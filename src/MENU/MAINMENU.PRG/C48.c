@@ -79,8 +79,8 @@ static void _nop(void) { }
  * Processes the object queue in the hope of finding a free slot.
  * Unused.
  */
-int _getNextEmptyObjectDataSlot(void) __attribute__((unused));
-int _getNextEmptyObjectDataSlot(void)
+static int _getNextEmptyObjectDataSlot(void) __attribute__((unused));
+static int _getNextEmptyObjectDataSlot(void)
 {
     vs_battle_processObjectDataQueue();
     return vs_battle_getEmptyObjectDataSlot();
@@ -300,7 +300,7 @@ int vs_mainmenu_ready(void)
     return 1;
 }
 
-int func_800FAA20(void)
+static int func_800FAA20(void)
 {
     static int D_80102034 = 0;
 
@@ -311,7 +311,7 @@ int func_800FAA20(void)
     return temp_s0 == 5;
 }
 
-int func_800FAA5C(int arg0)
+static int func_800FAA5C(int arg0)
 {
     if (arg0 & 0x40) {
         vs_battle_menuState.currentState = 0;
@@ -555,7 +555,7 @@ void func_800FAEBC(int arg0)
 
             misc = &vs_main_inventory.misc[index - 1];
 
-            vs_mainMenu_setUMisc(misc, &menuText[i * 2], rowTypes - -i, buf + i * 96);
+            vs_mainMenu_setMiscRow(misc, &menuText[i * 2], rowTypes - -i, buf + i * 96);
 
             if (misc->id < bronzeKey) {
 
@@ -661,7 +661,7 @@ void func_800FAEBC(int arg0)
 
 static inline int inline_fn(int a0, int a1, int a2) { return (a0 - (a1 - a2)) & 0xFFFF; }
 
-void func_800FB3C8(int arg0)
+static void func_800FB3C8(int arg0)
 {
     static char const* D_80102068[] = { "#HUMAN", "#BEAST", "#UNDEAD", "#PHANTOM",
         "#DRAGON", "#EVIL", NULL, NULL, "#PHYSICAL", "#AIR", "#FIRE", "#EARTH", "#WATER",
@@ -866,7 +866,7 @@ void func_800FB3C8(int arg0)
     }
 }
 
-int func_800FBB64(int arg0)
+static int func_800FBB64(int arg0)
 {
     do {
         arg0 = (arg0 + 1) & 3;

@@ -1,10 +1,9 @@
-#include "common.h"
 #include "58EC.h"
 #include "C48.h"
 #include "2D10.h"
-#include "../../SLUS_010.40/overlay.h"
-#include "../../BATTLE/BATTLE.PRG/573B8.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/overlay.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include "vs_string.h"
 #include <libetc.h>
@@ -134,7 +133,7 @@ int vs_mainMenu_getSelectedItemAction(void)
     return D_801022C8 == NULL ? _selectedItemAction : -1;
 }
 
-vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
+static vs_battle_menuItem_t* func_800FF388(int arg0, int arg1)
 {
     vs_battle_menuItem_t* temp_v0 =
         vs_battle_setMenuItem(arg0 + 0x20, arg1, ((arg0 + D_801024A0) * 0x10) + 0x12,
@@ -403,7 +402,7 @@ void func_800FFB68(int arg0)
 void vs_mainMenu_deactivateMenuItem(int arg0)
 {
     vs_battle_menuItem_t* item = &vs_battle_menuItems[arg0];
-    item->state = 0;
+    item->state = menuItemStateInactive;
 }
 
 void vs_mainMenu_dismissTextBox(void) { vs_battle_dismissTextBox(7); }
@@ -590,7 +589,7 @@ void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disa
     _textHeaders[index].x = xOffset;
 }
 
-void func_80100164(void)
+static void func_80100164(void)
 {
     static u_char D_801023BE = 8;
 

@@ -1,113 +1,134 @@
 #pragma once
-#include "../../SLUS_010.40/main.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 
-enum vs_mainMenu_menuActions {
-    menuActionNone,
-    menuActionCommand,
-    menuActionMenu,
-    menuActionNum,
-    menuActionWarning,
-    menuActionHelp,
-    menuActionInfo
-};
+/**
+ * Initializes the specified weapon details row.
+ *
+ * @param row 1 == blade, 2 == grip, 3+ == gem
+ * @param slide Whether the row should slide to a fixed x position (320)
+ */
+vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsRow(
+    int gem, int weaponIndex, int slide);
 
-enum vs_mainMenu_menuSelection {
-    menuSelectionConfirm,
-    menuSelectionBack = 0xFFFF,
-    menuSelectionQuit = -2
-};
+/**
+ * Initializes the specified shield details row.
+ *
+ * @param row The gem row
+ * @param slide Whether the row should slide to a fixed x position (320)
+ */
+vs_battle_menuItem_t* vs_mainMenu_initShieldDetailsRow(
+    int row, int shieldIndex, int slide);
 
-int vs_mainMenu_loadItemNames(int);
-void func_800FDD78(void);
+/**
+ * Prints the weapon's description to `buf` and assigns it to `menuText[1]`,
+ * and sets the row type to display the correct category and material.
+ */
+void vs_mainMenu_setWeaponRow(
+    vs_battle_uiWeapon* weapon, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Identical to `vs_mainMenu_setWeaponRow`, but operates on a
+ * `vs_main_inventoryWeapon`. Also sets `menuText[0]` to the weapon name.
+ */
+void vs_mainMenu_setWeaponRowFromInventory(
+    vs_main_inventoryWeapon* weapon, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Assigns the blade name to `menuText[0]`, prints the blade's description
+ * to `buf` and assigns it to `menuText[1]`, and sets the row type to
+ * display the correct category and material.
+ */
+void vs_mainMenu_setBladeRow(
+    vs_main_inventoryBlade* blade, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Assigns the grip name to `menuText[0]`, prints the grip's description
+ * to `buf` and assigns it to `menuText[1]`, and sets the row type to
+ * display the correct category.
+ */
+void vs_mainMenu_setGripRow(
+    vs_main_inventoryGrip* grip, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Assigns the shield name to `menuText[0]`, prints the shield's description
+ * to `buf` and assigns it to `menuText[1]`, and sets the row type to
+ * display the correct category and material.
+ */
+void vs_mainMenu_setShieldRow(
+    vs_battle_uiShield* shield, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Identical to `vs_mainMenu_setShieldRow`, but operates on a
+ * `vs_main_inventoryShield`.
+ */
+void vs_mainMenu_setShieldRowFromInventory(
+    vs_main_inventoryShield* shield, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Assigns the armor name to `menuText[0]`, prints the armor's description
+ * to `buf` and assigns it to `menuText[1]`, and sets the row type to
+ * display the correct category and material.
+ */
+void vs_mainMenu_setArmorRow(
+    vs_battle_uiArmor* armor, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Identical to `vs_mainMenu_setArmorRow`, but operates on a
+ * `vs_main_inventoryArmor`.
+ */
+void vs_mainMenu_setArmorRowFromInventory(
+    vs_main_inventoryArmor* shield, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Assigns the gem name to `menuText[0]`, prints the gem's description
+ * to `buf` and assigns it to `menuText[1]`, and sets the row type to
+ * display the correct category.
+ */
+void vs_mainMenu_setGemRow(
+    vs_main_inventoryGem* gem, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Assigns the item name to `menuText[0]`, prints the item's description
+ * to `buf` and assigns it to `menuText[1]`, and sets the row type to
+ * display the item count.
+ */
+void vs_mainMenu_setMiscRow(
+    vs_main_inventoryMisc* misc, char* menuText[], int* rowType, void* buf);
+
+/**
+ * Resets the Dp/Pp bars, and the numeric stats on the bottom right.
+ */
+void vs_mainMenu_resetStats(void);
+
+void vs_mainMenu_setWeaponRowStats(int);
+void vs_mainMenu_setBladeRowStats(int);
+void vs_mainMenu_setGripRowStats(int);
+void vs_mainMenu_setShieldStats(int);
+void vs_mainMenu_setArmorStats(int);
+void vs_mainMenu_setGemStats(int);
+void vs_mainMenu_resetStatusViewCursor(void);
 void vs_mainMenu_renderStatusView(void);
-enum vs_mainMenu_copyItem_flags { copyItemFlagsWrite = 0x10 };
-int vs_mainMenu_copyItem(
-    int arg0, vs_main_inventory_t* arg1, int arg2, vs_main_inventory_t* arg3);
 void vs_mainMenu_unequipAllWeapons(void);
 void vs_mainMenu_unequipShield(void);
 void vs_mainMenu_initItem(int, int);
+int vs_mainMenu_loadItemNames(int);
 int vs_mainMenu_ensureItemNamesLoaded(void);
+int vs_mainMenu_findItem(int category, int id);
+void vs_mainMenu_rebuildInventory(int);
 int vs_mainMenu_getItemCount(int itemCategory, vs_main_inventory_t* inventory);
 int vs_mainMenu_getFirstEmptyItemSlot(int, vs_main_inventory_t*);
-void vs_mainMenu_initSortUi(int count, int subMenuId, char* menuText[], int rowTypes[]);
-int func_800FF348(void);
-int vs_mainMenu_getSelectedItemAction(void);
-void vs_mainMenu_processItemActionMenu(void);
-void vs_mainMenu_printInformation(int, int);
 
-/**
- * Sets the text at the very top of the menu.
- * Text is automatically animated replaced with a slide animation
- * off the top of the screen.
- */
-void vs_mainMenu_setNextMenuAction(enum vs_mainMenu_menuActions action);
-void func_800FFA94(void);
-void func_800FFB68(int);
-void vs_mainMenu_deactivateMenuItem(int);
-int vs_mainMenu_findItem(int category, int id);
+enum vs_mainMenu_copyItem_flags { copyItemFlagsWrite = 0x10 };
 
-/**
- * Dismisses text box ID 7, used for the information
- * display at the bottom of the screen.
- */
-void vs_mainMenu_dismissTextBox(void);
-void vs_mainMenu_rebuildInventory(int);
+int vs_mainMenu_copyItem(
+    int arg0, vs_main_inventory_t* arg1, int arg2, vs_main_inventory_t* arg3);
 
-/**
- * Initializes text box ID 7, used for the information
- * display at the bottom of the screen.
- */
-void vs_mainMenu_initTextBox(void);
-void vs_mainmenu_renderButton(int index, int x, int y, u_long* data);
-int vs_mainMenu_renderCursor(u_int, int);
-int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3);
-void vs_mainMenu_renderIntColorDefault(int, int, u_long*);
-int vs_mainMenu_renderIntColor(int, int, int, u_long*);
-void vs_mainmenu_setInformationMessage(char*);
-
-/**
- * Populates one of two elements for displaying skill costs.
- *
- * @param index 0 is intended for the cost type, 1 for the value.
- * @param disabled Displays value in gray.
- */
-void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled);
-void vs_mainMenu_renderMenuRowIcon(int, int, int);
-void func_80100164(void);
-void vs_mainmenu_renderButtonUiBackground(int x, int y, int w, int h);
-void func_80100414(int, int);
-int func_80100814(void);
-
-/**
- * Retrieve row confirmed by the user.
- */
-int vs_mainMenu_getConfirmedRow(void);
-
-/**
- * Retrieve currently selected row.
- */
-int vs_mainmenu_getSelectedRow(void);
-void func_80100A5C(void);
-void func_80101118(int);
-int func_80101268(u_int, int, vs_battle_menuItem_t*, u_long*);
-void func_801013F8(int);
-void func_8010154C(vs_battle_menuItem_t* arg0);
-void vs_mainMenu_setUiWeaponStats(int);
-
-extern char vs_mainMenu_isLevelledSpell;
+extern char vs_mainMenu_weaponHands[];
 extern char vs_mainMenu_equipmentDetailNavigationMap[][4];
-extern char vs_mainMenu_inventoryItemCapacities[];
-extern char* vs_mainMenu_inventoryIndices[];
-extern int D_801021A0[];
+extern int vs_mainMenu_statCursorPositions[];
 extern int vs_mainMenu_mainCursorXY[];
 extern char vs_mainMenu_miscItemToSkillMap[];
 extern char (*vs_mainMenu_itemNames)[24];
-extern char D_801022C4;
-extern char vs_menu_cursorColor;
-extern char vs_mainMenu_hideMenu;
-extern int D_801022D8;
-extern char D_801022DC;
-extern char D_801023D0;
-extern char D_801023E3;
-extern char vs_mainMenu_weaponHands[];
+extern char vs_mainMenu_inventoryItemCapacities[];
+extern char* vs_mainMenu_inventoryIndices[];

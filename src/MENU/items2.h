@@ -80,7 +80,7 @@ static int _populateItemRows(
 
         switch (itemCategory) {
         case itemCategoryWeapon:
-            vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[index],
+            vs_mainMenu_setWeaponRowFromInventory(&vs_main_inventory.weapons[index],
                 &menuText[count * 2], &rowTypes[i], textBuf);
 
             if (vs_main_inventory.weapons[index].isEquipped != 0) {
@@ -89,17 +89,17 @@ static int _populateItemRows(
             break;
 
         case itemCategoryBlade:
-            vs_mainMenu_setUiBlade(&vs_main_inventory.blades[index], &menuText[count * 2],
-                &rowTypes[i], textBuf);
+            vs_mainMenu_setBladeRow(&vs_main_inventory.blades[index],
+                &menuText[count * 2], &rowTypes[i], textBuf);
             break;
 
         case itemCategoryGrip:
-            vs_mainMenu_setUiGrip(&vs_main_inventory.grips[index], &menuText[count * 2],
+            vs_mainMenu_setGripRow(&vs_main_inventory.grips[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
             break;
 
         case itemCategoryShield:
-            vs_mainMenu_initUiShield(&vs_main_inventory.shields[index],
+            vs_mainMenu_setShieldRowFromInventory(&vs_main_inventory.shields[index],
                 &menuText[count * 2], &rowTypes[i], textBuf);
 
             if (vs_main_inventory.shields[index].isEquipped != 0) {
@@ -108,8 +108,8 @@ static int _populateItemRows(
             break;
 
         case itemCategoryArmor:
-            vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index], &menuText[count * 2],
-                &rowTypes[i], textBuf);
+            vs_mainMenu_setArmorRowFromInventory(&vs_main_inventory.armor[index],
+                &menuText[count * 2], &rowTypes[i], textBuf);
 
             if (vs_main_inventory.armor[index].limb != 0) {
                 rowType = 0xCA00;
@@ -117,13 +117,13 @@ static int _populateItemRows(
             break;
 
         case itemCategoryGem:
-            vs_mainMenu_setUiGem(&vs_main_inventory.gems[index], &menuText[count * 2],
+            vs_mainMenu_setGemRow(&vs_main_inventory.gems[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
             break;
 
         case itemCategoryMisc: {
             u_int skillId;
-            vs_mainMenu_setUMisc(&vs_main_inventory.misc[index], &menuText[count * 2],
+            vs_mainMenu_setMiscRow(&vs_main_inventory.misc[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
 #ifdef _ITEMMENU
             skillId =

@@ -1,5 +1,5 @@
 #include "9258.h"
-#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/224.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/30D14.h"
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"

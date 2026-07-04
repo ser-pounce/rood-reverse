@@ -4,7 +4,7 @@
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include "src/BATTLE/BATTLE.PRG/4A0A8.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/224.h"
 #include "build/assets/MENU/MENUB.PRG/menuText.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include <stddef.h>
@@ -1217,37 +1217,37 @@ static void _populateLootItem(int lootIndex)
 
     switch (_lootList[lootIndex].itemCategory) {
     case itemCategoryWeapon:
-        vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[itemIndex], menuText,
-            &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setWeaponRowFromInventory(&vs_main_inventory.weapons[itemIndex],
+            menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryBlade:
-        vs_mainMenu_setUiBlade(&vs_main_inventory.blades[itemIndex], menuText, &rowType,
+        vs_mainMenu_setBladeRow(&vs_main_inventory.blades[itemIndex], menuText, &rowType,
             vs_battle_stringBuf);
         break;
 
     case itemCategoryGrip:
-        vs_mainMenu_setUiGrip(
+        vs_mainMenu_setGripRow(
             &vs_main_inventory.grips[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryShield:
-        vs_mainMenu_initUiShield(&vs_main_inventory.shields[itemIndex], menuText,
-            &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setShieldRowFromInventory(&vs_main_inventory.shields[itemIndex],
+            menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryArmor:
-        vs_mainMenu_initUiArmor(
+        vs_mainMenu_setArmorRowFromInventory(
             &vs_main_inventory.armor[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryGem:
-        vs_mainMenu_setUiGem(
+        vs_mainMenu_setGemRow(
             &vs_main_inventory.gems[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
 
     case itemCategoryMisc:
-        vs_mainMenu_setUMisc(
+        vs_mainMenu_setMiscRow(
             &vs_main_inventory.misc[itemIndex], menuText, &rowType, vs_battle_stringBuf);
         break;
     }

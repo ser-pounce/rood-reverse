@@ -1,4 +1,4 @@
-#include "278.h"
+#include "224.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30D14.h"
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"
@@ -256,7 +256,7 @@ int func_800F9EB8(void* arg0)
     return 0;
 }
 
-int func_800FA188(int arg0, int arg1, int* arg2)
+static int func_800FA188(int arg0, int arg1, int* arg2)
 {
     int i;
     int var_t2 = 0;
@@ -281,7 +281,8 @@ int func_800FA188(int arg0, int arg1, int* arg2)
     return ret;
 }
 
-int func_800FA238(int arg0, int arg1, int arg2)
+static int func_800FA238(int arg0, int arg1, int arg2) __attribute__((unused));
+static int func_800FA238(int arg0, int arg1, int arg2)
 {
     int i;
     D_800F45E0_t** var_t0 = D_800F45E0;

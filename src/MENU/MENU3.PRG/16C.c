@@ -6,7 +6,7 @@
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/224.h"
 #include "build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
 
@@ -413,8 +413,9 @@ static int _equipAccessoryMenu(int initialize)
 
                     if (index && (vs_main_inventory.armor[index - 1].limb == 7)) {
 
-                        vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
-                            (char**)menuText, rowTypes, textBuf);
+                        vs_mainMenu_setArmorRowFromInventory(
+                            &vs_main_inventory.armor[index - 1], (char**)menuText,
+                            rowTypes, textBuf);
 
                         rowTypes[0] |= index << 19;
                     }
@@ -430,7 +431,8 @@ static int _equipAccessoryMenu(int initialize)
                 if ((index != 0) && (vs_main_inventory.armor[index - 1].category == 7)
                     && (vs_main_inventory.armor[index - 1].limb == 0)) {
 
-                    vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
+                    vs_mainMenu_setArmorRowFromInventory(
+                        &vs_main_inventory.armor[index - 1],
                         (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
                         textBuf + rowCount * 96);
 
@@ -526,7 +528,7 @@ static int _equipWeaponMenu(int initialize)
             index = 0;
         }
 
-        vs_mainMenu_setUiWeaponStats(index);
+        vs_mainMenu_setWeaponRowStats(index);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_renderDpPpBars(3);
         vs_mainMenu_renderEquipStats(1);
@@ -571,8 +573,9 @@ static int _equipWeaponMenu(int initialize)
                     if ((index != 0)
                         && (vs_main_inventory.weapons[index - 1].isEquipped != 0)) {
 
-                        vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[index - 1],
-                            (char**)menuText, rowTypes, textBuf);
+                        vs_mainMenu_setWeaponRowFromInventory(
+                            &vs_main_inventory.weapons[index - 1], (char**)menuText,
+                            rowTypes, textBuf);
 
                         rowTypes[0] |= index << 0x13;
                     }
@@ -592,8 +595,9 @@ static int _equipWeaponMenu(int initialize)
 
                     if (weapon->isEquipped == 0) {
 
-                        vs_mainMenu_initUiWeapon(weapon, (char**)&menuText[rowCount * 2],
-                            &rowTypes[rowCount], textBuf + rowCount * 96);
+                        vs_mainMenu_setWeaponRowFromInventory(weapon,
+                            (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
+                            textBuf + rowCount * 96);
 
                         rowTypes[rowCount] |= index << 0x13;
                         ++rowCount;
@@ -608,7 +612,7 @@ static int _equipWeaponMenu(int initialize)
         break;
     }
     case handleInput:
-        vs_mainMenu_setUiWeaponStats(_equippedItem);
+        vs_mainMenu_setWeaponRowStats(_equippedItem);
         _processEquipSubMenu(0);
 
         selectedWeapon = _getSelectedItemRow() + 1;
@@ -750,8 +754,9 @@ static int _equipShieldMenu(int initialize)
                     if ((index != 0)
                         && (vs_main_inventory.shields[index - 1].isEquipped != 0)) {
 
-                        vs_mainMenu_initUiShield(&vs_main_inventory.shields[index - 1],
-                            (char**)menuText, rowTypes, textBuf);
+                        vs_mainMenu_setShieldRowFromInventory(
+                            &vs_main_inventory.shields[index - 1], (char**)menuText,
+                            rowTypes, textBuf);
 
                         rowTypes[0] |= index << 0x13;
                     }
@@ -764,7 +769,8 @@ static int _equipShieldMenu(int initialize)
                 index = vs_main_inventoryIndices.shields[i];
                 if (index != 0) {
                     if (vs_main_inventory.shields[index - 1].isEquipped == 0) {
-                        vs_mainMenu_initUiShield(&vs_main_inventory.shields[index - 1],
+                        vs_mainMenu_setShieldRowFromInventory(
+                            &vs_main_inventory.shields[index - 1],
                             (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
                             textBuf + rowCount * 96);
                         rowTypes[rowCount] |= index << 0x13;
@@ -929,8 +935,9 @@ static int _equipArmorMenu(int initBodyPart)
                     if ((index != 0)
                         && (vs_main_inventory.armor[index - 1].limb == bodyPart)) {
 
-                        vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
-                            (char**)menuText, rowTypes, textBuf);
+                        vs_mainMenu_setArmorRowFromInventory(
+                            &vs_main_inventory.armor[index - 1], (char**)menuText,
+                            rowTypes, textBuf);
 
                         rowTypes[0] |= index << 0x13;
                     }
@@ -948,7 +955,8 @@ static int _equipArmorMenu(int initBodyPart)
                         == bodyPartCategories[bodyPart])
                     && (vs_main_inventory.armor[index - 1].limb == 0)) {
 
-                    vs_mainMenu_initUiArmor(&vs_main_inventory.armor[index - 1],
+                    vs_mainMenu_setArmorRowFromInventory(
+                        &vs_main_inventory.armor[index - 1],
                         (char**)&menuText[rowCount * 2], &rowTypes[rowCount],
                         textBuf + rowCount * 0x60);
 
@@ -1106,7 +1114,8 @@ static int _equipMenu(int initialize)
 
         for (j = 0; j < 8; ++j, ++weapon) {
             if (weapon->isEquipped != 0) {
-                vs_mainMenu_initUiWeapon(weapon, (char**)rowStrings, rowTypes, buf);
+                vs_mainMenu_setWeaponRowFromInventory(
+                    weapon, (char**)rowStrings, rowTypes, buf);
                 break;
             }
         }
@@ -1115,7 +1124,8 @@ static int _equipMenu(int initialize)
 
         for (j = 0; j < 8; ++j, ++shield) {
             if (shield->isEquipped != 0) {
-                vs_mainMenu_initUiShield(shield, &rowStrings[2], &rowTypes[1], buf + 96);
+                vs_mainMenu_setShieldRowFromInventory(
+                    shield, &rowStrings[2], &rowTypes[1], buf + 96);
                 break;
             }
         }
@@ -1125,7 +1135,7 @@ static int _equipMenu(int initialize)
 
             for (j = 0; j < 16; ++j, ++armor) {
                 if (((i != 7) + armor->limb) == i) {
-                    vs_mainMenu_initUiArmor(
+                    vs_mainMenu_setArmorRowFromInventory(
                         armor, &rowStrings[i * 2], &rowTypes[i], &buf[i * 96]);
                     break;
                 }

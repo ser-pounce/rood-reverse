@@ -1315,12 +1315,15 @@ void vs_battle_applyWeapon(vs_battle_uiWeapon* target, vs_main_inventoryWeapon* 
     vs_main_bzero(tempWeapon, sizeof *tempWeapon);
 
     if (source != NULL) {
+
         tempWeapon->index = source->index;
+
         if (source->blade != 0) {
             vs_battle_copyInventoryBladeStats(
                 &tempWeapon->blade, &vs_main_inventory.blades[source->blade - 1]);
             tempWeapon->material = vs_main_inventory.blades[source->blade - 1].material;
         }
+
         if (source->grip != 0) {
             vs_battle_copyInventoryGripStats(
                 &tempWeapon->grip, &vs_main_inventory.grips[source->grip - 1]);
@@ -1337,6 +1340,7 @@ void vs_battle_applyWeapon(vs_battle_uiWeapon* target, vs_main_inventoryWeapon* 
             tempWeapon->name[i] = source->name[i];
         }
     }
+
     vs_battle_applyWeaponStats(target, tempWeapon);
     vs_main_freeHeapR(tempWeapon);
 }

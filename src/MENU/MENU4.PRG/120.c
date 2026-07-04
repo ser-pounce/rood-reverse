@@ -6,7 +6,7 @@
 #include "src/BATTLE/BATTLE.PRG/58578.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
-#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/224.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU4.PRG/status.h"
@@ -309,7 +309,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
 
     switch (row) {
     case 0:
-        vs_mainMenu_setUiWeapon(weapon, menuText, &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setWeaponRow(weapon, menuText, &rowType, vs_battle_stringBuf);
         menuText[0] = weapon->name;
         break;
 
@@ -354,7 +354,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
     menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
 
     if (row == 0) {
-        vs_mainMenu_setUiShield(shield, menuText, &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setShieldRow(shield, menuText, &rowType, vs_battle_stringBuf);
     } else if (row < 0) {
 
     } else if (row < 4) {
@@ -380,7 +380,7 @@ static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setUiArmor(arg0, menuText, &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setArmorRow(arg0, menuText, &rowType, vs_battle_stringBuf);
 
     return menuText[1];
 }
@@ -397,7 +397,7 @@ static char* _drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
     int rowType[2];
 
     vs_battle_copyUiAccessoryStats(&armor, arg0);
-    vs_mainMenu_initUiArmor(&armor, menuText, rowType, vs_battle_stringBuf);
+    vs_mainMenu_setArmorRowFromInventory(&armor, menuText, rowType, vs_battle_stringBuf);
 
     return menuText[1];
 }
@@ -1376,11 +1376,11 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
     if (row == 1) {
         vs_main_inventoryBlade blade;
         vs_battle_copyUiBladeStats(&blade, &weapon->blade);
-        vs_mainMenu_setUiBlade(&blade, menuText, &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setBladeRow(&blade, menuText, &rowType, vs_battle_stringBuf);
     } else if (row == 2) {
         vs_main_inventoryGrip grip;
         vs_battle_copyUiGripStats(&grip, &weapon->grip);
-        vs_mainMenu_setUiGrip(&grip, menuText, &rowType, vs_battle_stringBuf);
+        vs_mainMenu_setGripRow(&grip, menuText, &rowType, vs_battle_stringBuf);
     } else {
 
         // xOffset temporarily reused as the gem index
@@ -1394,7 +1394,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
             if (weapon->gems[xOffset].id != 0) {
                 vs_main_inventoryGem gem;
                 vs_battle_copyUiGemStats(&gem, &weapon->gems[xOffset]);
-                vs_mainMenu_setUiGem(&gem, menuText, &rowType, vs_battle_stringBuf);
+                vs_mainMenu_setGemRow(&gem, menuText, &rowType, vs_battle_stringBuf);
             }
 
             xOffset = 151;
@@ -1440,7 +1440,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int init)
         if (shield->gems[gemSlot].id != 0) {
             vs_main_inventoryGem gem;
             vs_battle_copyUiGemStats(&gem, &shield->gems[gemSlot]);
-            vs_mainMenu_setUiGem(&gem, menuText, &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setGemRow(&gem, menuText, &rowType, vs_battle_stringBuf);
         }
 
         gemSlot = 151;
@@ -1674,7 +1674,7 @@ static int _equipmentDetailScreen(int row)
                         _setWeaponRow(i, &actor->weapon, 0);
                     }
 
-                    vs_mainMenu_setUiWeapon(
+                    vs_mainMenu_setWeaponRow(
                         &actor->weapon, sp18, &sp48, vs_battle_stringBuf);
 
                     sp18[0] = (char*)&actor->weapon;
@@ -1688,7 +1688,7 @@ static int _equipmentDetailScreen(int row)
                         _setShieldRow(i, &actor->shield, 0);
                     }
 
-                    vs_mainMenu_setUiShield(
+                    vs_mainMenu_setShieldRow(
                         &actor->shield, sp18, &sp48, vs_battle_stringBuf);
 
                     break;
@@ -1698,14 +1698,15 @@ static int _equipmentDetailScreen(int row)
                         vs_mainMenu_renderDpPpBars(
                             renderDpPpBarsTargetDp | renderDpPpBarsStatStatic);
                         _drawArmorInfo(&actor->limbs[var_s2 - 2].armor);
-                        vs_mainMenu_setUiArmor(&actor->limbs[var_s2 - 2].armor, sp18,
+                        vs_mainMenu_setArmorRow(&actor->limbs[var_s2 - 2].armor, sp18,
                             &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_renderDpPpBars(
                             renderDpPpBarsTargetNone | renderDpPpBarsStatStatic);
                         _drawAccessoryInfo((vs_battle_uiAccessory*)&actor->accessory);
                         vs_battle_copyUiAccessoryStats(&armor, &actor->accessory);
-                        vs_mainMenu_initUiArmor(&armor, sp18, &sp48, vs_battle_stringBuf);
+                        vs_mainMenu_setArmorRowFromInventory(
+                            &armor, sp18, &sp48, vs_battle_stringBuf);
                     }
 
                     break;
@@ -1828,8 +1829,10 @@ static int _equipmentDetailScreen(int row)
                 break;
             }
         } else {
+
             var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                     [newSelection + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
+
             if (newSelection >= 18) {
                 if (_selectedEquipmentRow == 0) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
@@ -1843,7 +1846,7 @@ static int _equipmentDetailScreen(int row)
 
         vs_mainmenu_setInformationMessage(var_s3);
 
-        i = D_801021A0[newSelection];
+        i = vs_mainMenu_statCursorPositions[newSelection];
 
         if ((_selectedEquipmentRow == 1)
             && ((_equipmentDetailSelectedElement - 10) < 2U)) {
@@ -1929,13 +1932,13 @@ static int _equipmentScreen(int element)
         }
 
         if (temp_s6->weapon.blade.id != 0) {
-            vs_mainMenu_setUiWeapon(
+            vs_mainMenu_setWeaponRow(
                 &temp_s6->weapon, rowStrings, rowTypes, equipmentDescriptions[0]);
             rowStrings[0] = temp_s6->weapon.name;
         }
 
         if (temp_s6->shield.base.id != 0) {
-            vs_mainMenu_setUiShield(
+            vs_mainMenu_setShieldRow(
                 &temp_s6->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
@@ -1951,7 +1954,7 @@ static int _equipmentScreen(int element)
 
             if ((i - 2) < limbCount) {
                 if (limbs->armor.armor.id != 0) {
-                    vs_mainMenu_setUiArmor(&limbs->armor, &rowStrings[i * 2],
+                    vs_mainMenu_setArmorRow(&limbs->armor, &rowStrings[i * 2],
                         &rowTypes[i], equipmentDescriptions[i]);
                 }
 
@@ -1959,7 +1962,7 @@ static int _equipmentScreen(int element)
 
             } else {
                 vs_battle_copyUiAccessoryStats(p, &temp_s6->accessory);
-                vs_mainMenu_initUiArmor(
+                vs_mainMenu_setArmorRowFromInventory(
                     p, &rowStrings[i * 2], &rowTypes[i], equipmentDescriptions[i]);
 
                 rowTypes[i] |= rowType;

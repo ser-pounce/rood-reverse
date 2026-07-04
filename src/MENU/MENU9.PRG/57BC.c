@@ -5,7 +5,7 @@
 #include "src/BATTLE/BATTLE.PRG/30D14.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/224.h"
 
 int vs_menu9_loadZud(int zudId)
 {

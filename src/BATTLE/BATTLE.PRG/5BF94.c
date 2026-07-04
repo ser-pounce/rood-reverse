@@ -15,6 +15,7 @@
 #include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
 #include "../../MENU/MAINMENU.PRG/C48.h"
+#include "../../MENU/MAINMENU.PRG/58EC.h"
 #include "../../GIM/SCREFF2.PRG/0.h"
 #include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"

@@ -2,6 +2,7 @@
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "gpu.h"
 #include <libetc.h>
 

@@ -1,6 +1,6 @@
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/MENU/MAINMENU.PRG/278.h"
+#include "src/MENU/MAINMENU.PRG/224.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include <libgpu.h>
 

@@ -127,7 +127,7 @@ static int _weaponStatusView(int itemInfo)
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
-            vs_mainMenu_setUiWeaponStats(vs_main_inventoryIndices.weapons[itemIndex]);
+            vs_mainMenu_setWeaponRowStats(vs_main_inventoryIndices.weapons[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
             state = initWeapon;
         }
@@ -136,7 +136,7 @@ static int _weaponStatusView(int itemInfo)
     case initWeapon:
         if (initRow < 10) {
             if (++initRow < 6) {
-                vs_mainMenu_initWeaponDetailsMenu(
+                vs_mainMenu_initWeaponDetailsRow(
                     initRow, vs_main_inventoryIndices.weapons[itemIndex], 1);
                 return 0;
             }
@@ -161,15 +161,16 @@ static int _weaponStatusView(int itemInfo)
             itemIndex = newIndex;
             weaponToDisplay = _getItemIndex(0, newIndex);
 
-            vs_mainMenu_initUiWeapon(&vs_main_inventory.weapons[weaponToDisplay - 1],
-                menuText, &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setWeaponRowFromInventory(
+                &vs_main_inventory.weapons[weaponToDisplay - 1], menuText, &rowType,
+                vs_battle_stringBuf);
 
             do {
-                vs_mainMenu_setUiWeaponStats(weaponToDisplay);
+                vs_mainMenu_setWeaponRowStats(weaponToDisplay);
                 _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
                 for (i = 1; i < 6; ++i) {
-                    vs_mainMenu_initWeaponDetailsMenu(
+                    vs_mainMenu_initWeaponDetailsRow(
                         i, vs_main_inventoryIndices.weapons[newIndex], 0);
                 }
             } while (0);
@@ -220,7 +221,7 @@ static int _bladeStatusView(int itemInfo)
     case init:
         if ((state == 0) && (vs_mainmenu_ready() != 0)) {
             _initMenuLayout(itemRow, 3);
-            vs_mainMenu_setUiBladeStats(vs_main_inventoryIndices.blades[itemIndex]);
+            vs_mainMenu_setBladeRowStats(vs_main_inventoryIndices.blades[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
             state = wait;
         }
@@ -249,9 +250,9 @@ static int _bladeStatusView(int itemInfo)
             itemIndex = newIndex;
             bladeToDisplay = _getItemIndex(1, newIndex);
 
-            vs_mainMenu_setUiBlade(&vs_main_inventory.blades[bladeToDisplay - 1],
+            vs_mainMenu_setBladeRow(&vs_main_inventory.blades[bladeToDisplay - 1],
                 meunText, &rowType, vs_battle_stringBuf);
-            vs_mainMenu_setUiBladeStats(bladeToDisplay);
+            vs_mainMenu_setBladeRowStats(bladeToDisplay);
             _switchItemStatusPage(itemRow, meunText, rowType, newIndex);
         }
         break;
@@ -303,7 +304,7 @@ static int _gripStatusView(int itemInfo)
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 4);
-            vs_mainMenu_setUiGripStats(vs_main_inventoryIndices.grips[itemIndex]);
+            vs_mainMenu_setGripRowStats(vs_main_inventoryIndices.grips[itemIndex]);
             state = wait;
         }
         break;
@@ -328,10 +329,10 @@ static int _gripStatusView(int itemInfo)
                 itemIndex = newIndex;
                 gripToDisplay = _getItemIndex(2, newIndex);
 
-                vs_mainMenu_setUiGrip(&vs_main_inventory.grips[gripToDisplay - 1],
+                vs_mainMenu_setGripRow(&vs_main_inventory.grips[gripToDisplay - 1],
                     menuText, &rowType, vs_battle_stringBuf);
 
-                vs_mainMenu_setUiGripStats(gripToDisplay);
+                vs_mainMenu_setGripRowStats(gripToDisplay);
                 _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
             }
         }
@@ -406,7 +407,7 @@ static int _shieldStatusView(int itemInfo)
             ++initRow;
 
             if (initRow < 4) {
-                vs_mainMenu_initSetShieldGemMenu(
+                vs_mainMenu_initShieldDetailsRow(
                     initRow, vs_main_inventoryIndices.shields[itemIndex], 1);
             }
             break;
@@ -431,14 +432,14 @@ static int _shieldStatusView(int itemInfo)
             itemIndex = newIndex;
             i = _getItemIndex(3, newIndex);
 
-            vs_mainMenu_initUiShield(&vs_main_inventory.shields[i - 1], menuText,
-                &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setShieldRowFromInventory(&vs_main_inventory.shields[i - 1],
+                menuText, &rowType, vs_battle_stringBuf);
 
             vs_mainMenu_setShieldStats(i);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             for (i = 1; i < 4; ++i) {
-                vs_mainMenu_initSetShieldGemMenu(
+                vs_mainMenu_initShieldDetailsRow(
                     i, vs_main_inventoryIndices.shields[newIndex], 0);
             }
         }
@@ -524,8 +525,9 @@ static int _armorStatusView(int itemInfo)
             itemIndex = newIndex;
             armorToDisplay = _getItemIndex(4, newIndex);
 
-            vs_mainMenu_initUiArmor(&vs_main_inventory.armor[armorToDisplay - 1],
-                menuText, &rowType, vs_battle_stringBuf);
+            vs_mainMenu_setArmorRowFromInventory(
+                &vs_main_inventory.armor[armorToDisplay - 1], menuText, &rowType,
+                vs_battle_stringBuf);
             vs_mainMenu_setArmorStats(armorToDisplay);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
@@ -610,7 +612,7 @@ static int _gemStatusView(int itemInfo)
             itemIndex = newIndex;
             gemToDisplay = _getItemIndex(5, newIndex);
 
-            vs_mainMenu_setUiGem(&vs_main_inventory.gems[gemToDisplay - 1], menuText,
+            vs_mainMenu_setGemRow(&vs_main_inventory.gems[gemToDisplay - 1], menuText,
                 &rowType, vs_battle_stringBuf);
             vs_mainMenu_setGemStats(gemToDisplay);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
@@ -651,7 +653,7 @@ static int _itemStatusDispatcher(int itemInfo)
         _selectedItemCategoryIconOnTop = 1;
         _exitToBattle = 0;
 
-        func_800FDD78();
+        vs_mainMenu_resetStatusViewCursor();
         vs_battle_getMenuItem(31)->itemPage = page & 0xFF;
         vs_mainMenu_setNextMenuAction(menuActionNone);
     }

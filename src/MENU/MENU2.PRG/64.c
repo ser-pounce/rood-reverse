@@ -278,30 +278,36 @@ static int _abilityMenu(void)
                     ability = _unlockedChainAbilities[i];
 
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
-                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdCircle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[1] == ability) {
-                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdTriangle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[2] == ability) {
-                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdSquare, 199, i * 16 + 48, scratch);
                     }
                 } else {
 
                     ability = _unlockedDefenseAbilities[i];
 
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
-                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdCircle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[1] == ability) {
-                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdTriangle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[2] == ability) {
-                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdSquare, 199, i * 16 + 48, scratch);
                     }
                 }
             }
@@ -312,30 +318,36 @@ static int _abilityMenu(void)
                     ability = _unlockedChainAbilities[i + _firstAbility];
 
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
-                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdCircle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[1] == ability) {
-                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdTriangle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedChainAbilities[2] == ability) {
-                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdSquare, 199, i * 16 + 48, scratch);
                     }
                 } else {
 
                     ability = _unlockedDefenseAbilities[i + _firstAbility];
 
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
-                        vs_mainmenu_renderButton(2, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdCircle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[1] == ability) {
-                        vs_mainmenu_renderButton(0, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdTriangle, 199, i * 16 + 48, scratch);
                     }
 
                     if (vs_main_settings.mappedDefenseAbilities[2] == ability) {
-                        vs_mainmenu_renderButton(1, 199, i * 16 + 48, scratch);
+                        vs_mainmenu_renderButton(
+                            buttonIdSquare, 199, i * 16 + 48, scratch);
                     }
                 }
             }
@@ -675,7 +687,7 @@ int vs_menu2_exec(u_char* state)
             break;
         }
 
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
 
         if (vs_battle_shortcutInvoked != 0) {
 
@@ -795,8 +807,8 @@ int vs_menu2_exec(u_char* state)
         break;
 
     case exitToMainMenu:
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
             *state = none;
@@ -806,8 +818,8 @@ int vs_menu2_exec(u_char* state)
         break;
 
     case exitToBattle:
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 3;

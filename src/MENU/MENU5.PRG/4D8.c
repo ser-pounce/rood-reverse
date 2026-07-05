@@ -92,12 +92,12 @@ static void _renderIcon(int id, int x, int y);
 static void _setNextAction(int display)
 {
     if (display != 0) {
-        vs_mainMenu_setNextMenuAction(menuActionMenu);
+        vs_mainMenu_setMenuCommand(menuActionMenu);
         vs_mainMenu_hideMenu = 0;
         return;
     }
 
-    vs_mainMenu_setNextMenuAction(menuActionNone);
+    vs_mainMenu_setMenuCommand(menuActionNone);
     vs_mainMenu_hideMenu = 1;
 }
 
@@ -317,7 +317,7 @@ int vs_menu5_exec(u_char* state)
             D_800EB9B0 = 0;
 
             func_8008A4DC(1);
-            vs_mainMenu_setNextMenuAction(menuActionNone);
+            vs_mainMenu_setMenuCommand(menuActionNone);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
             armfileLoadDelay = 10;
@@ -2031,11 +2031,11 @@ static void _drawUIControls(void)
         int index = uiXOffset;
         void** s1 = (void**)0x1F800000;
 
-        vs_mainmenu_renderButton(4, index + 8, 15, s1[1] + 24);
-        vs_mainmenu_renderButton(5, uiXOffset + 64, 15, s1[1] + 24);
-        vs_mainmenu_renderButton(6, uiXOffset + 8, 33, s1[1] + 24);
-        vs_mainmenu_renderButton(7, uiXOffset + 8, 52, s1[1] + 24);
-        vs_mainmenu_renderButton(2, uiXOffset + 8, 70, s1[1] + 24);
+        vs_mainmenu_renderButton(buttonIdL1, index + 8, 15, s1[1] + 24);
+        vs_mainmenu_renderButton(buttonIdR1, uiXOffset + 64, 15, s1[1] + 24);
+        vs_mainmenu_renderButton(buttonIdL2, uiXOffset + 8, 33, s1[1] + 24);
+        vs_mainmenu_renderButton(buttonIdR2, uiXOffset + 8, 52, s1[1] + 24);
+        vs_mainmenu_renderButton(buttonIdCircle, uiXOffset + 8, 70, s1[1] + 24);
 
         switch (_menuCommandsState) {
         case 0: {

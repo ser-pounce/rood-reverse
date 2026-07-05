@@ -1274,7 +1274,7 @@ int vs_menu3_exec(u_char* state)
         }
 
         func_8008A4DC(0);
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         func_800CB654(1);
 
         D_800EB9B0 = 0x200000;
@@ -1420,8 +1420,8 @@ int vs_menu3_exec(u_char* state)
 
     case quit:
         func_800FFB68(0);
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() && vs_mainMenu_ensureItemTextUnloaded()) {
             *state = none;
@@ -1447,8 +1447,8 @@ int vs_menu3_exec(u_char* state)
 
     case 11:
         func_800FFB68(0);
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (D_80109710 != 0) {
             --D_80109710;
@@ -1465,8 +1465,8 @@ int vs_menu3_exec(u_char* state)
 
     case 12:
         func_800FFB68(0);
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if ((D_801022D8 == 0) && vs_mainMenu_ensureItemTextUnloaded()) {
 
@@ -1540,7 +1540,7 @@ int vs_menu3_exec(u_char* state)
 
     if (_statusCommandAnimationStep != 0) {
         vs_mainmenu_renderButtonUiBackground(16 - row, 38, 88, 10);
-        vs_mainmenu_renderButton(1, 8 - row, 36, NULL);
+        vs_mainmenu_renderButton(buttonIdSquare, 8 - row, 36, NULL);
         vs_battle_renderTextRawColor("STATUS", vs_getXY(28 - row, 38),
             vs_getRGB888(32, 32, 32) << _statusCommandState, NULL);
     }

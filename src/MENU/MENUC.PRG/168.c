@@ -380,7 +380,7 @@ static int _leaveItemSlotSelection(int arg0)
         vs_mainMenu_renderDpPpBars(4);
     }
 
-    vs_mainMenu_setNextMenuAction(menuActionMenu);
+    vs_mainMenu_setMenuCommand(menuActionMenu);
 
     return vs_main_buttonsPressed.all & PADRup ? -2 : -1;
 }
@@ -1474,11 +1474,11 @@ static int _assembleMenu(int arg0)
         break;
     case 8:
         if (vs_mainmenu_ready() != 0) {
-            vs_menu_cursorColor = 0;
+            vs_mainMenu_cursorColor = 0;
             vs_battle_stringBuf[0] = 0;
             vs_battle_stringBuf[1] = _combiningItem;
             _assembleBladeMenuHeader(4);
-            vs_mainMenu_setNextMenuAction(menuActionMenu);
+            vs_mainMenu_setMenuCommand(menuActionMenu);
             return 1;
         }
         break;
@@ -1864,7 +1864,7 @@ static int _attachGemsMenu(int arg0)
         switch (itemInfo) {
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1951,7 +1951,7 @@ static int _attachGemsTopMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
             _setMenuTitle(11, VS_MENU12_BIN_OFFSET_attachGems);
             state = 0;
@@ -2214,7 +2214,7 @@ static int _disassembleTopMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
             _setMenuTitle(12, VS_MENU12_BIN_OFFSET_disassemble);
             state = 0;
@@ -2342,10 +2342,10 @@ static int _renameWeaponMenu(int arg0)
         break;
     case 6:
         if (vs_mainmenu_ready() != 0) {
-            vs_menu_cursorColor = 0;
+            vs_mainMenu_cursorColor = 0;
             vs_battle_stringBuf[0] = 1;
             vs_battle_stringBuf[1] = _combiningItem;
-            vs_mainMenu_setNextMenuAction(menuActionMenu);
+            vs_mainMenu_setMenuCommand(menuActionMenu);
             return 1;
         }
         break;
@@ -2392,7 +2392,7 @@ static int _repairMenu(int arg0)
                 vs_battle_playMenuLeaveSfx();
                 return -2;
             }
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             vs_mainMenu_menuItemFlyoutRight(14);
             state = 4;
         }
@@ -2481,7 +2481,7 @@ static int _repairMenu(int arg0)
             if (vs_main_buttonsPressed.all & PADRup) {
                 return -2;
             }
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             state = 4;
         }
         break;
@@ -3068,7 +3068,7 @@ static int _combineBladeMenu(int arg0)
         switch (temp_v0_2) {
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -3663,7 +3663,7 @@ static int _combineShieldMenu(int arg0)
         switch (temp_s2) {
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -4152,7 +4152,7 @@ static int _combineArmorMenu(int arg0)
         case 1:
             vs_main_playSfxDefault(0x7E, 0x18);
 
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_renderDpPpBars(4);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -4284,7 +4284,7 @@ static int _combineTopMenu(int arg0)
         break;
     case 5:
         if (vs_mainmenu_ready() != 0) {
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
             _setMenuTitle(15, VS_MENU12_BIN_OFFSET_combine);
             state = 0U;
@@ -4415,9 +4415,9 @@ int vs_menuC_exec(u_char* state)
                 *state = 0xA;
                 if (i == 1) {
                     vs_battle_menuState.currentState = 8;
-                    vs_mainMenu_dismissTextBox();
+                    vs_mainMenu_dismissInformationBox();
                 } else {
-                    vs_mainMenu_initTextBox();
+                    vs_mainMenu_initInformationBox();
                 }
             } else {
                 *state = 0xB;
@@ -4478,7 +4478,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 10:
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         if (vs_mainmenu_ready() != 0) {
             *state = 1;
         }

@@ -42,10 +42,10 @@ extern void* D_1F800000[];
 void _toggleMenuAction(int enable)
 {
     if (enable != 0) {
-        vs_mainMenu_setNextMenuAction(menuActionMenu);
+        vs_mainMenu_setMenuCommand(menuActionMenu);
         vs_mainMenu_hideMenu = 0;
     } else {
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_hideMenu = 1;
     }
 }
@@ -326,7 +326,7 @@ int vs_menu9_exec(u_char* state)
             D_800EB9B0 = 0;
 
             func_8008A4DC(1);
-            vs_mainMenu_setNextMenuAction(menuActionNone);
+            vs_mainMenu_setMenuCommand(menuActionNone);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
             *state = 7;
@@ -641,7 +641,7 @@ int _menuInput(void)
         return _nextState;
 
     case 4:
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         _setTitleRows();
 
         menuAnimState = 0;
@@ -709,7 +709,7 @@ int _menuInput(void)
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_main_playSfxDefault(0x7E, 6);
-            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_dismissInformationBox();
 
             ++_menuState;
 
@@ -746,7 +746,7 @@ int _menuInput(void)
         break;
 
     case 7:
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         _setStatText();
 
         menuAnimState = 0;
@@ -820,7 +820,7 @@ int _menuInput(void)
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_main_playSfxDefault(0x7E, 6);
-            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_dismissInformationBox();
 
             ++_menuState;
 
@@ -854,7 +854,7 @@ int _menuInput(void)
         break;
 
     case 10:
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         _printBossRushMenuRow();
 
         ++_menuState;
@@ -880,7 +880,7 @@ int _menuInput(void)
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_main_playSfxDefault(0x7E, 6);
-            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_dismissInformationBox();
             _leaveBossRushMenu();
 
             ++_menuState;
@@ -931,7 +931,7 @@ int _menuInput(void)
 
             _enemyDescriptions = (u_short*)(_monBinData + 150);
 
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             _initEnemyList();
 
             menuAnimState = 0;
@@ -1010,7 +1010,7 @@ int _menuInput(void)
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_main_playSfxDefault(0x7E, 6);
-            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_dismissInformationBox();
 
             ++_menuState;
 
@@ -1103,7 +1103,7 @@ int _menuInput(void)
             ++_menuState;
 
             if (vs_main_buttonsPressed.all & PADRup) {
-                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_dismissInformationBox();
                 _nextState = 1;
             } else {
                 _nextState = 0;
@@ -2101,7 +2101,7 @@ void _renderEnemyDetailScreen(int animState, int state)
         temp_s4 = animState * 16;
         scratch = (void**)getScratchAddr(0);
 
-        vs_mainmenu_renderButton(6, temp_s4 - 120, 15, scratch[1] + 24);
+        vs_mainmenu_renderButton(buttonIdL2, temp_s4 - 120, 15, scratch[1] + 24);
 
         temp_s0 = (temp_s4 - 100) & 0xFFFF;
 
@@ -2111,7 +2111,7 @@ void _renderEnemyDetailScreen(int animState, int state)
         temp_s6 = temp_s4 - 112;
 
         _renderCommandsBg(temp_s6, 18, 96, 12, 3);
-        vs_mainmenu_renderButton(7, temp_s4 - 120, 34, scratch[1] + 24);
+        vs_mainmenu_renderButton(buttonIdR2, temp_s4 - 120, 34, scratch[1] + 24);
         vs_battle_renderTextRawColor(
             "ZOOM", temp_s0 | (36 << 16), _zoomColor, scratch[1] + 24);
         _renderCommandsBg(temp_s6, 36, 78, 12, 3);

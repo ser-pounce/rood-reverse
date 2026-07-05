@@ -426,7 +426,7 @@ int vs_menu2_skillUnlock(char* state)
 
     switch (*state) {
     case init:
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         // Fallthrough
     case breakArtInit:
         *state = abilityInit;

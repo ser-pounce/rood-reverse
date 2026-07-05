@@ -655,7 +655,7 @@ static int _itemStatusDispatcher(int itemInfo)
 
         vs_mainMenu_resetStatusViewCursor();
         vs_battle_getMenuItem(31)->itemPage = page & 0xFF;
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_setMenuCommand(menuActionNone);
     }
 
     page = _statusViewDispatch[itemCategory](page);
@@ -668,7 +668,7 @@ static int _itemStatusDispatcher(int itemInfo)
             _statusCommandState = 1;
             _ashleyRenderState = 0;
 
-            vs_mainMenu_setNextMenuAction(menuActionMenu);
+            vs_mainMenu_setMenuCommand(menuActionMenu);
 
             return page;
         }
@@ -678,7 +678,7 @@ static int _itemStatusDispatcher(int itemInfo)
 
     if (vs_mainmenu_ready() != 0) {
 
-        vs_menu_cursorColor = vs_mainMenu_selectedStatusViewElement != 9;
+        vs_mainMenu_cursorColor = vs_mainMenu_selectedStatusViewElement != 9;
 
         func_801013F8(1);
         vs_mainMenu_renderStatusView();
@@ -1123,16 +1123,17 @@ static int _sortItems(int initItemCategory)
                 rowTypes[i] = 0;
             }
 
-            vs_mainMenu_initSortUi(i, itemCategory + 45, menuText, rowTypes);
+            vs_mainMenu_addMenuActions(
+                i, itemCategory + actionMenuSort, menuText, rowTypes);
 
             state = 1;
         }
         break;
 
     case sort:
-        vs_mainMenu_processItemActionMenu();
+        vs_mainMenu_renderItemActionMenu();
 
-        i = vs_mainMenu_getSelectedItemAction();
+        i = vs_mainMenu_actionInputProcessed();
 
         if ((i + 1) != 0) {
             if (i >= 0) {
@@ -1250,7 +1251,7 @@ static int _discardMenu(int params)
             rowTypes[i] = 0;
         }
 
-        vs_mainMenu_initSortUi(2, 4, menuText, rowTypes);
+        vs_mainMenu_addMenuActions(2, actionMenuDiscard, menuText, rowTypes);
 
         state = discardOne;
         break;
@@ -1281,8 +1282,8 @@ static int _discardMenu(int params)
         break;
 
     case discardOne:
-        vs_mainMenu_processItemActionMenu();
-        i = vs_mainMenu_getSelectedItemAction() + 1;
+        vs_mainMenu_renderItemActionMenu();
+        i = vs_mainMenu_actionInputProcessed() + 1;
 
         if (i != 0) {
             if (i == 1) {
@@ -1429,15 +1430,15 @@ static int _discardMenu(int params)
                 rowTypes[i] = 0;
             }
 
-            vs_mainMenu_initSortUi(2, 4, menuText, rowTypes);
+            vs_mainMenu_addMenuActions(2, actionMenuDiscard, menuText, rowTypes);
             state = discardMultiple;
         }
 
         break;
 
     case discardMultiple:
-        vs_mainMenu_processItemActionMenu();
-        i = vs_mainMenu_getSelectedItemAction() + 1;
+        vs_mainMenu_renderItemActionMenu();
+        i = vs_mainMenu_actionInputProcessed() + 1;
 
         if (i != 0) {
             if (i == 1) {

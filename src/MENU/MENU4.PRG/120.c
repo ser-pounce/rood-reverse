@@ -1112,7 +1112,7 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
         animationState = vs_mainMenu_renderCursor(
             animationState, (((selectedStatusModifier & 7) * 16) + 2)
                                 | ((((selectedStatusModifier >> 3) * 16) + 136) << 0x10));
-        vs_menu_cursorColor = 1;
+        vs_mainMenu_cursorColor = 1;
     }
 
     return 0;
@@ -1522,7 +1522,7 @@ static int _equipmentDetailScreen(int row)
 
         func_800CB654(1);
         _setActiveRow(_selectedEquipmentRow);
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         _equipmentDetailSelectedElement = 9;
         _equipmentDetailRowToRender = 0;
@@ -1734,7 +1734,7 @@ static int _equipmentDetailScreen(int row)
 
                 menuItem->rowIcon = i;
                 _equipmentDetailSelectedElement = 9;
-                vs_menu_cursorColor = 0;
+                vs_mainMenu_cursorColor = 0;
                 _cursorAnimState = vs_mainMenu_renderCursor(
                     _cursorAnimState, vs_mainMenu_statusViewCursorPositions[9]);
                 D_801023E3 = 1;
@@ -1853,7 +1853,7 @@ static int _equipmentDetailScreen(int row)
             i += 7;
         }
 
-        vs_menu_cursorColor = _equipmentDetailSelectedElement != 9;
+        vs_mainMenu_cursorColor = _equipmentDetailSelectedElement != 9;
         _cursorAnimState = vs_mainMenu_renderCursor(_cursorAnimState, i);
 
         if (vs_main_buttonsPressed.all & PADRup) {
@@ -1864,7 +1864,7 @@ static int _equipmentDetailScreen(int row)
         if (vs_main_buttonsPressed.all & PADRdown) {
             _initEquipmentScreen(_selectedActor - 1);
             _exitEquipmentDetail(1);
-            vs_mainMenu_setNextMenuAction(menuActionMenu);
+            vs_mainMenu_setMenuCommand(menuActionMenu);
             return _selectedEquipmentRow + 1;
         }
 
@@ -2362,7 +2362,7 @@ int vs_menu4_exec(u_char* state)
         _xPos = 0xB00;
         _yPos = 0;
 
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
 
         _selectedElement = 0;
         vs_mainMenu_enabledStatPages = 0;
@@ -2550,7 +2550,7 @@ int vs_menu4_exec(u_char* state)
                         }
                     }
 
-                    vs_menu_cursorColor =
+                    vs_mainMenu_cursorColor =
                         (userInput < _getLimbCount(_selectedActor - 1)) ^ 1;
                     D_80108134 =
                         vs_mainMenu_renderCursor(D_80108134, D_801080C8[userInput]);
@@ -2597,7 +2597,8 @@ int vs_menu4_exec(u_char* state)
             }
         }
 
-        vs_menu_cursorColor = (_selectedElement < _getLimbCount(_selectedActor - 1)) ^ 1;
+        vs_mainMenu_cursorColor =
+            (_selectedElement < _getLimbCount(_selectedActor - 1)) ^ 1;
         break;
 
     case 6:
@@ -2797,7 +2798,7 @@ int vs_menu4_exec(u_char* state)
         *var_a0 = D_801081B8;
 
         func_8008A4DC(1);
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800F9E0C();
         func_80100414(-2, 128);
@@ -2812,7 +2813,7 @@ int vs_menu4_exec(u_char* state)
         _renderLimbUi(0);
         _renderBasicStats();
         func_800FFB68(0);
-        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_dismissInformationBox();
 
         if (animWait <= 0) {
             if (vs_mainMenu_ensureItemTextUnloaded() != 0) {
@@ -2828,7 +2829,7 @@ int vs_menu4_exec(u_char* state)
         _renderLimbUi(0);
         _renderBasicStats();
         func_800FFB68(0);
-        vs_mainMenu_dismissTextBox();
+        vs_mainMenu_dismissInformationBox();
 
         if (animWait <= 0) {
             if (vs_mainMenu_ensureItemTextUnloaded() != 0) {
@@ -2859,7 +2860,7 @@ int vs_menu4_exec(u_char* state)
         userInput = vs_battle_rowAnimationSteps[_animationIndex];
 
         vs_mainmenu_renderButtonUiBackground(16 - userInput, 38, 88, 10);
-        vs_mainmenu_renderButton(1, 8 - userInput, 36, 0);
+        vs_mainmenu_renderButton(buttonIdSquare, 8 - userInput, 36, 0);
         vs_battle_renderTextRawColor(
             "STATUS", ((0x1C - userInput) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);
     }

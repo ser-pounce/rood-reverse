@@ -1397,9 +1397,9 @@ int vs_battle_loadMenuPrg(int arg0)
     return 0;
 }
 
-void vs_battle_initInformationTextBox(int flags)
+void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader header)
 {
-    vs_battle_initTextBox(7, (flags << 8) | 4, 0, 1, 0, 4, 0, 0);
+    vs_battle_initTextBox(7, (header << 8) | 4, 0, 1, 0, 4, 0, 0);
 }
 
 vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }

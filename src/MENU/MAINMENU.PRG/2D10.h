@@ -212,12 +212,12 @@ int vs_mainMenu_copyItem(int itemCategory, vs_main_inventory_t* targetInventory,
 /**
  * Indicates which weapon categories are two-handed.
  */
-extern char vs_mainMenu_weaponHands[];
+extern u_char vs_mainMenu_weaponHands[];
 
 /**
  * Maps dpad input for navigation on the status view.
  */
-extern char vs_mainMenu_statusViewNavigationMap[][4];
+extern u_char vs_mainMenu_statusViewNavigationMap[][4];
 
 /**
  * Screen coordinates for the cursor on the status view.
@@ -227,7 +227,7 @@ extern int vs_mainMenu_statusViewCursorPositions[];
 /**
  * Maps useable items to "skills".
  */
-extern char vs_mainMenu_miscItemToSkillMap[];
+extern u_char vs_mainMenu_miscItemToSkillMap[];
 
 /**
  * A flat list of every item name. Cannot be used before invoking
@@ -236,9 +236,9 @@ extern char vs_mainMenu_miscItemToSkillMap[];
 extern char (*vs_mainMenu_itemNames)[24];
 
 /**
- * Contains the item limit for each category.
+ * The item limit for each category.
  */
-extern char vs_mainMenu_inventoryItemCapacities[];
+extern u_char vs_mainMenu_inventoryItemCapacities[];
 
 /**
  * Convenience map into the inventory index map in SLUS_010.40

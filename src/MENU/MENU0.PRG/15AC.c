@@ -106,8 +106,8 @@ static int _teleportMenu(int init)
                 vs_mainMenu_clearMenuExcept(0);
             } else {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             }
             state = returnIfReady;
         } else {
@@ -155,8 +155,8 @@ static void _setMenuHeader(void)
     menuItem->state = 2;
     menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
-    vs_mainMenu_setNextMenuAction(menuActionMenu);
-    vs_mainMenu_initTextBox();
+    vs_mainMenu_setMenuCommand(menuActionMenu);
+    vs_mainMenu_initInformationBox();
 }
 
 /**
@@ -197,7 +197,7 @@ int vs_menu0_exec(u_char* state)
             break;
         }
 
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
 
         i = vs_battle_shortcutInvoked;
 
@@ -473,8 +473,8 @@ int vs_menu0_exec(u_char* state)
         break;
 
     case exitToMainMenu:
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
             *state = none;
@@ -495,8 +495,8 @@ int vs_menu0_exec(u_char* state)
         break;
 
     case exit:
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 1;

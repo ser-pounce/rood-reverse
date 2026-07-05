@@ -221,12 +221,17 @@ void func_800C8550(u_int, void*, u_char*);
 void func_800C86AC(void);
 int vs_battle_loadMenuPrg(int arg0);
 
+enum vs_battle_informationTextBoxHeader {
+    informationTextBoxHeaderNone,
+    informationTextBoxHeaderCaution,
+    informationTextBoxHeaderInformation,
+    informationTextBoxHeaderCheck
+};
+
 /**
  * Initializes textbox ID 7
- *
- * @param flags
  */
-void vs_battle_initInformationTextBox(int flags);
+void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader flags);
 
 /**
  * Lerps between two predefined colors, used for menu item backgrounds.

@@ -48,8 +48,8 @@ static int _simpleMapOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -100,8 +100,8 @@ static int _abilityTimingOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -152,8 +152,8 @@ static int _weaponStatusOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -205,8 +205,8 @@ static int _armorStatusOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -257,8 +257,8 @@ static int _cursorMemoryOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -308,8 +308,8 @@ static int _informationOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -361,8 +361,8 @@ static int _puzzleModeOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -412,8 +412,8 @@ static int _soundOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 vs_mainMenu_clearMenuExcept(7);
             }
@@ -466,8 +466,8 @@ static int _vibrationOptionMenu(int init)
         if (selectedRow != 0) {
             if (selectedRow == -2) {
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 if (selectedRow == currentState) {
                     func_800438C8(0);
@@ -518,7 +518,7 @@ int vs_menu8_exec(u_char* state)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
         // Fallthrough
     case init:
         for (i = 0; i < 9; ++i) {
@@ -693,7 +693,7 @@ int vs_menu8_exec(u_char* state)
         }
         if (i > 0) {
             vs_main_settings.information = 2 - i;
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
         }
         *state = init;
         break;
@@ -743,16 +743,16 @@ int vs_menu8_exec(u_char* state)
         *state = init;
         break;
     case exitToMenu:
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             *state = none;
             return 1;
         }
         break;
     case exitToBattle:
-        vs_mainMenu_dismissTextBox();
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_dismissInformationBox();
+        vs_mainMenu_setMenuCommand(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
             vs_battle_menuState.currentState = 8;
             *state = none;

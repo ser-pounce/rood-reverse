@@ -1,6 +1,6 @@
 vs_mainMenu_statusViewCursorPositions
-D_801022C4
-vs_menu_cursorColor
+vs_mainMenu_actionMenuState
+vs_mainMenu_cursorColor
 D_801022D8
 D_801023D0
 D_801023E3
@@ -20,7 +20,7 @@ vs_mainMenu_updateStatPage
 func_800FBD80
 vs_mainMenu_resetStatusViewCursor
 vs_mainMenu_renderStatusView
-func_800FF348
+vs_mainMenu_getSelectedAction
 func_800FFB68
 func_80100414
 func_80100814
@@ -33,7 +33,7 @@ vs_mainMenu_clearMenuExcept
 vs_mainMenu_copyItem
 vs_mainMenu_currentUiItem
 vs_mainMenu_deactivateMenuItem
-vs_mainMenu_dismissTextBox
+vs_mainMenu_dismissInformationBox
 vs_mainmenu_renderButton
 vs_mainmenu_renderButtonUiBackground
 vs_mainMenu_drawClassAffinityType
@@ -51,15 +51,15 @@ vs_mainMenu_gems
 vs_mainMenu_getConfirmedRow
 vs_mainMenu_getFirstEmptyItemSlot
 vs_mainMenu_getItemCount
-vs_mainMenu_getSelectedItemAction
+vs_mainMenu_actionInputProcessed
 vs_mainmenu_getSelectedRow
 vs_mainMenu_grips
 vs_mainMenu_hideMenu
 vs_mainMenu_initInventory
 vs_mainMenu_initItem
 vs_mainMenu_initShieldDetailsRow
-vs_mainMenu_initSortUi
-vs_mainMenu_initTextBox
+vs_mainMenu_addMenuActions
+vs_mainMenu_initInformationBox
 vs_mainMenu_setArmorRowFromInventory
 vs_mainMenu_setShieldRowFromInventory
 vs_mainMenu_setWeaponRowFromInventory
@@ -75,7 +75,7 @@ vs_mainMenu_menuItemFlyoutLeft
 vs_mainMenu_menuItemFlyoutRight
 vs_mainMenu_miscItemToSkillMap
 vs_mainMenu_printInformation
-vs_mainMenu_processItemActionMenu
+vs_mainMenu_renderItemActionMenu
 vs_mainmenu_ready
 vs_mainMenu_rebuildInventory
 vs_mainMenu_renderCursor
@@ -87,7 +87,7 @@ vs_mainMenu_setDpPp
 vs_mainMenu_setStatsFromGem
 vs_mainmenu_setInformationMessage
 vs_mainmenu_setMenuRows
-vs_mainMenu_setNextMenuAction
+vs_mainMenu_setMenuCommand
 vs_mainMenu_setRangeRisk
 vs_mainMenu_setStatsFromShield
 vs_mainmenu_setSkillCost

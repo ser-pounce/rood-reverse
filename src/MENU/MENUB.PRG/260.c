@@ -75,7 +75,7 @@ static int _topLevelMenuTransition(int category)
         }
 
         func_800FFB68(1);
-        vs_mainMenu_setNextMenuAction(menuActionMenu);
+        vs_mainMenu_setMenuCommand(menuActionMenu);
 
         menuItem = vs_battle_setMenuItem(3, 320, 18, 0x7E, 8,
             (char*)&vs_battle_menuStrings
@@ -132,14 +132,14 @@ static int _topLevelMenuTransition(int category)
         state = 3;
 
         if (vs_main_settings.information == 0) {
-            vs_mainMenu_dismissTextBox();
+            vs_mainMenu_dismissInformationBox();
         }
 
         break;
 
     case 3:
         func_800FFB68(0);
-        vs_mainMenu_setNextMenuAction(menuActionNone);
+        vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
             _showInventory = 1;
@@ -203,7 +203,7 @@ static int _topLevelMenuTransition(int category)
 
     if (_statusCommandAnimationStep != 0) {
         vs_mainmenu_renderButtonUiBackground(0x10 - stepValue, 0x26, 0x58, 10);
-        vs_mainmenu_renderButton(1, 8 - stepValue, 0x24, NULL);
+        vs_mainmenu_renderButton(buttonIdSquare, 8 - stepValue, 0x24, NULL);
         vs_battle_renderTextRawColor("STATUS", ((0x1C - stepValue) & 0xFFFF) | 0x260000,
             0x202020 << _statusCommandState, NULL);
     }
@@ -353,7 +353,7 @@ static int _disassembleItem(int itemIndex)
                 state = disassemble;
             }
             if (vs_main_settings.information == 0) {
-                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_dismissInformationBox();
             }
             break;
         }
@@ -594,7 +594,7 @@ static int _consolidateMiscItems(int lootIndex)
             var_v0 = 0;
 
             if (vs_main_settings.information == 0) {
-                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_dismissInformationBox();
             }
 
             break;
@@ -1000,7 +1000,7 @@ void _displayInventoryCapacities(int edgeX)
     vs_mainmenu_renderButtonUiBackground(buttonBgPos, 128, 64, 10);
     vs_battle_renderTextRawColor("GET", (edgeX + 196) | (112 << 16),
         vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
-    vs_mainmenu_renderButton(2, edgeX + 176, 110, NULL);
+    vs_mainmenu_renderButton(buttonIdCircle, edgeX + 176, 110, NULL);
 
     str = "ALL";
     xy = (edgeX + 252) | (112 << 16);
@@ -1012,10 +1012,10 @@ void _displayInventoryCapacities(int edgeX)
     }
 
     vs_battle_renderTextRawColor(str, xy, var_a2, NULL);
-    vs_mainmenu_renderButton(1, edgeX + 232, 110, NULL);
+    vs_mainmenu_renderButton(buttonIdSquare, edgeX + 232, 110, NULL);
     vs_battle_renderTextRawColor("END", (edgeX + 196) | (128 << 16),
         vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
-    vs_mainmenu_renderButton(3, edgeX + 176, 126, NULL);
+    vs_mainmenu_renderButton(buttonIdCross, edgeX + 176, 126, NULL);
 }
 
 static int _droppableUnderCurrentDifficulty(int arg0)
@@ -1330,7 +1330,7 @@ static int _discardItems(int init)
             vs_mainMenu_menuItemFlyoutRight(31);
 
             if (vs_main_settings.information == 0) {
-                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_dismissInformationBox();
             }
 
             if ((D_8010A692 == 0) && !(vs_main_buttonsPressed.all & PADRdown)) {
@@ -1393,7 +1393,7 @@ static int _organizeInventory(_lootListItem* loot)
     vs_battle_menuItem_t* menuItem;
 
     if (loot != NULL) {
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
 
         itemCategory = loot->itemCategory;
         state = 0;
@@ -1521,7 +1521,7 @@ int _processLootMenu(int initialize)
             break;
         }
 
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
 
         state = processInput;
         // Fallthrough
@@ -1864,7 +1864,7 @@ int vs_menuB_exec(u_char* state)
                 *state = 4;
 
             } else {
-                vs_mainMenu_initTextBox();
+                vs_mainMenu_initInformationBox();
                 *state = 2;
             }
         }

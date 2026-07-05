@@ -132,13 +132,13 @@ typedef struct {
 } vs_menu_container;
 
 typedef struct {
-    char weapons[8];
-    char blades[16];
-    char grips[16];
-    char shields[8];
-    char armor[16];
-    char gems[48];
-    char misc[64];
+    u_char weapons[8];
+    u_char blades[16];
+    u_char grips[16];
+    u_char shields[8];
+    u_char armor[16];
+    u_char gems[48];
+    u_char misc[64];
 } vs_main_inventoryIndices_t;
 
 typedef struct {

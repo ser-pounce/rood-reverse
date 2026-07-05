@@ -797,7 +797,8 @@ loop_1:
         ++rowCount;
         availableActions[rowCount] = sortItems;
 
-        vs_mainMenu_initSortUi(rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
+        vs_mainMenu_addMenuActions(
+            rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
 
         state = processAction;
         break;
@@ -805,15 +806,16 @@ loop_1:
 
     case processAction:
 #ifdef _ITEMMENU
-        vs_mainMenu_printInformation(func_800FF348(), D_801022C4);
+        vs_mainMenu_printInformation(
+            vs_mainMenu_getSelectedAction(), vs_mainMenu_actionMenuState);
 #else
-        row = func_800FF348();
-        vs_mainMenu_printInformation(row, D_801022C4);
+        row = vs_mainMenu_getSelectedAction();
+        vs_mainMenu_printInformation(row, vs_mainMenu_actionMenuState);
 #define index i
 #endif
 
-        vs_mainMenu_processItemActionMenu();
-        index = vs_mainMenu_getSelectedItemAction() + 1;
+        vs_mainMenu_renderItemActionMenu();
+        index = vs_mainMenu_actionInputProcessed() + 1;
 
         if (index != 0) {
 
@@ -844,7 +846,7 @@ loop_1:
 
 #endif
                 case searchItem:
-                    vs_mainMenu_initTextBox();
+                    vs_mainMenu_initInformationBox();
                     vs_mainMenu_clearMenuExcept(3);
 
                     state = search;
@@ -872,7 +874,7 @@ loop_1:
                     break;
 
                 case sortItems:
-                    vs_mainMenu_initTextBox();
+                    vs_mainMenu_initInformationBox();
                     _sortItems(itemCategory + 1);
 
                     state = sort;
@@ -892,7 +894,7 @@ loop_1:
                     return -2;
                 }
 
-                vs_mainMenu_initTextBox();
+                vs_mainMenu_initInformationBox();
 
                 state = none;
             }
@@ -928,7 +930,7 @@ loop_1:
 
         if (i != 0) {
 
-            vs_mainMenu_initTextBox();
+            vs_mainMenu_initInformationBox();
             vs_mainMenu_flyoutLeftExcept(40);
             vs_mainMenu_clearMenuExcept(3);
 

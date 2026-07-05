@@ -407,7 +407,7 @@ void vs_mainMenu_exec(int arg0)
                     func_800FFB68(1);
                 }
 
-                vs_mainMenu_setNextMenuAction(menuActionMenu);
+                vs_mainMenu_setMenuCommand(menuActionMenu);
                 vs_mainMenu_clearMenuExcept(selectedMenu - 1);
 
                 menuItem->state = menuItemStateSlideX;
@@ -454,7 +454,7 @@ void vs_mainMenu_exec(int arg0)
             }
         }
     } else {
-        vs_mainMenu_setNextMenuAction(menuActionCommand);
+        vs_mainMenu_setMenuCommand(menuActionCommand);
 
         state = func_800C930C(0);
 
@@ -463,7 +463,7 @@ void vs_mainMenu_exec(int arg0)
                 state |= 0x40;
             } else {
                 state = 31;
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_setMenuCommand(menuActionNone);
             }
 
             menuState->currentState = state;
@@ -498,7 +498,7 @@ void func_800FAEBC(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (arg0 != 0) {
-        vs_mainMenu_initTextBox();
+        vs_mainMenu_initInformationBox();
 
         if (arg0 & 1) {
             D_80102456 = 1;
@@ -614,7 +614,7 @@ void func_800FAEBC(int arg0)
 
                     vs_battle_playMenuLeaveSfx();
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                    vs_mainMenu_dismissTextBox();
+                    vs_mainMenu_dismissInformationBox();
 
                     D_80102450 = -1;
                     _func_800FAEBC_state = 4;
@@ -626,7 +626,7 @@ void func_800FAEBC(int arg0)
             if (D_80102450 != 0) {
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
+                vs_mainMenu_dismissInformationBox();
 
                 if (D_80102450 > 0) {
                     D_800F5210 = vs_main_inventoryIndices.misc[D_80102450 - 1] - 1;
@@ -845,7 +845,7 @@ static void func_800FB3C8(int arg0)
     }
 
     vs_mainmenu_renderButtonUiBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
-    vs_mainmenu_renderButton(1, arg0 + 0x10, 0x2E, temp_s4 - 1);
+    vs_mainmenu_renderButton(buttonIdSquare, arg0 + 0x10, 0x2E, temp_s4 - 1);
 
     arg0 = (arg0 & 0xFFFF) + 0x22;
 

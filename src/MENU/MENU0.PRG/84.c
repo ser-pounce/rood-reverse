@@ -255,8 +255,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 }
             }
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_dismissTextBox();
-            vs_mainMenu_setNextMenuAction(menuActionNone);
+            vs_mainMenu_dismissInformationBox();
+            vs_mainMenu_setMenuCommand(menuActionNone);
             state = returnIfReady;
         } else {
             i = _availableWarlockSpells[vs_mainMenu_getConfirmedRow()];
@@ -307,8 +307,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
             vs_battle_playMenuLeaveSfx();
             vs_mainMenu_isLevelledSpell = 0;
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            vs_mainMenu_dismissTextBox();
-            vs_mainMenu_setNextMenuAction(menuActionNone);
+            vs_mainMenu_dismissInformationBox();
+            vs_mainMenu_setMenuCommand(menuActionNone);
             selectedRow = -2;
             state = returnIfReady;
             break;
@@ -325,8 +325,8 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 vs_battle_playMenuSelectSfx();
                 vs_mainMenu_isLevelledSpell = 0;
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
                 state = returnIfReady;
                 selectedRow += i;
                 break;
@@ -512,8 +512,8 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
                     selectedRow = _availableShamanSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             }
             state = returnIfReady;
         } else {
@@ -613,8 +613,8 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
                     selectedRow = _availableSorcererSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             }
             state = returnIfready;
         } else {
@@ -711,8 +711,8 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
                     selectedRow = _availableEnchanterSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                vs_mainMenu_dismissTextBox();
-                vs_mainMenu_setNextMenuAction(menuActionNone);
+                vs_mainMenu_dismissInformationBox();
+                vs_mainMenu_setMenuCommand(menuActionNone);
             }
             state = returnIfready;
         } else {

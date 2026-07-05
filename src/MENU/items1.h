@@ -127,7 +127,7 @@ static int _weaponStatusView(int itemInfo)
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
-            vs_mainMenu_setWeaponRowStats(vs_main_inventoryIndices.weapons[itemIndex]);
+            vs_mainMenu_setStatsFromWeapon(vs_main_inventoryIndices.weapons[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
             state = initWeapon;
         }
@@ -166,7 +166,7 @@ static int _weaponStatusView(int itemInfo)
                 vs_battle_stringBuf);
 
             do {
-                vs_mainMenu_setWeaponRowStats(weaponToDisplay);
+                vs_mainMenu_setStatsFromWeapon(weaponToDisplay);
                 _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
                 for (i = 1; i < 6; ++i) {
@@ -221,7 +221,7 @@ static int _bladeStatusView(int itemInfo)
     case init:
         if ((state == 0) && (vs_mainmenu_ready() != 0)) {
             _initMenuLayout(itemRow, 3);
-            vs_mainMenu_setBladeRowStats(vs_main_inventoryIndices.blades[itemIndex]);
+            vs_mainMenu_setStatsFromBlade(vs_main_inventoryIndices.blades[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
             state = wait;
         }
@@ -252,7 +252,7 @@ static int _bladeStatusView(int itemInfo)
 
             vs_mainMenu_setBladeRow(&vs_main_inventory.blades[bladeToDisplay - 1],
                 meunText, &rowType, vs_battle_stringBuf);
-            vs_mainMenu_setBladeRowStats(bladeToDisplay);
+            vs_mainMenu_setStatsFromBlade(bladeToDisplay);
             _switchItemStatusPage(itemRow, meunText, rowType, newIndex);
         }
         break;
@@ -304,7 +304,7 @@ static int _gripStatusView(int itemInfo)
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 4);
-            vs_mainMenu_setGripRowStats(vs_main_inventoryIndices.grips[itemIndex]);
+            vs_mainMenu_setStatsFromGrip(vs_main_inventoryIndices.grips[itemIndex]);
             state = wait;
         }
         break;
@@ -332,7 +332,7 @@ static int _gripStatusView(int itemInfo)
                 vs_mainMenu_setGripRow(&vs_main_inventory.grips[gripToDisplay - 1],
                     menuText, &rowType, vs_battle_stringBuf);
 
-                vs_mainMenu_setGripRowStats(gripToDisplay);
+                vs_mainMenu_setStatsFromGrip(gripToDisplay);
                 _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
             }
         }
@@ -394,7 +394,7 @@ static int _shieldStatusView(int itemInfo)
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
-            vs_mainMenu_setShieldStats(vs_main_inventoryIndices.shields[itemIndex]);
+            vs_mainMenu_setStatsFromShield(vs_main_inventoryIndices.shields[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
 
             state = initShield;
@@ -435,7 +435,7 @@ static int _shieldStatusView(int itemInfo)
             vs_mainMenu_setShieldRowFromInventory(&vs_main_inventory.shields[i - 1],
                 menuText, &rowType, vs_battle_stringBuf);
 
-            vs_mainMenu_setShieldStats(i);
+            vs_mainMenu_setStatsFromShield(i);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             for (i = 1; i < 4; ++i) {
@@ -490,7 +490,7 @@ static int _armorStatusView(int itemInfo)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 7);
-            vs_mainMenu_setArmorStats(vs_main_inventoryIndices.armor[itemIndex]);
+            vs_mainMenu_setStatsFromArmor(vs_main_inventoryIndices.armor[itemIndex]);
             if (vs_main_inventory.armor[vs_main_inventoryIndices.armor[itemIndex] - 1]
                     .category
                 != 7) {
@@ -528,7 +528,7 @@ static int _armorStatusView(int itemInfo)
             vs_mainMenu_setArmorRowFromInventory(
                 &vs_main_inventory.armor[armorToDisplay - 1], menuText, &rowType,
                 vs_battle_stringBuf);
-            vs_mainMenu_setArmorStats(armorToDisplay);
+            vs_mainMenu_setStatsFromArmor(armorToDisplay);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             return 0;
@@ -580,7 +580,7 @@ static int _gemStatusView(int itemInfo)
     case init:
         if (vs_mainmenu_ready() != 0) {
             _initMenuLayout(itemRow, 3);
-            vs_mainMenu_setGemStats(vs_main_inventoryIndices.gems[itemIndex]);
+            vs_mainMenu_setStatsFromGem(vs_main_inventoryIndices.gems[itemIndex]);
 
             state = wait;
         }
@@ -614,7 +614,7 @@ static int _gemStatusView(int itemInfo)
 
             vs_mainMenu_setGemRow(&vs_main_inventory.gems[gemToDisplay - 1], menuText,
                 &rowType, vs_battle_stringBuf);
-            vs_mainMenu_setGemStats(gemToDisplay);
+            vs_mainMenu_setStatsFromGem(gemToDisplay);
             _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             return 0;
@@ -678,7 +678,7 @@ static int _itemStatusDispatcher(int itemInfo)
 
     if (vs_mainmenu_ready() != 0) {
 
-        vs_menu_cursorColor = vs_mainMenu_selectedUiElement != 9;
+        vs_menu_cursorColor = vs_mainMenu_selectedStatusViewElement != 9;
 
         func_801013F8(1);
         vs_mainMenu_renderStatusView();

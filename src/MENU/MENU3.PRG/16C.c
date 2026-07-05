@@ -334,7 +334,7 @@ static void _populateUiAccessory(int accessoryId)
     vs_mainMenu_equipmentSubtype = 32;
     vs_mainMenu_currentUiItem = accessoryId;
 
-    func_800FBB8C(7);
+    vs_mainMenu_updateStatPage(7);
 }
 
 /**
@@ -528,7 +528,7 @@ static int _equipWeaponMenu(int initialize)
             index = 0;
         }
 
-        vs_mainMenu_setWeaponRowStats(index);
+        vs_mainMenu_setStatsFromWeapon(index);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_renderDpPpBars(3);
         vs_mainMenu_renderEquipStats(1);
@@ -612,7 +612,7 @@ static int _equipWeaponMenu(int initialize)
         break;
     }
     case handleInput:
-        vs_mainMenu_setWeaponRowStats(_equippedItem);
+        vs_mainMenu_setStatsFromWeapon(_equippedItem);
         _processEquipSubMenu(0);
 
         selectedWeapon = _getSelectedItemRow() + 1;
@@ -631,7 +631,7 @@ static int _equipWeaponMenu(int initialize)
             state = waitMenuReady;
         } else {
 
-            vs_mainMenu_unequipAllWeapons();
+            vs_mainMenu_unequipWeapon();
 
             if (selectedWeapon == 1) {
                 category = 10;
@@ -708,7 +708,7 @@ static int _equipShieldMenu(int initialize)
             index = 0;
         }
 
-        vs_mainMenu_setShieldStats(index);
+        vs_mainMenu_setStatsFromShield(index);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_renderDpPpBars(3);
         vs_mainMenu_renderEquipStats(1);
@@ -787,7 +787,7 @@ static int _equipShieldMenu(int initialize)
     }
 
     case handleInput:
-        vs_mainMenu_setShieldStats(_equippedItem);
+        vs_mainMenu_setStatsFromShield(_equippedItem);
         _processEquipSubMenu(0);
 
         selectedShield = _getSelectedItemRow() + 1;
@@ -823,7 +823,7 @@ static int _equipShieldMenu(int initialize)
 
                 if (actor->weapon.blade.id
                     && vs_mainMenu_weaponHands[actor->weapon.blade.category - 1]) {
-                    vs_mainMenu_unequipAllWeapons();
+                    vs_mainMenu_unequipWeapon();
                 }
 
                 vs_battle_equipShield(shield);
@@ -889,7 +889,7 @@ static int _equipArmorMenu(int initBodyPart)
 
         armorIndex = index;
 
-        vs_mainMenu_setArmorStats(index);
+        vs_mainMenu_setStatsFromArmor(index);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_renderDpPpBars(1);
         vs_mainMenu_renderEquipStats(1);
@@ -973,7 +973,7 @@ static int _equipArmorMenu(int initBodyPart)
     }
 
     case handleInput:
-        vs_mainMenu_setArmorStats(_equippedItem);
+        vs_mainMenu_setStatsFromArmor(_equippedItem);
         _processEquipSubMenu(1);
 
         selectedArmor = _getSelectedItemRow() + 1;
@@ -1266,7 +1266,7 @@ int vs_menu3_exec(u_char* state)
         _selectedItemCategoryIconOnTop = 0;
 
         if (vs_mainMenu_itemNames == NULL) {
-            vs_mainMenu_loadItemNames(1);
+            vs_mainMenu_loadItemText(1);
         }
 
         if (vs_mainmenu_ready() == 0) {
@@ -1287,7 +1287,7 @@ int vs_menu3_exec(u_char* state)
         // Fallthrough
 
     case loadItemNamesWait:
-        if (vs_mainMenu_loadItemNames(0) == 0) {
+        if (vs_mainMenu_loadItemText(0) == 0) {
             break;
         }
 
@@ -1423,7 +1423,7 @@ int vs_menu3_exec(u_char* state)
         vs_mainMenu_dismissTextBox();
         vs_mainMenu_setNextMenuAction(menuActionNone);
 
-        if (vs_mainmenu_ready() && vs_mainMenu_ensureItemNamesLoaded()) {
+        if (vs_mainmenu_ready() && vs_mainMenu_ensureItemTextUnloaded()) {
             *state = none;
             return 1;
         }
@@ -1455,7 +1455,7 @@ int vs_menu3_exec(u_char* state)
             break;
         }
 
-        if (vs_mainmenu_ready() && vs_mainMenu_ensureItemNamesLoaded()) {
+        if (vs_mainmenu_ready() && vs_mainMenu_ensureItemTextUnloaded()) {
             vs_battle_menuState.currentState = 4;
             *state = none;
             return 1;
@@ -1468,7 +1468,7 @@ int vs_menu3_exec(u_char* state)
         vs_mainMenu_dismissTextBox();
         vs_mainMenu_setNextMenuAction(menuActionNone);
 
-        if ((D_801022D8 == 0) && vs_mainMenu_ensureItemNamesLoaded()) {
+        if ((D_801022D8 == 0) && vs_mainMenu_ensureItemTextUnloaded()) {
 
             D_800F4E98.unk2 = 8;
             temp_a1_2 = vs_battle_menuState.currentState;

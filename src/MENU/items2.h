@@ -594,9 +594,9 @@ loop_1:
                     vs_main_inventory.misc[var_a1_2 - 1].count = 100;
                 } else {
 #ifdef _ITEMMENU
-                    vs_mainMenu_initItem(6, row);
+                    vs_mainMenu_initItem(itemCategoryMisc, row);
 #else
-                    vs_mainMenu_initItem(6, var_a1_2);
+                    vs_mainMenu_initItem(itemCategoryMisc, var_a1_2);
 #endif
                 }
             } else {

@@ -1839,7 +1839,7 @@ int vs_menuB_exec(u_char* state)
         _lootListOffset = 0;
         _0 = 0;
 
-        vs_mainMenu_loadItemNames(1);
+        vs_mainMenu_loadItemText(1);
         _applyAllLootLists(D_800EB9C4);
 
         _controlsEnabled = 0;
@@ -1851,7 +1851,7 @@ int vs_menuB_exec(u_char* state)
         break;
 
     case 1:
-        if (vs_mainMenu_loadItemNames(0) != 0) {
+        if (vs_mainMenu_loadItemText(0) != 0) {
 
             _showLoot = 1;
 
@@ -1904,7 +1904,7 @@ int vs_menuB_exec(u_char* state)
         _showLoot = 0;
 
         if ((vs_battle_dismissTextBox(7) != 0)
-            || (vs_mainMenu_ensureItemNamesLoaded() == 0)) {
+            || (vs_mainMenu_ensureItemTextUnloaded() == 0)) {
             break;
         }
 

@@ -674,17 +674,17 @@ static void _setUiStats(int arg0, int arg1)
 
     switch (var_v1) {
     case 1:
-        vs_mainMenu_setBladeRowStats(arg0);
+        vs_mainMenu_setStatsFromBlade(arg0);
         break;
     case 2:
-        vs_mainMenu_setGripRowStats(arg1);
+        vs_mainMenu_setStatsFromGrip(arg1);
         break;
     case 3:
-        vs_mainMenu_setWeaponRowStats(_combiningItem + 1);
+        vs_mainMenu_setStatsFromWeapon(_combiningItem + 1);
         break;
     }
 
-    func_800FBB8C(7);
+    vs_mainMenu_updateStatPage(7);
     vs_mainMenu_renderDpPpBars(11);
 }
 
@@ -797,9 +797,9 @@ static int _assembleBladeMenu(int params)
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
         if (itemId != 0) {
-            vs_mainMenu_setBladeRowStats(itemId);
+            vs_mainMenu_setStatsFromBlade(itemId);
         } else {
-            func_800FBB8C(3);
+            vs_mainMenu_updateStatPage(3);
             vs_mainMenu_resetStats();
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         }
@@ -913,9 +913,9 @@ static int _assembleGripMenu(int params)
         vs_mainMenu_renderDpPpBars(8);
 
         if (itemId != 0) {
-            vs_mainMenu_setGripRowStats((int)itemId);
+            vs_mainMenu_setStatsFromGrip((int)itemId);
         } else {
-            func_800FBB8C(4);
+            vs_mainMenu_updateStatPage(4);
             vs_mainMenu_resetStats();
         }
 
@@ -1015,9 +1015,9 @@ static int _attachGem(int params)
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
         vs_mainMenu_renderDpPpBars(8);
         if (itemId != 0) {
-            vs_mainMenu_setGemStats(itemId);
+            vs_mainMenu_setStatsFromGem(itemId);
         } else {
-            func_800FBB8C(3);
+            vs_mainMenu_updateStatPage(3);
             vs_mainMenu_resetStats();
         }
 
@@ -1662,12 +1662,12 @@ static int _attachGemsMenu(int arg0)
             _combiningItem = var_s2 - 1;
 
             if (isShield != 0) {
-                vs_mainMenu_setShieldStats(var_s2);
+                vs_mainMenu_setStatsFromShield(var_s2);
                 shield = &vs_main_inventory.shields[var_s2 - 1];
                 gemSlots = shield->base.gemSlots;
                 attachedGems = shield->gems;
             } else {
-                vs_mainMenu_setWeaponRowStats(var_s2);
+                vs_mainMenu_setStatsFromWeapon(var_s2);
                 weapon = &vs_main_inventory.weapons[var_s2 - 1];
                 gemSlots = vs_main_inventory.grips[weapon->grip - 1].gemSlots;
                 attachedGems = weapon->gems;
@@ -1824,14 +1824,14 @@ static int _attachGemsMenu(int arg0)
                         vs_battle_equipWeapon(weapon);
                     }
                 }
-                func_800FBB8C(7);
+                vs_mainMenu_updateStatPage(7);
                 vs_mainMenu_renderDpPpBars(11);
                 if (isShield != 0) {
-                    vs_mainMenu_setShieldStats(var_s2);
+                    vs_mainMenu_setStatsFromShield(var_s2);
                     vs_mainMenu_setShieldRowFromInventory(
                         shield, menuText, rowTypes, textBuf);
                 } else {
-                    vs_mainMenu_setWeaponRowStats(var_s2);
+                    vs_mainMenu_setStatsFromWeapon(var_s2);
                     vs_mainMenu_setWeaponRowFromInventory(
                         weapon, menuText, rowTypes, textBuf);
                 }
@@ -2065,9 +2065,9 @@ static int _disassembleMenu(int arg0)
         selectedItem = _availableItems[selectedRow];
         _combiningItem = selectedItem - 1;
         if (isShield != 0) {
-            vs_mainMenu_setShieldStats(selectedItem);
+            vs_mainMenu_setStatsFromShield(selectedItem);
         } else {
-            vs_mainMenu_setWeaponRowStats(selectedItem);
+            vs_mainMenu_setStatsFromWeapon(selectedItem);
         }
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_renderDpPpBars(3);
@@ -2121,7 +2121,7 @@ static int _disassembleMenu(int arg0)
             if (isShield != 0) {
                 vs_mainMenu_unequipShield();
             } else {
-                vs_mainMenu_unequipAllWeapons();
+                vs_mainMenu_unequipWeapon();
             }
             state = 7;
             break;
@@ -2300,7 +2300,7 @@ static int _renameWeaponMenu(int arg0)
             _copyMenuItem(selectedRow + 9, 10);
             itemId = _availableItems[selectedRow];
             _combiningItem = itemId - 1;
-            vs_mainMenu_setWeaponRowStats(itemId);
+            vs_mainMenu_setStatsFromWeapon(itemId);
             vs_mainMenu_drawClassAffinityType(7);
             vs_mainMenu_renderDpPpBars(3);
             D_8010BC49 = 0;
@@ -2615,7 +2615,7 @@ static void _setCombineBladeUi(int arg0)
             vs_mainMenu_equipmentSubtype = 2;
         }
     } else if (var_s3 & arg0) {
-        vs_mainMenu_setBladeRowStats(_combiningBladeIds[temp_v1]);
+        vs_mainMenu_setStatsFromBlade(_combiningBladeIds[temp_v1]);
     }
 }
 
@@ -2705,7 +2705,7 @@ static int _selectBlade(int arg0)
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
         if (itemId != 0) {
-            vs_mainMenu_setBladeRowStats(itemId);
+            vs_mainMenu_setStatsFromBlade(itemId);
         } else {
             vs_mainMenu_resetStats();
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
@@ -3081,13 +3081,13 @@ static int _combineBladeMenu(int arg0)
 
                 if (var_s1 != 0) {
                     if (vs_main_inventory.weapons[var_s1 - 1].isEquipped != 0) {
-                        vs_mainMenu_unequipAllWeapons();
+                        vs_mainMenu_unequipWeapon();
                         state = 6;
                     }
                     _disassembleWeapon(var_s1 - 1);
                 }
 
-                vs_mainMenu_initItem(1, _combiningBladeIds[i]);
+                vs_mainMenu_initItem(itemCategoryBlade, _combiningBladeIds[i]);
             }
 
             itemId = _combiningBladeIds[0];
@@ -3680,7 +3680,7 @@ static int _combineShieldMenu(int arg0)
                 }
 
                 _disassembleShield(itemId_3);
-                vs_mainMenu_initItem(3, temp_s1);
+                vs_mainMenu_initItem(itemCategoryShield, temp_s1);
             }
 
             temp_s2 = _itemsToCombine[0];
@@ -3785,7 +3785,7 @@ static void _initCombineArmor(int arg0)
             vs_mainMenu_strIntAgi[6] = armor->agility;
         }
     } else if (var_s2 & arg0) {
-        vs_mainMenu_setArmorStats(_combiningArmorIds[temp_v1]);
+        vs_mainMenu_setStatsFromArmor(_combiningArmorIds[temp_v1]);
     }
 }
 
@@ -3865,7 +3865,7 @@ static int _initUiArmor(int arg0)
     case 1:
         itemId = _availableItems[_itemsListWindow + _itemsListSelection];
         if (itemId != 0) {
-            vs_mainMenu_setArmorStats(itemId);
+            vs_mainMenu_setStatsFromArmor(itemId);
         } else {
             vs_mainMenu_resetStats();
         }
@@ -4164,7 +4164,7 @@ static int _combineArmorMenu(int arg0)
                     vs_battle_equipArmor(var_s1 - 1, NULL);
                     armor->limb = 0;
                 }
-                vs_mainMenu_initItem(4, _combiningArmorIds[i]);
+                vs_mainMenu_initItem(itemCategoryArmor, _combiningArmorIds[i]);
             }
             itemId = _combiningArmorIds[0];
             armor = &vs_main_inventory.armor[itemId - 1];

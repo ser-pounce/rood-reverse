@@ -101,34 +101,146 @@ void vs_mainMenu_setMiscRow(
  */
 void vs_mainMenu_resetStats(void);
 
-void vs_mainMenu_setWeaponRowStats(int);
-void vs_mainMenu_setBladeRowStats(int);
-void vs_mainMenu_setGripRowStats(int);
-void vs_mainMenu_setShieldStats(int);
-void vs_mainMenu_setArmorStats(int);
-void vs_mainMenu_setGemStats(int);
+/**
+ * Sets up the stats UI using the specified weapon.
+ */
+void vs_mainMenu_setStatsFromWeapon(int weaponIndex);
+
+/**
+ * Sets up the stats UI using the specified blade.
+ */
+void vs_mainMenu_setStatsFromBlade(int bladeIndex);
+
+/**
+ * Sets up the stats UI using the specified grip.
+ */
+void vs_mainMenu_setStatsFromGrip(int gripIndex);
+
+/**
+ * Sets up the stats UI using the specified shield.
+ */
+void vs_mainMenu_setStatsFromShield(int shieldIndex);
+
+/**
+ * Sets up the stats UI using the specified armor.
+ */
+void vs_mainMenu_setStatsFromArmor(int armorIndex);
+
+/**
+ * Sets up the stats UI using the specified gem.
+ */
+void vs_mainMenu_setStatsFromGem(int gemIndex);
+
+/**
+ * Returns the cursor the priciple item.
+ */
 void vs_mainMenu_resetStatusViewCursor(void);
+
+/**
+ * Updates the status view based on user input.
+ */
 void vs_mainMenu_renderStatusView(void);
-void vs_mainMenu_unequipAllWeapons(void);
+
+/**
+ * Unequips the current weapon (if any) and ensures that
+ * the equipped flag on all weapons is reset.
+ */
+void vs_mainMenu_unequipWeapon(void);
+
+/**
+ * Unequips the current shield (if any) and ensures that
+ * the equipped flag on all shields is reset.
+ */
 void vs_mainMenu_unequipShield(void);
-void vs_mainMenu_initItem(int, int);
-int vs_mainMenu_loadItemNames(int);
-int vs_mainMenu_ensureItemNamesLoaded(void);
+
+/**
+ * Resets and initializes inventory slots for
+ * the desired category. Shields and Weapons call this
+ * recursively to initialize subcomponents.
+ */
+void vs_mainMenu_initItem(int itemCategory, int index);
+
+/**
+ * Loads ITEMNAME.BIN, ITEMHELP.BIN, and MENU12.BIN from disk.
+ *
+ * @param load True to dispatch a CD load request.
+ * @return True if loading complete.
+ */
+int vs_mainMenu_loadItemText(int load);
+
+/**
+ * Frees the item text if still loaded.
+ *
+ * @return True if unloaded.
+ */
+int vs_mainMenu_ensureItemTextUnloaded(void);
+
+/**
+ * Finds the requested item ID
+ */
 int vs_mainMenu_findItem(int category, int id);
-void vs_mainMenu_rebuildInventory(int);
+
+/**
+ * Normalizes the inventory indices, used before displaying an item menu
+ * or after operations that modify the inventory such as combine or
+ * disassemble.
+ */
+void vs_mainMenu_rebuildInventory(int itemCategory);
+
+/**
+ * Returns the total number of items in the selected category.
+ */
 int vs_mainMenu_getItemCount(int itemCategory, vs_main_inventory_t* inventory);
-int vs_mainMenu_getFirstEmptyItemSlot(int, vs_main_inventory_t*);
+
+/**
+ * Finds an empty inventory slot.
+ */
+int vs_mainMenu_getFirstEmptyItemSlot(int itemCategory, vs_main_inventory_t*);
 
 enum vs_mainMenu_copyItem_flags { copyItemFlagsWrite = 0x10 };
 
-int vs_mainMenu_copyItem(
-    int arg0, vs_main_inventory_t* arg1, int arg2, vs_main_inventory_t* arg3);
+/**
+ * Used for copying between inventories, in practice only invoked by
+ * the loot menu.
+ *
+ * @param itemCategory Without copyItemFlagsWrite, the method will perform a dry run.
+ * @return The index of the copied item.
+ */
+int vs_mainMenu_copyItem(int itemCategory, vs_main_inventory_t* targetInventory,
+    int sourceItemIndex, vs_main_inventory_t* sourceInventory);
 
+/**
+ * Indicates which weapon categories are two-handed.
+ */
 extern char vs_mainMenu_weaponHands[];
-extern char vs_mainMenu_equipmentDetailNavigationMap[][4];
-extern int vs_mainMenu_statCursorPositions[];
-extern int vs_mainMenu_mainCursorXY[];
+
+/**
+ * Maps dpad input for navigation on the status view.
+ */
+extern char vs_mainMenu_statusViewNavigationMap[][4];
+
+/**
+ * Screen coordinates for the cursor on the status view.
+ */
+extern int vs_mainMenu_statusViewCursorPositions[];
+
+/**
+ * Maps useable items to "skills".
+ */
 extern char vs_mainMenu_miscItemToSkillMap[];
+
+/**
+ * A flat list of every item name. Cannot be used before invoking
+ * `vs_mainMenu_loadItemText`.
+ */
 extern char (*vs_mainMenu_itemNames)[24];
+
+/**
+ * Contains the item limit for each category.
+ */
 extern char vs_mainMenu_inventoryItemCapacities[];
-extern char* vs_mainMenu_inventoryIndices[];
+
+/**
+ * Convenience map into the inventory index map in SLUS_010.40
+ */
+extern u_char* vs_mainMenu_inventoryIndices[];

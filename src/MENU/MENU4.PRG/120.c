@@ -69,7 +69,7 @@ static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
         vs_mainMenu_setRangeRisk(weapon->range.range, weapon->risk, 0, 1);
     }
 
-    func_800FBB8C(7);
+    vs_mainMenu_updateStatPage(7);
 }
 
 /**
@@ -105,7 +105,7 @@ static void _drawShieldInfo(vs_battle_uiShield* shield)
         vs_mainMenu_strIntAgi[5] = shield->baseInt;
         vs_mainMenu_strIntAgi[6] = shield->baseAgility;
     }
-    func_800FBB8C(7);
+    vs_mainMenu_updateStatPage(7);
 }
 
 /**
@@ -145,7 +145,7 @@ static void _drawArmorInfo(vs_battle_uiArmor* armor)
         vs_mainMenu_strIntAgi[6] = armor->baseAgility;
     }
 
-    func_800FBB8C(7);
+    vs_mainMenu_updateStatPage(7);
 }
 
 /**
@@ -170,7 +170,7 @@ static void _drawAccessoryInfo(vs_battle_uiAccessory* accessory)
             accessory->currentStr, accessory->currentInt, accessory->currentAgility, 2);
     }
 
-    func_800FBB8C(7);
+    vs_mainMenu_updateStatPage(7);
 }
 
 /**
@@ -191,7 +191,7 @@ static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
     vs_mainMenu_setDpPp(blade->currentDp, blade->maxDp, weapon->currentPp, weapon->maxPp);
     vs_mainMenu_setStrIntAgi(blade->strength, blade->intelligence, blade->agility, 1);
     vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
-    func_800FBB8C(3);
+    vs_mainMenu_updateStatPage(3);
     vs_mainMenu_renderDpPpBars(11);
 }
 
@@ -209,7 +209,7 @@ static void _drawGripInfo(vs_battle_uiEquipment* grip)
     }
 
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
-    func_800FBB8C(4);
+    vs_mainMenu_updateStatPage(4);
     vs_mainMenu_renderDpPpBars(8);
 }
 
@@ -228,7 +228,7 @@ static void _drawGemInfo(vs_battle_uiEquipment* gem)
     }
 
     vs_mainMenu_setStrIntAgi(gem->strength, gem->intelligence, gem->agility, 1);
-    func_800FBB8C(3);
+    vs_mainMenu_updateStatPage(3);
     vs_mainMenu_renderDpPpBars(8);
 }
 
@@ -426,11 +426,11 @@ static int _equipmentDetailElementSelectable(int newSelection, int flags)
     case 5:
     case 6:
     case 7:
-        ret = D_801024B9 != 2;
+        ret = vs_mainMenu_itemStatPage != statPageType;
         break;
 
     case 8:
-        ret = D_801024B9 == 1;
+        ret = vs_mainMenu_itemStatPage == statPageAffinity;
         break;
 
     case 9:
@@ -485,7 +485,7 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
     }
     if (direction != 0) {
         newSelection =
-            vs_mainMenu_equipmentDetailNavigationMap[previousSelection][direction - 1];
+            vs_mainMenu_statusViewNavigationMap[previousSelection][direction - 1];
     }
 
     while (1) {
@@ -512,7 +512,7 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
 
         previousSelection = newSelection;
         newSelection =
-            vs_mainMenu_equipmentDetailNavigationMap[previousSelection][direction - 1];
+            vs_mainMenu_statusViewNavigationMap[previousSelection][direction - 1];
     }
 
     return newSelection;
@@ -1736,7 +1736,7 @@ static int _equipmentDetailScreen(int row)
                 _equipmentDetailSelectedElement = 9;
                 vs_menu_cursorColor = 0;
                 _cursorAnimState = vs_mainMenu_renderCursor(
-                    _cursorAnimState, vs_mainMenu_mainCursorXY[0]);
+                    _cursorAnimState, vs_mainMenu_statusViewCursorPositions[9]);
                 D_801023E3 = 1;
 
                 func_801013F8(1);
@@ -1793,18 +1793,18 @@ static int _equipmentDetailScreen(int row)
             var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                     [VS_ITEMHELP_BIN_INDEX_phantomPointsDesc - newSelection]];
         } else if (newSelection < 9) {
-            switch (D_801024B9) {
-            case 0:
+            switch (vs_mainMenu_itemStatPage) {
+            case statPageClass:
                 var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                         [newSelection + VS_ITEMHELP_BIN_INDEX_damagePointsDesc]];
                 break;
 
-            case 1:
+            case statPageAffinity:
                 var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                         [newSelection + VS_ITEMHELP_BIN_INDEX_evilClassDesc - 1]];
                 break;
 
-            case 2:
+            case statPageType:
                 var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                         [newSelection + VS_ITEMHELP_BIN_INDEX_darkAffinityDesc - 1]];
                 break;
@@ -1846,7 +1846,7 @@ static int _equipmentDetailScreen(int row)
 
         vs_mainmenu_setInformationMessage(var_s3);
 
-        i = vs_mainMenu_statCursorPositions[newSelection];
+        i = vs_mainMenu_statusViewCursorPositions[newSelection];
 
         if ((_selectedEquipmentRow == 1)
             && ((_equipmentDetailSelectedElement - 10) < 2U)) {
@@ -2323,7 +2323,7 @@ int vs_menu4_exec(u_char* state)
         _animationIndex = 10;
 
         if (vs_mainMenu_itemNames == NULL) {
-            vs_mainMenu_loadItemNames(1);
+            vs_mainMenu_loadItemText(1);
         }
 
         if (vs_mainmenu_ready() == 0) {
@@ -2365,7 +2365,7 @@ int vs_menu4_exec(u_char* state)
         vs_mainMenu_initTextBox();
 
         _selectedElement = 0;
-        D_80102544 = 0;
+        vs_mainMenu_enabledStatPages = 0;
 
         _renderSelectedLimbCondition();
 
@@ -2418,7 +2418,7 @@ int vs_menu4_exec(u_char* state)
                             [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
                 }
             }
-        } else if (vs_mainMenu_loadItemNames(0) != 0) {
+        } else if (vs_mainMenu_loadItemText(0) != 0) {
             if (_renderLimbUi(-3) == 2) {
                 if (vs_main_buttonsPressed.all & PADRup) {
 
@@ -2737,7 +2737,7 @@ int vs_menu4_exec(u_char* state)
             }
 
             userInput = _selectedStatRow;
-            limbs = 11 - D_801024B9 * 4;
+            limbs = 11 - vs_mainMenu_itemStatPage * 4;
 
             if (userInput >= limbs) {
                 userInput = limbs - 1;
@@ -2815,7 +2815,7 @@ int vs_menu4_exec(u_char* state)
         vs_mainMenu_dismissTextBox();
 
         if (animWait <= 0) {
-            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
+            if (vs_mainMenu_ensureItemTextUnloaded() != 0) {
                 *state = none;
                 return 1;
             }
@@ -2831,7 +2831,7 @@ int vs_menu4_exec(u_char* state)
         vs_mainMenu_dismissTextBox();
 
         if (animWait <= 0) {
-            if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
+            if (vs_mainMenu_ensureItemTextUnloaded() != 0) {
                 vs_battle_menuState.currentState = 5;
                 *state = none;
                 return 1;

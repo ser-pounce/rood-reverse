@@ -63,7 +63,20 @@ int vs_mainmenu_ready(void);
 
 void vs_mainMenu_exec(int);
 void func_800FAEBC(int);
-void func_800FBB8C(int arg0);
+
+enum vs_mainMenu_statPageEnabled {
+    statPageEnabledClass = 1 << 0,
+    statPageEnabledAffinity = 1 << 1,
+    statPageEnabledType = 1 << 2,
+    statPageEnabledAll =
+        statPageEnabledClass | statPageEnabledAffinity | statPageEnabledType
+};
+
+/**
+ * Flips between the class / affinity / type pages
+ */
+void vs_mainMenu_updateStatPage(int arg0);
+
 void vs_mainMenu_drawClassAffinityType(int);
 void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3);
 void vs_mainMenu_setStrIntAgi(int, int, int, int);

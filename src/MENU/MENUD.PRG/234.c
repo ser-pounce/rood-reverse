@@ -857,7 +857,7 @@ int _weaponNavigation(int weaponIndex)
     case init:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A32, 7);
-            vs_mainMenu_setWeaponRowStats(
+            vs_mainMenu_setStatsFromWeapon(
                 vs_menuD_containerData->indices.weapons[_selectedWeapon]);
             vs_mainMenu_renderDpPpBars(3);
             D_80109A30 = animate;
@@ -885,7 +885,7 @@ int _weaponNavigation(int weaponIndex)
                 i = func_80104114(0, selectedWeapon);
                 _setWeaponUi(&vs_menuD_containerData->data, text, &rowId,
                     vs_battle_stringBuf, i - 1);
-                vs_mainMenu_setWeaponRowStats(i);
+                vs_mainMenu_setStatsFromWeapon(i);
 
                 func_80104078(D_80109A32, text, rowId, selectedWeapon);
                 for (i = 1; i < 6; ++i) {
@@ -928,7 +928,7 @@ int _bladeNavigation(int bladeIndex)
     case init:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A37, 3);
-            vs_mainMenu_setBladeRowStats(
+            vs_mainMenu_setStatsFromBlade(
                 vs_menuD_containerData->indices.blades[D_80109A38]);
             vs_mainMenu_renderDpPpBars(3);
             D_80109A35 = animate;
@@ -953,7 +953,7 @@ int _bladeNavigation(int bladeIndex)
                 vs_mainMenu_setBladeRow(
                     &vs_menuD_containerData->data.blades[temp_v0_3 - 1], text, &sp18,
                     vs_battle_stringBuf);
-                vs_mainMenu_setBladeRowStats(temp_v0_3);
+                vs_mainMenu_setStatsFromBlade(temp_v0_3);
                 func_80104078(D_80109A37, text, sp18, selectedBlade);
             }
         }
@@ -992,7 +992,7 @@ int _gripNavigation(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A3B, 4);
-            vs_mainMenu_setGripRowStats(
+            vs_mainMenu_setStatsFromGrip(
                 vs_menuD_containerData->indices.grips[D_80109A3C]);
             D_80109A39 = 1U;
         }
@@ -1015,7 +1015,7 @@ int _gripNavigation(int arg0)
                 temp_v0_3 = func_80104114(2, temp_v0_2);
                 vs_mainMenu_setGripRow(&vs_menuD_containerData->data.grips[temp_v0_3 - 1],
                     sp10, &sp18, vs_battle_stringBuf);
-                vs_mainMenu_setGripRowStats(temp_v0_3);
+                vs_mainMenu_setStatsFromGrip(temp_v0_3);
                 func_80104078(D_80109A3B, sp10, sp18, temp_v0_2);
             }
         }
@@ -1060,7 +1060,7 @@ int _shieldNavigation(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A40, 7);
-            vs_mainMenu_setShieldStats(
+            vs_mainMenu_setStatsFromShield(
                 vs_menuD_containerData->indices.shields[D_80109A41]);
             vs_mainMenu_renderDpPpBars(3);
             D_80109A3E = 1;
@@ -1090,7 +1090,7 @@ int _shieldNavigation(int arg0)
                 i = func_80104114(3, temp_v0_2);
                 _setShieldUi(&vs_menuD_containerData->data, sp18, &sp20,
                     vs_battle_stringBuf, i - 1);
-                vs_mainMenu_setShieldStats(i);
+                vs_mainMenu_setStatsFromShield(i);
                 func_80104078(D_80109A40, sp18, sp20, temp_v0_2);
                 for (i = 1; i < 4; ++i) {
                     vs_mainMenu_initShieldDetailsRow(
@@ -1131,7 +1131,8 @@ int _armorNavigation(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A45, 7);
-            vs_mainMenu_setArmorStats(vs_menuD_containerData->indices.armor[D_80109A46]);
+            vs_mainMenu_setStatsFromArmor(
+                vs_menuD_containerData->indices.armor[D_80109A46]);
             if (vs_main_inventory
                     .armor[vs_menuD_containerData->indices.armor[D_80109A46] - 1]
                     .category
@@ -1160,7 +1161,7 @@ int _armorNavigation(int arg0)
                 vs_mainMenu_setArmorRowFromInventory(
                     &vs_menuD_containerData->data.armor[temp_v0_3 - 1], sp10, &sp18,
                     vs_battle_stringBuf);
-                vs_mainMenu_setArmorStats(temp_v0_3);
+                vs_mainMenu_setStatsFromArmor(temp_v0_3);
                 func_80104078(D_80109A45, sp10, sp18, temp_v0_2);
             }
         }
@@ -1196,7 +1197,7 @@ int _gemNavigation(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             func_80104034(D_80109A49, 3);
-            vs_mainMenu_setGemStats(vs_menuD_containerData->indices.gems[D_80109A4A]);
+            vs_mainMenu_setStatsFromGem(vs_menuD_containerData->indices.gems[D_80109A4A]);
             D_80109A47 = 1;
         }
         break;
@@ -1219,7 +1220,7 @@ int _gemNavigation(int arg0)
                 temp_v0_3 = func_80104114(5, temp_v0_2);
                 vs_mainMenu_setGemRow(&vs_menuD_containerData->data.gems[temp_v0_3 - 1],
                     sp10, &sp18, vs_battle_stringBuf);
-                vs_mainMenu_setGemStats(temp_v0_3);
+                vs_mainMenu_setStatsFromGem(temp_v0_3);
                 func_80104078(D_80109A49, sp10, sp18, temp_v0_2);
             }
         }
@@ -1261,7 +1262,7 @@ int func_80105008(int arg0)
         D_80109A7D = 1;
         vs_mainMenu_setNextMenuAction(menuActionMenu);
     } else if (vs_mainmenu_ready() != 0) {
-        vs_menu_cursorColor = vs_mainMenu_selectedUiElement != 9;
+        vs_menu_cursorColor = vs_mainMenu_selectedStatusViewElement != 9;
         func_801013F8(1);
         vs_mainMenu_renderStatusView();
     }
@@ -3138,7 +3139,7 @@ int vs_menuD_exec(u_char* arg0)
 
     switch (*arg0) {
     case 0:
-        vs_mainMenu_loadItemNames(1);
+        vs_mainMenu_loadItemText(1);
         vs_mainMenu_initTextBox();
         func_80103D50(0);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkC430.data,
@@ -3153,7 +3154,7 @@ int vs_menuD_exec(u_char* arg0)
         *arg0 = 1;
         return 0;
     case 1:
-        *arg0 += vs_mainMenu_loadItemNames(0);
+        *arg0 += vs_mainMenu_loadItemText(0);
         break;
     case 2:
         if (D_80109A78 != 0) {
@@ -3199,7 +3200,7 @@ int vs_menuD_exec(u_char* arg0)
         }
         break;
     case 6:
-        if (vs_mainMenu_ensureItemNamesLoaded() != 0) {
+        if (vs_mainMenu_ensureItemTextUnloaded() != 0) {
             _copyContainerToInventory();
             for (i = 0; i < 7; ++i) {
                 _defragmentContainerItems(i, &vs_menu_inventoryStorage->unkC430);

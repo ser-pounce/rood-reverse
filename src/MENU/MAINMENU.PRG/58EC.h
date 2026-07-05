@@ -118,12 +118,35 @@ extern char vs_mainMenu_currentUiItem;
 extern char bss_7[2];
 extern u_short* vs_mainMenu_menu12Text;
 extern short vs_mainMenu_strIntAgi[8];
-extern u_char vs_mainMenu_selectedUiElement;
-extern char D_801024B9;
+
+enum vs_mainMenu_statusUiIds {
+    statusUiPp,
+    statusUiDp,
+    statusUistatPageFirstElement,
+    statusUistatPageLastElement = 8,
+    statusUiPrincipleItem,
+    statusUiRange = 16,
+    statusUiRisk,
+    statusUiStr,
+    statusUiInt,
+    statusUiAgi,
+};
+
+extern u_char vs_mainMenu_selectedStatusViewElement;
+
+enum vs_mainMenu_statPage {
+    statPageClass,
+    statPageAffinity,
+    statPageType,
+    statPageNone,
+};
+
+extern char vs_mainMenu_itemStatPage;
+
 extern char bss_3[6];
 extern short vs_mainMenu_equipmentStats[64];
 extern u_short* vs_mainMenu_itemHelp;
-extern char D_80102544;
+extern char vs_mainMenu_enabledStatPages;
 extern char vs_mainMenu_equipmentSubtype;
 extern char bss_4[18];
 extern struct textHeader_t _textHeaders[2];

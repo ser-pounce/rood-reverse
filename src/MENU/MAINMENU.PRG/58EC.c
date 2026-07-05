@@ -33,12 +33,12 @@ char vs_mainMenu_currentUiItem;
 char bss_7[2];
 u_short* vs_mainMenu_menu12Text;
 short vs_mainMenu_strIntAgi[8];
-u_char vs_mainMenu_selectedUiElement;
-char D_801024B9;
+u_char vs_mainMenu_selectedStatusViewElement;
+char vs_mainMenu_itemStatPage;
 char bss_3[6];
 short vs_mainMenu_equipmentStats[64];
 u_short* vs_mainMenu_itemHelp;
-char D_80102544;
+char vs_mainMenu_enabledStatPages;
 char vs_mainMenu_equipmentSubtype;
 char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
 textHeader_t _textHeaders[2];

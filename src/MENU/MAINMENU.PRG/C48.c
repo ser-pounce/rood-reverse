@@ -519,12 +519,12 @@ void func_800FAEBC(int arg0)
         menuItem->unselectable = (D_800F4EA0 & 7) != 0;
         _func_800FAEBC_state = 1;
 
-        vs_mainMenu_loadItemNames(1);
+        vs_mainMenu_loadItemText(1);
 
         break;
 
     case 1:
-        if (!vs_mainmenu_ready() || !vs_mainMenu_loadItemNames(0)) {
+        if (!vs_mainmenu_ready() || !vs_mainMenu_loadItemText(0)) {
             break;
         }
 
@@ -641,7 +641,7 @@ void func_800FAEBC(int arg0)
         break;
 
     case 4:
-        if (!vs_mainmenu_ready() || !vs_mainMenu_ensureItemNamesLoaded()) {
+        if (!vs_mainmenu_ready() || !vs_mainMenu_ensureItemTextUnloaded()) {
             break;
         }
 
@@ -672,7 +672,7 @@ static void func_800FB3C8(int arg0)
     static char D_801020D4[] = "|f0|CLASS|f0|/|f0|AFFINITY|f0|/|f0|TYPE";
 #pragma vsstring(end)
 
-    int sp10;
+    int statPage;
     int sp14;
     int sp18;
     int sp1C;
@@ -694,16 +694,16 @@ static void func_800FB3C8(int arg0)
     int a0;
 
     temp_s4 = D_1F800000[1] - 3;
-    sp10 = D_801024B9;
+    statPage = vs_mainMenu_itemStatPage;
 
-    switch (sp10) {
-    case 0:
+    switch (statPage) {
+    case statPageClass:
         var_s7 = vs_mainMenu_equipmentStats;
         sp20 = &var_s7[8];
         sp24 = &var_s7[0x30];
         sp18 = 0x60;
         break;
-    case 1:
+    case statPageAffinity:
         var_s7 = vs_mainMenu_equipmentStats + 16;
         sp20 = &var_s7[8];
         sp24 = &var_s7[0x28];
@@ -715,7 +715,7 @@ static void func_800FB3C8(int arg0)
             }
         }
         break;
-    case 2:
+    case statPageType:
         var_s7 = vs_mainMenu_equipmentStats + 33;
         sp20 = var_s7;
         sp18 = 0x30;
@@ -730,7 +730,7 @@ static void func_800FB3C8(int arg0)
         j = var_s6 >> 4;
 
         if (vs_mainMenu_equipmentStats[63] != 0) {
-            if ((D_80102544 == 7) && (sp10 != 2)) {
+            if ((vs_mainMenu_enabledStatPages == 7) && (statPage != 2)) {
                 i = func_800FFE20(var_s7[j] - sp24[j],
                     ((arg0 + 0xA4) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), 0, temp_s4);
                 if (var_s7[j] > sp24[j]) {
@@ -745,8 +745,8 @@ static void func_800FB3C8(int arg0)
         i = 0x808080;
         a0 = vs_mainMenu_equipmentSubtype;
 
-        if ((a0 == 1) && ((D_80102544 == 7) && (sp10 != 0))) {
-            if (sp10 == a0) {
+        if ((a0 == 1) && ((vs_mainMenu_enabledStatPages == 7) && (statPage != 0))) {
+            if (statPage == a0) {
                 if (sp20[j] != var_s7[j]) {
                     if (sp20[j] < var_s7[j]) {
                         i = 0x804020;
@@ -777,7 +777,7 @@ static void func_800FB3C8(int arg0)
             func_800FFE20(
                 var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), sp20[j], temp_s4);
         }
-        vs_battle_renderTextRawColor(D_80102068[j + (sp10 * 8)],
+        vs_battle_renderTextRawColor(D_80102068[j + (statPage * 8)],
             ((arg0 + 0x40) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), i, temp_s4);
         func_800CCCB8(temp_s4, 0x40D0E030, sp14 | ((var_s6 + 0x42) << 0x10),
             sp14 | ((var_s6 + 0x45) << 0x10));
@@ -850,10 +850,11 @@ static void func_800FB3C8(int arg0)
     arg0 = (arg0 & 0xFFFF) + 0x22;
 
     for (j = 0; j < 3; ++j) {
-        D_801020D4[(0x180B01 >> (j * 8)) & 0xFF] = ((D_80102544 >> j) & 1) ? 0 : 3;
+        D_801020D4[(0x180B01 >> (j * 8)) & 0xFF] =
+            ((vs_mainMenu_enabledStatPages >> j) & 1) ? 0 : 3;
     }
 
-    D_801020D4[(0x180B01 >> (D_801024B9 * 8)) & 0xFF] = 1;
+    D_801020D4[(0x180B01 >> (vs_mainMenu_itemStatPage * 8)) & 0xFF] = 1;
 
     for (i_2 = 0; i_2 < 29; ++i_2) {
         i = D_801020D4[i_2];
@@ -870,15 +871,17 @@ static int func_800FBB64(int arg0)
 {
     do {
         arg0 = (arg0 + 1) & 3;
-    } while (!((D_80102544 >> arg0) & 1));
+    } while (!((vs_mainMenu_enabledStatPages >> arg0) & 1));
+
     return arg0;
 }
 
-void func_800FBB8C(int arg0)
+void vs_mainMenu_updateStatPage(int enabledPage)
 {
-    D_80102544 = arg0;
-    if (!((arg0 >> D_801024B9) & 1)) {
-        D_801024B9 = func_800FBB64(D_801024B9);
+    vs_mainMenu_enabledStatPages = enabledPage;
+
+    if (!((enabledPage >> vs_mainMenu_itemStatPage) & 1)) {
+        vs_mainMenu_itemStatPage = func_800FBB64(vs_mainMenu_itemStatPage);
     }
 }
 
@@ -888,15 +891,15 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
     static u_char D_801020F8 = 0;
 
     int var_s1;
-    int var_s0;
+    int statPage;
 
     var_s1 = 1;
 
     if (arg0 != 0) {
 
         if (arg0 > 0) {
-            D_801024B9 = 3;
-            func_800FBB8C(arg0);
+            vs_mainMenu_itemStatPage = statPageNone;
+            vs_mainMenu_updateStatPage(arg0);
         }
 
         D_801020F4 = arg0;
@@ -905,7 +908,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
         return;
     }
 
-    var_s0 = D_801024B9;
+    statPage = vs_mainMenu_itemStatPage;
 
     if (D_801020F4 > 0) {
 
@@ -914,8 +917,8 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
         if (D_801020F8 != 0) {
             --D_801020F8;
         } else if (vs_main_buttonsPressed.all & PADRleft) {
-            var_s0 = func_800FBB64(var_s0);
-            if (var_s0 != D_801024B9) {
+            statPage = func_800FBB64(statPage);
+            if (statPage != vs_mainMenu_itemStatPage) {
                 vs_main_playSfxDefault(0x7E, 14);
             } else {
                 vs_battle_playInvalidSfx();
@@ -932,7 +935,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
         func_800FB3C8(var_s1);
     }
 
-    D_801024B9 = var_s0;
+    vs_mainMenu_itemStatPage = statPage;
 }
 
 void vs_mainMenu_setRangeRisk(int range, int risk, int arg2, int arg3)

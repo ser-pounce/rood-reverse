@@ -101,7 +101,7 @@ static int _teleportMenu(int init)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_isLevelledSpell = 0;
+            vs_mainMenu_displaySkillCost = 0;
             if (selectedRow == (-1)) {
                 vs_mainMenu_clearMenuExcept(0);
             } else {

@@ -3701,7 +3701,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
-            func_80100414(0x7FE, 0x80);
+            vs_mainMenu_showBackground(2046, 128);
             _initFileMenu();
             if ((*(u_int*)&vs_main_settings) & 0x10) {
                 vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
@@ -3844,7 +3844,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         func_800CB654(0);
         D_800EB9B0 = 0;
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        func_80100414(-4, 0x80);
+        vs_mainMenu_showBackground(-4, 0x80);
         *state = 15;
         break;
     case 15:

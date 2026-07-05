@@ -318,7 +318,7 @@ int vs_battle_toBCD(int value);
 int vs_battle_drawCursor(int animStep, int position);
 u_int vs_battle_keystreamBits(int value);
 int vs_battle_decreaseMiscCount(int);
-void func_800CCCB8(u_long*, int, int, int);
+void vs_battle_addTile(u_long*, int, int, int);
 void func_800CCD00(int arg0, u_long* arg1);
 vs_battle_textBox* vs_battle_getTextBox(int arg0);
 void vs_battle_initTextBox(
@@ -368,7 +368,7 @@ extern int* vs_battle_rowTypeBuf;
 extern char vs_battle_unlockedBreakArt;
 extern char* vs_battle_stringBuf;
 extern char vs_battle_submenuStates[16];
-extern char D_800F4E90;
+extern char vs_battle_lowerScreenUiState;
 extern D_800F4E98_t D_800F4E98;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;

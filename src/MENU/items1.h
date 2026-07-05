@@ -343,7 +343,7 @@ static int _gripStatusView(int itemInfo)
                 .gemSlots
             + '0';
 
-        vs_mainMenu_renderMenuRowIcon(0x116, 0x100, 0x20);
+        vs_mainMenu_renderMenuRowIcon(mainMenuIconGem | (1 << 8), 256, 32);
         vs_battle_renderTextRaw(gemSlotCountBuf, vs_getXY(280, 36), NULL);
 
         break;

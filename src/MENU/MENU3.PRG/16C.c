@@ -1393,7 +1393,7 @@ int vs_menu3_exec(u_char* state)
 
     case 8:
         if (vs_battle_menuState.returnState != 0) {
-            func_80100414(-4, 0x80);
+            vs_mainMenu_showBackground(-4, 128);
             func_8008A4DC(1);
             _toggleMenuUi(0);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1539,7 +1539,7 @@ int vs_menu3_exec(u_char* state)
     }
 
     if (_statusCommandAnimationStep != 0) {
-        vs_mainmenu_renderButtonUiBackground(16 - row, 38, 88, 10);
+        vs_mainmenu_renderButtonBackground(16 - row, 38, 88, 10);
         vs_mainmenu_renderButton(buttonIdSquare, 8 - row, 36, NULL);
         vs_battle_renderTextRawColor("STATUS", vs_getXY(28 - row, 38),
             vs_getRGB888(32, 32, 32) << _statusCommandState, NULL);

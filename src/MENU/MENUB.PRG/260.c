@@ -202,7 +202,7 @@ static int _topLevelMenuTransition(int category)
     }
 
     if (_statusCommandAnimationStep != 0) {
-        vs_mainmenu_renderButtonUiBackground(0x10 - stepValue, 0x26, 0x58, 10);
+        vs_mainmenu_renderButtonBackground(0x10 - stepValue, 0x26, 0x58, 10);
         vs_mainmenu_renderButton(buttonIdSquare, 8 - stepValue, 0x24, NULL);
         vs_battle_renderTextRawColor("STATUS", ((0x1C - stepValue) & 0xFFFF) | 0x260000,
             0x202020 << _statusCommandState, NULL);
@@ -996,8 +996,8 @@ void _displayInventoryCapacities(int edgeX)
 
     buttonBgPos = edgeX + 184;
 
-    vs_mainmenu_renderButtonUiBackground(buttonBgPos, 112, 112, 10);
-    vs_mainmenu_renderButtonUiBackground(buttonBgPos, 128, 64, 10);
+    vs_mainmenu_renderButtonBackground(buttonBgPos, 112, 112, 10);
+    vs_mainmenu_renderButtonBackground(buttonBgPos, 128, 64, 10);
     vs_battle_renderTextRawColor("GET", (edgeX + 196) | (112 << 16),
         vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
     vs_mainmenu_renderButton(buttonIdCircle, edgeX + 176, 110, NULL);

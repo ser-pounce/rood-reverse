@@ -227,7 +227,7 @@ static int _loadMapBackground(int arg0)
             vs_main_freeCdQueueSlot(slot);
             vs_main_loadClut(buf, 3, 0, 256);
             vs_battle_renderImage(vs_getXY(640, 256), buf + 256, vs_getWH(160, 240));
-            func_80100414(-4, 0x80);
+            vs_mainMenu_showBackground(-4, 0x80);
             state = 1;
         }
         return 0;
@@ -311,7 +311,7 @@ int vs_menu5_exec(u_char* state)
         D_80108D38 = _menuManager();
 
         if (D_80108D38 != 0) {
-            func_80100414(-4, 0x80);
+            vs_mainMenu_showBackground(-4, 0x80);
             func_800CB654(0);
 
             D_800EB9B0 = 0;
@@ -547,9 +547,9 @@ static int _menuManager(void)
     }
 
     if (vs_main_stateFlags.mapPaling[_currentScene] != 0) {
-        func_80100414(0x7FE, 0x80);
+        vs_mainMenu_showBackground(2046, 128);
     } else {
-        func_80100414(0x7FE, (_backgroundBrightness + 0x80) / 2);
+        vs_mainMenu_showBackground(2046, (_backgroundBrightness + 128) / 2);
     }
 
     if (_menuState != 1) {

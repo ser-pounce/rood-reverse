@@ -110,11 +110,36 @@ void vs_mainmenu_renderButton(
  */
 int vs_mainMenu_renderCursor(u_int animStep, int xy);
 
-int vs_mainMenu_renderIntColor(int, int, int, u_long*);
-int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3);
-void vs_mainMenu_renderIntColorDefault(int, int, u_long*);
-void vs_mainMenu_renderMenuRowIcon(int, int, int);
-void vs_mainMenu_unpackMenubg(u_int*);
+/**
+ * Renders the provided value.
+ */
+int vs_mainMenu_renderIntColor(int value, int xy, int color, u_long* before);
+
+/**
+ * Renders the provided value with preset colors based on
+ * a comparison to `threshold`.
+ */
+int vs_mainMenu_renderIntWithThreshold(int value, int xy, int threshold, u_long* before);
+
+/**
+ * Invokes `vs_mainMenu_renderIntColor` with a neutral gray color.
+ */
+void vs_mainMenu_renderIntColorDefault(int value, int xy, u_long* before);
+
+enum vs_mainMenu_icons { mainMenuIconGem = 22 };
+
+/**
+ * Renders a well-known icon at the specified point.
+ *
+ * @param icon Packed value:
+ *
+ * - Bits 0-7: Icon id
+ *
+ * - Bit 8: Toggle low / high brightness
+ *
+ * - Bits 16-17: 1 == fade from top, 2 == fade from bottom
+ */
+void vs_mainMenu_renderMenuRowIcon(int icon, int x, int y);
 
 /**
  * Populates one of two elements for displaying skill costs.
@@ -124,9 +149,22 @@ void vs_mainMenu_unpackMenubg(u_int*);
  */
 void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled);
 
-void vs_mainmenu_renderButtonUiBackground(int x, int y, int w, int h);
-void func_80100414(int, int);
-int func_80100814(void);
+/**
+ * Renders the brownish, chisel-shaped background used behind command buttons.
+ */
+void vs_mainmenu_renderButtonBackground(int x, int y, int w, int h);
+
+/**
+ * Shows or hides the menu background.
+ *
+ * @param otOffset Seems to be the offset into the OT, positive values enable the bg.
+ */
+void vs_mainMenu_showBackground(int otOffset, int brightness);
+
+/**
+ * Unpacks the RLE buffer and stores it in VRAM.
+ */
+void vs_mainMenu_unpackMenubg(u_int* buf);
 
 /**
  * Initialises multiple menu rows
@@ -140,6 +178,8 @@ int func_80100814(void);
  * @param rowTypes Packed row style flags.
  */
 void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int rowTypes[]);
+
+int func_80100814(void);
 
 /**
  * Retrieve row confirmed by the user.
@@ -166,7 +206,7 @@ void func_80101F38(void);
 
 #define menuRowInfo(id, x, y) ((y) << 8) | ((x) << 4) | (id)
 
-extern char vs_mainMenu_isLevelledSpell;
+extern char vs_mainMenu_displaySkillCost;
 extern char vs_mainMenu_actionMenuState;
 extern char vs_mainMenu_cursorColor;
 extern char vs_mainMenu_hideMenu;

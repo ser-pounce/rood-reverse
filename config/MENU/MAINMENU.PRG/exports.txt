@@ -22,7 +22,7 @@ vs_mainMenu_resetStatusViewCursor
 vs_mainMenu_renderStatusView
 vs_mainMenu_getSelectedAction
 func_800FFB68
-func_80100414
+vs_mainMenu_showBackground
 func_80100814
 func_80100A5C
 func_80101268
@@ -35,7 +35,7 @@ vs_mainMenu_currentUiItem
 vs_mainMenu_deactivateMenuItem
 vs_mainMenu_dismissInformationBox
 vs_mainmenu_renderButton
-vs_mainmenu_renderButtonUiBackground
+vs_mainmenu_renderButtonBackground
 vs_mainMenu_drawClassAffinityType
 vs_mainMenu_renderDpPpBars
 vs_mainMenu_renderMenuRowIcon
@@ -66,7 +66,7 @@ vs_mainMenu_setWeaponRowFromInventory
 vs_mainMenu_initWeaponDetailsRow
 vs_mainMenu_inventoryIndices
 vs_mainMenu_inventoryItemCapacities
-vs_mainMenu_isLevelledSpell
+vs_mainMenu_displaySkillCost
 vs_mainMenu_itemHelp
 vs_mainMenu_itemNames
 vs_mainMenu_loadItemText

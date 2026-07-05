@@ -176,7 +176,7 @@ int vs_menuE_exec(u_char* state)
         if (menuResult == 0) {
             break;
         }
-        func_80100414(-4, 0x80);
+        vs_mainMenu_showBackground(-4, 128);
         func_800CB654(0);
         D_800EB9B0 = 0;
         func_8008A4DC(1);
@@ -264,7 +264,7 @@ static int _showMenu(void)
 
     switch (_showMenuState) {
     case init:
-        func_80100414(0x7FE, 0x80);
+        vs_mainMenu_showBackground(2046, 128);
         ++_showMenuState;
         break;
     case initMenu:

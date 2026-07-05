@@ -394,13 +394,13 @@ void vs_mainMenu_printInformation(int sourceRow, int actionMenuState)
     }
 }
 
-char vs_mainMenu_isLevelledSpell = 0;
+char vs_mainMenu_displaySkillCost = 0;
 char vs_mainMenu_cursorColor = 0;
 char vs_mainMenu_hideMenu = 0;
 int D_801022D8 = 0;
 char D_801022DC = 0;
 static short D_801022DE = -4;
-static short D_801022E0 = 128;
+static short _backgroundBrightness = 128;
 static char _menuActionCurrent = 0;
 static char _menuActionNext = 0;
 
@@ -451,8 +451,9 @@ void func_800FFB68(int arg0)
 {
     if (arg0 != 0) {
         D_801022DE = -4;
-        D_801022E0 = 128;
+        _backgroundBrightness = 128;
     }
+
     D_801022DC = arg0;
 }
 
@@ -518,67 +519,74 @@ int vs_mainMenu_renderCursor(u_int animStep, int xy)
     return (cursorAnimStep + 1) & 0xF;
 }
 
-int vs_mainMenu_renderIntColor(int arg0, int arg1, int arg2, u_long* arg3)
+int vs_mainMenu_renderIntColor(int value, int xy, int color, u_long* before)
 {
-    int sp10;
-    int var_s0 = arg0;
+    int buf;
+    int bcd = value;
 
-    if (arg0 < 0) {
-        var_s0 = -arg0;
+    if (value < 0) {
+        bcd = -value;
     }
 
     do {
-        var_s0 = vs_battle_toBCD(var_s0);
-        sp10 = ((var_s0 & 0xF) << 8) | ('0' << 8) | '#';
-        vs_battle_renderTextRawColor((char*)&sp10, arg1, arg2, arg3);
-        var_s0 = var_s0 >> 4;
-        arg1 -= 8;
-    } while (var_s0 != 0);
+        bcd = vs_battle_toBCD(bcd);
+        buf = ((bcd & 0xF) << 8) | ('0' << 8) | '#';
 
-    if (arg0 < 0) {
-        sp10 = ('-' << 8) | '#';
-        vs_battle_renderTextRawColor((char*)&sp10, arg1 + 1, arg2, arg3);
+        vs_battle_renderTextRawColor((char*)&buf, xy, color, before);
+
+        bcd >>= 4;
+        xy -= 8;
+    } while (bcd != 0);
+
+    if (value < 0) {
+        buf = ('-' << 8) | '#';
+        vs_battle_renderTextRawColor((char*)&buf, xy + 1, color, before);
     }
 
-    return arg1;
+    return xy;
 }
 
-int func_800FFE20(int arg0, int arg1, int arg2, u_long* arg3)
+int vs_mainMenu_renderIntWithThreshold(int value, int xy, int threshold, u_long* before)
 {
-    int var_a2;
+    int color = vs_getRGB888(128, 128, 128);
 
-    var_a2 = 0x808080;
-    if (arg2 < arg0) {
-        var_a2 = 0x804020;
+    if (threshold < value) {
+        color = vs_getRGB888(32, 64, 128);
     }
-    if (arg0 < arg2) {
-        var_a2 = 0x204080;
+
+    if (value < threshold) {
+        color = vs_getRGB888(128, 64, 32);
     }
-    return vs_mainMenu_renderIntColor(arg0, arg1, var_a2, arg3);
+
+    return vs_mainMenu_renderIntColor(value, xy, color, before);
 }
 
-void vs_mainMenu_renderIntColorDefault(int arg0, int arg1, u_long* arg2)
+void vs_mainMenu_renderIntColorDefault(int value, int xy, u_long* before)
 {
-    vs_mainMenu_renderIntColor(arg0, arg1, 0x808080, arg2);
+    vs_mainMenu_renderIntColor(value, xy, vs_getRGB888(128, 128, 128), before);
 }
 
-static void func_800FFE98(int offset, int xy, int clut, u_long* before)
+/**
+ * Fades the top or bottom 16 pixels of the icon, used for elements at the
+ * very top or bottom of the menu.
+ */
+static void _renderFeatheredIcon(int direction, int xy, int uvClut, u_long* before)
 {
     int i = 0;
 
-    if (offset < 0) {
+    if (direction < 0) {
         xy += vs_getXY(0, 15);
-        clut += vs_getUV0Clut(0, 15, 0, 0);
+        uvClut += vs_getUV0Clut(0, 15, 0, 0);
     }
 
     do {
         ++i;
 
-        vs_battle_setSpriteDefaultTexPage((i * 8) | 256, xy, vs_getWH(16, 1), before)[4] =
-            clut;
+        vs_battle_setSpriteDefaultTexPage(
+            (i * 8) | (1 << 8), xy, vs_getWH(16, 1), before)[4] = uvClut;
 
-        xy += vs_getXY(0, offset);
-        clut += vs_getUV0Clut(0, offset, 0, 0);
+        xy += vs_getXY(0, direction);
+        uvClut += vs_getUV0Clut(0, direction, 0, 0);
     } while (i < 16);
 }
 
@@ -602,9 +610,9 @@ static void _renderOutsetIcon(int icon, int xy)
         vs_getUV0Clut(96 - (icon * 16), 128, 976, 223);
 }
 
-void vs_mainMenu_renderMenuRowIcon(int arg0, int arg1, int arg2)
+void vs_mainMenu_renderMenuRowIcon(int icon, int x, int y)
 {
-    static u_short clutUvs[] = { vs_getUV(80, 96), vs_getUV(144, 96), vs_getUV(160, 96),
+    static u_short iconUvs[] = { vs_getUV(80, 96), vs_getUV(144, 96), vs_getUV(160, 96),
         vs_getUV(112, 96), vs_getUV(128, 96), vs_getUV(176, 96), vs_getUV(208, 96),
         vs_getUV(96, 96), vs_getUV(48, 112), vs_getUV(128, 112), vs_getUV(0, 112),
         vs_getUV(16, 112), vs_getUV(32, 112), vs_getUV(224, 96), vs_getUV(64, 112),
@@ -614,94 +622,98 @@ void vs_mainMenu_renderMenuRowIcon(int arg0, int arg1, int arg2)
         vs_getUV(184, 128), vs_getUV(200, 128), vs_getUV(216, 128), vs_getUV(232, 128),
         vs_getUV(96, 128), vs_getUV(80, 128) };
 
-    int v1;
-    int var_a0;
-    u_long* prim;
+    int fade = icon >> 16;
+    int brightness = (icon >> 8) & 1;
+    icon = (icon - 1) & 0xFF;
 
-    var_a0 = arg0 >> 0x10;
-    v1 = (arg0 >> 8) & 1;
-    arg0 = (arg0 - 1) & 0xFF;
+    if (fade == 0) {
+        u_long* prim = vs_battle_setSpriteDefaultTexPage(
+            64 << brightness, vs_getXY_2(x, y), vs_getWH(16, 16), D_1F800000[2] + 1);
 
-    if (var_a0 == 0) {
-        prim = vs_battle_setSpriteDefaultTexPage(
-            64 << v1, vs_getXY_2(arg1, arg2), vs_getWH(16, 16), D_1F800000[2] + 1);
-        prim[4] = vs_getUV0Clut(clutUvs[arg0], 0, 992, 223);
+        prim[4] = vs_getUV0Clut(iconUvs[icon], 0, 992, 223);
 
-        if (arg0 >= 23) {
+        if (icon >= 23) {
             prim[3] -= 12;
-            prim[4] = vs_getUV0Clut(clutUvs[arg0], 0, 976, 223);
-        }
-    } else {
-        if (var_a0 == 2) {
-            var_a0 = -1;
+            prim[4] = vs_getUV0Clut(iconUvs[icon], 0, 976, 223);
         }
 
-        func_800FFE98(var_a0, vs_getXY_2(arg1, arg2),
-            vs_getUV0Clut(clutUvs[arg0], 0, 992, 223), D_1F800000[2] + 1);
+    } else {
+        if (fade == 2) {
+            fade = -1;
+        }
+
+        _renderFeatheredIcon(fade, vs_getXY_2(x, y),
+            vs_getUV0Clut(iconUvs[icon], 0, 992, 223), D_1F800000[2] + 1);
     }
 }
 
 void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled)
 {
-    vs_mainMenu_isLevelledSpell = 1;
+    vs_mainMenu_displaySkillCost = 1;
+
     vs_battle_rMemcpy(&_textHeaders[index], text, 14);
+
     _textHeaders[index].disabled = disabled;
     _textHeaders[index].x = xOffset;
 }
 
-static void func_80100164(void)
+/**
+ * Slides and renders the ability cost element.
+ */
+static void _renderAbilityCost(void)
 {
-    static u_char D_801023BE = 8;
+    static u_char animState = 8;
 
-    int temp_s2;
-    int temp_t1;
-    int var_s1;
-    u_long* temp_s5;
-    u_long* temp_v1_2;
+    u_long* scratch = D_1F800000[1] - 1;
 
-    temp_s5 = D_1F800000[1] - 1;
-
-    if (vs_mainMenu_isLevelledSpell != 0) {
-        if (D_801023BE != 0) {
-            --D_801023BE;
+    if (vs_mainMenu_displaySkillCost != 0) {
+        if (animState != 0) {
+            --animState;
         }
     } else {
-        if (D_801023BE < 5) {
-            D_801023BE = 5;
-        } else if (D_801023BE < 8) {
-            ++D_801023BE;
+        if (animState < 5) {
+            animState = 5;
+        } else if (animState < 8) {
+            ++animState;
         }
     }
 
-    if (D_801023BE < 8) {
-        temp_s2 = -vs_battle_rowAnimationSteps[D_801023BE];
+    if (animState < 8) {
+        int i;
+        u_long* poly;
+        int x0;
+        int x1 = -vs_battle_rowAnimationSteps[animState];
 
-        for (var_s1 = 0; var_s1 < 2; ++var_s1) {
-            vs_battle_renderTextRawColor(_textHeaders[var_s1].text,
-                ((temp_s2 + _textHeaders[var_s1].x) & 0xFFFF) | 0xA00000,
-                0x808080 >> _textHeaders[var_s1].disabled, NULL);
+        for (i = 0; i < 2; ++i) {
+            vs_battle_renderTextRawColor(_textHeaders[i].text,
+                ((x1 + _textHeaders[i].x) & 0xFFFF) | (160 << 16),
+                vs_getRGB888(128, 128, 128) >> _textHeaders[i].disabled, NULL);
         }
 
-        temp_t1 = temp_s2 & 0xFFFF;
-        temp_v1_2 = D_1F800000[0];
-        temp_v1_2[0] = (*temp_s5 & 0xFFFFFF) | 0x0A000000;
-        temp_v1_2[1] = 0xE1000200;
-        temp_v1_2[2] = 0x38200808;
-        temp_v1_2[3] = temp_t1 | 0xA00000;
-        temp_v1_2[4] = 0x663040;
-        temp_v1_2[5] = (temp_s2 + 0x50) | 0xA00000;
-        temp_v1_2[6] = 0x200808;
-        temp_v1_2[7] = temp_t1 | 0xAB0000;
-        temp_v1_2[8] = 0x663040;
-        temp_v1_2[9] = (temp_s2 + 0x50) | 0xAB0000;
-        temp_v1_2[10] = 0xE1000000;
-        *temp_s5 = ((u_long)temp_v1_2 << 8) >> 8;
-        D_1F800000[0] = temp_v1_2 + 11;
-        func_800CCCB8(temp_s5, 0x60000000, temp_t1 | 0xA20000, 0xB0052);
+        x0 = x1 & 0xFFFF;
+        poly = D_1F800000[0];
+
+        poly[0] = (*scratch & 0xFFFFFF) | 0x0A000000;
+        poly[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
+        poly[2] = vs_getRGB0(primPolyG4, 8, 8, 32);
+        poly[3] = x0 | (160 << 16);
+        poly[4] = vs_getRGB888(64, 48, 102);
+        poly[5] = (x1 + 80) | (160 << 16);
+        poly[6] = vs_getRGB888(8, 8, 32);
+        poly[7] = x0 | (171 << 16);
+        poly[8] = vs_getRGB888(64, 48, 102);
+        poly[9] = (x1 + 80) | (171 << 16);
+        poly[10] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
+
+        *scratch = ((u_long)poly << 8) >> 8;
+        D_1F800000[0] = poly + 11;
+
+        vs_battle_addTile(
+            scratch, vs_getRGB0(primTile, 0, 0, 0), x0 | (162 << 16), vs_getWH(82, 11));
     }
 }
 
-void vs_mainmenu_renderButtonUiBackground(int x, int y, int w, int h)
+void vs_mainmenu_renderButtonBackground(int x, int y, int w, int h)
 {
     int i;
     u_long* var_t2 = D_1F800000[0];
@@ -710,26 +722,28 @@ void vs_mainmenu_renderButtonUiBackground(int x, int y, int w, int h)
     for (i = 0; i < h; ++i) {
         var_t2[0] = vs_getTag(u_long[6], temp_v1[0]);
         var_t2[1] = vs_getTpage(0, 0, 0, 0, ditheringOn);
-        var_t2[2] = vs_getRGB0(primLineG2, 0x40, 0x38, 0x20);
+        var_t2[2] = vs_getRGB0(primLineG2, 64, 56, 32);
         var_t2[3] = ((x & 0xFFFF) | ((y + i) << 0x10));
         var_t2[4] = vs_getRGB888(16, 16, 8);
-        var_t2[5] = ((((x + w) - i) & 0xFFFF) | ((y + i) << 0x10));
-        var_t2[6] = vs_getTpage(0, 0, 0, 0, ditheringOff);
+        var_t2[5] = vs_getXY_2((x + w) - i, y + i);
+        var_t2[6] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
         temp_v1[0] = (((u_long)var_t2 << 8) >> 8);
         var_t2 += 7;
     }
+
     D_1F800000[0] = var_t2;
 }
 
-void func_80100414(int arg0, int arg1)
+void vs_mainMenu_showBackground(int otOffset, int brightness)
 {
-    if (arg0 > 0) {
-        D_800F4E90 |= 2;
+    if (otOffset > 0) {
+        vs_battle_lowerScreenUiState |= 2;
     } else {
-        D_800F4E90 &= 1;
+        vs_battle_lowerScreenUiState &= 1;
     }
-    D_801022DE = arg0;
-    D_801022E0 = arg1;
+
+    D_801022DE = otOffset;
+    _backgroundBrightness = brightness;
 }
 
 void vs_mainMenu_unpackMenubg(u_int* buf)
@@ -743,7 +757,9 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
     u_int* temp_t1 = data + 0x200;
 
     for (i = 0, var_a2 = 0; i < 0x1780;) {
+
         u_int temp_a0 = temp_t1[i++];
+
         for (var_v1 = temp_a0 & 0xFFFF; var_v1 != 0; --var_v1) {
             buf[var_a2++] = 0;
         }
@@ -765,7 +781,7 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
     }
 
     vs_battle_renderImage(vs_getXY(672, 256), buf, vs_getWH(96, 240));
-    func_80100414(-4, 0x80);
+    vs_mainMenu_showBackground(-4, 128);
 }
 
 char D_801023D0 = 0;
@@ -1127,12 +1143,10 @@ void func_80101118(int arg0)
 {
     int var_a0;
     int temp_s4;
-    int var_s3;
-    u_long* temp_s2;
     u_long* temp_v0;
 
-    var_s3 = 0;
-    temp_s2 = D_1F800000[1] + D_801022DE;
+    int var_s3 = 0;
+    u_long* before = D_1F800000[1] + D_801022DE;
 
     if (vs_main_frameBuf == 0) {
         var_s3 = 0x140;
@@ -1142,26 +1156,27 @@ void func_80101118(int arg0)
     temp_s4 = arg0 == 0x80;
 
     if (temp_s4 != 0) {
-        arg0 = D_801022E0;
+        arg0 = _backgroundBrightness;
         var_a0 = arg0;
     } else {
         arg0 = arg0 | 0x100;
         var_a0 = arg0;
     }
-    temp_v0 = vs_battle_setSprite(var_a0, 0x100, 0xF00040, temp_s2);
+
+    temp_v0 = vs_battle_setSprite(var_a0, 0x100, 0xF00040, before);
     temp_v0[1] = 0xE10000BC;
     temp_v0[4] = 0x38F00000;
 
-    temp_v0 = vs_battle_setSprite(arg0, 0, 0xF00100, temp_s2);
+    temp_v0 = vs_battle_setSprite(arg0, 0, 0xF00100, before);
     temp_v0[1] = 0xE10000BA;
     temp_v0[4] = 0x38F00000;
 
     if (temp_s4 == 0) {
         int new_var = 0x120;
         arg0 = 0x180 - arg0;
-        vs_battle_setSprite(arg0, 0, 0xF00100, temp_s2)[1] =
+        vs_battle_setSprite(arg0, 0, 0xF00100, before)[1] =
             (((u_int)var_s3 >> 6) | new_var | 0xE1000000);
-        vs_battle_setSprite(arg0, 0x100, 0xF00040, temp_s2)[1] =
+        vs_battle_setSprite(arg0, 0x100, 0xF00040, before)[1] =
             (((var_s3 + 0x100) >> 6) | new_var | 0xE1000000);
     }
 }
@@ -1365,7 +1380,7 @@ void func_8010154C(vs_battle_menuItem_t* arg0)
         D_1F800000[0] = var_s2;
 
         if (temp_fp == 0) {
-            func_800CCCB8(temp_s7, 0x60000000,
+            vs_battle_addTile(temp_s7, 0x60000000,
                 ((var_s5 + 2) & 0xFFFF) | ((var_s5 >> 0x10) << 0x10), sp10 | 0x20000);
         }
 
@@ -1674,7 +1689,7 @@ void func_80101F38(void)
     if (vs_battle_menuItems != 0) {
         _renderMenuItems();
     }
-    func_80100164();
+    _renderAbilityCost();
     vs_mainMenu_drawClassAffinityType(0);
     vs_mainMenu_renderEquipStats(0);
     vs_mainMenu_renderDpPpBars(0);

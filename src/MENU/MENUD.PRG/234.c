@@ -1024,12 +1024,15 @@ int _gripNavigation(int arg0)
                              .grips[vs_menuD_containerData->indices.grips[D_80109A3C] - 1]
                              .gemSlots
                          + 0x30);
-        vs_mainMenu_renderMenuRowIcon(0x116, 0x100, 0x20);
-        vs_battle_renderTextRaw(D_80109954, 0x240118, NULL);
+
+        vs_mainMenu_renderMenuRowIcon(mainMenuIconGem | (1 << 8), 256, 32);
+        vs_battle_renderTextRaw(D_80109954, vs_getXY(280, 36), NULL);
         break;
+
     case 3:
         return vs_mainmenu_ready();
     }
+
     return 0;
 }
 
@@ -3292,8 +3295,8 @@ int vs_menuD_exec(u_char* arg0)
     if (D_80109A80 != 0) {
         int s3;
         i = 0x10 - i;
-        vs_mainmenu_renderButtonUiBackground(i, 0x26, 0x90, 0xA);
-        vs_mainmenu_renderButtonUiBackground(i, 0x36, 0x48, 0xA);
+        vs_mainmenu_renderButtonBackground(i, 0x26, 0x90, 0xA);
+        vs_mainmenu_renderButtonBackground(i, 0x36, 0x48, 0xA);
         temp_s0 = i - 8;
         vs_mainmenu_renderButton(buttonIdSquare, temp_s0, 0x24, NULL);
         vs_mainmenu_renderButton(buttonIdTriangle, i + 0x40, 0x24, NULL);

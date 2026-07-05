@@ -155,8 +155,8 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     D_1F800000[0] = prim;
 
     if (fadeEffect == 0) {
-        func_800CCCB8(before, 0x60000000, ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10),
-            w | 0x20000);
+        vs_battle_addTile(before, 0x60000000,
+            ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10), w | 0x20000);
     }
 
     if (animState != 0) {
@@ -320,7 +320,7 @@ int vs_menu9_exec(u_char* state)
 
         if (_selectedRow != 0) {
 
-            func_80100414(-4, 0x80);
+            vs_mainMenu_showBackground(-4, 0x80);
             func_800CB654(0);
 
             D_800EB9B0 = 0;
@@ -551,7 +551,7 @@ int _menuInput(void)
 
     switch (_menuState) {
     case init:
-        func_80100414(0x7FF, 0x80);
+        vs_mainMenu_showBackground(2047, 128);
 
         ++_menuState;
         break;

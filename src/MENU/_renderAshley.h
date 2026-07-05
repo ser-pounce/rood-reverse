@@ -129,7 +129,7 @@ static void _renderAshley(int mode)
             camera->farClip = 0x1000;
 
             func_8007ACB0();
-            func_80100414(0x7FE, 0x80);
+            vs_mainMenu_showBackground(2046, 128);
             func_800F9A24(0);
         }
         break;
@@ -138,7 +138,7 @@ static void _renderAshley(int mode)
         if (render != 0) {
 
             func_800F9E0C();
-            func_80100414(-4, 0x80);
+            vs_mainMenu_showBackground(-4, 128);
             vs_battle_setProjectionDistance(projectionDistance);
 
             ((camera_t*)((void*)camera - 0x34))->viewMatrix = viewMatrixBackup;

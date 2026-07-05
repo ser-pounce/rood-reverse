@@ -208,7 +208,7 @@ static int _weaponArtsMenu(int typeCursorMem)
 
         isLastRow = remainingRows == 0;
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
-        vs_mainMenu_isLevelledSpell = 0;
+        vs_mainMenu_displaySkillCost = 0;
 
         if (selectedRow != menuSelectionConfirm) {
 

@@ -416,7 +416,7 @@ void vs_mainMenu_exec(int arg0)
 
                 if (selectedMenu == 5) {
 
-                    func_80100414(-2, 128);
+                    vs_mainMenu_showBackground(-2, 128);
 
                     menuItem->targetPosition0 = 320;
                 }
@@ -731,7 +731,7 @@ static void func_800FB3C8(int arg0)
 
         if (vs_mainMenu_equipmentStats[63] != 0) {
             if ((vs_mainMenu_enabledStatPages == 7) && (statPage != 2)) {
-                i = func_800FFE20(var_s7[j] - sp24[j],
+                i = vs_mainMenu_renderIntWithThreshold(var_s7[j] - sp24[j],
                     ((arg0 + 0xA4) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), 0, temp_s4);
                 if (var_s7[j] > sp24[j]) {
                     vs_battle_renderTextRawColor("#+", i + 1, 0x804020, temp_s4);
@@ -774,14 +774,14 @@ static void func_800FB3C8(int arg0)
                     var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), i, temp_s4);
             }
         } else {
-            func_800FFE20(
+            vs_mainMenu_renderIntWithThreshold(
                 var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), sp20[j], temp_s4);
         }
         vs_battle_renderTextRawColor(D_80102068[j + (statPage * 8)],
             ((arg0 + 0x40) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), i, temp_s4);
-        func_800CCCB8(temp_s4, 0x40D0E030, sp14 | ((var_s6 + 0x42) << 0x10),
+        vs_battle_addTile(temp_s4, 0x40D0E030, sp14 | ((var_s6 + 0x42) << 0x10),
             sp14 | ((var_s6 + 0x45) << 0x10));
-        func_800CCCB8(temp_s4, 0x40978918, sp14 | (0x400000 + var_s6 * 0x10000),
+        vs_battle_addTile(temp_s4, 0x40978918, sp14 | (0x400000 + var_s6 * 0x10000),
             sp14 | ((var_s6 + 0x47) << 0x10));
         j = (var_s7[j] * 0x18) / 100;
 
@@ -795,7 +795,7 @@ static void func_800FB3C8(int arg0)
         if (j >= 0) {
             for (i = 0; i < 4; ++i) {
                 temp_v0_2 = (var_s6 + i + 0x42) << 0x10;
-                func_800CCCB8(temp_s4, D_801020B4[i], sp14 | temp_v0_2,
+                vs_battle_addTile(temp_s4, D_801020B4[i], sp14 | temp_v0_2,
                     ((arg0 + j + 0x74) & 0xFFFF) | temp_v0_2);
                 if (j == (0x18 - i)) {
                     --j;
@@ -804,7 +804,7 @@ static void func_800FB3C8(int arg0)
         } else {
             for (i = 0; i < 4; ++i) {
                 temp_v0_3 = ((var_s6 - i) + 0x45) << 0x10;
-                func_800CCCB8(temp_s4, D_801020C4[i], sp14 | temp_v0_3,
+                vs_battle_addTile(temp_s4, D_801020C4[i], sp14 | temp_v0_3,
                     ((arg0 + j + 0x74) & 0xFFFF) | temp_v0_3);
                 if (j == (i - 0x18)) {
                     j = i - 0x17;
@@ -813,13 +813,13 @@ static void func_800FB3C8(int arg0)
         }
 
         for (j = 2; j < 6; ++j) {
-            func_800CCCB8(temp_s4, 0x40330500,
+            vs_battle_addTile(temp_s4, 0x40330500,
                 inline_fn(arg0, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
                 inline_fn(arg0, j, 0x8E) | ((var_s6 + j + 0x40) << 0x10));
         }
 
         for (j = 0; j < 8; ++j) {
-            func_800CCCB8(temp_s4, 0x405D3200,
+            vs_battle_addTile(temp_s4, 0x405D3200,
                 inline_fn(arg0, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
                 inline_fn(arg0, j, 0x91) | ((var_s6 + j + 0x40) << 0x10));
         }
@@ -844,7 +844,7 @@ static void func_800FB3C8(int arg0)
         func_800CCD00(0xE1000200, temp_s4);
     }
 
-    vs_mainmenu_renderButtonUiBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
+    vs_mainmenu_renderButtonBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
     vs_mainmenu_renderButton(buttonIdSquare, arg0 + 0x10, 0x2E, temp_s4 - 1);
 
     arg0 = (arg0 & 0xFFFF) + 0x22;
@@ -1066,14 +1066,16 @@ void vs_mainMenu_renderEquipStats(int animate)
         if (valuesKnown != 0) {
             int new_var2;
             stat = vs_mainMenu_strIntAgi[i];
-            func_800FFE20(stat, position + 28, vs_mainMenu_strIntAgi[i + 4], temp_s4);
+            vs_mainMenu_renderIntWithThreshold(
+                stat, position + 28, vs_mainMenu_strIntAgi[i + 4], temp_s4);
             new_var2 = stat + D_80102488[i + 4];
             stat += D_80102488[i];
             var_a3 = valuesKnown & 1;
             if (var_a3 != 0) {
                 var_a3 = D_80102498[i];
             }
-            func_800FFE20(stat + var_a3, position + 60, new_var2 + var_a3, temp_s4);
+            vs_mainMenu_renderIntWithThreshold(
+                stat + var_a3, position + 60, new_var2 + var_a3, temp_s4);
         } else {
             vs_battle_renderTextRaw("#??", position + 28, temp_s4);
             vs_battle_renderTextRaw("#??", position + 60, temp_s4);

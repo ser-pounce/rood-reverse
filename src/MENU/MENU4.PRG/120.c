@@ -2333,7 +2333,7 @@ int vs_menu4_exec(u_char* state)
         D_800EB9AE = 1;
 
         func_8008A4DC(0);
-        func_80100414(0x7FE, 0x80);
+        vs_mainMenu_showBackground(2046, 128);
 
         _drawBackgroundFirst = 0;
         _fadeScreen = 0;
@@ -2801,7 +2801,7 @@ int vs_menu4_exec(u_char* state)
         vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800F9E0C();
-        func_80100414(-2, 128);
+        vs_mainMenu_showBackground(-2, 128);
 
         D_800EB9AE = 0;
         animWait = 8;
@@ -2859,7 +2859,7 @@ int vs_menu4_exec(u_char* state)
 
         userInput = vs_battle_rowAnimationSteps[_animationIndex];
 
-        vs_mainmenu_renderButtonUiBackground(16 - userInput, 38, 88, 10);
+        vs_mainmenu_renderButtonBackground(16 - userInput, 38, 88, 10);
         vs_mainmenu_renderButton(buttonIdSquare, 8 - userInput, 36, 0);
         vs_battle_renderTextRawColor(
             "STATUS", ((0x1C - userInput) & 0xFFFF) | 0x260000, 0x404040 << var_s6, 0);

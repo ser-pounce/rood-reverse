@@ -336,7 +336,7 @@ extern u_long D_800F4CD0;
 extern char vs_battle_shortcutInvoked;
 extern char D_800F4E68;
 extern char D_800F4E69;
-extern char D_800F4E90;
+extern char vs_battle_lowerScreenUiState;
 extern _textBoxSelector_t textBoxSelector;
 extern int D_800F4ED4;
 extern short D_800F4ED8[8];
@@ -1547,7 +1547,7 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
         y = x >> 0x10;
         x &= 0xFFFF;
 
-        func_800CCCB8(scratch + 1, 0x60000000, vs_getXY_2(x + 2, y + 2), w | 0xC0000);
+        vs_battle_addTile(scratch + 1, 0x60000000, vs_getXY_2(x + 2, y + 2), w | 0xC0000);
 
         prim = *(void**)0x1F800000;
 
@@ -1929,7 +1929,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9BC = NULL;
     vs_battle_menuItems = 0;
     D_800EB9CE = 0;
-    D_800F4E90 = 0;
+    vs_battle_lowerScreenUiState = 0;
     D_800EB9AF = 0;
     D_800EB9CC = 0;
     D_800EB9CD = 0;
@@ -2271,9 +2271,9 @@ void func_800CB50C(void)
     }
 }
 
-void func_800CB550(void) { D_800F4E90 = 1; }
+void func_800CB550(void) { vs_battle_lowerScreenUiState = 1; }
 
-void func_800CB560(void) { D_800F4E90 = 0; }
+void func_800CB560(void) { vs_battle_lowerScreenUiState = 0; }
 
 char const D_80069998[] = "00:00:00";
 
@@ -2405,12 +2405,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC204);
 
 void func_800CC580(u_long* arg0, int arg1)
 {
-    func_800CCCB8(arg0, arg1 | 0xE3040000, (arg1 + 0x3F) | 0xE407FC00, arg1 | 0xE5080000);
+    vs_battle_addTile(
+        arg0, arg1 | 0xE3040000, (arg1 + 0x3F) | 0xE407FC00, arg1 | 0xE5080000);
 }
 
 void func_800CC5C0(u_long* arg0, int arg1)
 {
-    func_800CCCB8(
+    vs_battle_addTile(
         arg0, arg1 | 0xE3000000, (arg1 + 0x13F) | 0xE403BC00, arg1 | 0xE5000000);
 }
 
@@ -2467,17 +2468,15 @@ u_int vs_battle_keystreamBits(int value)
     return temp_a1 >> (32 - value);
 }
 
-void func_800CCCB8(u_long* arg0, int arg1, int arg2, int arg3)
+void vs_battle_addTile(u_long* arg0, int rgb0, int xy, int wh)
 {
-    u_long* temp_v1;
-
-    temp_v1 = D_1F800000[0];
-    temp_v1[0] = (int)((*arg0 & 0xFFFFFF) | 0x03000000);
-    temp_v1[1] = arg1;
-    temp_v1[2] = arg2;
-    temp_v1[3] = arg3;
-    *arg0 = ((u_long)temp_v1 << 8) >> 8;
-    D_1F800000[0] = temp_v1 + 4;
+    u_long* prim = D_1F800000[0];
+    prim[0] = (int)((*arg0 & 0xFFFFFF) | 0x03000000);
+    prim[1] = rgb0;
+    prim[2] = xy;
+    prim[3] = wh;
+    *arg0 = ((u_long)prim << 8) >> 8;
+    D_1F800000[0] = prim + 4;
 }
 
 void func_800CCD00(int arg0, u_long* arg1)

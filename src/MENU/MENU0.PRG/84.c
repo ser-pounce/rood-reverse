@@ -230,7 +230,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_isLevelledSpell = 0;
+            vs_mainMenu_displaySkillCost = 0;
             if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
                 selectedRow = -2;
             }
@@ -246,7 +246,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                         && (vs_main_skills[selectedRow + 1].unlocked)) {
                         vs_mainMenu_flyoutMenuRightAndHoistSelection(
                             D_800F4EE8.cursorMemories[14], 2);
-                        vs_mainMenu_isLevelledSpell = 1;
+                        vs_mainMenu_displaySkillCost = 1;
                         state = levelledSpell;
                     }
                 }
@@ -305,7 +305,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
         if (vs_main_buttonsPressed.all & PADRup) {
             vs_battle_playMenuLeaveSfx();
-            vs_mainMenu_isLevelledSpell = 0;
+            vs_mainMenu_displaySkillCost = 0;
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_dismissInformationBox();
             vs_mainMenu_setMenuCommand(menuActionNone);
@@ -323,7 +323,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         } else if (vs_main_buttonsPressed.all & PADRright) {
             if (vs_battle_getSkillFlags(0, selectedRow + i) == 0) {
                 vs_battle_playMenuSelectSfx();
-                vs_mainMenu_isLevelledSpell = 0;
+                vs_mainMenu_displaySkillCost = 0;
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
                 vs_mainMenu_setMenuCommand(menuActionNone);
@@ -501,7 +501,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_isLevelledSpell = 0;
+            vs_mainMenu_displaySkillCost = 0;
             if ((vs_battle_shortcutInvoked != 0) && (selectedRow == -1)) {
                 selectedRow = -2;
             }
@@ -602,7 +602,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_isLevelledSpell = 0;
+            vs_mainMenu_displaySkillCost = 0;
             if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
                 selectedRow = -2;
             }
@@ -700,7 +700,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_isLevelledSpell = 0;
+            vs_mainMenu_displaySkillCost = 0;
             if ((vs_battle_shortcutInvoked != 0) && (selectedRow == -1)) {
                 selectedRow = -2;
             }

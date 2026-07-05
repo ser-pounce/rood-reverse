@@ -797,8 +797,7 @@ loop_1:
         ++rowCount;
         availableActions[rowCount] = sortItems;
 
-        vs_mainMenu_addMenuActions(
-            rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
+        vs_mainMenu_addMenuActions(rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
 
         state = processAction;
         break;
@@ -806,8 +805,7 @@ loop_1:
 
     case processAction:
 #ifdef _ITEMMENU
-        vs_mainMenu_printInformation(
-            vs_mainMenu_getSelectedAction(), vs_mainMenu_actionMenuState);
+        vs_mainMenu_printInformation(vs_mainMenu_getSelectedAction(), vs_mainMenu_actionMenuState);
 #else
         row = vs_mainMenu_getSelectedAction();
         vs_mainMenu_printInformation(row, vs_mainMenu_actionMenuState);

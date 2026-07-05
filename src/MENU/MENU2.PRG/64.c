@@ -267,7 +267,7 @@ static int _abilityMenu(void)
         break;
 
     case abilityMenu:
-        vs_mainMenu_isLevelledSpell = 0;
+        vs_mainMenu_displaySkillCost = 0;
         selectedAbility = _highlightedAbility + _firstAbility;
         previousFirstAbility = _firstAbility;
 

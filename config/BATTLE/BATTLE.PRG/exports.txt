@@ -15,7 +15,7 @@ D_800F4594
 D_800F45E0
 D_800F49DC
 D_800F4E6B
-D_800F4E90
+vs_battle_lowerScreenUiState
 D_800F4E98
 D_800F4EA0
 D_800F4EE8
@@ -63,7 +63,7 @@ func_800B217C
 func_800B28A8
 func_800C930C
 func_800CB654
-func_800CCCB8
+vs_battle_addTile
 func_800CCD00
 vs_batle_statusIconTexOffsets
 vs_battle_actors

@@ -708,7 +708,7 @@ void func_80103E24(int arg0, int arg1)
     int temp_s4 = (D_800F4EE8.unk85[0x1B] - 1) & 7;
 
     if (arg0 == 4) {
-        func_801013F8(0);
+        vs_mainMenu_renderTabNavigation(0);
     }
 
     arg0 = (arg0 * 8) - 16;
@@ -1266,7 +1266,7 @@ int func_80105008(int arg0)
         vs_mainMenu_setMenuCommand(menuActionMenu);
     } else if (vs_mainmenu_ready() != 0) {
         vs_mainMenu_cursorColor = vs_mainMenu_selectedStatusViewElement != 9;
-        func_801013F8(1);
+        vs_mainMenu_renderTabNavigation(1);
         vs_mainMenu_renderStatusView();
     }
     return temp_v0;
@@ -2310,16 +2310,19 @@ void func_801071D8(int arg0)
     int temp_v0_2;
     int i;
 
-    while (D_801023D0 < 16) {
-        func_80100A5C();
+    while (vs_mainMenu_itemsListRow < 16) {
+        vs_mainMenu_renderItemsList();
     }
 
     for (i = 20; i < 40; ++i) {
+
         vs_battle_menuItem_t* temp_v0 = vs_battle_getMenuItem(i);
+
         if (temp_v0->state == 2) {
             temp_v0->state = 1;
             temp_v0->x = temp_v0->targetPosition0;
         }
+
         temp_v0_2 = i ^ (D_800F4EE8.cursorMemories[(arg0 + 81) * 2] + 20);
         temp_v0->selected = temp_v0_2 == 0;
     }
@@ -2339,7 +2342,7 @@ int func_801072B0(int arg0)
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
         D_80109A7D = 5;
-        D_801023E3 = 0;
+        vs_mainMenu_freezeTabArrows = 0;
         D_80109A58 = 0;
         D_80109A5C = 0;
         return 0;
@@ -2452,7 +2455,7 @@ loop_1:
         temp_s1 = vs_main_allocHeapR(0x6C00);
         temp_s6 = (void*)temp_s1 + 0x6000;
         temp_s5 = (void*)temp_s1 + 0x6400;
-        D_801023E3 = 1;
+        vs_mainMenu_freezeTabArrows = 1;
 
         for (temp_s3 = 0; temp_s3 < 7; ++temp_s3) {
             _defragmentContainerItems(temp_s3, vs_menuD_containerData);
@@ -2513,7 +2516,7 @@ loop_1:
                 if (vs_main_buttonsPressed.all & 0x80) {
                     if ((temp_s0 != 0) && (vs_mainmenu_ready() != 0)) {
                         vs_battle_playMenuSelectSfx();
-                        temp_s0 = func_80100814();
+                        temp_s0 = vs_mainMenu_storeCursor();
                         vs_battle_getMenuItem(temp_s0 >> 8)->outsetIcon = 0;
                         func_80105008(var_s4 | ((temp_s0 + s6) * 0x10));
                         D_80109A7B = 0;
@@ -2541,7 +2544,7 @@ loop_1:
                     vs_main_settings.cursorMemory = temp_s3;
                     func_801071D8(var_s4);
                     D_80109A7D = 1;
-                    D_801023E3 = 0;
+                    vs_mainMenu_freezeTabArrows = 0;
                     vs_main_freeHeapR(temp_v0_7);
                     D_80109A68 = 6;
                 }
@@ -2594,7 +2597,7 @@ loop_1:
                 D_800F4EE8.unkA0[0] = (var_s4 + 1) & 7;
                 if (D_80109A68 == 2) {
                     if (D_80109A69 == 0) {
-                        func_80100814();
+                        vs_mainMenu_storeCursor();
                         vs_mainMenu_clearMenuExcept(0);
                     }
                     D_80109A68 = 3;
@@ -2981,7 +2984,7 @@ loop_1:
         break;
     case 14:
         if (vs_mainmenu_ready() != 0) {
-            func_80100814();
+            vs_mainMenu_storeCursor();
             func_801072B0(1);
             D_80109A68 = 0xF;
         }
@@ -3219,7 +3222,7 @@ int vs_menuD_exec(u_char* arg0)
                     break;
                 }
             }
-            vs_main_settings.unk0_4 = i == 7;
+            vs_main_settings.containerEmpty = i == 7;
             vs_mainMenu_clearMenuExcept(0);
             vs_battle_menuState.currentState = vs_battle_menuState.returnState;
             vs_battle_menuState.returnState = D_80109A74 + 2;

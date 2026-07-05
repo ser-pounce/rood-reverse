@@ -680,7 +680,7 @@ static int _itemStatusDispatcher(int itemInfo)
 
         vs_mainMenu_cursorColor = vs_mainMenu_selectedStatusViewElement != 9;
 
-        func_801013F8(1);
+        vs_mainMenu_renderTabNavigation(1);
         vs_mainMenu_renderStatusView();
     }
 

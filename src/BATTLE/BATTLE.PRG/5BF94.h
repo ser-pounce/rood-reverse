@@ -24,9 +24,9 @@ enum vs_battle_warlockSpellIds_e {
 };
 
 enum vs_battle_menuItemfadeEffect {
-    menuItem_fadeEffect_none,
-    menuItem_fadeEffect_fadeTop,
-    menuItem_fadeEffect_fadeBottom
+    menuItem_fadeNone,
+    menuItem_fadeTop,
+    menuItem_fadeBottom
 };
 
 enum vs_battle_menuItemState {

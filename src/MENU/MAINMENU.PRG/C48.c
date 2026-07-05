@@ -471,7 +471,7 @@ void vs_mainMenu_exec(int arg0)
     }
 
     if ((submenuReturn == 0) || (func_800FAA5C(menuState->currentState) == 0)) {
-        func_80101F38();
+        vs_mainMenu_renderScreen();
     }
 }
 
@@ -654,7 +654,7 @@ void func_800FAEBC(int arg0)
         return;
     }
 
-    func_80101F38();
+    vs_mainMenu_renderScreen();
 
     return;
 }

@@ -1306,7 +1306,7 @@ int vs_menu3_exec(u_char* state)
             case 1:
                 _equipMenu(1);
 
-                D_801023E3 = 0;
+                vs_mainMenu_freezeTabArrows = 0;
                 *state = equip;
 
                 break;
@@ -1468,7 +1468,8 @@ int vs_menu3_exec(u_char* state)
         vs_mainMenu_dismissInformationBox();
         vs_mainMenu_setMenuCommand(menuActionNone);
 
-        if ((D_801022D8 == 0) && vs_mainMenu_ensureItemTextUnloaded()) {
+        if ((vs_mainMenu_backgroundFadeStep == 0)
+            && vs_mainMenu_ensureItemTextUnloaded()) {
 
             D_800F4E98.unk2 = 8;
             temp_a1_2 = vs_battle_menuState.currentState;

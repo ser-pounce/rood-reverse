@@ -50,7 +50,7 @@ static void _renderItemCategory(int animationStep, int highlightSelected)
     int selectedCategory = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
     if (animationStep == 4) {
-        func_801013F8(0);
+        vs_mainMenu_renderTabNavigation(0);
     }
 
     animationStep = (animationStep * 8) - 16;

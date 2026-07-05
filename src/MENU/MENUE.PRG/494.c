@@ -189,7 +189,7 @@ int vs_menuE_exec(u_char* state)
         *state = exit;
         break;
     case exit:
-        if (D_801022D8 != 0) {
+        if (vs_mainMenu_backgroundFadeStep != 0) {
             break;
         }
         if (menuResult == 2) {

@@ -179,10 +179,19 @@ void vs_mainMenu_unpackMenubg(u_int* buf);
  */
 void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int rowTypes[]);
 
-int func_80100814(void);
+/**
+ * Stores the currently selected row for later cursor retrieval.
+ *
+ * @return Packed value:
+ *
+ * - Bits 0-7: The absolute row offset.
+ *
+ * - Bits 8-15: The row's identifer.
+ */
+int vs_mainMenu_storeCursor(void);
 
 /**
- * Retrieve row confirmed by the user.
+ * Retrieve absolute row confirmed by the user.
  */
 int vs_mainMenu_getConfirmedRow(void);
 
@@ -194,15 +203,38 @@ enum vs_mainMenu_menuSelection {
 
 /**
  * Retrieve currently selected row.
+ *
+ * @return The relative row, or -1 if menu cleanup is still ongoing.
  */
 int vs_mainmenu_getSelectedRow(void);
 
-void func_80100A5C(void);
-void func_80101118(int);
-int func_80101268(u_int, int, vs_battle_menuItem_t*, u_long*);
-void func_801013F8(int);
-void func_8010154C(vs_battle_menuItem_t* arg0);
-void func_80101F38(void);
+/**
+ * Renders the item rows and manages user input.
+ */
+void vs_mainMenu_renderItemsList(void);
+
+/**
+ * Draws `character` at the specified offset, intended for row labels.
+ *
+ * @return The x position immediately after the rendered character.
+ */
+int vs_mainMenu_renderRowLabel(
+    u_int character, int x, vs_battle_menuItem_t* menuItem, u_long* before);
+
+/**
+ * Renders the tab navigation arrows, e.g. in the inventory, container,
+ * or status menus.
+ *
+ * @param mode 0 == intended for item category navigation,
+ * renders arrows only. 1 == Renders the arrows at the top
+ * right of the screen, adding "L1/R1" prompts next to them.
+ */
+void vs_mainMenu_renderTabNavigation(int mode);
+
+/**
+ * Redraws the entire screen based on the current state.
+ */
+void vs_mainMenu_renderScreen(void);
 
 #define menuRowInfo(id, x, y) ((y) << 8) | ((x) << 4) | (id)
 
@@ -210,9 +242,9 @@ extern char vs_mainMenu_displaySkillCost;
 extern char vs_mainMenu_actionMenuState;
 extern char vs_mainMenu_cursorColor;
 extern char vs_mainMenu_hideMenu;
-extern int D_801022D8;
-extern char D_801023D0;
-extern char D_801023E3;
+extern int vs_mainMenu_backgroundFadeStep;
+extern char vs_mainMenu_itemsListRow;
+extern char vs_mainMenu_freezeTabArrows;
 extern char _rangeRiskData[8];
 extern short D_80102488[4];
 extern char D_80102490[8];
@@ -254,4 +286,4 @@ extern char vs_mainMenu_enabledStatPages;
 extern char vs_mainMenu_equipmentSubtype;
 extern char bss_4[18];
 extern struct textHeader_t _textHeaders[];
-extern char D_80102578;
+extern char vs_mainMenu_containerEmptyBackup;

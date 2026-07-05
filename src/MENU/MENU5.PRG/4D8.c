@@ -332,7 +332,7 @@ int vs_menu5_exec(u_char* state)
         break;
 
     case 9:
-        if (D_801022D8 == 0) {
+        if (vs_mainMenu_backgroundFadeStep == 0) {
 
             menuBgBackRects[0].x = 640;
             menuBgBackRects[0].y = 256;

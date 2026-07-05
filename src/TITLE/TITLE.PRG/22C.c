@@ -4550,7 +4550,7 @@ static void _initEnvironment(void)
     vs_main_settings.menuFlags = 0x2D8;
     vs_main_settings.information = 1;
     vs_main_settings.simpleMap = 3;
-    vs_main_settings.unk0_4 = 1;
+    vs_main_settings.containerEmpty = 1;
     vs_main_settings.abilityTimingDisplay = 1;
     vs_main_settings.cursorMemory = 1;
     if (vs_main_titleScreenCount == 0) {

@@ -176,8 +176,8 @@ static void _restoreItemMenu(int itemCategory)
 {
     int i;
 
-    while (D_801023D0 < 16) {
-        func_80100A5C();
+    while (vs_mainMenu_itemsListRow < 16) {
+        vs_mainMenu_renderItemsList();
     }
 
     for (i = 20; i < 40; ++i) {
@@ -285,7 +285,7 @@ loop_1:
         void* textBuf = vs_main_allocHeapR(64 * 96);
 #endif
 
-        D_801023E3 = 1;
+        vs_mainMenu_freezeTabArrows = 1;
 
         for (i = 0; i < 7; ++i) {
             vs_mainMenu_rebuildInventory(i);
@@ -411,7 +411,7 @@ loop_1:
 
                         vs_battle_playMenuSelectSfx();
 
-                        row = func_80100814();
+                        row = vs_mainMenu_storeCursor();
 
                         vs_battle_getMenuItem(row >> 8)->outsetIcon = 0;
                         _itemStatusDispatcher(itemCategory | ((row + offset) << 4));
@@ -458,7 +458,7 @@ loop_1:
                 _restoreItemMenu(itemCategory);
 
                 _statusCommandState = 1;
-                D_801023E3 = 0;
+                vs_mainMenu_freezeTabArrows = 0;
 
                 vs_main_freeHeapR(textBuf);
 
@@ -511,7 +511,7 @@ loop_1:
 
                 if (state == 2) {
                     if (noItems == 0) {
-                        func_80100814();
+                        vs_mainMenu_storeCursor();
                         vs_mainMenu_clearMenuExcept(3);
                     }
                     state = 3;
@@ -797,7 +797,8 @@ loop_1:
         ++rowCount;
         availableActions[rowCount] = sortItems;
 
-        vs_mainMenu_addMenuActions(rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
+        vs_mainMenu_addMenuActions(
+            rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
 
         state = processAction;
         break;
@@ -805,7 +806,8 @@ loop_1:
 
     case processAction:
 #ifdef _ITEMMENU
-        vs_mainMenu_printInformation(vs_mainMenu_getSelectedAction(), vs_mainMenu_actionMenuState);
+        vs_mainMenu_printInformation(
+            vs_mainMenu_getSelectedAction(), vs_mainMenu_actionMenuState);
 #else
         row = vs_mainMenu_getSelectedAction();
         vs_mainMenu_printInformation(row, vs_mainMenu_actionMenuState);

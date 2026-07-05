@@ -1737,9 +1737,9 @@ static int _equipmentDetailScreen(int row)
                 vs_mainMenu_cursorColor = 0;
                 _cursorAnimState = vs_mainMenu_renderCursor(
                     _cursorAnimState, vs_mainMenu_statusViewCursorPositions[9]);
-                D_801023E3 = 1;
+                vs_mainMenu_freezeTabArrows = 1;
 
-                func_801013F8(1);
+                vs_mainMenu_renderTabNavigation(1);
 
                 return 0;
             }
@@ -1868,9 +1868,9 @@ static int _equipmentDetailScreen(int row)
             return _selectedEquipmentRow + 1;
         }
 
-        D_801023E3 = 1;
+        vs_mainMenu_freezeTabArrows = 1;
 
-        func_801013F8(1);
+        vs_mainMenu_renderTabNavigation(1);
         break;
     }
 
@@ -2040,7 +2040,7 @@ static int _equipmentScreen(int element)
 
                 _initEquipmentScreen(i);
                 _switchCurrentActor(i + temp_s5);
-                func_80100814();
+                vs_mainMenu_storeCursor();
                 vs_mainMenu_clearMenuExcept(4);
 
                 _equipmentScreenState = waitChangeActor;

@@ -119,7 +119,7 @@ typedef struct vs_main_HeapHeader {
 
 typedef struct {
     u_char unk0_0 : 4;
-    u_char unk0_4 : 1;
+    u_char containerEmpty : 1;
     u_char abilityTimingDisplay : 1;
     u_char weaponStatChange : 1;
     u_char armorStatChange : 1;

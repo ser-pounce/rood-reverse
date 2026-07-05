@@ -119,7 +119,8 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
         if (var_s0 == vs_char_spacing) {
             i += *menuText++;
         } else {
-            i = func_80101268(var_s0 | (fadeEffect << 0x1F), i, menuItem, before);
+            i = vs_mainMenu_renderRowLabel(
+                var_s0 | (fadeEffect << 0x1F), i, menuItem, before);
         }
     }
 
@@ -339,7 +340,7 @@ int vs_menu9_exec(u_char* state)
         break;
 
     case 8:
-        if (D_801022D8 == 0) {
+        if (vs_mainMenu_backgroundFadeStep == 0) {
 
             if (_selectedRow == 2) {
                 vs_battle_menuState.currentState = 9;
@@ -1799,16 +1800,16 @@ void _renderTitleMenu(int animState)
         menuItem->gradientState = row->animationState;
 
         if ((i == 0) && (vs_battle_menu9CursorMemory.titlePage != 0)) {
-            menuItem->fadeEffect = menuItem_fadeEffect_fadeTop;
+            menuItem->fadeEffect = menuItem_fadeTop;
         }
 
         if ((i == 7) && (vs_battle_menu9CursorMemory.titlePage != 24)) {
-            menuItem->fadeEffect = menuItem_fadeEffect_fadeBottom;
+            menuItem->fadeEffect = menuItem_fadeBottom;
         }
 
         _renderTitleNo(row->x - 14, y, row->rowIndex, menuItem->fadeEffect & 1);
 
-        if ((menuItem->fadeEffect != menuItem_fadeEffect_none) && (animState == 8)) {
+        if ((menuItem->fadeEffect != menuItem_fadeNone) && (animState == 8)) {
             _renderFadedMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);
@@ -2028,11 +2029,11 @@ void _renderEnemyMenu(int animState)
         menuItem->gradientState = enemy->animationState;
 
         if ((i == 0) && (cursorMem->encyclopaediaPage != 0)) {
-            menuItem->fadeEffect = menuItem_fadeEffect_fadeTop;
+            menuItem->fadeEffect = menuItem_fadeTop;
         }
 
         if ((i == 7) && (cursorMem->encyclopaediaPage != 70)) {
-            menuItem->fadeEffect = menuItem_fadeEffect_fadeBottom;
+            menuItem->fadeEffect = menuItem_fadeBottom;
         }
 
         _renderEnemyNo(

@@ -3667,7 +3667,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
     switch (*state) {
     case init:
         vs_battle_playSfx10();
-        D_80102578 = ((*(u_int*)&vs_main_settings) >> 4) & 1;
+        vs_mainMenu_containerEmptyBackup = vs_main_settings.containerEmpty;
         vs_menu_inventoryStorage = vs_main_allocHeapR(sizeof *vs_menu_inventoryStorage);
         vs_battle_rMemzero(vs_menu_inventoryStorage, sizeof *vs_menu_inventoryStorage);
         func_800FBD80(16);
@@ -3829,15 +3829,12 @@ int vs_menu7_saveContainerMenu(u_char* state)
             *state = 13;
         }
         break;
-    case 13: {
-        char v0 = (*(int*)&vs_main_settings);
-        char v1 = D_80102578 & 1;
-        *(int*)&vs_main_settings = (*(int*)&vs_main_settings & ~0x10) | (v1 * 0x10);
+    case 13:
+        vs_main_settings.containerEmpty = vs_mainMenu_containerEmptyBackup;
         vs_battle_memcpy(&vs_main_inventory, vs_menu_inventoryStorage->unk0,
             sizeof vs_menu_inventoryStorage->unk0);
         vs_battle_memcpy(&vs_main_inventoryIndices, &vs_menu_inventoryStorage->unkF00,
             sizeof vs_menu_inventoryStorage->unkF00);
-    }
         /* fallthrough */
     case 14:
         func_8008A4DC(1);
@@ -3857,7 +3854,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         }
         break;
     case 16:
-        if ((vs_battle_dismissTextBox(7) == 0) && (D_801022D8 == 0)) {
+        if ((vs_battle_dismissTextBox(7) == 0) && (vs_mainMenu_backgroundFadeStep == 0)) {
             vs_main_freeHeapR(vs_menu_inventoryStorage);
             *state = init;
             return 1;
@@ -4041,7 +4038,7 @@ int vs_menu7_dataMenu(u_char* state)
 
     case 13:
     case 14:
-        if (D_801022D8 != 0) {
+        if (vs_mainMenu_backgroundFadeStep != 0) {
             break;
         }
         _shutdownMemcard();

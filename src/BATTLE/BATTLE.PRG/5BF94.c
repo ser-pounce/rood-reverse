@@ -1381,8 +1381,7 @@ int vs_battle_loadMenuPrg(int arg0)
 
         if (D_800F4FDB != 0) {
             if (vs_battle_shortcutInvoked == 5) {
-
-                func_800FAEBC(1);
+                vs_mainMenu_miscItemsShortcutMenu(1);
                 return 0;
             }
             return 1;
@@ -1595,13 +1594,16 @@ void func_800C97BC(void)
 
     if (temp_s1 != 0x3F) {
         if (vs_battle_loadMenuPrg(0) != 0) {
+
             if (vs_battle_shortcutInvoked == 5) {
-                func_800FAEBC(0);
+                vs_mainMenu_miscItemsShortcutMenu(0);
                 return;
             }
+
             vs_mainMenu_exec(var_s0);
             return;
         }
+
         if (temp_s1 == 0) {
             miscIndex = func_800C930C(0);
             if (miscIndex != 0) {
@@ -1956,7 +1958,7 @@ void func_800CAB40(void)
     D_800F4E98.unk0 = 1;
     if (vs_battle_shortcutInvoked == 5) {
         vs_battle_menuState.currentState = 4;
-        func_800FAEBC(2);
+        vs_mainMenu_miscItemsShortcutMenu(2);
     } else {
         vs_battle_menuState.currentState = vs_battle_menuState.returnState;
         vs_battle_submenuStates[vs_battle_menuState.returnState & 0xF] =
@@ -2423,11 +2425,11 @@ int vs_battle_decreaseMiscCount(int miscId)
     int i;
 
     if (miscId < 0x143) {
-        D_800F5210 = 0;
+        vs_battle_miscItemInvoked = 0;
     }
 
     for (i = 0; i < 64; ++i) {
-        int miscIndex = (D_800F5210 + i) & 0x3F;
+        int miscIndex = (vs_battle_miscItemInvoked + i) & 0x3F;
         if (vs_main_inventory.misc[miscIndex].id == miscId) {
             int count = vs_main_inventory.misc[miscIndex].count - 1;
             vs_main_inventory.misc[miscIndex].count = count;

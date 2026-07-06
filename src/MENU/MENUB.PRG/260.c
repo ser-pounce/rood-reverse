@@ -1820,7 +1820,7 @@ int vs_menuB_exec(u_char* state)
     case 0:
 
         vs_battle_playSfx10();
-        func_800FBD80(16);
+        vs_mainMenu_populateBaseStats(16);
 
         for (i = 0; i < 7; ++i) {
             vs_mainMenu_rebuildInventory(i);

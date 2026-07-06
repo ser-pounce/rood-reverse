@@ -1188,7 +1188,7 @@ static int _renderLimbUi(int init)
             state = 3;
         } else {
             tempSelectedActor = _selectedActor - 1;
-            func_800FBD80(tempSelectedActor);
+            vs_mainMenu_populateBaseStats(tempSelectedActor);
             for (i = 0; i < 6; ++i) {
                 limbAnimSteps[i] = 12 + i;
             }
@@ -1999,7 +1999,7 @@ static int _equipmentScreen(int element)
 
         if (i != 0) {
 
-            func_800FBD80(_selectedActor + 15);
+            vs_mainMenu_populateBaseStats(_selectedActor + 15);
             vs_mainMenu_clearMenuExcept(4);
 
             if (i < 0) {

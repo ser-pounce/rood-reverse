@@ -1245,4 +1245,4 @@ D_800F4FDB = 0x800F4FDB;
 vs_battle_textBoxes = 0x800F4FE0; // size:0x180
 vs_battle_stringContext = 0x800F5168; // size:0x38
 vs_battle_menuState = 0x800F51C0; // size:8
-D_800F5210 = 0x800F5210;
+vs_battle_miscItemInvoked = 0x800F5210;

@@ -90,11 +90,18 @@ void func_800F9A78(int arg0)
     temp_s3->unk5B5 = temp_s2->unk5B5;
 }
 
+typedef struct {
+    u_int unk0_0 : 8;
+    u_int unk0_8 : 8;
+    u_int unk0_16 : 8;
+    u_int unk0_24 : 8;
+} D_800F4538_unk58_3;
+
 void func_800F9CB0(void)
 {
     D_800F4538_unk58_2 sp10;
     int new_var;
-    int sp18;
+    D_800F4538_unk58_3 sp18;
     D_800F4538_t* temp_s0;
     int i;
 
@@ -118,15 +125,10 @@ void func_800F9CB0(void)
     sp10.unk1 = -1;
     sp10.unk2 = -1;
 
-    // BUG: reads junk
-    sp18 &= 0xFFFFFF00;
-    sp18 |= 2;
-    sp18 &= 0xFFFF00FF;
-    sp18 |= 0x0000FE00;
-    new_var = 0x20000;
-    sp18 &= 0xFE02;
-    sp18 |= new_var;
-    sp18 |= 0x10000000;
+    sp18.unk0_0 = 2;
+    sp18.unk0_8 = 254;
+    sp18.unk0_16 = 2;
+    sp18.unk0_24 = 16;
 
     if (D_800F4538[16] == NULL) {
         func_8009F940(1, 1, (D_800F4538_unk58_2*)&sp18, &sp10);

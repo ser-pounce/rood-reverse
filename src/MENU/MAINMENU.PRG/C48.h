@@ -61,8 +61,18 @@ void vs_mainMenu_flyoutMenuRightAndHoistSelection(int row, int offset);
  */
 int vs_mainmenu_ready(void);
 
+/**
+ * Main entrypoint.
+ */
 void vs_mainMenu_exec(int);
-void func_800FAEBC(int);
+
+/**
+ * Invoked from the shortcut menu in BATTLE.PRG.
+ *
+ * @param initialize +ive to trigger initialization, if == 1
+ * then additionally prevent forced cursor memory.
+ */
+void vs_mainMenu_miscItemsShortcutMenu(int initialize);
 
 enum vs_mainMenu_statPageEnabled {
     statPageEnabledClass = 1 << 0,
@@ -80,7 +90,7 @@ void vs_mainMenu_updateStatPage(int arg0);
 void vs_mainMenu_drawClassAffinityType(int);
 void vs_mainMenu_setRangeRisk(int arg0, int arg1, int arg2, int arg3);
 void vs_mainMenu_setStrIntAgi(int, int, int, int);
-void func_800FBD80(int);
+void vs_mainMenu_populateBaseStats(int);
 void vs_mainMenu_renderEquipStats(int);
 void vs_mainMenu_setDpPp(int, int, int, int);
 

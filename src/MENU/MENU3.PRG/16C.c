@@ -1258,7 +1258,7 @@ int vs_menu3_exec(u_char* state)
     switch (*state) {
     case init:
         _toggleMenuUi(0);
-        func_800FBD80(16);
+        vs_mainMenu_populateBaseStats(16);
 
         _secondaryTitleAnimationStep = 0;
         _itemCategoryIconsAnimationStep = 0;

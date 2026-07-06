@@ -475,18 +475,20 @@ void vs_mainMenu_exec(int arg0)
     }
 }
 
-void func_800FAEBC(int arg0)
+void vs_mainMenu_miscItemsShortcutMenu(int initialize)
 {
+    enum state { init, waitTitle, initItemRows, waitForInput, quit };
+
 #pragma vsstring(start)
     static char misc[] = "MISC\00000|0xF8|";
 #pragma vsstring(end)
 
     static int _0 __attribute__((unused)); // Garbage, patched in MAINMENU_PRG.py
-    static char D_80102410[64];
-    static int D_80102450;
-    static char _func_800FAEBC_state;
-    static char _noItems;
-    static char D_80102456;
+    static char skills[64];
+    static int selectedRow;
+    static char state;
+    static char noItems;
+    static char noForceCursorMemory;
     static char _1 __attribute__((unused));
 
     int j;
@@ -497,19 +499,19 @@ void func_800FAEBC(int arg0)
     void* buf;
     vs_battle_menuItem_t* menuItem;
 
-    if (arg0 != 0) {
+    if (initialize != 0) {
         vs_mainMenu_initInformationBox();
 
-        if (arg0 & 1) {
-            D_80102456 = 1;
+        if (initialize & 1) {
+            noForceCursorMemory = 1;
         }
 
-        _func_800FAEBC_state = 0;
+        state = init;
         return;
     }
 
-    switch (_func_800FAEBC_state) {
-    case 0:
+    switch (state) {
+    case init:
         menuItem = vs_battle_setMenuItem(0, 320, 18, 140, 8,
             (char*)&vs_battle_menuStrings
                 [vs_battle_menuStrings[VS_menuStrings_INDEX_items]]);
@@ -517,13 +519,13 @@ void func_800FAEBC(int arg0)
         menuItem->selected = 1;
         menuItem->targetPosition0 = 180;
         menuItem->unselectable = (D_800F4EA0 & 7) != 0;
-        _func_800FAEBC_state = 1;
+        state = waitTitle;
 
         vs_mainMenu_loadItemText(1);
 
         break;
 
-    case 1:
+    case waitTitle:
         if (!vs_mainmenu_ready() || !vs_mainMenu_loadItemText(0)) {
             break;
         }
@@ -532,14 +534,14 @@ void func_800FAEBC(int arg0)
         menuItem->state = menuItemStateSlideX;
         menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
-        _func_800FAEBC_state = 2;
+        state = initItemRows;
         break;
 
-    case 2:
-        buf = vs_main_allocHeapR(0x1B00U);
+    case initItemRows:
+        buf = vs_main_allocHeapR(0x1B00);
         rowCount = 0;
 
-        vs_mainMenu_rebuildInventory(6);
+        vs_mainMenu_rebuildInventory(itemCategoryMisc);
 
         rowTypes = buf + 0x1800;
         menuText = buf + 0x1900;
@@ -568,26 +570,27 @@ void func_800FAEBC(int arg0)
                         }
                     }
                 }
-                D_80102410[i] = skill;
+
+                skills[i] = skill;
             }
 
             if ((D_800F4EA0 & 7) || (misc->id >= bronzeKey)
-                || (vs_battle_getSkillFlags(0, D_80102410[i]) & 2)) {
-                rowTypes[i] |= 1;
+                || (vs_battle_getSkillFlags(0, skills[i]) & 2)) {
+                rowTypes[i] |= rowTypeDisabled;
             }
         }
 
-        _noItems = rowCount == 0;
+        noItems = rowCount == 0;
 
-        if (_noItems != 0) {
+        if (noItems != 0) {
             vs_mainmenu_setInformationMessage(
                 (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noItemsInCategory]);
         } else {
 
             i = vs_main_settings.cursorMemory;
 
-            if (D_80102456 != 0) {
-                D_80102456 = 0;
+            if (noForceCursorMemory != 0) {
+                noForceCursorMemory = 0;
             } else {
                 vs_main_settings.cursorMemory = 1;
             }
@@ -600,11 +603,11 @@ void func_800FAEBC(int arg0)
 
         vs_main_freeHeapR(buf);
 
-        _func_800FAEBC_state = 3;
+        state = waitForInput;
         break;
 
-    case 3:
-        if (_noItems != 0) {
+    case waitForInput:
+        if (noItems) {
             if (vs_main_buttonsPressed.all & (PADRup | PADRright | PADRdown)) {
                 if (vs_main_buttonsPressed.all & PADRright) {
 
@@ -616,36 +619,37 @@ void func_800FAEBC(int arg0)
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                     vs_mainMenu_dismissInformationBox();
 
-                    D_80102450 = -1;
-                    _func_800FAEBC_state = 4;
+                    selectedRow = -1;
+                    state = quit;
                 }
             }
         } else {
-            D_80102450 = vs_mainmenu_getSelectedRow() + 1;
+            selectedRow = vs_mainmenu_getSelectedRow() + 1;
 
-            if (D_80102450 != 0) {
+            if (selectedRow != 0) {
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
 
-                if (D_80102450 > 0) {
-                    D_800F5210 = vs_main_inventoryIndices.misc[D_80102450 - 1] - 1;
-                    D_800F4E98.executeAbility.s16[0] = D_80102410[D_80102450 - 1];
+                if (selectedRow > 0) {
+                    vs_battle_miscItemInvoked =
+                        vs_main_inventoryIndices.misc[selectedRow - 1] - 1;
+                    D_800F4E98.executeAbility.s16[0] = skills[selectedRow - 1];
                     D_800F4E98.executeAbility.s16[1] =
-                        vs_main_inventory.misc[D_800F5210].id;
+                        vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
                 }
 
-                _func_800FAEBC_state = 4;
+                state = quit;
             }
         }
         break;
 
-    case 4:
+    case quit:
         if (!vs_mainmenu_ready() || !vs_mainMenu_ensureItemTextUnloaded()) {
             break;
         }
 
-        if (D_80102450 > 0) {
+        if (selectedRow > 0) {
             D_800F4E98.unk2 = 8;
         }
 
@@ -659,17 +663,24 @@ void func_800FAEBC(int arg0)
     return;
 }
 
-static inline int inline_fn(int a0, int a1, int a2) { return (a0 - (a1 - a2)) & 0xFFFF; }
+static inline int _subtract(int a0, int a1, int a2) { return (a0 - (a1 - a2)) & 0xFFFF; }
 
-static void func_800FB3C8(int arg0)
+/**
+ * Draws the class / affinity / type pages
+ */
+static void _renderStatPage(int xOffset)
 {
-    static char const* D_80102068[] = { "#HUMAN", "#BEAST", "#UNDEAD", "#PHANTOM",
+    static char const* statHeaders[] = { "#HUMAN", "#BEAST", "#UNDEAD", "#PHANTOM",
         "#DRAGON", "#EVIL", NULL, NULL, "#PHYSICAL", "#AIR", "#FIRE", "#EARTH", "#WATER",
         "#LIGHT", "#DARK", NULL, "#BLUNT", "#EDGED", "#PIERCING" };
-    static int D_801020B4[] = { 0x40817318, 0x40D0E030, 0x40D0E030, 0x40817318 };
-    static int D_801020C4[] = { 0x40693F6E, 0x409F78DC, 0x409F78DC, 0x40693F6E };
+    static int positiveStatColors[] = { vs_getRGB0(primLineF2, 24, 115, 129),
+        vs_getRGB0(primLineF2, 48, 224, 208), vs_getRGB0(primLineF2, 48, 224, 208),
+        vs_getRGB0(primLineF2, 24, 115, 129) };
+    static int negativeStatColors[] = { vs_getRGB0(primLineF2, 110, 63, 105),
+        vs_getRGB0(primLineF2, 220, 120, 159), vs_getRGB0(primLineF2, 220, 120, 159),
+        vs_getRGB0(primLineF2, 110, 63, 105) };
 #pragma vsstring(start)
-    static char D_801020D4[] = "|f0|CLASS|f0|/|f0|AFFINITY|f0|/|f0|TYPE";
+    static char pageHeader[] = "|f0|CLASS|f0|/|f0|AFFINITY|f0|/|f0|TYPE";
 #pragma vsstring(end)
 
     int statPage;
@@ -703,6 +714,7 @@ static void func_800FB3C8(int arg0)
         sp24 = &var_s7[0x30];
         sp18 = 0x60;
         break;
+
     case statPageAffinity:
         var_s7 = vs_mainMenu_equipmentStats + 16;
         sp20 = &var_s7[8];
@@ -715,6 +727,7 @@ static void func_800FB3C8(int arg0)
             }
         }
         break;
+
     case statPageType:
         var_s7 = vs_mainMenu_equipmentStats + 33;
         sp20 = var_s7;
@@ -722,23 +735,25 @@ static void func_800FB3C8(int arg0)
         break;
     }
 
-    for (var_s6 = 0; var_s6 < sp18; var_s6 += 0x10) {
+    for (var_s6 = 0; var_s6 < sp18; var_s6 += 16) {
 
-        sp14 = (arg0 + 0x74) & 0xFFFF;
-        sp28 = (arg0 + 0x58) & 0xFFFF;
+        sp14 = (xOffset + 116) & 0xFFFF;
+        sp28 = (xOffset + 88) & 0xFFFF;
 
         j = var_s6 >> 4;
 
-        if (vs_mainMenu_equipmentStats[63] != 0) {
-            if ((vs_mainMenu_enabledStatPages == 7) && (statPage != 2)) {
-                i = vs_mainMenu_renderIntWithThreshold(var_s7[j] - sp24[j],
-                    ((arg0 + 0xA4) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), 0, temp_s4);
-                if (var_s7[j] > sp24[j]) {
-                    vs_battle_renderTextRawColor("#+", i + 1, 0x804020, temp_s4);
-                }
-                if (var_s7[j] == sp24[j]) {
-                    vs_battle_renderTextRawColor("#*", i + 1, 0x808080, temp_s4);
-                }
+        if ((vs_mainMenu_equipmentStats[63] != 0)
+            && ((vs_mainMenu_enabledStatPages == 7) && (statPage != 2))) {
+
+            i = vs_mainMenu_renderIntWithThreshold(var_s7[j] - sp24[j],
+                ((xOffset + 0xA4) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), 0, temp_s4);
+
+            if (var_s7[j] > sp24[j]) {
+                vs_battle_renderTextRawColor("#+", i + 1, 0x804020, temp_s4);
+            }
+
+            if (var_s7[j] == sp24[j]) {
+                vs_battle_renderTextRawColor("#*", i + 1, 0x808080, temp_s4);
             }
         }
 
@@ -777,54 +792,64 @@ static void func_800FB3C8(int arg0)
             vs_mainMenu_renderIntWithThreshold(
                 var_s7[j], sp28 | (0x400000 + var_s6 * 0x10000), sp20[j], temp_s4);
         }
-        vs_battle_renderTextRawColor(D_80102068[j + (statPage * 8)],
-            ((arg0 + 0x40) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), i, temp_s4);
+
+        vs_battle_renderTextRawColor(statHeaders[j + (statPage * 8)],
+            ((xOffset + 0x40) & 0xFFFF) | (0x400000 + var_s6 * 0x10000), i, temp_s4);
         vs_battle_addTile(temp_s4, 0x40D0E030, sp14 | ((var_s6 + 0x42) << 0x10),
             sp14 | ((var_s6 + 0x45) << 0x10));
         vs_battle_addTile(temp_s4, 0x40978918, sp14 | (0x400000 + var_s6 * 0x10000),
             sp14 | ((var_s6 + 0x47) << 0x10));
-        j = (var_s7[j] * 0x18) / 100;
 
-        if (j > 0x18) {
-            j = 0x18;
+        j = (var_s7[j] * 24) / 100;
+
+        if (j > 24) {
+            j = 24;
         }
-        if (j < -0x18) {
-            j = -0x18;
+
+        if (j < -24) {
+            j = -24;
         }
 
         if (j >= 0) {
             for (i = 0; i < 4; ++i) {
-                temp_v0_2 = (var_s6 + i + 0x42) << 0x10;
-                vs_battle_addTile(temp_s4, D_801020B4[i], sp14 | temp_v0_2,
-                    ((arg0 + j + 0x74) & 0xFFFF) | temp_v0_2);
-                if (j == (0x18 - i)) {
+
+                temp_v0_2 = (var_s6 + i + 66) << 0x10;
+
+                vs_battle_addTile(temp_s4, positiveStatColors[i], sp14 | temp_v0_2,
+                    ((xOffset + j + 116) & 0xFFFF) | temp_v0_2);
+
+                if (j == (24 - i)) {
                     --j;
                 }
             }
         } else {
             for (i = 0; i < 4; ++i) {
+
                 temp_v0_3 = ((var_s6 - i) + 0x45) << 0x10;
-                vs_battle_addTile(temp_s4, D_801020C4[i], sp14 | temp_v0_3,
-                    ((arg0 + j + 0x74) & 0xFFFF) | temp_v0_3);
-                if (j == (i - 0x18)) {
-                    j = i - 0x17;
+
+                vs_battle_addTile(temp_s4, negativeStatColors[i], sp14 | temp_v0_3,
+                    ((xOffset + j + 0x74) & 0xFFFF) | temp_v0_3);
+
+                if (j == (i - 24)) {
+                    j = i - 23;
                 }
             }
         }
 
         for (j = 2; j < 6; ++j) {
             vs_battle_addTile(temp_s4, 0x40330500,
-                inline_fn(arg0, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
-                inline_fn(arg0, j, 0x8E) | ((var_s6 + j + 0x40) << 0x10));
+                _subtract(xOffset, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
+                _subtract(xOffset, j, 0x8E) | ((var_s6 + j + 0x40) << 0x10));
         }
 
         for (j = 0; j < 8; ++j) {
             vs_battle_addTile(temp_s4, 0x405D3200,
-                inline_fn(arg0, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
-                inline_fn(arg0, j, 0x91) | ((var_s6 + j + 0x40) << 0x10));
+                _subtract(xOffset, j, 0x61) | ((var_s6 + j + 0x40) << 0x10),
+                _subtract(xOffset, j, 0x91) | ((var_s6 + j + 0x40) << 0x10));
         }
 
         func_800CCD00(0xE1000000, temp_s4);
+
         var_a2_2 = D_1F800000[0];
 
         for (j = 0; j < 11; ++j) {
@@ -833,47 +858,51 @@ static void func_800FB3C8(int arg0)
             temp_a0_2 = (temp_a0 + 0x40) << 0x10;
             var_a2_2[0] = (*temp_s4 & 0xFFFFFF) | 0x04000000;
             var_a2_2[1] = 0x50330500;
-            var_a2_2[2] = ((arg0 & 0xFFFF) | temp_a0_2);
+            var_a2_2[2] = ((xOffset & 0xFFFF) | temp_a0_2);
             var_a2_2[3] = 0x5D3200;
-            var_a2_2[4] = (((arg0 - temp_v1_3) & 0xFFFF) | temp_a0_2);
+            var_a2_2[4] = (((xOffset - temp_v1_3) & 0xFFFF) | temp_a0_2);
             *temp_s4 = ((u_long)var_a2_2 << 8) >> 8;
             var_a2_2 += 5;
         }
 
         D_1F800000[0] = var_a2_2;
+
         func_800CCD00(0xE1000200, temp_s4);
     }
 
-    vs_mainmenu_renderButtonBackground(arg0 + 0x18, 0x30, 0x87, 0xC);
-    vs_mainmenu_renderButton(buttonIdSquare, arg0 + 0x10, 0x2E, temp_s4 - 1);
+    vs_mainmenu_renderButtonBackground(xOffset + 24, 48, 135, 12);
+    vs_mainmenu_renderButton(buttonIdSquare, xOffset + 16, 46, temp_s4 - 1);
 
-    arg0 = (arg0 & 0xFFFF) + 0x22;
+    xOffset = (xOffset & 0xFFFF) + 0x22;
 
     for (j = 0; j < 3; ++j) {
-        D_801020D4[(0x180B01 >> (j * 8)) & 0xFF] =
+        pageHeader[(0x180B01 >> (j * 8)) & 0xFF] =
             ((vs_mainMenu_enabledStatPages >> j) & 1) ? 0 : 3;
     }
 
-    D_801020D4[(0x180B01 >> (vs_mainMenu_itemStatPage * 8)) & 0xFF] = 1;
+    pageHeader[(0x180B01 >> (vs_mainMenu_itemStatPage * 8)) & 0xFF] = 1;
 
     for (i_2 = 0; i_2 < 29; ++i_2) {
-        i = D_801020D4[i_2];
+        i = pageHeader[i_2];
         if (i == 0xFB) {
             ++i_2;
-            vs_battle_setFontStyle(D_801020D4[i_2] + 4);
+            vs_battle_setFontStyle(pageHeader[i_2] + 4);
         } else {
-            arg0 = vs_battle_printVariableWidthFontChar(i, arg0, 0x30, temp_s4 - 4);
+            xOffset = vs_battle_printVariableWidthFontChar(i, xOffset, 0x30, temp_s4 - 4);
         }
     }
 }
 
-static int func_800FBB64(int arg0)
+/**
+ * Cycles to the next available stat page.
+ */
+static int _getNextStatPage(int currentPage)
 {
     do {
-        arg0 = (arg0 + 1) & 3;
-    } while (!((vs_mainMenu_enabledStatPages >> arg0) & 1));
+        currentPage = (currentPage + 1) & 3;
+    } while (!((vs_mainMenu_enabledStatPages >> currentPage) & 1));
 
-    return arg0;
+    return currentPage;
 }
 
 void vs_mainMenu_updateStatPage(int enabledPage)
@@ -881,7 +910,7 @@ void vs_mainMenu_updateStatPage(int enabledPage)
     vs_mainMenu_enabledStatPages = enabledPage;
 
     if (!((enabledPage >> vs_mainMenu_itemStatPage) & 1)) {
-        vs_mainMenu_itemStatPage = func_800FBB64(vs_mainMenu_itemStatPage);
+        vs_mainMenu_itemStatPage = _getNextStatPage(vs_mainMenu_itemStatPage);
     }
 }
 
@@ -917,7 +946,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
         if (D_801020F8 != 0) {
             --D_801020F8;
         } else if (vs_main_buttonsPressed.all & PADRleft) {
-            statPage = func_800FBB64(statPage);
+            statPage = _getNextStatPage(statPage);
             if (statPage != vs_mainMenu_itemStatPage) {
                 vs_main_playSfxDefault(0x7E, 14);
             } else {
@@ -932,7 +961,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
     }
 
     if (var_s1 <= 0) {
-        func_800FB3C8(var_s1);
+        _renderStatPage(var_s1);
     }
 
     vs_mainMenu_itemStatPage = statPage;
@@ -957,10 +986,10 @@ void vs_mainMenu_setStrIntAgi(
     vs_battle_memcpy(&vs_mainMenu_strIntAgi[4], &vs_mainMenu_strIntAgi[0], 8);
 }
 
-void func_800FBD80(int arg0)
+void vs_mainMenu_populateBaseStats(int actorId)
 {
-    vs_battle_actor2* temp_t0 = vs_battle_actors[arg0 & 0xF]->unk3C;
-    D_80102488[3] = arg0 & 0xF;
+    vs_battle_actor2* temp_t0 = vs_battle_actors[actorId & 0xF]->unk3C;
+    D_80102488[3] = actorId & 0xF;
     D_80102498[0] = temp_t0->accessory.currentStr;
     D_80102498[1] = temp_t0->accessory.currentInt;
     D_80102498[2] = temp_t0->accessory.currentAgility;
@@ -972,13 +1001,15 @@ void func_800FBD80(int arg0)
     vs_mainMenu_equipmentSubtype = 0;
     D_80102488[6] = temp_t0->totalAgility;
 
-    if (arg0 < 16) {
+    if (actorId < 16) {
         int i;
+
         for (i = 0; i < 3; ++i) {
             D_80102488[i] -= D_80102488[4 + i];
         }
+
         vs_mainMenu_setStrIntAgi(temp_t0->totalStrength, temp_t0->totalIntelligence,
-            temp_t0->totalAgility, temp_t0->isAnalyzed | (arg0 == 0));
+            temp_t0->totalAgility, temp_t0->isAnalyzed | (actorId == 0));
         vs_battle_rMemzero(&D_80102490, 8);
     }
 }

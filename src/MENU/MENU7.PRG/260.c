@@ -3670,7 +3670,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         vs_mainMenu_containerEmptyBackup = vs_main_settings.containerEmpty;
         vs_menu_inventoryStorage = vs_main_allocHeapR(sizeof *vs_menu_inventoryStorage);
         vs_battle_rMemzero(vs_menu_inventoryStorage, sizeof *vs_menu_inventoryStorage);
-        func_800FBD80(16);
+        vs_mainMenu_populateBaseStats(16);
         vs_battle_initInformationTextBox(1);
         _promptYesNo(5);
         vs_mainmenu_setInformationMessage(

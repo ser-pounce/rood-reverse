@@ -8,6 +8,7 @@ vs_mainMenu_clearMenuExcept = 0x800FA8E0;
 vs_mainMenu_flyoutMenuRightAndHoistSelection = 0x800FA92C;
 vs_mainmenu_ready = 0x800FA9D0;
 vs_mainMenu_exec = 0x800FAAC8;
+vs_mainMenu_miscItemsShortcutMenu = 0x800FAEBC;
 vs_mainMenu_drawClassAffinityType = 0x800FBBD4;
 vs_mainMenu_setRangeRisk = 0x800FBD0C;
 vs_mainMenu_setStrIntAgi = 0x800FBD28;

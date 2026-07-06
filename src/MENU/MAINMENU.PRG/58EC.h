@@ -175,6 +175,10 @@ void vs_mainMenu_unpackMenubg(u_int* buf);
 
 #define menuRowInfo(id, x, y) ((y) << 8) | ((x) << 4) | (id)
 
+enum vs_mainMenu_rowTypeFlags {
+    rowTypeDisabled = 1,
+};
+
 /**
  * Initialises multiple menu rows
  *

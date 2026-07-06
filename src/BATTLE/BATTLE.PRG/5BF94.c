@@ -1562,7 +1562,6 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
         prim[8] = var_s2;
         prim[9] = (((x + w) & 0xFFFF) | ((y + 12) << 0x10));
         prim[10] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
-        ;
 
         *scratch = (u_int)((u_long)prim << 8) >> 8;
         *(void**)0x1F800000 = prim + 11;
@@ -2468,14 +2467,14 @@ u_int vs_battle_keystreamBits(int value)
     return temp_a1 >> (32 - value);
 }
 
-void vs_battle_addTile(u_long* arg0, int rgb0, int xy, int wh)
+void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh)
 {
     u_long* prim = D_1F800000[0];
-    prim[0] = (int)((*arg0 & 0xFFFFFF) | 0x03000000);
+    prim[0] = (int)((*before & 0xFFFFFF) | 0x03000000);
     prim[1] = rgb0;
     prim[2] = xy;
     prim[3] = wh;
-    *arg0 = ((u_long)prim << 8) >> 8;
+    *before = ((u_long)prim << 8) >> 8;
     D_1F800000[0] = prim + 4;
 }
 

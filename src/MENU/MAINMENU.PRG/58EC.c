@@ -173,7 +173,7 @@ static vs_battle_menuItem_t* _renderActionRow(int row, int x)
     menuItem->unselectable = flags & 1;
 
     if ((row == 0) && (_itemActionListOffset != 0)) {
-        menuItem->fadeEffect = menuItem_fadeTop;
+        menuItem->isScrollable = menuItem_scrollUp;
     }
 
     return menuItem;
@@ -203,7 +203,7 @@ void vs_mainMenu_renderItemActionMenu(void)
 
             if ((vs_mainMenu_actionMenuState + _itemActionListOffset)
                 < _itemActionCount) {
-                menuItem->fadeEffect = 2;
+                menuItem->isScrollable = 2;
             }
 
             vs_mainMenu_actionMenuState = 16;
@@ -348,7 +348,7 @@ void vs_mainMenu_renderItemActionMenu(void)
 
                         if (i == 7) {
                             if ((_itemActionListOffset + 7) < _itemActionCount) {
-                                menuItem->fadeEffect = 2;
+                                menuItem->isScrollable = 2;
                             }
                             break;
                         }
@@ -590,20 +590,24 @@ static void _renderFeatheredIcon(int direction, int xy, int uvClut, u_long* befo
     } while (i < 16);
 }
 
-static void func_800FFF38(int arg0, int arg1)
+/**
+ * Draws the material indicator character.
+ */
+static void _renderItemMaterial(int materialId, int xy)
 {
-    u_long* temp_a1;
-    int new_var2;
+    u_long* prim = vs_battle_setSpriteDefault(vs_getWH(7, 7), xy);
+    int uv = (((materialId / 3) * 8) + 216) | ((((materialId % 3) * 8) + 200) << 8);
 
-    temp_a1 = vs_battle_setSpriteDefault(0x70007, arg1);
-    new_var2 = (((arg0 / 3) * 8) + 0xD8) | ((((arg0 % 3) * 8) + 0xC8) << 8);
-    if (arg0 == 2) {
-        temp_a1[4] = new_var2 | 0x37FA0000;
+    if (materialId == 2) {
+        prim[4] = uv | (getClut(928, 223) << 16);
     } else {
-        temp_a1[4] = new_var2 | 0x37F90000;
+        prim[4] = uv | (getClut(912, 223) << 16);
     }
 }
 
+/**
+ * Draws the "Set" or "Eqp" icon.
+ */
 static void _renderOutsetIcon(int icon, int xy)
 {
     vs_battle_setSpriteDefault(vs_getWH(16, 16), xy)[4] =
@@ -902,7 +906,10 @@ int vs_mainMenu_getConfirmedRow(void) { return _selectedRow + _subMenuPage; }
 
 int vs_mainmenu_getSelectedRow(void) { return _itemsText != NULL ? -1 : _selectedRow; }
 
-static vs_battle_menuItem_t* func_801008F0(int row, int x)
+/**
+ * Sets the individual properties of a row based on its rowflags.
+ */
+static vs_battle_menuItem_t* _initItemRow(int row, int x)
 {
     int temp_v1;
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(row + (_subMenuRowInfo * 10),
@@ -921,7 +928,7 @@ static vs_battle_menuItem_t* func_801008F0(int row, int x)
     menuItem->rowIcon = (flags >> 26);
 
     if ((row == 0) && (_subMenuPage != 0)) {
-        menuItem->fadeEffect = 1;
+        menuItem->isScrollable = menuItem_scrollUp;
     }
 
     row = (flags >> 9) & 0x7F;
@@ -963,7 +970,7 @@ void vs_mainMenu_renderItemsList(void)
 
     if (vs_mainMenu_itemsListRow < 10) {
 
-        menuItem = func_801008F0(vs_mainMenu_itemsListRow, 320);
+        menuItem = _initItemRow(vs_mainMenu_itemsListRow, 320);
 
         menuItem->state = menuItemStateSlideX;
         ++vs_mainMenu_itemsListRow;
@@ -976,7 +983,7 @@ void vs_mainMenu_renderItemsList(void)
         if (vs_mainMenu_itemsListRow == (10 - _subMenuRowInfo)) {
 
             if ((vs_mainMenu_itemsListRow + _subMenuPage) < _subMenuRowCount) {
-                menuItem->fadeEffect = menuItem_fadeBottom;
+                menuItem->isScrollable = menuItem_scrollDown;
             }
 
             vs_mainMenu_itemsListRow = 16;
@@ -1129,7 +1136,7 @@ void vs_mainMenu_renderItemsList(void)
                     }
 
                     for (i = 0;;) {
-                        menuItem = func_801008F0(i, 194 - _menuRowYOffset);
+                        menuItem = _initItemRow(i, 194 - _menuRowYOffset);
                         menuItem->gradientState = gradientStates[i + _subMenuPage];
                         i += 1;
 
@@ -1139,7 +1146,7 @@ void vs_mainMenu_renderItemsList(void)
 
                         if (i == (10 - _subMenuRowInfo)) {
                             if ((i + _subMenuPage) < _subMenuRowCount) {
-                                menuItem->fadeEffect = 2;
+                                menuItem->isScrollable = menuItem_scrollDown;
                             }
                             break;
                         }
@@ -1298,138 +1305,150 @@ void vs_mainMenu_renderTabNavigation(int mode)
     vs_battle_setSpriteDefault(vs_getWH(16, 16), i + xy)[4] = clut | vs_getUV(16, 48);
 }
 
-static void func_8010154C(vs_battle_menuItem_t* arg0)
+/**
+ * Invoked on rows that have more rows above or below them.
+ */
+static void _renderScrollableRow(vs_battle_menuItem_t* menuItem)
 {
-    static char D_80102408 = 0;
-    static char D_80102409 = 0;
+    static char previousFrameBuf = 0;
+    static char animState = 0;
 
-    int sp10;
+    int wh;
     u_int sp14;
-    int sp18;
+    int gradientState;
     int backgroundWidth;
-    int temp_v1;
-    int temp_fp;
+    int scroll;
     int temp_v1_2;
     int i;
-    u_long* var_s2;
+    u_long* prim;
     int var_s3;
-    u_int var_s5;
+    u_int xy;
     int temp_a0;
-    u_int temp_v0_3;
-    u_long* temp_s7;
+    u_long* before;
 
-    char* ptr = &arg0->text[0];
+    char* ptr = &menuItem->text[0];
     sp14 = 0;
 
     if (vs_main_frameBuf == 0) {
-        sp14 = 0x140;
+        sp14 = 320;
     }
 
-    var_s5 = *(int*)&arg0->x;
-    temp_s7 = D_1F800000[2] + 2;
-    sp10 = arg0->w;
-    sp18 = arg0->gradientState;
-    temp_fp = arg0->fadeEffect - 1;
-    backgroundWidth = arg0->backgroundWidth;
+    xy = *(int*)&menuItem->x;
+    before = D_1F800000[2] + 2;
+    wh = menuItem->w;
+    gradientState = menuItem->gradientState;
+    scroll = menuItem->isScrollable - 1;
+    backgroundWidth = menuItem->backgroundWidth;
 
-    if (vs_main_frameBuf != D_80102408) {
-        ++D_80102409;
-        D_80102408 = vs_main_frameBuf;
-        if (D_80102409 >= 0xC) {
-            D_80102409 = 0;
+    if (vs_main_frameBuf != previousFrameBuf) {
+
+        ++animState;
+        previousFrameBuf = vs_main_frameBuf;
+
+        if (animState >= 12) {
+            animState = 0;
         }
     }
 
-    var_s3 = D_80102409 >> 2;
-    var_s3 = temp_fp == 0 ? var_s3 - 5 : 1 - var_s3;
+    var_s3 = animState >> 2;
+    var_s3 = scroll == 0 ? var_s3 - 5 : 1 - var_s3;
 
-    if (arg0->x == 0) {
+    if (menuItem->x == 0) {
+
         for (i = 32; i < 40; ++i) {
             if (vs_battle_getMenuItem(i)->state >= 2) {
                 break;
             }
         }
-        if (i == 0x28) {
-            var_s2 = temp_s7 - 2;
-            vs_battle_setSpriteDefaultTexPage(0x80, ((arg0->y + var_s3) << 0x10) | 0x7E,
-                0x100010, var_s2)[4] = ((temp_fp * 0x10) | 0x37F93000);
+
+        if (i == 40) {
+            prim = before - 2;
+            vs_battle_setSpriteDefaultTexPage(128, vs_getXY_2(126, menuItem->y + var_s3),
+                vs_getWH(16, 16), prim)[4] = vs_getUV0Clut(scroll * 16, 48, 912, 223);
         }
+
     } else {
+
         for (i = 0; i < 32; ++i) {
             if (vs_battle_getMenuItem(i)->state >= 2) {
                 break;
             }
         }
-        if (i == 0x20) {
-            vs_battle_setSpriteDefaultTexPage(0x80,
-                ((arg0->x - 0xE) & 0xFFFF) | ((arg0->y + var_s3) << 0x10), 0x100010,
-                temp_s7 - 2)[4] = (int)((temp_fp * 0x10) | 0x37F93000);
+
+        if (i == 32) {
+            vs_battle_setSpriteDefaultTexPage(128,
+                vs_getXY_2(menuItem->x - 14, menuItem->y + var_s3), vs_getWH(16, 16),
+                before - 2)[4] = vs_getUV0Clut(scroll * 16, 48, 912, 223);
         }
     }
 
-    temp_v1 = arg0->x;
+    i = menuItem->x + 6;
 
-    i = temp_v1 + 6;
-    if (arg0->rowIcon != 0) {
-        i = temp_v1 + 0x16;
+    if (menuItem->rowIcon != 0) {
+        i = menuItem->x + 22;
     }
 
     while ((var_s3 = *ptr++) != 0xFF) {
-        if (var_s3 == 0xFA) {
+        if (var_s3 == vs_char_spacing) {
             i += *ptr++;
         } else {
-            i = vs_mainMenu_renderRowLabel(var_s3 | (temp_fp << 0x1F), i, arg0, temp_s7);
+            i = vs_mainMenu_renderRowLabel(
+                var_s3 | (scroll << 0x1F), i, menuItem, before);
         }
     }
 
-    if (sp10 != 0) {
-        var_s2 = D_1F800000[0];
+    if (wh != 0) {
+        prim = D_1F800000[0];
 
         for (i = 0; i < 12; ++i) {
-            if (temp_fp == 0) {
-                var_s3 = i * 8 + 0x20;
+
+            if (scroll == 0) {
+                var_s3 = i * 8 + 32;
             } else {
-                var_s3 = 0x78 - i * 8;
+                var_s3 = 120 - i * 8;
             }
-            var_s2[0] = (*temp_s7 & 0xFFFFFF) | 0x06000000;
-            var_s2[1] = 0xE1000220;
-            var_s2[2] = (vs_battle_uiGradientStop(8 - sp18, backgroundWidth, var_s3)
-                         | 0x52000000);
-            var_s2[3] = var_s5;
-            var_s2[4] = vs_battle_uiGradientStop(sp18, backgroundWidth, var_s3);
-            var_s2[5] = ((var_s5 + sp10 - 1) & 0xFFFF) | ((var_s5 >> 0x10) << 0x10);
-            var_s2[6] = 0xE1000020;
-            temp_v0_3 = (u_long)var_s2 << 8;
-            var_s2 += 7;
-            *temp_s7 = temp_v0_3 >> 8;
-            var_s5 += 0x10000;
+
+            prim[0] = vs_getTag(u_long[6], *before);
+            prim[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+            prim[2] = vs_battle_uiGradientStop(8 - gradientState, backgroundWidth, var_s3)
+                    | 0x52000000;
+            prim[3] = xy;
+            prim[4] = vs_battle_uiGradientStop(gradientState, backgroundWidth, var_s3);
+            prim[5] = ((xy + wh - 1) & 0xFFFF) | ((xy >> 0x10) << 0x10);
+            prim[6] = vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+
+            *before = ((u_long)prim << 8) >> 8;
+            prim += 7;
+            xy += vs_getXY(0, 1);
         }
 
-        D_1F800000[0] = var_s2;
+        D_1F800000[0] = prim;
 
-        if (temp_fp == 0) {
-            vs_battle_addTile(temp_s7, 0x60000000,
-                ((var_s5 + 2) & 0xFFFF) | ((var_s5 >> 0x10) << 0x10), sp10 | 0x20000);
+        if (scroll == 0) {
+            vs_battle_addTile(before, vs_getRGB0(primTile, 0, 0, 0),
+                vs_getXY_2(xy + 2, xy >> 16), wh | vs_getWH(0, 2));
         }
 
-        if (sp18 != 0) {
-            arg0->gradientState = sp18 - 1;
+        if (gradientState != 0) {
+            menuItem->gradientState = gradientState - 1;
         }
 
-        var_s5 = var_s5 + 0xFFF40000;
+        xy = xy + 0xFFF40000;
 
-        sp10 |= 0x10000;
-        var_s3 = ((arg0->x < 0x80) ^ 1) << 7;
+        wh |= vs_getWH(0, 1);
+        var_s3 = ((menuItem->x < 0x80) ^ 1) << 7;
 
         for (i = 0; i < 12; ++i) {
-            var_s2 = vs_battle_setSprite(
-                temp_fp == 0 ? 0x78 - i * 8 : i * 8 + 0x20, var_s5, sp10, temp_s7);
-            temp_v1_2 = (var_s5 - var_s3);
-            temp_a0 = var_s5 >> 0x10;
-            var_s5 += 0x10000;
-            var_s2[1] = ((sp14 + var_s3) >> 6) | 0xE1000120;
-            var_s2[4] = temp_v1_2 & 0xFF;
-            var_s2[4] = var_s2[4] | (temp_a0 << 8);
+            prim = vs_battle_setSprite(
+                scroll == 0 ? 120 - i * 8 : i * 8 + 32, xy, wh, before);
+            temp_v1_2 = (xy - var_s3);
+            temp_a0 = xy >> 0x10;
+            xy += vs_getXY(0, 1);
+            prim[1] = ((sp14 + var_s3) >> 6)
+                    | vs_getTpage(0, 0, semiTransparencySubtract, semiTransparencyFull,
+                        ditheringOff);
+            prim[4] = temp_v1_2 & 0xFF;
+            prim[4] = prim[4] | (temp_a0 << 8);
         }
     }
 }
@@ -1441,11 +1460,10 @@ static void _renderMenuItems(void)
 
     for (i = 0; i < 40; ++i, ++menuItem) {
         int var_v1;
-        u_long* temp_s3;
+        u_long* before;
         int target;
         int origin;
         int temp_a1;
-        int temp_s0;
 
         int j = menuItem->state;
 
@@ -1614,9 +1632,10 @@ static void _renderMenuItems(void)
         }
 
         j = menuItem->max;
-        temp_s3 = D_1F800000[2] + 2;
+        before = D_1F800000[2] + 2;
 
         if (j != 0) {
+            int xy;
 
             if (menuItem->w == 126) {
                 var_v1 = menuItem->x + 116;
@@ -1626,17 +1645,17 @@ static void _renderMenuItems(void)
                 origin = var_v1 | ((menuItem->y + 1) << 0x10);
             }
 
-            vs_mainMenu_renderIntColorDefault(j, origin, temp_s3);
+            vs_mainMenu_renderIntColorDefault(j, origin, before);
 
-            temp_s0 = origin - 30;
+            xy = origin - 30;
 
-            vs_battle_renderTextRaw("/", temp_s0, temp_s3);
-            vs_mainMenu_renderIntColorDefault(menuItem->count, temp_s0, temp_s3);
+            vs_battle_renderTextRaw("/", xy, before);
+            vs_mainMenu_renderIntColorDefault(menuItem->count, xy, before);
 
             if ((menuItem->y == 18) && (menuItem->x < 96)) {
                 vs_mainMenu_renderIntColorDefault(
-                    menuItem->itemPage, origin + 32, temp_s3);
-                vs_battle_renderTextRaw("-", origin, temp_s3);
+                    menuItem->itemPage, origin + 32, before);
+                vs_battle_renderTextRaw("-", origin, before);
             }
 
         } else {
@@ -1646,14 +1665,14 @@ static void _renderMenuItems(void)
             if (j != 0) {
                 vs_battle_renderValue(0,
                     ((menuItem->x + menuItem->w) - 16) | ((menuItem->y + 3) << 0x10), j,
-                    temp_s3);
+                    before);
             }
         }
 
         if (menuItem->x < 320) {
 
-            if (menuItem->fadeEffect != 0) {
-                func_8010154C(menuItem);
+            if (menuItem->isScrollable != 0) {
+                _renderScrollableRow(menuItem);
             } else {
                 vs_battle_renderMenuItem(menuItem);
             }
@@ -1676,14 +1695,14 @@ static void _renderMenuItems(void)
 
         if (j != 0) {
             vs_mainMenu_renderMenuRowIcon(
-                (menuItem->fadeEffect << 0x10) | (menuItem->selected << 8) | j,
+                (menuItem->isScrollable << 0x10) | (menuItem->selected << 8) | j,
                 menuItem->x, menuItem->y - 2);
         }
 
         j = menuItem->material;
 
         if (j != 0) {
-            func_800FFF38(j - 1, (menuItem->x + 13) | ((menuItem->y - 3) << 0x10));
+            _renderItemMaterial(j - 1, (menuItem->x + 13) | ((menuItem->y - 3) << 0x10));
         }
     }
 }

@@ -1181,12 +1181,12 @@ static void _displayCurrentLoot(int x)
 
         if (i == 0) {
             if (_lootListOffset != 0) {
-                menuItem->fadeEffect = 1;
+                menuItem->isScrollable = 1;
             }
         }
 
         if ((i == 7) && (_lootListOffset != (_lootListCount - 8))) {
-            menuItem->fadeEffect = 2;
+            menuItem->isScrollable = 2;
         }
 
         temp_v1_3 = loot->state;

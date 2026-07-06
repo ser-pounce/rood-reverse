@@ -23,10 +23,10 @@ enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_drainMind = 0x5F
 };
 
-enum vs_battle_menuItemfadeEffect {
-    menuItem_fadeNone,
-    menuItem_fadeTop,
-    menuItem_fadeBottom
+enum vs_battle_menuItemScrollable {
+    menuItem_scrollNone,
+    menuItem_scrollUp,
+    menuItem_scrollDown
 };
 
 enum vs_battle_menuItemState {
@@ -44,7 +44,7 @@ typedef struct {
     u_char backgroundWidth;
     u_char _ __attribute__((unused));
     u_char gradientState;
-    u_char fadeEffect;
+    u_char isScrollable;
     u_char selected;
     u_char unselectable;
     u_char buttonId;
@@ -318,7 +318,7 @@ int vs_battle_toBCD(int value);
 int vs_battle_drawCursor(int animStep, int position);
 u_int vs_battle_keystreamBits(int value);
 int vs_battle_decreaseMiscCount(int);
-void vs_battle_addTile(u_long*, int, int, int);
+void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh);
 void func_800CCD00(int arg0, u_long* arg1);
 vs_battle_textBox* vs_battle_getTextBox(int arg0);
 void vs_battle_initTextBox(

@@ -483,7 +483,7 @@ static void _navigateItemsList(int arg0)
             ++_itemsListState;
             if (_itemsListState == 6) {
                 if (_itemCount >= 7) {
-                    menuItem->fadeEffect = 2;
+                    menuItem->isScrollable = 2;
                 }
                 _itemsListState = 16;
             }
@@ -617,7 +617,7 @@ static void _navigateItemsList(int arg0)
                         v1 = (itemInfo >> 9) & 0x7F;
 
                         if (v1 != 0) {
-                            menuItem->outsetIcon = v1 - 0x64;
+                            menuItem->outsetIcon = v1 - 100;
                         }
 
                         menuItem->material = (itemInfo >> 0x10) & 7;
@@ -629,14 +629,14 @@ static void _navigateItemsList(int arg0)
 
                         if (i == 6) {
                             if ((_itemsListWindow + 6) < _itemCount) {
-                                menuItem->fadeEffect = 2;
+                                menuItem->isScrollable = 2;
                             }
                             break;
                         }
                     }
 
                     if (_itemsListWindow != 0) {
-                        vs_battle_getMenuItem(21)->fadeEffect = 1;
+                        vs_battle_getMenuItem(21)->isScrollable = 1;
                     }
                 }
 

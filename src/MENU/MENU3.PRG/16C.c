@@ -143,7 +143,7 @@ static void _processEquipSubMenu(int hasSfx)
 
         if (state == 6) {
             if (_menuRowCount >= 7) {
-                menuItem->fadeEffect = 2;
+                menuItem->isScrollable = 2;
             }
 
             state = 16;
@@ -281,14 +281,14 @@ static void _processEquipSubMenu(int hasSfx)
                     }
                     if (i == 6) {
                         if ((_itemsFirstRow + 6) < _menuRowCount) {
-                            menuItem->fadeEffect = 2;
+                            menuItem->isScrollable = 2;
                         }
                         break;
                     }
                 }
 
                 if (_itemsFirstRow != 0) {
-                    vs_battle_getMenuItem(0x15)->fadeEffect = 1;
+                    vs_battle_getMenuItem(0x15)->isScrollable = 1;
                 }
             }
 

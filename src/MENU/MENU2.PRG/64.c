@@ -237,7 +237,7 @@ static int _abilityMenu(void)
         menuItem->targetPosition0 = 194;
 
         if ((_abilityMenuState == init) && (_firstAbility != 0)) {
-            menuItem->fadeEffect = 1;
+            menuItem->isScrollable = 1;
         }
 
         if (++_abilityMenuState == _abilityCount) {
@@ -246,7 +246,7 @@ static int _abilityMenu(void)
 
         if (_abilityMenuState == 8) {
             if ((_firstAbility + 8u) < _abilityCount) {
-                menuItem->fadeEffect = 2;
+                menuItem->isScrollable = 2;
             }
 
             _abilityMenuState = waitReady;
@@ -452,7 +452,7 @@ static int _abilityMenu(void)
                     menuItem->gradientState = abilityBuf[i + _firstAbility];
 
                     if ((i == 0) && (_firstAbility != 0)) {
-                        menuItem->fadeEffect = 1;
+                        menuItem->isScrollable = 1;
                     }
 
                     ++i;
@@ -461,7 +461,7 @@ static int _abilityMenu(void)
                         break;
                     } else if (i == 8) {
                         if ((_firstAbility + 8) < _abilityCount) {
-                            menuItem->fadeEffect = 2;
+                            menuItem->isScrollable = 2;
                         }
                         break;
                     }

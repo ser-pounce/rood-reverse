@@ -59,7 +59,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     int frameBuf;
     int animState;
     int bgWidth;
-    int fadeEffect;
+    int isScrollable;
     char temp_v1_2;
     int brightness;
     int var_s0;
@@ -83,7 +83,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     before = D_1F800000[2] + 8;
     w = menuItem->w;
     animState = menuItem->gradientState;
-    fadeEffect = menuItem->fadeEffect - 1;
+    isScrollable = menuItem->isScrollable - 1;
     bgWidth = menuItem->backgroundWidth;
 
     if (vs_main_frameBuf != _previousFrameBuf) {
@@ -102,7 +102,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 
         var_s0 = _navigationAnimState >> 2;
 
-        if (fadeEffect == 0) {
+        if (isScrollable == 0) {
             var_s0 = var_s0 - 5;
         } else {
             var_s0 = state - var_s0;
@@ -110,7 +110,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 
         vs_battle_setSpriteDefaultTexPage(128,
             (menuItem->x - 14) | ((menuItem->y + var_s0) << 0x10), vs_getWH(16, 16),
-            before - 1)[4] = (fadeEffect << 4) | vs_getUV0Clut(0, 48, 912, 223);
+            before - 1)[4] = (isScrollable << 4) | vs_getUV0Clut(0, 48, 912, 223);
     }
 
     i = menuItem->x + 6;
@@ -120,7 +120,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
             i += *menuText++;
         } else {
             i = vs_mainMenu_renderRowLabel(
-                var_s0 | (fadeEffect << 0x1F), i, menuItem, before);
+                var_s0 | (isScrollable << 0x1F), i, menuItem, before);
         }
     }
 
@@ -132,7 +132,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
 
-        if (fadeEffect == 0) {
+        if (isScrollable == 0) {
             var_s0 = s5 + 32;
         } else {
             var_s0 = s5;
@@ -155,7 +155,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 
     D_1F800000[0] = prim;
 
-    if (fadeEffect == 0) {
+    if (isScrollable == 0) {
         vs_battle_addTile(before, 0x60000000,
             ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10), w | 0x20000);
     }
@@ -170,7 +170,7 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 
     for (i = 0; i < 12; ++i) {
 
-        if (fadeEffect == 0) {
+        if (isScrollable == 0) {
             brightness = 120 - i * 8;
         } else {
             brightness = i * 8 + 32;
@@ -1800,16 +1800,16 @@ void _renderTitleMenu(int animState)
         menuItem->gradientState = row->animationState;
 
         if ((i == 0) && (vs_battle_menu9CursorMemory.titlePage != 0)) {
-            menuItem->fadeEffect = menuItem_fadeTop;
+            menuItem->isScrollable = menuItem_scrollUp;
         }
 
         if ((i == 7) && (vs_battle_menu9CursorMemory.titlePage != 24)) {
-            menuItem->fadeEffect = menuItem_fadeBottom;
+            menuItem->isScrollable = menuItem_scrollDown;
         }
 
-        _renderTitleNo(row->x - 14, y, row->rowIndex, menuItem->fadeEffect & 1);
+        _renderTitleNo(row->x - 14, y, row->rowIndex, menuItem->isScrollable & 1);
 
-        if ((menuItem->fadeEffect != menuItem_fadeNone) && (animState == 8)) {
+        if ((menuItem->isScrollable != menuItem_scrollNone) && (animState == 8)) {
             _renderFadedMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);
@@ -2029,17 +2029,17 @@ void _renderEnemyMenu(int animState)
         menuItem->gradientState = enemy->animationState;
 
         if ((i == 0) && (cursorMem->encyclopaediaPage != 0)) {
-            menuItem->fadeEffect = menuItem_fadeTop;
+            menuItem->isScrollable = menuItem_scrollUp;
         }
 
         if ((i == 7) && (cursorMem->encyclopaediaPage != 70)) {
-            menuItem->fadeEffect = menuItem_fadeBottom;
+            menuItem->isScrollable = menuItem_scrollDown;
         }
 
         _renderEnemyNo(
-            x - 14, y, cursorMem->encyclopaediaPage + i + 1, menuItem->fadeEffect & 1);
+            x - 14, y, cursorMem->encyclopaediaPage + i + 1, menuItem->isScrollable & 1);
 
-        if ((menuItem->fadeEffect != 0) && (animState == 8)) {
+        if ((menuItem->isScrollable != 0) && (animState == 8)) {
             _renderFadedMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);

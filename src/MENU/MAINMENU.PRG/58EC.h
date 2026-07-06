@@ -142,7 +142,7 @@ enum vs_mainMenu_icons { mainMenuIconGem = 22 };
  *
  * - Bit 8: Toggle low / high brightness
  *
- * - Bits 16-17: 1 == fade from top, 2 == fade from bottom
+ * - Bits 16-17: Scrollable indicator
  */
 void vs_mainMenu_renderMenuRowIcon(int icon, int x, int y);
 

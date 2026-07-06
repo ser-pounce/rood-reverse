@@ -404,7 +404,7 @@ void vs_mainMenu_exec(int arg0)
 
                 if (((selectedMenu - 4) < 2U) || (selectedMenu == 7)
                     || (selectedMenu == 9)) {
-                    func_800FFB68(1);
+                    vs_mainMenu_toggleBackgroundFade(1);
                 }
 
                 vs_mainMenu_setMenuCommand(menuActionMenu);
@@ -416,7 +416,7 @@ void vs_mainMenu_exec(int arg0)
 
                 if (selectedMenu == 5) {
 
-                    vs_mainMenu_showBackground(-2, 128);
+                    vs_mainMenu_setBackgroundRenderPriority(-2, 128);
 
                     menuItem->targetPosition0 = 320;
                 }

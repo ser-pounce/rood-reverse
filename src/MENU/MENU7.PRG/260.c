@@ -3683,7 +3683,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
             if (option >= 0) {
                 vs_battle_menuItem_t* menuItem;
                 _initMemcard(1);
-                func_800FFB68(1);
+                vs_mainMenu_toggleBackgroundFade(1);
                 vs_mainMenu_setMenuCommand(menuActionMenu);
                 menuItem = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
                     (char*)&_containerStrings[VS_container_OFFSET_container]);
@@ -3701,7 +3701,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
-            vs_mainMenu_showBackground(2046, 128);
+            vs_mainMenu_setBackgroundRenderPriority(2046, 128);
             _initFileMenu();
             if ((*(u_int*)&vs_main_settings) & 0x10) {
                 vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
@@ -3841,13 +3841,13 @@ int vs_menu7_saveContainerMenu(u_char* state)
         func_800CB654(0);
         D_800EB9B0 = 0;
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        vs_mainMenu_showBackground(-4, 0x80);
+        vs_mainMenu_setBackgroundRenderPriority(-4, 0x80);
         *state = 15;
         break;
     case 15:
         vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_dismissInformationBox();
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         if (vs_mainmenu_ready() != 0) {
             _shutdownMemcard();
             *state = 16;
@@ -4025,14 +4025,14 @@ int vs_menu7_dataMenu(u_char* state)
     case 11:
         vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_dismissInformationBox();
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         *state = 13;
         break;
 
     case 12:
         vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_dismissInformationBox();
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         *state = 14;
         break;
 

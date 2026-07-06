@@ -401,7 +401,7 @@ void vs_mainMenu_setStatsFromWeapon(int weaponIndex)
     }
 
     vs_mainMenu_equipmentSubtype = 1;
-    vs_mainMenu_currentUiItem = weaponIndex;
+    vs_mainMenu_currentStatusViewItem = weaponIndex;
 
     vs_mainMenu_updateStatPage(statPageEnabledAll);
 }
@@ -421,7 +421,7 @@ void vs_mainMenu_setStatsFromBlade(int bladeIndex)
     vs_mainMenu_setRangeRisk(blade->range.range, blade->cost, 0, 1);
 
     vs_mainMenu_equipmentSubtype = 2;
-    vs_mainMenu_currentUiItem = bladeIndex;
+    vs_mainMenu_currentStatusViewItem = bladeIndex;
 
     vs_mainMenu_updateStatPage(statPageEnabledClass | statPageEnabledAffinity);
 }
@@ -437,7 +437,7 @@ void vs_mainMenu_setStatsFromGrip(int gripIndex)
     vs_mainMenu_setStrIntAgi(grip->strength, grip->intelligence, grip->agility, 1);
 
     vs_mainMenu_equipmentSubtype = 4;
-    vs_mainMenu_currentUiItem = gripIndex;
+    vs_mainMenu_currentStatusViewItem = gripIndex;
 
     vs_mainMenu_updateStatPage(statPageEnabledType);
 }
@@ -478,7 +478,7 @@ void vs_mainMenu_setStatsFromShield(int shieldIndex)
     }
 
     vs_mainMenu_equipmentSubtype = 8;
-    vs_mainMenu_currentUiItem = shieldIndex;
+    vs_mainMenu_currentStatusViewItem = shieldIndex;
 
     vs_mainMenu_updateStatPage(statPageEnabledAll);
 }
@@ -525,7 +525,7 @@ void vs_mainMenu_setStatsFromArmor(int armorIndex)
         vs_mainMenu_equipmentSubtype = 16;
     }
 
-    vs_mainMenu_currentUiItem = armorIndex;
+    vs_mainMenu_currentStatusViewItem = armorIndex;
 
     vs_mainMenu_updateStatPage(statPageEnabledAll);
 }
@@ -544,7 +544,7 @@ void vs_mainMenu_setStatsFromGem(int gemIndex)
         temp_a2->strength, temp_a2->intelligence, temp_a2->agility, 1);
 
     vs_mainMenu_equipmentSubtype = 64;
-    vs_mainMenu_currentUiItem = gemIndex;
+    vs_mainMenu_currentStatusViewItem = gemIndex;
 
     vs_mainMenu_updateStatPage(statPageEnabledClass | statPageEnabledAffinity);
 }
@@ -564,7 +564,7 @@ static char* _weaponStatusView(int row)
     vs_main_inventoryWeapon* weapon;
 
     menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
-    weaponId = vs_mainMenu_currentUiItem;
+    weaponId = vs_mainMenu_currentStatusViewItem;
     weapon = &vs_mainMenu_weapons[weaponId - 1];
 
     switch (row) {
@@ -605,7 +605,7 @@ static char* _weaponStatusView(int row)
     }
 
     vs_mainMenu_equipmentSubtype = 1;
-    vs_mainMenu_currentUiItem = weaponId;
+    vs_mainMenu_currentStatusViewItem = weaponId;
 
     vs_battle_getMenuItem(row + 10)->selected = 1;
 
@@ -624,8 +624,8 @@ static char* _bladeStatusView(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setBladeRow(&vs_mainMenu_blades[vs_mainMenu_currentUiItem - 1], menuText,
-        &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setBladeRow(&vs_mainMenu_blades[vs_mainMenu_currentStatusViewItem - 1],
+        menuText, &rowType, vs_battle_stringBuf);
 
     // BUG: Returns stack temporary
     return menuText[1];
@@ -642,8 +642,8 @@ static char* _gripStatusView(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setGripRow(&vs_mainMenu_grips[vs_mainMenu_currentUiItem - 1], menuText,
-        &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setGripRow(&vs_mainMenu_grips[vs_mainMenu_currentStatusViewItem - 1],
+        menuText, &rowType, vs_battle_stringBuf);
 
     // BUG: Returns stack temporary
     return menuText[1];
@@ -664,8 +664,8 @@ static char* _shieldStatusView(int arg0)
     vs_main_inventoryShield* shield;
 
     menuText[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_noGems];
-    shield = &vs_mainMenu_shields[vs_mainMenu_currentUiItem - 1];
-    temp_s2 = vs_mainMenu_currentUiItem;
+    shield = &vs_mainMenu_shields[vs_mainMenu_currentStatusViewItem - 1];
+    temp_s2 = vs_mainMenu_currentStatusViewItem;
 
     if (arg0 == 0) {
         vs_mainMenu_setShieldRowFromInventory(
@@ -688,7 +688,7 @@ static char* _shieldStatusView(int arg0)
     }
 
     vs_mainMenu_equipmentSubtype = 8;
-    vs_mainMenu_currentUiItem = temp_s2;
+    vs_mainMenu_currentStatusViewItem = temp_s2;
 
     vs_battle_getMenuItem(arg0 + 10)->selected = 1;
 
@@ -708,7 +708,7 @@ static char* _armorStatusView(int arg0 __attribute__((unused)))
     int rowType;
 
     vs_mainMenu_setArmorRowFromInventory(
-        &vs_mainMenu_armor[vs_mainMenu_currentUiItem - 1], menuText, &rowType,
+        &vs_mainMenu_armor[vs_mainMenu_currentStatusViewItem - 1], menuText, &rowType,
         vs_battle_stringBuf);
 
     // BUG: Returns stack temporary
@@ -726,8 +726,8 @@ static char* _gemStatusView(int arg0 __attribute__((unused)))
     char* menuText[2];
     int rowType;
 
-    vs_mainMenu_setGemRow(&vs_mainMenu_gems[vs_mainMenu_currentUiItem - 1], menuText,
-        &rowType, vs_battle_stringBuf);
+    vs_mainMenu_setGemRow(&vs_mainMenu_gems[vs_mainMenu_currentStatusViewItem - 1],
+        menuText, &rowType, vs_battle_stringBuf);
 
     // BUG: Returns stack temporary
     return menuText[1];
@@ -784,19 +784,21 @@ static int _isUiElementReachable(int selectedElement)
     case 10:
     case 11:
     case 12:
-        if ((subType & 8) && (vs_mainMenu_currentUiItem != 0)) {
+        if ((subType & 8) && (vs_mainMenu_currentStatusViewItem != 0)) {
             var_a0 = (selectedElement - 10)
-                   < vs_mainMenu_shields[vs_mainMenu_currentUiItem - 1].base.gemSlots;
+                   < vs_mainMenu_shields[vs_mainMenu_currentStatusViewItem - 1]
+                         .base.gemSlots;
             break;
         }
         // Fallthrough
 
     case 13:
     case 14:
-        if ((subType & 1) && (vs_mainMenu_currentUiItem != 0)) {
+        if ((subType & 1) && (vs_mainMenu_currentStatusViewItem != 0)) {
             var_a0 = (selectedElement - 12)
                    < vs_mainMenu_grips
-                         [vs_mainMenu_weapons[vs_mainMenu_currentUiItem - 1].grip - 1]
+                         [vs_mainMenu_weapons[vs_mainMenu_currentStatusViewItem - 1].grip
+                             - 1]
                              .gemSlots;
         }
         break;
@@ -888,12 +890,12 @@ void vs_mainMenu_renderStatusView(void)
         }
     }
 
-    if (previousItem == vs_mainMenu_currentUiItem) {
+    if (previousItem == vs_mainMenu_currentStatusViewItem) {
         if (i != vs_mainMenu_selectedStatusViewElement) {
             vs_battle_playMenuChangeSfx();
         }
     } else {
-        previousItem = vs_mainMenu_currentUiItem;
+        previousItem = vs_mainMenu_currentStatusViewItem;
     }
 
     for (i = 11; i < 16; ++i) {
@@ -902,12 +904,12 @@ void vs_mainMenu_renderStatusView(void)
 
     if (vs_mainMenu_equipmentSubtype & 1) {
         vs_mainMenu_renderDpPpBars(11);
-        vs_mainMenu_setStatsFromWeapon(vs_mainMenu_currentUiItem);
+        vs_mainMenu_setStatsFromWeapon(vs_mainMenu_currentStatusViewItem);
     }
 
     if (vs_mainMenu_equipmentSubtype & 8) {
         vs_mainMenu_renderDpPpBars(11);
-        vs_mainMenu_setStatsFromShield(vs_mainMenu_currentUiItem);
+        vs_mainMenu_setStatsFromShield(vs_mainMenu_currentStatusViewItem);
     }
 
     if (vs_mainMenu_equipmentSubtype & 0x10) {

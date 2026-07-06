@@ -57,7 +57,12 @@ enum vs_mainMenu_menuCommands {
  */
 void vs_mainMenu_setMenuCommand(enum vs_mainMenu_menuCommands action);
 
-void func_800FFB68(int);
+/**
+ * Controls whether the background fades in or out.
+ *
+ * @param fadeState 0 == fade in, fade out otherwise.
+ */
+void vs_mainMenu_toggleBackgroundFade(int fadeState);
 
 /**
  * Removes the menu row.
@@ -155,16 +160,20 @@ void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disa
 void vs_mainmenu_renderButtonBackground(int x, int y, int w, int h);
 
 /**
- * Shows or hides the menu background.
+ * Sets the background rendering position within the OT.
  *
- * @param otOffset Seems to be the offset into the OT, positive values enable the bg.
+ * @param otOffset Generally small negative values when fading out (-2, -4),
+ * and large values when fading in (2046 / 2047). Positive values also disable
+ * the limb status indicator.
  */
-void vs_mainMenu_showBackground(int otOffset, int brightness);
+void vs_mainMenu_setBackgroundRenderPriority(int otOffset, int brightness);
 
 /**
  * Unpacks the RLE buffer and stores it in VRAM.
  */
 void vs_mainMenu_unpackMenubg(u_int* buf);
+
+#define menuRowInfo(id, x, y) ((y) << 8) | ((x) << 4) | (id)
 
 /**
  * Initialises multiple menu rows
@@ -236,23 +245,71 @@ void vs_mainMenu_renderTabNavigation(int mode);
  */
 void vs_mainMenu_renderScreen(void);
 
-#define menuRowInfo(id, x, y) ((y) << 8) | ((x) << 4) | (id)
-
+/**
+ * Controls whether the purple skill cost elements are rendered.
+ */
 extern char vs_mainMenu_displaySkillCost;
+
+/**
+ * Increments while appending actions to the command menu.
+ * Values of 16+ indicate that the menu has finished rendering.
+ */
 extern char vs_mainMenu_actionMenuState;
+
+/**
+ * 0 for regular orange cursor, 1 for teal.
+ */
 extern char vs_mainMenu_cursorColor;
+
+/**
+ * Setting to 1 disables rendering the menu rows on the right.
+ */
 extern char vs_mainMenu_hideMenu;
+
+/**
+ * Can be polled to determine whether the background is
+ * fully faded out or int.
+ */
 extern int vs_mainMenu_backgroundFadeStep;
+
+/**
+ * Increments while appending items to the items list.
+ * Values of 16+ indicate that the list has finished rendering.
+ */
 extern char vs_mainMenu_itemsListRow;
+
+/**
+ * Freezes the tab arrow animation and sets their color to teal.
+ */
 extern char vs_mainMenu_freezeTabArrows;
+
 extern char _rangeRiskData[8];
 extern short D_80102488[4];
+
+/**
+ * memzero'd but otherwise seems to be unused.
+ */
 extern char D_80102490[8];
+
 extern short D_80102498[4];
 extern char _menuActionsPageOffset;
-extern char vs_mainMenu_currentUiItem;
+
+/**
+ * Holds the ID of the item in the current status view.
+ */
+extern char vs_mainMenu_currentStatusViewItem;
+
 extern char bss_7[2];
+
+/**
+ * For whatever reason the text for MENUC is loaded with ITEMNAME and
+ * ITEMHELP and is available to all modules.
+ */
 extern u_short* vs_mainMenu_menu12Text;
+
+/**
+ * Stores the basic stats for display at the bottom right of the UI.
+ */
 extern short vs_mainMenu_strIntAgi[8];
 
 enum vs_mainMenu_statusUiIds {
@@ -268,6 +325,9 @@ enum vs_mainMenu_statusUiIds {
     statusUiAgi,
 };
 
+/**
+ * Holds the ID of the current cursor position on the status view.
+ */
 extern u_char vs_mainMenu_selectedStatusViewElement;
 
 enum vs_mainMenu_statPage {
@@ -277,13 +337,37 @@ enum vs_mainMenu_statPage {
     statPageNone,
 };
 
+/**
+ * Which stat page is currently active.
+ */
 extern char vs_mainMenu_itemStatPage;
 
 extern char bss_3[6];
+
+/**
+ * Holds the values for class / affinity / type
+ */
 extern short vs_mainMenu_equipmentStats[64];
+
+/**
+ * Exposes the text table imported from ITEMHELP.BIN
+ */
 extern u_short* vs_mainMenu_itemHelp;
+
+/**
+ * Controls which of the class / affinity / type pages are accessible.
+ */
 extern char vs_mainMenu_enabledStatPages;
+
+/**
+ * Flags that determine which of the UI elements shoud be rendered.
+ */
 extern char vs_mainMenu_equipmentSubtype;
+
 extern char bss_4[18];
 extern struct textHeader_t _textHeaders[];
+
+/**
+ * Purpose unclear, seems to be related to an unused game setting.
+ */
 extern char vs_mainMenu_containerEmptyBackup;

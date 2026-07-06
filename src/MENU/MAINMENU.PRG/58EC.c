@@ -35,7 +35,7 @@ char D_80102490[8];
 short D_80102498[4];
 
 char _menuActionsPageOffset;
-char vs_mainMenu_currentUiItem;
+char vs_mainMenu_currentStatusViewItem;
 char bss_7[2] __attribute__((unused));
 u_short* vs_mainMenu_menu12Text;
 short vs_mainMenu_strIntAgi[8];
@@ -398,8 +398,8 @@ char vs_mainMenu_displaySkillCost = 0;
 char vs_mainMenu_cursorColor = 0;
 char vs_mainMenu_hideMenu = 0;
 int vs_mainMenu_backgroundFadeStep = 0;
-char D_801022DC = 0;
-static short D_801022DE = -4;
+char _backgroundFadeState = 0;
+static short _backgroundOtOffset = -4;
 static short _backgroundBrightness = 128;
 static char _menuActionCurrent = 0;
 static char _menuActionNext = 0;
@@ -447,14 +447,14 @@ static void _renderMenuCommand(void)
     }
 }
 
-void func_800FFB68(int arg0)
+void vs_mainMenu_toggleBackgroundFade(int fadeState)
 {
-    if (arg0 != 0) {
-        D_801022DE = -4;
+    if (fadeState != 0) {
+        _backgroundOtOffset = -4;
         _backgroundBrightness = 128;
     }
 
-    D_801022DC = arg0;
+    _backgroundFadeState = fadeState;
 }
 
 void vs_mainMenu_deactivateMenuItem(int row)
@@ -734,7 +734,7 @@ void vs_mainmenu_renderButtonBackground(int x, int y, int w, int h)
     D_1F800000[0] = var_t2;
 }
 
-void vs_mainMenu_showBackground(int otOffset, int brightness)
+void vs_mainMenu_setBackgroundRenderPriority(int otOffset, int brightness)
 {
     if (otOffset > 0) {
         vs_battle_lowerScreenUiState |= 2;
@@ -742,7 +742,7 @@ void vs_mainMenu_showBackground(int otOffset, int brightness)
         vs_battle_lowerScreenUiState &= 1;
     }
 
-    D_801022DE = otOffset;
+    _backgroundOtOffset = otOffset;
     _backgroundBrightness = brightness;
 }
 
@@ -781,7 +781,7 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
     }
 
     vs_battle_renderImage(vs_getXY(672, 256), buf, vs_getWH(96, 240));
-    vs_mainMenu_showBackground(-4, 128);
+    vs_mainMenu_setBackgroundRenderPriority(-4, 128);
 }
 
 char vs_mainMenu_itemsListRow = 0;
@@ -1162,7 +1162,7 @@ void vs_mainMenu_renderItemsList(void)
  * Renders the background with optional transparency.
  *
  * @param brightness Passed as the fade step from 0-16, if < 16 the background
- * will be semitransparent.
+ * will blend with the previous screen.
  */
 static void _renderBackground(int brightness)
 {
@@ -1170,7 +1170,7 @@ static void _renderBackground(int brightness)
     u_long* prim;
 
     int uCoord = 0;
-    u_long* before = D_1F800000[1] + D_801022DE;
+    u_long* before = D_1F800000[1] + _backgroundOtOffset;
 
     if (vs_main_frameBuf == 0) {
         uCoord = 320;
@@ -1195,7 +1195,7 @@ static void _renderBackground(int brightness)
 
     if (!opaque) {
         int new_var = 288;
-        brightness = 384 - brightness;
+        brightness = (256 | 128) - brightness;
 
         vs_battle_setSprite(brightness, 0, vs_getWH(256, 240), before)[1] =
             (((u_int)uCoord >> 6) | new_var
@@ -1696,7 +1696,7 @@ void vs_mainMenu_renderScreen(void)
         vs_mainMenu_renderItemsList();
     }
 
-    if (D_801022DC != 0) {
+    if (_backgroundFadeState != 0) {
 
         fadeStep += 2;
 

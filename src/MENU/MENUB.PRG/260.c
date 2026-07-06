@@ -74,7 +74,7 @@ static int _topLevelMenuTransition(int category)
             break;
         }
 
-        func_800FFB68(1);
+        vs_mainMenu_toggleBackgroundFade(1);
         vs_mainMenu_setMenuCommand(menuActionMenu);
 
         menuItem = vs_battle_setMenuItem(3, 320, 18, 0x7E, 8,
@@ -138,7 +138,7 @@ static int _topLevelMenuTransition(int category)
         break;
 
     case 3:
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {

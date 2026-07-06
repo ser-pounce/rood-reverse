@@ -285,7 +285,7 @@ int vs_menu9_exec(u_char* state)
 
     switch (*state) {
     case init:
-        func_800FFB68(1);
+        vs_mainMenu_toggleBackgroundFade(1);
         initDelay = 8;
         _initDataComplete = 0;
         *state = initData;
@@ -321,7 +321,7 @@ int vs_menu9_exec(u_char* state)
 
         if (_selectedRow != 0) {
 
-            vs_mainMenu_showBackground(-4, 0x80);
+            vs_mainMenu_setBackgroundRenderPriority(-4, 128);
             func_800CB654(0);
 
             D_800EB9B0 = 0;
@@ -335,7 +335,7 @@ int vs_menu9_exec(u_char* state)
         break;
 
     case 7:
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         *state = 8;
         break;
 
@@ -552,7 +552,7 @@ int _menuInput(void)
 
     switch (_menuState) {
     case init:
-        vs_mainMenu_showBackground(2047, 128);
+        vs_mainMenu_setBackgroundRenderPriority(2047, 128);
 
         ++_menuState;
         break;

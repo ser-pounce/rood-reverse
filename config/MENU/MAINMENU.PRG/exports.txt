@@ -21,8 +21,8 @@ func_800FBD80
 vs_mainMenu_resetStatusViewCursor
 vs_mainMenu_renderStatusView
 vs_mainMenu_getSelectedAction
-func_800FFB68
-vs_mainMenu_showBackground
+vs_mainMenu_toggleBackgroundFade
+vs_mainMenu_setBackgroundRenderPriority
 vs_mainMenu_storeCursor
 vs_mainMenu_renderItemsList
 vs_mainMenu_renderRowLabel
@@ -31,7 +31,7 @@ vs_mainMenu_armor
 vs_mainMenu_blades
 vs_mainMenu_clearMenuExcept
 vs_mainMenu_copyItem
-vs_mainMenu_currentUiItem
+vs_mainMenu_currentStatusViewItem
 vs_mainMenu_deactivateMenuItem
 vs_mainMenu_dismissInformationBox
 vs_mainmenu_renderButton

@@ -332,7 +332,7 @@ static void _populateUiAccessory(int accessoryId)
     }
 
     vs_mainMenu_equipmentSubtype = 32;
-    vs_mainMenu_currentUiItem = accessoryId;
+    vs_mainMenu_currentStatusViewItem = accessoryId;
 
     vs_mainMenu_updateStatPage(7);
 }
@@ -1393,7 +1393,7 @@ int vs_menu3_exec(u_char* state)
 
     case 8:
         if (vs_battle_menuState.returnState != 0) {
-            vs_mainMenu_showBackground(-4, 128);
+            vs_mainMenu_setBackgroundRenderPriority(-4, 128);
             func_8008A4DC(1);
             _toggleMenuUi(0);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1419,7 +1419,7 @@ int vs_menu3_exec(u_char* state)
         break;
 
     case quit:
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
         vs_mainMenu_setMenuCommand(menuActionNone);
 
@@ -1446,7 +1446,7 @@ int vs_menu3_exec(u_char* state)
         break;
 
     case 11:
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
         vs_mainMenu_setMenuCommand(menuActionNone);
 
@@ -1464,7 +1464,7 @@ int vs_menu3_exec(u_char* state)
         break;
 
     case 12:
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
         vs_mainMenu_setMenuCommand(menuActionNone);
 

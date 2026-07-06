@@ -4313,7 +4313,7 @@ int vs_menuC_exec(u_char* state)
         for (i = 0; i < 7; ++i) {
             vs_mainMenu_rebuildInventory(i);
         }
-        vs_mainMenu_showBackground(2046, 128);
+        vs_mainMenu_setBackgroundRenderPriority(2046, 128);
         menuItem = vs_battle_getMenuItem(0);
         if ((menuItem->state != 1) || (menuItem->x != 180)) {
             _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);

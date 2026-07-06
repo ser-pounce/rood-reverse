@@ -2333,7 +2333,7 @@ int vs_menu4_exec(u_char* state)
         D_800EB9AE = 1;
 
         func_8008A4DC(0);
-        vs_mainMenu_showBackground(2046, 128);
+        vs_mainMenu_setBackgroundRenderPriority(2046, 128);
 
         _drawBackgroundFirst = 0;
         _fadeScreen = 0;
@@ -2801,7 +2801,7 @@ int vs_menu4_exec(u_char* state)
         vs_mainMenu_setMenuCommand(menuActionNone);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800F9E0C();
-        vs_mainMenu_showBackground(-2, 128);
+        vs_mainMenu_setBackgroundRenderPriority(-2, 128);
 
         D_800EB9AE = 0;
         animWait = 8;
@@ -2812,7 +2812,7 @@ int vs_menu4_exec(u_char* state)
     case quitToMenu:
         _renderLimbUi(0);
         _renderBasicStats();
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
 
         if (animWait <= 0) {
@@ -2828,7 +2828,7 @@ int vs_menu4_exec(u_char* state)
     case quitToBattle:
         _renderLimbUi(0);
         _renderBasicStats();
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
 
         if (animWait <= 0) {

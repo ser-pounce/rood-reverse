@@ -150,7 +150,7 @@ int vs_menuE_exec(u_char* state)
 
     switch (*state) {
     case init:
-        func_800FFB68(1);
+        vs_mainMenu_toggleBackgroundFade(1);
         D_8010522D = 8;
         isInit = 0;
         *state = initMenu;
@@ -176,7 +176,7 @@ int vs_menuE_exec(u_char* state)
         if (menuResult == 0) {
             break;
         }
-        vs_mainMenu_showBackground(-4, 128);
+        vs_mainMenu_setBackgroundRenderPriority(-4, 128);
         func_800CB654(0);
         D_800EB9B0 = 0;
         func_8008A4DC(1);
@@ -185,7 +185,7 @@ int vs_menuE_exec(u_char* state)
         *state = shutDown;
         break;
     case shutDown:
-        func_800FFB68(0);
+        vs_mainMenu_toggleBackgroundFade(0);
         *state = exit;
         break;
     case exit:
@@ -264,7 +264,7 @@ static int _showMenu(void)
 
     switch (_showMenuState) {
     case init:
-        vs_mainMenu_showBackground(2046, 128);
+        vs_mainMenu_setBackgroundRenderPriority(2046, 128);
         ++_showMenuState;
         break;
     case initMenu:

@@ -5,9 +5,6 @@ $(BUILD)/data/MENU/MENUD.PRG: LDLIBS += $(menuD_LDLIBS)
 $(BUILD)/data/MENU/MENUD.PRG: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
 $(BUILD)/data/MENU/MENUD.PRG $(BUILD)/data/MENU/MENUD.PRG.elf: LDSCRIPT := link.ld
-
-$(BUILD)/data/MENU/MENUD.PRG.elf: LDFLAGS += \
-	--retain-symbols-file=config/MENU/MENUD.PRG/exports.txt
 	
 $(BUILD)/src/MENU/MENUD.PRG/234.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MENUD.PRG/234.o: CC1VER := 2.8.1-psx

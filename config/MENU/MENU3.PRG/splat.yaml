@@ -13,7 +13,8 @@ options:
   auto_link_sections: [.rodata, .data, .bss]
 
 segments:
-  - start: 0x0
+  - name: MENU3.PRG
+    start: 0x0
     type: code
     vram: 0x80102800
     align: 4

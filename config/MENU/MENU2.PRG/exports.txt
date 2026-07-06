@@ -1,2 +1,0 @@
-vs_menu2_exec
-vs_menu2_skillUnlock

@@ -1,4 +1,0 @@
-vs_menuD_containerData
-vs_menuD_exec
-vs_menuD_initUiShield
-vs_menuD_initUiWeapon

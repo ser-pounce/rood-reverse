@@ -14,7 +14,8 @@ options:
   undefined_syms_auto_path: build/config/GIM/SCREFF2.PRG/undefined_syms_auto.txt
 
 segments:
-  - start: 0x0
+  - name: SCREFF2.PRG
+    start: 0x0
     type: code
     vram: 0x800F9800
     align: 4

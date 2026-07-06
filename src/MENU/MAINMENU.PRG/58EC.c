@@ -1513,6 +1513,7 @@ static void _renderMenuItems(void)
             if (origin == target) {
                 menuItem->state = 1;
             }
+
             break;
 
         case 3:

@@ -8,9 +8,6 @@ $(BUILD)/data/MENU/MAINMENU.PRG: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
 $(BUILD)/data/MENU/MAINMENU.PRG $(BUILD)/data/MENU/MAINMENU.PRG.elf: LDSCRIPT := link.ld
 
-$(BUILD)/data/MENU/MAINMENU.PRG.elf: LDFLAGS += \
-	--retain-symbols-file=config/MENU/MAINMENU.PRG/exports.txt
-
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: CC1VER := 2.8.1-psx
 $(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.o,224 278): CC1VER := 2.7.2-cdk

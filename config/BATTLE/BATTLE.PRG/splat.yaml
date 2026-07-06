@@ -15,7 +15,8 @@ options:
   undefined_syms_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_syms_auto.txt
 
 segments:
-  - start: 0x0
+  - name: BATTLE.PRG
+    start: 0x0
     type: code
     vram: 0x80068800
     align: 4

@@ -6,7 +6,6 @@ $(BUILD)/data/MENU/MENU9.PRG: LDFLAGS += \
 	--defsym=D_1F800000=0x1F800000
 
 $(BUILD)/data/MENU/MENU9.PRG.elf: LDFLAGS += \
-	--retain-symbols-file=config/MENU/MENU9.PRG/exports.txt \
 	--defsym=_toVsStringPercentAlias=0x80106D5C
 
 $(BUILD)/src/MENU/MENU9.PRG/%.o: ASFLAGS += -no-pad-sections

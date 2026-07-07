@@ -971,10 +971,10 @@ int _renderTimeAttackStart(void)
             vs_main_playSfxDefault(0x7E, 0x7C);
         }
 
-        func_8010459C(0xA0, 0x30, _screenTimer);
-        func_80104650(0xA0, 0x5C, _screenTimer - 0xF);
-        func_801046F8(0xA0, 0x78, _screenTimer - 0x1E);
-        func_801047D4(0xA0, 0x9C, _screenTimer - 0x2D);
+        func_8010459C(160, 48, _screenTimer);
+        func_80104650(160, 92, _screenTimer - 15);
+        func_801046F8(160, 120, _screenTimer - 30);
+        func_801047D4(160, 156, _screenTimer - 45);
 
         ++_screenTimer;
 
@@ -988,10 +988,10 @@ int _renderTimeAttackStart(void)
     } else if (D_801098A0 == 1) {
         --_screenTimer;
 
-        func_8010459C(0xA0, 0x30, _screenTimer);
-        func_80104650(0xA0, 0x5C, _screenTimer);
-        func_801046F8(0xA0, 0x78, _screenTimer);
-        func_801047D4(0xA0, 0x9C, _screenTimer);
+        func_8010459C(160, 48, _screenTimer);
+        func_80104650(160, 92, _screenTimer);
+        func_801046F8(160, 120, _screenTimer);
+        func_801047D4(160, 156, _screenTimer);
 
         if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer == 0)) {
             D_801098A0 = 2;
@@ -1980,15 +1980,6 @@ void func_801064D4(int arg0, int arg1, int arg2, int arg3)
     p[0] = poly;
 }
 
-static inline int _adjust(int v)
-{
-    if (v < 0) {
-        v += 7;
-    }
-
-    return v >> 3;
-}
-
 void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
 {
     POLY_GT4* poly;
@@ -2006,14 +1997,14 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
             D_801091D8[arg2].x + D_801091D8[arg2].w,
             D_801091D8[arg2].y + D_801091D8[arg2].h);
         if (arg3[3] < 8) {
-            setRGB0(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
-                _adjust(arg3[2] * arg3[3]));
-            setRGB1(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
-                _adjust(arg3[6] * arg3[3]));
-            setRGB2(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
-                _adjust(arg3[2] * arg3[3]));
-            setRGB3(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
-                _adjust(arg3[6] * arg3[3]));
+            setRGB0(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
+                (arg3[2] * arg3[3]) / 8);
+            setRGB1(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
+                (arg3[6] * arg3[3]) / 8);
+            setRGB2(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
+                (arg3[2] * arg3[3]) / 8);
+            setRGB3(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
+                (arg3[6] * arg3[3]) / 8);
         } else {
             setRGB0(poly, arg3[0], arg3[1], arg3[2]);
             setRGB1(poly, arg3[4], arg3[5], arg3[6]);
@@ -2039,13 +2030,10 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
     }
 }
 
-static inline int _adjust2(int v0, int v1)
+static inline int _adjust(int v0, int v1)
 {
-    int ret = (v0 * v1) + ((4 - v1) * 0xC0);
-    if (ret < 0) {
-        ret += 3;
-    }
-    return ret >> 2;
+    int ret = (v0 * v1) + ((4 - v1) * 192);
+    return ret / 4;
 }
 
 void func_80106A80(int arg0, int arg1, int arg2, char* arg3)
@@ -2066,34 +2054,34 @@ void func_80106A80(int arg0, int arg1, int arg2, char* arg3)
             D_801091D8[arg2].x + D_801091D8[arg2].w,
             D_801091D8[arg2].y + D_801091D8[arg2].h);
         if (arg3[3] < 8) {
-            setRGB0(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
-                _adjust(arg3[2] * arg3[3]));
-            setRGB1(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
-                _adjust(arg3[6] * arg3[3]));
-            setRGB2(poly, _adjust(arg3[0] * arg3[3]), _adjust(arg3[1] * arg3[3]),
-                _adjust(arg3[2] * arg3[3]));
-            setRGB3(poly, _adjust(arg3[4] * arg3[3]), _adjust(arg3[5] * arg3[3]),
-                _adjust(arg3[6] * arg3[3]));
+            setRGB0(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
+                (arg3[2] * arg3[3]) / 8);
+            setRGB1(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
+                (arg3[6] * arg3[3]) / 8);
+            setRGB2(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
+                (arg3[2] * arg3[3]) / 8);
+            setRGB3(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
+                (arg3[6] * arg3[3]) / 8);
         } else if (arg3[3] == 8) {
-            setRGB0(poly, 0xC0, 0xC0, 0xC0);
-            setRGB1(poly, 0xC0, 0xC0, 0xC0);
-            setRGB2(poly, 0xC0, 0xC0, 0xC0);
-            setRGB3(poly, 0xC0, 0xC0, 0xC0);
+            setRGB0(poly, 192, 192, 192);
+            setRGB1(poly, 192, 192, 192);
+            setRGB2(poly, 192, 192, 192);
+            setRGB3(poly, 192, 192, 192);
         } else if (arg3[3] == 9) {
-            setRGB0(poly, 0xE0, 0xE0, 0xE0);
-            setRGB1(poly, 0xE0, 0xE0, 0xE0);
-            setRGB2(poly, 0xE0, 0xE0, 0xE0);
-            setRGB3(poly, 0xE0, 0xE0, 0xE0);
+            setRGB0(poly, 224, 224, 224);
+            setRGB1(poly, 224, 224, 224);
+            setRGB2(poly, 224, 224, 224);
+            setRGB3(poly, 224, 224, 224);
         } else if (arg3[3] < 14) {
-            int temp_a0 = arg3[3] - 0xA;
-            setRGB0(poly, _adjust2(arg3[0], temp_a0), _adjust2(arg3[1], temp_a0),
-                _adjust2(arg3[2], temp_a0));
-            setRGB1(poly, _adjust2(arg3[4], temp_a0), _adjust2(arg3[5], temp_a0),
-                _adjust2(arg3[6], temp_a0));
-            setRGB2(poly, _adjust2(arg3[0], temp_a0), _adjust2(arg3[1], temp_a0),
-                _adjust2(arg3[2], temp_a0));
-            setRGB3(poly, _adjust2(arg3[4], temp_a0), _adjust2(arg3[5], temp_a0),
-                _adjust2(arg3[6], temp_a0));
+            int temp_a0 = arg3[3] - 10;
+            setRGB0(poly, _adjust(arg3[0], temp_a0), _adjust(arg3[1], temp_a0),
+                _adjust(arg3[2], temp_a0));
+            setRGB1(poly, _adjust(arg3[4], temp_a0), _adjust(arg3[5], temp_a0),
+                _adjust(arg3[6], temp_a0));
+            setRGB2(poly, _adjust(arg3[0], temp_a0), _adjust(arg3[1], temp_a0),
+                _adjust(arg3[2], temp_a0));
+            setRGB3(poly, _adjust(arg3[4], temp_a0), _adjust(arg3[5], temp_a0),
+                _adjust(arg3[6], temp_a0));
         } else {
             setRGB0(poly, arg3[0], arg3[1], arg3[2]);
             setRGB1(poly, arg3[4], arg3[5], arg3[6]);
@@ -2918,6 +2906,7 @@ void func_80108E48(void)
     int new_var = vs_main_scoredata.enemyKillStreak + 100000;
 
     vs_main_scoredata.enemyKillStreak = new_var - (vs_main_scoredata.bossHealCount * 100);
+
     if (vs_main_scoredata.enemyKillStreak > 999999999) {
         vs_main_scoredata.enemyKillStreak = 999999999;
     }

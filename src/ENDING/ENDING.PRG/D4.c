@@ -35,6 +35,7 @@ void func_8006B9DC(void);
 void func_8006BD78(void);
 void func_8006CF24(int, int, int, char*);
 
+extern u_short D_8006003A;
 extern int D_8006E3FC;
 extern int D_8007005C;
 extern int D_8007709C;
@@ -48,6 +49,7 @@ extern int D_800D837C;
 extern int D_800D975C;
 extern int D_800DB09C;
 extern int D_800DB26C;
+extern int D_800DB7D4[];
 extern signed char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
@@ -354,7 +356,112 @@ void func_8006B9B4(void)
 
 void func_8006B9DC(void) { vs_main_checkStreamXaEnd(); }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B9FC);
+static void _updateTitles(void)
+{
+    int i;
+    int j;
+    u_int count;
+
+    if (vs_main_scoredata.completionTimeMinutes < 600) {
+        vs_main_scoredata.titles |= 2;
+    }
+
+    for (i = 184; i < 224; ++i) {
+        if (!vs_main_skills[i].unlocked) {
+            break;
+        }
+    }
+
+    if (i == 224) {
+        vs_main_scoredata.titles |= 1 << 14;
+    }
+
+    for (i = 22; i < 54; ++i) {
+        if ((i != 33) && (i != 36) && (i != 38) && (i != 39)
+            && !vs_main_skills[i].unlocked) {
+            break;
+        }
+    }
+
+    if (i == 54) {
+        vs_main_scoredata.titles |= 1 << 15;
+    }
+
+    if (D_8006003A == 0) {
+        vs_main_scoredata.titles |= 1 << 16;
+    }
+
+    if (vs_main_stateFlags.unkB7 == 0) {
+        vs_main_scoredata.titles |= 1 << 17;
+    }
+
+    if (vs_main_stateFlags.unkB8 == 0) {
+        vs_main_scoredata.titles |= 1 << 18;
+    }
+
+    if (vs_main_stateFlags.unkB9 == 0) {
+        vs_main_scoredata.titles |= 1 << 19;
+    }
+
+    count = 0;
+
+    for (i = 0; i < 16; ++i) {
+        int t1 = 1;
+        for (j = 0; j < 32; ++j) {
+            if (vs_main_mapStatus.roomFlags[i] & D_800DB7D4[i] & (t1 << j)) {
+                ++count;
+            }
+        }
+    }
+
+    if (vs_main_scoredata.mapCompletion < count) {
+        vs_main_scoredata.mapCompletion = count;
+    }
+
+    count = 0;
+
+    for (i = 0; i < 64; ++i) {
+        if (vs_main_stateFlags.chestsOpened[i] != 0) {
+            ++count;
+        }
+    }
+
+    if (vs_main_scoredata.openedChestCount < count) {
+        vs_main_scoredata.openedChestCount = count;
+    }
+
+    if (vs_main_stateFlags.damascusGolemDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 4;
+    }
+
+    if (vs_main_stateFlags.damascusCrabDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 5;
+    }
+
+    if (vs_main_stateFlags.ravanaDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 6;
+    }
+
+    if (vs_main_stateFlags.dragonZombieDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 7;
+    }
+
+    if (vs_main_stateFlags.deathAndOgreZombieDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 8;
+    }
+
+    if (vs_main_stateFlags.asuraDefeated != 0) {
+        vs_main_scoredata.titles |= 1 << 9;
+    }
+
+    if (vs_main_stateFlags.goldKeyObtained != 0) {
+        vs_main_scoredata.titles |= 1 << 12;
+    }
+
+    if (vs_main_stateFlags.chestKeyObtained != 0) {
+        vs_main_scoredata.titles |= 1 << 13;
+    }
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006BD78);
 

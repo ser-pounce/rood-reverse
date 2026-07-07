@@ -6619,19 +6619,19 @@ int func_8007DFF0(u_int arg0, u_int arg1, int arg2)
 
 int func_8007E0A8(u_int arg0, u_int arg1, int arg2)
 {
-    u_int var_s0;
-    u_int i;
+    int var_s0 = 0;
 
-    var_s0 = 0;
-    if ((arg0 >= 0x19) && ((arg0 + arg1) < 0x21)) {
+    if ((25 <= arg0) && ((arg0 + arg1) < 33)) {
+        int i;
 
         for (i = 0; i < arg1; ++i) {
             if (D_800F19A8[arg0 + i] != arg2) {
                 var_s0 = 1;
             }
         }
+
         if (var_s0 != 0) {
-            vs_main_nop9(0x65, 0);
+            vs_main_nop9(101, 0);
         } else {
             if (var_s0 < arg1) {
                 for (i = 0; i < arg1; ++i) {
@@ -6639,9 +6639,11 @@ int func_8007E0A8(u_int arg0, u_int arg1, int arg2)
                 }
             }
         }
+
         return !var_s0;
     }
-    vs_main_nop9(0x65, 0);
+
+    vs_main_nop9(101, 0);
     return 0;
 }
 

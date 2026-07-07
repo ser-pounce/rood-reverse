@@ -350,6 +350,16 @@ extern char bss_3[6];
 
 /**
  * Holds the values for class / affinity / type
+ * Format is as follows but the actual data is accessed
+ * as a flat array.
+ *
+ * struct vs_mainMenu_equipmentStats_t {
+ *   vs_battle_classAffinityCurrent classAffinityCurrent;
+ *   short types[4];
+ *   short damageType;
+ *   short unk4A[11];
+ *   vs_battle_classAffinityBaseline classAffinityBaseline;
+ * };
  */
 extern short vs_mainMenu_equipmentStats[64];
 

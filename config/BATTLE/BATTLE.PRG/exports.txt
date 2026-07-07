@@ -15,12 +15,10 @@ D_800F4594
 D_800F45E0
 D_800F49DC
 D_800F4E6B
-vs_battle_lowerScreenUiState
 D_800F4E98
 D_800F4EA0
 D_800F4EE8
 D_800F4FDB
-vs_battle_miscItemInvoked
 func_8007ACB0
 func_8007C36C
 func_8007DD50
@@ -63,10 +61,9 @@ func_800B217C
 func_800B28A8
 func_800C930C
 func_800CB654
-vs_battle_addTile
-func_800CCD00
 vs_batle_statusIconTexOffsets
 vs_battle_actors
+vs_battle_addTile
 vs_battle_animationIndices
 vs_battle_applyAccessory
 vs_battle_applyArmor
@@ -114,12 +111,14 @@ vs_battle_getTextLineLength
 vs_battle_initInformationTextBox
 vs_battle_initSceneAndGetRoomNames
 vs_battle_initTextBox
+vs_battle_insertTpage
 vs_battle_inWorkshop
 vs_battle_isSpellClassUnlocked
 vs_battle_keystreamBits
 vs_battle_limbNames
 vs_battle_loadMenuPrg
 vs_battle_loadObjectDataState
+vs_battle_lowerScreenUiState
 vs_battle_manualDisplayState
 vs_battle_mapCompletionFlags
 vs_battle_mapStickDeadZone
@@ -128,6 +127,7 @@ vs_battle_menu9CursorMemory
 vs_battle_menuItems
 vs_battle_menuState
 vs_battle_menuStrings
+vs_battle_miscItemInvoked
 vs_battle_playInvalidSfx
 vs_battle_playMenuChangeSfx
 vs_battle_playMenuLeaveSfx

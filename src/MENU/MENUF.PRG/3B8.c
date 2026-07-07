@@ -1,8 +1,8 @@
 #include "common.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "build/src/include/lbas.h"
 #include <stdio.h>
 #include <libetc.h>
@@ -1174,7 +1174,7 @@ void func_801047D4(int arg0, int arg1, int arg2)
 
 void func_8010489C(int arg0, int arg1, int arg2)
 {
-    int temp_a2 = (arg2 / 15) + 0x60;
+    int temp_a2 = (arg2 / 15) + 96;
 
     func_80105C34(arg0 - (D_801091D8[temp_a2].w >> 1),
         arg1 - (D_801091D8[temp_a2].h >> 1), temp_a2, arg2 % 15);

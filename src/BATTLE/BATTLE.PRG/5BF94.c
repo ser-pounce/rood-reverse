@@ -1605,15 +1605,21 @@ void func_800C97BC(void)
         }
 
         if (temp_s1 == 0) {
+
             miscIndex = func_800C930C(0);
+
             if (miscIndex != 0) {
+
                 var_s0 = 0x1F;
+
                 if (miscIndex > 0) {
                     var_s0 = miscIndex | 0x40;
                 }
+
                 vs_battle_menuState.currentState = var_s0;
             }
         }
+
         if ((var_s0 >= 0x1F) || (temp_s1 == 0)) {
             for (i = 0; i < 10; ++i) {
                 vs_battle_renderMenuItem(var_s2);
@@ -2480,15 +2486,13 @@ void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh)
     D_1F800000[0] = prim + 4;
 }
 
-void func_800CCD00(int arg0, u_long* arg1)
+void vs_battle_insertTpage(int tpage, u_long* before)
 {
-    u_long* temp_v1;
-
-    temp_v1 = D_1F800000[0];
-    temp_v1[0] = (int)((*arg1 & 0xFFFFFF) | 0x01000000);
-    temp_v1[1] = arg0;
-    *arg1 = (u_int)((int)temp_v1 << 8) >> 8;
-    D_1F800000[0] = temp_v1 + 2;
+    u_long* prim = D_1F800000[0];
+    prim[0] = vs_getTag(sizeof(int), *before);
+    prim[1] = tpage;
+    *before = ((u_long)prim << 8) >> 8;
+    D_1F800000[0] = prim + 2;
 }
 
 int vs_battle_drawCursor(int animStep, int position)

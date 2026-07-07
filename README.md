@@ -56,54 +56,12 @@ Thanks also to the following amazing projects (and their dependencies):
 ![ENDING.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=ending.ENDING.PRG)
 ![SCREFF2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=ending.SCREFF2.PRG)
 
-### Editable content
-The following files can be freely edited*, either as source code or by editing the dumped .yaml or .obj formats
-```
-data/BATTLE/
-    INITBTL.PRG
+## Editable content
+Almost the entirety of the game's menu code and data is decompiled, including all files in `MENU` and `SMALL`, with the exceptions of `MENU/MCDATA.BIN`, `MENU/OPMCIMG1.BIN` and `MENU/OPMCIMG2.BIN`, and one function each in `MENU9.PRG` and `MENUF.PRG`. 
 
-data/MENU/
-    ARMOR.SYD
-    BLADE.SYD
-    SHIELD.SYD
-    ITEMNAME.BIN
-    ITEMHELP.BIN
-    MAPBG.BIN
-    MCMAN.BIN
-    MAINMENU.PRG
-    MENU0.PRG
-    MENU1.PRG
-    MENU2.PRG
-    MENU3.PRG
-    MENU4.PRG
-    MENU5.PRG
-    MENU7.PRG
-    MENU8.PRG
-    MENUB.PRG
-    MENUC.PRG
-    MENUD.PRG
-    MENUE.PRG
-    MENU12.BIN
-    SPMCIMG.BIN
+Much of the menu code has been refactored and is readable, and the menu executables are completely relocatable. It should be possible to rewrite the menu code arbitrarily, the method and data addresses in other modules will be relinked appropriately.
 
-data/SMALL/
-    HELP01.HF0 - HELP14.HF0
-    HELP01.HF1 - HELP14.HF1
-    DUMMY.ARM
-    SCEN001.ARM - SCEN031.ARM
-    MON.BIN
-    ATTACK.DIS
-    END.DIS
-    ENDSCR00 - ENDSCR15.DIS
-    ESC.DIS
-    IQ.DIS
-    RANK.DIS
-    TIME.DIS
-
-data/TITLE/
-    TITLE.PRG
-```
-(*n.b. until all of the loading code has been decompiled, if a file's sector size changes on disk then bad things will ensue)
+Due to the presence of a large number of empty sectors at the start of each directory on the disk, it should also be possible to rebuild the disk without affecting sector-based data loading in `BATTLE.PRG`, as long as the number of dummy sectors is adjusted accordingly.
 
 ## (Naive) Quickstart
 1. Fork the project

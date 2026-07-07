@@ -163,7 +163,7 @@ static char _0[5] __attribute__((unused));
  */
 int _warlockMagicMenu(u_int initShortcutInvoked)
 {
-    enum state { init, handleInput, returnIfReady, levelledSpell };
+    enum state { init, handleInput, returnIfReady, levelledSpellInit, levelledSpell };
 
     extern u_long* D_1F800000[];
 
@@ -181,8 +181,11 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
     int i;
 
     if (initShortcutInvoked) {
+
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
+
         vs_mainMenu_flyoutMenuRightAndHoistSelection(0, 1);
+
         state = init;
         return 0;
     }
@@ -195,9 +198,12 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         if (!vs_battle_shortcutInvoked && !vs_mainmenu_ready()) {
             break;
         }
+
         rowCount = 0;
+
         for (i = 0; i < 18; ++i) {
             int skillId = vs_battle_warlockSpellIds[i];
+
             if (vs_main_skills[skillId].unlocked) {
                 menuStrings[rowCount * 2] =
                     (char*)&_magicStrings[_magicStrings[i
@@ -205,9 +211,11 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 menuStrings[rowCount * 2 + 1] = (char*)&_magicStrings
                     [_magicStrings[i + VS_magic_INDEX_warlockSpellDescs]];
                 rowTypes[rowCount] = 0;
+
                 if (vs_battle_getSkillFlags(0, skillId) != 0) {
                     rowTypes[rowCount] |= 1;
                 }
+
                 _availableWarlockSpells[rowCount] = skillId;
                 ++rowCount;
             }
@@ -218,48 +226,69 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 rowTypes[i] |= 1;
             }
         }
+
         i = vs_main_settings.cursorMemory;
+
         if (shortcutInvoked != 0) {
             vs_main_settings.cursorMemory = 1;
         }
+
         vs_mainmenu_setMenuRows(rowCount, (2 << 8) | 7, menuStrings, rowTypes);
+
         vs_main_settings.cursorMemory = i;
         state = handleInput;
         break;
     }
     case handleInput:
+
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
+
         if (selectedRow != 0) {
+
             vs_mainMenu_displaySkillCost = 0;
+
             if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
                 selectedRow = -2;
             }
+
             if (selectedRow == -1) {
                 vs_mainMenu_clearMenuExcept(0);
+
                 state = returnIfReady;
                 break;
             }
+
             if (selectedRow > 0) {
+
                 selectedRow = _availableWarlockSpells[selectedRow - 1];
+
                 for (rowCount = 0; rowCount < 7; ++rowCount) {
                     if ((selectedRow == levelledSpells[rowCount])
                         && (vs_main_skills[selectedRow + 1].unlocked)) {
+
                         vs_mainMenu_flyoutMenuRightAndHoistSelection(
                             D_800F4EE8.cursorMemories[14], 2);
+
                         vs_mainMenu_displaySkillCost = 1;
-                        state = levelledSpell;
+                        state = levelledSpellInit;
                     }
                 }
-                if (state == levelledSpell) {
+
+                if (state == levelledSpellInit) {
                     break;
                 }
             }
+
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_dismissInformationBox();
             vs_mainMenu_setMenuCommand(menuActionNone);
+
             state = returnIfReady;
+
         } else {
+
             i = _availableWarlockSpells[vs_mainMenu_getConfirmedRow()];
+
             for (rowCount = 0; rowCount < 7; ++rowCount) {
                 if (i == levelledSpells[rowCount]) {
                     if (vs_main_skills[i + 1].unlocked) {
@@ -268,82 +297,110 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                     break;
                 }
             }
+
             _setMPCost(i);
         }
+
         break;
+
     case returnIfReady:
         if (vs_mainmenu_ready() != 0) {
             return selectedRow;
         }
         break;
-    case levelledSpell:
+
+    case levelledSpellInit:
         if (vs_mainmenu_ready() == 0) {
             break;
         }
+
         i = 2;
+
         if (vs_main_skills[selectedRow + 2].unlocked) {
             i = 3;
             if (vs_main_skills[selectedRow + 3].unlocked) {
                 i = 4;
             }
         }
+
         D_800F4EE8.cursorMemories[13] = i;
+
         if (D_800F4EE8.cursorMemories[12] >= i) {
             D_800F4EE8.cursorMemories[12] = i - 1;
         }
+
         D_8010694A = 0;
-        state = 4;
+        state = levelledSpell;
         break;
-    case 4: {
+
+    case levelledSpell: {
         u_long* temp_s6;
         int level;
         int var_s7_2;
-        u_long* var_t3;
+        u_long* prim;
 
         i = D_800F4EE8.cursorMemories[12];
         rowCount = D_800F4EE8.cursorMemories[13];
 
         if (vs_main_buttonsPressed.all & PADRup) {
+
             vs_battle_playMenuLeaveSfx();
+
             vs_mainMenu_displaySkillCost = 0;
+
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_dismissInformationBox();
             vs_mainMenu_setMenuCommand(menuActionNone);
+
             selectedRow = -2;
             state = returnIfReady;
             break;
         }
+
         if (vs_main_buttonsPressed.all & PADRdown) {
+
             vs_battle_playMenuLeaveSfx();
+
             for (i = 20; i < 30; ++i) {
                 vs_mainMenu_menuItemFlyoutRight(i);
             }
+
             state = init;
             break;
-        } else if (vs_main_buttonsPressed.all & PADRright) {
+        }
+
+        if (vs_main_buttonsPressed.all & PADRright) {
             if (vs_battle_getSkillFlags(0, selectedRow + i) == 0) {
+
                 vs_battle_playMenuSelectSfx();
+
                 vs_mainMenu_displaySkillCost = 0;
+
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
                 vs_mainMenu_setMenuCommand(menuActionNone);
+
                 state = returnIfReady;
                 selectedRow += i;
                 break;
+
             } else {
                 vs_battle_playInvalidSfx();
             }
         }
+
         if (vs_main_buttonRepeat & PADLright) {
             if (i < (rowCount - 1)) {
                 ++i;
             }
         }
+
         if (vs_main_buttonRepeat & PADLleft) {
             if (i > 0) {
                 --i;
             }
         }
+
         if (i != D_800F4EE8.cursorMemories[0xC]) {
             vs_battle_playMenuChangeSfx();
             D_800F4EE8.cursorMemories[0xC] = i;
@@ -359,68 +416,82 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
             if (i >= level) {
                 int v;
+
                 vs_battle_renderTextRaw(
                     spellLevels[level], (99 + level * 32) | vs_getXY(0, 103), NULL);
-                var_t3 = vs_battle_setSpriteDefaultTexPage(
+
+                prim = vs_battle_setSpriteDefaultTexPage(
                     vs_battle_cursorBrightnessAnimation[D_8010694A],
                     (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
-                var_t3[4] = 0x37FD70C0;
+                prim[4] = vs_getUV0Clut(192, 112, 976, 223);
 
                 v = D_8010694A;
+
                 if (level == i) {
                     ++D_8010694A;
                     D_8010694A &= 0xF;
                 } else {
                     D_8010694A = v & 0xF;
                 }
+
             } else if (level < rowCount) {
+
                 vs_battle_renderTextRaw(
-                    spellLevels[level], (0x63 + level * 0x20) | 0x670000, NULL);
-                var_t3 = vs_battle_setSpriteDefaultTexPage(0x40,
-                    (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
-                var_t3[4] = 0x37FE70C0;
+                    spellLevels[level], (99 + level * 32) | vs_getXY(0, 103), NULL);
+
+                prim = vs_battle_setSpriteDefaultTexPage(
+                    64, (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
+                prim[4] = vs_getUV0Clut(192, 112, 992, 223);
+
             } else {
+
                 var_s7_2 = 1;
+
                 vs_battle_renderTextRaw(
-                    spellLevels[4], (0x66 + level * 0x20) | 0x670000, NULL);
-                var_t3 = vs_battle_setSpriteDefaultTexPage(
+                    spellLevels[4], (102 + level * 32) | vs_getXY(0, 103), NULL);
+
+                prim = vs_battle_setSpriteDefaultTexPage(
                     0, (96 + level * 32) | vs_getXY(0, 100), vs_getWH(32, 16), temp_s6);
-                var_t3[1] = 0x64602000;
-                var_t3[4] = 0x37FE70C0;
+                prim[1] = 0x64602000;
+                prim[4] = vs_getUV0Clut(192, 112, 992, 223);
             }
 
-            var_t3[-3] = (u_short)var_t3[-3] | 0x37F50000;
-            var_t3[-5] = var_t3[-5] | 0x02000000;
-            var_t3[-8] = (u_short)var_t3[-8] | 0x37F50000;
-            var_t3[-10] = var_t3[-10] | 0x02000000;
+            prim[-3] = (u_short)prim[-3] | (getClut(848, 223) << 16);
+            prim[-5] = prim[-5] | 0x02000000;
+            prim[-8] = (u_short)prim[-8] | (getClut(848, 223) << 16);
+            prim[-10] |= 0x02000000;
 
             if (var_s7_2 != 0) {
-                var_t3[-12] = _get_mode(0, 0, 0x2C);
+                prim[-12] =
+                    vs_getTpage(768, 0, clut4Bit, semiTransparencyFull, ditheringOff);
             } else {
-                var_t3[-17] = _get_mode(0, 0, 0x2C);
-                var_t3[-13] = (u_short)var_t3[-13] | 0x37F50000;
-                var_t3[-15] = var_t3[-15] | 0x02000000;
+                prim[-17] =
+                    vs_getTpage(768, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+                prim[-13] = (u_short)prim[-13] | (getClut(848, 223) << 16);
+                prim[-15] |= 0x02000000;
             }
         }
-        var_t3 = vs_battle_setSpriteDefaultTexPage(
+
+        prim = vs_battle_setSpriteDefaultTexPage(
             128, vs_getXY(80, 100), vs_getWH(16, 16), temp_s6);
-        var_t3[4] = 0x37FD3050;
+        prim[4] = vs_getUV0Clut(80, 48, 976, 223);
 
-        var_t3 += 6;
+        prim += 6;
 
-        var_t3[0] = (*temp_s6 & 0xFFFFFF) | 0x09000000;
-        var_t3[1] = 0x2C808080;
-        var_t3[2] = 0x6400E0;
-        var_t3[3] = 0x37FD305F;
-        var_t3[4] = 0x6400F0;
-        var_t3[5] = 0xC304F;
-        var_t3[6] = 0x7400E0;
-        var_t3[7] = 0x405F;
-        var_t3[8] = 0x7400F0;
-        var_t3[9] = 0x404F;
+        prim[0] = vs_getTag(u_long[9], *temp_s6);
+        prim[1] = vs_getRGB0(primPolyFT4, 128, 128, 128);
+        prim[2] = vs_getXY(224, 100);
+        prim[3] = vs_getUV0Clut(95, 48, 976, 223);
+        prim[4] = vs_getXY(240, 100);
+        prim[5] =
+            vs_getUV1Tpage(79, 48, 768, clut4Bit, semiTransparencyHalf, ditheringOff);
+        prim[6] = vs_getXY(224, 116);
+        prim[7] = vs_getUV(95, 64);
+        prim[8] = vs_getXY(240, 116);
+        prim[9] = vs_getUV(79, 64);
 
-        *temp_s6 = ((u_int)var_t3 << 8) >> 8;
-        D_1F800000[0] = (u_long*)var_t3 + 10;
+        *temp_s6 = ((u_int)prim << 8) >> 8;
+        D_1F800000[0] = (u_long*)prim + 10;
 
         break;
     }
@@ -728,4 +799,4 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
-static const int _ = 0 __attribute__((unused));
+static const int _ __attribute__((unused)) = 0;

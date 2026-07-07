@@ -28,14 +28,12 @@ void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
 D_800DBB88_t* func_8006AB44(void (*)(void));
-void func_8006B760(void);
 void func_8006B884(void);
-void func_8006B910(void);
+static void _updateClearGameStats(void);
 void func_8006B9DC(void);
 void func_8006BD78(void);
 void func_8006CF24(int, int, int, char*);
 
-extern u_short D_8006003A;
 extern int D_8006E3FC;
 extern int D_8007005C;
 extern int D_8007709C;
@@ -49,7 +47,7 @@ extern int D_800D837C;
 extern int D_800D975C;
 extern int D_800DB09C;
 extern int D_800DB26C;
-extern int D_800DB7D4[];
+extern int _countableRooms[];
 extern signed char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
@@ -233,7 +231,7 @@ void func_8006A5C0(void)
         vs_main_freeHeapR(D_800DC1A8[i]);
     }
     func_8006B9DC();
-    func_8006B910();
+    _updateClearGameStats();
     func_8006BD78();
 }
 
@@ -341,11 +339,48 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B450);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B6A4);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B760);
+static void _updateTitles(void);
+
+static void _do_updateClearGameStats(void)
+{
+    int i;
+
+    if (vs_main_scoredata.completionTimeMinutes == 0) {
+        vs_main_scoredata.clearCount = vs_main_stateFlags.clearCount;
+        vs_main_scoredata.completionTimeMinutes =
+            (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
+    } else {
+        int minutes = (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
+        if (minutes < vs_main_scoredata.completionTimeMinutes) {
+            vs_main_scoredata.completionTimeMinutes = minutes;
+            vs_main_scoredata.clearCount = vs_main_stateFlags.clearCount;
+        }
+    }
+
+    _updateTitles();
+    vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
+
+    for (i = 0x10; i < 0x440; ++i) {
+        ((u_char*)&vs_main_stateFlags)[i] = 0;
+    }
+
+    if (vs_main_stateFlags.difficulty != 0) {
+        vs_main_stateFlags.normalModeCleared = 1;
+    } else {
+        vs_main_stateFlags.difficulty = 1;
+    }
+
+    if (vs_main_stateFlags.clearCount < 99) {
+        ++vs_main_stateFlags.clearCount;
+    }
+
+    D_80061068.zndId = 1;
+    D_80061068.mpdId = 0;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B884);
 
-void func_8006B910(void) { func_8006B760(); }
+static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
 
@@ -387,19 +422,19 @@ static void _updateTitles(void)
         vs_main_scoredata.titles |= 1 << 15;
     }
 
-    if (D_8006003A == 0) {
+    if (vs_main_settings.currentGameSaveCount == 0) {
         vs_main_scoredata.titles |= 1 << 16;
     }
 
-    if (vs_main_stateFlags.unkB7 == 0) {
+    if (vs_main_stateFlags.magicUsed == 0) {
         vs_main_scoredata.titles |= 1 << 17;
     }
 
-    if (vs_main_stateFlags.unkB8 == 0) {
+    if (vs_main_stateFlags.battleAbilitiesUsed == 0) {
         vs_main_scoredata.titles |= 1 << 18;
     }
 
-    if (vs_main_stateFlags.unkB9 == 0) {
+    if (vs_main_stateFlags.breakArtsUsed == 0) {
         vs_main_scoredata.titles |= 1 << 19;
     }
 
@@ -408,7 +443,7 @@ static void _updateTitles(void)
     for (i = 0; i < 16; ++i) {
         int t1 = 1;
         for (j = 0; j < 32; ++j) {
-            if (vs_main_mapStatus.roomFlags[i] & D_800DB7D4[i] & (t1 << j)) {
+            if (vs_main_mapStatus.roomFlags[i] & _countableRooms[i] & (t1 << j)) {
                 ++count;
             }
         }

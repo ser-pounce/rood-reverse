@@ -143,8 +143,8 @@ typedef struct {
 
 typedef struct {
     vs_Gametime_t gameTime;
-    u_short saveCount;
-    u_short unk12;
+    u_short cumulativeSaveCount;
+    u_short currentGameSaveCount;
     u_short currentHP;
     u_short maxHP;
     char saveLocation;
@@ -210,7 +210,8 @@ static int _findCurrentSaveOnActiveMemcard(void)
         if ((_saveFileInfo[i].unk4.base.slotState >= slotStateInUse)
             && (_saveFileInfo[i].unk4.base.slotState == vs_main_settings.slotState)
             && (_saveFileInfo[i].key == vs_main_settings.key)
-            && (_saveFileInfo[i].unk4.stats.saveCount == vs_main_settings.saveCount)
+            && (_saveFileInfo[i].unk4.stats.cumulativeSaveCount
+                == vs_main_settings.cumulativeSaveCount)
             && (_saveFileInfo[i].unk4.base.generation
                 == vs_main_settings.saveFileGeneration)) {
             return i + 1;
@@ -671,18 +672,20 @@ static void _packageGameSaveData(int targetFile)
             }
         }
     }
+
     s5->unk180.base.generation = ++vs_main_settings.saveFileGeneration;
-    if (vs_main_settings.saveCount < 9999) {
-        ++vs_main_settings.saveCount;
+
+    if (vs_main_settings.cumulativeSaveCount < 9999) {
+        ++vs_main_settings.cumulativeSaveCount;
     }
 
-    vs_main_settings.unk1A = 0;
+    vs_main_settings.currentGameSaveCount = 0;
     s5->unk180.base.unk8 = 0x20000107;
     s5->stats.gameTime.t = vs_main_gametime.t;
     s5->stats.currentHP = D_80060068.unk0.currentHP;
     s5->stats.maxHP = D_80060068.unk0.maxHP;
-    s5->stats.saveCount = vs_main_settings.saveCount;
-    s5->stats.unk12 = vs_main_settings.unk1A;
+    s5->stats.cumulativeSaveCount = vs_main_settings.cumulativeSaveCount;
+    s5->stats.currentGameSaveCount = vs_main_settings.currentGameSaveCount;
     s5->stats.saveLocation = 0x30;
     s5->stats.mapCompletion = 0;
     memset(&vs_main_inventory.misc, 0, sizeof vs_main_inventory.misc);
@@ -1728,7 +1731,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 }
                 _drawSaveInfoUI(y | 217, vs_uiids_save);
                 _drawSaveInfoUI(y | 239, vs_uiids_colon);
-                _drawInteger(y | 242, saveInfo->unk4.stats.saveCount, 1000);
+                _drawInteger(y | 242, saveInfo->unk4.stats.cumulativeSaveCount, 1000);
                 _drawSaveInfoUI(y | 267, vs_uiids_clear);
                 _drawSaveInfoUI(y | 293, vs_uiids_colon);
                 _drawInteger(y | 296, saveInfo->unk4.stats.clearCount, 10);

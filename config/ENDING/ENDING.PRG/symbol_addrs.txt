@@ -1,5 +1,8 @@
 _inverseDistanceFromScreencenter = 0x8006934C;
 _insertTpage = 0x8006A958;
+_do_updateClearGameStats = 0x8006B760;
+_updateClearGameStats = 0x8006B910;
 _updateTitles = 0x8006B9FC;
 _illustLbas = 0x800DB730;
 _illustSizes = 0x800DB770;
+_countableRooms = 0x800DB7D4;

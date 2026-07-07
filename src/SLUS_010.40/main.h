@@ -133,8 +133,8 @@ typedef struct {
     char mappedChainAbilities[4];
     char mappedDefenseAbilities[4];
     u_int key;
-    u_short saveCount;
-    u_short unk1A;
+    u_short cumulativeSaveCount;
+    u_short currentGameSaveCount;
     u_int saveFileGeneration;
 } vs_main_settings_t;
 
@@ -162,7 +162,7 @@ typedef struct {
     vs_trialScore_t bossTimeTrialScores[8][3];
     u_short maxChain;
     u_short unk8A;
-    u_int unk8C;
+    u_int clearCount;
     u_int completionTimeMinutes;
     u_int mapCompletion;
     u_int openedChestCount;
@@ -216,7 +216,7 @@ enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 typedef struct {
     char clearCount;
     char difficulty;
-    char unk2;
+    char normalModeCleared;
     char unk3;
     char unk4;
     char unk5;
@@ -265,9 +265,9 @@ typedef struct {
     char unkAC[9];
     char unkB5;
     char menuFSubmenu;
-    char unkB7;
-    char unkB8;
-    char unkB9;
+    char magicUsed;
+    char battleAbilitiesUsed;
+    char breakArtsUsed;
     char unkBA;
     char unkBB;
     char unkBC;

@@ -4,6 +4,7 @@
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "build/src/include/lbas.h"
+#include "gpu.h"
 #include <stdio.h>
 #include <libetc.h>
 #include <libgpu.h>
@@ -60,8 +61,8 @@ static void func_80105F6C(int, int, int, int, int);
 void func_801060A8(int, int, int, int);
 static void func_801064D4(int, int, int, int);
 static void func_8010664C(int, int, int, char*);
-static void func_80106A80(int, int, int, P_CODE colors[]);
-static void func_80107140(int, int, int, char*, int);
+static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
+static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
 static int _initCubePuzzleStart(void);
 static int _initCubePuzzleEnd(void);
 static int _initCubePuzzleQuit(void);
@@ -1102,8 +1103,8 @@ void func_8010459C(int arg0, int arg1, int arg2)
         D_8010972C[1].code = arg2;
         arg0 -= (_disMap[100].w + _disMap[101].w) >> 1;
 
-        func_80106A80(arg0, arg1, 0x64, D_8010972C);
-        func_80106A80(arg0 + _disMap[100].w, arg1, 0x65, &D_8010972C[1]);
+        _renderTexturePopIn(arg0, arg1, 0x64, D_8010972C);
+        _renderTexturePopIn(arg0 + _disMap[100].w, arg1, 0x65, &D_8010972C[1]);
     }
 }
 
@@ -1299,8 +1300,8 @@ void func_80104B8C(int arg0, int arg1, int arg2)
         D_80109738[1].code = arg2;
         arg0 -= (_disMap[22].w + _disMap[23].w) >> 1;
 
-        func_80106A80(arg0, arg1, 22, D_80109738);
-        func_80106A80(arg0 + _disMap[22].w, arg1, 23, &D_80109738[1]);
+        _renderTexturePopIn(arg0, arg1, 22, D_80109738);
+        _renderTexturePopIn(arg0 + _disMap[22].w, arg1, 23, &D_80109738[1]);
     }
 }
 
@@ -1405,28 +1406,28 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     v = _disMap[18].w + _disMap[26].w + _disMap[20].w;
     arg0 -= (((_disMap[10].w * 2) + v) + 0x74) >> 1;
 
-    func_80107140(arg0, arg1, 0x12, (char*)D_8010974C, temp_s2);
+    _renderTextureWipe(arg0, arg1, 0x12, D_8010974C, temp_s2);
 
     arg0 += _disMap[18].w;
 
-    func_80107140(arg0, arg1 + 7, 0x1A, (char*)D_8010974C, temp_s2);
+    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_8010974C, temp_s2);
 
     i = 2;
     arg0 = arg0 + i + _disMap[26].w;
 
     for (i = 0; i < 9; ++i) {
-        func_80107140(arg0, arg1 + 3, buf[i] - '0', (char*)D_8010974C, temp_s2);
+        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', D_8010974C, temp_s2);
 
         arg0 += 0xC;
 
         if ((i == 2) || (i == 5)) {
-            func_80107140(arg0, arg1 + 0xE, 0xA, (char*)D_8010974C, temp_s2);
+            _renderTextureWipe(arg0, arg1 + 0xE, 0xA, D_8010974C, temp_s2);
 
             arg0 += 3 + _disMap[10].w;
         }
     }
 
-    func_80107140(arg0, arg1 + 8, 0x14, (char*)D_8010974C, temp_s2);
+    _renderTextureWipe(arg0, arg1 + 8, 0x14, D_8010974C, temp_s2);
 }
 
 void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
@@ -1523,21 +1524,21 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     arg0 -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
 
-    func_80107140(arg0, arg1, 0x15, (char*)D_8010975C, temp_s4);
+    _renderTextureWipe(arg0, arg1, 0x15, D_8010975C, temp_s4);
 
     arg0 += _disMap[21].w;
     i = 2;
 
-    func_80107140(arg0, arg1 + 7, 0x1A, (char*)D_8010975C, temp_s4);
+    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_8010975C, temp_s4);
     arg0 = arg0 + i + _disMap[26].w;
 
     for (i = 0; i < 3; ++i) {
-        func_80107140(arg0, arg1 + 3, buf[i] - '0', (char*)D_8010975C, temp_s4);
+        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', D_8010975C, temp_s4);
 
         arg0 += 0xC;
     }
 
-    func_80107140(arg0, arg1 + 8, 0x13, (char*)D_8010975C, temp_s4);
+    _renderTextureWipe(arg0, arg1 + 8, 0x13, D_8010975C, temp_s4);
 }
 
 void func_801053B0(int arg0, int arg1, int arg2)
@@ -1590,7 +1591,7 @@ void func_8010540C(int arg0, int arg1, int arg2)
         for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
             int new_var2 = 1;
 
-            func_80106A80(
+            _renderTexturePopIn(
                 arg0, arg1, D_801095D0[i + (_rank * 4 + new_var2)], &D_8010976C[0]);
 
             arg0 += _disMap[D_801095D0[i + (_rank * 4 + new_var2)]].w;
@@ -1614,8 +1615,8 @@ void func_8010559C(int arg0, int arg1, int arg2)
         D_80109774[0].code = arg2;
         arg0 -= (_disMap[70].w + _disMap[71].w) >> 1;
 
-        func_80106A80(arg0, arg1, 70, D_80109774);
-        func_80106A80(arg0 + _disMap[70].w, arg1, 71, D_80109774);
+        _renderTexturePopIn(arg0, arg1, 70, D_80109774);
+        _renderTexturePopIn(arg0 + _disMap[70].w, arg1, 71, D_80109774);
     }
 }
 
@@ -1681,7 +1682,7 @@ void func_801056E8(int arg0, int arg1, int arg2)
         arg2 = 4;
     }
 
-    func_80107140(arg0, arg1, arg2 + 0x4E, (char*)D_8010977C, arg3);
+    _renderTextureWipe(arg0, arg1, arg2 + 0x4E, D_8010977C, arg3);
 }
 
 void func_80105790(int arg0, int arg1, int arg2)
@@ -2035,64 +2036,66 @@ static inline int _adjust(int component, int weight)
     return ret / 4;
 }
 
-void func_80106A80(int x, int y, int arg2, P_CODE arg3[])
+void _renderTexturePopIn(int x, int y, int texId, P_CODE colors[])
 {
     POLY_GT4* poly;
     void** p;
 
-    if (arg3[0].code != 0) {
+    if (colors[0].code != 0) {
         poly = *(void**)0x1F800000;
 
         setPolyGT4(poly);
-        setXY4(poly, x, y, _disMap[arg2].w + x, y, x, _disMap[arg2].h + y,
-            _disMap[arg2].w + x, _disMap[arg2].h + y);
-        setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
-            _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
-            _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
-        if (arg3[0].code < 8) {
-            setRGB0(poly, (arg3[0].r0 * arg3[0].code) / 8,
-                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
-            setRGB1(poly, (arg3[1].r0 * arg3[0].code) / 8,
-                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
-            setRGB2(poly, (arg3[0].r0 * arg3[0].code) / 8,
-                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
-            setRGB3(poly, (arg3[1].r0 * arg3[0].code) / 8,
-                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
-        } else if (arg3[0].code == 8) {
+        setXY4(poly, x, y, _disMap[texId].w + x, y, x, _disMap[texId].h + y,
+            _disMap[texId].w + x, _disMap[texId].h + y);
+        setUV4(poly, _disMap[texId].x, _disMap[texId].y,
+            _disMap[texId].x + _disMap[texId].w, _disMap[texId].y, _disMap[texId].x,
+            _disMap[texId].y + _disMap[texId].h, _disMap[texId].x + _disMap[texId].w,
+            _disMap[texId].y + _disMap[texId].h);
+
+        if (colors[0].code < 8) {
+            setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
+                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+            setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
+                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+            setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
+                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+            setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
+                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+        } else if (colors[0].code == 8) {
             setRGB0(poly, 192, 192, 192);
             setRGB1(poly, 192, 192, 192);
             setRGB2(poly, 192, 192, 192);
             setRGB3(poly, 192, 192, 192);
-        } else if (arg3[0].code == 9) {
+        } else if (colors[0].code == 9) {
             setRGB0(poly, 224, 224, 224);
             setRGB1(poly, 224, 224, 224);
             setRGB2(poly, 224, 224, 224);
             setRGB3(poly, 224, 224, 224);
-        } else if (arg3[0].code < 14) {
-            int temp_a0 = arg3[0].code - 10;
-            setRGB0(poly, _adjust(arg3[0].r0, temp_a0), _adjust(arg3[0].g0, temp_a0),
-                _adjust(arg3[0].b0, temp_a0));
-            setRGB1(poly, _adjust(arg3[1].r0, temp_a0), _adjust(arg3[1].g0, temp_a0),
-                _adjust(arg3[1].b0, temp_a0));
-            setRGB2(poly, _adjust(arg3[0].r0, temp_a0), _adjust(arg3[0].g0, temp_a0),
-                _adjust(arg3[0].b0, temp_a0));
-            setRGB3(poly, _adjust(arg3[1].r0, temp_a0), _adjust(arg3[1].g0, temp_a0),
-                _adjust(arg3[1].b0, temp_a0));
+        } else if (colors[0].code < 14) {
+            int temp_a0 = colors[0].code - 10;
+            setRGB0(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
+                _adjust(colors[0].b0, temp_a0));
+            setRGB1(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
+                _adjust(colors[1].b0, temp_a0));
+            setRGB2(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
+                _adjust(colors[0].b0, temp_a0));
+            setRGB3(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
+                _adjust(colors[1].b0, temp_a0));
         } else {
-            setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-            setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-            setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-            setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+            setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+            setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+            setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+            setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
         }
 
         setSemiTrans(poly, 1);
 
-        if (arg3[0].code < 10) {
-            poly->clut = _disMap[arg2].clut + 1;
-            poly->tpage = _disMap[arg2].tpage | 0x20;
+        if (colors[0].code < 10) {
+            poly->clut = _disMap[texId].clut + getClut(16, 0);
+            poly->tpage = _disMap[texId].tpage | getTPage(0, 1, 0, 0);
         } else {
-            poly->clut = _disMap[arg2].clut;
-            poly->tpage = _disMap[arg2].tpage;
+            poly->clut = _disMap[texId].clut;
+            poly->tpage = _disMap[texId].tpage;
         }
 
         p = (void**)0x1F800000;
@@ -2103,16 +2106,7 @@ void func_80106A80(int x, int y, int arg2, P_CODE arg3[])
     }
 }
 
-static inline int _adjust3(int v0)
-{
-    if (v0 < 0) {
-        v0 += 0x3F;
-    }
-
-    return v0 >> 6;
-}
-
-void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
+void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
 {
     int temp_a1;
     int var_a0;
@@ -2121,22 +2115,26 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
     POLY_GT4* poly;
     void** scratch;
 
-    if ((arg0 + _disMap[arg2].w) < (arg4 - 0x40)) {
+    if ((x + _disMap[texId].w) < (arg4 - 64)) {
+
         scratch = (void**)0x1F800000;
         poly = scratch[0];
+
         setPolyGT4(poly);
-        setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0,
-            _disMap[arg2].h + arg1, _disMap[arg2].w + arg0, _disMap[arg2].h + arg1);
-        setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
-            _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
-            _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
-        setRGB0(poly, arg3[0], arg3[1], arg3[2]);
-        setRGB1(poly, arg3[4], arg3[5], arg3[6]);
-        setRGB2(poly, arg3[0], arg3[1], arg3[2]);
-        setRGB3(poly, arg3[4], arg3[5], arg3[6]);
+        setXY4(poly, x, y, _disMap[texId].w + x, y, x, _disMap[texId].h + y,
+            _disMap[texId].w + x, _disMap[texId].h + y);
+        setUV4(poly, _disMap[texId].x, _disMap[texId].y,
+            _disMap[texId].x + _disMap[texId].w, _disMap[texId].y, _disMap[texId].x,
+            _disMap[texId].y + _disMap[texId].h, _disMap[texId].x + _disMap[texId].w,
+            _disMap[texId].y + _disMap[texId].h);
+        setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+        setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+        setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+        setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
         setSemiTrans(poly, 1);
-        poly->clut = _disMap[arg2].clut;
-        poly->tpage = _disMap[arg2].tpage;
+
+        poly->clut = _disMap[texId].clut;
+        poly->tpage = _disMap[texId].tpage;
 
         scratch = (void**)0x1F800000;
 
@@ -2146,60 +2144,63 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
         return;
     }
 
-    if (arg0 < arg4) {
+    if (x < arg4) {
+
         scratch = (void**)0x1F800000;
         poly = scratch[0];
-        var_s6 = _disMap[arg2].x;
+        var_s6 = _disMap[texId].x;
 
-        for (i = 0; i < _disMap[arg2].w; i += 12, arg0 += 0xC, var_s6 += 0xC) {
+        for (i = 0; i < _disMap[texId].w; i += 12, x += 12, var_s6 += 12) {
 
-            var_a0 = 0xC;
+            var_a0 = 12;
 
-            if ((i + 0xC) >= _disMap[arg2].w) {
-                var_a0 = _disMap[arg2].w - i;
+            if ((i + 12) >= _disMap[texId].w) {
+                var_a0 = _disMap[texId].w - i;
             }
 
             setPolyGT4(poly);
-            temp_a1 = arg0 + var_a0;
-            setXY4(poly, arg0, arg1, temp_a1, arg1, arg0, _disMap[arg2].h + arg1, temp_a1,
-                _disMap[arg2].h + arg1);
-            setUV4(poly, var_s6, _disMap[arg2].y, var_s6 + var_a0, _disMap[arg2].y,
-                var_s6, _disMap[arg2].y + _disMap[arg2].h, var_s6 + var_a0,
-                _disMap[arg2].y + _disMap[arg2].h);
+            temp_a1 = x + var_a0;
+            setXY4(poly, x, y, temp_a1, y, x, _disMap[texId].h + y, temp_a1,
+                _disMap[texId].h + y);
+            setUV4(poly, var_s6, _disMap[texId].y, var_s6 + var_a0, _disMap[texId].y,
+                var_s6, _disMap[texId].y + _disMap[texId].h, var_s6 + var_a0,
+                _disMap[texId].y + _disMap[texId].h);
 
-            var_a0 = arg4 - arg0;
+            var_a0 = arg4 - x;
 
-            if (var_a0 > 0x40) {
-                var_a0 = 0x40;
+            if (var_a0 > 64) {
+                var_a0 = 64;
             }
 
             if (var_a0 < 0) {
                 var_a0 = 0;
             }
 
-            setRGB0(poly, _adjust3(arg3[0] * var_a0), _adjust3(arg3[1] * var_a0),
-                _adjust3(arg3[2] * var_a0));
-            setRGB2(poly, _adjust3(arg3[0] * var_a0), _adjust3(arg3[1] * var_a0),
-                _adjust3(arg3[2] * var_a0));
+            setRGB0(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
+                (arg3[0].b0 * var_a0) / 64);
+            setRGB2(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
+                (arg3[0].b0 * var_a0) / 64);
 
             var_a0 = arg4 - temp_a1;
 
-            if (var_a0 > 0x40) {
-                var_a0 = 0x40;
+            if (var_a0 > 64) {
+                var_a0 = 64;
             }
 
             if (var_a0 < 0) {
                 var_a0 = 0;
             }
 
-            setRGB1(poly, _adjust3(arg3[4] * var_a0), _adjust3(arg3[5] * var_a0),
-                _adjust3(arg3[6] * var_a0));
-            setRGB3(poly, _adjust3(arg3[4] * var_a0), _adjust3(arg3[5] * var_a0),
-                _adjust3(arg3[6] * var_a0));
+            setRGB1(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
+                (arg3[1].b0 * var_a0) / 64);
+            setRGB3(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
+                (arg3[1].b0 * var_a0) / 64);
 
             setSemiTrans(poly, 1);
-            poly->clut = (_disMap[arg2].clut + 1);
-            poly->tpage = (_disMap[arg2].tpage | 0x20);
+
+            poly->clut = (_disMap[texId].clut + 1);
+            poly->tpage = (_disMap[texId].tpage | 0x20);
+
             scratch = (void**)0x1F800000;
 
             AddPrim(scratch[1] - 0x1C, poly++);
@@ -2210,80 +2211,85 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
     }
 }
 
-void func_80107698(int arg0, int arg1, int arg2)
+void func_80107698(int x, int y, int texId)
 {
     int i;
-    int var_s2;
+    int brightness;
     void** p = (void**)0x1F800000;
     POLY_FT4* poly = p[0];
-    int unk1 = _disMap[arg2].y;
+    int texY = _disMap[texId].y;
 
-    for (i = 0; i < _disMap[arg2].h; ++i, ++arg1, ++unk1) {
+    for (i = 0; i < _disMap[texId].h; ++i, ++y, ++texY) {
 
         setPolyFT4(poly);
-        setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0, arg1 + 1,
-            _disMap[arg2].w + arg0, arg1 + 1);
-        setUV4(poly, _disMap[arg2].x, unk1, _disMap[arg2].x + _disMap[arg2].w, unk1,
-            _disMap[arg2].x, unk1 + 1, _disMap[arg2].x + _disMap[arg2].w, unk1 + 1);
+        setXY4(
+            poly, x, y, _disMap[texId].w + x, y, x, y + 1, _disMap[texId].w + x, y + 1);
+        setUV4(poly, _disMap[texId].x, texY, _disMap[texId].x + _disMap[texId].w, texY,
+            _disMap[texId].x, texY + 1, _disMap[texId].x + _disMap[texId].w, texY + 1);
 
-        if (arg1 < 0xBE) {
-            var_s2 = 0x80 - ((0xBD - arg1) * 0x10);
+        if (y < 190) {
+            brightness = 128 - ((189 - y) * 16);
 
-            if (var_s2 < 0) {
-                var_s2 = 0;
+            if (brightness < 0) {
+                brightness = 0;
             }
 
-            setRGB0(poly, var_s2, var_s2, var_s2);
+            setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = _disMap[arg2].tpage | 0x20;
+            poly->tpage = _disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
             setPolyFT4(poly);
-            setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0, arg1 + 1,
-                _disMap[arg2].w + arg0, arg1 + 1);
-            setUV4(poly, _disMap[arg2].x, unk1, _disMap[arg2].x + _disMap[arg2].w, unk1,
-                _disMap[arg2].x, unk1 + 1, _disMap[arg2].x + _disMap[arg2].w, unk1 + 1);
+            setXY4(poly, x, y, _disMap[texId].w + x, y, x, y + 1, _disMap[texId].w + x,
+                y + 1);
+            setUV4(poly, _disMap[texId].x, texY, _disMap[texId].x + _disMap[texId].w,
+                texY, _disMap[texId].x, texY + 1, _disMap[texId].x + _disMap[texId].w,
+                texY + 1);
 
-            setRGB0(poly, var_s2, var_s2, var_s2);
+            setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = _disMap[arg2].tpage | 0x40;
+            poly->tpage =
+                _disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
-        } else if (arg1 >= 0xCE) {
+        } else if (y >= 206) {
 
-            var_s2 = 0x80 - ((arg1 - 0xCE) * 0x10);
-            if (var_s2 < 0) {
-                var_s2 = 0;
+            brightness = 128 - ((y - 206) * 16);
+
+            if (brightness < 0) {
+                brightness = 0;
             }
 
-            setRGB0(poly, var_s2, var_s2, var_s2);
+            setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = (_disMap[arg2].tpage | 0x20);
+            poly->tpage = _disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
             setPolyFT4(poly);
-            setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0, arg1 + 1,
-                _disMap[arg2].w + arg0, arg1 + 1);
-            setUV4(poly, _disMap[arg2].x, unk1, _disMap[arg2].x + _disMap[arg2].w, unk1,
-                _disMap[arg2].x, unk1 + 1, _disMap[arg2].x + _disMap[arg2].w, unk1 + 1);
-            setRGB0(poly, var_s2, var_s2, var_s2);
+            setXY4(poly, x, y, _disMap[texId].w + x, y, x, y + 1, _disMap[texId].w + x,
+                y + 1);
+            setUV4(poly, _disMap[texId].x, texY, _disMap[texId].x + _disMap[texId].w,
+                texY, _disMap[texId].x, texY + 1, _disMap[texId].x + _disMap[texId].w,
+                texY + 1);
+            setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = _disMap[arg2].tpage | 0x40;
+            poly->tpage =
+                _disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
         } else {
-            setRGB0(poly, 0x80, 0x80, 0x80);
+            setRGB0(poly, 128, 128, 128);
             setSemiTrans(poly, 1);
             setClut(poly, 800, 511);
-            poly->tpage = _disMap[arg2].tpage;
+            poly->tpage = _disMap[texId].tpage;
 
             AddPrim(p[1] - 0x1C, poly++);
         }
@@ -2344,7 +2350,7 @@ int _initCubePuzzleStart(void)
                 }
             }
 
-            D_801099F4 = 0x258;
+            D_801099F4 = 600;
             D_801099F6 = 1;
             room = vs_battle_roomData.sectionF->rooms;
             var_a0 = _iqDisData + 0x10440;
@@ -2466,7 +2472,7 @@ int _renderCubePuzzleStart(void)
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
-    if (_screenTimer == 0x1E) {
+    if (_screenTimer == 30) {
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
@@ -2667,27 +2673,27 @@ void func_80108564(int arg0, int arg1)
     }
 }
 
-void _renderAverageTime(int x, int y, int arg2)
+void _renderAverageTime(int x, int y, int step)
 {
-    static P_CODE D_801097CC[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
+    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (step < 0) {
+        step = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (step > 64) {
+        step = 64;
     }
 
-    if (arg2 > 0) {
-        D_801097CC[0].code = arg2;
-        D_801097CC[1].code = arg2;
+    if (step > 0) {
+        colors[0].code = step;
+        colors[1].code = step;
         x -= (_disMap[disIndexIq0AverageTime].w + _disMap[disIndexIq0AverageTime + 1].w)
           >> 1;
 
-        func_80106A80(x, y, disIndexIq0AverageTime, D_801097CC);
-        func_80106A80(x + _disMap[disIndexIq0AverageTime].w, y,
-            disIndexIq0AverageTime + 1, &D_801097CC[1]);
+        _renderTexturePopIn(x, y, disIndexIq0AverageTime, colors);
+        _renderTexturePopIn(x + _disMap[disIndexIq0AverageTime].w, y,
+            disIndexIq0AverageTime + 1, &colors[1]);
     }
 }
 
@@ -2709,8 +2715,8 @@ void func_80108688(int arg0, int arg1, int arg2)
         D_801097D8[1].code = arg2;
         arg0 -= (_disMap[105].w + _disMap[106].w) >> 1;
 
-        func_80106A80(arg0, arg1, 0x69, D_801097D8);
-        func_80106A80(arg0 + _disMap[105].w, arg1, 0x6A, &D_801097D8[1]);
+        _renderTexturePopIn(arg0, arg1, 0x69, D_801097D8);
+        _renderTexturePopIn(arg0 + _disMap[105].w, arg1, 0x6A, &D_801097D8[1]);
     }
 }
 
@@ -2753,7 +2759,7 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
     if (arg2 > 0) {
         D_801097E4[0].code = arg2;
 
-        func_80106A80(
+        _renderTexturePopIn(
             arg0 - (_disMap[arg3 + 0x6B].w >> 1), arg1, arg3 + 0x6B, D_801097E4);
     }
 }

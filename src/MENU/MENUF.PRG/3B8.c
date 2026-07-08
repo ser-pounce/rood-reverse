@@ -60,7 +60,7 @@ static void func_80105F6C(int, int, int, int, int);
 void func_801060A8(int, int, int, int);
 static void func_801064D4(int, int, int, int);
 static void func_8010664C(int, int, int, char*);
-static void func_80106A80(int, int, int, char*);
+static void func_80106A80(int, int, int, P_CODE colors[]);
 static void func_80107140(int, int, int, char*, int);
 static int _initCubePuzzleStart(void);
 static int _initCubePuzzleEnd(void);
@@ -70,21 +70,21 @@ static int _renderCubePuzzleEnd(void);
 static int _renderCubePuzzleQuit(void);
 static void func_801084F4(int arg0, int arg1);
 static void func_80108564(int arg0, int arg1);
-static void func_801085D4(int arg0, int arg1, int arg2);
+static void _renderAverageTime(int arg0, int arg1, int arg2);
 static void func_80108688(int arg0, int arg1, int arg2);
 static void func_8010873C(int arg0, int arg1, int arg2);
 static void func_80108784(int arg0, int arg1, int arg2);
 static void func_8010880C(int arg0, int arg1, int arg2, int arg3);
 static void func_8010887C(int arg0, int arg1, int arg2);
 static void _calculateScore(void);
-static void func_80108E38(void);
-static void func_80108E40(void);
+static void _nop0(void);
+static void _nop1(void);
 static void _determineRank(void);
 static int _getTotalStrength(void);
 static int _getTotalIntelligence(void);
 static int _getTotalAgility(void);
 static void func_80108E48(void);
-static void _nop(void);
+static void _nop2(void);
 static void _raiseMaxStrength(int amount);
 static void _raiseMaxIntelligence(int amount);
 static void _raiseMaxAgility(int amount);
@@ -137,7 +137,7 @@ int _initMenu(void)
 
     case 3:
         func_80108E48();
-        _nop();
+        _nop2();
 
         ret = 1;
         break;
@@ -535,7 +535,9 @@ int _execMenu(void)
     return ret;
 }
 
-static _texture_t D_801091D8[] = {
+enum disIndices { disIndexIq0AverageTime = 102 };
+
+static _texture_t _disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
@@ -829,7 +831,7 @@ int _renderCongratulationsScreen(void)
             }
 
             func_8007E0A8(0x1D, 3, 5);
-            _nop();
+            _nop2();
 
             return 1;
         }
@@ -1098,10 +1100,10 @@ void func_8010459C(int arg0, int arg1, int arg2)
 
         D_8010972C[0].code = arg2;
         D_8010972C[1].code = arg2;
-        arg0 -= (D_801091D8[100].w + D_801091D8[101].w) >> 1;
+        arg0 -= (_disMap[100].w + _disMap[101].w) >> 1;
 
-        func_80106A80(arg0, arg1, 0x64, (char*)D_8010972C);
-        func_80106A80(arg0 + D_801091D8[100].w, arg1, 0x65, (char*)(D_8010972C + 1));
+        func_80106A80(arg0, arg1, 0x64, D_8010972C);
+        func_80106A80(arg0 + _disMap[100].w, arg1, 0x65, &D_8010972C[1]);
     }
 }
 
@@ -1114,13 +1116,13 @@ void func_80104650(int arg0, int arg1, int arg2)
     }
 
     if (arg2 > 0) {
-        arg0 -= (D_801091D8[84].w + 0x18) >> 1;
+        arg0 -= (_disMap[84].w + 0x18) >> 1;
 
         func_80105C34(arg0, arg1, 0x54, arg2);
 
         new_var = arg0 + 0xC;
 
-        func_80105DD8(new_var + D_801091D8[84].w, arg1 - 1,
+        func_80105DD8(new_var + _disMap[84].w, arg1 - 1,
             vs_main_stateFlags.timeTrialBoss + 1, arg2, 0x7FF4);
     }
 }
@@ -1135,15 +1137,15 @@ void func_801046F8(int arg0, int arg1, int arg2)
         if (vs_main_stateFlags.timeTrialBoss != 6) {
 
             func_80105C34(
-                arg0 - (D_801091D8[vs_main_stateFlags.timeTrialBoss + 0x55].w >> 1), arg1,
+                arg0 - (_disMap[vs_main_stateFlags.timeTrialBoss + 0x55].w >> 1), arg1,
                 vs_main_stateFlags.timeTrialBoss + 0x55, arg2);
 
         } else {
-            arg0 -= (D_801091D8[91].w + D_801091D8[93].w) >> 1;
+            arg0 -= (_disMap[91].w + _disMap[93].w) >> 1;
 
             func_80105C34(arg0, arg1, 0x5B, arg2);
 
-            arg0 += D_801091D8[91].w;
+            arg0 += _disMap[91].w;
 
             func_80105C34(arg0, arg1, 0x5D, arg2);
         }
@@ -1158,14 +1160,14 @@ void func_801047D4(int arg0, int arg1, int arg2)
     }
 
     if (arg2 > 0) {
-        arg0 -= (D_801091D8[95].w + 0x60) >> 1;
+        arg0 -= (_disMap[95].w + 0x60) >> 1;
 
         func_80105C34(arg0, arg1, 0x5F, arg2);
 
         arg0++;
         new_var = arg0 + 0xB;
 
-        func_80105F6C(new_var + D_801091D8[95].w, arg1 + 2, arg2,
+        func_80105F6C(new_var + _disMap[95].w, arg1 + 2, arg2,
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0]
                 .time,
             0);
@@ -1176,8 +1178,8 @@ void func_8010489C(int arg0, int arg1, int arg2)
 {
     int temp_a2 = (arg2 / 15) + 96;
 
-    func_80105C34(arg0 - (D_801091D8[temp_a2].w >> 1),
-        arg1 - (D_801091D8[temp_a2].h >> 1), temp_a2, arg2 % 15);
+    func_80105C34(arg0 - (_disMap[temp_a2].w >> 1), arg1 - (_disMap[temp_a2].h >> 1),
+        temp_a2, arg2 % 15);
 }
 
 void func_80104914(int arg0)
@@ -1295,10 +1297,10 @@ void func_80104B8C(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_80109738[0].code = arg2;
         D_80109738[1].code = arg2;
-        arg0 -= (D_801091D8[22].w + D_801091D8[23].w) >> 1;
+        arg0 -= (_disMap[22].w + _disMap[23].w) >> 1;
 
-        func_80106A80(arg0, arg1, 22, (char*)D_80109738);
-        func_80106A80(arg0 + D_801091D8[22].w, arg1, 23, (char*)(D_80109738 + 1));
+        func_80106A80(arg0, arg1, 22, D_80109738);
+        func_80106A80(arg0 + _disMap[22].w, arg1, 23, &D_80109738[1]);
     }
 }
 
@@ -1323,17 +1325,17 @@ void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         sprintf(buf, "%09d", _score);
 
-        new_var = D_801091D8[18].w + D_801091D8[26].w;
-        arg0 -= (((D_801091D8[10].w * 2) + (new_var + D_801091D8[20].w)) + 0x74) >> 1;
+        new_var = _disMap[18].w + _disMap[26].w;
+        arg0 -= (((_disMap[10].w * 2) + (new_var + _disMap[20].w)) + 0x74) >> 1;
 
         func_8010664C(arg0, arg1, 0x12, (char*)D_80109744);
 
-        arg0 += D_801091D8[18].w;
+        arg0 += _disMap[18].w;
 
         func_8010664C(arg0, arg1 + 7, 0x1A, (char*)D_80109744);
 
         i = 2;
-        arg0 = (arg0 + i) + D_801091D8[26].w;
+        arg0 = (arg0 + i) + _disMap[26].w;
 
         for (i = 0; i < 9; ++i) {
             func_8010664C(arg0, arg1 + 3, buf[i] - '0', (char*)D_80109744);
@@ -1343,7 +1345,7 @@ void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
             if ((i == 2) || (i == 5)) {
                 func_8010664C(arg0, arg1 + 0xE, 0xA, (char*)D_80109744);
 
-                arg0 += D_801091D8[10].w + 3;
+                arg0 += _disMap[10].w + 3;
             }
         }
 
@@ -1400,17 +1402,17 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     sprintf(buf, "%09d", D_80109898);
 
-    v = D_801091D8[18].w + D_801091D8[26].w + D_801091D8[20].w;
-    arg0 -= (((D_801091D8[10].w * 2) + v) + 0x74) >> 1;
+    v = _disMap[18].w + _disMap[26].w + _disMap[20].w;
+    arg0 -= (((_disMap[10].w * 2) + v) + 0x74) >> 1;
 
     func_80107140(arg0, arg1, 0x12, (char*)D_8010974C, temp_s2);
 
-    arg0 += D_801091D8[18].w;
+    arg0 += _disMap[18].w;
 
     func_80107140(arg0, arg1 + 7, 0x1A, (char*)D_8010974C, temp_s2);
 
     i = 2;
-    arg0 = arg0 + i + D_801091D8[26].w;
+    arg0 = arg0 + i + _disMap[26].w;
 
     for (i = 0; i < 9; ++i) {
         func_80107140(arg0, arg1 + 3, buf[i] - '0', (char*)D_8010974C, temp_s2);
@@ -1420,7 +1422,7 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         if ((i == 2) || (i == 5)) {
             func_80107140(arg0, arg1 + 0xE, 0xA, (char*)D_8010974C, temp_s2);
 
-            arg0 += 3 + D_801091D8[10].w;
+            arg0 += 3 + _disMap[10].w;
         }
     }
 
@@ -1447,16 +1449,16 @@ void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         sprintf(buf, "%03d", _mapCompletion);
 
-        arg0 -= (D_801091D8[21].w + D_801091D8[26].w + D_801091D8[19].w + 0x26) >> 1;
+        arg0 -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
         i = 2;
 
         func_8010664C(arg0, arg1, 0x15, (char*)D_80109754);
 
-        arg0 += D_801091D8[21].w;
+        arg0 += _disMap[21].w;
 
         func_8010664C(arg0, arg1 + 7, 0x1A, (char*)D_80109754);
 
-        arg0 = arg0 + i + D_801091D8[26].w;
+        arg0 = arg0 + i + _disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
             func_8010664C(arg0, arg1 + 3, buf[i] - '0', (char*)D_80109754);
@@ -1519,15 +1521,15 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     sprintf(buf, "%03d", D_80109894);
 
-    arg0 -= (D_801091D8[21].w + D_801091D8[26].w + D_801091D8[19].w + 0x26) >> 1;
+    arg0 -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
 
     func_80107140(arg0, arg1, 0x15, (char*)D_8010975C, temp_s4);
 
-    arg0 += D_801091D8[21].w;
+    arg0 += _disMap[21].w;
     i = 2;
 
     func_80107140(arg0, arg1 + 7, 0x1A, (char*)D_8010975C, temp_s4);
-    arg0 = arg0 + i + D_801091D8[26].w;
+    arg0 = arg0 + i + _disMap[26].w;
 
     for (i = 0; i < 3; ++i) {
         func_80107140(arg0, arg1 + 3, buf[i] - '0', (char*)D_8010975C, temp_s4);
@@ -1553,7 +1555,7 @@ void func_801053B0(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_80109764[0].code = arg2;
 
-        func_8010664C(arg0 - (D_801091D8[12].w >> 1), arg1, 0xC, (char*)D_80109764);
+        func_8010664C(arg0 - (_disMap[12].w >> 1), arg1, 0xC, (char*)D_80109764);
     }
 }
 
@@ -1579,7 +1581,7 @@ void func_8010540C(int arg0, int arg1, int arg2)
         D_8010976C[0].code = arg2;
 
         for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
-            var_a0 += D_801091D8[D_801095D0[i + 1 + (_rank * 4)]].w;
+            var_a0 += _disMap[D_801095D0[i + 1 + (_rank * 4)]].w;
         }
 
         var_a0 /= 2;
@@ -1588,10 +1590,10 @@ void func_8010540C(int arg0, int arg1, int arg2)
         for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
             int new_var2 = 1;
 
-            func_80106A80(arg0, arg1, D_801095D0[i + (_rank * 4 + new_var2)],
-                (char*)&D_8010976C[0]);
+            func_80106A80(
+                arg0, arg1, D_801095D0[i + (_rank * 4 + new_var2)], &D_8010976C[0]);
 
-            arg0 += D_801091D8[D_801095D0[i + (_rank * 4 + new_var2)]].w;
+            arg0 += _disMap[D_801095D0[i + (_rank * 4 + new_var2)]].w;
         }
     }
 }
@@ -1610,10 +1612,10 @@ void func_8010559C(int arg0, int arg1, int arg2)
 
     if (arg2 > 0) {
         D_80109774[0].code = arg2;
-        arg0 -= (D_801091D8[70].w + D_801091D8[71].w) >> 1;
+        arg0 -= (_disMap[70].w + _disMap[71].w) >> 1;
 
-        func_80106A80(arg0, arg1, 70, (char*)D_80109774);
-        func_80106A80(arg0 + D_801091D8[70].w, arg1, 71, (char*)D_80109774);
+        func_80106A80(arg0, arg1, 70, D_80109774);
+        func_80106A80(arg0 + _disMap[70].w, arg1, 71, D_80109774);
     }
 }
 
@@ -1695,7 +1697,7 @@ void func_80105790(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         func_80105C34(arg0, arg1, 0x48, arg2);
 
-        arg0 += D_801091D8[72].w;
+        arg0 += _disMap[72].w;
 
         func_80105F6C(arg0, arg1 + 2, arg2, _timeTrialTime, 0);
     }
@@ -1718,7 +1720,7 @@ void func_8010581C(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         func_80105C34(arg0, arg1, 0x48, arg2);
 
-        arg0 += D_801091D8[72].w;
+        arg0 += _disMap[72].w;
 
         if (arg2 >= 0x10) {
             int a0 = (_timeTrialTime >> 0x10) & 0xFF;
@@ -1781,8 +1783,8 @@ void func_801059FC(int arg0, int arg1, int arg2)
                 .bossTimeTrialScores[0][vs_main_stateFlags.timeTrialBoss * 3 + i]
                 .time,
             temp_v0);
-        func_80105DD8((arg0 - D_801091D8[75 + i].w) - 0x58, arg1 + i * 0x14, i + 0x4B,
-            arg2, var_s3);
+        func_80105DD8(
+            (arg0 - _disMap[75 + i].w) - 0x58, arg1 + i * 0x14, i + 0x4B, arg2, var_s3);
     }
 }
 
@@ -1810,7 +1812,7 @@ void func_80105B30(int arg0, int arg1, int arg2, int arg3)
         vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][arg2]
             .time,
         temp_t1);
-    func_80105DD8((arg0 - D_801091D8[arg2 + 0x4B].w) - 0x58, arg1 + (arg2 * 0x14),
+    func_80105DD8((arg0 - _disMap[arg2 + 0x4B].w) - 0x58, arg1 + (arg2 * 0x14),
         arg2 + 0x4B, arg3, var_s3);
 }
 
@@ -1825,7 +1827,7 @@ void func_80105C34(int arg0, int arg1, int arg2, int arg3)
     }
 
     poly = *(void**)getScratchAddr(0);
-    temp_a2 = &D_801091D8[arg2];
+    temp_a2 = &_disMap[arg2];
     setPolyFT4(poly);
     setXY4(poly, arg0, arg1, temp_a2->w + arg0, arg1, arg0, temp_a2->h + arg1,
         temp_a2->w + arg0, temp_a2->h + arg1);
@@ -1861,7 +1863,7 @@ void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 
     poly = *(void**)getScratchAddr(0);
-    temp_a2 = &D_801091D8[arg2];
+    temp_a2 = &_disMap[arg2];
     setPolyFT4(poly);
     setXY4(poly, arg0, arg1, temp_a2->w + arg0, arg1, arg0, temp_a2->h + arg1,
         temp_a2->w + arg0, temp_a2->h + arg1);
@@ -1988,14 +1990,11 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
     if (arg3[3] != 0) {
         poly = *(void**)0x1F800000;
         setPolyGT4(poly);
-        setXY4(poly, arg0, arg1, D_801091D8[arg2].w + arg0, arg1, arg0,
-            D_801091D8[arg2].h + arg1, D_801091D8[arg2].w + arg0,
-            D_801091D8[arg2].h + arg1);
-        setUV4(poly, D_801091D8[arg2].x, D_801091D8[arg2].y,
-            D_801091D8[arg2].x + D_801091D8[arg2].w, D_801091D8[arg2].y,
-            D_801091D8[arg2].x, D_801091D8[arg2].y + D_801091D8[arg2].h,
-            D_801091D8[arg2].x + D_801091D8[arg2].w,
-            D_801091D8[arg2].y + D_801091D8[arg2].h);
+        setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0,
+            _disMap[arg2].h + arg1, _disMap[arg2].w + arg0, _disMap[arg2].h + arg1);
+        setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
+            _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
+            _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
         if (arg3[3] < 8) {
             setRGB0(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
                 (arg3[2] * arg3[3]) / 8);
@@ -2015,11 +2014,11 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
         setSemiTrans(poly, 1);
 
         if (arg3[3] < 8) {
-            poly->clut = D_801091D8[arg2].clut + 1;
-            poly->tpage = D_801091D8[arg2].tpage | 0x20;
+            poly->clut = _disMap[arg2].clut + 1;
+            poly->tpage = _disMap[arg2].tpage | 0x20;
         } else {
-            poly->clut = D_801091D8[arg2].clut;
-            poly->tpage = D_801091D8[arg2].tpage;
+            poly->clut = _disMap[arg2].clut;
+            poly->tpage = _disMap[arg2].tpage;
         }
 
         p = (void**)0x1F800000;
@@ -2030,73 +2029,70 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
     }
 }
 
-static inline int _adjust(int v0, int v1)
+static inline int _adjust(int component, int weight)
 {
-    int ret = (v0 * v1) + ((4 - v1) * 192);
+    int ret = (component * weight) + ((4 - weight) * 192);
     return ret / 4;
 }
 
-void func_80106A80(int arg0, int arg1, int arg2, char* arg3)
+void func_80106A80(int x, int y, int arg2, P_CODE arg3[])
 {
     POLY_GT4* poly;
     void** p;
 
-    if (arg3[3] != 0) {
+    if (arg3[0].code != 0) {
         poly = *(void**)0x1F800000;
 
         setPolyGT4(poly);
-        setXY4(poly, arg0, arg1, D_801091D8[arg2].w + arg0, arg1, arg0,
-            D_801091D8[arg2].h + arg1, D_801091D8[arg2].w + arg0,
-            D_801091D8[arg2].h + arg1);
-        setUV4(poly, D_801091D8[arg2].x, D_801091D8[arg2].y,
-            D_801091D8[arg2].x + D_801091D8[arg2].w, D_801091D8[arg2].y,
-            D_801091D8[arg2].x, D_801091D8[arg2].y + D_801091D8[arg2].h,
-            D_801091D8[arg2].x + D_801091D8[arg2].w,
-            D_801091D8[arg2].y + D_801091D8[arg2].h);
-        if (arg3[3] < 8) {
-            setRGB0(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
-                (arg3[2] * arg3[3]) / 8);
-            setRGB1(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
-                (arg3[6] * arg3[3]) / 8);
-            setRGB2(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
-                (arg3[2] * arg3[3]) / 8);
-            setRGB3(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
-                (arg3[6] * arg3[3]) / 8);
-        } else if (arg3[3] == 8) {
+        setXY4(poly, x, y, _disMap[arg2].w + x, y, x, _disMap[arg2].h + y,
+            _disMap[arg2].w + x, _disMap[arg2].h + y);
+        setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
+            _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
+            _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
+        if (arg3[0].code < 8) {
+            setRGB0(poly, (arg3[0].r0 * arg3[0].code) / 8,
+                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
+            setRGB1(poly, (arg3[1].r0 * arg3[0].code) / 8,
+                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
+            setRGB2(poly, (arg3[0].r0 * arg3[0].code) / 8,
+                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
+            setRGB3(poly, (arg3[1].r0 * arg3[0].code) / 8,
+                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
+        } else if (arg3[0].code == 8) {
             setRGB0(poly, 192, 192, 192);
             setRGB1(poly, 192, 192, 192);
             setRGB2(poly, 192, 192, 192);
             setRGB3(poly, 192, 192, 192);
-        } else if (arg3[3] == 9) {
+        } else if (arg3[0].code == 9) {
             setRGB0(poly, 224, 224, 224);
             setRGB1(poly, 224, 224, 224);
             setRGB2(poly, 224, 224, 224);
             setRGB3(poly, 224, 224, 224);
-        } else if (arg3[3] < 14) {
-            int temp_a0 = arg3[3] - 10;
-            setRGB0(poly, _adjust(arg3[0], temp_a0), _adjust(arg3[1], temp_a0),
-                _adjust(arg3[2], temp_a0));
-            setRGB1(poly, _adjust(arg3[4], temp_a0), _adjust(arg3[5], temp_a0),
-                _adjust(arg3[6], temp_a0));
-            setRGB2(poly, _adjust(arg3[0], temp_a0), _adjust(arg3[1], temp_a0),
-                _adjust(arg3[2], temp_a0));
-            setRGB3(poly, _adjust(arg3[4], temp_a0), _adjust(arg3[5], temp_a0),
-                _adjust(arg3[6], temp_a0));
+        } else if (arg3[0].code < 14) {
+            int temp_a0 = arg3[0].code - 10;
+            setRGB0(poly, _adjust(arg3[0].r0, temp_a0), _adjust(arg3[0].g0, temp_a0),
+                _adjust(arg3[0].b0, temp_a0));
+            setRGB1(poly, _adjust(arg3[1].r0, temp_a0), _adjust(arg3[1].g0, temp_a0),
+                _adjust(arg3[1].b0, temp_a0));
+            setRGB2(poly, _adjust(arg3[0].r0, temp_a0), _adjust(arg3[0].g0, temp_a0),
+                _adjust(arg3[0].b0, temp_a0));
+            setRGB3(poly, _adjust(arg3[1].r0, temp_a0), _adjust(arg3[1].g0, temp_a0),
+                _adjust(arg3[1].b0, temp_a0));
         } else {
-            setRGB0(poly, arg3[0], arg3[1], arg3[2]);
-            setRGB1(poly, arg3[4], arg3[5], arg3[6]);
-            setRGB2(poly, arg3[0], arg3[1], arg3[2]);
-            setRGB3(poly, arg3[4], arg3[5], arg3[6]);
+            setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+            setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+            setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+            setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
         }
 
         setSemiTrans(poly, 1);
 
-        if (arg3[3] < 10) {
-            poly->clut = D_801091D8[arg2].clut + 1;
-            poly->tpage = D_801091D8[arg2].tpage | 0x20;
+        if (arg3[0].code < 10) {
+            poly->clut = _disMap[arg2].clut + 1;
+            poly->tpage = _disMap[arg2].tpage | 0x20;
         } else {
-            poly->clut = D_801091D8[arg2].clut;
-            poly->tpage = D_801091D8[arg2].tpage;
+            poly->clut = _disMap[arg2].clut;
+            poly->tpage = _disMap[arg2].tpage;
         }
 
         p = (void**)0x1F800000;
@@ -2125,25 +2121,22 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
     POLY_GT4* poly;
     void** scratch;
 
-    if ((arg0 + D_801091D8[arg2].w) < (arg4 - 0x40)) {
+    if ((arg0 + _disMap[arg2].w) < (arg4 - 0x40)) {
         scratch = (void**)0x1F800000;
         poly = scratch[0];
         setPolyGT4(poly);
-        setXY4(poly, arg0, arg1, D_801091D8[arg2].w + arg0, arg1, arg0,
-            D_801091D8[arg2].h + arg1, D_801091D8[arg2].w + arg0,
-            D_801091D8[arg2].h + arg1);
-        setUV4(poly, D_801091D8[arg2].x, D_801091D8[arg2].y,
-            D_801091D8[arg2].x + D_801091D8[arg2].w, D_801091D8[arg2].y,
-            D_801091D8[arg2].x, D_801091D8[arg2].y + D_801091D8[arg2].h,
-            D_801091D8[arg2].x + D_801091D8[arg2].w,
-            D_801091D8[arg2].y + D_801091D8[arg2].h);
+        setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0,
+            _disMap[arg2].h + arg1, _disMap[arg2].w + arg0, _disMap[arg2].h + arg1);
+        setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
+            _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
+            _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
         setRGB0(poly, arg3[0], arg3[1], arg3[2]);
         setRGB1(poly, arg3[4], arg3[5], arg3[6]);
         setRGB2(poly, arg3[0], arg3[1], arg3[2]);
         setRGB3(poly, arg3[4], arg3[5], arg3[6]);
         setSemiTrans(poly, 1);
-        poly->clut = D_801091D8[arg2].clut;
-        poly->tpage = D_801091D8[arg2].tpage;
+        poly->clut = _disMap[arg2].clut;
+        poly->tpage = _disMap[arg2].tpage;
 
         scratch = (void**)0x1F800000;
 
@@ -2156,23 +2149,23 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
     if (arg0 < arg4) {
         scratch = (void**)0x1F800000;
         poly = scratch[0];
-        var_s6 = D_801091D8[arg2].x;
+        var_s6 = _disMap[arg2].x;
 
-        for (i = 0; i < D_801091D8[arg2].w; i += 12, arg0 += 0xC, var_s6 += 0xC) {
+        for (i = 0; i < _disMap[arg2].w; i += 12, arg0 += 0xC, var_s6 += 0xC) {
 
             var_a0 = 0xC;
 
-            if ((i + 0xC) >= D_801091D8[arg2].w) {
-                var_a0 = D_801091D8[arg2].w - i;
+            if ((i + 0xC) >= _disMap[arg2].w) {
+                var_a0 = _disMap[arg2].w - i;
             }
 
             setPolyGT4(poly);
             temp_a1 = arg0 + var_a0;
-            setXY4(poly, arg0, arg1, temp_a1, arg1, arg0, D_801091D8[arg2].h + arg1,
-                temp_a1, D_801091D8[arg2].h + arg1);
-            setUV4(poly, var_s6, D_801091D8[arg2].y, var_s6 + var_a0, D_801091D8[arg2].y,
-                var_s6, D_801091D8[arg2].y + D_801091D8[arg2].h, var_s6 + var_a0,
-                D_801091D8[arg2].y + D_801091D8[arg2].h);
+            setXY4(poly, arg0, arg1, temp_a1, arg1, arg0, _disMap[arg2].h + arg1, temp_a1,
+                _disMap[arg2].h + arg1);
+            setUV4(poly, var_s6, _disMap[arg2].y, var_s6 + var_a0, _disMap[arg2].y,
+                var_s6, _disMap[arg2].y + _disMap[arg2].h, var_s6 + var_a0,
+                _disMap[arg2].y + _disMap[arg2].h);
 
             var_a0 = arg4 - arg0;
 
@@ -2205,8 +2198,8 @@ void func_80107140(int arg0, int arg1, int arg2, char* arg3, int arg4)
                 _adjust3(arg3[6] * var_a0));
 
             setSemiTrans(poly, 1);
-            poly->clut = (D_801091D8[arg2].clut + 1);
-            poly->tpage = (D_801091D8[arg2].tpage | 0x20);
+            poly->clut = (_disMap[arg2].clut + 1);
+            poly->tpage = (_disMap[arg2].tpage | 0x20);
             scratch = (void**)0x1F800000;
 
             AddPrim(scratch[1] - 0x1C, poly++);
@@ -2223,16 +2216,15 @@ void func_80107698(int arg0, int arg1, int arg2)
     int var_s2;
     void** p = (void**)0x1F800000;
     POLY_FT4* poly = p[0];
-    int unk1 = D_801091D8[arg2].y;
+    int unk1 = _disMap[arg2].y;
 
-    for (i = 0; i < D_801091D8[arg2].h; ++i, ++arg1, ++unk1) {
+    for (i = 0; i < _disMap[arg2].h; ++i, ++arg1, ++unk1) {
 
         setPolyFT4(poly);
-        setXY4(poly, arg0, arg1, D_801091D8[arg2].w + arg0, arg1, arg0, arg1 + 1,
-            D_801091D8[arg2].w + arg0, arg1 + 1);
-        setUV4(poly, D_801091D8[arg2].x, unk1, D_801091D8[arg2].x + D_801091D8[arg2].w,
-            unk1, D_801091D8[arg2].x, unk1 + 1, D_801091D8[arg2].x + D_801091D8[arg2].w,
-            unk1 + 1);
+        setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0, arg1 + 1,
+            _disMap[arg2].w + arg0, arg1 + 1);
+        setUV4(poly, _disMap[arg2].x, unk1, _disMap[arg2].x + _disMap[arg2].w, unk1,
+            _disMap[arg2].x, unk1 + 1, _disMap[arg2].x + _disMap[arg2].w, unk1 + 1);
 
         if (arg1 < 0xBE) {
             var_s2 = 0x80 - ((0xBD - arg1) * 0x10);
@@ -2244,21 +2236,20 @@ void func_80107698(int arg0, int arg1, int arg2)
             setRGB0(poly, var_s2, var_s2, var_s2);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = D_801091D8[arg2].tpage | 0x20;
+            poly->tpage = _disMap[arg2].tpage | 0x20;
 
             AddPrim(p[1] - 0x1C, poly++);
 
             setPolyFT4(poly);
-            setXY4(poly, arg0, arg1, D_801091D8[arg2].w + arg0, arg1, arg0, arg1 + 1,
-                D_801091D8[arg2].w + arg0, arg1 + 1);
-            setUV4(poly, D_801091D8[arg2].x, unk1,
-                D_801091D8[arg2].x + D_801091D8[arg2].w, unk1, D_801091D8[arg2].x,
-                unk1 + 1, D_801091D8[arg2].x + D_801091D8[arg2].w, unk1 + 1);
+            setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0, arg1 + 1,
+                _disMap[arg2].w + arg0, arg1 + 1);
+            setUV4(poly, _disMap[arg2].x, unk1, _disMap[arg2].x + _disMap[arg2].w, unk1,
+                _disMap[arg2].x, unk1 + 1, _disMap[arg2].x + _disMap[arg2].w, unk1 + 1);
 
             setRGB0(poly, var_s2, var_s2, var_s2);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = D_801091D8[arg2].tpage | 0x40;
+            poly->tpage = _disMap[arg2].tpage | 0x40;
 
             AddPrim(p[1] - 0x1C, poly++);
 
@@ -2272,20 +2263,19 @@ void func_80107698(int arg0, int arg1, int arg2)
             setRGB0(poly, var_s2, var_s2, var_s2);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = (D_801091D8[arg2].tpage | 0x20);
+            poly->tpage = (_disMap[arg2].tpage | 0x20);
 
             AddPrim(p[1] - 0x1C, poly++);
 
             setPolyFT4(poly);
-            setXY4(poly, arg0, arg1, D_801091D8[arg2].w + arg0, arg1, arg0, arg1 + 1,
-                D_801091D8[arg2].w + arg0, arg1 + 1);
-            setUV4(poly, D_801091D8[arg2].x, unk1,
-                D_801091D8[arg2].x + D_801091D8[arg2].w, unk1, D_801091D8[arg2].x,
-                unk1 + 1, D_801091D8[arg2].x + D_801091D8[arg2].w, unk1 + 1);
+            setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0, arg1 + 1,
+                _disMap[arg2].w + arg0, arg1 + 1);
+            setUV4(poly, _disMap[arg2].x, unk1, _disMap[arg2].x + _disMap[arg2].w, unk1,
+                _disMap[arg2].x, unk1 + 1, _disMap[arg2].x + _disMap[arg2].w, unk1 + 1);
             setRGB0(poly, var_s2, var_s2, var_s2);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = D_801091D8[arg2].tpage | 0x40;
+            poly->tpage = _disMap[arg2].tpage | 0x40;
 
             AddPrim(p[1] - 0x1C, poly++);
 
@@ -2293,7 +2283,7 @@ void func_80107698(int arg0, int arg1, int arg2)
             setRGB0(poly, 0x80, 0x80, 0x80);
             setSemiTrans(poly, 1);
             setClut(poly, 800, 511);
-            poly->tpage = D_801091D8[arg2].tpage;
+            poly->tpage = _disMap[arg2].tpage;
 
             AddPrim(p[1] - 0x1C, poly++);
         }
@@ -2324,12 +2314,6 @@ int _initCubePuzzleStart(void)
 
         ++_submenuState;
 
-        if (0) {
-        wat:
-            D_801099F4 = var_a0[2];
-            D_801099F6 = var_a0[3];
-            goto wat2;
-        }
     } else if (_submenuState == 1) {
         if (_iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
@@ -2367,11 +2351,14 @@ int _initCubePuzzleStart(void)
 
             for (i = 0; i < 64; ++i, var_a0 += 4) {
                 if ((var_a0[0] == room->zoneId) && (var_a0[1] == room->mapId)) {
-                    goto wat;
+                    D_801099F4 = var_a0[2];
+                    D_801099F6 = var_a0[3];
+                    break;
                 }
             }
-        wat2:
+
             vs_main_freeCdQueueSlot(_iqDisCdSlot);
+
             ++_submenuState;
         }
     } else {
@@ -2385,7 +2372,7 @@ int _initCubePuzzleStart(void)
         _buffReelSelection = 0;
         _submenuState = 0;
 
-        func_80108E38();
+        _nop0();
         return 1;
     }
 
@@ -2483,27 +2470,27 @@ int _renderCubePuzzleStart(void)
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
-    func_801085D4(0xA0, 0x40, _screenTimer);
-    func_8010873C(0x80, 0x74, _screenTimer - 0xF);
-    func_80108784(0xC0, 0x90, _screenTimer - 0x1E);
-    func_801064D4(0xD6, 0xBB, _screenTimer - 0x1E, _screenTimer);
+    _renderAverageTime(160, 64, _screenTimer);
+    func_8010873C(128, 116, _screenTimer - 15);
+    func_80108784(192, 144, _screenTimer - 30);
+    func_801064D4(214, 187, _screenTimer - 30, _screenTimer);
 
-    if (_screenTimer < 0x7FFF) {
+    if (_screenTimer < 32767) {
         ++_screenTimer;
     }
 
     if (vs_main_buttonsPressed.all & PADRright) {
-        if (_screenTimer >= 0x4E) {
+        if (_screenTimer >= 78) {
 
-            func_80045D64(0x7E, 0);
-            func_8007E0A8(0x1D, 2, 5);
+            func_80045D64(126, 0);
+            func_8007E0A8(29, 2, 5);
 
             return 1;
         }
 
-        func_80045D64(0x7E, 0);
+        func_80045D64(126, 0);
 
-        _screenTimer = 0x4E;
+        _screenTimer = 78;
     }
 
     return 0;
@@ -2585,7 +2572,7 @@ int _renderCubePuzzleEnd(void)
 
                 vs_main_scoredata.enemyKillStreak += D_8010978C[temp_s0];
 
-                func_80108E40();
+                _nop1();
 
                 return 1;
             }
@@ -2637,7 +2624,7 @@ int _renderCubePuzzleQuit(void)
 
             func_80045D64(0x7E, 0);
             func_8007E0A8(0x1D, 1, 5);
-            func_80108E40();
+            _nop1();
 
             return 1;
         }
@@ -2680,26 +2667,27 @@ void func_80108564(int arg0, int arg1)
     }
 }
 
-void func_801085D4(int arg0, int arg1, int arg2)
+void _renderAverageTime(int x, int y, int arg2)
 {
-    static P_CODE D_801097CC[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
-        { 0x80, 0x60, 0x40 } };
+    static P_CODE D_801097CC[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (arg2 < 0) {
         arg2 = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
 
     if (arg2 > 0) {
         D_801097CC[0].code = arg2;
         D_801097CC[1].code = arg2;
-        arg0 -= (D_801091D8[102].w + D_801091D8[103].w) >> 1;
+        x -= (_disMap[disIndexIq0AverageTime].w + _disMap[disIndexIq0AverageTime + 1].w)
+          >> 1;
 
-        func_80106A80(arg0, arg1, 0x66, (char*)D_801097CC);
-        func_80106A80(arg0 + D_801091D8[102].w, arg1, 0x67, (char*)(D_801097CC + 1));
+        func_80106A80(x, y, disIndexIq0AverageTime, D_801097CC);
+        func_80106A80(x + _disMap[disIndexIq0AverageTime].w, y,
+            disIndexIq0AverageTime + 1, &D_801097CC[1]);
     }
 }
 
@@ -2719,21 +2707,21 @@ void func_80108688(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_801097D8[0].code = arg2;
         D_801097D8[1].code = arg2;
-        arg0 -= (D_801091D8[105].w + D_801091D8[106].w) >> 1;
+        arg0 -= (_disMap[105].w + _disMap[106].w) >> 1;
 
-        func_80106A80(arg0, arg1, 0x69, (char*)D_801097D8);
-        func_80106A80(arg0 + D_801091D8[105].w, arg1, 0x6A, (char*)(D_801097D8 + 1));
+        func_80106A80(arg0, arg1, 0x69, D_801097D8);
+        func_80106A80(arg0 + _disMap[105].w, arg1, 0x6A, &D_801097D8[1]);
     }
 }
 
-void func_8010873C(int arg0, int arg1, int arg2)
+void func_8010873C(int x, int y, int arg2)
 {
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
 
     if (arg2 > 0) {
-        func_80105C34(arg0 - (D_801091D8[104].w >> 1), arg1, 0x68, arg2);
+        func_80105C34(x - (_disMap[104].w >> 1), y, 104, arg2);
     }
 }
 
@@ -2765,8 +2753,8 @@ void func_8010880C(int arg0, int arg1, int arg2, int arg3)
     if (arg2 > 0) {
         D_801097E4[0].code = arg2;
 
-        func_80106A80(arg0 - (D_801091D8[arg3 + 0x6B].w >> 1), arg1, arg3 + 0x6B,
-            (char*)D_801097E4);
+        func_80106A80(
+            arg0 - (_disMap[arg3 + 0x6B].w >> 1), arg1, arg3 + 0x6B, D_801097E4);
     }
 }
 
@@ -2789,7 +2777,7 @@ void func_8010887C(int arg0, int arg1, int arg2)
 
         func_80105C34(arg0, arg1, 0x48, arg2);
 
-        arg0 += D_801091D8[72].w;
+        arg0 += _disMap[72].w;
 
         if (arg2 >= 0x10) {
             temp_a3 = vs_main_stateFlags.unkA1;
@@ -2897,9 +2885,9 @@ void _calculateScore(void)
     }
 }
 
-void func_80108E38(void) { }
+void _nop0(void) { }
 
-void func_80108E40(void) { }
+void _nop1(void) { }
 
 void func_80108E48(void)
 {
@@ -2914,7 +2902,7 @@ void func_80108E48(void)
     vs_main_scoredata.bossHealCount = 0;
 }
 
-void _nop(void) { }
+void _nop2(void) { }
 
 int _getTotalStrength(void) { return vs_battle_characterState->unk3C->totalStrength; }
 

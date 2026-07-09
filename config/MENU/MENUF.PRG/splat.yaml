@@ -7,13 +7,8 @@ options:
   src_path: src/MENU/MENUF.PRG
   asset_path: build/assets/MENU/MENUF.PRG
   ld_script_path: build/config/MENU/MENUF.PRG/link.ld
-  symbol_addrs_path: 
-    - config/MENU/MENUF.PRG/symbol_addrs.txt
-    - config/SLUS_010.40/symbol_addrs.txt
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-    - config/MENU/MAINMENU.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/MENU/MENUF.PRG/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/MENU/MENUF.PRG/undefined_syms_auto.txt
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
   auto_link_sections: [.rodata, .data, .bss]
 
 segments:

@@ -40,13 +40,13 @@ static void func_801046F8(int arg0, int arg1, int arg2);
 static void func_801047D4(int arg0, int arg1, int arg2);
 static void func_8010489C(int arg0, int arg1, int arg2);
 static void func_80104914(int);
-static void func_80104B8C(int arg0, int arg1, int arg2);
+static void _renderCongratulations(int arg0, int arg1, int arg2);
 static void func_80104C40(int arg0, int arg1, int arg2, int arg3);
-static void func_80104DBC(int arg0, int arg1, int arg2, int arg3);
+static void _renderScore(int arg0, int arg1, int arg2, int arg3);
 static void func_80105020(int arg0, int arg1, int arg2, int arg3);
-static void func_8010516C(int arg0, int arg1, int arg2, int arg3);
-static void func_801053B0(int arg0, int arg1, int arg2);
-static void func_8010540C(int arg0, int arg1, int arg2);
+static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+static void _renderRiskbreakerRank(int arg0, int arg1, int arg2);
 static void func_8010559C(int arg0, int arg1, int arg2);
 static void func_8010564C(int arg0, int arg1, int arg2);
 static void func_801056E8(int arg0, int arg1, int arg2);
@@ -60,7 +60,7 @@ static void func_80105DD8(int, int, int, int, int);
 static void func_80105F6C(int, int, int, int, int);
 void func_801060A8(int, int, int, int);
 static void func_801064D4(int, int, int, int);
-static void func_8010664C(int, int, int, char*);
+static void func_8010664C(int, int, int, P_CODE colors[]);
 static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
 static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
 static int _initCubePuzzleStart(void);
@@ -536,7 +536,19 @@ int _execMenu(void)
     return ret;
 }
 
-enum disIndices { disIndexIq0AverageTime = 102 };
+enum disIndices {
+    disIndexRank0Comma = 10,
+    disIndexRank0Bonus,
+    disIndexRank0RiskbreakerRank,
+    disIndexRank0Score = 18,
+    disIndexRank0Percent,
+    disIndexRank0Pts,
+    disIndexRank0MapCompleted,
+    disIndexRank0Congratulations,
+    disIndexRank0Plus = 24,
+    disIndexRank0Colon = 26,
+    disIndexIq0AverageTime = 102,
+};
 
 static _texture_t _disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
@@ -667,10 +679,14 @@ static _texture_t _disMap[] = {
     { 0, 48, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
     { 0, 72, 160, 24, getTPage(0, 0, 832, 256), getClut(832, 511) },
 };
-static u_char D_801095D0[] = { 0x3, 0x1B, 0x1C, 0x1D, 0x2, 0x1B, 0x1E, 0, 0x2, 0x22, 0x25,
-    0, 0x2, 0x20, 0x21, 0, 0x2, 0x42, 0x43, 0, 0x2, 0x23, 0x24, 0, 0x2, 0x1C, 0x1F, 0,
-    0x2, 0x2C, 0x1C, 0, 0x2, 0x37, 0x38, 0, 0x1, 0x1E, 0, 0, 0x1, 0x3B, 0, 0, 0x1, 0x39,
-    0, 0, 0x1, 0x21, 0, 0, 0x1, 0x2A, 0, 0, 0x1, 0x1F, 0, 0, 0x2, 0x3C, 0x41, 0 };
+
+/**
+ * First element == word count, followed by word lengths
+ */
+static u_char _riskbreakerRanks[][4] = { { 3, 27, 28, 29 }, { 2, 27, 30 }, { 2, 34, 37 },
+    { 2, 32, 33 }, { 2, 66, 67 }, { 2, 35, 36 }, { 2, 28, 31 }, { 2, 44, 28 },
+    { 2, 55, 56 }, { 1, 30 }, { 1, 59 }, { 1, 57 }, { 1, 33 }, { 1, 42 }, { 1, 31 },
+    { 2, 60, 65 } };
 
 enum BuffReelStats {
     buffReelStatStr = 13,
@@ -714,11 +730,11 @@ int _renderCongratulationsScreen(void)
             vs_main_playSfxDefault(0x7E, 0x78);
         }
 
-        func_80104B8C(160, 40, _screenTimer);
-        func_80104DBC(160, 80, _screenTimer - 32, D_801098A0);
-        func_8010516C(160, 102, _screenTimer - 112, D_801098A0);
-        func_801053B0(160, 138, _screenTimer - 192);
-        func_8010540C(160, 154, _screenTimer - 208);
+        _renderCongratulations(160, 40, _screenTimer);
+        _renderScore(160, 80, _screenTimer - 32, D_801098A0);
+        _renderMapCompletion(160, 102, _screenTimer - 112, D_801098A0);
+        _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
+        _renderRiskbreakerRank(160, 154, _screenTimer - 208);
         func_801060A8(130, 190, _screenTimer - 272, D_801098A0);
     }
 
@@ -799,16 +815,16 @@ int _renderCongratulationsScreen(void)
         }
     } else {
 
-        func_80104B8C(160, 40, 8 - D_80109864);
+        _renderCongratulations(160, 40, 8 - D_80109864);
         func_80104C40(160, 80, 8 - D_80109864, 3);
         func_80105020(160, 102, 8 - D_80109864, 3);
-        func_801053B0(160, 138, 8 - D_80109864);
-        func_8010540C(160, 154, 8 - D_80109864);
+        _renderRiskbreakerRankHeader(160, 138, 8 - D_80109864);
+        _renderRiskbreakerRank(160, 154, 8 - D_80109864);
         func_801060A8(130, 190, 8 - D_80109864, 3);
 
         if (D_80109864 >= 8) {
-            int amount = _buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].amount;
-            switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection >> 4].stat
+            int amount = _buffReels[_buffReelIndex][(char)_buffReelSelection / 16].amount;
+            switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection / 16].stat
                             - 13)) {
             case 0:
                 _raiseMaxStrength(amount);
@@ -1283,25 +1299,28 @@ void func_80104A50(int arg0)
     LoadImage(&sp10, (u_long*)_timBuf);
 }
 
-void func_80104B8C(int arg0, int arg1, int arg2)
+void _renderCongratulations(int x, int y, int timer)
 {
-    static P_CODE D_80109738[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
+    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_80109738[0].code = arg2;
-        D_80109738[1].code = arg2;
-        arg0 -= (_disMap[22].w + _disMap[23].w) >> 1;
+    if (timer > 0) {
+        colors[0].code = timer;
+        colors[1].code = timer;
+        x -= (_disMap[disIndexRank0Congratulations].w
+                 + _disMap[disIndexRank0Congratulations + 1].w)
+          >> 1;
 
-        _renderTexturePopIn(arg0, arg1, 22, D_80109738);
-        _renderTexturePopIn(arg0 + _disMap[22].w, arg1, 23, &D_80109738[1]);
+        _renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
+        _renderTexturePopIn(x + _disMap[disIndexRank0Congratulations].w, y,
+            disIndexRank0Congratulations + 1, &colors[1]);
     }
 }
 
@@ -1329,34 +1348,34 @@ void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         new_var = _disMap[18].w + _disMap[26].w;
         arg0 -= (((_disMap[10].w * 2) + (new_var + _disMap[20].w)) + 0x74) >> 1;
 
-        func_8010664C(arg0, arg1, 0x12, (char*)D_80109744);
+        func_8010664C(arg0, arg1, 0x12, D_80109744);
 
         arg0 += _disMap[18].w;
 
-        func_8010664C(arg0, arg1 + 7, 0x1A, (char*)D_80109744);
+        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109744);
 
         i = 2;
         arg0 = (arg0 + i) + _disMap[26].w;
 
         for (i = 0; i < 9; ++i) {
-            func_8010664C(arg0, arg1 + 3, buf[i] - '0', (char*)D_80109744);
+            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109744);
 
             arg0 += 0xC;
 
             if ((i == 2) || (i == 5)) {
-                func_8010664C(arg0, arg1 + 0xE, 0xA, (char*)D_80109744);
+                func_8010664C(arg0, arg1 + 0xE, 0xA, D_80109744);
 
                 arg0 += _disMap[10].w + 3;
             }
         }
 
-        func_8010664C(arg0, arg1 + 8, 0x14, (char*)D_80109744);
+        func_8010664C(arg0, arg1 + 8, 0x14, D_80109744);
     }
 }
 
-void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    static P_CODE D_8010974C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[16];
     int temp_s2;
@@ -1366,8 +1385,8 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     if (arg2 < 0) {
         arg2 = 0;
     }
-    if (arg2 >= 0x41) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
     if (arg2 <= 0) {
         return;
@@ -1376,7 +1395,7 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     temp_s2 = arg0 + (arg2 * 8);
 
     if (_score != 0) {
-        if (arg2 >= 0x20) {
+        if (arg2 >= 32) {
             if (D_80109898 == 0) {
                 D_801099EC = 1;
 
@@ -1393,41 +1412,42 @@ void func_80104DBC(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         }
     }
 
-    if (arg2 >= 0x20) {
-        D_80109898 = (_score >> 5) * (arg2 - 0x20);
+    if (arg2 >= 32) {
+        D_80109898 = (_score >> 5) * (arg2 - 32);
     }
 
-    if (arg2 == 0x40) {
+    if (arg2 == 64) {
         D_80109898 = _score;
     }
 
     sprintf(buf, "%09d", D_80109898);
 
-    v = _disMap[18].w + _disMap[26].w + _disMap[20].w;
-    arg0 -= (((_disMap[10].w * 2) + v) + 0x74) >> 1;
+    v = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+      + _disMap[disIndexRank0Pts].w;
+    arg0 -= (((_disMap[disIndexRank0Comma].w * 2) + v) + 116) >> 1;
 
-    _renderTextureWipe(arg0, arg1, 0x12, D_8010974C, temp_s2);
+    _renderTextureWipe(arg0, arg1, disIndexRank0Score, colors, temp_s2);
 
-    arg0 += _disMap[18].w;
+    arg0 += _disMap[disIndexRank0Score].w;
 
-    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_8010974C, temp_s2);
+    _renderTextureWipe(arg0, arg1 + 7, disIndexRank0Colon, colors, temp_s2);
 
     i = 2;
-    arg0 = arg0 + i + _disMap[26].w;
+    arg0 = arg0 + i + _disMap[disIndexRank0Colon].w;
 
     for (i = 0; i < 9; ++i) {
-        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', D_8010974C, temp_s2);
+        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', colors, temp_s2);
 
-        arg0 += 0xC;
+        arg0 += 12;
 
         if ((i == 2) || (i == 5)) {
-            _renderTextureWipe(arg0, arg1 + 0xE, 0xA, D_8010974C, temp_s2);
+            _renderTextureWipe(arg0, arg1 + 14, disIndexRank0Comma, colors, temp_s2);
 
-            arg0 += 3 + _disMap[10].w;
+            arg0 += 3 + _disMap[disIndexRank0Comma].w;
         }
     }
 
-    _renderTextureWipe(arg0, arg1 + 8, 0x14, D_8010974C, temp_s2);
+    _renderTextureWipe(arg0, arg1 + 8, 0x14, colors, temp_s2);
 }
 
 void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
@@ -1453,27 +1473,27 @@ void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         arg0 -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
         i = 2;
 
-        func_8010664C(arg0, arg1, 0x15, (char*)D_80109754);
+        func_8010664C(arg0, arg1, 0x15, D_80109754);
 
         arg0 += _disMap[21].w;
 
-        func_8010664C(arg0, arg1 + 7, 0x1A, (char*)D_80109754);
+        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109754);
 
         arg0 = arg0 + i + _disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
-            func_8010664C(arg0, arg1 + 3, buf[i] - '0', (char*)D_80109754);
+            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109754);
 
             arg0 += 0xC;
         }
 
-        func_8010664C(arg0, arg1 + 8, 0x13, (char*)D_80109754);
+        func_8010664C(arg0, arg1 + 8, 0x13, D_80109754);
     }
 }
 
-void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    static P_CODE D_8010975C[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[8];
     int temp_s4;
@@ -1483,8 +1503,8 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         arg2 = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
 
     if (arg2 <= 0) {
@@ -1512,9 +1532,9 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
         }
     }
 
-    if (arg2 >= 0x20) {
-        if (_mapCompletion >= 0x20) {
-            D_80109894 = (_mapCompletion * (arg2 - 0x20)) >> 5;
+    if (arg2 >= 32) {
+        if (_mapCompletion >= 32) {
+            D_80109894 = (_mapCompletion * (arg2 - 32)) >> 5;
         } else if (D_80109894 < _mapCompletion) {
             ++D_80109894;
         }
@@ -1522,79 +1542,79 @@ void func_8010516C(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     sprintf(buf, "%03d", D_80109894);
 
-    arg0 -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
+    arg0 -= (_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
+                + _disMap[disIndexRank0Percent].w + 38)
+         >> 1;
 
-    _renderTextureWipe(arg0, arg1, 0x15, D_8010975C, temp_s4);
+    _renderTextureWipe(arg0, arg1, disIndexRank0MapCompleted, colors, temp_s4);
 
-    arg0 += _disMap[21].w;
+    arg0 += _disMap[disIndexRank0MapCompleted].w;
     i = 2;
 
-    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_8010975C, temp_s4);
-    arg0 = arg0 + i + _disMap[26].w;
+    _renderTextureWipe(arg0, arg1 + 7, disIndexRank0Colon, colors, temp_s4);
+    arg0 = arg0 + i + _disMap[disIndexRank0Colon].w;
 
     for (i = 0; i < 3; ++i) {
-        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', D_8010975C, temp_s4);
+        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', colors, temp_s4);
 
-        arg0 += 0xC;
+        arg0 += 12;
     }
 
-    _renderTextureWipe(arg0, arg1 + 8, 0x13, D_8010975C, temp_s4);
+    _renderTextureWipe(arg0, arg1 + 8, disIndexRank0Percent, colors, temp_s4);
 }
 
-void func_801053B0(int arg0, int arg1, int arg2)
+void _renderRiskbreakerRankHeader(int x, int y, int timer)
 {
-    static P_CODE D_80109764[] = { { 0xC8, 0x50, 0x14 }, { 0xC8, 0x50, 0x14 } };
+    static P_CODE colors[] = { { 200, 80, 20 }, { 200, 80, 20 } };
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_80109764[0].code = arg2;
+    if (timer > 0) {
+        colors[0].code = timer;
 
-        func_8010664C(arg0 - (_disMap[12].w >> 1), arg1, 0xC, (char*)D_80109764);
+        func_8010664C(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
+            disIndexRank0RiskbreakerRank, colors);
     }
 }
 
-void func_8010540C(int arg0, int arg1, int arg2)
+void _renderRiskbreakerRank(int x, int y, int timer)
 {
-    static P_CODE D_8010976C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
+    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
-    int var_a0;
+    int xInset;
     int i;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 >= 0x41) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    var_a0 = 0;
+    xInset = 0;
 
-    if (arg2 > 0) {
+    if (timer > 0) {
 
-        D_8010976C[0].code = arg2;
+        colors[0].code = timer;
 
-        for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
-            var_a0 += _disMap[D_801095D0[i + 1 + (_rank * 4)]].w;
+        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
+            xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
         }
 
-        var_a0 /= 2;
-        arg0 -= var_a0;
+        xInset /= 2;
+        x -= xInset;
 
-        for (i = 0; i < D_801095D0[_rank * 4]; ++i) {
-            int new_var2 = 1;
+        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
+            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], colors);
 
-            _renderTexturePopIn(
-                arg0, arg1, D_801095D0[i + (_rank * 4 + new_var2)], &D_8010976C[0]);
-
-            arg0 += _disMap[D_801095D0[i + (_rank * 4 + new_var2)]].w;
+            x += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
         }
     }
 }
@@ -1931,8 +1951,98 @@ void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-// https://decomp.me/scratch/QECGI
-INCLUDE_ASM("build/src/MENU/MENUF.PRG/nonmatchings/3B8", func_801060A8);
+void func_80107698(int x, int y, int texId);
+
+void func_801060A8(int x, int y, int timer, int arg3)
+{
+    static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
+
+    RECT sp18;
+    char sp20[8];
+    DR_AREA* area;
+    int i;
+    int j;
+    void** p;
+    void** q;
+    int new_var2;
+    int v1;
+    int len;
+    int temp;
+
+    if (timer < 0) {
+        timer = 0;
+    }
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    if (timer > 0) {
+        D_80109784[0].code = timer;
+        x -= (_disMap[11].w + _disMap[26].w + _disMap[14].w + _disMap[24].w + 0xE) >> 1;
+        func_8010664C(x, y, 0xB, D_80109784);
+        x += _disMap[11].w;
+        func_8010664C(x, y, 0x1A, D_80109784);
+        x += 2 + _disMap[26].w;
+        new_var2 = 0x10;
+        p = (void**)0x1F800000;
+        area = p[0];
+        SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
+        AddPrim(p[1] - 0x1C, area++);
+        p[0] = area;
+
+        if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 0x140) {
+            sp18.x = 0x140;
+        } else {
+            sp18.x = 0;
+        }
+        sp18.y = y - (D_8010988C >> 3);
+        sp18.w = 0x140;
+        sp18.h = ((D_8010988C >> 3) * 2) + new_var2;
+
+        if (arg3 < 2) {
+            int a0 = x;
+            int new_var;
+            y += 8 + (_buffReelSelection & 0xF);
+
+            for (i = 0; i < 3; ++i) {
+                x = a0;
+                new_var = i - 1;
+                v1 = (_buffReelSelection / 16);
+                v1 += new_var;
+                temp = v1 & 0xF;
+                func_80107698(x, y - 1, _buffReels[_buffReelIndex][v1 & 0xF].stat);
+                x += _disMap[_buffReels[_buffReelIndex][v1 & 0xF].stat].w;
+                func_80107698(x, y + 4, 0x18);
+                x += _disMap[24].w;
+                sprintf(sp20, "%d", _buffReels[_buffReelIndex][v1 & 0xF].amount);
+                len = strlen(sp20);
+                for (j = 0; j < len; ++j) {
+                    func_80107698(x, y - 1, sp20[j] - 0x30);
+                    x += 0xC;
+                }
+                y -= 16;
+            }
+
+        } else {
+            temp = (char)_buffReelSelection / 16;
+            func_80105DD8(x, y - 1, _buffReels[_buffReelIndex][temp].stat, timer, 0x7FF2);
+            x += _disMap[_buffReels[_buffReelIndex][temp].stat].w;
+            func_80105DD8(x, y + 4, 0x18, timer, 0x7FF2);
+            x += _disMap[24].w;
+            sprintf(sp20, "%d", _buffReels[_buffReelIndex][temp].amount);
+            len = strlen(sp20);
+            for (j = 0; j < len; ++j) {
+                func_80105DD8(x, y - 1, sp20[j] - 0x30, timer, 0x7FF2);
+                x += 0xC;
+            }
+        }
+        q = (void**)0x1F800000;
+        area = q[0];
+        SetDrawArea(area, &sp18);
+        AddPrim(q[1] - 0x1C, area++);
+        q[0] = area;
+    }
+}
 
 void func_801064D4(int arg0, int arg1, int arg2, int arg3)
 {
@@ -1983,12 +2093,12 @@ void func_801064D4(int arg0, int arg1, int arg2, int arg3)
     p[0] = poly;
 }
 
-void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
+void func_8010664C(int arg0, int arg1, int arg2, P_CODE arg3[])
 {
     POLY_GT4* poly;
     void** p;
 
-    if (arg3[3] != 0) {
+    if (arg3[0].code != 0) {
         poly = *(void**)0x1F800000;
         setPolyGT4(poly);
         setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0,
@@ -1996,25 +2106,25 @@ void func_8010664C(int arg0, int arg1, int arg2, char* arg3)
         setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
             _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
             _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
-        if (arg3[3] < 8) {
-            setRGB0(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
-                (arg3[2] * arg3[3]) / 8);
-            setRGB1(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
-                (arg3[6] * arg3[3]) / 8);
-            setRGB2(poly, (arg3[0] * arg3[3]) / 8, (arg3[1] * arg3[3]) / 8,
-                (arg3[2] * arg3[3]) / 8);
-            setRGB3(poly, (arg3[4] * arg3[3]) / 8, (arg3[5] * arg3[3]) / 8,
-                (arg3[6] * arg3[3]) / 8);
+        if (arg3[0].code < 8) {
+            setRGB0(poly, (arg3[0].r0 * arg3[0].code) / 8,
+                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
+            setRGB1(poly, (arg3[1].r0 * arg3[0].code) / 8,
+                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
+            setRGB2(poly, (arg3[0].r0 * arg3[0].code) / 8,
+                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
+            setRGB3(poly, (arg3[1].r0 * arg3[0].code) / 8,
+                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
         } else {
-            setRGB0(poly, arg3[0], arg3[1], arg3[2]);
-            setRGB1(poly, arg3[4], arg3[5], arg3[6]);
-            setRGB2(poly, arg3[0], arg3[1], arg3[2]);
-            setRGB3(poly, arg3[4], arg3[5], arg3[6]);
+            setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+            setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+            setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+            setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
         }
 
         setSemiTrans(poly, 1);
 
-        if (arg3[3] < 8) {
+        if (arg3[0].code < 8) {
             poly->clut = _disMap[arg2].clut + 1;
             poly->tpage = _disMap[arg2].tpage | 0x20;
         } else {
@@ -2502,7 +2612,6 @@ int _renderCubePuzzleStart(void)
     return 0;
 }
 
-static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
 static int D_8010978C[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000,
     7000, 8000, 9000, 10000, 20000 };
 

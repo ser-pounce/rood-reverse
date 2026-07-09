@@ -34,11 +34,11 @@ static int _execMenu(void);
 static int _renderCongratulationsScreen(void);
 static int _renderTimeAttackEnd(void);
 static int _renderTimeAttackStart(void);
-static void func_8010459C(int arg0, int arg1, int arg2);
-static void func_80104650(int arg0, int arg1, int arg2);
-static void func_801046F8(int arg0, int arg1, int arg2);
-static void func_801047D4(int arg0, int arg1, int arg2);
-static void func_8010489C(int arg0, int arg1, int arg2);
+static void _renderTimeAttackHeader(int x, int y, int timer);
+static void _renderCourse(int arg0, int arg1, int arg2);
+static void _renderBossName(int arg0, int arg1, int arg2);
+static void _renderBestTimeHeader(int arg0, int arg1, int arg2);
+static void _renderStartCountdown(int arg0, int arg1, int arg2);
 static void func_80104914(int);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
 static void _renderScore(int arg0, int arg1, int arg2, int arg3);
@@ -59,7 +59,7 @@ static void func_80105C34(int, int, int, int);
 static void func_80105DD8(int, int, int, int, int);
 static void func_80105F6C(int, int, int, int, int);
 void _renderStatWheel(int, int, int, int);
-static void func_801064D4(int, int, int, int);
+static void _renderPressButtonPrompt(int, int, int, int);
 static void func_8010664C(int, int, int, P_CODE colors[]);
 static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
 static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
@@ -164,7 +164,7 @@ static int _rank;
 static int _clearCount;
 static u_int _score;
 static u_int _mapCompletion;
-static u_int D_8010988C;
+static u_int _buffReelSpinSpeed;
 static int _buffReelIndex;
 static int _onScreenMapCompletion;
 static int _onScreenScore;
@@ -237,7 +237,7 @@ int _initCongratulationsScreen(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        D_8010988C = 0;
+        _buffReelSpinSpeed = 0;
         _buffReelSelection = (rand() & 0xF0) | 8;
 
         strength = _getTotalStrength();
@@ -414,7 +414,7 @@ int _initTimeAttackEnd(void)
         _newTimeSlot = i;
         _screenTimer = 0;
         _screenState = 0;
-        D_8010988C = 0;
+        _buffReelSpinSpeed = 0;
         _submenuState = 0;
 
         vs_main_freeHeapR(timData);
@@ -479,7 +479,7 @@ int _initTimeAttackStart(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        D_8010988C = 0;
+        _buffReelSpinSpeed = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
         return 1;
@@ -547,6 +547,13 @@ enum disIndices {
     disIndexRank0Congratulations,
     disIndexRank0Plus = 24,
     disIndexRank0Colon = 26,
+    disIndexAttack0Course = 84,
+    disIndexAttack0Minotaur,
+    disIndexAttack0Death = 91,
+    disIndexAttack0OgreZombie = 93,
+    disIndexAttack0BestTime = 95,
+    disIndexAttack0Three,
+    disIndexAttack0TimeAttack = 100,
     disIndexIq0AverageTime = 102,
 };
 
@@ -717,12 +724,12 @@ static _buffReels_t _buffReels[][16] = {
         { buffReelStatStr, 1 } }
 };
 
-static int D_801099EC;
-static int D_801099F0;
+static int _incrementingScore;
+static int _incrementingMapCompletion;
 
 int _renderCongratulationsScreen(void)
 {
-    static int frameCount;
+    static int _stateTimer;
 
     if (_screenState != 3) {
         if (_screenTimer == 208) {
@@ -739,19 +746,19 @@ int _renderCongratulationsScreen(void)
     }
 
     if (_screenState == 0) {
-        _buffReelSelection = (_buffReelSelection + (D_8010988C >> 3)) & 0xFF;
+        _buffReelSelection = (_buffReelSelection + (_buffReelSpinSpeed >> 3)) & 0xFF;
         if ((_screenTimer - 272) > 0) {
 
-            if (D_8010988C == 8) {
+            if (_buffReelSpinSpeed == 8) {
                 vs_main_playSfxDefault(0x7E, 0x74);
                 vs_main_playSfxDefault(0x7E, 0x75);
             }
 
-            if (D_8010988C < 48) {
+            if (_buffReelSpinSpeed < 48) {
                 if (_screenTimer > 288) {
-                    ++D_8010988C;
+                    ++_buffReelSpinSpeed;
 
-                    func_801064D4(0xD6, 0xBB, D_8010988C, _screenTimer);
+                    _renderPressButtonPrompt(214, 187, _buffReelSpinSpeed, _screenTimer);
                 }
             } else {
                 if ((vs_main_buttonsPressed.all & PADRright) || _screenTimer > 2072) {
@@ -761,7 +768,7 @@ int _renderCongratulationsScreen(void)
                     }
 
                     _screenState = 1;
-                    frameCount = 0;
+                    _stateTimer = 0;
 
                     func_80045BFC(0x7E, 0x74, 0x40, 0x30);
                     func_80045BFC(0x7E, 0x75, 0x40, 0x30);
@@ -769,36 +776,36 @@ int _renderCongratulationsScreen(void)
                     func_80045C74(0x7E, 0x75, -0x10, 0x30);
                 }
 
-                func_801064D4(0xD6, 0xBB, 0x30, _screenTimer);
+                _renderPressButtonPrompt(214, 187, 48, _screenTimer);
             }
         } else if (vs_main_buttonsPressed.all & PADRright) {
 
             func_80045D64(0x7E, 0);
 
             _screenTimer = 272;
-            D_801099EC = 0;
-            D_801099F0 = 0;
+            _incrementingScore = 0;
+            _incrementingMapCompletion = 0;
             _onScreenMapCompletion = _mapCompletion;
             _onScreenScore = _score;
         }
     } else if (_screenState == 1) {
         int temp_v1;
-        int temp_a2_2 = 48 - frameCount;
+        int temp_a2_2 = 48 - _stateTimer;
 
         if (temp_a2_2 > 0) {
-            func_801064D4(0xD6, 0xBB, temp_a2_2, _screenTimer);
+            _renderPressButtonPrompt(0xD6, 0xBB, temp_a2_2, _screenTimer);
         }
 
-        temp_v1 = _buffReelSelection + (D_8010988C >> 3);
+        temp_v1 = _buffReelSelection + (_buffReelSpinSpeed >> 3);
         _buffReelSelection = temp_v1 & 0xFF;
 
-        if (D_8010988C >= 9) {
-            --D_8010988C;
+        if (_buffReelSpinSpeed >= 9) {
+            --_buffReelSpinSpeed;
         }
 
         temp_v1 &= 0xF;
 
-        if ((temp_v1 == 8) && (D_8010988C == temp_v1)) {
+        if ((temp_v1 == 8) && (_buffReelSpinSpeed == temp_v1)) {
 
             func_80045D64(0x7E, 0x74);
             func_80045D64(0x7E, 0x75);
@@ -806,23 +813,23 @@ int _renderCongratulationsScreen(void)
             vs_main_playSfxDefault(0x7E, 0x78);
 
             _screenState = 2;
-            frameCount = 0;
+            _stateTimer = 0;
         }
     } else if (_screenState == 2) {
-        if ((vs_main_buttonsPressed.all & PADRright) || (frameCount > 450)) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (_stateTimer > 450)) {
             _screenState = 3;
-            frameCount = 0;
+            _stateTimer = 0;
         }
     } else {
 
-        _renderCongratulations(160, 40, 8 - frameCount);
-        _renderScore(160, 80, 8 - frameCount, 3);
-        _renderMapCompletion(160, 102, 8 - frameCount, 3);
-        _renderRiskbreakerRankHeader(160, 138, 8 - frameCount);
-        _renderRiskbreakerRank(160, 154, 8 - frameCount);
-        _renderStatWheel(130, 190, 8 - frameCount, 3);
+        _renderCongratulations(160, 40, 8 - _stateTimer);
+        _renderScore(160, 80, 8 - _stateTimer, 3);
+        _renderMapCompletion(160, 102, 8 - _stateTimer, 3);
+        _renderRiskbreakerRankHeader(160, 138, 8 - _stateTimer);
+        _renderRiskbreakerRank(160, 154, 8 - _stateTimer);
+        _renderStatWheel(130, 190, 8 - _stateTimer, 3);
 
-        if (frameCount >= 8) {
+        if (_stateTimer >= 8) {
             int amount = _buffReels[_buffReelIndex][(char)_buffReelSelection / 16].amount;
             switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection / 16].stat
                             - 13)) {
@@ -854,14 +861,14 @@ int _renderCongratulationsScreen(void)
         }
     }
 
-    ++frameCount;
+    ++_stateTimer;
     ++_screenTimer;
     return 0;
 }
 
 int _renderTimeAttackEnd(void)
 {
-    int var_v0 = rsin(D_8010988C);
+    int var_v0 = rsin(_buffReelSpinSpeed);
 
     if (var_v0 < 0) {
         var_v0 = -var_v0;
@@ -873,7 +880,7 @@ int _renderTimeAttackEnd(void)
 
     func_80104914(var_v0 >> 8);
 
-    D_8010988C = (D_8010988C + 0x40) & 0xFFF;
+    _buffReelSpinSpeed = (_buffReelSpinSpeed + 0x40) & 0xFFF;
 
     if (_screenState == 0) {
         if (_screenTimer == 0x30) {
@@ -975,8 +982,6 @@ static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
     { 0x107A, 0x107A, 0x1000 } };
 static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 }, { 0x40, 0x80, 0xDC },
     { 0x80, 0x80, 0x80 } };
-static P_CODE D_8010972C[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
-    { 0x80, 0x60, 0x40 } };
 
 int _renderTimeAttackStart(void)
 {
@@ -990,10 +995,10 @@ int _renderTimeAttackStart(void)
             vs_main_playSfxDefault(0x7E, 0x7C);
         }
 
-        func_8010459C(160, 48, _screenTimer);
-        func_80104650(160, 92, _screenTimer - 15);
-        func_801046F8(160, 120, _screenTimer - 30);
-        func_801047D4(160, 156, _screenTimer - 45);
+        _renderTimeAttackHeader(160, 48, _screenTimer);
+        _renderCourse(160, 92, _screenTimer - 15);
+        _renderBossName(160, 120, _screenTimer - 30);
+        _renderBestTimeHeader(160, 156, _screenTimer - 45);
 
         ++_screenTimer;
 
@@ -1007,10 +1012,10 @@ int _renderTimeAttackStart(void)
     } else if (_screenState == 1) {
         --_screenTimer;
 
-        func_8010459C(160, 48, _screenTimer);
-        func_80104650(160, 92, _screenTimer);
-        func_801046F8(160, 120, _screenTimer);
-        func_801047D4(160, 156, _screenTimer);
+        _renderTimeAttackHeader(160, 48, _screenTimer);
+        _renderCourse(160, 92, _screenTimer);
+        _renderBossName(160, 120, _screenTimer);
+        _renderBestTimeHeader(160, 156, _screenTimer);
 
         if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer == 0)) {
             _screenState = 2;
@@ -1073,7 +1078,7 @@ int _renderTimeAttackStart(void)
                 var_a3 = 45;
             }
 
-            func_8010489C(0xA0, 0x78, var_a3);
+            _renderStartCountdown(160, 120, var_a3);
 
         } else {
             var_a3 = _screenTimer % 15;
@@ -1084,7 +1089,7 @@ int _renderTimeAttackStart(void)
 
             var_a3 = D_801096D0[var_a3];
 
-            func_8010489C(var_a3 + 0xA0, 0x78, _screenTimer);
+            _renderStartCountdown(var_a3 + 160, 120, _screenTimer);
         }
 
         ++_screenTimer;
@@ -1105,98 +1110,101 @@ int _renderTimeAttackStart(void)
     return 0;
 }
 
-void func_8010459C(int arg0, int arg1, int arg2)
+void _renderTimeAttackHeader(int x, int y, int timer)
 {
-    if (arg2 < 0) {
-        arg2 = 0;
-    }
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
-    }
-    if (arg2 > 0) {
+    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 },
+        { 128, 96, 64 } };
 
-        D_8010972C[0].code = arg2;
-        D_8010972C[1].code = arg2;
-        arg0 -= (_disMap[100].w + _disMap[101].w) >> 1;
+    if (timer < 0) {
+        timer = 0;
+    }
+    if (timer > 0x40) {
+        timer = 0x40;
+    }
+    if (timer > 0) {
 
-        _renderTexturePopIn(arg0, arg1, 0x64, D_8010972C);
-        _renderTexturePopIn(arg0 + _disMap[100].w, arg1, 0x65, &D_8010972C[1]);
+        colors[0].code = timer;
+        colors[1].code = timer;
+        x -= (_disMap[disIndexAttack0TimeAttack].w + _disMap[disIndexAttack0TimeAttack + 1].w) >> 1;
+
+        _renderTexturePopIn(x, y, 100, colors);
+        _renderTexturePopIn(x + _disMap[disIndexAttack0TimeAttack].w, y, disIndexAttack0TimeAttack + 1, &colors[1]);
     }
 }
 
-void func_80104650(int arg0, int arg1, int arg2)
+void _renderCourse(int x, int y, int timer)
 {
     int new_var;
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        arg0 -= (_disMap[84].w + 0x18) >> 1;
+    if (timer > 0) {
+        x -= (_disMap[disIndexAttack0Course].w + 24) >> 1;
 
-        func_80105C34(arg0, arg1, 0x54, arg2);
+        func_80105C34(x, y, disIndexAttack0Course, timer);
 
-        new_var = arg0 + 0xC;
+        new_var = x + 12;
 
-        func_80105DD8(new_var + _disMap[84].w, arg1 - 1,
-            vs_main_stateFlags.timeTrialBoss + 1, arg2, 0x7FF4);
+        func_80105DD8(new_var + _disMap[disIndexAttack0Course].w, y - 1,
+            vs_main_stateFlags.timeTrialBoss + 1, timer, 0x7FF4);
     }
 }
 
-void func_801046F8(int arg0, int arg1, int arg2)
+void _renderBossName(int x, int y, int timer)
 {
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
+    if (timer > 0) {
         if (vs_main_stateFlags.timeTrialBoss != 6) {
 
             func_80105C34(
-                arg0 - (_disMap[vs_main_stateFlags.timeTrialBoss + 0x55].w >> 1), arg1,
-                vs_main_stateFlags.timeTrialBoss + 0x55, arg2);
+                x - (_disMap[vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur].w >> 1), y,
+                vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur, timer);
 
         } else {
-            arg0 -= (_disMap[91].w + _disMap[93].w) >> 1;
+            x -= (_disMap[disIndexAttack0Death].w + _disMap[disIndexAttack0OgreZombie].w) >> 1;
 
-            func_80105C34(arg0, arg1, 0x5B, arg2);
+            func_80105C34(x, y, disIndexAttack0Death, timer);
 
-            arg0 += _disMap[91].w;
+            x += _disMap[disIndexAttack0Death].w;
 
-            func_80105C34(arg0, arg1, 0x5D, arg2);
+            func_80105C34(x, y, disIndexAttack0OgreZombie, timer);
         }
     }
 }
 
-void func_801047D4(int arg0, int arg1, int arg2)
+void _renderBestTimeHeader(int x, int y, int timer)
 {
-    int new_var;
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        arg0 -= (_disMap[95].w + 0x60) >> 1;
+    if (timer > 0) {
+        int new_var;
+        x -= (_disMap[disIndexAttack0BestTime].w + 96) >> 1;
 
-        func_80105C34(arg0, arg1, 0x5F, arg2);
+        func_80105C34(x, y, disIndexAttack0BestTime, timer);
 
-        arg0++;
-        new_var = arg0 + 0xB;
+        x++;
+        new_var = x + 11;
 
-        func_80105F6C(new_var + _disMap[95].w, arg1 + 2, arg2,
+        func_80105F6C(new_var + _disMap[disIndexAttack0BestTime].w, y + 2, timer,
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0]
                 .time,
             0);
     }
 }
 
-void func_8010489C(int arg0, int arg1, int arg2)
+void _renderStartCountdown(int x, int y, int timer)
 {
-    int temp_a2 = (arg2 / 15) + 96;
+    int temp_a2 = (timer / 15) + disIndexAttack0Three;
 
-    func_80105C34(arg0 - (_disMap[temp_a2].w >> 1), arg1 - (_disMap[temp_a2].h >> 1),
-        temp_a2, arg2 % 15);
+    func_80105C34(x - (_disMap[temp_a2].w / 2), y - (_disMap[temp_a2].h / 2),
+        temp_a2, timer % 15);
 }
 
 void func_80104914(int arg0)
@@ -1212,10 +1220,10 @@ void func_80104914(int arg0)
 
     for (i = 0; i < 32; ++i) {
 
-        var_a1_2 = _timBuf[0x80 + i];
+        var_a1_2 = _timBuf[128 + i];
 
-        var_a1 = ((_timBuf[0x20 + i] & 0x1F) * arg0)
-               + ((_timBuf[0x60 + i] & 0x1F) * (0x10 - arg0));
+        var_a1 = ((_timBuf[32 + i] & 0x1F) * arg0)
+               + ((_timBuf[96 + i] & 0x1F) * (0x10 - arg0));
 
         if (var_a1 < 0) {
             var_a1 += 0xF;
@@ -1223,7 +1231,7 @@ void func_80104914(int arg0)
 
         new_var2 = (var_a1 >> 4) & 0x1F;
 
-        var_a2 = ((_timBuf[0x20 + i] & 0x3E0) * arg0)
+        var_a2 = ((_timBuf[32 + i] & 0x3E0) * arg0)
                + ((_timBuf[0x60 + i] & 0x3E0) * (0x10 - arg0));
 
         if (var_a2 < 0) {
@@ -1402,15 +1410,15 @@ void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((un
 
             if (_onScreenScore == 0) {
 
-                D_801099EC = 1;
+                _incrementingScore = 1;
 
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
 
             if (_onScreenScore == _score) {
-                if (D_801099EC != 0) {
+                if (_incrementingScore != 0) {
 
-                    D_801099EC = 0;
+                    _incrementingScore = 0;
 
                     func_80045D64(0x7E, 0x72);
                     vs_main_playSfxDefault(0x7E, 0x73);
@@ -1524,14 +1532,14 @@ void _renderIncrementalMapCompletion(
     if (_mapCompletion != 0) {
         if (arg2 >= 0x20) {
             if (_onScreenMapCompletion == 0) {
-                D_801099F0 = 1;
+                _incrementingMapCompletion = 1;
 
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
 
             if (_onScreenMapCompletion == _mapCompletion) {
-                if (D_801099F0 != 0) {
-                    D_801099F0 = 0;
+                if (_incrementingMapCompletion != 0) {
+                    _incrementingMapCompletion = 0;
 
                     func_80045D64(0x7E, 0x72);
                     vs_main_playSfxDefault(0x7E, 0x73);
@@ -2003,9 +2011,9 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
         } else {
             sp18.x = 0;
         }
-        sp18.y = y - (D_8010988C >> 3);
+        sp18.y = y - (_buffReelSpinSpeed >> 3);
         sp18.w = 0x140;
-        sp18.h = ((D_8010988C >> 3) * 2) + new_var2;
+        sp18.h = ((_buffReelSpinSpeed >> 3) * 2) + new_var2;
 
         if (arg3 < 2) {
             int a0 = x;
@@ -2052,7 +2060,7 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
     }
 }
 
-void func_801064D4(int arg0, int arg1, int arg2, int arg3)
+void _renderPressButtonPrompt(int x, int y, int arg2, int arg3)
 {
     POLY_FT4* poly;
     void** p;
@@ -2062,35 +2070,36 @@ void func_801064D4(int arg0, int arg1, int arg2, int arg3)
         return;
     }
 
-    v1 = arg0 + 0x120;
+    v1 = x + 288;
 
-    if (arg2 > 0x30) {
-        arg2 = 0x30;
+    if (arg2 > 48) {
+        arg2 = 48;
     }
 
-    arg0 = (v1 - (arg2 * 6));
+    x = (v1 - (arg2 * 6));
 
     vs_battle_renderTextRawColor(
-        "PRESS", ((arg0 + 0x12) & 0xFFFF) | (arg1 << 0x10), 0x8080FF, NULL);
+        "PRESS", vs_getXY_2(x + 18, y), vs_getRGB888(255, 128, 128), NULL);
     vs_battle_renderTextRawColor(
-        "BUTTON", ((arg0 + 0x12) & 0xFFFF) | ((arg1 + 0xA) << 0x10), 0x8080FF, NULL);
+        "BUTTON", vs_getXY_2(x + 18, y + 10), vs_getRGB888(255, 128, 128), NULL);
 
-    arg1 += 0x16;
+    y += 22;
 
     if ((arg3 & 0xF) < 9) {
-        v1 = arg1 - 0x10;
-        arg1 = v1 + ((arg3 & 0xF) >> 1);
+        v1 = y - 16;
+        y = v1 + ((arg3 & 0xF) >> 1);
     } else {
-        v1 = arg1 - 0xA;
-        arg1 = v1 - ((arg3 & 0xF) >> 2);
+        v1 = y - 10;
+        y = v1 - ((arg3 & 0xF) >> 2);
     }
 
     poly = *(void**)0x1F800000;
+
     setPolyFT4(poly);
     setShadeTex(poly, 1);
-    setXY4(poly, arg0, arg1 - 2, arg0 + 0x10, arg1 - 2, arg0, arg1 + 0xE, arg0 + 0x10,
-        arg1 + 0xE);
-    setUV4(poly, 0x20, 0x80, 0x30, 0x80, 0x20, 0x90, 0x30, 0x90);
+    setXY4(poly, x, y - 2, x + 16, y - 2, x, y + 14, x + 16,
+        y + 0xE);
+    setUV4(poly, 32, 128, 48, 128, 32, 144, 48, 144);
     setTPage(poly, 0, 0, 768, 0);
     setClut(poly, 944, 223);
 
@@ -2492,7 +2501,7 @@ int _initCubePuzzleStart(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        D_8010988C = 0;
+        _buffReelSpinSpeed = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
 
@@ -2571,7 +2580,7 @@ int _initCubePuzzleQuit(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        D_8010988C = 0;
+        _buffReelSpinSpeed = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
         return 1;
@@ -2597,7 +2606,7 @@ int _renderCubePuzzleStart(void)
     _renderAverageTime(160, 64, _screenTimer);
     func_8010873C(128, 116, _screenTimer - 15);
     func_80108784(192, 144, _screenTimer - 30);
-    func_801064D4(214, 187, _screenTimer - 30, _screenTimer);
+    _renderPressButtonPrompt(214, 187, _screenTimer - 30, _screenTimer);
 
     if (_screenTimer < 32767) {
         ++_screenTimer;
@@ -2628,14 +2637,14 @@ int _renderCubePuzzleEnd(void)
     int temp_s0;
     int var_v0;
 
-    var_v0 = rsin(D_8010988C);
+    var_v0 = rsin(_buffReelSpinSpeed);
     if (var_v0 < 0) {
         var_v0 += 0x1FF;
     }
 
     func_80104A50((var_v0 >> 9) + 8);
 
-    D_8010988C = (D_8010988C + 0x40) & 0xFFF;
+    _buffReelSpinSpeed = (_buffReelSpinSpeed + 0x40) & 0xFFF;
 
     if (_screenState == 0) {
         temp_s0 = ((vs_main_stateFlags.unkA2 * 0x1770) + (vs_main_stateFlags.unkA1 * 0x64)
@@ -2681,7 +2690,7 @@ int _renderCubePuzzleEnd(void)
         func_8010887C(0x58, 0x40, _screenTimer);
         func_80108688(0xA0, 0x64, _screenTimer - 0x4B);
         func_8010880C(0xA0, 0x7C, _screenTimer - 0x5A, temp_s0);
-        func_801064D4(0xD6, 0xBB, _screenTimer - 0x5A, _screenTimer);
+        _renderPressButtonPrompt(0xD6, 0xBB, _screenTimer - 0x5A, _screenTimer);
 
         if (_screenTimer < 32767) {
             ++_screenTimer;
@@ -2712,7 +2721,7 @@ int _renderCubePuzzleQuit(void)
 {
     int var_v0;
 
-    var_v0 = rsin(D_8010988C);
+    var_v0 = rsin(_buffReelSpinSpeed);
 
     if (var_v0 < 0) {
         var_v0 += 0x1FF;
@@ -2720,7 +2729,7 @@ int _renderCubePuzzleQuit(void)
 
     func_80104A50((var_v0 >> 9) + 8);
 
-    D_8010988C = (D_8010988C + 0x40) & 0xFFF;
+    _buffReelSpinSpeed = (_buffReelSpinSpeed + 0x40) & 0xFFF;
 
     if (_screenState != 0) {
         return 0;
@@ -2736,7 +2745,7 @@ int _renderCubePuzzleQuit(void)
 
     func_801084F4(0x40, _screenTimer);
     func_80108564(0x64, _screenTimer - 0xF);
-    func_801064D4(0xD6, 0xBB, _screenTimer - 0xF, _screenTimer);
+    _renderPressButtonPrompt(0xD6, 0xBB, _screenTimer - 0xF, _screenTimer);
 
     if (_screenTimer < 0x7FFF) {
         ++_screenTimer;

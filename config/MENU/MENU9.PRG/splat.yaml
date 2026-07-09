@@ -7,9 +7,8 @@ options:
   src_path: src/MENU/MENU9.PRG
   asset_path: build/assets/MENU/MENU9.PRG
   ld_script_path: build/config/MENU/MENU9.PRG/link.ld
-  symbol_addrs_path: config/MENU/MENU9.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/MENU/MENU9.PRG/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/MENU/MENU9.PRG/undefined_syms_auto.txt
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
   subalign: 4
   auto_link_sections: [.rodata, .data, .bss]
 

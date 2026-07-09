@@ -1112,8 +1112,7 @@ int _renderTimeAttackStart(void)
 
 void _renderTimeAttackHeader(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 },
-        { 128, 96, 64 } };
+    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (timer < 0) {
         timer = 0;
@@ -1125,10 +1124,13 @@ void _renderTimeAttackHeader(int x, int y, int timer)
 
         colors[0].code = timer;
         colors[1].code = timer;
-        x -= (_disMap[disIndexAttack0TimeAttack].w + _disMap[disIndexAttack0TimeAttack + 1].w) >> 1;
+        x -= (_disMap[disIndexAttack0TimeAttack].w
+                 + _disMap[disIndexAttack0TimeAttack + 1].w)
+          >> 1;
 
         _renderTexturePopIn(x, y, 100, colors);
-        _renderTexturePopIn(x + _disMap[disIndexAttack0TimeAttack].w, y, disIndexAttack0TimeAttack + 1, &colors[1]);
+        _renderTexturePopIn(x + _disMap[disIndexAttack0TimeAttack].w, y,
+            disIndexAttack0TimeAttack + 1, &colors[1]);
     }
 }
 
@@ -1162,11 +1164,15 @@ void _renderBossName(int x, int y, int timer)
         if (vs_main_stateFlags.timeTrialBoss != 6) {
 
             func_80105C34(
-                x - (_disMap[vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur].w >> 1), y,
-                vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur, timer);
+                x
+                    - (_disMap[vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur]
+                            .w
+                        >> 1),
+                y, vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur, timer);
 
         } else {
-            x -= (_disMap[disIndexAttack0Death].w + _disMap[disIndexAttack0OgreZombie].w) >> 1;
+            x -= (_disMap[disIndexAttack0Death].w + _disMap[disIndexAttack0OgreZombie].w)
+              >> 1;
 
             func_80105C34(x, y, disIndexAttack0Death, timer);
 
@@ -1203,8 +1209,8 @@ void _renderStartCountdown(int x, int y, int timer)
 {
     int temp_a2 = (timer / 15) + disIndexAttack0Three;
 
-    func_80105C34(x - (_disMap[temp_a2].w / 2), y - (_disMap[temp_a2].h / 2),
-        temp_a2, timer % 15);
+    func_80105C34(
+        x - (_disMap[temp_a2].w / 2), y - (_disMap[temp_a2].h / 2), temp_a2, timer % 15);
 }
 
 void func_80104914(int arg0)
@@ -2097,8 +2103,7 @@ void _renderPressButtonPrompt(int x, int y, int arg2, int arg3)
 
     setPolyFT4(poly);
     setShadeTex(poly, 1);
-    setXY4(poly, x, y - 2, x + 16, y - 2, x, y + 14, x + 16,
-        y + 0xE);
+    setXY4(poly, x, y - 2, x + 16, y - 2, x, y + 14, x + 16, y + 0xE);
     setUV4(poly, 32, 128, 48, 128, 32, 144, 48, 144);
     setTPage(poly, 0, 0, 768, 0);
     setClut(poly, 944, 223);

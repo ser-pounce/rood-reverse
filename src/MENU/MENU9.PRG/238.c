@@ -607,7 +607,8 @@ int _menuInput(void)
             _nextState = 0;
         }
 
-        D_800F1BF7 = D_800F4EE8.cursorMemories[2] + D_800F4EE8.cursorMemories[3];
+        vs_battle_menu9CursorMemory.gazetteRow =
+            D_800F4EE8.cursorMemories[2] + D_800F4EE8.cursorMemories[3];
 
         vs_battle_dismissTextBox(0);
 
@@ -633,7 +634,7 @@ int _menuInput(void)
         func_800F9E0C();
 
         if (_nextState == 0) {
-            _menuState = (D_800F1BF7 * 3) + 4;
+            _menuState = (vs_battle_menu9CursorMemory.gazetteRow * 3) + 4;
             break;
         }
 
@@ -1434,7 +1435,7 @@ int _topMenu(int initialize)
             menuText[i * 2 + 1] = NULL;
         }
 
-        _setRows(4, D_800F1BF7, menuText);
+        _setRows(4, vs_battle_menu9CursorMemory.gazetteRow, menuText);
 
         ++state;
         break;
@@ -2201,8 +2202,127 @@ void _setStatText(void)
     }
 }
 
-// https://decomp.me/scratch/Xo8T1
-INCLUDE_ASM("build/src/MENU/MENU9.PRG/nonmatchings/238", _renderBossRushDetails);
+void _toVsStringInt(char* buf, int value);
+void _printFastestClearTime(char* buf, int rounds, int totalSeconds);
+void _toVsStringPercent(char* buf, int value);
+void _toVsStringPercentAlias(char* buf, int value);
+
+void _renderBossRushDetails(int arg0)
+{
+    static char D_8010989A = 0;
+
+    char sp18[32];
+    _gazetteRow* row;
+    u_short temp_v1_4;
+    int s5;
+    int i;
+    vs_battle_menuItem_t* menuItem;
+    char* intBuf;
+    vs_battle_menu9CursorMemory_t* new_var;
+    int v1;
+
+    row = _gazetteRows;
+    temp_v1_4 = vs_battle_menu9CursorMemory.recordTimePage
+              + vs_battle_menu9CursorMemory.recordTimeRow;
+
+    for (i = 0; i < 23; ++i, ++row) {
+        if (i == temp_v1_4) {
+            if (row->selected == 0) {
+                vs_mainmenu_setInformationMessage(row->description);
+            }
+            row->selected = 1;
+            row->animationState = 8;
+        } else {
+            row->selected = 0;
+            if (row->animationState != 0) {
+                --row->animationState;
+            }
+        }
+    }
+
+    row = &_gazetteRows[vs_battle_menu9CursorMemory.recordTimePage];
+    i = 0;
+    new_var = &vs_battle_menu9CursorMemory;
+    intBuf = &sp18[2];
+    s5 = 0x30 * 6;
+
+    for (; i < 8; ++i, ++row) {
+        int var_s4 = 0xF0 - (arg0 * 0x17);
+
+        if (var_s4 < ((i * 0x10) + 0x38)) {
+            var_s4 = ((i * 0x10) + 0x38);
+        }
+        if ((row->selected != 0) && (arg0 == 8)) {
+            D_8010989A = vs_mainMenu_renderCursor(
+                D_8010989A, ((row->x - 0xC) & 0xFFFF) | ((var_s4 - 8) << 0x10));
+        }
+
+        menuItem = vs_battle_setMenuItem(0, row->x, var_s4, 0x8E, 0, row->title);
+        menuItem->gradientState = row->animationState;
+
+        if ((i == 0) && (new_var->recordTimePage != 0)) {
+            menuItem->isScrollable = 1;
+        }
+        if ((i == 7) && (new_var->recordTimePage != 0xF)) {
+            menuItem->isScrollable = 2;
+        }
+        if ((menuItem->isScrollable != 0) && (arg0 == 8)) {
+            _renderFadedMenuItem(menuItem);
+        } else {
+            vs_battle_renderMenuItem(menuItem);
+        }
+
+        v1 = new_var->recordTimePage + i;
+
+        if (v1 == 0) {
+            _toVsStringInt(intBuf, _clearCount);
+        } else if (v1 == 1) {
+            _printFastestClearTime(intBuf, vs_main_scoredata.clearCount,
+                vs_main_scoredata.completionTimeMinutes);
+        } else if (v1 == 2) {
+            _toVsStringPercent(intBuf, (_openedChestCount * 100) / 52);
+        } else if (v1 == 3) {
+            _toVsStringPercent(intBuf, (vs_main_scoredata.openedChestCount * 100) / 52);
+        } else if (v1 == 4) {
+            _toVsStringPercentAlias(intBuf, (_mapCompletion * 100) / 361);
+        } else if (v1 == 5) {
+            _toVsStringPercentAlias(intBuf, vs_main_scoredata.mapCompletion * 100 / 361);
+        } else if (v1 == 6) {
+            _toVsStringInt(intBuf, vs_main_scoredata.maxChain);
+        } else if (v1 < 13) {
+            _toVsStringInt(intBuf, vs_main_scoredata.enemyKills[v1 - 7]);
+        } else {
+            v1 -= 12;
+            if (v1 == 10) {
+                v1 = 0;
+            }
+            _toVsStringInt(intBuf, vs_main_scoredata.weaponAttacks[v1]);
+        }
+
+        v1 = s5 - (vs_battle_getTextLineLength(intBuf) * 6);
+        s5 += 1;
+        s5 -= 1;
+        sp18[0] = 0xFA;
+        sp18[1] = v1 - (row->x - 0x72);
+        menuItem = vs_battle_setMenuItem(0, row->x + 0x8E, var_s4, 0x8E, 0, sp18);
+        menuItem->gradientState = 8 - row->animationState;
+
+        if ((i == 0) && (new_var->recordTimePage != 0)) {
+            menuItem->isScrollable = 1;
+        }
+        if ((i == 7) && (new_var->recordTimePage != 0xF)) {
+            menuItem->isScrollable = 2;
+        }
+
+        if ((menuItem->isScrollable != 0) && (arg0 == 8)) {
+            _renderFadedMenuItem(menuItem);
+        } else {
+            vs_battle_renderMenuItem(menuItem);
+        }
+    }
+
+    vs_battle_getMenuItem(0)->state = 0;
+}
 
 /**
  * Prints an integer in VS string encoding.

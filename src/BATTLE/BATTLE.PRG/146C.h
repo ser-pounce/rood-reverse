@@ -1102,7 +1102,6 @@ extern short vs_battle_doorEntered;
 extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
-extern char D_800F1BF7;
 extern _mpdRoomSection vs_battle_roomData;
 extern void* D_800F1CBC;
 extern _mpdRoomDoorSection_t D_800F1CC8;

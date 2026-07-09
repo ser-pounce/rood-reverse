@@ -41,10 +41,10 @@ static void func_801047D4(int arg0, int arg1, int arg2);
 static void func_8010489C(int arg0, int arg1, int arg2);
 static void func_80104914(int);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
-static void func_80104C40(int arg0, int arg1, int arg2, int arg3);
 static void _renderScore(int arg0, int arg1, int arg2, int arg3);
-static void func_80105020(int arg0, int arg1, int arg2, int arg3);
+static void _renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
 static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
 static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
 static void _renderRiskbreakerRank(int arg0, int arg1, int arg2);
 static void func_8010559C(int arg0, int arg1, int arg2);
@@ -58,7 +58,7 @@ static void func_80105B30(int arg0, int arg1, int arg2, int arg3);
 static void func_80105C34(int, int, int, int);
 static void func_80105DD8(int, int, int, int, int);
 static void func_80105F6C(int, int, int, int, int);
-void func_801060A8(int, int, int, int);
+void _renderStatWheel(int, int, int, int);
 static void func_801064D4(int, int, int, int);
 static void func_8010664C(int, int, int, P_CODE colors[]);
 static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
@@ -166,10 +166,10 @@ static u_int _score;
 static u_int _mapCompletion;
 static u_int D_8010988C;
 static int _buffReelIndex;
-static int D_80109894;
-static int D_80109898;
+static int _onScreenMapCompletion;
+static int _onScreenScore;
 static int _screenTimer;
-static int D_801098A0;
+static int _screenState;
 
 int _initCongratulationsScreen(void)
 {
@@ -233,10 +233,10 @@ int _initCongratulationsScreen(void)
         func_80045000(2, 0x7F, 0);
         vs_main_freeHeapR(timData);
 
-        D_80109894 = 0;
-        D_80109898 = 0;
+        _onScreenMapCompletion = 0;
+        _onScreenScore = 0;
         _screenTimer = 0;
-        D_801098A0 = 0;
+        _screenState = 0;
         D_8010988C = 0;
         _buffReelSelection = (rand() & 0xF0) | 8;
 
@@ -413,7 +413,7 @@ int _initTimeAttackEnd(void)
 
         _newTimeSlot = i;
         _screenTimer = 0;
-        D_801098A0 = 0;
+        _screenState = 0;
         D_8010988C = 0;
         _submenuState = 0;
 
@@ -475,10 +475,10 @@ int _initTimeAttackStart(void)
     } else {
         vs_main_freeHeapR(timData);
 
-        D_80109894 = 0;
-        D_80109898 = 0;
+        _onScreenMapCompletion = 0;
+        _onScreenScore = 0;
         _screenTimer = 0;
-        D_801098A0 = 0;
+        _screenState = 0;
         D_8010988C = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
@@ -722,23 +722,23 @@ static int D_801099F0;
 
 int _renderCongratulationsScreen(void)
 {
-    static int D_80109864;
+    static int frameCount;
 
-    if (D_801098A0 != 3) {
+    if (_screenState != 3) {
         if (_screenTimer == 208) {
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
         }
 
         _renderCongratulations(160, 40, _screenTimer);
-        _renderScore(160, 80, _screenTimer - 32, D_801098A0);
-        _renderMapCompletion(160, 102, _screenTimer - 112, D_801098A0);
+        _renderIncrementalScore(160, 80, _screenTimer - 32, _screenState);
+        _renderIncrementalMapCompletion(160, 102, _screenTimer - 112, _screenState);
         _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
         _renderRiskbreakerRank(160, 154, _screenTimer - 208);
-        func_801060A8(130, 190, _screenTimer - 272, D_801098A0);
+        _renderStatWheel(130, 190, _screenTimer - 272, _screenState);
     }
 
-    if (D_801098A0 == 0) {
+    if (_screenState == 0) {
         _buffReelSelection = (_buffReelSelection + (D_8010988C >> 3)) & 0xFF;
         if ((_screenTimer - 272) > 0) {
 
@@ -760,8 +760,8 @@ int _renderCongratulationsScreen(void)
                         vs_main_playSfxDefault(0x7E, 0x76);
                     }
 
-                    D_801098A0 = 1;
-                    D_80109864 = 0;
+                    _screenState = 1;
+                    frameCount = 0;
 
                     func_80045BFC(0x7E, 0x74, 0x40, 0x30);
                     func_80045BFC(0x7E, 0x75, 0x40, 0x30);
@@ -778,12 +778,12 @@ int _renderCongratulationsScreen(void)
             _screenTimer = 272;
             D_801099EC = 0;
             D_801099F0 = 0;
-            D_80109894 = _mapCompletion;
-            D_80109898 = _score;
+            _onScreenMapCompletion = _mapCompletion;
+            _onScreenScore = _score;
         }
-    } else if (D_801098A0 == 1) {
+    } else if (_screenState == 1) {
         int temp_v1;
-        int temp_a2_2 = 48 - D_80109864;
+        int temp_a2_2 = 48 - frameCount;
 
         if (temp_a2_2 > 0) {
             func_801064D4(0xD6, 0xBB, temp_a2_2, _screenTimer);
@@ -805,24 +805,24 @@ int _renderCongratulationsScreen(void)
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
 
-            D_801098A0 = 2;
-            D_80109864 = 0;
+            _screenState = 2;
+            frameCount = 0;
         }
-    } else if (D_801098A0 == 2) {
-        if ((vs_main_buttonsPressed.all & PADRright) || (D_80109864 > 450)) {
-            D_801098A0 = 3;
-            D_80109864 = 0;
+    } else if (_screenState == 2) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (frameCount > 450)) {
+            _screenState = 3;
+            frameCount = 0;
         }
     } else {
 
-        _renderCongratulations(160, 40, 8 - D_80109864);
-        func_80104C40(160, 80, 8 - D_80109864, 3);
-        func_80105020(160, 102, 8 - D_80109864, 3);
-        _renderRiskbreakerRankHeader(160, 138, 8 - D_80109864);
-        _renderRiskbreakerRank(160, 154, 8 - D_80109864);
-        func_801060A8(130, 190, 8 - D_80109864, 3);
+        _renderCongratulations(160, 40, 8 - frameCount);
+        _renderScore(160, 80, 8 - frameCount, 3);
+        _renderMapCompletion(160, 102, 8 - frameCount, 3);
+        _renderRiskbreakerRankHeader(160, 138, 8 - frameCount);
+        _renderRiskbreakerRank(160, 154, 8 - frameCount);
+        _renderStatWheel(130, 190, 8 - frameCount, 3);
 
-        if (D_80109864 >= 8) {
+        if (frameCount >= 8) {
             int amount = _buffReels[_buffReelIndex][(char)_buffReelSelection / 16].amount;
             switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection / 16].stat
                             - 13)) {
@@ -854,7 +854,7 @@ int _renderCongratulationsScreen(void)
         }
     }
 
-    ++D_80109864;
+    ++frameCount;
     ++_screenTimer;
     return 0;
 }
@@ -875,7 +875,7 @@ int _renderTimeAttackEnd(void)
 
     D_8010988C = (D_8010988C + 0x40) & 0xFFF;
 
-    if (D_801098A0 == 0) {
+    if (_screenState == 0) {
         if (_screenTimer == 0x30) {
             vs_main_playSfxDefault(0x7E, 0x72);
         }
@@ -920,9 +920,9 @@ int _renderTimeAttackEnd(void)
             func_80045D64(0x7E, 0);
 
             _screenTimer = 0;
-            ++D_801098A0;
+            ++_screenState;
         }
-    } else if (D_801098A0 == 1) {
+    } else if (_screenState == 1) {
 
         func_8010559C(0xA0, 0x34, 0x40);
         func_80105790(0x10, 0xA4, 0x40);
@@ -942,10 +942,10 @@ int _renderTimeAttackEnd(void)
                 vs_main_playSfxDefault(0x7E, 5);
             }
 
-            ++D_801098A0;
+            ++_screenState;
             _screenTimer = 7;
         }
-    } else if (D_801098A0 == 2) {
+    } else if (_screenState == 2) {
 
         func_8010559C(0xA0, 0x34, _screenTimer);
         func_80105790(0x10, 0xA4, _screenTimer);
@@ -960,7 +960,7 @@ int _renderTimeAttackEnd(void)
         if (_screenTimer > 0) {
             --_screenTimer;
         } else {
-            ++D_801098A0;
+            ++_screenState;
         }
     } else {
         func_8007E0A8(0x1D, 1, 5);
@@ -983,7 +983,7 @@ int _renderTimeAttackStart(void)
     int temp_v1_2;
     int var_a3;
 
-    if (D_801098A0 == 0) {
+    if (_screenState == 0) {
         if ((_screenTimer == ((_screenTimer / 15) * 0xF)) && (_screenTimer < 0x2E)) {
             vs_main_playSfxDefault(0x7E, 0x7A);
             vs_main_playSfxDefault(0x7E, 0x7B);
@@ -998,13 +998,13 @@ int _renderTimeAttackStart(void)
         ++_screenTimer;
 
         if (vs_main_buttonsPressed.all & PADRright) {
-            D_801098A0 = 2;
+            _screenState = 2;
             _screenTimer = 0;
         } else if (_screenTimer >= 90) {
-            D_801098A0 = 1;
+            _screenState = 1;
             _screenTimer = 8;
         }
-    } else if (D_801098A0 == 1) {
+    } else if (_screenState == 1) {
         --_screenTimer;
 
         func_8010459C(160, 48, _screenTimer);
@@ -1013,11 +1013,11 @@ int _renderTimeAttackStart(void)
         func_801047D4(160, 156, _screenTimer);
 
         if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer == 0)) {
-            D_801098A0 = 2;
+            _screenState = 2;
             _screenTimer = 0;
         }
 
-    } else if (D_801098A0 == 2) {
+    } else if (_screenState == 2) {
         func_8007C36C(4);
         func_8007DDAC(0);
         func_8007DDB8(&D_801096F0[0]);
@@ -1028,9 +1028,9 @@ int _renderTimeAttackStart(void)
         func_8007DE5C(0);
         func_8007DD50(1);
 
-        ++D_801098A0;
+        ++_screenState;
 
-    } else if (D_801098A0 == 3) {
+    } else if (_screenState == 3) {
 
         temp_v1_2 = _screenTimer / 15;
 
@@ -1090,10 +1090,10 @@ int _renderTimeAttackStart(void)
         ++_screenTimer;
 
         if (_screenTimer >= 62) {
-            ++D_801098A0;
+            ++_screenState;
         }
 
-    } else if (D_801098A0 == 4) {
+    } else if (_screenState == 4) {
         func_8007C36C(2);
         func_8007DDB8(&D_801096F0[2]);
         func_8007DD50(0);
@@ -1324,56 +1324,59 @@ void _renderCongratulations(int x, int y, int timer)
     }
 }
 
-void func_80104C40(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE D_80109744[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+    static P_CODE D_80109744[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[16];
     int i;
     int new_var;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 >= 0x41) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_80109744[0].code = arg2;
+    if (timer > 0) {
+        D_80109744[0].code = timer;
 
         sprintf(buf, "%09d", _score);
 
-        new_var = _disMap[18].w + _disMap[26].w;
-        arg0 -= (((_disMap[10].w * 2) + (new_var + _disMap[20].w)) + 0x74) >> 1;
+        new_var = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w;
+        x -= (((_disMap[disIndexRank0Comma].w * 2)
+                  + (new_var + _disMap[disIndexRank0Pts].w))
+                 + 116)
+          >> 1;
 
-        func_8010664C(arg0, arg1, 0x12, D_80109744);
+        func_8010664C(x, y, disIndexRank0Score, D_80109744);
 
-        arg0 += _disMap[18].w;
+        x += _disMap[disIndexRank0Score].w;
 
-        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109744);
+        func_8010664C(x, y + 7, disIndexRank0Colon, D_80109744);
 
         i = 2;
-        arg0 = (arg0 + i) + _disMap[26].w;
+        x = (x + i) + _disMap[disIndexRank0Colon].w;
 
         for (i = 0; i < 9; ++i) {
-            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109744);
+            func_8010664C(x, y + 3, buf[i] - '0', D_80109744);
 
-            arg0 += 0xC;
+            x += 0xC;
 
             if ((i == 2) || (i == 5)) {
-                func_8010664C(arg0, arg1 + 0xE, 0xA, D_80109744);
+                func_8010664C(x, y + 14, 10, D_80109744);
 
-                arg0 += _disMap[10].w + 3;
+                x += _disMap[disIndexRank0Comma].w + 3;
             }
         }
 
-        func_8010664C(arg0, arg1 + 8, 0x14, D_80109744);
+        func_8010664C(x, y + 8, disIndexRank0Pts, D_80109744);
     }
 }
 
-void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
     static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1382,27 +1385,31 @@ void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused))
     int i;
     int v;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
-    if (arg2 <= 0) {
+    if (timer <= 0) {
         return;
     }
 
-    temp_s2 = arg0 + (arg2 * 8);
+    temp_s2 = x + (timer * 8);
 
     if (_score != 0) {
-        if (arg2 >= 32) {
-            if (D_80109898 == 0) {
+        if (timer >= 32) {
+
+            if (_onScreenScore == 0) {
+
                 D_801099EC = 1;
 
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
-            if (D_80109898 == _score) {
+
+            if (_onScreenScore == _score) {
                 if (D_801099EC != 0) {
+
                     D_801099EC = 0;
 
                     func_80045D64(0x7E, 0x72);
@@ -1412,86 +1419,87 @@ void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused))
         }
     }
 
-    if (arg2 >= 32) {
-        D_80109898 = (_score >> 5) * (arg2 - 32);
+    if (timer >= 32) {
+        _onScreenScore = (_score >> 5) * (timer - 32);
     }
 
-    if (arg2 == 64) {
-        D_80109898 = _score;
+    if (timer == 64) {
+        _onScreenScore = _score;
     }
 
-    sprintf(buf, "%09d", D_80109898);
+    sprintf(buf, "%09d", _onScreenScore);
 
     v = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
       + _disMap[disIndexRank0Pts].w;
-    arg0 -= (((_disMap[disIndexRank0Comma].w * 2) + v) + 116) >> 1;
+    x -= (((_disMap[disIndexRank0Comma].w * 2) + v) + 116) >> 1;
 
-    _renderTextureWipe(arg0, arg1, disIndexRank0Score, colors, temp_s2);
+    _renderTextureWipe(x, y, disIndexRank0Score, colors, temp_s2);
 
-    arg0 += _disMap[disIndexRank0Score].w;
+    x += _disMap[disIndexRank0Score].w;
 
-    _renderTextureWipe(arg0, arg1 + 7, disIndexRank0Colon, colors, temp_s2);
+    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s2);
 
     i = 2;
-    arg0 = arg0 + i + _disMap[disIndexRank0Colon].w;
+    x = x + i + _disMap[disIndexRank0Colon].w;
 
     for (i = 0; i < 9; ++i) {
-        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', colors, temp_s2);
+        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
 
-        arg0 += 12;
+        x += 12;
 
         if ((i == 2) || (i == 5)) {
-            _renderTextureWipe(arg0, arg1 + 14, disIndexRank0Comma, colors, temp_s2);
+            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
 
-            arg0 += 3 + _disMap[disIndexRank0Comma].w;
+            x += 3 + _disMap[disIndexRank0Comma].w;
         }
     }
 
-    _renderTextureWipe(arg0, arg1 + 8, 0x14, colors, temp_s2);
+    _renderTextureWipe(x, y + 8, 0x14, colors, temp_s2);
 }
 
-void func_80105020(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE D_80109754[] = { { 0x64, 0xB4, 0xDC }, { 0x64, 0xB4, 0xDC } };
+    static P_CODE D_80109754[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[4];
     int i;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_80109754[0].code = arg2;
+    if (timer > 0) {
+        D_80109754[0].code = timer;
 
         sprintf(buf, "%03d", _mapCompletion);
 
-        arg0 -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
+        x -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
         i = 2;
 
-        func_8010664C(arg0, arg1, 0x15, D_80109754);
+        func_8010664C(x, y, 0x15, D_80109754);
 
-        arg0 += _disMap[21].w;
+        x += _disMap[21].w;
 
-        func_8010664C(arg0, arg1 + 7, 0x1A, D_80109754);
+        func_8010664C(x, y + 7, 0x1A, D_80109754);
 
-        arg0 = arg0 + i + _disMap[26].w;
+        x = x + i + _disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
-            func_8010664C(arg0, arg1 + 3, buf[i] - '0', D_80109754);
+            func_8010664C(x, y + 3, buf[i] - '0', D_80109754);
 
-            arg0 += 0xC;
+            x += 0xC;
         }
 
-        func_8010664C(arg0, arg1 + 8, 0x13, D_80109754);
+        func_8010664C(x, y + 8, 0x13, D_80109754);
     }
 }
 
-void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderIncrementalMapCompletion(
+    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
     static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1515,13 +1523,13 @@ void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3 __attribute__((
 
     if (_mapCompletion != 0) {
         if (arg2 >= 0x20) {
-            if (D_80109894 == 0) {
+            if (_onScreenMapCompletion == 0) {
                 D_801099F0 = 1;
 
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
 
-            if (D_80109894 == _mapCompletion) {
+            if (_onScreenMapCompletion == _mapCompletion) {
                 if (D_801099F0 != 0) {
                     D_801099F0 = 0;
 
@@ -1534,13 +1542,13 @@ void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3 __attribute__((
 
     if (arg2 >= 32) {
         if (_mapCompletion >= 32) {
-            D_80109894 = (_mapCompletion * (arg2 - 32)) >> 5;
-        } else if (D_80109894 < _mapCompletion) {
-            ++D_80109894;
+            _onScreenMapCompletion = (_mapCompletion * (arg2 - 32)) >> 5;
+        } else if (_onScreenMapCompletion < _mapCompletion) {
+            ++_onScreenMapCompletion;
         }
     }
 
-    sprintf(buf, "%03d", D_80109894);
+    sprintf(buf, "%03d", _onScreenMapCompletion);
 
     arg0 -= (_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
                 + _disMap[disIndexRank0Percent].w + 38)
@@ -1953,9 +1961,9 @@ void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 void func_80107698(int x, int y, int texId);
 
-void func_801060A8(int x, int y, int timer, int arg3)
+void _renderStatWheel(int x, int y, int timer, int arg3)
 {
-    static P_CODE D_80109784[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 } };
+    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 } };
 
     RECT sp18;
     char sp20[8];
@@ -1977,11 +1985,11 @@ void func_801060A8(int x, int y, int timer, int arg3)
     }
 
     if (timer > 0) {
-        D_80109784[0].code = timer;
+        colors[0].code = timer;
         x -= (_disMap[11].w + _disMap[26].w + _disMap[14].w + _disMap[24].w + 0xE) >> 1;
-        func_8010664C(x, y, 0xB, D_80109784);
+        func_8010664C(x, y, 0xB, colors);
         x += _disMap[11].w;
-        func_8010664C(x, y, 0x1A, D_80109784);
+        func_8010664C(x, y, 0x1A, colors);
         x += 2 + _disMap[26].w;
         new_var2 = 0x10;
         p = (void**)0x1F800000;
@@ -2480,10 +2488,10 @@ int _initCubePuzzleStart(void)
     } else {
         vs_main_freeHeapR(_iqDisData);
 
-        D_80109894 = 0;
-        D_80109898 = 0;
+        _onScreenMapCompletion = 0;
+        _onScreenScore = 0;
         _screenTimer = 0;
-        D_801098A0 = 0;
+        _screenState = 0;
         D_8010988C = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
@@ -2559,10 +2567,10 @@ int _initCubePuzzleQuit(void)
     } else {
         vs_main_freeHeapR(_escDisData);
 
-        D_80109894 = 0;
-        D_80109898 = 0;
+        _onScreenMapCompletion = 0;
+        _onScreenScore = 0;
         _screenTimer = 0;
-        D_801098A0 = 0;
+        _screenState = 0;
         D_8010988C = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
@@ -2574,7 +2582,7 @@ int _initCubePuzzleQuit(void)
 
 int _renderCubePuzzleStart(void)
 {
-    if (D_801098A0 != 0) {
+    if (_screenState != 0) {
         return 0;
     }
 
@@ -2629,7 +2637,7 @@ int _renderCubePuzzleEnd(void)
 
     D_8010988C = (D_8010988C + 0x40) & 0xFFF;
 
-    if (D_801098A0 == 0) {
+    if (_screenState == 0) {
         temp_s0 = ((vs_main_stateFlags.unkA2 * 0x1770) + (vs_main_stateFlags.unkA1 * 0x64)
                    + vs_main_stateFlags.unkA0);
         temp_s0 -= (D_801099F4 * 0x64);
@@ -2714,7 +2722,7 @@ int _renderCubePuzzleQuit(void)
 
     D_8010988C = (D_8010988C + 0x40) & 0xFFF;
 
-    if (D_801098A0 != 0) {
+    if (_screenState != 0) {
         return 0;
     }
 

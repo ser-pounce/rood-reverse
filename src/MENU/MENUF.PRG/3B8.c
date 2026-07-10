@@ -10,6 +10,7 @@
 #include <libgpu.h>
 #include <rand.h>
 #include <string.h>
+#include <abs.h>
 
 typedef struct {
     char x;
@@ -39,7 +40,7 @@ static void _renderCourse(int arg0, int arg1, int arg2);
 static void _renderBossName(int arg0, int arg1, int arg2);
 static void _renderBestTimeHeader(int arg0, int arg1, int arg2);
 static void _renderStartCountdown(int arg0, int arg1, int arg2);
-static void func_80104914(int);
+static void _pulseTimeAttackEnd(int);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
 static void _renderScore(int arg0, int arg1, int arg2, int arg3);
 static void _renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
@@ -47,20 +48,20 @@ static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
 static void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
 static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
 static void _renderRiskbreakerRank(int arg0, int arg1, int arg2);
-static void func_8010559C(int arg0, int arg1, int arg2);
-static void func_8010564C(int arg0, int arg1, int arg2);
-static void func_801056E8(int arg0, int arg1, int arg2);
-static void func_80105790(int, int, int);
-static void func_8010581C(int, int, int);
-static void func_801059B8(int arg0, int arg1, int arg2);
-static void func_801059FC(int arg0, int arg1, int arg2);
-static void func_80105B30(int arg0, int arg1, int arg2, int arg3);
-static void func_80105C34(int, int, int, int);
-static void func_80105DD8(int, int, int, int, int);
-static void func_80105F6C(int, int, int, int, int);
+static void _renderTimeAttackResultsHeader(int arg0, int arg1, int arg2);
+static void _renderTimeAttackRating(int arg0, int arg1, int arg2);
+static void _renderTimeAttackRatingWipe(int arg0, int arg1, int arg2);
+static void _renderHeaderAndTime(int, int, int);
+static void _renderHeaderAndIncrementalTime(int, int, int);
+static void _renderNewRecord(int arg0, int arg1, int arg2);
+static void _renderAllStoredTimes(int arg0, int arg1, int arg2);
+static void _renderStoredTime(int arg0, int arg1, int arg2, int arg3);
+static void _renderTextureFadeIn(int, int, int, int);
+static void _renderTextureFadeInClut(int, int, int, int, int);
+static void _renderTime(int, int, int, int, int);
 void _renderStatWheel(int, int, int, int);
 static void _renderPressButtonPrompt(int, int, int, int);
-static void func_8010664C(int, int, int, P_CODE colors[]);
+static void _renderTextureFadeInTint(int, int, int, P_CODE colors[]);
 static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
 static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
 static int _initCubePuzzleStart(void);
@@ -69,8 +70,8 @@ static int _initCubePuzzleQuit(void);
 static int _renderCubePuzzleStart(void);
 static int _renderCubePuzzleEnd(void);
 static int _renderCubePuzzleQuit(void);
-static void func_801084F4(int arg0, int arg1);
-static void func_80108564(int arg0, int arg1);
+static void _renderGivingUp(int arg0, int arg1);
+static void _renderChicken(int arg0, int arg1);
 static void _renderAverageTime(int arg0, int arg1, int arg2);
 static void func_80108688(int arg0, int arg1, int arg2);
 static void func_8010873C(int arg0, int arg1, int arg2);
@@ -164,7 +165,7 @@ static int _rank;
 static int _clearCount;
 static u_int _score;
 static u_int _mapCompletion;
-static u_int _buffReelSpinSpeed;
+static u_int _elementAnimationState;
 static int _buffReelIndex;
 static int _onScreenMapCompletion;
 static int _onScreenScore;
@@ -237,7 +238,7 @@ int _initCongratulationsScreen(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        _buffReelSpinSpeed = 0;
+        _elementAnimationState = 0;
         _buffReelSelection = (rand() & 0xF0) | 8;
 
         strength = _getTotalStrength();
@@ -307,7 +308,7 @@ int _initCongratulationsScreen(void)
 
 static int _newTimeSlot;
 static int _timeTrialTime;
-static u_short _timBuf[160];
+static u_short _clutBuf[160];
 
 int _initTimeAttackEnd(void)
 {
@@ -350,7 +351,7 @@ int _initTimeAttackEnd(void)
                 tim.caddr[0] = 0;
 
                 LoadImage(tim.crect, tim.caddr);
-                vs_main_memcpy(_timBuf, tim.caddr, sizeof _timBuf);
+                vs_main_memcpy(_clutBuf, tim.caddr, sizeof _clutBuf);
             }
 
             vs_main_freeCdQueueSlot(cdSlot);
@@ -414,7 +415,7 @@ int _initTimeAttackEnd(void)
         _newTimeSlot = i;
         _screenTimer = 0;
         _screenState = 0;
-        _buffReelSpinSpeed = 0;
+        _elementAnimationState = 0;
         _submenuState = 0;
 
         vs_main_freeHeapR(timData);
@@ -479,7 +480,7 @@ int _initTimeAttackStart(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        _buffReelSpinSpeed = 0;
+        _elementAnimationState = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
         return 1;
@@ -537,17 +538,48 @@ int _execMenu(void)
 }
 
 enum disIndices {
+    disIndexCommonZero,
     disIndexRank0Comma = 10,
     disIndexRank0Bonus,
     disIndexRank0RiskbreakerRank,
-    disIndexRank0Score = 18,
+    disIndexRank0Str,
+    disIndexRank0Agl,
+    disIndexRank0Int,
+    disIndexRank0Hp,
+    disIndexRank0Mp,
+    disIndexRank0Score,
     disIndexRank0Percent,
     disIndexRank0Pts,
     disIndexRank0MapCompleted,
     disIndexRank0Congratulations,
     disIndexRank0Plus = 24,
-    disIndexRank0Colon = 26,
-    disIndexAttack0Course = 84,
+    disIndexRank0Minus,
+    disIndexRank0Colon,
+    disIndexRank1Grand,
+    disIndexRank1Master,
+    disIndexRank1Breaker,
+    disIndexRank1Paladin,
+    disIndexRank1Gladiator,
+    disIndexRank1Raging,
+    disIndexRank1Berserker,
+    disIndexRank1Radiant,
+    disIndexRank1Couragous,
+    disIndexRank1Adventurer,
+    disIndexRank1Knight,
+    disIndexRank1Archer = 39,
+    disIndexRank1DareDevil = 42,
+    disIndexRank1Blade = 44,
+    disIndexRank1Of = 48,
+    disIndexRank1Seeker = 55,
+    disIndexTime0NewRecord = 69,
+    disIndexTime0TimeAttackResults,
+    disIndexTime0Time = 72,
+    disIndexTime0Prime,
+    disIndexTime0DoublePrime,
+    disIndexTime0First,
+    disIndexTime0Excellent = 78,
+    disIndexTime0Dash = 83,
+    disIndexAttack0Course,
     disIndexAttack0Minotaur,
     disIndexAttack0Death = 91,
     disIndexAttack0OgreZombie = 93,
@@ -555,6 +587,8 @@ enum disIndices {
     disIndexAttack0Three,
     disIndexAttack0TimeAttack = 100,
     disIndexIq0AverageTime = 102,
+    disIndexEsc0GivingUp = 123,
+    disIndexEsc0Chicken = 125,
 };
 
 static _texture_t _disMap[] = {
@@ -688,12 +722,18 @@ static _texture_t _disMap[] = {
 };
 
 /**
- * First element == word count, followed by word lengths
+ * First element == word count, followed by indices into pages 1 and 2 of RANK.DIS
  */
-static u_char _riskbreakerRanks[][4] = { { 3, 27, 28, 29 }, { 2, 27, 30 }, { 2, 34, 37 },
-    { 2, 32, 33 }, { 2, 66, 67 }, { 2, 35, 36 }, { 2, 28, 31 }, { 2, 44, 28 },
-    { 2, 55, 56 }, { 1, 30 }, { 1, 59 }, { 1, 57 }, { 1, 33 }, { 1, 42 }, { 1, 31 },
-    { 2, 60, 65 } };
+static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1Master,
+                                             disIndexRank1Breaker },
+    { 2, disIndexRank1Grand, disIndexRank1Paladin },
+    { 2, disIndexRank1Radiant, disIndexRank1Knight },
+    { 2, disIndexRank1Raging, disIndexRank1Berserker }, { 2, 66, 67 },
+    { 2, disIndexRank1Couragous, disIndexRank1Adventurer },
+    { 2, disIndexRank1Master, disIndexRank1Gladiator },
+    { 2, disIndexRank1Blade, disIndexRank1Master }, { 2, 55, 56 },
+    { 1, disIndexRank1Paladin }, { 1, 59 }, { 1, 57 }, { 1, disIndexRank1Berserker },
+    { 1, disIndexRank1DareDevil }, { 1, disIndexRank1Gladiator }, { 2, 60, 65 } };
 
 enum BuffReelStats {
     buffReelStatStr = 13,
@@ -746,19 +786,20 @@ int _renderCongratulationsScreen(void)
     }
 
     if (_screenState == 0) {
-        _buffReelSelection = (_buffReelSelection + (_buffReelSpinSpeed >> 3)) & 0xFF;
+        _buffReelSelection = (_buffReelSelection + (_elementAnimationState >> 3)) & 0xFF;
         if ((_screenTimer - 272) > 0) {
 
-            if (_buffReelSpinSpeed == 8) {
+            if (_elementAnimationState == 8) {
                 vs_main_playSfxDefault(0x7E, 0x74);
                 vs_main_playSfxDefault(0x7E, 0x75);
             }
 
-            if (_buffReelSpinSpeed < 48) {
+            if (_elementAnimationState < 48) {
                 if (_screenTimer > 288) {
-                    ++_buffReelSpinSpeed;
+                    ++_elementAnimationState;
 
-                    _renderPressButtonPrompt(214, 187, _buffReelSpinSpeed, _screenTimer);
+                    _renderPressButtonPrompt(
+                        214, 187, _elementAnimationState, _screenTimer);
                 }
             } else {
                 if ((vs_main_buttonsPressed.all & PADRright) || _screenTimer > 2072) {
@@ -796,16 +837,16 @@ int _renderCongratulationsScreen(void)
             _renderPressButtonPrompt(0xD6, 0xBB, temp_a2_2, _screenTimer);
         }
 
-        temp_v1 = _buffReelSelection + (_buffReelSpinSpeed >> 3);
+        temp_v1 = _buffReelSelection + (_elementAnimationState >> 3);
         _buffReelSelection = temp_v1 & 0xFF;
 
-        if (_buffReelSpinSpeed >= 9) {
-            --_buffReelSpinSpeed;
+        if (_elementAnimationState >= 9) {
+            --_elementAnimationState;
         }
 
         temp_v1 &= 0xF;
 
-        if ((temp_v1 == 8) && (_buffReelSpinSpeed == temp_v1)) {
+        if ((temp_v1 == 8) && (_elementAnimationState == temp_v1)) {
 
             func_80045D64(0x7E, 0x74);
             func_80045D64(0x7E, 0x75);
@@ -868,19 +909,11 @@ int _renderCongratulationsScreen(void)
 
 int _renderTimeAttackEnd(void)
 {
-    int var_v0 = rsin(_buffReelSpinSpeed);
+    int var_v0 = rsin(_elementAnimationState);
 
-    if (var_v0 < 0) {
-        var_v0 = -var_v0;
-    }
+    _pulseTimeAttackEnd(ABS(var_v0) / 256);
 
-    if (var_v0 <= -1) {
-        var_v0 += 0xFF;
-    }
-
-    func_80104914(var_v0 >> 8);
-
-    _buffReelSpinSpeed = (_buffReelSpinSpeed + 0x40) & 0xFFF;
+    _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
 
     if (_screenState == 0) {
         if (_screenTimer == 0x30) {
@@ -892,33 +925,33 @@ int _renderTimeAttackEnd(void)
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        func_8010559C(0xA0, 0x34, _screenTimer);
-        func_8010581C(0x10, 0xA4, _screenTimer - 0x20);
-        func_801056E8(0x10, 0x90, _screenTimer - 0x60);
+        _renderTimeAttackResultsHeader(160, 52, _screenTimer);
+        _renderHeaderAndIncrementalTime(16, 164, _screenTimer - 32);
+        _renderTimeAttackRatingWipe(16, 144, _screenTimer - 96);
 
         if (_newTimeSlot == 0) {
-            func_801059B8(0x46, 0xB8, _screenTimer - 0x80);
+            _renderNewRecord(70, 184, _screenTimer - 128);
         }
 
-        if ((_screenTimer == 0x80) && (_newTimeSlot == 0)) {
+        if ((_screenTimer == 128) && (_newTimeSlot == 0)) {
             vs_main_playSfxDefault(0x7E, 0x76);
         }
 
-        if (_screenTimer == 0xA0) {
+        if (_screenTimer == 160) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        if (_screenTimer == 0xA8) {
+        if (_screenTimer == 168) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        if (_screenTimer == 0xB0) {
+        if (_screenTimer == 176) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        func_80105B30(0x130, 0x90, 0, _screenTimer - 0xA0);
-        func_80105B30(0x130, 0x90, 1, _screenTimer - 0xA8);
-        func_80105B30(0x130, 0x90, 2, _screenTimer - 0xB0);
+        _renderStoredTime(304, 144, 0, _screenTimer - 160);
+        _renderStoredTime(304, 144, 1, _screenTimer - 168);
+        _renderStoredTime(304, 144, 2, _screenTimer - 176);
 
         ++_screenTimer;
 
@@ -931,15 +964,15 @@ int _renderTimeAttackEnd(void)
         }
     } else if (_screenState == 1) {
 
-        func_8010559C(0xA0, 0x34, 0x40);
-        func_80105790(0x10, 0xA4, 0x40);
-        func_8010564C(0x10, 0x90, 0x40);
+        _renderTimeAttackResultsHeader(160, 52, 64);
+        _renderHeaderAndTime(16, 164, 64);
+        _renderTimeAttackRating(16, 144, 64);
 
         if (_newTimeSlot == 0) {
-            func_801059B8(0x46, 0xB8, 0x40);
+            _renderNewRecord(70, 184, 64);
         }
 
-        func_801059FC(0x130, 0x90, 0x40);
+        _renderAllStoredTimes(304, 144, 64);
 
         ++_screenTimer;
 
@@ -954,15 +987,15 @@ int _renderTimeAttackEnd(void)
         }
     } else if (_screenState == 2) {
 
-        func_8010559C(0xA0, 0x34, _screenTimer);
-        func_80105790(0x10, 0xA4, _screenTimer);
-        func_8010564C(0x10, 0x90, _screenTimer);
+        _renderTimeAttackResultsHeader(160, 52, _screenTimer);
+        _renderHeaderAndTime(16, 164, _screenTimer);
+        _renderTimeAttackRating(16, 144, _screenTimer);
 
         if (_newTimeSlot == 0) {
-            func_801059B8(0x46, 0xB8, _screenTimer);
+            _renderNewRecord(70, 184, _screenTimer);
         }
 
-        func_801059FC(0x130, 0x90, _screenTimer);
+        _renderAllStoredTimes(304, 144, _screenTimer);
 
         if (_screenTimer > 0) {
             --_screenTimer;
@@ -970,7 +1003,7 @@ int _renderTimeAttackEnd(void)
             ++_screenState;
         }
     } else {
-        func_8007E0A8(0x1D, 1, 5);
+        func_8007E0A8(29, 1, 5);
 
         return 1;
     }
@@ -1145,11 +1178,11 @@ void _renderCourse(int x, int y, int timer)
     if (timer > 0) {
         x -= (_disMap[disIndexAttack0Course].w + 24) >> 1;
 
-        func_80105C34(x, y, disIndexAttack0Course, timer);
+        _renderTextureFadeIn(x, y, disIndexAttack0Course, timer);
 
         new_var = x + 12;
 
-        func_80105DD8(new_var + _disMap[disIndexAttack0Course].w, y - 1,
+        _renderTextureFadeInClut(new_var + _disMap[disIndexAttack0Course].w, y - 1,
             vs_main_stateFlags.timeTrialBoss + 1, timer, 0x7FF4);
     }
 }
@@ -1163,7 +1196,7 @@ void _renderBossName(int x, int y, int timer)
     if (timer > 0) {
         if (vs_main_stateFlags.timeTrialBoss != 6) {
 
-            func_80105C34(
+            _renderTextureFadeIn(
                 x
                     - (_disMap[vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur]
                             .w
@@ -1174,11 +1207,11 @@ void _renderBossName(int x, int y, int timer)
             x -= (_disMap[disIndexAttack0Death].w + _disMap[disIndexAttack0OgreZombie].w)
               >> 1;
 
-            func_80105C34(x, y, disIndexAttack0Death, timer);
+            _renderTextureFadeIn(x, y, disIndexAttack0Death, timer);
 
             x += _disMap[disIndexAttack0Death].w;
 
-            func_80105C34(x, y, disIndexAttack0OgreZombie, timer);
+            _renderTextureFadeIn(x, y, disIndexAttack0OgreZombie, timer);
         }
     }
 }
@@ -1193,12 +1226,12 @@ void _renderBestTimeHeader(int x, int y, int timer)
         int new_var;
         x -= (_disMap[disIndexAttack0BestTime].w + 96) >> 1;
 
-        func_80105C34(x, y, disIndexAttack0BestTime, timer);
+        _renderTextureFadeIn(x, y, disIndexAttack0BestTime, timer);
 
         x++;
         new_var = x + 11;
 
-        func_80105F6C(new_var + _disMap[disIndexAttack0BestTime].w, y + 2, timer,
+        _renderTime(new_var + _disMap[disIndexAttack0BestTime].w, y + 2, timer,
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0]
                 .time,
             0);
@@ -1209,108 +1242,84 @@ void _renderStartCountdown(int x, int y, int timer)
 {
     int temp_a2 = (timer / 15) + disIndexAttack0Three;
 
-    func_80105C34(
+    _renderTextureFadeIn(
         x - (_disMap[temp_a2].w / 2), y - (_disMap[temp_a2].h / 2), temp_a2, timer % 15);
 }
 
-void func_80104914(int arg0)
+void _pulseTimeAttackEnd(int arg0)
 {
-    RECT sp10;
+    RECT rect;
     int var_a1;
-    int var_a1_2;
-    int var_a2;
+    int r;
+    int g;
+    int b;
     int i;
-    int new_var2;
     int new_var3;
     int new_var4;
 
     for (i = 0; i < 32; ++i) {
 
-        var_a1_2 = _timBuf[128 + i];
+        b = _clutBuf[128 + i];
 
-        var_a1 = ((_timBuf[32 + i] & 0x1F) * arg0)
-               + ((_timBuf[96 + i] & 0x1F) * (0x10 - arg0));
+        var_a1 = ((_clutBuf[32 + i] & 0x1F) * arg0)
+               + ((_clutBuf[96 + i] & 0x1F) * (16 - arg0));
 
-        if (var_a1 < 0) {
-            var_a1 += 0xF;
-        }
+        r = (var_a1 / 16) & 0x1F;
 
-        new_var2 = (var_a1 >> 4) & 0x1F;
+        g = ((_clutBuf[32 + i] & 0x3E0) * arg0)
+          + ((_clutBuf[96 + i] & 0x3E0) * (16 - arg0));
 
-        var_a2 = ((_timBuf[32 + i] & 0x3E0) * arg0)
-               + ((_timBuf[0x60 + i] & 0x3E0) * (0x10 - arg0));
+        new_var4 = r | ((g / 16) & 0x3E0);
 
-        if (var_a2 < 0) {
-            var_a2 += 0xF;
-        }
+        b = ((_clutBuf[32 + i] & 0x7C00) * arg0)
+          + ((_clutBuf[96 + i] & 0x7C00) * (16 - arg0));
 
-        new_var4 = new_var2 | ((var_a2 >> 4) & 0x3E0);
+        new_var3 = (b / 16) & 0x7C00;
 
-        var_a1_2 = ((_timBuf[0x20 + i] & 0x7C00) * arg0)
-                 + ((_timBuf[0x60 + i] & 0x7C00) * (0x10 - arg0));
-
-        if (var_a1_2 < 0) {
-            var_a1_2 += 0xF;
-        }
-
-        new_var3 = (var_a1_2 >> 4) & 0x7C00;
-
-        _timBuf[0x80 + i] = (new_var4 | new_var3) | (_timBuf[0x20 + i] & 0x8000);
+        _clutBuf[128 + i] = (new_var4 | new_var3) | (_clutBuf[32 + i] & 0x8000);
     }
 
-    setRECT(&sp10, 0x300, 0x1FF, 0xA0, 1);
+    setRECT(&rect, 768, 511, 160, 1);
 
-    LoadImage(&sp10, (u_long*)_timBuf);
+    LoadImage(&rect, (u_long*)_clutBuf);
 }
 
-void func_80104A50(int arg0)
+void _pulseCubePuzzleEnd(int arg0)
 {
-    RECT sp10;
+    RECT rect;
     int var_a1;
-    int var_a1_2;
+    int b;
     int var_a2;
     int i;
-    int new_var2;
+    int r;
     int new_var3;
     int new_var4;
 
     for (i = 0; i < 32; ++i) {
 
-        var_a1_2 = _timBuf[0x80 + i];
+        b = _clutBuf[128 + i];
 
-        var_a1 = ((_timBuf[0x60 + i] & 0x1F) * arg0)
-               + ((_timBuf[0x40 + i] & 0x1F) * (0x10 - arg0));
+        var_a1 = ((_clutBuf[96 + i] & 0x1F) * arg0)
+               + ((_clutBuf[64 + i] & 0x1F) * (16 - arg0));
 
-        if (var_a1 < 0) {
-            var_a1 += 0xF;
-        }
+        r = (var_a1 / 16) & 0x1F;
 
-        new_var2 = (var_a1 >> 4) & 0x1F;
+        var_a2 = ((_clutBuf[96 + i] & 0x3E0) * arg0)
+               + ((_clutBuf[64 + i] & 0x3E0) * (16 - arg0));
 
-        var_a2 = ((_timBuf[0x60 + i] & 0x3E0) * arg0)
-               + ((_timBuf[0x40 + i] & 0x3E0) * (0x10 - arg0));
+        new_var4 = r | ((var_a2 / 16) & 0x3E0);
 
-        if (var_a2 < 0) {
-            var_a2 += 0xF;
-        }
+        b = ((_clutBuf[96 + i] & 0x7C00) * arg0)
+          + ((_clutBuf[64 + i] & 0x7C00) * (16 - arg0));
 
-        new_var4 = new_var2 | ((var_a2 >> 4) & 0x3E0);
+        new_var3 = (b / 16) & 0x7C00;
 
-        var_a1_2 = ((_timBuf[0x60 + i] & 0x7C00) * arg0)
-                 + ((_timBuf[0x40 + i] & 0x7C00) * (0x10 - arg0));
-
-        if (var_a1_2 < 0) {
-            var_a1_2 += 0xF;
-        }
-
-        new_var3 = (var_a1_2 >> 4) & 0x7C00;
-
-        _timBuf[0x80 + i] = (new_var4 | new_var3) | (_timBuf[0x60 + i] & 0x8000);
+        _clutBuf[128 + i] = (new_var4 | new_var3) | (_clutBuf[96 + i] & 0x8000);
     }
 
-    setRECT(&sp10, 0x300, 0x1FF, 0xA0, 1);
+    setRECT(&rect, 768, 511, 160, 1);
 
-    LoadImage(&sp10, (u_long*)_timBuf);
+    LoadImage(&rect, (u_long*)_clutBuf);
 }
 
 void _renderCongratulations(int x, int y, int timer)
@@ -1365,28 +1374,28 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
                  + 116)
           >> 1;
 
-        func_8010664C(x, y, disIndexRank0Score, D_80109744);
+        _renderTextureFadeInTint(x, y, disIndexRank0Score, D_80109744);
 
         x += _disMap[disIndexRank0Score].w;
 
-        func_8010664C(x, y + 7, disIndexRank0Colon, D_80109744);
+        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, D_80109744);
 
         i = 2;
         x = (x + i) + _disMap[disIndexRank0Colon].w;
 
         for (i = 0; i < 9; ++i) {
-            func_8010664C(x, y + 3, buf[i] - '0', D_80109744);
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', D_80109744);
 
             x += 0xC;
 
             if ((i == 2) || (i == 5)) {
-                func_8010664C(x, y + 14, 10, D_80109744);
+                _renderTextureFadeInTint(x, y + 14, 10, D_80109744);
 
                 x += _disMap[disIndexRank0Comma].w + 3;
             }
         }
 
-        func_8010664C(x, y + 8, disIndexRank0Pts, D_80109744);
+        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, D_80109744);
     }
 }
 
@@ -1494,21 +1503,21 @@ void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unuse
         x -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
         i = 2;
 
-        func_8010664C(x, y, 0x15, D_80109754);
+        _renderTextureFadeInTint(x, y, 0x15, D_80109754);
 
         x += _disMap[21].w;
 
-        func_8010664C(x, y + 7, 0x1A, D_80109754);
+        _renderTextureFadeInTint(x, y + 7, 0x1A, D_80109754);
 
         x = x + i + _disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
-            func_8010664C(x, y + 3, buf[i] - '0', D_80109754);
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', D_80109754);
 
             x += 0xC;
         }
 
-        func_8010664C(x, y + 8, 0x13, D_80109754);
+        _renderTextureFadeInTint(x, y + 8, 0x13, D_80109754);
     }
 }
 
@@ -1600,7 +1609,7 @@ void _renderRiskbreakerRankHeader(int x, int y, int timer)
     if (timer > 0) {
         colors[0].code = timer;
 
-        func_8010664C(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
+        _renderTextureFadeInTint(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
             disIndexRank0RiskbreakerRank, colors);
     }
 }
@@ -1641,9 +1650,65 @@ void _renderRiskbreakerRank(int x, int y, int timer)
     }
 }
 
-void func_8010559C(int arg0, int arg1, int arg2)
+void _renderTimeAttackResultsHeader(int x, int y, int timer)
 {
     static P_CODE D_80109774[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+
+    if (timer < 0) {
+        timer = 0;
+    }
+
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    if (timer > 0) {
+        D_80109774[0].code = timer;
+        x -= (_disMap[disIndexTime0TimeAttackResults].w
+                 + _disMap[disIndexTime0TimeAttackResults + 1].w)
+          >> 1;
+
+        _renderTexturePopIn(x, y, disIndexTime0TimeAttackResults, D_80109774);
+        _renderTexturePopIn(x + _disMap[disIndexTime0TimeAttackResults].w, y,
+            disIndexTime0TimeAttackResults + 1, D_80109774);
+    }
+}
+
+void _renderTimeAttackRating(int x, int y, int arg2)
+{
+    int var_a2;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 64) {
+        arg2 = 64;
+    }
+
+    if (arg2 <= 0) {
+        return;
+    }
+
+    if (_timeTrialTime < 7680) {
+        var_a2 = 0;
+    } else if (_timeTrialTime <= 65535) {
+        var_a2 = 1;
+    } else if (_timeTrialTime <= 73215) {
+        var_a2 = 2;
+    } else if (_timeTrialTime <= 131071) {
+        var_a2 = 3;
+    } else {
+        var_a2 = 4;
+    }
+
+    _renderTextureFadeIn(x, y, var_a2 + disIndexTime0Excellent, arg2);
+}
+
+void _renderTimeAttackRatingWipe(int x, int y, int arg2)
+{
+    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+
+    int arg3;
 
     if (arg2 < 0) {
         arg2 = 0;
@@ -1653,239 +1718,189 @@ void func_8010559C(int arg0, int arg1, int arg2)
         arg2 = 64;
     }
 
-    if (arg2 > 0) {
-        D_80109774[0].code = arg2;
-        arg0 -= (_disMap[70].w + _disMap[71].w) >> 1;
-
-        _renderTexturePopIn(arg0, arg1, 70, D_80109774);
-        _renderTexturePopIn(arg0 + _disMap[70].w, arg1, 71, D_80109774);
-    }
-}
-
-void func_8010564C(int arg0, int arg1, int arg2)
-{
-    int var_a2;
-
-    if (arg2 < 0) {
-        arg2 = 0;
-    }
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
-    }
-
     if (arg2 <= 0) {
         return;
     }
 
-    if (_timeTrialTime < 0x1E00) {
-        var_a2 = 0;
-    } else if (_timeTrialTime <= 0xFFFF) {
-        var_a2 = 1;
-    } else if (_timeTrialTime <= 0x11DFF) {
-        var_a2 = 2;
-    } else if (_timeTrialTime <= 0x1FFFF) {
-        var_a2 = 3;
-    } else {
-        var_a2 = 4;
-    }
+    arg3 = x + (arg2 * 8);
 
-    func_80105C34(arg0, arg1, var_a2 + 0x4E, arg2);
-}
-
-void func_801056E8(int arg0, int arg1, int arg2)
-{
-    static P_CODE D_8010977C[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
-
-    int arg3;
-
-    if (arg2 < 0) {
+    if (_timeTrialTime < 7680) {
         arg2 = 0;
-    }
-
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
-    }
-
-    if (arg2 <= 0) {
-        return;
-    }
-
-    arg3 = arg0 + (arg2 * 8);
-
-    if (_timeTrialTime < 0x1E00) {
-        arg2 = 0;
-    } else if (_timeTrialTime <= 0xFFFF) {
+    } else if (_timeTrialTime <= 65535) {
         arg2 = 1;
-    } else if (_timeTrialTime <= 0x11DFF) {
+    } else if (_timeTrialTime <= 73215) {
         arg2 = 2;
-    } else if (_timeTrialTime <= 0x1FFFF) {
+    } else if (_timeTrialTime <= 131071) {
         arg2 = 3;
     } else {
         arg2 = 4;
     }
 
-    _renderTextureWipe(arg0, arg1, arg2 + 0x4E, D_8010977C, arg3);
+    _renderTextureWipe(x, y, arg2 + disIndexTime0Excellent, colors, arg3);
 }
 
-void func_80105790(int arg0, int arg1, int arg2)
+void _renderHeaderAndTime(int arg0, int arg1, int arg2)
 {
     if (arg2 < 0) {
         arg2 = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (arg2 > 64) {
+        arg2 = 64;
     }
 
     if (arg2 > 0) {
-        func_80105C34(arg0, arg1, 0x48, arg2);
+        _renderTextureFadeIn(arg0, arg1, disIndexTime0Time, arg2);
 
-        arg0 += _disMap[72].w;
+        arg0 += _disMap[disIndexTime0Time].w;
 
-        func_80105F6C(arg0, arg1 + 2, arg2, _timeTrialTime, 0);
+        _renderTime(arg0, arg1 + 2, arg2, _timeTrialTime, 0);
     }
 }
 
-void func_8010581C(int arg0, int arg1, int arg2)
+void _renderHeaderAndIncrementalTime(int x, int y, int timer)
 {
     int temp_a3;
     int var_a3;
     int* new_var4;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 >= 0x41) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        func_80105C34(arg0, arg1, 0x48, arg2);
+    if (timer > 0) {
+        _renderTextureFadeIn(x, y, disIndexTime0Time, timer);
 
-        arg0 += _disMap[72].w;
+        x += _disMap[disIndexTime0Time].w;
 
-        if (arg2 >= 0x10) {
-            int a0 = (_timeTrialTime >> 0x10) & 0xFF;
-            int a1 = (_timeTrialTime >> 8) & 0xFF;
-            int a2 = _timeTrialTime & 0xFF;
-            temp_a3 = ((a0 * 6000) + (a1 * 100)) + a2;
+        if (timer >= 16) {
+            int mins = (_timeTrialTime >> 0x10) & 0xFF;
+            int secs = (_timeTrialTime >> 8) & 0xFF;
+            int ms = _timeTrialTime & 0xFF;
+            temp_a3 = ((mins * 6000) + (secs * 100)) + ms;
             var_a3 = temp_a3;
-            var_a3 = ((*(new_var4 = &var_a3)) * (arg2 - 0x10)) / 48;
-            a0 = var_a3 / 6000;
+            var_a3 = ((*(new_var4 = &var_a3)) * (timer - 16)) / 48;
+            mins = var_a3 / 6000;
             var_a3 = var_a3 % 6000;
-            a1 = var_a3 / 100;
+            secs = var_a3 / 100;
             var_a3 = var_a3 % 100;
-            var_a3 = (a0 << 0x10) | (a1 << 8) | var_a3;
+            var_a3 = (mins << 16) | (secs << 8) | var_a3;
         } else {
             var_a3 = 0;
         }
 
-        func_80105F6C(arg0, arg1 + 2, arg2, var_a3, 0);
+        _renderTime(x, y + 2, timer, var_a3, 0);
     }
 }
 
-void func_801059B8(int arg0, int arg1, int arg2)
+void _renderNewRecord(int x, int y, int timer)
 {
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        func_80105C34(arg0, arg1, 0x45, arg2);
+    if (timer > 0) {
+        _renderTextureFadeIn(x, y, disIndexTime0NewRecord, timer);
     }
 }
 
-void func_801059FC(int arg0, int arg1, int arg2)
+void _renderAllStoredTimes(int x, int y, int timer)
 {
-    int temp_v0;
+    int isNewRecord;
     int i;
     int var_s3;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 >= 0x41) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
     for (i = 0; i < 3; ++i) {
-        var_s3 = 0x7FF2;
-        temp_v0 = _newTimeSlot == i;
-        if (temp_v0 != 0) {
-            var_s3 = 0x7FF8;
+
+        var_s3 = getClut(800, 511);
+        isNewRecord = _newTimeSlot == i;
+
+        if (isNewRecord != 0) {
+            var_s3 = getClut(896, 511);
         }
 
-        func_80105F6C(arg0 - 0x54, arg1 + i * 0x14 + 2, arg2,
+        _renderTime(x - 84, y + i * 20 + 2, timer,
             vs_main_scoredata
                 .bossTimeTrialScores[0][vs_main_stateFlags.timeTrialBoss * 3 + i]
                 .time,
-            temp_v0);
-        func_80105DD8(
-            (arg0 - _disMap[75 + i].w) - 0x58, arg1 + i * 0x14, i + 0x4B, arg2, var_s3);
+            isNewRecord);
+        _renderTextureFadeInClut((x - _disMap[disIndexTime0First + i].w) - 88, y + i * 20,
+            disIndexTime0First + i, timer, var_s3);
     }
 }
 
-void func_80105B30(int arg0, int arg1, int arg2, int arg3)
+void _renderStoredTime(int x, int y, int slot, int timer)
 {
-    int temp_t1;
-    int var_s3;
+    int isCurrentTime;
+    int clut;
 
-    if (arg3 < 0) {
-        arg3 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg3 >= 0x41) {
-        arg3 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    temp_t1 = _newTimeSlot == arg2;
-    var_s3 = 0x7FF2;
+    isCurrentTime = _newTimeSlot == slot;
+    clut = getClut(800, 511);
 
-    if (temp_t1 != 0) {
-        var_s3 = 0x7FF8;
+    if (isCurrentTime != 0) {
+        clut = getClut(896, 511);
     }
 
-    func_80105F6C(arg0 - 0x54, arg1 + (arg2 * 0x14) + 2, arg3,
-        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][arg2]
+    _renderTime(x - 84, y + (slot * 20) + 2, timer,
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][slot]
             .time,
-        temp_t1);
-    func_80105DD8((arg0 - _disMap[arg2 + 0x4B].w) - 0x58, arg1 + (arg2 * 0x14),
-        arg2 + 0x4B, arg3, var_s3);
+        isCurrentTime);
+    _renderTextureFadeInClut((x - _disMap[slot + disIndexTime0First].w) - 88,
+        y + (slot * 20), slot + disIndexTime0First, timer, clut);
 }
 
-void func_80105C34(int arg0, int arg1, int arg2, int arg3)
+void _renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 {
-    _texture_t* temp_a2;
+    _texture_t* texture;
     POLY_FT4* poly;
     void** scratch;
 
-    if (arg3 <= 0) {
+    if (brightness <= 0) {
         return;
     }
 
     poly = *(void**)getScratchAddr(0);
-    temp_a2 = &_disMap[arg2];
+    texture = &_disMap[texIndex];
+
     setPolyFT4(poly);
-    setXY4(poly, arg0, arg1, temp_a2->w + arg0, arg1, arg0, temp_a2->h + arg1,
-        temp_a2->w + arg0, temp_a2->h + arg1);
-    setUV4(poly, temp_a2->x, temp_a2->y, temp_a2->x + temp_a2->w, temp_a2->y, temp_a2->x,
-        temp_a2->y + temp_a2->h, temp_a2->x + temp_a2->w, temp_a2->y + temp_a2->h);
+    setXY4(
+        poly, x, y, texture->w + x, y, x, texture->h + y, texture->w + x, texture->h + y);
+    setUV4(poly, texture->x, texture->y, texture->x + texture->w, texture->y, texture->x,
+        texture->y + texture->h, texture->x + texture->w, texture->y + texture->h);
     setSemiTrans(poly, 1);
 
-    if (arg3 < 8) {
-        setRGB0(poly, arg3 * 0x10, arg3 * 0x10, arg3 * 0x10);
-        poly->tpage = temp_a2->tpage | 0x20;
-        poly->clut = temp_a2->clut + 1;
+    if (brightness < 8) {
+        setRGB0(poly, brightness * 16, brightness * 16, brightness * 16);
+        poly->tpage = texture->tpage | getTPage(0, semiTransparencyFull, 0, 0);
+        poly->clut = texture->clut + 1;
     } else {
-        setRGB0(poly, 0x80, 0x80, 0x80);
-        poly->tpage = temp_a2->tpage;
-        poly->clut = temp_a2->clut;
+        setRGB0(poly, 128, 128, 128);
+        poly->tpage = texture->tpage;
+        poly->clut = texture->clut;
     }
 
     scratch = (void**)getScratchAddr(0);
@@ -1895,33 +1910,34 @@ void func_80105C34(int arg0, int arg1, int arg2, int arg3)
     scratch[0] = poly;
 }
 
-void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
+void _renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clut)
 {
-    _texture_t* temp_a2;
+    _texture_t* texture;
     POLY_FT4* poly;
     void** scratch;
 
-    if (arg3 <= 0) {
+    if (brightness <= 0) {
         return;
     }
 
     poly = *(void**)getScratchAddr(0);
-    temp_a2 = &_disMap[arg2];
+    texture = &_disMap[texIndex];
+
     setPolyFT4(poly);
-    setXY4(poly, arg0, arg1, temp_a2->w + arg0, arg1, arg0, temp_a2->h + arg1,
-        temp_a2->w + arg0, temp_a2->h + arg1);
-    setUV4(poly, temp_a2->x, temp_a2->y, temp_a2->x + temp_a2->w, temp_a2->y, temp_a2->x,
-        temp_a2->y + temp_a2->h, temp_a2->x + temp_a2->w, temp_a2->y + temp_a2->h);
+    setXY4(
+        poly, x, y, texture->w + x, y, x, texture->h + y, texture->w + x, texture->h + y);
+    setUV4(poly, texture->x, texture->y, texture->x + texture->w, texture->y, texture->x,
+        texture->y + texture->h, texture->x + texture->w, texture->y + texture->h);
     setSemiTrans(poly, 1);
 
-    if (arg3 < 8) {
-        setRGB0(poly, arg3 * 0x10, arg3 * 0x10, arg3 * 0x10);
-        poly->tpage = temp_a2->tpage | 0x20;
-        poly->clut = arg4 + 1;
+    if (brightness < 8) {
+        setRGB0(poly, brightness * 16, brightness * 16, brightness * 16);
+        poly->tpage = texture->tpage | getTPage(0, semiTransparencyFull, 0, 0);
+        poly->clut = clut + 1;
     } else {
-        setRGB0(poly, 0x80, 0x80, 0x80);
-        poly->tpage = temp_a2->tpage;
-        poly->clut = arg4;
+        setRGB0(poly, 128, 128, 128);
+        poly->tpage = texture->tpage;
+        poly->clut = clut;
     }
 
     scratch = (void**)getScratchAddr(0);
@@ -1931,44 +1947,45 @@ void func_80105DD8(int arg0, int arg1, int arg2, int arg3, int arg4)
     scratch[0] = poly;
 }
 
-void func_80105F6C(int arg0, int arg1, int arg2, int arg3, int arg4)
+void _renderTime(int x, int y, int timer, int time, int isNewRecord)
 {
     char buf[16];
     int i;
     int s2;
 
-    if (arg3 == 0x800000) {
+    if (time == 0x800000) {
         sprintf(buf, "------");
     } else {
         sprintf(
-            buf, "%02d%02d%02d", (arg3 >> 0x10) & 0xFF, (arg3 >> 8) & 0xFF, arg3 & 0xFF);
+            buf, "%02d%02d%02d", (time >> 0x10) & 0xFF, (time >> 8) & 0xFF, time & 0xFF);
     }
 
-    s2 = 0x7FF2;
+    s2 = getClut(800, 511);
 
-    if (arg4 != 0) {
-        s2 = 0x7FF8;
+    if (isNewRecord != 0) {
+        s2 = getClut(896, 511);
     }
 
     for (i = 0; i < 6; ++i) {
-        if (buf[i] == 0x2D) {
-            func_80105DD8(arg0, arg1, 0x53, arg2, s2);
+        if (buf[i] == '-') {
+            _renderTextureFadeInClut(x, y, disIndexTime0Dash, timer, s2);
 
-            arg0 += 0xC;
+            x += 12;
         } else {
-            func_80105DD8(arg0, arg1 - 3, buf[i] - 0x30, arg2, s2);
+            _renderTextureFadeInClut(x, y - 3, buf[i] - '0', timer, s2);
 
-            arg0 += 0xC;
+            x += 12;
         }
 
         if (i == 1) {
-            func_80105DD8(arg0, arg1 - 2, 0x49, arg2, s2);
+            _renderTextureFadeInClut(x, y - 2, disIndexTime0Prime, timer, s2);
 
-            arg0 += 6;
+            x += 6;
+
         } else if (i == 3) {
-            func_80105DD8(arg0, arg1 - 2, 0x4A, arg2, s2);
+            _renderTextureFadeInClut(x, y - 2, disIndexTime0DoublePrime, timer, s2);
 
-            arg0 += 6;
+            x += 6;
         }
     }
 }
@@ -1999,17 +2016,24 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
     }
 
     if (timer > 0) {
+
         colors[0].code = timer;
         x -= (_disMap[11].w + _disMap[26].w + _disMap[14].w + _disMap[24].w + 0xE) >> 1;
-        func_8010664C(x, y, 0xB, colors);
+
+        _renderTextureFadeInTint(x, y, disIndexRank0Bonus, colors);
+
         x += _disMap[11].w;
-        func_8010664C(x, y, 0x1A, colors);
+
+        _renderTextureFadeInTint(x, y, disIndexRank0Colon, colors);
+
         x += 2 + _disMap[26].w;
         new_var2 = 0x10;
         p = (void**)0x1F800000;
         area = p[0];
+
         SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
         AddPrim(p[1] - 0x1C, area++);
+
         p[0] = area;
 
         if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 0x140) {
@@ -2017,9 +2041,10 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
         } else {
             sp18.x = 0;
         }
-        sp18.y = y - (_buffReelSpinSpeed >> 3);
+
+        sp18.y = y - (_elementAnimationState >> 3);
         sp18.w = 0x140;
-        sp18.h = ((_buffReelSpinSpeed >> 3) * 2) + new_var2;
+        sp18.h = ((_elementAnimationState >> 3) * 2) + new_var2;
 
         if (arg3 < 2) {
             int a0 = x;
@@ -2047,14 +2072,15 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
 
         } else {
             temp = (char)_buffReelSelection / 16;
-            func_80105DD8(x, y - 1, _buffReels[_buffReelIndex][temp].stat, timer, 0x7FF2);
+            _renderTextureFadeInClut(
+                x, y - 1, _buffReels[_buffReelIndex][temp].stat, timer, 0x7FF2);
             x += _disMap[_buffReels[_buffReelIndex][temp].stat].w;
-            func_80105DD8(x, y + 4, 0x18, timer, 0x7FF2);
+            _renderTextureFadeInClut(x, y + 4, 0x18, timer, 0x7FF2);
             x += _disMap[24].w;
             sprintf(sp20, "%d", _buffReels[_buffReelIndex][temp].amount);
             len = strlen(sp20);
             for (j = 0; j < len; ++j) {
-                func_80105DD8(x, y - 1, sp20[j] - 0x30, timer, 0x7FF2);
+                _renderTextureFadeInClut(x, y - 1, sp20[j] - 0x30, timer, 0x7FF2);
                 x += 0xC;
             }
         }
@@ -2115,51 +2141,55 @@ void _renderPressButtonPrompt(int x, int y, int arg2, int arg3)
     p[0] = poly;
 }
 
-void func_8010664C(int arg0, int arg1, int arg2, P_CODE arg3[])
+void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
 {
     POLY_GT4* poly;
     void** p;
 
-    if (arg3[0].code != 0) {
-        poly = *(void**)0x1F800000;
-        setPolyGT4(poly);
-        setXY4(poly, arg0, arg1, _disMap[arg2].w + arg0, arg1, arg0,
-            _disMap[arg2].h + arg1, _disMap[arg2].w + arg0, _disMap[arg2].h + arg1);
-        setUV4(poly, _disMap[arg2].x, _disMap[arg2].y, _disMap[arg2].x + _disMap[arg2].w,
-            _disMap[arg2].y, _disMap[arg2].x, _disMap[arg2].y + _disMap[arg2].h,
-            _disMap[arg2].x + _disMap[arg2].w, _disMap[arg2].y + _disMap[arg2].h);
-        if (arg3[0].code < 8) {
-            setRGB0(poly, (arg3[0].r0 * arg3[0].code) / 8,
-                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
-            setRGB1(poly, (arg3[1].r0 * arg3[0].code) / 8,
-                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
-            setRGB2(poly, (arg3[0].r0 * arg3[0].code) / 8,
-                (arg3[0].g0 * arg3[0].code) / 8, (arg3[0].b0 * arg3[0].code) / 8);
-            setRGB3(poly, (arg3[1].r0 * arg3[0].code) / 8,
-                (arg3[1].g0 * arg3[0].code) / 8, (arg3[1].b0 * arg3[0].code) / 8);
-        } else {
-            setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-            setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-            setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-            setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-        }
-
-        setSemiTrans(poly, 1);
-
-        if (arg3[0].code < 8) {
-            poly->clut = _disMap[arg2].clut + 1;
-            poly->tpage = _disMap[arg2].tpage | 0x20;
-        } else {
-            poly->clut = _disMap[arg2].clut;
-            poly->tpage = _disMap[arg2].tpage;
-        }
-
-        p = (void**)0x1F800000;
-
-        AddPrim(p[1] - 0x1C, poly++);
-
-        p[0] = poly;
+    if (colors[0].code == 0) {
+        return;
     }
+
+    poly = *(void**)0x1F800000;
+
+    setPolyGT4(poly);
+    setXY4(poly, x, y, _disMap[texId].w + x, y, x, _disMap[texId].h + y,
+        _disMap[texId].w + x, _disMap[texId].h + y);
+    setUV4(poly, _disMap[texId].x, _disMap[texId].y, _disMap[texId].x + _disMap[texId].w,
+        _disMap[texId].y, _disMap[texId].x, _disMap[texId].y + _disMap[texId].h,
+        _disMap[texId].x + _disMap[texId].w, _disMap[texId].y + _disMap[texId].h);
+
+    if (colors[0].code < 8) {
+        setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
+            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+        setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
+            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+        setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
+            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+        setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
+            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+    } else {
+        setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+        setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+        setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+        setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+    }
+
+    setSemiTrans(poly, 1);
+
+    if (colors[0].code < 8) {
+        poly->clut = _disMap[texId].clut + 1;
+        poly->tpage = _disMap[texId].tpage | 0x20;
+    } else {
+        poly->clut = _disMap[texId].clut;
+        poly->tpage = _disMap[texId].tpage;
+    }
+
+    p = (void**)0x1F800000;
+
+    AddPrim(p[1] - 0x1C, poly++);
+
+    p[0] = poly;
 }
 
 static inline int _adjust(int component, int weight)
@@ -2477,7 +2507,7 @@ int _initCubePuzzleStart(void)
                         tim.caddr[0] = 0;
 
                         LoadImage(tim.crect, tim.caddr);
-                        vs_main_memcpy(_timBuf, tim.caddr, sizeof _timBuf);
+                        vs_main_memcpy(_clutBuf, tim.caddr, sizeof _clutBuf);
                     }
                 }
             }
@@ -2506,7 +2536,7 @@ int _initCubePuzzleStart(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        _buffReelSpinSpeed = 0;
+        _elementAnimationState = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
 
@@ -2570,7 +2600,7 @@ int _initCubePuzzleQuit(void)
                     *tim.caddr = 0;
 
                     LoadImage(tim.crect, tim.caddr);
-                    vs_main_memcpy(_timBuf, tim.caddr, sizeof _timBuf);
+                    vs_main_memcpy(_clutBuf, tim.caddr, sizeof _clutBuf);
                 }
             }
 
@@ -2585,7 +2615,7 @@ int _initCubePuzzleQuit(void)
         _onScreenScore = 0;
         _screenTimer = 0;
         _screenState = 0;
-        _buffReelSpinSpeed = 0;
+        _elementAnimationState = 0;
         _buffReelSelection = 0;
         _submenuState = 0;
         return 1;
@@ -2642,19 +2672,15 @@ int _renderCubePuzzleEnd(void)
     int temp_s0;
     int var_v0;
 
-    var_v0 = rsin(_buffReelSpinSpeed);
-    if (var_v0 < 0) {
-        var_v0 += 0x1FF;
-    }
+    _pulseCubePuzzleEnd((rsin(_elementAnimationState) / 512) + 8);
 
-    func_80104A50((var_v0 >> 9) + 8);
-
-    _buffReelSpinSpeed = (_buffReelSpinSpeed + 0x40) & 0xFFF;
+    _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
 
     if (_screenState == 0) {
-        temp_s0 = ((vs_main_stateFlags.unkA2 * 0x1770) + (vs_main_stateFlags.unkA1 * 0x64)
+
+        temp_s0 = ((vs_main_stateFlags.unkA2 * 6000) + (vs_main_stateFlags.unkA1 * 100)
                    + vs_main_stateFlags.unkA0);
-        temp_s0 -= (D_801099F4 * 0x64);
+        temp_s0 -= (D_801099F4 * 100);
 
         if (temp_s0 <= 0) {
             temp_s0 = 0xF - D_801099F6;
@@ -2663,8 +2689,8 @@ int _renderCubePuzzleEnd(void)
             temp_s0 = temp_s0 / 200;
             var_v0 = 1;
             temp_s0 = 0xF - (D_801099F6 + (temp_s0 + var_v0));
-            if (temp_s0 >= 0x10) {
-                temp_s0 = 0xF;
+            if (temp_s0 >= 16) {
+                temp_s0 = 15;
             }
             if (temp_s0 < 0) {
                 temp_s0 = 0;
@@ -2724,17 +2750,9 @@ int _renderCubePuzzleEnd(void)
 
 int _renderCubePuzzleQuit(void)
 {
-    int var_v0;
+    _pulseCubePuzzleEnd((rsin(_elementAnimationState) / 512) + 8);
 
-    var_v0 = rsin(_buffReelSpinSpeed);
-
-    if (var_v0 < 0) {
-        var_v0 += 0x1FF;
-    }
-
-    func_80104A50((var_v0 >> 9) + 8);
-
-    _buffReelSpinSpeed = (_buffReelSpinSpeed + 0x40) & 0xFFF;
+    _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
 
     if (_screenState != 0) {
         return 0;
@@ -2744,20 +2762,20 @@ int _renderCubePuzzleQuit(void)
         vs_main_playSfxDefault(0x7E, 0x7A);
     }
 
-    if (_screenTimer == 0xF) {
+    if (_screenTimer == 15) {
         vs_main_playSfxDefault(0x7E, 0x7A);
     }
 
-    func_801084F4(0x40, _screenTimer);
-    func_80108564(0x64, _screenTimer - 0xF);
-    _renderPressButtonPrompt(0xD6, 0xBB, _screenTimer - 0xF, _screenTimer);
+    _renderGivingUp(64, _screenTimer);
+    _renderChicken(100, _screenTimer - 15);
+    _renderPressButtonPrompt(214, 187, _screenTimer - 15, _screenTimer);
 
     if (_screenTimer < 0x7FFF) {
         ++_screenTimer;
     }
 
     if (vs_main_buttonsPressed.all & PADRright) {
-        if (_screenTimer >= 0x3F) {
+        if (_screenTimer > 62) {
 
             func_80045D64(0x7E, 0);
             func_8007E0A8(0x1D, 1, 5);
@@ -2766,7 +2784,7 @@ int _renderCubePuzzleQuit(void)
             return 1;
         }
 
-        _screenTimer = 0x3F;
+        _screenTimer = 63;
 
         func_80045D64(0x7E, 0);
     }
@@ -2774,33 +2792,33 @@ int _renderCubePuzzleQuit(void)
     return 0;
 }
 
-void func_801084F4(int arg0, int arg1)
+void _renderGivingUp(int arg0, int arg1)
 {
     if (arg1 < 0) {
         arg1 = 0;
     }
-    if (arg1 > 0x40) {
-        arg1 = 0x40;
+    if (arg1 > 64) {
+        arg1 = 64;
     }
     if (arg1 > 0) {
-        func_80105C34(0, arg0, 0x7B, arg1);
-        func_80105C34(0xA0, arg0, 0x7C, arg1);
+        _renderTextureFadeIn(0, arg0, disIndexEsc0GivingUp, arg1);
+        _renderTextureFadeIn(160, arg0, disIndexEsc0GivingUp + 1, arg1);
     }
 }
 
-void func_80108564(int arg0, int arg1)
+void _renderChicken(int arg0, int arg1)
 {
     if (arg1 < 0) {
         arg1 = 0;
     }
 
-    if (arg1 > 0x40) {
-        arg1 = 0x40;
+    if (arg1 > 64) {
+        arg1 = 64;
     }
 
     if (arg1 > 0) {
-        func_80105C34(0, arg0, 0x7D, arg1);
-        func_80105C34(0xA0, arg0, 0x7E, arg1);
+        _renderTextureFadeIn(0, arg0, disIndexEsc0Chicken, arg1);
+        _renderTextureFadeIn(0xA0, arg0, disIndexEsc0Chicken + 1, arg1);
     }
 }
 
@@ -2858,7 +2876,7 @@ void func_8010873C(int x, int y, int arg2)
     }
 
     if (arg2 > 0) {
-        func_80105C34(x - (_disMap[104].w >> 1), y, 104, arg2);
+        _renderTextureFadeIn(x - (_disMap[104].w >> 1), y, 104, arg2);
     }
 }
 
@@ -2871,7 +2889,7 @@ void func_80108784(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         int new_var = (D_801099F4 % 60) << 0x10;
 
-        func_80105F6C(arg0, arg1, arg2, ((D_801099F4 / 60) << 0x10) | (new_var >> 8), 0);
+        _renderTime(arg0, arg1, arg2, ((D_801099F4 / 60) << 0x10) | (new_var >> 8), 0);
     }
 }
 
@@ -2912,7 +2930,7 @@ void func_8010887C(int arg0, int arg1, int arg2)
 
     if (arg2 > 0) {
 
-        func_80105C34(arg0, arg1, 0x48, arg2);
+        _renderTextureFadeIn(arg0, arg1, 0x48, arg2);
 
         arg0 += _disMap[72].w;
 
@@ -2931,7 +2949,7 @@ void func_8010887C(int arg0, int arg1, int arg2)
             var_a3 = 0;
         }
 
-        func_80105F6C(arg0, arg1 + 2, arg2, var_a3, 0);
+        _renderTime(arg0, arg1 + 2, arg2, var_a3, 0);
     }
 }
 

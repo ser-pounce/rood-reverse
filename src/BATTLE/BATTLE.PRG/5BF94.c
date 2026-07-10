@@ -2290,7 +2290,7 @@ void _renderTimer(int* value)
     int i;
 
     *(int*)sp10 = *value;
-    sp10[0] = vs_main_stateFlags.unkA0;
+    sp10[0] = vs_main_stateFlags.puzzleTimerHundredths;
 
     if (sp10[3] != 0) {
         sp10[2] = 59;

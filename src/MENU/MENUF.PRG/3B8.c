@@ -26,72 +26,8 @@ typedef struct {
     short amount;
 } _buffReels_t;
 
-static int _initCongratulationsScreen(void);
 static int _initMenu(void);
-static int _initTimeAttackEnd(void);
-static int _initTimeAttackStart(void);
-static void func_80103748(void);
 static int _execMenu(void);
-static int _renderCongratulationsScreen(void);
-static int _renderTimeAttackEnd(void);
-static int _renderTimeAttackStart(void);
-static void _renderTimeAttackHeader(int x, int y, int timer);
-static void _renderCourse(int arg0, int arg1, int arg2);
-static void _renderBossName(int arg0, int arg1, int arg2);
-static void _renderBestTimeHeader(int arg0, int arg1, int arg2);
-static void _renderStartCountdown(int arg0, int arg1, int arg2);
-static void _pulseTimeAttackEnd(int);
-static void _renderCongratulations(int arg0, int arg1, int arg2);
-static void _renderScore(int arg0, int arg1, int arg2, int arg3);
-static void _renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
-static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
-static void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
-static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
-static void _renderRiskbreakerRank(int arg0, int arg1, int arg2);
-static void _renderTimeAttackResultsHeader(int arg0, int arg1, int arg2);
-static void _renderTimeAttackRating(int arg0, int arg1, int arg2);
-static void _renderTimeAttackRatingWipe(int arg0, int arg1, int arg2);
-static void _renderHeaderAndTime(int, int, int);
-static void _renderHeaderAndIncrementalTime(int, int, int);
-static void _renderNewRecord(int arg0, int arg1, int arg2);
-static void _renderAllStoredTimes(int arg0, int arg1, int arg2);
-static void _renderStoredTime(int arg0, int arg1, int arg2, int arg3);
-static void _renderTextureFadeIn(int, int, int, int);
-static void _renderTextureFadeInClut(int, int, int, int, int);
-static void _renderTime(int, int, int, int, int);
-void _renderStatWheel(int, int, int, int);
-static void _renderPressButtonPrompt(int, int, int, int);
-static void _renderTextureFadeInTint(int, int, int, P_CODE colors[]);
-static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
-static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
-static int _initCubePuzzleStart(void);
-static int _initCubePuzzleEnd(void);
-static int _initCubePuzzleQuit(void);
-static int _renderCubePuzzleStart(void);
-static int _renderCubePuzzleEnd(void);
-static int _renderCubePuzzleQuit(void);
-static void _renderGivingUp(int arg0, int arg1);
-static void _renderChicken(int arg0, int arg1);
-static void _renderAverageTime(int arg0, int arg1, int arg2);
-static void func_80108688(int arg0, int arg1, int arg2);
-static void func_8010873C(int arg0, int arg1, int arg2);
-static void func_80108784(int arg0, int arg1, int arg2);
-static void func_8010880C(int arg0, int arg1, int arg2, int arg3);
-static void func_8010887C(int arg0, int arg1, int arg2);
-static void _calculateScore(void);
-static void _nop0(void);
-static void _nop1(void);
-static void _determineRank(void);
-static int _getTotalStrength(void);
-static int _getTotalIntelligence(void);
-static int _getTotalAgility(void);
-static void func_80108E48(void);
-static void _nop2(void);
-static void _raiseMaxStrength(int amount);
-static void _raiseMaxIntelligence(int amount);
-static void _raiseMaxAgility(int amount);
-static void _raiseMaxHP(int amount);
-static void _raiseMaxMP(int amount);
 
 int vs_menuF_exec(u_char* arg0)
 {
@@ -120,6 +56,15 @@ static vs_main_CdFile const _disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE 
     { VS_TIME_DIS_LBA, VS_TIME_DIS_SIZE }, { VS_ATTACK_DIS_LBA, VS_ATTACK_DIS_SIZE },
     { VS_IQ_DIS_LBA, VS_IQ_DIS_SIZE }, { VS_ESC_DIS_LBA, VS_ESC_DIS_SIZE } };
 
+static int _initCongratulationsScreen(void);
+static int _initTimeAttackStart(void);
+static int _initTimeAttackEnd(void);
+static void _addHealBonus(void);
+static void _nop2(void);
+static int _initCubePuzzleStart(void);
+static int _initCubePuzzleEnd(void);
+static int _initCubePuzzleQuit(void);
+
 int _initMenu(void)
 {
     int ret;
@@ -138,7 +83,7 @@ int _initMenu(void)
         break;
 
     case 3:
-        func_80108E48();
+        _addHealBonus();
         _nop2();
 
         ret = 1;
@@ -159,6 +104,13 @@ int _initMenu(void)
 
     return ret;
 }
+
+static void func_80103748(void);
+static int _getTotalStrength(void);
+static int _getTotalIntelligence(void);
+static int _getTotalAgility(void);
+static void _calculateScore(void);
+static void _determineRank(void);
 
 static u_int _buffReelSelection;
 static int _rank;
@@ -259,7 +211,7 @@ int _initCongratulationsScreen(void)
 
         _submenuState = 0;
 
-        func_80108E48();
+        _addHealBonus();
 
         _clearCount = vs_main_stateFlags.clearCount;
 
@@ -363,9 +315,9 @@ int _initTimeAttackEnd(void)
 
         func_80045000(2, 0x7F, 0);
 
-        _timeTrialTime = (vs_main_stateFlags.timeTrialMins << 0x10)
-                       | (vs_main_stateFlags.timeTrialSecs << 8)
-                       | vs_main_stateFlags.timeTrialMs;
+        _timeTrialTime = (vs_main_stateFlags.timeAttackMins << 0x10)
+                       | (vs_main_stateFlags.timeAttackSecs << 8)
+                       | vs_main_stateFlags.timeAttackHundredths;
 
         if (_timeTrialTime == 0) {
             _timeTrialTime = (59 << 16) | (59 << 8) | 99;
@@ -375,7 +327,7 @@ int _initTimeAttackEnd(void)
             int record;
 
             if ((vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+                        .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
                         .time)
                 < _timeTrialTime) {
                 continue;
@@ -383,30 +335,31 @@ int _initTimeAttackEnd(void)
 
             for (record = 2; i < record; --record) {
                 vs_main_scoredata
-                    .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
-                    .time =
-                    vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
-                        .time;
+                    .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][record]
+                    .time = vs_main_scoredata
+                                .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss]
+                                                    [record - 1]
+                                .time;
                 vs_main_scoredata
-                    .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
-                    .round =
-                    vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
-                        .round;
+                    .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][record]
+                    .round = vs_main_scoredata
+                                 .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss]
+                                                     [record - 1]
+                                 .round;
                 vs_main_scoredata
-                    .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record]
+                    .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][record]
                     .difficulty =
                     vs_main_scoredata
-                        .bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][record - 1]
+                        .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss]
+                                            [record - 1]
                         .difficulty;
             }
 
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
                 .time = _timeTrialTime;
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
                 .round = vs_main_stateFlags.clearCount;
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][i]
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
                 .difficulty = vs_main_stateFlags.difficulty;
 
             break;
@@ -499,6 +452,13 @@ void func_80103748(void)
     }
 }
 
+static int _renderCongratulationsScreen(void);
+static int _renderTimeAttackStart(void);
+static int _renderTimeAttackEnd(void);
+static int _renderCubePuzzleStart(void);
+static int _renderCubePuzzleEnd(void);
+static int _renderCubePuzzleQuit(void);
+
 int _execMenu(void)
 {
     int ret;
@@ -569,8 +529,21 @@ enum disIndices {
     disIndexRank1Archer = 39,
     disIndexRank1DareDevil = 42,
     disIndexRank1Blade = 44,
-    disIndexRank1Of = 48,
-    disIndexRank1Seeker = 55,
+    disIndexRank2Of = 48,
+    disIndexRank2Mystic = 55,
+    disIndexRank2Wanderer,
+    disIndexRank2Destroyer,
+    disIndexRank2Gladiator,
+    disIndexRank2Spectrebane,
+    disIndexRank2Normal,
+    disIndexRank2Phantom,
+    disIndexRank2Fighter,
+    disIndexRank2Demon,
+    disIndexRank2Eater,
+    disIndexRank2Agent,
+    disIndexRank2Dragon,
+    disIndexRank2Slayer,
+    disIndexRank2Cartographer,
     disIndexTime0NewRecord = 69,
     disIndexTime0TimeAttackResults,
     disIndexTime0Time = 72,
@@ -586,7 +559,10 @@ enum disIndices {
     disIndexAttack0BestTime = 95,
     disIndexAttack0Three,
     disIndexAttack0TimeAttack = 100,
-    disIndexIq0AverageTime = 102,
+    disIndexIq0EvolveOrDie = 102,
+    disIndexIq0AverageTime = 104,
+    disIndexIq0Foodchain = 105,
+    disIndexIq1GameDesigner = 107,
     disIndexEsc0GivingUp = 123,
     disIndexEsc0Chicken = 125,
 };
@@ -728,12 +704,15 @@ static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1M
                                              disIndexRank1Breaker },
     { 2, disIndexRank1Grand, disIndexRank1Paladin },
     { 2, disIndexRank1Radiant, disIndexRank1Knight },
-    { 2, disIndexRank1Raging, disIndexRank1Berserker }, { 2, 66, 67 },
+    { 2, disIndexRank1Raging, disIndexRank1Berserker },
+    { 2, disIndexRank2Dragon, disIndexRank2Slayer },
     { 2, disIndexRank1Couragous, disIndexRank1Adventurer },
     { 2, disIndexRank1Master, disIndexRank1Gladiator },
-    { 2, disIndexRank1Blade, disIndexRank1Master }, { 2, 55, 56 },
-    { 1, disIndexRank1Paladin }, { 1, 59 }, { 1, 57 }, { 1, disIndexRank1Berserker },
-    { 1, disIndexRank1DareDevil }, { 1, disIndexRank1Gladiator }, { 2, 60, 65 } };
+    { 2, disIndexRank1Blade, disIndexRank1Master },
+    { 2, disIndexRank2Mystic, disIndexRank2Wanderer }, { 1, disIndexRank1Paladin },
+    { 1, disIndexRank2Spectrebane }, { 1, disIndexRank2Destroyer },
+    { 1, disIndexRank1Berserker }, { 1, disIndexRank1DareDevil },
+    { 1, disIndexRank1Gladiator }, { 2, disIndexRank2Normal, disIndexRank2Agent } };
 
 enum BuffReelStats {
     buffReelStatStr = 13,
@@ -763,6 +742,21 @@ static _buffReels_t _buffReels[][16] = {
         { buffReelStatAgi, 2 }, { buffReelStatMp, 2 }, { buffReelStatHp, 3 },
         { buffReelStatStr, 1 } }
 };
+
+static void _renderCongratulations(int arg0, int arg1, int arg2);
+static void _renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
+static void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+static void _renderRiskbreakerRank(int arg0, int arg1, int arg2);
+void _renderStatWheel(int, int, int, int);
+static void _renderPressButtonPrompt(int, int, int, int);
+static void _renderScore(int arg0, int arg1, int arg2, int arg3);
+static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _raiseMaxStrength(int amount);
+static void _raiseMaxIntelligence(int amount);
+static void _raiseMaxAgility(int amount);
+static void _raiseMaxHP(int amount);
+static void _raiseMaxMP(int amount);
 
 static int _incrementingScore;
 static int _incrementingMapCompletion;
@@ -907,6 +901,16 @@ int _renderCongratulationsScreen(void)
     return 0;
 }
 
+static void _pulseTimeAttackEnd(int);
+static void _renderTimeAttackResultsHeader(int arg0, int arg1, int arg2);
+static void _renderHeaderAndIncrementalTime(int, int, int);
+static void _renderTimeAttackRatingWipe(int arg0, int arg1, int arg2);
+static void _renderNewRecord(int arg0, int arg1, int arg2);
+static void _renderStoredTime(int arg0, int arg1, int arg2, int arg3);
+static void _renderHeaderAndTime(int, int, int);
+static void _renderTimeAttackRating(int arg0, int arg1, int arg2);
+static void _renderAllStoredTimes(int arg0, int arg1, int arg2);
+
 int _renderTimeAttackEnd(void)
 {
     int var_v0 = rsin(_elementAnimationState);
@@ -1010,16 +1014,21 @@ int _renderTimeAttackEnd(void)
     return 0;
 }
 
-static int D_801096D0[] = { 0x79, 0x5D, 0x43, 0x2B, 0x19, 0xC, 3, 0 };
-static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
-    { 0x107A, 0x107A, 0x1000 } };
-static P_CODE D_80109720[] = { { 0xDC, 0x50, 0x40 }, { 0x40, 0x80, 0xDC },
-    { 0x80, 0x80, 0x80 } };
+static void _renderTimeAttackHeader(int x, int y, int timer);
+static void _renderCourse(int arg0, int arg1, int arg2);
+static void _renderBossName(int arg0, int arg1, int arg2);
+static void _renderBestTimeHeader(int arg0, int arg1, int arg2);
+static void _renderStartCountdown(int arg0, int arg1, int arg2);
 
 int _renderTimeAttackStart(void)
 {
+    static int countdownOffsets[] = { 121, 93, 67, 43, 25, 12, 3, 0 };
+    static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
+        { 0x107A, 0x107A, 0x1000 } };
+    static P_CODE colors[] = { { 220, 80, 64 }, { 64, 128, 220 }, { 128, 128, 128 } };
+
     int temp_v1_2;
-    int var_a3;
+    int x;
 
     if (_screenState == 0) {
         if ((_screenTimer == ((_screenTimer / 15) * 0xF)) && (_screenTimer < 0x2E)) {
@@ -1059,7 +1068,7 @@ int _renderTimeAttackStart(void)
         func_8007C36C(4);
         func_8007DDAC(0);
         func_8007DDB8(&D_801096F0[0]);
-        func_8007DDD4(&D_80109720[1]);
+        func_8007DDD4(&colors[1]);
         func_8007DDF8((D_800F1A68_t*)(D_801096F0 + 2));
         func_8007DE2C(0);
         func_8007DE44(0U);
@@ -1096,33 +1105,33 @@ int _renderTimeAttackStart(void)
             if (_screenTimer == 45) {
                 func_8007DE2C(1);
                 func_8007DDB8(&D_801096F0[1]);
-                func_8007DDD4(&D_80109720[0]);
+                func_8007DDD4(&colors[0]);
             } else if (_screenTimer == 0x2E) {
                 func_8007DE2C(0);
             } else if (_screenTimer == 0x37) {
-                func_8007DDD4(&D_80109720[2]);
+                func_8007DDD4(&colors[2]);
             } else if (_screenTimer == 0x3C) {
                 func_8007DDB8(&D_801096F0[0]);
             }
 
-            var_a3 = 104 - _screenTimer;
+            x = 104 - _screenTimer;
 
-            if (var_a3 < 45) {
-                var_a3 = 45;
+            if (x < 45) {
+                x = 45;
             }
 
-            _renderStartCountdown(160, 120, var_a3);
+            _renderStartCountdown(160, 120, x);
 
         } else {
-            var_a3 = _screenTimer % 15;
+            x = _screenTimer % 15;
 
-            if (var_a3 > 7) {
-                var_a3 = 7;
+            if (x > 7) {
+                x = 7;
             }
 
-            var_a3 = D_801096D0[var_a3];
+            x = countdownOffsets[x];
 
-            _renderStartCountdown(var_a3 + 160, 120, _screenTimer);
+            _renderStartCountdown(x + 160, 120, _screenTimer);
         }
 
         ++_screenTimer;
@@ -1142,6 +1151,8 @@ int _renderTimeAttackStart(void)
 
     return 0;
 }
+
+static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
 
 void _renderTimeAttackHeader(int x, int y, int timer)
 {
@@ -1167,6 +1178,9 @@ void _renderTimeAttackHeader(int x, int y, int timer)
     }
 }
 
+static void _renderTextureFadeIn(int, int, int, int);
+static void _renderTextureFadeInClut(int, int, int, int, int);
+
 void _renderCourse(int x, int y, int timer)
 {
     int new_var;
@@ -1183,7 +1197,7 @@ void _renderCourse(int x, int y, int timer)
         new_var = x + 12;
 
         _renderTextureFadeInClut(new_var + _disMap[disIndexAttack0Course].w, y - 1,
-            vs_main_stateFlags.timeTrialBoss + 1, timer, 0x7FF4);
+            vs_main_stateFlags.timeAttackBoss + 1, timer, 0x7FF4);
     }
 }
 
@@ -1194,14 +1208,14 @@ void _renderBossName(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        if (vs_main_stateFlags.timeTrialBoss != 6) {
+        if (vs_main_stateFlags.timeAttackBoss != 6) {
 
-            _renderTextureFadeIn(
-                x
-                    - (_disMap[vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur]
-                            .w
-                        >> 1),
-                y, vs_main_stateFlags.timeTrialBoss + disIndexAttack0Minotaur, timer);
+            _renderTextureFadeIn(x
+                                     - (_disMap[vs_main_stateFlags.timeAttackBoss
+                                                + disIndexAttack0Minotaur]
+                                             .w
+                                         >> 1),
+                y, vs_main_stateFlags.timeAttackBoss + disIndexAttack0Minotaur, timer);
 
         } else {
             x -= (_disMap[disIndexAttack0Death].w + _disMap[disIndexAttack0OgreZombie].w)
@@ -1215,6 +1229,8 @@ void _renderBossName(int x, int y, int timer)
         }
     }
 }
+
+static void _renderTime(int, int, int, int, int);
 
 void _renderBestTimeHeader(int x, int y, int timer)
 {
@@ -1232,7 +1248,7 @@ void _renderBestTimeHeader(int x, int y, int timer)
         new_var = x + 11;
 
         _renderTime(new_var + _disMap[disIndexAttack0BestTime].w, y + 2, timer,
-            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][0]
+            vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][0]
                 .time,
             0);
     }
@@ -1347,9 +1363,11 @@ void _renderCongratulations(int x, int y, int timer)
     }
 }
 
+static void _renderTextureFadeInTint(int, int, int, P_CODE colors[]);
+
 void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE D_80109744[] = { { 100, 180, 220 }, { 100, 180, 220 } };
+    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[16];
     int i;
@@ -1364,7 +1382,7 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
     }
 
     if (timer > 0) {
-        D_80109744[0].code = timer;
+        colors[0].code = timer;
 
         sprintf(buf, "%09d", _score);
 
@@ -1374,30 +1392,32 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
                  + 116)
           >> 1;
 
-        _renderTextureFadeInTint(x, y, disIndexRank0Score, D_80109744);
+        _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
 
         x += _disMap[disIndexRank0Score].w;
 
-        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, D_80109744);
+        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
         i = 2;
         x = (x + i) + _disMap[disIndexRank0Colon].w;
 
         for (i = 0; i < 9; ++i) {
-            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', D_80109744);
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
 
             x += 0xC;
 
             if ((i == 2) || (i == 5)) {
-                _renderTextureFadeInTint(x, y + 14, 10, D_80109744);
+                _renderTextureFadeInTint(x, y + 14, 10, colors);
 
                 x += _disMap[disIndexRank0Comma].w + 3;
             }
         }
 
-        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, D_80109744);
+        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
     }
 }
+
+static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
 
 void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
@@ -1482,7 +1502,7 @@ void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((un
 
 void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE D_80109754[] = { { 100, 180, 220 }, { 100, 180, 220 } };
+    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[4];
     int i;
@@ -1496,28 +1516,28 @@ void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unuse
     }
 
     if (timer > 0) {
-        D_80109754[0].code = timer;
+        colors[0].code = timer;
 
         sprintf(buf, "%03d", _mapCompletion);
 
         x -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
         i = 2;
 
-        _renderTextureFadeInTint(x, y, 0x15, D_80109754);
+        _renderTextureFadeInTint(x, y, 0x15, colors);
 
         x += _disMap[21].w;
 
-        _renderTextureFadeInTint(x, y + 7, 0x1A, D_80109754);
+        _renderTextureFadeInTint(x, y + 7, 0x1A, colors);
 
         x = x + i + _disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
-            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', D_80109754);
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
 
             x += 0xC;
         }
 
-        _renderTextureFadeInTint(x, y + 8, 0x13, D_80109754);
+        _renderTextureFadeInTint(x, y + 8, 0x13, colors);
     }
 }
 
@@ -1652,7 +1672,7 @@ void _renderRiskbreakerRank(int x, int y, int timer)
 
 void _renderTimeAttackResultsHeader(int x, int y, int timer)
 {
-    static P_CODE D_80109774[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
     if (timer < 0) {
         timer = 0;
@@ -1663,14 +1683,14 @@ void _renderTimeAttackResultsHeader(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        D_80109774[0].code = timer;
+        colors[0].code = timer;
         x -= (_disMap[disIndexTime0TimeAttackResults].w
                  + _disMap[disIndexTime0TimeAttackResults + 1].w)
           >> 1;
 
-        _renderTexturePopIn(x, y, disIndexTime0TimeAttackResults, D_80109774);
+        _renderTexturePopIn(x, y, disIndexTime0TimeAttackResults, colors);
         _renderTexturePopIn(x + _disMap[disIndexTime0TimeAttackResults].w, y,
-            disIndexTime0TimeAttackResults + 1, D_80109774);
+            disIndexTime0TimeAttackResults + 1, colors);
     }
 }
 
@@ -1837,7 +1857,7 @@ void _renderAllStoredTimes(int x, int y, int timer)
 
         _renderTime(x - 84, y + i * 20 + 2, timer,
             vs_main_scoredata
-                .bossTimeTrialScores[0][vs_main_stateFlags.timeTrialBoss * 3 + i]
+                .bossTimeTrialScores[0][vs_main_stateFlags.timeAttackBoss * 3 + i]
                 .time,
             isNewRecord);
         _renderTextureFadeInClut((x - _disMap[disIndexTime0First + i].w) - 88, y + i * 20,
@@ -1866,7 +1886,7 @@ void _renderStoredTime(int x, int y, int slot, int timer)
     }
 
     _renderTime(x - 84, y + (slot * 20) + 2, timer,
-        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeTrialBoss][slot]
+        vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][slot]
             .time,
         isCurrentTime);
     _renderTextureFadeInClut((x - _disMap[slot + disIndexTime0First].w) - 88,
@@ -1990,14 +2010,14 @@ void _renderTime(int x, int y, int timer, int time, int isNewRecord)
     }
 }
 
-void func_80107698(int x, int y, int texId);
+void _renderAnimatedStatWheel(int x, int y, int texId);
 
 void _renderStatWheel(int x, int y, int timer, int arg3)
 {
     static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 } };
 
     RECT sp18;
-    char sp20[8];
+    char buf[8];
     DR_AREA* area;
     int i;
     int j;
@@ -2027,7 +2047,7 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
         _renderTextureFadeInTint(x, y, disIndexRank0Colon, colors);
 
         x += 2 + _disMap[26].w;
-        new_var2 = 0x10;
+        new_var2 = 16;
         p = (void**)0x1F800000;
         area = p[0];
 
@@ -2036,14 +2056,14 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
 
         p[0] = area;
 
-        if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 0x140) {
-            sp18.x = 0x140;
+        if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 320) {
+            sp18.x = 320;
         } else {
             sp18.x = 0;
         }
 
         sp18.y = y - (_elementAnimationState >> 3);
-        sp18.w = 0x140;
+        sp18.w = 320;
         sp18.h = ((_elementAnimationState >> 3) * 2) + new_var2;
 
         if (arg3 < 2) {
@@ -2057,37 +2077,58 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
                 v1 = (_buffReelSelection / 16);
                 v1 += new_var;
                 temp = v1 & 0xF;
-                func_80107698(x, y - 1, _buffReels[_buffReelIndex][v1 & 0xF].stat);
+
+                _renderAnimatedStatWheel(
+                    x, y - 1, _buffReels[_buffReelIndex][v1 & 0xF].stat);
+
                 x += _disMap[_buffReels[_buffReelIndex][v1 & 0xF].stat].w;
-                func_80107698(x, y + 4, 0x18);
+
+                _renderAnimatedStatWheel(x, y + 4, disIndexRank0Plus);
+
                 x += _disMap[24].w;
-                sprintf(sp20, "%d", _buffReels[_buffReelIndex][v1 & 0xF].amount);
-                len = strlen(sp20);
+
+                sprintf(buf, "%d", _buffReels[_buffReelIndex][v1 & 0xF].amount);
+
+                len = strlen(buf);
+
                 for (j = 0; j < len; ++j) {
-                    func_80107698(x, y - 1, sp20[j] - 0x30);
+                    _renderAnimatedStatWheel(x, y - 1, buf[j] - 0x30);
                     x += 0xC;
                 }
+
                 y -= 16;
             }
 
         } else {
             temp = (char)_buffReelSelection / 16;
-            _renderTextureFadeInClut(
-                x, y - 1, _buffReels[_buffReelIndex][temp].stat, timer, 0x7FF2);
+
+            _renderTextureFadeInClut(x, y - 1, _buffReels[_buffReelIndex][temp].stat,
+                timer, getClut(800, 511));
+
             x += _disMap[_buffReels[_buffReelIndex][temp].stat].w;
-            _renderTextureFadeInClut(x, y + 4, 0x18, timer, 0x7FF2);
+
+            _renderTextureFadeInClut(
+                x, y + 4, disIndexRank0Plus, timer, getClut(800, 511));
+
             x += _disMap[24].w;
-            sprintf(sp20, "%d", _buffReels[_buffReelIndex][temp].amount);
-            len = strlen(sp20);
+
+            sprintf(buf, "%d", _buffReels[_buffReelIndex][temp].amount);
+
+            len = strlen(buf);
+
             for (j = 0; j < len; ++j) {
-                _renderTextureFadeInClut(x, y - 1, sp20[j] - 0x30, timer, 0x7FF2);
+                _renderTextureFadeInClut(
+                    x, y - 1, buf[j] - '0', timer, getClut(800, 511));
                 x += 0xC;
             }
         }
+
         q = (void**)0x1F800000;
         area = q[0];
+
         SetDrawArea(area, &sp18);
         AddPrim(q[1] - 0x1C, area++);
+
         q[0] = area;
     }
 }
@@ -2373,7 +2414,7 @@ void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
     }
 }
 
-void func_80107698(int x, int y, int texId)
+void _renderAnimatedStatWheel(int x, int y, int texId)
 {
     int i;
     int brightness;
@@ -2460,8 +2501,10 @@ void func_80107698(int x, int y, int texId)
     p[0] = poly;
 }
 
-static short D_801099F4;
-static short D_801099F6;
+static void _nop0(void);
+
+static short _puzzleParTime;
+static short _puzzleRankCap;
 
 int _initCubePuzzleStart(void)
 {
@@ -2469,7 +2512,13 @@ int _initCubePuzzleStart(void)
     static void* _iqDisData;
 
     vs_battle_room* room;
-    short* var_a0;
+
+    struct {
+        short zoneId;
+        short mapId;
+        short par;
+        short rankCap;
+    }* puzzleData;
 
     if (_submenuState == 0) {
 
@@ -2512,15 +2561,16 @@ int _initCubePuzzleStart(void)
                 }
             }
 
-            D_801099F4 = 600;
-            D_801099F6 = 1;
+            _puzzleParTime = 600;
+            _puzzleRankCap = 1;
             room = vs_battle_roomData.sectionF->rooms;
-            var_a0 = _iqDisData + 0x10440;
+            puzzleData = _iqDisData + 0x10440;
 
-            for (i = 0; i < 64; ++i, var_a0 += 4) {
-                if ((var_a0[0] == room->zoneId) && (var_a0[1] == room->mapId)) {
-                    D_801099F4 = var_a0[2];
-                    D_801099F6 = var_a0[3];
+            for (i = 0; i < 64; ++i, ++puzzleData) {
+                if ((puzzleData->zoneId == room->zoneId)
+                    && (puzzleData->mapId == room->mapId)) {
+                    _puzzleParTime = puzzleData->par;
+                    _puzzleRankCap = puzzleData->rankCap;
                     break;
                 }
             }
@@ -2549,11 +2599,11 @@ int _initCubePuzzleStart(void)
 
 int _initCubePuzzleEnd(void)
 {
-    if (vs_main_stateFlags.unkA3 != 0) {
-        vs_main_stateFlags.unkA2 = 0x3B;
-        vs_main_stateFlags.unkA1 = 0x3B;
-        vs_main_stateFlags.unkA3 = 0;
-        vs_main_stateFlags.unkA0 = 0x63;
+    if (vs_main_stateFlags.puzzleSetMaxTimer != 0) {
+        vs_main_stateFlags.puzzleTimerMins = 59;
+        vs_main_stateFlags.puzzleTimerSeconds = 59;
+        vs_main_stateFlags.puzzleSetMaxTimer = 0;
+        vs_main_stateFlags.puzzleTimerHundredths = 99;
     }
 
     return _initCubePuzzleStart();
@@ -2624,6 +2674,10 @@ int _initCubePuzzleQuit(void)
     return 0;
 }
 
+static void _renderEvolveOrDie(int arg0, int arg1, int arg2);
+static void _renderAverageTimeHeader(int arg0, int arg1, int arg2);
+static void _renderCubePuzzleTime(int arg0, int arg1, int arg2);
+
 int _renderCubePuzzleStart(void)
 {
     if (_screenState != 0) {
@@ -2638,9 +2692,9 @@ int _renderCubePuzzleStart(void)
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
-    _renderAverageTime(160, 64, _screenTimer);
-    func_8010873C(128, 116, _screenTimer - 15);
-    func_80108784(192, 144, _screenTimer - 30);
+    _renderEvolveOrDie(160, 64, _screenTimer);
+    _renderAverageTimeHeader(128, 116, _screenTimer - 15);
+    _renderCubePuzzleTime(192, 144, _screenTimer - 30);
     _renderPressButtonPrompt(214, 187, _screenTimer - 30, _screenTimer);
 
     if (_screenTimer < 32767) {
@@ -2664,12 +2718,16 @@ int _renderCubePuzzleStart(void)
     return 0;
 }
 
-static int D_8010978C[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000,
-    7000, 8000, 9000, 10000, 20000 };
+static void _renderFoodchain(int arg0, int arg1, int arg2);
+static void _renderCubePuzzleRank(int arg0, int arg1, int arg2, int arg3);
+static void _renderCubePuzzleIncrementalTime(int arg0, int arg1, int arg2);
+static void _nop1(void);
 
 int _renderCubePuzzleEnd(void)
 {
-    int temp_s0;
+    static int _puzzleModeRankPoints[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000,
+        4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000 };
+
     int var_v0;
 
     _pulseCubePuzzleEnd((rsin(_elementAnimationState) / 512) + 8);
@@ -2677,23 +2735,25 @@ int _renderCubePuzzleEnd(void)
     _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
 
     if (_screenState == 0) {
+        int rank = ((vs_main_stateFlags.puzzleTimerMins * 6000)
+                    + (vs_main_stateFlags.puzzleTimerSeconds * 100)
+                    + vs_main_stateFlags.puzzleTimerHundredths);
+        rank -= (_puzzleParTime * 100);
 
-        temp_s0 = ((vs_main_stateFlags.unkA2 * 6000) + (vs_main_stateFlags.unkA1 * 100)
-                   + vs_main_stateFlags.unkA0);
-        temp_s0 -= (D_801099F4 * 100);
-
-        if (temp_s0 <= 0) {
-            temp_s0 = 0xF - D_801099F6;
+        if (rank <= 0) {
+            rank = 15 - _puzzleRankCap;
         } else {
-            --temp_s0;
-            temp_s0 = temp_s0 / 200;
+            --rank;
+            rank = rank / 200;
             var_v0 = 1;
-            temp_s0 = 0xF - (D_801099F6 + (temp_s0 + var_v0));
-            if (temp_s0 >= 16) {
-                temp_s0 = 15;
+            rank = 15 - (_puzzleRankCap + (rank + var_v0));
+
+            if (rank >= 16) {
+                rank = 15;
             }
-            if (temp_s0 < 0) {
-                temp_s0 = 0;
+
+            if (rank < 0) {
+                rank = 0;
             }
         }
 
@@ -2718,10 +2778,10 @@ int _renderCubePuzzleEnd(void)
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
 
-        func_8010887C(0x58, 0x40, _screenTimer);
-        func_80108688(0xA0, 0x64, _screenTimer - 0x4B);
-        func_8010880C(0xA0, 0x7C, _screenTimer - 0x5A, temp_s0);
-        _renderPressButtonPrompt(0xD6, 0xBB, _screenTimer - 0x5A, _screenTimer);
+        _renderCubePuzzleIncrementalTime(88, 64, _screenTimer);
+        _renderFoodchain(160, 100, _screenTimer - 75);
+        _renderCubePuzzleRank(160, 124, _screenTimer - 90, rank);
+        _renderPressButtonPrompt(214, 187, _screenTimer - 90, _screenTimer);
 
         if (_screenTimer < 32767) {
             ++_screenTimer;
@@ -2733,7 +2793,7 @@ int _renderCubePuzzleEnd(void)
                 func_80045D64(0x7E, 0);
                 func_8007E0A8(0x1D, 2, 5);
 
-                vs_main_scoredata.enemyKillStreak += D_8010978C[temp_s0];
+                vs_main_scoredata.miscScore += _puzzleModeRankPoints[rank];
 
                 _nop1();
 
@@ -2745,8 +2805,12 @@ int _renderCubePuzzleEnd(void)
             _screenTimer = 138;
         }
     }
+
     return 0;
 }
+
+static void _renderGivingUp(int arg0, int arg1);
+static void _renderChicken(int arg0, int arg1);
 
 int _renderCubePuzzleQuit(void)
 {
@@ -2822,7 +2886,7 @@ void _renderChicken(int arg0, int arg1)
     }
 }
 
-void _renderAverageTime(int x, int y, int step)
+void _renderEvolveOrDie(int x, int y, int step)
 {
     static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
@@ -2837,120 +2901,123 @@ void _renderAverageTime(int x, int y, int step)
     if (step > 0) {
         colors[0].code = step;
         colors[1].code = step;
-        x -= (_disMap[disIndexIq0AverageTime].w + _disMap[disIndexIq0AverageTime + 1].w)
+        x -= (_disMap[disIndexIq0EvolveOrDie].w + _disMap[disIndexIq0EvolveOrDie + 1].w)
           >> 1;
 
-        _renderTexturePopIn(x, y, disIndexIq0AverageTime, colors);
-        _renderTexturePopIn(x + _disMap[disIndexIq0AverageTime].w, y,
-            disIndexIq0AverageTime + 1, &colors[1]);
+        _renderTexturePopIn(x, y, disIndexIq0EvolveOrDie, colors);
+        _renderTexturePopIn(x + _disMap[disIndexIq0EvolveOrDie].w, y,
+            disIndexIq0EvolveOrDie + 1, &colors[1]);
     }
 }
 
-void func_80108688(int arg0, int arg1, int arg2)
+void _renderFoodchain(int x, int y, int timer)
 {
-    static P_CODE D_801097D8[] = { { 0x80, 0x60, 0x40 }, { 0xC8, 0xB4, 0xA0 },
-        { 0x80, 0x60, 0x40 } };
+    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_801097D8[0].code = arg2;
-        D_801097D8[1].code = arg2;
-        arg0 -= (_disMap[105].w + _disMap[106].w) >> 1;
+    if (timer > 0) {
+        colors[0].code = timer;
+        colors[1].code = timer;
+        x -= (_disMap[disIndexIq0Foodchain].w + _disMap[disIndexIq0Foodchain + 1].w) >> 1;
 
-        _renderTexturePopIn(arg0, arg1, 0x69, D_801097D8);
-        _renderTexturePopIn(arg0 + _disMap[105].w, arg1, 0x6A, &D_801097D8[1]);
-    }
-}
-
-void func_8010873C(int x, int y, int arg2)
-{
-    if (arg2 > 64) {
-        arg2 = 64;
-    }
-
-    if (arg2 > 0) {
-        _renderTextureFadeIn(x - (_disMap[104].w >> 1), y, 104, arg2);
-    }
-}
-
-void func_80108784(int arg0, int arg1, int arg2)
-{
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
-    }
-
-    if (arg2 > 0) {
-        int new_var = (D_801099F4 % 60) << 0x10;
-
-        _renderTime(arg0, arg1, arg2, ((D_801099F4 / 60) << 0x10) | (new_var >> 8), 0);
-    }
-}
-
-void func_8010880C(int arg0, int arg1, int arg2, int arg3)
-{
-    static P_CODE D_801097E4[] = { { 0x80, 0x80, 0x80 }, { 0x80, 0x80, 0x80 } };
-
-    if (arg2 < 0) {
-        arg2 = 0;
-    }
-
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
-    }
-
-    if (arg2 > 0) {
-        D_801097E4[0].code = arg2;
-
+        _renderTexturePopIn(x, y, disIndexIq0Foodchain, colors);
         _renderTexturePopIn(
-            arg0 - (_disMap[arg3 + 0x6B].w >> 1), arg1, arg3 + 0x6B, D_801097E4);
+            x + _disMap[disIndexIq0Foodchain].w, y, disIndexIq0Foodchain + 1, &colors[1]);
     }
 }
 
-void func_8010887C(int arg0, int arg1, int arg2)
+void _renderAverageTimeHeader(int x, int y, int timer)
+{
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    if (timer > 0) {
+        _renderTextureFadeIn(x - (_disMap[disIndexIq0AverageTime].w >> 1), y,
+            disIndexIq0AverageTime, timer);
+    }
+}
+
+void _renderCubePuzzleTime(int x, int y, int timer)
+{
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    if (timer > 0) {
+        int new_var = (_puzzleParTime % 60) << 0x10;
+
+        _renderTime(x, y, timer, ((_puzzleParTime / 60) << 0x10) | (new_var >> 8), 0);
+    }
+}
+
+void _renderCubePuzzleRank(int x, int y, int timer, int rank)
+{
+    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+
+    if (timer < 0) {
+        timer = 0;
+    }
+
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    if (timer > 0) {
+        colors[0].code = timer;
+
+        _renderTexturePopIn(x - (_disMap[rank + disIndexIq1GameDesigner].w >> 1), y,
+            rank + disIndexIq1GameDesigner, colors);
+    }
+}
+
+void _renderCubePuzzleIncrementalTime(int x, int y, int timer)
 {
     int temp_a3;
-    int var_a3;
+    int time;
     int new_var2;
     int* new_var4;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 >= 0x41) {
-        arg2 = 0x40;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-
-        _renderTextureFadeIn(arg0, arg1, 0x48, arg2);
-
-        arg0 += _disMap[72].w;
-
-        if (arg2 >= 0x10) {
-            temp_a3 = vs_main_stateFlags.unkA1;
-            new_var2 = vs_main_stateFlags.unkA2;
-            temp_a3 = ((new_var2 * 0x1770) + (temp_a3 * 100)) + vs_main_stateFlags.unkA0;
-            var_a3 = temp_a3;
-            var_a3 = ((*(new_var4 = &var_a3)) * (arg2 - 0x10)) / 48;
-            new_var2 = var_a3 / 6000;
-            var_a3 = var_a3 % 6000;
-            temp_a3 = var_a3 / 100;
-            var_a3 = var_a3 % 100;
-            var_a3 = (new_var2 << 0x10) | (temp_a3 << 8) | var_a3;
-        } else {
-            var_a3 = 0;
-        }
-
-        _renderTime(arg0, arg1 + 2, arg2, var_a3, 0);
+    if (timer <= 0) {
+        return;
     }
+
+    _renderTextureFadeIn(x, y, 72, timer);
+
+    x += _disMap[72].w;
+
+    if (timer >= 16) {
+        temp_a3 = vs_main_stateFlags.puzzleTimerSeconds;
+        new_var2 = vs_main_stateFlags.puzzleTimerMins;
+        temp_a3 = ((new_var2 * 6000) + (temp_a3 * 100))
+                + vs_main_stateFlags.puzzleTimerHundredths;
+        time = temp_a3;
+        time = ((*(new_var4 = &time)) * (timer - 16)) / 48;
+        new_var2 = time / 6000;
+        time = time % 6000;
+        temp_a3 = time / 100;
+        time = time % 100;
+        time = (new_var2 << 0x10) | (temp_a3 << 8) | time;
+    } else {
+        time = 0;
+    }
+
+    _renderTime(x, y + 2, timer, time, 0);
 }
 
 void _determineRank(void)
@@ -3033,7 +3100,7 @@ void _calculateScore(void)
     }
 
     _score = _score + vs_main_scoredata.streakScore;
-    _score = _score + vs_main_scoredata.enemyKillStreak;
+    _score = _score + vs_main_scoredata.miscScore;
 
     if (_score > 999999999) {
         _score = 999999999;
@@ -3044,17 +3111,17 @@ void _nop0(void) { }
 
 void _nop1(void) { }
 
-void func_80108E48(void)
+void _addHealBonus(void)
 {
-    int new_var = vs_main_scoredata.enemyKillStreak + 100000;
+    int new_var = vs_main_scoredata.miscScore + 100000;
 
-    vs_main_scoredata.enemyKillStreak = new_var - (vs_main_scoredata.bossHealCount * 100);
+    vs_main_scoredata.miscScore = new_var - (vs_main_scoredata.healCount * 100);
 
-    if (vs_main_scoredata.enemyKillStreak > 999999999) {
-        vs_main_scoredata.enemyKillStreak = 999999999;
+    if (vs_main_scoredata.miscScore > 999999999) {
+        vs_main_scoredata.miscScore = 999999999;
     }
 
-    vs_main_scoredata.bossHealCount = 0;
+    vs_main_scoredata.healCount = 0;
 }
 
 void _nop2(void) { }

@@ -2875,7 +2875,7 @@ void _calculateScore(void)
     }
 
     _score += vs_main_scoredata.streakScore;
-    _score += vs_main_scoredata.enemyKillStreak;
+    _score += vs_main_scoredata.miscScore;
     if (_score > 999999999) {
         _score = 999999999;
     }

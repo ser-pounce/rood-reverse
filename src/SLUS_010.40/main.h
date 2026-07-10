@@ -168,13 +168,13 @@ typedef struct {
     u_int openedChestCount;
     int enemyKillFlags[26];
     u_int streakScore;
-    u_int enemyKillStreak;
+    u_int miscScore;
     char killStreakEnemyClass;
     char killStreakEnemyCount;
     char weaponKillStreakBladeCategory;
     char weaponKillStreak;
     u_short chainStreak;
-    u_short bossHealCount;
+    u_short healCount;
 } vs_main_scoredata_t;
 
 typedef struct {
@@ -250,10 +250,10 @@ typedef struct {
     char unk21[0x1F];
     char unk40;
     char unk41[0x5F];
-    char unkA0;
-    char unkA1;
-    char unkA2;
-    char unkA3;
+    char puzzleTimerHundredths;
+    char puzzleTimerSeconds;
+    char puzzleTimerMins;
+    char puzzleSetMaxTimer;
     char gameOver;
     char unkA5;
     char unkA6;
@@ -278,10 +278,10 @@ typedef struct {
     char unkC1;
     char unkC2;
     char unkC3;
-    u_char timeTrialBoss;
-    char timeTrialMins;
-    char timeTrialSecs;
-    char timeTrialMs;
+    u_char timeAttackBoss;
+    u_char timeAttackMins;
+    u_char timeAttackSecs;
+    u_char timeAttackHundredths;
     char unkC8;
     char unkC9;
     char unkCA;

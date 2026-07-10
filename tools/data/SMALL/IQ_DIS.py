@@ -25,7 +25,7 @@ from tools.data.SMALL.generic_DIS import dump_file, encode_tim_from_png
 SPLIT_OFFSET  = 0x10440
 TABLE_ENTRIES = 64
 ENTRY_FMT     = '<4H'
-ENTRY_KEYS    = ('zoneId', 'mapId', 'unk4', 'unk6')
+ENTRY_KEYS    = ('zoneId', 'mapId', 'parTime', 'rankCap')
 ENTRY_SIZE    = struct.calcsize(ENTRY_FMT)
 
 

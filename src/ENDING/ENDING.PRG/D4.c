@@ -52,11 +52,15 @@ typedef struct {
 void func_8006B9B4(void);
 void func_8006A0D8(D_800DBB88_t* arg0);
 void _setDrawEnv(DRAWENV*);
+void func_8006A4D8(D_800DBB88_t*);
 void func_8006A888(void);
 void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
+int func_8006AAA0(void);
 D_800DBB88_t* func_8006AB44(void (*)(D_800DBB88_t*));
+void func_8006ABF0(void);
+void func_8006AF64(void);
 void func_8006B450(int, int, int, int, int, int);
 int func_8006B6A4(u_long*);
 void func_8006B884(void);
@@ -86,23 +90,24 @@ extern int D_800D975C;
 extern int D_800DB09C;
 extern int D_800DB26C;
 extern int _countableRooms[];
-extern signed char D_800DB72C;
+extern u_char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
 extern D_800DB814_t D_800DB814;
-extern char D_800DB876;
-extern char D_800DBAA8[];
+extern u_char D_800DB876;
+extern u_char D_800DBAA8[];
 extern short D_800DBAB8[];
 extern u_int D_800DBAD8[];
 extern D_800DBB88_t D_800DBB88[];
 extern D_800DBB88_t D_800DBBB8[];
-extern signed char D_800DC188;
-extern signed char D_800DC189;
-extern signed char D_800DC18A;
+extern u_char D_800DC188;
+extern u_char D_800DC189;
+extern u_char D_800DC18A;
 extern int D_800DC18C;
 extern int D_800DC190;
 extern int* D_800DC194;
 extern short D_800DC198;
+extern short D_800DC19A;
 extern short D_800DC19C;
 extern int D_800DC1A0;
 extern int D_800DC1A4;
@@ -319,7 +324,22 @@ void _setDrawEnv(DRAWENV* drawenv)
     drawenv->tpage = 0x20;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A888);
+void func_8006A888(void)
+{
+    while (D_800DC188 == 0) {
+        D_800DC19A = VSync(1);
+        func_8006B930();
+        func_8006ABF0();
+        func_8006AAA0();
+        func_8006AF64();
+        if ((vs_main_buttonsPressed.all & 0x800) && (D_800DC18A == 0)) {
+            func_8006AB44(func_8006A4D8);
+            D_800DC18A = 1;
+        }
+        func_8006B6A4(*(u_long**)0x1F800004 + 0x7FF);
+        D_800DC18C += 1;
+    }
+}
 
 void* _insertTpage(int arg0, int arg1)
 {

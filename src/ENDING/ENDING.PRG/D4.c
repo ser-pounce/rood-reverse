@@ -64,7 +64,7 @@ void func_8006AF64(void);
 void func_8006B450(int, int, int, int, int, int);
 int func_8006B6A4(u_long*);
 void func_8006B884(void);
-u_int func_8006AE54(short, short, short);
+int func_8006AE54(short, short, short);
 static void _updateClearGameStats(void);
 void func_8006B930(void);
 void func_8006B9DC(void);
@@ -109,7 +109,7 @@ extern int D_800DC190;
 extern int* D_800DC194;
 extern short D_800DC198;
 extern short D_800DC19A;
-extern short D_800DC19C;
+extern u_short D_800DC19C;
 extern int D_800DC1A0;
 extern int D_800DC1A4;
 extern void* D_800DC1A8[];
@@ -261,7 +261,7 @@ void func_8006A3BC(func_8006A3BC_t* arg0)
         arg0->unk8 = -1;
     }
 
-    D_800DC19C = func_8006AE54(0, arg0->unkA, 128) >> 5;
+    D_800DC19C = (u_int)func_8006AE54(0, arg0->unkA, 128) >> 5;
 }
 
 void func_8006A438(func_8006A438_t* arg0)
@@ -279,10 +279,35 @@ void func_8006A438(func_8006A438_t* arg0)
         arg0->unk8 = -1;
     }
 
-    D_800DC19C = 128 - ((int)(func_8006AE54(0, arg0->unkA, 0x80) << 7) >> 0xC);
+    D_800DC19C = 128 - ((func_8006AE54(0, arg0->unkA, 128) << 7) >> 0xC);
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A4D8);
+void func_8006A4D8(D_800DBB88_t* arg0)
+{
+    void** s2 = (void**)0x1F800000;
+    TILE* temp_s0 = s2[0];
+
+    if (arg0->unk8 == 1) {
+        arg0->unkA = 0;
+        arg0->unk8 = 2;
+    }
+
+    if (++arg0->unkA == 128u) {
+        D_800DC188 = 1;
+    }
+
+    SetTile(temp_s0);
+    setSemiTrans(temp_s0, 1);
+    temp_s0->r0 = temp_s0->g0 = temp_s0->b0 =
+        (func_8006AE54(1, arg0->unkA, 128) * 255) >> 0xC;
+    setWH(temp_s0, 320, 240);
+    setXY0(temp_s0, 0, 0);
+
+    AddPrim(s2[1], temp_s0++);
+
+    s2[0] = temp_s0;
+    s2[0] = _insertTpage(0x40, 0);
+}
 
 void func_8006A5C0(void)
 {
@@ -474,7 +499,7 @@ D_800DBB88_t* func_8006ABBC(void (*arg0)(D_800DBB88_t*))
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABF0);
 
-u_int func_8006AE54(short arg0, short arg1, short arg2)
+int func_8006AE54(short arg0, short arg1, short arg2)
 {
     switch (arg0) {
     case 0:

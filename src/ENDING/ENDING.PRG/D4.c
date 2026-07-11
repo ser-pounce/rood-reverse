@@ -37,6 +37,7 @@ void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
 D_800DBB88_t* func_8006AB44(void (*)(void));
+void func_8006B450(int, int, int, int, int, int);
 void func_8006B6A4(int);
 void func_8006B884(void);
 u_int func_8006AE54(int, short, int);
@@ -408,7 +409,15 @@ static void _do_updateClearGameStats(void)
     D_80061068.mpdId = 0;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B884);
+void func_8006B884(void)
+{
+    func_8006B450(0x140, 0xF0, 0x200, 0, 0, 0);
+    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    D_8005E0C0[0] = vs_main_allocHeap(0x20000);
+    D_8005E0C0[1] = vs_main_allocHeap(0x20000);
+    D_80055C80[0] = vs_main_allocHeap(0x2088);
+    D_80055C80[1] = vs_main_allocHeap(0x2088);
+}
 
 static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 

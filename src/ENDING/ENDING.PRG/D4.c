@@ -64,7 +64,7 @@ void func_8006AF64(void);
 void func_8006B450(int, int, int, int, int, int);
 int func_8006B6A4(u_long*);
 void func_8006B884(void);
-u_int func_8006AE54(int, short, int);
+u_int func_8006AE54(short, short, short);
 static void _updateClearGameStats(void);
 void func_8006B930(void);
 void func_8006B9DC(void);
@@ -474,7 +474,19 @@ D_800DBB88_t* func_8006ABBC(void (*arg0)(D_800DBB88_t*))
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006ABF0);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AE54);
+u_int func_8006AE54(short arg0, short arg1, short arg2)
+{
+    switch (arg0) {
+    case 0:
+        return (arg1 * ONE) / arg2;
+    case 1:
+        return rsin((arg1 * (ONE / 4)) / arg2);
+    case 2:
+        return (rcos(((arg1 * (ONE / 2)) / arg2) + (ONE / 2)) + ONE) >> 1;
+    case 3:
+        return rsin(((arg1 * (ONE / 4)) / arg2) - (ONE / 4)) + ONE;
+    }
+}
 
 void func_8006AF44(int arg0, int arg1)
 {

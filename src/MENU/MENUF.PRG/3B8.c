@@ -29,18 +29,18 @@ typedef struct {
 static int _initMenu(void);
 static int _execMenu(void);
 
-int vs_menuF_exec(u_char* arg0)
+int vs_menuF_exec(u_char* state)
 {
-    switch (*arg0) {
+    switch (*state) {
     case 0:
-        *arg0 = 1;
+        *state = 1;
         // Fallthrough
     case 1:
-        *arg0 += (_initMenu() != 0);
+        *state += (_initMenu() != 0);
         break;
     case 2:
         if (_execMenu() != 0) {
-            *arg0 = 0;
+            *state = 0;
             return 1;
         }
         break;

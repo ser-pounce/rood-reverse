@@ -1,6 +1,7 @@
 #include "common.h"
-#include "../SLUS_010.40/main.h"
-#include "../SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include <libapi.h>
@@ -20,6 +21,13 @@ typedef struct {
     short unkA;
 } D_800DBB88_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    short unk8;
+    u_short unkA;
+} func_8006A3BC_t;
+
 void func_8006B9B4(void);
 void func_8006A0D8(void);
 void _setDrawEnv(DRAWENV*);
@@ -29,6 +37,7 @@ void func_8006A9C0(int*);
 void func_8006AA6C(void);
 D_800DBB88_t* func_8006AB44(void (*)(void));
 void func_8006B884(void);
+u_int func_8006AE54(int, short, int);
 static void _updateClearGameStats(void);
 void func_8006B9DC(void);
 void func_8006BD78(void);
@@ -166,7 +175,20 @@ void func_8006A0D8(void)
     data[0] = _insertTpage(0xC0, 2);
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A3BC);
+void func_8006A3BC(func_8006A3BC_t* arg0)
+{
+    if (arg0->unk8 == 1) {
+        arg0->unkA = 0;
+        arg0->unk8 = 2;
+    }
+
+    if (++arg0->unkA == 0x80) {
+        D_800DC189 = 0;
+        arg0->unk8 = -1;
+    }
+
+    D_800DC19C = func_8006AE54(0, arg0->unkA, 128) >> 5;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A438);
 

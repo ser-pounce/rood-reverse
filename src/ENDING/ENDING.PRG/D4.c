@@ -79,6 +79,8 @@ extern int _illustLbas[];
 extern int _illustSizes[];
 extern char D_800DB876;
 extern char D_800DBAA8[];
+extern short D_800DBAB8[];
+extern u_int D_800DBAD8[];
 extern D_800DBB88_t D_800DBB88[];
 extern D_800DBB88_t D_800DBBB8[];
 extern signed char D_800DC188;
@@ -92,6 +94,8 @@ extern short D_800DC19C;
 extern int D_800DC1A0;
 extern int D_800DC1A4;
 extern void* D_800DC1A8[];
+extern u_int D_800DC1F0;
+extern u_int D_800DC1F8;
 extern int D_800DC208;
 
 // https://decomp.me/scratch/Y9v8c
@@ -674,7 +678,27 @@ void func_8006DF70(u_int* arg0, func_8006DF70_t* arg1)
     arg1->unk10 = arg0 + 3;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DFD0);
+void func_8006DFD0(void)
+{
+    int var_a2;
+    int var_v0;
+    int i;
+
+    for (i = 0, var_a2 = 0, var_v0 = 1; i < 16; ++i) {
+        if (vs_main_scoredata.titles & (var_v0 << i)) {
+            ++var_a2;
+        }
+    }
+
+    for (i = 0; i < 16; ++i) {
+        if (var_a2 >= D_800DBAB8[i]) {
+            if (D_800DC1F8 >= D_800DBAD8[i]) {
+                D_800DC1F0 = i;
+                return;
+            }
+        }
+    }
+}
 
 INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688A4);
 

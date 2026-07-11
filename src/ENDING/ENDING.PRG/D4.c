@@ -522,7 +522,54 @@ void func_8006AF44(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B324);
+void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
+{
+    int temp_a0;
+    int temp_v0;
+    u_char var_v1_2;
+    int var_v1;
+    SPRT_8* var_a2;
+    u_long** t4;
+
+    var_v1 = *arg3;
+    var_a2 = *(void**)0x1F800000;
+
+    while (var_v1 != 0) {
+
+        temp_v0 = var_v1 - 32;
+        var_v1_2 = temp_v0;
+
+        if (((temp_v0 & 0xFF) < 96u) && (var_v1_2 != 0)) {
+
+            if (var_v1_2 == 60) {
+                var_v1_2 = 15;
+            }
+
+            if (var_v1_2 > 64) {
+                var_v1_2 -= 32;
+            }
+
+            setSprt8(var_a2);
+            setShadeTex(var_a2, 1);
+            setXY0(var_a2, arg0, arg1);
+            setUV0(var_a2, (var_v1_2 & 0xF) * 8, (var_v1_2 & 0xF0) / 2);
+            setClut(var_a2, 960, arg2 + 32);
+
+            t4 = (u_long**)0x1F800000;
+            setaddr(var_a2, *t4[1] & 0xFFFFFF);
+            setaddr(t4[1], var_a2);
+
+            ++var_a2;
+        }
+
+        ++arg3;
+        var_v1 = *arg3;
+        arg0 += 7;
+    }
+
+    *(void**)0x1F800000 = var_a2;
+    *(void**)0x1F800000 = _insertTpage(0xF, 0);
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B450);
 

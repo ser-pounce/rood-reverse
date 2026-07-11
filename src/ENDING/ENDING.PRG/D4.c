@@ -15,8 +15,8 @@ typedef struct {
     void* unk10;
 } func_8006DF70_t;
 
-typedef struct {
-    void (*unk0)(void);
+typedef struct D_800DBB88_t {
+    void (*unk0)(struct D_800DBB88_t*);
     int unk4;
     short unk8;
     short unkA;
@@ -30,13 +30,13 @@ typedef struct {
 } func_8006A3BC_t;
 
 void func_8006B9B4(void);
-void func_8006A0D8(void);
+void func_8006A0D8(D_800DBB88_t* arg0);
 void _setDrawEnv(DRAWENV*);
 void func_8006A888(void);
 void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
-D_800DBB88_t* func_8006AB44(void (*)(void));
+D_800DBB88_t* func_8006AB44(void (*)(D_800DBB88_t*));
 void func_8006B450(int, int, int, int, int, int);
 void func_8006B6A4(int);
 void func_8006B884(void);
@@ -111,7 +111,7 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069BC0);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069F9C);
 
-void func_8006A0D8(void)
+void func_8006A0D8(D_800DBB88_t* arg0 __attribute__((unused)))
 {
     TILE* tile;
     POLY_G4* poly;
@@ -320,10 +320,35 @@ void func_8006AA6C(void)
     }
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AAA0);
+int func_8006AAA0(void)
+{
+    D_800DBB88_t* var_s0;
+    short i;
+    short* var_s1;
 
-D_800DBB88_t* func_8006AB44(void (*arg0)(void)) __attribute__((noreturn));
-D_800DBB88_t* func_8006AB44(void (*arg0)(void))
+    short var_s3 = 0;
+    var_s0 = D_800DBB88;
+    i = 0;
+    var_s1 = &D_800DBB88->unk8;
+
+    do {
+        if (*var_s1 < 0) {
+            *var_s1 = 0;
+        } else if (*var_s1 > 0) {
+            var_s3 += 1;
+            var_s0->unk0(var_s0);
+        }
+
+        ++i;
+        var_s1 += 0x18;
+        var_s0 += 4;
+    } while (i < 32);
+
+    return var_s3;
+}
+
+D_800DBB88_t* func_8006AB44(void (*arg0)(D_800DBB88_t*)) __attribute__((noreturn));
+D_800DBB88_t* func_8006AB44(void (*arg0)(D_800DBB88_t*))
 {
     short i;
     D_800DBB88_t* var_v1 = D_800DBBB8;
@@ -340,7 +365,7 @@ D_800DBB88_t* func_8006AB44(void (*arg0)(void))
     SystemError('M', 100);
 }
 
-D_800DBB88_t* func_8006ABBC(void (*arg0)(void))
+D_800DBB88_t* func_8006ABBC(void (*arg0)(D_800DBB88_t*))
 {
     if (D_800DBB88[0].unk8 == 0) {
         D_800DBB88[0].unk0 = arg0;

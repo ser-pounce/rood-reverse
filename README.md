@@ -32,7 +32,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![INITBTL.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.INITBTL.PRG&color=%2332a934)
 
 ### Menus
-![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus)
+![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus&color=%2332a934)
 
 
 ![MAINMENU.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MAINMENU.PRG&color=%2332a934)
@@ -44,12 +44,12 @@ Thanks also to the following amazing projects (and their dependencies):
 ![MENU5.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU5.PRG&color=%2332a934)
 ![MENU7.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU7.PRG&color=%2332a934)
 ![MENU8.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU8.PRG&color=%2332a934)
-![MENU9.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU9.PRG)
+![MENU9.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENU9.PRG&color=%2332a934)
 ![MENUB.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUB.PRG&color=%2332a934)
 ![MENUC.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUC.PRG&color=%2332a934)
 ![MENUD.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUD.PRG&color=%2332a934)
 ![MENUE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUE.PRG&color=%2332a934)
-![MENUF.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUF.PRG)
+![MENUF.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUF.PRG&color=%2332a934)
 
 ### Title and Ending Sequence
 ![TITLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=title.TITLE.PRG)

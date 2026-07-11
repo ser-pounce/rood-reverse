@@ -29,6 +29,15 @@ typedef struct {
     u_short unkA;
 } func_8006A3BC_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    short unk8;
+    u_short unkA;
+    u_short unkC;
+    u_short unkE;
+} func_8006A438_t;
+
 void func_8006B9B4(void);
 void func_8006A0D8(D_800DBB88_t* arg0);
 void _setDrawEnv(DRAWENV*);
@@ -199,7 +208,23 @@ void func_8006A3BC(func_8006A3BC_t* arg0)
     D_800DC19C = func_8006AE54(0, arg0->unkA, 128) >> 5;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A438);
+void func_8006A438(func_8006A438_t* arg0)
+{
+    if (arg0->unk8 == 1) {
+        arg0->unk8 = 2;
+        arg0->unkA = 0;
+        D_800DC189 = 1;
+    }
+
+    if (++arg0->unkA == 128) {
+        if (arg0->unkE != 0) {
+            D_800DC188 = 1;
+        }
+        arg0->unk8 = -1;
+    }
+
+    D_800DC19C = 128 - ((int)(func_8006AE54(0, arg0->unkA, 0x80) << 7) >> 0xC);
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006A4D8);
 

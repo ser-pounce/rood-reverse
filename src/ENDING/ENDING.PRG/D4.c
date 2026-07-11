@@ -48,6 +48,8 @@ int func_8006BE04(void);
 int func_8006C214(void);
 void func_8006CF24(int, int, int, char*);
 
+extern void* D_1F800000[];
+
 extern int D_8006E3FC;
 extern int D_8007005C;
 extern int D_8007709C;
@@ -410,7 +412,17 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B884);
 
 static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B930);
+void func_8006B930(void)
+{
+    void* temp_a0;
+
+    vs_main_processPadState();
+    temp_a0 = D_80055C80[vs_main_frameBuf];
+    D_1F800000[2] = temp_a0 + 8;
+    D_1F800000[1] = temp_a0 + 0x48;
+    ClearOTagR((u_long*)temp_a0, 0x822);
+    D_1F800000[0] = D_8005E0C0[vs_main_frameBuf];
+}
 
 void func_8006B9B4(void)
 {

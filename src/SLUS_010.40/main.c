@@ -7988,7 +7988,6 @@ extern char _dsControlBuf[11];
 extern _clutState_t _clutState;
 extern int sp;
 extern int D_8005DBF4[5][6];
-extern u_int _frameDuration;
 extern int vs_main_saveGameClearData;
 extern int _inGame;
 extern u_short _clutBuffer[14][256];
@@ -9229,9 +9228,10 @@ static void func_800443CC(void)
         if (status == DslReady) {
             vs_main_disk.unk4 = 0;
             ++vs_main_disk.unk3;
-            seconds = _frameDuration / 60;
+            seconds = vs_main_frameDuration / 60;
             if (seconds < 420) {
-                DsIntToPos(vs_main_disk.cdSector + (seconds * 75) + (_frameDuration % 60),
+                DsIntToPos(
+                    vs_main_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
                     &cdReadLoc);
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;

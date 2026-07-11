@@ -58,7 +58,7 @@ void func_8006A9C0(int*);
 void func_8006AA6C(void);
 D_800DBB88_t* func_8006AB44(void (*)(D_800DBB88_t*));
 void func_8006B450(int, int, int, int, int, int);
-void func_8006B6A4(int);
+int func_8006B6A4(u_long*);
 void func_8006B884(void);
 u_int func_8006AE54(int, short, int);
 static void _updateClearGameStats(void);
@@ -435,7 +435,25 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B324);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B450);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B6A4);
+int func_8006B6A4(u_long* arg0)
+{
+    int _[2];
+    int temp_s1;
+
+    vs_main_frameBuf = vs_main_frameBuf == 0;
+
+    DrawSync(0);
+
+    temp_s1 = vs_main_gametimeUpdate(0);
+
+    PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
+    PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
+    DrawOTag(arg0);
+
+    ++vs_main_frameDuration;
+
+    return temp_s1;
+}
 
 static void _updateTitles(void);
 
@@ -624,14 +642,14 @@ void func_8006BD78(void)
     do {
         func_8006B930();
         temp_s0 = func_8006BE04();
-        func_8006B6A4(*(int*)0x1F800004 + 0x1FFC);
+        func_8006B6A4(*(u_long**)0x1F800004 + 0x7FF);
     } while (temp_s0 == 0);
 
     do {
         func_8006B930();
         temp_s0 = func_8006C214();
         VSync(0);
-        func_8006B6A4(*(int*)0x1F800004 + 0x1FFC);
+        func_8006B6A4(*(u_long**)0x1F800004 + 0x7FF);
     } while (temp_s0 == 0);
 }
 

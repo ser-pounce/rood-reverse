@@ -2,7 +2,7 @@ _card_clear
 _card_format
 _card_info
 _card_load
-_frameDuration
+vs_main_frameDuration
 _trig_table
 AddPrim
 ApplyMatrix

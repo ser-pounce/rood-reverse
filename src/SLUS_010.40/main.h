@@ -444,6 +444,7 @@ extern int vs_main_buttonsReleased;
 extern int vs_main_buttonsState;
 extern int vs_main_saveGameClearData;
 
+extern u_int vs_main_frameDuration;
 extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_skillsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;

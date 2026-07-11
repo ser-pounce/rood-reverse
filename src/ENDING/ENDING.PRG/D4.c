@@ -77,6 +77,7 @@ void func_8006D358(int, int, int, P_CODE*);
 extern void* D_1F800000[];
 
 extern int D_8006E3FC;
+extern u_char D_8006FF7C[];
 extern int D_8007005C;
 extern int D_8007709C;
 extern int D_80088ABC;
@@ -136,7 +137,40 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069388);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069730);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069AEC);
+int func_80069AEC(u_char* arg0)
+{
+    short var_a1;
+    short i;
+    unsigned short var_a2;
+    short temp_v0;
+    int temp_v1;
+    int new_var;
+
+    temp_v0 = *arg0++;
+    var_a1 = 0;
+    var_a2 = 0;
+    i = 0;
+
+    for (i = 0; i < temp_v0; ++i, ++arg0) {
+        temp_v1 = *arg0;
+        if (temp_v1 < 32u) {
+            switch (temp_v1) {
+            case 1:
+                var_a2 = 0;
+                break;
+            case 2:
+                var_a2 = 0x70;
+                break;
+            case 31:
+                --var_a1;
+                break;
+            }
+        } else {
+            var_a1 += D_8006FF7C[(var_a2 - (new_var = 32)) + temp_v1] + 0xFFFF;
+        }
+    }
+    return var_a1;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069BC0);
 

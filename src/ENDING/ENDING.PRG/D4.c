@@ -5,6 +5,7 @@
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include <libapi.h>
+#include <libetc.h>
 
 typedef struct {
     int unk0;
@@ -36,11 +37,15 @@ void* _insertTpage(int arg0, int arg1);
 void func_8006A9C0(int*);
 void func_8006AA6C(void);
 D_800DBB88_t* func_8006AB44(void (*)(void));
+void func_8006B6A4(int);
 void func_8006B884(void);
 u_int func_8006AE54(int, short, int);
 static void _updateClearGameStats(void);
+void func_8006B930(void);
 void func_8006B9DC(void);
 void func_8006BD78(void);
+int func_8006BE04(void);
+int func_8006C214(void);
 void func_8006CF24(int, int, int, char*);
 
 extern int D_8006E3FC;
@@ -75,6 +80,7 @@ extern short D_800DC19C;
 extern int D_800DC1A0;
 extern int D_800DC1A4;
 extern void* D_800DC1A8[];
+extern int D_800DC208;
 
 // https://decomp.me/scratch/Y9v8c
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
@@ -520,7 +526,26 @@ static void _updateTitles(void)
     }
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006BD78);
+void func_8006BD78(void)
+{
+    int temp_s0;
+
+    D_800DC208 = 0;
+    SetDispMask(1);
+
+    do {
+        func_8006B930();
+        temp_s0 = func_8006BE04();
+        func_8006B6A4(*(int*)0x1F800004 + 0x1FFC);
+    } while (temp_s0 == 0);
+
+    do {
+        func_8006B930();
+        temp_s0 = func_8006C214();
+        VSync(0);
+        func_8006B6A4(*(int*)0x1F800004 + 0x1FFC);
+    } while (temp_s0 == 0);
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006BE04);
 

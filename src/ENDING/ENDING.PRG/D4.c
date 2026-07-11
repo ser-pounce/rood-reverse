@@ -38,6 +38,17 @@ typedef struct {
     u_short unkE;
 } func_8006A438_t;
 
+typedef struct {
+    u_char unk0[0xB2];
+    u_char unkB2;
+    u_char unkB3;
+    u_short unkB4;
+    u_short unkB6;
+    u_short unkB8;
+    u_char unkBA;
+    u_char unkBB;
+} D_800DB814_t;
+
 void func_8006B9B4(void);
 void func_8006A0D8(D_800DBB88_t* arg0);
 void _setDrawEnv(DRAWENV*);
@@ -57,6 +68,7 @@ void func_8006BD78(void);
 int func_8006BE04(void);
 int func_8006C214(void);
 void func_8006CF24(int, int, int, char*);
+void func_8006D358(int, int, int, P_CODE*);
 
 extern void* D_1F800000[];
 
@@ -77,6 +89,7 @@ extern int _countableRooms[];
 extern signed char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
+extern D_800DB814_t D_800DB814;
 extern char D_800DB876;
 extern char D_800DBAA8[];
 extern short D_800DBAB8[];
@@ -628,7 +641,26 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C214);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C3CC);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C514);
+extern P_CODE D_800DBA7C[2];
+
+void func_8006C514(int arg0, int arg1, int arg2)
+{
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+
+    if (arg2 > 64) {
+        arg2 = 64;
+    }
+
+    if (arg2 > 0) {
+        D_800DBA7C[0].code = arg2;
+        D_800DBA7C[1].code = arg2;
+        arg0 = arg0 - ((D_800DB814.unkB2 + D_800DB814.unkBA) >> 1);
+        func_8006D358(arg0, arg1, 0x16, D_800DBA7C);
+        func_8006D358(arg0 + D_800DB814.unkB2, arg1, 0x17, &D_800DBA7C[1]);
+    }
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C5C8);
 

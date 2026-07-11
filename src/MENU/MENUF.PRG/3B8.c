@@ -1161,9 +1161,11 @@ void _renderTimeAttackHeader(int x, int y, int timer)
     if (timer < 0) {
         timer = 0;
     }
+
     if (timer > 0x40) {
         timer = 0x40;
     }
+
     if (timer > 0) {
 
         colors[0].code = timer;

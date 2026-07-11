@@ -49,9 +49,27 @@ typedef struct {
 } func_8006A438_t;
 
 typedef struct {
-    u_char unk0[0x9A];
+    u_char unk0[0x52];
+    u_char unk52;
+    u_char unk53[0x3F];
+    u_char unk92;
+    u_char unk93[7];
     u_char unk9A;
-    u_char unk9B[15];
+    u_char unk9B;
+    u_char unk9C;
+    u_char unk9D;
+    u_char unk9E;
+    u_char unk9F;
+    u_char unkA0;
+    u_char unkA1;
+    u_char unkA2;
+    u_char unkA3;
+    u_char unkA4;
+    u_char unkA5;
+    u_char unkA6;
+    u_char unkA7;
+    u_char unkA8;
+    u_char unkA9;
     u_char unkAA;
     u_char unkAB[7];
     u_char unkB2;
@@ -87,6 +105,14 @@ void func_8006B9DC(void);
 void func_8006BD78(void);
 int func_8006BE04(void);
 int func_8006C214(void);
+void func_8006C3CC(int);
+void func_8006C514(int arg0, int arg1, int arg2);
+void func_8006C5C8(int, int, int, int);
+void func_8006C744(int, int, int, int);
+void func_8006C9A8(int arg0, int arg1, int arg2, int arg3);
+void func_8006CAF4(int, int, int, int);
+void func_8006CD38(int arg0, int arg1, int arg2);
+void func_8006CD94(int, int, int);
 void func_8006CF24(int, int, int, char*);
 void func_8006D358(int, int, int, P_CODE*);
 
@@ -135,12 +161,16 @@ extern u_int D_800DC1F0;
 extern u_int D_800DC1F8;
 extern int D_800DC1FC;
 extern int D_800DC208;
+extern int D_800DC20C;
+extern int D_800DC210;
 
 // https://decomp.me/scratch/Y9v8c
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068938);
 
+// https://decomp.me/scratch/UJsTy
+void func_80068EBC(D_800DBB88_t* arg0);
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068EBC);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069088);
@@ -803,7 +833,48 @@ void func_8006BD78(void)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006BE04);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C214);
+int func_8006C214(void)
+{
+    if (D_800DC210 == 0) {
+
+        if (D_800DC20C == 0xD0) {
+            vs_main_playSfxDefault(0x7E, 0x77);
+            vs_main_playSfxDefault(0x7E, 0x78);
+        }
+
+        func_8006C3CC(D_800DC20C);
+        func_8006C514(0xA0, 0x28, D_800DC20C);
+        func_8006C744(0xA0, 0x50, D_800DC20C - 0x20, D_800DC210);
+        func_8006CAF4(0xA0, 0x66, D_800DC20C - 0x70, D_800DC210);
+        func_8006CD38(0xA0, 0x8A, D_800DC20C - 0xC0);
+        func_8006CD94(0xA0, 0x9A, D_800DC20C - 0xD0);
+
+        if (D_800DC20C >= 0x1001) {
+            D_800DC20C = 0x1000;
+        }
+
+        if (vs_main_buttonsPressed.all != 0) {
+            D_800DC210 = 1;
+            D_800DC20C = 0;
+        }
+
+    } else {
+
+        func_8006C3CC(8 - D_800DC20C);
+        func_8006C514(0xA0, 0x28, 8 - D_800DC20C);
+        func_8006C5C8(0xA0, 0x50, 8 - D_800DC20C, 3);
+        func_8006C9A8(0xA0, 0x66, 8 - D_800DC20C, 3);
+        func_8006CD38(0xA0, 0x8A, 8 - D_800DC20C);
+        func_8006CD94(0xA0, 0x9A, 8 - D_800DC20C);
+
+        if (D_800DC20C >= 8) {
+            return 1;
+        }
+    }
+
+    ++D_800DC20C;
+    return 0;
+}
 
 // https://decomp.me/scratch/0FKMG
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C3CC);
@@ -829,11 +900,12 @@ void func_8006C514(int arg0, int arg1, int arg2)
     }
 }
 
+// https://decomp.me/scratch/AScWs
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C5C8);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C744);
 
-void func_8006C9A8(int arg0, int arg1, int arg2)
+void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
     char sp10[2];
     int i;

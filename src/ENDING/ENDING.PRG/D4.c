@@ -34,39 +34,13 @@ typedef struct D_800DBB88_t {
 } D_800DBB88_t;
 
 typedef struct {
-    u_char unk0[0x52];
-    u_char unk52;
-    u_char unk53[0x3F];
-    u_char unk92;
-    u_char unk93[7];
-    u_char unk9A;
-    u_char unk9B;
-    u_char unk9C;
-    u_char unk9D;
-    u_char unk9E;
-    u_char unk9F;
-    u_char unkA0;
-    u_char unkA1;
-    u_char unkA2;
-    u_char unkA3;
-    u_char unkA4;
-    u_char unkA5;
-    u_char unkA6;
-    u_char unkA7;
-    u_char unkA8;
-    u_char unkA9;
-    u_char unkAA;
-    u_char unkAB[7];
-    u_char unkB2;
-    u_char unkB3;
-    u_short unkB4;
-    u_short unkB6;
-    u_short unkB8;
-    u_char unkBA;
-    u_char unkBB;
-    u_char unkBC[22];
-    u_char unkD2;
-} D_800DB814_t;
+    char x;
+    char y;
+    char w;
+    char h;
+    u_short tpage;
+    u_short clut;
+} _texture_t;
 
 typedef struct {
     u_char unk0;
@@ -139,7 +113,7 @@ void func_8006C9A8(int arg0, int arg1, int arg2, int arg3);
 void func_8006CAF4(int, int, int, int);
 void func_8006CD38(int arg0, int arg1, int arg2);
 void func_8006CD94(int, int, int);
-void func_8006CF24(int, int, int, char*);
+void _renderTextureFadeInTint(int, int, int, P_CODE[]);
 void func_8006D358(int, int, int, P_CODE*);
 void func_8006DA18(int, int, int, P_CODE*, int);
 
@@ -163,13 +137,13 @@ extern int _countableRooms[];
 extern u_char D_800DB72C;
 extern int _illustLbas[];
 extern int _illustSizes[];
-extern D_800DB814_t D_800DB814;
+extern _texture_t D_800DB814[];
 extern u_char D_800DB876;
-extern char D_800DBA88[];
+extern P_CODE D_800DBA88[];
 extern P_CODE D_800DBA90[];
-extern char D_800DBA98[];
+extern P_CODE D_800DBA98[];
 extern P_CODE D_800DBAA0[];
-extern u_char D_800DBAA8[];
+extern P_CODE D_800DBAA8[];
 extern short D_800DBAB8[];
 extern u_int D_800DBAD8[];
 extern D_800DBB88_t D_800DBB88[];
@@ -1163,9 +1137,9 @@ void func_8006C514(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_800DBA7C[0].code = arg2;
         D_800DBA7C[1].code = arg2;
-        arg0 = arg0 - ((D_800DB814.unkB2 + D_800DB814.unkBA) >> 1);
+        arg0 = arg0 - ((D_800DB814[22].w + D_800DB814[23].w) >> 1);
         func_8006D358(arg0, arg1, 0x16, D_800DBA7C);
-        func_8006D358(arg0 + D_800DB814.unkB2, arg1, 0x17, &D_800DBA7C[1]);
+        func_8006D358(arg0 + D_800DB814[22].w, arg1, 0x17, &D_800DBA7C[1]);
     }
 }
 
@@ -1186,34 +1160,34 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     if (arg2 > 0) {
 
-        D_800DBA88[3] = arg2;
+        D_800DBA88[0].code = arg2;
 
         sprintf(sp10, "%09d", _score);
 
-        v1 = D_800DB814.unk92 + D_800DB814.unkD2 + D_800DB814.unkA2;
-        arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
+        v1 = D_800DB814[18].w + D_800DB814[26].w + D_800DB814[20].w;
+        arg0 -= (D_800DB814[10].w * 2 + v1 + 0x74) >> 1;
 
-        func_8006CF24(arg0, arg1, 0x12, D_800DBA88);
+        _renderTextureFadeInTint(arg0, arg1, 0x12, D_800DBA88);
 
-        arg0 += D_800DB814.unk92;
+        arg0 += D_800DB814[18].w;
 
-        func_8006CF24(arg0, arg1 + 7, 0x1A, D_800DBA88);
+        _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA88);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814.unkD2;
+        arg0 = v0 + D_800DB814[26].w;
 
         for (i = 0; i < 9; ++i) {
-            func_8006CF24(arg0, arg1 + 3, sp10[i] - 0x30, D_800DBA88);
+            _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - 0x30, D_800DBA88);
             arg0 += 12;
             if ((i == 2) || (i == 5)) {
                 int v0;
-                func_8006CF24(arg0, arg1 + 0xE, 0xA, D_800DBA88);
+                _renderTextureFadeInTint(arg0, arg1 + 0xE, 0xA, D_800DBA88);
                 v0 = arg0 + 3;
-                arg0 = v0 + D_800DB814.unk52;
+                arg0 = v0 + D_800DB814[10].w;
             }
         }
 
-        func_8006CF24(arg0, arg1 + 8, 0x14, D_800DBA88);
+        _renderTextureFadeInTint(arg0, arg1 + 8, 0x14, D_800DBA88);
     }
 }
 
@@ -1263,24 +1237,24 @@ void func_8006C744(int arg0, int arg1, int arg2, int arg3)
 
         sprintf(sp18, "%09d", D_800DC204);
 
-        v1 = D_800DB814.unk92 + D_800DB814.unkD2 + D_800DB814.unkA2;
-        arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
+        v1 = D_800DB814[18].w + D_800DB814[26].w + D_800DB814[20].w;
+        arg0 -= (D_800DB814[10].w * 2 + v1 + 0x74) >> 1;
 
         func_8006DA18(arg0, arg1, 0x12, D_800DBA90, temp_s2);
 
-        arg0 += D_800DB814.unk92;
+        arg0 += D_800DB814[18].w;
 
         func_8006DA18(arg0, arg1 + 7, 0x1A, D_800DBA90, temp_s2);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814.unkD2;
+        arg0 = v0 + D_800DB814[26].w;
 
         for (i = 0; i < 9; ++i) {
             func_8006DA18(arg0, arg1 + 3, sp18[i] - '0', D_800DBA90, temp_s2);
             arg0 += 12;
             if ((i == 2) || (i == 5)) {
                 func_8006DA18(arg0, arg1 + 0xE, 0xA, D_800DBA90, temp_s2);
-                arg0 += 3 + D_800DB814.unk52;
+                arg0 += 3 + D_800DB814[10].w;
             }
         }
 
@@ -1304,27 +1278,27 @@ void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
     if (arg2 > 0) {
 
-        D_800DBA98[3] = arg2;
+        D_800DBA98[0].code = arg2;
 
         sprintf(sp10, "%03d", D_800DC1FC);
 
-        arg0 -= ((D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
+        arg0 -= ((D_800DB814[21].w + D_800DB814[26].w + D_800DB814[19].w + 0x26) >> 1);
 
-        func_8006CF24(arg0, arg1, 0x15, D_800DBA98);
+        _renderTextureFadeInTint(arg0, arg1, 0x15, D_800DBA98);
 
-        arg0 += D_800DB814.unkAA;
+        arg0 += D_800DB814[21].w;
 
-        func_8006CF24(arg0, arg1 + 7, 0x1A, D_800DBA98);
+        _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA98);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814.unkD2;
+        arg0 = v0 + D_800DB814[26].w;
 
         for (i = 0; i < 3; ++i) {
-            func_8006CF24(arg0, arg1 + 3, sp10[i] - '0', D_800DBA98);
+            _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - '0', D_800DBA98);
             arg0 += 12;
         }
 
-        func_8006CF24(arg0, arg1 + 8, 0x13, D_800DBA98);
+        _renderTextureFadeInTint(arg0, arg1 + 8, 0x13, D_800DBA98);
     }
 }
 
@@ -1371,16 +1345,16 @@ void func_8006CAF4(int arg0, int arg1, int arg2, int arg3)
         sprintf(sp18, "%03d", D_800DC200);
 
         arg0 -=
-            ((int)(D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
+            ((int)(D_800DB814[21].w + D_800DB814[26].w + D_800DB814[19].w + 0x26) >> 1);
 
         func_8006DA18(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
 
-        arg0 += D_800DB814.unkAA;
+        arg0 += D_800DB814[21].w;
 
         func_8006DA18(arg0, arg1 + 7, 0x1A, D_800DBAA0, temp_s4);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814.unkD2;
+        arg0 = v0 + D_800DB814[26].w;
 
         for (i = 0; i < 3; ++i) {
             func_8006DA18(arg0, arg1 + 3, sp18[i] - '0', D_800DBAA0, temp_s4);
@@ -1400,14 +1374,65 @@ void func_8006CD38(int arg0, int arg1, int arg2)
         arg2 = 0x40;
     }
     if (arg2 > 0) {
-        D_800DBAA8[3] = arg2;
-        func_8006CF24(arg0 - (D_800DB876 >> 1), arg1, 0xC, D_800DBAA8);
+        D_800DBAA8[0].code = arg2;
+        _renderTextureFadeInTint(arg0 - (D_800DB876 >> 1), arg1, 0xC, D_800DBAA8);
     }
 }
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CD94);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CF24);
+void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
+{
+    POLY_GT4* poly;
+    void** p;
+
+    if (colors[0].code == 0) {
+        return;
+    }
+
+    poly = *(void**)0x1F800000;
+
+    setPolyGT4(poly);
+    setXY4(poly, x, y, D_800DB814[texId].w + x, y, x, D_800DB814[texId].h + y,
+        D_800DB814[texId].w + x, D_800DB814[texId].h + y);
+    setUV4(poly, D_800DB814[texId].x, D_800DB814[texId].y,
+        D_800DB814[texId].x + D_800DB814[texId].w, D_800DB814[texId].y,
+        D_800DB814[texId].x, D_800DB814[texId].y + D_800DB814[texId].h,
+        D_800DB814[texId].x + D_800DB814[texId].w,
+        D_800DB814[texId].y + D_800DB814[texId].h);
+
+    if (colors[0].code < 8) {
+        setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
+            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+        setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
+            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+        setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
+            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+        setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
+            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+    } else {
+        setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+        setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+        setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+        setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+    }
+
+    setSemiTrans(poly, 1);
+
+    if (colors[0].code < 8) {
+        poly->clut = D_800DB814[texId].clut + 1;
+        poly->tpage = D_800DB814[texId].tpage | 0x20;
+    } else {
+        poly->clut = D_800DB814[texId].clut;
+        poly->tpage = D_800DB814[texId].tpage;
+    }
+
+    p = (void**)0x1F800000;
+
+    AddPrim(p[1] - 0x1C, poly++);
+
+    p[0] = poly;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006D358);
 

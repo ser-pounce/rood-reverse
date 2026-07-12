@@ -3,6 +3,7 @@ _insertTpage = 0x8006A958;
 _do_updateClearGameStats = 0x8006B760;
 _updateClearGameStats = 0x8006B910;
 _updateTitles = 0x8006B9FC;
+_renderTextureFadeInTint = 0x8006CF24;
 _updateScore = 0x8006E074;
 _illustLbas = 0x800DB730;
 _illustSizes = 0x800DB770;

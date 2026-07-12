@@ -145,8 +145,6 @@ void func_8006DA18(int, int, int, P_CODE*, int);
 
 extern void* D_1F800000[];
 
-extern char D_800688A4;
-extern char D_800688AC;
 extern u_char D_8006E3FC[];
 extern u_char D_8006FF7C[];
 extern int D_8007005C;
@@ -189,7 +187,8 @@ extern int D_800DC1A0;
 extern int D_800DC1A4;
 extern void* D_800DC1A8[];
 extern u_int D_800DC1F0;
-extern u_int D_800DC1F8;
+extern int D_800DC1F4;
+extern u_int _score;
 extern int D_800DC1FC;
 extern u_int D_800DC200;
 extern int D_800DC204;
@@ -320,7 +319,7 @@ void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
             arg0->unk2A = 0;
         }
     }
-    
+
     arg0->unk28 = arg0->unk29 = arg0->unk2A;
 }
 
@@ -1189,7 +1188,7 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         D_800DBA88[3] = arg2;
 
-        sprintf(sp10, &D_800688A4, D_800DC1F8);
+        sprintf(sp10, "%09d", _score);
 
         v1 = D_800DB814.unk92 + D_800DB814.unkD2 + D_800DB814.unkA2;
         arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
@@ -1233,21 +1232,21 @@ void func_8006C744(int arg0, int arg1, int arg2, int arg3)
         var_s1 = 0;
     }
 
-    if (var_s1 >= 0x41) {
-        var_s1 = 0x40;
+    if (var_s1 > 64) {
+        var_s1 = 64;
     }
 
     if (var_s1 > 0) {
         temp_s2 = arg0 + (var_s1 * 8);
 
-        if (D_800DC1F8 != 0 && var_s1 >= 32) {
+        if (_score != 0 && var_s1 >= 32) {
 
             if (D_800DC204 == 0) {
                 D_800DC214 = 1;
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
 
-            if ((D_800DC204 == D_800DC1F8) && (D_800DC214 != 0)) {
+            if ((D_800DC204 == _score) && (D_800DC214 != 0)) {
                 D_800DC214 = 0;
                 func_80045D64(0x7E, 0x72);
                 vs_main_playSfxDefault(0x7E, 0x73);
@@ -1255,14 +1254,14 @@ void func_8006C744(int arg0, int arg1, int arg2, int arg3)
         }
 
         if (var_s1 >= 32) {
-            D_800DC204 = ((u_int)D_800DC1F8 >> 5) * (var_s1 - 32);
+            D_800DC204 = ((u_int)_score >> 5) * (var_s1 - 32);
         }
 
         if (var_s1 == 64) {
-            D_800DC204 = D_800DC1F8;
+            D_800DC204 = _score;
         }
 
-        sprintf(sp18, &D_800688A4, D_800DC204);
+        sprintf(sp18, "%09d", D_800DC204);
 
         v1 = D_800DB814.unk92 + D_800DB814.unkD2 + D_800DB814.unkA2;
         arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
@@ -1307,7 +1306,7 @@ void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         D_800DBA98[3] = arg2;
 
-        sprintf(sp10, &D_800688AC, D_800DC1FC);
+        sprintf(sp10, "%03d", D_800DC1FC);
 
         arg0 -= ((D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
 
@@ -1369,7 +1368,7 @@ void func_8006CAF4(int arg0, int arg1, int arg2, int arg3)
             }
         }
 
-        sprintf(sp18, &D_800688AC, D_800DC200);
+        sprintf(sp18, "%03d", D_800DC200);
 
         arg0 -=
             ((int)(D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
@@ -1446,7 +1445,7 @@ void func_8006DFD0(void)
 
     for (i = 0; i < 16; ++i) {
         if (var_a2 >= D_800DBAB8[i]) {
-            if (D_800DC1F8 >= D_800DBAD8[i]) {
+            if (_score >= D_800DBAD8[i]) {
                 D_800DC1F0 = i;
                 return;
             }
@@ -1454,8 +1453,64 @@ void func_8006DFD0(void)
     }
 }
 
-INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688A4);
+void _updateScore(void)
+{
+    short enemyKillPoints[] = { 20, 20, 40, 80, 100, 60 };
 
-INCLUDE_RODATA("build/src/ENDING/ENDING.PRG/nonmatchings/D4", D_800688AC);
+    short weaponAttackPoints[] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006E074);
+    int i;
+
+    _score = 0;
+
+    for (i = 0; i < 6; ++i) {
+        _score += vs_main_scoredata.enemyKills[i] * enemyKillPoints[i];
+    }
+
+    for (i = 0; i < 10; ++i) {
+        _score += vs_main_scoredata.weaponAttacks[i] * weaponAttackPoints[i];
+    }
+
+    for (i = 0; i < 8; ++i) {
+        if (vs_main_scoredata.bossTimeTrialScores[i][0].time != 0x800000) {
+            _score += 20000;
+        }
+    }
+
+    if (vs_main_scoredata.maxChain < 6U) {
+        _score += vs_main_scoredata.maxChain * 10;
+    } else if (vs_main_scoredata.maxChain < 11) {
+        _score += vs_main_scoredata.maxChain * 20;
+    } else if (vs_main_scoredata.maxChain < 16) {
+        _score += vs_main_scoredata.maxChain * 40;
+    } else if (vs_main_scoredata.maxChain < 21) {
+        _score += vs_main_scoredata.maxChain * 80;
+    } else if (vs_main_scoredata.maxChain < 26) {
+        _score += vs_main_scoredata.maxChain * 160;
+    } else if (vs_main_scoredata.maxChain < 31) {
+        _score += vs_main_scoredata.maxChain * 320;
+    } else if (vs_main_scoredata.maxChain < 51) {
+        _score += vs_main_scoredata.maxChain * 640;
+    } else {
+        _score += vs_main_scoredata.maxChain * 1280;
+    }
+
+    _score += D_800DC1F4 * 100000;
+
+    if ((D_800DC1F4 != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
+        if (vs_main_scoredata.completionTimeMinutes >= 540) {
+            _score += _score / 4;
+        } else if (vs_main_scoredata.completionTimeMinutes >= 300) {
+            _score += _score / 2;
+        } else {
+            _score *= 2;
+        }
+    }
+
+    _score += vs_main_scoredata.streakScore;
+    _score += vs_main_scoredata.miscScore;
+
+    if (_score > 999999999) {
+        _score = 999999999;
+    }
+}

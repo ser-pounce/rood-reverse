@@ -75,6 +75,40 @@ typedef struct {
     u_char unk3;
 } D_800DC194_t;
 
+typedef struct {
+    int unk0;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
+    u_char unk1C;
+    u_char unk1D;
+    u_char unk1E;
+    u_char unk1F;
+    short unk20;
+    short unk22;
+    short unk24;
+    short unk26;
+    u_char unk28;
+    u_char unk29;
+    u_char unk2A;
+    u_char unk2B;
+    short unk2C;
+    short unk2E;
+} func_80069388_t;
+
 void func_8006B9B4(void);
 void func_8006A0D8(D_800DBB88_t* arg0);
 void _setDrawEnv(DRAWENV*);
@@ -173,16 +207,122 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068938);
 void func_80068EBC(D_800DBB88_t* arg0);
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068EBC);
 
+// https://decomp.me/scratch/pNVRe
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069088);
 
 int _inverseDistanceFromScreencenter(int arg0, int arg1)
 {
-    arg0 -= 0xA0;
-    arg1 -= 0x70;
+    arg0 -= 160;
+    arg1 -= 112;
     return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069388);
+void func_80069388(func_80069388_t* arg0, short arg1, short arg2) __attribute__((unused));
+void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
+{
+    short temp_s0;
+    short v0;
+
+    if (arg2 == 0) {
+        temp_s0 = (arg1 * 128) / 80;
+        v0 = temp_s0
+           + (((200 - _inverseDistanceFromScreencenter(arg0->unk8, arg0->unkA)) << 7)
+               / 400);
+
+        if (v0 < 0x81) {
+            arg0->unk6 = v0;
+        } else {
+            arg0->unk6 = 128;
+        }
+
+        arg0->unk4 = arg0->unk5 = arg0->unk6;
+
+        v0 = temp_s0
+           + (((200 - _inverseDistanceFromScreencenter(arg0->unk14, arg0->unk16)) << 7)
+               / 400);
+
+        if (v0 < 0x81) {
+            arg0->unk12 = v0;
+        } else {
+            arg0->unk12 = 128;
+        }
+
+        arg0->unk10 = arg0->unk11 = arg0->unk12;
+
+        v0 = temp_s0
+           + (((200 - _inverseDistanceFromScreencenter(arg0->unk20, arg0->unk22)) << 7)
+               / 400);
+
+        if (v0 < 0x81) {
+            arg0->unk1E = v0;
+        } else {
+            arg0->unk1E = 128;
+        }
+
+        arg0->unk1C = arg0->unk1D = arg0->unk1E;
+
+        v0 = temp_s0
+           + (((200 - _inverseDistanceFromScreencenter(arg0->unk2C, arg0->unk2E)) << 7)
+               / 400);
+
+        if (v0 < 0x81) {
+            arg0->unk2A = v0;
+        } else {
+            arg0->unk2A = 128;
+        }
+
+    } else {
+
+        temp_s0 = ((0x50 - arg1) << 7) / 80;
+        v0 = temp_s0
+           - (((200 - _inverseDistanceFromScreencenter(arg0->unk8, arg0->unkA)) << 7)
+               / 400);
+
+        if (v0 >= 0) {
+            arg0->unk6 = v0;
+        } else {
+            arg0->unk6 = 0;
+        }
+
+        arg0->unk4 = arg0->unk5 = arg0->unk6;
+
+        v0 = temp_s0
+           - (((200 - _inverseDistanceFromScreencenter(arg0->unk14, arg0->unk16)) << 7)
+               / 400);
+
+        if (v0 >= 0) {
+            arg0->unk12 = v0;
+        } else {
+            arg0->unk12 = 0;
+        }
+
+        arg0->unk10 = arg0->unk11 = arg0->unk12;
+
+        v0 = temp_s0
+           - (((200 - _inverseDistanceFromScreencenter(arg0->unk20, arg0->unk22)) << 7)
+               / 400);
+
+        if (v0 >= 0) {
+            arg0->unk1E = v0;
+        } else {
+            arg0->unk1E = 0;
+        }
+
+        arg0->unk1C = arg0->unk1D = arg0->unk1E;
+
+        v0 = temp_s0
+           - (((200 - _inverseDistanceFromScreencenter(arg0->unk2C, arg0->unk2E)) << 7)
+               / 400);
+
+        if (v0 >= 0) {
+            arg0->unk2A = v0;
+        } else {
+            arg0->unk2A = 0;
+        }
+    }
+    
+    arg0->unk28 = arg0->unk29 = arg0->unk2A;
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069730);
 
@@ -550,7 +690,7 @@ void func_8006ABF0(void)
     int new_var;
 
     if (D_800DC190 != 0) {
-        D_800DC190 -= 1;
+        --D_800DC190;
         return;
     }
 

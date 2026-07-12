@@ -115,6 +115,7 @@ void func_8006CD38(int arg0, int arg1, int arg2);
 void func_8006CD94(int, int, int);
 void func_8006CF24(int, int, int, char*);
 void func_8006D358(int, int, int, P_CODE*);
+void func_8006DA18(int, int, int, P_CODE*, int);
 
 extern void* D_1F800000[];
 
@@ -140,6 +141,7 @@ extern int _illustSizes[];
 extern D_800DB814_t D_800DB814;
 extern u_char D_800DB876;
 extern char D_800DBA98[];
+extern P_CODE D_800DBAA0[];
 extern u_char D_800DBAA8[];
 extern short D_800DBAB8[];
 extern u_int D_800DBAD8[];
@@ -160,9 +162,11 @@ extern void* D_800DC1A8[];
 extern u_int D_800DC1F0;
 extern u_int D_800DC1F8;
 extern int D_800DC1FC;
+extern u_int D_800DC200;
 extern int D_800DC208;
 extern int D_800DC20C;
 extern int D_800DC210;
+extern int D_800DC218;
 
 // https://decomp.me/scratch/Y9v8c
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
@@ -945,7 +949,67 @@ void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CAF4);
+void func_8006CAF4(int arg0, int arg1, int arg2, int arg3)
+{
+    char sp18[2];
+    int temp_s4;
+    int i;
+    int v0;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+    if (arg2 > 64) {
+        arg2 = 64;
+    }
+
+    if (arg2 > 0) {
+
+        temp_s4 = arg0 + arg2 * 8;
+
+        if (D_800DC1FC != 0 && arg2 >= 32) {
+
+            if (D_800DC200 == 0) {
+                D_800DC218 = 1;
+                vs_main_playSfxDefault(0x7E, 0x72);
+            }
+
+            if ((D_800DC200 == D_800DC1FC) && (D_800DC218 != 0)) {
+                D_800DC218 = 0;
+                func_80045D64(0x7E, 0x72);
+                vs_main_playSfxDefault(0x7E, 0x73);
+            }
+        }
+
+        if (arg2 >= 32) {
+            if (D_800DC1FC >= 32u) {
+                D_800DC200 = (u_int)(D_800DC1FC * (arg2 - 32)) >> 5;
+            } else if (D_800DC200 < D_800DC1FC) {
+                D_800DC200 += 1;
+            }
+        }
+
+        sprintf(sp18, &D_800688AC, D_800DC200);
+
+        arg0 -= ((int)(D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
+
+        func_8006DA18(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
+
+        arg0 += D_800DB814.unkAA;
+
+        func_8006DA18(arg0, arg1 + 7, 0x1A, D_800DBAA0, temp_s4);
+
+        v0 = arg0 + 2;
+        arg0 = v0 + D_800DB814.unkD2;
+
+        for (i = 0; i < 3; ++i) {
+            func_8006DA18(arg0, arg1 + 3, sp18[i] - '0', D_800DBAA0, temp_s4);
+            arg0 += 12;
+        }
+
+        func_8006DA18(arg0, arg1 + 8, 0x13, D_800DBAA0, temp_s4);
+    }
+}
 
 void func_8006CD38(int arg0, int arg1, int arg2)
 {

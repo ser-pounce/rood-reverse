@@ -83,17 +83,34 @@ typedef struct {
     short unk2E;
 } func_80069388_t;
 
+typedef struct {
+    int size;
+    RECT rect;
+    char data[0];
+} func_8006A9C0_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    func_8006A9C0_t unk8;
+} func_8006A9C0_t2;
+
+void func_80068938(D_800DBB88_t* arg0);
+void func_80069088(D_800DBB88_t* arg0);
+void func_80069730(D_800DBB88_t* arg0);
+void func_80069BC0(D_800DBB88_t* arg0);
 void func_8006B9B4(void);
 void func_8006A0D8(D_800DBB88_t* arg0);
 void _setDrawEnv(DRAWENV*);
 void func_8006A4D8(D_800DBB88_t*);
 void func_8006A888(void);
 void* _insertTpage(int arg0, int arg1);
-void func_8006A9C0(int*);
+void func_8006A9C0(func_8006A9C0_t2*);
 void func_8006AA6C(void);
 int func_8006AAA0(void);
 D_800DBB88_t* func_8006AB44(void (*arg0)(D_800DBB88_t*)) __attribute__((noreturn));
 void func_8006ABF0(void);
+void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
 void func_8006AF64(void);
 void func_8006B450(int, int, int, int, int, int);
 int func_8006B6A4(u_long*);
@@ -121,20 +138,22 @@ extern void* D_1F800000[];
 
 extern u_char D_8006E3FC[];
 extern u_char D_8006FF7C[];
-extern int D_8007005C;
-extern int D_8007709C;
-extern int D_80088ABC;
-extern int D_8009A4DC;
-extern int D_800ABEFC;
-extern int D_800BD91C;
-extern int D_800CF33C;
-extern int D_800D7F7C;
-extern int D_800D837C;
-extern int D_800D975C;
-extern int D_800DB09C;
-extern int D_800DB26C;
+extern func_8006A9C0_t2 D_8007005C;
+extern func_8006A9C0_t2 D_8007709C;
+extern func_8006A9C0_t2 D_80088ABC;
+extern func_8006A9C0_t2 D_8009A4DC;
+extern func_8006A9C0_t2 D_800ABEFC;
+extern func_8006A9C0_t2 D_800BD91C;
+extern func_8006A9C0_t2 D_800CF33C;
+extern func_8006A9C0_t2 D_800D7F7C;
+extern func_8006A9C0_t2 D_800D837C;
+extern func_8006A9C0_t2 D_800D975C;
+extern func_8006A9C0_t2 D_800DB09C;
+extern func_8006A9C0_t2 D_800DB26C;
 extern int _countableRooms[];
 extern u_char D_800DB72C;
+extern func_8006A9C0_t2* D_800DB7B0;
+extern u_short D_800DB7B4[];
 extern int _illustLbas[];
 extern int _illustSizes[];
 extern _texture_t D_800DB814[];
@@ -146,6 +165,9 @@ extern P_CODE D_800DBAA0[];
 extern P_CODE D_800DBAA8[];
 extern short D_800DBAB8[];
 extern u_int D_800DBAD8[];
+extern short D_800DBB68;
+extern short D_800DBB6A;
+extern u_short D_800DBB6C;
 extern D_800DBB88_t D_800DBB88[];
 extern D_800DBB88_t D_800DBBB8[];
 extern u_char D_800DC188;
@@ -157,8 +179,8 @@ extern u_char* D_800DC194;
 extern short D_800DC198;
 extern short D_800DC19A;
 extern u_short D_800DC19C;
-extern int D_800DC1A0;
-extern int D_800DC1A4;
+extern void* D_800DC1A0;
+extern func_8006A9C0_t2* D_800DC1A4;
 extern void* D_800DC1A8[];
 extern u_int D_800DC1F0;
 extern int D_800DC1F4;
@@ -297,7 +319,94 @@ void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
     arg0->unk28 = arg0->unk29 = arg0->unk2A;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069730);
+void func_80069730(D_800DBB88_t* arg0)
+{
+    SPRT* sprt;
+    short temp_v0;
+    void** p;
+
+    temp_v0 = arg0->unk8 - 1;
+
+    switch (temp_v0) {
+    case 0:
+        if ((arg0->unkC >= 4) && (arg0->unkC != 15)) {
+            func_8006AF44(D_800DB7B0, D_800DC1A8[arg0->unkC + 1]);
+        }
+
+        arg0->unkA = 0;
+        arg0->unk8 = 2;
+        D_800DBB6A = (arg0->unkC % 5) * 0xC0;
+        D_800DBB6C = (arg0->unkC % 5) + 0x1E0;
+        /* fallthrough */
+
+    case 1:
+        D_800DBB68 = (D_800DC19C * arg0->unkA) / 80;
+
+        if (++arg0->unkA == 80) {
+            int var_a0 = 3;
+            arg0->unkA = 0;
+            if (arg0->unkC == 15) {
+                var_a0 = 5;
+            }
+            arg0->unk8 = var_a0;
+        }
+        break;
+
+    case 2:
+        D_800DBB68 = 128;
+
+        if (++arg0->unkA == D_800DB7B4[arg0->unkC]) {
+            arg0->unkA = 0;
+            arg0->unk8 = 4;
+        }
+
+        break;
+
+    case 3:
+        D_800DBB68 = (D_800DC19C * (80 - arg0->unkA)) / 80;
+
+        if (++arg0->unkA == 80) {
+            if (++arg0->unkC >= 5) {
+                func_8006A9C0(D_800DB7B0);
+            }
+            arg0->unk8 = 1;
+        }
+        break;
+
+    case 4:
+        D_800DBB68 = 0x80;
+        break;
+    }
+
+    p = (void**)0x1F800000;
+    sprt = p[0];
+
+    SetSprt(sprt);
+    setXY0(sprt, 0, 0);
+    setWH(sprt, 0xA0, 0xE0);
+    setUV0(sprt, 0, 0);
+    setSemiTrans(sprt, 1);
+    setClut(sprt, 0, D_800DBB6C);
+    sprt->r0 = sprt->g0 = sprt->b0 = D_800DBB68;
+
+    AddPrim(p[1] + 0x10, sprt++);
+
+    p[0] = sprt;
+    sprt = _insertTpage(getTPage(1, 2, D_800DBB6A, 256), 4);
+
+    SetSprt(sprt);
+    setXY0(sprt, 0xA0, 0);
+    setWH(sprt, 0xA0, 0xE0);
+    setUV0(sprt, 0x20, 0);
+    setSemiTrans(sprt, 1);
+    setClut(sprt, 0, D_800DBB6C);
+    sprt->r0 = sprt->g0 = sprt->b0 = D_800DBB68;
+
+    AddPrim(p[1] + 0x10, sprt++);
+
+    p[0] = sprt;
+    p[0] = _insertTpage(getTPage(1, 2, D_800DBB6A + 64, 256), 4);
+}
 
 int func_80069AEC(u_char* arg0)
 {
@@ -575,24 +684,26 @@ void* _insertTpage(int arg0, int arg1)
     return tpage;
 }
 
-void func_8006A9C0(int* arg0)
+void func_8006A9C0(func_8006A9C0_t2* arg0)
 {
     RECT rect;
-    short* p = (short*)(arg0 + 2);
+    func_8006A9C0_t* p = &arg0->unk8;
 
-    if (arg0[1] & 8) {
-        rect.x = p[2];
-        rect.y = p[3];
-        rect.w = p[4];
-        rect.h = p[5];
-        LoadImage(&rect, (u_long*)(arg0 + 5));
-        p = (short*)((char*)arg0 + (arg0[2] + 8));
+    if (arg0->unk4 & 8) {
+        rect.x = p->rect.x;
+        rect.y = p->rect.y;
+        rect.w = p->rect.w;
+        rect.h = p->rect.h;
+        LoadImage(&rect, (void*)p->data);
+        p = (func_8006A9C0_t*)((void*)arg0 + (p->size + 8));
     }
-    rect.x = p[2];
-    rect.y = p[3];
-    rect.w = p[4];
-    rect.h = p[5];
-    LoadImage(&rect, (u_long*)((char*)p + 0xC));
+
+    rect.x = p->rect.x;
+    rect.y = p->rect.y;
+    rect.w = p->rect.w;
+    rect.h = p->rect.h;
+
+    LoadImage(&rect, (void*)p->data);
 }
 
 void func_8006AA6C(void)
@@ -649,12 +760,6 @@ D_800DBB88_t* func_8006ABBC(void (*arg0)(D_800DBB88_t*))
     }
     return NULL;
 }
-
-void func_80068938(D_800DBB88_t* arg0);
-void func_80069088(D_800DBB88_t* arg0);
-void func_80069730(D_800DBB88_t* arg0);
-void func_80069BC0(D_800DBB88_t* arg0);
-extern u_short D_800DB7B4[];
 
 void func_8006ABF0(void)
 {
@@ -757,7 +862,7 @@ int func_8006AE54(short arg0, short arg1, short arg2)
     }
 }
 
-void func_8006AF44(int arg0, int arg1)
+void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
 {
     D_800DB72C = 1;
     D_800DC1A0 = arg1;

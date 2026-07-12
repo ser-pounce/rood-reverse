@@ -8,4 +8,5 @@ _updateScore = 0x8006E074;
 _illustLbas = 0x800DB730;
 _illustSizes = 0x800DB770;
 _countableRooms = 0x800DB7D4;
+D_800DBB6A = 0x800DBB6A;
 _score = 0x800DC1F8;

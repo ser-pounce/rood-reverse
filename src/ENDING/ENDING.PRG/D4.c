@@ -616,7 +616,47 @@ void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
     *(void**)0x1F800000 = _insertTpage(0xF, 0);
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006B450);
+void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+{
+    RECT rect;
+    int temp_s1;
+
+    rect = (RECT) { 0, 0, 1024, 512 };
+
+    SetDispMask(0);
+    SetGeomOffset(arg0 / 2, (arg1 + (int)((u_int)arg1 >> 0x1F)) >> 1);
+    SetGeomScreen(arg2);
+
+    temp_s1 = arg1 - 0x10;
+
+    SetDefDrawEnv(vs_main_drawEnv, 0, 0, arg0, temp_s1);
+    SetDefDispEnv(vs_main_dispEnv, arg0, 0, arg0, temp_s1);
+    SetDefDrawEnv(&vs_main_drawEnv[1], arg0, 0, arg0, temp_s1);
+    SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, arg0, temp_s1);
+
+    setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
+    setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
+
+    D_8005DFD4 = 0;
+    D_8005DFD8 = 0;
+    D_8005DFD6 = arg0;
+    D_8005DFDA = temp_s1;
+    vs_main_drawEnv[1].dtd = 0;
+    vs_main_drawEnv[0].dtd = 0;
+    vs_main_drawEnv[1].isbg = 1;
+    vs_main_drawEnv[0].isbg = 1;
+    setRGB0(&vs_main_drawEnv[0], arg3, arg4, arg5);
+    setRGB0(&vs_main_drawEnv[1], arg3, arg4, arg5);
+
+    ClearImage(&rect, 0, 0, 0);
+    DrawSync(0);
+    FntLoad(0x3C0, 0);
+    SetDumpFnt(FntOpen(0x28, 0x10, 0x200, 0x100, 0, 0x200));
+    PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
+    PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
+
+    vs_main_frameDuration = 0;
+}
 
 int func_8006B6A4(u_long* arg0)
 {

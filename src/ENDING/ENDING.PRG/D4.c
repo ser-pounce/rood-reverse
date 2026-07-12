@@ -119,6 +119,7 @@ void func_8006DA18(int, int, int, P_CODE*, int);
 
 extern void* D_1F800000[];
 
+extern char D_800688A4;
 extern char D_800688AC;
 extern int D_8006E3FC;
 extern u_char D_8006FF7C[];
@@ -140,6 +141,7 @@ extern int _illustLbas[];
 extern int _illustSizes[];
 extern D_800DB814_t D_800DB814;
 extern u_char D_800DB876;
+extern char D_800DBA88[];
 extern char D_800DBA98[];
 extern P_CODE D_800DBAA0[];
 extern u_char D_800DBAA8[];
@@ -168,7 +170,6 @@ extern int D_800DC20C;
 extern int D_800DC210;
 extern int D_800DC218;
 
-// https://decomp.me/scratch/Y9v8c
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068938);
@@ -904,8 +905,53 @@ void func_8006C514(int arg0, int arg1, int arg2)
     }
 }
 
-// https://decomp.me/scratch/AScWs
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C5C8);
+void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+{
+    char sp10[10];
+    int i;
+    int v0;
+    int v1;
+
+    if (arg2 < 0) {
+        arg2 = 0;
+    }
+
+    if (arg2 > 64) {
+        arg2 = 64;
+    }
+
+    if (arg2 > 0) {
+
+        D_800DBA88[3] = arg2;
+
+        sprintf(sp10, &D_800688A4, D_800DC1F8);
+
+        v1 = (D_800DB814.unk92 + D_800DB814.unkD2) + D_800DB814.unkA2;
+        arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
+
+        func_8006CF24(arg0, arg1, 0x12, D_800DBA88);
+
+        arg0 += D_800DB814.unk92;
+
+        func_8006CF24(arg0, arg1 + 7, 0x1A, D_800DBA88);
+
+        v0 = arg0 + 2;
+        arg0 = v0 + D_800DB814.unkD2;
+
+        for (i = 0; i < 9; ++i) {
+            func_8006CF24(arg0, arg1 + 3, sp10[i] - 0x30, D_800DBA88);
+            arg0 += 12;
+            if ((i == 2) || (i == 5)) {
+                int v0;
+                func_8006CF24(arg0, arg1 + 0xE, 0xA, D_800DBA88);
+                v0 = arg0 + 3;
+                arg0 = v0 + D_800DB814.unk52;
+            }
+        }
+
+        func_8006CF24(arg0, arg1 + 8, 0x14, D_800DBA88);
+    }
+}
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C744);
 
@@ -991,7 +1037,8 @@ void func_8006CAF4(int arg0, int arg1, int arg2, int arg3)
 
         sprintf(sp18, &D_800688AC, D_800DC200);
 
-        arg0 -= ((int)(D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
+        arg0 -=
+            ((int)(D_800DB814.unkAA + D_800DB814.unkD2 + D_800DB814.unk9A + 0x26) >> 1);
 
         func_8006DA18(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
 

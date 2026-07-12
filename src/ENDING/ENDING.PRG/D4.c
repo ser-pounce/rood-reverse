@@ -8,14 +8,6 @@
 #include <libetc.h>
 #include <stdio.h>
 
-typedef struct {
-    int unk0;
-    void* unk4;
-    void* unk8;
-    void* unkC;
-    void* unk10;
-} func_8006DF70_t;
-
 typedef struct D_800DBB88_t {
     void (*unk0)(struct D_800DBB88_t*);
     u_char* unk4;
@@ -133,6 +125,9 @@ void func_8006CD94(int, int, int);
 void _renderTextureFadeInTint(int, int, int, P_CODE[]);
 void func_8006D358(int, int, int, P_CODE*);
 void func_8006DA18(int, int, int, P_CODE*, int);
+void func_8006DF70(u_int* arg0, TIM_IMAGE* arg1);
+void func_8006DFD0(void);
+void _updateScore(void);
 
 extern void* D_1F800000[];
 
@@ -182,6 +177,8 @@ extern u_short D_800DC19C;
 extern void* D_800DC1A0;
 extern func_8006A9C0_t2* D_800DC1A4;
 extern void* D_800DC1A8[];
+extern vs_main_CdQueueSlot* D_800DC1E8;
+extern void* D_800DC1EC;
 extern u_int D_800DC1F0;
 extern int D_800DC1F4;
 extern u_int _score;
@@ -1179,7 +1176,148 @@ void func_8006BD78(void)
     } while (temp_s0 == 0);
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006BE04);
+int func_8006BE04(void)
+{
+    static const vs_main_CdFile D_8006881C[] = {
+        { VS_END_DIS_LBA, VS_END_DIS_SIZE },
+        { VS_ENDSCR00_DIS_LBA, VS_ENDSCR00_DIS_SIZE },
+        { VS_ENDSCR01_DIS_LBA, VS_ENDSCR01_DIS_SIZE },
+        { VS_ENDSCR02_DIS_LBA, VS_ENDSCR02_DIS_SIZE },
+        { VS_ENDSCR03_DIS_LBA, VS_ENDSCR03_DIS_SIZE },
+        { VS_ENDSCR04_DIS_LBA, VS_ENDSCR04_DIS_SIZE },
+        { VS_ENDSCR05_DIS_LBA, VS_ENDSCR05_DIS_SIZE },
+        { VS_ENDSCR06_DIS_LBA, VS_ENDSCR06_DIS_SIZE },
+        { VS_ENDSCR07_DIS_LBA, VS_ENDSCR07_DIS_SIZE },
+        { VS_ENDSCR08_DIS_LBA, VS_ENDSCR08_DIS_SIZE },
+        { VS_ENDSCR09_DIS_LBA, VS_ENDSCR09_DIS_SIZE },
+        { VS_ENDSCR10_DIS_LBA, VS_ENDSCR10_DIS_SIZE },
+        { VS_ENDSCR11_DIS_LBA, VS_ENDSCR11_DIS_SIZE },
+        { VS_ENDSCR12_DIS_LBA, VS_ENDSCR12_DIS_SIZE },
+        { VS_ENDSCR13_DIS_LBA, VS_ENDSCR13_DIS_SIZE },
+        { VS_ENDSCR14_DIS_LBA, VS_ENDSCR14_DIS_SIZE },
+        { VS_ENDSCR15_DIS_LBA, VS_ENDSCR15_DIS_SIZE },
+    };
+
+    TIM_IMAGE sp10;
+    int i;
+    int var_a1;
+    int var_v1;
+
+    if (D_800DC208 == 0) {
+
+        D_800DC1EC = vs_main_allocHeapR(D_8006881C->size);
+        D_800DC1E8 = vs_main_allocateCdQueueSlot(D_8006881C);
+
+        vs_main_cdEnqueue(D_800DC1E8, D_800DC1EC);
+
+        ++D_800DC208;
+
+    } else if (D_800DC208 == 1) {
+
+        if (D_800DC1E8->state != 4) {
+            return 0;
+        }
+
+        for (i = 0; i < 3; ++i) {
+
+            func_8006DF70(D_800DC1EC + i * 0x8220, &sp10);
+
+            if (sp10.paddr != NULL) {
+                sp10.prect->x = 832 + i * 64;
+                sp10.prect->y = 0x100;
+                sp10.prect->h = 0xFF;
+                LoadImage(sp10.prect, sp10.paddr);
+            }
+
+            if (i == 0) {
+                if (sp10.caddr != NULL) {
+                    sp10.crect->x = 0x300;
+                    sp10.crect->y = 0x1FF;
+                    sp10.crect->w = 0x80;
+                    sp10.crect->h = 1;
+                    *sp10.caddr = 0;
+                    LoadImage(sp10.crect, sp10.caddr);
+                }
+            }
+        }
+
+        vs_main_freeCdQueueSlot(D_800DC1E8);
+        ++D_800DC208;
+
+    } else if (D_800DC208 == 2) {
+
+        vs_main_freeHeapR(D_800DC1EC);
+
+        var_a1 = 0;
+        D_800DC200 = 0;
+        D_800DC204 = 0;
+        D_800DC20C = 0;
+        D_800DC210 = 0;
+        D_800DC1F4 = vs_main_stateFlags.clearCount;
+
+        for (i = 0; i < 16; ++i) {
+            int flag;
+            for (flag = 0; flag < 32; ++flag) {
+                int v = 1;
+                if (vs_main_mapStatus.roomFlags[i] & _countableRooms[i] & (v << flag)) {
+                    ++var_a1;
+                }
+            }
+        }
+
+        var_v1 = 0;
+
+        for (i = 0; i < 64; ++i) {
+            if (vs_main_stateFlags.chestsOpened[i] != 0) {
+                ++var_v1;
+            }
+        }
+
+        if (vs_main_scoredata.mapCompletion < var_a1) {
+            vs_main_scoredata.mapCompletion = var_a1;
+        }
+
+        if (vs_main_scoredata.openedChestCount < var_v1) {
+            vs_main_scoredata.openedChestCount = var_v1;
+        }
+
+        D_800DC1FC = (vs_main_scoredata.mapCompletion * 100) / 361;
+
+        _updateScore();
+        func_8006DFD0();
+
+        D_800DC1EC = vs_main_allocHeapR(D_8006881C[D_800DC1F0 + 1].size);
+        D_800DC1E8 = vs_main_allocateCdQueueSlot(&(&D_8006881C[1])[D_800DC1F0]);
+        vs_main_cdEnqueue(D_800DC1E8, D_800DC1EC);
+        ++D_800DC208;
+
+    } else if (D_800DC208 == 3) {
+
+        if (D_800DC1E8->state != 4) {
+            return 0;
+        }
+
+        func_8006DF70(D_800DC1EC, &sp10);
+
+        if (sp10.paddr != NULL) {
+            sp10.prect->x = 0;
+            sp10.prect->y = 0x100;
+            LoadImage(sp10.prect, sp10.paddr);
+        }
+
+        vs_main_freeCdQueueSlot(D_800DC1E8);
+
+        ++D_800DC208;
+
+    } else {
+        D_800DC208 = 0;
+        vs_main_freeHeapR(D_800DC1EC);
+
+        return 1;
+    }
+
+    return 0;
+}
 
 int func_8006C214(void)
 {
@@ -1543,22 +1681,24 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006D358);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DA18);
 
-void func_8006DF70(u_int* arg0, func_8006DF70_t* arg1)
+void func_8006DF70(u_int* arg0, TIM_IMAGE* arg1)
 {
 
     ++arg0;
-    arg1->unk0 = *arg0;
+    arg1->mode = *arg0;
     ++arg0;
-    if (arg1->unk0 & 8) {
-        arg1->unk4 = arg0 + 1;
-        arg1->unk8 = arg0 + 3;
-        arg0 += *arg0 / 4;
+
+    if (arg1->mode & 8) {
+        arg1->crect = (void*)(arg0 + 1);
+        arg1->caddr = (void*)(arg0 + 3);
+        arg0 += arg0[0] / 4;
     } else {
-        arg1->unk4 = 0;
-        arg1->unk8 = 0;
+        arg1->crect = 0;
+        arg1->caddr = 0;
     }
-    arg1->unkC = arg0 + 1;
-    arg1->unk10 = arg0 + 3;
+
+    arg1->prect = (void*)(arg0 + 1);
+    arg1->paddr = (void*)(arg0 + 3);
 }
 
 void func_8006DFD0(void)

@@ -142,6 +142,7 @@ extern int _illustSizes[];
 extern D_800DB814_t D_800DB814;
 extern u_char D_800DB876;
 extern char D_800DBA88[];
+extern P_CODE D_800DBA90[];
 extern char D_800DBA98[];
 extern P_CODE D_800DBAA0[];
 extern u_char D_800DBAA8[];
@@ -165,9 +166,11 @@ extern u_int D_800DC1F0;
 extern u_int D_800DC1F8;
 extern int D_800DC1FC;
 extern u_int D_800DC200;
+extern int D_800DC204;
 extern int D_800DC208;
 extern int D_800DC20C;
 extern int D_800DC210;
+extern int D_800DC214;
 extern int D_800DC218;
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
@@ -569,7 +572,6 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
 
 void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
 {
-    int temp_a0;
     int temp_v0;
     u_char var_v1_2;
     int var_v1;
@@ -966,7 +968,7 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         sprintf(sp10, &D_800688A4, D_800DC1F8);
 
-        v1 = (D_800DB814.unk92 + D_800DB814.unkD2) + D_800DB814.unkA2;
+        v1 = D_800DB814.unk92 + D_800DB814.unkD2 + D_800DB814.unkA2;
         arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
 
         func_8006CF24(arg0, arg1, 0x12, D_800DBA88);
@@ -993,7 +995,76 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C744);
+void func_8006C744(int arg0, int arg1, int arg2, int arg3)
+{
+    char sp18[16];
+    int temp_s2;
+    int var_s1;
+    int i;
+    int v0;
+    int v1;
+
+    var_s1 = arg2;
+
+    if (var_s1 < 0) {
+        var_s1 = 0;
+    }
+
+    if (var_s1 >= 0x41) {
+        var_s1 = 0x40;
+    }
+
+    if (var_s1 > 0) {
+        temp_s2 = arg0 + (var_s1 * 8);
+
+        if (D_800DC1F8 != 0 && var_s1 >= 32) {
+
+            if (D_800DC204 == 0) {
+                D_800DC214 = 1;
+                vs_main_playSfxDefault(0x7E, 0x72);
+            }
+
+            if ((D_800DC204 == D_800DC1F8) && (D_800DC214 != 0)) {
+                D_800DC214 = 0;
+                func_80045D64(0x7E, 0x72);
+                vs_main_playSfxDefault(0x7E, 0x73);
+            }
+        }
+
+        if (var_s1 >= 32) {
+            D_800DC204 = ((u_int)D_800DC1F8 >> 5) * (var_s1 - 32);
+        }
+
+        if (var_s1 == 64) {
+            D_800DC204 = D_800DC1F8;
+        }
+
+        sprintf(sp18, &D_800688A4, D_800DC204);
+
+        v1 = D_800DB814.unk92 + D_800DB814.unkD2 + D_800DB814.unkA2;
+        arg0 -= (D_800DB814.unk52 * 2 + v1 + 0x74) >> 1;
+
+        func_8006DA18(arg0, arg1, 0x12, D_800DBA90, temp_s2);
+
+        arg0 += D_800DB814.unk92;
+
+        func_8006DA18(arg0, arg1 + 7, 0x1A, D_800DBA90, temp_s2);
+
+        v0 = arg0 + 2;
+        arg0 = v0 + D_800DB814.unkD2;
+
+        for (i = 0; i < 9; ++i) {
+            func_8006DA18(arg0, arg1 + 3, sp18[i] - '0', D_800DBA90, temp_s2);
+            arg0 += 12;
+            if ((i == 2) || (i == 5)) {
+                func_8006DA18(arg0, arg1 + 0xE, 0xA, D_800DBA90, temp_s2);
+                arg0 += 3 + D_800DB814.unk52;
+            }
+        }
+
+        func_8006DA18(arg0, arg1 + 8, 0x14, D_800DBA90, temp_s2);
+    }
+}
 
 void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {

@@ -5,21 +5,12 @@
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "texture_t.h"
 #include <stdio.h>
 #include <libetc.h>
-#include <libgpu.h>
 #include <rand.h>
 #include <string.h>
 #include <abs.h>
-
-typedef struct {
-    char x;
-    char y;
-    char w;
-    char h;
-    u_short tpage;
-    u_short clut;
-} _texture_t;
 
 typedef struct {
     short stat;
@@ -148,7 +139,7 @@ int _initCongratulationsScreen(void)
             for (i = 0; i < 3; ++i) {
                 TIM_IMAGE tim;
 
-                vs_battle_setTimImage(timData + i * 0x8220, &tim);
+                vs_battle_parseTim(timData + i * 0x8220, &tim);
 
                 if (tim.paddr != NULL) {
                     tim.prect->x = 832 + i * 64;
@@ -285,7 +276,7 @@ int _initTimeAttackEnd(void)
         if (cdSlot->state == vs_main_CdQueueStateLoaded) {
             TIM_IMAGE tim;
 
-            vs_battle_setTimImage(timData, &tim);
+            vs_battle_parseTim(timData, &tim);
 
             if (tim.paddr != NULL) {
                 tim.prect->x = 832;
@@ -399,7 +390,7 @@ int _initTimeAttackStart(void)
             TIM_IMAGE tim;
 
             for (i = 0; i < 2; ++i) {
-                vs_battle_setTimImage(timData + i * 0x8220, &tim);
+                vs_battle_parseTim(timData + i * 0x8220, &tim);
 
                 if (tim.paddr != NULL) {
                     tim.prect->x = 832 + i * 64;
@@ -1152,8 +1143,6 @@ int _renderTimeAttackStart(void)
     return 0;
 }
 
-static void _renderTexturePopIn(int, int, int, P_CODE colors[]);
-
 void _renderTimeAttackHeader(int x, int y, int timer)
 {
     static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
@@ -1365,8 +1354,6 @@ void _renderCongratulations(int x, int y, int timer)
     }
 }
 
-static void _renderTextureFadeInTint(int, int, int, P_CODE colors[]);
-
 void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
     static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
@@ -1419,8 +1406,6 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
     }
 }
 
-static void _renderTextureWipe(int, int, int, P_CODE arg3[], int);
-
 void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
     static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
@@ -1442,25 +1427,21 @@ void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((un
 
     temp_s2 = x + (timer * 8);
 
-    if (_score != 0) {
-        if (timer >= 32) {
+    if ((_score != 0) && (timer >= 32)) {
 
-            if (_onScreenScore == 0) {
+        if (_onScreenScore == 0) {
 
-                _incrementingScore = 1;
+            _incrementingScore = 1;
 
-                vs_main_playSfxDefault(0x7E, 0x72);
-            }
+            vs_main_playSfxDefault(0x7E, 0x72);
+        }
 
-            if (_onScreenScore == _score) {
-                if (_incrementingScore != 0) {
+        if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
 
-                    _incrementingScore = 0;
+            _incrementingScore = 0;
 
-                    func_80045D64(0x7E, 0x72);
-                    vs_main_playSfxDefault(0x7E, 0x73);
-                }
-            }
+            func_80045D64(0x7E, 0x72);
+            vs_main_playSfxDefault(0x7E, 0x73);
         }
     }
 
@@ -1566,22 +1547,20 @@ void _renderIncrementalMapCompletion(
 
     temp_s4 = arg0 + (arg2 * 8);
 
-    if (_mapCompletion != 0) {
-        if (arg2 >= 0x20) {
-            if (_onScreenMapCompletion == 0) {
-                _incrementingMapCompletion = 1;
+    if ((_mapCompletion != 0) && (arg2 >= 32)) {
 
-                vs_main_playSfxDefault(0x7E, 0x72);
-            }
+        if (_onScreenMapCompletion == 0) {
+            _incrementingMapCompletion = 1;
 
-            if (_onScreenMapCompletion == _mapCompletion) {
-                if (_incrementingMapCompletion != 0) {
-                    _incrementingMapCompletion = 0;
+            vs_main_playSfxDefault(0x7E, 0x72);
+        }
 
-                    func_80045D64(0x7E, 0x72);
-                    vs_main_playSfxDefault(0x7E, 0x73);
-                }
-            }
+        if ((_onScreenMapCompletion == _mapCompletion)
+            && (_incrementingMapCompletion != 0)) {
+            _incrementingMapCompletion = 0;
+
+            func_80045D64(0x7E, 0x72);
+            vs_main_playSfxDefault(0x7E, 0x73);
         }
     }
 
@@ -2184,237 +2163,7 @@ void _renderPressButtonPrompt(int x, int y, int arg2, int arg3)
     p[0] = poly;
 }
 
-void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
-{
-    POLY_GT4* poly;
-    void** p;
-
-    if (colors[0].code == 0) {
-        return;
-    }
-
-    poly = *(void**)0x1F800000;
-
-    setPolyGT4(poly);
-    setXY4(poly, x, y, _disMap[texId].w + x, y, x, _disMap[texId].h + y,
-        _disMap[texId].w + x, _disMap[texId].h + y);
-    setUV4(poly, _disMap[texId].x, _disMap[texId].y, _disMap[texId].x + _disMap[texId].w,
-        _disMap[texId].y, _disMap[texId].x, _disMap[texId].y + _disMap[texId].h,
-        _disMap[texId].x + _disMap[texId].w, _disMap[texId].y + _disMap[texId].h);
-
-    if (colors[0].code < 8) {
-        setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
-            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-        setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
-            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-        setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
-            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-        setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
-            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-    } else {
-        setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-        setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-        setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-        setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-    }
-
-    setSemiTrans(poly, 1);
-
-    if (colors[0].code < 8) {
-        poly->clut = _disMap[texId].clut + 1;
-        poly->tpage = _disMap[texId].tpage | 0x20;
-    } else {
-        poly->clut = _disMap[texId].clut;
-        poly->tpage = _disMap[texId].tpage;
-    }
-
-    p = (void**)0x1F800000;
-
-    AddPrim(p[1] - 0x1C, poly++);
-
-    p[0] = poly;
-}
-
-static inline int _adjust(int component, int weight)
-{
-    int ret = (component * weight) + ((4 - weight) * 192);
-    return ret / 4;
-}
-
-void _renderTexturePopIn(int x, int y, int texId, P_CODE colors[])
-{
-    POLY_GT4* poly;
-    void** p;
-
-    if (colors[0].code != 0) {
-        poly = *(void**)0x1F800000;
-
-        setPolyGT4(poly);
-        setXY4(poly, x, y, _disMap[texId].w + x, y, x, _disMap[texId].h + y,
-            _disMap[texId].w + x, _disMap[texId].h + y);
-        setUV4(poly, _disMap[texId].x, _disMap[texId].y,
-            _disMap[texId].x + _disMap[texId].w, _disMap[texId].y, _disMap[texId].x,
-            _disMap[texId].y + _disMap[texId].h, _disMap[texId].x + _disMap[texId].w,
-            _disMap[texId].y + _disMap[texId].h);
-
-        if (colors[0].code < 8) {
-            setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
-                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-            setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
-                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-            setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
-                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-            setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
-                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-        } else if (colors[0].code == 8) {
-            setRGB0(poly, 192, 192, 192);
-            setRGB1(poly, 192, 192, 192);
-            setRGB2(poly, 192, 192, 192);
-            setRGB3(poly, 192, 192, 192);
-        } else if (colors[0].code == 9) {
-            setRGB0(poly, 224, 224, 224);
-            setRGB1(poly, 224, 224, 224);
-            setRGB2(poly, 224, 224, 224);
-            setRGB3(poly, 224, 224, 224);
-        } else if (colors[0].code < 14) {
-            int temp_a0 = colors[0].code - 10;
-            setRGB0(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
-                _adjust(colors[0].b0, temp_a0));
-            setRGB1(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
-                _adjust(colors[1].b0, temp_a0));
-            setRGB2(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
-                _adjust(colors[0].b0, temp_a0));
-            setRGB3(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
-                _adjust(colors[1].b0, temp_a0));
-        } else {
-            setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-            setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-            setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-            setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-        }
-
-        setSemiTrans(poly, 1);
-
-        if (colors[0].code < 10) {
-            poly->clut = _disMap[texId].clut + getClut(16, 0);
-            poly->tpage = _disMap[texId].tpage | getTPage(0, 1, 0, 0);
-        } else {
-            poly->clut = _disMap[texId].clut;
-            poly->tpage = _disMap[texId].tpage;
-        }
-
-        p = (void**)0x1F800000;
-
-        AddPrim(p[1] - 0x1C, poly++);
-
-        p[0] = poly;
-    }
-}
-
-void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
-{
-    int temp_a1;
-    int var_a0;
-    int i;
-    char var_s6;
-    POLY_GT4* poly;
-    void** scratch;
-
-    if ((x + _disMap[texId].w) < (arg4 - 64)) {
-
-        scratch = (void**)0x1F800000;
-        poly = scratch[0];
-
-        setPolyGT4(poly);
-        setXY4(poly, x, y, _disMap[texId].w + x, y, x, _disMap[texId].h + y,
-            _disMap[texId].w + x, _disMap[texId].h + y);
-        setUV4(poly, _disMap[texId].x, _disMap[texId].y,
-            _disMap[texId].x + _disMap[texId].w, _disMap[texId].y, _disMap[texId].x,
-            _disMap[texId].y + _disMap[texId].h, _disMap[texId].x + _disMap[texId].w,
-            _disMap[texId].y + _disMap[texId].h);
-        setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-        setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-        setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-        setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-        setSemiTrans(poly, 1);
-
-        poly->clut = _disMap[texId].clut;
-        poly->tpage = _disMap[texId].tpage;
-
-        scratch = (void**)0x1F800000;
-
-        AddPrim(scratch[1] - 0x1C, poly++);
-
-        scratch[0] = poly;
-        return;
-    }
-
-    if (x < arg4) {
-
-        scratch = (void**)0x1F800000;
-        poly = scratch[0];
-        var_s6 = _disMap[texId].x;
-
-        for (i = 0; i < _disMap[texId].w; i += 12, x += 12, var_s6 += 12) {
-
-            var_a0 = 12;
-
-            if ((i + 12) >= _disMap[texId].w) {
-                var_a0 = _disMap[texId].w - i;
-            }
-
-            setPolyGT4(poly);
-            temp_a1 = x + var_a0;
-            setXY4(poly, x, y, temp_a1, y, x, _disMap[texId].h + y, temp_a1,
-                _disMap[texId].h + y);
-            setUV4(poly, var_s6, _disMap[texId].y, var_s6 + var_a0, _disMap[texId].y,
-                var_s6, _disMap[texId].y + _disMap[texId].h, var_s6 + var_a0,
-                _disMap[texId].y + _disMap[texId].h);
-
-            var_a0 = arg4 - x;
-
-            if (var_a0 > 64) {
-                var_a0 = 64;
-            }
-
-            if (var_a0 < 0) {
-                var_a0 = 0;
-            }
-
-            setRGB0(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
-                (arg3[0].b0 * var_a0) / 64);
-            setRGB2(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
-                (arg3[0].b0 * var_a0) / 64);
-
-            var_a0 = arg4 - temp_a1;
-
-            if (var_a0 > 64) {
-                var_a0 = 64;
-            }
-
-            if (var_a0 < 0) {
-                var_a0 = 0;
-            }
-
-            setRGB1(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
-                (arg3[1].b0 * var_a0) / 64);
-            setRGB3(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
-                (arg3[1].b0 * var_a0) / 64);
-
-            setSemiTrans(poly, 1);
-
-            poly->clut = (_disMap[texId].clut + 1);
-            poly->tpage = (_disMap[texId].tpage | 0x20);
-
-            scratch = (void**)0x1F800000;
-
-            AddPrim(scratch[1] - 0x1C, poly++);
-        }
-
-        scratch = (void**)0x1F800000;
-        scratch[0] = poly;
-    }
-}
+#include "src/renderTextures.h"
 
 void _renderAnimatedStatWheel(int x, int y, int texId)
 {
@@ -2539,7 +2288,7 @@ int _initCubePuzzleStart(void)
             TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
 
-                vs_battle_setTimImage(_iqDisData + i * 0x8220, &tim);
+                vs_battle_parseTim(_iqDisData + i * 0x8220, &tim);
 
                 if (tim.paddr != NULL) {
                     tim.prect->x = 0x340 + i * 0x40;
@@ -2634,7 +2383,7 @@ int _initCubePuzzleQuit(void)
         if (_escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
 
-                vs_battle_setTimImage(_escDisData + i * 0x8220, &tim);
+                vs_battle_parseTim(_escDisData + i * 0x8220, &tim);
 
                 if (tim.paddr != NULL) {
                     tim.prect->x = 832 + i * 64;
@@ -3051,8 +2800,8 @@ void _determineRank(void)
 
 void _calculateScore(void)
 {
-    short classPoints[6] = { 20, 20, 40, 80, 100, 60 };
-    short weaponClassPoints[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
+    short classPoints[] = { 20, 20, 40, 80, 100, 60 };
+    short weaponClassPoints[] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
     int i;
 
     _score = 0;

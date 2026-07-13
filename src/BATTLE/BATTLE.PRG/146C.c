@@ -9914,7 +9914,7 @@ void _loadZndTims(void* data)
     for (i = 0; i < numTims; ++i) {
         byteOffset = *dataPtr++;
 
-        vs_battle_setTimImage(dataPtr, &tim);
+        vs_battle_parseTim(dataPtr, &tim);
 
         if (tim.paddr != NULL) {
             if (tim.prect->x >= 768) {
@@ -10893,7 +10893,7 @@ void func_8008D710(void)
     }
 }
 
-void vs_battle_setTimImage(u_long* arg0, TIM_IMAGE* tim)
+void vs_battle_parseTim(u_long* arg0, TIM_IMAGE* tim)
 {
     ++arg0;
     tim->mode = *arg0;
@@ -11580,7 +11580,7 @@ int func_8008F0FC(void)
         TIM_IMAGE tim;
 
         *D_800F1DD0 = 0x10;
-        vs_battle_setTimImage(D_800F1DD0, &tim);
+        vs_battle_parseTim(D_800F1DD0, &tim);
         if (tim.paddr != NULL) {
             tim.prect->x = (tim.prect->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
             tim.prect->y = (char)tim.prect->y + ((D_800F1DC8 & 0x10) * 0x10);

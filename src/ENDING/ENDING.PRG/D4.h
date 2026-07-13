@@ -1,3 +1,3 @@
 #pragma once
 
-void func_8006A5C0(void);
+void vs_ending_exec(void);

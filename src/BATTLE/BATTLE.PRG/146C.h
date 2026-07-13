@@ -1070,7 +1070,7 @@ void vs_battle_setDoorEntered2(int arg0);
 void func_8008C40C(void);
 void func_8008D594(int);
 void func_8008D5A0(int);
-void vs_battle_setTimImage(u_long*, TIM_IMAGE*);
+void vs_battle_parseTim(u_long*, TIM_IMAGE*);
 int vs_battle_getMapCompletion(void);
 void func_8008E224(int, int);
 int func_8008E470(void);

@@ -8171,7 +8171,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     func_80012B98();
     func_80042CB0();
     _loadEndingPrg();
-    func_8006A5C0();
+    vs_ending_exec();
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);

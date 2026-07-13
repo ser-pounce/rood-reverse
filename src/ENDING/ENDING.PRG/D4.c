@@ -4,6 +4,7 @@
 #include "src/SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "texture_t.h"
 #include <libapi.h>
 #include <libetc.h>
 #include <stdio.h>
@@ -12,7 +13,7 @@ typedef struct D_800DBB88_t {
     void (*unk0)(struct D_800DBB88_t*);
     u_char* unk4;
     short unk8;
-    u_short unkA;
+    u_short currentStep;
     u_short unkC;
     u_short unkE;
     int unk10;
@@ -24,15 +25,6 @@ typedef struct D_800DBB88_t {
     int unk28;
     int unk2C;
 } D_800DBB88_t;
-
-typedef struct {
-    char x;
-    char y;
-    char w;
-    char h;
-    u_short tpage;
-    u_short clut;
-} _texture_t;
 
 typedef struct {
     u_char unk0;
@@ -87,47 +79,47 @@ typedef struct {
     func_8006A9C0_t unk8;
 } func_8006A9C0_t2;
 
+enum easeMode {
+    easeModeLinear,
+    easeModeEaseOut,
+    easeModeEaseInOut,
+    easeModeEaseIn,
+};
+
 void func_80068938(D_800DBB88_t* arg0);
 void func_80069088(D_800DBB88_t* arg0);
-void func_80069730(D_800DBB88_t* arg0);
 void func_80069BC0(D_800DBB88_t* arg0);
-void func_8006B9B4(void);
-void func_8006A0D8(D_800DBB88_t* arg0);
-void _setDrawEnv(DRAWENV*);
-void func_8006A4D8(D_800DBB88_t*);
-void func_8006A888(void);
-void* _insertTpage(int arg0, int arg1);
-void func_8006A9C0(func_8006A9C0_t2*);
-void func_8006AA6C(void);
-int func_8006AAA0(void);
-D_800DBB88_t* func_8006AB44(void (*arg0)(D_800DBB88_t*)) __attribute__((noreturn));
-void func_8006ABF0(void);
-void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
+static void func_8006B9B4(void);
+static void _setDrawEnv(DRAWENV*);
+static void func_8006A888(void);
+static void* _insertTpage(int tPage, int otOffset);
+static void func_8006A9C0(func_8006A9C0_t2*);
+static void func_8006AA6C(void);
+static int func_8006AAA0(void);
+static D_800DBB88_t* func_8006AB44(void (*arg0)(D_800DBB88_t*)) __attribute__((noreturn));
+static void func_8006ABF0(void);
+static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
 void func_8006AF64(void);
-void func_8006B450(int, int, int, int, int, int);
-int func_8006B6A4(u_long*);
-void func_8006B884(void);
-int func_8006AE54(short, short, short);
+static int func_8006B6A4(u_long*);
+static void func_8006B884(void);
+static int _ease(short mode, short currentStep, short totalSteps);
 static void _updateClearGameStats(void);
-void func_8006B930(void);
-void func_8006B9DC(void);
-void func_8006BD78(void);
-int func_8006BE04(void);
-int func_8006C214(void);
+static void func_8006B930(void);
+static void _checkStreamXaEnd(void);
+static void func_8006BD78(void);
+static int func_8006BE04(void);
+static int _renderCongratulationsScreen(void);
 void func_8006C3CC(int);
-void func_8006C514(int arg0, int arg1, int arg2);
-void func_8006C5C8(int, int, int, int);
-void func_8006C744(int, int, int, int);
-void func_8006C9A8(int arg0, int arg1, int arg2, int arg3);
-void func_8006CAF4(int, int, int, int);
-void func_8006CD38(int arg0, int arg1, int arg2);
-void func_8006CD94(int, int, int);
-void _renderTextureFadeInTint(int, int, int, P_CODE[]);
-void func_8006D358(int, int, int, P_CODE*);
-void func_8006DA18(int, int, int, P_CODE*, int);
-void func_8006DF70(u_int* arg0, TIM_IMAGE* arg1);
-void func_8006DFD0(void);
-void _updateScore(void);
+static void _renderCongratulations(int arg0, int arg1, int arg2);
+static void _renderScore(int, int, int, int);
+static void _renderIncrementalScore(int, int, int, int);
+static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderIncrementalMapCompletion(int, int, int, int);
+static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+void _renderRiskbreakerRank(int, int, int);
+static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
+static void _determineRank(void);
+static void _updateScore(void);
 
 extern void* D_1F800000[];
 
@@ -151,15 +143,11 @@ extern func_8006A9C0_t2* D_800DB7B0;
 extern u_short D_800DB7B4[];
 extern int _illustLbas[];
 extern int _illustSizes[];
-extern _texture_t D_800DB814[];
+extern _texture_t _disMap[];
 extern u_char D_800DB876;
-extern P_CODE D_800DBA88[];
-extern P_CODE D_800DBA90[];
-extern P_CODE D_800DBA98[];
-extern P_CODE D_800DBAA0[];
 extern P_CODE D_800DBAA8[];
-extern short D_800DBAB8[];
-extern u_int D_800DBAD8[];
+extern short titleThresholds[];
+extern u_int rankScores[];
 extern short D_800DBB68;
 extern short D_800DBB6A;
 extern u_short D_800DBB6C;
@@ -177,19 +165,17 @@ extern u_short D_800DC19C;
 extern void* D_800DC1A0;
 extern func_8006A9C0_t2* D_800DC1A4;
 extern void* D_800DC1A8[];
-extern vs_main_CdQueueSlot* D_800DC1E8;
-extern void* D_800DC1EC;
-extern u_int D_800DC1F0;
-extern int D_800DC1F4;
+extern u_int _rank;
+extern int _clearCount;
 extern u_int _score;
-extern int D_800DC1FC;
-extern u_int D_800DC200;
-extern int D_800DC204;
-extern int D_800DC208;
+extern int _mapCompletion;
+extern u_int _onScreenMapCompletion;
+extern int _onScreenScore;
+extern int _submenuState;
 extern int D_800DC20C;
 extern int D_800DC210;
-extern int D_800DC214;
-extern int D_800DC218;
+extern int _incrementingScore;
+extern int _incrementingMapCompletion;
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
@@ -202,15 +188,16 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068EBC);
 // https://decomp.me/scratch/pNVRe
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069088);
 
-int _inverseDistanceFromScreencenter(int arg0, int arg1)
+static int _inverseDistanceFromScreencenter(int arg0, int arg1)
 {
     arg0 -= 160;
     arg1 -= 112;
     return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
 }
 
-void func_80069388(func_80069388_t* arg0, short arg1, short arg2) __attribute__((unused));
-void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
+static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
+    __attribute__((unused));
+static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
 {
     short temp_s0;
     short v0;
@@ -316,7 +303,7 @@ void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
     arg0->unk28 = arg0->unk29 = arg0->unk2A;
 }
 
-void func_80069730(D_800DBB88_t* arg0)
+static void func_80069730(D_800DBB88_t* arg0)
 {
     SPRT* sprt;
     short temp_v0;
@@ -330,18 +317,18 @@ void func_80069730(D_800DBB88_t* arg0)
             func_8006AF44(D_800DB7B0, D_800DC1A8[arg0->unkC + 1]);
         }
 
-        arg0->unkA = 0;
+        arg0->currentStep = 0;
         arg0->unk8 = 2;
         D_800DBB6A = (arg0->unkC % 5) * 0xC0;
         D_800DBB6C = (arg0->unkC % 5) + 0x1E0;
         /* fallthrough */
 
     case 1:
-        D_800DBB68 = (D_800DC19C * arg0->unkA) / 80;
+        D_800DBB68 = (D_800DC19C * arg0->currentStep) / 80;
 
-        if (++arg0->unkA == 80) {
+        if (++arg0->currentStep == 80) {
             int var_a0 = 3;
-            arg0->unkA = 0;
+            arg0->currentStep = 0;
             if (arg0->unkC == 15) {
                 var_a0 = 5;
             }
@@ -352,17 +339,17 @@ void func_80069730(D_800DBB88_t* arg0)
     case 2:
         D_800DBB68 = 128;
 
-        if (++arg0->unkA == D_800DB7B4[arg0->unkC]) {
-            arg0->unkA = 0;
+        if (++arg0->currentStep == D_800DB7B4[arg0->unkC]) {
+            arg0->currentStep = 0;
             arg0->unk8 = 4;
         }
 
         break;
 
     case 3:
-        D_800DBB68 = (D_800DC19C * (80 - arg0->unkA)) / 80;
+        D_800DBB68 = (D_800DC19C * (80 - arg0->currentStep)) / 80;
 
-        if (++arg0->unkA == 80) {
+        if (++arg0->currentStep == 80) {
             if (++arg0->unkC >= 5) {
                 func_8006A9C0(D_800DB7B0);
             }
@@ -405,7 +392,7 @@ void func_80069730(D_800DBB88_t* arg0)
     p[0] = _insertTpage(getTPage(1, 2, D_800DBB6A + 64, 256), 4);
 }
 
-int func_80069AEC(u_char* arg0)
+static int func_80069AEC(u_char* arg0)
 {
     short var_a1;
     short i;
@@ -445,7 +432,7 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069BC0);
 void func_80069F9C(D_800DBB88_t* arg0);
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069F9C);
 
-void func_8006A0D8(D_800DBB88_t* arg0 __attribute__((unused)))
+static void func_8006A0D8(D_800DBB88_t* arg0 __attribute__((unused)))
 {
     TILE* tile;
     POLY_G4* poly;
@@ -456,129 +443,130 @@ void func_8006A0D8(D_800DBB88_t* arg0 __attribute__((unused)))
 
     sprt = data[0];
     SetSprt(sprt);
-    setXY0(sprt, 0, 0xA);
-    setUV0(sprt, 0, 0xA);
-    setWH(sprt, 0x100, 0xCC);
+    setXY0(sprt, 0, 10);
+    setUV0(sprt, 0, 10);
+    setWH(sprt, 256, 204);
     setClut(sprt, 780, 255);
     sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
-    sprt = (SPRT*)_insertTpage(0x2C, 0x7FF);
+    sprt = (SPRT*)_insertTpage(getTPage(clut4Bit, semiTransparencyFull, 768, 0), 0x7FF);
     SetSprt(sprt);
-    setUV0(sprt, 0, 0xA);
-    setXY0(sprt, 0x100, 0xA);
-    setWH(sprt, 0x40, 0xCC);
+    setUV0(sprt, 0, 10);
+    setXY0(sprt, 256, 10);
+    setWH(sprt, 64, 204);
     setClut(sprt, 780, 255);
     sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
-    poly = (POLY_G4*)_insertTpage(0x2D, 0x7FF);
+    poly =
+        (POLY_G4*)_insertTpage(getTPage(clut4Bit, semiTransparencyFull, 832, 0), 0x7FF);
     SetPolyG4(poly);
     poly->x0 = poly->x2 = 0;
-    poly->x1 = poly->x3 = 0x140;
-    poly->y0 = poly->y1 = 0xA;
-    poly->y2 = poly->y3 = 0x1E;
-    poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 0xFF;
+    poly->x1 = poly->x3 = 320;
+    poly->y0 = poly->y1 = 10;
+    poly->y2 = poly->y3 = 30;
+    poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 255;
     poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 0;
     setSemiTrans(poly, 1);
     AddPrim(data[1] + 8, poly++);
 
     SetPolyG4(poly);
     poly->x0 = poly->x2 = 0;
-    poly->x1 = poly->x3 = 0x140;
-    poly->y0 = poly->y1 = 0xC2;
-    poly->y2 = poly->y3 = 0xD6;
+    poly->x1 = poly->x3 = 320;
+    poly->y0 = poly->y1 = 194;
+    poly->y2 = poly->y3 = 214;
     poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 0;
-    poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 0xFF;
+    poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 255;
     setSemiTrans(poly, 1);
     AddPrim(data[1] + 8, poly++);
 
     tile = (TILE*)poly;
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
-    setWH(tile, 0x140, 0xA);
+    setWH(tile, 320, 10);
     setXY0(tile, 0, 0);
     AddPrim(data[1] + 8, tile++);
 
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
-    setWH(tile, 0x140, 0xA);
+    setWH(tile, 320, 10);
     setXY0(tile, 0, 0);
     AddPrim(data[1] + 8, tile++);
 
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
-    setWH(tile, 0x140, 0xA);
-    setXY0(tile, 0, 0xD6);
+    setWH(tile, 320, 10);
+    setXY0(tile, 0, 214);
     AddPrim(data[1] + 8, tile++);
     data[0] = tile;
 
-    data[0] = _insertTpage(0xC0, 2);
+    data[0] = _insertTpage(getTPage(clut8Bit, semiTransparencySubtract, 0, 0), 2);
 }
 
-void func_8006A3BC(D_800DBB88_t* arg0)
+static void func_8006A3BC(D_800DBB88_t* arg0)
 {
     if (arg0->unk8 == 1) {
-        arg0->unkA = 0;
+        arg0->currentStep = 0;
         arg0->unk8 = 2;
     }
 
-    if (++arg0->unkA == 0x80) {
+    if (++arg0->currentStep == 0x80) {
         D_800DC189 = 0;
         arg0->unk8 = -1;
     }
 
-    D_800DC19C = (u_int)func_8006AE54(0, arg0->unkA, 128) >> 5;
+    D_800DC19C = (u_int)_ease(easeModeLinear, arg0->currentStep, 128) / 32;
 }
 
-void func_8006A438(D_800DBB88_t* arg0)
+static void func_8006A438(D_800DBB88_t* arg0)
 {
     if (arg0->unk8 == 1) {
         arg0->unk8 = 2;
-        arg0->unkA = 0;
+        arg0->currentStep = 0;
         D_800DC189 = 1;
     }
 
-    if (++arg0->unkA == 128) {
+    if (++arg0->currentStep == 128) {
         if (arg0->unkE != 0) {
             D_800DC188 = 1;
         }
         arg0->unk8 = -1;
     }
 
-    D_800DC19C = 128 - ((func_8006AE54(0, arg0->unkA, 128) << 7) >> 0xC);
+    D_800DC19C = 128 - ((_ease(easeModeLinear, arg0->currentStep, 128) << 7) >> 0xC);
 }
 
-void func_8006A4D8(D_800DBB88_t* arg0)
+static void func_8006A4D8(D_800DBB88_t* arg0)
 {
     void** s2 = (void**)0x1F800000;
     TILE* temp_s0 = s2[0];
 
     if (arg0->unk8 == 1) {
-        arg0->unkA = 0;
+        arg0->currentStep = 0;
         arg0->unk8 = 2;
     }
 
-    if (++arg0->unkA == 128u) {
+    if (++arg0->currentStep == 128u) {
         D_800DC188 = 1;
     }
 
     SetTile(temp_s0);
     setSemiTrans(temp_s0, 1);
     temp_s0->r0 = temp_s0->g0 = temp_s0->b0 =
-        (func_8006AE54(1, arg0->unkA, 128) * 255) >> 0xC;
+        (_ease(easeModeEaseOut, arg0->currentStep, 128) * 255) >> 0xC;
     setWH(temp_s0, 320, 240);
     setXY0(temp_s0, 0, 0);
 
     AddPrim(s2[1], temp_s0++);
 
     s2[0] = temp_s0;
-    s2[0] = _insertTpage(0x40, 0);
+    s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
-void func_8006A5C0(void)
+void vs_ending_exec(void)
 {
     vs_main_CdFile file;
     short i;
@@ -589,8 +577,10 @@ void func_8006A5C0(void)
     SetGeomScreen(0x200);
     _setDrawEnv(vs_main_drawEnv);
     _setDrawEnv(&vs_main_drawEnv[1]);
+
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
+    
     func_8006A9C0(&D_8007005C);
     func_8006A9C0(&D_800CF33C);
     func_8006A9C0(&D_800D7F7C);
@@ -617,31 +607,37 @@ void func_8006A5C0(void)
 
         vs_main_freeCdQueueSlot(slot);
     }
+
     D_800DC19C = 0;
     D_800DC18A = 0;
+
     func_8006AA6C();
     func_8006AB44(&func_8006A0D8);
     DrawSync(0);
     SetDispMask(1);
+
     D_800DC194 = D_8006E3FC;
-    D_800DC198 = -0x80;
+    D_800DC198 = -128;
     D_800DC188 = 0;
     D_800DC190 = 0;
     D_800DC18C = 0;
     D_800DC189 = 1;
+
     func_8006B9B4();
     func_8006A888();
     vs_main_checkStreamXaEnd();
     SetDispMask(0);
+
     for (i = 5; i < 16; ++i) {
         vs_main_freeHeapR(D_800DC1A8[i]);
     }
-    func_8006B9DC();
+
+    _checkStreamXaEnd();
     _updateClearGameStats();
     func_8006BD78();
 }
 
-void _setDrawEnv(DRAWENV* drawenv)
+static void _setDrawEnv(DRAWENV* drawenv)
 {
     drawenv->isbg = 1;
     drawenv->dtd = 0;
@@ -652,7 +648,7 @@ void _setDrawEnv(DRAWENV* drawenv)
     drawenv->tpage = 0x20;
 }
 
-void func_8006A888(void)
+static void func_8006A888(void)
 {
     while (D_800DC188 == 0) {
         D_800DC19A = VSync(1);
@@ -669,19 +665,19 @@ void func_8006A888(void)
     }
 }
 
-void* _insertTpage(int arg0, int arg1)
+static void* _insertTpage(int tPage, int otOffset)
 {
-    void** temp_s0;
-    DR_TPAGE* tpage;
+    void** scratch;
+    DR_TPAGE* drTpage;
 
-    temp_s0 = (void**)0x1F800000;
-    tpage = temp_s0[0];
-    SetDrawTPage(tpage, 0, 1, arg0 & 0xFFFF);
-    AddPrim(temp_s0[1] + (arg1 * 4), tpage++);
-    return tpage;
+    scratch = (void**)0x1F800000;
+    drTpage = scratch[0];
+    SetDrawTPage(drTpage, 0, 1, tPage & 0xFFFF);
+    AddPrim(scratch[1] + (otOffset * 4), drTpage++);
+    return drTpage;
 }
 
-void func_8006A9C0(func_8006A9C0_t2* arg0)
+static void func_8006A9C0(func_8006A9C0_t2* arg0)
 {
     RECT rect;
     func_8006A9C0_t* p = &arg0->unk8;
@@ -703,7 +699,7 @@ void func_8006A9C0(func_8006A9C0_t2* arg0)
     LoadImage(&rect, (void*)p->data);
 }
 
-void func_8006AA6C(void)
+static void func_8006AA6C(void)
 {
     short i;
     D_800DBB88_t* var_v1 = D_800DBB88;
@@ -712,7 +708,7 @@ void func_8006AA6C(void)
     }
 }
 
-int func_8006AAA0(void)
+static int func_8006AAA0(void)
 {
     short i;
     short var_s3 = 0;
@@ -739,7 +735,7 @@ D_800DBB88_t* func_8006AB44(void (*arg0)(D_800DBB88_t*))
         if (var_v1->unk8 == 0) {
             var_v1->unk0 = arg0;
             var_v1->unk8 = 1;
-            var_v1->unkA = 0;
+            var_v1->currentStep = 0;
             return var_v1;
         }
     }
@@ -752,13 +748,13 @@ D_800DBB88_t* func_8006ABBC(void (*arg0)(D_800DBB88_t*))
     if (D_800DBB88[0].unk8 == 0) {
         D_800DBB88[0].unk0 = arg0;
         D_800DBB88[0].unk8 = 1;
-        D_800DBB88[0].unkA = 0;
+        D_800DBB88[0].currentStep = 0;
         return D_800DBB88;
     }
     return NULL;
 }
 
-void func_8006ABF0(void)
+static void func_8006ABF0(void)
 {
     u_char* temp_a2;
     int temp_v1_2;
@@ -845,21 +841,21 @@ void func_8006ABF0(void)
     }
 }
 
-int func_8006AE54(short arg0, short arg1, short arg2)
+static int _ease(short mode, short currentStep, short totalSteps)
 {
-    switch (arg0) {
+    switch (mode) {
     case 0:
-        return (arg1 * ONE) / arg2;
+        return (currentStep * ONE) / totalSteps;
     case 1:
-        return rsin((arg1 * (ONE / 4)) / arg2);
+        return rsin((currentStep * (ONE / 4)) / totalSteps);
     case 2:
-        return (rcos(((arg1 * (ONE / 2)) / arg2) + (ONE / 2)) + ONE) >> 1;
+        return (rcos(((currentStep * (ONE / 2)) / totalSteps) + (ONE / 2)) + ONE) >> 1;
     case 3:
-        return rsin(((arg1 * (ONE / 4)) / arg2) - (ONE / 4)) + ONE;
+        return rsin(((currentStep * (ONE / 4)) / totalSteps) - (ONE / 4)) + ONE;
     }
 }
 
-void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
+static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
 {
     D_800DB72C = 1;
     D_800DC1A0 = arg1;
@@ -868,7 +864,7 @@ void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
 
-void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
+static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
 {
     int temp_v0;
     u_char var_v1_2;
@@ -916,7 +912,7 @@ void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
     *(void**)0x1F800000 = _insertTpage(0xF, 0);
 }
 
-void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+static void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
     RECT rect;
     int temp_s1;
@@ -958,7 +954,7 @@ void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     vs_main_frameDuration = 0;
 }
 
-int func_8006B6A4(u_long* arg0)
+static int func_8006B6A4(u_long* arg0)
 {
     int _[2];
     int temp_s1;
@@ -1017,7 +1013,7 @@ static void _do_updateClearGameStats(void)
     D_80061068.mpdId = 0;
 }
 
-void func_8006B884(void)
+static void func_8006B884(void)
 {
     func_8006B450(0x140, 0xF0, 0x200, 0, 0, 0);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
@@ -1029,7 +1025,7 @@ void func_8006B884(void)
 
 static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 
-void func_8006B930(void)
+static void func_8006B930(void)
 {
     void* temp_a0;
 
@@ -1041,12 +1037,12 @@ void func_8006B930(void)
     D_1F800000[0] = D_8005E0C0[vs_main_frameBuf];
 }
 
-void func_8006B9B4(void)
+static void func_8006B9B4(void)
 {
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }
 
-void func_8006B9DC(void) { vs_main_checkStreamXaEnd(); }
+static void _checkStreamXaEnd(void) { vs_main_checkStreamXaEnd(); }
 
 static void _updateTitles(void)
 {
@@ -1155,11 +1151,11 @@ static void _updateTitles(void)
     }
 }
 
-void func_8006BD78(void)
+static void func_8006BD78(void)
 {
     int temp_s0;
 
-    D_800DC208 = 0;
+    _submenuState = 0;
     SetDispMask(1);
 
     do {
@@ -1170,15 +1166,15 @@ void func_8006BD78(void)
 
     do {
         func_8006B930();
-        temp_s0 = func_8006C214();
+        temp_s0 = _renderCongratulationsScreen();
         VSync(0);
         func_8006B6A4(*(u_long**)0x1F800004 + 0x7FF);
     } while (temp_s0 == 0);
 }
 
-int func_8006BE04(void)
+static int func_8006BE04(void)
 {
-    static const vs_main_CdFile D_8006881C[] = {
+    static const vs_main_CdFile endScrDisFiles[] = {
         { VS_END_DIS_LBA, VS_END_DIS_SIZE },
         { VS_ENDSCR00_DIS_LBA, VS_ENDSCR00_DIS_SIZE },
         { VS_ENDSCR01_DIS_LBA, VS_ENDSCR01_DIS_SIZE },
@@ -1198,29 +1194,32 @@ int func_8006BE04(void)
         { VS_ENDSCR15_DIS_LBA, VS_ENDSCR15_DIS_SIZE },
     };
 
+    extern vs_main_CdQueueSlot* cdSlot;
+    extern void* timData;
+
     TIM_IMAGE sp10;
     int i;
     int var_a1;
     int var_v1;
 
-    if (D_800DC208 == 0) {
+    if (_submenuState == 0) {
 
-        D_800DC1EC = vs_main_allocHeapR(D_8006881C->size);
-        D_800DC1E8 = vs_main_allocateCdQueueSlot(D_8006881C);
+        timData = vs_main_allocHeapR(endScrDisFiles->size);
+        cdSlot = vs_main_allocateCdQueueSlot(endScrDisFiles);
 
-        vs_main_cdEnqueue(D_800DC1E8, D_800DC1EC);
+        vs_main_cdEnqueue(cdSlot, timData);
 
-        ++D_800DC208;
+        ++_submenuState;
 
-    } else if (D_800DC208 == 1) {
+    } else if (_submenuState == 1) {
 
-        if (D_800DC1E8->state != 4) {
+        if (cdSlot->state != vs_main_CdQueueStateLoaded) {
             return 0;
         }
 
         for (i = 0; i < 3; ++i) {
 
-            func_8006DF70(D_800DC1EC + i * 0x8220, &sp10);
+            _parseTim(timData + i * 0x8220, &sp10);
 
             if (sp10.paddr != NULL) {
                 sp10.prect->x = 832 + i * 64;
@@ -1241,19 +1240,19 @@ int func_8006BE04(void)
             }
         }
 
-        vs_main_freeCdQueueSlot(D_800DC1E8);
-        ++D_800DC208;
+        vs_main_freeCdQueueSlot(cdSlot);
+        ++_submenuState;
 
-    } else if (D_800DC208 == 2) {
+    } else if (_submenuState == 2) {
 
-        vs_main_freeHeapR(D_800DC1EC);
+        vs_main_freeHeapR(timData);
 
         var_a1 = 0;
-        D_800DC200 = 0;
-        D_800DC204 = 0;
+        _onScreenMapCompletion = 0;
+        _onScreenScore = 0;
         D_800DC20C = 0;
         D_800DC210 = 0;
-        D_800DC1F4 = vs_main_stateFlags.clearCount;
+        _clearCount = vs_main_stateFlags.clearCount;
 
         for (i = 0; i < 16; ++i) {
             int flag;
@@ -1281,23 +1280,23 @@ int func_8006BE04(void)
             vs_main_scoredata.openedChestCount = var_v1;
         }
 
-        D_800DC1FC = (vs_main_scoredata.mapCompletion * 100) / 361;
+        _mapCompletion = (vs_main_scoredata.mapCompletion * 100) / 361;
 
         _updateScore();
-        func_8006DFD0();
+        _determineRank();
 
-        D_800DC1EC = vs_main_allocHeapR(D_8006881C[D_800DC1F0 + 1].size);
-        D_800DC1E8 = vs_main_allocateCdQueueSlot(&D_8006881C[D_800DC1F0 + 1]);
-        vs_main_cdEnqueue(D_800DC1E8, D_800DC1EC);
-        ++D_800DC208;
+        timData = vs_main_allocHeapR(endScrDisFiles[_rank + 1].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&endScrDisFiles[_rank + 1]);
+        vs_main_cdEnqueue(cdSlot, timData);
+        ++_submenuState;
 
-    } else if (D_800DC208 == 3) {
+    } else if (_submenuState == 3) {
 
-        if (D_800DC1E8->state != 4) {
+        if (cdSlot->state != 4) {
             return 0;
         }
 
-        func_8006DF70(D_800DC1EC, &sp10);
+        _parseTim(timData, &sp10);
 
         if (sp10.paddr != NULL) {
             sp10.prect->x = 0;
@@ -1305,13 +1304,13 @@ int func_8006BE04(void)
             LoadImage(sp10.prect, sp10.paddr);
         }
 
-        vs_main_freeCdQueueSlot(D_800DC1E8);
+        vs_main_freeCdQueueSlot(cdSlot);
 
-        ++D_800DC208;
+        ++_submenuState;
 
     } else {
-        D_800DC208 = 0;
-        vs_main_freeHeapR(D_800DC1EC);
+        _submenuState = 0;
+        vs_main_freeHeapR(timData);
 
         return 1;
     }
@@ -1319,7 +1318,7 @@ int func_8006BE04(void)
     return 0;
 }
 
-int func_8006C214(void)
+static int _renderCongratulationsScreen(void)
 {
     if (D_800DC210 == 0) {
 
@@ -1329,11 +1328,11 @@ int func_8006C214(void)
         }
 
         func_8006C3CC(D_800DC20C);
-        func_8006C514(0xA0, 0x28, D_800DC20C);
-        func_8006C744(0xA0, 0x50, D_800DC20C - 0x20, D_800DC210);
-        func_8006CAF4(0xA0, 0x66, D_800DC20C - 0x70, D_800DC210);
-        func_8006CD38(0xA0, 0x8A, D_800DC20C - 0xC0);
-        func_8006CD94(0xA0, 0x9A, D_800DC20C - 0xD0);
+        _renderCongratulations(0xA0, 0x28, D_800DC20C);
+        _renderIncrementalScore(0xA0, 0x50, D_800DC20C - 0x20, D_800DC210);
+        _renderIncrementalMapCompletion(0xA0, 0x66, D_800DC20C - 0x70, D_800DC210);
+        _renderRiskbreakerRankHeader(0xA0, 0x8A, D_800DC20C - 0xC0);
+        _renderRiskbreakerRank(0xA0, 0x9A, D_800DC20C - 0xD0);
 
         if (D_800DC20C >= 0x1001) {
             D_800DC20C = 0x1000;
@@ -1347,11 +1346,11 @@ int func_8006C214(void)
     } else {
 
         func_8006C3CC(8 - D_800DC20C);
-        func_8006C514(0xA0, 0x28, 8 - D_800DC20C);
-        func_8006C5C8(0xA0, 0x50, 8 - D_800DC20C, 3);
-        func_8006C9A8(0xA0, 0x66, 8 - D_800DC20C, 3);
-        func_8006CD38(0xA0, 0x8A, 8 - D_800DC20C);
-        func_8006CD94(0xA0, 0x9A, 8 - D_800DC20C);
+        _renderCongratulations(0xA0, 0x28, 8 - D_800DC20C);
+        _renderScore(0xA0, 0x50, 8 - D_800DC20C, 3);
+        _renderMapCompletion(0xA0, 0x66, 8 - D_800DC20C, 3);
+        _renderRiskbreakerRankHeader(0xA0, 0x8A, 8 - D_800DC20C);
+        _renderRiskbreakerRank(0xA0, 0x9A, 8 - D_800DC20C);
 
         if (D_800DC20C >= 8) {
             return 1;
@@ -1365,10 +1364,10 @@ int func_8006C214(void)
 // https://decomp.me/scratch/0FKMG
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C3CC);
 
-extern P_CODE D_800DBA7C[2];
-
-void func_8006C514(int arg0, int arg1, int arg2)
+static void _renderCongratulations(int arg0, int arg1, int arg2)
 {
+    extern P_CODE D_800DBA7C[2];
+
     if (arg2 < 0) {
         arg2 = 0;
     }
@@ -1380,14 +1379,16 @@ void func_8006C514(int arg0, int arg1, int arg2)
     if (arg2 > 0) {
         D_800DBA7C[0].code = arg2;
         D_800DBA7C[1].code = arg2;
-        arg0 = arg0 - ((D_800DB814[22].w + D_800DB814[23].w) >> 1);
-        func_8006D358(arg0, arg1, 0x16, D_800DBA7C);
-        func_8006D358(arg0 + D_800DB814[22].w, arg1, 0x17, &D_800DBA7C[1]);
+        arg0 = arg0 - ((_disMap[22].w + _disMap[23].w) >> 1);
+        _renderTexturePopIn(arg0, arg1, 0x16, D_800DBA7C);
+        _renderTexturePopIn(arg0 + _disMap[22].w, arg1, 0x17, &D_800DBA7C[1]);
     }
 }
 
-void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    extern P_CODE D_800DBA88[];
+
     char sp10[10];
     int i;
     int v0;
@@ -1407,17 +1408,17 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         sprintf(sp10, "%09d", _score);
 
-        v1 = D_800DB814[18].w + D_800DB814[26].w + D_800DB814[20].w;
-        arg0 -= (D_800DB814[10].w * 2 + v1 + 0x74) >> 1;
+        v1 = _disMap[18].w + _disMap[26].w + _disMap[20].w;
+        arg0 -= (_disMap[10].w * 2 + v1 + 0x74) >> 1;
 
         _renderTextureFadeInTint(arg0, arg1, 0x12, D_800DBA88);
 
-        arg0 += D_800DB814[18].w;
+        arg0 += _disMap[18].w;
 
         _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA88);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814[26].w;
+        arg0 = v0 + _disMap[26].w;
 
         for (i = 0; i < 9; ++i) {
             _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - 0x30, D_800DBA88);
@@ -1426,7 +1427,7 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
                 int v0;
                 _renderTextureFadeInTint(arg0, arg1 + 0xE, 0xA, D_800DBA88);
                 v0 = arg0 + 3;
-                arg0 = v0 + D_800DB814[10].w;
+                arg0 = v0 + _disMap[10].w;
             }
         }
 
@@ -1434,8 +1435,11 @@ void func_8006C5C8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
 }
 
-void func_8006C744(int arg0, int arg1, int arg2, int arg3)
+static void _renderIncrementalScore(
+    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    extern P_CODE D_800DBA90[];
+
     char sp18[16];
     int temp_s2;
     int var_s1;
@@ -1458,55 +1462,58 @@ void func_8006C744(int arg0, int arg1, int arg2, int arg3)
 
         if (_score != 0 && var_s1 >= 32) {
 
-            if (D_800DC204 == 0) {
-                D_800DC214 = 1;
+            if (_onScreenScore == 0) {
+                _incrementingScore = 1;
                 vs_main_playSfxDefault(0x7E, 0x72);
             }
 
-            if ((D_800DC204 == _score) && (D_800DC214 != 0)) {
-                D_800DC214 = 0;
+            if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
+                _incrementingScore = 0;
                 func_80045D64(0x7E, 0x72);
                 vs_main_playSfxDefault(0x7E, 0x73);
             }
         }
 
         if (var_s1 >= 32) {
-            D_800DC204 = ((u_int)_score >> 5) * (var_s1 - 32);
+            _onScreenScore = ((u_int)_score >> 5) * (var_s1 - 32);
         }
 
         if (var_s1 == 64) {
-            D_800DC204 = _score;
+            _onScreenScore = _score;
         }
 
-        sprintf(sp18, "%09d", D_800DC204);
+        sprintf(sp18, "%09d", _onScreenScore);
 
-        v1 = D_800DB814[18].w + D_800DB814[26].w + D_800DB814[20].w;
-        arg0 -= (D_800DB814[10].w * 2 + v1 + 0x74) >> 1;
+        v1 = _disMap[18].w + _disMap[26].w + _disMap[20].w;
+        arg0 -= (_disMap[10].w * 2 + v1 + 0x74) >> 1;
 
-        func_8006DA18(arg0, arg1, 0x12, D_800DBA90, temp_s2);
+        _renderTextureWipe(arg0, arg1, 0x12, D_800DBA90, temp_s2);
 
-        arg0 += D_800DB814[18].w;
+        arg0 += _disMap[18].w;
 
-        func_8006DA18(arg0, arg1 + 7, 0x1A, D_800DBA90, temp_s2);
+        _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_800DBA90, temp_s2);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814[26].w;
+        arg0 = v0 + _disMap[26].w;
 
         for (i = 0; i < 9; ++i) {
-            func_8006DA18(arg0, arg1 + 3, sp18[i] - '0', D_800DBA90, temp_s2);
+            _renderTextureWipe(arg0, arg1 + 3, sp18[i] - '0', D_800DBA90, temp_s2);
             arg0 += 12;
             if ((i == 2) || (i == 5)) {
-                func_8006DA18(arg0, arg1 + 0xE, 0xA, D_800DBA90, temp_s2);
-                arg0 += 3 + D_800DB814[10].w;
+                _renderTextureWipe(arg0, arg1 + 0xE, 0xA, D_800DBA90, temp_s2);
+                arg0 += 3 + _disMap[10].w;
             }
         }
 
-        func_8006DA18(arg0, arg1 + 8, 0x14, D_800DBA90, temp_s2);
+        _renderTextureWipe(arg0, arg1 + 8, 0x14, D_800DBA90, temp_s2);
     }
 }
 
-void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+static void _renderMapCompletion(
+    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    extern P_CODE D_800DBA98[];
+
     char sp10[2];
     int i;
     int v0;
@@ -1523,18 +1530,18 @@ void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
 
         D_800DBA98[0].code = arg2;
 
-        sprintf(sp10, "%03d", D_800DC1FC);
+        sprintf(sp10, "%03d", _mapCompletion);
 
-        arg0 -= ((D_800DB814[21].w + D_800DB814[26].w + D_800DB814[19].w + 0x26) >> 1);
+        arg0 -= ((_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1);
 
         _renderTextureFadeInTint(arg0, arg1, 0x15, D_800DBA98);
 
-        arg0 += D_800DB814[21].w;
+        arg0 += _disMap[21].w;
 
         _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA98);
 
         v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814[26].w;
+        arg0 = v0 + _disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
             _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - '0', D_800DBA98);
@@ -1545,8 +1552,11 @@ void func_8006C9A8(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)
     }
 }
 
-void func_8006CAF4(int arg0, int arg1, int arg2, int arg3)
+static void _renderIncrementalMapCompletion(
+    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
+    extern P_CODE D_800DBAA0[];
+
     char sp18[2];
     int temp_s4;
     int i;
@@ -1555,359 +1565,127 @@ void func_8006CAF4(int arg0, int arg1, int arg2, int arg3)
     if (arg2 < 0) {
         arg2 = 0;
     }
+
     if (arg2 > 64) {
         arg2 = 64;
     }
 
-    if (arg2 > 0) {
-
-        temp_s4 = arg0 + arg2 * 8;
-
-        if (D_800DC1FC != 0 && arg2 >= 32) {
-
-            if (D_800DC200 == 0) {
-                D_800DC218 = 1;
-                vs_main_playSfxDefault(0x7E, 0x72);
-            }
-
-            if ((D_800DC200 == D_800DC1FC) && (D_800DC218 != 0)) {
-                D_800DC218 = 0;
-                func_80045D64(0x7E, 0x72);
-                vs_main_playSfxDefault(0x7E, 0x73);
-            }
-        }
-
-        if (arg2 >= 32) {
-            if (D_800DC1FC >= 32u) {
-                D_800DC200 = (u_int)(D_800DC1FC * (arg2 - 32)) >> 5;
-            } else if (D_800DC200 < D_800DC1FC) {
-                D_800DC200 += 1;
-            }
-        }
-
-        sprintf(sp18, "%03d", D_800DC200);
-
-        arg0 -=
-            ((int)(D_800DB814[21].w + D_800DB814[26].w + D_800DB814[19].w + 0x26) >> 1);
-
-        func_8006DA18(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
-
-        arg0 += D_800DB814[21].w;
-
-        func_8006DA18(arg0, arg1 + 7, 0x1A, D_800DBAA0, temp_s4);
-
-        v0 = arg0 + 2;
-        arg0 = v0 + D_800DB814[26].w;
-
-        for (i = 0; i < 3; ++i) {
-            func_8006DA18(arg0, arg1 + 3, sp18[i] - '0', D_800DBAA0, temp_s4);
-            arg0 += 12;
-        }
-
-        func_8006DA18(arg0, arg1 + 8, 0x13, D_800DBAA0, temp_s4);
-    }
-}
-
-void func_8006CD38(int arg0, int arg1, int arg2)
-{
-    if (arg2 < 0) {
-        arg2 = 0;
-    }
-    if (arg2 > 0x40) {
-        arg2 = 0x40;
-    }
-    if (arg2 > 0) {
-        D_800DBAA8[0].code = arg2;
-        _renderTextureFadeInTint(arg0 - (D_800DB876 >> 1), arg1, 0xC, D_800DBAA8);
-    }
-}
-
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006CD94);
-
-void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
-{
-    POLY_GT4* poly;
-    void** p;
-
-    if (colors[0].code == 0) {
+    if (arg2 <= 0) {
         return;
     }
 
-    poly = *(void**)0x1F800000;
+    temp_s4 = arg0 + arg2 * 8;
 
-    setPolyGT4(poly);
-    setXY4(poly, x, y, D_800DB814[texId].w + x, y, x, D_800DB814[texId].h + y,
-        D_800DB814[texId].w + x, D_800DB814[texId].h + y);
-    setUV4(poly, D_800DB814[texId].x, D_800DB814[texId].y,
-        D_800DB814[texId].x + D_800DB814[texId].w, D_800DB814[texId].y,
-        D_800DB814[texId].x, D_800DB814[texId].y + D_800DB814[texId].h,
-        D_800DB814[texId].x + D_800DB814[texId].w,
-        D_800DB814[texId].y + D_800DB814[texId].h);
+    if (_mapCompletion != 0 && arg2 >= 32) {
 
-    if (colors[0].code < 8) {
-        setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
-            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-        setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
-            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-        setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
-            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-        setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
-            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-    } else {
-        setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-        setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-        setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-        setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-    }
-
-    setSemiTrans(poly, 1);
-
-    if (colors[0].code < 8) {
-        poly->clut = D_800DB814[texId].clut + 1;
-        poly->tpage = D_800DB814[texId].tpage | 0x20;
-    } else {
-        poly->clut = D_800DB814[texId].clut;
-        poly->tpage = D_800DB814[texId].tpage;
-    }
-
-    p = (void**)0x1F800000;
-
-    AddPrim(p[1] - 0x1C, poly++);
-
-    p[0] = poly;
-}
-
-static inline int _adjust(int component, int weight)
-{
-    int ret = (component * weight) + ((4 - weight) * 192);
-    return ret / 4;
-}
-
-void func_8006D358(int x, int y, int texId, P_CODE colors[])
-{
-    POLY_GT4* poly;
-    void** p;
-
-    if (colors[0].code != 0) {
-        poly = *(void**)0x1F800000;
-
-        setPolyGT4(poly);
-        setXY4(poly, x, y, D_800DB814[texId].w + x, y, x, D_800DB814[texId].h + y,
-            D_800DB814[texId].w + x, D_800DB814[texId].h + y);
-        setUV4(poly, D_800DB814[texId].x, D_800DB814[texId].y,
-            D_800DB814[texId].x + D_800DB814[texId].w, D_800DB814[texId].y,
-            D_800DB814[texId].x, D_800DB814[texId].y + D_800DB814[texId].h,
-            D_800DB814[texId].x + D_800DB814[texId].w,
-            D_800DB814[texId].y + D_800DB814[texId].h);
-
-        if (colors[0].code < 8) {
-            setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
-                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-            setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
-                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-            setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
-                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-            setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
-                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-        } else if (colors[0].code == 8) {
-            setRGB0(poly, 192, 192, 192);
-            setRGB1(poly, 192, 192, 192);
-            setRGB2(poly, 192, 192, 192);
-            setRGB3(poly, 192, 192, 192);
-        } else if (colors[0].code == 9) {
-            setRGB0(poly, 224, 224, 224);
-            setRGB1(poly, 224, 224, 224);
-            setRGB2(poly, 224, 224, 224);
-            setRGB3(poly, 224, 224, 224);
-        } else if (colors[0].code < 14) {
-            int temp_a0 = colors[0].code - 10;
-            setRGB0(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
-                _adjust(colors[0].b0, temp_a0));
-            setRGB1(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
-                _adjust(colors[1].b0, temp_a0));
-            setRGB2(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
-                _adjust(colors[0].b0, temp_a0));
-            setRGB3(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
-                _adjust(colors[1].b0, temp_a0));
-        } else {
-            setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-            setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-            setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-            setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+        if (_onScreenMapCompletion == 0) {
+            _incrementingMapCompletion = 1;
+            vs_main_playSfxDefault(0x7E, 0x72);
         }
 
-        setSemiTrans(poly, 1);
-
-        if (colors[0].code < 10) {
-            poly->clut = D_800DB814[texId].clut + getClut(16, 0);
-            poly->tpage = D_800DB814[texId].tpage | getTPage(0, 1, 0, 0);
-        } else {
-            poly->clut = D_800DB814[texId].clut;
-            poly->tpage = D_800DB814[texId].tpage;
+        if ((_onScreenMapCompletion == _mapCompletion)
+            && (_incrementingMapCompletion != 0)) {
+            _incrementingMapCompletion = 0;
+            func_80045D64(0x7E, 0x72);
+            vs_main_playSfxDefault(0x7E, 0x73);
         }
+    }
 
-        p = (void**)0x1F800000;
+    if (arg2 >= 32) {
+        if (_mapCompletion >= 32u) {
+            _onScreenMapCompletion = (u_int)(_mapCompletion * (arg2 - 32)) >> 5;
+        } else if (_onScreenMapCompletion < _mapCompletion) {
+            _onScreenMapCompletion += 1;
+        }
+    }
 
-        AddPrim(p[1] - 0x1C, poly++);
+    sprintf(sp18, "%03d", _onScreenMapCompletion);
 
-        p[0] = poly;
+    arg0 -= ((int)(_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1);
+
+    _renderTextureWipe(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
+
+    arg0 += _disMap[21].w;
+
+    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_800DBAA0, temp_s4);
+
+    v0 = arg0 + 2;
+    arg0 = v0 + _disMap[26].w;
+
+    for (i = 0; i < 3; ++i) {
+        _renderTextureWipe(arg0, arg1 + 3, sp18[i] - '0', D_800DBAA0, temp_s4);
+        arg0 += 12;
+    }
+
+    _renderTextureWipe(arg0, arg1 + 8, 0x13, D_800DBAA0, temp_s4);
+}
+
+static void _renderRiskbreakerRankHeader(int x, int y, int timer)
+{
+    if (timer < 0) {
+        timer = 0;
+    }
+
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    if (timer > 0) {
+        D_800DBAA8[0].code = timer;
+        _renderTextureFadeInTint(x - (D_800DB876 >> 1), y, 12, D_800DBAA8);
     }
 }
 
-void func_8006DA18(int x, int y, int texId, P_CODE arg3[], int arg4)
-{
-    int temp_a1;
-    int var_a0;
-    int i;
-    char var_s6;
-    POLY_GT4* poly;
-    void** scratch;
+INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderRiskbreakerRank);
 
-    if ((x + D_800DB814[texId].w) < (arg4 - 64)) {
+#include "src/renderTextures.h"
 
-        scratch = (void**)0x1F800000;
-        poly = scratch[0];
-
-        setPolyGT4(poly);
-        setXY4(poly, x, y, D_800DB814[texId].w + x, y, x, D_800DB814[texId].h + y,
-            D_800DB814[texId].w + x, D_800DB814[texId].h + y);
-        setUV4(poly, D_800DB814[texId].x, D_800DB814[texId].y,
-            D_800DB814[texId].x + D_800DB814[texId].w, D_800DB814[texId].y,
-            D_800DB814[texId].x, D_800DB814[texId].y + D_800DB814[texId].h,
-            D_800DB814[texId].x + D_800DB814[texId].w,
-            D_800DB814[texId].y + D_800DB814[texId].h);
-        setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-        setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-        setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-        setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-        setSemiTrans(poly, 1);
-
-        poly->clut = D_800DB814[texId].clut;
-        poly->tpage = D_800DB814[texId].tpage;
-
-        scratch = (void**)0x1F800000;
-
-        AddPrim(scratch[1] - 0x1C, poly++);
-
-        scratch[0] = poly;
-        return;
-    }
-
-    if (x < arg4) {
-
-        scratch = (void**)0x1F800000;
-        poly = scratch[0];
-        var_s6 = D_800DB814[texId].x;
-
-        for (i = 0; i < D_800DB814[texId].w; i += 12, x += 12, var_s6 += 12) {
-
-            var_a0 = 12;
-
-            if ((i + 12) >= D_800DB814[texId].w) {
-                var_a0 = D_800DB814[texId].w - i;
-            }
-
-            setPolyGT4(poly);
-            temp_a1 = x + var_a0;
-            setXY4(poly, x, y, temp_a1, y, x, D_800DB814[texId].h + y, temp_a1,
-                D_800DB814[texId].h + y);
-            setUV4(poly, var_s6, D_800DB814[texId].y, var_s6 + var_a0,
-                D_800DB814[texId].y, var_s6, D_800DB814[texId].y + D_800DB814[texId].h,
-                var_s6 + var_a0, D_800DB814[texId].y + D_800DB814[texId].h);
-
-            var_a0 = arg4 - x;
-
-            if (var_a0 > 64) {
-                var_a0 = 64;
-            }
-
-            if (var_a0 < 0) {
-                var_a0 = 0;
-            }
-
-            setRGB0(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
-                (arg3[0].b0 * var_a0) / 64);
-            setRGB2(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
-                (arg3[0].b0 * var_a0) / 64);
-
-            var_a0 = arg4 - temp_a1;
-
-            if (var_a0 > 64) {
-                var_a0 = 64;
-            }
-
-            if (var_a0 < 0) {
-                var_a0 = 0;
-            }
-
-            setRGB1(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
-                (arg3[1].b0 * var_a0) / 64);
-            setRGB3(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
-                (arg3[1].b0 * var_a0) / 64);
-
-            setSemiTrans(poly, 1);
-
-            poly->clut = (D_800DB814[texId].clut + 1);
-            poly->tpage = (D_800DB814[texId].tpage | 0x20);
-
-            scratch = (void**)0x1F800000;
-
-            AddPrim(scratch[1] - 0x1C, poly++);
-        }
-
-        scratch = (void**)0x1F800000;
-        scratch[0] = poly;
-    }
-}
-
-void func_8006DF70(u_int* arg0, TIM_IMAGE* arg1)
+static void _parseTim(u_int* data, TIM_IMAGE* tim)
 {
 
-    ++arg0;
-    arg1->mode = *arg0;
-    ++arg0;
+    ++data;
+    tim->mode = *data;
+    ++data;
 
-    if (arg1->mode & 8) {
-        arg1->crect = (void*)(arg0 + 1);
-        arg1->caddr = (void*)(arg0 + 3);
-        arg0 += arg0[0] / 4;
+    if (tim->mode & 8) {
+        tim->crect = (void*)(data + 1);
+        tim->caddr = (void*)(data + 3);
+        data += data[0] / 4;
     } else {
-        arg1->crect = 0;
-        arg1->caddr = 0;
+        tim->crect = 0;
+        tim->caddr = 0;
     }
 
-    arg1->prect = (void*)(arg0 + 1);
-    arg1->paddr = (void*)(arg0 + 3);
+    tim->prect = (void*)(data + 1);
+    tim->paddr = (void*)(data + 3);
 }
 
-void func_8006DFD0(void)
+static void _determineRank(void)
 {
-    int var_a2;
-    int var_v0;
+    int unlockedTitles;
+    int flag;
     int i;
 
-    for (i = 0, var_a2 = 0, var_v0 = 1; i < 16; ++i) {
-        if (vs_main_scoredata.titles & (var_v0 << i)) {
-            ++var_a2;
+    for (i = 0, unlockedTitles = 0, flag = 1; i < 16; ++i) {
+        if (vs_main_scoredata.titles & (flag << i)) {
+            ++unlockedTitles;
         }
     }
 
     for (i = 0; i < 16; ++i) {
-        if (var_a2 >= D_800DBAB8[i]) {
-            if (_score >= D_800DBAD8[i]) {
-                D_800DC1F0 = i;
+        if (unlockedTitles >= titleThresholds[i]) {
+            if (_score >= rankScores[i]) {
+                _rank = i;
                 return;
             }
         }
     }
 }
 
-void _updateScore(void)
+static void _updateScore(void)
 {
     short enemyKillPoints[] = { 20, 20, 40, 80, 100, 60 };
-
     short weaponAttackPoints[] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
-
     int i;
 
     _score = 0;
@@ -1926,7 +1704,7 @@ void _updateScore(void)
         }
     }
 
-    if (vs_main_scoredata.maxChain < 6U) {
+    if (vs_main_scoredata.maxChain < 6) {
         _score += vs_main_scoredata.maxChain * 10;
     } else if (vs_main_scoredata.maxChain < 11) {
         _score += vs_main_scoredata.maxChain * 20;
@@ -1944,9 +1722,9 @@ void _updateScore(void)
         _score += vs_main_scoredata.maxChain * 1280;
     }
 
-    _score += D_800DC1F4 * 100000;
+    _score += _clearCount * 100000;
 
-    if ((D_800DC1F4 != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
+    if ((_clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
         if (vs_main_scoredata.completionTimeMinutes >= 540) {
             _score += _score / 4;
         } else if (vs_main_scoredata.completionTimeMinutes >= 300) {

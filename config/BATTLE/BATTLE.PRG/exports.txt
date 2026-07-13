@@ -159,7 +159,7 @@ vs_battle_setSpriteDefault
 vs_battle_setSpriteDefaultTexPage
 vs_battle_setStateFlag
 vs_battle_setTextBox
-vs_battle_setTimImage
+vs_battle_parseTim
 vs_battle_shamanSpellIds
 vs_battle_shortcutInvoked
 vs_battle_sorcererSpellIds

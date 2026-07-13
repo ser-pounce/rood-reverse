@@ -1677,7 +1677,82 @@ void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
     p[0] = poly;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006D358);
+static inline int _adjust(int component, int weight)
+{
+    int ret = (component * weight) + ((4 - weight) * 192);
+    return ret / 4;
+}
+
+void func_8006D358(int x, int y, int texId, P_CODE colors[])
+{
+    POLY_GT4* poly;
+    void** p;
+
+    if (colors[0].code != 0) {
+        poly = *(void**)0x1F800000;
+
+        setPolyGT4(poly);
+        setXY4(poly, x, y, D_800DB814[texId].w + x, y, x, D_800DB814[texId].h + y,
+            D_800DB814[texId].w + x, D_800DB814[texId].h + y);
+        setUV4(poly, D_800DB814[texId].x, D_800DB814[texId].y,
+            D_800DB814[texId].x + D_800DB814[texId].w, D_800DB814[texId].y,
+            D_800DB814[texId].x, D_800DB814[texId].y + D_800DB814[texId].h,
+            D_800DB814[texId].x + D_800DB814[texId].w,
+            D_800DB814[texId].y + D_800DB814[texId].h);
+
+        if (colors[0].code < 8) {
+            setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
+                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+            setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
+                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+            setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
+                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
+            setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
+                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+        } else if (colors[0].code == 8) {
+            setRGB0(poly, 192, 192, 192);
+            setRGB1(poly, 192, 192, 192);
+            setRGB2(poly, 192, 192, 192);
+            setRGB3(poly, 192, 192, 192);
+        } else if (colors[0].code == 9) {
+            setRGB0(poly, 224, 224, 224);
+            setRGB1(poly, 224, 224, 224);
+            setRGB2(poly, 224, 224, 224);
+            setRGB3(poly, 224, 224, 224);
+        } else if (colors[0].code < 14) {
+            int temp_a0 = colors[0].code - 10;
+            setRGB0(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
+                _adjust(colors[0].b0, temp_a0));
+            setRGB1(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
+                _adjust(colors[1].b0, temp_a0));
+            setRGB2(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
+                _adjust(colors[0].b0, temp_a0));
+            setRGB3(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
+                _adjust(colors[1].b0, temp_a0));
+        } else {
+            setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+            setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+            setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
+            setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+        }
+
+        setSemiTrans(poly, 1);
+
+        if (colors[0].code < 10) {
+            poly->clut = D_800DB814[texId].clut + getClut(16, 0);
+            poly->tpage = D_800DB814[texId].tpage | getTPage(0, 1, 0, 0);
+        } else {
+            poly->clut = D_800DB814[texId].clut;
+            poly->tpage = D_800DB814[texId].tpage;
+        }
+
+        p = (void**)0x1F800000;
+
+        AddPrim(p[1] - 0x1C, poly++);
+
+        p[0] = poly;
+    }
+}
 
 void func_8006DA18(int x, int y, int texId, P_CODE arg3[], int arg4)
 {

@@ -1454,8 +1454,43 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
-// https://decomp.me/scratch/0FKMG
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006C3CC);
+void func_8006C3CC(int arg0)
+{
+    int var_s2;
+    int i;
+    int temp_s4;
+    POLY_FT4* poly;
+
+    if (arg0 < 0) {
+        arg0 = 0;
+    }
+
+    if (arg0 > 64) {
+        arg0 = 64;
+    }
+
+    temp_s4 = arg0 * 2;
+
+    if (arg0 <= 0) {
+        return;
+    }
+
+    poly = *(void**)0x1F800000;
+    var_s2 = 64;
+
+    for (i = 0; i < 5; ++i) {
+        setPolyFT4(poly);
+        setXY4(poly, i * 64, 8, 64 + i * 64, 8, i * 64, 232, 64 + i * 64, 232);
+        setUV4(poly, 0, 0, 64, 0, 0, 224, 64, 224);
+        setRGB0(poly, temp_s4, temp_s4, temp_s4);
+        setClut(poly, 0, 0);
+        poly->tpage = (i + 16) | getTPage(3, 0, 0, 0);
+        AddPrim(*((void**)0x1F800004) + 0x1FF8, poly++);
+        var_s2 += 64;
+    }
+
+    *(void**)0x1F800000 = poly;
+}
 
 static void _renderCongratulations(int arg0, int arg1, int arg2)
 {

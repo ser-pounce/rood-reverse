@@ -176,6 +176,7 @@ extern int D_800DC20C;
 extern int D_800DC210;
 extern int _incrementingScore;
 extern int _incrementingMapCompletion;
+extern u_char _riskbreakerRanks[][4];
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
@@ -1636,7 +1637,41 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
     }
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderRiskbreakerRank);
+void _renderRiskbreakerRank(int x, int y, int timer)
+{
+    extern P_CODE D_800DBAB0[];
+
+    int xInset;
+    int i;
+
+    if (timer < 0) {
+        timer = 0;
+    }
+
+    if (timer > 64) {
+        timer = 64;
+    }
+
+    xInset = 0;
+
+    if (timer > 0) {
+
+        D_800DBAB0[0].code = timer;
+
+        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
+            xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
+        }
+
+        xInset /= 2;
+        x -= xInset;
+
+        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
+            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], D_800DBAB0);
+
+            x += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
+        }
+    }
+}
 
 #include "src/renderTextures.h"
 

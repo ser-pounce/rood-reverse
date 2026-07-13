@@ -39,3 +39,4 @@ _onScreenScore = 0x800DC204;
 _submenuState = 0x800DC208;
 _incrementingScore = 0x800DC214;
 _incrementingMapCompletion = 0x800DC218;
+_riskbreakerRanks = 0x800DBA3C;

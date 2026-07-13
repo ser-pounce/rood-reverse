@@ -182,9 +182,70 @@ INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068938);
 
-// https://decomp.me/scratch/UJsTy
-void func_80068EBC(D_800DBB88_t* arg0);
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80068EBC);
+void func_80068EBC(D_800DBB88_t* arg0)
+{
+    int temp_a0_2;
+    int temp_a0;
+    int temp_v0;
+    u_char var_s0;
+    void** p;
+    int new_var;
+
+    SPRT* sprt = *(SPRT**)0x1F800000;
+
+    switch (arg0->unk8) {
+    case 1:
+        arg0->currentStep = 0;
+        arg0->unk8 = 2;
+        /* fallthrough */
+
+    case 2:
+        temp_v0 = arg0->currentStep;
+        arg0->currentStep = temp_v0 + 1;
+        var_s0 = (temp_v0 << 7) / 60;
+
+        if (arg0->currentStep == 60) {
+            arg0->currentStep = 0;
+            arg0->unk8 = 3;
+        }
+        break;
+
+    case 3:
+        var_s0 = 128;
+
+        if (++arg0->currentStep == 240) {
+            arg0->currentStep = 0;
+            arg0->unk8 = 4;
+        }
+        break;
+
+    case 4:
+        temp_a0 = arg0->currentStep;
+        arg0->currentStep = temp_a0 + 1;
+        var_s0 = ((0x3C - temp_a0) << 7) / 60;
+
+        if (arg0->currentStep == 60) {
+            arg0->unk8 = -1;
+        }
+
+        break;
+    }
+
+    SetSprt(sprt);
+    setXY0(sprt, 248, 184);
+    setUV0(sprt, 0, 160);
+    setWH(sprt, 36, 17);
+    sprt->r0 = sprt->g0 = sprt->b0 = var_s0;
+    setClut(sprt, 896, 82);
+
+    p = (void**)0x1F800000;
+    setaddr(sprt, ((u_long*)p[1])[1]);
+    setaddr(p[1] + 4, sprt++);
+
+    new_var = 0;
+    p[new_var] = sprt;
+    p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
+}
 
 // https://decomp.me/scratch/pNVRe
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069088);

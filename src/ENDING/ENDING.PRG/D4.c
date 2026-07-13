@@ -430,8 +430,39 @@ static int func_80069AEC(u_char* arg0)
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069BC0);
 
-void func_80069F9C(D_800DBB88_t* arg0);
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069F9C);
+void func_80069F9C(D_800DBB88_t* arg0)
+{
+    void** p = (void**)0x1F800000;
+    SPRT* sprt = p[0];
+    int new_var;
+
+    if (arg0->unk8 == 1) {
+        arg0->unk10 = 0x6400;
+        arg0->unk14 = 0xE000;
+        arg0->unk8 = 2;
+    }
+
+    arg0->unk14 = arg0->unk14 + D_800DC198;
+
+    if (arg0->unk14 < -0xC00) {
+        arg0->unk8 = -1;
+        return;
+    }
+
+    SetSprt(sprt);
+    setXY0(sprt, arg0->unk10 >> 8, arg0->unk14 >> 8);
+    setUV0(sprt, 0, 0x30);
+    setWH(sprt, 0x78, 0x10);
+    setClut(sprt, 960, 64);
+    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+
+    setaddr(sprt, ((u_long*)p[1])[3]);
+    setaddr(p[1] + 12, sprt++);
+
+    new_var = 0;
+    p[new_var] = sprt;
+    p[new_var] = _insertTpage(0x2F, 3);
+}
 
 static void func_8006A0D8(D_800DBB88_t* arg0 __attribute__((unused)))
 {
@@ -581,7 +612,7 @@ void vs_ending_exec(void)
 
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
-    
+
     func_8006A9C0(&D_8007005C);
     func_8006A9C0(&D_800CF33C);
     func_8006A9C0(&D_800D7F7C);

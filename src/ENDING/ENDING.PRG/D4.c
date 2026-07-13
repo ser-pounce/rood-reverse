@@ -1287,7 +1287,7 @@ int func_8006BE04(void)
         func_8006DFD0();
 
         D_800DC1EC = vs_main_allocHeapR(D_8006881C[D_800DC1F0 + 1].size);
-        D_800DC1E8 = vs_main_allocateCdQueueSlot(&(&D_8006881C[1])[D_800DC1F0]);
+        D_800DC1E8 = vs_main_allocateCdQueueSlot(&D_8006881C[D_800DC1F0 + 1]);
         vs_main_cdEnqueue(D_800DC1E8, D_800DC1EC);
         ++D_800DC208;
 
@@ -1679,7 +1679,111 @@ void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006D358);
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006DA18);
+void func_8006DA18(int x, int y, int texId, P_CODE arg3[], int arg4)
+{
+    int temp_a1;
+    int var_a0;
+    int i;
+    char var_s6;
+    POLY_GT4* poly;
+    void** scratch;
+
+    if ((x + D_800DB814[texId].w) < (arg4 - 64)) {
+
+        scratch = (void**)0x1F800000;
+        poly = scratch[0];
+
+        setPolyGT4(poly);
+        setXY4(poly, x, y, D_800DB814[texId].w + x, y, x, D_800DB814[texId].h + y,
+            D_800DB814[texId].w + x, D_800DB814[texId].h + y);
+        setUV4(poly, D_800DB814[texId].x, D_800DB814[texId].y,
+            D_800DB814[texId].x + D_800DB814[texId].w, D_800DB814[texId].y,
+            D_800DB814[texId].x, D_800DB814[texId].y + D_800DB814[texId].h,
+            D_800DB814[texId].x + D_800DB814[texId].w,
+            D_800DB814[texId].y + D_800DB814[texId].h);
+        setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+        setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+        setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
+        setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+        setSemiTrans(poly, 1);
+
+        poly->clut = D_800DB814[texId].clut;
+        poly->tpage = D_800DB814[texId].tpage;
+
+        scratch = (void**)0x1F800000;
+
+        AddPrim(scratch[1] - 0x1C, poly++);
+
+        scratch[0] = poly;
+        return;
+    }
+
+    if (x < arg4) {
+
+        scratch = (void**)0x1F800000;
+        poly = scratch[0];
+        var_s6 = D_800DB814[texId].x;
+
+        for (i = 0; i < D_800DB814[texId].w; i += 12, x += 12, var_s6 += 12) {
+
+            var_a0 = 12;
+
+            if ((i + 12) >= D_800DB814[texId].w) {
+                var_a0 = D_800DB814[texId].w - i;
+            }
+
+            setPolyGT4(poly);
+            temp_a1 = x + var_a0;
+            setXY4(poly, x, y, temp_a1, y, x, D_800DB814[texId].h + y, temp_a1,
+                D_800DB814[texId].h + y);
+            setUV4(poly, var_s6, D_800DB814[texId].y, var_s6 + var_a0,
+                D_800DB814[texId].y, var_s6, D_800DB814[texId].y + D_800DB814[texId].h,
+                var_s6 + var_a0, D_800DB814[texId].y + D_800DB814[texId].h);
+
+            var_a0 = arg4 - x;
+
+            if (var_a0 > 64) {
+                var_a0 = 64;
+            }
+
+            if (var_a0 < 0) {
+                var_a0 = 0;
+            }
+
+            setRGB0(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
+                (arg3[0].b0 * var_a0) / 64);
+            setRGB2(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
+                (arg3[0].b0 * var_a0) / 64);
+
+            var_a0 = arg4 - temp_a1;
+
+            if (var_a0 > 64) {
+                var_a0 = 64;
+            }
+
+            if (var_a0 < 0) {
+                var_a0 = 0;
+            }
+
+            setRGB1(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
+                (arg3[1].b0 * var_a0) / 64);
+            setRGB3(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
+                (arg3[1].b0 * var_a0) / 64);
+
+            setSemiTrans(poly, 1);
+
+            poly->clut = (D_800DB814[texId].clut + 1);
+            poly->tpage = (D_800DB814[texId].tpage | 0x20);
+
+            scratch = (void**)0x1F800000;
+
+            AddPrim(scratch[1] - 0x1C, poly++);
+        }
+
+        scratch = (void**)0x1F800000;
+        scratch[0] = poly;
+    }
+}
 
 void func_8006DF70(u_int* arg0, TIM_IMAGE* arg1)
 {

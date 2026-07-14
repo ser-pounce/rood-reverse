@@ -247,8 +247,78 @@ void func_80068EBC(D_800DBB88_t* arg0)
     p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
-// https://decomp.me/scratch/pNVRe
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_80069088);
+void func_80069088(D_800DBB88_t* arg0)
+{
+    SPRT* sprt;
+    int var_fp;
+    void** s0;
+    int new_var;
+
+    sprt = *(SPRT**)0x1F800000;
+
+    switch (arg0->unk8) {
+    case 1:
+        arg0->unk10 = 0x3D00;
+        arg0->unk14 = 0x5000;
+        arg0->currentStep = 0;
+        arg0->unk8 = 2;
+        /* fallthrough */
+
+    case 2:
+        var_fp = (D_800DC19C * ++arg0->currentStep) / 60;
+        if (arg0->currentStep == 0x3C) {
+            arg0->unk8 = 3;
+            arg0->currentStep = 0;
+        }
+        break;
+    case 3:
+        var_fp = D_800DC19C;
+        if (++arg0->currentStep == 0x3C) {
+            arg0->unk8 = 4;
+        }
+        break;
+    case 4:
+        var_fp = D_800DC19C;
+        arg0->unk14 += D_800DC198;
+        if (arg0->unk14 < -0x3C00) {
+            arg0->unk8 = -1;
+            return;
+        }
+        break;
+    }
+
+    SetSprt(sprt);
+    setSemiTrans(sprt, 1);
+    setXY0(sprt, arg0->unk10 >> 8, arg0->unk14 >> 8);
+    setUV0(sprt, 0, 0x60);
+    setWH(sprt, 0xD0, 0x30);
+    setClut(sprt, 896, 80);
+    sprt->r0 = sprt->g0 = sprt->b0 = var_fp;
+
+    s0 = (void**)0x1F800000;
+    setaddr(sprt, getaddr(s0[1] + 12));
+    setaddr(s0[1] + 12, sprt++);
+
+    new_var = 0;
+    s0[new_var] = sprt;
+
+    sprt = _insertTpage(0x2E, 3);
+
+    SetSprt(sprt);
+    setSemiTrans(sprt, 1);
+    setXY0(sprt, arg0->unk10 >> 8, arg0->unk14 >> 8);
+    setUV0(sprt, 0, 0x60);
+    setWH(sprt, 0xD0, 0x30);
+    setClut(sprt, 896, 81);
+    sprt->r0 = sprt->g0 = sprt->b0 = var_fp;
+
+    setaddr(sprt, getaddr(s0[1] + 12));
+    setaddr(s0[1] + 12, sprt++);
+
+    s0[new_var] = sprt;
+    s0[new_var] = _insertTpage(0x4E, 3);
+    return;
+}
 
 static int _inverseDistanceFromScreencenter(int arg0, int arg1)
 {

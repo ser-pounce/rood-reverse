@@ -10,6 +10,7 @@ options:
   symbol_addrs_path: 
     - config/GIM/SCREFF2.PRG/symbol_addrs.txt
     - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/GIM/SCREFF2.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/GIM/SCREFF2.PRG/undefined_syms_auto.txt
 

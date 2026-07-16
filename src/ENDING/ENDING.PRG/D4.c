@@ -122,7 +122,7 @@ static void _updateScore(void);
 extern void* D_1F800000[];
 
 extern u_char D_8006E3FC[];
-extern u_char D_8006FF7C[];
+extern u_char _glyphWidths[];
 extern func_8006A9C0_t2 D_8007005C;
 extern func_8006A9C0_t2 D_8007709C;
 extern func_8006A9C0_t2 D_80088ABC;
@@ -527,39 +527,42 @@ static void _renderllustration(_creditsElement* element)
     p[0] = _insertTpage(getTPage(1, 2, D_800DBB6A + 64, 256), 4);
 }
 
-static int func_80069AEC(u_char* arg0)
+static int _creditsStrWidth(u_char* str)
 {
-    short var_a1;
+    short width;
     short i;
-    unsigned short var_a2;
-    short temp_v0;
-    int temp_v1;
+    unsigned short charTableOffset;
+    short len;
+    int c;
     int new_var;
 
-    temp_v0 = *arg0++;
-    var_a1 = 0;
-    var_a2 = 0;
+    len = *str++;
+    width = 0;
+    charTableOffset = 0;
     i = 0;
 
-    for (i = 0; i < temp_v0; ++i, ++arg0) {
-        temp_v1 = *arg0;
-        if (temp_v1 < 32u) {
-            switch (temp_v1) {
+    for (i = 0; i < len; ++i, ++str) {
+
+        c = *str;
+
+        if (c < 32u) {
+            switch (c) {
             case 1:
-                var_a2 = 0;
+                charTableOffset = 0;
                 break;
             case 2:
-                var_a2 = 0x70;
+                charTableOffset = 112;
                 break;
             case 31:
-                --var_a1;
+                --width;
                 break;
             }
         } else {
-            var_a1 += D_8006FF7C[(var_a2 - (new_var = 32)) + temp_v1] + 0xFFFF;
+            width += _glyphWidths[(charTableOffset - (new_var = 32)) + c] - 1;
         }
     }
-    return var_a1;
+
+    return width;
 }
 
 // https://decomp.me/scratch/86Hv9

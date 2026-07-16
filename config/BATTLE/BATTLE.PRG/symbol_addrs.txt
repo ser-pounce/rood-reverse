@@ -1,5 +1,3 @@
-
- 
 _insertActor = 0x8006A11C; // allow_duplicated:True
 _removeActor = 0x8006A1C4;
 _removeActorAtIndex = 0x8006A228;

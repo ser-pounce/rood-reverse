@@ -14,7 +14,6 @@ int _loadObjectData(int category, int wepId, int material)
     int _[6] __attribute__((unused));
     int i;
     D_800F4538_t* temp_s1 = D_800F4538[1];
-    int temp_s0 = vs_battle_loadObjectDataState;
 
     switch (vs_battle_loadObjectDataState) {
     case 0:
@@ -45,7 +44,7 @@ int _loadObjectData(int category, int wepId, int material)
         break;
 
     case 1:
-        if ((vs_battle_processObjectDataQueue() == 0) && (temp_s1->unk5B8 == temp_s0)) {
+        if ((vs_battle_processObjectDataQueue() == 0) && (temp_s1->unk5B8 == 1)) {
             func_800FA2CC();
 
             ++vs_battle_loadObjectDataState;

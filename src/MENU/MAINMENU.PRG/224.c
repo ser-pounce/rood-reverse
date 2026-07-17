@@ -330,7 +330,7 @@ void func_800FA2CC(void)
     i_2 = 1;
 
     if (temp_s1->unk0.unkA_7) {
-        i_2 = 0x65;
+        i_2 = 101;
     }
 
     temp_s1->unk5B8 = i_2;

@@ -69,10 +69,22 @@ typedef struct {
 } D_800F4538_unkC54;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    u_char unk8;
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+    u_char unkC;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
 } D_800F4538_unk68;
 
 typedef struct {

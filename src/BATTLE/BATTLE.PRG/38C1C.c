@@ -4,6 +4,7 @@
 
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
+int func_800A17BC(int, int, void*);
 int func_800A1C10(int arg0, int arg1, int arg2, int arg3);
 void func_800A9EB4(int, int, int);
 
@@ -13,7 +14,26 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A152C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1648);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1720);
+int func_800A1720(int arg0, int arg1, int* arg2)
+{
+    int var_v0 = arg1;
+
+    if (arg1 == 0xFD) {
+        var_v0 = 0;
+    }
+
+    var_v0 = func_800A17BC(arg0, var_v0, arg2);
+
+    if (var_v0 < 0) {
+        return var_v0;
+    }
+
+    if (arg1 == 0xFD) {
+        arg2[6] = D_800F4538[arg0]->unk0.unk1C.vy;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A17BC);
 

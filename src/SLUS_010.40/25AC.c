@@ -2617,8 +2617,17 @@ void func_800184B8(FSoundCommandParams* arg0)
     D_80036780 = var_a1;
 }
 
-// https://decomp.me/scratch/zbb0j
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001852C);
+void func_8001852C(void)
+{
+    Sound_KillMusicConfig(g_pActiveMusicConfig, g_ActiveMusicChannels, 0);
+
+    if (g_pSavedMousicConfig != NULL) {
+        Sound_KillMusicConfig(g_pSavedMousicConfig, g_pSecondaryMusicChannels, 0);
+    }
+
+    g_pActiveMusicConfig->StatusFlags &= 0xFFFEFFFF;
+    *(int*)&D_80037788.Param1 = 0;
+}
 
 void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
 {

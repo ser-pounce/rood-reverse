@@ -36,6 +36,10 @@
         "name": "Main game engine"
     },
     {
+        "id": "ending.SCREFF2.PRG",
+        "name": "Fullscreen effects"
+    },
+    {
         "id": "menus.MAINMENU.PRG",
         "name": "Top level menu and shared menu functionality"
     },
@@ -96,12 +100,8 @@
         "name": "Misc menus"
     },
     {
-        "id": "ending.SCREFF2.PRG",
-        "name": "Ending sequence helper functions"
-    },
-    {
         "id": "ending.ENDING.PRG",
-        "name": "Ending and credits"
+        "name": "Credits"
     },
     {
         "category_mappings": {
@@ -109,6 +109,7 @@
             "TITLE.PRG": "title.TITLE.PRG",
             "INITBTL.PRG": "battle.INITBTL.PRG",
             "BATTLE.PRG": "battle.BATTLE.PRG",
+            "SCREFF2.PRG": "battle.SCREFF2.PRG",
             "MAINMENU.PRG": "menus.MAINMENU.PRG",
             "MENU0.PRG": "menus.MENU0.PRG",
             "MENU1.PRG": "menus.MENU1.PRG",
@@ -124,7 +125,6 @@
             "MENUD.PRG": "menus.MENUD.PRG",
             "MENUE.PRG": "menus.MENUE.PRG",
             "MENUF.PRG": "menus.MENUF.PRG",
-            "SCREFF2.PRG": "ending.SCREFF2.PRG",
             "ENDING.PRG": "ending.ENDING.PRG"
         }
     }

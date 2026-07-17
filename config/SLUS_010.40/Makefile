@@ -1,6 +1,7 @@
 $(BUILD)/data/SLUS_010.40: LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
-	--defsym=__nCtors=0x00000000
+	--defsym=__nCtors=0x00000000 \
+	--defsym=g_pActiveMusicConfig2=0x80037820
 
 $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
 	--retain-symbols-file=config/SLUS_010.40/exports.txt

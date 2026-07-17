@@ -18,7 +18,7 @@ typedef struct {
     u_char actorId;
     char unk11;
     char material;
-    char unk13;
+    char variant;
 } vs_battle_objectData;
 
 int vs_battle_clamp(short arg0, int arg1, int arg2);

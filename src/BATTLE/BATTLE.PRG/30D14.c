@@ -318,7 +318,7 @@ exit:
     s1->unk5F = 0;
     s1->unk1C = (s1->unk5C << 7) + 0x40;
     s1->unk20 = (s1->unk5E << 7) + 0x40;
-    s1->unk1E = func_800A6EE8(&s1->unk1C, 0, 0, 1) - (arg0->unk13 << 7);
+    s1->unk1E = func_800A6EE8(&s1->unk1C, 0, 0, 1) - (arg0->variant << 7);
     func_800A0104(arg0->index, arg0->material);
     func_800E6898(s1);
     s1->unk6C[8].unk0_4 = 0;

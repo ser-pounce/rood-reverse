@@ -355,11 +355,6 @@ static void _setMenuHeader(void)
     vs_mainMenu_initInformationBox();
 }
 
-/**
- * Module entrypoint.
- *
- * @return Returns 1 if menu is exiting for any reason, 0 otherwise
- */
 int vs_menu1_exec(u_char* state)
 {
     enum state {

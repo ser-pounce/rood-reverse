@@ -50,7 +50,10 @@ void _toggleMenuAction(int enable)
     }
 }
 
-void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
+/**
+ * Feathers the top or bottom of the item and adds the scroll arrows.
+ */
+void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
 {
     static char _previousFrameBuf = 0;
     static char _navigationAnimState = 0;
@@ -98,12 +101,12 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
 
     state = menuItem->state;
 
-    if ((state == 1) && (menuItem->x < 0x80U)) {
+    if ((state == 1) && (menuItem->x < 128u)) {
 
         var_s0 = _navigationAnimState >> 2;
 
         if (isScrollable == 0) {
-            var_s0 = var_s0 - 5;
+            var_s0 -= 5;
         } else {
             var_s0 = state - var_s0;
         }
@@ -131,7 +134,6 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     prim = D_1F800000[0];
 
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
-
         if (isScrollable == 0) {
             var_s0 = s5 + 32;
         } else {
@@ -156,16 +158,16 @@ void _renderFadedMenuItem(vs_battle_menuItem_t* menuItem)
     D_1F800000[0] = prim;
 
     if (isScrollable == 0) {
-        vs_battle_addTile(before, 0x60000000,
-            ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10), w | 0x20000);
+        vs_battle_addTile(before, vs_getRGB0(primTile, 0, 0, 0),
+            ((xy + 2) & 0xFFFF) | ((xy >> 0x10) << 0x10), w | vs_getWH(0, 2));
     }
 
     if (animState != 0) {
         menuItem->gradientState = animState - 1;
     }
 
-    xy = xy + (-12 << 16);
-    w |= 0x10000;
+    xy += -12 << 16;
+    w |= vs_getWH(0, 1);
     var_s0 = (menuItem->x >= 128) << 7;
 
     for (i = 0; i < 12; ++i) {
@@ -263,18 +265,13 @@ void _clearMenuExceptRow8(void) { vs_mainMenu_clearMenuExcept(8); }
 void _menuReady(void) __attribute__((unused));
 void _menuReady(void) { vs_mainmenu_ready(); }
 
-int _initData(void);
+int _calculateProgress(void);
 int _menuInput(void);
 
-/**
- * Module entrypoint.
- *
- * @return 1 if menu is closing, 0 otherwise.
- */
 int vs_menu9_exec(u_char* state)
 {
     static int initDelay;
-    static int _initDataComplete;
+    static int _calculateProgressComplete;
     static int _selectedRow;
 
     enum state {
@@ -287,13 +284,13 @@ int vs_menu9_exec(u_char* state)
     case init:
         vs_mainMenu_toggleBackgroundFade(1);
         initDelay = 8;
-        _initDataComplete = 0;
+        _calculateProgressComplete = 0;
         *state = initData;
         break;
 
     case initData:
-        if (_initDataComplete == 0) {
-            _initDataComplete = _initData();
+        if (_calculateProgressComplete == 0) {
+            _calculateProgressComplete = _calculateProgress();
         }
 
         if (initDelay != 0) {
@@ -301,7 +298,7 @@ int vs_menu9_exec(u_char* state)
             break;
         }
 
-        if (_initDataComplete == 0) {
+        if (_calculateProgressComplete == 0) {
             break;
         }
 
@@ -417,7 +414,10 @@ static int _1[2] __attribute__((unused));
 static VECTOR _cameraPositionBackup;
 static VECTOR _cameraAnglesBackup;
 
-int _initData(void)
+/**
+ * Recalculates the base game stats and stores the previous camera state.
+ */
+int _calculateProgress(void)
 {
     int i;
     int j;
@@ -475,10 +475,13 @@ int _initData(void)
 
 static const vs_main_CdFile _monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
 
-static const P_CODE _colorStops0[] = { { 0, 65, 107 }, { 25, 130, 108 }, { 64, 48, 102 },
-    { 64, 56, 32 } };
+/**
+ * Stops used for the green and purple UI backgrounds
+ */
+static const P_CODE _bgColorStops0[] = { { 0, 65, 107 }, { 25, 130, 108 },
+    { 64, 48, 102 }, { 64, 56, 32 } };
 
-static const P_CODE _colorStops1[] = { { 0, 5, 51 }, { 1, 40, 38 }, { 8, 8, 32 },
+static const P_CODE _bgColorStops1[] = { { 0, 5, 51 }, { 1, 40, 38 }, { 8, 8, 32 },
     { 16, 16, 8 } };
 
 static u_short _menuText[] = {
@@ -509,11 +512,15 @@ static u_short _miscInfo[] = {
 #include "build/assets/MENU/MENU9.PRG/miscInfo.vsString"
 };
 
+// Probably imported accidentally
 #pragma vsstring(start)
-static char _yesString[] = "YES\0";
-static char _noString[] = "NO\0";
+static char _yesString[] __attribute__((unused)) = "YES\0";
+static char _noString[] __attribute__((unused)) = "NO\0";
 #pragma vsstring(end)
 
+/**
+ * Default boss rush times to beat.
+ */
 static char const* _timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$00:40:00",
     "$00:50:00", "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
 
@@ -533,6 +540,11 @@ void _leaveBossRushMenu(void);
 void _renderBossRushRecords(int);
 void _renderEnemyNavigation(int arg0);
 
+/**
+ * Manages user input
+ *
+ * @return 1 == menu selected, 2 == exit, 0 otherwise
+ */
 int _menuInput(void)
 {
     static int menuAnimState;
@@ -1535,9 +1547,9 @@ void _buildPitchMatrix(MATRIX* pitchMatrix, short angle)
 }
 
 /**
- * The trapezeoid behind the "Rotation" and "Zoom" commands.
+ * The quads behind the enemy number and class / name.
  */
-void _renderCommandsBg(int x, int y, int w, int h, int color)
+void _renderEnemyInfoBg(int x, int y, int w, int h, int color)
 {
     int i;
     int var_s7;
@@ -1551,10 +1563,10 @@ void _renderCommandsBg(int x, int y, int w, int h, int color)
     for (i = y, var_s7 = w; i < ((y + h) - 1); ++i, --var_s7) {
         setLineG2(line);
         setXY2(line, x, i, (x + var_s7) - 1, i);
-        setRGB0(
-            line, _colorStops0[color].r0, _colorStops0[color].g0, _colorStops0[color].b0);
-        setRGB1(
-            line, _colorStops1[color].r0, _colorStops1[color].g0, _colorStops1[color].b0);
+        setRGB0(line, _bgColorStops0[color].r0, _bgColorStops0[color].g0,
+            _bgColorStops0[color].b0);
+        setRGB1(line, _bgColorStops1[color].r0, _bgColorStops1[color].g0,
+            _bgColorStops1[color].b0);
 
         AddPrim(*((void**)getScratchAddr(1)) + 0x1C, line++);
     }
@@ -1596,12 +1608,12 @@ void _renderGradientQuad(int x, int y, int w, int h, int color)
 
     polyG4 = scratch[0];
     setPolyG4(polyG4);
-    r0 = _colorStops0[color].r0;
-    g0 = _colorStops0[color].g0;
-    b0 = _colorStops0[color].b0;
-    r1 = _colorStops1[color].r0;
-    g1 = _colorStops1[color].g0;
-    b1 = _colorStops1[color].b0;
+    r0 = _bgColorStops0[color].r0;
+    g0 = _bgColorStops0[color].g0;
+    b0 = _bgColorStops0[color].b0;
+    r1 = _bgColorStops1[color].r0;
+    g1 = _bgColorStops1[color].g0;
+    b1 = _bgColorStops1[color].b0;
 
     setXY4(polyG4, x, y, a3, y, x, a2, a3, a2);
     setRGB0(polyG4, r0, g0, b0);
@@ -1734,13 +1746,6 @@ void _setTitleRows(void)
     }
 }
 
-/**
- * Renders a title index.
- *
- * @param dimmed Renders the digit with a lower brightness.
- * De facto reserved for the first title when the window doesn't
- * start at index 01.
- */
 void _renderTitleNo(int arg0, int arg1, int enemyNo, int arg3);
 
 /**
@@ -1811,7 +1816,7 @@ void _renderTitleMenu(int animState)
         _renderTitleNo(row->x - 14, y, row->rowIndex, menuItem->isScrollable & 1);
 
         if ((menuItem->isScrollable != menuItem_scrollNone) && (animState == 8)) {
-            _renderFadedMenuItem(menuItem);
+            _renderScrollableMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);
         }
@@ -1820,6 +1825,13 @@ void _renderTitleMenu(int animState)
     vs_battle_getMenuItem(0)->state = 0;
 }
 
+/**
+ * Renders a title index.
+ *
+ * @param dimmed Renders the digit with a lower brightness.
+ * De facto reserved for the first title when the window doesn't
+ * start at index 01.
+ */
 void _renderTitleNo(int x, int y, int titleNo, int dimmed)
 {
     char digits[2];
@@ -1959,7 +1971,7 @@ void _initEnemyList(void)
  */
 void _renderEnemyMenu(int animState)
 {
-    static char D_80109899 = 0;
+    static char cursorAnimStep = 0;
 
     int i;
     int sp18;
@@ -2016,7 +2028,8 @@ void _renderEnemyMenu(int animState)
         x = 60;
 
         if ((enemy->selected != 0) && (animState == 8)) {
-            D_80109899 = vs_mainMenu_renderCursor(D_80109899, ((y - 8) << 0x10) | 48);
+            cursorAnimStep =
+                vs_mainMenu_renderCursor(cursorAnimStep, ((y - 8) << 0x10) | 48);
         }
 
         if (enemy->unlocked != 0) {
@@ -2041,7 +2054,7 @@ void _renderEnemyMenu(int animState)
             x - 14, y, cursorMem->encyclopaediaPage + i + 1, menuItem->isScrollable & 1);
 
         if ((menuItem->isScrollable != 0) && (animState == 8)) {
-            _renderFadedMenuItem(menuItem);
+            _renderScrollableMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);
         }
@@ -2108,15 +2121,15 @@ void _renderEnemyDetailScreen(int animState, int state)
         temp_s0 = (temp_s4 - 100) & 0xFFFF;
 
         vs_battle_renderTextRawColor(
-            "ROTATION", temp_s0 | 0x120000, _rotationColor, scratch[1] + 24);
+            "ROTATION", temp_s0 | (18 << 16), _rotationColor, scratch[1] + 24);
 
         temp_s6 = temp_s4 - 112;
 
-        _renderCommandsBg(temp_s6, 18, 96, 12, 3);
+        _renderEnemyInfoBg(temp_s6, 18, 96, 12, 3);
         vs_mainmenu_renderButton(buttonIdR2, temp_s4 - 120, 34, scratch[1] + 24);
         vs_battle_renderTextRawColor(
             "ZOOM", temp_s0 | (36 << 16), _zoomColor, scratch[1] + 24);
-        _renderCommandsBg(temp_s6, 36, 78, 12, 3);
+        _renderEnemyInfoBg(temp_s6, 36, 78, 12, 3);
         sprintf(sp60, "NO.   %03d/%03d", _selectedEnemy + 1, 78);
         vs_battle_renderTextRawColor(
             sp60, ((temp_s4 - 120) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
@@ -2207,9 +2220,12 @@ void _printFastestClearTime(char* buf, int rounds, int totalSeconds);
 void _toVsStringPercent(char* buf, int value);
 void _toVsStringPercentAlias(char* buf, int value);
 
-void _renderBossRushDetails(int arg0)
+/**
+ * Formats and renders the boss rush data.
+ */
+void _renderBossRushDetails(int animState)
 {
-    static char D_8010989A = 0;
+    static char cursorAnimStep = 0;
 
     char sp18[32];
     _gazetteRow* row;
@@ -2247,14 +2263,14 @@ void _renderBossRushDetails(int arg0)
     s5 = 0x30 * 6;
 
     for (; i < 8; ++i, ++row) {
-        int var_s4 = 0xF0 - (arg0 * 0x17);
+        int var_s4 = 0xF0 - (animState * 0x17);
 
         if (var_s4 < ((i * 0x10) + 0x38)) {
             var_s4 = ((i * 0x10) + 0x38);
         }
-        if ((row->selected != 0) && (arg0 == 8)) {
-            D_8010989A = vs_mainMenu_renderCursor(
-                D_8010989A, ((row->x - 0xC) & 0xFFFF) | ((var_s4 - 8) << 0x10));
+        if ((row->selected != 0) && (animState == 8)) {
+            cursorAnimStep = vs_mainMenu_renderCursor(
+                cursorAnimStep, ((row->x - 0xC) & 0xFFFF) | ((var_s4 - 8) << 0x10));
         }
 
         menuItem = vs_battle_setMenuItem(0, row->x, var_s4, 0x8E, 0, row->title);
@@ -2263,11 +2279,13 @@ void _renderBossRushDetails(int arg0)
         if ((i == 0) && (new_var->recordTimePage != 0)) {
             menuItem->isScrollable = 1;
         }
+
         if ((i == 7) && (new_var->recordTimePage != 0xF)) {
             menuItem->isScrollable = 2;
         }
-        if ((menuItem->isScrollable != 0) && (arg0 == 8)) {
-            _renderFadedMenuItem(menuItem);
+
+        if ((menuItem->isScrollable != 0) && (animState == 8)) {
+            _renderScrollableMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);
         }
@@ -2300,8 +2318,8 @@ void _renderBossRushDetails(int arg0)
         }
 
         v1 = s5 - (vs_battle_getTextLineLength(intBuf) * 6);
-        s5 += 1;
-        s5 -= 1;
+        ++s5;
+        --s5;
         sp18[0] = 0xFA;
         sp18[1] = v1 - (row->x - 0x72);
         menuItem = vs_battle_setMenuItem(0, row->x + 0x8E, var_s4, 0x8E, 0, sp18);
@@ -2314,8 +2332,8 @@ void _renderBossRushDetails(int arg0)
             menuItem->isScrollable = 2;
         }
 
-        if ((menuItem->isScrollable != 0) && (arg0 == 8)) {
-            _renderFadedMenuItem(menuItem);
+        if ((menuItem->isScrollable != 0) && (animState == 8)) {
+            _renderScrollableMenuItem(menuItem);
         } else {
             vs_battle_renderMenuItem(menuItem);
         }
@@ -2488,7 +2506,7 @@ void _leaveBossRushMenu(void)
  */
 void _renderBossRushRecords(int selected)
 {
-    static char D_801098A0 = 0;
+    static char cursorAnimStep = 0;
 
     char* difficulty[] __attribute__((unused)) = { "EASY", "NORMAL" };
     int difficultyColors[]
@@ -2546,7 +2564,7 @@ void _renderBossRushRecords(int selected)
             menuItem->selected = 1;
             var_fp = (((sp38 * 0x10) + 0x2A) << 0x10) | 0xB6;
 
-            D_801098A0 = vs_mainMenu_renderCursor(D_801098A0, var_fp);
+            cursorAnimStep = vs_mainMenu_renderCursor(cursorAnimStep, var_fp);
 
             sp3C = var_s1;
 
@@ -2820,7 +2838,6 @@ void _renderEnemyNavigation(int direction)
 /**
  * Determines the game score based on kills, attacks, boss rush scores
  * and other criteria.
- *
  */
 void _calculateScore(void)
 {

@@ -34,7 +34,7 @@ void func_800F9A78(int arg0)
     sp10.dataAddr = arg0;
     sp10.unk4 = temp_s3;
     sp10.actorId = 0xFF;
-    sp10.unk13 = temp_s2->unk0.unk10;
+    sp10.variant = temp_s2->unk0.unk10;
     sp10.material = 0;
 
     vs_battle_populateDataSlot(&sp10);
@@ -49,7 +49,7 @@ void func_800F9A78(int arg0)
         sp10.unk4 = temp_v0;
         sp10.actorId = 1;
         sp10.unk11 = 0xFC;
-        sp10.unk13 = temp_s2->unk0.unk10;
+        sp10.variant = temp_s2->unk0.unk10;
         sp10.material = 0;
 
         vs_battle_populateDataSlot(&sp10);

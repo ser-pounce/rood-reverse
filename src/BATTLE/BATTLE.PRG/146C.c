@@ -4393,7 +4393,7 @@ vs_battle_actor* func_800765B0(
         }
         objData.unk11 = var_v1_2 >> 8;
         objData.material = material;
-        objData.unk13 = arg2->unk0_8 >> 4;
+        objData.variant = arg2->unk0_8 >> 4;
 
         vs_battle_populateDataSlot(&objData);
 
@@ -4724,7 +4724,7 @@ int func_80077078(vs_battle_actor* arg0, int index, int wepId,
     } else {
         sp10.actorId = 0xFF;
     }
-    sp10.unk13 = 0;
+    sp10.variant = 0;
     sp10.material = 2;
     return vs_battle_populateDataSlot(&sp10);
 }

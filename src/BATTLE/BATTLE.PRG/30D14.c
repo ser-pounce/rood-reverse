@@ -736,7 +736,7 @@ fixPrims:
             pData += 12;
         }
 
-        // Fixup prim uv0 for some reason
+        // Update uv coords to match the loaded slot
         for (k = 0; k < vertices; pData += 2, ++k) {
             pData[0] += texU;
             pData[1] += texV;

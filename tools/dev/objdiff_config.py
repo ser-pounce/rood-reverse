@@ -75,7 +75,7 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
             }
         }
         if (
-            base_path.name not in {"32154.o", "2EA3C.o", "38C1C.o", "6E644.o"}
+            base_path.name not in {"32154.o", "2EA3C.o", "6E644.o"}
             and not base_path.name.endswith((".data.o", ".rodata.o", ".bss.o"))
         ):
             unit["base_path"] = str(base_path)

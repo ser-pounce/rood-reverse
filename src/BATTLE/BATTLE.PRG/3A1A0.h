@@ -88,11 +88,10 @@ typedef struct {
     u_char unk2;
     u_char unk3;
     u_short unk4;
-    u_short unk6;
+    short unk6;
     u_int unk8;
     int unkC;
-    int unk10;
-    int unk14;
+    SVECTOR unk10;
 } D_800F4538_unk1848;
 
 typedef struct {

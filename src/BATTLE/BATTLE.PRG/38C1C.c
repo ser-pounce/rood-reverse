@@ -4,11 +4,73 @@
 
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
-int func_800A17BC(int, int, void*);
+int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, int arg2, int arg3);
 void func_800A9EB4(int, int, int);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A141C);
+int func_800A141C(int arg0, int arg1, int arg2, int arg3)
+{
+    SVECTOR sp0;
+    MATRIX* v0;
+    D_800F4538_unk68* temp_v1;
+    D_800F4538_t* var_v1 = D_800F4538[arg0];
+
+    if (var_v1 == NULL) {
+        var_v1 = (D_800F4538_t*)D_800F45E0[arg0];
+        if (var_v1 == NULL) {
+            return -1;
+        }
+    }
+
+    v0 = &var_v1->unk0.unk6C[arg1];
+    temp_v1 = var_v1->unk0.unk68;
+
+    __asm__ volatile("lw $t4,0(%0);"
+                     "lw $t5,4(%0);"
+                     "ctc2 $t4, $0;"
+                     "ctc2 $t5, $1;"
+                     "lw $t4,8(%0);"
+                     "lw $t5,0xc(%0);"
+                     "lw $t6,0x10(%0);"
+                     "ctc2 $t4, $2;"
+                     "ctc2 $t5, $3;"
+                     "ctc2 $t6, $4;"
+                     "lw $t4,0x14(%0);"
+                     "lw $t5,0x18(%0);"
+                     "ctc2 $t4, $5;"
+                     "lw $t6,0x1c(%0);"
+                     "ctc2 $t5, $6;"
+                     "ctc2 $t6, $7"
+                     :
+                     : "r"(v0));
+
+    if (arg3 == 0) {
+        sp0.vx = 0;
+    } else {
+        if (arg3 == 1) {
+            sp0.vx = -(u_short)temp_v1->armatures[arg1].unk0;
+        } else {
+            sp0.vx = -temp_v1->armatures[arg1].unk0 / 2;
+        }
+    }
+
+    sp0.vy = 0;
+    sp0.vz = 0;
+    sp0.pad = 0;
+
+    __asm__ volatile("lwc2	$0,0(%0);"
+                     "lwc2	$1,4(%0);"
+                     "nop;"
+                     "nop;"
+                     "rtps;"
+                     "swc2 $14,0x0($a2);"
+                     "addu $v0,$a2,4;"
+                     "swc2 $19,0x0($v0);"
+                     :
+                     : "r"(&sp0));
+
+    return 0;
+}
 
 int func_800A152C(int arg0, int arg1, int arg2)
 {
@@ -71,7 +133,7 @@ int func_800A152C(int arg0, int arg1, int arg2)
 // https://decomp.me/scratch/N9nFn
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1648);
 
-int func_800A1720(int arg0, int arg1, int* arg2)
+int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
 {
     int var_v0 = arg1;
 
@@ -79,7 +141,7 @@ int func_800A1720(int arg0, int arg1, int* arg2)
         var_v0 = 0;
     }
 
-    var_v0 = func_800A17BC(arg0, var_v0, arg2);
+    var_v0 = func_800A17BC(arg0, var_v0, arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;

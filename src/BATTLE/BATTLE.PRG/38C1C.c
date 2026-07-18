@@ -12,6 +12,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A141C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A152C);
 
+// https://decomp.me/scratch/N9nFn
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1648);
 
 int func_800A1720(int arg0, int arg1, int* arg2)
@@ -90,7 +91,54 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1DE8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A208C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A249C);
+void func_800A0204(int, int, int, int);
+
+void func_800A249C(int arg0, int arg1)
+{
+    int var_a2;
+    int var_a1;
+    int v1;
+    D_800F4538_t* temp_a3 = D_800F4538[arg0];
+
+    if (temp_a3->unk0.unkA_5) {
+        return;
+    }
+
+    var_a1 = arg1 - temp_a3->unk0.unk26;
+
+    if (var_a1 > 0x800) {
+        var_a1 -= 0x1000;
+    }
+
+    if (var_a1 < -0x800) {
+        var_a1 += 0x1000;
+    }
+
+    if (var_a1 == 0) {
+        return;
+    }
+
+    temp_a3->unk1848.unk0 = 6;
+
+    v1 = temp_a3->unk5B8;
+
+    if ((v1 == 0x76) || (temp_a3->unk5B8 == 0x75) || temp_a3->unk0.unkC_0) {
+        return;
+    }
+
+    var_a2 = 0x1F;
+
+    if (!(temp_a3->unk0.unkA_6)) {
+
+        var_a2 = 0x11;
+
+        if (var_a1 < 0) {
+            var_a2 = 0x12;
+        }
+    }
+
+    func_800A0204(arg0, var_a2, 0, 0xA);
+}
 
 void func_800A2574(int arg0, short arg1)
 {

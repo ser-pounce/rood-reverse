@@ -30,7 +30,7 @@ int func_800A1720(int arg0, int arg1, int* arg2)
     }
 
     if (arg1 == 0xFD) {
-        arg2[6] = D_800F4538[arg0]->unk0.unk1C.vy;
+        arg2[6] = D_800F4538[arg0]->unk0.position.vy;
     }
 
     return 0;
@@ -104,7 +104,7 @@ void func_800A249C(int arg0, int arg1)
         return;
     }
 
-    var_a1 = arg1 - temp_a3->unk0.unk26;
+    var_a1 = arg1 - temp_a3->unk0.facing;
 
     if (var_a1 > 0x800) {
         var_a1 -= 0x1000;
@@ -120,9 +120,9 @@ void func_800A249C(int arg0, int arg1)
 
     temp_a3->unk1848.unk0 = 6;
 
-    v1 = temp_a3->unk5B8;
+    v1 = temp_a3->animationId;
 
-    if ((v1 == 0x76) || (temp_a3->unk5B8 == 0x75) || temp_a3->unk0.unkC_0) {
+    if ((v1 == 0x76) || (temp_a3->animationId == 0x75) || temp_a3->unk0.unkC_0) {
         return;
     }
 
@@ -156,10 +156,10 @@ void func_800AA850(int, int, int);
 
 void func_800A291C(D_800F4538_t* arg0)
 {
-    addVector(&arg0->unk0.unk1C, &arg0->unk1848.unk10);
+    addVector(&arg0->unk0.position, &arg0->unk1848.unk10);
 
-    arg0->unk0.unk5C = arg0->unk0.unk1C.vx / 128;
-    arg0->unk0.unk5E = arg0->unk0.unk1C.vz / 128;
+    arg0->unk0.unk5C = arg0->unk0.position.vx / 128;
+    arg0->unk0.unk5E = arg0->unk0.position.vz / 128;
 
     func_800AA850(arg0->unk0.unkF, arg0->unk1848.unk6, 12);
 }

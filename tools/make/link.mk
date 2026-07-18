@@ -18,4 +18,4 @@ $(BINTARGETS:=.elf): | $$(@D)/
 $(BINTARGETS:=.elf):
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
-	$(OBJCOPY) --strip-symbol=__romPos $@
+	$(OBJCOPY) $@

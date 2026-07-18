@@ -44,7 +44,7 @@ int _loadObjectData(int category, int wepId, int material)
         break;
 
     case 1:
-        if ((vs_battle_processObjectDataQueue() == 0) && (temp_s1->unk5B8 == 1)) {
+        if ((vs_battle_processObjectDataQueue() == 0) && (temp_s1->animationId == 1)) {
             func_800FA2CC();
 
             ++vs_battle_loadObjectDataState;
@@ -56,7 +56,7 @@ int _loadObjectData(int category, int wepId, int material)
         func_800F9A78(0);
         func_800F9CB0();
 
-        temp_s1->unk0.unkA_7 = 0;
+        temp_s1->unk0.weaponDrawn = 0;
 
         func_800A0204(1, 1, 0, 0);
         func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
@@ -74,7 +74,7 @@ int _loadObjectData(int category, int wepId, int material)
         break;
 
     case 3:
-        if (temp_s1->unk5B8 == 101) {
+        if (temp_s1->animationId == 101) {
             vs_battle_loadObjectDataState = 0;
             return 0;
         }

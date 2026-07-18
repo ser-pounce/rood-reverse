@@ -2201,8 +2201,8 @@ static void _drawScreen(void)
 {
     int temp_lo_5;
     int xOffset = (128 - _animationStep);
-    int z = D_800F4538[1]->cameraDistance;
-    int x = D_800F4538[1]->cameraHeightOffset;
+    int z = D_800F4538[1]->menuCameraDistance;
+    int x = D_800F4538[1]->menuCameraHeightOffset;
     int* p = (int*)D_1F800000 + 13;
 
     p[4] = ((-rsin(_xPos) * xOffset) >> 8) * z;

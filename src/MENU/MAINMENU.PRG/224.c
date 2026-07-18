@@ -12,7 +12,7 @@ void func_800F9A24(int arg0)
     func_800F9A78(arg0);
     func_800F9CB0();
 
-    D_800F4538[1]->unk0.unkA_7 = 1;
+    D_800F4538[1]->unk0.weaponDrawn = 1;
 
     func_800A0204(1, 1, 0, 0);
 }
@@ -115,9 +115,9 @@ void func_800F9CB0(void)
 
     func_8009D468(1, i);
 
-    temp_s0->unk0.unk1C.vx = 0;
-    temp_s0->unk0.unk1C.vy = 0;
-    temp_s0->unk0.unk1C.vz = 0;
+    temp_s0->unk0.position.vx = 0;
+    temp_s0->unk0.position.vy = 0;
+    temp_s0->unk0.position.vz = 0;
     temp_s0->unk5B0_4 = 0;
     temp_s0->unk0.unk8_0 = 0;
     temp_s0->unk0.unk9_7 = 0;
@@ -187,7 +187,7 @@ int func_800F9EB8(void* arg0)
         return -1;
     }
 
-    if (temp_s1->unk0.unk0 == 0) {
+    if (temp_s1->unk0.nBones == 0) {
         return -1;
     }
 
@@ -218,7 +218,7 @@ int func_800F9EB8(void* arg0)
         new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] += new_var2;
 
-        applyVector(&temp_s1->unk0.unk1C, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
+        applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
             temp_s1->unk6F4.unk2, +=);
 
         func_800B002C(temp_s1, temp_s1->unk17FD);
@@ -228,7 +228,7 @@ int func_800F9EB8(void* arg0)
         new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
         p[1] -= new_var3;
 
-        applyVector(&temp_s1->unk0.unk1C, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
+        applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
             temp_s1->unk6F4.unk2, -=);
     }
 
@@ -316,7 +316,7 @@ void func_800FA2CC(void)
         vs_battle_wepModels_t* var_a0 = vs_battle_wepModels[i];
 
         if (var_a0 != 0) {
-            if (temp_s1->unk0.unkA_7) {
+            if (temp_s1->unk0.weaponDrawn) {
                 var_a0->unk11 = 0x40;
                 var_a0->unk8_4 = 1;
             } else {
@@ -329,11 +329,11 @@ void func_800FA2CC(void)
 
     i_2 = 1;
 
-    if (temp_s1->unk0.unkA_7) {
+    if (temp_s1->unk0.weaponDrawn) {
         i_2 = 101;
     }
 
-    temp_s1->unk5B8 = i_2;
+    temp_s1->animationId = i_2;
     temp_s1->unk5AC_20 = 0;
     temp_s1->unk187C = func_800AD494(temp_s1, i_2, &sp10);
     temp_s1->unk6E3 = D_800F49DC;

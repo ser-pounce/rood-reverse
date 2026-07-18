@@ -69,22 +69,17 @@ typedef struct {
 } D_800F4538_unkC54;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    u_char unk8;
-    u_char unk9;
-    u_char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    u_char unkE;
-    u_char unkF;
+    int unk0;
+    u_char unk4[12];
+} _armature_t;
+
+typedef struct {
+    u_char unk0[48];
+    void* akaoOffset;
+    void* groupOffset;
+    void* vertexOffset;
+    void* polyOffset;
+    _armature_t armatures[0];
 } D_800F4538_unk68;
 
 typedef struct {
@@ -116,11 +111,11 @@ typedef struct {
 } _wepModelOffsets;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    int unk4;
+    u_char nBones;
+    u_char nVertexGroups;
+    u_short nTriangles;
+    u_short nQuads;
+    u_short nOther;
     char unk8_0 : 1;
     char unk8_1 : 1;
     char unk8_2 : 1;
@@ -136,7 +131,7 @@ typedef struct {
     u_char unkA_3 : 2;
     u_char unkA_5 : 1;
     u_char unkA_6 : 1;
-    u_char unkA_7 : 1;
+    u_char weaponDrawn : 1;
     u_char unkB_0 : 4;
     u_char unkB_4 : 3;
     u_char unkB_7 : 1;
@@ -153,9 +148,9 @@ typedef struct {
     u_short unk16;
     u_short unk18;
     u_short unk1A;
-    SVECTOR unk1C;
+    SVECTOR position;
     short unk24;
-    short unk26;
+    short facing;
     int unk28;
     short unk2C;
     short unk2E;
@@ -218,7 +213,7 @@ typedef struct {
     u_char unk5B5;
     u_char unk5B6;
     u_char unk5B7;
-    u_char unk5B8;
+    u_char animationId;
     u_char unk5B9;
     u_char unk5BA;
     u_char unk5BB;
@@ -238,24 +233,35 @@ typedef struct {
     void* unk5D8;
     void* unk5DC[4];
     SVECTOR unk5EC;
-    u_char unk5F4[0x48];
+    struct {
+        u_char x;
+        u_char y;
+        u_char w;
+        u_char h;
+    } texMapOverlays[8];
+    u_char unk614[0x24];
+    int unk638;
     u_short unk63C;
-    u_short cameraHeightOffset;
+    u_short menuCameraHeightOffset;
     u_char unk640[6];
     u_short unk646;
     u_int unk648_0 : 16;
     u_int unk648_16 : 1;
     u_int unk648_17 : 15;
-    u_char unk64C;
-    u_char unk64D;
-    u_short unk64E;
-    u_short unk650;
+    u_short shadowRadius;
+    u_short shadowRadiusExpandRate;
+    u_short shadowRadiusShrinkRate;
     u_short unk652;
     u_short unk654;
-    u_short cameraDistance;
-    u_char unk658[0x54];
-    int unk6AC[8];
-    u_short unk6CC[8];
+    u_short menuCameraDistance;
+    u_short unk658;
+    u_short unk65A;
+    int unk65C;
+    int unk660;
+    u_int btSeqLbas[12];
+    u_short chainAttackAnimationIds[12];
+    u_int spSeqLbas[4];
+    int unk6BC[8];
     int unk6DC;
     u_char unk6E0;
     u_char unk6E1;

@@ -28,7 +28,7 @@ int vs_menu9_loadZud(int zudId)
     case 2:
         func_800F9CB0();
 
-        D_800F4538[1]->unk0.unkA_7 = 1;
+        D_800F4538[1]->unk0.weaponDrawn = 1;
 
         func_800A0204(1, 1, 0, 0);
 
@@ -50,8 +50,8 @@ void func_801080C8(void)
 {
     D_800F4538_t* p = D_800F4538[1];
 
-    p->unk5B8 = 33;
-    p->unk0.unkA_7 = 0;
+    p->animationId = 33;
+    p->unk0.weaponDrawn = 0;
 
     func_800AD008(p, &p->unk704);
     func_800A087C(1, 3);

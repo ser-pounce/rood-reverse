@@ -1010,7 +1010,7 @@ int func_8009CFB0(int arg0)
         }
     exit:
         if (var_v0 == 0) {
-            func_8004644C(0x180, ((func_8004644C_t*)temp_s1->unk0.unk68)->unk30, 0);
+            func_8004644C(0x180, temp_s1->unk0.unk68->akaoOffset, 0);
             vs_main_freeHeap(temp_s1->unk0.unk68);
             vs_main_freeHeap(temp_s1->unk5D0);
         }
@@ -1194,8 +1194,8 @@ void func_8009D468(int arg0, int arg1)
         temp_s1->unk5AC_15 = 0;
         s0 = &temp_s1->unk1864;
         memset(s0, 0, sizeof *s0);
-        s0->unkC = temp_s1->unk64E;
-        s0->unkE = temp_s1->unk650;
+        s0->unkC = temp_s1->shadowRadiusExpandRate;
+        s0->unkE = temp_s1->shadowRadiusShrinkRate;
         memset(&temp_s1->unk1848, 0, sizeof temp_s1->unk1848);
     }
 }
@@ -1261,7 +1261,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
 
     if (arg2 == 2) {
         int i;
-        temp_s0->unk0.unkA_7 = arg1;
+        temp_s0->unk0.weaponDrawn = arg1;
 
         for (i = 0; i < 2; ++i) {
             vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[arg0 * 2 + i];
@@ -1290,12 +1290,12 @@ void func_8009D934(int arg0, int arg1, int arg2)
     }
 
     if (func_800BEB00() == 4) {
-        temp_s0->unk0.unkA_7 = arg1;
+        temp_s0->unk0.weaponDrawn = arg1;
         func_800A0204(arg0, 1, 0, 16);
         return;
     }
 
-    if (arg1 != temp_s0->unk0.unkA_7) {
+    if (arg1 != temp_s0->unk0.weaponDrawn) {
         if (arg1 == 0) {
 
             if (temp_s0->unk6E6 == 0) {
@@ -1305,7 +1305,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
             func_800A0204(arg0, (arg2 * 2) + 10, 0, var_s2);
 
             temp_s0->unk5AC_20 = 1;
-            temp_s0->unk0.unkA_7 = 0;
+            temp_s0->unk0.weaponDrawn = 0;
 
             func_800A01C8(arg0, 1, 16, 0);
         } else {
@@ -1314,7 +1314,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
                 func_800AE6C0(temp_s0, (int)temp_s1, 0);
             }
 
-            temp_s0->unk0.unkA_7 = arg1;
+            temp_s0->unk0.weaponDrawn = arg1;
 
             func_800A0204(arg0, (arg2 * 2) + 9, 0, var_s2);
 
@@ -1399,7 +1399,7 @@ void func_8009DDF4(int arg0, SVECTOR* arg1)
     int _[3] __attribute__((unused));
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
-    if (temp_s0->unk0.unkA_7
+    if (temp_s0->unk0.weaponDrawn
         && ((temp_s0->unk0.unkF == 0)
             || (!temp_s0->unk0.unkA_5 && !temp_s0->unk0.unkA_6
                 && ((temp_s0->unk0.unkA_0 != 2)) && (temp_s0->unk0.unkA_0 != 3)))) {
@@ -1460,7 +1460,7 @@ void func_8009DF3C(int arg0, int arg1)
         var_s0 = 0xC8;
         break;
     case 3:
-        var_s0 = temp_s2->unk5B8;
+        var_s0 = temp_s2->animationId;
         if ((var_s0 != 0xC6) && (var_s0 != 0xC8)) {
             return;
         }
@@ -1531,16 +1531,16 @@ int func_8009E180(D_800F4538_t* arg0, SVECTOR* arg1)
         return 0;
     }
 
-    temp_a1 = arg1->vx - arg0->unk0.unk1C.vx;
-    temp_a0 = arg1->vz - arg0->unk0.unk1C.vz;
+    temp_a1 = arg1->vx - arg0->unk0.position.vx;
+    temp_a0 = arg1->vz - arg0->unk0.position.vz;
 
     if ((temp_a1 == 0) && (temp_a0 == 0)) {
-        var_v1 = arg0->unk0.unk26;
+        var_v1 = arg0->unk0.facing;
     } else {
         var_v1 = (0xC00 - ratan2(temp_a0, temp_a1)) & 0xFFF;
     }
 
-    var_v1 -= arg0->unk0.unk26;
+    var_v1 -= arg0->unk0.facing;
 
     if (var_v1 >= 0x801) {
         var_v0 = var_v1 - 0x1000;
@@ -1564,9 +1564,9 @@ int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
         return 0;
     }
 
-    var_s0 = arg1->vx - arg0->unk0.unk1C.vx;
+    var_s0 = arg1->vx - arg0->unk0.position.vx;
     var_s0 = var_s0 * var_s0;
-    var_v1 = arg1->vz - arg0->unk0.unk1C.vz;
+    var_v1 = arg1->vz - arg0->unk0.position.vz;
 
     if (var_s0 < 0) {
         var_s0 = -var_s0;
@@ -1588,10 +1588,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009E2E0);
 
 int func_8009E480(void)
 {
-    if (D_800F4538[0]->unk5B8 == 0x63) {
+    if (D_800F4538[0]->animationId == 0x63) {
         return 1;
     }
-    return D_800F4538[0]->unk5B8 == 0xC7;
+    return D_800F4538[0]->animationId == 0xC7;
 }
 
 int func_8009E4B0(int arg0)
@@ -1611,7 +1611,7 @@ int func_8009E4B0(int arg0)
     }
 
     if (!temp_a1->unkC54.unk548_16) {
-        int temp_a0 = temp_a1->unk5B8;
+        int temp_a0 = temp_a1->animationId;
         if (temp_a0 >= 100) {
             temp_a0 -= 100;
 
@@ -1654,7 +1654,8 @@ int func_8009E4B0(int arg0)
 
 void func_8009E5C4(int arg0)
 {
-    if ((D_800F4538[arg0]->unk5B8 != 0x63) && (D_800F4538[arg0]->unk5B8 != 0xC7)) {
+    if ((D_800F4538[arg0]->animationId != 0x63)
+        && (D_800F4538[arg0]->animationId != 0xC7)) {
         func_8009E700(arg0, 1);
     }
 }
@@ -1671,15 +1672,15 @@ void func_8009E634(D_800F4538_t* arg0)
     var_a0 = 1;
 
     if (arg0->unk0.unkF == 0) {
-        if ((arg0->unk5B8 - 0x4F) >= 4U) {
-            if (((arg0->unk5B8 - 0x47) >= 4U) && (arg0->unk5B8 != 0x4C)) {
+        if ((arg0->animationId - 0x4F) >= 4U) {
+            if (((arg0->animationId - 0x47) >= 4U) && (arg0->animationId != 0x4C)) {
                 return;
             }
         } else {
             var_a0 = 2;
         }
 
-        temp_v1_2 = arg0->unk0.unk26 + 0x200;
+        temp_v1_2 = arg0->unk0.facing + 0x200;
         temp_v1_2 &= 0xFFF;
         temp_v1_2 /= 1024;
 
@@ -1732,9 +1733,9 @@ void func_8009EA14(int arg0, SVECTOR* arg1)
 
                 if (arg1 != NULL) {
 
-                    var_s0 = arg1->vx - temp_s1->unk0.unk1C.vx;
+                    var_s0 = arg1->vx - temp_s1->unk0.position.vx;
                     var_s0 *= var_s0;
-                    temp_v1 = arg1->vz - temp_s1->unk0.unk1C.vz;
+                    temp_v1 = arg1->vz - temp_s1->unk0.position.vz;
 
                     if (var_s0 < 0) {
                         var_s0 = -var_s0;
@@ -1765,16 +1766,16 @@ void func_8009EA14(int arg0, SVECTOR* arg1)
 
                 if (arg1 != NULL) {
 
-                    temp_a1 = arg1->vx - temp_s1->unk0.unk1C.vx;
-                    temp_a0 = arg1->vz - temp_s1->unk0.unk1C.vz;
+                    temp_a1 = arg1->vx - temp_s1->unk0.position.vx;
+                    temp_a0 = arg1->vz - temp_s1->unk0.position.vz;
 
                     if ((temp_a1 == 0) && (temp_a0 == 0)) {
-                        temp_v1_2 = temp_s1->unk0.unk26;
+                        temp_v1_2 = temp_s1->unk0.facing;
                     } else {
                         temp_v1_2 = (0xC00 - ratan2(temp_a0, temp_a1)) & 0xFFF;
                     }
 
-                    temp_v1_2 = temp_v1_2 - temp_s1->unk0.unk26;
+                    temp_v1_2 = temp_v1_2 - temp_s1->unk0.facing;
 
                     if (temp_v1_2 > 0x800) {
                         temp_v1_2 = temp_v1_2 - 0x1000;
@@ -1829,7 +1830,7 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
     int _[3] __attribute__((unused));
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
-    if (temp_s0->unk0.unkA_7
+    if (temp_s0->unk0.weaponDrawn
         && ((temp_s0->unk0.unkF == 0)
             || (!temp_s0->unk0.unkA_5 && !temp_s0->unk0.unkA_6
                 && (temp_s0->unk0.unkA_0 != 2) && (temp_s0->unk0.unkA_0 != 3)))) {
@@ -2259,8 +2260,8 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
         temp_a0->unk0.unk12 = arg1;
         temp_a0->unk0.unk13 = arg2;
     }
-    *(int*)&temp_a0->unk0.unk1C.vx = 0;
-    *(int*)&temp_a0->unk0.unk1C.vz = 0;
+    *(int*)&temp_a0->unk0.position.vx = 0;
+    *(int*)&temp_a0->unk0.position.vz = 0;
     temp_a0->unk0.unk1A = 0;
     *(int*)&temp_a0->unk0.unk24 = 0;
     temp_a0->unk0.unk28 = 0;
@@ -2279,7 +2280,7 @@ int func_8009FFA8(int arg0, int arg1)
         return -2;
     }
 
-    if ((temp_v1 > 16) || (D_800F4538[temp_v1]->unk0.unk0 == 0)) {
+    if ((temp_v1 > 16) || (D_800F4538[temp_v1]->unk0.nBones == 0)) {
         return -1;
     }
 
@@ -2375,12 +2376,12 @@ void func_800A06B8(D_800F4538_t* arg0, int arg1)
     D_800F4538_unk1864* a2 = &arg0->unk1864;
     a2->unk5 = 0;
     if (arg1 == 0) {
-        a2->unkC = arg0->unk64E;
-        a2->unkE = arg0->unk650;
+        a2->unkC = arg0->shadowRadiusExpandRate;
+        a2->unkE = arg0->shadowRadiusShrinkRate;
         a2->unk8 = 0;
     } else {
-        a2->unk10 = arg0->unk64E - a2->unkC;
-        a2->unk12 = arg0->unk650 - a2->unkE;
+        a2->unk10 = arg0->shadowRadiusExpandRate - a2->unkC;
+        a2->unk12 = arg0->shadowRadiusShrinkRate - a2->unkE;
         a2->unkA = -a2->unk8;
     }
     a2->unk4 = arg1;
@@ -2635,7 +2636,7 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unk5AC_3 << 3) {
             D_800F49E0 |= 0x80000;
         }
-        if ((temp_a1->unk5B8 - 0x47) < 0xEU) {
+        if ((temp_a1->animationId - 0x47) < 0xEU) {
             D_800F49E0 |= 0x80000;
         }
         if (temp_a1->unk0.unkA_3) {
@@ -2687,9 +2688,9 @@ int func_800A1108(int arg0, void* arg1)
     }
 
     ((int*)arg1)[0] = *(int*)&var_v1->unk0.unk5C;
-    ((int*)arg1)[1] = *(int*)&var_v1->unk0.unk1C.vx;
-    ((int*)arg1)[2] = *(int*)&var_v1->unk0.unk1C.vz;
-    ((u_short*)arg1)[5] = var_v1->unk0.unk26;
+    ((int*)arg1)[1] = *(int*)&var_v1->unk0.position.vx;
+    ((int*)arg1)[2] = *(int*)&var_v1->unk0.position.vz;
+    ((u_short*)arg1)[5] = var_v1->unk0.facing;
     return 0;
 }
 
@@ -2706,7 +2707,6 @@ int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
 void func_800A11D8(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
 {
     D_800F4538_t* var_t0 = D_800F4538[arg0];
-    void** p;
 
     if (var_t0 == NULL) {
         var_t0 = (D_800F4538_t*)D_800F45E0[arg0];
@@ -2715,8 +2715,7 @@ void func_800A11D8(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
         }
     }
     *arg2 = var_t0->unk0.unk6C[arg1];
-    p = (void**)&(var_t0->unk0.unk68 + arg1)[4];
-    *arg3 = *(u_long*)p;
+    *arg3 = var_t0->unk0.unk68->armatures[arg1].unk0;
 }
 
 int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
@@ -2744,9 +2743,9 @@ int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
             if (temp_a1->unk0.unkB_0) {
                 return -1;
             }
-            arg2->vx = temp_a1->unk0.unk1C.vx;
-            arg2->vz = temp_a1->unk0.unk1C.vz;
-            arg2->vy = temp_a1->unk0.unk1C.vy - temp_a1->unk646;
+            arg2->vx = temp_a1->unk0.position.vx;
+            arg2->vz = temp_a1->unk0.position.vz;
+            arg2->vy = temp_a1->unk0.position.vy - temp_a1->unk646;
         }
 
         SetRotMatrix((MATRIX*)0x1F800014);

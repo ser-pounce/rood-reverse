@@ -23,7 +23,7 @@ void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
     int sp[2];
     int type = arg1;
 
-    if (arg0->unk1C.vy >= 0xBB8) {
+    if (arg0->position.vy >= 0xBB8) {
         return;
     }
 
@@ -33,7 +33,7 @@ void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
         sp[0] = 0x80;
         sp[1] = 0;
     } else {
-        if ((*((int*)&actor->unk0.unk4 + 1) & 0x3F9F00) != 0x8000) {
+        if ((*((int*)&actor->unk0.nQuads + 1) & 0x3F9F00) != 0x8000) {
             func_800A1280(arg0->unkF, 0xFF, &actor->unk6FC, 0);
         }
 
@@ -56,12 +56,11 @@ void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
     }
 
     if (type == 8) {
-        func_8006CD60(*(u_int**)((char*)arg0->unk68 + 0x30), sp[0], sp[1]);
+        func_8006CD60(arg0->unk68->akaoOffset, sp[0], sp[1]);
     } else if (type == 4) {
-        func_800461CC(
-            0x7E, *(u_int**)((char*)arg0->unk68 + 0x30), rand() % 4 + 4, sp[0], sp[1]);
+        func_800461CC(0x7E, arg0->unk68->akaoOffset, rand() % 4 + 4, sp[0], sp[1]);
     } else {
-        func_800461CC(0x180, *(u_int**)((char*)arg0->unk68 + 0x30), type, sp[0], sp[1]);
+        func_800461CC(0x180, arg0->unk68->akaoOffset, type, sp[0], sp[1]);
     }
 }
 
@@ -103,7 +102,7 @@ void func_800AF6E8(D_800F4538_t* arg0)
         int v5b2;
 
         if (arg0->unk5CC == 1) {
-            func_800AF844(&arg0->unk704, &arg0->unkC54, arg0->unk0.unk0);
+            func_800AF844(&arg0->unk704, &arg0->unkC54, arg0->unk0.nBones);
         }
 
         v5b2 = arg0->unk5B2;
@@ -120,7 +119,7 @@ void func_800AF6E8(D_800F4538_t* arg0)
         }
 
         func_800B147C(
-            &arg0->unk704, &arg0->unkC54, arg0->unk0.unk0, arg0->unk5CC, arg0->unk5CD);
+            &arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC, arg0->unk5CD);
 
         arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
         arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;

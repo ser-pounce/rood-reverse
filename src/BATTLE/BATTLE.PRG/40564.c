@@ -36,7 +36,7 @@ void func_800A97EC(int arg0, u_char* arg1, int arg2, int arg3)
         angle = arg1[3];
         angle <<= 4;
         angle %= 0x1000;
-        angle -= actor->unk0.unk26;
+        angle -= actor->unk0.facing;
 
         func_800AA984(arg0, (short)angle, 0);
 
@@ -133,9 +133,9 @@ void func_800AA984(int arg0, short arg1, int arg2)
         short sum;
         a->unk0.unk18 = 0;
     recenter:
-        sum = (u_short)a->unk0.unk26 + a->unk0.unk3E;
-        a->unk0.unk26 = sum;
-        a->unk0.unk26 = sum % ONE;
+        sum = (u_short)a->unk0.facing + a->unk0.unk3E;
+        a->unk0.facing = sum;
+        a->unk0.facing = sum % ONE;
     } else if (arg2 == -1) {
         int speed;
 

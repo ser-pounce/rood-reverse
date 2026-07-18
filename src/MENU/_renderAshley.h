@@ -90,10 +90,10 @@ static void _renderAshley(int mode)
             int scaledDistance;
             int offsetX;
             int offsetZ;
-            int cameraDistance = D_800F4538[1]->cameraDistance;
+            int cameraDistance = D_800F4538[1]->menuCameraDistance;
 
             setVector(&camera->lookAt, ((-rsin(0xB00) * yOffset) >> 8) * cameraDistance,
-                -(D_800F4538[1]->cameraHeightOffset << 0xB),
+                -(D_800F4538[1]->menuCameraHeightOffset << 0xB),
                 ((rcos(0xB00) * yOffset) >> 8) * cameraDistance);
 
             scaledDistance = cameraDistance * 4;

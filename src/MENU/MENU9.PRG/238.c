@@ -575,7 +575,7 @@ int _menuInput(void)
 
         _cameraDistance = 0x150;
         _cameraHeightOffset = 0x6B;
-        _initCameraDistance = D_800F4538[1]->cameraDistance;
+        _initCameraDistance = D_800F4538[1]->menuCameraDistance;
         _cameraAngles.vx = 0xF40;
         _cameraAngles.vy = 0xE47;
         _cameraAngles.vz = 0;
@@ -1073,9 +1073,9 @@ int _menuInput(void)
                                  .zudId)
             == 0) {
 
-            int temp_v1_4 = D_800F4538[1]->cameraDistance;
+            int temp_v1_4 = D_800F4538[1]->menuCameraDistance;
             _initCameraDistance = temp_v1_4;
-            _cameraHeightOffset = D_800F4538[1]->cameraHeightOffset;
+            _cameraHeightOffset = D_800F4538[1]->menuCameraHeightOffset;
             _cameraDistance = (temp_v1_4 << 0x10) >> 0xE;
 
             if (_cameraDistance < 0x280) {
@@ -1364,9 +1364,9 @@ int _menuInput(void)
                                  .zudId)
             == 0) {
 
-            int temp_v1_10 = D_800F4538[1]->cameraDistance;
+            int temp_v1_10 = D_800F4538[1]->menuCameraDistance;
             _initCameraDistance = temp_v1_10;
-            _cameraHeightOffset = D_800F4538[1]->cameraHeightOffset;
+            _cameraHeightOffset = D_800F4538[1]->menuCameraHeightOffset;
             _cameraDistance = (temp_v1_10 << 0x10) >> 0xE;
 
             if (_cameraDistance < 0x280) {

@@ -10,7 +10,63 @@ void func_800A9EB4(int, int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A141C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A152C);
+int func_800A152C(int arg0, int arg1, int arg2)
+{
+    D_800F4538_t* var_v0_2;
+    D_800F4538_unk68* var_v1;
+    int i;
+    int nBones;
+    int new_var;
+
+    var_v0_2 = D_800F4538[arg0];
+
+    if (var_v0_2 == NULL) {
+        var_v0_2 = (D_800F4538_t*)D_800F45E0[arg0];
+        if (var_v0_2 == NULL) {
+            return -1;
+        }
+    }
+
+    nBones = var_v0_2->unk0.nBones;
+    var_v1 = var_v0_2->unk0.unk68;
+
+    do {
+        if (arg1 == 0xFF) {
+            return 0;
+        }
+    } while (0);
+
+    for (i = 0; i < nBones; ++i) {
+        switch (arg2) {
+        case 0:
+            if (var_v1->armatures[i].unk6 == (arg1 & 0xFF)) {
+                return i;
+            }
+            break;
+
+        case 1:
+            new_var = (var_v1->armatures[i].unk7 >> 4) == ((arg1 & 0xFF) + 1);
+            if (new_var) {
+                return i;
+            }
+            break;
+
+        case 2:
+            if ((var_v1->armatures[i].unk7 & 0xF) == ((arg1 & 0xFF) + 1)) {
+                return i;
+            }
+            break;
+
+        case 3:
+            if (var_v1->armatures[i].unk8 == (arg1 & 0xFF)) {
+                return i;
+            }
+            break;
+        }
+    }
+
+    return -4;
+}
 
 // https://decomp.me/scratch/N9nFn
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1648);

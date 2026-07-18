@@ -70,7 +70,15 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    u_char unk4[12];
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    u_char unk8;
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+    int unkC;
 } _armature_t;
 
 typedef struct {

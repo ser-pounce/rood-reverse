@@ -330,7 +330,7 @@ typedef struct {
     short unk181A;
     u_char unk181C[0x20];
     short unk183C;
-    short unk183E;
+    u_char unk183E[2];
     short unk1840;
     short unk1842;
     short unk1844;

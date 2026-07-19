@@ -99,17 +99,16 @@ void func_800A9CDC(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 
     if (arg2 == -1) {
         func_800AA490(arg0, arg1, -1, new_var->unk5C0);
-    } else {  
+    } else {
         func_800AA490(arg0, arg1, -1, arg2);
     }
-
 }
 
 void func_800A9D24(int arg0, SVECTOR* arg1, int arg2)
 {
     u_short temp_s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
-    
+
     if (arg2 == -1) {
         func_800AA698(arg0, arg1, -1);
         return;
@@ -119,7 +118,7 @@ void func_800A9D24(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C2 = arg2;
 
     func_800AA698(arg0, arg1, -1);
-    
+
     temp_s1->unk5C2 = temp_s0;
 }
 
@@ -332,7 +331,35 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB788);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB9A4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC0D4);
+int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
+{
+    int i;
+    int var_t0 = 0;
+
+    for (i = 0; i < 3; ++i) {
+        if (arg2 < 0) {
+            if (*arg1 < *arg0) {
+                var_t0 = 1;
+                *arg0 += arg2;
+                if (*arg0 < *arg1) {
+                    *arg0 = *arg1;
+                }
+            }
+        } else {
+            if (*arg0 < *arg1) {
+                var_t0 = 1;
+                *arg0 += arg2;
+                if (*arg1 < *arg0) {
+                    *arg0 = *arg1;
+                }
+            }
+        }
+        ++arg0;
+        ++arg1;
+    }
+
+    return var_t0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC168);
 

@@ -241,7 +241,26 @@ void func_800AAC80(RECT* arg0, int arg1, int arg2)
     *(DR_MOVE**)0x1F800000 = drMove + 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AACDC);
+void func_800AACDC(void)
+{
+    void* new_var;
+    RECT sp10;
+    DR_MOVE* temp_s0;
+
+    sp10.x = 470;
+    sp10.y = 384;
+    sp10.w = 18;
+    sp10.h = 36;
+
+    new_var = (void*)0x1F800000;
+    temp_s0 = *((DR_MOVE**)0x1F800000);
+    new_var = (void*)0x10;
+
+    SetDrawMove(temp_s0, &sp10, 16, 400);
+    func_8007A824(temp_s0);
+
+    *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAD4C);
 

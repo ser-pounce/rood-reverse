@@ -5,7 +5,7 @@
 void func_8007A824(DR_MOVE*);
 void func_800AA698(void);
 void func_800AA984(int, short, int);
-void func_800AAA88(void);
+void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
 void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
@@ -99,7 +99,24 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9E38);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9EB4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9F64);
+void func_800A9F64(int arg0, SVECTOR* arg1, int arg2)
+{
+    u_short temp_s0;
+
+    D_800F4538_t* temp_s1 = D_800F4538[arg0];
+
+    if (arg2 == -1) {
+        func_800AAA88(arg0, arg1, -1);
+        return;
+    }
+
+    temp_s0 = temp_s1->unk5C0;
+    temp_s1->unk5C0 = arg2;
+
+    func_800AAA88(arg0, arg1, -1);
+
+    temp_s1->unk5C0 = temp_s0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9FD0);
 
@@ -174,7 +191,7 @@ void func_800AA984(int arg0, short arg1, int arg2)
     }
 }
 
-void func_800AAA68(void) { func_800AAA88(); }
+void func_800AAA68(int arg0, SVECTOR* arg1, int arg2) { func_800AAA88(arg0, arg1, arg2); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAA88);
 

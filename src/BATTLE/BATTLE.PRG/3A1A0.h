@@ -49,11 +49,11 @@ typedef struct {
     u_char unk6;
     u_char unk7;
     u_short unk8;
-    u_short unkA;
+    short unkA;
     u_short unkC;
     u_short unkE;
-    u_short unk10;
-    u_short unk12;
+    short unk10;
+    short unk12;
 } D_800F4538_unk1864;
 
 typedef struct {

@@ -167,7 +167,31 @@ tail:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AF844);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AF960);
+void func_800AF960(D_800F45E0_t* arg0)
+{
+    int temp_lo;
+
+    D_800F4538_unk1864* a2 = &arg0->unk1864;
+
+    if (a2->unk4 != 0) {
+        temp_lo = a2->unkA / a2->unk4;
+        a2->unkA -= temp_lo;
+        a2->unk8 += temp_lo;
+        --a2->unk4;
+    }
+
+    a2->unk8 &= 0xFFF;
+
+    if (a2->unk5 != 0) {
+        temp_lo = a2->unk10 / a2->unk5;
+        a2->unk10 -= temp_lo;
+        a2->unkC += temp_lo;
+        temp_lo = a2->unk12 / a2->unk5;
+        a2->unk12 -= temp_lo;
+        a2->unkE += temp_lo;
+        --a2->unk5;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AFA28);
 

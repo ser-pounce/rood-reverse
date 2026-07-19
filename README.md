@@ -53,7 +53,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![MENUF.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus.MENUF.PRG&color=%2332a934)
 
 ### Title and Ending Sequence
-![TITLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=title.TITLE.PRG)
+![TITLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=title.TITLE.PRG&color=%2332a934)
 ![ENDING.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=ending.ENDING.PRG)
 
 ## Editable content

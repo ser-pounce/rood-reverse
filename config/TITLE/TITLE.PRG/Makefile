@@ -1,3 +1,7 @@
+$(BUILD)/data/TITLE/TITLE.PRG:$(BUILD)/data/SLUS_010.40.elf
+$(BUILD)/data/TITLE/TITLE.PRG: LDLIBS += $(BUILD)/data/SLUS_010.40.elf
+$(BUILD)/data/TITLE/TITLE.PRG $(BUILD)/data/TITLE/TITLE.PRG.elf: LDSCRIPT := link.ld
+
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CPPFLAGS += -D MENUBGSZ=$(strip \
 	$(shell $(SIZE) $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rgba16Compressed.img.o | cut -f2 | tail -n 1)\
 )

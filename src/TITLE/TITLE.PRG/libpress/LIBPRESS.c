@@ -206,10 +206,7 @@ static u_int volatile* D_80075C68[] = { (u_int volatile*)0x1F801098,
     (u_int volatile*)0x1F8010B0, (u_int volatile*)0x1F8010B4,
     (u_int volatile*)0x1F8010B8 };
 
-/*extern int* D_80075C5C;
-extern int volatile* D_80075C68;
-extern int * D_80075C88;
-
+/*
 void func_80072050(int arg0) {
     switch (arg0) {
     case 0:
@@ -235,6 +232,10 @@ void func_80072050(int arg0) {
 */
 
 static char const D_800689DC[] = "MDEC_rest:bad option(%d)\n";
+
+static u_int volatile* D_80075C84 = (u_int volatile*)0x1F801820;
+static u_int volatile* D_80075C88 = (u_int volatile*)0x1F801824;
+static u_int volatile* D_80075C8C = (u_int volatile*)0x1F8010F0;
 
 __asm__(".section .text;"
         ".set push;"
@@ -307,16 +308,7 @@ __asm__(".section .text;"
         "endlabel func_80072050;"
         ".set pop;");
 
-static u_int volatile* D_80075C84 = (u_int volatile*)0x1F801820;
-static u_int volatile* D_80075C88 = (u_int volatile*)0x1F801824;
-static u_int volatile* D_80075C8C = (u_int volatile*)0x1F8010F0;
-
-/*extern int** D_80075C54;
-extern int* D_80075C58;
-extern int* D_80075C5C;
-extern int* D_80075C84;
-extern int* D_80075C8C;
-
+/*
 void func_80072140(int* arg0, u_int arg1) {
     func_8007225C();
     *D_80075C8C |= 0x88;
@@ -370,11 +362,7 @@ __asm__(".section .text;"
         "endlabel func_80072140;"
         ".set pop;");
 
-/*extern int* D_80075C60;
-extern int* D_80075C64;
-extern int* D_80075C68;
-extern int* D_80075C8C;
-
+/*
 void func_800721D0(int arg0, u_int arg1) {
     func_800722F0();
     *D_80075C8C |= 0x88;
@@ -426,9 +414,7 @@ __asm__(".set push;"
         "endlabel func_800721D0;"
         ".set pop;");
 
-/*void func_8007239C(signed char const*);
-extern int* D_80075C88;
-
+/*
 int func_8007225C(void) {
     volatile int sp10;
 
@@ -492,10 +478,7 @@ __asm__(".section .text;"
         "endlabel func_8007225C;"
         ".set pop;");
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_800722F0);
-/*void func_8007239C(signed char const*);
-extern int* D_80075C68;
-
+/*
 int func_800722F0(void) {
     volatile int sp10;
 
@@ -509,6 +492,57 @@ int func_800722F0(void) {
     return 0;
 }
 */
+
+__asm__(".section .rodata;");
+
+static char const D_80068A08[] = "MDEC_out_sync";
+
+__asm__(".section .text;"
+        ".set push;"
+        "glabel func_800722F0;"
+        ".set noreorder;"
+        "addu     $sp, -0x20;"
+        "lui      $v1, %hi(D_80075C68);"
+        "lw       $v1, %lo(D_80075C68)($v1);"
+        "lui      $v0, (0x10);"
+        "sw       $ra, 0x18($sp);"
+        "sw       $v0, 0x10($sp);"
+        "lw       $v0, 0x0($v1);"
+        "lui      $v1, (0x100);"
+        "and      $v0, $v1;"
+        "beqz     $v0, 2f;"
+        "addu     $v0, $zero, $zero;"
+        "li       $a0, -0x1;"
+        "0:"
+        "lw       $v0, 0x10($sp);"
+        "nop;"
+        "addu     $v0, -0x1;"
+        "sw       $v0, 0x10($sp);"
+        "lw       $v0, 0x10($sp);"
+        "nop;"
+        "bne      $v0, $a0, 1f;"
+        "nop;"
+        "lui      $a0, %hi(D_80068A08);"
+        "jal      func_8007239C;"
+        "addiu    $a0, %lo(D_80068A08);"
+        "j        2f;"
+        "li       $v0, -0x1;"
+        "1:"
+        "lui      $v0, %hi(D_80075C68);"
+        "lw       $v0, %lo(D_80075C68)($v0);"
+        "nop;"
+        "lw       $v0, 0x0($v0);"
+        "nop;"
+        "and      $v0, $v1;"
+        "bnez     $v0, 0b;"
+        "addu     $v0, $zero, $zero;"
+        "2:"
+        "lw       $ra, 0x18($sp);"
+        "addu     $sp, 0x20;"
+        "j        $ra;"
+        "nop;"
+        "endlabel func_800722F0;"
+        ".set pop;");
 
 u_int func_80072384(void) { return *D_80075C88; }
 

@@ -7,11 +7,8 @@ options:
   src_path: src/TITLE/TITLE.PRG
   asset_path: build/assets/TITLE/TITLE.PRG
   ld_script_path: build/config/TITLE/TITLE.PRG/link.ld
-  symbol_addrs_path: 
-    - config/TITLE/TITLE.PRG/symbol_addrs.txt
-    - config/SLUS_010.40/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/TITLE/TITLE.PRG/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/TITLE/TITLE.PRG/undefined_syms_auto.txt
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 segments:
   - name: TITLE.PRG

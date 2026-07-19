@@ -71,6 +71,7 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                     "TITLE.PRG/22C",
                     "TITLE.PRG/libpress/VLC_C",
                     "TITLE.PRG/libpress/BUILD"
+                    "TITLE.PRG/libpress/LIBPRESS"
                 }
             }
         }

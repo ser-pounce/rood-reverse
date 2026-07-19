@@ -124,9 +124,9 @@ typedef struct {
     u_short nTriangles;
     u_short nQuads;
     u_short nOther;
-    char unk8_0 : 1;
-    char unk8_1 : 1;
-    char unk8_2 : 1;
+    char skip : 1;
+    char visible : 1;
+    char freeze : 1;
     char unk8_3 : 1;
     char unk8_4 : 3;
     char unk8_7 : 1;
@@ -172,24 +172,27 @@ typedef struct {
     u_short unk42;
     int unk44[5];
     D_800F4538_unk58_2 unk58;
-    u_char unk5C;
+    u_char currentTileX;
     u_char unk5D;
-    u_char unk5E;
+    u_char currentTileZ;
     u_char unk5F;
-    int unk60;
+    u_char lastTouchedTileX;
+    u_char unk61;
+    u_char lastTouchedTileZ;
+    u_char unk63;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
-    MATRIX unk6C[8];
 } D_800F4538_unk0;
 
 typedef struct {
     D_800F4538_unk0 unk0;
-    MATRIX unk16C[34];
+    MATRIX bones[42];
     u_int unk5AC_0 : 2;
     u_int unk5AC_2 : 1;
     u_int unk5AC_3 : 1;
     u_int unk5AC_4 : 2;
-    u_int unk5AC_6 : 2;
+    u_int unk5AC_6 : 1;
+    u_int momentumStop : 1;
     u_int unk5AC_8 : 1;
     u_int unk5AC_9 : 1;
     u_int unk5AC_10 : 1;

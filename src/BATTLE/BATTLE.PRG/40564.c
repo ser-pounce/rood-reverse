@@ -41,9 +41,9 @@ void func_800A97EC(int arg0, u_char* arg1, int arg2, int arg3)
         func_800AA984(arg0, (short)angle, 0);
 
         actor->unk5AC_0 = 0;
-        actor->unk0.unk5C = arg1[0];
+        actor->unk0.currentTileX = arg1[0];
         actor->unk0.unk5D = arg1[1];
-        actor->unk0.unk5E = arg1[2];
+        actor->unk0.currentTileZ = arg1[2];
     } else {
         if (arg3 == -1) {
             actor->unk5C6 = actor->unk5C0;

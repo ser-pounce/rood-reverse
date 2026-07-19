@@ -119,7 +119,7 @@ void func_800F9CB0(void)
     temp_s0->unk0.position.vy = 0;
     temp_s0->unk0.position.vz = 0;
     temp_s0->unk5B0_4 = 0;
-    temp_s0->unk0.unk8_0 = 0;
+    temp_s0->unk0.skip = 0;
     temp_s0->unk0.unk9_7 = 0;
     sp10.unk0 = -1;
     sp10.unk1 = -1;
@@ -133,7 +133,7 @@ void func_800F9CB0(void)
     if (D_800F4538[16] == NULL) {
         func_8009F940(1, 1, (D_800F4538_unk58_2*)&sp18, &sp10);
     } else {
-        D_800F4538[16]->unk0.unk8_0 = 0;
+        D_800F4538[16]->unk0.skip = 0;
     }
 
     sp10.unk0 = 0;
@@ -191,7 +191,7 @@ int func_800F9EB8(void* arg0)
         return -1;
     }
 
-    if (temp_s1->unk0.unk8_0) {
+    if (temp_s1->unk0.skip) {
         return -1;
     }
 
@@ -200,7 +200,7 @@ int func_800F9EB8(void* arg0)
     temp_s1->unk5B2 =
         ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
 
-    if (temp_s1->unk0.unk8_2) {
+    if (temp_s1->unk0.freeze) {
         func_800AB4F0(temp_s1);
         func_800AF6E8(temp_s1);
     } else {
@@ -241,17 +241,17 @@ int func_800F9EB8(void* arg0)
         vs_battle_wepModels_t* temp_a0 = vs_battle_wepModels[v];
 
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
-            MATRIX* temp_s0 = &temp_s1->unk0.unk6C[temp_a0->unkD];
+            MATRIX* bone = &temp_s1->bones[temp_a0->unkD];
 
-            temp_s0->t[0] -= temp_s1->unk6F4.unk0;
-            temp_s0->t[1] -= temp_s1->unk6F4.unk1;
-            temp_s0->t[2] -= temp_s1->unk6F4.unk2;
+            bone->t[0] -= temp_s1->unk6F4.unk0;
+            bone->t[1] -= temp_s1->unk6F4.unk1;
+            bone->t[2] -= temp_s1->unk6F4.unk2;
 
-            func_800B217C(temp_a0, temp_s0);
+            func_800B217C(temp_a0, bone);
 
-            temp_s0->t[0] += temp_s1->unk6F4.unk0;
-            temp_s0->t[1] += temp_s1->unk6F4.unk1;
-            temp_s0->t[2] += temp_s1->unk6F4.unk2;
+            bone->t[0] += temp_s1->unk6F4.unk0;
+            bone->t[1] += temp_s1->unk6F4.unk1;
+            bone->t[2] += temp_s1->unk6F4.unk2;
         }
     }
 

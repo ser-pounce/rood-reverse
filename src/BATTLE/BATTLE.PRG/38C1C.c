@@ -22,7 +22,7 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
         }
     }
 
-    v0 = &var_v1->unk0.unk6C[arg1];
+    v0 = &var_v1->bones[arg1];
     temp_v1 = var_v1->unk0.unk68;
 
     __asm__ volatile("lw $t4,0(%0);"
@@ -276,8 +276,8 @@ void func_800A291C(D_800F4538_t* arg0)
 {
     addVector(&arg0->unk0.position, &arg0->unk1848.unk10);
 
-    arg0->unk0.unk5C = arg0->unk0.position.vx / 128;
-    arg0->unk0.unk5E = arg0->unk0.position.vz / 128;
+    arg0->unk0.currentTileX = arg0->unk0.position.vx / 128;
+    arg0->unk0.currentTileZ = arg0->unk0.position.vz / 128;
 
     func_800AA850(arg0->unk0.unkF, arg0->unk1848.unk6, 12);
 }

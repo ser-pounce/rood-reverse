@@ -610,6 +610,7 @@ typedef struct {
         vs_battle_actor2 unk50;
     } unk0;
     D_800F4538_unk0 unk9B4;
+    MATRIX unk6C[8];
     int unk16C;
     int unk170;
     int unk174;

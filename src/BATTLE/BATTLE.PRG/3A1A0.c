@@ -96,13 +96,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A47C4);
 void func_800A4828(int arg0, MATRIX* arg1)
 {
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
-    int temp_s0 = temp_s1->unk0.unk8_1;
-    temp_s1->unk0.unk8_1 = 0;
+    int visible = temp_s1->unk0.visible;
+    temp_s1->unk0.visible = 0;
     temp_s1->unk5B2 = 1;
     func_800AECA0(arg1);
     func_800AEAE8(temp_s1);
     func_800B28A8(temp_s1, arg1, 0);
-    temp_s1->unk0.unk8_1 = temp_s0;
+    temp_s1->unk0.visible = visible;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);

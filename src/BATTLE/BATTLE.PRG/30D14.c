@@ -1188,9 +1188,9 @@ void func_8009D468(int arg0, int arg1)
         temp_s1->unk6EF = 0;
         temp_s1->unk1846 = 0;
         temp_s1->unk5AC_24 = 0;
-        temp_s1->unk0.unk8_0 = 1;
-        temp_s1->unk0.unk8_1 = 1;
-        temp_s1->unk0.unk8_2 = 1;
+        temp_s1->unk0.skip = 1;
+        temp_s1->unk0.visible = 1;
+        temp_s1->unk0.freeze = 1;
         temp_s1->unk5AC_15 = 0;
         s0 = &temp_s1->unk1864;
         memset(s0, 0, sizeof *s0);
@@ -1696,8 +1696,8 @@ void func_8009E634(D_800F4538_t* arg0)
         } else {
             var_a3 = var_a0;
         }
-        func_800E4C28(
-            arg0->unk0.unk5C + var_a2, arg0->unk0.unk5E + var_a3, var_a2, var_a3);
+        func_800E4C28(arg0->unk0.currentTileX + var_a2, arg0->unk0.currentTileZ + var_a3,
+            var_a2, var_a3);
     }
 }
 
@@ -1935,8 +1935,8 @@ void func_8009F530(int arg0)
             temp_v0_2->unk0.unkA_0 = 3;
             if (temp_v0_2->unk0.unkF != 0) {
                 temp_v0_2->unk181A = 1;
-                temp_v0_2->unk1814 = temp_v0_2->unk0.unk5C;
-                temp_v0_2->unk1818 = temp_v0_2->unk0.unk5E;
+                temp_v0_2->unk1814 = temp_v0_2->unk0.currentTileX;
+                temp_v0_2->unk1818 = temp_v0_2->unk0.currentTileZ;
             }
             temp_v0_2->unk0.unk11 = 4;
         }
@@ -2458,9 +2458,9 @@ void func_800A087C(int actorId, int arg1)
         vs_battle_wepModels_t* model;
         int new_var;
 
-        temp_t0->unk0.unk8_0 = (arg1 & 1) ^ 1;
-        temp_t0->unk0.unk8_1 = arg1 >> 1;
-        temp_t0->unk0.unk8_2 = arg1 >> 2;
+        temp_t0->unk0.skip = (arg1 & 1) ^ 1;
+        temp_t0->unk0.visible = arg1 >> 1;
+        temp_t0->unk0.freeze = arg1 >> 2;
         temp_t0->unk0.unk9_7 = arg1 >> 6;
 
         model = vs_battle_wepModels[actorId * 2];
@@ -2578,13 +2578,13 @@ u_int func_800A0BE0(int actorId)
         }
     } else {
         D_800F49E0 = 0x8000;
-        if (!(temp_a1->unk0.unk8_0)) {
+        if (!(temp_a1->unk0.skip)) {
             D_800F49E0 = 0x8001;
         }
-        if (temp_a1->unk0.unk8_1) {
+        if (temp_a1->unk0.visible) {
             D_800F49E0 |= 2;
         }
-        if (temp_a1->unk0.unk8_2) {
+        if (temp_a1->unk0.freeze) {
             D_800F49E0 |= 4;
         }
         if (temp_a1->unk5AC_0) {
@@ -2687,7 +2687,7 @@ int func_800A1108(int arg0, void* arg1)
         }
     }
 
-    ((int*)arg1)[0] = *(int*)&var_v1->unk0.unk5C;
+    ((int*)arg1)[0] = *(int*)&var_v1->unk0.currentTileX;
     ((int*)arg1)[1] = *(int*)&var_v1->unk0.position.vx;
     ((int*)arg1)[2] = *(int*)&var_v1->unk0.position.vz;
     ((u_short*)arg1)[5] = var_v1->unk0.facing;
@@ -2714,7 +2714,7 @@ void func_800A11D8(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
             return;
         }
     }
-    *arg2 = var_t0->unk0.unk6C[arg1];
+    *arg2 = var_t0->bones[arg1];
     *arg3 = var_t0->unk0.unk68->armatures[arg1].unk0;
 }
 

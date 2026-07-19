@@ -94,7 +94,43 @@ void func_800AE68C(int arg0, int arg1)
     func_800AE4FC(&D_800F4538[arg0]->unk0, arg1 + 4);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE6C0);
+void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
+{
+    int sp10[2];
+    D_800F4538_t* temp_s0 = D_800F4538[arg0->unk0.unkF];
+
+    if (temp_s0->unk17E4.unk0 == 2) {
+        sp10[0] = 0x80;
+        sp10[1] = 0;
+    } else {
+        int temp_v0;
+
+        if (temp_s0->unk0.unk9_0 || temp_s0->unk0.unk9_4 || !temp_s0->unk0.unk9_7
+            || temp_s0->unk0.unkA_0 || temp_s0->unk0.unkA_3 || temp_s0->unk0.unkA_5) {
+            func_800A1280(arg0->unk0.unkF, 0xFF, &temp_s0->unk6FC, 0);
+        }
+
+        temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
+        sp10[0] = temp_v0 >> 0x10;
+
+        if (temp_s0->unk17E4.unk1 != 0) {
+            sp10[0] = temp_s0->unk17E4.unk1;
+        }
+
+        sp10[1] = temp_v0 & 0xFFFF;
+
+        if (temp_s0->unk17E4.unk2 != 0) {
+            sp10[1] = temp_s0->unk17E4.unk2;
+        }
+    }
+
+    if (sp10[1] != 0) {
+        vs_main_playSfx(0x7E, arg1, sp10[0], sp10[1]);
+        if (arg2 != 0) {
+            vs_main_playSfx(0x7E, arg2, sp10[0], sp10[1]);
+        }
+    }
+}
 
 void func_800AE7D8(void* arg0, int arg1, int arg2)
 {

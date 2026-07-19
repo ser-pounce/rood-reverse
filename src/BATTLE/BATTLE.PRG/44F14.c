@@ -21,7 +21,7 @@ void func_800AE47C(D_800F4538_t* arg0)
     u_short* sp10;
     int var_v1;
     void* var_a3;
-    
+
     u_char** v0 = func_800AD494(arg0, arg0->animationId, &sp10);
     u_char* temp_a3 = *v0;
     temp_a3 += sp10[2];
@@ -181,7 +181,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B0908);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B101C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B13CC);
+int func_800B13CC(int arg0, int arg1, int arg2)
+{
+    int i;
+    int var_a3 = 0xBB8;
+
+    for (i = 0; i < 16; ++i) {
+
+        D_800F45E0_t* temp_v1 = D_800F45E0[i];
+
+        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && !(temp_v1->unk6C[8].unk0_3)
+            && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
+
+            int temp_v1_2 = temp_v1->unk1E;
+
+            if ((arg2 < temp_v1_2) && (temp_v1_2 < var_a3)) {
+                var_a3 = temp_v1_2;
+            }
+        }
+    }
+
+    var_a3 -= 128;
+
+    if (var_a3 > 0) {
+        var_a3 = 0;
+    }
+
+    return var_a3;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B147C);
 

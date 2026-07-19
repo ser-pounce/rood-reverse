@@ -78,7 +78,10 @@ typedef struct {
     u_char unk9;
     u_char unkA;
     u_char unkB;
-    int unkC;
+    u_char unkC;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
 } _armature_t;
 
 typedef struct {
@@ -170,7 +173,12 @@ typedef struct {
     u_short unk3E;
     u_short unk40;
     u_short unk42;
-    int unk44[5];
+    int unk44;
+    int unk48;
+    int unk4C;
+    short unk50;
+    short unk52;
+    int unk54;
     D_800F4538_unk58_2 unk58;
     u_char currentTileX;
     u_char unk5D;
@@ -337,6 +345,9 @@ typedef struct {
     D_800F4538_unk1864 unk1864;
     int unk1868;
     int unk187C;
+    u_char unk1880[0x50];
+    u_char unk18D0;
+    u_char unk18D1;
 } D_800F4538_t;
 
 typedef struct {

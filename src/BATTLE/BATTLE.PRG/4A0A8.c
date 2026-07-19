@@ -1004,10 +1004,10 @@ int func_800B784C(u_char* arg0, short arg1)
     sp10[2] = arg0[5];
     sp10[3] = arg0[6];
     if (D_800F4C2C == 2) {
-        func_800A97EC(temp_v0, sp10, 0, 0);
+        func_800A97EC(temp_v0, (func_8006EBF8_t_fields*)sp10, 0, 0);
     } else {
-        func_800A97EC(temp_v0, sp10, arg0[7] != 0xFF ? arg0[7] : -1,
-            arg0[8] != 0xFF ? arg0[8] : -1);
+        func_800A97EC(temp_v0, (func_8006EBF8_t_fields*)sp10,
+            arg0[7] != 0xFF ? arg0[7] : -1, arg0[8] != 0xFF ? arg0[8] : -1);
     }
     func_8009DC8C(temp_v0);
     D_800F4B70[temp_v0] = 1;

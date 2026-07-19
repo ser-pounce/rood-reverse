@@ -2,6 +2,7 @@
 #include "40564.h"
 #include "3A1A0.h"
 
+void func_8007A824(DR_MOVE*);
 void func_800AA698(void);
 void func_800AA984(int, short, int);
 void func_800AAA88(void);
@@ -179,7 +180,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAA88);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AABD0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAC80);
+void func_800AAC80(RECT* arg0, int arg1, int arg2)
+{
+    DR_MOVE* drMove = *(DR_MOVE**)0x1F800000;
+    SetDrawMove(drMove, arg0, arg1, arg2);
+    func_8007A824(drMove);
+    *(DR_MOVE**)0x1F800000 = drMove + 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AACDC);
 

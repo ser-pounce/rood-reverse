@@ -524,6 +524,7 @@ typedef struct {
     int lootSectionLen;
 } _mpdHeader;
 
+void func_800C64D0(int, int);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
 int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
@@ -730,6 +731,7 @@ extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
 extern int D_800F1868;
+extern int D_800F1870;
 extern int _firstPersonViewEnabled;
 extern int D_800F18A8;
 extern int D_800F18AC;
@@ -5450,6 +5452,8 @@ void func_8007983C(void)
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
+
+void func_8007A824(int arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
 
 int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
 {

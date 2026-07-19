@@ -302,7 +302,7 @@ __asm__(".section .text;"
         "3:"
         "lw       $ra, 0x10($sp);"
         "addu     $sp, 0x18;"
-        "jr       $ra;"
+        "j        $ra;"
         "nop;"
         "endlabel func_80072050;"
         ".set pop;");
@@ -365,12 +365,11 @@ __asm__(".section .text;"
         "lw       $ra, 0x18($sp);"
         "lw       $s1, 0x14($sp);"
         "lw       $s0, 0x10($sp);"
-        "jr       $ra;"
+        "j        $ra;"
         "addu     $sp, 0x20;"
         "endlabel func_80072140;"
         ".set pop;");
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_800721D0);
 /*extern int* D_80075C60;
 extern int* D_80075C64;
 extern int* D_80075C68;
@@ -385,6 +384,47 @@ void func_800721D0(int arg0, u_int arg1) {
     *D_80075C68 = 0x01000200;
 }
 */
+
+__asm__(".set push;"
+        ".set noreorder;"
+        "glabel func_800721D0;"
+        "addu     $sp, -0x20;"
+        "sw       $s1, 0x14($sp);"
+        "addu     $s1, $a0, $zero;"
+        "sw       $s0, 0x10($sp);"
+        "sw       $ra, 0x18($sp);"
+        "jal      func_800722F0;"
+        "addu     $s0, $a1, $zero;"
+        "lui      $v1, %hi(D_80075C8C);"
+        "lw       $v1, %lo(D_80075C8C)($v1);"
+        "nop;"
+        "lw       $v0, 0x0($v1);"
+        "srl      $s0, 5;"
+        "or       $v0, 0x88;"
+        "sw       $v0, 0x0($v1);"
+        "lui      $v0, %hi(D_80075C68);"
+        "lw       $v0, %lo(D_80075C68)($v0);"
+        "sll      $s0, 16;"
+        "sw       $zero, 0x0($v0);"
+        "lui      $v0, %hi(D_80075C60);"
+        "lw       $v0, %lo(D_80075C60)($v0);"
+        "or       $s0, 0x20;"
+        "sw       $s1, 0x0($v0);"
+        "lui      $v0, %hi(D_80075C64);"
+        "lw       $v0, %lo(D_80075C64)($v0);"
+        "lui      $v1, (0x100);"
+        "sw       $s0, 0x0($v0);"
+        "lui      $v0, %hi(D_80075C68);"
+        "lw       $v0, %lo(D_80075C68)($v0);"
+        "or       $v1, (0x0200);"
+        "sw       $v1, 0x0($v0);"
+        "lw       $ra, 0x18($sp);"
+        "lw       $s1, 0x14($sp);"
+        "lw       $s0, 0x10($sp);"
+        "j        $ra;"
+        "addu     $sp, 0x20;"
+        "endlabel func_800721D0;"
+        ".set pop;");
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_8007225C);
 /*void func_8007239C(signed char const*);

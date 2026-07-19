@@ -1,6 +1,7 @@
 #include "common.h"
 #include "40564.h"
 #include "3A1A0.h"
+#include <abs.h>
 
 void func_8007A824(DR_MOVE*);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
@@ -253,7 +254,39 @@ void func_800AA850(int arg0, u_short arg1, int arg2)
     func_800AA984(arg0, var_v1, arg2);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA8D0);
+void func_800AA8D0(int arg0, short arg1, int arg2)
+{
+    int arg2_2;
+    int var_v0;
+    D_800F4538_t* temp_v0 = D_800F4538[arg0];
+
+    if (temp_v0 == NULL) {
+        return;
+    }
+
+    arg1 -= temp_v0->unk0.facing;
+
+    if (arg1 > ONE / 2) {
+        arg1 -= ONE;
+    }
+
+    if (arg1 < -ONE / 2) {
+        arg1 += ONE;
+    }
+
+    var_v0 = arg1;
+
+    var_v0 = ABS(var_v0);
+    arg2 = ABS(arg2);
+
+    arg2_2 = var_v0 / arg2;
+
+    if ((var_v0 % arg2) != 0) {
+        ++arg2_2;
+    }
+
+    func_800AA984(arg0, arg1, arg2_2);
+}
 
 void func_800AA984(int arg0, short arg1, int arg2)
 {

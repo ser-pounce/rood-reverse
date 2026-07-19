@@ -60,7 +60,7 @@ typedef struct {
     u_char unk0[0x540];
     u_short unk540;
     u_short unk542;
-    int unk544;
+    u_char* unk544;
     int unk548_0 : 16;
     int unk548_16 : 1;
     int unk548_17 : 1;

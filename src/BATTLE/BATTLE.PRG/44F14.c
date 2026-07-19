@@ -5,6 +5,8 @@
 #include "44F14.h"
 #include "../../SLUS_010.40/main.h"
 
+u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
+void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, u_char*);
 void func_800AF844(D_800F4538_unkC54*, D_800F4538_unkC54*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 
@@ -14,7 +16,30 @@ void func_800AE46C(void) { }
 
 void func_800AE474(void) { }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE47C);
+void func_800AE47C(D_800F4538_t* arg0)
+{
+    u_short* sp10;
+    int var_v1;
+    void* var_a3;
+    
+    u_char** v0 = func_800AD494(arg0, arg0->animationId, &sp10);
+    u_char* temp_a3 = *v0;
+    temp_a3 += sp10[2];
+
+    var_v1 = temp_a3[0];
+
+    if (var_v1 == 0xFF) {
+        var_a3 = temp_a3 + 2;
+        var_v1 = temp_a3[1] + 0xFF;
+    } else {
+        var_a3 = temp_a3 + 1;
+    }
+
+    arg0->unk704.unk542 = var_v1;
+    arg0->unk704.unk544 = var_a3;
+
+    func_800AD714(arg0, &arg0->unk704, 2, var_a3);
+}
 
 void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
 {

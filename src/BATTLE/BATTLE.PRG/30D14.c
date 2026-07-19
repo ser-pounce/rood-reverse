@@ -2007,7 +2007,7 @@ void func_8009F898(int arg0, int arg1, int arg2)
 
 int func_8009F8DC(int arg0)
 {
-    int temp_s2;
+    u_char* temp_s2;
     int temp_v0;
     int temp_s1;
     D_800F4538_unkC54* s0 = &D_800F4538[arg0]->unkC54;

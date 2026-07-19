@@ -311,7 +311,6 @@ static u_int volatile* D_80075C84 = (u_int volatile*)0x1F801820;
 static u_int volatile* D_80075C88 = (u_int volatile*)0x1F801824;
 static u_int volatile* D_80075C8C = (u_int volatile*)0x1F8010F0;
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_80072140);
 /*extern int** D_80075C54;
 extern int* D_80075C58;
 extern int* D_80075C5C;
@@ -327,6 +326,49 @@ void func_80072140(int* arg0, u_int arg1) {
     *D_80075C5C = 0x01000201;
 }
 */
+
+__asm__(".section .text;"
+        ".set push;"
+        ".set noreorder;"
+        "glabel func_80072140;"
+        "addu     $sp, -0x20;"
+        "sw       $s1, 0x14($sp);"
+        "addu     $s1, $a0, $zero;"
+        "sw       $s0, 0x10($sp);"
+        "sw       $ra, 0x18($sp);"
+        "jal      func_8007225C;"
+        "addu     $s0, $a1, $zero;"
+        "lui      $v1, %hi(D_80075C8C);"
+        "lw       $v1, %lo(D_80075C8C)($v1);"
+        "srl      $s0, 5;"
+        "lw       $v0, 0x0($v1);"
+        "sll      $s0, 16;"
+        "or       $v0, 0x88;"
+        "sw       $v0, 0x0($v1);"
+        "lui      $v1, %hi(D_80075C54);"
+        "lw       $v1, %lo(D_80075C54)($v1);"
+        "addu     $v0, $s1, 0x4;"
+        "sw       $v0, 0x0($v1);"
+        "lui      $v0, %hi(D_80075C58);"
+        "lw       $v0, %lo(D_80075C58)($v0);"
+        "or       $s0, 0x20;"
+        "sw       $s0, 0x0($v0);"
+        "lui      $v1, %hi(D_80075C84);"
+        "lw       $v1, %lo(D_80075C84)($v1);"
+        "lw       $v0, 0x0($s1);"
+        "lui      $a0, (0x100);"
+        "sw       $v0, 0x0($v1);"
+        "lui      $v0, %hi(D_80075C5C);"
+        "lw       $v0, %lo(D_80075C5C)($v0);"
+        "or       $a0, (0x0201);"
+        "sw       $a0, 0x0($v0);"
+        "lw       $ra, 0x18($sp);"
+        "lw       $s1, 0x14($sp);"
+        "lw       $s0, 0x10($sp);"
+        "jr       $ra;"
+        "addu     $sp, 0x20;"
+        "endlabel func_80072140;"
+        ".set pop;");
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_800721D0);
 /*extern int* D_80075C60;

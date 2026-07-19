@@ -14,13 +14,31 @@ int DMACallback(int, void (*)(void));
 // Commented out functions have delay slot manipulation, probably due to custom linkage
 // used in later PSY-Q versions
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTReset);
 /*void DecDCTReset(int mode) {
     if (mode == 0) {
         ResetCallback();
     }
     func_80072050(mode);
 }*/
+
+__asm__(".set push;"
+        ".set noreorder;"
+        "glabel DecDCTReset;"
+        "addiu      $sp, $sp, -0x18;"
+        "sw         $s0, 0x10($sp);"
+        "addu       $s0, $a0, $zero;"
+        "bnez       $s0, 0f;"
+        "sw        $ra, 0x14($sp);"
+        "jal        ResetCallback;"
+        "nop;"
+        "0:"
+        "jal        func_80072050;"
+        "addu      $a0, $s0, $zero;"
+        "lw         $ra, 0x14($sp);"
+        "lw         $s0, 0x10($sp);"
+        "jr         $ra;"
+        "addiu     $sp, $sp, 0x18;"
+        ".set pop;");
 
 static int D_80075B44 = 0x40000001;
 static char D_80075B48[] = { 0x02, 0x10, 0x10, 0x13, 0x10, 0x13, 0x16, 0x16, 0x16, 0x16,

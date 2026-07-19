@@ -305,7 +305,33 @@ void func_800AAA68(int arg0, SVECTOR* arg1, int arg2) { func_800AAA88(arg0, arg1
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAA88);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AABD0);
+void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
+{
+    D_800F4538_t* temp_a3 = D_800F4538[arg0];
+
+    if (temp_a3 != NULL) {
+
+        if (arg2 == 0) {
+            temp_a3->unk5C8 = 0;
+            temp_a3->unk0.unk2C = arg1->vx;
+            temp_a3->unk0.unk2E = arg1->vy;
+            temp_a3->unk0.unk30 = arg1->vz;
+            return;
+        }
+
+        temp_a3->unk0.unk44.vx = arg1->vx - temp_a3->unk0.unk2C;
+        temp_a3->unk0.unk44.vy = arg1->vy - temp_a3->unk0.unk2E;
+        temp_a3->unk0.unk44.vz = arg1->vz - temp_a3->unk0.unk30;
+
+        if ((*(int*)&temp_a3->unk0.unk44 == 0)
+            && ((temp_a3->unk0.unk44.vz << 0x10) == 0)) {
+            temp_a3->unk5C8 = 0;
+            return;
+        }
+
+        temp_a3->unk5C8 = arg2;
+    }
+}
 
 void func_800AAC80(RECT* arg0, int arg1, int arg2)
 {

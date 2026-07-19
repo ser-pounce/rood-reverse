@@ -173,8 +173,7 @@ typedef struct {
     u_short unk3E;
     u_short unk40;
     u_short unk42;
-    int unk44;
-    int unk48;
+    SVECTOR unk44;
     int unk4C;
     short unk50;
     short unk52;

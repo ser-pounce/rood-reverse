@@ -3,7 +3,7 @@
 #include "3A1A0.h"
 
 void func_8007A824(DR_MOVE*);
-void func_800AA698(void);
+void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
@@ -91,7 +91,21 @@ void func_800A9CDC(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
     func_800AA490(arg0, arg1, -1, arg2);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9D24);
+void func_800A9D24(int arg0, SVECTOR* arg1, int arg2)
+{
+    D_800F4538_t* temp_s1;
+    u_short temp_s0;
+
+    temp_s1 = D_800F4538[arg0];
+    if (arg2 == -1) {
+        func_800AA698(arg0, arg1, -1);
+        return;
+    }
+    temp_s0 = temp_s1->unk5C2;
+    temp_s1->unk5C2 = (u_short)arg2;
+    func_800AA698(arg0, arg1, -1);
+    temp_s1->unk5C2 = temp_s0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9D90);
 
@@ -133,7 +147,7 @@ void func_800AA454(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA490);
 
-void func_800AA600(void) { func_800AA698(); }
+void func_800AA600(int arg0, SVECTOR* arg1, int arg2) { func_800AA698(arg0, arg1, arg2); }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA620);
 

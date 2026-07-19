@@ -115,7 +115,42 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEAE8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AECA0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEEC4);
+void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
+void func_800AEEC4(D_800F4538_t* arg0)
+{
+    int _[2] __attribute__((unused));
+    int var_a2;
+    int v0;
+    int temp_v1 = arg0->unk17E4.unk0;
+
+    if ((temp_v1 != 1) || (arg0->unk17E4.unk3 == 0)) {
+        return;
+    }
+
+    var_a2 = vs_gametime_tickspeed / 2;
+
+    if (arg0->unk17E4.unk3 < var_a2) {
+        var_a2 = arg0->unk17E4.unk3;
+    }
+
+    temp_v1 = arg0->unk17E8.unk2 - arg0->unk17E4.unk2;
+
+    if (temp_v1 != 0) {
+        temp_v1 *= var_a2;
+        v0 = temp_v1 / arg0->unk17E4.unk3;
+        arg0->unk17E4.unk2 = arg0->unk17E4.unk2 + v0;
+    }
+
+    temp_v1 = arg0->unk17E8.unk1 - arg0->unk17E4.unk1;
+
+    if (temp_v1 != 0) {
+        temp_v1 *= var_a2;
+        v0 = temp_v1 / arg0->unk17E4.unk3;
+        arg0->unk17E4.unk1 = arg0->unk17E4.unk1 + v0;
+    }
+
+    arg0->unk17E4.unk3 -= var_a2;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEF94);
 
@@ -167,6 +202,7 @@ tail:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AF844);
 
+void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
 void func_800AF960(D_800F45E0_t* arg0)
 {
     int temp_lo;

@@ -38,6 +38,7 @@ __asm__(".set push;"
         "lw         $s0, 0x10($sp);"
         "jr         $ra;"
         "addiu     $sp, $sp, 0x18;"
+        "endlabel DecDCTReset;"
         ".set pop;");
 
 static int D_80075B44 = 0x40000001;
@@ -86,7 +87,6 @@ DECDCTENV* DecDCTGetEnv(DECDCTENV* env)
     return env;
 }
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTPutEnv);
 /*DECDCTENV* DecDCTPutEnv(DECDCTENV* arg0) {
     int i;
     int *src1, *dst1;
@@ -109,6 +109,52 @@ INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", DecDCTPu
 
     return arg0;
 }*/
+
+__asm__(".set push;"
+        ".set noreorder;"
+        "glabel DecDCTPutEnv;"
+        "addiu      $sp, $sp, -0x18;"
+        "sw         $s0, 0x10($sp);"
+        "addu       $s0, $a0, $zero;"
+        "lui        $a1, %hi(D_80075B48);"
+        "addiu      $a1, $a1, %lo(D_80075B48);"
+        "addiu      $v1, $zero, 0xF;"
+        "addiu      $a2, $zero, -0x1;"
+        "sw         $ra, 0x14($sp);"
+        "0:"
+        "lw         $v0, 0x0($a0);"
+        "addiu      $a0, $a0, 0x4;"
+        "addiu      $v1, $v1, -0x1;"
+        "sw         $v0, 0x0($a1);"
+        "bne        $v1, $a2, 0b;"
+        "addiu     $a1, $a1, 0x4;"
+        "lui        $a1, %hi(D_80075B88);"
+        "addiu      $a1, $a1, %lo(D_80075B88);"
+        "addiu      $a0, $s0, 0x40;"
+        "addiu      $v1, $zero, 0xF;"
+        "addiu      $a2, $zero, -0x1;"
+        "1:"
+        "lw         $v0, 0x0($a0);"
+        "addiu      $a0, $a0, 0x4;"
+        "addiu      $v1, $v1, -0x1;"
+        "sw         $v0, 0x0($a1);"
+        "bne        $v1, $a2, 1b;"
+        "addiu     $a1, $a1, 0x4;"
+        "lui        $a0, %hi(D_80075B44);"
+        "addiu      $a0, $a0, %lo(D_80075B44);"
+        "jal        func_80072140;"
+        "addiu     $a1, $zero, 0x20;"
+        "lui        $a0, %hi(D_80075BC8);"
+        "addiu      $a0, $a0, %lo(D_80075BC8);"
+        "jal        func_80072140;"
+        "addiu     $a1, $zero, 0x20;"
+        "addu       $v0, $s0, $zero;"
+        "lw         $ra, 0x14($sp);"
+        "lw         $s0, 0x10($sp);"
+        "jr         $ra;"
+        "addiu     $sp, $sp, 0x18;"
+        "endlabel DecDCTPutEnv;"
+        ".set pop;");
 
 void DecDCTin(u_long* buf, int mode)
 {

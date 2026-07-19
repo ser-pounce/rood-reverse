@@ -5,7 +5,7 @@
 #include <libgpu.h>
 
 void func_800A97EC(int, func_8006EBF8_t_fields*, int, int);
-void func_800A9C54(int, u_char*, int);
+void func_800A9C54(int, func_8006EBF8_t_fields*, int);
 void func_800A9CDC(int, func_8006EBF8_t_fields*, int);
 void func_800A9D90(int, SVECTOR*, int);
 void func_800A9F64(int, SVECTOR*, int);

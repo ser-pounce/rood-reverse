@@ -78,32 +78,48 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9988);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9C54);
+void func_800A9C54(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
+{
+    D_800F4538_t* temp_s0 = D_800F4538[arg0];
+
+    if (arg2 == -1) {
+        func_800AA290(arg0, arg1, -1, temp_s0->unk5C2);
+    } else {
+        func_800AA290(arg0, arg1, -1, arg2);
+    }
+
+    temp_s0->unk0.currentTileX = arg1->unk0_0;
+    temp_s0->unk0.unk5D = arg1->unk0_8;
+    temp_s0->unk0.currentTileZ = arg1->unk0_16;
+}
 
 void func_800A9CDC(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 {
     D_800F4538_t* new_var = D_800F4538[arg0];
 
     if (arg2 == -1) {
-        arg2 = new_var->unk5C0;
+        func_800AA490(arg0, arg1, -1, new_var->unk5C0);
+    } else {  
+        func_800AA490(arg0, arg1, -1, arg2);
     }
 
-    func_800AA490(arg0, arg1, -1, arg2);
 }
 
 void func_800A9D24(int arg0, SVECTOR* arg1, int arg2)
 {
-    D_800F4538_t* temp_s1;
     u_short temp_s0;
-
-    temp_s1 = D_800F4538[arg0];
+    D_800F4538_t* temp_s1 = D_800F4538[arg0];
+    
     if (arg2 == -1) {
         func_800AA698(arg0, arg1, -1);
         return;
     }
+
     temp_s0 = temp_s1->unk5C2;
-    temp_s1->unk5C2 = (u_short)arg2;
+    temp_s1->unk5C2 = arg2;
+
     func_800AA698(arg0, arg1, -1);
+    
     temp_s1->unk5C2 = temp_s0;
 }
 

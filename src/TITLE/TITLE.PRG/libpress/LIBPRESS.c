@@ -426,7 +426,6 @@ __asm__(".set push;"
         "endlabel func_800721D0;"
         ".set pop;");
 
-INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_8007225C);
 /*void func_8007239C(signed char const*);
 extern int* D_80075C88;
 
@@ -443,6 +442,55 @@ int func_8007225C(void) {
     return 0;
 }
 */
+
+static char const D_800689F8[] = "MDEC_in_sync";
+
+__asm__(".section .text;"
+        ".set push;"
+        "glabel func_8007225C;"
+        ".set noreorder;"
+        "addu      $sp, -0x20;"
+        "lui       $v1, %hi(D_80075C88);"
+        "lw        $v1, %lo(D_80075C88)($v1);"
+        "lui       $v0, (0x10);"
+        "sw        $ra, 0x18($sp);"
+        "sw        $v0, 0x10($sp);"
+        "lw        $v0, 0x0($v1);"
+        "lui       $v1, (0x2000);"
+        "and       $v0, $v1;"
+        "beqz      $v0, 2f;"
+        "addu      $v0, $zero, $zero;"
+        "li        $a0, -1;"
+        "0:"
+        "lw        $v0, 0x10($sp);"
+        "nop;"
+        "addu      $v0, -1;"
+        "sw        $v0, 0x10($sp);"
+        "lw        $v0, 0x10($sp);"
+        "nop;"
+        "bne       $v0, $a0, 1f;"
+        "nop;"
+        "lui       $a0, %hi(D_800689F8);"
+        "jal       func_8007239C;"
+        "addiu     $a0, %lo(D_800689F8);"
+        "j         2f;"
+        "li        $v0, -1;"
+        "1:"
+        "lui       $v0, %hi(D_80075C88);"
+        "lw        $v0, %lo(D_80075C88)($v0);"
+        "nop;"
+        "lw        $v0, 0x0($v0);"
+        "nop;"
+        "and       $v0, $v1;"
+        "bnez      $v0, 0b;"
+        "addu      $v0, $zero, $zero;"
+        "2:"
+        "lw        $ra, 0x18($sp);"
+        "addu      $sp, 0x20;"
+        "j         $ra;"
+        "nop;"
+        "endlabel func_8007225C;"
+        ".set pop;");
 
 INCLUDE_ASM("build/src/TITLE/TITLE.PRG/nonmatchings/libpress/LIBPRESS", func_800722F0);
 /*void func_8007239C(signed char const*);

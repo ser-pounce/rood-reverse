@@ -276,7 +276,37 @@ void func_800A9F64(int arg0, SVECTOR* arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9FD0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA108);
+void func_800AA108(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
+{
+    D_800F4538_t* temp_s0 = D_800F4538[arg0];
+
+    if (temp_s0 != NULL) {
+
+        temp_s0->unk5C4 = arg2;
+
+        if ((arg2 == 0) && (arg3 == 0)) {
+            int temp_a1;
+
+            func_800AA290(arg0, arg1, -1, 0);
+
+            temp_a1 = arg1->unk0_24;
+            temp_a1 *= 0x10;
+            temp_a1 %= 0x1000;
+            temp_a1 -= temp_s0->unk0.facing;
+
+            func_800AA984(arg0, temp_a1, 0);
+            temp_s0->unk5AC_0 = 0;
+        } else {
+            func_800AA490(arg0, arg1, arg3, temp_s0->unk5C0);
+            temp_s0->unk5AC_0 = 1;
+        }
+
+        temp_s0->unk0.currentTileX = arg1->unk0_0;
+        temp_s0->unk0.unk5D = arg1->unk0_8;
+        temp_s0->unk0.currentTileZ = arg1->unk0_16;
+        temp_s0->unk5AC_2 = 1;
+    }
+}
 
 void func_800AA218(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 {

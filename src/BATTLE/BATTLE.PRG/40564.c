@@ -1,9 +1,11 @@
 #include "common.h"
 #include "40564.h"
 #include "3A1A0.h"
+#include "src/SLUS_010.40/main.h"
 #include <abs.h>
 
 void func_8007A824(DR_MOVE*);
+void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
@@ -638,4 +640,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AD008);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AD494);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AD62C);
+void func_800AD62C(int arg0, int* arg1, int* arg2)
+{
+    int temp_v0;
+    D_800F4538_t* temp_s0 = D_800F4538[arg0];
+
+    if (temp_s0->unk17E4.unk0 == 2) {
+        *arg1 = 0x80;
+        if (arg2 != NULL) {
+            *arg2 = 0;
+        }
+    } else {
+        if (temp_s0->unk0.unk9_0 || temp_s0->unk0.unk9_4 || !temp_s0->unk0.unk9_7
+            || temp_s0->unk0.unkA_0 || temp_s0->unk0.unkA_3 || temp_s0->unk0.unkA_5) {
+            func_800A1280(arg0, 0xFF, &temp_s0->unk6FC, 0);
+        }
+
+        temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
+        *arg1 = temp_v0 >> 0x10;
+
+        if (temp_s0->unk17E4.unk1 != 0) {
+            *arg1 = temp_s0->unk17E4.unk1;
+        }
+
+        if (arg2 != NULL) {
+            *arg2 = temp_v0 & 0xFFFF;
+            if (temp_s0->unk17E4.unk2 != 0) {
+                *arg2 = temp_s0->unk17E4.unk2;
+            }
+        }
+    }
+}

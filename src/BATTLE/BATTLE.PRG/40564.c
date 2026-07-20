@@ -4,6 +4,7 @@
 #include <abs.h>
 
 void func_8007A824(DR_MOVE*);
+void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
@@ -539,14 +540,34 @@ void func_800AC37C(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC440);
+void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2)
+{
+    int sp10;
+    int i;
+    _armature_t* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
+
+    for (i = 0; i < 2; ++i) {
+        if (arg2 == 0) {
+            if (arg0->unk18D0[i] == arg1) {
+                arg0->unk18D0[i] = 0;
+                temp_s2->unkC = 0;
+                return;
+            }
+        } else if (arg0->unk18D0[i] == 0) {
+            func_800A1720(arg0->unk0.unkF, arg1, arg0->unk1890[i], &sp10);
+            temp_s2->unkC = i + 1;
+            arg0->unk18D0[i] = arg1;
+            return;
+        }
+    }
+}
 
 void func_800AC500(D_800F4538_t* arg0)
 {
     int i;
 
-    arg0->unk18D0 = 0;
-    arg0->unk18D1 = 0;
+    arg0->unk18D0[0] = 0;
+    arg0->unk18D0[1] = 0;
 
     for (i = 0; i < arg0->unk0.nBones; ++i) {
         arg0->unk0.unk68->armatures[i].unkC = 0;

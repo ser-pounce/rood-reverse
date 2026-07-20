@@ -344,9 +344,9 @@ typedef struct {
     D_800F4538_unk1864 unk1864;
     int unk1868;
     int unk187C;
-    u_char unk1880[0x50];
-    u_char unk18D0;
-    u_char unk18D1;
+    u_char unk1880[0x10];
+    u_char unk1890[2][0x20];
+    u_char unk18D0[2];
 } D_800F4538_t;
 
 typedef struct {

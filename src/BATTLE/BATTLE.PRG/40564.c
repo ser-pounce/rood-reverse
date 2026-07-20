@@ -40,7 +40,7 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 
         angle = arg1->unk0_24;
         angle <<= 4;
-        angle %= 0x1000;
+        angle %= ONE;
         angle -= actor->unk0.facing;
 
         func_800AA984(arg0, (short)angle, 0);
@@ -167,7 +167,33 @@ void func_800A9E38(int arg0, int arg1, int arg2)
     temp_s1->unk5C0 = temp_s0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9EB4);
+void func_800A9EB4(int arg0, short arg1, int arg2)
+{
+    u_short temp_s0;
+    D_800F4538_t* temp_s1 = D_800F4538[arg0];
+
+    arg1 -= temp_s1->unk0.facing;
+
+    if (arg1 > ONE / 2) {
+        arg1 -= ONE;
+    }
+
+    if (arg1 < -ONE / 2) {
+        arg1 += ONE;
+    }
+
+    if (arg2 == -1) {
+        func_800AA984(arg0, arg1, -1);
+        return;
+    }
+
+    temp_s0 = temp_s1->unk5C0;
+    temp_s1->unk5C0 = arg2;
+
+    func_800AA984(arg0, arg1, -1);
+
+    temp_s1->unk5C0 = temp_s0;
+}
 
 void func_800A9F64(int arg0, SVECTOR* arg1, int arg2)
 {

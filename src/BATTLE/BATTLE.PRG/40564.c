@@ -42,7 +42,7 @@ int func_800A92B8(int arg0, int arg1)
         if (!temp_v1->unk8_0 && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
             && !temp_v1->unk9_0 && (temp_v1->unk1A != 0xFE)
             && (temp_v1->unk1E < var_t0)) {
-                
+
             var_t0 = temp_v1->unk1E;
             D_800F49F8 = i;
         }
@@ -519,7 +519,25 @@ int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC168);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC37C);
+void func_800AC37C(int arg0, int arg1)
+{
+    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+
+    switch (arg1) {
+    case 0:
+        temp_a0->unk0.unk9_0 = 14;
+        break;
+    case 1:
+        temp_a0->unk0.unk9_0 = 6;
+        break;
+    case 2:
+        temp_a0->unk0.unk9_0 = 9;
+        break;
+    }
+    if (temp_a0->unk17FD > 1) {
+        func_800AC37C(temp_a0->unk17FD, arg1);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC440);
 

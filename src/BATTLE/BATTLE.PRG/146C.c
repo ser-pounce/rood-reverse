@@ -645,7 +645,6 @@ void func_8008B4BC(int arg0);
 void _nop2(int arg0);
 int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
-_mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
 _mpdRoomSectionA* func_8008BC04(int, int, int);

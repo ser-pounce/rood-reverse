@@ -1,5 +1,6 @@
 #include "common.h"
 #include "40564.h"
+#include "146C.h"
 #include "3A1A0.h"
 #include "src/SLUS_010.40/main.h"
 #include <abs.h>
@@ -18,8 +19,54 @@ void func_800AB098(D_800F4538_t*, int, int);
 extern u_char D_800E8F2C;
 extern u_char D_800F49F8;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8D64);
+_mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
+{
+    int temp_s1 = arg0->vx / 128;
+    int temp_s0 = arg0->vz / 128;
+    _mpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
 
+    if (temp_v0 == NULL) {
+        return NULL;
+    }
+
+    temp_s1 = arg0->vx - (temp_s1 << 7);
+    temp_s0 = arg0->vz - (temp_s0 << 7);
+
+    // BUG: potentially unhandled values
+    switch (temp_v0->unk0_10) {
+    case 0:
+        return temp_v0;
+
+    case 1:
+        if ((temp_s1 + temp_s0) >= 0x81) {
+            return NULL;
+        }
+        return temp_v0;
+
+    case 2:
+        if ((temp_s1 - temp_s0) > 0) {
+            return NULL;
+        }
+        return temp_v0;
+
+    case 3:
+        if ((temp_s1 + temp_s0) < 0x80) {
+            return NULL;
+        }
+        return temp_v0;
+
+    case 4:
+        if ((temp_s1 - temp_s0) < 0) {
+            return NULL;
+        }
+        return temp_v0;
+
+    case 5:
+        return NULL;
+    }
+}
+
+int func_800A8E84(D_800F4538_t* arg0, SVECTOR* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8E84);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8FD4);

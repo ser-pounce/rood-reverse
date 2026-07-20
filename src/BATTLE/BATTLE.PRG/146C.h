@@ -1062,6 +1062,7 @@ void func_8008A6FC(void);
  */
 int vs_battle_getSkillFlags(int actorId, int skillId);
 void func_8008B430(D_800F4538_unk58_2*, int);
+_mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
 int func_8008B808(int, int, int, int);

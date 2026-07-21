@@ -6,6 +6,7 @@
 #include <abs.h>
 
 void func_8007A824(DR_MOVE*);
+void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
@@ -724,7 +725,50 @@ void func_800AC500(D_800F4538_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC540);
+void func_800AC540(int arg0, D_800F4538_t* arg1)
+{
+
+    switch (arg1->unk5AC_0) {
+    case 1:
+        if (arg1->unk0.unk18 == 0) {
+
+            if (arg1->unk0.unkA_5) {
+                func_800A0204(arg0, 0x1F, 0, 8);
+            } else {
+                func_800A0204(arg0, arg1->unk6E5, 0, 8);
+            }
+
+            if (!(arg1->unk5AC_2 << 2)) {
+                func_800A9D90(arg0, &arg1->unk5EC, arg1->unk5C4);
+            } else {
+                func_800AA620(arg0, &arg1->unk5EC, arg1->unk5C4);
+            }
+
+            arg1->unk5AC_0 = 2;
+        }
+        break;
+
+    case 2:
+        if (arg1->unk0.unk1A == 0) {
+            int temp_a1;
+
+            func_800A0204(arg0, 1, 0, 8);
+
+            temp_a1 = (u_short)arg1->unk5EC.pad;
+
+            if (temp_a1 != 0x8000) {
+                temp_a1 = temp_a1 & 0xFFF;
+                if ((arg1->unk5AC_2 << 2) == 0) {
+                    func_800A9EB4(arg0, temp_a1, arg1->unk5C6);
+                } else {
+                    func_800AA850(arg0, temp_a1, arg1->unk5C6);
+                }
+            }
+            arg1->unk5AC_0 = 0;
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
 

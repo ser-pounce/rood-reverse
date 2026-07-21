@@ -194,12 +194,12 @@ typedef struct {
 typedef struct {
     D_800F4538_unk0 unk0;
     MATRIX bones[42];
-    u_int unk5AC_0 : 2;
-    u_int unk5AC_2 : 1;
-    u_int unk5AC_3 : 1;
-    u_int unk5AC_4 : 2;
-    u_int unk5AC_6 : 1;
-    u_int momentumStop : 1;
+    u_char unk5AC_0 : 2;
+    u_char unk5AC_2 : 1;
+    u_char unk5AC_3 : 1;
+    u_char unk5AC_4 : 2;
+    u_char unk5AC_6 : 1;
+    u_char momentumStop : 1;
     u_int unk5AC_8 : 1;
     u_int unk5AC_9 : 1;
     u_int unk5AC_10 : 1;

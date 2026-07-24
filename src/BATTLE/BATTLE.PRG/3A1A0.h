@@ -167,8 +167,7 @@ typedef struct {
     short unk2E;
     short unk30;
     short unk32;
-    int unk34;
-    int unk38;
+    SVECTOR unk34;
     u_short unk3C;
     u_short unk3E;
     u_short unk40;
@@ -190,6 +189,21 @@ typedef struct {
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F4538_unk0;
+
+typedef struct {
+    u_char unk0_0 : 4;
+    u_char unk0_4 : 4;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+} D_800F4538_unk180C;
+
+typedef struct {
+    u_char x;
+    u_char y;
+    u_char w;
+    u_char h;
+} texMapOverlay_t;
 
 typedef struct {
     D_800F4538_unk0 unk0;
@@ -217,7 +231,8 @@ typedef struct {
     u_int unk5AC_22 : 1;
     u_int unk5AC_23 : 1;
     u_int unk5AC_24 : 1;
-    u_int unk5AC_25 : 3;
+    u_int unk5AC_25 : 2;
+    u_int unk5AC_27 : 1;
     u_int unk5AC_28 : 4;
     u_char unk5B0_0 : 3;
     u_char unk5B0_3 : 1;
@@ -251,12 +266,7 @@ typedef struct {
     void* unk5D8;
     void* unk5DC[4];
     SVECTOR unk5EC;
-    struct {
-        u_char x;
-        u_char y;
-        u_char w;
-        u_char h;
-    } texMapOverlays[8];
+    texMapOverlay_t texMapOverlays[8];
     u_char unk614[0x24];
     int unk638;
     u_short unk63C;
@@ -314,16 +324,7 @@ typedef struct {
     u_char unk17FF;
     short unk1800;
     u_char unk1802[0xA];
-    u_int unk180C_0 : 4;
-    u_int unk180C_4 : 4;
-    u_int unk180D : 8;
-    u_int unk180E : 8;
-    u_int unk180F : 8;
-    u_int unk1810_0 : 4;
-    u_int unk1810_4 : 4;
-    u_int unk1811 : 8;
-    u_int unk1812 : 8;
-    u_int unk1813 : 8;
+    D_800F4538_unk180C unk180C[2];
     short unk1814;
     short unk1816;
     short unk1818;
@@ -476,7 +477,8 @@ typedef struct {
     u_char unkB_0 : 4;
     u_char unkB_4 : 3;
     u_char unkB_7 : 1;
-    u_char unkC;
+    u_char unkC_0 : 4;
+    u_char unkC_4 : 4;
     u_char unkD;
     u_char unkE;
     u_char unkF;
@@ -506,7 +508,8 @@ typedef struct {
     int unk44;
     int unk48;
     int unk4C;
-    int unk50;
+    short unk50;
+    short unk52;
     int unk54;
     D_800F4538_unk58_2 unk58;
     char unk5C;

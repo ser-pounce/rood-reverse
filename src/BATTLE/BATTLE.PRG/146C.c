@@ -5468,7 +5468,7 @@ int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
     VectorNormal(&toCamera, &toCameraNorm);
 
     yaw = ratan2(toCameraNorm.vx, toCameraNorm.vz);
-    yaw = (yaw + 0x1000) % ONE;
+    yaw = (yaw + ONE) % ONE;
     _camera.t2.angles.vy = yaw;
     pitch = ratan2(
         toCameraNorm.vy, SquareRoot12((toCameraNorm.vx * toCameraNorm.vx) / ONE
@@ -5483,7 +5483,7 @@ int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
         } else if (toCamera.vz != 0) {
             arg0->values.distance = (toCamera.vz * ONE) / toCameraNorm.vz;
         } else {
-            arg0->values.distance = 0x400;
+            arg0->values.distance = ONE / 4;
         }
     }
     return yaw;

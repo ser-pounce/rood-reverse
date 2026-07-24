@@ -959,10 +959,10 @@ int func_8009CE9C(u_int arg0)
         D_800F4538_t* temp_s0 = D_800F4538[i];
         if ((temp_s0 != NULL) && *((u_char*)temp_s0 + D_800E8F2C + 0x183E) != 0xFF
             && (*((u_char*)temp_s0 + arg0 + 0x183D) == 0xFF)) {
-            if (temp_s0->unk180D >= 2) {
+            if (temp_s0->unk180C[0].unk1 >= 2) {
                 func_800AB098(temp_s0, 0, 0);
             }
-            if (temp_s0->unk1811 >= 2) {
+            if (temp_s0->unk180C[1].unk1 >= 2) {
                 func_800AB098(temp_s0, 1, 0);
             }
         }
@@ -1156,9 +1156,9 @@ void func_8009D468(int arg0, int arg1)
             func_800AB098(temp_s1, 1, 0);
         }
         temp_s1->unk1802[0] = 0;
-        temp_s1->unk180C_0 = 0;
+        temp_s1->unk180C[0].unk0_0 = 0;
         temp_s1->unk5AC_21 = 0;
-        temp_s1->unk1810_0 = 0;
+        temp_s1->unk180C[1].unk0_0 = 0;
         temp_s1->unk5AC_22 = 0;
         func_800A07FC(arg0, NULL);
         if (temp_s1->unk17FD == 1) {
@@ -1931,7 +1931,7 @@ void func_8009F530(int arg0)
 
         if ((temp_v0_2->unk0.unkA_0) != 3) {
             *(int*)&temp_v0_2->unk0.unk34 = 0;
-            temp_v0_2->unk0.unk38 = 0;
+            *(int*)&temp_v0_2->unk0.unk34.vz = 0;
             temp_v0_2->unk0.unkA_0 = 3;
             if (temp_v0_2->unk0.unkF != 0) {
                 temp_v0_2->unk181A = 1;

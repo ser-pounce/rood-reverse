@@ -3,6 +3,7 @@
 #include "146C.h"
 #include "3A1A0.h"
 #include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/32154.h"
 #include <abs.h>
 
 void func_8007A824(DR_MOVE*);
@@ -39,7 +40,7 @@ _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
         return temp_v0;
 
     case 1:
-        if ((temp_s1 + temp_s0) >= 0x81) {
+        if ((temp_s1 + temp_s0) > 0x80) {
             return NULL;
         }
         return temp_v0;
@@ -77,7 +78,7 @@ int func_800A91DC(int arg0, int arg1, int arg2)
     int _[2] __attribute__((unused));
     int i;
 
-    int var_t2 = 4096;
+    int var_t2 = ONE;
     int var_t3 = 0;
 
     for (i = 0; i < 16; ++i) {
@@ -609,6 +610,7 @@ void func_800AACDC(void)
     *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
 }
 
+// https://decomp.me/scratch/7lkmC
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAD4C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAE9C);
@@ -770,8 +772,10 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
     }
 }
 
+void func_800AC690(int arg0, D_800F45E0_t* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
 
+void func_800ACF54(D_800F45E0_t*);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800ACF54);
 
 void func_800ACFA0(short* arg0, u_char* arg1, int arg2)

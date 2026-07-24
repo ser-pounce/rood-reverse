@@ -1,8 +1,10 @@
 #include "common.h"
 #include "146C.h"
-#include "../../SLUS_010.40/main.h"
+#include "src/SLUS_010.40/main.h"
 #include <memory.h>
 #include <rand.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef struct {
     int* unk0;

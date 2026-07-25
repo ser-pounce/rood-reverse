@@ -9708,7 +9708,274 @@ int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800863A4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80086754);
+void func_80086754(int arg0, vs_battle_actor2* arg1)
+{
+    int i;
+    int statDecrease;
+    int statIncrease;
+    u_int temp_v1_2;
+
+    arg1->statuses &= ~arg0;
+
+    if (arg0 & 0x7E0) {
+        if (!(arg1->statuses & 0x7E0)) {
+            arg1->unk94C[0] = 0;
+        }
+    }
+
+    if (arg0 & 0x810) {
+        if (!(arg1->statuses & 0x810)) {
+            arg1->unk94C[1] = 0;
+        }
+    }
+
+    if (arg0 & 0x1FF80000) {
+        if (!(arg1->statuses & 0x1FF80000)) {
+            arg1->unk94C[2] = 0;
+        }
+    }
+
+    if (arg0 & 0x2000) {
+        if (!(arg1->statuses & 0x2000)) {
+            arg1->unk94C[3] = 0;
+        }
+    }
+
+    if (arg0 & 0x8000) {
+        if (!(arg1->statuses & 0x8000)) {
+            arg1->unk94C[4] = 0;
+        }
+    }
+
+    if (arg0 & 0x24000) {
+        if (!(arg1->statuses & 0x24000)) {
+            arg1->unk94C[5] = 0;
+        }
+    }
+
+    if (arg0 & 0x60) {
+        arg1->strength = arg1->totalStrength;
+    }
+
+    if (arg0 & 0x180) {
+        arg1->intelligence = arg1->totalIntelligence;
+    }
+
+    if (arg0 & 0x600) {
+        arg1->agility = arg1->totalAgility;
+    }
+
+    if (arg0 & 0x10000) {
+        arg1->strength = arg1->totalStrength;
+        arg1->intelligence = arg1->totalIntelligence;
+        arg1->agility = arg1->totalAgility;
+    }
+
+    if (arg0 & 0x8010) {
+        if (arg0 & 0x10) {
+
+            if ((arg1->unk34 != 0) && (arg1->limbs[arg1->unk34].maxHp != 0)
+                && (arg1->limbs[arg1->unk34].hp < 2)) {
+                arg1->limbs[arg1->unk34].hp = 2;
+            }
+
+            if ((arg1->unk35 != 0) && (arg1->limbs[arg1->unk35].maxHp != 0)
+                && (arg1->limbs[arg1->unk35].hp < 2)) {
+                arg1->limbs[arg1->unk35].hp = 2;
+            }
+        }
+
+        if (!(arg1->statuses & 0x10)) {
+            arg1->unk31 = arg1->unk2E;
+            arg1->unk33 = arg1->unk2F;
+        }
+
+        func_800E685C(arg1->unk957, arg1->unk31, arg1->unk33);
+    }
+
+    if ((arg0 & 0x800) && !(arg1->statuses & 0x8010)) {
+
+        arg1->unk31 = arg1->unk2E;
+        arg1->unk33 = arg1->unk2F;
+
+        func_800E685C(arg1->unk957, arg1->unk31, arg1->unk33);
+    }
+
+    if (arg0 & 0x180000) {
+        if (arg1->weapon.blade.id != 0) {
+            arg1->weapon.currentStr = arg1->weapon.baseStr;
+            arg1->weapon.currentInt = arg1->weapon.baseInt;
+        }
+
+        if (arg1->shield.base.id != 0) {
+            arg1->shield.currentStr = arg1->shield.baseStr;
+            arg1->shield.currentInt = arg1->shield.baseInt;
+        }
+
+        for (i = 0; i < 6; ++i) {
+            if (arg1->limbs[i].armor.armor.id != 0) {
+                arg1->limbs[i].armor.currentStr = arg1->limbs[i].armor.baseStr;
+                arg1->limbs[i].armor.currentInt = arg1->limbs[i].armor.baseInt;
+            }
+        }
+    }
+
+    temp_v1_2 = arg0 & 0x01E00000;
+
+    if (temp_v1_2 != 0) {
+        switch (temp_v1_2) {
+        case 0x200000:
+            statIncrease = 1;
+            statDecrease = 3;
+            break;
+
+        case 0x400000:
+            statIncrease = 2;
+            statDecrease = 4;
+            break;
+
+        case 0x800000:
+            statIncrease = 3;
+            statDecrease = 1;
+            break;
+
+        case 0x01000000:
+            statIncrease = 4;
+            statDecrease = 2;
+            break;
+
+        default:
+            statDecrease = 7;
+            statIncrease = 7;
+            break;
+        }
+
+        if (statIncrease != 7) {
+            if (arg1->weapon.blade.id != 0) {
+
+                if ((arg1->weapon.blade.affinities[statIncrease] < 50)
+                    && (vs_main_getRand(8) == 0)) {
+
+                    ++arg1->weapon.blade.affinities[statIncrease];
+
+                    if (arg1->unk957 == 0) {
+                        func_80096768(240, statIncrease + 6, 1);
+                    }
+                }
+
+                if ((arg1->weapon.blade.affinities[statDecrease] > -100)
+                    && (vs_main_getRand(16) == 0)) {
+
+                    --arg1->weapon.blade.affinities[statDecrease];
+
+                    if (arg1->unk957 == 0) {
+                        func_80096768(240, statDecrease + 6, 0x80000001);
+                    }
+                }
+            }
+
+            arg1->weapon.unk168[statIncrease] = 0;
+            arg1->weapon.unk168[statDecrease] = 0;
+
+            _calculateWeaponClassAffinity(arg1);
+        }
+    }
+
+    temp_v1_2 = arg0 & 0x1E000000;
+
+    if (temp_v1_2 != 0) {
+
+        switch (temp_v1_2) {
+        case 0x2000000:
+            statIncrease = 1;
+            statDecrease = 3;
+            break;
+
+        case 0x4000000:
+            statIncrease = 2;
+            statDecrease = 4;
+            break;
+
+        case 0x8000000:
+            statIncrease = 3;
+            statDecrease = 1;
+            break;
+
+        case 0x10000000:
+            statIncrease = 4;
+            statDecrease = 2;
+            break;
+
+        default:
+            statDecrease = 7;
+            statIncrease = 7;
+            break;
+        }
+
+        if (statIncrease != 7) {
+            if (arg1->shield.base.id != 0) {
+
+                if ((arg1->shield.base.affinities[statIncrease] < 50)
+                    && (vs_main_getRand(8) == 0)) {
+
+                    ++arg1->shield.base.affinities[statIncrease];
+
+                    if (arg1->unk957 == 0) {
+                        func_80096768(241, statIncrease + 6, 1);
+                    }
+                }
+
+                if ((arg1->shield.base.affinities[statDecrease] > -100)
+                    && (vs_main_getRand(0x10) == 0)) {
+
+                    --arg1->shield.base.affinities[statDecrease];
+
+                    if (arg1->unk957 == 0) {
+                        func_80096768(241, statDecrease + 6, 0x80000001);
+                    }
+                }
+            }
+
+            arg1->shield.unk134[statIncrease] = 0;
+            arg1->shield.unk134[statDecrease] = 0;
+
+            _calculateShieldClassAffinity(arg1);
+
+            for (i = 0; i < 6; ++i) {
+                if (arg1->limbs[i].armor.armor.id != 0) {
+
+                    if ((arg1->limbs[i].armor.armor.affinities[statIncrease] < 50)
+                        && (vs_main_getRand(8) == 0)) {
+
+                        ++arg1->limbs[i].armor.armor.affinities[statIncrease];
+
+                        if (arg1->unk957 == 0) {
+                            func_80096768(arg1->limbs[i].nameIndex, statIncrease + 6, 1);
+                        }
+                    }
+
+                    if ((arg1->limbs[i].armor.armor.affinities[statDecrease] > -100)
+                        && (vs_main_getRand(16) == 0)) {
+
+                        --arg1->limbs[i].armor.armor.affinities[statDecrease];
+
+                        if (arg1->unk957 == 0) {
+                            func_80096768(
+                                arg1->limbs[i].nameIndex, statDecrease + 6, 0x80000001);
+                        }
+                    }
+                }
+
+                arg1->limbs[i].armor.unk88[statIncrease] = 0;
+                arg1->limbs[i].armor.unk88[statDecrease] = 0;
+
+                _calculateArmorClassAffinity(arg1, i);
+            }
+        }
+
+        func_800971D4();
+    }
+}
 
 void func_80086EA4(vs_battle_actor2* arg0, int arg1, int arg2, int arg3)
 {

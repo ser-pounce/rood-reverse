@@ -560,7 +560,7 @@ int func_80093B04(u_short* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093B68);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093E64);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", vs_battle_renderBattleAbilityTimingResult);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093F24);
 

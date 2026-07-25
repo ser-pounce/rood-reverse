@@ -55,8 +55,6 @@ clean:
 remake: clean
 	$(MAKE)
 
-commit-check remake: MAKEFLAGS += --no-print-directory
-
 include $(INCMAKEFILES)
 
 $(BUILDDEPS):   | tools/.sysdeps

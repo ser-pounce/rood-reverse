@@ -147,7 +147,7 @@ typedef struct {
 } func_8008631C_t;
 
 typedef struct {
-    char unk0;
+    char defenceAbility;
     char unk1;
     char unk2;
     char unk3;
@@ -273,12 +273,12 @@ typedef struct {
     u_short unk2C00;
     char unk2C02;
     char unk2C03;
-    char unk2C04;
-    char unk2C05;
-    char unk2C06;
+    char previousChainInput;
+    char battleAbilityInputSuccessful;
+    char battleAbilityInputAttempted;
     char unk2C07;
-    u_short unk2C08;
-    u_short unk2C0A;
+    u_short battleAbilityTimer;
+    u_short battleAbilityTargetWindow;
     short unk2C0C;
     short unk2C0E;
 } D_800F19CC_t;
@@ -399,7 +399,7 @@ typedef struct {
     char unk3;
     short unk4;
     short unk6;
-    char unk8;
+    char defenceAbility;
     char unk9;
     char unkA;
     char unkB;
@@ -432,7 +432,8 @@ typedef struct {
             u_int unk0_14 : 5;
             u_int unk0_19 : 13;
         } fields;
-        int value;
+        u_short u16[2];
+        int s32;
     } unk4;
 } D_800F18EC_t;
 
@@ -557,6 +558,7 @@ void func_8006FA20(void);
 void func_8006FD1C(void);
 void func_80070278(void);
 void func_8007053C(void);
+void func_80070CAC(void);
 void func_80070F28(int);
 void func_8007138C(void);
 void func_80072BA8(int);
@@ -572,6 +574,7 @@ void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
     int, int, int, int, int, int, vs_battle_objectData_flags*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
+int func_80077F70(void);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
@@ -666,12 +669,14 @@ void func_8008D5FC(_mpdRoomSectionA* arg0);
 void func_8008D658(_mpdRoomSectionA*);
 void func_8008D710(void);
 int _getDoorId(int);
+void func_800D82A8(int);
 short func_8008DC7C(int arg0, int arg1);
 void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
 _mpdRoomSection13* func_8008E370(int* arg0);
 _mpdRoomSectionA* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
+void func_800E4C64(int);
 void func_8008E4DC(int);
 void _loadMpdLootSection(void* arg0);
 void func_8008E6DC(int);
@@ -691,7 +696,7 @@ void func_80093824(int);
 void func_80093A14(void);
 void func_80093B04(void*);
 void func_80093B68(void);
-void func_80093E64(int);
+void vs_battle_renderBattleAbilityTimingResult(int);
 void func_80093FEC(int, int, int, int);
 void func_80093914(char);
 void func_80095B7C(int, int);
@@ -711,6 +716,8 @@ int func_8009E480(void);
 u_int func_8009E4B0(char);
 void func_8009EA14(int, SVECTOR*);
 
+extern char D_8005FFAF;
+extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
 extern char _wepIdCategories[];
@@ -829,18 +836,19 @@ void func_80069C6C(int arg0)
 
     new_var2 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3].unk4;
 
-    if (new_var2->unk0 == 0) {
+    if (new_var2->defenceAbility == 0) {
         return;
     }
 
     // TODO: Remove dead code
-    switch (new_var2->unk0 != 0) {
+    switch (new_var2->defenceAbility != 0) {
     case 0:
         return;
     }
 
-    if ((D_800F19CC->unk2C0A == 0) && (func_80078828(0) != 0)) {
-        D_800F19CC->unk2C0A = D_800F19CC->unk2C08 + (vs_gametime_tickspeed * 2);
+    if ((D_800F19CC->battleAbilityTargetWindow == 0) && (func_80078828(0) != 0)) {
+        D_800F19CC->battleAbilityTargetWindow =
+            D_800F19CC->battleAbilityTimer + (vs_gametime_tickspeed * 2);
     }
 }
 
@@ -2019,7 +2027,7 @@ void func_8006C4C4(int arg0, func_8006C4C4_t3* arg1, int arg2)
     sp10.unk2 = 1;
     sp10.unk3 = 0;
     sp10.unk4 = 4;
-    sp10.unk8 = temp_s0->unk4.unk0;
+    sp10.defenceAbility = temp_s0->unk4.defenceAbility;
     sp10.unkA = 0;
 
     if (arg1->unk40 == 0) {
@@ -2195,7 +2203,7 @@ void func_8006CA20(int arg0, func_8006CE70_t* arg1)
 
         temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
 
-        if ((temp_s0->unk4.unk0 == arg0) && (temp_s0->unk44 == 0)) {
+        if ((temp_s0->unk4.defenceAbility == arg0) && (temp_s0->unk44 == 0)) {
 
             temp_v1 = temp_s0->unk4.unk3;
 
@@ -3219,7 +3227,8 @@ void func_8006FCBC(void)
 
     _cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
-    func_8006C4A4(temp_s0->unk4.unk0, func_800A152C(temp_s0->unk4.unk0, 0xF0, 0));
+    func_8006C4A4(temp_s0->unk4.defenceAbility,
+        func_800A152C(temp_s0->unk4.defenceAbility, 0xF0, 0));
 }
 
 void func_8006FD0C(void) { _cameraMode = 9; }
@@ -3231,12 +3240,12 @@ void func_80070278(void)
     D_800F19CC_t2* temp_s0;
     int temp_a3;
 
-    D_800F19CC->unk2C0A = 0;
-    D_800F19CC->unk2C08 = 0;
+    D_800F19CC->battleAbilityTargetWindow = 0;
+    D_800F19CC->battleAbilityTimer = 0;
     temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
 
     if (((temp_s0->unk0 - 0x16u) < 0x20) && (temp_s0->unk44 == 0)
-        && (temp_s0->unk4.unk0 == 0)) {
+        && (temp_s0->unk4.defenceAbility == 0)) {
         vs_battle_setStateFlag(0xB8, 1);
     }
 
@@ -3244,32 +3253,38 @@ void func_80070278(void)
 
     if (temp_a3 == 0) {
         if (!(vs_main_skills[temp_s0->unk0].unk2_0)) {
-            func_8009DD00(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, temp_s0->unk48);
-            D_800F19CC->unk2C0A = func_8009F8DC(temp_s0->unk4.unk0) * 2;
+            func_8009DD00(
+                temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844, temp_s0->unk48);
+            D_800F19CC->battleAbilityTargetWindow =
+                func_8009F8DC(temp_s0->unk4.defenceAbility) * 2;
         } else {
             if (temp_s0->unk0 >= 0x8D) {
                 if (temp_s0->unk0 < 0xB8) {
-                    func_8009F298(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                    func_8009F298(
+                        temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844, 1);
                 } else if (temp_s0->unk0 < 0xE0) {
-                    func_8009EFEC(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                    func_8009EFEC(
+                        temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844, 1);
                 } else {
-                    func_8009E2E0(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                    func_8009E2E0(
+                        temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844, 1);
                 }
             } else {
-                func_8009E2E0(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 1);
+                func_8009E2E0(temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844, 1);
             }
-            D_800F19CC->unk2C0A = 0;
+            D_800F19CC->battleAbilityTargetWindow = 0;
             vs_gametime_tickspeed = 4;
         }
     } else {
         if (temp_s0->unk0 < 0x28) {
-            func_8009EC9C(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844,
+            func_8009EC9C(temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844,
                 vs_main_settings.mappedChainAbilities[D_800F19CC->unk2C03 - 1] - 0x16,
                 temp_a3);
         } else {
-            func_8009EE9C(temp_s0->unk4.unk0, &D_800F19CC->unk8.unk844, 0);
+            func_8009EE9C(temp_s0->unk4.defenceAbility, &D_800F19CC->unk8.unk844, 0);
         }
-        D_800F19CC->unk2C0A = func_8009F8DC(temp_s0->unk4.unk0) * 2;
+        D_800F19CC->battleAbilityTargetWindow =
+            func_8009F8DC(temp_s0->unk4.defenceAbility) * 2;
     }
 
     func_80045D64(0x7E, 0x34);
@@ -3378,7 +3393,135 @@ void func_80070B04(void)
 // https://decomp.me/scratch/CcHt5
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070CAC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070F28);
+void func_80070F28(int arg0)
+{
+    int i;
+    int temp_v1_2;
+    u_char temp_s0;
+    int var_a0;
+
+    func_8006EF10();
+    temp_s0 = D_800F19CC->unk298C;
+    func_800C16DC();
+    func_800C06E0();
+    func_800C0738();
+    func_800C05B4();
+
+    if (arg0 != 0) {
+        if (temp_s0 == 0xFF) {
+            if (D_800F19CC->unk8.unk4 != 0) {
+                func_800CB114();
+                func_800E4C64(D_800F19CC->unk8.unk4);
+                D_800F19CC->unk8.unk0 = 0;
+                func_8006FBCC(0);
+                return;
+            }
+            if (!(vs_main_skills[D_800F19CC->unk8.unk0].unk2_0)) {
+                func_800CB114();
+                D_800F19CC->unk8.unk0 = 0;
+                func_8006FBCC(0);
+                return;
+            }
+            D_800F19CC->unk8.unk0 = 0;
+            func_800704D8();
+            return;
+        }
+    }
+
+    D_800F19CC->unk4 = 1;
+    D_800F19CC->unk0 = 0;
+
+    if (D_800F19CC->unk8.unk4 == 0) {
+        if (D_800F18EC->unk2 != 7) {
+            if (D_800F18EC->unk2 == 8) {
+                vs_battle_decreaseMiscCount(D_800F18EC->unk4.u16[1]);
+            }
+        }
+        D_800F18EC->unk2 = 0;
+    } else {
+        func_800D82A8(D_800F19CC->unk8.unk4);
+    }
+    func_800CB114();
+    if (arg0 == 0) {
+        func_80070CAC();
+    } else if (arg0 == 2) {
+        func_80070B04();
+    } else {
+        func_800708EC();
+    }
+
+    func_80085B10(D_800F19CC->unk8.unk0, D_800F19CC->unk854, &D_800F19CC->unk8, 1);
+
+    if ((D_800F19CC->unk8.unk4 == 0)
+        && ((temp_v1_2 = D_800F19CC->unk8.unk0, (temp_v1_2 == 1))
+            || ((temp_v1_2 - 0xB8) < 0x28U))
+        && (D_800F19CC->unk8.unk4C[0].unk8C == 0)
+        && (vs_battle_actors[D_800F19CC->unk8.unk4C[0].unk4C.unk.unk0]->unk27 != 0x80)) {
+        if (vs_battle_characterState->equippedWeaponCategory == 0xA) {
+
+            if (vs_main_scoredata.weaponAttacks[0] <= 0xFFFEU) {
+                ++vs_main_scoredata.weaponAttacks[0];
+            }
+
+        } else {
+            if (vs_main_scoredata
+                    .weaponAttacks[vs_battle_characterState->equippedWeaponCategory]
+                <= 0xFFFEU) {
+                ++vs_main_scoredata
+                      .weaponAttacks[vs_battle_characterState->equippedWeaponCategory];
+            }
+        }
+    }
+
+    if ((func_80077F70() >= 0x1C1)
+        && (((vs_main_skills[D_800F19CC->unk8.unk0].flagsD_4)) == 1)) {
+        D_800F19CC->unk2C0E = 0;
+    } else {
+        D_800F19CC->unk2C0E = (vs_main_skills[D_800F19CC->unk8.unk0].flagsD_4);
+    }
+
+    D_800F19CC->unk2C02 = 0;
+    D_800F19CC->unk2C03 = D_800F19CC->previousChainInput = 0;
+    D_800F19CC->unk2C07 = 0;
+
+    if (D_800F19CC->unk8.unk0 >= 0x37U) {
+        D_8005FFAF = 0;
+
+        do {
+        } while (0);
+
+        switch (D_800F19CC->unk8.unk0) {
+        case 0x4D:
+        case 0x60:
+        case 0xE0:
+        case 0xE1:
+        case 0xE2:
+        case 0xE3:
+        case 0xE8:
+        case 0xE9:
+        case 0xEA:
+        case 0xEB:
+            if (vs_main_scoredata.healCount < 0x3E8U) {
+                vs_main_scoredata.healCount += 1;
+            }
+        }
+    }
+
+    _cameraMode = 4;
+
+    for (i = 0; i < 16; ++i) {
+        if (i != D_800F19CC->unk8.unk4) {
+            func_8009E5C4(i);
+        }
+    }
+
+    vs_main_setClutState(1);
+    func_8007B1B8(8, 4, 0, 0, 0);
+    func_8006C250();
+    func_80095B70(1);
+    func_8008B4C8(0);
+    func_8008B4BC(0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007138C);
 
@@ -3604,7 +3747,7 @@ void func_800735F8(D_800F18EC_t* arg0)
     case 6:
     case 7:
     case 8:
-        func_80072EC4(0, arg0->unk4.value);
+        func_80072EC4(0, arg0->unk4.s32);
         return;
     case 10:
         func_800A1108(0, &sp18);
@@ -5045,7 +5188,7 @@ void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
     func_800A1AF8(arg0, var_v0, arg2, 0);
 }
 
-void func_80077F70(void)
+int func_80077F70(void)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -5056,7 +5199,7 @@ void func_80077F70(void)
     int temp_v1;
 
     temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0];
-    func_800A1AF8(temp_s0->unk4.unk0, 0, &sp10, 0);
+    func_800A1AF8(temp_s0->unk4.defenceAbility, 0, &sp10, 0);
     if (temp_s0->unk4A != 0) {
         if (temp_s0->unk4C[0].unk40 == 0) {
             func_80077F14(
@@ -5065,13 +5208,14 @@ void func_80077F70(void)
             sp18 = temp_s0->unk4C[0].unk0.vec;
         }
     } else {
-        func_800A1AF8(temp_s0->unk4.unk0, 0, &sp18, 0);
+        func_800A1AF8(temp_s0->unk4.defenceAbility, 0, &sp18, 0);
     }
     temp_v0 = sp18.vx - sp10.vx;
     temp_v0_2 = sp18.vz - sp10.vz;
     temp_v0_3 = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
     temp_v1 = sp18.vy - sp10.vy;
-    vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
+
+    return vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
 }
 
 void func_800780A8(SVECTOR* arg0)
@@ -5081,7 +5225,7 @@ void func_800780A8(SVECTOR* arg0)
     D_800F19CC_t2* temp_s0;
 
     temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0];
-    func_800A1AF8(temp_s0->unk4.unk0, 0, &sp10, 0);
+    func_800A1AF8(temp_s0->unk4.defenceAbility, 0, &sp10, 0);
     if (temp_s0->unk4A != 0) {
         if (temp_s0->unk4C[0].unk40 == 0) {
             func_80077F14(
@@ -5239,7 +5383,7 @@ void func_80078748(void)
 {
     D_800F19CC_t2* temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
     if ((func_800CB45C() == 0)
-        && ((func_800A0BE0(temp_s0->unk4.unk0) & 0x08000100) == 0x08000100)
+        && ((func_800A0BE0(temp_s0->unk4.defenceAbility) & 0x08000100) == 0x08000100)
         && (vs_battle_getEmptyObjectDataSlot() == 0) && (func_800CEEBC() != 0)) {
         func_800704B0();
     }
@@ -5256,7 +5400,7 @@ void func_800787F0(void)
 int func_80078828(int arg0)
 {
     D_800F19CC_t2* temp_s1;
-    int var_a0;
+    int hasMappedAbility;
     int ret;
     int i;
 
@@ -5265,28 +5409,40 @@ int func_80078828(int arg0)
 
     if ((temp_s1->unk44 == 0) && (temp_s1->unk4A != 0)
         && (temp_s1->unk4C[0].unk40 == 0)) {
-        if (temp_s1->unk4.unk0 == 0) {
-            var_a0 = 0;
+
+        if (temp_s1->unk4.defenceAbility == 0) {
+
+            hasMappedAbility = 0;
+
             if (arg0 == 0) {
+
                 for (i = 0; i < 3; ++i) {
+
                     ret = 1;
+
                     if (vs_main_settings.mappedChainAbilities[i] != 0) {
-                        var_a0 = 1;
+                        hasMappedAbility = 1;
                     }
                 }
-                if (var_a0 == 0) {
+
+                if (hasMappedAbility == 0) {
                     ret = 0;
                 }
             }
+
         } else {
-            var_a0 = 0;
+
+            hasMappedAbility = 0;
+
             if (arg0 == 0) {
+
                 for (i = 0; i < 3; ++i) {
                     if (vs_main_settings.mappedDefenseAbilities[i] != 0) {
-                        var_a0 = 1;
+                        hasMappedAbility = 1;
                     }
                 }
-                if (var_a0 == 0) {
+
+                if (hasMappedAbility == 0) {
                     ret = 0;
                 }
             }
@@ -5298,24 +5454,25 @@ int func_80078828(int arg0)
             ret = 0;
         }
 
-        if (temp_s1->unk4.unk0 != 0) {
+        if (temp_s1->unk4.defenceAbility != 0) {
             if (temp_s1->unk4C[0].unk0.unk.unk0 != 0) {
                 ret = 0;
             }
-        } else if (temp_s1->unk0 >= 0x28) {
+        } else if (temp_s1->unk0 >= 40) {
             ret = 0;
         }
 
-        if ((temp_s1->unk0 - 0x28u) < 0xE) {
+        if ((temp_s1->unk0 - 40u) < 14) {
             ret = 0;
         }
 
-        if (temp_s1->unk4.unk0 == temp_s1->unk4C[0].unk0.unk.unk0) {
+        if (temp_s1->unk4.defenceAbility == temp_s1->unk4C[0].unk0.unk.unk0) {
             ret = 0;
         }
 
         if (arg0 != 0) {
-            if (temp_s1->unk4.unk0 == 0) {
+
+            if (temp_s1->unk4.defenceAbility == 0) {
                 if (!(_getSkillCost(vs_main_settings.mappedChainAbilities[arg0 - 1],
                           vs_battle_characterState->unk3C, 0)
                         & 0xFF000000)) {
@@ -5328,11 +5485,13 @@ int func_80078828(int arg0)
                     ret = 0;
                 }
             }
-            if (D_800F19CC->unk2C04 == arg0) {
+
+            if (D_800F19CC->previousChainInput == arg0) {
                 ret = 0;
             }
         }
-        if (D_800F19CC->unk2C06 != 0) {
+
+        if (D_800F19CC->battleAbilityInputAttempted != 0) {
             ret = 0;
         }
     } else {
@@ -5346,117 +5505,144 @@ void func_80078AB4(void)
 {
     int var_a0;
     int i;
-    int var_s0;
-    int var_s1;
-    int var_v1;
-    int temp_s4;
+    int margin;
+    int button;
+    int isMapped;
+    int abilityTimer;
     u_int* new_var;
 
     D_800F19CC_t2* temp_s3 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
 
-    if (temp_s3->unk4.unk0 == 0) {
-        var_s0 = vs_battle_getStateFlag(1) ? 8 : 10;
+    if (temp_s3->unk4.defenceAbility == 0) {
+        margin = vs_battle_getStateFlag(1) ? 8 : 10;
     } else {
-        var_s0 = vs_battle_getStateFlag(1) ? 8 : 10;
+        margin = vs_battle_getStateFlag(1) ? 8 : 10;
         if (temp_s3->unk0 >= 54) {
-            var_s0 += 4;
+            margin += 4;
         }
     }
 
-    var_s0 -= D_800F19CC->unk0 / 3;
+    margin -= D_800F19CC->unk0 / 3;
 
-    if (var_s0 < 2) {
-        var_s0 = 2;
+    if (margin < 2) {
+        margin = 2;
     }
 
-    temp_s4 = D_800F19CC->unk2C08;
+    abilityTimer = D_800F19CC->battleAbilityTimer;
 
-    if (D_800F19CC->unk2C0A != 0) {
-        if (temp_s4 == (D_800F19CC->unk2C0A - (vs_gametime_tickspeed * 2))) {
+    if (D_800F19CC->battleAbilityTargetWindow != 0) {
+        if (abilityTimer
+            == (D_800F19CC->battleAbilityTargetWindow - (vs_gametime_tickspeed * 2))) {
             if (func_80078828(0) != 0) {
                 do {
-                    func_80096FF0((var_s0 * 2) / vs_gametime_tickspeed);
+                    func_80096FF0((margin * 2) / vs_gametime_tickspeed);
                 } while (0);
             }
         }
     }
 
-    D_800F19CC->unk2C08 += vs_gametime_tickspeed;
+    D_800F19CC->battleAbilityTimer += vs_gametime_tickspeed;
 
     new_var = &vs_main_buttonsPressed.all;
 
-    if (*new_var & 0xB0) {
+    if (*new_var & (PADRup | PADRright | PADRleft)) {
 
-        if (*new_var & 0x80) {
-            var_s1 = 3;
-        } else if (*new_var & 0x10) {
-            var_s1 = 2;
-        } else if (*new_var & 0x20) {
-            var_s1 = 1;
+        if (*new_var & PADRleft) {
+            button = 3;
+        } else if (*new_var & PADRup) {
+            button = 2;
+        } else if (*new_var & PADRright) {
+            button = 1;
         }
 
-        var_v1 = 0;
+        isMapped = 0;
 
         if (temp_s3->unk44 == 0) {
-            if (temp_s3->unk4.unk0 == 0) {
-                var_v1 = vs_main_settings.mappedChainAbilities[var_s1 - 1] > 0;
-            } else if (vs_main_settings.mappedDefenseAbilities[var_s1 - 1] != 0) {
-                var_v1 = 1;
+            if (temp_s3->unk4.defenceAbility == 0) {
+                isMapped = vs_main_settings.mappedChainAbilities[button - 1] != 0;
+            } else if (vs_main_settings.mappedDefenseAbilities[button - 1] != 0) {
+                isMapped = 1;
             }
         }
 
-        if (var_v1 != 0) {
-            if (func_80078828(var_s1) != 0) {
-                if (D_800F19CC->unk2C0A == 0) {
-                    func_80093E64(1);
-                    D_800F19CC->unk2C06 = 1;
+        if (isMapped != 0) {
+
+            if (func_80078828(button) != 0) {
+
+                if (D_800F19CC->battleAbilityTargetWindow == 0) {
+                    vs_battle_renderBattleAbilityTimingResult(1);
+                    D_800F19CC->battleAbilityInputAttempted = 1;
                 } else if (temp_s3->unk44 == 0) {
-                    if ((D_800F19CC->unk2C0A - var_s0) >= temp_s4) {
-                        func_80093E64(0);
-                        D_800F19CC->unk2C05 = 0;
-                        D_800F19CC->unk2C06 = 1;
-                    } else if (D_800F19CC->unk2C0A >= temp_s4) {
-                        func_80093E64(1);
-                        D_800F19CC->unk2C05 = 0;
-                        D_800F19CC->unk2C06 = 1;
-                    } else if ((D_800F19CC->unk2C0A + var_s0) >= temp_s4) {
-                        func_80093E64(2);
-                        if (D_800F19CC->unk2C06 == 0) {
-                            int v = (~D_800F19CC->unk2C02 & 0xB0);
+
+                    if ((D_800F19CC->battleAbilityTargetWindow - margin)
+                        >= abilityTimer) {
+                        vs_battle_renderBattleAbilityTimingResult(0);
+                        D_800F19CC->battleAbilityInputSuccessful = 0;
+                        D_800F19CC->battleAbilityInputAttempted = 1;
+                    } else if (D_800F19CC->battleAbilityTargetWindow >= abilityTimer) {
+                        vs_battle_renderBattleAbilityTimingResult(1);
+                        D_800F19CC->battleAbilityInputSuccessful = 0;
+                        D_800F19CC->battleAbilityInputAttempted = 1;
+                    } else if ((D_800F19CC->battleAbilityTargetWindow + margin)
+                               >= abilityTimer) {
+
+                        vs_battle_renderBattleAbilityTimingResult(2);
+
+                        if (D_800F19CC->battleAbilityInputAttempted == 0) {
+
+                            int v =
+                                (~D_800F19CC->unk2C02 & (PADRup | PADRright | PADRleft));
+
                             if (vs_main_buttonsPressed.all & v) {
-                                if (temp_s3->unk4.unk0 == 0) {
-                                    if ((D_800F19CC->unk2C04 != var_s1)
+
+                                if (temp_s3->unk4.defenceAbility == 0) {
+
+                                    if ((D_800F19CC->previousChainInput != button)
                                         && (vs_main_settings
-                                                .mappedChainAbilities[var_s1 - 1]
+                                                .mappedChainAbilities[button - 1]
                                             != 0)) {
+
                                         D_800F19CC->unk2C03 =
-                                            (D_800F19CC->unk2C04 = var_s1);
-                                        D_800F19CC->unk2C05 = 1;
-                                        D_800F19CC->unk2C06 = 1;
+                                            D_800F19CC->previousChainInput = button;
+                                        D_800F19CC->battleAbilityInputSuccessful = 1;
+                                        D_800F19CC->battleAbilityInputAttempted = 1;
+
                                     } else {
-                                        D_800F19CC->unk2C05 = 0;
-                                        D_800F19CC->unk2C06 = 1;
+                                        D_800F19CC->battleAbilityInputSuccessful = 0;
+                                        D_800F19CC->battleAbilityInputAttempted = 1;
                                     }
+
                                 } else {
+
                                     for (i = 0; i < temp_s3->unk4A; ++i) {
+
                                         if ((temp_s3->unk4C[0].unk0.unk.unk0 == 0)
                                             && (temp_s3->unk4C[0].unk40 == 0)) {
-                                            if ((D_800F19CC->unk2C04 != var_s1)
+
+                                            if ((D_800F19CC->previousChainInput != button)
                                                 && (vs_main_settings
-                                                        .mappedDefenseAbilities[var_s1
+                                                        .mappedDefenseAbilities[button
                                                                                 - 1]
                                                     != 0)) {
+
                                                 D_800F19CC->unk2C03 =
-                                                    (D_800F19CC->unk2C04 = var_s1);
-                                                D_800F19CC->unk2C05 = 2;
-                                                D_800F19CC->unk2C06 = 1;
+                                                    D_800F19CC->previousChainInput =
+                                                        button;
+                                                D_800F19CC->battleAbilityInputSuccessful =
+                                                    2;
+                                                D_800F19CC->battleAbilityInputAttempted =
+                                                    1;
+
                                                 if (vs_main_scoredata.chainStreak
                                                     <= 0xFFFEU) {
                                                     ++vs_main_scoredata.chainStreak;
                                                 }
+
                                             } else {
-                                                D_800F19CC->unk2C05 = 0;
-                                                D_800F19CC->unk2C06 = 1;
+                                                D_800F19CC->battleAbilityInputSuccessful =
+                                                    0;
+                                                D_800F19CC->battleAbilityInputAttempted =
+                                                    1;
                                             }
                                             break;
                                         }
@@ -5468,47 +5654,52 @@ void func_80078AB4(void)
 
                         var_a0 = 4;
 
-                        if ((D_800F19CC->unk2C0A + (var_s0 * 2)) >= temp_s4) {
+                        if ((D_800F19CC->battleAbilityTargetWindow + (margin * 2))
+                            >= abilityTimer) {
                             var_a0 = 3;
                         }
 
-                        func_80093E64(var_a0);
+                        vs_battle_renderBattleAbilityTimingResult(var_a0);
 
-                        D_800F19CC->unk2C05 = 0;
-                        D_800F19CC->unk2C06 = 1;
+                        D_800F19CC->battleAbilityInputSuccessful = 0;
+                        D_800F19CC->battleAbilityInputAttempted = 1;
                     }
 
-                    if (D_800F19CC->unk2C05 == 0) {
+                    if (D_800F19CC->battleAbilityInputSuccessful == 0) {
                         D_8005FFB0 = 0;
                     }
+
                 } else {
+
                     if (!(D_800F1868 & 3)) {
                         func_8006FD1C();
                     }
+
                     return;
                 }
 
-            } else if (D_800F19CC->unk2C06 == 0) {
-                D_800F19CC->unk2C05 = 0;
-                D_800F19CC->unk2C06 = 1;
+            } else if (D_800F19CC->battleAbilityInputAttempted == 0) {
+                D_800F19CC->battleAbilityInputSuccessful = 0;
+                D_800F19CC->battleAbilityInputAttempted = 1;
             }
         }
     }
 
     if (temp_s3->unk44 == 0) {
 
-        if (func_8009E4B0(temp_s3->unk4.unk0) != 0) {
+        if (func_8009E4B0(temp_s3->unk4.defenceAbility) != 0) {
             return;
         }
 
-        if ((D_800F19CC->unk2C06 != 0) || (D_800F19CC->unk2C03 == 0)) {
-            func_8009E5C4(temp_s3->unk4.unk0);
+        if ((D_800F19CC->battleAbilityInputAttempted != 0)
+            || (D_800F19CC->unk2C03 == 0)) {
+            func_8009E5C4(temp_s3->unk4.defenceAbility);
         }
 
         if ((temp_s3->unk4C[0].unk40 == 0)
             && (vs_battle_actors[temp_s3->unk4C[0].unk0.unk.unk0]->unk3C->currentHP
                 == 0)) {
-            func_8009E5C4(temp_s3->unk4.unk0);
+            func_8009E5C4(temp_s3->unk4.defenceAbility);
         }
     }
 
@@ -5557,7 +5748,7 @@ void func_800790BC(void)
             var_s3 = &D_800F19CC->unk854[i % 4];
 
             if (var_s3->unk44 == 0) {
-                func_80074A20(var_s3->unk4.unk0);
+                func_80074A20(var_s3->unk4.defenceAbility);
             }
 
             for (j = 0; j < var_s3->unk4A; ++j) {
@@ -5568,7 +5759,7 @@ void func_800790BC(void)
             }
         }
 
-        if (var_s3->unk4.unk0 != 0) {
+        if (var_s3->unk4.defenceAbility != 0) {
             var_s4 = 0;
         }
 

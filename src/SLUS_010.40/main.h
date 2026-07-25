@@ -74,9 +74,11 @@ typedef struct {
     int angle : 5;
     int aoe;
     char flags_0;
-    u_int flags_7 : 7;
+    u_int flagsD_0 : 4;
+    u_int flagsD_4 : 2;
+    u_int flagsD_6 : 1;
     u_int unlocked : 1;
-    u_int flags_16 : 16;
+    u_int flagsD_8 : 16;
     int unk10;
     struct {
         u_int effect : 7;

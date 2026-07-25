@@ -567,32 +567,32 @@ typedef struct {
 typedef struct vs_battle_actor {
     /* 0x00 */ struct vs_battle_actor* next;
     /* 0x04 */ int id;
-    /* 0x08 */ char unk8;
-    /* 0x09 */ char unk9;
-    /* 0x0A */ char unkA;
-    /* 0x0B */ char unkB;
+    /* 0x08 */ u_char unk8;
+    /* 0x09 */ u_char unk9;
+    /* 0x0A */ u_char unkA;
+    /* 0x0B */ u_char unkB;
     /* 0x0C */ int unkC;
     union {
-        char u8[4];
+        u_char u8[4];
         int s32;
     /* 0x10 */ } unk10;
     int unk14;
     u_short unk18;
     u_short subType;
     u_short unk1C;
-    char unk1E;
-    char unk1F;
+    u_char unk1E;
+    u_char unk1F;
     int unk20;
-    char unk24;
-    char equippedWeaponCategory;
-    char unk26;
+    u_char unk24;
+    u_char equippedWeaponCategory;
+    u_char unk26;
     u_char unk27;
-    char defeated;
-    char unk29;
-    char unk2A;
-    char unk2B;
+    u_char defeated;
+    u_char unk29;
+    u_char unk2A;
+    u_char unk2B;
     union {
-        char u8[4];
+        u_char u8[4];
         int s32;
     } unk2C;
     int unk30;

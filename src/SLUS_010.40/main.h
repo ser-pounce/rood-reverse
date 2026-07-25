@@ -84,8 +84,8 @@ typedef struct {
         u_int effect : 7;
         u_int prerequisiteFunction : 6;
         u_int hitFunction : 3;
-        u_int damageCalculator : 6;
-        u_int damageFactor : 5;
+        u_int statCalculator : 6;
+        u_int statFactor : 5;
         u_int type : 2;
         u_int affinity : 3;
     } hitParams[2];

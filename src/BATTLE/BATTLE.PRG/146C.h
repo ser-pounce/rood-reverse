@@ -1122,3 +1122,4 @@ extern u_int vs_battle_screenTransitionStep;
 extern int vs_battle_screenTransitionEffect;
 extern int vs_battle_screenTransitionWipeAngle;
 extern int vs_battle_screenTransitionSpeed;
+extern void* D_800F4930;

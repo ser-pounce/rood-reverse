@@ -1,7 +1,6 @@
-#include "common.h"
-#include "../BATTLE.PRG/146C.h"
-#include "../BATTLE.PRG/30D14.h"
-#include "../BATTLE.PRG/3A1A0.h"
+#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include <libgte.h>
 
 extern char D_800E8F29;
@@ -14,7 +13,6 @@ extern char D_800E8FC0;
 extern char D_800F2450[];
 extern int D_800F4528[];
 extern void* D_800F4768;
-extern void* D_800F4930;
 extern char D_800F4B18;
 extern char D_800F4B19;
 

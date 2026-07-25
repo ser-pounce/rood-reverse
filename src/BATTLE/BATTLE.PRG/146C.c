@@ -691,6 +691,14 @@ int func_8009E480(void);
 u_int func_8009E4B0(char);
 void func_8009EA14(int, SVECTOR*);
 
+void func_800E685C(int, int, int);
+
+extern u_char D_8004EF20;
+extern u_char D_8004EF80;
+extern u_char D_8004EFA0;
+extern u_char D_8004EFB2;
+extern u_char D_8004EFE2;
+extern u_char D_8004F000;
 extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
@@ -9733,7 +9741,184 @@ void func_80086EF4(vs_battle_actor2* arg0, int arg1, int arg2, int arg3)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80086FA8);
+void func_80086FA8(int arg0, vs_battle_actor2* arg1)
+{
+    int i;
+    int var_a3;
+    u_int temp_a0;
+
+    arg1->statuses |= arg0;
+
+    if (arg0 & 0x7E0) {
+        arg1->unk94C[0] = D_8004EF20;
+    }
+
+    if (arg0 & 0x810) {
+        arg1->unk94C[1] = D_8004EF80;
+    }
+
+    if (arg0 & 0x1FF80000) {
+        arg1->unk94C[2] = D_8004F000;
+    }
+
+    if (arg0 & 0x2000) {
+        arg1->unk94C[3] = D_8004EFA0;
+    }
+
+    if (arg0 & 0x8000) {
+        arg1->unk94C[4] = D_8004EFA0;
+    }
+
+    if (arg0 & 0x4000) {
+        arg1->unk94C[5] = D_8004EFB2;
+    } else if (arg0 & 0x20000) {
+        arg1->unk94C[5] = D_8004EFE2;
+    }
+
+    if (arg0 & 0x20) {
+        arg1->strength = arg1->totalStrength - (arg1->totalStrength / 10);
+    }
+
+    if (arg0 & 0x40) {
+        arg1->strength = arg1->totalStrength + (arg1->totalStrength / 10);
+    }
+
+    if (arg0 & 0x80) {
+        arg1->intelligence = arg1->totalIntelligence - (arg1->totalIntelligence / 10);
+    }
+
+    if (arg0 & 0x100) {
+        arg1->intelligence = arg1->totalIntelligence + (arg1->totalIntelligence / 10);
+    }
+
+    if (arg0 & 0x200) {
+        arg1->agility = arg1->totalAgility - (arg1->totalAgility / 10);
+    }
+    if (arg0 & 0x400) {
+        arg1->agility = arg1->totalAgility + (arg1->totalAgility / 10);
+    }
+
+    if (arg0 & 0x10000) {
+        arg1->strength = arg1->totalStrength - (arg1->totalStrength / 10);
+        arg1->intelligence = arg1->totalIntelligence - (arg1->totalIntelligence / 10);
+        arg1->agility = arg1->totalAgility - (arg1->totalAgility / 10);
+    }
+
+    if (arg0 & 0x8810) {
+
+        if (arg1->statuses & 0x8010) {
+            arg1->unk31 = (arg1->unk2E >> 1);
+            arg1->unk33 = arg1->unk2F >> 1;
+        } else if (arg1->statuses & 0x800) {
+            arg1->unk31 = arg1->unk2E + (arg1->unk2E >> 2);
+            arg1->unk33 = arg1->unk2F + (arg1->unk2F >> 2);
+        }
+
+        func_800E685C(arg1->unk957, arg1->unk31, arg1->unk33);
+    }
+
+    if (arg0 & 0x80000) {
+
+        var_a3 = ((arg1->intelligence + arg1->weapon.currentInt) * 7) / 100;
+
+        if (var_a3 < 0) {
+            var_a3 = 0;
+        }
+
+        if (arg1->weapon.blade.id != 0) {
+            arg1->weapon.currentStr -= var_a3;
+        }
+
+        if (arg1->shield.base.id != 0) {
+            arg1->shield.currentStr -= var_a3;
+        }
+
+        for (i = 0; i < 6; ++i) {
+            if (arg1->limbs[i].armor.armor.id != 0) {
+                arg1->limbs[i].armor.currentStr -= var_a3;
+            }
+        }
+    }
+
+    if (arg0 & 0x100000) {
+
+        var_a3 = ((arg1->intelligence + arg1->weapon.currentInt) * 7) / 100;
+
+        if (var_a3 < 0) {
+            var_a3 = 0;
+        }
+
+        if (arg1->weapon.blade.id != 0) {
+            arg1->weapon.currentStr += var_a3;
+        }
+
+        if (arg1->shield.base.id != 0) {
+            arg1->shield.currentStr += var_a3;
+        }
+
+        for (i = 0; i < 6; ++i) {
+            if (arg1->limbs[i].armor.armor.id != 0) {
+                arg1->limbs[i].armor.currentStr += var_a3;
+            }
+        }
+    }
+
+    if (arg0 & 0x20000000) {
+        *(int*)&arg1->unk954 |= 0x20000;
+    }
+
+    temp_a0 = arg0 & 0x01E00000;
+
+    if (temp_a0 != 0) {
+
+        var_a3 = (arg1->intelligence + arg1->weapon.currentInt) / 2;
+
+        if (var_a3 < 0) {
+            var_a3 = 0;
+        }
+
+        switch (temp_a0) {
+        case 0x200000:
+            func_80086EA4(arg1, 1, 3, var_a3);
+            break;
+        case 0x400000:
+            func_80086EA4(arg1, 2, 4, var_a3);
+            break;
+        case 0x800000:
+            func_80086EA4(arg1, 3, 1, var_a3);
+            break;
+        case 0x01000000:
+            func_80086EA4(arg1, 4, 2, var_a3);
+            break;
+        }
+    }
+
+    temp_a0 = arg0 & 0x01E000000;
+
+    if (temp_a0) {
+
+        var_a3 = (arg1->intelligence + arg1->weapon.currentInt) / 2;
+
+        if (var_a3 < 0) {
+            var_a3 = 0;
+        }
+
+        switch (temp_a0) {
+        case 0x2000000:
+            func_80086EF4(arg1, 1, 3, var_a3);
+            break;
+        case 0x4000000:
+            func_80086EF4(arg1, 2, 4, var_a3);
+            break;
+        case 0x8000000:
+            func_80086EF4(arg1, 3, 1, var_a3);
+            break;
+        case 0x10000000:
+            func_80086EF4(arg1, 4, 2, var_a3);
+            break;
+        }
+    }
+}
 
 void func_80087578(int arg0, int arg1, int arg2, int arg3)
 {

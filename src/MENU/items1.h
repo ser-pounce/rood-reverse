@@ -795,13 +795,13 @@ static int _getShieldStatValue(int stat, vs_battle_uiShield* shield)
     case 1:
         return -shield->base.material;
     case 4:
-        return shield->currentPp;
-    case 5:
-        return shield->maxPp;
-    case 6:
         return shield->currentDp;
-    case 7:
+    case 5:
         return shield->maxDp;
+    case 6:
+        return shield->currentPp;
+    case 7:
+        return shield->maxPp;
     case 8:
         return shield->currentStr;
     case 9:

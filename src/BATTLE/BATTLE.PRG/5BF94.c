@@ -1728,7 +1728,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
 
     if ((arg0 != 0xFF) && (D_800EB9B0 == 0)) {
 
-        var_s2 = vs_batle_statusIconTexOffsets[arg0];
+        var_s2 = vs_battle_statusIconTexOffsets[arg0];
         arg2 = (arg2 * 0x10) + 0xA0;
 
         if (arg1 < 0) {

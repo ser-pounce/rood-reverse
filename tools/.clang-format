@@ -6,4 +6,5 @@ AlignOperands: AlignAfterOperator
 BreakBeforeBinaryOperators: NonAssignment
 BreakStringLiterals: false
 SkipMacroDefinitionBody: true
+WhitespaceSensitiveMacros: [INCLUDE_ASM, INCLUDE_RODATA]
 ...

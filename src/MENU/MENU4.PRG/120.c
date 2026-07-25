@@ -97,7 +97,7 @@ static void _drawShieldInfo(vs_battle_uiShield* shield)
         }
 
         vs_mainMenu_setDpPp(
-            shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
+            shield->currentDp, shield->maxDp, shield->currentPp, shield->maxPp);
         vs_mainMenu_setStrIntAgi(
             shield->currentStr, shield->currentInt, shield->currentAgility, 1);
 
@@ -954,7 +954,7 @@ static void _renderStatusIcons(vs_battle_actor2* actor, int animationStep)
 
             // 0x0F0F906A = Flags for toggling the icon palette
             ((u_long*)actor)[4] =
-                (vs_batle_statusIconTexOffsets[i]
+                (vs_battle_statusIconTexOffsets[i]
                     | (((0x0F0F906A >> i) & 1) ? (getClut(912, 223) << 16)
                                                : (getClut(896, 223) << 16)));
             // 0x37F90000 : 0x37F80000

@@ -371,10 +371,10 @@ typedef struct {
     char dropRate;
     u_char index;
     char unkDB;
-    u_short currentDp;
-    u_short maxDp;
     u_short currentPp;
     u_short maxPp;
+    u_short currentDp;
+    u_short maxDp;
     short currentStr;
     u_short baseStr;
     short currentInt;

@@ -352,7 +352,7 @@ extern char vs_battle_rowAnimationSteps[];
 extern int D_800EBBEC[];
 extern char D_800EBBFC[];
 extern char D_800EBC00[];
-extern u_short vs_batle_statusIconTexOffsets[];
+extern u_short vs_battle_statusIconTexOffsets[];
 extern u_int D_800EBC54[];
 extern char vs_battle_animationIndices[];
 extern char vs_battle_warlockSpellIds[];

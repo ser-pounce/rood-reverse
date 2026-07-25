@@ -468,7 +468,7 @@ void vs_mainMenu_setStatsFromShield(int shieldIndex)
         }
 
         vs_mainMenu_setDpPp(
-            shield->currentPp, shield->maxPp, shield->currentDp, shield->maxDp);
+            shield->currentDp, shield->maxDp, shield->currentPp, shield->maxPp);
         vs_mainMenu_setStrIntAgi(
             shield->currentStr, shield->currentInt, shield->currentAgility, 1);
 

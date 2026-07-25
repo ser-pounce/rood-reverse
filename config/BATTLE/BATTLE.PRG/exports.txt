@@ -61,7 +61,7 @@ func_800B217C
 func_800B28A8
 func_800C930C
 func_800CB654
-vs_batle_statusIconTexOffsets
+vs_battle_statusIconTexOffsets
 vs_battle_actors
 vs_battle_addTile
 vs_battle_animationIndices

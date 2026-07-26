@@ -206,7 +206,7 @@ typedef struct {
     int statuses;
     char unk20[8];
     D_80060068_t2 limbs[6];
-    int unk7C;
+    int weaponDrawn;
     int unk80;
     int unk84;
 } D_80060068_t3;

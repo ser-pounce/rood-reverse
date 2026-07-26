@@ -582,7 +582,7 @@ typedef struct vs_battle_actor {
     u_short unk1C;
     u_char unk1E;
     u_char unk1F;
-    int unk20;
+    int weaponDrawn;
     u_char unk24;
     u_char equippedWeaponCategory;
     u_char unk26;

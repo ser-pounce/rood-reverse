@@ -473,7 +473,9 @@ void func_80085390(
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
 void func_80086754(int, vs_battle_actor2*);
 void _applyBattleAbilityEffect(_hitEntity_t*);
-void func_80088554(void);
+void func_80087EF4(vs_battle_actor2*);
+int func_800882F4(void);
+int func_80088554(void);
 void func_80088CA0(void);
 void func_80089114(void);
 void func_80089CE4(void);
@@ -559,7 +561,7 @@ void func_8009D7E8(int, int);
 void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
 int func_8009E480(void);
-u_int func_8009E4B0(char);
+u_int func_8009E4B0(int);
 void func_8009EA14(int, SVECTOR*);
 
 void func_800E685C(int, int, int);
@@ -581,6 +583,8 @@ extern int (*_attackPrerequisiteFunctions[])(vs_skill_t*, char*);
 extern void (*_skillEffectMediators[])(
     vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
 extern short (*_statCalculators[])(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
+extern int D_800E8490;
+extern int D_800E8494;
 extern int D_800E8498;
 extern short D_800E849C[];
 extern char D_800E84AC[][4];
@@ -3163,7 +3167,7 @@ void func_800704D8(void)
     D_800F196C = 5;
     D_800F19CC->unk8.skillIndex = 0;
     _cameraMode = 1;
-    func_800CB660((vs_battle_characterState->unk20 & 1) | 2);
+    func_800CB660((vs_battle_characterState->weaponDrawn & 1) | 2);
     func_800CAB40();
     func_8006C39C();
 }
@@ -3584,7 +3588,7 @@ void func_8007357C(void)
 {
     D_800F196C = 5;
     _cameraMode = 1;
-    func_800CB660((vs_battle_characterState->unk20 & 1) | 2);
+    func_800CB660((vs_battle_characterState->weaponDrawn & 1) | 2);
     func_8006C39C();
 }
 
@@ -3600,7 +3604,7 @@ void func_800735F8(D_800F18EC_t* arg0)
     func_8006EBF8_t sp18;
 
     func_8008B4C8(1);
-    func_800CB660(vs_battle_characterState->unk20 & 1);
+    func_800CB660(vs_battle_characterState->weaponDrawn & 1);
 
     switch (arg0->unk2) {
     case 5:
@@ -3632,7 +3636,7 @@ void func_80073718(void)
 
     D_800F196C = 3;
     _cameraMode = 2;
-    vs_battle_setStateFlag(0xAC, vs_battle_characterState->unk20 & 1);
+    vs_battle_setStateFlag(0xAC, vs_battle_characterState->weaponDrawn & 1);
     vs_battle_setStateFlag(
         0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
     if (vs_battle_cameraCurrentSpherical.initialDistance == 0x600) {
@@ -4727,7 +4731,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     temp_s1->subType = 0;
     temp_s1->unk2A = arg2;
     temp_s1->unk2B = arg3;
-    temp_s1->unk20 = 0;
+    temp_s1->weaponDrawn = 0;
 
     switch (id) {
     case 0:
@@ -4740,7 +4744,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
         switch (arg4 & 3) {
         case 1:
             temp_s1->unk1C = 4;
-            temp_s1->unk20 |= 1;
+            temp_s1->weaponDrawn |= 1;
             func_8009D934(id, 1, 0);
             break;
         case 0:
@@ -4806,7 +4810,7 @@ void func_80076F24(
     temp_s0->subType = arg1->subType;
     temp_s0->unk2A = arg2;
     temp_s0->unk2B = arg3;
-    temp_s0->unk20 = 0;
+    temp_s0->weaponDrawn = 0;
 
     switch (id) {
     case 0:
@@ -4820,7 +4824,7 @@ void func_80076F24(
         switch (arg4 & 3) {
         case 1:
             temp_s0->unk1C = 4;
-            temp_s0->unk20 |= 1;
+            temp_s0->weaponDrawn |= 1;
             func_8009D934(id, 1, 0);
             break;
         case 2:
@@ -4978,7 +4982,7 @@ void func_800773BC(
             arg0->next = NULL;
         }
     }
-    if (arg0->unk20 & 1) {
+    if (arg0->weaponDrawn & 1) {
         func_800A087C(arg1, 0x1846);
     } else {
         func_800A087C(arg1, 0x46);
@@ -6227,14 +6231,14 @@ void func_8007C050(void)
     }
 }
 
-int func_8007C088(int arg0) { return vs_battle_actors[arg0]->unk20 & 1; }
+int func_8007C088(int arg0) { return vs_battle_actors[arg0]->weaponDrawn & 1; }
 
 void func_8007C0AC(int arg0, int arg1)
 {
     if (arg1 == 2) {
-        vs_battle_actors[arg0]->unk20 ^= 1;
+        vs_battle_actors[arg0]->weaponDrawn ^= 1;
 
-        if (vs_battle_actors[arg0]->unk20 & 1) {
+        if (vs_battle_actors[arg0]->weaponDrawn & 1) {
             func_8009D934(arg0, 1, 0);
         } else {
             func_8009D934(arg0, 0, 0);
@@ -6249,12 +6253,12 @@ void func_8007C0AC(int arg0, int arg1)
             }
         }
     } else {
-        (*vs_battle_actors)->unk20 &= ~1;
-        (*vs_battle_actors)->unk20 |= arg1;
+        (*vs_battle_actors)->weaponDrawn &= ~1;
+        (*vs_battle_actors)->weaponDrawn |= arg1;
         func_8009D934(0, arg1, 1);
     }
     if (arg0 == 0) {
-        func_800CB660(vs_battle_characterState->unk20 & 1);
+        func_800CB660(vs_battle_characterState->weaponDrawn & 1);
     }
 }
 
@@ -7165,7 +7169,7 @@ short _getAttackGemBuff(vs_skill_t* skill, vs_battle_actor2* actor)
     int hasGemBuff = 0;
     int gemBuff = 0;
 
-    if (vs_battle_actors[actor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[actor->unk957]->weaponDrawn & 1) {
         int i;
         if (skill->type == skillTypeSpell) {
             hasGemBuff = 0;
@@ -7195,7 +7199,7 @@ short _getDefenseGemBuff(vs_skill_t* skill, vs_battle_actor2* actor, int hitNumb
     int i;
 
     int gemBuff = 0;
-    if (vs_battle_actors[actor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[actor->unk957]->weaponDrawn & 1) {
         hasGemBuff = 0;
         if (skill->type == 1) {
             for (i = 0; i < 3; ++i) {
@@ -7355,12 +7359,12 @@ int _getAgilityDifference(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t*
         targetActorValue += targetActor->limbs[i].armor.currentAgility;
     }
 
-    if (vs_battle_actors[sourceActor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[sourceActor->unk957]->weaponDrawn & 1) {
         sourceActorValue +=
             sourceActor->weapon.currentAgility + sourceActor->shield.currentAgility;
     }
 
-    if (vs_battle_actors[targetActor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
         targetActorValue +=
             targetActor->weapon.currentAgility + targetActor->shield.currentAgility;
     }
@@ -7406,12 +7410,12 @@ int _getIntelligenceDifference(vs_skill_t* skill, _hitEntity_t* source,
         targetActorValue += targetActor->limbs[i].armor.currentInt;
     }
 
-    if (vs_battle_actors[sourceActor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[sourceActor->unk957]->weaponDrawn & 1) {
         sourceActorValue +=
             sourceActor->weapon.currentInt + sourceActor->shield.currentInt;
     }
 
-    if (vs_battle_actors[targetActor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
         targetActorValue +=
             targetActor->weapon.currentInt + targetActor->shield.currentInt;
     }
@@ -7458,12 +7462,12 @@ int _getAgilityDifference2(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t
         targetValue += targetActor->limbs[i].armor.currentAgility;
     }
 
-    if (vs_battle_actors[sourceActor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[sourceActor->unk957]->weaponDrawn & 1) {
         sourceValue +=
             sourceActor->weapon.currentAgility + sourceActor->shield.currentAgility;
     }
 
-    if (vs_battle_actors[targetActor->unk957]->unk20 & 1) {
+    if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
         targetValue +=
             targetActor->weapon.currentAgility + targetActor->shield.currentAgility;
     }
@@ -8139,7 +8143,7 @@ void _adjustDpPp(
         }
     }
 
-    if (vs_battle_actors[target->unk957]->unk20 & 1) {
+    if (vs_battle_actors[target->unk957]->weaponDrawn & 1) {
         if (target->shield.currentDp >= amount) {
             target->shield.currentDp -= amount;
         } else {
@@ -8190,7 +8194,7 @@ void func_800803A4(
 
     var_t1 = 100;
 
-    if (vs_battle_actors[arg2->unk957]->unk20 & 1) {
+    if (vs_battle_actors[arg2->unk957]->weaponDrawn & 1) {
         var_t0 = 0;
         for (i = 0; i < 3; ++i) {
             if (arg2->shield.gems[i].gemEffects == 9) {
@@ -10537,7 +10541,188 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80087EF4);
 // https://decomp.me/scratch/d6yyd
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800882F4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80088554);
+int func_80088554(void)
+{
+    int var_s1;
+    int i;
+    int var_s5 = 0;
+
+    for (i = 0; i < 16; ++i) {
+
+        vs_battle_actor* temp_s3 = vs_battle_actors[i];
+        var_s1 = 0;
+
+        if ((temp_s3 != NULL) && ((temp_s3->unk27 != 0x80) || (i == 0))) {
+
+            int temp_v0 = func_800A0BE0(i);
+
+            if (temp_v0 & 0x01000000) {
+
+                if (func_8009E4B0(i) != 1) {
+
+                    var_s1 = func_800792E4(0, i, 0);
+
+                    if ((var_s1 == 0) && (i != 0)) {
+                        if (func_800BEC58(0xC, 0, NULL, 0) == 1) {
+                            var_s1 = 1;
+                        } else {
+                            var_s1 = 2;
+                        }
+                    }
+                }
+
+            } else if ((temp_v0 & 0x01002001) == 1) {
+
+                vs_battle_actor2* temp_s0 = temp_s3->unk3C;
+
+                if (temp_s0 != NULL) {
+
+                    if (temp_s0->unk954 > 35) {
+                        temp_s0->unk954 -= 35;
+                    } else if (temp_s0->unk954 != 0) {
+                        temp_s0->unk954 = 0;
+                    }
+
+                    if ((D_800E8490 % 30 == 0) && (temp_s0->currentHP != 0)) {
+
+                        if (temp_s3->weaponDrawn & 1) {
+
+                            if (D_800E8490 % 120 == 0) {
+                                if (temp_s0->risk != 0) {
+                                    --temp_s0->risk;
+                                }
+                            }
+
+                            if (D_800E8490 % 180 == 0) {
+
+                                if (temp_s0->currentMP < temp_s0->maxMP) {
+                                    ++temp_s0->currentMP;
+                                }
+
+                                if (temp_s3->weaponDrawn & 1) {
+
+                                    if (temp_s0->weapon.currentPp != 0) {
+                                        --temp_s0->weapon.currentPp;
+                                    }
+
+                                    if (temp_s0->shield.currentPp != 0) {
+                                        --temp_s0->shield.currentPp;
+                                    }
+                                }
+                            }
+
+                            if (D_800E8490 % 240 == 0) {
+
+                                if (temp_s0->currentHP < temp_s0->maxHP) {
+                                    if (temp_s0->currentHP != 0) {
+                                        ++temp_s0->currentHP;
+                                    }
+                                }
+
+                                if (temp_s0->limbs[D_800E8494].maxHp != 0) {
+                                    if (temp_s0->limbs[D_800E8494].hp
+                                        < temp_s0->limbs[D_800E8494].maxHp) {
+                                        ++temp_s0->limbs[D_800E8494].hp;
+                                    }
+                                }
+                            }
+
+                        } else {
+
+                            if (!(temp_s0->statuses & 8) || (D_800E8490 % 120 == 0)) {
+
+                                if (temp_s0->risk != 0) {
+                                    --temp_s0->risk;
+                                }
+                            }
+
+                            if (D_800E8490 % 60 == 0) {
+
+                                if (temp_s0->currentMP < temp_s0->maxMP) {
+                                    ++temp_s0->currentMP;
+                                }
+
+                                if (temp_s3->weaponDrawn & 1) {
+
+                                    if (temp_s0->weapon.currentPp != 0) {
+                                        --temp_s0->weapon.currentPp;
+                                    }
+
+                                    if (temp_s0->shield.currentPp != 0) {
+                                        --temp_s0->shield.currentPp;
+                                    }
+                                }
+                            }
+
+                            if (D_800E8490 % 120 == 0) {
+
+                                if (temp_s0->currentHP < temp_s0->maxHP) {
+                                    if (temp_s0->currentHP != 0) {
+                                        ++temp_s0->currentHP;
+                                    }
+                                }
+
+                                if (temp_s0->limbs[D_800E8494].maxHp != 0) {
+                                    if (temp_s0->limbs[D_800E8494].hp
+                                        < temp_s0->limbs[D_800E8494].maxHp) {
+                                        ++temp_s0->limbs[D_800E8494].hp;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (D_800E8490 % 60 == 0) {
+
+                        if (temp_s0->currentHP != 0) {
+                            func_80087EF4(temp_s0);
+                        }
+
+                        if (temp_s0->currentHP == 0) {
+
+                            if (temp_s3->unk26 == 0) {
+                                func_80074A20(i);
+                            } else {
+
+                                var_s1 = func_800792E4(0, i, 0);
+
+                                if ((var_s1 == 0) && (i != 0)) {
+                                    if (func_800BEC58(0xC, 0, NULL, 0) == 1) {
+                                        var_s1 = 1;
+                                    } else {
+                                        var_s1 = 2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (var_s1 != 0) {
+            if (var_s5 == 0) {
+                var_s5 = var_s1;
+            } else if (var_s1 == 1) {
+                var_s5 = 1;
+            }
+        }
+    }
+
+    D_800E8490 = (D_800E8490 + vs_gametime_tickspeed) % 720;
+
+    if (D_800E8490 % 240 == 0) {
+        D_800E8494 = (D_800E8494 + 1) % 6;
+    }
+
+    var_s1 = func_800882F4();
+
+    if (var_s1 != 0) {
+        var_s5 = var_s1;
+    }
+
+    return var_s5;
+}
 
 void func_80088B6C(void) { func_80088554(); }
 
@@ -11142,7 +11327,7 @@ int vs_battle_getSkillFlags(int actorId, int skillId)
             ret |= 4;
         }
     } else if (skillId < 224) {
-        if (vs_battle_actors[actorId]->unk20 == 0) {
+        if (vs_battle_actors[actorId]->weaponDrawn == 0) {
             ret |= 4;
         }
 

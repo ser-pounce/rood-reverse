@@ -8442,7 +8442,7 @@ void func_80042CB0(void)
         }
     }
 
-    temp_t5->unk0.unk7C = vs_battle_characterState->unk20;
+    temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
     temp_t5->unk0.unk80 = vs_battle_cameraCurrentSpherical.delta.pitch;
     temp_t5->unk0.unk84 = vs_battle_cameraCurrentSpherical.initialDistance;
 

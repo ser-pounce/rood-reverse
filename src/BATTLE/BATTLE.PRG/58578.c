@@ -58,28 +58,6 @@ typedef struct {
 } D_800EB9B8_t;
 
 typedef struct {
-    u_int unk0 : 8;
-    u_int unk1 : 8;
-    u_int unk2 : 8;
-    u_int unk3 : 8;
-} func_800C1564_flags;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    short unk2;
-    union {
-        func_800C1564_flags flags;
-        u_char values[4];
-    } unk4;
-    u_short unk8[4];
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-} func_800C1564_t;
-
-typedef struct {
     SVECTOR unk0;
     SVECTOR unk8;
     short unk10[4];
@@ -102,7 +80,7 @@ void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     char* new_var;
 
     for (i = 0; i < 3; ++i) {
-        arg1->unk10[i] = arg0->unk8[i];
+        arg1->unk10[i] = arg0->unk8.unk0[i];
         arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4.values[i]);
     }
 

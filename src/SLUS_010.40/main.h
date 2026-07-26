@@ -70,9 +70,12 @@ typedef struct {
     char rangeX;
     char rangeY;
     char rangeZ;
-    int shape : 3;
-    int angle : 5;
-    int aoe;
+    u_char shape : 3;
+    u_char angle : 5;
+    u_char aoe_0;
+    u_char aoe_8;
+    u_char aoe_16;
+    u_char aoe_24;
     char flags_0;
     u_int flagsD_0 : 4;
     u_int flagsD_4 : 2;

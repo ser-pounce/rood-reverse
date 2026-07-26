@@ -94,6 +94,28 @@ typedef struct {
 } func_8008631C_t2;
 
 typedef struct {
+    union {
+        func_8008631C_t2 unk;
+        SVECTOR vec;
+    } unk4C;
+    int unk54;
+    int unk58;
+    int unk5C;
+    int unk60;
+    int unk64;
+    int unk68;
+    int unk6C;
+    int unk70;
+    int unk74;
+    int unk78;
+    int unk7C;
+    int unk80;
+    int unk84;
+    int unk88;
+    int unk8C;
+} func_8008631C_t3;
+
+typedef struct {
     u_short skillIndex;
     char unk2;
     char unk3;
@@ -119,28 +141,8 @@ typedef struct {
     int unk44;
     short unk48;
     u_short unk4A;
-    struct {
-        union {
-            func_8008631C_t2 unk;
-            SVECTOR vec;
-        } unk4C;
-        int unk54;
-        int unk58;
-        int unk5C;
-        int unk60;
-        int unk64;
-        int unk68;
-        int unk6C;
-        int unk70;
-        int unk74;
-        int unk78;
-        int unk7C;
-        int unk80;
-        int unk84;
-        int unk88;
-        int unk8C;
-    } unk4C[2];
-    int unk90[474];
+    func_8008631C_t3 unk4C[6];
+    u_char unk90[0x658];
     short unk83C; // These three are probably a vector
     short unk83E;
     short unk840;
@@ -9706,7 +9708,101 @@ int func_8008631C(int arg0, int arg1, int arg2, int arg3, void* arg4)
     return _getSkillCost(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800863A4);
+int func_800863A4(int arg0, int arg1, int arg2, int arg3, func_800C1564_t2* arg4,
+    func_800C1564_t2* arg5, D_800F19CC_t2* arg6)
+{
+    func_8008631C_t sp10;
+    func_800C1564_t sp860;
+    u_short sp870[2];
+    int var_s2;
+    int temp_s0;
+    int temp_s0_2;
+    int temp_s1;
+    int temp_v0;
+    int i;
+
+    sp10.skillIndex = arg0;
+    sp10.unk44 = 0;
+    sp10.unk4 = arg1;
+    sp10.unk4A = 0;
+    temp_v0 = (vs_main_skills[arg0].unk2_4);
+
+    switch (temp_v0) {
+    case 11:
+    case 12:
+        sp860.unk0 = vs_main_skills[arg0].shape;
+        sp860.unk1 = 1;
+        sp860.unk4.values[0] = vs_main_skills[arg0].rangeX;
+        sp860.unk4.values[1] = vs_main_skills[arg0].rangeY;
+        sp860.unk4.values[2] = vs_main_skills[arg0].rangeZ;
+        temp_s1 = arg5->unk0[0] - arg4->unk0[0];
+        temp_s0 = arg5->unk0[2] - arg4->unk0[2];
+        sp860.unk2 = ratan2(temp_s1, temp_s0);
+        temp_s0_2 = arg5->unk0[1] - arg4->unk0[1];
+        sp860.unk4.values[3] =
+            (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
+                / 16)
+            + 0x40;
+        sp860.unk8 = *arg4;
+        break;
+
+    case 2:
+    case 4:
+    case 6:
+    case 8:
+        sp860.unk0 = vs_main_skills[arg0].aoe_24 & 7;
+        sp860.unk1 = 1;
+        sp860.unk4.values[0] = vs_main_skills[arg0].aoe_0;
+        sp860.unk4.values[1] = vs_main_skills[arg0].aoe_8;
+        sp860.unk4.values[2] = vs_main_skills[arg0].aoe_16;
+        sp860.unk2 = 0;
+        sp860.unk4.values[3] = vs_main_skills[arg0].aoe_24 & 0xF8;
+        sp860.unk8 = *arg5;
+        break;
+    }
+
+    switch (vs_main_skills[arg0].unk2_4) {
+    case 6:
+    case 8:
+    case 11:
+    case 12:
+        var_s2 = 0;
+
+        for (i = 0; i < 6; ++i) {
+            if ((func_800A1B9C(arg2, i, sp870, 2) >= 0)
+                && (func_800C1564(&sp860, sp870) != 0)) {
+                sp10.unk4C[var_s2].unk8C = 0;
+                sp10.unk4C[var_s2].unk4C.unk.unk0 = arg2;
+                sp10.unk4C[var_s2].unk4C.unk.unk1 = i;
+                ++var_s2;
+            }
+        }
+
+        sp10.unk4A = var_s2;
+        break;
+
+    case 5:
+    case 7:
+        sp10.unk4C[0].unk8C = 0;
+        sp10.unk4C[0].unk4C.unk.unk0 = arg2;
+        sp10.unk4C[0].unk4C.unk.unk1 = arg3;
+        sp10.unk4A = 1;
+        break;
+
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        sp10.unk4C[0].unk8C = 0;
+        sp10.unk4C[0].unk4C.unk.unk0 = arg2;
+        sp10.unk4C[0].unk4C.unk.unk1 = vs_battle_actors[arg2]->unk3C->unk36;
+        sp10.unk4A = 1;
+        break;
+    }
+
+    func_80085B10(arg0, arg6, &sp10, 0);
+    return _getSkillCost(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
+}
 
 void func_80086754(int arg0, vs_battle_actor2* arg1)
 {

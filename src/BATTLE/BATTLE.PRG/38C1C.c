@@ -5,7 +5,7 @@
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
-int func_800A1C10(int arg0, int arg1, int arg2, int arg3);
+int func_800A1C10(int arg0, int arg1, u_short* arg2, int arg3);
 void func_800A9EB4(int, int, int);
 
 int func_800A141C(int arg0, int arg1, int arg2, int arg3)
@@ -158,7 +158,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A17BC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A190C);
 
-int func_800A1AF8(int arg0, int arg1, int arg2, int arg3)
+int func_800A1AF8(int arg0, int arg1, u_short* arg2, int arg3)
 {
     int var_v0 = func_800A1C10(arg0, arg1, arg2, arg3);
 
@@ -169,7 +169,7 @@ int func_800A1AF8(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-int func_800A1B28(int arg0, int arg1, int arg2, int arg3)
+int func_800A1B28(int arg0, int arg1, u_short* arg2, int arg3)
 {
     int var_v0 = func_800A152C(arg0, arg1, 1);
 
@@ -186,7 +186,7 @@ int func_800A1B28(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-int func_800A1B9C(int arg0, int arg1, int arg2, int arg3)
+int func_800A1B9C(int arg0, int arg1, u_short* arg2, int arg3)
 {
     int var_v0 = func_800A152C(arg0, arg1, 2);
 

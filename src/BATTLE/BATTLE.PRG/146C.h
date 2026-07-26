@@ -553,7 +553,7 @@ typedef struct {
     char unk920[6][6];
     int unk944;
     int statuses;
-    u_char unk94C[8];
+    u_char statusTimers[8];
     u_short unk954;
     u_char unk956_0 : 1;
     u_char isAnalyzed : 1;

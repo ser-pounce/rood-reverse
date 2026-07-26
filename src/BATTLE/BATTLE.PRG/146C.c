@@ -578,6 +578,7 @@ extern int D_80068C1C[];
 extern char D_800E8184[];
 extern char _wepIdCategories[];
 extern u_char D_800E8200[];
+extern int D_800E8204[];
 extern int (*_hitFunctions[])(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
 extern int (*_attackPrerequisiteFunctions[])(vs_skill_t*, char*);
 extern void (*_skillEffectMediators[])(
@@ -4715,7 +4716,7 @@ void func_80076784(
     }
 
     for (i = 0; i < 5; ++i) {
-        actor->unk94C[i] = 0;
+        actor->statusTimers[i] = 0;
     }
 
     actor->unk954 = 0;
@@ -9703,37 +9704,37 @@ void func_80086754(int arg0, vs_battle_actor2* arg1)
 
     if (arg0 & 0x7E0) {
         if (!(arg1->statuses & 0x7E0)) {
-            arg1->unk94C[0] = 0;
+            arg1->statusTimers[0] = 0;
         }
     }
 
     if (arg0 & 0x810) {
         if (!(arg1->statuses & 0x810)) {
-            arg1->unk94C[1] = 0;
+            arg1->statusTimers[1] = 0;
         }
     }
 
     if (arg0 & 0x1FF80000) {
         if (!(arg1->statuses & 0x1FF80000)) {
-            arg1->unk94C[2] = 0;
+            arg1->statusTimers[2] = 0;
         }
     }
 
     if (arg0 & 0x2000) {
         if (!(arg1->statuses & 0x2000)) {
-            arg1->unk94C[3] = 0;
+            arg1->statusTimers[3] = 0;
         }
     }
 
     if (arg0 & 0x8000) {
         if (!(arg1->statuses & 0x8000)) {
-            arg1->unk94C[4] = 0;
+            arg1->statusTimers[4] = 0;
         }
     }
 
     if (arg0 & 0x24000) {
         if (!(arg1->statuses & 0x24000)) {
-            arg1->unk94C[5] = 0;
+            arg1->statusTimers[5] = 0;
         }
     }
 
@@ -10001,29 +10002,29 @@ void func_80086FA8(int arg0, vs_battle_actor2* arg1)
     arg1->statuses |= arg0;
 
     if (arg0 & 0x7E0) {
-        arg1->unk94C[0] = D_8004EF20;
+        arg1->statusTimers[0] = D_8004EF20;
     }
 
     if (arg0 & 0x810) {
-        arg1->unk94C[1] = D_8004EF80;
+        arg1->statusTimers[1] = D_8004EF80;
     }
 
     if (arg0 & 0x1FF80000) {
-        arg1->unk94C[2] = D_8004F000;
+        arg1->statusTimers[2] = D_8004F000;
     }
 
     if (arg0 & 0x2000) {
-        arg1->unk94C[3] = D_8004EFA0;
+        arg1->statusTimers[3] = D_8004EFA0;
     }
 
     if (arg0 & 0x8000) {
-        arg1->unk94C[4] = D_8004EFA0;
+        arg1->statusTimers[4] = D_8004EFA0;
     }
 
     if (arg0 & 0x4000) {
-        arg1->unk94C[5] = D_8004EFB2;
+        arg1->statusTimers[5] = D_8004EFB2;
     } else if (arg0 & 0x20000) {
-        arg1->unk94C[5] = D_8004EFE2;
+        arg1->statusTimers[5] = D_8004EFE2;
     }
 
     if (arg0 & 0x20) {
@@ -10536,7 +10537,128 @@ void _applyBattleAbilityEffect(_hitEntity_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80087EF4);
+void func_80087EF4(vs_battle_actor2* actor)
+{
+    int var_a0_2;
+    int i;
+    int statuses;
+
+    statuses = 0;
+
+    if ((actor->statusTimers[0] != 0) && (--actor->statusTimers[0] == 0)) {
+        statuses = actor->statuses & 0x7E0;
+    }
+
+    if ((actor->statusTimers[1] != 0) && (--actor->statusTimers[1] == 0)) {
+        statuses |= actor->statuses & 0x810;
+    }
+
+    if ((actor->statusTimers[2] != 0) && (--actor->statusTimers[2] == 0)) {
+        statuses |= actor->statuses & 0x1FF80000;
+    }
+
+    if ((actor->statusTimers[3] != 0) && (--actor->statusTimers[3] == 0)) {
+        statuses |= actor->statuses & 0x2000;
+    }
+
+    if ((actor->statusTimers[4] != 0) && (--actor->statusTimers[4] == 0)) {
+        statuses |= actor->statuses & 0x8000;
+    }
+
+    if ((actor->statusTimers[5] != 0) && (--actor->statusTimers[5] == 0)) {
+
+        int hp;
+
+        if (actor->statuses & 0x4000) {
+
+            actor->statusTimers[5] = D_8004EFB2;
+            hp = (actor->currentHP / 20) + vs_main_getRand(6);
+
+            if (hp <= 0) {
+                hp = 1;
+            }
+
+            if (actor->currentHP < hp) {
+                actor->currentHP = 0;
+            } else {
+                actor->currentHP -= hp;
+            }
+
+            func_80093B68(actor->unk957, 0, hp | 0x80000000, 0);
+
+        } else if (actor->statuses & 0x20000) {
+
+            actor->statusTimers[5] = D_8004EFE2;
+            hp = 2;
+            hp = (actor->maxHP / 20) - hp + vs_main_getRandSmoothed(5);
+            actor->currentHP += hp;
+
+            if (actor->maxHP < actor->currentHP) {
+                actor->currentHP = actor->maxHP;
+            }
+
+            for (i = 0; i < 6; ++i) {
+                if (actor->limbs[i].maxHp != 0) {
+                    int var_v1 = hp;
+
+                    if (hp < 0) {
+                        var_v1 = hp + 7;
+                    }
+
+                    actor->limbs[i].hp += (var_v1 >> 3);
+
+                    if (actor->limbs[i].maxHp < actor->limbs[i].hp) {
+                        actor->limbs[i].hp = actor->limbs[i].maxHp;
+                    }
+                }
+            }
+
+            func_80093B68(actor->unk957, 0, hp, 0);
+        }
+    }
+
+    if (actor->statuses & 0x10) {
+
+        var_a0_2 = 0;
+
+        if (actor->unk34 != 0) {
+            var_a0_2 = actor->limbs[actor->unk34].hp >= 2;
+        }
+
+        if ((actor->unk35 != 0) && (actor->limbs[actor->unk35].hp >= 2)) {
+            var_a0_2 = 1;
+        }
+
+        if (var_a0_2 != 0) {
+            statuses |= 0x10;
+        }
+    }
+
+    if (actor->unk957 == 0) {
+        if (actor->statuses & 0xF) {
+
+            for (i = 0; i < 4; ++i) {
+                if (actor->statuses & D_800E8204[i]) {
+
+                    var_a0_2 = 0;
+
+                    if (actor->unk34 != 0) {
+                        var_a0_2 = actor->limbs[i].hp >= 2;
+                    }
+
+                    if (var_a0_2 != 0) {
+                        statuses |= D_800E8204[i];
+                    }
+                }
+            }
+        }
+    }
+
+    if (statuses != 0) {
+        func_80093FEC(actor->unk957, 0, statuses, 1);
+        func_80086754(statuses, actor);
+    }
+}
 
 // https://decomp.me/scratch/d6yyd
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800882F4);

@@ -204,7 +204,7 @@ typedef struct {
     short risk;
     u_short flags;
     int statuses;
-    char unk20[8];
+    char statusTimers[8];
     D_80060068_t2 limbs[6];
     int weaponDrawn;
     int unk80;

@@ -8423,7 +8423,7 @@ void func_80042CB0(void)
     temp_t5->unk0.statuses = temp_t0->statuses;
 
     for (i = 0; i < 8; ++i) {
-        temp_t5->unk0.unk20[i] = temp_t0->unk94C[i];
+        temp_t5->unk0.statusTimers[i] = temp_t0->statusTimers[i];
     }
 
     var_t4 = 0;

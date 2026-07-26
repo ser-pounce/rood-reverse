@@ -133,7 +133,7 @@ void func_800F9AD8(void)
     func_80086FA8(s1->statuses, temp_s0);
 
     for (i = 0; i < 8; ++i) {
-        temp_s0->unk94C[i] = s1->unk20[i];
+        temp_s0->statusTimers[i] = s1->statusTimers[i];
     }
 
     for (i = 0; i < 6; ++i) {

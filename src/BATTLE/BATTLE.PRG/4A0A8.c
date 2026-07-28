@@ -612,7 +612,7 @@ __asm__(".set push;"
         "endlabel func_800B668C;"
         ".set pop;");
 
-int _invalidOpcode(u_char* arg0, short arg1)
+int vs_battle_invalidOpcode(u_char* arg0, short arg1)
 {
     char buf[64];
 

@@ -22,9 +22,9 @@ typedef struct {
 } System_dat_h;
 
 void func_800CA9C0(void*);
-void func_800FA6B8(void);
+static void func_800FA6B8(void);
 void _initScriptFunctionTable(void);
-void func_800F9CCC(void);
+static void func_800F9CCC(void);
 void func_800FA7B0(void);
 
 static vs_battle_charInitData D_800FAB18 = {
@@ -40,7 +40,7 @@ extern DR_STP D_800F1970[];
 extern DR_STP D_800F1988[];
 extern void* D_800F19CC;
 
-void func_800F9818(void)
+static void func_800F9818(void)
 {
     int i;
     int var_v0;
@@ -58,7 +58,7 @@ void func_800F9818(void)
     }
 }
 
-void _loadSystemDat(void)
+static void _loadSystemDat(void)
 {
     RECT rect;
     RECT* p_hdr;
@@ -104,13 +104,13 @@ void _loadSystemDat(void)
     vs_main_freeHeapR(buf);
 }
 
-void func_800F9AB0(void) { }
+static void func_800F9AB0(void) { }
 
-int func_800F9AB8(void) { return vs_battle_getEmptyObjectDataSlot(); }
+static int func_800F9AB8(void) { return vs_battle_getEmptyObjectDataSlot(); }
 
 void func_800CB660(int);
 
-void func_800F9AD8(void)
+static void func_800F9AD8(void)
 {
     int j;
     int i;
@@ -161,7 +161,7 @@ void func_800F9AD8(void)
     vs_battle_cameraCurrentSpherical.initialDistance = s1->unk84;
 }
 
-void func_800F9CCC(void)
+static void func_800F9CCC(void)
 {
     int i;
     int bladeIndex;
@@ -395,7 +395,7 @@ void func_800FA35C(void)
     func_800760CC(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
 }
 
-void func_800FA6B8(void)
+static void func_800FA6B8(void)
 {
     vs_main_bzero(D_800F1CE0, 0x20);
     vs_main_bzero(&vs_battle_roomData, sizeof vs_battle_roomData);
@@ -408,7 +408,7 @@ void func_800FA6B8(void)
     vs_battle_doorEntered = -1;
     D_800F1BA4 = 0;
     D_800F1BB6 = 0;
-    _submenuState = 0;
+    vs_battle_submenuState = 0;
     vs_battle_sceneBuffer = NULL;
     D_800F1CD6 = 1;
     D_800F1CD4 = 8;

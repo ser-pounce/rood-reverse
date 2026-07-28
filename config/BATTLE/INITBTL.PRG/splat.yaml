@@ -7,12 +7,8 @@ options:
   src_path: src/BATTLE/INITBTL.PRG
   asset_path: build/assets/BATTLE/INITBTL.PRG
   ld_script_path: build/config/BATTLE/INITBTL.PRG/link.ld
-  symbol_addrs_path: 
-    - config/BATTLE/INITBTL.PRG/symbol_addrs.txt
-    - config/SLUS_010.40/symbol_addrs.txt
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/BATTLE/INITBTL.PRG/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/BATTLE/INITBTL.PRG/undefined_syms_auto.txt
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 segments:
   - name: INITBTL.PRG

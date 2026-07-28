@@ -122,7 +122,7 @@ int _initCongratulationsScreen(void)
 
     int i;
 
-    if (_submenuState == 0) {
+    if (vs_battle_submenuState == 0) {
 
         func_8007DFF0(0x1D, 3, 5);
 
@@ -131,9 +131,9 @@ int _initCongratulationsScreen(void)
 
         vs_main_cdEnqueue(cdSlot, timData);
 
-        ++_submenuState;
+        ++vs_battle_submenuState;
 
-    } else if (_submenuState == 1) {
+    } else if (vs_battle_submenuState == 1) {
         if (cdSlot->state == vs_main_CdQueueStateLoaded) {
 
             for (i = 0; i < 3; ++i) {
@@ -165,7 +165,7 @@ int _initCongratulationsScreen(void)
             vs_main_freeCdQueueSlot(cdSlot);
             func_80103748();
 
-            ++_submenuState;
+            ++vs_battle_submenuState;
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
         int strength;
@@ -200,7 +200,7 @@ int _initCongratulationsScreen(void)
             _buffReelIndex = 2;
         }
 
-        _submenuState = 0;
+        vs_battle_submenuState = 0;
 
         _addHealBonus();
 
@@ -259,7 +259,7 @@ int _initTimeAttackEnd(void)
     static void* timData;
 
     int i;
-    int state = _submenuState;
+    int state = vs_battle_submenuState;
 
     if (state == 0) {
 
@@ -270,7 +270,7 @@ int _initTimeAttackEnd(void)
 
         vs_main_cdEnqueue(cdSlot, timData);
 
-        ++_submenuState;
+        ++vs_battle_submenuState;
 
     } else if (state == 1) {
         if (cdSlot->state == vs_main_CdQueueStateLoaded) {
@@ -300,7 +300,7 @@ int _initTimeAttackEnd(void)
             vs_main_freeCdQueueSlot(cdSlot);
             func_80103748();
 
-            ++_submenuState;
+            ++vs_battle_submenuState;
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
 
@@ -360,7 +360,7 @@ int _initTimeAttackEnd(void)
         _screenTimer = 0;
         _screenState = 0;
         _elementAnimationState = 0;
-        _submenuState = 0;
+        vs_battle_submenuState = 0;
 
         vs_main_freeHeapR(timData);
 
@@ -374,7 +374,7 @@ int _initTimeAttackStart(void)
     static vs_main_CdQueueSlot* cdSlot;
     static void* timData;
 
-    if (_submenuState == 0) {
+    if (vs_battle_submenuState == 0) {
 
         func_8007DFF0(0x1D, 2, 5);
 
@@ -383,8 +383,8 @@ int _initTimeAttackStart(void)
 
         vs_main_cdEnqueue(cdSlot, timData);
 
-        ++_submenuState;
-    } else if (_submenuState == 1) {
+        ++vs_battle_submenuState;
+    } else if (vs_battle_submenuState == 1) {
         if (cdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
@@ -415,7 +415,7 @@ int _initTimeAttackStart(void)
 
             vs_main_freeCdQueueSlot(cdSlot);
 
-            ++_submenuState;
+            ++vs_battle_submenuState;
         }
     } else {
         vs_main_freeHeapR(timData);
@@ -426,7 +426,7 @@ int _initTimeAttackStart(void)
         _screenState = 0;
         _elementAnimationState = 0;
         _buffReelSelection = 0;
-        _submenuState = 0;
+        vs_battle_submenuState = 0;
         return 1;
     }
 
@@ -2271,7 +2271,7 @@ int _initCubePuzzleStart(void)
         short rankCap;
     }* puzzleData;
 
-    if (_submenuState == 0) {
+    if (vs_battle_submenuState == 0) {
 
         func_8007DFF0(0x1D, 2, 5);
 
@@ -2280,9 +2280,9 @@ int _initCubePuzzleStart(void)
 
         vs_main_cdEnqueue(_iqDisCdSlot, _iqDisData);
 
-        ++_submenuState;
+        ++vs_battle_submenuState;
 
-    } else if (_submenuState == 1) {
+    } else if (vs_battle_submenuState == 1) {
         if (_iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
@@ -2328,7 +2328,7 @@ int _initCubePuzzleStart(void)
 
             vs_main_freeCdQueueSlot(_iqDisCdSlot);
 
-            ++_submenuState;
+            ++vs_battle_submenuState;
         }
     } else {
         vs_main_freeHeapR(_iqDisData);
@@ -2339,7 +2339,7 @@ int _initCubePuzzleStart(void)
         _screenState = 0;
         _elementAnimationState = 0;
         _buffReelSelection = 0;
-        _submenuState = 0;
+        vs_battle_submenuState = 0;
 
         _nop0();
         return 1;
@@ -2368,7 +2368,7 @@ int _initCubePuzzleQuit(void)
     TIM_IMAGE tim;
     int i;
 
-    if (_submenuState == 0) {
+    if (vs_battle_submenuState == 0) {
 
         func_8007DFF0(0x1D, 1, 5);
 
@@ -2377,9 +2377,9 @@ int _initCubePuzzleQuit(void)
 
         vs_main_cdEnqueue(_escDisCdSLot, _escDisData);
 
-        ++_submenuState;
+        ++vs_battle_submenuState;
 
-    } else if (_submenuState == 1) {
+    } else if (vs_battle_submenuState == 1) {
         if (_escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
 
@@ -2407,7 +2407,7 @@ int _initCubePuzzleQuit(void)
 
             vs_main_freeCdQueueSlot(_escDisCdSLot);
 
-            ++_submenuState;
+            ++vs_battle_submenuState;
         }
     } else {
         vs_main_freeHeapR(_escDisData);
@@ -2418,7 +2418,7 @@ int _initCubePuzzleQuit(void)
         _screenState = 0;
         _elementAnimationState = 0;
         _buffReelSelection = 0;
-        _submenuState = 0;
+        vs_battle_submenuState = 0;
         return 1;
     }
 

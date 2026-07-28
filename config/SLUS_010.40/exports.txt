@@ -9,6 +9,7 @@ ClearImage
 ClearOTagR
 close
 CloseEvent
+D_80050468
 D_80055C80
 D_8005DFD4
 D_8005DFD6
@@ -144,6 +145,7 @@ vs_main_loadMusicSlot
 vs_main_mapStatus
 vs_main_materialModifiers
 vs_main_memcpy
+vs_main_nearClip
 vs_main_padDisconnectAll
 vs_main_playSfxDefault
 vs_main_processPadState

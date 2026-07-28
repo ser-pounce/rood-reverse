@@ -768,6 +768,7 @@ heapB = 0x800501B8;
 cdReadLoc = 0x800501C8;
 _cdQueue = 0x800501E0;
 _cdQueueCount = 0x80050460;
+D_80050468 = 0x80050468;
 D_8005046A = 0x8005046A;
 vs_main_startState = 0x80050470;
 sp2 = 0x80050474;

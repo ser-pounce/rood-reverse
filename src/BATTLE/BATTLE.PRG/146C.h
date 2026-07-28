@@ -1111,7 +1111,7 @@ extern void* D_800F1CBC;
 extern _mpdRoomDoorSection_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
-extern int _submenuState;
+extern int vs_battle_submenuState;
 extern int D_800F1CE0[8];
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;

@@ -9580,6 +9580,7 @@ void func_80085A34(func_80085A34_t* arg0)
     }
 }
 
+// https://decomp.me/scratch/KrvDw
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085B10);
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4)

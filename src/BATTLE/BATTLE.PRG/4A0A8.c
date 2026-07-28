@@ -43,8 +43,10 @@ typedef struct {
 } func_800BD57C_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
+    union {
+        u_char u8[2];
+        short s16;
+    } unk0;
     short unk2;
     short unk4;
     short unk6;
@@ -90,23 +92,29 @@ typedef struct {
     short unk1FC;
     short unk1FE;
     short unk200;
-    char unk202[0x1C];
-    char unk21E;
-    char unk21F;
-    char unk220;
-    char unk221;
-    char unk222;
-    char unk223;
-    char unk224[0x1A];
+    char unk202[0x18];
+    short unk21A;
+    short unk21C;
+    short unk21E;
+    short unk220;
+    short unk222;
+    char unk224[0x16];
+    short unk23A;
+    short unk23C;
     short unk23E;
     short unk240;
-    char unk242[0x1C];
+    char unk242[0x18];
+    short unk25A;
+    short unk25C;
     short unk25E;
     short unk260;
     char unk262[0x16];
     short unk278;
     short unk27A;
     int unk27C;
+    int unk280;
+    int unk284;
+    int unk288;
 } D_800F4BA4_t;
 
 typedef struct {
@@ -2785,7 +2793,75 @@ void func_800BBAFC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BBBE8);
+extern P_CODE D_800E9C08;
+extern D_800F1A68_t D_800E9C0C;
+
+void func_800BBBE8(void)
+{
+    VECTOR _ __attribute__((unused));
+    VECTOR sp20;
+    VECTOR sp30;
+
+    D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
+    D_800F4BA0 = 0;
+
+    vs_battle_getCameraPosition(&sp20);
+    vs_battle_getCameraLookAt(&sp30);
+    _copyVector(&D_800F4BA4->unk0[1].cameraPos, &sp20);
+    _copyVector(&D_800F4BA4->unk0[0].unkA4, &sp20);
+    _copyVector(&D_800F4BA4->unk0[0].cameraPos, &sp30);
+    _copyVector(&D_800F4BA4->unk0[1].unkA4, &sp30);
+
+    D_800F4BA4->unk0[0].unk0 = 0xF;
+    D_800F4BA4->unk0[0].unk6 = D_800F4BA4->unk0[0].unk7 = 0;
+    D_800F4BA4->unk0[1].unk0 = 0xF;
+    D_800F4BA4->unk0[1].unk6 = D_800F4BA4->unk0[1].unk7 = 0;
+    D_800F4BA4->unk168.unkA = 0;
+    D_800F4BA4->unk168.unk2 = 0;
+    D_800F4BA4->unk168.unk0 = 1;
+
+    func_8007DD50(0);
+
+    D_800F4BA4->unk174.unkA = 0;
+    D_800F4BA4->unk174.unk2 = 0;
+
+    func_8007DDAC(0);
+
+    D_800F4BA4->unk174.unk0 = 1;
+    D_800F4BA4->unk200 = 0x1000;
+    D_800F4BA4->unk1FE = 0x1000;
+
+    func_8007DDB8(&D_800E9C0C);
+
+    D_800F4BA4->unk21E = D_800F4BA4->unk220 = D_800F4BA4->unk222 = D_800F4BA4->unk21A = 0;
+
+    func_8007DDD4(&D_800E9C08);
+
+    D_800F4BA4->unk23A = 0;
+    D_800F4BA4->unk240 = 0x1000;
+    D_800F4BA4->unk23E = 0x1000;
+
+    func_8007DDF8(&D_800E9C0C);
+
+    D_800F4BA4->unk25A = 0;
+
+    func_8007DE2C(1);
+
+    D_800F4BA4->unk25E = 0x1000;
+    D_800F4BA4->unk27A = D_800F4BA4->unk260 = 0;
+    D_800F4BA4->projectionDistance.unk2 = 0x200;
+    D_800F4BA4->projectionDistance.unk9 = 0;
+    D_800F4BA4->projectionDistance.unk0 = 1;
+    D_800F4BA4->nearClip.unk2 = 0x40;
+    D_800F4BA4->nearClip.unk9 = 0;
+    D_800F4BA4->nearClip.unk0 = 1;
+    D_800F4BA4->farClip.unk2 = 0x1000;
+    D_800F4BA4->farClip.unk9 = 0;
+    D_800F4BA4->farClip.unk0 = 1;
+    D_800F4BA4->unk1A4.unk0.s16 = 0;
+    D_800F4BA4->unk1A4.unkB = D_800F4BA4->unk1B0.unkB = 0;
+    D_800F4BA4->unk1E8 = 0x2000;
+}
 
 void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
 
@@ -3110,7 +3186,7 @@ int func_800BE01C(func_800BDF6C_t* arg0)
         arg0->unk8 = arg0->unk9;
     }
 
-    switch (arg0->unk1) {
+    switch (arg0->unk0.u8[1]) {
     case 0:
         *(int*)0x1F800088 = 0x1000;
         break;

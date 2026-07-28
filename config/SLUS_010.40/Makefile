@@ -1,3 +1,5 @@
+$(BUILD)/data/SLUS_010.40: $(BUILD)/data/TITLE/TITLE.PRG.elf
+$(BUILD)/data/SLUS_010.40: LDLIBS += $(patsubst %,$(BUILD)/data/%.PRG.elf,TITLE/TITLE)
 $(BUILD)/data/SLUS_010.40: LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000 \
@@ -20,7 +22,6 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ overlay 25AC main): CC1VER := 2.8.1-psx
 
 $(BUILD)/config/SLUS_010.40/link.d: \
-	config/TITLE/TITLE.PRG/symbol_addrs.txt \
 	config/BATTLE/INITBTL.PRG/symbol_addrs.txt \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

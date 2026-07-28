@@ -113,6 +113,7 @@ vs_battle_equipAccessory
 vs_battle_equipArmor
 vs_battle_equipShield
 vs_battle_equipWeapon
+vs_battle_exec
 vs_battle_getCurrentRoomId
 vs_battle_getCurrentSceneId
 vs_battle_getEmptyObjectDataSlot

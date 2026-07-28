@@ -9,8 +9,6 @@ options:
   ld_script_path: build/config/MENU/MAINMENU.PRG/link.ld
   create_undefined_funcs_auto: false
   create_undefined_syms_auto: false
-  undefined_funcs_auto_path: build/config/MENU/MAINMENU.PRG/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/MENU/MAINMENU.PRG/undefined_syms_auto.txt
   subalign: 4
   auto_link_sections: [.rodata, .data, .bss]
 

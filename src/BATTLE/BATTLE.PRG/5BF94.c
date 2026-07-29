@@ -235,6 +235,19 @@ typedef struct {
 } func_800D2A38_out_t;
 
 typedef struct {
+    u_short flags;
+    char unk2[0xC];
+    u_char unkE;
+} func_800D0548_src_t;
+
+typedef struct {
+    char unk0[6];
+    u_short flags;
+    char unk8[6];
+    short unkE;
+} func_800D0548_dst_t;
+
+typedef struct {
     u_char unk0[0x34];
     u_char unk34;
     u_char unk35;
@@ -279,6 +292,8 @@ void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
 void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
+void func_800D01E4(func_800D0548_src_t*, func_800D0548_dst_t*);
+void func_800D037C(func_800D0548_src_t*, func_800D0548_dst_t*);
 void func_800D1104(int);
 void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
@@ -3305,7 +3320,27 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D01E4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D037C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0548);
+void func_800D0548(func_800D0548_src_t* arg0, func_800D0548_dst_t* arg1)
+{
+    int type = arg0->flags & 0x3000;
+
+    if (type == 0x1000) goto type1;
+    if (type < 0x1001) goto done;
+    if (type == 0x2000) goto type2;
+    goto done;
+
+type1:
+    func_800D01E4(arg0, arg1);
+    goto done;
+
+type2:
+    func_800D037C(arg0, arg1);
+
+done:
+    if ((arg1->flags & 4) && arg0->unkE >= arg1->unkE) {
+        arg1->unkE++;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
 

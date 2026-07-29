@@ -3890,8 +3890,23 @@ int func_800D4D98(D_800F53B8_t* arg0 __attribute__((unused)))
 
 int func_800D4DA8(D_800F53B8_t* arg0 __attribute__((unused))) { return 1; }
 
-int func_800D4DB0(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DB0);
+int func_800D4DB0(D_800F53B8_t* arg0)
+{
+    u_char selected = arg0->unk10[func_800D5170(arg0)];
+
+    if (arg0->unk4 == NULL && (u_int)(u_char)selected < 4) {
+        u_char* counts = (u_char*)D_800F569C->unkB4;
+        int count = *(counts + selected + 0x16);
+
+        if (count != 0 && D_800F569C->unkBC != 0
+            && count < *(int*)D_800F569C->unkBC) {
+            selected = count - 1;
+        }
+    }
+
+    func_800D55A4(arg0, (u_char)selected, 0);
+    return 1;
+}
 
 int func_800D4E5C(D_800F53B8_t* arg0)
 {

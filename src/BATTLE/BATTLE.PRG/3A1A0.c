@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "30D14.h"
 #include "3A1A0.h"
 
@@ -24,6 +25,7 @@ int func_800B13CC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
+int func_8008D2C0(func_8008D2C0_t[]);
 
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
@@ -45,21 +47,110 @@ void func_800A2C48(D_800F4538_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2CD4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2FBC);
+/* Bleeds the unk34 residual into the position over unk5CA remaining frames,
+ * taking an even share each frame so the last one lands exactly. */
+void func_800A2FBC(D_800F4538_t* arg0)
+{
+    int dx = arg0->unk0.unk34.vx / arg0->unk5CA;
+    int dy = arg0->unk0.unk34.vy / arg0->unk5CA;
+    int dz = arg0->unk0.unk34.vz / arg0->unk5CA;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3054);
+    arg0->unk5CA--;
+
+    arg0->unk0.unk34.vx -= dx;
+    arg0->unk0.position.vx += dx;
+    arg0->unk0.unk34.vy -= dy;
+    arg0->unk0.position.vy += dy;
+    arg0->unk0.unk34.vz -= dz;
+    arg0->unk0.position.vz += dz;
+}
+
+/* Records a destination half a tile away from unk1C/unk20, stepped in whichever
+ * direction arg1 points on each axis. */
+void func_800A3054(D_800F45E0_t* arg0, SVECTOR* arg1)
+{
+    int dx = 0x3F;
+    int dz = 0x3F;
+
+    if (arg1->vx < 0) {
+        dx = -0x3F;
+    }
+    if (arg1->vz < 0) {
+        dz = -0x3F;
+    }
+
+    arg0->unk181A = 1;
+    arg0->unk1814 = arg0->unk1C + dx;
+    arg0->unk1818 = arg0->unk20 + dz;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A30A0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3310);
+/* Index of the first model from 2 up that is flagged and standing exactly on
+ * arg1, or 0. The vx/vy pair is compared as one word, which is why the position
+ * test is split in two. */
+int func_800A3310(int arg0, SVECTOR* arg1)
+{
+    int i;
+
+    for (i = 2; i < arg0; i++) {
+        D_800F4538_t* model = D_800F4538[i];
+
+        if ((model != NULL) && ((((u_int*)model)[2] & 0x200000) != 0)
+            && (*(int*)&model->unk0.position.vx == *(int*)&arg1->vx)
+            && (model->unk0.position.vz == arg1->vz)) {
+            return i;
+        }
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3394);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3500);
+/* Lowest surface at tile (arg0, arg1): the collision map's height, pulled down
+ * by any actor standing there whose unk1E sits below it. */
+int func_800A3500(int arg0, int arg1)
+{
+    int height;
+    int i;
+
+    height = func_8008DA24(arg0, arg1);
+    height <<= 17;
+    height >>= 17;
+
+    for (i = 0; i < 16; i++) {
+        D_800F45E0_t* actor = D_800F45E0[i];
+
+        if ((actor != NULL) && (actor->unk1C == arg0) && (actor->unk20 == arg1)) {
+            int top = actor->unk1E - 0x80;
+
+            if (top < height) {
+                height = top;
+            }
+        }
+    }
+
+    return height;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A35A8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A36E0);
+void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
+{
+    D_800F4538_t* model = D_800F4538[arg0];
+
+    if (model != NULL) {
+        arg2->unk0.unk0.value = model->unk1878;
+
+        if (((((u_int*)model)[2] & 0x200000) != 0)
+            && ((arg1 == 0x10) || (arg1 == 0x20))) {
+            arg2->unk0.unk0.value = *(int*)&model->unk0.currentTileX;
+        }
+
+        arg2->unk0.unk0.fields.unk0_24 = model->unk0.facing / 16;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3760);
 
@@ -91,7 +182,29 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A46A4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A47C4);
+int func_800A47C4(void)
+{
+    int i;
+
+    for (i = 0; i < 16; i++) {
+        D_800F45E0_t* actor = D_800F45E0[i];
+
+        if (actor == NULL) {
+            continue;
+        }
+        if ((((u_int*)actor)[2] & 1) != 0) {
+            continue;
+        }
+        if ((((u_int*)actor)[2] & 0xF00) != 0) {
+            continue;
+        }
+        if (actor->unk1A != 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 void func_800A4828(int arg0, MATRIX* arg1)
 {
@@ -107,7 +220,23 @@ void func_800A4828(int arg0, MATRIX* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A24);
+func_8008D2C0_t* func_800A4A24(int arg0)
+{
+    func_8008D2C0_t sp10[4];
+    int id = arg0 - 2;
+    int count;
+    int i;
+
+    count = func_8008D2C0(sp10);
+
+    for (i = 0; i < count; i++) {
+        if (sp10[i].unk3 == id) {
+            return &sp10[i];
+        }
+    }
+
+    return NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A88);
 

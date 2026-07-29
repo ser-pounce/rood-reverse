@@ -257,7 +257,9 @@ typedef struct {
     u_short unk5C4;
     u_short unk5C6;
     u_short unk5C8;
-    u_short unk5CA;
+    /* volatile because func_800A2FBC re-reads it for each of its three
+     * divisions instead of caching it; same reason as unk5D below. */
+    volatile u_short unk5CA;
     char unk5CC;
     char unk5CD;
     short unk5CE;
@@ -343,7 +345,7 @@ typedef struct {
     u_char unk1862;
     u_char unk1863;
     D_800F4538_unk1864 unk1864;
-    int unk1868;
+    int unk1878;
     int unk187C;
     u_char unk1880[0x10];
     u_char unk1890[2][0x20];
@@ -605,7 +607,12 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    u_char unk1800[0x3C];
+    u_char unk1800[0x14];
+    short unk1814;
+    short unk1816;
+    short unk1818;
+    short unk181A;
+    u_char unk181C[0x20];
     short unk183C;
     short unk183E;
     short unk1840;
@@ -622,12 +629,12 @@ typedef struct {
     u_int unk1850;
     u_char unk1854[0x10];
     D_800F4538_unk1864 unk1864;
-    int unk1868;
+    int unk1878;
     int unk187C;
 } D_800F45E0_t;
 
 int func_800A1108(int, void*);
-void func_800A36E0(int, char, func_8006EBF8_t*);
+void func_800A36E0(int, int, func_8006EBF8_t*);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);
 void func_800A35A8(void);

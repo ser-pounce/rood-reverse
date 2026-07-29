@@ -31,10 +31,14 @@ segments:
       - [0x1010, .rodata, 573B8]
       - [0x1024, .rodata, 58578]
       - [0x10F8, .rodata, 5BF94]
-      - [0x1354, rodata, 6E644]
+      # Deliberately not named `6E644`, and so not `.rodata`: naming it after
+      # the C unit turns on splat's rodata migration, which only emits the
+      # entries a function in that unit references by name and silently drops
+      # the remaining 188 bytes, shifting the whole overlay.
+      - [0x1354, rodata, 6E644_rodata]
       - [0x146C, c]
       - [0x2842C, c]
-      - [0x2EA3C, asm]
+      - [0x2EA3C, c]
       - [0x30D14, c]
       - [0x38C1C, c]
       - [0x3A1A0, c]
@@ -44,7 +48,7 @@ segments:
       - [0x573B8, c]
       - [0x58578, c]
       - [0x5BF94, c]
-      - [0x6E644, asm]
+      - [0x6E644, c]
       - [0x7F984, data]
       - [0x82DC8, .data, menuLbas]
       - [0x82E08, .data, gimLbas]

@@ -1,7 +1,10 @@
 #pragma once
+#include "146C.h"
 
 void func_800D6E44(void);
 void func_800D7814(void);
+void func_800D78B8(void);
+void func_800D78CC(void);
 void func_800D78F0(void);
 void func_800DC638(void);
 int func_800DEC88(void*);

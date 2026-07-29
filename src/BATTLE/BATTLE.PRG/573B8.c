@@ -117,7 +117,26 @@ __asm__("glabel vs_battle_copyAligned;"
         "add       $a2, -2;"
         "endlabel vs_battle_copyAligned;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_memcpy);
+/* Hand-written too, and it has to be: vs_battle_copyAligned above branches
+ * straight into it, and its `jr $ra` carries no delay slot of its own, so the
+ * first instruction of vs_battle_setSpriteDefault below runs as one. Copies
+ * four shorts per iteration until src reaches src + numBytes. */
+__asm__("glabel vs_battle_memcpy;"
+        "addu      $a2, $a1, $a2;"
+        ".L800C01E4:;"
+        "lh        $t0, 0x0($a1);"
+        "lh        $t1, 0x2($a1);"
+        "lh        $t2, 0x4($a1);"
+        "lh        $t3, 0x6($a1);"
+        "addiu     $a1, $a1, 0x8;"
+        "sh        $t0, 0x0($a0);"
+        "sh        $t1, 0x2($a0);"
+        "sh        $t2, 0x4($a0);"
+        "sh        $t3, 0x6($a0);"
+        "bne       $a1, $a2, .L800C01E4;"
+        "addiu     $a0, $a0, 0x8;"
+        "jr        $ra;"
+        "endlabel vs_battle_memcpy;");
 
 __asm__("glabel vs_battle_setSpriteDefault;"
         "lui      $v1, 0x1F80;"
@@ -164,7 +183,26 @@ __asm__("glabel vs_battle_setSpriteDefault;"
         "sw         $t4, ($v1);"
         "endlabel vs_battle_setSprite;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02A8);
+/* Hand-written, like the blocks around it, not compiler output: it makes two
+ * calls out of an 8-byte frame. Every function in this project that the
+ * compiler produced reserves at least 0x18 when it calls anything, because gcc
+ * always lays down the 0x10 outgoing-argument area. Trying to match it from C
+ * costs a session; the closest C gets is `SetRotMatrix(&D_1F800014_mat);
+ * SetTransMatrix(&D_1F800014_mat);`, which CSEs the address into `s0`. */
+__asm__("glabel func_800C02A8;"
+        "addiu     $sp, $sp, -0x8;"
+        "sw        $ra, ($sp);"
+        "lui       $a0, %hi(D_1F800014_mat);"
+        "jal       SetRotMatrix;"
+        "addiu     $a0, $a0, %lo(D_1F800014_mat);"
+        "lui       $a0, %hi(D_1F800014_mat);"
+        "jal       SetTransMatrix;"
+        "addiu     $a0, $a0, %lo(D_1F800014_mat);"
+        "lw        $ra, ($sp);"
+        "nop;"
+        "jr        $ra;"
+        "addiu     $sp, $sp, 0x8;"
+        "endlabel func_800C02A8;");
 
 __asm__("glabel vs_battle_playSfx10;"
         "j         .L800C02FC;"

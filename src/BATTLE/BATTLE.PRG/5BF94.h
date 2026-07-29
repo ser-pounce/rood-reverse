@@ -150,6 +150,75 @@ typedef struct {
     char* strings[10];
 } vs_battle_stringContext_t;
 
+/* A whole camera pose, captured so it can be interpolated towards another.
+ * D_800F5520 holds the from/to pair and D_800F54D8 the interpolated result. */
+typedef struct {
+    /* 0x00 */ VECTOR position;
+    /* 0x10 */ VECTOR lookAt;
+    /* 0x20 */ VECTOR unk20;
+    /* 0x30 */ int roll;
+    /* 0x34 */ int nearClip;
+    /* 0x38 */ int projectionDistance;
+    /* 0x3C */ int farClip;
+} vs_battle_cameraPose_t;
+
+/* One of the four D_800F54B8 slots. unk0 is 0xFF while the slot is idle. */
+typedef struct {
+    /* 0x0 */ u_char unk0;
+    /* 0x1 */ u_char kind : 5;
+    /*     */ u_char indirectKind : 1;
+    /*     */ u_char indirectCount : 1;
+    /*     */ u_char unk1_7 : 1;
+    /* 0x2 */ u_char kindArg;
+    /* 0x3 */ u_char countArg;
+    /* 0x4 */ u_char unk4;
+    /* 0x5 */ u_char unk5;
+} D_800F54B8_t;
+
+typedef struct {
+    char unk0[0x14];
+    char unk14;
+    char unk15;
+} D_800F569C_t2;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4[4];
+    int unk8;
+    int unkC;
+    int unk10;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t1;
+
+typedef struct {
+    char unk0[8];
+    u_char* unk8;
+    u_char* unkC[4];
+    char unk1C[0x70];
+    func_800D0B30_t1* unk8C;
+    char* unk90;
+    int unk94;
+    u_char* unk98[4];
+    u_char* unkA8;
+    int unkAC;
+    u_short* unkB0;
+    D_800F569C_t2* unkB4;
+    int unkB8;
+    int unkBC;
+    u_char* unkC0;
+    int unkC4;
+    int unkC8;
+    int unkCC;
+} D_800F569C_t;
+
+extern D_800F569C_t D_800F56C8;
+extern D_800F569C_t* D_800F5698;
+extern D_800F569C_t* D_800F569C;
+extern D_800F569C_t D_800F57A0;
+
 typedef struct {
     u_short unk0;
     char unk2;

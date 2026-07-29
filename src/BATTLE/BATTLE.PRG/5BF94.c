@@ -34,6 +34,29 @@ typedef struct {
     /* 0xC */ int unkC;
 } func_800D5780_t;
 
+/* One step of the eight-byte-per-entry script func_800D5780_t.unk0 points at.
+ * The three u_char fields are biased by 0x80. */
+typedef struct {
+    /* 0x0 */ short unk0;
+    /* 0x2 */ short unk2;
+    /* 0x4 */ u_char unk4;
+    /* 0x5 */ u_char unk5;
+    /* 0x6 */ u_char unk6;
+    /* 0x7 */ u_char unk7;
+} func_800D6298_t;
+
+/* The same eight bytes as func_800D6298_t, as the handler-dispatch opcode
+ * reads them: a packed word plus a 16-bit operand. */
+typedef struct {
+    /* 0x0 */ u_int unk0_0 : 9;
+    /*     */ u_int unk0_9 : 9;
+    /*     */ u_int unk0_18 : 3;
+    /*     */ u_int unk0_21 : 6;
+    /*     */ u_int unk0_27 : 5;
+    /* 0x4 */ u_short unk4;
+    /* 0x6 */ u_short unk6;
+} func_800D5D74_t;
+
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
 int func_800D12D8(int);
@@ -125,6 +148,18 @@ typedef struct {
     char unk38[0x98];
 } func_800CE714_t2_2;
 
+/* A node of the fixed pool behind D_800F55F4. func_800D2698 carves a heap
+ * block into a doubly linked free list of these; each owner keeps the ones it
+ * has taken on D_800F53B8_t.unk18, counted by D_800F53B8_t.unk8. */
+typedef struct D_800F55F4_t {
+    /* 0x00 */ struct D_800F55F4_t* prev;
+    /* 0x04 */ struct D_800F55F4_t* next;
+    /* 0x08 */ char unk8[0x34];
+    /* 0x3C */ int unk3C[8];
+    /* 0x5C */ char unk5C[0x1B];
+    /* 0x77 */ u_char unk77;
+} D_800F55F4_t;
+
 typedef struct D_800F53B8_t {
     struct D_800F53B8_t* next;
     D_800F53B8_t5* unk4;
@@ -137,7 +172,7 @@ typedef struct D_800F53B8_t {
     u_int unk14_8 : 3;
     u_int unk14_11 : 5;
     u_int unk14_16 : 16;
-    int unk18;
+    D_800F55F4_t* unk18;
     func_800CE714_t2_2 unk1C[16];
     D_800F53B8_t3 unkD1C;
 } D_800F53B8_t;
@@ -170,41 +205,6 @@ typedef struct {
     u_char count;
     u_char unkC;
 } _textBoxSelector_t;
-
-typedef struct {
-    char unk0[0x14];
-    char unk14;
-    char unk15;
-} D_800F569C_t2;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_char unk4[4];
-    int unk8;
-    int unkC;
-    int unk10;
-    short unk14[6];
-    short unk20[6];
-    short unk2C[6];
-} func_800D0B30_t1;
-
-typedef struct {
-    char unk0[0xC];
-    u_char* unkC[4];
-    char unk1C[0x70];
-    func_800D0B30_t1* unk8C;
-    char* unk90;
-    char unk94[0x1C];
-    u_short* unkB0;
-    D_800F569C_t2* unkB4;
-    int unkB8;
-    int unkBC;
-    int unkC0;
-    int unkC4;
-    int unkC8;
-    int unkCC;
-} D_800F569C_t;
 
 typedef struct {
     int unk0;
@@ -265,9 +265,9 @@ void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
 void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
-void func_800D169C(int, int, int, int);
-void func_800D17A8(int, int, int, int);
-void func_800D1B18(int*);
+void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
+void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
+void func_800D1B18(vs_battle_cameraPose_t*);
 void func_800D2560(void);
 void func_800D268C(void);
 void func_800D2698(int);
@@ -283,6 +283,9 @@ void func_800D6AEC(D_800F53B8_t*, u_short);
 void func_800D7890(int);
 
 extern u_long* D_1F800000[];
+
+extern char D_800EAA54[];
+extern int (*D_800F56A8[8])(func_800D4910_t*, int, int);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
@@ -359,17 +362,25 @@ extern D_800F53B8_t* D_800F53BC;
 extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
-extern int D_800F54D8;
+extern D_800F54B8_t D_800F54B8[4];
+extern short D_800F54D0;
+extern vs_battle_cameraPose_t D_800F54D8;
+extern vs_battle_cameraPose_t D_800F5520[2];
+extern short D_800F55A0;
 extern u_char D_800F4E80;
 extern D_800F53B8_t3 D_800F5234;
 extern char D_800F5518;
-extern int D_800F55A8;
+extern vs_battle_cameraPose_t D_800F55A8;
 extern int D_800F55E8;
+extern int D_800F55F0;
+extern D_800F55F4_t* D_800F55F4;
+extern int D_800F55F8;
+extern D_800F55F4_t* D_800F55FC;
 extern int D_800F5600;
 extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
-extern D_800F569C_t* D_800F569C;
+extern u_char D_800EC330[][2][4];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -404,11 +415,39 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C56C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5798);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58A4);
+/* Name of the lowest status effect set in arg0, or the empty entry if none. */
+char* func_800C58A4(u_int arg0)
+{
+    u_int statuses = arg0 >> 5;
+    int i;
+
+    for (i = 0; i < 0x18; i++) {
+        if ((statuses >> i) & 1) {
+            return (char*)&vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
+        }
+    }
+
+    return D_800EAA54;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C64D0);
+/* Walks the ordering table from arg0 to the entry that points back at arg0[-1]
+ * and splices arg1 in there. Primitives carry the next link in their low 24
+ * bits and their word count in the top byte. */
+void func_800C64D0(u_long* arg0, u_long* arg1)
+{
+    u_long* prim = arg0;
+    u_long mask = 0xFFFFFF;
+    u_long tail = (u_long)(arg0 - 1) & mask;
+
+    while ((*prim & mask) != tail) {
+        prim = (u_long*)((*prim & mask) | 0x80000000);
+    }
+
+    *prim = (*prim & 0xFF000000) | ((u_long)arg1 & mask);
+    *arg1 = (*arg1 & 0xFF000000) | tail;
+}
 
 INCLUDE_ASM(
     "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_renderTextRawColor);
@@ -3095,7 +3134,28 @@ void func_800CF8BC(void)
 
 void func_800CF920(void) { D_800F522C = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF92C);
+/* Offsets a packed (y << 8) | x screen position by the signed pair in arg2,
+ * clamping each axis to 1..0xFE. */
+void func_800CF92C(int arg0, int arg1, int arg2, u_short* arg3)
+{
+    int x = (short)arg2 + arg0;
+    int y;
+
+    if (x <= 0) {
+        x = 1;
+    } else if (x >= 0xFF) {
+        x = 0xFE;
+    }
+
+    y = (arg2 >> 16) + arg1;
+    if (y <= 0) {
+        y = 1;
+    } else if (y >= 0xFF) {
+        y = 0xFE;
+    }
+
+    *arg3 = x | (y << 8);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF988);
 
@@ -3143,7 +3203,12 @@ int _absMax3(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC8C);
+/* vs_battle_lerp with the cosine easing of func_800D18B4, inlined. */
+int func_800CFC8C(int arg0, int arg1, int arg2, int arg3)
+{
+    int var_v0 = (arg1 - arg0) * (ONE - rcos((arg3 * (ONE / 2)) / arg2));
+    return arg0 + (var_v0 / (ONE * 2));
+}
 
 void _lerpVector(short* src, int t, VECTOR* vec)
 {
@@ -3277,7 +3342,15 @@ void func_800D0C60(int arg0, func_800D0C60_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1104);
+void func_800D1104(int arg0)
+{
+    func_800D0B30_t1* temp = D_800F569C->unk8C;
+    int i;
+
+    for (i = 0; i < temp->unk0; i++) {
+        D_800F5330[i + 1] = D_800F569C->unkC[i][arg0 % temp->unk4[i]];
+    }
+}
 
 int func_800D118C(int arg0, int arg1)
 {
@@ -3294,7 +3367,26 @@ int func_800D118C(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D11F4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D12D8);
+int func_800D12D8(int arg0)
+{
+    u_char* base = D_800F569C->unkC0;
+    int count = 0;
+    int off;
+
+    if (arg0 < *(int*)base) {
+        off = ((short*)base)[arg0 + 2];
+        off += base[off];
+
+        while (base[off] != 0) {
+            count += base[off];
+            off += 2;
+        }
+
+        count++;
+    }
+
+    return count;
+}
 
 int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
 {
@@ -3312,20 +3404,36 @@ int vs_battle_lerp(int arg0, int arg1, int arg2)
     return arg0 + (var_v0 / (ONE * 2));
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D169C);
+void func_800D169C(SVECTOR* arg0, SVECTOR* arg1, int arg2, SVECTOR* arg3)
+{
+    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1718);
+void func_800D1718(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* arg4)
+{
+    func_800D169C(arg0, arg1, ONE - rcos((arg3 * (ONE / 2)) / arg2), arg4);
+}
 
-void func_800D1778(int arg0, int arg1, int arg2, int arg3, int arg4)
+void func_800D1778(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* arg4)
 {
     func_800D169C(arg0, arg1, (arg3 * (ONE * 2)) / arg2, arg4);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D17A8);
+void func_800D17A8(VECTOR* arg0, VECTOR* arg1, int arg2, VECTOR* arg3)
+{
+    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1824);
+void func_800D1824(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
+{
+    func_800D17A8(arg0, arg1, ONE - rcos((arg3 * (ONE / 2)) / arg2), arg4);
+}
 
-void func_800D1884(int arg0, int arg1, int arg2, int arg3, int arg4)
+void func_800D1884(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
 {
     func_800D17A8(arg0, arg1, (arg3 * (ONE * 2)) / arg2, arg4);
 }
@@ -3340,11 +3448,35 @@ void func_800D1904(int arg0, int arg1, int arg2, int arg3)
     vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
+/* Reverts to assembly over a two-instruction scheduling difference: the target
+ * materialises 0xFF before the loop counter, every source shape tried emits it
+ * after. Everything else in the function matches.
+ *
+ * void func_800D1930(void)
+ * {
+ *     int i;
+ *     D_800F5518 = 0;
+ *     D_800F55E8 = 0;
+ *     D_800F54D0 = 0;
+ *     D_800F55A0 = 0;
+ *     for (i = 3; i >= 0; i--) {
+ *         D_800F54B8[i].unk0 = 0xFF;
+ *     }
+ * }
+ */
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1930);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D197C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1B18);
+void func_800D1B18(vs_battle_cameraPose_t* arg0)
+{
+    vs_battle_getCameraPosition(&arg0->position);
+    vs_battle_getCameraLookAt(&arg0->lookAt);
+    arg0->roll = vs_battle_getCameraRoll() + 0x8000;
+    arg0->nearClip = vs_main_nearClip;
+    arg0->projectionDistance = vs_main_projectionDistance;
+    arg0->farClip = _camera.t2.farClip;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1B80);
 
@@ -3361,13 +3493,54 @@ void func_800D1DFC(int arg0)
 
 void func_800D1E20(int arg0) { D_800F55E8 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E2C);
+u_char func_800D1E2C(D_800F54B8_t* arg0)
+{
+    int kind =
+        arg0->indirectKind ? func_800D118C(arg0->kindArg, arg0->unk0) : arg0->kindArg;
+    return kind;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E78);
+u_char func_800D1E78(D_800F54B8_t* arg0)
+{
+    int count =
+        arg0->indirectCount ? func_800D118C(arg0->countArg, arg0->unk0) : arg0->countArg;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1EF0);
+    if (count == 0) {
+        return 0;
+    }
+    return rand() % count;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1FEC);
+void func_800D1EF0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6)
+{
+    int i;
+
+    for (i = 0; i < 4; i++) {
+        if (((arg0 >> i) & 1) != 0) {
+            D_800F54B8[i].kind = arg1;
+            D_800F54B8[i].unk4 = arg2;
+            D_800F54B8[i].indirectKind = arg3;
+            D_800F54B8[i].kindArg = arg4;
+            D_800F54B8[i].indirectCount = arg5;
+            D_800F54B8[i].countArg = arg6;
+            D_800F54B8[i].unk0 = 0;
+            D_800F54B8[i].unk5 = func_800D1E78(&D_800F54B8[i]);
+            func_800D1DE4(1 << i);
+        }
+    }
+}
+
+void func_800D1FEC(int arg0)
+{
+    int i;
+
+    for (i = 0; i < 4; i++) {
+        if (((arg0 >> i) & 1) != 0) {
+            D_800F54B8[i].unk0 = 0xFF;
+            func_800D1DFC(1 << i);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D206C);
 
@@ -3375,21 +3548,124 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D21C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D236C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2518);
+void func_800D2518(void) { D_800F54D8 = D_800F5520[0]; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2560);
 
 void func_800D268C(void) { D_800F5600 = 0; }
 
+/* Reverts to assembly: the instruction sequence is reproduced exactly bar a
+ * consistent permutation of five registers, which no source shape tried moved.
+ * Builds the D_800F55F4 free list out of one heap block of `count` nodes.
+ *
+ * void func_800D2698(int count)
+ * {
+ *     D_800F55F4_t* pool;
+ *     int i;
+ *
+ *     if (D_800F5600 != 0) {
+ *         D_800F5600++;
+ *         return;
+ *     }
+ *
+ *     pool = vs_main_allocHeapR(count * sizeof *pool);
+ *     D_800F55FC = pool;
+ *     pool[0].prev = NULL;
+ *     pool[0].next = &pool[1];
+ *
+ *     for (i = 1; i < count - 1; i++) {
+ *         pool[i].prev = &pool[i - 1];
+ *         pool[i].next = &pool[i + 1];
+ *     }
+ *
+ *     D_800F55F8 = 0;
+ *     D_800F55F0 = count;
+ *     D_800F5600 = 1;
+ *     D_800F55FC[i].prev = &D_800F55FC[i - 1];
+ *     D_800F55FC[i].next = NULL;
+ *     D_800F55F4 = D_800F55FC;
+ * }
+ */
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2698);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D278C);
+void func_800D278C(void)
+{
+    if (D_800F5600 == 1) {
+        if (D_800F55FC != NULL) {
+            vs_main_freeHeapR(D_800F55FC);
+            D_800F55FC = NULL;
+        }
+        D_800F5600 = 0;
+    } else {
+        D_800F5600--;
+    }
+}
 
+/* Reverts to assembly over the last four instructions: the target keeps the
+ * unk8 increment in v0 and moves the return value in afterwards, every shape
+ * tried moves the return value first and increments in v1. Pops one node off
+ * the D_800F55F4 free list and pushes it onto arg0's list.
+ *
+ * D_800F55F4_t* func_800D27F0(D_800F53B8_t* arg0)
+ * {
+ *     D_800F55F4_t* node = D_800F55F4;
+ *
+ *     if (node == NULL) {
+ *         func_800CE644(0x14);
+ *     }
+ *
+ *     func_800D6CCC(node->unk3C);
+ *     node->unk77 = 0xFF;
+ *     node->prev = NULL;
+ *     D_800F55F8++;
+ *     D_800F55F4 = node->next;
+ *     node->next = arg0->unk18;
+ *
+ *     if (arg0->unk18 != NULL) {
+ *         arg0->unk18->prev = node;
+ *     }
+ *
+ *     arg0->unk18 = node;
+ *     arg0->unk8++;
+ *     return node;
+ * }
+ */
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D27F0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2888);
+void func_800D2888(D_800F55F4_t* arg0, D_800F53B8_t* arg1)
+{
+    if (arg0->next != NULL) {
+        arg0->next->prev = arg0->prev;
+    }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2904);
+    if (arg0->prev != NULL) {
+        arg0->prev->next = arg0->next;
+    } else {
+        arg1->unk18 = arg0->next;
+    }
+
+    arg0->next = D_800F55F4;
+    D_800F55F4 = arg0;
+    D_800F55F8--;
+    arg1->unk8--;
+}
+
+void func_800D2904(D_800F53B8_t* arg0)
+{
+    D_800F55F4_t* head = arg0->unk18;
+    D_800F55F4_t* tail = head;
+
+    if (head != NULL) {
+        while (tail->next != NULL) {
+            tail = tail->next;
+        }
+
+        tail->next = D_800F55F4;
+        D_800F55F4 = head;
+        D_800F55F8 -= arg0->unk8;
+        arg0->unk8 = 0;
+    }
+}
 
 void func_800D2970(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
@@ -3612,8 +3888,18 @@ int func_800D4EC0(D_800F53B8_t* arg0)
 int func_800D4F00(D_800F53B8_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4F00);
 
-int func_800D4FB4(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4FB4);
+int func_800D4FB4(D_800F53B8_t* arg0)
+{
+    int i;
+
+    for (i = 0; i < 2; i++) {
+        u_char* dst = D_800F569C->unk8 + 4 + i * 0xCC;
+        dst[0xC4] = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
+        dst[0xC5] = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
+        dst[0xC6] = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
+    }
+    return 1;
+}
 
 int func_800D5048(D_800F53B8_t* arg0)
 {
@@ -3708,7 +3994,22 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5904);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5D74);
+int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    /* Integer arithmetic rather than `(func_800D5D74_t*)arg1->unk0 + unk6`:
+     * the target adds index to base in that order, and gcc canonicalises
+     * pointer arithmetic the other way round. */
+    func_800D5D74_t* entry =
+        (func_800D5D74_t*)(arg1->unk6 * sizeof *entry + (u_int)arg1->unk0);
+
+    if (entry->unk0_0 == ((short*)arg0->unkD1C.unk30)[1]) {
+        func_800CF694(arg0, D_800F56A8[entry->unk0_18],
+            (entry->unk0_9 + (entry->unk0_21 << 8)) | (entry->unk4 << 16));
+        return func_800D5780(arg1);
+    }
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5E00);
 
@@ -3718,9 +4019,31 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6048);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D61AC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6298);
+int func_800D6298(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    func_800D6298_t* entry = (func_800D6298_t*)arg1->unk0 + arg1->unk6;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6310);
+    if (entry->unk0 == ((short*)arg0->unkD1C.unk30)[1]) {
+        func_8007B1B8(entry->unk7, entry->unk2, entry->unk4 - 0x80, entry->unk5 - 0x80,
+            entry->unk6 - 0x80);
+        return func_800D5780(arg1);
+    }
+
+    return 1;
+}
+
+int func_800D6310(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    func_800D6298_t* entry = (func_800D6298_t*)arg1->unk0 + arg1->unk6;
+
+    if (entry->unk0 == ((short*)arg0->unkD1C.unk30)[1]) {
+        func_8007B344(entry->unk7, entry->unk2, entry->unk4 - 0x80, entry->unk5 - 0x80,
+            entry->unk6 - 0x80);
+        return func_800D5780(arg1);
+    }
+
+    return 1;
+}
 
 void func_800D6388(D_800F53B8_t* arg0)
 {
@@ -3747,7 +4070,13 @@ void func_800D6418(D_800F53B8_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6448);
+void func_800D6448(u_char* arg0, u_char arg1, u_char arg2)
+{
+    func_800D78B8();
+    arg0 += arg1 * 0xD0;
+    func_800CF7A8(arg0[0x50], arg0[0x51], arg2 % 10, arg2 / 10);
+    func_800D78CC();
+}
 
 void func_800D64E4(void) { func_800CF830(0, 0); }
 
@@ -3774,7 +4103,16 @@ void func_800D65A8(func_800D6508_t* arg0, char arg1)
     arg0->unk22_0 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D65D8);
+void func_800D65D8(D_800F53B8_t* arg0, u_char arg1)
+{
+    if (arg0->unkD1C.unkC.unk0 == 4) {
+        if (arg1 != 0) {
+            func_8009F898((u_char)arg0->unkD1C.unkC.unk4.unk0, 1, arg1);
+        } else {
+            func_8009F898((u_char)arg0->unkD1C.unkC.unk4.unk0, 0, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6628);
 

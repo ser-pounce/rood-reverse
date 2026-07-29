@@ -248,6 +248,12 @@ typedef struct {
 } func_800D0548_dst_t;
 
 typedef struct {
+    char unk0[0x68];
+    VECTOR lookAt;
+    char unk78[0x58];
+} func_800D66FC_t;
+
+typedef struct {
     u_char unk0[0x34];
     u_char unk34;
     u_char unk35;
@@ -4232,7 +4238,23 @@ void func_800D66CC(D_800F53B8_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D66FC);
+void func_800D66FC(func_800D66FC_t* arg0, u_char arg1, u_char arg2)
+{
+    func_800D66FC_t* source;
+
+    func_800D1B18(&D_800F5520[0]);
+    func_800D1B18(&D_800F5520[1]);
+    source = &arg0[arg1];
+    D_800F5520[1].lookAt.vx = source->lookAt.vx << 12;
+    D_800F5520[1].lookAt.vy = source->lookAt.vy << 12;
+    D_800F5520[1].lookAt.vz = source->lookAt.vz << 12;
+    D_800F54D0 = 0;
+    if (arg2 == 0) {
+        arg2 = 1;
+    }
+    D_800F55A0 = arg2;
+    func_800D1E20(2);
+}
 
 void func_800D67C4(D_800F53B8_t* arg0 __attribute__((unused)), u_char arg1)
 {

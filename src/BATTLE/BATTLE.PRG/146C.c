@@ -370,7 +370,7 @@ typedef struct {
     int lootSectionLen;
 } _mpdHeader;
 
-void func_800C64D0(int, int);
+void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
 int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);

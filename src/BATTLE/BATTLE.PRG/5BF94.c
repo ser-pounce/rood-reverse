@@ -408,7 +408,18 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58A4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C64D0);
+void func_800C64D0(u_long* arg0, int* arg1)
+{
+    int a3 = 0xFFFFFF;
+    int temp_t0 = ((u_long)(arg0 - 1) & a3);
+
+    while ((*arg0 & a3) != temp_t0) {
+        arg0 = (u_long*)((*arg0 & a3) | 0x80000000);
+    }
+
+    *arg0 = (*arg0 & 0xFF000000) | ((u_long)arg1 & a3);
+    *arg1 = (int)((*arg1 & 0xFF000000) | temp_t0);
+}
 
 INCLUDE_ASM(
     "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_renderTextRawColor);

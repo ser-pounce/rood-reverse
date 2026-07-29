@@ -3330,7 +3330,10 @@ void func_800D1884(int arg0, int arg1, int arg2, int arg3, int arg4)
     func_800D17A8(arg0, arg1, (arg3 * (ONE * 2)) / arg2, arg4);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D18B4);
+void func_800D18B4(int arg0, int arg1, int arg2, int arg3)
+{
+    vs_battle_lerp(arg0, arg1, ONE - rcos((arg3 * (ONE / 2)) / arg2));
+}
 
 void func_800D1904(int arg0, int arg1, int arg2, int arg3)
 {

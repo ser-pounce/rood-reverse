@@ -41,9 +41,27 @@ typedef struct {
 extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800EB9AC;
 
+extern MATRIX D_1F800014_mat;
+extern char D_800F4B70[];
+
+void func_800BBDDC(void);
+void func_8007D260(int arg0);
+int func_800A0204(int, int, int, int);
+
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFD9C);
+void func_800BFD9C(void)
+{
+    int i;
+
+    for (i = 0; i < 17; ++i) {
+        if (D_800F4B70[i] != 0) {
+            func_8007D260(i);
+        }
+    }
+
+    func_800BBDDC();
+}
 
 short vs_battle_getShort(u_char* arg0)
 {
@@ -77,7 +95,16 @@ void func_800C00E8(int arg0, void* arg1)
     vs_main_cdEnqueue(D_800F4BBC, arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0150);
+void func_800C0150(void)
+{
+    short i;
+
+    for (i = 0; i < 17; ++i) {
+        if (func_8007CF64(i) != NULL) {
+            func_800A0204(i, 1, 0, 0);
+        }
+    }
+}
 
 __asm__("glabel vs_battle_copyAligned;"
         "and       $t0, $a2, 0x7;"

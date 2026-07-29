@@ -4107,7 +4107,22 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5E00);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5F8C);
+int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    func_800D6298_t* entry = (func_800D6298_t*)arg1->unk0 + arg1->unk6;
+
+    if (entry->unk0 == ((short*)arg0->unkD1C.unk30)[1]) {
+        if (arg0->unkD1C.unkC.unk0 == 4
+            && (func_800A0BE0((u_char)arg0->unkD1C.unkC.unk4.unk0) & 2)) {
+            func_8007B29C(entry->unk7, entry->unk2,
+                (u_char)arg0->unkD1C.unkC.unk4.unk0, entry->unk4 - 0x80,
+                entry->unk5 - 0x80, entry->unk6 - 0x80);
+        }
+        return func_800D5780(arg1);
+    }
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6048);
 

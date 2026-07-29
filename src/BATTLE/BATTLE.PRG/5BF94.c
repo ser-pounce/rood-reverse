@@ -4125,7 +4125,17 @@ void func_800D66CC(D_800F53B8_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D66FC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D67C4);
+void func_800D67C4(D_800F53B8_t* arg0 __attribute__((unused)), u_char arg1)
+{
+    func_800D1B18(&D_800F5520[0]);
+    D_800F5520[1] = D_800F55A8;
+    D_800F54D0 = 0;
+    if (arg1 == 0) {
+        arg1 = 1;
+    }
+    D_800F55A0 = arg1;
+    func_800D1E20(2);
+}
 
 void func_800D6860(D_800F53B8_t* arg0)
 {

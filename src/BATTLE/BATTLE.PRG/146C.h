@@ -898,13 +898,6 @@ typedef struct {
     int unk4;
 } D_800F53B8_t4;
 
-typedef struct {
-    short unk0;
-    short unk1;
-    short unk2;
-    short unk3;
-} func_8008D2C0_t;
-
 typedef struct func_800D4910_t {
     struct func_800D4910_t* next;
     int (*unk4)(struct func_800D4910_t*, int, int);
@@ -1040,8 +1033,6 @@ void vs_battle_getCameraPosition(VECTOR* outPosition);
 void vs_battle_setCameraPosition(VECTOR* inPosition);
 void vs_battle_getCameraLookAt(VECTOR* outLookAt);
 void vs_battle_setCameraLookAt(VECTOR* inLookAt);
-void vs_battle_getCameraPosition(VECTOR* outPosition);
-void vs_battle_getCameraLookAt(VECTOR* outLookAt);
 int vs_battle_getCameraRoll(void);
 void vs_battle_setNearClip(int arg0);
 void func_8007DD50(int);

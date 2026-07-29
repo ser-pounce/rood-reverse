@@ -11,6 +11,13 @@ typedef struct {
     int unk40;
 } D_1F8003BC_t;
 
+typedef struct {
+    short unk0;
+    short unk1;
+    short unk2;
+    short unk3;
+} func_8008D2C0_t;
+
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
@@ -46,9 +53,6 @@ void func_800A2C48(D_800F4538_t* arg0)
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2CD4);
-
-/* Bleeds the unk34 residual into the position over unk5CA remaining frames,
- * taking an even share each frame so the last one lands exactly. */
 void func_800A2FBC(D_800F4538_t* arg0)
 {
     int dx = arg0->unk0.unk34.vx / arg0->unk5CA;
@@ -65,8 +69,6 @@ void func_800A2FBC(D_800F4538_t* arg0)
     arg0->unk0.position.vz += dz;
 }
 
-/* Records a destination half a tile away from unk1C/unk20, stepped in whichever
- * direction arg1 points on each axis. */
 void func_800A3054(D_800F45E0_t* arg0, SVECTOR* arg1)
 {
     int dx = 0x3F;
@@ -85,10 +87,6 @@ void func_800A3054(D_800F45E0_t* arg0, SVECTOR* arg1)
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A30A0);
-
-/* Index of the first model from 2 up that is flagged and standing exactly on
- * arg1, or 0. The vx/vy pair is compared as one word, which is why the position
- * test is split in two. */
 int func_800A3310(int arg0, SVECTOR* arg1)
 {
     int i;
@@ -96,7 +94,7 @@ int func_800A3310(int arg0, SVECTOR* arg1)
     for (i = 2; i < arg0; i++) {
         D_800F4538_t* model = D_800F4538[i];
 
-        if ((model != NULL) && ((((u_int*)model)[2] & 0x200000) != 0)
+        if ((model != NULL) && model->unk0.unkA_5
             && (*(int*)&model->unk0.position.vx == *(int*)&arg1->vx)
             && (model->unk0.position.vz == arg1->vz)) {
             return i;
@@ -143,8 +141,7 @@ void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
     if (model != NULL) {
         arg2->unk0.unk0.value = model->unk1878;
 
-        if (((((u_int*)model)[2] & 0x200000) != 0)
-            && ((arg1 == 0x10) || (arg1 == 0x20))) {
+        if (model->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {
             arg2->unk0.unk0.value = *(int*)&model->unk0.currentTileX;
         }
 
@@ -192,10 +189,10 @@ int func_800A47C4(void)
         if (actor == NULL) {
             continue;
         }
-        if ((((u_int*)actor)[2] & 1) != 0) {
+        if ((actor->actorId & 1) != 0) {
             continue;
         }
-        if ((((u_int*)actor)[2] & 0xF00) != 0) {
+        if (actor->unk9_0 != 0) {
             continue;
         }
         if (actor->unk1A != 0) {

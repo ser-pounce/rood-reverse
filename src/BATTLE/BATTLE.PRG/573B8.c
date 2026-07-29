@@ -117,10 +117,6 @@ __asm__("glabel vs_battle_copyAligned;"
         "add       $a2, -2;"
         "endlabel vs_battle_copyAligned;");
 
-/* Hand-written too, and it has to be: vs_battle_copyAligned above branches
- * straight into it, and its `jr $ra` carries no delay slot of its own, so the
- * first instruction of vs_battle_setSpriteDefault below runs as one. Copies
- * four shorts per iteration until src reaches src + numBytes. */
 __asm__("glabel vs_battle_memcpy;"
         "addu      $a2, $a1, $a2;"
         ".L800C01E4:;"
@@ -183,12 +179,6 @@ __asm__("glabel vs_battle_setSpriteDefault;"
         "sw         $t4, ($v1);"
         "endlabel vs_battle_setSprite;");
 
-/* Hand-written, like the blocks around it, not compiler output: it makes two
- * calls out of an 8-byte frame. Every function in this project that the
- * compiler produced reserves at least 0x18 when it calls anything, because gcc
- * always lays down the 0x10 outgoing-argument area. Trying to match it from C
- * costs a session; the closest C gets is `SetRotMatrix(&D_1F800014_mat);
- * SetTransMatrix(&D_1F800014_mat);`, which CSEs the address into `s0`. */
 __asm__("glabel func_800C02A8;"
         "addiu     $sp, $sp, -0x8;"
         "sw        $ra, ($sp);"

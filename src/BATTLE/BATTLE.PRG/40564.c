@@ -6,10 +6,6 @@
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
 
-/* The eight bytes func_800ACF54 moves from unk1C to unk4C in one go. It has to
- * be a struct assignment: gcc turns that into a single block move the
- * scheduler cannot break up, which is why the target's four instructions stay
- * together and the loads either side of them are not hoisted. */
 typedef struct {
     int unk0;
     int unk4;
@@ -784,16 +780,12 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 void func_800AC690(int arg0, D_800F45E0_t* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
 
-/* Snapshots the current tile word and the unk1C position + unk26 facing into
- * the unk4C..unk52 copy, so the step that follows can compare against where
- * this actor was. The word-at-a-time reads are what the target does: the
- * shorts move in pairs and the flag byte at 0xC is tested as part of a word. */
 void func_800ACF54(D_800F45E0_t* arg0)
 {
     arg0->unk60 = *(int*)&arg0->unk5C;
     *(func_800ACF54_t*)&arg0->unk4C = *(func_800ACF54_t*)&arg0->unk1C;
 
-    if ((((u_int*)arg0)[3] & 0xF) == 0) {
+    if (arg0->unkC_0 == 0) {
         arg0->unk1878 = *(int*)&arg0->unk5C;
     }
 

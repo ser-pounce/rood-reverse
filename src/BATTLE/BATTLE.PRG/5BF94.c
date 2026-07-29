@@ -34,8 +34,6 @@ typedef struct {
     /* 0xC */ int unkC;
 } func_800D5780_t;
 
-/* One step of the eight-byte-per-entry script func_800D5780_t.unk0 points at.
- * The three u_char fields are biased by 0x80. */
 typedef struct {
     /* 0x0 */ short unk0;
     /* 0x2 */ short unk2;
@@ -45,8 +43,6 @@ typedef struct {
     /* 0x7 */ u_char unk7;
 } func_800D6298_t;
 
-/* The same eight bytes as func_800D6298_t, as the handler-dispatch opcode
- * reads them: a packed word plus a 16-bit operand. */
 typedef struct {
     /* 0x0 */ u_int unk0_0 : 9;
     /*     */ u_int unk0_9 : 9;
@@ -312,7 +308,6 @@ void func_800D2904(D_800F53B8_t*);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
-int func_800D5170_int(D_800F53B8_t*) __asm__("func_800D5170");
 u_short func_800D5198(D_800F53B8_t*);
 int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
@@ -474,15 +469,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
  * bits and their word count in the top byte. */
 void func_800C64D0(u_long* arg0, u_long* arg1)
 {
-    u_long* prim = arg0;
     u_long mask = 0xFFFFFF;
     u_long tail = (u_long)(arg0 - 1) & mask;
 
-    while ((*prim & mask) != tail) {
-        prim = (u_long*)((*prim & mask) | 0x80000000);
+    while ((*arg0 & mask) != tail) {
+        arg0 = (u_long*)((*arg0 & mask) | 0x80000000);
     }
 
-    *prim = (*prim & 0xFF000000) | ((u_long)arg1 & mask);
+    *arg0 = (*arg0 & 0xFF000000) | ((u_long)arg1 & mask);
     *arg1 = (*arg1 & 0xFF000000) | tail;
 }
 
@@ -3172,7 +3166,7 @@ void func_800CF8BC(void)
 void func_800CF920(void) { D_800F522C = 0; }
 
 /* Offsets a packed (y << 8) | x screen position by the signed pair in arg2,
- * clamping each axis to 1..0xFE. */
+ * clamping each axis to 1..254. */
 void func_800CF92C(int arg0, int arg1, int arg2, u_short* arg3)
 {
     int x = (short)arg2 + arg0;
@@ -3180,15 +3174,15 @@ void func_800CF92C(int arg0, int arg1, int arg2, u_short* arg3)
 
     if (x <= 0) {
         x = 1;
-    } else if (x >= 0xFF) {
-        x = 0xFE;
+    } else if (x >= 255) {
+        x = 254;
     }
 
     y = (arg2 >> 16) + arg1;
     if (y <= 0) {
         y = 1;
-    } else if (y >= 0xFF) {
-        y = 0xFE;
+    } else if (y >= 255) {
+        y = 254;
     }
 
     *arg3 = x | (y << 8);
@@ -3328,21 +3322,15 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D037C);
 
 void func_800D0548(func_800D0548_src_t* arg0, func_800D0548_dst_t* arg1)
 {
-    int type = arg0->flags & 0x3000;
+    switch (arg0->flags & 0x3000) {
+    case 0x1000:
+        func_800D01E4(arg0, arg1);
+        break;
+    case 0x2000:
+        func_800D037C(arg0, arg1);
+        break;
+    }
 
-    if (type == 0x1000) goto type1;
-    if (type < 0x1001) goto done;
-    if (type == 0x2000) goto type2;
-    goto done;
-
-type1:
-    func_800D01E4(arg0, arg1);
-    goto done;
-
-type2:
-    func_800D037C(arg0, arg1);
-
-done:
     if ((arg1->flags & 4) && arg0->unkE >= arg1->unkE) {
         arg1->unkE++;
     }
@@ -3505,22 +3493,6 @@ void func_800D1904(int arg0, int arg1, int arg2, int arg3)
     vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
-/* Reverts to assembly over a two-instruction scheduling difference: the target
- * materialises 0xFF before the loop counter, every source shape tried emits it
- * after. Everything else in the function matches.
- *
- * void func_800D1930(void)
- * {
- *     int i;
- *     D_800F5518 = 0;
- *     D_800F55E8 = 0;
- *     D_800F54D0 = 0;
- *     D_800F55A0 = 0;
- *     for (i = 3; i >= 0; i--) {
- *         D_800F54B8[i].unk0 = 0xFF;
- *     }
- * }
- */
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1930);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D197C);
@@ -3611,38 +3583,6 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2560);
 
 void func_800D268C(void) { D_800F5600 = 0; }
 
-/* Reverts to assembly: the instruction sequence is reproduced exactly bar a
- * consistent permutation of five registers, which no source shape tried moved.
- * Builds the D_800F55F4 free list out of one heap block of `count` nodes.
- *
- * void func_800D2698(int count)
- * {
- *     D_800F55F4_t* pool;
- *     int i;
- *
- *     if (D_800F5600 != 0) {
- *         D_800F5600++;
- *         return;
- *     }
- *
- *     pool = vs_main_allocHeapR(count * sizeof *pool);
- *     D_800F55FC = pool;
- *     pool[0].prev = NULL;
- *     pool[0].next = &pool[1];
- *
- *     for (i = 1; i < count - 1; i++) {
- *         pool[i].prev = &pool[i - 1];
- *         pool[i].next = &pool[i + 1];
- *     }
- *
- *     D_800F55F8 = 0;
- *     D_800F55F0 = count;
- *     D_800F5600 = 1;
- *     D_800F55FC[i].prev = &D_800F55FC[i - 1];
- *     D_800F55FC[i].next = NULL;
- *     D_800F55F4 = D_800F55FC;
- * }
- */
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2698);
 
 void func_800D278C(void)
@@ -3658,35 +3598,6 @@ void func_800D278C(void)
     }
 }
 
-/* Reverts to assembly over the last four instructions: the target keeps the
- * unk8 increment in v0 and moves the return value in afterwards, every shape
- * tried moves the return value first and increments in v1. Pops one node off
- * the D_800F55F4 free list and pushes it onto arg0's list.
- *
- * D_800F55F4_t* func_800D27F0(D_800F53B8_t* arg0)
- * {
- *     D_800F55F4_t* node = D_800F55F4;
- *
- *     if (node == NULL) {
- *         func_800CE644(0x14);
- *     }
- *
- *     func_800D6CCC(node->unk3C);
- *     node->unk77 = 0xFF;
- *     node->prev = NULL;
- *     D_800F55F8++;
- *     D_800F55F4 = node->next;
- *     node->next = arg0->unk18;
- *
- *     if (arg0->unk18 != NULL) {
- *         arg0->unk18->prev = node;
- *     }
- *
- *     arg0->unk18 = node;
- *     arg0->unk8++;
- *     return node;
- * }
- */
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D27F0);
 
 void func_800D2888(D_800F55F4_t* arg0, D_800F53B8_t* arg1)
@@ -3935,7 +3846,7 @@ int func_800D4DB0(D_800F53B8_t* arg0)
 {
     u_char selected = arg0->unk10[func_800D5170(arg0)];
 
-    if (arg0->unk4 == NULL && (u_int)(u_char)selected < 4) {
+    if (arg0->unk4 == NULL && selected < 4) {
         u_char* counts = (u_char*)D_800F569C->unkB4;
         int count = *(counts + selected + 0x16);
 
@@ -3945,7 +3856,7 @@ int func_800D4DB0(D_800F53B8_t* arg0)
         }
     }
 
-    func_800D55A4(arg0, (u_char)selected, 0);
+    func_800D55A4(arg0, selected, 0);
     return 1;
 }
 
@@ -3972,9 +3883,9 @@ int func_800D4EC0(D_800F53B8_t* arg0)
 
 int func_800D4F00(D_800F53B8_t* arg0)
 {
-    int first = func_800D5170_int(arg0);
-    int second = func_800D5170_int(arg0);
-    int third = func_800D5170_int(arg0);
+    int first = func_800D5170(arg0);
+    int second = func_800D5170(arg0);
+    int third = func_800D5170(arg0);
     D_800F569C_t** state = &D_800F569C;
     int offset = (first & 0x3F) * 0xCC;
     u_char* dst;
@@ -4096,11 +4007,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
 
 int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
-    /* Integer arithmetic rather than `(func_800D5D74_t*)arg1->unk0 + unk6`:
-     * the target adds index to base in that order, and gcc canonicalises
-     * pointer arithmetic the other way round. */
-    func_800D5D74_t* entry =
-        (func_800D5D74_t*)(arg1->unk6 * sizeof *entry + (u_int)arg1->unk0);
+    func_800D5D74_t* entry = (func_800D5D74_t*)arg1->unk0 + arg1->unk6;
 
     if (entry->unk0_0 == ((short*)arg0->unkD1C.unk30)[1]) {
         func_800CF694(arg0, D_800F56A8[entry->unk0_18],

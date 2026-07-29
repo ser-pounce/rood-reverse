@@ -262,6 +262,13 @@ typedef struct {
 
 typedef struct {
     short unk0;
+    short unk1;
+    short unk2;
+    short unk3;
+} func_8008D2C0_t;
+
+typedef struct {
+    short unk0;
     short unk2;
     union {
         struct {

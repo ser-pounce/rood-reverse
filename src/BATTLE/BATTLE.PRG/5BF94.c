@@ -220,6 +220,21 @@ typedef struct {
 } func_800D0B30_t2;
 
 typedef struct {
+    char unk0[0x24];
+    u_int unk24;
+    char unk28[4];
+    SVECTOR unk2C;
+    VECTOR unk34;
+    char unk44[0x54];
+    VECTOR unk98;
+} func_800D2A38_t;
+
+typedef struct {
+    char unk0[0xC];
+    VECTOR unkC;
+} func_800D2A38_out_t;
+
+typedef struct {
     u_char unk0[0x34];
     u_char unk34;
     u_char unk35;
@@ -3695,7 +3710,20 @@ void func_800D2A14(u_short* arg0, SVECTOR* arg1)
     arg1->vz = arg0[4];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2A38);
+void func_800D2A38(func_800D2A38_t* arg0, func_800D2A38_out_t* arg1)
+{
+    if (arg0->unk24 & 0x40000) {
+        ApplyRotMatrix(&arg0->unk2C, &arg0->unk34);
+    } else {
+        arg0->unk34.vx = arg0->unk2C.vx;
+        arg0->unk34.vy = arg0->unk2C.vy;
+        arg0->unk34.vz = arg0->unk2C.vz;
+    }
+
+    arg1->unkC.vx = arg0->unk98.vx + (arg0->unk34.vx << 12);
+    arg1->unkC.vy = arg0->unk98.vy + (arg0->unk34.vy << 12);
+    arg1->unkC.vz = arg0->unk98.vz + (arg0->unk34.vz << 12);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2ADC);
 

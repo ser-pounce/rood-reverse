@@ -291,6 +291,7 @@ void func_800D2904(D_800F53B8_t*);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
+int func_800D5170_int(D_800F53B8_t*) __asm__("func_800D5170");
 u_short func_800D5198(D_800F53B8_t*);
 int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
@@ -3913,8 +3914,23 @@ int func_800D4EC0(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4F00(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4F00);
+int func_800D4F00(D_800F53B8_t* arg0)
+{
+    int first = func_800D5170_int(arg0);
+    int second = func_800D5170_int(arg0);
+    int third = func_800D5170_int(arg0);
+    D_800F569C_t** state = &D_800F569C;
+    int offset = (first & 0x3F) * 0xCC;
+    u_char* dst;
+
+    offset += 4;
+    dst = (*state)->unk8 + offset;
+
+    dst[0xC4] = ((u_char)first >> 6) + ((second & 0xF) << 2);
+    dst[0xC5] = ((u_char)second >> 4) + ((third & 3) << 4);
+    dst[0xC6] = (u_char)third >> 2;
+    return 1;
+}
 
 int func_800D4FB4(D_800F53B8_t* arg0)
 {

@@ -154,6 +154,16 @@ generate the unit as one `INCLUDE_ASM` per `^glabel` in
   from the previous type survive and produce duplicate-symbol link errors that
   have nothing to do with the real problem.
 
+- **A matched function can still own labels used by neighboring assembly.**
+   `func_800D826C` matched by itself, but converting it to C removed
+   `.L800D8278`, which `func_800D820C` and `func_800D836C` branch into. `dcmp.py`
+   cannot detect that cross-function dependency; the full link reports a
+   truncated `R_MIPS_PC16` relocation. Keep the function in assembly until the
+   whole shared-entry cluster can be transcribed or decompiled together. Also
+   check for one-instruction entry points between generated files:
+   `func_800E6EAC` is a bare `jr $ra` whose delay slot is the first instruction
+   of `func_800E6EB0`, so the initial asm-to-C conversion omitted it entirely.
+
 ## Other things that waste time
 
 - **Single-object builds cannot revert a function to `INCLUDE_ASM`**, because

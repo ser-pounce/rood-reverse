@@ -1,0 +1,2 @@
+_illustrationTimers = 0x800DB7B4;
+_addRenderer = 0x8006AB44;

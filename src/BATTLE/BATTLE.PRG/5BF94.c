@@ -3154,7 +3154,11 @@ int _absMax3(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC8C);
+int func_800CFC8C(int arg0, int arg1, int arg2, int arg3)
+{
+    return arg0
+         + ((int)((arg1 - arg0) * (0x1000 - rcos((int)(arg3 << 0xB) / arg2))) / 8192);
+}
 
 void _lerpVector(short* src, int t, VECTOR* vec)
 {

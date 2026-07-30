@@ -466,9 +466,6 @@ char* func_800C58A4(u_int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
 
-/* Walks the ordering table from arg0 to the entry that points back at arg0[-1]
- * and splices arg1 in there. Primitives carry the next link in their low 24
- * bits and their word count in the top byte. */
 void func_800C64D0(u_long* arg0, u_long* arg1)
 {
     u_long mask = 0xFFFFFF;

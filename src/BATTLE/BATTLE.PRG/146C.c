@@ -370,7 +370,7 @@ typedef struct {
     int lootSectionLen;
 } _mpdHeader;
 
-void func_800C64D0(int, int);
+void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
 int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
@@ -493,7 +493,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
-void _nop2(int arg0);
+void _vsBattleNop2(int arg0);
 int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
 void func_8008B8F8(char (*arg0)[12]);
@@ -599,7 +599,7 @@ extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
 extern int D_800F1868;
-extern int D_800F1870;
+extern void* D_800F1870;
 extern int _firstPersonViewEnabled;
 extern int D_800F18A8;
 extern int D_800F18AC;
@@ -5687,7 +5687,7 @@ void func_8007983C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
-void func_8007A824(int arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
+void func_8007A824(int* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
 
 int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
 {
@@ -10993,7 +10993,7 @@ void _finishLoadZnd(int id)
 void func_80089098(void)
 {
     func_800BEBEC();
-    _nop2(0);
+    _vsBattleNop2(0);
     if (_zoneContext.zndEnemies != NULL) {
         vs_main_freeHeap(_zoneContext.zndEnemies);
     }
@@ -11764,7 +11764,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void _nop2(int arg0 __attribute__((unused))) { }
+void _vsBattleNop2(int arg0 __attribute__((unused))) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {

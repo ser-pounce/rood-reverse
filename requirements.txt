@@ -1,4 +1,4 @@
-splat64[mips] == 0.41.1
+splat64[mips]== 0.50.0
 pandas
 toml
 cffi

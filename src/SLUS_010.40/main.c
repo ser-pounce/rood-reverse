@@ -8233,7 +8233,7 @@ static void _nop0(void) { }
 
 static void _nop1(void) { }
 
-static void _nop2(void) { }
+static void _mainNop2(void) { }
 
 static void _nop3(void) { }
 

@@ -2,7 +2,8 @@ battle.prg := BATTLE/BATTLE.PRG
 buildDir   := $(BUILD)/src/$(battle.prg)
 
 $(BUILD)/data/$(battle.prg): LDFLAGS += \
-	--defsym=_camera=0x1F800000
+	--defsym=_camera=0x1F800000 \
+	--defsym=D_1F800014_mat=0x1F800014
 
 $(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
 	--retain-symbols-file=config/BATTLE/BATTLE.PRG/exports.txt

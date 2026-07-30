@@ -599,7 +599,7 @@ extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
 extern int D_800F1868;
-extern int D_800F1870;
+extern void* D_800F1870;
 extern int _firstPersonViewEnabled;
 extern int D_800F18A8;
 extern int D_800F18AC;

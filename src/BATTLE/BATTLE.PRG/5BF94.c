@@ -308,9 +308,11 @@ void func_800D2904(D_800F53B8_t*);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
+int func_800D5170_int(D_800F53B8_t*) __asm__("func_800D5170");
 u_short func_800D5198(D_800F53B8_t*);
 int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
+void func_8009F898(int, int, int);
 void func_800D6AEC(D_800F53B8_t*, u_short);
 void func_800D7890(int);
 
@@ -3322,15 +3324,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D037C);
 
 void func_800D0548(func_800D0548_src_t* arg0, func_800D0548_dst_t* arg1)
 {
-    switch (arg0->flags & 0x3000) {
-    case 0x1000:
-        func_800D01E4(arg0, arg1);
-        break;
-    case 0x2000:
-        func_800D037C(arg0, arg1);
-        break;
-    }
+    int type = arg0->flags & 0x3000;
 
+    if (type == 0x1000) goto type1;
+    if (type < 0x1001) goto done;
+    if (type == 0x2000) goto type2;
+    goto done;
+
+type1:
+    func_800D01E4(arg0, arg1);
+    goto done;
+
+type2:
+    func_800D037C(arg0, arg1);
+
+done:
     if ((arg1->flags & 4) && arg0->unkE >= arg1->unkE) {
         arg1->unkE++;
     }
@@ -3883,9 +3891,9 @@ int func_800D4EC0(D_800F53B8_t* arg0)
 
 int func_800D4F00(D_800F53B8_t* arg0)
 {
-    int first = func_800D5170(arg0);
-    int second = func_800D5170(arg0);
-    int third = func_800D5170(arg0);
+    int first = func_800D5170_int(arg0);
+    int second = func_800D5170_int(arg0);
+    int third = func_800D5170_int(arg0);
     D_800F569C_t** state = &D_800F569C;
     int offset = (first & 0x3F) * 0xCC;
     u_char* dst;
@@ -4007,7 +4015,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
 
 int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
-    func_800D5D74_t* entry = (func_800D5D74_t*)arg1->unk0 + arg1->unk6;
+    func_800D5D74_t* entry =
+        (func_800D5D74_t*)(arg1->unk6 * sizeof *entry + (u_int)arg1->unk0);
 
     if (entry->unk0_0 == ((short*)arg0->unkD1C.unk30)[1]) {
         func_800CF694(arg0, D_800F56A8[entry->unk0_18],

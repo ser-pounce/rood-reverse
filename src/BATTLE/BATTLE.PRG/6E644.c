@@ -14,6 +14,11 @@ extern u_short D_800F5694[2];
 extern void* D_800F56A4;
 extern int (*D_800F56A8[8])(func_800D4910_t*, int, int);
 
+int func_80046168(u_int);
+int func_80046608(u_int);
+int func_800E5568(void*);
+void func_800E6F9C(void);
+
 typedef struct {
 	u_short lba;
 	u_short size;
@@ -28,25 +33,6 @@ typedef struct {
 	short unk24[8];
 	short unk34[8];
 } D_800F5638_t;
-
-typedef struct {
-	u_short count;
-	u_short dataOffset;
-	u_char sizes[0];
-} func_800D7990_t;
-
-typedef struct {
-	short count;
-	u_short dataOffset;
-	int offsets[0];
-} func_800D7A14_t;
-
-typedef struct {
-	u_char unk0[0x12A];
-	char unk12A;
-	u_char unk12B[0xD];
-	short unk138;
-} func_800D8260_t;
 
 extern D_800F5688_t D_800F5688;
 extern u_short D_800F568A;
@@ -74,15 +60,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78F0);
 
 void func_800D7980(int arg0) { D_800F569C->unkBC = arg0; }
 
-void func_800D7990(func_800D7990_t* arg0)
+void func_800D7990(u_char* arg0)
 {
 	int i;
-	u_char* data = (u_char*)arg0 + arg0->dataOffset;
+	u_char* data;
 
 	D_800F569C->unk8C = (func_800D0B30_t1*)arg0;
-	for (i = 0; i < arg0->count; i++) {
+	data = arg0 + ((u_short*)arg0)[1];
+	for (i = 0; i < *(u_short*)arg0; i++) {
 		D_800F569C->unkC[i] = data;
-		data += arg0->sizes[i];
+		data += *(arg0 + i + 4);
 	}
 }
 
@@ -92,14 +79,14 @@ void func_800D79F4(D_800F569C_t2* arg0) { D_800F569C->unkB4 = arg0; }
 
 void func_800D7A04(int arg0) { D_800F569C->unkB8 = arg0; }
 
-void func_800D7A14(func_800D7A14_t* arg0)
+void func_800D7A14(u_char* arg0)
 {
 	int i;
 
-	D_800F569C->unk94 = arg0->count;
-	D_800F569C->unkA8 = (u_char*)arg0 + arg0->dataOffset;
+	D_800F569C->unk94 = *(short*)arg0;
+	D_800F569C->unkA8 = arg0 + *(u_short*)(arg0 + 2);
 	for (i = 0; i < D_800F569C->unk94; i++) {
-		D_800F569C->unk98[i] = (u_char*)arg0 + arg0->offsets[i];
+		D_800F569C->unk98[i] = arg0 + ((int*)(arg0 + 4))[i];
 	}
 }
 
@@ -119,13 +106,13 @@ void func_800D7AB4(u_char* arg0) { D_800F569C->unkC0 = arg0; }
 void func_800D7AC4(int arg0)
 {
 	D_800F569C->unkC4 = arg0;
-	func_80046168();
+	func_80046168(arg0);
 }
 
 void func_800D7AEC(int arg0)
 {
 	D_800F569C->unkC8 = arg0;
-	D_800F569C->unkCC = func_80046608();
+	D_800F569C->unkCC = func_80046608(arg0);
 }
 
 int func_800D7B24(int arg0, int arg1, void* arg2)
@@ -232,10 +219,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D820C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D821C);
 
-void func_800D8260(func_800D8260_t* arg0, short arg1, char arg2)
+void func_800D8260(u_char* arg0, short arg1, char arg2)
 {
-	arg0->unk138 = arg1;
-	arg0->unk12A = arg2;
+	*(short*)(arg0 + 0x138) = arg1;
+	arg0[0x12A] = arg2;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D826C);
@@ -516,16 +503,16 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5308);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5568);
 
-int func_800E5600(int _ __attribute__((unused)), int arg1, u_int arg2)
+int func_800E5600(int arg0 __attribute__((unused)), int arg1, u_int arg2)
 {
 	vs_skill_t* skill = &vs_main_skills[arg1];
 	int result = 0;
 
-	if (skill->flagsD_8 & 0x2000) {
-		result = skill->aoe_8 << 5;
-	} else if (skill->flagsD_8 & 0x80) {
-		int value = func_800E5568(&skill->aoe_0);
-		if (value < arg2) {
+	if (((u_int*)skill)[3] & 0x20000000) {
+		result = ((u_char*)skill)[9] << 5;
+	} else if (((u_int*)skill)[3] & 0x800000) {
+		int value = func_800E5568((u_char*)skill + 8);
+		if ((u_int)value < arg2) {
 			result = value;
 		}
 	}
@@ -534,15 +521,16 @@ int func_800E5600(int _ __attribute__((unused)), int arg1, u_int arg2)
 
 int func_800E5698(u_char* arg0, int arg1)
 {
-	vs_skill_t* skill = &vs_main_skills[arg1];
-	void* data = &skill->rangeX;
-	u_int value;
+	u_char* data = (u_char*)&vs_main_skills[arg1];
+	int value;
 
-	if (skill->rangeX == 0xFF) {
+	if (data[4] == 0xFF) {
 		data = *(u_char**)(arg0 + 0x5C) + 0x38;
+	} else {
+		data += 4;
 	}
 	value = func_800E5568(data);
-	if (value >= 0x21) {
+	if ((u_int)value >= 0x21) {
 		value -= 0x20;
 	}
 	return value * value;
@@ -597,6 +585,10 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6B4C);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6BA0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6C34);
+
+__asm__("glabel func_800E6EAC;"
+	"jr $ra;"
+	"endlabel func_800E6EAC;");
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6EB0);
 

@@ -189,7 +189,7 @@ int func_800A47C4(void)
         if (actor == NULL) {
             continue;
         }
-        if ((actor->actorId & 1) != 0) {
+        if (actor->unk8_0 != 0) {
             continue;
         }
         if (actor->unk9_0 != 0) {
@@ -217,22 +217,24 @@ void func_800A4828(int arg0, MATRIX* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);
 
-func_8008D2C0_t* func_800A4A24(int arg0)
+u_int func_800A4A24(int arg0)
 {
     func_8008D2C0_t sp10[4];
     int id = arg0 - 2;
     int count;
     int i;
+    u_int result;
 
     count = func_8008D2C0(sp10);
 
     for (i = 0; i < count; i++) {
         if (sp10[i].unk3 == id) {
-            return &sp10[i];
+            result = (u_int)&sp10[i];
+            return result;
         }
     }
 
-    return NULL;
+    return 0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A88);

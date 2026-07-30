@@ -493,7 +493,7 @@ int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
-void _nop2(int arg0);
+void _vsBattleNop2(int arg0);
 int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
 void func_8008B8F8(char (*arg0)[12]);
@@ -10993,7 +10993,7 @@ void _finishLoadZnd(int id)
 void func_80089098(void)
 {
     func_800BEBEC();
-    _nop2(0);
+    _vsBattleNop2(0);
     if (_zoneContext.zndEnemies != NULL) {
         vs_main_freeHeap(_zoneContext.zndEnemies);
     }
@@ -11764,7 +11764,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void _nop2(int arg0 __attribute__((unused))) { }
+void _vsBattleNop2(int arg0 __attribute__((unused))) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {

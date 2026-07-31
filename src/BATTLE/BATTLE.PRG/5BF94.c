@@ -410,7 +410,7 @@ char* func_800C58A4(uint arg0)
     arg0 >>= 5;
     for (i = 0; i < 0x18; i++) {
         if ((arg0 >> i) & 1) {
-            return &vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
+            return (char*)&vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
         }
     }
     return (char*)&vs_battle_statusStrings[0xF6];

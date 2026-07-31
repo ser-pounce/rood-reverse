@@ -366,7 +366,7 @@ typedef struct {
 
 typedef struct {
     short zudId;
-    short unk2;
+    short classId;
     short killFlagsOffset;
     short killFlagsCount;
     short selected;
@@ -2134,7 +2134,7 @@ void _renderEnemyDetailScreen(int animState, int state)
         vs_battle_renderTextRawColor(
             sp60, ((temp_s4 - 120) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
         _renderGradientQuad(temp_s4 - 128, 160, 100, 12, 2);
-        vs_battle_renderTextRawColor(enemyClassName[_monBinData[_selectedEnemy].unk2],
+        vs_battle_renderTextRawColor(enemyClassName[_monBinData[_selectedEnemy].classId],
             ((temp_s2 + 188) & 0xFFFF) | 0x9B0000, 0x808080, NULL);
         _renderGradientQuad(temp_s2 + 180, 155, 140, 26, 1);
     }

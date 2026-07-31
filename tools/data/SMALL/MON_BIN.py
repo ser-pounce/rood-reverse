@@ -43,25 +43,32 @@ def parse_entries(data: bytes) -> list[dict]:
     for i in range(NUM_ENTRIES):
         offset = i * MON_STRUCT_SIZE
         (
-            unk0, unk2, unk4, unk6,
+            zudId, classId, killFlagsOffset, killFlagsCount,
             selected, animationState,
-            unlocked, unkD, unkE, unkF,
+            unlocked, prev, next, unkF,
             raw_name,
         ) = struct.unpack_from(MON_STRUCT_FORMAT, data, offset)
 
-        entries.append({
-            "unk0":           unk0,
-            "unk2":           unk2,
-            "unk4":           unk4,
-            "unk6":           unk6,
-            "selected":       selected,
-            "animationState": animationState,
-            "unlocked":       unlocked,
-            "unkD":           unkD,
-            "unkE":           unkE,
-            "unkF":           unkF,
-            "name":           maybe_literal(decode(raw_name)),
-        })
+        entry = {
+            "zudId":           zudId,
+            "classId":         classId,
+            "killFlagsOffset": killFlagsOffset,
+            "killFlagsCount":  killFlagsCount,
+            "name":            maybe_literal(decode(raw_name)),
+        }
+
+        for name, value in [
+            ("selected", selected),
+            ("animationState", animationState),
+            ("unlocked", unlocked),
+            ("prev", prev),
+            ("next", next),
+            ("unkF", unkF),
+        ]:
+            if value != 0:
+                entry[name] = value
+
+        entries.append(entry)
     return entries
 
 
@@ -128,9 +135,9 @@ def build_entries(entries: list[dict]) -> bytes:
         name_bytes = encode_name(e["name"], pad_encoded)
         out += struct.pack(
             "<6h4B",
-            e["unk0"], e["unk2"], e["unk4"], e["unk6"],
-            e["selected"], e["animationState"],
-            e["unlocked"], e["unkD"], e["unkE"], e["unkF"],
+            e["zudId"], e["classId"], e["killFlagsOffset"], e["killFlagsCount"],
+            e.get("selected", 0), e.get("animationState", 0),
+            e.get("unlocked", 0), e.get("prev", 0), e.get("next", 0), e.get("unkF", 0),
         )
         out += name_bytes
     return out

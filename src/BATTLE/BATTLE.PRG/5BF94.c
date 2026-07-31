@@ -404,7 +404,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C56C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5798);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58A4);
+char* func_800C58A4(uint arg0)
+{
+    int i;
+    arg0 >>= 5;
+    for (i = 0; i < 0x18; i++) {
+        if ((arg0 >> i) & 1) {
+            return (char*)&vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
+        }
+    }
+    return (char*)&vs_battle_statusStrings[0xF6];
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
 
@@ -3154,7 +3164,12 @@ int _absMax3(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC8C);
+int func_800CFC8C(int arg0, int arg1, int arg2, int arg3)
+{
+    return arg0
+         + ((int)((arg1 - arg0) * (ONE - rcos((int)(arg3 * ONE / 2) / arg2)))
+             / (ONE * 2));
+}
 
 void _lerpVector(short* src, int t, VECTOR* vec)
 {

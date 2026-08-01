@@ -3407,7 +3407,8 @@ void func_800D268C(void) { D_800F5600 = 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2698);
 
-void func_800D278C(void) {
+void func_800D278C(void)
+{
     if (D_800F5600 == 1) {
         if (D_800F55FC != NULL) {
             vs_main_freeHeapR(D_800F55FC);

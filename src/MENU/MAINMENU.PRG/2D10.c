@@ -11,8 +11,6 @@
 #include "vs_string.h"
 #include <libetc.h>
 
-extern u_long* D_1F800000[];
-
 vs_battle_menuItem_t* vs_mainMenu_initWeaponDetailsRow(
     int row, int weaponIndex, int slide)
 {

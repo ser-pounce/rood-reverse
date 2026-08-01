@@ -165,8 +165,6 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfReady, levelledSpellInit, levelledSpell };
 
-    extern u_long* D_1F800000[];
-
     static char levelledSpells[] = { vs_battle_spell_explosion,
         vs_battle_spell_thunderburst, vs_battle_spell_flameSphere,
         vs_battle_spell_gaeaStrike, vs_battle_spell_avalanche,
@@ -408,7 +406,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
         _setMPCost(selectedRow + i);
 
-        temp_s6 = D_1F800000[1] - 1;
+        temp_s6 = vs_scratch.unk4 - 4;
 
         for (level = 0; level < 4; ++level) {
 
@@ -491,7 +489,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         prim[9] = vs_getUV(79, 64);
 
         *temp_s6 = ((u_int)prim << 8) >> 8;
-        D_1F800000[0] = (u_long*)prim + 10;
+        vs_scratch.unk0 = prim + 10;
 
         break;
     }

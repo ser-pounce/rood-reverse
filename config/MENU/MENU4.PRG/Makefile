@@ -3,7 +3,6 @@ menu4_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG M
 $(BUILD)/data/MENU/MENU4.PRG: $(menu4_LDLIBS)
 $(BUILD)/data/MENU/MENU4.PRG: LDLIBS += $(menu4_LDLIBS)
 $(BUILD)/data/MENU/MENU4.PRG: LDFLAGS += \
-	--defsym=D_1F800000=0x1F800000 \
 	--defsym=vs_scratch=0x1F800000
 $(BUILD)/data/MENU/MENU4.PRG $(BUILD)/data/MENU/MENU4.PRG.elf: LDSCRIPT := link.ld
 

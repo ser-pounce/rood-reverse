@@ -34,8 +34,6 @@
 #include <libgpu.h>
 #include <abs.h>
 
-extern void* D_1F800000[];
-
 /**
  * Hides or shows the menu action at the very top of the menu.
  */
@@ -83,7 +81,7 @@ void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
     }
 
     xy = *(int*)&menuItem->x;
-    before = D_1F800000[2] + 8;
+    before = vs_scratch.unk8 + 8;
     w = menuItem->w;
     animState = menuItem->gradientState;
     isScrollable = menuItem->isScrollable - 1;
@@ -131,7 +129,7 @@ void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
         return;
     }
 
-    prim = D_1F800000[0];
+    prim = vs_scratch.unk0;
 
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
         if (isScrollable == 0) {
@@ -155,7 +153,7 @@ void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
         xy += vs_getXY(0, 1);
     }
 
-    D_1F800000[0] = prim;
+    vs_scratch.unk0 = prim;
 
     if (isScrollable == 0) {
         vs_battle_addTile(before, vs_getRGB0(primTile, 0, 0, 0),

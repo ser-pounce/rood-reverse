@@ -12,8 +12,6 @@
 
 #define _ITEMMENU
 
-extern void* D_1F800000[];
-
 #include "src/MENU/_toggleUi.h"
 #include "src/MENU/items0.h"
 #include "src/MENU/items1.h"

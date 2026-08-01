@@ -5,7 +5,7 @@ $(BUILD)/data/MENU/MAINMENU.PRG: FIXUP = $(VPYTHON) -m tools.data.MENU.MAINMENU_
 $(BUILD)/data/MENU/MAINMENU.PRG: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDLIBS += $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDFLAGS += \
-	--defsym=D_1F800000=0x1F800000
+	--defsym=vs_scratch=0x1F800000
 $(BUILD)/data/MENU/MAINMENU.PRG $(BUILD)/data/MENU/MAINMENU.PRG.elf: LDSCRIPT := link.ld
 
 $(BUILD)/src/MENU/MAINMENU.PRG/%.o: ASFLAGS += -no-pad-sections

@@ -3209,7 +3209,6 @@ static void _setMenuItemClut(
 
 static int _displayGameOverScreen(int init)
 {
-    extern u_long* D_1F800000[];
     static short clut[2][16];
     static int color1;
     static int color2;
@@ -3220,7 +3219,7 @@ static int _displayGameOverScreen(int init)
     static char _[8];
 
     u_long* prim;
-    u_long* nextPrim = D_1F800000[2];
+    u_long* nextPrim = vs_scratch.unk8;
 
     if (init != 0) {
         color1 = 0;
@@ -3232,14 +3231,14 @@ static int _displayGameOverScreen(int init)
         return 0;
     }
     if (color1 < 0) {
-        prim = D_1F800000[0];
+        prim = vs_scratch.unk0;
         prim[0] = (*nextPrim & 0xFFFFFF) | 0x04000000;
         prim[1] = vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
         prim[3] = vs_getXY(0, 0);
         prim[4] = vs_getWH(320, 240);
         prim[2] = vs_getRGB0Raw(primTileSemiTrans, (color1 + 128) * 0x020202);
         *nextPrim = ((u_long)prim << 8) >> 8;
-        D_1F800000[0] = prim + 5;
+        vs_scratch.unk0 = prim + 5;
         color1 += 8;
         if (color1 == 0) {
             SetDispMask(0);
@@ -3869,7 +3868,6 @@ int vs_menu7_saveContainerMenu(u_char* state)
 
 static void _drawPlayTime(void)
 {
-    extern u_long* D_1F800000[];
     static char* _playTime = "00:00:00:00";
 
     char time[4];
@@ -3880,7 +3878,7 @@ static void _drawPlayTime(void)
     if (time[3] >= 100) {
         *(int*)&time = 0;
         time[3] = 0;
-        vs_battle_renderTextRaw("1", 0xC800D8, D_1F800000[1] - 5);
+        vs_battle_renderTextRaw("1", 0xC800D8, vs_scratch.unk4 - 0x14);
     } else {
         time[0] = ((((time[0] << 14) + vs_battle_keystreamBits(15)) * 5u) >> 14) / 3;
     }
@@ -3890,8 +3888,8 @@ static void _drawPlayTime(void)
         _playTime[9 - i * 3] = (digits >> 4) + 48;
         _playTime[10 - i * 3] = (digits & 0xF) + 48;
     }
-    vs_battle_renderTextRaw(_playTime, 0xC800E0, D_1F800000[1] - 5);
-    vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, D_1F800000[1] - 5);
+    vs_battle_renderTextRaw(_playTime, 0xC800E0, vs_scratch.unk4 - 0x14);
+    vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, vs_scratch.unk4 - 0x14);
 }
 
 int vs_menu7_dataMenu(u_char* state)

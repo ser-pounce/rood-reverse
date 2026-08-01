@@ -1406,10 +1406,10 @@ static int _discardMenu(int params)
         vs_battle_setFontStyle(5);
 
         i = vs_battle_toBCD(discardCount);
-        vs_battle_printVariableWidthFontChar(i & 0xF, 66, 130, D_1F800000[2] - 12);
+        vs_battle_printVariableWidthFontChar(i & 0xF, 66, 130, vs_scratch.unk8 - 12);
         i = vs_battle_toBCD(i >> 4);
-        vs_battle_printVariableWidthFontChar(i & 0xF, 60, 130, D_1F800000[2] - 12);
-        vs_battle_printVariableWidthFontChar(i >> 4, 54, 130, D_1F800000[2] - 12);
+        vs_battle_printVariableWidthFontChar(i & 0xF, 60, 130, vs_scratch.unk8 - 12);
+        vs_battle_printVariableWidthFontChar(i >> 4, 54, 130, vs_scratch.unk8 - 12);
 
         cursorBrightness = vs_mainMenu_renderCursor(
             cursorBrightness, (54 - (discardStep * 6)) | (114 << 16));

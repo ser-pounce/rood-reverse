@@ -27,9 +27,214 @@ void _initScriptFunctionTable(void);
 static void func_800F9CCC(void);
 void func_800FA7B0(void);
 
+#pragma vsstring(start)
+
+// Defaulted elements deliberately omitted for brevity, refer to the definition of
+// vs_battle_charInitData if you need to modify these.
 static vs_battle_charInitData D_800FAB18 = {
-#include "build/assets/BATTLE/INITBTL.PRG/charInit.h"
+    .subType      = 174,
+    .reach        = 7,
+    .name         = "Ashley|>6|Riot\0",
+    .hp           = 250,
+    .mp           = 50,
+    .strength     = 100,
+    .intelligence = 100,
+    .agility      = 100,
+    .unk23        = 1,
+    .unk24        = 2,
+    .walkSpeed    = 10,
+    .unk26        = 4,
+    .runSpeed     = 20,
+    .unk30        = 4,
+    .unk32        = 3,
+    .weapon = {
+        .blade = {
+            .id           = 14,
+            .subId        = 14,
+            .wepId        = 16,
+            .category     = 2,
+            .strength     = 9,
+            .intelligence = 1,
+            .agility      = -3,
+            .currentDp    = 12600,
+            .maxDp        = 12600,
+            .maxPp        = 136,
+            .damageType   = 2,
+            .costType     = 2,
+            .cost         = 1,
+            .range        = {
+                .range            = 3,
+                .unk1             = 2,
+                .unk2             = 3,
+                .attackShape      = 1,
+            },
+            .classes      = {-1, -1, -2, -1, -1, -5},
+            .affinities   = {8, 5, 5, -3, -3, 2, 2, 0},
+        },
+        .grip = {
+            .id           = 96,
+            .subId        = 1,
+            .category     = 1,
+            .strength     = 1,
+            .agility      = -1,
+            .types        = {0, 0, 4, 1},
+        },
+        .material = 3,
+        .name = "Fandango\0",
+    },
+    .accessory = {
+        .equip = {
+            .id           = 223,
+            .subId        = 97,
+            .category     = 7,
+            .intelligence = 1,
+            .classes      = {0, 0, 5, -5, -5, 5},
+            .affinities   = {5, 0, 0, 0, 0, 5, -5, 0},
+        },
+    },
+    .armor = {
+        {
+            .hp = 200,
+            .unk10 = {
+                {.unk0 = 1},
+                {.unk3 = 1},
+                {.unk3 = 2},
+                {.unk3 = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 191,
+                    .subId        = 65,
+                    .category     = 5,
+                    .strength     = 1,
+                    .intelligence = 13,
+                    .currentDp    = 3350,
+                    .maxDp        = 3350,
+                    .types        = {0, 1, 0, 0},
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .unk54 = {100, 0, 0, 5, 0, 0},
+        },
+        {
+            .hp = 200,
+            .unk10 = {
+                {.unk0 = 1},
+                {.unk3 = 1},
+                {.unk3 = 2},
+                {.unk3 = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 191,
+                    .subId        = 65,
+                    .category     = 5,
+                    .strength     = 1,
+                    .intelligence = 13,
+                    .currentDp    = 3350,
+                    .maxDp        = 3350,
+                    .types        = {0, 1, 0, 0},
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                 },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .unk54 = {0, 100, 0, 5, 0, 0},
+        },
+        {
+            .hp = 200,
+            .unk10 = {
+                {0},
+                {.unk3 = 1},
+                {.unk3 = 2},
+                {.unk3 = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 143,
+                    .subId        = 17,
+                    .category     = 2,
+                    .strength     = 1,
+                    .intelligence = 8,
+                    .currentDp    = 3800,
+                    .maxDp        = 3800,
+                    .affinities = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .unk54 = {0, 0, 100, 10, 0, 0},
+        },
+        {
+            .hp = 200,
+            .agilityDefenseBonus = 0,
+            .chainEvasion = 0,
+            .unk4 = {0, 0, 0, 0},
+            .unk8 = {0, 0, 0, 0},
+            .unkC = 0,
+            .unk10 = {
+                {0},
+                {.unk3 = 1},
+                {.unk3 = 2},
+                {.unk3 = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 159,
+                    .subId        = 33,
+                    .category     = 3,
+                    .strength     = 5,
+                    .intelligence = 10,
+                    .currentDp    = 5500,
+                    .maxDp        = 5500,
+                    .types        = {0, 1, 1, 0},
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk31 = 0,
+                .unk32 = 1,
+                .index = 0,
+            },
+            .unk54 = {5, 5, 5, 100, 5, 0},
+        },
+        {
+            .hp = 200,
+            .unk10 = {
+                {0},
+                {.unk3 = 1},
+                {.unk3 = 2},
+                {.unk3 = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 175,
+                    .subId        = 49,
+                    .category     = 4,
+                    .strength     = 1,
+                    .intelligence = 12,
+                    .currentDp    = 4050,
+                    .maxDp        = 4050,
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .unk54 = {0, 0, 0, 5, 100, 0},
+        },
+        {
+            .unk10 = {
+                {0},
+                {.unk3 = 1},
+                {.unk3 = 2},
+                {.unk3 = 3},
+            },
+        },
+    },
 };
+
+#pragma vsstring(end)
 
 extern int D_800F1874;
 extern int D_800F18F4;

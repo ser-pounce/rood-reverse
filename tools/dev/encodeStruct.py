@@ -101,7 +101,10 @@ def extract_vs_string_fields(source: str) -> set:
 # ---------------------------------------------------------------------------
 
 def build_ffi(source: str, root_struct: str):
-    cleaned = re.sub(r'^#[^\n]*\n', '', source, flags=re.MULTILINE)
+    cleaned = '\n'.join(
+        line for line in source.splitlines()
+        if not line.lstrip().startswith('#')
+    )
     cleaned = re.sub(r'/\*.*?\*/', '', cleaned, flags=re.DOTALL)
     cleaned = re.sub(r'//[^\n]*', '', cleaned)
 

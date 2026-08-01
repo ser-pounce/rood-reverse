@@ -142,65 +142,81 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 {
     SVECTOR sp;
     u_int* ent;
-    int x;
-    int z;
     int h;
     int r;
     int los;
 
-    x = arg1 + arg0->vx;
-    z = arg2 + arg0->vz;
+    int x = arg1 + arg0->vx;
+    int z = arg2 + arg0->vz;
+
     sp.vx = x;
     sp.vz = z;
+
     ent = func_800A8D64(&sp, 0);
+
     if (ent != NULL) {
+
         D_800F49F0 = ent;
+
         if (arg3 == 0) {
             h = func_8008DC7C(x, z);
         } else {
             h = func_8008DA24(x, z);
         }
+
         if (h >= 0) {
+
             h <<= 17;
             h >>= 17;
+
             if (arg3 == 2) {
                 r = func_800B13CC(x / 128, z / 128, arg0->vy);
             } else {
                 r = func_800A92B8(x / 128, z / 128);
             }
+
             if (r != 0) {
                 h = r;
             }
-            if ((*ent >> 17) & 1) {
-                if (h >= 0) {
-                    h = 0xBB8;
-                    if (arg3 == 3) {
-                        los = D_800E9278[*ent & 0x1F];
-                        if (los == 0x14) {
-                            h = 0;
-                        }
+
+            if (((*ent >> 17) & 1) && (h >= 0)) {
+
+                h = 3000;
+
+                if (arg3 == 3) {
+
+                    los = D_800E9278[*ent & 0x1F];
+
+                    if (los == 0x14) {
+                        h = 0;
                     }
                 }
             }
+
             if (arg3 != 2 && arg3 != 4) {
+
                 los = func_800A9378(x, arg0->vy, z, 0);
+
                 r = h;
-                if (los != 0) {
-                    if (los < h) {
-                        h = los;
-                    }
+
+                if ((los != 0) && (los < h)) {
+                    h = los;
                 }
-                if (arg3 == 3 && h < arg0->vy - 0x40) {
+
+                if (arg3 == 3 && h < arg0->vy - 64) {
                     h = r;
                 }
             }
+
             return h;
         }
     }
+
     if (arg3 == 3) {
         return arg0->vy;
     }
-    return -0xBB8;
+
+    return -3000;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A70DC);
@@ -283,9 +299,11 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
     if (sb->unk0 < elev2 - h) {
         return 0xFF;
     }
+
     if (h < sb->unk40 + limit) {
         return 0xFF;
     }
+
     if (func_800A8E84(actor, arg0) == 0) {
         return 0xFF;
     }

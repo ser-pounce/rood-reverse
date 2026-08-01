@@ -2,11 +2,11 @@
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "scratch.h"
 #include <libgpu.h>
 
 extern int _ashleyYOffset;
 extern int _ashleyRenderState;
-extern void* D_1F800000[];
 
 enum ashleyRenderMode {
     ashleyRenderModeRender,
@@ -36,10 +36,10 @@ static void _renderAshley(int mode)
     static int _ __attribute__((unused));
 #endif
     static MATRIX viewMatrixBackup;
-    static camera_t2 cameraBackup;
+    static vs_camera_t cameraBackup;
 
     int yOffset;
-    camera_t2* camera = &((camera_t*)&D_1F800000)->t2;
+    vs_camera_t* camera = &vs_scratch.camera;
 
     switch (mode) {
     case ashleyRenderModeRender:
@@ -109,7 +109,7 @@ static void _renderAshley(int mode)
             camera->position.vz = camera->lookAt.vz + offsetZ;
 
             func_8007ACB0();
-            func_800F9EB8(&D_1F800000[5]);
+            func_800F9EB8(&vs_scratch.viewMatrix);
         }
         break;
 
@@ -123,7 +123,7 @@ static void _renderAshley(int mode)
 
             vs_battle_setProjectionDistance(512);
 
-            viewMatrixBackup = ((camera_t*)((void*)camera - 0x34))->viewMatrix;
+            viewMatrixBackup = ((vs_scratch_t*)((void*)camera - 0x34))->viewMatrix;
             cameraBackup = *camera;
             setVector(&camera->angles, 0, 0, 0);
             camera->farClip = 0x1000;
@@ -141,7 +141,7 @@ static void _renderAshley(int mode)
             vs_mainMenu_setBackgroundRenderPriority(-4, 128);
             vs_battle_setProjectionDistance(projectionDistance);
 
-            ((camera_t*)((void*)camera - 0x34))->viewMatrix = viewMatrixBackup;
+            ((vs_scratch_t*)((void*)camera - 0x34))->viewMatrix = viewMatrixBackup;
             *camera = cameraBackup;
             render = 0;
         }

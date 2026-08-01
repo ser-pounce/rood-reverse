@@ -370,7 +370,7 @@ void func_800FA35C(void)
     _zoneContext.unk68 = D_80061068.unk6_0 & 0x3FF;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();
-    _camera.t2.farClip = 0x1000;
+    vs_scratch.camera.farClip = 0x1000;
     vs_battle_cameraCurrentSpherical.delta.pitch = 0x800;
     vs_battle_cameraCurrentSpherical.values.yaw = 0x800;
     vs_battle_cameraCurrentSpherical.values.pitch = -0x180;

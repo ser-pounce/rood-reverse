@@ -282,8 +282,6 @@ void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D6AEC(D_800F53B8_t*, u_short);
 void func_800D7890(int);
 
-extern u_long* D_1F800000[];
-
 extern u_int _gimLbas[];
 extern int _menuLbas[];
 extern char D_800EB9AC;
@@ -1667,7 +1665,7 @@ int vs_battle_renderValue(int font, int xy, int value, u_long* before)
     int new_var;
 
     if (before == NULL) {
-        before = D_1F800000[1] - 4;
+        before = vs_scratch.unk4 - 0x10;
     }
 
     do {
@@ -1690,7 +1688,7 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy)
     u_long* primBuf;
 
     rgb1 = D_800EBC04[colorIndex];
-    primBuf = D_1F800000[0];
+    primBuf = vs_scratch.unk0;
 
     rgb0 = (((w * 0xFF) + ((rgb1 & 0xFF) * (0x40 - w))) >> 6)
          | ((((w * 0xF0) + (((rgb1 >> 8) & 0xFF) * (0x40 - w))) >> 6) << 8)
@@ -1714,12 +1712,12 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy)
     primBuf[12] = xy + rgb1;
     primBuf[13] = vs_getTpage(0, 0, 0, 0, 0);
     *before = ((u_long)primBuf << 8) >> 8;
-    D_1F800000[0] = primBuf + 14;
+    vs_scratch.unk0 = primBuf + 14;
 }
 
 void _renderStatBar(int colorIndex, int current, int max)
 {
-    u_long* prim = D_1F800000[1] - 3;
+    u_long* prim = vs_scratch.unk4 - 0xC;
     int xy = D_800EBBDC[colorIndex] - D_800EB9B0;
 
     if (max != 0) {
@@ -1761,7 +1759,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
         }
 
         temp_a0 = vs_battle_setSpriteDefaultTexPage(
-            0x80, arg2 | 0x80000, var_s1 | 0x100000, D_1F800000[1] - 1);
+            0x80, arg2 | 0x80000, var_s1 | 0x100000, vs_scratch.unk4 - 4);
 
         temp_a0[4] = (var_s2 | (((0x0F0F906A >> arg0) & 1) ? 0x37F90000 : 0x37F80000));
 
@@ -1782,7 +1780,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
             }
 
             vs_battle_setSpriteDefaultTexPage(0x80, arg2 | 0x80000, var_s1 | 0x80000,
-                D_1F800000[1] - 1)[4] = var_s2 | 0x37FF0000;
+                vs_scratch.unk4 - 4)[4] = var_s2 | 0x37FF0000;
         }
     }
 }
@@ -1873,7 +1871,7 @@ void func_800C9F88(void) { D_800EBC78 = 1; }
 void func_800C9F98(int arg0, int arg1)
 {
     u_long* temp_v0 =
-        vs_battle_setSpriteDefaultTexPage(arg1, arg0, 0x60006, D_1F800000[2]);
+        vs_battle_setSpriteDefaultTexPage(arg1, arg0, 0x60006, vs_scratch.unk8);
     temp_v0[1] = 0xE1000017;
     temp_v0[4] = 0x373D80C0;
 }
@@ -1905,14 +1903,14 @@ void func_800C9FE8(void)
                     temp_v0);
                 temp_v0_2 = vs_battle_setSpriteDefaultTexPage(temp_v0,
                     ((temp_s3 + D_800EBCA0[i]) & 0xFFFF) | (D_800EBCA0[i + 4] << 0x10),
-                    D_800EBCA8[i], D_1F800000[2]);
+                    D_800EBCA8[i], vs_scratch.unk8);
                 temp_v0_2[1] = 0xE1000017;
                 temp_v0_2[4] = (*((i) + D_800EBCB8) | 0x373D0000);
             }
         }
 
         vs_battle_setSpriteDefaultTexPage(0x180, ((temp_s3 + 0x48) & 0xFFFF) | 0x660000,
-            0x1E001E, D_1F800000[2])[4] = 0x37FBA0B8;
+            0x1E001E, vs_scratch.unk8)[4] = 0x37FBA0B8;
         temp_s3 = (0xA0 - temp_s3);
 
         for (i = 0; i < 4; ++i) {
@@ -1924,12 +1922,12 @@ void func_800C9FE8(void)
                 temp_v0_2 = vs_battle_setSpriteDefaultTexPage(temp_v0,
                     (((temp_s3 + D_800EBCC8[i]) - 2) & 0xFFFF)
                         | (D_800EBCC8[i + 4] << 0x10),
-                    D_800EBCD0[i], D_1F800000[2]);
+                    D_800EBCD0[i], vs_scratch.unk8);
                 temp_v0_2[1] = 0xE1000017;
                 temp_v0_2[4] = D_800EBCE0[i] | 0x373D0000;
             }
             vs_battle_setSpriteDefaultTexPage(0x80, temp_s3 + D_800EBC88[3 - i], 0x100010,
-                D_1F800000[2])[4] = (((3 - i) * 0x10) | 0x37FB8000);
+                vs_scratch.unk8)[4] = (((3 - i) * 0x10) | 0x37FB8000);
         }
     }
     D_800EBC78 = 0;
@@ -2325,7 +2323,7 @@ void _renderTimer(int* value)
         D_800EC258[7 - i * 3] = (bcd & 0xF) + '0';
     }
 
-    vs_battle_renderTextRaw(D_800EC258, vs_getXY(128, 200), D_1F800000[1] - 1);
+    vs_battle_renderTextRaw(D_800EC258, vs_getXY(128, 200), vs_scratch.unk4 - 4);
 }
 
 void func_800CB654(int arg0) { D_800EB9AF = arg0; }
@@ -2498,28 +2496,28 @@ u_int vs_battle_keystreamBits(int value)
 
 void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh)
 {
-    u_long* prim = D_1F800000[0];
+    u_long* prim = vs_scratch.unk0;
     prim[0] = (int)((*before & 0xFFFFFF) | 0x03000000);
     prim[1] = rgb0;
     prim[2] = xy;
     prim[3] = wh;
     *before = ((u_long)prim << 8) >> 8;
-    D_1F800000[0] = prim + 4;
+    vs_scratch.unk0 = prim + 4;
 }
 
 void vs_battle_insertTpage(int tpage, u_long* before)
 {
-    u_long* prim = D_1F800000[0];
+    u_long* prim = vs_scratch.unk0;
     prim[0] = vs_getTag(sizeof(int), *before);
     prim[1] = tpage;
     *before = ((u_long)prim << 8) >> 8;
-    D_1F800000[0] = prim + 2;
+    vs_scratch.unk0 = prim + 2;
 }
 
 int vs_battle_drawCursor(int animStep, int position)
 {
     vs_battle_setSpriteDefaultTexPage(vs_battle_cursorBrightnessAnimation[animStep],
-        (((position * 0x10) + 0xA) << 0x10) | 0xB4, 0x100010, D_1F800000[2])[4] =
+        (((position * 0x10) + 0xA) << 0x10) | 0xB4, 0x100010, vs_scratch.unk8)[4] =
         0x37F83020;
     return (animStep + 1) & 0xF;
 }

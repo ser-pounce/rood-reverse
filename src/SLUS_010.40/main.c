@@ -7997,7 +7997,6 @@ extern int D_8005FE78;
 extern int D_8005FE7C;
 extern int D_8005FE80;
 extern int D_8005FE84;
-extern MATRIX D_1F800014_mat;
 extern int vs_main_buttonsReleased;
 
 static void _loadBattlePrg(void)
@@ -9941,8 +9940,8 @@ void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
     long value;
     long flag;
 
-    SetRotMatrix(&D_1F800014_mat);
-    SetTransMatrix(&D_1F800014_mat);
+    SetRotMatrix(&vs_scratch.viewMatrix);
+    SetTransMatrix(&vs_scratch.viewMatrix);
     z = RotTransPers(vec, &coords, &value, &flag);
     _do_panSfx(arg0, arg1, coords, z);
 }
@@ -10276,8 +10275,8 @@ static void func_800463BC(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
     long value;
     long flag;
 
-    SetRotMatrix(&D_1F800014_mat);
-    SetTransMatrix(&D_1F800014_mat);
+    SetRotMatrix(&vs_scratch.viewMatrix);
+    SetTransMatrix(&vs_scratch.viewMatrix);
     z = RotTransPers(vec, &sxy, &value, &flag);
     func_80046310(arg0, arg1, arg2, sxy, z);
 }

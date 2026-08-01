@@ -1,7 +1,7 @@
 $(BUILD)/data/BATTLE/INITBTL.PRG: $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
 $(BUILD)/data/BATTLE/INITBTL.PRG: LDLIBS += $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
 $(BUILD)/data/BATTLE/INITBTL.PRG: LDFLAGS += \
-	--defsym=_camera=0x1F800000
+	--defsym=vs_scratch=0x1F800000
 
 $(BUILD)/data/BATTLE/INITBTL.PRG $(BUILD)/data/BATTLE/INITBTL.PRG.elf: LDSCRIPT := link.ld
 
@@ -17,6 +17,7 @@ $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.h: $(BUILD)/assets/BATTLE/INITBTL.PR
 		--header src/BATTLE/BATTLE.PRG/146C.h \
 		--compiler mipsel-linux-gnu-gcc \
 		--include include/psx/ \
+		--include src/include/ \
 		--struct vs_battle_charInitData
 
 $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.yaml: | $$(@D)/
@@ -25,6 +26,7 @@ $(BUILD)/assets/BATTLE/INITBTL.PRG/charInit.yaml: | $$(@D)/
 		--header src/BATTLE/BATTLE.PRG/146C.h \
 		--compiler mipsel-linux-gnu-gcc \
 		--include include/psx/ \
+		--include src/include/ \
 		--struct vs_battle_charInitData
 
 PYTHONDEPS += cffi

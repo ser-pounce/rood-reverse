@@ -2203,27 +2203,27 @@ static void _drawScreen(void)
     int xOffset = (128 - _animationStep);
     int z = D_800F4538[1]->menuCameraDistance;
     int x = D_800F4538[1]->menuCameraHeightOffset;
-    int* p = (int*)D_1F800000 + 13;
+    vs_camera_t* camera = &vs_scratch.camera;
 
-    p[4] = ((-rsin(_xPos) * xOffset) >> 8) * z;
-    p[5] = -(x << 0xB);
-    p[6] = ((rcos(_xPos) * xOffset) >> 8) * z;
-    ((int*)D_1F800000)[13] = p[4] + ((rcos(_xPos) * rcos(_yPos)) >> 0xA) * z;
-    p[1] = p[5] - rsin(_yPos) * z * 4;
+    camera->lookAt.vx = ((-rsin(_xPos) * xOffset) >> 8) * z;
+    camera->lookAt.vy = -(x * ONE / 2);
+    camera->lookAt.vz = ((rcos(_xPos) * xOffset) >> 8) * z;
+    camera->position.vx = camera->lookAt.vx + ((rcos(_xPos) * rcos(_yPos)) >> 0xA) * z;
+    camera->position.vy = camera->lookAt.vy - rsin(_yPos) * z * 4;
 
     temp_lo_5 = (rsin(_xPos) * rcos(_yPos) >> 0xA) * z;
-    p[8] = 0;
-    p[9] = 0;
-    p[10] = 0;
-    p[12] = 0x1000;
-    p[2] = p[6] + temp_lo_5;
+    camera->angles.vx = 0;
+    camera->angles.vy = 0;
+    camera->angles.vz = 0;
+    camera->farClip = ONE;
+    camera->position.vz = camera->lookAt.vz + temp_lo_5;
 
     func_8007ACB0();
 
     if (_delayScreenUpdate) {
         --_delayScreenUpdate;
     } else {
-        func_800F9EB8(p - 8);
+        func_800F9EB8(&vs_scratch.viewMatrix);
     }
 
     _drawMenuBackground();

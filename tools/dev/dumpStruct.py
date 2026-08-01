@@ -110,11 +110,13 @@ def extract_vs_string_fields(source: str) -> set:
 
 def build_ffi(source: str, root_struct: str):
     """
-    Strip preprocessor line markers and comments, feed to cffi, and return
+    Strip preprocessor directives and comments, feed to cffi, and return
     (ffi, ctype) for the named root struct.
     """
-    # Remove # line directives emitted by -E
-    cleaned = re.sub(r'^#[^\n]*\n', '', source, flags=re.MULTILINE)
+    cleaned = '\n'.join(
+        line for line in source.splitlines()
+        if not line.lstrip().startswith('#')
+    )
     # Strip block comments (annotations already captured above)
     cleaned = re.sub(r'/\*.*?\*/', '', cleaned, flags=re.DOTALL)
     # Strip line comments

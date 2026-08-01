@@ -3,6 +3,7 @@
 #include "../../SLUS_010.40/D_80061068_t.h"
 #include "2842C.h"
 #include "3A1A0.h"
+#include "scratch.h"
 
 typedef struct {
     short width;
@@ -719,23 +720,6 @@ typedef struct {
 } D_800F18E8_t;
 
 typedef struct {
-    /* 0x00 */ VECTOR position;
-    /* 0x10 */ VECTOR lookAt;
-    /* 0x20 */ VECTOR angles;
-    /* 0x30 */ int farClip;
-} camera_t2;
-
-typedef struct {
-    /* 0x00 */ void* unk0;
-    /* 0x04 */ void* unk4;
-    /* 0x08 */ void* unk8;
-    /* 0x0C */ int unkC;
-    /* 0x10 */ u_int firstPersonViewFacing;
-    /* 0x14 */ MATRIX viewMatrix;
-    /* 0x34 */ camera_t2 t2;
-} camera_t;
-
-typedef struct {
     int yaw;
     int pitch;
     int distance;
@@ -806,7 +790,7 @@ typedef struct {
 } vs_battle_screenTransitionWipePoly;
 
 typedef struct {
-    camera_t2 fromCameraState;
+    vs_camera_t fromCameraState;
     _sphericalCamera fromSpherical;
     int fromNearClip;
     int fromProjectionDistance;
@@ -1118,7 +1102,6 @@ extern int vs_battle_screenTransitionAlpha;
 extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
 extern POLY_G4 vs_battle_screenTransitionEdgePolyG4[];
 extern POLY_F4 vs_battle_screenTransitionPolyF4[];
-extern camera_t _camera;
 extern vs_battle_cameraTransition_t* vs_battle_cameraTransition;
 extern u_int vs_battle_screenTransitionStep;
 extern int vs_battle_screenTransitionEffect;

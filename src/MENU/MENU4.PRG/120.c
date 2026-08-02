@@ -2820,7 +2820,7 @@ int vs_menu4_exec(u_char* state)
 
         if (animWait <= 0) {
             if (vs_mainMenu_ensureItemTextUnloaded() != 0) {
-                vs_battle_menuState.currentState = 5;
+                vs_battle_menuState.currentMenu = 5;
                 *state = none;
                 return 1;
             }

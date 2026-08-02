@@ -64,8 +64,15 @@ typedef struct {
     char* subText;
 } vs_battle_menuItem_t;
 
+enum vs_battle_menuStates {
+    menuStateMainMenu,
+    menuStateNoneClosing = 0x1F,
+    menuStateNoneClosed = 0x3F,
+    menuStateOpenedFromMainMenu = 0x40
+};
+
 typedef struct {
-    char currentState;
+    char currentMenu;
     char returnState;
     char executeAbilityType;
     char loading;

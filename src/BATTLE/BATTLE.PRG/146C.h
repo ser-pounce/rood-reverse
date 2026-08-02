@@ -684,8 +684,8 @@ typedef struct {
     _zndEnemy* zndEnemies;
     vs_main_CdFile* zudFiles;
     int unk14;
-    int unk18;
-    int unk1C;
+    vs_main_CdQueueSlot* unk18;
+    void* unk1C;
     vs_main_CdQueueSlot* zndCdFile;
     void* zndData;
     int musicId;

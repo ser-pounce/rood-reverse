@@ -754,7 +754,7 @@ int vs_menu8_exec(u_char* state)
         vs_mainMenu_dismissInformationBox();
         vs_mainMenu_setMenuCommand(menuActionNone);
         if (vs_mainmenu_ready() != 0) {
-            vs_battle_menuState.currentState = 8;
+            vs_battle_menuState.currentMenu = 8;
             *state = none;
             return 1;
         }

@@ -1,4 +1,6 @@
 #pragma once
+#include <stddef.h>
+#include <libgte.h>
 
 void func_800B28A8(void*, MATRIX*, char);
 short func_800BEB10(void);
@@ -157,6 +159,18 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
     u_short doorSectionLen, int startState);
 void func_800B64A8(int, int, int);
 int func_800BF850(void);
+void func_800B63AC(int, int*, int, int);
+void func_800B6404(int, int*, int, int);
+void func_800B6438(int, int*, int, int);
+void func_800B64CC(int, int, int, int);
+void func_800B6500(int, SVECTOR*);
+void func_800B6530(int, SVECTOR*, int);
+void func_800B653C(int, SVECTOR*, int, int);
+void func_800B6580(int, int*, int);
+void func_800B65E8(int, int*, int);
+void func_800B65F4(int, int*, int);
+void func_800B6634(int, int);
+void func_800B668C(int arg0, short arg1, int arg2);
 
 extern short D_800F4BE2;
 extern char D_800F4C08;

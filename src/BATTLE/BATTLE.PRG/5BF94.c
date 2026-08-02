@@ -1603,11 +1603,11 @@ void func_800C97BC(void)
     int var_s0;
 
     var_s2 = vs_battle_menuItems;
-    var_s0 = vs_battle_menuState.currentState;
+    var_s0 = vs_battle_menuState.currentMenu;
 
     if (var_s0 == 0x7F) {
         D_800F4E98.unk0 = 2;
-        vs_battle_menuState.currentState = 0x3F;
+        vs_battle_menuState.currentMenu = 0x3F;
     }
 
     temp_s1 = var_s0 & 0x3F;
@@ -1636,7 +1636,7 @@ void func_800C97BC(void)
                     var_s0 = miscIndex | 0x40;
                 }
 
-                vs_battle_menuState.currentState = var_s0;
+                vs_battle_menuState.currentMenu = var_s0;
             }
         }
 
@@ -1965,7 +1965,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9D8 = 0;
     func_800CA97C();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
-    vs_battle_menuState.currentState = 0x3F;
+    vs_battle_menuState.currentMenu = 0x3F;
     vs_battle_rMemzero(&D_800F4E98, sizeof D_800F4E98);
     vs_battle_rMemzero(&vs_battle_textBoxes[0], sizeof vs_battle_textBoxes[0]);
     vs_battle_rMemzero(vs_battle_submenuStates, sizeof vs_battle_submenuStates);
@@ -1983,10 +1983,10 @@ void func_800CAB40(void)
     D_800F4E98.unk2 = 0;
     D_800F4E98.unk0 = 1;
     if (vs_battle_shortcutInvoked == 5) {
-        vs_battle_menuState.currentState = 4;
+        vs_battle_menuState.currentMenu = 4;
         vs_mainMenu_miscItemsShortcutMenu(2);
     } else {
-        vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+        vs_battle_menuState.currentMenu = vs_battle_menuState.returnState;
         vs_battle_submenuStates[vs_battle_menuState.returnState & 0xF] =
             vs_battle_menuState.executeAbilityType;
     }
@@ -2042,12 +2042,12 @@ int func_800CACD0(int menuState, int arg1)
     int var_a0;
     void* miscIndex;
 
-    if (vs_battle_menuState.currentState == 0x3F) {
+    if (vs_battle_menuState.currentMenu == 0x3F) {
         vs_battle_shortcutInvoked = 0;
         D_800F4FDB = 0;
         D_800F4EA0 = func_800CABE0(arg1);
         D_800F4E98.unk2 = 0;
-        vs_battle_menuState.currentState = menuState;
+        vs_battle_menuState.currentMenu = menuState;
         D_800F4E98.unk0 = 1;
 
         if (arg1 == 0) {

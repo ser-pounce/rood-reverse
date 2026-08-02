@@ -405,7 +405,7 @@ __asm__(".set push;"
         "endlabel func_800B6404;"
         ".set pop");
 
-void func_800B6438(int arg0, int arg1, int arg2, int arg3)
+void func_800B6438(int arg0, int* arg1, int arg2, int arg3)
 {
     __asm__("la         $v0, D_800F4538;"
             "sll        $v1, $a0, 2;"
@@ -573,7 +573,7 @@ __asm__(".set push;"
         "endlabel func_800B65F4;"
         ".set pop;");
 
-void func_800B6634()
+void func_800B6634(int arg0, int arg1)
 {
     __asm__("la         $v0, D_800F4538;"
             "sll        $v1, $a0, 2;"

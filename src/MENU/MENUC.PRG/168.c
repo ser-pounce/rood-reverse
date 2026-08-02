@@ -4374,7 +4374,7 @@ int vs_menuC_exec(u_char* state)
                     vs_battle_textBoxes[7].state = 0;
                     *state = 0xB;
                 } else {
-                    vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+                    vs_battle_menuState.currentMenu = vs_battle_menuState.returnState;
                     vs_battle_menuState.returnState = 0;
                     D_800F4EA0 &= ~0x200;
                     *state = 0;
@@ -4415,7 +4415,7 @@ int vs_menuC_exec(u_char* state)
             if (i != -2) {
                 *state = 0xA;
                 if (i == 1) {
-                    vs_battle_menuState.currentState = 8;
+                    vs_battle_menuState.currentMenu = 8;
                     vs_mainMenu_dismissInformationBox();
                 } else {
                     vs_mainMenu_initInformationBox();
@@ -4451,7 +4451,7 @@ int vs_menuC_exec(u_char* state)
             if (i != -2) {
                 *state = 0xA;
                 if (i == 1) {
-                    vs_battle_menuState.currentState = 8;
+                    vs_battle_menuState.currentMenu = 8;
                 }
             } else {
                 *state = 0xB;
@@ -4485,7 +4485,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 11:
-        vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+        vs_battle_menuState.currentMenu = vs_battle_menuState.returnState;
         vs_battle_menuState.returnState = 1;
         D_800F4EA0 &= ~0x200;
         *state = 0;

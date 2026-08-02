@@ -638,6 +638,7 @@ int func_800A3760(int, int, int);
 int func_800A38E0(int);
 void func_800A3E6C(int);
 int func_800A47C4(void);
+void func_800A4E68(int);
 
 extern D_800F4538_t* D_800F4538[17];
 extern vs_battle_wepModels_t* vs_battle_wepModels[20];

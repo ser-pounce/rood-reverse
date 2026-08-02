@@ -452,8 +452,8 @@ int vs_menu1_exec(u_char* state)
     case executeArt:
         if (vs_mainmenu_ready() != 0) {
             D_800F4E98.unk2 = 6;
-            vs_battle_menuState.returnState = vs_battle_menuState.currentState;
-            vs_battle_menuState.currentState = 2;
+            vs_battle_menuState.returnState = vs_battle_menuState.currentMenu;
+            vs_battle_menuState.currentMenu = 2;
             *state = none;
             return 1;
         }
@@ -465,7 +465,7 @@ int vs_menu1_exec(u_char* state)
         vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
-            vs_battle_menuState.currentState = 2;
+            vs_battle_menuState.currentMenu = 2;
             *state = none;
             return 1;
         }

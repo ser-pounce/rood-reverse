@@ -73,3 +73,4 @@ u_int func_800A0BE0(int actorId);
 int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3);
 int func_800A1280(int, int, SVECTOR*, int);
 int func_800A13EC(int, int, int*, int);
+void func_8009E614(int arg0);

@@ -821,7 +821,7 @@ int vs_menu2_exec(u_char* state)
         vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
-            vs_battle_menuState.currentState = 3;
+            vs_battle_menuState.currentMenu = 3;
             *state = none;
             return 1;
         }

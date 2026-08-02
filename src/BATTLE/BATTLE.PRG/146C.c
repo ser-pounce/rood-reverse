@@ -5698,6 +5698,7 @@ void func_8007DF98(void);
 void func_8008A3A0(void);
 void func_80089098(void);
 
+// https://decomp.me/scratch/CQo8q
 void vs_battle_exec(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 

@@ -1382,8 +1382,8 @@ int vs_menu3_exec(u_char* state)
             _renderAshley(2);
 
             *state = 8;
-            temp_a1 = vs_battle_menuState.currentState;
-            vs_battle_menuState.currentState = 13;
+            temp_a1 = vs_battle_menuState.currentMenu;
+            vs_battle_menuState.currentMenu = 13;
             vs_battle_menuState.returnState = temp_a1;
             D_800F4EA0 |= 0x200;
         }
@@ -1454,7 +1454,7 @@ int vs_menu3_exec(u_char* state)
         }
 
         if (vs_mainmenu_ready() && vs_mainMenu_ensureItemTextUnloaded()) {
-            vs_battle_menuState.currentState = 4;
+            vs_battle_menuState.currentMenu = 4;
             *state = none;
             return 1;
         }
@@ -1470,8 +1470,8 @@ int vs_menu3_exec(u_char* state)
             && vs_mainMenu_ensureItemTextUnloaded()) {
 
             D_800F4E98.unk2 = 8;
-            temp_a1_2 = vs_battle_menuState.currentState;
-            vs_battle_menuState.currentState = 4;
+            temp_a1_2 = vs_battle_menuState.currentMenu;
+            vs_battle_menuState.currentMenu = 4;
             vs_battle_menuState.returnState = temp_a1_2;
             *state = none;
 

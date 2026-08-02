@@ -368,6 +368,7 @@ extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern D_800F569C_t* D_800F569C;
+extern void* D_800F55FC;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -3404,7 +3405,18 @@ void func_800D268C(void) { D_800F5600 = 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2698);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D278C);
+void func_800D278C(void)
+{
+    if (D_800F5600 == 1) {
+        if (D_800F55FC != NULL) {
+            vs_main_freeHeapR(D_800F55FC);
+            D_800F55FC = NULL;
+        }
+        D_800F5600 = 0;
+        return;
+    }
+    --D_800F5600;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D27F0);
 

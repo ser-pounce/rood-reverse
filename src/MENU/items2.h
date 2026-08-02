@@ -837,9 +837,9 @@ loop_1:
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
                     vs_battle_miscItemInvoked = indices[selectedRow - 1] - 1;
-                    D_800F4E98.executeAbility.s16[0] =
+                    D_800F4E98.executeAbility.u16[0] =
                         (short)_miscSkills[selectedRow - 1];
-                    D_800F4E98.executeAbility.s16[1] =
+                    D_800F4E98.executeAbility.u16[1] =
                         (short)vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
 
                     return 3;

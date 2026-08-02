@@ -271,21 +271,6 @@ typedef struct {
 } func_8008D2C0_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    union {
-        struct {
-            u_int unk0_0 : 9;
-            u_int unk0_9 : 5;
-            u_int unk0_14 : 5;
-            u_int unk0_19 : 13;
-        } fields;
-        u_short u16[2];
-        int s32;
-    } unk4;
-} D_800F18EC_t;
-
-typedef struct {
     int unk0;
     int unk4;
     short unk8;
@@ -3304,7 +3289,7 @@ void func_80070F28(int arg0)
     if (D_800F19CC->unk8.unk4.unk0.targetActor == 0) {
         if (D_800F18EC->unk2 != 7) {
             if (D_800F18EC->unk2 == 8) {
-                vs_battle_decreaseMiscCount(D_800F18EC->unk4.u16[1]);
+                vs_battle_decreaseMiscCount(D_800F18EC->executeAbility.u16[1]);
             }
         }
         D_800F18EC->unk2 = 0;
@@ -3618,16 +3603,19 @@ void func_800735F8(D_800F18EC_t* arg0)
     case 6:
     case 7:
     case 8:
-        func_80072EC4(0, arg0->unk4.s32);
+        func_80072EC4(0, arg0->executeAbility.s32);
         return;
     case 10:
         func_800A1108(0, &sp18);
         func_8006F4B0(&sp18.unk0);
         vs_battle_setStateFlag(0xB7, 1);
-        func_8007C694(arg0->unk4.fields.unk0_0, arg0->unk4.fields.unk0_9,
-            arg0->unk4.fields.unk0_14, 0, 8);
-        if (vs_battle_characterState->unk3C->currentMP >= arg0->unk4.fields.unk0_19) {
-            vs_battle_characterState->unk3C->currentMP -= arg0->unk4.fields.unk0_19;
+        func_8007C694(arg0->executeAbility.fields.unk0_0,
+            arg0->executeAbility.fields.unk0_9, arg0->executeAbility.fields.unk0_14, 0,
+            8);
+        if (vs_battle_characterState->unk3C->currentMP
+            >= arg0->executeAbility.fields.unk0_19) {
+            vs_battle_characterState->unk3C->currentMP -=
+                arg0->executeAbility.fields.unk0_19;
         }
         func_8009E070(0, NULL, 7);
         break;
@@ -4057,7 +4045,7 @@ void func_800743E0()
 
 int func_800744B8(void)
 {
-    D_800F4E98_t* temp_v0;
+    D_800F18EC_t* temp_v0;
 
     if (D_800F1910.unk0->keyOrSigil != 0) {
         if (func_800CB45C() != 0) {

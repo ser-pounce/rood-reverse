@@ -636,8 +636,8 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
                 if (selectedRow > 0) {
                     vs_battle_miscItemInvoked =
                         vs_main_inventoryIndices.misc[selectedRow - 1] - 1;
-                    D_800F4E98.executeAbility.s16[0] = skills[selectedRow - 1];
-                    D_800F4E98.executeAbility.s16[1] =
+                    D_800F4E98.executeAbility.u16[0] = skills[selectedRow - 1];
+                    D_800F4E98.executeAbility.u16[1] =
                         vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
                 }
 

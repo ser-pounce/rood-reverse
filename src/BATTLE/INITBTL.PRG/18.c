@@ -1,4 +1,5 @@
 #include "common.h"
+#include "18.h"
 #include "build/src/include/lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
@@ -92,14 +93,14 @@ static vs_battle_charInitData D_800FAB18 = {
             .affinities   = {5, 0, 0, 0, 0, 5, -5, 0},
         },
     },
-    .armor = {
+    .limbs = {
         {
             .hp = 200,
-            .unk10 = {
-                {.unk0 = 1},
-                {.unk3 = 1},
-                {.unk3 = 2},
-                {.unk3 = 3},
+            .skills = {
+                {.id = 1},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
             },
             .unk20 = {
                 .equip = {
@@ -116,15 +117,15 @@ static vs_battle_charInitData D_800FAB18 = {
                 .material = 2,
                 .unk32    = 1,
             },
-            .unk54 = {100, 0, 0, 5, 0, 0},
+            .dpSplash = {100, 0, 0, 5, 0, 0},
         },
         {
             .hp = 200,
-            .unk10 = {
-                {.unk0 = 1},
-                {.unk3 = 1},
-                {.unk3 = 2},
-                {.unk3 = 3},
+            .skills = {
+                {.id = 1},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
             },
             .unk20 = {
                 .equip = {
@@ -141,15 +142,15 @@ static vs_battle_charInitData D_800FAB18 = {
                 .material = 2,
                 .unk32    = 1,
             },
-            .unk54 = {0, 100, 0, 5, 0, 0},
+            .dpSplash = {0, 100, 0, 5, 0, 0},
         },
         {
             .hp = 200,
-            .unk10 = {
+            .skills = {
                 {0},
-                {.unk3 = 1},
-                {.unk3 = 2},
-                {.unk3 = 3},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
             },
             .unk20 = {
                 .equip = {
@@ -165,20 +166,15 @@ static vs_battle_charInitData D_800FAB18 = {
                 .material = 2,
                 .unk32    = 1,
             },
-            .unk54 = {0, 0, 100, 10, 0, 0},
+            .dpSplash = {0, 0, 100, 10, 0, 0},
         },
         {
             .hp = 200,
-            .agilityDefenseBonus = 0,
-            .chainEvasion = 0,
-            .unk4 = {0, 0, 0, 0},
-            .unk8 = {0, 0, 0, 0},
-            .unkC = 0,
-            .unk10 = {
+            .skills = {
                 {0},
-                {.unk3 = 1},
-                {.unk3 = 2},
-                {.unk3 = 3},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
             },
             .unk20 = {
                 .equip = {
@@ -193,19 +189,17 @@ static vs_battle_charInitData D_800FAB18 = {
                     .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
                 },
                 .material = 2,
-                .unk31 = 0,
                 .unk32 = 1,
-                .index = 0,
             },
-            .unk54 = {5, 5, 5, 100, 5, 0},
+            .dpSplash = {5, 5, 5, 100, 5, 0},
         },
         {
             .hp = 200,
-            .unk10 = {
+            .skills = {
                 {0},
-                {.unk3 = 1},
-                {.unk3 = 2},
-                {.unk3 = 3},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
             },
             .unk20 = {
                 .equip = {
@@ -221,14 +215,14 @@ static vs_battle_charInitData D_800FAB18 = {
                 .material = 2,
                 .unk32    = 1,
             },
-            .unk54 = {0, 0, 0, 5, 100, 0},
+            .dpSplash = {0, 0, 0, 5, 100, 0},
         },
         {
-            .unk10 = {
+            .skills = {
                 {0},
-                {.unk3 = 1},
-                {.unk3 = 2},
-                {.unk3 = 3},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
             },
         },
     },
@@ -241,8 +235,6 @@ extern int D_800F18F4;
 extern int D_800F190C;
 extern int D_800F1968;
 extern int D_800F196C;
-extern DR_STP D_800F1970[];
-extern DR_STP D_800F1988[];
 extern void* D_800F19CC;
 
 static void func_800F9818(void)
@@ -507,7 +499,7 @@ static void _initTransitionState(void)
     vs_battle_screenTransitionAlpha = 255;
 }
 
-void func_800FA35C(void)
+void func_800FA35C(int startState __attribute__((unused)))
 {
     int _0[2];
     RECT rect;

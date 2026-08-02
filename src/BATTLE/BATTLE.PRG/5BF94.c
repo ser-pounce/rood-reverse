@@ -2132,7 +2132,7 @@ int vs_battle_chainAbilitiesUnlocked(int defense)
     return 0;
 }
 
-int _validateShortcutSelection(int shortcut)
+int vs_battle_validateShortcutSelection(int shortcut)
 {
     int noneUnlocked = 0;
     int menuState = 0;

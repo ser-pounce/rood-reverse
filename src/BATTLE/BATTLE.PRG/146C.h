@@ -401,7 +401,7 @@ typedef struct {
     u_short types[4];
     vs_battle_classAffinityCurrent classAffinityCurrent;
     short unk88[8];
-    char unk98;
+    char dropRate;
     char unk99;
     u_char index;
     u_char unk9B;
@@ -448,8 +448,8 @@ typedef struct {
 } vs_battle_actor4;
 
 typedef struct {
-    short unk0;
-    char unk2_0 : 4;
+    short id;
+    char index : 4;
     char unk2_4 : 4;
     char unk3;
 } vs_battle_actor_unk8C0;
@@ -551,7 +551,7 @@ typedef struct {
     vs_battle_uiAccessory accessory; // 328
     vs_battle_uiEquipment_limb limbs[6]; // 388
     vs_battle_actor_unk8C0 armor[6][4];
-    char unk920[6][6];
+    char dpSplash[6][6];
     int unk944;
     int statuses;
     u_char statusTimers[8];
@@ -813,7 +813,7 @@ typedef struct {
 typedef struct {
     vs_battle_uiEquipment equip;
     char material;
-    char unk31;
+    char dropRate;
     char unk32;
     char index;
 } _armorIntermediate;
@@ -827,30 +827,29 @@ typedef struct {
 } _accessoryIntermediate;
 
 typedef struct {
-    u_short unk0;
+    u_short id;
     char unk2;
-    char unk3;
-} _armorIntermediateInit_unk10;
+    char index;
+} _skills;
 
 typedef struct {
     u_short hp;
     char agilityDefenseBonus;
     char chainEvasion;
-    signed char unk4[4];
-    signed char unk8[4];
-    int unkC;
-    _armorIntermediateInit_unk10 unk10[4];
+    signed char types[4];
+    signed char affinities[8];
+    _skills skills[4];
     _armorIntermediate unk20;
-    char unk54[6];
+    char dpSplash[6];
     char unk5A[2];
-} _armorIntermediateInit;
+} _limbInit;
 
 typedef struct {
     u_short subType;
     char unk2;
     u_int reach : 5;
     u_int unk3_5 : 3;
-    char name[24]; /* vs_string */
+    char name[24];
     short hp;
     short mp;
     char strength;
@@ -870,8 +869,8 @@ typedef struct {
     vs_battle_weaponIntermediate weapon;
     vs_battle_shieldIntermediate shield;
     _accessoryIntermediate accessory;
-    _armorIntermediateInit armor[6];
-    int unk460;
+    _limbInit limbs[6];
+    int mpdIdentifer;
 } vs_battle_charInitData;
 
 typedef struct {
@@ -1108,3 +1107,5 @@ extern int vs_battle_screenTransitionEffect;
 extern int vs_battle_screenTransitionWipeAngle;
 extern int vs_battle_screenTransitionSpeed;
 extern void* D_800F4930;
+extern DR_STP D_800F1970[];
+extern DR_STP D_800F1988[];

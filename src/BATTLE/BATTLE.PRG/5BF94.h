@@ -337,6 +337,13 @@ void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);
 void func_800CF920(void);
 int vs_battle_getTextLineLength(char* str);
+int vs_battle_validateShortcutSelection(int shortcut);
+void func_800C8778(void);
+void func_800C9F88(void);
+void func_800CA2DC(void);
+int func_800CACD0(int menuState, int arg1);
+void func_800CB83C(void);
+int func_800CF060(void);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];

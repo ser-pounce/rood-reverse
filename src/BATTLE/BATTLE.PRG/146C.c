@@ -1,8 +1,10 @@
 #include "common.h"
 #include "146C.h"
+#include "2842C.h"
 #include "2EA3C.h"
 #include "30D14.h"
 #include "38C1C.h"
+#include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
 #include "4A0A8.h"
@@ -12,6 +14,7 @@
 #include "6E644.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/BATTLE/INITBTL.PRG/18.h"
 #include <abs.h>
 #include <libetc.h>
 #include <libgpu.h>
@@ -614,7 +617,7 @@ extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
 extern vs_battle_actor* D_800F192C;
 extern int D_800F1968;
-extern int D_800F196C;
+extern u_int D_800F196C;
 extern int D_800F19A0;
 extern char D_800F19A8[];
 extern int D_800F19C8;
@@ -1086,7 +1089,7 @@ void _applyArmorStats(vs_battle_uiArmor* target, _armorIntermediate* source)
         target->classAffinityBaseline.affinity[i] = v;
     }
 
-    target->unk98 = source->unk31;
+    target->dropRate = source->dropRate;
     target->unk99 = source->unk32;
 }
 
@@ -1615,7 +1618,7 @@ int _dropAccessoryRand(vs_battle_lootedAccessory* looted, vs_battle_uiAccessory*
 
 int _dropArmorRand(vs_battle_lootedArmor* looted, vs_battle_uiArmor* base)
 {
-    if (vs_main_getRand(0xFF) < base->unk98) {
+    if (vs_main_getRand(0xFF) < base->dropRate) {
         int i;
 
         for (i = 0; i < 2; ++i) {
@@ -2635,6 +2638,7 @@ void func_8006E640(int arg0)
     }
 }
 
+int func_8006E7F0(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E7F0);
 
 int func_8006EBF8(void)
@@ -2656,7 +2660,7 @@ int func_8006EBF8(void)
     return v;
 }
 
-void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
+void func_8006EC7C(void)
 {
     func_8006EBF8_t sp10;
     int temp_a1;
@@ -3586,7 +3590,7 @@ void func_80073554(void)
     func_8006C40C();
 }
 
-void func_8007357C(void)
+void func_8007357C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)))
 {
     D_800F196C = 5;
     _cameraMode = 1;
@@ -3946,14 +3950,14 @@ int func_80074120(void)
     return 1;
 }
 
-void func_8007418C(void)
+int func_8007418C(void)
 {
     SVECTOR sp10;
 
     sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4.vx;
     sp10.vy = (u_short)D_800F1910.unk4.unk0.unk4.vy;
     sp10.vz = (u_short)D_800F1910.unk4.unk0.unk4.vz;
-    _stepTowardTarget(&sp10, 0, 0x28);
+    return _stepTowardTarget(&sp10, 0, 0x28);
 }
 
 void func_800741D4(void)
@@ -4019,10 +4023,13 @@ int func_80074374(void)
     return temp_s0;
 }
 
-void func_800743E0(int arg0, int arg1)
+void func_800743E0()
 {
     int temp_v1 = D_800F1910.unk0->keyOrSigil;
+    int arg1;
+
     _cameraMode = 3;
+
     if (temp_v1 != 0) {
         switch (temp_v1) {
         case 1:
@@ -4176,7 +4183,8 @@ int func_80074860(int arg0)
 
     func_800A1108(arg0, &sp10);
     func_80074798(&sp10, sp20);
-    return func_800BEC58(4, 0, sp20, 1) == 1;
+    // BUG: arg2 should be an actor ID?
+    return func_800BEC58(4, 0, (int)sp20, 1) == 1;
 }
 
 _mpdRoomSectionA* func_800748B8(int arg0)
@@ -4272,6 +4280,7 @@ void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1)
     func_8008C40C();
 }
 
+int func_80074BAC(int, u_char*);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074BAC);
 
 int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
@@ -4388,6 +4397,7 @@ void func_800753F8(vs_battle_actor* arg0, SVECTOR* arg1)
     }
 }
 
+int func_80075554(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80075554);
 
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
@@ -4661,8 +4671,8 @@ void func_80076784(
     _applyAccessoryStats(&actor->accessory, &init->accessory);
 
     for (i = 0; i < 6; ++i) {
-        actor->limbs[i].hp = actor->limbs[i].maxHp = init->armor[i].hp;
-        actor->limbs[i].agilityDefenseBonus = init->armor[i].agilityDefenseBonus;
+        actor->limbs[i].hp = actor->limbs[i].maxHp = init->limbs[i].hp;
+        actor->limbs[i].agilityDefenseBonus = init->limbs[i].agilityDefenseBonus;
 
         j = func_800A152C(arg0, i, 2);
 
@@ -4674,33 +4684,33 @@ void func_80076784(
             actor->limbs[i].unk5 = 0;
         }
 
-        actor->limbs[i].chainEvasion = init->armor[i].chainEvasion;
+        actor->limbs[i].chainEvasion = init->limbs[i].chainEvasion;
 
         for (j = 0; j < 4; ++j) {
-            actor->limbs[i].types[j] = init->armor[i].unk4[j];
+            actor->limbs[i].types[j] = init->limbs[i].types[j];
         }
 
         for (j = 0; j < 7; ++j) {
-            actor->limbs[i].affinities[j] = init->armor[i].unk8[j];
+            actor->limbs[i].affinities[j] = init->limbs[i].affinities[j];
         }
 
-        _applyArmorStats(&actor->limbs[i].armor, &init->armor[i].unk20);
+        _applyArmorStats(&actor->limbs[i].armor, &init->limbs[i].unk20);
     }
 
     vs_battle_nop0(actor);
 
     for (i = 0; i < 6; ++i) {
         for (j = 0; j < 4; ++j) {
-            actor->armor[i][j].unk0 = init->armor[i].unk10[j].unk0;
-            actor->armor[i][j].unk2_0 = init->armor[i].unk10[j].unk3;
-            actor->armor[i][j].unk2_4 = init->armor[i].unk10[j].unk2;
+            actor->armor[i][j].id = init->limbs[i].skills[j].id;
+            actor->armor[i][j].index = init->limbs[i].skills[j].index;
+            actor->armor[i][j].unk2_4 = init->limbs[i].skills[j].unk2;
             actor->armor[i][j].unk3 = 1;
         }
     }
 
     for (i = 0; i < 6; ++i) {
         for (j = 0; j < 6; ++j) {
-            actor->unk920[i][j] = init->armor[i].unk54[j];
+            actor->dpSplash[i][j] = init->limbs[i].dpSplash[j];
         }
     }
 
@@ -5656,6 +5666,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
     return ret;
 }
 
+void func_800793C0(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
 
 void func_800797BC(void)
@@ -5686,6 +5697,20 @@ void func_8007983C(void)
     }
 }
 
+void _finishLoadZnd(int id);
+void func_80089DC0(int arg0);
+void func_8008C8A8(void);
+int func_80088B6C(void);
+void func_80088B8C(void);
+void func_8008EC48(int arg0);
+void func_8008AC78(void);
+void func_8008B28C(void);
+void func_8007D734(void*);
+void func_8007DF98(void);
+void func_8008A3A0(void);
+void func_80089098(void);
+
+void vs_battle_exec(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
 void func_8007A824(int* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
@@ -8098,7 +8123,7 @@ void func_80080000(vs_skill_t* skill, _hitEntity_t* entity, short baseValue)
     case 14:
         for (i = 0; i < 6; ++i) {
             _armorDpAdjustmentAmounts[i] =
-                (baseValue * actor->unk920[entity->unk0.targetLimb][i]) / 100;
+                (baseValue * actor->dpSplash[entity->unk0.targetLimb][i]) / 100;
             entity->limbs[i].effects.value0 += _armorDpAdjustmentAmounts[i];
         }
         break;
@@ -10853,7 +10878,7 @@ int func_80088554(void)
     return var_s5;
 }
 
-void func_80088B6C(void) { func_80088554(); }
+int func_80088B6C(void) { return func_80088554(); }
 
 void func_80088B8C(void)
 {
@@ -11662,7 +11687,6 @@ int func_8008ABF0(int arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/jsBf0
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008AC78);
 
 void func_8008B1FC(void* arg0)
@@ -13122,7 +13146,6 @@ void func_8008EB30(int* arg0)
     var_a0[2] = (arg0[1] & 0xFFFFFF) | 0x30000000;
 }
 
-// https://decomp.me/scratch/c8coB
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 
 int func_8008EFCC(int arg0)

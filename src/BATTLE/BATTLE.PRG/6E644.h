@@ -18,3 +18,6 @@ void func_800E6EAC(void);
 void func_800E6F1C(void);
 void func_800E7454(vs_battle_actor*);
 void func_800E7608(int);
+u_short func_800E45B4(void);
+void func_800E511C(void);
+void func_800E5308(void);

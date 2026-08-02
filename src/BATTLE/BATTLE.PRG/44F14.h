@@ -9,3 +9,4 @@ void func_800AF6E8(D_800F4538_t*);
 void func_800AFA28(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800B002C(void*, int);
 void func_800B217C(void*, void*);
+void func_800AEF94(MATRIX*);

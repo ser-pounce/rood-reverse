@@ -3417,7 +3417,7 @@ void func_800D278C(void)
         D_800F5600 = 0;
         return;
     }
-    D_800F5600 -= 1;
+    --D_800F5600;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D27F0);

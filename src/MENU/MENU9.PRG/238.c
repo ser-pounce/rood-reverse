@@ -34,8 +34,6 @@
 #include <libgpu.h>
 #include <abs.h>
 
-extern void* D_1F800000[];
-
 /**
  * Hides or shows the menu action at the very top of the menu.
  */
@@ -83,7 +81,7 @@ void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
     }
 
     xy = *(int*)&menuItem->x;
-    before = D_1F800000[2] + 8;
+    before = vs_scratch.unk8 + 8;
     w = menuItem->w;
     animState = menuItem->gradientState;
     isScrollable = menuItem->isScrollable - 1;
@@ -131,7 +129,7 @@ void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
         return;
     }
 
-    prim = D_1F800000[0];
+    prim = vs_scratch.unk0;
 
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
         if (isScrollable == 0) {
@@ -155,7 +153,7 @@ void _renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
         xy += vs_getXY(0, 1);
     }
 
-    D_1F800000[0] = prim;
+    vs_scratch.unk0 = prim;
 
     if (isScrollable == 0) {
         vs_battle_addTile(before, vs_getRGB0(primTile, 0, 0, 0),
@@ -374,7 +372,7 @@ typedef struct {
     u_char unlocked;
     u_char prev;
     u_char next;
-    u_char unkF;
+    u_char _ __attribute__((unused));
     char name[28];
 } _monBinData_t;
 
@@ -462,9 +460,11 @@ int _calculateProgress(void)
         vs_main_scoredata.openedChestCount = _openedChestCount;
     }
 
-    vs_main_memcpy(&_cameraPositionBackup, &((camera_t*)getScratchAddr(0))->t2.position,
+    vs_main_memcpy(&_cameraPositionBackup,
+        &((vs_scratch_t*)getScratchAddr(0))->camera.position,
         sizeof _cameraPositionBackup);
-    vs_main_memcpy(&_cameraAnglesBackup, &((camera_t*)getScratchAddr(0))->t2.angles.vx,
+    vs_main_memcpy(&_cameraAnglesBackup,
+        &((vs_scratch_t*)getScratchAddr(0))->camera.angles.vx,
         sizeof _cameraAnglesBackup);
     _setTitleFlags();
     _calculateScore();
@@ -1401,10 +1401,10 @@ int _menuInput(void)
  */
 void _restoreCamera(void)
 {
-    vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.position, &_cameraPositionBackup,
-        sizeof _cameraPositionBackup);
-    vs_main_memcpy(&((camera_t*)getScratchAddr(0))->t2.angles.vx, &_cameraAnglesBackup,
-        sizeof _cameraAnglesBackup);
+    vs_main_memcpy(&((vs_scratch_t*)getScratchAddr(0))->camera.position,
+        &_cameraPositionBackup, sizeof _cameraPositionBackup);
+    vs_main_memcpy(&((vs_scratch_t*)getScratchAddr(0))->camera.angles.vx,
+        &_cameraAnglesBackup, sizeof _cameraAnglesBackup);
 }
 
 /**
@@ -1479,7 +1479,7 @@ void _buildCameraMatrix(MATRIX* cameraMatrix)
     int angle0;
     int angle1;
     int angle2;
-    camera_t* camera;
+    vs_scratch_t* scratch;
 
     angle0 = (angle1 = rsin(_cameraAngles.vy));
     angle1 = rcos(_cameraAngles.vx);
@@ -1492,12 +1492,12 @@ void _buildCameraMatrix(MATRIX* cameraMatrix)
     angle2 = rsin(_cameraAngles.vx) * -_cameraDistance;
     position.vy = (angle2 / ONE) - (_cameraHeightOffset / 2);
 
-    camera = (camera_t*)getScratchAddr(0);
-    setVector(
-        &camera->t2.position, position.vx * ONE, position.vy * ONE, position.vz * ONE);
-    camera->t2.angles.vx = _cameraAngles.vx;
-    camera->t2.angles.vy = _cameraAngles.vy;
-    camera->t2.angles.vz = _cameraAngles.vz;
+    scratch = (vs_scratch_t*)getScratchAddr(0);
+    setVector(&scratch->camera.position, position.vx * ONE, position.vy * ONE,
+        position.vz * ONE);
+    scratch->camera.angles.vx = _cameraAngles.vx;
+    scratch->camera.angles.vy = _cameraAngles.vy;
+    scratch->camera.angles.vz = _cameraAngles.vz;
 
     _buildYawMatrix(cameraMatrix, _cameraAngles.vy);
     _buildPitchMatrix(&pitchMatrix, _cameraAngles.vx);

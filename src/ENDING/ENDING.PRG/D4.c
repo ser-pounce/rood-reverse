@@ -5,6 +5,7 @@
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "texture_t.h"
+#include "scratch.h"
 #include <libapi.h>
 #include <libetc.h>
 #include <memory.h>
@@ -118,8 +119,6 @@ void _renderRiskbreakerRank(int, int, int);
 static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
-
-extern void* D_1F800000[];
 
 extern u_char D_8006E3FC[];
 extern u_char _glyphWidths[];
@@ -1220,10 +1219,10 @@ static void func_8006B930(void)
 
     vs_main_processPadState();
     temp_a0 = D_80055C80[vs_main_frameBuf];
-    D_1F800000[2] = temp_a0 + 8;
-    D_1F800000[1] = temp_a0 + 0x48;
+    vs_scratch.unk8 = temp_a0 + 8;
+    vs_scratch.unk4 = temp_a0 + 0x48;
     ClearOTagR((u_long*)temp_a0, 0x822);
-    D_1F800000[0] = D_8005E0C0[vs_main_frameBuf];
+    vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
 }
 
 static void func_8006B9B4(void)

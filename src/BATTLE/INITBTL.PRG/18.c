@@ -1,4 +1,5 @@
 #include "common.h"
+#include "18.h"
 #include "build/src/include/lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
@@ -27,17 +28,213 @@ void _initScriptFunctionTable(void);
 static void func_800F9CCC(void);
 void func_800FA7B0(void);
 
+#pragma vsstring(start)
+
+// Defaulted elements deliberately omitted for brevity, refer to the definition of
+// vs_battle_charInitData if you need to modify these.
 static vs_battle_charInitData D_800FAB18 = {
-#include "build/assets/BATTLE/INITBTL.PRG/charInit.h"
+    .subType      = 174,
+    .reach        = 7,
+    .name         = "Ashley|>6|Riot\0",
+    .hp           = 250,
+    .mp           = 50,
+    .strength     = 100,
+    .intelligence = 100,
+    .agility      = 100,
+    .unk23        = 1,
+    .unk24        = 2,
+    .walkSpeed    = 10,
+    .unk26        = 4,
+    .runSpeed     = 20,
+    .unk30        = 4,
+    .unk32        = 3,
+    .weapon = {
+        .blade = {
+            .id           = 14,
+            .subId        = 14,
+            .wepId        = 16,
+            .category     = 2,
+            .strength     = 9,
+            .intelligence = 1,
+            .agility      = -3,
+            .currentDp    = 12600,
+            .maxDp        = 12600,
+            .maxPp        = 136,
+            .damageType   = 2,
+            .costType     = 2,
+            .cost         = 1,
+            .range        = {
+                .range            = 3,
+                .unk1             = 2,
+                .unk2             = 3,
+                .attackShape      = 1,
+            },
+            .classes      = {-1, -1, -2, -1, -1, -5},
+            .affinities   = {8, 5, 5, -3, -3, 2, 2, 0},
+        },
+        .grip = {
+            .id           = 96,
+            .subId        = 1,
+            .category     = 1,
+            .strength     = 1,
+            .agility      = -1,
+            .types        = {0, 0, 4, 1},
+        },
+        .material = 3,
+        .name = "Fandango\0",
+    },
+    .accessory = {
+        .equip = {
+            .id           = 223,
+            .subId        = 97,
+            .category     = 7,
+            .intelligence = 1,
+            .classes      = {0, 0, 5, -5, -5, 5},
+            .affinities   = {5, 0, 0, 0, 0, 5, -5, 0},
+        },
+    },
+    .limbs = {
+        {
+            .hp = 200,
+            .skills = {
+                {.id = 1},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 191,
+                    .subId        = 65,
+                    .category     = 5,
+                    .strength     = 1,
+                    .intelligence = 13,
+                    .currentDp    = 3350,
+                    .maxDp        = 3350,
+                    .types        = {0, 1, 0, 0},
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .dpSplash = {100, 0, 0, 5, 0, 0},
+        },
+        {
+            .hp = 200,
+            .skills = {
+                {.id = 1},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 191,
+                    .subId        = 65,
+                    .category     = 5,
+                    .strength     = 1,
+                    .intelligence = 13,
+                    .currentDp    = 3350,
+                    .maxDp        = 3350,
+                    .types        = {0, 1, 0, 0},
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                 },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .dpSplash = {0, 100, 0, 5, 0, 0},
+        },
+        {
+            .hp = 200,
+            .skills = {
+                {0},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 143,
+                    .subId        = 17,
+                    .category     = 2,
+                    .strength     = 1,
+                    .intelligence = 8,
+                    .currentDp    = 3800,
+                    .maxDp        = 3800,
+                    .affinities = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .dpSplash = {0, 0, 100, 10, 0, 0},
+        },
+        {
+            .hp = 200,
+            .skills = {
+                {0},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 159,
+                    .subId        = 33,
+                    .category     = 3,
+                    .strength     = 5,
+                    .intelligence = 10,
+                    .currentDp    = 5500,
+                    .maxDp        = 5500,
+                    .types        = {0, 1, 1, 0},
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32 = 1,
+            },
+            .dpSplash = {5, 5, 5, 100, 5, 0},
+        },
+        {
+            .hp = 200,
+            .skills = {
+                {0},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
+            },
+            .unk20 = {
+                .equip = {
+                    .id           = 175,
+                    .subId        = 49,
+                    .category     = 4,
+                    .strength     = 1,
+                    .intelligence = 12,
+                    .currentDp    = 4050,
+                    .maxDp        = 4050,
+                    .affinities   = {2, 5, 5, -1, -1, -5, -5, 0},
+                },
+                .material = 2,
+                .unk32    = 1,
+            },
+            .dpSplash = {0, 0, 0, 5, 100, 0},
+        },
+        {
+            .skills = {
+                {0},
+                {.index = 1},
+                {.index = 2},
+                {.index = 3},
+            },
+        },
+    },
 };
+
+#pragma vsstring(end)
 
 extern int D_800F1874;
 extern int D_800F18F4;
 extern int D_800F190C;
 extern int D_800F1968;
 extern int D_800F196C;
-extern DR_STP D_800F1970[];
-extern DR_STP D_800F1988[];
 extern void* D_800F19CC;
 
 static void func_800F9818(void)
@@ -302,7 +499,7 @@ static void _initTransitionState(void)
     vs_battle_screenTransitionAlpha = 255;
 }
 
-void func_800FA35C(void)
+void func_800FA35C(int startState __attribute__((unused)))
 {
     int _0[2];
     RECT rect;
@@ -370,7 +567,7 @@ void func_800FA35C(void)
     _zoneContext.unk68 = D_80061068.unk6_0 & 0x3FF;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();
-    _camera.t2.farClip = 0x1000;
+    vs_scratch.camera.farClip = 0x1000;
     vs_battle_cameraCurrentSpherical.delta.pitch = 0x800;
     vs_battle_cameraCurrentSpherical.values.yaw = 0x800;
     vs_battle_cameraCurrentSpherical.values.pitch = -0x180;

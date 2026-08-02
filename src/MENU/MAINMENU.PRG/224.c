@@ -174,7 +174,7 @@ void func_800F9E0C(void)
     }
 }
 
-int func_800F9EB8(void* arg0)
+int func_800F9EB8(MATRIX* arg0)
 {
     int _[2];
     int i;

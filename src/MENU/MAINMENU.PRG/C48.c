@@ -41,8 +41,6 @@ vs_main_inventoryArmor* vs_mainMenu_armor;
 vs_main_inventoryShield* vs_mainMenu_shields;
 vs_main_inventoryWeapon* vs_mainMenu_weapons;
 
-extern u_long* D_1F800000[];
-
 void vs_mainMenu_initInventory(void)
 {
     int i;
@@ -638,8 +636,8 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
                 if (selectedRow > 0) {
                     vs_battle_miscItemInvoked =
                         vs_main_inventoryIndices.misc[selectedRow - 1] - 1;
-                    D_800F4E98.executeAbility.s16[0] = skills[selectedRow - 1];
-                    D_800F4E98.executeAbility.s16[1] =
+                    D_800F4E98.executeAbility.u16[0] = skills[selectedRow - 1];
+                    D_800F4E98.executeAbility.u16[1] =
                         vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
                 }
 
@@ -707,7 +705,7 @@ static void _renderStatPage(int xOffset)
     u_long* prim;
     int a0;
 
-    u_long* before = D_1F800000[1] - 3;
+    u_long* before = vs_scratch.unk4 - 0xC;
     statPage = vs_mainMenu_itemStatPage;
 
     switch (statPage) {
@@ -854,7 +852,7 @@ static void _renderStatPage(int xOffset)
         vs_battle_insertTpage(
             vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff), before);
 
-        prim = D_1F800000[0];
+        prim = vs_scratch.unk0;
 
         for (j = 0; j < 11; ++j) {
             temp_a0 = var_s6 + j;
@@ -869,7 +867,7 @@ static void _renderStatPage(int xOffset)
             prim += 5;
         }
 
-        D_1F800000[0] = prim;
+        vs_scratch.unk0 = prim;
 
         vs_battle_insertTpage(
             vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn), before);
@@ -1044,7 +1042,7 @@ void vs_mainMenu_renderEquipStats(int animate)
 
     position = vs_getXY(248, 126);
     actor = vs_battle_actors[D_80102488[3]]->unk3C;
-    temp_s4 = D_1F800000[1] - 6;
+    temp_s4 = vs_scratch.unk4 - 0x18;
 
     if (animate != 0) {
         if (statsAnimation != animate) {
@@ -1138,7 +1136,7 @@ void vs_mainMenu_renderDpPpBars(int flags)
     static char state = 1;
     static char target = 0;
 
-    void* before = D_1F800000[1] - 3;
+    void* before = vs_scratch.unk4 - 0xC;
 
     if (flags != 0) {
 

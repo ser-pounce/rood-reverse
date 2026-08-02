@@ -19,8 +19,6 @@
 #include <libetc.h>
 #include <abs.h>
 
-extern u_long* D_1F800000[];
-
 static int _loadArmFile(void);
 static int _menuManager(void);
 static void _snapMapToRoom(vs_battle_scene* scene, int roomId);
@@ -108,13 +106,13 @@ static void _setNextAction(int display)
 static void _renderDefaultIcon(int id, int xy, int brightness, u_long* nextPrim)
 {
     if (nextPrim == 0) {
-        nextPrim = D_1F800000[2];
+        nextPrim = vs_scratch.unk8;
     }
 
     vs_battle_setSpriteDefaultTexPage(128, xy, vs_getWH(16, 16), nextPrim)[4] =
         ((id + 4) << 4) | (getClut(976, 223) << 16) | 0x8000;
 
-    D_1F800000[0][-4] = (int)(brightness | 0x64000000);
+    ((u_long*)vs_scratch.unk0)[-4] = (int)(brightness | 0x64000000);
 }
 
 static int _currentMapRow = -1;

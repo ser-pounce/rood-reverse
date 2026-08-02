@@ -634,6 +634,10 @@ void func_800A35A8(void);
 D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
+int func_800A3760(int, int, int);
+int func_800A38E0(int);
+void func_800A3E6C(int);
+int func_800A47C4(void);
 
 extern D_800F4538_t* D_800F4538[17];
 extern vs_battle_wepModels_t* vs_battle_wepModels[20];

@@ -18,8 +18,6 @@ enum copyContainerFlags { copyContainerFlagsCopy = 0x10 };
 static int _copyContainerItem(int, vs_menu_containerData*, int, vs_menu_containerData*);
 int func_80106C64(int, char**, int*, char*);
 
-extern u_long* D_1F800000[];
-
 void vs_menuD_initUiWeapon(vs_battle_uiWeapon* target, vs_main_inventoryWeapon* source,
     vs_menu_containerData* container)
 {
@@ -727,7 +725,7 @@ void func_80103E24(int arg0, int arg1)
             }
         } else {
             var_v1 = vs_battle_setSpriteDefaultTexPage(
-                0x80, temp_s0 | (arg0 << 0x10), 0x100010, D_1F800000[1] - 3);
+                0x80, temp_s0 | (arg0 << 0x10), 0x100010, vs_scratch.unk4 - 0xC);
         }
 
         var_v1[4] = (0x78 + i * 0x10) | 0x8000 | (i == temp_s4 ? 0x37FD0000 : 0x37FE0000);
@@ -1873,12 +1871,12 @@ int _discardMenu(int arg0)
         vs_battle_setFontStyle(5);
         temp_v0_7 = vs_battle_toBCD(discardCount);
         vs_battle_printVariableWidthFontChar(
-            temp_v0_7 & 0xF, 0x42, 0x82, D_1F800000[2] - 3);
+            temp_v0_7 & 0xF, 0x42, 0x82, vs_scratch.unk8 - 0xC);
         temp_v0_7 = vs_battle_toBCD(temp_v0_7 >> 4);
         vs_battle_printVariableWidthFontChar(
-            temp_v0_7 & 0xF, 0x3C, 0x82, D_1F800000[2] - 3);
+            temp_v0_7 & 0xF, 0x3C, 0x82, vs_scratch.unk8 - 0xC);
         vs_battle_printVariableWidthFontChar(
-            temp_v0_7 >> 4, 0x36, 0x82, D_1F800000[2] - 3);
+            temp_v0_7 >> 4, 0x36, 0x82, vs_scratch.unk8 - 0xC);
         D_80109A07 =
             vs_mainMenu_renderCursor(D_80109A07, (0x36 - (discardStep * 6)) | 0x720000);
         break;
@@ -3095,7 +3093,7 @@ int func_801089BC(int arg0)
         }
         D_80109A2C += 16;
         vs_battle_renderTextRawColor("OK", 0x4200C8,
-            ((rsin((D_80109A2C) * 8) >> 5) + 0x40) * 0x10101, D_1F800000[1] - 3);
+            ((rsin((D_80109A2C) * 8) >> 5) + 0x40) * 0x10101, vs_scratch.unk4 - 0xC);
         v = 0x1A;
         D_80109A2D = vs_mainMenu_renderCursor(
             D_80109A2D, (((var_s1 * 0x10) - (((var_s1 * 2) & 4) - v)) << 0x10) | 0xB4);

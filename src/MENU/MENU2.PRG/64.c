@@ -218,7 +218,6 @@ static int _abilityMenu(void)
 {
     enum state { init, waitReady = 16, abilityMenu };
 
-    extern u_long* D_1F800000[];
     static int cursorAnimStep = 0;
 
     int selectedAbility;
@@ -226,7 +225,7 @@ static int _abilityMenu(void)
     int previousFirstAbility;
     int ability;
     vs_battle_menuItem_t* menuItem;
-    u_long* scratch = D_1F800000[2] + 2;
+    u_long* scratch = vs_scratch.unk8 + 8;
 
     if (_abilityMenuState < 10) {
 

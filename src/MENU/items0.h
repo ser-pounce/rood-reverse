@@ -4,9 +4,8 @@
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "gpu.h"
+#include "scratch.h"
 #include <libetc.h>
-
-extern void* D_1F800000[];
 
 /**
  * Process L1/R1 input.
@@ -72,7 +71,7 @@ static void _renderItemCategory(int animationStep, int highlightSelected)
 
         } else {
             texPage = vs_battle_setSpriteDefaultTexPage(
-                128, x | (animationStep << 0x10), vs_getWH(16, 16), D_1F800000[1]);
+                128, x | (animationStep << 0x10), vs_getWH(16, 16), vs_scratch.unk4);
         }
 
         texPage[4] = (120 + i * 16) | (128 << 8)

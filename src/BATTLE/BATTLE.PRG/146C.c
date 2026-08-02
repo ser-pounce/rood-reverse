@@ -1,8 +1,10 @@
 #include "common.h"
 #include "146C.h"
+#include "2842C.h"
 #include "2EA3C.h"
 #include "30D14.h"
 #include "38C1C.h"
+#include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
 #include "4A0A8.h"
@@ -12,6 +14,7 @@
 #include "6E644.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/BATTLE/INITBTL.PRG/18.h"
 #include <abs.h>
 #include <libetc.h>
 #include <libgpu.h>
@@ -266,21 +269,6 @@ typedef struct {
     short unk2;
     short unk3;
 } func_8008D2C0_t;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    union {
-        struct {
-            u_int unk0_0 : 9;
-            u_int unk0_9 : 5;
-            u_int unk0_14 : 5;
-            u_int unk0_19 : 13;
-        } fields;
-        u_short u16[2];
-        int s32;
-    } unk4;
-} D_800F18EC_t;
 
 typedef struct {
     int unk0;
@@ -614,7 +602,7 @@ extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
 extern vs_battle_actor* D_800F192C;
 extern int D_800F1968;
-extern int D_800F196C;
+extern u_int D_800F196C;
 extern int D_800F19A0;
 extern char D_800F19A8[];
 extern int D_800F19C8;
@@ -681,8 +669,6 @@ extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
 extern short D_8005FFB0;
 
-extern int D_1F800000[];
-
 // invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle
 // Abilities or Items) invoked just before the skill takes effect
 void func_80069C6C(int arg0)
@@ -729,8 +715,8 @@ void func_80069D14(void)
 void func_80069D78(void)
 {
     vs_battle_syncCameraAnglesFromPosition(NULL);
-    _camera.firstPersonViewFacing =
-        ((_camera.firstPersonViewFacing & 0x7FFF) | (_firstPersonViewEnabled << 0x10));
+    vs_scratch.firstPersonViewFacing =
+        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (_firstPersonViewEnabled << 0x10));
 }
 
 void func_80069DBC(void)
@@ -1088,7 +1074,7 @@ void _applyArmorStats(vs_battle_uiArmor* target, _armorIntermediate* source)
         target->classAffinityBaseline.affinity[i] = v;
     }
 
-    target->unk98 = source->unk31;
+    target->dropRate = source->dropRate;
     target->unk99 = source->unk32;
 }
 
@@ -1617,7 +1603,7 @@ int _dropAccessoryRand(vs_battle_lootedAccessory* looted, vs_battle_uiAccessory*
 
 int _dropArmorRand(vs_battle_lootedArmor* looted, vs_battle_uiArmor* base)
 {
-    if (vs_main_getRand(0xFF) < base->unk98) {
+    if (vs_main_getRand(0xFF) < base->dropRate) {
         int i;
 
         for (i = 0; i < 2; ++i) {
@@ -2419,13 +2405,13 @@ void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
     outPos->vx &= ~(ONE - 1);
     outPos->vz &= ~(ONE - 1);
 
-    bound = inPos->vy - _camera.t2.lookAt.vy;
+    bound = inPos->vy - vs_scratch.camera.lookAt.vy;
 
     v = -(ONE * 96);
     if ((bound > (ONE * 96)) || (bound < v)) {
         outPos->vy = inPos->vy;
     } else {
-        outPos->vy = _camera.t2.lookAt.vy;
+        outPos->vy = vs_scratch.camera.lookAt.vy;
     }
     if (outPos->vy > 0) {
         outPos->vy = 0;
@@ -2454,8 +2440,8 @@ int _computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
     targetPosScaled.vz = targetPosFixed.vz / ONE;
     targetPosScaled.vy = targetPosFixed.vy / ONE;
 
-    SetRotMatrix(&_camera.viewMatrix);
-    SetTransMatrix(&_camera.viewMatrix);
+    SetRotMatrix(&vs_scratch.viewMatrix);
+    SetTransMatrix(&vs_scratch.viewMatrix);
     RotTransPers(&targetPosScaled, &sxy, &p, &notCentered);
 
     if (clampToZone == 0) {
@@ -2474,11 +2460,11 @@ int _computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
         notCentered = 1;
     }
 
-    outDisplacement->vx = (targetPosScaled.vx * ONE) - _camera.t2.lookAt.vx;
+    outDisplacement->vx = (targetPosScaled.vx * ONE) - vs_scratch.camera.lookAt.vx;
     targetPosFixed.vx = outDisplacement->vx / ONE;
-    outDisplacement->vz = (targetPosScaled.vz * ONE) - _camera.t2.lookAt.vz;
+    outDisplacement->vz = (targetPosScaled.vz * ONE) - vs_scratch.camera.lookAt.vz;
     targetPosFixed.vz = outDisplacement->vz / ONE;
-    outDisplacement->vy = (targetPosScaled.vy * ONE) - _camera.t2.lookAt.vy;
+    outDisplacement->vy = (targetPosScaled.vy * ONE) - vs_scratch.camera.lookAt.vy;
     targetPosFixed.vy = outDisplacement->vy / ONE;
 
     VectorNormal(&targetPosFixed, &direction);
@@ -2528,19 +2514,22 @@ int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
     if (_computeStepAndDisplacement(
             targetPos, &step, &displacement, transformFlag, maxSpeed)
         != 0) {
-        _camera.t2.lookAt.vx =
-            _addMinDelta(_camera.t2.lookAt.vx, step.vx, displacement.vx);
-        _camera.t2.lookAt.vz =
-            _addMinDelta(_camera.t2.lookAt.vz, step.vz, displacement.vz);
-        _camera.t2.lookAt.vy =
-            _addMinDelta(_camera.t2.lookAt.vy, step.vy, displacement.vy);
+        vs_scratch.camera.lookAt.vx =
+            _addMinDelta(vs_scratch.camera.lookAt.vx, step.vx, displacement.vx);
+        vs_scratch.camera.lookAt.vz =
+            _addMinDelta(vs_scratch.camera.lookAt.vz, step.vz, displacement.vz);
+        vs_scratch.camera.lookAt.vy =
+            _addMinDelta(vs_scratch.camera.lookAt.vy, step.vy, displacement.vy);
     } else {
-        _camera.t2.lookAt.vx = _add_min(_camera.t2.lookAt.vx, step.vx, displacement.vx);
-        _camera.t2.lookAt.vz = _add_min(_camera.t2.lookAt.vz, step.vz, displacement.vz);
-        _camera.t2.lookAt.vy = _add_min(_camera.t2.lookAt.vy, step.vy, displacement.vy);
+        vs_scratch.camera.lookAt.vx =
+            _add_min(vs_scratch.camera.lookAt.vx, step.vx, displacement.vx);
+        vs_scratch.camera.lookAt.vz =
+            _add_min(vs_scratch.camera.lookAt.vz, step.vz, displacement.vz);
+        vs_scratch.camera.lookAt.vy =
+            _add_min(vs_scratch.camera.lookAt.vy, step.vy, displacement.vy);
     }
-    if (_camera.t2.lookAt.vy > 0) {
-        _camera.t2.lookAt.vy = 0;
+    if (vs_scratch.camera.lookAt.vy > 0) {
+        vs_scratch.camera.lookAt.vy = 0;
     }
     return vs_battle_cameraCurrentSpherical.speed;
 }
@@ -2551,40 +2540,40 @@ void _snapLookAtToPosition(VECTOR* arg0)
     int new_var;
 
     _clampPositionToZoneBounds(arg0, &sp10.position);
-    sp10.lookAt.vx = sp10.position.vx - _camera.t2.lookAt.vx;
-    sp10.lookAt.vz = sp10.position.vz - _camera.t2.lookAt.vz;
-    sp10.lookAt.vy = sp10.position.vy - _camera.t2.lookAt.vy;
+    sp10.lookAt.vx = sp10.position.vx - vs_scratch.camera.lookAt.vx;
+    sp10.lookAt.vz = sp10.position.vz - vs_scratch.camera.lookAt.vz;
+    sp10.lookAt.vy = sp10.position.vy - vs_scratch.camera.lookAt.vy;
 
     if (sp10.lookAt.vx > 0x12000) {
-        _camera.t2.lookAt.vx += 0x12000;
+        vs_scratch.camera.lookAt.vx += 0x12000;
     } else {
         new_var = 0xFFFEE000;
         if (sp10.lookAt.vx < new_var) {
-            _camera.t2.lookAt.vx -= 0x12000;
+            vs_scratch.camera.lookAt.vx -= 0x12000;
         } else {
-            _camera.t2.lookAt.vx = sp10.position.vx;
+            vs_scratch.camera.lookAt.vx = sp10.position.vx;
         }
     }
     if (sp10.lookAt.vz > 0x12000) {
-        _camera.t2.lookAt.vz += 0x12000;
+        vs_scratch.camera.lookAt.vz += 0x12000;
     } else {
         new_var = 0xFFFEE000;
         if (sp10.lookAt.vz < new_var) {
-            _camera.t2.lookAt.vz -= 0x12000;
+            vs_scratch.camera.lookAt.vz -= 0x12000;
         } else {
-            _camera.t2.lookAt.vz = sp10.position.vz;
+            vs_scratch.camera.lookAt.vz = sp10.position.vz;
         }
     }
     if (sp10.lookAt.vy < 0) {
         new_var = 0xFFFA0000;
         if (sp10.lookAt.vy < new_var) {
-            _camera.t2.lookAt.vy += 0x60000 + sp10.lookAt.vy;
+            vs_scratch.camera.lookAt.vy += 0x60000 + sp10.lookAt.vy;
         }
     } else if (sp10.lookAt.vy > 0x60000) {
-        _camera.t2.lookAt.vy -= 0x60000 - sp10.lookAt.vy;
+        vs_scratch.camera.lookAt.vy -= 0x60000 - sp10.lookAt.vy;
     }
-    if (_camera.t2.lookAt.vy > 0) {
-        _camera.t2.lookAt.vy = 0;
+    if (vs_scratch.camera.lookAt.vy > 0) {
+        vs_scratch.camera.lookAt.vy = 0;
     }
 }
 
@@ -2634,6 +2623,7 @@ void func_8006E640(int arg0)
     }
 }
 
+int func_8006E7F0(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E7F0);
 
 int func_8006EBF8(void)
@@ -2655,7 +2645,7 @@ int func_8006EBF8(void)
     return v;
 }
 
-void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
+void func_8006EC7C(void)
 {
     func_8006EBF8_t sp10;
     int temp_a1;
@@ -2709,9 +2699,9 @@ void func_8006EC7C(int arg0, int arg1, int arg2, int arg3)
 
     func_800AA850(0, vs_battle_cameraCurrentSpherical.values.yaw & 0xFFF, 0);
     func_800A1108(0, &sp10);
-    _camera.t2.position.vx = sp10.unk0.unk4.vx * ONE;
-    _camera.t2.position.vz = sp10.unk0.unk4.vz * ONE;
-    _camera.t2.position.vy = (sp10.unk0.unk4.vy - 180) * ONE;
+    vs_scratch.camera.position.vx = sp10.unk0.unk4.vx * ONE;
+    vs_scratch.camera.position.vz = sp10.unk0.unk4.vz * ONE;
+    vs_scratch.camera.position.vy = (sp10.unk0.unk4.vy - 180) * ONE;
     _setCameraLookAtFromAngles(&vs_battle_cameraCurrentSpherical.values);
 }
 
@@ -2733,9 +2723,9 @@ void _computeCameraTransition(VECTOR* targetPosition)
 {
     VECTOR cameraToTarget;
 
-    cameraToTarget.vx = (targetPosition->vx - _camera.t2.position.vx) / ONE;
-    cameraToTarget.vz = (targetPosition->vz - _camera.t2.position.vz) / ONE;
-    cameraToTarget.vy = (targetPosition->vy - _camera.t2.position.vy) / ONE;
+    cameraToTarget.vx = (targetPosition->vx - vs_scratch.camera.position.vx) / ONE;
+    cameraToTarget.vz = (targetPosition->vz - vs_scratch.camera.position.vz) / ONE;
+    cameraToTarget.vy = (targetPosition->vy - vs_scratch.camera.position.vy) / ONE;
 
     VectorNormal(&cameraToTarget, &vs_battle_cameraTransition->direction);
 
@@ -2743,7 +2733,7 @@ void _computeCameraTransition(VECTOR* targetPosition)
 
     copyVector(&vs_battle_cameraTransition->targetPosition, targetPosition);
 
-    cameraToTarget.vy = (targetPosition->vy - _camera.t2.position.vy);
+    cameraToTarget.vy = (targetPosition->vy - vs_scratch.camera.position.vy);
 
     vs_battle_cameraTransition->transitionFrames =
         cameraToTarget.vy
@@ -2772,17 +2762,17 @@ void _computeCameraTransition(VECTOR* targetPosition)
         + vs_battle_cameraTransition->targetPosition.vy;
 
     vs_battle_cameraTransition->lookAtStep.vx =
-        (vs_battle_cameraTransition->targetLookAt.vx - _camera.t2.lookAt.vx)
+        (vs_battle_cameraTransition->targetLookAt.vx - vs_scratch.camera.lookAt.vx)
         / vs_battle_cameraTransition->transitionFrames;
     vs_battle_cameraTransition->lookAtStep.vz =
-        (vs_battle_cameraTransition->targetLookAt.vz - _camera.t2.lookAt.vz)
+        (vs_battle_cameraTransition->targetLookAt.vz - vs_scratch.camera.lookAt.vz)
         / vs_battle_cameraTransition->transitionFrames;
     vs_battle_cameraTransition->lookAtStep.vy =
-        (vs_battle_cameraTransition->targetLookAt.vy - _camera.t2.lookAt.vy)
+        (vs_battle_cameraTransition->targetLookAt.vy - vs_scratch.camera.lookAt.vy)
         / vs_battle_cameraTransition->transitionFrames;
 
     vs_battle_cameraTransition->farClipStep =
-        (vs_battle_cameraTransition->toFarClip - _camera.t2.farClip)
+        (vs_battle_cameraTransition->toFarClip - vs_scratch.camera.farClip)
         / vs_battle_cameraTransition->transitionFrames;
     vs_battle_cameraTransition->nearClipStep =
         (vs_battle_cameraTransition->toNearClip - vs_main_nearClip)
@@ -2799,9 +2789,9 @@ int _stepCameraTransition(void)
     int currentY;
     int _[4] __attribute__((unused));
 
-    currentY = _camera.t2.position.vy & ~0xFFF;
+    currentY = vs_scratch.camera.position.vy & ~0xFFF;
     targetY = vs_battle_cameraTransition->targetPosition.vy & ~0xFFF;
-    nextY = (_camera.t2.position.vy
+    nextY = (vs_scratch.camera.position.vy
                 + (vs_battle_cameraTransition->direction.vy
                     * vs_battle_cameraTransition->transitionSpeed))
           & ~0xFFF;
@@ -2809,31 +2799,31 @@ int _stepCameraTransition(void)
     if (((currentY >= targetY) && (targetY >= nextY))
         || ((targetY >= currentY) && (nextY >= targetY))) {
 
-        _camera.t2.position.vx = vs_battle_cameraTransition->targetPosition.vx;
-        _camera.t2.position.vz = vs_battle_cameraTransition->targetPosition.vz;
-        _camera.t2.position.vy = vs_battle_cameraTransition->targetPosition.vy;
-        _camera.t2.lookAt.vx = vs_battle_cameraTransition->targetLookAt.vx;
-        _camera.t2.lookAt.vz = vs_battle_cameraTransition->targetLookAt.vz;
-        _camera.t2.lookAt.vy = vs_battle_cameraTransition->targetLookAt.vy;
+        vs_scratch.camera.position.vx = vs_battle_cameraTransition->targetPosition.vx;
+        vs_scratch.camera.position.vz = vs_battle_cameraTransition->targetPosition.vz;
+        vs_scratch.camera.position.vy = vs_battle_cameraTransition->targetPosition.vy;
+        vs_scratch.camera.lookAt.vx = vs_battle_cameraTransition->targetLookAt.vx;
+        vs_scratch.camera.lookAt.vz = vs_battle_cameraTransition->targetLookAt.vz;
+        vs_scratch.camera.lookAt.vy = vs_battle_cameraTransition->targetLookAt.vy;
 
         vs_battle_cameraCurrentSpherical = vs_battle_cameraTransition->toSpherical;
 
-        _camera.t2.farClip = vs_battle_cameraTransition->toFarClip;
+        vs_scratch.camera.farClip = vs_battle_cameraTransition->toFarClip;
 
         vs_battle_setNearClip(vs_battle_cameraTransition->toNearClip);
         vs_battle_setProjectionDistance(vs_battle_cameraTransition->toProjectionDistance);
         return 1;
     }
-    _camera.t2.position.vx += vs_battle_cameraTransition->direction.vx
-                            * vs_battle_cameraTransition->transitionSpeed;
-    _camera.t2.position.vz += vs_battle_cameraTransition->direction.vz
-                            * vs_battle_cameraTransition->transitionSpeed;
-    _camera.t2.position.vy += vs_battle_cameraTransition->direction.vy
-                            * vs_battle_cameraTransition->transitionSpeed;
-    _camera.t2.lookAt.vx += vs_battle_cameraTransition->lookAtStep.vx;
-    _camera.t2.lookAt.vz += vs_battle_cameraTransition->lookAtStep.vz;
-    _camera.t2.lookAt.vy += vs_battle_cameraTransition->lookAtStep.vy;
-    _camera.t2.farClip += vs_battle_cameraTransition->farClipStep;
+    vs_scratch.camera.position.vx += vs_battle_cameraTransition->direction.vx
+                                   * vs_battle_cameraTransition->transitionSpeed;
+    vs_scratch.camera.position.vz += vs_battle_cameraTransition->direction.vz
+                                   * vs_battle_cameraTransition->transitionSpeed;
+    vs_scratch.camera.position.vy += vs_battle_cameraTransition->direction.vy
+                                   * vs_battle_cameraTransition->transitionSpeed;
+    vs_scratch.camera.lookAt.vx += vs_battle_cameraTransition->lookAtStep.vx;
+    vs_scratch.camera.lookAt.vz += vs_battle_cameraTransition->lookAtStep.vz;
+    vs_scratch.camera.lookAt.vy += vs_battle_cameraTransition->lookAtStep.vy;
+    vs_scratch.camera.farClip += vs_battle_cameraTransition->farClipStep;
 
     vs_battle_setNearClip(vs_main_nearClip + vs_battle_cameraTransition->nearClipStep);
     vs_battle_setProjectionDistance(
@@ -3299,7 +3289,7 @@ void func_80070F28(int arg0)
     if (D_800F19CC->unk8.unk4.unk0.targetActor == 0) {
         if (D_800F18EC->unk2 != 7) {
             if (D_800F18EC->unk2 == 8) {
-                vs_battle_decreaseMiscCount(D_800F18EC->unk4.u16[1]);
+                vs_battle_decreaseMiscCount(D_800F18EC->executeAbility.u16[1]);
             }
         }
         D_800F18EC->unk2 = 0;
@@ -3469,11 +3459,11 @@ void _initBattleCameraTransition(void)
             vs_main_allocHeapR(sizeof *vs_battle_cameraTransition);
     }
     if (D_800F196C != 7) {
-        vs_battle_cameraTransition->fromCameraState = _camera.t2;
+        vs_battle_cameraTransition->fromCameraState = vs_scratch.camera;
         vs_battle_cameraTransition->fromSpherical = vs_battle_cameraCurrentSpherical;
         vs_battle_cameraTransition->fromNearClip = vs_main_nearClip;
         vs_battle_cameraTransition->fromProjectionDistance = vs_main_projectionDistance;
-        vs_battle_cameraTransition->fromFarClip = _camera.t2.farClip;
+        vs_battle_cameraTransition->fromFarClip = vs_scratch.camera.farClip;
     }
     vs_battle_cameraTransition->toNearClip = 4;
     vs_battle_cameraTransition->toProjectionDistance = 224;
@@ -3507,7 +3497,7 @@ void _initBattleCameraTransition(void)
 
 void _endBattleCameraTransition(void)
 {
-    _camera.t2 = vs_battle_cameraTransition->fromCameraState;
+    vs_scratch.camera = vs_battle_cameraTransition->fromCameraState;
 
     vs_battle_cameraCurrentSpherical = vs_battle_cameraTransition->fromSpherical;
 
@@ -3585,7 +3575,7 @@ void func_80073554(void)
     func_8006C40C();
 }
 
-void func_8007357C(void)
+void func_8007357C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)))
 {
     D_800F196C = 5;
     _cameraMode = 1;
@@ -3613,16 +3603,19 @@ void func_800735F8(D_800F18EC_t* arg0)
     case 6:
     case 7:
     case 8:
-        func_80072EC4(0, arg0->unk4.s32);
+        func_80072EC4(0, arg0->executeAbility.s32);
         return;
     case 10:
         func_800A1108(0, &sp18);
         func_8006F4B0(&sp18.unk0);
         vs_battle_setStateFlag(0xB7, 1);
-        func_8007C694(arg0->unk4.fields.unk0_0, arg0->unk4.fields.unk0_9,
-            arg0->unk4.fields.unk0_14, 0, 8);
-        if (vs_battle_characterState->unk3C->currentMP >= arg0->unk4.fields.unk0_19) {
-            vs_battle_characterState->unk3C->currentMP -= arg0->unk4.fields.unk0_19;
+        func_8007C694(arg0->executeAbility.fields.unk0_0,
+            arg0->executeAbility.fields.unk0_9, arg0->executeAbility.fields.unk0_14, 0,
+            8);
+        if (vs_battle_characterState->unk3C->currentMP
+            >= arg0->executeAbility.fields.unk0_19) {
+            vs_battle_characterState->unk3C->currentMP -=
+                arg0->executeAbility.fields.unk0_19;
         }
         func_8009E070(0, NULL, 7);
         break;
@@ -3945,14 +3938,14 @@ int func_80074120(void)
     return 1;
 }
 
-void func_8007418C(void)
+int func_8007418C(void)
 {
     SVECTOR sp10;
 
     sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4.vx;
     sp10.vy = (u_short)D_800F1910.unk4.unk0.unk4.vy;
     sp10.vz = (u_short)D_800F1910.unk4.unk0.unk4.vz;
-    _stepTowardTarget(&sp10, 0, 0x28);
+    return _stepTowardTarget(&sp10, 0, 0x28);
 }
 
 void func_800741D4(void)
@@ -4018,10 +4011,13 @@ int func_80074374(void)
     return temp_s0;
 }
 
-void func_800743E0(int arg0, int arg1)
+void func_800743E0()
 {
     int temp_v1 = D_800F1910.unk0->keyOrSigil;
+    int arg1;
+
     _cameraMode = 3;
+
     if (temp_v1 != 0) {
         switch (temp_v1) {
         case 1:
@@ -4049,7 +4045,7 @@ void func_800743E0(int arg0, int arg1)
 
 int func_800744B8(void)
 {
-    D_800F4E98_t* temp_v0;
+    D_800F18EC_t* temp_v0;
 
     if (D_800F1910.unk0->keyOrSigil != 0) {
         if (func_800CB45C() != 0) {
@@ -4175,7 +4171,8 @@ int func_80074860(int arg0)
 
     func_800A1108(arg0, &sp10);
     func_80074798(&sp10, sp20);
-    return func_800BEC58(4, 0, sp20, 1) == 1;
+    // BUG: arg2 should be an actor ID?
+    return func_800BEC58(4, 0, (int)sp20, 1) == 1;
 }
 
 _mpdRoomSectionA* func_800748B8(int arg0)
@@ -4271,6 +4268,7 @@ void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1)
     func_8008C40C();
 }
 
+int func_80074BAC(int, u_char*);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074BAC);
 
 int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
@@ -4387,6 +4385,7 @@ void func_800753F8(vs_battle_actor* arg0, SVECTOR* arg1)
     }
 }
 
+int func_80075554(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80075554);
 
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
@@ -4660,8 +4659,8 @@ void func_80076784(
     _applyAccessoryStats(&actor->accessory, &init->accessory);
 
     for (i = 0; i < 6; ++i) {
-        actor->limbs[i].hp = actor->limbs[i].maxHp = init->armor[i].hp;
-        actor->limbs[i].agilityDefenseBonus = init->armor[i].agilityDefenseBonus;
+        actor->limbs[i].hp = actor->limbs[i].maxHp = init->limbs[i].hp;
+        actor->limbs[i].agilityDefenseBonus = init->limbs[i].agilityDefenseBonus;
 
         j = func_800A152C(arg0, i, 2);
 
@@ -4673,33 +4672,33 @@ void func_80076784(
             actor->limbs[i].unk5 = 0;
         }
 
-        actor->limbs[i].chainEvasion = init->armor[i].chainEvasion;
+        actor->limbs[i].chainEvasion = init->limbs[i].chainEvasion;
 
         for (j = 0; j < 4; ++j) {
-            actor->limbs[i].types[j] = init->armor[i].unk4[j];
+            actor->limbs[i].types[j] = init->limbs[i].types[j];
         }
 
         for (j = 0; j < 7; ++j) {
-            actor->limbs[i].affinities[j] = init->armor[i].unk8[j];
+            actor->limbs[i].affinities[j] = init->limbs[i].affinities[j];
         }
 
-        _applyArmorStats(&actor->limbs[i].armor, &init->armor[i].unk20);
+        _applyArmorStats(&actor->limbs[i].armor, &init->limbs[i].unk20);
     }
 
     vs_battle_nop0(actor);
 
     for (i = 0; i < 6; ++i) {
         for (j = 0; j < 4; ++j) {
-            actor->armor[i][j].unk0 = init->armor[i].unk10[j].unk0;
-            actor->armor[i][j].unk2_0 = init->armor[i].unk10[j].unk3;
-            actor->armor[i][j].unk2_4 = init->armor[i].unk10[j].unk2;
+            actor->armor[i][j].id = init->limbs[i].skills[j].id;
+            actor->armor[i][j].index = init->limbs[i].skills[j].index;
+            actor->armor[i][j].unk2_4 = init->limbs[i].skills[j].unk2;
             actor->armor[i][j].unk3 = 1;
         }
     }
 
     for (i = 0; i < 6; ++i) {
         for (j = 0; j < 6; ++j) {
-            actor->unk920[i][j] = init->armor[i].unk54[j];
+            actor->dpSplash[i][j] = init->limbs[i].dpSplash[j];
         }
     }
 
@@ -5023,7 +5022,7 @@ int _isLookAtAtDestination(void)
         sp10.position.vy = 0;
     }
     _clampPositionToZoneBounds(&sp10.position, &sp10.position);
-    sp10.lookAt = _camera.t2.lookAt;
+    sp10.lookAt = vs_scratch.camera.lookAt;
 
     if ((sp10.position.vx == (sp10.lookAt.vx & ~0xFFF))
         && (sp10.position.vz == (sp10.lookAt.vz & ~0xFFF))
@@ -5036,11 +5035,11 @@ int _isLookAtAtDestination(void)
 void func_80077EC4(void)
 {
     vs_battle_initialiseCameraFromSpherical(
-        &_camera.t2.position, &_camera.t2.lookAt, -1, -1);
-    _camera.t2.farClip = 0x1000;
-    _camera.t2.angles.vz = 0;
-    _camera.t2.angles.vy = 0;
-    _camera.t2.angles.vx = 0;
+        &vs_scratch.camera.position, &vs_scratch.camera.lookAt, -1, -1);
+    vs_scratch.camera.farClip = 0x1000;
+    vs_scratch.camera.angles.vz = 0;
+    vs_scratch.camera.angles.vy = 0;
+    vs_scratch.camera.angles.vx = 0;
 }
 
 void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
@@ -5655,6 +5654,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
     return ret;
 }
 
+void func_800793C0(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
 
 void func_800797BC(void)
@@ -5685,6 +5685,20 @@ void func_8007983C(void)
     }
 }
 
+void _finishLoadZnd(int id);
+void func_80089DC0(int arg0);
+void func_8008C8A8(void);
+int func_80088B6C(void);
+void func_80088B8C(void);
+void func_8008EC48(int arg0);
+void func_8008AC78(void);
+void func_8008B28C(void);
+void func_8007D734(void*);
+void func_8007DF98(void);
+void func_8008A3A0(void);
+void func_80089098(void);
+
+void vs_battle_exec(void);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
 
 void func_8007A824(int* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
@@ -5696,19 +5710,19 @@ int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
     int yaw;
     int pitch;
 
-    toCamera.vx = (_camera.t2.position.vx - _camera.t2.lookAt.vx) / ONE;
-    toCamera.vz = (_camera.t2.position.vz - _camera.t2.lookAt.vz) / ONE;
-    toCamera.vy = (_camera.t2.position.vy - _camera.t2.lookAt.vy) / ONE;
+    toCamera.vx = (vs_scratch.camera.position.vx - vs_scratch.camera.lookAt.vx) / ONE;
+    toCamera.vz = (vs_scratch.camera.position.vz - vs_scratch.camera.lookAt.vz) / ONE;
+    toCamera.vy = (vs_scratch.camera.position.vy - vs_scratch.camera.lookAt.vy) / ONE;
 
     VectorNormal(&toCamera, &toCameraNorm);
 
     yaw = ratan2(toCameraNorm.vx, toCameraNorm.vz);
     yaw = (yaw + ONE) % ONE;
-    _camera.t2.angles.vy = yaw;
+    vs_scratch.camera.angles.vy = yaw;
     pitch = ratan2(
         toCameraNorm.vy, SquareRoot12((toCameraNorm.vx * toCameraNorm.vx) / ONE
                                       + (toCameraNorm.vz * toCameraNorm.vz) / ONE));
-    _camera.t2.angles.vx = pitch;
+    vs_scratch.camera.angles.vx = pitch;
 
     if (arg0 != NULL) {
         arg0->values.yaw = yaw;
@@ -5738,54 +5752,56 @@ void _computeSphericalOffset(
 
 void _setCameraPositionFromAngles(_sphericalValues* spherical)
 {
-    _computeSphericalOffset(&_camera.t2.position, &_camera.t2.lookAt, spherical);
+    _computeSphericalOffset(
+        &vs_scratch.camera.position, &vs_scratch.camera.lookAt, spherical);
 }
 
 void _setCameraLookAtFromAngles(_sphericalValues* spherical)
 {
-    _camera.t2.lookAt.vx = -rsin(spherical->yaw);
-    _camera.t2.lookAt.vz = -rcos(spherical->yaw);
-    _camera.t2.lookAt.vy = (-rsin(spherical->pitch) * 0x1000) / rcos(spherical->pitch);
-    VectorNormal(&_camera.t2.lookAt, &_camera.t2.lookAt);
-    _camera.t2.lookAt.vx =
-        (_camera.t2.lookAt.vx * spherical->distance) + _camera.t2.position.vx;
-    _camera.t2.lookAt.vz =
-        (_camera.t2.lookAt.vz * spherical->distance) + _camera.t2.position.vz;
-    _camera.t2.lookAt.vy =
-        (_camera.t2.lookAt.vy * spherical->distance) + _camera.t2.position.vy;
+    vs_scratch.camera.lookAt.vx = -rsin(spherical->yaw);
+    vs_scratch.camera.lookAt.vz = -rcos(spherical->yaw);
+    vs_scratch.camera.lookAt.vy =
+        (-rsin(spherical->pitch) * 0x1000) / rcos(spherical->pitch);
+    VectorNormal(&vs_scratch.camera.lookAt, &vs_scratch.camera.lookAt);
+    vs_scratch.camera.lookAt.vx = (vs_scratch.camera.lookAt.vx * spherical->distance)
+                                + vs_scratch.camera.position.vx;
+    vs_scratch.camera.lookAt.vz = (vs_scratch.camera.lookAt.vz * spherical->distance)
+                                + vs_scratch.camera.position.vz;
+    vs_scratch.camera.lookAt.vy = (vs_scratch.camera.lookAt.vy * spherical->distance)
+                                + vs_scratch.camera.position.vy;
 }
 
 void vs_battle_getCameraPosition(VECTOR* outPosition)
 {
-    outPosition->vx = _camera.t2.position.vx;
-    outPosition->vy = _camera.t2.position.vy;
-    outPosition->vz = _camera.t2.position.vz;
+    outPosition->vx = vs_scratch.camera.position.vx;
+    outPosition->vy = vs_scratch.camera.position.vy;
+    outPosition->vz = vs_scratch.camera.position.vz;
 }
 
 void vs_battle_setCameraPosition(VECTOR* inPosition)
 {
-    _camera.t2.position.vx = inPosition->vx;
-    _camera.t2.position.vy = inPosition->vy;
-    _camera.t2.position.vz = inPosition->vz;
+    vs_scratch.camera.position.vx = inPosition->vx;
+    vs_scratch.camera.position.vy = inPosition->vy;
+    vs_scratch.camera.position.vz = inPosition->vz;
 }
 
 void vs_battle_getCameraLookAt(VECTOR* outLookAt)
 {
-    outLookAt->vx = _camera.t2.lookAt.vx;
-    outLookAt->vy = _camera.t2.lookAt.vy;
-    outLookAt->vz = _camera.t2.lookAt.vz;
+    outLookAt->vx = vs_scratch.camera.lookAt.vx;
+    outLookAt->vy = vs_scratch.camera.lookAt.vy;
+    outLookAt->vz = vs_scratch.camera.lookAt.vz;
 }
 
 void vs_battle_setCameraLookAt(VECTOR* inLookAt)
 {
-    _camera.t2.lookAt.vx = inLookAt->vx;
-    _camera.t2.lookAt.vy = inLookAt->vy;
-    _camera.t2.lookAt.vz = inLookAt->vz;
+    vs_scratch.camera.lookAt.vx = inLookAt->vx;
+    vs_scratch.camera.lookAt.vy = inLookAt->vy;
+    vs_scratch.camera.lookAt.vz = inLookAt->vz;
 }
 
-void vs_battle_setCameraRoll(int arg0) { _camera.t2.angles.vz = arg0; }
+void vs_battle_setCameraRoll(int arg0) { vs_scratch.camera.angles.vz = arg0; }
 
-int vs_battle_getCameraRoll(void) { return _camera.t2.angles.vz & 0xFFF; }
+int vs_battle_getCameraRoll(void) { return vs_scratch.camera.angles.vz & 0xFFF; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 
@@ -5850,13 +5866,16 @@ void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
     func_800478E0(arg0, arg1, arg2, arg3, arg4);
 }
 
-void func_8007B378(int arg0, u_short* arg1, int arg2)
+void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3) __attribute__((unused));
+void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
 {
-    vs_main_loadClutTransition(arg0, 0, arg1);
+    vs_main_loadClutTransition(arg0, 0, arg1, arg3);
+    // BUG: Missing last parameter to vs_main_loadClutTransition
     vs_main_loadClutTransition(arg0, 1, arg1 + 0x100);
     vs_main_loadClutTransition(arg0, 2, arg1 + 0x200);
 }
 
+void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3) __attribute__((unused));
 void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
@@ -6632,7 +6651,7 @@ void vs_battle_setProjectionDistance(int projectionDistance)
 
 void vs_battle_setFarClip(int farClip, int arg1)
 {
-    _camera.t2.farClip = farClip;
+    vs_scratch.camera.farClip = farClip;
 
     if (arg1 == 0) {
         if (farClip < 0) {
@@ -8092,7 +8111,7 @@ void func_80080000(vs_skill_t* skill, _hitEntity_t* entity, short baseValue)
     case 14:
         for (i = 0; i < 6; ++i) {
             _armorDpAdjustmentAmounts[i] =
-                (baseValue * actor->unk920[entity->unk0.targetLimb][i]) / 100;
+                (baseValue * actor->dpSplash[entity->unk0.targetLimb][i]) / 100;
             entity->limbs[i].effects.value0 += _armorDpAdjustmentAmounts[i];
         }
         break;
@@ -10847,7 +10866,7 @@ int func_80088554(void)
     return var_s5;
 }
 
-void func_80088B6C(void) { func_80088554(); }
+int func_80088B6C(void) { return func_80088554(); }
 
 void func_80088B8C(void)
 {
@@ -11050,7 +11069,7 @@ void func_80089888(void)
     }
     func_800A1108(0, &sp18);
     func_8009E5C4(0);
-    func_800A4828(0, &_camera.viewMatrix);
+    func_800A4828(0, &vs_scratch.viewMatrix);
     func_800A0A1C(0, 0);
     func_800E6158();
 }
@@ -11269,7 +11288,7 @@ void func_80089DC0(int arg0)
     vs_main_buttonsPressed.all = 0;
     vs_main_buttonsPreviousState = 0;
     vs_main_buttonsState = 0;
-    _camera.t2.farClip = ONE;
+    vs_scratch.camera.farClip = ONE;
 
     if (vs_battle_screenTransitionEffect == 3) {
         vs_battle_screenTransitionStep = 0;
@@ -11310,8 +11329,8 @@ void func_80089DC0(int arg0)
 
     _clampPositionToZoneBounds(&sp20, &lookAt);
 
-    _camera.t2.lookAt = lookAt;
-    _camera.t2.angles.vy = vs_battle_cameraCurrentSpherical.values.yaw;
+    vs_scratch.camera.lookAt = lookAt;
+    vs_scratch.camera.angles.vy = vs_battle_cameraCurrentSpherical.values.yaw;
 
     _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
     func_800A1108(0, &sp40);
@@ -11359,11 +11378,11 @@ void func_8008A3A0(void)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        _camera.unk4 = D_80055C80[vs_main_frameBuf] + 0x10;
-        ClearOTagR(_camera.unk4, 0x800);
+        vs_scratch.unk4 = D_80055C80[vs_main_frameBuf] + 0x10;
+        ClearOTagR(vs_scratch.unk4, 0x800);
         func_8007DF40();
-        _drawScreenTransition(_camera.unk4);
-        func_8007629C(_camera.unk4 + 0x1FFC);
+        _drawScreenTransition(vs_scratch.unk4);
+        func_8007629C(vs_scratch.unk4 + 0x1FFC);
     }
 
     DrawSync(0);
@@ -11656,7 +11675,6 @@ int func_8008ABF0(int arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/jsBf0
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008AC78);
 
 void func_8008B1FC(void* arg0)
@@ -12157,7 +12175,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
 
     if (vs_battle_roomData.section11 != 0) {
         func_8008C40C();
-        v = ((_camera.t2.angles.vy + 0x900) & 0xFFF) >> 9;
+        v = ((vs_scratch.camera.angles.vy + 0x900) & 0xFFF) >> 9;
         var_a1 = vs_battle_roomData.section11;
         len = vs_battle_roomData.header.section11Len;
         for (i = 0; i < len;) {
@@ -13116,7 +13134,6 @@ void func_8008EB30(int* arg0)
     var_a0[2] = (arg0[1] & 0xFFFFFF) | 0x30000000;
 }
 
-// https://decomp.me/scratch/c8coB
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
 
 int func_8008EFCC(int arg0)

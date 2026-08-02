@@ -140,10 +140,16 @@ typedef struct {
     short unk0;
     short unk2;
     union {
-        short s16[2];
+        struct {
+            u_int unk0_0 : 9;
+            u_int unk0_9 : 5;
+            u_int unk0_14 : 5;
+            u_int unk0_19 : 13;
+        } fields;
+        u_short u16[2];
         int s32;
     } executeAbility;
-} D_800F4E98_t;
+} D_800F18EC_t;
 
 typedef struct {
     int integers[10];
@@ -291,7 +297,7 @@ int vs_battle_isSpellClassUnlocked(int spellClass);
 int vs_battle_chainAbilitiesUnlocked(int);
 void func_800CB23C(void);
 void func_800CB660(int arg0);
-D_800F4E98_t* func_800CB66C(void);
+D_800F18EC_t* func_800CB66C(void);
 void func_800CB114(void);
 void func_800CB158(vs_battle_lootListNode*);
 void func_800CB18C(vs_battle_loot*);
@@ -337,6 +343,13 @@ void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);
 void func_800CF920(void);
 int vs_battle_getTextLineLength(char* str);
+int vs_battle_validateShortcutSelection(int shortcut);
+void func_800C8778(void);
+void func_800C9F88(void);
+void func_800CA2DC(void);
+int func_800CACD0(int menuState, int arg1);
+void func_800CB83C(void);
+int func_800CF060(void);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];
@@ -369,7 +382,7 @@ extern char vs_battle_unlockedBreakArt;
 extern char* vs_battle_stringBuf;
 extern char vs_battle_submenuStates[16];
 extern char vs_battle_lowerScreenUiState;
-extern D_800F4E98_t D_800F4E98;
+extern D_800F18EC_t D_800F4E98;
 extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char vs_battle_unlockedBattleAbility;

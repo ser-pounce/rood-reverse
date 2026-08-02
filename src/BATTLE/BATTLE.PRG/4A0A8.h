@@ -1,6 +1,6 @@
 #pragma once
 
-void func_800B28A8(void*, void*, char);
+void func_800B28A8(void*, MATRIX*, char);
 short func_800BEB10(void);
 void func_800BEB34(void);
 void func_800BEB9C(int);
@@ -8,8 +8,7 @@ void func_800BEBEC(void);
 char vs_battle_getStateFlag(short);
 void vs_battle_setStateFlag(short id, char value);
 int func_800BEC30(void);
-short func_800BEC58(int, int, char*, int);
-
+short func_800BEC58(int, int, int, int);
 int vs_battle_invalidOpcode(u_char*, short);
 int func_800B66F4(u_char*, short);
 int func_800B6724(u_char*, short);
@@ -156,6 +155,8 @@ int func_800BB604(u_char*, short);
 int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
     void* scriptSection, u_short scriptSectionLen, void* doorSection,
     u_short doorSectionLen, int startState);
+void func_800B64A8(int, int, int);
+int func_800BF850(void);
 
 extern short D_800F4BE2;
 extern char D_800F4C08;

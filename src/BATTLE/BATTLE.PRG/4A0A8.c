@@ -225,8 +225,6 @@ static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
 
-extern void* D_1F800000[];
-
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
 extern char D_800E9B58[];

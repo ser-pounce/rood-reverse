@@ -3,7 +3,7 @@ menuD_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG M
 $(BUILD)/data/MENU/MENUD.PRG: $(menuD_LDLIBS)
 $(BUILD)/data/MENU/MENUD.PRG: LDLIBS += $(menuD_LDLIBS)
 $(BUILD)/data/MENU/MENUD.PRG: LDFLAGS += \
-	--defsym=D_1F800000=0x1F800000
+	--defsym=vs_scratch=0x1F800000
 $(BUILD)/data/MENU/MENUD.PRG $(BUILD)/data/MENU/MENUD.PRG.elf: LDSCRIPT := link.ld
 	
 $(BUILD)/src/MENU/MENUD.PRG/234.o: ASFLAGS += -no-pad-sections

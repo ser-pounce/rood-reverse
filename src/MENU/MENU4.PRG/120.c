@@ -16,16 +16,6 @@
 #include "gpu.h"
 #include <libetc.h>
 
-typedef struct {
-    int unk0[8];
-} D_80108198_t;
-
-typedef struct {
-    int unk0[13];
-} D_801081B8_t;
-
-extern u_long* D_1F800000[];
-
 static u_short _statusStrings[] = {
 #include "build/assets/MENU/MENU4.PRG/status.vsString"
 };
@@ -742,7 +732,7 @@ static void _renderStatBar(int colorIndex, int current, int max, int xy)
     current <<= 6;
 
     vs_battle_renderStatBar(
-        colorIndex & 0xFF, ((current + max) - 1) / max, D_1F800000[1] - 3, xy);
+        colorIndex & 0xFF, ((current + max) - 1) / max, vs_scratch.unk4 - 0xC, xy);
 }
 
 /**
@@ -753,7 +743,7 @@ static void _renderBasicStats(void)
     int i;
     int y;
     vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
-    u_long* insertBefore = D_1F800000[1] - 3;
+    u_long* insertBefore = vs_scratch.unk4 - 0xC;
 
     switch (_renderBasicStatsState) {
     case 0:
@@ -860,8 +850,8 @@ void _drawStatusIndicator(int colorIndex, int xy, int subdued)
     u_long* prim;
     u_long* temp_t1;
 
-    temp_t1 = D_1F800000[2];
-    prim = D_1F800000[0];
+    temp_t1 = vs_scratch.unk8;
+    prim = vs_scratch.unk0;
     color = D_800EBC54[colorIndex] >> subdued;
     prim[0] = (*temp_t1 & 0xFFFFFF) | 0x06000000;
     prim[1] = color | (primTile << 24);
@@ -871,7 +861,7 @@ void _drawStatusIndicator(int colorIndex, int xy, int subdued)
     prim[5] = xy + vs_getXY(1, 1);
     prim[6] = vs_getWH(5, 5);
     *temp_t1 = ((u_long)prim << 8) >> 8;
-    D_1F800000[0] = prim + 7;
+    vs_scratch.unk0 = prim + 7;
 }
 
 /**
@@ -890,8 +880,8 @@ static void _drawLimbLeaderLine(
     temp_t2 = limb * 16 + 42;
     limb = ((xy >> 16) - temp_t2);
 
-    prim = D_1F800000[0];
-    temp_t0 = D_1F800000[1];
+    prim = vs_scratch.unk0;
+    temp_t0 = vs_scratch.unk4;
 
     x = (short)xy;
 
@@ -913,7 +903,7 @@ static void _drawLimbLeaderLine(
     prim[8] = (temp_t2 << 0x10) | 216;
     temp_t0[-1] = (((u_long)prim << 8) >> 8);
     prim += 9;
-    D_1F800000[0] = prim;
+    vs_scratch.unk0 = prim;
 }
 
 /**
@@ -944,13 +934,13 @@ static void _renderStatusIcons(vs_battle_actor2* actor, int animationStep)
             if (i >= new_var) {
                 // Element indicator
                 vs_battle_setSpriteDefaultTexPage(
-                    128, ((x + 8) & 0xFFFF) | y, vs_getWH(8, 8), D_1F800000[1] - 2)[4] =
+                    128, ((x + 8) & 0xFFFF) | y, vs_getWH(8, 8), vs_scratch.unk4 - 8)[4] =
                     ((((i & 3) * 8) + 0x3068) | (getClut(1008, 223) << 16));
             }
 
             // Nasty match hack
             actor = (vs_battle_actor2*)vs_battle_setSpriteDefaultTexPage(
-                128, (x & 0xFFFF) | y, vs_getWH(16, 16), D_1F800000[1] - 2);
+                128, (x & 0xFFFF) | y, vs_getWH(16, 16), vs_scratch.unk4 - 8);
 
             // 0x0F0F906A = Flags for toggling the icon palette
             ((u_long*)actor)[4] =
@@ -2091,8 +2081,8 @@ static int _equipmentScreen(int element)
 static void _fadeScreenLeft(void)
 {
     int uv1Tpage;
-    u_long* prim = D_1F800000[0];
-    u_long* temp_t1 = D_1F800000[1];
+    u_long* prim = vs_scratch.unk0;
+    u_long* temp_t1 = vs_scratch.unk4;
 
     if (_fadeScreen == 0) {
         return;
@@ -2122,7 +2112,7 @@ static void _fadeScreenLeft(void)
 
     temp_t1[-1] = (((u_long)prim << 8) >> 8);
 
-    D_1F800000[0] = prim + 14;
+    vs_scratch.unk0 = prim + 14;
 }
 
 /**
@@ -2132,8 +2122,8 @@ static void _drawMenuBackground(void)
 {
     int uv1Tpage;
 
-    u_long* prim = D_1F800000[0];
-    void* temp_a0 = D_1F800000[1];
+    u_long* prim = vs_scratch.unk0;
+    void* temp_a0 = vs_scratch.unk4;
     u_int* var_t9 = temp_a0 + 0x1FF4;
 
     if (_drawBackgroundFirst != 0) {
@@ -2191,7 +2181,7 @@ static void _drawMenuBackground(void)
     prim[13] = vs_getUV(160, 240);
     *var_t9 = ((u_long)prim << 8) >> 8;
 
-    D_1F800000[0] = prim + 14;
+    vs_scratch.unk0 = prim + 14;
 }
 
 /**
@@ -2203,27 +2193,27 @@ static void _drawScreen(void)
     int xOffset = (128 - _animationStep);
     int z = D_800F4538[1]->menuCameraDistance;
     int x = D_800F4538[1]->menuCameraHeightOffset;
-    int* p = (int*)D_1F800000 + 13;
+    vs_camera_t* camera = &vs_scratch.camera;
 
-    p[4] = ((-rsin(_xPos) * xOffset) >> 8) * z;
-    p[5] = -(x << 0xB);
-    p[6] = ((rcos(_xPos) * xOffset) >> 8) * z;
-    ((int*)D_1F800000)[13] = p[4] + ((rcos(_xPos) * rcos(_yPos)) >> 0xA) * z;
-    p[1] = p[5] - rsin(_yPos) * z * 4;
+    camera->lookAt.vx = ((-rsin(_xPos) * xOffset) >> 8) * z;
+    camera->lookAt.vy = -(x * ONE / 2);
+    camera->lookAt.vz = ((rcos(_xPos) * xOffset) >> 8) * z;
+    camera->position.vx = camera->lookAt.vx + ((rcos(_xPos) * rcos(_yPos)) >> 0xA) * z;
+    camera->position.vy = camera->lookAt.vy - rsin(_yPos) * z * 4;
 
     temp_lo_5 = (rsin(_xPos) * rcos(_yPos) >> 0xA) * z;
-    p[8] = 0;
-    p[9] = 0;
-    p[10] = 0;
-    p[12] = 0x1000;
-    p[2] = p[6] + temp_lo_5;
+    camera->angles.vx = 0;
+    camera->angles.vy = 0;
+    camera->angles.vz = 0;
+    camera->farClip = ONE;
+    camera->position.vz = camera->lookAt.vz + temp_lo_5;
 
     func_8007ACB0();
 
     if (_delayScreenUpdate) {
         --_delayScreenUpdate;
     } else {
-        func_800F9EB8(p - 8);
+        func_800F9EB8(&vs_scratch.viewMatrix);
     }
 
     _drawMenuBackground();
@@ -2303,16 +2293,14 @@ int vs_menu4_exec(u_char* state)
     static int D_80108134 = 0;
     static int D_80108188;
     static char _[12] __attribute__((unused));
-    static D_80108198_t D_80108198;
-    static D_801081B8_t D_801081B8;
+    static MATRIX D_80108198;
+    static vs_camera_t D_801081B8;
     static u_char _animationIndex;
 
     int limbs;
     int var_s5;
     int var_s6;
-    D_801081B8_t* var_a0;
     int userInput;
-    int new_var2;
 
     var_s5 = 0;
     var_s6 = 0;
@@ -2351,25 +2339,26 @@ int vs_menu4_exec(u_char* state)
 
         vs_battle_setProjectionDistance(0x200);
 
-        new_var2 = 13;
-        var_a0 = (D_801081B8_t*)(&D_1F800000[new_var2]);
-        D_80108198 = *(D_80108198_t*)&D_1F800000[5];
-        D_801081B8 = *var_a0;
-        D_1F800000[25] = (u_long*)0x1000;
-        D_1F800000[21] = 0;
-        D_1F800000[22] = 0;
-        D_1F800000[23] = 0;
-        _xPos = 0xB00;
-        _yPos = 0;
+        {
 
-        vs_mainMenu_initInformationBox();
+            D_80108198 = vs_scratch.viewMatrix;
+            D_801081B8 = vs_scratch.camera;
+            vs_scratch.camera.farClip = ONE;
+            vs_scratch.camera.angles.vx = 0;
+            vs_scratch.camera.angles.vy = 0;
+            vs_scratch.camera.angles.vz = 0;
+            _xPos = ONE / 16 * 11;
+            _yPos = 0;
 
-        _selectedElement = 0;
-        vs_mainMenu_enabledStatPages = 0;
+            vs_mainMenu_initInformationBox();
 
-        _renderSelectedLimbCondition();
+            _selectedElement = 0;
+            vs_mainMenu_enabledStatPages = 0;
 
-        *state = 5;
+            _renderSelectedLimbCondition();
+
+            *state = 5;
+        }
         break;
 
     case waitForMenu:
@@ -2792,10 +2781,8 @@ int vs_menu4_exec(u_char* state)
         _renderBasicStats();
         vs_battle_setProjectionDistance(D_80108188);
 
-        new_var2 = 13;
-        var_a0 = (D_801081B8_t*)&D_1F800000[new_var2];
-        *(D_80108198_t*)&D_1F800000[5] = D_80108198;
-        *var_a0 = D_801081B8;
+        vs_scratch.viewMatrix = D_80108198;
+        vs_scratch.camera = D_801081B8;
 
         func_8008A4DC(1);
         vs_mainMenu_setMenuCommand(menuActionNone);

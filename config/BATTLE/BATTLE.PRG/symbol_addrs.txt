@@ -1,3 +1,4 @@
+vs_scratch = 0x1F800000; // absolute:True size:0x64
 _insertActor = 0x8006A11C; // allow_duplicated:True
 _removeActor = 0x8006A1C4;
 _removeActorAtIndex = 0x8006A228;
@@ -766,7 +767,7 @@ func_800CACD0 = 0x800CACD0; // type:func
 vs_battle_isSpellClassUnlocked = 0x800CAEAC; // type:func
 _breakArtsUnlocked = 0x800CAF40; // type:func
 vs_battle_chainAbilitiesUnlocked = 0x800CAFB4;
-_validateShortcutSelection = 0x800CB030; // type:func
+vs_battle_validateShortcutSelection = 0x800CB030; // type:func
 func_800CB114 = 0x800CB114; // type:func
 func_800CB158 = 0x800CB158; // type:func
 func_800CB18C = 0x800CB18C; // type:func

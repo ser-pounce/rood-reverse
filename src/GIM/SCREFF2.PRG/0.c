@@ -5,8 +5,6 @@
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include <libgte.h>
 
-extern void* D_1F800000[];
-
 void func_800F9800(int arg0)
 {
     D_800EB9B4->unk2 = arg0;
@@ -31,7 +29,7 @@ void func_800F986C(void)
     u_long* temp_s4;
     u_long* var_t2;
 
-    temp_s4 = D_1F800000[1];
+    temp_s4 = vs_scratch.unk4;
 
     for (y = 192; y >= 0; y -= 32) {
         for (var_s2 = 0x100; var_s2 >= 0; var_s2 -= 64) {
@@ -89,7 +87,7 @@ void func_800F986C(void)
     }
 
     var_s0 = D_800EB9B4->unk2 - 3;
-    var_t2 = D_1F800000[0];
+    var_t2 = vs_scratch.unk0;
     var_t2[0] = ((temp_s4[var_s0] & 0xFFFFFF) | 0x07000000);
     var_t2[1] = 0xE30402C0;
     var_t2[2] = 0xE4077FFF;
@@ -110,7 +108,7 @@ void func_800F986C(void)
     var_t2[4] = 0xE6000000;
 
     *temp_s4 = ((u_long)var_t2 << 8) >> 8;
-    D_1F800000[0] = var_t2 + 5;
+    vs_scratch.unk0 = var_t2 + 5;
 }
 
 void func_800F9BC0(short arg0, short arg1)
@@ -160,8 +158,8 @@ void func_800F9FB8(void)
     int i;
     void** temp_s4;
 
-    temp_s4 = D_1F800000[2];
-    var_s2 = func_800F9EBC(0xE00140, 6, D_1F800000[0], temp_s4);
+    temp_s4 = vs_scratch.unk8;
+    var_s2 = func_800F9EBC(0xE00140, 6, vs_scratch.unk0, temp_s4);
     var_s2 = func_800F9EBC(0xE00000, 0x16, var_s2, temp_s4);
     var_s2 = func_800F9EBC(0, 0x26, var_s2, temp_s4);
     var_s2 = func_800F9EBC(0x140, 0x36, var_s2, temp_s4);
@@ -180,5 +178,5 @@ void func_800F9FB8(void)
         *temp_s4 = (void*)(((u_long)var_s2 << 8) >> 8);
         var_s2 += 10;
     }
-    D_1F800000[0] = var_s2;
+    vs_scratch.unk0 = var_s2;
 }

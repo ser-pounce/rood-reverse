@@ -3,8 +3,8 @@ $(BUILD)/data/SLUS_010.40: LDLIBS += $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE
 $(BUILD)/data/SLUS_010.40: LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000 \
-	--defsym=g_pActiveMusicConfig2=0x80037820 \
-	--defsym=D_1F800014_mat=0x1F800014
+	--defsym=g_pActiveMusicConfig2=0x80037820\
+	--defsym=vs_scratch=0x1F800000
 
 $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
 	--retain-symbols-file=config/SLUS_010.40/exports.txt

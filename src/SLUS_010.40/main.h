@@ -525,14 +525,17 @@ void func_8004644C(int arg0, int* arg1, int arg2);
 void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4);
 void vs_main_setMonoSound(int);
 int func_80046634(void);
-// BUG: Function seems to be called with 3 and 4 parameters
-// but always reads 4th
-void vs_main_loadClutTransition();
+// Parameters left undeclared due to misuse in unused func_8007B378
+void vs_main_loadClutTransition(
+    /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
 void vs_main_transformClutSlot(int, int, int, short, int, int);
 void func_800472D0(int arg0, D_8005DC6C_t* arg1);
 void vs_main_loadSoundFile(int);
 void func_800478E0(int, int, int, int, int);
 void func_80047FC0(int, int, int, int, int, int);
+void func_80047FFC(void);
+void func_800483FC(void);
+void func_800481C0(void);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);

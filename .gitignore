@@ -1,6 +1,4 @@
 **/__pycache__
-/.claude
-/.direnv
 /.vscode
 /build
 /config/*.xml

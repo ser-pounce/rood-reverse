@@ -34,9 +34,11 @@ typedef struct {
     /* 0xC */ int unkC;
 } func_800D5780_t;
 
-void func_800D5700(func_800D5780_t*);
-void func_800D5738(func_800D5780_t*);
-int func_800D12D8(int);
+typedef struct {
+    u_short unk0;
+    u_char unk2;
+    u_char unk3;
+} func_800D6894_t;
 
 typedef struct {
     u_short unk0;
@@ -268,6 +270,7 @@ void func_800D1104(int);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
 void func_800D1B18(int*);
+int func_800D12D8(int);
 void func_800D2560(void);
 void func_800D268C(void);
 void func_800D2698(int);
@@ -279,6 +282,13 @@ u_char func_800D5170(D_800F53B8_t*);
 u_short func_800D5198(D_800F53B8_t*);
 int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
+void func_800D5700(func_800D5780_t*);
+void func_800D5738(func_800D5780_t*);
+void func_800D6448(D_800F53B8_t*, int, int);
+void func_800D65D8(D_800F53B8_t*, int);
+void func_800D6628(D_800F53B8_t*, int);
+void func_800D66FC(D_800F53B8_t*, int, int);
+void func_800D67C4(D_800F53B8_t*, int);
 void func_800D6AEC(D_800F53B8_t*, u_short);
 void func_800D7890(int);
 
@@ -3840,7 +3850,85 @@ void func_800D6860(D_800F53B8_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6894);
+int func_800D6894(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    func_800D6894_t* temp_a2 = (func_800D6894_t*)(arg1->unk0 - (-arg1->unk6));
+
+    if ((temp_a2->unk0 & 0x1FF) == arg0->unkD1C.unk30->unk2) {
+        u_char temp_a1_2 = temp_a2->unk2;
+        u_char temp_a2_2 = temp_a2->unk3;
+
+        switch (temp_a2->unk0 >> 9) {
+        case 0:
+            func_800D6388(arg0);
+            break;
+
+        case 1:
+            func_800D63D0(arg0);
+            break;
+
+        case 2:
+            func_800D6418(arg0);
+            break;
+
+        case 3:
+            func_800D6448(arg0, temp_a1_2, temp_a2_2);
+            break;
+
+        case 4:
+            func_800D64E4();
+            break;
+
+        case 5:
+            func_800D6508((func_800D6508_t*)arg0, temp_a1_2);
+            break;
+
+        case 6:
+            func_800D6538(arg0);
+            break;
+
+        case 7:
+            func_800D6554();
+            break;
+
+        case 8:
+            func_800D6574(arg0);
+            break;
+
+        case 9:
+            func_800D65A8((func_800D6508_t*)arg0, temp_a1_2);
+            break;
+
+        case 10:
+            func_800D65D8(arg0, temp_a1_2);
+            break;
+
+        case 11:
+            func_800D6628(arg0, temp_a1_2);
+            break;
+
+        case 12:
+            func_800D66CC(arg0);
+            break;
+
+        case 13:
+            func_800D66FC(arg0, temp_a1_2, temp_a2_2);
+            break;
+
+        case 14:
+            func_800D67C4(arg0, temp_a1_2);
+            break;
+
+        case 15:
+            func_800D6860(arg0);
+            break;
+        }
+
+        return func_800D5780(arg1);
+    }
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6A18);
 

@@ -876,8 +876,7 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
+    short unk2;
     int unk4;
 } D_800F53B8_t4;
 

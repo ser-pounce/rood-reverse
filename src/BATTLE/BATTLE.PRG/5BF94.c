@@ -3807,19 +3807,16 @@ void func_800D65A8(func_800D6508_t* arg0, char arg1)
     arg0->unk22_0 = 0;
 }
 
-void func_800D65D8(int* arg0, int arg1)
+void func_800D65D8(D_800F53B8_t* arg0, u_char arg1)
 {
-    int var_a1 = 1;
-    int var_a2 = arg1 & 0xFF;
 
-    if ((arg0[0x34A] & 0xFFFF) == 4) {
-        if (var_a2 != 0) {
-            return func_8009F898(arg0[0x34B] & 0xFF, var_a1, var_a2);
+    if (arg0->unkD1C.unkC.unk0 == 4) {
+        if (arg1 != 0) {
+            func_8009F898((u_char)arg0->unkD1C.unkC.unk4.unk0, 1, arg1);
+
         } else {
-            var_a1 = 0;
-            var_a2 = 0;
+            func_8009F898((u_char)arg0->unkD1C.unkC.unk4.unk0, 0, 0);
         }
-        func_8009F898(arg0[0x34B] & 0xFF, var_a1, var_a2);
     }
 }
 

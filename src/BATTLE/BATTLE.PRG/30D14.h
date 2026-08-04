@@ -50,6 +50,7 @@ void func_8009EE9C(int, SVECTOR*, int);
 void func_8009EFEC(int, SVECTOR*, int);
 void func_8009F298(int, SVECTOR*, int);
 void func_8009F530(int);
+void func_8009F898(int arg0, int arg1, int arg2);
 int func_8009F8DC(int);
 void func_8009F940(int, int, D_800F4538_unk58_2*, D_800F4538_unk58_2*);
 void func_8009F990(int, D_800F4538_unk64*);

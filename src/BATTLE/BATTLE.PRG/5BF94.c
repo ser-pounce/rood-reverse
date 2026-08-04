@@ -285,7 +285,7 @@ void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
 void func_800D6448(D_800F53B8_t*, int, int);
-void func_800D65D8(D_800F53B8_t*, int);
+void func_800D65D8(D_800F53B8_t*, u_char);
 void func_800D6628(D_800F53B8_t*, int);
 void func_800D66FC(D_800F53B8_t*, int, int);
 void func_800D67C4(D_800F53B8_t*, int);

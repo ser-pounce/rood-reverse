@@ -338,7 +338,7 @@ int vs_menu9_exec(u_char* state)
         if (vs_mainMenu_backgroundFadeStep == 0) {
 
             if (_selectedRow == 2) {
-                vs_battle_menuState.currentState = 9;
+                vs_battle_menuState.currentMenu = 9;
             }
 
             vs_mainMenu_hideMenu = 0;

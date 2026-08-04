@@ -775,7 +775,7 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
     ClearImage(&rects[0], 0, 0, 0);
     ClearImage(&rects[1], 0, 0, 0);
 
-    if (((vs_battle_menuState.currentState & 0x3F) == 7) && (D_800F4EA0 & 0x200)
+    if (((vs_battle_menuState.currentMenu & 0x3F) == 7) && (D_800F4EA0 & 0x200)
         && (vs_main_stateFlags.gameOver == 1)) {
         vs_battle_renderImage(vs_getXY(640, 511), data, vs_getWH(256, 1));
     } else {

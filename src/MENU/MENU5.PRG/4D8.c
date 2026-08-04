@@ -353,7 +353,7 @@ int vs_menu5_exec(u_char* state)
 
     case 10:
         if (D_80108D38 == 2) {
-            vs_battle_menuState.currentState = 6;
+            vs_battle_menuState.currentMenu = 6;
         }
 
         vs_main_freeHeapR(menuBgBackup);

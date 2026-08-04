@@ -3222,7 +3222,7 @@ int vs_menuD_exec(u_char* arg0)
             }
             vs_main_settings.containerEmpty = i == 7;
             vs_mainMenu_clearMenuExcept(0);
-            vs_battle_menuState.currentState = vs_battle_menuState.returnState;
+            vs_battle_menuState.currentMenu = vs_battle_menuState.returnState;
             vs_battle_menuState.returnState = D_80109A74 + 2;
             *arg0 = 0;
             return 0;

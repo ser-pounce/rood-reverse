@@ -193,7 +193,7 @@ int vs_menuE_exec(u_char* state)
             break;
         }
         if (menuResult == 2) {
-            vs_battle_menuState.currentState = 10;
+            vs_battle_menuState.currentMenu = 10;
         }
         vs_mainMenu_hideMenu = 0;
         *state = none;

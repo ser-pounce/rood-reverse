@@ -883,7 +883,7 @@ int vs_menu8_execRename(char* state)
     case 3:
         if (_animStep == 10) {
             *state = 0;
-            vs_battle_menuState.currentState = 13;
+            vs_battle_menuState.currentMenu = 13;
         }
 
         break;

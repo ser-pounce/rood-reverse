@@ -3772,8 +3772,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
             sizeof vs_menu_inventoryStorage->unkFB0);
         _shutdownMemcard();
         *state = 8;
-        vs_battle_menuState.returnState = vs_battle_menuState.currentState;
-        vs_battle_menuState.currentState = 14;
+        vs_battle_menuState.returnState = vs_battle_menuState.currentMenu;
+        vs_battle_menuState.currentMenu = 14;
         break;
     case 8:
         if (vs_mainmenu_ready() != 0) {
@@ -4044,7 +4044,7 @@ int vs_menu7_dataMenu(u_char* state)
         }
         _shutdownMemcard();
         if (*state == 14) {
-            vs_battle_menuState.currentState = 7;
+            vs_battle_menuState.currentMenu = 7;
         }
         *state = none;
         return 1;

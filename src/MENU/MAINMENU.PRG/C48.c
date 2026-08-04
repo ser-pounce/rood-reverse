@@ -315,8 +315,8 @@ static int _quitDelay(void)
 
 static int func_800FAA5C(int arg0)
 {
-    if (arg0 & 0x40) {
-        vs_battle_menuState.currentState = 0;
+    if (arg0 & menuStateOpenedFromMainMenu) {
+        vs_battle_menuState.currentMenu = 0;
 
         func_800C930C(1);
 
@@ -327,7 +327,7 @@ static int func_800FAA5C(int arg0)
         func_8007E0A8(26, 3, 6);
     }
 
-    vs_battle_menuState.currentState = 127;
+    vs_battle_menuState.currentMenu = 0x7F;
     return 1;
 }
 
@@ -462,17 +462,17 @@ void vs_mainMenu_exec(int arg0)
 
         if (state != 0) {
             if (state > 0) {
-                state |= 0x40;
+                state |= menuStateOpenedFromMainMenu;
             } else {
-                state = 31;
+                state = menuStateNoneClosing;
                 vs_mainMenu_setMenuCommand(menuActionNone);
             }
 
-            menuState->currentState = state;
+            menuState->currentMenu = state;
         }
     }
 
-    if ((submenuReturn == 0) || (func_800FAA5C(menuState->currentState) == 0)) {
+    if ((submenuReturn == 0) || (func_800FAA5C(menuState->currentMenu) == 0)) {
         vs_mainMenu_renderScreen();
     }
 }
@@ -655,7 +655,7 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
             D_800F4E98.unk2 = 8;
         }
 
-        vs_battle_menuState.currentState = 0x3F;
+        vs_battle_menuState.currentMenu = menuStateNoneClosed;
         D_800F4E98.unk0 = 2;
         return;
     }

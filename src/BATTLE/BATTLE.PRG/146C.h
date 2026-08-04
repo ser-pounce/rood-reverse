@@ -684,8 +684,8 @@ typedef struct {
     _zndEnemy* zndEnemies;
     vs_main_CdFile* zudFiles;
     int unk14;
-    int unk18;
-    int unk1C;
+    vs_main_CdQueueSlot* unk18;
+    void* unk1C;
     vs_main_CdQueueSlot* zndCdFile;
     void* zndData;
     int musicId;
@@ -876,8 +876,7 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
+    short unk2;
     int unk4;
 } D_800F53B8_t4;
 

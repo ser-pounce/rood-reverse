@@ -1,8 +1,8 @@
 DISKLBA        ?= $(BUILD)/config/$(DISKCODE)_LBA.txt
-PSXISO         := tools/mkpsxiso
-PSXISOBUILD    := $(PSXISO)/build
-DUMPSXISO      ?= $(PSXISOBUILD)/Release/dumpsxiso
-MKPSXISO       ?= $(PSXISOBUILD)/Release/mkpsxiso
+PSXISO_VERSION ?= 2.30
+PSXISO         ?= tools/mkpsxiso/
+DUMPSXISO      ?= $(PSXISO)dumpsxiso
+MKPSXISO       ?= $(PSXISO)mkpsxiso
 DUMPSXISOFLAGS ?= -x data -s $(DISKCONFIG)
 MKPSXISOFLAGS  ?= -q -lba -noisogen
 
@@ -22,11 +22,11 @@ $(BUILD)/src/include/lbas.h: $(DISKLBA) | $$(@D)/
 	$(ECHO) Generating $@
 	$(VPYTHON) tools/etc/make_lba_import.py $< $@
 
-$(DUMPSXISO):
-	$(ECHO) Building mkpsxiso
-	$(CMAKE) -S $(PSXISO) -B $(PSXISOBUILD) --preset release --log-level=ERROR \
-		$(if $(DEBUG),,> /dev/null)
-	$(CMAKE) --build $(PSXISOBUILD) -j --config Release $(if $(DEBUG),,> /dev/null)
+$(DUMPSXISO): | $$(@D)/
+	$(ECHO) Downloading mkpsxiso
+	$(WGET) $(WGETFLAGS) https://github.com/Lameguy64/mkpsxiso/releases/download/v$(PSXISO_VERSION)/mkpsxiso-$(PSXISO_VERSION)-Linux.zip -P $(@D)
+	$(UNZIP) $(UNZIPFLAGS) $(@D)/mkpsxiso-$(PSXISO_VERSION)-Linux.zip -d $(@D)
+	$(RM) $(RMFLAGS) $(@D)/mkpsxiso-$(PSXISO_VERSION)-Linux.zip
 
 $(DISKIMAGE):
 	$(error $@ not found)

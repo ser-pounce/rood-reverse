@@ -81,7 +81,6 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 | Package                 | Minimum Version |
 |-------------------------|----------------|
 | clang-format            | 18.1.3         |
-| cmake                   | 3.28.3         |
 | g++                     | 13.3.0         |
 | gcc-mipsel-linux-gnu    | 12.4.0         |
 | make                    | 4.3            |

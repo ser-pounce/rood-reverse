@@ -8,11 +8,13 @@ MV       ?= mv
 SED      ?= sed
 TOUCH    ?= touch
 TRUNCATE ?= truncate
+WGET     ?= wget
 
 COMMANDFLAGS ?= -v
 DIFFFLAGS    ?= -s
 MKDIRFLAGS   ?= -p
 RMFLAGS      ?= -Rf
+WGETFLAGS    ?= $(if $(DEBUG),,-q)
 
 SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) $(RUSTUP)
 

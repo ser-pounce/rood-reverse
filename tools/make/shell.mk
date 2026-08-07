@@ -6,15 +6,21 @@ FIND     ?= find
 MKDIR    ?= mkdir
 MV       ?= mv
 SED      ?= sed
+TAR      ?= tar
 TOUCH    ?= touch
 TRUNCATE ?= truncate
+UNZIP    ?= unzip
+WGET     ?= wget
 
 COMMANDFLAGS ?= -v
 DIFFFLAGS    ?= -s
 MKDIRFLAGS   ?= -p
 RMFLAGS      ?= -Rf
+TARFLAGS     ?= -xzf
+UNZIPFLAGS   ?= -jq
+WGETFLAGS    ?= $(if $(DEBUG),,-q)
 
-SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) $(RUSTUP)
+SYSDEPS       = $(CXX) $(PYTHON) $(CPP) $(FORMAT)
 
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m
@@ -25,7 +31,7 @@ SHELL_RESET  := \033[0m
 .PHONY: check clean-all confirm-reset
 
 tools/.sysdeps:
-	$(ECHO) "$(SHELL_CYAN)Welcome to Rood Reverse!\\nChecking prerequisites and setting up remaining tools, this could take a while.\\n$(SHELL_RESET)"
+	$(ECHO) "$(SHELL_CYAN)Welcome to Rood Reverse!\\nChecking prerequisites and setting up remaining tools, this could take a minute.\\n$(SHELL_RESET)"
 	missing=0
 	for cmd in $(SYSDEPS); do
 		command -v "$$cmd" >/dev/null 2>&1 || { echo "Missing: $$cmd"; missing=1; }

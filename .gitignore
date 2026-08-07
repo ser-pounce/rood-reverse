@@ -11,3 +11,5 @@
 /nonmatchings/
 /tools/.sysdeps
 /tools/python
+/tools/old-gcc
+/tools/mkpsxiso

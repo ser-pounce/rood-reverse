@@ -1,6 +1,6 @@
 CPP       = $(ARCH)cpp
 CC1VER   ?= 2.7.2-psx
-CC1      ?= tools/old-gcc/build-gcc-$(CC1VER)/cc1
+CC1      ?= tools/old-gcc/$(CC1VER)/cc1
 MAS       = $(VPYTHON) tools/maspsx/maspsx.py
 VSSTRING  = $(VPYTHON) tools/etc/vsStringTransformer.py
 

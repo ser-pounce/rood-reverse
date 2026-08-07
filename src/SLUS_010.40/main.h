@@ -540,7 +540,7 @@ void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
 void vs_main_nop10(int, int);
-void vs_main_loadClut(u_short const* img, u_int y, u_int x, u_int w);
+void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count);
 void func_80048EC4(void);
 void vs_main_commitClut(void);
 void vs_main_setClutState(int arg0);

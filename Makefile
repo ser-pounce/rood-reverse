@@ -3,10 +3,6 @@ OBJCOPY  := $(ARCH)objcopy
 SIZE     := $(ARCH)size
 PYTHON   := python3
 GIT      := git
-CMAKE    := cmake
-DOCKER   := docker
-CARGO    := cargo
-RUSTUP   := rustup
 
 OBJCOPYFLAGS := -I binary -O elf32-tradlittlemips
 

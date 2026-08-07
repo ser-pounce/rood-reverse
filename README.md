@@ -81,16 +81,11 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 | Package                 | Minimum Version |
 |-------------------------|----------------|
 | clang-format            | 18.1.3         |
-| cmake                   | 3.28.3         |
-| docker-buildx           | 29.1.3         |
 | g++                     | 13.3.0         |
 | gcc-mipsel-linux-gnu    | 12.4.0         |
 | make                    | 4.3            |
 | python3                 | 3.12.3         |
 | python3-venv            | 3.12.3         |
-| rustup                  | 1.26.0         |
-- If you do not use your own docker configuration, set docker permissions with `sudo usermod -aG docker $USER`, then log out and back in again
-- Run `rustup default stable` if you do not already have a local rust environment set up
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 

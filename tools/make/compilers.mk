@@ -1,10 +1,11 @@
 OLDGCC         ?= tools/old-gcc
-COMPILER_PATHS ?= $(COMPILERS:%=$(OLDGCC)/build-gcc-%/cc1)
+OLDGCC_VERSION ?= 0.17
+COMPILER_PATHS ?= $(COMPILERS:%=$(OLDGCC)/%/cc1)
 
 BUILDDEPS += $(COMPILER_PATHS)
 
-$(COMPILER_PATHS): $(OLDGCC)/build-gcc-%/cc1:
-	$(ECHO) Building GCC $*
-	$(DOCKER) build -f $(OLDGCC)/gcc-$*.Dockerfile --target export \
-		--output $(OLDGCC)/build-gcc-$* $(OLDGCC)/ $(if $(DEBUG),,2> /dev/null)
-	$(TOUCH) $@
+$(COMPILER_PATHS): tools/old-gcc/%/cc1: | $$(@D)/
+	$(ECHO) Downloading old-gcc $*
+	$(WGET) $(WGETFLAGS) https://github.com/decompals/old-gcc/releases/download/$(OLDGCC_VERSION)/gcc-$*.tar.gz -P $(@D)
+	$(TAR) $(TARFLAGS) $(@D)/gcc-$*.tar.gz -C $(@D)
+	$(RM) $(RMFLAGS) $(@D)/gcc-$*.tar.gz

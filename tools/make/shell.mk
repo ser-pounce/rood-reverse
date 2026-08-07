@@ -20,7 +20,7 @@ TARFLAGS     ?= -xzf
 UNZIPFLAGS   ?= -jq
 WGETFLAGS    ?= $(if $(DEBUG),,-q)
 
-SYSDEPS       = $(CMAKE) $(CXX) $(PYTHON) $(CPP) $(DOCKER) $(FORMAT) $(RUSTUP)
+SYSDEPS       = $(CXX) $(PYTHON) $(CPP) $(FORMAT)
 
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m

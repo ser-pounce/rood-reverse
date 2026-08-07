@@ -397,8 +397,8 @@ typedef struct {
     u_char unk6C[0x34];
     u_char unkBoneInfo[4][8];
     u_short palettes[7][64];
-    u_char unk440[0x40];
-    u_char unk480[0x12C];
+    u_short unk440[96];
+    u_short unk500[86];
     u_int unk5AC_0 : 4;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;

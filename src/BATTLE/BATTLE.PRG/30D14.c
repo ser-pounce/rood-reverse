@@ -88,6 +88,7 @@ extern u_char D_800E8FA8[];
 extern void* D_800E8FB4[];
 extern char D_800E8FC0;
 extern int D_800E8FC4;
+extern u_char D_800E8FC8[];
 extern u_char D_800E9090[];
 extern u_char D_800E909C[];
 extern u_char D_800E919C[];
@@ -758,7 +759,32 @@ fixPrims:
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
+void func_8009A98C(int index, int material)
+{
+    int var_s2;
+    int var_s3;
+    u_char new_var;
+    vs_battle_wepModels_t* temp_s1 = vs_battle_wepModels[index];
+
+    do {
+    } while (0);
+
+    var_s3 = 32;
+    temp_s1->unk9_4 = material;
+    new_var = D_800E8FC8[material];
+
+    if (temp_s1->isDoubleClut) {
+        var_s2 = 64;
+    } else {
+        var_s3 = 16;
+        var_s2 = 32;
+    }
+
+    vs_main_memcpy(&temp_s1->unk440[var_s3], &temp_s1->palettes[new_var], var_s2 * 2);
+    vs_main_memcpy(&temp_s1->unk500, temp_s1->unk440, 0xC0);
+    vs_main_loadClut(temp_s1->unk500, (temp_s1->unk10 >> 1) + 4,
+        ((temp_s1->unk10 & 1) * 0x30) + 0xA0, var_s3 + var_s2);
+}
 
 int func_8009AA84(int index)
 {

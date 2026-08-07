@@ -79,13 +79,16 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 - Make sure the following packages are installed, older versions may also work but this is not tested. This configuration works as-is on Ubuntu 24.04 on WSL; depending on your distro you may need additional packages.
 
 | Package                 | Minimum Version |
-|-------------------------|----------------|
-| clang-format            | 18.1.3         |
-| g++                     | 13.3.0         |
-| gcc-mipsel-linux-gnu    | 12.4.0         |
-| make                    | 4.3            |
-| python3                 | 3.12.3         |
-| python3-venv            | 3.12.3         |
+|-------------------------|-----------------|
+| clang-format            | 18.1.3          |
+| g++                     | 13.3.0          |
+| gcc-mipsel-linux-gnu    | 12.4.0          |
+| make                    | 4.4             |
+| python3                 | 3.12.3          |
+| python3-venv            | 3.12.3          |
+| unzip                   | 6.00            |
+| wget                    | 1.21.4          |
+Take a look at `./Dockerfile` for a minimal setup on Ubuntu
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 

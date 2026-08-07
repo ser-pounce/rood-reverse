@@ -37,7 +37,7 @@ SHELL := bash
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean commit-check remake
+.PHONY: all clean commit-check remake docker-build docker-push
 
 SKIPSPLAT += commit-check clean remake clean-all
 
@@ -54,6 +54,12 @@ clean:
 
 remake: clean
 	$(MAKE)
+
+docker-build:
+	docker build -t ghcr.io/ser-pounce/rood-reverse:main .
+
+docker-push: docker-build
+	docker push ghcr.io/ser-pounce/rood-reverse:main
 
 include $(INCMAKEFILES)
 

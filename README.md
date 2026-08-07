@@ -88,6 +88,7 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 | python3-venv            | 3.12.3          |
 | unzip                   | 6.00            |
 | wget                    | 1.21.4          |
+
 Take a look at `./Dockerfile` for a minimal setup on Ubuntu
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build

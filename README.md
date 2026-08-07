@@ -64,6 +64,7 @@ Much of the menu code has been refactored and is readable, and the menu executab
 Due to the presence of a large number of empty sectors at the start of each directory on the disk, it should also be possible to rebuild the disk without affecting sector-based data loading in `BATTLE.PRG`, as long as the number of dummy sectors is adjusted accordingly.
 
 ## (Naive) Quickstart
+0. n.b.: You may want to consider limiting the jobs spawned by make to something sensible like `-j8`.
 1. Fork the project
 2. Install system dependencies and copy disk image (see "Setup" below)
 3. Run `make -j` to perform an initial split & build

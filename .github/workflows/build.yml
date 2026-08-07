@@ -30,7 +30,7 @@ jobs:
 
       - name: Build, verify, and detect missing formatting
         run: |
-          make commit-check -j
+          make commit-check -j8
           git diff --exit-code
 
       - name: Upload progress

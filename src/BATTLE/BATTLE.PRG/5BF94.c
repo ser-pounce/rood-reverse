@@ -298,8 +298,18 @@ void func_800D65D8(D_800F53B8_t*, u_char);
 void func_800D6628(D_800F53B8_t*, int);
 void func_800D66FC(D_800F53B8_t*, int, int);
 void func_800D67C4(D_800F53B8_t*, int);
-void func_800D6AEC(D_800F53B8_t*, u_short);
+void func_800D6AEC(D_800F53B8_t*, int);
 void func_800D7890(int);
+int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
+int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
+int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
+int func_800D5D74(D_800F53B8_t*, func_800D5780_t*);
+int func_800D5E00(D_800F53B8_t*, func_800D5780_t*);
+int func_800D5F8C(D_800F53B8_t*, func_800D5780_t*);
+int func_800D6048(D_800F53B8_t*, func_800D5780_t*, int);
+int func_800D61AC(D_800F53B8_t*, func_800D5780_t*);
+int func_800D6298(D_800F53B8_t*, func_800D5780_t*);
+int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
@@ -3951,7 +3961,64 @@ int func_800D6894(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6A18);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6AEC);
+void func_800D6AEC(D_800F53B8_t* arg0, int arg1)
+{
+    D_800F53B8_t4* temp_a0;
+    func_800D5780_t* temp_a1;
+    int var_s1;
+
+    for (var_s1 = 0; var_s1 < arg0->unkD1C.unk30->unk0; var_s1++) {
+        if ((arg0->unkD1C.unk30->unk4 >> var_s1) & 1) {
+            int temp;
+            func_800D5780_t* temp_a1 =
+                (func_800D5780_t*)&arg0->unkD1C.unk30[var_s1 * 2 + 1];
+            switch (temp_a1->unk4) {
+            case 1:
+                temp = func_800D57FC(arg0, temp_a1);
+                break;
+            case 2:
+                temp = func_800D5904(arg0, temp_a1);
+                break;
+            case 3:
+                temp = func_800D5A98(arg0, temp_a1, arg1);
+                break;
+            case 4:
+                temp = func_800D5D74(arg0, temp_a1);
+                break;
+            case 5:
+                temp = func_800D5E00(arg0, temp_a1);
+                break;
+            case 6:
+                temp = func_800D5F8C(arg0, temp_a1);
+                break;
+            case 7:
+                temp = func_800D6048(arg0, temp_a1, arg0->unkD1C.unk30->unk1 & 2);
+                break;
+            case 8:
+                temp = func_800D61AC(arg0, temp_a1);
+                break;
+            case 9:
+                temp = func_800D6298(arg0, temp_a1);
+                break;
+            case 10:
+                temp = func_800D6310(arg0, temp_a1);
+                break;
+            case 12:
+                temp = func_800D6894(arg0, temp_a1);
+                break;
+            case 13:
+                temp = func_800D6A18(arg0, temp_a1);
+                break;
+            }
+            if (temp == 0) {
+                arg0->unkD1C.unk30->unk4 &= ~(1 << var_s1);
+            }
+        }
+    }
+    if (!(arg0->unkD1C.unk30->unk1 & 1)) {
+        arg0->unkD1C.unk30->unk2++;
+    }
+}
 
 void func_800D6CCC(int* arg0)
 {

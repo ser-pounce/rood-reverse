@@ -67,7 +67,7 @@ void func_800F9A78(int arg0)
             sp10.unk4 = temp_v0;
             sp10.actorId = 1;
             sp10.unk11 = temp_s0->unkC;
-            sp10.material = temp_s0->unk9_4;
+            sp10.material = temp_s0->material;
             vs_battle_populateDataSlot(&sp10);
         }
     }

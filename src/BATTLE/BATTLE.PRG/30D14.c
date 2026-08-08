@@ -50,7 +50,7 @@ int _parseShp(vs_battle_objectData*);
 int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int _loadEtm(vs_battle_objectData*);
-void func_8009A98C(int index, int material);
+void _loadMaterialPalette(int index, int material);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -88,6 +88,7 @@ extern u_char D_800E8FA8[];
 extern void* D_800E8FB4[];
 extern char D_800E8FC0;
 extern int D_800E8FC4;
+extern u_char _weaponMaterialPaletteMap[];
 extern u_char D_800E9090[];
 extern u_char D_800E909C[];
 extern u_char D_800E919C[];
@@ -572,11 +573,11 @@ int _parseWep(vs_battle_objectData* objectData)
                 buf->polygonsOffset += (u_long)dst;
             }
 
-            model->unk10 = objectData->unk11 + (objectData->actorId * 2) + 0x10;
+            model->clutSlotOffset = objectData->unk11 + (objectData->actorId << 1) + 16;
 
-            func_8009A98C(objectData->index, objectData->material);
+            _loadMaterialPalette(objectData->index, objectData->material);
 
-            model->unk11 = 0x40;
+            model->unk11 = 64;
             model->unk8_4 = 0;
             model->unk8_6 = 0;
             model->unk13 = 0;
@@ -685,7 +686,7 @@ int _parseWep(vs_battle_objectData* objectData)
     }
 
     model->texSlot = i;
-    model->unk10 = objectData->unk11 + (objectData->actorId * 2) + 16;
+    model->clutSlotOffset = objectData->unk11 + (objectData->actorId << 1) + 16;
 
     if (size == 96) {
         w = 32;
@@ -744,9 +745,9 @@ fixPrims:
     }
 
     memcpy(model->unkBoneInfo, data, model->nBones * 8);
-    func_8009A98C(objectData->index, objectData->material);
+    _loadMaterialPalette(objectData->index, objectData->material);
 
-    model->unk11 = 0x40;
+    model->unk11 = 64;
     model->unk8_4 = 0;
     model->unk8_6 = 0;
     model->unk13 = 0;
@@ -758,7 +759,32 @@ fixPrims:
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30D14", func_8009A98C);
+void _loadMaterialPalette(int index, int material)
+{
+    int count;
+    int offset;
+    int palette;
+    vs_battle_wepModels_t* model = vs_battle_wepModels[index];
+
+    do {
+    } while (0);
+
+    offset = 32;
+    model->material = material;
+    palette = _weaponMaterialPaletteMap[material];
+
+    if (model->isDoubleClut) {
+        count = 64;
+    } else {
+        offset = 16;
+        count = 32;
+    }
+
+    vs_main_memcpy(&model->unk440[offset], &model->palettes[palette], count * 2);
+    vs_main_memcpy(&model->unk500, model->unk440, sizeof model->unk500);
+    vs_main_loadClut(model->unk500, (model->clutSlotOffset >> 1) + 4,
+        ((model->clutSlotOffset & 1) * 48) + 160, offset + count);
+}
 
 int func_8009AA84(int index)
 {
@@ -776,13 +802,13 @@ int func_8009AA84(int index)
 
         if (index >= 4) {
             int var_v0;
-            vs_battle_objectData* a3 = &objData;
+            vs_battle_objectData* obj = &objData;
 
             for (i = 0; i < 20; ++i) {
-                if ((i != a3->index) && ((vs_battle_wepModels[i] != NULL))
-                    && ((vs_battle_wepModels[i]->actorId) || (a3->index < 4))
-                    && (vs_battle_wepModels[i]->modelId == a3->modelId)) {
-                    a3->dataAddr = i;
+                if ((i != obj->index) && ((vs_battle_wepModels[i] != NULL))
+                    && ((vs_battle_wepModels[i]->actorId) || (obj->index < 4))
+                    && (vs_battle_wepModels[i]->modelId == obj->modelId)) {
+                    obj->dataAddr = i;
                     var_v0 = 1;
                     goto exit;
                 }

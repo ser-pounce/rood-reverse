@@ -15,7 +15,7 @@
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64",
             "compilerArgs": [
-                "-nostdinc "
+                "-nostdinc"
             ]
         }
     ],

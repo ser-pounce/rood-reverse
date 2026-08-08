@@ -64,6 +64,7 @@ Much of the menu code has been refactored and is readable, and the menu executab
 Due to the presence of a large number of empty sectors at the start of each directory on the disk, it should also be possible to rebuild the disk without affecting sector-based data loading in `BATTLE.PRG`, as long as the number of dummy sectors is adjusted accordingly.
 
 ## (Naive) Quickstart
+0. n.b.: You may want to consider limiting the jobs spawned by make to something sensible like `-j8`.
 1. Fork the project
 2. Install system dependencies and copy disk image (see "Setup" below)
 3. Run `make -j` to perform an initial split & build
@@ -79,13 +80,17 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 - Make sure the following packages are installed, older versions may also work but this is not tested. This configuration works as-is on Ubuntu 24.04 on WSL; depending on your distro you may need additional packages.
 
 | Package                 | Minimum Version |
-|-------------------------|----------------|
-| clang-format            | 18.1.3         |
-| g++                     | 13.3.0         |
-| gcc-mipsel-linux-gnu    | 12.4.0         |
-| make                    | 4.3            |
-| python3                 | 3.12.3         |
-| python3-venv            | 3.12.3         |
+|-------------------------|-----------------|
+| clang-format            | 18.1.3          |
+| g++                     | 13.3.0          |
+| gcc-mipsel-linux-gnu    | 12.4.0          |
+| make                    | 4.4             |
+| python3                 | 3.12.3          |
+| python3-venv            | 3.12.3          |
+| unzip                   | 6.00            |
+| wget                    | 1.21.4          |
+
+Take a look at `./Dockerfile` for a minimal setup on Ubuntu
 - Dump your original disk to `disks/SLUS-01040.bin`
 - Run `make -j` to finish installation and perform an initial build
 

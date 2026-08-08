@@ -8306,7 +8306,91 @@ void func_80080A9C(
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080C9C);
+void func_80080C9C(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2, int arg3, int arg4)
+{
+    int sp10[8];
+    int temp_s2;
+    int i;
+    vs_battle_uiEquipment* equipment;
+    int var_a0 = 0;
+
+    switch (arg0->unk2_4) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        if ((vs_battle_actors[arg1->unk957]->weaponDrawn & 1)
+            && (arg1->shield.base.id != 0)) {
+            sp10[var_a0++] = 0xFF;
+        }
+
+        for (i = 0; i < 6; ++i) {
+            if ((arg1->limbs[i].maxHp != 0) && (arg1->limbs[i].armor.armor.id != 0)) {
+                sp10[var_a0++] = i;
+            }
+        }
+
+        break;
+
+    case 5:
+    case 7:
+    case 14:
+        if (vs_battle_actors[arg1->unk957]->weaponDrawn & 1) {
+            if (arg1->shield.base.id != 0) {
+                sp10[var_a0++] = 0xFF;
+            }
+        }
+
+    case 6:
+    case 8:
+    case 11:
+    case 12:
+        if (arg1->limbs[arg4].maxHp && (arg1->limbs[arg4].armor.armor.id != 0)) {
+            sp10[var_a0++] = arg4;
+        }
+
+        break;
+    }
+
+    if (var_a0 == 0) {
+        return;
+    }
+
+    temp_s2 = sp10[vs_main_getRand(var_a0)];
+
+    if (temp_s2 == 0xFF) {
+        vs_battle_uiEquipment* equipment = &arg1->shield.base;
+
+        if (arg1->shield.base.id != 0) {
+
+            if (arg2 != 0) {
+                func_80080A9C(arg0, equipment, arg2 - 1, 0xF1, arg1->unk957);
+            }
+            if (arg3 != 0) {
+                func_800807E8(arg0, equipment, arg3 - 1, 0xF1, arg1->unk957);
+            }
+        }
+        _calculateShieldClassAffinity(arg1);
+    } else {
+
+        equipment = &arg1->limbs[temp_s2].armor.armor;
+
+        if (equipment->id != 0) {
+            if (arg2 != 0) {
+                do {
+                    func_80080A9C(arg0, equipment, arg2 - 1,
+                        arg1->limbs[temp_s2].nameIndex, arg1->unk957);
+                } while (0);
+            }
+            if (arg3 != 0) {
+                func_800807E8(arg0, equipment, arg3 - 1, arg1->limbs[temp_s2].nameIndex,
+                    arg1->unk957);
+            }
+        }
+
+        _calculateArmorClassAffinity(arg1, temp_s2);
+    }
+}
 
 void func_80080F78(vs_skill_t* skill, vs_battle_actor2* arg1, int arg2, int arg3)
 {

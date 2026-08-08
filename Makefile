@@ -3,10 +3,6 @@ OBJCOPY  := $(ARCH)objcopy
 SIZE     := $(ARCH)size
 PYTHON   := python3
 GIT      := git
-CMAKE    := cmake
-DOCKER   := docker
-CARGO    := cargo
-RUSTUP   := rustup
 
 OBJCOPYFLAGS := -I binary -O elf32-tradlittlemips
 
@@ -37,7 +33,7 @@ SHELL := bash
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean commit-check remake
+.PHONY: all clean commit-check remake docker-build docker-push
 
 SKIPSPLAT += commit-check clean remake clean-all
 
@@ -54,6 +50,12 @@ clean:
 
 remake: clean
 	$(MAKE)
+
+docker-build:
+	docker build -t ghcr.io/ser-pounce/rood-reverse:main .
+
+docker-push: docker-build
+	docker push ghcr.io/ser-pounce/rood-reverse:main
 
 include $(INCMAKEFILES)
 

@@ -1,0 +1,40 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    if: github.repository == 'ser-pounce/rood-reverse'
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ser-pounce/rood-reverse:main
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Initialize
+        run: |
+          mkdir -p disks
+          cp /SLUS-01040.bin disks/SLUS-01040.bin
+          git config --global --add safe.directory '*'
+
+      - name: Build, verify, and detect missing formatting
+        run: |
+          make commit-check -j8
+          git diff --exit-code
+
+      - name: Upload progress
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: SLUS_010.40_report
+          path: progress.json

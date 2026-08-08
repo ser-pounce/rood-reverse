@@ -287,13 +287,15 @@ typedef struct {
 } _mpdRoomSection;
 
 typedef struct {
-    short class[2][8];
-    short affinity[2][8];
+    /* 0x00 */ short class[2][8];
+    /* 0x20 */ short affinity[2][8];
+    /* 0x40 */
 } vs_battle_classAffinityCurrent;
 
 typedef struct {
-    short class[8];
-    u_short affinity[8];
+    /* 0x00 */ short class[8];
+    /* 0x10 */ u_short affinity[8];
+    /* 0x20 */
 } vs_battle_classAffinityBaseline;
 
 typedef struct {
@@ -310,126 +312,132 @@ typedef struct {
 } func_80103080_t;
 
 typedef struct {
-    u_short id;
-    signed char subId;
-    signed char wepId;
-    char category;
-    signed char strength;
-    signed char intelligence;
-    signed char agility;
-    u_short currentDp;
-    u_short maxDp;
-    u_short currentPp;
-    u_short maxPp;
-    char damageType; // 0x10
-    char costType;
-    char cost;
-    char material;
-    char unk14;
-    char gemSlots;
-    char gemEffects;
-    char index;
-    vs_battle_range_t range;
-    signed char types[4];
-    signed char classes[8];
-    signed char affinities[8];
+    /* 0x00 */ u_short id;
+    /* 0x02 */ signed char subId;
+    /* 0x03 */ signed char wepId;
+    /* 0x04 */ char category;
+    /* 0x05 */ signed char strength;
+    /* 0x06 */ signed char intelligence;
+    /* 0x07 */ signed char agility;
+    /* 0x08 */ u_short currentDp;
+    /* 0x0A */ u_short maxDp;
+    /* 0x0C */ u_short currentPp;
+    /* 0x0E */ u_short maxPp;
+    /* 0x10 */ char damageType;
+    /* 0x11 */ char costType;
+    /* 0x12 */ char cost;
+    /* 0x13 */ char material;
+    /* 0x14 */ char unk14;
+    /* 0x15 */ char gemSlots;
+    /* 0x16 */ char gemEffects;
+    /* 0x17 */ char index;
+    /* 0x18 */ vs_battle_range_t range;
+    /* 0x1C */ signed char types[4];
+    /* 0x20 */ signed char classes[8];
+    /* 0x28 */ signed char affinities[8];
+    /* 0x30 */
 } vs_battle_uiEquipment;
 
 typedef struct {
-    char name[24];
-    vs_battle_uiEquipment blade; // 0x18
-    vs_battle_uiEquipment grip; // 0x48
-    vs_battle_uiEquipment gems[3]; // 0x78
-    char wepId;
-    char damageTypeValue;
-    char risk;
-    char unk10B;
-    char dropRate;
-    u_char index;
-    u_char damageType;
-    u_char skillType;
-    u_short currentPp;
-    u_short maxPp;
-    u_short currentDp;
-    u_short maxDp;
-    short currentStr;
-    u_short baseStr;
-    short currentInt;
-    u_short baseInt;
-    short currentAgility;
-    u_short baseAgility;
-    vs_battle_range_t range;
-    vs_battle_classAffinityCurrent classAffinityCurrent;
-    short unk168[8];
-    vs_battle_classAffinityBaseline classAffinityBaseline;
+    /* 0x000 */ char name[24];
+    /* 0x018 */ vs_battle_uiEquipment blade;
+    /* 0x048 */ vs_battle_uiEquipment grip;
+    /* 0x078 */ vs_battle_uiEquipment gems[3];
+    /* 0x108 */ char wepId;
+    /* 0x109 */ char damageTypeValue;
+    /* 0x10A */ char risk;
+    /* 0x10B */ char unk10B;
+    /* 0x10C */ char dropRate;
+    /* 0x10D */ u_char index;
+    /* 0x10E */ u_char damageType;
+    /* 0x10F */ u_char skillType;
+    /* 0x110 */ u_short currentPp;
+    /* 0x112 */ u_short maxPp;
+    /* 0x114 */ u_short currentDp;
+    /* 0x116 */ u_short maxDp;
+    /* 0x118 */ short currentStr;
+    /* 0x11A */ u_short baseStr;
+    /* 0x11C */ short currentInt;
+    /* 0x11E */ u_short baseInt;
+    /* 0x120 */ short currentAgility;
+    /* 0x122 */ u_short baseAgility;
+    /* 0x124 */ vs_battle_range_t range;
+    /* 0x128 */ vs_battle_classAffinityCurrent classAffinityCurrent;
+    /* 0x168 */ short unk168[8];
+    /* 0x178 */ vs_battle_classAffinityBaseline classAffinityBaseline;
+    /* 0x198 */
 } vs_battle_uiWeapon;
 
 typedef struct {
-    int unk0[6];
-    vs_battle_uiEquipment base; // 0x18
-    vs_battle_uiEquipment gems[3]; // 0x48
-    char wepId; // 0xD8
-    char dropRate;
-    u_char index;
-    char unkDB;
-    u_short currentPp;
-    u_short maxPp;
-    u_short currentDp;
-    u_short maxDp;
-    short currentStr;
-    u_short baseStr;
-    short currentInt;
-    u_short baseInt;
-    short currentAgility;
-    u_short baseAgility;
-    char types[4];
-    vs_battle_classAffinityCurrent classAffinityCurrent; // 0xF4
-    short unk134[8];
-    vs_battle_classAffinityBaseline classAffinityBaseline; // 0x144
+    /* 0x000 */ int unk0[6];
+    /* 0x018 */ vs_battle_uiEquipment base;
+    /* 0x048 */ vs_battle_uiEquipment gems[3];
+    /* 0x0D8 */ char wepId;
+    /* 0x0D9 */ char dropRate;
+    /* 0x0DA */ u_char index;
+    /* 0x0DB */ char unkDB;
+    /* 0x0DC */ u_short currentPp;
+    /* 0x0DE */ u_short maxPp;
+    /* 0x0E0 */ u_short currentDp;
+    /* 0x0E2 */ u_short maxDp;
+    /* 0x0E4 */ short currentStr;
+    /* 0x0E6 */ u_short baseStr;
+    /* 0x0E8 */ short currentInt;
+    /* 0x0EA */ u_short baseInt;
+    /* 0x0EC */ short currentAgility;
+    /* 0x0EE */ u_short baseAgility;
+    /* 0x0F0 */ char types[4];
+    /* 0x0F4 */ vs_battle_classAffinityCurrent classAffinityCurrent;
+    /* 0x134 */ short unk134[8];
+    /* 0x144 */ vs_battle_classAffinityBaseline classAffinityBaseline;
+    /* 0x164 */
 } vs_battle_uiShield;
 
 typedef struct {
-    vs_battle_uiEquipment armor;
-    u_short currentDp; // 0x30
-    u_short maxDp;
-    short currentStr;
-    u_short baseStr;
-    short currentInt;
-    u_short baseInt;
-    short currentAgility;
-    u_short baseAgility;
-    u_short types[4];
-    vs_battle_classAffinityCurrent classAffinityCurrent;
-    short unk88[8];
-    char dropRate;
-    char unk99;
-    u_char index;
-    u_char unk9B;
-    vs_battle_classAffinityBaseline classAffinityBaseline;
+    /* 0x00 */ vs_battle_uiEquipment armor;
+    /* 0x30 */ u_short currentDp;
+    /* 0x32 */ u_short maxDp;
+    /* 0x34 */ short currentStr;
+    /* 0x36 */ u_short baseStr;
+    /* 0x38 */ short currentInt;
+    /* 0x3A */ u_short baseInt;
+    /* 0x3C */ short currentAgility;
+    /* 0x3E */ u_short baseAgility;
+    /* 0x40 */ u_short types[4];
+    /* 0x48 */ vs_battle_classAffinityCurrent classAffinityCurrent;
+    /* 0x88 */ short unk88[8];
+    /* 0x98 */ char dropRate;
+    /* 0x99 */ char unk99;
+    /* 0x9A */ u_char index;
+    /* 0x9B */ u_char unk9B;
+    /* 0x9C */ vs_battle_classAffinityBaseline classAffinityBaseline;
+    /* 0xBC */
 } vs_battle_uiArmor;
 
 typedef struct {
-    short hp;
-    short maxHp;
-    signed char agilityDefenseBonus;
-    char unk5;
-    u_char nameIndex;
-    char chainEvasion;
-    short types[4];
-    short affinities[8];
-    vs_battle_uiArmor armor; // 0x18
+    /* 0x00 */ short hp;
+    /* 0x02 */ short maxHp;
+    /* 0x04 */ signed char agilityDefenseBonus;
+    /* 0x05 */ char unk5;
+    /* 0x06 */ u_char nameIndex;
+    /* 0x07 */ char chainEvasion;
+    /* 0x08 */ short types[4];
+    /* 0x10 */ short affinities[8];
+    /* 0x20 */ vs_battle_uiArmor armor;
+    /* 0xDC */
 } vs_battle_uiEquipment_limb;
 
 typedef struct {
-    vs_battle_uiEquipment accessory;
-    short currentStr;
-    short currentInt;
-    short currentAgility;
-    char dropRate;
-    u_char index;
-    u_short types[4];
-    u_short classes[8];
-    u_short affinities[8];
+    /* 0x00 */ vs_battle_uiEquipment accessory;
+    /* 0x30 */ short currentStr;
+    /* 0x32 */ short currentInt;
+    /* 0x34 */ short currentAgility;
+    /* 0x36 */ char dropRate;
+    /* 0x37 */ u_char index;
+    /* 0x38 */ u_short types[4];
+    /* 0x40 */ u_short classes[8];
+    /* 0x50 */ u_short affinities[8];
+    /* 0x60 */
 } vs_battle_uiAccessory;
 
 typedef struct {
@@ -441,6 +449,7 @@ typedef struct {
 typedef struct {
     u_short id;
     char dropRate;
+    char unk3;
 } vs_battle_uiMiscRand;
 
 typedef struct {
@@ -518,51 +527,52 @@ enum vs_battle_statuses {
 };
 
 typedef struct {
-    char name[24];
-    short currentHP;
-    short maxHP;
-    short currentMP;
-    short maxMP;
-    u_short risk;
-    u_short strength;
-    u_short totalStrength;
-    u_short intelligence;
-    u_short totalIntelligence;
-    u_short agility;
-    u_short totalAgility;
-    char unk2E;
-    char unk2F;
-    char unk30;
-    char unk31;
-    char unk32;
-    char unk33;
-    u_int unk34 : 8;
-    u_int unk35 : 8;
-    u_int unk36 : 8;
-    u_int enemyClass : 3;
-    u_int reach : 5;
-    u_int currentRange : 8;
-    u_int unk39 : 8;
-    u_int unk3A : 8;
-    u_int unk3B_0 : 3;
-    u_int currentAttackShapeAngle : 5;
-    vs_battle_uiWeapon weapon; // 0x3C
-    vs_battle_uiShield shield; // 1C4
-    vs_battle_uiAccessory accessory; // 328
-    vs_battle_uiEquipment_limb limbs[6]; // 388
-    vs_battle_actor_unk8C0 armor[6][4];
-    char dpSplash[6][6];
-    int unk944;
-    int statuses;
-    u_char statusTimers[8];
-    u_short unk954;
-    u_char unk956_0 : 1;
-    u_char isAnalyzed : 1;
-    u_char unk956_2 : 6;
-    u_char unk957;
-    vs_battle_uiMisc miscItem;
-    int unk95C;
-    vs_battle_uiMiscRand unk960;
+    /* 0x000 */ char name[24];
+    /* 0x018 */ short currentHP;
+    /* 0x01A */ short maxHP;
+    /* 0x01C */ short currentMP;
+    /* 0x01E */ short maxMP;
+    /* 0x020 */ u_short risk;
+    /* 0x022 */ u_short strength;
+    /* 0x024 */ u_short totalStrength;
+    /* 0x026 */ u_short intelligence;
+    /* 0x028 */ u_short totalIntelligence;
+    /* 0x02A */ u_short agility;
+    /* 0x02C */ u_short totalAgility;
+    /* 0x02E */ char unk2E;
+    /* 0x02F */ char unk2F;
+    /* 0x030 */ char unk30;
+    /* 0x031 */ char unk31;
+    /* 0x032 */ char unk32;
+    /* 0x033 */ char unk33;
+    /* 0x034 */ u_int unk34 : 8;
+    /* 0x035 */ u_int unk35 : 8;
+    /* 0x036 */ u_int unk36 : 8;
+    /* 0x037 */ u_int enemyClass : 3;
+    /* 0x037 */ u_int reach : 5;
+    /* 0x038 */ u_int currentRange : 8;
+    /* 0x039 */ u_int unk39 : 8;
+    /* 0x03A */ u_int unk3A : 8;
+    /* 0x03B */ u_int unk3B_0 : 3;
+    /* 0x03B */ u_int currentAttackShapeAngle : 5;
+    /* 0x03C */ vs_battle_uiWeapon weapon;
+    /* 0x1D4 */ vs_battle_uiShield shield;
+    /* 0x338 */ vs_battle_uiAccessory accessory;
+    /* 0x398 */ vs_battle_uiEquipment_limb limbs[6];
+    /* 0x8C0 */ vs_battle_actor_unk8C0 armor[6][4];
+    /* 0x920 */ char dpSplash[6][6];
+    /* 0x944 */ int unk944;
+    /* 0x948 */ int statuses;
+    /* 0x94C */ u_char statusTimers[8];
+    /* 0x954 */ u_short unk954;
+    /* 0x956 */ u_char unk956_0 : 1;
+    /* 0x956 */ u_char isAnalyzed : 1;
+    /* 0x956 */ u_char unk956_2 : 6;
+    /* 0x957 */ u_char unk957;
+    /* 0x958 */ vs_battle_uiMisc miscItem;
+    /* 0x95C */ int unk95C;
+    /* 0x960 */ vs_battle_uiMiscRand unk960;
+    /* 0x964 */
 } vs_battle_actor2;
 
 typedef struct vs_battle_actor {

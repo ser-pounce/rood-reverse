@@ -8560,25 +8560,13 @@ short func_800824D8(
          + (D_800F19CC->unk0 - 1);
 }
 
-short func_8008255C(vs_skill_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008255C);
-
-short func_800829B8(vs_skill_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800829B8);
-
 typedef struct {
     u_char type;
     u_char affinity;
     short unk2;
     int unk4;
     short unk8;
-    short amountHealed;
+    short value;
     int unkC;
     int unk10;
     int unk14;
@@ -8589,16 +8577,15 @@ typedef struct {
     short strFactor;
     short shieldStrFactor;
     short armorStrFactor;
-} _hpHealedFromHealPanel_t;
+} _trapIntermediate;
 
 static int _getRoomTrapLevel(void);
 
-short _hpHealedFromHealPanel(vs_skill_t* skill,
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* hit, int nHit,
-    int withRandMod)
+short func_8008255C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* hit, int nHit, int withRandMod)
 {
-    _hpHealedFromHealPanel_t sp10;
-    short amountHealed;
+    _trapIntermediate sp10;
+    short damage;
     int randMod;
     int dpMod;
     int defense;
@@ -8606,9 +8593,9 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
     vs_battle_actor2* actor = vs_battle_actors[hit->unk0.targetActor]->unk3C;
     int limb = hit->unk0.targetLimb;
 
-    sp10.amountHealed = actor->maxHP / 10;
-    sp10.amountHealed *= skill->hitParams[nHit].statFactor;
-    sp10.amountHealed += (_getRoomTrapLevel() + 1) * 10;
+    sp10.value = actor->maxHP / 10;
+    sp10.value *= skill->hitParams[nHit].statFactor;
+    sp10.value += (_getRoomTrapLevel() + 1) * 10;
     sp10.type = skill->hitParams[nHit].type;
     sp10.affinity = skill->hitParams[nHit].affinity - 1;
     sp10.str = actor->strength;
@@ -8686,11 +8673,11 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
     defense += sp10.shieldStr * sp10.shieldStrFactor;
     defense += sp10.armorStr * sp10.armorStrFactor;
     defense /= (actor->risk / 2) + 100;
-    new_var2 = sp10.amountHealed;
-    amountHealed = new_var2 - defense;
+    new_var2 = sp10.value;
+    damage = new_var2 - defense;
 
-    if (amountHealed < 0) {
-        amountHealed = 0;
+    if (damage < 0) {
+        damage = 0;
     }
 
     if (withRandMod != 0) {
@@ -8699,13 +8686,138 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
         randMod = 0;
     }
 
-    amountHealed += randMod;
+    damage += randMod;
 
-    if (amountHealed < 0) {
-        amountHealed = 0;
+    if (damage < 0) {
+        damage = 0;
     }
 
-    return amountHealed;
+    if (damage >= actor->currentHP) {
+        damage = actor->currentHP - 1;
+    }
+
+    return damage;
+}
+
+short func_800829B8(vs_skill_t* arg0 __attribute__((unused)),
+    _hitEntity_t* arg1 __attribute__((unused)),
+    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
+    int arg4 __attribute__((unused)));
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800829B8);
+
+short _hpHealedFromHealPanel(vs_skill_t* skill,
+    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* hit, int nHit,
+    int withRandMod)
+{
+    _trapIntermediate sp10;
+    short hpHealed;
+    int randMod;
+    int dpMod;
+    int defense;
+    int new_var2;
+    vs_battle_actor2* actor = vs_battle_actors[hit->unk0.targetActor]->unk3C;
+    int limb = hit->unk0.targetLimb;
+
+    sp10.value = actor->maxHP / 10;
+    sp10.value *= skill->hitParams[nHit].statFactor;
+    sp10.value += (_getRoomTrapLevel() + 1) * 10;
+    sp10.type = skill->hitParams[nHit].type;
+    sp10.affinity = skill->hitParams[nHit].affinity - 1;
+    sp10.str = actor->strength;
+    sp10.armorStr = actor->limbs[limb].armor.currentStr;
+    sp10.shieldStr = 0;
+    sp10.armorStrFactor = 100;
+    sp10.shieldStrFactor = 100;
+    sp10.strFactor = 100;
+
+    if (sp10.type != 0) {
+        sp10.strFactor = actor->limbs[limb].types[sp10.type] + 100;
+        sp10.armorStrFactor = actor->limbs[limb].armor.types[sp10.type] + 100;
+    }
+
+    if (sp10.affinity) {
+        sp10.strFactor += actor->limbs[limb].affinities[sp10.affinity];
+        sp10.armorStrFactor +=
+            actor->limbs[limb].armor.classAffinityCurrent.affinity[0][sp10.affinity];
+    }
+
+    if (actor->limbs[limb].armor.maxDp != 0) {
+
+        dpMod =
+            ((actor->limbs[limb].armor.maxDp - actor->limbs[limb].armor.currentDp) * 100)
+            / actor->limbs[limb].armor.maxDp;
+
+        if (dpMod < 0) {
+            dpMod += 3;
+        }
+
+        sp10.armorStrFactor -= dpMod >> 2;
+    }
+
+    if (vs_battle_actors[actor->unk957]->weaponDrawn & 1) {
+
+        sp10.shieldStr = actor->shield.currentStr;
+
+        if (sp10.type != 0) {
+            sp10.shieldStrFactor += actor->shield.types[sp10.type];
+        }
+
+        if (sp10.affinity != 0) {
+            sp10.shieldStrFactor +=
+                actor->shield.classAffinityCurrent.affinity[0][sp10.affinity];
+        }
+
+        if (actor->shield.maxDp != 0) {
+
+            dpMod = ((actor->shield.maxDp - actor->shield.currentDp) * 100)
+                  / actor->shield.maxDp;
+
+            if (dpMod < 0) {
+                dpMod += 3;
+            }
+
+            sp10.shieldStrFactor -= dpMod >> 2;
+        }
+
+        if (actor->shield.maxPp != 0) {
+
+            dpMod = (actor->shield.currentPp * 100) / actor->shield.maxPp;
+
+            if (dpMod < 0) {
+                dpMod += 3;
+            }
+
+            sp10.shieldStrFactor += dpMod >> 2;
+        }
+    }
+
+    sp10.str += actor->accessory.currentStr;
+    sp10.strFactor +=
+        actor->accessory.types[sp10.type] + actor->accessory.affinities[sp10.affinity];
+    defense = (sp10.str - 20) * sp10.strFactor;
+    defense += sp10.shieldStr * sp10.shieldStrFactor;
+    defense += sp10.armorStr * sp10.armorStrFactor;
+    defense /= (actor->risk / 2) + 100;
+    new_var2 = sp10.value;
+    hpHealed = new_var2 - defense;
+
+    if (hpHealed < 0) {
+        hpHealed = 0;
+    }
+
+    if (withRandMod != 0) {
+        randMod = vs_main_getRandSmoothed(11) - 5;
+    } else {
+        randMod = 0;
+    }
+
+    hpHealed += randMod;
+
+    if (hpHealed < 0) {
+        hpHealed = 0;
+    }
+
+    return hpHealed;
 }
 
 short func_80083430(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),

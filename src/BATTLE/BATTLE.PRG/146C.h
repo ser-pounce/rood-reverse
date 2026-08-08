@@ -131,7 +131,7 @@ typedef struct {
     int unk2C;
     char isWorkshop;
     char unk31;
-    char unk32;
+    char trapLevel;
     char unk33;
     short unk34;
     short unk36;

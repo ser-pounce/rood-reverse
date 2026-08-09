@@ -452,7 +452,8 @@ void _triggerArmorAffinityChange(vs_skill_t*, vs_battle_uiEquipment*, int, int, 
 void _triggerClassChange(vs_skill_t* arg0, vs_battle_uiEquipment*, int, int, int);
 int _setApplicableStatuses(int, _hitEntity_t*);
 int _setInflictedStatuses(int, _hitEntity_t*);
-short func_80081148(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
+static short _getPhysicalAttackDamage(
+    vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
 short _calculateStatChange(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int);
 int _getSkillCost(u_int, vs_battle_actor2*, int);
 void func_80085008(_hitEntity_t*);
@@ -610,7 +611,7 @@ extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F1A00;
 extern int D_800F1A04;
-extern u_int D_800F1A08;
+extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
 extern int D_800F1A20;
@@ -8691,19 +8692,19 @@ int _setInflictedStatuses(int arg0, _hitEntity_t* entity)
     return ret;
 }
 
-void func_80081130(vs_skill_t* arg0 __attribute__((unused)),
+void _statCalculatorNop(vs_skill_t* arg0 __attribute__((unused)),
     _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
 }
 
-short func_80081138(vs_skill_t* arg0 __attribute__((unused)),
+short _getLastValue(vs_skill_t* arg0 __attribute__((unused)),
     _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    return D_800F1A08;
+    return _lastValue;
 }
 
 typedef struct {
@@ -8732,8 +8733,8 @@ typedef struct {
     /* 0x24 */ short armorStatFactor;
 } _hitIntermediate;
 
-short func_80081148(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
-    int nHit, int withRandMod, int arg5)
+static short _getPhysicalAttackDamage(vs_skill_t* skill, _hitEntity_t* source,
+    _hitEntity_t* target, int nHit, int withRandMod, int applyStatuses)
 {
     _hitIntermediate sp18;
     int attack;
@@ -8904,7 +8905,7 @@ short func_80081148(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
         value += 1 + vs_main_getRand(5);
     }
 
-    if ((arg5 != 0) && (sourceActor->statuses & 2)) {
+    if ((applyStatuses != 0) && (sourceActor->statuses & 2)) {
         value /= 2;
     }
 
@@ -8928,13 +8929,13 @@ short func_80081148(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     return value;
 }
 
-short func_800819D0(
-    vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+short _getPhysicalAttackDamageWithoutStatusModifiers(vs_skill_t* skill,
+    _hitEntity_t* source, _hitEntity_t* target, int nHit, int withRandMod)
 {
-    return func_80081148(arg0, arg1, arg2, arg3, arg4, 0);
+    return _getPhysicalAttackDamage(skill, source, target, nHit, withRandMod, 0);
 }
 
-short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
+short _getMagicAttackDamage(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
     int nHit, int addRandMod)
 {
     _hitIntermediate sp18;
@@ -8946,8 +8947,8 @@ short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     int defense;
 
     vs_battle_actor2* sourceActor = vs_battle_actors[source->unk0.targetActor]->unk3C;
-    vs_battle_actor2* temp_s1 = vs_battle_actors[target->unk0.targetActor]->unk3C;
-    int temp_s2 = target->unk0.targetLimb;
+    vs_battle_actor2* targetActor = vs_battle_actors[target->unk0.targetActor]->unk3C;
+    int limb = target->unk0.targetLimb;
 
     sp18.sourceClass = sourceActor->enemyClass;
     sp18.type = skill->hitParams[nHit].type;
@@ -8976,11 +8977,11 @@ short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
 
         for (i = 0; i < 7; ++i) {
             sp18.tempTargetAffinity =
-                temp_s1->limbs[temp_s2].affinities[i]
-                + temp_s1->limbs[temp_s2].armor.classAffinityCurrent.affinity[0][i];
-            if (vs_battle_actors[temp_s1->unk957]->weaponDrawn & 1) {
+                targetActor->limbs[limb].affinities[i]
+                + targetActor->limbs[limb].armor.classAffinityCurrent.affinity[0][i];
+            if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
                 sp18.tempTargetAffinity +=
-                    temp_s1->shield.classAffinityCurrent.affinity[0][i];
+                    targetActor->shield.classAffinityCurrent.affinity[0][i];
             }
             if (maxAffinity < sp18.tempTargetAffinity) {
                 maxAffinity = sp18.tempTargetAffinity;
@@ -9022,66 +9023,66 @@ short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     sp18.weaponDamage += sourceActor->accessory.types[sp18.type]
                        + sourceActor->accessory.affinities[sp18.sourceAffinity];
     sp18.weaponDamage = sp18.weaponDamage / 4 + 100;
-    sp18.mediatingStat = temp_s1->intelligence;
-    sp18.armorStat = temp_s1->limbs[temp_s2].armor.currentInt;
+    sp18.mediatingStat = targetActor->intelligence;
+    sp18.armorStat = targetActor->limbs[limb].armor.currentInt;
     sp18.shieldStat = 0;
     sp18.armorStatFactor = 100;
     sp18.shieldStatFactor = 100;
     sp18.statFactor = 100;
 
     if (sp18.type != 0) {
-        sp18.statFactor = temp_s1->limbs[temp_s2].types[sp18.type] + 100;
-        sp18.armorStatFactor = temp_s1->limbs[temp_s2].armor.types[sp18.type] + 100;
+        sp18.statFactor = targetActor->limbs[limb].types[sp18.type] + 100;
+        sp18.armorStatFactor = targetActor->limbs[limb].armor.types[sp18.type] + 100;
     }
 
-    sp18.statFactor += temp_s1->limbs[temp_s2].affinities[sp18.sourceAffinity];
+    sp18.statFactor += targetActor->limbs[limb].affinities[sp18.sourceAffinity];
     sp18.armorStatFactor +=
-        temp_s1->limbs[temp_s2]
+        targetActor->limbs[limb]
             .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
 
-    if (temp_s1->limbs[temp_s2].armor.maxDp != 0) {
-        sp18.armorStatFactor -= (((temp_s1->limbs[temp_s2].armor.maxDp
-                                      - temp_s1->limbs[temp_s2].armor.currentDp)
+    if (targetActor->limbs[limb].armor.maxDp != 0) {
+        sp18.armorStatFactor -= (((targetActor->limbs[limb].armor.maxDp
+                                      - targetActor->limbs[limb].armor.currentDp)
                                      * 100)
-                                    / temp_s1->limbs[temp_s2].armor.maxDp)
+                                    / targetActor->limbs[limb].armor.maxDp)
                               / 4;
     }
 
-    if (vs_battle_actors[temp_s1->unk957]->weaponDrawn & 1) {
+    if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
 
-        sp18.shieldStat = temp_s1->shield.currentInt;
+        sp18.shieldStat = targetActor->shield.currentInt;
 
         if (sp18.type != 0) {
-            sp18.shieldStatFactor += temp_s1->shield.types[sp18.type];
+            sp18.shieldStatFactor += targetActor->shield.types[sp18.type];
         }
 
         sp18.shieldStatFactor =
             sp18.shieldStatFactor
-            + temp_s1->shield.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
+            + targetActor->shield.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
 
-        if (temp_s1->shield.maxDp != 0) {
+        if (targetActor->shield.maxDp != 0) {
             sp18.shieldStatFactor -=
-                (((temp_s1->shield.maxDp - temp_s1->shield.currentDp) * 100)
-                    / temp_s1->shield.maxDp)
+                (((targetActor->shield.maxDp - targetActor->shield.currentDp) * 100)
+                    / targetActor->shield.maxDp)
                 / 4;
         }
 
-        if (temp_s1->shield.maxPp != 0) {
+        if (targetActor->shield.maxPp != 0) {
             sp18.shieldStatFactor +=
-                ((temp_s1->shield.currentPp * 100) / temp_s1->shield.maxPp) / 4;
+                ((targetActor->shield.currentPp * 100) / targetActor->shield.maxPp) / 4;
         }
     }
 
-    sp18.mediatingStat = sp18.mediatingStat + temp_s1->accessory.currentInt;
-    sp18.statFactor += temp_s1->accessory.types[sp18.type]
-                     + temp_s1->accessory.affinities[sp18.sourceAffinity];
+    sp18.mediatingStat = sp18.mediatingStat + targetActor->accessory.currentInt;
+    sp18.statFactor += targetActor->accessory.types[sp18.type]
+                     + targetActor->accessory.affinities[sp18.sourceAffinity];
     attack = (sp18.value * sp18.weaponDamage) / 100;
     attack = (attack * (skill->hitParams[nHit].statFactor * 10 + 100)) / 100;
     defense = (sp18.mediatingStat - 20) * sp18.statFactor;
     defense += sp18.shieldStat * sp18.shieldStatFactor;
     defense += sp18.armorStat * sp18.armorStatFactor;
-    defense /= (temp_s1->risk >> 1) + 100;
-    value = func_8007FE5C(skill, attack - defense, sourceActor, temp_s1);
+    defense /= (targetActor->risk >> 1) + 100;
+    value = func_8007FE5C(skill, attack - defense, sourceActor, targetActor);
 
     if (value < 0) {
         value = 0;
@@ -9092,7 +9093,7 @@ short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
         if (nHit == 0) {
             if (sp18.sourceAffinity != 0) {
                 if (target->unk40 == 0) {
-                    func_80080C9C(skill, temp_s1, 0, sp18.sourceAffinity + 1, temp_s2);
+                    func_80080C9C(skill, targetActor, 0, sp18.sourceAffinity + 1, limb);
                 }
             }
         }
@@ -9101,31 +9102,33 @@ short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     return value;
 }
 
-short func_80082144(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+short _previousHitFactor0(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    int v = (D_800F19CC->unk8.unk4C[0].unk0.hp + D_800F19CC->unk8.unk4C[0].unk0.mp)
-          * arg0->hitParams[arg3].statFactor;
-    return (v / 10) + (D_800F19CC->unk0 - 1);
+    return (((D_800F19CC->unk8.unk4C[0].unk0.hp + D_800F19CC->unk8.unk4C[0].unk0.mp)
+                * arg0->hitParams[arg3].statFactor)
+               / 10)
+         + (D_800F19CC->unk0 - 1);
 }
 
-short func_800821B0(vs_skill_t* arg0, _hitEntity_t* arg1,
+short _hpLostFactor(vs_skill_t* arg0, _hitEntity_t* arg1,
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0.targetActor]->unk3C;
-    int v = (temp_v0->maxHP - temp_v0->currentHP) * arg0->hitParams[arg3].statFactor;
+    vs_battle_actor2* actor = vs_battle_actors[arg1->unk0.targetActor]->unk3C;
+    int v = (actor->maxHP - actor->currentHP) * arg0->hitParams[arg3].statFactor;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short func_80082234(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+short _previousHitFactor1(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
-    int v = (D_800F19CC->unk8.unk4C[0].unk0.hp + D_800F19CC->unk8.unk4C[0].unk0.mp)
-          * arg0->hitParams[arg3].statFactor;
-    return (v / 10) + (D_800F19CC->unk0 - 1);
+    return (((D_800F19CC->unk8.unk4C[0].unk0.hp + D_800F19CC->unk8.unk4C[0].unk0.mp)
+                * arg0->hitParams[arg3].statFactor)
+               / 10)
+         + (D_800F19CC->unk0 - 1);
 }
 
 short func_800822A0(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
@@ -9137,7 +9140,7 @@ short func_800822A0(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused))
     return (v / 100) + (D_800F19CC->unk0 - 1);
 }
 
-short func_8008231C(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+short _getWeaponPp(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
@@ -9145,7 +9148,8 @@ short func_8008231C(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1
          + ((u_short)D_800F19CC->unk0 - 1);
 }
 
-short func_80082360(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorMagicDamageReceived(vs_skill_t* skill,
+    _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9161,7 +9165,8 @@ short func_80082360(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)
     return var_a2;
 }
 
-short func_8008241C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorPhysicalDamageReceived(vs_skill_t* skill,
+    _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9177,11 +9182,11 @@ short func_8008241C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)
     return var_a2;
 }
 
-short func_800824D8(
+short _mpLostFactor(
     vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
-    vs_battle_actor2* temp_v0 = vs_battle_actors[arg1->unk0.targetActor]->unk3C;
-    return (temp_v0->maxMP - temp_v0->currentMP) * arg0->hitParams[arg3].statFactor / 10
+    vs_battle_actor2* actor = vs_battle_actors[arg1->unk0.targetActor]->unk3C;
+    return (actor->maxMP - actor->currentMP) * arg0->hitParams[arg3].statFactor / 10
          + (D_800F19CC->unk0 - 1);
 }
 
@@ -9601,7 +9606,7 @@ short func_800834E4(vs_skill_t* arg0 __attribute__((unused)),
          - vs_battle_actors[arg2->unk0.targetActor]->unk3C->currentMP;
 }
 
-short func_80083524(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+short _previousHitFactor2(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9685,13 +9690,13 @@ short func_8008384C(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {
-    return (D_800F1A08 * arg0->hitParams[arg3].statFactor) / 10;
+    return (_lastValue * arg0->hitParams[arg3].statFactor) / 10;
 }
 
-short func_8008388C(
+short _getPhysicalAttackDamageWithStatusModifiers(
     vs_skill_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
-    return func_80081148(arg0, arg1, arg2, arg3, arg4, 1);
+    return _getPhysicalAttackDamage(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
 short _getRisk(vs_skill_t* arg0 __attribute__((unused)),
@@ -9714,7 +9719,7 @@ short _calculateStatChange(
             skill, arg1, arg2, hit, arg4);
     }
 
-    D_800F1A08 = amount;
+    _lastValue = amount;
     return amount;
 }
 
@@ -10281,7 +10286,7 @@ int func_80084CAC(
 
     if (temp_s0->currentMP < amount) {
         amount = temp_s0->currentMP;
-        D_800F1A08 = temp_s0->currentMP;
+        _lastValue = temp_s0->currentMP;
     }
 
     arg2->unk0.mp += amount;
@@ -10475,7 +10480,7 @@ void func_80085390(
     } else if (skill->type == skillTypeSpell) {
         if ((arg2->unk40 == 0)
             && (vs_battle_actors[arg2->unk0.targetActor]->unk3C->statuses & 0x80040000)) {
-            D_800F1A08 = 0;
+            _lastValue = 0;
         } else {
             _skillEffectMediators[skill->hitParams[hit].effect](
                 skill, arg1, arg2, hit, arg3);

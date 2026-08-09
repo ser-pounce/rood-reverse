@@ -3774,7 +3774,20 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5D74);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5E00);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5F8C);
+int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    func_800D6310_t* temp_s0 = (func_800D6310_t*)arg1->unk0 + (arg1->unk6);
+
+    if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
+        if ((arg0->unkD1C.unkC.unk0 == 4)
+            && (func_800A0BE0((char)arg0->unkD1C.unkC.unk4.unk0) & 2)) {
+            func_8007B29C(temp_s0->unk7, temp_s0->unk2, (char)arg0->unkD1C.unkC.unk4.unk0,
+                temp_s0->unk4 - 0x80, (temp_s0->unk5 - 0x80), (temp_s0->unk6 - 0x80));
+        }
+        return func_800D5780(arg1);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6048);
 
@@ -3795,7 +3808,7 @@ int func_800D6298(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 int func_800D6310(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
     func_800D6310_t* temp_a3 = (func_800D6310_t*)(arg1->unk0 + arg1->unk6 * 2);
-    ;
+
     if (temp_a3->unk0 == arg0->unkD1C.unk30->unk2) {
         func_8007B344(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
             temp_a3->unk5 - 0x80, temp_a3->unk6 - 0x80);

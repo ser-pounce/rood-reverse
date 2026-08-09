@@ -8460,29 +8460,29 @@ short func_80081138(vs_skill_t* arg0 __attribute__((unused)),
 }
 
 typedef struct {
-    u_char type;
-    u_char sourceAffinity;
-    u_char class;
-    u_char unk3;
-    short typeValue;
-    short weaponAffinity;
-    short weaponClass;
-    short value;
-    short weaponDamage;
-    short unkE;
-    u_char unk10;
-    u_char targetAffinity;
-    u_char unk12;
-    u_char unk13;
-    short unk14;
-    short tempTargetAffinity;
-    short unk18;
-    short str;
-    short shieldStr;
-    short armorStr;
-    short strFactor;
-    short shieldStrFactor;
-    short armorStrFactor;
+    /* 0x00 */ u_char type;
+    /* 0x01 */ u_char sourceAffinity;
+    /* 0x02 */ u_char sourceClass;
+    /* 0x03 */ u_char unk3;
+    /* 0x04 */ short typeValue;
+    /* 0x06 */ short weaponAffinity;
+    /* 0x08 */ short weaponClass;
+    /* 0x0A */ short value;
+    /* 0x0C */ short weaponDamage;
+    /* 0x0E */ short unkE;
+    /* 0x10 */ u_char unk10;
+    /* 0x11 */ u_char targetAffinity;
+    /* 0x12 */ u_char targetClass;
+    /* 0x13 */ u_char unk13;
+    /* 0x14 */ short unk14;
+    /* 0x16 */ short tempTargetAffinity;
+    /* 0x18 */ short unk18;
+    /* 0x1A */ short mediatingStat;
+    /* 0x1C */ short shieldStat;
+    /* 0x1E */ short armorStat;
+    /* 0x20 */ short statFactor;
+    /* 0x22 */ short shieldStatFactor;
+    /* 0x24 */ short armorStatFactor;
 } _hitIntermediate;
 
 short func_80081148(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
@@ -8500,8 +8500,8 @@ short func_80081148(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     vs_battle_actor2* targetActor = vs_battle_actors[target->unk0.targetActor]->unk3C;
     int limb = target->unk0.targetLimb;
 
-    sp18.class = sourceActor->enemyClass;
-    sp18.unk12 = targetActor->enemyClass;
+    sp18.sourceClass = sourceActor->enemyClass;
+    sp18.targetClass = targetActor->enemyClass;
 
     if (skill->hitParams[nHit].type == 0) {
         sp18.type = sourceActor->weapon.damageType;
@@ -8587,65 +8587,65 @@ short func_80081148(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     }
 
     sp18.value += sourceActor->accessory.currentStr;
-    sp18.weaponDamage += (sourceActor->accessory.types[sp18.type]
-                          + sourceActor->accessory.classes[sp18.unk12]
-                          + sourceActor->accessory.affinities[sp18.sourceAffinity]);
+    sp18.weaponDamage += sourceActor->accessory.types[sp18.type]
+                       + sourceActor->accessory.classes[sp18.targetClass]
+                       + sourceActor->accessory.affinities[sp18.sourceAffinity];
     sp18.weaponDamage = sp18.weaponDamage / 4 + 100;
-    sp18.str = targetActor->strength;
-    sp18.armorStr = targetActor->limbs[limb].armor.currentStr;
-    sp18.shieldStr = 0;
-    sp18.armorStrFactor = 100;
-    sp18.shieldStrFactor = 100;
-    sp18.strFactor = 100;
-    sp18.strFactor = targetActor->limbs[limb].types[sp18.type]
-                   + targetActor->limbs[limb].affinities[sp18.sourceAffinity] + 100;
-    sp18.armorStrFactor =
-        targetActor->limbs[limb].armor.classAffinityCurrent.class[0][sp18.class]
+    sp18.mediatingStat = targetActor->strength;
+    sp18.armorStat = targetActor->limbs[limb].armor.currentStr;
+    sp18.shieldStat = 0;
+    sp18.armorStatFactor = 100;
+    sp18.shieldStatFactor = 100;
+    sp18.statFactor = 100;
+    sp18.statFactor = targetActor->limbs[limb].types[sp18.type]
+                    + targetActor->limbs[limb].affinities[sp18.sourceAffinity] + 100;
+    sp18.armorStatFactor =
+        targetActor->limbs[limb].armor.classAffinityCurrent.class[0][sp18.sourceClass]
         + (targetActor->limbs[limb].armor.types[sp18.type]
             + targetActor->limbs[limb]
                   .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity])
         + 100;
 
     if (targetActor->limbs[limb].armor.maxDp != 0) {
-        sp18.armorStrFactor -= (((targetActor->limbs[limb].armor.maxDp
-                                     - targetActor->limbs[limb].armor.currentDp)
-                                    * 100)
-                                   / targetActor->limbs[limb].armor.maxDp)
-                             / 4;
+        sp18.armorStatFactor -= (((targetActor->limbs[limb].armor.maxDp
+                                      - targetActor->limbs[limb].armor.currentDp)
+                                     * 100)
+                                    / targetActor->limbs[limb].armor.maxDp)
+                              / 4;
     }
 
     if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
 
-        sp18.shieldStr += targetActor->shield.currentStr;
-        sp18.shieldStrFactor =
-            sp18.shieldStrFactor
+        sp18.shieldStat += targetActor->shield.currentStr;
+        sp18.shieldStatFactor =
+            sp18.shieldStatFactor
             + ((targetActor->shield.types[sp18.type]
                    + targetActor->shield.classAffinityCurrent
                          .affinity[0][sp18.sourceAffinity])
-                + targetActor->shield.classAffinityCurrent.class[0][sp18.class]);
+                + targetActor->shield.classAffinityCurrent.class[0][sp18.sourceClass]);
 
         if (targetActor->shield.maxDp != 0) {
-            sp18.shieldStrFactor -=
+            sp18.shieldStatFactor -=
                 (((targetActor->shield.maxDp - targetActor->shield.currentDp) * 100)
                     / targetActor->shield.maxDp)
                 / 4;
         }
         if (targetActor->shield.maxPp != 0) {
-            sp18.shieldStrFactor +=
+            sp18.shieldStatFactor +=
                 (targetActor->shield.currentPp * 100) / targetActor->shield.maxPp / 4;
         }
     }
 
-    sp18.str = sp18.str + targetActor->accessory.currentStr;
-    sp18.strFactor = sp18.strFactor
-                   + ((targetActor->accessory.types[sp18.type]
-                          + targetActor->accessory.classes[sp18.class])
-                       + targetActor->accessory.affinities[sp18.sourceAffinity]);
+    sp18.mediatingStat = sp18.mediatingStat + targetActor->accessory.currentStr;
+    sp18.statFactor = sp18.statFactor
+                    + ((targetActor->accessory.types[sp18.type]
+                           + targetActor->accessory.classes[sp18.sourceClass])
+                        + targetActor->accessory.affinities[sp18.sourceAffinity]);
     attack = (sp18.value * sp18.weaponDamage) / 100;
     attack = (attack * ((skill->hitParams[nHit].statFactor * 10) + 100)) / 100;
-    defense = (sp18.str - 20) * sp18.strFactor;
-    defense += sp18.shieldStr * sp18.shieldStrFactor;
-    defense += sp18.armorStr * sp18.armorStrFactor;
+    defense = (sp18.mediatingStat - 20) * sp18.statFactor;
+    defense += sp18.shieldStat * sp18.shieldStatFactor;
+    defense += sp18.armorStat * sp18.armorStatFactor;
     defense /= (targetActor->risk / 2) + 100;
     value = func_8007FE5C(skill, attack - defense, sourceActor, targetActor);
 
@@ -8687,11 +8687,172 @@ short func_800819D0(
     return func_80081148(arg0, arg1, arg2, arg3, arg4, 0);
 }
 
-short func_800819FC(vs_skill_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)));
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800819FC);
+short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
+    int nHit, int addRandMod, int arg5 __attribute__((unused)))
+{
+    _hitIntermediate sp18;
+    short maxAffinity;
+    short value;
+    int i;
+    int affinity;
+    int attack;
+    int defense;
+
+    vs_battle_actor2* sourceActor = vs_battle_actors[source->unk0.targetActor]->unk3C;
+    vs_battle_actor2* temp_s1 = vs_battle_actors[target->unk0.targetActor]->unk3C;
+    int temp_s2 = target->unk0.targetLimb;
+
+    sp18.sourceClass = sourceActor->enemyClass;
+    sp18.type = skill->hitParams[nHit].type;
+
+    if (skill->hitParams[nHit].affinity == 0) {
+
+        if (!(vs_battle_actors[sourceActor->unk957]->weaponDrawn & 1)
+            || sourceActor->weapon.blade.id == 0) {
+            affinity = 0;
+        } else {
+            affinity = 0;
+            maxAffinity = 0;
+            for (i = 0; i < 7; ++i) {
+                if (maxAffinity
+                    < sourceActor->weapon.classAffinityCurrent.affinity[0][i]) {
+                    maxAffinity = sourceActor->weapon.classAffinityCurrent.affinity[0][i];
+                    affinity = i;
+                }
+            }
+        }
+
+        sp18.sourceAffinity = affinity;
+
+        affinity = 0;
+        maxAffinity = 0;
+
+        for (i = 0; i < 7; ++i) {
+            sp18.tempTargetAffinity =
+                temp_s1->limbs[temp_s2].affinities[i]
+                + temp_s1->limbs[temp_s2].armor.classAffinityCurrent.affinity[0][i];
+            if (vs_battle_actors[temp_s1->unk957]->weaponDrawn & 1) {
+                sp18.tempTargetAffinity +=
+                    temp_s1->shield.classAffinityCurrent.affinity[0][i];
+            }
+            if (maxAffinity < sp18.tempTargetAffinity) {
+                maxAffinity = sp18.tempTargetAffinity;
+                affinity = i;
+            }
+        }
+
+        sp18.targetAffinity = affinity;
+    } else {
+        sp18.sourceAffinity = skill->hitParams[nHit].affinity - 1;
+        sp18.targetAffinity = skill->hitParams[nHit].affinity - 1;
+    }
+
+    sp18.value = sourceActor->intelligence;
+
+    if (vs_battle_actors[sourceActor->unk957]->weaponDrawn & 1) {
+
+        sp18.value = sp18.value + sourceActor->weapon.currentInt;
+        sp18.weaponDamage = sp18.weaponAffinity =
+            sourceActor->weapon.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
+
+        if (sourceActor->weapon.maxDp != 0) {
+            sp18.weaponDamage -=
+                (((sourceActor->weapon.maxDp - sourceActor->weapon.currentDp) * 100)
+                    / sourceActor->weapon.maxDp);
+        }
+        if (sourceActor->weapon.maxPp != 0) {
+            sp18.weaponDamage +=
+                (sourceActor->weapon.currentPp * 100) / sourceActor->weapon.maxPp;
+        }
+    } else {
+        sp18.weaponClass = 0;
+        sp18.weaponAffinity = 0;
+        sp18.typeValue = 0;
+        sp18.weaponDamage = 0;
+    }
+
+    sp18.value += sourceActor->accessory.currentInt;
+    sp18.weaponDamage += sourceActor->accessory.types[sp18.type]
+                       + sourceActor->accessory.affinities[sp18.sourceAffinity];
+    sp18.weaponDamage = sp18.weaponDamage / 4 + 100;
+    sp18.mediatingStat = temp_s1->intelligence;
+    sp18.armorStat = temp_s1->limbs[temp_s2].armor.currentInt;
+    sp18.shieldStat = 0;
+    sp18.armorStatFactor = 100;
+    sp18.shieldStatFactor = 100;
+    sp18.statFactor = 100;
+
+    if (sp18.type != 0) {
+        sp18.statFactor = temp_s1->limbs[temp_s2].types[sp18.type] + 100;
+        sp18.armorStatFactor = temp_s1->limbs[temp_s2].armor.types[sp18.type] + 100;
+    }
+
+    sp18.statFactor += temp_s1->limbs[temp_s2].affinities[sp18.sourceAffinity];
+    sp18.armorStatFactor +=
+        temp_s1->limbs[temp_s2]
+            .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
+
+    if (temp_s1->limbs[temp_s2].armor.maxDp != 0) {
+        sp18.armorStatFactor -= (((temp_s1->limbs[temp_s2].armor.maxDp
+                                      - temp_s1->limbs[temp_s2].armor.currentDp)
+                                     * 100)
+                                    / temp_s1->limbs[temp_s2].armor.maxDp)
+                              / 4;
+    }
+
+    if (vs_battle_actors[temp_s1->unk957]->weaponDrawn & 1) {
+
+        sp18.shieldStat = temp_s1->shield.currentInt;
+
+        if (sp18.type != 0) {
+            sp18.shieldStatFactor += temp_s1->shield.types[sp18.type];
+        }
+
+        sp18.shieldStatFactor =
+            sp18.shieldStatFactor
+            + temp_s1->shield.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
+
+        if (temp_s1->shield.maxDp != 0) {
+            sp18.shieldStatFactor -=
+                (((temp_s1->shield.maxDp - temp_s1->shield.currentDp) * 100)
+                    / temp_s1->shield.maxDp)
+                / 4;
+        }
+
+        if (temp_s1->shield.maxPp != 0) {
+            sp18.shieldStatFactor +=
+                ((temp_s1->shield.currentPp * 100) / temp_s1->shield.maxPp) / 4;
+        }
+    }
+
+    sp18.mediatingStat = sp18.mediatingStat + temp_s1->accessory.currentInt;
+    sp18.statFactor += temp_s1->accessory.types[sp18.type]
+                     + temp_s1->accessory.affinities[sp18.sourceAffinity];
+    attack = (sp18.value * sp18.weaponDamage) / 100;
+    attack = (attack * (skill->hitParams[nHit].statFactor * 10 + 100)) / 100;
+    defense = (sp18.mediatingStat - 20) * sp18.statFactor;
+    defense += sp18.shieldStat * sp18.shieldStatFactor;
+    defense += sp18.armorStat * sp18.armorStatFactor;
+    defense /= (temp_s1->risk >> 1) + 100;
+    value = func_8007FE5C(skill, attack - defense, sourceActor, temp_s1);
+
+    if (value < 0) {
+        value = 0;
+    }
+
+    if (addRandMod != 0) {
+        value += 1 + vs_main_getRand(5);
+        if (nHit == 0) {
+            if (sp18.sourceAffinity != 0) {
+                if (target->unk40 == 0) {
+                    func_80080C9C(skill, temp_s1, 0, sp18.sourceAffinity + 1, temp_s2);
+                }
+            }
+        }
+    }
+
+    return value;
+}
 
 short func_80082144(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
@@ -8796,21 +8957,21 @@ short _damageFromTrapPanel(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((
     sp10.value += (_getRoomTrapLevel() + 1) * 10;
     sp10.type = skill->hitParams[nHit].type;
     sp10.sourceAffinity = skill->hitParams[nHit].affinity - 1;
-    sp10.str = actor->strength;
-    sp10.armorStr = actor->limbs[limb].armor.currentStr;
-    sp10.shieldStr = 0;
-    sp10.armorStrFactor = 100;
-    sp10.shieldStrFactor = 100;
-    sp10.strFactor = 100;
+    sp10.mediatingStat = actor->strength;
+    sp10.armorStat = actor->limbs[limb].armor.currentStr;
+    sp10.shieldStat = 0;
+    sp10.armorStatFactor = 100;
+    sp10.shieldStatFactor = 100;
+    sp10.statFactor = 100;
 
     if (sp10.type != 0) {
-        sp10.strFactor = actor->limbs[limb].types[sp10.type] + 100;
-        sp10.armorStrFactor = actor->limbs[limb].armor.types[sp10.type] + 100;
+        sp10.statFactor = actor->limbs[limb].types[sp10.type] + 100;
+        sp10.armorStatFactor = actor->limbs[limb].armor.types[sp10.type] + 100;
     }
 
     if (sp10.sourceAffinity) {
-        sp10.strFactor += actor->limbs[limb].affinities[sp10.sourceAffinity];
-        sp10.armorStrFactor +=
+        sp10.statFactor += actor->limbs[limb].affinities[sp10.sourceAffinity];
+        sp10.armorStatFactor +=
             actor->limbs[limb]
                 .armor.classAffinityCurrent.affinity[0][sp10.sourceAffinity];
     }
@@ -8825,19 +8986,19 @@ short _damageFromTrapPanel(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((
             dpMod += 3;
         }
 
-        sp10.armorStrFactor -= dpMod >> 2;
+        sp10.armorStatFactor -= dpMod >> 2;
     }
 
     if (vs_battle_actors[actor->unk957]->weaponDrawn & 1) {
 
-        sp10.shieldStr = actor->shield.currentStr;
+        sp10.shieldStat = actor->shield.currentStr;
 
         if (sp10.type != 0) {
-            sp10.shieldStrFactor += actor->shield.types[sp10.type];
+            sp10.shieldStatFactor += actor->shield.types[sp10.type];
         }
 
         if (sp10.sourceAffinity != 0) {
-            sp10.shieldStrFactor +=
+            sp10.shieldStatFactor +=
                 actor->shield.classAffinityCurrent.affinity[0][sp10.sourceAffinity];
         }
 
@@ -8850,7 +9011,7 @@ short _damageFromTrapPanel(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((
                 dpMod += 3;
             }
 
-            sp10.shieldStrFactor -= dpMod >> 2;
+            sp10.shieldStatFactor -= dpMod >> 2;
         }
 
         if (actor->shield.maxPp != 0) {
@@ -8861,16 +9022,16 @@ short _damageFromTrapPanel(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((
                 dpMod += 3;
             }
 
-            sp10.shieldStrFactor += dpMod >> 2;
+            sp10.shieldStatFactor += dpMod >> 2;
         }
     }
 
-    sp10.str += actor->accessory.currentStr;
-    sp10.strFactor += actor->accessory.types[sp10.type]
-                    + actor->accessory.affinities[sp10.sourceAffinity];
-    defense = (sp10.str - 20) * sp10.strFactor;
-    defense += sp10.shieldStr * sp10.shieldStrFactor;
-    defense += sp10.armorStr * sp10.armorStrFactor;
+    sp10.mediatingStat += actor->accessory.currentStr;
+    sp10.statFactor += actor->accessory.types[sp10.type]
+                     + actor->accessory.affinities[sp10.sourceAffinity];
+    defense = (sp10.mediatingStat - 20) * sp10.statFactor;
+    defense += sp10.shieldStat * sp10.shieldStatFactor;
+    defense += sp10.armorStat * sp10.armorStatFactor;
     defense /= (actor->risk / 2) + 100;
     new_var2 = sp10.value;
     damage = new_var2 - defense;
@@ -8911,7 +9072,7 @@ short func_800829B8(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     vs_battle_actor2* targetActor = vs_battle_actors[target->unk0.targetActor]->unk3C;
     int limb = target->unk0.targetLimb;
 
-    sp18.class = sourceActor->enemyClass;
+    sp18.sourceClass = sourceActor->enemyClass;
     sp18.type = skill->hitParams[nHit].type;
     sp18.sourceAffinity = skill->hitParams[nHit].affinity - 1;
     sp18.value = sourceActor->intelligence;
@@ -8949,67 +9110,67 @@ short func_800829B8(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* targe
     sp18.weaponDamage += sourceActor->accessory.types[sp18.type]
                        + sourceActor->accessory.affinities[sp18.sourceAffinity];
     sp18.weaponDamage = (sp18.weaponDamage / 4) + 100;
-    sp18.str = targetActor->intelligence;
-    sp18.armorStr = targetActor->limbs[limb].armor.currentInt;
-    sp18.shieldStr = 0;
-    sp18.armorStrFactor = 100;
-    sp18.shieldStrFactor = 100;
-    sp18.strFactor = 100;
+    sp18.mediatingStat = targetActor->intelligence;
+    sp18.armorStat = targetActor->limbs[limb].armor.currentInt;
+    sp18.shieldStat = 0;
+    sp18.armorStatFactor = 100;
+    sp18.shieldStatFactor = 100;
+    sp18.statFactor = 100;
 
     if (sp18.type != 0) {
-        sp18.strFactor = targetActor->limbs[limb].types[sp18.type] + 100;
-        sp18.armorStrFactor = targetActor->limbs[limb].armor.types[sp18.type] + 100;
+        sp18.statFactor = targetActor->limbs[limb].types[sp18.type] + 100;
+        sp18.armorStatFactor = targetActor->limbs[limb].armor.types[sp18.type] + 100;
     }
 
     if (sp18.sourceAffinity != 0) {
-        sp18.strFactor += targetActor->limbs[limb].affinities[sp18.sourceAffinity];
-        sp18.armorStrFactor +=
+        sp18.statFactor += targetActor->limbs[limb].affinities[sp18.sourceAffinity];
+        sp18.armorStatFactor +=
             targetActor->limbs[limb]
                 .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
     }
 
     if (targetActor->limbs[limb].armor.maxDp != 0) {
-        sp18.armorStrFactor -= (((targetActor->limbs[limb].armor.maxDp
-                                     - targetActor->limbs[limb].armor.currentDp)
-                                    * 100)
-                                   / targetActor->limbs[limb].armor.maxDp)
-                             / 4;
+        sp18.armorStatFactor -= (((targetActor->limbs[limb].armor.maxDp
+                                      - targetActor->limbs[limb].armor.currentDp)
+                                     * 100)
+                                    / targetActor->limbs[limb].armor.maxDp)
+                              / 4;
     }
 
     if (vs_battle_actors[targetActor->unk957]->weaponDrawn & 1) {
 
-        sp18.shieldStr = targetActor->shield.currentInt;
+        sp18.shieldStat = targetActor->shield.currentInt;
 
         if (sp18.type != 0) {
-            sp18.shieldStrFactor += targetActor->shield.types[sp18.type];
+            sp18.shieldStatFactor += targetActor->shield.types[sp18.type];
         }
 
         if (sp18.sourceAffinity != 0) {
-            sp18.shieldStrFactor +=
+            sp18.shieldStatFactor +=
                 targetActor->shield.classAffinityCurrent.affinity[0][sp18.sourceAffinity];
         }
 
         if (targetActor->shield.maxDp != 0) {
-            sp18.shieldStrFactor -=
+            sp18.shieldStatFactor -=
                 (((targetActor->shield.maxDp - targetActor->shield.currentDp) * 100)
                     / targetActor->shield.maxDp)
                 / 4;
         }
 
         if (targetActor->shield.maxPp != 0) {
-            sp18.shieldStrFactor +=
+            sp18.shieldStatFactor +=
                 ((targetActor->shield.currentPp * 100) / targetActor->shield.maxPp) / 4;
         }
     }
 
-    sp18.str += targetActor->accessory.currentInt;
-    sp18.strFactor += targetActor->accessory.types[sp18.type]
-                    + targetActor->accessory.affinities[sp18.sourceAffinity];
+    sp18.mediatingStat += targetActor->accessory.currentInt;
+    sp18.statFactor += targetActor->accessory.types[sp18.type]
+                     + targetActor->accessory.affinities[sp18.sourceAffinity];
     attack = (sp18.value * sp18.weaponDamage) / 100;
     attack = (attack * ((skill->hitParams[nHit].statFactor * 10) + 100)) / 100;
-    defense = (sp18.str - 20) * sp18.strFactor;
-    defense += sp18.shieldStr * sp18.shieldStrFactor;
-    defense += sp18.armorStr * sp18.armorStrFactor;
+    defense = (sp18.mediatingStat - 20) * sp18.statFactor;
+    defense += sp18.shieldStat * sp18.shieldStatFactor;
+    defense += sp18.armorStat * sp18.armorStatFactor;
     defense /= (targetActor->risk / 2) + 100;
     value = func_8007FE5C(skill, attack - defense, sourceActor, targetActor);
 
@@ -9059,21 +9220,21 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
     sp10.value += (_getRoomTrapLevel() + 1) * 10;
     sp10.type = skill->hitParams[nHit].type;
     sp10.sourceAffinity = skill->hitParams[nHit].affinity - 1;
-    sp10.str = actor->strength;
-    sp10.armorStr = actor->limbs[limb].armor.currentStr;
-    sp10.shieldStr = 0;
-    sp10.armorStrFactor = 100;
-    sp10.shieldStrFactor = 100;
-    sp10.strFactor = 100;
+    sp10.mediatingStat = actor->strength;
+    sp10.armorStat = actor->limbs[limb].armor.currentStr;
+    sp10.shieldStat = 0;
+    sp10.armorStatFactor = 100;
+    sp10.shieldStatFactor = 100;
+    sp10.statFactor = 100;
 
     if (sp10.type != 0) {
-        sp10.strFactor = actor->limbs[limb].types[sp10.type] + 100;
-        sp10.armorStrFactor = actor->limbs[limb].armor.types[sp10.type] + 100;
+        sp10.statFactor = actor->limbs[limb].types[sp10.type] + 100;
+        sp10.armorStatFactor = actor->limbs[limb].armor.types[sp10.type] + 100;
     }
 
     if (sp10.sourceAffinity) {
-        sp10.strFactor += actor->limbs[limb].affinities[sp10.sourceAffinity];
-        sp10.armorStrFactor +=
+        sp10.statFactor += actor->limbs[limb].affinities[sp10.sourceAffinity];
+        sp10.armorStatFactor +=
             actor->limbs[limb]
                 .armor.classAffinityCurrent.affinity[0][sp10.sourceAffinity];
     }
@@ -9088,19 +9249,19 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
             dpMod += 3;
         }
 
-        sp10.armorStrFactor -= dpMod >> 2;
+        sp10.armorStatFactor -= dpMod >> 2;
     }
 
     if (vs_battle_actors[actor->unk957]->weaponDrawn & 1) {
 
-        sp10.shieldStr = actor->shield.currentStr;
+        sp10.shieldStat = actor->shield.currentStr;
 
         if (sp10.type != 0) {
-            sp10.shieldStrFactor += actor->shield.types[sp10.type];
+            sp10.shieldStatFactor += actor->shield.types[sp10.type];
         }
 
         if (sp10.sourceAffinity != 0) {
-            sp10.shieldStrFactor +=
+            sp10.shieldStatFactor +=
                 actor->shield.classAffinityCurrent.affinity[0][sp10.sourceAffinity];
         }
 
@@ -9113,7 +9274,7 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
                 dpMod += 3;
             }
 
-            sp10.shieldStrFactor -= dpMod >> 2;
+            sp10.shieldStatFactor -= dpMod >> 2;
         }
 
         if (actor->shield.maxPp != 0) {
@@ -9124,16 +9285,16 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
                 dpMod += 3;
             }
 
-            sp10.shieldStrFactor += dpMod >> 2;
+            sp10.shieldStatFactor += dpMod >> 2;
         }
     }
 
-    sp10.str += actor->accessory.currentStr;
-    sp10.strFactor += actor->accessory.types[sp10.type]
-                    + actor->accessory.affinities[sp10.sourceAffinity];
-    defense = (sp10.str - 20) * sp10.strFactor;
-    defense += sp10.shieldStr * sp10.shieldStrFactor;
-    defense += sp10.armorStr * sp10.armorStrFactor;
+    sp10.mediatingStat += actor->accessory.currentStr;
+    sp10.statFactor += actor->accessory.types[sp10.type]
+                     + actor->accessory.affinities[sp10.sourceAffinity];
+    defense = (sp10.mediatingStat - 20) * sp10.statFactor;
+    defense += sp10.shieldStat * sp10.shieldStatFactor;
+    defense += sp10.armorStat * sp10.armorStatFactor;
     defense /= (actor->risk / 2) + 100;
     new_var2 = sp10.value;
     hpHealed = new_var2 - defense;

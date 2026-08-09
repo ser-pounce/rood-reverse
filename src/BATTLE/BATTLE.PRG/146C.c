@@ -448,8 +448,8 @@ void func_80080000(vs_skill_t*, _hitEntity_t*, short);
 void func_800801E0(vs_skill_t*, _hitEntity_t*, short);
 void _adjustDpPp(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void func_800803A4(vs_skill_t*, vs_battle_actor2*, vs_battle_actor2*, int);
-void func_80080534(vs_skill_t*, vs_battle_uiEquipment*, int, int, int);
-void func_80080A9C(vs_skill_t* arg0, vs_battle_uiEquipment*, int, int, int);
+void _triggerArmorAffinityChange(vs_skill_t*, vs_battle_uiEquipment*, int, int, int);
+void _triggerClassChange(vs_skill_t* arg0, vs_battle_uiEquipment*, int, int, int);
 int _setApplicableStatuses(int, _hitEntity_t*);
 int _setInflictedStatuses(int, _hitEntity_t*);
 short func_80081148(vs_skill_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
@@ -8236,10 +8236,126 @@ void func_800803A4(
     }
 }
 
-// https://decomp.me/scratch/HH1u5
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080534);
+void _triggerArmorAffinityChange(vs_skill_t* skill, vs_battle_uiEquipment* equipment,
+    int affinity, int arg3, int actorId)
+{
+    int targetAffinity;
+    int i;
+    int physical;
+    int opposingAffinity;
+    int randVal;
 
-void _triggerAffinityChange(vs_skill_t* skill, vs_battle_uiEquipment* equipment,
+    if (skill->hitParams[0].affinity != 0) {
+        affinity = skill->hitParams[0].affinity - 1;
+    }
+
+    switch (affinity) {
+    case 0:
+        targetAffinity = 0;
+        break;
+
+    case 1:
+        targetAffinity = 3;
+        physical = 0;
+        opposingAffinity = 1;
+        break;
+
+    case 2:
+        targetAffinity = 4;
+        physical = 0;
+        opposingAffinity = 2;
+        break;
+
+    case 3:
+        targetAffinity = 1;
+        physical = 0;
+        opposingAffinity = 3;
+        break;
+
+    case 4:
+        targetAffinity = 2;
+        physical = 0;
+        opposingAffinity = 4;
+        break;
+
+    case 5:
+        targetAffinity = 6;
+        physical = 0;
+        opposingAffinity = 5;
+        break;
+
+    case 6:
+        targetAffinity = 5;
+        physical = 0;
+        opposingAffinity = 6;
+        break;
+    }
+
+    if (equipment->affinities[targetAffinity] >= 100) {
+        return;
+    }
+
+    randVal = vs_main_getRand(256);
+
+    if ((70 - ((equipment->affinities[targetAffinity] + 100) / 4)) >= randVal) {
+
+        ++equipment->affinities[targetAffinity];
+
+        if (actorId == 0) {
+            func_80096768(arg3, targetAffinity + 6, 1);
+        }
+
+        if (targetAffinity == 0) {
+            for (i = 1; i < 7; ++i) {
+                if (equipment->affinities[i] > -100) {
+
+                    int randVal = vs_main_getRand(256);
+
+                    if ((((equipment->affinities[i] + 100) / 4) + 20) >= randVal) {
+
+                        --equipment->affinities[i];
+
+                        if (actorId == 0) {
+                            func_80096768(arg3, i + 6, 0x80000001);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        if (equipment->affinities[physical] > -100) {
+
+            int randVal = vs_main_getRand(256);
+
+            if ((((equipment->affinities[physical] + 100) / 4) + 20) >= randVal) {
+
+                --equipment->affinities[physical];
+
+                if (actorId == 0) {
+                    func_80096768(arg3, physical + 6, 0x80000001);
+                }
+            }
+        }
+
+        if (equipment->affinities[opposingAffinity] > -100) {
+
+            int randVal = vs_main_getRand(256);
+
+            if ((((equipment->affinities[opposingAffinity] + 100) / 4) + 0x14)
+                >= randVal) {
+
+                --equipment->affinities[opposingAffinity];
+
+                if (actorId == 0) {
+                    func_80096768(arg3, opposingAffinity + 6, 0x80000001);
+                }
+            }
+        }
+    }
+}
+
+void _triggerWeaponAffinityChange(vs_skill_t* skill, vs_battle_uiEquipment* equipment,
     int affinity, int arg3, int suppressNotification)
 {
     int targetAffinity;
@@ -8358,63 +8474,79 @@ void _triggerAffinityChange(vs_skill_t* skill, vs_battle_uiEquipment* equipment,
     }
 }
 
-void func_80080A9C(
-    vs_skill_t* arg0, vs_battle_uiEquipment* arg1, int arg2, int arg3, int arg4)
+void _triggerClassChange(vs_skill_t* skill __attribute__((unused)),
+    vs_battle_uiEquipment* equipment, int class, int arg3, int actorId)
 {
-    int var_s1;
-    int var_s2;
-    int a2 = arg2;
+    int opposingClass0;
+    int opposingClass1;
+    int randVal;
+    int targetClass = class;
 
-    switch (arg2) {
+    switch (class) {
     case 0:
-        var_s1 = 1;
-        var_s2 = 2;
+        opposingClass0 = 1;
+        opposingClass1 = 2;
         break;
     case 1:
-        var_s1 = 2;
-        var_s2 = 3;
+        opposingClass0 = 2;
+        opposingClass1 = 3;
         break;
     case 2:
-        var_s1 = 3;
-        var_s2 = 4;
+        opposingClass0 = 3;
+        opposingClass1 = 4;
         break;
     case 3:
-        var_s1 = 4;
-        var_s2 = 5;
+        opposingClass0 = 4;
+        opposingClass1 = 5;
         break;
     case 4:
-        var_s1 = 5;
-        var_s2 = 0;
+        opposingClass0 = 5;
+        opposingClass1 = 0;
         break;
     case 5:
-        var_s1 = 0;
-        var_s2 = 1;
+        opposingClass0 = 0;
+        opposingClass1 = 1;
         break;
     }
 
-    if (arg1->classes[a2] < 100) {
-        int temp_a2 = vs_main_getRand(256);
-        if ((70 - (arg1->classes[a2] + 100) / 4) >= temp_a2) {
-            ++arg1->classes[a2];
-            if (arg4 == 0) {
-                func_80096768(arg3, a2, 1);
-            }
-            if (arg1->classes[var_s1] >= -99) {
-                int temp_a2 = vs_main_getRand(256);
-                if (((arg1->classes[var_s1] + 100) / 4 + 20) >= temp_a2) {
-                    --arg1->classes[var_s1];
-                    if (arg4 == 0) {
-                        func_80096768(arg3, var_s1, 0x80000001);
-                    }
+    if (equipment->classes[targetClass] >= 100) {
+        return;
+    }
+
+    randVal = vs_main_getRand(256);
+
+    if ((70 - (equipment->classes[targetClass] + 100) / 4) >= randVal) {
+
+        ++equipment->classes[targetClass];
+
+        if (actorId == 0) {
+            func_80096768(arg3, targetClass, 1);
+        }
+
+        if (equipment->classes[opposingClass0] > -100) {
+
+            int randVal = vs_main_getRand(256);
+
+            if (((equipment->classes[opposingClass0] + 100) / 4 + 20) >= randVal) {
+
+                --equipment->classes[opposingClass0];
+
+                if (actorId == 0) {
+                    func_80096768(arg3, opposingClass0, 0x80000001);
                 }
             }
-            if (arg1->classes[var_s2] >= -99) {
-                int temp_a2 = vs_main_getRand(256);
-                if (((arg1->classes[var_s2] + 100) / 4 + 20) >= temp_a2) {
-                    --arg1->classes[var_s2];
-                    if (arg4 == 0) {
-                        func_80096768(arg3, var_s2, 0x80000001);
-                    }
+        }
+
+        if (equipment->classes[opposingClass1] > -100) {
+
+            int randVal = vs_main_getRand(256);
+
+            if (((equipment->classes[opposingClass1] + 100) / 4 + 20) >= randVal) {
+
+                --equipment->classes[opposingClass1];
+
+                if (actorId == 0) {
+                    func_80096768(arg3, opposingClass1, 0x80000001);
                 }
             }
         }
@@ -8479,10 +8611,11 @@ void func_80080C9C(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2, int arg3,
         if (arg1->shield.base.id != 0) {
 
             if (arg2 != 0) {
-                func_80080A9C(arg0, equipment, arg2 - 1, 0xF1, arg1->unk957);
+                _triggerClassChange(arg0, equipment, arg2 - 1, 0xF1, arg1->unk957);
             }
             if (arg3 != 0) {
-                _triggerAffinityChange(arg0, equipment, arg3 - 1, 0xF1, arg1->unk957);
+                _triggerWeaponAffinityChange(
+                    arg0, equipment, arg3 - 1, 0xF1, arg1->unk957);
             }
         }
         _calculateShieldClassAffinity(arg1);
@@ -8493,12 +8626,12 @@ void func_80080C9C(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2, int arg3,
         if (equipment->id != 0) {
             if (arg2 != 0) {
                 do {
-                    func_80080A9C(arg0, equipment, arg2 - 1,
+                    _triggerClassChange(arg0, equipment, arg2 - 1,
                         arg1->limbs[temp_s2].nameIndex, arg1->unk957);
                 } while (0);
             }
             if (arg3 != 0) {
-                _triggerAffinityChange(arg0, equipment, arg3 - 1,
+                _triggerWeaponAffinityChange(arg0, equipment, arg3 - 1,
                     arg1->limbs[temp_s2].nameIndex, arg1->unk957);
             }
         }
@@ -8513,10 +8646,10 @@ void func_80080F78(vs_skill_t* skill, vs_battle_actor2* arg1, int arg2, int arg3
         vs_battle_uiEquipment* temp_s1 = &arg1->weapon.blade;
         if (arg1->weapon.blade.id != 0) {
             if (arg2 != 0) {
-                func_80080A9C(skill, temp_s1, arg2 - 1, 0xF0, arg1->unk957);
+                _triggerClassChange(skill, temp_s1, arg2 - 1, 0xF0, arg1->unk957);
             }
             if (arg3 != 0) {
-                func_80080534(skill, temp_s1, arg3 - 1, 0xF0, arg1->unk957);
+                _triggerArmorAffinityChange(skill, temp_s1, arg3 - 1, 0xF0, arg1->unk957);
             }
         }
         _calculateWeaponClassAffinity(arg1);

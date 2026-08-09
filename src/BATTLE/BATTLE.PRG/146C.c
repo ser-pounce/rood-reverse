@@ -8239,10 +8239,124 @@ void func_800803A4(
 // https://decomp.me/scratch/HH1u5
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80080534);
 
-// https://decomp.me/scratch/RCJDN
-void func_800807E8(
-    vs_skill_t* arg0, vs_battle_uiEquipment* arg1, int arg2, int arg3, int arg4);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800807E8);
+void _triggerAffinityChange(vs_skill_t* skill, vs_battle_uiEquipment* equipment,
+    int affinity, int arg3, int suppressNotification)
+{
+    int targetAffinity;
+    int i;
+    int physical;
+    int opposingAffinity;
+    int randVal;
+
+    if (skill->hitParams[0].affinity != 0) {
+        affinity = skill->hitParams[0].affinity - 1;
+    }
+
+    switch (affinity) {
+    case 0:
+        targetAffinity = 0;
+        break;
+
+    case 1:
+        targetAffinity = 1;
+        physical = 0;
+        opposingAffinity = 3;
+        break;
+
+    case 2:
+        targetAffinity = 2;
+        physical = 0;
+        opposingAffinity = 4;
+        break;
+
+    case 3:
+        targetAffinity = 3;
+        physical = 0;
+        opposingAffinity = 1;
+        break;
+
+    case 4:
+        targetAffinity = 4;
+        physical = 0;
+        opposingAffinity = 2;
+        break;
+
+    case 5:
+        targetAffinity = 5;
+        physical = 0;
+        opposingAffinity = 6;
+        break;
+
+    case 6:
+        targetAffinity = 6;
+        physical = 0;
+        opposingAffinity = 5;
+        break;
+    }
+
+    if (equipment->affinities[targetAffinity] >= 100) {
+        return;
+    }
+
+    randVal = vs_main_getRand(256);
+
+    if ((70 - ((equipment->affinities[targetAffinity] + 100) / 4)) < randVal) {
+        return;
+    }
+
+    ++equipment->affinities[targetAffinity];
+
+    if (suppressNotification == 0) {
+        func_80096768(arg3, targetAffinity + 6, 1);
+    }
+
+    if (targetAffinity == 0) {
+        for (i = 1; i < 7; ++i) {
+            if (equipment->affinities[i] > -100) {
+
+                int randVal = vs_main_getRand(256);
+
+                if ((((equipment->affinities[i] + 100) / 4) + 20) >= randVal) {
+
+                    --equipment->affinities[i];
+
+                    if (suppressNotification == 0) {
+                        func_80096768(arg3, i + 6, 0x80000001);
+                    }
+                }
+            }
+        }
+        return;
+    }
+
+    if (equipment->affinities[physical] > -100) {
+
+        int randVal = vs_main_getRand(256);
+
+        if ((((equipment->affinities[physical] + 100) / 4) + 20) >= randVal) {
+
+            --equipment->affinities[physical];
+
+            if (suppressNotification == 0) {
+                func_80096768(arg3, physical + 6, 0x80000001);
+            }
+        }
+    }
+
+    if (equipment->affinities[opposingAffinity] > -100) {
+
+        int randVal = vs_main_getRand(256);
+
+        if ((((equipment->affinities[opposingAffinity] + 100) / 4) + 20) >= randVal) {
+
+            --equipment->affinities[opposingAffinity];
+
+            if (suppressNotification == 0) {
+                func_80096768(arg3, opposingAffinity + 6, 0x80000001);
+            }
+        }
+    }
+}
 
 void func_80080A9C(
     vs_skill_t* arg0, vs_battle_uiEquipment* arg1, int arg2, int arg3, int arg4)
@@ -8368,7 +8482,7 @@ void func_80080C9C(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2, int arg3,
                 func_80080A9C(arg0, equipment, arg2 - 1, 0xF1, arg1->unk957);
             }
             if (arg3 != 0) {
-                func_800807E8(arg0, equipment, arg3 - 1, 0xF1, arg1->unk957);
+                _triggerAffinityChange(arg0, equipment, arg3 - 1, 0xF1, arg1->unk957);
             }
         }
         _calculateShieldClassAffinity(arg1);
@@ -8384,8 +8498,8 @@ void func_80080C9C(vs_skill_t* arg0, vs_battle_actor2* arg1, int arg2, int arg3,
                 } while (0);
             }
             if (arg3 != 0) {
-                func_800807E8(arg0, equipment, arg3 - 1, arg1->limbs[temp_s2].nameIndex,
-                    arg1->unk957);
+                _triggerAffinityChange(arg0, equipment, arg3 - 1,
+                    arg1->limbs[temp_s2].nameIndex, arg1->unk957);
             }
         }
 
@@ -8688,7 +8802,7 @@ short func_800819D0(
 }
 
 short func_800819FC(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
-    int nHit, int addRandMod, int arg5 __attribute__((unused)))
+    int nHit, int addRandMod)
 {
     _hitIntermediate sp18;
     short maxAffinity;

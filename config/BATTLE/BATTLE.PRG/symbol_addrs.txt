@@ -135,6 +135,7 @@ _hitPrerequisiteUnused2 = 0x8007FDD0;
 _canPerformAttack = 0x8007FDD8;
 func_80080000 = 0x80080000; // type:func size:0x1E0
 _adjustDpPp = 0x800802C4;
+_triggerAffinityChange = 0x800807E8;
 _setApplicableStatuses = 0x80081020;
 _setInflictedStatuses = 0x800810CC;
 _damageFromTrapPanel = 0x8008255C;

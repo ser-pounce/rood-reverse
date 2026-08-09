@@ -3776,7 +3776,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5E00);
 
 int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
-    func_800D6310_t* temp_s0 = (func_800D6310_t*)arg1->unk0 + (arg1->unk6);
+    func_800D6310_t* temp_s0 = (func_800D6310_t*)arg1->unk0 + arg1->unk6;
 
     if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
         if ((arg0->unkD1C.unkC.unk0 == 4)

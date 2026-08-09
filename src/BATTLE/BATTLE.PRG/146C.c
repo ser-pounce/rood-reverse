@@ -6114,36 +6114,36 @@ void func_8007BBD8(int arg0, int arg1, int arg2)
 {
     D_80050468.unk0 = arg0;
     D_80050468.unk2 = arg1;
-    D_80050468.unk7 = 0;
-    D_80050468.unk6 = 0;
-    D_80050468.unk5 = 0;
-    D_80050468.unk4 = 0;
+    D_80050468.hours = 0;
+    D_80050468.minutes = 0;
+    D_80050468.seconds = 0;
+    D_80050468.frames = 0;
 
     if (arg0 != 1) {
-        D_80050468.unk4 = arg2 % 256;
-        D_80050468.unk5 = (arg2 / 256) % 256;
-        D_80050468.unk6 = (arg2 / 65536) % 256;
-        D_80050468.unk7 = (arg2 / 16777216) % 256;
+        D_80050468.frames = arg2 % 256;
+        D_80050468.seconds = (arg2 / 256) % 256;
+        D_80050468.minutes = (arg2 / 65536) % 256;
+        D_80050468.hours = (arg2 / 16777216) % 256;
     }
 
-    vs_battle_setStateFlag(0xA0, D_80050468.unk4);
-    vs_battle_setStateFlag(0xA1, D_80050468.unk5);
-    vs_battle_setStateFlag(0xA2, D_80050468.unk6);
-    vs_battle_setStateFlag(0xA3, D_80050468.unk7);
+    vs_battle_setStateFlag(0xA0, D_80050468.frames);
+    vs_battle_setStateFlag(0xA1, D_80050468.seconds);
+    vs_battle_setStateFlag(0xA2, D_80050468.minutes);
+    vs_battle_setStateFlag(0xA3, D_80050468.hours);
     func_800CB550();
 }
 
 void func_8007BCCC(void)
 {
     D_80050468.unk0 = 0;
-    D_80050468.unk7 = 0;
-    D_80050468.unk6 = 0;
-    D_80050468.unk5 = 0;
-    D_80050468.unk4 = 0;
+    D_80050468.hours = 0;
+    D_80050468.minutes = 0;
+    D_80050468.seconds = 0;
+    D_80050468.frames = 0;
     vs_battle_setStateFlag(0xA0, 0);
-    vs_battle_setStateFlag(0xA1, D_80050468.unk5);
-    vs_battle_setStateFlag(0xA2, D_80050468.unk6);
-    vs_battle_setStateFlag(0xA3, D_80050468.unk7);
+    vs_battle_setStateFlag(0xA1, D_80050468.seconds);
+    vs_battle_setStateFlag(0xA2, D_80050468.minutes);
+    vs_battle_setStateFlag(0xA3, D_80050468.hours);
     func_800CB560();
 }
 
@@ -11760,8 +11760,66 @@ void func_80087EF4(vs_battle_actor2* actor)
     }
 }
 
-// https://decomp.me/scratch/d6yyd
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800882F4);
+int func_800882F4(void)
+{
+    int var_s1 = 0;
+    int var_s2 = 0;
+
+    if (D_80050468.unk0 == var_s1) {
+        return var_s1;
+    }
+
+    if (D_80050468.unk0 == 1) {
+        if (D_80050468.hours <= 0) {
+            D_80050468.frames += vs_gametime_tickspeed;
+            if (D_80050468.frames > 59) {
+                D_80050468.frames = 0;
+                if (++D_80050468.seconds > 59) {
+                    D_80050468.seconds = 0;
+                    if (++D_80050468.minutes > 59) {
+                        D_80050468.minutes = 0;
+                        if (++D_80050468.hours > 0) {
+                            D_80050468.hours = D_80050468.unk0;
+                        }
+                    }
+                }
+            }
+        }
+    } else if (D_80050468.frames | D_80050468.seconds | D_80050468.minutes
+               | D_80050468.hours) {
+        if (D_80050468.frames == 0) {
+            D_80050468.frames = 60;
+            if (--D_80050468.seconds < 0) {
+                D_80050468.seconds = 59;
+                if (--D_80050468.minutes < 0) {
+                    D_80050468.minutes = 59;
+                    if (--D_80050468.hours < 0) {
+                        D_80050468.hours = 0;
+                    }
+                }
+            }
+        }
+
+        D_80050468.frames -= vs_gametime_tickspeed;
+    }
+
+    if (D_80050468.frames != 0) {
+        vs_battle_setStateFlag(
+            0xA0, ((((D_80050468.frames << 0xE) + rand()) * 5u) >> 0xE) / 3);
+    } else {
+        vs_battle_setStateFlag(0xA0, D_80050468.frames);
+    }
+
+    vs_battle_setStateFlag(0xA1, D_80050468.seconds);
+    vs_battle_setStateFlag(0xA2, D_80050468.minutes);
+    vs_battle_setStateFlag(0xA3, D_80050468.hours);
+
+    if ((var_s2 == 0) && (D_80050468.frames == 0) && (func_800BEC58(16, 0, 0, 0) == 1)) {
+        var_s1 = 1;
+    }
+
+    return var_s1;
+}
 
 int func_80088554(void)
 {

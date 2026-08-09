@@ -9131,7 +9131,7 @@ short _previousHitFactor1(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((un
          + (D_800F19CC->unk0 - 1);
 }
 
-short func_800822A0(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorCurrentHp(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9165,7 +9165,7 @@ short _factorMagicDamageReceived(vs_skill_t* skill,
     return var_a2;
 }
 
-short _factorPhysicalDamageReceived(vs_skill_t* skill,
+short _factorPhysicalDamageReceived0(vs_skill_t* skill,
     _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
@@ -9311,8 +9311,8 @@ short _damageFromTrapPanel(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((
     return damage;
 }
 
-short func_800829B8(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target,
-    int nHit, int withRandMod)
+short _hpHealed(vs_skill_t* skill, _hitEntity_t* source, _hitEntity_t* target, int nHit,
+    int withRandMod)
 {
     _hitIntermediate sp18;
     short value;
@@ -9570,27 +9570,28 @@ short _hpHealedFromHealPanel(vs_skill_t* skill,
     return hpHealed;
 }
 
-short func_80083430(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+short _itemRecovery(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3, int arg4)
 {
-    short temp_s0;
     short temp_v0;
+    short temp_s0 = arg0->hitParams[arg3].statFactor * 5;
 
-    temp_s0 = arg0->hitParams[arg3].statFactor * 5;
     if (arg4 != 0) {
         temp_v0 = vs_main_getRandSmoothed(0xB) - 5;
     } else {
         temp_v0 = 0;
     }
-    temp_s0 = temp_s0 + temp_v0;
+
+    temp_s0 += temp_v0;
 
     if (temp_s0 < 0) {
         temp_s0 = 0;
     }
+
     return temp_s0;
 }
 
-short func_800834A4(vs_skill_t* arg0 __attribute__((unused)),
+short _getRecoverableHp(vs_skill_t* arg0 __attribute__((unused)),
     _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -9598,7 +9599,7 @@ short func_800834A4(vs_skill_t* arg0 __attribute__((unused)),
          - vs_battle_actors[arg2->unk0.targetActor]->unk3C->currentHP;
 }
 
-short func_800834E4(vs_skill_t* arg0 __attribute__((unused)),
+short _getRecoverableMp(vs_skill_t* arg0 __attribute__((unused)),
     _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
     int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
 {
@@ -9616,7 +9617,8 @@ short _previousHitFactor2(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((un
          + (D_800F19CC->unk0 - 1);
 }
 
-short func_80083590(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorMagicDamageReceivedOfType(vs_skill_t* skill,
+    _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9633,7 +9635,8 @@ short func_80083590(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)
     return var_a2;
 }
 
-short func_8008364C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorPhysicalDamageReceived1(vs_skill_t* skill,
+    _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9649,7 +9652,7 @@ short func_8008364C(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)
     return var_a2;
 }
 
-short func_80083708(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorSpellCost(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9666,7 +9669,7 @@ short func_80083708(vs_skill_t* skill, _hitEntity_t* arg1 __attribute__((unused)
     return var_v0;
 }
 
-short func_8008379C(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
+short _factorDamageReceived(vs_skill_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
     _hitEntity_t* arg2 __attribute__((unused)), int arg3,
     int arg4 __attribute__((unused)))
 {
@@ -9686,7 +9689,7 @@ short _getEquippedShieldDp(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_
     return vs_battle_actors[arg1->unk0.targetActor]->unk3C->shield.currentPp;
 }
 
-short func_8008384C(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
+short _factorLastValue(vs_skill_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
     _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
     int arg4 __attribute__((unused)))
 {

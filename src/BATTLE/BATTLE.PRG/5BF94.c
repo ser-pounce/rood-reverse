@@ -3782,9 +3782,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D61AC);
 
 int func_800D6298(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
-    func_800D6310_t* temp_a3;
+    func_800D6310_t* temp_a3 = (func_800D6310_t*)arg1->unk0 + (arg1->unk6);
 
-    temp_a3 = (func_800D6310_t*)arg1->unk0 + (arg1->unk6);
     if (temp_a3->unk0 == arg0->unkD1C.unk30->unk2) {
         func_8007B1B8(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
             temp_a3->unk5 - 0x80, (temp_a3->unk6 - 0x80));

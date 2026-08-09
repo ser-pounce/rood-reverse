@@ -3782,7 +3782,7 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
         if ((arg0->unkD1C.unkC.unk0 == 4)
             && (func_800A0BE0((char)arg0->unkD1C.unkC.unk4.unk0) & 2)) {
             func_8007B29C(temp_s0->unk7, temp_s0->unk2, (char)arg0->unkD1C.unkC.unk4.unk0,
-                temp_s0->unk4 - 0x80, (temp_s0->unk5 - 0x80), (temp_s0->unk6 - 0x80));
+                temp_s0->unk4 - 0x80, temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
         }
         return func_800D5780(arg1);
     }

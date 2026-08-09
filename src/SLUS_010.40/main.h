@@ -396,10 +396,10 @@ typedef struct {
     char unk0;
     char unk1;
     u_short unk2;
-    signed char unk4;
-    signed char unk5;
-    signed char unk6;
-    signed char unk7;
+    signed char frames;
+    signed char seconds;
+    signed char minutes;
+    signed char hours;
 } D_80050468_t;
 
 extern portInfo_t _portInfo[2];

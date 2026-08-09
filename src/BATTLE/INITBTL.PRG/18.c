@@ -560,10 +560,10 @@ void func_800FA35C(int startState __attribute__((unused)))
     vs_main_projectionDistance = 0x200;
     vs_main_nearClip = 0x40;
     D_80050468.unk0 = 0;
-    D_80050468.unk7 = 0;
-    D_80050468.unk6 = 0;
-    D_80050468.unk5 = 0;
-    D_80050468.unk4 = 0;
+    D_80050468.hours = 0;
+    D_80050468.minutes = 0;
+    D_80050468.seconds = 0;
+    D_80050468.frames = 0;
     _zoneContext.unk68 = D_80061068.unk6_0 & 0x3FF;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();

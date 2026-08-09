@@ -137,6 +137,7 @@ func_80080000 = 0x80080000; // type:func size:0x1E0
 _adjustDpPp = 0x800802C4;
 _setApplicableStatuses = 0x80081020;
 _setInflictedStatuses = 0x800810CC;
+_damageFromTrapPanel = 0x8008255C;
 _hpHealedFromHealPanel = 0x80082FF4;
 _getEquippedShieldDp = 0x8008381C;
 _getRisk = 0x800838BC;

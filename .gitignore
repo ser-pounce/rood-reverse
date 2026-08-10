@@ -13,4 +13,5 @@
 /tools/python
 /tools/old-gcc
 /tools/mkpsxiso
+/tools/xdelta
 /progress.json

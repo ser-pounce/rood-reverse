@@ -96,7 +96,7 @@ static vs_battle_charInitData D_800FAB18 = {
     .limbs = {
         {
             .hp = 200,
-            .skills = {
+            .actions = {
                 {.id = 1},
                 {.index = 1},
                 {.index = 2},
@@ -121,7 +121,7 @@ static vs_battle_charInitData D_800FAB18 = {
         },
         {
             .hp = 200,
-            .skills = {
+            .actions = {
                 {.id = 1},
                 {.index = 1},
                 {.index = 2},
@@ -146,7 +146,7 @@ static vs_battle_charInitData D_800FAB18 = {
         },
         {
             .hp = 200,
-            .skills = {
+            .actions = {
                 {0},
                 {.index = 1},
                 {.index = 2},
@@ -170,7 +170,7 @@ static vs_battle_charInitData D_800FAB18 = {
         },
         {
             .hp = 200,
-            .skills = {
+            .actions = {
                 {0},
                 {.index = 1},
                 {.index = 2},
@@ -195,7 +195,7 @@ static vs_battle_charInitData D_800FAB18 = {
         },
         {
             .hp = 200,
-            .skills = {
+            .actions = {
                 {0},
                 {.index = 1},
                 {.index = 2},
@@ -218,7 +218,7 @@ static vs_battle_charInitData D_800FAB18 = {
             .dpSplash = {0, 0, 0, 5, 100, 0},
         },
         {
-            .skills = {
+            .actions = {
                 {0},
                 {.index = 1},
                 {.index = 2},
@@ -247,10 +247,10 @@ static void func_800F9818(void)
         if (i < 0) {
             var_v0 = i + 7;
         }
-        if (vs_main_skillsLearned[var_v0 >> 3] & (0x80 >> (i - ((var_v0 >> 3) * 8)))) {
-            vs_main_skills[i].unlocked = 1;
+        if (vs_main_actionsLearned[var_v0 >> 3] & (0x80 >> (i - ((var_v0 >> 3) * 8)))) {
+            vs_main_actions[i].unlocked = 1;
         } else {
-            vs_main_skills[i].unlocked = 0;
+            vs_main_actions[i].unlocked = 0;
         }
     }
 }

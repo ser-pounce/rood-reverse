@@ -92,7 +92,7 @@ typedef struct {
     char unk100[0x80];
     savedata_unk180_t unk180;
     char stateFlags[0x440];
-    char skillsLearned[32];
+    char actionsLearned[32];
     char mapStatus[0x48];
     vs_main_settings_t settings;
     D_80060068_t unk6C8;
@@ -614,7 +614,7 @@ static int _applyLoadedSaveFile(int write)
 
     _rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof vs_main_stateFlags);
     _rMemcpy(
-        vs_main_skillsLearned, spmcimg[1].skillsLearned, sizeof vs_main_skillsLearned);
+        vs_main_actionsLearned, spmcimg[1].actionsLearned, sizeof vs_main_actionsLearned);
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
     _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
@@ -719,8 +719,8 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
     _rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof savedata->stateFlags);
-    _rMemcpy(
-        savedata->skillsLearned, vs_main_skillsLearned, sizeof savedata->skillsLearned);
+    _rMemcpy(savedata->actionsLearned, vs_main_actionsLearned,
+        sizeof savedata->actionsLearned);
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
     _rMemcpy(&savedata->settings, &vs_main_settings, sizeof savedata->settings);
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof savedata->unk6C8);

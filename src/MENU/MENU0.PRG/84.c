@@ -12,8 +12,8 @@
 static signed char _MPCostTextBuffer[16];
 
 /**
- * Prints the MP cost of a spell using skill data.
- * @param id Skill ID. Value can be negated to indicate a variable cost spell.
+ * Prints the MP cost of a spell using action data.
+ * @param id Action ID. Value can be negated to indicate a variable cost spell.
  */
 static void _setMPCost(int id)
 {
@@ -27,10 +27,10 @@ static void _setMPCost(int id)
         id = -id;
     }
 
-    flags = vs_battle_getSkillFlags(0, id);
-    vs_mainmenu_setSkillCost(1, "MP", 8, (flags >> 1) & 1);
+    flags = vs_battle_getActionFlags(0, id);
+    vs_mainmenu_setActionCost(1, "MP", 8, (flags >> 1) & 1);
 
-    cost = vs_main_skills[id].cost;
+    cost = vs_main_actions[id].cost;
     _MPCostTextBuffer[15] = NULL;
 
     i = 15;
@@ -52,7 +52,7 @@ static void _setMPCost(int id)
 
     _MPCostTextBuffer[--i] = '#';
 
-    vs_mainmenu_setSkillCost(
+    vs_mainmenu_setActionCost(
         0, &_MPCostTextBuffer[i], variableCost * 4 + 72, (flags >> 1) & 1);
 }
 
@@ -66,7 +66,7 @@ void _setMPCostDirect(int costDecimal, int disabled)
     int cost;
     int i;
 
-    vs_mainmenu_setSkillCost(1, "MP", 8, disabled);
+    vs_mainmenu_setActionCost(1, "MP", 8, disabled);
 
     cost = costDecimal;
     i = 15;
@@ -80,7 +80,7 @@ void _setMPCostDirect(int costDecimal, int disabled)
 
     _MPCostDirectTextBuffer[--i] = '#';
 
-    vs_mainmenu_setSkillCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
+    vs_mainmenu_setActionCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
 }
 
 u_short _magicStrings[] = {
@@ -200,9 +200,9 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         rowCount = 0;
 
         for (i = 0; i < 18; ++i) {
-            int skillId = vs_battle_warlockSpellIds[i];
+            int actionId = vs_battle_warlockSpellIds[i];
 
-            if (vs_main_skills[skillId].unlocked) {
+            if (vs_main_actions[actionId].unlocked) {
                 menuStrings[rowCount * 2] =
                     (char*)&_magicStrings[_magicStrings[i
                                                         + VS_magic_INDEX_warlockSpells]];
@@ -210,11 +210,11 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                     [_magicStrings[i + VS_magic_INDEX_warlockSpellDescs]];
                 rowTypes[rowCount] = 0;
 
-                if (vs_battle_getSkillFlags(0, skillId) != 0) {
+                if (vs_battle_getActionFlags(0, actionId) != 0) {
                     rowTypes[rowCount] |= 1;
                 }
 
-                _availableWarlockSpells[rowCount] = skillId;
+                _availableWarlockSpells[rowCount] = actionId;
                 ++rowCount;
             }
         }
@@ -243,7 +243,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
         if (selectedRow != 0) {
 
-            vs_mainMenu_displaySkillCost = 0;
+            vs_mainMenu_displayActionCost = 0;
 
             if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
                 selectedRow = -2;
@@ -262,12 +262,12 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
                 for (rowCount = 0; rowCount < 7; ++rowCount) {
                     if ((selectedRow == levelledSpells[rowCount])
-                        && (vs_main_skills[selectedRow + 1].unlocked)) {
+                        && (vs_main_actions[selectedRow + 1].unlocked)) {
 
                         vs_mainMenu_flyoutMenuRightAndHoistSelection(
                             D_800F4EE8.cursorMemories[14], 2);
 
-                        vs_mainMenu_displaySkillCost = 1;
+                        vs_mainMenu_displayActionCost = 1;
                         state = levelledSpellInit;
                     }
                 }
@@ -289,7 +289,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
             for (rowCount = 0; rowCount < 7; ++rowCount) {
                 if (i == levelledSpells[rowCount]) {
-                    if (vs_main_skills[i + 1].unlocked) {
+                    if (vs_main_actions[i + 1].unlocked) {
                         i = -i;
                     }
                     break;
@@ -314,9 +314,9 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
         i = 2;
 
-        if (vs_main_skills[selectedRow + 2].unlocked) {
+        if (vs_main_actions[selectedRow + 2].unlocked) {
             i = 3;
-            if (vs_main_skills[selectedRow + 3].unlocked) {
+            if (vs_main_actions[selectedRow + 3].unlocked) {
                 i = 4;
             }
         }
@@ -344,7 +344,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
             vs_battle_playMenuLeaveSfx();
 
-            vs_mainMenu_displaySkillCost = 0;
+            vs_mainMenu_displayActionCost = 0;
 
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_dismissInformationBox();
@@ -368,11 +368,11 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
         }
 
         if (vs_main_buttonsPressed.all & PADRright) {
-            if (vs_battle_getSkillFlags(0, selectedRow + i) == 0) {
+            if (vs_battle_getActionFlags(0, selectedRow + i) == 0) {
 
                 vs_battle_playMenuSelectSfx();
 
-                vs_mainMenu_displaySkillCost = 0;
+                vs_mainMenu_displayActionCost = 0;
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
@@ -521,7 +521,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
     int rowTypes[6];
     int i;
     int rowCount;
-    int skillId;
+    int actionId;
 
     if (initShortcutInvoked != 0) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
@@ -538,18 +538,18 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
 
         rowCount = 0;
         for (i = 0; i < 6; ++i) {
-            skillId = vs_battle_shamanSpellIds[i];
-            if (!vs_main_skills[skillId].unlocked) {
+            actionId = vs_battle_shamanSpellIds[i];
+            if (!vs_main_actions[actionId].unlocked) {
                 continue;
             }
-            menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+            menuStrings[rowCount * 2] = vs_main_actions[actionId].name;
             menuStrings[rowCount * 2 + 1] =
                 (char*)&_magicStrings[_magicStrings[i + VS_magic_INDEX_shamanSpellDescs]];
             rowTypes[rowCount] = 0;
-            if (vs_battle_getSkillFlags(0, skillId) != 0) {
+            if (vs_battle_getActionFlags(0, actionId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableShamanSpells[rowCount] = skillId;
+            _availableShamanSpells[rowCount] = actionId;
             ++rowCount;
         }
 
@@ -570,7 +570,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_displaySkillCost = 0;
+            vs_mainMenu_displayActionCost = 0;
             if ((vs_battle_shortcutInvoked != 0) && (selectedRow == -1)) {
                 selectedRow = -2;
             }
@@ -622,7 +622,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
     int rowTypes[18];
     int i;
     int rowCount;
-    int skillId;
+    int actionId;
 
     if (initShortcutInvoked != 0) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
@@ -638,19 +638,19 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
         }
         rowCount = 0;
         for (i = 0; i < 18; ++i) {
-            skillId = vs_battle_sorcererSpellIds[i];
-            if (!vs_main_skills[skillId].unlocked) {
+            actionId = vs_battle_sorcererSpellIds[i];
+            if (!vs_main_actions[actionId].unlocked) {
                 continue;
             }
-            menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+            menuStrings[rowCount * 2] = vs_main_actions[actionId].name;
             menuStrings[rowCount * 2 + 1] =
                 (char*)&_magicStrings[_magicStrings[i
                                                     + VS_magic_INDEX_sorcererSpellDescs]];
             rowTypes[rowCount] = 0;
-            if (vs_battle_getSkillFlags(0, skillId) != 0) {
+            if (vs_battle_getActionFlags(0, actionId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableSorcererSpells[rowCount] = skillId;
+            _availableSorcererSpells[rowCount] = actionId;
             ++rowCount;
         }
 
@@ -671,7 +671,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_displaySkillCost = 0;
+            vs_mainMenu_displayActionCost = 0;
             if (vs_battle_shortcutInvoked && (selectedRow == -1)) {
                 selectedRow = -2;
             }
@@ -721,7 +721,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
     int rowTypes[8];
     int i;
     int rowCount;
-    int skillId;
+    int actionId;
 
     if (initShortcutInvoked != 0) {
         shortcutInvoked = (initShortcutInvoked ^ 2) < 1;
@@ -737,18 +737,18 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
         }
         rowCount = 0;
         for (i = 0; i < 8; ++i) {
-            skillId = vs_battle_enchanterSpellIds[i];
-            if (!vs_main_skills[skillId].unlocked) {
+            actionId = vs_battle_enchanterSpellIds[i];
+            if (!vs_main_actions[actionId].unlocked) {
                 continue;
             }
-            menuStrings[rowCount * 2] = vs_main_skills[skillId].name;
+            menuStrings[rowCount * 2] = vs_main_actions[actionId].name;
             menuStrings[rowCount * 2 + 1] = (char*)&_magicStrings
                 [_magicStrings[i + VS_magic_INDEX_enchanterSpellDescs]];
             rowTypes[rowCount] = 0;
-            if (vs_battle_getSkillFlags(0, skillId) != 0) {
+            if (vs_battle_getActionFlags(0, actionId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableEnchanterSpells[rowCount] = skillId;
+            _availableEnchanterSpells[rowCount] = actionId;
             ++rowCount;
         }
 
@@ -769,7 +769,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
     case handleInput:
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
         if (selectedRow != 0) {
-            vs_mainMenu_displaySkillCost = 0;
+            vs_mainMenu_displayActionCost = 0;
             if ((vs_battle_shortcutInvoked != 0) && (selectedRow == -1)) {
                 selectedRow = -2;
             }

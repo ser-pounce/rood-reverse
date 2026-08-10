@@ -8,7 +8,7 @@
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 
 /**
- * Prints the HP cost of a Break Art using skill data.
+ * Prints the HP cost of a Break Art using action data.
  */
 static void _setHPCost(int id)
 {
@@ -18,10 +18,10 @@ static void _setHPCost(int id)
     int i;
     int cost;
 
-    flags = vs_battle_getSkillFlags(0, id);
-    vs_mainmenu_setSkillCost(1, "HP", 8, (flags >> 1) & 1);
+    flags = vs_battle_getActionFlags(0, id);
+    vs_mainmenu_setActionCost(1, "HP", 8, (flags >> 1) & 1);
 
-    cost = vs_main_skills[id].cost;
+    cost = vs_main_actions[id].cost;
     _digitBuffer[15] = 0;
 
     i = 15;
@@ -35,7 +35,7 @@ static void _setHPCost(int id)
     --i;
     _digitBuffer[i] = '#';
 
-    vs_mainmenu_setSkillCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
+    vs_mainmenu_setActionCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
 /**
@@ -114,7 +114,7 @@ static int _weaponArtsMenu(int typeCursorMem)
     static char artsLearned;
     static char remainingRows;
     static char _[12];
-    static u_short skillIds[4];
+    static u_short actionIds[4];
 
     int i;
 
@@ -150,21 +150,21 @@ static int _weaponArtsMenu(int typeCursorMem)
 
         for (i = 0; i < 4; ++i) {
 
-            int skillId = vs_main_skills_daggerArt1 + (weaponType - 1) * 4 + i;
+            int actionId = vs_main_actions_daggerArt1 + (weaponType - 1) * 4 + i;
 
-            if (vs_main_skills[skillId].unlocked) {
-                menuStrings[rowCount * 2] = (char*)vs_main_skills[skillId].name;
+            if (vs_main_actions[actionId].unlocked) {
+                menuStrings[rowCount * 2] = (char*)vs_main_actions[actionId].name;
                 menuStrings[rowCount * 2 + 1] =
                     (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
                                               + ((weaponType - 1) * 4)]];
                 rowTypes[rowCount] = 0;
 
                 if ((weaponType != vs_battle_characterState->equippedWeaponCategory)
-                    || (vs_battle_getSkillFlags(0, skillId) != 0)) {
+                    || (vs_battle_getActionFlags(0, actionId) != 0)) {
                     rowTypes[rowCount] = 1;
                 }
 
-                skillIds[rowCount++] = skillId;
+                actionIds[rowCount++] = actionId;
             }
         }
 
@@ -179,7 +179,7 @@ static int _weaponArtsMenu(int typeCursorMem)
             menuStrings[rowCount * 2 + 1] =
                 (char*)&_strings[VS_strings_OFFSET_viewArtsDesc];
             rowTypes[rowCount] = 2;
-            skillIds[rowCount] = 0xFFFF;
+            actionIds[rowCount] = 0xFFFF;
             ++rowCount;
         }
 
@@ -208,14 +208,14 @@ static int _weaponArtsMenu(int typeCursorMem)
 
         isLastRow = remainingRows == 0;
         selectedRow = vs_mainmenu_getSelectedRow() + 1;
-        vs_mainMenu_displaySkillCost = 0;
+        vs_mainMenu_displayActionCost = 0;
 
         if (selectedRow != menuSelectionConfirm) {
 
             isLastRow = 0;
 
             if (selectedRow > 0) {
-                selectedRow = skillIds[selectedRow - 1];
+                selectedRow = actionIds[selectedRow - 1];
             } else if (vs_battle_shortcutInvoked != 0) {
                 selectedRow = menuSelectionQuit;
             }
@@ -230,7 +230,7 @@ static int _weaponArtsMenu(int typeCursorMem)
 
             state = returnSelection;
         } else {
-            i = skillIds[vs_mainMenu_getConfirmedRow()];
+            i = actionIds[vs_mainMenu_getConfirmedRow()];
             if (i != 0xFFFF) {
                 _setHPCost(i);
             }
@@ -296,7 +296,7 @@ static int _weaponCategoriesMenu(int initialize)
             menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 1]];
             rowTypes[i] = 0x04000000 * (i + 1);
             for (j = 0; j < 4; ++j) {
-                if (vs_main_skills[i * 4 + vs_main_skills_daggerArt1 + j].unlocked) {
+                if (vs_main_actions[i * 4 + vs_main_actions_daggerArt1 + j].unlocked) {
                     break;
                 }
             }

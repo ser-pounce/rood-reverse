@@ -30,34 +30,34 @@ static int _breakArtUnlocked(int init)
     static char _[15] __attribute__((unused));
 
     if (init != 0) {
-        int skillId;
+        int actionId;
         int weaponCategory = vs_battle_characterState->equippedWeaponCategory;
         int weaponCategoryMod = weaponCategory;
         u_char(*new_var)[12] = &vs_main_artsStatus.artsLearned;
         weaponCategoryMod %= 10;
-        skillId = (*new_var)[weaponCategoryMod];
+        actionId = (*new_var)[weaponCategoryMod];
 
-        if (skillId == 4) {
+        if (actionId == 4) {
             return 1;
         }
 
         if (vs_main_artsStatus.kills.weaponCategories[weaponCategoryMod]
-            < vs_main_artsPointsRequirements[weaponCategoryMod][skillId]) {
+            < vs_main_artsPointsRequirements[weaponCategoryMod][actionId]) {
             return 1;
         }
 
         vs_battle_initInformationTextBox(3);
 
-        vs_main_artsStatus.artsLearned[weaponCategoryMod] = skillId + 1;
-        skillId = 184 + ((weaponCategory - 1) * 4) + skillId;
+        vs_main_artsStatus.artsLearned[weaponCategoryMod] = actionId + 1;
+        actionId = 184 + ((weaponCategory - 1) * 4) + actionId;
         vs_battle_stringContext.strings[0] =
             (char*)&_battleAbilityMenuStrings[_battleAbilityMenuStrings[weaponCategory]];
-        vs_battle_stringContext.strings[1] = vs_main_skills[skillId].name;
+        vs_battle_stringContext.strings[1] = vs_main_actions[actionId].name;
 
         vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                 [VS_battleAbilitiesMenu_OFFSET_breakArtUnlock]);
 
-        vs_main_skills[skillId].unlocked = 1;
+        vs_main_actions[actionId].unlocked = 1;
         messageTimeout = 120;
 
     } else if (vs_battle_textBoxes[7].unk0.done) {
@@ -154,7 +154,7 @@ static int _battleAbilityUnlocked(int initialize)
     int i;
     int abilityState;
     vs_battle_menuItem_t* menuItem;
-    int skill;
+    int action;
 
     if (initialize != 0) {
 
@@ -174,7 +174,7 @@ static int _battleAbilityUnlocked(int initialize)
 
         for (i = 0; i < 11; ++i) {
             int ability = _unlockableChainAbilities[i];
-            if (!vs_main_skills[ability].unlocked) {
+            if (!vs_main_actions[ability].unlocked) {
                 remainingChainAbilities[remainingChainAbilityCount++] = ability;
             }
         }
@@ -183,7 +183,7 @@ static int _battleAbilityUnlocked(int initialize)
 
         for (i = 0; i < 11; ++i) {
             int ability = _unlockableDefenseAbilities[i];
-            if (!vs_main_skills[ability].unlocked) {
+            if (!vs_main_actions[ability].unlocked) {
                 remainingDefenseAbilities[remainingDefenseAbilityCount++] = ability;
             }
         }
@@ -281,7 +281,7 @@ static int _battleAbilityUnlocked(int initialize)
 
             for (i = 0; i < remainingChainAbilityCount; ++i) {
                 chainAbilityMenuStrings[i * 2] =
-                    vs_main_skills[remainingChainAbilities[i]].name;
+                    vs_main_actions[remainingChainAbilities[i]].name;
                 chainAbilityMenuStrings[i * 2 + 1] =
                     _getAbilityDescription(remainingChainAbilities[i]);
                 chainAbilityRowTypes[i] = 0;
@@ -315,7 +315,7 @@ static int _battleAbilityUnlocked(int initialize)
 
             for (i = 0; i < remainingDefenseAbilityCount; ++i) {
                 defenseAbilityMenuStrings[i * 2] =
-                    vs_main_skills[remainingDefenseAbilities[i]].name;
+                    vs_main_actions[remainingDefenseAbilities[i]].name;
                 defenseAbilityMenuStrings[i * 2 + 1] =
                     _getAbilityDescription(remainingDefenseAbilities[i]);
                 defenseAbilityRowTypes[i] = 0;
@@ -346,52 +346,52 @@ static int _battleAbilityUnlocked(int initialize)
 
     case unlockChainAbility:
         row = vs_mainmenu_getSelectedRow();
-        skill = row + 1;
+        action = row + 1;
 
-        if (skill != 0) {
+        if (action != 0) {
 
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
-            if (skill < 0) {
+            if (action < 0) {
                 state = reinit;
                 break;
             }
 
             vs_battle_initInformationTextBox(3);
 
-            skill = remainingChainAbilities[row];
-            vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
+            action = remainingChainAbilities[row];
+            vs_battle_stringContext.strings[1] = vs_main_actions[action].name;
 
             vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
 
-            vs_main_skills[skill].unlocked = 1;
+            vs_main_actions[action].unlocked = 1;
             state = showMessage;
         }
         break;
 
     case unlockDefenseAbility:
         row = vs_mainmenu_getSelectedRow();
-        skill = row + 1;
+        action = row + 1;
 
-        if (skill != 0) {
+        if (action != 0) {
 
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
-            if (skill < 0) {
+            if (action < 0) {
                 state = reinit;
                 break;
             }
 
             vs_battle_initInformationTextBox(3);
 
-            skill = remainingDefenseAbilities[row];
-            vs_battle_stringContext.strings[1] = vs_main_skills[skill].name;
+            action = remainingDefenseAbilities[row];
+            vs_battle_stringContext.strings[1] = vs_main_actions[action].name;
 
             vs_mainmenu_setInformationMessage((char*)&_battleAbilityMenuStrings
                     [VS_battleAbilitiesMenu_OFFSET_battleAbilityUnlock]);
 
-            vs_main_skills[skill].unlocked = 1;
+            vs_main_actions[action].unlocked = 1;
             state = showMessage;
         }
         break;
@@ -420,7 +420,7 @@ static int _battleAbilityUnlocked(int initialize)
  *
  * @return 1 if the unlock message has been displayed and closed, 0 otherwise.
  */
-int vs_menu2_skillUnlock(char* state)
+int vs_menu2_actionUnlock(char* state)
 {
     enum state { init, breakArtInit, breakArtUnlock, abilityInit, abilityUnlock, exit };
 

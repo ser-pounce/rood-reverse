@@ -53,7 +53,7 @@ static int _getParentShieldIndex(int itemCategory, int itemIndex)
 
 /**
  * Sets the text and rowtypes for the specified category.
- * Maps skills to misc items if selected.
+ * Maps actions to misc items if selected.
  *
  * @return Item count
  */
@@ -122,23 +122,23 @@ static int _populateItemRows(
             break;
 
         case itemCategoryMisc: {
-            u_int skillId;
+            u_int actionId;
             vs_mainMenu_setMiscRow(&vs_main_inventory.misc[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
 #ifdef _ITEMMENU
-            skillId =
-                vs_mainMenu_miscItemToSkillMap[vs_main_inventory.misc[index].id - 323];
+            actionId =
+                vs_mainMenu_miscItemToActionMap[vs_main_inventory.misc[index].id - 323];
 
-            if ((skillId - 106) < 28) {
+            if ((actionId - 106) < 28) {
                 int j;
                 for (j = 0; j < 3; ++j) {
-                    if (vs_main_skills[skillId].unlocked) {
-                        ++skillId;
+                    if (vs_main_actions[actionId].unlocked) {
+                        ++actionId;
                     }
                 }
             }
 
-            _miscSkills[count] = skillId;
+            _miscActions[count] = actionId;
 #endif
             break;
         }
@@ -665,7 +665,7 @@ loop_1:
             if (vs_main_inventory.misc[index].id > 457) {
                 *vs_battle_rowTypeBuf = 1;
                 sp310[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_cannotUse];
-            } else if (vs_battle_getSkillFlags(0, _miscSkills[selectedRow - 1]) & 2) {
+            } else if (vs_battle_getActionFlags(0, _miscActions[selectedRow - 1]) & 2) {
                 *vs_battle_rowTypeBuf = 1;
                 sp310[1] = (char*)&_menuText[VS_menuText_OFFSET_insufficientMp];
             }
@@ -838,7 +838,7 @@ loop_1:
 
                     vs_battle_miscItemInvoked = indices[selectedRow - 1] - 1;
                     D_800F4E98.executeAbility.u16[0] =
-                        (short)_miscSkills[selectedRow - 1];
+                        (short)_miscActions[selectedRow - 1];
                     D_800F4E98.executeAbility.u16[1] =
                         (short)vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
 

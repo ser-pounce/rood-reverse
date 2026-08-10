@@ -16,7 +16,6 @@ COMMANDFLAGS ?= -v
 DIFFFLAGS    ?= -s
 MKDIRFLAGS   ?= -p
 RMFLAGS      ?= -Rf
-TARFLAGS     ?= -xzf
 UNZIPFLAGS   ?= -jq
 WGETFLAGS    ?= $(if $(DEBUG),,-q)
 

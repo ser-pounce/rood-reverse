@@ -350,7 +350,7 @@ typedef struct {
     /* 0x10C */ char dropRate;
     /* 0x10D */ u_char index;
     /* 0x10E */ u_char damageType;
-    /* 0x10F */ u_char skillType;
+    /* 0x10F */ u_char actionType;
     /* 0x110 */ u_short currentPp;
     /* 0x112 */ u_short maxPp;
     /* 0x114 */ u_short currentDp;
@@ -672,10 +672,10 @@ typedef struct {
 } _zndEnemy;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     int unk4;
     int unk8;
     int unkC;
@@ -840,7 +840,7 @@ typedef struct {
     u_short id;
     char unk2;
     char index;
-} _skills;
+} _actions;
 
 typedef struct {
     u_short hp;
@@ -848,7 +848,7 @@ typedef struct {
     char chainEvasion;
     signed char types[4];
     signed char affinities[8];
-    _skills skills[4];
+    _actions actions[4];
     _armorIntermediate unk20;
     char dpSplash[6];
     char unk5A[2];
@@ -1015,8 +1015,8 @@ int func_8007D03C(int);
 int func_8007D08C(int, int);
 int func_8007D15C(int);
 void func_8007D1A8(int, int);
-int vs_battle_isSkillUnlocked(u_int);
-void vs_battle_setSkillUnlocked(u_int);
+int vs_battle_isActionUnlocked(u_int);
+void vs_battle_setActionUnlocked(u_int);
 void func_8007D340(int);
 void func_8007D3F8(void);
 void func_8007DF48(void);
@@ -1047,14 +1047,14 @@ int func_8008A4FC(void);
 void func_8008A6FC(void);
 
 /**
- * Retrieve skill availability info.
+ * Retrieve action availability info.
  *
  * @return Packed value
  * - Bit 0:
  * - Bit 1: Requirements not met (i.e. insufficient HP/MP/Risk)
- * - Bit 2: Skill locked
+ * - Bit 2: action locked
  */
-int vs_battle_getSkillFlags(int actorId, int skillId);
+int vs_battle_getActionFlags(int actorId, int actionId);
 void func_8008B430(D_800F4538_unk58_2*, int);
 _mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);

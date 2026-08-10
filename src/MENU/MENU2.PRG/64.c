@@ -10,7 +10,7 @@
 #include <libetc.h>
 
 /**
- * Prints the HP cost of an Ability using skill data.
+ * Prints the HP cost of an Ability using action data.
  */
 static void _setRiskCost(int id)
 {
@@ -19,9 +19,9 @@ static void _setRiskCost(int id)
     int i;
     int cost;
 
-    vs_mainmenu_setSkillCost(1, "RISK", 8, 0);
+    vs_mainmenu_setActionCost(1, "RISK", 8, 0);
 
-    cost = vs_main_skills[id].cost;
+    cost = vs_main_actions[id].cost;
     stringBuffer[15] = 0;
 
     i = 15;
@@ -36,7 +36,7 @@ static void _setRiskCost(int id)
     --i;
     stringBuffer[i] = '#';
 
-    vs_mainmenu_setSkillCost(0, &stringBuffer[i], 72, 0);
+    vs_mainmenu_setActionCost(0, &stringBuffer[i], 72, 0);
 }
 
 u_short _battleAbilityStrings[] = {
@@ -266,7 +266,7 @@ static int _abilityMenu(void)
         break;
 
     case abilityMenu:
-        vs_mainMenu_displaySkillCost = 0;
+        vs_mainMenu_displayActionCost = 0;
         selectedAbility = _highlightedAbility + _firstAbility;
         previousFirstAbility = _firstAbility;
 
@@ -499,7 +499,6 @@ static int _chainAbilityMenu(int initialize)
     u_short* menuStrings[28];
     int i;
     int count;
-    int skill;
 
     if (initialize != 0) {
         vs_mainMenu_flyoutMenuRightAndHoistSelection(0, 1);
@@ -518,13 +517,13 @@ static int _chainAbilityMenu(int initialize)
 
         for (i = 0; i < 14; ++i) {
 
-            skill = vs_battle_chainAbilityOffsets[i];
+            int action = vs_battle_chainAbilityOffsets[i];
 
-            if (vs_main_skills[skill].unlocked) {
-                menuStrings[count * 2] = (u_short*)vs_main_skills[skill].name;
+            if (vs_main_actions[action].unlocked) {
+                menuStrings[count * 2] = (u_short*)vs_main_actions[action].name;
                 menuStrings[count * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
                         [VS_battleAbilities_INDEX_chainAbilityEffect0 + i]];
-                _unlockedChainAbilities[count] = skill;
+                _unlockedChainAbilities[count] = action;
                 ++count;
             }
         }
@@ -561,7 +560,6 @@ static int _defenseAbilityMenu(int arg0)
     u_short* menuStrings[28];
     int i;
     int row;
-    int skill;
 
     if (arg0 != 0) {
         vs_mainMenu_flyoutMenuRightAndHoistSelection(1, 1);
@@ -579,12 +577,12 @@ static int _defenseAbilityMenu(int arg0)
         row = 0;
 
         for (i = 0; i < 14; ++i) {
-            skill = vs_battle_defenseAbilityOffsets[i];
-            if (vs_main_skills[skill].unlocked) {
-                menuStrings[row * 2] = (u_short*)vs_main_skills[skill].name;
+            int action = vs_battle_defenseAbilityOffsets[i];
+            if (vs_main_actions[action].unlocked) {
+                menuStrings[row * 2] = (u_short*)vs_main_actions[action].name;
                 menuStrings[row * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
                         [VS_battleAbilities_INDEX_defenseAbilityEffect0 + i]];
-                _unlockedDefenseAbilities[row] = skill;
+                _unlockedDefenseAbilities[row] = action;
                 ++row;
             }
         }

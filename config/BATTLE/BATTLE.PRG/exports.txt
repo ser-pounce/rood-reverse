@@ -274,7 +274,7 @@ vs_battle_getGeomOffset
 vs_battle_getLimbStatus
 vs_battle_getMapCompletion
 vs_battle_getMenuItem
-vs_battle_getSkillFlags
+vs_battle_getActionFlags
 vs_battle_getStatusFlags
 vs_battle_getTextBox
 vs_battle_getTextLineLength

@@ -521,7 +521,7 @@ signed char _animOffset2[][2] = { { 240, 241 }, { 240, 242 }, { 241, 242 }, { 24
 
 /*
 #pragma vsstring(start)
-vs_skill_t vs_main_skills[] = { { .id = 0,
+vs_action_t vs_main_actions[] = { { .id = 0,
                                     .effect = 0,
                                     .unk2_0 = 0,
                                     .type = 0,
@@ -8381,7 +8381,7 @@ void func_80042CB0(void)
     int var_t3;
     int new_var;
     int var_t4;
-    signed char skillsLearned;
+    signed char actionsLearned;
     vs_battle_actor2* temp_t0;
     D_80060068_t* temp_t5;
     int v0;
@@ -8399,11 +8399,11 @@ void func_80042CB0(void)
     D_80061068.unk6_0 = D_800F18E8.unk0_0;
 
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
-        for (skillsLearned = 0, i = 0; i < 8; ++i) {
-            skillsLearned =
-                (*(int*)&skillsLearned * 2) | vs_main_skills[var_s1 * 8 + i].unlocked;
+        for (actionsLearned = 0, i = 0; i < 8; ++i) {
+            actionsLearned =
+                (*(int*)&actionsLearned * 2) | vs_main_actions[var_s1 * 8 + i].unlocked;
         }
-        vs_main_skillsLearned[var_s1] = skillsLearned;
+        vs_main_actionsLearned[var_s1] = actionsLearned;
     }
     temp_t0 = vs_battle_characterState->unk3C;
     temp_t5 = &D_80060068;

@@ -147,12 +147,12 @@ enum vs_mainMenu_icons { mainMenuIconGem = 22 };
 void vs_mainMenu_renderMenuRowIcon(int icon, int x, int y);
 
 /**
- * Populates one of two elements for displaying skill costs.
+ * Populates one of two elements for displaying action costs.
  *
  * @param index 0 is intended for the cost type, 1 for the value.
  * @param disabled Displays value in gray.
  */
-void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled);
+void vs_mainmenu_setActionCost(int index, char const* text, int xOffset, int disabled);
 
 /**
  * Renders the brownish, chisel-shaped background used behind command buttons.
@@ -250,9 +250,9 @@ void vs_mainMenu_renderTabNavigation(int mode);
 void vs_mainMenu_renderScreen(void);
 
 /**
- * Controls whether the purple skill cost elements are rendered.
+ * Controls whether the purple action cost elements are rendered.
  */
-extern char vs_mainMenu_displaySkillCost;
+extern char vs_mainMenu_displayActionCost;
 
 /**
  * Increments while appending actions to the command menu.

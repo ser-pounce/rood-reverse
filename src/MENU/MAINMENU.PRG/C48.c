@@ -365,7 +365,7 @@ void vs_mainMenu_exec(int arg0)
                 if (selectedMenu == 15) {
                     submenuReturn = vs_menuF_exec(submenuState);
                 } else if (selectedMenu == 3) {
-                    submenuReturn = vs_menu2_skillUnlock(submenuState);
+                    submenuReturn = vs_menu2_actionUnlock(submenuState);
                 } else if (selectedMenu == 14) {
                     submenuReturn = vs_menuD_exec(submenuState);
                 } else if (selectedMenu == 8) {
@@ -486,7 +486,7 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
 #pragma vsstring(end)
 
     static int _0 __attribute__((unused)); // Garbage, patched in MAINMENU_PRG.py
-    static char skills[64];
+    static char actions[64];
     static int selectedRow;
     static char state;
     static char noItems;
@@ -563,21 +563,21 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
 
             if (misc->id < bronzeKey) {
 
-                u_int skill = vs_mainMenu_miscItemToSkillMap[misc->id - 323];
+                u_int action = vs_mainMenu_miscItemToActionMap[misc->id - 323];
 
-                if ((skill - 106) < 28) {
+                if ((action - 106) < 28) {
                     for (j = 0; j < 3; ++j) {
-                        if (vs_main_skills[skill].unlocked) {
-                            ++skill;
+                        if (vs_main_actions[action].unlocked) {
+                            ++action;
                         }
                     }
                 }
 
-                skills[i] = skill;
+                actions[i] = action;
             }
 
             if ((D_800F4EA0 & 7) || (misc->id >= bronzeKey)
-                || (vs_battle_getSkillFlags(0, skills[i]) & 2)) {
+                || (vs_battle_getActionFlags(0, actions[i]) & 2)) {
                 rowTypes[i] |= rowTypeDisabled;
             }
         }
@@ -636,7 +636,7 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
                 if (selectedRow > 0) {
                     vs_battle_miscItemInvoked =
                         vs_main_inventoryIndices.misc[selectedRow - 1] - 1;
-                    D_800F4E98.executeAbility.u16[0] = skills[selectedRow - 1];
+                    D_800F4E98.executeAbility.u16[0] = actions[selectedRow - 1];
                     D_800F4E98.executeAbility.u16[1] =
                         vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
                 }

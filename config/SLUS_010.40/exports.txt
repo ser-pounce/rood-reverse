@@ -158,8 +158,8 @@ vs_main_scoredata
 vs_main_setMonoSound
 vs_main_settings
 vs_main_setVibrateParams
-vs_main_skills
-vs_main_skillsLearned
+vs_main_actions
+vs_main_actionsLearned
 vs_main_soundData
 vs_main_stateFlags
 vs_main_stickPosBuf

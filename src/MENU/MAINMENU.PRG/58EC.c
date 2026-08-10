@@ -392,7 +392,7 @@ void vs_mainMenu_printInformation(int sourceRow, int actionMenuState)
     }
 }
 
-char vs_mainMenu_displaySkillCost = 0;
+char vs_mainMenu_displayActionCost = 0;
 char vs_mainMenu_cursorColor = 0;
 char vs_mainMenu_hideMenu = 0;
 int vs_mainMenu_backgroundFadeStep = 0;
@@ -649,9 +649,9 @@ void vs_mainMenu_renderMenuRowIcon(int icon, int x, int y)
     }
 }
 
-void vs_mainmenu_setSkillCost(int index, char const* text, int xOffset, int disabled)
+void vs_mainmenu_setActionCost(int index, char const* text, int xOffset, int disabled)
 {
-    vs_mainMenu_displaySkillCost = 1;
+    vs_mainMenu_displayActionCost = 1;
 
     vs_battle_rMemcpy(&_textHeaders[index], text, 14);
 
@@ -668,7 +668,7 @@ static void _renderAbilityCost(void)
 
     u_long* scratch = vs_scratch.unk4 - 4;
 
-    if (vs_mainMenu_displaySkillCost != 0) {
+    if (vs_mainMenu_displayActionCost != 0) {
         if (animState != 0) {
             --animState;
         }

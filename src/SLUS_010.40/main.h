@@ -42,20 +42,20 @@ typedef struct {
     void* vram;
 } vs_main_CdQueueSlot;
 
-enum skills_e { vs_main_skills_daggerArt1 = 184 };
+enum actions_e { vs_main_actions_daggerArt1 = 184 };
 
 typedef union {
     u_short u16[2];
     u_int s32;
 } vs_hitParams_t;
 
-enum skillTypes {
-    skillTypeSpell = 1,
-    skillTypeAbility,
-    skillTypeBreakArt,
-    skillTypeItem = 5,
-    skillTypeBaseAttack,
-    skillTypeTrap
+enum actionTypes {
+    actionTypeSpell = 1,
+    actionTypeAbility,
+    actionTypeBreakArt,
+    actionTypeItem = 5,
+    actionTypeBaseAttack,
+    actionTypeTrap
 };
 
 enum enemyClasses { enemyClassUndead = 2 };
@@ -93,7 +93,7 @@ typedef struct {
         u_int affinity : 3;
     } hitParams[2];
     char name[24];
-} vs_skill_t;
+} vs_action_t;
 
 typedef struct {
     int currentMusicSlot;
@@ -404,7 +404,7 @@ typedef struct {
 
 extern portInfo_t _portInfo[2];
 extern soundData_t vs_main_soundData;
-extern vs_skill_t vs_main_skills[256];
+extern vs_action_t vs_main_actions[256];
 extern int D_8004A52C;
 extern char vs_main_materialModifiers[8][30];
 extern int vs_main_frameBuf;
@@ -451,7 +451,7 @@ extern int vs_main_saveGameClearData;
 
 extern u_int vs_main_frameDuration;
 extern vs_main_scoredata_t vs_main_scoredata;
-extern char vs_main_skillsLearned[32];
+extern char vs_main_actionsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern int vs_main_startState;

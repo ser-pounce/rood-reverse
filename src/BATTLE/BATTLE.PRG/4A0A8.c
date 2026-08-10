@@ -2457,10 +2457,10 @@ int vs_battle_script_specialOp(u_char* arg0, short arg1)
         D_800F4C68 = 1;
         break;
     case 3:
-        if (vs_battle_isSkillUnlocked(arg0[2]) != 0) {
+        if (vs_battle_isActionUnlocked(arg0[2]) != 0) {
             vs_battle_setStateFlag(0xB1, 0);
         } else {
-            vs_battle_setSkillUnlocked(arg0[2]);
+            vs_battle_setActionUnlocked(arg0[2]);
             vs_battle_setStateFlag(0xB1, 1);
         }
         break;

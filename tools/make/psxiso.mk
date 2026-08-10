@@ -13,6 +13,15 @@ $(DISKCONFIG): | $(DISKIMAGE)
 	$(ECHO) Dumping files from disk
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) $(DISKIMAGE) $(if $(DEBUG),,> /dev/null)
 
+$(BUILD)/$(DISKIMAGE): $(BUILD)/$(DISKCONFIG)
+	$(ECHO) Building disk image
+	cp -r --update=none data/ $(BUILD)
+	cd $(BUILD)
+	../$(MKPSXISO) $(DISKCONFIG) -o $(DISKIMAGE) -c $(basename $(DISKIMAGE)).cue $(if $(DEBUG),,> /dev/null)
+
+$(BUILD)/$(DISKCONFIG): $(DISKCONFIG) | $$(@D)/
+	cp $< $@
+
 $(DISKLBA): | $$(@D)/
 	$(ECHO) Generating $@
 	$(MKPSXISO) $(MKPSXISOFLAGS) $(DISKCONFIG)

@@ -24,7 +24,7 @@ endif
 
 DISKCODE   := SLUS-01040
 DISKIMAGE  := disks/$(DISKCODE).bin
-DISKCONFIG := config/$(DISKCODE).xml
+DISKCONFIG := disks/$(DISKCODE).xml
 COMPILERS  := 2.7.2-psx 2.7.2-cdk 2.8.1-psx
 
 SHELL := bash
@@ -33,7 +33,7 @@ SHELL := bash
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean commit-check remake docker-build docker-push
+.PHONY: all clean commit-check remake image docker-build docker-push
 
 SKIPSPLAT += commit-check clean remake clean-all
 
@@ -50,6 +50,8 @@ clean:
 
 remake: clean
 	$(MAKE)
+
+image: $(BUILD)/$(DISKIMAGE)
 
 docker-build:
 	docker build -t ghcr.io/ser-pounce/rood-reverse:main .

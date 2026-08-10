@@ -256,7 +256,11 @@ typedef struct {
 } func_800D6310_t;
 
 typedef struct {
-    u_int unk0;
+    u_int unk0_0 : 9;
+    u_int unk0_9 : 9;
+    u_int unk0_18 : 3;
+    u_int unk0_21 : 6;
+    u_int unk0_27 : 5;
     u_short unk4;
 } func_800D5D74_t;
 

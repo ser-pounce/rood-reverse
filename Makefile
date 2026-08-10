@@ -18,7 +18,7 @@ INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMAL
 
 ifndef PERMUTER
 ifndef __BASH_MAKE_COMPLETION__
-INCMAKEFILES += $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso splat)
+INCMAKEFILES += $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso splat xdelta)
 endif
 endif
 

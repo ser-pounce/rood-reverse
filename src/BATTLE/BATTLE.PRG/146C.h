@@ -672,10 +672,10 @@ typedef struct {
 } _zndEnemy;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     int unk4;
     int unk8;
     int unkC;

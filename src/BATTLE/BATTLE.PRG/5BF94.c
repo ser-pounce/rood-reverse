@@ -2097,7 +2097,7 @@ int func_800CACD0(int menuState, int arg1)
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
                      ++var_a0) {
-                    if (vs_main_skills[var_a0].unlocked) {
+                    if (vs_main_actions[var_a0].unlocked) {
                         var_a1 |= 1 << i;
                         break;
                     }
@@ -2125,7 +2125,7 @@ int vs_battle_isSpellClassUnlocked(int spellClass)
     int i;
 
     for (i = 0; i < _spellClassCounts[spellClass]; ++i) {
-        if (vs_main_skills[_spellIds[spellClass][i]].unlocked) {
+        if (vs_main_actions[_spellIds[spellClass][i]].unlocked) {
             return 1;
         }
     }
@@ -2136,10 +2136,10 @@ int _breakArtsUnlocked(void)
 {
     int i;
     for (i = 0; i < 4; ++i) {
-        if ((vs_main_skills[0xB8
-                            + ((vs_battle_characterState->equippedWeaponCategory - 1) * 4)
-                            + i]
-                    .unlocked)) {
+        if ((vs_main_actions
+                    [0xB8 + ((vs_battle_characterState->equippedWeaponCategory - 1) * 4)
+                        + i]
+                        .unlocked)) {
             return 1;
         }
     }
@@ -2149,10 +2149,10 @@ int _breakArtsUnlocked(void)
 int vs_battle_chainAbilitiesUnlocked(int defense)
 {
     int i;
-    vs_skill_t* v0;
+    vs_action_t* v0;
 
     for (i = 0; i < 14; ++i) {
-        v0 = vs_main_skills;
+        v0 = vs_main_actions;
         if (v0[defense == 0 ? vs_battle_chainAbilityOffsets[i]
                             : vs_battle_defenseAbilityOffsets[i]]
                 .unlocked) {
@@ -2271,7 +2271,7 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
     vs_battle_initTextBox(7, 0x304, 0, 1, 0, 3, 0, 0);
 
     D_800EB9D8[0] = 0x00F8 | (0x04FB << 16);
-    vs_battle_stringContext.strings[0] = vs_main_skills[arg1].name;
+    vs_battle_stringContext.strings[0] = vs_main_actions[arg1].name;
 
     if (arg0 == 12) {
         vs_battle_printf((char*)&D_800EB9D8[1],
@@ -2279,7 +2279,7 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
     } else if (arg0 == 11) {
         vs_battle_textBoxes[7].unk0.unk0_8 = 0;
         vs_battle_printf((char*)&D_800EB9D8[1],
-            (char*)&vs_battle_menuStrings[vs_battle_menuStrings[vs_main_skills[arg1].type
+            (char*)&vs_battle_menuStrings[vs_battle_menuStrings[vs_main_actions[arg1].type
                                                                 + 22]]);
     } else {
         if (arg1 != 0) {

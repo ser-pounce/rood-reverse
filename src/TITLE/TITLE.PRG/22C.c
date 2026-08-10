@@ -589,7 +589,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     }
 
     _rMemcpy(&vs_main_stateFlags, spmcimg[1].unk200, sizeof vs_main_stateFlags);
-    _rMemcpy(vs_main_skillsLearned, spmcimg[1].unk640, sizeof vs_main_skillsLearned);
+    _rMemcpy(vs_main_actionsLearned, spmcimg[1].unk640, sizeof vs_main_actionsLearned);
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
     _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof vs_main_settings);
     _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
@@ -696,7 +696,7 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
     _rMemcpy(savedata->unk200, &vs_main_stateFlags, sizeof savedata->unk200);
-    _rMemcpy(savedata->unk640, vs_main_skillsLearned, sizeof savedata->unk640);
+    _rMemcpy(savedata->unk640, vs_main_actionsLearned, sizeof savedata->unk640);
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
     _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof savedata->unk6A8);
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof savedata->unk6C8);
@@ -4946,7 +4946,7 @@ static void _initGameData(void)
             0x37000000, 0x38000000, 0x39000000, 0x3A000000, 0x3B000000, 0x3C000000,
             0x3D000000, 0x3E000000, 0x3F000000, 0x40000000 }
     };
-    static int _skillsLearned[8] = { 0x0074FE7F, 0x00000000, 0x00000000, 0x00000000,
+    static int actionsLearned[8] = { 0x0074FE7F, 0x00000000, 0x00000000, 0x00000000,
         0xFFFDFD03, 0x007EFEFD, 0x00000000, 0xFFFFFFFF };
 
     int i;
@@ -4960,7 +4960,7 @@ static void _initGameData(void)
         *v0-- = 0;
     } while (--i >= 0);
 
-    vs_main_memcpy(vs_main_skillsLearned, _skillsLearned, sizeof _skillsLearned);
+    vs_main_memcpy(vs_main_actionsLearned, actionsLearned, sizeof actionsLearned);
     vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
     vs_main_bzero(&vs_main_gametime, sizeof vs_main_gametime);
     vs_main_bzero(&vs_main_scoredata, sizeof vs_main_scoredata);

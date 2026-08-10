@@ -225,9 +225,9 @@ extern u_char vs_mainMenu_statusViewNavigationMap[][4];
 extern int vs_mainMenu_statusViewCursorPositions[];
 
 /**
- * Maps useable items to "skills".
+ * Maps useable items to actions.
  */
-extern u_char vs_mainMenu_miscItemToSkillMap[];
+extern u_char vs_mainMenu_miscItemToActionMap[];
 
 /**
  * A flat list of every item name. Cannot be used before invoking

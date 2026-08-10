@@ -2722,7 +2722,7 @@ void _setTitleFlags(void)
     }
 
     for (i = 184; i < 224; ++i) {
-        if (!vs_main_skills[i].unlocked) {
+        if (!vs_main_actions[i].unlocked) {
             break;
         }
     }
@@ -2733,7 +2733,7 @@ void _setTitleFlags(void)
 
     for (i = 22; i < 54; ++i) {
         if (((i != 33) && (i != 36) && (i != 38) && (i != 39)
-                && !vs_main_skills[i].unlocked)) {
+                && !vs_main_actions[i].unlocked)) {
             break;
         }
     }

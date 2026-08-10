@@ -16,7 +16,7 @@
 #include "src/MENU/items0.h"
 #include "src/MENU/items1.h"
 
-static char _miscSkills[64];
+static char _miscActions[64];
 
 #include "src/MENU/items2.h"
 

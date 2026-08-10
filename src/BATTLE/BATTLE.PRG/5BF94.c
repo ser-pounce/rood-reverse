@@ -3786,7 +3786,9 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
     if ((temp_a3->unk0 & 0x1FF) == arg0->unkD1C.unk30->unk2) {
         func_800CF694(arg0, D_800F56A8[temp_a3->unk0 >> 0x12 & 0x07],
-            ((temp_a3->unk0 >> 9 & 0x1FF) + (temp_a3->unk0 >> 0xD & 0x3F00))
+    if (temp_a3->unk0_0 == arg0->unkD1C.unk30->unk2) {
+        func_800CF694(arg0, D_800F56A8[temp_a3->unk0_18],
+            (temp_a3->unk0_9 + temp_a3->unk0_21 * 256)
                 | (temp_a3->unk4 << 0x10));
         return func_800D5780(arg1);
     }

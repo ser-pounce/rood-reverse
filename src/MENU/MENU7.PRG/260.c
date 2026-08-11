@@ -98,7 +98,7 @@ typedef struct {
     D_80060068_t unk6C8;
     vs_main_inventory_t inventory;
     vs_main_inventoryIndices_t unk16C8;
-    D_80061068_t unk1778;
+    _mpdRoomDoorSection_t unk1778;
     vs_main_scoredata_t scoreData;
     int unk1898;
     char unk189C[0x520];

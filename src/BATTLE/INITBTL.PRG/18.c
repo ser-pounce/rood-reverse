@@ -564,7 +564,7 @@ void func_800FA35C(int startState __attribute__((unused)))
     D_80050468.minutes = 0;
     D_80050468.seconds = 0;
     D_80050468.frames = 0;
-    _zoneContext.unk68 = D_80061068.unk6_0 & 0x3FF;
+    _zoneContext.unk68 = D_80061068.unk6_0;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();
     vs_scratch.camera.farClip = 0x1000;

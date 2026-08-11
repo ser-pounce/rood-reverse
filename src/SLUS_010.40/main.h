@@ -1,6 +1,5 @@
 #pragma once
 #include "25AC.h"
-#include "D_80061068_t.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include <sys/types.h>
 #include <libgte.h>
@@ -402,6 +401,30 @@ typedef struct {
     signed char hours;
 } D_80050468_t;
 
+typedef struct {
+    u_short unk0_0 : 5;
+    u_short unk0_5 : 5;
+    u_short unk0_10 : 3;
+    u_short unk0_13 : 3;
+} _mpdRoomDoorSection2;
+
+typedef struct {
+    u_char zndId;
+    u_char mpdId;
+    _mpdRoomDoorSection2 unk2;
+    u_short unk4_0 : 8;
+    u_short unk4_8 : 5;
+    u_short unk4_13 : 2;
+    u_short unk4_15 : 1;
+    u_short unk6_0 : 10;
+    u_short unk6_10 : 5;
+    u_short unk6_15 : 1;
+    u_char unk8;
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+} _mpdRoomDoorSection_t;
+
 extern portInfo_t _portInfo[2];
 extern soundData_t vs_main_soundData;
 extern vs_action_t vs_main_actions[256];
@@ -459,7 +482,7 @@ extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
 extern vs_main_inventory_t vs_main_inventory;
-extern D_80061068_t D_80061068;
+extern _mpdRoomDoorSection_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;

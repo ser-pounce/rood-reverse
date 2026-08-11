@@ -269,7 +269,7 @@ typedef struct {
     D_80060068_t unk6C8;
     char unk7C8[15][256];
     char unk16C8[0xB0];
-    D_80061068_t unk1778;
+    _mpdRoomDoorSection_t unk1778;
     vs_main_scoredata_t unk1784;
     int unk1898;
     char unk189C[0x520];
@@ -4986,7 +4986,7 @@ static void _initGameData(void)
     vs_gametime_tickspeed = 2;
     D_80061068.unk4_8 = 4;
     D_80061068.unk6_10 = 2;
-    D_80061068.unk2_13 = 0;
+    D_80061068.unk2.unk0_13 = 0;
     D_80061068.unk4_13 = 2;
 }
 

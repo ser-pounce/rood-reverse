@@ -1,6 +1,5 @@
 #pragma once
 #include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/D_80061068_t.h"
 #include "2842C.h"
 #include "3A1A0.h"
 #include "scratch.h"
@@ -70,30 +69,14 @@ typedef struct {
     u_int unk0_8 : 1;
     u_int unk0_9 : 1;
     u_int unk0_10 : 3;
-    u_int unk0_13 : 3;
+    u_int unk0_13 : 1;
+    u_int unk0_14 : 1;
+    u_int unk0_15 : 1;
     u_int unk0_16 : 1;
     u_int unk0_17 : 1;
     u_int unk0_18 : 2;
     u_int unk0_19 : 12;
 } _mpdRoomSection3;
-
-typedef struct {
-    u_short unk0_0 : 5;
-    u_short unk0_5 : 5;
-    u_short unk0_10 : 3;
-    u_short unk0_13 : 3;
-} _mpdRoomDoorSection2;
-
-typedef struct {
-    char targetZone;
-    char targetRoom;
-    _mpdRoomDoorSection2 unk2;
-    int unk4;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-} _mpdRoomDoorSection_t;
 
 typedef struct {
     short unk0;
@@ -993,8 +976,8 @@ void func_8007C444(int, int, int);
 void func_8007C460(int);
 void func_8007C46C(int, int, int);
 void func_8007C4AC(int, int, int);
-void func_8007C580(D_80061068_t*, int, int);
-void func_8007C654(D_80061068_t*, int, int);
+void func_8007C580(_mpdRoomDoorSection_t*, int, int);
+void func_8007C654(_mpdRoomDoorSection_t*, int, int);
 void func_8007C8A4(int, int);
 int func_8007C928(u_int arg0, int arg1, vs_battle_objectData_flags* arg2);
 void func_8007CA20(int, int, int);
@@ -1089,7 +1072,7 @@ extern vs_battle_lootListNode* _lootListHead;
 extern vs_battle_actor* vs_battle_actors[];
 extern _sphericalCamera vs_battle_cameraCurrentSpherical;
 extern vs_battle_actor* vs_battle_characterState;
-extern D_80061068_t D_800F1AB0;
+extern _mpdRoomDoorSection_t D_800F1AB0;
 extern u_short D_800F1BA4;
 extern u_short* D_800F1BA8;
 extern D_800F1BAC_t (*D_800F1BAC)[32];

@@ -94,8 +94,7 @@ static void* _insertTpage(int tPage, int otOffset);
 static void func_8006A9C0(func_8006A9C0_t2*);
 static void _resetElements(void);
 static int _renderElements(void);
-static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*))
-    __attribute__((noreturn));
+static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _parseCreditsScript(void);
 static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
 void func_8006AF64(void);

@@ -1828,7 +1828,7 @@ int func_800B988C(u_char* arg0, short arg1)
 
 int func_800B98C0(u_char* arg0, short arg1)
 {
-    D_80061068_t sp10;
+    _mpdRoomDoorSection_t sp10;
 
     if (D_800F4BE2 == 0) {
 
@@ -1836,7 +1836,7 @@ int func_800B98C0(u_char* arg0, short arg1)
         sp10.mpdId = arg0[2];
         sp10.unk4_8 = arg0[3];
         sp10.unk6_10 = arg0[5];
-        sp10.unk2_13 = arg0[4];
+        sp10.unk2.unk0_13 = arg0[4];
         sp10.unk4_13 = arg0[6];
         sp10.unk4_15 = arg0[7];
         sp10.unk6_15 = arg0[7] >> 1;

@@ -428,8 +428,8 @@ int func_8007BD8C(int arg0);
 void func_8007BF6C(int);
 void func_8007BFF8(int);
 void func_8007C0AC(int, int);
-int func_8007C4E0(D_80061068_t*, int, int);
-int func_8007C5C0(D_80061068_t*, int, int);
+int func_8007C4E0(_mpdRoomDoorSection_t*, int, int);
+int func_8007C5C0(_mpdRoomDoorSection_t*, int, int);
 int func_8007C694(int, int, int, int, int);
 void vs_battle_initialiseCameraFromSpherical(
     VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
@@ -6405,7 +6405,7 @@ void func_8007C4AC(int effect, int arg1, int arg2)
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }
 
-int func_8007C4E0(D_80061068_t* arg0, int effect, int speed)
+int func_8007C4E0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
 {
     D_800F1AB0 = *arg0;
     vs_battle_screenTransitionStep = 1;
@@ -6420,7 +6420,7 @@ int func_8007C4E0(D_80061068_t* arg0, int effect, int speed)
     return 1;
 }
 
-void func_8007C580(D_80061068_t* arg0, int arg1, int arg2)
+void func_8007C580(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 {
     func_8006EBF8_t sp10;
 
@@ -6430,7 +6430,7 @@ void func_8007C580(D_80061068_t* arg0, int arg1, int arg2)
         sp10.unk0.unk0.fields.unk0_8);
 }
 
-int func_8007C5C0(D_80061068_t* arg0, int effect, int speed)
+int func_8007C5C0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
 {
     D_800F1AB0 = *arg0;
     vs_battle_screenTransitionStep = 2;
@@ -6443,7 +6443,7 @@ int func_8007C5C0(D_80061068_t* arg0, int effect, int speed)
     return 1;
 }
 
-void func_8007C654(D_80061068_t* arg0, int arg1, int arg2)
+void func_8007C654(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 {
     func_8006EBF8_t sp10;
 
@@ -6466,7 +6466,7 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
 
     D_800F1AB0.unk4_8 = arg1;
     D_800F1AB0.unk6_10 = arg2;
-    D_800F1AB0.unk2_13 = 0;
+    D_800F1AB0.unk2.unk0_13 = 0;
 
     func_800A1108(0, &sp10);
 
@@ -12183,7 +12183,7 @@ void func_80089888(void)
     func_8009D458();
     sp28.unk0_0 = D_800F1AB0.unk4_8;
     sp28.unk0_16 = D_800F1AB0.unk6_10;
-    sp28.unk0_8 = D_800F1AB0.unk2_13;
+    sp28.unk0_8 = D_800F1AB0.unk2.unk0_13;
     sp28.unk0_24 = D_800F1AB0.unk4_13 * 64;
     func_800A30A0(0, &sp28, -0x800, 2);
 

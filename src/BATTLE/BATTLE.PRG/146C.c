@@ -358,6 +358,18 @@ typedef struct {
     int lootSectionLen;
 } _mpdHeader;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+} func_800A1108_t;
+
 void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
@@ -620,7 +632,7 @@ extern short D_800F1A2C;
 extern int D_800F1A30[];
 extern int D_800F1A40;
 extern u_int D_800F1A44;
-extern int D_800F1A50;
+extern int D_800F1A50[];
 extern D_800F1A68_t D_800F1A68;
 extern P_CODE D_800F1A78;
 extern char D_800F1A9C[];
@@ -2625,8 +2637,129 @@ void func_8006E640(int arg0)
     }
 }
 
-int func_8006E7F0(void);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E7F0);
+int func_8006E7F0(void)
+{
+    func_800A1108_t unksp10;
+    int temp_a0;
+    int temp_a1;
+    int temp_s1;
+    vs_battle_actor2* temp_s0;
+
+    func_800A1108(0, &unksp10);
+    func_80074B14(0, (func_8006EBF8_t_fields*)&unksp10);
+    temp_s0 = vs_battle_characterState->unk3C;
+    temp_s1 = func_800A0BE0(0);
+
+    if (((vs_battle_screenTransitionStep - 1) < 2U)
+        || (vs_battle_screenTransitionStep == 4)) {
+        if (D_800F1AB0.unk6_15) {
+            func_800B64A8(0, D_800F1AB0.unk4_13 << 10, temp_s0->unk31 << 0xB);
+        } else {
+            func_800B64A8(0, 0, 0);
+        }
+    } else {
+
+        func_8006E158();
+
+        D_800F1A50[3] = 0;
+        D_800F1A50[1] = 0;
+
+        if (_portInfo->mode == 7) {
+
+            temp_a1 = _portInfo->rStickX - 128;
+            temp_a0 = _portInfo->rStickY - 128;
+
+            if (((_portInfo->rStickX - 64) > 128u) || (temp_a0 < -64) || (temp_a0 > 64)) {
+
+                if (temp_a1 > 64) {
+                    temp_a1 -= 64;
+                } else if (temp_a1 < -64) {
+                    temp_a1 += 64;
+                } else {
+                    temp_a1 = 0;
+                }
+
+                if (temp_a0 > 64) {
+                    temp_a0 = temp_a0 - 64;
+                } else if (temp_a0 < -64) {
+                    temp_a0 = temp_a0 + 64;
+                } else {
+                    temp_a0 = 0;
+                }
+                D_800F1A50[3] = 0;
+                D_800F1A50[1] = -temp_a1;
+                D_800F1A50[3] = temp_a0;
+            }
+        }
+
+        if ((D_800F1A50[1] == 0) && (D_800F1A50[3] == 0)) {
+            if (vs_main_buttonsPreviousState & 0x4000) {
+                D_800F1A50[1] = 0;
+                D_800F1A50[3] = 0x10;
+            }
+            if (vs_main_buttonsPreviousState & 0x1000) {
+                D_800F1A50[1] += 0;
+                D_800F1A50[3] -= 16;
+            }
+            if (vs_main_buttonsPreviousState & 0x8000) {
+                D_800F1A50[3] += 0;
+                D_800F1A50[1] += 16;
+            }
+            if (vs_main_buttonsPreviousState & 0x2000) {
+                D_800F1A50[3] += 0;
+                D_800F1A50[1] -= 16;
+            }
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance > 0x900) {
+            vs_battle_cameraCurrentSpherical.values.distance = 0x900;
+        } else if (vs_battle_cameraCurrentSpherical.values.distance < 0x600) {
+            vs_battle_cameraCurrentSpherical.values.distance = 0x600;
+        }
+        if ((D_800F1A50[1] != 0) || (D_800F1A50[3] != 0)) {
+            if (temp_s1 & 0x80000) {
+                func_800B64A8(0,
+                    (ratan2(D_800F1A50[1], D_800F1A50[3])
+                        + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                        & 0xFFF,
+                    temp_s0->unk31 * ONE);
+            } else if (vs_main_buttonsPreviousState & 2) {
+                if (vs_main_buttonsPressed.all & 0x80) {
+                    func_800A48CC(0,
+                        (ratan2(D_800F1A50[1], D_800F1A50[3])
+                            + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                            & 0xFFF,
+                        temp_s0->unk31 * ONE);
+                } else {
+                    func_800B64A8(0,
+                        (ratan2(D_800F1A50[1], D_800F1A50[3])
+                            + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                            & 0xFFF,
+                        temp_s0->unk31 * ONE);
+                }
+            } else if (vs_main_buttonsPressed.all & 0x80) {
+                func_800A48CC(0,
+                    (ratan2(D_800F1A50[1], D_800F1A50[3])
+                        + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                        & 0xFFF,
+                    temp_s0->unk33 * ONE);
+            } else {
+                func_800B64A8(0,
+                    (ratan2(D_800F1A50[1], D_800F1A50[3])
+                        + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                        & 0xFFF,
+                    temp_s0->unk33 * ONE);
+            }
+        } else if (!(temp_s1 & 0x80000) && (vs_main_buttonsPressed.all & 0x80)) {
+            func_800A48CC(0,
+                (ratan2(0, 0) + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                    & 0xFFF,
+                0);
+        } else {
+            func_800B64A8(0, ratan2(0, 0) & 0xFFF, 0);
+        }
+    }
+    return 0;
+}
 
 int func_8006EBF8(void)
 {
@@ -12425,7 +12558,7 @@ void func_80089DC0(int arg0)
 
     D_800F19C8 = 0;
     _firstPersonViewEnabled = 0;
-    D_800F1A50 = 1;
+    D_800F1A50[0] = 1;
     D_800F1868 = 0;
     func_8007D15C(1);
     D_8005E1D4 = 0;

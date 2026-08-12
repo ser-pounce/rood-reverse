@@ -594,6 +594,7 @@ typedef struct {
 
 int func_800A1108(int, void*);
 void func_800A36E0(int, char, func_8006EBF8_t*);
+void func_800A48CC(int, int, int);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);
 void func_800A35A8(void);

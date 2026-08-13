@@ -117,10 +117,7 @@ typedef struct {
     char unk29A5;
     char unk29A6;
     char unk29A7;
-    short unk29A8;
-    short unk29AA;
-    short unk29AC;
-    short unk29AE;
+    SVECTOR unk29A8;
     char unk29B0;
     char unk29B1;
     short unk29B2;
@@ -2091,7 +2088,7 @@ void func_8006CA20(int arg0, func_8006CE70_t* arg1)
     }
 }
 
-// https://decomp.me/scratch/vphlQ
+// https://decomp.me/scratch/gKwdw
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006CB04);
 
 void func_8006CD60(u_int* arg0, int arg1, int arg2)
@@ -2591,7 +2588,7 @@ void _snapLookAtToPosition(VECTOR* arg0)
     }
 }
 
-// https://decomp.me/scratch/tuNRf
+// https://decomp.me/scratch/axID6
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E158);
 
 void func_8006E640(int arg0)
@@ -3964,9 +3961,9 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
         vs_battle_actors[targetActor]->unk3C->unk36;
     D_800F19CC->unk4 = 1;
     D_800F19CC->unk0 = 0;
-    D_800F19CC->unk29A8 = arg1->unk0.unk4.vx;
-    D_800F19CC->unk29AA = arg1->unk0.unk4.vy;
-    D_800F19CC->unk29AC = arg1->unk0.unk4.vz;
+    D_800F19CC->unk29A8.vx = arg1->unk0.unk4.vx;
+    D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
+    D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
     sp10.unk0 = arg0->unk0.unk6 + 6;
     sp10.unk4 = 5;

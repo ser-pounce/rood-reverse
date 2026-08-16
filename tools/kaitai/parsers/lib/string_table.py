@@ -30,30 +30,6 @@ class StringTable(KaitaiStruct):
 
 
 
-    class Description(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(StringTable.Description, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.text = self._io.read_bytes_term(231, False, True, True)
-            if self._io.pos() % 2 != 0:
-                pass
-                self.pad = self._io.read_u1()
-                if not self.pad == 235:
-                    raise kaitaistruct.ValidationNotEqualError(235, self.pad, self._io, u"/types/description/seq/1")
-
-
-
-        def _fetch_instances(self):
-            pass
-            if self._io.pos() % 2 != 0:
-                pass
-
-
-
     class StringRef(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
             super(StringTable.StringRef, self).__init__(_io)
@@ -62,28 +38,27 @@ class StringTable(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.value = self._io.read_s2le()
+            self.offset = self._io.read_s2le()
 
 
         def _fetch_instances(self):
             pass
-            _ = self.description
-            if hasattr(self, '_m_description'):
+            _ = self.text
+            if hasattr(self, '_m_text'):
                 pass
-                self._m_description._fetch_instances()
 
 
         @property
-        def description(self):
-            if hasattr(self, '_m_description'):
-                return self._m_description
+        def text(self):
+            if hasattr(self, '_m_text'):
+                return self._m_text
 
             io = self._parent._io
             _pos = io.pos()
-            io.seek(self.value * 2)
-            self._m_description = StringTable.Description(io, self, self._root)
+            io.seek(self.offset * 2)
+            self._m_text = io.read_bytes_term(231, False, True, True)
             io.seek(_pos)
-            return getattr(self, '_m_description', None)
+            return getattr(self, '_m_text', None)
 
 
     @property

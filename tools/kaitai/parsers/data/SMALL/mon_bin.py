@@ -61,7 +61,7 @@ class MonBin(KaitaiStruct):
             if hasattr(self, '_m_description'):
                 return self._m_description
 
-            self._m_description = self._root.descriptions.string_refs[self.index].description.text
+            self._m_description = self._root.descriptions.string_refs[self.index].text
             return getattr(self, '_m_description', None)
 
 

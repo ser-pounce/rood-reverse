@@ -33,4 +33,4 @@ types:
         size: 28
     instances:
       description:
-        value: _root.descriptions.string_refs[index].description.text
+        value: _root.descriptions.string_refs[index].text

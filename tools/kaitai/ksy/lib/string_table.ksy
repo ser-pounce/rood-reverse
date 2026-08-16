@@ -15,19 +15,10 @@ instances:
 types:
   string_ref:
     seq:
-      - id: value
+      - id: offset
         type: s2
     instances:
-      description:
+      text:
         io: _parent._io
-        pos: value * 2
-        type: description
-
-  description:
-    seq:
-      - id: text
+        pos: offset * 2
         terminator: 0xE7
-      - id: pad
-        type: u1
-        if: _io.pos % 2 != 0
-        valid: 0xEB

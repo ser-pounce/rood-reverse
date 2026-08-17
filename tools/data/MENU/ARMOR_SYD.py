@@ -127,8 +127,8 @@ def encode(yaml_path: str, binary_path: str) -> None:
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <input.SYD> <output.yaml>")
-        print(f"       {sys.argv[0]} <input.yaml> <output.SYD>")
+        print(f"Usage: {sys.argv[0]} <input.SYD> <output.yml>")
+        print(f"       {sys.argv[0]} <input.yml> <output.SYD>")
         sys.exit(1)
 
     input_file, output_file = sys.argv[1], sys.argv[2]
@@ -136,10 +136,10 @@ if __name__ == '__main__':
     try:
         if input_file.upper().endswith('.SYD'):
             decode(input_file, output_file)
-        elif input_file.lower().endswith('.yaml'):
+        elif input_file.lower().endswith('.yml'):
             encode(input_file, output_file)
         else:
-            print(f"Error: cannot determine mode from input filename '{input_file}' (expected *.SYD or *.yaml)", file=sys.stderr)
+            print(f"Error: cannot determine mode from input filename '{input_file}' (expected *.SYD or *.yml)", file=sys.stderr)
             sys.exit(1)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)

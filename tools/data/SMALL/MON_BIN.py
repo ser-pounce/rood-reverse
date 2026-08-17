@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from tools.kaitai.parsers.data.SMALL.mon_bin import MonBin
-from tools.libdata.yaml import configure_yaml
+from tools.libdata.yaml import configure_yaml, dump
 from tools.libdata.offset_table import build_offset_table
 from tools.etc.vsString import decode, encode
 
@@ -43,7 +43,7 @@ def decode_bin(in_path: Path, out_path: Path) -> None:
     records = [build_record(monster) for monster in data.monsters]
 
     with open(out_path, "w", encoding="utf-8") as f:
-        yaml.dump(records, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
+        dump(records, f)
 
 
 def validate_record(rec: dict) -> None:

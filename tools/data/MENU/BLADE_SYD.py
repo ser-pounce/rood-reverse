@@ -1,5 +1,4 @@
 import struct
-import sys
 import yaml
 from pathlib import Path
 from tools.libdata.yaml import configure_yaml, dump

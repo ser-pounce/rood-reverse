@@ -9,7 +9,7 @@ from enum import IntEnum
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-class ShieldSyd(KaitaiStruct):
+class ArmorSyd(KaitaiStruct):
 
     class Materials(IntEnum):
         wood = 1
@@ -20,7 +20,7 @@ class ShieldSyd(KaitaiStruct):
         silver = 6
         damascus = 7
     def __init__(self, _io, _parent=None, _root=None):
-        super(ShieldSyd, self).__init__(_io)
+        super(ArmorSyd, self).__init__(_io)
         self._parent = _parent
         self._root = _root or self
         self._read()
@@ -49,25 +49,44 @@ class ShieldSyd(KaitaiStruct):
                 self._m_info[i]._fetch_instances()
 
 
-        _ = self.materials
-        if hasattr(self, '_m_materials'):
+        _ = self.materialcombinations
+        if hasattr(self, '_m_materialcombinations'):
             pass
-            for i in range(len(self._m_materials)):
+            self._m_materialcombinations._fetch_instances()
+
+
+    class ArmorRow(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(ArmorSyd.ArmorRow, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.materials = []
+            for i in range(8):
+                self.materials.append(ArmorSyd.MaterialRow(self._io, self, self._root))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.materials)):
                 pass
-                self._m_materials[i]._fetch_instances()
+                self.materials[i]._fetch_instances()
 
 
 
     class CombinationRow(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ShieldSyd.CombinationRow, self).__init__(_io)
+            super(ArmorSyd.CombinationRow, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
 
         def _read(self):
             self.data = []
-            for i in range(17):
+            for i in range(65):
                 self.data.append(self._io.read_u1())
 
 
@@ -79,30 +98,9 @@ class ShieldSyd(KaitaiStruct):
 
 
 
-    class MaterialRow(KaitaiStruct):
+    class Info(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ShieldSyd.MaterialRow, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.data = []
-            for i in range(8):
-                self.data.append(KaitaiStream.resolve_enum(ShieldSyd.Materials, self._io.read_u1()))
-
-
-
-        def _fetch_instances(self):
-            pass
-            for i in range(len(self.data)):
-                pass
-
-
-
-    class Shieldinfo(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(ShieldSyd.Shieldinfo, self).__init__(_io)
+            super(ArmorSyd.Info, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
@@ -121,6 +119,71 @@ class ShieldSyd(KaitaiStruct):
             pass
 
 
+    class MaterialRow(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(ArmorSyd.MaterialRow, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.armor = []
+            for i in range(4):
+                self.armor.append(KaitaiStream.resolve_enum(ArmorSyd.Materials, self._io.read_u1()))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.armor)):
+                pass
+
+
+
+    class MaterialsTable(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(ArmorSyd.MaterialsTable, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.materials = []
+            for i in range(8):
+                self.materials.append(ArmorSyd.OuterMaterialRow(self._io, self, self._root))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.materials)):
+                pass
+                self.materials[i]._fetch_instances()
+
+
+
+    class OuterMaterialRow(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(ArmorSyd.OuterMaterialRow, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.armor = []
+            for i in range(4):
+                self.armor.append(ArmorSyd.ArmorRow(self._io, self, self._root))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.armor)):
+                pass
+                self.armor[i]._fetch_instances()
+
+
+
     @property
     def combinations(self):
         if hasattr(self, '_m_combinations'):
@@ -129,8 +192,8 @@ class ShieldSyd(KaitaiStruct):
         _pos = self._io.pos()
         self._io.seek(self.combinations_offset)
         self._m_combinations = []
-        for i in range(17):
-            self._m_combinations.append(ShieldSyd.CombinationRow(self._io, self, self._root))
+        for i in range(65):
+            self._m_combinations.append(ArmorSyd.CombinationRow(self._io, self, self._root))
 
         self._io.seek(_pos)
         return getattr(self, '_m_combinations', None)
@@ -144,26 +207,23 @@ class ShieldSyd(KaitaiStruct):
         self._io.seek(self.info_offset)
         self._raw__m_info = []
         self._m_info = []
-        for i in range(17):
+        for i in range(81):
             self._raw__m_info.append(self._io.read_bytes(8))
             _io__raw__m_info = KaitaiStream(BytesIO(self._raw__m_info[i]))
-            self._m_info.append(ShieldSyd.Shieldinfo(_io__raw__m_info, self, self._root))
+            self._m_info.append(ArmorSyd.Info(_io__raw__m_info, self, self._root))
 
         self._io.seek(_pos)
         return getattr(self, '_m_info', None)
 
     @property
-    def materials(self):
-        if hasattr(self, '_m_materials'):
-            return self._m_materials
+    def materialcombinations(self):
+        if hasattr(self, '_m_materialcombinations'):
+            return self._m_materialcombinations
 
         _pos = self._io.pos()
         self._io.seek(self.materials_offset)
-        self._m_materials = []
-        for i in range(8):
-            self._m_materials.append(ShieldSyd.MaterialRow(self._io, self, self._root))
-
+        self._m_materialcombinations = ArmorSyd.MaterialsTable(self._io, self, self._root)
         self._io.seek(_pos)
-        return getattr(self, '_m_materials', None)
+        return getattr(self, '_m_materialcombinations', None)
 
 

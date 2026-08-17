@@ -13,6 +13,7 @@ class BladeSyd(KaitaiStruct):
 
     class Materials(IntEnum):
         wood = 1
+        leather = 2
         bronze = 3
         iron = 4
         hagane = 5

@@ -1,5 +1,5 @@
 meta:
-  id: blade_syd
+  id: armor_syd
   file-extension: SYD
   endian: le
 
@@ -17,7 +17,7 @@ instances:
     pos: combinations_offset
     type: combination_row
     repeat: expr
-    repeat-expr: 96
+    repeat-expr: 65
 
   materialcombinations:
     pos: materials_offset
@@ -26,8 +26,9 @@ instances:
   info:
     pos: info_offset
     type: info
+    size: 8
     repeat: expr
-    repeat-expr: 96
+    repeat-expr: 81
 
 types:
   combination_row:
@@ -35,35 +36,35 @@ types:
       - id: data
         type: u1
         repeat: expr
-        repeat-expr: 96
+        repeat-expr: 65
         
   materials_table:
     seq:
       - id: materials
         type: outer_material_row
         repeat: expr
-        repeat-expr: 5
+        repeat-expr: 8
         
   outer_material_row:
     seq:
-    - id: weapons
-      type: weapon_row
+    - id: armor
+      type: armor_row
       repeat: expr
-      repeat-expr: 10
+      repeat-expr: 4
         
-  weapon_row:
+  armor_row:
     seq:
       - id: materials
         type: material_row
         repeat: expr
-        repeat-expr: 5
+        repeat-expr: 8
 
   material_row:
     seq:
-      - id: weapons
+      - id: armor
         type: u1
         repeat: expr
-        repeat-expr: 10
+        repeat-expr: 4
         enum: materials
         
   info:
@@ -74,15 +75,7 @@ types:
         type: u1
       - id: category
         type: u1
-      - id: damagetype
-        type: u1
-      - id: costtype
-        type: u1
-      - id: cost
-        type: u1
-      - id: unk6
-        type: u1
-      - id: unk7
+      - id: gemslots
         type: u1
       - id: strength
         type: s1
@@ -90,18 +83,6 @@ types:
         type: s1
       - id: agility
         type: s1
-      - id: unkb
-        type: u1
-      - id: range
-        type: u1
-      - id: unkd
-        type: u1
-      - id: unke
-        type: u1
-      - id: attackshapeangle
-        type: b5
-      - id: attackshape
-        type: b3
 
 enums:
   materials:

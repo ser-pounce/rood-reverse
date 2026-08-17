@@ -67,6 +67,7 @@ types:
 enums:
   materials:
     1: wood
+    2: leather
     3: bronze
     4: iron
     5: hagane

@@ -1,10 +1,9 @@
 import struct
-import sys
 import yaml
 from pathlib import Path
 from tools.libdata.yaml import configure_yaml, dump
 from tools.kaitai.parsers.data.MENU.shield_syd import ShieldSyd
-from tools.data.MENU.syd_cli import run_cli, write_syd
+from tools.data.MENU.syd_cli import align, run_cli, write_syd
 
 RECORD_FIELDS = [
     "subid",
@@ -42,10 +41,6 @@ def row_bytes(values, size, enum_cls=None) -> bytes:
 def block_bytes(rows, size, enum_cls=None) -> bytes:
     header = b"\x00" * (size + 1)
     return header + b"".join(row_bytes(r, size, enum_cls) for r in rows)
-
-
-def align(data: bytes) -> bytes:
-    return data + b"\x00" * (-len(data) % 4)
 
 
 def encode(in_path: Path, out_path: Path) -> None:

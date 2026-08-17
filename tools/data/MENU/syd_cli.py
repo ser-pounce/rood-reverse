@@ -3,6 +3,11 @@ import struct
 from pathlib import Path
 from typing import Callable
 
+
+def align(data: bytes) -> bytes:
+    return data + b"\x00" * (-len(data) % 4)
+
+
 def run_cli(decode: Callable, encode: Callable) -> None:
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} <input> <output>")

@@ -3,7 +3,7 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from tools.kaitai.parsers.lib import string_table
+from tools.kaitai.parsers.data.SMALL import string_table
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):

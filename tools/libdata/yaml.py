@@ -14,7 +14,6 @@ def _int_enum_representer(dumper: yaml.Dumper, data: IntEnum):
 
 
 def configure_yaml() -> None:
-    """Register project-wide YAML representers. Call once before yaml.dump()."""
     yaml.add_representer(str, _str_representer)
     yaml.add_multi_representer(IntEnum, _int_enum_representer)
 

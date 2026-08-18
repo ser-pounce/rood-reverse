@@ -3,7 +3,7 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
-from tools.kaitai.parsers.lib import syd
+from tools.kaitai.parsers.data.MENU import syd
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
@@ -17,65 +17,11 @@ class ArmorSyd(KaitaiStruct):
         self._read()
 
     def _read(self):
-        self.offsets = syd.Syd.Offsets(self._io)
+        self.root = syd.Syd(u"armor", 65, 81, 8, 4, self._io)
 
 
     def _fetch_instances(self):
         pass
-        self.offsets._fetch_instances()
-        _ = self.combinations
-        if hasattr(self, '_m_combinations'):
-            pass
-            self._m_combinations._fetch_instances()
-
-        _ = self.info
-        if hasattr(self, '_m_info'):
-            pass
-            for i in range(len(self._m_info)):
-                pass
-                self._m_info[i]._fetch_instances()
-
-
-        _ = self.materialcombinations
-        if hasattr(self, '_m_materialcombinations'):
-            pass
-            self._m_materialcombinations._fetch_instances()
-
-
-    @property
-    def combinations(self):
-        if hasattr(self, '_m_combinations'):
-            return self._m_combinations
-
-        _pos = self._io.pos()
-        self._io.seek(self.offsets.combinations)
-        self._m_combinations = syd.Syd.SquareArray(65, self._io)
-        self._io.seek(_pos)
-        return getattr(self, '_m_combinations', None)
-
-    @property
-    def info(self):
-        if hasattr(self, '_m_info'):
-            return self._m_info
-
-        _pos = self._io.pos()
-        self._io.seek(self.offsets.info)
-        self._m_info = []
-        for i in range(81):
-            self._m_info.append(syd.Syd.ArmorInfo(self._io))
-
-        self._io.seek(_pos)
-        return getattr(self, '_m_info', None)
-
-    @property
-    def materialcombinations(self):
-        if hasattr(self, '_m_materialcombinations'):
-            return self._m_materialcombinations
-
-        _pos = self._io.pos()
-        self._io.seek(self.offsets.materials)
-        self._m_materialcombinations = syd.Syd.MaterialsTable(8, 4, self._io)
-        self._io.seek(_pos)
-        return getattr(self, '_m_materialcombinations', None)
+        self.root._fetch_instances()
 
 

@@ -1,9 +1,10 @@
 import struct
 import yaml
 from pathlib import Path
-from tools.data.MENU.syd_cli import align, run_cli, write_syd
 from tools.libdata.yaml import configure_yaml, dump
+from tools.data.MENU.syd_cli import align, run_cli, write_syd
 from tools.kaitai.parsers.data.MENU.armor_syd import ArmorSyd
+from tools.kaitai.parsers.lib.syd import Syd
 
 RECORD_FIELDS = [
     "subid",
@@ -19,10 +20,10 @@ def build_material_table(table) -> list:
     return [
         [
             [
-                list(material_row.armor)
+                list(material_row.equipment)
                 for material_row in armor_row.materials[1:]
             ]
-            for armor_row in outer_row.armor
+            for armor_row in outer_row.equipment
         ]
         for outer_row in table.materials[1:]
     ]
@@ -33,7 +34,7 @@ def decode(in_path: str, out_path: str) -> None:
     data = ArmorSyd.from_file(str(in_path))
 
     output = {
-        "combinations": [list(row.data)[1:] for row in data.combinations[1:]],
+        "combinations": [list(row.data)[1:] for row in data.combinations.rows[1:]],
         "materials": build_material_table(data.materialcombinations),
         "info": [{field: getattr(armor, field) for field in RECORD_FIELDS} for armor in data.info[1:]],
     }
@@ -43,7 +44,7 @@ def decode(in_path: str, out_path: str) -> None:
 
 
 def build_material_row_bytes(cells) -> bytes:
-    return bytes(ArmorSyd.Materials[v].value for v in cells)
+    return bytes(Syd.Materials[v].value for v in cells)
 
 
 def build_armor_row_bytes(material_rows) -> bytes:

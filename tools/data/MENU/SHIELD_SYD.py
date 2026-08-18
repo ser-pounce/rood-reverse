@@ -2,8 +2,9 @@ import struct
 import yaml
 from pathlib import Path
 from tools.libdata.yaml import configure_yaml, dump
-from tools.kaitai.parsers.data.MENU.shield_syd import ShieldSyd
 from tools.data.MENU.syd_cli import align, run_cli, write_syd
+from tools.kaitai.parsers.data.MENU.shield_syd import ShieldSyd
+from tools.kaitai.parsers.lib.syd import Syd
 
 RECORD_FIELDS = [
     "subid",
@@ -21,8 +22,8 @@ def decode(in_path: Path, out_path: Path) -> None:
     data = ShieldSyd.from_file(str(in_path))
 
     output = {
-        "combinations": [list(row.data)[1:] for row in data.combinations[1:]],
-        "materials": [list(row.data)[1:] for row in data.materials[1:]],
+        "combinations": [list(row.data)[1:] for row in data.combinations.rows[1:]],
+        "materials": [list(row.equipment)[1:] for row in data.materialcombinations[1:]],
         "info": [{field: getattr(shield, field) for field in RECORD_FIELDS} for shield in data.info[1:]],
     }
 
@@ -47,7 +48,7 @@ def encode(in_path: Path, out_path: Path) -> None:
     obj = yaml.safe_load(in_path.read_text(encoding="utf-8"))
 
     comb_block = align(block_bytes(obj["combinations"], size=16))
-    mat_block = block_bytes(obj["materials"], size=7, enum_cls=ShieldSyd.Materials)
+    mat_block = block_bytes(obj["materials"], size=7, enum_cls=Syd.Materials)
     info_block = b"".join(
         struct.pack(
             "<4B3bx",

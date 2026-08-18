@@ -2,8 +2,9 @@ import struct
 import yaml
 from pathlib import Path
 from tools.libdata.yaml import configure_yaml, dump
-from tools.kaitai.parsers.data.MENU.blade_syd import BladeSyd
 from tools.data.MENU.syd_cli import run_cli, write_syd
+from tools.kaitai.parsers.data.MENU.blade_syd import BladeSyd
+from tools.kaitai.parsers.lib.syd import Syd
 
 RECORD_FIELDS = [
     "subid",
@@ -29,10 +30,10 @@ def build_material_table(table) -> list:
     return [
         [
             [
-                list(material_row.weapons)[1:]
+                list(material_row.equipment)[1:]
                 for material_row in weapon_row.materials
             ]
-            for weapon_row in outer_row.weapons[1:]
+            for weapon_row in outer_row.equipment[1:]
         ]
         for outer_row in table.materials
     ]
@@ -42,7 +43,7 @@ def decode(in_path: str, out_path: str) -> None:
     data = BladeSyd.from_file(str(in_path))
 
     output = {
-        "combinations": [list(row.data)[1:] for row in data.combinations[1:]],
+        "combinations": [list(row.data)[1:] for row in data.combinations.rows[1:]],
         "materials": build_material_table(data.materialcombinations),
         "info": [{field: getattr(weapon, field) for field in RECORD_FIELDS} for weapon in data.info[1:]],
     }
@@ -51,7 +52,7 @@ def decode(in_path: str, out_path: str) -> None:
         dump(output, f, default_flow_style=None)
 
 
-def material_value(v, enum_cls=BladeSyd.Materials):
+def material_value(v, enum_cls=Syd.Materials):
     return enum_cls[v].value if isinstance(v, str) else v
 
 

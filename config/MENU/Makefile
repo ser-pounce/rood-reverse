@@ -29,15 +29,15 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	cp $< $@
 
-.PRECIOUS: $(BUILD)/assets/MENU/%.SYD.yaml
+.PRECIOUS: $(BUILD)/assets/MENU/%.SYD.yml
 
-$(BUILD)/assets/MENU/%.SYD.yaml: | $$(@D)/
+$(BUILD)/assets/MENU/%.SYD.yml: | $$(@D)/
 	$(ECHO) Converting data/MENU/$*.SYD
-	$(VPYTHON) -m tools.data.MENU.$*_SYD data/MENU/$*.SYD $@
+	$(VPYTHON) -m tools.data.MENU.SYD $* data/MENU/$*.SYD $@
 
-$(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yaml | $$(@D)/
+$(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yml | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.$*_SYD $< $@
+	$(VPYTHON) -m tools.data.MENU.SYD $* $< $@
 
 $(BUILD)/assets/MENU/MENUBG.BIN.png: data/MENU/MENUBG.BIN
 	$(ECHO) Converting $<

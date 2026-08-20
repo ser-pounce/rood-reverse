@@ -1,55 +1,55 @@
 .PRECIOUS: $(BUILD)/assets/%/help_data.yaml $(BUILD)/assets/SMALL/%.obj
 
 $(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$(@D)/
-	echo Converting $<
+	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.help_builder $< $|
 
 $(BUILD)/assets/%/help_data.yaml: | $$(@D)/
-	echo Converting data/$*.HF0 data/$*.HF1
+	$(ECHO) Converting data/$*.HF0 data/$*.HF1
 	$(VPYTHON) -m tools.data.SMALL.help_dumper data/$*.HF0 data/$*.HF1 $|
 
 $(BUILD)/data/SMALL/%.ARM: $(BUILD)/assets/SMALL/%.obj | $$(@D)/
-	echo Converting $<
-	$(VPYTHON) -m tools.data.SMALL.buildArmFile $< $@ $(JPFONT)
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.SMALL.ARM $< $@ $(JPFONT)
 
 $(BUILD)/assets/SMALL/%.obj: | $$(@D)/
-	echo Converting data/SMALL/$*.ARM
-	$(VPYTHON) -m tools.data.SMALL.dumpArmFile data/SMALL/$*.ARM $@ $(JPFONT)
+	$(ECHO) Converting data/SMALL/$*.ARM
+	$(VPYTHON) -m tools.data.SMALL.ARM data/SMALL/$*.ARM $@ $(JPFONT)
 
 ENDSCR := $(patsubst %,ENDSCR%,00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15)
 
 $(BUILD)/assets/SMALL/%.DIS.png:
-	echo Converting data/SMALL/$*.DIS
+	$(ECHO) Converting data/SMALL/$*.DIS
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
 
 $(BUILD)/assets/SMALL/%.DIS/:
-	echo Converting data/SMALL/$*.DIS
+	$(ECHO) Converting data/SMALL/$*.DIS
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
 
 $(BUILD)/assets/SMALL/IQ.DIS/:
-	echo Converting data/SMALL/IQ.DIS
+	$(ECHO) Converting data/SMALL/IQ.DIS
 	$(VPYTHON) -m tools.data.SMALL.IQ_DIS data/SMALL/IQ.DIS $@
 
 $(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END RANK): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS/ | $$(@D)/
 $(patsubst %,$(BUILD)/data/SMALL/%.DIS,ESC TIME $(ENDSCR)): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS.png | $$(@D)/
 
 $(BUILD)/data/SMALL/%.DIS:
-	echo Converting $<
+	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS $< $@
 
 $(BUILD)/data/SMALL/IQ.DIS: $(BUILD)/assets/SMALL/IQ.DIS/
-	echo Converting $<
+	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.IQ_DIS $< $@
 
-$(BUILD)/assets/SMALL/MON.BIN.yaml:
-	echo Converting data/SMALL/MON.BIN
+$(BUILD)/assets/SMALL/MON.BIN.yml:
+	$(ECHO) Converting data/SMALL/MON.BIN
 	$(VPYTHON) -m tools.data.SMALL.MON_BIN data/SMALL/MON.BIN $@
 
-$(BUILD)/data/SMALL/MON.BIN: $(BUILD)/assets/SMALL/MON.BIN.yaml
-	echo Converting $<
+$(BUILD)/data/SMALL/MON.BIN: $(BUILD)/assets/SMALL/MON.BIN.yml
+	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.MON_BIN $< $@
 
-$(patsubst %,$(BUILD)/data/SMALL/%.ARM,DUMMY SCEN018): JPFONT := true
+$(patsubst %,$(BUILD)/data/SMALL/%.ARM,DUMMY SCEN018): JPFONT := --jp-font
 
 helpfiles := 01 02 03 04 05 06 07 08 09 10 11 12 13 14
 helpfiles := $(helpfiles:%=$(BUILD)/data/SMALL/HELP%.HF)

@@ -1,4 +1,5 @@
-splat64[mips]== 0.50.0
-pandas
-toml
 cffi
+kaitaistruct
+pandas
+splat64[mips]== 0.50.0
+toml

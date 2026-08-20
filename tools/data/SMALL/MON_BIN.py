@@ -1,200 +1,115 @@
-#!/usr/bin/env python3
-"""Convert between a mon.bin file and its YAML representation."""
-
-import sys
+import argparse
 import struct
-import io
+from pathlib import Path
+
 import yaml
+
+from tools.kaitai.parsers.data.SMALL.mon_bin import MonBin
+from tools.libdata.yaml import configure_yaml, dump
+from tools.libdata.offset_table import build_offset_table
 from tools.etc.vsString import decode, encode
 
+MONSTER_COUNT = 150
+NAME_FIELD_SIZE = 28
 
-class LiteralString(str):
-    pass
+# (ksy_id, needs_decode)
+RECORD_FIELDS = (
+    ("name", True),
+    ("zudid", False),
+    ("classid", False),
+    ("killflagsoffset", False),
+    ("killflagscount", False),
+    ("description", True),
+)
 
+MONSTER_STRUCT = struct.Struct(f"<4h8x{NAME_FIELD_SIZE}s")
 
-def literal_representer(dumper, data):
-    return dumper.represent_scalar("tag:yaml.org,2002:str", str(data), style="|")
-
-
-yaml.add_representer(LiteralString, literal_representer)
-
-
-def maybe_literal(s: str) -> str:
-    return LiteralString(s) if "\n" in s else s
-
-
-# Struct layout: 6 shorts (12 bytes) + 4 u_chars (4 bytes) + char[28] = 44 bytes
-MON_STRUCT_FORMAT = "<6h4B28s"
-MON_STRUCT_SIZE   = struct.calcsize(MON_STRUCT_FORMAT)  # 44 bytes
-NUM_ENTRIES       = 150
-
-# Padding string appended to short encoded names
-NAME_PAD_STRING = '|>14||m184||m184|_Ô|m184||m184|'
-NAME_MIN_LENGTH = 13  # minimum encoded length before null padding
-NAME_FIELD_SIZE = 28  # final null-padded size
+# "Empty" name buffer: junk bytes from the pad string (mirroring the
+# original buffer-reuse artifact), null-padded out to the full field
+# size. A name's encoded bytes are overlaid on top of this.
+_NAME_TEMPLATE = encode('|>14||m184||m184|_Ô|m184||m184|', padding=None).ljust(NAME_FIELD_SIZE, b"\x00")
 
 
-# ---------------------------------------------------------------------------
-# Decoding (bin -> yaml)
-# ---------------------------------------------------------------------------
-
-def parse_entries(data: bytes) -> list[dict]:
-    entries = []
-    for i in range(NUM_ENTRIES):
-        offset = i * MON_STRUCT_SIZE
-        (
-            zudId, classId, killFlagsOffset, killFlagsCount,
-            selected, animationState,
-            unlocked, prev, next, unkF,
-            raw_name,
-        ) = struct.unpack_from(MON_STRUCT_FORMAT, data, offset)
-
-        entry = {
-            "zudId":           zudId,
-            "classId":         classId,
-            "killFlagsOffset": killFlagsOffset,
-            "killFlagsCount":  killFlagsCount,
-            "name":            maybe_literal(decode(raw_name)),
-        }
-
-        for name, value in [
-            ("selected", selected),
-            ("animationState", animationState),
-            ("unlocked", unlocked),
-            ("prev", prev),
-            ("next", next),
-            ("unkF", unkF),
-        ]:
-            if value != 0:
-                entry[name] = value
-
-        entries.append(entry)
-    return entries
+def build_record(monster) -> dict:
+    rec = {}
+    for field, needs_decode in RECORD_FIELDS:
+        value = getattr(monster, field)
+        rec[field] = decode(value) if needs_decode else value
+    return rec
 
 
-def parse_string_table(data: bytes, base_offset: int) -> list[str]:
-    f = io.BytesIO(data)
+def decode_bin(in_path: Path, out_path: Path) -> None:
+    configure_yaml()
 
-    f.seek(base_offset)
-    string_count = struct.unpack("<H", f.read(2))[0]
-
-    string_offsets = [string_count]
-    for _ in range(string_count - 1):
-        offset = struct.unpack("<H", f.read(2))[0]
-        string_offsets.append(offset)
-
-    file_size = len(data)
-
-    strings = []
-    for offset in string_offsets:
-        start_pos = base_offset + (offset * 2)
-        f.seek(start_pos)
-        string_data = f.read(file_size - start_pos)
-        strings.append(maybe_literal(decode(string_data)))
-    return strings
-
-
-def decode_bin(in_path: str, out_path: str) -> None:
-    with open(in_path, "rb") as f:
-        data = f.read()
-
-    struct_block_size = NUM_ENTRIES * MON_STRUCT_SIZE
-    entries           = parse_entries(data)
-    string_table      = parse_string_table(data, struct_block_size)
-
-    doc = {
-        "entries":      entries,
-        "string_table": string_table,
-    }
+    data = MonBin.from_file(str(in_path))
+    records = [build_record(monster) for monster in data.monsters]
 
     with open(out_path, "w", encoding="utf-8") as f:
-        yaml.dump(doc, f, allow_unicode=True, sort_keys=False, width=1000)
+        dump(records, f)
 
 
-# ---------------------------------------------------------------------------
-# Encoding (yaml -> bin)
-# ---------------------------------------------------------------------------
+def validate_record(rec: dict) -> None:
+    for ksy_id, _ in RECORD_FIELDS:
+        if ksy_id not in rec:
+            raise ValueError(f"Record missing required field {ksy_id!r}: {rec}")
 
-def encode_name(name: str, pad_encoded: bytes) -> bytes:
+
+def encode_name(name: str) -> bytes:
     encoded = encode(name, padding=None)
-    enc_len = len(encoded)
-
-    if enc_len < NAME_MIN_LENGTH:
-        # Append bytes from pad_encoded starting at enc_len
-        encoded = encoded + pad_encoded[enc_len:NAME_MIN_LENGTH]
-
-    # Null-pad to NAME_FIELD_SIZE
-    encoded = encoded.ljust(NAME_FIELD_SIZE, b"\x00")
-    return encoded
-
-
-def build_entries(entries: list[dict]) -> bytes:
-    pad_encoded = encode(NAME_PAD_STRING, padding=None)
-    out = b""
-    for e in entries:
-        name_bytes = encode_name(e["name"], pad_encoded)
-        out += struct.pack(
-            "<6h4B",
-            e["zudId"], e["classId"], e["killFlagsOffset"], e["killFlagsCount"],
-            e.get("selected", 0), e.get("animationState", 0),
-            e.get("unlocked", 0), e.get("prev", 0), e.get("next", 0), e.get("unkF", 0),
+    if len(encoded) > NAME_FIELD_SIZE:
+        raise ValueError(
+            f"Monster name is {len(encoded)} bytes; maximum is "
+            f"{NAME_FIELD_SIZE}: {name!r}"
         )
-        out += name_bytes
-    return out
+
+    buffer = bytearray(_NAME_TEMPLATE)
+    buffer[:len(encoded)] = encoded
+    return bytes(buffer)
 
 
-def build_string_table(strings: list[str]) -> bytes:
-    encoded_strings = [encode(s) for s in strings]
-    count           = len(encoded_strings)
-
-    # Header: count shorts. First value is count itself (= offset of first string
-    # in units of 2 bytes), then cumulative offsets for subsequent strings.
-    header_size = count * 2  # in bytes
-    cursor      = header_size  # byte offset from start of table
-    offsets     = []
-    for enc in encoded_strings:
-        offsets.append(cursor // 2)
-        cursor += len(enc)
-
-    # First offset entry is the count itself (matching the parse logic)
-    header = struct.pack("<H", count)
-    for off in offsets[1:]:
-        header += struct.pack("<H", off)
-
-    return header + b"".join(encoded_strings)
+def build_monster_block(rec: dict) -> bytes:
+    return MONSTER_STRUCT.pack(
+        rec["zudid"],
+        rec["classid"],
+        rec["killflagsoffset"],
+        rec["killflagscount"],
+        encode_name(rec["name"]),
+    )
 
 
-def encode_yaml(in_path: str, out_path: str) -> None:
-    with open(in_path, "r", encoding="utf-8") as f:
-        doc = yaml.safe_load(f)
+def encode_yml(in_path: Path, out_path: Path) -> None:
+    records = yaml.safe_load(in_path.read_text(encoding="utf-8"))
 
-    entries_bin  = build_entries(doc["entries"])
-    string_table = build_string_table(doc["string_table"])
+    if not isinstance(records, list) or len(records) != MONSTER_COUNT:
+        count = len(records) if isinstance(records, list) else "not a list"
+        raise ValueError(f"Expected {MONSTER_COUNT} monsters, got {count}")
+    for rec in records:
+        validate_record(rec)
+
+    monster_blocks = [build_monster_block(rec) for rec in records]
+    desc_blocks = [encode(rec["description"]) for rec in records]
+    string_table = build_offset_table(desc_blocks)
 
     with open(out_path, "wb") as f:
-        f.write(entries_bin)
+        f.write(b"".join(monster_blocks))
         f.write(string_table)
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Decode or encode MON.BIN")
+    parser.add_argument("input", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args(argv)
 
-def main():
-    if len(sys.argv) < 3:
-        print(f"Usage: {sys.argv[0]} <input> <output>")
-        sys.exit(1)
-
-    in_path, out_path = sys.argv[1], sys.argv[2]
-
-    if in_path.endswith(".BIN"):
-        decode_bin(in_path, out_path)
-    elif in_path.endswith(".yaml"):
-        encode_yaml(in_path, out_path)
+    suffix = args.input.suffix.lower()
+    if suffix == ".bin":
+        decode_bin(args.input, args.output)
+    elif suffix == ".yml":
+        encode_yml(args.input, args.output)
     else:
-        print(f"Cannot determine mode from input filename: {in_path}")
-        sys.exit(1)
+        parser.error("Could not infer mode from input file extension; expected .BIN or .yml")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

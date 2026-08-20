@@ -117,10 +117,7 @@ typedef struct {
     char unk29A5;
     char unk29A6;
     char unk29A7;
-    short unk29A8;
-    short unk29AA;
-    short unk29AC;
-    short unk29AE;
+    SVECTOR unk29A8;
     char unk29B0;
     char unk29B1;
     short unk29B2;
@@ -2091,7 +2088,7 @@ void func_8006CA20(int arg0, func_8006CE70_t* arg1)
     }
 }
 
-// https://decomp.me/scratch/vphlQ
+// https://decomp.me/scratch/gKwdw
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006CB04);
 
 void func_8006CD60(u_int* arg0, int arg1, int arg2)
@@ -2591,7 +2588,7 @@ void _snapLookAtToPosition(VECTOR* arg0)
     }
 }
 
-// https://decomp.me/scratch/tuNRf
+// https://decomp.me/scratch/axID6
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E158);
 
 void func_8006E640(int arg0)
@@ -2653,7 +2650,7 @@ int func_8006E7F0(void)
     if (((vs_battle_screenTransitionStep - 1) < 2U)
         || (vs_battle_screenTransitionStep == 4)) {
         if (D_800F1AB0.unk6_15) {
-            func_800B64A8(0, D_800F1AB0.unk4_13 << 10, temp_s0->unk31 << 0xB);
+            func_800B64A8(0, D_800F1AB0.unk4_13 << 10, temp_s0->unk31 * ONE / 2);
         } else {
             func_800B64A8(0, 0, 0);
         }
@@ -2666,23 +2663,24 @@ int func_8006E7F0(void)
 
         if (_portInfo->mode == 7) {
 
-            temp_a1 = _portInfo->rStickX - 128;
-            temp_a0 = _portInfo->rStickY - 128;
+            temp_a1 = _portInfo->rStickX - ONE / 32;
+            temp_a0 = _portInfo->rStickY - ONE / 32;
 
-            if (((_portInfo->rStickX - 64) > 128u) || (temp_a0 < -64) || (temp_a0 > 64)) {
+            if (((_portInfo->rStickX - ONE / 64) > ONE / 32u) || (temp_a0 < -ONE / 64)
+                || (temp_a0 > ONE / 64)) {
 
-                if (temp_a1 > 64) {
-                    temp_a1 -= 64;
-                } else if (temp_a1 < -64) {
-                    temp_a1 += 64;
+                if (temp_a1 > ONE / 64) {
+                    temp_a1 -= ONE / 64;
+                } else if (temp_a1 < -ONE / 64) {
+                    temp_a1 += ONE / 64;
                 } else {
                     temp_a1 = 0;
                 }
 
-                if (temp_a0 > 64) {
-                    temp_a0 = temp_a0 - 64;
-                } else if (temp_a0 < -64) {
-                    temp_a0 = temp_a0 + 64;
+                if (temp_a0 > ONE / 64) {
+                    temp_a0 = temp_a0 - ONE / 64;
+                } else if (temp_a0 < -ONE / 64) {
+                    temp_a0 = temp_a0 + ONE / 64;
                 } else {
                     temp_a0 = 0;
                 }
@@ -2693,71 +2691,74 @@ int func_8006E7F0(void)
         }
 
         if ((D_800F1A50[1] == 0) && (D_800F1A50[3] == 0)) {
-            if (vs_main_buttonsPreviousState & 0x4000) {
+            if (vs_main_buttonsPreviousState & PADLdown) {
                 D_800F1A50[1] = 0;
-                D_800F1A50[3] = 0x10;
+                D_800F1A50[3] = ONE / 256;
             }
-            if (vs_main_buttonsPreviousState & 0x1000) {
+            if (vs_main_buttonsPreviousState & PADLup) {
                 D_800F1A50[1] += 0;
-                D_800F1A50[3] -= 16;
+                D_800F1A50[3] -= ONE / 256;
             }
-            if (vs_main_buttonsPreviousState & 0x8000) {
+            if (vs_main_buttonsPreviousState & PADLleft) {
                 D_800F1A50[3] += 0;
-                D_800F1A50[1] += 16;
+                D_800F1A50[1] += ONE / 256;
             }
-            if (vs_main_buttonsPreviousState & 0x2000) {
+            if (vs_main_buttonsPreviousState & PADLright) {
                 D_800F1A50[3] += 0;
-                D_800F1A50[1] -= 16;
+                D_800F1A50[1] -= ONE / 256;
             }
         }
-        if (vs_battle_cameraCurrentSpherical.values.distance > 0x900) {
-            vs_battle_cameraCurrentSpherical.values.distance = 0x900;
-        } else if (vs_battle_cameraCurrentSpherical.values.distance < 0x600) {
-            vs_battle_cameraCurrentSpherical.values.distance = 0x600;
+
+        if (vs_battle_cameraCurrentSpherical.values.distance > ONE / 16 * 9) {
+            vs_battle_cameraCurrentSpherical.values.distance = ONE / 16 * 9;
+        } else if (vs_battle_cameraCurrentSpherical.values.distance < ONE / 16 * 6) {
+            vs_battle_cameraCurrentSpherical.values.distance = ONE / 16 * 6;
         }
+
         if ((D_800F1A50[1] != 0) || (D_800F1A50[3] != 0)) {
             if (temp_s1 & 0x80000) {
                 func_800B64A8(0,
                     (ratan2(D_800F1A50[1], D_800F1A50[3])
-                        + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                        + vs_battle_cameraCurrentSpherical.values.yaw + ONE / 2)
                         & 0xFFF,
                     temp_s0->unk31 * ONE);
-            } else if (vs_main_buttonsPreviousState & 2) {
-                if (vs_main_buttonsPressed.all & 0x80) {
+            } else if (vs_main_buttonsPreviousState & PADR2) {
+                if (vs_main_buttonsPressed.all & PADRleft) {
                     func_800A48CC(0,
                         (ratan2(D_800F1A50[1], D_800F1A50[3])
-                            + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                            + vs_battle_cameraCurrentSpherical.values.yaw + ONE / 2)
                             & 0xFFF,
                         temp_s0->unk31 * ONE);
                 } else {
                     func_800B64A8(0,
                         (ratan2(D_800F1A50[1], D_800F1A50[3])
-                            + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                            + vs_battle_cameraCurrentSpherical.values.yaw + ONE / 2)
                             & 0xFFF,
                         temp_s0->unk31 * ONE);
                 }
-            } else if (vs_main_buttonsPressed.all & 0x80) {
+            } else if (vs_main_buttonsPressed.all & PADRleft) {
                 func_800A48CC(0,
                     (ratan2(D_800F1A50[1], D_800F1A50[3])
-                        + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                        + vs_battle_cameraCurrentSpherical.values.yaw + ONE / 2)
                         & 0xFFF,
                     temp_s0->unk33 * ONE);
             } else {
                 func_800B64A8(0,
                     (ratan2(D_800F1A50[1], D_800F1A50[3])
-                        + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                        + vs_battle_cameraCurrentSpherical.values.yaw + ONE / 2)
                         & 0xFFF,
                     temp_s0->unk33 * ONE);
             }
-        } else if (!(temp_s1 & 0x80000) && (vs_main_buttonsPressed.all & 0x80)) {
+        } else if (!(temp_s1 & 0x80000) && (vs_main_buttonsPressed.all & PADRleft)) {
             func_800A48CC(0,
-                (ratan2(0, 0) + vs_battle_cameraCurrentSpherical.values.yaw + 0x800)
+                (ratan2(0, 0) + vs_battle_cameraCurrentSpherical.values.yaw + ONE / 2)
                     & 0xFFF,
                 0);
         } else {
             func_800B64A8(0, ratan2(0, 0) & 0xFFF, 0);
         }
     }
+
     return 0;
 }
 
@@ -3960,9 +3961,9 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
         vs_battle_actors[targetActor]->unk3C->unk36;
     D_800F19CC->unk4 = 1;
     D_800F19CC->unk0 = 0;
-    D_800F19CC->unk29A8 = arg1->unk0.unk4.vx;
-    D_800F19CC->unk29AA = arg1->unk0.unk4.vy;
-    D_800F19CC->unk29AC = arg1->unk0.unk4.vz;
+    D_800F19CC->unk29A8.vx = arg1->unk0.unk4.vx;
+    D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
+    D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
     sp10.unk0 = arg0->unk0.unk6 + 6;
     sp10.unk4 = 5;

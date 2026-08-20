@@ -1,5 +1,5 @@
+import argparse
 import struct
-import sys
 from pathlib import Path
 
 import yaml
@@ -13,14 +13,16 @@ MONSTER_COUNT = 150
 NAME_FIELD_SIZE = 28
 
 # (ksy_id, needs_decode)
-RECORD_FIELDS = [
+RECORD_FIELDS = (
     ("name", True),
     ("zudid", False),
     ("classid", False),
     ("killflagsoffset", False),
     ("killflagscount", False),
     ("description", True),
-]
+)
+
+MONSTER_STRUCT = struct.Struct(f"<4h8x{NAME_FIELD_SIZE}s")
 
 # "Empty" name buffer: junk bytes from the pad string (mirroring the
 # original buffer-reuse artifact), null-padded out to the full field
@@ -54,14 +56,19 @@ def validate_record(rec: dict) -> None:
 
 def encode_name(name: str) -> bytes:
     encoded = encode(name, padding=None)
+    if len(encoded) > NAME_FIELD_SIZE:
+        raise ValueError(
+            f"Monster name is {len(encoded)} bytes; maximum is "
+            f"{NAME_FIELD_SIZE}: {name!r}"
+        )
+
     buffer = bytearray(_NAME_TEMPLATE)
     buffer[:len(encoded)] = encoded
-    return bytes(buffer[:NAME_FIELD_SIZE])
+    return bytes(buffer)
 
 
 def build_monster_block(rec: dict) -> bytes:
-    return struct.pack(
-        f"<4h8x{NAME_FIELD_SIZE}s",
+    return MONSTER_STRUCT.pack(
         rec["zudid"],
         rec["classid"],
         rec["killflagsoffset"],
@@ -71,11 +78,11 @@ def build_monster_block(rec: dict) -> bytes:
 
 
 def encode_yml(in_path: Path, out_path: Path) -> None:
-    with open(in_path, "r", encoding="utf-8") as f:
-        records = yaml.safe_load(f)
+    records = yaml.safe_load(in_path.read_text(encoding="utf-8"))
 
-    if len(records) != MONSTER_COUNT:
-        raise ValueError(f"Expected {MONSTER_COUNT} monsters, got {len(records)}")
+    if not isinstance(records, list) or len(records) != MONSTER_COUNT:
+        count = len(records) if isinstance(records, list) else "not a list"
+        raise ValueError(f"Expected {MONSTER_COUNT} monsters, got {count}")
     for rec in records:
         validate_record(rec)
 
@@ -88,22 +95,21 @@ def encode_yml(in_path: Path, out_path: Path) -> None:
         f.write(string_table)
 
 
-def main():
-    if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <input> <output>")
-        sys.exit(1)
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Decode or encode MON.BIN")
+    parser.add_argument("input", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args(argv)
 
-    in_path = Path(sys.argv[1])
-    out_path = Path(sys.argv[2])
-
-    if in_path.suffix == ".BIN":
-        decode_bin(in_path, out_path)
-    elif in_path.suffix == ".yml":
-        encode_yml(in_path, out_path)
+    suffix = args.input.suffix.lower()
+    if suffix == ".bin":
+        decode_bin(args.input, args.output)
+    elif suffix == ".yml":
+        encode_yml(args.input, args.output)
     else:
-        print(f"Unrecognized extension {in_path.suffix!r} — expected .BIN or .yml")
-        sys.exit(1)
+        parser.error("Could not infer mode from input file extension; expected .BIN or .yml")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

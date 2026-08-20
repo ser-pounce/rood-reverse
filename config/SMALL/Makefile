@@ -10,11 +10,11 @@ $(BUILD)/assets/%/help_data.yaml: | $$(@D)/
 
 $(BUILD)/data/SMALL/%.ARM: $(BUILD)/assets/SMALL/%.obj | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.SMALL.buildArmFile $< $@ $(JPFONT)
+	$(VPYTHON) -m tools.data.SMALL.ARM $< $@ $(JPFONT)
 
 $(BUILD)/assets/SMALL/%.obj: | $$(@D)/
 	$(ECHO) Converting data/SMALL/$*.ARM
-	$(VPYTHON) -m tools.data.SMALL.dumpArmFile data/SMALL/$*.ARM $@ $(JPFONT)
+	$(VPYTHON) -m tools.data.SMALL.ARM data/SMALL/$*.ARM $@ $(JPFONT)
 
 ENDSCR := $(patsubst %,ENDSCR%,00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15)
 
@@ -49,7 +49,7 @@ $(BUILD)/data/SMALL/MON.BIN: $(BUILD)/assets/SMALL/MON.BIN.yml
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.MON_BIN $< $@
 
-$(patsubst %,$(BUILD)/data/SMALL/%.ARM,DUMMY SCEN018): JPFONT := true
+$(patsubst %,$(BUILD)/data/SMALL/%.ARM,DUMMY SCEN018): JPFONT := --jp-font
 
 helpfiles := 01 02 03 04 05 06 07 08 09 10 11 12 13 14
 helpfiles := $(helpfiles:%=$(BUILD)/data/SMALL/HELP%.HF)

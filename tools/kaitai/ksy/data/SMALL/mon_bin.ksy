@@ -10,7 +10,7 @@ seq:
     repeat: expr
     repeat-expr: 150
   - id: descriptions
-    type: string_table
+    type: string_table(0)
     size-eos: true
 
 types:

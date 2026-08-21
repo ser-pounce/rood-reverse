@@ -113,7 +113,6 @@ def write_room(
     next_ = room.next if room.next is not None else 0
 
     file.write(f"o {room_index} {clean_room_name(name)}\n")
-    file.write(f"# Room {room_index}\n")
     if name is not None:
         file.write(f"# Full name: {name}\n")
     file.write(
@@ -136,8 +135,6 @@ def decode_arm(in_path: Path, out_path: Path, jp_font: bool = False) -> None:
     data = SceneArm.from_file(str(in_path))
 
     with out_path.open("w", encoding="utf-8") as file:
-        file.write(f"# Source: {in_path}\n\n")
-
         vertex_offset = 1
         for index, room in enumerate(data.rooms):
             vertex_offset = write_room(file, index, room, vertex_offset, jp_font)

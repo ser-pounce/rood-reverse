@@ -6,7 +6,7 @@ import yaml
 
 from tools.kaitai.parsers.data.SMALL.mon_bin import MonBin
 from tools.libdata.yaml import configure_yaml, dump
-from tools.libdata.offset_table import build_offset_table
+from tools.libdata.util import build_offset_table
 from tools.etc.vsString import decode, encode
 
 MONSTER_COUNT = 150

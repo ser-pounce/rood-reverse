@@ -6,6 +6,7 @@ from pathlib import Path
 
 import yaml
 
+from tools.libdata.util import align
 from tools.libdata.yaml import configure_yaml, dump
 from tools.kaitai.parsers.data.MENU.armor_syd import ArmorSyd
 from tools.kaitai.parsers.data.MENU.blade_syd import BladeSyd
@@ -146,7 +147,7 @@ def encode(config: FormatConfig, in_path: Path, out_path: Path) -> None:
         for value in row
     )
 
-    comb_block = comb_block + bytes(-len(comb_block) % 4)
+    comb_block = align(comb_block)
 
     mat_block = build_material_block(obj["materials"])
 

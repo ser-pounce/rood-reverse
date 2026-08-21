@@ -2,11 +2,11 @@
 
 $(BUILD)/data/%.HF0 $(BUILD)/data/%.HF1 &: $(BUILD)/assets/%/help_data.yaml | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.SMALL.help_builder $< $|
+	$(VPYTHON) -m tools.data.SMALL.HELP $< $|
 
 $(BUILD)/assets/%/help_data.yaml: | $$(@D)/
 	$(ECHO) Converting data/$*.HF0 data/$*.HF1
-	$(VPYTHON) -m tools.data.SMALL.help_dumper data/$*.HF0 data/$*.HF1 $|
+	$(VPYTHON) -m tools.data.SMALL.HELP data/$*.HF0 $|
 
 $(BUILD)/data/SMALL/%.ARM: $(BUILD)/assets/SMALL/%.obj | $$(@D)/
 	$(ECHO) Converting $<

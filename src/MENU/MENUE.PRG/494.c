@@ -632,7 +632,7 @@ static void _drawSprite(short* data)
     short posY;
     short width;
     short height;
-    short tileMode;
+    short colors;
     short clutPacked;
     int spriteW;
     int spriteH;
@@ -645,67 +645,70 @@ static void _drawSprite(short* data)
     u_long** scratch;
     short tPage;
 
-    if ((*data == 0) || ((_getAnimationState((AnimationState_t*)data) << 0x10) == 0)) {
-        data += 8;
-        posX = *data++;
-        posY = *data++;
-        width = *data++;
-        height = *data++;
-        ++data;
-        tileMode = *data++;
-        clutPacked = *data++;
+    if ((*data != 0) && ((_getAnimationState((AnimationState_t*)data) << 0x10) != 0)) {
+        return;
+    }
 
-        clutPacked = ((((clutPacked % 16) << 4) + 0x300) >> 4)
-                   | (((clutPacked / 16) + 0x1F0) << 6);
+    data += 8;
+    posX = *data++;
+    posY = *data++;
+    width = *data++;
+    height = *data++;
+    ++data; // num_sprites
+    colors = *data++;
+    clutPacked = *data++;
 
-        tileStride = 8;
-        if (tileMode == 16) {
-            tileStride = 16;
-        }
+    clutPacked =
+        ((((clutPacked % 16) << 4) + 0x300) >> 4) | (((clutPacked / 16) + 0x1F0) << 6);
 
-        for (i = 0; i < height; i += 16) {
-            spriteH = _min(height - i, 16);
+    tileStride = 8;
 
-            for (j = 0; j < width; ++data, j += tileStride) {
-                int spriteU0;
-                int spriteV0;
+    if (colors == 16) {
+        tileStride = 16;
+    }
 
-                spriteW = _min(width - j, tileStride);
-                spriteX = 0x0D;
-                spriteX = posX + (j + spriteX);
-                spriteY = _add_int(posY, i + 0x37);
-                spriteY -= _scrollPosition * 0xD;
+    for (i = 0; i < height; i += 16) {
+        spriteH = _min(height - i, 16);
 
-                if ((spriteY < 0x27) || (0xB9 <= spriteY)) {
-                    continue;
-                }
+        for (j = 0; j < width; ++data, j += tileStride) {
+            int spriteU0;
+            int spriteV0;
 
-                sprite = *((void**)0x1F800000);
-                setSprt(sprite);
-                setShadeTex(sprite, 1);
-                sprite->clut = clutPacked;
-                setXY0(sprite, spriteX, spriteY);
+            spriteW = _min(width - j, tileStride);
+            spriteX = 0x0D;
+            spriteX = posX + (j + spriteX);
+            spriteY = _add_int(posY, i + 0x37);
+            spriteY -= _scrollPosition * 0xD;
 
-                spriteU0 = (*data / 16);
-                tPage = spriteU0;
-                tPage = tPage % 3 + 0x1D;
-
-                if (tileMode == 16) {
-                    sprite->u0 = ((*data - (spriteU0 << 4)) << 16) >> 12;
-                } else {
-                    tPage |= 0x80;
-                    sprite->u0 = ((*data - (spriteU0 << 4)) << 16) >> 13;
-                }
-
-                spriteV0 = (*data / 48);
-                sprite->v0 = (spriteV0 << 4);
-                setWH(sprite, spriteW, spriteH);
-
-                scratch = (void*)getScratchAddr(0);
-                AddPrim(scratch[1], sprite++);
-                scratch[0] = (void*)sprite;
-                _insertTPage(0, tPage);
+            if ((spriteY < 0x27) || (0xB9 <= spriteY)) {
+                continue;
             }
+
+            sprite = *((void**)0x1F800000);
+            setSprt(sprite);
+            setShadeTex(sprite, 1);
+            sprite->clut = clutPacked;
+            setXY0(sprite, spriteX, spriteY);
+
+            spriteU0 = (*data / 16);
+            tPage = spriteU0;
+            tPage = tPage % 3 + 0x1D;
+
+            if (colors == 16) {
+                sprite->u0 = ((*data - (spriteU0 << 4)) << 16) >> 12;
+            } else {
+                tPage |= 0x80;
+                sprite->u0 = ((*data - (spriteU0 << 4)) << 16) >> 13;
+            }
+
+            spriteV0 = (*data / 48);
+            sprite->v0 = (spriteV0 << 4);
+            setWH(sprite, spriteW, spriteH);
+
+            scratch = (void*)getScratchAddr(0);
+            AddPrim(scratch[1], sprite++);
+            scratch[0] = (void*)sprite;
+            _insertTPage(0, tPage);
         }
     }
 }

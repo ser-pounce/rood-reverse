@@ -1,14 +1,19 @@
 meta:
   id: string_table
   endian: le
-
+  
+params:
+  - id: offset
+    type: u4
+  
 seq:
   - id: num_string_refs
     type: s2
+
 instances:
   string_refs:
-    pos: 0
     type: string_ref
+    pos: offset
     repeat: expr
     repeat-expr: num_string_refs
 

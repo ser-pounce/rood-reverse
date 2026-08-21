@@ -9,10 +9,11 @@ if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
 class StringTable(KaitaiStruct):
-    def __init__(self, _io, _parent=None, _root=None):
+    def __init__(self, offset, _io, _parent=None, _root=None):
         super(StringTable, self).__init__(_io)
         self._parent = _parent
         self._root = _root or self
+        self.offset = offset
         self._read()
 
     def _read(self):
@@ -67,7 +68,7 @@ class StringTable(KaitaiStruct):
             return self._m_string_refs
 
         _pos = self._io.pos()
-        self._io.seek(0)
+        self._io.seek(self.offset)
         self._m_string_refs = []
         for i in range(self.num_string_refs):
             self._m_string_refs.append(StringTable.StringRef(self._io, self, self._root))

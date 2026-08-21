@@ -23,7 +23,7 @@ class MonBin(KaitaiStruct):
 
         self._raw_descriptions = self._io.read_bytes_full()
         _io__raw_descriptions = KaitaiStream(BytesIO(self._raw_descriptions))
-        self.descriptions = string_table.StringTable(_io__raw_descriptions)
+        self.descriptions = string_table.StringTable(0, _io__raw_descriptions)
 
 
     def _fetch_instances(self):

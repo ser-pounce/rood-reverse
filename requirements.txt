@@ -1,5 +1,6 @@
 cffi
 kaitaistruct
+numpy
 pandas
 splat64[mips]== 0.50.0
 toml

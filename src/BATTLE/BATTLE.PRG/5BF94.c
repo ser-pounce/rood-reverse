@@ -3154,7 +3154,29 @@ void func_800CF8BC(void)
 
 void func_800CF920(void) { D_800F522C = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF92C);
+void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
+{
+    int var_v1;
+    int temp_a1;
+
+    var_v1 = (short)arg2 + arg0;
+
+    if (var_v1 <= 0) {
+        var_v1 = 1;
+    } else if (var_v1 >= 0xFF) {
+        var_v1 = 0xFE;
+    }
+
+    temp_a1 = (arg2 >> 16) + arg1;
+
+    if (temp_a1 <= 0) {
+        temp_a1 = 1;
+    } else if (temp_a1 >= 0xFF) {
+        temp_a1 = 0xFE;
+    }
+
+    *arg3 = var_v1 | temp_a1 << 8;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF988);
 

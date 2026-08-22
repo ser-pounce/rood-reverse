@@ -55,7 +55,7 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
+    u_char unk1;
     char unk2;
     char unk3;
     D_800F1DD8_t2* unk4;
@@ -90,6 +90,7 @@ typedef struct {
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
+int func_80092B04(func_80092B04_t*, int, D_800F1DD8_t*);
 int func_8009291C(int);
 void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1);
 int func_8009306C(func_80092F74_t* arg0);
@@ -389,15 +390,14 @@ int func_80092A18(void)
 
 int func_80092B04(func_80092B04_t* arg0, int arg1, D_800F1DD8_t* arg2)
 {
-    func_80092B04_t2* temp_s0;
     int i;
-    int idle;
+    int idle = 0;
 
-    idle = 0;
     for (i = 0; i < arg1; ++i, ++arg0) {
         if (arg0->unk4 != NULL) {
             while (1) {
-                temp_s0 = arg0->unk4;
+                func_80092B04_t2* temp_s0 = arg0->unk4;
+
                 if ((temp_s0->unk0 != 0) && (temp_s0->unk2 < 0xD)) {
                     if (vs_main_stateFlags.unkA8 != 0) {
                         if (temp_s0->unk2 == 0xB) {
@@ -734,7 +734,7 @@ int func_80093F24(int arg0)
     q->unkB = 0;
     q->unk8.u8[1] = 0;
     q->unkC = arg0;
-    if ((u_short)arg0 >= 1000) {
+    if (q->unkC >= 1000) {
         q->unkC = 999;
     }
     ++D_800F227E;
@@ -757,17 +757,12 @@ int func_80093FEC(int arg0, int arg1, int arg2, int arg3)
 int func_8009406C(int arg0, int arg1, int arg2, int arg3)
 {
     SVECTOR sp10;
-    D_800F1BAC_t* p;
-    int i;
-    int found;
-    int frame;
-    int kind;
+    int i = 0;
+    int found = 0;
+    int frame = 0;
+    int kind = 0;
+    D_800F1BAC_t* p = *D_800F1BAC;
 
-    i = 0;
-    found = 0;
-    frame = 0;
-    kind = 0;
-    p = *D_800F1BAC;
     for (; i < D_800F227E; ++i, ++p) {
         if ((p->unk8.u8[0] == 2) && (p->unk8.u8[1] == arg0)) {
             frame = p->unkF + 0xC;
@@ -982,21 +977,26 @@ void func_80096FF0(int arg0)
 {
     int d;
 
-    if (vs_main_settings.abilityTimingDisplay) {
-        if (func_800A1280(0, 0xFB, &D_800F2280, 0) == 0) {
-            if (D_800F2280.vy < 40) {
-                d = 40 - D_800F2280.vy;
-                D_800F2280.vy = 40;
-                if (D_800F2280.vx + d < 288) {
-                    D_800F2280.vx += d;
-                } else {
-                    D_800F2280.vx -= d;
-                }
-                D_800F2280.vy += d;
-            }
-            D_800F2272 += arg0;
-        }
+    if (!vs_main_settings.abilityTimingDisplay) {
+        return;
     }
+
+    if (func_800A1280(0, 0xFB, &D_800F2280, 0) != 0) {
+        return;
+    }
+
+    if (D_800F2280.vy < 40) {
+        d = 40 - D_800F2280.vy;
+        D_800F2280.vy = 40;
+        if (D_800F2280.vx + d < 288) {
+            D_800F2280.vx += d;
+        } else {
+            D_800F2280.vx -= d;
+        }
+        D_800F2280.vy += d;
+    }
+
+    D_800F2272 += arg0;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800970BC);

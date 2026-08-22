@@ -738,7 +738,7 @@ typedef struct {
     } unk8;
     char unkA;
     char unkB;
-    short unkC;
+    u_short unkC;
     char unkE;
     char unkF;
     int unk10;

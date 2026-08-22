@@ -33,6 +33,7 @@ typedef struct {
     int* unk0;
     union {
         u_short u16[2];
+        short s16[2];
         int s32;
     } unk4[4];
     int unk14;
@@ -95,7 +96,7 @@ int func_8009291C(int);
 void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1);
 int func_8009306C(func_80092F74_t* arg0);
 int func_80093364(func_80092F74_t* arg0);
-void func_8009406C(int, int, int, int);
+int func_8009406C(int, int, int, int);
 void func_80095C18(int, char);
 int func_800A1280(int, int, SVECTOR*, int);
 void* func_800962E4();
@@ -755,7 +756,61 @@ int func_80093FEC(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009406C);
+int func_8009406C(int arg0, int arg1, int arg2, int arg3)
+{
+    SVECTOR sp10;
+    D_800F1BAC_t* p;
+    int i;
+    int found;
+    int frame;
+    int kind;
+
+    i = 0;
+    found = 0;
+    frame = 0;
+    kind = 0;
+    p = *D_800F1BAC;
+    for (; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 2) && (p->unk8.u8[1] == arg0)) {
+            frame = p->unkF + 0xC;
+            if (p->unk6 >= 0) {
+                kind = p->unkB;
+                ++found;
+            }
+        }
+    }
+
+    p = func_800962E4();
+    if (arg3 & 0x80) {
+        if (func_800A1280(arg0, 0xFB, &sp10, 0) != 0) {
+            return 0;
+        }
+        if ((u_short)sp10.vx >= 0x141) {
+            return 0;
+        }
+        if ((u_short)sp10.vy >= 0xF1) {
+            return 0;
+        }
+    }
+    arg3 &= 0x7F;
+    p->unk8.u8[0] = 2;
+    p->unk0 = 0;
+    p->unk2 = 0;
+    p->unk4 = 0;
+    p->unk6 = found;
+    if (frame < 0x25) {
+        p->unkF = frame;
+    } else {
+        p->unkF = 0;
+    }
+    p->unkB = kind;
+    p->unk8.u8[1] = arg0;
+    p->unkA = arg1;
+    p->unkE = arg3;
+    p->unkC = arg2;
+    ++D_800F227E;
+    return 0;
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F04);
 

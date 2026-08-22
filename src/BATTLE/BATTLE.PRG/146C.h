@@ -728,7 +728,8 @@ typedef struct {
 } _sphericalCamera;
 
 typedef struct {
-    int unk0;
+    short unk0;
+    short unk2;
     short unk4;
     short unk6;
     union {

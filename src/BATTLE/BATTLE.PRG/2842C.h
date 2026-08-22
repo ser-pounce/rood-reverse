@@ -33,7 +33,7 @@ int func_800919D8(int);
 int func_80091A1C(int, int);
 int func_80091A78(int, int);
 void func_80092548(void);
-void func_8009291C(int);
+int func_8009291C(int);
 int func_800936F8(int);
 int func_80093764(int);
 void func_80093788(int);

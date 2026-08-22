@@ -33,7 +33,6 @@ typedef struct {
     int* unk0;
     union {
         u_short u16[2];
-        short s16[2];
         int s32;
     } unk4[4];
     int unk14;
@@ -42,8 +41,7 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    char unk4;
-    char unk5;
+    short unk4;
     char unk6;
     char unk7;
     int unk8;

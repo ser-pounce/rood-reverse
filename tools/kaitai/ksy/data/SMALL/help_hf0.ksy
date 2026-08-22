@@ -6,9 +6,9 @@ meta:
   imports: [/string_table]
   
 seq:
-  - id: strings_size
+  - id: len_help_text
     type: u4
-  - id: sprites_size
+  - id: len_sprite_table
     type: u4
   - id: lines_size
     type: u4
@@ -16,30 +16,30 @@ seq:
     contents: [0, 0, 0, 0]
   - id: help_text
     type: string_table(2)
-    size: strings_size
+    size: len_help_text
 
 instances:
   content_start:
-    value: strings_size + 16
+    value: len_help_text + 16
     
   sprite_table:
     type: sprite_table
     pos: content_start
-    size: sprites_size
+    size: len_sprite_table
     
   line_table:
     type: line_table
-    pos: content_start + sprites_size
+    pos: content_start + len_sprite_table
     
 types:
   sprite_table:
     seq:
-      - id: num_sprites
+      - id: num_sprite_refs
         type: u2
       - id: sprite_refs
         type: sprite_ref
         repeat: expr
-        repeat-expr: num_sprites
+        repeat-expr: num_sprite_refs
         
   sprite_ref:
     seq:

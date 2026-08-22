@@ -144,14 +144,14 @@ class SceneArm(KaitaiStruct):
             for i in range(self.num_vertices):
                 self.vertices.append(SceneArm.Vertex(self._io, self, self._root))
 
-            self.num_poly3 = self._io.read_u4le()
+            self.num_poly3s = self._io.read_u4le()
             self.poly3s = []
-            for i in range(self.num_poly3):
+            for i in range(self.num_poly3s):
                 self.poly3s.append(SceneArm.Poly3(self._io, self, self._root))
 
-            self.num_poly4 = self._io.read_u4le()
+            self.num_poly4s = self._io.read_u4le()
             self.poly4s = []
-            for i in range(self.num_poly4):
+            for i in range(self.num_poly4s):
                 self.poly4s.append(SceneArm.Poly4(self._io, self, self._root))
 
             self.num_floor_lines = self._io.read_u4le()

@@ -112,7 +112,7 @@ def build_palette(
     return [
         (color.r8, color.g8, color.b8, color.a8)
         for clut in framebuffer.cluts[start:end]
-        for color in clut.color
+        for color in clut.colors
     ]
 
 

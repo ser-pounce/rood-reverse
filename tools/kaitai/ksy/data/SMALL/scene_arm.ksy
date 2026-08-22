@@ -73,18 +73,18 @@ types:
         type: vertex
         repeat: expr
         repeat-expr: num_vertices
-      - id: num_poly3
+      - id: num_poly3s
         type: u4
       - id: poly3s
         type: poly3
         repeat: expr
-        repeat-expr: num_poly3
-      - id: num_poly4
+        repeat-expr: num_poly3s
+      - id: num_poly4s
         type: u4
       - id: poly4s
         type: poly4
         repeat: expr
-        repeat-expr: num_poly4
+        repeat-expr: num_poly4s
       - id: num_floor_lines
         type: u4
       - id: floor_lines

@@ -17,13 +17,13 @@ class HelpHf0(KaitaiStruct):
         self._read()
 
     def _read(self):
-        self.strings_size = self._io.read_u4le()
-        self.sprites_size = self._io.read_u4le()
+        self.len_help_text = self._io.read_u4le()
+        self.len_sprite_table = self._io.read_u4le()
         self.lines_size = self._io.read_u4le()
         self.reserved = self._io.read_bytes(4)
         if not self.reserved == b"\x00\x00\x00\x00":
             raise kaitaistruct.ValidationNotEqualError(b"\x00\x00\x00\x00", self.reserved, self._io, u"/seq/3")
-        self._raw_help_text = self._io.read_bytes(self.strings_size)
+        self._raw_help_text = self._io.read_bytes(self.len_help_text)
         _io__raw_help_text = KaitaiStream(BytesIO(self._raw_help_text))
         self.help_text = string_table.StringTable(2, _io__raw_help_text)
 
@@ -183,9 +183,9 @@ class HelpHf0(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.num_sprites = self._io.read_u2le()
+            self.num_sprite_refs = self._io.read_u2le()
             self.sprite_refs = []
-            for i in range(self.num_sprites):
+            for i in range(self.num_sprite_refs):
                 self.sprite_refs.append(HelpHf0.SpriteRef(self._io, self, self._root))
 
 
@@ -203,7 +203,7 @@ class HelpHf0(KaitaiStruct):
         if hasattr(self, '_m_content_start'):
             return self._m_content_start
 
-        self._m_content_start = self.strings_size + 16
+        self._m_content_start = self.len_help_text + 16
         return getattr(self, '_m_content_start', None)
 
     @property
@@ -212,7 +212,7 @@ class HelpHf0(KaitaiStruct):
             return self._m_line_table
 
         _pos = self._io.pos()
-        self._io.seek(self.content_start + self.sprites_size)
+        self._io.seek(self.content_start + self.len_sprite_table)
         self._m_line_table = HelpHf0.LineTable(self._io, self, self._root)
         self._io.seek(_pos)
         return getattr(self, '_m_line_table', None)
@@ -224,7 +224,7 @@ class HelpHf0(KaitaiStruct):
 
         _pos = self._io.pos()
         self._io.seek(self.content_start)
-        self._raw__m_sprite_table = self._io.read_bytes(self.sprites_size)
+        self._raw__m_sprite_table = self._io.read_bytes(self.len_sprite_table)
         _io__raw__m_sprite_table = KaitaiStream(BytesIO(self._raw__m_sprite_table))
         self._m_sprite_table = HelpHf0.SpriteTable(_io__raw__m_sprite_table, self, self._root)
         self._io.seek(_pos)

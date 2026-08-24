@@ -18,7 +18,7 @@ $(BUILD)/assets/SMALL/%.obj: | $$(@D)/
 
 ENDSCR := $(patsubst %,ENDSCR%,00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15)
 
-$(BUILD)/assets/SMALL/%.DIS.png:
+$(BUILD)/assets/SMALL/%.DIS.png: | $$(@D)/
 	$(ECHO) Converting data/SMALL/$*.DIS
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
 
@@ -26,20 +26,12 @@ $(BUILD)/assets/SMALL/%.DIS/:
 	$(ECHO) Converting data/SMALL/$*.DIS
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
 
-$(BUILD)/assets/SMALL/IQ.DIS/:
-	$(ECHO) Converting data/SMALL/IQ.DIS
-	$(VPYTHON) -m tools.data.SMALL.IQ_DIS data/SMALL/IQ.DIS $@
-
-$(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END RANK): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS/ | $$(@D)/
-$(patsubst %,$(BUILD)/data/SMALL/%.DIS,ESC TIME $(ENDSCR)): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS.png | $$(@D)/
-
-$(BUILD)/data/SMALL/%.DIS:
+$(BUILD)/data/SMALL/%.DIS: | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.generic_DIS $< $@
 
-$(BUILD)/data/SMALL/IQ.DIS: $(BUILD)/assets/SMALL/IQ.DIS/
-	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.SMALL.IQ_DIS $< $@
+$(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END IQ RANK): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS/
+$(patsubst %,$(BUILD)/data/SMALL/%.DIS,ESC TIME $(ENDSCR)): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS.png
 
 $(BUILD)/assets/SMALL/MON.BIN.yml:
 	$(ECHO) Converting data/SMALL/MON.BIN

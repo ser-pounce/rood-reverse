@@ -17,116 +17,104 @@ class ImageDis(KaitaiStruct):
         self._read()
 
     def _read(self):
-        self.tims = []
+        self.sections = []
         i = 0
         while not self._io.is_eof():
-            self.tims.append(ImageDis.Tim(self._io, self, self._root))
+            self.sections.append(ImageDis.Section(self._io, self, self._root))
             i += 1
 
 
 
     def _fetch_instances(self):
         pass
-        for i in range(len(self.tims)):
+        for i in range(len(self.sections)):
             pass
-            self.tims[i]._fetch_instances()
+            self.sections[i]._fetch_instances()
 
 
-    class Clutsection(KaitaiStruct):
+    class IqData(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ImageDis.Clutsection, self).__init__(_io)
+            super(ImageDis.IqData, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
 
         def _read(self):
-            self.len = self._io.read_u4le()
-            self.rect = img.Img.Rect(self._io)
-            self._raw_clut = self._io.read_bytes(self.len - 12)
-            _io__raw_clut = KaitaiStream(BytesIO(self._raw_clut))
-            self.clut = img.Img.Clut(_io__raw_clut)
+            self.zone_id = self._io.read_u2le()
+            self.map_id = self._io.read_u2le()
+            self.par_time = self._io.read_u2le()
+            self.rank_cap = self._io.read_u2le()
 
 
         def _fetch_instances(self):
             pass
-            self.rect._fetch_instances()
-            self.clut._fetch_instances()
 
 
-    class Indices(KaitaiStruct):
-        def __init__(self, mode, _io, _parent=None, _root=None):
-            super(ImageDis.Indices, self).__init__(_io)
+    class IqTable(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(ImageDis.IqTable, self).__init__(_io)
             self._parent = _parent
             self._root = _root
-            self.mode = mode
             self._read()
 
         def _read(self):
-            self.index = []
+            self.iq_data = []
             i = 0
             while not self._io.is_eof():
-                _on = self.mode
-                if _on == 0:
-                    pass
-                    self.index.append(self._io.read_bits_int_le(4))
-                elif _on == 1:
-                    pass
-                    self.index.append(self._io.read_u1())
-                elif _on == 2:
-                    pass
-                    self.index.append(img.Img.Bgr5551(self._io))
+                self.iq_data.append(ImageDis.IqData(self._io, self, self._root))
                 i += 1
 
 
 
         def _fetch_instances(self):
             pass
-            for i in range(len(self.index)):
+            for i in range(len(self.iq_data)):
                 pass
-                _on = self.mode
-                if _on == 0:
-                    pass
-                elif _on == 1:
-                    pass
-                elif _on == 2:
-                    pass
-                    self.index[i]._fetch_instances()
+                self.iq_data[i]._fetch_instances()
 
 
 
-    class Tim(KaitaiStruct):
+    class Section(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ImageDis.Tim, self).__init__(_io)
+            super(ImageDis.Section, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
 
         def _read(self):
-            self.magic = self._io.read_bytes(4)
-            if not self.magic == b"\x10\x00\x00\x00":
-                raise kaitaistruct.ValidationNotEqualError(b"\x10\x00\x00\x00", self.magic, self._io, u"/types/tim/seq/0")
-            self.mode = self._io.read_bits_int_le(3)
-            self.has_clut = self._io.read_bits_int_le(1) != 0
-            self.reserved = self._io.read_bits_int_le(28)
-            if self.has_clut:
+            _on = self.magic
+            if _on == 16:
                 pass
-                self.clut = ImageDis.Clutsection(self._io, self, self._root)
-
-            self.indices_len = self._io.read_u4le()
-            self.rect = img.Img.Rect(self._io)
-            self._raw_indices = self._io.read_bytes(self.indices_len - 12)
-            _io__raw_indices = KaitaiStream(BytesIO(self._raw_indices))
-            self.indices = ImageDis.Indices(self.mode, _io__raw_indices, self, self._root)
+                self.body = img.Img.Tim(self._io)
+            else:
+                pass
+                self.body = ImageDis.IqTable(self._io, self, self._root)
 
 
         def _fetch_instances(self):
             pass
-            if self.has_clut:
+            _on = self.magic
+            if _on == 16:
                 pass
-                self.clut._fetch_instances()
+                self.body._fetch_instances()
+            else:
+                pass
+                self.body._fetch_instances()
+            _ = self.magic
+            if hasattr(self, '_m_magic'):
+                pass
 
-            self.rect._fetch_instances()
-            self.indices._fetch_instances()
+
+        @property
+        def magic(self):
+            if hasattr(self, '_m_magic'):
+                return self._m_magic
+
+            _pos = self._io.pos()
+            self._io.seek(self._io.pos())
+            self._m_magic = self._io.read_u4le()
+            self._io.seek(_pos)
+            return getattr(self, '_m_magic', None)
 
 
 

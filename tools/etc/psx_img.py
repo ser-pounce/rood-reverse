@@ -354,8 +354,8 @@ def write_png(
     width:        int,
     height:       int,
     bitdepth:     int,
-    cluts_before: list[Palette],
-    cluts_after:  list[Palette],
+    cluts_before: list[Palette] = [],
+    cluts_after:  list[Palette] = [],
     plte_clut:    int = 0,
     img_rect:     tuple[int, int, int, int] | None = None,
     clut_rect:    tuple[int, int, int, int] | None = None,
@@ -385,20 +385,15 @@ def write_png(
     import png as png_lib
 
     if bitdepth == 16:
-        # True-colour RGBA path.
         n_pixels = width * height
         if len(pixels) != n_pixels * 4:
             raise ValueError(
                 f'16bpp pixels must be width*height*4 bytes, '
                 f'got {len(pixels)} (expected {n_pixels * 4})'
             )
-        rows = [
-            list(pixels[y * width * 4:(y + 1) * width * 4])
-            for y in range(height)
-        ]
         writer = png_lib.Writer(width=width, height=height, alpha=True, greyscale=False, bitdepth=8)
         with open(output_path, 'wb') as f:
-            writer.write(f, rows)
+            writer.write_array(f, pixels)
         extra_chunks: list[bytes] = [make_splt_chunk(_SENTINEL_16BPP, [])]
         if img_rect is not None:
             extra_chunks.append(make_text_chunk('tim_img_rect', ','.join(map(str, img_rect))))

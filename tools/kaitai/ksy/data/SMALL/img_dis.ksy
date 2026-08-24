@@ -4,54 +4,39 @@ meta:
   endian: le
   bit-endian: le
   imports: [/img]
-  
+
 seq:
-  - id: tims
-    type: tim
+  - id: sections
+    type: section
     repeat: eos
-  
+
 types:
-  tim:
-    seq:
-      - id: magic
-        contents: [0x10, 0, 0, 0]
-      - id: mode
-        type: b3
-      - id: has_clut
-        type: b1
-      - id: reserved
-        type: b28
-      - id: clut
-        type: clutsection
-        if: has_clut
-      - id: indices_len
-        type: u4
-      - id: rect
-        type: img::rect
-      - id: indices
-        type: indices(mode)
-        size: indices_len - 12
-      
-  clutsection:
-    seq:
-      - id: len
-        type: u4
-      - id: rect
-        type: img::rect
-      - id: clut
-        type: img::clut
-        size: len - 12
-        
-  indices:
-    params:
-      - id: mode
+  section:
+    instances:
+      magic:
+        pos: _io.pos
         type: u4
     seq:
-      - id: index
+      - id: body
         type:
-          switch-on: mode
+          switch-on: magic
           cases:
-            0: b4
-            1: u1
-            2: img::bgr5551
+            0x10: img::tim
+            _: iq_table
+
+  iq_table:
+    seq:
+      - id: iq_data
+        type: iq_data
         repeat: eos
+
+  iq_data:
+    seq:
+      - id: zone_id
+        type: u2
+      - id: map_id
+        type: u2
+      - id: par_time
+        type: u2
+      - id: rank_cap
+        type: u2

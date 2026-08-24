@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Initialize
         run: |
@@ -34,7 +34,7 @@ jobs:
           git diff --exit-code
 
       - name: Upload progress
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: SLUS_010.40_report
           path: progress.json

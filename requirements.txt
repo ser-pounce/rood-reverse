@@ -2,5 +2,6 @@ cffi
 kaitaistruct
 numpy
 pandas
+Pillow
 splat64[mips]== 0.50.0
 toml

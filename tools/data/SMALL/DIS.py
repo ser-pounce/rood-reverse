@@ -1,0 +1,255 @@
+import argparse
+import struct
+from pathlib import Path
+
+import yaml
+from PIL import Image
+from PIL.PngImagePlugin import PngInfo
+
+from tools.kaitai.parsers.data.SMALL.img import Img
+from tools.kaitai.parsers.data.SMALL.image_dis import ImageDis
+
+
+# pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
+# interface for chunks.
+# Pillow: Has excellent chunk support but no 4/8 bit grayscale support.
+# Pillow wins on overall simplicity.
+
+
+def decode_clut(section: Img.Clutsection, info: PngInfo) -> None:
+    clut = [c.raw for c in section.clut.colors]
+    info.add_text('tim_clut_rect', ','.join(map(str, (section.rect.x, section.rect.y, section.rect.w, section.rect.h))))
+    info.add(b'clUb', struct.pack(f'<{len(clut)}H', *clut), after_idat=True)
+
+
+def decode_highColor(tim: Img.Tim, info: PngInfo, output_path: Path) -> None:
+    w, h = tim.rect.w, tim.rect.h
+    pixels = bytearray(w * h * 4)
+    stp_packed = bytearray((w * h + 7) // 8)
+
+    for i, pixel in enumerate(tim.indices.index):
+        pixels[i * 4 : i * 4 + 4] = (pixel.r8, pixel.g8, pixel.b8, pixel.a8)
+        if pixel.stp:
+            stp_packed[i >> 3] |= 0x80 >> (i & 7)
+
+    img = Image.frombytes('RGBA', (w, h), bytes(pixels))
+    info.add(b'stPd', bytes(stp_packed), after_idat=True)
+    img.save(output_path, pnginfo=info)
+
+
+def generate_grayscale_palette(n_colors: int) -> list[tuple[int, int, int]]:
+    scale = 255 // (n_colors - 1)
+    palette = []
+    for i in range(n_colors):
+        v = (i * scale)
+        palette.extend((v, v, v))
+    return palette
+
+
+def decode_grayscale(tim: Img.Tim, info: PngInfo, output_path: Path) -> None:
+    bpp = 4 if tim.mode == 0 else 8
+    pixel_width = tim.rect.w * 16 // bpp
+    img = Image.frombytes('P', (pixel_width, tim.rect.h), bytes(tim.indices.index))
+    img.putpalette(generate_grayscale_palette(1 << bpp))
+    img.save(output_path, pnginfo=info, bits=bpp)
+
+
+def decode_tim(tim: Img.Tim, output_path: Path) -> None:
+    info = PngInfo()
+    info.add_text('tim_offset', f'{tim.rect.x},{tim.rect.y}')
+
+    if tim.has_clut:
+        decode_clut(tim.clut, info)
+
+    if tim.mode == 2:
+        decode_highColor(tim, info, output_path)
+
+    else:
+        decode_grayscale(tim, info, output_path)
+
+
+def _parse_ints(raw: str | None, count: int) -> tuple[int, ...] | None:
+    if not raw:
+        raise ValueError(f'No values present')
+    
+    parts = raw.split(',')
+
+    if len(parts) != count:
+        raise ValueError(f'Requested {count} values, {len(parts)} present')
+    try:
+        return tuple(int(p.strip()) for p in parts)
+    except ValueError:
+        raise ValueError(f'Error when parsing values')
+
+
+def get_bit_depth(png_path: str) -> int:
+    with open(png_path, 'rb') as f:
+        f.seek(24)
+        bitdepth = f.read(1)[0]
+
+    if bitdepth not in (4, 8):
+        raise ValueError(f'Expected 4-bit or 8-bit indexed PNG: {png_path}')
+
+    return bitdepth
+
+
+def get_chunk(img: Image, name: str) -> bytes:
+    name_bytes = name.encode("latin-1")
+    return next((c[1] for c in img.private_chunks if c[0] == name_bytes), None)
+
+
+def encode_clut(img: Image, mode: int) -> bytes:
+    clut_bytes = get_chunk(img, 'clUb')
+
+    if clut_bytes is not None:
+        clut = list(struct.unpack(f'<{len(clut_bytes) // 2}H', clut_bytes))
+        packed_clut_bytes = struct.pack(f'<{len(clut)}H', *clut)
+        clut_len = 12 + len(packed_clut_bytes)
+        clut_rect = _parse_ints(img.text.get('tim_clut_rect'), 4)
+
+        out = struct.pack("<II", 0x10, mode | 8)
+        out += struct.pack("<I4h", clut_len, *clut_rect) + packed_clut_bytes
+    else:
+        out = struct.pack("<II", 0x10, mode)
+
+    return out
+
+
+def build_tim(img: Image, pixel_data: bytes, width: int, mode: int) -> bytes:
+    img_offset = _parse_ints(img.text.get('tim_offset'), 2)
+    out = encode_clut(img, mode)
+    out += struct.pack("<I4h", 12 + len(pixel_data), img_offset[0], img_offset[1], width, img.height)
+    out += pixel_data
+    return out
+
+
+def encode_highColor(img: Image) -> bytes:
+    stp_packed = get_chunk(img, 'stPd')
+
+    if stp_packed is None:
+        raise ValueError(f'Png file is missing expected stPd chunk')
+
+    rgba = img.tobytes()
+    pixel_count = img.width * img.height
+    raw_pixels = [0] * pixel_count
+
+    for i in range(pixel_count):
+        r5, g5, b5 = rgba[i * 4] >> 3, rgba[i * 4 + 1] >> 3, rgba[i * 4 + 2] >> 3
+        stp = (stp_packed[i >> 3] >> (7 - (i & 7))) & 1
+        raw_pixels[i] = (stp << 15) | (b5 << 10) | (g5 << 5) | r5
+
+    pixel_data = struct.pack(f'<{len(raw_pixels)}H', *raw_pixels)
+
+    return build_tim(img, pixel_data, img.width, 2)
+
+
+def encode_grayscale(img: Image) -> bytes:
+    pixel_data = img.tobytes()
+    bitdepth = get_bit_depth(img.filename)
+    
+    if bitdepth == 4:
+        packed = bytearray((len(pixel_data) + 1) // 2)
+        for i in range(0, len(pixel_data), 2):
+            lo = pixel_data[i] & 0x0F
+            hi = pixel_data[i + 1] & 0x0F if i + 1 < len(pixel_data) else 0
+            packed[i // 2] = lo | (hi << 4)
+        pixel_data = bytes(packed)
+
+    return build_tim(img, pixel_data, img.width * bitdepth // 16, 1 if bitdepth == 8 else 0)
+
+
+def encode_tim(png_path: Path) -> bytes:
+    img = Image.open(png_path)
+    img.load()
+
+    if img.mode == 'RGBA':
+        return encode_highColor(img)
+
+    elif img.mode == 'P':
+        return encode_grayscale(img)
+
+    else:
+        raise ValueError(f'Unsupported PNG mode for TIM encode: {img.mode}')
+
+
+def encode_iq_table(iq_table_path: str) -> bytes:
+    with open(iq_table_path) as f:
+        entries = yaml.safe_load(f)
+
+    table_bytes = bytearray()
+    for entry in entries:
+        table_bytes += struct.pack(
+            '<4H',
+            entry['zoneId'], entry['mapId'], entry['parTime'], entry['rankCap'],
+        )
+
+    return bytes(table_bytes)
+
+
+def encode_tims(png_files: list[str], iq_table_path: str) -> bytes:
+
+    output = b"".join(encode_tim(png_file) for png_file in png_files)
+
+    if iq_table_path.exists():
+        output += encode_iq_table(iq_table_path)
+
+    return output
+
+
+def decode_iq_table(iqTable: ImageDis.IqTable, output_dir: str):
+    entries = [
+        {
+            'zoneId': entry.zone_id,
+            'mapId': entry.map_id,
+            'parTime': entry.par_time,
+            'rankCap': entry.rank_cap,
+        }
+        for entry in iqTable.iq_data
+    ]
+    with open(output_dir / "iq_table.yaml", 'w') as f:
+        yaml.safe_dump(entries, f, default_flow_style=False, sort_keys=False)
+
+
+def decode_tims(dis: ImageDis, output_dir: Path):
+    if isinstance(dis.sections[-1].body, ImageDis.IqTable):
+        decode_iq_table(dis.sections[-1].body, output_dir)
+        dis.sections = dis.sections[:-1]
+
+    if output_dir.exists() and output_dir.is_file():
+        raise ValueError(f"Output path must be a directory for {len(dis.sections)} PNG files: {output_dir}")
+
+    for i, tim in enumerate([s.body for s in dis.sections]):
+        decode_tim(tim, output_dir / f"{i:04d}.png")
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Convert PSX TIM/DIS files to/from PNG")
+    parser.add_argument("input", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args(argv)
+
+    if args.input.suffix.lower() == ".png":
+        args.output.write_bytes(encode_tim(args.input))
+
+    elif args.input.is_dir():
+        png_files = sorted(args.input.glob("*.png"))
+        if not png_files:
+            parser.error(f"No PNG files in {args.input}")
+        args.output.write_bytes(encode_tims(png_files, args.input / "iq_table.yaml"))
+
+    else:
+        dis = ImageDis.from_file(str(args.input))
+
+        if not dis.sections:
+            raise ValueError(f"No valid sections in {args.input}")
+    
+        if len(dis.sections) == 1:
+            decode_tim(dis.sections[0].body, args.output)
+        else:
+            decode_tims(dis, args.output)
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

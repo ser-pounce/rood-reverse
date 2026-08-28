@@ -16,22 +16,18 @@ $(BUILD)/assets/SMALL/%.obj: | $$(@D)/
 	$(ECHO) Converting data/SMALL/$*.ARM
 	$(VPYTHON) -m tools.data.SMALL.ARM data/SMALL/$*.ARM $@ $(JPFONT)
 
-ENDSCR := $(patsubst %,ENDSCR%,00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15)
-
 $(BUILD)/assets/SMALL/%.DIS.png: | $$(@D)/
 	$(ECHO) Converting data/SMALL/$*.DIS
-	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
+	$(VPYTHON) -m tools.data.SMALL.DIS data/SMALL/$*.DIS $@
 
 $(BUILD)/assets/SMALL/%.DIS/:
 	$(ECHO) Converting data/SMALL/$*.DIS
-	$(VPYTHON) -m tools.data.SMALL.generic_DIS data/SMALL/$*.DIS $@
+	$(MKDIR) $(MKDIRFLAGS) $@
+	$(VPYTHON) -m tools.data.SMALL.DIS data/SMALL/$*.DIS $@
 
 $(BUILD)/data/SMALL/%.DIS: | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.SMALL.generic_DIS $< $@
-
-$(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END IQ RANK): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS/
-$(patsubst %,$(BUILD)/data/SMALL/%.DIS,ESC TIME $(ENDSCR)): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS.png
+	$(VPYTHON) -m tools.data.SMALL.DIS $< $@
 
 $(BUILD)/assets/SMALL/MON.BIN.yml:
 	$(ECHO) Converting data/SMALL/MON.BIN
@@ -45,10 +41,18 @@ $(patsubst %,$(BUILD)/data/SMALL/%.ARM,DUMMY SCEN018): JPFONT := --jp-font
 
 helpfiles := 01 02 03 04 05 06 07 08 09 10 11 12 13 14
 helpfiles := $(helpfiles:%=$(BUILD)/data/SMALL/HELP%.HF)
+
 scenefiles := 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 \
               16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
 scenefiles := DUMMY $(scenefiles:%=SCEN0%)
 
+dis_single_image   := $(patsubst %,ENDSCR%,00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15)
+dis_single_image   := $(patsubst %,$(BUILD)/data/SMALL/%.DIS,ESC TIME $(dis_single_image))
+dis_multiple_image := $(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END IQ RANK)
+
+$(dis_single_image): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS.png
+$(dis_multiple_image): $(BUILD)/data/SMALL/%.DIS: $(BUILD)/assets/SMALL/%.DIS/
+
 TARGETS += $(helpfiles:%=%0) $(helpfiles:%=%1) $(scenefiles:%=$(BUILD)/data/SMALL/%.ARM)
-TARGETS += $(patsubst %,$(BUILD)/data/SMALL/%.DIS,ATTACK END ESC IQ RANK TIME $(ENDSCR))
+TARGETS += $(dis_single_image) $(dis_multiple_image)
 TARGETS += $(BUILD)/data/SMALL/MON.BIN

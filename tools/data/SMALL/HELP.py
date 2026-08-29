@@ -3,16 +3,15 @@
 
 import argparse
 import struct
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-import png
 import yaml
+from PIL import Image
 
 from tools.etc.vsString import decode, encode
-from tools.libdata.img import rgba8888_to_bgr1555
+from tools.libdata.img import rgb888_to_bgr555
 from tools.libdata.util import align, build_offset_table
 from tools.libdata.yaml import configure_yaml, dump
 from tools.kaitai.parsers.data.SMALL.help_hf0 import HelpHf0
@@ -22,21 +21,12 @@ from tools.kaitai.parsers.data.SMALL.help_hf1 import HelpHf1
 BLOCK_WIDTH = 8
 BLOCK_HEIGHT = 16
 CLUTS_PER_LINE = 16
-COLORS_PER_CLUT = 16
 
 ANIMATION_STRUCT = struct.Struct("<hHhhhhhxx")
 SPRITE_STRUCT = struct.Struct("<hhhhhhh")
 LINE_STRUCT = struct.Struct("<hhhhBBBx")
 HF0_HEADER_STRUCT = struct.Struct("<IIII")
 HF1_HEADER_STRUCT = struct.Struct("<II")
-
-
-@dataclass(frozen=True)
-class ImageData:
-    indices: list[list[int]]
-    palette: list[tuple[int, int, int, int]]
-    width: int
-    height: int
 
 
 def parse_animation(animation: HelpHf0.Animation) -> dict[str, Any] | None:
@@ -101,18 +91,17 @@ def render_pixels(
     return ((cropped + sprite.clut_x) % 256).astype(np.uint8)
 
 
-def build_palette(
-    framebuffer: HelpHf1, clut_y: int
-) -> list[tuple[int, int, int, int]]:
+def build_palette(framebuffer: HelpHf1, clut_y: int) -> list[int]:
     start = clut_y * CLUTS_PER_LINE
     end = start + CLUTS_PER_LINE
     if start < 0 or end > len(framebuffer.cluts):
         raise ValueError(f"CLUT line {clut_y} out of range")
 
     return [
-        (color.r8, color.g8, color.b8, color.a8)
+        channel
         for clut in framebuffer.cluts[start:end]
         for color in clut.colors
+        for channel in (color.r8, color.g8, color.b8)
     ]
 
 
@@ -122,10 +111,9 @@ def render_sprite(
     output_path: Path,
 ) -> None:
     rows = render_pixels(framebuffer, sprite)
-    palette = build_palette(framebuffer, sprite.clut_y)
-    
-    with output_path.open("wb") as file:
-        png.Writer(width=sprite.w, height=sprite.h, palette=palette).write(file, rows)
+    image = Image.fromarray(rows, mode="P")
+    image.putpalette(build_palette(framebuffer, sprite.clut_y))
+    image.save(output_path)
 
 
 def decode_hf(hf0_path: Path, hf1_path: Path, output_dir: Path) -> None:
@@ -163,8 +151,8 @@ class BlockExtractor:
     def __init__(self):
         self.blocks: dict[tuple[int, ...], int] = {}
 
-    def extract_blocks(self, image: ImageData) -> list[int]:
-        arr = np.array(image.indices, dtype=np.uint8)
+    def extract_blocks(self, image: Image.Image) -> list[int]:
+        arr = np.array(image, dtype=np.uint8)
         pad_h = -arr.shape[0] % BLOCK_HEIGHT
         pad_w = -arr.shape[1] % BLOCK_WIDTH
         arr = np.pad(arr, ((0, pad_h), (0, pad_w)))
@@ -190,9 +178,8 @@ class PaletteManager:
     def __init__(self):
         self.palettes: dict[tuple[int, ...], int] = {}
 
-    def add_palette(self, rgba_palette: list[tuple[int, int, int, int]]) -> int:
-        palette = tuple(rgba8888_to_bgr1555(*color) for color in rgba_palette)
-        return self.palettes.setdefault(palette, len(self.palettes))
+    def add_palette(self, raw_palette: list[int]) -> int:
+        return self.palettes.setdefault(tuple(raw_palette), len(self.palettes))
 
     @property
     def unique_palettes(self) -> list[tuple[int, ...]]:
@@ -257,12 +244,11 @@ def pack_line(line: dict[str, Any]) -> bytes:
     )
 
 
-def load_png(path: Path) -> ImageData:
-    with path.open("rb") as file:
-        width, height, pixels, metadata = png.Reader(file=file).read()
-        if not metadata.get("palette"):
-            raise ValueError(f"{path}: Not an indexed PNG file")
-        return ImageData(list(pixels), metadata["palette"], width, height)
+def load_png(path: Path) -> Image.Image:
+    image = Image.open(path)
+    if image.mode != "P":
+        raise ValueError(f"{path}: Not an indexed PNG file")
+    return image
 
 
 def process_sprites(sprites: list[dict[str, Any]], sprites_dir: Path, block_extractor: BlockExtractor, palette_manager: PaletteManager) -> dict[str, dict[str, Any]]:
@@ -278,7 +264,7 @@ def process_sprites(sprites: list[dict[str, Any]], sprites_dir: Path, block_extr
             "h": image.height,
             "sprites": block_extractor.extract_blocks(image),
             "clutX": 0,
-            "clutY": palette_manager.add_palette(image.palette),
+            "clutY": palette_manager.add_palette(image.getpalette()),
         }
 
     return processed_sprites
@@ -327,7 +313,10 @@ def write_hf0(output_dir: Path, help_name: str, data: dict[str, Any], processed_
 
 
 def write_hf1(output_dir: Path, help_name: str, block_extractor: BlockExtractor, palette_manager: PaletteManager) -> None:
-    palettes = [list(palette[:256]) + [0] * (256 - len(palette)) for palette in palette_manager.unique_palettes]
+    palettes = []
+    for raw_palette in palette_manager.unique_palettes:
+        colors = [raw_palette[i : i + 3] for i in range(0, len(raw_palette), 3)]
+        palettes.append([rgb888_to_bgr555(*color) for color in colors])
     num_cluts = len(palettes) * CLUTS_PER_LINE
     output = b"".join(
         (

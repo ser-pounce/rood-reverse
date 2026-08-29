@@ -4,9 +4,7 @@ from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 
 
-def rgba8888_to_bgr1555(r: int, g: int, b: int, a: int) -> int:
-    if a == 0:
-        return 0
+def rgb888_to_bgr555(r: int, g: int, b: int) -> int:
     return ((b >> 3) << 10) | ((g >> 3) << 5) | (r >> 3)
 
 

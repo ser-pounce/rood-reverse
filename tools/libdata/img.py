@@ -1,3 +1,4 @@
+import struct
 from pathlib import Path
 
 from PIL import Image
@@ -30,3 +31,19 @@ def pack_4bpp(data: bytes) -> bytes:
         hi = data[i + 1] & 0x0F if i + 1 < len(data) else 0
         packed[i // 2] = lo | (hi << 4)
     return bytes(packed)
+
+
+def decode_8bpp_bin(pixels: bytes, width: int, height: int, clut: list[tuple[int, int, int]], output_path: Path) -> None:
+    img = Image.frombytes('P', (width, height), pixels)
+    img.putpalette(bytes(channel for color in clut for channel in color))
+    img.save(output_path)
+
+
+def encode_8bpp_bin(pixels: bytes, palette: list[int], output_path: Path) -> None:
+
+    words = [
+        rgb888_to_bgr555(*palette[i:i + 3]) | 0x8000
+        for i in range(0, 256 * 3, 3)
+    ]
+
+    output_path.write_bytes(struct.pack('<256H', *words) + pixels)

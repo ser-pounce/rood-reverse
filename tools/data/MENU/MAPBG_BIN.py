@@ -1,36 +1,30 @@
 import argparse
-import struct
 from pathlib import Path
 
 from PIL import Image
 
-from tools.libdata.img import rgb888_to_bgr555
 from tools.kaitai.parsers.data.MENU.mapbg_bin import MapbgBin
+from tools.libdata.img import decode_8bpp_bin, encode_8bpp_bin
 
 
-def decode(input_path: Path, output_path: Path) -> None:
+def decode_bin(input_path: Path, output_path: Path) -> None:
     mapbg = MapbgBin.from_file(input_path)
-    clut = bytes(b for color in mapbg.clut.colors for b in (color.r8, color.g8, color.b8))
-    img = Image.frombytes('P', (320, 240), bytes(mapbg.indices))
-    img.putpalette(clut)
-    img.save(output_path)
+    decode_8bpp_bin(
+        mapbg.indices,
+        320, 240,
+        [(c.r8, c.g8, c.b8) for c in mapbg.clut.colors],
+        output_path
+    )
 
 
-def encode(input_path: Path, output_path: Path) -> None:
+def encode_bin(input_path: Path, output_path: Path) -> None:
     img = Image.open(input_path)
     img.load()
 
     if img.mode != 'P':
         raise ValueError(f'{input_path} must be paletted')
 
-    palette = img.getpalette()
-
-    words = [
-        rgb888_to_bgr555(*palette[i:i + 3]) | 0x8000
-        for i in range(0, 256 * 3, 3)
-    ]
-
-    output_path.write_bytes(struct.pack('<256H', *words) + bytes(img.tobytes()))
+    encode_8bpp_bin(img.tobytes(), img.getpalette(), output_path)
 
 
 def main(argv=None) -> int:
@@ -41,9 +35,9 @@ def main(argv=None) -> int:
 
     suffix = args.input.suffix.lower()
     if suffix == '.bin':
-        decode(args.input, args.output)
+        decode_bin(args.input, args.output)
     elif suffix == '.png':
-        encode(args.input, args.output)
+        encode_bin(args.input, args.output)
     else:
         parser.error(f"Could not infer mode from input file extension; expected .BIN or .png, got {suffix!r}")
 

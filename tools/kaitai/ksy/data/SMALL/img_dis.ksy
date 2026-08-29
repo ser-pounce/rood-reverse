@@ -1,5 +1,5 @@
 meta:
-  id: image_dis
+  id: img_dis
   file-extension: DIS
   endian: le
   bit-endian: le

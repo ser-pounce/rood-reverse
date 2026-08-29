@@ -8,7 +8,7 @@ from PIL.PngImagePlugin import PngInfo
 
 from tools.libdata.img import decode_grayscale, pack_4bpp
 from tools.kaitai.parsers.lib.img import Img
-from tools.kaitai.parsers.data.SMALL.image_dis import ImageDis
+from tools.kaitai.parsers.data.SMALL.img_dis import ImgDis
 
 
 # pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
@@ -176,7 +176,7 @@ def encode_tims(png_files: list[str], iq_table_path: str) -> bytes:
     return output
 
 
-def decode_iq_table(iqTable: ImageDis.IqTable, output_dir: str):
+def decode_iq_table(iqTable: ImgDis.IqTable, output_dir: str):
     entries = [
         {
             'zoneId': entry.zone_id,
@@ -190,8 +190,8 @@ def decode_iq_table(iqTable: ImageDis.IqTable, output_dir: str):
         yaml.safe_dump(entries, f, default_flow_style=False, sort_keys=False)
 
 
-def decode_tims(dis: ImageDis, output_dir: Path):
-    if isinstance(dis.sections[-1].body, ImageDis.IqTable):
+def decode_tims(dis: ImgDis, output_dir: Path):
+    if isinstance(dis.sections[-1].body, ImgDis.IqTable):
         decode_iq_table(dis.sections[-1].body, output_dir)
         dis.sections = dis.sections[:-1]
 
@@ -218,7 +218,7 @@ def main(argv=None) -> int:
         args.output.write_bytes(encode_tims(png_files, args.input / "iq_table.yaml"))
 
     else:
-        dis = ImageDis.from_file(str(args.input))
+        dis = ImgDis.from_file(str(args.input))
 
         if not dis.sections:
             raise ValueError(f"No valid sections in {args.input}")

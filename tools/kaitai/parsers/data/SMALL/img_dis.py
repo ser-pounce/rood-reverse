@@ -9,9 +9,9 @@ from tools.kaitai.parsers.data.SMALL import img
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
     raise Exception("Incompatible Kaitai Struct Python API: 0.11 or later is required, but you have %s" % (kaitaistruct.__version__))
 
-class ImageDis(KaitaiStruct):
+class ImgDis(KaitaiStruct):
     def __init__(self, _io, _parent=None, _root=None):
-        super(ImageDis, self).__init__(_io)
+        super(ImgDis, self).__init__(_io)
         self._parent = _parent
         self._root = _root or self
         self._read()
@@ -20,7 +20,7 @@ class ImageDis(KaitaiStruct):
         self.sections = []
         i = 0
         while not self._io.is_eof():
-            self.sections.append(ImageDis.Section(self._io, self, self._root))
+            self.sections.append(ImgDis.Section(self._io, self, self._root))
             i += 1
 
 
@@ -34,7 +34,7 @@ class ImageDis(KaitaiStruct):
 
     class IqData(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ImageDis.IqData, self).__init__(_io)
+            super(ImgDis.IqData, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
@@ -52,7 +52,7 @@ class ImageDis(KaitaiStruct):
 
     class IqTable(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ImageDis.IqTable, self).__init__(_io)
+            super(ImgDis.IqTable, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
@@ -61,7 +61,7 @@ class ImageDis(KaitaiStruct):
             self.iq_data = []
             i = 0
             while not self._io.is_eof():
-                self.iq_data.append(ImageDis.IqData(self._io, self, self._root))
+                self.iq_data.append(ImgDis.IqData(self._io, self, self._root))
                 i += 1
 
 
@@ -76,7 +76,7 @@ class ImageDis(KaitaiStruct):
 
     class Section(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(ImageDis.Section, self).__init__(_io)
+            super(ImgDis.Section, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
@@ -88,7 +88,7 @@ class ImageDis(KaitaiStruct):
                 self.body = img.Img.Tim(self._io)
             else:
                 pass
-                self.body = ImageDis.IqTable(self._io, self, self._root)
+                self.body = ImgDis.IqTable(self._io, self, self._root)
 
 
         def _fetch_instances(self):

@@ -11,11 +11,11 @@ $(BUILD)/data/MENU/SPMCIMG.BIN: $(BUILD)/assets/MENU/SPMCIMG.BIN.png | $$(@D)/
 
 $(BUILD)/assets/MENU/MAPBG.BIN.png: | $$(@D)/
 	$(ECHO) Converting data/MENU/MAPBG.BIN
-	$(VPYTHON) -m tools.data.MENU.MAPBG_BIN decode data/MENU/MAPBG.BIN $@
+	$(VPYTHON) -m tools.data.MENU.MAPBG_BIN data/MENU/MAPBG.BIN $@
 
 $(BUILD)/data/MENU/MAPBG.BIN: $(BUILD)/assets/MENU/MAPBG.BIN.png | $$(@D)/
 	$(ECHO) Converting $<
-	$(VPYTHON) -m tools.data.MENU.MAPBG_BIN encode $< $@
+	$(VPYTHON) -m tools.data.MENU.MAPBG_BIN $< $@
 
 $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed.yaml: assets/MENU/ITEMNAME.BIN.yaml | $$(@D)/
 	$(ECHO) Extracting data/MENU/ITEMNAME.BIN

@@ -121,7 +121,7 @@ def render_sprite(
     sprite: HelpHf0.SpriteData,
     output_path: Path,
 ) -> None:
-    rows = render_pixels(framebuffer, sprite).tolist()
+    rows = render_pixels(framebuffer, sprite)
     palette = build_palette(framebuffer, sprite.clut_y)
     
     with output_path.open("wb") as file:
@@ -339,7 +339,7 @@ def write_hf1(output_dir: Path, help_name: str, block_extractor: BlockExtractor,
     (output_dir / f"{help_name}.HF1").write_bytes(output)
 
 
-def encode_hf(yaml_path: Path, output_dir: Path):
+def encode_hf(yaml_path: Path, output_dir: Path) -> None:
     data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
     block_extractor = BlockExtractor()
     palette_manager = PaletteManager()

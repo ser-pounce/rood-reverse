@@ -79,7 +79,7 @@ types:
       - id: mode
         type: u4
     seq:
-      - id: index
+      - id: indices
         type:
           switch-on: mode
           cases:

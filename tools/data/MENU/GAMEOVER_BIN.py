@@ -1,38 +1,29 @@
 #!/usr/bin/env python3
 import argparse
-import logging
 from pathlib import Path
 
-from tools.etc.psx_img import decode_raw_image, encode_raw_image
+from PIL import Image
 
-logger = logging.getLogger(__name__)
-
-IMAGE_W = 96
-IMAGE_H = 128
-
-
-def decode(infile: Path, outfile: Path) -> None:
-    decode_raw_image(infile, outfile, IMAGE_W, IMAGE_H, 4)
-
-
-def encode(infile: Path, outfile: Path) -> None:
-    encode_raw_image(infile, outfile, IMAGE_W, IMAGE_H, 4)
+from tools.kaitai.parsers.lib.img import Img
+from tools.libdata.img import decode_grayscale, pack_4bpp
+from kaitaistruct import KaitaiStream
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Decode or encode GAMEOVER.BIN")
-    parser.add_argument('input',   type=Path)
-    parser.add_argument('output',  type=Path)
-    parser.add_argument('--debug', action='store_true')
+    parser.add_argument('input', type=Path)
+    parser.add_argument('output', type=Path)
     args = parser.parse_args(argv)
-
-    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO, format='%(message)s')
 
     suffix = args.input.suffix.lower()
     if suffix == '.bin':
-        decode(args.input, args.output)
+        with open(args.input, 'rb') as f:
+            indices = Img.Indices(0, KaitaiStream(f))
+        decode_grayscale(bytes(indices.indices), 96, 128, 4, args.output)
     elif suffix == '.png':
-        encode(args.input, args.output)
+        img = Image.open(args.input)
+        img.load()
+        args.output.write_bytes(pack_4bpp(img.tobytes()))
     else:
         parser.error('Could not infer mode from input file extension; supply a .BIN or .png input file')
     return 0

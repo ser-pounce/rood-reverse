@@ -6,7 +6,8 @@ import yaml
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 
-from tools.kaitai.parsers.data.SMALL.img import Img
+from tools.libdata.img import decode_grayscale, pack_4bpp
+from tools.kaitai.parsers.lib.img import Img
 from tools.kaitai.parsers.data.SMALL.image_dis import ImageDis
 
 
@@ -22,12 +23,12 @@ def decode_clut(section: Img.Clutsection, info: PngInfo) -> None:
     info.add(b'clUb', struct.pack(f'<{len(clut)}H', *clut), after_idat=True)
 
 
-def decode_highColor(tim: Img.Tim, info: PngInfo, output_path: Path) -> None:
+def decode_highColor(tim: Img.Tim, output_path: Path, info: PngInfo = None) -> None:
     w, h = tim.rect.w, tim.rect.h
     pixels = bytearray(w * h * 4)
     stp_packed = bytearray((w * h + 7) // 8)
 
-    for i, pixel in enumerate(tim.indices.index):
+    for i, pixel in enumerate(tim.indices.indices):
         pixels[i * 4 : i * 4 + 4] = (pixel.r8, pixel.g8, pixel.b8, pixel.a8)
         if pixel.stp:
             stp_packed[i >> 3] |= 0x80 >> (i & 7)
@@ -35,23 +36,6 @@ def decode_highColor(tim: Img.Tim, info: PngInfo, output_path: Path) -> None:
     img = Image.frombytes('RGBA', (w, h), bytes(pixels))
     info.add(b'stPd', bytes(stp_packed), after_idat=True)
     img.save(output_path, pnginfo=info)
-
-
-def generate_grayscale_palette(n_colors: int) -> list[tuple[int, int, int]]:
-    scale = 255 // (n_colors - 1)
-    palette = []
-    for i in range(n_colors):
-        v = (i * scale)
-        palette.extend((v, v, v))
-    return palette
-
-
-def decode_grayscale(tim: Img.Tim, info: PngInfo, output_path: Path) -> None:
-    bpp = 4 if tim.mode == 0 else 8
-    pixel_width = tim.rect.w * 16 // bpp
-    img = Image.frombytes('P', (pixel_width, tim.rect.h), bytes(tim.indices.index))
-    img.putpalette(generate_grayscale_palette(1 << bpp))
-    img.save(output_path, pnginfo=info, bits=bpp)
 
 
 def decode_tim(tim: Img.Tim, output_path: Path) -> None:
@@ -62,13 +46,14 @@ def decode_tim(tim: Img.Tim, output_path: Path) -> None:
         decode_clut(tim.clut, info)
 
     if tim.mode == 2:
-        decode_highColor(tim, info, output_path)
+        decode_highColor(tim, output_path, info)
 
     else:
-        decode_grayscale(tim, info, output_path)
+        bpp = 4 if tim.mode == 0 else 8
+        decode_grayscale(bytes(tim.indices.indices), tim.rect.w * 16 // bpp, tim.rect.h, bpp, output_path, info)
 
 
-def _parse_ints(raw: str | None, count: int) -> tuple[int, ...] | None:
+def _parse_ints(raw: str | None, count: int) -> tuple[int, ...]:
     if not raw:
         raise ValueError(f'No values present')
     
@@ -148,12 +133,7 @@ def encode_grayscale(img: Image) -> bytes:
     bitdepth = get_bit_depth(img.filename)
     
     if bitdepth == 4:
-        packed = bytearray((len(pixel_data) + 1) // 2)
-        for i in range(0, len(pixel_data), 2):
-            lo = pixel_data[i] & 0x0F
-            hi = pixel_data[i + 1] & 0x0F if i + 1 < len(pixel_data) else 0
-            packed[i // 2] = lo | (hi << 4)
-        pixel_data = bytes(packed)
+        pixel_data = pack_4bpp(pixel_data)
 
     return build_tim(img, pixel_data, img.width * bitdepth // 16, 1 if bitdepth == 8 else 0)
 

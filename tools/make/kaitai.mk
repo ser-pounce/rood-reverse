@@ -1,7 +1,7 @@
 KSC      ?= ksc
 KSCFLAGS ?= -t python -I tools/kaitai/ksy/lib
 
-KAITAI_KSY     != $(FIND) tools/kaitai/ksy/data -type f -name *.ksy
+KAITAI_KSY     != $(FIND) tools/kaitai/ksy -type f -name *.ksy
 KAITAI_PARSERS := $(KAITAI_KSY:tools/kaitai/ksy/%.ksy=tools/kaitai/parsers/%.py)
 
 .PHONY: kaitai

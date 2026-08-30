@@ -13,7 +13,7 @@ from PIL import Image
 from tools.etc.vsString import decode, encode
 from tools.kaitai.parsers.data.SMALL.help_hf0 import HelpHf0
 from tools.kaitai.parsers.data.SMALL.help_hf1 import HelpHf1
-from tools.libdata.img import rgb888_to_bgr555
+from tools.libdata.img import encode_rgb555
 from tools.libdata.util import align, build_offset_table
 from tools.libdata.yaml import configure_yaml, dump
 
@@ -313,16 +313,13 @@ def write_hf0(output_dir: Path, help_name: str, data: dict[str, Any], processed_
 
 
 def write_hf1(output_dir: Path, help_name: str, block_extractor: BlockExtractor, palette_manager: PaletteManager) -> None:
-    palettes = []
-    for raw_palette in palette_manager.unique_palettes:
-        colors = [raw_palette[i : i + 3] for i in range(0, len(raw_palette), 3)]
-        palettes.append([rgb888_to_bgr555(*color) for color in colors])
+    palettes = [encode_rgb555(raw_palette, False) for raw_palette in palette_manager.unique_palettes]
     num_cluts = len(palettes) * CLUTS_PER_LINE
     output = b"".join(
         (
             HF1_HEADER_STRUCT.pack(len(block_extractor.unique_blocks), num_cluts),
             b"".join(bytes(block) for block in block_extractor.unique_blocks),
-            b"".join(struct.pack("<256H", *palette) for palette in palettes),
+            b"".join(palettes),
         )
     )
     (output_dir / f"{help_name}.HF1").write_bytes(output)

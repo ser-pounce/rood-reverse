@@ -3,6 +3,7 @@
 
 import kaitaistruct
 from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+import tools.libdata.rle
 
 
 if getattr(kaitaistruct, 'API_VERSION', (0, 9)) < (0, 11):
@@ -148,7 +149,7 @@ class Img(KaitaiStruct):
             if hasattr(self, '_m_a8'):
                 return self._m_a8
 
-            self._m_a8 = (0 if  (((not (self.stp))) and ( ((self.r == 0) and (self.g == 0) and (self.b == 0)) ))  else 255)
+            self._m_a8 = (0 if  ((self.stp) and ( ((self.r == 0) and (self.g == 0) and (self.b == 0)) ))  else 255)
             return getattr(self, '_m_a8', None)
 
         @property
@@ -182,6 +183,50 @@ class Img(KaitaiStruct):
 
             self._m_raw = ((self.r + (self.g << 5)) + (self.b << 10)) + (int(self.stp) << 15)
             return getattr(self, '_m_raw', None)
+
+
+    class Rgb5Array(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Img.Rgb5Array, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.colors = []
+            i = 0
+            while not self._io.is_eof():
+                self.colors.append(Img.Rgb5(self._io, self, self._root))
+                i += 1
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.colors)):
+                pass
+                self.colors[i]._fetch_instances()
+
+
+
+    class RleRgb5(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Img.RleRgb5, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self._raw__raw_raw_indices = self._io.read_bytes_full()
+            _process = tools.libdata.rle.RleDecompressor(2147516416)
+            self._raw_raw_indices = _process.decode(self._raw__raw_raw_indices)
+            _io__raw_raw_indices = KaitaiStream(BytesIO(self._raw_raw_indices))
+            self.raw_indices = Img.Rgb5Array(_io__raw_raw_indices, self, self._root)
+
+
+        def _fetch_instances(self):
+            pass
+            self.raw_indices._fetch_instances()
 
 
     class Tim(KaitaiStruct):

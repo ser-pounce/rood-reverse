@@ -30,7 +30,20 @@ types:
       b8:
         value: b << 3
       a8:
-        value: '(not stp and (r == 0 and g == 0 and b == 0)) ? 0 : 255'
+        value: '(stp and (r == 0 and g == 0 and b == 0)) ? 0 : 255'
+
+  rgb5_array:
+    seq:
+      - id: colors
+        type: rgb5
+        repeat: eos
+
+  rle_rgb5:
+    seq:
+      - id: raw_indices
+        size-eos: true
+        process: tools.libdata.rle.rle_decompressor(0x80008000)
+        type: rgb5_array
 
   rect:
     seq:

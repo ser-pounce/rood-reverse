@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image
 
 from tools.kaitai.parsers.data.MENU.mapbg_bin import MapbgBin
-from tools.libdata.img import decode_8bpp_bin, encode_8bpp_bin
+from tools.libdata.img import decode_8bpp_bin, encode_rgb555
 
 
 def decode_bin(input_path: Path, output_path: Path) -> None:
@@ -24,7 +24,7 @@ def encode_bin(input_path: Path, output_path: Path) -> None:
     if img.mode != 'P':
         raise ValueError(f'{input_path} must be paletted')
 
-    encode_8bpp_bin(img.tobytes(), img.getpalette(), output_path)
+    output_path.write_bytes(encode_rgb555(img.getpalette()) + img.tobytes())
 
 
 def main(argv=None) -> int:

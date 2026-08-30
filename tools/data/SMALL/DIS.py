@@ -8,7 +8,7 @@ from PIL.PngImagePlugin import PngInfo
 
 from tools.kaitai.parsers.lib.img import Img
 from tools.kaitai.parsers.data.SMALL.img_dis import ImgDis
-from tools.libdata.img import decode_grayscale, pack_4bpp
+from tools.libdata.img import decode_grayscale, decode_highcolor, encode_highColor, get_chunk, pack_4bpp
 
 
 # pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
@@ -23,21 +23,6 @@ def decode_clut(section: Img.Clutsection, info: PngInfo) -> None:
     info.add(b'clUb', struct.pack(f'<{len(clut)}H', *clut), after_idat=True)
 
 
-def decode_highColor(tim: Img.Tim, output_path: Path, info: PngInfo = None) -> None:
-    w, h = tim.rect.w, tim.rect.h
-    pixels = bytearray(w * h * 4)
-    stp_packed = bytearray((w * h + 7) // 8)
-
-    for i, pixel in enumerate(tim.indices.indices):
-        pixels[i * 4 : i * 4 + 4] = (pixel.r8, pixel.g8, pixel.b8, pixel.a8)
-        if pixel.stp:
-            stp_packed[i >> 3] |= 0x80 >> (i & 7)
-
-    img = Image.frombytes('RGBA', (w, h), bytes(pixels))
-    info.add(b'stPd', bytes(stp_packed), after_idat=True)
-    img.save(output_path, pnginfo=info)
-
-
 def decode_tim(tim: Img.Tim, output_path: Path) -> None:
     info = PngInfo()
     info.add_text('tim_offset', f'{tim.rect.x},{tim.rect.y}')
@@ -46,8 +31,8 @@ def decode_tim(tim: Img.Tim, output_path: Path) -> None:
         decode_clut(tim.clut, info)
 
     if tim.mode == 2:
-        decode_highColor(tim, output_path, info)
-
+        decode_highcolor(tim.rect.w, tim.rect.h, tim.indices.indices, output_path, info)
+        
     else:
         bpp = 4 if tim.mode == 0 else 8
         decode_grayscale(bytes(tim.indices.indices), tim.rect.w * 16 // bpp, tim.rect.h, bpp, output_path, info)
@@ -78,11 +63,6 @@ def get_bit_depth(png_path: str) -> int:
     return bitdepth
 
 
-def get_chunk(img: Image, name: str) -> bytes:
-    name_bytes = name.encode("latin-1")
-    return next((c[1] for c in img.private_chunks if c[0] == name_bytes), None)
-
-
 def encode_clut(img: Image, mode: int) -> bytes:
     clut_bytes = get_chunk(img, 'clUb')
 
@@ -108,26 +88,6 @@ def build_tim(img: Image, pixel_data: bytes, width: int, mode: int) -> bytes:
     return out
 
 
-def encode_highColor(img: Image) -> bytes:
-    stp_packed = get_chunk(img, 'stPd')
-
-    if stp_packed is None:
-        raise ValueError(f'Png file is missing expected stPd chunk')
-
-    rgba = img.tobytes()
-    pixel_count = img.width * img.height
-    raw_pixels = [0] * pixel_count
-
-    for i in range(pixel_count):
-        r5, g5, b5 = rgba[i * 4] >> 3, rgba[i * 4 + 1] >> 3, rgba[i * 4 + 2] >> 3
-        stp = (stp_packed[i >> 3] >> (7 - (i & 7))) & 1
-        raw_pixels[i] = (stp << 15) | (b5 << 10) | (g5 << 5) | r5
-
-    pixel_data = struct.pack(f'<{len(raw_pixels)}H', *raw_pixels)
-
-    return build_tim(img, pixel_data, img.width, 2)
-
-
 def encode_grayscale(img: Image) -> bytes:
     pixel_data = img.tobytes()
     bitdepth = get_bit_depth(img.filename)
@@ -143,7 +103,7 @@ def encode_tim(png_path: Path) -> bytes:
     img.load()
 
     if img.mode == 'RGBA':
-        return encode_highColor(img)
+        return build_tim(img, encode_highColor(img), img.width, 2)
 
     elif img.mode == 'P':
         return encode_grayscale(img)

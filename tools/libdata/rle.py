@@ -1,6 +1,7 @@
 import struct
 
-def rle_decompress(data: bytes) -> bytes:
+
+def rle_decompress(data: bytes, fill_value: int = 0) -> bytes:
     words      = []
     pos        = 0
     data_words = len(data) // 4
@@ -9,8 +10,8 @@ def rle_decompress(data: bytes) -> bytes:
         control, = struct.unpack_from('<I', data, pos * 4)
         pos += 1
 
-        zero_count = control & 0xFFFF
-        words.extend([0] * zero_count)
+        fill_count = control & 0xFFFF
+        words.extend([fill_value] * fill_count)
 
         literal_count = control >> 16
         if literal_count:
@@ -20,27 +21,27 @@ def rle_decompress(data: bytes) -> bytes:
     return struct.pack(f'<{len(words)}I', *words)
 
 
-def rle_compress(words: bytes) -> bytes:
+def rle_compress(words: bytes, fill_value: int = 0) -> bytes:
     assert len(words) % 4 == 0
     count = len(words) // 4
     values = struct.unpack(f'<{count}I', words) if count else ()
 
-    MAX_RUN = 0xFFFF  # zero_count and literal_count are each 16 bits
+    MAX_RUN = 0xFFFF
     output = []
     pos = 0
 
     while pos < count:
-        zero_start = pos
-        while pos < count and values[pos] == 0 and pos - zero_start < MAX_RUN:
+        fill_start = pos
+        while pos < count and values[pos] == fill_value and pos - fill_start < MAX_RUN:
             pos += 1
-        zero_count = pos - zero_start
+        fill_count = pos - fill_start
 
         literal_start = pos
-        while pos < count and values[pos] != 0 and pos - literal_start < MAX_RUN:
+        while pos < count and values[pos] != fill_value and pos - literal_start < MAX_RUN:
             pos += 1
         literal_count = pos - literal_start
 
-        control = (literal_count << 16) | zero_count
+        control = (literal_count << 16) | fill_count
         output.append(control)
         output.extend(values[literal_start:pos])
 
@@ -48,5 +49,8 @@ def rle_compress(words: bytes) -> bytes:
 
 
 class RleDecompressor:
+    def __init__(self, fill_value: int = 0) -> None:
+        self.fill_value = fill_value
+
     def decode(self, data: bytes) -> bytes:
-        return rle_decompress(data)
+        return rle_decompress(data, self.fill_value)

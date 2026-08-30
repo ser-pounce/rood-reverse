@@ -152,7 +152,9 @@ typedef struct {
 typedef struct {
     u_short locationCluts[2][256];
     char unk400[7][32];
-    char unk4E0[22][128];
+    char unk4E0[7][128];
+    char unk860[7][128];
+    char unkBE0[8][128];
     char unkFE0[32];
     u_short textTable[0x800];
     saveFileInfo_t saveFileInfo[5];

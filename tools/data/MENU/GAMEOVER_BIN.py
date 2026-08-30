@@ -2,10 +2,10 @@ import argparse
 from pathlib import Path
 
 from PIL import Image
+from kaitaistruct import KaitaiStream
 
 from tools.kaitai.parsers.lib.img import Img
 from tools.libdata.img import decode_grayscale, pack_4bpp
-from kaitaistruct import KaitaiStream
 
 
 def main(argv=None):

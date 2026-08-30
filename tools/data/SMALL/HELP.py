@@ -3,19 +3,19 @@
 
 import argparse
 import struct
+import yaml
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-import yaml
 from PIL import Image
 
 from tools.etc.vsString import decode, encode
+from tools.kaitai.parsers.data.SMALL.help_hf0 import HelpHf0
+from tools.kaitai.parsers.data.SMALL.help_hf1 import HelpHf1
 from tools.libdata.img import rgb888_to_bgr555
 from tools.libdata.util import align, build_offset_table
 from tools.libdata.yaml import configure_yaml, dump
-from tools.kaitai.parsers.data.SMALL.help_hf0 import HelpHf0
-from tools.kaitai.parsers.data.SMALL.help_hf1 import HelpHf1
 
 
 BLOCK_WIDTH = 8

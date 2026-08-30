@@ -1,13 +1,12 @@
 import argparse
 import struct
+import yaml
 from pathlib import Path
 
-import yaml
-
+from tools.etc.vsString import decode, encode
 from tools.kaitai.parsers.data.SMALL.mon_bin import MonBin
 from tools.libdata.yaml import configure_yaml, dump
 from tools.libdata.util import build_offset_table
-from tools.etc.vsString import decode, encode
 
 MONSTER_COUNT = 150
 NAME_FIELD_SIZE = 28

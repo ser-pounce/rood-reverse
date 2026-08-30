@@ -6,12 +6,12 @@ from pathlib import Path
 
 import yaml
 
-from tools.libdata.util import align
-from tools.libdata.yaml import configure_yaml, dump
 from tools.kaitai.parsers.data.MENU.armor_syd import ArmorSyd
 from tools.kaitai.parsers.data.MENU.blade_syd import BladeSyd
 from tools.kaitai.parsers.data.MENU.shield_syd import ShieldSyd
 from tools.kaitai.parsers.data.MENU.syd import Syd
+from tools.libdata.util import align
+from tools.libdata.yaml import configure_yaml, dump
 
 
 BLADE_BYTE_FIELDS = (

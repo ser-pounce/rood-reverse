@@ -1,14 +1,14 @@
 import argparse
 import struct
+import yaml
 from pathlib import Path
 
-import yaml
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 
-from tools.libdata.img import decode_grayscale, pack_4bpp
 from tools.kaitai.parsers.lib.img import Img
 from tools.kaitai.parsers.data.SMALL.img_dis import ImgDis
+from tools.libdata.img import decode_grayscale, pack_4bpp
 
 
 # pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
@@ -53,7 +53,7 @@ def decode_tim(tim: Img.Tim, output_path: Path) -> None:
         decode_grayscale(bytes(tim.indices.indices), tim.rect.w * 16 // bpp, tim.rect.h, bpp, output_path, info)
 
 
-def _parse_ints(raw: str | None, count: int) -> tuple[int, ...]:
+def parse_ints(raw: str | None, count: int) -> tuple[int, ...]:
     if not raw:
         raise ValueError(f'No values present')
     
@@ -90,7 +90,7 @@ def encode_clut(img: Image, mode: int) -> bytes:
         clut = list(struct.unpack(f'<{len(clut_bytes) // 2}H', clut_bytes))
         packed_clut_bytes = struct.pack(f'<{len(clut)}H', *clut)
         clut_len = 12 + len(packed_clut_bytes)
-        clut_rect = _parse_ints(img.text.get('tim_clut_rect'), 4)
+        clut_rect = parse_ints(img.text.get('tim_clut_rect'), 4)
 
         out = struct.pack("<II", 0x10, mode | 8)
         out += struct.pack("<I4h", clut_len, *clut_rect) + packed_clut_bytes
@@ -101,7 +101,7 @@ def encode_clut(img: Image, mode: int) -> bytes:
 
 
 def build_tim(img: Image, pixel_data: bytes, width: int, mode: int) -> bytes:
-    img_offset = _parse_ints(img.text.get('tim_offset'), 2)
+    img_offset = parse_ints(img.text.get('tim_offset'), 2)
     out = encode_clut(img, mode)
     out += struct.pack("<I4h", 12 + len(pixel_data), img_offset[0], img_offset[1], width, img.height)
     out += pixel_data

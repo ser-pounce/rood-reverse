@@ -6,9 +6,10 @@ from PIL.PngImagePlugin import PngInfo
 
 from tools.kaitai.parsers.data.MENU.mcdata_bin import McdataBin
 
-IMG_W, IMG_H   = 448, 256
-BLOCK_W        = 64
-CLUT_0_COLS    = {1, 2, 3, 4}
+
+IMG_W, IMG_H = 448, 256
+BLOCK_W      = 64
+CLUT_0_COLS  = {1, 2, 3, 4}
 
 
 def decode_bin(input_path: Path, clut_path: Path, output_path: Path) -> None:

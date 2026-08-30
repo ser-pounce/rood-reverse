@@ -1,30 +1,34 @@
-import sys
+import argparse
+from pathlib import Path
+
 from tools.etc.vsString import write_table
 
 
-if __name__ == '__main__':
-    if len(sys.argv) != 5:
-        print("Usage: vsString_dumpFixedTable.py <binary_file> <keys_file> <out_path> <record_size>")
-        sys.exit(1)
-
-    bin_path = sys.argv[1]
-    keys_file = sys.argv[2]
-    out_path = sys.argv[3]
+def positive_int(value: str) -> int:
     try:
-        record_size = int(sys.argv[4], 0)
+        parsed = int(value, 0)
     except ValueError:
-        print("Error: record_size must be an integer", file=sys.stderr)
-        sys.exit(2)
+        raise argparse.ArgumentTypeError(f"{value!r} is not an integer")
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError(f"{parsed} is not positive")
+    return parsed
 
-    if record_size <= 0:
-        print("Error: record_size must be positive", file=sys.stderr)
-        sys.exit(2)
 
-    with open(bin_path, "rb") as f:
-        data = f.read()
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Dump a fixed-record-size binary file into a vsString table")
+    parser.add_argument('input', type=Path)
+    parser.add_argument('keys_file', type=Path)
+    parser.add_argument('output', type=Path)
+    parser.add_argument('record_size', type=positive_int)
+    args = parser.parse_args(argv)
 
-    filesize = len(data)
-    count = filesize // record_size
-    offsets = [(i * record_size) // 2 for i in range(count)]
+    data = args.input.read_bytes()
+    count = len(data) // args.record_size
+    records = [data[i * args.record_size : (i + 1) * args.record_size] for i in range(count)]
 
-    write_table(data, offsets, keys_file, out_path)
+    write_table(records, args.keys_file, args.output)
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

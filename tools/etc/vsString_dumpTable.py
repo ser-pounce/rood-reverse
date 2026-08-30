@@ -1,16 +1,27 @@
-import sys
+import argparse
+from pathlib import Path
+
+from kaitaistruct import KaitaiStream, BytesIO
+
 from tools.etc.vsString import write_table
+from tools.kaitai.parsers.lib.string_table import StringTable
+
+
+def vsString_dumpTable(data: bytes, keys_path: Path, output_path: Path):
+    table = StringTable(0, KaitaiStream(BytesIO(data)))
+    write_table([s.text for s in table.string_refs], keys_path, output_path)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Dump a StringTable binary file into a vsString table")
+    parser.add_argument('input', type=Path)
+    parser.add_argument('keys_file', type=Path)
+    parser.add_argument('output', type=Path)
+    args = parser.parse_args(argv)
+
+    vsString_dumpTable(args.input.read_bytes(), args.keys_file, args.output)
+    return 0
 
 
 if __name__ == '__main__':
-    with open(sys.argv[1], "rb") as f:
-        data = f.read()
-    
-    count = int.from_bytes(data[0:2], "little")
-
-    offsets = [
-        int.from_bytes(data[2*i:2*i + 2], "little")
-        for i in range(count)
-    ]
-    
-    write_table(data, offsets, sys.argv[2], sys.argv[3])
+    raise SystemExit(main())

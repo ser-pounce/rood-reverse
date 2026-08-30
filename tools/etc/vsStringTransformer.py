@@ -1,6 +1,6 @@
 import sys
 import re
-from vsString import encode_raw
+from tools.etc.vsString import encode_raw
 
 def encode_c_string_literal(s):
     encoded = encode_raw(eval(s))

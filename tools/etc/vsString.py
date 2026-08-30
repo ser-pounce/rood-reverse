@@ -1,6 +1,7 @@
 import ctypes
 import yaml
 
+from tools.libdata.yaml import configure_yaml, dump
 
 class vsStringBase():
     _type_ = ctypes.c_ubyte
@@ -522,17 +523,13 @@ def assign_strings(template, strings, idx=0):
             raise ValueError("Not enough strings for keys template")
         return strings[idx], idx + 1
 
-def write_table(data, offsets, keys_file, out_path):
+
+def write_table(encoded_strings: list[bytes], keys_file, out_path):
 
     with open(keys_file, "r", encoding="utf-8") as f:
         keys_yaml = yaml.safe_load(f)
 
-    strings = []
-    for off in offsets:
-        s = decode(data[off*2:])
-        if "\n" in s:
-            s = LiteralString(s)
-        strings.append(s)
+    strings = [decode(s) for s in encoded_strings]
 
     result, used = assign_strings(keys_yaml, strings)
 
@@ -541,5 +538,6 @@ def write_table(data, offsets, keys_file, out_path):
             f"Not all strings were consumed (used {used}, have {len(strings)})"
         )
 
+    configure_yaml()
     with open(out_path, "w", encoding="utf-8") as f:
-        yaml.dump(result, f, allow_unicode=True, sort_keys=False, width=1000)
+        dump(result, f, width=1000)

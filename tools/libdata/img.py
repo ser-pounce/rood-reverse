@@ -7,6 +7,36 @@ from PIL.PngImagePlugin import PngInfo
 from tools.kaitai.parsers.lib.img import Img
 
 
+def get_png_bit_depth(png_path: Path) -> int:
+    with open(png_path, 'rb') as f:
+        f.seek(24)
+        bitdepth = f.read(1)[0]
+
+    if bitdepth not in (4, 8):
+        raise ValueError(f'Expected 4-bit or 8-bit indexed PNG: {png_path}')
+
+    return bitdepth
+
+
+def write_indexed_png(
+    data: bytes,
+    width: int,
+    height: int,
+    palette: bytes,
+    output_path: Path,
+    bpp: int = None,
+    info: PngInfo = None,
+) -> None:
+    img = Image.frombytes('P', (width, height), data)
+    img.putpalette(palette)
+
+    save_kwargs = {'pnginfo': info}
+    if bpp is not None:
+        save_kwargs['bits'] = bpp
+
+    img.save(output_path, **save_kwargs)
+
+
 def generate_grayscale_palette(n_colors: int) -> list[tuple[int, int, int]]:
     scale = 255 // (n_colors - 1)
     palette = []
@@ -17,15 +47,12 @@ def generate_grayscale_palette(n_colors: int) -> list[tuple[int, int, int]]:
 
 
 def decode_grayscale(data: bytes, width: int, height: int, bpp: int, output_path: Path, info: PngInfo = None) -> None:
-    img = Image.frombytes('P', (width, height), data)
-    img.putpalette(generate_grayscale_palette(1 << bpp))
-    img.save(output_path, pnginfo=info, bits=bpp)
+    write_indexed_png(data, width, height, generate_grayscale_palette(1 << bpp), output_path, bpp=bpp, info=info)
 
 
 def decode_8bpp_bin(pixels: bytes, width: int, height: int, clut: list[tuple[int, int, int]], output_path: Path) -> None:
-    img = Image.frombytes('P', (width, height), pixels)
-    img.putpalette(bytes(channel for color in clut for channel in color))
-    img.save(output_path)
+    palette = bytes(channel for color in clut for channel in color)
+    write_indexed_png(pixels, width, height, palette, output_path)
 
 
 def decode_highcolor(width: int, height: int, colors: list[Img.Rgb5], output_path: Path, info: PngInfo = None) -> None:
@@ -43,6 +70,29 @@ def decode_highcolor(width: int, height: int, colors: list[Img.Rgb5], output_pat
     img = Image.frombytes('RGBA', (width, height), bytes(pixels))
     info.add(b'stPd', bytes(stp_packed), after_idat=True)
     img.save(output_path, pnginfo=info)
+
+
+CLUT_CHUNK_AFTER  = b'clUa'
+CLUT_CHUNK_BEFORE = b'clUb'
+
+
+def write_clut_chunk(info: PngInfo, raw_cluts: bytes, cluts_after: bool) -> None:
+    chunk_name = CLUT_CHUNK_AFTER if cluts_after else CLUT_CHUNK_BEFORE
+    info.add(chunk_name, raw_cluts, after_idat=True)
+
+
+def read_clut_chunk(img: Image) -> tuple[bytes, bool]:
+    raw_after  = get_chunk(img, CLUT_CHUNK_AFTER.decode())
+    raw_before = get_chunk(img, CLUT_CHUNK_BEFORE.decode())
+
+    if raw_after is not None and raw_before is not None:
+        raise ValueError(f'found both {CLUT_CHUNK_AFTER} and {CLUT_CHUNK_BEFORE} chunks')
+
+    if raw_after is not None:
+        return raw_after, True
+    if raw_before is not None:
+        return raw_before, False
+    return bytes(), False
 
 
 def pack_4bpp(data: bytes) -> bytes:

@@ -1,30 +1,28 @@
-import struct
+import argparse
 from pathlib import Path
 from typing import Any
 
-from tools.etc.psx_img import (
-    Palette,
-    decode_image,
-    encode_image,
-    encode_cluts,
-    pack_pixels,
-    read_png,
-    write_png,
-)
+from kaitaistruct import KaitaiStream, BytesIO
+from PIL import Image
+from PIL.PngImagePlugin import PngInfo
+
 from tools.splat_ext.img import PSXSegImg
+from tools.libdata.img import (
+    generate_grayscale_palette, get_png_bit_depth, pack_4bpp,
+    read_clut_chunk, write_clut_chunk, write_indexed_png,
+)
+from tools.kaitai.parsers.lib.img import Img
 
 
-# ---------------------------------------------------------------------------
-# Splat segment
-# ---------------------------------------------------------------------------
+BITDEPTH_TO_MODE = {4: 0, 8: 1}
+
 
 class PSXSegRgbClut(PSXSegImg):
 
-    cluts_before: int
-    cluts_after:  int
-    bitdepth:     int
-    clut_entries: int
-    plte_clut:    int
+    bitdepth:    int
+    num_cluts:   int
+    plte_clut:   int | None
+    cluts_after: bool
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -32,70 +30,90 @@ class PSXSegRgbClut(PSXSegImg):
         if len(kwargs['yaml']) < 5:
             raise ValueError('PSXSegRgbClut requires width and height')
 
-        if isinstance(kwargs['yaml'], dict):
-            self.cluts_before = int(kwargs['yaml'].get('cluts_before', 0))
-            self.cluts_after  = int(kwargs['yaml'].get('cluts_after',  0))
-            self.bitdepth     = int(kwargs['yaml'].get('bitdepth', 4))
-            self.plte_clut    = int(kwargs['yaml'].get('plte_clut', 0))
-        else:
-            # List-style YAML: clut count parameters must use dict-style
-            self.cluts_before = 1
-            self.cluts_after  = 0
-            self.bitdepth     = 4
-            self.plte_clut    = 0
+        yaml = kwargs['yaml']
 
-        if self.bitdepth not in (4, 8):
+        if not isinstance(yaml, dict):
+            raise ValueError('Abbreviated syntax not supported')
+        
+        self.bitdepth    = int(yaml.get('bitdepth', 4))
+        self.num_cluts   = int(yaml.get('num_cluts', 1))
+        plte_clut        = yaml.get('plte_clut')
+        self.plte_clut   = int(plte_clut) if plte_clut is not None else None
+        self.cluts_after = bool(yaml.get('cluts_after', False))
+
+        if self.bitdepth not in BITDEPTH_TO_MODE:
             raise ValueError(f'PSXSegRgbClut: bitdepth must be 4 or 8, got {self.bitdepth}')
-        self.clut_entries = 1 << self.bitdepth  # 4-bit -> 16, 8-bit -> 256
 
     def split(self, rom_bytes: bytes) -> None:
-        pixels, before_cluts, after_cluts = decode_image(
-            rom_bytes, self.rom_start, self.width, self.height,
-            self.bitdepth, self.cluts_before, self.cluts_after,
+        parsed = Img.ClutsIndices(
+            BITDEPTH_TO_MODE[self.bitdepth],
+            self.num_cluts,
+            self.cluts_after,
+            KaitaiStream(BytesIO(rom_bytes[self.rom_start:self.rom_end]))
         )
-        png_path = self.make_path()
-        write_png(png_path, pixels, self.width, self.height,
-                  self.bitdepth, before_cluts, after_cluts, self.plte_clut)
+
+        if self.plte_clut is None:
+            palette = generate_grayscale_palette(1 << self.bitdepth)
+        else:
+            palette = bytes(
+                channel
+                for color in parsed.cluts[self.plte_clut].colors
+                for channel in (color.r8, color.g8, color.b8)
+            )
+
+        info = PngInfo()
+        if self.num_cluts > 0:
+            raw_cluts = parsed._raw_cluts_a if self.cluts_after else parsed._raw_cluts_b
+            write_clut_chunk(info, b''.join(raw_cluts), self.cluts_after)
+
+        write_indexed_png(
+            bytes(parsed.indices.indices), self.width, self.height,
+            palette, self.make_path(), bpp=self.bitdepth, info=info,
+        )
 
 
-# ---------------------------------------------------------------------------
-# CLI re-encoder
-# ---------------------------------------------------------------------------
+def encode(image_path: Path) -> tuple[bytes, bytes, bool]:
+    img = Image.open(image_path)
+    img.load()
+
+    if img.mode != 'P':
+        raise ValueError('Input image must be a palettized (P-mode) PNG')
+
+    try:
+        raw_clut, cluts_after = read_clut_chunk(img)
+    except ValueError as e:
+        raise ValueError(f'{image_path}: {e}') from e
+
+    indices = img.tobytes()
+    bitdepth = get_png_bit_depth(image_path)
+    pixel_bytes = pack_4bpp(indices) if bitdepth == 4 else indices
+
+    return pixel_bytes, raw_clut, cluts_after
+
 
 if __name__ == '__main__':
-    import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument('input',  type=Path, help='Input PNG file')
     parser.add_argument('output', type=Path, help='Output file')
     parser.add_argument('--dat',  action='store_true', help='Write a .dat text file instead of a .o object file')
     args = parser.parse_args()
 
-    pixels, width, height, bitdepth, cluts_before, cluts_after, _, _ = read_png(args.input)
+    pixel_bytes, raw_clut, cluts_after = encode(args.input)
+    symbol_name = args.input.name.split('.')[0]
 
-    packed            = pack_pixels(list(pixels), bitdepth)
-    clut_bytes_before = encode_cluts(cluts_before)
-    clut_bytes_after  = encode_cluts(cluts_after)
-
-    binary        = bytes(clut_bytes_before + packed + clut_bytes_after)
-    symbol_name   = args.input.name.split('.')[0]
-    symbol_offset = len(clut_bytes_before)  # pixel data starts after any leading CLUTs
+    first, second = (pixel_bytes, raw_clut) if cluts_after else (raw_clut, pixel_bytes)
+    first_name, second_name = (
+        (symbol_name, f'{symbol_name}_clut') if cluts_after
+        else (f'{symbol_name}_clut', symbol_name)
+    )
+    binary = first + second
+    symbols = [(first_name, 0), (second_name, len(first))]
 
     if args.dat:
         with open(args.output, 'w') as h:
             for byte in binary:
                 h.write(f'0x{byte:02X},')
     else:
-        if cluts_before:
-            symbols = [(f'{symbol_name}_clut', 0), (symbol_name, symbol_offset)]
-        elif cluts_after:
-            symbols = [(symbol_name, 0), (f'{symbol_name}_clut', len(packed))]
-        else:
-            symbols = [(symbol_name, 0)]
-
         PSXSegRgbClut.write_object_file(
-            binary,
-            args.output,
-            symbols,
-            *PSXSegRgbClut.objcopy_from_env(),
+            binary, args.output, symbols, *PSXSegRgbClut.objcopy_from_env(),
         )

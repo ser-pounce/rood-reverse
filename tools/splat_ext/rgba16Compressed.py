@@ -36,11 +36,12 @@ if __name__ == '__main__':
 
     img = Image.open(args.input)
     img.load()
-    binary      = rle_compress(encode_highColor(img), fill_value=TRANSPARENT_WORD)
+
+    data = rle_compress(encode_highColor(img), fill_value=TRANSPARENT_WORD)
     symbol_name = args.input.name.split('.')[0]
 
     PSXSegRgba16Compressed.write_object_file(
-        binary,
+        data,
         args.output,
         [(symbol_name, 0)],
         *PSXSegRgba16Compressed.objcopy_from_env(),

@@ -8,7 +8,7 @@ from PIL.PngImagePlugin import PngInfo
 
 from tools.kaitai.parsers.lib.img import Img
 from tools.kaitai.parsers.data.SMALL.img_dis import ImgDis
-from tools.libdata.img import decode_grayscale, decode_highcolor, encode_highColor, get_chunk, pack_4bpp
+from tools.libdata.img import decode_grayscale, decode_highcolor, encode_highColor, get_chunk, get_png_bit_depth, pack_4bpp
 
 
 # pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
@@ -52,17 +52,6 @@ def parse_ints(raw: str | None, count: int) -> tuple[int, ...]:
         raise ValueError(f'Error when parsing values')
 
 
-def get_bit_depth(png_path: str) -> int:
-    with open(png_path, 'rb') as f:
-        f.seek(24)
-        bitdepth = f.read(1)[0]
-
-    if bitdepth not in (4, 8):
-        raise ValueError(f'Expected 4-bit or 8-bit indexed PNG: {png_path}')
-
-    return bitdepth
-
-
 def encode_clut(img: Image, mode: int) -> bytes:
     clut_bytes = get_chunk(img, 'clUb')
 
@@ -90,7 +79,7 @@ def build_tim(img: Image, pixel_data: bytes, width: int, mode: int) -> bytes:
 
 def encode_grayscale(img: Image) -> bytes:
     pixel_data = img.tobytes()
-    bitdepth = get_bit_depth(img.filename)
+    bitdepth = get_png_bit_depth(img.filename)
     
     if bitdepth == 4:
         pixel_data = pack_4bpp(pixel_data)

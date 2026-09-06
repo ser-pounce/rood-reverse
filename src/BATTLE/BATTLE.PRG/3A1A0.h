@@ -283,7 +283,7 @@ typedef struct {
     u_short unk654;
     u_short menuCameraDistance;
     u_short unk658;
-    u_short unk65A;
+    short unk65A;
     int unk65C;
     int unk660;
     u_int btSeqLbas[12];

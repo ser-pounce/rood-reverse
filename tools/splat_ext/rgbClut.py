@@ -53,11 +53,13 @@ class PSXSegRgbClut(PSXSegImg):
         )
 
         if self.plte_clut is None:
-            palette = generate_grayscale_palette(1 << self.bitdepth)
+            palette = bytes(generate_grayscale_palette(1 << self.bitdepth))
         else:
+            cluts = parsed.cluts
+            assert cluts is not None
             palette = bytes(
                 channel
-                for color in parsed.cluts[self.plte_clut].colors
+                for color in cluts[self.plte_clut].colors
                 for channel in (color.r8, color.g8, color.b8)
             )
 
@@ -102,10 +104,12 @@ if __name__ == '__main__':
     symbol_name = args.input.name.split('.')[0]
 
     first, second = (pixel_bytes, raw_clut) if cluts_after else (raw_clut, pixel_bytes)
+    
     first_name, second_name = (
         (symbol_name, f'{symbol_name}_clut') if cluts_after
         else (f'{symbol_name}_clut', symbol_name)
     )
+
     binary = first + second
     symbols = [(first_name, 0), (second_name, len(first))]
 

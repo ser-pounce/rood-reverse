@@ -1,5 +1,6 @@
 import struct
 from pathlib import Path
+from typing import Any
 
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
@@ -24,20 +25,20 @@ def write_indexed_png(
     height: int,
     palette: bytes,
     output_path: Path,
-    bpp: int = None,
-    info: PngInfo = None,
+    bpp: int | None = None,
+    info: PngInfo | None = None,
 ) -> None:
     img = Image.frombytes('P', (width, height), data)
     img.putpalette(palette)
 
-    save_kwargs = {'pnginfo': info}
+    save_kwargs: dict[str, Any] = {'pnginfo': info}
     if bpp is not None:
         save_kwargs['bits'] = bpp
 
     img.save(output_path, **save_kwargs)
 
 
-def generate_grayscale_palette(n_colors: int) -> list[tuple[int, int, int]]:
+def generate_grayscale_palette(n_colors: int) -> list[int]:
     scale = 255 // (n_colors - 1)
     palette = []
     for i in range(n_colors):
@@ -46,8 +47,9 @@ def generate_grayscale_palette(n_colors: int) -> list[tuple[int, int, int]]:
     return palette
 
 
-def decode_grayscale(data: bytes, width: int, height: int, bpp: int, output_path: Path, info: PngInfo = None) -> None:
-    write_indexed_png(data, width, height, generate_grayscale_palette(1 << bpp), output_path, bpp=bpp, info=info)
+def decode_grayscale(data: bytes, width: int, height: int, bpp: int, output_path: Path, info: PngInfo | None = None) -> None:
+    palette = bytes(generate_grayscale_palette(1 << bpp))
+    write_indexed_png(data, width, height, palette, output_path, bpp=bpp, info=info)
 
 
 def decode_8bpp_bin(pixels: bytes, width: int, height: int, clut: list[tuple[int, int, int]], output_path: Path) -> None:
@@ -55,12 +57,14 @@ def decode_8bpp_bin(pixels: bytes, width: int, height: int, clut: list[tuple[int
     write_indexed_png(pixels, width, height, palette, output_path)
 
 
-def decode_highcolor(width: int, height: int, colors: list[Img.Rgb5], output_path: Path, info: PngInfo = None) -> None:
+def decode_highcolor(width: int, height: int, colors: list[Img.Rgb5], output_path: Path, info: PngInfo | None = None) -> None:
     pixels = bytearray(width * height * 4)
     stp_packed = bytearray((width * height + 7) // 8)
 
     for i, pixel in enumerate(colors):
-        pixels[i * 4 : i * 4 + 4] = (pixel.r8, pixel.g8, pixel.b8, pixel.a8)
+        r8, g8, b8, a8 = pixel.r8, pixel.g8, pixel.b8, pixel.a8
+        assert r8 is not None and g8 is not None and b8 is not None and a8 is not None
+        pixels[i * 4 : i * 4 + 4] = bytes((r8, g8, b8, a8))
         if pixel.stp:
             stp_packed[i >> 3] |= 0x80 >> (i & 7)
 
@@ -81,7 +85,7 @@ def write_clut_chunk(info: PngInfo, raw_cluts: bytes, cluts_after: bool) -> None
     info.add(chunk_name, raw_cluts, after_idat=True)
 
 
-def read_clut_chunk(img: Image) -> tuple[bytes, bool]:
+def read_clut_chunk(img: Image.Image) -> tuple[bytes, bool]:
     raw_after  = get_chunk(img, CLUT_CHUNK_AFTER.decode())
     raw_before = get_chunk(img, CLUT_CHUNK_BEFORE.decode())
 
@@ -113,12 +117,13 @@ def encode_rgb555(colors: list[int], stp: bool = True) -> bytes:
     return struct.pack(f'<{len(words)}H', *words)
 
 
-def get_chunk(img: Image, name: str) -> bytes:
+def get_chunk(img: Image.Image, name: str) -> bytes | None:
     name_bytes = name.encode("latin-1")
-    return next((c[1] for c in img.private_chunks if c[0] == name_bytes), None)
+    chunks: list[tuple[bytes, bytes]] = getattr(img, 'private_chunks', [])
+    return next((chunk[1] for chunk in chunks if chunk[0] == name_bytes), None)
 
 
-def encode_highColor(img: Image) -> bytes:
+def encode_highColor(img: Image.Image) -> bytes:
     stp_packed = get_chunk(img, 'stPd')
 
     if stp_packed is None:

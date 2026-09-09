@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt/lists \
     apt-get update && apt-get install -y --no-install-recommends \
     clang-format \
     g++ \
-    gcc-mipsel-linux-gnu \
+    binutils-mipsel-linux-gnu \
     git \
     make \
     python3 \

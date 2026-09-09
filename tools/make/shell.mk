@@ -19,7 +19,7 @@ RMFLAGS      ?= -Rf
 UNZIPFLAGS   ?= -jq
 WGETFLAGS    ?= $(if $(DEBUG),,-q)
 
-SYSDEPS       = $(CXX) $(PYTHON) $(CPP) $(FORMAT) $(UNZIP) $(WGET)
+SYSDEPS       = $(CXX) $(PYTHON) $(FORMAT) $(UNZIP) $(WGET)
 
 SHELL_RED    := \033[0;31m
 SHELL_GREEN  := \033[0;32m

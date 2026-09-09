@@ -54,9 +54,8 @@ static int _teleportMenu(int init)
             if (savePointState == 0) {
                 continue;
             }
-            menuStrings[2 * rowCount] =
-                (char*)(&_teleportationStrings[_teleportationStrings
-                        [i * 2 + VS_teleportation_INDEX_locations]]);
+            menuStrings[2 * rowCount] = (char*)(&_teleportationStrings
+                    [_teleportationStrings[i * 2 + VS_teleportation_INDEX_locations]]);
             menuStrings[(rowCount * 2) + 1] =
                 (char*)(&_teleportationStrings[_teleportationStrings
                         [i * 2 + VS_teleportation_INDEX_locations + 1]]);

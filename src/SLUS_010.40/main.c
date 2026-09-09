@@ -8717,7 +8717,7 @@ void vs_main_setVibrateParams(void)
 
         if (temp_t1 != 0) {
             for (i = 0; i < 2; ++i) {
-                int(*a1)[6] = (int(*)[6])_padAct[j].unk10;
+                int (*a1)[6] = (int (*)[6])_padAct[j].unk10;
                 if (a1[i][5] == 0) {
                     temp_a0 = a1[i][4];
                     a1[i][5] = temp_t1[temp_a0++];
@@ -10781,7 +10781,7 @@ void func_800472D0(int arg0, D_8005DC6C_t* arg1)
     int i;
 
     if (_clutState.active != 0) {
-        int(*temp_t6)[6] = _clutState.bgColors;
+        int (*temp_t6)[6] = _clutState.bgColors;
         for (i = 0; i < 5; ++i) {
             int r;
             int g;
@@ -10837,7 +10837,7 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     int var_t0;
     int var_t1;
     int i;
-    int(*p)[6] = _clutState.bgColors;
+    int (*p)[6] = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
         switch (arg0) {
@@ -11232,7 +11232,7 @@ void func_80047FFC(void)
     int new_var;
     int new_var2;
     int var_v1;
-    int(*t1)[6];
+    int (*t1)[6];
 
     if (_clutState.bgAnimActive == 0) {
         return;
@@ -11602,7 +11602,7 @@ void func_80048E68(u_short* srcClut, int slot, u_short rOffset, u_short gOffset,
 void func_80048EC4(void)
 {
     int i;
-    int(*bgColors)[6] = _clutState.bgColors;
+    int (*bgColors)[6] = _clutState.bgColors;
     int* var_v1 = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {

@@ -698,7 +698,7 @@ static void _assembleBladeMenuHeader(int arg0)
     arg0 &= 0xF;
     menuItem = vs_battle_setMenuItem(32, 16, 18, 164, 8,
         (char*)(&vs_mainMenu_menu12Text
-                    [vs_mainMenu_menu12Text[arg0 + VS_MENU12_BIN_INDEX_assemble]]));
+                [vs_mainMenu_menu12Text[arg0 + VS_MENU12_BIN_INDEX_assemble]]));
     menuItem->rowIcon = 24;
     menuItem->selected = 1;
     if (arg0 == 0) {

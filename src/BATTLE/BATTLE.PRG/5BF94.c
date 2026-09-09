@@ -504,7 +504,7 @@ char* vs_battle_printf(char* dest, char* src)
                         *dest++ = '0';
                     } else {
                         for (divisor = 0x10000000; (integer / divisor) == 0;
-                             divisor >>= 4)
+                            divisor >>= 4)
                             ;
                         while (divisor != 0) {
                             *dest++ = (integer / divisor) & 0xF;
@@ -536,7 +536,7 @@ char* vs_battle_printf(char* dest, char* src)
                         *dest++ = 0;
                     } else {
                         for (divisor = 1000000000; (integer / divisor) == 0;
-                             divisor /= 10)
+                            divisor /= 10)
                             ;
                         while (divisor != 0) {
                             *dest++ = (integer / divisor) % 10;
@@ -2106,7 +2106,7 @@ int func_800CACD0(int menuState, int arg1)
 
             for (i = 0; i < 3; ++i) {
                 for (var_a0 = D_800EBD68[i * 2]; var_a0 < D_800EBD68[i * 2 + 1];
-                     ++var_a0) {
+                    ++var_a0) {
                     if (vs_main_actions[var_a0].unlocked) {
                         var_a1 |= 1 << i;
                         break;

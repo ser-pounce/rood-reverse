@@ -735,8 +735,8 @@ static int _renameMenuInput(int initialize)
             vs_battle_rMemcpy(_nameBuffer,
                 vs_mainMenu_itemNames
                     + vs_main_inventory
-                          .blades[vs_main_inventory.weapons[weaponId].blade - 1]
-                          .id,
+                        .blades[vs_main_inventory.weapons[weaponId].blade - 1]
+                        .id,
                 0x18);
         }
 

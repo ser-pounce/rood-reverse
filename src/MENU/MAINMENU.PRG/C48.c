@@ -110,7 +110,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
                     ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i];
                 param = i;
             } else if (subMaxParam < ((vs_battle_uiWeapon*)(item))
-                                         ->classAffinityCurrent.class[1][i]) {
+                           ->classAffinityCurrent.class[1][i]) {
                 subMaxParam =
                     ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i];
             }
@@ -125,7 +125,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
                 param = i;
                 isAffinity = 1;
             } else if (subMaxParam < ((vs_battle_uiWeapon*)(item))
-                                         ->classAffinityCurrent.affinity[1][i]) {
+                           ->classAffinityCurrent.affinity[1][i]) {
                 subMaxParam =
                     ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
             }
@@ -142,7 +142,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
                     ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i];
                 param = i;
             } else if (subMaxParam < ((vs_battle_uiShield*)(item))
-                                         ->classAffinityCurrent.class[1][i]) {
+                           ->classAffinityCurrent.class[1][i]) {
                 subMaxParam =
                     ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i];
             }
@@ -157,7 +157,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
                 param = i;
                 isAffinity = 1;
             } else if (subMaxParam < ((vs_battle_uiShield*)(item))
-                                         ->classAffinityCurrent.affinity[1][i]) {
+                           ->classAffinityCurrent.affinity[1][i]) {
                 subMaxParam =
                     ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i];
             }
@@ -189,7 +189,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
                 param = i;
                 isAffinity = 1;
             } else if (subMaxParam < ((vs_battle_uiArmor*)(item))
-                                         ->classAffinityCurrent.affinity[1][i]) {
+                           ->classAffinityCurrent.affinity[1][i]) {
                 subMaxParam =
                     ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i];
             }

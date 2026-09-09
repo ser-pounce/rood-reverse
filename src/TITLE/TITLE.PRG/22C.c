@@ -727,7 +727,7 @@ static void _packageGameSaveData(int targetFile)
     }
     s5->checksums[1] = var_a0;
     for (i = (long)&((savedata_t*)0)->unk180.unk180.base.slotState;
-         i < (int)sizeof(savedata_t); ++i) {
+        i < (int)sizeof(savedata_t); ++i) {
         _spmcimg[i] += _keystreamBits(8);
     }
 }

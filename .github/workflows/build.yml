@@ -8,6 +8,10 @@ permissions:
   contents: read
   packages: read
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     if: github.repository == 'ser-pounce/rood-reverse'
@@ -24,7 +28,7 @@ jobs:
 
       - name: Build, verify, and detect missing formatting
         run: |
-          make commit-check -j8
+          make commit-check -j"$(nproc)" DISKIMAGE=/SLUS-01040.bin
           git diff --exit-code
 
       - name: Upload progress

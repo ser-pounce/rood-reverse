@@ -3222,7 +3222,16 @@ int _absMax3(int arg0, int arg1, int arg2)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFC48);
+int _absMax2(int arg0, int arg1) __attribute__((unused));
+int _absMax2(int arg0, int arg1)
+{
+    int abs0 = arg0 >= 0 ? arg0 : -arg0;
+
+    if (abs0 < (arg1 < 0 ? -arg1 : arg1)) {
+        return arg1;
+    }
+    return arg0;
+}
 
 int func_800CFC8C(int arg0, int arg1, int arg2, int arg3)
 {

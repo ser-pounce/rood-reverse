@@ -90,7 +90,22 @@ __asm__("glabel vs_battle_copyAligned;"
         "add       $a2, -2;"
         "endlabel vs_battle_copyAligned;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_memcpy);
+__asm__("glabel vs_battle_memcpy;"
+        "addu      $a2, $a1, $a2;"
+        ".L800C01E4:;"
+        "lh        $t0, ($a1);"
+        "lh        $t1, 2($a1);"
+        "lh        $t2, 4($a1);"
+        "lh        $t3, 6($a1);"
+        "addu      $a1, 8;"
+        "sh        $t0, ($a0);"
+        "sh        $t1, 2($a0);"
+        "sh        $t2, 4($a0);"
+        "sh        $t3, 6($a0);"
+        "bne       $a1, $a2, .L800C01E4;"
+        "addu      $a0, 8;"
+        "jr        $ra;"
+        "endlabel vs_battle_memcpy;");
 
 __asm__("glabel vs_battle_setSpriteDefault;"
         "lui      $v1, 0x1F80;"

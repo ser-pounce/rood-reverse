@@ -137,7 +137,20 @@ __asm__("glabel vs_battle_setSpriteDefault;"
         "sw         $t4, ($v1);"
         "endlabel vs_battle_setSprite;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02A8);
+__asm__("glabel func_800C02A8;"
+        "addu     $sp, -0x8;"
+        "sw       $ra, ($sp);"
+        "lui      $a0, 0x1F80;"
+        "jal      SetRotMatrix;"
+        "addu     $a0, 0x14;"
+        "lui      $a0, 0x1F80;"
+        "jal      SetTransMatrix;"
+        "addu     $a0, 0x14;"
+        "lw       $ra, ($sp);"
+        ".nop;"
+        "j        $ra;"
+        "addu     $sp, 0x8;"
+        "endlabel func_800C02A8;");
 
 __asm__("glabel vs_battle_playSfx10;"
         "j         .L800C02FC;"

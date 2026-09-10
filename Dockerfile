@@ -13,3 +13,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
     && rm -rf /var/lib/apt/lists/* \
     && git config --system --add safe.directory /github/workspace
+
+COPY disks/SLUS-01040.bin /SLUS-01040.bin

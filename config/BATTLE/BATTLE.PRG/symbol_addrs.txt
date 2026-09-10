@@ -873,6 +873,7 @@ func_800CF92C = 0x800CF92C; // type:func
 func_800CF988 = 0x800CF988; // type:func
 func_800CFB80 = 0x800CFB80; // type:func
 _absMax3 = 0x800CFBF8;
+_absMax2 = 0x800CFC48;
 _lerpVector = 0x800CFCF0;
 _lerpSvector = 0x800CFD60; // type:func
 _lerp2DVector = 0x800CFDD0; // type:func

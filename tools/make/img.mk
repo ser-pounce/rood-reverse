@@ -1,6 +1,6 @@
-.PRECIOUS: %.img.bin %.img.dat %.img.sym
+.PRECIOUS: %.img.bin %.img.sym
 
-%.img.bin %.img.dat %.img.sym &: %.img.png | $$(@D)/
+%.img.bin %.img.sym &: %.img.png | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.splat_ext.$(word 2,$(subst ., ,$(@F))) $< $(@D)/$(*F).img.bin
 

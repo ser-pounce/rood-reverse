@@ -1,20 +1,13 @@
+import argparse
 from pathlib import Path
 from typing import Any
 
+from PIL import Image
 from splat.segtypes.segment import Segment
 from splat.util import options
 
 
 class PSXSegImg(Segment):
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        if isinstance(kwargs['yaml'], dict) and 'width' in kwargs['yaml'] and 'height' in kwargs['yaml']:
-            self.width  = kwargs['yaml']['width']
-            self.height = kwargs['yaml']['height']
-        elif len(kwargs['yaml']) > 3:
-            self.width  = kwargs['yaml'][3]
-            self.height = kwargs['yaml'][4]
 
     def out_path(self) -> Path:
         type_extension = f'.{self.type}' if options.opts.image_type_in_extension else ''
@@ -25,28 +18,53 @@ class PSXSegImg(Segment):
         path.parent.mkdir(parents=True, exist_ok=True)
         return path
 
-    @property
-    def symbol_name(self) -> str:
-        """Symbol name derived from the segment name, stripping all extensions."""
-        return self.name.split('.')[0]
+    @staticmethod
+    def load_input_image(image_path: Path) -> Image.Image:
+        image = Image.open(image_path)
+        image.load()
+        return image
 
     @staticmethod
-    def write_image_files(
-        binary:        bytes,
-        output_path:   Path,
-        symbols:       list[tuple[str, int]],
-    ) -> None:
-        """
-        Write image data, the legacy textual representation, and symbol metadata.
+    def symbol_name_from_path(image_path: Path) -> str:
+        return image_path.name.split('.')[0]
 
-        Make uses the binary and symbol files to create the final object file.
-        """
-        output_path.write_bytes(binary)
+    @classmethod
+    def encode_to_binary(cls, image_path: Path) -> tuple[bytes, list[tuple[str, int]]]:
+        raise NotImplementedError
 
-        with output_path.with_suffix('.dat').open('w') as dat:
-            for byte in binary:
-                dat.write(f'0x{byte:02X},')
+    @classmethod
+    def run_encoder(cls) -> None:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('input', type=Path, help='Input PNG file')
+        parser.add_argument('output', type=Path, help='Output binary file')
+        args = parser.parse_args()
 
-        with output_path.with_suffix('.sym').open('w') as symbol_file:
+        binary, symbols = cls.encode_to_binary(args.input)
+        args.output.write_bytes(binary)
+
+        with args.output.with_suffix('.sym').open('w') as symbol_file:
             for name, offset in symbols:
                 symbol_file.write(f'{name} {offset}\n')
+
+
+
+class PSXSegSizedImg(PSXSegImg):
+
+    width:  int
+    height: int
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        yaml = kwargs['yaml']
+
+        if isinstance(yaml, dict):
+            self.width  = int(yaml.get('width', 0))
+            self.height = int(yaml.get('height', 0))
+        elif isinstance(yaml, (list, tuple)) and len(yaml) > 4:
+            self.width  = int(yaml[3])
+            self.height = int(yaml[4])
+
+        if self.width == 0 or self.height == 0:
+            raise ValueError(
+                f'{self.__class__.__name__} requires width and height'
+            )

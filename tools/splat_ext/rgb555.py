@@ -1,4 +1,3 @@
-import argparse
 from pathlib import Path
 
 from kaitaistruct import KaitaiStream, BytesIO
@@ -6,9 +5,10 @@ from PIL import Image
 
 from tools.kaitai.parsers.lib.img import Img
 from tools.libdata.img import encode_rgb555
-from tools.splat_ext.img import PSXSegImg
+from tools.splat_ext.img import PSXSegSizedImg
 
-class PSXSegRgba16(PSXSegImg):
+
+class PSXSegRgb555(PSXSegSizedImg):
 
     def split(self, rom_bytes: bytes) -> None:
         data = rom_bytes[self.rom_start : self.rom_end]
@@ -23,21 +23,13 @@ class PSXSegRgba16(PSXSegImg):
         img = Image.frombytes('RGB', (self.width, self.height), pixels)
         img.save(self.make_path())
 
+    @classmethod
+    def encode_to_binary(cls, image_path: Path) -> tuple[bytes, list[tuple[str, int]]]:
+        img = PSXSegRgb555.load_input_image(image_path)
+        data = encode_rgb555(img.tobytes(), False)
+        symbol_name = PSXSegRgb555.symbol_name_from_path(image_path)
+        return data, [(symbol_name, 0)]
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input',  type=Path, help='Input PNG file')
-    parser.add_argument('output', type=Path, help='Output binary file')
-    args = parser.parse_args()
-
-    img = Image.open(args.input)
-    img.load()
-
-    data = encode_rgb555(img.tobytes(), False)
-    symbol_name = args.input.name.split('.')[0]
-    
-    PSXSegRgba16.write_image_files(
-        data,
-        args.output,
-        [(symbol_name, 0)],
-    )
+    PSXSegRgb555.run_encoder()

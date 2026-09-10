@@ -3,13 +3,13 @@ $(BUILD)/data/TITLE/TITLE.PRG: LDLIBS += $(BUILD)/data/SLUS_010.40.elf
 $(BUILD)/data/TITLE/TITLE.PRG $(BUILD)/data/TITLE/TITLE.PRG.elf: LDSCRIPT := link.ld
 
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CPPFLAGS += -D MENUBGSZ=$(strip \
-	$(shell $(SIZE) $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rgba16Compressed.img.o | cut -f2 | tail -n 1)\
+	$(shell $(SIZE) $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rleRgb555.img.o | cut -f2 | tail -n 1)\
 )
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1FLAGS += -Wno-uninitialized
-$(BUILD)/src/TITLE/TITLE.PRG/22C.o: ASFLAGS += -no-pad-sections
+$(BUILD)/src/TITLE/TITLE.PRG/22C.o $(BUILD)/src/TITLE/TITLE.PRG/titleData.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/TITLE/TITLE.PRG/22C.o: CC1VER := 2.8.1-psx
 
 $(BUILD)/config/TITLE/TITLE.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt
 
-$(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rgba16Compressed.img.o
+$(BUILD)/src/TITLE/TITLE.PRG/22C.o: $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rleRgb555.img.o

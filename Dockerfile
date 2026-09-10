@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 FROM ubuntu
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -12,6 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         wget \
     && rm -rf /var/lib/apt/lists/* \
-    && git config --system --add safe.directory /github/workspace
+    && git config --system --add safe.directory '*'
 
 COPY disks/SLUS-01040.bin /SLUS-01040.bin

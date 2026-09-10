@@ -18,4 +18,3 @@ $(BINTARGETS:=.elf): | $$(@D)/
 $(BINTARGETS:=.elf):
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
-	$(OBJCOPY) $@

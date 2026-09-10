@@ -11,7 +11,7 @@ permissions:
 jobs:
   build:
     if: github.repository == 'ser-pounce/rood-reverse'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container:
       image: ghcr.io/ser-pounce/rood-reverse:main
       credentials:
@@ -21,12 +21,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
-      - name: Initialize
-        run: |
-          mkdir -p disks
-          cp /SLUS-01040.bin disks/SLUS-01040.bin
-          git config --global --add safe.directory '*'
 
       - name: Build, verify, and detect missing formatting
         run: |

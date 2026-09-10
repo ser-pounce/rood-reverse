@@ -96,8 +96,7 @@ def encode(image_path: Path) -> tuple[bytes, bytes, bool]:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('input',  type=Path, help='Input PNG file')
-    parser.add_argument('output', type=Path, help='Output file')
-    parser.add_argument('--dat',  action='store_true', help='Write a .dat text file instead of a .o object file')
+    parser.add_argument('output', type=Path, help='Output binary file')
     args = parser.parse_args()
 
     pixel_bytes, raw_clut, cluts_after = encode(args.input)
@@ -113,11 +112,4 @@ if __name__ == '__main__':
     binary = first + second
     symbols = [(first_name, 0), (second_name, len(first))]
 
-    if args.dat:
-        with open(args.output, 'w') as h:
-            for byte in binary:
-                h.write(f'0x{byte:02X},')
-    else:
-        PSXSegRgbClut.write_object_file(
-            binary, args.output, symbols, *PSXSegRgbClut.objcopy_from_env(),
-        )
+    PSXSegRgbClut.write_image_files(binary, args.output, symbols)

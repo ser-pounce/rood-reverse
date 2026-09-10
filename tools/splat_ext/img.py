@@ -1,7 +1,3 @@
-import os
-import shlex
-import subprocess
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -35,34 +31,22 @@ class PSXSegImg(Segment):
         return self.name.split('.')[0]
 
     @staticmethod
-    def objcopy_from_env() -> tuple[str, list[str]]:
-        """Read OBJCOPY and OBJCOPYFLAGS from the environment."""
-        objcopy       = os.environ.get('OBJCOPY', 'objcopy')
-        objcopy_flags = shlex.split(os.environ.get('OBJCOPYFLAGS', ''))
-        return objcopy, objcopy_flags
-
-    @staticmethod
-    def write_object_file(
+    def write_image_files(
         binary:        bytes,
         output_path:   Path,
         symbols:       list[tuple[str, int]],
-        objcopy:       str,
-        objcopy_flags: list[str],
     ) -> None:
         """
-        Write a linkable .o file from a binary blob with named symbols at given offsets.
+        Write image data, the legacy textual representation, and symbol metadata.
 
-        Uses a temporary file since objcopy cannot read from stdin.
-        objcopy and objcopy_flags are typically sourced from the environment
-        via objcopy_from_env(), which reads OBJCOPY and OBJCOPYFLAGS exported
-        from the Makefile.
+        Make uses the binary and symbol files to create the final object file.
         """
-        symbol_args = [arg for name, offset in symbols
-                           for arg in ('--add-symbol', f'{name}=.data:{offset}')]
-        with tempfile.NamedTemporaryFile(delete=True) as tmp:
-            tmp.write(binary)
-            tmp.flush()
-            subprocess.run(
-                [objcopy, *objcopy_flags, *symbol_args, tmp.name, str(output_path)],
-                check=True,
-            )
+        output_path.write_bytes(binary)
+
+        with output_path.with_suffix('.dat').open('w') as dat:
+            for byte in binary:
+                dat.write(f'0x{byte:02X},')
+
+        with output_path.with_suffix('.sym').open('w') as symbol_file:
+            for name, offset in symbols:
+                symbol_file.write(f'{name} {offset}\n')

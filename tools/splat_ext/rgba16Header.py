@@ -24,7 +24,7 @@ class PSXSegRgba16Header(PSXSegImg):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('input',  type=Path, help='Input PNG file')
-    parser.add_argument('output', type=Path, help='Output file')
+    parser.add_argument('output', type=Path, help='Output binary file')
     args = parser.parse_args()
 
     img = Image.open(args.input)
@@ -33,10 +33,9 @@ if __name__ == '__main__':
     data = struct.pack('<HH', img.width, img.height) + encode_highColor(img)
     symbol_name = args.input.name.split('.')[0]
     
-    PSXSegRgba16Header.write_object_file(
+    PSXSegRgba16Header.write_image_files(
         data,
         args.output,
         [(f'{symbol_name}_header', 0),
             (f'{symbol_name}_data',   HEADER_SIZE)],
-        *PSXSegRgba16Header.objcopy_from_env(),
     )

@@ -1,4 +1,5 @@
 import struct
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -108,7 +109,7 @@ def pack_4bpp(data: bytes) -> bytes:
     return bytes(packed)
 
 
-def encode_rgb555(colors: list[int], stp: bool = True) -> bytes:
+def encode_rgb555(colors: Sequence[int], stp: bool = True) -> bytes:
     words = [
         ((b >> 3) << 10) | ((g >> 3) << 5) | (r >> 3) | (stp << 15)
         for r, g, b in zip(*[iter(colors)] * 3)

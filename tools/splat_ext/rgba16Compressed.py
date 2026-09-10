@@ -31,7 +31,7 @@ class PSXSegRgba16Compressed(PSXSegImg):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('input',  type=Path, help='Input PNG file')
-    parser.add_argument('output', type=Path, help='Output file')
+    parser.add_argument('output', type=Path, help='Output binary file')
     args = parser.parse_args()
 
     img = Image.open(args.input)
@@ -40,9 +40,8 @@ if __name__ == '__main__':
     data = rle_compress(encode_highColor(img), fill_value=TRANSPARENT_WORD)
     symbol_name = args.input.name.split('.')[0]
 
-    PSXSegRgba16Compressed.write_object_file(
+    PSXSegRgba16Compressed.write_image_files(
         data,
         args.output,
         [(symbol_name, 0)],
-        *PSXSegRgba16Compressed.objcopy_from_env(),
     )

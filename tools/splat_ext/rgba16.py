@@ -27,7 +27,7 @@ class PSXSegRgba16(PSXSegImg):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('input',  type=Path, help='Input PNG file')
-    parser.add_argument('output', type=Path, help='Output file')
+    parser.add_argument('output', type=Path, help='Output binary file')
     args = parser.parse_args()
 
     img = Image.open(args.input)
@@ -36,9 +36,8 @@ if __name__ == '__main__':
     data = encode_rgb555(img.tobytes(), False)
     symbol_name = args.input.name.split('.')[0]
     
-    PSXSegRgba16.write_object_file(
+    PSXSegRgba16.write_image_files(
         data,
         args.output,
         [(symbol_name, 0)],
-        *PSXSegRgba16.objcopy_from_env(),
     )

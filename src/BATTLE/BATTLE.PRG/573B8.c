@@ -5,6 +5,7 @@
 #include "../SLUS_010.40/main.h"
 
 extern u_char D_800E9C30[];
+extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
 
@@ -41,9 +42,23 @@ typedef struct {
 extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800EB9AC;
 
+extern void func_8007D260(int);
+extern void func_800BBDDC(void);
+
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFD9C);
+void func_800BFD9C(void)
+{
+    int i;
+
+    for (i = 0; i < 17; i++) {
+        if (D_800F4B70[i] != 0) {
+            func_8007D260(i);
+        }
+    }
+
+    func_800BBDDC();
+}
 
 short vs_battle_getShort(u_char* arg0)
 {

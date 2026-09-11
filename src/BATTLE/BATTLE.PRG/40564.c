@@ -775,8 +775,23 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 void func_800AC690(int arg0, D_800F45E0_t* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
 
-void func_800ACF54(D_800F45E0_t*);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800ACF54);
+typedef struct {
+    int unk0;
+    int unk4;
+} func_800ACF54_t;
+
+void func_800ACF54(D_800F45E0_t* arg0)
+{
+
+    arg0->unk60 = *(int*)&arg0->unk5C;
+    *(func_800ACF54_t*)&arg0->unk4C = *(func_800ACF54_t*)&arg0->unk1C;
+
+    if (!(arg0->unkC_0)) {
+        arg0->unk1868 = *(int*)&arg0->unk5C;
+    }
+
+    arg0->unk52 = arg0->unk26;
+}
 
 void func_800ACFA0(short* arg0, u_char* arg1, int arg2)
 {

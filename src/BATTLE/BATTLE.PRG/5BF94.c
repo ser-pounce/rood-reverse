@@ -276,22 +276,16 @@ typedef struct {
 } func_800D1E2C_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
+    VECTOR position;
+    VECTOR lookAt;
     int unk20;
     int unk24;
     int unk28;
     int unk2C;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3C;
+    int roll;
+    int nearClip;
+    int projectionDistance;
+    int farClip;
 } D_800F54D8_t;
 
 void _renderDigit(int, int, int, u_long*);
@@ -3492,7 +3486,15 @@ void func_800D1930(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D197C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1B18);
+void func_800D1B18(D_800F54D8_t* arg0)
+{
+    vs_battle_getCameraPosition(&arg0->position);
+    vs_battle_getCameraLookAt(&arg0->lookAt);
+    arg0->roll = vs_battle_getCameraRoll() + ONE * 8;
+    arg0->nearClip = vs_main_nearClip;
+    arg0->projectionDistance = vs_main_projectionDistance;
+    arg0->farClip = vs_scratch.camera.farClip;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1B80);
 

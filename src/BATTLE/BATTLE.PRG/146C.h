@@ -922,6 +922,7 @@ int func_8006C84C(int);
 void func_8006CDD8(func_8006CE70_t*);
 void func_8006CE50(void);
 void func_8006CE70(func_8006CE70_t*);
+int vs_battle_getCameraRoll(void);
 
 /**
  * Retrieves room ID, only used for teleporting.

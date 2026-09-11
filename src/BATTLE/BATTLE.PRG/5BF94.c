@@ -270,6 +270,25 @@ typedef struct {
     u_char unk2;
 } func_800D1E2C_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3C;
+} D_800F54D8_t;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
@@ -293,7 +312,7 @@ void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D169C(int, int, int, int);
 void func_800D17A8(int, int, int, int);
-void func_800D1B18(int*);
+void func_800D1B18(D_800F54D8_t*);
 int func_800D12D8(int);
 void func_800D2560(void);
 void func_800D268C(void);
@@ -401,11 +420,12 @@ extern D_800F53B8_t* D_800F53BC;
 extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
-extern int D_800F54D8;
+extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
 extern D_800F53B8_t3 D_800F5234;
 extern char D_800F5518;
-extern int D_800F55A8;
+extern D_800F54D8_t D_800F5520;
+extern D_800F54D8_t D_800F55A8;
 extern int D_800F55E8;
 extern int D_800F5600;
 extern int D_800F5610;
@@ -3483,7 +3503,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D21C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D236C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2518);
+void func_800D2518(void) { D_800F54D8 = D_800F5520; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2560);
 

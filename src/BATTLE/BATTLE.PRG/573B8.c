@@ -92,7 +92,7 @@ __asm__("glabel vs_battle_copyAligned;"
 
 __asm__("glabel vs_battle_memcpy;"
         "addu      $a2, $a1, $a2;"
-        ".L800C01E4:;"
+        "0:;"
         "lh        $t0, ($a1);"
         "lh        $t1, 2($a1);"
         "lh        $t2, 4($a1);"

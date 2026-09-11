@@ -3438,7 +3438,10 @@ int vs_battle_lerp(int arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D169C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1718);
+void func_800D1718(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    func_800D169C(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2), arg4);
+}
 
 void func_800D1778(int arg0, int arg1, int arg2, int arg3, int arg4)
 {

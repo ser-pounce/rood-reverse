@@ -16,11 +16,18 @@ typedef struct {
     short unk4;
 } func_800A3054_t;
 
+typedef struct {
+    int unk0;
+    short unk4;
+    short unk6;
+} func_8008D2C0_t;
+
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
 void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
+int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(u_char, u_char, short, u_int);
 short func_8008DC7C(int, int);
@@ -141,7 +148,23 @@ void func_800A4828(int arg0, MATRIX* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A24);
+func_8008D2C0_t* func_800A4A24(int arg0)
+{
+    func_8008D2C0_t sp10[4];
+    int temp_v0;
+    int i;
+    arg0 -= 2;
+
+    temp_v0 = func_8008D2C0(sp10);
+
+    for (i = 0; i < temp_v0; ++i) {
+        if (sp10[i].unk6 == arg0) {
+            // BUG: returns stack variable
+            return &sp10[i];
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A88);
 

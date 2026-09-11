@@ -264,6 +264,12 @@ typedef struct {
     u_short unk4;
 } func_800D5D74_t;
 
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+} func_800D1E2C_t;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
@@ -3453,7 +3459,17 @@ void func_800D1DFC(int arg0)
 
 void func_800D1E20(int arg0) { D_800F55E8 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E2C);
+u_char func_800D1E2C(func_800D1E2C_t* arg0)
+{
+    int var_v0;
+
+    if (arg0->unk1 & 0x20) {
+        var_v0 = func_800D118C(arg0->unk2, arg0->unk0);
+    } else {
+        var_v0 = arg0->unk2;
+    }
+    return var_v0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E78);
 

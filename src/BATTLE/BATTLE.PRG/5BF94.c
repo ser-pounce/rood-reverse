@@ -3589,7 +3589,7 @@ void func_800D2888(func_800D2904_t* arg0, D_800F53B8_t* arg1)
     if (arg0->previous != NULL) {
         arg0->previous->next = arg0->next;
     } else {
-        arg1->unk18 = (func_800D2904_t*)arg0->next;
+        arg1->unk18 = arg0->next;
     }
 
     arg0->next = D_800F55F4;

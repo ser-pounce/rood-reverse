@@ -1,8 +1,8 @@
 #include "common.h"
-#include "build/src/include/lbas.h"
 #include "146C.h"
 #include "573B8.h"
-#include "../SLUS_010.40/main.h"
+#include "src/SLUS_010.40/main.h"
+#include "build/src/include/lbas.h"
 
 extern u_char D_800E9C30[];
 extern unsigned char D_800F4B70[17];
@@ -43,6 +43,7 @@ extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800EB9AC;
 
 extern void func_8007D260(int);
+void func_800A0204(int, int, int, int);
 extern void func_800BBDDC(void);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
@@ -92,7 +93,16 @@ void func_800C00E8(int arg0, void* arg1)
     vs_main_cdEnqueue(D_800F4BBC, arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0150);
+void func_800C0150(void)
+{
+    short i;
+
+    for (i = 0; i < 17; ++i) {
+        if (func_8007CF64(i) != NULL) {
+            func_800A0204(i, 1, 0, 0);
+        }
+    }
+}
 
 __asm__("glabel vs_battle_copyAligned;"
         "and       $t0, $a2, 0x7;"

@@ -102,7 +102,7 @@ __asm__("glabel vs_battle_memcpy;"
         "sh        $t1, 2($a0);"
         "sh        $t2, 4($a0);"
         "sh        $t3, 6($a0);"
-        "bne       $a1, $a2, .L800C01E4;"
+        "bne       $a1, $a2, 0b;"
         "addu      $a0, 8;"
         "jr        $ra;"
         "endlabel vs_battle_memcpy;");

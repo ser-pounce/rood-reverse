@@ -317,7 +317,7 @@ void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D169C(int, int, int, int);
-void func_800D17A8(int, int, int, int);
+void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
 void func_800D1B18(D_800F54D8_t*);
 int func_800D12D8(int);
 void func_800D2560(void);
@@ -3456,14 +3456,19 @@ void func_800D1778(int arg0, int arg1, int arg2, int arg3, int arg4)
     func_800D169C(arg0, arg1, (arg3 * (ONE * 2)) / arg2, arg4);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D17A8);
+void func_800D17A8(VECTOR* arg0, VECTOR* arg1, int arg2, VECTOR* arg3)
+{
+    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+}
 
-void func_800D1824(int arg0, int arg1, int arg2, int arg3, int arg4)
+void func_800D1824(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
 {
     func_800D17A8(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2), arg4);
 }
 
-void func_800D1884(int arg0, int arg1, int arg2, int arg3, int arg4)
+void func_800D1884(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
 {
     func_800D17A8(arg0, arg1, (arg3 * (ONE * 2)) / arg2, arg4);
 }

@@ -1,4 +1,3 @@
-cffi
 kaitaistruct
 numpy
 pandas

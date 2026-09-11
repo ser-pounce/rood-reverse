@@ -80,7 +80,20 @@ void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A30A0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3310);
+int func_800A3310(int arg0, SVECTOR* arg1)
+{
+    int i;
+
+    for (i = 2; i < arg0; ++i) {
+        D_800F4538_t* temp_a2 = D_800F4538[i];
+        if (temp_a2 != NULL && temp_a2->unk0.unkA_5
+            && *(int*)&temp_a2->unk0.position == *(int*)arg1
+            && temp_a2->unk0.position.vz == arg1->vz) {
+            return i;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3394);
 

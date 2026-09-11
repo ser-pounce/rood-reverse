@@ -128,7 +128,7 @@ typedef struct {
 } func_800CE714_t2_2;
 
 typedef struct func_800D2904_t {
-    int unk0;
+    struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
 } func_800D2904_t;
 
@@ -3580,7 +3580,23 @@ void func_800D278C(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D27F0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2888);
+void func_800D2888(func_800D2904_t* arg0, D_800F53B8_t* arg1)
+{
+    if (arg0->next != NULL) {
+        arg0->next->previous = arg0->previous;
+    }
+
+    if (arg0->previous != NULL) {
+        arg0->previous->next = arg0->next;
+    } else {
+        arg1->unk18 = (func_800D2904_t*)arg0->next;
+    }
+
+    arg0->next = D_800F55F4;
+    D_800F55F4 = arg0;
+    --D_800F55F8;
+    --arg1->unk8;
+}
 
 void func_800D2904(D_800F53B8_t* arg0)
 {

@@ -288,6 +288,13 @@ typedef struct {
     int farClip;
 } D_800F54D8_t;
 
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+} func_800D1E78_t;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
@@ -3523,7 +3530,22 @@ u_char func_800D1E2C(func_800D1E2C_t* arg0)
     return var_v0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1E78);
+u_char func_800D1E78(func_800D1E78_t* arg0)
+{
+    int var_s0;
+
+    if (arg0->unk1 & 0x40) {
+        var_s0 = func_800D118C(arg0->unk3, arg0->unk0);
+    } else {
+        var_s0 = arg0->unk3;
+    }
+
+    if (var_s0 == 0) {
+        return 0;
+    }
+
+    return (rand() % var_s0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1EF0);
 

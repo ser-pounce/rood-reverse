@@ -1,14 +1,41 @@
 #include "common.h"
+#include <libcd.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdStatus);
+int CD_init(void);
+void CD_initintr(void);
+int CD_initvol(void);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdMode);
+extern u_char D_80032208;
+extern CdlLOC D_80032214;
+extern u_char D_80032218;
+extern u_char D_80032219;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdLastCom);
+int CdStatus(void) { return D_80032208; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdLastPos);
+int CdMode(void) { return D_80032218; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdReset);
+int CdLastCom(void) { return D_80032219; }
+
+CdlLOC* CdLastPos(void) { return &D_80032214; }
+
+int CdReset(int mode)
+{
+    if (mode == 2) {
+        CD_initintr();
+        return 1;
+    }
+
+    if (CD_init() != 0) {
+        return 0;
+    }
+
+    if (mode == 1) {
+        if (CD_initvol() != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdFlush);
 

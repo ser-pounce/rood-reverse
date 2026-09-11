@@ -420,11 +420,14 @@ extern D_800F53B8_t* D_800F53BC;
 extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
+extern u_char D_800F54B8[];
+extern short D_800F54D0;
 extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
 extern D_800F53B8_t3 D_800F5234;
 extern char D_800F5518;
 extern D_800F54D8_t D_800F5520;
+extern short D_800F55A0;
 extern D_800F54D8_t D_800F55A8;
 extern int D_800F55E8;
 extern int D_800F5600;
@@ -3461,7 +3464,18 @@ void func_800D1904(int arg0, int arg1, int arg2, int arg3)
     vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1930);
+void func_800D1930(void)
+{
+    int i;
+    D_800F5518 = 0;
+    D_800F55E8 = 0;
+    D_800F54D0 = 0;
+    D_800F55A0 = 0;
+
+    for (i = 0; i < 4; ++i) {
+        D_800F54B8[i * 6] = 0xFF;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D197C);
 

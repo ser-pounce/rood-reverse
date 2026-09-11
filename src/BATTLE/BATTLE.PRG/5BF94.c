@@ -3409,7 +3409,15 @@ void func_800D0C60(int arg0, func_800D0C60_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1104);
+void func_800D1104(int arg0)
+{
+    int i;
+    func_800D0B30_t1* temp_a2 = D_800F569C->unk8C;
+
+    for (i = 0; i < temp_a2->unk0; ++i) {
+        D_800F5330[i + 1] = D_800F569C->unkC[i][arg0 % temp_a2->unk4[i]];
+    }
+}
 
 int func_800D118C(int arg0, int arg1)
 {

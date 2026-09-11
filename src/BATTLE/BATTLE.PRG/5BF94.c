@@ -207,7 +207,7 @@ typedef struct {
     D_800F569C_t2* unkB4;
     int unkB8;
     int unkBC;
-    int unkC0;
+    u_char* unkC0;
     int unkC4;
     int unkC8;
     int unkCC;
@@ -3426,7 +3426,22 @@ int func_800D118C(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D11F4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D12D8);
+int func_800D12D8(int arg0)
+{
+    u_char* table = D_800F569C->unkC0;
+    int sum = 0;
+
+    if (arg0 < *(int*)table) {
+        int off = ((short*)table)[arg0 + 2];
+        off += table[off];
+        while (table[off] != 0) {
+            sum += table[off];
+            off += 2;
+        }
+        sum += 1;
+    }
+    return sum;
+}
 
 int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
 {

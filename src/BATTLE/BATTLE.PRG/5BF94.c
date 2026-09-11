@@ -3559,7 +3559,17 @@ u_char func_800D1E78(func_800D1E78_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1EF0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1FEC);
+void func_800D1FEC(int arg0)
+{
+    int i;
+
+    for (i = 0; i < 4; ++i) {
+        if ((arg0 >> i) & 1) {
+            D_800F54B8[i * 6] = 0xFF;
+            func_800D1DFC(1 << i);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D206C);
 

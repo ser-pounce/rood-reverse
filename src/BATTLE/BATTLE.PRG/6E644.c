@@ -48,7 +48,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7CFC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7EF4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7FB4);
+extern u_short D_800F5688[2];
+
+void func_800D7FB4(int arg0, int arg1)
+{
+    D_800F5688[0] = arg0;
+    D_800F5688[1] = arg1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7FC8);
 

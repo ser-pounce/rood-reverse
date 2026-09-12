@@ -58,7 +58,22 @@ void func_800A2C48(D_800F4538_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2CD4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2FBC);
+void func_800A2FBC(D_800F4538_t* arg0)
+{
+    int temp_a1 = arg0->unk0.unk34.vx / arg0->unk5CA;
+    arg0->unk0.unk34.vx -= temp_a1;
+    arg0->unk0.position.vx += temp_a1;
+
+    temp_a1 = arg0->unk0.unk34.vy / arg0->unk5CA;
+    arg0->unk0.unk34.vy -= temp_a1;
+    arg0->unk0.position.vy += temp_a1;
+
+    temp_a1 = arg0->unk0.unk34.vz / arg0->unk5CA;
+    arg0->unk0.unk34.vz -= temp_a1;
+    arg0->unk0.position.vz += temp_a1;
+
+    --arg0->unk5CA;
+}
 
 void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
 {

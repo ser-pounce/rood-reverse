@@ -22,20 +22,32 @@ typedef struct {
     u_short unk4;
 } func_800E5A74_t;
 
+typedef struct {
+    int unk0;
+    _loadFileContext loadContexts[8];
+    u_short unk24[8];
+    u_short unk34[8];
+} D_800F5638_t;
+
+void func_8007DFF0(int, int, int);
 void func_8007E180(int);
+void func_800D8038(int);
 void func_800D8054(int);
 
-extern int D_800F5638;
+extern int D_800F5630;
+extern D_800F5638_t D_800F5638;
 extern void* _effBuf;
-extern int D_800F5680;
+extern u_int D_800F5680;
 extern int D_800F5684;
 extern _loadFileContext _loadEffContext;
 extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
 extern u_int D_800F5690;
 extern _loadFileContext D_800F5694;
+extern u_long* D_800F56A0;
 extern int D_800F56A4;
 extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
+extern int D_800F5874;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
 
@@ -117,7 +129,76 @@ void func_800D7BF8(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7C5C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7CFC);
+int func_800D7CFC(void)
+{
+    int _[16] __attribute__((unused));
+    RECT sp50;
+    int temp_s0;
+    u_int temp_s1;
+    int var_s0;
+    void* temp_v0_3;
+
+    if ((D_800F5680 == 0) && (D_800F5638.unk0 != 0)) {
+        D_800F5630 = 0;
+        func_800D8038(1);
+    }
+
+    temp_s1 = D_800F5680;
+
+    switch (temp_s1) {
+    case 1:
+        if (D_800F56A0 == NULL) {
+            // FBT sizes are all equal
+            D_800F56A0 = vs_main_allocHeapR(VS_E000_0_FBT_SIZE);
+        }
+
+        var_s0 = _loadfile(D_800F5638.loadContexts[D_800F5630].lba + VS_E000_P_LBA,
+            D_800F5638.loadContexts[D_800F5630].size, D_800F56A0);
+
+        if (var_s0 == 0) {
+            temp_v0_3 = (D_800F5630 * 2) + &D_800F5638;
+            temp_s0 = D_800F5638.unk24[D_800F5630];
+
+            if (D_800F5638.unk34[D_800F5630] == 0) {
+                temp_s0 += 0x18;
+                func_8007DFF0(temp_s0, 1, 2);
+                D_800F5874 |= temp_s1 << temp_s0;
+                sp50.x = (temp_s0 - (temp_s0 / 16 * 16)) << 6;
+                sp50.y = temp_s0 / 16 << 8;
+                sp50.w = 0x40;
+                sp50.h = 0x100;
+                LoadImage(&sp50, D_800F56A0);
+            } else {
+                sp50.x = 0x300;
+                sp50.y = temp_s0 + 0xF0;
+                sp50.w = 0x100;
+                sp50.h = 5 - temp_s0;
+                LoadImage(&sp50, D_800F56A0);
+            }
+
+            ++D_800F5630;
+
+            if (D_800F5638.unk0 == D_800F5630) {
+                func_800D8038(2);
+            }
+
+            var_s0 = 1;
+        }
+        break;
+
+    case 2:
+        if (D_800F56A0 != NULL) {
+            vs_main_freeHeapR(D_800F56A0);
+            D_800F56A0 = NULL;
+        }
+        /* fallthrough */
+
+    case 0:
+        var_s0 = 0;
+        break;
+    }
+    return var_s0;
+}
 
 int func_800D7EF4(void)
 {
@@ -167,7 +248,7 @@ void func_800D7FE4(int (*arg0)(struct func_800D4910_t*, int, int), int arg1)
     D_800F56A8[arg1] = arg0;
 }
 
-void func_800D7FFC(int arg0) { D_800F5638 = arg0; }
+void func_800D7FFC(int arg0) { D_800F5638.unk0 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8008);
 
@@ -179,7 +260,7 @@ void func_800D8054(int arg0) { D_800F5690 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8060);
 
-int func_800D8200(void) { return 0x14C08; }
+int vs_battle_getMainMenuLba(void) { return VS_MAINMENU_PRG_LBA; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D820C);
 

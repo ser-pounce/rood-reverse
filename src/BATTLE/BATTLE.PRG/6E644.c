@@ -3,16 +3,21 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 
+typedef struct {
+    u_short lba;
+    u_short size;
+} _loadFileContext;
+
 void func_8007E180(int);
+void func_800D8054(int);
 
 extern void* _effBuf;
 extern int D_800F5684;
-extern struct {
-    u_short lba;
-    u_short size;
-} _loadEffContext;
+extern _loadFileContext _loadEffContext;
 extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
+extern u_int D_800F5690;
+extern _loadFileContext D_800F5694;
 
 extern int D_800F5638;
 
@@ -98,7 +103,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7C5C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7CFC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7EF4);
+int func_800D7EF4(void)
+{
+    int _[16];
+    int ret;
+    u_int temp_s0 = D_800F5690;
+
+    switch (temp_s0) {
+    case 1:
+        if (D_800F5684 == 0) {
+            func_8007E180(2);
+            D_800F5684 = temp_s0;
+        }
+        // Fallthrough
+
+    case 2:
+        ret = _loadfile(D_800F5694.lba + VS_E000_P_LBA, D_800F5694.size, vs_overlay_slots[3]);
+        if (ret == 0) {
+            func_800D8054(3);
+        }
+        break;
+    case 0:
+    case 3:
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
 
 extern u_short D_800F5688[2];
 

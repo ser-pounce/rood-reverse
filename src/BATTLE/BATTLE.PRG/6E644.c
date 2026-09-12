@@ -1,4 +1,7 @@
 #include "common.h"
+#include "src/SLUS_010.40/main.h"
+
+extern vs_main_CdQueueSlot* D_800F568C;
 
 extern int D_800F5638;
 
@@ -38,7 +41,26 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AC4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AEC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7B24);
+int func_800D7B24(int lba, int size, void* buf)
+{
+    vs_main_CdFile cdFile;
+
+    if (D_800F568C == NULL) {
+        cdFile.lba = lba;
+        cdFile.size = size;
+        D_800F568C = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(D_800F568C, buf);
+        return 1;
+    }
+
+    if (D_800F568C->state == 4) {
+        vs_main_freeCdQueueSlot(D_800F568C);
+        D_800F568C = NULL;
+        return 0;
+    }
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7BA4);
 

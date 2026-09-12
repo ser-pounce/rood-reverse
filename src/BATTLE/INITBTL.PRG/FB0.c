@@ -1,5 +1,5 @@
 #include "src/BATTLE/BATTLE.PRG/146C.h"
-#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include <libgte.h>
 

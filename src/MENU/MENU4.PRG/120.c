@@ -1,7 +1,7 @@
 #include "120.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
-#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/58578.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"

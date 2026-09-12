@@ -197,7 +197,9 @@ typedef struct {
 } func_800D0B30_t1;
 
 typedef struct {
-    char unk0[0xC];
+    int unk0;
+    int unk4;
+    u_char* unk8;
     u_char* unkC[4];
     char unk1C[0x70];
     func_800D0B30_t1* unk8C;
@@ -394,6 +396,7 @@ extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
 extern int (*D_800EC324[])(struct func_800D4910_t*, int, int);
 extern char D_800EC32C[];
+extern u_char D_800EC330[][2][4];
 extern int (*D_800EC3F4[])(void*);
 extern u_char D_800F522C;
 extern char D_800F4CB8;
@@ -3884,8 +3887,19 @@ int func_800D4EC0(D_800F53B8_t* arg0)
 int func_800D4F00(D_800F53B8_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4F00);
 
-int func_800D4FB4(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4FB4);
+int func_800D4FB4(D_800F53B8_t* arg0)
+{
+    int i;
+
+    for (i = 0; i < 2; ++i) {
+        u_char* temp_v1 = &D_800F569C->unk8[i * 204 + 4];
+        temp_v1[0xC4] = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
+        temp_v1[0xC5] = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
+        temp_v1[0xC6] = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
+    }
+
+    return 1;
+}
 
 int func_800D5048(D_800F53B8_t* arg0)
 {

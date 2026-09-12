@@ -1295,3 +1295,6 @@ vs_battle_textBoxes = 0x800F4FE0; // size:0x180
 vs_battle_stringContext = 0x800F5168; // size:0x38
 vs_battle_menuState = 0x800F51C0; // size:8
 vs_battle_miscItemInvoked = 0x800F5210;
+_effBuf = 0x800F567C;
+_loadEffContext = 0x800F5688;
+_effBufSize = 0x800F568A;

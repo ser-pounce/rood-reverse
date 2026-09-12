@@ -5,7 +5,13 @@
 
 void func_8007E180(int);
 
+extern void* _effBuf;
 extern int D_800F5684;
+extern struct {
+    u_short lba;
+    u_short size;
+} _loadEffContext;
+extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
 
 extern int D_800F5638;
@@ -77,7 +83,16 @@ void vs_battle_loadEffPurge(void)
     _loadfile(VS_EFFPURGE_BIN_LBA, VS_EFFPURGE_BIN_SIZE, vs_overlay_slots[3]);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7BF8);
+void func_800D7BF8(void)
+{
+    int _[16];
+
+    if (_effBuf == NULL) {
+        _effBuf = vs_main_allocHeapR(_effBufSize);
+    }
+
+    _loadfile(_loadEffContext.lba + VS_E000_P_LBA, _loadEffContext.size, _effBuf);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7C5C);
 

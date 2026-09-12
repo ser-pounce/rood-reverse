@@ -8,18 +8,34 @@ typedef struct {
     u_short size;
 } _loadFileContext;
 
+struct func_800D4910_t;
+
+typedef struct {
+    char unk0[0x12A];
+    u_char unk12A;
+    char unk12B[0xD];
+    u_short unk138;
+} func_800D8260_t;
+
+typedef struct {
+    int unk0;
+    u_short unk4;
+} func_800E5A74_t;
+
 void func_8007E180(int);
 void func_800D8054(int);
 
+extern int D_800F5638;
 extern void* _effBuf;
+extern int D_800F5680;
 extern int D_800F5684;
 extern _loadFileContext _loadEffContext;
 extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
 extern u_int D_800F5690;
 extern _loadFileContext D_800F5694;
-
-extern int D_800F5638;
+extern int D_800F56A4;
+extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
 
@@ -118,7 +134,8 @@ int func_800D7EF4(void)
         // Fallthrough
 
     case 2:
-        ret = _loadfile(D_800F5694.lba + VS_E000_P_LBA, D_800F5694.size, vs_overlay_slots[3]);
+        ret = _loadfile(
+            D_800F5694.lba + VS_E000_P_LBA, D_800F5694.size, vs_overlay_slots[3]);
         if (ret == 0) {
             func_800D8054(3);
         }
@@ -132,26 +149,18 @@ int func_800D7EF4(void)
     return ret;
 }
 
-extern u_short D_800F5688[2];
-
 void func_800D7FB4(int arg0, int arg1)
 {
-    D_800F5688[0] = arg0;
-    D_800F5688[1] = arg1;
+    _loadEffContext.lba = arg0;
+    _loadEffContext.size = arg1;
 }
-
-extern u_short D_800F5694[2];
-extern int D_800F56A4;
 
 void func_800D7FC8(int arg0, int arg1, int arg2)
 {
-    D_800F5694[0] = arg0;
-    D_800F5694[1] = arg1;
+    D_800F5694.lba = arg0;
+    D_800F5694.size = arg1;
     D_800F56A4 = arg2;
 }
-
-struct func_800D4910_t;
-extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 
 void func_800D7FE4(int (*arg0)(struct func_800D4910_t*, int, int), int arg1)
 {
@@ -162,13 +171,9 @@ void func_800D7FFC(int arg0) { D_800F5638 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8008);
 
-extern int D_800F5680;
-
 void func_800D8038(int arg0) { D_800F5680 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8044);
-
-extern int D_800F5690;
 
 void func_800D8054(int arg0) { D_800F5690 = arg0; }
 
@@ -179,13 +184,6 @@ int func_800D8200(void) { return 0x14C08; }
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D820C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D821C);
-
-typedef struct {
-    char unk0[0x12A];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-} func_800D8260_t;
 
 void func_800D8260(func_800D8260_t* arg0, int arg1, int arg2)
 {
@@ -482,11 +480,6 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5698);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5710);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5998);
-
-typedef struct {
-    int unk0;
-    u_short unk4;
-} func_800E5A74_t;
 
 void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
 {

@@ -58,7 +58,15 @@ void func_800D7FB4(int arg0, int arg1)
     D_800F5688[1] = arg1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7FC8);
+extern u_short D_800F5694[2];
+extern int D_800F56A4;
+
+void func_800D7FC8(int arg0, int arg1, int arg2)
+{
+    D_800F5694[0] = arg0;
+    D_800F5694[1] = arg1;
+    D_800F56A4 = arg2;
+}
 
 struct func_800D4910_t;
 extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);

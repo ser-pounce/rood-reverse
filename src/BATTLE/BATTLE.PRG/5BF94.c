@@ -123,7 +123,10 @@ typedef struct {
     int unk28;
     int unk2C;
     int unk30;
-    int unk34;
+    u_char unk34;
+    u_char unk35;
+    u_char unk36;
+    u_char unk37;
     char unk38[0x98];
 } func_800CE714_t2_2;
 
@@ -335,13 +338,6 @@ int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
-void func_800D6448(D_800F53B8_t*, int, int);
-void func_800D65D8(D_800F53B8_t*, u_char);
-void func_800D6628(D_800F53B8_t*, int);
-void func_800D66FC(D_800F53B8_t*, int, int);
-void func_800D67C4(D_800F53B8_t*, int);
-void func_800D6AEC(D_800F53B8_t*, int);
-void func_800D7890(int);
 int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
@@ -351,7 +347,16 @@ int func_800D5F8C(D_800F53B8_t*, func_800D5780_t*);
 int func_800D6048(D_800F53B8_t*, func_800D5780_t*, int);
 int func_800D61AC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D6298(D_800F53B8_t*, func_800D5780_t*);
+void func_800D6448(D_800F53B8_t*, u_char, u_char);
+void func_800D65D8(D_800F53B8_t*, u_char);
+void func_800D6628(D_800F53B8_t*, int);
+void func_800D66FC(D_800F53B8_t*, int, int);
+void func_800D67C4(D_800F53B8_t*, int);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
+void func_800D6AEC(D_800F53B8_t*, int);
+void func_800D7890(int);
+void func_800D78B8(void);
+void func_800D78CC(void);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
@@ -2773,7 +2778,7 @@ void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
         arg1->unk1C[i].unk30 = 0;
         arg1->unk1C[i].unk2C = 0;
         arg1->unk1C[i].unk28 = 0;
-        arg1->unk1C[i].unk34 = 0;
+        *(int*)&arg1->unk1C[i].unk34 = 0;
     }
 
     arg1->unkD1C.unk0 = arg0->unk0->unk0;
@@ -4091,7 +4096,12 @@ void func_800D6418(D_800F53B8_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6448);
+void func_800D6448(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
+{
+    func_800D78B8();
+    func_800CF7A8(arg0->unk1C[arg1].unk34, arg0->unk1C[arg1].unk35, arg2 % 10, arg2 / 10);
+    func_800D78CC();
+}
 
 void func_800D64E4(void) { func_800CF830(0, 0); }
 

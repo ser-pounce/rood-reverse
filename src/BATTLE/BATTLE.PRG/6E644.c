@@ -60,7 +60,13 @@ void func_800D7FB4(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7FC8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7FE4);
+struct func_800D4910_t;
+extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
+
+void func_800D7FE4(int (*arg0)(struct func_800D4910_t*, int, int), int arg1)
+{
+    D_800F56A8[arg1] = arg0;
+}
 
 void func_800D7FFC(int arg0) { D_800F5638 = arg0; }
 

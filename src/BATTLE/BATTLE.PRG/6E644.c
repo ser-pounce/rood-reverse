@@ -1,6 +1,11 @@
 #include "common.h"
 #include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/overlay.h"
+#include "build/src/include/lbas.h"
 
+void func_8007E180(int);
+
+extern int D_800F5684;
 extern vs_main_CdQueueSlot* D_800F568C;
 
 extern int D_800F5638;
@@ -41,7 +46,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AC4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AEC);
 
-int func_800D7B24(int lba, int size, void* buf)
+static int _loadfile(int lba, int size, void* buf)
 {
     vs_main_CdFile cdFile;
 
@@ -62,7 +67,15 @@ int func_800D7B24(int lba, int size, void* buf)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7BA4);
+void vs_battle_loadEffPurge(void)
+{
+    if (D_800F5684 == 0) {
+        func_8007E180(2);
+        D_800F5684 = 1;
+    }
+
+    _loadfile(VS_EFFPURGE_BIN_LBA, VS_EFFPURGE_BIN_SIZE, vs_overlay_slots[3]);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7BF8);
 

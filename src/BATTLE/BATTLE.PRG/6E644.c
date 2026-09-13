@@ -31,6 +31,21 @@ typedef struct {
 } func_800E5568_t;
 
 typedef struct {
+    u_short unk0_0 : 5;
+    u_short unk0_5 : 5;
+    u_short unk0_10 : 6;
+    u_short unk2_0 : 5;
+    u_short unk2_5 : 5;
+    u_short unk2_10 : 6;
+} D_800F5910_t;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+} func_800DFA54_t;
+
+typedef struct {
     int unk0;
     _loadFileContext loadContexts[8];
     u_short unk24[8];
@@ -51,6 +66,7 @@ extern u_long* D_800F56A0;
 extern int D_800F56A4;
 extern void (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 extern int D_800F5874;
+extern D_800F5910_t* D_800F5910;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
 
@@ -435,7 +451,22 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEEFC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DF9A8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFA54);
+void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
+{
+    int i;
+
+    arg1 >>= 19;
+    arg2 >>= 19;
+    for (i = arg0 * 2; i < arg0 * 2 + 2; i++) {
+        if (arg1 == D_800F5910[i].unk2_0 && arg2 == D_800F5910[i].unk2_5) {
+            goto found;
+        }
+    }
+    i = arg0 * 2;
+found:
+    arg3->unk0 = D_800F5910[i].unk0_0;
+    arg3->unk2 = D_800F5910[i].unk0_5;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFAF8);
 

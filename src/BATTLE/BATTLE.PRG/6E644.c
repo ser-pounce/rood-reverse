@@ -65,7 +65,7 @@ void func_800D79E4(char* arg0) { D_800F569C->unk90 = arg0; }
 
 void func_800D79F4(D_800F569C_t2* arg0) { D_800F569C->unkB4 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7A04);
+void func_800D7A04(int arg0) { D_800F569C->unkB8 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7A14);
 

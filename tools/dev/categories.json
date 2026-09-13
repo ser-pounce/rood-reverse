@@ -60,6 +60,10 @@
         "name": "PLG045"
     },
     {
+        "id": "effects.PLG045.BIN",
+        "name": "PLG047"
+    },
+    {
         "id": "menus.MAINMENU.PRG",
         "name": "Top level menu and shared menu functionality"
     },
@@ -134,6 +138,7 @@
             "PLG005.BIN": "effects.PLG005.BIN",
             "PLG044.BIN": "effects.PLG044.BIN",
             "PLG045.BIN": "effects.PLG045.BIN",
+            "PLG047.BIN": "effects.PLG047.BIN",
             "MAINMENU.PRG": "menus.MAINMENU.PRG",
             "MENU0.PRG": "menus.MENU0.PRG",
             "MENU1.PRG": "menus.MENU1.PRG",

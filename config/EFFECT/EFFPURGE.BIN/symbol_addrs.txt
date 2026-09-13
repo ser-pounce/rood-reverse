@@ -1,2 +1,3 @@
 func_800F9800 = 0x800F9800; // size:0x13B8
 func_800FAC4C = 0x800FAC4C; // size:0x130
+D_800FAE4C = 0x800FAE4C; // type:u8

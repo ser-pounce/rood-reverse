@@ -1,0 +1,1 @@
+func_800FAC4C = 0x800FAC4C; // size:0x130

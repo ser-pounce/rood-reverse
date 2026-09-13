@@ -241,7 +241,13 @@ void func_800D7FE4(int (*arg0)(struct func_800D4910_t*, int, int), int arg1)
 
 void func_800D7FFC(int arg0) { D_800F5638.unk0 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8008);
+void func_800D8008(int arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    D_800F5638.loadContexts[arg4].lba = arg0;
+    D_800F5638.loadContexts[arg4].size = arg1;
+    D_800F5638.unk24[arg4] = arg2;
+    D_800F5638.unk34[arg4] = arg3;
+}
 
 void func_800D8038(int arg0) { D_800F5680 = arg0; }
 

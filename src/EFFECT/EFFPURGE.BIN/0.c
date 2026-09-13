@@ -2,8 +2,8 @@
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 
-void func_800FAC4C();
-void func_800FAD7C();
+void func_800FAC4C(void);
+void func_800FAD7C(void);
 
 INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800F9800);
 
@@ -84,8 +84,6 @@ void func_800FABB8(void)
 }
 
 INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAC4C);
-
-INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAC78);
 
 void func_800FAD7C(void)
 {

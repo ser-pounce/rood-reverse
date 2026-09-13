@@ -112,7 +112,25 @@ int func_800A3310(int arg0, SVECTOR* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3394);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3500);
+int func_800A3500(int arg0, int arg1)
+{
+    int h;
+    int i;
+    D_800F45E0_t* actor;
+
+    h = func_8008DA24(arg0, arg1);
+    h <<= 17;
+    h >>= 17;
+
+    for (i = 0; i < 16; ++i) {
+        actor = D_800F45E0[i];
+        if (actor != NULL && actor->unk1C == arg0 && actor->unk20 == arg1
+            && actor->unk1E - 0x80 < h) {
+            h = actor->unk1E - 0x80;
+        }
+    }
+    return h;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A35A8);
 

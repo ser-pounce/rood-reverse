@@ -312,6 +312,7 @@ char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
+void func_800CF514(int arg0);
 void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(
     D_800F53B8_t*, int (*)(struct func_800D4910_t*, int, int), int);
@@ -321,10 +322,11 @@ void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
 void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
+int func_800D12D8(int);
 void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
+void func_800D1930(void);
 void func_800D1B18(D_800F54D8_t*);
-int func_800D12D8(int);
 void func_800D2560(void);
 void func_800D268C(void);
 void func_800D2698(int);
@@ -357,6 +359,12 @@ void func_800D6AEC(D_800F53B8_t*, int);
 void func_800D7890(int);
 void func_800D78B8(void);
 void func_800D78CC(void);
+int func_800D7BF8(void);
+void func_800D7C5C(void);
+int func_800D7CFC(void);
+int func_800D7EF4(void);
+void func_800D8060(void*);
+void func_800FABB8(void);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
@@ -2847,8 +2855,156 @@ void func_800CE8F4(D_800F53B8_t* arg0)
     vs_main_freeHeapR(arg0);
 }
 
-// https://decomp.me/scratch/pX0Sr
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE9B0);
+int func_800CE9B0(void)
+{
+    int _[10] __attribute__((unused));
+    vs_main_CdFile sp38;
+    D_800F53B8_t* temp_s1;
+    D_800F53B8_t* var_s0;
+    int i;
+    int var_s2;
+
+    var_s0 = D_800F53B8;
+    var_s2 = 1;
+
+    switch (D_800F531C) {
+    case 0:
+        var_s2 = 0;
+        break;
+
+    case 6:
+        if (vs_battle_loadEffPurge() == 0) {
+            vs_main_wait();
+            func_800FABB8();
+            if ((D_800F5230.unk0 != 0) && (_loadEffContext.lba == 0)) {
+                func_800CF478(4);
+                D_800F5224 = 0;
+                D_800F5228 = 0;
+            } else {
+                func_800CF478(2);
+            }
+            if (D_800F5684 != 0) {
+                func_8007E1C0(2);
+                D_800F5684 = 0;
+            }
+        }
+        break;
+
+    case 2:
+        if (func_800D7CFC() == 0) {
+            func_800CF478(8);
+        }
+        break;
+
+    case 8:
+        if (func_800D7EF4() == 0) {
+            func_800CF478(3);
+            vs_main_wait();
+        }
+        break;
+
+    case 3:
+        if (func_800D7BF8() == 0) {
+            func_800D8060(_effBuf);
+            func_800CF478(5);
+
+            D_800F5224 = D_800F569C->unkB4->unk14;
+            D_800F5228 = 0;
+
+            for (i = 0; i < D_800F5224; ++i) {
+                D_800F521C |= 1 << i;
+            }
+
+            D_800F54A8 = 1;
+            sp38.lba = vs_battle_getMainMenuLba();
+            sp38.size = 0;
+            D_800F5218 = vs_main_allocateCdQueueSlot(&sp38);
+            vs_main_cdEnqueue(D_800F5218, NULL);
+        }
+        break;
+
+    case 4:
+        while (var_s0 != NULL) {
+
+            temp_s1 = var_s0->next;
+            D_800F53BC = var_s0;
+
+            if (D_800F569C->unk8C != NULL) {
+                func_800D1104(var_s0->unk14_16);
+            }
+
+            func_800D78F0();
+
+            if (func_800D51D8(var_s0) == 0) {
+                func_800CE8F4(var_s0);
+            } else {
+                ++var_s0->unk14_16;
+            }
+
+            var_s0 = temp_s1;
+        }
+
+        if (D_800F53B8 != NULL) {
+            break;
+        }
+
+        if (D_800F5224 <= D_800F5228) {
+
+            if (D_800F569C->unkC4 != 0) {
+                func_80046194();
+                D_800F569C->unkC4 = 0;
+            }
+
+            if (D_800F569C->unkC8 != 0) {
+                func_80046634();
+                D_800F569C->unkC8 = 0;
+                D_800F569C->unkCC = 0;
+            }
+
+            func_800434A4(0, 1);
+            func_800D7C5C();
+            func_800D278C();
+            func_800CF514(D_800F5318);
+
+            D_800F54A8 = 0;
+            D_800F5318 = 0;
+
+            if (D_800F5684 != 0) {
+                func_8007E1C0(2);
+                D_800F5684 = 0;
+            }
+
+            func_800D1930();
+            func_800CF478(9);
+        } else {
+            func_800CF478(5);
+        }
+
+        var_s2 = 1;
+        break;
+
+    case 9:
+        if (D_800F5218 != NULL) {
+            if (D_800F5218->state != 4) {
+                // Ugly match hack
+                if (D_800F569C || var_s2) {
+                    var_s2 = 1;
+                    break;
+                } else {
+                    var_s2 = 1;
+                    break;
+                }
+            }
+            vs_main_freeCdQueueSlot(D_800F5218);
+            D_800F5218 = NULL;
+        }
+        func_800CF478(0);
+        var_s2 = 0;
+        break;
+    }
+
+    return var_s2;
+}
 
 int func_800CED60(void)
 {

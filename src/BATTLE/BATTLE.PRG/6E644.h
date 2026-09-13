@@ -1,4 +1,10 @@
 #pragma once
+#include "146C.h"
+
+typedef struct {
+    u_short lba;
+    u_short size;
+} _loadFileContext;
 
 void func_800D6E44(void);
 void func_800D7814(void);
@@ -21,3 +27,9 @@ void func_800E7608(int);
 u_short func_800E45B4(void);
 void func_800E511C(void);
 void func_800E5308(void);
+int vs_battle_getMainMenuLba(void);
+int vs_battle_loadEffPurge(void);
+
+extern int D_800F5684;
+extern void* _effBuf;
+extern _loadFileContext _loadEffContext;

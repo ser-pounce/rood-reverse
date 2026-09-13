@@ -1,12 +1,8 @@
 #include "common.h"
+#include "6E644.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
-
-typedef struct {
-    u_short lba;
-    u_short size;
-} _loadFileContext;
 
 struct func_800D4910_t;
 
@@ -29,17 +25,12 @@ typedef struct {
     u_short unk34[8];
 } D_800F5638_t;
 
-void func_8007DFF0(int, int, int);
-void func_8007E180(int);
 void func_800D8038(int);
 void func_800D8054(int);
 
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
-extern void* _effBuf;
 extern u_int D_800F5680;
-extern int D_800F5684;
-extern _loadFileContext _loadEffContext;
 extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
 extern u_int D_800F5690;
@@ -97,7 +88,7 @@ static int _loadfile(int lba, int size, void* buf)
         return 1;
     }
 
-    if (D_800F568C->state == 4) {
+    if (D_800F568C->state == vs_main_CdQueueStateLoaded) {
         vs_main_freeCdQueueSlot(D_800F568C);
         D_800F568C = NULL;
         return 0;
@@ -106,14 +97,14 @@ static int _loadfile(int lba, int size, void* buf)
     return 1;
 }
 
-void vs_battle_loadEffPurge(void)
+int vs_battle_loadEffPurge(void)
 {
     if (D_800F5684 == 0) {
         func_8007E180(2);
         D_800F5684 = 1;
     }
 
-    _loadfile(VS_EFFPURGE_BIN_LBA, VS_EFFPURGE_BIN_SIZE, vs_overlay_slots[3]);
+    return _loadfile(VS_EFFPURGE_BIN_LBA, VS_EFFPURGE_BIN_SIZE, vs_overlay_slots[3]);
 }
 
 void func_800D7BF8(void)

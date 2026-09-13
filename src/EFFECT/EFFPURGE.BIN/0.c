@@ -83,7 +83,33 @@ void func_800FABB8(void)
     D_800F56C8.unkC8 = 0;
 }
 
-INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAC4C);
+void func_800FAC4C(void)
+{
+    int i;
+    int temp_s1;
+    u_char* a2;
+
+    int new_var = D_800FAE4C[D_800F5230.unk0];
+    int var_s2 = 0;
+
+    for (i = 0; i < D_800F5230.unk0; ++i) {
+        var_s2 += D_800FB7AC[i];
+    }
+
+    temp_s1 = D_800FB7AC[D_800F5230.unk0];
+
+    func_800D7FFC(temp_s1 + (new_var != 0));
+
+    a2 = &D_800FAFDC[D_800F5230.unk0];
+
+    func_800D8008(
+        D_800FB16C[D_800F5230.unk0].lba, D_800FB16C[D_800F5230.unk0].size, *a2, 1, 0);
+
+    for (i = 0; i < temp_s1; ++i) {
+        func_800D8008(D_800FBC30[var_s2 + i].lba, D_800FBC30[var_s2 + i].size,
+            D_800FB93C[var_s2 + i], 0, i + 1);
+    }
+}
 
 void func_800FAD7C(void)
 {

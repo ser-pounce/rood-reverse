@@ -52,6 +52,10 @@
         "name": "PLG005"
     },
     {
+        "id": "effects.PLG044.BIN",
+        "name": "PLG044"
+    },
+    {
         "id": "menus.MAINMENU.PRG",
         "name": "Top level menu and shared menu functionality"
     },
@@ -124,6 +128,7 @@
             "SCREFF2.PRG": "battle.SCREFF2.PRG",
             "EFFPURGE.BIN": "effects.EFFPURGE.BIN",
             "PLG005.BIN": "effects.PLG005.BIN",
+            "PLG044.BIN": "effects.PLG044.BIN",
             "MAINMENU.PRG": "menus.MAINMENU.PRG",
             "MENU0.PRG": "menus.MENU0.PRG",
             "MENU1.PRG": "menus.MENU1.PRG",

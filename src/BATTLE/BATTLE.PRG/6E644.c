@@ -148,7 +148,25 @@ void func_800D7BF8(void)
     _loadfile(_loadEffContext.lba + VS_E000_P_LBA, _loadEffContext.size, _effBuf);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7C5C);
+void func_800D7C5C(void)
+{
+    int i;
+    int bit;
+    int flags;
+
+    for (i = 0x18; i < 0x20; i++) {
+        flags = D_800F5874;
+        bit = 1 << i;
+        if (flags & bit) {
+            func_8007E0A8(i, 1, 2);
+            D_800F5874 &= ~bit;
+        }
+    }
+    if (_effBuf != NULL) {
+        vs_main_freeHeapR(_effBuf);
+        _effBuf = NULL;
+    }
+}
 
 int func_800D7CFC(void)
 {

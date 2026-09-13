@@ -56,43 +56,6 @@ typedef struct {
 } gim_t;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    func_8006CE70_t unk4;
-} D_800F53B8_t3_2;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    short unk4;
-    short unk6;
-    int unk8;
-} D_800F53B8_t3_3;
-
-typedef struct {
-    D_800F53B8_t3_2 unk0;
-    D_800F53B8_t3_2 unkC;
-    D_800F53B8_t3_2 unk18;
-    D_800F53B8_t3_2 unk24;
-    D_800F53B8_t4* unk30;
-    func_800D4910_t* unk34;
-    short unk38;
-    short unk3A;
-    int unk3C;
-} D_800F53B8_t3;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    u_int unk14_0 : 11;
-    u_int unk14_11 : 5;
-    u_int unk14_16 : 16;
-} D_800F53B8_t5;
-
-typedef struct {
     D_800F53B8_t3* unk0;
     D_800F53B8_t3* unk4;
     D_800F53B8_t3* unk8;
@@ -109,36 +72,6 @@ typedef struct {
 } D_800F53B8_t2;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    u_char unk34;
-    u_char unk35;
-    u_char unk36;
-    u_char unk37;
-    char unk38[0x98];
-} func_800CE714_t2_2;
-
-typedef struct func_800D2904_t {
-    struct func_800D2904_t* previous;
-    struct func_800D2904_t* next;
-    char unk8[4];
-    int unkC;
-    int unk10;
-    int unk14;
-} func_800D2904_t;
-
-typedef struct {
     char unk0[0x24];
     u_int unk24;
     char unk28[4];
@@ -147,28 +80,6 @@ typedef struct {
     char unk44[0x54];
     VECTOR unk98;
 } func_800D2A38_t;
-
-typedef struct D_800F53B8_t {
-    struct D_800F53B8_t* next;
-    D_800F53B8_t5* unk4;
-    char unk8;
-    char unk9;
-    u_short unkA;
-    char* unkC;
-    char unk10[4];
-    u_int unk14_0 : 8;
-    u_int unk14_8 : 3;
-    u_int unk14_11 : 5;
-    u_int unk14_16 : 16;
-    func_800D2904_t* unk18;
-    func_800CE714_t2_2 unk1C[16];
-    D_800F53B8_t3 unkD1C;
-} D_800F53B8_t;
-
-typedef struct {
-    short unk0;
-    short unk2;
-} func_800CFE1C_t;
 
 typedef struct {
     char unk0[0x22];
@@ -409,14 +320,12 @@ extern int D_800F5224;
 extern int D_800F5228;
 extern func_800CF0E8_t D_800F5230;
 extern u_char D_800F5238;
-extern SVECTOR D_800F5310[];
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
 extern int D_800F5330[];
 extern int D_800F53B4;
 extern D_800F53B8_t* D_800F53B8;
-extern D_800F53B8_t* D_800F53BC;
 extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
@@ -3418,7 +3327,7 @@ int func_800CFC8C(int arg0, int arg1, int arg2, int arg3)
              / (ONE * 2));
 }
 
-void _lerpVector(short* src, int t, VECTOR* vec)
+void vs_battle_lerpVector(short* src, int t, VECTOR* vec)
 {
     int start0 = src[0];
     int end0 = src[1];
@@ -3432,7 +3341,7 @@ void _lerpVector(short* src, int t, VECTOR* vec)
     vec->vz = (((end2 - start2) * t) >> 7) + start2;
 }
 
-void _lerpSvector(short* src, int t, SVECTOR* vec)
+void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec)
 {
     int start0 = src[0];
     int end0 = src[1];
@@ -3446,7 +3355,7 @@ void _lerpSvector(short* src, int t, SVECTOR* vec)
     vec->vz = (((end2 - start2) * t) >> 7) + start2;
 }
 
-void _lerp2DVector(short* src, int t, int* vec)
+void vs_battle_lerp2DVector(short* src, int t, int* vec)
 {
     int start0 = src[0];
     int end0 = src[1];
@@ -3508,14 +3417,14 @@ void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
 void func_800D0B30(func_800D0B30_t1* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
     if (arg0->unk0 & 1) {
-        _lerpSvector(arg0->unk14, D_800F5330[arg0->unk4[2]], &arg2->unk8);
+        vs_battle_lerpSvector(arg0->unk14, D_800F5330[arg0->unk4[2]], &arg2->unk8);
         arg1->vx += arg2->unk8.vx;
         arg1->vy = arg1->vy + arg2->unk8.vy;
         arg1->vz += arg2->unk8.vz;
         RotMatrix_gte(arg1, &arg2->unk48);
-        _lerpVector(arg0->unk20, D_800F5330[arg0->unk4[0]], &arg2->unk10);
+        vs_battle_lerpVector(arg0->unk20, D_800F5330[arg0->unk4[0]], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
-        _lerpVector(arg0->unk2C, D_800F5330[arg0->unk4[3]], &arg2->unk20);
+        vs_battle_lerpVector(arg0->unk2C, D_800F5330[arg0->unk4[3]], &arg2->unk20);
         func_8004140C(&arg2->unk48, &arg2->unk20);
         return;
     }
@@ -3811,7 +3720,7 @@ void func_800D2970(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
     arg2->vz = arg0->vz + arg1->vz;
 }
 
-void _addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2)
+void vs_battle_addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2)
 {
     arg2->vx = arg0->vx + arg1->vx;
     arg2->vy = arg0->vy + arg1->vy;

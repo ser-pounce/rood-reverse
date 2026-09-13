@@ -43,6 +43,7 @@ def main(basepath: Path, targetpath: Path, categories_path: Path):
                     "INITBTL.PRG/18",
                     "INITBTL.PRG/FB0",
                     "INITBTL.PRG/12AC",
+                    "EFFPURGE.BIN/0",
                     "MAINMENU.PRG/224",
                     "MAINMENU.PRG/C48",
                     "MAINMENU.PRG/2D10",

@@ -202,6 +202,87 @@ typedef struct {
     int unkCC;
 } D_800F569C_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    u_int unk14_0 : 11;
+    u_int unk14_11 : 5;
+    u_int unk14_16 : 16;
+} D_800F53B8_t5;
+
+typedef struct func_800D2904_t {
+    struct func_800D2904_t* previous;
+    struct func_800D2904_t* next;
+    char unk8[4];
+    int unkC;
+    int unk10;
+    int unk14;
+} func_800D2904_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    u_char unk34;
+    u_char unk35;
+    u_char unk36;
+    u_char unk37;
+    char unk38[0x98];
+} func_800CE714_t2_2;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    func_8006CE70_t unk4;
+} D_800F53B8_t3_2;
+
+typedef struct {
+    D_800F53B8_t3_2 unk0;
+    D_800F53B8_t3_2 unkC;
+    D_800F53B8_t3_2 unk18;
+    D_800F53B8_t3_2 unk24;
+    D_800F53B8_t4* unk30;
+    func_800D4910_t* unk34;
+    short unk38;
+    short unk3A;
+    int unk3C;
+} D_800F53B8_t3;
+
+typedef struct D_800F53B8_t {
+    struct D_800F53B8_t* next;
+    D_800F53B8_t5* unk4;
+    char unk8;
+    char unk9;
+    u_short unkA;
+    char* unkC;
+    char unk10[4];
+    u_int unk14_0 : 8;
+    u_int unk14_8 : 3;
+    u_int unk14_11 : 5;
+    u_int unk14_16 : 16;
+    func_800D2904_t* unk18;
+    func_800CE714_t2_2 unk1C[16];
+    D_800F53B8_t3 unkD1C;
+} D_800F53B8_t;
+
+typedef struct {
+    short unk0;
+    short unk2;
+} func_800CFE1C_t;
+
 enum vs_battle_limbStatus {
     limbStatusCritical,
     limbStatusDamaged,
@@ -361,6 +442,12 @@ void func_800CA2DC(void);
 int func_800CACD0(int menuState, int arg1);
 void func_800CB83C(void);
 int func_800CF060(void);
+void vs_battle_addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2);
+void vs_battle_lerp2DVector(short* src, int t, int* vec);
+void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
+void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
+int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
+int func_800D118C(int arg0, int arg1);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];
@@ -403,3 +490,5 @@ extern vs_battle_textBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
 extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;
+extern SVECTOR D_800F5310[];
+extern D_800F53B8_t* D_800F53BC;

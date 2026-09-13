@@ -45,7 +45,11 @@
     },
     {
         "id": "effects.EFFPURGE.BIN",
-        "name": "Ability effects resetter"
+        "name": "Ability effect dispatcher"
+    },
+    {
+        "id": "effects.PLG005.BIN",
+        "name": "PLG005"
     },
     {
         "id": "menus.MAINMENU.PRG",
@@ -119,6 +123,7 @@
             "BATTLE.PRG": "battle.BATTLE.PRG",
             "SCREFF2.PRG": "battle.SCREFF2.PRG",
             "EFFPURGE.BIN": "effects.EFFPURGE.BIN",
+            "PLG005.BIN": "effects.PLG005.BIN",
             "MAINMENU.PRG": "menus.MAINMENU.PRG",
             "MENU0.PRG": "menus.MENU0.PRG",
             "MENU1.PRG": "menus.MENU1.PRG",

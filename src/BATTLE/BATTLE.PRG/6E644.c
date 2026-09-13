@@ -4,6 +4,7 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
+#include <abs.h>
 
 struct func_800D4910_t;
 
@@ -20,6 +21,14 @@ typedef struct {
     int unk0;
     u_short unk4;
 } func_800E5A74_t;
+
+typedef struct {
+    char rangeX;
+    char rangeY;
+    char rangeZ;
+    u_char shape : 3;
+    u_char angle : 5;
+} func_800E5568_t;
 
 typedef struct {
     int unk0;
@@ -570,7 +579,27 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E527C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5308);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5568);
+int func_800E5568(func_800E5568_t* arg0)
+{
+    int (*fn)(int);
+    int mask;
+    int r;
+    int v;
+
+    mask = 1 << arg0->shape;
+    if (mask & 0x16) {
+        r = arg0->rangeZ;
+        fn = rcos;
+    } else if (mask & 0x8) {
+        r = arg0->rangeY;
+        fn = rcos;
+    } else {
+        r = arg0->rangeY;
+        fn = rsin;
+    }
+    v = fn(arg0->angle << 7);
+    return ((r << 5) * ABS(v)) >> 12;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5600);
 

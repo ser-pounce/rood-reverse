@@ -7,7 +7,6 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "573B8.h"
-#include "6E644.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include "../../SLUS_010.40/main.h"
@@ -180,43 +179,6 @@ typedef struct {
     u_char count;
     u_char unkC;
 } _textBoxSelector_t;
-
-typedef struct {
-    char unk0[0x14];
-    char unk14;
-    char unk15;
-} D_800F569C_t2;
-
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_char unk4[4];
-    int unk8;
-    int unkC;
-    int unk10;
-    short unk14[6];
-    short unk20[6];
-    short unk2C[6];
-} func_800D0B30_t1;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_char* unk8;
-    u_char* unkC[4];
-    char unk1C[0x70];
-    func_800D0B30_t1* unk8C;
-    char* unk90;
-    char unk94[0x1C];
-    u_short* unkB0;
-    D_800F569C_t2* unkB4;
-    int unkB8;
-    int unkBC;
-    u_char* unkC0;
-    int unkC4;
-    int unkC8;
-    int unkCC;
-} D_800F569C_t;
 
 typedef struct {
     int unk0;
@@ -458,7 +420,6 @@ extern int D_800F5600;
 extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
-extern D_800F569C_t* D_800F569C;
 extern void* D_800F55FC;
 extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 

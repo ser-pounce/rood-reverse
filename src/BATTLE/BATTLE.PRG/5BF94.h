@@ -1,6 +1,7 @@
 #pragma once
 #include "../../SLUS_010.40/main.h"
 #include "146C.h"
+#include "6E644.h"
 
 enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_solidShock = 0x61,
@@ -164,39 +165,41 @@ typedef struct {
 } vs_battle_stringContext_t;
 
 typedef struct {
+    char unk0[0x14];
+    char unk14;
+    char unk15;
+} D_800F569C_t2;
+
+typedef struct {
     u_short unk0;
-    char unk2;
-    char unk3;
-    u_short unk4;
-    short unk6;
-    union {
-        char u8[2];
-        short s16;
-    } unk8;
-    union {
-        char u8[2];
-        short s16;
-    } unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    union {
-        char u8[2];
-        u_short u16;
-    } unk14;
-    union {
-        char u8[2];
-        u_short u16;
-    } unk16;
-    short unk18;
-    short unk1A;
-    int unk1C[45];
-    char unkD0[16];
-    short unkE0;
-    short unkE2;
-    short unkE4;
-} func_800CF0E8_t;
+    u_short unk2;
+    u_char unk4[4];
+    int unk8;
+    int unkC;
+    int unk10;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t1;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    u_char* unk8;
+    u_char* unkC[4];
+    char unk1C[0x70];
+    func_800D0B30_t1* unk8C;
+    char* unk90;
+    char unk94[0x1C];
+    u_short* unkB0;
+    D_800F569C_t2* unkB4;
+    int unkB8;
+    int unkBC;
+    u_char* unkC0;
+    int unkC4;
+    int unkC8;
+    int unkCC;
+} D_800F569C_t;
 
 enum vs_battle_limbStatus {
     limbStatusCritical,
@@ -394,6 +397,7 @@ extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
+extern D_800F569C_t* D_800F569C;
 extern vs_battle_textBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
 extern vs_battle_stringContext_t vs_battle_stringContext;

@@ -1,4 +1,9 @@
 #include "common.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/6E644.h"
+
+void func_800FAC4C();
+void func_800FAD7C();
 
 INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800F9800);
 
@@ -64,7 +69,19 @@ INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FA868);
 
 INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FA8D0);
 
-INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FABB8);
+void func_800FABB8(void)
+{
+    func_800D8038(0);
+    func_800FAC4C();
+    func_800FAD7C();
+    _loadEffContext = D_800FC7FC[D_800F5230.unk0];
+    func_800D2698(0xFF);
+    D_800F569C->unkB4 = 0;
+    D_800F56C8.unk8C = 0;
+    D_800F56C8.unkC0 = 0;
+    D_800F56C8.unkC4 = 0;
+    D_800F56C8.unkC8 = 0;
+}
 
 INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAC4C);
 

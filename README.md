@@ -32,6 +32,9 @@ Thanks also to the following amazing projects (and their dependencies):
 ![INITBTL.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.INITBTL.PRG&color=%2332a934)
 ![SCREFF2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.SCREFF2.PRG)
 
+### Effects
+![EFFPURGE.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.EFFPURGE.BIN)
+
 ### Menus
 ![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus&color=%2332a934)
 

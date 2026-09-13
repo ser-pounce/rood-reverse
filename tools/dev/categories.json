@@ -16,6 +16,10 @@
         "name": "Main game engine & bootstrapper"
     },
     {
+        "id": "effects",
+        "name": "Ability effect binaries"
+    },
+    {
         "id": "ending",
         "name": "Ending and credits"
     },
@@ -38,6 +42,10 @@
     {
         "id": "battle.SCREFF2.PRG",
         "name": "Fullscreen effects"
+    },
+    {
+        "id": "effects.EFFPURGE.BIN",
+        "name": "Ability effects resetter"
     },
     {
         "id": "menus.MAINMENU.PRG",
@@ -110,6 +118,7 @@
             "INITBTL.PRG": "battle.INITBTL.PRG",
             "BATTLE.PRG": "battle.BATTLE.PRG",
             "SCREFF2.PRG": "battle.SCREFF2.PRG",
+            "EFFPURGE.BIN": "effects.EFFPURGE.BIN",
             "MAINMENU.PRG": "menus.MAINMENU.PRG",
             "MENU0.PRG": "menus.MENU0.PRG",
             "MENU1.PRG": "menus.MENU1.PRG",

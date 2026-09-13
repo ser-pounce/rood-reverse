@@ -190,7 +190,8 @@ typedef struct {
     char unk1C[0x70];
     func_800D0B30_t1* unk8C;
     char* unk90;
-    char unk94[0x1C];
+    char unk94[0x18];
+    int unkAC;
     u_short* unkB0;
     D_800F569C_t2* unkB4;
     int unkB8;

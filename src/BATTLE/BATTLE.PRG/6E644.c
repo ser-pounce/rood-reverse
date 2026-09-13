@@ -253,7 +253,7 @@ void func_800D8008(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 void func_800D8038(int arg0) { D_800F5680 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8044);
+u_int func_800D8044(void) { return D_800F5680; }
 
 void func_800D8054(int arg0) { D_800F5690 = arg0; }
 

@@ -298,6 +298,7 @@ extern u_char D_800EC2E4;
 extern int (*D_800EC324[])(struct func_800D4910_t*, int, int);
 extern char D_800EC32C[];
 extern u_char D_800EC330[][2][4];
+extern u_char D_800EC368[][5][4];
 extern int (*D_800EC3F4[])(void*);
 extern u_char D_800EC4B8;
 extern u_char D_800F522C;
@@ -3969,7 +3970,19 @@ int func_800D5048(D_800F53B8_t* arg0)
 }
 
 int func_800D5088(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5088);
+int func_800D5088(D_800F53B8_t* arg0)
+{
+    int i;
+    u_char* dst;
+
+    for (i = 0; i < 5; i++) {
+        dst = D_800F569C->unk8 + (D_800EC368[arg0->unkD1C.unk18.unk2][i][3] * 0xCC + 4);
+        dst[0xC4] = D_800EC368[arg0->unkD1C.unk18.unk2][i][0];
+        dst[0xC5] = D_800EC368[arg0->unkD1C.unk18.unk2][i][1];
+        dst[0xC6] = D_800EC368[arg0->unkD1C.unk18.unk2][i][2];
+    }
+    return 1;
+}
 
 int func_800D5150(D_800F53B8_t* arg0 __attribute__((unused)))
 {

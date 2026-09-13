@@ -87,4 +87,25 @@ INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAC4C);
 
 INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAC78);
 
-INCLUDE_ASM("build/src/EFFECT/EFFPURGE.BIN/nonmatchings/0", func_800FAD7C);
+void func_800FAD7C(void)
+{
+    int temp_s1;
+    int i;
+    int temp_s2;
+
+    temp_s2 = D_800FCE3C[D_800F5230.unk0];
+    temp_s1 = D_800FCE3C[D_800F5230.unk0 + 1] - temp_s2;
+
+    func_800D7FC8(
+        D_800FD6B8[D_800F5230.unk0].lba, D_800FD6B8[D_800F5230.unk0].size, temp_s1);
+
+    for (i = 0; i < temp_s1; ++i) {
+        func_800D7FE4(D_800FD15C[temp_s2 + i], i);
+    }
+
+    if (temp_s1 != 0) {
+        func_800D8054(1);
+    } else {
+        func_800D8054(0);
+    }
+}

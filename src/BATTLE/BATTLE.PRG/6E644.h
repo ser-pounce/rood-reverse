@@ -62,11 +62,20 @@ typedef struct {
     short unkE4;
 } func_800CF0E8_t;
 
+typedef struct func_800D4910_t {
+    struct func_800D4910_t* next;
+    int (*unk4)(struct func_800D4910_t*, int, int);
+    void* unk8;
+} func_800D4910_t;
+
 void func_800D2698(int);
 void func_800D8038(int);
 void func_800D6E44(void);
 void func_800D7814(void);
 void func_800D78F0(void);
+void func_800D7FC8(int, int, int);
+void func_800D7FE4(int (*arg0)(func_800D4910_t*, int, int), int arg1);
+void func_800D8054(int);
 void func_800DC638(void);
 int func_800DEC88(void*);
 void func_800E527C(int, int, int);
@@ -94,3 +103,6 @@ extern _loadFileContext _loadEffContext;
 extern func_800CF0E8_t D_800F5230;
 extern D_800F56C8_t D_800F56C8;
 extern _loadFileContext D_800FC7FC[];
+extern u_short D_800FCE3C[];
+extern int (*D_800FD15C[])(func_800D4910_t*, int, int);
+extern _loadFileContext D_800FD6B8[];

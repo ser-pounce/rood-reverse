@@ -7,7 +7,9 @@
 struct func_800D4910_t;
 
 typedef struct {
-    char unk0[0x12A];
+    char unk0[0x38];
+    int unk38;
+    char unk3C[0xEE];
     u_char unk12A;
     char unk12B[0xD];
     u_short unk138;
@@ -521,7 +523,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4C64);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4C8C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4CE8);
+void func_800E4CE8(func_800D8260_t* arg0) { arg0->unk38 = -1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4CF4);
 

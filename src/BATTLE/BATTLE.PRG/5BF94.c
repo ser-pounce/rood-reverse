@@ -327,7 +327,7 @@ int func_800D61AC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D6298(D_800F53B8_t*, func_800D5780_t*);
 void func_800D6448(D_800F53B8_t*, u_char, u_char);
 void func_800D65D8(D_800F53B8_t*, u_char);
-void func_800D6628(D_800F53B8_t*, int);
+void func_800D6628(D_800F53B8_t*, u_char);
 void func_800D66FC(D_800F53B8_t*, int, int);
 void func_800D67C4(D_800F53B8_t*, int);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
@@ -341,6 +341,7 @@ int func_800D7CFC(void);
 int func_800D7EF4(void);
 void func_800D8060(void*);
 void func_800FABB8(void);
+void func_800AE68C(int, int);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
@@ -387,6 +388,7 @@ extern int (*D_800EC324[])(struct func_800D4910_t*, int, int);
 extern char D_800EC32C[];
 extern u_char D_800EC330[][2][4];
 extern int (*D_800EC3F4[])(void*);
+extern u_char D_800EC4B8;
 extern u_char D_800F522C;
 extern char D_800F4CB8;
 extern char _fontTable;
@@ -4284,7 +4286,21 @@ void func_800D65D8(D_800F53B8_t* arg0, u_char arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6628);
+void func_800D6628(D_800F53B8_t* arg0, u_char arg1)
+{
+    int var;
+
+    if (arg0->unkD1C.unkC.unk0 == 4) {
+        if (arg1 < 4) {
+            func_800AE68C((u_char)arg0->unkD1C.unkC.unk4.unk0, arg1);
+        } else {
+            do {
+                var = rand() % 3;
+            } while (var == D_800EC4B8);
+            func_800AE68C((u_char)arg0->unkD1C.unkC.unk4.unk0, D_800EC4B8 = var);
+        }
+    }
+}
 
 void func_800D66CC(D_800F53B8_t* arg0)
 {

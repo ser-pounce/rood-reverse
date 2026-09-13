@@ -8,8 +8,6 @@ options:
   asset_path: build/assets/EFFECT/EFFPURGE.BIN
   ld_script_path: build/config/EFFECT/EFFPURGE.BIN/link.ld
   symbol_addrs_path:
-    - config/EFFECT/EFFPURGE.BIN/symbol_addrs.txt
-    - config/SLUS_010.40/symbol_addrs.txt
     - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/EFFECT/EFFPURGE.BIN/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/EFFECT/EFFPURGE.BIN/undefined_syms_auto.txt
@@ -24,5 +22,4 @@ segments:
     subsegments:
     - [0x0, c]
     - [0x164C, .data, 0]
-    - [0x1FAC, data]
   - [0x4370]

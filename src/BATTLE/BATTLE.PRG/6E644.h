@@ -74,7 +74,7 @@ void func_800D6E44(void);
 void func_800D7814(void);
 void func_800D78F0(void);
 void func_800D7FC8(int, int, int);
-void func_800D7FE4(int (*arg0)(func_800D4910_t*, int, int), int arg1);
+void func_800D7FE4(void (*arg0)(func_800D4910_t*, int, int), int arg1);
 void func_800D7FFC(int arg0);
 void func_800D8054(int);
 void func_800D8008(int, int, int, int, int);

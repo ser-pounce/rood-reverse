@@ -2,8 +2,38 @@ $(BUILD)/src/EFFECT/EFFPURGE.BIN/0.o: CC1VER := 2.8.1-psx
 $(BUILD)/src/EFFECT/EFFPURGE.BIN/0.o: ASFLAGS += -no-pad-sections
 
 $(BUILD)/data/EFFECT/EFFPURGE.BIN: LDFLAGS += \
+	--defsym=func_800F9818=0x800F9818 \
+	--defsym=func_800F98E0=0x800F98E0 \
+	--defsym=func_800F98F8=0x800F98F8 \
+	--defsym=func_800F9910=0x800F9910 \
+	--defsym=func_800F9928=0x800F9928 \
+	--defsym=func_800F99D8=0x800F99D8 \
 	--defsym=func_800F99F0=0x800F99F0 \
+	--defsym=func_800F9AE8=0x800F9AE8 \
+	--defsym=func_800FA30C=0x800FA30C \
+	--defsym=func_800FA324=0x800FA324 \
+	--defsym=func_800FA368=0x800FA368 \
+	--defsym=func_800FA398=0x800FA398 \
+	--defsym=func_800FA3B0=0x800FA3B0 \
+	--defsym=func_800FA41C=0x800FA41C \
+	--defsym=func_800FA424=0x800FA424 \
+	--defsym=func_800FA48C=0x800FA48C \
+	--defsym=func_800FA490=0x800FA490 \
+	--defsym=func_800FA4A8=0x800FA4A8 \
 	--defsym=func_800FA588=0x800FA588 \
+	--defsym=func_800FA6B8=0x800FA6B8 \
+	--defsym=func_800FA6BC=0x800FA6BC \
+	--defsym=func_800FA6D0=0x800FA6D0 \
+	--defsym=func_800FA6F8=0x800FA6F8 \
+	--defsym=func_800FA710=0x800FA710 \
+	--defsym=func_800FA740=0x800FA740 \
+	--defsym=func_800FA770=0x800FA770 \
+	--defsym=func_800FA7B0=0x800FA7B0 \
+	--defsym=func_800FA7F0=0x800FA7F0 \
+	--defsym=func_800FA84C=0x800FA84C \
+	--defsym=func_800FA868=0x800FA868 \
+	--defsym=func_800FA8D0=0x800FA8D0 \
+	--defsym=func_800FAC78=0x800FAC78 \
 	--defsym=func_800FAF00=0x800FAF00 \
 	--defsym=func_800FAF30=0x800FAF30 \
 	--defsym=func_800FB00C=0x800FB00C \
@@ -16,8 +46,8 @@ $(BUILD)/data/EFFECT/EFFPURGE.BIN: LDFLAGS += \
 	--defsym=func_800FB320=0x800FB320 \
 	--defsym=func_800FB32C=0x800FB32C \
 	--defsym=func_800FB338=0x800FB338 \
-	--defsym=func_800FB3FC=0x800FB3FC \
 	--defsym=func_800FB348=0x800FB348 \
+	--defsym=func_800FB3FC=0x800FB3FC \
 	--defsym=func_800FB400=0x800FB400 \
 	--defsym=func_800FB418=0x800FB418 \
 	--defsym=func_800FB4B8=0x800FB4B8 \
@@ -34,7 +64,71 @@ $(BUILD)/data/EFFECT/EFFPURGE.BIN: LDFLAGS += \
 	--defsym=func_800FB62C=0x800FB62C \
 	--defsym=func_800FB71C=0x800FB71C \
 	--defsym=func_800FB720=0x800FB720 \
+	--defsym=func_800FB89C=0x800FB89C \
+	--defsym=func_800FBA00=0x800FBA00 \
+	--defsym=func_800FBA18=0x800FBA18 \
+	--defsym=func_800FBAC8=0x800FBAC8 \
+	--defsym=func_800FBB24=0x800FBB24 \
+	--defsym=func_800FBD60=0x800FBD60 \
+	--defsym=func_800FBDE4=0x800FBDE4 \
+	--defsym=func_800FBDF8=0x800FBDF8 \
+	--defsym=func_800FBE44=0x800FBE44 \
+	--defsym=func_800FBE88=0x800FBE88 \
+	--defsym=func_800FBEFC=0x800FBEFC \
+	--defsym=func_800FBF4C=0x800FBF4C \
+	--defsym=func_800FBF6C=0x800FBF6C \
+	--defsym=func_800FBF7C=0x800FBF7C \
+	--defsym=func_800FBF94=0x800FBF94 \
+	--defsym=func_800FBFCC=0x800FBFCC \
+	--defsym=func_800FBFDC=0x800FBFDC \
+	--defsym=func_800FC0E4=0x800FC0E4 \
+	--defsym=func_800FC11C=0x800FC11C \
+	--defsym=func_800FC21C=0x800FC21C \
+	--defsym=func_800FC228=0x800FC228 \
+	--defsym=func_800FC29C=0x800FC29C \
+	--defsym=func_800FC2BC=0x800FC2BC \
+	--defsym=func_800FC42C=0x800FC42C \
+	--defsym=func_800FC50C=0x800FC50C \
+	--defsym=func_800FC524=0x800FC524 \
+	--defsym=func_800FC568=0x800FC568 \
+	--defsym=func_800FC56C=0x800FC56C \
+	--defsym=func_800FC624=0x800FC624 \
+	--defsym=func_800FC6EC=0x800FC6EC \
+	--defsym=func_800FC8C4=0x800FC8C4 \
+	--defsym=func_800FC8D0=0x800FC8D0 \
+	--defsym=func_800FC97C=0x800FC97C \
 	--defsym=func_800FCA2C=0x800FCA2C \
+	--defsym=func_800FCA50=0x800FCA50 \
+	--defsym=func_800FCABC=0x800FCABC \
+	--defsym=func_800FCB0C=0x800FCB0C \
+	--defsym=func_800FCB38=0x800FCB38 \
+	--defsym=func_800FCE0C=0x800FCE0C \
+	--defsym=func_800FCE78=0x800FCE78 \
+	--defsym=func_800FCE90=0x800FCE90 \
+	--defsym=func_800FCF18=0x800FCF18 \
+	--defsym=func_800FCFB4=0x800FCFB4 \
+	--defsym=func_800FCFEC=0x800FCFEC \
+	--defsym=func_800FD074=0x800FD074 \
+	--defsym=func_800FD104=0x800FD104 \
+	--defsym=func_800FD198=0x800FD198 \
+	--defsym=func_800FD2E4=0x800FD2E4 \
+	--defsym=func_800FD354=0x800FD354 \
+	--defsym=func_800FD420=0x800FD420 \
+	--defsym=func_800FD4F4=0x800FD4F4 \
+	--defsym=func_800FD51C=0x800FD51C \
+	--defsym=func_800FD534=0x800FD534 \
+	--defsym=func_800FD654=0x800FD654 \
+	--defsym=func_800FD6C0=0x800FD6C0 \
+	--defsym=func_800FDA1C=0x800FDA1C \
+	--defsym=func_800FDBAC=0x800FDBAC \
 	--defsym=func_800FDC20=0x800FDC20 \
 	--defsym=func_800FDE48=0x800FDE48 \
-	--defsym=func_800FF4E8=0x800FF4E8
+	--defsym=func_800FDEC4=0x800FDEC4 \
+	--defsym=func_800FE044=0x800FE044 \
+	--defsym=func_800FE3EC=0x800FE3EC \
+	--defsym=func_800FE958=0x800FE958 \
+	--defsym=func_800FF334=0x800FF334 \
+	--defsym=func_800FF46C=0x800FF46C \
+	--defsym=func_800FF4E8=0x800FF4E8 \
+	--defsym=func_800FFB04=0x800FFB04 \
+	--defsym=func_800FFFA8=0x800FFFA8

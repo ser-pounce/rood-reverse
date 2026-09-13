@@ -37,7 +37,7 @@ extern u_int D_800F5690;
 extern _loadFileContext D_800F5694;
 extern u_long* D_800F56A0;
 extern int D_800F56A4;
-extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
+extern void (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 extern int D_800F5874;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
@@ -234,7 +234,7 @@ void func_800D7FC8(int arg0, int arg1, int arg2)
     D_800F56A4 = arg2;
 }
 
-void func_800D7FE4(int (*arg0)(struct func_800D4910_t*, int, int), int arg1)
+void func_800D7FE4(void (*arg0)(struct func_800D4910_t*, int, int), int arg1)
 {
     D_800F56A8[arg1] = arg0;
 }

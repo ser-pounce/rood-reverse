@@ -53,7 +53,7 @@ extern D_800F569C_t* D_800F5698;
 
 void func_800D78B8(void) { D_800F5698 = D_800F569C; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78CC);
+void func_800D78CC(void) { D_800F569C = D_800F5698; }
 
 void func_800D78E0(u_char* arg0) { D_800F569C->unk8 = arg0; }
 

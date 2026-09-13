@@ -1,4 +1,5 @@
 #include "common.h"
+#include "5BF94.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/overlay.h"
@@ -54,7 +55,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78E0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78F0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7980);
+void func_800D7980(int arg0) { D_800F569C->unkBC = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7990);
 

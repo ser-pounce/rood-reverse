@@ -16,7 +16,7 @@ def load_category_mappings(categories_path: Path):
 def get_name_and_category(base_path: Path, category_mappings: dict):
     parts = base_path.parts
     for i, part in enumerate(parts):
-        if part.endswith(".PRG") or part == "SLUS_010.40":
+        if part.endswith(".PRG") or part.endswith(".BIN") or part == "SLUS_010.40":
             name = Path(*parts[i:]).with_suffix("")
             old_category = part
             # Map the old category to the new prefixed category

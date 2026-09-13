@@ -61,7 +61,19 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78F0);
 
 void func_800D7980(int arg0) { D_800F569C->unkBC = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7990);
+void func_800D7990(func_800D0B30_t1* arg0)
+{
+    D_800F569C_t* s = D_800F569C;
+    u_char* p;
+    int i;
+
+    s->unk8C = arg0;
+    p = (u_char*)arg0 + arg0->unk2;
+    for (i = 0; i < arg0->unk0; i++) {
+        s->unkC[i] = p;
+        p += arg0->unk4[i];
+    }
+}
 
 void func_800D79E4(char* arg0) { D_800F569C->unk90 = arg0; }
 

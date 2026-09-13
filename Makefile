@@ -9,7 +9,8 @@ OBJCOPYFLAGS := -I binary -O elf32-tradlittlemips
 BUILD        := build
 BINARIES     := SLUS_010.40 $(addsuffix .PRG, \
 				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
-				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
+				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F))) \
+				EFFECT/EFFPURGE.BIN
 BINARY_DEPS  := $(BINARIES:%=$(BUILD)/config/%/link.d)
 BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS      := $(BINTARGETS)

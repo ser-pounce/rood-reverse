@@ -17,7 +17,8 @@ typedef struct {
 } func_800A3054_t;
 
 typedef struct {
-    int unk0;
+    short unk0;
+    short unk2;
     short unk4;
     short unk6;
 } func_8008D2C0_t;
@@ -228,7 +229,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4D8C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A51A0);
+int func_800A51A0(int arg0, SVECTOR* arg1)
+{
+    func_8008D2C0_t sp10[4];
+    func_8008D2C0_t* p;
+    int n;
+    int i;
+
+    arg0 -= 2;
+    n = func_8008D2C0(sp10);
+    for (i = 0; i < n; i++) {
+        if (sp10[i].unk6 == arg0) {
+            p = &sp10[i];
+            goto found;
+        }
+    }
+    p = NULL;
+found:
+    if (p->unk0 + 0x40 < arg1->vx) {
+        return 0;
+    }
+    if (arg1->vx < p->unk0 - 0x40) {
+        return 0;
+    }
+    if (p->unk4 + 0x40 < arg1->vz) {
+        return 0;
+    }
+    return !(arg1->vz < p->unk4 - 0x40);
+}
 
 void func_800A525C(D_800F4538_t* arg0)
 {

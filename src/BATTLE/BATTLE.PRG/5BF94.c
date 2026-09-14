@@ -97,6 +97,14 @@ typedef struct {
 } D_800F5620_t;
 
 typedef struct {
+    char unk0[0xC];
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+} func_800CFAAC_t;
+
+typedef struct {
     u_char order[8];
     u_char unk8;
     u_char unk9;
@@ -3268,7 +3276,40 @@ void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF988);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFAAC);
+void func_800CFAAC(func_800CFAAC_t* arg0)
+{
+    int dx;
+    int dy;
+    int sx;
+    int sy;
+
+    if (*(int*)&arg0->unkC == *(int*)&arg0->unk10) {
+        return;
+    }
+    sx = -1;
+    sy = -1;
+    dx = arg0->unk10 - arg0->unkC;
+    dy = arg0->unk12 - arg0->unkE;
+    if (dx < 0) {
+        dx = -dx;
+        sx = 1;
+    }
+    if (dy < 0) {
+        dy = -dy;
+        sy = 1;
+    }
+    if (dy < dx) {
+        arg0->unk10 += sx;
+        if (dx < dy * 2) {
+            arg0->unk12 += sy;
+        }
+    } else {
+        arg0->unk12 += sy;
+        if (dy < dx * 2) {
+            arg0->unk10 += sx;
+        }
+    }
+}
 
 int func_800CFB68(int arg0, int arg1, int arg2)
 {

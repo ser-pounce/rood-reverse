@@ -3,4 +3,4 @@ $(BUILD)/data/EFFECT/%.BIN: LDFLAGS += \
 
 $(BUILD)/src/EFFECT/%.o: ASFLAGS += -no-pad-sections
 
-BINARIES += $(patsubst %,EFFECT/%.BIN,EFFPURGE $(addprefix PLG,005 044 045 047))
+BINARIES += $(patsubst %,EFFECT/%.BIN,EFFPURGE $(addprefix PLG,005 044 045 047 049))

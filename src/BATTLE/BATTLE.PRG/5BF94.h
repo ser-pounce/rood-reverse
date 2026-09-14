@@ -194,8 +194,8 @@ typedef struct {
     int unkAC;
     u_short* unkB0;
     D_800F569C_t2* unkB4;
-    int unkB8;
-    int unkBC;
+    void* unkB8;
+    void* unkBC;
     u_char* unkC0;
     int unkC4;
     int unkC8;

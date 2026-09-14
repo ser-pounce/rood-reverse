@@ -52,6 +52,9 @@ typedef struct {
     u_short unk34[8];
 } D_800F5638_t;
 
+void func_800D7A14(void*);
+void func_800D7AC4(void*);
+void func_800D7AEC(void*);
 void func_800D8038(int);
 void func_800D8054(int);
 
@@ -84,7 +87,7 @@ void func_800D78E0(u_char* arg0) { D_800F569C->unk8 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78F0);
 
-void func_800D7980(int arg0) { D_800F569C->unkBC = arg0; }
+void func_800D7980(void* arg0) { D_800F569C->unkBC = arg0; }
 
 void func_800D7990(func_800D0B30_t1* arg0)
 {
@@ -104,7 +107,7 @@ void func_800D79E4(char* arg0) { D_800F569C->unk90 = arg0; }
 
 void func_800D79F4(D_800F569C_t2* arg0) { D_800F569C->unkB4 = arg0; }
 
-void func_800D7A04(int arg0) { D_800F569C->unkB8 = arg0; }
+void func_800D7A04(void* arg0) { D_800F569C->unkB8 = arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7A14);
 
@@ -319,7 +322,63 @@ u_int func_800D8044(void) { return D_800F5680; }
 
 void func_800D8054(int arg0) { D_800F5690 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8060);
+void func_800D8060(void* arg0)
+{
+    while (1) {
+        int temp_s1 = *(int*)arg0;
+
+        switch (temp_s1 & 0xFFFF0000) {
+        case 0:
+            return;
+
+        case 0x10000:
+            func_800D7A14(arg0 + 4);
+            break;
+
+        case 0x20000:
+            func_800D7A74(arg0 + 4);
+            break;
+
+        case 0x30000:
+            func_800D7980(arg0 + 4);
+            break;
+
+        case 0x40000:
+            func_800D7990(arg0 + 4);
+            break;
+
+        case 0x50000:
+            func_800D78E0(arg0 + 4);
+            break;
+
+        case 0x80000:
+            func_800D79E4(arg0 + 4);
+            break;
+
+        case 0x90000:
+            func_800D79F4(arg0 + 4);
+            break;
+
+        case 0xA0000:
+            func_800D7A04(arg0 + 4);
+            break;
+
+        case 0xB0000:
+            func_800D7AB4(arg0 + 4);
+            break;
+
+        case 0xC0000:
+            func_800D7AC4(arg0 + 4);
+            break;
+
+        case 0xD0000:
+            func_800D7AEC(arg0 + 4);
+            break;
+        }
+
+        arg0 += temp_s1 & 0xFFFF;
+    }
+}
 
 int vs_battle_getMainMenuLba(void) { return VS_MAINMENU_PRG_LBA; }
 

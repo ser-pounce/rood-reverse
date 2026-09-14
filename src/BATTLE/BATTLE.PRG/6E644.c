@@ -712,15 +712,14 @@ int func_800E5568(func_800E5568_t* arg0)
 int func_800E5600(int arg0, int actionId, u_int arg2)
 {
     vs_action_t* action = &vs_main_actions[actionId];
-    u_int flags = *(u_int*)&action->flags_0;
     int r = 0;
     int v;
 
-    if (flags & 0x20000000) {
+    if (action->flagsE_13 << 0x1D) {
         r = action->aoe_8 << 5;
-    } else if (flags & 0x800000) {
+    } else if (action->flagsE_3 << 0x17) {
         v = func_800E5568((func_800E5568_t*)&action->aoe_0);
-        if ((u_int)v < arg2) {
+        if (v < arg2) {
             r = v;
         }
     }

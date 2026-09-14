@@ -63,6 +63,13 @@ typedef struct {
 } D_800F5638_t;
 
 typedef struct {
+    short unk0;
+    short unk1;
+    short unk2;
+    short unk3;
+} func_8008D2C0_t;
+
+typedef struct {
     signed char dx : 2;
     signed char unk0_2 : 2;
     signed char dz : 2;
@@ -91,6 +98,7 @@ void func_800D7AC4(void*);
 void func_800D7AEC(void*);
 void func_800D8038(int);
 void func_800D8054(int);
+int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
 
@@ -602,7 +610,31 @@ found:
     arg3->unk2 = D_800F5910[i].unk0_5;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFAF8);
+int func_800DFAF8(int arg0, u_int arg1, int arg2)
+{
+    func_8008D2C0_t sp10[4];
+    func_8008D2C0_t* m;
+    u_short* p;
+    int i;
+    int j;
+
+    func_8008D2C0(sp10);
+    for (i = 0; i < 8; i++) {
+        p = (u_short*)&D_800F5910[i];
+        j = i >> 1;
+        if (arg2 == 0) {
+            p++;
+        }
+        if ((u_char)arg1 == (*p & 0x1F) && (u_char)(arg1 >> 16) == ((*p >> 5) & 0x1F)) {
+            m = &sp10[j];
+            if (D_800F5910[i].unk2_0 == m->unk0 >> 7
+                && D_800F5910[i].unk2_5 == m->unk2 >> 7) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFBCC);
 

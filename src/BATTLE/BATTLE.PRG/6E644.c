@@ -798,7 +798,22 @@ int func_800E5568(func_800E5568_t* arg0)
     return ((r << 5) * ABS(v)) >> 12;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5600);
+int func_800E5600(int arg0, int actionId, u_int arg2)
+{
+    vs_action_t* action = &vs_main_actions[actionId];
+    int r = 0;
+    int v;
+
+    if (action->flagsE_13 << 0x1D) {
+        r = action->aoe_8 << 5;
+    } else if (action->flagsE_3 << 0x17) {
+        v = func_800E5568((func_800E5568_t*)&action->aoe_0);
+        if (v < arg2) {
+            r = v;
+        }
+    }
+    return r;
+}
 
 int func_800E5698(func_800E5698_t* arg0, int actionId)
 {

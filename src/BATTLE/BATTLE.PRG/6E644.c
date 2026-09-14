@@ -613,13 +613,12 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
 {
     func_8008D2C0_t sp10[4];
     func_8008D2C0_t* m;
-    D_800F5910_t* e;
     int i;
     int j;
 
     func_8008D2C0(sp10);
     for (i = 0; i < 8; i++) {
-        e = &D_800F5910[i * 2];
+        D_800F5910_t* e = &D_800F5910[i * 2];
         j = i >> 1;
         if (arg2 == 0) {
             e++;

@@ -739,13 +739,13 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5EC0);
 int func_800E5FDC(int arg0, int arg1)
 {
     int i;
-    int x;
-    int z;
+    u_int x;
+    u_int z;
 
     for (i = 0; i < 4; i++) {
         x = arg0 + D_800F16EC[i * 2].dx;
         z = arg1 + D_800F16EC[i * 2].dz;
-        if ((u_int)x < 32 && (u_int)z < 32 && !(D_800F58B8[z][x] & 0x70)) {
+        if (x < 32 && z < 32 && !(D_800F58B8[z][x] & 0x70)) {
             return func_8008DC7C(x << 7 | 0x40, z << 7 | 0x40) >> 6;
         }
     }

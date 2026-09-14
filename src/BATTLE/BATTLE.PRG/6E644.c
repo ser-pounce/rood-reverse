@@ -617,11 +617,11 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
     int j;
 
     func_8008D2C0(sp10);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; ++i) {
         D_800F5910_t* e = &D_800F5910[i * 2];
         j = i >> 1;
         if (arg2 == 0) {
-            e++;
+            ++e;
         }
         if ((u_char)arg1 == e->unk0_0 && (u_char)(arg1 >> 16) == e->unk0_5) {
             m = &sp10[j];

@@ -59,4 +59,5 @@ $(BUILD)/data/MENU/MENUA.PRG: | $$(@D)/
 	$(ECHO) Touching empty file $@
 	$(TOUCH) $@
 
-TARGETS += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))
+BINARIES += $(patsubst %,MENU/%.PRG,MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F))
+TARGETS  += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

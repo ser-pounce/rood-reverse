@@ -31,6 +31,16 @@ typedef struct {
 } func_800E5568_t;
 
 typedef struct {
+    char unk0[0x38];
+    func_800E5568_t unk38;
+} func_800E5698_t2;
+
+typedef struct {
+    char unk0[0x5C];
+    func_800E5698_t2* unk5C;
+} func_800E5698_t;
+
+typedef struct {
     u_short unk0_0 : 5;
     u_short unk0_5 : 5;
     u_short unk0_10 : 6;
@@ -711,7 +721,23 @@ int func_800E5568(func_800E5568_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5600);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5698);
+int func_800E5698(func_800E5698_t* arg0, int actionId)
+{
+    vs_action_t* action = &vs_main_actions[actionId];
+    func_800E5568_t* range;
+    u_int v;
+
+    if (action->rangeX == 0xFF) {
+        range = &arg0->unk5C->unk38;
+    } else {
+        range = (func_800E5568_t*)&action->rangeX;
+    }
+    v = func_800E5568(range);
+    if (v > 0x20) {
+        v -= 0x20;
+    }
+    return v * v;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5710);
 

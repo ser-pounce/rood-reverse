@@ -598,7 +598,8 @@ void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
     arg1 >>= 19;
     arg2 >>= 19;
     for (i = arg0 * 2; i < arg0 * 2 + 2; i++) {
-        if (arg1 == D_800F5910[i * 2 + 1].unk0_0 && arg2 == D_800F5910[i * 2 + 1].unk0_5) {
+        if (arg1 == D_800F5910[i * 2 + 1].unk0_0
+            && arg2 == D_800F5910[i * 2 + 1].unk0_5) {
             goto found;
         }
     }

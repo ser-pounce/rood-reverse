@@ -44,9 +44,6 @@ typedef struct {
     u_short unk0_0 : 5;
     u_short unk0_5 : 5;
     u_short unk0_10 : 6;
-    u_short unk2_0 : 5;
-    u_short unk2_5 : 5;
-    u_short unk2_10 : 6;
 } D_800F5910_t;
 
 typedef struct {
@@ -578,14 +575,15 @@ void func_800DF9A8(func_800DFA54_t* arg0, func_800DFA54_t* arg1)
     int i;
 
     for (i = 0; i < 8; i++) {
-        if (D_800F5910[i].unk0_0 == arg0->unk0 && D_800F5910[i].unk0_5 == arg0->unk2) {
+        if (D_800F5910[i * 2].unk0_0 == arg0->unk0
+            && D_800F5910[i * 2].unk0_5 == arg0->unk2) {
             if (i & 1) {
                 i--;
             } else {
                 i++;
             }
-            arg1->unk0 = D_800F5910[i].unk2_0;
-            arg1->unk2 = D_800F5910[i].unk2_5;
+            arg1->unk0 = D_800F5910[i * 2 + 1].unk0_0;
+            arg1->unk2 = D_800F5910[i * 2 + 1].unk0_5;
             arg1->unk1 = i >> 1;
             return;
         }
@@ -600,35 +598,35 @@ void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
     arg1 >>= 19;
     arg2 >>= 19;
     for (i = arg0 * 2; i < arg0 * 2 + 2; i++) {
-        if (arg1 == D_800F5910[i].unk2_0 && arg2 == D_800F5910[i].unk2_5) {
+        if (arg1 == D_800F5910[i * 2 + 1].unk0_0 && arg2 == D_800F5910[i * 2 + 1].unk0_5) {
             goto found;
         }
     }
     i = arg0 * 2;
 found:
-    arg3->unk0 = D_800F5910[i].unk0_0;
-    arg3->unk2 = D_800F5910[i].unk0_5;
+    arg3->unk0 = D_800F5910[i * 2].unk0_0;
+    arg3->unk2 = D_800F5910[i * 2].unk0_5;
 }
 
 int func_800DFAF8(int arg0, u_int arg1, int arg2)
 {
     func_8008D2C0_t sp10[4];
     func_8008D2C0_t* m;
-    u_short* p;
+    D_800F5910_t* e;
     int i;
     int j;
 
     func_8008D2C0(sp10);
     for (i = 0; i < 8; i++) {
-        p = (u_short*)&D_800F5910[i];
+        e = &D_800F5910[i * 2];
         j = i >> 1;
         if (arg2 == 0) {
-            p++;
+            e++;
         }
-        if ((u_char)arg1 == (*p & 0x1F) && (u_char)(arg1 >> 16) == ((*p >> 5) & 0x1F)) {
+        if ((u_char)arg1 == e->unk0_0 && (u_char)(arg1 >> 16) == e->unk0_5) {
             m = &sp10[j];
-            if (D_800F5910[i].unk2_0 == m->unk0 >> 7
-                && D_800F5910[i].unk2_5 == m->unk2 >> 7) {
+            if (D_800F5910[i * 2 + 1].unk0_0 == m->unk0 >> 7
+                && D_800F5910[i * 2 + 1].unk0_5 == m->unk2 >> 7) {
                 return i;
             }
         }

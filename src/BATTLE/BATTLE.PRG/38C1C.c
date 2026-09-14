@@ -130,8 +130,39 @@ int func_800A152C(int arg0, int arg1, int arg2)
     return -4;
 }
 
-// https://decomp.me/scratch/N9nFn
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1648);
+int func_800A1648(int arg0, int arg1, int arg2)
+{
+    D_800F4538_t* actor;
+    D_800F4538_unk68* model;
+    u_int v;
+
+    actor = D_800F4538[arg0];
+    if (actor == NULL) {
+        actor = (D_800F4538_t*)D_800F45E0[arg0];
+        if (actor == NULL) {
+            return -1;
+        }
+    }
+    model = actor->unk0.unk68;
+    switch (arg2) {
+    case 0:
+        v = model->armatures[arg1].unk6;
+        break;
+    case 1:
+        v = model->armatures[arg1].unk7 >> 4;
+        if (v == 0) {
+            return -3;
+        }
+        break;
+    case 2:
+        v = model->armatures[arg1].unk7 & 0xF;
+        if (v == 0) {
+            return -3;
+        }
+        break;
+    }
+    return v;
+}
 
 int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
 {

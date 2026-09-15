@@ -137,21 +137,6 @@ typedef struct {
 } func_800D0C60_t;
 
 typedef struct {
-    int unk0;
-    short unk4;
-    u_char unk6;
-    u_char unk7;
-    int unk8;
-    short unkC;
-    short unkE;
-    int unk10;
-    short unk14;
-    u_char unk16;
-    u_char unk17;
-    u_char* unk18;
-} func_800D6CF_t;
-
-typedef struct {
     short unk0;
     short unk2;
     unsigned char unk4;
@@ -240,7 +225,6 @@ void func_800D268C(void);
 void func_800D2698(int);
 void func_800D278C(void);
 void func_800D2904(D_800F53B8_t*);
-void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
 u_short func_800D5198(D_800F53B8_t*);
@@ -3997,8 +3981,18 @@ int func_800D4EC0(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4F00(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4F00);
+int func_800D4F00(D_800F53B8_t* arg0)
+{
+    u_char first = func_800D5170(arg0);
+    u_char second = func_800D5170(arg0);
+    u_char third = func_800D5170(arg0);
+    u_char* dst = &D_800F569C->unk8[(first & 0x3F) * 204 + 4];
+
+    dst[0xC4] = (first >> 6) + ((second & 0xF) << 2);
+    dst[0xC5] = (second >> 4) + ((third & 3) << 4);
+    dst[0xC6] = third >> 2;
+    return 1;
+}
 
 int func_800D4FB4(D_800F53B8_t* arg0)
 {

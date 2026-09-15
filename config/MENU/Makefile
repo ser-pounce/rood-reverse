@@ -59,5 +59,17 @@ $(BUILD)/data/MENU/MENUA.PRG: | $$(@D)/
 	$(ECHO) Touching empty file $@
 	$(TOUCH) $@
 
-BINARIES += $(patsubst %,MENU/%.PRG,MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F))
+$(BUILD)/src/MENU/%.o: CC1VER := 2.8.1-psx
+$(BUILD)/src/MENU/%.o: ASFLAGS += -no-pad-sections
+
+MENUS           := $(patsubst %,MENU/%.PRG, $(addprefix MENU,0 1 2 3 4 5 7 8 9 B C D E F) MAINMENU)
+MENU_BINTARGETS := $(MENUS:%=$(BUILD)/data/%)
+MENU_LDLIBS     := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
+
+$(MENU_BINTARGETS): $(MENU_LDLIBS)
+$(MENU_BINTARGETS): LDLIBS += $(MENU_LDLIBS)
+$(MENU_BINTARGETS): LDFLAGS += --defsym=vs_scratch=0x1F800000
+$(MENU_BINTARGETS) $(MENU_BINTARGETS:.PRG=.PRG.elf): LDSCRIPT := link.ld
+
+BINARIES += $(MENUS)
 TARGETS  += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

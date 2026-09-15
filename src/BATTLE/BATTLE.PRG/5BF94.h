@@ -283,6 +283,21 @@ typedef struct {
     short unk2;
 } func_800CFE1C_t;
 
+typedef struct {
+    int unk0;
+    short unk4;
+    u_char unk6;
+    u_char unk7;
+    int unk8;
+    short unkC;
+    short unkE;
+    int unk10;
+    short unk14;
+    u_char unk16;
+    u_char unk17;
+    u_char* unk18;
+} func_800D6CF_t;
+
 enum vs_battle_limbStatus {
     limbStatusCritical,
     limbStatusDamaged,
@@ -450,6 +465,9 @@ int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
 int func_800D118C(int arg0, int arg1);
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
+void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
+void func_800D6CCC(int* arg0);
+void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];

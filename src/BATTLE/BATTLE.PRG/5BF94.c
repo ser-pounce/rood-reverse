@@ -137,21 +137,6 @@ typedef struct {
 } func_800D0C60_t;
 
 typedef struct {
-    int unk0;
-    short unk4;
-    u_char unk6;
-    u_char unk7;
-    int unk8;
-    short unkC;
-    short unkE;
-    int unk10;
-    short unk14;
-    u_char unk16;
-    u_char unk17;
-    u_char* unk18;
-} func_800D6CF_t;
-
-typedef struct {
     short unk0;
     short unk2;
     unsigned char unk4;
@@ -240,7 +225,6 @@ void func_800D268C(void);
 void func_800D2698(int);
 void func_800D278C(void);
 void func_800D2904(D_800F53B8_t*);
-void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
 void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
 u_short func_800D5198(D_800F53B8_t*);

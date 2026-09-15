@@ -193,6 +193,11 @@ typedef struct {
     u_char unk3;
 } func_800D1E78_t;
 
+typedef struct {
+    int count;
+    short offsets[1];
+} func_800D11F4_t;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
@@ -3520,7 +3525,35 @@ int func_800D118C(int arg0, int arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D11F4);
+int func_800D11F4(int arg0, int arg1)
+{
+    u_char* buf = D_800F569C->unkC0;
+    func_800D11F4_t* table = (func_800D11F4_t*)buf;
+    int offset;
+    int v;
+
+    if (arg0 < table->count) {
+        offset = *(arg0 + table->offsets);
+        offset += buf[offset];
+        while (buf[offset] != 0) {
+            v = arg1 - buf[offset];
+            if (v < 0) {
+                break;
+            }
+            offset += 2;
+            arg1 = v;
+        }
+        if (buf[offset] != 0) {
+            return (buf[offset + 3] - buf[offset + 1]) * arg1 / buf[offset]
+                 + buf[offset + 1];
+        }
+        if (arg1 == 0) {
+            return buf[offset + 1];
+        }
+        return -1;
+    }
+    return 0;
+}
 
 int func_800D12D8(int arg0)
 {

@@ -3997,8 +3997,18 @@ int func_800D4EC0(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4F00(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4F00);
+int func_800D4F00(D_800F53B8_t* arg0)
+{
+    u_char first = func_800D5170(arg0);
+    u_char second = func_800D5170(arg0);
+    u_char third = func_800D5170(arg0);
+    u_char* dst = &D_800F569C->unk8[(first & 0x3F) * 204 + 4];
+
+    dst[0xC4] = (first >> 6) + ((second & 0xF) << 2);
+    dst[0xC5] = (second >> 4) + ((third & 3) << 4);
+    dst[0xC6] = third >> 2;
+    return 1;
+}
 
 int func_800D4FB4(D_800F53B8_t* arg0)
 {

@@ -351,13 +351,14 @@ extern D_800F54D8_t D_800F5520;
 extern short D_800F55A0;
 extern D_800F54D8_t D_800F55A8;
 extern int D_800F55E8;
+extern int D_800F55F0;
 extern func_800D2904_t* D_800F55F4;
 extern int D_800F55F8;
 extern int D_800F5600;
 extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
-extern void* D_800F55FC;
+extern func_800D2904_t* D_800F55FC;
 extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
@@ -3727,7 +3728,28 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2560);
 
 void func_800D268C(void) { D_800F5600 = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2698);
+void func_800D2698(int arg0)
+{
+    int i;
+
+    if (D_800F5600 != 0) {
+        ++D_800F5600;
+        return;
+    }
+    D_800F55FC = vs_main_allocHeapR(sizeof *D_800F55FC * arg0);
+    D_800F55FC[0].previous = NULL;
+    D_800F55FC[0].next = &D_800F55FC[1];
+    for (i = 1; i < arg0 - 1; ++i) {
+        D_800F55FC[i].previous = &D_800F55FC[i - 1];
+        D_800F55FC[i].next = &D_800F55FC[i + 1];
+    }
+    D_800F55F8 = 0;
+    D_800F55F0 = arg0;
+    D_800F5600 = 1;
+    D_800F55FC[i].previous = &D_800F55FC[i - 1];
+    D_800F55FC[i].next = NULL;
+    D_800F55F4 = D_800F55FC;
+}
 
 void func_800D278C(void)
 {

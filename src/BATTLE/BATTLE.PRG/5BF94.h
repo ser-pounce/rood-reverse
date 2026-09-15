@@ -220,6 +220,7 @@ typedef struct func_800D2904_t {
     int unkC;
     int unk10;
     int unk14;
+    char unk18[0x60];
 } func_800D2904_t;
 
 typedef struct {

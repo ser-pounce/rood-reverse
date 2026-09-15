@@ -841,7 +841,25 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009506C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095258);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800957D0);
+void func_800957D0(int arg0, int arg1, int arg2)
+{
+    void** p = (void**)0x1F800000;
+    POLY_FT4* prim = (POLY_FT4*)p[0];
+
+    setlen(prim, 9);
+    setcode(prim, 0x2C);
+    arg0 -= 8;
+    arg2 <<= 4;
+    setXY4(
+        prim, arg0, arg1 - 5, arg0 + 16, arg1 - 5, arg0, arg1 + 5, arg0 + 16, arg1 + 5);
+    setUV4(
+        prim, arg2 + 0x40, 0x30, arg2 + 0x50, 0x30, arg2 + 0x40, 0x3A, arg2 + 0x50, 0x3A);
+    prim->tpage = 0x17;
+    prim->clut = 0x373E;
+    setShadeTex(prim, 1);
+    AddPrim((u_long*)p[1] - 5, prim++);
+    p[0] = prim;
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069240);
 

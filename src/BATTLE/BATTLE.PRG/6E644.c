@@ -98,6 +98,7 @@ void func_800D8054(int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
+void func_800E5EC0(int, int, int);
 
 extern D_800F16EC_t D_800F16EC[8];
 extern int D_800F5630;
@@ -113,6 +114,7 @@ extern void (*D_800F56A8[])(struct func_800D4910_t*, int, int);
 extern int D_800F5874;
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
+extern u_short (*D_800F58D0)[32];
 extern D_800F5910_t* D_800F5910;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
@@ -860,7 +862,22 @@ int func_800E5FDC(int arg0, int arg1)
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6098);
+void func_800E6098(void)
+{
+    int x;
+    int z;
+
+    for (z = 0; z < 32; ++z) {
+        for (x = 0; x < 32; ++x) {
+            if ((D_800F58B8[z][x] & 0x20) && !(D_800F58D0[z][x] & 0x2000)) {
+                int r = func_800E5FDC(x, z);
+                if (r >= 0) {
+                    func_800E5EC0(x, z, r);
+                }
+            }
+        }
+    }
+}
 
 void func_800E6F9C(void);
 

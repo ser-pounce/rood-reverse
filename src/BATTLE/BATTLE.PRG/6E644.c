@@ -90,6 +90,13 @@ typedef struct {
     u_short unk18;
 } D_800F58BC_t;
 
+typedef struct {
+    char unk0[0x34];
+    u_char unk34;
+    char unk35;
+    u_char unk36;
+} func_800E0850_t;
+
 void func_800D7A14(void*);
 void func_800D7AC4(void*);
 void func_800D7AEC(void*);
@@ -98,6 +105,8 @@ void func_800D8054(int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
+int func_800E0678(func_800E0850_t*, int);
+int func_800E42EC(int, int);
 void func_800E5EC0(int, int, int);
 
 extern D_800F16EC_t D_800F16EC[8];
@@ -642,7 +651,27 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E02B4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0678);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0850);
+int func_800E0850(func_800E0850_t* arg0, u_int arg1)
+{
+    int min = 0;
+    int count = 1;
+
+    if (arg1 & 0x3FF) {
+        count = 3;
+    }
+    arg1 = (arg1 >> 9) & 6;
+    while (--count != -1) {
+        if (func_800E0678(arg0, arg1) != 0) {
+            int h = func_800E42EC(arg0->unk34 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx,
+                arg0->unk36 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
+            if (h < min) {
+                min = h;
+            }
+        }
+        arg1 = (arg1 + 1) & 7;
+    }
+    return min;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0918);
 

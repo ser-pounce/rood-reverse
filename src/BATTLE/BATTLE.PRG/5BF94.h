@@ -448,6 +448,8 @@ void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
 void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
 int func_800D118C(int arg0, int arg1);
+void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
+void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];

@@ -5943,7 +5943,7 @@ int vs_battle_getCameraRoll(void) { return vs_scratch.camera.angles.vz & 0xFFF; 
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 
-void _lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
+void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
 {
     static const VECTOR D_800689F8 = { 0, -ONE, 0 };
     VECTOR sp10;

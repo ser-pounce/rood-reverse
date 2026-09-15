@@ -3769,7 +3769,7 @@ void func_800D2904(D_800F53B8_t* arg0)
     arg0->unk8 = 0;
 }
 
-void func_800D2970(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+void vs_battle_addVector(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     arg2->vx = arg0->vx + arg1->vx;
     arg2->vy = arg0->vy + arg1->vy;
@@ -3783,18 +3783,18 @@ void vs_battle_addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2)
     arg2->vz = arg0->vz + arg1->vz;
 }
 
-void _svecToVec(SVECTOR* arg0, VECTOR* arg1)
+void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1)
 {
     arg1->vx = arg0->vx;
     arg1->vy = arg0->vy;
     arg1->vz = arg0->vz;
 }
 
-void func_800D2A14(u_short* arg0, SVECTOR* arg1)
+void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1)
 {
-    arg1->vx = arg0[0];
-    arg1->vy = arg0[2];
-    arg1->vz = arg0[4];
+    arg1->vx = arg0->vx;
+    arg1->vy = arg0->vy;
+    arg1->vz = arg0->vz;
 }
 
 void func_800D2A38(func_800D2A38_t* arg0, func_800D2904_t* arg1)

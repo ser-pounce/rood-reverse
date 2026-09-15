@@ -1,4 +1,8 @@
 #include "common.h"
+#include "src/SLUS_010.40/32154.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include <rand.h>
+#include <inline_c.h>
 
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800F98E0);
 

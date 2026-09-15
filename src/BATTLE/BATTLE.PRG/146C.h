@@ -917,6 +917,7 @@ void func_8006CDD8(func_8006CE70_t*);
 void func_8006CE50(void);
 void func_8006CE70(func_8006CE70_t*);
 int vs_battle_getCameraRoll(void);
+void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
 
 /**
  * Retrieves room ID, only used for teleporting.

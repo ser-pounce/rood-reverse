@@ -87,6 +87,40 @@ typedef struct {
     char unkF;
 } func_800962E4_t;
 
+typedef struct {
+    u_char unk0[0xC];
+    u_char unkC;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    u_char unk14;
+    u_char unk15;
+    u_char unk16[0xA];
+} func_80093914_t;
+
+typedef struct {
+    u_char unk0[0xC];
+    u_char unkC;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    u_char unk14;
+    u_char unk15;
+    u_char unk16[0xE];
+    u_char unk24;
+    u_char unk25;
+    u_char unk26;
+    u_char unk27;
+} func_80093914_t2;
+
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -644,7 +678,53 @@ void func_800938AC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093914);
+void func_80093914(int arg0)
+{
+    int* base = vs_battle_roomData.geometrySection;
+    int* entry = func_8009195C(arg0);
+    int* block;
+    int n0;
+    int n1;
+    func_80093914_t* t;
+    func_80093914_t2* q;
+    int i;
+    u_char tmp;
+
+    if (entry == NULL) {
+        return;
+    }
+    block = (int*)((u_char*)base + entry[7]);
+    n0 = block[0];
+    n1 = block[1];
+    block += 2;
+    t = (func_80093914_t*)block;
+    for (i = 0; i < n0; ++i, ++t) {
+        tmp = t->unkC;
+        t->unkC = t->unkD;
+        t->unkD = tmp;
+        tmp = t->unk10;
+        t->unk10 = t->unk11;
+        t->unk11 = tmp;
+        tmp = t->unk14;
+        t->unk14 = t->unk15;
+        t->unk15 = tmp;
+    }
+    q = (func_80093914_t2*)t;
+    for (i = 0; i < n1; ++i, ++q) {
+        tmp = q->unkC;
+        q->unkC = q->unkD;
+        q->unkD = tmp;
+        tmp = q->unk10;
+        q->unk10 = q->unk11;
+        q->unk11 = tmp;
+        tmp = q->unk14;
+        q->unk14 = q->unk15;
+        q->unk15 = tmp;
+        tmp = q->unk24;
+        q->unk24 = q->unk25;
+        q->unk25 = tmp;
+    }
+}
 
 void func_80093A14(void)
 {

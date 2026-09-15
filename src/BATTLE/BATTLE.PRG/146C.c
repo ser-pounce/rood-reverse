@@ -543,7 +543,7 @@ void func_80093B04(void*);
 void func_80093B68(int arg0, int arg1, int arg2, int arg3);
 int vs_battle_renderBattleAbilityTimingResult(int);
 void func_80093FEC(int, int, int, int);
-void func_80093914(char);
+void func_80093914(int);
 void func_80095B7C(int, int);
 void func_80096768(int, int, int);
 void func_80096FF0(int);

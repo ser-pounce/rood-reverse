@@ -95,7 +95,7 @@ def encode_tim(png_path: Path) -> bytes:
     img.load()
     img = cast(PngImageFile, img)
 
-    if img.mode == 'RGBA':
+    if img.mode == 'RGB':
         return build_tim(img, encode_highColor(img), img.width, 2)
 
     elif img.mode == 'P':

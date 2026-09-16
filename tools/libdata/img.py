@@ -59,20 +59,20 @@ def decode_8bpp_bin(pixels: bytes, width: int, height: int, clut: list[tuple[int
 
 
 def decode_highcolor(width: int, height: int, colors: list[Img.Rgb5], output_path: Path, info: PngInfo | None = None) -> None:
-    pixels = bytearray(width * height * 4)
+    pixels = bytearray(width * height * 3)
     stp_packed = bytearray((width * height + 7) // 8)
 
     for i, pixel in enumerate(colors):
-        r8, g8, b8, a8 = pixel.r8, pixel.g8, pixel.b8, pixel.a8
-        assert r8 is not None and g8 is not None and b8 is not None and a8 is not None
-        pixels[i * 4 : i * 4 + 4] = bytes((r8, g8, b8, a8))
+        r8, g8, b8 = pixel.r8, pixel.g8, pixel.b8
+        assert r8 is not None and g8 is not None and b8 is not None
+        pixels[i * 3 : i * 3 + 3] = bytes((r8, g8, b8))
         if pixel.stp:
             stp_packed[i >> 3] |= 0x80 >> (i & 7)
 
     if info is None:
         info = PngInfo()
 
-    img = Image.frombytes('RGBA', (width, height), bytes(pixels))
+    img = Image.frombytes('RGB', (width, height), bytes(pixels))
     info.add(b'stPd', bytes(stp_packed), after_idat=True)
     img.save(output_path, pnginfo=info)
 
@@ -135,7 +135,7 @@ def encode_highColor(img: Image.Image) -> bytes:
     raw_pixels = [0] * pixel_count
 
     for i in range(pixel_count):
-        r5, g5, b5 = rgba[i * 4] >> 3, rgba[i * 4 + 1] >> 3, rgba[i * 4 + 2] >> 3
+        r5, g5, b5 = rgba[i * 3] >> 3, rgba[i * 3 + 1] >> 3, rgba[i * 3 + 2] >> 3
         stp = (stp_packed[i >> 3] >> (7 - (i & 7))) & 1
         raw_pixels[i] = (stp << 15) | (b5 << 10) | (g5 << 5) | r5
 

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "30DB0.h"
 #include "3A1A0.h"
+#include "../../SLUS_010.40/main.h"
 
 typedef struct {
     int unk0;
@@ -38,10 +39,12 @@ int func_800B13CC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
+void func_800B0908(D_800F45E0_t*, int);
 
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
 extern u_char D_800F49F8;
+extern char D_800F4B18;
 extern u_char D_800E9278[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
@@ -225,7 +228,22 @@ func_8008D2C0_t* func_800A4A24(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A88);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4D8C);
+void func_800A4D8C(void)
+{
+    int i;
+
+    for (i = 0; i < 16; ++i) {
+        if ((D_800F45E0[i] != NULL) && (D_800F45E0[i]->unk0 != 0)) {
+            func_800B0908(D_800F45E0[i], vs_gametime_tickspeed / 2);
+        }
+    }
+    for (i = 0; i < 17; ++i) {
+        if ((D_800F4538[i] != NULL) && (D_800F4538[i]->unk0.skip == 0)) {
+            func_800A4E68(i);
+        }
+    }
+    D_800F4B18 = 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
 

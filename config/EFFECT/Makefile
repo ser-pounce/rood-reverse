@@ -5,4 +5,4 @@ $(BUILD)/data/EFFECT/%.BIN: LDFLAGS += \
 $(BUILD)/src/EFFECT/%.o: CC1VER := 2.8.1-psx
 $(BUILD)/src/EFFECT/%.o: ASFLAGS += -no-pad-sections
 
-BINARIES += $(patsubst %,EFFECT/%.BIN,EFFPURGE $(addprefix PLG,005 044 045 047 049 050 051))
+BINARIES += $(patsubst %,EFFECT/%.BIN,EFFPURGE $(addprefix PLG,005 044 045 047 049 050 051 052))

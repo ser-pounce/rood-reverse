@@ -1,9 +1,0 @@
-vs_battle_renderMenuItem = 0x800C9078;
-vs_mainMenu_renderCursor = 0x800FFCDC;
-_renderFadedMenuItem = 0x80102A7C;
-_renderBossRushDetails = 0x80106808;
-_toVsStringInt = 0x80106CEC;
-_toVsStringPercent = 0x80106D5C;
-_printFastestClearTime = 0x80106DE0;
-_clearCount = 0x8010A466;
-_mapCompletion = 0x8010A46A;

@@ -18,7 +18,7 @@ SHELL := bash
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean commit-check remake image docker-build docker-push
+.PHONY: all clean commit-check remake image
 
 SKIPSPLAT += commit-check clean remake clean-all
 
@@ -38,22 +38,15 @@ remake: clean
 
 image: $(BUILD)/$(DISKIMAGE)
 
-docker-build:
-	docker build -t ghcr.io/ser-pounce/rood-reverse:main .
-
-docker-push: docker-build
-	docker push ghcr.io/ser-pounce/rood-reverse:main
-
-
 BINARIES := SLUS_010.40 $(addsuffix .PRG, TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING)
 
-include config/EFFECT/Makefile config/MENU/Makefile config/SMALL/Makefile
+include $(patsubst %,config/%/Makefile,EFFECT MENU SMALL)
 
 BINTARGETS := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS    += $(BINTARGETS)
 
-include $(BINARIES:%=config/%/Makefile)
-include $(patsubst %,tools/make/%.mk,shell assemble compile kaitai link permuter python vsstring)
+include $(wildcard $(BINARIES:%=config/%/Makefile))
+include $(patsubst %,tools/make/%.mk,shell assemble compile docker kaitai link permuter python vsstring)
 
 ifndef PERMUTER
 ifndef __BASH_MAKE_COMPLETION__

@@ -29,11 +29,11 @@ $(BUILD)/data/SMALL/%.DIS: | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.DIS $< $@
 
-$(BUILD)/assets/SMALL/MON.BIN.yml:
+$(BUILD)/assets/SMALL/MON.BIN.yaml:
 	$(ECHO) Converting data/SMALL/MON.BIN
 	$(VPYTHON) -m tools.data.SMALL.MON_BIN data/SMALL/MON.BIN $@
 
-$(BUILD)/data/SMALL/MON.BIN: $(BUILD)/assets/SMALL/MON.BIN.yml
+$(BUILD)/data/SMALL/MON.BIN: $(BUILD)/assets/SMALL/MON.BIN.yaml
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.SMALL.MON_BIN $< $@
 

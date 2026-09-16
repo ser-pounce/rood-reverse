@@ -1,16 +1,7 @@
-import ctypes
 import yaml
+from pathlib import Path
 
 from tools.libdata.yaml import configure_yaml, dump
-
-class vsStringBase():
-    _type_ = ctypes.c_ubyte
-
-def vsString(length):
-    class vsString(ctypes.Array, vsStringBase):
-        _length_ = length
-    vsString.__name__ = f"vsString_{length}"
-    return vsString
 
 table = [
     '0', '1', '2', '3', '4', '5', '6', '7', # 0x00
@@ -429,7 +420,7 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 # |0xn| is a "virtual" opcode of sorts intended for injecting raw values into an encoded string,
 # for example when junk data like truncated opcodes need to be matched.
 
-def decode(s, jpTable=False):
+def decode(s: bytes, jpTable: bool = False):
     baseTable = jp_table_0 if jpTable else table
     result = ""
     i = 0
@@ -454,7 +445,8 @@ def decode(s, jpTable=False):
                 i += 1
     return result
 
-def encode_raw(s, jpTable=False):
+
+def encode_raw(s: str, jpTable: bool = False):
     baseTable = jp_table_0 if jpTable else table
     result = []
     i = 0
@@ -488,7 +480,8 @@ def encode_raw(s, jpTable=False):
             i += 1
     return bytes(result)
 
-def encode(s, padding=0xEB, jpTable=False):
+
+def encode(s: str, padding: int | None = 0xEB, jpTable: bool = False):
     result = list(encode_raw(s, jpTable))
     result.append(0xE7)
     if padding != None and len(result) % 2 == 1:
@@ -499,12 +492,15 @@ def encode(s, padding=0xEB, jpTable=False):
 class LiteralString(str): 
     pass
 
+
 def literal_representer(dumper, data):
     return dumper.represent_scalar("tag:yaml.org,2002:str", str(data), style="|")
 
+
 yaml.add_representer(LiteralString, literal_representer)
 
-def assign_strings(template, strings, idx=0):
+
+def assign_strings(template, strings: list[str], idx: int = 0):
     if isinstance(template, dict):
         result = {}
         for k, v in template.items():
@@ -524,7 +520,7 @@ def assign_strings(template, strings, idx=0):
         return strings[idx], idx + 1
 
 
-def write_table(encoded_strings: list[bytes], keys_file, out_path):
+def write_table(encoded_strings: list[bytes], keys_file: Path, out_path: Path):
 
     with open(keys_file, "r", encoding="utf-8") as f:
         keys_yaml = yaml.safe_load(f)

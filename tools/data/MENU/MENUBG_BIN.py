@@ -25,7 +25,10 @@ def encode_bin(input_path: Path, output_path: Path) -> None:
     if img.mode != 'P':
         raise ValueError(f'{input_path} must be paletted')
 
-    output_path.write_bytes(encode_rgb555(img.getpalette()) + rle_compress(img.tobytes()))
+    palette = img.getpalette()
+    assert palette is not None
+
+    output_path.write_bytes(encode_rgb555(palette) + rle_compress(img.tobytes()))
 
 
 def main(argv=None) -> int:

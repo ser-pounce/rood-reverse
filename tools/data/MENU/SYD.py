@@ -168,12 +168,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     suffix = args.input.suffix.lower()
     if suffix == ".syd":
         decode(FORMATS[args.item_type], args.input, args.output)
-    elif suffix == ".yml":
+    elif suffix == ".yaml":
         encode(FORMATS[args.item_type], args.input, args.output)
     else:
         parser.error(
             f"Could not infer mode from input file extension {args.input.suffix!r}; "
-            "expected .SYD or .yml"
+            "expected .SYD or .yaml"
         )
     return 0
 

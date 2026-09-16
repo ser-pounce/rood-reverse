@@ -9,7 +9,10 @@ from tools.kaitai.parsers.lib.string_table import StringTable
 
 def vsString_dumpTable(data: bytes, keys_path: Path, output_path: Path):
     table = StringTable(0, KaitaiStream(BytesIO(data)))
-    write_table([s.text for s in table.string_refs], keys_path, output_path)
+    string_refs = table.string_refs
+    assert string_refs is not None
+    
+    write_table([s.text for s in string_refs], keys_path, output_path)
 
 
 def main(argv=None):

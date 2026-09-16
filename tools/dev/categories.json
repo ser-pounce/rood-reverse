@@ -68,6 +68,10 @@
         "name": "PLG049"
     },
     {
+        "id": "effects.PLG050.BIN",
+        "name": "PLG050"
+    },
+    {
         "id": "menus.MAINMENU.PRG",
         "name": "Top level menu and shared menu functionality"
     },
@@ -144,6 +148,7 @@
             "PLG045.BIN": "effects.PLG045.BIN",
             "PLG047.BIN": "effects.PLG047.BIN",
             "PLG049.BIN": "effects.PLG049.BIN",
+            "PLG050.BIN": "effects.PLG050.BIN",
             "MAINMENU.PRG": "menus.MAINMENU.PRG",
             "MENU0.PRG": "menus.MENU0.PRG",
             "MENU1.PRG": "menus.MENU1.PRG",
@@ -161,5 +166,49 @@
             "MENUF.PRG": "menus.MENUF.PRG",
             "ENDING.PRG": "ending.ENDING.PRG"
         }
+    },
+    {
+        "complete_units": [
+            "SLUS_010.40/overlay",
+            "INITBTL.PRG/18",
+            "INITBTL.PRG/FB0",
+            "INITBTL.PRG/12AC",
+            "EFFPURGE.BIN/0",
+            "MAINMENU.PRG/224",
+            "MAINMENU.PRG/C48",
+            "MAINMENU.PRG/2D10",
+            "MAINMENU.PRG/58EC",
+            "MENU0.PRG/84",
+            "MENU0.PRG/15AC",
+            "MENU1.PRG/30",
+            "MENU2.PRG/64",
+            "MENU2.PRG/143C",
+            "MENU3.PRG/16C",
+            "MENU3.PRG/68C4",
+            "MENU4.PRG/120",
+            "MENU5.PRG/4D8",
+            "MENU7.PRG/260",
+            "MENU8.PRG/88",
+            "MENU8.PRG/21A0",
+            "MENU9.PRG/238",
+            "MENU9.PRG/57BC",
+            "MENU9.PRG/592C",
+            "MENUB.PRG/260",
+            "MENUC.PRG/168",
+            "MENUC.PRG/9258",
+            "MENUD.PRG/234",
+            "MENUE.PRG/494",
+            "MENUF.PRG/3B8",
+            "TITLE.PRG/22C",
+            "TITLE.PRG/libpress/VLC_C",
+            "TITLE.PRG/libpress/BUILD",
+            "TITLE.PRG/libpress/LIBPRESS"
+        ]
+    },
+    {
+    "exclusions": {
+        "names": ["32154.o", "2EA3C.o"],
+        "suffixes": [".data.o", ".rodata.o", ".bss.o"]
     }
+}
 ]

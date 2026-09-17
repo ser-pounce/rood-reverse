@@ -61,7 +61,9 @@
                 { "file": "PLG061.BIN", "name": "PLG061" },
                 { "file": "PLG065.BIN", "name": "PLG065" },
                 { "file": "PLG069.BIN", "name": "PLG069" },
-                { "file": "PLG073.BIN", "name": "PLG073" }
+                { "file": "PLG073.BIN", "name": "PLG073" },
+                { "file": "PLG077.BIN", "name": "PLG077" },
+                { "file": "PLG081.BIN", "name": "PLG081" }
             ]
         },
         {

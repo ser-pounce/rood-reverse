@@ -1,0 +1,27 @@
+sha1: 3a10850eb9d5afab3e953b095cce30942c60755b
+options:
+  basename: EFFECT/PLG255.BIN
+  target_path: data/EFFECT/PLG255.BIN
+  elf_path: build/data/EFFECT/PLG255.BIN.elf
+  asm_path: build/src/EFFECT/PLG255.BIN
+  src_path: src/EFFECT/PLG255.BIN
+  asset_path: build/assets/EFFECT/PLG255.BIN
+  ld_script_path: build/config/EFFECT/PLG255.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG255.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG255.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG255.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 1D8]
+    - [0x1D8, c]
+    - [0x38EC, data, 1D8]
+  - [0x38F4]

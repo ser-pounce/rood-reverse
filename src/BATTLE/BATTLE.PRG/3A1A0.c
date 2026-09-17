@@ -282,7 +282,7 @@ int func_800A69B4(D_800F4538_t* arg0)
 {
     SVECTOR v;
     int ret = 0;
-    int h = rsin(0x200) * arg0->unk63C / ONE;
+    int h = rsin(ONE / 8) * arg0->unk63C / ONE;
 
     v.vx = 0;
     v.vz = 0;
@@ -292,9 +292,9 @@ int func_800A69B4(D_800F4538_t* arg0)
         v.vx = h;
     }
     h = func_800A6EE8(&D_800F4B08, v.vx, v.vz, 1) - D_800F4B08.vy;
-    if (h >= -63) {
+    if (h > -64) {
         h = func_800A6EE8(&D_800F4B08, -v.vx, -v.vz, 1) - D_800F4B08.vy;
-        if (h >= -63) {
+        if (h > -64) {
             ret = 1;
         }
     }

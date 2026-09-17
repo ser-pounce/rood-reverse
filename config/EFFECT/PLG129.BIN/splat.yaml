@@ -1,0 +1,26 @@
+sha1: b7ffb7443fc0b12c14b3d5d83bc07034ff8e7ec5
+options:
+  basename: EFFECT/PLG129.BIN
+  target_path: data/EFFECT/PLG129.BIN
+  elf_path: build/data/EFFECT/PLG129.BIN.elf
+  asm_path: build/src/EFFECT/PLG129.BIN
+  src_path: src/EFFECT/PLG129.BIN
+  asset_path: build/assets/EFFECT/PLG129.BIN
+  ld_script_path: build/config/EFFECT/PLG129.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG129.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG129.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG129.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, asm]
+    - [0x3DA8, data, 0]
+  - [0x4138]

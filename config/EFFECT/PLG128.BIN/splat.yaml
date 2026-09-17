@@ -1,0 +1,27 @@
+sha1: 3b03341e27cecf3c4bc67cd9343a56d9a688654b
+options:
+  basename: EFFECT/PLG128.BIN
+  target_path: data/EFFECT/PLG128.BIN
+  elf_path: build/data/EFFECT/PLG128.BIN.elf
+  asm_path: build/src/EFFECT/PLG128.BIN
+  src_path: src/EFFECT/PLG128.BIN
+  asset_path: build/assets/EFFECT/PLG128.BIN
+  ld_script_path: build/config/EFFECT/PLG128.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG128.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG128.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG128.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, F8]
+    - [0xF8, c]
+    - [0x6CF0, data]
+  - [0x7214]

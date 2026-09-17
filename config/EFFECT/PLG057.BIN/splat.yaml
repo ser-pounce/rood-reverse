@@ -1,0 +1,27 @@
+sha1: 020f9de72f7c0a25198818c4453ae4ee7bfeb051
+options:
+  basename: EFFECT/PLG057.BIN
+  target_path: data/EFFECT/PLG057.BIN
+  elf_path: build/data/EFFECT/PLG057.BIN.elf
+  asm_path: build/src/EFFECT/PLG057.BIN
+  src_path: src/EFFECT/PLG057.BIN
+  asset_path: build/assets/EFFECT/PLG057.BIN
+  ld_script_path: build/config/EFFECT/PLG057.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG057.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG057.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG057.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 2D0]
+    - [0x2D0, c]
+    - [0x61B4, data, 2D0]
+  - [0x61C0]

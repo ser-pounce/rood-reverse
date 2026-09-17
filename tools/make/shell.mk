@@ -1,4 +1,5 @@
 CAT      ?= cat
+CP       ?= cp
 COMMAND  ?= command
 DIFF     ?= diff
 ECHO     ?= echo -e

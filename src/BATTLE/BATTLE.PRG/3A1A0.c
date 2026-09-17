@@ -40,10 +40,13 @@ int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800B0908(D_800F45E0_t*, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
 
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
 extern u_char D_800F49F8;
+extern u_char D_800F49F9;
+extern SVECTOR D_800F4B08;
 extern char D_800F4B18;
 extern u_char D_800E9278[];
 
@@ -293,7 +296,28 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6660);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6798);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A69B4);
+int func_800A69B4(D_800F4538_t* arg0)
+{
+    SVECTOR v;
+    int ret = 0;
+    int h = rsin(ONE / 8) * arg0->unk63C / ONE;
+
+    v.vx = 0;
+    v.vz = 0;
+    if ((D_800F49F9 >> 1) & 1) {
+        v.vz = h;
+    } else {
+        v.vx = h;
+    }
+    h = func_800A6EE8(&D_800F4B08, v.vx, v.vz, 1) - D_800F4B08.vy;
+    if (h > -64) {
+        h = func_800A6EE8(&D_800F4B08, -v.vx, -v.vz, 1) - D_800F4B08.vy;
+        if (h > -64) {
+            ret = 1;
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6AA0);
 

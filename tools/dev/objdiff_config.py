@@ -3,31 +3,27 @@ import json
 from pathlib import Path
 
 
+
 def load_categories(categories_path: Path):
     with open(categories_path, "r") as f:
-        categories = json.load(f)
+        data = json.load(f)
 
-    category_mappings = None
-    complete_units = set()
-    excluded_names = set()
-    excluded_suffixes = ()
-    filtered_categories = []
+    complete_units = set(data.get("complete_units", []))
+    exclusions = data.get("exclusions", {})
+    excluded_names = set(exclusions.get("names", []))
+    excluded_suffixes = tuple(exclusions.get("suffixes", []))
 
-    for item in categories:
-        if "category_mappings" in item:
-            category_mappings = item["category_mappings"]
-        elif "complete_units" in item:
-            complete_units = set(item["complete_units"])
-        elif "exclusions" in item:
-            excluded_names = set(item["exclusions"].get("names", []))
-            excluded_suffixes = tuple(item["exclusions"].get("suffixes", []))
-        else:
-            filtered_categories.append(item)
+    category_mappings = {}
+    progress_categories = []
 
-    if category_mappings is None:
-        raise ValueError("No category_mappings found in categories.json")
+    for cat in data["categories"]:
+        progress_categories.append({"id": cat["id"], "name": cat["name"]})
+        for module in cat["modules"]:
+            full_id = f"{cat['id']}.{module['file']}"
+            progress_categories.append({"id": full_id, "name": module["name"]})
+            category_mappings[module["file"]] = full_id
 
-    return category_mappings, complete_units, excluded_names, excluded_suffixes, filtered_categories
+    return category_mappings, complete_units, excluded_names, excluded_suffixes, progress_categories
 
 
 def get_name_and_categories(base_path: Path, category_mappings: dict):

@@ -241,7 +241,9 @@ typedef struct {
     u_char unk35;
     u_char unk36;
     u_char unk37;
-    char unk38[0x98];
+    u_char unk38[0x14];
+    VECTOR unk4C;
+    u_char unk5C[0x74];
 } func_800CE714_t2_2;
 
 typedef struct {

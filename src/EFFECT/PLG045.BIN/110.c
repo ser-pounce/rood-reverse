@@ -1,5 +1,6 @@
 #include "common.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/6E644.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800F9910);
 
@@ -33,12 +34,6 @@ typedef struct {
 } func_800FA098_arg1;
 
 typedef struct {
-    u_char unk0[0x68];
-    VECTOR unk68;
-    u_char unk78[0x58];
-} func_800FA098_arg2;
-
-typedef struct {
     u_char unk0;
     u_char unk1;
     short unk2;
@@ -47,13 +42,14 @@ typedef struct {
     int unkC;
 } func_800FA098_arg3;
 
-void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    func_800FA098_arg2* arg2, func_800FA098_arg3* arg3)
+void func_800F9910(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
+void func_800FA2B0(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
+void func_800FA760(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
+
+void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
+    func_800FA098_arg3* arg3)
 {
     int i;
-    VECTOR* new_var;
-    VECTOR* new_var2;
-    VECTOR* new_var3;
 
     vs_battle_lerpSvector(
         arg0->unk7C, func_800D118C(arg0->unkF, arg3->unkC), &arg1->unk13C);
@@ -62,9 +58,9 @@ void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     switch (arg1->unk24 & 0x1C0) {
     case 0xC0:
-        arg1->unk13C.vx += (*(new_var3 = &arg2[arg0->unkC9].unk68)).vx;
-        arg1->unk13C.vy += (*(new_var2 = &arg2[arg0->unkC9].unk68)).vy;
-        arg1->unk13C.vz += (*(new_var = &arg2[arg0->unkC9].unk68)).vz;
+        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk4C.vx;
+        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk4C.vy;
+        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk4C.vz;
         break;
     case 0x80:
         arg1->unk13C.vx += D_800F5230.unkE0;
@@ -87,4 +83,5 @@ INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FA2B0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FA760);
 
+void func_800FB320(func_800D4910_t*, int, int);
 INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FB320);

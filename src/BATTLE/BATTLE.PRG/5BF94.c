@@ -270,7 +270,7 @@ void func_800D7C5C(void);
 int func_800D7CFC(void);
 int func_800D7EF4(void);
 void func_800D8060(void*);
-void func_800FABB8(void);
+void vs_effpurge_exec(void);
 void func_800AE68C(int, int);
 
 extern u_int _gimLbas[];
@@ -2782,8 +2782,8 @@ int func_800CE9B0(void)
     case 6:
         if (vs_battle_loadEffPurge() == 0) {
             vs_main_wait();
-            func_800FABB8();
-            if ((D_800F5230.unk0 != 0) && (_loadEffContext.lba == 0)) {
+            vs_effpurge_exec();
+            if ((D_800F5230.effectId != 0) && (_loadEffContext.lba == 0)) {
                 func_800CF478(4);
                 D_800F5224 = 0;
                 D_800F5228 = 0;
@@ -3212,7 +3212,7 @@ void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x36;
+    sp10.effectId = 54;
     sp10.unk2 = 1;
     sp10.unk4 = 5;
     sp10.unk10 = 5;
@@ -3247,7 +3247,7 @@ void func_800CF8BC(void)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x38;
+    sp10.effectId = 56;
     sp10.unk2 = 1;
     sp10.unk4 = 4;
     sp10.unkA.u8[0] = 0;

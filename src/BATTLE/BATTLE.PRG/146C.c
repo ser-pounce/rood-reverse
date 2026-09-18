@@ -2972,13 +2972,13 @@ void func_8006F450(func_800CF0E8_t* arg0)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x24;
+    sp10.effectId = 36;
     sp10.unk2 = 1;
     sp10.unk4 = 4;
     sp10.unk3 = 0;
     sp10.unk8.u8[0] = 0;
     sp10.unk10 = 5;
-    sp10.unk14.u16 = arg0->unk0;
+    sp10.unk14.u16 = arg0->effectId;
     sp10.unk18 = arg0->unk4;
     sp10.unk16.u16 = 0;
     func_800CF3F8(&sp10, 0);
@@ -2988,7 +2988,7 @@ void func_8006F4B0(func_8006EBF8_t3* arg0)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x21;
+    sp10.effectId = 33;
     sp10.unk2 = 1;
     sp10.unk4 = 4;
     sp10.unk3 = 0;
@@ -3101,7 +3101,7 @@ void func_8006F848(void)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x14;
+    sp10.effectId = 20;
     sp10.unk2 = 1;
     sp10.unk4 = 5;
     sp10.unk10 = 4;
@@ -3657,7 +3657,7 @@ void func_800733F8(int arg0)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = arg0;
+    sp10.effectId = arg0;
     D_800F196C = 4;
     sp10.unk2 = 1;
     sp10.unk3 = 0;
@@ -3965,7 +3965,7 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
     D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
     D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
-    sp10.unk0 = arg0->unk0.unk6 + 6;
+    sp10.effectId = arg0->unk0.unk6 + 6;
     sp10.unk4 = 5;
     sp10.unk10 = 4;
     sp10.unk2 = 1;
@@ -6325,7 +6325,7 @@ void func_8007BE20(int arg0, int arg1)
 
     sp10.unk2 = 1;
     sp10.unk4 = 5;
-    sp10.unk0 = arg0;
+    sp10.effectId = arg0;
     sp10.unk3 = 0;
     sp10.unkC = 0;
     sp10.unkA.s16 = 0;

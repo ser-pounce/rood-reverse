@@ -3,7 +3,8 @@
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
 
-void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2);
+/** Effect entrypoints, declarations to temporarily satisfy the compiler  */
+void func_800F9800(func_800D4910_t*, int, int);
 void func_800F9818(func_800D4910_t*, int, int);
 void func_800F98E0(func_800D4910_t*, int, int);
 void func_800F98F8(func_800D4910_t*, int, int);
@@ -35,8 +36,6 @@ void func_800FA7F0(func_800D4910_t*, int, int);
 void func_800FA84C(func_800D4910_t*, int, int);
 void func_800FA868(func_800D4910_t*, int, int);
 void func_800FA8D0(func_800D4910_t*, int, int);
-void func_800FAC4C(void);
-void func_800FAD7C(void);
 void func_800FAC78(func_800D4910_t*, int, int);
 void func_800FAF00(func_800D4910_t*, int, int);
 void func_800FAF30(func_800D4910_t*, int, int);
@@ -153,7 +152,7 @@ static u_char D_800FAE4C[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0 };
 
-static u_char D_800FAFDC[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+static u_char _fbcSuffixes[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -167,66 +166,71 @@ static u_char D_800FAFDC[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1 };
+    1, 1, 1, 1 };
 
-#define FBC_NONE { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }
+#define FBC_DEFAULT { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }
 #define FBC(x) { VS_E##x##_1_FBC_LBA - VS_E000_P_LBA, VS_E##x##_1_FBC_SIZE }
 
-static _loadFileContext D_800FB16C[] = {
+static _loadFileContext _fbcFiles[] = {
     { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }, FBC(001), FBC(002),
-    FBC(003), FBC(004), FBC(005), FBC_NONE, FBC(007), FBC(008), FBC(009), FBC(010),
-    FBC_NONE, FBC_NONE, FBC(013), FBC(014), FBC(015), FBC(016), FBC(017), FBC(018),
-    FBC(019), FBC(020), FBC_NONE, FBC(022), FBC(023), FBC(024), FBC_NONE, FBC(026),
-    FBC(027), FBC_NONE, FBC(029), FBC(030), FBC_NONE, FBC(032), FBC_NONE, FBC(034),
-    FBC(035), FBC(036), FBC(037), FBC(038), FBC(039), FBC(040), FBC(041), FBC(042),
-    FBC(043), FBC(044), FBC(045), FBC(046), FBC(047), FBC(048), FBC(049), FBC(050),
-    FBC(051), FBC(052), FBC(053), FBC(054), FBC(055), FBC(056), FBC(057), FBC(058),
-    FBC(059), FBC(060), FBC(061), FBC(062), FBC(063), FBC(064), FBC(065), FBC(066),
-    FBC(067), FBC(068), FBC(069), FBC(070), FBC(071), FBC(072), FBC(073), FBC(074),
-    FBC(075), FBC(076), FBC(077), FBC(078), FBC(079), FBC(080), FBC(081), FBC(082),
-    FBC(083), FBC(084), FBC(085), FBC(086), FBC(087), FBC(088), FBC(089), FBC(090),
-    FBC(091), FBC(092), FBC(093), FBC(094), FBC(095), FBC(096), FBC_NONE, FBC(098),
-    FBC(099), FBC(100), FBC(101), FBC(102), FBC(103), FBC(104), FBC(105), FBC(106),
-    FBC(107), FBC(108), FBC(109), FBC(110), FBC(111), FBC(112), FBC_NONE, FBC(114),
-    FBC(115), FBC(116), FBC(117), FBC(118), FBC(119), FBC(120), FBC(121), FBC_NONE,
-    FBC_NONE, FBC(124), FBC(125), FBC(126), FBC(127), FBC(128), FBC(129), FBC_NONE,
-    FBC(131), FBC(132), FBC(133), FBC(134), FBC(135), FBC(136), FBC(137), FBC(138),
-    FBC(139), FBC(140), FBC(141), FBC(142), FBC(143), FBC(144), FBC(145), FBC(146),
-    FBC(147), FBC(148), FBC(149), FBC(150), FBC(151), FBC(152), FBC(153), FBC(154),
-    FBC(155), FBC(156), FBC(157), FBC(158), FBC(159), FBC(160), FBC(161), FBC(162),
-    FBC(163), FBC(164), FBC(165), FBC(166), FBC(167), FBC(168), FBC(169), FBC(170),
-    FBC(171), FBC(172), FBC(173), FBC(174), FBC(175), FBC(176), FBC(177), FBC(178),
-    FBC(179), FBC(180), FBC(181), FBC(182), FBC(183), FBC(184), FBC(185), FBC(186),
-    FBC(187), FBC(188), FBC(189), FBC(190), FBC(191), FBC(192), FBC(193), FBC(194),
-    FBC(195), FBC(196), FBC(197), FBC(198), FBC(199), FBC(200), FBC(201), FBC(202),
-    FBC(203), FBC(204), FBC(205), FBC(206), FBC(207), FBC(208), FBC(209), FBC(210),
-    FBC(211), FBC(212), FBC(213), FBC(214), FBC(215), FBC(216), FBC(217), FBC(218),
-    FBC(219), FBC(220), FBC(221), FBC(222), FBC(223), FBC(224), FBC(225), FBC(226),
-    FBC(227), FBC(228), FBC(229), FBC(230), FBC(231), FBC(232), FBC(233), FBC(234),
-    FBC(235), FBC(236), FBC(237), FBC(238), FBC(239), FBC(240), FBC(241), FBC(242),
-    FBC(243), FBC(244), FBC(245), FBC(246), FBC(247), FBC(248), FBC(249), FBC(250),
-    FBC(251), FBC_NONE, FBC(253), FBC(254), FBC(255), FBC_NONE, FBC_NONE, FBC(258),
-    FBC(259), FBC(260), FBC(261), FBC_NONE, FBC(263), FBC(264), FBC(265), FBC(266),
-    FBC_NONE, FBC_NONE, FBC(269), FBC_NONE, FBC(271), FBC(272), FBC(273), FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC(280), FBC(281), FBC(282),
-    FBC(283), FBC(284), FBC(285), FBC(286), FBC(287), FBC(288), FBC(289), FBC(290),
-    FBC(291), FBC(292), FBC(293), FBC(294), FBC(295), FBC(296), FBC(297), FBC(298),
-    FBC(299), FBC(300), FBC(301), FBC(302), FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE,
-    FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE, FBC_NONE
+    FBC(003), FBC(004), FBC(005), FBC_DEFAULT, FBC(007), FBC(008), FBC(009), FBC(010),
+    FBC_DEFAULT, FBC_DEFAULT, FBC(013), FBC(014), FBC(015), FBC(016), FBC(017), FBC(018),
+    FBC(019), FBC(020), FBC_DEFAULT, FBC(022), FBC(023), FBC(024), FBC_DEFAULT, FBC(026),
+    FBC(027), FBC_DEFAULT, FBC(029), FBC(030), FBC_DEFAULT, FBC(032), FBC_DEFAULT,
+    FBC(034), FBC(035), FBC(036), FBC(037), FBC(038), FBC(039), FBC(040), FBC(041),
+    FBC(042), FBC(043), FBC(044), FBC(045), FBC(046), FBC(047), FBC(048), FBC(049),
+    FBC(050), FBC(051), FBC(052), FBC(053), FBC(054), FBC(055), FBC(056), FBC(057),
+    FBC(058), FBC(059), FBC(060), FBC(061), FBC(062), FBC(063), FBC(064), FBC(065),
+    FBC(066), FBC(067), FBC(068), FBC(069), FBC(070), FBC(071), FBC(072), FBC(073),
+    FBC(074), FBC(075), FBC(076), FBC(077), FBC(078), FBC(079), FBC(080), FBC(081),
+    FBC(082), FBC(083), FBC(084), FBC(085), FBC(086), FBC(087), FBC(088), FBC(089),
+    FBC(090), FBC(091), FBC(092), FBC(093), FBC(094), FBC(095), FBC(096), FBC_DEFAULT,
+    FBC(098), FBC(099), FBC(100), FBC(101), FBC(102), FBC(103), FBC(104), FBC(105),
+    FBC(106), FBC(107), FBC(108), FBC(109), FBC(110), FBC(111), FBC(112), FBC_DEFAULT,
+    FBC(114), FBC(115), FBC(116), FBC(117), FBC(118), FBC(119), FBC(120), FBC(121),
+    FBC_DEFAULT, FBC_DEFAULT, FBC(124), FBC(125), FBC(126), FBC(127), FBC(128), FBC(129),
+    FBC_DEFAULT, FBC(131), FBC(132), FBC(133), FBC(134), FBC(135), FBC(136), FBC(137),
+    FBC(138), FBC(139), FBC(140), FBC(141), FBC(142), FBC(143), FBC(144), FBC(145),
+    FBC(146), FBC(147), FBC(148), FBC(149), FBC(150), FBC(151), FBC(152), FBC(153),
+    FBC(154), FBC(155), FBC(156), FBC(157), FBC(158), FBC(159), FBC(160), FBC(161),
+    FBC(162), FBC(163), FBC(164), FBC(165), FBC(166), FBC(167), FBC(168), FBC(169),
+    FBC(170), FBC(171), FBC(172), FBC(173), FBC(174), FBC(175), FBC(176), FBC(177),
+    FBC(178), FBC(179), FBC(180), FBC(181), FBC(182), FBC(183), FBC(184), FBC(185),
+    FBC(186), FBC(187), FBC(188), FBC(189), FBC(190), FBC(191), FBC(192), FBC(193),
+    FBC(194), FBC(195), FBC(196), FBC(197), FBC(198), FBC(199), FBC(200), FBC(201),
+    FBC(202), FBC(203), FBC(204), FBC(205), FBC(206), FBC(207), FBC(208), FBC(209),
+    FBC(210), FBC(211), FBC(212), FBC(213), FBC(214), FBC(215), FBC(216), FBC(217),
+    FBC(218), FBC(219), FBC(220), FBC(221), FBC(222), FBC(223), FBC(224), FBC(225),
+    FBC(226), FBC(227), FBC(228), FBC(229), FBC(230), FBC(231), FBC(232), FBC(233),
+    FBC(234), FBC(235), FBC(236), FBC(237), FBC(238), FBC(239), FBC(240), FBC(241),
+    FBC(242), FBC(243), FBC(244), FBC(245), FBC(246), FBC(247), FBC(248), FBC(249),
+    FBC(250), FBC(251), FBC_DEFAULT, FBC(253), FBC(254), FBC(255), FBC_DEFAULT,
+    FBC_DEFAULT, FBC(258), FBC(259), FBC(260), FBC(261), FBC_DEFAULT, FBC(263), FBC(264),
+    FBC(265), FBC(266), FBC_DEFAULT, FBC_DEFAULT, FBC(269), FBC_DEFAULT, FBC(271),
+    FBC(272), FBC(273), FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC(280), FBC(281), FBC(282), FBC(283), FBC(284), FBC(285), FBC(286),
+    FBC(287), FBC(288), FBC(289), FBC(290), FBC(291), FBC(292), FBC(293), FBC(294),
+    FBC(295), FBC(296), FBC(297), FBC(298), FBC(299), FBC(300), FBC(301), FBC(302),
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT, FBC_DEFAULT,
+    FBC_DEFAULT
 };
 
-static u_char D_800FB7AC[] = { 1, 2, 2, 2, 2, 3, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2,
+static u_char _fbtCounts[] = { 1, 2, 2, 2, 2, 3, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2,
     2, 0, 2, 2, 3, 0, 2, 2, 0, 3, 3, 0, 3, 0, 2, 3, 3, 3, 3, 3, 3, 2, 2, 2, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -242,37 +246,37 @@ static u_char D_800FB7AC[] = { 1, 2, 2, 2, 2, 3, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0 };
 
-static u_char D_800FB93C[] = { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2, 1, 2,
-    1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2,
-    3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-    1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
-    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
-    2, 3, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 1, 2, 3,
-    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
-    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2,
-    1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
-    2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 4, 5, 6, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
-    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1,
-    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+static u_char _fbtSuffixes[] = { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2, 1,
+    2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1,
+    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
+    2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
     1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
     3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
     2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-    1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 1, 1, 1, 2, 3, 1, 2,
-    1, 2, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2,
-    3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 1,
-    2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 1, 2,
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
+    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1,
+    2, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 4, 5, 6, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
     3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
     2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
-    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 1, 1, 2, 3, 1, 2, 3,
-    1, 2, 3, 1, 2, 3, 1, 2, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 1, 1, 1, 2,
-    3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 0 };
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
+    3, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 1, 1, 1, 2, 3, 1,
+    2, 1, 2, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 1, 1, 2, 3, 1,
+    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2,
+    1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
+    2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+    1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 1, 1, 2, 3, 1, 2,
+    3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 1, 1, 1,
+    2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 0 };
 
 #define FBT(x) { VS_E##x##_FBT_LBA - VS_E000_P_LBA, VS_E##x##_FBT_SIZE }
 
-static _loadFileContext D_800FBC30[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(002_1),
+static _loadFileContext _fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(002_1),
     FBT(002_2), FBT(003_1), FBT(003_2), FBT(004_1), FBT(004_2), FBT(005_1), FBT(005_2),
     FBT(005_3), FBT(007_1), FBT(007_2), FBT(008_1), FBT(008_2), FBT(009_1), FBT(009_2),
     FBT(010_1), FBT(010_2), FBT(013_1), FBT(013_2), FBT(014_1), FBT(014_2), FBT(015_1),
@@ -383,9 +387,9 @@ static _loadFileContext D_800FBC30[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT
     FBT(301_3), FBT(302_1) };
 
 #define P(x) { VS_E##x##_P_LBA - VS_E000_P_LBA, VS_E##x##_P_SIZE }
-#define P_NONE P(000)
+#define P_DEFAULT P(000)
 
-static _loadFileContext D_800FC7FC[] = { P(000), P(001), P(002), P(003), P(004), P(005),
+static _loadFileContext _pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004), P(005),
     P(006), P(007), P(008), P(009), P(010), P(011), P(012), P(013), P(014), P(015),
     P(016), P(017), P(018), P(019), P(020), P(021), P(022), P(023), P(024), P(025),
     P(026), P(027), P(028), P(029), P(030), P(031), P(032), P(033), P(034), P(035),
@@ -410,22 +414,26 @@ static _loadFileContext D_800FC7FC[] = { P(000), P(001), P(002), P(003), P(004),
     P(216), P(217), P(218), P(219), P(220), P(221), P(222), P(223), P(224), P(225),
     P(226), P(227), P(228), P(229), P(230), P(231), P(232), P(233), P(234), P(235),
     P(236), P(237), P(238), P(239), P(240), P(241), P(242), P(243), P(244), P(245),
-    P(246), P(247), P(248), P(249), P(250), P(251), P(000), P(253), P(254), P(255),
-    P(000), P(000), P(258), P(259), P(260), P(261), P(000), P(263), P(264), P(265),
-    P(266), P(000), P(000), P(269), P(000), P(271), P(272), P(273), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(280), P(281), P(282), P(283), P(284), P(285),
-    P(286), P(287), P(288), P(289), P(290), P(291), P(292), P(293), P(294), P(295),
-    P(296), P(297), P(298), P(299), P(300), P(301), P(302), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000), P(000),
-    P(000), P(000), P(000), P(000) };
+    P(246), P(247), P(248), P(249), P(250), P(251), P_DEFAULT, P(253), P(254), P(255),
+    P_DEFAULT, P_DEFAULT, P(258), P(259), P(260), P(261), P_DEFAULT, P(263), P(264),
+    P(265), P(266), P_DEFAULT, P_DEFAULT, P(269), P_DEFAULT, P(271), P(272), P(273),
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P(280), P(281),
+    P(282), P(283), P(284), P(285), P(286), P(287), P(288), P(289), P(290), P(291),
+    P(292), P(293), P(294), P(295), P(296), P(297), P(298), P(299), P(300), P(301),
+    P(302), P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
+    P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT };
 
 static u_short D_800FCE3C[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x001, 0x001,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
@@ -462,75 +470,75 @@ static u_short D_800FCE3C[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x001,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static void (*D_800FD15C[])(func_800D4910_t*, int, int) = { func_800F9818, func_800F9800,
-    func_800FB320, func_800F9800, func_800F9800, func_800FB4C0, func_800FBA00,
-    func_800FC624, func_800FD51C, func_800F98E0, func_800FC0E4, NULL, func_800F9800,
-    func_800F9800, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
-    func_800F9818, func_800FA368, func_800F9818, func_800FA368, func_800FB4E0, NULL,
-    func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C,
+static void (*_effectEntryPoints[])(func_800D4910_t*, int, int) = { func_800F9818,
+    func_800F9800, func_800FB320, func_800F9800, func_800F9800, func_800FB4C0,
+    func_800FBA00, func_800FC624, func_800FD51C, func_800F98E0, func_800FC0E4, NULL,
+    func_800F9800, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
+    func_800FA368, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
     func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354,
-    func_800FF46C, func_800F9818, func_800FA3B0, func_800FAF00, func_800FBB24,
+    func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL,
+    func_800FD354, func_800FF46C, func_800F9818, func_800FA3B0, func_800FAF00,
+    func_800FBB24, func_800F9818, func_800FA3B0, func_800FAF00, func_800FBB24,
     func_800F9818, func_800FA3B0, func_800FAF00, func_800FBB24, func_800F9818,
-    func_800FA3B0, func_800FAF00, func_800FBB24, func_800F9818, func_800FA3B0,
-    func_800FAF00, func_800FBB24, func_800F98F8, func_800FA7B0, func_800FB71C,
+    func_800FA3B0, func_800FAF00, func_800FBB24, func_800F98F8, func_800FA7B0,
+    func_800FB71C, func_800FD6C0, func_800F98F8, func_800FA7B0, func_800FB71C,
     func_800FD6C0, func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0,
-    func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98F8,
-    func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98E0, func_800FBFCC,
-    func_800FC50C, func_800F98E0, func_800FBFCC, func_800FC50C, func_800F98E0,
+    func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98E0,
     func_800FBFCC, func_800FC50C, func_800F98E0, func_800FBFCC, func_800FC50C,
-    func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC,
-    func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC,
-    func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC,
-    func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC,
-    func_800F9818, func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C,
-    func_800F9818, func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C,
-    func_800F9818, func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C,
-    func_800F9818, func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C, NULL, NULL,
-    func_800F9800, func_800FA6B8, func_800FB2DC, func_800FB338, func_800FB5CC,
-    func_800FC11C, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
-    func_800FA368, func_800F98F8, func_800FA868, func_800FB720, func_800FDE48,
-    func_800F99F0, func_800FA588, func_800FB4F8, func_800FDC20, func_800FF4E8,
-    func_800FB320, func_800FB418, func_800FCA2C, func_800F98F8, func_800FA490,
-    func_800FB400, func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8,
-    func_800F9800, NULL, func_800FA424, func_800FAF30, func_800FBAC8, func_800FC6EC,
-    func_800F9800, func_800F9800, func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL,
-    func_800FC42C, func_800F9818, func_800FA368, func_800F98F8, func_800FBFDC,
-    func_800FC524, func_800FD074, func_800F9818, func_800FA6D0, func_800FB2F4,
-    func_800FBE44, func_800F9818, func_800FA710, func_800FB320, func_800FB4B8,
-    func_800F9818, func_800FA368, func_800FB2D8, func_800FBEFC, func_800F9800,
-    func_800FA6F8, func_800F9800, func_800F9800, func_800F99D8, func_800FA8D0,
-    func_800FC8C4, func_800FCB38, func_800FF334, func_800F98F8, func_800FB89C,
-    func_800FB4B8, func_800FBA00, func_800F9800, func_800F9818, func_800FA710,
-    func_800FB260, func_800FBDF8, func_800F9800, func_800F9928, func_800FBE88,
-    func_800FC11C, NULL, func_800F9910, func_800FA41C, func_800FCA50, func_800F9800,
-    func_800FA30C, func_800F9818, func_800FA710, func_800FB338, NULL, func_800FB5CC,
-    func_800F9800, func_800F9800, func_800FA398, func_800FB00C, func_800FBF7C,
-    func_800F9818, func_800FA710, func_800F9800, func_800FA6F8, NULL, func_800F98F8,
-    func_800FA7B0, func_800FCFB4, func_800FD4F4, func_800FE044, NULL, func_800F9800,
-    func_800FA740, func_800FB5F8, func_800FC21C, func_800FB320, func_800FB4D8, NULL,
-    func_800FBA18, func_800FC8D0, func_800FD420, func_800F9800, func_800FA6B8,
-    func_800FB32C, func_800FC29C, NULL, func_800F98E0, func_800FA84C, func_800FD2E4, NULL,
-    func_800FB5D0, func_800FCE90, func_800FD104, func_800FB4C0, NULL, func_800FBA00,
-    func_800FC624, func_800F9818, func_800FA48C, func_800FB348, func_800FBF6C,
-    func_800FCABC, func_800FD654, func_800F9800, func_800F9800, func_800F9818,
-    func_800FA710, func_800FAC78, func_800FB4C0, func_800F9800, func_800FA770,
-    func_800FB62C, func_800FC56C, func_800FAC78, func_800FAC78, func_800F98F8,
-    func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL,
-    func_800F9800, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800F9800,
-    func_800F9800, func_800FA6BC, func_800F9800, func_800FB5B0, func_800FCE78,
-    func_800F9800, func_800F9800, func_800F9800, NULL, func_800F9910, func_800FA4A8,
-    func_800FB0CC, func_800FDA1C, func_800F9AE8, func_800FBD60, func_800FDBAC,
-    func_800FFB04, func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL, func_800FB4B8,
-    func_800FB5B0, func_800FCE78, func_800F9818, func_800FA368, func_800FB2D8,
-    func_800F9800, func_800FB338, func_800FB5CC, func_800FC11C, func_800FB320,
-    func_800FB4D0, func_800FBA18, func_800FC568, func_800F9818, func_800FA48C,
-    func_800FB3FC, func_800FBF4C, func_800F9910, func_800FBF94, func_800FC228,
-    func_800FD198, func_800FB320, NULL, func_800FB5B4 };
+    func_800F98E0, func_800FBFCC, func_800FC50C, func_800F98E0, func_800FBFCC,
+    func_800FC50C, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
+    func_800FE3EC, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
+    func_800FE3EC, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
+    func_800FE3EC, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
+    func_800FE3EC, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
+    func_800FC97C, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
+    func_800FC97C, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
+    func_800FC97C, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
+    func_800FC97C, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800FB338,
+    func_800FB5CC, func_800FC11C, func_800F9800, func_800F9818, func_800FA368,
+    func_800F9818, func_800FA368, func_800F98F8, func_800FA868, func_800FB720,
+    func_800FDE48, func_800F99F0, func_800FA588, func_800FB4F8, func_800FDC20,
+    func_800FF4E8, func_800FB320, func_800FB418, func_800FCA2C, func_800F98F8,
+    func_800FA490, func_800FB400, func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4,
+    func_800FFFA8, func_800F9800, NULL, func_800FA424, func_800FAF30, func_800FBAC8,
+    func_800FC6EC, func_800F9800, func_800F9800, func_800FB4B8, func_800FBA00, NULL,
+    func_800F98E0, NULL, func_800FC42C, func_800F9818, func_800FA368, func_800F98F8,
+    func_800FBFDC, func_800FC524, func_800FD074, func_800F9818, func_800FA6D0,
+    func_800FB2F4, func_800FBE44, func_800F9818, func_800FA710, func_800FB320,
+    func_800FB4B8, func_800F9818, func_800FA368, func_800FB2D8, func_800FBEFC,
+    func_800F9800, func_800FA6F8, func_800F9800, func_800F9800, func_800F99D8,
+    func_800FA8D0, func_800FC8C4, func_800FCB38, func_800FF334, func_800F98F8,
+    func_800FB89C, func_800FB4B8, func_800FBA00, func_800F9800, func_800F9818,
+    func_800FA710, func_800FB260, func_800FBDF8, func_800F9800, func_800F9928,
+    func_800FBE88, func_800FC11C, NULL, func_800F9910, func_800FA41C, func_800FCA50,
+    func_800F9800, func_800FA30C, func_800F9818, func_800FA710, func_800FB338, NULL,
+    func_800FB5CC, func_800F9800, func_800F9800, func_800FA398, func_800FB00C,
+    func_800FBF7C, func_800F9818, func_800FA710, func_800F9800, func_800FA6F8, NULL,
+    func_800F98F8, func_800FA7B0, func_800FCFB4, func_800FD4F4, func_800FE044, NULL,
+    func_800F9800, func_800FA740, func_800FB5F8, func_800FC21C, func_800FB320,
+    func_800FB4D8, NULL, func_800FBA18, func_800FC8D0, func_800FD420, func_800F9800,
+    func_800FA6B8, func_800FB32C, func_800FC29C, NULL, func_800F98E0, func_800FA84C,
+    func_800FD2E4, NULL, func_800FB5D0, func_800FCE90, func_800FD104, func_800FB4C0, NULL,
+    func_800FBA00, func_800FC624, func_800F9818, func_800FA48C, func_800FB348,
+    func_800FBF6C, func_800FCABC, func_800FD654, func_800F9800, func_800F9800,
+    func_800F9818, func_800FA710, func_800FAC78, func_800FB4C0, func_800F9800,
+    func_800FA770, func_800FB62C, func_800FC56C, func_800FAC78, func_800FAC78,
+    func_800F98F8, func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800,
+    NULL, NULL, func_800F9800, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC,
+    func_800F9800, func_800F9800, func_800FA6BC, func_800F9800, func_800FB5B0,
+    func_800FCE78, func_800F9800, func_800F9800, func_800F9800, NULL, func_800F9910,
+    func_800FA4A8, func_800FB0CC, func_800FDA1C, func_800F9AE8, func_800FBD60,
+    func_800FDBAC, func_800FFB04, func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL,
+    func_800FB4B8, func_800FB5B0, func_800FCE78, func_800F9818, func_800FA368,
+    func_800FB2D8, func_800F9800, func_800FB338, func_800FB5CC, func_800FC11C,
+    func_800FB320, func_800FB4D0, func_800FBA18, func_800FC568, func_800F9818,
+    func_800FA48C, func_800FB3FC, func_800FBF4C, func_800F9910, func_800FBF94,
+    func_800FC228, func_800FD198, func_800FB320, NULL, func_800FB5B4 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
 
-static _loadFileContext D_800FD6B8[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
+static _loadFileContext _plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG(005), PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
@@ -570,6 +578,11 @@ static _loadFileContext D_800FD6B8[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG(297), PLG_NONE, PLG_NONE, PLG(300),
     PLG(301) };
 
+/**
+ * Invokes all effect entry points.
+ * Probably a dev artifact, calling this in-game will presumably crash.
+ */
+void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2) __attribute__((unused));
 void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2)
 {
     func_800F9818(0, 2, 0);
@@ -888,12 +901,16 @@ void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2)
     func_800FB5B4(0, 2, 0);
 }
 
-void func_800FABB8(void)
+
+static void func_800FAC4C(void);
+static void func_800FAD7C(void);
+
+void vs_effpurge_exec(void)
 {
     func_800D8038(0);
     func_800FAC4C();
     func_800FAD7C();
-    _loadEffContext = D_800FC7FC[D_800F5230.unk0];
+    _loadEffContext = _pFiles[D_800F5230.effectId];
     func_800D2698(0xFF);
     D_800F569C->unkB4 = 0;
     D_800F56C8.unk8C = 0;
@@ -902,48 +919,48 @@ void func_800FABB8(void)
     D_800F56C8.unkC8 = 0;
 }
 
-void func_800FAC4C(void)
+static void func_800FAC4C(void)
 {
     int i;
     int temp_s1;
     u_char* a2;
 
-    int new_var = D_800FAE4C[D_800F5230.unk0];
+    int new_var = D_800FAE4C[D_800F5230.effectId];
     int var_s2 = 0;
 
-    for (i = 0; i < D_800F5230.unk0; ++i) {
-        var_s2 += D_800FB7AC[i];
+    for (i = 0; i < D_800F5230.effectId; ++i) {
+        var_s2 += _fbtCounts[i];
     }
 
-    temp_s1 = D_800FB7AC[D_800F5230.unk0];
+    temp_s1 = _fbtCounts[D_800F5230.effectId];
 
     func_800D7FFC(temp_s1 + (new_var != 0));
 
-    a2 = &D_800FAFDC[D_800F5230.unk0];
+    a2 = &_fbcSuffixes[D_800F5230.effectId];
 
-    func_800D8008(
-        D_800FB16C[D_800F5230.unk0].lba, D_800FB16C[D_800F5230.unk0].size, *a2, 1, 0);
+    func_800D8008(_fbcFiles[D_800F5230.effectId].lba, _fbcFiles[D_800F5230.effectId].size,
+        *a2, 1, 0);
 
     for (i = 0; i < temp_s1; ++i) {
-        func_800D8008(D_800FBC30[var_s2 + i].lba, D_800FBC30[var_s2 + i].size,
-            D_800FB93C[var_s2 + i], 0, i + 1);
+        func_800D8008(_fbtFiles[var_s2 + i].lba, _fbtFiles[var_s2 + i].size,
+            _fbtSuffixes[var_s2 + i], 0, i + 1);
     }
 }
 
-void func_800FAD7C(void)
+static void func_800FAD7C(void)
 {
     int temp_s1;
     int i;
     int temp_s2;
 
-    temp_s2 = D_800FCE3C[D_800F5230.unk0];
-    temp_s1 = D_800FCE3C[D_800F5230.unk0 + 1] - temp_s2;
+    temp_s2 = D_800FCE3C[D_800F5230.effectId];
+    temp_s1 = D_800FCE3C[D_800F5230.effectId + 1] - temp_s2;
 
     func_800D7FC8(
-        D_800FD6B8[D_800F5230.unk0].lba, D_800FD6B8[D_800F5230.unk0].size, temp_s1);
+        _plgFiles[D_800F5230.effectId].lba, _plgFiles[D_800F5230.effectId].size, temp_s1);
 
     for (i = 0; i < temp_s1; ++i) {
-        func_800D7FE4(D_800FD15C[temp_s2 + i], i);
+        func_800D7FE4(_effectEntryPoints[temp_s2 + i], i);
     }
 
     if (temp_s1 != 0) {

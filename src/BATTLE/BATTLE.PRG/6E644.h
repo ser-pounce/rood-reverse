@@ -28,7 +28,7 @@ typedef struct {
 } D_800F56C8_t;
 
 typedef struct {
-    u_short unk0;
+    u_short effectId;
     char unk2;
     char unk3;
     u_short unk4;

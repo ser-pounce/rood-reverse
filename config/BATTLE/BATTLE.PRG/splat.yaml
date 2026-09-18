@@ -11,6 +11,7 @@ options:
     - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
     - config/SLUS_010.40/symbol_addrs.txt
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
+    - config/EFFECT/EFFPURGE.BIN/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_syms_auto.txt
 

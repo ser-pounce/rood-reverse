@@ -3596,8 +3596,8 @@ void func_800D155C(int arg0, int arg1, int arg2, int arg3, int arg4, int* arg5)
     int p2 = (((arg4 + ONE) * -arg4) >> 12) * (arg4 - (ONE * 2));
     int p3 = (((arg4 + ONE) * arg4) >> 12) * (arg4 - ONE);
 
-    *arg5 = ((arg0 * (((p0 >> 12) * 0xAAA) >> 14)) + (arg1 * (p1 >> 13))
-                + (arg2 * (p2 >> 13)) + (arg3 * (((p3 >> 12) * 0xAAA) >> 14)))
+    *arg5 = ((arg0 * (((p0 >> 12) * (ONE * 2 / 3)) >> 14)) + (arg1 * (p1 >> 13))
+                + (arg2 * (p2 >> 13)) + (arg3 * (((p3 >> 12) * (ONE * 2 / 3)) >> 14)))
          >> 12;
 }
 

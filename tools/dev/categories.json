@@ -46,7 +46,7 @@
         },
         {
             "id": "effects",
-            "name": "Ability effect binaries",
+            "name": "Ability effects",
             "modules": [
                 { "file": "EFFPURGE.BIN", "name": "Ability effect dispatcher" },
                 { "file": "PLG005.BIN", "name": "PLG005" },
@@ -72,6 +72,7 @@
                 { "file": "PLG128.BIN", "name": "PLG128" },
                 { "file": "PLG129.BIN", "name": "PLG129" },
                 { "file": "PLG134.BIN", "name": "PLG134" },
+                { "file": "PLG135.BIN", "name": "PLG135" },
                 { "file": "PLG139.BIN", "name": "PLG139" },
                 { "file": "PLG141.BIN", "name": "PLG141" },
                 { "file": "PLG149.BIN", "name": "PLG149" },

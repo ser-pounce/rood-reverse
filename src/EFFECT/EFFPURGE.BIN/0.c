@@ -901,7 +901,6 @@ void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2)
     func_800FB5B4(0, 2, 0);
 }
 
-
 static void func_800FAC4C(void);
 static void func_800FAD7C(void);
 

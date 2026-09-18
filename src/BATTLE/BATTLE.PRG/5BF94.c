@@ -3589,7 +3589,17 @@ int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1390);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D155C);
+void func_800D155C(int arg0, int arg1, int arg2, int arg3, int arg4, int* arg5)
+{
+    int p0 = ((-arg4 * (arg4 - ONE)) >> 12) * (arg4 - (ONE * 2));
+    int p1 = (((arg4 + ONE) * (arg4 - ONE)) >> 12) * (arg4 - (ONE * 2));
+    int p2 = (((arg4 + ONE) * -arg4) >> 12) * (arg4 - (ONE * 2));
+    int p3 = (((arg4 + ONE) * arg4) >> 12) * (arg4 - ONE);
+
+    *arg5 = ((arg0 * (((p0 >> 12) * (ONE * 2 / 3)) >> 14)) + (arg1 * (p1 >> 13))
+                + (arg2 * (p2 >> 13)) + (arg3 * (((p3 >> 12) * (ONE * 2 / 3)) >> 14)))
+         >> 12;
+}
 
 int vs_battle_lerp(int arg0, int arg1, int arg2)
 {

@@ -1097,7 +1097,22 @@ void func_80096FF0(int arg0)
     D_800F2272 += arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800970BC);
+void func_800970BC(void)
+{
+    void** p = (void**)0x1F800000;
+    POLY_FT4* prim = (POLY_FT4*)p[0];
+
+    setPolyFT4(prim);
+    setXY4(prim, D_800F2280.vx - 11, D_800F2280.vy - 32, D_800F2280.vx + 11,
+        D_800F2280.vy - 32, D_800F2280.vx - 11, D_800F2280.vy, D_800F2280.vx + 11,
+        D_800F2280.vy);
+    setUV4(prim, 0xC0, 0, 0xD6, 0, 0xC0, 0x20, 0xD6, 0x20);
+    setRGB0(prim, 0xF0, 0x40, 0x20);
+    setTPage(prim, 0, 0, 448, 256);
+    setClut(prim, 960, 221);
+    AddPrim((u_long*)p[1] - 5, prim++);
+    p[0] = prim;
+}
 
 void func_800971D4(void)
 {

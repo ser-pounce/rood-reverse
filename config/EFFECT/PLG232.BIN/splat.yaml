@@ -1,0 +1,27 @@
+sha1: 2ea99b1df45f6be21ddafad12c1ab2616a9bb825
+options:
+  basename: EFFECT/PLG232.BIN
+  target_path: data/EFFECT/PLG232.BIN
+  elf_path: build/data/EFFECT/PLG232.BIN.elf
+  asm_path: build/src/EFFECT/PLG232.BIN
+  src_path: src/EFFECT/PLG232.BIN
+  asset_path: build/assets/EFFECT/PLG232.BIN
+  ld_script_path: build/config/EFFECT/PLG232.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG232.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG232.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG232.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, E0]
+    - [0xE0, c]
+    - [0x2200, data, E0]
+  - [0x2204]

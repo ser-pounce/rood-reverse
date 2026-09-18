@@ -110,7 +110,9 @@
                 { "file": "PLG263.BIN", "name": "PLG263" },
                 { "file": "PLG265.BIN", "name": "PLG265" },
                 { "file": "PLG266.BIN", "name": "PLG266" },
-                { "file": "PLG272.BIN", "name": "PLG272" }
+                { "file": "PLG272.BIN", "name": "PLG272" },
+                { "file": "PLG273.BIN", "name": "PLG273" },
+                { "file": "PLG291.BIN", "name": "PLG291" }
             ]
         },
         {

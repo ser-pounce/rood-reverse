@@ -29,7 +29,7 @@ void func_800FA7B0(void)
     }
 
     for (i = 0; i < 12; ++i) {
-        short(*new_var)[2];
+        short (*new_var)[2];
         D_800F46A8[i].tpage =
             GetTPage(0, 0, D_800E8F30[i][0] << 6, (new_var = D_800E8F30)[i][1] << 8);
         D_800F46A8[i].clut0 = GetClut(768, i + 228);
@@ -38,7 +38,7 @@ void func_800FA7B0(void)
     }
 
     for (; i < 24; ++i) {
-        short(*new_var)[2];
+        short (*new_var)[2];
         D_800F46A8[i].tpage =
             GetTPage(0, 0, D_800E8F30[i][0] << 6, (new_var = D_800E8F30)[i][1] << 8);
         D_800F46A8[i].clut0 = GetClut(768, 229);

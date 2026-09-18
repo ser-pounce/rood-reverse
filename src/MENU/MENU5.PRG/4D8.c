@@ -1126,7 +1126,7 @@ static int _renderRoom(int roomIndex, void* roomData, int arg2, int arg3)
     TILE* tile;
     int const* new_var;
 
-    short(*var_s1)[4] = (void*)getScratchAddr(64);
+    short (*var_s1)[4] = (void*)getScratchAddr(64);
     int elementCount = *(int*)roomData;
     roomData += 4;
 

@@ -3088,8 +3088,8 @@ int _isArtOrAbilityUnlocked(void)
     if (unlockArt == 0) {
         if (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22) {
             if (vs_main_artsStatus.kills.total
-                >= vs_main_battleAbilitiesPointsRequirements
-                    [vs_main_artsStatus.kills.battleAbilitiesUnlocked]) {
+                >= vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills
+                        .battleAbilitiesUnlocked]) {
                 unlockBattleAbility = 1;
             }
         }
@@ -7675,8 +7675,8 @@ int _getChainEvasionModifier(vs_action_t* arg0 __attribute__((unused)),
 
     rate = ((255
                 - vs_battle_actors[target->unk0.targetActor]
-                      ->unk3C->limbs[target->unk0.targetLimb]
-                      .chainEvasion)
+                    ->unk3C->limbs[target->unk0.targetLimb]
+                    .chainEvasion)
                * 100)
          / 255;
     if (rate == 255) {
@@ -8135,7 +8135,7 @@ int _canPerformAttack(vs_action_t* action, char* arg1, int hitNumber)
         }
     }
     return _attackPrerequisiteFunctions[action->hitParams[hitNumber]
-                                            .prerequisiteFunction](action, arg1);
+            .prerequisiteFunction](action, arg1);
 }
 
 short func_8007FE5C(
@@ -8993,7 +8993,7 @@ static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
         targetActor->limbs[limb].armor.classAffinityCurrent.class[0][sp18.sourceClass]
         + (targetActor->limbs[limb].armor.types[sp18.type]
             + targetActor->limbs[limb]
-                  .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity])
+                .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity])
         + 100;
 
     if (targetActor->limbs[limb].armor.maxDp != 0) {
@@ -9011,7 +9011,7 @@ static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
             sp18.shieldStatFactor
             + ((targetActor->shield.types[sp18.type]
                    + targetActor->shield.classAffinityCurrent
-                         .affinity[0][sp18.sourceAffinity])
+                       .affinity[0][sp18.sourceAffinity])
                 + targetActor->shield.classAffinityCurrent.class[0][sp18.sourceClass]);
 
         if (targetActor->shield.maxDp != 0) {
@@ -10656,7 +10656,7 @@ void func_80085390(
             && (vs_main_artsStatus.artsLearned[temp_s0] < 4)
             && (vs_main_artsStatus.kills.weaponCategories[temp_s0]
                 < vs_main_artsPointsRequirements[temp_s0][vs_main_artsStatus
-                                                              .artsLearned[temp_s0]])) {
+                        .artsLearned[temp_s0]])) {
             ++vs_main_artsStatus.kills.weaponCategories[temp_s0];
         }
     }
@@ -14064,7 +14064,7 @@ void func_8008DF14(void)
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
 {
     int i;
-    char(*var_t0)[4];
+    char (*var_t0)[4];
     void* p;
 
     D_800E8594.unk0 = arg0 + 0x80;

@@ -41,8 +41,8 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
                      "lw $t6,0x1c(%0);"
                      "ctc2 $t5, $6;"
                      "ctc2 $t6, $7"
-                     :
-                     : "r"(v0));
+        :
+        : "r"(v0));
 
     if (arg3 == 0) {
         sp0.vx = 0;
@@ -66,8 +66,8 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
                      "swc2 $14,0x0($a2);"
                      "addu $v0,$a2,4;"
                      "swc2 $19,0x0($v0);"
-                     :
-                     : "r"(&sp0));
+        :
+        : "r"(&sp0));
 
     return 0;
 }

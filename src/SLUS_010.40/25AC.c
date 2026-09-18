@@ -400,7 +400,7 @@ int func_80012358(int arg0)
         return 0;
     }
     for (var_a1 = SfxSoundChannels - 10, var_v1 = 0x1000; var_v1 & 0xFFFFFF;
-         var_v1 *= 2, ++var_a1) {
+        var_v1 *= 2, ++var_a1) {
         if ((a2 & var_v1) && (arg0 == var_a1->unk28)) {
             return var_a1->unk3C;
         }
@@ -1553,8 +1553,7 @@ void func_80014D70(
                             &in_pChannel->VoiceParams,
                             in_pChannel->VoiceParams.VolumeScale);
                         g_Sound_VoiceChannelConfigs[in_pChannel->VoiceParams
-                                                        .AssignedVoiceNumber] =
-                            g_pActiveMusicConfig;
+                                .AssignedVoiceNumber] = g_pActiveMusicConfig;
                         g_Sound_GlobalFlags.UpdateFlags |= 0x100;
                     }
                 } else {
@@ -1894,7 +1893,7 @@ void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_Progra
                      | g_Sound_Cutscene_StreamState.VoicesInUseFlags;
 
         for (slotsRemaining = 0xC; slotsRemaining != 0;
-             slotsRemaining -= 2, channel -= 2, voiceBit /= 4) {
+            slotsRemaining -= 2, channel -= 2, voiceBit /= 4) {
             if (!(activeVoices & (voiceBit | (voiceBit * 2)))) {
                 break;
             }
@@ -5137,7 +5136,7 @@ void Sound_Cutscene_InitVoice(
             char Mask = 0xFF;
             VolL = ((g_Sound_Cutscene_StreamState.Volume
                         * g_Sound_StereoPanGainTableQ15[g_Sound_Cutscene_StreamState
-                                                            .field19_0x4c.u8[1]])
+                                .field19_0x4c.u8[1]])
                     >> 0x10);
             VolR = ((g_Sound_Cutscene_StreamState.Volume
                         * g_Sound_StereoPanGainTableQ15

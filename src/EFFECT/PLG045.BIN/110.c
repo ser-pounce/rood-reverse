@@ -7,7 +7,10 @@ INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800F9910);
 int func_800CFB80(int, int);
 
 typedef struct {
-    int unk0;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     int unk4;
     int unk8;
     u_char unkC;
@@ -18,11 +21,20 @@ typedef struct {
     u_char unk11;
     u_char unk12;
     u_char unk13;
-    u_char unk14[0x68];
+    u_char unk14[0x60];
+    short unk74;
+    short unk76;
+    int unk78;
     short unk7C[6];
     short unk88[6];
-    u_char unk94[0x35];
+    u_char unk94[0x2C];
+    short unkC0;
+    short unkC2;
+    int unkC4;
+    u_char unkC8;
     u_char unkC9;
+    u_char unkCA;
+    u_char unkCB;
 } func_800FA098_arg0;
 
 typedef struct {
@@ -41,6 +53,25 @@ typedef struct {
     int unk8;
     int unkC;
 } func_800FA098_arg3;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    void* unk4;
+    int unk8;
+    int unkC;
+} func_800FB320_t;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    short unk2;
+    void* unk4;
+    int unk8;
+    int unkC;
+} func_800D4910_unk8;
 
 void func_800F9910(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
 void func_800FA2B0(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
@@ -83,5 +114,83 @@ INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FA2B0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FA760);
 
-void func_800FB320(func_800D4910_t*, int, int);
-INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FB320);
+int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
+{
+    func_800FA098_arg0* temp_s2;
+    int var_a0;
+    short var_v0;
+    func_800FA098_arg1* a2 = (func_800FA098_arg1*)0x1F8001D0;
+    func_800D4910_unk8* temp_s1 = arg0->unk8;
+    D_800F53B8_t* temp_s0 = D_800F53BC;
+    int s3 = 1;
+
+    switch (arg1) {
+    case 1:
+        temp_s1 = vs_main_allocHeapR(0x30);
+        arg0->unk8 = temp_s1;
+        temp_s1->unk1 = arg2 >> 8;
+        temp_s1->unk0 = arg2;
+        temp_s1->unkC = 0;
+        temp_s1->unk8 = 0;
+        temp_s2 = (func_800FA098_arg0*)(D_800F569C->unk8 + ((temp_s1->unk1 * 0xCC) + 4));
+
+        var_v0 = temp_s2->unkC2;
+        if (temp_s2->unkC2 < temp_s2->unkC0) {
+            var_v0 = temp_s2->unkC0;
+        }
+
+        var_a0 = var_v0;
+
+        if (var_a0 >= 9) {
+            var_a0 = 8;
+        }
+
+        temp_s1->unk4 = vs_main_allocHeapR(var_a0 << 5);
+        func_800D6CCC((int*)(temp_s1 + 1));
+        func_800D6CF0((func_800D6CF_t*)(temp_s1 + 1), temp_s2->unk1, temp_s2->unk0);
+        break;
+
+    case 2:
+        temp_s2 = (func_800FA098_arg0*)(D_800F569C->unk8 + ((temp_s1->unk1 * 0xCC) + 4));
+        a2->unk24 = temp_s2->unk4 & 0x03FFFFFF;
+        temp_s1->unk2 = func_800CFE1C((func_800CFE1C_t*)&temp_s2->unkC0,
+            func_800D118C(temp_s2->unk14[2], temp_s1->unkC));
+
+        if (temp_s1->unk2 >= 9) {
+            temp_s1->unk2 = 8;
+        }
+
+        if (temp_s1->unk8 <= 0) {
+            func_800F9910(temp_s2, a2, temp_s0, temp_s1);
+            func_800FA098(temp_s2, a2, temp_s0, (func_800FA098_arg3*)temp_s1);
+            temp_s1->unk8 = temp_s2->unk74;
+        }
+
+        temp_s1->unk8 = (temp_s1->unk8 - 1);
+
+        func_800FA2B0(temp_s2, a2, temp_s0, temp_s1);
+        func_800FA760(temp_s2, a2, temp_s0, temp_s1);
+
+        ++temp_s1->unkC;
+
+        if (temp_s1->unk0 != 0) {
+            --temp_s1->unk0;
+            if (!temp_s1->unk0) {
+                vs_main_freeHeapR(temp_s1->unk4);
+                s3 = 0;
+            }
+        }
+        break;
+
+    case 3:
+        temp_s1->unk0 = 1;
+        break;
+
+    case 4:
+        vs_main_freeHeapR(temp_s1->unk4);
+        s3 = 0;
+        break;
+    }
+
+    return s3;
+}

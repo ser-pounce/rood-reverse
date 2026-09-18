@@ -65,7 +65,7 @@ static int _populateItemRows(
     int count = 0;
 
     for (i = 0; i < vs_mainMenu_inventoryItemCapacities[itemCategory];
-         ++count, ++i, textBuf += 96) {
+        ++count, ++i, textBuf += 96) {
 
         int parentItem;
         int rowType;

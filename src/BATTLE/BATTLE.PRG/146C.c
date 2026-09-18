@@ -2,7 +2,7 @@
 #include "146C.h"
 #include "2842C.h"
 #include "2EA3C.h"
-#include "30D14.h"
+#include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
@@ -543,7 +543,7 @@ void func_80093B04(void*);
 void func_80093B68(int arg0, int arg1, int arg2, int arg3);
 int vs_battle_renderBattleAbilityTimingResult(int);
 void func_80093FEC(int, int, int, int);
-void func_80093914(char);
+void func_80093914(int);
 void func_80095B7C(int, int);
 void func_80096768(int, int, int);
 void func_80096FF0(int);
@@ -2972,13 +2972,13 @@ void func_8006F450(func_800CF0E8_t* arg0)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x24;
+    sp10.effectId = 36;
     sp10.unk2 = 1;
     sp10.unk4 = 4;
     sp10.unk3 = 0;
     sp10.unk8.u8[0] = 0;
     sp10.unk10 = 5;
-    sp10.unk14.u16 = arg0->unk0;
+    sp10.unk14.u16 = arg0->effectId;
     sp10.unk18 = arg0->unk4;
     sp10.unk16.u16 = 0;
     func_800CF3F8(&sp10, 0);
@@ -2988,7 +2988,7 @@ void func_8006F4B0(func_8006EBF8_t3* arg0)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x21;
+    sp10.effectId = 33;
     sp10.unk2 = 1;
     sp10.unk4 = 4;
     sp10.unk3 = 0;
@@ -3088,8 +3088,8 @@ int _isArtOrAbilityUnlocked(void)
     if (unlockArt == 0) {
         if (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22) {
             if (vs_main_artsStatus.kills.total
-                >= vs_main_battleAbilitiesPointsRequirements
-                    [vs_main_artsStatus.kills.battleAbilitiesUnlocked]) {
+                >= vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills
+                        .battleAbilitiesUnlocked]) {
                 unlockBattleAbility = 1;
             }
         }
@@ -3101,7 +3101,7 @@ void func_8006F848(void)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = 0x14;
+    sp10.effectId = 20;
     sp10.unk2 = 1;
     sp10.unk4 = 5;
     sp10.unk10 = 4;
@@ -3657,7 +3657,7 @@ void func_800733F8(int arg0)
 {
     func_800CF0E8_t sp10;
 
-    sp10.unk0 = arg0;
+    sp10.effectId = arg0;
     D_800F196C = 4;
     sp10.unk2 = 1;
     sp10.unk3 = 0;
@@ -3965,7 +3965,7 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
     D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
     D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
-    sp10.unk0 = arg0->unk0.unk6 + 6;
+    sp10.effectId = arg0->unk0.unk6 + 6;
     sp10.unk4 = 5;
     sp10.unk10 = 4;
     sp10.unk2 = 1;
@@ -5943,7 +5943,7 @@ int vs_battle_getCameraRoll(void) { return vs_scratch.camera.angles.vz & 0xFFF; 
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
 
-void _lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
+void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
 {
     static const VECTOR D_800689F8 = { 0, -ONE, 0 };
     VECTOR sp10;
@@ -6325,7 +6325,7 @@ void func_8007BE20(int arg0, int arg1)
 
     sp10.unk2 = 1;
     sp10.unk4 = 5;
-    sp10.unk0 = arg0;
+    sp10.effectId = arg0;
     sp10.unk3 = 0;
     sp10.unkC = 0;
     sp10.unkA.s16 = 0;
@@ -7675,8 +7675,8 @@ int _getChainEvasionModifier(vs_action_t* arg0 __attribute__((unused)),
 
     rate = ((255
                 - vs_battle_actors[target->unk0.targetActor]
-                      ->unk3C->limbs[target->unk0.targetLimb]
-                      .chainEvasion)
+                    ->unk3C->limbs[target->unk0.targetLimb]
+                    .chainEvasion)
                * 100)
          / 255;
     if (rate == 255) {
@@ -8135,7 +8135,7 @@ int _canPerformAttack(vs_action_t* action, char* arg1, int hitNumber)
         }
     }
     return _attackPrerequisiteFunctions[action->hitParams[hitNumber]
-                                            .prerequisiteFunction](action, arg1);
+            .prerequisiteFunction](action, arg1);
 }
 
 short func_8007FE5C(
@@ -8993,7 +8993,7 @@ static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
         targetActor->limbs[limb].armor.classAffinityCurrent.class[0][sp18.sourceClass]
         + (targetActor->limbs[limb].armor.types[sp18.type]
             + targetActor->limbs[limb]
-                  .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity])
+                .armor.classAffinityCurrent.affinity[0][sp18.sourceAffinity])
         + 100;
 
     if (targetActor->limbs[limb].armor.maxDp != 0) {
@@ -9011,7 +9011,7 @@ static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
             sp18.shieldStatFactor
             + ((targetActor->shield.types[sp18.type]
                    + targetActor->shield.classAffinityCurrent
-                         .affinity[0][sp18.sourceAffinity])
+                       .affinity[0][sp18.sourceAffinity])
                 + targetActor->shield.classAffinityCurrent.class[0][sp18.sourceClass]);
 
         if (targetActor->shield.maxDp != 0) {
@@ -10656,7 +10656,7 @@ void func_80085390(
             && (vs_main_artsStatus.artsLearned[temp_s0] < 4)
             && (vs_main_artsStatus.kills.weaponCategories[temp_s0]
                 < vs_main_artsPointsRequirements[temp_s0][vs_main_artsStatus
-                                                              .artsLearned[temp_s0]])) {
+                        .artsLearned[temp_s0]])) {
             ++vs_main_artsStatus.kills.weaponCategories[temp_s0];
         }
     }
@@ -14064,7 +14064,7 @@ void func_8008DF14(void)
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
 {
     int i;
-    char(*var_t0)[4];
+    char (*var_t0)[4];
     void* p;
 
     D_800E8594.unk0 = arg0 + 0x80;

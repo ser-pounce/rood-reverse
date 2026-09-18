@@ -1,27 +1,12 @@
-ARCH     := mipsel-linux-gnu-
-OBJCOPY  := $(ARCH)objcopy
-SIZE     := $(ARCH)size
-PYTHON   := python3
-GIT      := git
+ARCH    := mipsel-linux-gnu-
+OBJCOPY := $(ARCH)objcopy
+SIZE    := $(ARCH)size
+PYTHON  := python3
+GIT     := git
 
 OBJCOPYFLAGS := -I binary -O elf32-tradlittlemips
 
-BUILD        := build
-BINARIES     := SLUS_010.40 $(addsuffix .PRG, \
-				TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING \
-				$(addprefix MENU/, MAINMENU $(addprefix MENU, 0 1 2 3 4 5 7 8 9 B C D E F)))
-BINARY_DEPS  := $(BINARIES:%=$(BUILD)/config/%/link.d)
-BINTARGETS   := $(BINARIES:%=$(BUILD)/data/%)
-TARGETS      := $(BINTARGETS)
-INCMAKEFILES := $(BINARIES:%=config/%/Makefile) config/MENU/Makefile config/SMALL/Makefile \
-				$(patsubst %,tools/make/%.mk,shell assemble compile kaitai link permuter python vsstring)
-
-ifndef PERMUTER
-ifndef __BASH_MAKE_COMPLETION__
-INCMAKEFILES += $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso splat xdelta)
-endif
-endif
-
+BUILD      := build
 DISKCODE   := SLUS-01040
 DISKIMAGE  := disks/$(DISKCODE).bin
 DISKCONFIG := disks/$(DISKCODE).xml
@@ -33,7 +18,7 @@ SHELL := bash
 .ONESHELL:
 .SILENT:
 .SECONDEXPANSION:
-.PHONY: all clean commit-check remake image docker-build docker-push
+.PHONY: all clean commit-check remake image
 
 SKIPSPLAT += commit-check clean remake clean-all
 
@@ -53,13 +38,23 @@ remake: clean
 
 image: $(BUILD)/$(DISKIMAGE)
 
-docker-build:
-	docker build -t ghcr.io/ser-pounce/rood-reverse:main .
+BINARIES := SLUS_010.40 $(addsuffix .PRG, TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING)
 
-docker-push: docker-build
-	docker push ghcr.io/ser-pounce/rood-reverse:main
+include $(patsubst %,config/%/Makefile,EFFECT MENU SMALL)
 
-include $(INCMAKEFILES)
+BINTARGETS := $(BINARIES:%=$(BUILD)/data/%)
+TARGETS    += $(BINTARGETS)
+
+include $(wildcard $(BINARIES:%=config/%/Makefile))
+include $(patsubst %,tools/make/%.mk,shell assemble compile docker kaitai link permuter python vsstring)
+
+ifndef PERMUTER
+ifndef __BASH_MAKE_COMPLETION__
+include $(patsubst %,tools/make/%.mk,compilers img lint objdiff psxiso splat xdelta)
+endif
+endif
+
+BINARY_DEPS := $(BINARIES:%=$(BUILD)/config/%/link.d)
 
 $(BUILDDEPS):   | tools/.sysdeps
 $(DISKCONFIG):  | $(BUILDDEPS)

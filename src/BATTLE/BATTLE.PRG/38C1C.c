@@ -41,8 +41,8 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
                      "lw $t6,0x1c(%0);"
                      "ctc2 $t5, $6;"
                      "ctc2 $t6, $7"
-                     :
-                     : "r"(v0));
+        :
+        : "r"(v0));
 
     if (arg3 == 0) {
         sp0.vx = 0;
@@ -66,8 +66,8 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
                      "swc2 $14,0x0($a2);"
                      "addu $v0,$a2,4;"
                      "swc2 $19,0x0($v0);"
-                     :
-                     : "r"(&sp0));
+        :
+        : "r"(&sp0));
 
     return 0;
 }
@@ -130,8 +130,39 @@ int func_800A152C(int arg0, int arg1, int arg2)
     return -4;
 }
 
-// https://decomp.me/scratch/N9nFn
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1648);
+int func_800A1648(int arg0, int arg1, int arg2)
+{
+    D_800F4538_t* actor;
+    D_800F4538_unk68* model;
+    u_int v;
+
+    actor = D_800F4538[arg0];
+    if (actor == NULL) {
+        actor = (D_800F4538_t*)D_800F45E0[arg0];
+        if (actor == NULL) {
+            return -1;
+        }
+    }
+    model = actor->unk0.unk68;
+    switch (arg2) {
+    case 0:
+        v = model->armatures[arg1].unk6;
+        break;
+    case 1:
+        v = model->armatures[arg1].unk7 >> 4;
+        if (v == 0) {
+            return -3;
+        }
+        break;
+    case 2:
+        v = model->armatures[arg1].unk7 & 0xF;
+        if (v == 0) {
+            return -3;
+        }
+        break;
+    }
+    return v;
+}
 
 int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
 {
@@ -156,7 +187,59 @@ int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A17BC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A190C);
+int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
+{
+    D_800F4538_t* var_a2;
+    int var_v0;
+
+    if (arg1 == 0xFB) {
+        var_a2 = D_800F4538[arg0];
+
+        if (var_a2 == NULL) {
+            var_a2 = (D_800F4538_t*)D_800F45E0[arg0];
+            if (var_a2 == NULL) {
+                return -1;
+            }
+
+            *arg2 = var_a2->unk0.position;
+            arg2->vy -= 0xC0;
+        } else {
+            *arg2 = var_a2->unk0.position;
+            arg2->vy -= var_a2->unk646;
+        }
+
+        return 0;
+    }
+
+    if (arg1 == 0xFD) {
+        *arg2 = D_800F4538[arg0]->unk0.position;
+        return 0;
+    }
+
+    if ((arg1 & 0xF0) == 0x40) {
+        var_v0 = arg1;
+    } else if (arg1 == 0xFA) {
+        var_a2 = D_800F4538[arg0];
+        *arg2 = var_a2->unk0.position;
+        var_v0 = var_a2->unk65A * var_a2->unk183C / ONE;
+        arg2->vy += var_v0;
+        return 0;
+    } else {
+        var_v0 = func_800A152C(arg0, arg1, 0);
+
+        if (var_v0 < 0) {
+            return var_v0;
+        }
+    }
+
+    var_v0 = func_800A1C10(arg0, var_v0, (u_short*)arg2, arg3);
+
+    if (var_v0 < 0) {
+        return var_v0;
+    }
+
+    return 0;
+}
 
 int func_800A1AF8(int arg0, int arg1, u_short* arg2, int arg3)
 {

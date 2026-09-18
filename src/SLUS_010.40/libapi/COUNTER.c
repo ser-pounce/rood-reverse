@@ -14,7 +14,7 @@ typedef struct {
 enum interruptMask { VBLANK = 1, TMR0 = 0x10, TMR1 = 0x20, TMR2 = 0x40 };
 
 static int (*_interruptReg)[2] = (int (*)[2])0x1F801070;
-static volatile RootCounter (*_rootCounter0)[3] = (RootCounter(*)[3])0x1F801100;
+static volatile RootCounter (*_rootCounter0)[3] = (RootCounter (*)[3])0x1F801100;
 static long _interruptMasks[4] = { TMR0, TMR1, TMR2, VBLANK };
 
 long SetRCnt(u_long counter, u_short targetVal, long mode)

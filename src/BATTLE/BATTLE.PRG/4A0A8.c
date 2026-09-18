@@ -1,7 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "2842C.h"
-#include "30D14.h"
+#include "30DB0.h"
 #include "3A1A0.h"
 #include "40564.h"
 #include "4A0A8.h"
@@ -463,8 +463,8 @@ void func_800B64CC(int arg0, int arg1, int arg2, int arg3)
             "sw         %2, 0x1850($v0);"
             ".L800B64F4:"
             "sw         $v1, 0x1848($v0);"
-            :
-            : "r"(arg0), "r"(arg1), "r"(arg2), "r"(arg3));
+        :
+        : "r"(arg0), "r"(arg1), "r"(arg2), "r"(arg3));
 }
 
 __asm__("glabel func_800B6500;"
@@ -3363,8 +3363,8 @@ static int _fixedPointMult(int a, int b)
             "srl        $t0, 12;"
             "sll        $t1, 20;"
             "or         %0, $t0, $t1;"
-            : "=r"(result)
-            : "r"(a), "r"(b));
+        : "=r"(result)
+        : "r"(a), "r"(b));
     return result;
 }
 

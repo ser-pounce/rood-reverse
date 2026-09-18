@@ -59,12 +59,13 @@ def parse_line(line: HelpHf0.LineData) -> dict[str, Any]:
 
 
 def parse_hf0(data: HelpHf0) -> dict[str, Any]:
+    string_refs = data.help_text.string_refs
+    assert string_refs is not None
+    lines = data.line_table.lines if data.line_table is not None else []
+
     return {
-        "strings": [decode(list(ref.text)) for ref in data.help_text.string_refs],
-        "sprites": [
-            parse_sprite(ref.sprite) for ref in data.sprite_table.sprite_refs
-        ],
-        "lines": [parse_line(line) for line in data.line_table.lines],
+        "strings": [decode(bytes(ref.text)) for ref in string_refs],
+        "lines": [parse_line(line) for line in lines],
     }
 
 
@@ -121,27 +122,31 @@ def decode_hf(hf0_path: Path, hf1_path: Path, output_dir: Path) -> None:
 
     hf0 = HelpHf0.from_file(str(hf0_path))
     hf1 = HelpHf1.from_file(str(hf1_path))
-    sprites = [ref.sprite for ref in hf0.sprite_table.sprite_refs]
-    seen: dict[tuple, str] = {}
-    sprite_files: list[str] = []
 
-    for sprite in sprites:
+    sprite_table = hf0.sprite_table
+    sprite_refs = sprite_table.sprite_refs if sprite_table is not None else []
+
+    seen: dict[tuple, str] = {}
+    sprite_entries: list[dict] = []
+    for ref in sprite_refs:
+        sprite = ref.sprite
+        parsed_sprite = parse_sprite(sprite)
+
         signature = (tuple(sprite.sprites), sprite.w, sprite.h, sprite.clut_x, sprite.clut_y)
         if signature not in seen:
             filename = f"sprite_{len(seen):03d}.png"
             render_sprite(hf1, sprite, output_dir / filename)
             seen[signature] = filename
-        sprite_files.append(seen[signature])
+        filename = seen[signature]
+
+        sprite_entries.append({
+            "position": {"x": parsed_sprite["x"], "y": parsed_sprite["y"]},
+            "file": filename,
+            **({"animation": parsed_sprite["animation"]} if "animation" in parsed_sprite else {}),
+        })
 
     hf0_data = parse_hf0(hf0)
-    hf0_data["sprites"] = [
-        {
-            "position": {"x": sprite["x"], "y": sprite["y"]},
-            "file": filename,
-            **({"animation": sprite["animation"]} if "animation" in sprite else {}),
-        }
-        for sprite, filename in zip(hf0_data["sprites"], sprite_files)
-    ]
+    hf0_data["sprites"] = sprite_entries
 
     with (output_dir / "help_data.yaml").open("w", encoding="utf-8") as file:
         dump(hf0_data, file)
@@ -259,12 +264,16 @@ def process_sprites(sprites: list[dict[str, Any]], sprites_dir: Path, block_extr
         if filename in processed_sprites:
             continue
         image = load_png(sprites_dir / filename)
+
+        palette = image.getpalette()
+        assert palette is not None
+
         processed_sprites[filename] = {
             "w": image.width,
             "h": image.height,
             "sprites": block_extractor.extract_blocks(image),
             "clutX": 0,
-            "clutY": palette_manager.add_palette(image.getpalette()),
+            "clutY": palette_manager.add_palette(palette),
         }
 
     return processed_sprites
@@ -344,7 +353,7 @@ def main(argv=None) -> int:
     suffix = args.input.suffix.lower()
     if suffix == ".hf0":
         decode_hf(args.input, args.input.with_suffix(".HF1"), args.output_dir)
-    elif suffix in {".yaml", ".yml"}:
+    elif suffix == ".yaml":
         encode_hf(args.input, args.output_dir)
     else:
         parser.error("Could not infer mode from input file extension; expected .HF0 or .yaml")

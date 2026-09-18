@@ -1,6 +1,7 @@
 #pragma once
 #include "../../SLUS_010.40/main.h"
 #include "146C.h"
+#include "6E644.h"
 
 enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_solidShock = 0x61,
@@ -164,39 +165,139 @@ typedef struct {
 } vs_battle_stringContext_t;
 
 typedef struct {
+    char unk0[0x14];
+    char unk14;
+    char unk15;
+} D_800F569C_t2;
+
+typedef struct {
     u_short unk0;
-    char unk2;
-    char unk3;
-    u_short unk4;
-    short unk6;
-    union {
-        char u8[2];
-        short s16;
-    } unk8;
-    union {
-        char u8[2];
-        short s16;
-    } unkA;
+    u_short unk2;
+    u_char unk4[4];
+    int unk8;
+    int unkC;
+    int unk10;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t1;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    u_char* unk8;
+    u_char* unkC[4];
+    char unk1C[0x70];
+    func_800D0B30_t1* unk8C;
+    char* unk90;
+    char unk94[0x18];
+    int unkAC;
+    u_short* unkB0;
+    D_800F569C_t2* unkB4;
+    void* unkB8;
+    void* unkBC;
+    u_char* unkC0;
+    int unkC4;
+    int unkC8;
+    int unkCC;
+} D_800F569C_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    u_int unk14_0 : 11;
+    u_int unk14_11 : 5;
+    u_int unk14_16 : 16;
+} D_800F53B8_t5;
+
+typedef struct func_800D2904_t {
+    struct func_800D2904_t* previous;
+    struct func_800D2904_t* next;
+    char unk8[4];
+    int unkC;
+    int unk10;
+    int unk14;
+    char unk18[0x60];
+} func_800D2904_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkC;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    u_char unk34;
+    u_char unk35;
+    u_char unk36;
+    u_char unk37;
+    char unk38[0x98];
+} func_800CE714_t2_2;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    func_8006CE70_t unk4;
+} D_800F53B8_t3_2;
+
+typedef struct {
+    D_800F53B8_t3_2 unk0;
+    D_800F53B8_t3_2 unkC;
+    D_800F53B8_t3_2 unk18;
+    D_800F53B8_t3_2 unk24;
+    D_800F53B8_t4* unk30;
+    func_800D4910_t* unk34;
+    short unk38;
+    short unk3A;
+    int unk3C;
+} D_800F53B8_t3;
+
+typedef struct D_800F53B8_t {
+    struct D_800F53B8_t* next;
+    D_800F53B8_t5* unk4;
+    char unk8;
+    char unk9;
+    u_short unkA;
+    char* unkC;
+    char unk10[4];
+    u_int unk14_0 : 8;
+    u_int unk14_8 : 3;
+    u_int unk14_11 : 5;
+    u_int unk14_16 : 16;
+    func_800D2904_t* unk18;
+    func_800CE714_t2_2 unk1C[16];
+    D_800F53B8_t3 unkD1C;
+} D_800F53B8_t;
+
+typedef struct {
+    short unk0;
+    short unk2;
+} func_800CFE1C_t;
+
+typedef struct {
+    int unk0;
+    short unk4;
+    u_char unk6;
+    u_char unk7;
+    int unk8;
     short unkC;
     short unkE;
-    short unk10;
-    short unk12;
-    union {
-        char u8[2];
-        u_short u16;
-    } unk14;
-    union {
-        char u8[2];
-        u_short u16;
-    } unk16;
-    short unk18;
-    short unk1A;
-    int unk1C[45];
-    char unkD0[16];
-    short unkE0;
-    short unkE2;
-    short unkE4;
-} func_800CF0E8_t;
+    int unk10;
+    short unk14;
+    u_char unk16;
+    u_char unk17;
+    u_char* unk18;
+} func_800D6CF_t;
 
 enum vs_battle_limbStatus {
     limbStatusCritical,
@@ -357,6 +458,17 @@ void func_800CA2DC(void);
 int func_800CACD0(int menuState, int arg1);
 void func_800CB83C(void);
 int func_800CF060(void);
+void vs_battle_addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2);
+void vs_battle_lerp2DVector(short* src, int t, int* vec);
+void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
+void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
+int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
+int func_800D118C(int arg0, int arg1);
+void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
+void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
+void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
+void func_800D6CCC(int* arg0);
+void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];
@@ -394,7 +506,10 @@ extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
+extern D_800F569C_t* D_800F569C;
 extern vs_battle_textBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
 extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;
+extern SVECTOR D_800F5310[];
+extern D_800F53B8_t* D_800F53BC;

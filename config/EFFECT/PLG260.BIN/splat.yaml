@@ -1,0 +1,26 @@
+sha1: 2684fae78806ce855d9e91fce3badeb46928ad19
+options:
+  basename: EFFECT/PLG260.BIN
+  target_path: data/EFFECT/PLG260.BIN
+  elf_path: build/data/EFFECT/PLG260.BIN.elf
+  asm_path: build/src/EFFECT/PLG260.BIN
+  src_path: src/EFFECT/PLG260.BIN
+  asset_path: build/assets/EFFECT/PLG260.BIN
+  ld_script_path: build/config/EFFECT/PLG260.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG260.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG260.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG260.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, c]
+    - [0xB0C, data, 0]
+  - [0xBDC]

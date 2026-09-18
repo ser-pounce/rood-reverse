@@ -1,5 +1,5 @@
 LD        = $(ARCH)ld
-BCONFIG   = $(patsubst $(BUILD)/data/%,$(BUILD)/config/%,$(@:.elf=))
+BCONFIG  ?= $(patsubst $(BUILD)/data/%,$(BUILD)/config/%,$(@:.elf=))
 LDSCRIPT ?= link.ld undefined_funcs_auto.txt undefined_syms_auto.txt
 LDFLAGS   = -nostdlib --build-id=none -L $(BCONFIG) $(LDSCRIPT:%=-T %)
 
@@ -18,4 +18,3 @@ $(BINTARGETS:=.elf): | $$(@D)/
 $(BINTARGETS:=.elf):
 	$(ECHO) Linking $@
 	$(LD) $(LDFLAGS) $(OUTPUT_OPTION)
-	$(OBJCOPY) $@

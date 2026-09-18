@@ -265,7 +265,7 @@ static void func_801031A0(void)
     vs_battle_memcpy(&container->misc, D_80109A88->data.misc, sizeof container->misc);
 
     for (var_a2 = vs_menu_inventoryStorage->itemsToTransfer[0], i = 0; var_a2 != 0;
-         ++i, var_a2 = vs_menu_inventoryStorage->itemsToTransfer[i]) {
+        ++i, var_a2 = vs_menu_inventoryStorage->itemsToTransfer[i]) {
         if ((var_a2 >> 8) == itemCategoryMisc) {
             _copyContainerItem(copyContainerFlagsCopy | itemCategoryMisc, container,
                 (var_a2 - 1) & 0xFF, &vs_menu_inventoryStorage->unk87B0);

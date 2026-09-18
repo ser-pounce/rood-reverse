@@ -1,5 +1,6 @@
 #pragma once
 #include <sys/types.h>
+#include <libgte.h>
 #include <libgpu.h>
 
 enum vs_texMode { clut4Bit = 0, clut8Bit = 1, direct16Bit = 2 };

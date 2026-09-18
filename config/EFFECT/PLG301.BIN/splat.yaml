@@ -1,0 +1,27 @@
+sha1: fd8821431eaa726ab4faa8d54d1e32ad606e3c35
+options:
+  basename: EFFECT/PLG301.BIN
+  target_path: data/EFFECT/PLG301.BIN
+  elf_path: build/data/EFFECT/PLG301.BIN.elf
+  asm_path: build/src/EFFECT/PLG301.BIN
+  src_path: src/EFFECT/PLG301.BIN
+  asset_path: build/assets/EFFECT/PLG301.BIN
+  ld_script_path: build/config/EFFECT/PLG301.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG301.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG301.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG301.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 110]
+    - [0x110, c]
+    - [0x2D24, data, 110]
+  - [0x2D48]

@@ -1,10 +1,11 @@
 #include "common.h"
-#include "build/src/include/lbas.h"
 #include "146C.h"
 #include "573B8.h"
-#include "../SLUS_010.40/main.h"
+#include "src/SLUS_010.40/main.h"
+#include "build/src/include/lbas.h"
 
 extern u_char D_800E9C30[];
+extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
 
@@ -41,9 +42,24 @@ typedef struct {
 extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800EB9AC;
 
+extern void func_8007D260(int);
+void func_800A0204(int, int, int, int);
+extern void func_800BBDDC(void);
+
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFD9C);
+void func_800BFD9C(void)
+{
+    int i;
+
+    for (i = 0; i < 17; i++) {
+        if (D_800F4B70[i] != 0) {
+            func_8007D260(i);
+        }
+    }
+
+    func_800BBDDC();
+}
 
 short vs_battle_getShort(u_char* arg0)
 {
@@ -77,7 +93,16 @@ void func_800C00E8(int arg0, void* arg1)
     vs_main_cdEnqueue(D_800F4BBC, arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0150);
+void func_800C0150(void)
+{
+    short i;
+
+    for (i = 0; i < 17; ++i) {
+        if (func_8007CF64(i) != NULL) {
+            func_800A0204(i, 1, 0, 0);
+        }
+    }
+}
 
 __asm__("glabel vs_battle_copyAligned;"
         "and       $t0, $a2, 0x7;"
@@ -90,7 +115,22 @@ __asm__("glabel vs_battle_copyAligned;"
         "add       $a2, -2;"
         "endlabel vs_battle_copyAligned;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", vs_battle_memcpy);
+__asm__("glabel vs_battle_memcpy;"
+        "addu      $a2, $a1, $a2;"
+        "0:;"
+        "lh        $t0, ($a1);"
+        "lh        $t1, 2($a1);"
+        "lh        $t2, 4($a1);"
+        "lh        $t3, 6($a1);"
+        "addu      $a1, 8;"
+        "sh        $t0, ($a0);"
+        "sh        $t1, 2($a0);"
+        "sh        $t2, 4($a0);"
+        "sh        $t3, 6($a0);"
+        "bne       $a1, $a2, 0b;"
+        "addu      $a0, 8;"
+        "jr        $ra;"
+        "endlabel vs_battle_memcpy;");
 
 __asm__("glabel vs_battle_setSpriteDefault;"
         "lui      $v1, 0x1F80;"
@@ -137,7 +177,20 @@ __asm__("glabel vs_battle_setSpriteDefault;"
         "sw         $t4, ($v1);"
         "endlabel vs_battle_setSprite;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C02A8);
+__asm__("glabel func_800C02A8;"
+        "addu     $sp, -0x8;"
+        "sw       $ra, ($sp);"
+        "lui      $a0, 0x1F80;"
+        "jal      SetRotMatrix;"
+        "addu     $a0, 0x14;"
+        "lui      $a0, 0x1F80;"
+        "jal      SetTransMatrix;"
+        "addu     $a0, 0x14;"
+        "lw       $ra, ($sp);"
+        ".nop;"
+        "j        $ra;"
+        "addu     $sp, 0x8;"
+        "endlabel func_800C02A8;");
 
 __asm__("glabel vs_battle_playSfx10;"
         "j         .L800C02FC;"

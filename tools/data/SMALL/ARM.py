@@ -3,7 +3,7 @@ import re
 import struct
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TextIO
+from typing import TextIO, TypedDict
 
 from tools.etc.vsString import decode, encode
 from tools.kaitai.parsers.data.SMALL.scene_arm import SceneArm
@@ -105,7 +105,7 @@ def write_room(
     jp_font: bool,
 ) -> int:
     name = (
-        decode(list(room.name[:ROOM_NAME_SIZE]), jp_font)
+        decode(bytes(room.name[:ROOM_NAME_SIZE]), jp_font)
         if room.name is not None
         else None
     )
@@ -128,7 +128,7 @@ def write_room(
     write_obj_points(file, room.points, vertex_offset)
 
     file.write("\n")
-    return vertex_offset + len(room.vertices)
+    return vertex_offset + (len(room.vertices) if room.vertices is not None else 0)
 
 
 def decode_arm(in_path: Path, out_path: Path, jp_font: bool = False) -> None:
@@ -157,8 +157,16 @@ def parse_obj_blocks(in_path: Path) -> list[list[str]]:
     return blocks
 
 
-def parse_metadata(comments: list[str]) -> dict[str, int | str | None]:
-    metadata: dict[str, int | str | None] = {
+class RoomMetadata(TypedDict):
+    name: str | None
+    zone: int | None
+    map: int | None
+    prev: int | None
+    next: int | None
+
+
+def parse_metadata(comments: list[str]) -> RoomMetadata:
+    metadata: RoomMetadata = {
         "name": None,
         "zone": None,
         "map": None,
@@ -231,7 +239,8 @@ def parse_room(block: list[str], vertex_offset: int) -> RoomData:
         tokens = line.split()
         kind = tokens[0]
         if kind == "v" and len(tokens) >= 4:
-            vertices.append(tuple(round(float(value)) for value in tokens[1:4]))
+            x, y, z = (round(float(value)) for value in tokens[1:4])
+            vertices.append((x, y, z))
         elif kind == "f":
             indices = [int(token.split("/")[0]) for token in tokens[1:]]
             local = local_indices(indices, vertex_offset)

@@ -283,7 +283,7 @@ typedef struct {
     u_short unk654;
     u_short menuCameraDistance;
     u_short unk658;
-    u_short unk65A;
+    short unk65A;
     int unk65C;
     int unk660;
     u_int btSeqLbas[12];
@@ -593,7 +593,7 @@ typedef struct {
 } D_800F45E0_t;
 
 int func_800A1108(int, void*);
-void func_800A36E0(int, char, func_8006EBF8_t*);
+void func_800A36E0(int, int, func_8006EBF8_t*);
 void func_800A48CC(int, int, int);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);

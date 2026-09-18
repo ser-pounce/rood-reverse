@@ -76,7 +76,7 @@ def build_monster_block(rec: dict) -> bytes:
     )
 
 
-def encode_yml(in_path: Path, out_path: Path) -> None:
+def encode_yaml(in_path: Path, out_path: Path) -> None:
     records = yaml.safe_load(in_path.read_text(encoding="utf-8"))
 
     if not isinstance(records, list) or len(records) != MONSTER_COUNT:
@@ -103,10 +103,10 @@ def main(argv=None) -> int:
     suffix = args.input.suffix.lower()
     if suffix == ".bin":
         decode_bin(args.input, args.output)
-    elif suffix == ".yml":
-        encode_yml(args.input, args.output)
+    elif suffix == ".yaml":
+        encode_yaml(args.input, args.output)
     else:
-        parser.error("Could not infer mode from input file extension; expected .BIN or .yml")
+        parser.error("Could not infer mode from input file extension; expected .BIN or .yaml")
     return 0
 
 

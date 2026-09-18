@@ -32,6 +32,78 @@ Thanks also to the following amazing projects (and their dependencies):
 ![INITBTL.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.INITBTL.PRG&color=%2332a934)
 ![SCREFF2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.SCREFF2.PRG)
 
+### Effects
+![Total effects progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects)
+
+
+![EFFPURGE.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.EFFPURGE.BIN&color=%2332a934)
+![PLG005.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG005.BIN)
+![PLG044.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG044.BIN)
+![PLG045.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG045.BIN)
+![PLG047.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG047.BIN)
+![PLG049.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG049.BIN)
+![PLG050.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG050.BIN)
+![PLG051.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG051.BIN)
+![PLG053.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG053.BIN)
+![PLG057.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG057.BIN)
+![PLG061.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG061.BIN)
+![PLG065.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG065.BIN)
+![PLG065.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG069.BIN)
+![PLG073.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG073.BIN)
+![PLG077.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG077.BIN)
+![PLG081.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG081.BIN)
+![PLG082.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG082.BIN)
+![PLG085.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG085.BIN)
+![PLG086.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG086.BIN)
+![PLG087.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG087.BIN)
+![PLG114.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG114.BIN)
+![PLG128.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG128.BIN)
+![PLG129.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG129.BIN)
+![PLG134.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG134.BIN)
+![PLG135.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG135.BIN)
+![PLG137.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG137.BIN)
+![PLG138.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG138.BIN)
+![PLG139.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG139.BIN)
+![PLG141.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG141.BIN)
+![PLG142.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG142.BIN)
+![PLG143.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG143.BIN)
+![PLG146.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG146.BIN)
+![PLG147.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG147.BIN)
+![PLG148.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG148.BIN)
+![PLG149.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG149.BIN)
+![PLG150.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG150.BIN)
+![PLG152.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG152.BIN)
+![PLG153.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG153.BIN)
+![PLG154.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG154.BIN)
+![PLG156.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG156.BIN)
+![PLG158.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG158.BIN)
+![PLG160.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG160.BIN)
+![PLG161.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG161.BIN)
+![PLG162.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG162.BIN)
+![PLG165.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG165.BIN)
+![PLG166.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG166.BIN)
+![PLG167.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG167.BIN)
+![PLG168.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG168.BIN)
+![PLG169.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG169.BIN)
+![PLG198.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG198.BIN)
+![PLG224.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG224.BIN)
+![PLG232.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG232.BIN)
+![PLG232.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG236.BIN)
+![PLG242.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG242.BIN)
+![PLG246.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG246.BIN)
+![PLG250.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG250.BIN)
+![PLG255.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG255.BIN)
+![PLG260.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG260.BIN)
+![PLG263.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG263.BIN)
+![PLG265.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG265.BIN)
+![PLG265.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG266.BIN)
+![PLG272.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG272.BIN)
+![PLG273.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG273.BIN)
+![PLG291.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG291.BIN)
+![PLG297.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG297.BIN)
+![PLG300.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG300.BIN)
+![PLG300.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG301.BIN)
+
 ### Menus
 ![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus&color=%2332a934)
 
@@ -77,18 +149,18 @@ Due to the presence of a large number of empty sectors at the start of each dire
 
 ## Setup
 The project is mostly self-configuring but requires a minimal amount of setup.
-- Make sure the following packages are installed, older versions may also work but this is not tested. This configuration works as-is on Ubuntu 24.04 on WSL; depending on your distro you may need additional packages.
+- Make sure the following packages are installed, older versions may also work but this is not tested. This configuration works as-is on Ubuntu 26.04 on WSL; depending on your distro you may need additional packages.
 
-| Package                 | Minimum Version |
-|-------------------------|-----------------|
-| clang-format            | 18.1.3          |
-| g++                     | 13.3.0          |
-| gcc-mipsel-linux-gnu    | 12.4.0          |
-| make                    | 4.4             |
-| python3                 | 3.12.3          |
-| python3-venv            | 3.12.3          |
-| unzip                   | 6.00            |
-| wget                    | 1.21.4          |
+| Package                      | Minimum Version |
+|------------------------------|-----------------|
+| clang-format                 | 21.1.8          |
+| g++                          | 15.2.0          |
+| binutils-mipsel-linux-gnu    | 2.45.90         |
+| make                         | 4.4.            |
+| python3                      | 3.14.4          |
+| python3-venv                 | 3.14.4          |
+| unzip                        | 6.00            |
+| wget                         | 1.25.0          |
 
 Take a look at `./Dockerfile` for a minimal setup on Ubuntu
 - Dump your original disk to `disks/SLUS-01040.bin`

@@ -876,12 +876,6 @@ typedef struct {
     int unk4;
 } D_800F53B8_t4;
 
-typedef struct func_800D4910_t {
-    struct func_800D4910_t* next;
-    int (*unk4)(struct func_800D4910_t*, int, int);
-    void* unk8;
-} func_800D4910_t;
-
 typedef struct {
     int unk0;
     short unk4;
@@ -922,6 +916,8 @@ int func_8006C84C(int);
 void func_8006CDD8(func_8006CE70_t*);
 void func_8006CE50(void);
 void func_8006CE70(func_8006CE70_t*);
+int vs_battle_getCameraRoll(void);
+void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
 
 /**
  * Retrieves room ID, only used for teleporting.

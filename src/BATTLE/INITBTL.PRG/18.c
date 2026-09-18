@@ -4,7 +4,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
 #include "../BATTLE.PRG/2842C.h"
-#include "../BATTLE.PRG/30D14.h"
+#include "../BATTLE.PRG/30DB0.h"
 #include "../BATTLE.PRG/4A0A8.h"
 #include "../BATTLE.PRG/573B8.h"
 #include "../BATTLE.PRG/5BF94.h"

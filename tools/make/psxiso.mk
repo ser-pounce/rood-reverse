@@ -9,7 +9,7 @@ MKPSXISOFLAGS  ?= -q -lba -noisogen
 BUILDDEPS  += $(DUMPSXISO)
 PYTHONDEPS += pandas
 
-$(DISKCONFIG): | $(DISKIMAGE)
+$(DISKCONFIG): | $(DISKIMAGE) $$(@D)/
 	$(ECHO) Dumping files from disk
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) $(DISKIMAGE) $(if $(DEBUG),,> /dev/null)
 

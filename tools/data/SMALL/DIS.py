@@ -2,13 +2,14 @@ import argparse
 import struct
 import yaml
 from pathlib import Path
+from typing import cast
 
 from PIL import Image
-from PIL.PngImagePlugin import PngInfo
+from PIL.PngImagePlugin import PngInfo, PngImageFile
 
 from tools.kaitai.parsers.lib.img import Img
 from tools.kaitai.parsers.data.SMALL.img_dis import ImgDis
-from tools.libdata.img import decode_grayscale, decode_highcolor, encode_highColor, get_chunk, pack_4bpp
+from tools.libdata.img import decode_grayscale, decode_highcolor, encode_highColor, get_chunk, get_png_bit_depth, pack_4bpp
 
 
 # pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
@@ -52,18 +53,7 @@ def parse_ints(raw: str | None, count: int) -> tuple[int, ...]:
         raise ValueError(f'Error when parsing values')
 
 
-def get_bit_depth(png_path: str) -> int:
-    with open(png_path, 'rb') as f:
-        f.seek(24)
-        bitdepth = f.read(1)[0]
-
-    if bitdepth not in (4, 8):
-        raise ValueError(f'Expected 4-bit or 8-bit indexed PNG: {png_path}')
-
-    return bitdepth
-
-
-def encode_clut(img: Image, mode: int) -> bytes:
+def encode_clut(img: PngImageFile, mode: int) -> bytes:
     clut_bytes = get_chunk(img, 'clUb')
 
     if clut_bytes is not None:
@@ -80,7 +70,7 @@ def encode_clut(img: Image, mode: int) -> bytes:
     return out
 
 
-def build_tim(img: Image, pixel_data: bytes, width: int, mode: int) -> bytes:
+def build_tim(img: PngImageFile, pixel_data: bytes, width: int, mode: int) -> bytes:
     img_offset = parse_ints(img.text.get('tim_offset'), 2)
     out = encode_clut(img, mode)
     out += struct.pack("<I4h", 12 + len(pixel_data), img_offset[0], img_offset[1], width, img.height)
@@ -88,9 +78,11 @@ def build_tim(img: Image, pixel_data: bytes, width: int, mode: int) -> bytes:
     return out
 
 
-def encode_grayscale(img: Image) -> bytes:
+def encode_grayscale(img: PngImageFile) -> bytes:
     pixel_data = img.tobytes()
-    bitdepth = get_bit_depth(img.filename)
+    filename = img.filename
+    assert isinstance(filename, str)
+    bitdepth = get_png_bit_depth(Path(filename))
     
     if bitdepth == 4:
         pixel_data = pack_4bpp(pixel_data)
@@ -101,8 +93,9 @@ def encode_grayscale(img: Image) -> bytes:
 def encode_tim(png_path: Path) -> bytes:
     img = Image.open(png_path)
     img.load()
+    img = cast(PngImageFile, img)
 
-    if img.mode == 'RGBA':
+    if img.mode == 'RGB':
         return build_tim(img, encode_highColor(img), img.width, 2)
 
     elif img.mode == 'P':
@@ -112,7 +105,7 @@ def encode_tim(png_path: Path) -> bytes:
         raise ValueError(f'Unsupported PNG mode for TIM encode: {img.mode}')
 
 
-def encode_iq_table(iq_table_path: str) -> bytes:
+def encode_iq_table(iq_table_path: Path) -> bytes:
     with open(iq_table_path) as f:
         entries = yaml.safe_load(f)
 
@@ -126,9 +119,9 @@ def encode_iq_table(iq_table_path: str) -> bytes:
     return bytes(table_bytes)
 
 
-def encode_tims(png_files: list[str], iq_table_path: str) -> bytes:
+def encode_tims(png_files: list[str], iq_table_path: Path) -> bytes:
 
-    output = b"".join(encode_tim(png_file) for png_file in png_files)
+    output = b"".join(encode_tim(Path(png_file)) for png_file in png_files)
 
     if iq_table_path.exists():
         output += encode_iq_table(iq_table_path)
@@ -136,7 +129,7 @@ def encode_tims(png_files: list[str], iq_table_path: str) -> bytes:
     return output
 
 
-def decode_iq_table(iqTable: ImgDis.IqTable, output_dir: str):
+def decode_iq_table(iqTable: ImgDis.IqTable, output_dir: Path):
     entries = [
         {
             'zoneId': entry.zone_id,

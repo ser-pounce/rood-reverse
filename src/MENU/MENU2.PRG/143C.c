@@ -244,9 +244,8 @@ static int _battleAbilityUnlocked(int initialize)
                 [VS_battleAbilitiesMenu_OFFSET_chainAbilities];
             menuStrings[1] =
                 (char*)(&_battleAbilityMenuStrings[VS_battleAbilitiesMenu_OFFSET_select]);
-            menuStrings[2] =
-                (char*)(&_battleAbilityMenuStrings
-                            [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
+            menuStrings[2] = (char*)(&_battleAbilityMenuStrings
+                    [VS_battleAbilitiesMenu_OFFSET_defenseAbilities]);
             menuStrings[3] = menuStrings[1];
             rowTypes[0] = 0;
             rowTypes[1] = 0;

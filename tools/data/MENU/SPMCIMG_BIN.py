@@ -1,8 +1,9 @@
 import argparse
 from pathlib import Path
+from typing import cast
 
 from PIL import Image
-from PIL.PngImagePlugin import PngInfo
+from PIL.PngImagePlugin import PngInfo, PngImageFile
 
 from tools.kaitai.parsers.data.MENU.mcdata_bin import McdataBin
 
@@ -37,7 +38,8 @@ def decode_bin(input_path: Path, clut_path: Path, output_path: Path) -> None:
 def encode_bin(input_path: Path, output_path: Path) -> None:
     img = Image.open(input_path)
     img.load()
-
+    img = cast(PngImageFile, img)
+    
     private = {c[0]: c[1] for c in reversed(img.private_chunks)}
     indices = private.get(b'idxD')
     if indices is None:

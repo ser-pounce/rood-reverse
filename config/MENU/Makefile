@@ -29,13 +29,13 @@ $(BUILD)/data/MENU/ITEMNAME.BIN: $(BUILD)/assets/MENU/ITEMNAME.BIN.vsStringFixed
 	$(ECHO) Converting $<
 	cp $< $@
 
-.PRECIOUS: $(BUILD)/assets/MENU/%.SYD.yml
+.PRECIOUS: $(BUILD)/assets/MENU/%.SYD.yaml
 
-$(BUILD)/assets/MENU/%.SYD.yml: | $$(@D)/
+$(BUILD)/assets/MENU/%.SYD.yaml: | $$(@D)/
 	$(ECHO) Converting data/MENU/$*.SYD
 	$(VPYTHON) -m tools.data.MENU.SYD $* data/MENU/$*.SYD $@
 
-$(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yml | $$(@D)/
+$(BUILD)/data/MENU/%.SYD: $(BUILD)/assets/MENU/%.SYD.yaml | $$(@D)/
 	$(ECHO) Converting $<
 	$(VPYTHON) -m tools.data.MENU.SYD $* $< $@
 
@@ -59,4 +59,17 @@ $(BUILD)/data/MENU/MENUA.PRG: | $$(@D)/
 	$(ECHO) Touching empty file $@
 	$(TOUCH) $@
 
-TARGETS += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))
+$(BUILD)/src/MENU/%.o: CC1VER := 2.8.1-psx
+$(BUILD)/src/MENU/%.o: ASFLAGS += -no-pad-sections
+
+MENUS           := $(patsubst %,MENU/%.PRG, $(addprefix MENU,0 1 2 3 4 5 7 8 9 B C D E F) MAINMENU)
+MENU_BINTARGETS := $(MENUS:%=$(BUILD)/data/%)
+MENU_LDLIBS     := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
+
+$(MENU_BINTARGETS): $(MENU_LDLIBS)
+$(MENU_BINTARGETS): LDLIBS += $(MENU_LDLIBS)
+$(MENU_BINTARGETS): LDFLAGS += --defsym=vs_scratch=0x1F800000
+$(MENU_BINTARGETS) $(MENU_BINTARGETS:.PRG=.PRG.elf): LDSCRIPT := link.ld
+
+BINARIES += $(MENUS)
+TARGETS  += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

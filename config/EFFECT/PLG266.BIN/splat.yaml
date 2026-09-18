@@ -1,0 +1,27 @@
+sha1: 6e1cb3a75935459c42c21e6b726f93c904b74fb3
+options:
+  basename: EFFECT/PLG266.BIN
+  target_path: data/EFFECT/PLG266.BIN
+  elf_path: build/data/EFFECT/PLG266.BIN.elf
+  asm_path: build/src/EFFECT/PLG266.BIN
+  src_path: src/EFFECT/PLG266.BIN
+  asset_path: build/assets/EFFECT/PLG266.BIN
+  ld_script_path: build/config/EFFECT/PLG266.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG266.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG266.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG266.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 2E8]
+    - [0x2E8, c]
+    - [0x56A0, data, 2E8]
+  - [0x56AC]

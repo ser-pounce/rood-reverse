@@ -7,7 +7,7 @@
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/2EA3C.h"
-#include "src/BATTLE/BATTLE.PRG/30D14.h"
+#include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
@@ -922,7 +922,7 @@ int _menuInput(void)
         }
 
         for (menuAnimState = 0, var_s0 = _gazetteRows; menuAnimState < 8;
-             ++menuAnimState, ++var_s0) {
+            ++menuAnimState, ++var_s0) {
             if (var_s0->animationState == 0) {
                 vs_mainMenu_deactivateMenuItem(menuAnimState);
             }
@@ -1070,7 +1070,7 @@ int _menuInput(void)
     case 19:
         if (vs_menu9_loadZud(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                          + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                                 .zudId)
+                    .zudId)
             == 0) {
 
             int temp_v1_4 = D_800F4538[1]->menuCameraDistance;
@@ -1361,7 +1361,7 @@ int _menuInput(void)
 
         if (vs_menu9_loadZud(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                          + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                                 .zudId)
+                    .zudId)
             == 0) {
 
             int temp_v1_10 = D_800F4538[1]->menuCameraDistance;
@@ -1924,7 +1924,7 @@ void _initEnemyList(void)
         enemy->unlocked = 0;
 
         for (j = enemy->killFlagsOffset;
-             j < (enemy->killFlagsOffset + enemy->killFlagsCount); ++j) {
+            j < (enemy->killFlagsOffset + enemy->killFlagsCount); ++j) {
 
             int flag = vs_main_scoredata.enemyKillFlags[j / 32] & (1 << (j % 32));
 

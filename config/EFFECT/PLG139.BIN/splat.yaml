@@ -1,0 +1,27 @@
+sha1: 3b2a471f8964ccf9e56c3ea9110d6bbaaf2d8df3
+options:
+  basename: EFFECT/PLG139.BIN
+  target_path: data/EFFECT/PLG139.BIN
+  elf_path: build/data/EFFECT/PLG139.BIN.elf
+  asm_path: build/src/EFFECT/PLG139.BIN
+  src_path: src/EFFECT/PLG139.BIN
+  asset_path: build/assets/EFFECT/PLG139.BIN
+  ld_script_path: build/config/EFFECT/PLG139.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG139.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG139.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG139.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 18]
+    - [0x18, c]
+    - [0x1A60, data, 18]
+  - [0x1A80]

@@ -20,7 +20,7 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 	) \
 ): ASFLAGS += -no-pad-sections
 
-$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ overlay 25AC main): CC1VER := 2.8.1-psx
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main): CC1VER := 2.8.1-psx
 
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \

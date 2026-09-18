@@ -8,10 +8,14 @@ permissions:
   contents: read
   packages: read
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     if: github.repository == 'ser-pounce/rood-reverse'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container:
       image: ghcr.io/ser-pounce/rood-reverse:main
       credentials:
@@ -22,15 +26,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Initialize
-        run: |
-          mkdir -p disks
-          cp /SLUS-01040.bin disks/SLUS-01040.bin
-          git config --global --add safe.directory '*'
-
       - name: Build, verify, and detect missing formatting
         run: |
-          make commit-check -j8
+          make commit-check -j"$(nproc)" DISKIMAGE=/SLUS-01040.bin
           git diff --exit-code
 
       - name: Upload progress

@@ -1,131 +1,169 @@
-[
-    {
-        "id": "lib",
-        "name": "Entry point and libraries"
-    },
-    {
-        "id": "title",
-        "name": "Title sequence and menu"
-    },
-    {
-        "id": "menus",
-        "name": "Menus"
-    },
-    {
-        "id": "battle",
-        "name": "Main game engine & bootstrapper"
-    },
-    {
-        "id": "ending",
-        "name": "Ending and credits"
-    },
-    {
-        "id": "lib.SLUS_010.40",
-        "name": "Entry point and libraries"
-    },
-    {
-        "id": "title.TITLE.PRG",
-        "name": "Title sequence and menu"
-    },
-    {
-        "id": "battle.INITBTL.PRG",
-        "name": "Main engine bootstrapper"
-    },
-    {
-        "id": "battle.BATTLE.PRG",
-        "name": "Main game engine"
-    },
-    {
-        "id": "battle.SCREFF2.PRG",
-        "name": "Fullscreen effects"
-    },
-    {
-        "id": "menus.MAINMENU.PRG",
-        "name": "Top level menu and shared menu functionality"
-    },
-    {
-        "id": "menus.MENU0.PRG",
-        "name": "Magic menu"
-    },
-    {
-        "id": "menus.MENU1.PRG",
-        "name": "Break Arts menu"
-    },
-    {
-        "id": "menus.MENU2.PRG",
-        "name": "Battle Abilities menu"
-    },
-    {
-        "id": "menus.MENU3.PRG",
-        "name": "Items menu"
-    },
-    {
-        "id": "menus.MENU4.PRG",
-        "name": "Status menu"
-    },
-    {
-        "id": "menus.MENU5.PRG",
-        "name": "Map menu"
-    },
-    {
-        "id": "menus.MENU7.PRG",
-        "name": "Data menu"
-    },
-    {
-        "id": "menus.MENU8.PRG",
-        "name": "Options menu"
-    },
-    {
-        "id": "menus.MENU9.PRG",
-        "name": "Score menu"
-    },
-    {
-        "id": "menus.MENUB.PRG",
-        "name": "Loot menu"
-    },
-    {
-        "id": "menus.MENUC.PRG",
-        "name": "Item setup menu"
-    },
-    {
-        "id": "menus.MENUD.PRG",
-        "name": "Container menu"
-    },
-    {
-        "id": "menus.MENUE.PRG",
-        "name": "Quick Manual menu"
-    },
-    {
-        "id": "menus.MENUF.PRG",
-        "name": "Misc menus"
-    },
-    {
-        "id": "ending.ENDING.PRG",
-        "name": "Credits"
-    },
-    {
-        "category_mappings": {
-            "SLUS_010.40": "lib.SLUS_010.40",
-            "TITLE.PRG": "title.TITLE.PRG",
-            "INITBTL.PRG": "battle.INITBTL.PRG",
-            "BATTLE.PRG": "battle.BATTLE.PRG",
-            "SCREFF2.PRG": "battle.SCREFF2.PRG",
-            "MAINMENU.PRG": "menus.MAINMENU.PRG",
-            "MENU0.PRG": "menus.MENU0.PRG",
-            "MENU1.PRG": "menus.MENU1.PRG",
-            "MENU2.PRG": "menus.MENU2.PRG",
-            "MENU3.PRG": "menus.MENU3.PRG",
-            "MENU4.PRG": "menus.MENU4.PRG",
-            "MENU5.PRG": "menus.MENU5.PRG",
-            "MENU7.PRG": "menus.MENU7.PRG",
-            "MENU8.PRG": "menus.MENU8.PRG",
-            "MENU9.PRG": "menus.MENU9.PRG",
-            "MENUB.PRG": "menus.MENUB.PRG",
-            "MENUC.PRG": "menus.MENUC.PRG",
-            "MENUD.PRG": "menus.MENUD.PRG",
-            "MENUE.PRG": "menus.MENUE.PRG",
-            "MENUF.PRG": "menus.MENUF.PRG",
-            "ENDING.PRG": "ending.ENDING.PRG"
+{
+    "categories": [
+        {
+            "id": "lib",
+            "name": "Entry point and libraries",
+            "modules": [
+                { "file": "SLUS_010.40", "name": "Entry point and libraries" }
+            ]
+        },
+        {
+            "id": "title",
+            "name": "Title sequence and menu",
+            "modules": [
+                { "file": "TITLE.PRG", "name": "Title sequence and menu" }
+            ]
+        },
+        {
+            "id": "menus",
+            "name": "Menus",
+            "modules": [
+                { "file": "MAINMENU.PRG", "name": "Top level menu and shared menu functionality" },
+                { "file": "MENU0.PRG", "name": "Magic menu" },
+                { "file": "MENU1.PRG", "name": "Break Arts menu" },
+                { "file": "MENU2.PRG", "name": "Battle Abilities menu" },
+                { "file": "MENU3.PRG", "name": "Items menu" },
+                { "file": "MENU4.PRG", "name": "Status menu" },
+                { "file": "MENU5.PRG", "name": "Map menu" },
+                { "file": "MENU7.PRG", "name": "Data menu" },
+                { "file": "MENU8.PRG", "name": "Options menu" },
+                { "file": "MENU9.PRG", "name": "Score menu" },
+                { "file": "MENUB.PRG", "name": "Loot menu" },
+                { "file": "MENUC.PRG", "name": "Item setup menu" },
+                { "file": "MENUD.PRG", "name": "Container menu" },
+                { "file": "MENUE.PRG", "name": "Quick Manual menu" },
+                { "file": "MENUF.PRG", "name": "Misc menus" }
+            ]
+        },
+        {
+            "id": "battle",
+            "name": "Main game engine & bootstrapper",
+            "modules": [
+                { "file": "INITBTL.PRG", "name": "Main engine bootstrapper" },
+                { "file": "BATTLE.PRG", "name": "Main game engine" },
+                { "file": "SCREFF2.PRG", "name": "Fullscreen effects" }
+            ]
+        },
+        {
+            "id": "effects",
+            "name": "Ability effects",
+            "modules": [
+                { "file": "EFFPURGE.BIN", "name": "Ability effect dispatcher" },
+                { "file": "PLG005.BIN", "name": "PLG005" },
+                { "file": "PLG044.BIN", "name": "PLG044" },
+                { "file": "PLG045.BIN", "name": "PLG045" },
+                { "file": "PLG047.BIN", "name": "PLG047" },
+                { "file": "PLG049.BIN", "name": "PLG049" },
+                { "file": "PLG050.BIN", "name": "PLG050" },
+                { "file": "PLG051.BIN", "name": "PLG051" },
+                { "file": "PLG053.BIN", "name": "PLG053" },
+                { "file": "PLG057.BIN", "name": "PLG057" },
+                { "file": "PLG061.BIN", "name": "PLG061" },
+                { "file": "PLG065.BIN", "name": "PLG065" },
+                { "file": "PLG069.BIN", "name": "PLG069" },
+                { "file": "PLG073.BIN", "name": "PLG073" },
+                { "file": "PLG077.BIN", "name": "PLG077" },
+                { "file": "PLG081.BIN", "name": "PLG081" },
+                { "file": "PLG082.BIN", "name": "PLG082" },
+                { "file": "PLG085.BIN", "name": "PLG085" },
+                { "file": "PLG086.BIN", "name": "PLG086" },
+                { "file": "PLG087.BIN", "name": "PLG087" },
+                { "file": "PLG114.BIN", "name": "PLG114" },
+                { "file": "PLG128.BIN", "name": "PLG128" },
+                { "file": "PLG129.BIN", "name": "PLG129" },
+                { "file": "PLG134.BIN", "name": "PLG134" },
+                { "file": "PLG135.BIN", "name": "PLG135" },
+                { "file": "PLG137.BIN", "name": "PLG137" },
+                { "file": "PLG138.BIN", "name": "PLG138" },
+                { "file": "PLG139.BIN", "name": "PLG139" },
+                { "file": "PLG141.BIN", "name": "PLG141" },
+                { "file": "PLG142.BIN", "name": "PLG142" },
+                { "file": "PLG143.BIN", "name": "PLG143" },
+                { "file": "PLG146.BIN", "name": "PLG146" },
+                { "file": "PLG147.BIN", "name": "PLG147" },
+                { "file": "PLG148.BIN", "name": "PLG148" },
+                { "file": "PLG149.BIN", "name": "PLG149" },
+                { "file": "PLG150.BIN", "name": "PLG150" },
+                { "file": "PLG152.BIN", "name": "PLG152" },
+                { "file": "PLG153.BIN", "name": "PLG153" },
+                { "file": "PLG154.BIN", "name": "PLG154" },
+                { "file": "PLG156.BIN", "name": "PLG156" },
+                { "file": "PLG158.BIN", "name": "PLG158" },
+                { "file": "PLG160.BIN", "name": "PLG160" },
+                { "file": "PLG161.BIN", "name": "PLG161" },
+                { "file": "PLG162.BIN", "name": "PLG162" },
+                { "file": "PLG165.BIN", "name": "PLG165" },
+                { "file": "PLG166.BIN", "name": "PLG166" },
+                { "file": "PLG167.BIN", "name": "PLG167" },
+                { "file": "PLG168.BIN", "name": "PLG168" },
+                { "file": "PLG169.BIN", "name": "PLG169" },
+                { "file": "PLG170.BIN", "name": "PLG170" },
+                { "file": "PLG198.BIN", "name": "PLG198" },
+                { "file": "PLG224.BIN", "name": "PLG224" },
+                { "file": "PLG232.BIN", "name": "PLG232" },
+                { "file": "PLG236.BIN", "name": "PLG236" },
+                { "file": "PLG242.BIN", "name": "PLG242" },
+                { "file": "PLG246.BIN", "name": "PLG246" },
+                { "file": "PLG250.BIN", "name": "PLG250" },
+                { "file": "PLG255.BIN", "name": "PLG255" },
+                { "file": "PLG260.BIN", "name": "PLG260" },
+                { "file": "PLG263.BIN", "name": "PLG263" },
+                { "file": "PLG265.BIN", "name": "PLG265" },
+                { "file": "PLG266.BIN", "name": "PLG266" },
+                { "file": "PLG272.BIN", "name": "PLG272" },
+                { "file": "PLG273.BIN", "name": "PLG273" },
+                { "file": "PLG291.BIN", "name": "PLG291" },
+                { "file": "PLG297.BIN", "name": "PLG297" },
+                { "file": "PLG300.BIN", "name": "PLG300" },
+                { "file": "PLG301.BIN", "name": "PLG301" }
+            ]
+        },
+        {
+            "id": "ending",
+            "name": "Ending and credits",
+            "modules": [
+                { "file": "ENDING.PRG", "name": "Credits" }
+            ]
         }
+    ],
+    "complete_units": [
+        "SLUS_010.40/overlay",
+        "INITBTL.PRG/18",
+        "INITBTL.PRG/FB0",
+        "INITBTL.PRG/12AC",
+        "EFFPURGE.BIN/0",
+        "MAINMENU.PRG/224",
+        "MAINMENU.PRG/C48",
+        "MAINMENU.PRG/2D10",
+        "MAINMENU.PRG/58EC",
+        "MENU0.PRG/84",
+        "MENU0.PRG/15AC",
+        "MENU1.PRG/30",
+        "MENU2.PRG/64",
+        "MENU2.PRG/143C",
+        "MENU3.PRG/16C",
+        "MENU3.PRG/68C4",
+        "MENU4.PRG/120",
+        "MENU5.PRG/4D8",
+        "MENU7.PRG/260",
+        "MENU8.PRG/88",
+        "MENU8.PRG/21A0",
+        "MENU9.PRG/238",
+        "MENU9.PRG/57BC",
+        "MENU9.PRG/592C",
+        "MENUB.PRG/260",
+        "MENUC.PRG/168",
+        "MENUC.PRG/9258",
+        "MENUD.PRG/234",
+        "MENUE.PRG/494",
+        "MENUF.PRG/3B8",
+        "TITLE.PRG/22C",
+        "TITLE.PRG/libpress/VLC_C",
+        "TITLE.PRG/libpress/BUILD",
+        "TITLE.PRG/libpress/LIBPRESS"
+    ],
+    "exclusions": {
+        "names": ["32154.o", "2EA3C.o"],
+        "suffixes": [".data.o", ".rodata.o", ".bss.o"]
     }
-]
+}

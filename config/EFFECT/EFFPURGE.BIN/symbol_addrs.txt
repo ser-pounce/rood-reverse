@@ -1,0 +1,12 @@
+func_800F9800 = 0x800F9800; // size:0x13B8
+vs_effpurge_exec = 0x800FABB8;
+func_800FAC4C = 0x800FAC4C; // size:0x130
+D_800FAE4C = 0x800FAE4C; // type:u8
+_fbcSuffixes = 0x800FAFDC;
+_fbcFiles = 0x800FB16C;
+_fbtCounts = 0x800FB7AC;
+_fbtSuffixes = 0x800FB93C;
+_fbtFiles = 0x800FBC30;
+_pFiles = 0x800FC7FC;
+_effectEntryPoints = 0x800FD15C;
+_plgFiles = 0x800FD6B8;

@@ -2,7 +2,7 @@
 #include "../MAINMENU.PRG/224.h"
 #include "../../BATTLE/BATTLE.PRG/146C.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
-#include "../../BATTLE/BATTLE.PRG/30D14.h"
+#include "../../BATTLE/BATTLE.PRG/30DB0.h"
 #include "../../BATTLE/BATTLE.PRG/44F14.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 

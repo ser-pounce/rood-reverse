@@ -47,6 +47,69 @@ class Img(KaitaiStruct):
 
 
 
+    class ClutsIndices(KaitaiStruct):
+        def __init__(self, mode, num_cluts, cluts_after, _io, _parent=None, _root=None):
+            super(Img.ClutsIndices, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.mode = mode
+            self.num_cluts = num_cluts
+            self.cluts_after = cluts_after
+            self._read()
+
+        def _read(self):
+            if (not (self.cluts_after)):
+                pass
+                self._raw_cluts_b = []
+                self.cluts_b = []
+                for i in range(self.num_cluts):
+                    self._raw_cluts_b.append(self._io.read_bytes((32 if self.mode == 0 else 512)))
+                    _io__raw_cluts_b = KaitaiStream(BytesIO(self._raw_cluts_b[i]))
+                    self.cluts_b.append(Img.Clut(_io__raw_cluts_b, self, self._root))
+
+
+            self._raw_indices = self._io.read_bytes(self._io.size() - (32 if self.mode == 0 else 512) * self.num_cluts)
+            _io__raw_indices = KaitaiStream(BytesIO(self._raw_indices))
+            self.indices = Img.Indices(self.mode, _io__raw_indices, self, self._root)
+            if self.cluts_after:
+                pass
+                self._raw_cluts_a = []
+                self.cluts_a = []
+                for i in range(self.num_cluts):
+                    self._raw_cluts_a.append(self._io.read_bytes((32 if self.mode == 0 else 512)))
+                    _io__raw_cluts_a = KaitaiStream(BytesIO(self._raw_cluts_a[i]))
+                    self.cluts_a.append(Img.Clut(_io__raw_cluts_a, self, self._root))
+
+
+
+
+        def _fetch_instances(self):
+            pass
+            if (not (self.cluts_after)):
+                pass
+                for i in range(len(self.cluts_b)):
+                    pass
+                    self.cluts_b[i]._fetch_instances()
+
+
+            self.indices._fetch_instances()
+            if self.cluts_after:
+                pass
+                for i in range(len(self.cluts_a)):
+                    pass
+                    self.cluts_a[i]._fetch_instances()
+
+
+
+        @property
+        def cluts(self):
+            if hasattr(self, '_m_cluts'):
+                return self._m_cluts
+
+            self._m_cluts = (self.cluts_a if self.cluts_after else self.cluts_b)
+            return getattr(self, '_m_cluts', None)
+
+
     class Clutsection(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
             super(Img.Clutsection, self).__init__(_io)
@@ -193,6 +256,32 @@ class Img(KaitaiStruct):
             self._read()
 
         def _read(self):
+            self.colors = []
+            i = 0
+            while not self._io.is_eof():
+                self.colors.append(Img.Rgb5(self._io, self, self._root))
+                i += 1
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.colors)):
+                pass
+                self.colors[i]._fetch_instances()
+
+
+
+    class Rgba16Header(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(Img.Rgba16Header, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.w = self._io.read_u2le()
+            self.h = self._io.read_u2le()
             self.colors = []
             i = 0
             while not self._io.is_eof():

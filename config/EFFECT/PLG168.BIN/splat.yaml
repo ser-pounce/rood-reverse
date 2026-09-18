@@ -1,0 +1,27 @@
+sha1: 9fa2dae95abeacf6e2684c807175b64353617634
+options:
+  basename: EFFECT/PLG168.BIN
+  target_path: data/EFFECT/PLG168.BIN
+  elf_path: build/data/EFFECT/PLG168.BIN.elf
+  asm_path: build/src/EFFECT/PLG168.BIN
+  src_path: src/EFFECT/PLG168.BIN
+  asset_path: build/assets/EFFECT/PLG168.BIN
+  ld_script_path: build/config/EFFECT/PLG168.BIN/link.ld
+  symbol_addrs_path:
+    - config/SLUS_010.40/symbol_addrs.txt
+    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+  undefined_funcs_auto_path: build/config/EFFECT/PLG168.BIN/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/config/EFFECT/PLG168.BIN/undefined_syms_auto.txt
+
+
+segments:
+  - name: PLG168.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 1F0]
+    - [0x1F0, c]
+    - [0x4454, data, 1F0]
+  - [0x445C]

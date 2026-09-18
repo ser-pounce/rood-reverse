@@ -45,6 +45,44 @@ types:
         process: tools.libdata.rle.rle_decompressor(0x80008000)
         type: rgb5_array
 
+  rgba16_header:
+    seq:
+      - id: w
+        type: u2
+      - id: h
+        type: u2
+      - id: colors
+        type: rgb5
+        repeat: eos
+
+  cluts_indices:
+    params:
+      - id: mode
+        type: u4
+      - id: num_cluts
+        type: u4
+      - id: cluts_after
+        type: bool
+    seq:
+      - id: cluts_b
+        type: clut
+        size: 'mode == 0 ? 32 : 512'
+        repeat: expr
+        repeat-expr: num_cluts
+        if: not cluts_after
+      - id: indices
+        type: indices(mode)
+        size: '_io.size - (mode == 0 ? 32 : 512) * num_cluts'
+      - id: cluts_a
+        type: clut
+        size: 'mode == 0 ? 32 : 512'
+        repeat: expr
+        repeat-expr: num_cluts
+        if: cluts_after
+    instances:
+      cluts:
+        value: 'cluts_after ? cluts_a : cluts_b'
+
   rect:
     seq:
       - id: x

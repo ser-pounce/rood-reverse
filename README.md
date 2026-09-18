@@ -96,6 +96,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![PLG255.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG255.BIN)
 ![PLG260.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG260.BIN)
 ![PLG263.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG263.BIN)
+![PLG265.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG265.BIN)
 
 ### Menus
 ![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus&color=%2332a934)

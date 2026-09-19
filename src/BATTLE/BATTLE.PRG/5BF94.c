@@ -4073,11 +4073,12 @@ int func_800D4F00(D_800F53B8_t* arg0)
     u_char first = func_800D5170(arg0);
     u_char second = func_800D5170(arg0);
     u_char third = func_800D5170(arg0);
-    u_char* dst = &D_800F569C->unk8[(first & 0x3F) * 204 + 4];
+    func_800FA098_arg0* dst =
+        (func_800FA098_arg0*)&D_800F569C->unk8[(first & 0x3F) * 204 + 4];
 
-    dst[0xC4] = (first >> 6) + ((second & 0xF) << 2);
-    dst[0xC5] = (second >> 4) + ((third & 3) << 4);
-    dst[0xC6] = third >> 2;
+    dst->unkC4 = (first >> 6) + ((second & 0xF) << 2);
+    dst->unkC5 = (second >> 4) + ((third & 3) << 4);
+    dst->unkC6 = third >> 2;
     return 1;
 }
 
@@ -4086,10 +4087,10 @@ int func_800D4FB4(D_800F53B8_t* arg0)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        u_char* temp_v1 = &D_800F569C->unk8[i * 204 + 4];
-        temp_v1[0xC4] = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
-        temp_v1[0xC5] = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
-        temp_v1[0xC6] = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
+        func_800FA098_arg0* dst = (func_800FA098_arg0*)&D_800F569C->unk8[i * 204 + 4];
+        dst->unkC4 = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
+        dst->unkC5 = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
+        dst->unkC6 = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
     }
 
     return 1;

@@ -7,37 +7,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800F9910);
 int func_800CFB80(int, int);
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    int unk8;
-    u_char unkC;
-    u_char unkD;
-    u_char unkE;
-    u_char unkF;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-    u_char unk14[0x60];
-    short unk74;
-    short unk76;
-    int unk78;
-    short unk7C[6];
-    short unk88[6];
-    u_char unk94[0x2C];
-    short unkC0;
-    short unkC2;
-    int unkC4;
-    u_char unkC8;
-    u_char unkC9;
-    u_char unkCA;
-    u_char unkCB;
-} func_800FA098_arg0;
-
-typedef struct {
     u_char unk0[0x24];
     u_int unk24;
     u_char unk28[0x114];

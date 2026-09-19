@@ -183,6 +183,40 @@ typedef struct {
 } func_800D0B30_t1;
 
 typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    int unk8;
+    u_char unkC;
+    u_char unkD;
+    u_char unkE;
+    u_char unkF;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    u_char unk14[0x60];
+    short unk74;
+    short unk76;
+    int unk78;
+    short unk7C[6];
+    short unk88[6];
+    u_char unk94[0x2C];
+    short unkC0;
+    short unkC2;
+    u_char unkC4;
+    u_char unkC5;
+    u_char unkC6;
+    u_char unkC7;
+    u_char unkC8;
+    u_char unkC9;
+    u_char unkCA;
+    u_char unkCB;
+} func_800FA098_arg0;
+
+typedef struct {
     int unk0;
     int unk4;
     u_char* unk8;

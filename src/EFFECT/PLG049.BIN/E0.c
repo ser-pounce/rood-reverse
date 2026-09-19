@@ -30,7 +30,11 @@ typedef struct {
 } func_800FA294_arg0;
 
 typedef struct {
-    u_char unk0[0x34];
+    u_char unk0[0x24];
+    u_int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
     VECTOR unk34;
     VECTOR unk44;
     u_char unk54[0x10];
@@ -45,6 +49,10 @@ typedef struct {
     int unk120;
     int unk124[2];
     int unk12C[2];
+    int unk134;
+    int unk138;
+    SVECTOR unk13C;
+    SVECTOR unk144;
 } func_800FA294_arg1;
 
 typedef struct {

@@ -1,5 +1,6 @@
 #include "common.h"
 #include <rand.h>
+#include <abs.h>
 #include "146C.h"
 #include "3A1A0.h"
 #include "44F14.h"
@@ -7,7 +8,7 @@
 
 u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
 void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, u_char*);
-void func_800AF844(D_800F4538_unkC54*, D_800F4538_unkC54*, int);
+void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AD714);
@@ -198,7 +199,7 @@ void func_800AF6E8(D_800F4538_t* arg0)
         int v5b2;
 
         if (arg0->unk5CC == 1) {
-            func_800AF844(&arg0->unk704, &arg0->unkC54, arg0->unk0.nBones);
+            func_800AF844(arg0->unk704.unk0, arg0->unkC54.unk0, arg0->unk0.nBones);
         }
 
         v5b2 = arg0->unk5B2;
@@ -236,7 +237,38 @@ tail:
     func_800B002C(arg0, 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AF844);
+void func_800AF844(SVECTOR* dst, SVECTOR* src, int count)
+{
+    int i;
+
+    for (i = 0; i < count; ++i) {
+        int x = src[i].vx - dst[i].vx;
+        int z;
+
+        if (x >= ONE) {
+            x -= ONE * 2;
+        } else if (x < -ONE) {
+            x += ONE * 2;
+        }
+
+        x = ABS(x);
+        z = src[i].vz - dst[i].vz;
+
+        if (z >= ONE) {
+            z -= ONE * 2;
+        } else if (z < -ONE) {
+            z += ONE * 2;
+        }
+
+        z = ABS(z);
+
+        if (x + z >= ONE) {
+            dst[i].vx = (dst[i].vx + ONE) % (ONE * 2);
+            dst[i].vz = (dst[i].vz + ONE) % (ONE * 2);
+            dst[i].vy = (ONE - dst[i].vy) % (ONE * 2);
+        }
+    }
+}
 
 void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
 void func_800AF960(D_800F45E0_t* arg0)

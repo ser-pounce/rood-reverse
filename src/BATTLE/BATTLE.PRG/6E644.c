@@ -892,7 +892,24 @@ void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5A9C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5EC0);
+void func_800E5EC0(int arg0, int arg1, int arg2)
+{
+    D_800F16EC_t* step;
+    int i;
+    int value = arg2 & 0x3FF;
+
+    D_800F58D0[arg1][arg0] = (D_800F58D0[arg1][arg0] & 0xFC00) | value | 0x2000;
+
+    for (i = 0, step = D_800F16EC; i < 4; ++i, step += 2) {
+        u_int x = arg0 + step->dx;
+        u_int z = arg1 + step->dz;
+
+        if (x < 32 && z < 32 && (D_800F58B8[z][x] & 0x20)
+            && !(D_800F58D0[z][x] & 0x2000)) {
+            func_800E5EC0(x, z, arg2);
+        }
+    }
+}
 
 int func_800E5FDC(int arg0, int arg1)
 {

@@ -389,7 +389,49 @@ exit:
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_80099E7C);
+void func_80099E7C(void* arg0, int arg1, int arg2, int arg3, int arg4)
+{
+    u_char* p = arg0;
+    int i;
+    int j;
+    int count;
+
+    if (arg2 == 0) {
+        for (i = 0; i < arg1; ++i) {
+            if (*p == 0x24) {
+                p += 0xA;
+                count = 3;
+            } else {
+                p += 0xC;
+                count = 4;
+            }
+
+            for (j = 0; j < count; ++j) {
+                p[0] += arg3;
+                p[1] += arg4;
+                p += 2;
+            }
+        }
+    } else {
+        for (i = 0; i < arg1; ++i) {
+            if (p[11] == 0x34) {
+                p[6] += arg3;
+                p[7] += arg4;
+                p += 0x14;
+                count = 2;
+            } else {
+                p += 0x18;
+                count = 4;
+            }
+
+            for (j = 0; j < count; ++j) {
+                p[0] += arg3;
+                p[1] += arg4;
+                p += 2;
+            }
+        }
+    }
+}
 
 int func_80099FA8(vs_battle_objectData* objData)
 {

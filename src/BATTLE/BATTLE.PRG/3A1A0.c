@@ -139,7 +139,39 @@ int func_800A3500(int arg0, int arg1)
     return h;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A35A8);
+void func_800A35A8(void)
+{
+    int i;
+    int j;
+    int h;
+    int x;
+    int z;
+    D_800F4538_t* actor;
+    D_800F45E0_t* obj;
+
+    for (i = 2; i < 17; ++i) {
+        actor = D_800F4538[i];
+
+        if (actor != NULL && !actor->unk0.unkA_5 && actor->unk0.unk5D < 2
+            && !actor->unk0.unkA_0) {
+            x = actor->unk0.position.vx;
+            z = actor->unk0.position.vz;
+            h = func_8008DA24(x, z);
+            h <<= 17;
+            h >>= 17;
+
+            for (j = 0; j < 16; ++j) {
+                obj = D_800F45E0[j];
+                if (obj != NULL && obj->unk1C == x && obj->unk20 == z
+                    && obj->unk1E - 0x80 < h) {
+                    h = obj->unk1E - 0x80;
+                }
+            }
+
+            actor->unk0.position.vy = h;
+        }
+    }
+}
 
 void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
 {

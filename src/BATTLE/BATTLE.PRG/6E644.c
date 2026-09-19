@@ -172,7 +172,7 @@ void func_800D7A74(u_short* arg0)
     D_800F569C->unkB0 = arg0;
 }
 
-void* func_800D7A90(long arg0)
+void* func_800D7A90(int arg0)
 {
     return (u_char*)D_800F569C->unkB0 + D_800F569C->unkB0[arg0 + 2];
 }

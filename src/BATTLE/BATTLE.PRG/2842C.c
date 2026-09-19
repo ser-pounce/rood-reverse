@@ -1,6 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "src/SLUS_010.40/main.h"
+#include <abs.h>
 #include <memory.h>
 #include <rand.h>
 #include <stdio.h>
@@ -41,7 +42,8 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    short unk4;
+    char unk4;
+    char unk5;
     char unk6;
     char unk7;
     int unk8;
@@ -364,7 +366,59 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091E10);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091FE8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800923F8);
+int func_800923F8(D_800F1DD8_t2* arg0)
+{
+    int* base = vs_battle_roomData.geometrySection;
+    int* p;
+    int delta;
+    int ret = 1;
+
+    if (arg0->unk4 != 0) {
+        arg0->unk4 = 0;
+        arg0->unk14 = arg0->unk1C;
+        arg0->unk8 = arg0->unk20;
+    }
+
+    arg0->unk14 += arg0->unk8;
+    arg0->unk8 += arg0->unkC * 8;
+    delta = (arg0->unk14 - arg0->unk18) & 0xFFF;
+
+    if (delta > ONE / 2) {
+        delta = ONE - delta;
+    }
+
+    if (delta < ABS(arg0->unk8)) {
+        arg0->unk8 = -(arg0->unk8 >> arg0->unk10);
+
+        if (ABS(arg0->unk8) < 0x21) {
+            arg0->unk14 = arg0->unk18;
+            ret = 0;
+        }
+    }
+
+    p = (void*)base + arg0->unk0;
+
+    if (arg0->unk7 == 1) {
+        p[5] = arg0->unk14;
+        p[0] |= 0x6000;
+    } else if (arg0->unk7 == 2) {
+        p[4] = arg0->unk14;
+    } else {
+        p[6] = arg0->unk14;
+    }
+
+    if (ret != 0) {
+        return 1;
+    }
+
+    delta = arg0->unk1C;
+    arg0->unk20 = -arg0->unk20;
+    arg0->unk8 = arg0->unk20;
+    arg0->unk1C = arg0->unk18;
+    arg0->unk18 = delta;
+    arg0->unkC = -arg0->unkC;
+    return 0;
+}
 
 int func_80092540(void) { return 0; }
 

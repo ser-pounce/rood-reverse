@@ -9,63 +9,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800F98E0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FA07C);
 
-typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8;
-    u_char unk9;
-    u_char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    u_char unkE;
-    u_char unkF;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-    u_char unk14[0x20];
-    short unk34[8][6];
-    short unk94[8][4];
-} func_800FA294_arg0;
-
-typedef struct {
-    u_char unk0[0x24];
-    u_int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    VECTOR unk34;
-    VECTOR unk44;
-    u_char unk54[0x10];
-    MATRIX unk64;
-    u_char unk84[0x44];
-    VECTOR unkC8;
-    VECTOR unkD8;
-    VECTOR unkE8;
-    SVECTOR unkF8;
-    u_char unk100[0x18];
-    int unk118[2];
-    int unk120;
-    int unk124[2];
-    int unk12C[2];
-    int unk134;
-    int unk138;
-    SVECTOR unk13C;
-    SVECTOR unk144;
-} func_800FA294_arg1;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    SVECTOR (*unk4)[15];
-    int unk8;
-} func_800FA294_arg3;
-
-void func_800FA294(func_800FA294_arg0* arg0, func_800FA294_arg1* arg1,
-    int arg2 __attribute__((unused)), func_800FA294_arg3* arg3)
+void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    int arg2 __attribute__((unused)), func_800FA098_arg3* arg3)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -77,8 +22,8 @@ void func_800FA294(func_800FA294_arg0* arg0, func_800FA294_arg1* arg1,
     int var_s4;
 
     do {
-        for (i = 0; i < arg3->unk2; ++i) {
-            SVECTOR* temp_s5 = arg3->unk4[i];
+        for (i = 0; i < (u_char)arg3->unk2; ++i) {
+            SVECTOR* temp_s5 = &arg3->unk4[i * 15];
             arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
             arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
             arg1->unk34.vz = temp_s5[3].vz - temp_s5[0].vz;

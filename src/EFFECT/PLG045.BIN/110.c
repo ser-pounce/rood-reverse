@@ -6,62 +6,6 @@
 #include <rand.h>
 #include <inline_c.h>
 
-typedef struct {
-    u_char unk0[0x24];
-    u_int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    VECTOR unk34;
-    VECTOR unk44;
-    u_char unk54[0x10];
-    MATRIX unk64;
-    u_char unk84[0x14];
-    VECTOR unk98;
-    VECTOR unkA8;
-    u_char unkB8[0x10];
-    VECTOR unkC8;
-    VECTOR unkD8;
-    VECTOR unkE8;
-    SVECTOR unkF8;
-    u_char unk100[0x18];
-    int unk118[2];
-    int unk120;
-    int unk124[2];
-    int unk12C[2];
-    int unk134;
-    int unk138;
-    SVECTOR unk13C;
-    SVECTOR unk144;
-    u_char unk14C[0x24];
-    int unk170;
-    int unk174;
-    int unk178;
-    int unk17C;
-    int unk180;
-    int unk184;
-    int unk188;
-} func_800FA098_arg1;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    short unk2;
-    SVECTOR* unk4;
-    int unk8;
-    int unkC;
-} func_800FA098_arg3;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    void* unk4;
-    int unk8;
-    int unkC;
-} func_800FB320_t;
-
 void func_800FA760(
     func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA098_arg3*);
 
@@ -442,7 +386,7 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
         temp_s1->unk0 = arg2;
         temp_s1->unkC = 0;
         temp_s1->unk8 = 0;
-        temp_s2 = (func_800FA098_arg0*)(D_800F569C->unk8 + ((temp_s1->unk1 * 0xCC) + 4));
+        temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
 
         var_v0 = temp_s2->unkC0.unk2;
         if (temp_s2->unkC0.unk2 < temp_s2->unkC0.unk0) {
@@ -456,12 +400,12 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         temp_s1->unk4 = vs_main_allocHeapR(var_a0 << 5);
-        func_800D6CCC((int*)(temp_s1 + 1));
-        func_800D6CF0((func_800D6CF_t*)(temp_s1 + 1), temp_s2->unk1, temp_s2->unk0);
+        func_800D6CCC((int*)(&temp_s1->unk10));
+        func_800D6CF0(&temp_s1->unk10, temp_s2->unk1, temp_s2->unk0);
         break;
 
     case 2:
-        temp_s2 = (func_800FA098_arg0*)(D_800F569C->unk8 + ((temp_s1->unk1 * 0xCC) + 4));
+        temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
         a2->unk24 = temp_s2->unk4 & 0x03FFFFFF;
         temp_s1->unk2 = func_800CFE1C(
             &temp_s2->unkC0, func_800D118C(temp_s2->unk14[2], temp_s1->unkC));

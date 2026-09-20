@@ -188,6 +188,21 @@ typedef struct {
 } func_800CFE1C_t;
 
 typedef struct {
+    int unk0;
+    short unk4;
+    u_char unk6;
+    u_char unk7;
+    int unk8;
+    short unkC;
+    short unkE;
+    int unk10;
+    short unk14;
+    u_char unk16;
+    u_char unk17;
+    u_char* unk18;
+} func_800D6CF_t;
+
+typedef struct {
     u_char unk0;
     u_char unk1;
     u_char unk2;
@@ -227,14 +242,73 @@ typedef struct {
 } func_800FA098_arg0;
 
 typedef struct {
+    u_char unk0[0x24];
+    u_int unk24;
+    int unk28;
+    int unk2C;
+    int unk30;
+    VECTOR unk34;
+    VECTOR unk44;
+    u_char unk54[0x10];
+    MATRIX unk64;
+    u_char unk84[0x14];
+    VECTOR unk98;
+    VECTOR unkA8;
+    u_char unkB8[0x10];
+    VECTOR unkC8;
+    VECTOR unkD8;
+    VECTOR unkE8;
+    SVECTOR unkF8;
+    u_char unk100[0x18];
+    int unk118[2];
+    int unk120;
+    int unk124[2];
+    int unk12C[2];
+    int unk134;
+    int unk138;
+    SVECTOR unk13C;
+    SVECTOR unk144;
+    u_char unk14C[0x24];
+    int unk170;
+    int unk174;
+    int unk178;
+    int unk17C;
+    int unk180;
+    int unk184;
+    int unk188;
+} func_800FA098_arg1;
+
+typedef struct {
+    short unk0;
+    short unk2;
+} func_800FA098_arg3_2;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    short unk2;
+    SVECTOR* unk4;
+    int unk8;
+    int unkC;
+    func_800D6CF_t unk10;
+    func_800FA098_arg3_2* unk2C;
+} func_800FA098_arg3;
+
+typedef struct {
+    int count;
+    func_800FA098_arg0 unk4[0];
+} D_800F569C_unk8;
+
+typedef struct {
     int unk0;
     int unk4;
-    u_char* unk8;
+    D_800F569C_unk8* unk8;
     u_char* unkC[4];
     char unk1C[0x70];
     func_800D0B30_t1* unk8C;
     char* unk90;
-    char unk94[0x18];
+    char unk94[0x14];
+    void* unkA8;
     int unkAC;
     u_short* unkB0;
     D_800F569C_t2* unkB4;
@@ -324,21 +398,6 @@ typedef struct D_800F53B8_t {
     func_800CE714_t2_2 unk1C[16];
     D_800F53B8_t3 unkD1C;
 } D_800F53B8_t;
-
-typedef struct {
-    int unk0;
-    short unk4;
-    u_char unk6;
-    u_char unk7;
-    int unk8;
-    short unkC;
-    short unkE;
-    int unk10;
-    short unk14;
-    u_char unk16;
-    u_char unk17;
-    u_char* unk18;
-} func_800D6CF_t;
 
 enum vs_battle_limbStatus {
     limbStatusCritical,

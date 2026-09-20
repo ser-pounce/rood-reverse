@@ -5,12 +5,37 @@
 #include <rand.h>
 #include <inline_c.h>
 
+typedef struct {
+    SVECTOR unk0;
+    u_char unk8[0x18];
+    u_char unk20;
+    u_char unk21;
+    u_char unk22;
+    u_char unk23;
+    SVECTOR unk24;
+    u_char unk28[0x40];
+    int unk6C;
+    int unk70;
+    int unk74;
+} func_800FA76C_t;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    short unk2;
+    func_800FA76C_t* unk4;
+    int unk8;
+    int unkC;
+    func_800D6CF_t unk10;
+    func_800FA098_arg3_2* unk2C;
+} func_800FA76C_arg3;
+
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800F98E0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FA07C);
 
 void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    int arg2 __attribute__((unused)), func_800FA098_arg3* arg3)
+    int arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -23,7 +48,7 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     do {
         for (i = 0; i < (u_char)arg3->unk2; ++i) {
-            SVECTOR* temp_s5 = &arg3->unk4[i * 15];
+            SVECTOR* temp_s5 = &arg3->unk4[i].unk0;
             arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
             arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
             arg1->unk34.vz = temp_s5[3].vz - temp_s5[0].vz;
@@ -110,7 +135,31 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     } while (0);
 }
 
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FA76C);
+void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
+    func_800FA76C_arg3* arg3)
+{
+    int temp_s3;
+    int i;
+
+    vs_battle_lerp2DVector(arg0->unk94[4], 0, &arg1->unk134);
+    temp_s3 = func_800CFE1C((func_800CFE1C_t*)&arg0->unk14[0x1C], 0) << 0xC;
+
+    for (i = 0; i < (u_char)arg3->unk2; ++i) {
+        int var_v1 = func_800CFB80(arg1->unk134, arg1->unk138);
+        if (var_v1 == 0) {
+            var_v1 = 1;
+        }
+        arg3->unk4[i].unk20 = var_v1;
+        arg3->unk4[i].unk21 = 1;
+        arg3->unk4[i].unk22 = 8;
+        arg3->unk4[i].unk23 = 0;
+        arg3->unk4[i].unk24 = arg3->unk4[i].unk0;
+        arg3->unk4[i].unk6C = 0;
+        arg3->unk4[i].unk70 = temp_s3;
+        arg3->unk4[i].unk74 =
+            ((0x06000000 / (var_v1 * var_v1)) - ((temp_s3 * 2) / var_v1));
+    }
+}
 
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FA8E4);
 

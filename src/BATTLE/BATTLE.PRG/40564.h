@@ -8,6 +8,8 @@ void func_800A97EC(int, func_8006EBF8_t_fields*, int, int);
 void func_800A9C54(int, func_8006EBF8_t_fields*, int);
 void func_800A9CDC(int, func_8006EBF8_t_fields*, int);
 void func_800A9D90(int, SVECTOR*, int);
+void func_800A9E38(int, short, int);
+void func_800A9EB4(int, short, int);
 void func_800A9F64(int, SVECTOR*, int);
 void func_800A9FD0(int, SVECTOR*, int);
 void func_800AA850(int, u_short, int);

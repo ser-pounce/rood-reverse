@@ -1,6 +1,8 @@
 #include "common.h"
+#include "58578.h"
 #include "5BF94.h"
 #include "6E644.h"
+#include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
@@ -97,14 +99,34 @@ typedef struct {
     u_char unk36;
 } func_800E0850_t;
 
+typedef struct {
+    char unk0[0x88];
+    u_char unk88;
+} func_800DCAA0_t1;
+
+typedef struct {
+    int unk0;
+    u_int unk4_0 : 5;
+    u_int unk4_5 : 8;
+    u_int unk4_13 : 19;
+    int unk8;
+    u_int unkC_0 : 4;
+    u_int unkC_4 : 3;
+    u_int unkC_7 : 12;
+    u_int unkC_19 : 13;
+} func_800DCAA0_t;
+
 void func_800D7A14(void*);
 void func_800D7AC4(void*);
 void func_800D7AEC(void*);
 void func_800D8038(int);
 void func_800D8054(int);
+int func_8008631C(int, int, int, int, void*);
+int func_800863A4(int, int, int, int, func_800C1564_t2*, func_800C1564_t2*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
+void func_800DC888(int);
 int func_800E0678(func_800E0850_t*, int);
 int func_800E42EC(int, int);
 void func_800E5EC0(int, int, int);
@@ -124,6 +146,7 @@ extern int D_800F5874;
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
+extern void* D_800F5900;
 extern D_800F5910_t* D_800F5910;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
@@ -558,7 +581,30 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC810);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC888);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCAA0);
+void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int arg3)
+{
+    func_800C1564_t2 sp20;
+    func_800C1564_t2 sp28;
+    int temp_s0 = arg2->unkC_0;
+    int temp_v0;
+
+    if (arg3 != 3) {
+        temp_v0 =
+            func_8008631C(arg2->unk4_5, arg0->unk88, temp_s0, arg2->unkC_4, D_800F5900);
+    } else {
+        D_800F4538_t* actor = D_800F4538[temp_s0];
+        sp28.unk0[0] = actor->unk0.position.vx;
+        sp28.unk0[2] = actor->unk0.position.vz;
+        sp28.unk0[1] = actor->unk0.position.vy - arg2->unkC_7;
+        *(int*)&sp20.unk0[0] = *(int*)&sp28.unk0[0];
+        sp20.unk0[2] = sp28.unk0[2] + vs_gte_rsqrt(arg2->unk8);
+        temp_v0 = func_800863A4(
+            arg2->unk4_5, arg0->unk88, temp_s0, arg2->unkC_4, &sp20, &sp28, D_800F5900);
+    }
+    if (temp_v0 != 0) {
+        func_800DC888(arg1);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCBD8);
 

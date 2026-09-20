@@ -220,7 +220,8 @@ typedef struct {
     u_char unk11;
     u_char unk12;
     u_char unk13;
-    u_char unk14[0x20];
+    u_char unk14[0x1C];
+    func_800CFE1C_t unk30;
     short unk34[5][6];
     int unk70;
     short unk74;
@@ -565,6 +566,7 @@ void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int func_800CFB80(int, int);
 int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
 int func_800D118C(int arg0, int arg1);
+void func_800D1390(void*, SVECTOR*, SVECTOR*, SVECTOR*, int, SVECTOR*);
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);

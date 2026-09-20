@@ -233,6 +233,10 @@ void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
 void func_800D1930(void);
 void func_800D1B18(D_800F54D8_t*);
+void func_800D1B80(D_800F54D8_t*);
+void func_800D206C(void);
+void func_800D21C0(void);
+void func_800D236C(void);
 void func_800D2560(void);
 void func_800D268C(void);
 void func_800D2698(int);
@@ -358,7 +362,7 @@ extern char D_800F5518;
 extern D_800F54D8_t D_800F5520;
 extern short D_800F55A0;
 extern D_800F54D8_t D_800F55A8;
-extern int D_800F55E8;
+extern u_int D_800F55E8;
 extern int D_800F55F0;
 extern func_800D2904_t* D_800F55F4;
 extern int D_800F55F8;
@@ -3764,7 +3768,45 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D236C);
 
 void func_800D2518(void) { D_800F54D8 = D_800F5520; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2560);
+void func_800D2560(void)
+{
+    int temp_s0 = D_800F55E8 != 0;
+
+    if (D_800F55A0 != 0) {
+        switch (D_800F55E8) {
+        case 0:
+            break;
+        case 1:
+            func_800D21C0();
+            break;
+        case 2:
+            func_800D236C();
+            break;
+        case 3:
+            func_800D2518();
+            break;
+        }
+        if (D_800F54D0 <= D_800F55A0) {
+            ++D_800F54D0;
+            if (D_800F54D0 > D_800F55A0) {
+                D_800F54D0 = 0;
+                D_800F55A0 = 0;
+                func_800D1E20(0);
+            }
+        }
+    }
+    if (D_800F5518 != 0) {
+        func_800D206C();
+    } else {
+        D_800F54D8.unk2C = 0;
+        D_800F54D8.unk28 = 0;
+        D_800F54D8.unk24 = 0;
+        D_800F54D8.unk20 = 0;
+    }
+    if (D_800F5518 != 0 || temp_s0) {
+        func_800D1B80(&D_800F54D8);
+    }
+}
 
 void func_800D268C(void) { D_800F5600 = 0; }
 

@@ -3669,9 +3669,9 @@ void func_800733F8(int arg0)
     sp10.unk14.u8[0] = 0;
     sp10.unk14.u8[1] = 0;
     sp10.unk16.u8[0] = 0;
-    sp10.unkE4 = 0;
-    sp10.unkE2 = 0;
-    sp10.unkE0 = 0;
+    sp10.unkE0.vz = 0;
+    sp10.unkE0.vy = 0;
+    sp10.unkE0.vx = 0;
     func_800CF0E8(&sp10, 0, 0);
     vs_gametime_tickspeed = 4;
     func_800CB654(1);

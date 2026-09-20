@@ -31,10 +31,43 @@ typedef struct {
 
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800F98E0);
 
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FA07C);
+void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
+    func_800FA76C_arg3* arg3)
+{
+    int i;
+
+    vs_battle_lerpSvector(
+        arg0->unk7C, func_800D118C(arg0->unkF, arg3->unk8), &arg1->unk13C);
+    vs_battle_lerpSvector(
+        arg0->unk88, func_800D118C(arg0->unk10, arg3->unk8), &arg1->unk144);
+
+    switch (arg1->unk24 & 0x1C0) {
+    case 0:
+        break;
+
+    case 0xC0:
+        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk4C.vx;
+        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk4C.vy;
+        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk4C.vz;
+        break;
+
+    case 0x80:
+        arg1->unk13C.vx += D_800F5230.unkE0.vx;
+        arg1->unk13C.vy += D_800F5230.unkE0.vy;
+        arg1->unk13C.vz += D_800F5230.unkE0.vz;
+        break;
+    }
+
+    for (i = 0; i < (u_char)arg3->unk2; ++i) {
+        SVECTOR* v = &arg3->unk4[i].splinePoints[3];
+        v->vx = arg1->unk13C.vx + func_800CFB80(arg1->unk144.vx, -arg1->unk144.vx);
+        v->vy = arg1->unk13C.vy + func_800CFB80(arg1->unk144.vy, -arg1->unk144.vy);
+        v->vz = arg1->unk13C.vz + func_800CFB80(arg1->unk144.vz, -arg1->unk144.vz);
+    }
+}
 
 void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    int arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -134,8 +167,8 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     } while (0);
 }
 
-void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
-    func_800FA76C_arg3* arg3)
+void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     int speed;
     int i;

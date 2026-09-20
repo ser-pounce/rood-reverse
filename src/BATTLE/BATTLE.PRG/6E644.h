@@ -57,9 +57,7 @@ typedef struct {
     short unk1A;
     int unk1C[45];
     char unkD0[16];
-    short unkE0;
-    short unkE2;
-    short unkE4;
+    SVECTOR unkE0;
 } func_800CF0E8_t;
 
 typedef struct func_800D4910_t {

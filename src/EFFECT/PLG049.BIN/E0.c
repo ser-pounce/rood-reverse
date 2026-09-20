@@ -7,18 +7,14 @@
 #include <rand.h>
 
 typedef struct {
-    SVECTOR unk0;
-    SVECTOR unk8;
-    SVECTOR unk10;
-    SVECTOR unk18;
-    u_char unk20;
-    u_char unk21;
+    SVECTOR splinePoints[4];
+    u_char stepCount;
+    u_char trailCount;
     u_char unk22;
-    u_char unk23;
-    SVECTOR unk24[2]; // Potentially more
-    u_char unk28[0x38];
-    int unk6C;
-    int unk70;
+    u_char currentTrail;
+    SVECTOR trails[9];
+    int splineProgress;
+    int speed;
     int unk74;
 } func_800FA76C_t;
 
@@ -51,7 +47,7 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     do {
         for (i = 0; i < (u_char)arg3->unk2; ++i) {
-            SVECTOR* temp_s5 = &arg3->unk4[i].unk0;
+            SVECTOR* temp_s5 = arg3->unk4[i].splinePoints;
             arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
             arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
             arg1->unk34.vz = temp_s5[3].vz - temp_s5[0].vz;
@@ -141,62 +137,66 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
     func_800FA76C_arg3* arg3)
 {
-    int temp_s3;
+    int speed;
     int i;
 
     vs_battle_lerp2DVector(arg0->unk94[4], 0, &arg1->unk134);
-    temp_s3 = func_800CFE1C(&arg0->unk30, 0) << 0xC;
+    speed = func_800CFE1C(&arg0->unk30, 0) << 0xC;
 
     for (i = 0; i < (u_char)arg3->unk2; ++i) {
-        int var_v1 = func_800CFB80(arg1->unk134, arg1->unk138);
-        if (var_v1 == 0) {
-            var_v1 = 1;
+        int stepCount = func_800CFB80(arg1->unk134, arg1->unk138);
+        if (stepCount == 0) {
+            stepCount = 1;
         }
-        arg3->unk4[i].unk20 = var_v1;
-        arg3->unk4[i].unk21 = 1;
+        arg3->unk4[i].stepCount = stepCount;
+        arg3->unk4[i].trailCount = 1;
         arg3->unk4[i].unk22 = 8;
-        arg3->unk4[i].unk23 = 0;
-        arg3->unk4[i].unk24[0] = arg3->unk4[i].unk0;
-        arg3->unk4[i].unk6C = 0;
-        arg3->unk4[i].unk70 = temp_s3;
+        arg3->unk4[i].currentTrail = 0;
+        arg3->unk4[i].trails[0] = arg3->unk4[i].splinePoints[0];
+        arg3->unk4[i].splineProgress = 0;
+        arg3->unk4[i].speed = speed;
         arg3->unk4[i].unk74 =
-            ((0x06000000 / (var_v1 * var_v1)) - ((temp_s3 * 2) / var_v1));
+            ((0x06000000 / (stepCount * stepCount)) - ((speed * 2) / stepCount));
     }
 }
 
-void func_800FA8E4(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
-    func_800FA76C_arg3* arg3)
+void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
+    func_800FA098_arg1* arg1 __attribute__((unused)),
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     int i;
 
     for (i = 0; i < (u_char)arg3->unk2; ++i) {
 
         func_800FA76C_t* temp_s0 = &arg3->unk4[i];
-        int temp_a1 = temp_s0->unk22;
 
-        if (temp_a1 != 0) {
-            if (arg3->unk8 >= temp_s0->unk20) {
-                temp_s0->unk22 = temp_a1 - 1;
-                if (temp_s0->unk22 < temp_s0->unk20) {
-                    --temp_s0->unk21;
-                }
-            } else {
+        if (temp_s0->unk22 == 0) {
+            continue;
+        }
 
-                int temp_a0_2 = temp_s0->unk20 - arg3->unk8;
-                int temp_a2 = temp_s0->unk70;
+        if (arg3->unk8 >= temp_s0->stepCount) {
+            --temp_s0->unk22;
+            if (temp_s0->unk22 < temp_s0->stepCount) {
+                --temp_s0->trailCount;
+            }
+        } else {
+            int currentStep = temp_s0->stepCount - arg3->unk8;
+            int speed = temp_s0->speed;
 
-                temp_a2 += ((0x06000000 - (temp_s0->unk6C * 2)) / (temp_a0_2 * temp_a0_2))
-                         - ((temp_a2 * 2) / temp_a0_2);
-                temp_s0->unk70 = temp_a2;
-                temp_s0->unk6C += temp_a2;
-                temp_s0->unk23 = (temp_s0->unk23 + 1) % 9;
+            speed += ((0x06000000 - (temp_s0->splineProgress * 2))
+                         / (currentStep * currentStep))
+                   - ((speed * 2) / currentStep);
+            temp_s0->speed = speed;
+            temp_s0->splineProgress += speed;
+            temp_s0->currentTrail = (temp_s0->currentTrail + 1) % 9;
 
-                func_800D1390(&temp_s0->unk0, &temp_s0->unk8, &temp_s0->unk10, &temp_s0->unk18,
-                    (temp_s0->unk6C >> 0xC) - ONE, &temp_s0->unk24[temp_s0->unk23]);
+            vs_battle_splineInterpolate(&temp_s0->splinePoints[0],
+                &temp_s0->splinePoints[1], &temp_s0->splinePoints[2],
+                &temp_s0->splinePoints[3], (temp_s0->splineProgress >> 0xC) - ONE,
+                &temp_s0->trails[temp_s0->currentTrail]);
 
-                if (temp_s0->unk21 < 9) {
-                    ++temp_s0->unk21;
-                }
+            if (temp_s0->trailCount < 9) {
+                ++temp_s0->trailCount;
             }
         }
     }

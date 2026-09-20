@@ -566,7 +566,22 @@ void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int func_800CFB80(int, int);
 int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
 int func_800D118C(int arg0, int arg1);
-void func_800D1390(void*, SVECTOR*, SVECTOR*, SVECTOR*, int, SVECTOR*);
+
+/**
+ * Evaluates a point on a spline segment between p1 and p2.
+ *
+ * The curve passes through p1 at t = 0 and p2 at t = ONE;
+ *
+ * @param p0  Control point before segment.
+ * @param p1  Segment start point.
+ * @param p2  Segment end point.
+ * @param p3  Control point afater segment.
+ * @param t   Interpolation value ([0, ONE] ?).
+ * @param out Output vector.
+ */
+void vs_battle_splineInterpolate(
+    SVECTOR* p0, SVECTOR* p1, SVECTOR* p2, SVECTOR* p3, int t, SVECTOR* out);
+
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, int);

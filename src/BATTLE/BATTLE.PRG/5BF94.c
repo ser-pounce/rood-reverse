@@ -3587,7 +3587,29 @@ int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
     return arg0 + var_v0 / ONE;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1390);
+void vs_battle_splineInterpolate(
+    SVECTOR* p0, SVECTOR* p1, SVECTOR* p2, SVECTOR* p3, int t, SVECTOR* out)
+{
+    int temp_t3 = -t;
+    int temp_t2 = t - ONE;
+    int temp_t1 = t + ONE;
+
+    int temp_t0 =
+        (((((temp_t3 * temp_t2) >> 0xC) * (t - ONE * 2)) >> 0xC) * (ONE * 2 / 3)) >> 0xE;
+    int temp_t3_2 = (((temp_t1 * temp_t2) >> 0xC) * (t - ONE * 2)) >> 0xD;
+    int temp_t2_2 = (((temp_t1 * temp_t3) >> 0xC) * (t - ONE * 2)) >> 0xD;
+    int temp_v1_2 = (((((temp_t1 * t) >> 0xC) * temp_t2) >> 0xC) * (ONE * 2 / 3)) >> 0xE;
+
+    out->vx = ((p0->vx * temp_t0) + (p1->vx * temp_t3_2) + (p2->vx * temp_t2_2)
+                  + (p3->vx * temp_v1_2))
+           >> 0xC;
+    out->vy = ((p0->vy * temp_t0) + (p1->vy * temp_t3_2) + (p2->vy * temp_t2_2)
+                  + (p3->vy * temp_v1_2))
+           >> 0xC;
+    out->vz = ((p0->vz * temp_t0) + (p1->vz * temp_t3_2) + (p2->vz * temp_t2_2)
+                  + (p3->vz * temp_v1_2))
+           >> 0xC;
+}
 
 void func_800D155C(int arg0, int arg1, int arg2, int arg3, int arg4, int* arg5)
 {

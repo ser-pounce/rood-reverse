@@ -1136,8 +1136,41 @@ int func_800B7D10(u_char* arg0, short arg1)
     return 0;
 }
 
-// https://decomp.me/scratch/8dS3J
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7DC4);
+int func_800B7DC4(u_char* arg0, short arg1)
+{
+    func_8006EBF8_t sp10;
+    u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
+    int var_a1;
+
+    if (arg0[4] != 0) {
+        func_800A1108(temp_s1, &sp10);
+        var_a1 = (arg0[3] << 4) - sp10.unk0.unk4.pad;
+        if (var_a1 < -ONE / 2) {
+            var_a1 += ONE;
+        }
+        if (var_a1 > ONE / 2) {
+            var_a1 -= ONE;
+        }
+        switch ((signed char)arg0[4]) {
+        case -1:
+            if (var_a1 > 0) {
+                var_a1 -= ONE;
+            }
+            break;
+        case 1:
+            if (var_a1 < 0) {
+                var_a1 += ONE;
+            }
+            break;
+        }
+        func_800A9E38(temp_s1, var_a1, var_s2);
+    } else {
+        func_800A9EB4(temp_s1, arg0[3] << 4, var_s2);
+    }
+    D_800F4B70[temp_s1] = 1;
+    return 0;
+}
 
 int func_800B7EF0(u_char* arg0, short arg1)
 {

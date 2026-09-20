@@ -258,7 +258,7 @@ void func_800A9D90(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C2 = temp_s0;
 }
 
-void func_800A9E38(int arg0, int arg1, int arg2)
+void func_800A9E38(int arg0, short arg1, int arg2)
 {
     u_short temp_s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];

@@ -10841,8 +10841,8 @@ int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg
     return _getActionCost(arg0, vs_battle_actors[arg1]->unk3C, 0) & 0xFF000000;
 }
 
-int func_800863A4(int arg0, int arg1, int targetActor, int arg3, func_800C1564_t2* arg4,
-    func_800C1564_t2* arg5, D_800F19CC_t2* arg6)
+int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
+    SVECTOR* arg5, D_800F19CC_t2* arg6)
 {
     D_800F19CC_t2 sp10;
     func_800C1564_t sp860;
@@ -10868,10 +10868,10 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, func_800C1564_t
         sp860.unk4.values[0] = vs_main_actions[arg0].rangeX;
         sp860.unk4.values[1] = vs_main_actions[arg0].rangeY;
         sp860.unk4.values[2] = vs_main_actions[arg0].rangeZ;
-        temp_s1 = arg5->unk0[0] - arg4->unk0[0];
-        temp_s0 = arg5->unk0[2] - arg4->unk0[2];
+        temp_s1 = arg5->vx - arg4->vx;
+        temp_s0 = arg5->vz - arg4->vz;
         sp860.unk2 = ratan2(temp_s1, temp_s0);
-        temp_s0_2 = arg5->unk0[1] - arg4->unk0[1];
+        temp_s0_2 = arg5->vy - arg4->vy;
         sp860.unk4.values[3] =
             (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)

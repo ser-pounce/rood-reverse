@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <libgte.h>
 
 typedef struct {
     u_int unk0 : 8;
@@ -9,10 +10,6 @@ typedef struct {
 } func_800C1564_flags;
 
 typedef struct {
-    short unk0[4];
-} func_800C1564_t2;
-
-typedef struct {
     u_char unk0;
     u_char unk1;
     short unk2;
@@ -20,7 +17,7 @@ typedef struct {
         func_800C1564_flags flags;
         u_char values[4];
     } unk4;
-    func_800C1564_t2 unk8;
+    SVECTOR unk8;
 } func_800C1564_t;
 
 int vs_battle_mapStickDeadZone(int);

@@ -88,7 +88,7 @@ void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     char* new_var;
 
     for (i = 0; i < 3; ++i) {
-        arg1->unk10[i] = arg0->unk8.unk0[i];
+        arg1->unk10[i] = (&arg0->unk8.vx)[i];
         arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4.values[i]);
     }
 

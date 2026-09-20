@@ -1,5 +1,4 @@
 #include "common.h"
-#include "58578.h"
 #include "5BF94.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/32154.h"
@@ -122,7 +121,7 @@ void func_800D7AEC(void*);
 void func_800D8038(int);
 void func_800D8054(int);
 int func_8008631C(int, int, int, int, void*);
-int func_800863A4(int, int, int, int, func_800C1564_t2*, func_800C1564_t2*, void*);
+int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
@@ -583,8 +582,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC888);
 
 void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int arg3)
 {
-    func_800C1564_t2 sp20;
-    func_800C1564_t2 sp28;
+    SVECTOR sp20;
+    SVECTOR sp28;
     int temp_s0 = arg2->unkC_0;
     int temp_v0;
 
@@ -593,11 +592,11 @@ void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int 
             func_8008631C(arg2->unk4_5, arg0->unk88, temp_s0, arg2->unkC_4, D_800F5900);
     } else {
         D_800F4538_t* actor = D_800F4538[temp_s0];
-        sp28.unk0[0] = actor->unk0.position.vx;
-        sp28.unk0[2] = actor->unk0.position.vz;
-        sp28.unk0[1] = actor->unk0.position.vy - arg2->unkC_7;
-        *(int*)&sp20.unk0[0] = *(int*)&sp28.unk0[0];
-        sp20.unk0[2] = sp28.unk0[2] + vs_gte_rsqrt(arg2->unk8);
+        sp28.vx = actor->unk0.position.vx;
+        sp28.vz = actor->unk0.position.vz;
+        sp28.vy = actor->unk0.position.vy - arg2->unkC_7;
+        *(int*)&sp20.vx = *(int*)&sp28.vx;
+        sp20.vz = sp28.vz + vs_gte_rsqrt(arg2->unk8);
         temp_v0 = func_800863A4(
             arg2->unk4_5, arg0->unk88, temp_s0, arg2->unkC_4, &sp20, &sp28, D_800F5900);
     }

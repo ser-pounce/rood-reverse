@@ -503,6 +503,7 @@ void vs_battle_addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2);
 void vs_battle_lerp2DVector(short* src, int t, int* vec);
 void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
 void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
+int func_800CFB80(int, int);
 int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
 int func_800D118C(int arg0, int arg1);
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);

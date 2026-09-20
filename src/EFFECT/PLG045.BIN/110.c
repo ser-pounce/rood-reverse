@@ -6,10 +6,6 @@
 #include <rand.h>
 #include <inline_c.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800F9910);
-
-int func_800CFB80(int, int);
-
 typedef struct {
     u_char unk0[0x24];
     u_int unk24;
@@ -20,7 +16,10 @@ typedef struct {
     VECTOR unk44;
     u_char unk54[0x10];
     MATRIX unk64;
-    u_char unk84[0x44];
+    u_char unk84[0x14];
+    VECTOR unk98;
+    VECTOR unkA8;
+    u_char unkB8[0x10];
     VECTOR unkC8;
     VECTOR unkD8;
     VECTOR unkE8;
@@ -34,6 +33,14 @@ typedef struct {
     int unk138;
     SVECTOR unk13C;
     SVECTOR unk144;
+    u_char unk14C[0x24];
+    int unk170;
+    int unk174;
+    int unk178;
+    int unk17C;
+    int unk180;
+    int unk184;
+    int unk188;
 } func_800FA098_arg1;
 
 typedef struct {
@@ -55,10 +62,230 @@ typedef struct {
     int unkC;
 } func_800FB320_t;
 
-void func_800F9910(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
-void func_800FA2B0(
+void func_800FA760(
     func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA098_arg3*);
-void func_800FA760(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
+
+extern int D_800FB5B4;
+
+void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
+    func_800FA098_arg3* arg3)
+{
+    int sp10;
+    SVECTOR* temp_s1;
+    int temp_a1;
+    int temp_lo;
+    int temp_s0_2;
+    int temp_s3;
+    int temp_v0;
+    int temp_v0_4;
+    int var_fp;
+    int i;
+    u_short var_a0_2;
+    u_short var_v1;
+    u_short var_v1_2;
+    MATRIX* temp_s0;
+
+    vs_battle_lerpVector(
+        (short*)&arg0->unk14[4], func_800D118C(arg0->unk8, arg3->unkC), &arg1->unk98);
+    temp_s0 = (MATRIX*)arg2->unk1C[arg0->unkC8].unk38;
+
+    switch (arg1->unk24 & 7) {
+    case 0:
+        break;
+    case 1:
+        vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
+        break;
+    case 2:
+        arg1->unk98.vx += temp_s0->t[0];
+        arg1->unk98.vy += temp_s0->t[1];
+        arg1->unk98.vz += temp_s0->t[2];
+        break;
+    }
+
+    vs_battle_lerpVector((short*)&arg0->unk14[0x10],
+        func_800D118C(arg0->unk9, arg3->unkC), (VECTOR*)&arg1->unk84[0x24]);
+    SetRotMatrix(temp_s0);
+    gte_zrtr();
+
+    switch (arg1->unk24 & 0x38) {
+    case 0:
+        for (i = 0; i < arg3->unk2; ++i) {
+
+            temp_s1 = arg3->unk4 + (i * 4);
+
+            temp_v0 = rand();
+            arg1->unk170 = rsin(temp_v0);
+            arg1->unk178 = rcos(temp_v0);
+
+            temp_v0 = rand();
+            arg1->unk174 = rsin(temp_v0);
+            arg1->unk17C = rcos(temp_v0);
+
+            temp_s1->vx =
+                (((arg1->unkA8.vx * arg1->unk178) >> 0xC) * arg1->unk17C) >> 0xC;
+            temp_s1->vy =
+                (((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC;
+            temp_s1->vz = (arg1->unkA8.vz * arg1->unk170) >> 0xC;
+
+            if (arg1->unk24 & 0x40000) {
+                ApplyRotMatrix(temp_s1, &arg1->unk34);
+                temp_s1->vx = arg1->unk34.vx;
+                temp_s1->vy = arg1->unk34.vy;
+                temp_s1->vz = arg1->unk34.vz;
+            }
+
+            temp_s1->vx += arg1->unk98.vx;
+            temp_s1->vy += arg1->unk98.vy;
+            temp_s1->vz += arg1->unk98.vz;
+        }
+        return;
+
+    case 8:
+        for (i = 0; i < arg3->unk2; ++i) {
+
+            temp_s1 = arg3->unk4 + i * 4;
+
+            switch (arg1->unk24 & 0x1800) {
+            case 0x0:
+            case 0x800:
+                switch (rand() % 6) {
+                case 0:
+                    temp_s1->vx = arg1->unkA8.vx;
+                    goto jump1;
+
+                case 1:
+                    temp_s1->vx = -arg1->unkA8.vx;
+                jump1:
+                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    break;
+
+                case 2:
+                    temp_s1->vy = arg1->unkA8.vy;
+                    goto jump2;
+
+                case 3:
+                    temp_s1->vy = -arg1->unkA8.vy;
+                jump2:
+                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    break;
+
+                case 4:
+                    temp_s1->vz = arg1->unkA8.vz;
+                    goto jump3;
+
+                case 5:
+                    temp_s1->vz = -arg1->unkA8.vz;
+                jump3:
+                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    break;
+                }
+                break;
+
+            case 0x1000:
+                temp_a1 = D_800FB5B4 + 1;
+                D_800FB5B4 = temp_a1 & 7;
+
+                var_a0_2 = arg1->unkA8.vx;
+                if (!(D_800FB5B4 & 1)) {
+                    var_a0_2 = -var_a0_2;
+                }
+                temp_s1->vx = var_a0_2;
+
+                var_v1 = arg1->unkA8.vy;
+                if (!(D_800FB5B4 & 2)) {
+                    var_v1 = -var_v1;
+                }
+                temp_s1->vy = var_v1;
+
+                var_v1_2 = arg1->unkA8.vz;
+                if (!(D_800FB5B4 & 4)) {
+                    var_v1_2 = -var_v1_2;
+                }
+                temp_s1->vz = var_v1_2;
+
+                break;
+            }
+
+            if (arg1->unk24 & 0x40000) {
+                ApplyRotMatrix(temp_s1, &arg1->unk34);
+                temp_s1->vx = arg1->unk34.vx;
+                temp_s1->vy = arg1->unk34.vy;
+                temp_s1->vz = arg1->unk34.vz;
+            }
+
+            temp_s1->vx = temp_s1->vx + arg1->unk98.vx;
+            temp_s1->vy = temp_s1->vy + arg1->unk98.vy;
+            temp_s1->vz = temp_s1->vz + arg1->unk98.vz;
+        }
+        return;
+
+    case 16:
+    case 24:
+    case 32:
+    case 40:
+        arg1->unk184 = 4;
+        arg1->unk188 = 4;
+        break;
+
+    case 48:
+        arg1->unk184 = arg0->unkCA;
+
+        if (arg1->unk184 == 0) {
+            arg1->unk184 = 1;
+        }
+
+        arg1->unk188 = arg0->unkCB;
+
+        if (arg1->unk188 == 0) {
+            arg1->unk188 = arg1->unk184;
+        }
+        break;
+
+    default:
+        return;
+    }
+
+    temp_lo = 0x1000 / arg1->unk184;
+
+    if ((arg1->unk24 & 0x1800) != 0x1000) {
+        D_800FB5B4 %= arg1->unk188;
+        temp_s0_2 = (D_800FB5B4 * temp_lo) + 0x200;
+        sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
+        var_fp = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+    }
+
+    for (i = 0; i < arg3->unk2; ++i) {
+        temp_s1 = arg3->unk4 + (i * 4);
+        D_800FB5B4 = (D_800FB5B4 + 1) % arg1->unk188;
+        temp_s0_2 = (D_800FB5B4 * temp_lo) + 0x200;
+        temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
+        temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+
+        if ((arg1->unk24 & 0x1800) == 0x1000) {
+            temp_s1->vx = temp_s3;
+            temp_s1->vz = temp_s0_2;
+        } else {
+            temp_v0_4 = rand() >> 3;
+            temp_s1->vx = (((temp_s3 - sp10) * temp_v0_4) >> 0xC) + sp10;
+            temp_s1->vz = (((temp_s0_2 - var_fp) * temp_v0_4) >> 0xC) + var_fp;
+        }
+
+        temp_s1->vy = 0;
+
+        if (arg1->unk24 & 0x40000) {
+            ApplyRotMatrix(temp_s1, &arg1->unk34);
+            temp_s1->vx = arg1->unk34.vx;
+            temp_s1->vy = arg1->unk34.vy;
+            temp_s1->vz = arg1->unk34.vz;
+        }
+        temp_s1->vx += arg1->unk98.vx;
+        temp_s1->vy += arg1->unk98.vy;
+        temp_s1->vz += arg1->unk98.vz;
+    }
+}
 
 void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
     func_800FA098_arg3* arg3)

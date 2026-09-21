@@ -165,9 +165,14 @@ typedef struct {
 } vs_battle_stringContext_t;
 
 typedef struct {
-    char unk0[0x14];
-    char unk14;
-    char unk15;
+    short unk0[6];
+    short unkC[2];
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    u_char unk14;
+    u_char unk15;
 } D_800F569C_t2;
 
 typedef struct {

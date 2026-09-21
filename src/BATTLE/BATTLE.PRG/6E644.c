@@ -115,6 +115,8 @@ typedef struct {
     u_int unkC_19 : 13;
 } func_800DCAA0_t;
 
+void func_800D5260(VECTOR*);
+void func_800D5294(int*);
 void func_800D7890(int arg0);
 void func_800D7A14(void*);
 void func_800D7AC4(void*);
@@ -134,6 +136,7 @@ void func_800E5EC0(int, int, int);
 
 extern int D_800EC4BC[];
 extern D_800F16EC_t D_800F16EC[8];
+extern int D_800F5330[];
 extern char D_800F53C0[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
@@ -187,7 +190,17 @@ void func_800D78CC(void) { D_800F569C = D_800F5698; }
 
 void func_800D78E0(D_800F569C_unk8* arg0) { D_800F569C->unk8 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D78F0);
+void func_800D78F0(void)
+{
+    VECTOR sp10;
+    int sp20;
+
+    vs_battle_lerpVector(
+        D_800F569C->unkB4->unk0, D_800F5330[D_800F569C->unkB4->unk12], &sp10);
+    sp20 = func_800CFE1C(D_800F569C->unkB4->unkC, D_800F5330[D_800F569C->unkB4->unk13]);
+    func_800D5260(&sp10);
+    func_800D5294(&sp20);
+}
 
 void func_800D7980(void* arg0) { D_800F569C->unkBC = arg0; }
 

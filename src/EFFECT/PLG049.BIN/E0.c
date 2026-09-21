@@ -50,8 +50,221 @@ typedef struct {
     char unk2C[9];
 } func_800FB4C0_t2;
 
-void func_800F98E0(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800F98E0);
+extern int D_800FE3D4;
+
+void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
+    func_800FA76C_arg3* arg3)
+{
+    int sp10;
+    int sp14;
+    MATRIX* temp_s0;
+    SVECTOR* temp_s1;
+    int temp_a1;
+    int temp_lo;
+    int temp_s0_2;
+    int temp_s3;
+    int temp_v0;
+    int temp_v0_4;
+    int i;
+    u_short var_a0;
+    u_short var_v1;
+    u_short var_v1_2;
+    u_char temp_v1;
+
+    vs_battle_lerpVector(
+        (short*)&arg0->unk14[4], func_800D118C(arg0->unk8, arg3->unk8), &arg1->unk98);
+
+    temp_v1 = arg0->unkC8;
+    temp_s0 = &arg2->unk1C[temp_v1].unk38;
+
+    switch (arg1->unk24 & 7) {
+    case 0:
+        break;
+    case 1:
+        vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
+        break;
+    case 2:
+        arg1->unk98.vx += temp_s0->t[0];
+        arg1->unk98.vy += temp_s0->t[1];
+        arg1->unk98.vz += temp_s0->t[2];
+        break;
+    }
+
+    vs_battle_lerpVector(
+        (short*)&arg0->unk14[0x10], func_800D118C(arg0->unk9, arg3->unk8), &arg1->unkA8);
+    SetRotMatrix(temp_s0);
+    gte_zrtr();
+
+    switch (arg1->unk24 & 0x38) {
+    case 0:
+        for (i = 0; i < arg3->unk2; ++i) {
+            temp_s1 = &arg3->unk4[i].splinePoints[0];
+            temp_v0 = rand();
+            arg1->unk170 = rsin(temp_v0);
+            arg1->unk178 = rcos(temp_v0);
+            temp_v0 = rand();
+            arg1->unk174 = rsin(temp_v0);
+            arg1->unk17C = rcos(temp_v0);
+            temp_s1->vx =
+                ((((arg1->unkA8.vx * arg1->unk178) >> 0xC) * arg1->unk17C) >> 0xC);
+            temp_s1->vy =
+                ((((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC);
+            temp_s1->vz = ((arg1->unkA8.vz * arg1->unk170) >> 0xC);
+            if (arg1->unk24 & 0x40000) {
+                ApplyRotMatrix(temp_s1, &arg1->unk34);
+                temp_s1->vx = arg1->unk34.vx;
+                temp_s1->vy = arg1->unk34.vy;
+                temp_s1->vz = arg1->unk34.vz;
+            }
+            temp_s1->vx += arg1->unk98.vx;
+            temp_s1->vy += arg1->unk98.vy;
+            temp_s1->vz += arg1->unk98.vz;
+        }
+        return;
+
+    case 8:
+        for (i = 0; i < arg3->unk2; ++i) {
+
+            temp_s1 = &arg3->unk4[i].splinePoints[0];
+
+            switch (arg1->unk24 & 0x1800) {
+            case 0x800:
+            case 0x0:
+                switch (rand() % 6) {
+                case 0:
+                    temp_s1->vx = arg1->unkA8.vx;
+                    goto jump0;
+                case 1:
+                    temp_s1->vx = -arg1->unkA8.vx;
+                jump0:
+                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    break;
+                case 2:
+                    temp_s1->vy = arg1->unkA8.vy;
+                    goto jump1;
+                    break;
+                case 3:
+                    temp_s1->vy = -arg1->unkA8.vy;
+                jump1:
+                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    break;
+                case 4:
+                    temp_s1->vz = arg1->unkA8.vz;
+                    goto jump2;
+                    break;
+                case 5:
+                    temp_s1->vz = -arg1->unkA8.vz;
+                jump2:
+                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    break;
+                }
+                break;
+
+            case 0x1000:
+                temp_a1 = D_800FE3D4 + 1;
+                D_800FE3D4 = temp_a1 & 7;
+
+                var_a0 = arg1->unkA8.vx;
+                if (!(temp_a1 & 1)) {
+                    var_a0 = -var_a0;
+                }
+
+                temp_s1->vx = var_a0;
+
+                var_v1 = arg1->unkA8.vy;
+                if (!(temp_a1 & 2)) {
+                    var_v1 = -var_v1;
+                }
+                temp_s1->vy = var_v1;
+
+                var_v1_2 = arg1->unkA8.vz;
+                if (!(temp_a1 & 4)) {
+                    var_v1_2 = -var_v1_2;
+                }
+                temp_s1->vz = var_v1_2;
+
+                break;
+            }
+
+            if (arg1->unk24 & 0x40000) {
+                ApplyRotMatrix(temp_s1, &arg1->unk34);
+                temp_s1->vx = arg1->unk34.vx;
+                temp_s1->vy = arg1->unk34.vy;
+                temp_s1->vz = arg1->unk34.vz;
+            }
+
+            temp_s1->vx += arg1->unk98.vx;
+            temp_s1->vy += arg1->unk98.vy;
+            temp_s1->vz += arg1->unk98.vz;
+        }
+
+        return;
+
+    case 16:
+    case 24:
+    case 32:
+    case 40:
+        arg1->unk184 = 4;
+        arg1->unk188 = 4;
+        break;
+
+    case 48:
+        arg1->unk184 = arg0->unkCA;
+        if (arg1->unk184 == 0) {
+            arg1->unk184 = 1;
+        }
+        arg1->unk188 = arg0->unkCB;
+        if (arg1->unk188 == 0) {
+            arg1->unk188 = arg1->unk184;
+        }
+        break;
+
+    default:
+        return;
+    }
+
+    temp_lo = 0x1000 / arg1->unk184;
+
+    if ((arg1->unk24 & 0x1800) != 0x1000) {
+        D_800FE3D4 = D_800FE3D4 % arg1->unk188;
+        temp_s0_2 = (D_800FE3D4 * temp_lo) + 0x200;
+        sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
+        sp14 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+    }
+
+    for (i = 0; i < arg3->unk2; ++i) {
+        temp_s1 = &arg3->unk4[i].splinePoints[0];
+        D_800FE3D4 = (D_800FE3D4 + 1) % arg1->unk188;
+        temp_s0_2 = (D_800FE3D4 * temp_lo) + 0x200;
+        temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
+        temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+
+        if ((arg1->unk24 & 0x1800) == 0x1000) {
+            temp_s1->vx = temp_s3;
+            temp_s1->vz = temp_s0_2;
+        } else {
+            temp_v0_4 = rand() >> 3;
+            temp_s1->vx = (((temp_s3 - sp10) * temp_v0_4) >> 0xC) + sp10;
+            temp_s1->vz = (((temp_s0_2 - sp14) * temp_v0_4) >> 0xC) + sp14;
+        }
+
+        temp_s1->vy = 0;
+
+        if (arg1->unk24 & 0x40000) {
+            ApplyRotMatrix(temp_s1, &arg1->unk34);
+            temp_s1->vx = arg1->unk34.vx;
+            temp_s1->vy = arg1->unk34.vy;
+            temp_s1->vz = arg1->unk34.vz;
+        }
+
+        temp_s1->vx = temp_s1->vx + arg1->unk98.vx;
+        temp_s1->vy = temp_s1->vy + arg1->unk98.vy;
+        temp_s1->vz = temp_s1->vz + arg1->unk98.vz;
+    }
+}
 
 void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
     func_800FA76C_arg3* arg3)
@@ -329,19 +542,25 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         if (temp_s3->unk3 != 0) {
             for (i = 0; i < temp_s0->unk2; ++i) {
+
                 sp18.unk60 = 0;
+
                 if (temp_s3->unk4_0 & 0x20000) {
+
                     SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
                     SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
+
                     s4->unk2C.vx =
                         temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx;
                     s4->unk2C.vy =
                         temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy;
                     s4->unk2C.vz =
                         temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz;
+
                     gte_ldv0(&s4->unk2C);
                     gte_rtv0tr2();
                     gte_stlvnl(&s4->unk34);
+
                     sp18.unkC.vx = s4->unk34.vx << 0xC;
                     sp18.unkC.vy = s4->unk34.vy << 0xC;
                     sp18.unkC.vz = s4->unk34.vz << 0xC;

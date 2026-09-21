@@ -11,25 +11,27 @@ permissions:
   packages: read
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    if: github.repository == 'ser-pounce/rood-reverse'
+  build-push:
+    if: github.repository == 'ser-pounce/rood-reverse' && github.event_name == 'push'
     runs-on: ubuntu-26.04
-    environment: trusted-build
-    container:
+    container: &build-container
       image: ghcr.io/ser-pounce/rood-reverse:main
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
-      - name: Checkout
+      - &checkout
+        name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
-      - name: Build, verify, and detect missing formatting
+      - &build-and-verify
+        name: Build, verify, and detect missing formatting
         run: |
           make commit-check -j"$(nproc)" DISKIMAGE=/SLUS-01040.bin
           git diff --exit-code
@@ -39,3 +41,12 @@ jobs:
         with:
           name: SLUS_010.40_report
           path: progress.json
+
+  build-pr:
+    if: github.repository == 'ser-pounce/rood-reverse' && github.event_name == 'pull_request'
+    runs-on: ubuntu-26.04
+    environment: trusted-build
+    container: *build-container
+    steps:
+      - *checkout
+      - *build-and-verify

@@ -323,7 +323,10 @@ typedef struct func_800D2904_t {
     int unkC;
     int unk10;
     int unk14;
-    char unk18[0x60];
+    char unk18[0x24];
+    int unk3C[8];
+    char unk5C[0x1B];
+    u_char unk77;
 } func_800D2904_t;
 
 typedef struct {

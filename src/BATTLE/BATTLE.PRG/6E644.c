@@ -141,6 +141,7 @@ extern _loadFileContext _plgLoadContext;
 extern u_long* D_800F56A0;
 extern int _plgEntryPointCount;
 extern effectExec D_800F56A8[];
+extern D_800F569C_t D_800F57A0;
 extern int D_800F5874;
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
@@ -152,7 +153,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7814);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7890);
+void func_800D7890(int arg0)
+{
+    if (arg0 == 0) {
+        D_800F569C = &D_800F57A0;
+    } else {
+        D_800F569C = &D_800F56C8;
+    }
+}
 
 extern D_800F569C_t* D_800F5698;
 

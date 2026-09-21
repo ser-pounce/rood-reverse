@@ -1,7 +1,7 @@
-name: build
+name: build-pr
 
 on:
-  push:
+  pull_request:
     branches: [main]
 
 permissions:
@@ -9,13 +9,14 @@ permissions:
   packages: read
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: build-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   build:
     if: github.repository == 'ser-pounce/rood-reverse'
     runs-on: ubuntu-26.04
+    environment: trusted-build
     container:
       image: ghcr.io/ser-pounce/rood-reverse:main
       credentials:
@@ -31,10 +32,3 @@ jobs:
         run: |
           make commit-check -j"$(nproc)" DISKIMAGE=/SLUS-01040.bin
           git diff --exit-code
-
-      - name: Upload progress
-        uses: actions/upload-artifact@v7
-        with:
-          name: SLUS_010.40_report
-          path: progress.json
-

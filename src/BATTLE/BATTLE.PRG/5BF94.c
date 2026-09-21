@@ -210,7 +210,7 @@ void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
-extern int func_800CE174(func_800D4910_t*, int, int);
+extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CE9B0(void);
@@ -220,8 +220,7 @@ void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
 void func_800CF514(int arg0);
 void func_800CF614(D_800F53B8_t*);
-func_800D4910_t* func_800CF694(
-    D_800F53B8_t*, int (*)(struct func_800D4910_t*, int, int), int);
+func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
@@ -318,7 +317,7 @@ extern char* D_800EC258;
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
-extern int (*D_800EC324[])(struct func_800D4910_t*, int, int);
+extern effectExec D_800EC324[];
 extern char D_800EC32C[];
 extern u_char D_800EC330[][2][4];
 extern u_char D_800EC368[][5][4];
@@ -371,7 +370,7 @@ extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
-extern int (*D_800F56A8[])(struct func_800D4910_t*, int, int);
+extern effectExec D_800F56A8[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -3181,8 +3180,7 @@ void func_800CF614(D_800F53B8_t* arg0)
     vs_main_freeHeapR(arg0);
 }
 
-func_800D4910_t* func_800CF694(
-    D_800F53B8_t* arg0, int (*arg1)(func_800D4910_t*, int, int), int arg2)
+func_800D4910_t* func_800CF694(D_800F53B8_t* arg0, effectExec arg1, int arg2)
 {
     func_800D4910_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     temp_v0->next = arg0->unkD1C.unk34;
@@ -3958,7 +3956,7 @@ int func_800D4778(D_800F53B8_t* arg0)
     D_800F53B8_t2 sp10;
 
     sp10.unk14 = arg0->unkC;
-    sp10.unk18 = func_800D5198(arg0) & 0xFFFF;
+    sp10.unk18 = func_800D5198(arg0);
     sp10.unk0 = &arg0->unkD1C;
     func_800CE83C(&sp10);
     return 1;
@@ -3977,8 +3975,8 @@ int func_800D47F4(D_800F53B8_t* arg0)
     int temp_s0;
     int temp_s2;
 
-    temp_s2 = func_800D5170(arg0) & 0xFF;
-    temp_s0 = func_800D5198(arg0) & 0xFFFF;
+    temp_s2 = func_800D5170(arg0);
+    temp_s0 = func_800D5198(arg0);
     temp_s0 = temp_s0 + (func_800D5198(arg0) << 0x10);
 
     if (arg0->unkD1C.unk3C != 0) {
@@ -4079,7 +4077,7 @@ int func_800D4B90(D_800F53B8_t* arg0)
 
 int func_800D4BD0(D_800F53B8_t* arg0)
 {
-    func_800D2ADC(arg0, arg0->unk10[func_800D5170(arg0)], 0, 0, 0);
+    func_800D2ADC(arg0, arg0->unk10[func_800D5170(arg0)], 0, 0, NULL);
     return 1;
 }
 
@@ -4270,7 +4268,7 @@ int func_800D57FC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     }
     func_800D1104(arg1->unk8);
     func_800D2ADC(
-        arg0, e[arg1->unk6].unk0_20, e[arg1->unk6].unk0_26, e[arg1->unk6].unk0_16, 0);
+        arg0, e[arg1->unk6].unk0_20, e[arg1->unk6].unk0_26, e[arg1->unk6].unk0_16, NULL);
     ++arg1->unk8;
     if (!(arg0->unkD1C.unk30->unk1 & 1)) {
         --arg1->unkA;

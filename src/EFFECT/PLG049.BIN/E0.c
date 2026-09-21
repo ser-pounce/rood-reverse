@@ -25,35 +25,16 @@ typedef struct {
     u_char unk3;
     func_800FA76C_t* unk4;
     int unk8;
-    int unkC;
-    func_800D6CF_t unk10;
-    func_800FA098_arg3_2* unk2C;
-} func_800FA76C_arg3;
-
-typedef struct {
-    u_char unk0[0xC];
-    VECTOR unkC;
-    u_char unk1C[0x44];
-    u_char unk60;
-    u_char unk61[23];
-} func_800FB4C0_t;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    func_800FA76C_t* unk4;
-    int unk8;
     func_800D6CF_t unkC;
     int unk1C;
-    char unk2C[9];
-} func_800FB4C0_t2;
+    u_char unk2C[9];
+    u_char unk35[3];
+} func_800FA76C_arg3;
 
 extern int D_800FE3D4;
 
-void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
-    func_800FA76C_arg3* arg3)
+static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
 {
     int sp10;
     int sp14;
@@ -266,8 +247,8 @@ void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     }
 }
 
-void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
-    func_800FA76C_arg3* arg3)
+static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
 {
     int i;
 
@@ -301,7 +282,7 @@ void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     }
 }
 
-void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+static void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     SVECTOR sp10;
@@ -402,7 +383,7 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     } while (0);
 }
 
-void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+static void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     int speed;
@@ -428,7 +409,7 @@ void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     }
 }
 
-void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
+static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
     func_800FA098_arg1* arg1 __attribute__((unused)),
     D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
@@ -470,7 +451,8 @@ void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
     }
 }
 
-void func_800FAA70(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
+void func_800FAA70(
+    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FAA70);
 
 int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
@@ -479,7 +461,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA098_arg0* temp_s3;
     int i;
     int j;
-    func_800FB4C0_t2* temp_v0;
+    func_800FA76C_arg3* temp_v0;
 
     func_800FA098_arg1* s4 = (func_800FA098_arg1*)0x1F8001D0;
     int s6 = 1;
@@ -488,7 +470,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     switch (arg1) {
     case 1:
-        temp_v0 = vs_main_allocHeapR(0x38);
+        temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
         arg0->unk8 = temp_v0;
         temp_v0->unk1 = arg2 >> 8;
         temp_v0->unk0 = arg2;
@@ -500,12 +482,14 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
             i = 8;
         }
 
-        temp_v0->unk4 = vs_main_allocHeapR(i * 0x78);
+        temp_v0->unk4 = vs_main_allocHeapR(i * sizeof *temp_v0->unk4);
         temp_v0->unk2 = i;
         temp_v0->unk3 = 0;
 
         if (temp_s3->unk4_26 != 0) {
+
             i = D_800F569C->unk8C->unk4[temp_s3->unk4_26];
+
             if (i >= 2) {
                 --i;
             }

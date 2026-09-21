@@ -137,10 +137,10 @@ extern u_int D_800F5680;
 extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
 extern u_int D_800F5690;
-extern _loadFileContext D_800F5694;
+extern _loadFileContext _plgLoadContext;
 extern u_long* D_800F56A0;
-extern int D_800F56A4;
-extern void (*D_800F56A8[])(struct func_800D4910_t*, int, int);
+extern int _plgEntryPointCount;
+extern effectExec D_800F56A8[];
 extern int D_800F5874;
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
@@ -236,7 +236,7 @@ int vs_battle_loadEffPurge(void)
     return _loadfile(VS_EFFPURGE_BIN_LBA, VS_EFFPURGE_BIN_SIZE, vs_overlay_slots[3]);
 }
 
-void func_800D7BF8(void)
+int func_800D7BF8(void)
 {
     int _[16];
 
@@ -244,7 +244,7 @@ void func_800D7BF8(void)
         _effBuf = vs_main_allocHeapR(_effBufSize);
     }
 
-    _loadfile(_loadEffContext.lba + VS_E000_P_LBA, _loadEffContext.size, _effBuf);
+    return _loadfile(_loadEffContext.lba + VS_E000_P_LBA, _loadEffContext.size, _effBuf);
 }
 
 void func_800D7C5C(void)
@@ -353,8 +353,8 @@ int func_800D7EF4(void)
         // Fallthrough
 
     case 2:
-        ret = _loadfile(
-            D_800F5694.lba + VS_E000_P_LBA, D_800F5694.size, vs_overlay_slots[3]);
+        ret = _loadfile(_plgLoadContext.lba + VS_E000_P_LBA, _plgLoadContext.size,
+            vs_overlay_slots[3]);
         if (ret == 0) {
             func_800D8054(3);
         }
@@ -374,17 +374,14 @@ void func_800D7FB4(int arg0, int arg1)
     _loadEffContext.size = arg1;
 }
 
-void func_800D7FC8(int arg0, int arg1, int arg2)
+void vs_battle_configurePlgLoad(int lba, int size, int entryPointCount)
 {
-    D_800F5694.lba = arg0;
-    D_800F5694.size = arg1;
-    D_800F56A4 = arg2;
+    _plgLoadContext.lba = lba;
+    _plgLoadContext.size = size;
+    _plgEntryPointCount = entryPointCount;
 }
 
-void func_800D7FE4(void (*arg0)(struct func_800D4910_t*, int, int), int arg1)
-{
-    D_800F56A8[arg1] = arg0;
-}
+void func_800D7FE4(effectExec arg0, int arg1) { D_800F56A8[arg1] = arg0; }
 
 void func_800D7FFC(int arg0) { D_800F5638.unk0 = arg0; }
 

@@ -6,10 +6,26 @@
 #include <rand.h>
 #include <inline_c.h>
 
-void func_800FA760(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA098_arg3*);
+typedef struct {
+    short unk0;
+    short unk2;
+} func_800FA098_arg3_2;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    short unk2;
+    SVECTOR* unk4;
+    int unk8;
+    int unkC;
+    func_800D6CF_t unk10;
+    func_800FA098_arg3_2* unk2C;
+} func_800FA098_arg3;
 
 extern int D_800FB5B4;
+
+void func_800FA760(
+    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA098_arg3*);
 
 void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
     func_800FA098_arg3* arg3)

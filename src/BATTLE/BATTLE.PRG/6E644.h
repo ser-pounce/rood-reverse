@@ -60,19 +60,23 @@ typedef struct {
     SVECTOR unkE0;
 } func_800CF0E8_t;
 
-typedef struct func_800D4910_t {
+typedef struct func_800D4910_t func_800D4910_t;
+
+typedef int (*effectExec)(func_800D4910_t*, u_int, int);
+
+struct func_800D4910_t {
     struct func_800D4910_t* next;
-    int (*unk4)(struct func_800D4910_t*, int, int);
+    effectExec unk4;
     void* unk8;
-} func_800D4910_t;
+};
 
 void func_800D2698(int);
 void func_800D8038(int);
 void func_800D6E44(void);
 void func_800D7814(void);
 void func_800D78F0(void);
-void func_800D7FC8(int, int, int);
-void func_800D7FE4(void (*arg0)(func_800D4910_t*, int, int), int arg1);
+void vs_battle_configurePlgLoad(int, int, int);
+void func_800D7FE4(effectExec arg0, int arg1);
 void func_800D7FFC(int arg0);
 void func_800D8054(int);
 void func_800D8008(int, int, int, int, int);

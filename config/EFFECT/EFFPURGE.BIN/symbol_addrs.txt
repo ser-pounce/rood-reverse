@@ -8,5 +8,6 @@ _fbtCounts = 0x800FB7AC;
 _fbtSuffixes = 0x800FB93C;
 _fbtFiles = 0x800FBC30;
 _pFiles = 0x800FC7FC;
+_effectEntryPointIndices = 0x800FCE3C;
 _effectEntryPoints = 0x800FD15C;
 _plgFiles = 0x800FD6B8;

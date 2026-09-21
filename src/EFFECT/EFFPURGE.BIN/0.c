@@ -4,137 +4,137 @@
 #include "build/src/include/lbas.h"
 
 /** Effect entrypoints, declarations to temporarily satisfy the compiler  */
-void func_800F9800(func_800D4910_t*, int, int);
-void func_800F9818(func_800D4910_t*, int, int);
-void func_800F98E0(func_800D4910_t*, int, int);
-void func_800F98F8(func_800D4910_t*, int, int);
-void func_800F9910(func_800D4910_t*, int, int);
-void func_800F9928(func_800D4910_t*, int, int);
-void func_800F99D8(func_800D4910_t*, int, int);
-void func_800F99F0(func_800D4910_t*, int, int);
-void func_800F9AE8(func_800D4910_t*, int, int);
-void func_800FA30C(func_800D4910_t*, int, int);
-void func_800FA324(func_800D4910_t*, int, int);
-void func_800FA368(func_800D4910_t*, int, int);
-void func_800FA398(func_800D4910_t*, int, int);
-void func_800FA3B0(func_800D4910_t*, int, int);
-void func_800FA41C(func_800D4910_t*, int, int);
-void func_800FA424(func_800D4910_t*, int, int);
-void func_800FA48C(func_800D4910_t*, int, int);
-void func_800FA490(func_800D4910_t*, int, int);
-void func_800FA4A8(func_800D4910_t*, int, int);
-void func_800FA588(func_800D4910_t*, int, int);
-void func_800FA6B8(func_800D4910_t*, int, int);
-void func_800FA6BC(func_800D4910_t*, int, int);
-void func_800FA6D0(func_800D4910_t*, int, int);
-void func_800FA6F8(func_800D4910_t*, int, int);
-void func_800FA710(func_800D4910_t*, int, int);
-void func_800FA740(func_800D4910_t*, int, int);
-void func_800FA770(func_800D4910_t*, int, int);
-void func_800FA7B0(func_800D4910_t*, int, int);
-void func_800FA7F0(func_800D4910_t*, int, int);
-void func_800FA84C(func_800D4910_t*, int, int);
-void func_800FA868(func_800D4910_t*, int, int);
-void func_800FA8D0(func_800D4910_t*, int, int);
-void func_800FAC78(func_800D4910_t*, int, int);
-void func_800FAF00(func_800D4910_t*, int, int);
-void func_800FAF30(func_800D4910_t*, int, int);
-void func_800FB00C(func_800D4910_t*, int, int);
-void func_800FB0CC(func_800D4910_t*, int, int);
-void func_800FB260(func_800D4910_t*, int, int);
-void func_800FB294(func_800D4910_t*, int, int);
-void func_800FB2D8(func_800D4910_t*, int, int);
-void func_800FB2DC(func_800D4910_t*, int, int);
-void func_800FB2F4(func_800D4910_t*, int, int);
-void func_800FB320(func_800D4910_t*, int, int);
-void func_800FB32C(func_800D4910_t*, int, int);
-void func_800FB338(func_800D4910_t*, int, int);
-void func_800FB348(func_800D4910_t*, int, int);
-void func_800FB3FC(func_800D4910_t*, int, int);
-void func_800FB400(func_800D4910_t*, int, int);
-void func_800FB418(func_800D4910_t*, int, int);
-void func_800FB4B8(func_800D4910_t*, int, int);
-void func_800FB4C0(func_800D4910_t*, int, int);
-void func_800FB4D0(func_800D4910_t*, int, int);
-void func_800FB4D8(func_800D4910_t*, int, int);
-void func_800FB4E0(func_800D4910_t*, int, int);
-void func_800FB4F8(func_800D4910_t*, int, int);
-void func_800FB5B0(func_800D4910_t*, int, int);
-void func_800FB5B4(func_800D4910_t*, int, int);
-void func_800FB5CC(func_800D4910_t*, int, int);
-void func_800FB5D0(func_800D4910_t*, int, int);
-void func_800FB5F8(func_800D4910_t*, int, int);
-void func_800FB62C(func_800D4910_t*, int, int);
-void func_800FB71C(func_800D4910_t*, int, int);
-void func_800FB720(func_800D4910_t*, int, int);
-void func_800FB89C(func_800D4910_t*, int, int);
-void func_800FBA00(func_800D4910_t*, int, int);
-void func_800FBA18(func_800D4910_t*, int, int);
-void func_800FBAC8(func_800D4910_t*, int, int);
-void func_800FBB24(func_800D4910_t*, int, int);
-void func_800FBD60(func_800D4910_t*, int, int);
-void func_800FBDE4(func_800D4910_t*, int, int);
-void func_800FBDF8(func_800D4910_t*, int, int);
-void func_800FBE44(func_800D4910_t*, int, int);
-void func_800FBE88(func_800D4910_t*, int, int);
-void func_800FBEFC(func_800D4910_t*, int, int);
-void func_800FBF4C(func_800D4910_t*, int, int);
-void func_800FBF6C(func_800D4910_t*, int, int);
-void func_800FBF7C(func_800D4910_t*, int, int);
-void func_800FBF94(func_800D4910_t*, int, int);
-void func_800FBFCC(func_800D4910_t*, int, int);
-void func_800FBFDC(func_800D4910_t*, int, int);
-void func_800FC0E4(func_800D4910_t*, int, int);
-void func_800FC11C(func_800D4910_t*, int, int);
-void func_800FC21C(func_800D4910_t*, int, int);
-void func_800FC228(func_800D4910_t*, int, int);
-void func_800FC29C(func_800D4910_t*, int, int);
-void func_800FC2BC(func_800D4910_t*, int, int);
-void func_800FC42C(func_800D4910_t*, int, int);
-void func_800FC50C(func_800D4910_t*, int, int);
-void func_800FC524(func_800D4910_t*, int, int);
-void func_800FC568(func_800D4910_t*, int, int);
-void func_800FC56C(func_800D4910_t*, int, int);
-void func_800FC624(func_800D4910_t*, int, int);
-void func_800FC6EC(func_800D4910_t*, int, int);
-void func_800FC8C4(func_800D4910_t*, int, int);
-void func_800FC8D0(func_800D4910_t*, int, int);
-void func_800FC97C(func_800D4910_t*, int, int);
-void func_800FCA2C(func_800D4910_t*, int, int);
-void func_800FCA50(func_800D4910_t*, int, int);
-void func_800FCABC(func_800D4910_t*, int, int);
-void func_800FCB0C(func_800D4910_t*, int, int);
-void func_800FCB38(func_800D4910_t*, int, int);
-void func_800FCE0C(func_800D4910_t*, int, int);
-void func_800FCE78(func_800D4910_t*, int, int);
-void func_800FCE90(func_800D4910_t*, int, int);
-void func_800FCF18(func_800D4910_t*, int, int);
-void func_800FCFB4(func_800D4910_t*, int, int);
-void func_800FCFEC(func_800D4910_t*, int, int);
-void func_800FD074(func_800D4910_t*, int, int);
-void func_800FD104(func_800D4910_t*, int, int);
-void func_800FD198(func_800D4910_t*, int, int);
-void func_800FD2E4(func_800D4910_t*, int, int);
-void func_800FD354(func_800D4910_t*, int, int);
-void func_800FD420(func_800D4910_t*, int, int);
-void func_800FD4F4(func_800D4910_t*, int, int);
-void func_800FD51C(func_800D4910_t*, int, int);
-void func_800FD534(func_800D4910_t*, int, int);
-void func_800FD654(func_800D4910_t*, int, int);
-void func_800FD6C0(func_800D4910_t*, int, int);
-void func_800FDA1C(func_800D4910_t*, int, int);
-void func_800FDBAC(func_800D4910_t*, int, int);
-void func_800FDC20(func_800D4910_t*, int, int);
-void func_800FDE48(func_800D4910_t*, int, int);
-void func_800FDEC4(func_800D4910_t*, int, int);
-void func_800FE044(func_800D4910_t*, int, int);
-void func_800FE3EC(func_800D4910_t*, int, int);
-void func_800FE958(func_800D4910_t*, int, int);
-void func_800FF334(func_800D4910_t*, int, int);
-void func_800FF46C(func_800D4910_t*, int, int);
-void func_800FF4E8(func_800D4910_t*, int, int);
-void func_800FFB04(func_800D4910_t*, int, int);
-void func_800FFFA8(func_800D4910_t*, int, int);
+int func_800F9800(func_800D4910_t*, u_int, int);
+int func_800F9818(func_800D4910_t*, u_int, int);
+int func_800F98E0(func_800D4910_t*, u_int, int);
+int func_800F98F8(func_800D4910_t*, u_int, int);
+int func_800F9910(func_800D4910_t*, u_int, int);
+int func_800F9928(func_800D4910_t*, u_int, int);
+int func_800F99D8(func_800D4910_t*, u_int, int);
+int func_800F99F0(func_800D4910_t*, u_int, int);
+int func_800F9AE8(func_800D4910_t*, u_int, int);
+int func_800FA30C(func_800D4910_t*, u_int, int);
+int func_800FA324(func_800D4910_t*, u_int, int);
+int func_800FA368(func_800D4910_t*, u_int, int);
+int func_800FA398(func_800D4910_t*, u_int, int);
+int func_800FA3B0(func_800D4910_t*, u_int, int);
+int func_800FA41C(func_800D4910_t*, u_int, int);
+int func_800FA424(func_800D4910_t*, u_int, int);
+int func_800FA48C(func_800D4910_t*, u_int, int);
+int func_800FA490(func_800D4910_t*, u_int, int);
+int func_800FA4A8(func_800D4910_t*, u_int, int);
+int func_800FA588(func_800D4910_t*, u_int, int);
+int func_800FA6B8(func_800D4910_t*, u_int, int);
+int func_800FA6BC(func_800D4910_t*, u_int, int);
+int func_800FA6D0(func_800D4910_t*, u_int, int);
+int func_800FA6F8(func_800D4910_t*, u_int, int);
+int func_800FA710(func_800D4910_t*, u_int, int);
+int func_800FA740(func_800D4910_t*, u_int, int);
+int func_800FA770(func_800D4910_t*, u_int, int);
+int func_800FA7B0(func_800D4910_t*, u_int, int);
+int func_800FA7F0(func_800D4910_t*, u_int, int);
+int func_800FA84C(func_800D4910_t*, u_int, int);
+int func_800FA868(func_800D4910_t*, u_int, int);
+int func_800FA8D0(func_800D4910_t*, u_int, int);
+int func_800FAC78(func_800D4910_t*, u_int, int);
+int func_800FAF00(func_800D4910_t*, u_int, int);
+int func_800FAF30(func_800D4910_t*, u_int, int);
+int func_800FB00C(func_800D4910_t*, u_int, int);
+int func_800FB0CC(func_800D4910_t*, u_int, int);
+int func_800FB260(func_800D4910_t*, u_int, int);
+int func_800FB294(func_800D4910_t*, u_int, int);
+int func_800FB2D8(func_800D4910_t*, u_int, int);
+int func_800FB2DC(func_800D4910_t*, u_int, int);
+int func_800FB2F4(func_800D4910_t*, u_int, int);
+int func_800FB320(func_800D4910_t*, u_int, int);
+int func_800FB32C(func_800D4910_t*, u_int, int);
+int func_800FB338(func_800D4910_t*, u_int, int);
+int func_800FB348(func_800D4910_t*, u_int, int);
+int func_800FB3FC(func_800D4910_t*, u_int, int);
+int func_800FB400(func_800D4910_t*, u_int, int);
+int func_800FB418(func_800D4910_t*, u_int, int);
+int func_800FB4B8(func_800D4910_t*, u_int, int);
+int func_800FB4C0(func_800D4910_t*, u_int, int);
+int func_800FB4D0(func_800D4910_t*, u_int, int);
+int func_800FB4D8(func_800D4910_t*, u_int, int);
+int func_800FB4E0(func_800D4910_t*, u_int, int);
+int func_800FB4F8(func_800D4910_t*, u_int, int);
+int func_800FB5B0(func_800D4910_t*, u_int, int);
+int func_800FB5B4(func_800D4910_t*, u_int, int);
+int func_800FB5CC(func_800D4910_t*, u_int, int);
+int func_800FB5D0(func_800D4910_t*, u_int, int);
+int func_800FB5F8(func_800D4910_t*, u_int, int);
+int func_800FB62C(func_800D4910_t*, u_int, int);
+int func_800FB71C(func_800D4910_t*, u_int, int);
+int func_800FB720(func_800D4910_t*, u_int, int);
+int func_800FB89C(func_800D4910_t*, u_int, int);
+int func_800FBA00(func_800D4910_t*, u_int, int);
+int func_800FBA18(func_800D4910_t*, u_int, int);
+int func_800FBAC8(func_800D4910_t*, u_int, int);
+int func_800FBB24(func_800D4910_t*, u_int, int);
+int func_800FBD60(func_800D4910_t*, u_int, int);
+int func_800FBDE4(func_800D4910_t*, u_int, int);
+int func_800FBDF8(func_800D4910_t*, u_int, int);
+int func_800FBE44(func_800D4910_t*, u_int, int);
+int func_800FBE88(func_800D4910_t*, u_int, int);
+int func_800FBEFC(func_800D4910_t*, u_int, int);
+int func_800FBF4C(func_800D4910_t*, u_int, int);
+int func_800FBF6C(func_800D4910_t*, u_int, int);
+int func_800FBF7C(func_800D4910_t*, u_int, int);
+int func_800FBF94(func_800D4910_t*, u_int, int);
+int func_800FBFCC(func_800D4910_t*, u_int, int);
+int func_800FBFDC(func_800D4910_t*, u_int, int);
+int func_800FC0E4(func_800D4910_t*, u_int, int);
+int func_800FC11C(func_800D4910_t*, u_int, int);
+int func_800FC21C(func_800D4910_t*, u_int, int);
+int func_800FC228(func_800D4910_t*, u_int, int);
+int func_800FC29C(func_800D4910_t*, u_int, int);
+int func_800FC2BC(func_800D4910_t*, u_int, int);
+int func_800FC42C(func_800D4910_t*, u_int, int);
+int func_800FC50C(func_800D4910_t*, u_int, int);
+int func_800FC524(func_800D4910_t*, u_int, int);
+int func_800FC568(func_800D4910_t*, u_int, int);
+int func_800FC56C(func_800D4910_t*, u_int, int);
+int func_800FC624(func_800D4910_t*, u_int, int);
+int func_800FC6EC(func_800D4910_t*, u_int, int);
+int func_800FC8C4(func_800D4910_t*, u_int, int);
+int func_800FC8D0(func_800D4910_t*, u_int, int);
+int func_800FC97C(func_800D4910_t*, u_int, int);
+int func_800FCA2C(func_800D4910_t*, u_int, int);
+int func_800FCA50(func_800D4910_t*, u_int, int);
+int func_800FCABC(func_800D4910_t*, u_int, int);
+int func_800FCB0C(func_800D4910_t*, u_int, int);
+int func_800FCB38(func_800D4910_t*, u_int, int);
+int func_800FCE0C(func_800D4910_t*, u_int, int);
+int func_800FCE78(func_800D4910_t*, u_int, int);
+int func_800FCE90(func_800D4910_t*, u_int, int);
+int func_800FCF18(func_800D4910_t*, u_int, int);
+int func_800FCFB4(func_800D4910_t*, u_int, int);
+int func_800FCFEC(func_800D4910_t*, u_int, int);
+int func_800FD074(func_800D4910_t*, u_int, int);
+int func_800FD104(func_800D4910_t*, u_int, int);
+int func_800FD198(func_800D4910_t*, u_int, int);
+int func_800FD2E4(func_800D4910_t*, u_int, int);
+int func_800FD354(func_800D4910_t*, u_int, int);
+int func_800FD420(func_800D4910_t*, u_int, int);
+int func_800FD4F4(func_800D4910_t*, u_int, int);
+int func_800FD51C(func_800D4910_t*, u_int, int);
+int func_800FD534(func_800D4910_t*, u_int, int);
+int func_800FD654(func_800D4910_t*, u_int, int);
+int func_800FD6C0(func_800D4910_t*, u_int, int);
+int func_800FDA1C(func_800D4910_t*, u_int, int);
+int func_800FDBAC(func_800D4910_t*, u_int, int);
+int func_800FDC20(func_800D4910_t*, u_int, int);
+int func_800FDE48(func_800D4910_t*, u_int, int);
+int func_800FDEC4(func_800D4910_t*, u_int, int);
+int func_800FE044(func_800D4910_t*, u_int, int);
+int func_800FE3EC(func_800D4910_t*, u_int, int);
+int func_800FE958(func_800D4910_t*, u_int, int);
+int func_800FF334(func_800D4910_t*, u_int, int);
+int func_800FF46C(func_800D4910_t*, u_int, int);
+int func_800FF4E8(func_800D4910_t*, u_int, int);
+int func_800FFB04(func_800D4910_t*, u_int, int);
+int func_800FFFA8(func_800D4910_t*, u_int, int);
 
 static u_char D_800FAE4C[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 3,
@@ -435,32 +435,32 @@ static _loadFileContext _pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004),
     P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
     P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT };
 
-static u_short D_800FCE3C[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x001, 0x001,
+static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
-    0x001, 0x002, 0x003, 0x003, 0x004, 0x005, 0x009, 0x00C, 0x00D, 0x00E, 0x010, 0x012,
-    0x014, 0x016, 0x01A, 0x01E, 0x022, 0x026, 0x02A, 0x02E, 0x032, 0x036, 0x03A, 0x03E,
-    0x042, 0x046, 0x049, 0x04C, 0x04F, 0x052, 0x057, 0x05C, 0x061, 0x066, 0x06B, 0x070,
-    0x075, 0x07A, 0x07F, 0x082, 0x083, 0x085, 0x087, 0x08B, 0x090, 0x090, 0x090, 0x090,
-    0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x091,
-    0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x093,
-    0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093,
-    0x093, 0x09B, 0x0A1, 0x0A1, 0x0A2, 0x0A2, 0x0A3, 0x0A5, 0x0A9, 0x0AB, 0x0AF, 0x0B3,
-    0x0B5, 0x0B6, 0x0B7, 0x0BB, 0x0BD, 0x0BE, 0x0BF, 0x0C4, 0x0C6, 0x0C8, 0x0C9, 0x0CD,
-    0x0CE, 0x0D1, 0x0D5, 0x0D7, 0x0D9, 0x0DC, 0x0DD, 0x0E1, 0x0E3, 0x0E5, 0x0EB, 0x0F0,
-    0x0F0, 0x0F1, 0x0F6, 0x0FA, 0x0FE, 0x102, 0x106, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C,
+    0x001, 0x001, 0x001, 0x002, 0x003, 0x003, 0x004, 0x005, 0x009, 0x00C, 0x00D, 0x00E,
+    0x010, 0x012, 0x014, 0x016, 0x01A, 0x01E, 0x022, 0x026, 0x02A, 0x02E, 0x032, 0x036,
+    0x03A, 0x03E, 0x042, 0x046, 0x049, 0x04C, 0x04F, 0x052, 0x057, 0x05C, 0x061, 0x066,
+    0x06B, 0x070, 0x075, 0x07A, 0x07F, 0x082, 0x083, 0x085, 0x087, 0x08B, 0x090, 0x090,
+    0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090, 0x090,
+    0x090, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091, 0x091,
+    0x091, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093, 0x093,
+    0x093, 0x093, 0x093, 0x09B, 0x0A1, 0x0A1, 0x0A2, 0x0A2, 0x0A3, 0x0A5, 0x0A9, 0x0AB,
+    0x0AF, 0x0B3, 0x0B5, 0x0B6, 0x0B7, 0x0BB, 0x0BD, 0x0BE, 0x0BF, 0x0C4, 0x0C6, 0x0C8,
+    0x0C9, 0x0CD, 0x0CE, 0x0D1, 0x0D5, 0x0D7, 0x0D9, 0x0DC, 0x0DD, 0x0E1, 0x0E3, 0x0E5,
+    0x0EB, 0x0F0, 0x0F0, 0x0F1, 0x0F6, 0x0FA, 0x0FE, 0x102, 0x106, 0x10C, 0x10C, 0x10C,
     0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C,
-    0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10D,
+    0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C, 0x10C,
+    0x10C, 0x10D, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E,
     0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E,
-    0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x10E, 0x110, 0x110,
-    0x110, 0x111, 0x111, 0x111, 0x111, 0x111, 0x111, 0x111, 0x111, 0x112, 0x112, 0x112,
-    0x112, 0x116, 0x116, 0x116, 0x116, 0x117, 0x118, 0x11B, 0x11E, 0x11E, 0x11F, 0x122,
-    0x127, 0x128, 0x128, 0x12A, 0x12B, 0x12B, 0x12B, 0x12B, 0x12D, 0x12D, 0x12D, 0x12E,
-    0x12F, 0x130, 0x130, 0x130, 0x135, 0x135, 0x139, 0x13C, 0x13C, 0x13C, 0x13F, 0x13F,
-    0x141, 0x144, 0x145, 0x145, 0x145, 0x145, 0x145, 0x145, 0x145, 0x148, 0x148, 0x148,
-    0x148, 0x148, 0x148, 0x148, 0x148, 0x148, 0x148, 0x149, 0x14C, 0x14C, 0x14C, 0x14C,
-    0x14C, 0x14C, 0x150, 0x150, 0x150, 0x154, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
+    0x110, 0x110, 0x110, 0x111, 0x111, 0x111, 0x111, 0x111, 0x111, 0x111, 0x111, 0x112,
+    0x112, 0x112, 0x112, 0x116, 0x116, 0x116, 0x116, 0x117, 0x118, 0x11B, 0x11E, 0x11E,
+    0x11F, 0x122, 0x127, 0x128, 0x128, 0x12A, 0x12B, 0x12B, 0x12B, 0x12B, 0x12D, 0x12D,
+    0x12D, 0x12E, 0x12F, 0x130, 0x130, 0x130, 0x135, 0x135, 0x139, 0x13C, 0x13C, 0x13C,
+    0x13F, 0x13F, 0x141, 0x144, 0x145, 0x145, 0x145, 0x145, 0x145, 0x145, 0x145, 0x148,
+    0x148, 0x148, 0x148, 0x148, 0x148, 0x148, 0x148, 0x148, 0x148, 0x149, 0x14C, 0x14C,
+    0x14C, 0x14C, 0x14C, 0x14C, 0x150, 0x150, 0x150, 0x154, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
@@ -468,72 +468,72 @@ static u_short D_800FCE3C[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x001,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
-    0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
+    0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static void (*_effectEntryPoints[])(func_800D4910_t*, int, int) = { func_800F9818,
-    func_800F9800, func_800FB320, func_800F9800, func_800F9800, func_800FB4C0,
-    func_800FBA00, func_800FC624, func_800FD51C, func_800F98E0, func_800FC0E4, NULL,
-    func_800F9800, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
-    func_800FA368, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
-    func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354,
+static effectExec _effectEntryPoints[] = { func_800F9818, func_800F9800, func_800FB320,
+    func_800F9800, func_800F9800, func_800FB4C0, func_800FBA00, func_800FC624,
+    func_800FD51C, func_800F98E0, func_800FC0E4, NULL, func_800F9800, func_800F9800,
+    func_800F9818, func_800FA368, func_800F9818, func_800FA368, func_800F9818,
+    func_800FA368, func_800F9818, func_800FA368, func_800FB4E0, NULL, func_800FD354,
     func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL,
-    func_800FD354, func_800FF46C, func_800F9818, func_800FA3B0, func_800FAF00,
-    func_800FBB24, func_800F9818, func_800FA3B0, func_800FAF00, func_800FBB24,
+    func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C,
     func_800F9818, func_800FA3B0, func_800FAF00, func_800FBB24, func_800F9818,
-    func_800FA3B0, func_800FAF00, func_800FBB24, func_800F98F8, func_800FA7B0,
-    func_800FB71C, func_800FD6C0, func_800F98F8, func_800FA7B0, func_800FB71C,
-    func_800FD6C0, func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0,
-    func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98E0,
-    func_800FBFCC, func_800FC50C, func_800F98E0, func_800FBFCC, func_800FC50C,
+    func_800FA3B0, func_800FAF00, func_800FBB24, func_800F9818, func_800FA3B0,
+    func_800FAF00, func_800FBB24, func_800F9818, func_800FA3B0, func_800FAF00,
+    func_800FBB24, func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0,
+    func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98F8,
+    func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98F8, func_800FA7B0,
+    func_800FB71C, func_800FD6C0, func_800F98E0, func_800FBFCC, func_800FC50C,
     func_800F98E0, func_800FBFCC, func_800FC50C, func_800F98E0, func_800FBFCC,
-    func_800FC50C, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
-    func_800FE3EC, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
-    func_800FE3EC, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
-    func_800FE3EC, func_800F98F8, func_800FA7F0, func_800FCFEC, func_800FD534,
-    func_800FE3EC, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
-    func_800FC97C, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
-    func_800FC97C, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
-    func_800FC97C, func_800F9818, func_800FA324, func_800FB294, func_800FBDE4,
-    func_800FC97C, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800FB338,
-    func_800FB5CC, func_800FC11C, func_800F9800, func_800F9818, func_800FA368,
-    func_800F9818, func_800FA368, func_800F98F8, func_800FA868, func_800FB720,
-    func_800FDE48, func_800F99F0, func_800FA588, func_800FB4F8, func_800FDC20,
-    func_800FF4E8, func_800FB320, func_800FB418, func_800FCA2C, func_800F98F8,
-    func_800FA490, func_800FB400, func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4,
-    func_800FFFA8, func_800F9800, NULL, func_800FA424, func_800FAF30, func_800FBAC8,
-    func_800FC6EC, func_800F9800, func_800F9800, func_800FB4B8, func_800FBA00, NULL,
-    func_800F98E0, NULL, func_800FC42C, func_800F9818, func_800FA368, func_800F98F8,
-    func_800FBFDC, func_800FC524, func_800FD074, func_800F9818, func_800FA6D0,
-    func_800FB2F4, func_800FBE44, func_800F9818, func_800FA710, func_800FB320,
-    func_800FB4B8, func_800F9818, func_800FA368, func_800FB2D8, func_800FBEFC,
-    func_800F9800, func_800FA6F8, func_800F9800, func_800F9800, func_800F99D8,
-    func_800FA8D0, func_800FC8C4, func_800FCB38, func_800FF334, func_800F98F8,
-    func_800FB89C, func_800FB4B8, func_800FBA00, func_800F9800, func_800F9818,
-    func_800FA710, func_800FB260, func_800FBDF8, func_800F9800, func_800F9928,
-    func_800FBE88, func_800FC11C, NULL, func_800F9910, func_800FA41C, func_800FCA50,
-    func_800F9800, func_800FA30C, func_800F9818, func_800FA710, func_800FB338, NULL,
-    func_800FB5CC, func_800F9800, func_800F9800, func_800FA398, func_800FB00C,
-    func_800FBF7C, func_800F9818, func_800FA710, func_800F9800, func_800FA6F8, NULL,
-    func_800F98F8, func_800FA7B0, func_800FCFB4, func_800FD4F4, func_800FE044, NULL,
-    func_800F9800, func_800FA740, func_800FB5F8, func_800FC21C, func_800FB320,
-    func_800FB4D8, NULL, func_800FBA18, func_800FC8D0, func_800FD420, func_800F9800,
-    func_800FA6B8, func_800FB32C, func_800FC29C, NULL, func_800F98E0, func_800FA84C,
-    func_800FD2E4, NULL, func_800FB5D0, func_800FCE90, func_800FD104, func_800FB4C0, NULL,
-    func_800FBA00, func_800FC624, func_800F9818, func_800FA48C, func_800FB348,
-    func_800FBF6C, func_800FCABC, func_800FD654, func_800F9800, func_800F9800,
-    func_800F9818, func_800FA710, func_800FAC78, func_800FB4C0, func_800F9800,
-    func_800FA770, func_800FB62C, func_800FC56C, func_800FAC78, func_800FAC78,
-    func_800F98F8, func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800,
-    NULL, NULL, func_800F9800, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC,
-    func_800F9800, func_800F9800, func_800FA6BC, func_800F9800, func_800FB5B0,
-    func_800FCE78, func_800F9800, func_800F9800, func_800F9800, NULL, func_800F9910,
-    func_800FA4A8, func_800FB0CC, func_800FDA1C, func_800F9AE8, func_800FBD60,
-    func_800FDBAC, func_800FFB04, func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL,
-    func_800FB4B8, func_800FB5B0, func_800FCE78, func_800F9818, func_800FA368,
-    func_800FB2D8, func_800F9800, func_800FB338, func_800FB5CC, func_800FC11C,
-    func_800FB320, func_800FB4D0, func_800FBA18, func_800FC568, func_800F9818,
-    func_800FA48C, func_800FB3FC, func_800FBF4C, func_800F9910, func_800FBF94,
-    func_800FC228, func_800FD198, func_800FB320, NULL, func_800FB5B4 };
+    func_800FC50C, func_800F98E0, func_800FBFCC, func_800FC50C, func_800F98F8,
+    func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC, func_800F98F8,
+    func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC, func_800F98F8,
+    func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC, func_800F98F8,
+    func_800FA7F0, func_800FCFEC, func_800FD534, func_800FE3EC, func_800F9818,
+    func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C, func_800F9818,
+    func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C, func_800F9818,
+    func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C, func_800F9818,
+    func_800FA324, func_800FB294, func_800FBDE4, func_800FC97C, NULL, NULL, func_800F9800,
+    func_800FA6B8, func_800FB2DC, func_800FB338, func_800FB5CC, func_800FC11C,
+    func_800F9800, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
+    func_800F98F8, func_800FA868, func_800FB720, func_800FDE48, func_800F99F0,
+    func_800FA588, func_800FB4F8, func_800FDC20, func_800FF4E8, func_800FB320,
+    func_800FB418, func_800FCA2C, func_800F98F8, func_800FA490, func_800FB400,
+    func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8, func_800F9800, NULL,
+    func_800FA424, func_800FAF30, func_800FBAC8, func_800FC6EC, func_800F9800,
+    func_800F9800, func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL, func_800FC42C,
+    func_800F9818, func_800FA368, func_800F98F8, func_800FBFDC, func_800FC524,
+    func_800FD074, func_800F9818, func_800FA6D0, func_800FB2F4, func_800FBE44,
+    func_800F9818, func_800FA710, func_800FB320, func_800FB4B8, func_800F9818,
+    func_800FA368, func_800FB2D8, func_800FBEFC, func_800F9800, func_800FA6F8,
+    func_800F9800, func_800F9800, func_800F99D8, func_800FA8D0, func_800FC8C4,
+    func_800FCB38, func_800FF334, func_800F98F8, func_800FB89C, func_800FB4B8,
+    func_800FBA00, func_800F9800, func_800F9818, func_800FA710, func_800FB260,
+    func_800FBDF8, func_800F9800, func_800F9928, func_800FBE88, func_800FC11C, NULL,
+    func_800F9910, func_800FA41C, func_800FCA50, func_800F9800, func_800FA30C,
+    func_800F9818, func_800FA710, func_800FB338, NULL, func_800FB5CC, func_800F9800,
+    func_800F9800, func_800FA398, func_800FB00C, func_800FBF7C, func_800F9818,
+    func_800FA710, func_800F9800, func_800FA6F8, NULL, func_800F98F8, func_800FA7B0,
+    func_800FCFB4, func_800FD4F4, func_800FE044, NULL, func_800F9800, func_800FA740,
+    func_800FB5F8, func_800FC21C, func_800FB320, func_800FB4D8, NULL, func_800FBA18,
+    func_800FC8D0, func_800FD420, func_800F9800, func_800FA6B8, func_800FB32C,
+    func_800FC29C, NULL, func_800F98E0, func_800FA84C, func_800FD2E4, NULL, func_800FB5D0,
+    func_800FCE90, func_800FD104, func_800FB4C0, NULL, func_800FBA00, func_800FC624,
+    func_800F9818, func_800FA48C, func_800FB348, func_800FBF6C, func_800FCABC,
+    func_800FD654, func_800F9800, func_800F9800, func_800F9818, func_800FA710,
+    func_800FAC78, func_800FB4C0, func_800F9800, func_800FA770, func_800FB62C,
+    func_800FC56C, func_800FAC78, func_800FAC78, func_800F98F8, func_800FA7F0,
+    func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL, func_800F9800,
+    NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800F9800, func_800F9800,
+    func_800FA6BC, func_800F9800, func_800FB5B0, func_800FCE78, func_800F9800,
+    func_800F9800, func_800F9800, NULL, func_800F9910, func_800FA4A8, func_800FB0CC,
+    func_800FDA1C, func_800F9AE8, func_800FBD60, func_800FDBAC, func_800FFB04,
+    func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0,
+    func_800FCE78, func_800F9818, func_800FA368, func_800FB2D8, func_800F9800,
+    func_800FB338, func_800FB5CC, func_800FC11C, func_800FB320, func_800FB4D0,
+    func_800FBA18, func_800FC568, func_800F9818, func_800FA48C, func_800FB3FC,
+    func_800FBF4C, func_800F9910, func_800FBF94, func_800FC228, func_800FD198,
+    func_800FB320, NULL, func_800FB5B4 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -582,8 +582,8 @@ static _loadFileContext _plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, 
  * Invokes all effect entry points.
  * Probably a dev artifact, calling this in-game will presumably crash.
  */
-void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2) __attribute__((unused));
-void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2)
+int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2) __attribute__((unused));
+int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800F9818(0, 2, 0);
     func_800F9800(0, 2, 0);
@@ -898,7 +898,7 @@ void func_800F9800(func_800D4910_t* arg0, int arg1, int arg2)
     func_800FC228(0, 2, 0);
     func_800FD198(0, 2, 0);
     func_800FB320(0, 2, 0);
-    func_800FB5B4(0, 2, 0);
+    return func_800FB5B4(0, 2, 0);
 }
 
 static void func_800FAC4C(void);
@@ -948,21 +948,18 @@ static void func_800FAC4C(void)
 
 static void func_800FAD7C(void)
 {
-    int temp_s1;
     int i;
-    int temp_s2;
+    int firstindex = _effectEntryPointIndices[D_800F5230.effectId];
+    int count = _effectEntryPointIndices[D_800F5230.effectId + 1] - firstindex;
 
-    temp_s2 = D_800FCE3C[D_800F5230.effectId];
-    temp_s1 = D_800FCE3C[D_800F5230.effectId + 1] - temp_s2;
+    vs_battle_configurePlgLoad(
+        _plgFiles[D_800F5230.effectId].lba, _plgFiles[D_800F5230.effectId].size, count);
 
-    func_800D7FC8(
-        _plgFiles[D_800F5230.effectId].lba, _plgFiles[D_800F5230.effectId].size, temp_s1);
-
-    for (i = 0; i < temp_s1; ++i) {
-        func_800D7FE4(_effectEntryPoints[temp_s2 + i], i);
+    for (i = 0; i < count; ++i) {
+        func_800D7FE4(_effectEntryPoints[firstindex + i], i);
     }
 
-    if (temp_s1 != 0) {
+    if (count != 0) {
         func_800D8054(1);
     } else {
         func_800D8054(0);

@@ -280,22 +280,6 @@ typedef struct {
 } func_800FA098_arg1;
 
 typedef struct {
-    short unk0;
-    short unk2;
-} func_800FA098_arg3_2;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    short unk2;
-    SVECTOR* unk4;
-    int unk8;
-    int unkC;
-    func_800D6CF_t unk10;
-    func_800FA098_arg3_2* unk2C;
-} func_800FA098_arg3;
-
-typedef struct {
     int count;
     func_800FA098_arg0 unk4[0];
 } D_800F569C_unk8;
@@ -398,6 +382,14 @@ typedef struct D_800F53B8_t {
     func_800CE714_t2_2 unk1C[16];
     D_800F53B8_t3 unkD1C;
 } D_800F53B8_t;
+
+typedef struct {
+    u_char unk0[0xC];
+    VECTOR unkC;
+    u_char unk1C[0x44];
+    u_char unk60;
+    u_char unk61[23];
+} func_800FB4C0_t;
 
 enum vs_battle_limbStatus {
     limbStatusCritical,
@@ -583,7 +575,7 @@ void vs_battle_splineInterpolate(
 
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
-void func_800D2ADC(D_800F53B8_t*, int, int, int, void*);
+void func_800D2ADC(D_800F53B8_t*, int, int, int, func_800FB4C0_t*);
 void func_800D6CCC(int* arg0);
 void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2);
 

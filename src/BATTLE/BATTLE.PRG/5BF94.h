@@ -616,6 +616,7 @@ extern D_800F4EE8_t D_800F4EE8;
 extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
 extern D_800F569C_t* D_800F569C;
+extern D_800F569C_t D_800F56C8;
 extern vs_battle_textBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
 extern vs_battle_stringContext_t vs_battle_stringContext;

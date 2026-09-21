@@ -623,3 +623,4 @@ extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;
 extern SVECTOR D_800F5310[];
 extern D_800F53B8_t* D_800F53BC;
+extern effectExec vs_battle_effectRenderers[];

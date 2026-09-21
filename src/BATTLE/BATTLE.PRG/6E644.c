@@ -389,7 +389,10 @@ void vs_battle_configurePlgLoad(int lba, int size, int entryPointCount)
     _plgEntryPointCount = entryPointCount;
 }
 
-void func_800D7FE4(effectExec arg0, int arg1) { D_800F56A8[arg1] = arg0; }
+void vs_battle_setEffectExec(effectExec func, int index)
+{
+    vs_battle_effectRenderers[index] = func;
+}
 
 void func_800D7FFC(int arg0) { D_800F5638.unk0 = arg0; }
 

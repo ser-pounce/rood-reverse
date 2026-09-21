@@ -24,6 +24,19 @@
 #include <abs.h>
 
 typedef struct {
+    u_int unk0_0 : 8;
+    u_int unk0_8 : 8;
+    u_int unk0_16 : 4;
+    u_int unk0_20 : 6;
+    u_int unk0_26 : 6;
+} func_800D57FC_t;
+
+typedef struct {
+    unsigned unk0_0 : 4;
+    unsigned unk0_4 : 5;
+} func_800D57FC_t2;
+
+typedef struct {
     /* 0x0 */ u_long* unk0;
     /* 0x4 */ u_char unk4;
     /* 0x5 */ u_char unk5;
@@ -146,17 +159,9 @@ typedef struct {
 } func_800D6310_t;
 
 typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 8;
-    u_int unk0_16 : 4;
-    u_int unk0_20 : 6;
-    u_int unk0_26 : 6;
-} func_800D57FC_t;
-
-typedef struct {
     u_int unk0_0 : 9;
     u_int unk0_9 : 9;
-    u_int unk0_18 : 3;
+    u_int effectRenderer : 3;
     u_int unk0_21 : 6;
     u_int unk0_27 : 5;
     u_short unk4;
@@ -370,7 +375,6 @@ extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
-extern effectExec D_800F56A8[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
 
@@ -2757,7 +2761,7 @@ void func_800CE8F4(D_800F53B8_t* arg0)
 
     while (var_s1 != NULL) {
         func_800D4910_t* temp_s0 = var_s1->next;
-        var_s1->unk4(var_s1, 4, 0);
+        var_s1->renderer(var_s1, 4, 0);
         func_800CF70C(arg0, var_s1);
         var_s1 = temp_s0;
     }
@@ -2949,7 +2953,7 @@ int func_800CED60(void)
 
             while (var_s0 != NULL) {
                 func_800D4910_t* temp_s2 = var_s0->next;
-                if (var_s0->unk4(var_s0, 2, 0) == 0) {
+                if (var_s0->renderer(var_s0, 2, 0) == 0) {
                     func_800CF70C(var_s1, var_s0);
                 }
                 var_s0 = temp_s2;
@@ -3180,14 +3184,14 @@ void func_800CF614(D_800F53B8_t* arg0)
     vs_main_freeHeapR(arg0);
 }
 
-func_800D4910_t* func_800CF694(D_800F53B8_t* arg0, effectExec arg1, int arg2)
+func_800D4910_t* func_800CF694(D_800F53B8_t* arg0, effectExec renderer, int arg2)
 {
     func_800D4910_t* temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     temp_v0->next = arg0->unkD1C.unk34;
     arg0->unkD1C.unk34 = temp_v0;
-    temp_v0->unk4 = arg1;
+    temp_v0->renderer = renderer;
     temp_v0->unk8 = 0;
-    temp_v0->unk4(temp_v0, 1, arg2);
+    temp_v0->renderer(temp_v0, 1, arg2);
     return temp_v0;
 }
 
@@ -3236,8 +3240,8 @@ void func_800CF830(int arg0, int arg1)
     while (var_s1 != NULL) {
         func_800D4910_t* var_s0 = var_s1->unkD1C.unk34;
         while (var_s0 != NULL) {
-            if (var_s0->unk4 == func_800CE174) {
-                var_s0->unk4(var_s0, 3, 0);
+            if (var_s0->renderer == func_800CE174) {
+                var_s0->renderer(var_s0, 3, 0);
             }
             var_s0 = var_s0->next;
         }
@@ -4012,7 +4016,7 @@ int func_800D4910(D_800F53B8_t* arg0)
 
     while (var_s0 != 0) {
         func_800D4910_t* s1 = var_s0->next;
-        if (var_s0->unk4(var_s0, 2, 0) == 0) {
+        if (var_s0->renderer(var_s0, 2, 0) == 0) {
             func_800CF70C(arg0, var_s0);
         }
         var_s0 = s1;
@@ -4229,14 +4233,15 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D55A4);
 
 void func_800D5700(func_800D5780_t* arg0)
 {
-    u_long* base = arg0->unk0;
-    arg0->unkC = (base[arg0->unk6] >> 20) & 0x3F;
-    arg0->unkA = ((u_char*)&base[arg0->unk6])[1];
+    func_800D57FC_t* base = (func_800D57FC_t*)arg0->unk0;
+    arg0->unkC = base[arg0->unk6].unk0_20;
+    arg0->unkA = base[arg0->unk6].unk0_8;
 }
 
 void func_800D5738(func_800D5780_t* arg0)
 {
-    arg0->unkA = func_800D12D8((arg0->unk0[arg0->unk6 * 2 + 1] >> 4) & 0x1F);
+    arg0->unkA =
+        func_800D12D8((((func_800D57FC_t2*)&arg0->unk0[arg0->unk6 * 2 + 1])->unk0_4));
 }
 
 int func_800D5780(func_800D5780_t* arg0)
@@ -4289,7 +4294,7 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D5D74_t* temp_a3 = (func_800D5D74_t*)(arg1->unk6 * 8 + (u_int)arg1->unk0);
 
     if (temp_a3->unk0_0 == arg0->unkD1C.unk30->unk2) {
-        func_800CF694(arg0, D_800F56A8[temp_a3->unk0_18],
+        func_800CF694(arg0, vs_battle_effectRenderers[temp_a3->effectRenderer],
             (temp_a3->unk0_9 + temp_a3->unk0_21 * 256) | (temp_a3->unk4 << 0x10));
         return func_800D5780(arg1);
     }

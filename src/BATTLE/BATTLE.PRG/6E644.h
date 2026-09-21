@@ -45,7 +45,7 @@ typedef int (*effectExec)(func_800D4910_t*, u_int, int);
 
 struct func_800D4910_t {
     struct func_800D4910_t* next;
-    effectExec unk4;
+    effectExec renderer;
     void* unk8;
 };
 
@@ -55,7 +55,7 @@ void func_800D6E44(void);
 void func_800D7814(void);
 void func_800D78F0(void);
 void vs_battle_configurePlgLoad(int, int, int);
-void func_800D7FE4(effectExec arg0, int arg1);
+void vs_battle_setEffectExec(effectExec arg0, int arg1);
 void func_800D7FFC(int arg0);
 void func_800D8054(int);
 void func_800D8008(int, int, int, int, int);

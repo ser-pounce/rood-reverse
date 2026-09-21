@@ -31,7 +31,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     vs_battle_lerpVector(
         (short*)&arg0->unk14[4], func_800D118C(arg0->unk8, arg3->unkC), &arg1->unk98);
-    temp_s0 = (MATRIX*)arg2->unk1C[arg0->unkC8].unk38;
+    temp_s0 = &arg2->unk1C[arg0->unkC8].unk38;
 
     switch (arg1->unk24 & 7) {
     case 0:
@@ -46,8 +46,8 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
         break;
     }
 
-    vs_battle_lerpVector((short*)&arg0->unk14[0x10],
-        func_800D118C(arg0->unk9, arg3->unkC), (VECTOR*)&arg1->unk84[0x24]);
+    vs_battle_lerpVector(
+        (short*)&arg0->unk14[0x10], func_800D118C(arg0->unk9, arg3->unkC), &arg1->unkA8);
     SetRotMatrix(temp_s0);
     gte_zrtr();
 
@@ -243,9 +243,9 @@ void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     switch (arg1->unk24 & 0x1C0) {
     case 0xC0:
-        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk4C.vx;
-        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk4C.vy;
-        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk4C.vz;
+        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk38.t[0];
+        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk38.t[1];
+        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk38.t[2];
         break;
     case 0x80:
         arg1->unk13C.vx += D_800F5230.unkE0.vx;
@@ -388,9 +388,9 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
         temp_s1->unk8 = 0;
         temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
 
-        var_v0 = temp_s2->unkC0.unk2;
-        if (temp_s2->unkC0.unk2 < temp_s2->unkC0.unk0) {
-            var_v0 = temp_s2->unkC0.unk0;
+        var_v0 = temp_s2->unkC0[1];
+        if (temp_s2->unkC0[1] < temp_s2->unkC0[0]) {
+            var_v0 = temp_s2->unkC0[0];
         }
 
         var_a0 = var_v0;
@@ -406,9 +406,9 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     case 2:
         temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
-        a2->unk24 = temp_s2->unk4 & 0x03FFFFFF;
+        a2->unk24 = temp_s2->unk4_0;
         temp_s1->unk2 = func_800CFE1C(
-            &temp_s2->unkC0, func_800D118C(temp_s2->unk14[2], temp_s1->unkC));
+            temp_s2->unkC0, func_800D118C(temp_s2->unk14[2], temp_s1->unkC));
 
         if (temp_s1->unk2 >= 9) {
             temp_s1->unk2 = 8;

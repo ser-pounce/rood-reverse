@@ -207,7 +207,8 @@ typedef struct {
     u_char unk1;
     u_char unk2;
     u_char unk3;
-    int unk4;
+    u_int unk4_0 : 26;
+    u_int unk4_26 : 6;
     u_char unk8;
     u_char unk9;
     u_char unkA;
@@ -221,7 +222,7 @@ typedef struct {
     u_char unk12;
     u_char unk13;
     u_char unk14[0x1C];
-    func_800CFE1C_t unk30;
+    short unk30[2];
     short unk34[5][6];
     int unk70;
     short unk74;
@@ -231,7 +232,7 @@ typedef struct {
     short unk88[6];
     short unk94[5][4];
     int unkBC;
-    func_800CFE1C_t unkC0;
+    short unkC0[2];
     u_char unkC4;
     u_char unkC5;
     u_char unkC6;
@@ -246,8 +247,7 @@ typedef struct {
     u_char unk0[0x24];
     u_int unk24;
     int unk28;
-    int unk2C;
-    int unk30;
+    SVECTOR unk2C;
     VECTOR unk34;
     VECTOR unk44;
     u_char unk54[0x10];
@@ -360,9 +360,8 @@ typedef struct {
     u_char unk35;
     u_char unk36;
     u_char unk37;
-    u_char unk38[0x14];
-    VECTOR unk4C;
-    u_char unk5C[0x74];
+    MATRIX unk38;
+    u_char unk58[0x78];
 } func_800CE714_t2_2;
 
 typedef struct {
@@ -564,7 +563,7 @@ void vs_battle_lerp2DVector(short* src, int t, int* vec);
 void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
 void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int func_800CFB80(int, int);
-int func_800CFE1C(func_800CFE1C_t* arg0, int arg1);
+int func_800CFE1C(short* arg0, int arg1);
 int func_800D118C(int arg0, int arg1);
 
 /**
@@ -584,7 +583,7 @@ void vs_battle_splineInterpolate(
 
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
-void func_800D2ADC(D_800F53B8_t*, int, int, int, int);
+void func_800D2ADC(D_800F53B8_t*, int, int, int, void*);
 void func_800D6CCC(int* arg0);
 void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2);
 

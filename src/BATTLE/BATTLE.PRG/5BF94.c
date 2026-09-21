@@ -3424,10 +3424,10 @@ void vs_battle_lerp2DVector(short* src, int t, int* vec)
     vec[1] = ((((end1 - start1) * t) >> 7) + start1);
 }
 
-int func_800CFE1C(func_800CFE1C_t* arg0, int arg1)
+int func_800CFE1C(short* arg0, int arg1)
 {
-    int new_var = arg0->unk0;
-    return (((arg0->unk2 - new_var) * arg1) >> 7) + new_var;
+    int new_var = arg0[0];
+    return (((arg0[1] - new_var) * arg1) >> 7) + new_var;
 }
 
 void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));

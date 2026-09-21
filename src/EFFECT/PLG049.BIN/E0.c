@@ -21,7 +21,8 @@ typedef struct {
 typedef struct {
     u_char unk0;
     u_char unk1;
-    short unk2;
+    u_char unk2;
+    u_char unk3;
     func_800FA76C_t* unk4;
     int unk8;
     int unkC;
@@ -29,6 +30,27 @@ typedef struct {
     func_800FA098_arg3_2* unk2C;
 } func_800FA76C_arg3;
 
+typedef struct {
+    u_char unk0[0xC];
+    VECTOR unkC;
+    u_char unk1C[0x44];
+    u_char unk60;
+    u_char unk61[23];
+} func_800FB4C0_t;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    func_800FA76C_t* unk4;
+    int unk8;
+    func_800D6CF_t unkC;
+    int unk1C;
+    char unk2C[9];
+} func_800FB4C0_t2;
+
+void func_800F98E0(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800F98E0);
 
 void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
@@ -46,9 +68,9 @@ void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
         break;
 
     case 0xC0:
-        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk4C.vx;
-        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk4C.vy;
-        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk4C.vz;
+        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk38.t[0];
+        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk38.t[1];
+        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk38.t[2];
         break;
 
     case 0x80:
@@ -58,7 +80,7 @@ void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
         break;
     }
 
-    for (i = 0; i < (u_char)arg3->unk2; ++i) {
+    for (i = 0; i < arg3->unk2; ++i) {
         SVECTOR* v = &arg3->unk4[i].splinePoints[3];
         v->vx = arg1->unk13C.vx + func_800CFB80(arg1->unk144.vx, -arg1->unk144.vx);
         v->vy = arg1->unk13C.vy + func_800CFB80(arg1->unk144.vy, -arg1->unk144.vy);
@@ -79,7 +101,7 @@ void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int var_s4;
 
     do {
-        for (i = 0; i < (u_char)arg3->unk2; ++i) {
+        for (i = 0; i < arg3->unk2; ++i) {
             SVECTOR* temp_s5 = arg3->unk4[i].splinePoints;
             arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
             arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
@@ -174,9 +196,9 @@ void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int i;
 
     vs_battle_lerp2DVector(arg0->unk94[4], 0, &arg1->unk134);
-    speed = func_800CFE1C(&arg0->unk30, 0) << 0xC;
+    speed = func_800CFE1C(arg0->unk30, 0) << 0xC;
 
-    for (i = 0; i < (u_char)arg3->unk2; ++i) {
+    for (i = 0; i < arg3->unk2; ++i) {
         int stepCount = func_800CFB80(arg1->unk134, arg1->unk138);
         if (stepCount == 0) {
             stepCount = 1;
@@ -199,7 +221,7 @@ void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
 {
     int i;
 
-    for (i = 0; i < (u_char)arg3->unk2; ++i) {
+    for (i = 0; i < arg3->unk2; ++i) {
 
         func_800FA76C_t* temp_s0 = &arg3->unk4[i];
 
@@ -235,9 +257,129 @@ void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
     }
 }
 
+void func_800FAA70(func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, void*);
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FAA70);
 
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FB4C0);
+int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
+{
+    func_800FB4C0_t sp18;
+    func_800FA098_arg0* temp_s3;
+    int i;
+    int j;
+    func_800FB4C0_t2* temp_v0;
+
+    func_800FA098_arg1* s4 = (func_800FA098_arg1*)0x1F8001D0;
+    int s6 = 1;
+    func_800FA76C_arg3* temp_s0 = arg0->unk8;
+    D_800F53B8_t* temp_s5 = D_800F53BC;
+
+    switch (arg1) {
+    case 1:
+        temp_v0 = vs_main_allocHeapR(0x38);
+        arg0->unk8 = temp_v0;
+        temp_v0->unk1 = arg2 >> 8;
+        temp_v0->unk0 = arg2;
+        temp_v0->unk8 = 0;
+        temp_s3 = &D_800F569C->unk8->unk4[temp_v0->unk1];
+        i = temp_s3->unkC0[0];
+
+        if (i >= 9) {
+            i = 8;
+        }
+
+        temp_v0->unk4 = vs_main_allocHeapR(i * 0x78);
+        temp_v0->unk2 = i;
+        temp_v0->unk3 = 0;
+
+        if (temp_s3->unk4_26 != 0) {
+            i = D_800F569C->unk8C->unk4[temp_s3->unk4_26];
+            if (i >= 2) {
+                --i;
+            }
+
+            for (j = 0; j < 9; ++j) {
+                temp_v0->unk2C[j] = D_800F569C->unkC[temp_s3->unk4_26][(j * i) / 8];
+            }
+
+        } else {
+            for (j = 0; j < 9; ++j) {
+                temp_v0->unk2C[j] = 0x80;
+            }
+        }
+
+        func_800D6CCC((int*)&temp_v0->unkC);
+        func_800D6CF0(&temp_v0->unkC, temp_s3->unk1, temp_s3->unk0);
+
+        break;
+
+    case 2:
+        temp_s3 = &D_800F569C->unk8->unk4[temp_s0->unk1];
+        s4->unk24 = temp_s3->unk4_0;
+
+        if (temp_s0->unk3 == 0) {
+            func_800F98E0(temp_s3, s4, temp_s5, temp_s0);
+            func_800FA07C(temp_s3, s4, temp_s5, temp_s0);
+            func_800FA294(temp_s3, s4, temp_s5, temp_s0);
+            func_800FA76C(temp_s3, s4, temp_s5, temp_s0);
+            temp_s0->unk3 = 1;
+        }
+
+        func_800FA8E4(temp_s3, s4, temp_s5, temp_s0);
+        func_800FAA70(temp_s3, s4, temp_s5, temp_s0);
+
+        if (temp_s3->unk3 != 0) {
+            for (i = 0; i < temp_s0->unk2; ++i) {
+                sp18.unk60 = 0;
+                if (temp_s3->unk4_0 & 0x20000) {
+                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
+                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
+                    s4->unk2C.vx =
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx;
+                    s4->unk2C.vy =
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy;
+                    s4->unk2C.vz =
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz;
+                    gte_ldv0(&s4->unk2C);
+                    gte_rtv0tr2();
+                    gte_stlvnl(&s4->unk34);
+                    sp18.unkC.vx = s4->unk34.vx << 0xC;
+                    sp18.unkC.vy = s4->unk34.vy << 0xC;
+                    sp18.unkC.vz = s4->unk34.vz << 0xC;
+                } else {
+                    sp18.unkC.vx =
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx << 0xC;
+                    sp18.unkC.vy =
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy << 0xC;
+                    sp18.unkC.vz =
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz << 0xC;
+                }
+                func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
+            }
+        }
+
+        ++temp_s0->unk8;
+
+        if (temp_s0->unk0 != 0) {
+            --temp_s0->unk0;
+            if (!temp_s0->unk0) {
+                vs_main_freeHeapR(temp_s0->unk4);
+                s6 = 0;
+            }
+        }
+        break;
+
+    case 3:
+        temp_s0->unk0 = 1;
+        break;
+
+    case 4:
+        vs_main_freeHeapR(temp_s0->unk4);
+        s6 = 0;
+        break;
+    }
+
+    return s6;
+}
 
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FBA00);
 

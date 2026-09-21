@@ -3848,7 +3848,30 @@ void func_800D278C(void)
     --D_800F5600;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D27F0);
+func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
+{
+    func_800D2904_t* node = D_800F55F4;
+
+    if (node == NULL) {
+        func_800CE644(0x14);
+    }
+    func_800D6CCC(node->unk3C);
+    node->unk77 = 0xFF;
+    node->previous = NULL;
+    ++D_800F55F8;
+    D_800F55F4 = node->next;
+    node->next = arg0->unk18;
+    if (arg0->unk18 != NULL) {
+        arg0->unk18->previous = node;
+    }
+    arg0->unk18 = node;
+    ++arg0->unk8;
+
+    do {
+    } while (0);
+
+    return node;
+}
 
 void func_800D2888(func_800D2904_t* arg0, D_800F53B8_t* arg1)
 {

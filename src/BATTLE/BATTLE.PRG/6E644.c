@@ -115,11 +115,13 @@ typedef struct {
     u_int unkC_19 : 13;
 } func_800DCAA0_t;
 
+void func_800D7890(int arg0);
 void func_800D7A14(void*);
 void func_800D7AC4(void*);
 void func_800D7AEC(void*);
 void func_800D8038(int);
 void func_800D8054(int);
+void func_800D8060(void* arg0);
 int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
@@ -130,17 +132,20 @@ int func_800E0678(func_800E0850_t*, int);
 int func_800E42EC(int, int);
 void func_800E5EC0(int, int, int);
 
+extern int D_800EC4BC[];
 extern D_800F16EC_t D_800F16EC[8];
+extern char D_800F53C0[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
 extern u_int D_800F5680;
 extern u_short _effBufSize;
 extern vs_main_CdQueueSlot* D_800F568C;
-extern u_int D_800F5690;
+extern u_int _plgLoadState;
 extern _loadFileContext _plgLoadContext;
 extern u_long* D_800F56A0;
 extern int _plgEntryPointCount;
 extern effectExec D_800F56A8[];
+extern func_800CF0E8_t* D_800F5798;
 extern D_800F569C_t D_800F57A0;
 extern int D_800F5874;
 extern u_short (*D_800F58B8)[32];
@@ -151,7 +156,19 @@ extern D_800F5910_t* D_800F5910;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7814);
+void func_800D7814(void)
+{
+    D_800F568C = NULL;
+    _effBuf = NULL;
+    D_800F56A0 = NULL;
+    D_800F5874 = 0;
+    D_800F5684 = 0;
+    D_800F57A0.unk8C = NULL;
+    D_800F57A0.unkD0 = D_800F53C0;
+    D_800F5798 = &D_800F5230;
+    func_800D7890(0);
+    func_800D8060(&D_800EC4BC);
+}
 
 void func_800D7890(int arg0)
 {
@@ -350,13 +367,13 @@ int func_800D7EF4(void)
 {
     int _[16];
     int ret;
-    u_int temp_s0 = D_800F5690;
+    u_int state = _plgLoadState;
 
-    switch (temp_s0) {
+    switch (state) {
     case 1:
         if (D_800F5684 == 0) {
             func_8007E180(2);
-            D_800F5684 = temp_s0;
+            D_800F5684 = state;
         }
         // Fallthrough
 
@@ -408,7 +425,7 @@ void func_800D8038(int arg0) { D_800F5680 = arg0; }
 
 u_int func_800D8044(void) { return D_800F5680; }
 
-void func_800D8054(int arg0) { D_800F5690 = arg0; }
+void func_800D8054(int arg0) { _plgLoadState = arg0; }
 
 void func_800D8060(void* arg0)
 {

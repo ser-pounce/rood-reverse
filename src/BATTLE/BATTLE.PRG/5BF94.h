@@ -303,6 +303,7 @@ typedef struct {
     int unkC4;
     int unkC8;
     int unkCC;
+    void* unkD0;
 } D_800F569C_t;
 
 typedef struct {

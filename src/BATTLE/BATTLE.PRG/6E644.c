@@ -115,10 +115,16 @@ typedef struct {
     u_int unkC_19 : 13;
 } func_800DCAA0_t;
 
+typedef struct {
+    short unk0;
+    u_short unk2;
+    int unk4[2];
+} func_800D7A14_t;
+
 void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
-void func_800D7A14(void*);
+void func_800D7A14(func_800D7A14_t* arg0);
 void func_800D7AC4(void*);
 void func_800D7AEC(void*);
 void func_800D8038(int);
@@ -224,7 +230,17 @@ void func_800D79F4(D_800F569C_t2* arg0) { D_800F569C->unkB4 = arg0; }
 
 void func_800D7A04(void* arg0) { D_800F569C->unkB8 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7A14);
+void func_800D7A14(func_800D7A14_t* arg0)
+{
+    int i;
+
+    D_800F569C->unk94 = arg0->unk0;
+    D_800F569C->unkA8 = (void*)arg0 + arg0->unk2;
+
+    for (i = 0; i < D_800F569C->unk94; ++i) {
+        D_800F569C->unk98[i] = (void*)arg0 + arg0->unk4[i];
+    }
+}
 
 void func_800D7A74(u_short* arg0)
 {

@@ -297,7 +297,8 @@ typedef struct {
     char unk1C[0x70];
     func_800D0B30_t1* unk8C;
     char* unk90;
-    char unk94[0x14];
+    int unk94;
+    void* unk98[4];
     void* unkA8;
     int unkAC;
     u_short* unkB0;

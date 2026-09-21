@@ -1,6 +1,8 @@
 name: build
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
 
@@ -16,6 +18,7 @@ jobs:
   build:
     if: github.repository == 'ser-pounce/rood-reverse'
     runs-on: ubuntu-26.04
+    environment: trusted-build
     container:
       image: ghcr.io/ser-pounce/rood-reverse:main
       credentials:

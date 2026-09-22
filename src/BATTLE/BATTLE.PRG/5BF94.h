@@ -308,7 +308,7 @@ typedef struct {
     void* unkB8;
     void* block3Data;
     u_char* unkC0;
-    int unkC4;
+    u_char* unkC4;
     int unkC8;
     int unkCC;
     void* unkD0;

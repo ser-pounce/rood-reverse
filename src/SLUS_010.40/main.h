@@ -545,6 +545,7 @@ int vs_main_computeSfxPan(int coords, int z);
 void func_80045BFC(int arg0, int arg1, int arg2, char arg3);
 void func_80045C74(int arg0, int arg1, int arg2, char arg3);
 void func_80045CEC(int, int, int, char);
+int func_80046168(u_int);
 int func_80046194(void);
 void func_800461CC(int, u_int[], u_int, int, int);
 void func_800462E8(int arg0, int* arg1, u_int arg2);

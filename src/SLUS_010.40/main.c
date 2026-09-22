@@ -10157,7 +10157,7 @@ int vs_main_freeSfx(u_int id)
     return 0;
 }
 
-static int func_80046168(u_int arg0)
+int func_80046168(u_int arg0)
 {
     if (vs_main_soundData.unk14[16] == 0) {
         vs_main_soundData.unk14[16] = arg0;

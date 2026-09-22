@@ -1208,7 +1208,7 @@ void func_8009D468(int arg0, int arg1)
         temp_s1->unk5C8 = 0;
         temp_s1->unk0.unk18 = 0;
         *(int*)&temp_s1->unk0.unk24 = 0;
-        temp_s1->unk0.unk28 = 0;
+        *(int*)&temp_s1->unk0.unk28 = 0;
         temp_s1->unk0.unk1A = 0;
         temp_s1->unk0.unk16 = 0;
         temp_s1->unk0.unk14 = 0;
@@ -2330,7 +2330,7 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
     *(int*)&temp_a0->unk0.position.vz = 0;
     temp_a0->unk0.unk1A = 0;
     *(int*)&temp_a0->unk0.unk24 = 0;
-    temp_a0->unk0.unk28 = 0;
+    *(int*)&temp_a0->unk0.unk28 = 0;
     temp_a0->unk0.unk18 = 0;
     temp_a0->unk0.unk9_5 = 1;
 }

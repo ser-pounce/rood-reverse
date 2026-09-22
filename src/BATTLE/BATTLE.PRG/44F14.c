@@ -146,7 +146,50 @@ void func_800AE7D8(void* arg0, int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE828);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE980);
+void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
+{
+    int i;
+
+    dst->unk0[41].vx = (dst->unk0[41].vx + src->unk0[41].vx) >> 1;
+    dst->unk0[41].vy = (dst->unk0[41].vy + src->unk0[41].vy) >> 1;
+    dst->unk0[41].vz = (dst->unk0[41].vz + src->unk0[41].vz) >> 1;
+
+    for (i = 0; i < count; ++i) {
+        int x = src->unk0[i].vx - dst->unk0[i].vx;
+        int y;
+        int z;
+
+        if (x >= ONE) {
+            x -= ONE * 2;
+        } else if (x < -ONE) {
+            x += ONE * 2;
+        }
+
+        dst->unk0[i].vx += x >> 1;
+        y = src->unk0[i].vy - dst->unk0[i].vy;
+
+        if (y >= ONE) {
+            y -= ONE * 2;
+        } else if (y < -ONE) {
+            y += ONE * 2;
+        }
+
+        dst->unk0[i].vy += y >> 1;
+        z = src->unk0[i].vz - dst->unk0[i].vz;
+
+        if (z >= ONE) {
+            z -= ONE * 2;
+        } else if (z < -ONE) {
+            z += ONE * 2;
+        }
+
+        dst->unk0[i].vz += z >> 1;
+
+        dst->unk150[i].vx = (dst->unk150[i].vx + src->unk150[i].vx) >> 1;
+        dst->unk150[i].vy = (dst->unk150[i].vy + src->unk150[i].vy) >> 1;
+        dst->unk150[i].vz = (dst->unk150[i].vz + src->unk150[i].vz) >> 1;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEAE8);
 

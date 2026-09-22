@@ -551,7 +551,52 @@ void func_800AA984(int arg0, short arg1, int arg2)
 
 void func_800AAA68(int arg0, SVECTOR* arg1, int arg2) { func_800AAA88(arg0, arg1, arg2); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAA88);
+void func_800AAA88(int arg0, SVECTOR* arg1, int arg2)
+{
+    D_800F4538_t* a = D_800F4538[arg0];
+    int m;
+
+    a->unk0.unk3C = arg1->vx;
+    a->unk0.unk3E = arg1->vy;
+    a->unk0.unk40 = arg1->vz;
+
+    if (arg2 == 0) {
+        a->unk0.unk18 = 0;
+    recenter:
+        a->unk0.unk24 += a->unk0.unk3C;
+        a->unk0.facing += a->unk0.unk3E;
+        a->unk0.unk28 += a->unk0.unk40;
+        a->unk0.unk24 &= 0xFFF;
+        a->unk0.facing &= 0xFFF;
+        a->unk0.unk28 &= 0xFFF;
+    } else if (arg2 == -1) {
+        m = ABS(a->unk0.unk3C);
+
+        if (m < ABS(a->unk0.unk3E)) {
+            m = ABS(a->unk0.unk3E);
+        }
+
+        if (m < ABS(a->unk0.unk40)) {
+            m = ABS(a->unk0.unk40);
+        }
+
+        m *= a->unk5C0;
+        a->unk0.unk18 = m / ONE;
+
+        if (m & 0xFFF) {
+            a->unk0.unk18 = (m / ONE) + 1;
+        }
+
+        if (a->unk0.unk18 != 0) {
+            return;
+        }
+
+        goto recenter;
+
+    } else {
+        a->unk0.unk18 = arg2;
+    }
+}
 
 void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
 {

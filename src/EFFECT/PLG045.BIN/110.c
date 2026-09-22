@@ -402,7 +402,7 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
         temp_s1->unk0 = arg2;
         temp_s1->unkC = 0;
         temp_s1->unk8 = 0;
-        temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
+        temp_s2 = &D_800F569C->block5Data->unk4[temp_s1->unk1];
 
         var_v0 = temp_s2->unkC0[1];
         if (temp_s2->unkC0[1] < temp_s2->unkC0[0]) {
@@ -421,7 +421,7 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
         break;
 
     case 2:
-        temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
+        temp_s2 = &D_800F569C->block5Data->unk4[temp_s1->unk1];
         a2->unk24 = temp_s2->unk4_0;
         temp_s1->unk2 =
             func_800CFE1C(temp_s2->unkC0, func_800D118C(temp_s2->unk16, temp_s1->unkC));

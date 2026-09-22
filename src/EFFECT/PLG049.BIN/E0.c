@@ -475,7 +475,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
         temp_v0->unk1 = arg2 >> 8;
         temp_v0->unk0 = arg2;
         temp_v0->unk8 = 0;
-        temp_s3 = &D_800F569C->unk8->unk4[temp_v0->unk1];
+        temp_s3 = &D_800F569C->block5Data->unk4[temp_v0->unk1];
         i = temp_s3->unkC0[0];
 
         if (i >= 9) {
@@ -488,14 +488,15 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         if (temp_s3->unk4_26 != 0) {
 
-            i = D_800F569C->unk8C->unk4[temp_s3->unk4_26];
+            i = D_800F569C->block4Data->subBlockSizes[temp_s3->unk4_26];
 
             if (i >= 2) {
                 --i;
             }
 
             for (j = 0; j < 9; ++j) {
-                temp_v0->unk2C[j] = D_800F569C->unkC[temp_s3->unk4_26][(j * i) / 8];
+                temp_v0->unk2C[j] =
+                    D_800F569C->block4SubBlocks[temp_s3->unk4_26][(j * i) / 8];
             }
 
         } else {
@@ -510,7 +511,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
         break;
 
     case 2:
-        temp_s3 = &D_800F569C->unk8->unk4[temp_s0->unk1];
+        temp_s3 = &D_800F569C->block5Data->unk4[temp_s0->unk1];
         s4->unk24 = temp_s3->unk4_0;
 
         if (temp_s0->unk3 == 0) {

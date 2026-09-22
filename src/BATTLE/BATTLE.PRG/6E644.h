@@ -82,6 +82,6 @@ int vs_battle_getMainMenuLba(void);
 int vs_battle_loadEffPurge(void);
 
 extern int D_800F5684;
-extern void* _effBuf;
-extern _loadFileContext _loadEffContext;
+extern void* vs_battle_pfileBuf;
+extern _loadFileContext vs_battle_pFileLoadContext;
 extern func_800CF0E8_t D_800F5230;

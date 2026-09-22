@@ -173,19 +173,13 @@ typedef struct {
     u_char unk13;
     u_char unk14;
     u_char unk15;
-} D_800F569C_t2;
+} pFileBlock9;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_char unk4[4];
-    int unk8;
-    int unkC;
-    int unk10;
-    short unk14[6];
-    short unk20[6];
-    short unk2C[6];
-} func_800D0B30_t1;
+    u_short count;
+    u_short dataOffset;
+    u_char subBlockSizes[0];
+} pFileBlock4;
 
 typedef struct {
     short unk0;
@@ -295,24 +289,24 @@ typedef struct {
 typedef struct {
     int count;
     func_800FA098_arg0 unk4[0];
-} D_800F569C_unk8;
+} pFileBlock5;
 
 typedef struct {
     int unk0;
     int unk4;
-    D_800F569C_unk8* unk8;
-    u_char* unkC[4];
+    pFileBlock5* block5Data;
+    u_char* block4SubBlocks[4];
     char unk1C[0x70];
-    func_800D0B30_t1* unk8C;
-    char* unk90;
-    int unk94;
-    void* unk98[4];
-    void* unkA8;
-    int unkAC;
-    u_short* unkB0;
-    D_800F569C_t2* unkB4;
+    pFileBlock4* block4Data;
+    char* block8Data;
+    int block1TableCount;
+    void* block1Tables[4];
+    void* block1Data;
+    int block2Count;
+    u_short* block2Data;
+    pFileBlock9* block9Data;
     void* unkB8;
-    void* unkBC;
+    void* block3Data;
     u_char* unkC0;
     int unkC4;
     int unkC8;

@@ -909,11 +909,11 @@ void vs_effpurge_exec(void)
     func_800D8038(0);
     _configureFb();
     _configurePlg();
-    _loadEffContext = _pFiles[D_800F5230.effectId];
+    vs_battle_pFileLoadContext = _pFiles[D_800F5230.effectId];
     func_800D2698(255);
-    D_800F569C->unkB4 = 0;
-    D_800F56C8.unk8C = 0;
-    D_800F56C8.unkC0 = 0;
+    D_800F569C->block9Data = NULL;
+    D_800F56C8.block4Data = NULL;
+    D_800F56C8.unkC0 = NULL;
     D_800F56C8.unkC4 = 0;
     D_800F56C8.unkC8 = 0;
 }

@@ -211,6 +211,21 @@ typedef struct {
     short offsets[1];
 } func_800D11F4_t;
 
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    int unk8;
+    int unkC;
+    int unk10;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
@@ -2790,7 +2805,7 @@ int func_800CE9B0(void)
         if (vs_battle_loadEffPurge() == 0) {
             vs_main_wait();
             vs_effpurge_exec();
-            if ((D_800F5230.effectId != 0) && (_loadEffContext.lba == 0)) {
+            if ((D_800F5230.effectId != 0) && (vs_battle_pFileLoadContext.lba == 0)) {
                 func_800CF478(4);
                 D_800F5224 = 0;
                 D_800F5228 = 0;
@@ -2819,10 +2834,10 @@ int func_800CE9B0(void)
 
     case 3:
         if (func_800D7BF8() == 0) {
-            func_800D8060(_effBuf);
+            func_800D8060(vs_battle_pfileBuf);
             func_800CF478(5);
 
-            D_800F5224 = D_800F569C->unkB4->unk14;
+            D_800F5224 = D_800F569C->block9Data->unk14;
             D_800F5228 = 0;
 
             for (i = 0; i < D_800F5224; ++i) {
@@ -2843,7 +2858,7 @@ int func_800CE9B0(void)
             temp_s1 = var_s0->next;
             D_800F53BC = var_s0;
 
-            if (D_800F569C->unk8C != NULL) {
+            if (D_800F569C->block4Data != NULL) {
                 func_800D1104(var_s0->unk14_16);
             }
 
@@ -2943,7 +2958,7 @@ int func_800CED60(void)
             func_800CF484(4, var_s1);
             break;
         case 4:
-            if (D_800F569C->unk8C != NULL) {
+            if (D_800F569C->block4Data != NULL) {
                 func_800D1104(var_s1->unk14_16);
             }
 
@@ -3007,7 +3022,7 @@ int func_800CEF74(int arg0)
     v = func_800CEEBC();
     if (v != 0) {
         if (D_800F521C & (1 << arg0)) {
-            char* a1 = D_800F569C->unk90;
+            char* a1 = D_800F569C->block8Data;
             sp10.unk18 = arg0 * 3;
             sp10.unk0 = &D_800F5234;
             sp10.unk4 = &D_800F5234;
@@ -3474,17 +3489,17 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0984);
 
 void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
 
-void func_800D0B30(func_800D0B30_t1* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
+void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
     if (arg0->unk0 & 1) {
-        vs_battle_lerpSvector(arg0->unk14, D_800F5330[arg0->unk4[2]], &arg2->unk8);
+        vs_battle_lerpSvector(arg0->unk14, D_800F5330[arg0->unk6], &arg2->unk8);
         arg1->vx += arg2->unk8.vx;
         arg1->vy = arg1->vy + arg2->unk8.vy;
         arg1->vz += arg2->unk8.vz;
         RotMatrix_gte(arg1, &arg2->unk48);
-        vs_battle_lerpVector(arg0->unk20, D_800F5330[arg0->unk4[0]], &arg2->unk10);
+        vs_battle_lerpVector(arg0->unk20, D_800F5330[arg0->unk4], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
-        vs_battle_lerpVector(arg0->unk2C, D_800F5330[arg0->unk4[3]], &arg2->unk20);
+        vs_battle_lerpVector(arg0->unk2C, D_800F5330[arg0->unk7], &arg2->unk20);
         func_8004140C(&arg2->unk48, &arg2->unk20);
         return;
     }
@@ -3522,19 +3537,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 void func_800D1104(int arg0)
 {
     int i;
-    func_800D0B30_t1* temp_a2 = D_800F569C->unk8C;
+    pFileBlock4* temp_a2 = D_800F569C->block4Data;
 
-    for (i = 0; i < temp_a2->unk0; ++i) {
-        D_800F5330[i + 1] = D_800F569C->unkC[i][arg0 % temp_a2->unk4[i]];
+    for (i = 0; i < temp_a2->count; ++i) {
+        D_800F5330[i + 1] =
+            D_800F569C->block4SubBlocks[i][arg0 % temp_a2->subBlockSizes[i]];
     }
 }
 
 int func_800D118C(int arg0, int arg1)
 {
-    func_800D0B30_t1* temp_a2 = D_800F569C->unk8C;
+    pFileBlock4* block = D_800F569C->block4Data;
 
-    if ((arg0 != 0) && (temp_a2->unk0 >= arg0)) {
-        return D_800F569C->unkC[arg0 - 1][arg1 % temp_a2->unk4[arg0 - 1]];
+    if ((arg0 != 0) && (block->count >= arg0)) {
+        return D_800F569C
+            ->block4SubBlocks[arg0 - 1][arg1 % block->subBlockSizes[arg0 - 1]];
     }
 
     return 0;
@@ -4066,11 +4083,11 @@ int func_800D49A4(D_800F53B8_t* arg0)
 
     if (((u_short)(arg0->unkD1C.unk38 - 6) < 16) || (arg0->unkD1C.unk38 == 0x21)
         || (arg0->unkD1C.unk38 == 0x24)) {
-        for (i = 0; i < D_800F569C->unkB4->unk15; ++i) {
+        for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
             arg0->unk1C[i].unk20 = -0x80;
         }
     } else if ((arg0->unkD1C.unk38 == 0x38) && (arg0->unk10[3] == 0x2B)) {
-        for (i = 0; i < D_800F569C->unkB4->unk15; ++i) {
+        for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
             arg0->unk1C[i].unk20 = 0x80;
         }
     }
@@ -4169,7 +4186,7 @@ int func_800D4F00(D_800F53B8_t* arg0)
     u_char first = func_800D5170(arg0);
     u_char second = func_800D5170(arg0);
     u_char third = func_800D5170(arg0);
-    func_800FA098_arg0* dst = &D_800F569C->unk8->unk4[first & 0x3F];
+    func_800FA098_arg0* dst = &D_800F569C->block5Data->unk4[first & 0x3F];
 
     dst->unkC4 = (first >> 6) + ((second & 0xF) << 2);
     dst->unkC5 = (second >> 4) + ((third & 3) << 4);
@@ -4182,7 +4199,7 @@ int func_800D4FB4(D_800F53B8_t* arg0)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        func_800FA098_arg0* dst = &D_800F569C->unk8->unk4[i];
+        func_800FA098_arg0* dst = &D_800F569C->block5Data->unk4[i];
         dst->unkC4 = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
         dst->unkC5 = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
         dst->unkC6 = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
@@ -4206,7 +4223,7 @@ int func_800D5088(D_800F53B8_t* arg0)
 
     for (i = 0; i < 5; i++) {
         func_800FA098_arg0* dst =
-            &D_800F569C->unk8->unk4[D_800EC368[arg0->unkD1C.unk18.unk2][i][3]];
+            &D_800F569C->block5Data->unk4[D_800EC368[arg0->unkD1C.unk18.unk2][i][3]];
         dst->unkC4 = D_800EC368[arg0->unkD1C.unk18.unk2][i][0];
         dst->unkC5 = D_800EC368[arg0->unkD1C.unk18.unk2][i][1];
         dst->unkC6 = D_800EC368[arg0->unkD1C.unk18.unk2][i][2];
@@ -4669,7 +4686,7 @@ void func_800D6CCC(int* arg0)
 void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2)
 {
     arg0->unk16 = arg1;
-    arg0->unk18 = (u_char*)D_800F569C->unkB0 + D_800F569C->unkB0[arg2 + 2];
+    arg0->unk18 = (u_char*)D_800F569C->block2Data + D_800F569C->block2Data[arg2 + 2];
     arg0->unkE = 0;
     arg0->unk6 = 0;
 }

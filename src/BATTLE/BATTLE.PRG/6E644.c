@@ -135,7 +135,7 @@ void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
-void func_800D7AC4(void*);
+void func_800D7AC4(u_char*);
 void func_800D7AEC(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
@@ -265,7 +265,11 @@ void* func_800D7A90(int arg0)
 
 void func_800D7AB4(u_char* arg0) { D_800F569C->unkC0 = arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AC4);
+void func_800D7AC4(u_char* arg0)
+{
+    D_800F569C->unkC4 = arg0;
+    func_80046168((u_int)arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AEC);
 

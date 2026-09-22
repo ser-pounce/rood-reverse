@@ -281,7 +281,7 @@ void func_800D6448(D_800F53B8_t*, u_char, u_char);
 void func_800D65D8(D_800F53B8_t*, u_char);
 void func_800D6628(D_800F53B8_t*, u_char);
 void func_800D66FC(D_800F53B8_t*, int, int);
-void func_800D67C4(D_800F53B8_t*, int);
+void func_800D67C4(D_800F53B8_t*, u_char);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
@@ -378,7 +378,7 @@ extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
 extern D_800F53B8_t3 D_800F5234;
 extern char D_800F5518;
-extern D_800F54D8_t D_800F5520;
+extern D_800F54D8_t D_800F5520[2];
 extern short D_800F55A0;
 extern D_800F54D8_t D_800F55A8;
 extern u_int D_800F55E8;
@@ -3785,7 +3785,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D21C0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D236C);
 
-void func_800D2518(void) { D_800F54D8 = D_800F5520; }
+void func_800D2518(void) { D_800F54D8 = D_800F5520[0]; }
 
 void func_800D2560(void)
 {
@@ -4503,7 +4503,17 @@ void func_800D66CC(D_800F53B8_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D66FC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D67C4);
+void func_800D67C4(D_800F53B8_t* arg0, u_char arg1)
+{
+    func_800D1B18(D_800F5520);
+    D_800F5520[1] = D_800F55A8;
+    D_800F54D0 = 0;
+    if (arg1 == 0) {
+        arg1 = 1;
+    }
+    D_800F55A0 = arg1;
+    func_800D1E20(2);
+}
 
 void func_800D6860(D_800F53B8_t* arg0)
 {

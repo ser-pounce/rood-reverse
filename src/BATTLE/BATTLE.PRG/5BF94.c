@@ -76,7 +76,7 @@ typedef struct {
     int unk10;
     char* unk14;
     int unk18;
-    D_800F53B8_t5* unk1C;
+    D_800F53B8_t* unk1C;
     u_char unk20;
     u_char unk21;
     u_char unk22;
@@ -2677,7 +2677,7 @@ void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
 {
     int i;
 
-    arg1->unk4 = arg0->unk1C;
+    arg1->previous = arg0->unk1C;
     arg1->unk8 = 0;
     arg1->unk9 = arg0->unk10;
     arg1->unkA = arg0->unk18;
@@ -3812,7 +3812,7 @@ void func_800D2560(void)
 
 void func_800D268C(void) { D_800F5600 = 0; }
 
-void func_800D2698(int arg0)
+void func_800D2698(int count)
 {
     int i;
 
@@ -3820,15 +3820,18 @@ void func_800D2698(int arg0)
         ++D_800F5600;
         return;
     }
-    D_800F55FC = vs_main_allocHeapR(sizeof *D_800F55FC * arg0);
+
+    D_800F55FC = vs_main_allocHeapR(sizeof *D_800F55FC * count);
     D_800F55FC[0].previous = NULL;
     D_800F55FC[0].next = &D_800F55FC[1];
-    for (i = 1; i < arg0 - 1; ++i) {
+
+    for (i = 1; i < count - 1; ++i) {
         D_800F55FC[i].previous = &D_800F55FC[i - 1];
         D_800F55FC[i].next = &D_800F55FC[i + 1];
     }
+
     D_800F55F8 = 0;
-    D_800F55F0 = arg0;
+    D_800F55F0 = count;
     D_800F5600 = 1;
     D_800F55FC[i].previous = &D_800F55FC[i - 1];
     D_800F55FC[i].next = NULL;
@@ -3855,15 +3858,19 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
     if (node == NULL) {
         func_800CE644(0x14);
     }
+
     func_800D6CCC(node->unk3C);
+
     node->unk77 = 0xFF;
     node->previous = NULL;
     ++D_800F55F8;
     D_800F55F4 = node->next;
     node->next = arg0->unk18;
+
     if (arg0->unk18 != NULL) {
         arg0->unk18->previous = node;
     }
+
     arg0->unk18 = node;
     ++arg0->unk8;
 
@@ -4186,8 +4193,8 @@ int func_800D4FB4(D_800F53B8_t* arg0)
 
 int func_800D5048(D_800F53B8_t* arg0)
 {
-    if (arg0->unk4 != 0) {
-        --arg0->unk4->unk14_11;
+    if (arg0->previous != 0) {
+        --arg0->previous->unk14_11;
     }
     return 1;
 }

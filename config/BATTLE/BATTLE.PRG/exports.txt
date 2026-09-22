@@ -244,6 +244,7 @@ vs_battle_chainAbilityOffsets
 vs_battle_characterState
 vs_battle_characterWidths
 vs_battle_commonWepBuffs
+vs_battle_configureEffectFbLoad
 vs_battle_copyAligned
 vs_battle_copyInventoryArmorStats
 vs_battle_copyInventoryBladeStats
@@ -363,6 +364,7 @@ vs_battle_script_specialOp
 vs_battle_setFontStyle
 vs_battle_setGeomOffset
 vs_battle_setMenuItem
+vs_battle_setPlgLoadState
 vs_battle_setProjectionDistance
 vs_battle_setRoomsUnk0
 vs_battle_setSprite

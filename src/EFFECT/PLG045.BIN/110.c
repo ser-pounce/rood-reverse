@@ -46,7 +46,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     MATRIX* temp_s0;
 
     vs_battle_lerpVector(
-        (short*)&arg0->unk14[4], func_800D118C(arg0->unk8, arg3->unkC), &arg1->unk98);
+        (short*)arg0->unk18, func_800D118C(arg0->unk8, arg3->unkC), &arg1->unk98);
     temp_s0 = &arg2->unk1C[arg0->unkC8].unk38;
 
     switch (arg1->unk24 & 7) {
@@ -63,7 +63,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     }
 
     vs_battle_lerpVector(
-        (short*)&arg0->unk14[0x10], func_800D118C(arg0->unk9, arg3->unkC), &arg1->unkA8);
+        (short*)&arg0->unk18[0xC], func_800D118C(arg0->unk9, arg3->unkC), &arg1->unkA8);
     SetRotMatrix(temp_s0);
     gte_zrtr();
 
@@ -423,8 +423,8 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
     case 2:
         temp_s2 = &D_800F569C->unk8->unk4[temp_s1->unk1];
         a2->unk24 = temp_s2->unk4_0;
-        temp_s1->unk2 = func_800CFE1C(
-            temp_s2->unkC0, func_800D118C(temp_s2->unk14[2], temp_s1->unkC));
+        temp_s1->unk2 =
+            func_800CFE1C(temp_s2->unkC0, func_800D118C(temp_s2->unk16, temp_s1->unkC));
 
         if (temp_s1->unk2 >= 9) {
             temp_s1->unk2 = 8;

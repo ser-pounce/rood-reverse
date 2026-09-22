@@ -53,7 +53,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     u_char temp_v1;
 
     vs_battle_lerpVector(
-        (short*)&arg0->unk14[4], func_800D118C(arg0->unk8, arg3->unk8), &arg1->unk98);
+        (short*)arg0->unk18, func_800D118C(arg0->unk8, arg3->unk8), &arg1->unk98);
 
     temp_v1 = arg0->unkC8;
     temp_s0 = &arg2->unk1C[temp_v1].unk38;
@@ -72,7 +72,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     }
 
     vs_battle_lerpVector(
-        (short*)&arg0->unk14[0x10], func_800D118C(arg0->unk9, arg3->unk8), &arg1->unkA8);
+        (short*)&arg0->unk18[0xC], func_800D118C(arg0->unk9, arg3->unk8), &arg1->unkA8);
     SetRotMatrix(temp_s0);
     gte_zrtr();
 
@@ -545,16 +545,16 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
                     gte_rtv0tr2();
                     gte_stlvnl(&s4->unk34);
 
-                    sp18.unkC.vx = s4->unk34.vx << 0xC;
-                    sp18.unkC.vy = s4->unk34.vy << 0xC;
-                    sp18.unkC.vz = s4->unk34.vz << 0xC;
+                    sp18.unkC.vx = s4->unk34.vx * ONE;
+                    sp18.unkC.vy = s4->unk34.vy * ONE;
+                    sp18.unkC.vz = s4->unk34.vz * ONE;
                 } else {
                     sp18.unkC.vx =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx << 0xC;
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx * ONE;
                     sp18.unkC.vy =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy << 0xC;
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy * ONE;
                     sp18.unkC.vz =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz << 0xC;
+                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz * ONE;
                 }
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
             }

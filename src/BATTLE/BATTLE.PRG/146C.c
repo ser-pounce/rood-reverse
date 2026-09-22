@@ -7121,7 +7121,7 @@ void func_8007DF98(void)
 
 int func_8007DFF0(u_int arg0, u_int arg1, int arg2)
 {
-    if (arg0 >= 0x19) {
+    if (arg0 > 0x18) {
         int var_a3 = 0;
         if ((arg0 + arg1) < 0x21) {
             u_int i;
@@ -7138,7 +7138,7 @@ int func_8007DFF0(u_int arg0, u_int arg1, int arg2)
             }
         }
     }
-    vs_main_nop9(0x64, 0);
+    vs_main_nop9(100, 0);
     return 0;
 }
 

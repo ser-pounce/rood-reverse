@@ -54,11 +54,12 @@ void func_800D8038(int);
 void func_800D6E44(void);
 void func_800D7814(void);
 void func_800D78F0(void);
-void vs_battle_configurePlgLoad(int, int, int);
+void vs_battle_configurePlg(int, int, int);
 void vs_battle_setEffectExec(effectExec arg0, int arg1);
 void func_800D7FFC(int arg0);
-void func_800D8054(int);
-void func_800D8008(int, int, int, int, int);
+void vs_battle_setPlgLoadState(int);
+void vs_battle_configureEffectFbLoad(
+    int lba, int size, int suffix, int isClut, int index);
 void func_800DC638(void);
 int func_800DEC88(void*);
 void func_800E527C(int, int, int);

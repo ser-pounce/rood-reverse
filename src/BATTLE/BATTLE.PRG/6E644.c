@@ -56,8 +56,8 @@ typedef struct {
 typedef struct {
     int unk0;
     _loadFileContext loadContexts[8];
-    u_short unk24[8];
-    u_short unk34[8];
+    u_short slots[8];
+    u_short isClut[8];
 } D_800F5638_t;
 
 typedef struct {
@@ -128,7 +128,7 @@ void func_800D7A14(func_800D7A14_t* arg0);
 void func_800D7AC4(void*);
 void func_800D7AEC(void*);
 void func_800D8038(int);
-void func_800D8054(int);
+void vs_battle_setPlgLoadState(int);
 void func_800D8060(void* arg0);
 int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
@@ -307,7 +307,7 @@ void func_800D7C5C(void)
     int bit;
     int flags;
 
-    for (i = 0x18; i < 0x20; i++) {
+    for (i = 24; i < 32; i++) {
         flags = D_800F5874;
         bit = 1 << i;
         if (flags & bit) {
@@ -325,10 +325,8 @@ int func_800D7CFC(void)
 {
     int _[16] __attribute__((unused));
     RECT sp50;
-    int temp_s0;
     u_int temp_s1;
     int var_s0;
-    void* temp_v0_3;
 
     if ((D_800F5680 == 0) && (D_800F5638.unk0 != 0)) {
         D_800F5630 = 0;
@@ -348,23 +346,23 @@ int func_800D7CFC(void)
             D_800F5638.loadContexts[D_800F5630].size, D_800F56A0);
 
         if (var_s0 == 0) {
-            temp_v0_3 = (D_800F5630 * 2) + &D_800F5638;
-            temp_s0 = D_800F5638.unk24[D_800F5630];
+            void* temp_v0_3 = (D_800F5630 * 2) + &D_800F5638;
+            int slot = D_800F5638.slots[D_800F5630];
 
-            if (D_800F5638.unk34[D_800F5630] == 0) {
-                temp_s0 += 0x18;
-                func_8007DFF0(temp_s0, 1, 2);
-                D_800F5874 |= temp_s1 << temp_s0;
-                sp50.x = (temp_s0 - (temp_s0 / 16 * 16)) << 6;
-                sp50.y = temp_s0 / 16 << 8;
-                sp50.w = 0x40;
-                sp50.h = 0x100;
+            if (D_800F5638.isClut[D_800F5630] == 0) {
+                slot += 24;
+                func_8007DFF0(slot, 1, 2);
+                D_800F5874 |= temp_s1 << slot;
+                sp50.x = (slot - (slot / 16 * 16)) << 6;
+                sp50.y = slot / 16 << 8;
+                sp50.w = 64;
+                sp50.h = 256;
                 LoadImage(&sp50, D_800F56A0);
             } else {
-                sp50.x = 0x300;
-                sp50.y = temp_s0 + 0xF0;
-                sp50.w = 0x100;
-                sp50.h = 5 - temp_s0;
+                sp50.x = 768;
+                sp50.y = slot + 240;
+                sp50.w = 256;
+                sp50.h = 5 - slot;
                 LoadImage(&sp50, D_800F56A0);
             }
 
@@ -410,7 +408,7 @@ int func_800D7EF4(void)
         ret = _loadfile(_plgLoadContext.lba + VS_E000_P_LBA, _plgLoadContext.size,
             vs_overlay_slots[3]);
         if (ret == 0) {
-            func_800D8054(3);
+            vs_battle_setPlgLoadState(3);
         }
         break;
     case 0:
@@ -428,7 +426,7 @@ void func_800D7FB4(int arg0, int arg1)
     _loadEffContext.size = arg1;
 }
 
-void vs_battle_configurePlgLoad(int lba, int size, int entryPointCount)
+void vs_battle_configurePlg(int lba, int size, int entryPointCount)
 {
     _plgLoadContext.lba = lba;
     _plgLoadContext.size = size;
@@ -442,19 +440,19 @@ void vs_battle_setEffectExec(effectExec func, int index)
 
 void func_800D7FFC(int arg0) { D_800F5638.unk0 = arg0; }
 
-void func_800D8008(int arg0, int arg1, int arg2, int arg3, int arg4)
+void vs_battle_configureEffectFbLoad(int lba, int size, int slot, int isClut, int index)
 {
-    D_800F5638.loadContexts[arg4].lba = arg0;
-    D_800F5638.loadContexts[arg4].size = arg1;
-    D_800F5638.unk24[arg4] = arg2;
-    D_800F5638.unk34[arg4] = arg3;
+    D_800F5638.loadContexts[index].lba = lba;
+    D_800F5638.loadContexts[index].size = size;
+    D_800F5638.slots[index] = slot;
+    D_800F5638.isClut[index] = isClut;
 }
 
 void func_800D8038(int arg0) { D_800F5680 = arg0; }
 
 u_int func_800D8044(void) { return D_800F5680; }
 
-void func_800D8054(int arg0) { _plgLoadState = arg0; }
+void vs_battle_setPlgLoadState(int arg0) { _plgLoadState = arg0; }
 
 void func_800D8060(void* arg0)
 {

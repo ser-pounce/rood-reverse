@@ -226,7 +226,11 @@ typedef struct {
     u_char unk11;
     u_char unk12;
     u_char unk13;
-    u_char unk14[0x1C];
+    u_char unk14;
+    u_char unk15;
+    u_char unk16;
+    u_char unk17;
+    u_char unk18[0x18];
     short unk30[2];
     short unk34[5][6];
     int unk70;
@@ -260,12 +264,14 @@ typedef struct {
     u_char unk84[0x14];
     VECTOR unk98;
     VECTOR unkA8;
-    u_char unkB8[0x10];
+    VECTOR unkB8;
     VECTOR unkC8;
     VECTOR unkD8;
     VECTOR unkE8;
     SVECTOR unkF8;
-    u_char unk100[0x18];
+    SVECTOR unk100;
+    SVECTOR unk108;
+    SVECTOR unk110;
     int unk118[2];
     int unk120;
     int unk124[2];
@@ -274,7 +280,9 @@ typedef struct {
     int unk138;
     SVECTOR unk13C;
     SVECTOR unk144;
-    u_char unk14C[0x24];
+    u_char unk14C[0x1C];
+    int unk168;
+    int unk16C;
     int unk170;
     int unk174;
     int unk178;
@@ -312,17 +320,6 @@ typedef struct {
     void* unkD0;
 } D_800F569C_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    u_int unk14_0 : 11;
-    u_int unk14_11 : 5;
-    u_int unk14_16 : 16;
-} D_800F53B8_t5;
-
 typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
@@ -330,7 +327,8 @@ typedef struct func_800D2904_t {
     int unkC;
     int unk10;
     int unk14;
-    char unk18[0x24];
+    VECTOR unk18;
+    u_char unk28[0x14];
     int unk3C[8];
     char unk5C[0x1B];
     u_char unk77;
@@ -378,7 +376,7 @@ typedef struct {
 
 typedef struct D_800F53B8_t {
     struct D_800F53B8_t* next;
-    D_800F53B8_t5* unk4;
+    struct D_800F53B8_t* previous;
     char unk8;
     char unk9;
     u_short unkA;

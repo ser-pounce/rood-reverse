@@ -4,10 +4,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: read
-  packages: read
-
 concurrency:
   group: build-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -16,7 +12,6 @@ jobs:
   build:
     if: github.repository == 'ser-pounce/rood-reverse'
     runs-on: ubuntu-26.04
-    environment: trusted-build
     container:
       image: ghcr.io/ser-pounce/rood-reverse:main
       credentials:

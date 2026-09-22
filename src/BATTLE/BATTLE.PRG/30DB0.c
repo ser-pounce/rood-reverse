@@ -215,7 +215,39 @@ int vs_battle_processObjectDataQueue(void)
     return ret < 0 ? -1 : 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_80099854);
+void func_80099854(int arg0)
+{
+    vs_battle_objectData objectData;
+    vs_battle_objectData* src;
+    int i;
+    int slot;
+    vs_battle_objectData* dst;
+
+    if (arg0 == 0) {
+        return;
+    }
+
+    src = &objectData;
+    src->dataType = 7;
+    src->index = 0;
+    src->actorId = 3;
+    src->material = arg0;
+
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_objectDataSlots[i].dataType == 0) {
+            slot = i;
+            goto found;
+        }
+    }
+
+    slot = -1;
+
+found:
+    if (slot != -1) {
+        dst = &vs_battle_objectDataSlots[slot];
+        *dst = *src;
+    }
+}
 
 int func_80099900(vs_battle_objectData* arg0)
 {

@@ -37,7 +37,7 @@ class P(KaitaiStruct):
         while True:
             _ = P.Block(self._io, self, self._root)
             self.blocks.append(_)
-            if _.next_block == 0:
+            if _.size == 0:
                 break
             i += 1
 
@@ -57,85 +57,80 @@ class P(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.next_block = self._io.read_u2le()
+            self.size = self._io.read_u2le()
             self.type = KaitaiStream.resolve_enum(P.BlockType, self._io.read_u2le())
-            if self.next_block != 0:
+            if self.size != 0:
                 pass
                 _on = self.type
                 if _on == P.BlockType.type0:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type1:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.Type1Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type10:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type11:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                    self.body = P.RawBody(_io__raw_body, self, self._root)
+                    self.body = P.Type11Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type12:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type13:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
-                    _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                    self.body = P.RawBody(_io__raw_body, self, self._root)
-                elif _on == P.BlockType.type14:
-                    pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type2:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.Type2Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type3:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type4:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.Type4Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type5:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.Type5Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type8:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type9:
                     pass
-                    self._raw_body = self._io.read_bytes(self.next_block - 4)
+                    self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
                 else:
                     pass
-                    self.body = self._io.read_bytes(self.next_block - 4)
+                    self.body = self._io.read_bytes(self.size - 4)
 
 
 
         def _fetch_instances(self):
             pass
-            if self.next_block != 0:
+            if self.size != 0:
                 pass
                 _on = self.type
                 if _on == P.BlockType.type0:
@@ -154,9 +149,6 @@ class P(KaitaiStruct):
                     pass
                     self.body._fetch_instances()
                 elif _on == P.BlockType.type13:
-                    pass
-                    self.body._fetch_instances()
-                elif _on == P.BlockType.type14:
                     pass
                     self.body._fetch_instances()
                 elif _on == P.BlockType.type2:
@@ -195,6 +187,29 @@ class P(KaitaiStruct):
 
         def _fetch_instances(self):
             pass
+
+
+    class Type11Body(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.Type11Body, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.num_offsets = self._io.read_u4le()
+            self.offsets = []
+            for i in range(self.num_offsets):
+                self.offsets.append(self._io.read_u2le())
+
+            self.data = self._io.read_bytes_full()
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.offsets)):
+                pass
+
 
 
     class Type1Body(KaitaiStruct):

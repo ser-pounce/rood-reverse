@@ -10335,7 +10335,7 @@ static int func_8004659C(int arg0)
     return 0;
 }
 
-static int func_80046608(u_int arg0)
+int func_80046608(u_int arg0)
 {
     if (vs_main_soundData.unk14[22] == 0) {
         vs_main_soundData.unk14[22] = arg0;

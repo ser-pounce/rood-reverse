@@ -913,9 +913,9 @@ void vs_effpurge_exec(void)
     func_800D2698(255);
     D_800F569C->block9Data = NULL;
     D_800F56C8.block4Data = NULL;
-    D_800F56C8.unkC0 = NULL;
-    D_800F56C8.unkC4 = 0;
-    D_800F56C8.unkC8 = 0;
+    D_800F56C8.block11Data = NULL;
+    D_800F56C8.block12Data = NULL;
+    D_800F56C8.block13Data = NULL;
 }
 
 static void _configureFb(void)

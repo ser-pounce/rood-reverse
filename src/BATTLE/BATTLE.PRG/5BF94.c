@@ -208,8 +208,8 @@ typedef struct {
 
 typedef struct {
     int count;
-    short offsets[1];
-} func_800D11F4_t;
+    short offsets[0];
+} pFileBlock11;
 
 typedef struct {
     u_short unk0;
@@ -2879,14 +2879,14 @@ int func_800CE9B0(void)
 
         if (D_800F5224 <= D_800F5228) {
 
-            if (D_800F569C->unkC4 != 0) {
+            if (D_800F569C->block12Data != 0) {
                 func_80046194();
-                D_800F569C->unkC4 = 0;
+                D_800F569C->block12Data = NULL;
             }
 
-            if (D_800F569C->unkC8 != 0) {
+            if (D_800F569C->block13Data != NULL) {
                 func_80046634();
-                D_800F569C->unkC8 = 0;
+                D_800F569C->block13Data = NULL;
                 D_800F569C->unkCC = 0;
             }
 
@@ -3559,8 +3559,8 @@ int func_800D118C(int arg0, int arg1)
 
 int func_800D11F4(int arg0, int arg1)
 {
-    u_char* buf = D_800F569C->unkC0;
-    func_800D11F4_t* table = (func_800D11F4_t*)buf;
+    u_char* buf = D_800F569C->block11Data;
+    pFileBlock11* table = (pFileBlock11*)buf;
     int offset;
     int v;
 
@@ -3589,7 +3589,7 @@ int func_800D11F4(int arg0, int arg1)
 
 int func_800D12D8(int arg0)
 {
-    u_char* table = D_800F569C->unkC0;
+    u_char* table = D_800F569C->block11Data;
     int sum = 0;
 
     if (arg0 < *(int*)table) {

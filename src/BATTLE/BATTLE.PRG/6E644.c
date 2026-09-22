@@ -135,8 +135,8 @@ void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
-void func_800D7AC4(u_char*);
-void func_800D7AEC(void*);
+void _parsePfileBlock12(void*);
+void _parsePfileBlock13(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
@@ -238,7 +238,7 @@ void _parsePfileBlock8(void* block) { D_800F569C->block8Data = block; }
 
 void _parsePfileBlock9(pFileBlock9* arg0) { D_800F569C->block9Data = arg0; }
 
-void func_800D7A04(void* arg0) { D_800F569C->unkB8 = arg0; }
+void _parsePfileBlock10(void* arg0) { D_800F569C->block10Data = arg0; }
 
 void _parsePfileBlock1(pFileBlock1* block)
 {
@@ -263,15 +263,19 @@ void* func_800D7A90(int arg0)
     return (u_char*)D_800F569C->block2Data + D_800F569C->block2Data[arg0 + 2];
 }
 
-void func_800D7AB4(u_char* arg0) { D_800F569C->unkC0 = arg0; }
+void _parsePfileBlock11(u_char* arg0) { D_800F569C->block11Data = arg0; }
 
-void func_800D7AC4(u_char* arg0)
+void _parsePfileBlock12(void* arg0)
 {
-    D_800F569C->unkC4 = arg0;
+    D_800F569C->block12Data = arg0;
     func_80046168((u_int)arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D7AEC);
+void _parsePfileBlock13(void* arg0)
+{
+    D_800F569C->block13Data = arg0;
+    D_800F569C->unkCC = func_80046608((u_int)arg0);
+}
 
 static int _loadfile(int lba, int size, void* buf)
 {
@@ -508,19 +512,19 @@ void func_800D8060(p_file_t* arg0)
             break;
 
         case 0xA0000:
-            func_800D7A04(arg0->data);
+            _parsePfileBlock10(arg0->data);
             break;
 
         case 0xB0000:
-            func_800D7AB4(arg0->data);
+            _parsePfileBlock11(arg0->data);
             break;
 
         case 0xC0000:
-            func_800D7AC4(arg0->data);
+            _parsePfileBlock12(arg0->data);
             break;
 
         case 0xD0000:
-            func_800D7AEC(arg0->data);
+            _parsePfileBlock13(arg0->data);
             break;
         }
 

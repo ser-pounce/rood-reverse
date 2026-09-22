@@ -305,11 +305,11 @@ typedef struct {
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;
-    void* unkB8;
+    void* block10Data;
     void* block3Data;
-    u_char* unkC0;
-    u_char* unkC4;
-    int unkC8;
+    u_char* block11Data;
+    void* block12Data;
+    void* block13Data;
     int unkCC;
     void* unkD0;
 } D_800F569C_t;

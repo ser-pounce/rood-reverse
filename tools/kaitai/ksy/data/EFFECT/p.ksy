@@ -7,7 +7,7 @@ seq:
   - id: blocks
     type: block
     repeat: until
-    repeat-until: _.next_block == 0
+    repeat-until: _.size == 0
 
 enums:
   block_type:
@@ -28,13 +28,13 @@ enums:
 types:
   block:
     seq:
-      - id: next_block
+      - id: size
         type: u2
       - id: type
         type: u2
         enum: block_type
       - id: body
-        size: next_block - 4
+        size: size - 4
         type:
           switch-on: type
           cases:
@@ -47,11 +47,10 @@ types:
             'block_type::type8': raw_body
             'block_type::type9': raw_body
             'block_type::type10': raw_body
-            'block_type::type11': raw_body
+            'block_type::type11': type11_body
             'block_type::type12': raw_body
             'block_type::type13': raw_body
-            'block_type::type14': raw_body
-        if: next_block != 0
+        if: size != 0
 
   raw_body:
     seq:
@@ -103,3 +102,14 @@ types:
         size: 0xCC
         repeat: expr
         repeat-expr: num_data
+        
+  type11_body:
+    seq:
+      - id: num_offsets
+        type: u4
+      - id: offsets
+        type: u2
+        repeat: expr
+        repeat-expr: num_offsets
+      - id: data
+        size-eos: true

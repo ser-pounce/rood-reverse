@@ -552,6 +552,7 @@ void func_800462E8(int arg0, int* arg1, u_int arg2);
 void func_8004644C(int arg0, int* arg1, int arg2);
 void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4);
 void vs_main_setMonoSound(int);
+int func_80046608(u_int arg0);
 int func_80046634(void);
 // Parameters left undeclared due to misuse in unused func_8007B378
 void vs_main_loadClutTransition(

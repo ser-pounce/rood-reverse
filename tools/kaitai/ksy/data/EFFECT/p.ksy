@@ -2,6 +2,7 @@ meta:
   id: p
   file-extension: .P
   endian: le
+  bit-endian: le
 
 seq:
   - id: blocks
@@ -99,9 +100,84 @@ types:
       - id: num_data
         type: u4
       - id: data
-        size: 0xCC
+        type: func_800fa098_arg0
         repeat: expr
         repeat-expr: num_data
+        
+  func_800fa098_arg0:
+    seq:
+      - id: unk0
+        type: u1
+      - id: unk1
+        type: u1
+      - id: unk2
+        type: u1
+      - id: unk3
+        type: u1
+      - id: unk4_bit0
+        type: b26
+      - id: unk4_bit26
+        type: b6
+      - id: unk8
+        type: u1
+      - id: unk9
+        type: u1
+      - id: unka
+        type: u1
+      - id: unkb
+        type: u1
+      - id: unkc
+        type: u1
+      - id: unkd
+        type: u1
+      - id: unke
+        type: u1
+      - id: unkf
+        type: u1
+      - id: unk10
+        type: u1
+      - id: unk11
+        type: u1
+      - id: unk12
+        type: u1
+      - id: unk13
+        type: u1
+      - id: unk14
+        type: u1
+      - id: unk15
+        type: u1
+      - id: unk16
+        type: u1
+      - id: unk17
+        type: u1
+      - id: unk18
+        size: 24
+      - id: unk30
+        type: array1d(2)
+      - id: unk34
+        type: array2d(8, 6)
+      - id: unk94
+        type: array2d(5, 4)
+      - id: unkbc
+        type: s4
+      - id: unkc0
+        type: array1d(2)
+      - id: unkc4
+        type: u1
+      - id: unkc5
+        type: u1
+      - id: unkc6
+        type: u1
+      - id: unkc7
+        type: u1
+      - id: unkc8
+        type: u1
+      - id: unkc9
+        type: u1
+      - id: unkca
+        type: u1
+      - id: unkcb
+        type: u1
         
   type11_body:
     seq:
@@ -113,3 +189,25 @@ types:
         repeat-expr: num_offsets
       - id: data
         size-eos: true
+        
+  array1d:
+    params:
+      - id: num_value
+        type: s4
+    seq:
+      - id: value
+        type: s2
+        repeat: expr
+        repeat-expr: num_value
+
+  array2d:
+    params:
+      - id: num_rows
+        type: s4
+      - id: cols
+        type: s4
+    seq:
+      - id: rows
+        type: array1d(cols)
+        repeat: expr
+        repeat-expr: num_rows

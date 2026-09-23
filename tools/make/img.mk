@@ -6,4 +6,5 @@
 
 %.img.o: %.img.bin %.img.sym | $$(@D)/
 	$(ECHO) Assembling $@
-	symbol_args=$$(awk '{ printf "--add-symbol %s=.data:%s ", $$1, $$2 }' $*.img.sym); $(OBJCOPY) $(OBJCOPYFLAGS) $$symbol_args $< $@
+	symbol_args=$$(awk '{ printf "--add-symbol %s=.data:%s ", $$1, $$2 }' $*.img.sym)
+	$(OBJCOPY) $(OBJCOPYFLAGS) $$symbol_args $< $@

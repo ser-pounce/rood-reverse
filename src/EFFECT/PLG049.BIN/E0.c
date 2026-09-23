@@ -253,9 +253,9 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int i;
 
     vs_battle_lerpSvector(
-        arg0->unk7C, func_800D118C(arg0->unkF, arg3->unk8), &arg1->unk13C);
+        arg0->unk34[6], func_800D118C(arg0->unkF, arg3->unk8), &arg1->unk13C);
     vs_battle_lerpSvector(
-        arg0->unk88, func_800D118C(arg0->unk10, arg3->unk8), &arg1->unk144);
+        arg0->unk34[7], func_800D118C(arg0->unk10, arg3->unk8), &arg1->unk144);
 
     switch (arg1->unk24 & 0x1C0) {
     case 0:

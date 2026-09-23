@@ -226,13 +226,7 @@ typedef struct {
     u_char unk17;
     u_char unk18[0x18];
     short unk30[2];
-    short unk34[5][6];
-    int unk70;
-    short unk74;
-    short unk76;
-    int unk78;
-    short unk7C[6];
-    short unk88[6];
+    short unk34[8][6];
     short unk94[5][4];
     int unkBC;
     short unkC0[2];

@@ -253,9 +253,9 @@ void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     int i;
 
     vs_battle_lerpSvector(
-        arg0->unk7C, func_800D118C(arg0->unkF, arg3->unkC), &arg1->unk13C);
+        arg0->unk34[6], func_800D118C(arg0->unkF, arg3->unkC), &arg1->unk13C);
     vs_battle_lerpSvector(
-        arg0->unk88, func_800D118C(arg0->unk10, arg3->unkC), &arg1->unk144);
+        arg0->unk34[7], func_800D118C(arg0->unk10, arg3->unkC), &arg1->unk144);
 
     switch (arg1->unk24 & 0x1C0) {
     case 0xC0:
@@ -433,7 +433,7 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
         if (temp_s1->unk8 <= 0) {
             func_800F9910(temp_s2, a2, temp_s0, temp_s1);
             func_800FA098(temp_s2, a2, temp_s0, temp_s1);
-            temp_s1->unk8 = temp_s2->unk74;
+            temp_s1->unk8 = temp_s2->unk34[5][2];
         }
 
         temp_s1->unk8 = (temp_s1->unk8 - 1);

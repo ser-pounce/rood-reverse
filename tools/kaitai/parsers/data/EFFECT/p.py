@@ -49,6 +49,52 @@ class P(KaitaiStruct):
             self.blocks[i]._fetch_instances()
 
 
+    class Array1d(KaitaiStruct):
+        def __init__(self, num_value, _io, _parent=None, _root=None):
+            super(P.Array1d, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.num_value = num_value
+            self._read()
+
+        def _read(self):
+            self.value = []
+            for i in range(self.num_value):
+                self.value.append(self._io.read_s2le())
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.value)):
+                pass
+
+
+
+    class Array2d(KaitaiStruct):
+        def __init__(self, num_rows, cols, _io, _parent=None, _root=None):
+            super(P.Array2d, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.num_rows = num_rows
+            self.cols = cols
+            self._read()
+
+        def _read(self):
+            self.rows = []
+            for i in range(self.num_rows):
+                self.rows.append(P.Array1d(self.cols, self._io, self, self._root))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.rows)):
+                pass
+                self.rows[i]._fetch_instances()
+
+
+
     class Block(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
             super(P.Block, self).__init__(_io)
@@ -174,6 +220,60 @@ class P(KaitaiStruct):
 
 
 
+    class Func800fa098Arg0(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.Func800fa098Arg0, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.unk0 = self._io.read_u1()
+            self.unk1 = self._io.read_u1()
+            self.unk2 = self._io.read_u1()
+            self.unk3 = self._io.read_u1()
+            self.unk4_bit0 = self._io.read_bits_int_le(26)
+            self.unk4_bit26 = self._io.read_bits_int_le(6)
+            self.unk8 = self._io.read_u1()
+            self.unk9 = self._io.read_u1()
+            self.unka = self._io.read_u1()
+            self.unkb = self._io.read_u1()
+            self.unkc = self._io.read_u1()
+            self.unkd = self._io.read_u1()
+            self.unke = self._io.read_u1()
+            self.unkf = self._io.read_u1()
+            self.unk10 = self._io.read_u1()
+            self.unk11 = self._io.read_u1()
+            self.unk12 = self._io.read_u1()
+            self.unk13 = self._io.read_u1()
+            self.unk14 = self._io.read_u1()
+            self.unk15 = self._io.read_u1()
+            self.unk16 = self._io.read_u1()
+            self.unk17 = self._io.read_u1()
+            self.unk18 = self._io.read_bytes(24)
+            self.unk30 = P.Array1d(2, self._io, self, self._root)
+            self.unk34 = P.Array2d(8, 6, self._io, self, self._root)
+            self.unk94 = P.Array2d(5, 4, self._io, self, self._root)
+            self.unkbc = self._io.read_s4le()
+            self.unkc0 = P.Array1d(2, self._io, self, self._root)
+            self.unkc4 = self._io.read_u1()
+            self.unkc5 = self._io.read_u1()
+            self.unkc6 = self._io.read_u1()
+            self.unkc7 = self._io.read_u1()
+            self.unkc8 = self._io.read_u1()
+            self.unkc9 = self._io.read_u1()
+            self.unkca = self._io.read_u1()
+            self.unkcb = self._io.read_u1()
+
+
+        def _fetch_instances(self):
+            pass
+            self.unk30._fetch_instances()
+            self.unk34._fetch_instances()
+            self.unk94._fetch_instances()
+            self.unkc0._fetch_instances()
+
+
     class RawBody(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
             super(P.RawBody, self).__init__(_io)
@@ -294,7 +394,7 @@ class P(KaitaiStruct):
             self.num_data = self._io.read_u4le()
             self.data = []
             for i in range(self.num_data):
-                self.data.append(self._io.read_bytes(204))
+                self.data.append(P.Func800fa098Arg0(self._io, self, self._root))
 
 
 
@@ -302,6 +402,7 @@ class P(KaitaiStruct):
             pass
             for i in range(len(self.data)):
                 pass
+                self.data[i]._fetch_instances()
 
 
 

@@ -4184,8 +4184,20 @@ int func_800D4D98(D_800F53B8_t* arg0 __attribute__((unused)))
 
 int func_800D4DA8(D_800F53B8_t* arg0 __attribute__((unused))) { return 1; }
 
-int func_800D4DB0(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4DB0);
+int func_800D4DB0(D_800F53B8_t* arg0)
+{
+    u_char index = arg0->unk10[func_800D5170(arg0)];
+
+    if (arg0->previous == NULL && index < 4) {
+        int id = D_800F569C->block9Data->unk16[index];
+        if (id != 0 && D_800F569C->block3Data != NULL
+            && id < D_800F569C->block3Data->count) {
+            index = id - 1;
+        }
+    }
+    func_800D55A4(arg0, index, 0);
+    return 1;
+}
 
 int func_800D4E5C(D_800F53B8_t* arg0)
 {

@@ -173,6 +173,7 @@ typedef struct {
     u_char unk13;
     u_char unk14;
     u_char unk15;
+    u_char unk16[4];
 } pFileBlock9;
 
 typedef struct {
@@ -286,6 +287,10 @@ typedef struct {
 } pFileBlock5;
 
 typedef struct {
+    int count;
+} pFileBlock3;
+
+typedef struct {
     int unk0;
     int unk4;
     pFileBlock5* block5Data;
@@ -300,7 +305,7 @@ typedef struct {
     u_short* block2Data;
     pFileBlock9* block9Data;
     void* block10Data;
-    void* block3Data;
+    pFileBlock3* block3Data;
     u_char* block11Data;
     void* block12Data;
     void* block13Data;

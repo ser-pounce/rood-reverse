@@ -116,6 +116,18 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
+    char unk0[4];
+    u_char unk4;
+    char unk5[0x3F];
+    int unk44;
+} func_800DEEA4_t;
+
+typedef struct {
+    char unk0[0x9A];
+    short unk9A;
+} func_800DEEA4_t2;
+
+typedef struct {
     short tableCount;
     u_short dataOffset;
     int tableOffsets[0];
@@ -145,6 +157,7 @@ int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
+void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(int);
 int func_800E0678(func_800E0850_t*, int);
 int func_800E42EC(int, int);
@@ -166,6 +179,7 @@ extern effectExec D_800F56A8[];
 extern func_800CF0E8_t* D_800F5798;
 extern D_800F569C_t D_800F57A0;
 extern int D_800F5874;
+extern func_800DEEA4_t2* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
@@ -697,7 +711,20 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEB10);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEC88);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEEA4);
+void func_800DEEA4(func_800DEEA4_t* arg0)
+{
+    if (arg0 != NULL) {
+        if (arg0->unk44 == 0) {
+            func_800DEEA4_t2* entry = D_800F5878[arg0->unk4];
+
+            if (entry != NULL) {
+                entry->unk9A = 0;
+            }
+        }
+
+        func_800DC810(arg0);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEEFC);
 

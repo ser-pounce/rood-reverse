@@ -123,7 +123,9 @@ typedef struct {
 } func_800DEEA4_t;
 
 typedef struct {
-    char unk0[0x9A];
+    char unk0[0x16];
+    signed char unk16;
+    char unk17[0x83];
     short unk9A;
 } func_800DEEA4_t2;
 
@@ -1027,7 +1029,27 @@ int func_800E5698(func_800E5698_t* arg0, int actionId)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5710);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5998);
+void func_800E5998(void)
+{
+    vs_battle_actor* actor = vs_battle_actors[0]->next;
+
+    while (actor != NULL) {
+        if (D_800F5878[actor->id]->unk16 == 0x10) {
+            vs_battle_actor* other = vs_battle_actors[0]->next;
+
+            while (other != NULL) {
+                if (other->unk30_0 == actor->unk30_9) {
+                    break;
+                }
+                other = other->next;
+            }
+            if (other != NULL) {
+                D_800F5878[actor->id]->unk16 = other->id;
+            }
+        }
+        actor = actor->next;
+    }
+}
 
 void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
 {

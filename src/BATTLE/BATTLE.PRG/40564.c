@@ -655,8 +655,73 @@ void func_800AACDC(void)
     *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
 }
 
-// https://decomp.me/scratch/7lkmC
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAD4C);
+int func_800AAD4C(int arg0, int arg1, int arg2, int arg3)
+{
+    D_800F4538_t* actor = D_800F4538[arg0];
+    D_800F4538_unk180C* slot;
+
+    if (actor == NULL) {
+        return -1;
+    }
+
+    if (arg1 >= 2) {
+        return -1;
+    }
+
+    if ((arg3 == 1) && (arg2 == 0)) {
+        return 0;
+    }
+
+    slot = &actor->unk180C[arg1];
+
+    switch (arg3) {
+    case 0:
+        slot->unk0_4 = 0;
+        break;
+
+    case 1:
+        if ((slot->unk0_4 == 1) && (slot->unk0_0 == arg2)) {
+            return 0;
+        }
+
+        slot->unk0_0 = arg2;
+        slot->unk2 = 0;
+
+        if (arg1 == 1) {
+            slot->unk3 = arg0 * 10;
+        } else {
+            slot->unk3 = 0;
+        }
+
+        slot->unk0_4 = arg3;
+        break;
+
+    case 2: {
+        int state = slot->unk0_4;
+
+        if (state == 1) {
+            goto state2;
+        }
+        if (state < 2) {
+            return 0;
+        }
+        if (state == arg3) {
+            goto state1;
+        }
+        return 0;
+
+    state2:
+        slot->unk0_4 = 2;
+        break;
+
+    state1:
+        slot->unk0_4 = 1;
+        break;
+    }
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAE9C);
 

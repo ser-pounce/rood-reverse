@@ -226,7 +226,18 @@ typedef struct {
     short unk2C[6];
 } func_800D0B30_t;
 
+typedef struct {
+    char unk0;
+    char unk1[0x13];
+} func_800C56C0_t2;
+
+typedef struct {
+    char unk0[0x990];
+    func_800C56C0_t2 unk990[24];
+} func_800C56C0_t;
+
 void _renderDigit(int, int, int, u_long*);
+void func_800C51B4(int);
 void func_800CA97C(void);
 void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
@@ -300,7 +311,7 @@ extern u_int _gimLbas[];
 extern int _menuLbas[];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
-extern int D_800EB9B8;
+extern func_800C56C0_t* D_800EB9B8;
 extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
@@ -344,6 +355,9 @@ extern u_char D_800EC368[][5][4];
 extern int (*D_800EC3F4[])(void*);
 extern u_char D_800EC4B8;
 extern u_char D_800F522C;
+extern u_char D_800F4C70[2][16];
+extern u_char D_800F4CB0;
+extern u_char D_800F4CB1;
 extern char D_800F4CB8;
 extern char _fontTable;
 extern int _fontBrightness;
@@ -420,7 +434,20 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5360);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C553C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C56C0);
+void func_800C56C0(void)
+{
+    int i;
+
+    func_800C51B4(1);
+
+    for (i = 0; i < D_800F4CB1; ++i) {
+        D_800EB9B8->unk990[D_800F4C70[0][i]].unk0 = 3;
+    }
+
+    for (i = 0; i < D_800F4CB0; ++i) {
+        D_800EB9B8->unk990[D_800F4C70[1][i]].unk0 = 2;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5798);
 
@@ -1973,7 +2000,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9B0 = 0;
     D_800F4ED4 = 0;
     D_800EB9B4 = NULL;
-    D_800EB9B8 = 0;
+    D_800EB9B8 = NULL;
     D_800EB9BC = NULL;
     vs_battle_menuItems = 0;
     D_800EB9CE = 0;

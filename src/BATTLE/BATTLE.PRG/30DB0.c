@@ -76,6 +76,7 @@ void func_800E68A0(D_800F45E0_t*);
 
 extern u_short _shpLbaOffsets[];
 extern u_char _shpFileSectorSizes[];
+extern u_char D_800E8960[];
 extern u_short _etmLbaOffsets[];
 extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
@@ -112,6 +113,9 @@ extern char D_800F4448[];
 extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
+extern short D_800F4628[4][16];
+extern char* D_800F4810[4][16];
+extern short D_800F4938[4][16];
 extern u_int D_800F49E0;
 
 int vs_battle_getEmptyObjectDataSlot(void)
@@ -1038,8 +1042,40 @@ void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", _loadSeq);
 
-void func_8009CAEC(D_800F4538_t* arg0, int arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009CAEC);
+void func_8009CAEC(D_800F4538_t* arg0, int arg1)
+{
+    int i = 0;
+    int id;
+    char* p;
+
+    while (1) {
+        if (D_800F4628[arg1][i] == -1) {
+            goto tail;
+        }
+        if (D_800F4628[arg1][i] == D_800E8960[arg0->unk6E6]) {
+            p = D_800F4810[arg1][i];
+            p += 8;
+            break;
+        }
+        if (D_800F4628[arg1][i] == arg0->unk6E6) {
+            p = D_800F4810[arg1][i];
+            p += 8;
+            break;
+        }
+        ++i;
+    }
+    arg0->unk5DC[arg1] = p;
+tail:
+    i = 0;
+    while ((id = D_800F4628[arg1][i]) != -1) {
+        if (id == arg0->unk6E6) {
+            arg0->unk183E[arg1] = D_800F4938[arg1][i];
+            return;
+        }
+        ++i;
+    }
+    arg0->unk183E[arg1] = 0xFF;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009CC20);
 

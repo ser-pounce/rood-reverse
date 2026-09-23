@@ -13,7 +13,7 @@ $(DISKCONFIG): | $(DISKIMAGE) $$(@D)/
 	$(ECHO) Dumping files from disk
 	$(DUMPSXISO) $(DUMPSXISOFLAGS) $(DISKIMAGE) $(if $(DEBUG),,> /dev/null)
 
-$(BUILD)/$(DISKIMAGE): $(BUILD)/$(DISKCONFIG)
+$(BUILD)/$(DISKIMAGE): $$(TARGETS) $(BUILD)/$(DISKCONFIG)
 	$(ECHO) Building disk image
 	cp -r --update=none data/ $(BUILD)
 	cd $(BUILD)

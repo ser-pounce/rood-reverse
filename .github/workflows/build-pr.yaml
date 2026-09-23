@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-pr:
     if: github.repository == 'ser-pounce/rood-reverse'
     runs-on: ubuntu-26.04
     container:

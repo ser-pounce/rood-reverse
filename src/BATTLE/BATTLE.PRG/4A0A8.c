@@ -192,6 +192,7 @@ typedef struct {
     char unk2[22];
 } func_800BB68C_t;
 
+int func_80090C2C(int);
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, func_800BB68C_t*);
@@ -2021,8 +2022,36 @@ int func_800B9F90(u_char* arg0, short arg1)
     return (D_800F4C2C == 2) * 4;
 }
 
-// https://decomp.me/scratch/kvMAx
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9FC0);
+int func_800B9FC0(u_char* arg0, short arg1)
+{
+    func_80090C2C(arg0[1] >> 4);
+    if (arg0[4] == 0) {
+        D_800F4B88.unk10 = arg0[1] & 0xF;
+        func_80091320(D_800F4B88.unk10);
+        D_800F4B88.unk4 = arg0[2] * 16;
+        D_800F4B88.unkA = arg0[3] * 4 + ONE / 8;
+        func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
+    } else {
+        int v = arg0[1] & 0xF;
+        short base;
+        int delta;
+
+        D_800F4B88.unk12 = D_800F4B88.unk10;
+        D_800F4B88.unk14 = v - D_800F4B88.unk10;
+        D_800F4B88.unkE =
+            arg0[3] * 4 - (base = (D_800F4B88.unkC = D_800F4B88.unkA) - ONE / 8);
+        delta = arg0[2] * 16 - (D_800F4B88.unk6 = D_800F4B88.unk4);
+        if (delta < -ONE / 2) {
+            delta += ONE;
+        } else if (delta > ONE / 2) {
+            delta -= ONE;
+        }
+        D_800F4B88.unk8 = delta;
+        D_800F4B88.unk3 = arg0[4];
+        D_800F4B88.unk2 = 0;
+    }
+    return 0;
+}
 
 int func_800BA0E4(u_char* arg0, short arg1)
 {

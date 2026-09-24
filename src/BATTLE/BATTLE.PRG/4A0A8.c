@@ -2032,10 +2032,12 @@ int func_800B9FC0(u_char* arg0, short arg1)
         D_800F4B88.unkA = arg0[3] * 4 + ONE / 8;
         func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
     } else {
+        int v = arg0[1] & 0xF;
         short base;
         int delta;
 
-        D_800F4B88.unk14 = (arg0[1] & 0xF) - (D_800F4B88.unk12 = D_800F4B88.unk10);
+        D_800F4B88.unk12 = D_800F4B88.unk10;
+        D_800F4B88.unk14 = v - D_800F4B88.unk10;
         D_800F4B88.unkE =
             arg0[3] * 4 - (base = (D_800F4B88.unkC = D_800F4B88.unkA) - ONE / 8);
         delta = arg0[2] * 16 - (D_800F4B88.unk6 = D_800F4B88.unk4);

@@ -91,16 +91,6 @@ typedef struct {
 } D_800F53B8_t2;
 
 typedef struct {
-    char unk0[0x24];
-    u_int unk24;
-    char unk28[4];
-    SVECTOR unk2C;
-    VECTOR unk34;
-    char unk44[0x54];
-    VECTOR unk98;
-} func_800D2A38_t;
-
-typedef struct {
     char unk0[0x22];
     u_short unk22_0 : 2;
     u_short unk22_2 : 1;
@@ -4015,7 +4005,7 @@ void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1)
     arg1->vz = arg0->vz;
 }
 
-void func_800D2A38(func_800D2A38_t* arg0, func_800D2904_t* arg1)
+void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
 {
     if (arg0->unk24 & 0x40000) {
         ApplyRotMatrix(&arg0->unk2C, &arg0->unk34);

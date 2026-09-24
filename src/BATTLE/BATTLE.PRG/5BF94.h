@@ -242,7 +242,8 @@ typedef struct {
 } func_800FA098_arg0;
 
 typedef struct {
-    u_char unk0[0x24];
+    VECTOR unk0;
+    u_char unk10[0x14];
     u_int unk24;
     int unk28;
     SVECTOR unk2C;

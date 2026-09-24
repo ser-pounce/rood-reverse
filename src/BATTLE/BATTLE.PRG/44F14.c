@@ -6,10 +6,15 @@
 #include "44F14.h"
 #include "../../SLUS_010.40/main.h"
 
+void func_8008EB04(int*, int*);
+int func_800A91DC(int, int, int);
 u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
 void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, u_char*);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
+
+extern u_char D_800E91A4[];
+extern u_char D_800E9278[];
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AD714);
 
@@ -144,7 +149,48 @@ void func_800AE7D8(void* arg0, int arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AE828);
+void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
+{
+    int sp10;
+    int sp14;
+    int id;
+    int floor;
+    _mpdRoomSection3* room;
+
+    if ((u_char)(arg1->animationId - 0xCA) < 18) {
+        return;
+    }
+    if (arg0 == 1) {
+        return;
+    }
+    if (*((int*)&arg1->unk5B4 - 2) & 0xF0000000) {
+        id = D_800E91A4[D_800F45E0[func_800A91DC(arg1->unk0.currentTileX,
+                                       arg1->unk0.currentTileZ, 1)]
+                ->unk6C[8]
+                .actorId];
+    } else {
+        floor = arg1->unk0.unk5D;
+        id = 0xD;
+        if (arg1->unk6E4 != 0) {
+            floor = arg1->unk6E4;
+        }
+        room = func_8008B764(arg1->unk0.currentTileX, arg1->unk0.currentTileZ, floor);
+        if (room != NULL) {
+            id = D_800E9278[room->unk0_0];
+        }
+    }
+    if (arg2 == 0x41) {
+        id += 0x10;
+    } else if (arg2 == 0x42) {
+        id += 0x18;
+    } else {
+        func_8008EB04(&sp10, &sp14);
+        if (sp14 >= 6 && sp10 > 0 && sp10 < 3) {
+            id += 8;
+        }
+    }
+    func_800AE4FC(&arg1->unk0, id);
+}
 
 void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
 {

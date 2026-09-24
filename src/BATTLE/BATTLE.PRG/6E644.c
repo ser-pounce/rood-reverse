@@ -865,25 +865,29 @@ void func_800E1238(func_800E0850_t* arg0, int arg1)
     if (func_800E0918(arg0, arg1, 0) != 0) {
         return;
     }
-    if (func_800E4764(arg0, &sp10, &sp14) != 0) {
-        arg0->unk7 = 1;
-        func_800E3600(arg0, arg1, 3);
-        if (*(int*)0x1F8003C8 == 5) {
-            goto five;
-        }
-        if (*(int*)0x1F8003C8 == 7) {
-            goto seven;
-        }
-        func_800E678C(arg0);
+
+    if (func_800E4764(arg0, &sp10, &sp14) == 0) {
+        func_800E2CCC(arg0);
+        return;
     }
-    func_800E2CCC(arg0);
-    return;
-five:
-    arg1 = arg0->unk188 * (ONE / 8);
-seven:
+
+    arg0->unk7 = 1;
+    func_800E3600(arg0, arg1, 3);
+
+    if (*(int*)0x1F8003C8 != 5 && *(int*)0x1F8003C8 != 7) {
+        func_800E678C(arg0);
+        func_800E2CCC(arg0);
+        return;
+    }
+
+    if (*(int*)0x1F8003C8 == 5) {
+        arg1 = arg0->unk188 * (ONE / 8);
+    }
+
     angle = (-arg1 + ONE * 3 / 4) & 0xFFF;
     c = rcos(angle);
     s = rsin(angle);
+
     if (func_800E0850(arg0, arg1) + arg0->unkBE < arg0->unk4E) {
         arg0->unk184 = -ONE;
         arg0->unk180 = 0;
@@ -893,6 +897,7 @@ seven:
         arg0->unk17C = c;
         arg0->unk180 = s;
     }
+
     if (!(arg0->unk58->unk8_21 << 21)) {
         func_800E4B18(arg0);
     } else {

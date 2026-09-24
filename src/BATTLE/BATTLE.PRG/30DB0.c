@@ -1066,13 +1066,11 @@ void func_8009CAEC(D_800F4538_t* arg0, int arg1)
     }
     arg0->unk5DC[arg1] = p;
 tail:
-    i = 0;
-    while ((id = D_800F4628[arg1][i]) != -1) {
+    for (i = 0; (id = D_800F4628[arg1][i]) != -1; ++i) {
         if (id == arg0->unk6E6) {
             arg0->unk183E[arg1] = D_800F4938[arg1][i];
             return;
         }
-        ++i;
     }
     arg0->unk183E[arg1] = 0xFF;
 }

@@ -92,10 +92,33 @@ typedef struct {
 } D_800F58BC_t;
 
 typedef struct {
-    char unk0[0x34];
+    int unk0;
+    int unk4;
+    u_int unk8_0 : 21;
+    u_int unk8_21 : 1;
+    u_int unk8_22 : 10;
+} func_800E1238_t;
+
+typedef struct {
+    char unk0[7];
+    u_char unk7;
+    char unk8[0x2C];
     u_char unk34;
     char unk35;
     u_char unk36;
+    char unk37[0x17];
+    short unk4E;
+    char unk50[8];
+    func_800E1238_t* unk58;
+    char unk5C[0x62];
+    short unkBE;
+    char unkC0[0xBC];
+    int unk17C;
+    int unk180;
+    int unk184;
+    short unk188;
+    char unk18A[0x9E];
+    int unk228;
 } func_800E0850_t;
 
 typedef struct {
@@ -161,9 +184,16 @@ short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(int);
+void func_800DEEFC(func_800E0850_t*, int);
 int func_800E0678(func_800E0850_t*, int);
+int func_800E0918(func_800E0850_t*, int, int);
+void func_800E2CCC(func_800E0850_t*);
+void func_800E3600(func_800E0850_t*, int, int);
 int func_800E42EC(int, int);
+int func_800E4764(func_800E0850_t*, int*, int*);
+void func_800E4B18(func_800E0850_t*);
 void func_800E5EC0(int, int, int);
+void func_800E678C(func_800E0850_t*);
 
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
@@ -824,7 +854,52 @@ int func_800E0850(func_800E0850_t* arg0, u_int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0918);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1238);
+void func_800E1238(func_800E0850_t* arg0, int arg1)
+{
+    int sp10;
+    int sp14;
+    int angle;
+    int c;
+    int s;
+
+    if (func_800E0918(arg0, arg1, 0) != 0) {
+        return;
+    }
+    if (func_800E4764(arg0, &sp10, &sp14) != 0) {
+        arg0->unk7 = 1;
+        func_800E3600(arg0, arg1, 3);
+        if (*(int*)0x1F8003C8 == 5) {
+            goto five;
+        }
+        if (*(int*)0x1F8003C8 == 7) {
+            goto seven;
+        }
+        func_800E678C(arg0);
+    }
+    func_800E2CCC(arg0);
+    return;
+five:
+    arg1 = arg0->unk188 * (ONE / 8);
+seven:
+    angle = (-arg1 + ONE * 3 / 4) & 0xFFF;
+    c = rcos(angle);
+    s = rsin(angle);
+    if (func_800E0850(arg0, arg1) + arg0->unkBE < arg0->unk4E) {
+        arg0->unk184 = -ONE;
+        arg0->unk180 = 0;
+        arg0->unk17C = 0;
+    } else {
+        arg0->unk184 = 0;
+        arg0->unk17C = c;
+        arg0->unk180 = s;
+    }
+    if (!(arg0->unk58->unk8_21 << 21)) {
+        func_800E4B18(arg0);
+    } else {
+        arg0->unk228 = 0;
+        func_800DEEFC(arg0, sp14);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1388);
 

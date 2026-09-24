@@ -24,6 +24,11 @@ typedef struct {
     short unk6;
 } func_8008D2C0_t;
 
+typedef struct {
+    char unk0[6];
+    short unk6;
+} func_800A6660_t;
+
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
@@ -38,6 +43,7 @@ u_int* func_800A8D64(SVECTOR*, int);
 int func_800B13CC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
+void func_800AA850(int, short, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
@@ -324,7 +330,45 @@ void func_800A525C(D_800F4538_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A5280);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6660);
+void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
+{
+    int delta;
+
+    if (arg1 == arg0->unk0.facing) {
+        return;
+    }
+    if (arg0->unk0.unk18 != 0) {
+        if (arg2->unk6 == 0) {
+            delta = arg1 - ((arg0->unk0.facing + arg0->unk0.unk3E) & 0xFFF);
+            if (delta >= ONE / 2) {
+                delta -= ONE;
+            } else if (delta < -ONE / 2) {
+                delta += ONE;
+            }
+            arg0->unk0.unk3E += delta;
+        } else {
+            delta = arg1 - arg0->unk0.facing;
+            if (delta >= ONE / 2) {
+                delta -= ONE;
+            } else if (delta < -ONE / 2) {
+                delta += ONE;
+            }
+            arg0->unk0.unk3E = delta;
+            arg0->unk0.unk18 = 12;
+        }
+    } else {
+        func_800AA850(arg0->unk0.unkF, arg1, 12);
+    }
+    if (arg0->unk63C > 0x80) {
+        delta = arg0->unk0.unk3E / 32;
+        if (delta < 0) {
+            delta = -delta;
+        }
+        if (arg0->unk0.unk18 < delta) {
+            arg0->unk0.unk18 = delta;
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6798);
 

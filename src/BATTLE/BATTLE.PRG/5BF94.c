@@ -53,7 +53,13 @@ typedef struct {
 } func_800D6894_t;
 
 typedef struct {
-    u_short unk0;
+    u_int unk0_0 : 1;
+    u_int unk0_1 : 1;
+    u_int unk0_2 : 1;
+    u_int unk0_3 : 3;
+    u_int unk0_6 : 3;
+    u_int unk0_9 : 3;
+    u_int unk0_12 : 4;
     char unk2;
     char unk3;
     short unk4;
@@ -1364,8 +1370,9 @@ void vs_battle_loadGim(int id, int arg1)
         var_s0->data = vs_main_allocHeapR((char)_gimLbas[id] << 0xB);
 
         for (i = 0; i < 3; ++i) {
-            var_s0->unk0 = 0;
-            *(int*)&var_s0->unk0 = (((*(int*)&var_s0->unk0 | 2) & ~0x1C0) | 0x40);
+            *(u_short*)var_s0 = 0;
+            var_s0->unk0_1 = 1;
+            var_s0->unk0_6 = 1;
             var_s0->unk2 = arg1;
             var_s0->unk3 = 0x80;
             var_s0->id = id;
@@ -1383,7 +1390,23 @@ void vs_battle_loadGim(int id, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8550);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C86AC);
+void func_800C86AC(void)
+{
+    gim_t* var_s0 = D_800EB9BC;
+    int i;
+
+    if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
+        func_8007E0A8(var_s0->unk2, var_s0->unk0_9, 6);
+        for (i = 0; i < 3; ++i) {
+            if (var_s0->unk0_3 == 3) {
+                func_8007E0A8(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+            }
+            ++var_s0;
+        }
+        vs_main_freeHeapR(D_800EB9BC);
+        D_800EB9BC = NULL;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8778);
 

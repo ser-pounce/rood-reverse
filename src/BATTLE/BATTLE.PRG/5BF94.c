@@ -291,7 +291,7 @@ int func_800D6298(D_800F53B8_t*, func_800D5780_t*);
 void func_800D6448(D_800F53B8_t*, u_char, u_char);
 void func_800D65D8(D_800F53B8_t*, u_char);
 void func_800D6628(D_800F53B8_t*, u_char);
-void func_800D66FC(D_800F53B8_t*, int, int);
+void func_800D66FC(D_800F53B8_t*, u_char, u_char);
 void func_800D67C4(D_800F53B8_t*, u_char);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
@@ -4540,7 +4540,20 @@ void func_800D66CC(D_800F53B8_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D66FC);
+void func_800D66FC(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
+{
+    func_800D1B18(D_800F5520);
+    func_800D1B18(&D_800F5520[1]);
+    D_800F5520[1].lookAt.vx = arg0->unk1C[arg1].unk38.t[0] * ONE;
+    D_800F5520[1].lookAt.vy = arg0->unk1C[arg1].unk38.t[1] * ONE;
+    D_800F5520[1].lookAt.vz = arg0->unk1C[arg1].unk38.t[2] * ONE;
+    D_800F54D0 = 0;
+    if (arg2 == 0) {
+        arg2 = 1;
+    }
+    D_800F55A0 = arg2;
+    func_800D1E20(2);
+}
 
 void func_800D67C4(D_800F53B8_t* arg0, u_char arg1)
 {

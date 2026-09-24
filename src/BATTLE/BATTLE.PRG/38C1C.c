@@ -6,7 +6,10 @@ void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, u_short* arg2, int arg3);
+MATRIX* func_800A1DE8(int, int, MATRIX*);
 void func_800A9EB4(int, int, int);
+
+extern MATRIX D_800F49B8;
 
 int func_800A141C(int arg0, int arg1, int arg2, int arg3)
 {
@@ -185,7 +188,35 @@ int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A17BC);
+int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
+{
+    D_800F4538_t* actor;
+    D_800F4538_t* obj;
+    vs_battle_wepModels_t* model;
+    int _[22] __attribute__((unused));
+
+    *(MATRIX*)arg2 = *func_800A1DE8(arg0, arg1, &D_800F49B8);
+
+    actor = D_800F4538[arg0];
+    if (actor == NULL) {
+        obj = (D_800F4538_t*)D_800F45E0[arg0];
+        if (obj == NULL) {
+            return 0;
+        }
+        *arg3 = obj->unk0.unk68->armatures[arg1].unk0;
+    } else if (arg1 == 0xFF) {
+        *arg3 = 0;
+    } else if ((arg1 & 0xF0) == 0x40) {
+        model = vs_battle_wepModels[arg0 * 2];
+        if (model == NULL) {
+            return 0;
+        }
+        *arg3 = ((D_800F4538_unk68*)model->offsets)->armatures[arg1 - 0x3F].unk0;
+    } else {
+        *arg3 = actor->unk0.unk68->armatures[arg1].unk0;
+    }
+    return 0;
+}
 
 int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {

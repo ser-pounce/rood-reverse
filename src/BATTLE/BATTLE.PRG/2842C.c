@@ -9,7 +9,7 @@
 
 typedef struct {
     int* unk0;
-    int unk4;
+    void* unk4;
     short unk8;
     short unkA;
     int unkC;
@@ -424,7 +424,46 @@ int func_80092540(void) { return 0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80092548);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800927AC);
+void func_800927AC(D_800F1DD8_t* arg0)
+{
+    int _[32] __attribute__((unused));
+    int i;
+    signed char* script;
+    func_80092F74_t* elem = vs_main_allocHeap(sizeof *elem * arg0->unk1);
+    signed char* ids = (signed char*)arg0->unk4;
+
+    arg0->unk4 = (D_800F1DD8_t2*)elem;
+    ids += 4;
+    script = ids + arg0->unk1;
+
+    if (arg0->unk1 % 4) {
+        script = &script[4 - arg0->unk1 % 4];
+    }
+
+    for (i = 0; i < arg0->unk1; ++i, ++elem, ++ids) {
+        elem->unk8 = *ids;
+        elem->unk4 = script;
+        if (elem->unk8 >= 0) {
+            int* entry = func_8009195C(elem->unk8);
+            elem->unk0 = entry;
+            if (entry != NULL) {
+                elem->unkC = entry[1] * 16;
+                elem->unk10 = entry[2] * 16;
+                elem->unk14 = entry[3] * 16;
+                elem->unk1C = entry[4];
+                elem->unk1E = entry[5];
+                elem->unk20 = entry[6];
+            }
+        } else {
+            elem->unk0 = NULL;
+        }
+        elem->unk18 = 0;
+        elem->unk22 = 0;
+        if (elem->unk0 == NULL) {
+            elem->unk8 = -1;
+        }
+    }
+}
 
 void func_80092914(void) { }
 

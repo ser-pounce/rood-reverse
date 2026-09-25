@@ -423,7 +423,68 @@ void func_800AA454(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
     func_800AA490(arg0, arg1, arg2, D_800F4538[arg0]->unk5C0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA490);
+void func_800AA490(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
+{
+    int angle;
+    int dz;
+    D_800F4538_t* actor = D_800F4538[arg0];
+
+    if (actor == NULL) {
+        return;
+    }
+
+    angle = arg1->unk0_0 - actor->unk0.currentTileX;
+    dz = arg1->unk0_16 - actor->unk0.currentTileZ;
+
+    if (angle == 0 && dz == 0) {
+        angle = arg1->unk0_24 * 16;
+    } else {
+        angle = 0xC00 - ratan2(dz, angle);
+        angle %= ONE;
+    }
+
+    angle -= actor->unk0.facing;
+
+    if (angle >= ONE / 2) {
+        angle -= ONE;
+    }
+
+    if (angle < -ONE / 2) {
+        angle += ONE;
+    }
+
+    actor->unk0.unk3E = angle;
+    actor->unk0.unk3C = 0;
+    actor->unk0.unk40 = 0;
+
+    if (angle == 0) {
+        return;
+    }
+
+    if (arg2 == 0) {
+        actor->unk0.unk18 = 0;
+    turn:
+        actor->unk0.facing = (actor->unk0.facing + actor->unk0.unk3E) & 0xFFF;
+        return;
+    }
+
+    if (arg2 == -1) {
+        if (angle < 0) {
+            angle = -angle;
+        }
+        angle *= arg3;
+        actor->unk0.unk18 = angle / ONE;
+        if (angle & 0xFFF) {
+            actor->unk0.unk18 = angle / ONE + 1;
+        }
+        if (actor->unk0.unk18 == 0) {
+            goto turn;
+        }
+        return;
+    }
+
+    actor->unk0.unk18 = arg2;
+}
 
 void func_800AA600(int arg0, SVECTOR* arg1, int arg2) { func_800AA698(arg0, arg1, arg2); }
 

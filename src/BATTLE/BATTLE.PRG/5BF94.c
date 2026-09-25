@@ -178,9 +178,15 @@ typedef struct {
 
 typedef struct {
     u_char unk0;
-    u_char unk1;
+    u_char unk1_0 : 5;
+    u_char unk1_5 : 1;
+    u_char unk1_6 : 1;
+    u_char unk1_7 : 1;
     u_char unk2;
-} func_800D1E2C_t;
+    u_char unk3;
+    u_char unk4;
+    u_char unk5;
+} D_800F54B8_t;
 
 typedef struct {
     VECTOR position;
@@ -194,13 +200,6 @@ typedef struct {
     int projectionDistance;
     int farClip;
 } D_800F54D8_t;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-} func_800D1E78_t;
 
 typedef struct {
     int count;
@@ -382,7 +381,7 @@ extern D_800F53B8_t* D_800F53B8;
 extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
-extern u_char D_800F54B8[];
+extern D_800F54B8_t D_800F54B8[];
 extern short D_800F54D0;
 extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
@@ -3745,7 +3744,7 @@ void func_800D1930(void)
     D_800F55A0 = 0;
 
     for (i = 0; i < 4; ++i) {
-        D_800F54B8[i * 6] = 0xFF;
+        D_800F54B8[i].unk0 = 0xFF;
     }
 }
 
@@ -3776,11 +3775,11 @@ void func_800D1DFC(int arg0)
 
 void func_800D1E20(int arg0) { D_800F55E8 = arg0; }
 
-u_char func_800D1E2C(func_800D1E2C_t* arg0)
+u_char func_800D1E2C(D_800F54B8_t* arg0)
 {
     int var_v0;
 
-    if (arg0->unk1 & 0x20) {
+    if (arg0->unk1_5) {
         var_v0 = func_800D118C(arg0->unk2, arg0->unk0);
     } else {
         var_v0 = arg0->unk2;
@@ -3788,11 +3787,11 @@ u_char func_800D1E2C(func_800D1E2C_t* arg0)
     return var_v0;
 }
 
-u_char func_800D1E78(func_800D1E78_t* arg0)
+u_char func_800D1E78(D_800F54B8_t* arg0)
 {
     int var_s0;
 
-    if (arg0->unk1 & 0x40) {
+    if (arg0->unk1_6) {
         var_s0 = func_800D118C(arg0->unk3, arg0->unk0);
     } else {
         var_s0 = arg0->unk3;
@@ -3805,7 +3804,25 @@ u_char func_800D1E78(func_800D1E78_t* arg0)
     return (rand() % var_s0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1EF0);
+void func_800D1EF0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6)
+{
+    int i;
+
+    for (i = 0; i < 4; ++i) {
+        if ((arg0 >> i) & 1) {
+            D_800F54B8_t* p = &D_800F54B8[i];
+            p->unk1_0 = arg1;
+            p->unk4 = arg2;
+            p->unk1_5 = arg3;
+            p->unk2 = arg4;
+            p->unk1_6 = arg5;
+            p->unk3 = arg6;
+            p->unk0 = 0;
+            p->unk5 = func_800D1E78(p);
+            func_800D1DE4(1 << i);
+        }
+    }
+}
 
 void func_800D1FEC(int arg0)
 {
@@ -3813,7 +3830,7 @@ void func_800D1FEC(int arg0)
 
     for (i = 0; i < 4; ++i) {
         if ((arg0 >> i) & 1) {
-            D_800F54B8[i * 6] = 0xFF;
+            D_800F54B8[i].unk0 = 0xFF;
             func_800D1DFC(1 << i);
         }
     }

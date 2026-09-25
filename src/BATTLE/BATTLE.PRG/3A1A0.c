@@ -47,6 +47,7 @@ void func_800AA850(int, short, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
+int func_800E75EC(void);
 
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
@@ -108,7 +109,7 @@ void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A30A0);
 
-int func_800A3310(int arg0, SVECTOR* arg1)
+inline int func_800A3310(int arg0, SVECTOR* arg1)
 {
     int i;
 
@@ -123,7 +124,34 @@ int func_800A3310(int arg0, SVECTOR* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3394);
+void func_800A3394(int arg0, SVECTOR* arg1)
+{
+    SVECTOR pos;
+    int floor;
+    int retried;
+    D_800F4538_t* actor = D_800F4538[arg0];
+
+    pos.vx = arg1->vx;
+    pos.vz = arg1->vz;
+    pos.vy = arg1->vy - 0xC0;
+    floor = func_800E75EC();
+    retried = 0;
+
+    while (1) {
+        if (func_800A3310(arg0, &pos) != 0) {
+            pos.vy -= 0xC0;
+        } else if (floor != 0 && pos.vy - actor->menuCameraHeightOffset < floor) {
+            if (retried != 0) {
+                return;
+            }
+            retried = 1;
+            pos.vy = arg1->vy - 0x60;
+        } else {
+            arg1->vy = pos.vy;
+            return;
+        }
+    }
+}
 
 int func_800A3500(int arg0, int arg1)
 {

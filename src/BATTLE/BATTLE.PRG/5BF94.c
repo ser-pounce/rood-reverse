@@ -2897,7 +2897,7 @@ int func_800CE9B0(void)
             temp_s1 = var_s0->next;
             D_800F53BC = var_s0;
 
-            if (D_800F569C->transparencyCurveBlock != NULL) {
+            if (D_800F569C->curveBlock != NULL) {
                 func_800D1104(var_s0->unk14_16);
             }
 
@@ -2997,7 +2997,7 @@ int func_800CED60(void)
             func_800CF484(4, var_s1);
             break;
         case 4:
-            if (D_800F569C->transparencyCurveBlock != NULL) {
+            if (D_800F569C->curveBlock != NULL) {
                 func_800D1104(var_s1->unk14_16);
             }
 
@@ -3388,17 +3388,20 @@ int func_800CFB68(int arg0, int arg1, int arg2)
     return (((arg1 - arg0) * arg2) >> 7) + arg0;
 }
 
-int func_800CFB80(int arg0, int arg1)
+int vs_battle_randUniformInt(int arg0, int arg1)
 {
-    int new_var;
     if (arg0 != arg1) {
+        int new_var;
+
         if (arg1 < arg0) {
             new_var = rand() % (arg0 - arg1);
             return new_var + arg1;
         }
+
         new_var = rand() % (arg1 - arg0);
         return new_var + arg0;
     }
+
     return arg0;
 }
 
@@ -3576,21 +3579,19 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 void func_800D1104(int arg0)
 {
     int i;
-    pFileTransparencyCurveBlock* temp_a2 = D_800F569C->transparencyCurveBlock;
+    pFileCurveBlock* temp_a2 = D_800F569C->curveBlock;
 
     for (i = 0; i < temp_a2->count; ++i) {
-        D_800F5330[i + 1] =
-            D_800F569C->transparencyCurves[i][arg0 % temp_a2->curveSizes[i]];
+        D_800F5330[i + 1] = D_800F569C->curves[i][arg0 % temp_a2->curveSizes[i]];
     }
 }
 
-int func_800D118C(int arg0, int arg1)
+int vs_battle_sampleCurve(int curveId, int step)
 {
-    pFileTransparencyCurveBlock* block = D_800F569C->transparencyCurveBlock;
+    pFileCurveBlock* block = D_800F569C->curveBlock;
 
-    if ((arg0 != 0) && (block->count >= arg0)) {
-        return D_800F569C
-            ->transparencyCurves[arg0 - 1][arg1 % block->curveSizes[arg0 - 1]];
+    if ((curveId != 0) && (block->count >= curveId)) {
+        return D_800F569C->curves[curveId - 1][step % block->curveSizes[curveId - 1]];
     }
 
     return 0;
@@ -3780,7 +3781,7 @@ u_char func_800D1E2C(D_800F54B8_t* arg0)
     int var_v0;
 
     if (arg0->unk1_5) {
-        var_v0 = func_800D118C(arg0->unk2, arg0->unk0);
+        var_v0 = vs_battle_sampleCurve(arg0->unk2, arg0->unk0);
     } else {
         var_v0 = arg0->unk2;
     }
@@ -3792,7 +3793,7 @@ u_char func_800D1E78(D_800F54B8_t* arg0)
     int var_s0;
 
     if (arg0->unk1_6) {
-        var_s0 = func_800D118C(arg0->unk3, arg0->unk0);
+        var_s0 = vs_battle_sampleCurve(arg0->unk3, arg0->unk0);
     } else {
         var_s0 = arg0->unk3;
     }
@@ -4024,7 +4025,7 @@ void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1)
 
 void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
 {
-    if (arg0->unk24 & 0x40000) {
+    if (arg0->flags & 0x40000) {
         ApplyRotMatrix(&arg0->unk2C, &arg0->unk34);
     } else {
         arg0->unk34.vx = arg0->unk2C.vx;

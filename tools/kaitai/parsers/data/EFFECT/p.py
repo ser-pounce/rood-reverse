@@ -112,7 +112,7 @@ class P(KaitaiStruct):
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                    self.body = P.TransparencyCurves(_io__raw_body, self, self._root)
+                    self.body = P.curves(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type0:
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
@@ -248,7 +248,7 @@ class P(KaitaiStruct):
             self.unk1 = self._io.read_u1()
             self.unk2 = self._io.read_u1()
             self.unk3 = self._io.read_u1()
-            self.unk4_bit0 = self._io.read_bits_int_le(26)
+            self.flags = self._io.read_bits_int_le(26)
             self.transparency_curve = self._io.read_bits_int_le(6)
             self.unk8 = self._io.read_u1()
             self.unk9 = self._io.read_u1()
@@ -266,7 +266,8 @@ class P(KaitaiStruct):
             self.unk15 = self._io.read_u1()
             self.unk16 = self._io.read_u1()
             self.unk17 = self._io.read_u1()
-            self.unk18 = self._io.read_bytes(24)
+            self.unk18 = P.Array1d(6, self._io, self, self._root)
+            self.unk24 = P.Array1d(6, self._io, self, self._root)
             self.unk30 = P.Array1d(2, self._io, self, self._root)
             self.unk34 = P.Array2d(8, 6, self._io, self, self._root)
             self.unk94 = P.Array2d(5, 4, self._io, self, self._root)
@@ -284,6 +285,8 @@ class P(KaitaiStruct):
 
         def _fetch_instances(self):
             pass
+            self.unk18._fetch_instances()
+            self.unk24._fetch_instances()
             self.unk30._fetch_instances()
             self.unk34._fetch_instances()
             self.unk94._fetch_instances()
@@ -305,9 +308,9 @@ class P(KaitaiStruct):
             pass
 
 
-    class TransparencyCurves(KaitaiStruct):
+    class curves(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(P.TransparencyCurves, self).__init__(_io)
+            super(P.curves, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()

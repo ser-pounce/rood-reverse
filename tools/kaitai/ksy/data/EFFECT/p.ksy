@@ -16,7 +16,7 @@ enums:
     1: type1
     2: type2
     3: type3
-    4: transparency_curves
+    4: curves
     5: type5
     8: type8
     9: type9
@@ -43,7 +43,7 @@ types:
             'block_type::type1': type1_body
             'block_type::type2': type2_body
             'block_type::type3': raw_body
-            'block_type::transparency_curves': transparency_curves
+            'block_type::curves': curves
             'block_type::type5': type5_body
             'block_type::type8': raw_body
             'block_type::type9': raw_body
@@ -82,7 +82,7 @@ types:
       - id: data
         size-eos: true
         
-  transparency_curves:
+  curves:
     seq:
       - id: num_curves
         type: u2
@@ -124,7 +124,7 @@ types:
         type: u1
       - id: unk3
         type: u1
-      - id: unk4_bit0
+      - id: flags
         type: b26
       - id: transparency_curve
         type: b6
@@ -161,7 +161,9 @@ types:
       - id: unk17
         type: u1
       - id: unk18
-        size: 24
+        type: array1d(6)
+      - id: unk24
+        type: array1d(6)
       - id: unk30
         type: array1d(2)
       - id: unk34

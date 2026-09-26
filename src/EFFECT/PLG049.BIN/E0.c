@@ -9,21 +9,21 @@
 typedef struct {
     SVECTOR splinePoints[4];
     u_char stepCount;
-    u_char pivotCount;
-    u_char unk22;
-    u_char currentPivot;
-    SVECTOR pivots[9];
+    u_char splineSampleCount;
+    u_char trailCollapseCounter;
+    u_char currentSplineSample;
+    SVECTOR splineSamples[9];
     int splineProgress;
     int speed;
     int unk74;
-} _trailContext;
+} _trail;
 
 typedef struct {
     u_char unk0;
     u_char unk1;
     u_char trailcount;
     u_char unk3;
-    _trailContext* trails;
+    _trail* trails;
     int unk8;
     func_800D6CF_t unkC;
     int unk1C;
@@ -38,7 +38,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 {
     int sp10;
     int sp14;
-    MATRIX* temp_s0;
+    MATRIX* matrix;
     SVECTOR* temp_s1;
     int temp_a1;
     int temp_lo;
@@ -50,33 +50,31 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     u_short var_a0;
     u_short var_v1;
     u_short var_v1_2;
-    u_char temp_v1;
 
     vs_battle_lerpVector(
-        (short*)arg0->unk18, func_800D118C(arg0->unk8, arg3->unk8), &arg1->unk98);
+        arg0->unk18, vs_battle_sampleCurve(arg0->unk8, arg3->unk8), &arg1->unk98);
 
-    temp_v1 = arg0->unkC8;
-    temp_s0 = &arg2->unk1C[temp_v1].unk38;
+    matrix = &arg2->unk1C[arg0->unkC8].unk38;
 
-    switch (arg1->unk24 & 7) {
+    switch (arg1->flags & 7) {
     case 0:
         break;
     case 1:
         vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
         break;
     case 2:
-        arg1->unk98.vx += temp_s0->t[0];
-        arg1->unk98.vy += temp_s0->t[1];
-        arg1->unk98.vz += temp_s0->t[2];
+        arg1->unk98.vx += matrix->t[0];
+        arg1->unk98.vy += matrix->t[1];
+        arg1->unk98.vz += matrix->t[2];
         break;
     }
 
     vs_battle_lerpVector(
-        (short*)&arg0->unk18[0xC], func_800D118C(arg0->unk9, arg3->unk8), &arg1->unkA8);
-    SetRotMatrix(temp_s0);
+        arg0->unk24, vs_battle_sampleCurve(arg0->unk9, arg3->unk8), &arg1->unkA8);
+    SetRotMatrix(matrix);
     gte_zrtr();
 
-    switch (arg1->unk24 & 0x38) {
+    switch (arg1->flags & 0x38) {
     case 0:
         for (i = 0; i < arg3->trailcount; ++i) {
             temp_s1 = &arg3->trails[i].splinePoints[0];
@@ -91,7 +89,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
             temp_s1->vy =
                 ((((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC);
             temp_s1->vz = ((arg1->unkA8.vz * arg1->unk170) >> 0xC);
-            if (arg1->unk24 & 0x40000) {
+            if (arg1->flags & 0x40000) {
                 ApplyRotMatrix(temp_s1, &arg1->unk34);
                 temp_s1->vx = arg1->unk34.vx;
                 temp_s1->vy = arg1->unk34.vy;
@@ -108,7 +106,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
             temp_s1 = &arg3->trails[i].splinePoints[0];
 
-            switch (arg1->unk24 & 0x1800) {
+            switch (arg1->flags & 0x1800) {
             case 0x800:
             case 0x0:
                 switch (rand() % 6) {
@@ -118,8 +116,10 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
                 case 1:
                     temp_s1->vx = -arg1->unkA8.vx;
                 jump0:
-                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
-                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    temp_s1->vy =
+                        vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    temp_s1->vz =
+                        vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
                     break;
                 case 2:
                     temp_s1->vy = arg1->unkA8.vy;
@@ -128,8 +128,10 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
                 case 3:
                     temp_s1->vy = -arg1->unkA8.vy;
                 jump1:
-                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    temp_s1->vx =
+                        vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vz =
+                        vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
                     break;
                 case 4:
                     temp_s1->vz = arg1->unkA8.vz;
@@ -138,8 +140,10 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
                 case 5:
                     temp_s1->vz = -arg1->unkA8.vz;
                 jump2:
-                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    temp_s1->vx =
+                        vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vy =
+                        vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
                     break;
                 }
                 break;
@@ -170,7 +174,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
                 break;
             }
 
-            if (arg1->unk24 & 0x40000) {
+            if (arg1->flags & 0x40000) {
                 ApplyRotMatrix(temp_s1, &arg1->unk34);
                 temp_s1->vx = arg1->unk34.vx;
                 temp_s1->vy = arg1->unk34.vy;
@@ -209,7 +213,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     temp_lo = 0x1000 / arg1->unk184;
 
-    if ((arg1->unk24 & 0x1800) != 0x1000) {
+    if ((arg1->flags & 0x1800) != 0x1000) {
         D_800FE3D4 = D_800FE3D4 % arg1->unk188;
         temp_s0_2 = (D_800FE3D4 * temp_lo) + 0x200;
         sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
@@ -223,7 +227,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
         temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
 
-        if ((arg1->unk24 & 0x1800) == 0x1000) {
+        if ((arg1->flags & 0x1800) == 0x1000) {
             temp_s1->vx = temp_s3;
             temp_s1->vz = temp_s0_2;
         } else {
@@ -234,7 +238,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
         temp_s1->vy = 0;
 
-        if (arg1->unk24 & 0x40000) {
+        if (arg1->flags & 0x40000) {
             ApplyRotMatrix(temp_s1, &arg1->unk34);
             temp_s1->vx = arg1->unk34.vx;
             temp_s1->vy = arg1->unk34.vy;
@@ -253,11 +257,11 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int i;
 
     vs_battle_lerpSvector(
-        arg0->unk34[6], func_800D118C(arg0->unkF, arg3->unk8), &arg1->unk13C);
+        arg0->unk34[6], vs_battle_sampleCurve(arg0->unkF, arg3->unk8), &arg1->unk13C);
     vs_battle_lerpSvector(
-        arg0->unk34[7], func_800D118C(arg0->unk10, arg3->unk8), &arg1->unk144);
+        arg0->unk34[7], vs_battle_sampleCurve(arg0->unk10, arg3->unk8), &arg1->unk144);
 
-    switch (arg1->unk24 & 0x1C0) {
+    switch (arg1->flags & 0x1C0) {
     case 0:
         break;
 
@@ -276,9 +280,12 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     for (i = 0; i < arg3->trailcount; ++i) {
         SVECTOR* v = &arg3->trails[i].splinePoints[3];
-        v->vx = arg1->unk13C.vx + func_800CFB80(arg1->unk144.vx, -arg1->unk144.vx);
-        v->vy = arg1->unk13C.vy + func_800CFB80(arg1->unk144.vy, -arg1->unk144.vy);
-        v->vz = arg1->unk13C.vz + func_800CFB80(arg1->unk144.vz, -arg1->unk144.vz);
+        v->vx =
+            arg1->unk13C.vx + vs_battle_randUniformInt(arg1->unk144.vx, -arg1->unk144.vx);
+        v->vy =
+            arg1->unk13C.vy + vs_battle_randUniformInt(arg1->unk144.vy, -arg1->unk144.vy);
+        v->vz =
+            arg1->unk13C.vz + vs_battle_randUniformInt(arg1->unk144.vz, -arg1->unk144.vz);
     }
 }
 
@@ -303,18 +310,18 @@ static void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
             temp_s0 = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
                                    + (arg1->unk34.vy * arg1->unk34.vy)
                                    + (arg1->unk34.vz * arg1->unk34.vz));
-            vs_battle_lerp2DVector(
-                arg0->unk94[0], func_800D118C(arg0->unk12, arg3->unk8), arg1->unk124);
-            vs_battle_lerp2DVector(
-                arg0->unk94[1], func_800D118C(arg0->unk13, arg3->unk8), arg1->unk12C);
-            vs_battle_lerp2DVector(
-                arg0->unk94[2], func_800D118C(arg0->unkC, arg3->unk8), arg1->unk118);
-            vs_battle_lerpVector(
-                arg0->unk34[1], func_800D118C(arg0->unkB, arg3->unk8), &arg1->unkC8);
-            vs_battle_lerpVector(
-                arg0->unk34[0], func_800D118C(arg0->unkA, arg3->unk8), &arg1->unkE8);
-            vs_battle_lerpSvector(
-                arg0->unk34[2], func_800D118C(arg0->unkD, arg3->unk8), &arg1->unkF8);
+            vs_battle_lerp2DVector(arg0->unk94[0],
+                vs_battle_sampleCurve(arg0->unk12, arg3->unk8), arg1->unk124);
+            vs_battle_lerp2DVector(arg0->unk94[1],
+                vs_battle_sampleCurve(arg0->unk13, arg3->unk8), arg1->unk12C);
+            vs_battle_lerp2DVector(arg0->unk94[2],
+                vs_battle_sampleCurve(arg0->unkC, arg3->unk8), arg1->unk118);
+            vs_battle_lerpVector(arg0->unk34[1],
+                vs_battle_sampleCurve(arg0->unkB, arg3->unk8), &arg1->unkC8);
+            vs_battle_lerpVector(arg0->unk34[0],
+                vs_battle_sampleCurve(arg0->unkA, arg3->unk8), &arg1->unkE8);
+            vs_battle_lerpSvector(arg0->unk34[2],
+                vs_battle_sampleCurve(arg0->unkD, arg3->unk8), &arg1->unkF8);
 
             if (arg1->unkF8.vx != 0) {
                 int var_v0_2 =
@@ -389,19 +396,20 @@ static void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int speed;
     int i;
 
-    vs_battle_lerp2DVector(arg0->unk94[4], 0, &arg1->unk134);
+    vs_battle_lerp2DVector(arg0->unk94[4], 0, arg1->unk134);
+
     speed = func_800CFE1C(arg0->unk30, 0) << 0xC;
 
     for (i = 0; i < arg3->trailcount; ++i) {
-        int stepCount = func_800CFB80(arg1->unk134, arg1->unk138);
+        int stepCount = vs_battle_randUniformInt(arg1->unk134[0], arg1->unk134[1]);
         if (stepCount == 0) {
             stepCount = 1;
         }
         arg3->trails[i].stepCount = stepCount;
-        arg3->trails[i].pivotCount = 1;
-        arg3->trails[i].unk22 = 8;
-        arg3->trails[i].currentPivot = 0;
-        arg3->trails[i].pivots[0] = arg3->trails[i].splinePoints[0];
+        arg3->trails[i].splineSampleCount = 1;
+        arg3->trails[i].trailCollapseCounter = 8;
+        arg3->trails[i].currentSplineSample = 0;
+        arg3->trails[i].splineSamples[0] = arg3->trails[i].splinePoints[0];
         arg3->trails[i].splineProgress = 0;
         arg3->trails[i].speed = speed;
         arg3->trails[i].unk74 =
@@ -417,16 +425,16 @@ static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
 
     for (i = 0; i < arg3->trailcount; ++i) {
 
-        _trailContext* temp_s0 = &arg3->trails[i];
+        _trail* temp_s0 = &arg3->trails[i];
 
-        if (temp_s0->unk22 == 0) {
+        if (temp_s0->trailCollapseCounter == 0) {
             continue;
         }
 
         if (arg3->unk8 >= temp_s0->stepCount) {
-            --temp_s0->unk22;
-            if (temp_s0->unk22 < temp_s0->stepCount) {
-                --temp_s0->pivotCount;
+            --temp_s0->trailCollapseCounter;
+            if (temp_s0->trailCollapseCounter < temp_s0->stepCount) {
+                --temp_s0->splineSampleCount;
             }
         } else {
             int currentStep = temp_s0->stepCount - arg3->unk8;
@@ -437,15 +445,15 @@ static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
                    - ((speed * 2) / currentStep);
             temp_s0->speed = speed;
             temp_s0->splineProgress += speed;
-            temp_s0->currentPivot = (temp_s0->currentPivot + 1) % 9;
+            temp_s0->currentSplineSample = (temp_s0->currentSplineSample + 1) % 9;
 
             vs_battle_splineInterpolate(&temp_s0->splinePoints[0],
                 &temp_s0->splinePoints[1], &temp_s0->splinePoints[2],
                 &temp_s0->splinePoints[3], (temp_s0->splineProgress >> 0xC) - ONE,
-                &temp_s0->pivots[temp_s0->currentPivot]);
+                &temp_s0->splineSamples[temp_s0->currentSplineSample]);
 
-            if (temp_s0->pivotCount < 9) {
-                ++temp_s0->pivotCount;
+            if (temp_s0->splineSampleCount < 9) {
+                ++temp_s0->splineSampleCount;
             }
         }
     }
@@ -492,22 +500,20 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
         if (temp_s3->transparencyCurve != 0) {
 
             // bad var reuse, trail = length of curve
-            trail = D_800F569C->transparencyCurveBlock
-                        ->curveSizes[temp_s3->transparencyCurve];
+            trail = D_800F569C->curveBlock->curveSizes[temp_s3->transparencyCurve];
 
             if (trail > 1) {
                 --trail;
             }
 
-            for (j = 0; j < 9; ++j) {
+            for (j = 0; j < (int)sizeof temp_v0->sampledTransparencyCurve; ++j) {
                 temp_v0->sampledTransparencyCurve[j] =
-                    D_800F569C
-                        ->transparencyCurves[temp_s3->transparencyCurve][(j * trail) / 8];
+                    D_800F569C->curves[temp_s3->transparencyCurve][(j * trail) / 8];
             }
 
         } else {
-            for (j = 0; j < 9; ++j) {
-                temp_v0->sampledTransparencyCurve[j] = 0x80;
+            for (j = 0; j < (int)sizeof temp_v0->sampledTransparencyCurve; ++j) {
+                temp_v0->sampledTransparencyCurve[j] = 128;
             }
         }
 
@@ -518,7 +524,7 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     case 2:
         temp_s3 = &D_800F569C->block5Data->unk4[temp_s0->unk1];
-        s4->unk24 = temp_s3->unk4_0;
+        s4->flags = temp_s3->flags;
 
         if (temp_s0->unk3 == 0) {
             func_800F98E0(temp_s3, s4, temp_s5, temp_s0);
@@ -536,20 +542,23 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
 
                 sp18.unk60 = 0;
 
-                if (temp_s3->unk4_0 & 0x20000) {
+                if (temp_s3->flags & 0x20000) {
 
                     SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
                     SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
 
-                    s4->unk2C.vx = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vx;
-                    s4->unk2C.vy = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vy;
-                    s4->unk2C.vz = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vz;
+                    s4->unk2C.vx =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vx;
+                    s4->unk2C.vy =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vy;
+                    s4->unk2C.vz =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vz;
 
                     gte_ldv0(&s4->unk2C);
                     gte_rtv0tr2();
@@ -559,18 +568,21 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
                     sp18.unkC.vy = s4->unk34.vy * ONE;
                     sp18.unkC.vz = s4->unk34.vz * ONE;
                 } else {
-                    sp18.unkC.vx = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vx
-                                 * ONE;
-                    sp18.unkC.vy = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vy
-                                 * ONE;
-                    sp18.unkC.vz = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vz
-                                 * ONE;
+                    sp18.unkC.vx =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vx
+                        * ONE;
+                    sp18.unkC.vy =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vy
+                        * ONE;
+                    sp18.unkC.vz =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vz
+                        * ONE;
                 }
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
             }

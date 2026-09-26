@@ -46,10 +46,10 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     MATRIX* temp_s0;
 
     vs_battle_lerpVector(
-        (short*)arg0->unk18, func_800D118C(arg0->unk8, arg3->unkC), &arg1->unk98);
+        arg0->unk18, vs_battle_sampleCurve(arg0->unk8, arg3->unkC), &arg1->unk98);
     temp_s0 = &arg2->unk1C[arg0->unkC8].unk38;
 
-    switch (arg1->unk24 & 7) {
+    switch (arg1->flags & 7) {
     case 0:
         break;
     case 1:
@@ -63,11 +63,11 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     }
 
     vs_battle_lerpVector(
-        (short*)&arg0->unk18[0xC], func_800D118C(arg0->unk9, arg3->unkC), &arg1->unkA8);
+        arg0->unk24, vs_battle_sampleCurve(arg0->unk9, arg3->unkC), &arg1->unkA8);
     SetRotMatrix(temp_s0);
     gte_zrtr();
 
-    switch (arg1->unk24 & 0x38) {
+    switch (arg1->flags & 0x38) {
     case 0:
         for (i = 0; i < arg3->unk2; ++i) {
 
@@ -87,7 +87,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 (((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC;
             temp_s1->vz = (arg1->unkA8.vz * arg1->unk170) >> 0xC;
 
-            if (arg1->unk24 & 0x40000) {
+            if (arg1->flags & 0x40000) {
                 ApplyRotMatrix(temp_s1, &arg1->unk34);
                 temp_s1->vx = arg1->unk34.vx;
                 temp_s1->vy = arg1->unk34.vy;
@@ -105,7 +105,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
             temp_s1 = arg3->unk4 + i * 4;
 
-            switch (arg1->unk24 & 0x1800) {
+            switch (arg1->flags & 0x1800) {
             case 0x0:
             case 0x800:
                 switch (rand() % 6) {
@@ -116,8 +116,10 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 case 1:
                     temp_s1->vx = -arg1->unkA8.vx;
                 jump1:
-                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
-                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    temp_s1->vy =
+                        vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    temp_s1->vz =
+                        vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
                     break;
 
                 case 2:
@@ -127,8 +129,10 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 case 3:
                     temp_s1->vy = -arg1->unkA8.vy;
                 jump2:
-                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vz = func_800CFB80(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    temp_s1->vx =
+                        vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vz =
+                        vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
                     break;
 
                 case 4:
@@ -138,8 +142,10 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 case 5:
                     temp_s1->vz = -arg1->unkA8.vz;
                 jump3:
-                    temp_s1->vx = func_800CFB80(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vy = func_800CFB80(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    temp_s1->vx =
+                        vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
+                    temp_s1->vy =
+                        vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
                     break;
                 }
                 break;
@@ -169,7 +175,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 break;
             }
 
-            if (arg1->unk24 & 0x40000) {
+            if (arg1->flags & 0x40000) {
                 ApplyRotMatrix(temp_s1, &arg1->unk34);
                 temp_s1->vx = arg1->unk34.vx;
                 temp_s1->vy = arg1->unk34.vy;
@@ -210,7 +216,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     temp_lo = 0x1000 / arg1->unk184;
 
-    if ((arg1->unk24 & 0x1800) != 0x1000) {
+    if ((arg1->flags & 0x1800) != 0x1000) {
         D_800FB5B4 %= arg1->unk188;
         temp_s0_2 = (D_800FB5B4 * temp_lo) + 0x200;
         sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
@@ -224,7 +230,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
         temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
         temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
 
-        if ((arg1->unk24 & 0x1800) == 0x1000) {
+        if ((arg1->flags & 0x1800) == 0x1000) {
             temp_s1->vx = temp_s3;
             temp_s1->vz = temp_s0_2;
         } else {
@@ -235,7 +241,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
         temp_s1->vy = 0;
 
-        if (arg1->unk24 & 0x40000) {
+        if (arg1->flags & 0x40000) {
             ApplyRotMatrix(temp_s1, &arg1->unk34);
             temp_s1->vx = arg1->unk34.vx;
             temp_s1->vy = arg1->unk34.vy;
@@ -253,11 +259,11 @@ void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     int i;
 
     vs_battle_lerpSvector(
-        arg0->unk34[6], func_800D118C(arg0->unkF, arg3->unkC), &arg1->unk13C);
+        arg0->unk34[6], vs_battle_sampleCurve(arg0->unkF, arg3->unkC), &arg1->unk13C);
     vs_battle_lerpSvector(
-        arg0->unk34[7], func_800D118C(arg0->unk10, arg3->unkC), &arg1->unk144);
+        arg0->unk34[7], vs_battle_sampleCurve(arg0->unk10, arg3->unkC), &arg1->unk144);
 
-    switch (arg1->unk24 & 0x1C0) {
+    switch (arg1->flags & 0x1C0) {
     case 0xC0:
         arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk38.t[0];
         arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk38.t[1];
@@ -274,9 +280,12 @@ void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     for (i = 0; i < arg3->unk2; ++i) {
         SVECTOR* temp_s0 = &arg3->unk4[i * 4 + 3];
-        temp_s0->vx = arg1->unk13C.vx + func_800CFB80(arg1->unk144.vx, -arg1->unk144.vx);
-        temp_s0->vy = arg1->unk13C.vy + func_800CFB80(arg1->unk144.vy, -arg1->unk144.vy);
-        temp_s0->vz = arg1->unk13C.vz + func_800CFB80(arg1->unk144.vz, -arg1->unk144.vz);
+        temp_s0->vx =
+            arg1->unk13C.vx + vs_battle_randUniformInt(arg1->unk144.vx, -arg1->unk144.vx);
+        temp_s0->vy =
+            arg1->unk13C.vy + vs_battle_randUniformInt(arg1->unk144.vy, -arg1->unk144.vy);
+        temp_s0->vz =
+            arg1->unk13C.vz + vs_battle_randUniformInt(arg1->unk144.vz, -arg1->unk144.vz);
     }
 }
 
@@ -305,17 +314,17 @@ void func_800FA2B0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                                + (arg1->unk34.vz * arg1->unk34.vz));
 
         vs_battle_lerp2DVector(
-            arg0->unk94[0], func_800D118C(arg0->unk12, arg3->unkC), arg1->unk124);
+            arg0->unk94[0], vs_battle_sampleCurve(arg0->unk12, arg3->unkC), arg1->unk124);
         vs_battle_lerp2DVector(
-            arg0->unk94[1], func_800D118C(arg0->unk13, arg3->unkC), arg1->unk12C);
+            arg0->unk94[1], vs_battle_sampleCurve(arg0->unk13, arg3->unkC), arg1->unk12C);
         vs_battle_lerp2DVector(
-            arg0->unk94[2], func_800D118C(arg0->unkC, arg3->unkC), arg1->unk118);
+            arg0->unk94[2], vs_battle_sampleCurve(arg0->unkC, arg3->unkC), arg1->unk118);
         vs_battle_lerpVector(
-            arg0->unk34[1], func_800D118C(arg0->unkB, arg3->unkC), &arg1->unkC8);
+            arg0->unk34[1], vs_battle_sampleCurve(arg0->unkB, arg3->unkC), &arg1->unkC8);
         vs_battle_lerpVector(
-            arg0->unk34[0], func_800D118C(arg0->unkA, arg3->unkC), &arg1->unkE8);
+            arg0->unk34[0], vs_battle_sampleCurve(arg0->unkA, arg3->unkC), &arg1->unkE8);
         vs_battle_lerpSvector(
-            arg0->unk34[2], func_800D118C(arg0->unkD, arg3->unkC), &arg1->unkF8);
+            arg0->unk34[2], vs_battle_sampleCurve(arg0->unkD, arg3->unkC), &arg1->unkF8);
 
         if (arg1->unkF8.vx != 0) {
             int var_v0_2 =
@@ -422,9 +431,9 @@ int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     case 2:
         temp_s2 = &D_800F569C->block5Data->unk4[temp_s1->unk1];
-        a2->unk24 = temp_s2->unk4_0;
-        temp_s1->unk2 =
-            func_800CFE1C(temp_s2->unkC0, func_800D118C(temp_s2->unk16, temp_s1->unkC));
+        a2->flags = temp_s2->flags;
+        temp_s1->unk2 = func_800CFE1C(
+            temp_s2->unkC0, vs_battle_sampleCurve(temp_s2->unk16, temp_s1->unkC));
 
         if (temp_s1->unk2 >= 9) {
             temp_s1->unk2 = 8;

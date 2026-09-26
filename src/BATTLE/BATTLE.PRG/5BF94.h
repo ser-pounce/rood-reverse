@@ -180,7 +180,7 @@ typedef struct {
     u_short count;
     u_short dataOffset;
     u_char curveSizes[0];
-} pFileTransparencyCurveBlock;
+} pFileCurveBlock;
 
 typedef struct {
     short unk0;
@@ -207,7 +207,7 @@ typedef struct {
     u_char unk1;
     u_char unk2;
     u_char unk3;
-    u_int unk4_0 : 26;
+    u_int flags : 26;
     u_int transparencyCurve : 6;
     u_char unk8;
     u_char unk9;
@@ -225,7 +225,8 @@ typedef struct {
     u_char unk15;
     u_char unk16;
     u_char unk17;
-    u_char unk18[0x18];
+    short unk18[6];
+    short unk24[6];
     short unk30[2];
     short unk34[8][6];
     short unk94[5][4];
@@ -244,7 +245,7 @@ typedef struct {
 typedef struct {
     VECTOR unk0;
     u_char unk10[0x14];
-    u_int unk24;
+    u_int flags;
     int unk28;
     SVECTOR unk2C;
     VECTOR unk34;
@@ -266,8 +267,7 @@ typedef struct {
     int unk120;
     int unk124[2];
     int unk12C[2];
-    int unk134;
-    int unk138;
+    int unk134[2];
     SVECTOR unk13C;
     SVECTOR unk144;
     u_char unk14C[0x1C];
@@ -295,8 +295,8 @@ typedef struct {
     int unk0;
     int unk4;
     pFileBlock5* block5Data;
-    u_char* transparencyCurves[32];
-    pFileTransparencyCurveBlock* transparencyCurveBlock;
+    u_char* curves[32];
+    pFileCurveBlock* curveBlock;
     char* block8Data;
     int block1TableCount;
     void* block1Tables[4];
@@ -555,9 +555,9 @@ void vs_battle_addVecToSvec(VECTOR* arg0, SVECTOR* arg1, VECTOR* arg2);
 void vs_battle_lerp2DVector(short* src, int t, int* vec);
 void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
 void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
-int func_800CFB80(int, int);
+int vs_battle_randUniformInt(int, int);
 int func_800CFE1C(short* arg0, int arg1);
-int func_800D118C(int arg0, int arg1);
+int vs_battle_sampleCurve(int arg0, int arg1);
 
 /**
  * Evaluates a point on a spline segment between p1 and p2.

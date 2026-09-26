@@ -14,21 +14,21 @@ typedef struct {
 typedef struct {
     SVECTOR splinePoints[4];
     u_char stepCount;
-    u_char pivotCount;
-    u_char unk22;
-    u_char currentPivot;
-    SVECTOR pivots[5];
+    u_char splineSampleCount;
+    u_char trailCollapseCounter;
+    u_char currentSplineSample;
+    SVECTOR splineSamples[5];
     int splineProgress;
     int speed;
     int unk54;
-} _trailContext;
+} _trail;
 
 typedef struct {
     u_char unk0;
     u_char unk1;
     u_char trailcount;
     u_char unk3;
-    _trailContext* trails;
+    _trail* trails;
     int unk8;
     func_800D6CF_t unkC;
     int unk1C;
@@ -120,8 +120,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
         if (temp_s3->transparencyCurve != 0) {
 
             // bad var reuse, trail = length of curve
-            trail = D_800F569C->transparencyCurveBlock
-                        ->curveSizes[temp_s3->transparencyCurve];
+            trail = D_800F569C->curveBlock->curveSizes[temp_s3->transparencyCurve];
 
             if (trail > 1) {
                 --trail;
@@ -129,8 +128,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 
             for (j = 0; j < 5; ++j) {
                 temp_v0->sampledTransparencyCurve[j] =
-                    D_800F569C
-                        ->transparencyCurves[temp_s3->transparencyCurve][(j * trail) / 4];
+                    D_800F569C->curves[temp_s3->transparencyCurve][(j * trail) / 4];
             }
 
         } else {
@@ -145,7 +143,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     case 2:
         temp_s3 = &D_800F569C->block5Data->unk4[temp_s0->unk1];
-        s4->unk24 = (temp_s3->unk4_0);
+        s4->flags = (temp_s3->flags);
 
         if (temp_s0->unk3 == 0) {
             func_800FE3D0(temp_s3, s4, temp_s5, temp_s0);
@@ -163,18 +161,21 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 
                 sp18.unk60 = 0;
 
-                if (temp_s3->unk4_0 & 0x20000) {
+                if (temp_s3->flags & 0x20000) {
                     SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
                     SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
-                    s4->unk2C.vx = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vx;
-                    s4->unk2C.vy = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vy;
-                    s4->unk2C.vz = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vz;
+                    s4->unk2C.vx =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vx;
+                    s4->unk2C.vy =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vy;
+                    s4->unk2C.vz =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vz;
 
                     gte_ldv0(&s4->unk2C);
                     gte_rtv0tr2();
@@ -184,18 +185,21 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
                     sp18.unkC.vy = s4->unk34.vy * ONE;
                     sp18.unkC.vz = s4->unk34.vz * ONE;
                 } else {
-                    sp18.unkC.vx = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vx
-                                 * ONE;
-                    sp18.unkC.vy = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vy
-                                 * ONE;
-                    sp18.unkC.vz = temp_s0->trails[trail]
-                                       .pivots[temp_s0->trails[trail].currentPivot]
-                                       .vz
-                                 * ONE;
+                    sp18.unkC.vx =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vx
+                        * ONE;
+                    sp18.unkC.vy =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vy
+                        * ONE;
+                    sp18.unkC.vz =
+                        temp_s0->trails[trail]
+                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                            .vz
+                        * ONE;
                 }
 
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);

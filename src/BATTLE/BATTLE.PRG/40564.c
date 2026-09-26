@@ -502,7 +502,62 @@ void func_800AA620(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA698);
+void func_800AA698(int arg0, SVECTOR* arg1, int arg2)
+{
+    int dist;
+    int temp;
+    D_800F4538_t* actor = D_800F4538[arg0];
+
+    if (actor == NULL) {
+        return;
+    }
+
+    actor->unk0.unk34.vx = arg1->vx;
+    actor->unk0.unk34.vy = arg1->vy;
+    actor->unk0.unk34.vz = arg1->vz;
+
+    if (arg2 == 0) {
+        actor->unk0.unk1A = 0;
+    move:
+        actor->unk0.position.vx += arg1->vx;
+        actor->unk0.position.vy += arg1->vy;
+        actor->unk0.position.vz += arg1->vz;
+        actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+        actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+        return;
+    }
+
+    if (arg2 == -1) {
+        temp = actor->unk0.unk34.vx;
+        temp *= temp;
+        if (temp < 0) {
+            temp = -temp;
+        }
+        dist = temp;
+        temp = actor->unk0.unk34.vz;
+        temp *= temp;
+        if (temp < 0) {
+            temp = -temp;
+        }
+        dist += temp;
+        temp = actor->unk0.unk34.vy;
+        temp *= temp;
+        if (temp < 0) {
+            temp = -temp;
+        }
+        dist = vs_gte_rsqrt(dist + temp) * actor->unk5C2;
+        actor->unk0.unk1A = dist / 128;
+        if (dist & 0x7F) {
+            actor->unk0.unk1A = dist / 128 + 1;
+        }
+        if (actor->unk0.unk1A == 0) {
+            goto move;
+        }
+        return;
+    }
+
+    actor->unk0.unk1A = arg2;
+}
 
 void func_800AA82C(int arg0, short arg1, int arg2) { func_800AA984(arg0, arg1, arg2); }
 

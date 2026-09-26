@@ -1715,8 +1715,70 @@ int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
     return ratan2(arg1->vy - sp10.vy, var_s0);
 }
 
-// https://decomp.me/scratch/eQWuH
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009E2E0);
+void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
+{
+    u_char sp10[2] = { 0x55, 0x58 };
+    u_char sp18[2] = { 0x57, 0x59 };
+    int sp20;
+    int angle;
+    int diff;
+    int anim;
+    D_800F4538_t* actor = D_800F4538[arg0];
+
+    if (actor == NULL) {
+        return;
+    }
+
+    if (arg2 == 0) {
+        if (arg1 != NULL) {
+            int dx = arg1->vx - actor->unk0.position.vx;
+            int dz = arg1->vz - actor->unk0.position.vz;
+
+            if (dx == 0 && dz == 0) {
+                angle = actor->unk0.facing;
+            } else {
+                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
+            }
+
+            angle -= actor->unk0.facing;
+
+            if (angle > ONE / 2) {
+                angle -= ONE;
+            } else if (angle < -ONE / 2) {
+                angle += ONE;
+            }
+
+            diff = angle;
+        } else {
+            diff = 0;
+        }
+
+        actor->unk0.unk3E = diff;
+        actor->unk0.unk18 = 10;
+
+        if (actor->unk63C > 0x80) {
+            actor->unk0.unk18 = 20;
+        }
+    }
+
+    anim = sp10[arg2];
+
+    if (actor->unk0.weaponDrawn) {
+        anim += 100;
+    }
+
+    func_800AD494(actor, anim, &sp20);
+
+    if (sp20 == 0) {
+        anim = sp18[arg2];
+        if (actor->unk0.weaponDrawn) {
+            anim += 100;
+        }
+    }
+
+    func_800A0204(arg0, anim, 0, 6);
+    func_8009FD38(actor);
+}
 
 int func_8009E480(void)
 {

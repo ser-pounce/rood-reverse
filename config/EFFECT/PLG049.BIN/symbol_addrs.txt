@@ -1,0 +1,1 @@
+vs_spiritSurge_renderTrails = 0x800FB4C0;

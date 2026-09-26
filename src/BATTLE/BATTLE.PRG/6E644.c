@@ -227,7 +227,7 @@ void func_800D7814(void)
     D_800F56A0 = NULL;
     D_800F5874 = 0;
     D_800F5684 = 0;
-    D_800F57A0.block4Data = NULL;
+    D_800F57A0.transparencyCurveBlock = NULL;
     D_800F57A0.unkD0 = D_800F53C0;
     D_800F5798 = &D_800F5230;
     func_800D7890(0);
@@ -266,17 +266,17 @@ void func_800D78F0(void)
 
 void _parsePfileBlock3(void* block) { D_800F569C->block3Data = block; }
 
-void _parsePfileBlock4(pFileBlock4* block)
+void _parsepFileTransparencyCurveBlock(pFileTransparencyCurveBlock* block)
 {
     u_char* p;
     int i;
 
-    D_800F569C->block4Data = block;
+    D_800F569C->transparencyCurveBlock = block;
     p = (u_char*)block + block->dataOffset;
 
     for (i = 0; i < block->count; i++) {
-        D_800F569C->block4SubBlocks[i] = p;
-        p += block->subBlockSizes[i];
+        D_800F569C->transparencyCurves[i] = p;
+        p += block->curveSizes[i];
     }
 }
 
@@ -542,7 +542,7 @@ void func_800D8060(p_file_t* arg0)
             break;
 
         case 0x40000:
-            _parsePfileBlock4((pFileBlock4*)arg0->data);
+            _parsepFileTransparencyCurveBlock((pFileTransparencyCurveBlock*)arg0->data);
             break;
 
         case 0x50000:

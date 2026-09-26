@@ -51,6 +51,7 @@ $(BUILD)/data/EFFECT/EFFPURGE.BIN: LDFLAGS += \
 	--defsym=func_800FB418=0x800FB418 \
 	--defsym=func_800FB4B8=0x800FB4B8 \
 	--defsym=func_800FB4C0=0x800FB4C0 \
+	--defsym=vs_spiritSurge_renderTrails=0x800FB4C0 \
 	--defsym=func_800FB4D0=0x800FB4D0 \
 	--defsym=func_800FB4D8=0x800FB4D8 \
 	--defsym=func_800FB4E0=0x800FB4E0 \

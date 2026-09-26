@@ -179,8 +179,8 @@ typedef struct {
 typedef struct {
     u_short count;
     u_short dataOffset;
-    u_char subBlockSizes[0];
-} pFileBlock4;
+    u_char curveSizes[0];
+} pFileTransparencyCurveBlock;
 
 typedef struct {
     short unk0;
@@ -208,7 +208,7 @@ typedef struct {
     u_char unk2;
     u_char unk3;
     u_int unk4_0 : 26;
-    u_int unk4_26 : 6;
+    u_int transparencyCurve : 6;
     u_char unk8;
     u_char unk9;
     u_char unkA;
@@ -295,9 +295,8 @@ typedef struct {
     int unk0;
     int unk4;
     pFileBlock5* block5Data;
-    u_char* block4SubBlocks[4];
-    char unk1C[0x70];
-    pFileBlock4* block4Data;
+    u_char* transparencyCurves[32];
+    pFileTransparencyCurveBlock* transparencyCurveBlock;
     char* block8Data;
     int block1TableCount;
     void* block1Tables[4];

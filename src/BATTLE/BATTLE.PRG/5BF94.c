@@ -2897,7 +2897,7 @@ int func_800CE9B0(void)
             temp_s1 = var_s0->next;
             D_800F53BC = var_s0;
 
-            if (D_800F569C->block4Data != NULL) {
+            if (D_800F569C->transparencyCurveBlock != NULL) {
                 func_800D1104(var_s0->unk14_16);
             }
 
@@ -2997,7 +2997,7 @@ int func_800CED60(void)
             func_800CF484(4, var_s1);
             break;
         case 4:
-            if (D_800F569C->block4Data != NULL) {
+            if (D_800F569C->transparencyCurveBlock != NULL) {
                 func_800D1104(var_s1->unk14_16);
             }
 
@@ -3576,21 +3576,21 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
 void func_800D1104(int arg0)
 {
     int i;
-    pFileBlock4* temp_a2 = D_800F569C->block4Data;
+    pFileTransparencyCurveBlock* temp_a2 = D_800F569C->transparencyCurveBlock;
 
     for (i = 0; i < temp_a2->count; ++i) {
         D_800F5330[i + 1] =
-            D_800F569C->block4SubBlocks[i][arg0 % temp_a2->subBlockSizes[i]];
+            D_800F569C->transparencyCurves[i][arg0 % temp_a2->curveSizes[i]];
     }
 }
 
 int func_800D118C(int arg0, int arg1)
 {
-    pFileBlock4* block = D_800F569C->block4Data;
+    pFileTransparencyCurveBlock* block = D_800F569C->transparencyCurveBlock;
 
     if ((arg0 != 0) && (block->count >= arg0)) {
         return D_800F569C
-            ->block4SubBlocks[arg0 - 1][arg1 % block->subBlockSizes[arg0 - 1]];
+            ->transparencyCurves[arg0 - 1][arg1 % block->curveSizes[arg0 - 1]];
     }
 
     return 0;

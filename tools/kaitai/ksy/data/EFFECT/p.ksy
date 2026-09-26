@@ -16,7 +16,7 @@ enums:
     1: type1
     2: type2
     3: type3
-    4: type4
+    4: transparency_curves
     5: type5
     8: type8
     9: type9
@@ -43,7 +43,7 @@ types:
             'block_type::type1': type1_body
             'block_type::type2': type2_body
             'block_type::type3': raw_body
-            'block_type::type4': type4_body
+            'block_type::transparency_curves': transparency_curves
             'block_type::type5': type5_body
             'block_type::type8': raw_body
             'block_type::type9': raw_body
@@ -82,18 +82,28 @@ types:
       - id: data
         size-eos: true
         
-  type4_body:
+  transparency_curves:
     seq:
-      - id: num_offsets
+      - id: num_curves
         type: u2
       - id: data_offset
         type: u2
-      - id: offsets
+      - id: sizes
         type: u1
         repeat: expr
-        repeat-expr: num_offsets
-      - id: data
-        size-eos: true
+        repeat-expr: num_curves
+      - id: curves
+        type: block_chunk(_index)
+        repeat: expr
+        repeat-expr: num_curves
+
+  block_chunk:
+    params:
+      - id: idx
+        type: u4
+    seq:
+      - id: body
+        size: _parent.sizes[idx]
 
   type5_body:
     seq:

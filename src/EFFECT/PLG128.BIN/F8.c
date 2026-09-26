@@ -14,25 +14,25 @@ typedef struct {
 typedef struct {
     SVECTOR splinePoints[4];
     u_char stepCount;
-    u_char trailCount;
+    u_char pivotCount;
     u_char unk22;
-    u_char currentTrail;
-    SVECTOR trails[5];
+    u_char currentPivot;
+    SVECTOR pivots[5];
     int splineProgress;
     int speed;
     int unk54;
-} func_800FA76C_t;
+} _trailContext;
 
 typedef struct {
     u_char unk0;
     u_char unk1;
-    u_char unk2;
+    u_char trailcount;
     u_char unk3;
-    func_800FA76C_t* unk4;
+    _trailContext* trails;
     int unk8;
     func_800D6CF_t unkC;
     int unk1C;
-    u_char unk2C[8];
+    u_char sampledTransparencyCurve[8];
 } func_800FA76C_arg3;
 
 void func_800FE3D0(
@@ -90,7 +90,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800FB4C0_t sp18;
     func_800FA098_arg0* temp_s3;
-    int i;
+    int trail;
     int j;
     func_800FA76C_arg3* temp_v0;
 
@@ -107,32 +107,35 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
         temp_v0->unk0 = arg2;
         temp_v0->unk8 = 0;
         temp_s3 = &D_800F569C->block5Data->unk4[temp_v0->unk1];
-        i = temp_s3->unkC0[0];
+        trail = temp_s3->unkC0[0];
 
-        if (i > 16) {
-            i = 16;
+        if (trail > 16) {
+            trail = 16;
         }
 
-        temp_v0->unk4 = vs_main_allocHeapR(i * sizeof *temp_v0->unk4);
-        temp_v0->unk2 = i;
+        temp_v0->trails = vs_main_allocHeapR(trail * sizeof *temp_v0->trails);
+        temp_v0->trailcount = trail;
         temp_v0->unk3 = 0;
 
-        if (temp_s3->unk4_26 != 0) {
+        if (temp_s3->transparencyCurve != 0) {
 
-            i = D_800F569C->block4Data->subBlockSizes[temp_s3->unk4_26];
+            // bad var reuse, trail = length of curve
+            trail = D_800F569C->transparencyCurveBlock
+                        ->curveSizes[temp_s3->transparencyCurve];
 
-            if (i >= 2) {
-                --i;
+            if (trail > 1) {
+                --trail;
             }
 
             for (j = 0; j < 5; ++j) {
-                temp_v0->unk2C[j] =
-                    D_800F569C->block4SubBlocks[temp_s3->unk4_26][(j * i) / 4];
+                temp_v0->sampledTransparencyCurve[j] =
+                    D_800F569C
+                        ->transparencyCurves[temp_s3->transparencyCurve][(j * trail) / 4];
             }
 
         } else {
             for (j = 0; j < 5; ++j) {
-                temp_v0->unk2C[j] = 0x80;
+                temp_v0->sampledTransparencyCurve[j] = 0x80;
             }
         }
 
@@ -156,19 +159,22 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800FF54C(temp_s3, s4, temp_s5, temp_s0);
 
         if (temp_s3->unk3 != 0) {
-            for (i = 0; i < temp_s0->unk2; ++i) {
+            for (trail = 0; trail < temp_s0->trailcount; ++trail) {
 
                 sp18.unk60 = 0;
 
                 if (temp_s3->unk4_0 & 0x20000) {
                     SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
                     SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
-                    s4->unk2C.vx =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx;
-                    s4->unk2C.vy =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy;
-                    s4->unk2C.vz =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz;
+                    s4->unk2C.vx = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vx;
+                    s4->unk2C.vy = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vy;
+                    s4->unk2C.vz = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vz;
 
                     gte_ldv0(&s4->unk2C);
                     gte_rtv0tr2();
@@ -178,12 +184,18 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
                     sp18.unkC.vy = s4->unk34.vy * ONE;
                     sp18.unkC.vz = s4->unk34.vz * ONE;
                 } else {
-                    sp18.unkC.vx =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx * ONE;
-                    sp18.unkC.vy =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy * ONE;
-                    sp18.unkC.vz =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz * ONE;
+                    sp18.unkC.vx = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vx
+                                 * ONE;
+                    sp18.unkC.vy = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vy
+                                 * ONE;
+                    sp18.unkC.vz = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vz
+                                 * ONE;
                 }
 
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
@@ -196,7 +208,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
             --temp_s0->unk0;
             if (!temp_s0->unk0) {
                 var_s6 = 0;
-                vs_main_freeHeapR(temp_s0->unk4);
+                vs_main_freeHeapR(temp_s0->trails);
             }
         }
         break;
@@ -207,7 +219,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     case 4:
         var_s6 = 0;
-        vs_main_freeHeapR(temp_s0->unk4);
+        vs_main_freeHeapR(temp_s0->trails);
         break;
     }
 

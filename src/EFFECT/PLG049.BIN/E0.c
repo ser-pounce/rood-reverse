@@ -9,25 +9,25 @@
 typedef struct {
     SVECTOR splinePoints[4];
     u_char stepCount;
-    u_char trailCount;
+    u_char pivotCount;
     u_char unk22;
-    u_char currentTrail;
-    SVECTOR trails[9];
+    u_char currentPivot;
+    SVECTOR pivots[9];
     int splineProgress;
     int speed;
     int unk74;
-} func_800FA76C_t;
+} _trailContext;
 
 typedef struct {
     u_char unk0;
     u_char unk1;
-    u_char unk2;
+    u_char trailcount;
     u_char unk3;
-    func_800FA76C_t* unk4;
+    _trailContext* trails;
     int unk8;
     func_800D6CF_t unkC;
     int unk1C;
-    u_char unk2C[9];
+    u_char sampledTransparencyCurve[9];
     u_char unk35[3];
 } func_800FA76C_arg3;
 
@@ -78,8 +78,8 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     switch (arg1->unk24 & 0x38) {
     case 0:
-        for (i = 0; i < arg3->unk2; ++i) {
-            temp_s1 = &arg3->unk4[i].splinePoints[0];
+        for (i = 0; i < arg3->trailcount; ++i) {
+            temp_s1 = &arg3->trails[i].splinePoints[0];
             temp_v0 = rand();
             arg1->unk170 = rsin(temp_v0);
             arg1->unk178 = rcos(temp_v0);
@@ -104,9 +104,9 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         return;
 
     case 8:
-        for (i = 0; i < arg3->unk2; ++i) {
+        for (i = 0; i < arg3->trailcount; ++i) {
 
-            temp_s1 = &arg3->unk4[i].splinePoints[0];
+            temp_s1 = &arg3->trails[i].splinePoints[0];
 
             switch (arg1->unk24 & 0x1800) {
             case 0x800:
@@ -216,8 +216,8 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         sp14 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
     }
 
-    for (i = 0; i < arg3->unk2; ++i) {
-        temp_s1 = &arg3->unk4[i].splinePoints[0];
+    for (i = 0; i < arg3->trailcount; ++i) {
+        temp_s1 = &arg3->trails[i].splinePoints[0];
         D_800FE3D4 = (D_800FE3D4 + 1) % arg1->unk188;
         temp_s0_2 = (D_800FE3D4 * temp_lo) + 0x200;
         temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
@@ -274,8 +274,8 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         break;
     }
 
-    for (i = 0; i < arg3->unk2; ++i) {
-        SVECTOR* v = &arg3->unk4[i].splinePoints[3];
+    for (i = 0; i < arg3->trailcount; ++i) {
+        SVECTOR* v = &arg3->trails[i].splinePoints[3];
         v->vx = arg1->unk13C.vx + func_800CFB80(arg1->unk144.vx, -arg1->unk144.vx);
         v->vy = arg1->unk13C.vy + func_800CFB80(arg1->unk144.vy, -arg1->unk144.vy);
         v->vz = arg1->unk13C.vz + func_800CFB80(arg1->unk144.vz, -arg1->unk144.vz);
@@ -295,8 +295,8 @@ static void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int var_s4;
 
     do {
-        for (i = 0; i < arg3->unk2; ++i) {
-            SVECTOR* temp_s5 = arg3->unk4[i].splinePoints;
+        for (i = 0; i < arg3->trailcount; ++i) {
+            SVECTOR* temp_s5 = arg3->trails[i].splinePoints;
             arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
             arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
             arg1->unk34.vz = temp_s5[3].vz - temp_s5[0].vz;
@@ -392,19 +392,19 @@ static void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     vs_battle_lerp2DVector(arg0->unk94[4], 0, &arg1->unk134);
     speed = func_800CFE1C(arg0->unk30, 0) << 0xC;
 
-    for (i = 0; i < arg3->unk2; ++i) {
+    for (i = 0; i < arg3->trailcount; ++i) {
         int stepCount = func_800CFB80(arg1->unk134, arg1->unk138);
         if (stepCount == 0) {
             stepCount = 1;
         }
-        arg3->unk4[i].stepCount = stepCount;
-        arg3->unk4[i].trailCount = 1;
-        arg3->unk4[i].unk22 = 8;
-        arg3->unk4[i].currentTrail = 0;
-        arg3->unk4[i].trails[0] = arg3->unk4[i].splinePoints[0];
-        arg3->unk4[i].splineProgress = 0;
-        arg3->unk4[i].speed = speed;
-        arg3->unk4[i].unk74 =
+        arg3->trails[i].stepCount = stepCount;
+        arg3->trails[i].pivotCount = 1;
+        arg3->trails[i].unk22 = 8;
+        arg3->trails[i].currentPivot = 0;
+        arg3->trails[i].pivots[0] = arg3->trails[i].splinePoints[0];
+        arg3->trails[i].splineProgress = 0;
+        arg3->trails[i].speed = speed;
+        arg3->trails[i].unk74 =
             ((0x06000000 / (stepCount * stepCount)) - ((speed * 2) / stepCount));
     }
 }
@@ -415,9 +415,9 @@ static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
 {
     int i;
 
-    for (i = 0; i < arg3->unk2; ++i) {
+    for (i = 0; i < arg3->trailcount; ++i) {
 
-        func_800FA76C_t* temp_s0 = &arg3->unk4[i];
+        _trailContext* temp_s0 = &arg3->trails[i];
 
         if (temp_s0->unk22 == 0) {
             continue;
@@ -426,7 +426,7 @@ static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
         if (arg3->unk8 >= temp_s0->stepCount) {
             --temp_s0->unk22;
             if (temp_s0->unk22 < temp_s0->stepCount) {
-                --temp_s0->trailCount;
+                --temp_s0->pivotCount;
             }
         } else {
             int currentStep = temp_s0->stepCount - arg3->unk8;
@@ -437,15 +437,15 @@ static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
                    - ((speed * 2) / currentStep);
             temp_s0->speed = speed;
             temp_s0->splineProgress += speed;
-            temp_s0->currentTrail = (temp_s0->currentTrail + 1) % 9;
+            temp_s0->currentPivot = (temp_s0->currentPivot + 1) % 9;
 
             vs_battle_splineInterpolate(&temp_s0->splinePoints[0],
                 &temp_s0->splinePoints[1], &temp_s0->splinePoints[2],
                 &temp_s0->splinePoints[3], (temp_s0->splineProgress >> 0xC) - ONE,
-                &temp_s0->trails[temp_s0->currentTrail]);
+                &temp_s0->pivots[temp_s0->currentPivot]);
 
-            if (temp_s0->trailCount < 9) {
-                ++temp_s0->trailCount;
+            if (temp_s0->pivotCount < 9) {
+                ++temp_s0->pivotCount;
             }
         }
     }
@@ -455,18 +455,21 @@ void func_800FAA70(
     func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FAA70);
 
-int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
+/**
+ * Text rays from caster to target
+ */
+int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800FB4C0_t sp18;
     func_800FA098_arg0* temp_s3;
-    int i;
+    int trail;
     int j;
     func_800FA76C_arg3* temp_v0;
 
     func_800FA098_arg1* s4 = (func_800FA098_arg1*)0x1F8001D0;
-    int s6 = 1;
     func_800FA76C_arg3* temp_s0 = arg0->unk8;
     D_800F53B8_t* temp_s5 = D_800F53BC;
+    int s6 = 1;
 
     switch (arg1) {
     case 1:
@@ -476,32 +479,35 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
         temp_v0->unk0 = arg2;
         temp_v0->unk8 = 0;
         temp_s3 = &D_800F569C->block5Data->unk4[temp_v0->unk1];
-        i = temp_s3->unkC0[0];
+        trail = temp_s3->unkC0[0];
 
-        if (i >= 9) {
-            i = 8;
+        if (trail > 8) {
+            trail = 8;
         }
 
-        temp_v0->unk4 = vs_main_allocHeapR(i * sizeof *temp_v0->unk4);
-        temp_v0->unk2 = i;
+        temp_v0->trails = vs_main_allocHeapR(trail * sizeof *temp_v0->trails);
+        temp_v0->trailcount = trail;
         temp_v0->unk3 = 0;
 
-        if (temp_s3->unk4_26 != 0) {
+        if (temp_s3->transparencyCurve != 0) {
 
-            i = D_800F569C->block4Data->subBlockSizes[temp_s3->unk4_26];
+            // bad var reuse, trail = length of curve
+            trail = D_800F569C->transparencyCurveBlock
+                        ->curveSizes[temp_s3->transparencyCurve];
 
-            if (i >= 2) {
-                --i;
+            if (trail > 1) {
+                --trail;
             }
 
             for (j = 0; j < 9; ++j) {
-                temp_v0->unk2C[j] =
-                    D_800F569C->block4SubBlocks[temp_s3->unk4_26][(j * i) / 8];
+                temp_v0->sampledTransparencyCurve[j] =
+                    D_800F569C
+                        ->transparencyCurves[temp_s3->transparencyCurve][(j * trail) / 8];
             }
 
         } else {
             for (j = 0; j < 9; ++j) {
-                temp_v0->unk2C[j] = 0x80;
+                temp_v0->sampledTransparencyCurve[j] = 0x80;
             }
         }
 
@@ -526,7 +532,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800FAA70(temp_s3, s4, temp_s5, temp_s0);
 
         if (temp_s3->unk3 != 0) {
-            for (i = 0; i < temp_s0->unk2; ++i) {
+            for (trail = 0; trail < temp_s0->trailcount; ++trail) {
 
                 sp18.unk60 = 0;
 
@@ -535,12 +541,15 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
                     SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
                     SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
 
-                    s4->unk2C.vx =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx;
-                    s4->unk2C.vy =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy;
-                    s4->unk2C.vz =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz;
+                    s4->unk2C.vx = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vx;
+                    s4->unk2C.vy = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vy;
+                    s4->unk2C.vz = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vz;
 
                     gte_ldv0(&s4->unk2C);
                     gte_rtv0tr2();
@@ -550,12 +559,18 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
                     sp18.unkC.vy = s4->unk34.vy * ONE;
                     sp18.unkC.vz = s4->unk34.vz * ONE;
                 } else {
-                    sp18.unkC.vx =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vx * ONE;
-                    sp18.unkC.vy =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vy * ONE;
-                    sp18.unkC.vz =
-                        temp_s0->unk4[i].trails[temp_s0->unk4[i].currentTrail].vz * ONE;
+                    sp18.unkC.vx = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vx
+                                 * ONE;
+                    sp18.unkC.vy = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vy
+                                 * ONE;
+                    sp18.unkC.vz = temp_s0->trails[trail]
+                                       .pivots[temp_s0->trails[trail].currentPivot]
+                                       .vz
+                                 * ONE;
                 }
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
             }
@@ -566,7 +581,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
         if (temp_s0->unk0 != 0) {
             --temp_s0->unk0;
             if (!temp_s0->unk0) {
-                vs_main_freeHeapR(temp_s0->unk4);
+                vs_main_freeHeapR(temp_s0->trails);
                 s6 = 0;
             }
         }
@@ -577,7 +592,7 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
         break;
 
     case 4:
-        vs_main_freeHeapR(temp_s0->unk4);
+        vs_main_freeHeapR(temp_s0->trails);
         s6 = 0;
         break;
     }
@@ -585,8 +600,17 @@ int func_800FB4C0(func_800D4910_t* arg0, u_int arg1, int arg2)
     return s6;
 }
 
+/**
+ * Concentric text circles over caster
+ */
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FBA00);
 
+/**
+ * Target impact
+ */
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FC624);
 
+/**
+ * Column of light and particles on cast
+ */
 INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FD51C);

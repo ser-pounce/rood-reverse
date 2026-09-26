@@ -16,7 +16,7 @@ class P(KaitaiStruct):
         type1 = 1
         type2 = 2
         type3 = 3
-        type4 = 4
+        transparency_curves = 4
         type5 = 5
         type8 = 8
         type9 = 9
@@ -108,7 +108,12 @@ class P(KaitaiStruct):
             if self.size != 0:
                 pass
                 _on = self.type
-                if _on == P.BlockType.type0:
+                if _on == P.BlockType.transparency_curves:
+                    pass
+                    self._raw_body = self._io.read_bytes(self.size - 4)
+                    _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
+                    self.body = P.TransparencyCurves(_io__raw_body, self, self._root)
+                elif _on == P.BlockType.type0:
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
@@ -148,11 +153,6 @@ class P(KaitaiStruct):
                     self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
-                elif _on == P.BlockType.type4:
-                    pass
-                    self._raw_body = self._io.read_bytes(self.size - 4)
-                    _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                    self.body = P.Type4Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type5:
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
@@ -179,7 +179,10 @@ class P(KaitaiStruct):
             if self.size != 0:
                 pass
                 _on = self.type
-                if _on == P.BlockType.type0:
+                if _on == P.BlockType.transparency_curves:
+                    pass
+                    self.body._fetch_instances()
+                elif _on == P.BlockType.type0:
                     pass
                     self.body._fetch_instances()
                 elif _on == P.BlockType.type1:
@@ -203,9 +206,6 @@ class P(KaitaiStruct):
                 elif _on == P.BlockType.type3:
                     pass
                     self.body._fetch_instances()
-                elif _on == P.BlockType.type4:
-                    pass
-                    self.body._fetch_instances()
                 elif _on == P.BlockType.type5:
                     pass
                     self.body._fetch_instances()
@@ -218,6 +218,22 @@ class P(KaitaiStruct):
                 else:
                     pass
 
+
+
+    class BlockChunk(KaitaiStruct):
+        def __init__(self, idx, _io, _parent=None, _root=None):
+            super(P.BlockChunk, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.idx = idx
+            self._read()
+
+        def _read(self):
+            self.body = self._io.read_bytes(self._parent.sizes[self.idx])
+
+
+        def _fetch_instances(self):
+            pass
 
 
     class Func800fa098Arg0(KaitaiStruct):
@@ -233,7 +249,7 @@ class P(KaitaiStruct):
             self.unk2 = self._io.read_u1()
             self.unk3 = self._io.read_u1()
             self.unk4_bit0 = self._io.read_bits_int_le(26)
-            self.unk4_bit26 = self._io.read_bits_int_le(6)
+            self.transparency_curve = self._io.read_bits_int_le(6)
             self.unk8 = self._io.read_u1()
             self.unk9 = self._io.read_u1()
             self.unka = self._io.read_u1()
@@ -287,6 +303,37 @@ class P(KaitaiStruct):
 
         def _fetch_instances(self):
             pass
+
+
+    class TransparencyCurves(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.TransparencyCurves, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.num_curves = self._io.read_u2le()
+            self.data_offset = self._io.read_u2le()
+            self.sizes = []
+            for i in range(self.num_curves):
+                self.sizes.append(self._io.read_u1())
+
+            self.curves = []
+            for i in range(self.num_curves):
+                self.curves.append(P.BlockChunk(i, self._io, self, self._root))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.sizes)):
+                pass
+
+            for i in range(len(self.curves)):
+                pass
+                self.curves[i]._fetch_instances()
+
 
 
     class Type11Body(KaitaiStruct):
@@ -348,30 +395,6 @@ class P(KaitaiStruct):
             self.offsets = []
             for i in range(self.num_offsets):
                 self.offsets.append(self._io.read_u2le())
-
-            self.data = self._io.read_bytes_full()
-
-
-        def _fetch_instances(self):
-            pass
-            for i in range(len(self.offsets)):
-                pass
-
-
-
-    class Type4Body(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(P.Type4Body, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.num_offsets = self._io.read_u2le()
-            self.data_offset = self._io.read_u2le()
-            self.offsets = []
-            for i in range(self.num_offsets):
-                self.offsets.append(self._io.read_u1())
 
             self.data = self._io.read_bytes_full()
 

@@ -126,7 +126,7 @@ types:
         type: u1
       - id: unk4_bit0
         type: b26
-      - id: unk4_bit26
+      - id: transparency_curve
         type: b6
       - id: unk8
         type: u1

@@ -3611,12 +3611,12 @@ void func_800D1104(int arg0)
     }
 }
 
-int vs_battle_sampleCurve(int curveId, int step)
+int vs_battle_sampleCurve(int curveId, int distance)
 {
     pFileCurveBlock* block = D_800F569C->curveBlock;
 
     if ((curveId != 0) && (block->count >= curveId)) {
-        return D_800F569C->curves[curveId - 1][step % block->curveSizes[curveId - 1]];
+        return D_800F569C->curves[curveId - 1][distance % block->curveSizes[curveId - 1]];
     }
 
     return 0;

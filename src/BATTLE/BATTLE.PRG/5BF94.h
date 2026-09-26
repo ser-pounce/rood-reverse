@@ -246,7 +246,8 @@ typedef struct {
 
 typedef struct {
     VECTOR unk0;
-    u_char unk10[0x14];
+    VECTOR unk10;
+    int unk20;
     u_int flags;
     int unk28;
     SVECTOR unk2C;
@@ -559,7 +560,16 @@ void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
 void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int vs_battle_randUniformInt(int, int);
 int func_800CFE1C(short* arg0, int arg1);
-int vs_battle_sampleCurve(int arg0, int arg1);
+void func_800D6D24(func_800D6CF_t* arg0);
+
+/**
+ * Samples a curve from the currently loaded .P file.
+ *
+ * @param curveId Curve to sample (1-indexed).
+ * @param distance Point to sample, will wrap around if too long.
+ * @return Sampled value; 0 if `curveId` is not a valid index.
+ */
+int vs_battle_sampleCurve(int curveId, int distance);
 
 /**
  * Evaluates a point on a spline segment between p1 and p2.

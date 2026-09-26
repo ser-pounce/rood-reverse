@@ -1,4 +1,7 @@
+#define TRAIL_SAMPLE_COUNT 5
+
 #include "common.h"
+#include "src/EFFECT/trails.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "vs_inline_c.h"
@@ -10,29 +13,6 @@ typedef struct {
     VECTOR unk98;
     MATRIX unkA8;
 } func_800FD9A4_t;
-
-typedef struct {
-    SVECTOR splinePoints[4];
-    u_char stepCount;
-    u_char splineSampleCount;
-    u_char trailCollapseCounter;
-    u_char currentSplineSample;
-    SVECTOR splineSamples[5];
-    int splineProgress;
-    int speed;
-    int unk54;
-} _trail;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char trailcount;
-    u_char unk3;
-    _trail* trails;
-    int unk8;
-    func_800D6CF_t unkC;
-    u_char sampledTransparencyCurve[8];
-} func_800FA76C_arg3;
 
 void func_800FE3D0(
     func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
@@ -100,7 +80,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     switch (arg1) {
     case 1:
-        temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+        temp_v0 = vs_main_allocHeapR(sizeof *temp_v0 + 8);
         arg0->unk8 = temp_v0;
         temp_v0->unk1 = arg2 >> 8;
         temp_v0->unk0 = arg2;

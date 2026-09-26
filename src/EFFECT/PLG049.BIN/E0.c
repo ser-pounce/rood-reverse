@@ -1,34 +1,12 @@
+#define TRAIL_SAMPLE_COUNT 9
+
 #include "common.h"
+#include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 #include <libgte.h>
 #include <rand.h>
-
-typedef struct {
-    SVECTOR splinePoints[4];
-    u_char stepCount;
-    u_char splineSampleCount;
-    u_char trailCollapseCounter;
-    u_char currentSplineSample;
-    SVECTOR splineSamples[9];
-    int splineProgress;
-    int speed;
-    int unk74;
-} _trail;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char trailcount;
-    u_char unk3;
-    _trail* trails;
-    int unk8;
-    func_800D6CF_t unkC;
-    u_char sampledTransparencyCurve[9];
-    u_char unk35[3];
-} func_800FA76C_arg3;
 
 extern int D_800FE3D4;
 
@@ -38,7 +16,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     int sp10;
     int sp14;
     MATRIX* matrix;
-    SVECTOR* temp_s1;
+    SVECTOR* splinePoint;
     int temp_a1;
     int temp_lo;
     int temp_s0_2;
@@ -55,16 +33,17 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     matrix = &arg2->unk1C[arg0->unkC8].unk38;
 
+    // Determines trail origin:
     switch (arg1->flags & 7) {
     case 0:
         break;
+    // Fixed point D_800F5310
     case 1:
         vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
         break;
+    // Caster
     case 2:
-        arg1->unk98.vx += matrix->t[0];
-        arg1->unk98.vy += matrix->t[1];
-        arg1->unk98.vz += matrix->t[2];
+        applyVector(&arg1->unk98, matrix->t[0], matrix->t[1], matrix->t[2], +=);
         break;
     }
 
@@ -76,75 +55,80 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     switch (arg1->flags & 0x38) {
     case 0:
         for (i = 0; i < arg3->trailcount; ++i) {
-            temp_s1 = &arg3->trails[i].splinePoints[0];
+
+            splinePoint = &arg3->trails[i].splinePoints[0];
+
             temp_v0 = rand();
             arg1->unk170 = rsin(temp_v0);
             arg1->unk178 = rcos(temp_v0);
+
             temp_v0 = rand();
             arg1->unk174 = rsin(temp_v0);
             arg1->unk17C = rcos(temp_v0);
-            temp_s1->vx =
-                ((((arg1->unkA8.vx * arg1->unk178) >> 0xC) * arg1->unk17C) >> 0xC);
-            temp_s1->vy =
-                ((((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC);
-            temp_s1->vz = ((arg1->unkA8.vz * arg1->unk170) >> 0xC);
+
+            setVector(splinePoint,
+                ((((arg1->unkA8.vx * arg1->unk178) >> 0xC) * arg1->unk17C) >> 0xC),
+                ((((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC),
+                ((arg1->unkA8.vz * arg1->unk170) >> 0xC));
+
             if (arg1->flags & 0x40000) {
-                ApplyRotMatrix(temp_s1, &arg1->unk34);
-                temp_s1->vx = arg1->unk34.vx;
-                temp_s1->vy = arg1->unk34.vy;
-                temp_s1->vz = arg1->unk34.vz;
+                ApplyRotMatrix(splinePoint, &arg1->unk34);
+                copyVector(splinePoint, &arg1->unk34);
             }
-            temp_s1->vx += arg1->unk98.vx;
-            temp_s1->vy += arg1->unk98.vy;
-            temp_s1->vz += arg1->unk98.vz;
+
+            addVector(splinePoint, &arg1->unk98);
         }
         return;
 
     case 8:
         for (i = 0; i < arg3->trailcount; ++i) {
 
-            temp_s1 = &arg3->trails[i].splinePoints[0];
+            splinePoint = &arg3->trails[i].splinePoints[0];
 
             switch (arg1->flags & 0x1800) {
-            case 0x800:
             case 0x0:
+            case 0x800:
                 switch (rand() % 6) {
                 case 0:
-                    temp_s1->vx = arg1->unkA8.vx;
-                    goto jump0;
-                case 1:
-                    temp_s1->vx = -arg1->unkA8.vx;
-                jump0:
-                    temp_s1->vy =
+                    splinePoint->vx = arg1->unkA8.vx;
+                    if (0) {
+                    case 1:
+                        splinePoint->vx = -arg1->unkA8.vx;
+                    }
+
+                    splinePoint->vy =
                         vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
-                    temp_s1->vz =
+                    splinePoint->vz =
                         vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
                     break;
+
                 case 2:
-                    temp_s1->vy = arg1->unkA8.vy;
-                    goto jump1;
-                    break;
-                case 3:
-                    temp_s1->vy = -arg1->unkA8.vy;
-                jump1:
-                    temp_s1->vx =
+                    splinePoint->vy = arg1->unkA8.vy;
+                    if (0) {
+                    case 3:
+                        splinePoint->vy = -arg1->unkA8.vy;
+                    }
+
+                    splinePoint->vx =
                         vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vz =
+                    splinePoint->vz =
                         vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
                     break;
+
                 case 4:
-                    temp_s1->vz = arg1->unkA8.vz;
-                    goto jump2;
-                    break;
-                case 5:
-                    temp_s1->vz = -arg1->unkA8.vz;
-                jump2:
-                    temp_s1->vx =
+                    splinePoint->vz = arg1->unkA8.vz;
+                    if (0) {
+                    case 5:
+                        splinePoint->vz = -arg1->unkA8.vz;
+                    }
+
+                    splinePoint->vx =
                         vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vy =
+                    splinePoint->vy =
                         vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
                     break;
                 }
+
                 break;
 
             case 0x1000:
@@ -156,33 +140,29 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
                     var_a0 = -var_a0;
                 }
 
-                temp_s1->vx = var_a0;
+                splinePoint->vx = var_a0;
 
                 var_v1 = arg1->unkA8.vy;
                 if (!(temp_a1 & 2)) {
                     var_v1 = -var_v1;
                 }
-                temp_s1->vy = var_v1;
+                splinePoint->vy = var_v1;
 
                 var_v1_2 = arg1->unkA8.vz;
                 if (!(temp_a1 & 4)) {
                     var_v1_2 = -var_v1_2;
                 }
-                temp_s1->vz = var_v1_2;
+                splinePoint->vz = var_v1_2;
 
                 break;
             }
 
             if (arg1->flags & 0x40000) {
-                ApplyRotMatrix(temp_s1, &arg1->unk34);
-                temp_s1->vx = arg1->unk34.vx;
-                temp_s1->vy = arg1->unk34.vy;
-                temp_s1->vz = arg1->unk34.vz;
+                ApplyRotMatrix(splinePoint, &arg1->unk34);
+                copyVector(splinePoint, &arg1->unk34);
             }
 
-            temp_s1->vx += arg1->unk98.vx;
-            temp_s1->vy += arg1->unk98.vy;
-            temp_s1->vz += arg1->unk98.vz;
+            addVector(splinePoint, &arg1->unk98);
         }
 
         return;
@@ -210,43 +190,39 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         return;
     }
 
-    temp_lo = 0x1000 / arg1->unk184;
+    temp_lo = ONE / arg1->unk184;
 
     if ((arg1->flags & 0x1800) != 0x1000) {
         D_800FE3D4 = D_800FE3D4 % arg1->unk188;
-        temp_s0_2 = (D_800FE3D4 * temp_lo) + 0x200;
+        temp_s0_2 = (D_800FE3D4 * temp_lo) + ONE / 8;
         sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
         sp14 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
     }
 
     for (i = 0; i < arg3->trailcount; ++i) {
-        temp_s1 = &arg3->trails[i].splinePoints[0];
+        splinePoint = &arg3->trails[i].splinePoints[0];
         D_800FE3D4 = (D_800FE3D4 + 1) % arg1->unk188;
-        temp_s0_2 = (D_800FE3D4 * temp_lo) + 0x200;
+        temp_s0_2 = (D_800FE3D4 * temp_lo) + ONE / 8;
         temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
         temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
 
         if ((arg1->flags & 0x1800) == 0x1000) {
-            temp_s1->vx = temp_s3;
-            temp_s1->vz = temp_s0_2;
+            splinePoint->vx = temp_s3;
+            splinePoint->vz = temp_s0_2;
         } else {
             temp_v0_4 = rand() >> 3;
-            temp_s1->vx = (((temp_s3 - sp10) * temp_v0_4) >> 0xC) + sp10;
-            temp_s1->vz = (((temp_s0_2 - sp14) * temp_v0_4) >> 0xC) + sp14;
+            splinePoint->vx = (((temp_s3 - sp10) * temp_v0_4) >> 0xC) + sp10;
+            splinePoint->vz = (((temp_s0_2 - sp14) * temp_v0_4) >> 0xC) + sp14;
         }
 
-        temp_s1->vy = 0;
+        splinePoint->vy = 0;
 
         if (arg1->flags & 0x40000) {
-            ApplyRotMatrix(temp_s1, &arg1->unk34);
-            temp_s1->vx = arg1->unk34.vx;
-            temp_s1->vy = arg1->unk34.vy;
-            temp_s1->vz = arg1->unk34.vz;
+            ApplyRotMatrix(splinePoint, &arg1->unk34);
+            copyVector(splinePoint, &arg1->unk34);
         }
 
-        temp_s1->vx = temp_s1->vx + arg1->unk98.vx;
-        temp_s1->vy = temp_s1->vy + arg1->unk98.vy;
-        temp_s1->vz = temp_s1->vz + arg1->unk98.vz;
+        addVector(splinePoint, &arg1->unk98);
     }
 }
 
@@ -265,26 +241,23 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         break;
 
     case 0xC0:
-        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk38.t[0];
-        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk38.t[1];
-        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk38.t[2];
+        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].unk38.t[0],
+            arg2->unk1C[arg0->unkC9].unk38.t[1], arg2->unk1C[arg0->unkC9].unk38.t[2], +=);
         break;
 
     case 0x80:
-        arg1->unk13C.vx += D_800F5230.unkE0.vx;
-        arg1->unk13C.vy += D_800F5230.unkE0.vy;
-        arg1->unk13C.vz += D_800F5230.unkE0.vz;
+        applyVector(&arg1->unk13C, D_800F5230.unkE0.vx, D_800F5230.unkE0.vy,
+            D_800F5230.unkE0.vz, +=);
         break;
     }
 
     for (i = 0; i < arg3->trailcount; ++i) {
         SVECTOR* v = &arg3->trails[i].splinePoints[3];
-        v->vx =
-            arg1->unk13C.vx + vs_battle_randUniformInt(arg1->unk144.vx, -arg1->unk144.vx);
-        v->vy =
-            arg1->unk13C.vy + vs_battle_randUniformInt(arg1->unk144.vy, -arg1->unk144.vy);
-        v->vz =
-            arg1->unk13C.vz + vs_battle_randUniformInt(arg1->unk144.vz, -arg1->unk144.vz);
+        setVector(v,
+            arg1->unk13C.vx + vs_battle_randUniformInt(arg1->unk144.vx, -arg1->unk144.vx),
+            arg1->unk13C.vy + vs_battle_randUniformInt(arg1->unk144.vy, -arg1->unk144.vy),
+            arg1->unk13C.vz
+                + vs_battle_randUniformInt(arg1->unk144.vz, -arg1->unk144.vz));
     }
 }
 
@@ -302,10 +275,12 @@ static void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 
     do {
         for (i = 0; i < arg3->trailcount; ++i) {
+
             SVECTOR* temp_s5 = arg3->trails[i].splinePoints;
-            arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
-            arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
-            arg1->unk34.vz = temp_s5[3].vz - temp_s5[0].vz;
+
+            setVector(&arg1->unk34, temp_s5[3].vx - temp_s5[0].vx,
+                temp_s5[3].vy - temp_s5[0].vy, temp_s5[3].vz - temp_s5[0].vz);
+
             temp_s0 = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
                                    + (arg1->unk34.vy * arg1->unk34.vy)
                                    + (arg1->unk34.vz * arg1->unk34.vz));
@@ -411,7 +386,7 @@ static void func_800FA76C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         arg3->trails[i].splineSamples[0] = arg3->trails[i].splinePoints[0];
         arg3->trails[i].splineProgress = 0;
         arg3->trails[i].speed = speed;
-        arg3->trails[i].unk74 =
+        arg3->trails[i].unk =
             ((0x06000000 / (stepCount * stepCount)) - ((speed * 2) / stepCount));
     }
 }
@@ -480,7 +455,7 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     switch (arg1) {
     case 1:
-        temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
+        temp_v0 = vs_main_allocHeapR(sizeof *temp_v0 + 12);
         arg0->unk8 = temp_v0;
         temp_v0->unk1 = arg2 >> 8;
         temp_v0->unk0 = arg2;
@@ -505,13 +480,13 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
                 --trail;
             }
 
-            for (j = 0; j < (int)sizeof temp_v0->sampledTransparencyCurve; ++j) {
+            for (j = 0; j < 9; ++j) {
                 temp_v0->sampledTransparencyCurve[j] =
                     D_800F569C->curves[temp_s3->transparencyCurve][(j * trail) / 8];
             }
 
         } else {
-            for (j = 0; j < (int)sizeof temp_v0->sampledTransparencyCurve; ++j) {
+            for (j = 0; j < 9; ++j) {
                 temp_v0->sampledTransparencyCurve[j] = 128;
             }
         }
@@ -546,42 +521,37 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
                     SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
                     SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
 
-                    s4->unk2C.vx =
+                    setVector(&s4->unk2C,
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vx;
-                    s4->unk2C.vy =
+                            .vx,
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vy;
-                    s4->unk2C.vz =
+                            .vy,
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vz;
+                            .vz);
 
                     gte_ldv0(&s4->unk2C);
                     gte_rtv0tr2();
                     gte_stlvnl(&s4->unk34);
 
-                    sp18.unkC.vx = s4->unk34.vx * ONE;
-                    sp18.unkC.vy = s4->unk34.vy * ONE;
-                    sp18.unkC.vz = s4->unk34.vz * ONE;
+                    setVector(&sp18.unkC, s4->unk34.vx * ONE, s4->unk34.vy * ONE,
+                        s4->unk34.vz * ONE);
                 } else {
-                    sp18.unkC.vx =
+                    setVector(&sp18.unkC,
                         temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vx
-                        * ONE;
-                    sp18.unkC.vy =
+                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                                .vx
+                            * ONE,
                         temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vy
-                        * ONE;
-                    sp18.unkC.vz =
+                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                                .vy
+                            * ONE,
                         temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vz
-                        * ONE;
+                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                                .vz
+                            * ONE);
                 }
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
             }

@@ -223,57 +223,60 @@ void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
 int func_800A3760(int arg0, int arg1, int arg2)
 {
     int i;
+    int maxDist;
     int bestDist;
     int best = -1;
     D_800F4538_t* self = D_800F4538[arg0];
 
-    if (self != NULL) {
-        int maxDist = arg1 * arg1;
+    if (self == NULL) {
+        return -1;
+    }
 
-        for (i = 0; i < 17; ++i) {
-            D_800F4538_t* actor;
-            int dx;
-            int dy;
-            int dz;
-            int dist;
-            int angle;
+    maxDist = arg1 * arg1;
 
-            if (i == arg0) {
-                continue;
-            }
-            actor = D_800F4538[i];
-            if (actor == NULL || actor->unk0.skip) {
-                continue;
-            }
-            dy = actor->unk0.position.vy - self->unk0.position.vy;
-            if (dy < -arg2 || dy > arg2) {
-                continue;
-            }
-            dx = actor->unk0.position.vx - self->unk0.position.vx;
-            dz = actor->unk0.position.vz - self->unk0.position.vz;
-            dist = dx * dx;
-            if (dist < 0) {
-                dist = -dist;
-            }
-            dz = dz * dz;
-            if (dz < 0) {
-                dz = -dz;
-            }
-            dist += dz;
-            if (dist > maxDist) {
-                continue;
-            }
-            angle = func_8009E180(self, &actor->unk0.position);
-            if (angle < -ONE / 4 || angle > ONE / 4) {
-                continue;
-            }
-            if (best == -1) {
-                best = i;
-                bestDist = dist;
-            } else if (dist < bestDist) {
-                best = i;
-                bestDist = dist;
-            }
+    for (i = 0; i < 17; ++i) {
+        D_800F4538_t* actor;
+        int dx;
+        int dy;
+        int dz;
+        int dist;
+        int angle;
+
+        if (i == arg0) {
+            continue;
+        }
+        actor = D_800F4538[i];
+        if (actor == NULL || actor->unk0.skip) {
+            continue;
+        }
+        dy = actor->unk0.position.vy - self->unk0.position.vy;
+        if (dy < -arg2 || dy > arg2) {
+            continue;
+        }
+        dx = actor->unk0.position.vx - self->unk0.position.vx;
+        dz = actor->unk0.position.vz - self->unk0.position.vz;
+        dist = dx * dx;
+        if (dist < 0) {
+            dist = -dist;
+        }
+        dz = dz * dz;
+        if (dz < 0) {
+            dz = -dz;
+        }
+        dist += dz;
+        if (dist > maxDist) {
+            continue;
+        }
+        angle = func_8009E180(self, &actor->unk0.position);
+        if (angle < -ONE / 4 || angle > ONE / 4) {
+            continue;
+        }
+        if (best == -1) {
+            best = i;
+            bestDist = dist;
+        } else if (dist < bestDist) {
+            best = i;
+            bestDist = dist;
         }
     }
     return best;

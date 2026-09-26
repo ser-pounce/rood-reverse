@@ -26,7 +26,6 @@ typedef struct {
     _trail* trails;
     int unk8;
     func_800D6CF_t unkC;
-    int unk1C;
     u_char sampledTransparencyCurve[9];
     u_char unk35[3];
 } func_800FA76C_arg3;

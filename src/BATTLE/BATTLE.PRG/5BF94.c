@@ -4784,6 +4784,36 @@ void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2)
     arg0->unk6 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6D24);
+void func_800D6D24(func_800D6CF_t* arg0)
+{
+    if (arg0->unk6 != 0) {
+        arg0->unk6 -= 2;
+        if (arg0->unk6 != 0) {
+            return;
+        }
+    }
+
+    while (1) {
+        int w = *(int*)(arg0->unk18 + arg0->unkE);
+
+        switch (w & 0xF0000000) {
+        case 0:
+            arg0->unk1C = (int*)D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF);
+            *(short*)&arg0->unk6 = (w >> 16) & 0x3FFF;
+            arg0->unkE += 4;
+            return;
+        case 0x10000000:
+            arg0->unk8 = (w << 18) >> 18;
+            arg0->unkA = (w << 4) >> 18;
+            arg0->unkE += 4;
+            break;
+        case 0x20000000:
+            arg0->unkE = 0;
+            break;
+        case 0x30000000:
+            return;
+        }
+    }
+}
 
 void func_800D6E24(void) { func_800D6E44(); }

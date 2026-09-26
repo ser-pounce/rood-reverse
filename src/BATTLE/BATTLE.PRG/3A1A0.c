@@ -48,6 +48,7 @@ int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 int func_800E75EC(void);
+int func_8009E180(D_800F4538_t*, SVECTOR*);
 
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
@@ -219,7 +220,67 @@ void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3760);
+int func_800A3760(int arg0, int arg1, int arg2)
+{
+    int i;
+    int maxDist;
+    int bestDist;
+    int best = -1;
+    D_800F4538_t* self = D_800F4538[arg0];
+
+    if (self == NULL) {
+        return -1;
+    }
+
+    maxDist = arg1 * arg1;
+
+    for (i = 0; i < 17; ++i) {
+        D_800F4538_t* actor;
+        int dx;
+        int dy;
+        int dz;
+        int dist;
+        int angle;
+
+        if (i == arg0) {
+            continue;
+        }
+        actor = D_800F4538[i];
+        if (actor == NULL || actor->unk0.skip) {
+            continue;
+        }
+        dy = actor->unk0.position.vy - self->unk0.position.vy;
+        if (dy < -arg2 || dy > arg2) {
+            continue;
+        }
+        dx = actor->unk0.position.vx - self->unk0.position.vx;
+        dz = actor->unk0.position.vz - self->unk0.position.vz;
+        dist = dx * dx;
+        if (dist < 0) {
+            dist = -dist;
+        }
+        dz = dz * dz;
+        if (dz < 0) {
+            dz = -dz;
+        }
+        dist += dz;
+        if (dist > maxDist) {
+            continue;
+        }
+        angle = func_8009E180(self, &actor->unk0.position);
+        if (angle < -ONE / 4 || angle > ONE / 4) {
+            continue;
+        }
+        if (best == -1) {
+            best = i;
+            bestDist = dist;
+        } else if (dist < bestDist) {
+            best = i;
+            bestDist = dist;
+        }
+    }
+    return best;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A38E0);
 

@@ -192,14 +192,16 @@ typedef struct {
     short unk4;
     u_char unk6;
     u_char unk7;
-    int unk8;
+    short unk8;
+    short unkA;
     short unkC;
-    short unkE;
+    u_short unkE;
     int unk10;
     short unk14;
     u_char unk16;
     u_char unk17;
     u_char* unk18;
+    void* unk1C;
 } func_800D6CF_t;
 
 typedef struct {

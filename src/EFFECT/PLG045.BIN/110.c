@@ -19,7 +19,6 @@ typedef struct {
     int unk8;
     int unkC;
     func_800D6CF_t unk10;
-    func_800FA098_arg3_2* unk2C;
 } func_800FA098_arg3;
 
 extern int D_800FB5B4;

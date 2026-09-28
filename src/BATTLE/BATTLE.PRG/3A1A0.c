@@ -36,7 +36,7 @@ void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);
-D_800F4538_t* func_800A3C34(u_char, u_char, short, u_int);
+D_800F4538_t* func_800A3C34(int, int, int, int);
 short func_8008DC7C(int, int);
 short func_8008DA24(int, int);
 u_int* func_800A8D64(SVECTOR*, int);
@@ -298,7 +298,47 @@ D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1)
     return func_800A3C34(arg0->unk5C, arg0->unk5E, arg0->unk1E, arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3C34);
+D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
+{
+    int i;
+
+    arg2 -= 192;
+
+    if (arg3 < 2) {
+        i = 0;
+    } else {
+        i = arg3;
+    }
+
+    for (; i < 17; ++i) {
+        D_800F4538_t* actor = D_800F4538[i];
+        if ((actor == NULL) || actor->unk0.skip || (actor->unk6E6 == 0x7F)) {
+            continue;
+        }
+        if ((arg3 == 1)
+            && (((actor->unk0.unkB_4 != 0) && (actor->unk0.unkB_4 < 3))
+                || actor->unk0.unkA_0 || actor->unk0.unkB_0)) {
+            SVECTOR* pos = &actor->unk5EC;
+            if (((pos->vx & 0xFF) == arg0) && (arg1 == (pos->vy & 0xFF))) {
+                return actor;
+            }
+            continue;
+        }
+        if ((i == 0) && (*((int*)&actor->unk5B4 - 2) & 0xF0000000)) {
+            D_800F45E0_t* temp_v1 = D_800F45E0[actor->unk5AC_28];
+            if ((arg0 == temp_v1->unk5C) && (arg1 == temp_v1->unk5E)) {
+                return actor;
+            }
+            continue;
+        }
+        if ((actor->unk0.unkA_3 != 2) && (actor->unk0.currentTileX == arg0)
+            && (actor->unk0.currentTileZ == arg1) && !actor->unk0.unkA_5
+            && (actor->unk0.position.vy >= arg2)) {
+            return actor;
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3DB4);
 

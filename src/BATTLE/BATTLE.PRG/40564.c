@@ -9,7 +9,7 @@
 typedef struct {
     int unk0;
     u_char* unk4;
-    u_char unk8[1];
+    u_short unk8[0];
 } func_800AD494_t;
 
 void func_8007A824(DR_MOVE*);
@@ -1060,7 +1060,7 @@ int func_800AD494(void* arg0, int arg1, u_short** arg2)
     if (idx == 0xFF) {
         *arg2 = NULL;
     } else {
-        *arg2 = (u_short*)&p->unk8[(actor->unk0.nBones * 4 + 10) * idx];
+        *arg2 = &p->unk8[(((actor->unk0.nBones * 4) + 10) * idx) >> 1];
     }
     return (int)p;
 }

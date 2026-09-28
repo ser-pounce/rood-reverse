@@ -59,7 +59,8 @@ typedef struct {
     u_int unk0_3 : 3;
     u_int unk0_6 : 3;
     u_int unk0_9 : 3;
-    u_int unk0_12 : 4;
+    u_int unk0_12 : 1;
+    u_int unk0_13 : 3;
     char unk2;
     char unk3;
     short unk4;
@@ -234,7 +235,7 @@ typedef struct {
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800CA97C(void);
-void func_800CBBCC(u_char* arg0, int arg1, u_long* arg2);
+void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
 extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
@@ -340,6 +341,7 @@ extern u_short D_800EBDDC[];
 extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
+extern void (*D_800EC25C[])(gim_t*, int, u_long*);
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -2460,12 +2462,12 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB83C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CBBCC);
 
-void func_800CC128(u_char* arg0, int arg1, u_long* arg2)
+void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
 {
     int var_s1;
     int new_var;
 
-    int temp_s0 = arg0[3];
+    int temp_s0 = arg0->unk3;
 
     if (temp_s0 == 0x80) {
         func_800CBBCC(arg0, arg1, arg2);
@@ -2504,7 +2506,30 @@ void func_800CC5C0(u_long* arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC600);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCA90);
+void func_800CCA90(int arg0)
+{
+    gim_t* gim = &D_800EB9BC[arg0];
+    int clut = (gim->unk2 - 16) << 6;
+
+    if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
+        return;
+    }
+
+    if (gim->unk0_2) {
+        if (gim->unk0_12) {
+            clut = getClut(clut, 511);
+        } else {
+            clut = getClut(768, 227);
+        }
+    } else {
+        clut = getClut(clut + arg0 * 16, 511);
+    }
+
+    D_800F51C8 = 0;
+    D_800EC25C[gim->unk0_3](gim, clut << 16,
+        gim->unkC & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
+                           : vs_scratch.unk8 + 0x18 - arg0 * 8);
+}
 
 int vs_battle_decreaseMiscCount(int miscId)
 {

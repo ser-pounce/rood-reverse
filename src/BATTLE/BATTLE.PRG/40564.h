@@ -18,4 +18,4 @@ int func_800AAD4C(int, int, int, int);
 void func_800AB4F0(void*);
 void func_800AC37C(int, int);
 void func_800AD008(void*, void*);
-int func_800AD494(void*, char, u_short**);
+int func_800AD494(void*, int, u_short**);

@@ -6,6 +6,12 @@
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
 
+typedef struct {
+    int unk0;
+    u_char* unk4;
+    u_short unk8[0];
+} func_800AD494_t;
+
 void func_8007A824(DR_MOVE*);
 void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
@@ -19,6 +25,9 @@ void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AB098(D_800F4538_t*, int, int);
 
 extern u_char D_800E8F2C;
+extern void* D_800F4768;
+extern char D_800F49DC;
+extern u_char D_800F49E4;
 extern u_char D_800F49F8;
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
@@ -986,7 +995,75 @@ void func_800ACFA0(short* arg0, u_char* arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AD008);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AD494);
+int func_800AD494(void* arg0, int arg1, u_short** arg2)
+{
+    D_800F4538_t* actor = arg0;
+    func_800AD494_t* p;
+    int idx;
+
+    *arg2 = NULL;
+
+    if (arg1 == 0) {
+        p = actor->unk5D0;
+        idx = 0;
+    } else if (arg1 == 0xFF) {
+        p = actor->unk5DC[3];
+        if ((actor->unk0.unkF == 0) || (actor->unk6E6 == 2)) {
+            idx = D_800F49E4;
+        } else {
+            if (actor->unk5B1 == 0) {
+                return 0;
+            }
+            idx = actor->unk5B1 - 1;
+            idx = idx * 3 + D_800F49E4;
+        }
+        if (idx >= actor->unk5B6) {
+            return 0;
+        }
+    } else if (arg1 == 0xFE) {
+        p = actor->unk5DC[3];
+        if (actor->unk5B1 == 0) {
+            return 0;
+        }
+        idx = actor->unk5B1 - 1;
+        idx = idx * 3 + 31;
+        if (idx >= actor->unk5B6) {
+            return 0;
+        }
+    } else if (arg1 >= 0xDC) {
+        p = actor->unk5DC[D_800E8F2C];
+        idx = arg1 - 0xDC;
+    } else if (arg1 >= 0xCA) {
+        p = D_800F4768;
+        idx = arg1 - 0xCA;
+    } else if (arg1 >= 100) {
+        p = actor->unk5D8;
+        idx = arg1 - 100;
+        if (idx >= actor->unk5B5) {
+            return 0;
+        }
+    } else {
+        p = actor->unk5D4;
+        idx = arg1;
+        if (idx >= actor->unk5B4) {
+            return 0;
+        }
+    }
+
+    if (p == NULL) {
+        return 0;
+    }
+
+    idx = p->unk4[idx];
+    D_800F49DC = idx;
+
+    if (idx == 0xFF) {
+        *arg2 = NULL;
+    } else {
+        *arg2 = &p->unk8[(((actor->unk0.nBones * 4) + 10) * idx) >> 1];
+    }
+    return (int)p;
+}
 
 void func_800AD62C(int arg0, int* arg1, int* arg2)
 {

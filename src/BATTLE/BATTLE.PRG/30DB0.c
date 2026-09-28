@@ -81,6 +81,7 @@ extern u_short _etmLbaOffsets[];
 extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
 extern u_short D_800E8D00[];
+extern u_char D_800E8E80[];
 extern u_char _loadShpState;
 extern u_char D_800E8F29;
 extern u_char D_800E8F2C;
@@ -116,6 +117,7 @@ extern int D_800F45D8;
 extern short D_800F4628[4][16];
 extern char* D_800F4810[4][16];
 extern short D_800F4938[4][16];
+extern int D_800F49D8;
 extern u_int D_800F49E0;
 
 int vs_battle_getEmptyObjectDataSlot(void)
@@ -2017,7 +2019,89 @@ void func_8009EA14(int arg0, SVECTOR* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009EC9C);
+void func_8009EC9C(int arg0, SVECTOR* arg1, int arg2, int arg3)
+{
+    SVECTOR sp10;
+    int dx;
+    int dz;
+    int z;
+    int zz;
+    int dist;
+    int pitch;
+    int angle;
+    int turn;
+    int anim;
+    D_800F4538_t* actor = D_800F4538[arg0];
+
+    if (actor == NULL) {
+        return;
+    }
+
+    anim = D_800E8E80[arg2] * 6 + 0xCA;
+
+    if (arg1 == NULL) {
+        pitch = 0;
+    } else {
+        dist = arg1->vx - actor->unk0.position.vx;
+        dist = dist * dist;
+        z = arg1->vz - actor->unk0.position.vz;
+
+        if (dist < 0) {
+            dist = -dist;
+        }
+
+        zz = z * z;
+
+        if (zz < 0) {
+            zz = -zz;
+        }
+
+        dist = vs_gte_rsqrt(dist + zz);
+        func_800A1AF8(actor->unk0.unkF, 0, &sp10, 0);
+        pitch = ratan2(arg1->vy - sp10.vy, dist);
+    }
+
+    if (pitch >= -0xE4) {
+        if (pitch >= 0xAC) {
+            anim += 4;
+        } else {
+            anim += 2;
+        }
+    }
+
+    if (arg3 == 1) {
+        D_800F49D8 = arg3;
+    }
+
+    D_800F49D8 ^= 1;
+    anim += D_800F49D8;
+
+    if (arg1 == NULL) {
+        turn = 0;
+    } else {
+        dx = arg1->vx - actor->unk0.position.vx;
+        dz = arg1->vz - actor->unk0.position.vz;
+
+        if ((dx == 0) && (dz == 0)) {
+            angle = actor->unk0.facing;
+        } else {
+            angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
+        }
+
+        angle -= actor->unk0.facing;
+
+        if (angle > ONE / 2) {
+            angle -= ONE;
+        } else if (angle < -ONE / 2) {
+            angle += ONE;
+        }
+        turn = angle;
+    }
+
+    actor->unk0.unk3E = turn;
+    actor->unk0.unk18 = 0xA;
+    func_800A0204(arg0, anim, 0, 8);
+}
 
 void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
 {

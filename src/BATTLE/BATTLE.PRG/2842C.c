@@ -34,6 +34,7 @@ typedef struct {
     int* unk0;
     union {
         u_short u16[2];
+        short s16[2];
         int s32;
     } unk4[4];
     int unk14;
@@ -547,8 +548,61 @@ int func_80092B04(func_80092B04_t* arg0, int arg1, D_800F1DD8_t* arg2)
     return idle != arg1;
 }
 
-int func_80092C68(func_80092F74_t* arg0, func_80092F74_t2* arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80092C68);
+int func_80092C68(func_80092F74_t* arg0, func_80092F74_t2* arg1)
+{
+    int x = arg0->unkC / 16 - arg1->unk4[0].s16[0];
+    int y;
+    int z;
+    int d;
+
+    arg0->unk24 = arg1->unk4[1].u16[1] - ABS(x);
+    y = arg0->unk10 / 16 - arg1->unk4[0].s16[1];
+    arg0->unk26 = arg1->unk4[1].u16[1] - ABS(y);
+    z = arg0->unk14 / 16;
+    z -= arg1->unk4[1].s16[0];
+    arg0->unk28 = arg1->unk4[1].u16[1] - ABS(z);
+
+    d = arg0->unk24;
+
+    if (d > 0) {
+        z = arg0->unkC - (arg1->unk4[0].s16[0] << 4);
+        if (z < 0) {
+            arg0->unk24 = -d;
+        }
+    } else {
+        arg0->unk24 = 0;
+    }
+
+    d = arg0->unk26;
+
+    if (d > 0) {
+        if (arg0->unk10 - (arg1->unk4[0].s16[1] << 4) < 0) {
+            arg0->unk26 = -d;
+        }
+    } else {
+        arg0->unk26 = 0;
+    }
+
+    d = arg0->unk28;
+
+    if (d > 0) {
+        if (arg0->unk14 - (arg1->unk4[1].s16[0] << 4) < 0) {
+            arg0->unk28 = -d;
+        }
+    } else {
+        arg0->unk28 = 0;
+    }
+
+    arg0->unk24 /= 4;
+    arg0->unk26 /= 4;
+    arg0->unk28 /= 4;
+    arg0->unk2A = arg1->unk4[2].u16[0] + 1;
+    arg0->unk2C = (arg0->unk24 & 0x1F) - 16;
+    arg0->unk2E = (arg0->unk26 & 0x3F) - 32;
+    arg0->unk30 = 0;
+    arg0->unk32 = 0;
+    return 0;
+}
 
 int func_80092E14(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {

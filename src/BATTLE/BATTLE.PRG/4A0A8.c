@@ -192,6 +192,7 @@ typedef struct {
     char unk2[22];
 } func_800BB68C_t;
 
+short func_8008DC7C(int, int);
 int func_80090C2C(int);
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
@@ -3065,8 +3066,58 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCA8C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCFB4);
 
-// https://decomp.me/scratch/gzNKP
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD2B8);
+int func_800BD2B8(MATRIX* arg0)
+{
+    VECTOR pos;
+    SVECTOR offset;
+    long flag;
+    int first;
+    int second;
+    int h;
+    short lowest;
+
+    SetRotMatrix(arg0);
+    SetTransMatrix(arg0);
+
+    offset.vx = 80;
+    offset.vy = 80;
+    offset.vz = 150;
+    RotTrans(&offset, &pos, &flag);
+    first = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    lowest = first;
+
+    offset.vx = -80;
+    offset.vy = 80;
+    offset.vz = 150;
+    RotTrans(&offset, &pos, &flag);
+    second = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+
+    if (second < first) {
+        lowest = second;
+    }
+
+    offset.vx = 80;
+    offset.vy = -80;
+    offset.vz = 150;
+    RotTrans(&offset, &pos, &flag);
+    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+
+    if (h < lowest) {
+        lowest = h;
+    }
+
+    offset.vx = -80;
+    offset.vy = -80;
+    offset.vz = 150;
+    RotTrans(&offset, &pos, &flag);
+    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+
+    if (h < lowest) {
+        lowest = h;
+    }
+
+    return lowest * ONE;
+}
 
 int func_800BD444(u_char* arg0, short arg1)
 {

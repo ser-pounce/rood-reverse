@@ -3079,16 +3079,12 @@ int func_800BD2B8(MATRIX* arg0)
     SetRotMatrix(arg0);
     SetTransMatrix(arg0);
 
-    offset.vx = 80;
-    offset.vy = 80;
-    offset.vz = 150;
+    setVector(&offset, 80, 80, 150);
     RotTrans(&offset, &pos, &flag);
     first = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
     lowest = first;
 
-    offset.vx = -80;
-    offset.vy = 80;
-    offset.vz = 150;
+    setVector(&offset, -80, 80, 150);
     RotTrans(&offset, &pos, &flag);
     second = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
 
@@ -3096,9 +3092,7 @@ int func_800BD2B8(MATRIX* arg0)
         lowest = second;
     }
 
-    offset.vx = 80;
-    offset.vy = -80;
-    offset.vz = 150;
+    setVector(&offset, 80, -80, 150);
     RotTrans(&offset, &pos, &flag);
     h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
 
@@ -3106,9 +3100,7 @@ int func_800BD2B8(MATRIX* arg0)
         lowest = h;
     }
 
-    offset.vx = -80;
-    offset.vy = -80;
-    offset.vz = 150;
+    setVector(&offset, -80, -80, 150);
     RotTrans(&offset, &pos, &flag);
     h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
 

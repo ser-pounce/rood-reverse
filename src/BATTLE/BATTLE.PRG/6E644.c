@@ -1,4 +1,5 @@
 #include "common.h"
+#include "3A1A0.h"
 #include "5BF94.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/32154.h"
@@ -8,15 +9,6 @@
 #include <abs.h>
 
 struct func_800D4910_t;
-
-typedef struct {
-    char unk0[0x38];
-    int unk38;
-    char unk3C[0xEE];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-} func_800D8260_t;
 
 typedef struct {
     int unk0;
@@ -128,7 +120,8 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    u_int unk4_0 : 5;
+    u_int unk4_0 : 3;
+    u_int unk4_3 : 2;
     u_int unk4_5 : 8;
     u_int unk4_13 : 19;
     int unk8;
@@ -139,17 +132,48 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
-    char unk0[4];
+    u_char unk0;
+    char unk1[0x3F];
+    int unk40;
+} func_800DEB10_t;
+
+typedef struct {
+    char unk0[9];
+    u_char unk9;
+    char unkA[2];
+    u_short unkC;
+    u_short unkE;
+} func_800DEB10_t2;
+
+typedef struct {
+    u_short unk0;
+    char unk2[2];
     u_char unk4;
     char unk5[0x3F];
     int unk44;
+    char unk48[2];
+    u_short unk4A;
+    func_800DEB10_t unk4C[0];
 } func_800DEEA4_t;
 
 typedef struct {
     char unk0[0x16];
     signed char unk16;
-    char unk17[0x83];
+    char unk17[0x21];
+    int unk38;
+    char unk3C[0x18];
+    func_800DEB10_t2* unk54;
+    char unk58[0x42];
     short unk9A;
+    char unk9C[0x5F];
+    u_char unkFB;
+    char unkFC[0x2E];
+    u_char unk12A;
+    char unk12B[0xD];
+    u_short unk138;
+    char unk13A[0x2F6];
+    func_800DCAA0_t* unk430[16];
+    int unk470;
 } func_800DEEA4_t2;
 
 typedef struct {
@@ -192,6 +216,8 @@ void func_800E3600(func_800E0850_t*, int, int);
 int func_800E42EC(int, int);
 int func_800E4764(func_800E0850_t*, int*, int*);
 void func_800E4B18(func_800E0850_t*);
+void func_800E4C8C(func_800DEEA4_t2*);
+void func_800E4CE8(func_800DEEA4_t2* arg0);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E0850_t*);
 
@@ -584,7 +610,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D820C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D821C);
 
-void func_800D8260(func_800D8260_t* arg0, int arg1, int arg2)
+void func_800D8260(func_800DEEA4_t2* arg0, int arg1, int arg2)
 {
     arg0->unk138 = arg1;
     arg0->unk12A = arg2;
@@ -739,7 +765,56 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE030);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE3E4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEB10);
+void func_800DEB10(func_800DEEA4_t* arg0)
+{
+    int i;
+    int j;
+    func_800DEEA4_t2* entry;
+    func_800DEB10_t2* temp_t1;
+
+    if (arg0 == NULL) {
+        return;
+    }
+
+    if (arg0->unk44 != 0) {
+        return;
+    }
+
+    entry = D_800F5878[arg0->unk4];
+    temp_t1 = entry->unk54;
+
+    if (entry == NULL) {
+        return;
+    }
+
+    if (temp_t1->unk9 != 24) {
+        return;
+    }
+
+    for (i = 0; i < entry->unk470; ++i) {
+        func_800DCAA0_t** list = entry->unk430;
+        func_800DCAA0_t* temp_a2 = list[i];
+
+        if ((arg0->unk0 == temp_a2->unk4_5) && (temp_t1->unkC == temp_a2->unk4_0)
+            && (temp_t1->unkE == temp_a2->unk4_3)) {
+            entry->unkFB = temp_a2->unkC_0;
+            for (j = 0; j < arg0->unk4A; ++j) {
+                func_800DEB10_t* elem = &arg0->unk4C[j];
+
+                if (elem->unk40 == 0) {
+                    D_800F45E0_t* actor = D_800F45E0[elem->unk0];
+
+                    if ((actor == NULL) || ((0x14 >> actor->unk6C[8].actorId) & 1)) {
+                        func_800E4CE8(entry);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    func_800E4C8C(entry);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEC88);
 
@@ -1022,7 +1097,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4C64);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4C8C);
 
-void func_800E4CE8(func_800D8260_t* arg0) { arg0->unk38 = -1; }
+void func_800E4CE8(func_800DEEA4_t2* arg0) { arg0->unk38 = -1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4CF4);
 

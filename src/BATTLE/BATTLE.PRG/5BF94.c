@@ -237,7 +237,7 @@ typedef struct {
     char unk7;
     int unk8;
     int unkC;
-    char* unk10;
+    char* limbName;
 } func_800C56C0_t2;
 
 typedef struct {
@@ -476,10 +476,10 @@ func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
 
     if (arg1 == 2) {
         item->unk4 = 320;
-        item->unk10 = vs_battle_limbNames[src->unk8] + 1;
+        item->limbName = vs_battle_limbNames[src->unk8] + 1;
     } else {
         item->unk4 = -72;
-        item->unk10 = vs_battle_limbNames[src->unk8];
+        item->limbName = vs_battle_limbNames[src->unk8];
         item->unk7 = 1;
     }
     return item;

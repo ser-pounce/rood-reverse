@@ -223,12 +223,27 @@ typedef struct {
 } func_800D0B30_t;
 
 typedef struct {
+    int unk0;
+    int unk4;
+    u_char unk8;
+    char unk9[0xF];
+} func_800C5798_t;
+
+typedef struct {
     char unk0;
-    char unk1[0x13];
+    char unk1[3];
+    short unk4;
+    u_char unk6;
+    char unk7;
+    int unk8;
+    int unkC;
+    char* limbName;
 } func_800C56C0_t2;
 
 typedef struct {
-    char unk0[0x990];
+    char unk0[0x40];
+    func_800C5798_t* unk40;
+    char unk44[0x94C];
     func_800C56C0_t2 unk990[24];
 } func_800C56C0_t;
 
@@ -446,7 +461,29 @@ void func_800C56C0(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5798);
+func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
+{
+    int temp_v1;
+    func_800C56C0_t2* item = &D_800EB9B8->unk990[arg0];
+    func_800C5798_t* src = &D_800EB9B8->unk40[arg0];
+
+    vs_battle_rMemzero(item, sizeof *item);
+    item->unk0 = arg1;
+    item->unk6 = arg2 * 11 + 32;
+    temp_v1 = src->unk4;
+    item->unk8 = src->unk0;
+    item->unkC = temp_v1;
+
+    if (arg1 == 2) {
+        item->unk4 = 320;
+        item->limbName = vs_battle_limbNames[src->unk8] + 1;
+    } else {
+        item->unk4 = -72;
+        item->limbName = vs_battle_limbNames[src->unk8];
+        item->unk7 = 1;
+    }
+    return item;
+}
 
 char* func_800C58A4(uint arg0)
 {

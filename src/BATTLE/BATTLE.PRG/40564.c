@@ -425,7 +425,67 @@ void func_800AA218(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AA290);
+void func_800AA290(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
+{
+    SVECTOR target;
+    int dist;
+    int temp;
+    D_800F4538_t* actor = D_800F4538[arg0];
+
+    if (actor == NULL) {
+        return;
+    }
+
+    target.vx = arg1->unk0_0 * 128 + 64;
+    target.vz = arg1->unk0_16 * 128 + 64;
+    actor->unk0.unk34.vx = target.vx - actor->unk0.position.vx;
+    actor->unk0.unk34.vz = target.vz - actor->unk0.position.vz;
+    actor->unk0.unk34.vy = func_800A6EE8(&target, 0, 0, 4) - actor->unk0.position.vy;
+
+    if ((actor->unk0.unk34.vx == 0) && (actor->unk0.unk34.vz == 0)
+        && (actor->unk0.unk34.vy == 0)) {
+        return;
+    }
+
+    if (arg2 == 0) {
+        actor->unk0.unk1A = 0;
+    move:
+        addVector(&actor->unk0.position, &actor->unk0.unk34);
+        return;
+    }
+
+    if (arg2 == -1) {
+        temp = actor->unk0.unk34.vx;
+        temp *= temp;
+        if (temp < 0) {
+            temp = -temp;
+        }
+        dist = temp;
+        temp = actor->unk0.unk34.vz;
+        temp *= temp;
+        if (temp < 0) {
+            temp = -temp;
+        }
+        dist += temp;
+        temp = actor->unk0.unk34.vy;
+        temp *= temp;
+        if (temp < 0) {
+            temp = -temp;
+        }
+        dist = vs_gte_rsqrt(dist + temp) * arg3;
+        temp = dist / 128;
+        actor->unk0.unk1A = temp;
+        if (dist & 0x7F) {
+            actor->unk0.unk1A = temp + 1;
+        }
+        if (actor->unk0.unk1A == 0) {
+            goto move;
+        }
+        return;
+    }
+
+    actor->unk0.unk1A = arg2;
+}
 
 void func_800AA454(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 {

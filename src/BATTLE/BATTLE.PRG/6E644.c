@@ -1,5 +1,6 @@
 #include "common.h"
 #include "3A1A0.h"
+#include "4A0A8.h"
 #include "5BF94.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/32154.h"
@@ -67,12 +68,30 @@ typedef struct {
 } D_800F16EC_t;
 
 typedef struct {
+    char unk0[8];
+    u_char unk8;
+    u_char unk9;
+    char unkA[2];
+    u_short unkC;
+    u_short unkE;
+    SVECTOR unk10;
+    char unk18[0x24];
+    vs_battle_actor2* unk3C;
+} func_800DEB10_t2;
+
+typedef struct {
     int unk0;
     u_int unk4;
 } func_800E78F4_t2;
 
 typedef struct {
-    char unk0[0x430];
+    char unk0[0x4E];
+    u_short unk4E;
+    char unk50[4];
+    func_800DEB10_t2* unk54;
+    char unk58[4];
+    vs_battle_actor2* unk5C;
+    char unk60[0x3D0];
     func_800E78F4_t2* unk430;
     char unk434[0x3C];
     int unk470;
@@ -82,6 +101,21 @@ typedef struct {
     char unk0[0x18];
     u_short unk18;
 } D_800F58BC_t;
+
+typedef struct {
+    char unk0[0xA];
+    u_char unkA;
+    char unkB;
+    short unkC;
+    short unkE;
+    char unk10[2];
+    u_short unk12;
+    char unk14[2];
+    u_char unk16;
+    u_char unk17;
+    char unk18[4];
+    u_char unk1C;
+} D_800F5920_t;
 
 typedef struct {
     int unk0;
@@ -136,14 +170,6 @@ typedef struct {
     char unk1[0x3F];
     int unk40;
 } func_800DEB10_t;
-
-typedef struct {
-    char unk0[9];
-    u_char unk9;
-    char unkA[2];
-    u_short unkC;
-    u_short unkE;
-} func_800DEB10_t2;
 
 typedef struct {
     u_short unk0;
@@ -201,6 +227,8 @@ void _parsePfileBlock13(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
+void func_800D82CC(func_800E78F4_t*);
+void func_800D836C(func_800E78F4_t*);
 int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
@@ -220,6 +248,8 @@ void func_800E4C8C(func_800DEEA4_t2*);
 void func_800E4CE8(func_800DEEA4_t2* arg0);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E0850_t*);
+int func_800E7698(func_800E78F4_t*);
+void func_800E7960(func_800E78F4_t*);
 
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
@@ -243,6 +273,9 @@ extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
 extern void* D_800F5900;
 extern D_800F5910_t* D_800F5910;
+extern int D_800F5918;
+extern int D_800F591C;
+extern D_800F5920_t* D_800F5920;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
 
@@ -1343,7 +1376,79 @@ int func_800E78F4(func_800E78F4_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7960);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7F8C);
+int func_800E7F8C(func_800E78F4_t* arg0)
+{
+    D_800F5920_t* temp_s0;
+    char state;
+
+    if (func_800E78F4(arg0) != 0) {
+        func_800D836C(arg0);
+    }
+
+    state = vs_battle_getStateFlag(0xA6);
+    temp_s0 = D_800F5920;
+
+    if (temp_s0->unkC > 0) {
+        --temp_s0->unkC;
+    }
+
+    switch (state) {
+    case 0:
+        if (temp_s0->unk16 != 0) {
+            temp_s0->unk16 = 0;
+            arg0->unk470 = temp_s0->unk17;
+        }
+
+        temp_s0->unkA = 0;
+        func_800E7960(arg0);
+
+        if ((temp_s0->unkE != 0) && (temp_s0->unkC == 0)
+            && (arg0->unk5C->limbs[4].hp >= 2)) {
+            temp_s0->unkC = 900;
+            temp_s0->unkE = 0;
+            temp_s0->unk17 = arg0->unk470;
+            state = 1;
+            arg0->unk470 = 0;
+            temp_s0->unk16 = 1;
+        }
+        break;
+
+    case 4:
+        temp_s0->unk1C = 0;
+        func_800D82CC(arg0);
+
+        if (func_800E7698(arg0) != 0) {
+            if (temp_s0->unkA != 0) {
+                func_800DEB10_t2* temp_a1 = arg0->unk54;
+
+                if (temp_a1->unk3C->limbs[4].hp >= 2) {
+                    temp_a1->unkC = 4;
+                    temp_a1->unkE = 0;
+                    setVector(&temp_a1->unk10, D_800F4538[0]->unk0.position.vx,
+                        D_800F4538[0]->unk0.position.vy
+                            - (D_800F4538[0]->menuCameraHeightOffset >> 1),
+                        D_800F4538[0]->unk0.position.vz);
+                    temp_a1->unk9 = 24;
+                    temp_a1->unk8 = 0x80;
+                }
+
+                temp_s0->unk12 = arg0->unk4E;
+                arg0->unk470 = temp_s0->unk17;
+                temp_s0->unk16 = 0;
+            } else {
+                state = 6;
+            }
+
+            D_800F591C = 0;
+            temp_s0->unkE = 0;
+            D_800F5918 = 0;
+        }
+        break;
+    }
+
+    vs_battle_setStateFlag(0xA6, state);
+    return 1;
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069C18);
 

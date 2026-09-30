@@ -129,7 +129,7 @@ void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
 int func_80092B04(func_80092B04_t*, int, D_800F1DD8_t*);
 int func_8009291C(int);
-void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1);
+void func_80092EDC(func_80092F74_t* arg0);
 int func_8009306C(func_80092F74_t* arg0);
 int func_80093364(func_80092F74_t* arg0);
 int func_8009406C(int, int, int, int);
@@ -625,11 +625,11 @@ int func_80092E7C(func_80092F74_t* arg0, func_80092F74_t2* arg1)
     arg0->unk1C = arg1->unk4[3].s32;
     arg0->unk1E = arg1->unk14;
     arg0->unk20 = arg1->unk18;
-    func_80092EDC(arg0, arg1);
+    func_80092EDC(arg0);
     return 0;
 }
 
-void func_80092EDC(func_80092F74_t* arg0, func_80092F74_t2* arg1)
+void func_80092EDC(func_80092F74_t* arg0)
 {
     if (arg0->unk8 >= 0) {
         int* temp_v1 = arg0->unk0;
@@ -691,8 +691,33 @@ int func_80092FBC(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 int func_8009306C(func_80092F74_t* arg0);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009306C);
 
-int func_80093364(func_80092F74_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093364);
+int func_80093364(func_80092F74_t* arg0)
+{
+    arg0->unkC += arg0->unk24;
+    arg0->unk10 += arg0->unk26;
+    arg0->unk14 += arg0->unk28;
+    arg0->unk1C += arg0->unk2C;
+    arg0->unk1E += arg0->unk2E;
+    arg0->unk20 += arg0->unk30;
+    arg0->unk1C &= 0xFFF;
+    arg0->unk1E &= 0xFFF;
+    arg0->unk20 &= 0xFFF;
+
+    if (arg0->unk2A != 0) {
+        arg0->unk24 -= (arg0->unk24 * arg0->unk2A) / 16;
+        arg0->unk26 -= (arg0->unk26 * arg0->unk2A) / 16;
+        arg0->unk28 -= (arg0->unk28 * arg0->unk2A) / 16;
+    }
+
+    if (arg0->unk32 != 0) {
+        arg0->unk2C -= (arg0->unk2C * arg0->unk32) / 16;
+        arg0->unk2E -= (arg0->unk2E * arg0->unk32) / 16;
+        arg0->unk30 -= (arg0->unk30 * arg0->unk32) / 16;
+    }
+
+    func_80092EDC(arg0);
+    return 0;
+}
 
 int func_8009352C(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {

@@ -7,6 +7,11 @@
 #include <abs.h>
 
 typedef struct {
+    u_char unk0;
+    u_char unk1;
+} func_800AAE9C_t;
+
+typedef struct {
     int unk0;
     u_char* unk4;
     u_short unk8[0];
@@ -25,6 +30,9 @@ void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AB098(D_800F4538_t*, int, int);
 
 extern u_char D_800E8F2C;
+extern func_800AAE9C_t D_800E909C[][28];
+extern func_800AAE9C_t D_800E916C[][8];
+extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
@@ -843,7 +851,72 @@ void func_800AACDC(void)
 // https://decomp.me/scratch/7lkmC
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAD4C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAE9C);
+int func_800AAE9C(D_800F4538_t* actor)
+{
+    int i;
+
+    if (D_800F2450[D_800E8F2C] == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < 2; ++i) {
+        D_800F4538_unk180C* slot = &actor->unk180C[i];
+        func_800AAE9C_t* p;
+
+        if (slot->unk0_0 == 0) {
+            continue;
+        }
+
+        switch (slot->unk0_4) {
+        case 2:
+            continue;
+
+        case 0:
+            if (slot->unk1 == 1) {
+                slot->unk0_0 = 0;
+                continue;
+            }
+            // Fallthrough
+        case 1:
+            if (i == 0) {
+                p = &D_800E909C[slot->unk0_0][slot->unk2];
+            } else {
+                p = &D_800E916C[slot->unk0_0][slot->unk2];
+            }
+
+            ++slot->unk3;
+
+            if (p->unk1 < slot->unk3) {
+                slot->unk3 = 0;
+                ++slot->unk2;
+                ++p;
+
+                if (p->unk0 == 0) {
+                    slot->unk2 = 0;
+
+                    if (i == 0) {
+                        p = D_800E909C[slot->unk0_0];
+                    } else {
+                        p = D_800E916C[slot->unk0_0];
+                    }
+
+                    if (p->unk0 == 0) {
+                        return;
+                    }
+                }
+            } else if (p->unk0 == 0) {
+                return;
+            }
+
+            slot->unk1 = p->unk0;
+            break;
+        }
+
+        func_800AB098(actor, i, slot->unk1 - 1);
+    }
+
+    // BUG: no return value, in practice it isn't read by the only caller.
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB098);
 

@@ -107,6 +107,19 @@ typedef struct {
 } D_800F5620_t;
 
 typedef struct {
+    char unk0[4];
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+} func_800CF988_t2;
+
+typedef struct {
+    char unk0[8];
+    func_800CF988_t2 unk8[4];
+} func_800CF988_t;
+
+typedef struct {
     char unk0[0xC];
     short unkC;
     short unkE;
@@ -3408,7 +3421,37 @@ void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
     *arg3 = var_v1 | temp_a1 << 8;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF988);
+void func_800CF988(func_800CF988_t* arg0, int arg1, int arg2, int arg3)
+{
+    int page;
+    int offset;
+    int left = 320;
+
+    if (arg0->unk8[0].unk4 < left) {
+        left = arg0->unk8[0].unk4;
+    }
+
+    if (arg0->unk8[1].unk4 < left) {
+        left = arg0->unk8[1].unk4;
+    }
+
+    if (arg0->unk8[2].unk4 < left) {
+        left = arg0->unk8[2].unk4;
+    }
+
+    if (arg0->unk8[3].unk4 < left) {
+        left = arg0->unk8[3].unk4;
+    }
+
+    left &= ~0x3F;
+    page = left / 64;
+    arg0->unk8[1].unkA = ((vs_main_frameBuf & 1) ? page : page + 5) | arg3 | 0x100;
+    offset = arg1 - left;
+    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[0].unk4, &arg0->unk8[0].unk8);
+    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[1].unk4, &arg0->unk8[1].unk8);
+    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[2].unk4, &arg0->unk8[2].unk8);
+    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[3].unk4, &arg0->unk8[3].unk8);
+}
 
 void func_800CFAAC(func_800CFAAC_t* arg0)
 {

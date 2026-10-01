@@ -893,18 +893,11 @@ int func_800AAE9C(D_800F4538_t* actor)
 
                 if (p->unk0 == 0) {
                     slot->unk2 = 0;
-
-                    if (i == 0) {
-                        p = D_800E909C[slot->unk0_0];
-                    } else {
-                        p = D_800E916C[slot->unk0_0];
-                    }
-
-                    if (p->unk0 == 0) {
-                        return;
-                    }
+                    p = (i == 0) ? D_800E909C[slot->unk0_0] : D_800E916C[slot->unk0_0];
                 }
-            } else if (p->unk0 == 0) {
+            }
+
+            if (p->unk0 == 0) {
                 return;
             }
 

@@ -3947,36 +3947,40 @@ void func_800D206C(void)
     int i;
 
     for (i = 0; i < 4; ++i) {
-        if ((D_800F5518 >> i) & 1) {
-            int v = func_800D11F4(D_800F54B8[i].unk1_0, D_800F54B8[i].unk0);
+        int v;
 
-            if (v >= 0) {
-                v = ((rsin(D_800F54B8[i].unk5 * 32) * v) * D_800F54B8[i].unk4) >> 8;
+        if (!((D_800F5518 >> i) & 1)) {
+            continue;
+        }
 
-                switch (i) {
-                case 0:
-                    D_800F54D8.unk20 = v;
-                    break;
+        v = func_800D11F4(D_800F54B8[i].unk1_0, D_800F54B8[i].unk0);
 
-                case 1:
-                    D_800F54D8.unk24 = v;
-                    break;
+        if (v >= 0) {
+            v = ((rsin(D_800F54B8[i].unk5 * 32) * v) * D_800F54B8[i].unk4) >> 8;
 
-                case 2:
-                    D_800F54D8.unk28 = v;
-                    break;
+            switch (i) {
+            case 0:
+                D_800F54D8.unk20 = v;
+                break;
 
-                case 3:
-                    D_800F54D8.unk2C = v >> 12;
-                    break;
-                }
+            case 1:
+                D_800F54D8.unk24 = v;
+                break;
 
-                D_800F54B8[i].unk5 +=
-                    func_800D1E2C(&D_800F54B8[i]) + func_800D1E78(&D_800F54B8[i]);
-                ++D_800F54B8[i].unk0;
-            } else {
-                func_800D1FEC(1 << i);
+            case 2:
+                D_800F54D8.unk28 = v;
+                break;
+
+            case 3:
+                D_800F54D8.unk2C = v >> 12;
+                break;
             }
+
+            D_800F54B8[i].unk5 +=
+                func_800D1E2C(&D_800F54B8[i]) + func_800D1E78(&D_800F54B8[i]);
+            ++D_800F54B8[i].unk0;
+        } else {
+            func_800D1FEC(1 << i);
         }
     }
 }

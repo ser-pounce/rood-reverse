@@ -71,7 +71,7 @@ typedef struct {
     short unkE;
     void* data;
     vs_main_CdQueueSlot* cdQueueSlot;
-    int unk18[0xF7];
+    short unk18[0x1EE];
     int unk3F4;
 } gim_t;
 
@@ -1429,7 +1429,50 @@ void vs_battle_loadGim(int id, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8550);
+void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
+{
+    gim_t* gim = &D_800EB9BC[arg0];
+    int step;
+    int next;
+    int i;
+
+    gim->unk0_0 = 1;
+
+    if (gim->unk0_3 == 2) {
+        short* p = gim->unk18;
+        int angle = vs_battle_keystreamBits(9);
+        int target = vs_battle_keystreamBits(10);
+
+        for (i = 0; i < 240; ++i) {
+            p[i] = (rsin(angle) >> 3) + 320;
+            step = vs_battle_keystreamBits(8) - 64;
+            next = vs_battle_keystreamBits(10);
+
+            if (target < angle) {
+                angle -= step;
+
+                if (target >= angle) {
+                    target = next;
+                }
+            } else {
+                angle += step;
+
+                if (angle >= target) {
+                    target = next;
+                }
+            }
+
+            if (angle < 0) {
+                angle = 128;
+                target = vs_battle_keystreamBits(10);
+            }
+        }
+    }
+
+    if (gim->unk0_3 == 3) {
+        func_8007DFF0(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+    }
+}
 
 void func_800C86AC(void)
 {

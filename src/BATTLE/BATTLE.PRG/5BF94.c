@@ -37,14 +37,14 @@ typedef struct {
 } func_800D57FC_t2;
 
 typedef struct {
-    /* 0x0 */ u_long* unk0;
-    /* 0x4 */ u_char unk4;
-    /* 0x5 */ u_char unk5;
-    /* 0x6 */ short unk6;
-    /* 0x8 */ short unk8;
-    /* 0xA */ short unkA;
-    /* 0xC */ int unkC;
-} func_800D5780_t;
+    func_800D5780_t2 unk0;
+    u_short unk2;
+} func_800D55A4_t2;
+
+typedef struct {
+    int count;
+    func_800D55A4_t2 unk4[0];
+} func_800D55A4_t;
 
 typedef struct {
     u_short unk0;
@@ -303,6 +303,7 @@ int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
+int func_800D5780(func_800D5780_t*);
 int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
@@ -4523,19 +4524,51 @@ void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D52A4);
 
-void* func_800D5550(u_short* arg0, int arg1)
+void* func_800D5550(pFileBlock3* arg0, int arg1)
 {
-    u_short* v = arg0 + arg1;
-    return (char*)arg0 + v[2];
+    return (char*)arg0 + arg0->offsets[arg1];
 }
 
-void* func_800D5564(u_short* arg0, int arg1, int arg2)
+void* func_800D5564(pFileBlock3* arg0, int arg1, int arg2)
 {
-    u_short* v = (u_short*)func_800D5550(arg0, arg1) + arg2 * 2;
-    return (char*)arg0 + v[3];
+    func_800D55A4_t* entry = func_800D5550(arg0, arg1);
+    return (char*)arg0 + entry->unk4[arg2].unk2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D55A4);
+void func_800D55A4(D_800F53B8_t* arg0, int arg1, int arg2)
+{
+    func_800D55A4_t* entry = func_800D5550(D_800F569C->block3Data, arg1);
+    D_800F53B8_t4* p;
+    int count = 0;
+    int i;
+
+    if (arg0->unkD1C.unk30 != NULL) {
+        vs_main_freeHeapR(arg0->unkD1C.unk30);
+    }
+
+    arg0->unkD1C.unk30 = vs_main_allocHeapR(entry->count * 16 + 8);
+    p = arg0->unkD1C.unk30;
+    p->unk0 = entry->count;
+    p->unk2 = 0;
+    p->unk4 = 0;
+
+    for (i = 0; i < p->unk0; ++i) {
+        p->unk8[i].unk0 = func_800D5564(D_800F569C->block3Data, arg1, i);
+        p->unk8[i].unk4 = entry->unk4[i].unk0;
+
+        if (p->unk8[i].unk4.unk0_0 == 3) {
+            ++count;
+        }
+
+        p->unk8[i].unk6 = -1;
+        *(int*)&p->unk8[i].unk8 = 0;
+        p->unk8[i].unkC = 0;
+        func_800D5780(&p->unk8[i]);
+        p->unk4 |= 1 << i;
+    }
+
+    p->unk1 = count ? 2 : 0;
+}
 
 void func_800D5700(func_800D5780_t* arg0)
 {
@@ -4552,11 +4585,11 @@ void func_800D5738(func_800D5780_t* arg0)
 
 int func_800D5780(func_800D5780_t* arg0)
 {
-    if (arg0->unk6 + 1 >= arg0->unk5) {
+    if (arg0->unk6 + 1 >= arg0->unk4.unk0_8) {
         return 0;
     }
     arg0->unk6++;
-    switch (arg0->unk4) {
+    switch (arg0->unk4.unk0_0) {
     case 1:
         func_800D5700(arg0);
         break;
@@ -4905,7 +4938,7 @@ void func_800D6AEC(D_800F53B8_t* arg0, int arg1)
             int temp;
             func_800D5780_t* temp_a1 =
                 (func_800D5780_t*)&arg0->unkD1C.unk30[var_s1 * 2 + 1];
-            switch (temp_a1->unk4) {
+            switch (temp_a1->unk4.unk0_0) {
             case 1:
                 temp = func_800D57FC(arg0, temp_a1);
                 break;

@@ -873,13 +873,6 @@ typedef struct {
 } vs_battle_charInitData;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    int unk4;
-} D_800F53B8_t4;
-
-typedef struct {
     int unk0;
     short unk4;
     short unk6;

@@ -297,6 +297,7 @@ typedef struct {
 
 typedef struct {
     int count;
+    u_short offsets[0];
 } pFileBlock3;
 
 typedef struct {
@@ -373,6 +374,28 @@ typedef struct {
     u_short unk2;
     func_8006CE70_t unk4;
 } D_800F53B8_t3_2;
+
+typedef struct {
+    u_short unk0_0 : 8;
+    u_short unk0_8 : 8;
+} func_800D5780_t2;
+
+typedef struct {
+    /* 0x0 */ u_long* unk0;
+    /* 0x4 */ func_800D5780_t2 unk4;
+    /* 0x6 */ short unk6;
+    /* 0x8 */ short unk8;
+    /* 0xA */ short unkA;
+    /* 0xC */ int unkC;
+} func_800D5780_t;
+
+typedef struct {
+    char unk0;
+    char unk1;
+    short unk2;
+    int unk4;
+    func_800D5780_t unk8[0];
+} D_800F53B8_t4;
 
 typedef struct {
     D_800F53B8_t3_2 unk0;

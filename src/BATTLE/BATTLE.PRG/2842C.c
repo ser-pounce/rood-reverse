@@ -138,6 +138,8 @@ void func_80096444(int);
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
+extern short D_800E8634[];
+extern RECT D_800E8640[];
 extern short D_800F1D00;
 extern short D_800F1D98[];
 extern short D_800F1DA4;
@@ -1078,7 +1080,48 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094B0C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094E18);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009506C);
+void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
+{
+    POLY_FT4* prim;
+    int step;
+    int y0;
+    int y1;
+    int i;
+
+    if (arg2->unkB < 4) {
+        step = arg2->unkB;
+    } else if (arg2->unkB >= 27) {
+        step = 30 - arg2->unkB;
+    } else {
+        step = 4;
+    }
+
+    arg0 -= 16;
+    y0 = arg1 - D_800E8634[step];
+    y1 = arg1 + D_800E8634[step];
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+
+    for (i = 0; i < 4; ++i) {
+        if ((arg0 < 320) && ((arg0 + D_800E8640[i].w) >= 0)) {
+            setPolyFT4(prim);
+            setXY4(prim, arg0, y0, arg0 + D_800E8640[i].w, y0, arg0, y1,
+                arg0 + D_800E8640[i].w, y1);
+            setShadeTex(prim, 1);
+            setUV4(prim, D_800E8640[i].x, D_800E8640[i].y,
+                D_800E8640[i].x + D_800E8640[i].w, D_800E8640[i].y, D_800E8640[i].x,
+                D_800E8640[i].y + 10, D_800E8640[i].x + D_800E8640[i].w,
+                D_800E8640[i].y + 10);
+            setSemiTrans(prim, 1);
+            setTPage(prim, 0, 0, 768, 0);
+            setClut(prim, 864, 223);
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+        }
+
+        arg0 += D_800E8640[i].w;
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095258);
 

@@ -188,6 +188,12 @@ typedef struct {
 } func_800CFE1C_t;
 
 typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4[0];
+} func_800D6CF_t2;
+
+typedef struct {
     int unk0;
     short unk4;
     u_char unk6;
@@ -201,7 +207,7 @@ typedef struct {
     u_char unk16;
     u_char unk17;
     u_char* unk18;
-    void* unk1C;
+    func_800D6CF_t2* unk1C;
 } func_800D6CF_t;
 
 typedef struct {
@@ -349,7 +355,8 @@ typedef struct {
     u_char unk36;
     u_char unk37;
     MATRIX unk38;
-    u_char unk58[0x78];
+    MATRIX unk58;
+    u_char unk78[0x58];
 } func_800CE714_t2_2;
 
 typedef struct {

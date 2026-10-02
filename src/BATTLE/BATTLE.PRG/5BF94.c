@@ -4987,7 +4987,7 @@ void func_800D6D24(func_800D6CF_t* arg0)
 
         switch (w & 0xF0000000) {
         case 0:
-            arg0->unk1C = (int*)D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF);
+            arg0->unk1C = D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF) * 4;
             *(short*)&arg0->unk6 = (w >> 16) & 0x3FFF;
             arg0->unkE += 4;
             return;

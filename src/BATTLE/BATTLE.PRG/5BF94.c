@@ -71,7 +71,7 @@ typedef struct {
     short unkE;
     void* data;
     vs_main_CdQueueSlot* cdQueueSlot;
-    int unk18[0xF7];
+    short unk18[0x1EE];
     int unk3F4;
 } gim_t;
 
@@ -1429,7 +1429,50 @@ void vs_battle_loadGim(int id, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8550);
+void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
+{
+    gim_t* gim = &D_800EB9BC[arg0];
+    int step;
+    int next;
+    int i;
+
+    gim->unk0_0 = 1;
+
+    if (gim->unk0_3 == 2) {
+        short* p = gim->unk18;
+        int angle = vs_battle_keystreamBits(9);
+        int target = vs_battle_keystreamBits(10);
+
+        for (i = 0; i < 240; ++i) {
+            p[i] = (rsin(angle) >> 3) + 320;
+            step = vs_battle_keystreamBits(8) - 64;
+            next = vs_battle_keystreamBits(10);
+
+            if (target < angle) {
+                angle -= step;
+
+                if (target >= angle) {
+                    target = next;
+                }
+            } else {
+                angle += step;
+
+                if (angle >= target) {
+                    target = next;
+                }
+            }
+
+            if (angle < 0) {
+                angle = 128;
+                target = vs_battle_keystreamBits(10);
+            }
+        }
+    }
+
+    if (gim->unk0_3 == 3) {
+        func_8007DFF0(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+    }
+}
 
 void func_800C86AC(void)
 {
@@ -3942,7 +3985,48 @@ void func_800D1FEC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D206C);
+void func_800D206C(void)
+{
+    int i;
+
+    for (i = 0; i < 4; ++i) {
+        int v;
+
+        if (!((D_800F5518 >> i) & 1)) {
+            continue;
+        }
+
+        v = func_800D11F4(D_800F54B8[i].unk1_0, D_800F54B8[i].unk0);
+
+        if (v >= 0) {
+            v = ((rsin(D_800F54B8[i].unk5 * 32) * v) * D_800F54B8[i].unk4) >> 8;
+
+            switch (i) {
+            case 0:
+                D_800F54D8.unk20 = v;
+                break;
+
+            case 1:
+                D_800F54D8.unk24 = v;
+                break;
+
+            case 2:
+                D_800F54D8.unk28 = v;
+                break;
+
+            case 3:
+                D_800F54D8.unk2C = v >> 12;
+                break;
+            }
+
+            D_800F54B8[i].unk5 +=
+                func_800D1E2C(&D_800F54B8[i]) + func_800D1E78(&D_800F54B8[i]);
+            ++D_800F54B8[i].unk0;
+        } else {
+            func_800D1FEC(1 << i);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D21C0);
 
@@ -4363,9 +4447,9 @@ int func_800D4F00(D_800F53B8_t* arg0)
     u_char third = func_800D5170(arg0);
     func_800FA098_arg0* dst = &D_800F569C->block5Data->unk4[first & 0x3F];
 
-    dst->unkC4 = (first >> 6) + ((second & 0xF) << 2);
-    dst->unkC5 = (second >> 4) + ((third & 3) << 4);
-    dst->unkC6 = third >> 2;
+    dst->rCurve = (first >> 6) + ((second & 0xF) << 2);
+    dst->gCurve = (second >> 4) + ((third & 3) << 4);
+    dst->bCurve = third >> 2;
     return 1;
 }
 
@@ -4375,9 +4459,9 @@ int func_800D4FB4(D_800F53B8_t* arg0)
 
     for (i = 0; i < 2; ++i) {
         func_800FA098_arg0* dst = &D_800F569C->block5Data->unk4[i];
-        dst->unkC4 = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
-        dst->unkC5 = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
-        dst->unkC6 = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
+        dst->rCurve = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
+        dst->gCurve = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
+        dst->bCurve = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
     }
 
     return 1;
@@ -4399,9 +4483,9 @@ int func_800D5088(D_800F53B8_t* arg0)
     for (i = 0; i < 5; i++) {
         func_800FA098_arg0* dst =
             &D_800F569C->block5Data->unk4[D_800EC368[arg0->unkD1C.unk18.unk2][i][3]];
-        dst->unkC4 = D_800EC368[arg0->unkD1C.unk18.unk2][i][0];
-        dst->unkC5 = D_800EC368[arg0->unkD1C.unk18.unk2][i][1];
-        dst->unkC6 = D_800EC368[arg0->unkD1C.unk18.unk2][i][2];
+        dst->rCurve = D_800EC368[arg0->unkD1C.unk18.unk2][i][0];
+        dst->gCurve = D_800EC368[arg0->unkD1C.unk18.unk2][i][1];
+        dst->bCurve = D_800EC368[arg0->unkD1C.unk18.unk2][i][2];
     }
     return 1;
 }
@@ -4903,7 +4987,7 @@ void func_800D6D24(func_800D6CF_t* arg0)
 
         switch (w & 0xF0000000) {
         case 0:
-            arg0->unk1C = (int*)D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF);
+            arg0->unk1C = D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF);
             *(short*)&arg0->unk6 = (w >> 16) & 0x3FFF;
             arg0->unkE += 4;
             return;

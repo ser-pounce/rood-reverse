@@ -21,7 +21,7 @@ typedef struct {
     u_char trailcount;
     u_char unk3;
     _trail* trails;
-    int unk8;
+    int curveSampleDistance;
     func_800D6CF_t unkC;
     u_char sampledTransparencyCurve[0];
 } func_800FA76C_arg3;

@@ -188,6 +188,11 @@ typedef struct {
 } func_800CFE1C_t;
 
 typedef struct {
+    u_short unk0;
+    u_short dataIndex;
+} pFileBlock1Indices;
+
+typedef struct {
     int unk0;
     short unk4;
     u_char unk6;
@@ -201,7 +206,7 @@ typedef struct {
     u_char unk16;
     u_char unk17;
     u_char* unk18;
-    void* unk1C;
+    pFileBlock1Indices* unk1C;
 } func_800D6CF_t;
 
 typedef struct {
@@ -234,9 +239,9 @@ typedef struct {
     short unk94[5][4];
     int unkBC;
     short unkC0[2];
-    u_char unkC4;
-    u_char unkC5;
-    u_char unkC6;
+    u_char rCurve;
+    u_char gCurve;
+    u_char bCurve;
     u_char unkC7;
     u_char unkC8;
     u_char unkC9;
@@ -295,6 +300,16 @@ typedef struct {
 } pFileBlock3;
 
 typedef struct {
+    short clut;
+    short tpage;
+    u_char u0;
+    u_char v0;
+    u_char u1;
+    u_char v1;
+    u_char unk8[0x10];
+} pFileBlock1Data;
+
+typedef struct {
     int unk0;
     int unk4;
     pFileBlock5* block5Data;
@@ -302,8 +317,8 @@ typedef struct {
     pFileCurveBlock* curveBlock;
     char* block8Data;
     int block1TableCount;
-    void* block1Tables[4];
-    void* block1Data;
+    pFileBlock1Indices* block1Tables[4];
+    pFileBlock1Data* block1Data;
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;
@@ -349,7 +364,8 @@ typedef struct {
     u_char unk36;
     u_char unk37;
     MATRIX unk38;
-    u_char unk58[0x78];
+    MATRIX unk58;
+    u_char unk78[0x58];
 } func_800CE714_t2_2;
 
 typedef struct {

@@ -4,18 +4,10 @@
 #include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
+#include "gpu.h"
 #include <inline_c.h>
 #include <libgte.h>
 #include <rand.h>
-
-typedef struct {
-    short unk0;
-    short unk2;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-} func_block1_t;
 
 typedef struct {
     u_char unk0;
@@ -46,8 +38,8 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     u_short var_v1;
     u_short var_v1_2;
 
-    vs_battle_lerpVector(
-        arg0->unk18, vs_battle_sampleCurve(arg0->unk8, arg3->unk8), &arg1->unk98);
+    vs_battle_lerpVector(arg0->unk18,
+        vs_battle_sampleCurve(arg0->unk8, arg3->curveSampleDistance), &arg1->unk98);
 
     matrix = &arg2->unk1C[arg0->unkC8].unk38;
 
@@ -65,8 +57,8 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         break;
     }
 
-    vs_battle_lerpVector(
-        arg0->unk24, vs_battle_sampleCurve(arg0->unk9, arg3->unk8), &arg1->unkA8);
+    vs_battle_lerpVector(arg0->unk24,
+        vs_battle_sampleCurve(arg0->unk9, arg3->curveSampleDistance), &arg1->unkA8);
     SetRotMatrix(matrix);
     gte_zrtr();
 
@@ -249,10 +241,10 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
 {
     int i;
 
-    vs_battle_lerpSvector(
-        arg0->unk34[6], vs_battle_sampleCurve(arg0->unkF, arg3->unk8), &arg1->unk13C);
-    vs_battle_lerpSvector(
-        arg0->unk34[7], vs_battle_sampleCurve(arg0->unk10, arg3->unk8), &arg1->unk144);
+    vs_battle_lerpSvector(arg0->unk34[6],
+        vs_battle_sampleCurve(arg0->unkF, arg3->curveSampleDistance), &arg1->unk13C);
+    vs_battle_lerpSvector(arg0->unk34[7],
+        vs_battle_sampleCurve(arg0->unk10, arg3->curveSampleDistance), &arg1->unk144);
 
     switch (arg1->flags & 0x1C0) {
     case 0:
@@ -303,17 +295,23 @@ static void func_800FA294(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
                                    + (arg1->unk34.vy * arg1->unk34.vy)
                                    + (arg1->unk34.vz * arg1->unk34.vz));
             vs_battle_lerp2DVector(arg0->unk94[0],
-                vs_battle_sampleCurve(arg0->unk12, arg3->unk8), arg1->unk124);
+                vs_battle_sampleCurve(arg0->unk12, arg3->curveSampleDistance),
+                arg1->unk124);
             vs_battle_lerp2DVector(arg0->unk94[1],
-                vs_battle_sampleCurve(arg0->unk13, arg3->unk8), arg1->unk12C);
+                vs_battle_sampleCurve(arg0->unk13, arg3->curveSampleDistance),
+                arg1->unk12C);
             vs_battle_lerp2DVector(arg0->unk94[2],
-                vs_battle_sampleCurve(arg0->unkC, arg3->unk8), arg1->unk118);
+                vs_battle_sampleCurve(arg0->unkC, arg3->curveSampleDistance),
+                arg1->unk118);
             vs_battle_lerpVector(arg0->unk34[1],
-                vs_battle_sampleCurve(arg0->unkB, arg3->unk8), &arg1->unkC8);
+                vs_battle_sampleCurve(arg0->unkB, arg3->curveSampleDistance),
+                &arg1->unkC8);
             vs_battle_lerpVector(arg0->unk34[0],
-                vs_battle_sampleCurve(arg0->unkA, arg3->unk8), &arg1->unkE8);
+                vs_battle_sampleCurve(arg0->unkA, arg3->curveSampleDistance),
+                &arg1->unkE8);
             vs_battle_lerpSvector(arg0->unk34[2],
-                vs_battle_sampleCurve(arg0->unkD, arg3->unk8), &arg1->unkF8);
+                vs_battle_sampleCurve(arg0->unkD, arg3->curveSampleDistance),
+                &arg1->unkF8);
 
             if (arg1->unkF8.vx != 0) {
                 int var_v0_2 =
@@ -423,13 +421,13 @@ static void func_800FA8E4(func_800FA098_arg0* arg0 __attribute__((unused)),
             continue;
         }
 
-        if (arg3->unk8 >= temp_s0->stepCount) {
+        if (arg3->curveSampleDistance >= temp_s0->stepCount) {
             --temp_s0->trailCollapseCounter;
             if (temp_s0->trailCollapseCounter < temp_s0->stepCount) {
                 --temp_s0->splineSampleCount;
             }
         } else {
-            int currentStep = temp_s0->stepCount - arg3->unk8;
+            int currentStep = temp_s0->stepCount - arg3->curveSampleDistance;
             int speed = temp_s0->speed;
 
             speed += ((0x06000000 - (temp_s0->splineProgress * 2))
@@ -470,36 +468,36 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     int var_s0_2;
     int j;
     unkPrim* temp_a3;
-    func_block1_t* temp_s7;
+    pFileBlock1Data* temp_s7;
     SVECTOR* temp;
     DVECTOR* temp2;
     int temp_s3;
 
-    vs_battle_lerpSvector(
-        arg0->unk34[4], vs_battle_sampleCurve(arg0->unkE, arg3->unk8), &arg1->unk108);
+    vs_battle_lerpSvector(arg0->unk34[4],
+        vs_battle_sampleCurve(arg0->unkE, arg3->curveSampleDistance), &arg1->unk108);
 
-    if (arg0->unkC4 != 0) {
-        j = vs_battle_sampleCurve(arg0->unkC4, arg3->unk8) * 2;
-        spC0.r = j <= 0xFF ? j : 0xFF;
+    if (arg0->rCurve != 0) {
+        j = vs_battle_sampleCurve(arg0->rCurve, arg3->curveSampleDistance) * 2;
+        spC0.r = j <= 255 ? j : 255;
     } else {
-        spC0.r = 0x80;
+        spC0.r = 128;
     }
 
-    if (arg0->unkC5 != 0) {
-        j = vs_battle_sampleCurve(arg0->unkC5, arg3->unk8) * 2;
-        spC0.g = j <= 0xFF ? j : 0xFF;
+    if (arg0->gCurve != 0) {
+        j = vs_battle_sampleCurve(arg0->gCurve, arg3->curveSampleDistance) * 2;
+        spC0.g = j <= 255 ? j : 255;
     } else {
-        spC0.g = 0x80;
+        spC0.g = 128;
     }
 
-    if (arg0->unkC6 != 0) {
-        j = vs_battle_sampleCurve(arg0->unkC6, arg3->unk8) * 2;
-        spC0.b = j <= 0xFF ? j : 0xFF;
+    if (arg0->bCurve != 0) {
+        j = vs_battle_sampleCurve(arg0->bCurve, arg3->curveSampleDistance) * 2;
+        spC0.b = j <= 255 ? j : 255;
     } else {
-        spC0.b = 0x80;
+        spC0.b = 128;
     }
 
-    spC0.cd = 0x3E;
+    spC0.cd = primPolyGT4SemiTrans;
 
     if (arg1->flags & 0x20000) {
         SetRotMatrix(&arg2->unk1C[arg0->unkC8].unk58);
@@ -511,7 +509,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     func_800D6D24(&arg3->unkC);
 
-    temp_s7 = D_800F569C->block1Data + arg3->unkC.unk1C->unk2 * 0x18;
+    temp_s7 = &D_800F569C->block1Data[arg3->unkC.unk1C->dataIndex];
 
     for (i = 0; i < arg3->trailcount; ++i) {
 
@@ -544,9 +542,9 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
             sp10.unk4.y2 = spF0[0].vy - temp_a1_2;
 
             sp10.unk4.u0 = sp10.unk4.u2 =
-                temp_s7->unk4 + ((temp_s7->unk6 * temp_s1->trailCollapseCounter) / 8);
-            spF8 = temp_s7->unk5;
-            spFC = temp_s7->unk5 + temp_s7->unk7;
+                temp_s7->u0 + ((temp_s7->u1 * temp_s1->trailCollapseCounter) / 8);
+            spF8 = temp_s7->v0;
+            spFC = temp_s7->v0 + temp_s7->v1;
             sp10.unk4.v0 = spF8;
             sp10.unk4.v2 = spFC;
             sp10.unk4.r0 =
@@ -576,8 +574,8 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 sp10.unk4.y3 = temp2[1].vy - temp_a1_2;
 
                 sp10.unk4.u1 = sp10.unk4.u3 =
-                    temp_s7->unk4
-                    + ((temp_s7->unk6 * ((temp_s1->trailCollapseCounter - j) - 1)) / 8);
+                    temp_s7->u0
+                    + ((temp_s7->u1 * ((temp_s1->trailCollapseCounter - j) - 1)) / 8);
                 sp10.unk4.v1 = spF8;
                 sp10.unk4.v3 = spFC;
                 sp10.unk4.r1 =
@@ -603,7 +601,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                     temp_a3 = vs_scratch.unk0;
                     vs_scratch.unk0 = temp_a3 + 1;
                     temp_a3->unk3 = 0xE;
-                    temp_a3->unk4.code = 0x3E;
+                    temp_a3->unk4.code = primPolyGT4SemiTrans;
                     temp_a3->unk4.tag = 0xE1000000;
                     temp_a3->unk38 = 0xE1000200;
                     *(int*)&temp_a3->unk0 =
@@ -623,8 +621,8 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                     *(short*)&temp_a3->unk4.u1 = *(short*)&sp10.unk4.u1;
                     *(short*)&temp_a3->unk4.u2 = *(short*)&sp10.unk4.u2;
                     *(short*)&temp_a3->unk4.u3 = *(short*)&sp10.unk4.u3;
-                    *(short*)&temp_a3->unk4.tpage = temp_s7->unk2;
-                    *(short*)&temp_a3->unk4.clut = temp_s7->unk0;
+                    *(short*)&temp_a3->unk4.tpage = temp_s7->tpage;
+                    *(short*)&temp_a3->unk4.clut = temp_s7->clut;
                 }
                 *(int*)&sp10.unk4.x0 = *(int*)&sp10.unk4.x1;
                 *(int*)&sp10.unk4.x2 = *(int*)&sp10.unk4.x3;
@@ -639,7 +637,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
             sp10.unk4.y1 = ((u_short*)spF0)[j * 2 + 3] + temp_a1_2;
             sp10.unk4.x3 = ((u_short*)spF0)[j * 2 + 2] - temp_s0;
             sp10.unk4.y3 = ((u_short*)spF0)[j * 2 + 3] - temp_a1_2;
-            sp10.unk4.u1 = sp10.unk4.u3 = temp_s7->unk4;
+            sp10.unk4.u1 = sp10.unk4.u3 = temp_s7->u0;
             sp10.unk4.v1 = spF8;
             sp10.unk4.v3 = spFC;
             sp10.unk4.r1 = (spC0.r * arg3->sampledTransparencyCurve[0]) >> 7;
@@ -652,7 +650,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 temp_a3 = vs_scratch.unk0;
                 vs_scratch.unk0 = temp_a3 + 1;
                 temp_a3->unk3 = 0xE;
-                temp_a3->unk4.code = 0x3E;
+                temp_a3->unk4.code = primPolyGT4SemiTrans;
                 temp_a3->unk4.tag = 0xE1000000;
                 temp_a3->unk38 = 0xE1000200;
                 *(int*)&temp_a3->unk0 =
@@ -672,8 +670,8 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
                 *(short*)&temp_a3->unk4.u1 = *(short*)&sp10.unk4.u1;
                 *(short*)&temp_a3->unk4.u2 = *(short*)&sp10.unk4.u2;
                 *(short*)&temp_a3->unk4.u3 = *(short*)&sp10.unk4.u3;
-                *(short*)&temp_a3->unk4.tpage = temp_s7->unk2;
-                *(short*)&temp_a3->unk4.clut = temp_s7->unk0;
+                *(short*)&temp_a3->unk4.tpage = temp_s7->tpage;
+                *(short*)&temp_a3->unk4.clut = temp_s7->clut;
             }
         }
     }
@@ -701,7 +699,7 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
         arg0->unk8 = temp_v0;
         temp_v0->unk1 = arg2 >> 8;
         temp_v0->unk0 = arg2;
-        temp_v0->unk8 = 0;
+        temp_v0->curveSampleDistance = 0;
         temp_s3 = &D_800F569C->block5Data->unk4[temp_v0->unk1];
         trail = temp_s3->unkC0[0];
 
@@ -799,7 +797,7 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
 
-        ++temp_s0->unk8;
+        ++temp_s0->curveSampleDistance;
 
         if (temp_s0->unk0 != 0) {
             --temp_s0->unk0;

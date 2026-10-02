@@ -84,7 +84,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
         arg0->unk8 = temp_v0;
         temp_v0->unk1 = arg2 >> 8;
         temp_v0->unk0 = arg2;
-        temp_v0->unk8 = 0;
+        temp_v0->curveSampleDistance = 0;
         temp_s3 = &D_800F569C->block5Data->unk4[temp_v0->unk1];
         trail = temp_s3->unkC0[0];
 
@@ -185,7 +185,7 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
 
-        ++temp_s0->unk8;
+        ++temp_s0->curveSampleDistance;
 
         if (temp_s0->unk0 != 0) {
             --temp_s0->unk0;

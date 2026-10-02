@@ -68,8 +68,49 @@ types:
         type: u4
         repeat: expr
         repeat-expr: num_table_offsets
-      - id: data
-        size-eos: true
+    instances:
+      data:
+        pos: data_offset
+        type: type1_data
+        repeat: eos
+        
+  type1_table:
+    seq:
+      - id: unk0
+        type: u2
+      - id: data_index
+        type: u2
+        
+  type1_data:
+    seq:
+      - id: clut_x
+        type: b6
+      - id: clut_y
+        type: b10
+      - id: tpage_x
+        type: b4
+      - id: tpage_y
+        type: b1
+      - id: tpage_abr
+        type: b2
+      - id: tpage_tp
+        type: b2
+      - id: tpage_dtd
+        type: b1
+      - id: tpage_dfe
+        type: b1
+      - id: reserved
+        type: b5
+      - id: u0
+        type: u1
+      - id: v0
+        type: u1
+      - id: u1
+        type: u1
+      - id: v1
+        type: u1
+      - id: unk_8
+        size: 0x10
         
   type2_body:
     seq:
@@ -174,11 +215,11 @@ types:
         type: s4
       - id: unkc0
         type: array1d(2)
-      - id: unkc4
+      - id: r_curve
         type: u1
-      - id: unkc5
+      - id: g_curve
         type: u1
-      - id: unkc6
+      - id: b_curve
         type: u1
       - id: unkc7
         type: u1

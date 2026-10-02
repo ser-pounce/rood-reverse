@@ -4447,9 +4447,9 @@ int func_800D4F00(D_800F53B8_t* arg0)
     u_char third = func_800D5170(arg0);
     func_800FA098_arg0* dst = &D_800F569C->block5Data->unk4[first & 0x3F];
 
-    dst->unkC4 = (first >> 6) + ((second & 0xF) << 2);
-    dst->unkC5 = (second >> 4) + ((third & 3) << 4);
-    dst->unkC6 = third >> 2;
+    dst->rCurve = (first >> 6) + ((second & 0xF) << 2);
+    dst->gCurve = (second >> 4) + ((third & 3) << 4);
+    dst->bCurve = third >> 2;
     return 1;
 }
 
@@ -4459,9 +4459,9 @@ int func_800D4FB4(D_800F53B8_t* arg0)
 
     for (i = 0; i < 2; ++i) {
         func_800FA098_arg0* dst = &D_800F569C->block5Data->unk4[i];
-        dst->unkC4 = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
-        dst->unkC5 = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
-        dst->unkC6 = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
+        dst->rCurve = D_800EC330[arg0->unkD1C.unk18.unk2][i][0];
+        dst->gCurve = D_800EC330[arg0->unkD1C.unk18.unk2][i][1];
+        dst->bCurve = D_800EC330[arg0->unkD1C.unk18.unk2][i][2];
     }
 
     return 1;
@@ -4483,9 +4483,9 @@ int func_800D5088(D_800F53B8_t* arg0)
     for (i = 0; i < 5; i++) {
         func_800FA098_arg0* dst =
             &D_800F569C->block5Data->unk4[D_800EC368[arg0->unkD1C.unk18.unk2][i][3]];
-        dst->unkC4 = D_800EC368[arg0->unkD1C.unk18.unk2][i][0];
-        dst->unkC5 = D_800EC368[arg0->unkD1C.unk18.unk2][i][1];
-        dst->unkC6 = D_800EC368[arg0->unkD1C.unk18.unk2][i][2];
+        dst->rCurve = D_800EC368[arg0->unkD1C.unk18.unk2][i][0];
+        dst->gCurve = D_800EC368[arg0->unkD1C.unk18.unk2][i][1];
+        dst->bCurve = D_800EC368[arg0->unkD1C.unk18.unk2][i][2];
     }
     return 1;
 }
@@ -4987,7 +4987,7 @@ void func_800D6D24(func_800D6CF_t* arg0)
 
         switch (w & 0xF0000000) {
         case 0:
-            arg0->unk1C = D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF) * 4;
+            arg0->unk1C = D_800F569C->block1Tables[arg0->unk16] + (w & 0xFFFF);
             *(short*)&arg0->unk6 = (w >> 16) & 0x3FFF;
             arg0->unkE += 4;
             return;

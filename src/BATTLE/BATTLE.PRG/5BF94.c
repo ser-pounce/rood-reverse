@@ -4524,20 +4524,20 @@ void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D52A4);
 
-void* func_800D5550(pFileBlock3* arg0, int arg1)
+void* _getPFileBlock3section(pFileBlock3* arg0, int arg1)
 {
     return (char*)arg0 + arg0->offsets[arg1];
 }
 
 void* func_800D5564(pFileBlock3* arg0, int arg1, int arg2)
 {
-    func_800D55A4_t* entry = func_800D5550(arg0, arg1);
+    func_800D55A4_t* entry = _getPFileBlock3section(arg0, arg1);
     return (char*)arg0 + entry->unk4[arg2].unk2;
 }
 
 void func_800D55A4(D_800F53B8_t* arg0, int arg1, int arg2)
 {
-    func_800D55A4_t* entry = func_800D5550(D_800F569C->block3Data, arg1);
+    func_800D55A4_t* entry = _getPFileBlock3section(D_800F569C->block3Data, arg1);
     D_800F53B8_t4* p;
     int count = 0;
     int i;

@@ -1099,7 +1099,7 @@ void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
     arg0 -= 16;
     y0 = arg1 - D_800E8634[step];
     y1 = arg1 + D_800E8634[step];
-    prim = *(POLY_FT4**)0x1F800000;
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
 
     for (i = 0; i < 4; ++i) {
         if ((arg0 < 320) && ((arg0 + D_800E8640[i].w) >= 0)) {
@@ -1120,7 +1120,7 @@ void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
         arg0 += D_800E8640[i].w;
     }
 
-    *(POLY_FT4**)0x1F800000 = prim;
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095258);

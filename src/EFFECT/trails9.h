@@ -5,7 +5,7 @@
 #define TRAIL_SAMPLE_COUNT 9
 
 #include "common.h"
-#include "src/EFFECT/trails.h"
+#include "src/EFFECT/trails9Types.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
@@ -20,12 +20,12 @@ typedef struct {
     u_char unk3;
     POLY_GT4 unk4;
     int unk38;
-} unkPrim;
+} vs_trail9Prim;
 
 extern int VS_TRAIL_CORNER_STATE;
 
 static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2, vs_trail9State* arg3)
 {
     int sp10;
     int sp14;
@@ -241,7 +241,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2, vs_trail9State* arg3)
 {
     int i;
 
@@ -276,7 +276,7 @@ static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -385,7 +385,7 @@ static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_ar
 }
 
 static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
 {
     int speed;
     int i;
@@ -413,13 +413,13 @@ static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1*
 
 static void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
     func_800FA098_arg1* arg1 __attribute__((unused)),
-    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
 {
     int i;
 
     for (i = 0; i < arg3->trailcount; ++i) {
 
-        _trail* temp_s0 = &arg3->trails[i];
+        vs_trail9* temp_s0 = &arg3->trails[i];
 
         if (temp_s0->trailCollapseCounter == 0) {
             continue;
@@ -454,9 +454,9 @@ static void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unu
 }
 
 void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2, vs_trail9State* arg3)
 {
-    unkPrim sp10;
+    vs_trail9Prim sp10;
     DVECTOR sp50[10];
     int sp78[10];
     int spA0[8];
@@ -466,12 +466,12 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     int i;
     int spF8;
     int spFC;
-    _trail* temp_s1;
+    vs_trail9* temp_s1;
     int temp_a1_2;
     int temp_s0;
     int var_s0_2;
     int j;
-    unkPrim* temp_a3;
+    vs_trail9Prim* temp_a3;
     pFileBlock1Data* temp_s7;
     SVECTOR* temp;
     DVECTOR* temp2;
@@ -688,10 +688,10 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA098_arg0* temp_s3;
     int trail;
     int j;
-    func_800FA76C_arg3* temp_v0;
+    vs_trail9State* temp_v0;
 
     func_800FA098_arg1* s4 = (func_800FA098_arg1*)0x1F8001D0;
-    func_800FA76C_arg3* temp_s0 = arg0->unk8;
+    vs_trail9State* temp_s0 = arg0->unk8;
     D_800F53B8_t* temp_s5 = D_800F53BC;
     int s6 = 1;
 

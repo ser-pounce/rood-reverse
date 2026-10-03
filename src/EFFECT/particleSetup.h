@@ -8,6 +8,9 @@
 #include <rand.h>
 #include <inline_c.h>
 
+#ifndef VS_PARTICLE_SETUP_TYPES
+#define VS_PARTICLE_SETUP_TYPES
+
 typedef struct {
     short unk0;
     short unk2;
@@ -22,6 +25,8 @@ typedef struct {
     int unkC;
     func_800D6CF_t unk10;
 } func_800FA098_arg3;
+
+#endif
 
 extern int VS_PARTICLE_CORNER_STATE;
 

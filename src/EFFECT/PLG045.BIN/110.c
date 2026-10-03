@@ -6,6 +6,6 @@
 #define VS_PARTICLE_CORNER_STATE D_800FB5B4
 #include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FA760);
+#include "src/EFFECT/particleRender.h"
 
 #include "src/EFFECT/particleDispatch.h"

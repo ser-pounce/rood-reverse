@@ -8,7 +8,7 @@
 #define VS_PARTICLE_CORNER_STATE D_800FF9B4
 #include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA920);
+#include "src/EFFECT/particleRender.h"
 
 #include "src/EFFECT/particleDispatch.h"
 
@@ -22,16 +22,12 @@ INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA920);
 #define VS_TRAIL_CORNER_STATE D_800FF9B8
 #include "src/EFFECT/trails9.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FD894);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FE030);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FE248);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FE70C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FE884);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FEA10);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FF46C);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FD894
+#define VS_TRAIL_TARGET_FUNCTION func_800FE030
+#define VS_TRAIL_CONTROL_FUNCTION func_800FE248
+#define VS_TRAIL_INIT_FUNCTION func_800FE70C
+#define VS_TRAIL_UPDATE_FUNCTION func_800FE884
+#define VS_TRAIL_RENDER_FUNCTION func_800FEA10
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FF46C
+#define VS_TRAIL_CORNER_STATE D_800FF9BC
+#include "src/EFFECT/trails5.h"

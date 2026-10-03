@@ -8,7 +8,7 @@
 #define VS_PARTICLE_CORNER_STATE D_800FD088
 #include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG082.BIN/nonmatchings/128", func_800FA778);
+#include "src/EFFECT/particleRender.h"
 
 #include "src/EFFECT/particleDispatch.h"
 

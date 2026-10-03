@@ -12,7 +12,12 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     switch (arg1) {
     case 1:
+#ifdef VS_PARTICLE_UNTEXTURED
+        /* This variant uses only the state prefix, without texture animation. */
+        temp_s1 = vs_main_allocHeapR(0x10);
+#else
         temp_s1 = vs_main_allocHeapR(0x30);
+#endif
         arg0->unk8 = temp_s1;
         temp_s1->unk1 = arg2 >> 8;
         temp_s1->unk0 = arg2;
@@ -32,13 +37,19 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         temp_s1->unk4 = vs_main_allocHeapR(var_a0 << 5);
+#ifndef VS_PARTICLE_UNTEXTURED
         func_800D6CCC((int*)(&temp_s1->unk10));
         func_800D6CF0(&temp_s1->unk10, temp_s2->unk1, temp_s2->unk0);
+#endif
         break;
 
     case 2:
         temp_s2 = &D_800F569C->block5Data->unk4[temp_s1->unk1];
+#ifdef VS_PARTICLE_UNTEXTURED
+        a2->flags = temp_s2->flags & 0x3FFFFFF;
+#else
         a2->flags = temp_s2->flags;
+#endif
         temp_s1->unk2 = func_800CFE1C(
             temp_s2->unkC0, vs_battle_sampleCurve(temp_s2->unk16, temp_s1->unkC));
 
@@ -87,3 +98,5 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_PARTICLE_RENDER_FUNCTION
 #undef VS_PARTICLE_DISPATCH_FUNCTION
 #undef VS_PARTICLE_CORNER_STATE
+
+#undef VS_PARTICLE_UNTEXTURED

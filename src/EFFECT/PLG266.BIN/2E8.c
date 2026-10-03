@@ -1,14 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800F9AE8);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FA270);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FA488);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800F9AE8
+#define VS_PARTICLE_TARGET_FUNCTION func_800FA270
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FA488
+#define VS_PARTICLE_RENDER_FUNCTION func_800FA938
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FB4F8
+#define VS_PARTICLE_CORNER_STATE D_800FEEA0
+#include "src/EFFECT/particleSetup.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FA938);
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FB4F8);
+#include "src/EFFECT/particleDispatch.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FB78C);
 

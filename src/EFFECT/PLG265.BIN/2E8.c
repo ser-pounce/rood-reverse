@@ -26,12 +26,14 @@ INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FD150);
 
 INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FDBAC);
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FE0F4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FE87C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FEA94);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FE0F4
+#define VS_PARTICLE_TARGET_FUNCTION func_800FE87C
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FEA94
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEF44
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FFB04
+#define VS_PARTICLE_CORNER_STATE D_800FFDC0
+#include "src/EFFECT/particleSetup.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FEF44);
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FFB04);
+#include "src/EFFECT/particleDispatch.h"

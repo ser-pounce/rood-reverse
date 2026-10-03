@@ -1,28 +1,26 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800F9AD0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA258);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA470);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800F9AD0
+#define VS_PARTICLE_TARGET_FUNCTION func_800FA258
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FA470
+#define VS_PARTICLE_RENDER_FUNCTION func_800FA920
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FB4E0
+#define VS_PARTICLE_CORNER_STATE D_800FF9B4
+#include "src/EFFECT/particleSetup.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA920);
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FB4E0);
+#include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FB774);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FBF10);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FC128);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FC600);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FC778);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FC904);
-
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FD354);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FB774
+#define VS_TRAIL_TARGET_FUNCTION func_800FBF10
+#define VS_TRAIL_CONTROL_FUNCTION func_800FC128
+#define VS_TRAIL_INIT_FUNCTION func_800FC600
+#define VS_TRAIL_UPDATE_FUNCTION func_800FC778
+#define VS_TRAIL_RENDER_FUNCTION func_800FC904
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FD354
+#define VS_TRAIL_CORNER_STATE D_800FF9B8
+#include "src/EFFECT/trails9.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FD894);
 

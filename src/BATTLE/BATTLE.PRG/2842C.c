@@ -121,6 +121,42 @@ typedef struct {
     u_char unk27;
 } func_80093914_t2;
 
+typedef struct {
+    int geometryOffset;
+    char unk4[3];
+    u_char delay;
+    u_char baseU;
+    u_char baseV;
+    u_char frameCount;
+    u_char columns;
+    u_char frameWidth;
+    u_char frameHeight;
+    u_char tick;
+    u_char frame;
+    u_char u[4];
+    u_char v[4];
+} func_80091C6C_t;
+
+typedef struct {
+    int geometryOffset;
+    char unk4[3];
+    u_char delay;
+    u_char baseU;
+    u_char baseV;
+    u_char width;
+    u_char height;
+    u_char currentU;
+    u_char currentV;
+    u_char windowWidth;
+    u_char windowHeight;
+    signed char stepU;
+    signed char stepV;
+    u_char tick;
+    char unk13;
+    u_char u[4];
+    u_char v[4];
+} func_80091E10_t;
+
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -360,9 +396,98 @@ void func_80091B04(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091C6C);
+// Advance an atlas frame and update the room polygon's texture coordinates.
+int func_80091C6C(func_80091C6C_t* arg0)
+{
+    void* base;
+    u_char* polygon;
+    int u;
+    int v;
+    func_80091C6C_t* quad = arg0;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091E10);
+    base = vs_battle_roomData.geometrySection;
+
+    if (++arg0->tick > arg0->delay) {
+        arg0->tick = 0;
+        if (++arg0->frame >= arg0->frameCount) {
+            arg0->frame = 0;
+        }
+        u = arg0->baseU + arg0->frameWidth * (arg0->frame % (u_int)arg0->columns);
+        v = arg0->baseV + arg0->frameHeight * (arg0->frame / (u_int)arg0->columns);
+        polygon = base + arg0->geometryOffset;
+        if ((polygon[0xF] & 0x3C) == 0x34) {
+            polygon[0x18] = arg0->u[0] + u;
+            polygon[0x1C] = arg0->u[1] + u;
+            polygon[0x13] = arg0->u[2] + u;
+            polygon[0x19] = arg0->v[0] + v;
+            polygon[0x1D] = arg0->v[1] + v;
+            polygon[0x17] = arg0->v[2] + v;
+        } else {
+            polygon[0x18] = quad->u[0] + u;
+            polygon[0x1C] = quad->u[1] + u;
+            polygon[0x13] = quad->u[2] + u;
+            polygon[0x23] = quad->u[3] + u;
+            polygon[0x19] = quad->v[0] + v;
+            polygon[0x1D] = quad->v[1] + v;
+            polygon[0x17] = quad->v[2] + v;
+            polygon[0x27] = quad->v[3] + v;
+        }
+    }
+    return 1;
+}
+
+// Scroll the texture window, wrapping at the bounds of its atlas region.
+int func_80091E10(func_80091E10_t* arg0)
+{
+    void* base;
+    u_char* polygon;
+    int u;
+    int v;
+    func_80091E10_t* quad = arg0;
+
+    base = vs_battle_roomData.geometrySection;
+
+    if (++arg0->tick > arg0->delay) {
+        u = arg0->currentU;
+        v = arg0->currentV;
+        u += arg0->stepU;
+        v += arg0->stepV;
+        arg0->tick = 0;
+        if (u < arg0->baseU) {
+            u = arg0->baseU + arg0->width - arg0->windowWidth;
+        }
+        if (v < arg0->baseV) {
+            v = arg0->baseV + arg0->height - arg0->windowHeight;
+        }
+        if (arg0->baseU + arg0->width < u + arg0->windowWidth) {
+            u = arg0->baseU;
+        }
+        if (arg0->baseV + arg0->height < v + arg0->windowHeight) {
+            v = arg0->baseV;
+        }
+        arg0->currentU = u;
+        arg0->currentV = v;
+        polygon = base + arg0->geometryOffset;
+        if ((polygon[0xF] & 0x3C) == 0x34) {
+            polygon[0x18] = arg0->u[0] + u;
+            polygon[0x1C] = arg0->u[1] + u;
+            polygon[0x13] = arg0->u[2] + u;
+            polygon[0x19] = arg0->v[0] + v;
+            polygon[0x1D] = arg0->v[1] + v;
+            polygon[0x17] = arg0->v[2] + v;
+        } else {
+            polygon[0x18] = quad->u[0] + u;
+            polygon[0x1C] = quad->u[1] + u;
+            polygon[0x13] = quad->u[2] + u;
+            polygon[0x23] = quad->u[3] + u;
+            polygon[0x19] = quad->v[0] + v;
+            polygon[0x1D] = quad->v[1] + v;
+            polygon[0x17] = quad->v[2] + v;
+            polygon[0x27] = quad->v[3] + v;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091FE8);
 

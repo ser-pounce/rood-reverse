@@ -437,7 +437,62 @@ void func_80091468(int arg0, int arg1)
     D_800F1DB6 = arg1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009147C);
+void func_8009147C(vs_battle_backgroundLayout* arg0, int arg1, int arg2, int arg3)
+{
+    char* buffer = ((vs_scratch_t*)0x1F800000)->unk0;
+    vs_battle_backgroundTile* tiles = arg0->tiles;
+    int cosStep = rcos(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * 32;
+    int sinStep = rsin(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * 32;
+    int row;
+    int col;
+    POLY_GT4* prim;
+    TILE* background;
+
+    for (row = 0; row < arg0->height * 32; row += 32) {
+        int y = row - arg2;
+        prim = (POLY_GT4*)buffer;
+        for (col = 0; col < 1024; col += 32) {
+            int x = ((col + arg1) & 1023) - 512;
+            int screenX = rcos(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * x
+                        - rsin(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * y;
+            int screenY = rsin(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * x
+                        + rcos(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * y;
+            vs_battle_backgroundTile* tile;
+
+            if ((screenX < -0x40000) || (screenX > 0x180000) || (screenY < -0x40000)
+                || (screenY > 0x130000)) {
+                continue;
+            }
+            tile = &tiles[(row / 32) * arg0->width + (col / 32) % arg0->width];
+            if ((tile->uv.w == 0) && (tile->uv.h == 0)) {
+                continue;
+            }
+            setPolyGT4(prim);
+            setXY4(prim, screenX / 4096, screenY / 4096, (screenX + cosStep) / 4096,
+                (screenY + sinStep) / 4096, (screenX - sinStep) / 4096,
+                (screenY + cosStep) / 4096, (screenX + cosStep - sinStep) / 4096,
+                (screenY + sinStep + cosStep) / 4096);
+            setRGB0(prim, tile->colors[0].r, tile->colors[0].g, tile->colors[0].b);
+            setRGB1(prim, tile->colors[1].r, tile->colors[1].g, tile->colors[1].b);
+            setRGB2(prim, tile->colors[2].r, tile->colors[2].g, tile->colors[2].b);
+            setRGB3(prim, tile->colors[3].r, tile->colors[3].g, tile->colors[3].b);
+            setUV4(prim, tile->uv.x, tile->uv.y, tile->uv.x + tile->uv.w, tile->uv.y,
+                tile->uv.x, tile->uv.y + tile->uv.h, tile->uv.x + tile->uv.w,
+                tile->uv.y + tile->uv.h);
+            prim->tpage = arg3 | (tile->colors[1].cd << 7);
+            prim->clut = 0x3BB0;
+            buffer += sizeof(POLY_GT4);
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 0x1FFC, prim++);
+        }
+    }
+    background = (TILE*)buffer;
+    setTile(background);
+    setRGB0(background, 0, 0, 0);
+    setXY0(background, 0, 0);
+    setWH(background, 320, 240);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 0x1FFC, background);
+    ((vs_scratch_t*)0x1F800000)->unk0 = background + 1;
+}
 
 void func_800918E8(int arg0)
 {

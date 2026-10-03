@@ -1,5 +1,19 @@
 #pragma once
 #include <stddef.h>
+#include <libgte.h>
+#include <libgpu.h>
+
+typedef struct {
+    RECT uv;
+    CVECTOR colors[4];
+} vs_battle_backgroundTile;
+
+typedef struct {
+    int width;
+    int height;
+    int unk8;
+    vs_battle_backgroundTile tiles[0];
+} vs_battle_backgroundLayout;
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -27,6 +41,7 @@ void func_80091320(int);
 void func_8009134C(int, int);
 int func_800913BC(int);
 void func_80091468(int, int);
+void func_8009147C(vs_battle_backgroundLayout*, int, int, int);
 void func_800918E8(int);
 int func_80091998(int);
 int func_800919D8(int);

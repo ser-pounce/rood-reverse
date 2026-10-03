@@ -671,10 +671,10 @@ extern short D_800F1DC2;
 extern short D_800F1DC4;
 extern char D_800F1DC6;
 extern char D_800F1DC8;
-extern signed char D_800F1DC9;
+extern u_char D_800F1DC9;
 extern char D_800F1DCA;
 extern char D_800F1DCB;
-extern u_int* D_800F1DCC;
+extern vs_battle_backgroundLayout* D_800F1DCC;
 extern u_long* D_800F1DD0;
 extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
@@ -5827,7 +5827,7 @@ void func_80089DC0(int arg0);
 void func_8008C8A8(void);
 int func_80088B6C(void);
 void func_80088B8C(void);
-void func_8008EC48(int arg0);
+void func_8008EC48(VECTOR* arg0);
 void func_8008AC78(void);
 void func_8008B28C(void);
 void func_8007D734(void*);
@@ -14416,7 +14416,73 @@ void func_8008EB30(int* arg0)
     var_a0[2] = (arg0[1] & 0xFFFFFF) | 0x30000000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
+void func_8008EC48(VECTOR* arg0)
+{
+    VECTOR position;
+    MATRIX matrix;
+    VECTOR* angles;
+    POLY_FT4* prim;
+    int red;
+    int green;
+    int blue;
+
+    if ((D_800F1DC9 != 0) && (D_800F1DCC != NULL)) {
+        if (((u_int)(D_800F1DCC->width - 1) < 31)
+            && ((u_int)(D_800F1DCC->height - 1) < 31)) {
+            int x = (((vs_scratch_t*)0x1F800000)->camera.angles.vy * D_800F1DB8) / 4096
+                  - D_800F1DB4;
+            int y = (((vs_scratch_t*)0x1F800000)->camera.angles.vx * D_800F1DBA) / 4096;
+            y = D_800F1DB6 - y;
+            func_8009147C(D_800F1DCC, x, y, D_800F1DC8);
+        }
+    } else if (D_800F1DC6 != 0) {
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        setPolyFT4(prim);
+        setXY4(prim, 0, 0, 320, 0, 0, 240, 320, 240);
+        setUV4(prim, 248, 248, 249, 248, 248, 249, 249, 249);
+        if (D_800F1BB0.unk6 != 0) {
+            red = 128 + D_800F1BB0.unk0 * 4;
+            green = 128 + D_800F1BB0.unk1 * 4;
+            blue = 128 + D_800F1BB0.unk2 * 4;
+            red = (short)vs_battle_clamp(red, 0, 255);
+            green = (short)vs_battle_clamp(green, 0, 255);
+            blue = (short)vs_battle_clamp(blue, 0, 255);
+            setRGB0(prim, red, green, blue);
+        } else {
+            setRGB0(prim, 128, 128, 128);
+        }
+        prim->tpage = 0x11;
+        prim->clut = 0x38B1;
+        AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 0x1FFC, prim++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+    } else {
+        angles = arg0;
+        if (angles == NULL) {
+            if (vs_battle_roomData.sectionB != NULL) {
+                angles = (VECTOR*)&vs_battle_roomData.sectionB->unk14;
+            } else {
+                angles = (VECTOR*)D_800F1CE0;
+            }
+        }
+        position.vx = ((vs_scratch_t*)0x1F800000)->camera.position.vx / 4096;
+        position.vy = ((vs_scratch_t*)0x1F800000)->camera.position.vy / 4096;
+        position.vz = ((vs_scratch_t*)0x1F800000)->camera.position.vz / 4096;
+        applyVector(&position, ((vs_scratch_t*)0x1F800000)->camera.farClip,
+            ((vs_scratch_t*)0x1F800000)->camera.farClip,
+            ((vs_scratch_t*)0x1F800000)->camera.farClip, *=);
+        applyVector(&position, 4096, 4096, 4096, /=);
+        SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+        SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+        if (((vs_scratch_t*)0x1F800000)->camera.farClip != 4096) {
+            func_80098648(&position, angles, &matrix);
+        } else {
+            func_800985AC(&position, angles, &matrix);
+        }
+        SetRotMatrix(&matrix);
+        SetTransMatrix(&matrix);
+        func_8009820C(D_80068C1C);
+    }
+}
 
 int func_8008EFCC(int arg0)
 {

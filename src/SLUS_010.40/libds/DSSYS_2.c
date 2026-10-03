@@ -1,5 +1,7 @@
 #include "common.h"
 
+extern int D_80039DB8;
+
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_800231E4);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80023214);
@@ -36,7 +38,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsFlush);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsSystemStatus);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsQueueLen);
+int DsQueueLen(void) { return D_80039DB8; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsStatus);
 

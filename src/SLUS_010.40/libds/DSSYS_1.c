@@ -1,5 +1,13 @@
 #include "common.h"
 
+extern u_char D_800326A8;
+extern u_char D_800326A9;
+extern u_char D_800326AE;
+extern u_char D_800326AF;
+extern u_char D_80032694;
+extern int D_800326B8;
+extern int D_8003267C;
+
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_init);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_reset_members);
@@ -20,23 +28,23 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_start_callbac
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_system_status);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_lastcom);
+int DS_lastcom(void) { return D_800326A8; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_lastmode);
+int DS_lastmode(void) { return D_800326A9; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_lastpos);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_lastseek);
+int DS_lastseek(void) { return D_800326AE; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_lastread);
+int DS_lastread(void) { return D_800326AF; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_status);
+int DS_status(void) { return D_80032694; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_sync);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_ready);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_shell_open);
+int DS_shell_open(void) { return D_800326B8; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_cw_system);
 
@@ -62,7 +70,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_stop);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_restart);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_system_active);
+int DS_system_active(void) { return D_8003267C; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", parcpy);
 

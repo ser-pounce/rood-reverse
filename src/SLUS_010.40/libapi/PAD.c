@@ -1,9 +1,11 @@
 #include "common.h"
 #include <libapi.h>
 
+extern int D_80033664;
+
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", SetInitPadFlag);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", ReadInitPadFlag);
+int ReadInitPadFlag(void) { return D_80033664; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", PAD_init);
 

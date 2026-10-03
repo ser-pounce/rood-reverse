@@ -1,5 +1,7 @@
 #include "common.h"
 
+extern u_char D_80033446;
+
 INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", D_80010864);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", ResetGraph);
@@ -8,7 +10,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetGraphDebug);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetGraphQueue);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", GetGraphDebug);
+int GetGraphDebug(void) { return D_80033446; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", DrawSyncCallback);
 

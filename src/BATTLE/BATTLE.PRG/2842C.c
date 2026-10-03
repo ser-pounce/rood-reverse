@@ -157,6 +157,24 @@ typedef struct {
     u_char v[4];
 } func_80091E10_t;
 
+typedef struct {
+    u_char tick;
+    u_char frame;
+    u_char frameCount;
+    u_char columns;
+    char unk4[3];
+    u_char delay;
+    int scrollStep;
+    RECT rect;
+} func_80091FE8_t;
+
+typedef struct {
+    u_char count;
+    u_char unk1;
+    u_char active;
+    u_char unk3;
+} func_80092548_t;
+
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -489,7 +507,64 @@ int func_80091E10(func_80091E10_t* arg0)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091FE8);
+// Copy an atlas frame or vertically wrapped texture region in both VRAM layouts.
+int func_80091FE8(func_80091FE8_t* arg0)
+{
+    RECT source;
+    RECT halfSource;
+    int destX;
+    int destY;
+    int wrapY;
+    int halfDestX;
+    int halfSourceX;
+
+    if (++arg0->tick > arg0->delay) {
+        arg0->rect.x -= 320;
+        arg0->rect.y += 256;
+        arg0->tick = 0;
+        if (arg0->scrollStep == 0) {
+            if (++arg0->frame > arg0->frameCount) {
+                arg0->frame = 1;
+            }
+            source.x = arg0->rect.x + arg0->rect.w * (arg0->frame % (u_int)arg0->columns);
+            source.y = arg0->rect.y + arg0->rect.h * (arg0->frame / (u_int)arg0->columns);
+            source.w = arg0->rect.w;
+            source.h = arg0->rect.h;
+        } else {
+            arg0->frame += arg0->scrollStep;
+            if (arg0->frame >= arg0->rect.h) {
+                arg0->frame = 0;
+            }
+            source.x = arg0->rect.x + arg0->rect.w / 2;
+            source.y = arg0->rect.y + arg0->frame;
+            source.w = arg0->rect.w / 2;
+            source.h = arg0->rect.h - arg0->frame;
+        }
+        halfDestX = (short)(arg0->rect.x % 64) / 2 - 64;
+        destX = halfDestX + (arg0->rect.x & 0x3C0);
+        destY = (short)(arg0->rect.y % 256) / 2 + (short)(arg0->rect.y & 0x100);
+        halfSourceX = (short)(source.x % 64) / 2 - 64;
+        halfSource.x = halfSourceX + (source.x & 0x3C0);
+        halfSource.y = (short)(source.y % 256) / 2 + (source.y & 0x100);
+        halfSource.w = source.w / 2;
+        halfSource.h = source.h / 2;
+        MoveImage(&source, arg0->rect.x, arg0->rect.y);
+        MoveImage(&halfSource, destX, destY);
+        if (arg0->scrollStep != 0 && arg0->frame != 0) {
+            source.y = arg0->rect.y;
+            source.h = arg0->frame;
+            wrapY = arg0->rect.y + arg0->rect.h - arg0->frame;
+            destY = (wrapY % 256) / 2 + (wrapY & 0x100);
+            halfSource.y = (short)(source.y % 256) / 2 + (source.y & 0x100);
+            halfSource.h = source.h / 2;
+            MoveImage(&source, arg0->rect.x, wrapY);
+            MoveImage(&halfSource, destX, destY);
+        }
+        arg0->rect.x += 320;
+        arg0->rect.y -= 256;
+    }
+    return 1;
+}
 
 int func_800923F8(D_800F1DD8_t2* arg0)
 {
@@ -547,7 +622,82 @@ int func_800923F8(D_800F1DD8_t2* arg0)
 
 int func_80092540(void) { return 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80092548);
+// Initialize fixed-size room effects and variable-length animation scripts.
+void func_80092548(void)
+{
+    int sizes[] = { 24, 20, 32, 0, 0, 0, 36 };
+    void* data;
+    D_800F1DD8_t* entry;
+    int var_s3;
+    int var_s2;
+    int count;
+    int size;
+    int consumed;
+    int alignedSize;
+
+    D_800F2258 = -1;
+    D_800F1D00 = 0;
+    D_800F225A = 0;
+    if ((int)vs_battle_roomData.header.textureEffectsSectionLen > 0) {
+        data = (void*)vs_battle_roomData.textureEffectsSection;
+        var_s2 = vs_battle_roomData.header.textureEffectsSectionLen;
+        consumed = 0;
+        var_s3 = 0;
+        while (consumed < var_s2) {
+            if (((D_800F1DD8_t2*)data)->unk6 < 7
+                && sizes[((D_800F1DD8_t2*)data)->unk6] != 0) {
+                D_800F1DD8[var_s3].unk4 = (void*)data;
+                D_800F1DD8[var_s3].unk0 = ((D_800F1DD8_t2*)data)->unk5 == 0;
+                D_800F1DD8[var_s3].unk2 = 1;
+                D_800F1DD8[var_s3].unk3 = 0;
+                D_800F1DD8[var_s3].unk1 = ((D_800F1DD8_t2*)data)->unk6;
+                ((D_800F1DD8_t2*)data)->unk4 = 1;
+                consumed += sizes[((D_800F1DD8_t2*)data)->unk6];
+                data += sizes[((D_800F1DD8_t2*)data)->unk6];
+                ++var_s3;
+            } else {
+                consumed = var_s2;
+            }
+        }
+        D_800F225A = var_s3;
+    }
+    D_800F225B = 0;
+    if ((int)vs_battle_roomData.header.sectionDLen > 0) {
+        data = (void*)vs_battle_roomData.sectionD;
+        var_s3 = vs_battle_roomData.header.sectionDLen;
+        var_s2 = 0;
+        count = 64;
+        while (var_s2 < var_s3) {
+            entry = &D_800F1DD8[count];
+            entry->unk0 = ((func_80092548_t*)data)->active;
+            entry->unk1 = ((func_80092548_t*)data)->count;
+            entry->unk2 = 1;
+            entry->unk3 = 0;
+            entry->unk4 = (void*)data;
+            entry->unk8 = (void*)data;
+            if (entry->unk0 != 0) {
+                func_800927AC(entry);
+            }
+            size = entry->unk1 + 4;
+            if ((entry->unk1 & 3) != 0) {
+                alignedSize = entry->unk1 + 8;
+                size = alignedSize - (entry->unk1 & 3);
+            }
+            data += size;
+            var_s2 += size;
+            size = ((short*)data)[1] == 11 ? 4 : ((short*)data)[0];
+            while (size != 0) {
+                data += size;
+                var_s2 += size;
+                size = ((short*)data)[1] == 11 ? 4 : ((short*)data)[0];
+            }
+            var_s2 += 4;
+            data += 4;
+            ++D_800F225B;
+            ++count;
+        }
+    }
+}
 
 void func_800927AC(D_800F1DD8_t* arg0)
 {

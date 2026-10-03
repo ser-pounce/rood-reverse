@@ -744,7 +744,8 @@ typedef struct {
     u_short unkC;
     char unkE;
     char unkF;
-    int unk10;
+    short unk10;
+    short unk12;
     int unk14;
 } D_800F1BAC_t;
 

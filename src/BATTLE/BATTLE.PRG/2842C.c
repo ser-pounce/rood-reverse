@@ -193,14 +193,21 @@ void func_80092EDC(func_80092F74_t* arg0);
 int func_8009306C(func_80092F74_t* arg0);
 int func_80093364(func_80092F74_t* arg0);
 int func_8009406C(int, int, int, int);
+int func_80094E18(int, int, D_800F1BAC_t*);
 void func_80095C18(int, char);
 int func_800A1280(int, int, SVECTOR*, int);
+int func_800A152C(int, int, int);
+int func_800A190C(int, int, SVECTOR*, int);
+int func_800A1AF8(int, int, u_short*, int);
 void* func_800962E4();
 void func_80096444(int);
 
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
+extern char D_800691E4[];
+extern RECT D_80068FAC[];
+extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
 extern u_short D_800F1CDC;
@@ -1431,7 +1438,91 @@ int func_80093B04(u_short* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093B68);
+int func_80093B68(int arg0, int arg1, int arg2, int arg3)
+{
+    SVECTOR position;
+    int limb;
+    int i;
+    int count;
+    int frame;
+    int flags;
+    int result;
+    int amount;
+    D_800F1BAC_t* p;
+    if (arg1 != -1) {
+        limb = func_800A152C(arg0, arg1, 2);
+        if (limb < 0) {
+            return -2;
+        }
+    } else {
+        limb = 255;
+    }
+    i = 0;
+    count = 0;
+    frame = 0;
+    p = *D_800F1BAC;
+    for (; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 1) && (p->unk8.u8[1] == arg0) && (p->unk6 >= 0)) {
+            frame = p->unkB;
+            ++count;
+        }
+    }
+    i = 0;
+    flags = 0;
+    p = *D_800F1BAC;
+    for (; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 1) && (p->unk8.u8[1] == arg0) && (p->unkA == limb)
+            && (p->unk6 == count - 1)) {
+            flags = 128;
+            break;
+        }
+    }
+    p = func_800962E4();
+    if (limb != 255) {
+        result = func_800A1AF8(arg0, limb, (u_short*)p, 2);
+    } else {
+        result = func_800A190C(arg0, 255, (SVECTOR*)p, 2);
+    }
+    if (result != 0) {
+        return -2;
+    }
+    if (arg3 & 128) {
+        if (func_800A1280(arg0, 251, &position, 0) != 0) {
+            return 0;
+        }
+        if ((u_short)position.vx >= 321) {
+            return 0;
+        }
+        if ((u_short)position.vy >= 241) {
+            return 0;
+        }
+    }
+    arg3 &= 127;
+    if (func_800A190C(arg0, 251, &position, 0) != 0) {
+        return -2;
+    }
+    p->unk10 = 4096;
+    p->unk12 = 4096;
+    p->unk0 -= position.vx;
+    p->unk2 -= position.vy;
+    p->unk4 -= position.vz;
+    p->unk8.u8[0] = 1;
+    p->unk6 = count;
+    p->unkB = frame;
+    p->unk8.u8[1] = arg0;
+    p->unkA = limb;
+    p->unkE = arg3 | flags;
+    amount = arg2 & 0x7FFF;
+    if (amount > 999) {
+        p->unkC = 999 | (((u_int)arg2 >> 16) & 0x8000);
+    } else {
+        p->unkC = amount | (((u_int)arg2 >> 16) & 0x8000);
+    }
+    sprintf((char*)&p->unk14, D_800691E4, p->unkC & 0x7FFF);
+    p->unkF = strlen((char*)&p->unk14);
+    ++D_800F227E;
+    return 0;
+}
 
 int vs_battle_renderBattleAbilityTimingResult(int arg0)
 {
@@ -1577,9 +1668,93 @@ void func_80094AF8(D_800F1BAC_t* arg0)
     arg0->unk6 = arg0->unk6 - 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094B0C);
+void func_80094B0C(int x, int y, D_800F1BAC_t* p)
+{
+    CVECTOR colors[] = { { 128, 128, 128, 0 }, { 0, 128, 0, 0 }, { 128, 0, 128, 0 },
+        { 0, 128, 128, 0 } };
+    signed char bounce[] = { 0, -6, -12, -14, -16, -10, -5, -1, 0, -3, -6, -7, -8, -5, -3,
+        -1, 0, -2, -1, 0 };
+    int frame = 15;
+    int color;
+    int offset;
+    int i;
+    int digitY;
+    void* cursor;
+    POLY_FT4* prim;
+    if (p->unkE >= 3) {
+        if (!(p->unkC & 0x8000)) {
+            y -= p->unkB >> 1;
+        } else {
+            y += p->unkB >> 1;
+        }
+        i = func_80094E18(x, y, p);
+        color = 0;
+        offset = 0;
+    } else {
+        if (p->unkB < 16) {
+            frame = p->unkB;
+        }
+        color = (p->unkE & 1) << 1;
+        i = p->unkF * 3;
+        if (!(p->unkC & 0x8000)) {
+            offset = bounce[frame];
+            ++color;
+        } else {
+            offset = bounce[frame + 4];
+        }
+    }
+    x += i - 6;
+    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
+    prim = cursor;
+    for (i = p->unkF - 1; i >= 0; --i, x -= 6) {
+        digitY = y + offset;
+        offset /= 2;
+        if ((u_int)(x + 8) < 328) {
+            setPolyFT4(prim);
+            setXY4(
+                prim, x, digitY - 6, x + 8, digitY - 6, x, digitY + 6, x + 8, digitY + 6);
+            setShadeTex(prim, 0);
+            setRGB0(prim, colors[color].r, colors[color].g, colors[color].b);
+            setUV4(prim, (((signed char*)p + i)[20] - '0') * 8 + 64, 0,
+                (((signed char*)p + i)[20] - '0') * 8 + 72, 0,
+                (((signed char*)p + i)[20] - '0') * 8 + 64, 12,
+                (((signed char*)p + i)[20] - '0') * 8 + 72, 12);
+            setTPage(prim, 0, 0, 768, 0);
+            setClut(prim, 832, 223);
+            cursor += sizeof(POLY_FT4);
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+        }
+    }
+    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094E18);
+int func_80094E18(int x, int y, D_800F1BAC_t* p)
+{
+    RECT* rect = &D_80068FAC[D_800E861C[p->unkE - 3]];
+    POLY_FT4* prim = ((vs_scratch_t*)0x1F800000)->unk0;
+    int sign = p->unkC;
+    int width = (p->unkF * 6 + rect->w + 12) / 2;
+    x -= width;
+    setPolyFT4(prim);
+    setXY4(prim, x, y - 6, x + rect->w, y - 6, x, y + 6, x + rect->w, y + 6);
+    setShadeTex(prim, 1);
+    setUV4(prim, rect->x, rect->y, rect->x + rect->w, rect->y, rect->x, rect->y + 12,
+        rect->x + rect->w, rect->y + 12);
+    setTPage(prim, 0, 0, 448, 256);
+    setClut(prim, 976, 220);
+    sign = (sign & 0x8000) ? 0 : 8;
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+    x += rect->w + 4;
+    setPolyFT4(prim);
+    setXY4(prim, x, y - 5, x + 8, y - 5, x, y + 5, x + 8, y + 5);
+    setUV4(prim, sign + 154, 76, sign + 162, 76, sign + 154, 86, sign + 162, 86);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 864, 223);
+    setShadeTex(prim, 1);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+    return width;
+}
 
 void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
 {
@@ -1646,41 +1821,54 @@ void func_800957D0(int arg0, int arg1, int arg2)
     p[0] = prim;
 }
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069240);
+void func_800958A4(int x, int y, D_800F1BAC_t* p)
+{
+    char* timing[] = { "$TOO   FAST!", "$FAST!", "", "$SLOW!", "$TOO   SLOW!" };
+    char* success[] = { "$COOL!", "$GOOD!", "$EXCELLENT!", "$RIGHT   ON!", "$PERFECT!",
+        "$WELL   TIMED!", "$NICE!", "$GREAT!" };
+    short offsets[] = { 64, 16, 4, 1 };
+    int colors[] = { 0x808000, 0x608020, 0x408040, 0x208060, 0x8080 };
+    int step;
+    short* slide = offsets;
+    if (p->unkB < 4) {
+        step = p->unkB;
+    } else if (p->unkB >= 42) {
+        step = 45 - p->unkB;
+    } else {
+        goto draw;
+    }
+    {
+        short* entry = slide;
+        entry += step;
+        x -= *entry;
+    }
+draw:
+    if (p->unkC != 2) {
+        vs_battle_renderTextRawColor(timing[p->unkC], (x & 0xFFFF) | (y << 16),
+            colors[p->unkC], ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+    } else {
+        vs_battle_renderTextRawColor(success[p->unkF], (x & 0xFFFF) | (y << 16), 0x408040,
+            ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+    }
+}
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069250);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069258);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_8006925C);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069264);
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800958A4);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069288);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069290);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069298);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692A4);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692B4);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692C0);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692D0);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692D8);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692E0);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069300);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069308);
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095A4C);
+void func_80095A4C(int x, int y, D_800F1BAC_t* p)
+{
+    char text[16];
+    short offsets[] = { 64, 16, 4, 1 };
+    if ((p->unkB < 4) && (p->unkC == 1)) {
+        x -= offsets[p->unkB];
+    } else if (p->unkB >= 87) {
+        x -= offsets[90 - p->unkB];
+    }
+    if (p->unkC == 1) {
+        sprintf(text, "$1 CHAIN");
+    } else {
+        sprintf(text, "$%d CHAINS", p->unkC);
+    }
+    vs_battle_renderTextRawColor(
+        text, (x & 0xFFFF) | (y << 16), 0x1040A0, ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+}
 
 void func_80095B70(int arg0) { D_800F2270 = arg0; }
 
@@ -1770,9 +1958,115 @@ void func_80096444(int arg0)
     vs_main_bzero(&(*D_800F1BAC)[D_800F227E], sizeof(*D_800F1BAC)[D_800F227E]);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009651C);
+void func_8009651C(SVECTOR* position, int direction)
+{
+    int dx[] = { -8, 0, 7, 10, 7, 0, -8, -11 };
+    int dy[] = { -8, -11, -8, 0, 7, 10, 7, 0 };
+    int x = position->vx;
+    int y = position->vy;
+    int index;
+    POLY_FT4* prim;
+    if (direction == 4) {
+        index = 0;
+    } else if (direction == 6) {
+        index = 1;
+    } else if (direction == 2) {
+        index = 2;
+    } else if (direction == 10) {
+        index = 3;
+    } else if (direction == 8) {
+        index = 4;
+    } else if (direction == 9) {
+        index = 5;
+    } else if (direction == 1) {
+        index = 6;
+    } else if (direction == 5) {
+        index = 7;
+    } else {
+        return;
+    }
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+    setPolyFT4(prim);
+    setShadeTex(prim, 1);
+    setXY0(prim, dx[index] + x, dy[index] + y);
+    index += 2;
+    index &= 7;
+    prim->x1 = dx[index] + x;
+    prim->y1 = dy[index] + y;
+    index += 2;
+    index &= 7;
+    prim->x3 = dx[index] + x;
+    prim->y3 = dy[index] + y;
+    index += 2;
+    index &= 7;
+    prim->x2 = dx[index] + x;
+    prim->y2 = dy[index] + y;
+    setUV4(prim, 48, 48, 63, 48, 48, 63, 63, 63);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 976, 223);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 16, prim++);
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80096768);
+int func_80096768(int arg0, int arg1, int arg2)
+{
+    SVECTOR unused __attribute__((unused));
+    int i;
+    int count;
+    int amount;
+    D_800F1BAC_t* p;
+    if ((vs_main_settings.weaponStatChange && (arg0 == 240))
+        || (vs_main_settings.armorStatChange && (arg0 != 240))) {
+        switch (arg0) {
+        case 1:
+            arg0 = 4;
+            break;
+        case 2:
+            break;
+        case 3:
+            arg0 = 3;
+            break;
+        case 4:
+            arg0 = 6;
+            break;
+        case 6:
+            arg0 = 5;
+            break;
+        case 241:
+            arg0 = 1;
+            break;
+        case 240:
+            arg0 = 0;
+            break;
+        }
+        i = 0;
+        count = 0;
+        p = *D_800F1BAC;
+        for (; i < D_800F227E; ++i, ++p) {
+            if ((p->unk8.u8[0] == 6) || (p->unk8.u8[0] == 7)) {
+                ++count;
+            }
+        }
+        p = func_800962E4();
+        p->unk8.u8[0] = 7;
+        p->unk8.u8[1] = 127;
+        p->unk6 = count;
+        p->unk12 = 0;
+        p->unkB = 0;
+        p->unkE = arg0;
+        p->unkA = arg1;
+        amount = arg2 & 0x7FFF;
+        if (amount > 999) {
+            p->unkC = 999 | (((u_int)arg2 >> 16) & 0x8000);
+        } else {
+            p->unkC = amount | (((u_int)arg2 >> 16) & 0x8000);
+        }
+        sprintf((char*)&p->unk14, D_800691E4, p->unkC & 0x7FFF);
+        p->unkF = strlen((char*)&p->unk14);
+        ++D_800F227E;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009695C);
 

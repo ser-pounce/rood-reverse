@@ -138,6 +138,7 @@ void func_80096444(int);
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
+extern char D_800691E4[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
 extern short D_800F1D00;
@@ -1271,7 +1272,75 @@ void func_80096444(int arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009651C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80096768);
+int func_80096768(int arg0, int arg1, int arg2)
+{
+    int _[2] __attribute__((unused));
+    int i;
+    int count;
+    D_800F1BAC_t* p;
+
+    if ((vs_main_settings.weaponStatChange && (arg0 == 240))
+        || (vs_main_settings.armorStatChange && (arg0 != 240))) {
+        switch (arg0) {
+        case 1:
+            arg0 = 4;
+            break;
+
+        case 2:
+            arg0 = 2;
+            break;
+
+        case 3:
+            arg0 = 3;
+            break;
+
+        case 4:
+            arg0 = 6;
+            break;
+
+        case 6:
+            arg0 = 5;
+            break;
+
+        case 241:
+            arg0 = 1;
+            break;
+
+        case 240:
+            arg0 = 0;
+            break;
+        }
+
+        p = *D_800F1BAC;
+        count = 0;
+
+        for (i = 0; i < D_800F227E; ++i, ++p) {
+            if ((p->unk8.u8[0] == 6) || (p->unk8.u8[0] == 7)) {
+                ++count;
+            }
+        }
+
+        p = func_800962E4();
+        p->unk8.u8[0] = 7;
+        p->unk8.u8[1] = 0x7F;
+        p->unk6 = count;
+        p->unk12 = 0;
+        p->unkB = 0;
+        p->unkE = arg0;
+        p->unkA = arg1;
+
+        if ((arg2 & 0x7FFF) >= 1000) {
+            p->unkC = 999 | ((arg2 & 0x80000000) >> 16);
+        } else {
+            p->unkC = (arg2 & 0x7FFF) | ((arg2 & 0x80000000) >> 16);
+        }
+
+        sprintf(p->unk14, D_800691E4, p->unkC & 0x7FFF);
+        p->unkF = strlen(p->unk14);
+        ++D_800F227E;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009695C);
 

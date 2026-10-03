@@ -14343,7 +14343,7 @@ void func_8008E938(void)
     }
 }
 
-int func_80090C2C(int);
+void func_80090C2C(int);
 
 int func_8008EA90(int arg0)
 {

@@ -1,18 +1,14 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800F98F8);
-
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FA094);
-
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FA2AC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FA784);
-
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FA8FC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FAA88);
-
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FB4D8);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800F98F8
+#define VS_TRAIL_TARGET_FUNCTION func_800FA094
+#define VS_TRAIL_CONTROL_FUNCTION func_800FA2AC
+#define VS_TRAIL_INIT_FUNCTION func_800FA784
+#define VS_TRAIL_UPDATE_FUNCTION func_800FA8FC
+#define VS_TRAIL_RENDER_FUNCTION func_800FAA88
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FB4D8
+#define VS_TRAIL_CORNER_STATE D_800FE38C
+#include "src/EFFECT/trails9.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FBA18);
 

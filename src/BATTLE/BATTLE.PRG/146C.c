@@ -16,6 +16,7 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/INITBTL.PRG/18.h"
 #include <abs.h>
+#include "insertTPage.h"
 #include <libetc.h>
 #include <libgpu.h>
 #include <libgte.h>
@@ -14604,7 +14605,108 @@ void func_8008F30C(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F440);
+void func_8008F440(void)
+{
+    SVECTOR vertices[10];
+    long projection;
+    long flags;
+    LINE_G2* line;
+    POLY_FT4* splash;
+    int depth;
+    D_800F1DD4_t* particle;
+    int i;
+    int j;
+    _mpdRoomSection3* cell;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC == 0) {
+            if (D_800F1BA4 == 0) {
+                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                    particle->unk2 += D_800F1D98[1] << particle->unkE;
+                    if (particle->unkE == 0) {
+                        particle->unk0 += D_800F1D98[0];
+                        particle->unk4 += D_800F1D98[2];
+                    }
+                }
+            }
+            particle->unkE = 2;
+            line = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers((SVECTOR*)particle, (long*)&line->x0, &projection, &flags);
+            if (((u_short)(line->x0 + 639) < 1599) && (depth < 2048)) {
+                if (((u_int)((u_short)line->y0 - 1) < 239) && (line->x0 > 0)
+                    && (line->x0 < 320) && (depth > 4)) {
+                    vertices[0].vx = particle->unk0 - D_800F1D98[0];
+                    vertices[0].vy = particle->unk2 - D_800F1D98[1];
+                    vertices[0].vz = particle->unk4 - D_800F1D98[2];
+                    RotTransPers(&vertices[0], (long*)&line->x1, &projection, &flags);
+                    setLineG2(line);
+                    setSemiTrans(line, 1);
+                    setRGB0(line, 96, 96, 128);
+                    setRGB1(line, 32, 32, 100);
+                    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, line++);
+                    ((vs_scratch_t*)0x1F800000)->unk0 = line;
+                    _insertTPage(depth, 96);
+                    particle->unkE = 0;
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+            if (particle->unk2 > 0) {
+                if ((particle->unkE == 0) && (i & 1)) {
+                    cell = func_8008B764(particle->unk0 / 128, particle->unk4 / 128, 0);
+                    if ((cell != NULL) && ((*(u_int*)cell & 31) != 31)) {
+                        particle->unkC = 1;
+                        projection =
+                            (func_8008DC7C(particle->unk0, particle->unk4) << 17) >> 17;
+                        particle->unk2 = projection;
+                    } else {
+                        func_80090A1C(particle);
+                    }
+                } else {
+                    func_80090A1C(particle);
+                }
+            }
+        } else {
+            setVector(
+                &vertices[0], particle->unk0 - 24, particle->unk2, particle->unk4 - 24);
+            setVector(
+                &vertices[1], particle->unk0 + 24, particle->unk2, particle->unk4 - 24);
+            setVector(
+                &vertices[2], particle->unk0 - 24, particle->unk2, particle->unk4 + 24);
+            setVector(
+                &vertices[3], particle->unk0 + 24, particle->unk2, particle->unk4 + 24);
+            splash = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth = RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+                (long*)&splash->x0, (long*)&splash->x1, (long*)&splash->x2,
+                (long*)&splash->x3, &projection, &flags);
+            depth -= 64;
+            if ((u_int)(depth - 1) < 2047) {
+                setPolyFT4(splash);
+                setSemiTrans(splash, 1);
+                setUV4(splash, (particle->unkD >> 1) * 16, 192,
+                    (particle->unkD >> 1) * 16 + 16, 192, (particle->unkD >> 1) * 16, 208,
+                    (particle->unkD >> 1) * 16 + 16, 208);
+                setRGB0(splash, 128, 128, 128);
+                splash->tpage = 0x71;
+                splash->clut = 0x38BF;
+                AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, splash++);
+                ((vs_scratch_t*)0x1F800000)->unk0 = splash;
+                if (D_800F1BA4 == 0) {
+                    particle->unkD += vs_gametime_tickspeed >> 1;
+                }
+                if (particle->unkD >= 8) {
+                    func_80090A1C(particle);
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+        }
+    }
+}
 
 void func_8008F9A4(int arg0, int arg1)
 {
@@ -14631,11 +14733,311 @@ void func_8008FA14(D_800F1DD4_t* arg0)
     arg0->unkF = (rand() & 0xF) + 8;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FAC8);
+void func_8008FAC8(void)
+{
+    long dx;
+    long dy;
+    POLY_G4* prim;
+    int depth;
+    D_800F1DD4_t* particle;
+    int i;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FDC4);
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC != 0) {
+            continue;
+        }
+        if (D_800F1BA4 == 0) {
+            particle->unk2 -= particle->unkF * vs_gametime_tickspeed;
+            if (particle->unk2 < -1024) {
+                func_8008FA14(particle);
+            }
+        }
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        depth = RotTransPers((SVECTOR*)particle, (long*)&prim->x1, &dx, &dy);
+        if (((u_int)((u_short)prim->y1 - 1) >= 239) || (prim->x1 <= 0)
+            || (prim->x1 >= 320) || (depth <= 64) || (depth >= 2048)) {
+            continue;
+        }
+        particle->unk2 += 192;
+        depth = RotTransPers((SVECTOR*)particle, (long*)&prim->x2, &dx, &dy);
+        particle->unk2 -= 192;
+        dx = (prim->x2 - prim->x1) / 32;
+        dy = (prim->y2 - prim->y1) / 32;
+        prim->x0 = prim->x1 + dx + dy;
+        prim->y0 = prim->y1 + dy - dx;
+        prim->x3 = prim->x1 + dx - dy;
+        prim->y3 = dx + (prim->y1 + dy);
+        setPolyG4(prim);
+        setSemiTrans(prim, 1);
+        setRGB1(prim, 192, 64, 64);
+        setRGB0(prim, 32, 8, 32);
+        setRGB3(prim, 32, 8, 32);
+        setRGB2(prim, 0, 0, 0);
+        AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+        _insertTPage(depth, 32);
+    }
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
+void func_8008FDC4(void)
+{
+    SVECTOR unused[6] __attribute__((unused));
+    long projection;
+    long flags;
+    TILE* prim;
+    int depth;
+    D_800F1DD4_t* particle;
+    short x;
+    short y;
+    int i;
+    int j;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC == 0) {
+            if (D_800F1BA4 == 0) {
+                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                    if (particle->unkE != 0) {
+                        particle->unk2 += D_800F1D98[1] << particle->unkE;
+                    } else {
+                        particle->unkF += (rand() & 15) - 7;
+                        particle->unkF &= 127;
+                        if (particle->unkD != 0) {
+                            particle->unk0 +=
+                                (D_800F1D98[0] >> 3) + (rsin(particle->unkF << 5) >> 9);
+                            particle->unk4 +=
+                                (D_800F1D98[2] >> 3) - (rcos(particle->unkF << 5) >> 9);
+                            particle->unk2 -= rsin(particle->unkD << 6) >> 9;
+                            ++particle->unkD;
+                            if (particle->unkD > 32) {
+                                particle->unkD = 0;
+                            }
+                        } else {
+                            particle->unk0 +=
+                                (D_800F1D98[0] >> 3) + (rsin(particle->unkF << 5) >> 10);
+                            particle->unk4 +=
+                                (D_800F1D98[2] >> 3) - (rcos(particle->unkF << 5) >> 10);
+                            if ((rand() & 127) == 0) {
+                                particle->unkD = 1;
+                            }
+                        }
+                        particle->unk2 += D_800F1D98[1] >> 3;
+                    }
+                }
+            }
+            particle->unkE = 2;
+            prim = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers((SVECTOR*)particle, (long*)&prim->x0, &projection, &flags);
+            if (((u_short)(prim->x0 + 639) < 1599) && (depth < 2048)) {
+                if (depth > 4) {
+                    x = prim->x0;
+                    y = prim->y0;
+                    if (((u_int)((u_short)y - 1) < 239) && (x > 0) && (x < 320)) {
+                        setTile(prim);
+                        setSemiTrans(prim, 1);
+                        if (i & 1) {
+                            setWH(prim, 2, 2);
+                        } else {
+                            setWH(prim, 1, 1);
+                        }
+                        setRGB0(prim, 255, 255, 255);
+                        AddPrim(
+                            (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                        particle->unkE = 0;
+                    }
+                    projection = x + (rsin(i << 5) >> 6);
+                    flags = y - (rcos(i << 5) >> 6);
+                    if (((u_int)(flags - 1) < 239) && (projection > 0)
+                        && (projection < 320) && (depth > 4)) {
+                        setTile(prim);
+                        setXY0(prim, projection, flags);
+                        setSemiTrans(prim, 1);
+                        if ((i & 1) == 0) {
+                            setWH(prim, 2, 2);
+                        } else {
+                            setWH(prim, 1, 1);
+                        }
+                        setRGB0(prim, 255, 255, 255);
+                        AddPrim(
+                            (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                        particle->unkE = 0;
+                    }
+                    if (particle->unkE == 0) {
+                        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+                        _insertTPage(depth, 0x71);
+                    }
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+            if (particle->unk2 > 0) {
+                if ((particle->unkE == 0) && (i & 1)) {
+                    particle->unkC = 1;
+                    particle->unkD = 0;
+                    projection =
+                        (func_8008DC7C(particle->unk0, particle->unk4) << 17) >> 17;
+                    particle->unk2 = projection;
+                } else {
+                    func_80090A1C(particle);
+                }
+            }
+        } else {
+            prim = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers((SVECTOR*)particle, (long*)&prim->x0, &projection, &flags);
+            if (((u_int)((u_short)prim->y0 - 1) < 239) && (prim->x0 > 0)
+                && (prim->x0 < 320) && (depth > 4)) {
+                setTile(prim);
+                setSemiTrans(prim, 1);
+                setWH(prim, 2, 2);
+                setRGB0(prim, 128 - (particle->unkD << 4), 128 - (particle->unkD << 4),
+                    128 - (particle->unkD << 4));
+                AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+                _insertTPage(depth, 96);
+                if (D_800F1BA4 == 0) {
+                    particle->unkD += vs_gametime_tickspeed >> 1;
+                }
+                if (particle->unkD >= 8) {
+                    func_80090A1C(particle);
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+        }
+    }
+}
+
+void func_80090434(void)
+{
+    SVECTOR unused[4] __attribute__((unused));
+    VECTOR origin;
+    VECTOR velocity;
+    long flags;
+    void* cursor;
+    TILE* prim;
+    D_800F1DD4_t* particle;
+    int x;
+    int y;
+    int color;
+    int j;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    RotTrans(&D_800F1CE0, &origin, &flags);
+    RotTrans((SVECTOR*)D_800F1D98, &velocity, &flags);
+    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
+    origin.vx = (velocity.vx - origin.vx) >> 3;
+    origin.vy = (velocity.vy - origin.vy) >> 3;
+    origin.vz = (velocity.vz - origin.vz) >> 3;
+    if (D_800F1BA4 == 0) {
+        if (D_800F1DC7 != 0) {
+            D_800F1DC7 -= 8;
+        }
+    } else if (D_800F1DC7 < 96) {
+        D_800F1DC7 += 8;
+    }
+    particle = D_800F1DD4;
+    prim = cursor;
+    for (flags = 0; flags < D_800F1DC0; ++flags, ++particle) {
+        if (D_800F1BA4 == 0) {
+            for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                particle->unkF += (rand() & 15) - 7;
+                particle->unkF &= 127;
+                if (particle->unkD != 0) {
+                    particle->unk0 += origin.vx + (rsin(particle->unkF << 5) >> 9);
+                    particle->unk4 += origin.vz - (rcos(particle->unkF << 5) >> 9);
+                    particle->unk2 -= rsin(particle->unkD << 6) >> 9;
+                    ++particle->unkD;
+                    if (particle->unkD > 32) {
+                        particle->unkD = 0;
+                    }
+                } else {
+                    particle->unk0 += origin.vx + (rsin(particle->unkF << 5) >> 10);
+                    particle->unk4 += origin.vz - (rcos(particle->unkF << 5) >> 10);
+                    if ((rand() & 127) == 0) {
+                        particle->unkD = 1;
+                    }
+                }
+                particle->unk2 += origin.vy;
+                particle->unk4 &= 255;
+                if (particle->unk0 < 0) {
+                    particle->unk0 += 320;
+                }
+                if (particle->unk0 > 320) {
+                    particle->unk0 -= 320;
+                }
+                if (particle->unk2 < 0) {
+                    particle->unk2 += 240;
+                }
+                if (particle->unk2 > 240) {
+                    particle->unk2 -= 240;
+                }
+            }
+        }
+        x = ((particle->unk0 - 160) << 12) / ((particle->unk4 << 2) + 3072) + 160;
+        y = ((particle->unk2 - 120) << 12) / ((particle->unk4 << 2) + 3072) + 120;
+        {
+            int brightness = (255 - particle->unk4) / 4;
+            int fade = D_800F1DC7 - 32;
+            color = brightness - fade;
+        }
+        if (color < 0) {
+            color = 0;
+        }
+        if (((u_int)x < 320) && ((u_int)y < 240)) {
+            setTile(prim);
+            setXY0(prim, x, y);
+            setSemiTrans(prim, 1);
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+        }
+        if (((u_short)particle->unk8 < 320) && ((u_short)particle->unkA < 240)) {
+            setTile(prim);
+            setXY0(prim, particle->unk8, particle->unkA);
+            setSemiTrans(prim, 1);
+            color >>= 1;
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+            setTile(prim);
+            setXY0(prim, x - ((x - particle->unk8) * 2), y - ((y - particle->unkA) * 2));
+            setSemiTrans(prim, 1);
+            color >>= 1;
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+        }
+        if (D_800F1BA4 == 0) {
+            particle->unk8 = x;
+            particle->unkA = y;
+        }
+    }
+    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+    _insertTPage(4, 0x31);
+}
 
 void func_80090A1C(D_800F1DD4_t* arg0)
 {

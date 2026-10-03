@@ -951,7 +951,7 @@ int vs_battle_renderBattleAbilityTimingResult(int arg0)
     p->unk8.u8[0] = 4;
     p->unk8.u8[1] = 0;
     p->unkC = arg0;
-    p->unkF = rand() & 7;
+    p->displayTextLen = rand() & 7;
     ++D_800F227E;
     return 0;
 }
@@ -1009,7 +1009,7 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
 
     for (; i < D_800F227E; ++i, ++p) {
         if ((p->unk8.u8[0] == 2) && (p->unk8.u8[1] == arg0)) {
-            frame = p->unkF + 0xC;
+            frame = p->displayTextLen + 0xC;
             if (p->unk6 >= 0) {
                 kind = p->unkB;
                 ++found;
@@ -1036,9 +1036,9 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     p->unk4 = 0;
     p->unk6 = found;
     if (frame < 0x25) {
-        p->unkF = frame;
+        p->displayTextLen = frame;
     } else {
-        p->unkF = 0;
+        p->displayTextLen = 0;
     }
     p->unkB = kind;
     p->unk8.u8[1] = arg0;
@@ -1335,10 +1335,11 @@ int func_80096768(int arg0, int arg1, int arg2)
             p->unkC = (arg2 & 0x7FFF) | ((arg2 & 0x80000000) >> 16);
         }
 
-        sprintf(p->unk14, D_800691E4, p->unkC & 0x7FFF);
-        p->unkF = strlen(p->unk14);
+        sprintf(p->displayText, D_800691E4, p->unkC & 0x7FFF);
+        p->displayTextLen = strlen(p->displayText);
         ++D_800F227E;
     }
+
     return 0;
 }
 

@@ -194,7 +194,7 @@ int func_8009306C(func_80092F74_t* arg0);
 int func_80093364(func_80092F74_t* arg0);
 int func_8009406C(int, int, int, int);
 int func_80094E18(int, int, D_800F1BAC_t*);
-void func_80095C18(int, char);
+void func_80095C18(int, int);
 int func_800A1280(int, int, SVECTOR*, int);
 int func_800A152C(int, int, int);
 int func_800A190C(int, int, SVECTOR*, int);
@@ -205,8 +205,25 @@ void func_80096444(int);
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
+extern int D_80068F04[][4];
+extern u_short D_80068F64[][4];
+extern int D_80068F94[];
+extern int D_800F2274;
+int func_80096254(int, int);
+int func_8009F858(int);
+u_long* vs_battle_setSprite(int, int, int, u_long*);
+void func_8009651C(SVECTOR*, int);
 extern char D_800691E4[];
 extern RECT D_80068FAC[];
+typedef struct {
+    u_char count;
+    u_char labels[2];
+    u_char color;
+} CombatLabel;
+extern CombatLabel D_800690B4[];
+extern const CVECTOR D_80069134[];
+extern const RECT D_80069144[];
+extern const RECT D_8006917C[];
 extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
@@ -233,7 +250,18 @@ extern short D_800F2270;
 extern short D_800F2272;
 extern short D_800F2278;
 extern short D_800F227A;
+extern short D_800F227C;
 extern short D_800F227E;
+void func_800970BC(void);
+void func_80094844(short*, D_800F1BAC_t*);
+void func_80094AF8(D_800F1BAC_t*);
+void func_80094B0C(int, int, D_800F1BAC_t*);
+void func_8009506C(int, int, D_800F1BAC_t*);
+void func_80095258(int, int, D_800F1BAC_t*);
+void func_800958A4(int, int, D_800F1BAC_t*);
+void func_80095A4C(int, int, D_800F1BAC_t*);
+void func_8009695C(int, int, D_800F1BAC_t*);
+void func_8009639C(int);
 extern SVECTOR D_800F2280;
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068EB4);
@@ -1799,7 +1827,93 @@ void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
     ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095258);
+void func_80095258(int x, int y, D_800F1BAC_t* p)
+{
+    short slide[] = { 32, 14, 6, 2 };
+    short fade[] = { 5, 9, 13, 15 };
+    RECT* rects[2];
+    int step;
+    int width;
+    int i;
+    POLY_FT4* prim;
+    void* cursor;
+    if (D_800690B4[p->unkC].count == 0) {
+        return;
+    }
+    if (p->unkB < 4) {
+        step = p->unkB;
+        if (!(p->unkE & 1)) {
+            x += slide[step];
+        }
+    } else if (p->unkB < 6) {
+        step = 5;
+    } else if (p->unkB >= 27) {
+        step = 30 - p->unkB;
+        if (!(p->unkE & 1)) {
+            x -= slide[step];
+        }
+    } else {
+        step = 4;
+        if (p->unkB >= 25) {
+            step = 5;
+        }
+    }
+    if ((p->unkE & 1) && p->unkB >= 15) {
+        width = p->unkB - 15;
+        if (width > 4) {
+            width = 4;
+        }
+        func_800957D0(x, y, width);
+    }
+    width = 0;
+    for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
+        rects[i] = &D_80068FAC[D_800690B4[p->unkC].labels[i]];
+        width += rects[i]->w;
+    }
+    x -= width / 2;
+    if (p->unkE & 1) {
+        width = 0;
+    } else {
+        width = D_800690B4[p->unkC].color;
+    }
+    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
+    prim = cursor;
+    for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
+        if (x < 320 && x + rects[i]->w >= 0) {
+            setPolyFT4(prim);
+            setXY4(
+                prim, x, y - 6, x + rects[i]->w, y - 6, x, y + 6, x + rects[i]->w, y + 6);
+            setShadeTex(prim, 0);
+            if (step == 5) {
+                setRGB0(prim, D_80069134[width].r / 2 + 96, D_80069134[width].g / 2 + 96,
+                    D_80069134[width].b / 2 + 96);
+            } else if (step == 4) {
+                prim->r0 = D_80069134[width].r / 2;
+                prim->g0 = D_80069134[width].g / 2;
+                prim->b0 = D_80069134[width].b / 2;
+            } else {
+                setRGB0(prim, D_80069134[width].r * fade[step] / 32,
+                    D_80069134[width].g * fade[step] / 32,
+                    D_80069134[width].b * fade[step] / 32);
+            }
+            setUV4(prim, rects[i]->x, rects[i]->y, rects[i]->x + rects[i]->w, rects[i]->y,
+                rects[i]->x, rects[i]->y + 12, rects[i]->x + rects[i]->w,
+                rects[i]->y + 12);
+            setSemiTrans(prim, 1);
+            if (step != 4) {
+                setTPage(prim, 0, 1, 448, 256);
+                setClut(prim, 960, 220);
+            } else {
+                setTPage(prim, 0, 0, 448, 256);
+                setClut(prim, 976, 220);
+            }
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+            cursor += sizeof(POLY_FT4);
+        }
+        x += rects[i]->w;
+    }
+    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+}
 
 void func_800957D0(int arg0, int arg1, int arg2)
 {
@@ -1890,7 +2004,161 @@ void func_80095B7C(int arg0, int arg1)
     memset(D_800F2260, arg1, 0x10);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095C18);
+void func_80095C18(int actor, int kind)
+{
+    SVECTOR position;
+    SVECTOR other;
+    int reserved[2];
+    long depth;
+    long side;
+    int xy;
+    u_long* prim;
+    u_long* ot;
+    int flags;
+    int z;
+    int* corners;
+    u_short* uv;
+    if (!(kind & 8)) {
+        if (kind & 0x80) {
+            kind &= 7;
+            if ((u_int)(kind - 1) >= 4) {
+                kind = 5;
+            }
+        }
+        if (func_800A1280(actor, 251, &position, 0)) {
+            return;
+        }
+        if (func_800A1280(0, 251, &other, 0)) {
+            return;
+        }
+        z = position.vz - 16;
+        xy = *(int*)&position;
+        if (other.vx + 32 < position.vx) {
+            D_800F2274 &= ~(1 << actor);
+        }
+        if (position.vx < other.vx - 32) {
+            D_800F2274 |= 1 << actor;
+        }
+        if (z < 64) {
+            z = 64;
+        } else if (z >= 2048) {
+            z = 2047;
+        }
+        ot = (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + z;
+        side = (D_800F2274 >> actor) & 1;
+        switch (kind) {
+        case 0:
+            return;
+        case 1:
+        case 2:
+        case 3:
+            while (kind) {
+                --kind;
+                vs_battle_setSprite(
+                    128, xy + kind * 6 + D_80068F94[side], 0x50005, ot)[4] = 0x373E125A;
+            }
+            break;
+        case 4:
+            flags = 0;
+            if (position.vx < 16) {
+                position.vx = 16;
+                flags = 1;
+            }
+            if (position.vx > 304) {
+                position.vx = 304;
+                flags |= 2;
+            }
+            if (flags) {
+                if (position.vy < 40) {
+                    position.vy = 40;
+                    flags |= 4;
+                }
+            } else if (position.vy < 8) {
+                position.vy = 40;
+                flags = 4;
+            }
+            if (position.vy > 208) {
+                position.vy = 208;
+                flags |= 8;
+            }
+            if (flags) {
+                func_8009651C(&position, flags);
+                return;
+            }
+            side += 2;
+            vs_battle_setSprite(128, xy + D_80068F94[side], 0xC0007, ot)[4] = 0x373E1198;
+            break;
+        case 5:
+            vs_battle_setSprite(
+                128, xy + D_80068F94[side] + 0xFFFD0002, 0x100010, ot)[4] = 0x373E2098;
+            break;
+        case 6:
+            side += 4;
+            break;
+        case 7:
+            prim = vs_battle_setSprite(128, xy + 0xFFEA0000, 0xC0007, ot);
+            prim[1] = 0xE1000017;
+            prim[4] = 0x373E11B7;
+            return;
+        }
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        corners = D_80068F04[side];
+        uv = D_80068F64[side];
+        prim[0] = (*ot & 0xFFFFFF) | 0x9000000;
+        prim[1] = 0x2C808080;
+        prim[2] = func_80096254(xy, corners[0]);
+        prim[3] = uv[0] | 0x373E0000;
+        prim[4] = func_80096254(xy, corners[1]);
+        prim[5] = uv[1] | 0x170000;
+        prim[6] = func_80096254(xy, corners[2]);
+        prim[7] = uv[2];
+        prim[8] = func_80096254(xy, corners[3]);
+        prim[9] = uv[3];
+        *ot = ((u_long)prim << 8) >> 8;
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim + 10;
+    } else {
+        if (func_800A190C(actor, 255, &other, 0) == 0) {
+            if (func_800A190C(0, 255, &position, 0)) {
+                return;
+            }
+            position.vx -= other.vx;
+            position.vz -= other.vz;
+            side = ABS(position.vx) + ABS(position.vz);
+            if (side < 352) {
+                D_800F2274 &= ~(1 << actor);
+            }
+            if (side > 416) {
+                D_800F2274 |= 1 << actor;
+            }
+            side = (D_800F2274 >> actor) & 1;
+            if (side) {
+                return;
+            }
+            SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+            SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+            other.vy -= 64;
+            RotTransPers(&other, (long*)&position, &depth, &side);
+            ot = ((vs_scratch_t*)0x1F800000)->unk4;
+            position.vx -= 8;
+            position.vy -= 8;
+            xy = *(int*)&position;
+            depth = func_8009F858(actor);
+            if (depth >= 0) {
+                if (depth == 0) {
+                    ++D_800F2260[actor];
+                    if (!(D_800F2260[actor] & 7)) {
+                        D_800F2260[actor] = 0;
+                    }
+                }
+                prim = vs_battle_setSprite(128, xy, 0x100010, ot);
+                prim[1] = 0xE100000C;
+                prim[4] = ((depth << 4) + 96) | 0x37FD2000;
+                return;
+            }
+        }
+        D_800F2260[actor] = 0;
+    }
+}
 
 int func_80096254(int arg0, int arg1)
 {

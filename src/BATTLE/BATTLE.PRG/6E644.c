@@ -98,7 +98,8 @@ typedef struct {
 } func_800E78F4_t;
 
 typedef struct {
-    char unk0[0x18];
+    u_char maxX, maxZ, minX, minZ;
+    char unk4[0x14];
     u_short unk18;
 } D_800F58BC_t;
 
@@ -670,6 +671,8 @@ typedef struct {
     unsigned char disabled;
     unsigned char rest[0x2C];
     vs_battle_movementPosition position;
+    char unk38[0x130];
+    vs_battle_movementPosition destination;
 } func_800D8400_t;
 int func_800D96C8(func_800D8400_t*, unsigned int, unsigned int, int);
 int func_800D954C(func_800D8400_t*, unsigned int);
@@ -1120,7 +1123,35 @@ void func_800E1238(func_800E0850_t* arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1388);
+void func_800E1388(func_800D8400_t* state, vs_battle_movementPosition source, int angle,
+    unsigned int distance)
+{
+    vs_battle_movementPosition dest;
+    int i, x, z, heading;
+    unsigned int step;
+    angle = -angle;
+    angle += 0xC00;
+    heading = angle & 0xFFF;
+    step = distance >> 3;
+
+    for (i = 0; i < 8; i++, distance -= step) {
+        x = ((int)(distance * rcos(heading)) >> 12) + 64;
+        dest.p.x = (int)(source.p.x * 128 + x) >> 7;
+        z = ((int)(distance * rsin(heading)) >> 12) + 64;
+        dest.p.z = (int)(source.p.z * 128 + z) >> 7;
+        if (func_800D954C(state, dest.raw) > 0)
+            break;
+    }
+    if (dest.p.x < D_800F58BC->minX)
+        dest.p.x = D_800F58BC->minX;
+    else if (dest.p.x > D_800F58BC->maxX)
+        dest.p.x = D_800F58BC->maxX;
+    if (dest.p.z < D_800F58BC->minZ)
+        dest.p.z = D_800F58BC->minZ;
+    else if (dest.p.z > D_800F58BC->maxZ)
+        dest.p.z = D_800F58BC->maxZ;
+    state->destination = dest;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E153C);
 

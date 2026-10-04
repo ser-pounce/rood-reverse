@@ -459,7 +459,41 @@ int func_800C0758(int phase, int segments, int index)
     return index;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C085C);
+void func_80040F8C(SVECTOR*, MATRIX*);
+
+MATRIX* func_800C085C(u_char* scale, int angle)
+{
+    short* scratch = (void*)0x1F800350;
+    MATRIX* rotation = (void*)0x1F800330;
+    int axis;
+    int component;
+    short* coordinate;
+
+    scratch[0] = -(scale[3] << 4);
+    scratch[1] = angle;
+    scratch[2] = 0;
+    func_80040F8C((SVECTOR*)scratch, rotation);
+    for (axis = 0; axis < 3; ++axis) {
+        u_char* value;
+        component = 0;
+        value = &scale[axis];
+        coordinate = scratch;
+        for (; component < 3; ++component, ++coordinate) {
+            if (axis == component) {
+                *coordinate = *value << 5;
+            } else {
+                *coordinate = 0;
+            }
+        }
+        ApplyMatrixSV(rotation, (SVECTOR*)scratch, (SVECTOR*)&scratch[8 + axis * 4]);
+    }
+    for (axis = 0; axis < 3; ++axis) {
+        for (component = 0; component < 3; ++component) {
+            scratch[axis * 3 + component] = scratch[8 + component * 4 + axis];
+        }
+    }
+    return (MATRIX*)scratch;
+}
 
 extern u_char D_80040A14[];
 

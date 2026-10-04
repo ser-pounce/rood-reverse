@@ -137,7 +137,83 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8FD4);
+int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
+{
+    actorCollisionExclusion* scratch = (void*)0x1F8003BC;
+    int i, flags, radius, minY, minX, maxX, minZ, maxZ;
+    int otherRadius, dx, dz, oldDistance, otherFlags;
+    short otherX, otherZ, actorX, actorZ;
+    actorCollisionExclusion* clear;
+    D_800F4538_t* other;
+    D_800F4538_t** entry;
+    for (i = 16, clear = (void*)((char*)scratch + 16); i >= 0;
+        --i, clear = (void*)((char*)clear - 1))
+        clear->excluded = 0;
+    flags = *(u_int*)((char*)actor + 0x5AC);
+    if (flags & 0x800)
+        return flags & 0x800;
+    radius = *(u_short*)&actor->unk640[0];
+    minY = actor->unk0.position.vy - *(u_short*)&actor->unk640[2];
+    minX = actor->unk0.position.vx - radius;
+    maxX = actor->unk0.position.vx + radius;
+    minZ = actor->unk0.position.vz - radius;
+    maxZ = actor->unk0.position.vz + radius;
+    i = 2;
+    if (flags & 8)
+        minY -= 128;
+    for (entry = &D_800F4538[i]; i < 17; ++entry) {
+        other = *entry;
+        if (other == NULL)
+            goto next_actor;
+        otherFlags = *(u_int*)((char*)other + 8);
+        if (otherFlags & 1)
+            goto next_actor;
+        if (*(u_int*)((char*)other + 0x5AC) & 0x1000000)
+            goto next_actor;
+        if (other->unk0.unk13 == 0xFC)
+            goto next_actor;
+        if ((otherFlags & 0xF000000) == 0x2000000)
+            goto next_actor;
+        otherRadius = *(u_short*)&other->unk640[0];
+        if (other->unk0.position.vx + otherRadius < minX)
+            goto next_actor;
+        if (maxX < other->unk0.position.vx - otherRadius)
+            goto next_actor;
+        if (other->unk0.position.vz + otherRadius < minZ)
+            goto next_actor;
+        if (maxZ < other->unk0.position.vz - otherRadius)
+            goto next_actor;
+        if (other->unk0.position.vy < minY)
+            goto next_actor;
+        if (actor->unk0.position.vy
+            < other->unk0.position.vy - *(u_short*)&other->unk640[2])
+            goto next_actor;
+        ((actorCollisionExclusion*)((char*)scratch + i))->excluded = 1;
+        otherX = other->unk0.position.vx;
+        actorX = actor->unk0.position.vx;
+        dx = otherX - actorX;
+        dx *= dx;
+        otherZ = other->unk0.position.vz;
+        actorZ = actor->unk0.position.vz;
+        dz = otherZ - actorZ;
+        dz *= dz;
+        oldDistance = dx + dz;
+        dx = otherX - (actorX + motion->vx);
+        dx *= dx;
+        dz = otherZ - (actorZ + motion->vz);
+        dz *= dz;
+        dx += dz;
+        oldDistance = dx < oldDistance;
+        ++i;
+        if (oldDistance)
+            return 0;
+        goto increment_entry;
+    next_actor:
+        ++i;
+    increment_entry:;
+    }
+    return 1;
+}
 
 int func_800A91DC(int arg0, int arg1, int arg2)
 {

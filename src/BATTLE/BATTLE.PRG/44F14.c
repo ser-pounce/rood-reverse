@@ -1344,7 +1344,123 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B196C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B1A68);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B217C);
+typedef struct {
+    char prefix[0x34];
+    u_short tpage, clut;
+    char pad38[0x14];
+    SVECTOR translation, position;
+    MATRIX* parent;
+    int pad60;
+    MATRIX matrix;
+    SVECTOR rotation;
+    VECTOR scale;
+    char* model;
+} weaponTransformScratch;
+typedef struct {
+    char prefix[0x20];
+    MATRIX matrix;
+} weaponMatrix;
+typedef struct {
+    char prefix[0xA0];
+    SVECTOR rotation;
+} weaponRotation;
+extern MATRIX D_800F3C58[];
+void func_800B17F0(SVECTOR*, MATRIX*);
+void func_800B196C(MATRIX*, MATRIX*);
+void func_800B396C(MATRIX*, VECTOR*);
+int func_800B3A68(void*, MATRIX*, int, void*);
+short func_800BEB00(void);
+void func_800B516C(void*, void*, void*, void*);
+void func_800B3CF0(void*, void*, void*, void*);
+
+void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
+{
+    CVECTOR color;
+    weaponTransformScratch* scratch = (void*)0x1F80035C;
+    D_800F4538_t* actor = D_800F4538[weapon->actorId];
+    int value, i, parentOffset, parentBone, current, target, length;
+    weaponRotation* rotation;
+    unsigned int flags;
+    scratch->model = (char*)weapon->offsets;
+    *(MATRIX*)0x1F8003C0 = *source;
+    if (weapon->unk13 != 0) {
+        target = weapon->unk12;
+        current = weapon->unk11;
+        value = target - current;
+        value /= weapon->unk13;
+        weapon->unk11 = current + value;
+        --weapon->unk13;
+        if ((*(int*)&weapon->clutSlotOffset & 0xFF00FF00) == 0)
+            *(int*)((char*)weapon + 8) &= ~0x10;
+    }
+    if (weapon->unk11 != 64) {
+        value = weapon->unk11;
+        value <<= 6;
+        scratch->scale.vx = value;
+        scratch->scale.vy = value;
+        scratch->scale.vz = value;
+        func_800B396C(&scratch->matrix, &scratch->scale);
+    }
+    D_800F3C58[0] = scratch->matrix;
+    ((weaponMatrix*)weapon)->matrix = scratch->matrix;
+    scratch->translation.vx = scratch->translation.vy = 0;
+    for (i = 1; i < weapon->nBones; ++i) {
+        parentBone = *(u_char*)(scratch->model + (i << 4) + 0x44);
+        parentOffset = parentBone << 5;
+        scratch->parent = (MATRIX*)((char*)weapon + (parentOffset + 0x20));
+        gte_SetRotMatrix(scratch->parent);
+        gte_SetTransMatrix(scratch->parent);
+        length = *(u_short*)(scratch->model + (parentBone << 4) + 0x40);
+        scratch->translation.vy = 0;
+        scratch->translation.vz = 0;
+        scratch->translation.vx = -length;
+        gte_ldv0(&scratch->translation);
+        gte_rtv0tr2();
+        rotation = (weaponRotation*)((char*)weapon + (i << 3));
+        scratch->rotation.vx = rotation->rotation.vx;
+        scratch->rotation.vy = rotation->rotation.vy;
+        scratch->rotation.vz = rotation->rotation.vz;
+        gte_stlvnl(scratch->matrix.t);
+        *(int*)&scratch->rotation &= 0x0FFF0FFF;
+        *(int*)&scratch->rotation.vz &= 0xFFF;
+        func_800B17F0(&scratch->rotation, &scratch->matrix);
+        func_800B196C((MATRIX*)(parentOffset + (int)D_800F3C58), &scratch->matrix);
+        D_800F3C58[i] = scratch->matrix;
+        ((weaponMatrix*)((char*)weapon + (i << 5)))->matrix = scratch->matrix;
+    }
+    if (*(int*)((char*)actor + 8) & 2) {
+        if (*(short*)((char*)actor + 0x1E) >= 256) {
+            if (actor->unk0.unkF == 0 || func_800BEB00() != 4)
+                return;
+        }
+        if (func_800B3A68(weapon, &((weaponMatrix*)weapon)->matrix,
+                (-vs_main_nearClip) << 2, weapon->offsets)) {
+            scratch->tpage = vs_battle_wepTextures[weapon->texSlot].tpage;
+            scratch->clut = vs_battle_wepTextures[weapon->clutSlotOffset].clut0;
+            flags = *(u_int*)((char*)actor + 8);
+            value = 0;
+            if (((flags >> 8 & 15) - 4) < 5) {
+                value = 1;
+                if ((flags & 0xF00) == 0x600)
+                    value = 0;
+            }
+            if ((flags & 0xF00) == 0xF00)
+                value = 1;
+            if (*(int*)((char*)weapon + 8) & 0x40) {
+                color.r = weapon->unk5C0;
+                color.g = weapon->unk5C0;
+                color.b = weapon->unk5C0;
+            } else {
+                *(int*)&color = *(int*)((char*)actor + 0x54);
+            }
+            if (value) {
+                func_800B516C(&D_800F2458, weapon, &color, scratch->model);
+                return;
+            }
+            func_800B3CF0(&D_800F2458, weapon, &color, scratch->model);
+        }
+    }
+}
 
 typedef struct {
     char prefix[0x1870];

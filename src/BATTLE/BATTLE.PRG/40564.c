@@ -1095,7 +1095,52 @@ void func_800AB2AC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB358);
+extern u_char D_800E8F30[];
+extern u_char D_800E8F90[];
+
+static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
+static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
+void func_800AB358(int index, u_char* arg)
+{
+    RECT rect;
+    DR_MOVE* packet;
+    int srcX, srcY, dstX, width, height, slot;
+    int x, y, row, py, page;
+    u_char *actor, *part;
+    actor = (u_char*)D_800F4538[index];
+    if (D_800F2450[D_800E8F2C]) {
+        srcX = arg[2];
+        srcY = arg[3];
+        srcY += (actor + D_800E8F2C)[0x183E];
+        part = actor + 0x5F4 + arg[1] * 4;
+        dstX = part[0];
+        width = part[2];
+        height = part[3];
+        if (!(*(int*)(actor + 0x5AC) & 0x8000000)) {
+            srcX /= 4;
+            width /= 4;
+            dstX /= 4;
+        } else {
+            srcX /= 2;
+            width /= 2;
+            dstX /= 2;
+        }
+        packet = vs_battlePacketBegin();
+        slot = actor[0x5BB];
+        x = *(short*)(D_800E8F30 + slot * 4);
+        y = *(short*)(D_800E8F30 + slot * 4 + 2);
+        row = D_800E8F90[slot];
+        py = part[1];
+        page = D_800F2450[D_800E8F2C];
+        rect.y = srcY + 256;
+        rect.w = width;
+        rect.h = height;
+        rect.x = ((page & 15) << 6) + srcX;
+        SetDrawMove(packet, &rect, dstX + (x << 6), (y << 8) + (row << 6) + py);
+        func_8007A824(packet);
+        vs_battlePacketEnd(packet);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB4F0);
 

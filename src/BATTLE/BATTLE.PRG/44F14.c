@@ -11,7 +11,8 @@
 void func_8008EB04(int*, int*);
 int func_800A91DC(int, int, int);
 u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
-void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, u_char*);
+/* Some callers supply an ignored fourth argument; the decoder uses state->unk544. */
+void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, ...);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 
@@ -709,7 +710,134 @@ void func_800AF960(D_800F45E0_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AFA28);
+struct animationFrameScratch {
+    char prefix[8];
+    int first, last;
+    u_char** data;
+};
+void func_800AFDE8(u_short, SVECTOR*, int);
+void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
+{
+    u_short* header;
+    struct animationFrameScratch* scratch = (void*)0x1F8003EC;
+    D_800F4538_unkC54* boneState;
+    D_800F4538_unk1864* shadow;
+    int frame;
+    int frameOrOffset;
+    int x;
+    int y;
+    int z;
+    int delta;
+    int lastFrame;
+    int i;
+    u_short rootTrack;
+    u_char** data;
+    u_char queuedAnimation;
+
+    (*(int*)((char*)state + 0x548)) = (int)((*(int*)((char*)state + 0x548)) & 0xFFFDFFFF);
+    frameOrOffset = (short)state->unk540;
+    i = 0;
+    if (actor->unk5B2 != 0) {
+        shadow = &actor->unk1864;
+    advance_frame:
+        if (shadow->unk4 != 0) {
+            delta = shadow->unkA / shadow->unk4;
+            shadow->unkA -= delta;
+            shadow->unk8 += delta;
+            --shadow->unk4;
+        }
+        shadow->unk8 &= 0xFFF;
+        if (shadow->unk5 != 0) {
+            delta = shadow->unk10 / shadow->unk5;
+            shadow->unk10 -= delta;
+            shadow->unkC += delta;
+            delta = shadow->unk12 / shadow->unk5;
+            shadow->unk12 -= delta;
+            shadow->unkE += delta;
+            --shadow->unk5;
+        }
+        if ((short)state->unk540 >= (int)(u_short)actor->unk5BC) {
+            (*(int*)((char*)state + 0x548)) =
+                (int)((*(int*)((char*)state + 0x548)) | 0x20000);
+            queuedAnimation = actor->unk6E0;
+            if (queuedAnimation != 0) {
+                func_800A0618((int)actor->unk0.unkF, (int)actor->unk6E0,
+                    (int)actor->unk6E1, (int)actor->unk6E2);
+                actor->unk6E0 = 0;
+                return;
+            }
+        }
+        if ((*(int*)((char*)actor + 8)) & 4) {
+            if (state->unk542 == (short)state->unk540) {
+                func_800AD714(actor, state, mode);
+            }
+        }
+        if ((short)state->unk540 >= (int)(u_short)actor->unk5BC) {
+            state->unk540 -= 1;
+            (*(int*)((char*)state + 0x548)) =
+                (int)((*(int*)((char*)state + 0x548)) | 0x10000);
+        }
+        state->unk540 += 1;
+        i += 1;
+        if (i >= (int)actor->unk5B2) {
+            goto update_bones;
+        }
+        goto advance_frame;
+    }
+update_bones:
+    frame = (short)state->unk540;
+    if ((frame != 1) && !((*(int*)((char*)state + 0x548)) & 0x10000)) {
+        lastFrame = frame - 1;
+        if ((*((u_char*)state + 0x549)) == 0) {
+            if (lastFrame < frameOrOffset) {
+                frameOrOffset = 1;
+            }
+            if (frameOrOffset == 0) {
+                frameOrOffset = 1;
+            }
+            data = func_800AD494(actor, actor->animationId, &header);
+            if (data != NULL) {
+                scratch->first = (int)frameOrOffset;
+                scratch->last = lastFrame;
+                scratch->data = data;
+                rootTrack = header[4];
+                if (rootTrack != 0) {
+                    func_800AFDE8(rootTrack, &state->unk150[0x29], 0);
+                    x = state->unk150[0x29].vx;
+                    if (x < 0) {
+                        x += 3;
+                    }
+                    actor->unk0.position.vx = (u_short)actor->unk0.position.vx + (x >> 2);
+                    y = state->unk150[0x29].vy;
+                    if (y < 0) {
+                        y += 3;
+                    }
+                    actor->unk0.position.vy = (u_short)actor->unk0.position.vy + (y >> 2);
+                    z = state->unk150[0x29].vz;
+                    if (z < 0) {
+                        z += 3;
+                    }
+                    actor->unk0.position.vz = (u_short)actor->unk0.position.vz + (z >> 2);
+                }
+                func_800AFDE8(header[3], &state->unk0[0x29], 0);
+                i = 0;
+                if (actor->unk0.nBones != 0) {
+                    frameOrOffset = 0x150;
+                    boneState = state;
+                    do {
+                        func_800AFDE8(header[i + 5], boneState->unk0, 1);
+                        if (((u_char*)header)[3] & 2) {
+                            func_800AFDE8(header[i + actor->unk0.nBones + 5],
+                                (SVECTOR*)((char*)state + frameOrOffset), 0);
+                        }
+                        frameOrOffset += 8;
+                        boneState = (void*)((char*)boneState + 8);
+                    } while (++i < (int)actor->unk0.nBones);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AFDE8);
 

@@ -1613,7 +1613,79 @@ int func_800E5698(func_800E5698_t* arg0, int actionId)
     return v * v;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5710);
+typedef union {
+    unsigned int raw;
+    unsigned char bytes[4];
+} actionMetadataWord;
+typedef struct {
+    actionMetadataWord flags;
+    char pad[8];
+    unsigned int flagsC;
+    char rest[36];
+} actionMetadataAction;
+typedef struct {
+    unsigned short id, pad;
+} actionMetadataSlot;
+typedef struct {
+    char pad[0x8C0];
+    actionMetadataSlot slots[6][4];
+} actionMetadataStats;
+typedef struct {
+    unsigned int f0 : 1, f1 : 1, f2 : 1, kind : 2, longRange : 1, special : 1, f7 : 1,
+        radius : 16, high : 8;
+    unsigned int rangeSquared;
+} actionMetadataEntry;
+typedef struct {
+    char pad0[0x17];
+    unsigned char maxActionCost;
+    char pad18[0x44];
+    actionMetadataStats* stats;
+    char pad60[0x28];
+    unsigned char id;
+    char pad89[0x1A7];
+    actionMetadataEntry entries[6][4];
+} actionMetadataState;
+void func_800E5710(actionMetadataState* state)
+{
+    int row, column, id, mask;
+    actionMetadataAction* action;
+    actionMetadataEntry* entry;
+    if (!state->id) {
+        state->maxActionCost = 1;
+        return;
+    }
+    for (row = 0; row < 6; row++)
+        for (column = 0; column < 4; column++) {
+            id = state->stats->slots[row][column].id;
+            action = (void*)&vs_main_actions[id];
+            entry = &state->entries[row][column];
+            mask = 1 << ((action->flags.raw >> 20) & 15);
+            entry->rangeSquared = func_800E5698((void*)state, id);
+            entry->radius =
+                func_800E5600((int)state, id, vs_gte_rsqrt(entry->rangeSquared));
+            entry->longRange =
+                entry->rangeSquared > 0x51000 && !(action->flagsC & 0x20000000);
+            if (mask & 0x4198)
+                entry->f1 = 1;
+            if (mask & 0x154)
+                entry->f2 = 1;
+            if (mask & 0xA)
+                entry->kind = 1;
+            else if (mask & 0x40A0)
+                entry->kind = 2;
+            else if (mask & 0x1954)
+                entry->kind = 3;
+            entry->special = ((unsigned char*)D_800F58BC)[10]
+                          && (action->flags.raw & 0xE0000) != 0x20000
+                          && (action->flags.raw & 0xE0000) != 0x60000
+                          && (mask & 0x4000) != 0;
+            if ((action->flags.raw & 0xE0000) == 0x20000) {
+                unsigned int value = action->flags.bytes[3];
+                if (state->maxActionCost < value)
+                    state->maxActionCost = value;
+            }
+        }
+}
 
 void func_800E5998(void)
 {
@@ -1731,7 +1803,7 @@ const unsigned char D_80069C08[4] = { 9, 7, 0, 0 };
 int func_800E7F8C(func_800E78F4_t*);
 void func_800E7660(actorSettingsState*);
 void func_800E5998(void);
-void func_800E5710(actorSettingsState*);
+
 void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
 {
     actorSettingsActor* actor = state->actor;
@@ -1794,7 +1866,7 @@ void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
         state->callback = D_800F1790[(actor->flags.raw >> 4) & 31];
     state->f16 = 16;
     func_800E5998();
-    func_800E5710(state);
+    func_800E5710((void*)state);
 }
 
 void func_800E5EC0(int arg0, int arg1, int arg2)

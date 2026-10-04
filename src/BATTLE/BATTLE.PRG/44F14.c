@@ -364,7 +364,244 @@ void func_800AEEC4(D_800F4538_t* arg0)
     arg0->unk17E4.unk3 -= var_a2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEF94);
+void func_800AAE9C(void*);
+void func_800AB4F0(void*);
+void func_800AB788(void*, void*, int);
+void func_800AB9A4(void*);
+void func_800AC540(int, D_800F4538_t*);
+void func_800B0908(void*, int);
+void func_800B1A68(void*, MATRIX*);
+void func_800B28A8(void*, MATRIX*, char);
+extern int D_800E9308;
+extern u_char D_800F4B18, D_800F4B19;
+
+struct frameScratch {
+    int unused;
+    int depth;
+};
+
+void func_800AEF94(MATRIX* camera)
+{
+    /* The original routine reserves 0x30 bytes of unused local storage. */
+    int unused[12];
+    actorTransformScratch* objectScratch;
+    struct frameScratch* frame;
+    D_800F4538_t** previous;
+    D_800F4538_t** previousAttached;
+    D_800F4538_t* actor;
+    D_800F4538_t* attached;
+    D_800F4538_t** entries;
+    D_800F4538_t** weaponActors;
+    D_800F45E0_t* object;
+    int packedPosition;
+    int flags;
+    int weaponActorFlags;
+    int i;
+    int step;
+    u_int modelHeight;
+    u_char attachmentId;
+    vs_battle_wepModels_t** weapons;
+    vs_battle_wepModels_t* weapon;
+
+    func_800AECA0(camera);
+    i = 0;
+    entries = D_800F4538;
+    do {
+        actor = entries[i];
+        if ((actor != NULL) && (actor->unk0.nBones != 0)
+            && !((*(u_int*)((char*)actor + 8)) & 1) && (actor->unk0.unk13 != 0xFC)) {
+            func_800AAE9C(actor);
+            if (actor->unk0.unk64.unk0 != 0) {
+                func_800AB788(actor, NULL, 0);
+            }
+            if ((*(u_int*)((char*)actor + 8)) & 0xF00) {
+                func_800AB9A4(actor);
+            }
+            flags = (*(u_int*)((char*)actor + 8));
+            (*(u_int*)((char*)actor + 8)) = (int)(flags & 0x7FFFFFFF);
+            if (flags & 4) {
+                if ((actor->unk17E4.unk0 == 1) && actor->unk17E4.unk3 != 0) {
+                    int delta;
+                    step = vs_gametime_tickspeed / 2;
+                    if (actor->unk17E4.unk3 < step)
+                        step = actor->unk17E4.unk3;
+                    delta = actor->unk17E8.unk2 - actor->unk17E4.unk2;
+                    if (delta != 0) {
+                        delta *= step;
+                        delta /= actor->unk17E4.unk3;
+                        actor->unk17E4.unk2 = actor->unk17E4.unk2 + delta;
+                    }
+                    delta = actor->unk17E8.unk1 - actor->unk17E4.unk1;
+                    if (delta != 0) {
+                        delta *= step;
+                        delta /= actor->unk17E4.unk3;
+                        actor->unk17E4.unk1 = actor->unk17E4.unk1 + delta;
+                    }
+                    actor->unk17E4.unk3 -= step;
+                }
+                step = 0;
+                if (i > 0) {
+                    int texture = actor->unk6E6;
+                    previous = entries;
+                    do {
+                        ++step;
+                        if ((*previous)->unk6E6 == texture)
+                            goto texture_ready;
+                        ++previous;
+                    } while (step < i);
+                }
+                func_800AB4F0(actor);
+            texture_ready:;
+
+                if ((*(u_int*)((char*)actor + 0x5AC)) & 3) {
+                    func_800AC540(i, actor);
+                }
+                if (vs_gametime_tickspeed == 4) {
+                    actor->unk5B2 *= 2;
+                }
+                func_800AF6E8(actor);
+                actor->unk5B2 = 1;
+                actor->unk5B2 = (((u_int)(*(u_int*)((char*)actor + 0x5B0)) >> 3) & 1) + 1;
+            } else {
+                func_800AEAE8(actor);
+            }
+            if ((*(u_int*)((char*)actor + 8)) & 0x2000) {
+                func_800B28A8(
+                    actor, &entries[actor->unk0.unk12]->bones[actor->unk0.unk13], 0U);
+            } else {
+                func_800B28A8(actor, camera, 0U);
+                attachmentId = actor->unk17FD;
+                if (attachmentId != 0) {
+                    if (attachmentId >= 2U) {
+                        attached = entries[actor->unk17FD];
+                        func_800AAE9C(attached);
+                        if (attached->unk0.unk64.unk0 != 0) {
+                            func_800AB788(attached, NULL, 0);
+                        }
+                        if ((*(u_int*)((char*)attached + 8)) & 0xF00) {
+                            func_800AB9A4(attached);
+                        }
+                        if ((*(u_int*)((char*)actor + 8)) & 4) {
+                            if ((attached->unk17E4.unk0 == 1)
+                                && attached->unk17E4.unk3 != 0) {
+                                int delta;
+                                step = vs_gametime_tickspeed / 2;
+                                if (attached->unk17E4.unk3 < step)
+                                    step = attached->unk17E4.unk3;
+                                delta = attached->unk17E8.unk2 - attached->unk17E4.unk2;
+                                if (delta != 0) {
+                                    delta *= step;
+                                    delta /= attached->unk17E4.unk3;
+                                    attached->unk17E4.unk2 =
+                                        attached->unk17E4.unk2 + delta;
+                                }
+                                delta = attached->unk17E8.unk1 - attached->unk17E4.unk1;
+                                if (delta != 0) {
+                                    delta *= step;
+                                    delta /= attached->unk17E4.unk3;
+                                    attached->unk17E4.unk1 =
+                                        attached->unk17E4.unk1 + delta;
+                                }
+                                attached->unk17E4.unk3 -= step;
+                            }
+                            step = 0;
+                            if (i > 0) {
+                                int texture = attached->unk6E6;
+                                previousAttached = entries;
+                                do {
+                                    ++step;
+                                    if ((*previousAttached)->unk6E6 == texture)
+                                        goto linked_texture_ready;
+                                    ++previousAttached;
+                                } while (step < i);
+                            }
+                            func_800AB4F0(attached);
+                        linked_texture_ready:;
+                        }
+                    }
+                    frame = (void*)0x1F800000;
+                    frame->depth += actor->unk6F4.unk3 * 4;
+                    actor->unk0.position.vx = (u_short)actor->unk0.position.vx
+                                            + (signed char)(u_char)actor->unk6F4.unk0;
+                    actor->unk0.position.vy = (u_short)actor->unk0.position.vy
+                                            + (signed char)(u_char)actor->unk6F4.unk1;
+                    actor->unk0.position.vz = (u_short)actor->unk0.position.vz
+                                            + (signed char)(u_char)actor->unk6F4.unk2;
+                    func_800B002C(actor, (int)actor->unk17FD);
+                    func_800B28A8(actor, camera, actor->unk17FD);
+                    frame->depth -= actor->unk6F4.unk3 * 4;
+                    actor->unk0.position.vx = (u_short)actor->unk0.position.vx
+                                            - (signed char)(u_char)actor->unk6F4.unk0;
+                    actor->unk0.position.vy = (u_short)actor->unk0.position.vy
+                                            - (signed char)(u_char)actor->unk6F4.unk1;
+                    actor->unk0.position.vz = (u_short)actor->unk0.position.vz
+                                            - (signed char)(u_char)actor->unk6F4.unk2;
+                }
+            }
+            if (((u_short)actor->unk63C >= 0x80U) && ((u_char)actor->unk5CC != 0)) {
+                (*(u_int*)((char*)actor + 8)) =
+                    (int)((*(u_int*)((char*)actor + 8)) | 0x80000000);
+            }
+        }
+        i += 1;
+    } while (i < 0x11);
+    i = 0;
+    weaponActors = D_800F4538;
+    weapons = vs_battle_wepModels;
+    do {
+        weapon = *weapons;
+        if ((weapon != NULL) && ((*(u_int*)((char*)weapon + 8)) & 0x10)
+            && (weapon->unkD != 0)) {
+            actor = weaponActors[(u_char)(*(u_int*)((char*)weapon + 8)) & 0xF];
+            if (actor != NULL) {
+                weaponActorFlags = (*(u_int*)((char*)actor + 8));
+                if (weaponActorFlags & 1)
+                    goto weapon_next;
+                if (!(weaponActorFlags & 2))
+                    goto weapon_next;
+                if (weaponActorFlags & 0x1000)
+                    goto weapon_next;
+                func_800B217C(weapon, &actor->bones[weapon->unkD]);
+            }
+        }
+    weapon_next:;
+        i += 1;
+        weapons++;
+    } while (i < 0x14);
+    objectScratch = (void*)0x1F80035C;
+    frame = (void*)0x1F800000;
+    i = 0;
+    entries = (void*)D_800F45E0;
+    frame->depth = (int)(frame->depth + 0x10);
+    do {
+        object = (void*)*entries;
+        if ((object != NULL) && ((u_char)object->unk0 != 0)) {
+            if (((i == D_800F4B19) && (D_800F4B18 == 0)) || (object->unk1A == 0xF7)) {
+                func_800B0908((D_800F4538_t*)object,
+                    (int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F))
+                        >> 1);
+            }
+            packedPosition = *(int*)&object->unk1C;
+            objectScratch->offset.vz = (u_short)object->unk20;
+            modelHeight = (*(int*)((char*)object->unk68 + 0x50));
+            *(int*)&objectScratch->offset = packedPosition;
+            objectScratch->offset.vy =
+                (u_short)(objectScratch->offset.vy + ((int)modelHeight / 2));
+            if (object->unk64.unk0 != 0) {
+                func_800AB788(NULL, (D_800F4538_t*)object, 0);
+            }
+            if ((*(u_int*)((char*)object + 8)) & 0xF00) {
+                func_800AB9A4((D_800F4538_t*)object);
+            }
+            func_800B1A68((D_800F4538_t*)object, camera);
+        }
+        i += 1;
+        entries++;
+    } while (i < 0x10);
+    D_800F4B18 = 0;
+    frame->depth = (int)(frame->depth - 0x10);
+    D_800E9308 += 1;
+}
 
 void func_800AF6E8(D_800F4538_t* arg0)
 {
@@ -505,7 +742,119 @@ void func_800B07DC(D_800F4538_t* actor)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B0908);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B101C);
+typedef struct {
+    char prefix[8];
+    u_int flags;
+    char paddingC[3];
+    u_char objectId;
+    char padding10[0xA];
+    short mode;
+    short x, y, z, padding22;
+    short rotationX, rotationY, rotationZ, padding2A;
+    short scaleX, scaleY, scaleZ, padding32, padding34;
+    short deltaY, padding38, orientation;
+    char padding3C[0xF0];
+    char savedState[32];
+    char state[32];
+    char padding16C[2];
+    u_char material, padding16F, frame;
+} objectMotionContext;
+extern u_char D_800E91AC[], D_800E91BC[], D_800E91CC[], D_800E91DC[];
+extern u_char D_800E91EC[], D_800E91F0[], D_800E91FC[], D_800E9208[];
+extern u_char D_800E9218[], D_800E9228[], D_800E9238[], D_800E9248[];
+extern u_char D_800E9258[], D_800E9268[];
+int func_800A0104(int, int);
+
+int func_800B101C(objectMotionContext* object)
+{
+    int frame = object->frame;
+    int value;
+    int value2;
+    if (frame == 0)
+        frame = 1;
+    value = object->mode;
+    if (value == 0xFD) {
+        object->y += (signed char)D_800E91AC[frame];
+        object->rotationX += (signed char)D_800E91BC[frame];
+        object->rotationY += (signed char)D_800E91CC[frame];
+        object->rotationZ += (signed char)D_800E91DC[frame];
+        if (frame == 14)
+            goto complete;
+        goto next;
+    } else if (value == 0xFB) {
+        value = object->orientation;
+        object->z += (signed char)D_800E91F0[frame];
+        value2 = (signed char)D_800E91FC[frame];
+        if (value == 0 || value == 3)
+            value2 = -value2;
+        if (value & 1)
+            object->rotationZ += value2;
+        else
+            object->rotationX += value2;
+        if (frame == 9)
+            goto complete;
+        goto next;
+    } else if (value == 0xFA) {
+        object->y += (signed char)D_800E91EC[frame];
+        object->deltaY = (signed char)D_800E91EC[frame];
+        if (frame == 3)
+            goto complete;
+        goto next;
+    } else if (value == 0xF9) {
+        int orientation;
+        object->y += (signed char)D_800E9208[frame];
+        value = (signed char)D_800E9218[frame];
+        orientation = object->orientation;
+        value2 = D_800E9228[frame];
+        if (orientation >= 2)
+            value = -value;
+        if ((u_int)(orientation - 1) < 2)
+            value2 = -value2;
+        if (orientation & 1) {
+            object->x += value;
+            object->rotationZ += value2;
+        } else {
+            object->z += value;
+            object->rotationX += value2;
+        }
+        if (frame == 14) {
+            func_800A0104(object->objectId, object->material);
+            object->mode = 0;
+            goto done;
+        }
+        goto next;
+    } else if (value == 0xF8) {
+        if (frame >= 9) {
+            object->y += 3;
+            if (frame == 9) {
+                vs_main_memcpy(object->state, object->savedState, 32);
+                object->flags = (object->flags & ~0xF00) | 0xC00;
+            }
+            if (frame == 40) {
+                func_80099D6C(object->objectId);
+                object->mode = 0;
+                goto done;
+            }
+        }
+        goto next;
+    } else if (value == 0xF7) {
+        object->y += (signed char)D_800E9238[frame];
+        object->scaleX = (signed char)D_800E9248[frame];
+        object->scaleY = (signed char)D_800E9258[frame];
+        object->scaleZ = (signed char)D_800E9268[frame];
+        if (frame == 14)
+            goto complete;
+        goto next;
+    } else
+        goto next;
+next:
+    object->frame = frame + 1;
+    return 1;
+complete:
+    object->mode = 0;
+done:
+    return 0;
+}
 
 int func_800B13CC(int arg0, int arg1, int arg2)
 {

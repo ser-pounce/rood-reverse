@@ -99,7 +99,8 @@ typedef struct {
 
 typedef struct {
     u_char maxX, maxZ, minX, minZ;
-    char unk4[0x14];
+    char unk4[0x10];
+    int unk14;
     u_short unk18;
     char unk1A[2];
     void* unk1C;
@@ -242,7 +243,8 @@ int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(int);
 void func_800DEEFC(func_800E0850_t*, int);
-int func_800E0678(func_800E0850_t*, int);
+struct directionalCacheState;
+int func_800E0678(struct directionalCacheState*, int);
 int func_800E0918(func_800E0850_t*, int, int);
 typedef struct movementRecoveryState movementRecoveryState;
 void func_800E2CCC(movementRecoveryState*);
@@ -1474,7 +1476,57 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFBCC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E02B4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0678);
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned char x, y, z, w;
+    } p;
+} directionalCachePoint;
+typedef struct directionalCacheState {
+    char pad[0x34];
+    directionalCachePoint tile, previous;
+    char pad3C[0x82];
+    short minimumHeight;
+} directionalCacheState;
+int func_800E02B4(directionalCacheState*, int, int);
+int func_800E42EC(int, int);
+typedef struct {
+    unsigned char tested, valid;
+} directionalCacheBits;
+#define MOVEMENT_CHECK_CACHE ((directionalCacheBits*)0x1F8003D0)
+#define MOVEMENT_CHECK_DIRECTIONS ((D_800F16EC_t*)0x1F8003EC)
+#define MOVEMENT_CHECK_TILES (*(unsigned short(**)[32])0x1F8003C0)
+int func_800E0678(directionalCacheState* state, int direction)
+{
+    int x, z;
+    if ((MOVEMENT_CHECK_CACHE->tested >> direction) & 1)
+        return (MOVEMENT_CHECK_CACHE->valid & (1 << direction)) > 0;
+    if (func_800E02B4(state, direction, 1))
+        goto invalid;
+    x = state->tile.p.x + MOVEMENT_CHECK_DIRECTIONS[direction].dx;
+    z = state->tile.p.z + MOVEMENT_CHECK_DIRECTIONS[direction].dz;
+    if (x > D_800F58BC->maxX || x < D_800F58BC->minX || z > D_800F58BC->maxZ
+        || z < D_800F58BC->minZ)
+        goto invalid;
+    if (MOVEMENT_CHECK_TILES[z][x] & 0x40)
+        goto invalid;
+    if (state->previous.p.x == x && state->previous.p.z == z)
+        goto invalid;
+    if (D_800F58BC->unk14
+        && func_800E42EC(x, z) + state->minimumHeight < D_800F58BC->unk14)
+        return 0;
+    MOVEMENT_CHECK_CACHE->tested |= 1 << direction;
+    MOVEMENT_CHECK_CACHE->valid |= 1 << direction;
+    return 1;
+invalid:
+    MOVEMENT_CHECK_CACHE->tested |= 1 << direction;
+    MOVEMENT_CHECK_CACHE->valid &= ~(1 << direction);
+    return 0;
+}
+
+#undef MOVEMENT_CHECK_CACHE
+#undef MOVEMENT_CHECK_DIRECTIONS
+#undef MOVEMENT_CHECK_TILES
 
 int func_800E0850(func_800E0850_t* arg0, u_int arg1)
 {
@@ -1486,7 +1538,7 @@ int func_800E0850(func_800E0850_t* arg0, u_int arg1)
     }
     arg1 = (arg1 >> 9) & 6;
     while (--count != -1) {
-        if (func_800E0678(arg0, arg1) != 0) {
+        if (func_800E0678((void*)arg0, arg1) != 0) {
             int h = func_800E42EC(arg0->unk34 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx,
                 arg0->unk36 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
             if (h < min) {

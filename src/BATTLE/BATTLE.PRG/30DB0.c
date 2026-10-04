@@ -2168,7 +2168,109 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
 }
 
 // https://decomp.me/scratch/kQp6H
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009EFEC);
+extern char D_800F49E4;
+
+void func_8009EFEC(int actorId, SVECTOR* target, int mode)
+{
+    int animation;
+    D_800F4538_t* fallbackActor;
+    D_800F4538_t* actor;
+    int facingDelta;
+    int angle;
+    int dz;
+    int dx;
+    int pitch;
+    int reactionAnimation;
+    int value;
+    int verticalAngle;
+
+    actor = D_800F4538[actorId];
+    if (mode == 0) {
+        if (target != NULL) {
+            dx = target->vx - actor->unk0.position.vx;
+            dz = target->vz - actor->unk0.position.vz;
+            if ((dx == 0) && (dz == 0)) {
+                angle = actor->unk0.facing;
+            } else {
+                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
+            }
+            angle = angle - actor->unk0.facing;
+            if (angle > 0x800) {
+                angle -= 0x1000;
+            } else if (angle < -0x800) {
+                angle += 0x1000;
+            }
+            facingDelta = angle;
+        } else {
+            facingDelta = 0;
+        }
+        actor->unk0.unk3E = facingDelta;
+        actor->unk0.unk18 = 0xA;
+        if ((u_short)actor->unk63C >= 0x80U) {
+            actor->unk0.unk18 = 0x14;
+        }
+        func_800AD494(actor, 0xBFU, &animation);
+        value = 0xBF;
+        if (animation == NULL) {
+            value = 0xC1;
+        }
+        func_800A0204(actorId, value, 0, 8);
+        func_8009FD38(actor);
+        return;
+    } else if (mode == 1) {
+        func_800AD494(actor, 0xFFU, &animation);
+        if (animation == NULL) {
+            fallbackActor = D_800F4538[actorId];
+            if (fallbackActor != NULL) {
+                fallbackActor->unk0.unk3E = func_8009E180(fallbackActor, target);
+                fallbackActor->unk0.unk18 = 0xA;
+                if ((u_short)fallbackActor->unk63C >= 0x81U) {
+                    fallbackActor->unk0.unk18 = 0x14;
+                }
+                pitch = func_8009E228(fallbackActor, target);
+                reactionAnimation = 0x48;
+                if (pitch >= -0xE4) {
+                    reactionAnimation = 0x49;
+                    if (pitch >= 0xAC) {
+                        reactionAnimation = 0x4A;
+                    }
+                }
+                func_800A0204(actorId, reactionAnimation, 0, 6);
+                func_8009FD38(fallbackActor);
+                return;
+            }
+        } else {
+            SVECTOR origin;
+            verticalAngle = 0;
+            if (target != NULL) {
+                value = target->vx - actor->unk0.position.vx;
+                value = value * value;
+                verticalAngle = target->vz - actor->unk0.position.vz;
+                if (value < 0) {
+                    value = -value;
+                }
+                verticalAngle = verticalAngle * verticalAngle;
+                if (verticalAngle < 0) {
+                    verticalAngle = -verticalAngle;
+                }
+                value = vs_gte_rsqrt(value + verticalAngle);
+                func_800A1AF8(actor->unk0.unkF, 0, &origin, 0);
+                verticalAngle = ratan2(target->vy - origin.vy, value);
+            }
+            if (verticalAngle < -0xE4) {
+                D_800F49E4 = 0;
+            } else {
+                if (verticalAngle >= 0xAC) {
+                    D_800F49E4 = 2;
+                } else {
+                    D_800F49E4 = 1;
+                }
+            }
+            func_800A0204(actorId, 0xFF, 0, 8);
+            return;
+        }
+    }
+}
 
 void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
 {

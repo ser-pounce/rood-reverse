@@ -355,7 +355,12 @@ typedef struct func_800D2904_t {
     VECTOR unk18;
     u_char unk28[0x14];
     int unk3C[8];
-    char unk5C[0x1B];
+    char unk5C[0xC];
+    short lifetime;
+    char unk6A[2];
+    u_char endEvent;
+    u_char tickEvent;
+    char unk6E[9];
     u_char unk77;
 } func_800D2904_t;
 

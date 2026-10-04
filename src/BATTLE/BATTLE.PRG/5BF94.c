@@ -294,7 +294,14 @@ void func_800D5738(func_800D5780_t*);
 int func_800D5780(func_800D5780_t*);
 int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
-int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
+typedef struct {
+    u_char* data;
+    char prefix[8];
+    short delay;
+    short index;
+} timedSpawnState;
+
+int func_800D5A98(D_800F53B8_t*, timedSpawnState*, int);
 int func_800D5D74(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5E00(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5F8C(D_800F53B8_t*, func_800D5780_t*);
@@ -442,11 +449,110 @@ void func_800C518C(int arg0, void* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C51B4);
+void func_800C51B4(int mode)
+{
+    func_800C5798_t* entries = D_800EB9B8->unk40;
+    int i, group;
+    if (D_800EB9B8->unk0[0x31]) {
+        if (mode != 3) {
+            for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
+                group = entries[i].unk9[0];
+                if (!(group >> 4)) {
+                    void* data;
+                    if (mode == 1) {
+                        func_800C513C(group, (signed char)entries[i].unk9[1]);
+                        data = NULL;
+                    } else {
+                        func_800C5164(group, 0, (signed char)entries[i].unk9[1]);
+                        data = &D_800EB9B8->unk0[0x34];
+                    }
+                    func_800C518C(group, data);
+                }
+            }
+        }
+    } else {
+        i = D_800EB9B8->unk0[0x2D];
+        if (i != 255) {
+            if (mode & 1) {
+                group = D_800EB9B8->unk0[0x2F];
+                if (!(group >> 4)) {
+                    func_800C513C(group, (signed char)D_800EB9B8->unk0[0x30]);
+                    func_800C518C(group, NULL);
+                }
+            }
+            if (mode & 2) {
+                D_800EB9B8->unk0[0x2F] = entries[i].unk9[0];
+                D_800EB9B8->unk0[0x30] = entries[i].unk9[1];
+                group = D_800EB9B8->unk0[0x2F];
+                if (!(group >> 4)) {
+                    func_800C5164(group, 0, (signed char)D_800EB9B8->unk0[0x30]);
+                    func_800C518C(group, &D_800EB9B8->unk0[0x34]);
+                }
+            }
+        }
+    }
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5360);
+extern u_char D_800F4C90[8], D_800F4C98[8], D_800F4CA0[8], D_800F4CA8[8];
+extern u_char D_800F4CB2, D_800F4CB3;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C553C);
+void func_800C5360(int group)
+{
+    int first = 0;
+    int i;
+    if (D_800F4CB1 > D_800F4CB0) {
+        for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
+            if (D_800EB9B8->unk40[i].unk9[0] == group) {
+                if (!first)
+                    first = i + 1;
+                D_800F4C70[1][D_800F4CB0++] = i;
+            }
+        }
+        D_800F4CA0[D_800F4CB2] = first - 1;
+        D_800F4C90[D_800F4CB2++] = group;
+    } else {
+        for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
+            if (D_800EB9B8->unk40[i].unk9[0] == group) {
+                if (!first)
+                    first = i + 1;
+                D_800F4C70[0][D_800F4CB1++] = i;
+            }
+        }
+        D_800F4CA8[D_800F4CB3] = first - 1;
+        D_800F4C98[D_800F4CB3++] = group;
+    }
+}
+
+extern u_char D_800F4CB4;
+
+void func_800C553C(void)
+{
+    int size, group, i, count;
+    D_800F4CB0 = 0;
+    D_800F4CB1 = 0;
+    D_800F4CB2 = 0;
+    D_800F4CB3 = 0;
+    for (size = 6; size > 0; --size) {
+        for (group = 0; group < 16; ++group) {
+            count = 0;
+            for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
+                if (D_800EB9B8->unk40[i].unk9[0] == group)
+                    ++count;
+            }
+            if (count == size)
+                func_800C5360(group);
+        }
+    }
+    for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
+        group = D_800EB9B8->unk40[i].unk9[0];
+        if (group >> 4)
+            func_800C5360(group);
+    }
+    i = D_800F4CB1;
+    if (i < D_800F4CB0)
+        i = D_800F4CB0;
+    D_800F4CB4 = ((16 - i) * 11) >> 1;
+}
 
 void func_800C56C0(void)
 {
@@ -4879,8 +4985,41 @@ int func_800D4BD0(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4C18(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4C18);
+void func_800D52A4(func_800D2904_t*);
+void func_800D6E24(void);
+
+int func_800D4C18(D_800F53B8_t* arg0)
+{
+    func_800D2904_t* next = arg0->unk18;
+    func_800D2904_t* node;
+
+    func_800D52A4(next);
+    /* The original caller supplies arguments to this argument-free wrapper. */
+    ((void (*)())func_800D6E24)(arg0->unk18, (void*)0x1F80015C);
+    node = next;
+    while (next != NULL) {
+        next = node->next;
+        ++node->unk77;
+        if (node->tickEvent != 0) {
+            func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
+        }
+        if (node->lifetime == -1) {
+            if (((u_char*)node)[0x42] == 0) {
+                if (node->endEvent != 0) {
+                    func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
+                }
+                func_800D2888(node, arg0);
+            }
+        } else if (--node->lifetime == 0) {
+            if (node->endEvent != 0) {
+                func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
+            }
+            func_800D2888(node, arg0);
+        }
+        node = next;
+    }
+    return 1;
+}
 
 int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
 {
@@ -5021,7 +5160,65 @@ void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D52A4);
+typedef struct {
+    short mass;
+    short gravityScale;
+    int x, y, z;
+    int vx, vy, vz;
+    int fx, fy, fz;
+    int ax, ay, az;
+} effectMotionState;
+
+typedef struct {
+    char prefix[0x62];
+    short targetX, targetY, targetZ;
+    char padding[8];
+    int attraction;
+} effectAttractionView;
+
+void func_800D52A4(func_800D2904_t* node)
+{
+    VECTOR direction;
+    effectMotionState* state;
+    int damping;
+    int drag = D_800F5618;
+    int gravityX = D_800F5620.unk0;
+    int gravityY = D_800F5620.unk4;
+    int gravityZ = D_800F5620.unk8;
+
+    for (; node != NULL; node = node->next) {
+        state = (effectMotionState*)node->unk8;
+        damping = *(short*)node->unk8 - drag;
+        state->vx = (state->vx * damping + (state->fx << 12)) / *(short*)node->unk8
+                  + ((gravityX * state->gravityScale) >> 12);
+        state->x += state->vx;
+        state->vy = (state->vy * damping + (state->fy << 12)) / *(short*)node->unk8
+                  + ((gravityY * state->gravityScale) >> 12);
+        state->y += state->vy;
+        state->vz = (state->vz * damping + (state->fz << 12)) / *(short*)node->unk8
+                  + ((gravityZ * state->gravityScale) >> 12);
+        state->z += state->vz;
+        damping = ((effectAttractionView*)node)->attraction;
+        if (damping != 0) {
+            direction.vx = ((effectAttractionView*)node)->targetX - (state->x >> 12);
+            direction.vy = ((effectAttractionView*)node)->targetY - (state->y >> 12);
+            direction.vz = ((effectAttractionView*)node)->targetZ - (state->z >> 12);
+            if (direction.vx != 0 || direction.vy != 0 || direction.vz != 0) {
+                VectorNormal(&direction, &direction);
+                direction.vx = (direction.vx * damping) >> 12;
+                direction.vy = (direction.vy * damping) >> 12;
+                direction.vz = (direction.vz * damping) >> 12;
+            }
+            state->fx += state->ax + direction.vx;
+            state->fy += state->ay + direction.vy;
+            state->fz += state->az + direction.vz;
+        } else {
+            state->fx += state->ax;
+            state->fy += state->ay;
+            state->fz += state->az;
+        }
+    }
+}
 
 void* _getPFileBlock3section(pFileBlock3* arg0, int arg1)
 {
@@ -5123,9 +5320,93 @@ int func_800D57FC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5904);
+void func_80046578(int);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
+int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    SVECTOR position;
+    u_int* commands = (u_int*)arg1->unk0;
+    u_int command = commands[arg1->unk6];
+    if ((command & 0x1FF) == arg0->unkD1C.unk30->unk2) {
+        int kind = (command >> 18) & 3;
+        if (kind == 2) {
+            if (D_800F569C->unkCC != 0)
+                func_80046578(D_800F569C->unkCC);
+        } else {
+            int bank = kind == 0 ? 0x7E : 0xF00000;
+            if (((command >> 20) & 3) == 0) {
+                vs_main_playSfxDefault(bank, (command >> 9) & 0x1FF);
+            } else {
+                position.vx = arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[0];
+                position.vy = arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[1];
+                position.vz = arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[2];
+                vs_main_panSfx(bank, (commands[arg1->unk6] >> 9) & 0x1FF, &position);
+            }
+        }
+        return func_800D5780(arg1);
+    }
+    return 1;
+}
+
+int func_800D5A98(D_800F53B8_t* arg0, timedSpawnState* arg1, int arg2)
+{
+    D_800F53B8_t2 spawn;
+    D_800F53B8_t* child;
+    struct {
+        u_char actors[6];
+        u_char final, frame, delay;
+    }* event = (void*)arg1->data;
+    int result = 1;
+
+    if (event->frame <= arg0->unkD1C.unk30->unk2) {
+        if (arg1->index < ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+            if (arg1->delay == 0) {
+                do {
+                    spawn.unk14 = D_800F569C->block8Data;
+                    spawn.unk18 = arg2;
+                    spawn.unk10 = 0;
+                    spawn.unk0 = D_800F569C->unkD0 + 4;
+                    spawn.unk4 = D_800F569C->unkD0 + 4;
+                    spawn.unk8 = D_800F569C->unkD0 + (arg1->index * 12 + 16);
+                    spawn.unkC = D_800F569C->unkD0 + (arg1->index * 12 + 16);
+                    spawn.unk1C = arg0;
+                    spawn.unk20 = arg0->unk14_0;
+                    child = func_800CE83C(&spawn);
+                    ++arg0->unk14_11;
+                    if (spawn.unk8->unk0.unk0 == 4) {
+                        child->unk10[1] = event->actors[((u_char*)spawn.unk8)[5]];
+                    } else {
+                        child->unk10[1] = event->actors[0];
+                    }
+                    if (++arg1->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2)
+                        break;
+                    arg1->delay += event->delay;
+                } while (arg1->delay == 0);
+            }
+            if (arg1->delay != 0)
+                --arg1->delay;
+        } else if (arg1->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+            if ((*(u_int*)((char*)arg0 + 0x14) & 0xF800) == 0) {
+                spawn.unk14 = D_800F569C->block8Data;
+                spawn.unk18 = arg2;
+                spawn.unk10 = 0;
+                spawn.unk0 = D_800F569C->unkD0 + 4;
+                spawn.unk4 = D_800F569C->unkD0 + 4;
+                spawn.unk8 = D_800F569C->unkD0 + 16;
+                spawn.unkC = D_800F569C->unkD0 + 16;
+                spawn.unk1C = arg0;
+                spawn.unk20 = arg0->unk14_0;
+                child = func_800CE83C(&spawn);
+                ++arg0->unk14_11;
+                child->unk10[1] = event->final;
+                ++arg1->index;
+            }
+        } else {
+            result = 0;
+        }
+    }
+    return result;
+}
 
 int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
@@ -5156,7 +5437,41 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6048);
+typedef struct {
+    short frame, duration;
+    u_char x, y, z, mode;
+} timedActorEvent;
+
+typedef struct {
+    char prefix[16];
+    u_short type;
+    u_short pad12;
+    u_char actor;
+} timedActorTargetView;
+
+int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int allTargets)
+{
+    timedActorEvent* event = &((timedActorEvent*)arg1->unk0)[arg1->unk6];
+    if (event->frame == arg0->unkD1C.unk30->unk2) {
+        if (allTargets) {
+            int i;
+            for (i = 0; i < D_800F5230.unk2; ++i) {
+                timedActorTargetView* target = (void*)((char*)&D_800F5230 + i * 12);
+                if (target->type == 4 && (func_800A0BE0(target->actor) & 2)) {
+                    func_8007B29C(event->mode, event->duration, target->actor,
+                        event->x - 128, event->y - 128, event->z - 128);
+                }
+            }
+        } else if (arg0->unkD1C.unk24.unk0 == 4
+                   && (func_800A0BE0((u_char)arg0->unkD1C.unk24.unk4.unk0) & 2)) {
+            func_8007B29C(event->mode, event->duration,
+                (u_char)arg0->unkD1C.unk24.unk4.unk0, event->x - 128, event->y - 128,
+                event->z - 128);
+        }
+        return func_800D5780(arg1);
+    }
+    return 1;
+}
 
 int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
@@ -5445,7 +5760,7 @@ void func_800D6AEC(D_800F53B8_t* arg0, int arg1)
                 temp = func_800D5904(arg0, temp_a1);
                 break;
             case 3:
-                temp = func_800D5A98(arg0, temp_a1, arg1);
+                temp = func_800D5A98(arg0, (void*)temp_a1, arg1);
                 break;
             case 4:
                 temp = func_800D5D74(arg0, temp_a1);

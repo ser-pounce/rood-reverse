@@ -1840,7 +1840,115 @@ u_char func_800E1850(u_char arg0, u_int arg1, int arg2)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1908);
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned char x, y, z, w;
+    } p;
+} terrainMovementPoint;
+typedef struct terrainMovementActor {
+    char pad0[9];
+    unsigned char mode;
+    char padA[2];
+    unsigned short angle;
+} terrainMovementActor;
+typedef struct terrainMovementState {
+    char pad0[2];
+    unsigned char f2;
+    char pad3[1];
+    unsigned char f4;
+    unsigned char f5;
+    char pad6[20];
+    unsigned char f1A;
+    char pad1B[14];
+    unsigned char f29;
+    char pad2A[10];
+    terrainMovementPoint tile;
+    char pad38[20];
+    short position[3];
+    char pad52[2];
+    terrainMovementActor* actor;
+    char pad58[272];
+    terrainMovementPoint destination;
+    char pad16C[16];
+    int targetX;
+    int targetZ;
+    char pad184[4];
+    short angle;
+} terrainMovementState;
+#define TERRAIN_TILE_MASK (*(unsigned char**)0x1F8003C4)
+#define TERRAIN_MAP_WIDTH (*(unsigned char*)0x1F8003DC)
+#define TERRAIN_MOVE_RESULT (*(int*)0x1F8003C8)
+#define TERRAIN_TILES (*(unsigned short(**)[32])0x1F8003C0)
+int func_800DFBCC(terrainMovementState*, int, int);
+void func_800E4BB8(terrainMovementState*);
+void func_800E4B70(terrainMovementState*, int);
+void func_800E1908(terrainMovementState* state)
+{
+    unsigned char* tile =
+        &TERRAIN_TILE_MASK[state->tile.p.z * TERRAIN_MAP_WIDTH + state->tile.p.x];
+    int old = *tile;
+    terrainMovementActor* actor = state->actor;
+    int mode;
+    *tile = func_800E1850(old, state->tile.raw, state->position[1]);
+    func_800E3600((void*)state,
+        ratan2(state->position[0] - state->targetX, state->position[2] - state->targetZ)
+            & 0xFFF,
+        0);
+    *tile = old;
+    mode = TERRAIN_MOVE_RESULT;
+    if ((0xA0 >> mode) & 1) {
+        actor->mode = 9;
+        if (mode == 5)
+            actor->angle = state->angle << 9;
+        else
+            actor->angle = state->angle;
+    }
+}
+void func_800E19FC(terrainMovementState* state)
+{
+    int current, next, mode;
+    int active = 1;
+    state->f4 = 0;
+    state->f5 = active;
+    if (state->f1A) {
+        func_800E1908(state);
+        return;
+    }
+    current = TERRAIN_TILES[state->tile.p.z][state->tile.p.x] & 15;
+    next = TERRAIN_TILES[state->destination.p.z][state->destination.p.x] & 15;
+    if (current != next) {
+        if (state->f29) {
+            mode = func_800DFBCC(state, current, next);
+            if (mode == 6) {
+                state->targetX = (state->destination.p.x << 7) + 64;
+                state->targetZ = (state->destination.p.z << 7) + 64;
+                if ((TERRAIN_TILES[state->destination.p.z][state->destination.p.x] & 15)
+                    == (TERRAIN_TILES[state->tile.p.z][state->tile.p.x] & 15))
+                    goto move;
+            } else {
+                func_800E4BB8(state);
+                if (mode == 5)
+                    func_800E4B70(state, state->angle << 9);
+                else
+                    func_800DEEFC((void*)state, mode);
+                return;
+            }
+        }
+        state->f2 = active;
+        *(unsigned char*)0x1F8003D0 = 0;
+    }
+move:
+    func_800E3600((void*)state,
+        ratan2(state->position[0] - state->targetX, state->position[2] - state->targetZ)
+            & 0xFFF,
+        0);
+}
+
+#undef TERRAIN_TILE_MASK
+#undef TERRAIN_MAP_WIDTH
+#undef TERRAIN_MOVE_RESULT
+#undef TERRAIN_TILES
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1BB8);
 

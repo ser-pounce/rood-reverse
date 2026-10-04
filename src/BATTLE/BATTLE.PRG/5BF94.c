@@ -169,6 +169,11 @@ typedef struct {
 } func_800D6310_t;
 
 typedef struct {
+    char unk0[0x10];
+    D_800F53B8_t3_2 unk10[16];
+} func_800D6048_t;
+
+typedef struct {
     u_int unk0_0 : 9;
     u_int unk0_9 : 9;
     u_int effectRenderer : 3;
@@ -4657,7 +4662,31 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6048);
+int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
+{
+    int i;
+    func_800D6310_t* entry = (func_800D6310_t*)arg1->unk0 + arg1->unk6;
+
+    if (entry->unk0 != arg0->unkD1C.unk30->unk2) {
+        return 1;
+    }
+
+    if (arg2 != 0) {
+        func_800D6048_t* effect = (func_800D6048_t*)&D_800F5230;
+        for (i = 0; i < D_800F5230.unk2; ++i) {
+            if ((effect->unk10[i].unk0 == 4)
+                && (func_800A0BE0(effect->unk10[i].unk4.unk0 & 0xFF) & 2)) {
+                func_8007B29C(entry->unk7, entry->unk2, effect->unk10[i].unk4.unk0 & 0xFF,
+                    entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+            }
+        }
+    } else if ((arg0->unkD1C.unk24.unk0 == 4)
+               && (func_800A0BE0(arg0->unkD1C.unk24.unk4.unk0 & 0xFF) & 2)) {
+        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.unk4.unk0 & 0xFF,
+            entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+    }
+    return func_800D5780(arg1);
+}
 
 int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {

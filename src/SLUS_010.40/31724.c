@@ -112,20 +112,6 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80040F8C);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041104);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041124);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041144);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041164);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041184);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_800411A4);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_800411C4);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_800411E4);
-
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", RotMatrix_gte);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/31724", func_80041238);

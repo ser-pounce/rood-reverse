@@ -240,7 +240,8 @@ void func_800DC888(int);
 void func_800DEEFC(func_800E0850_t*, int);
 int func_800E0678(func_800E0850_t*, int);
 int func_800E0918(func_800E0850_t*, int, int);
-void func_800E2CCC(func_800E0850_t*);
+typedef struct movementRecoveryState movementRecoveryState;
+void func_800E2CCC(movementRecoveryState*);
 void func_800E3600(func_800E0850_t*, int, int);
 int func_800E42EC(int, int);
 int func_800E4764(func_800E0850_t*, int*, int*);
@@ -1084,7 +1085,7 @@ void func_800E1238(func_800E0850_t* arg0, int arg1)
     }
 
     if (func_800E4764(arg0, &sp10, &sp14) == 0) {
-        func_800E2CCC(arg0);
+        func_800E2CCC((void*)arg0);
         return;
     }
 
@@ -1093,7 +1094,7 @@ void func_800E1238(func_800E0850_t* arg0, int arg1)
 
     if (*(int*)0x1F8003C8 != 5 && *(int*)0x1F8003C8 != 7) {
         func_800E678C(arg0);
-        func_800E2CCC(arg0);
+        func_800E2CCC((void*)arg0);
         return;
     }
 
@@ -1256,7 +1257,106 @@ failed:
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2CCC);
+typedef struct {
+    char pad0[8];
+    unsigned int flags;
+    char padC[8];
+    short angle14;
+    char pad16[0x10];
+    short angle26;
+} movementRecoveryContext;
+struct movementRecoveryState {
+    char pad0[9];
+    unsigned char flag9;
+    char padA[0x2A];
+    vs_battle_movementPosition position;
+    char pad38[0x14];
+    short x;
+    char pad4E[2];
+    short z;
+    char pad52[6];
+    movementRecoveryContext* context;
+    char pad5C[0xDE];
+    unsigned short timer, duration;
+    char pad13E[0x1A];
+    short targetX, targetZ;
+    unsigned char targetActor;
+    char pad15D;
+    unsigned short flags;
+    char pad160[0x28];
+    unsigned short facing188, facing18A;
+    char pad18C[0x9C];
+    int counter;
+};
+typedef struct {
+    char pad0[0x1C];
+    short x, y, z;
+} movementActorPosition;
+void func_800E4B10(void*);
+int func_800E4320(int, int);
+void func_800E2CCC(movementRecoveryState* state)
+{
+    movementRecoveryContext* context = state->context;
+    int direction, i, bestHeight, bestDirection, height;
+    unsigned int x, z;
+    unsigned int angle, quadrant;
+    int nx, nz;
+    vs_battle_movementPosition source;
+    unsigned char* bounds;
+    if ((context->flags & 0x200000) && state->counter++ > 120 && (state->flags & 6)
+        && (state->flags & 0x30)
+        && func_800D954C((void*)state, state->position.raw) > 0) {
+        func_800E678C((void*)state);
+        func_800E4B10(state);
+        return;
+    }
+    if (state->targetActor != 16) {
+        movementActorPosition* actor =
+            (movementActorPosition*)D_800F4538[state->targetActor];
+        direction = ratan2(state->x - actor->x, state->z - actor->z) & 0xFFF;
+        state->facing18A = direction;
+        state->timer = state->duration;
+        func_800DEEFC((void*)state, 4);
+    } else if (state->flag9) {
+        direction = ratan2(state->x - state->targetX, state->z - state->targetZ) & 0xFFF;
+        state->facing188 = direction;
+        state->timer = state->duration;
+        func_800DEEFC((void*)state, 3);
+    } else {
+        bestHeight = (-2147483647 - 1);
+        bestDirection = -1;
+        source = state->position;
+        x = source.raw & 255;
+        z = (source.raw >> 16) & 255;
+        angle = context->angle26 + context->angle14;
+        quadrant = (angle & 0xFFF) >> 10;
+        if ((angle & 0x3FF) > 512)
+            direction = ((quadrant + 1) & 3) * 2;
+        else
+            direction = quadrant * 2;
+        i = 0;
+        bounds = (unsigned char*)0x1F8003DC;
+        for (; i < 4; i++) {
+            direction = (direction + i * 2) & 7;
+            nx = (unsigned char)(x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx);
+            nz = (unsigned char)(z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz);
+            if (nx < bounds[0] && nz < bounds[1]) {
+                height = (func_800E4320(nx, nz) << 17) >> 17;
+                if (height > bestHeight) {
+                    bestDirection = direction;
+                    bestHeight = height;
+                }
+            }
+        }
+        if (bestDirection < 0)
+            func_800DEEFC((void*)state, 0);
+        else {
+            state->facing18A = bestDirection << 9;
+            state->timer = state->duration;
+            func_800DEEFC((void*)state, 4);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2F5C);
 

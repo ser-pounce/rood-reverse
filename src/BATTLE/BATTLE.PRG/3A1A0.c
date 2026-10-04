@@ -108,7 +108,88 @@ void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
     arg0->unk1818 = (u_short)arg0->unk0.position.vz + var_a3;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A30A0);
+inline int func_800A3310(int, SVECTOR*);
+void func_800A3394(int, SVECTOR*);
+int func_800A3500(int, int);
+func_8008D2C0_t* func_800A4A24(int);
+void func_800ACF54(D_800F4538_t*);
+
+void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode)
+{
+    D_800F4538_t* actor;
+    SVECTOR* position;
+    short z;
+    int ceiling;
+    int flags;
+    int value;
+    u_char tileType;
+    int* anchor;
+
+    actor = D_800F4538[actorId];
+    (*(int*)((char*)actor + 0x5C)) = *(int*)placement;
+    actor->unk0.position.vx = ((u_char)placement->unk0_0 << 7) + 0x40;
+    z = ((u_char)placement->unk0_16 << 7) + 0x40;
+    actor->unk0.position.vz = z;
+    actor->unk0.position.vy = func_800A3500(actor->unk0.position.vx, z);
+    if (mode == 0x10 || mode == 0x20) {
+        ceiling = func_800E75EC();
+        if (ceiling == 0) {
+            value = -0x180;
+        } else {
+            value = ceiling - actor->unk0.position.vy;
+            if (value >= -0x7F) {
+                value = -0x80;
+            }
+        }
+        position = &actor->unk0.position;
+        actor->unk0.position.vy = (u_short)actor->unk0.position.vy + value;
+        if (func_800A3310(actorId, position) != 0) {
+            func_800A3394(actorId, position);
+        }
+        (*(int*)((char*)actor + 0x8)) |= 0x200000;
+        func_800A0204(actorId, 8, 0, 0);
+    } else {
+        if (mode == 0x40 || mode == 0x80) {
+            (*(int*)((char*)actor + 0x8)) |= 0x400000;
+        }
+        tileType = (u_char)placement->unk0_8;
+        if (tileType == 7) {
+            actor->unk0.unk5D = 0;
+            actor->unk0.position.vy = (short)height;
+            actor->unk0.unk34.vy = 0;
+            (*(int*)((char*)actor + 0x8)) =
+                (int)(((*(int*)((char*)actor + 0x8)) & 0xFFF8FFFF) | 0x30000);
+        } else {
+            if (tileType >= 2U) {
+                anchor = (int*)func_800A4A24((u_char)placement->unk0_8);
+                (*(int*)((char*)actor + 0x1C)) = (int)anchor[0];
+                (*(int*)((char*)actor + 0x20)) = (int)anchor[1];
+                (*(int*)((char*)actor + 0x17EC)) = (int)anchor[0];
+                (*(int*)((char*)actor + 0x17F0)) = (int)anchor[1];
+                (*(short*)((char*)actor + 0x17F2)) = (short)(u_char)placement->unk0_8;
+                flags = ((*(int*)((char*)actor + 0xC)) & ~0xF)
+                      | ((u_char)placement->unk0_8 & 0xF);
+                (*(int*)((char*)actor + 0xC)) = flags;
+                (*(int*)((char*)actor + 0xC)) =
+                    (int)((flags & ~0xF0) | (((u_char)placement->unk0_8 & 0xF) * 0x10));
+            }
+            func_800A0204(actorId, 1, 0, 0);
+        }
+    }
+    func_800ACF54(actor);
+    actor->unk0.unk1A = 0;
+    value = *((u_char*)placement + 3);
+    actor->unk0.unk3E = 0;
+    actor->unk0.unk18 = 0;
+    (*(short*)((char*)actor + 0x18D2)) = 0;
+    (*(short*)((char*)actor + 0x18D4)) = 0;
+    (*(short*)((char*)actor + 0x18D6)) = 0;
+    (*(short*)((char*)actor + 0x18D8)) = 0;
+    value *= 0x10;
+    actor->unk0.facing = value;
+    func_800A0ABC(actorId);
+    actor->unk6E4 = 0;
+}
 
 inline int func_800A3310(int arg0, SVECTOR* arg1)
 {
@@ -543,7 +624,54 @@ void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6798);
+extern short D_800F4B0A;
+typedef struct {
+    int words[2];
+} probePosition;
+int func_800A76BC(D_800F4538_t*, int, int*, int);
+
+int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, int arg2)
+{
+    probePosition saved;
+    int height;
+    int valid = 0;
+    if (actor->unk6EC <= D_800F4B0A) {
+        return 0;
+    }
+    offset->vx = 0;
+    offset->vz = 0;
+    offset->vy += 0xEC;
+    saved = *(probePosition*)&actor->unk0.position;
+    actor->unk0.position.vx += offset->vx;
+    actor->unk0.position.vy += offset->vy;
+    actor->unk0.position.vz += offset->vz;
+    actor->unk0.unkA_3 = 2;
+    if (func_800A76BC(actor, arg2, &height, 0) != 3
+        && !(*(int*)((char*)actor + 0x5AC) & 0x2000) && height < 5) {
+        height = rsin(0x200);
+        height = height * actor->unk63C / 4096;
+        if ((D_800F49F9 >> 1) & 1) {
+            offset->vz = height;
+        } else {
+            offset->vx = height;
+        }
+        height = func_800A6EE8(&D_800F4B08, offset->vx, offset->vz, 1);
+        height -= D_800F4B08.vy;
+        if (height >= -0x3F) {
+            height = func_800A6EE8(&D_800F4B08, -offset->vx, -offset->vz, 1);
+            height -= D_800F4B08.vy;
+            if (height >= -0x3F) {
+                valid = 1;
+            }
+        }
+    }
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
+    offset->vx = 0;
+    offset->vz = 0;
+    *(probePosition*)&actor->unk0.position = saved;
+    return valid;
+}
 
 int func_800A69B4(D_800F4538_t* arg0)
 {

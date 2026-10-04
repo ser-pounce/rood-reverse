@@ -1300,7 +1300,94 @@ void func_800DEB10(func_800DEEA4_t* arg0)
     func_800E4C8C(entry);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEC88);
+typedef struct actorEvaluationStats {
+    char pad0[24];
+    short hp;
+    char pad1A[23];
+    unsigned char f31;
+    char pad32[1];
+    unsigned char f33;
+} actorEvaluationStats;
+typedef struct actorEvaluationActor {
+    struct actorEvaluationActor* next;
+    int id;
+    unsigned char flags;
+    char pad9[51];
+    actorEvaluationStats* stats;
+} actorEvaluationActor;
+typedef struct actorEvaluationState {
+    char pad0[19];
+    unsigned char f13;
+    char pad14[7];
+    unsigned char dead;
+    char pad1C[108];
+    unsigned char id;
+    char pad89[17];
+    unsigned short timer;
+    char pad9C[75];
+    unsigned char fE7;
+    unsigned char fE8;
+    char padE9[177];
+    unsigned char f19A;
+} actorEvaluationState;
+typedef struct actorEvaluationContext {
+    char pad0[4];
+    unsigned char id;
+    char pad5[63];
+    int f44;
+} actorEvaluationContext;
+extern void* D_800F58EC;
+extern void* D_800F5904;
+extern void* D_800F58F8;
+void func_800E685C(int, int, int);
+void func_800DD604(actorEvaluationState*);
+void func_800DE3E4(actorEvaluationState*);
+void func_800D821C(actorEvaluationState*);
+int func_800DEC88(void* arg0)
+{
+    actorEvaluationContext* context = arg0;
+    actorEvaluationActor* actor;
+    actorEvaluationState* state;
+    D_800F58BC->unk18 = 0;
+    D_800F5900 = vs_main_allocHeapR(0x1ECC);
+    D_800F58EC = D_800F5900 + 0x9CC;
+    D_800F5904 = D_800F5900 + 0xD8C;
+    D_800F58F8 = D_800F5900 + 0x1D8C;
+    if (D_800F5900) {
+        func_800DEB10((void*)context);
+        for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;
+            actor = actor->next) {
+            state = (actorEvaluationState*)D_800F5878[actor->id];
+            state->fE8 = 0;
+            state->fE7 = 0;
+            state->f19A = 0;
+            func_800E685C(state->id, actor->stats->f31, actor->stats->f33);
+            func_800DD604(state);
+            if (context && !context->f44 && context->id == state->id)
+                state->timer = 0;
+        }
+        func_800DC810((void*)context);
+        for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;
+            actor = actor->next) {
+            ((actorEvaluationState*)D_800F5878[actor->id])->dead = actor->stats->hp == 0;
+        }
+        for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;
+            actor = actor->next) {
+            state = (actorEvaluationState*)D_800F5878[actor->id];
+            func_800DE3E4(state);
+            if (state->f13) {
+                if (actor->flags & 32)
+                    func_800D821C(state);
+                else
+                    func_800D820C(state->id, 128);
+            }
+        }
+        D_800F58BC->unk18 = 0;
+        if (D_800F5900)
+            vs_main_freeHeapR(D_800F5900);
+    }
+    return 0;
+}
 
 void func_800DEEA4(func_800DEEA4_t* arg0)
 {

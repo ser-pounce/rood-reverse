@@ -1142,7 +1142,76 @@ void func_800AB358(int index, u_char* arg)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB4F0);
+void func_800AB4F0(void* actor)
+{
+    RECT rect;
+    u_char *bounds, *state, *part;
+    // Original code reads height before its first assignment (incoming saved S2).
+    // Preserve this defect for exact original-compiler matching.
+    int i, page, originX, originY, x, y, width, height;
+    int dx, sx, sy, limitX, limitY, destX, px, py, dy;
+    DR_MOVE* packet;
+    page = ((u_char*)actor)[0x5BB];
+    originX = *(short*)(D_800E8F30 + page * 4) << 6;
+    originY = (*(short*)(D_800E8F30 + page * 4 + 2) << 8) + (D_800E8F90[page] << 6);
+    for (i = 0; i < 4; ++i) {
+        bounds = actor + 0x61C + i * 8;
+        if (bounds[2]) {
+            state = actor + 0x181C + i * 8;
+            state[5] += vs_gametime_tickspeed / 2;
+            if (state[4] < state[5]) {
+                state[5] = 0;
+                part = actor + 0x5F4 + i * 4;
+                if (bounds[2] && bounds[2] != height) {
+                    width = part[2];
+                    px = state[0];
+                    dx = (signed char)state[2];
+                    py = state[1];
+                    dy = (signed char)state[3];
+                    sx = bounds[0];
+                    height = part[3];
+                    x = px + dx;
+                    y = py + dy;
+                    limitX = sx + bounds[2];
+                    limitY = bounds[1] + bounds[3];
+                    if (limitX < x + width || x < sx) {
+                        if (bounds[6] & 1) {
+                            x -= dx * 2;
+                            state[2] = -state[2];
+                        } else
+                            x = sx;
+                    }
+                    if (limitY < y + height || y < bounds[1]) {
+                        if (bounds[6] & 1) {
+                            y -= (signed char)state[3] * 2;
+                            state[3] = -state[3];
+                        } else
+                            y = bounds[1];
+                    }
+                    state[0] = x;
+                    state[1] = y;
+                    if (!(*(int*)(actor + 0x5AC) & 0x8000000)) {
+                        x /= 4;
+                        width /= 4;
+                        destX = part[0] >> 2;
+                    } else {
+                        x /= 2;
+                        width /= 2;
+                        destX = part[0] >> 1;
+                    }
+                    rect.x = originX + x;
+                    packet = vs_battlePacketBegin();
+                    rect.y = originY + y;
+                    rect.w = width;
+                    rect.h = height;
+                    SetDrawMove(packet, &rect, originX + destX, originY + part[1]);
+                    func_8007A824(packet);
+                    vs_battlePacketEnd(packet);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB788);
 

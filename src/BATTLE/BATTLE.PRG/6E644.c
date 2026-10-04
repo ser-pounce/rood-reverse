@@ -101,7 +101,9 @@ typedef struct {
     u_char maxX, maxZ, minX, minZ;
     char unk4[0x14];
     u_short unk18;
-    char unk1A[0xA];
+    char unk1A[2];
+    void* unk1C;
+    char unk20[4];
     int unk24;
 } D_800F58BC_t;
 
@@ -1095,7 +1097,82 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBD80);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBF00);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBFE4);
+typedef struct {
+    char pad[8];
+    unsigned int low : 26, mode : 2, high : 4;
+} actorPhaseFlags;
+typedef struct actorTimerState {
+    char pad0[0x54];
+    actorPhaseFlags* actor;
+    char pad58[0x30];
+    unsigned char id;
+    char pad89[5];
+    unsigned short timer8E;
+    char pad90[8];
+    unsigned short timer98, timer9A;
+    char pad9C[0x93];
+    signed char phase, direction;
+    char pad131[0x6F];
+    struct actorTimerState* next;
+    unsigned char targetFlags;
+} actorTimerState;
+void func_800D820C(int, int);
+void func_800DBFE4(actorTimerState* state)
+{
+    int value;
+    if (state->timer8E && ++state->timer8E) {
+        if (state->timer8E < 8)
+            value = 0;
+        else if (state->timer8E < 16)
+            value = 1;
+        else if (state->timer8E < 24)
+            value = 2;
+        else
+            value = 3;
+        if (state->timer8E <= 120) {
+            func_800D820C(state->id, value + 1);
+            return;
+        }
+        func_800E4C8C((void*)state);
+        func_800D82CC((void*)state);
+    }
+    if (state->timer9A) {
+        if (--state->timer9A)
+            func_800D820C(state->id, 4);
+        else
+            func_800D820C(state->id, 0);
+    }
+    if (state->timer98)
+        state->timer98--;
+}
+void func_800DC0D0(void)
+{
+    actorTimerState* head = (actorTimerState*)D_800F58BC->unk1C;
+    actorTimerState* state;
+    int changed = 0;
+    actorPhaseFlags* actor;
+    if (head) {
+        state = head;
+        do {
+            actor = state->actor;
+            if ((state->targetFlags >> 6) != 2) {
+                if (state->phase == 0) {
+                    state->direction = 1;
+                    actor->mode = 1;
+                    changed = 1;
+                } else if (state->phase == 16) {
+                    state->direction = -1;
+                    actor->mode = 2;
+                    changed = 1;
+                }
+                state->phase += state->direction;
+                if (changed)
+                    break;
+            }
+            state = state->next;
+        } while (state);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC19C);
 

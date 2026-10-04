@@ -415,7 +415,29 @@ void func_800C20B4(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2254);
+typedef struct {
+    short xyz[3], flags;
+} menuCircleVertex;
+int func_800C2254(int angle, int index)
+{
+    short (*basis)[3] = (void*)0x1F800398;
+    int point = 0, component;
+    int phase = angle;
+    menuCircleVertex* vertex = (void*)((char*)D_800EB9B8 + (index * 8 + 0x48));
+    int cosine, sine;
+    for (; point < 33; ++index, phase += 128, ++point, ++vertex) {
+        for (component = 0; component < 3; ++component) {
+            cosine = rcos(phase);
+            sine = rsin(phase);
+            vertex->xyz[component] = basis[0][component]
+                                   + ((basis[1][component] * cosine) >> 12)
+                                   + ((basis[2][component] * sine) >> 12);
+        }
+        component = point != 0;
+        vertex->flags = component;
+    }
+    return index;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2368);
 

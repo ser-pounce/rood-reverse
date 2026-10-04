@@ -360,7 +360,39 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A41D0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A46A4);
+void func_800A70DC(D_800F4538_t*, int);
+typedef struct {
+    char prefix[0x2C];
+    u_char contact, nextContact;
+} collisionScratchView;
+
+int func_800A46A4(D_800F4538_t* actor)
+{
+    collisionScratchView* scratch = (void*)0x1F8003BC;
+    int saved = actor->unk0.unkC_0;
+    int radius = actor->unk63C;
+    int direction;
+    collisionScratchView *hit, *previous;
+    actor->unk0.unkC_0 = 0;
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
+    func_800A70DC(actor, rsin(512) * radius / 4096);
+    actor->unk0.unkC_0 = saved;
+    actor->unk0.unkA_3 = 2;
+    direction = (u_short)actor->unk1800 >> 9;
+    hit = (void*)((char*)scratch + direction);
+    hit->contact = 0;
+    hit->nextContact = 0;
+    --direction;
+    direction &= 7;
+    previous = (void*)((char*)scratch + direction);
+    previous->contact = 0;
+    for (direction = 0; direction < 8; ++direction) {
+        if (((collisionScratchView*)((char*)scratch + direction))->contact)
+            return 1;
+    }
+    return 0;
+}
 
 int func_800A47C4(void)
 {
@@ -621,7 +653,69 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A70DC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A7524);
+typedef struct {
+    char prefix[0x2C];
+    u_char contacts[8];
+} collisionResponseScratch;
+
+void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
+{
+    collisionResponseScratch* scratch;
+    int x, z;
+    if (*(u_int*)((char*)actor + 0x5AC) & 0x1000) {
+        scratch = (void*)0x1F8003BC;
+        x = 0;
+        z = (scratch->contacts[0] != 0) * 16;
+        if (scratch->contacts[1]) {
+            x = 8;
+            z += 8;
+        }
+        if (scratch->contacts[2])
+            x += 16;
+        if (scratch->contacts[3]) {
+            x += 8;
+            z -= 8;
+        }
+        if (scratch->contacts[4])
+            z -= 16;
+        if (scratch->contacts[5]) {
+            x -= 8;
+            z -= 8;
+        }
+        if (scratch->contacts[6])
+            x -= 16;
+        if (scratch->contacts[7]) {
+            x -= 8;
+            z += 8;
+        }
+        if (x > 16)
+            x = 16;
+        if (x < -16)
+            x = -16;
+        if (z > 16)
+            z = 16;
+        if (z < -16)
+            z = -16;
+        if (x != 0) {
+            if (x < 0) {
+                if (motion->vx > 0)
+                    motion->vx = 0;
+            } else if (motion->vx < 0)
+                motion->vx = 0;
+        }
+        if (z != 0) {
+            if (z < 0) {
+                if (motion->vz > 0)
+                    motion->vz = 0;
+            } else if (motion->vz < 0)
+                motion->vz = 0;
+        }
+        motion->vx += x;
+        motion->vz += z;
+        actor->unk6EE = 0;
+        actor->unk6EF = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
 

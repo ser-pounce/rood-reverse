@@ -327,7 +327,52 @@ __asm__("glabel vs_battle_playSfx10;"
         "addu     $sp, 0x8;"
         "endlabel vs_battle_playMenuChangeSfx;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C031C);
+void vs_battle_rMemzero(void*, int);
+
+void func_800C031C(void)
+{
+    int index;
+    int x, y;
+    short* edges;
+    if (D_800EB9B8 == NULL)
+        D_800EB9B8 = vs_main_allocHeap(0x4B1C);
+    vs_battle_rMemzero(D_800EB9B8, 0x4B1C);
+    index = 0;
+    D_800EB9B8->unk2D = -1;
+    edges = (short*)((char*)D_800EB9B8 + 0x44B4);
+    for (y = 0;; ++y) {
+        for (x = 0; x < 9; ++x)
+            edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+        if (y == 9)
+            break;
+        for (x = 0; x < 10; ++x)
+            edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+    }
+    for (x = 0;; ++x) {
+        for (y = 9; y > 0; --y)
+            edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+        if (x == 9)
+            break;
+        for (y = 9; y >= 0; --y)
+            edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+    }
+    for (y = 9;; --y) {
+        for (x = 9; x > 0; --x)
+            edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+        if (y == 0)
+            break;
+        for (x = 9; x >= 0; --x)
+            edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+    }
+    for (x = 9;; --x) {
+        for (y = 0; y < 9; ++y)
+            edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+        if (x == 0)
+            break;
+        for (y = 0; y < 10; ++y)
+            edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+    }
+}
 
 void func_800C05B4(void)
 {

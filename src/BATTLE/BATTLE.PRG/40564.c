@@ -86,7 +86,56 @@ _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 }
 
 int func_800A8E84(D_800F4538_t* arg0, SVECTOR* arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8E84);
+typedef struct {
+    char prefix[4];
+    u_char excluded;
+} actorCollisionExclusion;
+
+int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
+{
+    actorCollisionExclusion* scratch = (void*)0x1F8003BC;
+    int i, radius, flags;
+    D_800F4538_t* other;
+    if (actor->unk0.unkF == 0) {
+        if (*(u_int*)((char*)actor + 0x5AC) & 0x800)
+            return 1;
+        if (*(u_int*)((char*)actor + 0x5AC) & 0x1000)
+            return 1;
+        for (i = 2; i < 17; ++i) {
+            other = D_800F4538[i];
+            if (other == NULL || other == actor)
+                continue;
+            flags = *(u_int*)((char*)other + 8);
+            if (flags & 1)
+                continue;
+            if (*(u_int*)((char*)other + 0x5AC) & 0x1000000)
+                continue;
+            if (other->unk0.unk13 == 0xFC)
+                continue;
+            if ((flags & 0xF000000) == 0x2000000)
+                continue;
+            if (((actorCollisionExclusion*)((char*)scratch + i))->excluded)
+                continue;
+            radius = *(u_short*)&other->unk640[0];
+            if (other->unk0.position.vx + radius < position->vx)
+                continue;
+            if (position->vx < other->unk0.position.vx - radius)
+                continue;
+            if (other->unk0.position.vz + radius < position->vz)
+                continue;
+            if (position->vz < other->unk0.position.vz - radius)
+                continue;
+            if (other->unk0.position.vy
+                < actor->unk0.position.vy - *(u_short*)&actor->unk640[2])
+                continue;
+            if (actor->unk0.position.vy
+                < other->unk0.position.vy - *(u_short*)&other->unk640[2])
+                continue;
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8FD4);
 

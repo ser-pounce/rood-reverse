@@ -1474,7 +1474,109 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFBCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E02B4);
+typedef struct {
+    short x, y, z, pad;
+} obstructionVector;
+typedef struct {
+    char pad[0x1C];
+    obstructionVector position;
+} obstructionModel;
+typedef struct {
+    char pad0[0x4C];
+    obstructionVector position;
+    char pad54[4];
+    obstructionModel* model;
+    char pad5C[0x2C];
+    unsigned char id;
+    char pad89[9];
+    unsigned short radius;
+    char pad94[0x1F];
+    unsigned char step;
+    char padB4[4];
+    short height;
+} obstructionState;
+typedef struct {
+    unsigned char p0, p1, tested, p3, result[8];
+} obstructionCache;
+#define OBSTRUCTION_CACHE ((obstructionCache*)0x1F8003D0)
+#define OBSTRUCTION_DIRECTIONS ((D_800F16EC_t*)0x1F8003EC)
+#define OBSTRUCTION_STATES ((obstructionState**)0x1F80037C)
+
+int func_800E02B4(obstructionState* state, int direction, int ahead)
+{
+    obstructionVector points[4];
+    int x, y, z, i, dx, dy, dz;
+    unsigned int radius, height;
+    vs_battle_actor* actor;
+    obstructionState* other;
+    obstructionModel* model;
+    if ((OBSTRUCTION_CACHE->tested >> direction) & 1)
+        return OBSTRUCTION_CACHE->result[direction];
+    x = state->position.x + ahead * (state->step * OBSTRUCTION_DIRECTIONS[direction].dx);
+    y = state->position.y;
+    z = state->position.z + ahead * (state->step * OBSTRUCTION_DIRECTIONS[direction].dz);
+    i = func_8008D2C0((void*)points);
+    for (i = i - 1; i != -1; i--) {
+        dx = points[i].x - x;
+        dy = points[i].y - y;
+        dz = points[i].z - z;
+        if (ahead) {
+            if (OBSTRUCTION_DIRECTIONS[direction].dx > 0 && dx < 0)
+                continue;
+            if (OBSTRUCTION_DIRECTIONS[direction].dx < 0 && dx > 0)
+                continue;
+            if (OBSTRUCTION_DIRECTIONS[direction].dz > 0 && dz < 0)
+                continue;
+            if (OBSTRUCTION_DIRECTIONS[direction].dz < 0 && dz > 0)
+                continue;
+        }
+        radius = state->radius + 96;
+        height = (state->height + 32) >> 1;
+        if ((unsigned int)ABS(dx) <= radius && (unsigned int)ABS(dz) <= radius
+            && (unsigned int)ABS(dy) <= height) {
+            OBSTRUCTION_CACHE->tested |= 1 << direction;
+            OBSTRUCTION_CACHE->result[direction] = 1;
+            return 1;
+        }
+    }
+    for (actor = vs_battle_actors[0]; actor; actor = actor->next) {
+        other = OBSTRUCTION_STATES[actor->id];
+        model = other->model;
+        if (other->id == state->id || !other->id)
+            continue;
+        dx = model->position.x - x;
+        dy = model->position.y - y;
+        dz = model->position.z - z;
+        if (ahead) {
+            if (OBSTRUCTION_DIRECTIONS[direction].dx > 0 && dx < 0)
+                continue;
+            if (OBSTRUCTION_DIRECTIONS[direction].dx < 0 && dx > 0)
+                continue;
+            if (OBSTRUCTION_DIRECTIONS[direction].dz > 0 && dz < 0)
+                continue;
+            if (OBSTRUCTION_DIRECTIONS[direction].dz < 0 && dz > 0)
+                continue;
+        }
+        radius = other->radius + state->radius + other->step;
+        if (!other->id)
+            height = -1;
+        else
+            height = (state->height + other->height) >> 1;
+        if ((unsigned int)ABS(dx) <= radius && (unsigned int)ABS(dz) <= radius
+            && (unsigned int)ABS(dy) <= height) {
+            OBSTRUCTION_CACHE->tested |= 1 << direction;
+            OBSTRUCTION_CACHE->result[direction] = actor->id + 1;
+            return actor->id + 1;
+        }
+    }
+    OBSTRUCTION_CACHE->tested |= 1 << direction;
+    OBSTRUCTION_CACHE->result[direction] = 0;
+    return 0;
+}
+
+#undef OBSTRUCTION_CACHE
+#undef OBSTRUCTION_DIRECTIONS
+#undef OBSTRUCTION_STATES
 
 typedef union {
     unsigned int raw;
@@ -1488,7 +1590,7 @@ typedef struct directionalCacheState {
     char pad3C[0x82];
     short minimumHeight;
 } directionalCacheState;
-int func_800E02B4(directionalCacheState*, int, int);
+
 int func_800E42EC(int, int);
 typedef struct {
     unsigned char tested, valid;
@@ -1501,7 +1603,7 @@ int func_800E0678(directionalCacheState* state, int direction)
     int x, z;
     if ((MOVEMENT_CHECK_CACHE->tested >> direction) & 1)
         return (MOVEMENT_CHECK_CACHE->valid & (1 << direction)) > 0;
-    if (func_800E02B4(state, direction, 1))
+    if (func_800E02B4((void*)state, direction, 1))
         goto invalid;
     x = state->tile.p.x + MOVEMENT_CHECK_DIRECTIONS[direction].dx;
     z = state->tile.p.z + MOVEMENT_CHECK_DIRECTIONS[direction].dz;

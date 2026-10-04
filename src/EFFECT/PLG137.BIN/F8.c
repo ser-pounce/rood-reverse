@@ -12,6 +12,7 @@ INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800F98F8);
 #define VS_TRAIL_CORNER_STATE D_800FE03C
 #include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FC524);
+#define VS_GRID_FUNCTION func_800FC524
+#include "src/EFFECT/grids.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FD074);

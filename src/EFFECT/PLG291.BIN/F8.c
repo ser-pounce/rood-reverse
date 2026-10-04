@@ -10,6 +10,7 @@
 #define VS_TRAIL_CORNER_STATE D_800FD4D8
 #include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG291.BIN/nonmatchings/F8", func_800FBA18);
+#define VS_GRID_FUNCTION func_800FBA18
+#include "src/EFFECT/grids.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG291.BIN/nonmatchings/F8", func_800FC568);

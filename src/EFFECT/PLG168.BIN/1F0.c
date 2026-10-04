@@ -34,4 +34,5 @@
 #define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FD104);
+#define VS_GRID_FUNCTION func_800FD104
+#include "src/EFFECT/grids.h"

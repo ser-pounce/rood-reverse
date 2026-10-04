@@ -4,7 +4,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800F99F0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FA588);
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FB4F8);
+#define VS_GRID_FUNCTION func_800FB4F8
+#include "src/EFFECT/grids.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FC048
 #define VS_TRAIL_TARGET_FUNCTION func_800FC7E4

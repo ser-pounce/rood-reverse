@@ -203,19 +203,6 @@ typedef struct {
 } D_800F54B8_t;
 
 typedef struct {
-    VECTOR position;
-    VECTOR lookAt;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int roll;
-    int nearClip;
-    int projectionDistance;
-    int farClip;
-} D_800F54D8_t;
-
-typedef struct {
     int count;
     short offsets[0];
 } pFileBlock11;

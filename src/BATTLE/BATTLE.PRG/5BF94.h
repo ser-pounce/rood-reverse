@@ -332,6 +332,19 @@ typedef struct {
     void* unkD0;
 } D_800F569C_t;
 
+typedef struct {
+    VECTOR position;
+    VECTOR lookAt;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int roll;
+    int nearClip;
+    int projectionDistance;
+    int farClip;
+} D_800F54D8_t;
+
 typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
@@ -366,7 +379,9 @@ typedef struct {
     u_char unk37;
     MATRIX unk38;
     MATRIX unk58;
-    u_char unk78[0x58];
+    u_char unk78[0x46];
+    short unkBE;
+    u_char unkC0[0x10];
 } func_800CE714_t2_2;
 
 typedef struct {

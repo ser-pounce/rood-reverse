@@ -12,4 +12,5 @@
 
 #include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FB5CC);
+#define VS_GRID_FUNCTION func_800FB5CC
+#include "src/EFFECT/grids.h"

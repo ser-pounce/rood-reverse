@@ -250,7 +250,8 @@ void func_800E4C8C(func_800DEEA4_t2*);
 void func_800E4CE8(func_800DEEA4_t2* arg0);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E0850_t*);
-int func_800E7698(func_800E78F4_t*);
+typedef struct radialMotionState radialMotionState;
+int func_800E7698(radialMotionState*);
 void func_800E7960(func_800E78F4_t*);
 
 extern p_file_t D_800EC4BC;
@@ -1754,7 +1755,82 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7608);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7660);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7698);
+typedef struct {
+    char pad[0x5B0];
+    unsigned int a : 4, active : 1, b : 27;
+} radialMotionContext;
+struct radialMotionState {
+    char pad[0x4C];
+    short x, y, z;
+    char pad52[6];
+    radialMotionContext* context;
+    char pad5C[0x120];
+    int targetX, targetZ, targetY;
+    char pad188[0x2E8];
+    int field470;
+};
+typedef struct {
+    short facing;
+    unsigned char state, flag3;
+    char pad4[6];
+    unsigned char flagA, frame;
+    char padC[4];
+    short angle;
+    char pad12[6];
+    short x, z;
+} radialMotion;
+typedef struct {
+    char pad[8];
+    unsigned int flags;
+} radialMotionActor;
+extern short D_800F17DC[][2];
+unsigned int func_800E4660(int, int, int);
+int func_800E7698(radialMotionState* state)
+{
+    radialMotionContext* context = state->context;
+    radialMotion* motion = (radialMotion*)D_800F5920;
+    int angle;
+    state->field470 = 0;
+    context->active = motion->frame < 14;
+    func_800E4660(0x7C0 - state->x, 0, 0x7C0 - state->z);
+    switch (motion->state) {
+    case 0:
+        motion->flagA = 1;
+        angle = ratan2(state->x - 0x7C0, state->z - 0x7C0) & 0xFFF;
+        angle = -angle;
+        angle += 0xC00;
+        motion->angle = angle & 0xFFF;
+        motion->frame = 0;
+        motion->state++;
+        motion->x = state->x;
+        motion->z = state->z;
+        break;
+    case 1:
+        if (!D_800F17DC[motion->frame][0] && !D_800F17DC[motion->frame][1]) {
+            if (((radialMotionActor*)D_800F4538[0])->flags & 0x70000) {
+                func_800E2CCC((void*)state);
+                return 0;
+            }
+            motion->state = 0;
+            angle = ratan2(0x7C0 - state->x, 0x7C0 - state->z) & 0xFFF;
+            angle = -angle;
+            angle += 0xC00;
+            motion->facing = angle & 0xFFF;
+            context->active = 0;
+            return 1;
+        }
+        break;
+    }
+    angle = rcos(motion->angle);
+    state->targetX = (state->x << 12) + D_800F17DC[motion->frame][0] * angle;
+    angle = rsin(motion->angle);
+    state->targetZ = (state->z << 12) + D_800F17DC[motion->frame][0] * angle;
+    state->targetY = (state->y + D_800F17DC[motion->frame][1]) << 12;
+    func_800DEEFC((void*)state, 8);
+    motion->flag3 = 0;
+    motion->frame++;
+    return 0;
+}
 
 int func_800E78F4(func_800E78F4_t* arg0)
 {
@@ -1813,7 +1889,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
         temp_s0->unk1C = 0;
         func_800D82CC(arg0);
 
-        if (func_800E7698(arg0) != 0) {
+        if (func_800E7698((void*)arg0) != 0) {
             if (temp_s0->unkA != 0) {
                 func_800DEB10_t2* temp_a1 = arg0->unk54;
 

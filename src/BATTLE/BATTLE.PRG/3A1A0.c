@@ -29,7 +29,9 @@ typedef struct {
     short unk6;
 } func_800A6660_t;
 
-u_int func_800A29A0(void*);
+void func_800A29A0(D_800F4538_t*);
+void func_800ACF54(D_800F4538_t*);
+void func_800E4C28();
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(D_800F4538_t*);
 void func_800AECA0(MATRIX*);
@@ -58,7 +60,84 @@ extern SVECTOR D_800F4B08;
 extern char D_800F4B18;
 extern u_char D_800E9278[];
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
+void func_800A29A0(D_800F4538_t* arg0)
+{
+    int temp_v0;
+    u_int var_v0;
+    int var_v0_2;
+    int var_v0_3;
+
+    temp_v0 = arg0->unk0.unkB_0;
+    switch (temp_v0) {
+    case 1:
+        (*(u_int*)((char*)arg0 + 8)) = (u_int)((*(u_int*)((char*)arg0 + 8)) & 0xFFDFFFFF);
+        func_800A0204((int)arg0->unk0.unkF, 0x13, 0, 8);
+        func_800A01C8((int)arg0->unk0.unkF, 0x14, 8, 0);
+        (*(u_char*)((char*)arg0 + 0x57)) = 0;
+        var_v0 =
+            ((((*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF) | 0x02000000) & ~0xF00) | 0x600;
+        goto block_22;
+    default:
+        return;
+    case 2:
+        if ((u_int)(((u_int)(*(u_int*)((char*)arg0 + 8)) >> 8) & 0xF) >= 8U) {
+            if (arg0->unk0.unk13 == 0xFC) {
+                var_v0_2 =
+                    (u_int)(((u_int)(*(u_int*)((char*)D_800F4538[arg0->unk0.unk12] + 8))
+                                >> 8)
+                            & 0xF)
+                    < 9U;
+                goto block_8;
+            }
+            if ((*(u_int*)((char*)arg0 + 0x119C)) & 0x20000) {
+                var_v0_2 = arg0->unk5CC;
+            block_8:
+                if (var_v0_2 == 0) {
+                    (*(u_int*)((char*)arg0 + 8)) =
+                        (u_int)(((*(u_int*)((char*)arg0 + 8)) & ~0xF00) | 0x900);
+                    func_800A9C54(arg0->unk0.unkF, (char*)arg0 + 0x5EC, 0);
+                    arg0->unk0.facing = (u_short)(*(u_short*)((char*)arg0 + 0x5F2));
+                    func_800A0204((int)arg0->unk0.unkF, 0x15, 0, 8);
+                    func_800A01C8((int)arg0->unk0.unkF, 0x16, 8, 0);
+                    var_v0 = ((*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF) | 0x03000000;
+                    goto block_22;
+                }
+            }
+        }
+        break;
+    case 3:
+        if (!((*(u_int*)((char*)arg0 + 8)) & 0xF00)) {
+            if (arg0->unk0.unk13 == 0xFC) {
+                var_v0_3 = (*(u_int*)((char*)D_800F4538[arg0->unk0.unk12] + 8)) & 0xF00;
+            } else {
+                var_v0_3 = arg0->unk5CC;
+            }
+            if (var_v0_3 == 0) {
+                func_800A0204((int)arg0->unk0.unkF, 1, 0, 8);
+            case 4:
+                func_800ACF54(arg0);
+                func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
+            case 5:
+                if ((int)arg0->unk17FD >= 2U) {
+                    if ((*(u_int*)((char*)D_800F4538[arg0->unk17FD] + 8)) & 0x0F000000) {
+                        (*(u_int*)((char*)arg0 + 8)) =
+                            (u_int)(((*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF)
+                                    | 0x05000000);
+                        return;
+                    }
+                    goto block_21;
+                }
+            block_21:
+                var_v0 = (*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF;
+                goto block_22;
+            }
+        }
+        break;
+    }
+    return;
+block_22:
+    (*(u_int*)((char*)arg0 + 8)) = var_v0;
+}
 
 void func_800A2C48(D_800F4538_t* arg0)
 {

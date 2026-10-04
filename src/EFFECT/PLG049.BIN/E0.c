@@ -11,7 +11,9 @@
 /**
  * Concentric text circles over caster
  */
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FBA00);
+#define VS_RING_FUNCTION func_800FBA00
+#define VS_RING_COLORS D_800FE3D8
+#include "src/EFFECT/rings.h"
 
 /**
  * Target impact

@@ -2,7 +2,10 @@
 
 INCLUDE_ASM("build/src/EFFECT/PLG153.BIN/nonmatchings/110", func_800F9910);
 
-INCLUDE_ASM("build/src/EFFECT/PLG153.BIN/nonmatchings/110", func_800FA41C);
+#define VS_RING_FUNCTION func_800FA41C
+#define VS_RING_COLORS D_800FCDB4
+#define VS_RING_TRANSPOSED
+#include "src/EFFECT/rings.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FB040
 #define VS_PARTICLE_TARGET_FUNCTION func_800FB7C8

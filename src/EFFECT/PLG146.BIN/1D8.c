@@ -28,7 +28,10 @@ INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FA8D0);
 #define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FCB38);
+#define VS_RING_FUNCTION func_800FCB38
+#define VS_RING_COLORS D_800FFB20
+#define VS_RING_TRANSPOSED
+#include "src/EFFECT/rings.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FD75C
 #define VS_TRAIL_TARGET_FUNCTION func_800FDEF8

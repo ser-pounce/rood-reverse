@@ -4,7 +4,9 @@ INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800F98F8);
 
 INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FA7B0);
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FB71C);
+#define VS_RING_FUNCTION func_800FB71C
+#define VS_RING_COLORS D_800FD954
+#include "src/EFFECT/rings.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FC340
 #define VS_PARTICLE_TARGET_FUNCTION func_800FCAC8

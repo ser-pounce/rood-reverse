@@ -2,7 +2,10 @@
 
 INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800F98F8);
 
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FA7B0);
+#define VS_RING_FUNCTION func_800FA7B0
+#define VS_RING_COLORS D_800FEC68
+#define VS_RING_TRANSPOSED
+#include "src/EFFECT/rings.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FB3D4
 #define VS_TRAIL_TARGET_FUNCTION func_800FBB70
@@ -17,4 +20,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FA7B0);
 #define VS_GRID_FUNCTION func_800FD4F4
 #include "src/EFFECT/grids.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FE044);
+#define VS_RING_FUNCTION func_800FE044
+#define VS_RING_COLORS D_800FEC8C
+#include "src/EFFECT/rings.h"

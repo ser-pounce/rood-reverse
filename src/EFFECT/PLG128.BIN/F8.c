@@ -48,7 +48,9 @@ INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FB400);
 #define VS_GRID_FUNCTION func_800FC2BC
 #include "src/EFFECT/grids.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FCE0C);
+#define VS_SURFACE_FUNCTION func_800FCE0C
+#define VS_SURFACE_VERTICES D_80100790
+#include "src/EFFECT/surfaces.h"
 
 void func_800FD9A4(func_800FD9A4_t* arg0, VECTOR* arg1)
 {

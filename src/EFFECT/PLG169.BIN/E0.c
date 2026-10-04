@@ -10,6 +10,8 @@
 #define VS_TRAIL_CORNER_STATE D_800FD590
 #include "src/EFFECT/trails9.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG169.BIN/nonmatchings/E0", func_800FBA00);
+#define VS_RING_FUNCTION func_800FBA00
+#define VS_RING_COLORS D_800FD594
+#include "src/EFFECT/rings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG169.BIN/nonmatchings/E0", func_800FC624);

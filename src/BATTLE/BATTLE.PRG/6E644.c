@@ -162,12 +162,15 @@ typedef struct {
     u_int unkC_0 : 4;
     u_int unkC_4 : 3;
     u_int unkC_7 : 12;
-    u_int unkC_19 : 13;
+    u_int unkC_19 : 8;
+    u_int unkC_27 : 5;
 } func_800DCAA0_t;
 
 typedef struct {
     u_char unk0;
-    char unk1[0x3F];
+    char unk1;
+    u_char unk2;
+    char unk3[0x3D];
     int unk40;
 } func_800DEB10_t;
 
@@ -271,7 +274,7 @@ extern func_800DEEA4_t2* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
-extern void* D_800F5900;
+extern func_800DEEA4_t* D_800F5900;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
@@ -782,7 +785,22 @@ void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int 
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCBD8);
+void func_800DCBD8(func_800DCAA0_t* arg0)
+{
+    int i;
+    int threshold = 0;
+    int id = arg0->unkC_0;
+
+    for (i = 0; i < D_800F5900->unk4A; ++i) {
+        func_800DEB10_t* entry = &D_800F5900->unk4C[i];
+        if ((entry->unk40 == 0) && (id == D_800F5900->unk4C[i].unk0)) {
+            threshold = D_800F5900->unk4C[i].unk2;
+            break;
+        }
+    }
+
+    arg0->unkC_19 = threshold + (threshold >> 2) + (threshold >> 5);
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069B68);
 

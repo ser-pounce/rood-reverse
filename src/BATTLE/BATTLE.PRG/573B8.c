@@ -1,6 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "573B8.h"
+#include "4A0A8.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
 
@@ -46,7 +47,63 @@ extern void func_8007D260(int);
 void func_800A0204(int, int, int, int);
 extern void func_800BBDDC(void);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
+typedef int (*eventOpcodeHandler)(u_char*, int);
+extern eventOpcodeHandler _opcodeFunctionTable[];
+extern u_char D_800F4C20, D_800F4C2C, D_800F4C68;
+extern short D_800F4C58[];
+extern char vs_battle_textBoxStatuses[];
+int func_800BFE34(u_char*);
+void func_800C0150(void);
+
+int func_800BFBB8(u_char** cursor, short actor)
+{
+    u_char* script = *cursor;
+    int result;
+    if (actor == 0 && D_800F4C2C == 1) {
+        if ((vs_main_buttonsPressed.all & 0x800) || D_800F4C68) {
+            D_800F4C68 = 0;
+            D_800F4C58[0] = D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
+            vs_battle_textBoxStatuses[0] = vs_battle_textBoxStatuses[1] =
+                vs_battle_textBoxStatuses[2] = vs_battle_textBoxStatuses[3] = 0;
+            if (D_800F4C20)
+                func_80044DF4(0);
+            func_80045DC0();
+            func_800434A4(0, 2);
+            func_800C0150();
+            func_8007C46C(0, 255, 0);
+            func_8007C424();
+            vs_battle_setStateFlag(0xA8, 1);
+            D_800F4C2C = 2;
+        }
+    }
+    while (1) {
+        if (D_800F4C2C != 2)
+            result = _opcodeFunctionTable[*script](script, actor);
+        else
+            result = ((eventOpcodeHandler*)D_800F4C28)[*script](script, actor);
+        switch (result) {
+        case 0:
+            script += func_800BFE34(script);
+            break;
+        case 3:
+            *cursor = NULL;
+            goto done;
+        case 2:
+            return 1;
+        case 4:
+            script += func_800BFE34(script);
+            goto save;
+        case 1:
+            goto save;
+        default:
+            script = (u_char*)result;
+        }
+    }
+save:
+    *cursor = script;
+done:
+    return 0;
+}
 
 void func_800BFD9C(void)
 {
@@ -83,7 +140,52 @@ int func_800BFE50(u_short arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFEBC);
+extern signed char D_800F4B28[][2];
+
+int func_800BFEBC(short mode, short frame, short duration)
+{
+    short position = frame;
+    int value, power, i, magnitude;
+    if (frame > duration)
+        position = duration;
+    switch (mode) {
+    case 0:
+        return (position << 12) / duration;
+    case 1:
+        return rsin((position << 10) / duration);
+    case 2:
+        return (rcos((position << 11) / duration + 0x800) + 0x1000) >> 1;
+    case 3:
+        return rsin((position << 10) / duration - 0x400) + 0x1000;
+    default:
+        mode -= 4;
+        power = D_800F4B28[mode][1];
+        value = (position << 12) / duration;
+        if (power != 0) {
+            if (power > 0) {
+                for (i = 0; i < power; ++i)
+                    value = (value * value) >> 12;
+            } else {
+                value = 0x1000 - value;
+                magnitude = -power;
+                for (i = 0; i < magnitude; ++i)
+                    value = (value * value) >> 12;
+                value = 0x1000 - value;
+            }
+        }
+        switch ((int)(u_char)D_800F4B28[mode][0]) {
+        case 1:
+            return rsin(value / 4);
+        case 2:
+            return (rcos(value / 2 + 0x800) + 0x1000) >> 1;
+        case 3:
+            return rsin(value / 4 - 0x400) + 0x1000;
+        case 0:
+        default:
+            return value;
+        }
+    }
+}
 
 void func_800C00E8(int arg0, void* arg1)
 {

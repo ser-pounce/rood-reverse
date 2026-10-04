@@ -252,7 +252,8 @@ void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E0850_t*);
 typedef struct radialMotionState radialMotionState;
 int func_800E7698(radialMotionState*);
-void func_800E7960(func_800E78F4_t*);
+typedef struct trackingMotionState trackingMotionState;
+void func_800E7960(trackingMotionState*);
 
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
@@ -1846,7 +1847,174 @@ int func_800E78F4(func_800E78F4_t* arg0)
     return r;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7960);
+typedef struct {
+    char pad[0x18];
+    short current, maximum;
+} trackingMotionStats;
+struct trackingMotionState {
+    char pad[0x4C];
+    short x, y, z;
+    char pad52[6];
+    radialMotionContext* context;
+    trackingMotionStats* stats;
+    char pad60[0xFC];
+    unsigned char targetActor;
+    char pad15D[0x1F];
+    int targetX, targetZ, targetY;
+};
+typedef struct {
+    unsigned short facing;
+    unsigned char state, flag3;
+    int radiusSquared;
+    char pad8[4];
+    short stateC, stateE, angle, height;
+    unsigned char phase;
+    char pad15[7];
+    unsigned char initialized;
+} trackingMotion;
+typedef struct {
+    char pad[0x1C];
+    short x, y, z;
+} trackingMotionActor;
+int rand(void);
+int vs_gte_rsqrt(int);
+unsigned int func_800E4660(int, int, int);
+void func_800E7960(trackingMotionState* state)
+{
+    trackingMotion* motion = (trackingMotion*)D_800F5920;
+    int center[3], playerAngle, currentAngle, tracking;
+    int radius, heading, sign, cosCurrent, sinTarget, sinCurrent, cosTarget, aligned,
+        delta, ratio, angle, adjust, denominator, scale, magnitude;
+    int oppositeAngle;
+    int initialAngle, currentHeading, targetHeading, facing, trig, correction, difference;
+    if (!motion->initialized) {
+        initialAngle = ratan2(0x7C0 - state->x, 0x7C0 - state->z) & 0xFFF;
+        initialAngle = -initialAngle;
+        initialAngle += 0xC00;
+        motion->facing = initialAngle & 0xFFF;
+        motion->height = state->y;
+        motion->initialized = 1;
+    }
+    if (!motion->flag3) {
+        motion->radiusSquared = func_800E4660(0x7C0 - state->x, 0, 0x7C0 - state->z);
+        motion->flag3++;
+    }
+    state->context->active = 0;
+    radius = vs_gte_rsqrt(motion->radiusSquared);
+    if (radius < 1024)
+        radius += 32;
+    if (radius > 1024)
+        radius -= 32;
+    difference = radius - 1024;
+    if (difference < 0)
+        difference = -difference;
+    if (difference < 32)
+        radius = 1024;
+    motion->radiusSquared = radius * radius;
+    center[0] = 0x7C0000;
+    difference = motion->height - 160;
+    if (difference < 0)
+        difference = -difference;
+    if (difference < 16)
+        motion->height = 160;
+    else if (motion->height < 160)
+        motion->height += 12;
+    else
+        motion->height -= 12;
+    center[1] = motion->height << 12;
+    center[2] = 0x7C0000;
+    playerAngle = ratan2(0x7C0 - ((trackingMotionActor*)D_800F4538[0])->x,
+        0x7C0 - ((trackingMotionActor*)D_800F4538[0])->z);
+    currentAngle = ratan2(0x7C0 - state->x, 0x7C0 - state->z);
+    if (func_800E78F4((void*)state) && func_800D826C((void*)state)) {
+        heading = playerAngle;
+        tracking = 1;
+    } else {
+        tracking = 0;
+        heading = playerAngle + 0x800;
+    }
+    sign = -1;
+    if (D_800F5918 >= 0)
+        sign = 1;
+    cosCurrent = rcos(-currentAngle + 0xC00);
+    sinTarget = rsin(-heading + 0xC00);
+    sinCurrent = rsin(-currentAngle + 0xC00);
+    cosTarget = rcos(-heading + 0xC00);
+    aligned = ((cosCurrent * sinTarget - sinCurrent * cosTarget) * sign) >= 0;
+    if (aligned) {
+        if (ABS(D_800F5918) > 0x280000)
+            delta = D_800F5918 / 8 + (sign << 16);
+        else
+            delta = sign << 16;
+    } else
+        delta = D_800F5918 / 4 + (sign << 16);
+    if (tracking || rcos(currentAngle - heading) < rcos(222)) {
+        if (!aligned)
+            delta = -delta;
+    }
+    D_800F5918 += delta;
+    sign = -1;
+    if (D_800F5918 >= 0)
+        sign = 1;
+    if (ABS(D_800F5918) > 0x820000)
+        D_800F5918 = sign * 0x820000;
+    ratio = (state->stats->current << 16) / state->stats->maximum;
+    if (!motion->stateC) {
+        if ((!motion->phase && ratio < 0xC000)
+            || (motion->phase == 1 && ratio < 0x4000)) {
+            motion->phase++;
+            goto trigger;
+        } else if (ABS(D_800F5918) < 0x40000 && tracking && D_800F591C < 30
+                   && !(rand() & 511)) {
+        trigger:
+            motion->stateE = 1;
+        }
+    }
+    motion->facing += D_800F5918 >> 16;
+    facing = motion->facing;
+    state->targetActor = 0;
+    trig = rcos(facing);
+    state->targetX = center[0] + radius * trig;
+    trig = rsin(facing);
+    state->targetZ = center[2] + radius * trig;
+    if (tracking) {
+        if (aligned) {
+            denominator = currentAngle - playerAngle;
+            scale = -80 - D_800F591C;
+        } else {
+            oppositeAngle = currentAngle - 0x800;
+            denominator = playerAngle - oppositeAngle;
+            scale = 300 - D_800F591C;
+        }
+    } else if (aligned) {
+        oppositeAngle = currentAngle - 0x800;
+        denominator = playerAngle - oppositeAngle;
+        scale = 300 - D_800F591C;
+    } else {
+        denominator = ABS(D_800F5918) >> 16;
+        scale = 10;
+    }
+    denominator &= 0xFFF;
+    if (denominator > 0x800)
+        denominator = 0x1000 - denominator;
+    if (!denominator) {
+        denominator = 1;
+        scale = 0;
+    }
+    magnitude = ABS(D_800F5918);
+    correction = magnitude * scale / denominator;
+    if (ABS(correction) > magnitude * 4)
+        correction = (correction >> 31) * magnitude * 4;
+    D_800F591C += correction >> 16;
+    if (D_800F591C < -100)
+        D_800F591C = -100;
+    if (D_800F591C > 500)
+        D_800F591C = 500;
+    state->targetY = center[1] - (D_800F591C << 12);
+    if (state->targetY >= 0xFF000)
+        state->targetY = 0xFF000;
+    func_800DEEFC((void*)state, 8);
+}
 
 int func_800E7F8C(func_800E78F4_t* arg0)
 {
@@ -1872,7 +2040,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
         }
 
         temp_s0->unkA = 0;
-        func_800E7960(arg0);
+        func_800E7960((void*)arg0);
 
         if ((temp_s0->unkE != 0) && (temp_s0->unkC == 0)
             && (arg0->unk5C->limbs[4].hp >= 2)) {

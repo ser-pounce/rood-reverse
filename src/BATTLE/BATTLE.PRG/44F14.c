@@ -715,7 +715,7 @@ struct animationFrameScratch {
     int first, last;
     u_char** data;
 };
-void func_800AFDE8(u_short, SVECTOR*, int);
+void func_800AFDE8(int, SVECTOR*, int);
 void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     u_short* header;
@@ -839,7 +839,110 @@ update_bones:
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AFDE8);
+void func_800AFDE8(int offset, SVECTOR* value, int rotation)
+{
+    struct animationFrameScratch* scratch = (void*)0x1F8003EC;
+    SVECTOR* delta = (void*)((char*)value + 0x2A0);
+    u_char* data = (u_char*)(u_int)(u_short)value->pad;
+    int nextFrame = (u_short)delta->pad;
+    int frame = scratch->first;
+    int flags, count, packed;
+    data += (int)((u_char*)(offset + (int)*scratch->data));
+    if (frame <= scratch->last) {
+    decode:
+        if (nextFrame >= frame) {
+            value->vx += delta->vx;
+            value->vy += delta->vy;
+            value->vz += delta->vz;
+            if (rotation) {
+                *(int*)value &= 0x1FFF1FFF;
+                value->vz &= 0x1FFF;
+            }
+            goto advance;
+        } else {
+            flags = *data;
+            if (flags == 0)
+                return;
+            if (flags & 0xE0) {
+                count = flags & 0x1F;
+                if (count == 0x1F) {
+                    nextFrame += 0x20;
+                    nextFrame += data[1];
+                    data += 2;
+                } else {
+                    nextFrame += count + 1;
+                    ++data;
+                }
+            } else {
+                count = flags & 3;
+                if (count == 3) {
+                    nextFrame += 4;
+                    nextFrame += data[1];
+                    data += 2;
+                } else {
+                    nextFrame += count + 1;
+                    ++data;
+                }
+                flags <<= 3;
+                {
+                    count = ((signed char*)data)[0];
+                    count <<= 8;
+                    count |= data[1];
+                    data += 2;
+                }
+                packed = count;
+                count >>= 3;
+                if (packed & 4) {
+                    delta->vx = count;
+                    flags &= 0x60;
+                    if (packed & 3) {
+                        {
+                            count = ((signed char*)data)[0];
+                            count <<= 8;
+                            count |= data[1];
+                            data += 2;
+                        }
+                    }
+                }
+                if (packed & 2) {
+                    delta->vy = count;
+                    flags &= 0xA0;
+                    if (packed & 1) {
+                        {
+                            count = ((signed char*)data)[0];
+                            count <<= 8;
+                            count |= data[1];
+                            data += 2;
+                        }
+                    } else
+                        goto bytes;
+                }
+                if (packed & 1) {
+                    delta->vz = count;
+                    flags &= 0xC0;
+                }
+            }
+        bytes:
+            if (flags & 0x80) {
+                delta->vx = (signed char)*data++;
+            }
+            if (flags & 0x40) {
+                delta->vy = (signed char)*data++;
+            }
+            if (flags & 0x20) {
+                delta->vz = (signed char)*data++;
+            }
+        }
+        goto decode;
+    advance:
+        ++frame;
+        if (frame <= scratch->last)
+            goto decode;
+    }
+    data -= (int)((u_char*)(offset + (int)*scratch->data));
+    value->pad = (int)data;
+    delta->pad = nextFrame;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B002C);
 

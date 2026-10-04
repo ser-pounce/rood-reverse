@@ -150,7 +150,107 @@ void func_800A2C48(D_800F4538_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A2CD4);
+void func_800A2FBC(D_800F4538_t*);
+void func_800A9EB4(int, short, int);
+void func_800AA620(int, SVECTOR*, int);
+
+void func_800A2CD4(D_800F4538_t* arg0)
+{
+    int temp_v0;
+    u_short temp_v0_2;
+    u_int temp_v1;
+    u_int var_v0;
+    u_char temp_v1_2;
+
+    temp_v0 = ((u_int)(*(u_int*)((char*)arg0 + 8)) >> 0x1C) & 7;
+    switch (temp_v0) {
+    case 1:
+        func_800A0204((int)arg0->unk0.unkF, 9, 0, 8);
+        func_800A9C54(arg0->unk0.unkF, (char*)arg0 + 0x5EC, -1);
+        func_800A9EB4(arg0->unk0.unkF, (*(short*)((char*)arg0 + 0x5F2)), 8);
+        arg0->unk5CA = (u_short)arg0->unk0.unk1A;
+        arg0->unk0.unk1A = 0U;
+        if (arg0->unk5CA != 0) {
+            (*(u_int*)((char*)arg0 + 8)) =
+                (u_int)(((*(u_int*)((char*)arg0 + 8)) & 0x8FFFFFFF) | 0x20000000);
+            return;
+        }
+        goto block_10;
+    default:
+        return;
+    case 2:
+        func_800A2FBC(arg0);
+        func_800A9378(
+            arg0->unk0.position.vx, arg0->unk0.position.vy, arg0->unk0.position.vz, 2);
+        if ((*(int*)&D_800F49F4) != 0) {
+            (*(u_int*)((char*)arg0 + 8)) =
+                (u_int)((*(u_int*)((char*)arg0 + 8)) | 0x200000);
+            goto block_16;
+        }
+        if (arg0->unk5CA == 0) {
+            func_800A0204((int)arg0->unk0.unkF, 0xA, 0, 8);
+            arg0->unk0.unkA_5 = 0;
+            arg0->unk0.unkB_4 = 3;
+            return;
+        }
+        break;
+    case 3:
+        if ((arg0->unk0.unk1A == 0) && ((*(u_int*)((char*)arg0 + 0x119C)) & 0x20000)) {
+        block_10:
+            (*(u_int*)((char*)arg0 + 8)) =
+                (u_int)((*(u_int*)((char*)arg0 + 8)) & 0xFFDFFFFF);
+            func_800ACF54(arg0);
+            func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
+            func_800A0204((int)arg0->unk0.unkF, 1, 0, 8);
+            arg0->unk0.unkB_4 = 0;
+            break;
+        }
+        break;
+    case 4:
+        func_800A0204((int)arg0->unk0.unkF, 7, 0, 8);
+        func_800A01C8((int)arg0->unk0.unkF, 0x25, 8, 0);
+        func_800AA620(arg0->unk0.unkF, (SVECTOR*)((char*)arg0 + 0x5EC), -1);
+        func_800A9EB4(arg0->unk0.unkF, (*(short*)((char*)arg0 + 0x5F2)), 8);
+        temp_v0_2 = arg0->unk0.unk1A;
+        arg0->unk0.unk1A = 0U;
+        arg0->unk5CA = temp_v0_2;
+        temp_v1 = (*(u_int*)((char*)arg0 + 8)) | 0x200000;
+        (*(u_int*)((char*)arg0 + 8)) = temp_v1;
+        if (arg0->unk5CA == 0) {
+            arg0->unk6E0 = 0;
+            goto block_16;
+        }
+        var_v0 = (temp_v1 & 0x8FFFFFFF) | 0x50000000;
+        goto block_22;
+    case 5:
+        func_800A2FBC(arg0);
+        func_800A9378(
+            arg0->unk0.position.vx, arg0->unk0.position.vy, arg0->unk0.position.vz, 3);
+        if ((*(int*)&D_800F49F4) == 0) {
+            if (arg0->unk5CA == 0) {
+            block_16:
+            block_17:
+                func_800A0204((int)arg0->unk0.unkF, 1, 0, 8);
+                arg0->unk0.unkB_4 = 0;
+                break;
+            }
+        } else {
+            goto block_17;
+        }
+        break;
+    case 6:
+        temp_v1_2 = arg0->animationId;
+        if ((temp_v1_2 != 0xC7) && (temp_v1_2 != 0xC9) && (arg0->unk5CC == 0)) {
+            goto block_21;
+        }
+        break;
+    }
+    return;
+block_21:
+    var_v0 = (*(u_int*)((char*)arg0 + 8)) & 0x8FFFFFFF;
+block_22:
+    (*(u_int*)((char*)arg0 + 8)) = var_v0;
+}
 
 void func_800A2FBC(D_800F4538_t* arg0)
 {

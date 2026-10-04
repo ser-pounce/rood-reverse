@@ -2907,7 +2907,31 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_800A0104);
+typedef struct {
+    char prefix[0x84];
+    SVECTOR rotation;
+} objectRotationScratch;
+extern u_char D_800E9030[];
+void func_80040F8C(SVECTOR*, MATRIX*);
+int func_800A0104(int objectId, int orientation)
+{
+    objectRotationScratch* scratch;
+    D_800F45E0_t* object = D_800F45E0[objectId];
+    if (object == NULL || (*(u_char*)((char*)object + 0x16C) & 7) >= 2U) {
+        return -1;
+    }
+    scratch = (void*)0x1F80035C;
+    *(u_char*)((char*)object + 0x16E) = orientation;
+    orientation *= 4;
+    scratch->rotation.vx = D_800E9030[orientation] << 10;
+    scratch->rotation.vy = D_800E9030[orientation + 1] << 10;
+    scratch->rotation.vz = D_800E9030[orientation + 2] << 10;
+    func_80040F8C(&scratch->rotation, (MATRIX*)((char*)object + 0xEC));
+    object->unk18 = 0;
+    *(int*)&object->unk24 = 0;
+    object->unk28 = 0;
+    return 0;
+}
 
 int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
 {

@@ -1642,7 +1642,160 @@ void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
     *arg0 = ((arg1->unk4 & 0xFFE) << 20) | (*arg0 & 0x1FFFFF);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5A9C);
+typedef union {
+    unsigned int raw;
+    unsigned short half[2];
+    unsigned char byte[4];
+} actorSettingsWord;
+typedef struct actorSettingsActor {
+    char pad0[26];
+    unsigned short kind;
+    char pad1C[20];
+    actorSettingsWord flags;
+    union {
+        unsigned int raw;
+        struct {
+            unsigned int low : 12, mode : 2, high : 18;
+        } bits;
+    } flags34;
+} actorSettingsActor;
+typedef struct actorSettingsState {
+    char pad0[22];
+    unsigned char f16;
+    char pad17[2];
+    unsigned char f19;
+    char pad1A[6];
+    unsigned char f20;
+    unsigned char f21;
+    unsigned char f22;
+    unsigned char f23;
+    unsigned char f24;
+    unsigned char f25;
+    unsigned char f26;
+    unsigned char f27;
+    unsigned char f28;
+    unsigned char f29;
+    unsigned char f2A;
+    unsigned char f2B;
+    unsigned char f2C;
+    unsigned char f2D;
+    unsigned char f2E;
+    unsigned char f2F;
+    unsigned char f30;
+    unsigned char f31;
+    unsigned char f32;
+    unsigned char f33;
+    char pad34[32];
+    actorSettingsActor* actor;
+    char pad58[16];
+    int (*callback)(func_800E78F4_t*);
+    char pad6C[40];
+    unsigned short collisionRadius;
+    char pad96[14];
+    unsigned int limit;
+    int cosine;
+    unsigned int rangeSquared;
+    unsigned short fB0;
+    unsigned char fB2;
+    char padB3[7];
+    unsigned short fBA;
+    char padBC[12];
+    unsigned int fC8;
+    unsigned char fCC;
+    char padCD[1];
+    unsigned char fCE;
+    char padCF[5];
+    unsigned short fD4;
+    unsigned short fD6;
+    unsigned char fD8;
+    char padD9[40];
+    unsigned char f101;
+    unsigned char f102;
+    char pad103[37];
+    unsigned short angle;
+    char pad12A[52];
+    unsigned short flags;
+} actorSettingsState;
+typedef struct {
+    unsigned short first, second;
+    unsigned char third, pad;
+} actorSettingsEntry;
+extern unsigned int D_80069C1C[];
+extern unsigned short D_800F17B8[][2], D_800F17C8[][2];
+extern unsigned char D_800F17D8[], D_80069C18[];
+extern actorSettingsEntry D_80069C3C[];
+extern int D_800F58C0;
+extern unsigned short* D_800F58C8;
+extern int (*D_800F1790[])(func_800E78F4_t*);
+const unsigned char D_80069C08[4] = { 9, 7, 0, 0 };
+int func_800E7F8C(func_800E78F4_t*);
+void func_800E7660(actorSettingsState*);
+void func_800E5998(void);
+void func_800E5710(actorSettingsState*);
+void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
+{
+    actorSettingsActor* actor = state->actor;
+    unsigned int rangeSquared, step;
+    int i, temp;
+    rangeSquared = D_80069C1C[(settings->half[1] & 28) >> 2];
+    state->rangeSquared = rangeSquared;
+    if (rangeSquared > 0x23FFFF)
+        rangeSquared = 0x240000;
+    state->limit = rangeSquared;
+    state->angle = D_800F17B8[settings->half[1] & 3][0];
+    state->cosine = rcos((state->angle / 2) * 4096 / 360);
+    state->f25 = (settings->raw >> 15) & 1;
+    state->f29 = (settings->raw >> 14) & 1;
+    state->f24 = (settings->raw >> 13) & 1;
+    state->f2D = 0;
+    if (D_800F58C0) {
+        for (i = 0; i < 8; i++) {
+            if (D_800F58C8[i] >> 15)
+                break;
+        }
+        if (i != 8)
+            state->f2D = (settings->raw >> 12) & 1;
+    }
+    state->fB2 = ((settings->raw >> 10) & 3) + 1;
+    state->fB0 = D_800F17C8[(settings->raw >> 8) & 3][0];
+    step = 128;
+    if (state->collisionRadius > 128)
+        step = 32;
+    state->fBA = (step * D_800F17D8[(settings->raw >> 2) & 3]) >> 4;
+    state->f23 = 1;
+    state->f21 = settings->byte[3] & 1;
+    state->f22 = (settings->raw >> 23) & 1;
+    state->f2C = (settings->raw >> 21) & 3;
+    state->f2F = (settings->raw >> 28) & 3;
+    state->f31 = settings->raw >> 30;
+    state->f20 = (settings->raw >> 26) & 1;
+    state->fD6 = D_80069C3C[(settings->raw >> 4) & 7].first;
+    state->fD4 = D_80069C3C[(settings->raw >> 4) & 7].second;
+    state->fD8 = D_80069C3C[(settings->raw >> 4) & 7].third;
+    state->f27 = (settings->raw >> 27) & 1;
+    state->f30 = (settings->raw >> 25) & 1;
+    if (!(state->flags & 0xC0))
+        state->f32 = D_80069C18[state->f31];
+    state->f33 = settings->byte[0] >> 7;
+    temp = actor->flags34.bits.mode;
+    state->f26 = temp >> 1;
+    temp &= 1;
+    state->f2B = temp;
+    state->f102 = D_80069C08[(actor->flags34.raw >> 14) & 1];
+    state->f101 = (actor->flags.raw >> 14) & 3;
+    state->fC8 = actor->flags.half[1] & 63;
+    state->fCC = (actor->flags.raw >> 22) & 31;
+    state->fCE = actor->flags.raw >> 27;
+    if ((unsigned int)(actor->kind - 0xAC) < 2) {
+        state->callback = func_800E7F8C;
+        state->f19 = 1;
+        func_800E7660(state);
+    } else
+        state->callback = D_800F1790[(actor->flags.raw >> 4) & 31];
+    state->f16 = 16;
+    func_800E5998();
+    func_800E5710(state);
+}
 
 void func_800E5EC0(int arg0, int arg1, int arg2)
 {
@@ -1815,7 +1968,7 @@ typedef struct actorInitializationState {
 
 void func_800E4288(void*, int);
 void func_800E6828(actorInitializationState*);
-void func_800E5A9C(actorInitializationState*, int*);
+
 void func_800E7370(actorInitializationState*);
 void func_800E72D0(void);
 
@@ -1891,7 +2044,7 @@ int func_800E6178(actorInitializationActor* actor, int options)
     packed = actor->field38;
     if (actor->field34 & 1)
         func_800E5A74(&packed, (void*)&actor->field30);
-    func_800E5A9C(state, &packed);
+    func_800E5A9C((void*)state, (void*)&packed);
     func_800E7370(state);
     temp = state->distance - 64;
     if (state->rangeSquared < (unsigned int)(temp * temp))

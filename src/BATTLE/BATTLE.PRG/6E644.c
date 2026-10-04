@@ -101,6 +101,8 @@ typedef struct {
     u_char maxX, maxZ, minX, minZ;
     char unk4[0x14];
     u_short unk18;
+    char unk1A[0xA];
+    int unk24;
 } D_800F58BC_t;
 
 typedef struct {
@@ -739,7 +741,8 @@ typedef struct {
     int pad0;
     unsigned int row : 3, column : 2, pad5 : 8, threshold : 16, pad29 : 3;
     unsigned int distanceSquared;
-    unsigned int kind : 4, padC4 : 15, weight : 8, padC27 : 5;
+    unsigned int targetId : 4, padC4 : 15, weight : 8, padC27 : 5;
+    unsigned int low : 1, flag1 : 1, pad2 : 4, range : 16, high : 10;
 } actionCandidateEntry;
 typedef struct {
     unsigned char flags, pad[3];
@@ -767,7 +770,7 @@ int func_800D85D8(actionCandidateState* state)
     for (i = 0; i < state->count; i++) {
         entry = state->entries[i];
         if (entry->weight && entry->threshold <= D_800F58BC->unk18) {
-            if (!func_800E4CF4(state, entry, entry->kind)
+            if (!func_800E4CF4(state, entry, entry->targetId)
                 || !func_800E4DF8(state, entry->row, entry->column))
                 entry->weight = 0;
         }
@@ -811,9 +814,134 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D98E8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9DD8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9E18);
+typedef union {
+    unsigned int raw;
+    unsigned char bytes[4];
+} candidateMovementWord;
+typedef struct candidateMovementState {
+    char pad0[1];
+    unsigned char f1;
+    char pad2[74];
+    short position[3];
+    char pad52[48];
+    short height;
+    char pad84[47];
+    unsigned char maxRange;
+    char padB4[122];
+    unsigned char mode;
+    char pad12F[5];
+    candidateMovementWord destination;
+    char pad138[36];
+    unsigned char target;
+    char pad15D[1];
+    unsigned short flags;
+    char pad160[8];
+    candidateMovementWord next;
+    char pad16C[56];
+    candidateMovementWord targets[16];
+    unsigned int distances[16];
+    char pad224[588];
+    int count;
+} candidateMovementState;
+int func_800DB8AC(candidateMovementState*, actionCandidateEntry*);
+int func_800E42D4(int, int);
+int func_800E4624(short*, short*, int, int);
+unsigned int func_800E4660(int, int, int);
+void func_800DB5B8(candidateMovementState*, unsigned int, int);
+void func_800DB5DC(candidateMovementState*, unsigned int, int);
+int func_800DB61C(candidateMovementState*, int);
+int func_800DB370(actionCandidateState*, int, int, int);
+int func_800DB74C(actionCandidateState*, int);
+int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
+{
+    int id, flag;
+    unsigned int distance, limit;
+    int active = 0;
+    short point[3];
+    int x, z, y;
+    if (!state->count)
+        return 0;
+    id = entry->targetId;
+    if (id == 16 || !((candidateMovementState**)0x1F80037C)[id])
+        return 0;
+    switch (state->mode) {
+    case 1:
+    normal:
+        limit = 0x1F80;
+        if (!(state->flags & 8))
+            limit = vs_gte_rsqrt(entry->distanceSquared) + (state->maxRange << 5);
+        limit = limit * limit;
+        if ((state->targets[id].bytes[0] >> 6) == 2) {
+            distance = entry->distanceSquared;
+            flag = 0;
+            active = 1;
+        } else {
+            if (func_800DB8AC(state, entry)) {
+                distance = entry->distanceSquared;
+                active = 1;
+            } else {
+                distance = limit;
+                {
+                    unsigned int minimum = 0x64000;
+                    if (distance < minimum)
+                        distance = minimum;
+                }
+            }
+            flag = 1;
+        }
+        distance = vs_gte_rsqrt(distance);
+        if (active) {
+            D_800F58BC->unk24++;
+            if (state->distances[id] < limit && (state->targets[entry->targetId].raw & 1))
+                func_800D836C((void*)state);
+        }
+    move:
+        if (func_800DB370((void*)state, id, distance, flag))
+            return 1;
+        return func_800DB74C((void*)state, id) != 0;
+    case 2:
+        if (!func_800DBCB4((void*)state, (void*)entry))
+            goto normal;
+        if (entry->flag1) {
+            point[0] = (state->destination.bytes[0] << 7) + 64;
+            point[2] = (state->destination.bytes[2] << 7) + 64;
+            point[1] = func_800E42D4(point[0], point[2]);
+            distance =
+                vs_gte_rsqrt(func_800E4624(point, (short*)&D_800F4538[id]->unk0.position,
+                    state->height, ((candidateMovementState*)D_800F5878[id])->height));
+            distance =
+                (int)distance < vs_gte_rsqrt(entry->distanceSquared) - entry->range;
+            if (distance)
+                goto normal;
+        }
+        x = (state->next.bytes[0] << 7) + 64;
+        z = (state->next.bytes[2] << 7) + 64;
+        y = func_800E42D4(x, z);
+        if (func_800E4660(
+                x - state->position[0], y - state->position[1], z - state->position[2])
+            <= 0xFFFF) {
+            state->target = id;
+            func_800DB5B8(state, state->destination.raw, 2);
+        } else {
+            state->f1 = 1;
+            func_800DB5DC(state, state->destination.raw, 256);
+        }
+        return 1;
+    case 4:
+        return func_800DB61C(state, 0);
+    case 7:
+        func_800D82CC((void*)state);
+        id = 0;
+        flag = 1;
+        if ((state->targets[id].bytes[0] >> 6) == 3) {
+            distance = 640;
+            goto move;
+        }
+        break;
+    }
+    return 0;
+}
 
-int func_800D9E18(actionCandidateState*, actionCandidateEntry*);
 int func_800DB370(actionCandidateState*, int, int, int);
 int func_800DB74C(actionCandidateState*, int);
 int func_800DA1D4(actionCandidateState* state)
@@ -825,13 +953,13 @@ int func_800DA1D4(actionCandidateState* state)
     switch (state->status) {
     case 0:
         entry = state->entries[0];
-        id = entry->kind;
-        if (func_800D9E18(state, entry))
+        id = entry->targetId;
+        if (func_800D9E18((void*)state, entry))
             return 1;
         for (i = 1; i < state->count; i++) {
             entry = state->entries[i];
-            if (entry->threshold < D_800F58BC->unk18 && entry->kind != id)
-                return func_800D9E18(state, entry);
+            if (entry->threshold < D_800F58BC->unk18 && entry->targetId != id)
+                return func_800D9E18((void*)state, entry);
         }
         return 0;
     case 1:
@@ -842,7 +970,7 @@ int func_800DA1D4(actionCandidateState* state)
             if (func_800DB74C(state, 0))
                 return 1;
         }
-        id = state->entries[0]->kind;
+        id = state->entries[0]->targetId;
         if ((state->targets[id].flags >> 6) == 3) {
             flag = 1;
             distance = 640;

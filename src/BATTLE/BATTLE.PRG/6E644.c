@@ -735,7 +735,71 @@ done:
     return dest.raw & 0xFFFF00FF;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D85D8);
+typedef struct {
+    int pad0;
+    unsigned int row : 3, column : 2, pad5 : 8, threshold : 16, pad29 : 3;
+    unsigned int distanceSquared;
+    unsigned int kind : 4, padC4 : 15, weight : 8, padC27 : 5;
+} actionCandidateEntry;
+typedef struct {
+    unsigned char flags, pad[3];
+} actionCandidateTarget;
+typedef struct {
+    char pad0[0x131];
+    unsigned char status;
+    char pad132[0x72];
+    actionCandidateTarget targets[16];
+    unsigned int targetDistancesSquared[16];
+    char pad224[0x20C];
+    actionCandidateEntry* entries[16];
+    int count;
+} actionCandidateState;
+int func_800E4CF4(actionCandidateState*, actionCandidateEntry*, int);
+int func_800E4DF8(actionCandidateState*, int, int);
+void func_800D9DD8(actionCandidateState*);
+int func_800D85D8(actionCandidateState* state)
+{
+    int i, changed = 0;
+    unsigned char value;
+    actionCandidateEntry* entry;
+    actionCandidateEntry* candidate;
+    vs_battle_actor* actor;
+    for (i = 0; i < state->count; i++) {
+        entry = state->entries[i];
+        if (entry->weight && entry->threshold <= D_800F58BC->unk18) {
+            if (!func_800E4CF4(state, entry, entry->kind)
+                || !func_800E4DF8(state, entry->row, entry->column))
+                entry->weight = 0;
+        }
+    }
+    if (state->count > 0 && !state->entries[0]->weight) {
+        changed = 1;
+        for (i = 1; i < state->count; i++) {
+            candidate = state->entries[i];
+            if (candidate->weight) {
+                state->entries[0] = candidate;
+                func_800D9DD8(state);
+                goto done;
+            }
+        }
+        state->count = 0;
+    }
+done:
+    if (!state->count) {
+        actor = vs_battle_actors[0];
+        while (actor) {
+            if ((state->targets[actor->id].flags >> 6) == 3)
+                break;
+            actor = actor->next;
+        }
+        value = 2;
+        if (!actor)
+            value = 3;
+    } else
+        value = D_800F58BC->unk18 + 30 < state->entries[0]->threshold;
+    state->status = value;
+    return changed;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D87E8);
 
@@ -749,7 +813,77 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9DD8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9E18);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA1D4);
+int func_800D9E18(actionCandidateState*, actionCandidateEntry*);
+int func_800DB370(actionCandidateState*, int, int, int);
+int func_800DB74C(actionCandidateState*, int);
+int func_800DA1D4(actionCandidateState* state)
+{
+    int id = -1, flag, distance, i;
+    unsigned int nearest = -1;
+    actionCandidateEntry* entry;
+    vs_battle_actor* actor;
+    switch (state->status) {
+    case 0:
+        entry = state->entries[0];
+        id = entry->kind;
+        if (func_800D9E18(state, entry))
+            return 1;
+        for (i = 1; i < state->count; i++) {
+            entry = state->entries[i];
+            if (entry->threshold < D_800F58BC->unk18 && entry->kind != id)
+                return func_800D9E18(state, entry);
+        }
+        return 0;
+    case 1:
+        func_800D82CC((void*)state);
+        if ((state->targets[0].flags >> 6) == 3) {
+            if (func_800DB370(state, 0, 640, 1))
+                return 1;
+            if (func_800DB74C(state, 0))
+                return 1;
+        }
+        id = state->entries[0]->kind;
+        if ((state->targets[id].flags >> 6) == 3) {
+            flag = 1;
+            distance = 640;
+        } else {
+            if (state->count < 2)
+                return 0;
+            flag = 0;
+            distance = vs_gte_rsqrt(state->entries[1]->distanceSquared);
+        }
+        if (func_800DB370(state, id, distance, flag))
+            return 1;
+        if (func_800DB74C(state, id))
+            return 1;
+    case 2:
+        func_800D82CC((void*)state);
+        if ((state->targets[0].flags >> 6) == 3) {
+            if (func_800DB370(state, 0, 640, 1))
+                return 1;
+            if (func_800DB74C(state, 0))
+                return 1;
+        }
+        for (actor = vs_battle_actors[0]; actor; actor = actor->next) {
+            int candidate = actor->id;
+            if ((state->targets[candidate].flags >> 6) == 3) {
+                unsigned int d = state->targetDistancesSquared[candidate];
+                if (d < nearest) {
+                    nearest = d;
+                    id = candidate;
+                }
+            }
+        }
+        if (id >= 0) {
+            if (func_800DB370(state, id, 640, 1))
+                return 1;
+            if (func_800DB74C(state, id))
+                return 1;
+        }
+        break;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA4BC);
 

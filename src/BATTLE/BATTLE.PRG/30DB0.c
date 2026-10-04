@@ -1334,7 +1334,26 @@ void func_8009D468(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009D6F4);
+void func_8009D6F4(void)
+{
+    int i;
+    for (i = 0; i < 17; ++i) {
+        D_800F4538_t* actor = D_800F4538[i];
+        if (actor != NULL) {
+            if (actor->unk5AC_3)
+                actor->unk5AC_3 = 0;
+            actor->unk5AC_20 = 0;
+            actor->unk0.unk11 = 0;
+            actor->unk0.unkC_0 = 0;
+            actor->unk0.unkC_4 = 0;
+            actor->unk0.unkA_3 = 0;
+            actor->unk0.unk9_6 = 0;
+            actor->unk5AC_15 = 0;
+            actor->unk0.unkA_0 = 0;
+            memset(&actor->unk1848, 0, sizeof actor->unk1848);
+        }
+    }
+}
 
 void func_8009D7E8(int arg0, int arg1)
 {

@@ -679,7 +679,45 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA1D4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA4BC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAC80);
+typedef struct {
+    char prefix[0x13];
+    u_char kind;
+    char gap[0x12B];
+    u_char cooldown;
+    char gap2[0xEC];
+    func_800DCAA0_t* action;
+} actionSetupContext;
+int func_800DBD80(actionSetupContext*, func_800DCAA0_t*);
+int func_800D826C(actionSetupContext*);
+int func_800DBC60(actionSetupContext*, func_800DCAA0_t*);
+int func_800E45D4(int);
+extern int D_800F58E0;
+
+int func_800DAC80(actionSetupContext* context, func_800DCAA0_t* action)
+{
+    D_800F4538_t* actor;
+    if (!func_800DBD80(context, action))
+        return 0;
+    func_800D836C((void*)context);
+    if (func_800D826C(context)) {
+        context->action = action;
+        D_800F58E0 = 1;
+        actor = D_800F4538[action->unkC_0];
+        if (actor != NULL && (*(u_int*)((char*)actor + 8) & 0x180000)) {
+            action->unkC_4 = func_800E45D4(2);
+            action->unkC_7 = 217;
+        }
+        func_800DEEFC((void*)context, 15);
+        if (func_800DBC60(context, action)) {
+            if (context->kind == 0)
+                context->cooldown = *((u_char*)D_800F58BC + 8);
+            else
+                context->cooldown = 50;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAD9C);
 
@@ -1042,7 +1080,82 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1BB8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2B2C);
+typedef struct {
+    char prefix[0x4C];
+    short x;
+    short padding4E;
+    short z;
+    char padding52[6];
+    D_800F4538_t* actor;
+    char padding5C[0x2C];
+    u_char actorId;
+    char padding89[0x31];
+    u_short delay;
+    char paddingBC[0x4C];
+    int previousDestination;
+    u_char pending;
+    char padding10D[0x2D];
+    u_short timer;
+    char padding13C[0x2C];
+    int destination;
+    char padding16C[0x10];
+    int targetX;
+    int targetZ;
+    char padding184[4];
+    u_int padding188 : 16;
+    int angle : 16;
+    char padding18C[0x18];
+    u_int targetFlags[17];
+    char padding1E8[0x299];
+    u_char reaction;
+} movementDecisionContext;
+int func_800E4180(void*, int, int, int);
+
+int func_800E2B2C(movementDecisionContext* context, int targetId)
+{
+    D_800F4538_t* actor = context->actor;
+    int angle;
+    if (targetId == context->actorId) {
+        func_800DEEFC((void*)context, 0);
+        return 1;
+    }
+    if (context->delay == 0)
+        return 0;
+    if (context->reaction != 0) {
+        if (func_800E4180(context, 128, 3, 6))
+            return 1;
+        context->pending = 0;
+        goto failed;
+    }
+    angle = ratan2(context->x - context->targetX, context->z - context->targetZ);
+    if ((context->destination & 0xFF00FF) != (context->previousDestination & 0xFF00FF)
+        && ((context->targetFlags[targetId] >> 5) & 1)) {
+        if (context->pending == 0) {
+            context->pending = 1;
+            context->angle = angle;
+            context->previousDestination = context->destination;
+        }
+    }
+    if (context->pending == 0)
+        return 0;
+    context->timer = context->delay;
+    if (((actor->unk0.facing + (short)actor->unk0.unk14) & 0xFFF)
+        == (context->angle & 0xFFF)) {
+        if (!((context->targetFlags[targetId] >> 5) & 1)) {
+            if (func_800E4180(context, 128, 1, 6))
+                return 1;
+            context->pending = 0;
+            goto failed;
+        }
+        context->pending = 1;
+        context->angle = angle & 0xFFF;
+        context->previousDestination = context->destination;
+    }
+    func_800DEEFC((void*)context, 4);
+    return 1;
+failed:
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2CCC);
 

@@ -31,7 +31,7 @@ typedef struct {
 
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
-void func_800AEAE8(void*);
+void func_800AEAE8(D_800F4538_t*);
 void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
 int func_8008D2C0(func_8008D2C0_t*);

@@ -1,6 +1,8 @@
 #include "common.h"
 #include <rand.h>
 #include <abs.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 #include "146C.h"
 #include "3A1A0.h"
 #include "44F14.h"
@@ -237,9 +239,93 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEAE8);
+typedef struct {
+    char prefix[0x3A];
+    u_short angleX, angleY;
+    char padding[0x16];
+    SVECTOR offset;
+    char padding2[8];
+    MATRIX matrix;
+    SVECTOR rotation;
+} actorTransformScratch;
+extern struct {
+    char prefix[0x1FD0];
+    int scales[3];
+} D_800F2458;
+void func_800B07DC(D_800F4538_t*);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AECA0);
+void func_800AEAE8(D_800F4538_t* actor)
+{
+    actorTransformScratch* scratch = (void*)0x1F80035C;
+    D_800F2458.scales[0] = 64;
+    D_800F2458.scales[1] = 64;
+    D_800F2458.scales[2] = 64;
+    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == 4096) {
+        scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
+        scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
+        scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
+    } else {
+        scratch->offset.vx = *(short*)((char*)actor + 0x84C) * actor->unk0.unk2C / 8192;
+        scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk2E / 8192;
+        scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk30 / 8192;
+    }
+    scratch->offset.vx = scratch->offset.vx * actor->unk183C / 4096;
+    scratch->offset.vy = scratch->offset.vy * actor->unk183C / 4096;
+    scratch->offset.vz = scratch->offset.vz * actor->unk183C / 4096;
+    func_800B07DC(actor);
+    scratch->angleX = actor->unk0.unk14;
+    scratch->angleY = actor->unk0.unk16;
+}
+
+extern MATRIX D_8005E218;
+extern MATRIX D_800F4910;
+extern MATRIX D_800F49B8;
+void func_8004140C(MATRIX*, VECTOR*);
+void func_80041C68(MATRIX*, MATRIX*);
+typedef struct {
+    char prefix[0x64];
+    MATRIX matrix;
+    char gap[8];
+    VECTOR scale;
+} cameraTransformScratch;
+
+void func_800AECA0(MATRIX* source)
+{
+    MATRIX rotation;
+    cameraTransformScratch* scratch = (void*)0x1F80035C;
+    struct {
+        char prefix[0x5C];
+        int angle, unused, zoom;
+    }* camera = (void*)0x1F800000;
+    int i;
+    for (i = 0; i < 3; ++i) {
+        scratch->matrix.m[0][i] = D_8005E218.m[i][0];
+        scratch->matrix.m[1][i] = D_8005E218.m[i][1];
+        scratch->matrix.m[2][i] = D_8005E218.m[i][2];
+    }
+    rotation.m[1][1] = rotation.m[0][0] = rcos(-camera->angle);
+    rotation.m[1][0] = rsin(-camera->angle);
+    rotation.m[0][1] = -rotation.m[1][0];
+    rotation.m[2][2] = 4096;
+    rotation.m[0][2] = rotation.m[1][2] = rotation.m[2][0] = rotation.m[2][1] = 0;
+    scratch->scale.vx = 3640;
+    scratch->scale.vy = 4096;
+    scratch->scale.vz = 4096;
+    func_8004140C(&scratch->matrix, &scratch->scale);
+    func_80041C68(&scratch->matrix, &rotation);
+    scratch->matrix = rotation;
+    i = 0x1000000 / camera->zoom;
+    scratch->scale.vx = i;
+    scratch->scale.vy = i;
+    scratch->scale.vz = i;
+    func_8004140C(&scratch->matrix, &scratch->scale);
+    /* Preserve the original copy from the parameter home area. */
+    D_800F4910 = *(MATRIX*)&source;
+    D_800F49B8 = scratch->matrix;
+    D_800F49B8.t[0] = source->t[0];
+    D_800F49B8.t[1] = source->t[1];
+    D_800F49B8.t[2] = source->t[2];
+}
 
 void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
 void func_800AEEC4(D_800F4538_t* arg0)
@@ -392,7 +478,30 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AFDE8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B002C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B07DC);
+void func_80040F8C(SVECTOR*, MATRIX*);
+
+void func_800B07DC(D_800F4538_t* actor)
+{
+    actorTransformScratch* scratch = (void*)0x1F80035C;
+    scratch->rotation.vx = actor->unk0.unk24;
+    scratch->rotation.vy = actor->unk0.facing;
+    scratch->rotation.vz = actor->unk0.unk28;
+    func_80040F8C(&scratch->rotation, &scratch->matrix);
+    scratch->matrix.t[0] = 0;
+    scratch->matrix.t[1] = 0;
+    scratch->matrix.t[2] = 0;
+    gte_SetRotMatrix(&scratch->matrix);
+    gte_SetTransMatrix(&scratch->matrix);
+    gte_ldv0(&scratch->offset);
+    gte_rtv0tr2();
+    gte_stlvnl(scratch->matrix.t);
+    scratch->offset.vx = scratch->matrix.t[0];
+    scratch->offset.vy = scratch->matrix.t[1];
+    scratch->offset.vz = scratch->matrix.t[2];
+    scratch->offset.vx += actor->unk0.position.vx;
+    scratch->offset.vz += actor->unk0.position.vz;
+    scratch->offset.vy += actor->unk0.position.vy;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B0908);
 

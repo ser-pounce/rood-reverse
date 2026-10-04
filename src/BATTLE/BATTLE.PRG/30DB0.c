@@ -1917,7 +1917,124 @@ void func_8009E634(D_800F4538_t* arg0)
 }
 
 // https://decomp.me/scratch/ajofv
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009E700);
+void func_8009E700(int actorId, int animation)
+{
+    D_800F4538_t* actor;
+    D_800F45E0_t* object;
+    int objectState;
+    int state;
+    int action;
+    int facing;
+    int direction;
+    int distance;
+    int tileDx;
+    int tileDz;
+    u_int movementFlags;
+    u_int flags;
+    int currentAnimation;
+    int reactionAnimation;
+    int baseAnimation;
+
+    actor = D_800F4538[actorId];
+    if (actor == NULL) {
+        object = D_800F45E0[actorId];
+        if ((object != NULL)
+            && ((objectState = object->unk1A, (objectState == 0xF9))
+                || (objectState == 0xFF))
+            && ((*(u_char*)((char*)object + 0x170)) == 0)) {
+            object->unk1A = 0;
+        }
+    } else {
+        currentAnimation = actor->animationId;
+        if ((currentAnimation != 0xC6) && (currentAnimation != 0xC8)
+            && ((actor->unk0.unkF != 0)
+                || (((*(int*)((char*)actor + 8)) & 0x184000) != 0x80000))) {
+            flags = (*(int*)((char*)actor + 8));
+            if (((u_int)((flags >> 0x10) & 7) < 2U)
+                && (state = flags & 0x70000000, (state != 0x20000000))
+                && (state != 0x50000000)) {
+                action = flags & 0x0F000000;
+                if (action == 0x3000000) {
+                    func_800A2C48(actor);
+                } else if (action != 0) {
+                    goto resetState;
+                }
+                {
+                    movementFlags = (*(int*)((char*)actor + 8));
+                    if ((movementFlags & 0x180000) == 0x100000) {
+                        if ((*(int*)((char*)actor + 0x18)) != 0) {
+                            actor->unk0.unk1A = 0;
+                            actor->unk0.unk18 = 0;
+                            actor->unk0.position.vx = (u_short)actor->unk0.position.vx
+                                                    + (u_short)actor->unk0.unk34.vx;
+                            actor->unk0.position.vy = (u_short)actor->unk0.position.vy
+                                                    + (u_short)actor->unk0.unk34.vy;
+                            actor->unk0.position.vz = (u_short)actor->unk0.position.vz
+                                                    + (u_short)actor->unk0.unk34.vz;
+                            actor->unk0.facing =
+                                (u_short)actor->unk0.facing + (u_short)actor->unk0.unk3E;
+                        }
+                    } else if (!(movementFlags & 0xF00)) {
+                        baseAnimation = actor->animationId;
+                        if ((int)baseAnimation >= 0x65) {
+                            baseAnimation -= 0x64;
+                        }
+                        if (baseAnimation != 0x62) {
+                            distance = 1;
+                            if (actor->unk0.unkF == 0) {
+                                reactionAnimation = actor->animationId;
+                                if ((u_int)(reactionAnimation - 0x4F) >= 4U) {
+                                    if (((u_int)(reactionAnimation - 0x47) >= 4U)
+                                        && (reactionAnimation != 0x4C)) {
+
+                                    } else {
+                                        goto moveFromReaction;
+                                    }
+                                } else {
+                                    distance = 2;
+                                moveFromReaction:
+                                    facing = actor->unk0.facing + 0x200;
+                                    facing &= 0xFFF;
+                                    facing /= 1024;
+                                    direction = facing;
+                                    tileDx = 0;
+                                    tileDz = 0;
+                                    if (direction < 2) {
+                                        distance = -distance;
+                                    }
+                                    if (direction & 1) {
+                                        tileDx = distance;
+                                    } else {
+                                        tileDz = distance;
+                                    }
+                                    func_800E4C28(actor->unk0.currentTileX + tileDx,
+                                        actor->unk0.currentTileZ + tileDz, tileDx,
+                                        tileDz);
+                                }
+                            }
+                            if ((*(int*)((char*)actor + 0x5AC)) & 8) {
+                                func_800A0204((int)actor->unk0.unkF, 0x4B, 0, 0xC);
+                            } else {
+                                func_800A0204(actorId, animation, 0, 0x10);
+                                actor->unk1846 = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        resetState:
+            if (((*(int*)((char*)actor + 8)) & 0x180000) != 0x100000) {
+                (*(int*)((char*)actor + 8)) =
+                    (u_int)((*(int*)((char*)actor + 8)) & 0xFFE7FFFF);
+            }
+            actor->unk5C8 = 0;
+            actor->unk0.unk18 = 0;
+            actor->unk0.unk1A = 0;
+            (*(int*)((char*)actor + 8)) = (u_int)((*(int*)((char*)actor + 8)) & ~0x4000);
+            func_800A0ABC(actorId);
+        }
+    }
+}
 
 void func_8009EA14(int arg0, SVECTOR* arg1)
 {

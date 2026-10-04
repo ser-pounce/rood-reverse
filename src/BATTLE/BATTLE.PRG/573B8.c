@@ -1,10 +1,13 @@
 #include "common.h"
 #include "146C.h"
+#include "4A0A8.h"
 #include "573B8.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
+#include <libetc.h>
 
 extern u_char D_800E9C30[];
+extern int (*_opcodeFunctionTable[])(u_char*, short);
 extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
@@ -45,8 +48,74 @@ extern u_char D_800EB9AC;
 extern void func_8007D260(int);
 void func_800A0204(int, int, int, int);
 extern void func_800BBDDC(void);
+int func_800BFE34(u_char*);
+void func_800C0150(void);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFBB8);
+short func_800BFBB8(u_char** arg0, short arg1)
+{
+    int ret;
+    u_char* script = *arg0;
+
+    if ((arg1 == 0) && (D_800F4C2C == 1)
+        && ((vs_main_buttonsPressed.all & PADstart) || (D_800F4C68 != 0))) {
+        D_800F4C68 = 0;
+        D_800F4C58[3] = 0;
+        D_800F4C58[2] = 0;
+        D_800F4C58[1] = 0;
+        D_800F4C58[0] = 0;
+        vs_battle_textBoxStatuses[3] = 0;
+        vs_battle_textBoxStatuses[2] = 0;
+        vs_battle_textBoxStatuses[1] = 0;
+        vs_battle_textBoxStatuses[0] = 0;
+
+        if (D_800F4C20 != 0) {
+            func_80044DF4(0);
+        }
+
+        func_80045DC0();
+        func_800434A4(0, 2);
+        func_800C0150();
+        func_8007C46C(0, 0xFF, 0);
+        func_8007C424();
+        vs_battle_setStateFlag(0xA8, 1);
+        D_800F4C2C = 2;
+    }
+
+    while (1) {
+        if (D_800F4C2C != 2) {
+            ret = _opcodeFunctionTable[*script](script, arg1);
+        } else {
+            ret = D_800F4C28[*script](script, arg1);
+        }
+
+        switch (ret) {
+        case 0:
+            script += func_800BFE34(script);
+            continue;
+
+        case 1:
+            break;
+
+        case 3:
+            *arg0 = NULL;
+            return 0;
+
+        case 2:
+            return 1;
+
+        case 4:
+            script += func_800BFE34(script);
+            break;
+
+        default:
+            script = (u_char*)ret;
+            continue;
+        }
+
+        *arg0 = script;
+        return 0;
+    }
+}
 
 void func_800BFD9C(void)
 {

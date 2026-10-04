@@ -743,9 +743,10 @@ typedef struct {
     char unkB;
     u_short unkC;
     char unkE;
-    char unkF;
-    int unk10;
-    int unk14;
+    char displayTextLen;
+    short unk10;
+    short unk12;
+    char displayText[4];
 } D_800F1BAC_t;
 
 typedef struct {

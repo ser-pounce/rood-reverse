@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P20", SetSprt8);
+void SetSprt8(SPRT_8* p) { setSprt8(p); }

@@ -2,7 +2,9 @@
 
 INCLUDE_ASM("build/src/EFFECT/PLG166.BIN/nonmatchings/0", func_800F9800);
 
-INCLUDE_ASM("build/src/EFFECT/PLG166.BIN/nonmatchings/0", func_800FA6B8);
+#define VS_MIRROR_SURFACE_FUNCTION func_800FA6B8
+#define VS_MIRROR_SURFACE_VERTICES D_800FCEC0
+#include "src/EFFECT/mirroredSurfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG166.BIN/nonmatchings/0", func_800FB32C);
 

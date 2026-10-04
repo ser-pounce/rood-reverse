@@ -1,6 +1,9 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG069.BIN/nonmatchings/E0", func_800F98E0);
+#define VS_MESH10_FUNCTION func_800F98E0
+#define VS_MESH10_VERTICES D_800FD424
+#define VS_MESH10_FACES D_800FD474
+#include "src/EFFECT/meshes10.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FA3EC
 #define VS_TRAIL_TARGET_FUNCTION func_800FAB88

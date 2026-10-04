@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P17", SetPolyFT4);
+void SetPolyFT4(POLY_FT4* p) { setPolyFT4(p); }

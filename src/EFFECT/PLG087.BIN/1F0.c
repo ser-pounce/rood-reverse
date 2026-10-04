@@ -1,6 +1,9 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800F99F0);
+#define VS_SURFACE_FUNCTION func_800F99F0
+#define VS_SURFACE_VERTICES D_800FF75C
+#define VS_SURFACE_REPEAT
+#include "src/EFFECT/surfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FA588);
 

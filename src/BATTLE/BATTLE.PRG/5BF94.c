@@ -265,6 +265,13 @@ typedef struct {
     func_800C56C0_t2 unk990[24];
 } func_800C56C0_t;
 
+typedef struct {
+    int unk0_0 : 12;
+    int unk0_12 : 12;
+    u_int unk0_24 : 2;
+    u_int unk0_26 : 4;
+} func_800CCE10_t;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800CA97C(void);
@@ -376,6 +383,7 @@ extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(gim_t*, int, u_long*);
+extern func_800CCE10_t D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -2722,7 +2730,26 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
 
 vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCE10);
+func_800CCE10_t func_800CCE10(int arg0, int arg1, int arg2, int arg3)
+{
+    func_800CCE10_t ret;
+    func_800CCE10_t* p =
+        &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    int offsetX = p->unk0_0;
+    int offsetY = p->unk0_12;
+    int unk24 = p->unk0_24;
+
+    if ((arg1 >> 2) & 1) {
+        offsetX = -offsetX;
+        unk24 ^= 2;
+    }
+
+    ret.unk0_0 = offsetX - ((arg2 * 12 + 10) >> 1);
+    ret.unk0_12 = offsetY - ((arg3 * 13 + 4) >> 1);
+    ret.unk0_24 = unk24;
+    ret.unk0_26 = p->unk0_26;
+    return ret;
+}
 
 void vs_battle_initTextBox(
     int id, int flags, int x, int y, int charsPerLine, int h, int centerX, int centerY)

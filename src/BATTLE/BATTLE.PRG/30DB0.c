@@ -2183,7 +2183,74 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009F314);
+void func_800AE7D8(void*, int, int);
+
+void func_8009F314(int actorId, void* context, int animate)
+{
+    u_short* animation;
+    D_800F4538_t* actor;
+    D_800F45E0_t* object;
+    int flags;
+    int animationId;
+
+    actor = D_800F4538[actorId];
+    if (actor != NULL) {
+        flags = (*(int*)((char*)actor + 8));
+        if ((flags & 0x270000) || ((flags & 0x180000) == 0x100000)) {
+            if ((*(int*)((char*)actor + 0xC)) & 0xF) {
+                func_8008C49C(((u_char)(*(int*)((char*)actor + 0xC)) & 0xF) - 2, -1);
+                (*(int*)((char*)actor + 0xC)) =
+                    (int)((*(int*)((char*)actor + 0xC)) & ~0xF);
+            }
+            actor->unk0.unk1A = 0;
+            actor->unk0.unk34.vx = 0;
+            actor->unk0.unk34.vz = 0;
+            if (actor->unk0.unkF == 0) {
+                if (((*(int*)((char*)actor + 8)) & 0x70000) == 0x30000) {
+                    if (actor->unk0.unk34.vy <= 0) {
+                        goto setVerticalSpeed;
+                    }
+                } else {
+                    goto setFallingSpeed;
+                }
+            } else {
+            setVerticalSpeed:
+            setFallingSpeed:
+                actor->unk0.unk34.vy = -6;
+            }
+            actor->unk181A = 0;
+            (*(int*)((char*)actor + 8)) =
+                (int)(((*(int*)((char*)actor + 8)) & 0xFFF8FFFF) | 0x30000);
+        }
+        if (animate != 0) {
+            animationId = 0x46;
+            if ((*(int*)((char*)actor + 0x5AC)) & 8) {
+                animationId = 0x3A;
+            }
+            func_800AD494(actor, 0xABU, (int*)&animation);
+            if (animation != NULL) {
+                if (!((*(int*)((char*)actor + 8)) & 0x70000)) {
+                    animationId = 0x47;
+                }
+            }
+            func_800A0204(actorId, animationId, 0, 6);
+            func_8009FD38(actor);
+            actor->unk0.unk9_0 = 1;
+        } else {
+            actor->unk0.unk9_0 = 2;
+        }
+        if ((u_char)actor->unk17FD >= 2U) {
+            func_8009F314((int)actor->unk17FD, context, animate);
+        }
+    } else {
+        object = D_800F45E0[actorId];
+        if (object != NULL) {
+            object->unk1A = 0xF7;
+            *(u_char*)((char*)object + 0x170) = 0;
+            func_800AE7D8(object, 0x32, 0);
+        }
+    }
+}
 
 void func_8009F530(int arg0)
 {

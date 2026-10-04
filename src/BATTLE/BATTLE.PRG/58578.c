@@ -5,6 +5,8 @@
 #include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 #include <stddef.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 
 typedef struct {
     char unk0;
@@ -259,7 +261,70 @@ int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1384);
+int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
+{
+    struct {
+        int corners[5];
+        int clip;
+    } polygon;
+    struct {
+        SVECTOR local;
+        SVECTOR rotated;
+        short origin[4];
+    } work;
+    MATRIX matrix;
+    int i, x, z, offsetX, offsetZ;
+    short* ptr;
+    void* base;
+    int offset;
+
+    work.origin[0] = shape->unk8.vx;
+    work.origin[1] = shape->unk8.vy;
+    work.origin[2] = shape->unk8.vz;
+    work.local.vx = shape->unk4.values[3] << 4;
+    work.local.vy = -shape->unk2;
+    work.local.vz = 0;
+    ptr = (short*)&work;
+    RotMatrix_gte(&work.local, &matrix);
+    i = 0;
+    base = &work;
+    offset = 16;
+    do {
+        *ptr = *position++ - *(u_short*)(base + offset);
+        offset += 2;
+        ++i;
+        ++ptr;
+    } while (i < 3);
+    ApplyMatrixSV(&matrix, &work.local, &work.rotated);
+    if ((u_short)-work.rotated.vy > (shape->unk4.values[1] << 5)) {
+        return 0;
+    }
+    x = shape->unk4.values[0] << 5;
+    z = shape->unk4.values[2] << 5;
+    if (angled) {
+        offsetZ = z;
+        offsetX = -x;
+    } else {
+        offsetZ = 0;
+        offsetX = offsetZ;
+    }
+    i = 0;
+    polygon.corners[0] = (u_short)-x | (-offsetZ << 16);
+    polygon.corners[1] = -offsetX | (-z << 16);
+    polygon.corners[2] = x | (offsetZ << 16);
+    polygon.corners[3] = (u_short)offsetX | (z << 16);
+    polygon.corners[4] = (u_short)work.rotated.vx | (work.rotated.vz << 16);
+    do {
+        gte_ldsxy3(polygon.corners[4], polygon.corners[i], polygon.corners[(i + 1) & 3]);
+        gte_nclip2();
+        gte_stopz(&polygon.clip);
+        if (polygon.clip < 0) {
+            return 0;
+        }
+        ++i;
+    } while (i < 4);
+    return 1;
+}
 
 int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
 {

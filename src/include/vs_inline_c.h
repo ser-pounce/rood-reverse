@@ -26,3 +26,8 @@
 	"ctc2	$0, $6;"					\
 	"ctc2	$0, $7"						\
 )
+
+#define gte_nclip2() __asm__ volatile ( \
+    "nop;" \
+    "nop;" \
+    "nclip")

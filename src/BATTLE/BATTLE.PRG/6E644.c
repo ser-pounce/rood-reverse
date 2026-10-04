@@ -1700,7 +1700,236 @@ void func_800E6F9C(void);
 
 void func_800E6158(void) { func_800E6F9C(); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6178);
+extern int D_800F590C;
+void func_800A190C(unsigned char, int, void*, int);
+int func_800A152C(int, int, int);
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned char b0, b1, b2, b3;
+    } bytes;
+    struct {
+        unsigned int low : 24, f24 : 2, f26 : 2, high : 4;
+    } bits;
+} actorInitializationFlags;
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned char x, y, z, w;
+    } p;
+} actorInitializationPoint;
+typedef struct actorInitializationStats {
+    char pad0[48];
+    unsigned char field30;
+    unsigned char field31;
+    unsigned char field32;
+    unsigned char field33;
+} actorInitializationStats;
+typedef struct actorInitializationModel {
+    char pad0[8];
+    unsigned int flags;
+    char padC[16];
+    short position[3];
+    char pad22[58];
+    actorInitializationPoint tile;
+    char pad60[268];
+    unsigned int kind;
+    char pad170[1228];
+    unsigned short radius;
+    unsigned short field63E;
+} actorInitializationModel;
+typedef struct actorInitializationActor {
+    char pad0[4];
+    int id;
+    actorInitializationFlags flags;
+    char padC[16];
+    unsigned short attributes;
+    char pad1E[1];
+    unsigned char field1F;
+    char pad20[16];
+    int field30;
+    unsigned int field34;
+    int field38;
+    actorInitializationStats* stats;
+    int field40;
+    actorInitializationModel* model;
+} actorInitializationActor;
+typedef struct actorInitializationState {
+    char pad0[42];
+    unsigned char field2A;
+    char pad2B[9];
+    int tile;
+    int previous;
+    char pad3C[6];
+    short options;
+    char pad44[16];
+    actorInitializationActor* actor;
+    actorInitializationModel* model;
+    actorInitializationStats* stats;
+    short* position;
+    unsigned int* tilePointer;
+    char pad68[26];
+    unsigned short field82;
+    char pad84[4];
+    unsigned char id;
+    unsigned char field89;
+    unsigned char field8A;
+    char pad8B[7];
+    unsigned short radius;
+    unsigned short collisionRadius;
+    char pad96[6];
+    int field9C;
+    char padA0[12];
+    unsigned int rangeSquared;
+    char padB0[3];
+    unsigned char maxRange;
+    int distance;
+    unsigned short fieldB8;
+    char padBA[2];
+    short fieldBC;
+    short fieldBE;
+    char padC0[67];
+    unsigned char field103;
+    char pad104[12];
+    int field110;
+    char pad114[16];
+    unsigned char field124;
+    char pad125[8];
+    unsigned char field12D;
+    char pad12E[14];
+    unsigned short stepHeight;
+    char pad13E[32];
+    unsigned short flags;
+    char pad160[16];
+    int next;
+    char pad174[16];
+    int targetY;
+    char pad188[12];
+    int field194;
+    char pad198[140];
+    unsigned char field224;
+    unsigned char field225;
+    unsigned char field226;
+    unsigned char field227;
+} actorInitializationState;
+
+void func_800E4288(void*, int);
+void func_800E6828(actorInitializationState*);
+void func_800E5A9C(actorInitializationState*, int*);
+void func_800E7370(actorInitializationState*);
+void func_800E72D0(void);
+
+int func_800E6178(actorInitializationActor* actor, int options)
+{
+    actorInitializationState* state;
+    actorInitializationModel* model;
+    actorInitializationStats* stats;
+    int id = actor->id;
+    int i, kind, temp, packed;
+    unsigned int radius, range;
+    unsigned short result[4];
+    if (actor->attributes & 0x15)
+        D_800F590C |= 1 << id;
+    if (!actor->field40) {
+        kind = actor->model->kind & 7;
+        if (kind == 2 || kind == 4) {
+            for (i = 0; i < 4; i++) {
+                if (!((int*)D_800F58BC)[10 + i]) {
+                    ((int*)D_800F58BC)[10 + i] = (int)actor;
+                    break;
+                }
+            }
+        }
+    }
+    if (!(actor->attributes & 5))
+        return 0;
+    state = vs_main_allocHeap(0x484);
+    D_800F5878[id] = (void*)state;
+    func_800E4288(state, 0x484);
+    state->id = id;
+    state->actor = actor;
+    model = actor->model;
+    state->model = model;
+    state->stats = actor->stats;
+    func_800A190C(state->id, 250, result, 0);
+    state->field82 = result[1] - model->position[1];
+    radius = model->radius;
+    if (!id)
+        state->radius = 40;
+    else if (radius < 63)
+        state->radius = radius;
+    else
+        state->radius = 62;
+    if (radius > 128) {
+        state->stepHeight = 32;
+        state->collisionRadius = radius;
+    } else {
+        radius = state->radius;
+        state->stepHeight = 128;
+        state->collisionRadius = radius;
+    }
+    state->position = model->position;
+    state->tilePointer = &model->tile.raw;
+    state->field89 = 0;
+    state->field8A = 0;
+    state->field103 = 1;
+    state->field2A = func_800A152C(id, 2, 3) >= 0;
+    stats = actor->stats;
+    state->field224 = stats->field30;
+    state->field225 = stats->field32;
+    state->field226 = stats->field31;
+    state->field227 = stats->field33;
+    if (state->field224 & 8)
+        state->distance = state->field226 << 7;
+    else if (state->field225 & 8)
+        state->distance = state->field227 << 7;
+    func_800E6828(state);
+    range = state->field226;
+    if (range < state->field227)
+        range = state->field227;
+    state->maxRange = range;
+    packed = actor->field38;
+    if (actor->field34 & 1)
+        func_800E5A74(&packed, (void*)&actor->field30);
+    func_800E5A9C(state, &packed);
+    func_800E7370(state);
+    temp = state->distance - 64;
+    if (state->rangeSquared < (unsigned int)(temp * temp))
+        state->distance = vs_gte_rsqrt(state->rangeSquared) - 64;
+    state->fieldBC = -256;
+    state->fieldBE = -128;
+    state->fieldB8 = model->field63E;
+    state->tile = *state->tilePointer;
+    state->field110 = *state->tilePointer;
+    state->field194 = -1;
+    state->field9C = -1;
+    state->targetY = state->position[1] << 12;
+    if (id) {
+        if ((state->flags & 0x30) && (state->flags & 0xC6)
+            && (D_800F58B8[model->tile.p.z][model->tile.p.x] & 0x10)
+            && !(model->flags & 0x200000)) {
+            state->next = model->tile.raw;
+            func_800DEEFC((void*)state, 12);
+        } else if ((short)options < 0 || !(((int)(short)options << 26) < 0)) {
+            if (actor->field1F) {
+                func_800DEEFC((void*)state, 1);
+                state->field12D = 1;
+            }
+        }
+    }
+    actor->flags.bytes.b1 = 0;
+    actor->flags.bits.f26 = 0;
+    actor->flags.bits.f24 = 0;
+    state->field124 = actor->flags.bytes.b1;
+    state->previous = -1;
+    state->options = (short)options;
+    func_800E72D0();
+    if (state->id) {
+        while (func_800DEC88(0))
+            ;
+    }
+    return (short)options >= 0 && (((int)(short)options << 26) < 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E65DC);
 

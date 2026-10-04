@@ -4686,7 +4686,7 @@ vs_battle_actor* func_800765B0(
         vs_battle_actors[index] = &temp_v0->unk0.unk0;
 
         func_8007647C(index, actorId);
-        func_800E6178(&temp_v0->unk0.unk0, -1);
+        func_800E6178((void*)&temp_v0->unk0.unk0, -1);
         func_800A087C(index, 0x1846);
 
         return &temp_v0->unk0.unk0;
@@ -5125,7 +5125,7 @@ void func_800773BC(
         func_800A087C(arg1, 0x46);
     }
     arg0->unk38 = 0;
-    func_800E6178(arg0, -1);
+    func_800E6178((void*)arg0, -1);
 }
 
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
@@ -6690,7 +6690,7 @@ int func_8007C928(u_int arg0, int arg1, vs_battle_objectData_flags* arg2)
             temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
             func_80076D50(arg0, arg1, 0, 0, 6);
             s0 = func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg2, 0);
-            func_800E6178(*temp_s1, -1);
+            func_800E6178((void*)*temp_s1, -1);
             return s0 + 1;
         }
     }

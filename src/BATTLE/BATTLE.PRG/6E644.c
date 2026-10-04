@@ -1154,7 +1154,91 @@ void func_800E1388(func_800D8400_t* state, vs_battle_movementPosition source, in
     state->destination = dest;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E153C);
+typedef struct {
+    char pad0[0xD];
+    unsigned char flagD;
+    char padE[0x26];
+    vs_battle_movementPosition position;
+    char pad38[0x10];
+    vs_battle_movementPosition previous;
+    short x;
+    char pad4E[2];
+    short z;
+    char pad52[0x3A];
+    unsigned short attempts;
+    char pad8E[0x26];
+    int distance;
+    char padB8[0xA6];
+    unsigned short flags;
+    char pad160[8];
+    vs_battle_movementPosition destination;
+    char pad16C[4];
+    vs_battle_movementPosition next;
+    char pad174[8];
+    int referenceX, referenceZ;
+} movementDestinationState;
+unsigned int func_800E4660(int, int, int);
+unsigned int func_800E45F4(unsigned int, unsigned int);
+void func_800E4B2C(movementDestinationState*, int);
+void func_800E153C(movementDestinationState* state, int unused)
+{
+    int distance = state->distance;
+    int angle, i;
+    vs_battle_movementPosition dest;
+    if ((state->position.raw & 0xFF00FF) == (state->destination.raw & 0xFF00FF))
+        goto fallback;
+    angle = ratan2(state->x - state->destination.p.x * 128 - 64,
+        state->z - state->destination.p.z * 128 - 64);
+    if (func_800E4660(state->destination.p.x * 128 - state->x + 64, 0,
+            state->destination.p.z * 128 - state->z + 64)
+        > (unsigned int)(distance * distance))
+        func_800E1388((void*)state, state->position, angle, distance);
+    if ((state->flags & 6)
+        && (state->flagD
+            || func_800E45F4(state->destination.raw, state->position.raw) < 16)) {
+        if ((int)(state->previous.raw << 8) >= 0)
+            state->destination = state->previous;
+        func_800E4B2C(state, angle);
+        return;
+    }
+    if (++state->attempts < 6)
+        goto fallback;
+    dest = state->destination;
+    if (func_800D954C((void*)state, dest.raw) > 0)
+        goto begin;
+    for (i = 0; i < 4; i++) {
+        dest.p.x = state->destination.p.x + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dx;
+        dest.p.z = state->destination.p.z + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dz;
+        if (func_800D954C((void*)state, dest.raw) > 0) {
+            state->destination = dest;
+            goto begin;
+        }
+    }
+    goto fallback;
+begin:
+    state->attempts = 0;
+    state->next = state->destination;
+    func_800DEEFC((void*)state, 13);
+    return;
+fallback:
+    func_800E2CCC((void*)state);
+}
+void func_800E1764(movementDestinationState* state, int angle)
+{
+    unsigned int previous[1];
+    unsigned int distance;
+    int opposite = (angle + 0x800) & 0xFFF;
+    func_800E1388((void*)state, state->position, angle, state->distance);
+    previous[0] = state->destination.raw;
+    func_800E1388((void*)state, state->position, opposite, state->distance);
+    distance = func_800E4660(state->destination.p.x * 128 - state->referenceX + 64, 0,
+        state->destination.p.z * 128 - state->referenceZ + 64);
+    if (distance
+        < func_800E4660(((unsigned char*)&previous)[0] * 128 - state->referenceX + 64, 0,
+            ((unsigned char*)&previous)[2] * 128 - state->referenceZ + 64))
+        state->destination.raw = previous[0];
+    func_800E153C(state, angle);
+}
 
 u_char func_800E1850(u_char arg0, u_int arg1, int arg2)
 {

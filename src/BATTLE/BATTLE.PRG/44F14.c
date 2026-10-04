@@ -370,7 +370,8 @@ void func_800AB4F0(void*);
 void func_800AB788(void*, void*, int);
 void func_800AB9A4(void*);
 void func_800AC540(int, D_800F4538_t*);
-void func_800B0908(void*, int);
+typedef struct objectAnimationState objectAnimationState;
+void func_800B0908(objectAnimationState*, int);
 void func_800B1A68(void*, MATRIX*);
 void func_800B28A8(void*, MATRIX*, char);
 extern int D_800E9308;
@@ -578,7 +579,7 @@ void func_800AEF94(MATRIX* camera)
         object = (void*)*entries;
         if ((object != NULL) && ((u_char)object->unk0 != 0)) {
             if (((i == D_800F4B19) && (D_800F4B18 == 0)) || (object->unk1A == 0xF7)) {
-                func_800B0908((D_800F4538_t*)object,
+                func_800B0908((objectAnimationState*)object,
                     (int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F))
                         >> 1);
             }
@@ -971,7 +972,224 @@ void func_800B07DC(D_800F4538_t* actor)
     scratch->offset.vy += actor->unk0.position.vy;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B0908);
+struct objectAnimationState {
+    char prefix[8];
+    int flags;
+    char padC[3];
+    u_char id, pad10;
+    signed char delay;
+    u_char parent, pad13;
+    int pad14;
+    short rotationTicks, mode;
+    SVECTOR position;
+    short rx, ry, rz, pad2A;
+    short sx, sy, sz, pad32;
+    short dx, dy, dz, orientation;
+    short drx, dry, drz;
+    char pad42[0x1A];
+    u_char tileX, pad5D, tileZ, pad5F;
+    char pad60[0x10C];
+    u_char material, durability, pad16E, parentObject, frame;
+};
+int func_800B101C();
+int func_800A3DB4(int, int, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800E6898(void*);
+void func_800E4C28(int, int);
+void func_800B0908(objectAnimationState* object, int unused)
+{
+    actorTransformScratch* scratch = (void*)0x1F80035C;
+    int step, mode, other;
+    objectAnimationState* child;
+    if (object->delay) {
+        --object->delay;
+        return;
+    }
+    if (object->rotationTicks) {
+        step = object->drx / object->rotationTicks;
+        object->drx -= step;
+        object->rx = (object->rx + step) & 0xFFF;
+        step = object->dry / object->rotationTicks;
+        object->dry -= step;
+        object->ry = (object->ry + step) & 0xFFF;
+        step = object->drz / object->rotationTicks;
+        object->drz -= step;
+        object->rz = (object->rz + step) & 0xFFF;
+        --object->rotationTicks;
+    }
+    mode = object->mode;
+    if (!mode)
+        return;
+    if (mode == 0xFF) {
+        if (!object->dx && !object->dz) {
+            object->frame = 0;
+            goto fall;
+        }
+        object->frame = 1;
+        step = (short)(u_short)object->dx / 2;
+        object->dx -= step;
+        object->position.vx += step;
+        if (object->dx < 0) {
+            if (object->dx >= -1) {
+                object->position.vx += object->dx;
+                object->dx = 0;
+            }
+        } else if (object->dx < 2) {
+            object->position.vx += object->dx;
+            object->dx = 0;
+        }
+        step = (short)(u_short)object->dz / 2;
+        object->dz -= step;
+        object->position.vz += step;
+        if (object->dz < 0) {
+            if (object->dz >= -1) {
+                object->position.vz += object->dz;
+                object->dz = 0;
+            }
+        } else if (object->dz < 2) {
+            object->position.vz += object->dz;
+            object->dz = 0;
+        }
+        return;
+    } else if (mode == 0xFE) {
+        if ((object->position.vx & 0x7F) == 0x40
+            && (object->position.vz & 0x7F) == 0x40) {
+            scratch->rotation.vx = object->position.vx;
+            scratch->rotation.vz = object->position.vz;
+            step = object->orientation;
+            other = 128;
+            if (step < 2)
+                other = -128;
+            if (step & 1)
+                scratch->rotation.vx += other;
+            else
+                scratch->rotation.vz += other;
+            if (func_800A3DB4(
+                    scratch->rotation.vx, scratch->rotation.vz, object->position.vy)
+                && func_800A6EE8(&object->position, 0, 0, 1) == object->position.vy) {
+                object->tileX = 0xFF;
+                object->tileZ = 0xFF;
+            } else
+                goto fall;
+        }
+        object->position.vx += object->dx;
+        object->position.vz += object->dz;
+        return;
+    } else if (mode == 0xFD) {
+        if (!func_800B101C(object)) {
+            func_800E6898(object);
+            func_800E6898(object);
+            func_800E4C28(object->tileX, object->tileZ);
+        }
+        return;
+    } else if (mode == 0xFC) {
+    fall:
+        object->tileX = object->position.vx / 128;
+        object->tileZ = object->position.vz / 128;
+        step = func_800A6EE8(&object->position, 0, 0, 2);
+        if (object->position.vy < step) {
+            object->dy += 3;
+            object->position.vy += object->dy;
+            if (object->position.vy < step) {
+                object->mode = 0xFC;
+                goto children;
+            }
+        }
+        {
+            int previousY = (u_short)object->position.vy;
+            object->position.vy = step;
+            object->dy += step - previousY;
+        }
+        other = object->material & 7;
+        if (other >= 5) {
+            *(int*)&object->material &= ~0x30;
+            other = func_800A91DC(object->tileX, object->tileZ, 1);
+            if (other) {
+                other = *(u_char*)((char*)D_800F45E0[other] + 0x16C) & 7;
+                if (other >= 5) {
+                    if (other == (object->material & 7)) {
+                        object->mode = 0xFD;
+                        object->frame = 0;
+                        *(int*)&object->material =
+                            (*(int*)&object->material & ~0x30) | 0x20;
+                        vs_main_panSfx(0x7E, 0x30, &object->position);
+                    } else {
+                        *(int*)&object->material =
+                            (*(int*)&object->material & ~0x30) | 0x10;
+                        vs_main_panSfx(0x7E, 0x31, &object->position);
+                        object->mode = 0;
+                        func_800E6898(object);
+                        func_800E4C28(object->tileX, object->tileZ);
+                    }
+                    goto children;
+                }
+            }
+        }
+        object->tileX = object->position.vx / 128;
+        object->tileZ = object->position.vz / 128;
+        func_800E6898(object);
+        func_800E4C28(object->tileX, object->tileZ);
+        if ((*(int*)&object->material & 7) == 1) {
+            --object->durability;
+            if (!object->durability) {
+                object->mode = 0xF8;
+                object->frame = 0;
+                return;
+            }
+        }
+        step = object->mode;
+        if (step == 0xFE) {
+            vs_main_panSfx(0x7E, 0x30, &object->position);
+            object->mode = 0xFB;
+            object->frame = 0;
+        } else if (step == 0xFF || step == 0xF9) {
+            object->mode = 0;
+        } else {
+            vs_main_panSfx(0x7E, 0x30, &object->position);
+            object->mode = 0xFA;
+            object->frame = 0;
+        }
+    children:
+        step = 0;
+        do {
+            child = (void*)D_800F45E0[step];
+            if (child && !(child->flags & 1) && child->parentObject == object->id) {
+                child->position.vy += object->dy;
+                if (!object->mode)
+                    child->parentObject = 0xFF;
+            }
+            ++step;
+        } while (step < 16);
+        return;
+    } else if (mode == 0xFB) {
+        goto animate;
+    } else if (mode == 0xFA) {
+        func_800B101C(object);
+        goto children;
+    } else if (mode == 0xF9) {
+        if (func_800B101C(object))
+            return;
+        goto fall;
+    } else if (mode == 0xF7) {
+        goto animate;
+    } else if (mode == 0xF8) {
+    animate:
+        func_800B101C(object);
+        return;
+    }
+    step = object->dx / object->mode;
+    object->dx -= step;
+    object->position.vx += step;
+    step = object->dy / object->mode;
+    object->dy -= step;
+    object->position.vy += step;
+    step = object->dz / object->mode;
+    object->dz -= step;
+    object->position.vz += step;
+    --object->mode;
+    if (!object->mode && object->parent == 0xFF)
+        goto fall;
+}
 
 typedef struct {
     char prefix[8];

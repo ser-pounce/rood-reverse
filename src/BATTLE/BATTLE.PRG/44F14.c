@@ -1346,4 +1346,42 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B1A68);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B217C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B26B8);
+typedef struct {
+    char prefix[0x1870];
+    MATRIX matrix;
+} savedBoneMatrix;
+typedef struct {
+    char prefix[0x6C];
+    MATRIX matrix;
+} actorBoneMatrix;
+typedef struct {
+    char prefix[0x4C];
+    SVECTOR translation;
+} boneTransformScratch;
+extern MATRIX D_800F3C58[];
+void func_800B196C(MATRIX*, MATRIX*);
+void func_800B26B8(void* actor, MATRIX* parent, int bone, int saved)
+{
+    boneTransformScratch* scratch = (void*)0x1F80035C;
+    MATRIX* matrix = (void*)0x1F8003C0;
+    char* savedAddress;
+    int boneOffset;
+    actorBoneMatrix* destination;
+    MATRIX* table;
+    *matrix = ((savedBoneMatrix*)((saved << 5) + (int)actor))->matrix;
+    func_800B196C(parent, matrix);
+    gte_SetRotMatrix(parent);
+    gte_SetTransMatrix(parent);
+    savedAddress = (char*)actor + ((saved - 1) << 5);
+    scratch->translation.vx = *(u_short*)(savedAddress + 0x18A4);
+    scratch->translation.vy = *(u_short*)(savedAddress + 0x18A8);
+    scratch->translation.vz = *(u_short*)(savedAddress + 0x18AC);
+    gte_ldv0((void*)0x1F8003A8);
+    gte_rtv0tr2();
+    gte_stlvnl((void*)0x1F8003D4);
+    table = D_800F3C58;
+    boneOffset = bone << 5;
+    *(MATRIX*)(boneOffset + (int)table) = *matrix;
+    destination = (void*)(boneOffset + (int)actor);
+    destination->matrix = *matrix;
+}

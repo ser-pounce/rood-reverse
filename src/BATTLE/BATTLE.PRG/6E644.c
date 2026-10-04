@@ -659,7 +659,75 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D82CC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D836C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8400);
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned int x : 8, y : 8, z : 8, status : 8;
+    } p;
+} vs_battle_movementPosition;
+typedef struct {
+    unsigned char pad[7];
+    unsigned char disabled;
+    unsigned char rest[0x2C];
+    vs_battle_movementPosition position;
+} func_800D8400_t;
+int func_800D96C8(func_800D8400_t*, unsigned int, unsigned int, int);
+int func_800D954C(func_800D8400_t*, unsigned int);
+unsigned int func_800DB93C(func_800D8400_t*, unsigned int, int, unsigned int);
+unsigned int func_800D8400(
+    func_800D8400_t* state, int first, int second, unsigned int direction)
+{
+    vs_battle_movementPosition dest, source;
+    int count, i, result;
+    unsigned int directions, quadrant;
+    int nearest;
+    if (state->disabled)
+        return 0;
+    dest.p.status = 1;
+    source = state->position;
+    if (first == second) {
+        directions = direction;
+        count = 1;
+    } else {
+        quadrant = (direction & 0xFFF) >> 10;
+        if ((direction & 0x3FF) > 512)
+            nearest = ((quadrant + 1) & 3) * 2;
+        else
+            nearest = quadrant * 2;
+        direction = nearest;
+        if (direction != first)
+            directions = (first << 16) | direction;
+        else
+            directions = (second << 16) | direction;
+        count = 2;
+    }
+    for (i = 0; i < count; i++) {
+        direction = (directions >> (i * 16)) & 0xFFFF;
+        dest.p.x = source.p.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+        dest.p.z = source.p.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+        result = func_800D96C8(state, source.raw, dest.raw, direction);
+        if (result > 0) {
+            result = func_800D954C(state, dest.raw);
+            if (result < 0)
+                goto blocked;
+            if (result)
+                goto done;
+            return 0;
+        }
+        if (result < 0)
+            goto blocked;
+        dest.raw = func_800DB93C(state, dest.raw, direction, source.raw);
+        if (dest.p.status == 1)
+            goto done;
+        if (dest.p.status)
+            goto blocked;
+    }
+    return 0;
+blocked:
+    dest.p.status = 2;
+done:
+    return dest.raw & 0xFFFF00FF;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D85D8);
 

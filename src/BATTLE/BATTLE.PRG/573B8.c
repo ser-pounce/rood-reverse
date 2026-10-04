@@ -286,10 +286,92 @@ void func_800C0738(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0758);
+typedef struct {
+    short xyz[3];
+    short flags;
+} menuCurveVertex;
+
+int func_800C0758(int phase, int segments, int index)
+{
+    short* trig = (short*)0x1F8003B0;
+    short (*basis)[4] = (void*)0x1F800398;
+    int i, component;
+    menuCurveVertex* vertex = (void*)((char*)D_800EB9B8 + 0x48 + index * 8);
+    for (i = 0; i <= segments; ++index, ++i, ++vertex) {
+        for (component = 0; component < 3; ++component) {
+            vertex->xyz[component] =
+                basis[0][component]
+                + ((basis[1][component] * trig[(i + phase + 8) & 31]) >> 12)
+                + ((basis[2][component] * trig[(i + phase) & 31]) >> 12);
+        }
+        component = i != 0;
+        if (component && segments != 32)
+            component += segments - i < 2;
+        vertex->flags = component;
+    }
+    return index;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C085C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0990);
+extern u_char D_80040A14[];
+
+void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
+{
+    int depth = (start->vz + end->vz) >> 1;
+    int dx, dy, ax, ay, angle, shift;
+    u_long link;
+    u_long* primitive;
+    u_long* orderingTable;
+    if ((u_int)depth >= 2048)
+        return;
+    dy = end->vy - start->vy;
+    dx = end->vx - start->vx;
+    angle = 0;
+    shift = dy | dx;
+    if (shift) {
+        ax = dx;
+        ay = dy;
+        if (ax < 0)
+            ax = -ax;
+        if (ay < 0)
+            ay = -ay;
+        shift = 512;
+        if (ax < ay) {
+            angle = ax << 9;
+            angle /= ay;
+            angle = D_80040A14[angle];
+            angle = shift - angle;
+        } else {
+            angle = ay << 9;
+            angle /= ax;
+            angle = D_80040A14[angle];
+        }
+        shift = 1024;
+        if (ax != dx)
+            angle = shift - angle;
+        angle *= 2;
+        if (ay != dy)
+            angle = -angle;
+    }
+    shift = 30 - (((angle + 256) >> 8) & 14);
+    ay = start->vx + ((0x4FC5 << shift) >> 30);
+    ax = start->vy + ((0xFC54 << shift) >> 30);
+    if (intensity < 0)
+        intensity = 0;
+    else if (intensity >= 64)
+        intensity = 63;
+    primitive = vs_scratch.unk0;
+    orderingTable = (u_long*)vs_scratch.unk4 + depth;
+    link = *orderingTable;
+    link &= 0xFFFFFF;
+    primitive[1] = 0xE1000200;
+    primitive[3] = (ay & 0xFFFF) | (ax << 16);
+    primitive[0] = link | 0x04000000;
+    primitive[2] = (((color << 8) >> 8) * intensity) | ((color >> 24) << 24);
+    primitive[4] = *(u_long*)end;
+    *orderingTable = ((u_int)primitive << 8) >> 8;
+    vs_scratch.unk0 = primitive + 5;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0B50);

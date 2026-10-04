@@ -1379,8 +1379,50 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
 }
 #pragma vsstring(end)
 
-void func_800C7EBC(void*, int, int, int);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7EBC);
+void func_800C7EBC(u_short*, u_int, int, u_int);
+extern u_short D_800EB98C[16];
+
+void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
+{
+    RECT rect;
+    u_long pixels[18];
+    u_short packed;
+    int row, column;
+    u_short* output;
+    u_int inverse = 0x10000 - alpha;
+    rect.x = (glyph % 21) * 3 + 0x340;
+    rect.y = (glyph / 21) * 12;
+    rect.w = 3;
+    rect.h = 12;
+    StoreImage(&rect, pixels);
+    DrawSync(0);
+    for (row = 0; row < 12;) {
+        for (column = 0, output = destination; column < 12; ++column, ++output) {
+            u_short source, previous;
+            u_int index;
+            if (column & 3)
+                packed >>= 4;
+            else
+                packed = *(u_short*)((u_int)pixels + (((column >> 2) + row * 3) << 1));
+            index = packed & 15;
+            source = index;
+            if (index != 0) {
+                previous = *output;
+                source = D_800EB98C[source];
+                *output =
+                    (((((previous & 31) * inverse) + ((source & 31) * alpha)) >> 16) & 31)
+                    | (((((previous & 0x3E0) * inverse) + ((source & 0x3E0) * alpha))
+                           >> 16)
+                        & 0x3E0)
+                    | (((((previous & 0x7C00) * inverse) + ((source & 0x7C00) * alpha))
+                           >> 16)
+                        & 0x7C00);
+            }
+        }
+        ++row;
+        destination += stride;
+    }
+}
 
 #pragma vsstring(start)
 void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
@@ -2646,7 +2688,114 @@ void func_800CB7DC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB83C);
+void func_800CD158(int);
+void func_800CD3E4(int);
+extern int D_8005046C;
+
+void func_800CB83C(void)
+{
+    int id, state, duration, scale, reverse;
+    int x, cx, y, cy, width, height;
+    int flags;
+    vs_battle_textBox* box;
+
+    for (id = 7; id != -1; --id) {
+        box = &vs_battle_textBoxes[id];
+        state = box->state;
+        if (state == 0)
+            continue;
+        flags = *(int*)&box->unk0;
+        D_800F4E80 = id;
+        if (flags < 0)
+            continue;
+        duration = box->unk22;
+        scale = vs_gametime_tickspeed >> 1;
+        if (state < 0) {
+            state -= scale;
+            if (state < -duration) {
+                box->state = 0;
+                continue;
+            }
+            scale = ((duration + state + 1) << 16) / duration;
+        } else {
+            state += scale;
+            if (duration < state)
+                state = duration + 1;
+            scale = state - 1;
+            switch ((int)(((u_int)flags >> 4) & 3)) {
+            case 0:
+            case 1:
+                scale = rsin((scale << 10) / duration) * 16;
+                break;
+            case 2:
+                if (scale < duration - 1)
+                    scale = (scale << 16) / (duration - 2);
+                else
+                    goto settle;
+                break;
+            case 3:
+                if (duration >= 3) {
+                    if (scale < duration - 1)
+                        scale = (scale * 0xC000) / (duration - 2) + 0x6000;
+                    else {
+                    settle:
+                        scale = scale == duration ? 0x10000 : 0x11000;
+                    }
+                }
+                break;
+            }
+        }
+        x = box->x * scale;
+        reverse = 0x10000 - scale;
+        cx = box->centerX * reverse;
+        y = box->y * scale;
+        cy = box->centerY * reverse;
+        width = (box->charsPerLine * 12 + 10) * scale;
+        height = (box->lineCount * 13 + 4) * scale;
+        box->state = state;
+        box->unk24 = (x + cx) >> 16;
+        box->unk26 = (y + cy) >> 16;
+        box->unk28 = width >> 16;
+        box->unk2A = height >> 16;
+        switch (box->unk0.unk0_0) {
+        case 0:
+            if (state < 0) {
+                _renderTextImmediate(box, scale);
+                break;
+            }
+            goto text;
+        case 4:
+            func_800CD158(id);
+            if (state < 0)
+                break;
+            goto text;
+        case 6:
+        immediate:
+            _renderTextImmediate(box, scale);
+            break;
+        case 2:
+        case 7:
+            func_800CD3E4(id);
+        default:
+        text:
+            if (state == duration + 1)
+                _printVariableWidthFont(box);
+            else if (state < 0)
+                _printFixedWidthFont(box, scale);
+            break;
+        case 3:
+            break;
+        }
+    }
+    AddPrims((u_long*)vs_scratch.unk4 - 6, D_800F51B8, D_800F51B8 + 33);
+    D_800EB9CE = D_800EB9CE == 2 ? 0 : D_800EB9CE + 1;
+    D_800F51B8 = &D_800F4CD0 + D_800EB9CE * 34;
+    ClearOTag(D_800F51B8, 34);
+    if (vs_battle_lowerScreenUiState == 1)
+        _renderTimer(&D_8005046C);
+    func_800CB708();
+    vs_battle_keystreamBits(0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CBBCC);
 

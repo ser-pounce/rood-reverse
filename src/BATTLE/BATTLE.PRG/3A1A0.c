@@ -340,7 +340,19 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
     return NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3DB4);
+int func_800A3DB4(int x, int z, int minimumHeight)
+{
+    SVECTOR offset;
+    int height;
+    ((int*)&offset)[0] = 0;
+    ((int*)&offset)[1] = 0;
+    height = func_800A6EE8(&offset, x, z, 1);
+    if (height < minimumHeight)
+        return 0;
+    if ((*D_800F49F0 >> 20) & 1)
+        return 0;
+    return func_800A3C34(x / 128, z / 128, height, 1) == NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3E6C);
 

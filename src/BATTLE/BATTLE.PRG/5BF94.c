@@ -2825,7 +2825,119 @@ void func_800CB83C(void)
     vs_battle_keystreamBits(0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CBBCC);
+void func_800CBBCC(gim_t* image, int clut, u_long* ot)
+{
+    int alpha = image->unk3;
+    int background;
+    int quadColor;
+    u_short* tiles = (u_short*)((char*)image + 0x200);
+    int scale = image->unkC & 0x3FFF;
+    int columns = ((u_char*)&image->unk4)[0];
+    int rows = ((u_char*)&image->unk4)[1];
+    int color;
+    short* columnX;
+    short* rowY;
+    int i, j;
+    int top, bottom, left, right, tile, u, v, tpage;
+    int packedBottom;
+    u_long* prim;
+
+    j = image->unk8 + 160;
+    columnX = (short*)(0x1F800400 - ((columns + 1) << 1));
+    rowY = columnX - (rows + 1);
+
+    for (i = 0; i <= columns; i++) {
+        columnX[i] = (((i * 2 - columns) * scale) >> 7) + j;
+    }
+
+    j = image->unkA + 120;
+    for (i = 0; i <= rows; i++) {
+        rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
+    }
+
+    color = (u_short)image->unkE;
+    if (color) {
+        int r = ((color << 3) & 0xF8) * alpha;
+        int g = ((color >> 2) & 0xF8) * alpha;
+        int b = ((color >> 7) & 0xF8) * alpha;
+        background =
+            (r >> 7) | ((g >> 7) << 8) | ((b >> 7) << 16) | ((D_800F51C8 + 48) << 25);
+
+        i = rowY[0];
+        if (i > 0) {
+            vs_battle_addTile(ot, background, 0, 320 | (i << 16));
+        }
+        i = rowY[rows];
+        if (i < 240) {
+            vs_battle_addTile(ot, background, i << 16, 320 | (0xF00000 - (i << 16)));
+        }
+        i = columnX[0];
+        if (i > 0) {
+            vs_battle_addTile(ot, background, 0, i | 0xF00000);
+        }
+        i = columnX[columns];
+        if (i < 320) {
+            vs_battle_addTile(ot, background, i & 0xFFFF, (320 - i) | 0xF00000);
+        }
+    }
+
+    quadColor = alpha | (alpha << 8) | (alpha << 16) | ((D_800F51C8 + 22) << 25);
+    alpha |= D_800F51C8 << 8;
+
+    for (j = 0; j < rows; j++) {
+        top = rowY[j];
+        if (top >= 240) {
+            continue;
+        }
+        bottom = rowY[j + 1];
+        if (bottom < 0) {
+            continue;
+        }
+        for (i = 0; i < columns; i++) {
+            left = columnX[i];
+            if (left >= 320) {
+                continue;
+            }
+            right = columnX[i + 1];
+            if (right < 0) {
+                continue;
+            }
+            tile = tiles[i + j * columns];
+            if (tile) {
+                v = tile << 6;
+                u = v & 0xC0;
+                v = (v & 0x1F00) * 15;
+                tpage = getTPage(image->unk0_2, 1,
+                    ((image->unk2 - 18) << 6) + ((tile >> 2) & 0x1C0), 256);
+                if (scale == ONE) {
+                    prim = vs_battle_setSprite(alpha, left | (top << 16), 0xF0040, ot);
+                } else {
+                    int x0 = left & 0xFFFF;
+                    int u1 = u + 64;
+                    u1 -= u1 >> 8;
+                    packedBottom = bottom << 16;
+                    prim = vs_scratch.unk0;
+                    prim[0] = (*ot & 0xFFFFFF) | 0xA000000;
+                    prim[2] = quadColor;
+                    prim[3] = x0 | (top << 16);
+                    prim[5] = right | (top << 16);
+                    prim[6] = u1 | v | (tpage << 16);
+                    prim[7] = x0 | packedBottom;
+                    prim[8] = u | (v + 0xF00);
+                    prim[9] = right | packedBottom;
+                    prim[10] = u1 | (v + 0xF00);
+                    *ot = ((u_long)prim << 8) >> 8;
+                    vs_scratch.unk0 = prim + 11;
+                }
+                prim[1] = tpage | 0xE1000000;
+                prim[4] = u | v | clut;
+            } else if (color && (color != 0x8000 || !D_800F51C8)) {
+                vs_battle_addTile(ot, background, (left & 0xFFFF) | (top << 16),
+                    (right - left) | ((bottom - top) << 16));
+            }
+        }
+    }
+}
 
 void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
 {

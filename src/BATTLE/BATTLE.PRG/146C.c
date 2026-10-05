@@ -290,6 +290,75 @@ typedef struct {
 } func_8006F630_t2;
 
 typedef struct {
+    char bytes[8];
+} actorSpawnSettings;
+
+typedef struct {
+    u_char type;
+    u_char index;
+    u_char hidden;
+    u_char unk3;
+    u_char id;
+    u_char slot;
+    u_char flagTest;
+    u_char statTest;
+    u_short flagValue;
+    u_short statValue;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+    actorSpawnSettings settings;
+    u_char unk18[2];
+    u_short itemId;
+    u_short item2Id;
+    u_short item3Id;
+    u_char itemCount;
+    u_char item2Count;
+    u_char item3Count;
+    u_char facing;
+    u_char unk24;
+    u_char variant;
+    u_char unk26;
+    u_char sceneTest;
+} mpdEnemySpawn;
+
+typedef struct {
+    u_char unk0;
+    u_char hidden;
+    short unk2;
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    short strength;
+    short intelligence;
+    short agility;
+    short limbHP[6];
+    short unk1E;
+    int statuses;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+} savedEnemyState;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int model;
+    int unkC;
+    int blade;
+    int unk14;
+    int shield;
+    int unk1C;
+    int effect;
+    int effectSize;
+    int weaponEffect;
+    int weaponEffectSize;
+} zudHeader;
+
+typedef struct {
     u_char actorId : 4;
     char unk0_4 : 4;
     char unk1;
@@ -5835,7 +5904,217 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800775C0);
+extern u_char D_8004FE88[];
+extern vs_battle_charInitData* D_800F188C;
+
+vs_battle_actor* func_800775C0(
+    int id, mpdEnemySpawn* spawn, vs_battle_charInitData* init, int flags)
+{
+    vs_battle_objectData object;
+    vs_main_CdFile file;
+    vs_battle_actor* actor;
+    zudHeader* zud;
+    savedEnemyState* saved;
+    int zudIndex;
+    int bladeId;
+    int shieldId;
+    int loaded;
+    int i;
+    int category;
+    int height;
+
+    if (vs_battle_actors[id] == NULL) {
+        zudIndex = init->mpdIdentifer;
+        bladeId = (u_char)init->weapon.blade.wepId;
+        shieldId = (u_char)init->shield.base.wepId;
+        if (D_8004FE88[(u_char)init->unk2]) {
+            actor = vs_main_allocHeap(0x3BB4);
+            actor->unk3C = (vs_battle_actor2*)((char*)actor + 0x50);
+            actor->unk40 = 2;
+            actor->unk44 = (void*)((char*)actor + 0x9B4);
+            actor->unk48[0] = (void*)((char*)actor + 0x22B4);
+        } else {
+            actor = vs_main_allocHeap(0x2E84);
+            actor->unk3C = (vs_battle_actor2*)((char*)actor + 0x50);
+            actor->unk40 = 1;
+            actor->unk44 = (void*)((char*)actor + 0x9B4);
+            actor->unk48[0] = (void*)((char*)actor + 0x22B4);
+            actor->unk48[1] = (void*)((char*)actor + 0x289C);
+        }
+        category = 10;
+        if (bladeId) {
+            category = init->weapon.blade.category;
+        }
+        actor->equippedWeaponCategory = category;
+
+        loaded = 0;
+        if (_zoneContext.unk1C != NULL) {
+            if (zudIndex + 1 == _zoneContext.unk14) {
+                loaded = 1;
+            } else {
+                vs_main_freeHeapR(_zoneContext.unk1C);
+                _zoneContext.unk1C = NULL;
+                _zoneContext.unk14 = 0;
+            }
+        }
+        if (!loaded) {
+            file.lba = _zoneContext.zudFiles[zudIndex].lba;
+            file.size = _zoneContext.zudFiles[zudIndex].size;
+            if (_zoneContext.unk18 != NULL) {
+                vs_main_nop9(0xA7, 0);
+            }
+            _zoneContext.unk18 = vs_main_allocateCdQueueSlot(&file);
+            _zoneContext.unk1C = vs_main_allocHeapR(file.size);
+            vs_main_cdEnqueuePriority(_zoneContext.unk18, _zoneContext.unk1C);
+            while (_zoneContext.unk18->state != 4) {
+                vs_main_gametimeUpdate(0);
+            }
+            vs_main_freeCdQueueSlot(_zoneContext.unk18);
+            _zoneContext.unk18 = NULL;
+            _zoneContext.unk14 = zudIndex + 1;
+        }
+
+        zud = _zoneContext.unk1C;
+        object.dataType = 2;
+        object.index = id;
+        object.dataAddr = zud->model + (u_long)zud;
+        object.modelId = (u_char)_zoneContext.zndEnemies[zudIndex].unk0[2];
+        if ((D_80061078[D_80060064].zndId == _zoneContext.zndId)
+            && (D_80061078[D_80060064].mapId == _zoneContext.mapId)
+            && ((saved = func_80069E80(spawn->index)) != NULL)) {
+            object.unkC.unk0_0 = saved->x;
+            object.unkC.unk0_16 = saved->z;
+            object.unkC.unk0_8 = saved->direction;
+            height = saved->height;
+            object.unkC.unk0_8 &= 1;
+        } else {
+            object.unkC.unk0_0 = spawn->x;
+            object.unkC.unk0_16 = spawn->z;
+            object.unkC.unk0_8 = spawn->direction;
+            height = spawn->height << 6;
+            object.unkC.unk0_8 &= 1;
+        }
+        object.unkC.unk0_24 = height;
+        object.unk4 = actor->unk44;
+        object.actorId = 0xFF;
+        object.variant = spawn->variant & 1;
+        object.material = init->unk24;
+        vs_battle_populateDataSlot(&object);
+
+        if ((u_char)init->unk2 != 0x7F) {
+            if (D_8004FE88[(u_char)init->unk2]) {
+                object.dataType = 1;
+                object.index = id + 4;
+                object.modelId = (u_char)D_800F188C[zudIndex].unk2 + 1;
+                object.unk4 = actor->unk48[0];
+                object.actorId = id;
+                object.unk11 = 0xFC;
+                object.variant = 0;
+                vs_battle_populateDataSlot(&object);
+            } else {
+                if (bladeId) {
+                    object.dataType = 4;
+                    object.index = id * 2;
+                    object.dataAddr = zud->blade + (u_long)zud;
+                    object.modelId = bladeId;
+                    object.unk4 = actor->unk48[0];
+                    object.actorId = id;
+                    object.unk11 = 0xF0;
+                    object.material = init->weapon.material;
+                    vs_battle_populateDataSlot(&object);
+                }
+                if (shieldId) {
+                    object.dataType = 4;
+                    object.index = id * 2 + 1;
+                    object.dataAddr = zud->shield + (u_long)zud;
+                    object.modelId = shieldId;
+                    object.unk4 = actor->unk48[1];
+                    object.actorId = id;
+                    object.unk11 = 0xF1;
+                    object.material = init->shield.material;
+                    vs_battle_populateDataSlot(&object);
+                }
+            }
+            if (((id < 2) || ((flags & 3) == 1)) && zud->weaponEffectSize) {
+                object.dataType = 8;
+                object.index = id;
+                object.dataAddr = zud->weaponEffect + (u_long)zud;
+                object.actorId = 0;
+                object.modelId = actor->equippedWeaponCategory;
+                vs_battle_populateDataSlot(&object);
+            }
+            if (zud->effectSize) {
+                object.dataType = 8;
+                object.index = id;
+                object.dataAddr = zud->effect + (u_long)zud;
+                object.actorId = 0;
+                object.modelId = 0;
+                vs_battle_populateDataSlot(&object);
+            }
+        }
+
+        while (vs_battle_getEmptyObjectDataSlot()) {
+            vs_battle_processObjectDataQueue();
+            vs_main_gametimeUpdate(0);
+        }
+
+        vs_battle_actors[id] = actor;
+        func_80076F24(id, init, bladeId, shieldId, flags, 1);
+        if (actor->weaponDrawn & 1) {
+            func_800A087C(id, 0x1846);
+        } else {
+            func_800A087C(id, 0x46);
+        }
+        func_800A0204(id, 0, 0, 0);
+        func_800A0AFC(id, actor->unk3C->unk31 << 12, actor->unk3C->unk33 << 12);
+        if (actor->unk1C & 7) {
+            actor->next = vs_battle_actors[0]->next;
+            vs_battle_actors[0]->next = actor;
+        }
+        actor->unk1E = spawn->facing;
+        actor->unk1F = spawn->unk26;
+        actor->unk27 = spawn->index;
+        actor->unk29 = 0;
+        actor->defeated = 0;
+        actor->unk3C->miscItem.id = spawn->itemId;
+        actor->unk3C->miscItem.count = spawn->itemCount;
+        *(u_short*)((char*)actor->unk3C + 0x95C) = spawn->item2Id;
+        *((char*)actor->unk3C + 0x95E) = spawn->item2Count;
+        *(u_short*)((char*)actor->unk3C + 0x960) = spawn->item3Id;
+        *((char*)actor->unk3C + 0x962) = spawn->item3Count;
+        do {
+            *(actorSpawnSettings*)((char*)actor + 0x30) = spawn->settings;
+        } while (0);
+        actor->unk38 = init->unk2C;
+
+        if ((D_80061078[D_80060064].zndId == _zoneContext.zndId)
+            && (D_80061078[D_80060064].mapId == _zoneContext.mapId)
+            && ((saved = func_80069E80(spawn->index)) != NULL)) {
+            actor->unk3C->currentHP = saved->currentHP;
+            actor->unk3C->maxHP = saved->maxHP;
+            actor->unk3C->currentMP = saved->currentMP;
+            actor->unk3C->maxMP = saved->maxMP;
+            actor->unk3C->strength = actor->unk3C->totalStrength = saved->strength;
+            actor->unk3C->intelligence = actor->unk3C->totalIntelligence =
+                saved->intelligence;
+            actor->unk3C->agility = actor->unk3C->totalAgility = saved->agility;
+            for (i = 0; i < 6; ++i) {
+                actor->unk3C->limbs[i].hp = saved->limbHP[i];
+            }
+            func_80086FA8(saved->statuses, actor->unk3C);
+            i = func_800E6178((void*)actor, saved->unk2);
+        } else {
+            i = func_800E6178((void*)actor, -1);
+        }
+        if (i == 0) {
+            func_8009DF3C(id, spawn->unk26);
+        } else {
+            func_8009DF3C(id, 0);
+        }
+        return actor;
+    }
+    return NULL;
+}
 
 int _isLookAtAtDestination(void)
 {

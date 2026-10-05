@@ -939,6 +939,7 @@ void func_8007B1B8(int, int, short, short, short);
 void func_8007B29C(int, int, int, short, short, short);
 void func_8007B344(int, int, short, short, short);
 void func_8007B9A0(void);
+void func_8007B9CC(void);
 int func_8007B9FC(void);
 void func_8007BA98(int, int, int, int);
 void func_8007BBB8(int, int);

@@ -232,6 +232,7 @@ extern int D_800E9B4C[];
 extern char D_800E9B58[];
 extern char D_800E9BE0[];
 extern char D_800E9BE8[];
+extern u_char D_800E9BF0[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
 extern void D_800E9B5C;
@@ -1858,7 +1859,72 @@ int func_800B92D0(u_char* arg0, short arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B92F4);
+int func_800B92F4(u_char* script, short arg1)
+{
+    switch (script[1]) {
+    case 10:
+    case 11:
+    case 12:
+        if (D_800F4BF8 == 0) {
+            vs_battle_setStateFlag(0xB6, D_800E9BF0[script[1] - 10]);
+            func_8007B9A0();
+            D_800F4BF8 = 1;
+            return 1;
+        }
+        goto finishState;
+    case 14:
+        if (D_800F4BF8 == 0) {
+            if (vs_battle_getStateFlag(0xB6) == 1) {
+                vs_battle_setStateFlag(0xB6, 2);
+            }
+            func_8007B9A0();
+            D_800F4C69 = 2;
+            D_800F4BF8 = 1;
+            return 1;
+        }
+    finishState:
+        if (func_8007B9FC() != 0) {
+            return 1;
+        }
+        vs_battle_setStateFlag(0xB6, 0);
+        D_800F4BF8 = 0;
+        return 4;
+    case 13:
+        if (D_800F4BF8 == 0) {
+            vs_battle_setStateFlag(0xB6, 1);
+            func_8007B9A0();
+            D_800F4BF8 = 1;
+            return 1;
+        }
+        goto finishTransition;
+    case 15:
+        if (D_800F4BF8 == 0) {
+            func_8007B9CC();
+            D_800F4BF8 = 1;
+            return 1;
+        }
+    finishTransition:
+        if (func_8007B9FC() == 0) {
+            D_800F4BF8 = 0;
+            return 4;
+        }
+        return 1;
+    default:
+        if (D_800F4BF8 == 0) {
+            func_800CACD0(script[1], 2);
+            D_800F4BF8 = 1;
+            return 1;
+        }
+        func_800C97BC();
+        if (func_800CB66C()->unk0 == 2) {
+            func_800CB114();
+            D_800F4BF8 = 0;
+            break;
+        }
+        return 1;
+    }
+    return 4;
+}
 
 int func_800B94D8(u_char* arg0, short arg1)
 {

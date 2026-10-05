@@ -241,7 +241,8 @@ int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
 void func_800DC810(func_800DEEA4_t*);
-void func_800DC888(int);
+struct actionStatSnapshot;
+void func_800DC888(struct actionStatSnapshot*);
 void func_800DEEFC(func_800E0850_t*, int);
 struct directionalCacheState;
 int func_800E0678(struct directionalCacheState*, int);
@@ -1340,7 +1341,84 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC784);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC810);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC888);
+typedef struct actionStatSnapshot {
+    int unknown;
+    short hp, maxHP, mp, maxMP;
+    unsigned int status;
+    short value10, limit10, value14, limit14;
+} actionStatSnapshot;
+typedef struct {
+    unsigned char actor;
+    char pad1[3];
+    short hp, mp;
+    char pad8[12];
+    unsigned int addStatus, removeStatus, modes;
+    char pad20[24];
+    short value10;
+    char pad3A[2];
+    short value14;
+    char pad3E[2];
+    int skip;
+} actionStatDelta;
+typedef struct {
+    unsigned short action;
+    char pad2[2];
+    actionStatDelta first;
+    char pad48[2];
+    unsigned short count;
+    actionStatDelta entries[1];
+} actionStatApplication;
+typedef struct {
+    unsigned int flags;
+    char pad4[48];
+} actionCostView;
+
+void func_800DC30C(short*, short*, int, int);
+void func_800DC888(actionStatSnapshot* stats)
+{
+    actionStatSnapshot* row;
+    actionStatDelta* entry;
+    actionCostView* action;
+    int i, ok;
+    if (!((actionStatApplication*)D_800F5900)->first.skip) {
+        action = (actionCostView*)&vs_main_actions[((actionStatApplication*)D_800F5900)
+                ->action];
+        row = &stats[((actionStatApplication*)D_800F5900)->first.actor];
+        switch ((int)((action->flags >> 17) & 7)) {
+        case 1:
+            func_800DC30C(&row->mp, &row->maxMP, ((unsigned char*)action)[3], 1);
+            break;
+        case 3:
+            func_800DC30C(&row->hp, &row->maxHP, ((unsigned char*)action)[3], 1);
+            break;
+        case 6:
+            func_800DC30C(&row->value10, &row->limit10, ((unsigned char*)action)[3], 1);
+            break;
+        }
+    }
+    /* Preserve the original unconditional success guard after applying the cost.
+     */
+    ok = 1;
+    if (ok) {
+        for (i = -1; i < ((actionStatApplication*)D_800F5900)->count; i++) {
+            if (i < 0)
+                entry = &((actionStatApplication*)D_800F5900)->first;
+            else
+                entry = &((actionStatApplication*)D_800F5900)->entries[i];
+            if (!entry->skip) {
+                row = &stats[entry->actor];
+                func_800DC30C(&row->hp, &row->maxHP, entry->hp, entry->modes & 3);
+                func_800DC30C(&row->mp, &row->maxMP, entry->mp, (entry->modes >> 2) & 3);
+                func_800DC30C(&row->value10, &row->limit10, entry->value10,
+                    (entry->modes >> 18) & 3);
+                func_800DC30C(&row->value14, &row->limit14, entry->value14,
+                    (entry->modes >> 22) & 3);
+                row->status |= entry->addStatus;
+                row->status &= ~entry->removeStatus;
+            }
+        }
+    }
+}
 
 void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int arg3)
 {
@@ -1363,7 +1441,7 @@ void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int 
             arg2->unk4_5, arg0->unk88, temp_s0, arg2->unkC_4, &sp20, &sp28, D_800F5900);
     }
     if (temp_v0 != 0) {
-        func_800DC888(arg1);
+        func_800DC888((void*)arg1);
     }
 }
 

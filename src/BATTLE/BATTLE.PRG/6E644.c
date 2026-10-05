@@ -8,6 +8,7 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
+#include <stdlib.h>
 
 struct func_800D4910_t;
 
@@ -1467,7 +1468,209 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069B68);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069BBC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCC94);
+typedef struct {
+    char pad0[0x17];
+    unsigned char maxActionCost;
+    char pad18[0x13];
+    unsigned char special;
+    char pad2C[0x178];
+    struct {
+        unsigned char classification;
+        char pad[3];
+    } targets[16];
+} actionScoreState;
+typedef struct actionScoreActor {
+    struct actionScoreActor* next;
+    int id;
+} actionScoreActor;
+typedef struct {
+    char pad[14];
+    unsigned short flags;
+} actionScoreMetadata;
+void func_800DC424(actionStatSnapshot*);
+int func_800DC284(int, int, int, int);
+const signed char D_80069BD0[] = { -51, -39, -39, -39, -26, -51, 50, -13, 12, -13, 12, 25,
+    -51, -26, -45, -26, -39, 76, 19, -13, 12, 12, 12, 12, 12, 12, 12, 12, 12, 0, 0, 0 };
+static inline int actionStatusScore(actionStatSnapshot* stats, int id)
+{
+    int sum = 0, i, noCost;
+    actionStatSnapshot* row =
+        (actionStatSnapshot*)(id * sizeof(actionStatSnapshot) + (int)stats);
+    noCost = ((actionScoreState*)D_800F5878[row->unknown & 15])->maxActionCost == 0;
+    for (i = 0; i < 32; i++)
+        if (row->status & (1 << i))
+            if (i != 12 || !noCost)
+                sum += D_80069BD0[i];
+    if (!row->hp)
+        sum -= 128;
+    if ((row->hp << 7) < row->maxHP * 44)
+        sum -= 84;
+    return sum;
+}
+static inline int actionHpRatio(actionStatSnapshot* stats, int id)
+{
+    int d = stats[id].maxHP;
+    if (d == 0)
+        return 0;
+    return (stats[id].hp << 7) / d;
+}
+static inline int actionMpRatio(actionStatSnapshot* stats, int id)
+{
+    int d = stats[id].maxMP;
+    if (d == 0)
+        return 0;
+    return (stats[id].mp << 7) / d;
+}
+static inline int actionExtraRatio(actionStatSnapshot* stats, int id)
+{
+    actionStatSnapshot* row =
+        (actionStatSnapshot*)(id * sizeof(actionStatSnapshot) + (int)stats);
+    int extra = 0;
+    if (row->limit10)
+        extra = (row->value10 << 7) / row->limit10;
+    if (row->limit14)
+        extra += (row->value14 << 7) / row->limit14;
+    return extra;
+}
+void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int mode,
+    actionScoreMetadata* action)
+{
+    int special = 0, flags = 0, value;
+    actionScoreActor* actor;
+    actionStatSnapshot* stats;
+    int id;
+    unsigned int kind;
+    if (action)
+        flags = action->flags;
+    if ((flags & 32) && (rand() & 127) < 115) {
+        candidate->pad0 = 0x80000000;
+        return;
+    }
+    candidate->pad0 = 0;
+    candidate->weight = 128;
+    stats = (actionStatSnapshot*)0x1F80018C;
+    func_800DC424(stats);
+    if (state->special && (flags & 16)) {
+        special = 1;
+        candidate->weight = 40;
+    } else if (mode) {
+        func_800DCAA0((void*)state, (int)stats, (void*)candidate, mode);
+        func_800DCBD8(candidate);
+    }
+    for (actor = (void*)vs_battle_actors[0]; actor; actor = actor->next) {
+        id = actor->id;
+        kind = state->targets[id].classification;
+        kind >>= 6;
+        if (kind == 1)
+            continue;
+        value = func_800DC284(actionStatusScore(stats, id), actionHpRatio(stats, id),
+            actionMpRatio(stats, id), actionExtraRatio(stats, id));
+        if (kind != 2)
+            value = -value;
+        candidate->pad0 += value;
+    }
+    if (special)
+        candidate->pad0++;
+    candidate->pad0 = (candidate->pad0 << 7) + candidate->weight;
+}
+
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned int unk0 : 6, classification : 2, unk8 : 7, timer : 5, counter : 7,
+            unk27 : 1, previous : 2, unk30 : 2;
+    } p;
+    struct {
+        unsigned char flags, pad[3];
+    } b;
+} actionReactionTarget;
+typedef struct {
+    char pad0[0x13];
+    unsigned char flag13;
+    char pad14[12];
+    unsigned char flag20, flag21;
+    char pad22[5];
+    unsigned char flag27;
+    char pad28[8];
+    unsigned char flag30;
+    char pad31[0x57];
+    unsigned char id;
+    char pad89[0xA4];
+    unsigned char mode;
+    char pad12E[0x76];
+    actionReactionTarget targets[16];
+} actionReactionState;
+typedef struct {
+    char pad0[20];
+    unsigned int effect1, effect2;
+    char pad1C[24];
+} actionReactionAction;
+typedef struct {
+    char pad0[10];
+    unsigned char flag;
+} actionReactionMotion;
+int func_800DC48C(int, int);
+int func_800DC484(int, int);
+void func_800DC210(actionReactionState*, int);
+void func_800DC19C(actionReactionState*);
+void func_800DC784(actionReactionState*, int);
+void func_800DD000(actionReactionState* state, actionStatApplication* app)
+{
+    int own, source, action, i, bad;
+    actionReactionState* other;
+    actionStatDelta* entry;
+    actionReactionAction* info;
+    if (!app || app->first.skip)
+        return;
+    own = state->id;
+    if (!own)
+        return;
+    info = (void*)&vs_main_actions[app->action];
+    bad = 0;
+    if (((info->effect1 >> 7) & 63) == 3 || ((info->effect2 >> 7) & 63) == 3)
+        bad = 1;
+    if (bad)
+        return;
+    source = app->first.actor;
+    action = app->action;
+    other = (void*)D_800F5878[source];
+    for (i = 0; i < app->count; i++) {
+        entry = &app->entries[i];
+        if (entry->skip || entry->actor != own || source == own)
+            continue;
+        if (state->mode == 1)
+            state->mode = 2;
+        if (func_800DC48C(action, state->id)) {
+            if (source == 0 && state->flag13 == 0 && state->flag27)
+                func_800DC210(state, 0);
+            else if ((other->targets[0].b.flags >> 6) == 3)
+                func_800DC19C(state);
+        }
+        state->targets[source].p.timer = 28;
+        if (func_800DC484(action, state->id)) {
+            if (D_800F5920 && source == 0 && (entry->modes & 3) != 2 && entry->hp > 0)
+                ((actionReactionMotion*)D_800F5920)->flag = 0;
+            if (source == 0 && state->flag27)
+                func_800DC19C(state);
+            if (state->flag30 && (state->flag20 == 0 || source == 0)) {
+                func_800DC784(state, source);
+            } else if (state->targets[source].p.classification != 3) {
+                if (other->targets[own].p.counter) {
+                    other->targets[own].p.counter = 0;
+                    other->targets[own].p.classification = other->targets[own].p.previous;
+                } else {
+                    state->targets[source].p.counter = 127;
+                    state->targets[source].p.previous =
+                        state->targets[source].p.classification;
+                    if (state->flag20)
+                        func_800DC784(state, source);
+                }
+            }
+        }
+    }
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD344);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD604);
 

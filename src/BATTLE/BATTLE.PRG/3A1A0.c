@@ -711,9 +711,126 @@ int func_800A3DB4(int x, int z, int minimumHeight)
     return func_800A3C34(x / 128, z / 128, height, 1) == NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3E6C);
-
 extern int D_800E90A8;
+extern u_char D_800E8FD0[];
+void func_800AE6C0(D_800F4538_t*, int, int);
+void func_800E4C1C(int, int);
+void func_800AA454(int, func_8006EBF8_t_fields*, int);
+
+int func_800A3E6C(int actorId)
+{
+    SVECTOR position;
+    struct {
+        u_char x;
+        u_char y;
+        u_char z;
+        u_char direction;
+    } tile;
+    D_800F4538_t* actor;
+    D_800F45E0_t* object;
+    int objectId;
+    int height;
+    int step;
+    int dx;
+    int dz;
+
+    actor = D_800F4538[actorId];
+    if (*(u_int*)((char*)actor + 0x5AC) & 0x100000) {
+        return -1;
+    }
+    objectId = func_800A38E0(actorId);
+    if (objectId == -1) {
+        return -1;
+    }
+    object = D_800F45E0[objectId];
+    object->unk3A = D_800F49E8;
+    D_800E90A8 = objectId;
+    height = actor->unk0.position.vy - object->unk1E;
+    height /= 64;
+    height++;
+
+    object->unk34 = 0;
+    object->unk38 = 0;
+    switch ((*(u_char*)((char*)object + 0x16C)) & 7) {
+    case 0:
+    case 1:
+        *(u_char*)((char*)object + 0x16E) =
+            D_800E8FD0[*(u_char*)((char*)object + 0x16E) * 4 + D_800F49E8];
+        // fallthrough
+    case 2:
+        step = 0x80;
+        if (D_800F49E8 < 2) {
+            step = -0x80;
+        }
+        if (D_800F49E8 & 1) {
+            object->unk34 = step;
+        } else {
+            object->unk38 = step;
+        }
+        goto move;
+    case 3:
+        step = 0x20;
+        object->unk34 = 0;
+        object->unk38 = 0;
+        if (D_800F49E8 < 2) {
+            step = -0x20;
+        }
+        if (D_800F49E8 & 1) {
+            object->unk34 = step;
+        } else {
+            object->unk38 = step;
+        }
+    move:
+        object->unk36 = 0;
+        func_800AE6C0(actor, 0x2C, 0x2D);
+        func_800A0204(actorId, height + 0x4F, 0, 4);
+        *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
+        func_800E4C1C(
+            (object->unk1C + object->unk34) / 128, (object->unk20 + object->unk38) / 128);
+        break;
+    case 4:
+    case 5:
+    case 6:
+        if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+            func_800A0204(actorId, 0x4C, 0, 4);
+            func_800AE6C0(actor, 0x2E, 0x2F);
+            *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
+        } else {
+            func_800A0204(actorId, height + 0x47, 0, 4);
+            func_800AE6C0(actor, 0x2C, 0x2D);
+            *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
+        }
+        dx = 0;
+        dz = 0;
+        step = 1;
+        if (D_800F49E8 < 2) {
+            step = -1;
+        }
+
+        if (D_800F49E8 & 1) {
+            dx = step;
+        } else {
+            dz = step;
+        }
+        func_800E4C1C(actor->unk0.currentTileX + dx, actor->unk0.currentTileZ + dz);
+        break;
+    }
+    step = 1;
+    *(int*)&tile = *(int*)&actor->unk0.currentTileX;
+    if (D_800F49E8 < 2) {
+        step = -1;
+    }
+    if (D_800F49E8 & 1) {
+        tile.x += step;
+    } else {
+        tile.z += step;
+    }
+    func_800AA454(actorId, (func_8006EBF8_t_fields*)&tile, 4);
+    position.vx = (actor->unk0.currentTileX << 7) + 0x40;
+    position.vz = (actor->unk0.currentTileZ << 7) + 0x40;
+    position.vy = actor->unk0.position.vy;
+    func_800AA620(actorId, &position, 4);
+}
 int func_800A190C(int, int, SVECTOR*, int);
 void func_800E68A0(D_800F45E0_t*);
 
@@ -788,7 +905,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     if (D_800F49E8 & 1) {
         object->unk34 += step;
     } else {
-        *(short*)&object->unk38 += step;
+        object->unk38 += step;
     }
     facing = ((u_short)object->unk26 + ((4 - D_800F49E8) << 10)) & 0xFFF;
     direction = facing + 0x200;

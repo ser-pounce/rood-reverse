@@ -3300,7 +3300,75 @@ void func_800704D8(void)
     func_8006C39C();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007053C);
+typedef struct {
+    char reserved[0x29C0];
+    struct {
+        SVECTOR position;
+        char kind, actor;
+        signed char limb;
+        char reservedB[13];
+    } targets[23];
+} actionTargetContextView;
+extern unsigned char D_800E81C4[];
+void func_800C0700(void*);
+void func_800C1664(int, int, int);
+int func_8008631C(int, int, int, int, void*);
+
+void func_8007053C(void)
+{
+    D_800F19CC_t2 result;
+    int i;
+    int kept;
+    int action;
+    D_800F19CC->unk2990 = D_800F19CC->unk2998;
+    func_800C06E0();
+    if (D_800F19CC->unk2990.pad) {
+        func_800C16DC();
+        func_800C06E0();
+        func_800C0738();
+        func_800C05B4();
+        if (!vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0) {
+            func_800CB114();
+            func_8006FBCC(0);
+            return;
+        }
+        func_800704D8();
+        return;
+    }
+    action = D_800F19CC->unk8.actionIndex;
+    D_800F19CC->unk29B8 = D_800F19CC->unk2990;
+    func_800C0700(&D_800F19CC->unk29B0);
+    kept = 0;
+    for (i = 0; i < D_800F19CC->unk2C00; ++i) {
+        if (D_800E81C4[(*(unsigned int*)&vs_main_actions[action] >> 20) & 15]) {
+            if (func_800C1564(
+                    (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
+                vs_main_memcpy(&D_800F19CC->unk29C0[kept], &D_800F19CC->unk29C0[i], 24);
+                func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
+                    D_800F19CC->unk29C0[kept].unk9,
+                    (signed char)D_800F19CC->unk29C0[kept].unkA, &result);
+                func_8006F630((void*)&D_800F19CC->unk29C0[kept], (void*)&result,
+                    (void*)&result.unk4C[0]);
+                ++kept;
+            }
+        } else if (func_800C1564(
+                       (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
+            D_800F19CC->unk29C0[kept].unk8 = 16;
+            ((actionTargetContextView*)D_800F19CC)->targets[kept].limb = -1;
+            D_800F19CC->unk29C0[kept].unk9 = D_800F19CC->unk29C0[i].unk9;
+            D_800F19CC->unk29C0[kept].unk0 = D_800F19CC->unk29C0[i].unk0;
+            func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
+                D_800F19CC->unk29C0[kept].unk9,
+                vs_battle_actors[D_800F19CC->unk29C0[kept].unk9]->unk3C->unk36, &result);
+            func_8006F630((void*)&D_800F19CC->unk29C0[kept], (void*)&result,
+                (void*)&result.unk4C[0]);
+            ++kept;
+        }
+    }
+    D_800F19CC->unk2C00 = kept;
+    func_800C1664(kept, (int)D_800F19CC->unk29C0, 1);
+    _cameraMode = 3;
+}
 
 void func_8007087C(D_800F19CC_t* arg0)
 {

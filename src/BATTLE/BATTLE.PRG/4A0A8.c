@@ -3337,7 +3337,50 @@ int func_800BE01C(func_800BDF6C_t* arg0)
 }
 
 // https://decomp.me/scratch/3pQUE
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE180);
+typedef struct {
+    char reserved[0x50];
+    SVECTOR a;
+    SVECTOR b;
+    SVECTOR c;
+} cameraShakeScratch;
+void func_800BE180(void)
+{
+    short count = 0;
+    cameraShakeScratch* clear = (cameraShakeScratch*)0x1F800088;
+    short i = 0;
+    int x, y, z;
+    cameraShakeScratch* scratch;
+    func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
+    clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
+    scratch = (cameraShakeScratch*)0x1F800088;
+    for (; i < 2; ++entry, ++i) {
+        if (func_800BE01C(entry)) {
+            scratch->c.vx = x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1);
+            scratch->c.vy = y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1);
+            scratch->c.vz = z = entry->unk2 * ((entry->unkA >> 6) - 1);
+            if (entry->unkA & 1) {
+                scratch->a.vx += x;
+                scratch->a.vy += y;
+                scratch->a.vz += z;
+            }
+            if (entry->unkA & 2) {
+                scratch->b.vx += scratch->c.vx;
+                scratch->b.vy += scratch->c.vy;
+                scratch->b.vz += scratch->c.vz;
+            }
+            ++count;
+        }
+    }
+    D_800F4BA4->unk1A4.unk0.s16 = count;
+    if (count) {
+        D_800F4BA4->unk1BE = ((SVECTOR*)0x1F8000D8)->vx;
+        D_800F4BA4->unk1C0 = ((SVECTOR*)0x1F8000D8)->vy;
+        D_800F4BA4->unk1C2 = ((SVECTOR*)0x1F8000D8)->vz;
+        D_800F4BA4->unk1C6 = ((SVECTOR*)0x1F8000E0)->vx;
+        D_800F4BA4->unk1C8 = ((SVECTOR*)0x1F8000E0)->vy;
+        D_800F4BA4->unk1CA = ((SVECTOR*)0x1F8000E0)->vz;
+    }
+}
 
 void func_800BE36C(int arg0, int arg1)
 {

@@ -97,7 +97,7 @@ static int _renderElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _parseCreditsScript(void);
 static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
-void func_8006AF64(void);
+int func_8006AF64(void);
 static int _drawScreen(u_long*);
 static void func_8006B884(void);
 static int _ease(short mode, short currentStep, short totalSteps);
@@ -172,6 +172,13 @@ extern int D_800DC210;
 extern int _incrementingScore;
 extern int _incrementingMapCompletion;
 extern u_char _riskbreakerRanks[][4];
+extern u_char* D_800DBB70;
+extern u_char* D_800DBB74;
+extern u_char* D_800DBB78;
+extern u_char D_800DBB7C;
+extern u_char D_800DBB7D;
+extern u_short D_800DBB7E;
+extern u_short D_800DBB80;
 
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
 
@@ -1049,7 +1056,81 @@ static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
     D_800DC1A4 = arg0;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
+/* Incrementally decompresses the stream queued by func_8006AF44, yielding
+   once the frame budget (200 VSync ticks since D_800DC19A) is used up.
+   Returns 1 when the end-of-stream marker (0x7F) is reached, 0 otherwise. */
+int func_8006AF64(void)
+{
+    short i;
+    u_char op;
+
+    if (D_800DB72C == 0) {
+        return 0;
+    }
+
+    if (D_800DB72C == 1) {
+        D_800DB72C = 2;
+        D_800DBB74 = D_800DC1A0;
+        D_800DBB78 = (u_char*)D_800DC1A4;
+    }
+
+    while (1) {
+        if ((VSync(1) - D_800DC19A) > 200) {
+            return 0;
+        }
+
+        op = *D_800DBB74;
+
+        if (!(op & 0x80)) {
+            if (op == 0x7F) {
+                D_800DB72C = 0;
+                return 1;
+            }
+            if (op == 0x7D) {
+                // 0x7D: u8 count, u8 value: fill count + 1 bytes
+                ++D_800DBB74;
+                D_800DBB7E = *D_800DBB74++;
+                D_800DBB7C = *D_800DBB74++;
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = D_800DBB7C;
+                }
+            } else if (op == 0x7E) {
+                // 0x7E: u8 count, u8 value0, u8 value1: fill count + 1 byte pairs
+                ++D_800DBB74;
+                D_800DBB7E = *D_800DBB74++;
+                D_800DBB7C = *D_800DBB74++;
+                D_800DBB7D = *D_800DBB74++;
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = D_800DBB7C;
+                    *D_800DBB78++ = D_800DBB7D;
+                }
+            } else {
+                // 0x00-0x7C: copy op + 1 literal bytes
+                D_800DBB7E = *D_800DBB74++;
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = *D_800DBB74++;
+                }
+            }
+        } else {
+            // 1LLLOOOO OOOOOOOO: copy L + 3 bytes from offset O + 1 back,
+            // repeated while followed by 0x7C
+            D_800DBB7E = ((op >> 4) & 7) + 3;
+            D_800DBB80 = ((D_800DBB74[0] & 0xF) << 8) + D_800DBB74[1];
+            D_800DBB74 += 2;
+            D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+            for (i = 0; i < D_800DBB7E; ++i) {
+                *D_800DBB78++ = *D_800DBB70++;
+            }
+            while (*D_800DBB74 == 0x7C) {
+                D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+                ++D_800DBB74;
+                for (i = 0; i < D_800DBB7E; ++i) {
+                    *D_800DBB78++ = *D_800DBB70++;
+                }
+            }
+        }
+    }
+}
 
 static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
 {

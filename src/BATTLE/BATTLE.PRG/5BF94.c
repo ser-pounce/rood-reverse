@@ -7,17 +7,18 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "573B8.h"
-#include "vs_string.h"
-#include "gpu.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/overlay.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../SLUS_010.40/32154.h"
-#include "../../MENU/MAINMENU.PRG/C48.h"
-#include "../../MENU/MAINMENU.PRG/58EC.h"
-#include "../../GIM/SCREFF2.PRG/0.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/overlay.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/GIM/SCREFF2.PRG/0.h"
 #include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
+#include "vs_string.h"
+#include "gpu.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
@@ -518,10 +519,11 @@ char* func_800C58A4(uint arg0)
     arg0 >>= 5;
     for (i = 0; i < 0x18; i++) {
         if ((arg0 >> i) & 1) {
-            return (char*)&vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
+            return (char*)&vs_battle_statusStrings
+                [vs_battle_statusStrings[VS_statusStrings_INDEX_strDown + i]];
         }
     }
-    return (char*)&vs_battle_statusStrings[0xF6];
+    return (char*)&vs_battle_statusStrings[VS_statusStrings_OFFSET_empty];
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);

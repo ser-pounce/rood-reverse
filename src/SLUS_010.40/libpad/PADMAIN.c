@@ -63,8 +63,27 @@ typedef struct {
     int unk;
 } PadIntRP;
 
-extern volatile int* D_800335FC; /* interrupt status/mask registers */
+typedef struct {
+    int stat; /* I_STAT */
+    int mask; /* I_MASK */
+} PadIntrRegs;
+
+extern volatile PadIntrRegs* D_800335FC; /* interrupt status/mask registers */
 extern volatile u_short* D_80033600; /* SIO0 registers */
+
+#define SIO_DATA (*(volatile u_char*)D_80033600)
+#define SIO_SET_BAUD(x)      \
+    do {                     \
+        D_80033600[7] = (x); \
+    } while (0)
+
+#define RCNT2_COUNT (*(volatile u_short*)0x1F801120)
+#define RCNT2_MODE (*(volatile u_short*)0x1F801124)
+#define RCNT2_TARGET (*(volatile u_short*)0x1F801128)
+
+extern u_int D_8003FEA0; /* counter value at setRC2wait */
+extern u_int D_8003FEA4; /* wait length */
+extern void setRC2wait(u_int wait);
 extern int (*D_800335C4)();
 extern PadIntRP D_8003FC00;
 extern int chkRC2wait(void);
@@ -121,10 +140,10 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padSetVsyncPar
 
 int func_8002BDE8(void)
 {
-    if (!(D_800335FC[1] & 1)) {
+    if (!(D_800335FC->mask & 1)) {
         return 0;
     }
-    if (!(D_800335FC[0] & 1)) {
+    if (!(D_800335FC->stat & 1)) {
         return 0;
     }
     if (D_800335C4) {
@@ -184,9 +203,74 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", func_8002C438);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padSioRW);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padSioRW2);
+int _padSioRW2(PadPort* p, int data)
+{
+    int recv;
+    int baud;
+    int type;
+    int pos;
+    u_int now;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padClrIntSio0);
+    baud = 0x88;
+    type = p->recvBuf[0];
+    if ((type >> 4) == 8 && p->unk44 >= 9) {
+        baud = 0x22;
+    }
+    while (!(D_80033600[2] & 2)) { }
+    setRC2wait(400);
+    recv = SIO_DATA;
+    if (p->unk44 != 0 || (recv >> 4) != 8) {
+        SIO_SET_BAUD(baud);
+    } else {
+        SIO_SET_BAUD(0x22);
+    }
+    /* inlined chkRC2wait() timeout */
+    while (!(D_800335FC->stat & 0x80)) {
+        now = RCNT2_COUNT;
+        if (now < D_8003FEA0) {
+            if (RCNT2_TARGET != 0) {
+                now += RCNT2_TARGET;
+            } else {
+                now += 0x10000;
+            }
+        }
+        if (RCNT2_MODE & 0x200) {
+            if ((now - D_8003FEA0) >= D_8003FEA4) {
+                return -2;
+            }
+        } else if (((now - D_8003FEA0) >> 3) >= D_8003FEA4) {
+            return -2;
+        }
+    }
+    if (p->unkE8 != 8 && D_800335E0 == 2) {
+        setRC2wait(60);
+        while (!chkRC2wait()) { }
+    }
+    SIO_DATA = data;
+    if (D_800335E0 == 3 && recv == 0x80) {
+        D_800335FC->stat = ~0x80;
+        D_80033600[5] |= 0x10;
+    }
+    pos = p->unk44;
+    p->sioIndex++;
+    if (pos != 0xFF) {
+        p->recvBuf[p->unk44] = recv;
+    }
+    p->unk44++;
+    return recv;
+}
+
+int _padClrIntSio0(void)
+{
+    D_800335FC->stat = ~0x80;
+    while (D_80033600[2] & 0x80) {
+        if (chkRC2wait()) {
+            return 0;
+        }
+    }
+    D_80033600[5] |= 0x10;
+    return 1;
+}
 
 void _padWaitRXready(void)
 {

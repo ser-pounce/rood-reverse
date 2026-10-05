@@ -215,7 +215,9 @@ segments:
     subsegments:
       - [0x30A10, rodata, 31724]
       - [0x31418, rodata, 32154]
-      - [0x31724, asm]
+      - [0x31724, hasm]
+      - [0x31B7C, asm] # ratan2: not conclusively hand-written
+      - [0x31C0C, hasm]
       - [0x31D08, hasm, libgte/MTX_005] # |
       - [0x31D34, c, libgte/REG13]      # |
       - [0x31D40, c, libgte/REG12]      # |

@@ -13,7 +13,7 @@ $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.o: MASFLAGS += --expand-div
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
-	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31724 32154 main libcd/SYS libcd/SYS_2 \
+	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31724 31B7C 31C0C 32154 main libcd/SYS libcd/SYS_2 \
 	$(addprefix libgte/, \
 		MTX_005 REG13 REG12 REG11 MTX_12 MTX_09 MTX_004 \
 		MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00 \

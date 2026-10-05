@@ -34,6 +34,20 @@ extern int _DsPacket2(u_char, DslLOC*, u_char, DslCB, int, int);
 
 extern int D_80039DB8;
 
+typedef struct {
+    int id;
+    u_char intr;
+    u_char result[8];
+} DS_RES;
+
+typedef struct {
+    DS_RES ent[8]; /* 80039DC0 */
+    int idx; /* 80039E40 */
+} DS_RESQ;
+
+extern DS_RESQ D_80039DC0;
+extern void rescpy(u_char*, u_char*);
+
 void func_800231E4(DS_CQ* p)
 {
     int i;
@@ -69,7 +83,15 @@ int func_800235A4(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80023614);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80023838);
+void func_80023838(int id, u_char intr, u_char* result)
+{
+    D_80039DC0.ent[D_80039DC0.idx].id = id;
+    D_80039DC0.ent[D_80039DC0.idx].intr = intr;
+    rescpy(D_80039DC0.ent[D_80039DC0.idx].result, result);
+    if (++D_80039DC0.idx >= 8) {
+        D_80039DC0.idx = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsInit);
 
@@ -129,7 +151,18 @@ int DsShellOpen(void) { return DS_shell_open(); }
 
 u_char DsLastCom(void) { return DS_lastcom(); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_800244EC);
+void func_800244EC(void)
+{
+    DS_CQ* e;
+    int status = DS_system_status(0);
+
+    if (status == 1 && D_80039CF0.len > 0 && DS_system_status(0) == status) {
+        e = &D_80039CF0.q[D_80039CF0.tail];
+        if (e->id != 0) {
+            DS_cw(e->com, e->pparam);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80024590);
 

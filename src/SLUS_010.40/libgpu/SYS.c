@@ -55,6 +55,8 @@ extern volatile u_long* D_8003355C; /* DMA6 MADR */
 extern volatile u_long* D_80033560; /* DMA6 BCR */
 extern volatile u_long* D_80033564; /* DMA6 CHCR */
 extern volatile u_long* D_80033568; /* DMA DPCR */
+extern volatile int D_8003356C; /* command queue write index */
+extern volatile int D_80033570; /* command queue read index */
 
 int DMACallback(int, void (*)(void));
 int func_8002A3E8(int, int, int, int);
@@ -332,7 +334,36 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A698);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A8F8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002AA48);
+int func_8002AA48(int mode)
+{
+    int n;
+
+    if (mode == 0) {
+        func_8002AB84();
+        while (D_8003356C != D_80033570) {
+            func_8002A698();
+            if (func_8002ABB8()) {
+                return -1;
+            }
+        }
+        while ((*D_80033558 & 0x01000000) || !(*D_8003354C & 0x04000000)) {
+            if (func_8002ABB8()) {
+                return -1;
+            }
+        }
+        return 0;
+    }
+    n = (D_8003356C - D_80033570) & 0x3F;
+    if (n) {
+        func_8002A698();
+    }
+    if ((*D_80033558 & 0x01000000) || !(*D_8003354C & 0x04000000)) {
+        if (n == 0) {
+            return 1;
+        }
+    }
+    return n;
+}
 
 inline void func_8002AB84(void)
 {
@@ -342,7 +373,20 @@ inline void func_8002AB84(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002ABB8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002ACFC);
+int func_8002ACFC(int mode)
+{
+    *D_8003354C = 0x10000007;
+    if ((*D_80033548 & 0xFFFFFF) != 2) {
+        *D_80033548 = 0xE1001000 | (*D_8003354C & 0x3FFF);
+        *D_80033548;
+        return 0;
+    }
+    if (!(mode & 8)) {
+        return 1;
+    }
+    *D_8003354C = 0x09000001;
+    return 2;
+}
 
 int LoadImage2(RECT* rect, u_long* p)
 {

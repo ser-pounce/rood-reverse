@@ -3383,7 +3383,60 @@ void func_80070B04(void)
 }
 
 // https://decomp.me/scratch/CcHt5
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070CAC);
+/* Environment targets overlay the actor-effect records with coordinates. */
+typedef struct {
+    short x, y, z, radius;
+    char reserved8[56];
+    int kind;
+} environmentTarget;
+typedef struct {
+    unsigned short action;
+    char reserved2[72];
+    unsigned short count;
+    environmentTarget targets[30];
+} environmentTargetList;
+_mpdRoomSection9* func_8008E400(int*);
+int func_8008D2C0(func_8008D2C0_t*);
+void func_80070CAC(void)
+{
+    func_8008D2C0_t points[4];
+    int count;
+    int i;
+    _mpdRoomSection9* room;
+    environmentTargetList* list = (environmentTargetList*)&D_800F19CC->unk8;
+    list->count = 0;
+    switch ((int)list->action) {
+    case 93:
+    case 241:
+        room = func_8008E400(&count);
+        for (i = 0; i < count; i++) {
+            if (room[i].unk6 != 16) {
+                list->targets[list->count].kind = 3;
+                list->targets[list->count].x = room[i].unk0 * 128 + 64;
+                list->targets[list->count].y =
+                    (func_8008DC7C((room[i].unk0 << 7) | 64, (room[i].unk2 << 7) | 64)
+                        << 17)
+                    >> 17;
+                list->targets[list->count].z = room[i].unk2 * 128 + 64;
+                list->targets[list->count].radius = 128;
+                list->count++;
+            }
+        }
+        break;
+    case 79:
+        count = func_8008D2C0(points);
+        for (i = 0; i < count; i++) {
+            list->targets[list->count].kind = 5;
+            list->targets[list->count].x = points[i].unk0;
+            list->targets[list->count].y = points[i].unk1;
+            list->targets[list->count].z = points[i].unk2;
+            list->targets[list->count].radius = 64;
+            list->count++;
+        }
+        break;
+    }
+    func_8007087C((D_800F19CC_t*)&D_800F19CC->unk8);
+}
 
 void func_80070F28(int arg0)
 {

@@ -822,7 +822,620 @@ done:
     return changed;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D87E8);
+typedef struct {
+    char unk0[8];
+    union {
+        u_int raw;
+        struct {
+            u_int unk0 : 16;
+            u_int unk16 : 3;
+            u_int unk19 : 2;
+            u_int unk21 : 10;
+            u_int unk31 : 1;
+        } bits;
+    } flags;
+    char unkC[8];
+    short unk14;
+    char unk16[6];
+    SVECTOR position;
+    short unk24;
+    short facing;
+    char unk28[0x34];
+    vs_battle_movementPosition tile;
+    vs_battle_movementPosition lastTile;
+    char unk64[0x548];
+    u_int unk5AC_0 : 15;
+    u_int unk5AC_15 : 1;
+    u_int unk5AC_16 : 16;
+} actorObject;
+
+typedef union {
+    u_int raw;
+    struct {
+        u_int active : 1;
+        u_int previous : 1;
+        u_int hidden : 1;
+        u_int inView : 1;
+        u_int unk4 : 1;
+        u_int visible : 1;
+        u_int kind : 2;
+        u_int counter : 7;
+        u_int timer : 5;
+        u_int kindTimer : 7;
+        u_int blocked : 1;
+        u_int previousKind : 2;
+        u_int outOfReach : 1;
+        u_int unk31 : 1;
+    } bits;
+} actorRelation;
+
+typedef struct {
+    char unk0[0x22];
+    u_char unk22;
+    char unk23[2];
+    u_char unk25;
+    char unk26[0xE];
+    vs_battle_movementPosition tile;
+    char unk38[0x14];
+    SVECTOR position;
+    char unk54[4];
+    actorObject* object;
+    char unk5C[0x26];
+    short height;
+    char unk84[4];
+    u_char actorId;
+    char unk89[9];
+    u_short radius;
+    char unk94[0x10];
+    u_int nearDistance;
+    u_int angleLimit;
+    u_int farDistance;
+    char unkB0[8];
+    short extent;
+    char unkBA[0x71];
+    u_char phase;
+    char unk12C[0x78];
+    actorRelation relations[16];
+    u_int distances[16];
+} actorRelationState;
+
+int func_800E4624(short*, short*, int, int);
+int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
+int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
+
+#define RELATION_STATES ((actorRelationState**)0x1F80037C)
+
+static inline int checkExtent(
+    SVECTOR* from, SVECTOR* to, actorRelationState* state, int id)
+{
+    actorRelationState* other = RELATION_STATES[id];
+    int extent;
+
+    if (other) {
+        extent = other->extent;
+    } else {
+        extent = 128;
+    }
+    return func_800E44E8(from, to, extent, state->extent);
+}
+
+static inline int checkHeight(
+    SVECTOR* from, SVECTOR* to, actorRelationState* state, int id)
+{
+    actorRelationState* other = RELATION_STATES[id];
+    int height;
+    int own;
+
+    if (other) {
+        height = ABS(other->height);
+    } else {
+        height = 64;
+    }
+    own = state->height;
+    if (own < 0) {
+        own = -own;
+    }
+    return func_800E44E8(from, to, height, own);
+}
+
+void func_800D87E8(actorRelationState* state, int id)
+{
+    int height;
+    int active;
+    int previous;
+    int visible;
+    actorRelation relation;
+    actorObject* object;
+    actorRelationState* other;
+    vs_battle_actor* actor;
+    int owner;
+    int blocked;
+    int heading;
+    int angle;
+    int distance;
+    int x;
+    int z;
+    u_short radius;
+    u_int targetDistance;
+    u_int root;
+
+    {
+        actorRelationState* target = (actorRelationState*)D_800F5878[id];
+        actorObject* targetObject;
+
+        if (target) {
+            targetObject = (actorObject*)D_800F4538[id];
+            if ((targetObject->flags.raw & 0x180000)
+                && targetObject->position.vy > state->position.vy) {
+                height = -target->extent;
+            } else {
+                height = ((actorRelationState*)D_800F5878[id])->height;
+            }
+        } else {
+            height = -64;
+        }
+    }
+    state->distances[id] = func_800E4624((short*)&state->position,
+        (short*)&((actorObject*)vs_battle_actors[id]->unk44)->position, state->height,
+        height);
+
+    if (D_800F45E0[id]
+        || ((object = (actorObject*)vs_battle_actors[id]->unk44),
+            (object->tile.raw & 0xFF00FF) == (state->tile.raw & 0xFF00FF))
+        || ((object->flags.raw & 0x180000)
+            && (object->lastTile.raw & 0xFF00FF) == (state->tile.raw & 0xFF00FF))) {
+        state->relations[id].raw |= 0x40000004;
+    } else {
+        if (++state->phase & 1) {
+            state->relations[id].bits.outOfReach =
+                !checkExtent(&object->position, &state->position, state, id);
+        } else {
+            state->relations[id].bits.hidden =
+                !checkHeight(&object->position, &state->position, state, id);
+        }
+        if (state->relations[id].bits.hidden) {
+            state->relations[id].bits.outOfReach = 1;
+        }
+    }
+
+    {
+        actorObject* object = state->object;
+        state->relations[id].bits.inView =
+            func_800E437C(&state->position,
+                &((actorObject*)vs_battle_actors[id]->unk44)->position,
+                object->facing + object->unk14, state->distances[id])
+            >= (int)state->angleLimit;
+    }
+
+    /* Copied as a raw word, which keeps the local addressable. */
+    *(u_int*)&relation = *(u_int*)&state->relations[id];
+    if (state->actorId == id) {
+        relation.bits.active = 1;
+        relation.bits.visible = 1;
+        relation.bits.previous = 0;
+    } else {
+        active = 0;
+        if (state->distances[id] <= state->farDistance && relation.bits.inView
+            && id != state->actorId && (state->unk25 || relation.bits.outOfReach)) {
+            active = 1;
+        }
+        relation.bits.active = active;
+        {
+            int timer = relation.bits.timer;
+            if (timer) {
+                relation.bits.timer = timer - 1;
+                relation.bits.active = 1;
+            }
+        }
+        previous = 0;
+        if (!relation.bits.active) {
+            previous = state->relations[id].bits.active;
+        }
+        relation.bits.previous = previous;
+        visible = 0;
+        if (relation.bits.active
+            || (state->distances[id] < state->nearDistance && relation.bits.outOfReach)) {
+            visible = 1;
+        }
+        relation.bits.visible = visible;
+    }
+
+    {
+        actorObject* object = (actorObject*)vs_battle_actors[id]->unk44;
+        if ((*(u_short(**)[32])0x1F8003C0)[object->tile.p.z][object->tile.p.x] & 0x2000) {
+            relation.bits.unk31 = 1;
+        } else {
+            relation.bits.unk31 = relation.bits.active;
+        }
+    }
+    *(u_int*)&state->relations[id] = *(u_int*)&relation;
+
+    blocked = 0;
+    radius = 63;
+    {
+        actorObject* own = state->object;
+        x = own->position.vx;
+        z = own->position.vz;
+    }
+    owner = state->actorId;
+    targetDistance = state->distances[id];
+    heading = ratan2(((actorObject*)vs_battle_actors[id]->unk44)->position.vx - x,
+        ((actorObject*)vs_battle_actors[id]->unk44)->position.vz - z);
+    other = RELATION_STATES[id];
+    if (other) {
+        radius = other->radius;
+    }
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        int candidate = actor->id;
+        if (candidate == owner || candidate == id
+            || state->distances[candidate] > targetDistance) {
+            continue;
+        }
+        {
+            actorObject* object = (actorObject*)D_800F4538[candidate];
+            angle = ratan2(object->position.vx - x, object->position.vz - z) - heading;
+        }
+        if (rcos(angle) < 0) {
+            continue;
+        }
+        root = vs_gte_rsqrt(state->distances[candidate]);
+        distance = (int)(root * rsin(angle)) >> 12;
+        if (distance < 0) {
+            distance = -distance;
+        }
+        if ((u_int)distance < radius) {
+            blocked = 1;
+            break;
+        }
+    }
+
+    {
+        actorRelation final;
+
+        final.raw = state->relations[id].raw & 0xF7FFFFFF;
+        final.raw |= blocked << 27;
+        state->relations[id] = final;
+        if (state->actorId != id && RELATION_STATES[id]) {
+            if (final.bits.kindTimer) {
+                final.bits.kindTimer--;
+                if (!final.bits.kindTimer) {
+                    final.bits.kind = final.bits.previousKind;
+                }
+            }
+            if (state->unk22 && final.bits.kind == 3) {
+                if (final.bits.active) {
+                    final.bits.counter = 0;
+                } else {
+                    final.bits.counter++;
+                    if (final.bits.counter >= 121) {
+                        final.bits.kind = 1;
+                    }
+                }
+            }
+            state->relations[id] = final;
+        }
+    }
+}
+
+typedef struct actorUpdateActor {
+    struct actorUpdateActor* next;
+    int id;
+    u_char flags;
+    u_char unk9;
+    char unkA;
+    u_int unkB_0 : 2;
+    u_int unkB_2 : 6;
+    char unkC[0x30];
+    vs_battle_actor2* stats;
+} actorUpdateActor;
+
+typedef struct {
+    u_int position;
+    u_int unk4;
+} actorUpdatePoint;
+
+typedef struct {
+    u_int current : 16;
+    u_int max : 16;
+} actorUpdateHp;
+
+typedef struct {
+    char unk0[0x18];
+    actorUpdateHp hp;
+    int current;
+    int max;
+} actorUpdateStats;
+
+typedef struct {
+    char unk0[8];
+    u_char unk8;
+    char unk9[5];
+    u_char unkE;
+    char unkF[5];
+    u_char unk14;
+    char unk15[3];
+    u_char unk18;
+    char unk19[3];
+    u_char unk1C;
+    u_char unk1D;
+    char unk1E[0x11];
+    u_char unk2F;
+    char unk30[4];
+    u_int unk34;
+    union {
+        int value;
+        u_char b[4];
+    } unk38;
+    u_int unk3C;
+    u_short unk40;
+    char unk42[3];
+    u_char unk45;
+    u_short unk46;
+    char unk48[4];
+    int unk4C;
+    int unk50;
+    vs_battle_actor* actor;
+    actorObject* object;
+    actorUpdatePoint* unk5C;
+    actorUpdatePoint* unk60;
+    actorUpdatePoint* unk64;
+    char unk68[8];
+    union {
+        u_char b[8];
+        int w[2];
+    } historyX;
+    union {
+        u_char b[8];
+        int w[2];
+    } historyZ;
+    u_char historyIndex;
+    u_char historyMask;
+    char unk82[0xE];
+    u_short unk90;
+    char unk92[0x68];
+    u_char unkFA;
+    u_char unkFB;
+    char unkFC[0x18];
+    u_short unk114;
+    char unk116[0xA];
+    u_int unk120;
+    u_char unk124;
+    char unk125[5];
+    u_char unk12A;
+    char unk12B[6];
+    u_char unk131;
+    char unk132[6];
+    u_short unk138;
+    char unk13A[0x1C];
+    u_short unk156;
+    char unk158[0x34];
+    int unk18C;
+    u_int unk190_0 : 5;
+    u_int unk190_5 : 7;
+    u_int unk190_12 : 20;
+    char unk194[6];
+    u_char unk19A;
+    char unk19B[9];
+    u_int targets[16];
+} actorUpdateState;
+
+static inline int historyRepeats(actorUpdateState* state)
+{
+    return state->historyX.w[0] == state->historyX.w[1]
+        && state->historyZ.w[0] == state->historyZ.w[1];
+}
+
+static inline int historyStalled(actorUpdateState* state)
+{
+    return state->historyMask == 0xFF ? historyRepeats(state) : 0;
+}
+
+extern int D_800F58D4;
+extern int D_800F58E0;
+extern int D_800F16F4;
+struct actorEvaluationState;
+struct actorTimerState;
+void func_800D821C(struct actorEvaluationState*);
+void func_800DBF00(func_800E78F4_t*);
+void func_800DBFE4(struct actorTimerState*);
+void func_800E4F14(void*);
+void func_800D8280(actorUpdateState*);
+void func_800E4358(actorUpdateState*);
+void func_800E48F8(actorUpdateState*);
+void func_800E48A8(actorUpdateState*, int, int);
+
+void func_800D8EF4(void)
+{
+    actorUpdateActor* actor;
+    actorUpdateState* state;
+    actorObject* object;
+    int flags;
+    int id;
+    int targetId;
+    int i;
+    int arg;
+    int alert;
+    vs_battle_actor* other;
+    u_int target;
+    actorUpdateStats* stats;
+    u_int x;
+    actorUpdateHp hp;
+    int current;
+    int max;
+    u_int z;
+
+    D_800F58E0 = 0;
+    D_800F58BC->unk24 = 0;
+    if (D_800F58BC->unk18 < 0xFFFE) {
+        D_800F58BC->unk18++;
+    }
+
+    for (actor = (actorUpdateActor*)vs_battle_actors[0]; actor != NULL;
+        actor = actor->next) {
+        flags = actor->flags;
+        actor->unkB_0 = 0;
+        id = actor->id;
+        state = ((actorUpdateState**)0x1F80037C)[id];
+        state->unk1D = 0;
+        object = state->object;
+        state->unk90 = actor->stats->unk954;
+
+        if (flags & 0x20) {
+            func_800D82CC((func_800E78F4_t*)state);
+            func_800D821C((struct actorEvaluationState*)state);
+            func_800DBF00((func_800E78F4_t*)state);
+        skip:
+            state->unk14 = 1;
+            continue;
+        }
+        func_800D8280(state);
+        func_800E4358(state);
+        if (flags & 0x80) {
+            goto skip;
+        }
+        func_800DBFE4((struct actorTimerState*)state);
+        if ((flags & 0x40) || state->unk18C
+            || (object->flags.bits.unk16 | object->flags.bits.unk19 | object->unk5AC_15)
+            || id == 0) {
+            goto skip;
+        }
+        if (object->flags.bits.unk31) {
+            state->unk1D = 1;
+            func_800D87E8((actorRelationState*)state, 0);
+            goto skip;
+        }
+
+        arg = func_800E45B4();
+        if (D_800F16F4 < arg) {
+            goto idle;
+        }
+        *(int*)0x1F8003FC = arg;
+        if (state->unk18) {
+            if (state->unk12A != 0 && state->unk138 == 6) {
+            idle:
+                func_800E48F8(state);
+                goto skip;
+            }
+            state->unk18 = 0;
+        }
+        if (state->unk19A) {
+            state->unk19A--;
+            func_800E2CCC((movementRecoveryState*)state);
+            func_800D87E8((actorRelationState*)state, 0);
+            state->unk1D = 1;
+            if (state->unk46 >= 2) {
+                state->unk46--;
+            }
+            goto idle;
+        }
+
+        state->unk14 = 0;
+        if ((state->unk64->position & 0xFF00FF) == (state->unk34 & 0xFF00FF)) {
+            if (state->unk46 && --state->unk46 == 0) {
+                state->unk38.value = state->unk64->position;
+                state->unkFB = 16;
+                state->unk1C = 1;
+                state->unk45 = 40;
+            }
+            if (state->unk45 && --state->unk45 == 0) {
+                if (++state->unkFA >= 5) {
+                    state->unkFA = 1;
+                }
+                state->unk45 = 40;
+            }
+            state->unk8 = 1;
+        } else {
+            state->unk46 = 0xA8C;
+            state->unk8 = 0;
+            if (state->unk1C) {
+                func_800E4CE8((func_800DEEA4_t2*)state);
+                state->unk1C = 0;
+            }
+        }
+
+        if (state->unk124 != 8 && actor->unk9 != 8 && state->unk124 != actor->unk9) {
+            func_800E48A8(state, 1, 64);
+        }
+        state->unk124 = actor->unk9;
+        state->unk34 = state->object->tile.raw;
+        x = state->unk60->position;
+        z = state->unk60->unk4;
+        state->unk4C = x;
+        state->unk50 = z;
+        state->unk120 = (((z & 0xFFFF) >> 6) << 16) | ((x & 0xFFFF) >> 6);
+        if ((0x12600 >> state->unk124) & 1) {
+            if (historyStalled(state)) {
+                state->historyMask = 0;
+                state->unk19A = 30;
+                goto idle;
+            }
+            state->historyX.b[state->historyIndex] = state->unk4C;
+            state->historyZ.b[state->historyIndex] = state->unk50;
+            state->historyMask |= 1 << state->historyIndex;
+            state->historyIndex = (state->historyIndex + 1) & 7;
+        } else {
+            state->historyMask = 0;
+        }
+
+        if (state->unk190_5 > 0) {
+            state->unk190_5--;
+        }
+
+        arg = 0;
+        for (i = 0; i < 2; i++) {
+            func_800D87E8((actorRelationState*)state, arg);
+            arg = D_800F58D4;
+            if (arg == 0) {
+                break;
+            }
+        }
+
+        func_800E4F14(state);
+        if (func_800D85D8((actionCandidateState*)state)) {
+            goto idle;
+        }
+
+        alert = 0;
+        stats = (actorUpdateStats*)state->actor->unk3C;
+        hp = stats->hp;
+        current = hp.current;
+        max = hp.max;
+        if (state->unk2F != 0) {
+            if (state->unk2F == 1) {
+                alert = current * 4 < max;
+            } else if (state->unk2F == 2) {
+                if (current * 2 < max) {
+                    alert = 1;
+                }
+            } else if (state->unk114) {
+                alert = 1;
+            } else {
+                for (other = vs_battle_actors[0]; other != NULL; other = other->next) {
+                    target = state->targets[other->id];
+                    if (((target >> 5) & 1) && ((target >> 6) & 3) == 3) {
+                        alert = 1;
+                        break;
+                    }
+                }
+            }
+            if (state->unk131 == 2) {
+                alert = 1;
+            }
+        }
+        state->unkE = alert;
+        if (state->unk156) {
+            state->unk156--;
+        }
+        if (state->unk1C == 0 && state->unk38.value >= 0) {
+            targetId = state->unk38.b[3];
+            if (state->unk40 == 0 || --state->unk40 == 0 || D_800F4538[targetId] == NULL
+                || (((actorObject*)D_800F4538[targetId])->tile.raw & 0xFF00FF)
+                       != (state->unk3C & 0xFF00FF)) {
+                func_800E4CE8((func_800DEEA4_t2*)state);
+            }
+        }
+    }
+}
 
 extern int D_800F58C4;
 
@@ -2568,7 +3181,199 @@ void func_800DE030(int elapsed)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE3E4);
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+
+typedef struct {
+    char unk0[0x26];
+    u_char allowFallback;
+    char unk27[0x2D];
+    vs_battle_actor* actor;
+    char unk58[4];
+    vs_battle_actor2* stats;
+    char unk60[0x28];
+    u_char id;
+    char unk89[0xA5];
+    u_char mode;
+    char unk12F[0x10];
+    u_char minDelay;
+    char unk140[0x1B0];
+    actionCandidateEntry candidates[16];
+    actionCandidateEntry* entries[16];
+    int count;
+} actionPlanState;
+
+extern int D_800F58F0;
+extern int D_800F58F4;
+extern vs_battle_actor2* D_800F58E8;
+extern actionCandidateEntry (*D_800F58EC)[16];
+extern actionCandidateEntry* D_800F58F8;
+void func_800DC3E8(vs_battle_actor2* src, vs_battle_actor2* dst);
+void func_800DC3CC(actionPlanState*);
+void func_800DC574(actionPlanState*, int);
+
+static inline int snapshotActorStats(void)
+{
+    vs_battle_actor* actor;
+
+    D_800F58E8 = vs_main_allocHeapR(sizeof(vs_battle_actor2) * 16);
+    if (D_800F58E8 == NULL) {
+        return 0;
+    }
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        func_800DC3E8(actor->unk3C, &D_800F58E8[actor->id]);
+    }
+    return 1;
+}
+
+static inline void restoreActorStats(void)
+{
+    vs_battle_actor* actor;
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        func_800DC3E8(&D_800F58E8[actor->id], actor->unk3C);
+    }
+    vs_main_freeHeapR(D_800F58E8);
+}
+
+void func_800DE3E4(actionPlanState* state)
+{
+    int delays[3] = { 0, 455, 2900 };
+    int quotas[3] = { 10, 3, 3 };
+    int selected[3];
+    int row;
+    int column;
+    int pass;
+    int i;
+    int j;
+    int delay;
+    int index;
+    int minDelay;
+    vs_battle_actor* actor;
+    vs_battle_actor2* stats = state->stats;
+    int remaining;
+    actionCandidateEntry* entry;
+    actionCandidateEntry* rejected;
+    actionCandidateEntry* fallback;
+    vs_battle_actor* self;
+
+    D_800F58F0 = 0;
+    D_800F58F4 = 0;
+
+    for (row = 0; row < 6; ++row) {
+        for (column = 0; column < 4; ++column) {
+            for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+                D_800F5904[actor->id][(u_short)stats->armor[row][column].id] = 0;
+            }
+        }
+    }
+
+    state->count = 0;
+    if (state->id == 0) {
+        return;
+    }
+
+    if (snapshotActorStats()) {
+        minDelay = MAX(state->minDelay, (u_short)(state->stats->unk954 / 35));
+        D_800F58BC->unk18 = 0;
+
+        for (pass = 0; pass < 3; ++pass) {
+            delay = MAX(delays[pass], minDelay);
+            func_800DE030(delay);
+            func_800DD918((actionChoiceState*)state, (short)delay);
+            func_800DC3CC(state);
+
+            if (pass == 1) {
+                remaining = 16 - selected[0] - quotas[2];
+                if (remaining < 0) {
+                    remaining = 0;
+                }
+                selected[1] = remaining;
+                selected[pass] = MIN(selected[1], state->count);
+            } else {
+                selected[pass] = MIN(state->count, quotas[pass]);
+            }
+
+            for (i = 0; i < selected[pass]; ++i) {
+                func_800DC2E0(&D_800F58EC[pass][i], state->entries[i]);
+            }
+            for (i = selected[pass]; i < state->count; ++i) {
+                rejected = state->entries[i];
+                D_800F5904[rejected->targetId][rejected->action] = 0;
+            }
+            state->count = 0;
+        }
+
+        for (pass = 0; pass < 3; ++pass) {
+            for (j = 0; j < selected[pass]; ++j) {
+                index = state->count;
+                entry = &state->candidates[index];
+                func_800DC2E0(entry, &D_800F58EC[pass][j]);
+                state->entries[index] = entry;
+                state->count = index + 1;
+                if (index + 1 >= 16) {
+                    goto restore;
+                }
+            }
+        }
+
+        if (state->count == 0 && state->allowFallback) {
+            for (i = 0; i < D_800F58F0; ++i) {
+                fallback = &state->candidates[i];
+                func_800DC2E0(fallback, &D_800F58F8[i]);
+                fallback->weight = 128;
+                state->entries[i] = fallback;
+            }
+            state->count = D_800F58F0;
+            func_800DC3CC(state);
+        }
+    restore:
+        restoreActorStats();
+        D_800F58BC->unk18 = 0;
+    } else {
+        func_800DD918((actionChoiceState*)state, 0);
+        func_800DC3CC(state);
+    }
+
+    if (state->count >= 2) {
+        for (pass = 0; pass < 3; ++pass) {
+            if (selected[pass] != 0) {
+                func_800DC574(state, selected[pass]);
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < state->count; ++i) {
+        if (i > 0
+            && (int)state->entries[i]->threshold - (int)state->entries[0]->threshold
+                   < 80) {
+            state->entries[i]->threshold = state->entries[0]->threshold + 80;
+        }
+        state->entries[i]->threshold += rand() & 7;
+    }
+
+    func_800D85D8((actionCandidateState*)state);
+    if (state->count == 0) {
+        state->mode = 7;
+    } else {
+        func_800D9DD8((actionCandidateState*)state);
+    }
+
+    if (D_800F5920 != NULL) {
+        self = state->actor;
+        if (vs_battle_getStateFlag(0xA6) == 4 && self->unk9 == 24 && self->unkC == 4) {
+            vs_battle_setStateFlag(0xA6, 5);
+        }
+        if (D_800F5920->unk16 && (u_int)(self->subType - 172) < 2) {
+            D_800F5920->unk17 = state->count;
+            state->count = 0;
+        }
+    }
+}
+
+#undef MIN
+#undef MAX
 
 void func_800DEB10(func_800DEEA4_t* arg0)
 {
@@ -2657,11 +3462,8 @@ typedef struct actorEvaluationContext {
     char pad5[63];
     int f44;
 } actorEvaluationContext;
-extern void* D_800F58EC;
 extern u_char (*D_800F5904)[256];
-extern void* D_800F58F8;
 void func_800E685C(int, int, int);
-void func_800DE3E4(actorEvaluationState*);
 void func_800D821C(actorEvaluationState*);
 int func_800DEC88(void* arg0)
 {
@@ -2670,9 +3472,9 @@ int func_800DEC88(void* arg0)
     actorEvaluationState* state;
     D_800F58BC->unk18 = 0;
     D_800F5900 = vs_main_allocHeapR(0x1ECC);
-    D_800F58EC = (char*)D_800F5900 + 0x9CC;
+    D_800F58EC = (void*)((char*)D_800F5900 + 0x9CC);
     D_800F5904 = (void*)((char*)D_800F5900 + 0xD8C);
-    D_800F58F8 = (char*)D_800F5900 + 0x1D8C;
+    D_800F58F8 = (void*)((char*)D_800F5900 + 0x1D8C);
     if (D_800F5900) {
         func_800DEB10((void*)context);
         for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;
@@ -2694,7 +3496,7 @@ int func_800DEC88(void* arg0)
         for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;
             actor = actor->next) {
             state = (actorEvaluationState*)D_800F5878[actor->id];
-            func_800DE3E4(state);
+            func_800DE3E4((actionPlanState*)state);
             if (state->f13) {
                 if (actor->flags & 32)
                     func_800D821C(state);
@@ -2790,7 +3592,252 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFBCC);
+typedef struct routeEdgeState {
+    char unk0[5];
+    u_char unk5;
+    char unk6[0x2E];
+    vs_battle_movementPosition tile;
+    char unk38[0x14];
+    short x;
+    short y;
+    short z;
+    char unk52[0x36];
+    u_char id;
+    char unk89[0xB1];
+    u_short cooldown;
+    u_short period;
+    char unk13E[0x16];
+    u_char area;
+    char unk155[7];
+    u_char target;
+    char unk15D[0xB];
+    vs_battle_movementPosition destination;
+    char unk16C[4];
+    vs_battle_movementPosition next;
+    char unk174[8];
+    int moveX;
+    int moveZ;
+    char unk184[4];
+    short heading;
+    short angle;
+    char unk18C[0xF];
+    u_char gate;
+    func_800DFA54_t exit;
+} routeEdgeState;
+
+typedef struct {
+    char unk0[0x60];
+    short* position;
+} routeEdgeActor;
+
+typedef struct {
+    char unk0[14];
+    u_char closedGates;
+} routeEdgeGlobals;
+
+typedef u_short routeEdgePair[2];
+
+extern u_char D_800F175C[];
+int func_8008E320(int);
+void func_800E4BE0(int);
+
+static inline u_int routeWord(routeEdgePair* pair) { return *(u_int*)pair; }
+
+static inline u_short routeHalf(routeEdgePair* pair, int index) { return (*pair)[index]; }
+
+static inline u_int routeTile(int z, int x)
+{
+    return (*(u_short(**)[32])0x1F8003C0)[z][x];
+}
+
+static inline int routeSetArea(routeEdgeState* state, vs_battle_movementPosition position)
+{
+    state->area = routeTile(position.p.z, position.p.x) & 15;
+    return 6;
+}
+
+int func_800DFBCC(routeEdgeState* state, int index, int area)
+{
+    routeEdgePair routes;
+    int distances[2];
+    vs_battle_movementPosition position;
+    vs_battle_movementPosition candidate;
+    int count;
+    int i;
+    int result;
+    int amount;
+    int x;
+    int z;
+    u_short route;
+    u_char* direction;
+    u_char* table;
+
+    /* Both packed words are copied through u_int views. */
+    position.raw = *(u_int*)&state->tile;
+    *(u_int*)routes = (*(u_int**)0x1F8003F4)[area * 16 + index];
+    if (!(routeWord(&routes) & 0x1BE0)) {
+        return 6;
+    }
+    state->area = area;
+    count = 1;
+    if (routeWord(&routes) & 0x1BE00000) {
+        count = 2;
+    }
+
+    for (i = 0; i < count; i++) {
+        if (!i) {
+            route = routeHalf(&routes, 0);
+        } else {
+            route = routeHalf(&routes, 1);
+        }
+        if (((route >> 5) & 31) != position.p.x || (route & 31) != position.p.z) {
+            continue;
+        }
+        candidate = position;
+        if (route & 0x400) {
+            if (route & 0x8000) {
+                continue;
+            }
+            result = func_800DFAF8((int)state, position.raw, 1);
+            if (result >= 0 && func_8008E320(i = result >> 1) >= 0) {
+                candidate.p.y = i + 2;
+                if (!((((routeEdgeGlobals*)D_800F58BC)->closedGates >> candidate.p.y)
+                        & 1)) {
+                    state->gate = candidate.p.y;
+                    if (state->id) {
+                        func_800E4BE0(candidate.p.y);
+                    }
+                    func_800DF9A8((func_800DFA54_t*)&candidate, &state->exit);
+                    goto accept;
+                }
+            }
+            candidate.p.x = (route >> 5) & 31;
+            candidate.p.z = route & 31;
+            goto center;
+        }
+        if (route & 0x6000) {
+            u_char* step;
+
+            state->area = routeTile(candidate.p.z, candidate.p.x) & 15;
+            state->unk5 = 0;
+            amount = ((route >> 13) & 3) + 1;
+            step = &D_800F175C[(route >> 11) & 3];
+            candidate.p.x += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dx;
+            candidate.p.z += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dz;
+            result = func_800D954C((func_800D8400_t*)state, candidate.raw);
+            if (result < 0) {
+            center:
+                if (state->target != 16
+                    && ((routeEdgeActor**)0x1F80037C)[state->target]) {
+                    state->moveX =
+                        ((routeEdgeActor**)0x1F80037C)[state->target]->position[0];
+                    state->moveZ =
+                        ((routeEdgeActor**)0x1F80037C)[state->target]->position[2];
+                } else {
+                    state->moveX = candidate.p.x * 128 + 64;
+                    state->moveZ = candidate.p.z * 128 + 64;
+                }
+                state->angle =
+                    ratan2(state->x - state->moveX, state->z - state->moveZ) & 0xFFF;
+                state->cooldown = state->period;
+                return 4;
+            }
+            if (result <= 0) {
+                continue;
+            }
+        stop:
+            candidate.p.y = 0;
+        accept:
+            state->next = candidate;
+            return 14;
+        }
+        table = D_800F175C;
+        direction = &table[(route >> 11) & 3];
+        candidate.p.x += ((D_800F16EC_t*)0x1F8003EC)[*direction].dx;
+        candidate.p.z += ((D_800F16EC_t*)0x1F8003EC)[*direction].dz;
+        if (func_800D954C((func_800D8400_t*)state, candidate.raw) <= 0) {
+            goto center;
+        }
+        if ((*(u_short(**)[32])0x1F8003BC)[candidate.p.z][candidate.p.x] & 0x1C00) {
+            goto stop;
+        }
+        if (((*(u_char**)0x1F8003C4)[position.p.z * *(u_char*)0x1F8003DC + position.p.x]
+                >> *direction)
+            & 1) {
+            goto stop;
+        }
+        state->heading = *direction;
+        return 5;
+    }
+
+    if ((routeWord(&routes) & 0x8400) == 0x8400) {
+        if (count == 1) {
+        areaOnly:
+            return routeSetArea(state, position);
+        }
+        if ((routeWord(&routes) & 0x84000000) == 0x84000000) {
+            goto areaOnly;
+        }
+        goto second;
+    }
+    if ((routeWord(&routes) & 0x84000000) == 0x84000000) {
+        goto first;
+    }
+
+    for (i = 0; i < count; i++) {
+        if (!i) {
+            route = routeHalf(&routes, 0);
+        } else {
+            route = routeHalf(&routes, 1);
+        }
+        if (!((*(u_short(**)[32])0x1F8003BC)[route & 31][(route >> 5) & 31] & 0x1C00)) {
+            continue;
+        }
+        if (i) {
+            route = routeHalf(&routes, 0);
+        } else {
+            route = routeHalf(&routes, 1);
+        }
+        if (((*(u_short(**)[32])0x1F8003BC)[route & 31][(route >> 5) & 31] & 0x1C00)
+            || count == 1) {
+            state->area = (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            return 6;
+        }
+        state->destination.raw = ((route & 31) << 16) | ((route >> 5) & 31);
+        return 6;
+    }
+
+    x = position.p.x;
+    if (count == 1) {
+        if (((state->destination.raw = ((routeHalf(&routes, 0) & 31) << 16)
+                                     | ((routeWord(&routes) >> 5) & 31))
+                & 0xFF00FF)
+            == (state->tile.raw & 0xFF00FF)) {
+            goto center;
+        }
+        return 6;
+    }
+    z = position.p.z;
+    distances[0] =
+        (x - ((routeWord(&routes) >> 5) & 31)) * (x - ((routeWord(&routes) >> 5) & 31))
+        + (z - (routeHalf(&routes, 0) & 31)) * (z - (routeHalf(&routes, 0) & 31));
+    x -= (routeWord(&routes) >> 21) & 31;
+    z -= (routeWord(&routes) >> 16) & 31;
+    distances[1] = x * x + z * z;
+    if (distances[0] < distances[1]) {
+    first:
+        state->destination.raw =
+            ((routeHalf(&routes, 0) & 31) << 16) | ((routeWord(&routes) >> 5) & 31);
+    } else {
+    second:
+        state->destination.raw =
+            (routeWord(&routes) & 0x1F0000) | ((routeWord(&routes) >> 21) & 31);
+    }
+    if ((state->destination.raw & 0xFF00FF) == (state->tile.raw & 0xFF00FF)) {
+        goto center;
+    }
+    return 6;
+}
 
 typedef struct {
     short x, y, z, pad;
@@ -3252,7 +4299,8 @@ typedef struct terrainMovementState {
 #define TERRAIN_MAP_WIDTH (*(unsigned char*)0x1F8003DC)
 #define TERRAIN_MOVE_RESULT (*(int*)0x1F8003C8)
 #define TERRAIN_TILES (*(unsigned short(**)[32])0x1F8003C0)
-int func_800DFBCC(terrainMovementState*, int, int);
+struct routeEdgeState;
+int func_800DFBCC(struct routeEdgeState*, int, int);
 void func_800E4BB8(terrainMovementState*);
 void func_800E4B70(terrainMovementState*, int);
 void func_800E1908(terrainMovementState* state)
@@ -3291,7 +4339,7 @@ void func_800E19FC(terrainMovementState* state)
     next = TERRAIN_TILES[state->destination.p.z][state->destination.p.x] & 15;
     if (current != next) {
         if (state->f29) {
-            mode = func_800DFBCC(state, current, next);
+            mode = func_800DFBCC((struct routeEdgeState*)state, current, next);
             if (mode == 6) {
                 state->targetX = (state->destination.p.x << 7) + 64;
                 state->targetZ = (state->destination.p.z << 7) + 64;
@@ -4032,7 +5080,217 @@ void func_800E2CCC(movementRecoveryState* state)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2F5C);
+typedef union {
+    u_int raw;
+    struct {
+        u_int unk0 : 1;
+        u_int direction : 3;
+        u_int clockwise : 1;
+        u_int count : 7;
+        u_int visited : 4;
+        u_int stop : 1;
+        u_int changed : 1;
+        u_int cell : 4;
+        u_int boundX : 5;
+        u_int boundZ : 5;
+    } bits;
+} movementPath;
+
+typedef struct {
+    char unk0;
+    u_char unk1;
+    char unk2[2];
+    u_char unk4;
+    u_char unk5;
+    char unk6[0x2E];
+    vs_battle_movementPosition tile;
+    char unk38[0x14];
+    short x;
+    char unk4E[2];
+    short z;
+    char unk52[0x92];
+    u_char unkE4;
+    char unkE5[2];
+    u_char unkE7;
+    u_char unkE8;
+    char unkE9[0x75];
+    u_short flags;
+    char unk160[8];
+    vs_battle_movementPosition destination;
+    char unk16C[4];
+    vs_battle_movementPosition next;
+    char unk174[0x1C];
+    movementPath path;
+    char unk194[5];
+    u_char unk199;
+    u_char waitTimer;
+} movementPathState;
+
+typedef int (*movementPathTest)(movementPathState*, int);
+
+int func_800D98E8(movementPathState*, int);
+int func_800E3D5C(movementPathState*, movementPathTest);
+
+int func_800E2F5C(movementPathState* state, movementPathTest test, int mask)
+{
+    movementPath path;
+    u_int direction;
+    int heading;
+    int blocker;
+    int i;
+    int cell;
+    int turn;
+    int x;
+    int z;
+    int boundX;
+    int boundZ;
+    int center;
+    int hit;
+    vs_battle_movementPosition ahead;
+    vs_battle_movementPosition point;
+
+    path = state->path;
+    state->unk5 = 0;
+    state->unk1 = state->unk199;
+    if (path.bits.count == 0) {
+        goto done;
+    }
+
+    heading = path.bits.direction;
+    direction = (path.bits.clockwise ? heading - 2 : heading + 2) & 7;
+    hit = func_800D98E8(state, direction);
+    blocker = hit - 1;
+    if (hit) {
+        if (!(((movementPathState**)0x1F80037C)[blocker]->flags & 0x30)
+            && !((movementPathState**)0x1F80037C)[blocker]->waitTimer) {
+            ((movementPathState**)0x1F80037C)[blocker]->waitTimer = func_800E45D4(4) + 4;
+        }
+    }
+
+    if (!state->unk4 && !path.bits.changed && !test(state, path.bits.direction)) {
+        ahead.p.x = state->tile.p.x + ((D_800F16EC_t*)0x1F8003EC)[path.bits.direction].dx;
+        ahead.p.z = state->tile.p.z + ((D_800F16EC_t*)0x1F8003EC)[path.bits.direction].dz;
+        ahead.p.y = 0;
+        if (!func_800D96C8(
+                (func_800D8400_t*)state, state->tile.raw, ahead.raw, path.bits.direction)
+            || func_800D954C((func_800D8400_t*)state, ahead.raw) <= 0) {
+            path.bits.changed = 1;
+            path.bits.clockwise = !path.bits.clockwise;
+            path.bits.visited = 0;
+            path.bits.direction += 4;
+        }
+    }
+
+    boundX = path.bits.boundX << 7;
+    boundZ = path.bits.boundZ << 7;
+    if (!state->unk4) {
+        x = state->tile.p.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+        z = state->tile.p.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+        if (((*(unsigned short (**)[32])0x1F8003C0)[z][x] >> mask) & 1
+            || x > D_800F58BC->maxX || z > D_800F58BC->maxZ || x < D_800F58BC->minX
+            || z < D_800F58BC->minZ) {
+            state->unkE8 = 0;
+            state->unkE7 = 0;
+            state->unkE4 = 0;
+            goto stop;
+        }
+        if (boundZ > 0) {
+            center = (state->destination.p.z << 7) + 64;
+            if ((center < boundZ && state->z < boundZ)
+                || (boundZ < center && boundZ < state->z)) {
+                goto done;
+            }
+        }
+        if (boundX > 0) {
+            center = (state->destination.p.x << 7) + 64;
+            if ((center < boundX && state->x < boundX)
+                || (boundX < center && boundX < state->x)) {
+                goto done;
+            }
+        }
+    } else {
+        if (boundZ > 0) {
+            center = (state->destination.p.z << 7) + 64;
+            if ((boundZ < center && state->z < boundZ)
+                || (center < boundZ && boundZ < state->z)) {
+                goto done;
+            }
+        }
+        if (boundX > 0) {
+            center = (state->destination.p.x << 7) + 64;
+            if ((boundX < center && state->x < boundX)
+                || (center < boundX && boundX < state->x)) {
+                goto done;
+            }
+        }
+    }
+
+    cell = func_800E3D5C(state, test);
+    if (cell == path.bits.cell) {
+        goto keep;
+    }
+    path.bits.cell = cell;
+
+    turn = -1;
+    if (path.bits.clockwise) {
+        turn = 1;
+    }
+    if (test(state, (path.bits.direction - turn * 2 - turn) & 7)
+        && test(state, (path.bits.direction - turn * 2) & 7)) {
+        if (!(state->flags & 0x30) && !state->waitTimer) {
+            state->waitTimer = func_800E45D4(4) + 4;
+        }
+        goto stop;
+    }
+
+    path.bits.visited |= 1 << (path.bits.direction >> 1);
+    if (path.bits.visited == 15) {
+        goto stop;
+    }
+
+    direction = (path.bits.direction - turn * 2) & 7;
+    for (i = 0; i < 4; i++) {
+        if (test(state, direction)) {
+            if (path.bits.direction != direction) {
+                path.bits.changed = 1;
+            }
+            path.bits.direction = direction;
+            goto keep;
+        }
+        point.p.x = state->tile.p.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+        point.p.z = state->tile.p.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+        point.p.y = 0;
+        /* Passed through its address: the status byte is left over from the previous
+         * probe. */
+        if (func_800D96C8(
+                (func_800D8400_t*)state, state->tile.raw, *(u_int*)&point, direction)
+            && func_800D954C((func_800D8400_t*)state, *(u_int*)&point) > 0) {
+            state->next = point;
+            if (path.bits.direction != direction) {
+                path.bits.changed = 1;
+            }
+            path.bits.direction = direction;
+            goto detour;
+        }
+        direction = (direction + turn * 2) & 7;
+    }
+    state->path = path;
+    return -1;
+
+detour:
+    state->path = path;
+    return 14;
+
+keep:
+    state->path = path;
+    return 5;
+
+stop:
+    path.bits.stop = 1;
+done:
+    state->path = path;
+    return -1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E3600);
 

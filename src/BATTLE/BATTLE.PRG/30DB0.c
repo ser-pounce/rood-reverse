@@ -64,6 +64,7 @@ int func_8009F794(D_800F45E0_t* arg0);
 void func_8009F9F4(int, D_800F4538_unk64*);
 void func_8009FD38(D_800F4538_t* arg0);
 int func_800A0104(int, int);
+void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A152C(int, int, int);
@@ -71,10 +72,14 @@ void func_800A2C48(D_800F4538_t*);
 void func_800A525C(D_800F4538_t*);
 int func_800A6EE8(short*, int, int, int);
 int func_800A91DC(int, int, int);
+int func_800AAD4C(int, int, int, int);
 void func_800AB2AC(int);
+void func_800AC500(D_800F4538_t*);
+void func_800AD008(void*, void*);
 int func_800AD494(D_800F4538_t*, int, int*);
 void func_800AD62C(int, int*, int*, int);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
+void func_800AE47C(D_800F4538_t*);
 void func_800AE6C0(D_800F4538_t*, int, int);
 short func_800BEB00();
 void func_800E6898(void*);
@@ -3125,8 +3130,129 @@ int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-// https://decomp.me/scratch/XFe1q
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_800A0204);
+int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
+{
+    u_short* frames;
+    D_800F4538_t* actor;
+    int keepFlag15;
+    int anim;
+    int found;
+
+    if (animation == 0) {
+        return 0;
+    }
+    actor = D_800F4538[actorId];
+    if (actor == NULL) {
+        return -1;
+    }
+    if ((*(int*)((char*)actor + 0x5AC)) & 0x1000000) {
+        return 0;
+    }
+    actor->unk5AC_16 = 0;
+    if ((*(int*)((char*)actor + 0x5AC)) & 0x800000) {
+        func_800AE47C(actor);
+    }
+    actor->unk5AC_23 = 0;
+    keepFlag15 = 0;
+    if (animation == 25 || animation == 26) {
+        keepFlag15 = 1;
+    }
+    if (!keepFlag15) {
+        actor->unk5AC_15 = 0;
+    }
+    actor->unk1802[2] = 0;
+    actor->unk1802[6] = 0;
+    func_800AAD4C(actorId, 1, 1, 1);
+    func_800AC500(actor);
+    if (((*(int*)((char*)actor + 0x5AC)) & 0x8000) && !keepFlag15) {
+        actor->unk5AC_15 = 0;
+    }
+    anim = animation;
+    actor->unk5B0_3 = 0;
+
+    if (anim < 100) {
+        if (actor->unk0.unkA_5) {
+            if (anim == 1 || anim == 6) {
+                anim = 8;
+            }
+        } else if (actor->unk0.unkA_0 == 3) {
+            if (anim == 1) {
+                anim = 48;
+                if (actor->unk0.unkA_6) {
+                    anim = 35;
+                }
+            }
+        } else if (actor->unk0.unkA_6) {
+            if (anim == 1) {
+                anim = 31;
+            } else if (anim == 13) {
+                anim = 32;
+            }
+        }
+        if (actor->unk0.weaponDrawn) {
+            anim += 100;
+        } else if (actor->unk5AC_3) {
+            if (anim == 1) {
+                anim = 75;
+            } else if (anim == 13) {
+                anim = 84;
+                if (actor->animationId == anim) {
+                    return 0;
+                }
+            } else if (anim == 84) {
+                if (actor->animationId == anim) {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    actor->unk5AC_20 = 0;
+    if (!actor->unk0.weaponDrawn && (anim == 36 || anim == 39)) {
+        actor->unk0.unkA_3 = 1;
+    setHeading:
+        actor->unk1800 = (actor->unk0.facing + actor->unk0.unk3E) & 0xFFF;
+    } else if (!actor->unk0.weaponDrawn && (anim == 41 || anim == 59)) {
+        actor->unk0.unkA_3 = 2;
+        goto setHeading;
+    } else if (*(int*)&actor->unk0.unk34 == 0 && actor->unk0.unk34.vz == 0) {
+        actor->unk0.unkA_3 = 0;
+        actor->unk0.unk9_6 = 0;
+    }
+
+retry:
+    found = func_800AD494(actor, anim, (int*)&frames);
+    if (found == 0 || frames == NULL) {
+        actor->unk5AC_15 = 0;
+        if (anim == 0) {
+            // Returns without a value (v0 holds the updated flags word).
+            return;
+        }
+        anim = 0;
+        goto retry;
+    }
+
+    actor->animationId = anim;
+    if (func_800BEB00() == 4 || actor->unk187C != found || D_800F49DC != actor->unk6E3) {
+        actor->unk6E3 = D_800F49DC;
+        actor->unk187C = found;
+        actor->unk5BC = *frames;
+        func_800AD008(actor, &actor->unkC54);
+        actor->unk6E0 = 0;
+        func_800A06B8(actor, blendFrames);
+        if (actor->unk63C >= 0x80) {
+            blendFrames *= 2;
+        }
+        if (blendFrames >= 2) {
+            actor->unk5CD = blendFrames;
+            actor->unk5CC = 1;
+        } else {
+            actor->unk5CD = 0;
+            actor->unk5CC = 0;
+        }
+    }
+    return 0;
+}
 
 int func_800A0618(int arg0, int arg1, int arg2, int arg3)
 {

@@ -3087,19 +3087,83 @@ int func_800CD3A0(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3E4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CDCBC);
-
 typedef struct {
     union {
         int value;
         u_char bytes[4];
+        struct {
+            u_int actor : 16, color : 4, texture : 4, life : 8;
+        } bits;
     } config;
     int index, age;
     SVECTOR first[8], second[8], previousFirst, currentFirst, previousSecond,
         currentSecond;
     int projectionDepth, projectionFlags;
 } effectTrailState;
-void func_800CDCBC(effectTrailState*, int, int);
+typedef struct {
+    u_long tag;
+    POLY_GT4 poly;
+    u_long endPage;
+} TrailPacket;
+extern CVECTOR D_800EC308[], D_800EC2E8[];
+void func_800CF988(func_800CF988_t*, int, int, int);
+void func_800CDCBC(effectTrailState* t, int head, int tail)
+{
+    long xy[4];
+    int depth;
+    TrailPacket* p;
+    u_short uv;
+    u_char row, column;
+    vs_scratch_t* scratch;
+    depth = RotAverage4(&t->previousFirst, &t->currentFirst, &t->previousSecond,
+        &t->currentSecond, &xy[0], &xy[1], &xy[2], &xy[3], (long*)&t->projectionDepth,
+        (long*)&t->projectionFlags);
+    if ((u_int)(depth - 17) >= 2031)
+        return;
+    p = vs_scratch.unk0;
+    vs_scratch.unk0 = (char*)p + sizeof(TrailPacket);
+    setlen(p, 14);
+    p->poly.code = 0x3C;
+    p->poly.tag = 0xE1000000;
+    p->endPage = 0xE1000200;
+    *(long*)&p->poly.x0 = xy[0];
+    *(long*)&p->poly.x1 = xy[1];
+    *(long*)&p->poly.x2 = xy[2];
+    *(long*)&p->poly.x3 = xy[3];
+    scratch = &vs_scratch;
+    if ((t->config.value & 0xF00000) == 0x600000) {
+        p->poly.r0 = p->poly.r1 = D_800EC308[t->config.bits.color].r * head - 128;
+        p->poly.g0 = p->poly.g1 = D_800EC308[t->config.bits.color].g * head - 128;
+        p->poly.b0 = p->poly.b1 = D_800EC308[t->config.bits.color].b * head - 128;
+        p->poly.r2 = p->poly.r3 = D_800EC308[t->config.bits.color].r * tail - 128;
+        p->poly.g2 = p->poly.g3 = D_800EC308[t->config.bits.color].g * tail - 128;
+        p->poly.b2 = p->poly.b3 = D_800EC308[t->config.bits.color].b * tail - 128;
+        func_800CF988((func_800CF988_t*)p, head, head, 0);
+        addPrim((u_long*)scratch->unk4 + depth, p);
+    } else {
+        p->poly.code = 0x3E;
+        uv = 0x58;
+        if ((t->config.value & 0xF0000) != 0x70000)
+            uv = 0x38;
+        p->poly.tpage = uv;
+        p->poly.clut = 0x3C30;
+        column = t->config.bits.texture % 3U;
+        row = t->config.bits.texture / 3U;
+        uv = column * 2560 + row * 40;
+        *(u_short*)&p->poly.u0 = uv + 0x4868;
+        *(u_short*)&p->poly.u2 = uv + 0x4887;
+        *(u_short*)&p->poly.u1 = uv + 0x4F68;
+        *(u_short*)&p->poly.u3 = uv + 0x4F87;
+        p->poly.r0 = p->poly.r1 = (D_800EC2E8[t->config.bits.color].r * head) / 8;
+        p->poly.g0 = p->poly.g1 = (D_800EC2E8[t->config.bits.color].g * head) / 8;
+        p->poly.b0 = p->poly.b1 = (D_800EC2E8[t->config.bits.color].b * head) / 8;
+        p->poly.r2 = p->poly.r3 = (D_800EC2E8[t->config.bits.color].r * tail) / 8;
+        p->poly.g2 = p->poly.g3 = (D_800EC2E8[t->config.bits.color].g * tail) / 8;
+        p->poly.b2 = p->poly.b3 = (D_800EC2E8[t->config.bits.color].b * tail) / 8;
+        addPrim((u_long*)scratch->unk4 + depth, p);
+    }
+}
+
 int func_800CE174(func_800D4910_t* node, u_int mode, int config)
 {
     effectTrailState* t = node->unk8;

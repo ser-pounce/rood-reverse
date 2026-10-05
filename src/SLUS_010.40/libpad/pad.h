@@ -47,3 +47,18 @@ typedef struct padPort {
     u_char unkEA;
     char unkEB[5];
 } padPort;
+
+typedef struct {
+    u_long data;
+    u_short stat;
+    u_short unk6;
+    u_short mode;
+    u_short ctrl;
+    u_short unkC;
+    u_short baud;
+} padSio;
+
+typedef struct {
+    u_long stat;
+    u_long mask;
+} padIntr;

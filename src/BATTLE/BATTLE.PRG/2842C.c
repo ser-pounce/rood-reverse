@@ -1688,7 +1688,83 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800691E4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800941FC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094844);
+void func_80094844(short* pos, D_800F1BAC_t* label)
+{
+    int i;
+    int j;
+    int dx;
+    int dy;
+    int x;
+    int y;
+
+    if (label->unk10 == 0x1000 && label->unk12 == 0x1000) {
+        label->unk10 = 0;
+        label->unk12 = 0;
+        if (D_800F227C > 0) {
+            for (i = 0; i < D_800F227C; i++) {
+                x = pos[0] - ((DVECTOR*)D_800F1CBC)[i].vx;
+                y = pos[1] - ((DVECTOR*)D_800F1CBC)[i].vy;
+                if (ABS(x) < 24 && ABS(y) < 10) {
+                    break;
+                }
+            }
+            if (i != D_800F227C) {
+                // i is reused as the "free spot found" flag
+                i = 0;
+                for (dy = 0; dy < 48; dy += 8) {
+                    for (dx = 0; dx < 32; dx += 8) {
+                        for (j = 0; j < D_800F227C; j++) {
+                            y = pos[1] + dy - ((DVECTOR*)D_800F1CBC)[j].vy;
+                            if (ABS(y) < 10) {
+                                x = pos[0] + dx - ((DVECTOR*)D_800F1CBC)[j].vx;
+                                if (ABS(x) < 24) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (j == D_800F227C) {
+                            i = 1;
+                            goto done;
+                        }
+                        for (j = 0; j < D_800F227C; j++) {
+                            y = pos[1] + dy - ((DVECTOR*)D_800F1CBC)[j].vy;
+                            if (ABS(y) < 10) {
+                                x = pos[0] - dx - ((DVECTOR*)D_800F1CBC)[j].vx;
+                                if (ABS(x) < 24) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (j == D_800F227C) {
+                            i = 1;
+                            dx = -dx;
+                            goto done;
+                        }
+                    }
+                }
+            done:
+                if (i) {
+                    label->unk10 = dx;
+                    label->unk12 = dy;
+                }
+            }
+        }
+    }
+    pos[0] += label->unk10;
+    pos[1] += label->unk12;
+    ((DVECTOR*)D_800F1CBC)[D_800F227C].vx = pos[0];
+    ((DVECTOR*)D_800F1CBC)[D_800F227C].vy = pos[1];
+    if (pos[0] < 32) {
+        pos[0] = 32;
+    }
+    if (pos[0] > 288) {
+        pos[0] = 288;
+    }
+    if (pos[1] > 200) {
+        pos[1] = 200;
+    }
+    D_800F227C++;
+}
 
 void func_80094AF8(D_800F1BAC_t* arg0)
 {
@@ -2347,7 +2423,79 @@ int func_80096768(int arg0, int arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009695C);
+void func_8009695C(int x, int y, D_800F1BAC_t* p)
+{
+    u_char colors[2][4] = { { 128, 64, 0, 0 }, { 0, 64, 128, 0 } };
+    int negative;
+    int positive;
+    int i;
+    POLY_FT4* prim;
+
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+    y -= p->unk12;
+    negative = p->unkC & 0x8000;
+    positive = !negative;
+
+    setPolyFT4(prim);
+    setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+    setXY4(prim, x, y, x + D_80069144[p->unkE].w, y, x, y + D_80069144[p->unkE].h,
+        x + D_80069144[p->unkE].w, y + D_80069144[p->unkE].h);
+    setUV4(prim, D_80069144[p->unkE].x, D_80069144[p->unkE].y,
+        D_80069144[p->unkE].x + D_80069144[p->unkE].w, D_80069144[p->unkE].y,
+        D_80069144[p->unkE].x, D_80069144[p->unkE].y + D_80069144[p->unkE].h,
+        D_80069144[p->unkE].x + D_80069144[p->unkE].w,
+        D_80069144[p->unkE].y + D_80069144[p->unkE].h);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 848, 223);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 8, prim++);
+
+    x += D_80069144[p->unkE].w + 2;
+    setPolyFT4(prim);
+    setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+    setXY4(prim, x, y, x + D_8006917C[p->unkA].w, y, x, y + D_8006917C[p->unkA].h,
+        x + D_8006917C[p->unkA].w, y + D_8006917C[p->unkA].h);
+    setUV4(prim, D_8006917C[p->unkA].x, D_8006917C[p->unkA].y,
+        D_8006917C[p->unkA].x + D_8006917C[p->unkA].w, D_8006917C[p->unkA].y,
+        D_8006917C[p->unkA].x, D_8006917C[p->unkA].y + D_8006917C[p->unkA].h,
+        D_8006917C[p->unkA].x + D_8006917C[p->unkA].w,
+        D_8006917C[p->unkA].y + D_8006917C[p->unkA].h);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 848, 223);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 8, prim++);
+
+    x += D_8006917C[p->unkA].w + 2;
+    setPolyFT4(prim);
+    setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+    setXY4(prim, x, y - 1, x + 8, y - 1, x, y + 7, x + 8, y + 7);
+    setUV4(prim, positive * 8 + 120, 208, positive * 8 + 128, 208, positive * 8 + 120,
+        216, positive * 8 + 128, 216);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 848, 223);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 8, prim++);
+
+    x += 2;
+    x += p->displayTextLen * 5;
+    for (i = p->displayTextLen - 1; i >= 0; --i, x -= 5) {
+        setPolyFT4(prim);
+        setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+        prim->x0 = x;
+        prim->x1 = x + 6;
+        prim->y0 = y - 1;
+        prim->y1 = y - 1;
+        prim->x2 = x;
+        prim->y2 = y + 9;
+        prim->x3 = x + 6;
+        prim->y3 = y + 9;
+        setUV4(prim, (((signed char*)p + i)[20] - '0') * 6, 0,
+            (((signed char*)p + i)[20] - '0') * 6 + 6, 0,
+            (((signed char*)p + i)[20] - '0') * 6, 10,
+            (((signed char*)p + i)[20] - '0') * 6 + 6, 10);
+        setTPage(prim, 0, 0, 768, 0);
+        setClut(prim, 832, 223);
+        AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 8, prim++);
+    }
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+}
 
 void func_80096FF0(int arg0)
 {

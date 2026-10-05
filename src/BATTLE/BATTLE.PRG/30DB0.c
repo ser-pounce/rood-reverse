@@ -1260,7 +1260,73 @@ tail:
     arg0->unk183E[arg1] = 0xFF;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009CC20);
+extern void* D_800F4528[];
+
+int func_8009CC20(int arg0, int arg1)
+{
+    vs_battle_objectData objectData;
+    D_800F4538_t* actor;
+    int i;
+
+    switch (arg1) {
+    case 0:
+        if (arg0 >= 17) {
+            return -1;
+        }
+        actor = D_800F4538[arg0];
+        if (actor == NULL) {
+            return -1;
+        }
+        if (actor->unk5D8 == NULL) {
+            return 0;
+        }
+        if (arg0 != 0) {
+            objectData.index = arg0;
+            objectData.modelId = actor->unk5B1;
+            if (arg0 == 1 && actor->unk6E6 == 0) {
+                vs_main_freeHeap(actor->unk5D8);
+            } else if (!vs_battleFindSharedSequence(&objectData)) {
+                vs_main_freeHeap(actor->unk5D8);
+            }
+        }
+        actor->unk5D8 = NULL;
+        actor->unk5B1 = 0;
+        actor->unk5B5 = 0;
+        break;
+    case 1:
+    case 2:
+        --arg0;
+        for (i = 0; i < 17; ++i) {
+            actor = D_800F4538[i];
+            if (actor != NULL) {
+                actor->unk5DC[arg0] = NULL;
+            }
+        }
+        i = func_8009D208(arg0 + 1);
+        if (i < 0) {
+            return i;
+        }
+        if (D_800F4528[arg0] != NULL) {
+            vs_main_freeHeap(D_800F4528[arg0]);
+        }
+        D_800F4528[arg0] = NULL;
+        break;
+    case 4:
+    case 5:
+        actor = D_800F4538[arg0];
+        if (actor == NULL) {
+            return -1;
+        }
+        if (actor->unk5DC[3] == NULL) {
+            return 0;
+        }
+        vs_main_freeHeap(actor->unk5DC[3]);
+        actor->unk5DC[3] = NULL;
+        actor->unk5B6 = 0;
+        break;
+    }
+    return 0;
+}
 
 void func_800AB098(D_800F4538_t*, int, int);
 

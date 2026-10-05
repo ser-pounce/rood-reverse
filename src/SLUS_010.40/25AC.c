@@ -2674,7 +2674,38 @@ void Sound_Cmd_20_unk(FSoundCommandParams* arg0)
 }
 
 // https://decomp.me/scratch/wOmFh
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001733C);
+void func_8001733C(FSoundCommandParams* in_Params)
+{
+    int* header;
+    int* offsets;
+    char* data;
+    u_short* entry;
+    char* programCounter1;
+    char* programCounter2;
+    int count;
+
+    in_Params->ExtParam1 = func_80016DA8(((int*)in_Params->Param1)[2]);
+    header = (int*)in_Params->Param1;
+    offsets = header + 4;
+    count = header[1];
+    data = (char*)header;
+    data += 32; // skip the header
+
+    entry = (u_short*)(data + *offsets);
+    programCounter1 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 4);
+    entry++;
+    programCounter2 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 2);
+    Sound_PlaySfxProgram(in_Params, programCounter1, programCounter2, 0);
+
+    while (--count != 0) {
+        offsets++;
+        entry = (u_short*)(data + *offsets);
+        programCounter1 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 4);
+        entry++;
+        programCounter2 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 2);
+        Sound_PlaySfxProgram(in_Params, programCounter1, programCounter2, 1);
+    }
+}
 
 void Sound_Cmd_21_unk(FSoundCommandParams* arg0)
 {

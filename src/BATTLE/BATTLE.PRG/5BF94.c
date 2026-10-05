@@ -3723,7 +3723,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
         vs_battle_lerpVector(arg0->unk20, D_800F5330[arg0->unk4], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
         vs_battle_lerpVector(arg0->unk2C, D_800F5330[arg0->unk7], &arg2->unk20);
-        func_8004140C(&arg2->unk48, &arg2->unk20);
+        ScaleMatrix(&arg2->unk48, &arg2->unk20);
         return;
     }
     func_800CFE7C((func_800CFE98_t*)&arg2->unk48);

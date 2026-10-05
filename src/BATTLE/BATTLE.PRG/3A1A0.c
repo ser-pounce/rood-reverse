@@ -908,7 +908,129 @@ void func_800A4D8C(void)
     D_800F4B18 = 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
+void func_800A25EC(D_800F4538_t*); /* extern */
+void func_800A2790(D_800F4538_t*); /* extern */
+void func_800A291C(D_800F4538_t*); /* extern */
+void func_800A2CD4(D_800F4538_t*); /* extern */
+int func_800A51A0(int, SVECTOR*); /* extern */
+void func_800A525C(D_800F4538_t*); /* extern */
+void func_800A5280(int, int, int, SVECTOR*); /* extern */
+void func_800AC690(int, D_800F4538_t*); /* extern */
+void func_800E6B24(u_char); /* extern */
+
+void func_800A4E68(int arg0)
+{
+    SVECTOR movement;
+    D_800F4538_t* temp_s0;
+    int var_v0;
+    int var_v1;
+    u_int temp_a0;
+    u_int temp_v1;
+    int temp_v1_2;
+    int temp_v1_3;
+    int temp_v1_4;
+
+    temp_s0 = D_800F4538[arg0];
+    temp_v1 = (*(u_int*)((char*)temp_s0 + 8));
+    if (!(temp_v1 & 0xF00) || ((u_int)((temp_v1 >> 8) & 0xF) >= 6U)) {
+        if (arg0 == 0) {
+            func_800A4A88(temp_s0, 0);
+            if (!((*(u_int*)((char*)temp_s0 + 8)) & 0x70000) || (temp_s0->unk181A == 0)) {
+                temp_v1_2 = temp_s0->unk1848.unk0;
+                switch (temp_v1_2) { /* switch 1; irregular */
+                case 7: /* switch 1 */
+                case 0: /* switch 1 */
+                    movement.pad = 0;
+                    goto block_13;
+                case 1: /* switch 1 */
+                    movement.pad = (short)temp_v1_2;
+                    movement.vx = (u_short)temp_s0->unk1848.unk6;
+                block_13:
+                    func_800A5280(0, (short)temp_s0->unk1848.unk4, temp_s0->unk1848.unk8,
+                        &movement);
+                    if ((*(u_int*)((char*)temp_s0 + 8)) & 0x70000) {
+                    block_14:
+                        func_800AC690(0, temp_s0);
+                    }
+                    break;
+
+                case 2: /* switch 1 */
+                    func_800A25EC(temp_s0);
+                    break;
+                }
+            } else {
+                goto block_14;
+            }
+            func_800A4A88(temp_s0, 1);
+            func_800A4A88(temp_s0, 2);
+        } else {
+            func_800A4A88(temp_s0, 0);
+            if (temp_s0->unk1848.unk0 == 2) {
+                func_800A25EC(temp_s0);
+            } else {
+                temp_a0 = (*(u_int*)((char*)temp_s0 + 8));
+                if (!(temp_a0 & 0x70000)) {
+                    if (temp_a0 & 0x0F000000) {
+                        func_800A29A0(temp_s0);
+                    } else if (temp_a0 & 0x70000000) {
+                        func_800A2CD4(temp_s0);
+                    } else {
+                        temp_v1_3 = temp_s0->unk1848.unk0;
+                        switch (temp_v1_3) { /* switch 2; irregular */
+                        case 1: /* switch 2 */
+                            if (((int)temp_a0 >= 0) && !(temp_a0 & 0x200000)) {
+                                movement.pad = (short)temp_v1_3;
+                                movement.vx = (u_short)temp_s0->unk1848.unk6;
+                                func_800A5280(arg0, (short)temp_s0->unk1848.unk4,
+                                    temp_s0->unk1848.unk8, &movement);
+                                if ((*(u_int*)((char*)temp_s0 + 8)) & 0x70000) {
+                                block_34:
+                                    func_800AC690(arg0, temp_s0);
+                                }
+                            }
+                            break;
+                        case 3: /* switch 2 */
+                            func_800A2790(temp_s0);
+                            break;
+                        case 4: /* switch 2 */
+                            func_800A291C(temp_s0);
+                            break;
+                        }
+                    }
+                } else {
+                    goto block_34;
+                }
+            }
+            temp_v1_4 = temp_s0->unk6E4;
+            if (temp_v1_4 != 0) {
+                if (temp_s0->unk0.unkC_0 == temp_v1_4) {
+                    temp_s0->unk0.unkC_0 = 0;
+                }
+                if (func_800A51A0(temp_s0->unk6E4, &temp_s0->unk0.position) == 0) {
+                    temp_s0->unk6E4 = 0;
+                    func_800E6B24(temp_s0->unk0.unkF);
+                }
+                if (temp_s0->unk181A == 1) {
+                    temp_s0->unk1814 = (short)(u_short)temp_s0->unk0.position.vx;
+                    temp_s0->unk1818 = (short)(u_short)temp_s0->unk0.position.vz;
+                }
+            }
+            func_800A4A88(temp_s0, 1);
+            func_800A4A88(temp_s0, 2);
+            var_v0 = temp_s0->unk0.position.vx;
+            if (var_v0 < 0) {
+                var_v0 += 0x7F;
+            }
+            var_v1 = temp_s0->unk0.position.vz;
+            temp_s0->unk0.currentTileX = (u_char)(var_v0 >> 7);
+            if (var_v1 < 0) {
+                var_v1 += 0x7F;
+            }
+            temp_s0->unk0.currentTileZ = (u_char)(var_v1 >> 7);
+        }
+        func_800A525C(temp_s0);
+    }
+}
 
 int func_800A51A0(int arg0, SVECTOR* arg1)
 {

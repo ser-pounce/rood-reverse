@@ -231,7 +231,7 @@ segments:
       - [0x32040, hasm, libgte/CMB_02]  # |
       - [0x320BC, hasm, libgte/MTX_07]  # |
       - [0x320DC, hasm, libgte/CMB_00]  # |
-      - [0x32154, asm]
+      - [0x32154, hasm]
   - start: 0x32568
     type: code
     vram: 0x80041D68

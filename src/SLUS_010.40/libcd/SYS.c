@@ -4,9 +4,6 @@
 int CD_init(void);
 void CD_initintr(void);
 int CD_initvol(void);
-int CD_vol(CdlATV* vol);
-int CD_getsector(void* madr, int size);
-int CD_getsector2(void* madr, int size);
 
 extern u_char D_80032208;
 extern CdlLOC D_80032214;
@@ -39,53 +36,3 @@ int CdReset(int mode)
     }
     return 1;
 }
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdFlush);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdSetDebug);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdComstr);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdIntstr);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdSync);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdReady);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdSyncCallback);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdReadyCallback);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdControl);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdControlF);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdControlB);
-
-int CdMix(CdlATV* vol)
-{
-    CD_vol(vol);
-    return 1;
-}
-
-int CdGetSector(void* madr, int size) { return CD_getsector(madr, size) == 0; }
-
-int CdGetSector2(void* madr, int size) { return CD_getsector2(madr, size) == 0; }
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdDataCallback);
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdDataSync);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_80010284);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_800103D0);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_800103E0);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_800103FC);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_80010408);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_80010424);
-
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS", D_80010438);

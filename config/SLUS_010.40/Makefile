@@ -13,13 +13,17 @@ $(BUILD)/src/SLUS_010.40/main.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.o: MASFLAGS += --expand-div
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
-	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31724 32154 main \
+	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31724 32154 main libcd/SYS libcd/SYS_2 \
 	$(addprefix libgte/, \
 		MTX_005 REG13 REG12 REG11 MTX_12 MTX_09 MTX_004 \
 		MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00 \
 	) \
 ): ASFLAGS += -no-pad-sections
 
+# libcd SYS is one PsyQ object, split at the CdReset/CdFlush boundary: CdReset only matches under
+# 2.8.1-psx (its CD_initvol() result is copied to v1 before the test), while everything from CdFlush on
+# only matches under 2.7.2-psx like the other libcd units (per-access lui for globals, ra/sp restore
+# before jr). SYS_2 takes the default 2.7.2-psx.
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main): CC1VER := 2.8.1-psx
 
 # Sony's PsyQ library objects were assembled by GNU as in reorder mode (the assembler fills

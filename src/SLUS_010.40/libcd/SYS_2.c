@@ -1,25 +1,68 @@
 #include "common.h"
 #include <libcd.h>
 
+void CD_flush(void);
+int CD_sync(int mode, u_char* result);
+int CD_ready(int mode, u_char* result);
 int CD_vol(CdlATV* vol);
 int CD_getsector(void* madr, int size);
 int CD_getsector2(void* madr, int size);
+int CD_datasync(int mode);
+void* DMACallback(int dma, void (*func)());
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdFlush);
+extern CdlCB D_800321FC;
+extern CdlCB D_80032200;
+extern int D_80032204;
+extern char* D_80032220[];
+extern char* D_800322A0[];
+extern char D_80010284[];
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdSetDebug);
+void CdFlush(void) { CD_flush(); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdComstr);
+int CdSetDebug(int level)
+{
+    int old;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdIntstr);
+    old = D_80032204;
+    D_80032204 = level;
+    return old;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdSync);
+char* CdComstr(u_char com)
+{
+    if (com > 27) {
+        return D_80010284;
+    }
+    return D_80032220[com];
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdReady);
+char* CdIntstr(u_char intr)
+{
+    if (intr > 6) {
+        return D_80010284;
+    }
+    return D_800322A0[intr];
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdSyncCallback);
+int CdSync(int mode, u_char* result) { return CD_sync(mode, result); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdReadyCallback);
+int CdReady(int mode, u_char* result) { return CD_ready(mode, result); }
+
+CdlCB CdSyncCallback(CdlCB func)
+{
+    CdlCB old = D_800321FC;
+
+    D_800321FC = func;
+    return old;
+}
+
+CdlCB CdReadyCallback(CdlCB func)
+{
+    CdlCB old = D_80032200;
+
+    D_80032200 = func;
+    return old;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdControl);
 
@@ -37,9 +80,9 @@ int CdGetSector(void* madr, int size) { return CD_getsector(madr, size) == 0; }
 
 int CdGetSector2(void* madr, int size) { return CD_getsector2(madr, size) == 0; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdDataCallback);
+void(*CdDataCallback(void (*func)())) { return DMACallback(3, func); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", CdDataSync);
+int CdDataSync(int mode) { return CD_datasync(mode); }
 
 INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libcd/SYS_2", D_80010284);
 

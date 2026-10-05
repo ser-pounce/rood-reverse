@@ -78,6 +78,7 @@ segments:
       - [0x10B84, c, libcd/CDROM]
       - [0x10BB4, c, libcd/SYS]
       - [0x10C5C, c, libcd/SYS_2]
+      - [0x111C0, pad]
       - [0x111C4, c, libcd/BIOS]
       - [0x12934, c, libcd/C_002]
       - [0x12994, c, libcd/C_003]

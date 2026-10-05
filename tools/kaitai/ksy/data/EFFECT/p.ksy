@@ -42,7 +42,7 @@ types:
             'block_type::type0': raw_body
             'block_type::type1': type1_body
             'block_type::type2': type2_body
-            'block_type::type3': raw_body
+            'block_type::type3': type3_body
             'block_type::curves': curves
             'block_type::type5': type5_body
             'block_type::type8': raw_body
@@ -122,6 +122,47 @@ types:
         repeat-expr: num_offsets
       - id: data
         size-eos: true
+        
+  type3_body:
+    seq:
+      - id: num_offsets
+        type: u4
+      - id: offsets
+        type: u2
+        repeat: expr
+        repeat-expr: num_offsets
+    instances:
+      sections:
+        type: section_ref(offsets[_index])
+        repeat: expr
+        repeat-expr: num_offsets
+
+  section_ref:
+    params:
+      - id: offset
+        type: u4
+    instances:
+      section:
+        pos: offset
+        type: type3_section
+        
+  type3_section:
+    seq:
+      - id: num_meta
+        type: u4
+      - id: meta
+        type: type3_subsection_meta
+        repeat: expr
+        repeat-expr: num_meta
+        
+  type3_subsection_meta:
+    seq:
+      - id: unk0
+        type: u1
+      - id: unk1
+        type: u1
+      - id: offset
+        type: u2
         
   curves:
     seq:

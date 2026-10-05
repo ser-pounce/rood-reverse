@@ -743,9 +743,10 @@ typedef struct {
     char unkB;
     u_short unkC;
     char unkE;
-    char unkF;
-    int unk10;
-    int unk14;
+    char displayTextLen;
+    short unk10;
+    short unk12;
+    char displayText[4];
 } D_800F1BAC_t;
 
 typedef struct {
@@ -871,13 +872,6 @@ typedef struct {
     _limbInit limbs[6];
     int mpdIdentifer;
 } vs_battle_charInitData;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    int unk4;
-} D_800F53B8_t4;
 
 typedef struct {
     int unk0;

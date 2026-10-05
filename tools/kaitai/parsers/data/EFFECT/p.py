@@ -152,7 +152,7 @@ class P(KaitaiStruct):
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                    self.body = P.RawBody(_io__raw_body, self, self._root)
+                    self.body = P.Type3Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type5:
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
@@ -339,6 +339,38 @@ class P(KaitaiStruct):
             pass
 
 
+    class SectionRef(KaitaiStruct):
+        def __init__(self, offset, _io, _parent=None, _root=None):
+            super(P.SectionRef, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.offset = offset
+            self._read()
+
+        def _read(self):
+            pass
+
+
+        def _fetch_instances(self):
+            pass
+            _ = self.section
+            if hasattr(self, '_m_section'):
+                pass
+                self._m_section._fetch_instances()
+
+
+        @property
+        def section(self):
+            if hasattr(self, '_m_section'):
+                return self._m_section
+
+            _pos = self._io.pos()
+            self._io.seek(self.offset)
+            self._m_section = P.Type3Section(self._io, self, self._root)
+            self._io.seek(_pos)
+            return getattr(self, '_m_section', None)
+
+
     class Type11Body(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
             super(P.Type11Body, self).__init__(_io)
@@ -474,6 +506,87 @@ class P(KaitaiStruct):
             for i in range(len(self.offsets)):
                 pass
 
+
+
+    class Type3Body(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.Type3Body, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.num_offsets = self._io.read_u4le()
+            self.offsets = []
+            for i in range(self.num_offsets):
+                self.offsets.append(self._io.read_u2le())
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.offsets)):
+                pass
+
+            _ = self.sections
+            if hasattr(self, '_m_sections'):
+                pass
+                for i in range(len(self._m_sections)):
+                    pass
+                    self._m_sections[i]._fetch_instances()
+
+
+
+        @property
+        def sections(self):
+            if hasattr(self, '_m_sections'):
+                return self._m_sections
+
+            self._m_sections = []
+            for i in range(self.num_offsets):
+                self._m_sections.append(P.SectionRef(self.offsets[i], self._io, self, self._root))
+
+            return getattr(self, '_m_sections', None)
+
+
+    class Type3Section(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.Type3Section, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.num_meta = self._io.read_u4le()
+            self.meta = []
+            for i in range(self.num_meta):
+                self.meta.append(P.Type3SubsectionMeta(self._io, self, self._root))
+
+
+
+        def _fetch_instances(self):
+            pass
+            for i in range(len(self.meta)):
+                pass
+                self.meta[i]._fetch_instances()
+
+
+
+    class Type3SubsectionMeta(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.Type3SubsectionMeta, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.unk0 = self._io.read_u1()
+            self.unk1 = self._io.read_u1()
+            self.offset = self._io.read_u2le()
+
+
+        def _fetch_instances(self):
+            pass
 
 
     class Type5Body(KaitaiStruct):

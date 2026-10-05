@@ -7,17 +7,18 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "573B8.h"
-#include "vs_string.h"
-#include "gpu.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/overlay.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../SLUS_010.40/32154.h"
-#include "../../MENU/MAINMENU.PRG/C48.h"
-#include "../../MENU/MAINMENU.PRG/58EC.h"
-#include "../../GIM/SCREFF2.PRG/0.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/overlay.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/GIM/SCREFF2.PRG/0.h"
 #include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
+#include "vs_string.h"
+#include "gpu.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
@@ -37,14 +38,14 @@ typedef struct {
 } func_800D57FC_t2;
 
 typedef struct {
-    /* 0x0 */ u_long* unk0;
-    /* 0x4 */ u_char unk4;
-    /* 0x5 */ u_char unk5;
-    /* 0x6 */ short unk6;
-    /* 0x8 */ short unk8;
-    /* 0xA */ short unkA;
-    /* 0xC */ int unkC;
-} func_800D5780_t;
+    func_800D5780_t2 unk0;
+    u_short unk2;
+} func_800D55A4_t2;
+
+typedef struct {
+    int count;
+    func_800D55A4_t2 unk4[0];
+} func_800D55A4_t;
 
 typedef struct {
     u_short unk0;
@@ -169,6 +170,11 @@ typedef struct {
 } func_800D6310_t;
 
 typedef struct {
+    char unk0[0x10];
+    D_800F53B8_t3_2 unk10[16];
+} func_800D6048_t;
+
+typedef struct {
     u_int unk0_0 : 9;
     u_int unk0_9 : 9;
     u_int effectRenderer : 3;
@@ -239,7 +245,17 @@ typedef struct {
     int unk0;
     int unk4;
     u_char unk8;
-    char unk9[0xF];
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+    u_char unkC;
+    u_char unkD;
+    short unkE;
+    int unk10;
+    u_char unk14;
+    u_char unk15;
+    u_char unk16;
+    u_char unk17;
 } func_800C5798_t;
 
 typedef struct {
@@ -254,11 +270,21 @@ typedef struct {
 } func_800C56C0_t2;
 
 typedef struct {
-    char unk0[0x40];
+    char unk0[0x34];
+    int unk34;
+    int unk38;
+    int unk3C;
     func_800C5798_t* unk40;
     char unk44[0x94C];
     func_800C56C0_t2 unk990[24];
 } func_800C56C0_t;
+
+typedef struct {
+    int unk0_0 : 12;
+    int unk0_12 : 12;
+    u_int unk0_24 : 2;
+    u_int unk0_26 : 4;
+} func_800CCE10_t;
 
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
@@ -303,6 +329,7 @@ int func_800D51D8(D_800F53B8_t* arg0);
 void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
+int func_800D5780(func_800D5780_t*);
 int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
@@ -370,6 +397,7 @@ extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(gim_t*, int, u_long*);
+extern func_800CCE10_t D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -498,16 +526,17 @@ func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
     return item;
 }
 
-char* func_800C58A4(uint arg0)
+char* _getStatusString(uint arg0)
 {
     int i;
     arg0 >>= 5;
-    for (i = 0; i < 0x18; i++) {
+    for (i = 0; i < 24; i++) {
         if ((arg0 >> i) & 1) {
-            return (char*)&vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
+            return (char*)&vs_battle_statusStrings
+                [vs_battle_statusStrings[VS_statusStrings_INDEX_strDown + i]];
         }
     }
-    return (char*)&vs_battle_statusStrings[0xF6];
+    return (char*)&vs_battle_statusStrings[VS_statusStrings_OFFSET_empty];
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
@@ -2716,7 +2745,26 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
 
 vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CCE10);
+func_800CCE10_t func_800CCE10(int arg0, int arg1, int arg2, int arg3)
+{
+    func_800CCE10_t ret;
+    func_800CCE10_t* p =
+        &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    int offsetX = p->unk0_0;
+    int offsetY = p->unk0_12;
+    int unk24 = p->unk0_24;
+
+    if ((arg1 >> 2) & 1) {
+        offsetX = -offsetX;
+        unk24 ^= 2;
+    }
+
+    ret.unk0_0 = offsetX - ((arg2 * 12 + 10) >> 1);
+    ret.unk0_12 = offsetY - ((arg3 * 13 + 4) >> 1);
+    ret.unk0_24 = unk24;
+    ret.unk0_26 = p->unk0_26;
+    return ret;
+}
 
 void vs_battle_initTextBox(
     int id, int flags, int x, int y, int charsPerLine, int h, int centerX, int centerY)
@@ -3690,7 +3738,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
         vs_battle_lerpVector(arg0->unk20, D_800F5330[arg0->unk4], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
         vs_battle_lerpVector(arg0->unk2C, D_800F5330[arg0->unk7], &arg2->unk20);
-        func_8004140C(&arg2->unk48, &arg2->unk20);
+        ScaleMatrix(&arg2->unk48, &arg2->unk20);
         return;
     }
     func_800CFE7C((func_800CFE98_t*)&arg2->unk48);
@@ -4523,19 +4571,51 @@ void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D52A4);
 
-void* func_800D5550(u_short* arg0, int arg1)
+void* _getPFileBlock3section(pFileBlock3* arg0, int arg1)
 {
-    u_short* v = arg0 + arg1;
-    return (char*)arg0 + v[2];
+    return (char*)arg0 + arg0->offsets[arg1];
 }
 
-void* func_800D5564(u_short* arg0, int arg1, int arg2)
+void* func_800D5564(pFileBlock3* arg0, int arg1, int arg2)
 {
-    u_short* v = (u_short*)func_800D5550(arg0, arg1) + arg2 * 2;
-    return (char*)arg0 + v[3];
+    func_800D55A4_t* entry = _getPFileBlock3section(arg0, arg1);
+    return (char*)arg0 + entry->unk4[arg2].unk2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D55A4);
+void func_800D55A4(D_800F53B8_t* arg0, int arg1, int arg2)
+{
+    func_800D55A4_t* entry = _getPFileBlock3section(D_800F569C->block3Data, arg1);
+    D_800F53B8_t4* p;
+    int count = 0;
+    int i;
+
+    if (arg0->unkD1C.unk30 != NULL) {
+        vs_main_freeHeapR(arg0->unkD1C.unk30);
+    }
+
+    arg0->unkD1C.unk30 = vs_main_allocHeapR(entry->count * 16 + 8);
+    p = arg0->unkD1C.unk30;
+    p->unk0 = entry->count;
+    p->unk2 = 0;
+    p->unk4 = 0;
+
+    for (i = 0; i < p->unk0; ++i) {
+        p->unk8[i].unk0 = func_800D5564(D_800F569C->block3Data, arg1, i);
+        p->unk8[i].unk4 = entry->unk4[i].unk0;
+
+        if (p->unk8[i].unk4.unk0_0 == 3) {
+            ++count;
+        }
+
+        p->unk8[i].unk6 = -1;
+        *(int*)&p->unk8[i].unk8 = 0;
+        p->unk8[i].unkC = 0;
+        func_800D5780(&p->unk8[i]);
+        p->unk4 |= 1 << i;
+    }
+
+    p->unk1 = count ? 2 : 0;
+}
 
 void func_800D5700(func_800D5780_t* arg0)
 {
@@ -4552,11 +4632,11 @@ void func_800D5738(func_800D5780_t* arg0)
 
 int func_800D5780(func_800D5780_t* arg0)
 {
-    if (arg0->unk6 + 1 >= arg0->unk5) {
+    if (arg0->unk6 + 1 >= arg0->unk4.unk0_8) {
         return 0;
     }
     arg0->unk6++;
-    switch (arg0->unk4) {
+    switch (arg0->unk4.unk0_0) {
     case 1:
         func_800D5700(arg0);
         break;
@@ -4624,7 +4704,31 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D6048);
+int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
+{
+    int i;
+    func_800D6310_t* entry = (func_800D6310_t*)arg1->unk0 + arg1->unk6;
+
+    if (entry->unk0 != arg0->unkD1C.unk30->unk2) {
+        return 1;
+    }
+
+    if (arg2 != 0) {
+        func_800D6048_t* effect = (func_800D6048_t*)&D_800F5230;
+        for (i = 0; i < D_800F5230.unk2; ++i) {
+            if ((effect->unk10[i].unk0 == 4)
+                && (func_800A0BE0(effect->unk10[i].unk4.unk0 & 0xFF) & 2)) {
+                func_8007B29C(entry->unk7, entry->unk2, effect->unk10[i].unk4.unk0 & 0xFF,
+                    entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+            }
+        }
+    } else if ((arg0->unkD1C.unk24.unk0 == 4)
+               && (func_800A0BE0(arg0->unkD1C.unk24.unk4.unk0 & 0xFF) & 2)) {
+        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.unk4.unk0 & 0xFF,
+            entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+    }
+    return func_800D5780(arg1);
+}
 
 int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
@@ -4905,7 +5009,7 @@ void func_800D6AEC(D_800F53B8_t* arg0, int arg1)
             int temp;
             func_800D5780_t* temp_a1 =
                 (func_800D5780_t*)&arg0->unkD1C.unk30[var_s1 * 2 + 1];
-            switch (temp_a1->unk4) {
+            switch (temp_a1->unk4.unk0_0) {
             case 1:
                 temp = func_800D57FC(arg0, temp_a1);
                 break;

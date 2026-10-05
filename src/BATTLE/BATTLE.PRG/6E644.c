@@ -71,7 +71,10 @@ typedef struct {
     char unk0[8];
     u_char unk8;
     u_char unk9;
-    char unkA[2];
+    char unkA;
+    u_int unkB_0 : 2;
+    u_int unkB_2 : 2;
+    u_int unkB_4 : 4;
     u_short unkC;
     u_short unkE;
     SVECTOR unk10;
@@ -84,14 +87,18 @@ typedef struct {
     u_int unk4;
 } func_800E78F4_t2;
 
-typedef struct {
+typedef struct func_800E78F4_t {
     char unk0[0x4E];
     u_short unk4E;
     char unk50[4];
     func_800DEB10_t2* unk54;
     char unk58[4];
     vs_battle_actor2* unk5C;
-    char unk60[0x3D0];
+    char unk60[0xCF];
+    u_char unk12F;
+    char unk130[0x70];
+    struct func_800E78F4_t* unk1A0;
+    char unk1A4[0x28C];
     func_800E78F4_t2* unk430;
     char unk434[0x3C];
     int unk470;
@@ -100,6 +107,9 @@ typedef struct {
 typedef struct {
     char unk0[0x18];
     u_short unk18;
+    char unk1A[2];
+    func_800E78F4_t* unk1C;
+    func_800E78F4_t* unk20;
 } D_800F58BC_t;
 
 typedef struct {
@@ -162,12 +172,15 @@ typedef struct {
     u_int unkC_0 : 4;
     u_int unkC_4 : 3;
     u_int unkC_7 : 12;
-    u_int unkC_19 : 13;
+    u_int unkC_19 : 8;
+    u_int unkC_27 : 5;
 } func_800DCAA0_t;
 
 typedef struct {
     u_char unk0;
-    char unk1[0x3F];
+    char unk1;
+    u_char unk2;
+    char unk3[0x3D];
     int unk40;
 } func_800DEB10_t;
 
@@ -271,7 +284,7 @@ extern func_800DEEA4_t2* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
-extern void* D_800F5900;
+extern func_800DEEA4_t* D_800F5900;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
@@ -719,7 +732,35 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBCEC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBD80);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBF00);
+void func_800DBF00(func_800E78F4_t* arg0)
+{
+    func_800DEB10_t2* data = arg0->unk54;
+    func_800E78F4_t* node;
+
+    arg0->unk12F = 0;
+    data->unkB_2 = 2;
+
+    if (arg0 == D_800F58BC->unk20) {
+        data->unkB_2 = 2;
+        D_800F58BC->unk20 = D_800F58BC->unk20->unk1A0 != NULL ? D_800F58BC->unk20->unk1A0
+                                                              : D_800F58BC->unk1C;
+    }
+
+    if (D_800F58BC->unk1C == arg0) {
+        D_800F58BC->unk1C = arg0->unk1A0;
+    } else {
+        for (node = D_800F58BC->unk1C; node != NULL; node = node->unk1A0) {
+            if (node->unk1A0 == arg0) {
+                node->unk1A0 = arg0->unk1A0;
+                return;
+            }
+        }
+    }
+
+    if (D_800F58BC->unk1C == NULL) {
+        D_800F58BC->unk20 = NULL;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBFE4);
 
@@ -782,7 +823,22 @@ void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int 
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCBD8);
+void func_800DCBD8(func_800DCAA0_t* arg0)
+{
+    int i;
+    int threshold = 0;
+    int id = arg0->unkC_0;
+
+    for (i = 0; i < D_800F5900->unk4A; ++i) {
+        func_800DEB10_t* entry = &D_800F5900->unk4C[i];
+        if ((entry->unk40 == 0) && (id == D_800F5900->unk4C[i].unk0)) {
+            threshold = D_800F5900->unk4C[i].unk2;
+            break;
+        }
+    }
+
+    arg0->unkC_19 = threshold + (threshold >> 2) + (threshold >> 5);
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069B68);
 

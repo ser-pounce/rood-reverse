@@ -6,6 +6,7 @@
 #include "44F14.h"
 #include "6E644.h"
 #include "../SLUS_010.40/main.h"
+#include "../SLUS_010.40/31724.h"
 #include "../SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
@@ -38,6 +39,11 @@ typedef struct {
     int unk8;
     int unkC;
 } D_800E8FB4_t;
+
+typedef struct {
+    u_char unk0[0x84];
+    SVECTOR unk84;
+} D_1F80035C_t;
 
 void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
@@ -91,6 +97,7 @@ extern void* D_800E8FB4[];
 extern char D_800E8FC0;
 extern int D_800E8FC4;
 extern u_char _weaponMaterialPaletteMap[];
+extern u_char D_800E9030[];
 extern u_char D_800E9090[];
 extern u_char D_800E909C[];
 extern u_char D_800E919C[];
@@ -1334,7 +1341,31 @@ void func_8009D468(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009D6F4);
+void func_8009D6F4(void)
+{
+    int i;
+
+    for (i = 0; i < 17; ++i) {
+        D_800F4538_t* actor = D_800F4538[i];
+        if (actor == NULL) {
+            continue;
+        }
+
+        if (actor->unk5AC_3) {
+            actor->unk5AC_3 = 0;
+        }
+
+        actor->unk0.unk11 = 0;
+        actor->unk5AC_20 = 0;
+        actor->unk0.unkC_0 = 0;
+        actor->unk0.unkC_4 = 0;
+        actor->unk0.unkA_3 = 0;
+        actor->unk0.unk9_6 = 0;
+        actor->unk5AC_15 = 0;
+        actor->unk0.unkA_0 = 0;
+        memset(&actor->unk1848, 0, sizeof actor->unk1848);
+    }
+}
 
 void func_8009D7E8(int arg0, int arg1)
 {
@@ -2602,7 +2633,25 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_800A0104);
+int func_800A0104(int index, int material)
+{
+    D_800F45E0_t* obj = D_800F45E0[index];
+
+    if ((obj == NULL) || (obj->unk6C[8].actorId >= 2)) {
+        return -1;
+    }
+
+    obj->unk6C[8].unk2 = material;
+    material *= 4;
+    ((D_1F80035C_t*)0x1F80035C)->unk84.vx = D_800E9030[material] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->unk84.vy = D_800E9030[material + 1] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->unk84.vz = D_800E9030[material + 2] * (ONE / 4);
+    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->unk84, (MATRIX*)&obj->unk6C[4]);
+    obj->unk18 = 0;
+    *(int*)&obj->unk24 = 0;
+    obj->unk28 = 0;
+    return 0;
+}
 
 int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
 {

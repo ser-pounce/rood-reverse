@@ -14,6 +14,7 @@ options:
     - config/EFFECT/EFFPURGE.BIN/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_syms_auto.txt
+  subalign: 4
 
 segments:
   - name: BATTLE.PRG
@@ -47,10 +48,15 @@ segments:
       - [0x5BF94, c]
       - [0x6E644, c]
       - [0x7F984, data]
+      - [0x82068, vsStringTable, statusStrings]
+      - [0x823AC, databin]
       - [0x82DC8, .data, menuLbas]
       - [0x82E08, .data, gimLbas]
       - [0x82F08, data]
       - [0x831DC, vsStringTable, menuStrings]
       - [0x833B8, data]
+      - [0x835DC, vsStringTable, doorStrings]
+      - { start: 0x83758, type: vsStringFixedLengthTable, name: keyStrings, length: 24 }
+      - [0x83A58, data]
       - [0x89058, bss]
   - [0x8D124]

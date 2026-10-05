@@ -1349,7 +1349,9 @@ typedef struct actionStatSnapshot {
 } actionStatSnapshot;
 typedef struct {
     unsigned char actor;
-    char pad1[3];
+    char pad1;
+    unsigned char value2;
+    char pad3;
     short hp, mp;
     char pad8[12];
     unsigned int addStatus, removeStatus, modes;
@@ -1445,7 +1447,21 @@ void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int 
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCBD8);
+void func_800DCBD8(actionCandidateEntry* candidate)
+{
+    int i, weight = 0;
+    actionStatDelta* entry;
+    int target = candidate->targetId;
+    for (i = 0; i < ((actionStatApplication*)D_800F5900)->count; i++) {
+        entry = &((actionStatApplication*)D_800F5900)->entries[i];
+        if (!entry->skip
+            && target == ((actionStatApplication*)D_800F5900)->entries[i].actor) {
+            weight = ((actionStatApplication*)D_800F5900)->entries[i].value2;
+            break;
+        }
+    }
+    candidate->weight = weight + (weight >> 2) + (weight >> 5);
+}
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069B68);
 

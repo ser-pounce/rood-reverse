@@ -1,21 +1,62 @@
 #include "common.h"
+#include <libds.h>
 
-extern int D_80032824;
+/* ready-system state (DsStartReadySystem) */
+typedef struct {
+    int pos; /* 0x00: expected position */
+    int lastPos; /* 0x04: last position reported to func */
+    DslRCB func; /* 0x08 */
+    int request; /* 0x0C: resend the packet */
+    int count; /* 0x10 */
+    DslCB oldReady; /* 0x14 */
+    DslCB oldStart; /* 0x18 */
+    int mode; /* 0x1C */
+    int active; /* 0x20 */
+} ERSystem;
+
+extern ERSystem D_80032804;
+
+void func_80026360(u_char intr, u_char* result);
+void func_8002676C(u_char intr, u_char* result);
+int DS_lastmode(void);
+DslLOC* DS_lastpos(void);
+int DS_lastread(void);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", DsStartReadySystem);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", DsEndReadySystem);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", DsReadySystemMode);
+int DsReadySystemMode(int mode)
+{
+    int old = D_80032804.mode;
+
+    D_80032804.mode = mode;
+    return old;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", func_80026360);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", func_8002663C);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", func_800266F4);
+void func_800266F4(void)
+{
+    int mode;
+    DslLOC* pos;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", func_8002676C);
+    DsReadyCallback(NULL);
+    D_80032804.pos = DsPosToInt(DS_lastpos());
+    mode = (u_char)DS_lastmode();
+    pos = DS_lastpos();
+    DsPacket(mode, pos, DS_lastread(), func_8002676C, -1);
+}
 
-int ER_active(void) { return D_80032824; }
+void func_8002676C(u_char intr, u_char* result)
+{
+    if (intr == DslComplete) {
+        DsReadyCallback(func_80026360);
+    }
+}
+
+int ER_active(void) { return D_80032804.active; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", ER_clear);

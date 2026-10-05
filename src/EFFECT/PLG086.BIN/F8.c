@@ -333,7 +333,8 @@ int func_800F98F8(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-INCLUDE_ASM("build/src/EFFECT/PLG086.BIN/nonmatchings/F8", func_800FA868);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FA868
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_GRID_FUNCTION func_800FB720
 #include "src/EFFECT/grids.h"

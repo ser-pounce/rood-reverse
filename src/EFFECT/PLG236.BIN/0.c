@@ -333,7 +333,9 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-INCLUDE_ASM("build/src/EFFECT/PLG236.BIN/nonmatchings/0", func_800FA770);
+#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_FUNCTION func_800FA770
+#include "src/EFFECT/rotatingSurfaces.h"
 
 typedef struct {
     u_char lifetime;

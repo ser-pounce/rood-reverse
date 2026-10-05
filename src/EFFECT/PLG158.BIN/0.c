@@ -342,4 +342,6 @@ int func_800FB00C(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-INCLUDE_ASM("build/src/EFFECT/PLG158.BIN/nonmatchings/0", func_800FBF7C);
+#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_FUNCTION func_800FBF7C
+#include "src/EFFECT/rotatingSurfaces.h"

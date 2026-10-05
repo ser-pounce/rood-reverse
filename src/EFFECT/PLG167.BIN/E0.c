@@ -333,7 +333,8 @@ int func_800F98E0(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-INCLUDE_ASM("build/src/EFFECT/PLG167.BIN/nonmatchings/E0", func_800FA84C);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FA84C
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FB704
 #define VS_TRAIL_TARGET_FUNCTION func_800FBEA0

@@ -25,4 +25,5 @@
 /**
  * Column of light and particles on cast
  */
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FD51C);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FD51C
+#include "src/EFFECT/rotatingSurfaces.h"

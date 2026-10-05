@@ -6,7 +6,8 @@
 #include <inline_c.h>
 #include <rand.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800F98F8);
+#define VS_ROTATING_SURFACE_FUNCTION func_800F98F8
+#include "src/EFFECT/rotatingSurfaces.h"
 
 typedef struct {
     u_char lifetime;

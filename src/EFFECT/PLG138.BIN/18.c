@@ -1,6 +1,7 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG138.BIN/nonmatchings/18", func_800F9818);
+#define VS_ROTATING_SURFACE_FUNCTION func_800F9818
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_RING_FUNCTION func_800FA6D0
 #define VS_RING_COLORS D_800FCD3C

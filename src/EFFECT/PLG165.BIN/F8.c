@@ -16,7 +16,8 @@
 #define VS_TRAIL_CORNER_STATE D_800FE38C
 #include "src/EFFECT/trails9.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FBA18);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FBA18
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_GRID_FUNCTION func_800FC8D0
 #include "src/EFFECT/grids.h"

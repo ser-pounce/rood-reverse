@@ -340,4 +340,6 @@ int func_800FA368(func_800D4910_t* arg0, u_int arg1, int arg2)
 #define VS_RING_COLORS D_800FCDD8
 #include "src/EFFECT/rings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG142.BIN/nonmatchings/18", func_800FBEFC);
+#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_FUNCTION func_800FBEFC
+#include "src/EFFECT/rotatingSurfaces.h"

@@ -1231,7 +1231,47 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBCEC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBD80);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBF00);
+typedef struct {
+    char pad0[8];
+    unsigned int pad8 : 26, mode : 2, pad28 : 4;
+} actorQueueObject;
+typedef struct actorQueueState {
+    char pad0[0x54];
+    actorQueueObject* object;
+    char pad58[0xD7];
+    unsigned char flag12F;
+    char pad130[0x70];
+    struct actorQueueState* next;
+} actorQueueState;
+typedef struct {
+    char pad0[0x1C];
+    actorQueueState* head;
+    actorQueueState* current;
+} actorQueueRegistry;
+void func_800DBF00(actorQueueState* state)
+{
+    actorQueueState* node;
+    actorQueueObject* object = state->object;
+    state->flag12F = 0;
+    object->mode = 2;
+    if (state == ((actorQueueRegistry*)D_800F58BC)->current) {
+        object->mode = 2;
+        ((actorQueueRegistry*)D_800F58BC)->current =
+            ((actorQueueRegistry*)D_800F58BC)->current->next
+                ? ((actorQueueRegistry*)D_800F58BC)->current->next
+                : ((actorQueueRegistry*)D_800F58BC)->head;
+    }
+    if (((actorQueueRegistry*)D_800F58BC)->head == state)
+        ((actorQueueRegistry*)D_800F58BC)->head = state->next;
+    else
+        for (node = ((actorQueueRegistry*)D_800F58BC)->head; node; node = node->next)
+            if (node->next == state) {
+                node->next = node->next->next;
+                return;
+            }
+    if (!((actorQueueRegistry*)D_800F58BC)->head)
+        ((actorQueueRegistry*)D_800F58BC)->current = 0;
+}
 
 typedef struct {
     char pad[8];

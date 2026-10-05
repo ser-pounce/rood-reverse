@@ -2,32 +2,42 @@
 
 typedef struct {
     int unk0;
-    int unk4;
-    int unk8;
+    void* (*unk4)(int, void (*)());
+    void (*unk8)(int, void (*)());
     void (*unkC)(void);
+    void (*unk10)(void);
+    int (*unk14)(int, void (*)());
+    void (*unk18)(void);
 } D_800320D4_t;
 
 extern D_800320D4_t* D_800320D4;
+extern unsigned short D_8003104E;
+extern unsigned short* D_800320DC;
 
 void ResetCallback(void) { D_800320D4->unkC(); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", InterruptCallback);
+void InterruptCallback(int irq, void (*f)()) { D_800320D4->unk8(irq, f); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", DMACallback);
+void* DMACallback(int dma, void (*f)()) { return D_800320D4->unk4(dma, f); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", VSyncCallback);
+int VSyncCallback(void (*f)()) { return D_800320D4->unk14(4, f); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", VSyncCallbacks);
+int VSyncCallbacks(int ch, void (*f)()) { return D_800320D4->unk14(ch, f); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", StopCallback);
+void StopCallback(void) { D_800320D4->unk10(); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", RestartCallback);
+void RestartCallback(void) { D_800320D4->unk18(); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", CheckCallback);
+int CheckCallback(void) { return D_8003104E; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", GetIntrMask);
+int GetIntrMask(void) { return *D_800320DC; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", SetIntrMask);
+int SetIntrMask(int mask)
+{
+    unsigned short old = *D_800320DC;
+    *D_800320DC = mask;
+    return old;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", func_8001FA68);
 
@@ -41,4 +51,13 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", func_8001FE58);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", func_8001FEF8);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR", memzero);
+void memzero(long* ptr, long size)
+{
+    long i = size - 1;
+
+    if (size != 0) {
+        do {
+            *ptr++ = 0;
+        } while (--i != -1);
+    }
+}

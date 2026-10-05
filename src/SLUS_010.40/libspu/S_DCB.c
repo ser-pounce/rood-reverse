@@ -1,3 +1,5 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_DCB", _SpuDataCallback);
+extern void* DMACallback(int dma, void (*func)(void));
+
+void _SpuDataCallback(void (*func)(void)) { DMACallback(4, func); }

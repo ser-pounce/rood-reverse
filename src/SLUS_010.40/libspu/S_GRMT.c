@@ -1,3 +1,6 @@
 #include "common.h"
+#include <libspu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_GRMT", SpuGetReverbModeType);
+extern long D_80030804; /* _spu_rev_attr.mode */
+
+void SpuGetReverbModeType(long* mode) { *mode = D_80030804; }

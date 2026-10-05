@@ -1,3 +1,14 @@
 #include "common.h"
+#include <libspu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_STC", SpuSetTransferCallback);
+extern volatile SpuTransferCallbackProc D_80030898; /* _spu_transferCallback */
+
+SpuTransferCallbackProc SpuSetTransferCallback(SpuTransferCallbackProc func)
+{
+    SpuTransferCallbackProc old = D_80030898;
+
+    if (func != old) {
+        D_80030898 = func;
+    }
+    return old;
+}

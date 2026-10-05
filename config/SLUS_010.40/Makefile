@@ -22,6 +22,15 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main): CC1VER := 2.8.1-psx
 
+# Sony's PsyQ library objects were assembled by GNU as in reorder mode (the assembler fills
+# j/jr/jal delay slots with the preceding instruction, including the tail of a lui/sw macro),
+# not by ASPSX. Feed cc1 output straight to as; only `move` must keep the old addu encoding.
+# libsn/SNMAIN is SN Systems hand-written asm and keeps the ASPSX (maspsx) path.
+$(BUILD)/src/SLUS_010.40/lib%.o: MAS := sed -E -e '1i .include "macro.inc"' -e 's/^\tmove\t([^,]+),(.+)$$/\taddu\t\1,\2,$$0/'
+$(BUILD)/src/SLUS_010.40/lib%.o: MASFLAGS :=
+$(BUILD)/src/SLUS_010.40/libsn/SNMAIN.o: MAS = $(VPYTHON) tools/maspsx/maspsx.py
+$(BUILD)/src/SLUS_010.40/libsn/SNMAIN.o: MASFLAGS := --aspsx-version=2.77 --macro-inc
+
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

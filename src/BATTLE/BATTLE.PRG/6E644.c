@@ -2531,6 +2531,47 @@ move:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1BB8);
 
+typedef struct {
+    char pad0[0x34];
+    vs_battle_movementPosition tile;
+    char pad38[0xC8];
+    unsigned char index, row, rate, direction, timer;
+    char pad105[0x63];
+    vs_battle_movementPosition dest;
+} patrolWaypointState;
+extern unsigned short (*D_800F58D8)[8];
+void func_800E50A0(void*, int, int);
+static inline unsigned int patrolWaypoint(unsigned short* row, int index)
+{
+    unsigned short* ptr = row;
+    ptr += index;
+    return *ptr;
+}
+void func_800E23AC(patrolWaypointState* state)
+{
+    unsigned short* row;
+    unsigned int entry;
+    int step;
+    row = D_800F58D8[state->row];
+    entry = patrolWaypoint(row, state->index);
+    if (state->tile.p.x != (entry & 31) || state->tile.p.z != ((entry >> 5) & 31)) {
+        if (state->timer)
+            state->timer--;
+        if (func_800E45D4(1 << state->rate) || state->timer)
+            goto move;
+        state->direction = -state->direction;
+    }
+    step = state->direction + 8;
+    do {
+        state->index = (state->index + step) & 7;
+    } while (!(patrolWaypoint(row, state->index) >> 15));
+    state->timer = 10;
+move:
+    state->dest.p.x = patrolWaypoint(row, state->index) & 31;
+    state->dest.p.z = (patrolWaypoint(row, state->index) >> 5) & 31;
+    func_800E50A0(state, 0, 0);
+}
+
 typedef union {
     unsigned int raw;
     unsigned char b[4];

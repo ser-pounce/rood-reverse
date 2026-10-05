@@ -715,7 +715,62 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3E6C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A41D0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
+void func_800A4A88(D_800F4538_t*, int);
+int func_800A46A4(D_800F4538_t*);
+int func_800A4494(int contact, SVECTOR* point)
+{
+    int i;
+    D_800F4538_t* actor;
+    int dx, dz, hit;
+    int radius, x, z, y;
+    for (i = 0; i < 17; i++) {
+        actor = D_800F4538[i];
+        if (actor == 0 || actor->unk0.skip)
+            continue;
+        if (actor->unk0.unkC_0 == contact) {
+            if (actor->unk0.unkA_3 != 2)
+                continue;
+            dx = point->vx - *(short*)&actor->unk17EC[0];
+            dz = point->vz - *(short*)&actor->unk17EC[4];
+            actor->unk0.position.vx += dx;
+            actor->unk0.position.vz += dz;
+            hit = func_800A46A4(actor);
+            actor->unk0.position.vx -= dx;
+            actor->unk0.position.vz -= dz;
+            if (!hit)
+                continue;
+        transition:
+            actor->unk0.unk34.vx = 0;
+            actor->unk0.unk34.vy = 3;
+            actor->unk0.unk34.vz = 0;
+            actor->unk6EE = 0;
+            actor->unk6EF = 0;
+            actor->unk0.unkA_0 = 3;
+            actor->unk0.unkA_3 = 0;
+            actor->unk0.unk9_6 = 0;
+            actor->unk0.unkC_0 = 0;
+            func_800A4A88(actor, 2);
+            return 1;
+        } else {
+            radius = actor->unk63C;
+            x = point->vx;
+            if (x + 64 < actor->unk0.position.vx - radius
+                || x - 64 > actor->unk0.position.vx + radius)
+                continue;
+            z = point->vz;
+            if (z + 64 < actor->unk0.position.vz - radius
+                || z - 64 > actor->unk0.position.vz + radius)
+                continue;
+            y = actor->unk0.position.vy;
+            if (point->vy < y - 288 || point->vy >= y)
+                continue;
+            if (actor->unk0.unkA_3 == 2)
+                goto transition;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_800A70DC(D_800F4538_t*, int);
 typedef struct {

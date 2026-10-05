@@ -98,9 +98,7 @@ int func_800F9818(func_800D4910_t* arg0, u_int arg1, int arg2)
             vs_battle_addVecToSvec(&s6->unk98, D_800F5310, &s6->unk98);
             break;
         case 2:
-            s6->unk98.vx += m->t[0];
-            s6->unk98.vy += m->t[1];
-            s6->unk98.vz += m->t[2];
+            applyVector(&s6->unk98, m->t[0], m->t[1], m->t[2], +=);
             break;
         }
         // bad var reuse: j and i accumulate the grid offsets below
@@ -174,33 +172,21 @@ int func_800F9818(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         if (s7->rCurve != 0) {
             temp = vs_battle_sampleCurve(s7->rCurve, fp->curveSampleDistance) * 2;
-            if (temp < 0x100) {
-                color.r = temp;
-            } else {
-                color.r = 0xFF;
-            }
+            color.r = temp >= 0x100 ? 0xFF : temp;
         } else {
             color.r = 0x80;
         }
 
         if (s7->gCurve != 0) {
             temp = vs_battle_sampleCurve(s7->gCurve, fp->curveSampleDistance) * 2;
-            if (temp < 0x100) {
-                color.g = temp;
-            } else {
-                color.g = 0xFF;
-            }
+            color.g = temp >= 0x100 ? 0xFF : temp;
         } else {
             color.g = 0x80;
         }
 
         if (s7->bCurve != 0) {
             temp = vs_battle_sampleCurve(s7->bCurve, fp->curveSampleDistance) * 2;
-            if (temp < 0x100) {
-                color.b = temp;
-            } else {
-                color.b = 0xFF;
-            }
+            color.b = temp >= 0x100 ? 0xFF : temp;
         } else {
             color.b = 0x80;
         }
@@ -267,8 +253,8 @@ int func_800F9818(func_800D4910_t* arg0, u_int arg1, int arg2)
                     }
                     prim = vs_scratch.unk0;
                     vs_scratch.unk0 = prim + 1;
-                    prim->unk4.tag = 0xE1000000;
-                    prim->unk2C = 0xE1000200;
+                    prim->unk4.tag = _get_mode(0, 0, 0);
+                    prim->unk2C = _get_mode(0, 1, 0);
                     *(int*)&prim->unk4.x0 = screenXY[i][j];
                     *(int*)&prim->unk4.x1 = screenXY[i][j + 1];
                     *(int*)&prim->unk4.x2 = screenXY[i + 1][j];

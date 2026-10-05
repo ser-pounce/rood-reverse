@@ -443,7 +443,7 @@ enum vs_battle_limbStatus {
 };
 
 int func_800C4794(SVECTOR*);
-int func_800C58F8(void*);
+int func_800C58F8(u_char*);
 int vs_battle_setTextBox(int, char*);
 int vs_battle_selectTextBox(u_char);
 char* vs_battle_printf(char*, char*);

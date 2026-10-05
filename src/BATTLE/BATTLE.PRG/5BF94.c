@@ -245,7 +245,17 @@ typedef struct {
     int unk0;
     int unk4;
     u_char unk8;
-    char unk9[0xF];
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+    u_char unkC;
+    u_char unkD;
+    short unkE;
+    int unk10;
+    u_char unk14;
+    u_char unk15;
+    u_char unk16;
+    u_char unk17;
 } func_800C5798_t;
 
 typedef struct {
@@ -260,7 +270,10 @@ typedef struct {
 } func_800C56C0_t2;
 
 typedef struct {
-    char unk0[0x40];
+    char unk0[0x34];
+    int unk34;
+    int unk38;
+    int unk3C;
     func_800C5798_t* unk40;
     char unk44[0x94C];
     func_800C56C0_t2 unk990[24];
@@ -513,11 +526,11 @@ func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
     return item;
 }
 
-char* func_800C58A4(uint arg0)
+char* _getStatusString(uint arg0)
 {
     int i;
     arg0 >>= 5;
-    for (i = 0; i < 0x18; i++) {
+    for (i = 0; i < 24; i++) {
         if ((arg0 >> i) & 1) {
             return (char*)&vs_battle_statusStrings
                 [vs_battle_statusStrings[VS_statusStrings_INDEX_strDown + i]];

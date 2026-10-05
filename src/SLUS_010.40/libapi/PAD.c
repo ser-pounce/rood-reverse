@@ -9,9 +9,14 @@ extern long InitPAD2(char*, long, char*, long);
 int func_8002EBD8(void);
 extern volatile int* D_8003366C;
 extern int D_8003FEA8;
+extern int (*D_8003FEAC[2])(void);
+extern int D_8003FEB4;
 extern long StartPAD2(void);
 extern void StopPAD2(void);
 extern int SysDeqIntRP(int, void*);
+extern int SysEnqIntRP(int, void*);
+int func_8002EC88(void);
+int func_8002ECF0(void);
 int func_8002EC50(void);
 
 void SetInitPadFlag(int flag) { D_80033664 = flag; }
@@ -60,7 +65,18 @@ void StopPAD(void)
     D_80033664 = 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", func_8002EBD8);
+int func_8002EBD8(void)
+{
+    EnterCriticalSection();
+    D_8003FEAC[0] = func_8002EC88;
+    D_8003FEAC[1] = func_8002ECF0;
+    D_8003FEA8 = 0;
+    D_8003FEB4 = 0;
+    SysDeqIntRP(1, &D_8003FEAC[-1]);
+    SysEnqIntRP(1, &D_8003FEAC[-1]);
+    ExitCriticalSection();
+    return 1;
+}
 
 int func_8002EC50(void)
 {

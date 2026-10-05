@@ -31,6 +31,13 @@ $(BUILD)/src/SLUS_010.40/lib%.o: MASFLAGS :=
 $(BUILD)/src/SLUS_010.40/libsn/SNMAIN.o: MAS = $(VPYTHON) tools/maspsx/maspsx.py
 $(BUILD)/src/SLUS_010.40/libsn/SNMAIN.o: MASFLAGS := --aspsx-version=2.77 --macro-inc
 
+# A few PsyQ library units were built without the post-loop CSE pass (stores to one global struct
+# share a single `la base` register instead of per-store lui/sw macros), and libc memmove without
+# loop strength reduction (its backward copy recomputes dst+n every iteration).
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libspu/S_INI libspu/S_SRMD libspu/S_SRMT libapi/PAD): \
+	CC1FLAGS += -fno-rerun-cse-after-loop
+$(BUILD)/src/SLUS_010.40/libc/MEMMOVE.o: CC1FLAGS += -fno-strength-reduce
+
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

@@ -775,10 +775,54 @@ typedef struct {
 extern u_char D_800E9BEC[];
 int func_800BB7C4(int arg0, SVECTOR* arg1);
 
-// https://decomp.me/scratch/0ihTK
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6B98);
+textOffset func_800CCE10(int, int, int, int);
+
 int func_800B6B98(
-    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
+    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction)
+{
+    short dx;
+    short dy;
+    short width;
+    short height;
+    int delta;
+    short x;
+    short y;
+
+    dx = 0;
+    dy = 0;
+    result->offset = func_800CCE10(
+        script[5] & 0xF, (origin->vz ^ direction) * 4, script[6], script[7]);
+    result->x = x = origin->vx + result->offset.x;
+    result->y = y = origin->vy + result->offset.y;
+    height = script[7] * 13 + 4;
+    width = script[6] * 12 + 8;
+
+    if (x < 4) {
+        result->x = 4;
+        delta = 4 - x;
+        dx = delta;
+    } else if (x + width > 320) {
+        width = 320 - width;
+        result->x = width;
+        dx = width - x;
+    }
+
+    if (y < 4) {
+        result->y = 4;
+        delta = 4 - y;
+        dy = delta;
+    } else if (height + y > 216) {
+        height = 216 - height;
+        result->y = height;
+        dy = height - y;
+    }
+
+    if (dx == 0 && dy == 0) {
+        return 1;
+    }
+    result->distance = vs_gte_rsqrt(dx * dx + dy * dy);
+    return 0;
+}
 
 // script[1]   = boxId
 // script[2-3] = anchor id (resolved by func_800BFE50)

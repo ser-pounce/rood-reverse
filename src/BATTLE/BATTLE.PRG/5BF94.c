@@ -237,10 +237,9 @@ typedef struct {
     u_char unk9;
     u_char unkA;
     u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    short unkE;
-    int unk10;
+    u_short unkC;
+    u_short unkE;
+    u_int unk10;
     u_char unk14;
     u_char unk15;
     u_char unk16;
@@ -379,9 +378,14 @@ void func_800C2B0C(SVECTOR* arg0, int arg1);
 void func_800C2E24(SVECTOR* arg0, MATRIX* arg1, int arg2);
 void* func_800C282C(void);
 int _getCollisionMapDimensions(int arg0);
+int func_800C1D84(void);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
+extern u_char D_800EABAA;
+extern char D_800EA984[];
+extern char D_800EA9B6[];
+extern char D_800EAA54[];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
 extern func_800C56C0_t* D_800EB9B8;
@@ -414,6 +418,10 @@ extern u_char D_800EBCC8[];
 extern int D_800EBCD0[];
 extern u_short D_800EBCE0[];
 extern u_char D_800EBCE8;
+extern int D_800EBCEC[];
+extern int D_800EBD14[];
+extern u_int D_800EBD3C[];
+extern u_short D_800EBD64;
 extern u_char _spellClassCounts[];
 extern u_char* _spellIds[];
 extern char D_800EBD68[];
@@ -877,7 +885,279 @@ char* _getStatusString(uint arg0)
     return (char*)&vs_battle_statusStrings[VS_statusStrings_OFFSET_empty];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
+int func_800C58F8(u_char* target)
+{
+    func_800C56C0_t2* item;
+    func_800C5798_t* entry;
+    int i;
+    int value;
+    int prev;
+    int type;
+
+    if (target == NULL) {
+        D_800EABAA = 0;
+        return 0;
+    }
+    if (D_800EABAA == 0) {
+        D_800EB9B8->unk34 = 0x808080;
+        vs_battle_initInformationTextBox(0);
+        func_800C51B4(2);
+        func_800C553C();
+        if (D_800EB9B8->unk2C == 0) {
+            D_800EABAA = 16;
+        }
+    }
+
+    *target = 0xFF;
+
+    if (D_800EABAA < 16) {
+        if ((D_800EABAA >= D_800F4CB1) && (D_800EABAA >= D_800F4CB0)) {
+            D_800EABAA = 18;
+        } else {
+            if (D_800EABAA < D_800F4CB1) {
+                i = D_800F4C70[0][D_800EABAA];
+                item = func_800C5798(i, 2, D_800EABAA);
+                if (D_800EABAA != 0) {
+                    prev = D_800F4C70[0][D_800EABAA - 1];
+                    if (D_800EB9B8->unk40[i].unk9 != D_800EB9B8->unk40[prev].unk9) {
+                        item->unk7 = 1 - D_800EB9B8->unk990[prev].unk7;
+                    } else {
+                        item->unk7 = D_800EB9B8->unk990[prev].unk7;
+                    }
+                }
+            }
+            if (D_800EABAA < D_800F4CB0) {
+                i = D_800F4C70[1][D_800EABAA];
+                item = func_800C5798(i, 3, D_800EABAA);
+                if (D_800EABAA != 0) {
+                    prev = D_800F4C70[1][D_800EABAA - 1];
+                    if (D_800EB9B8->unk40[i].unk9 != D_800EB9B8->unk40[prev].unk9) {
+                        item->unk7 = 1 - D_800EB9B8->unk990[prev].unk7;
+                    } else {
+                        item->unk7 = D_800EB9B8->unk990[prev].unk7;
+                    }
+                }
+            }
+        nextState:
+            ++D_800EABAA;
+        }
+    } else {
+        switch (D_800EABAA) {
+        case 16:
+            vs_battle_textBoxes[7].unk0.unk0_8 = 1;
+            vs_battle_setTextBox(7, (char*)&D_800EBDDC[D_800EBDDC[0]]);
+            if (vs_main_buttonsPressed.all & 0x60) {
+                vs_battle_playMenuLeaveSfx();
+                D_800EABAA = 17;
+            }
+            break;
+        case 17:
+            D_800EB9AC = D_800EB9B8->unk0.unk1 == 2;
+            D_800EABAA = 21;
+            break;
+        case 18:
+            if (func_800C1D84() == 0) {
+                break;
+            }
+            goto nextState;
+        case 19:
+            if (++D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] == 0x22) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0x12;
+            }
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 0;
+            if (vs_main_buttonsPressed.all & 0x40) {
+                vs_battle_playMenuLeaveSfx();
+                func_800C56C0();
+                D_800EB9AC = D_800EB9B8->unk0.unk1 == 2;
+                D_800EABAA = 21;
+                break;
+            }
+            *target = D_800EB9B8->unk2D;
+            if (vs_main_buttonsPressed.all & 0x20) {
+                func_800C56C0();
+                D_800EABAA = 20;
+                break;
+            }
+            value = D_800EB9B8->unk2D;
+            if (vs_main_buttonRepeat & 1) {
+                for (i = 0; i < D_800F4CB3; ++i) {
+                    if (D_800F4C98[i] == D_800EB9B8->unk40[value].unk9) {
+                        break;
+                    }
+                }
+                if (i != D_800F4CB3) {
+                    if (++i == D_800F4CB3) {
+                        if (D_800F4CB2 == 0) {
+                            goto selected;
+                        }
+                        goto firstOfRow1;
+                    }
+                    D_800EB9B8->unk2D = D_800F4CA8[i];
+                    goto selected;
+                }
+                for (i = 0; i < D_800F4CB2; ++i) {
+                    if (D_800F4C90[i] == D_800EB9B8->unk40[value].unk9) {
+                        break;
+                    }
+                }
+                if (++i == D_800F4CB2) {
+                    goto firstOfRow0;
+                }
+                D_800EB9B8->unk2D = D_800F4CA0[i];
+                goto selected;
+            }
+            for (i = 0; i < D_800F4CB1; ++i) {
+                if (D_800F4C70[0][i] == value) {
+                    break;
+                }
+            }
+            if (i != D_800F4CB1) {
+                if ((vs_main_buttonsPressed.all & 0x8000) && (D_800F4CB0 != 0)) {
+                    if (i >= D_800F4CB0) {
+                        i = D_800F4CB0 - 1;
+                    }
+                    goto row1;
+                }
+                do {
+                    if (vs_main_buttonRepeat & 0x1000) {
+                        if (i == 0) {
+                            if (D_800F4CB0 != 0) {
+                                goto lastOfRow1;
+                            }
+                            i = D_800F4CB1 - 1;
+                        } else {
+                            --i;
+                        }
+                    }
+                } while (0);
+                if (vs_main_buttonRepeat & 0x4000) {
+                    if (i != D_800F4CB1 - 1) {
+                        ++i;
+                    } else {
+                        i = 0;
+                        if (D_800F4CB0 != 0) {
+                            goto firstOfRow1;
+                        }
+                    }
+                }
+                D_800EB9B8->unk2D = D_800F4C70[0][i];
+                goto selected;
+            lastOfRow1:
+                D_800EB9B8->unk2D = D_800F4C70[1][D_800F4CB0 - 1];
+                goto selected;
+            firstOfRow1:
+                D_800EB9B8->unk2D = D_800F4C70[1][0];
+                goto selected;
+            lastOfRow0:
+                D_800EB9B8->unk2D = D_800F4C70[0][D_800F4CB1 - 1];
+                goto selected;
+            firstOfRow0:
+                D_800EB9B8->unk2D = D_800F4C70[0][0];
+                goto selected;
+            }
+            for (i = 0; i < D_800F4CB0; ++i) {
+                if (D_800F4C70[1][i] == value) {
+                    break;
+                }
+            }
+            if (vs_main_buttonsPressed.all & 0x2000) {
+                if (i >= D_800F4CB1) {
+                    i = D_800F4CB1 - 1;
+                }
+                D_800EB9B8->unk2D = D_800F4C70[0][i];
+                goto selected;
+            }
+            if (vs_main_buttonRepeat & 0x1000) {
+                if (i == 0) {
+                    goto lastOfRow0;
+                }
+                --i;
+            }
+            if (vs_main_buttonRepeat & 0x4000) {
+                if (i == D_800F4CB0 - 1) {
+                    goto firstOfRow0;
+                }
+                ++i;
+            }
+        row1:
+            D_800EB9B8->unk2D = D_800F4C70[1][i];
+        selected:
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 1;
+            if (value != D_800EB9B8->unk2D) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0;
+                vs_battle_playMenuChangeSfx();
+                func_800C51B4(3);
+            }
+            entry = &D_800EB9B8->unk40[D_800EB9B8->unk2D];
+            i = entry->unk9;
+            type = entry->unk8;
+            if (i >> 4) {
+                vs_battle_stringContext.strings[0] = (char*)&vs_battle_statusStrings
+                    [vs_battle_statusStrings[(i >> 5) + VS_statusStrings_INDEX_blocker]];
+            } else if (type == 16) {
+                vs_battle_stringContext.strings[0] = vs_battle_actors[i]->unk3C->name;
+            } else {
+                vs_battle_stringContext.strings[0] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings[type]];
+            }
+            for (value = 1; value < 6; ++value) {
+                vs_battle_stringContext.strings[value] = D_800EAA54;
+            }
+            value = entry->unkB;
+            if ((type == 16) && !(i >> 4) && (vs_battle_actors[i]->unk1C & 0x10)) {
+                value = 5;
+                vs_battle_stringContext.strings[1] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unkE == 0 ? VS_statusStrings_INDEX_indestructable
+                                              : VS_statusStrings_INDEX__3]];
+            } else if (value == 0x3A) {
+                value = 1;
+            } else if (value == 0x3B) {
+                value = 2;
+            } else if (value == 0x3E) {
+                value = 3;
+            } else if (value == 0x3F) {
+                value = 4;
+            } else {
+                vs_battle_stringContext.strings[1] = D_800EA9B6;
+                vs_battle_stringContext.strings[6] = _getStatusString(entry->unk10);
+                value = 0;
+            }
+            vs_battle_stringContext.strings[2] =
+                (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                        [entry->unk14 + VS_statusStrings_INDEX_indestructable]];
+            if (value != 0) {
+                if (value < 5) {
+                    vs_battle_stringContext.strings[1] =
+                        (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                                [VS_statusStrings_INDEX_mpTemplate - (value & 1)]];
+                    vs_battle_stringContext.strings[5] =
+                        (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                                [entry->unk17 + VS_statusStrings_INDEX_human]];
+                }
+                vs_battle_stringContext.strings[3] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unk15 + VS_statusStrings_INDEX_empty]];
+                vs_battle_stringContext.strings[4] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unk16 + VS_statusStrings_INDEX_physical]];
+            }
+            vs_battle_stringContext.integers[0] = entry->unkC;
+            vs_battle_stringContext.integers[1] = entry->unkE;
+            vs_battle_printf((char*)D_800EB9B8 + 0x4A54, D_800EA984);
+            vs_battle_setTextBox(7, (char*)D_800EB9B8 + 0x4A54);
+            break;
+        case 20:
+            *target = D_800EB9B8->unk2D;
+            // fallthrough
+        case 21:
+            vs_battle_dismissTextBox(7);
+            func_800C06E0();
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_800C64D0(u_long* arg0, int* arg1)
 {
@@ -2571,8 +2851,175 @@ void func_800C9FE8(void)
     D_800EBC78 = 0;
 }
 
-// https://decomp.me/scratch/NSW3O
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
+void func_800CA2DC(void)
+{
+    u_long* prim;
+    vs_battle_actor2* actor;
+    void* ot;
+    int i;
+    int j;
+    int k;
+    int rightX;
+    u_int flags;
+    u_int count;
+    int selected;
+
+    actor = vs_battle_characterState->unk3C;
+    ot = vs_scratch.unk4 - 4;
+    func_800C9FE8();
+
+    if (D_800EB9CC == 1) {
+        if ((u_char)D_800EB9CD < 4) {
+            D_800EBD64 = 0;
+            ++D_800EB9CD;
+        }
+    } else if (D_800EB9CD != 0) {
+        --D_800EB9CD;
+    }
+
+    if (D_800EB9CD != 0) {
+        prim = vs_battle_setSprite(0x140,
+            ((((u_char)D_800EB9CD * 3 - 4) << 16) - D_800EB9B0) | 0xEC, 0xA0049,
+            vs_scratch.unk4 - 0xC);
+        prim[1] = 0xE1000017;
+        k = rsin(D_800EBD64 & 0x7FF);
+        prim[4] = 0x373D0040;
+        prim[2] += k >> 5;
+        D_800EBD64 += vs_gametime_tickspeed * 64;
+    }
+
+    if (D_800EB9AF != 0) {
+        if (D_800EB9B0 == 0x200000) {
+            return;
+        }
+        D_800EB9B0 += 0x80000;
+    } else {
+        k = vs_battle_textBoxes[7].state;
+        if (!(vs_battle_lowerScreenUiState & 2)
+            && ((k == 0) || (k != vs_battle_textBoxes[7].unk22 + 1))) {
+            k = 0xB80008;
+            for (i = 0; i < 5; ++i) {
+                j = i + (D_800EB9CC & 1) * 5;
+                prim = vs_battle_setSpriteDefaultTexPage(
+                    0, k + D_800EBCEC[j], D_800EBD14[j], ot);
+                prim[2] = D_800EBC54[vs_battle_getLimbStatus(
+                              &vs_battle_characterState->unk3C->limbs[i])]
+                        | 0x64000000;
+                prim[4] = D_800EBD3C[j];
+            }
+        }
+        if (D_800EB9B0 != 0) {
+            D_800EB9B0 -= 0x80000;
+        }
+    }
+
+    _renderStatBar(0, actor->currentHP, actor->maxHP);
+    _renderStatBar(1, actor->currentMP, actor->maxMP);
+    if ((k = actor->risk) != 0) {
+        _renderStatBar(2, k, 100);
+    }
+    if (k == 0) {
+        vs_battle_renderTextRaw(
+            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.unk4 - 0xC);
+    }
+
+    if (D_800EB9AE != 0) {
+        return;
+    }
+
+    flags = vs_battle_getStatusFlags(actor);
+    count = 0;
+    selected = 0xFF;
+    for (j = 0; j < 32; ++j) {
+        if ((flags >> j) & 1) {
+            if (j == D_800EB9D0.u8[1]) {
+                selected = count;
+            }
+            ++count;
+        }
+    }
+    for (j = 0; j < 3; ++j) {
+        if (!((flags >> D_800EB9D0.u8[j]) & 1)) {
+            D_800EB9D0.u8[j] = 0xFF;
+        }
+    }
+
+    if (count == 0) {
+        return;
+    }
+
+    j = D_800EB9D0.u8[3];
+    if (j == 12) {
+        D_800EB9D0.u8[0] = D_800EB9D0.u8[1];
+        D_800EB9D0.u8[1] = D_800EB9D0.u8[2];
+        D_800EB9D0.u8[2] = 0xFF;
+        i = (D_800EB9D0.u8[1] + 1) & 0xFF;
+        for (k = 0; k < 32; ++k, ++i) {
+            i %= 32;
+            if (((flags >> i) & 1) && (i != D_800EB9D0.u8[1])) {
+                D_800EB9D0.u8[2] = i;
+                break;
+            }
+        }
+    }
+
+    k = 1; // dead store kept for codegen: count == 1 below is compared against this
+           // register
+    if ((D_800EB9D0.u8[0] == D_800EB9D0.u8[2]) && (D_800EB9D0.u8[1] != 0xFF)) {
+        if ((count == 1) && (j < 3)) {
+            j = 0;
+        }
+        if ((count == 2) && (D_800EB9D0.u8[0] != 0xFF) && ((u_int)(j - 12) < 3)) {
+            j = 12;
+        }
+    }
+
+    k = -8;
+    if (j >= 9) {
+        if (j < 12) {
+            k = 8 - j * 2;
+        } else {
+            k = 24 - j * 2;
+        }
+    }
+
+    if ((++j != D_800EB9D0.u8[3]) && (vs_gametime_tickspeed == 4)) {
+        j = (j + 1) & 0xE;
+    }
+    rightX = k + 16;
+    D_800EB9D0.u8[3] = j & 0xF;
+    func_800C9CB4(D_800EB9D0.u8[2], rightX, 1);
+    ot -= 4;
+    func_800C9CB4(D_800EB9D0.u8[1], k, 1);
+    func_800C9CB4(D_800EB9D0.u8[1], rightX, 0);
+    func_800C9CB4(D_800EB9D0.u8[0], k, 0);
+
+    k = 0x80000 - D_800EB9B0;
+    if (count < 3) {
+        for (i = 0; i < count; ++i) {
+            prim =
+                vs_battle_setSpriteDefaultTexPage(0x80, (0x94 + i * 3) | k, 0x40004, ot);
+            prim[4] = 0x37F40C1A;
+        }
+        return;
+    }
+
+    j = k + 0x30000;
+    if (selected != 0xFF) {
+        prim = vs_battle_setSprite(
+            0x80, ((selected & 7) * 3 + 0x94) | (!(selected & 8) ? k : j), 0x40004, ot);
+        prim[4] = 0x37F40C1A;
+    }
+    i = 25;
+    if (count < 9) {
+        i = count * 3 + 1;
+    } else {
+        prim = vs_battle_setSprite(0x80, j | 0x94, ((count - 8) * 3 + 1) | 0x40000, ot);
+        prim[4] = 0x37F40C00;
+    }
+    prim = vs_battle_setSpriteDefaultTexPage(0x80, k | 0x94, i | 0x40000, ot);
+    prim[4] = 0x37F40C00;
+}
 
 void func_800CA97C(void)
 {

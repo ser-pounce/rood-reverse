@@ -1591,7 +1591,9 @@ typedef struct {
     unsigned char flag20, flag21;
     char pad22[5];
     unsigned char flag27;
-    char pad28[8];
+    char pad28[4];
+    unsigned char flag2C;
+    char pad2D[3];
     unsigned char flag30;
     char pad31[0x57];
     unsigned char id;
@@ -1670,7 +1672,60 @@ void func_800DD000(actionReactionState* state, actionStatApplication* app)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD344);
+void func_800DD344(actionReactionState* state)
+{
+    actionScoreActor* actor;
+    actionScoreActor* candidate;
+    actionScoreActor* ally;
+    actionReactionState* other;
+    actionReactionState* firstOther;
+    actionReactionState* allyState;
+    int id, classification;
+    unsigned int otherClass;
+    if (state->flag13) {
+        for (actor = (void*)vs_battle_actors[0]; actor; actor = actor->next) {
+            id = actor->id;
+            firstOther = (void*)D_800F5878[id];
+            if (id == state->id || id == 0 || firstOther->flag2C == 3)
+                classification = 2;
+            else if (!firstOther->flag13) {
+                if ((firstOther->targets[0].b.flags >> 6) == 3) {
+                    classification = 3;
+                    state->targets[id].p.counter = 0;
+                } else
+                    classification = 1;
+            } else
+                classification = 1;
+            state->targets[id].p.classification = classification;
+        }
+    } else if (state->flag21) {
+        for (actor = (void*)vs_battle_actors[0]; actor; actor = actor->next) {
+            otherClass = state->targets[actor->id].b.flags >> 6;
+            other = (void*)D_800F5878[actor->id];
+            if (otherClass == 2 && (other->targets[state->id].b.flags >> 6) == 2) {
+                for (candidate = (void*)vs_battle_actors[0]; candidate;
+                    candidate = candidate->next) {
+                    id = candidate->id;
+                    if (state->targets[id].p.classification == 1
+                        && (state->targets[id].raw & 1)
+                        && (other->targets[id].b.flags >> 6) == 3) {
+                        for (ally = (void*)vs_battle_actors[0]; ally; ally = ally->next) {
+                            allyState = (void*)D_800F5878[ally->id];
+                            if ((state->targets[ally->id].b.flags >> 6) == 2
+                                && (allyState->targets[state->id].b.flags >> 6) == 2
+                                && (allyState->targets[id].p.classification == 2
+                                    || (allyState->targets[id].p.counter
+                                        && allyState->targets[id].p.previous == 2)))
+                                break;
+                        }
+                        if (!ally)
+                            func_800DC784(state, id);
+                    }
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD604);
 

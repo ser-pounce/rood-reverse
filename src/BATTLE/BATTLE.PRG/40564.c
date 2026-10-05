@@ -17,7 +17,15 @@ typedef struct {
     u_short unk8[0];
 } func_800AD494_t;
 
+typedef struct {
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
+} func_8008D2C0_t;
+
 void func_8007A824(DR_MOVE*);
+int func_8008D2C0(func_8008D2C0_t*);
 void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
@@ -36,7 +44,9 @@ extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
+extern int D_800F49F4;
 extern u_char D_800F49F8;
+extern short D_800F4B00;
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
@@ -150,7 +160,60 @@ int func_800A92B8(int arg0, int arg1)
     return var_t0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9378);
+int func_800A9378(int arg0, int arg1, int arg2, int arg3)
+{
+    func_8008D2C0_t sp10[4];
+    int count;
+    int i;
+
+    D_800F49F4 = 0;
+    count = func_8008D2C0(sp10);
+
+    if (count == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < count; ++i) {
+        if ((arg0 >= sp10[i].unk0 + 64) || (arg0 < sp10[i].unk0 - 64)) {
+            continue;
+        }
+
+        if ((arg2 >= sp10[i].unk4 + 64) || (arg2 < sp10[i].unk4 - 64)) {
+            continue;
+        }
+
+        switch (arg3) {
+        case 0:
+            if (sp10[i].unk2 < arg1 - 256) {
+                continue;
+            }
+            break;
+
+        case 1:
+            if (sp10[i].unk2 < arg1 - 256) {
+                return sp10[i].unk2 + 96;
+            }
+            continue;
+
+        case 2:
+            if ((sp10[i].unk2 >= arg1) || (sp10[i].unk2 < arg1 - 128)) {
+                continue;
+            }
+            break;
+
+        case 3:
+            if ((sp10[i].unk2 >= arg1) || (sp10[i].unk2 < arg1 - D_800F4B00)) {
+                continue;
+            }
+            return sp10[i].unk2 + 96;
+        }
+
+        D_800F49F4 = sp10[i].unk6 + 2;
+        return sp10[i].unk2;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9530);
 

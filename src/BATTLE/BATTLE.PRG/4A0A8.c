@@ -275,8 +275,6 @@ extern int D_800F4C64;
 extern char D_800F4C69;
 extern char D_800F4C6A;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B28A8);
-
 __asm__(".set push;"
         ".set noreorder;"
         "glabel func_800B396C;"

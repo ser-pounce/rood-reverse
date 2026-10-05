@@ -372,7 +372,6 @@ void func_800AC540(int, D_800F4538_t*);
 typedef struct objectAnimationState objectAnimationState;
 void func_800B0908(objectAnimationState*, int);
 void func_800B1A68(void*, MATRIX*);
-void func_800B28A8(void*, MATRIX*, char);
 extern int D_800E9308;
 extern u_char D_800F4B18, D_800F4B19;
 
@@ -1498,3 +1497,5 @@ void func_800B26B8(void* actor, MATRIX* parent, int bone, int saved)
     destination = (void*)(boneOffset + (int)actor);
     destination->matrix = *matrix;
 }
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B28A8);

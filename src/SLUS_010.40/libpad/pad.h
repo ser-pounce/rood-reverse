@@ -32,9 +32,13 @@ typedef struct padPort {
     char unk44;
     u_char unk45;
     u_char unk46;
-    char unk47[2];
+    u_char unk47;
+    u_char unk48;
     u_char unk49;
-    char unk4A[0xD];
+    char unk4A[7];
+    u_char unk51[2];
+    u_char unk53;
+    char unk54[3];
     u_char unk57[6];
     u_char unk5D[6];
     char unk63[0x80];

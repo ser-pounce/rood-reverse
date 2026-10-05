@@ -3,6 +3,30 @@
 
 int DsControlF(u_char com, u_char* param) { return DsCommand(com, param, NULL, 0); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_4", DsControl);
+int DsControl(u_char com, u_char* param, u_char* result)
+{
+    int id;
+    u_char ret;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_4", DsControlB);
+    id = DsCommand(com, param, NULL, 0);
+    if (id == 0) {
+        return 0;
+    }
+    while ((ret = DsSync(id, result)) == DslNoIntr)
+        ;
+    return ret == DslComplete;
+}
+
+int DsControlB(u_char com, u_char* param, u_char* result)
+{
+    int id;
+    u_char ret;
+
+    id = DsCommand(com, param, NULL, 0);
+    if (id == 0) {
+        return 0;
+    }
+    while ((ret = DsSync(id, result)) == DslNoIntr)
+        ;
+    return ret == DslComplete;
+}

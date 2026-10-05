@@ -101,14 +101,88 @@ int PadGetState(int port)
     return p->loadState;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADENTRY", PadInfoMode);
+int PadInfoMode(int port, int term, int offs)
+{
+    PadPort* p = D_800335B0(port);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADENTRY", PadInfoAct);
+    switch (term) {
+    case 1:
+        return p->curId;
+    case 2:
+        return p->curExId;
+    case 3:
+        return p->curMode;
+    case 4:
+        if (offs < 0) {
+            return p->numIds;
+        }
+        if (offs < p->numIds) {
+            return p->idTable[offs];
+        }
+        break;
+    case 100:
+        return p->vsyncCount;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADENTRY", PadInfoComb);
+int PadInfoAct(int port, int acno, int term)
+{
+    PadPort* p = D_800335B0(port);
+    u_char* info;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADENTRY", PadSetActAlign);
+    if (acno < 0) {
+        return p->numActs;
+    }
+    if (acno < p->numActs) {
+        info = &p->actInfo[acno * 5];
+        switch (term) {
+        case 1:
+            return info[0];
+        case 2:
+            return info[1];
+        case 3:
+            return info[2];
+        case 4:
+            return info[3];
+        case 5:
+            return info[4];
+        }
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADENTRY", PadSetMainMode);
+int PadInfoComb(int port, int listno, int offs)
+{
+    PadPort* p = D_800335B0(port);
+    PadComb* comb;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADENTRY", PadSetAct);
+    if (listno < 0) {
+        return p->numCombs;
+    }
+    if (listno < p->numCombs) {
+        comb = &p->comb[listno];
+        if (offs < 0) {
+            return comb->size;
+        }
+        if (offs < comb->size) {
+            return comb->data[offs];
+        }
+    }
+    return 0;
+}
+
+int PadSetActAlign(int port, u_char* data)
+{
+    return _padSetActAlign(D_800335B0(port), data);
+}
+
+int PadSetMainMode(int port, int offs, int lock)
+{
+    return _padSetMainMode(D_800335B0(port), offs, lock);
+}
+
+void PadSetAct(int port, u_char* data, int len)
+{
+    _padSetAct(D_800335B0(port), data, len);
+}

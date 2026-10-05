@@ -7,7 +7,11 @@
 extern u_int D_8003FEA0; /* counter value at setRC2wait */
 extern u_int D_8003FEA4; /* wait length */
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/WAITRC2", setRC2wait);
+void setRC2wait(u_int wait)
+{
+    D_8003FEA4 = wait;
+    D_8003FEA0 = RCNT2_COUNT;
+}
 
 int chkRC2wait(void)
 {

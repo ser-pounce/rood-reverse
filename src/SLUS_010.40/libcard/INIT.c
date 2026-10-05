@@ -12,9 +12,38 @@ extern void _patch_card(void);
 extern void _patch_card2(void);
 extern void _patch_card_info(void);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcard/INIT", InitCARD);
+void InitCARD(long val)
+{
+    int critical;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcard/INIT", StartCARD);
+    ChangeClearPAD(0);
+    VSync(0);
+    critical = EnterCriticalSection();
+    if (ReadInitPadFlag() == 0) {
+        val = 0;
+    }
+    InitCARD2(val);
+    _copy_memcard_patch();
+    _patch_card();
+    _patch_card2();
+    _patch_card_info();
+    if (critical == 1) {
+        ExitCriticalSection();
+    }
+}
+
+long StartCARD(void)
+{
+    int critical;
+
+    critical = EnterCriticalSection();
+    StartCARD2();
+    ChangeClearPAD(0);
+    if (critical == 1) {
+        ExitCriticalSection();
+    }
+    return 0;
+}
 
 long StopCARD(void)
 {

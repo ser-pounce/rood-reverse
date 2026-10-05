@@ -71,13 +71,45 @@ void func_8002E478(PadPort* p);
 void func_8002E6DC(PadPort* p);
 int func_8002E7BC(PadPort* p);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADSEQD", _padInitDirSeq);
+void _padInitDirSeq(void)
+{
+    D_800335B4 = func_8002E368;
+    D_800335B8 = func_8002E7BC;
+    D_800335BC = func_8002E478;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADSEQD", func_8002E368);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADSEQD", func_8002E478);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADSEQD", func_8002E6DC);
+void func_8002E6DC(PadPort* p)
+{
+    p->vsyncCount++;
+    if (p->cmdState != 0) {
+        if (p->cmdState == 1) {
+            if (p->retry < 11) {
+                p->retry++;
+                return;
+            }
+            p->loadState = 2;
+            p->cmdState = 0xFF;
+            return;
+        }
+        if (p->retry < 11) {
+            p->retry++;
+            return;
+        }
+        if (p->loadState != 0) {
+            D_800335A0(p);
+        }
+    }
+    if (p->recvBuf[0] != 0xF3) {
+        p->sendBuf[0] = 0xFF;
+        p->sendBuf[1] = 0;
+        p->curId = 0;
+        p->sendLen = 0;
+    }
+}
 
 int func_8002E7BC(PadPort* p)
 {

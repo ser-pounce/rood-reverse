@@ -18,7 +18,17 @@ void* startIntrVSync(void)
     return func_80020058;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR_VB", func_8001FFEC);
+void func_8001FFEC(void)
+{
+    int i;
+
+    D_80032114++;
+    for (i = 0; i < 8; i++) {
+        if (D_800320F4[i] != NULL) {
+            D_800320F4[i]();
+        }
+    }
+}
 
 void func_80020058(int index, void (*func)())
 {

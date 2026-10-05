@@ -755,11 +755,12 @@ done:
 }
 
 typedef struct {
-    int pad0;
-    unsigned int row : 3, column : 2, pad5 : 8, threshold : 16, pad29 : 3;
+    int score;
+    unsigned int row : 3, column : 2, action : 8, threshold : 16, pad29 : 3;
     unsigned int distanceSquared;
-    unsigned int targetId : 4, padC4 : 15, weight : 8, padC27 : 5;
-    unsigned int low : 1, flag1 : 1, pad2 : 4, range : 16, high : 10;
+    unsigned int targetId : 4, part : 3, heading : 12, weight : 8, padC27 : 5;
+    unsigned int low : 1, flag1 : 1, flag2 : 1, flag3 : 1, flag4 : 1, flag5 : 1,
+        range : 16, high : 10;
 } actionCandidateEntry;
 typedef struct {
     unsigned char flags, pad[3];
@@ -1476,7 +1477,113 @@ void func_800DAED0(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DB0BC);
+typedef union {
+    u_int raw;
+    struct {
+        u_char x, y, z, status;
+    } p;
+} stuckMovementPosition;
+
+typedef struct {
+    char unk0[2];
+    u_char stuck;
+    char unk3[0x19];
+    u_char unk1C;
+    char unk1D[0x17];
+    stuckMovementPosition position;
+    stuckMovementPosition previous;
+    char unk3C[0x10];
+    short x;
+    char unk4E[2];
+    short z;
+    char unk52[0xA8];
+    u_char detourStep;
+    u_char unkFB;
+    char unkFC[0x1C];
+    u_char detourDirections[4];
+    char unk11C[0x40];
+    u_char unk15C;
+    char unk15D[0xB];
+    stuckMovementPosition destination;
+} stuckMovementState;
+
+int func_800DB0BC(stuckMovementState* state)
+{
+    u_char directions[4];
+    u_int probe;
+    u_int angle;
+    u_int quadrant;
+    int first;
+    int second;
+    int i;
+
+    if (D_800F5920 == NULL) {
+        if ((state->position.raw & 0xFF00FF) == (state->previous.raw & 0xFF00FF)) {
+            state->stuck = 1;
+            if (state->detourStep == 0) {
+                angle = ratan2(state->x - state->destination.p.x * 128 - 64,
+                    state->z - state->destination.p.z * 128 - 64);
+                angle &= 0xFFF;
+                first = (angle >> 9) & 7;
+                second = ((angle >> 9) + 2) & 7;
+                quadrant = angle >> 10;
+                if (((angle & 0x3FF) > 512 ? ((quadrant + 1) & 3) * 2 : quadrant * 2)
+                    == first) {
+                    directions[0] = first;
+                    directions[1] = second;
+                } else {
+                    directions[0] = second;
+                    directions[1] = first;
+                }
+                if (func_800E45D4(2)) {
+                    directions[2] = (first + 4) & 7;
+                    directions[3] = (second + 4) & 7;
+                } else {
+                    directions[2] = (second + 4) & 7;
+                    directions[3] = (first + 4) & 7;
+                }
+                *(u_int*)state->detourDirections = *(u_int*)directions;
+                probe = 0;
+                for (i = 0; i < 4; ++i) {
+                    ((u_char*)&probe)[0] = state->position.p.x
+                                         + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dx;
+                    ((u_char*)&probe)[2] = state->position.p.z
+                                         + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dz;
+                    if (func_800D954C((func_800D8400_t*)state, probe) > 0) {
+                        state->detourStep = i;
+                        break;
+                    }
+                }
+                state->detourStep++;
+            }
+            if (state->detourStep >= 5) {
+                func_800E4CE8((func_800DEEA4_t2*)state);
+                state->unk1C = 0;
+                state->detourStep = 0;
+                return 0;
+            }
+            state->destination.p.x =
+                state->position.p.x
+                + ((D_800F16EC_t*)0x1F8003EC)[state->detourDirections[state->detourStep
+                                                                      - 1]]
+                      .dx;
+            state->destination.p.z =
+                state->position.p.z
+                + ((D_800F16EC_t*)0x1F8003EC)[state->detourDirections[state->detourStep
+                                                                      - 1]]
+                      .dz;
+            state->unk15C = state->unkFB;
+            if (func_800D954C((func_800D8400_t*)state, state->destination.raw) > 0) {
+                func_800E50A0(state, 0, 0);
+            } else {
+                state->detourStep++;
+            }
+            return 1;
+        }
+        state->detourStep = 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DB370);
 
@@ -1853,10 +1960,10 @@ void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int
     if (action)
         flags = action->flags;
     if ((flags & 32) && (rand() & 127) < 115) {
-        candidate->pad0 = 0x80000000;
+        candidate->score = 0x80000000;
         return;
     }
-    candidate->pad0 = 0;
+    candidate->score = 0;
     candidate->weight = 128;
     stats = (actionStatSnapshot*)0x1F80018C;
     func_800DC424(stats);
@@ -1877,11 +1984,11 @@ void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int
             actionMpRatio(stats, id), actionExtraRatio(stats, id));
         if (kind != 2)
             value = -value;
-        candidate->pad0 += value;
+        candidate->score += value;
     }
     if (special)
-        candidate->pad0++;
-    candidate->pad0 = (candidate->pad0 << 7) + candidate->weight;
+        candidate->score++;
+    candidate->score = (candidate->score << 7) + candidate->weight;
 }
 
 typedef union {
@@ -2037,7 +2144,103 @@ void func_800DD344(actionReactionState* state)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD604);
+typedef struct {
+    u_int unk0_0 : 2;
+    u_int flag2 : 1;
+    u_int mode : 2;
+    u_int flag5 : 1;
+    u_int usable : 1;
+    u_int enabled : 1;
+    u_int range : 16;
+    u_int unk0_24 : 8;
+    u_int value;
+} actionSlotConfig;
+
+typedef struct {
+    u_int flag0 : 1;
+    u_int flag1 : 1;
+    u_int flag2 : 1;
+    u_int flag3 : 1;
+    u_int unk4 : 28;
+} actionChoiceFlags;
+
+typedef struct {
+    int unk0;
+    u_int category : 3;
+    u_int slot : 2;
+    u_int action : 8;
+    u_int unk4_13 : 19;
+    u_int score;
+    u_int unkC_0 : 19;
+    u_int targetWeight : 8;
+    u_int unkC_27 : 5;
+    actionChoiceFlags flags;
+} actionChoice;
+
+typedef struct {
+    char unk0[0x1B];
+    u_char dead;
+    char unk1C[0x40];
+    vs_battle_actor2* stats;
+    char unk60[0x22];
+    short heading;
+    char unk84[0xBC];
+    actionChoice choice;
+    char unk154[0xDC];
+    actionSlotConfig configs[6][4];
+} actionChoiceState;
+
+/* Local view of the vs_main_actions flag word at 0xC */
+typedef struct {
+    char unk0[0xC];
+    u_int unkC_0 : 23;
+    u_int flag23 : 1;
+    u_int unkC_24 : 4;
+    u_int flag28 : 1;
+    u_int flag29 : 1;
+    u_int unkC_30 : 2;
+    char unk10[0x24];
+} actionChoiceInfo;
+
+void func_800DD604(actionChoiceState* state)
+{
+    vs_battle_actor2* stats;
+    actionChoice* choice;
+    actionSlotConfig* config;
+    u_int best;
+    int row;
+    int col;
+    int action;
+    actionChoiceFlags flags;
+
+    best = 0;
+    choice = &state->choice;
+    stats = state->stats;
+    for (row = 0; row < 6; ++row) {
+        for (col = 0; col < 4; ++col) {
+            config = &state->configs[row][col];
+            action = (u_short)stats->armor[row][col].id;
+            if (func_800E4DF8((actionCandidateState*)state, row, col) && config->usable
+                && best < config->value) {
+                best = config->value;
+                choice->score = best;
+                choice->slot = col;
+                choice->category = row;
+                choice->action = action;
+                choice->flags.flag1 = 0;
+                flags = choice->flags;
+                flags.flag2 = ((actionChoiceInfo*)vs_main_actions)[action].flag28;
+                choice->targetWeight = 128;
+                flags.flag0 = 0;
+                flags.flag3 = 0;
+                choice->flags = flags;
+            }
+        }
+    }
+    if (best == 0) {
+        choice->action = 0;
+    }
+}
 
 typedef struct {
     char pad0[0x4C];
@@ -2102,9 +2305,268 @@ void func_800DD7CC(nearestWaypointState* state, nearestWaypointDestination* dest
     *(int*)0x1F8003BC = savedMap;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD918);
+extern u_char (*D_800F5904)[256];
+void func_800E4288(void*, int);
+void func_800DC2E0(actionCandidateEntry*, actionCandidateEntry*);
+void func_800DC344(actionChoiceState*, actionCandidateEntry*);
+void func_800DC4F0(actionCandidateEntry*, actionChoiceInfo*);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE030);
+static inline vs_battle_uiEquipment_limb* actorLimb(vs_battle_actor2* stats, int limb)
+{
+    return ((vs_battle_actor2*)(limb * sizeof(vs_battle_uiEquipment_limb) + (int)stats))
+        ->limbs;
+}
+
+void func_800DD918(actionChoiceState* state, int threshold)
+{
+    actionCandidateEntry* list = (actionCandidateEntry*)0x1F80030C;
+    actionCandidateEntry* candidate;
+    int pass;
+    int row;
+    int col;
+    int action;
+    int limb;
+    int part;
+    int last;
+    int flag;
+    u_int id;
+    actionSlotConfig* config;
+    actionChoiceInfo* info;
+    vs_battle_actor* actor;
+    actionChoiceState* target;
+
+    func_800E4288(list, sizeof(actionCandidateEntry));
+    list[0].distanceSquared = 256;
+    list[0].threshold = threshold;
+    func_800DCC94((actionScoreState*)state, list, 0, NULL);
+    func_800DC2E0(&list[1], list);
+    list[1].threshold = threshold;
+    candidate = &list[1];
+
+    for (row = 0; row < 6; ++row) {
+        for (col = 0; col < 4; ++col) {
+            action = (u_short)state->stats->armor[row][col].id;
+            config = &state->configs[row][col];
+            info = &((actionChoiceInfo*)vs_main_actions)[action];
+            if (action == 0 || !config->enabled) {
+                continue;
+            }
+            list[1].column = col;
+            list[1].row = row;
+            list[1].action = action;
+            flag = info->flag29;
+            list[1].flag1 = info->flag23 | flag;
+            list[1].flag2 = info->flag28;
+            list[1].flag3 = config->flag2;
+            list[1].range = config->range;
+            list[1].distanceSquared = config->value;
+
+            for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+                id = actor->id;
+                if (((actionChoiceState*)D_800F5878[id])->dead) {
+                    continue;
+                }
+                list[1].targetId = id;
+                list[1].flag4 = func_800DC484(action, id);
+                list[1].flag5 = func_800DC48C(action, id);
+                list[1].low = config->flag5 && list[1].flag4;
+                if (!func_800E4CF4((actionCandidateState*)state, candidate, id)
+                    || D_800F5904[id][action]) {
+                    continue;
+                }
+
+                switch ((int)config->mode) {
+                case 1:
+                    func_800DCC94((actionScoreState*)state, candidate, 1,
+                        (actionScoreMetadata*)info);
+                    func_800DC4F0(candidate, info);
+                    if (list[1].score > list[0].score) {
+                        func_800DC344(state, candidate);
+                    }
+                    break;
+
+                case 2:
+                    last = -1;
+                    func_800DC2E0(&list[2], list);
+                    func_800DC2E0(&list[3], list);
+                    for (limb = 0; limb < 6; ++limb) {
+                        if (actorLimb(actor->unk3C, limb)->maxHp != 0) {
+                            last = limb;
+                            list[1].part = last;
+                            func_800DCC94((actionScoreState*)state, candidate, 2,
+                                (actionScoreMetadata*)info);
+                            {
+                                int chance = list[1].weight;
+                                if ((rand() & 127) < chance
+                                    && list[1].score > list[2].score) {
+                                    func_800DC2E0(&list[2], candidate);
+                                }
+                            }
+                            if (list[1].score > list[3].score) {
+                                func_800DC2E0(&list[3], &list[1]);
+                            }
+                        }
+                    }
+                    part = rand();
+                    part = (part & 3) + ((part >> 2) & 1) + ((part >> 3) & 1);
+                    if (actorLimb(actor->unk3C, part)->maxHp == 0 && last >= 0) {
+                        part = last;
+                    }
+                    if (part >= 0) {
+                        list[1].part = part;
+                        func_800DC4F0(&list[1], info);
+                    }
+                    if (list[2].score > list[0].score) {
+                        func_800DC344(state, &list[2]);
+                    } else if (list[0].score < list[3].score) {
+                        func_800DC344(state, &list[3]);
+                    }
+                    break;
+
+                case 3:
+                    target = (actionChoiceState*)D_800F5878[actor->id];
+                    func_800DC2E0(&list[2], list);
+                    func_800DC2E0(&list[3], list);
+                    list[1].heading = 0;
+                    for (pass = 0; pass < 1; ++pass) {
+                        list[1].heading = ABS(target->heading);
+                        func_800DCC94((actionScoreState*)state, candidate, 3,
+                            (actionScoreMetadata*)info);
+                        {
+                            int chance = list[1].weight;
+                            if ((rand() & 127) < chance
+                                && list[1].score > list[2].score) {
+                                func_800DC2E0(&list[2], candidate);
+                            }
+                        }
+                        if (list[1].score > list[3].score) {
+                            func_800DC2E0(&list[3], &list[1]);
+                        }
+                    }
+                    func_800DC4F0(&list[1], info);
+                    if (list[2].score > list[0].score) {
+                        func_800DC344(state, &list[2]);
+                    } else if (list[0].score < list[3].score) {
+                        func_800DC344(state, &list[3]);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
+
+typedef struct {
+    int mask;
+    u_short unk4;
+    u_short interval;
+    int unk8;
+    int unkC;
+} statusEffectTick;
+typedef struct {
+    statusEffectTick entries[1];
+} statusEffectTable;
+
+extern u_int D_80069BBC[];
+void func_800E4F14(void*);
+
+void func_800DE030(int elapsed)
+{
+    vs_battle_actor* actor;
+    vs_battle_actor2* stats;
+    void* state;
+    int statuses;
+    int ticks;
+    int i;
+    int limb;
+    int duration;
+    int scale;
+    int amount;
+    int row;
+    int column;
+    vs_battle_uiEquipment_limb* limbs;
+
+    ticks = (elapsed >> 5) + (elapsed >> 9);
+    D_800F58BC->unk18 += elapsed;
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        stats = actor->unk3C;
+        statuses = stats->statuses;
+
+        if (D_800F58BC->unk18 > 2880) {
+            for (limb = 0; limb < 6; ++limb) {
+                limbs = &stats->limbs[limb];
+                limbs->hp += 2;
+                if (limbs->hp > limbs->maxHp) {
+                    limbs->hp = limbs->maxHp;
+                }
+            }
+        }
+
+        if (stats->limbs[stats->unk34].hp >= 2 || stats->limbs[stats->unk35].hp >= 2) {
+            statuses &= ~0x10;
+        }
+
+        amount = elapsed / 240;
+        if (amount > 0) {
+            stats->currentHP += amount - 1;
+        }
+        if (stats->currentHP > stats->maxHP) {
+            stats->currentHP = stats->maxHP;
+        }
+
+        amount = elapsed / 180;
+        if (amount > 0) {
+            stats->currentMP += amount - 1;
+        }
+        if (stats->currentMP > stats->maxMP) {
+            stats->currentMP = stats->maxMP;
+        }
+
+        if (statuses & 0x4000) {
+            scale = stats->maxHP * 5;
+            stats->currentHP -= (ticks
+                                    / (*(statusEffectTable*)vs_main_statusEffectParams)
+                                        .entries[14]
+                                        .interval)
+                              * scale / 100;
+            if (stats->currentHP < 0) {
+                stats->currentHP = 0;
+            }
+        }
+
+        if (statuses & 0x20000) {
+            scale = stats->maxHP * 5;
+            stats->currentHP += (ticks
+                                    / (*(statusEffectTable*)vs_main_statusEffectParams)
+                                        .entries[17]
+                                        .interval)
+                              * scale / 100;
+            if (stats->currentHP < 0) {
+                stats->currentHP = 0;
+            }
+        }
+
+        for (i = 0; i < 5; ++i) {
+            if (statuses & D_80069BBC[i]) {
+                duration = stats->statusTimers[i];
+                duration = (duration << 5) - (duration << 1);
+                if (D_800F58BC->unk18 >= duration) {
+                    statuses &= ~D_80069BBC[i];
+                }
+            }
+        }
+
+        stats->statuses = statuses;
+        state = D_800F5878[actor->id];
+        func_800E4F14(state);
+        for (row = 0; row < 6; ++row) {
+            for (column = 0; column < 4; ++column) {
+                func_800E4DF8(state, row, column);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE3E4);
 
@@ -2196,10 +2658,9 @@ typedef struct actorEvaluationContext {
     int f44;
 } actorEvaluationContext;
 extern void* D_800F58EC;
-extern void* D_800F5904;
+extern u_char (*D_800F5904)[256];
 extern void* D_800F58F8;
 void func_800E685C(int, int, int);
-void func_800DD604(actorEvaluationState*);
 void func_800DE3E4(actorEvaluationState*);
 void func_800D821C(actorEvaluationState*);
 int func_800DEC88(void* arg0)
@@ -2210,7 +2671,7 @@ int func_800DEC88(void* arg0)
     D_800F58BC->unk18 = 0;
     D_800F5900 = vs_main_allocHeapR(0x1ECC);
     D_800F58EC = (char*)D_800F5900 + 0x9CC;
-    D_800F5904 = (char*)D_800F5900 + 0xD8C;
+    D_800F5904 = (void*)((char*)D_800F5900 + 0xD8C);
     D_800F58F8 = (char*)D_800F5900 + 0x1D8C;
     if (D_800F5900) {
         func_800DEB10((void*)context);
@@ -2221,7 +2682,7 @@ int func_800DEC88(void* arg0)
             state->fE7 = 0;
             state->f19A = 0;
             func_800E685C(state->id, actor->stats->f31, actor->stats->f33);
-            func_800DD604(state);
+            func_800DD604((actionChoiceState*)state);
             if (context && !context->f44 && context->id == state->id)
                 state->timer = 0;
         }

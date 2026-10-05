@@ -331,7 +331,124 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9988);
+short func_8008DA24(int, int);
+
+static inline int scanFloor(int arg0, int arg1)
+{
+    int var_t0;
+    int i;
+
+    var_t0 = 0xBB8;
+    D_800F49F8 = 0;
+
+    for (i = 0; i < 16; ++i) {
+
+        D_800F45E0_t* temp_v1 = D_800F45E0[i];
+
+        if (temp_v1 == NULL) {
+            continue;
+        }
+
+        if (!temp_v1->unk8_0 && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
+            && !temp_v1->unk9_0 && (temp_v1->unk1A != 0xFE)
+            && (temp_v1->unk1E < var_t0)) {
+
+            var_t0 = temp_v1->unk1E;
+            D_800F49F8 = i;
+        }
+    }
+
+    var_t0 -= 128;
+
+    if (var_t0 > 0) {
+        var_t0 = 0;
+    }
+
+    return var_t0;
+}
+
+void func_800A9988(int arg0, SVECTOR* arg1, int arg2, int arg3)
+{
+    int angle;
+    D_800F4538_t* temp_s0;
+    D_800F45E0_t** var_t0;
+    D_800F45E0_t* temp_a2_2;
+    short temp_a2_3;
+    short temp_v0;
+    int var_a0;
+    int var_v1;
+    int temp_v1_2;
+    int temp_v1_3;
+    int var_a0_2;
+    u_short temp_a2;
+    u_short temp_v1;
+    int var_a3;
+
+    temp_s0 = D_800F4538[arg0];
+    if ((arg2 == 0) && (arg3 == 0)) {
+        temp_a2 = arg1->pad;
+        if (temp_a2 == 0x8000) {
+            angle = arg1->vx - temp_s0->unk0.position.vx;
+            var_a0_2 = arg1->vz - temp_s0->unk0.position.vz;
+            if ((angle == 0) && (var_a0_2 == 0)) {
+                angle = (short)temp_a2;
+            } else {
+                angle = 0xC00 - ratan2(var_a0_2, angle);
+                angle &= 0xFFF;
+            }
+            angle = (short)angle;
+            temp_s0->unk0.facing = angle;
+        } else {
+            temp_s0->unk0.facing = (short)temp_a2;
+        }
+        temp_s0->unk0.unk18 = 0;
+        func_800A9D90(arg0, arg1, 0);
+        return;
+    }
+    angle = arg1->vx - temp_s0->unk0.position.vx;
+    var_a0_2 = arg1->vz - temp_s0->unk0.position.vz;
+    if ((angle == 0) && (var_a0_2 == 0)) {
+        temp_v1 = (u_short)arg1->pad;
+        if (temp_v1 != 0x8000) {
+            angle = (short)temp_v1;
+            goto block_15;
+        }
+    } else {
+        angle = 0xC00 - ratan2(var_a0_2, angle);
+        angle &= 0xFFF;
+    block_15:
+        angle = (short)angle;
+        func_800A9EB4(arg0, angle, arg3);
+        if (arg2 == -1) {
+            temp_s0->unk5C4 = temp_s0->unk5C2;
+        } else {
+            temp_s0->unk5C4 = arg2;
+        }
+        if (arg3 == -1) {
+            temp_s0->unk5C6 = temp_s0->unk5C0;
+        } else {
+            temp_s0->unk5C6 = (u_short)arg3;
+        }
+        temp_s0->unk5EC.vx = (short)(u_short)arg1->vx;
+        temp_s0->unk5EC.vz = (short)(u_short)arg1->vz;
+        angle = (u_short)arg1->vy;
+        if (angle == 0x8000) {
+            angle = func_8008DA24(arg1->vx, arg1->vz);
+            angle <<= 17;
+            angle >>= 17;
+            var_a0_2 = scanFloor(arg1->vx / 128, arg1->vx / 128);
+            if (var_a0_2 != 0) {
+                angle = var_a0_2;
+            }
+            temp_s0->unk5EC.vy = (short)angle;
+        } else {
+            temp_s0->unk5EC.vy = (short)angle;
+        }
+        temp_s0->unk5EC.pad = (short)(u_short)arg1->pad;
+        temp_s0->unk5AC_0 = 1;
+        temp_s0->unk5AC_2 = 0;
+    }
+}
 
 void func_800A9C54(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 {

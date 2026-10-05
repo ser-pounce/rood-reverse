@@ -1,12 +1,9 @@
-import yaml
 from pathlib import Path
 
-from kaitaistruct import KaitaiStream, BytesIO
 from splat.segtypes.segment import Segment
 from splat.util import options
 
 from tools.etc.vsString_dumpTable import vsString_dumpTable
-from tools.kaitai.parsers.lib.string_table import StringTable
 
 
 class PSXSegVsStringTable(Segment):

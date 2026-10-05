@@ -211,9 +211,9 @@ segments:
     vram: 0x80040210
     align: 4
     subsegments:
-      - [0x30A10, .rodata, 31724]
+      - [0x30A10, rodata, 31724]
       - [0x31418, rodata, 32154]
-      - [0x31724, c]
+      - [0x31724, asm]
       - [0x31D08, c, libgte/MTX_005] # |
       - [0x31D34, c, libgte/REG13]   # |
       - [0x31D40, c, libgte/REG12]   # |

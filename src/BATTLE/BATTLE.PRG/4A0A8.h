@@ -173,6 +173,11 @@ void func_800B6634(int, int);
 void func_800B668C(int arg0, short arg1, int arg2);
 
 extern short D_800F4BE2;
+extern char vs_battle_textBoxStatuses[];
 extern char D_800F4C08;
+extern char D_800F4C20;
+extern char D_800F4C2C;
 extern void* D_800F4C30;
 extern void* D_800F4C48;
+extern short D_800F4C58[];
+extern char D_800F4C68;

@@ -72,7 +72,10 @@ typedef struct {
     char unk0[8];
     u_char unk8;
     u_char unk9;
-    char unkA[2];
+    char unkA;
+    u_int unkB_0 : 2;
+    u_int unkB_2 : 2;
+    u_int unkB_4 : 4;
     u_short unkC;
     u_short unkE;
     SVECTOR unk10;
@@ -85,14 +88,18 @@ typedef struct {
     u_int unk4;
 } func_800E78F4_t2;
 
-typedef struct {
+typedef struct func_800E78F4_t {
     char unk0[0x4E];
     u_short unk4E;
     char unk50[4];
     func_800DEB10_t2* unk54;
     char unk58[4];
     vs_battle_actor2* unk5C;
-    char unk60[0x3D0];
+    char unk60[0xCF];
+    u_char unk12F;
+    char unk130[0x70];
+    struct func_800E78F4_t* unk1A0;
+    char unk1A4[0x28C];
     func_800E78F4_t2* unk430;
     char unk434[0x3C];
     int unk470;
@@ -104,8 +111,8 @@ typedef struct {
     int unk14;
     u_short unk18;
     char unk1A[2];
-    void* unk1C;
-    char unk20[4];
+    func_800E78F4_t* unk1C;
+    func_800E78F4_t* unk20;
     int unk24;
 } D_800F58BC_t;
 
@@ -169,12 +176,15 @@ typedef struct {
     u_int unkC_0 : 4;
     u_int unkC_4 : 3;
     u_int unkC_7 : 12;
-    u_int unkC_19 : 13;
+    u_int unkC_19 : 8;
+    u_int unkC_27 : 5;
 } func_800DCAA0_t;
 
 typedef struct {
     u_char unk0;
-    char unk1[0x3F];
+    char unk1;
+    u_char unk2;
+    char unk3[0x3D];
     int unk40;
 } func_800DEB10_t;
 
@@ -284,7 +294,7 @@ extern func_800DEEA4_t2* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
-extern void* D_800F5900;
+extern func_800DEEA4_t* D_800F5900;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
@@ -1236,46 +1246,34 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBCEC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBD80);
 
-typedef struct {
-    char pad0[8];
-    unsigned int pad8 : 26, mode : 2, pad28 : 4;
-} actorQueueObject;
-typedef struct actorQueueState {
-    char pad0[0x54];
-    actorQueueObject* object;
-    char pad58[0xD7];
-    unsigned char flag12F;
-    char pad130[0x70];
-    struct actorQueueState* next;
-} actorQueueState;
-typedef struct {
-    char pad0[0x1C];
-    actorQueueState* head;
-    actorQueueState* current;
-} actorQueueRegistry;
-void func_800DBF00(actorQueueState* state)
+void func_800DBF00(func_800E78F4_t* arg0)
 {
-    actorQueueState* node;
-    actorQueueObject* object = state->object;
-    state->flag12F = 0;
-    object->mode = 2;
-    if (state == ((actorQueueRegistry*)D_800F58BC)->current) {
-        object->mode = 2;
-        ((actorQueueRegistry*)D_800F58BC)->current =
-            ((actorQueueRegistry*)D_800F58BC)->current->next
-                ? ((actorQueueRegistry*)D_800F58BC)->current->next
-                : ((actorQueueRegistry*)D_800F58BC)->head;
+    func_800DEB10_t2* data = arg0->unk54;
+    func_800E78F4_t* node;
+
+    arg0->unk12F = 0;
+    data->unkB_2 = 2;
+
+    if (arg0 == D_800F58BC->unk20) {
+        data->unkB_2 = 2;
+        D_800F58BC->unk20 = D_800F58BC->unk20->unk1A0 != NULL ? D_800F58BC->unk20->unk1A0
+                                                              : D_800F58BC->unk1C;
     }
-    if (((actorQueueRegistry*)D_800F58BC)->head == state)
-        ((actorQueueRegistry*)D_800F58BC)->head = state->next;
-    else
-        for (node = ((actorQueueRegistry*)D_800F58BC)->head; node; node = node->next)
-            if (node->next == state) {
-                node->next = node->next->next;
+
+    if (D_800F58BC->unk1C == arg0) {
+        D_800F58BC->unk1C = arg0->unk1A0;
+    } else {
+        for (node = D_800F58BC->unk1C; node != NULL; node = node->unk1A0) {
+            if (node->unk1A0 == arg0) {
+                node->unk1A0 = arg0->unk1A0;
                 return;
             }
-    if (!((actorQueueRegistry*)D_800F58BC)->head)
-        ((actorQueueRegistry*)D_800F58BC)->current = 0;
+        }
+    }
+
+    if (D_800F58BC->unk1C == NULL) {
+        D_800F58BC->unk20 = NULL;
+    }
 }
 
 typedef struct {
@@ -1493,20 +1491,21 @@ void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int 
     }
 }
 
-void func_800DCBD8(actionCandidateEntry* candidate)
+void func_800DCBD8(func_800DCAA0_t* arg0)
 {
-    int i, weight = 0;
-    actionStatDelta* entry;
-    int target = candidate->targetId;
-    for (i = 0; i < ((actionStatApplication*)D_800F5900)->count; i++) {
-        entry = &((actionStatApplication*)D_800F5900)->entries[i];
-        if (!entry->skip
-            && target == ((actionStatApplication*)D_800F5900)->entries[i].actor) {
-            weight = ((actionStatApplication*)D_800F5900)->entries[i].value2;
+    int i;
+    int threshold = 0;
+    int id = arg0->unkC_0;
+
+    for (i = 0; i < D_800F5900->unk4A; ++i) {
+        func_800DEB10_t* entry = &D_800F5900->unk4C[i];
+        if ((entry->unk40 == 0) && (id == D_800F5900->unk4C[i].unk0)) {
+            threshold = D_800F5900->unk4C[i].unk2;
             break;
         }
     }
-    candidate->weight = weight + (weight >> 2) + (weight >> 5);
+
+    arg0->unkC_19 = threshold + (threshold >> 2) + (threshold >> 5);
 }
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069B68);
@@ -1600,7 +1599,7 @@ void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int
         candidate->weight = 40;
     } else if (mode) {
         func_800DCAA0((void*)state, (int)stats, (void*)candidate, mode);
-        func_800DCBD8(candidate);
+        func_800DCBD8((void*)candidate);
     }
     for (actor = (void*)vs_battle_actors[0]; actor; actor = actor->next) {
         id = actor->id;
@@ -1944,9 +1943,9 @@ int func_800DEC88(void* arg0)
     actorEvaluationState* state;
     D_800F58BC->unk18 = 0;
     D_800F5900 = vs_main_allocHeapR(0x1ECC);
-    D_800F58EC = D_800F5900 + 0x9CC;
-    D_800F5904 = D_800F5900 + 0xD8C;
-    D_800F58F8 = D_800F5900 + 0x1D8C;
+    D_800F58EC = (char*)D_800F5900 + 0x9CC;
+    D_800F5904 = (char*)D_800F5900 + 0xD8C;
+    D_800F58F8 = (char*)D_800F5900 + 0x1D8C;
     if (D_800F5900) {
         func_800DEB10((void*)context);
         for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;

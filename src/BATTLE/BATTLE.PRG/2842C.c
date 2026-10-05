@@ -1546,8 +1546,8 @@ int func_80093B68(int arg0, int arg1, int arg2, int arg3)
     } else {
         p->unkC = amount | (((u_int)arg2 >> 16) & 0x8000);
     }
-    sprintf((char*)&p->unk14, D_800691E4, p->unkC & 0x7FFF);
-    p->unkF = strlen((char*)&p->unk14);
+    sprintf(p->displayText, D_800691E4, p->unkC & 0x7FFF);
+    p->displayTextLen = strlen(p->displayText);
     ++D_800F227E;
     return 0;
 }
@@ -1570,7 +1570,7 @@ int vs_battle_renderBattleAbilityTimingResult(int arg0)
     p->unk8.u8[0] = 4;
     p->unk8.u8[1] = 0;
     p->unkC = arg0;
-    p->unkF = rand() & 7;
+    p->displayTextLen = rand() & 7;
     ++D_800F227E;
     return 0;
 }
@@ -1628,7 +1628,7 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
 
     for (; i < D_800F227E; ++i, ++p) {
         if ((p->unk8.u8[0] == 2) && (p->unk8.u8[1] == arg0)) {
-            frame = p->unkF + 0xC;
+            frame = p->displayTextLen + 0xC;
             if (p->unk6 >= 0) {
                 kind = p->unkB;
                 ++found;
@@ -1655,9 +1655,9 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     p->unk4 = 0;
     p->unk6 = found;
     if (frame < 0x25) {
-        p->unkF = frame;
+        p->displayTextLen = frame;
     } else {
-        p->unkF = 0;
+        p->displayTextLen = 0;
     }
     p->unkB = kind;
     p->unk8.u8[1] = arg0;
@@ -1723,7 +1723,7 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
             frame = p->unkB;
         }
         color = (p->unkE & 1) << 1;
-        i = p->unkF * 3;
+        i = p->displayTextLen * 3;
         if (!(p->unkC & 0x8000)) {
             offset = bounce[frame];
             ++color;
@@ -1734,7 +1734,7 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
     x += i - 6;
     cursor = ((vs_scratch_t*)0x1F800000)->unk0;
     prim = cursor;
-    for (i = p->unkF - 1; i >= 0; --i, x -= 6) {
+    for (i = p->displayTextLen - 1; i >= 0; --i, x -= 6) {
         digitY = y + offset;
         offset /= 2;
         if ((u_int)(x + 8) < 328) {
@@ -1761,7 +1761,7 @@ int func_80094E18(int x, int y, D_800F1BAC_t* p)
     RECT* rect = &D_80068FAC[D_800E861C[p->unkE - 3]];
     POLY_FT4* prim = ((vs_scratch_t*)0x1F800000)->unk0;
     int sign = p->unkC;
-    int width = (p->unkF * 6 + rect->w + 12) / 2;
+    int width = (p->displayTextLen * 6 + rect->w + 12) / 2;
     x -= width;
     setPolyFT4(prim);
     setXY4(prim, x, y - 6, x + rect->w, y - 6, x, y + 6, x + rect->w, y + 6);
@@ -1961,8 +1961,8 @@ draw:
         vs_battle_renderTextRawColor(timing[p->unkC], (x & 0xFFFF) | (y << 16),
             colors[p->unkC], ((vs_scratch_t*)0x1F800000)->unk4 - 16);
     } else {
-        vs_battle_renderTextRawColor(success[p->unkF], (x & 0xFFFF) | (y << 16), 0x408040,
-            ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+        vs_battle_renderTextRawColor(success[p->displayTextLen], (x & 0xFFFF) | (y << 16),
+            0x408040, ((vs_scratch_t*)0x1F800000)->unk4 - 16);
     }
 }
 
@@ -2278,61 +2278,72 @@ void func_8009651C(SVECTOR* position, int direction)
 
 int func_80096768(int arg0, int arg1, int arg2)
 {
-    SVECTOR unused __attribute__((unused));
+    int _[2] __attribute__((unused));
     int i;
     int count;
-    int amount;
     D_800F1BAC_t* p;
+
     if ((vs_main_settings.weaponStatChange && (arg0 == 240))
         || (vs_main_settings.armorStatChange && (arg0 != 240))) {
         switch (arg0) {
         case 1:
             arg0 = 4;
             break;
+
         case 2:
+            arg0 = 2;
             break;
+
         case 3:
             arg0 = 3;
             break;
+
         case 4:
             arg0 = 6;
             break;
+
         case 6:
             arg0 = 5;
             break;
+
         case 241:
             arg0 = 1;
             break;
+
         case 240:
             arg0 = 0;
             break;
         }
-        i = 0;
-        count = 0;
+
         p = *D_800F1BAC;
-        for (; i < D_800F227E; ++i, ++p) {
+        count = 0;
+
+        for (i = 0; i < D_800F227E; ++i, ++p) {
             if ((p->unk8.u8[0] == 6) || (p->unk8.u8[0] == 7)) {
                 ++count;
             }
         }
+
         p = func_800962E4();
         p->unk8.u8[0] = 7;
-        p->unk8.u8[1] = 127;
+        p->unk8.u8[1] = 0x7F;
         p->unk6 = count;
         p->unk12 = 0;
         p->unkB = 0;
         p->unkE = arg0;
         p->unkA = arg1;
-        amount = arg2 & 0x7FFF;
-        if (amount > 999) {
-            p->unkC = 999 | (((u_int)arg2 >> 16) & 0x8000);
+
+        if ((arg2 & 0x7FFF) >= 1000) {
+            p->unkC = 999 | ((arg2 & 0x80000000) >> 16);
         } else {
-            p->unkC = amount | (((u_int)arg2 >> 16) & 0x8000);
+            p->unkC = (arg2 & 0x7FFF) | ((arg2 & 0x80000000) >> 16);
         }
-        sprintf((char*)&p->unk14, D_800691E4, p->unkC & 0x7FFF);
-        p->unkF = strlen((char*)&p->unk14);
+
+        sprintf(p->displayText, D_800691E4, p->unkC & 0x7FFF);
+        p->displayTextLen = strlen(p->displayText);
         ++D_800F227E;
     }
+
     return 0;
 }
 

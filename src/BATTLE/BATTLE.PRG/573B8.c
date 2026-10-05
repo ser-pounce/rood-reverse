@@ -1,11 +1,13 @@
 #include "common.h"
 #include "146C.h"
-#include "573B8.h"
 #include "4A0A8.h"
+#include "573B8.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
+#include <libetc.h>
 
 extern u_char D_800E9C30[];
+extern int (*_opcodeFunctionTable[])(u_char*, short);
 extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
@@ -46,63 +48,73 @@ extern u_char D_800EB9AC;
 extern void func_8007D260(int);
 void func_800A0204(int, int, int, int);
 extern void func_800BBDDC(void);
-
-typedef int (*eventOpcodeHandler)(u_char*, int);
-extern eventOpcodeHandler _opcodeFunctionTable[];
-extern u_char D_800F4C20, D_800F4C2C, D_800F4C68;
-extern short D_800F4C58[];
-extern char vs_battle_textBoxStatuses[];
 int func_800BFE34(u_char*);
 void func_800C0150(void);
 
-int func_800BFBB8(u_char** cursor, short actor)
+short func_800BFBB8(u_char** arg0, short arg1)
 {
-    u_char* script = *cursor;
-    int result;
-    if (actor == 0 && D_800F4C2C == 1) {
-        if ((vs_main_buttonsPressed.all & 0x800) || D_800F4C68) {
-            D_800F4C68 = 0;
-            D_800F4C58[0] = D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
-            vs_battle_textBoxStatuses[0] = vs_battle_textBoxStatuses[1] =
-                vs_battle_textBoxStatuses[2] = vs_battle_textBoxStatuses[3] = 0;
-            if (D_800F4C20)
-                func_80044DF4(0);
-            func_80045DC0();
-            func_800434A4(0, 2);
-            func_800C0150();
-            func_8007C46C(0, 255, 0);
-            func_8007C424();
-            vs_battle_setStateFlag(0xA8, 1);
-            D_800F4C2C = 2;
+    int ret;
+    u_char* script = *arg0;
+
+    if ((arg1 == 0) && (D_800F4C2C == 1)
+        && ((vs_main_buttonsPressed.all & PADstart) || (D_800F4C68 != 0))) {
+        D_800F4C68 = 0;
+        D_800F4C58[3] = 0;
+        D_800F4C58[2] = 0;
+        D_800F4C58[1] = 0;
+        D_800F4C58[0] = 0;
+        vs_battle_textBoxStatuses[3] = 0;
+        vs_battle_textBoxStatuses[2] = 0;
+        vs_battle_textBoxStatuses[1] = 0;
+        vs_battle_textBoxStatuses[0] = 0;
+
+        if (D_800F4C20 != 0) {
+            func_80044DF4(0);
         }
+
+        func_80045DC0();
+        func_800434A4(0, 2);
+        func_800C0150();
+        func_8007C46C(0, 0xFF, 0);
+        func_8007C424();
+        vs_battle_setStateFlag(0xA8, 1);
+        D_800F4C2C = 2;
     }
+
     while (1) {
-        if (D_800F4C2C != 2)
-            result = _opcodeFunctionTable[*script](script, actor);
-        else
-            result = ((eventOpcodeHandler*)D_800F4C28)[*script](script, actor);
-        switch (result) {
+        if (D_800F4C2C != 2) {
+            ret = _opcodeFunctionTable[*script](script, arg1);
+        } else {
+            ret = D_800F4C28[*script](script, arg1);
+        }
+
+        switch (ret) {
         case 0:
             script += func_800BFE34(script);
+            continue;
+
+        case 1:
             break;
+
         case 3:
-            *cursor = NULL;
-            goto done;
+            *arg0 = NULL;
+            return 0;
+
         case 2:
             return 1;
+
         case 4:
             script += func_800BFE34(script);
-            goto save;
-        case 1:
-            goto save;
+            break;
+
         default:
-            script = (u_char*)result;
+            script = (u_char*)ret;
+            continue;
         }
+
+        *arg0 = script;
+        return 0;
     }
-save:
-    *cursor = script;
-done:
-    return 0;
 }
 
 void func_800BFD9C(void)
@@ -459,8 +471,6 @@ int func_800C0758(int phase, int segments, int index)
     return index;
 }
 
-void func_80040F8C(SVECTOR*, MATRIX*);
-
 MATRIX* func_800C085C(u_char* scale, int angle)
 {
     short* scratch = (void*)0x1F800350;
@@ -472,7 +482,7 @@ MATRIX* func_800C085C(u_char* scale, int angle)
     scratch[0] = -(scale[3] << 4);
     scratch[1] = angle;
     scratch[2] = 0;
-    func_80040F8C((SVECTOR*)scratch, rotation);
+    RotMatrixYXZ_gte((SVECTOR*)scratch, rotation);
     for (axis = 0; axis < 3; ++axis) {
         u_char* value;
         component = 0;

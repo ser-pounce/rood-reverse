@@ -7,17 +7,18 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "573B8.h"
-#include "vs_string.h"
-#include "gpu.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/overlay.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../SLUS_010.40/32154.h"
-#include "../../MENU/MAINMENU.PRG/C48.h"
-#include "../../MENU/MAINMENU.PRG/58EC.h"
-#include "../../GIM/SCREFF2.PRG/0.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/overlay.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/GIM/SCREFF2.PRG/0.h"
 #include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
+#include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
+#include "vs_string.h"
+#include "gpu.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
@@ -170,6 +171,11 @@ typedef struct {
 } func_800D6310_t;
 
 typedef struct {
+    char unk0[0x10];
+    D_800F53B8_t3_2 unk10[16];
+} func_800D6048_t;
+
+typedef struct {
     u_int unk0_0 : 9;
     u_int unk0_9 : 9;
     u_int effectRenderer : 3;
@@ -227,7 +233,17 @@ typedef struct {
     int unk0;
     int unk4;
     u_char unk8;
-    char unk9[0xF];
+    u_char unk9;
+    u_char unkA;
+    u_char unkB;
+    u_char unkC;
+    u_char unkD;
+    short unkE;
+    int unk10;
+    u_char unk14;
+    u_char unk15;
+    u_char unk16;
+    u_char unk17;
 } func_800C5798_t;
 
 typedef struct {
@@ -242,11 +258,21 @@ typedef struct {
 } func_800C56C0_t2;
 
 typedef struct {
-    char unk0[0x40];
+    char unk0[0x34];
+    int unk34;
+    int unk38;
+    int unk3C;
     func_800C5798_t* unk40;
     char unk44[0x94C];
     func_800C56C0_t2 unk990[24];
 } func_800C56C0_t;
+
+typedef struct {
+    int unk0_0 : 12;
+    int unk0_12 : 12;
+    u_int unk0_24 : 2;
+    u_int unk0_26 : 4;
+} func_800CCE10_t;
 
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
@@ -366,6 +392,7 @@ extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(gim_t*, int, u_long*);
+extern func_800CCE10_t D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -456,14 +483,14 @@ void func_800C51B4(int mode)
     if (D_800EB9B8->unk0[0x31]) {
         if (mode != 3) {
             for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
-                group = entries[i].unk9[0];
+                group = entries[i].unk9;
                 if (!(group >> 4)) {
                     void* data;
                     if (mode == 1) {
-                        func_800C513C(group, (signed char)entries[i].unk9[1]);
+                        func_800C513C(group, (signed char)entries[i].unkA);
                         data = NULL;
                     } else {
-                        func_800C5164(group, 0, (signed char)entries[i].unk9[1]);
+                        func_800C5164(group, 0, (signed char)entries[i].unkA);
                         data = &D_800EB9B8->unk0[0x34];
                     }
                     func_800C518C(group, data);
@@ -481,8 +508,8 @@ void func_800C51B4(int mode)
                 }
             }
             if (mode & 2) {
-                D_800EB9B8->unk0[0x2F] = entries[i].unk9[0];
-                D_800EB9B8->unk0[0x30] = entries[i].unk9[1];
+                D_800EB9B8->unk0[0x2F] = entries[i].unk9;
+                D_800EB9B8->unk0[0x30] = entries[i].unkA;
                 group = D_800EB9B8->unk0[0x2F];
                 if (!(group >> 4)) {
                     func_800C5164(group, 0, (signed char)D_800EB9B8->unk0[0x30]);
@@ -502,7 +529,7 @@ void func_800C5360(int group)
     int i;
     if (D_800F4CB1 > D_800F4CB0) {
         for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
-            if (D_800EB9B8->unk40[i].unk9[0] == group) {
+            if (D_800EB9B8->unk40[i].unk9 == group) {
                 if (!first)
                     first = i + 1;
                 D_800F4C70[1][D_800F4CB0++] = i;
@@ -512,7 +539,7 @@ void func_800C5360(int group)
         D_800F4C90[D_800F4CB2++] = group;
     } else {
         for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
-            if (D_800EB9B8->unk40[i].unk9[0] == group) {
+            if (D_800EB9B8->unk40[i].unk9 == group) {
                 if (!first)
                     first = i + 1;
                 D_800F4C70[0][D_800F4CB1++] = i;
@@ -536,7 +563,7 @@ void func_800C553C(void)
         for (group = 0; group < 16; ++group) {
             count = 0;
             for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
-                if (D_800EB9B8->unk40[i].unk9[0] == group)
+                if (D_800EB9B8->unk40[i].unk9 == group)
                     ++count;
             }
             if (count == size)
@@ -544,7 +571,7 @@ void func_800C553C(void)
         }
     }
     for (i = 0; i < D_800EB9B8->unk0[0x2C]; ++i) {
-        group = D_800EB9B8->unk40[i].unk9[0];
+        group = D_800EB9B8->unk40[i].unk9;
         if (group >> 4)
             func_800C5360(group);
     }
@@ -593,16 +620,17 @@ func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
     return item;
 }
 
-char* func_800C58A4(uint arg0)
+char* _getStatusString(uint arg0)
 {
     int i;
     arg0 >>= 5;
-    for (i = 0; i < 0x18; i++) {
+    for (i = 0; i < 24; i++) {
         if ((arg0 >> i) & 1) {
-            return (char*)&vs_battle_statusStrings[vs_battle_statusStrings[0x39 + i]];
+            return (char*)&vs_battle_statusStrings
+                [vs_battle_statusStrings[VS_statusStrings_INDEX_strDown + i]];
         }
     }
-    return (char*)&vs_battle_statusStrings[0xF6];
+    return (char*)&vs_battle_statusStrings[VS_statusStrings_OFFSET_empty];
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
@@ -3036,37 +3064,25 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
 
 vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-typedef struct {
-    int x : 12;
-    int y : 12;
-    u_int alignment : 2;
-    u_int flags : 4;
-} func_800CCE10_t;
-
-extern func_800CCE10_t D_800EC284[][2];
-
-func_800CCE10_t func_800CCE10(int index, int direction, int width, int height)
+func_800CCE10_t func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
-    func_800CCE10_t result;
-    func_800CCE10_t* entry = D_800EC284[index];
-    int x, y, alignment;
+    func_800CCE10_t ret;
+    func_800CCE10_t* p =
+        &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    int offsetX = p->unk0_0;
+    int offsetY = p->unk0_12;
+    int unk24 = p->unk0_24;
 
-    direction >>= 2;
-    if ((direction & 3) == 1 || (direction & 3) == 2) {
-        ++entry;
+    if ((arg1 >> 2) & 1) {
+        offsetX = -offsetX;
+        unk24 ^= 2;
     }
-    x = entry->x;
-    y = entry->y;
-    alignment = entry->alignment;
-    if (direction & 1) {
-        x = -x;
-        alignment ^= 2;
-    }
-    result.x = x - ((width * 12 + 10) >> 1);
-    result.y = y - ((height * 13 + 4) >> 1);
-    result.alignment = alignment;
-    result.flags = entry->flags;
-    return result;
+
+    ret.unk0_0 = offsetX - ((arg2 * 12 + 10) >> 1);
+    ret.unk0_12 = offsetY - ((arg3 * 13 + 4) >> 1);
+    ret.unk0_24 = unk24;
+    ret.unk0_26 = p->unk0_26;
+    return ret;
 }
 
 void vs_battle_initTextBox(
@@ -4477,7 +4493,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
         vs_battle_lerpVector(arg0->unk20, D_800F5330[arg0->unk4], &arg2->unk10);
         TransMatrix(&arg2->unk48, &arg2->unk10);
         vs_battle_lerpVector(arg0->unk2C, D_800F5330[arg0->unk7], &arg2->unk20);
-        func_8004140C(&arg2->unk48, &arg2->unk20);
+        ScaleMatrix(&arg2->unk48, &arg2->unk20);
         return;
     }
     func_800CFE7C((func_800CFE98_t*)&arg2->unk48);
@@ -5857,40 +5873,30 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-typedef struct {
-    short frame, duration;
-    u_char x, y, z, mode;
-} timedActorEvent;
-
-typedef struct {
-    char prefix[16];
-    u_short type;
-    u_short pad12;
-    u_char actor;
-} timedActorTargetView;
-
-int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int allTargets)
+int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
 {
-    timedActorEvent* event = &((timedActorEvent*)arg1->unk0)[arg1->unk6];
-    if (event->frame == arg0->unkD1C.unk30->unk2) {
-        if (allTargets) {
-            int i;
-            for (i = 0; i < D_800F5230.unk2; ++i) {
-                timedActorTargetView* target = (void*)((char*)&D_800F5230 + i * 12);
-                if (target->type == 4 && (func_800A0BE0(target->actor) & 2)) {
-                    func_8007B29C(event->mode, event->duration, target->actor,
-                        event->x - 128, event->y - 128, event->z - 128);
-                }
-            }
-        } else if (arg0->unkD1C.unk24.unk0 == 4
-                   && (func_800A0BE0((u_char)arg0->unkD1C.unk24.unk4.unk0) & 2)) {
-            func_8007B29C(event->mode, event->duration,
-                (u_char)arg0->unkD1C.unk24.unk4.unk0, event->x - 128, event->y - 128,
-                event->z - 128);
-        }
-        return func_800D5780(arg1);
+    int i;
+    func_800D6310_t* entry = (func_800D6310_t*)arg1->unk0 + arg1->unk6;
+
+    if (entry->unk0 != arg0->unkD1C.unk30->unk2) {
+        return 1;
     }
-    return 1;
+
+    if (arg2 != 0) {
+        func_800D6048_t* effect = (func_800D6048_t*)&D_800F5230;
+        for (i = 0; i < D_800F5230.unk2; ++i) {
+            if ((effect->unk10[i].unk0 == 4)
+                && (func_800A0BE0(effect->unk10[i].unk4.unk0 & 0xFF) & 2)) {
+                func_8007B29C(entry->unk7, entry->unk2, effect->unk10[i].unk4.unk0 & 0xFF,
+                    entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+            }
+        }
+    } else if ((arg0->unkD1C.unk24.unk0 == 4)
+               && (func_800A0BE0(arg0->unkD1C.unk24.unk4.unk0 & 0xFF) & 2)) {
+        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.unk4.unk0 & 0xFF,
+            entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+    }
+    return func_800D5780(arg1);
 }
 
 int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)

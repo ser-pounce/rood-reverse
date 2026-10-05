@@ -6,6 +6,7 @@
 #include "44F14.h"
 #include "6E644.h"
 #include "../SLUS_010.40/main.h"
+#include "../SLUS_010.40/31724.h"
 #include "../SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
@@ -38,6 +39,11 @@ typedef struct {
     int unk8;
     int unkC;
 } D_800E8FB4_t;
+
+typedef struct {
+    u_char unk0[0x84];
+    SVECTOR unk84;
+} D_1F80035C_t;
 
 void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
@@ -91,6 +97,7 @@ extern void* D_800E8FB4[];
 extern char D_800E8FC0;
 extern int D_800E8FC4;
 extern u_char _weaponMaterialPaletteMap[];
+extern u_char D_800E9030[];
 extern u_char D_800E9090[];
 extern u_char D_800E909C[];
 extern u_char D_800E919C[];
@@ -3078,29 +3085,23 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
     return 0;
 }
 
-typedef struct {
-    char prefix[0x84];
-    SVECTOR rotation;
-} objectRotationScratch;
-extern u_char D_800E9030[];
-void func_80040F8C(SVECTOR*, MATRIX*);
-int func_800A0104(int objectId, int orientation)
+int func_800A0104(int index, int material)
 {
-    objectRotationScratch* scratch;
-    D_800F45E0_t* object = D_800F45E0[objectId];
-    if (object == NULL || (*(u_char*)((char*)object + 0x16C) & 7) >= 2U) {
+    D_800F45E0_t* obj = D_800F45E0[index];
+
+    if ((obj == NULL) || (obj->unk6C[8].actorId >= 2)) {
         return -1;
     }
-    scratch = (void*)0x1F80035C;
-    *(u_char*)((char*)object + 0x16E) = orientation;
-    orientation *= 4;
-    scratch->rotation.vx = D_800E9030[orientation] << 10;
-    scratch->rotation.vy = D_800E9030[orientation + 1] << 10;
-    scratch->rotation.vz = D_800E9030[orientation + 2] << 10;
-    func_80040F8C(&scratch->rotation, (MATRIX*)((char*)object + 0xEC));
-    object->unk18 = 0;
-    *(int*)&object->unk24 = 0;
-    object->unk28 = 0;
+
+    obj->unk6C[8].unk2 = material;
+    material *= 4;
+    ((D_1F80035C_t*)0x1F80035C)->unk84.vx = D_800E9030[material] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->unk84.vy = D_800E9030[material + 1] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->unk84.vz = D_800E9030[material + 2] * (ONE / 4);
+    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->unk84, (MATRIX*)&obj->unk6C[4]);
+    obj->unk18 = 0;
+    *(int*)&obj->unk24 = 0;
+    obj->unk28 = 0;
     return 0;
 }
 

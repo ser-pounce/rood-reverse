@@ -281,7 +281,6 @@ void func_800AEAE8(D_800F4538_t* actor)
 extern MATRIX D_8005E218;
 extern MATRIX D_800F4910;
 extern MATRIX D_800F49B8;
-void func_8004140C(MATRIX*, VECTOR*);
 void func_80041C68(MATRIX*, MATRIX*);
 typedef struct {
     char prefix[0x64];
@@ -312,14 +311,14 @@ void func_800AECA0(MATRIX* source)
     scratch->scale.vx = 3640;
     scratch->scale.vy = 4096;
     scratch->scale.vz = 4096;
-    func_8004140C(&scratch->matrix, &scratch->scale);
+    ScaleMatrix(&scratch->matrix, &scratch->scale);
     func_80041C68(&scratch->matrix, &rotation);
     scratch->matrix = rotation;
     i = 0x1000000 / camera->zoom;
     scratch->scale.vx = i;
     scratch->scale.vy = i;
     scratch->scale.vz = i;
-    func_8004140C(&scratch->matrix, &scratch->scale);
+    ScaleMatrix(&scratch->matrix, &scratch->scale);
     /* Preserve the original copy from the parameter home area. */
     D_800F4910 = *(MATRIX*)&source;
     D_800F49B8 = scratch->matrix;
@@ -947,15 +946,13 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B002C);
 
-void func_80040F8C(SVECTOR*, MATRIX*);
-
 void func_800B07DC(D_800F4538_t* actor)
 {
     actorTransformScratch* scratch = (void*)0x1F80035C;
     scratch->rotation.vx = actor->unk0.unk24;
     scratch->rotation.vy = actor->unk0.facing;
     scratch->rotation.vz = actor->unk0.unk28;
-    func_80040F8C(&scratch->rotation, &scratch->matrix);
+    RotMatrixYXZ_gte(&scratch->rotation, &scratch->matrix);
     scratch->matrix.t[0] = 0;
     scratch->matrix.t[1] = 0;
     scratch->matrix.t[2] = 0;

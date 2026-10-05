@@ -2,6 +2,7 @@
 #include "30DB0.h"
 #include "3A1A0.h"
 #include "../../SLUS_010.40/main.h"
+#include <abs.h>
 
 typedef struct {
     int unk0;
@@ -1392,9 +1393,9 @@ extern short D_800F4B0A;
 typedef struct {
     int words[2];
 } probePosition;
-int func_800A76BC(D_800F4538_t*, int, int*, int);
+int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 
-int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, int arg2)
+int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, SVECTOR* motion)
 {
     probePosition saved;
     int height;
@@ -1410,7 +1411,7 @@ int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, int arg2)
     actor->unk0.position.vy += offset->vy;
     actor->unk0.position.vz += offset->vz;
     actor->unk0.unkA_3 = 2;
-    if (func_800A76BC(actor, arg2, &height, 0) != 3
+    if (func_800A76BC(actor, motion, &height, 0) != 3
         && !(*(int*)((char*)actor + 0x5AC) & 0x2000) && height < 5) {
         height = rsin(0x200);
         height = height * actor->unk63C / 4096;
@@ -1860,7 +1861,569 @@ void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
+int func_800A8B34(SVECTOR* arg0, int arg1);
+int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion);
+
+int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOnly)
+{
+    int xResults[5];
+    int zResults[5];
+    int probeDirections[2];
+    SVECTOR probe;
+    SVECTOR opposite;
+    SVECTOR xProbe;
+    SVECTOR zProbe;
+    u_int* probeTiles[2];
+    int sideOffset;
+    int cornerStep;
+    int diagonal;
+    int radius;
+    D_1F8003BC_t* scratch;
+    int direction;
+    int offset;
+    int diagonalOffset;
+    int crossOffset;
+    int crossDiagonalOffset;
+    int cross;
+    int crossDiagonal;
+    int expected;
+    int facing;
+    int x;
+    int z;
+
+    scratch = (D_1F8003BC_t*)0x1F8003BC;
+    scratch->unk18 = (D_800F45E0_t*)actor;
+    actor->unk5AC_14 = actor->unk5AC_13;
+    actor->unk5AC_13 = 0;
+    radius = actor->unk63C;
+    diagonal = rsin(0x200) * radius / 4096;
+    scratch->unk0 = -0xC0;
+    if (*(u_int*)((char*)actor + 8) & 0x800000) {
+        scratch->unk40 = -0x40;
+    } else if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+        scratch->unk0 = -0x140;
+        scratch->unk40 = -0x40;
+    } else {
+        scratch->unk40 = -0x100;
+    }
+
+    if (probeOnly) {
+        scratch->unk40 = -0x100;
+        actor->unk5AC_10 = 0;
+        actor->unk5AC_12 = 0;
+        if (!(*(u_int*)((char*)actor + 0xC) & 0xF)) {
+            probeTiles[0] = func_800A8D64(&actor->unk0.position, actor->unk0.unk5D);
+            if (probeTiles[0] == NULL) {
+                actor->unk5AC_10 = 1;
+            }
+        }
+        probe.vx = actor->unk0.position.vx + motion->vx;
+        probe.vz = actor->unk0.position.vz + motion->vz;
+        scratch->unk1C[0] = actor->unk0.position.vy;
+        scratch->unk0 = 0;
+        xResults[0] = func_800A8B34(&probe, 0);
+        D_800F4B08 = probe;
+        if (xResults[0] == 0xFF) {
+            *result = 0;
+            return 3;
+        }
+        D_800F49F0 = probeTiles[0];
+        *result = xResults[0];
+        if (*result >= 2) {
+            *result = 1;
+        }
+        return 0;
+    }
+
+    if (func_800A8FD4(actor, motion) == 0) {
+        return 3;
+    }
+    func_800A70DC(actor, diagonal);
+    func_800A7524(actor, motion);
+    actor->unk5AC_10 = 0;
+    if (!(*(u_int*)((char*)actor + 0xC) & 0xF)) {
+        probeTiles[0] = func_800A8D64(&actor->unk0.position, actor->unk0.unk5D);
+        if (probeTiles[0] == NULL) {
+            actor->unk5AC_10 = 1;
+        } else {
+            actor->unk5AC_10 = 0;
+        }
+    }
+
+    if (motion->vx == 0) {
+        xResults[0] = 0xFF;
+        goto probeZ;
+    }
+    if (motion->vz == 0) {
+        zResults[0] = 0xFF;
+        goto probeX;
+    }
+
+    direction = 6;
+    if (motion->vx < 0) {
+        offset = -radius;
+        direction = 2;
+        diagonalOffset = -diagonal;
+    } else {
+        offset = radius;
+        diagonalOffset = diagonal;
+    }
+    if (motion->vz < 0) {
+        crossOffset = -radius;
+        crossDiagonalOffset = -diagonal;
+        if (direction == 2) {
+            direction = 1;
+        } else {
+            direction = 7;
+        }
+    } else {
+        crossOffset = radius;
+        crossDiagonalOffset = diagonal;
+        if (direction == 2) {
+            direction = 3;
+        } else {
+            direction = 5;
+        }
+    }
+    probe.vx = actor->unk0.position.vx + motion->vx + diagonalOffset;
+    probe.vz = actor->unk0.position.vz + motion->vz + crossDiagonalOffset;
+    xResults[0] = func_800A8B34(&probe, direction);
+    D_800F4B08 = probe;
+    probeTiles[0] = D_800F49F0;
+    probe.vx -= diagonalOffset * 2;
+    direction -= 2;
+    xResults[1] = func_800A8B34(&probe, direction);
+    probe.vx += diagonalOffset * 2;
+    probe.vz -= crossDiagonalOffset * 2;
+    direction += 4;
+    xResults[2] = func_800A8B34(&probe, direction);
+    probe.vx -= diagonalOffset;
+    probe.vz += crossDiagonalOffset + crossOffset;
+    direction -= 3;
+    xResults[3] = func_800A8B34(&probe, direction);
+    probe.vx += offset;
+    probe.vz -= crossOffset;
+    direction += 2;
+    xResults[4] = func_800A8B34(&probe, direction);
+    // offset/diagonalOffset are reused for the height delta and the climb limit
+    offset = D_800F4B08.vy - actor->unk0.position.vy;
+    diagonalOffset = offset / 64;
+    if (offset & 0x3F) {
+        diagonalOffset--;
+    }
+    diagonalOffset = -diagonalOffset;
+    if (diagonalOffset <= 0) {
+        diagonalOffset = 1;
+    }
+    if (xResults[0] != 0xFF && xResults[1] <= diagonalOffset
+        && xResults[2] <= diagonalOffset && xResults[3] <= diagonalOffset
+        && xResults[4] <= diagonalOffset && (xResults[0] < 4 || (direction & 1))) {
+        D_800F49F0 = probeTiles[0];
+        D_800F49F9 = (direction - 1) & 7;
+        *result = xResults[0];
+        return 0;
+    }
+
+    if (motion->vx != 0) {
+    probeX:
+        direction = 6;
+        if (motion->vx < 0) {
+            offset = -radius;
+            direction = 2;
+            diagonalOffset = -diagonal;
+        } else {
+            offset = radius;
+            diagonalOffset = diagonal;
+        }
+        probe.vx = actor->unk0.position.vx + motion->vx + offset;
+        probe.vz = actor->unk0.position.vz;
+        xResults[0] = func_800A8B34(&probe, direction);
+        *(probePosition*)&xProbe = *(probePosition*)&probe;
+        probeDirections[0] = direction;
+        direction -= 2;
+        probeTiles[0] = D_800F49F0;
+        probe.vx -= offset;
+        probe.vz += offset;
+        xResults[1] = func_800A8B34(&probe, direction);
+        direction += 4;
+        probe.vz -= offset * 2;
+        xResults[2] = func_800A8B34(&probe, direction);
+        direction -= 3;
+        probe.vx += diagonalOffset;
+        probe.vz += offset + diagonalOffset;
+        xResults[3] = func_800A8B34(&probe, direction);
+        probe.vz -= diagonalOffset * 2;
+        xResults[4] = func_800A8B34(&probe, direction + 2);
+    } else {
+        xResults[0] = 0xFF;
+    }
+
+    if (motion->vz != 0) {
+    probeZ:
+        direction = 4;
+        if (motion->vz < 0) {
+            offset = -radius;
+            direction = 0;
+            diagonalOffset = -diagonal;
+        } else {
+            offset = radius;
+            diagonalOffset = diagonal;
+        }
+        probe.vx = actor->unk0.position.vx;
+        probe.vz = actor->unk0.position.vz + motion->vz + offset;
+        zResults[0] = func_800A8B34(&probe, direction);
+        *(probePosition*)&zProbe = *(probePosition*)&probe;
+        probeDirections[1] = direction;
+        direction -= 2;
+        probeTiles[1] = D_800F49F0;
+        probe.vx -= offset;
+        probe.vz -= offset;
+        zResults[1] = func_800A8B34(&probe, direction);
+        direction += 4;
+        probe.vx += offset * 2;
+        zResults[2] = func_800A8B34(&probe, direction);
+        direction -= 3;
+        probe.vx -= offset + diagonalOffset;
+        probe.vz += diagonalOffset;
+        zResults[3] = func_800A8B34(&probe, direction);
+        probe.vx += diagonalOffset * 2;
+        zResults[4] = func_800A8B34(&probe, direction + 2);
+    } else {
+        zResults[0] = 0xFF;
+    }
+
+    x = motion->vx;
+    z = motion->vz;
+
+    if (ABS(x) == ABS(z) || ABS(x) >= ABS(z)) {
+        offset = xProbe.vy - actor->unk0.position.vy;
+        diagonalOffset = offset / 64;
+        if (offset & 0x3F) {
+            diagonalOffset--;
+        }
+        diagonalOffset = -diagonalOffset;
+        if (diagonalOffset <= 0) {
+            diagonalOffset = 1;
+        }
+        if (xResults[0] != 0xFF && xResults[1] <= diagonalOffset
+            && xResults[2] <= diagonalOffset && xResults[3] <= diagonalOffset
+            && xResults[4] <= diagonalOffset) {
+            if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+                if (x < 0) {
+                    facing = actor->unk17FE;
+                    expected = 6;
+                } else {
+                    facing = actor->unk17FE;
+                    expected = 2;
+                }
+                if (facing == expected) {
+                    goto slideX;
+                }
+            }
+            goto acceptX;
+        }
+        if (zResults[0] != 0xFF && zResults[1] < 2 && zResults[2] < 2 && zResults[3] < 2
+            && zResults[4] < 2) {
+            if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+                if (motion->vz < 0) {
+                    if (actor->unk17FE == 4) {
+                        goto slideX;
+                    }
+                } else if (actor->unk17FE == 0) {
+                    goto slideX;
+                }
+            }
+            motion->vx = 0;
+            *result = zResults[0];
+            D_800F4B08 = zProbe;
+            D_800F49F0 = probeTiles[1];
+            D_800F49F9 = probeDirections[1];
+            return 2;
+        }
+    slideX:
+        if (*(u_int*)((char*)actor + 8) & 0x70000) {
+            return 3;
+        }
+        direction = 6;
+        if (motion->vx < 0) {
+            offset = -radius;
+            direction = 2;
+            diagonalOffset = -diagonal;
+        } else {
+            offset = radius;
+            diagonalOffset = diagonal;
+        }
+        direction -= 1;
+        probe.vx = actor->unk0.position.vx + motion->vx + offset;
+        probe.vz = actor->unk0.position.vz + offset;
+        zResults[0] = func_800A8B34(&probe, direction);
+        direction += 2;
+        opposite.vx = probe.vx;
+        opposite.vz = actor->unk0.position.vz - offset;
+        zResults[1] = func_800A8B34(&opposite, direction);
+        if (zResults[0] == 0xFF && zResults[1] == 0xFF) {
+            return 3;
+        }
+        // crossOffset/crossDiagonalOffset are reused for the half step and the turn
+        crossOffset = motion->vx / 2;
+        if (zResults[0] < 2) {
+            if (zResults[1] < 2) {
+                direction -= 2;
+                probe.vx = actor->unk0.position.vx + motion->vx;
+                probe.vz = actor->unk0.position.vz + offset;
+                zResults[2] = func_800A8B34(&probe, direction);
+                direction += 2;
+                opposite.vx = probe.vx;
+                opposite.vz = actor->unk0.position.vz - offset;
+                zResults[3] = func_800A8B34(&opposite, direction);
+                if (zResults[2] == 0xFF && zResults[3] == 0xFF) {
+                    return 3;
+                }
+                if (zResults[2] > 0) {
+                    goto slideXBack;
+                }
+                if (zResults[3] <= 0 && (zResults[0] != 0 || zResults[1] != 1)) {
+                    if (zResults[0] == 1 && zResults[1] == 1) {
+                        goto slideXBack;
+                    }
+                    if (probe.vy <= opposite.vy) {
+                        goto slideXBack;
+                    }
+                }
+            }
+            sideOffset = offset;
+            crossDiagonal = -diagonalOffset;
+            cross = crossOffset;
+            crossDiagonalOffset = 1;
+            cornerStep = -3;
+        slideXProbe:
+            direction -= crossDiagonalOffset;
+            probe.vx = actor->unk0.position.vx + crossOffset + offset;
+            probe.vz = actor->unk0.position.vz + cross;
+            zResults[1] = func_800A8B34(&probe, direction);
+            if (zResults[1] < scratch->unk40) {
+                zResults[1] = 0xFF;
+            }
+            direction += crossDiagonalOffset;
+            probe.vx = actor->unk0.position.vx + crossOffset + diagonalOffset;
+            probe.vz = actor->unk0.position.vz + cross + crossDiagonal;
+            zResults[2] = func_800A8B34(&probe, direction);
+            if (zResults[2] < scratch->unk40) {
+                zResults[2] = 0xFF;
+            }
+            direction += cornerStep;
+            probe.vx = actor->unk0.position.vx;
+            probe.vz = actor->unk0.position.vz + crossOffset + sideOffset;
+            zResults[3] = func_800A8B34(&probe, direction);
+            if (zResults[3] < scratch->unk40) {
+                zResults[3] = 0xFF;
+            }
+            D_800F4B08 = probe;
+            if (zResults[1] < 2 && zResults[2] < 2) {
+                if (zResults[3] >= 2) {
+                    return 3;
+                }
+                probe.vx = actor->unk0.position.vx + crossOffset;
+                probe.vz = actor->unk0.position.vz + cross + sideOffset;
+                zResults[0] = func_800A8B34(&probe, direction);
+                if (zResults[0] >= 2) {
+                    return 3;
+                }
+                direction += crossDiagonalOffset;
+                offset = 0;
+            slideXMove:
+                motion->vx = crossOffset;
+                motion->vz = cross;
+                goto moved;
+            }
+            if (zResults[3] >= 2) {
+                return 3;
+            }
+            crossOffset = 0;
+            offset = 2;
+            goto slideXMove;
+        }
+        if (zResults[1] >= 2) {
+            return 3;
+        }
+    slideXBack:
+        direction -= 2;
+        sideOffset = -offset;
+        crossDiagonal = diagonalOffset;
+        cross = -crossOffset;
+        crossDiagonalOffset = -1;
+        cornerStep = 3;
+        goto slideXProbe;
+    }
+
+    offset = zProbe.vy - actor->unk0.position.vy;
+    diagonalOffset = offset / 64;
+    if (offset & 0x3F) {
+        diagonalOffset--;
+    }
+    diagonalOffset = -diagonalOffset;
+    if (diagonalOffset <= 0) {
+        diagonalOffset = 1;
+    }
+    if (zResults[0] != 0xFF && zResults[1] <= diagonalOffset
+        && zResults[2] <= diagonalOffset && zResults[3] <= diagonalOffset
+        && zResults[4] <= diagonalOffset) {
+        if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+            if (z < 0) {
+                if (actor->unk17FE == 4) {
+                    goto slideZ;
+                }
+            } else if (actor->unk17FE == 0) {
+                goto slideZ;
+            }
+        }
+        motion->vx = 0;
+        *result = zResults[0];
+        D_800F4B08 = zProbe;
+        D_800F49F0 = probeTiles[1];
+        D_800F49F9 = probeDirections[1];
+        return 2;
+    }
+    if (xResults[0] != 0xFF && xResults[1] < 2 && xResults[2] < 2 && xResults[3] < 2
+        && xResults[4] < 2) {
+        if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+            if (motion->vx < 0) {
+                facing = actor->unk17FE;
+                expected = 6;
+            } else {
+                facing = actor->unk17FE;
+                expected = 2;
+            }
+            if (facing == expected) {
+                goto slideZ;
+            }
+        }
+    acceptX:
+        motion->vz = 0;
+        *result = xResults[0];
+        D_800F4B08 = xProbe;
+        D_800F49F0 = probeTiles[0];
+        D_800F49F9 = probeDirections[0];
+        return 1;
+    }
+slideZ:
+    if (*(u_int*)((char*)actor + 8) & 0x70000) {
+        return 3;
+    }
+    direction = 4;
+    if (motion->vz < 0) {
+        offset = -radius;
+        direction = 0;
+        diagonalOffset = -diagonal;
+    } else {
+        offset = radius;
+        diagonalOffset = diagonal;
+    }
+    direction -= 1;
+    probe.vz = actor->unk0.position.vz + motion->vz + offset;
+    probe.vx = actor->unk0.position.vx - offset;
+    zResults[0] = func_800A8B34(&probe, direction);
+    direction += 2;
+    opposite.vz = probe.vz;
+    opposite.vx = actor->unk0.position.vx + offset;
+    zResults[1] = func_800A8B34(&opposite, direction);
+    if (zResults[0] == 0xFF && zResults[1] == 0xFF) {
+        return 3;
+    }
+    crossOffset = motion->vz / 2;
+    if (zResults[0] < 2) {
+        if (zResults[1] < 2) {
+            direction -= 2;
+            probe.vz = actor->unk0.position.vz + motion->vz;
+            probe.vx = actor->unk0.position.vx - offset;
+            zResults[2] = func_800A8B34(&probe, direction);
+            direction += 2;
+            opposite.vz = probe.vz;
+            opposite.vx = actor->unk0.position.vx + offset;
+            zResults[3] = func_800A8B34(&opposite, direction);
+            if (zResults[2] == 0xFF && zResults[3] == 0xFF) {
+                return 3;
+            }
+            if (zResults[2] > 0) {
+                goto slideZBack;
+            }
+            if (zResults[3] <= 0 && (zResults[0] != 0 || zResults[1] != 1)) {
+                if (zResults[0] == 1 && zResults[1] == 1) {
+                    goto slideZBack;
+                }
+                if (probe.vy <= opposite.vy) {
+                    goto slideZBack;
+                }
+            }
+        }
+        sideOffset = -offset;
+        crossDiagonal = diagonalOffset;
+        cross = -crossOffset;
+        crossDiagonalOffset = 1;
+        cornerStep = -3;
+    slideZProbe:
+        direction -= crossDiagonalOffset;
+        probe.vz = actor->unk0.position.vz + crossOffset + offset;
+        probe.vx = actor->unk0.position.vx + cross;
+        zResults[1] = func_800A8B34(&probe, direction);
+        if (zResults[1] < scratch->unk40) {
+            zResults[1] = 0xFF;
+        }
+        direction += crossDiagonalOffset;
+        probe.vz = actor->unk0.position.vz + crossOffset + diagonalOffset;
+        probe.vx = actor->unk0.position.vx + cross + crossDiagonal;
+        zResults[2] = func_800A8B34(&probe, direction);
+        if (zResults[2] < scratch->unk40) {
+            zResults[2] = 0xFF;
+        }
+        direction += cornerStep;
+        probe.vz = actor->unk0.position.vz;
+        probe.vx = actor->unk0.position.vx + cross + sideOffset;
+        zResults[3] = func_800A8B34(&probe, direction);
+        if (zResults[3] < scratch->unk40) {
+            zResults[3] = 0xFF;
+        }
+        D_800F4B08 = probe;
+        if (zResults[1] < 2 && zResults[2] < 2) {
+            if (zResults[3] >= 2) {
+                return 3;
+            }
+            probe.vx = actor->unk0.position.vx + cross + sideOffset;
+            probe.vz = actor->unk0.position.vz + crossOffset;
+            zResults[0] = func_800A8B34(&probe, direction);
+            if (zResults[0] >= 2) {
+                return 3;
+            }
+            direction += crossDiagonalOffset;
+            offset = 0;
+        slideZMove:
+            motion->vz = crossOffset;
+            motion->vx = cross;
+        moved:
+            *result = zResults[3];
+            actor->unk17FE = direction & 7;
+            actor->unk5AC_13 = 1;
+            return offset;
+        }
+        if (zResults[3] >= 2) {
+            return 3;
+        }
+        crossOffset = 0;
+        offset = 1;
+        goto slideZMove;
+    }
+    if (zResults[1] < 2) {
+    slideZBack:
+        direction -= 2;
+        crossDiagonal = -diagonalOffset;
+        cross = crossOffset;
+        crossDiagonalOffset = -1;
+        sideOffset = offset;
+        cornerStep = 3;
+        goto slideZProbe;
+    }
+    return 3;
+}
 
 int func_800A8B34(SVECTOR* arg0, int arg1)
 {

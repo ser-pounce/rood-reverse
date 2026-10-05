@@ -1,5 +1,8 @@
 #include "common.h"
 
+extern int CD_sync(int, u_char*);
+extern int CD_ready(int, u_char*);
+
 extern u_char D_800326A8;
 extern u_char D_800326A9;
 extern u_char D_800326AE;
@@ -40,9 +43,9 @@ int DS_lastread(void) { return D_800326AF; }
 
 int DS_status(void) { return D_80032694; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_sync);
+int DS_sync(u_char* result) { return CD_sync(1, result); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_ready);
+int DS_ready(u_char* result) { return CD_ready(1, result); }
 
 int DS_shell_open(void) { return D_800326B8; }
 
@@ -72,8 +75,30 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", DS_restart);
 
 int DS_system_active(void) { return D_8003267C; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", parcpy);
+void parcpy(u_char* dst, u_char* src)
+{
+    int i;
+    if (src) {
+        if (dst) {
+            for (i = 0; i < 4; i++)
+                *dst++ = *src++;
+        }
+    } else if (dst) {
+        *dst = 0;
+    }
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", rescpy);
+void rescpy(u_char* dst, u_char* src)
+{
+    int i;
+    if (src) {
+        if (dst) {
+            for (i = 0; i < 8; i++)
+                *dst++ = *src++;
+        }
+    } else if (dst) {
+        *dst = 0;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_1", tipDsSystem);

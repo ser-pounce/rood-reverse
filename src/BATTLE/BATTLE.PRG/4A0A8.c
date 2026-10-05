@@ -3066,7 +3066,196 @@ void func_800BC1CC(short arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC2E8);
+typedef struct {
+    u_char mode, ease1, ease2, ease3, time, duration, follow, following;
+    int value, delta;
+    short angle, angleDelta;
+    VECTOR start, position, velocity, aux, followDelta, followPosition, previousCamera,
+        computed, camera, target;
+} cameraSetupState;
+typedef struct {
+    int value, distance;
+    char reserved8[8];
+    VECTOR v1, v2, v3;
+    char reserved40[16];
+    SVECTOR rotation, rotation2;
+    char reserved60[16];
+    MATRIX matrix;
+} cameraSetupScratch;
+VECTOR* _setVectorImm(VECTOR*, u_char*);
+void _vecToRotMatrix(VECTOR*, MATRIX*);
+int func_800BD2B8(MATRIX*);
+void func_800A190C(int, int, SVECTOR*, int);
+int func_800BC2E8(u_char* script, short unused)
+{
+    cameraSetupState* c;
+    cameraSetupState* other;
+    if (!(script[0] & 16)) {
+        c = (cameraSetupState*)D_800F4BA4;
+        other = c + 1;
+    } else {
+        c = (cameraSetupState*)D_800F4BA4 + 1;
+        other = (cameraSetupState*)D_800F4BA4;
+    }
+    switch (script[0] & 15) {
+    case 0:
+        _setVectorImm(&c->position, script + 1);
+        return 0;
+    case 1:
+        c->mode = 15;
+        _copyVector(&c->camera, &c->position);
+        _copyVector(&other->target, &c->position);
+        return 0;
+    case 2:
+        c->mode = 2;
+        c->time = 0;
+        c->ease1 = script[1];
+        c->duration = script[2];
+        _copyVector(&c->start, &c->camera);
+        _vectorSubtract(&c->velocity, &c->position, &c->camera);
+        return 0;
+    case 3:
+        c->mode = 3;
+        c->time = 0;
+        c->ease1 = script[1];
+        c->duration = script[2];
+        _copyVector(&c->start, &c->camera);
+        _vectorSubtract(&c->velocity, &c->position, &c->camera);
+        c->value = _vectorMagnitude(
+            _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->camera));
+        return 0;
+    case 4: {
+        cameraSetupScratch* s;
+        c->mode = 4;
+        c->time = 0;
+        c->duration = script[3];
+        c->ease1 = script[1] >> 4;
+        c->ease2 = script[2] & 15;
+        c->ease3 = script[2] >> 4;
+        _copyVector(&c->start, &c->target);
+        s = (cameraSetupScratch*)0x1F800088;
+        s->v1.vx = c->camera.vx - c->target.vx;
+        s->v1.vy = 0;
+        s->v1.vz = c->camera.vz - c->target.vz;
+        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
+        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        s->v2.vx = c->position.vx - c->target.vx;
+        s->v2.vy = 0;
+        s->v2.vz = c->position.vz - c->target.vz;
+        c->delta = _vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
+        s->value = (_atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
+        if (s->value < -2048)
+            s->value += 4096;
+        if (s->value > 2048)
+            s->value -= 4096;
+        switch (script[1] & 15) {
+        case 15:
+            if (s->value == 0)
+                s->value = -4096;
+            else if (s->value > 0)
+                s->value -= 4096;
+            break;
+        case 1:
+            if (s->value == 0)
+                s->value = 4096;
+            else if (s->value < 0)
+                s->value += 4096;
+            break;
+        }
+        c->angleDelta = ((cameraSetupScratch*)0x1F800088)->value;
+        c->aux.vy = c->camera.vy - c->target.vy;
+        c->velocity.vy = c->position.vy - c->target.vy - c->aux.vy;
+        return 0;
+    }
+    case 5: {
+        cameraSetupScratch* s;
+        c->mode = 5;
+        c->time = 0;
+        c->duration = script[8];
+        c->ease1 = script[6] & 15;
+        c->ease2 = script[6] >> 4;
+        c->ease3 = script[7] & 15;
+        _copyVector(&c->position, &c->target);
+        s = (cameraSetupScratch*)0x1F800088;
+        s->v1.vx = c->camera.vx - c->target.vx;
+        s->v1.vy = 0;
+        s->v1.vz = c->camera.vz - c->target.vz;
+        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
+        c->delta = ((c->value * script[5]) >> 6) - c->value;
+        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz);
+        c->angleDelta = vs_battle_getShort(script + 1);
+        {
+            int height = vs_battle_getShort(script + 3) << 12;
+            c->start.vy = c->camera.vy;
+            c->velocity.vy = height - c->start.vy;
+        }
+        return 0;
+    }
+    case 7:
+        func_800A190C(func_800BFE50((u_short)vs_battle_getShort(script + 1)), script[3],
+            (SVECTOR*)0x1F8000D8, 2);
+        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
+        _setVectorImm((VECTOR*)0x1F8000A8, script + 4);
+        _vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
+        if (D_800F4BA4->unk1E8 != 0x2000)
+            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+        return 0;
+    case 8:
+        c->mode = 8;
+        c->value = func_800BFE50((u_short)vs_battle_getShort(script + 1));
+        c->delta = script[3];
+        c->time = 0;
+        c->duration = script[10];
+        _setVectorImm(&c->velocity, script + 4);
+        return 0;
+    case 9:
+        c->mode = 9;
+        c->time = 0;
+        c->duration = script[1];
+        _vectorSubtract(&c->velocity, &c->camera, &c->target);
+        return 0;
+    case 10: {
+        cameraSetupScratch* s;
+        int id = func_800BFE50((u_short)vs_battle_getShort(script + 1));
+        s = (cameraSetupScratch*)0x1F800088;
+        s->value = id;
+        func_800A1108(id, &D_800F4BA4->unk1CC[1]);
+        s->rotation2.vz = 0;
+        s->rotation2.vx = 0;
+        s->rotation2.vy = *(short*)((char*)D_800F4BA4 + 0x1DA);
+        RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
+        _setVectorImm((VECTOR*)0x1F800098, script + 4);
+        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        func_800A190C(s->value, script[3], (SVECTOR*)0x1F8000E0, 2);
+        _vectorAdd(&c->position,
+            _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
+            (VECTOR*)0x1F800098);
+        if (D_800F4BA4->unk1E8 != 0x2000)
+            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+        return 0;
+    }
+    case 11: {
+        cameraSetupScratch* s;
+        c->mode = 11;
+        c->time = 0;
+        c->ease1 = 0;
+        c->duration = script[2];
+        _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->camera);
+        _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+        s = (cameraSetupScratch*)0x1F800088;
+        s->matrix.t[0] = c->camera.vx >> 12;
+        s->matrix.t[1] = c->camera.vy >> 12;
+        s->matrix.t[2] = c->camera.vz >> 12;
+        c->camera.vy = func_800BD2B8((MATRIX*)0x1F8000F8);
+        _copyVector(&c->computed, &c->camera);
+        c->delta = _vectorMagnitude(
+            _vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
+        c->value = c->delta / script[2];
+        D_800F4BA4->unk27C = D_800F4BA4->unk280 = D_800F4BA4->unk284 = 0x80000000;
+        return 0;
+    }
+    }
+}
 
 void func_800BC9E0(void)
 {

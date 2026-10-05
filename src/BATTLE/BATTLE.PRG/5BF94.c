@@ -3089,7 +3089,93 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3E4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CDCBC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
+typedef struct {
+    union {
+        int value;
+        u_char bytes[4];
+    } config;
+    int index, age;
+    SVECTOR first[8], second[8], previousFirst, currentFirst, previousSecond,
+        currentSecond;
+    int projectionDepth, projectionFlags;
+} effectTrailState;
+void func_800CDCBC(effectTrailState*, int, int);
+int func_800CE174(func_800D4910_t* node, u_int mode, int config)
+{
+    effectTrailState* t = node->unk8;
+    int result = 1;
+    int segments, phase, span, weight;
+    switch (mode) {
+    case 1:
+        t = vs_main_allocHeapR(sizeof(effectTrailState));
+        node->unk8 = t;
+        t->index = 0;
+        t->age = 0;
+        t->config.value = config;
+        break;
+    case 2:
+        t->index = (t->index + 1) & 7;
+        func_800A1AF8(t->config.bytes[0], t->config.bytes[1], &t->first[t->index], 0);
+        func_800A1AF8(t->config.bytes[0], t->config.bytes[1], &t->second[t->index], 1);
+        if (++t->age >= 4) {
+            segments = 5;
+            if (t->age < 9)
+                segments = t->age - 3;
+            SetRotMatrix(&vs_scratch.viewMatrix);
+            SetTransMatrix(&vs_scratch.viewMatrix);
+            vs_battle_splineInterpolate(&t->first[t->index],
+                &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
+                &t->first[(t->index - 3) & 7], -4096, &t->previousFirst);
+            vs_battle_splineInterpolate(&t->second[t->index],
+                &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
+                &t->second[(t->index - 3) & 7], -4096, &t->previousSecond);
+            weight = (segments + 1) * 2;
+            for (span = -2048; span < 0; span += 2048) {
+                vs_battle_splineInterpolate(&t->first[t->index],
+                    &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
+                    &t->first[(t->index - 3) & 7], span, &t->currentFirst);
+                vs_battle_splineInterpolate(&t->second[t->index],
+                    &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
+                    &t->second[(t->index - 3) & 7], span, &t->currentSecond);
+                func_800CDCBC(t, weight / 2, (weight - 1) / 2);
+                --weight;
+                t->previousFirst = t->currentFirst;
+                t->previousSecond = t->currentSecond;
+            }
+            for (span = 0; span < segments; ++span) {
+                for (phase = 0; phase < 4096; phase += 2048) {
+                    vs_battle_splineInterpolate(&t->first[((t->index - span) & 7)],
+                        &t->first[((t->index - span) - 1) & 7],
+                        &t->first[((t->index - span) - 2) & 7],
+                        &t->first[((t->index - span) - 3) & 7], phase, &t->currentFirst);
+                    vs_battle_splineInterpolate(&t->second[((t->index - span) & 7)],
+                        &t->second[((t->index - span) - 1) & 7],
+                        &t->second[((t->index - span) - 2) & 7],
+                        &t->second[((t->index - span) - 3) & 7], phase,
+                        &t->currentSecond);
+                    func_800CDCBC(t, weight / 2, (weight - 1) / 2);
+                    --weight;
+                    t->previousFirst = t->currentFirst;
+                    t->previousSecond = t->currentSecond;
+                }
+            }
+        }
+        if (t->config.bytes[3] != 255)
+            --t->config.bytes[3];
+        if (t->config.bytes[3] == 0)
+            result = 0;
+        break;
+    case 3:
+        t->config.bytes[3] = 8;
+        break;
+    case 4:
+        vs_main_freeHeapR(t);
+        node->unk8 = 0;
+        result = 0;
+        break;
+    }
+    return result;
+}
 
 int func_800CE644(int arg0 __attribute__((unused))) { }
 

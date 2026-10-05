@@ -5569,7 +5569,52 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5E00);
+typedef struct {
+    u_short unk0;
+    u_char count, unk3;
+    char prefix[12];
+    D_800F53B8_t3_2 target[0];
+} soundEventTargets;
+int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
+{
+    int result = 1;
+    u_short* data = (u_short*)event->unk0;
+    u_short packed = data[event->unk6];
+    int play = 0;
+    int i;
+    if ((packed & 511) != actor->unkD1C.unk30->unk2)
+        return result;
+    switch (packed >> 14) {
+    case 1:
+        if (actor->unkD1C.unk0.unk0 == 4 && (u_char)actor->unkD1C.unk0.unk4.unk0 == 0)
+            play = 1;
+        break;
+    case 2:
+        if (actor->unkD1C.unk18.unk0 == 4 && (u_char)actor->unkD1C.unk18.unk4.unk0 == 0)
+            play = 1;
+        break;
+    case 0:
+        play = 1;
+        break;
+    case 3:
+        for (i = 0; i < ((soundEventTargets*)D_800F569C->unkD0)->count; ++i) {
+            if (((soundEventTargets*)D_800F569C->unkD0)->target[i].unk0 == 4
+                && (u_char)((soundEventTargets*)D_800F569C->unkD0)->target[i].unk4.unk0
+                       == 0) {
+                play = 1;
+                break;
+            }
+        }
+        break;
+    }
+    if (play) {
+        char* sound = (char*)D_800F569C->block11Data;
+        func_800433B4(
+            sound + ((short*)(sound + 4))[(data[event->unk6] >> 9) & 31], 255, 1);
+    }
+    result = func_800D5780(event);
+    return result;
+}
 
 int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {

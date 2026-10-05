@@ -247,7 +247,8 @@ void func_800DC888(struct actionStatSnapshot*);
 void func_800DEEFC(func_800E0850_t*, int);
 struct directionalCacheState;
 int func_800E0678(struct directionalCacheState*, int);
-int func_800E0918(func_800E0850_t*, int, int);
+struct movementCheckState;
+int func_800E0918(struct movementCheckState*, int, int);
 typedef struct movementRecoveryState movementRecoveryState;
 void func_800E2CCC(movementRecoveryState*);
 void func_800E3600(func_800E0850_t*, int, int);
@@ -2176,7 +2177,61 @@ int func_800E0850(func_800E0850_t* arg0, u_int arg1)
     return min;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0918);
+typedef struct {
+    char pad0[8];
+    unsigned int flags;
+} movementCheckObject;
+typedef struct movementCheckState {
+    char pad0[0x34];
+    int position;
+    char pad38[0x20];
+    movementCheckObject* object;
+    char pad5C[0x62];
+    short height;
+    char padC0[0x9E];
+    unsigned short flags;
+    char pad160[8];
+    int target;
+} movementCheckState;
+void func_800E4B2C();
+void func_800E4B70();
+unsigned int func_800E45F4(unsigned int, unsigned int);
+int func_800E42E0(unsigned int);
+void func_800E4B10(void*);
+int func_800E0918(movementCheckState* state, int action, int mode)
+{
+    void (*callback)(movementCheckState*, int);
+    unsigned int distance;
+    if (mode)
+        callback = (void (*)(movementCheckState*, int))func_800E4B2C;
+    else
+        callback = (void (*)(movementCheckState*, int))func_800E4B70;
+    if (state->flags & 6) {
+        distance = func_800E45F4(state->target, state->position);
+        if (mode && distance < 16) {
+            if (!(state->object->flags & 0x200000)) {
+                callback(state, action);
+                return 1;
+            }
+        } else if (D_800F58BC->unk14) {
+            if (func_800E42E0(state->position) + state->height < D_800F58BC->unk14) {
+                if (state->object->flags & 0x200000) {
+                    if (func_800D954C((void*)state, state->position) > 0) {
+                        func_800E678C((void*)state);
+                        func_800E4B10(state);
+                        return 1;
+                    }
+                } else {
+                    callback(state, action);
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0A68);
 
 void func_800E1238(func_800E0850_t* arg0, int arg1)
 {
@@ -2186,7 +2241,7 @@ void func_800E1238(func_800E0850_t* arg0, int arg1)
     int c;
     int s;
 
-    if (func_800E0918(arg0, arg1, 0) != 0) {
+    if (func_800E0918((void*)arg0, arg1, 0) != 0) {
         return;
     }
 

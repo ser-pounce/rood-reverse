@@ -16,6 +16,7 @@ extern int chkRC2wait(void);
 extern void EnterCriticalSection(void);
 extern void ExitCriticalSection(void);
 extern int ChangeClearRCnt(int, int);
+extern int D_80033604;
 extern int SysDeqIntRP(int, PadIntRP*);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", PadEnableCom);
@@ -38,7 +39,12 @@ int func_8002BDE8(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", func_8002BE50);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padChkVsync);
+int _padChkVsync(void)
+{
+    int ret = D_80033604;
+    D_80033604 = 0;
+    return ret;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padStartCom);
 
@@ -60,4 +66,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padSioRW2);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padClrIntSio0);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padWaitRXready);
+void _padWaitRXready(void)
+{
+    while (!(D_80033600[2] & 2)) { }
+}

@@ -124,7 +124,17 @@ void func_8002CEB0(PadPort* p)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADCMD", func_8002CF58);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADCMD", _padSetActAlign);
+int _padSetActAlign(PadPort* p, u_char* data)
+{
+    if (D_800335B8(p)) {
+        return 0;
+    }
+    p->cmdState = 1;
+    p->sendFunc = func_8002D3B8;
+    p->actAlign = data;
+    p->recvFunc = func_8002D3D4;
+    return 1;
+}
 
 void func_8002D3B8(PadPort* p)
 {

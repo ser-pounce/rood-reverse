@@ -2,6 +2,11 @@
 #include <libapi.h>
 
 extern int D_80033664;
+extern void _remove_ChgclrPAD(void);
+extern void _patch_pad(void);
+extern int PAD_init2(int, int, int, int);
+extern long InitPAD2(char*, long, char*, long);
+int func_8002EBD8(void);
 extern volatile int* D_8003366C;
 extern int D_8003FEA8;
 extern long StartPAD2(void);
@@ -9,13 +14,35 @@ extern void StopPAD2(void);
 extern int SysDeqIntRP(int, void*);
 int func_8002EC50(void);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", SetInitPadFlag);
+void SetInitPadFlag(int flag) { D_80033664 = flag; }
 
 int ReadInitPadFlag(void) { return D_80033664; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", PAD_init);
+int PAD_init(int a0, int a1, int a2, int a3)
+{
+    _remove_ChgclrPAD();
+    EnterCriticalSection();
+    _patch_pad();
+    ExitCriticalSection();
+    ChangeClearPAD(0);
+    func_8002EBD8();
+    PAD_init2(a0, a1, a2, a3);
+    D_80033664 = 1;
+    return 1;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", func_8002EAE0);
+long func_8002EAE0(char* a0, long a1, char* a2, long a3)
+{
+    _remove_ChgclrPAD();
+    EnterCriticalSection();
+    _patch_pad();
+    ExitCriticalSection();
+    ChangeClearPAD(0);
+    func_8002EBD8();
+    InitPAD2(a0, a1, a2, a3);
+    D_80033664 = 1;
+    return 1;
+}
 
 long StartPAD(void)
 {

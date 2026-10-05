@@ -1,7 +1,9 @@
 #include "common.h"
 
-extern int* D_80032124;
+extern volatile u_int* D_80032124;
 extern void (*D_80032128[8])();
+extern volatile int* D_80032148;
+extern int printf(const char*, ...);
 
 void func_80020100(void);
 void* func_80020280(int ch, void (*func)());
@@ -16,7 +18,30 @@ void* startIntrDMA(void)
     return func_80020280;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR_DMA", func_80020100);
+void func_80020100(void)
+{
+    int i;
+    u_int mask;
+
+    mask = (*D_80032124 >> 24) & 0x7F;
+    while (mask != 0) {
+        for (i = 0; mask != 0 && i < 7; i++, mask >>= 1) {
+            if (mask & 1) {
+                *D_80032124 &= 0xFFFFFF | (1 << (i + 24));
+                if (D_80032128[i] != NULL) {
+                    D_80032128[i]();
+                }
+            }
+        }
+        mask = (*D_80032124 >> 24) & 0x7F;
+    }
+    if ((*D_80032124 & 0xFF000000) == 0x80000000 || (*D_80032124 & 0x8000)) {
+        printf("DMA bus error: code=%08x\n", *D_80032124);
+        for (i = 0; i < 7; i++) {
+            printf("MADR[%d]=%08x\n", i, D_80032148[i * 4]);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR_DMA", func_80020280);
 

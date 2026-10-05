@@ -42,9 +42,25 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/SPU", _spu_Fr_);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/SPU", _spu_t);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/SPU", _spu_Fw);
+u_int _spu_Fw(u_char* addr, u_int size)
+{
+    if (D_8003087C == 0) {
+        _spu_t(2, D_80030878 << D_80030888);
+        _spu_t(1);
+        _spu_t(3, addr, size);
+    } else {
+        func_8001DCD4(addr, size);
+    }
+    return size;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/SPU", _spu_Fr);
+u_int _spu_Fr(u_char* addr, u_int size)
+{
+    _spu_t(2, D_80030878 << D_80030888);
+    _spu_t(0);
+    _spu_t(3, addr, size);
+    return size;
+}
 
 void _spu_FsetRXX(int reg, u_int addr, int flag)
 {
@@ -81,4 +97,12 @@ void func_8001E4DC(void) { *D_80030874 = (*D_80030874 & 0xF0FFFFFF) | 0x20000000
 
 void func_8001E504(void) { *D_80030874 = (*D_80030874 & 0xF0FFFFFF) | 0x22000000; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/SPU", _spu_Fw1ts);
+void _spu_Fw1ts(void)
+{
+    volatile int i;
+    volatile int wait = 13;
+
+    for (i = 0; i < 60; i += 1) {
+        wait *= 13;
+    }
+}

@@ -28,6 +28,7 @@ extern int DS_lastcom(void);
 extern int DS_status(void);
 extern int DS_shell_open(void);
 extern void DS_stop(void);
+extern int DsQueueLen(void);
 extern void DS_restart(void);
 extern int _DsPacket2(u_char, DslLOC*, u_char, DslCB, int, int);
 
@@ -110,7 +111,15 @@ void DsFlush(void)
     DS_restart();
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsSystemStatus);
+int DsSystemStatus(void)
+{
+    int status = DS_system_status(0);
+
+    if (status == 1 && DsQueueLen() > 0) {
+        status = 2;
+    }
+    return status;
+}
 
 int DsQueueLen(void) { return D_80039DB8; }
 

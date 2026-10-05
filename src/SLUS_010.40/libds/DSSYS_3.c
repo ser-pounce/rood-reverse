@@ -5,6 +5,8 @@ extern int CD_vol(DslATV*);
 extern int CD_getsector(void*, int);
 extern int CD_getsector2(void*, int);
 extern int CD_datasync(int);
+extern int D_80032204;
+extern DslLOC* DS_lastpos(void);
 
 int DsMix(DslATV* vol)
 {
@@ -36,6 +38,18 @@ int DsPosToInt(DslLOC* p)
     return (btoi(p->minute) * 60 + btoi(p->second)) * 75 + btoi(p->sector) - 150;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsSetDebug);
+int DsSetDebug(int level)
+{
+    int old = D_80032204;
+    D_80032204 = level;
+    return old;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsLastPos);
+DslLOC* DsLastPos(DslLOC* p)
+{
+    if (p != NULL) {
+        *p = *DS_lastpos();
+        return p;
+    }
+    return DS_lastpos();
+}

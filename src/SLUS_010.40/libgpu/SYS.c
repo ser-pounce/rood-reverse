@@ -2,6 +2,7 @@
 #include <libgte.h>
 #include <libgpu.h>
 #include <libetc.h>
+#include <memory.h>
 
 extern u_char D_80033446;
 extern u_long* D_80033548;
@@ -11,6 +12,9 @@ extern u_long* D_80033554;
 extern u_long* D_80033558;
 extern int D_80033580;
 extern int D_80033584;
+extern DRAWENV D_80033454;
+extern DISPENV D_800334B0;
+extern u_char D_8003E2F8[];
 
 typedef struct {
     char* ver;
@@ -82,11 +86,19 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", PutDrawEnv);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", DrawOTagEnv);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", GetDrawEnv);
+DRAWENV* GetDrawEnv(DRAWENV* env)
+{
+    memcpy(env, &D_80033454, sizeof(DRAWENV));
+    return env;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", PutDispEnv);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", GetDispEnv);
+DISPENV* GetDispEnv(DISPENV* env)
+{
+    memcpy(env, &D_800334B0, sizeof(DISPENV));
+    return env;
+}
 
 int GetODE(void) { return D_8003343C->status() >> 31; }
 
@@ -124,9 +136,13 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029E18);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A054);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A2D4);
+void func_8002A2D4(u_long n)
+{
+    *D_8003354C = n;
+    D_8003E2F8[n >> 24] = n;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A2F8);
+int func_8002A2F8(int n) { return D_8003E2F8[n]; }
 
 int func_8002A30C(u_long* p, int n)
 {

@@ -1,3 +1,4 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG246.BIN/nonmatchings/0", func_800F9800);
+#define VS_ROTATING_SURFACE_FUNCTION func_800F9800
+#include "src/EFFECT/rotatingSurfaces.h"

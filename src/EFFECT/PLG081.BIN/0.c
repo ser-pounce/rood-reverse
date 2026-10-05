@@ -6,7 +6,8 @@
 #include <inline_c.h>
 #include <rand.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG081.BIN/nonmatchings/0", func_800F9800);
+#define VS_ROTATING_SURFACE_FUNCTION func_800F9800
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_RING_FUNCTION func_800FA6B8
 #define VS_RING_COLORS D_800FC24C

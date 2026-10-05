@@ -4323,7 +4323,297 @@ int func_800BEC30(void)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEC58);
+extern char D_800F4BA8;
+int func_8007C218(int);
+int func_800A0024(int, void*);
+int func_800A92B8(int, int);
+int func_8007CFCC(int);
+
+short func_800BEC58(int arg0, int arg1, int arg2, int arg3)
+{
+    char buf[64];
+    func_8006EBF8_t position;
+    short type;
+    short mode;
+    short i;
+    short otherActorId;
+    short flagId;
+    short actorId;
+    short flagValue;
+    int result;
+    short negate;
+    short eventId;
+    u_char* p;
+    short left;
+    int right;
+
+    type = arg0;
+    mode = arg3;
+
+    if (type == 0xFF) {
+        if (D_800F4C34 == 0) {
+            return 0;
+        }
+        return 2;
+    }
+    if (type == 1) {
+        int scriptSection = _mpdScriptSection;
+        if (scriptSection & 1) {
+            _mpdScriptSection = 0;
+            D_800F4C34 = 1;
+            D_800F4BE0 = 1;
+            D_800F4BA8 = 1;
+            return 1;
+        }
+    }
+    if (type == 0x40) {
+        _evtFile = arg1;
+        D_800F4BE0 = 0;
+        D_800F4C34 = 1;
+        D_800F4BA8 = 1;
+        return 1;
+    }
+    if (D_800F4C34 != 0 && D_800F4BA8 != 0) {
+        return 2;
+    }
+
+    for (i = 0; i < 16; ++i) {
+        u_short offset = ((u_short*)_mpdClearedSection)[i];
+        if (offset == 0xFFFF) {
+            return 0;
+        }
+        p = (u_char*)_mpdClearedSection + offset;
+        if (!(*p & type)) {
+            continue;
+        }
+        p++;
+        eventId = vs_battle_getShort(p);
+        p += 2;
+        negate = 0;
+        while (1) {
+            result = 0;
+            switch (*p) {
+            case 0xFF:
+                if (eventId & 0x8000) {
+                    _evtFile = eventId & 0xF;
+                    D_800F4BE0 = 2;
+                } else {
+                    _evtFile = eventId;
+                    D_800F4BE0 = 0;
+                }
+                D_800F4C34 = 1;
+                D_800F4BA8 = 0;
+                return 1;
+            case 1:
+                func_800A1108(0, &position);
+                if (position.unk0.unk0.fields.unk0_0 == p[1]
+                    && position.unk0.unk0.fields.unk0_16 == p[2]) {
+                    result = 1;
+                }
+                p += 3;
+                break;
+            case 2:
+                func_800A1108(0, &position);
+                if (position.unk0.unk0.fields.unk0_0 >= p[1]
+                    && position.unk0.unk0.fields.unk0_0 < p[1] + p[3]
+                    && position.unk0.unk0.fields.unk0_16 >= p[2]
+                    && position.unk0.unk0.fields.unk0_16 < p[2] + p[4]) {
+                    result = 1;
+                }
+                p += 5;
+                break;
+            case 3:
+                left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
+                right = p[3];
+                goto compare;
+            case 15:
+                left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
+                right = vs_battle_getStateFlag(((p[2] & 3) << 8) | p[3]);
+            compare:
+                switch (p[1] & 0xF0) {
+                case 0x00:
+                    if (left <= right) {
+                        result = 1;
+                    }
+                    break;
+                case 0x10:
+                    if (left >= right) {
+                        result = 1;
+                    }
+                    break;
+                case 0x20:
+                    if (left == right) {
+                        result = 1;
+                    }
+                    break;
+                case 0x30:
+                    if (left != right) {
+                        result = 1;
+                    }
+                    break;
+                case 0x40:
+                    if (left < right) {
+                        result = 1;
+                    }
+                    break;
+                case 0x50:
+                    if (left > right) {
+                        result = 1;
+                    }
+                    break;
+                }
+                p += 4;
+                break;
+            case 4:
+                left = vs_battle_getShort(p + 1);
+                if (left & 0x1000) {
+                    if (func_8007CF64(left & 0x1F) != NULL) {
+                        result = 1;
+                    }
+                } else if (func_8007CF18(left) != 1) {
+                    result = 1;
+                }
+                p += 3;
+                break;
+            case 5:
+                left = flagValue = func_8007CF80(p[1]);
+                flagId = vs_battle_getShort(p + 2);
+                if (flagId != 0) {
+                    vs_battle_setStateFlag(flagId, flagValue);
+                    result = 1;
+                } else if (left != 0) {
+                    result = 1;
+                }
+                p += 4;
+                break;
+            case 6:
+                if (mode == 0) {
+                    actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                    otherActorId = func_800BFE50(vs_battle_getShort(p + 3));
+                    if (actorId != 1 && otherActorId != 1 && arg1 == actorId
+                        && arg2 == otherActorId) {
+                        result = 1;
+                    }
+                }
+                p += 5;
+                break;
+            case 7:
+                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                if (actorId == 1) {
+                    negate = 0;
+                    break;
+                }
+                left = flagValue = func_8007C218(actorId);
+                flagId = vs_battle_getShort(p + 3);
+                if (flagId != 0) {
+                    vs_battle_setStateFlag(flagId, flagValue);
+                    result = 1;
+                } else if (left != 0) {
+                    result = 1;
+                }
+                p += 5;
+                break;
+            case 8:
+                if (mode == 1 && ((u_char*)arg2)[0] == p[1]
+                    && ((u_char*)arg2)[2] == p[2]) {
+                    result = 1;
+                }
+                p += 3;
+                break;
+            case 9:
+                if (!(func_800A0BE0(0) & 0x104000)) {
+                    result = 1;
+                }
+                p += 1;
+                break;
+            case 10:
+                left = flagValue =
+                    vs_battle_itemIdIsInInventory(vs_battle_getShort(p + 1));
+                flagId = vs_battle_getShort(p + 3);
+                if (flagId != 0) {
+                    vs_battle_setStateFlag(flagId, flagValue);
+                    result = 1;
+                } else if (left != 0) {
+                    result = 1;
+                }
+                p += 5;
+                break;
+            case 11:
+                if ((short)func_800A0024(p[1], &position) >= 0
+                    && position.unk0.unk0.fields.unk0_0 == p[2]
+                    && position.unk0.unk0.fields.unk0_16 == p[3]
+                    && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
+                    && (p[5] == 0
+                        || (position.unk0.unk0.fields.unk0_24 >> 2) + 1 == p[5])) {
+                    result = 1;
+                }
+                p += 6;
+                break;
+            case 12:
+                left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
+                flagId = vs_battle_getShort(p + 3);
+                if (flagId != 0) {
+                    vs_battle_setStateFlag(flagId, flagValue);
+                    result = 1;
+                } else if (left != 0) {
+                    result = 1;
+                }
+                p += 5;
+                break;
+            case 13:
+                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                if (actorId == 1) {
+                    negate = 0;
+                    break;
+                }
+                func_800A1108(actorId, &position);
+                if (position.unk0.unk0.fields.unk0_0 == p[3]
+                    && position.unk0.unk0.fields.unk0_16 == p[4]) {
+                    result = 1;
+                }
+                p += 5;
+                break;
+            case 14:
+                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                if (actorId == 1) {
+                    negate = 0;
+                    break;
+                }
+                func_800A1108(actorId, &position);
+                if (position.unk0.unk0.fields.unk0_0 >= p[3]
+                    && position.unk0.unk0.fields.unk0_0 < p[3] + p[5]
+                    && position.unk0.unk0.fields.unk0_16 >= p[4]
+                    && position.unk0.unk0.fields.unk0_16 < p[4] + p[6]) {
+                    result = 1;
+                }
+                p += 7;
+                break;
+            case 16:
+                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                if (actorId == 1) {
+                    negate = 0;
+                    break;
+                }
+                if (func_8007CFCC(actorId) != 0) {
+                    result = 1;
+                }
+                p += 3;
+                break;
+            case 0xFE:
+                negate = 1;
+                p += 1;
+                continue;
+            default:
+                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *p);
+                break;
+            }
+            if (result == negate) {
+                break;
+            }
+            negate = 0;
+        }
+    }
+}
 
 typedef struct {
     u_char low;

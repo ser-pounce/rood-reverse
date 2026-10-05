@@ -20,10 +20,12 @@
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
 #include "vs_string.h"
 #include "gpu.h"
+#include "vs_inline_c.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
 #include <abs.h>
+#include <inline_c.h>
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -435,6 +437,7 @@ extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
 extern effectExec D_800EC324[];
+extern int D_800EC328;
 extern char D_800EC32C[];
 extern u_char D_800EC330[][2][4];
 extern u_char D_800EC368[][5][4];
@@ -5998,7 +6001,7 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
 
     func_800D6CCC(node->unk3C);
 
-    node->unk77 = 0xFF;
+    node->unk74.fields.age = 0xFF;
     node->previous = NULL;
     ++D_800F55F8;
     D_800F55F4 = node->next;
@@ -6099,7 +6102,582 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
     arg1->unk14 = arg0->unk98.vz + arg0->unk34.vz * ONE;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2ADC);
+/* Uniform integer between a and b (inclusive) using 30 random bits. */
+#define RAND_UNIFORM_WIDE(a, b)                                                    \
+    ((a) == (b)  ? (a)                                                             \
+     : (b) < (a) ? (rand() + (rand() << 16)) % ((a) - (b) + 1) + (b)               \
+                 : (rand() + (rand() << 16)) % ((b) - (a) + 1) + (a))
+
+void func_800D2ADC(
+    D_800F53B8_t* arg0, int event, int arg2, int arg3, func_800FB4C0_t* parent)
+{
+    int _[4] __attribute__((unused));
+    int frame;
+    int count;
+    int i;
+    int sample;
+    int step;
+    int angle;
+    int x;
+    int z;
+    int value;
+    func_800D2904_t* node;
+    func_800D2904_t* first;
+    MATRIX* matrix;
+    int prevX;
+    int prevZ;
+    int range;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg0* def = &D_800F569C->block5Data->unk4[event];
+
+    scratch->flags = def->flags;
+    scratch->unk28 = scratch->flags;
+    scratch->unk168 = def->unkC8;
+    scratch->unk16C = def->unkC9;
+
+    if (arg2 != 0) {
+        scratch->unk180 = arg2;
+    } else if (def->transparencyCurve != 0) {
+        scratch->unk180 = def->transparencyCurve;
+    } else if (parent != NULL) {
+        scratch->unk180 = parent->unk60;
+    } else {
+        scratch->unk180 = 4;
+    }
+
+    if (parent != NULL && arg3 == 0) {
+        arg3 = parent->unk60_8 & 0xF;
+    }
+
+    frame = arg0->unk14_16;
+    sample = def->unk16;
+    if (frame % func_800CFE1C(def->unkC0, D_800F5330[sample]) != 0) {
+        return;
+    }
+
+    gte_zrtr();
+
+    matrix = &arg0->unk1C[scratch->unk168].unk38;
+    sample = def->unk15;
+    count = func_800CFE1C(def->unkBC, D_800F5330[sample]);
+    if (count + D_800F55F8 >= D_800F55F0) {
+        count = D_800F55F0 - D_800F55F8;
+    }
+
+    for (i = 0; i < count; ++i) {
+        node = func_800D27F0(arg0);
+        node->unk6A = scratch->unk168;
+        node->unk6B = scratch->unk16C;
+        func_800D6CF0((func_800D6CF_t*)node->unk3C, def->unk1, def->unk0);
+    }
+
+    sample = def->unk8;
+    vs_battle_lerpVector(def->unk18, D_800F5330[sample], &scratch->unk98);
+    first = node;
+
+    switch (scratch->flags & 7) {
+    case 0:
+        break;
+    case 1:
+        vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
+        break;
+    case 2:
+        scratch->unk98.vx += matrix->t[0];
+        scratch->unk98.vy += matrix->t[1];
+        scratch->unk98.vz += matrix->t[2];
+        break;
+    case 4:
+        if (parent != NULL) {
+            scratch->unk98.vx += parent->unkC.vx >> 12;
+            scratch->unk98.vy += parent->unkC.vy >> 12;
+            scratch->unk98.vz += parent->unkC.vz >> 12;
+        }
+        break;
+    }
+
+    scratch->unk98.vx <<= 12;
+    scratch->unk98.vy <<= 12;
+    scratch->unk98.vz <<= 12;
+
+    sample = def->unk9;
+    vs_battle_lerpVector(def->unk24, D_800F5330[sample], &scratch->unkA8);
+    node = first;
+    sample = def->unk17;
+    sample = func_800CFE1C(def->unk30, D_800F5330[sample]);
+    SetRotMatrix(matrix);
+    gte_zrtr();
+
+    switch (scratch->flags & 0x38) {
+    case 0:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = (scratch->unkA8.vy * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            angle = rand();
+            scratch->unk174 = rsin(angle);
+            scratch->unk17C = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                scratch->unk2C.vy =
+                    vs_battle_randUniformInt(scratch->unkA8.vy, scratch->unkD8.vy);
+                scratch->unk2C.vz =
+                    vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                goto scale0;
+            case 0x800:
+            case 0x1000:
+                vs_battle_vecToSvec(&scratch->unkA8, &scratch->unk2C);
+            scale0:
+                scratch->unk2C.vx =
+                    (((scratch->unk2C.vx * scratch->unk178) >> 12) * scratch->unk17C)
+                    >> 12;
+                scratch->unk2C.vy =
+                    (((scratch->unk2C.vy * scratch->unk178) >> 12) * scratch->unk174)
+                    >> 12;
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 8:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = (scratch->unkA8.vy * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                angle = rand();
+                if (angle & 1) {
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                } else {
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(-scratch->unkA8.vx, -scratch->unkD8.vx);
+                }
+                if (angle & 2) {
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, scratch->unkD8.vy);
+                } else {
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(-scratch->unkA8.vy, -scratch->unkD8.vy);
+                }
+                if (angle & 4) {
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                } else {
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(-scratch->unkA8.vz, -scratch->unkD8.vz);
+                }
+                break;
+            case 0x800:
+                switch (rand() % 6) {
+                case 0:
+                    scratch->unk2C.vx = scratch->unkA8.vx;
+                    goto face_x;
+                case 1:
+                    scratch->unk2C.vx = -scratch->unkA8.vx;
+                face_x:
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
+                    break;
+                case 2:
+                    scratch->unk2C.vy = scratch->unkA8.vy;
+                    goto face_y;
+                case 3:
+                    scratch->unk2C.vy = -scratch->unkA8.vy;
+                face_y:
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
+                    break;
+                case 4:
+                    scratch->unk2C.vz = scratch->unkA8.vz;
+                    goto face_z;
+                case 5:
+                    scratch->unk2C.vz = -scratch->unkA8.vz;
+                face_z:
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    break;
+                }
+                break;
+            case 0x1000:
+                D_800EC328 = (D_800EC328 + 1) & 7;
+                scratch->unk2C.vx =
+                    (D_800EC328 & 1) ? scratch->unkA8.vx : -scratch->unkA8.vx;
+                scratch->unk2C.vy =
+                    (D_800EC328 & 2) ? scratch->unkA8.vy : -scratch->unkA8.vy;
+                scratch->unk2C.vz =
+                    (D_800EC328 & 4) ? scratch->unkA8.vz : -scratch->unkA8.vz;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 16:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = scratch->unkA8.vy;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                scratch->unk2C.vz =
+                    vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                goto scale16;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale16:
+                scratch->unk2C.vy = vs_gte_rsqrt(
+                    RAND_UNIFORM_WIDE(scratch->unkA8.vy * scratch->unkA8.vy, 0));
+                scratch->unk2C.vx =
+                    (((scratch->unk2C.vx * scratch->unk178) >> 12) * scratch->unk2C.vy)
+                    / scratch->unkA8.vy;
+                scratch->unk2C.vz =
+                    (((scratch->unk2C.vz * scratch->unk170) >> 12) * scratch->unk2C.vy)
+                    / scratch->unkA8.vy;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 24:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vx * scratch->unkA8.vx,
+                        scratch->unkD8.vx * scratch->unkD8.vx));
+                scratch->unk2C.vz =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vz * scratch->unkA8.vz,
+                        scratch->unkD8.vz * scratch->unkD8.vz));
+                goto scale24;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale24:
+                scratch->unk2C.vx = (scratch->unk2C.vx * scratch->unk178) >> 12;
+                scratch->unk2C.vy = vs_battle_randUniformInt(scratch->unkA8.vy, 0);
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 32:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vx * scratch->unkA8.vx,
+                        scratch->unkD8.vx * scratch->unkD8.vx));
+                scratch->unk2C.vz =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vz * scratch->unkA8.vz,
+                        scratch->unkD8.vz * scratch->unkD8.vz));
+                goto scale32;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale32:
+                scratch->unk2C.vy = 0;
+                scratch->unk2C.vx = (scratch->unk2C.vx * scratch->unk178) >> 12;
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 40:
+        scratch->unk184 = 4;
+        scratch->unk188 = 4;
+        goto ring;
+
+    case 48:
+        scratch->unk184 = def->unkCA;
+        if (scratch->unk184 == 0) {
+            scratch->unk184 = 1;
+        }
+        scratch->unk188 = def->unkCB;
+        if (scratch->unk188 == 0) {
+            scratch->unk188 = scratch->unk184;
+        }
+    ring:
+        step = 0x1000 / scratch->unk184;
+        if ((scratch->flags & 0x1800) != 0x1000) {
+            D_800EC328 %= scratch->unk188;
+            angle = D_800EC328 * step + 0x200;
+            prevX = (rcos(angle) * scratch->unkA8.vx) >> 12;
+            prevZ = (rsin(angle) * scratch->unkA8.vz) >> 12;
+        }
+        for (i = 0; i < count; ++i) {
+            range = 0x1194 - sample;
+            D_800EC328 = (D_800EC328 + 1) % scratch->unk188;
+            angle = D_800EC328 * step + 0x200;
+            x = (rcos(angle) * scratch->unkA8.vx) >> 12;
+            z = (rsin(angle) * scratch->unkA8.vz) >> 12;
+            if ((scratch->flags & 0x1800) == 0x1000) {
+                scratch->unk2C.vx = x;
+                scratch->unk2C.vz = z;
+            } else {
+                value = rand() >> 3;
+                scratch->unk2C.vx = (((x - prevX) * value) >> 12) + prevX;
+                scratch->unk2C.vz = (((z - prevZ) * value) >> 12) + prevZ;
+                prevX = x;
+                prevZ = z;
+                if ((scratch->flags & 0x1800) != 0x800) {
+                    value = SquareRoot12(((rand() * range) >> 15) + sample);
+                    if (value > 0x1000) {
+                        value = 0x1000;
+                    }
+                    scratch->unk2C.vx = (scratch->unk2C.vx * value) >> 12;
+                    scratch->unk2C.vz = (scratch->unk2C.vz * value) >> 12;
+                }
+            }
+            scratch->unk2C.vy = 0;
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unkC;
+    vs_battle_lerp2DVector(def->unk94[2], D_800F5330[sample], scratch->unk118);
+    scratch->unk118[0] <<= 5;
+    scratch->unk118[1] <<= 5;
+    sample = def->unkB;
+    vs_battle_lerpVector(def->unk34[1], D_800F5330[sample], &scratch->unkC8);
+    sample = def->unkA;
+    vs_battle_lerpVector(def->unk34[0], D_800F5330[sample], &scratch->unkE8);
+    node = first;
+
+    switch (scratch->flags & 0xE000) {
+    case 0x4000:
+        if (arg0->unkD1C.unkC.unk0 == 4) {
+            func_800A1AF8(((u_char*)&arg0->unkD1C.unkC.unk4)[0],
+                ((u_char*)&arg0->unkD1C.unkC.unk4)[2], &scratch->unk2C, 0);
+        } else {
+            scratch->unk2C = *(SVECTOR*)&arg0->unkD1C.unkC.unk4;
+        }
+        goto aim;
+    case 0x6000:
+        if (arg0->unkD1C.unk24.unk0 == 4) {
+            func_800A1AF8(((u_char*)&arg0->unkD1C.unk24.unk4)[0],
+                ((u_char*)&arg0->unkD1C.unk24.unk4)[2], &scratch->unk2C, 0);
+        } else {
+            scratch->unk2C = *(SVECTOR*)&arg0->unkD1C.unk24.unk4;
+        }
+    aim:
+        vs_battle_svecToVec(&scratch->unk2C, &scratch->unk34);
+        scratch->unk44.vx = scratch->unk98.vx >> 12;
+        scratch->unk44.vy = scratch->unk98.vy >> 12;
+        scratch->unk44.vz = scratch->unk98.vz >> 12;
+        vs_battle_lookAt(&scratch->unk44, &scratch->unk34, &scratch->unk64);
+        matrix = &scratch->unk64;
+    case 0:
+        for (i = 0; i < count; ++i) {
+            scratch->unk2C.vx =
+                scratch->unkE8.vx
+                + vs_battle_randUniformInt(scratch->unkC8.vx, -scratch->unkC8.vx);
+            scratch->unk2C.vy =
+                scratch->unkE8.vy
+                + vs_battle_randUniformInt(scratch->unkC8.vy, -scratch->unkC8.vy);
+            scratch->unk2C.vz =
+                scratch->unkE8.vz
+                + vs_battle_randUniformInt(scratch->unkC8.vz, -scratch->unkC8.vz);
+            RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
+            gte_SetRotMatrix(scratch);
+            *(int*)&scratch->unk2C = 0;
+            scratch->unk2C.vz = 0x1000;
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            if (scratch->flags & 0x40000) {
+                vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
+                gte_SetRotMatrix(matrix);
+                ApplyRotMatrix(&scratch->unk2C, &scratch->unkB8);
+            }
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node = node->next;
+        }
+        break;
+    case 0x8000:
+        for (i = 0; i < count; ++i) {
+            scratch->unk2C.vx =
+                scratch->unkE8.vx
+                + vs_battle_randUniformInt(scratch->unkC8.vx, -scratch->unkC8.vx);
+            scratch->unk2C.vy =
+                scratch->unkE8.vy
+                + vs_battle_randUniformInt(scratch->unkC8.vy, -scratch->unkC8.vy);
+            scratch->unk2C.vz =
+                scratch->unkE8.vz
+                + vs_battle_randUniformInt(scratch->unkC8.vz, -scratch->unkC8.vz);
+            RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
+            gte_SetRotMatrix(scratch);
+            *(int*)&scratch->unk2C = 0;
+            scratch->unk2C.vz = 0x1000;
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            gte_SetRotMatrix(matrix);
+            vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node = node->next;
+        }
+        break;
+    case 0x2000:
+        for (i = 0; i < count; ++i) {
+            scratch->unkB8.vx = (scratch->unk98.vx - node->unkC) >> 12;
+            scratch->unkB8.vy = (scratch->unk98.vy - node->unk10) >> 12;
+            scratch->unkB8.vz = (scratch->unk98.vz - node->unk14) >> 12;
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            if (scratch->unkB8.vx != 0 || scratch->unkB8.vy != 0
+                || scratch->unkB8.vz != 0) {
+                VectorNormal(&scratch->unkB8, &scratch->unkB8);
+                node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
+                node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
+                node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            } else {
+                node->unk18[1] = scratch->unk120;
+                node->unk18[2] = 0;
+                node->unk18[0] = 0;
+            }
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unkD;
+    vs_battle_lerpSvector(def->unk34[2], D_800F5330[sample], &scratch->unkF8);
+    vs_battle_lerpSvector(def->unk34[3], D_800F5330[sample], &scratch->unk100);
+    sample = def->unkE;
+    vs_battle_lerpSvector(def->unk34[4], D_800F5330[sample], &scratch->unk108);
+    vs_battle_lerpSvector(def->unk34[5], D_800F5330[sample], &scratch->unk110);
+    node = first;
+    for (i = 0; i < count; ++i) {
+        node->unk24[0] = vs_battle_randUniformInt(scratch->unkF8.vx, scratch->unk100.vx);
+        node->unk24[1] = vs_battle_randUniformInt(scratch->unkF8.vy, scratch->unk100.vy);
+        node->unk24[2] = vs_battle_randUniformInt(scratch->unkF8.vz, scratch->unk100.vz);
+        node->unk30[0] = vs_battle_randUniformInt(scratch->unk108.vx, scratch->unk110.vx);
+        node->unk30[1] = vs_battle_randUniformInt(scratch->unk108.vy, scratch->unk110.vy);
+        node->unk30[2] = vs_battle_randUniformInt(scratch->unk108.vz, scratch->unk110.vz);
+        node = node->next;
+    }
+
+    sample = def->unk12;
+    vs_battle_lerp2DVector(def->unk94[0], D_800F5330[sample], scratch->unk124);
+    sample = def->unk13;
+    vs_battle_lerp2DVector(def->unk94[1], D_800F5330[sample], scratch->unk12C);
+    sample = def->unk14;
+    vs_battle_lerp2DVector(def->unk94[4], D_800F5330[sample], scratch->unk134);
+    node = first;
+    for (i = 0; i < count; ++i) {
+        node->unk8 = vs_battle_randUniformInt(scratch->unk124[0], scratch->unk124[1]);
+        node->unkA = vs_battle_randUniformInt(scratch->unk12C[0], scratch->unk12C[1]);
+        node->lifetime = vs_battle_randUniformInt(scratch->unk134[0], scratch->unk134[1]);
+        node = node->next;
+    }
+
+    sample = def->unkF;
+    vs_battle_lerpSvector(def->unk34[6], D_800F5330[sample], &scratch->unk13C);
+    sample = def->unk10;
+    vs_battle_lerpSvector(def->unk34[7], D_800F5330[sample], &scratch->unk144);
+    node = first;
+
+    switch (scratch->flags & 0x1C0) {
+    case 0:
+    case 0x40:
+        for (i = 0; i < count; ++i) {
+            node->unk62[0] = scratch->unk13C.vx;
+            node->unk62[1] = scratch->unk13C.vy;
+            node->unk62[2] = scratch->unk13C.vz;
+            node = node->next;
+        }
+        break;
+    case 0xC0:
+        for (i = 0; i < count; ++i) {
+            node->unk62[0] =
+                arg0->unk1C[scratch->unk16C].unk38.t[0] + scratch->unk13C.vx
+                + vs_battle_randUniformInt(scratch->unk144.vx, -scratch->unk144.vy);
+            node->unk62[1] =
+                arg0->unk1C[scratch->unk16C].unk38.t[1] + scratch->unk13C.vy
+                + vs_battle_randUniformInt(scratch->unk144.vy, -scratch->unk144.vy);
+            node->unk62[2] =
+                arg0->unk1C[scratch->unk16C].unk38.t[2] + scratch->unk13C.vz
+                + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz);
+            node = node->next;
+        }
+        break;
+    case 0x80:
+    case 0x140:
+        for (i = 0; i < count; ++i) {
+            node->unk62[2] = 0;
+            node->unk62[1] = 0;
+            node->unk62[0] = 0;
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unk11;
+    vs_battle_lerp2DVector(def->unk94[3], D_800F5330[sample], scratch->unk14C);
+    node = first;
+    scratch->unk154.packed = *(int*)&def->rCurve;
+    scratch->unk154.fields.age = node->unk74.fields.age;
+    for (i = 0; i < count; ++i) {
+        node->unk5C = scratch->flags;
+        value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
+        node->unk74.packed = scratch->unk154.packed;
+        node->unk70 = value;
+        *(u_short*)&node->endEvent = *(u_short*)&def->unk2;
+        node->unk60_0 = scratch->unk180;
+        node->unk60_8 = arg3;
+        node = node->next;
+    }
+}
 
 void func_800D46DC(int arg0, D_800F53B8_t* arg1)
 {
@@ -6266,7 +6844,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
     node = next;
     while (next != NULL) {
         next = node->next;
-        ++node->unk77;
+        ++node->unk74.fields.age;
         if (node->tickEvent != 0) {
             func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
         }
@@ -6454,15 +7032,15 @@ void func_800D52A4(func_800D2904_t* node)
     int gravityZ = D_800F5620.unk8;
 
     for (; node != NULL; node = node->next) {
-        state = (effectMotionState*)node->unk8;
-        damping = *(short*)node->unk8 - drag;
-        state->vx = (state->vx * damping + (state->fx << 12)) / *(short*)node->unk8
+        state = (effectMotionState*)&node->unk8;
+        damping = node->unk8 - drag;
+        state->vx = (state->vx * damping + (state->fx << 12)) / node->unk8
                   + ((gravityX * state->gravityScale) >> 12);
         state->x += state->vx;
-        state->vy = (state->vy * damping + (state->fy << 12)) / *(short*)node->unk8
+        state->vy = (state->vy * damping + (state->fy << 12)) / node->unk8
                   + ((gravityY * state->gravityScale) >> 12);
         state->y += state->vy;
-        state->vz = (state->vz * damping + (state->fz << 12)) / *(short*)node->unk8
+        state->vz = (state->vz * damping + (state->fz << 12)) / node->unk8
                   + ((gravityZ * state->gravityScale) >> 12);
         state->z += state->vz;
         damping = ((effectAttractionView*)node)->attraction;

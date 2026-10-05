@@ -237,7 +237,7 @@ typedef struct {
     short unk30[2];
     short unk34[8][6];
     short unk94[5][4];
-    int unkBC;
+    short unkBC[2];
     short unkC0[2];
     u_char rCurve;
     u_char gCurve;
@@ -249,12 +249,23 @@ typedef struct {
     u_char unkCB;
 } func_800FA098_arg0;
 
+typedef union {
+    int packed;
+    struct {
+        u_char rCurve;
+        u_char gCurve;
+        u_char bCurve;
+        u_char age;
+    } fields;
+} func_800D2904_curves;
+
 typedef struct {
     VECTOR unk0;
     VECTOR unk10;
     int unk20;
     u_int flags;
-    int unk28;
+    u_short unk28;
+    u_short unk2A;
     SVECTOR unk2C;
     VECTOR unk34;
     VECTOR unk44;
@@ -278,14 +289,16 @@ typedef struct {
     int unk134[2];
     SVECTOR unk13C;
     SVECTOR unk144;
-    u_char unk14C[0x1C];
+    int unk14C[2];
+    func_800D2904_curves unk154;
+    u_char unk158[0x10];
     int unk168;
     int unk16C;
     int unk170;
     int unk174;
     int unk178;
     int unk17C;
-    int unk180;
+    u_char unk180;
     int unk184;
     int unk188;
 } func_800FA098_arg1;
@@ -348,20 +361,28 @@ typedef struct {
 typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
-    char unk8[4];
+    short unk8;
+    short unkA;
     int unkC;
     int unk10;
     int unk14;
-    VECTOR unk18;
-    u_char unk28[0x14];
+    int unk18[3];
+    int unk24[3];
+    int unk30[3];
     int unk3C[8];
-    char unk5C[0xC];
+    int unk5C;
+    u_int unk60_0 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 4;
+    short unk62[3];
     short lifetime;
-    char unk6A[2];
+    u_char unk6A;
+    u_char unk6B;
     u_char endEvent;
     u_char tickEvent;
-    char unk6E[9];
-    u_char unk77;
+    char unk6E[2];
+    int unk70;
+    func_800D2904_curves unk74;
 } func_800D2904_t;
 
 typedef struct {
@@ -450,8 +471,10 @@ typedef struct {
     u_char unk0[0xC];
     VECTOR unkC;
     u_char unk1C[0x44];
-    u_char unk60;
-    u_char unk61[23];
+    u_int unk60 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 20;
+    u_char unk64[20];
 } func_800FB4C0_t;
 
 enum vs_battle_limbStatus {

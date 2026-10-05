@@ -1034,7 +1034,273 @@ int func_800DA1D4(actionCandidateState* state)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA4BC);
+typedef struct {
+    unsigned int unk0, unk4, distance, flagsC;
+} da4bcEntry;
+
+typedef struct {
+    char pad0[14];
+    unsigned char flagE, flagF;
+    char pad10[6];
+    signed int target16 : 8;
+    char pad17;
+    unsigned char flag18;
+    char pad19[27];
+    unsigned int tile;
+    char pad38[12];
+    unsigned char timer44;
+    char pad45[7];
+    short x;
+    char pad4E[2];
+    short z;
+    char pad52[54];
+    unsigned char id;
+    char pad89[42];
+    unsigned char radius;
+    char padB4[53];
+    unsigned char mode;
+    char padEA[68];
+    unsigned char action;
+    char pad12F[2];
+    unsigned char pending;
+    char pad132[42];
+    unsigned char target15C;
+    char pad15D[71];
+    unsigned int targets[16];
+    unsigned int distances[16];
+    char pad224[524];
+    da4bcEntry* entries[16];
+} da4bcState;
+
+typedef union {
+    unsigned int raw;
+    unsigned char b[4];
+} da4bcPoint;
+
+typedef struct {
+    char pad0[28];
+    short x;
+    char pad1E[2];
+    short z;
+    char pad22[58];
+    vs_battle_movementPosition tile;
+} da4bcModel;
+
+typedef struct {
+    unsigned int pad0 : 6, mode : 2, pad8 : 12, category : 7, pad27 : 1, oldMode : 2,
+        pad30 : 2;
+} da4bcTargetBits;
+
+typedef struct {
+    char pad[0x1A4];
+    da4bcTargetBits targets[16];
+} da4bcTargetState;
+
+typedef struct da4bcActor {
+    struct da4bcActor* next;
+    int id;
+} da4bcActor;
+
+typedef struct {
+    unsigned int target : 4, pad : 28;
+} da4bcEntryTarget;
+
+int func_800DBB2C(void*, void*, int);
+void func_800DB5B0(void*);
+void func_800DB5FC(void*);
+void func_800E50A0(void*, int, int);
+int func_800E45D4(int);
+void func_800E1388(func_800D8400_t*, vs_battle_movementPosition, int, unsigned int);
+
+int func_800DA4BC(da4bcState* state, da4bcEntry* entry)
+{
+    int target, distance, radius, result;
+
+    result = 0;
+    if (func_800DB8AC((void*)state, (void*)entry)) {
+        target = entry->flagsC & 15;
+        distance = vs_gte_rsqrt(entry->distance);
+        radius = distance + (state->radius << 5);
+        radius = radius * radius;
+        D_800F58BC->unk24++;
+        if (state->distances[target] < (unsigned int)radius) {
+            if (state->targets[entry->flagsC & 15] & 1)
+                func_800D836C((void*)state);
+        }
+        if (func_800DB370((void*)state, target, distance, 1))
+            return 1;
+        if (func_800DB74C((void*)state, target))
+            return 1;
+    }
+    return result;
+}
+
+int func_800DA5CC(da4bcState* state)
+{
+    da4bcEntry* entry = state->entries[0];
+    int target;
+
+    if (!state->pending && func_800DA4BC(state, entry))
+        return 1;
+    target = state->target16;
+    if (target < 16) {
+        if (func_800DB370((void*)state, target, 288, 1)) {
+            if (state->mode == 1 && state->action != 7) {
+                state->target15C = ((da4bcEntryTarget*)&entry->flagsC)->target;
+                func_800E678C((void*)state);
+                func_800E2CCC((void*)state);
+            }
+            return 1;
+        }
+        if (func_800DB74C((void*)state, target))
+            return 1;
+    }
+    return 0;
+}
+
+int func_800DA6A4(da4bcState* state)
+{
+    int target;
+
+    if (state->flagE)
+        return func_800DB61C((void*)state, 1);
+    target = func_800DBB2C(state, 0, 3);
+    if (target >= 0 && func_800DBB2C(state, 0, 2) >= 0
+        && func_800DB370((void*)state, target, 1024, 1))
+        return 1;
+    return func_800DA1D4((void*)state);
+}
+
+int func_800DA738(da4bcState* state)
+{
+    da4bcPoint point;
+    int oldFlag, candidate;
+    unsigned char* pointPtr;
+    int centerX, centerZ;
+    int angleA, angleB, cosA, cosB, sinA, dot;
+    vs_battle_movementPosition tile;
+    unsigned int valid;
+    int target;
+    int active = 0;
+    da4bcModel** models;
+    da4bcModel* first;
+    da4bcModel* second;
+
+    candidate = func_800DBB2C(state, &point, 3);
+    target = state->target16;
+    valid = (unsigned int)~candidate >> 31;
+    if (state->id != target && target != 16) {
+        if (((da4bcState**)0x1F80037C)[target])
+            active = ((unsigned char)state->targets[target] >> 6) == 2;
+    }
+    oldFlag = state->flagF;
+    state->flagF = active;
+    if (valid) {
+        if (active) {
+            if ((state->targets[target] >> 5) & 1) {
+                models = (da4bcModel**)&D_800F4538[target];
+                first = *models;
+                pointPtr = point.b;
+                tile = first->tile;
+                angleA = ratan2((point.b[0] << 7) - (centerX = first->x - 64),
+                    (point.b[2] << 7) - (centerZ = first->z - 64));
+                second = *models;
+                angleB = ratan2(state->x - second->x, state->z - second->z);
+                cosA = rcos(angleA);
+                cosB = rcos(angleB);
+                sinA = rsin(angleA);
+                dot = cosA * cosB + sinA * rsin(angleB);
+                dot >>= 12;
+                if (state->timer44)
+                    state->timer44--;
+                if (dot >= -1200 || state->timer44) {
+                    func_800E1388((void*)state, tile,
+                        ratan2(point.b[0] - (tile.raw & 255),
+                            pointPtr[2] - ((tile.raw >> 16) & 255)),
+                        320);
+                    ((unsigned char*)state)[1] = 1;
+                    func_800E50A0(state, 0, 0);
+                    if (!state->timer44)
+                        state->timer44 = 10;
+                    return 1;
+                }
+            }
+        } else
+            goto fallback;
+    }
+    if (active) {
+        if (valid
+            && ((da4bcState**)0x1F80037C)[target]->distances[candidate] <= 0x23FFF) {
+            state->target15C = target;
+            func_800E2CCC((void*)state);
+            return 1;
+        }
+        if (func_800DB370((void*)state, target, 320, 1))
+            return 1;
+        if (func_800DB74C((void*)state, target))
+            return 1;
+    }
+fallback:
+    if (valid) {
+        if (oldFlag) {
+            if ((unsigned int)func_800E45D4(128) < 128)
+                state->flag18 = 1;
+            func_800D8260((void*)state, 6, 0);
+        }
+        if (func_800DB61C((void*)state, 1))
+            return 1;
+    }
+    return func_800DB61C((void*)state, 1);
+}
+
+int func_800DAA6C(da4bcState* state)
+{
+    if (state->flagE) {
+        if (!func_800DB61C((void*)state, 1))
+            func_800DB5B0(state);
+        return 1;
+    }
+    if (!func_800DA1D4((void*)state))
+        func_800DB5FC(state);
+    return 1;
+}
+
+int func_800DAAD8(da4bcState* state)
+{
+    da4bcEntry* entry = state->entries[0];
+    int target;
+    da4bcActor* actor;
+
+    if (!state->pending && func_800DA4BC(state, entry))
+        return 1;
+    target = state->target16;
+    if (target < 16) {
+        if (func_800DB370((void*)state, target, 384, 0)) {
+            if (state->mode == 1 && state->action != 7) {
+                state->target15C = ((da4bcEntryTarget*)&entry->flagsC)->target;
+                func_800E678C((void*)state);
+                func_800E2CCC((void*)state);
+            }
+            return 1;
+        }
+        if (func_800DB74C((void*)state, target))
+            return 1;
+    }
+    for (actor = (da4bcActor*)vs_battle_actors[0]; actor; actor = actor->next) {
+        if (((da4bcTargetState*)state)->targets[actor->id].mode != 3
+            && ((da4bcTargetState*)state)->targets[actor->id].category) {
+            ((da4bcTargetState*)state)->targets[actor->id].mode = 3;
+            if (func_800DB61C((void*)state, 0)) {
+                ((da4bcTargetState*)state)->targets[actor->id].mode =
+                    ((da4bcTargetState*)state)->targets[actor->id].oldMode;
+                return 1;
+            }
+            ((da4bcTargetState*)state)->targets[actor->id].mode =
+                ((da4bcTargetState*)state)->targets[actor->id].oldMode;
+        }
+    }
+    return 0;
+}
 
 typedef struct {
     char prefix[0x13];

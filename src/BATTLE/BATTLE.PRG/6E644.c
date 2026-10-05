@@ -2084,7 +2084,254 @@ move:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1BB8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
+typedef union {
+    unsigned int raw;
+    unsigned char b[4];
+} targetMovementPoint;
+typedef struct {
+    unsigned int f0 : 1, f1 : 1, f2 : 1, pad3 : 2, f5 : 1, pad6 : 26;
+} targetMovementFlags;
+typedef struct {
+    char pad[9];
+    unsigned char id;
+} targetMovementActor;
+typedef struct {
+    char pad0[8];
+    unsigned int flags;
+    char padC[16];
+    short x;
+    char pad1E[2];
+    short z;
+} targetMovementModel;
+typedef struct targetMovementState {
+    unsigned char b0;
+    unsigned char b1;
+    char pad2[1];
+    unsigned char b3;
+    unsigned char b4;
+    char pad5[4];
+    unsigned char b9;
+    char padA[2];
+    unsigned char bC;
+    unsigned char bD;
+    char padE[22];
+    unsigned char b24;
+    char pad25[14];
+    unsigned char b33;
+    vs_battle_movementPosition tile;
+    char pad38[16];
+    targetMovementPoint previousDestination;
+    short x;
+    char pad4E[2];
+    short z;
+    char pad52[2];
+    targetMovementActor* actor;
+    targetMovementModel* model;
+    char pad5C[44];
+    unsigned char id;
+    char pad89[83];
+    int range;
+    int previousRange;
+    unsigned char bE4;
+    unsigned char targetId;
+    unsigned char timeout;
+    unsigned char bE7;
+    unsigned char bE8;
+    unsigned char rangeMode;
+    unsigned char previousOption;
+    unsigned char previousTargetId;
+    targetMovementPoint cachedDestination;
+    char padF0[4];
+    unsigned char targetTileX;
+    char padF5[1];
+    unsigned char targetTileZ;
+    char padF7[1];
+    unsigned short timer;
+    char padFA[94];
+    short destinationX;
+    short destinationZ;
+    unsigned char movementTargetId;
+    char pad15D[1];
+    unsigned short flags15E;
+    char pad160[8];
+    targetMovementPoint destination;
+    char pad16C[16];
+    int targetX;
+    int targetZ;
+    char pad184[32];
+    targetMovementFlags targets[16];
+    unsigned int distances[16];
+} targetMovementState;
+int func_800E4FB0(void*, int, int);
+void func_800E50A0(void*, int, int);
+int func_800E4180(void*, int, int, int);
+void func_800E4904(void*);
+
+int func_800E24EC(targetMovementState* s, int option)
+{
+    int result = 1, target = s->targetId, mode, value, angle, distance, one, radius;
+    unsigned int oldPosition;
+    targetMovementModel* model;
+    if (target == s->id) {
+        func_800DEEFC((void*)s, 0);
+        goto done;
+    }
+    model = (targetMovementModel*)D_800F4538[target];
+    if (s->model->flags & 0x200000)
+        option = 1;
+    if ((!(model->flags & 0x1F0000)
+                ? ((model->x >> 6) != s->targetTileX || (model->z >> 6) != s->targetTileZ)
+                : (s->destination.b[0] != (s->targetTileX >> 1)
+                      || s->destination.b[2] != (s->targetTileZ >> 1)))
+        || s->range != s->previousRange || target != s->previousTargetId
+        || option != s->previousOption || s->timer++ > 180) {
+        s->timer = 0;
+        s->bE8 = 0;
+        s->bE7 = 0;
+    }
+    s->previousOption = option;
+    s->previousTargetId = target;
+    s->previousRange = s->range;
+    if (s->targets[target].f0) {
+        s->bE4 = 0;
+        if (s->targets[target].f2) {
+            mode = s->rangeMode;
+            switch (mode) {
+            case 0:
+                if ((unsigned int)((s->range - 96) * (s->range - 96))
+                    < s->distances[target])
+                    s->rangeMode = 0;
+                else
+                    s->rangeMode = 1;
+                break;
+            case 1:
+                value = s->range;
+                if ((unsigned int)(value * value) < s->distances[target]) {
+                out_of_range:
+                    s->rangeMode = 0;
+                } else {
+                    if ((unsigned int)((value - 128) * (value - 128))
+                        >= s->distances[target])
+                        s->rangeMode = 2;
+                    else
+                        s->rangeMode = mode;
+                }
+                break;
+            case 2:
+                if ((unsigned int)((s->range - 32) * (s->range - 32))
+                    < s->distances[target])
+                    s->rangeMode = 1;
+                else
+                    s->rangeMode = mode;
+                break;
+            }
+        } else
+            goto out_of_range;
+        if ((s->rangeMode != 2 && s->bE8) || (s->rangeMode != 0 && s->bE7))
+            goto recover;
+        if (option == 0 && s->rangeMode == 2)
+            s->rangeMode = 1;
+        one = 1;
+        switch (s->rangeMode) {
+        case 0:
+            if (option == one)
+                s->b0 = one;
+            s->bC = one;
+            s->b1 = func_800E4FB0(s, target, s->range);
+            if (s->flags15E & 8) {
+                oldPosition = s->destination.raw;
+                angle = ratan2(s->x - (s->destination.b[0] << 7) - 64,
+                            s->z - (s->destination.b[2] << 7) - 64)
+                      & 4095;
+                distance = func_800E4660(s->x - (s->destination.b[0] << 7) - 64, 0,
+                    s->z - (s->destination.b[2] << 7) - 64);
+                s->previousDestination.raw = oldPosition;
+                distance = vs_gte_rsqrt(distance);
+                radius = s->range - 96;
+                func_800E1388((void*)s, s->tile, angle,
+                    distance - (radius >= 0 ? radius : -radius));
+                if ((s->destination.raw & 0xFF00FF) == (s->tile.raw & 0xFF00FF)) {
+                    s->bD = one;
+                    s->destination.raw = oldPosition;
+                }
+            }
+            s->movementTargetId = s->targetId;
+            func_800E50A0(s, 0, 0);
+            break;
+        case 1:
+        recover:
+            s->movementTargetId = target;
+            func_800E2CCC((void*)s);
+            break;
+        case 2:
+            s->b3 = one;
+            *(unsigned char*)0x1F8003D0 = 0;
+            s->b4 = one;
+            s->targetX = model->x;
+            s->targetZ = model->z;
+            if (s->b33) {
+                s->b1 = one;
+                s->b9 = one;
+                s->destinationX = s->targetX;
+                s->destinationZ = s->targetZ;
+            } else
+                s->movementTargetId = target;
+            angle = ratan2(s->targetX - s->x, s->targetZ - s->z);
+            func_800E50A0(s, 1, angle);
+            if (s->actor->id >= 9)
+                s->bE8 = 1;
+            break;
+        }
+    } else {
+        if (!s->bE4 && s->targets[target].f1) {
+            if (s->b24) {
+                s->bE4 = 1;
+                s->timeout = 255;
+                s->cachedDestination.b[0] = s->targetTileX >> 1;
+                s->cachedDestination.b[2] = s->targetTileZ >> 1;
+            } else {
+                if (s->targets[target].f5) {
+                    result = 0;
+                    goto done;
+                }
+                func_800D8260((void*)s, 7, 40);
+                if (!func_800E4180(s, 128, 1, 1))
+                    result = 0;
+                goto done;
+            }
+        }
+        if (s->bE8)
+            goto recover;
+        if (s->bE4) {
+            s->destination.raw = s->cachedDestination.raw;
+            if (s->timeout)
+                s->timeout--;
+            if ((s->destination.raw & 0xFF00FF) == (s->tile.raw & 0xFF00FF)) {
+                if (s->targets[target].f5) {
+                    result = 0;
+                    goto done;
+                }
+                func_800D8260((void*)s, 7, 40);
+                if (!func_800E4180(s, 128, 1, 1)) {
+                cancel:
+                    s->bE4 = 0;
+                    result = 0;
+                }
+            } else if (s->timeout) {
+                s->b1 = 1;
+                s->bC = 1;
+                func_800E50A0(s, 0, 0);
+            } else
+                goto cancel;
+        } else if (!func_800E4180(s, 0, 3, 1))
+            result = 0;
+    }
+    goto done;
+
+done:
+    func_800E4904(s);
+    return result;
+}
 
 typedef struct {
     char prefix[0x4C];

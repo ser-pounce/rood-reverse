@@ -4,6 +4,9 @@
 int CD_init(void);
 void CD_initintr(void);
 int CD_initvol(void);
+int CD_vol(CdlATV* vol);
+int CD_getsector(void* madr, int size);
+int CD_getsector2(void* madr, int size);
 
 extern u_char D_80032208;
 extern CdlLOC D_80032214;
@@ -59,11 +62,15 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdControlF);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdControlB);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdMix);
+int CdMix(CdlATV* vol)
+{
+    CD_vol(vol);
+    return 1;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdGetSector);
+int CdGetSector(void* madr, int size) { return CD_getsector(madr, size) == 0; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdGetSector2);
+int CdGetSector2(void* madr, int size) { return CD_getsector2(madr, size) == 0; }
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/SYS", CdDataCallback);
 

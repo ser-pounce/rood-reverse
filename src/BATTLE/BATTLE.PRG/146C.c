@@ -6001,7 +6001,122 @@ int func_800792E4(int arg0, int arg1, int arg2)
 }
 
 void func_800793C0(void);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
+extern int D_800F19D8;
+extern int D_800F19EC;
+
+void func_800793C0(void)
+{
+    D_800F19CC_t2* temp_s2;
+    D_800F19CC_t2* temp_s2_2;
+    int var_s1;
+    int var_s1_2;
+    int var_s3;
+    int var_s4;
+    int var_v1;
+    int var_v1_2;
+    int var_v1_3;
+    unsigned char temp_a0_2;
+
+    if (D_800F19EC == 1 || D_800F19EC == 3) {
+        if (vs_main_projectionDistance > 512) {
+            vs_main_projectionDistance -= 64;
+            if (vs_main_projectionDistance <= 512)
+                vs_main_projectionDistance = 512;
+            SetGeomScreen(vs_main_projectionDistance);
+        } else if (vs_main_projectionDistance < 512) {
+            vs_main_projectionDistance += 64;
+            if (vs_main_projectionDistance >= 512)
+                vs_main_projectionDistance = 512;
+            SetGeomScreen(vs_main_projectionDistance);
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance < D_800F19CC->unk2C0C) {
+            vs_battle_cameraCurrentSpherical.values.distance += 192;
+            if (vs_battle_cameraCurrentSpherical.values.distance > D_800F19CC->unk2C0C)
+                vs_battle_cameraCurrentSpherical.values.distance = D_800F19CC->unk2C0C;
+        } else if (vs_battle_cameraCurrentSpherical.values.distance
+                   > D_800F19CC->unk2C0C) {
+            vs_battle_cameraCurrentSpherical.values.distance -= 192;
+            if (vs_battle_cameraCurrentSpherical.values.distance < D_800F19CC->unk2C0C)
+                vs_battle_cameraCurrentSpherical.values.distance = D_800F19CC->unk2C0C;
+        }
+    }
+    if ((vs_main_projectionDistance == 0x200) && (D_800F19D8 == D_800F19CC->unk2C0C)
+        && (_isLookAtAtDestination() != 0)) {
+        var_s4 = 1;
+        var_s3 = 0;
+        if (D_800F19CC->unk4 != 0) {
+            do {
+                var_v1 = var_s3;
+                if (var_s3 < 0) {
+                    var_v1 = var_s3 + 3;
+                }
+                temp_s2 = &D_800F19CC->unk854[var_s3 - ((var_v1 >> 2) * 4)];
+                var_s1 = 0;
+                if (temp_s2->unk4A != 0) {
+                    do {
+                        if ((temp_s2->unk4C[var_s1].unk40 == 0)
+                            && ((unsigned int)(func_8009E4B0((int)temp_s2->unk4C[var_s1]
+                                                       .unk0.targetActor)
+                                               + 1)
+                                >= 2U)) {
+                            var_s4 = 0;
+                        }
+                        var_s1 += 1;
+                    } while (var_s1 < (int)temp_s2->unk4A);
+                }
+                var_s3 += 1;
+            } while ((unsigned int)var_s3 < (unsigned int)D_800F19CC->unk4);
+        }
+        if (var_s4 != 0) {
+            func_8006C40C();
+            func_800CB654(0);
+            var_s3 = 0;
+            func_8009E5C4((int)D_800F19CC->unk8.unk4.unk0.targetActor);
+            if (D_800F19CC->unk4 != 0) {
+                do {
+                    var_v1_2 = var_s3;
+                    if (var_s3 < 0) {
+                        var_v1_2 = var_s3 + 3;
+                    }
+                    temp_s2_2 = &D_800F19CC->unk854[var_s3 - ((var_v1_2 >> 2) * 4)];
+                    var_s1_2 = 0;
+                    if (temp_s2_2->unk4A != 0) {
+                        do {
+                            if (temp_s2_2->unk4C[var_s1_2].unk40 == 0) {
+                                func_800792E4((int)temp_s2_2->unk4.unk0.targetActor,
+                                    (int)temp_s2_2->unk4C[var_s1_2].unk0.targetActor, 1);
+                            }
+                            var_s1_2 += 1;
+                        } while (var_s1_2 < (int)temp_s2_2->unk4A);
+                    }
+                    var_s3 += 1;
+                } while ((unsigned int)var_s3 < (unsigned int)D_800F19CC->unk4);
+            }
+            var_s3 = 0;
+            if (D_800F19CC->unk4 != 0) {
+                do {
+                    var_v1_3 = var_s3;
+                    if (var_s3 < 0) {
+                        var_v1_3 = var_s3 + 3;
+                    }
+                    temp_s2 = &D_800F19CC->unk854[var_s3 - ((var_v1_3 >> 2) * 4)];
+                    if (temp_s2->unk4.unk40 == 0) {
+                        temp_a0_2 = temp_s2->unk4.unk0.targetActor;
+                        func_800792E4((int)temp_a0_2, (int)temp_a0_2, 1);
+                    }
+                    var_s3 += 1;
+                } while ((unsigned int)var_s3 < (unsigned int)D_800F19CC->unk4);
+            }
+            if (D_800F196C != 3) {
+                if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                    func_80073898();
+                    return;
+                }
+                func_8006FB48();
+            }
+        }
+    }
+}
 
 void func_800797BC(void)
 {

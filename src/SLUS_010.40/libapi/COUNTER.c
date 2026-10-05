@@ -71,18 +71,14 @@ long StartRCnt(u_long spec)
     return i < 3;
 }
 
-__asm__("glabel StopRCnt;"
-        "and    $a0, 0xFFFF;"
-        "sll    $a0, 2;"
-        "lw     $a1, _interruptReg;"
-        "lw     $v0, _interruptMasks($a0);"
-        "lw     $v1, 0x4($a1);"
-        "nor    $v0, $zero, $v0;"
-        "and    $v1, $v0;"
-        "li     $v0, 0x1;"
-        "j      $ra;"
-        "sw     $v1, 0x4($a1);"
-        "endlabel StopRCnt");
+long StopRCnt(u_long spec)
+{
+    int i;
+
+    i = spec & 0xFFFF;
+    (*_interruptReg)[1] &= ~_interruptMasks[i];
+    return 1;
+}
 
 long ResetRCnt(u_long spec)
 {

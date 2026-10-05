@@ -1059,7 +1059,139 @@ int func_800DAC80(actionSetupContext* context, func_800DCAA0_t* action)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAD9C);
+typedef struct {
+    unsigned int pad0, flags4, distance, flagsC;
+} actionDispatchEntry;
+typedef struct actionDispatchModel {
+    char pad0[8];
+    unsigned int flags;
+    char padC[6];
+    unsigned char id;
+    char pad13[7];
+    short status;
+    short position[3];
+} actionDispatchModel;
+typedef struct actionDispatchActor {
+    struct actionDispatchActor* next;
+    int id;
+    char pad8[0x3C];
+    actionDispatchModel* model;
+} actionDispatchActor;
+typedef struct actionDispatchState {
+    unsigned int flags0, flags4, flags8;
+    unsigned short flagsC, padE;
+    char pad10[4];
+    unsigned char f14;
+    char pad15[8];
+    unsigned char f1D;
+    char pad1E[0x16];
+    unsigned char tileX, pad35, tileZ;
+    char pad37[0x11];
+    int target48;
+    short position[3];
+    char pad52[0x30];
+    short height;
+    char pad84[0x34];
+    short depth;
+    char padBA[0x78];
+    signed char terrain132;
+    char pad133[0xD];
+    actionDispatchEntry fallback;
+    char pad150[4];
+    signed char terrain154;
+    char pad155[7];
+    unsigned char target;
+    char pad15D[0x87];
+    unsigned int distance;
+    char pad1E8[0x248];
+    actionDispatchEntry* entries[16];
+    int count;
+} actionDispatchState;
+typedef struct {
+    char pad[0x28];
+    actionDispatchActor* registered[4];
+} actionDispatchRegistry;
+extern int D_800F16F4;
+void func_800DB820(actionDispatchState*);
+void func_800DB7B4(actionDispatchState*);
+int func_800DAD9C(actionDispatchState* state)
+{
+    int i, j;
+    actionDispatchEntry* entry;
+    actionDispatchActor* actor;
+    actionDispatchModel* model;
+    for (i = 0; i < state->count; i++) {
+        entry = state->entries[i];
+        if (func_800DAC80((void*)state, (void*)entry))
+            return 1;
+    }
+    entry = &state->fallback;
+    if ((entry->flags4 >> 5) & 255) {
+        for (j = 0; j < 4; j++) {
+            actor = ((actionDispatchRegistry*)D_800F58BC)->registered[j];
+            if (actor) {
+                entry->flagsC = (entry->flagsC & ~15) | (actor->id & 15);
+                model = (actionDispatchModel*)D_800F45E0[actor->id];
+                if (model->id && model->status == 0) {
+                    if (func_800DAC80((void*)state, (void*)entry))
+                        return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+void func_800DAED0(void)
+{
+    actionDispatchActor* actor;
+    actionDispatchState* state;
+    int value, height, coordinate;
+    for (actor = ((actionDispatchActor*)vs_battle_actors[0])->next; actor;
+        actor = actor->next) {
+        state = ((actionDispatchState**)0x1F80037C)[actor->id];
+        if (!state->f14 || state->f1D) {
+            value = func_800E45B4();
+            if (D_800F16F4 < value)
+                func_800DEEFC((void*)state, 17);
+            else {
+                *(int*)0x1F8003FC = value;
+                if (state->f14 && state->f1D) {
+                    if (D_800F5878[0]) {
+                        if ((((actionDispatchModel*)D_800F4538[0])->flags & 0x180000)
+                            && (coordinate =
+                                    ((actionDispatchModel*)D_800F4538[0])->position[1],
+                                state->position[1] < coordinate))
+                            height = -((actionDispatchState*)D_800F5878[0])->depth;
+                        else
+                            height = ((actionDispatchState*)D_800F5878[0])->height;
+                    } else
+                        height = -64;
+                    state->distance = func_800E4624(state->position,
+                        ((actionDispatchActor*)vs_battle_actors[0])->model->position,
+                        state->height, height);
+                    func_800DAD9C(state);
+                } else {
+                    coordinate = state->tileX;
+                    state->target = 16;
+                    state->target48 = -1;
+                    /* Clear the packed header halfword through its raw address. */
+                    *(unsigned short*)((char*)state + 12) = 0;
+                    state->flags0 = 0;
+                    state->flags4 = 0;
+                    state->flags8 = 0;
+                    value =
+                        (*(unsigned short (**)[32])0x1F8003C0)[state->tileZ][coordinate]
+                        & 15;
+                    state->terrain154 = value;
+                    state->terrain132 = value;
+                    *(int*)0x1F8003D0 = 0;
+                    func_800DB820(state);
+                    func_800DB7B4(state);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DB0BC);
 

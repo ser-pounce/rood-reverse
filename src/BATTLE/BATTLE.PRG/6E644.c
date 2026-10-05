@@ -813,6 +813,10 @@ done:
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D87E8);
 
+extern int D_800F58C4;
+
+void func_800D9538(void) { D_800F58C4 = *(int*)0x1F8003F8; }
+
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D954C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D96C8);

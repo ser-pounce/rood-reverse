@@ -1269,7 +1269,103 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
     return -3000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A70DC);
+typedef struct {
+    char prefix[0x1C];
+    short heights[8];
+    u_char blocked[8];
+    u_char attributes[8];
+    u_char centerAttribute;
+} ActorCollisionSamples;
+static inline int vs_battleRelativeSampleHeight(
+    ActorCollisionSamples* samples, int sector, int offset, int y)
+{
+    return samples->heights[(sector + offset) & 7] - y;
+}
+void func_800A70DC(D_800F4538_t* actor, int diagonal)
+{
+    ActorCollisionSamples* samples = (void*)0x1F8003BC;
+    ActorCollisionSamples* clearCursor;
+    int i, j, negativeRadius, negativeDiagonal, delta;
+    actor->unk5AC_12 = 0;
+    i = 7;
+    clearCursor = (void*)((char*)samples + i);
+    for (; i >= 0; i--) {
+        clearCursor->blocked[0] = 0;
+        clearCursor = (void*)((char*)clearCursor - 1);
+    }
+    if (*(u_int*)((char*)actor + 0x5AC) & 0x600) {
+        for (i = 7; i >= 0; i--)
+            samples->heights[i] = 0;
+        return;
+    }
+    if (actor->unk0.unkA_3 == 2) {
+        for (i = 0; i < 8; i++)
+            samples->heights[i] = actor->unk0.position.vy;
+        return;
+    }
+    i = actor->unk63C;
+    negativeRadius = -i;
+    samples->centerAttribute = (*func_800A8D64((&actor->unk0.position), 0) >> 5) & 1;
+    samples->heights[0] = func_800A6EE8((&actor->unk0.position), 0, negativeRadius, 0);
+    samples->attributes[0] = (*D_800F49F0 >> 5) & 1;
+    samples->heights[6] = func_800A6EE8((&actor->unk0.position), i, 0, 0);
+    samples->attributes[6] = (*D_800F49F0 >> 5) & 1;
+    samples->heights[2] = func_800A6EE8((&actor->unk0.position), negativeRadius, 0, 0);
+    samples->attributes[2] = (*D_800F49F0 >> 5) & 1;
+    negativeDiagonal = -diagonal;
+    samples->heights[7] =
+        func_800A6EE8((&actor->unk0.position), diagonal, negativeDiagonal, 0);
+    samples->attributes[7] = (*D_800F49F0 >> 5) & 1;
+    samples->heights[1] =
+        func_800A6EE8((&actor->unk0.position), negativeDiagonal, negativeDiagonal, 0);
+    samples->attributes[1] = (*D_800F49F0 >> 5) & 1;
+    samples->heights[3] =
+        func_800A6EE8((&actor->unk0.position), negativeDiagonal, diagonal, 0);
+    samples->attributes[3] = (*D_800F49F0 >> 5) & 1;
+    samples->heights[5] = func_800A6EE8((&actor->unk0.position), diagonal, diagonal, 0);
+    samples->attributes[5] = (*D_800F49F0 >> 5) & 1;
+    samples->heights[4] = func_800A6EE8((&actor->unk0.position), 0, i, 0);
+    samples->attributes[4] = (*D_800F49F0 >> 5) & 1;
+    if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0)
+        j = actor->unk0.position.vy - 32;
+    else if (actor->unk1848.unk8 == 0)
+        j = actor->unk0.position.vy - 64;
+    else
+        j = actor->unk0.position.vy - 96;
+    for (i = 0; i < 8; i++) {
+        if (samples->heights[i] > actor->unk0.position.vy)
+            samples->heights[i] = actor->unk0.position.vy;
+        if ((!samples->attributes[i] || !samples->centerAttribute)
+            && j >= samples->heights[i]) {
+            samples->blocked[i] = 1;
+            actor->unk5AC_12 = 1;
+        }
+    }
+    if (actor->unk0.unkA_0) {
+        i = (short)actor->unk1848.unk4 + 256;
+        i /= 512;
+        j = 0;
+        do {
+            delta =
+                vs_battleRelativeSampleHeight(samples, i, j - 1, actor->unk0.position.vy);
+            if (delta < -255)
+                return;
+            ++j;
+            if (delta >= -192)
+                return;
+        } while (j < 3);
+        j = 0;
+        do {
+            delta =
+                vs_battleRelativeSampleHeight(samples, i, j + 2, actor->unk0.position.vy);
+            ++j;
+            if (delta < -192)
+                return;
+        } while (j < 5);
+        samples->heights[i] = actor->unk0.position.vy;
+        actor->unk5AC_12 = 0;
+    }
+}
 
 typedef struct {
     char prefix[0x2C];

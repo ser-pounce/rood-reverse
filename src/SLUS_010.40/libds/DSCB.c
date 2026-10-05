@@ -1,9 +1,34 @@
 #include "common.h"
+#include <libds.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSCB", DsSyncCallback);
+int DMACallback(int, void (*)(void));
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSCB", DsReadyCallback);
+extern DslCB D_80039E60;
+extern DslCB D_80039E64;
+extern DslCB D_80039E68;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSCB", DsStartCallback);
+DslCB DsSyncCallback(DslCB func)
+{
+    DslCB* p = &D_80039E60;
+    DslCB old = *p;
+    *p = func;
+    return old;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSCB", DsDataCallback);
+DslCB DsReadyCallback(DslCB func)
+{
+    DslCB* p = &D_80039E64;
+    DslCB old = *p;
+    *p = func;
+    return old;
+}
+
+DslCB DsStartCallback(DslCB func)
+{
+    DslCB* p = &D_80039E68;
+    DslCB old = *p;
+    *p = func;
+    return old;
+}
+
+void(*DsDataCallback(void (*func)())) { return (void*)DMACallback(3, func); }

@@ -1247,7 +1247,114 @@ int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
     return var_t0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC168);
+int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference)
+{
+    int i = 0;
+    int changed = 0;
+    int r, g, b;
+    int baseR, baseG;
+    int color, delta;
+    int output;
+    if (count > 0) {
+        do {
+            b = *colors;
+            r = b & 31;
+            g = (b >> 5) & 31;
+            b = (b >> 10) & 31;
+            switch (mode) {
+            case 0:
+                delta = amount * 2;
+                r -= delta;
+                if (r < 0)
+                    r = 0;
+                g -= delta;
+                if (g < 0)
+                    g = 0;
+                r |= g << 5;
+                if (r != 0)
+                    changed = 1;
+                r |= b << 10;
+                output = r | ~0x7FFF;
+                *colors = output;
+                break;
+            case 1:
+                delta = amount * 4;
+            fade:
+                b -= delta;
+                if (b < 0)
+                    b = 0;
+                r -= delta;
+                if (r < 0)
+                    r = 0;
+                g -= delta;
+                if (g < 0)
+                    g = 0;
+                r |= g << 5;
+                r |= b << 10;
+                if (r != 0)
+                    changed = 1;
+                output = r | ~0x7FFF;
+                *colors = output;
+                break;
+            case 2:
+                output = 0xFFFF;
+                *colors = output;
+                break;
+            case 3:
+                r += amount;
+                if (r >= 32)
+                    r = 31;
+                g += amount * 2;
+                if (g >= 32)
+                    g = 31;
+                b += amount * 2;
+                if (b >= 32)
+                    b = 31;
+                r |= g << 5;
+                r |= b << 10;
+                output = r | ~0x7FFF;
+                *colors = output;
+                break;
+            case 4:
+                color = *reference;
+                r -= amount * 2;
+                baseR = color & 31;
+                baseG = (color >> 5) & 31;
+                color = (color >> 10) & 31;
+                if (r < baseR)
+                    r = baseR;
+                g -= amount * 2;
+                if (g < baseG)
+                    g = baseG;
+                b -= amount * 2;
+                if (b < color)
+                    b = color;
+                r |= g << 5;
+                delta = b << 10;
+                color = *reference;
+                r |= delta;
+                do {
+                    if (r != (color & 0x7FFF)) {
+                        changed = 1;
+                    }
+                } while (0);
+                output = (color & 0x8000) | r;
+                *colors = output;
+                break;
+            case 5:
+                delta = amount;
+                goto fade;
+            case 6:
+                output = 0x8000;
+                *colors = output;
+            }
+            ++i;
+            ++colors;
+            ++reference;
+        } while (i < count);
+    }
+    return changed;
+}
 
 void func_800AC37C(int arg0, int arg1)
 {

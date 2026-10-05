@@ -1774,6 +1774,69 @@ void func_800DD344(actionReactionState* state)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD604);
 
+typedef struct {
+    char pad0[0x4C];
+    short x, y, z;
+} nearestWaypointState;
+typedef struct {
+    unsigned char x, y, z, flags;
+} nearestWaypointDestination;
+extern unsigned short* D_800F58C8;
+static inline unsigned int nearestWaypointValue(unsigned short* row, int index)
+{
+    unsigned short* p = row;
+    p += index;
+    return *p;
+}
+static inline unsigned short* nearestWaypointAddress(unsigned short* row, int index)
+{
+    row += index;
+    return row;
+}
+void func_800DD7CC(nearestWaypointState* state, nearestWaypointDestination* destination)
+{
+    int x;
+    int z;
+    int savedMap;
+    int dx;
+    int dz;
+    int index;
+    unsigned short entry;
+    unsigned int packed;
+    unsigned int distance;
+    unsigned int closest;
+
+    closest = -1U;
+    {
+        int* scratch = (int*)0x1F8003BC;
+        index = 0;
+        savedMap = *scratch;
+    }
+    *(int*)0x1F8003BC = (int)D_800F58D0;
+    do {
+        entry = *nearestWaypointAddress(D_800F58C8, index);
+        packed = entry & 0xFFFF;
+        if ((packed >> 0xF) != 0) {
+            x = ((entry & 0x1F) << 7) + 0x40;
+            z = ((packed * 4) & 0xF80) + 0x40;
+            dx = state->x - x;
+            dz = state->z - z;
+            distance = func_800E4660(dx, state->y - func_800E42D4(x, z), dz);
+            if (distance < closest) {
+                destination->x =
+                    (signed char)(nearestWaypointValue(D_800F58C8, index) & 0x1F);
+                closest = distance;
+                destination->z =
+                    (signed char)(((unsigned short)nearestWaypointValue(D_800F58C8, index)
+                                      >> 5)
+                                  & 0x1F);
+            }
+        }
+        index += 1;
+    } while (index < 8);
+    *(int*)0x1F8003BC = savedMap;
+}
+
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD918);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE030);

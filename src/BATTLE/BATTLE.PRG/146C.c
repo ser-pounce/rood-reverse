@@ -6148,7 +6148,7 @@ void func_8007983C(void)
 
 void _finishLoadZnd(int id);
 void func_80089DC0(int arg0);
-void func_8008C8A8(void);
+int func_8008C8A8(void);
 int func_80088B6C(void);
 void func_80088B8C(void);
 void func_8008EC48(VECTOR* arg0);
@@ -13950,7 +13950,115 @@ void func_8008C6B4(int arg0, int arg1)
 
 static short const D_80068BEC[] = { 8, 14, 16, 11, 7, 3, 1 };
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008C8A8);
+typedef struct {
+    unsigned int flags[2];
+    VECTOR positions[4];
+    VECTOR velocities[6];
+} RoomMotionVectors;
+int func_800A4494(int, SVECTOR*);
+int func_8008C8A8(void)
+{
+    SVECTOR point;
+    _mpdRoomSection12* object;
+    int count, i, tick;
+    int* scene;
+    u_int temp;
+    int y;
+    if (D_800F1BA4 || vs_battle_roomData.section12 == NULL || *(u_char*)&D_800F1D6E)
+        return;
+    if (D_800F1D68 > 0) {
+        D_800F1D68 -= vs_gametime_tickspeed >> 1;
+        if (D_800F1D68 < 30 && vs_main_frameBuf)
+            func_8008E4DC(D_800F1D6F == 0);
+        if (D_800F1D68 <= 0) {
+            func_8008E4DC(0);
+            D_800F1D68 = 0;
+        }
+        return;
+    }
+    object = vs_battle_roomData.section12;
+    count = vs_battle_roomData.header.section12Len / sizeof(*object);
+    for (i = 0; i < count; ++i, ++object) {
+        if (!object->unk0_9) {
+            if (!object->unk0_8 || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
+                for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
+                    temp = D_800F1D70[i];
+                    if (temp < 7) {
+                        D_800F1D70[i] = temp + (vs_gametime_tickspeed >> 1);
+                        if (D_800F1D70[i] >= 8)
+                            D_800F1D70[i] = 7;
+                    }
+                    if (!object->unk4_0) {
+                        object->unkA8 +=
+                            ((RoomMotionVectors*)object)->velocities[object->unk0_29].vx;
+                        object->unkAC +=
+                            ((RoomMotionVectors*)object)->velocities[object->unk0_29].vy;
+                        object->unkB0 +=
+                            ((RoomMotionVectors*)object)->velocities[object->unk0_29].vz;
+                        point.vy = -(object->unkAC / 4096);
+                        point.vx = object->unkA8 / 4096;
+                        point.vz = object->unkB0 / 4096;
+                        if (func_800A4494(i + 2, &point)) {
+                            object->unkA8 -= ((RoomMotionVectors*)object)
+                                                 ->velocities[object->unk0_29]
+                                                 .vx;
+                            object->unkAC -= ((RoomMotionVectors*)object)
+                                                 ->velocities[object->unk0_29]
+                                                 .vy;
+                            object->unkB0 -= ((RoomMotionVectors*)object)
+                                                 ->velocities[object->unk0_29]
+                                                 .vz;
+                        } else {
+                            ++object->unk4_16;
+                            if (object->unk4_16 >= ((RoomMotionVectors*)object)
+                                    ->velocities[object->unk0_29]
+                                    .pad) {
+                                object->unk4_16 = 0;
+                                object->unk4_0 = 1;
+                                object->unkA8 = object->unk8[object->unk0_27].vx;
+                                object->unkAC = object->unk8[object->unk0_27].vy;
+                                object->unkB0 = object->unk8[object->unk0_27].vz;
+                                if (object->unk0_27 == object->unk4_8)
+                                    *(unsigned int*)&object->unkB4 |= 0x4000;
+                            }
+                        }
+                    } else {
+                        ++object->unk4_16;
+                        if (object->unk4_16 >= object->unk8[object->unk0_27].pad) {
+                            object->unk4_16 = 0;
+                            object->unk4_0 = 0;
+                            object->unk0_14 = object->unk0_27;
+                            ++object->unk0_29;
+                            *(unsigned int*)&object->unkB4 &= ~0x4000;
+                            if (object->unk0_14 == 0) {
+                                object->unk0_26 = 1;
+                                object->unk0_29 = 0;
+                            } else if (object->unk0_14 == object->unk0_10)
+                                object->unk0_26 = 0;
+                            if (object->unk0_26)
+                                ++object->unk0_27;
+                            else
+                                --object->unk0_27;
+                        }
+                    }
+                }
+            }
+            scene = func_8009195C(object->unk0_0);
+            if (scene != NULL) {
+                scene[1] = object->unkA8 / 4096;
+                y = object->unkAC / 4096;
+                temp = D_80068BEC[D_800F1D70[i]] - y;
+                scene[2] = temp;
+                scene[3] = object->unkB0 / 4096;
+                scene[0] &= ~0x100;
+            }
+        } else {
+            scene = func_8009195C(object->unk0_0);
+            if (scene != NULL)
+                scene[0] |= 0x100;
+        }
+    }
+}
 
 // https://decomp.me/scratch/YpZTC
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008CEB0);

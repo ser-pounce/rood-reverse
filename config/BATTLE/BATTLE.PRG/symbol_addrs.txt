@@ -1093,6 +1093,7 @@ func_800E1850 = 0x800E1850; // type:func
 func_800E1908 = 0x800E1908; // type:func
 func_800E19FC = 0x800E19FC; // type:func
 func_800E1BB8 = 0x800E1BB8; // type:func
+func_800E1EAC = 0x800E1EAC; // type:func
 func_800E23AC = 0x800E23AC; // type:func
 func_800E24EC = 0x800E24EC; // type:func
 func_800E2B2C = 0x800E2B2C; // type:func

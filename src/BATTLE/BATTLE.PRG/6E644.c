@@ -2861,7 +2861,247 @@ move:
 #undef TERRAIN_MOVE_RESULT
 #undef TERRAIN_TILES
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1BB8);
+typedef struct {
+    char pad0[8];
+    unsigned int flags;
+} wanderObject;
+typedef struct wanderState {
+    char pad0[2];
+    unsigned char flag2;
+    unsigned char flag3;
+    char pad4[4];
+    unsigned char flag8;
+    char pad9[0x2B];
+    vs_battle_movementPosition tile;
+    char pad38[0x10];
+    vs_battle_movementPosition saved;
+    short x, y, z;
+    char pad52[6];
+    wanderObject* object;
+    char pad5C[0x58];
+    unsigned int moveArg;
+    char padB8[8];
+    unsigned short mode;
+    unsigned short timer;
+    int rangeSquared;
+    char padC8[8];
+    short angle;
+    unsigned short cooldown;
+    unsigned short restPeriod;
+    unsigned short movePeriod;
+    unsigned char rate;
+    char padD9[0x43];
+    vs_battle_movementPosition goal;
+    char pad120[13];
+    unsigned char mode12D;
+    char pad12E[0x2F];
+    unsigned char count;
+    unsigned short flags;
+    char pad160[8];
+    vs_battle_movementPosition dest;
+} wanderState;
+
+#define WANDER_DIRECTIONS ((D_800F16EC_t*)0x1F8003EC)
+#define WANDER_TILES (*(unsigned short(**)[32])0x1F8003C0)
+
+int func_800E4690(unsigned int, int);
+int D_800D9B6C(wanderState*, int);
+
+static inline D_800F16EC_t* wanderDirection(int index)
+{
+    return WANDER_DIRECTIONS + index;
+}
+
+int func_800E1BB8(wanderState* state, unsigned int tile, unsigned int maxCount, int arg3)
+{
+    vs_battle_movementPosition candidate;
+    int count = 0;
+    int choices[4];
+    int i;
+    unsigned int chosen;
+
+    if (!maxCount)
+        return -1;
+    if (!state->count)
+        state->goal.raw = tile;
+    candidate = state->goal;
+    for (i = 0; i < 4; i++) {
+        if (!(state->flags & 8)) {
+            D_800F16EC_t offset;
+            if (*(int*)0x1F8003F4)
+                candidate.p.y =
+                    (*(unsigned char**)0x1F8003C4)[state->goal.p.z
+                                                       * (*(unsigned char*)0x1F8003DC)
+                                                   + state->goal.p.x]
+                        >> i * 2
+                    & 1;
+            else
+                candidate.p.y = func_800E4690(state->goal.raw, i * 2);
+            offset = *wanderDirection(i * 2);
+            candidate.p.x = state->goal.p.x + offset.dx;
+            candidate.p.z = state->goal.p.z + offset.dz;
+            if (candidate.p.y) {
+                if (!func_800D96C8(
+                        (func_800D8400_t*)state, state->goal.raw, candidate.raw, i * 2))
+                    continue;
+                candidate.p.y = 0;
+            }
+            if (!state->flag2
+                && (WANDER_TILES[candidate.p.z][candidate.p.x] & 15)
+                       != (WANDER_TILES[state->goal.p.z][state->goal.p.x] & 15))
+                continue;
+        }
+        if (!(WANDER_TILES[candidate.p.z][candidate.p.x] & 32))
+            choices[count++] = i * 2;
+    }
+    if (!count)
+        return -1;
+    chosen = (unsigned int)func_800E45D4(4096) % count;
+    if (state->angle > 0 && ((state->angle + 4) & 7) == choices[chosen])
+        chosen = (unsigned int)func_800E45D4(4096) % count;
+    state->goal.p.x += WANDER_DIRECTIONS[choices[chosen]].dx;
+    state->goal.p.z += WANDER_DIRECTIONS[choices[chosen]].dz;
+    state->angle = choices[chosen];
+    state->count++;
+    return maxCount < state->count;
+}
+
+static inline int wanderRandomHeading(int direction)
+{
+    int offset = func_800E45D4(512);
+    int angle = direction << 9;
+    offset += 0xFF00;
+    return angle + offset;
+}
+
+static inline void wanderStartWalk(wanderState* s)
+{
+    s->angle = -1;
+    s->count = 0;
+    s->cooldown = 60;
+    s->mode++;
+    func_800E2CCC((movementRecoveryState*)s);
+}
+
+void func_800E1EAC(wanderState* state, unsigned int tile, unsigned int range)
+{
+    unsigned short rest, move;
+    int rate, i, heading, x, z, value, result;
+    int (*check)(wanderState*, int);
+
+    state->timer++;
+    rate = state->rate;
+    rest = state->restPeriod;
+    move = state->movePeriod;
+    if (state->object->flags & 0x200000)
+        check = (int (*)(wanderState*, int))func_800E0678;
+    else
+        check = D_800D9B6C;
+    if (state->mode12D == 1) {
+        if (state->timer < 31)
+            return;
+        if ((unsigned int)func_800E45D4(128) < 44)
+            state->mode12D = 2;
+        else {
+            state->timer = 0;
+            return;
+        }
+    }
+    if (state->timer == move) {
+        if ((unsigned int)func_800E45D4(128) < 44)
+            state->timer = 0;
+    } else if (state->timer >= rest + move) {
+        state->timer = (unsigned int)func_800E45D4(128) < 44 ? move : 0;
+    }
+    state->flag2 = 1;
+    *(unsigned char*)0x1F8003D0 = 0;
+    value = state->timer < move;
+    if (!value)
+        goto recover;
+    if (range >= 63) {
+        if (!state->mode || !func_800E45D4(1 << rate) || !state->cooldown) {
+            value = (unsigned int)func_800E45D4(4096) % range + 128;
+            state->mode = 1;
+            state->cooldown = 60;
+            state->rangeSquared = value * value;
+            heading = func_800E45D4(4) * 2;
+            for (i = 0; i < 4; i++) {
+                int direction = (heading + i * 2) & 7;
+                if (check(state, direction)) {
+                    state->angle = wanderRandomHeading(direction);
+                    break;
+                }
+            }
+            if (i == 4)
+                state->angle = func_800E45D4(4096);
+        }
+        if (!state->flag8)
+            state->cooldown = 60;
+        else if (state->cooldown)
+            state->cooldown--;
+        if (state->flags & 8)
+            func_800E1388(
+                (func_800D8400_t*)state, state->tile, state->angle, state->moveArg);
+        {
+            int boundsHeading = state->angle >> 9;
+            int boundsIndex;
+            for (boundsIndex = 0; boundsIndex < 2;
+                boundsHeading = (boundsHeading + 2) & 7, boundsIndex++) {
+                x = state->tile.p.x + WANDER_DIRECTIONS[boundsHeading].dx;
+                z = state->tile.p.z + WANDER_DIRECTIONS[boundsHeading].dz;
+                if (D_800F58BC->maxZ < z || z < D_800F58BC->minZ || D_800F58BC->maxX < x
+                    || x < D_800F58BC->minX || (WANDER_TILES[z][x] & 0x800)) {
+                    state->cooldown = 0;
+                    break;
+                }
+            }
+        }
+        func_800E50A0(state, 1, state->angle);
+        return;
+    }
+    state->flag3 = 1;
+    if (!func_800E45D4(1 << rate))
+        state->mode = 0;
+    switch (state->mode) {
+    case 0:
+        wanderStartWalk(state);
+        return;
+    case 1:
+        result = func_800E1BB8(state, tile, range, 3);
+        if (result < 0)
+            state->mode = 0;
+        else if (result > 0) {
+            state->mode++;
+            state->dest = state->goal;
+        }
+        break;
+    case 2:
+        state->dest = state->goal;
+        if (state->flags & 8) {
+            heading = ratan2(state->x - state->dest.p.x * 128 - 64,
+                          state->z - state->dest.p.z * 128 - 64)
+                    & 4095;
+            state->saved = state->dest;
+            func_800E1388((func_800D8400_t*)state, state->tile, heading, state->moveArg);
+        }
+        func_800E50A0(state, 0, 0);
+        if (!state->flag8)
+            state->cooldown = 60;
+        else if (state->cooldown)
+            state->cooldown--;
+        if ((state->dest.raw & 0xFF00FF) == (state->tile.raw & 0xFF00FF)
+            || !state->cooldown)
+            state->mode = 0;
+        return;
+    default:
+        state->mode = 0;
+    }
+recover:
+    func_800E2CCC((movementRecoveryState*)state);
+}
+
+#undef WANDER_DIRECTIONS
+#undef WANDER_TILES
 
 typedef struct {
     char pad0[0x34];

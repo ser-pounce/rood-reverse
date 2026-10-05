@@ -10,4 +10,6 @@
 #define VS_TRAIL_CORNER_STATE D_800FC8F8
 #include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG148.BIN/nonmatchings/E0", func_800FBA00);
+#define VS_TILED_RING_FUNCTION func_800FBA00
+#define VS_TILED_RING_COLORS D_800FC8FC
+#include "src/EFFECT/tiledRings.h"

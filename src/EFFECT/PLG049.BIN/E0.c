@@ -18,7 +18,9 @@
 /**
  * Target impact
  */
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FC624);
+#define VS_TILED_RING_FUNCTION func_800FC624
+#define VS_TILED_RING_COLORS D_800FE3F8
+#include "src/EFFECT/tiledRings.h"
 
 /**
  * Column of light and particles on cast

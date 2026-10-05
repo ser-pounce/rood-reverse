@@ -777,7 +777,44 @@ void func_800A4828(int arg0, MATRIX* arg1)
     temp_s1->unk0.visible = visible;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);
+void func_800B64A8(int, int, int);
+typedef struct {
+    unsigned mode : 2;
+    unsigned fast : 1;
+    unsigned reserved : 29;
+} vs_battleMovementModeFlags;
+void func_800A48CC(int index, int direction, int distance)
+{
+    D_800F4538_t* actor = D_800F4538[index];
+    vs_battleMovementModeFlags* flags = (void*)((char*)actor + 0x5B0);
+    if (actor->unk5AC_0 != 0)
+        return;
+    if (actor->unk0.unkA_3 != 0)
+        return;
+    if (actor->unk0.unkA_0 != 0) {
+        func_800B64A8(index, direction, distance);
+        return;
+    }
+    if (distance == 0) {
+        flags->fast = 0;
+        flags->mode = 0;
+        func_800A0204(index, 0x2F, 0, 4);
+        actor->unk0.unk11 = 6;
+        actor->unk0.unkA_0 = 2;
+    } else {
+        flags->fast = 0;
+        flags->mode = 1;
+        if (distance / 4096 >= actor->unk5B9) {
+            flags->mode = 2;
+            flags->fast = 1;
+        }
+        actor->unk0.unk11 = 0;
+        actor->unk0.unkA_0 = 1;
+    }
+    actor->unk1848.unk0 = 7;
+    actor->unk1848.unk4 = direction;
+    actor->unk1848.unk8 = distance;
+}
 
 func_8008D2C0_t* func_800A4A24(int arg0)
 {

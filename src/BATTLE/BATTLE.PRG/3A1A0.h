@@ -470,7 +470,8 @@ typedef struct {
     short unk32;
     short unk34;
     short unk36;
-    int unk38;
+    short unk38;
+    short unk3A;
     int unk3C;
     int unk40;
     int unk44;
@@ -605,7 +606,7 @@ void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
 int func_800A3760(int, int, int);
 int func_800A38E0(int);
-void func_800A3E6C(int);
+int func_800A3E6C(int);
 int func_800A47C4(void);
 void func_800A4E68(int);
 

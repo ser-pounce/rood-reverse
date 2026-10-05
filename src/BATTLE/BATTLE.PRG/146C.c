@@ -7372,7 +7372,128 @@ void func_8007D41C(void)
         (i + D_800F1ABC->sprite)[0] = D_800F1ABC->sprite[0];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D734);
+void func_8007D734(void* arg0)
+{
+    MATRIX sp18;
+    VECTOR translation;
+    SVECTOR vertex;
+    VECTOR sp50;
+    RECT sp60;
+    int sp68;
+    POLY_FT4* temp_a1;
+    POLY_FT4* temp_v0_2;
+    POLY_FT4* temp_v0_3;
+    POLY_FT4* temp_v0_4;
+    SPRT* temp_a2;
+    int temp_s0;
+    int temp_v0;
+    unsigned short page;
+    int var_s1;
+
+    memset(&sp60, 0, 8);
+    if (D_800F1B98 == 2) {
+        translation.vx = D_800F1A68.unk0 + 0xA0;
+        translation.vy = D_800F1A68.unk4 + 0x70;
+        RotMatrix_gte((SVECTOR*)D_800F1A28, &sp18);
+        TransMatrix(&sp18, &translation);
+        ScaleMatrix(&sp18, (VECTOR*)D_800F1A30);
+        SetRotMatrix(&sp18);
+        SetTransMatrix(&sp18);
+        if ((D_800F1A28[2] & 0xFFF) || D_800F1A30[0] != 0x1000
+            || D_800F1A30[1] != D_800F1A30[0]) {
+            var_s1 = 0;
+            do {
+                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->poly)->r0 =
+                    D_800F1A78.r0;
+                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->poly)->g0 =
+                    D_800F1A78.g0;
+                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->poly)->b0 =
+                    D_800F1A78.b0;
+                if (!((unsigned short)D_800F1A2C & 0xFFF) && D_800F1A40) {
+                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1].tpage = GetTPage(
+                        2, D_800F1B9C, var_s1 * 64 + ((vs_main_frameBuf ^ 1) * 320), 0);
+                } else {
+                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1].tpage = GetTPage(
+                        2, D_800F1B9C, var_s1 * 64 + ((vs_main_frameBuf & 1) * 320), 0);
+                }
+                vertex.vx = var_s1 * 64 - 160;
+                vertex.vy = -0x70;
+                vertex.vz = 0;
+                RotTrans(&vertex, &sp50, &sp68);
+                temp_v0_2 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
+                temp_v0_2->x0 = (short)(unsigned short)sp50.vx;
+                temp_v0_2->y0 = (short)(unsigned short)sp50.vy;
+                vertex.vx = var_s1 * 64 - 96;
+                vertex.vy = -0x70;
+                vertex.vz = 0;
+                RotTrans(&vertex, &sp50, &sp68);
+                temp_v0_3 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
+                temp_v0_3->x1 = (short)(unsigned short)sp50.vx;
+                temp_v0_3->y1 = (short)(unsigned short)sp50.vy;
+                vertex.vx = var_s1 * 64 - 160;
+                vertex.vy = 0x6F;
+                vertex.vz = 0;
+                RotTrans(&vertex, &sp50, &sp68);
+                temp_v0_4 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
+                temp_v0_4->x2 = (short)(unsigned short)sp50.vx;
+                temp_v0_4->y2 = (short)(unsigned short)sp50.vy;
+                vertex.vx = var_s1 * 64 - 96;
+                vertex.vy = 0x6F;
+                vertex.vz = 0;
+                RotTrans(&vertex, &sp50, &sp68);
+                temp_a1 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
+                temp_a1->x3 = (short)(unsigned short)sp50.vx;
+                temp_a1->y3 = (short)(unsigned short)sp50.vy;
+                AddPrim(arg0 + (D_800F1A44 * 4),
+                    &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1]);
+                var_s1 += 1;
+            } while (var_s1 < 5);
+        } else {
+            var_s1 = 0;
+            do {
+                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->sprite)->r0 =
+                    D_800F1A78.r0;
+                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->sprite)->g0 =
+                    D_800F1A78.g0;
+                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->sprite)->b0 =
+                    D_800F1A78.b0;
+                temp_v0 = (vs_main_frameBuf * 5) + var_s1;
+                temp_a2 = (SPRT*)(temp_v0 * sizeof(SPRT) + (u_long)D_800F1ABC
+                                  + sizeof(D_800F1ABC->poly));
+                temp_s0 = var_s1 << 6;
+                temp_a2->x0 = (unsigned short)D_800F1A68.unk0 + temp_s0;
+                temp_a2->y0 = (short)(unsigned short)D_800F1A68.unk4;
+                AddPrim(arg0 + (D_800F1A44 * 4), &D_800F1ABC->sprite[temp_v0]);
+                page = (D_800F1A40 ? GetTPage(2, D_800F1B9C,
+                                         temp_s0 + ((vs_main_frameBuf ^ 1) * 0x140), 0)
+                                   : GetTPage(2, D_800F1B9C,
+                                         temp_s0 + ((vs_main_frameBuf & 1) * 0x140), 0));
+                SetDrawMode(
+                    (DR_MODE*)((char*)D_800F1ABC
+                               + ((((vs_main_frameBuf * 5) + var_s1) * 0xC) + 0x258)),
+                    0, 1, page, &sp60);
+                AddPrim(arg0 + (D_800F1A44 * 4),
+                    (DR_MODE*)((char*)D_800F1ABC
+                               + ((((vs_main_frameBuf * 5) + var_s1) * 0xC) + 0x258)));
+                var_s1 += 1;
+            } while (var_s1 < 5);
+        }
+    }
+    if (D_800F1B98 == 1) {
+        D_800F1B98 = 2;
+        return;
+    }
+    if (D_800F1B98 >= 3) {
+        ++D_800F1B98;
+        if (D_800F1B98 >= 5) {
+            D_800F1B98 = 0;
+            if (D_800F1ABC != NULL) {
+                vs_main_freeHeapR(D_800F1ABC);
+                D_800F1ABC = NULL;
+            }
+        }
+    }
+}
 
 void func_8007DD50(int arg0)
 {

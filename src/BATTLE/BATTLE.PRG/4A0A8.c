@@ -3225,7 +3225,148 @@ int func_800BD610(void)
     return temp_a2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD6C4);
+typedef struct {
+    char reserved[0x1FC];
+    func_800BDBB4_t effects[4];
+} cameraEnvironmentState;
+
+void func_8007DE88(int*);
+void func_8007DEA8(P_CODE*);
+void func_8007DECC(D_800F1A68_t*);
+void func_800F9BC0(int, int);
+
+int func_800BD6C4(u_char* script, short arg1)
+{
+    D_800F1A68_t values;
+    P_CODE color;
+    short mode;
+    short effectValue;
+    switch (script[0]) {
+    case 185:
+        func_8007DE44(vs_battle_getShort(script + 1));
+        return 0;
+
+    case 186:
+        func_8007DE5C(script[1]);
+        return 0;
+
+    case 228:
+        if ((((cameraEnvironmentState*)D_800F4BA4)->effects[0].unk1E = script[4]) == 0) {
+            values.unk0 = (script[1] << 7);
+            values.unk4 = (script[2] << 7);
+            func_8007DDB8(&values);
+        } else {
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[0].unk1C = 0;
+            func_8007DE88(&values.unk0);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[0].unk12 =
+                (script[1] << 7)
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[0].unkA = values.unk0);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[0].unk14 =
+                (script[2] << 7)
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[0].unkC = values.unk4);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[0].unk1 = script[3];
+        }
+        return 0;
+
+    case 229:
+        if ((((cameraEnvironmentState*)D_800F4BA4)->effects[1].unk1E = script[5]) == 0) {
+            color.r0 = script[1];
+            color.g0 = script[2];
+            color.b0 = script[3];
+            func_8007DDD4(&color);
+        } else {
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[1].unk1C = 0;
+            func_8007DEA8(&color);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[1].unk12 =
+                script[1]
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[1].unkA = color.r0);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[1].unk14 =
+                script[2]
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[1].unkC = color.g0);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[1].unk16 =
+                script[3]
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[1].unkE = color.b0);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[1].unk1 = script[4];
+        }
+        return 0;
+
+    case 230:
+        if ((((cameraEnvironmentState*)D_800F4BA4)->effects[2].unk1E = script[4]) == 0) {
+            values.unk0 = (signed char)script[1];
+            values.unk4 = (signed char)script[2];
+            func_8007DDF8(&values);
+        } else {
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[2].unk1C = 0;
+            func_8007DECC(&values);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[2].unk12 =
+                (signed char)script[1]
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[2].unkA = values.unk0);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[2].unk14 =
+                (signed char)script[2]
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[2].unkC = values.unk4);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[2].unk1 = script[3];
+        }
+        return 0;
+
+    case 231:
+        func_8007DE2C(script[1]);
+        return 0;
+
+    case 237:
+
+        if (((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk1E > 0)
+            return 1;
+
+        if ((((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk1E = script[4]) == 0) {
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk2 = effectValue =
+                script[1] << 6;
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk4 =
+                (signed char)script[2];
+            func_800F9BC0(
+                effectValue, ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk4);
+        } else {
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk1C = 0;
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk12 =
+                (script[1] << 6)
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[3].unkA =
+                        ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk2);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk14 =
+                (signed char)script[2]
+                - (((cameraEnvironmentState*)D_800F4BA4)->effects[3].unkC =
+                        ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk4);
+            ((cameraEnvironmentState*)D_800F4BA4)->effects[3].unk1 = script[3];
+        }
+        return 0;
+
+    case 191:
+        mode = vs_battle_getShort(script + 1);
+        if (!mode) {
+            func_8007DE2C(0);
+            values.unk0 = values.unk4 = 0;
+            func_8007DDF8(&values);
+            values.unk0 = values.unk4 = 4096;
+            func_8007DDB8(&values);
+            color.r0 = color.g0 = color.b0 = 128;
+            func_8007DDD4(&color);
+            func_8007DE44(0);
+            func_8007DE5C(0);
+            func_8007DD50(0);
+        } else {
+            func_8007DD50(1);
+            func_8007DE2C(0);
+            values.unk0 = 0;
+            values.unk4 = 2;
+            func_8007DDF8(&values);
+            values.unk0 = values.unk4 = 4096;
+            func_8007DDB8(&values);
+            color.r0 = color.g0 = color.b0 = 144;
+            func_8007DE5C(1);
+            func_8007DDD4(&color);
+            func_8007DE44(mode);
+        }
+        return 0;
+    }
+}
 
 void func_800F9BC0(int, int);
 

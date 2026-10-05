@@ -20,4 +20,13 @@ $(BUILD)/config/$(battle.prg)/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \
 	config/MENU/MAINMENU.PRG/symbol_addrs.txt
 
-$(BUILD)/assets/$(battle.prg)/menuStrings.vsString.o: OBJCOPYFLAGS += --pad-to 0x1DC
+# Patch single byte in string table padding, seems it might actually be used though
+$(BUILD)/data/BATTLE/BATTLE.PRG: FIXUP = $(XDELTA) -dfans $@ tools/data/BATTLE/BATTLE.PRG.xdelta $@
+
+$(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.h &: $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.etc.vsString_yamlToDataFixed $< $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin 24 $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.h
+
+$(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.o: $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin
+	$(ECHO) Converting $<
+	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@

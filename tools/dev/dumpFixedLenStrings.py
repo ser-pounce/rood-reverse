@@ -1,48 +1,55 @@
-import sys
+import argparse
 from pathlib import Path
+
 from tools.etc.vsString import decode
 
 
-def main():
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
-        print("Usage: python dumpFixedLenStrings.py <binary_file> <length> [debug]")
-        sys.exit(1)
-
-    bin_path = Path(sys.argv[1])
+def positive_int(value):
     try:
-        record_length = int(sys.argv[2], 0)
+        number = int(value, 0)
     except ValueError:
-        print("Error: length must be an integer", file=sys.stderr)
-        sys.exit(2)
-
-    debug_mode = len(sys.argv) == 4 and sys.argv[3] == "debug"
-
-    if record_length <= 0:
-        print('Error: length must be a positive integer', file=sys.stderr)
-        sys.exit(2)
-
-    if not bin_path.exists():
-        print(f'Error: file not found: {bin_path}', file=sys.stderr)
-        sys.exit(2)
-
-    with bin_path.open('rb') as f:
-        idx = 0
-        while True:
-            start_pos = f.tell()
-            chunk = f.read(record_length)
-            if not chunk:
-                break
-
-            decoded = decode(chunk)
-
-            if debug_mode:
-                print(f"[{idx:3d}] [0x{start_pos:04x}] {decoded}")
-            else:
-                print(f"line{idx}: {decoded}")
-
-            idx += 1
+        raise argparse.ArgumentTypeError(f"{value!r} is not an integer")
+    if number <= 0:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return number
 
 
-if __name__ == '__main__':
+def load_data(path, record_length, count=None):
+    with path.open("rb") as f:
+        if count is None:
+            return f.read()
+        return f.read(record_length * count)
+
+
+def decode_strings(data, record_length):
+    return [
+        decode(data[offset:offset + record_length])
+        for offset in range(0, len(data), record_length)
+    ]
+
+
+def format_strings(strings):
+    return [f"line{idx}: {s}" for idx, s in enumerate(strings)]
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Dump fixed-length strings from a binary file."
+    )
+    parser.add_argument("binary_file", type=Path)
+    parser.add_argument("length", type=positive_int,
+                        help="size of each string record in bytes")
+    parser.add_argument("count", type=positive_int, nargs="?", default=None,
+                        help="number of strings to dump (default: until end of file)")
+    args = parser.parse_args()
+
+    if not args.binary_file.is_file():
+        parser.error(f"file not found: {args.binary_file}")
+
+    data = load_data(args.binary_file, args.length, args.count)
+    for line in format_strings(decode_strings(data, args.length)):
+        print(line)
+
+
+if __name__ == "__main__":
     main()
-

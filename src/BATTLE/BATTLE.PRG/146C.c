@@ -3952,7 +3952,193 @@ void func_80070F28(int arg0)
     func_8008B4BC(0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007138C);
+typedef struct {
+    u_short type;
+    short reserved2;
+    union {
+        struct {
+            u_char actor;
+            u_char reserved;
+            signed char part;
+            char reserved3;
+        } actor;
+        SVECTOR position;
+    } value;
+} actionEffectTarget;
+
+typedef struct {
+    u_short effect;
+    signed char count;
+    u_char otherCount;
+    actionEffectTarget source;
+    actionEffectTarget targets[16];
+    char others[16];
+    SVECTOR position;
+} actionEffectRequest;
+
+void func_8007138C(void)
+{
+    vs_battle_objectData object;
+    actionEffectRequest request;
+    func_8006EBF8_t actorPosition;
+    SVECTOR soundPosition;
+    D_800F19CC_t2* action;
+    int mode;
+    int i;
+    int j;
+    int duplicate;
+    int count;
+    vs_battle_actor* actor;
+
+    D_800F19CC->battleAbilityInputSuccessful = 0;
+    if (vs_battle_characterState->unk3C->statuses & 0x8000) {
+        D_800F19CC->battleAbilityInputAttempted = 1;
+    } else {
+        D_800F19CC->battleAbilityInputAttempted = 0;
+    }
+
+    action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    if (!vs_main_actions[action->actionIndex].unk2_0) {
+        func_80070278();
+        return;
+    }
+
+    func_800A1108(action->unk4.unk0.targetActor, &actorPosition);
+    soundPosition.vx = actorPosition.unk0.unk4.vx;
+    soundPosition.vz = actorPosition.unk0.unk4.vz;
+    soundPosition.vy = actorPosition.unk0.unk4.vy;
+
+    if (action->actionIndex < 0x8D) {
+        func_8009E2E0(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
+        vs_main_panSfx(0x7E, 0x34, &soundPosition);
+        if (!action->unk4.unk0.targetActor) {
+            vs_battle_setStateFlag(0xB7, 1);
+        }
+        mode = 2;
+    } else if (action->actionIndex < 0xB8) {
+        func_8009F298(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
+        vs_main_panSfx(0x7E, 0x36, &soundPosition);
+        mode = 3;
+    } else if (action->actionIndex < 0xE0) {
+        func_8009EFEC(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
+        vs_main_panSfx(0x7E, 0x34, &soundPosition);
+        if (!action->unk4.unk0.targetActor) {
+            vs_battle_setStateFlag(0xB9, 1);
+        }
+        mode = 3;
+    } else {
+        func_8009E2E0(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
+        vs_main_panSfx(0x7E, 0x35, &soundPosition);
+        mode = 1;
+    }
+
+    request.effect = vs_main_actions[action->actionIndex].unk1;
+    request.otherCount = 0;
+    request.source.type = 4;
+    request.source.value.actor.actor = action->unk4.unk0.targetActor;
+    request.source.value.actor.reserved = 0;
+    request.source.value.actor.part =
+        func_800A152C(action->unk4.unk0.targetActor, 255, 2);
+
+    count = 0;
+    for (i = 0; i < action->unk4A; ++i) {
+        if (!action->unk4C[i].unk40) {
+            duplicate = 0;
+            for (j = 0; j < count; ++j) {
+                if (!action->unk4C[j].unk40
+                    && request.targets[j].value.actor.actor
+                           == action->unk4C[i].unk0.targetActor) {
+                    request.targets[j].value.actor.part = 0;
+                    duplicate = 1;
+                }
+            }
+            if (duplicate) {
+                continue;
+            }
+            request.targets[count].type = 4;
+            request.targets[count].value.actor.actor = action->unk4C[i].unk0.targetActor;
+            request.targets[count].value.actor.reserved = 0;
+            request.targets[count].value.actor.part = func_800A152C(
+                action->unk4C[i].unk0.targetActor, action->unk4C[i].unk0.targetLimb, 2);
+            // BUG: tests the limb of the entry at the output index
+            if (action->unk4C[count].unk0.targetLimb == -1) {
+                request.targets[count].value.actor.part = func_800A152C(
+                    action->unk4C[i].unk0.targetActor,
+                    vs_battle_actors[action->unk4C[i].unk0.targetActor]->unk3C->unk36, 2);
+            } else {
+                request.targets[count].value.actor.part =
+                    func_800A152C(action->unk4C[i].unk0.targetActor,
+                        action->unk4C[i].unk0.targetLimb, 2);
+            }
+            ++count;
+        } else {
+            request.targets[count].type = 5;
+            request.targets[count].value.position = *(SVECTOR*)&action->unk4C[i].unk0;
+            ++count;
+        }
+    }
+    request.count = count;
+
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_actors[i]
+            && (vs_battle_actors[i]->unk40 == 1 || vs_battle_actors[i]->unk40 == 2)) {
+            duplicate = 0;
+            for (j = 0; j < action->unk4A; ++j) {
+                // BUG: indexes the hit list with the actor index
+                if (!action->unk4C[j].unk40 && i == action->unk4C[i].unk0.targetActor) {
+                    duplicate = 1;
+                    break;
+                }
+            }
+            if (i == action->unk4.unk0.targetActor) {
+                duplicate = 1;
+            }
+            if (!duplicate) {
+                request.others[request.otherCount] = i;
+                ++request.otherCount;
+            }
+        }
+    }
+
+    request.position.vx = action->unk844.vx;
+    request.position.vy = action->unk844.vy;
+    request.position.vz = action->unk844.vz;
+    if (request.effect == 0x27 && action->unk4C[0].unk40 == 4) {
+        request.effect = 0x24;
+    }
+    func_800CF0E8((func_800CF0E8_t*)&request, mode, action->unk2);
+
+    if (action->actionIndex >= 0x8D && action->actionIndex < 0xE0) {
+        actor = vs_battle_actors[action->unk4.unk0.targetActor];
+        object.dataType = 7;
+        object.index = action->unk4.unk0.targetActor;
+        object.modelId = 0;
+        if (action->actionIndex < 0xB8) {
+            object.actorId = 5;
+            object.modelId =
+                actor->unk3C
+                    ->armor[((u_short*)&actor->unkC)[0]][((u_short*)&actor->unkC)[1]]
+                    .unk2_4;
+        } else if (object.index) {
+            object.actorId = 5;
+            object.modelId =
+                actor->unk3C
+                    ->armor[((u_short*)&actor->unkC)[0]][((u_short*)&actor->unkC)[1]]
+                    .unk2_4;
+        } else {
+            object.actorId = 4;
+            object.modelId = (action->actionIndex - 0xB8) % 4;
+        }
+        object.material = actor->equippedWeaponCategory;
+        vs_battle_populateDataSlot(&object);
+    }
+
+    func_800CB654(1);
+    if (vs_main_settings.information) {
+        vs_battle_displaySceneMessage(0xB, action->actionIndex, 1);
+    }
+    _cameraMode = 5;
+}
 
 void func_800719DC(int arg0 __attribute__((unused))) { func_80070F28(0); }
 

@@ -185,7 +185,7 @@ segments:
       - [0x1F544, c, libapi/A19]
       - [0x1F554, c, libapi/A20]
       - [0x1F564, c, libapi/A21]
-      - [0x1F574, c, libapi/PATCH]
+      - [0x1F574, hasm, libapi/PATCH]
       - [0x1F614, hasm, libapi/CHCLRPAD]
       - [0x1F684, c, libcard/A74]
       - [0x1F694, c, libcard/A75]

@@ -45,11 +45,11 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_tiledRingUV uv[2][4];
     MATRIX unusedTransform;
     func_800FB4C0_t child;
-    vs_tiledRingState* state;
+    vs_tiledRingState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
-    D_800F53B8_t* battle;
-    int alive;
+    D_800F53B8_t* battle = D_800F53BC;
+    int alive = 1;
     MATRIX* actorMatrix;
     int fraction;
     int radiusValue;
@@ -67,9 +67,6 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int drawColumn;
     vs_tiledRingPrim* prim;
     pFileBlock1Data* texture;
-    alive = 1;
-    state = arg0->unk8;
-    battle = D_800F53BC;
     switch (arg1) {
     case 1:
         state = vs_main_allocHeapR(sizeof(*state));
@@ -83,19 +80,19 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         state->angle = 0;
         state->age = 0;
         effect = &D_800F569C->block5Data->unk4[state->effect];
-        func_800D6CCC((int*)(&state->texture));
+        func_800D6CCC((int*)&state->texture);
         func_800D6CF0(&state->texture, effect->unkCA, effect->unkCB);
         break;
 
-    case 2: {
+    case 2:
         effect = &D_800F569C->block5Data->unk4[state->effect];
         scratch->flags = effect->flags;
         actorMatrix = &battle->unk1C[effect->unkC8].unk38;
         effect = &D_800F569C->block5Data->unk4[state->effect];
         column = vs_battle_sampleCurve(effect->unk17, state->age);
         fraction = func_800CFE1C(effect->unk30, column);
-        column = ((u_char*)effect)[7];
-        factorBytes = ((u_char*)VS_TILED_RING_COLORS) + (column & 0x1C);
+        column = effect->transparencyCurve & 0x7;
+        factorBytes = VS_TILED_RING_COLORS[column];
         factors[0] = factorBytes[0];
         factors[1] = factorBytes[1];
         factors[2] = factorBytes[2];
@@ -110,9 +107,8 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             break;
 
         case 2:
-            scratch->unk98.vx += actorMatrix->t[0];
-            scratch->unk98.vy += actorMatrix->t[1];
-            scratch->unk98.vz += actorMatrix->t[2];
+            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
+                actorMatrix->t[2], +=);
             break;
         }
 
@@ -130,7 +126,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             vs_battle_sampleCurve(effect->unkC, state->age), scratch->unk118);
         state->radiusSpeed += scratch->unk108.vx;
 
-        radiusValue = (state->radius += scratch->unkF8.vx + state->radiusSpeed);
+        radiusValue = state->radius += scratch->unkF8.vx + state->radiusSpeed;
         height[0] = 0;
         radius[0] = radiusValue + scratch->unkA8.vx;
         state->heightSpeed += scratch->unk108.vy;
@@ -157,7 +153,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             speed = scratch->unk118[0];
         }
         maxSpeed = oldAngle + speed;
-        baseAngle = (state->angle = maxSpeed);
+        baseAngle = state->angle = maxSpeed;
         for (column = 0; column < 4; ++column) {
             for (row = 0; row < 3; ++row) {
                 cosAngle = (radius[row] * rcos(baseAngle + (column * 256))) >> 12;
@@ -224,37 +220,35 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         func_800D6D24(&state->texture);
         texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
-        uv[0][0].u = (uv[0][2].u = (uv[1][0].u = (uv[1][2].u = texture->u0)));
-        uv[0][1].u =
-            (uv[0][3].u = (uv[1][1].u = (uv[1][3].u = uv[0][0].u + texture->u1)));
-        uv[0][0].v = (uv[0][1].v = texture->v0);
-        uv[0][2].v =
-            (uv[0][3].v = (uv[1][0].v = (uv[1][1].v = uv[0][0].v
-                                                    + ((texture->v1 * fraction) >> 12))));
-        uv[1][2].v = (uv[1][3].v = texture->v0 + texture->v1);
+        uv[0][0].u = uv[0][2].u = uv[1][0].u = uv[1][2].u = texture->u0;
+        uv[0][1].u = uv[0][3].u = uv[1][1].u = uv[1][3].u = uv[0][0].u + texture->u1;
+        uv[0][0].v = uv[0][1].v = texture->v0;
+        uv[0][2].v = uv[0][3].v = uv[1][0].v = uv[1][1].v =
+            uv[0][0].v + ((texture->v1 * fraction) >> 12);
+        uv[1][2].v = uv[1][3].v = texture->v0 + texture->v1;
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             for (drawColumn = 0; drawColumn < 15; ++drawColumn) {
-                depth = (((depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1])
-                             + depths[drawRow + 1][drawColumn])
+                depth = (depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1]
+                            + depths[drawRow + 1][drawColumn]
                             + depths[drawRow + 1][drawColumn + 1])
                       / 4;
-                if ((depth < 0x800) && (vs_main_nearClip < depth)) {
+                if (depth < 0x800 && vs_main_nearClip < depth) {
                     prim = vs_scratch.unk0;
                     vs_scratch.unk0 = prim + 1;
-                    prim->poly.tag = 0xE1000000;
-                    prim->drawMode = 0xE1000200;
-                    *((int*)(&prim->poly.x0)) = screen[drawRow][drawColumn];
-                    *((int*)(&prim->poly.x1)) = screen[drawRow][drawColumn + 1];
-                    *((int*)(&prim->poly.x2)) = screen[drawRow + 1][drawColumn];
-                    *((int*)(&prim->poly.x3)) = screen[drawRow + 1][drawColumn + 1];
-                    *((int*)(&prim->poly.r0)) =
-                        (*((int*)(&prim->poly.r1)) = *((int*)(&colors[drawRow])));
-                    *((int*)(&prim->poly.r2)) =
-                        (*((int*)(&prim->poly.r3)) = *((int*)(&colors[drawRow + 1])));
-                    *((u_short*)(&prim->poly.u0)) = *((u_short*)(&uv[drawRow][0]));
-                    *((u_short*)(&prim->poly.u1)) = *((u_short*)(&uv[drawRow][1]));
-                    *((u_short*)(&prim->poly.u2)) = *((u_short*)(&uv[drawRow][2]));
-                    *((u_short*)(&prim->poly.u3)) = *((u_short*)(&uv[drawRow][3]));
+                    prim->poly.tag = _get_mode(0, 0, 0);
+                    prim->drawMode = _get_mode(0, 1, 0);
+                    *(int*)&prim->poly.x0 = screen[drawRow][drawColumn];
+                    *(int*)&prim->poly.x1 = screen[drawRow][drawColumn + 1];
+                    *(int*)&prim->poly.x2 = screen[drawRow + 1][drawColumn];
+                    *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
+                    *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 =
+                        *(int*)&colors[drawRow];
+                    *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 =
+                        *(int*)&colors[drawRow + 1];
+                    *(u_short*)&prim->poly.u0 = *(u_short*)&uv[drawRow][0];
+                    *(u_short*)&prim->poly.u1 = *(u_short*)&uv[drawRow][1];
+                    *(u_short*)&prim->poly.u2 = *(u_short*)&uv[drawRow][2];
+                    *(u_short*)&prim->poly.u3 = *(u_short*)&uv[drawRow][3];
                     prim->poly.tpage = texture->tpage;
                     prim->poly.clut = texture->clut;
                     prim->tag =
@@ -265,27 +259,25 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 }
             }
 
-            depth =
-                (((depths[drawRow][15] + depths[drawRow][0]) + depths[drawRow + 1][15])
-                    + depths[drawRow + 1][0])
-                / 4;
-            if ((depth < 0x800) && (vs_main_nearClip < depth)) {
+            depth = (depths[drawRow][15] + depths[drawRow][0] + depths[drawRow + 1][15]
+                        + depths[drawRow + 1][0])
+                  / 4;
+            if (depth < 0x800 && vs_main_nearClip < depth) {
                 prim = vs_scratch.unk0;
                 vs_scratch.unk0 = prim + 1;
-                prim->poly.tag = 0xE1000000;
-                prim->drawMode = 0xE1000200;
-                *((int*)(&prim->poly.x0)) = screen[drawRow][15];
-                *((int*)(&prim->poly.x1)) = screen[drawRow][0];
-                *((int*)(&prim->poly.x2)) = screen[drawRow + 1][15];
-                *((int*)(&prim->poly.x3)) = screen[drawRow + 1][0];
-                *((int*)(&prim->poly.r0)) =
-                    (*((int*)(&prim->poly.r1)) = *((int*)(&colors[drawRow])));
-                *((int*)(&prim->poly.r2)) =
-                    (*((int*)(&prim->poly.r3)) = *((int*)(&colors[drawRow + 1])));
-                *((u_short*)(&prim->poly.u0)) = *((u_short*)(&uv[drawRow][0]));
-                *((u_short*)(&prim->poly.u1)) = *((u_short*)(&uv[drawRow][1]));
-                *((u_short*)(&prim->poly.u2)) = *((u_short*)(&uv[drawRow][2]));
-                *((u_short*)(&prim->poly.u3)) = *((u_short*)(&uv[drawRow][3]));
+                prim->poly.tag = _get_mode(0, 0, 0);
+                prim->drawMode = _get_mode(0, 1, 0);
+                *(int*)&prim->poly.x0 = screen[drawRow][15];
+                *(int*)&prim->poly.x1 = screen[drawRow][0];
+                *(int*)&prim->poly.x2 = screen[drawRow + 1][15];
+                *(int*)&prim->poly.x3 = screen[drawRow + 1][0];
+                *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 = *(int*)&colors[drawRow];
+                *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 =
+                    *(int*)&colors[drawRow + 1];
+                *(u_short*)&prim->poly.u0 = *(u_short*)&uv[drawRow][0];
+                *(u_short*)&prim->poly.u1 = *(u_short*)&uv[drawRow][1];
+                *(u_short*)&prim->poly.u2 = *(u_short*)&uv[drawRow][2];
+                *(u_short*)&prim->poly.u3 = *(u_short*)&uv[drawRow][3];
                 prim->poly.tpage = texture->tpage;
                 prim->poly.clut = texture->clut;
                 prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
@@ -300,19 +292,15 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             if (effect->flags & 0x20000) {
                 SetRotMatrix(actorMatrix);
                 SetTransMatrix(actorMatrix);
-                (&scratch->unk2C)->vx = scratch->unk98.vx,
-                (&scratch->unk2C)->vy = scratch->unk98.vy,
-                (&scratch->unk2C)->vz = scratch->unk98.vz;
+                copyVector(&scratch->unk2C, &scratch->unk98);
                 gte_ldv0(&scratch->unk2C);
                 gte_rtv0tr2();
                 gte_stlvnl(&scratch->unk34);
-                (&child.unkC)->vx = scratch->unk34.vx * 4096,
-                (&child.unkC)->vy = scratch->unk34.vy * 4096,
-                (&child.unkC)->vz = scratch->unk34.vz * 4096;
+                setVector(&child.unkC, scratch->unk34.vx * ONE, scratch->unk34.vy * ONE,
+                    scratch->unk34.vz * ONE);
             } else {
-                (&child.unkC)->vx = scratch->unk98.vx * 4096,
-                (&child.unkC)->vy = scratch->unk98.vy * 4096,
-                (&child.unkC)->vz = scratch->unk98.vz * 4096;
+                setVector(&child.unkC, scratch->unk98.vx * ONE, scratch->unk98.vy * ONE,
+                    scratch->unk98.vz * ONE);
             }
             func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
         }
@@ -324,7 +312,6 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
         break;
-    }
 
     case 3:
         state->lifetime = 1;

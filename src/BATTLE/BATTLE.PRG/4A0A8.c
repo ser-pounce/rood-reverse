@@ -195,6 +195,20 @@ typedef struct {
     int distance;
 } textPlacement;
 
+typedef struct {
+    int value;
+    int distance;
+    char unk8[8];
+    VECTOR v1;
+    VECTOR v2;
+    VECTOR v3;
+    char unk40[16];
+    SVECTOR rotation;
+    SVECTOR rotation2;
+    char unk60[16];
+    MATRIX matrix;
+} cameraScratch;
+
 short func_8008DC7C(int, int);
 int func_80090C2C(int);
 void func_800A190C(int, int, SVECTOR*, int);
@@ -222,6 +236,7 @@ void func_800BE3D0(char arg0);
 void func_800BE5A4(short arg0);
 VECTOR* _vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* _vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
+VECTOR* _setVectorImm(VECTOR*, u_char*);
 VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
@@ -3122,7 +3137,176 @@ void func_800BC1CC(short arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC2E8);
+int func_800BC2E8(u_char* script, short unused)
+{
+    D_800F4BA4_t2* c;
+    D_800F4BA4_t2* other;
+    if (!(script[0] & 16)) {
+        c = &D_800F4BA4->lookAt;
+        other = &D_800F4BA4->eye;
+    } else {
+        c = &D_800F4BA4->eye;
+        other = &D_800F4BA4->lookAt;
+    }
+    switch (script[0] & 15) {
+    case 0:
+        _setVectorImm(&c->position, script + 1);
+        return 0;
+    case 1:
+        c->mode = 15;
+        _copyVector(&c->current, &c->position);
+        _copyVector(&other->target, &c->position);
+        return 0;
+    case 2:
+        c->mode = 2;
+        c->time = 0;
+        c->ease1 = script[1];
+        c->duration = script[2];
+        _copyVector(&c->start, &c->current);
+        _vectorSubtract(&c->velocity, &c->position, &c->current);
+        return 0;
+    case 3:
+        c->mode = 3;
+        c->time = 0;
+        c->ease1 = script[1];
+        c->duration = script[2];
+        _copyVector(&c->start, &c->current);
+        _vectorSubtract(&c->velocity, &c->position, &c->current);
+        c->value = _vectorMagnitude(
+            _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
+        return 0;
+    case 4: {
+        cameraScratch* s;
+        c->mode = 4;
+        c->time = 0;
+        c->duration = script[3];
+        c->ease1 = script[1] >> 4;
+        c->ease2 = script[2] & 15;
+        c->ease3 = script[2] >> 4;
+        _copyVector(&c->start, &c->target);
+        s = (cameraScratch*)0x1F800088;
+        setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
+        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
+        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        setVector(
+            &s->v2, c->position.vx - c->target.vx, 0, c->position.vz - c->target.vz);
+        c->delta = _vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
+        s->value = (_atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
+        if (s->value < -ONE / 2) {
+            s->value += ONE;
+        }
+        if (s->value > ONE / 2) {
+            s->value -= ONE;
+        }
+        switch (script[1] & 15) {
+        case 15:
+            if (s->value == 0) {
+                s->value = -ONE;
+            } else if (s->value > 0) {
+                s->value -= ONE;
+            }
+            break;
+        case 1:
+            if (s->value == 0) {
+                s->value = ONE;
+            } else if (s->value < 0) {
+                s->value += ONE;
+            }
+            break;
+        }
+        c->angleDelta = ((cameraScratch*)0x1F800088)->value;
+        c->aux.vy = c->current.vy - c->target.vy;
+        c->velocity.vy = c->position.vy - c->target.vy - c->aux.vy;
+        return 0;
+    }
+    case 5: {
+        cameraScratch* s;
+        int height;
+        c->mode = 5;
+        c->time = 0;
+        c->duration = script[8];
+        c->ease1 = script[6] & 15;
+        c->ease2 = script[6] >> 4;
+        c->ease3 = script[7] & 15;
+        _copyVector(&c->position, &c->target);
+        s = (cameraScratch*)0x1F800088;
+        setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
+        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
+        c->delta = ((c->value * script[5]) >> 6) - c->value;
+        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz);
+        c->angleDelta = vs_battle_getShort(script + 1);
+        height = vs_battle_getShort(script + 3) * ONE;
+        c->start.vy = c->current.vy;
+        c->velocity.vy = height - c->start.vy;
+        return 0;
+    }
+    case 7:
+        func_800A190C(func_800BFE50(vs_battle_getShort(script + 1)), script[3],
+            (SVECTOR*)0x1F8000D8, 2);
+        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
+        _setVectorImm((VECTOR*)0x1F8000A8, script + 4);
+        _vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
+        if (D_800F4BA4->unk1E8 != 0x2000) {
+            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+        }
+        return 0;
+    case 8:
+        c->mode = 8;
+        c->value = func_800BFE50(vs_battle_getShort(script + 1));
+        c->delta = script[3];
+        c->time = 0;
+        c->duration = script[10];
+        _setVectorImm(&c->velocity, script + 4);
+        return 0;
+    case 9:
+        c->mode = 9;
+        c->time = 0;
+        c->duration = script[1];
+        _vectorSubtract(&c->velocity, &c->current, &c->target);
+        return 0;
+    case 10: {
+        int id = func_800BFE50(vs_battle_getShort(script + 1));
+        cameraScratch* s = (cameraScratch*)0x1F800088;
+        s->value = id;
+        func_800A1108(id, &D_800F4BA4->unk1CC[1]);
+        s->rotation2.vz = 0;
+        s->rotation2.vx = 0;
+        s->rotation2.vy = *(short*)((char*)D_800F4BA4 + 0x1DA);
+        RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
+        _setVectorImm((VECTOR*)0x1F800098, script + 4);
+        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        func_800A190C(s->value, script[3], (SVECTOR*)0x1F8000E0, 2);
+        _vectorAdd(&c->position,
+            _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
+            (VECTOR*)0x1F800098);
+        if (D_800F4BA4->unk1E8 != 0x2000) {
+            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+        }
+        return 0;
+    }
+    case 11: {
+        cameraScratch* s;
+        c->mode = 11;
+        c->time = 0;
+        c->ease1 = 0;
+        c->duration = script[2];
+        _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
+        _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+        s = (cameraScratch*)0x1F800088;
+        s->matrix.t[0] = c->current.vx >> 12;
+        s->matrix.t[1] = c->current.vy >> 12;
+        s->matrix.t[2] = c->current.vz >> 12;
+        c->current.vy = func_800BD2B8((MATRIX*)0x1F8000F8);
+        _copyVector(&c->computed, &c->current);
+        c->delta = _vectorMagnitude(
+            _vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
+        c->value = c->delta / script[2];
+        D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
+            0x80000000;
+        return 0;
+    }
+    }
+}
 
 void func_800BC9E0(void)
 {

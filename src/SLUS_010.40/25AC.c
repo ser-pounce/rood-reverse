@@ -2225,7 +2225,51 @@ void Sound_ProcessKeyOffRequests(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015970);
+void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
+    int in_ExtraVoiceMask)
+{
+    int VoiceMask = 0;
+    int SavedKeyedMask;
+    int ActiveKeyedMask;
+    int Filter = ~(g_Sound_VoiceSchedulerState.ActiveChannelMask
+                   | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14);
+    int ActiveMask;
+    int SavedMask = 0;
+
+    if (g_pSavedMousicConfig != NULL) {
+        SavedMask = g_pSavedMousicConfig->ActiveChannelMask & in_SavedChannelMask;
+        SavedKeyedMask = SavedMask & g_pSavedMousicConfig->KeyedMask;
+
+        if (SavedKeyedMask != 0) {
+            ChannelMaskToVoiceMaskFiltered(
+                g_pSecondaryMusicChannels, &VoiceMask, SavedKeyedMask, Filter);
+            SavedMask &= ~g_pSavedMousicConfig->KeyedMask;
+        }
+    }
+
+    ActiveMask = g_pActiveMusicConfig->ActiveChannelMask & in_ActiveChannelMask;
+    ActiveKeyedMask = ActiveMask & g_pActiveMusicConfig->KeyedMask;
+
+    if (ActiveKeyedMask != 0) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_ActiveMusicChannels, &VoiceMask, ActiveKeyedMask, Filter);
+        ActiveMask &= ~g_pActiveMusicConfig->KeyedMask;
+    }
+
+    if ((g_pSavedMousicConfig != NULL) && (SavedMask != 0)) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_pSecondaryMusicChannels, &VoiceMask, SavedMask, Filter);
+    }
+
+    if (ActiveMask != 0) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_ActiveMusicChannels, &VoiceMask, ActiveMask, Filter);
+    }
+
+    VoiceMask |= in_ExtraVoiceMask;
+    *out_VoiceMask = VoiceMask;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+}
 
 // 0x20 toggles whether we use the alternate sample bank
 #define SOUND_BANK_FLAG_ALT_SAMPLE_BANK (1u << 6) // 0x40

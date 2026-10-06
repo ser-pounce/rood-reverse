@@ -1544,7 +1544,117 @@ void Sound_UpdateSlidesAndDelays(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001436C);
+void func_8001436C(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    short* Wave;
+    int temp;
+    int Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
+    int Sample;
+    u_int UpdateFlags = in_pChannel->UpdateFlags;
+
+    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (in_pChannel->VibratoDelayCurrent == 0)
+        && (--in_pChannel->unkA4 == 0)) {
+        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+        Wave = in_pChannel->VibratoWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->VibratoWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->VibratoWave++;
+        temp = (in_pChannel->VibratoBase * Sample) >> 16;
+        if (temp != in_pChannel->VibratoPitch) {
+            in_pChannel->VibratoPitch = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+            if (temp >= 0) {
+                in_pChannel->VibratoPitch = temp * 2;
+            }
+        }
+    }
+
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && (in_pChannel->TremeloDelayCurrent == 0)
+        && !(--in_pChannel->unkB6 & 0xFFFF)) {
+        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+        Wave = in_pChannel->TremeloWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->TremeloWave = Wave + Wave[2];
+        }
+        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremeloWave++;
+        temp = (temp * Sample) >> 15;
+        if (temp != in_pChannel->TremeloVolume) {
+            in_pChannel->TremeloVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+    }
+
+    if ((UpdateFlags & SOUND_UPDATE_PAN_LFO)
+        && (--in_pChannel->AutoPanRateCurrent == 0)) {
+        in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
+        Wave = in_pChannel->AutoPanWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->AutoPanWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->AutoPanWave++;
+        temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
+        if (temp != in_pChannel->AutoPanVolume) {
+            in_pChannel->AutoPanVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+    }
+
+    if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_VOL) {
+        Volume = ((short)((in_pChannel - 1)->VoiceParams.SampleRate * 2)
+                     * (in_pChannel->VolumeBalance >> 8))
+              >> 7;
+        in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+    }
+
+    if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
+        Volume += in_pChannel->TremeloVolume;
+        Volume =
+            (Volume * (int)(((u_int)g_pActiveMusicConfig->A_Volume >> 16) & 0x7F)) >> 7;
+        temp = ((in_pChannel->ChannelPan >> 8) + in_pChannel->AutoPanVolume) & 0xFF;
+        if (D_80039AFC & 2) {
+            in_pChannel->VoiceParams.Volume.right = (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right;
+        } else {
+            in_pChannel->VoiceParams.Volume.left =
+                (Volume * g_Sound_StereoPanGainTableQ15[temp]) >> 15;
+            in_pChannel->VoiceParams.Volume.right =
+                (Volume * g_Sound_StereoPanGainTableQ15[temp ^ 0xFF]) >> 15;
+        }
+    }
+
+    if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_PITCH) {
+        Sample = (in_pChannel - 1)->VoiceParams.SampleRate + in_pChannel->VibratoPitch
+               + (in_pChannel->PitchSlide >> 16);
+        temp = g_Sound_MasterPitchScaleQ16_16 & 0xFF0000;
+        if (temp != 0) {
+            temp >>= 16;
+            if (temp < 0x80) {
+                Sample += (Sample * temp) >> 7;
+            } else {
+                Sample = (Sample * temp) >> 8;
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate =
+            (in_pChannel->FinePitchDelta + Sample) & 0x3FFF;
+        in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+    } else if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_SAMPLE_RATE) {
+        Sample = in_pChannel->PitchBase + in_pChannel->VibratoPitch
+               + (in_pChannel->PitchSlide >> 16);
+        temp = g_Sound_MasterPitchScaleQ16_16 & 0xFF0000;
+        if (temp != 0) {
+            temp >>= 16;
+            if (temp < 0x80) {
+                Sample += (Sample * temp) >> 7;
+            } else {
+                Sample = (Sample * temp) >> 8;
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate =
+            (in_pChannel->FinePitchDelta + Sample) & 0x3FFF;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800147CC);
 

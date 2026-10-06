@@ -16,4 +16,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG069.BIN/nonmatchings/E0", func_800FB57C);
 
 INCLUDE_ASM("build/src/EFFECT/PLG069.BIN/nonmatchings/E0", func_800FBFCC);
 
-INCLUDE_ASM("build/src/EFFECT/PLG069.BIN/nonmatchings/E0", func_800FC50C);
+#define VS_TILED_RING_FUNCTION func_800FC50C
+#define VS_TILED_RING_COLORS D_800FD4D8
+#include "src/EFFECT/tiledRings.h"

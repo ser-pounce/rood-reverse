@@ -1024,8 +1024,29 @@ int func_80013588(void* arg0, int arg1)
     return -1;
 }
 
-// https://decomp.me/scratch/xpW1h
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
+int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
+{
+    FAkaoSequence* header;
+    FSoundInstrumentInfo* instruments;
+
+    _waitTransferAvailable();
+    if (Sound_IsNotAkaoFile(in_Data) == 0) {
+        header = in_Data;
+        SpuSetTransferStartAddr(in_SpuAddr);
+        in_Data = ((FAkaoSequence*)in_Data)->Payload;
+        instruments = in_Data;
+        in_Data = instruments + header->unk1C;
+        _writeSpu(in_Data, header->unk14);
+        Sound_CopyAndRelocateInstruments(instruments,
+            &g_InstrumentInfo[in_FirstInstrument], in_SpuAddr, header->unk1C);
+        if (in_Wait != 0) {
+            _waitTransferAvailable();
+        }
+        return 0;
+    }
+    _isSpuTransfer = -1;
+    return -1;
+}
 
 // https://decomp.me/scratch/nDizh
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);

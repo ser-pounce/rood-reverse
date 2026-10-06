@@ -13,3 +13,5 @@ $(BUILD)/config/TITLE/TITLE.PRG/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt
 
 $(BUILD)/src/TITLE/TITLE.PRG/22C.c.o: $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rleRgb555.img.png.o
+
+$(BUILD)/src/TITLE/TITLE.PRG/libpress/%.c.o: PREPROCESS.s = $(PSQ_PATCH)

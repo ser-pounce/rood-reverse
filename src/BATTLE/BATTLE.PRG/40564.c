@@ -17,11 +17,20 @@ typedef struct {
     u_short unk8[0];
 } func_800AD494_t;
 
+typedef struct {
+    short x;
+    short y;
+    short z;
+    short id;
+} func_8008D2C0_t;
+
 void func_8007A824(DR_MOVE*);
+int func_8008D2C0(func_8008D2C0_t*);
 void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800A70DC(void*, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
@@ -36,7 +45,10 @@ extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
+extern int D_800F49F4;
 extern u_char D_800F49F8;
+extern u_char D_800F49F9;
+extern short D_800F4B00;
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
@@ -275,9 +287,152 @@ int func_800A92B8(int arg0, int arg1)
     return var_t0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9378);
+int func_800A9378(int x, int y, int z, int mode)
+{
+    func_8008D2C0_t platforms[4];
+    int count;
+    int i;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9530);
+    D_800F49F4 = 0;
+    count = func_8008D2C0(platforms);
+    if (count == 0) {
+        return 0;
+    }
+
+    for (i = 0; i < count; ++i) {
+        if (x < platforms[i].x + 64 && x >= platforms[i].x - 64 && z < platforms[i].z + 64
+            && z >= platforms[i].z - 64) {
+            switch (mode) {
+            case 0:
+                if (platforms[i].y < y - 256) {
+                    continue;
+                }
+                break;
+            case 1:
+                if (platforms[i].y < y - 256) {
+                    return platforms[i].y + 96;
+                }
+                continue;
+            case 2:
+                if (platforms[i].y >= y || platforms[i].y < y - 128) {
+                    continue;
+                }
+                break;
+            case 3:
+                if (platforms[i].y < y && platforms[i].y >= y - D_800F4B00) {
+                    return platforms[i].y + 96;
+                }
+                continue;
+            }
+            D_800F49F4 = platforms[i].id + 2;
+            return platforms[i].y;
+        }
+    }
+    return 0;
+}
+
+// Inlined copy of 3A1A0 func_800A4A24.
+// BUG: returns the address of a stack variable
+static inline func_8008D2C0_t* func_800A4A24(int id)
+{
+    func_8008D2C0_t platforms[4];
+    int count;
+    int i;
+    id -= 2;
+
+    count = func_8008D2C0(platforms);
+
+    for (i = 0; i < count; ++i) {
+        if (platforms[i].id == id) {
+            return &platforms[i];
+        }
+    }
+    return NULL;
+}
+
+int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
+{
+    func_8008D2C0_t* platform;
+    int position;
+    int edge;
+    int surface;
+    int distance;
+    u_int direction;
+    u_int flags;
+    int result;
+
+    position = actor->unk63C;
+    direction = D_800F49F9 >> 1;
+    actor->unk1800 = direction << 10;
+
+    if (actor->unk0.unkC_0) {
+        platform = func_800A4A24(actor->unk0.unkC_0);
+        edge = 65;
+        if ((int)direction < 2) {
+            position = -position;
+        } else {
+            edge = -65;
+        }
+        if (direction & 1) {
+            position += actor->unk0.position.vx;
+            edge += platform->x;
+            offset->vx = edge - position;
+        } else {
+            position += actor->unk0.position.vz;
+            edge += platform->z;
+            offset->vz = edge - position;
+        }
+    } else {
+        edge = 0;
+        if ((int)direction < 2) {
+            position = -position;
+        } else {
+            edge = 127;
+        }
+        if (direction & 1) {
+            position += actor->unk0.position.vx;
+            offset->vx = edge - (position & 127);
+        } else {
+            position += actor->unk0.position.vz;
+            offset->vz = edge - (position & 127);
+        }
+        if (offset->vx > 32) {
+            offset->vx -= 64;
+        }
+        if (offset->vx < -32) {
+            offset->vx += 64;
+        }
+        if (offset->vz > 32) {
+            offset->vz -= 64;
+        }
+        if (offset->vz < -32) {
+            offset->vz += 64;
+        }
+        if (*(u_int*)((char*)actor + 0x5AC) & 0xF0000000) {
+            offset->vy += 12;
+        }
+        offset->vy += 8;
+    }
+    surface = actor->unk0.unkC_0;
+    actor->unk0.unkC_0 = 0;
+    actor->unk0.position.vx += offset->vx;
+    actor->unk0.position.vz += offset->vz;
+    distance = rsin(0x200);
+    distance *= actor->unk63C;
+    distance /= 4096;
+    func_800A70DC(actor, distance);
+    actor->unk0.position.vx -= offset->vx;
+    actor->unk0.position.vz -= offset->vz;
+    actor->unk0.unkC_0 = surface;
+    flags = *(u_int*)((char*)actor + 0x5AC);
+    if (!(flags & 0x1000)) {
+        result = 1;
+    } else {
+        *(u_int*)((char*)actor + 0x5AC) = flags & ~0x1000;
+        result = 0;
+    }
+    return result;
+}
 
 void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 {
@@ -1333,7 +1488,6 @@ void func_800AB4F0(void* actor)
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB788);
 
 void func_800A190C(int, int, SVECTOR*, int);
-void func_800A70DC(void*, int);
 void func_800A7524(void*, void*);
 int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
 int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);

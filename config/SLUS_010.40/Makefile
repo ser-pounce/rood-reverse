@@ -37,6 +37,12 @@ $(BUILD)/src/SLUS_010.40/libc/MEMMOVE.o: CC1VER := 2.7.2-cdk
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libpad/PADIF libpad/PADSEQD libetc/INTR_DMA): CC1VER := 2.7.2-cdk
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libpad/PADIF libpad/PADSEQD libetc/INTR_DMA): CC1FLAGS += -mmips-as
 
+# libcd BIOS was built with the CDK 2.7.2 cc1 (MIPS-as syntax): getintr's result[] loops keep their
+# index (no strength reduction) and reorg fills delay slots from branch-target threads. Previously
+# matched BIOS code is byte-identical either way.
+$(BUILD)/src/SLUS_010.40/libcd/BIOS.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libcd/BIOS.o: CC1FLAGS += -mmips-as
+
 # libcd SYS_2 was built with -mhard-float: with the FP registers not fixed, loop.c's invariant
 # threshold is larger and the CdControl* retry loops hoist their 1/-1 constants. Every matched
 # libcd/libds function is byte-identical with or without it.

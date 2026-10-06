@@ -27,14 +27,122 @@ extern CdlCB D_80032200; /* ready callback */
 extern int D_80032208; /* CD status */
 extern int D_8003220C;
 extern int D_800324A4;
+extern int D_80032204; /* debug level */
+extern int D_80032210; /* shell open count */
+extern u_char D_80032219; /* last command */
+extern char* D_80032220[]; /* command names */
+extern int D_800322C0[]; /* commands answered with Acknowledge only */
+extern int D_800323C0[]; /* commands whose Acknowledge carries the status */
 extern u_char D_80039C50[]; /* sync result */
 extern u_char D_80039C58[]; /* ready result */
+extern u_char D_80039C60[]; /* data-end result */
+extern char D_800103FC[]; /* "DiskError: " */
+extern char D_80010408[]; /* "com=%s,code=(%02x:%02x)\n" */
+extern char D_80010424[]; /* "CDROM: unknown intr" */
+extern char D_80010438[]; /* "(%d)\n" */
 
 int func_800209C4(void);
 void func_80022054(void);
 void InterruptCallback(int irq, void (*f)());
+void std_out_puts(char*);
+int printf(char*, ...);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/BIOS", func_800209C4);
+static inline void CD_memcpy(u_char* dst, u_char* src, int n)
+{
+    if (dst != NULL) {
+        while (n-- != 0) {
+            *dst++ = *src++;
+        }
+    }
+}
+
+int func_800209C4(void)
+{
+    volatile u_char intr;
+    volatile u_char result[8];
+    int i;
+    int j;
+    int err;
+
+    *D_800324C0 = 1;
+    intr = *D_800324CC & 7;
+    err = 0;
+    if (intr == 0) {
+        return 0;
+    }
+    while (intr != (*D_800324CC & 7)) {
+        intr = *D_800324CC & 7;
+    }
+    for (i = 0; i < 8 && (*D_800324C0 & 0x20); i++) {
+        result[i] = *D_800324C4;
+    }
+    for (j = i; j < 8; j++) {
+        result[j] = 0;
+    }
+    *D_800324C0 = 1;
+    *D_800324CC = 7;
+    *D_800324C8 = 7;
+    if (intr != CdlAcknowledge || D_800323C0[D_80032219] != 0) {
+        if (!(D_80032208 & CdlStatShellOpen) && (result[0] & CdlStatShellOpen)) {
+            D_80032210++;
+        }
+        D_80032208 = result[0];
+        D_8003220C = result[1];
+        err = D_80032208;
+        err &= 0x1D;
+    }
+    if (intr == CdlDiskError) {
+        if (D_80032204 > 2) {
+            printf(D_800103FC);
+        }
+        if (D_80032204 > 2) {
+            printf(D_80010408, D_80032220[D_80032219], D_80032208, D_8003220C);
+        }
+    }
+    switch (intr) {
+    case CdlAcknowledge:
+        if (err) {
+            D_800324D8.sync = CdlDiskError;
+            CD_memcpy(D_80039C50, (u_char*)result, 8);
+            return 2;
+        }
+        if (D_800322C0[D_80032219] != 0) {
+            D_800324D8.sync = CdlAcknowledge;
+            CD_memcpy(D_80039C50, (u_char*)result, 8);
+            return 1;
+        }
+        D_800324D8.sync = CdlComplete;
+        CD_memcpy(D_80039C50, (u_char*)result, 8);
+        return 2;
+    case CdlComplete:
+        D_800324D8.sync = err ? CdlDiskError : CdlComplete;
+        CD_memcpy(D_80039C50, (u_char*)result, 8);
+        return 2;
+    case CdlDataReady:
+        if (err && i == 1) {
+            err = 0;
+        }
+        D_800324D8.ready = err ? CdlDiskError : CdlDataReady;
+        CD_memcpy(D_80039C58, (u_char*)result, 8);
+        *D_800324C0 = 0;
+        *D_800324CC = 0;
+        return 4;
+    case CdlDataEnd:
+        D_800324D8.ready = D_800324D8.unk2 = CdlDataEnd;
+        CD_memcpy(D_80039C60, (u_char*)result, 8);
+        CD_memcpy(D_80039C58, (u_char*)result, 8);
+        return 4;
+    case CdlDiskError:
+        D_800324D8.sync = D_800324D8.ready = CdlDiskError;
+        CD_memcpy(D_80039C50, (u_char*)result, 8);
+        CD_memcpy(D_80039C58, (u_char*)result, 8);
+        return 6;
+    default:
+        std_out_puts(D_80010424);
+        printf(D_80010438, intr);
+        return 0;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/BIOS", CD_sync);
 
@@ -54,7 +162,20 @@ int CD_vol(CdlATV* vol)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/BIOS", CD_flush);
+void CD_flush(void)
+{
+    *D_800324C0 = 1;
+    while (*D_800324CC & 7) {
+        *D_800324C0 = 1;
+        *D_800324CC = 7;
+        *D_800324C8 = 7;
+    }
+    D_800324D8.ready = D_800324D8.unk2 = CdlNoIntr;
+    D_800324D8.sync = CdlComplete;
+    *D_800324C0 = 0;
+    *D_800324CC = 0;
+    *D_800324D0 = 0x1325;
+}
 
 int CD_initvol(void)
 {

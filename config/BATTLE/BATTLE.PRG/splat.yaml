@@ -59,7 +59,7 @@ segments:
       - [0x70D4C, hasm]
       - [0x71618, c]
       - [0x72B70, hasm]
-      - [0x73460, c]
+      - [0x73460, hasm]
       - [0x73580, hasm]
       - [0x73700, c]
       - [0x7399C, hasm]

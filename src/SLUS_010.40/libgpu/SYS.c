@@ -75,13 +75,45 @@ INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", D_80010864);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", ResetGraph);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetGraphDebug);
+int SetGraphDebug(int level)
+{
+    u_char old = D_80033444.level;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetGraphQueue);
+    if ((D_80033444.level = level)) {
+        D_80033440("SetGraphDebug:level:%d,type:%d reverse:%d\n", D_80033444.level,
+            D_80033444.version, D_80033444.reverse);
+    }
+    return old;
+}
+
+int SetGraphQueue(int mode)
+{
+    u_char old = D_80033444.unk1;
+
+    if (D_80033444.level >= 2) {
+        D_80033440("SetGrapQue(%d)...\n", mode);
+    }
+    if (mode != D_80033444.unk1) {
+        D_8003343C->reset(1);
+        D_80033444.unk1 = mode;
+        DMACallback(2, NULL);
+    }
+    return old;
+}
 
 int GetGraphDebug(void) { return D_80033444.level; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", DrawSyncCallback);
+u_long DrawSyncCallback(void (*func)(void))
+{
+    void (*old)(void);
+
+    if (D_80033444.level >= 2) {
+        D_80033440("DrawSyncCallback(%08x)...\n", func);
+    }
+    old = D_80033444.drawSyncCB;
+    D_80033444.drawSyncCB = func;
+    return (u_long)old;
+}
 
 void SetDispMask(int mask)
 {
@@ -129,9 +161,23 @@ int StoreImage(RECT* rect, u_long* p)
     return D_8003343C->addque2(D_8003343C->drs, rect, 8, p);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", MoveImage);
+typedef struct {
+    int unk0[3];
+    u_long move[5]; /* 0x800334DC: VRAM->VRAM copy packet */
+} GpuData334D0;
+extern GpuData334D0 D_800334D0;
 
-INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", D_800109A8);
+int MoveImage(RECT* rect, int x, int y)
+{
+    func_800286B8("MoveImage", rect);
+    if (rect->w == 0 || rect->h == 0) {
+        return -1;
+    }
+    D_800334D0.move[2] = *(u_long*)&rect->x;
+    D_800334D0.move[3] = (y << 16) | (x & 0xFFFF);
+    D_800334D0.move[4] = *(u_long*)&rect->w;
+    return D_8003343C->addque2(D_8003343C->cwc, D_800334D0.move, 0x14, 0);
+}
 
 u_long* ClearOTag(u_long* ot, int n)
 {
@@ -417,7 +463,25 @@ int StoreImage2(RECT* rect, u_long* p)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", MoveImage2);
+int MoveImage2(RECT* rect, int x, int y)
+{
+    func_800286B8("MoveImage", rect);
+    func_8002AB84();
+    while ((*D_80033558 & 0x01000000) || !(*D_8003354C & 0x04000000)) {
+        if (func_8002ABB8()) {
+            return -1;
+        }
+    }
+    DMACallback(2, _GPU_ResetCallback);
+    if (rect->w == 0 || rect->h == 0) {
+        return -1;
+    }
+    D_800334D0.move[2] = *(u_long*)&rect->x;
+    D_800334D0.move[3] = (y << 16) | (x & 0xFFFF);
+    D_800334D0.move[4] = *(u_long*)&rect->w;
+    D_8003343C->cwc(D_800334D0.move);
+    return 0;
+}
 
 int DrawOTag2(u_long* p)
 {

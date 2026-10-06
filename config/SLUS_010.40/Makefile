@@ -24,7 +24,7 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 # 2.8.1-psx (its CD_initvol() result is copied to v1 before the test), while everything from CdFlush on
 # only matches under 2.7.2-psx like the other libcd units (per-access lui for globals, ra/sp restore
 # before jr). SYS_2 takes the default 2.7.2-psx.
-$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main): CC1VER := 2.8.1-psx
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main 31B7C): CC1VER := 2.8.1-psx
 
 # Sony's PsyQ library objects were assembled by GNU as in reorder mode (the assembler fills
 # j/jr/jal delay slots with the preceding instruction, including the tail of a lui/sw macro),

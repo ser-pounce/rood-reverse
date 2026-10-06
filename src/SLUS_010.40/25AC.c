@@ -104,6 +104,8 @@ void IRQCallbackProc(void);
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
+void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
+    int in_ExtraVoiceMask);
 void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
@@ -186,6 +188,7 @@ extern int g_Sound_TempoMultiplier;
 extern int D_80039B48;
 extern int g_Sound_LfoPhase;
 extern FSoundVoiceModeFlags g_Sound_VoiceModeFlags;
+extern int D_80037894;
 
 int InitSound(void)
 {
@@ -2036,8 +2039,152 @@ void Sound_RestoreChannelVolumeFromMasterFade(
     in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
 }
 
-// https://decomp.me/scratch/0wUZ7
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015220);
+void func_80015220(void)
+{
+    u_int KeyOnFlags;
+    u_int ReservedVoices;
+    u_int Voices;
+    u_int Flags;
+    u_int SavedChannels;
+    u_int SavedVoices;
+    FSoundChannel* pChannel;
+
+    ReservedVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                   | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14;
+    KeyOnFlags = 0;
+
+    if ((g_pActiveMusicConfig->ActiveChannelMask & g_pActiveMusicConfig->PendingKeyOnMask)
+        || ((g_pSavedMousicConfig != NULL)
+            && (g_pSavedMousicConfig->ActiveChannelMask
+                & g_pSavedMousicConfig->PendingKeyOnMask))) {
+        func_80015080(ReservedVoices);
+    }
+
+    if (g_pSavedMousicConfig != NULL) {
+        if (g_Sound_GlobalFlags.MixBehavior & 0x100) {
+            Sound_ApplyMasterFadeToChannelVolume(
+                g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+        }
+
+        g_pActiveMusicConfig = g_pSavedMousicConfig;
+        SavedChannels = (g_pActiveMusicConfig->ActiveChannelMask
+                            & g_pActiveMusicConfig->ActiveNoteMask)
+                      & ~(g_pActiveMusicConfig->AllocatedVoiceMask & ReservedVoices);
+        SavedVoices =
+            (SavedChannels & g_pActiveMusicConfig->AllocatedVoiceMask) & ~ReservedVoices;
+        if (SavedChannels & g_pActiveMusicConfig->KeyedMask) {
+            func_80014D70(g_pSecondaryMusicChannels,
+                SavedChannels & g_pActiveMusicConfig->KeyedMask, SavedVoices,
+                &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask &= ~g_pActiveMusicConfig->KeyedMask;
+            SavedChannels &= ~g_pActiveMusicConfig->KeyedMask;
+        }
+
+        g_pActiveMusicConfig = &D_800366F0;
+        Flags = (g_pActiveMusicConfig->ActiveChannelMask
+                    & g_pActiveMusicConfig->ActiveNoteMask)
+              & ~(g_pActiveMusicConfig->AllocatedVoiceMask
+                  & (SavedVoices | ReservedVoices));
+        Voices = SavedVoices | ReservedVoices;
+        Voices = (Flags & g_pActiveMusicConfig->AllocatedVoiceMask) & ~Voices;
+        if (Flags & g_pActiveMusicConfig->KeyedMask) {
+            func_80014D70(g_ActiveMusicChannels, Flags & g_pActiveMusicConfig->KeyedMask,
+                Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask &= ~g_pActiveMusicConfig->KeyedMask;
+            Flags &= ~g_pActiveMusicConfig->KeyedMask;
+        }
+
+        if (SavedChannels != 0) {
+            g_pActiveMusicConfig = g_pSavedMousicConfig;
+            SavedVoices &= ~Voices;
+            func_80014D70(
+                g_pSecondaryMusicChannels, SavedChannels, SavedVoices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask = 0;
+            g_pActiveMusicConfig = &D_800366F0;
+        }
+
+        if (Flags != 0) {
+            func_80014D70(g_ActiveMusicChannels, Flags, Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask = 0;
+        }
+
+        if (g_Sound_GlobalFlags.MixBehavior & 0x100) {
+            Sound_RestoreChannelVolumeFromMasterFade(
+                g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+        }
+    } else {
+        Flags = (g_pActiveMusicConfig->ActiveChannelMask
+                    & g_pActiveMusicConfig->ActiveNoteMask)
+              & ~(g_pActiveMusicConfig->AllocatedVoiceMask & ReservedVoices);
+        Voices = (Flags & g_pActiveMusicConfig->AllocatedVoiceMask) & ~ReservedVoices;
+        if (Flags & g_pActiveMusicConfig->KeyedMask) {
+            func_80014D70(g_ActiveMusicChannels, Flags & g_pActiveMusicConfig->KeyedMask,
+                Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask &= ~g_pActiveMusicConfig->KeyedMask;
+            Flags &= ~g_pActiveMusicConfig->KeyedMask;
+        }
+        if (Flags != 0) {
+            func_80014D70(g_ActiveMusicChannels, Flags, Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask = 0;
+        }
+    }
+
+    Flags = g_Sound_VoiceSchedulerState.ActiveChannelMask
+          & g_Sound_VoiceSchedulerState.KeyedFlags;
+    if (Flags != 0) {
+        Voices = 0x1000;
+        pChannel = D_80035910;
+        KeyOnFlags |= g_Sound_VoiceSchedulerState.KeyOnFlags;
+        do {
+            if (Flags & Voices) {
+                func_800147CC(pChannel, Voices);
+                if (pChannel->VoiceParams.VoiceParamFlags != 0) {
+                    SetVoiceParamsByFlags(pChannel->VoiceParams.AssignedVoiceNumber,
+                        &pChannel->VoiceParams, pChannel->UpdateFlags);
+                }
+                Flags &= ~Voices;
+            }
+            Voices <<= 1;
+            pChannel++;
+        } while (Flags != 0);
+        D_80037894 = 0;
+    }
+
+    Flags = g_Sound_GlobalFlags.UpdateFlags;
+    if (Flags & 0x80) {
+        SpuSetReverbModeDepth(
+            g_pActiveMusicConfig->RevDepth >> 12, g_pActiveMusicConfig->RevDepth >> 12);
+        g_Sound_GlobalFlags.UpdateFlags &= ~0x80;
+    }
+    if (Flags & 0x10) {
+        if (g_Sound_VoiceSchedulerState.ActiveChannelMask != 0) {
+            SpuSetNoiseClock(g_Sound_VoiceSchedulerState.NoiseClock);
+        } else {
+            SpuSetNoiseClock(g_pActiveMusicConfig->NoiseClock);
+        }
+        g_Sound_GlobalFlags.UpdateFlags &= ~0x10;
+    }
+    if (Flags & 0x100) {
+        func_80015970(&g_Sound_VoiceModeFlags.Noise,
+            g_pSavedMousicConfig->NoiseChannelFlags,
+            g_pActiveMusicConfig->NoiseChannelFlags,
+            g_Sound_VoiceSchedulerState.NoiseVoiceFlags);
+        func_80015970(&g_Sound_VoiceModeFlags.Reverb,
+            g_pSavedMousicConfig->ReverbChannelFlags,
+            g_pActiveMusicConfig->ReverbChannelFlags,
+            g_Sound_VoiceSchedulerState.ReverbVoiceFlags);
+        func_80015970(&g_Sound_VoiceModeFlags.Fm, g_pSavedMousicConfig->FmChannelFlags,
+            g_pActiveMusicConfig->FmChannelFlags,
+            g_Sound_VoiceSchedulerState.FmVoiceFlags);
+        SetVoiceReverbMode(g_Sound_VoiceModeFlags.Reverb);
+        SetVoiceNoiseMode(g_Sound_VoiceModeFlags.Noise);
+        SetVoiceFmMode(g_Sound_VoiceModeFlags.Fm);
+        g_Sound_GlobalFlags.UpdateFlags &= ~0x100;
+    }
+    if (KeyOnFlags != 0) {
+        SetVoiceKeyOn(KeyOnFlags);
+    }
+}
 
 void ChannelMaskToVoiceMaskFiltered(FSoundChannel* in_Channel, int* io_VoiceMask,
     int in_ChannelMask, int in_VoiceMaskFilter)

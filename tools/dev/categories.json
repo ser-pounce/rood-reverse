@@ -163,7 +163,7 @@
         "TITLE.PRG/libpress/LIBPRESS"
     ],
     "exclusions": {
-        "names": ["32154.o", "2EA3C.o"],
-        "suffixes": [".data.o", ".rodata.o", ".bss.o"]
+        "names": ["SLUS_010.40/32154", "BATTLE.PRG/2EA3C"],
+        "suffixes": [".data.s.o", ".rodata.s.o", ".bss.s.o"]
     }
 }

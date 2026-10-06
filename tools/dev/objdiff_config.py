@@ -29,7 +29,7 @@ def load_categories(categories_path: Path):
 def get_name_and_categories(base_path: Path, category_mappings: dict):
     for i, part in enumerate(base_path.parts):
         if part in category_mappings:
-            name = Path(*base_path.parts[i:]).with_suffix("")
+            name = Path(*base_path.parts[i:]).with_suffix("").with_suffix("")
             new_category = category_mappings[part]
             supercategory = new_category.split(".", 1)[0]
             return name, [supercategory, new_category]
@@ -51,7 +51,7 @@ def build_unit(base_path: Path, basepath: Path, targetpath: Path,
         },
     }
 
-    if base_path.name not in excluded_names and not base_path.name.endswith(excluded_suffixes):
+    if str(name) not in excluded_names and not base_path.name.endswith(excluded_suffixes):    
         unit["base_path"] = str(base_path)
 
     return unit

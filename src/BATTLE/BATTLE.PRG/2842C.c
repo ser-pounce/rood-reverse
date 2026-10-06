@@ -1686,7 +1686,183 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_8006917C);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800691E4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800941FC);
+void func_800941FC(void)
+{
+    SVECTOR position;
+    short screen[2];
+    long p;
+    long flag;
+    D_800F1BAC_t* label;
+    int removed;
+    int i;
+    int visible;
+
+    if (D_800F2272 > 0) {
+        --D_800F2272;
+        func_800970BC();
+    }
+    if (D_800F1BA4 == 0) {
+        D_800F2278 += vs_gametime_tickspeed / 2;
+    }
+    if (D_800F2278 > 20) {
+        label = *D_800F1BAC;
+        D_800F2278 = 0;
+        for (i = 0; i < D_800F227E; ++i, ++label) {
+            if (label->unk8.u8[0] == 6) {
+                if (--label->unk6 == -1) {
+                    for (p = 0; p < i; ++p) {
+                        if ((*D_800F1BAC)[p].unk8.u8[0] == 6) {
+                            (*D_800F1BAC)[p].unk12 += 10;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    removed = 0;
+    label = *D_800F1BAC;
+    D_800F227C = 0;
+    for (i = 0; i < D_800F227E; ++i, ++label) {
+        if (label->unk8.u8[0] == 0) {
+            continue;
+        }
+        if (label->unk8.u8[0] < 3) {
+            if (func_800A190C(label->unk8.u8[1], 0xFB, &position, 0) != 0) {
+                goto remove;
+            }
+            if (position.vy > 0) {
+                position.vy = 0;
+            }
+            position.vx += label->unk0;
+            position.vy += label->unk2;
+            position.vz += label->unk4;
+            visible = RotTransPers(&position, (long*)screen, &p, &flag);
+            if (screen[0] < 32) {
+                screen[0] = 32;
+            }
+            if (screen[0] > 288) {
+                screen[0] = 288;
+            }
+            if (screen[1] < 40) {
+                screen[1] = 40;
+            }
+            if (screen[1] > 200) {
+                screen[1] = 200;
+            }
+        } else if (label->unk8.u8[0] == 3) {
+            visible = RotTransPers((SVECTOR*)label, (long*)screen, &p, &flag);
+        } else {
+            visible = 1;
+        }
+        if (visible <= 0) {
+            goto remove;
+        }
+        switch (label->unk8.u8[0]) {
+        case 1:
+            if (label->unk6 <= 0) {
+                label->unkE &= 0x7F;
+                screen[1] += 8;
+                func_80094844(screen, label);
+                if (label->unkE == 2) {
+                    func_8009506C(screen[0], screen[1], label);
+                } else {
+                    func_80094B0C(screen[0], screen[1], label);
+                }
+                label->unkB += vs_gametime_tickspeed / 2;
+                if (label->unkB >= 10) {
+                    label->unk6 = -1;
+                }
+                if (label->unkB < 31) {
+                    break;
+                }
+                goto remove;
+            }
+            screen[1] += 8;
+            func_80094844(screen, label);
+            if (label->unkE & 0x80) {
+                label->unkE &= 0x7F;
+                func_80094AF8(label);
+                break;
+            }
+            goto waiting;
+        case 2:
+            if (label->unk6 > 0) {
+                goto waiting;
+            }
+            screen[1] -= label->displayTextLen;
+            if (label->unk8.u8[1] != 0 || D_800F227A == 0) {
+                if (label->unkE == 2) {
+                    func_8009506C(screen[0], screen[1], label);
+                } else {
+                    func_80095258(screen[0], screen[1], label);
+                }
+            }
+            label->unkB += vs_gametime_tickspeed / 2;
+            if (label->unkB >= 10) {
+                label->unk6 = -1;
+            }
+            if (label->unkB >= 31) {
+                label->unk8.u8[0] = 0;
+                ++removed;
+            }
+            break;
+        waiting:
+            label->unkB += vs_gametime_tickspeed / 2;
+            if (label->unkB >= 10) {
+                func_80094AF8(label);
+            }
+            break;
+        case 3:
+            func_8009506C(screen[0], screen[1], label);
+            label->unkB += vs_gametime_tickspeed / 2;
+            if (label->unkB >= 31) {
+                label->unk8.u8[0] = 0;
+                ++removed;
+            }
+            break;
+        case 4:
+            func_800958A4(44, 48, label);
+            label->unkB += vs_gametime_tickspeed / 2;
+            if (label->unkB >= 46) {
+                label->unk8.u8[0] = 0;
+                ++removed;
+            }
+            break;
+        case 5:
+            func_80095A4C(44, 64, label);
+            label->unkB += vs_gametime_tickspeed / 2;
+            if (label->unkB >= 91) {
+                label->unk8.u8[0] = 0;
+                ++removed;
+            }
+            break;
+        case 6:
+            if (label->unk6 >= 0) {
+                break;
+            }
+            func_8009695C(8, 172, label);
+            if (D_800F1BA4 != 0) {
+                break;
+            }
+            label->unkB += vs_gametime_tickspeed / 2;
+            if (label->unkB >= 61) {
+                label->unk8.u8[0] = 0;
+                ++removed;
+            }
+            break;
+        case 0:
+        case 7:
+            break;
+        }
+        continue;
+    remove:
+        label->unk8.u8[0] = 0;
+        ++removed;
+    }
+    if (removed > 0) {
+        func_8009639C(removed);
+    }
+}
 
 void func_80094844(short* pos, D_800F1BAC_t* label)
 {

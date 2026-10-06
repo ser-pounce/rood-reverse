@@ -51,7 +51,7 @@ def build_unit(base_path: Path, basepath: Path, targetpath: Path,
         },
     }
 
-    if str(name) not in excluded_names and not base_path.name.endswith(excluded_suffixes):    
+    if str(name) not in excluded_names and not base_path.name.endswith(excluded_suffixes):
         unit["base_path"] = str(base_path)
 
     return unit

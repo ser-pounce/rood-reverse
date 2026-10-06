@@ -3,158 +3,76 @@
 #include <libetc.h>
 #include <stdio.h>
 
-void func_80072050(int);
-void func_80072140(u_long* arg0, u_int arg1);
-void func_800721D0(u_long* buf, int size);
-int func_8007225C(void);
-int func_800722F0(void);
-u_int func_80072384(void);
-int DMACallback(int, void (*)(void));
+static void MDEC_reset(int);
 
-// Commented out functions have delay slot manipulation, probably due to custom linkage
-// used in later PSY-Q versions
-
-/*void DecDCTReset(int mode) {
+void DecDCTReset(int mode)
+{
     if (mode == 0) {
         ResetCallback();
     }
-    func_80072050(mode);
-}*/
+    MDEC_reset(mode);
+}
 
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel DecDCTReset;"
-        "addu    $sp, -0x18;"
-        "sw      $s0, 0x10($sp);"
-        "addu    $s0, $a0, $zero;"
-        "bnez    $s0, 0f;"
-        "sw      $ra, 0x14($sp);"
-        "jal     ResetCallback;"
-        "nop;"
-        "0:"
-        "jal     func_80072050;"
-        "addu    $a0, $s0, $zero;"
-        "lw      $ra, 0x14($sp);"
-        "lw      $s0, 0x10($sp);"
-        "j       $ra;"
-        "addu    $sp, 0x18;"
-        "endlabel DecDCTReset;"
-        ".set pop;");
+typedef struct {
+    u_long unk0;
+    char data[0];
+} mdec_params;
 
-static int D_80075B44 = 0x40000001;
-static char D_80075B48[] = { 0x02, 0x10, 0x10, 0x13, 0x10, 0x13, 0x16, 0x16, 0x16, 0x16,
+static mdec_params mdec_iq_y = { 0x40000001,
+    { 0x02, 0x10, 0x10, 0x13, 0x10, 0x13, 0x16, 0x16, 0x16, 0x16, 0x16, 0x16, 0x1A, 0x18,
+        0x1A, 0x1B, 0x1B, 0x1B, 0x1A, 0x1A, 0x1A, 0x1A, 0x1B, 0x1B, 0x1B, 0x1D, 0x1D,
+        0x1D, 0x22, 0x22, 0x22, 0x1D, 0x1D, 0x1D, 0x1B, 0x1B, 0x1D, 0x1D, 0x20, 0x20,
+        0x22, 0x22, 0x25, 0x26, 0x25, 0x23, 0x23, 0x22, 0x23, 0x26, 0x26, 0x28, 0x28,
+        0x28, 0x30, 0x30, 0x2E, 0x2E, 0x38, 0x38, 0x3A, 0x45, 0x45, 0x53 } };
+
+static char mdec_iq_c[] = { 0x02, 0x10, 0x10, 0x13, 0x10, 0x13, 0x16, 0x16, 0x16, 0x16,
     0x16, 0x16, 0x1A, 0x18, 0x1A, 0x1B, 0x1B, 0x1B, 0x1A, 0x1A, 0x1A, 0x1A, 0x1B, 0x1B,
     0x1B, 0x1D, 0x1D, 0x1D, 0x22, 0x22, 0x22, 0x1D, 0x1D, 0x1D, 0x1B, 0x1B, 0x1D, 0x1D,
     0x20, 0x20, 0x22, 0x22, 0x25, 0x26, 0x25, 0x23, 0x23, 0x22, 0x23, 0x26, 0x26, 0x28,
     0x28, 0x28, 0x30, 0x30, 0x2E, 0x2E, 0x38, 0x38, 0x3A, 0x45, 0x45, 0x53 };
-static char D_80075B88[] = { 0x02, 0x10, 0x10, 0x13, 0x10, 0x13, 0x16, 0x16, 0x16, 0x16,
-    0x16, 0x16, 0x1A, 0x18, 0x1A, 0x1B, 0x1B, 0x1B, 0x1A, 0x1A, 0x1A, 0x1A, 0x1B, 0x1B,
-    0x1B, 0x1D, 0x1D, 0x1D, 0x22, 0x22, 0x22, 0x1D, 0x1D, 0x1D, 0x1B, 0x1B, 0x1D, 0x1D,
-    0x20, 0x20, 0x22, 0x22, 0x25, 0x26, 0x25, 0x23, 0x23, 0x22, 0x23, 0x26, 0x26, 0x28,
-    0x28, 0x28, 0x30, 0x30, 0x2E, 0x2E, 0x38, 0x38, 0x3A, 0x45, 0x45, 0x53 };
-static int D_80075BC8 = 0x60000000;
+
+static mdec_params mdec_coef = { 0x60000000,
+    { 0x82, 0x5A, 0x82, 0x5A, 0x82, 0x5A, 0x82, 0x5A, 0x82, 0x5A, 0x82, 0x5A, 0x82, 0x5A,
+        0x82, 0x5A, 0x8A, 0x7D, 0x6D, 0x6A, 0x1C, 0x47, 0xF8, 0x18, 0x07, 0xE7, 0xE3,
+        0xB8, 0x92, 0x95, 0x75, 0x82, 0x41, 0x76, 0xFB, 0x30, 0x04, 0xCF, 0xBE, 0x89,
+        0xBE, 0x89, 0x04, 0xCF, 0xFB, 0x30, 0x41, 0x76, 0x6D, 0x6A, 0x07, 0xE7, 0x75,
+        0x82, 0xE3, 0xB8, 0x1C, 0x47, 0x8A, 0x7D, 0xF8, 0x18, 0x92, 0x95, 0x82, 0x5A,
+        0x7D, 0xA5, 0x7D, 0xA5, 0x82, 0x5A, 0x82, 0x5A, 0x7D, 0xA5, 0x7D, 0xA5, 0x82,
+        0x5A, 0x1C, 0x47, 0x75, 0x82, 0xF8, 0x18, 0x6D, 0x6A, 0x92, 0x95, 0x07, 0xE7,
+        0x8A, 0x7D, 0xE3, 0xB8, 0xFB, 0x30, 0xBE, 0x89, 0x41, 0x76, 0x04, 0xCF, 0x04,
+        0xCF, 0x41, 0x76, 0xBE, 0x89, 0xFB, 0x30, 0xF8, 0x18, 0xE3, 0xB8, 0x6D, 0x6A,
+        0x75, 0x82, 0x8A, 0x7D, 0x92, 0x95, 0x1C, 0x47, 0x07, 0xE7, 0x50, 0x73, 0x0E,
+        0x00, 0x00, 0x00, 0x45, 0x00 } };
+
+static inline void _memcpy(u_long* dst, u_long* src, size_t size)
+{
+    while (size--) {
+        *dst++ = *src++;
+    }
+}
 
 DECDCTENV* DecDCTGetEnv(DECDCTENV* env)
 {
-    static short D_80075BCC[] = { 0x5A82, 0x5A82, 0x5A82, 0x5A82, 0x5A82, 0x5A82, 0x5A82,
-        0x5A82, 0x7D8A, 0x6A6D, 0x471C, 0x18F8, 0xE707, 0xB8E3, 0x9592, 0x8275, 0x7641,
-        0x30FB, 0xCF04, 0x89BE, 0x89BE, 0xCF04, 0x30FB, 0x7641, 0x6A6D, 0xE707, 0x8275,
-        0xB8E3, 0x471C, 0x7D8A, 0x18F8, 0x9592, 0x5A82, 0xA57D, 0xA57D, 0x5A82, 0x5A82,
-        0xA57D, 0xA57D, 0x5A82, 0x471C, 0x8275, 0x18F8, 0x6A6D, 0x9592, 0xE707, 0x7D8A,
-        0xB8E3, 0x30FB, 0x89BE, 0x7641, 0xCF04, 0xCF04, 0x7641, 0x89BE, 0x30FB, 0x18F8,
-        0xB8E3, 0x6A6D, 0x8275, 0x7D8A, 0x9592, 0x471C, 0xE707, 0x7350, 0x000E, 0x0000,
-        0x0045 };
 
-    int* var_a2;
-    int i;
-    int* var_a1;
+    _memcpy((u_long*)&env->iq_y, (u_long*)mdec_iq_y.data, 16);
+    _memcpy((u_long*)&env->iq_c, (u_long*)mdec_iq_c, 16);
+    _memcpy((u_long*)&env->dct, (u_long*)mdec_coef.data, 32);
 
-    var_a2 = (int*)env->iq_y;
-    var_a1 = (int*)D_80075B48;
-    for (i = 15; i != -1; --i) {
-        *var_a2++ = *var_a1++;
-    }
-    var_a2 = (int*)env->iq_c;
-    var_a1 = (int*)D_80075B88;
-    for (i = 15; i != -1; --i) {
-        *var_a2++ = *var_a1++;
-    }
-    var_a2 = (int*)env->dct;
-    var_a1 = (int*)D_80075BCC;
-    for (i = 31; i != -1; --i) {
-        *var_a2++ = *var_a1++;
-    }
     return env;
 }
 
-/*DECDCTENV* DecDCTPutEnv(DECDCTENV* arg0) {
-    int i;
-    int *src1, *dst1;
-    int *src2, *dst2;
+static void MDEC_in(mdec_params* arg0, u_int arg1);
 
-    dst1 = D_80075B48;
-    src1 = (int*)&arg0->iq_y;
-    for (i = 15; i != -1; i--) {
-        *dst1++ = *src1++;
-    }
+DECDCTENV* DecDCTPutEnv(DECDCTENV* arg0)
+{
+    _memcpy((u_long*)mdec_iq_y.data, (u_long*)&arg0->iq_y, 16);
+    _memcpy((u_long*)mdec_iq_c, (u_long*)&arg0->iq_c, 16);
 
-    dst2 = D_80075B88;
-    src2 = (int*)&arg0->iq_c;
-    for (i = 15; i != -1; i--) {
-        *dst2++ = *src2++;
-    }
-
-    func_80072140(D_80075B44, 32);
-    func_80072140(D_80075BC8, 32);
+    MDEC_in(&mdec_iq_y, 32);
+    MDEC_in(&mdec_coef, 32);
 
     return arg0;
-}*/
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel DecDCTPutEnv;"
-        "addu     $sp, -0x18;"
-        "sw       $s0, 0x10($sp);"
-        "addu     $s0, $a0, $zero;"
-        "lui      $a1, %hi(D_80075B48);"
-        "addiu    $a1, %lo(D_80075B48);"
-        "addu     $v1, $zero, 0xF;"
-        "addu     $a2, $zero, -0x1;"
-        "sw       $ra, 0x14($sp);"
-        "0:"
-        "lw       $v0, 0x0($a0);"
-        "addu     $a0, 4;"
-        "addu     $v1, -0x1;"
-        "sw       $v0, 0x0($a1);"
-        "bne      $v1, $a2, 0b;"
-        "addu     $a1, 4;"
-        "lui      $a1, %hi(D_80075B88);"
-        "addiu    $a1, %lo(D_80075B88);"
-        "addu     $a0, $s0, 64;"
-        "li       $v1, 15;"
-        "li       $a2, -1;"
-        "1:"
-        "lw       $v0, 0x0($a0);"
-        "addu     $a0, 4;"
-        "addu     $v1, -1;"
-        "sw       $v0, 0x0($a1);"
-        "bne      $v1, $a2, 1b;"
-        "addu     $a1, 4;"
-        "lui      $a0, %hi(D_80075B44);"
-        "addiu    $a0, %lo(D_80075B44);"
-        "jal      func_80072140;"
-        "li       $a1, 32;"
-        "lui      $a0, %hi(D_80075BC8);"
-        "addiu    $a0, %lo(D_80075BC8);"
-        "jal      func_80072140;"
-        "li       $a1,32;"
-        "addu     $v0, $s0, $zero;"
-        "lw       $ra, 0x14($sp);"
-        "lw       $s0, 0x10($sp);"
-        "j        $ra;"
-        "addu     $sp, 0x18;"
-        "endlabel DecDCTPutEnv;"
-        ".set pop;");
+}
 
 void DecDCTin(u_long* buf, int mode)
 {
@@ -170,390 +88,142 @@ void DecDCTin(u_long* buf, int mode)
         *buf &= 0xFDFFFFFF;
     }
 
-    func_80072140(buf, (u_short)*buf);
+    MDEC_in((mdec_params*)buf, (u_short)*buf);
 }
 
-void DecDCTout(u_long* buf, int size) { func_800721D0(buf, size); }
+static void MDEC_out(u_long* buf, u_int size);
+
+void DecDCTout(u_long* buf, int size) { MDEC_out(buf, size); }
+
+static u_int get_mdec1(void);
+
+static int MDEC_in_sync(void);
 
 int DecDCTinSync(int mode)
 {
     if (mode != 0) {
-        return (func_80072384() >> 0x1D) & 1;
+        return (get_mdec1() >> 0x1D) & 1;
     }
-    return func_8007225C();
+    return MDEC_in_sync();
 }
+
+static int MDEC_out_sync(void);
 
 int DecDCToutSync(int mode)
 {
     if (mode != 0) {
-        return (func_80072384() >> 0x18) & 1;
+        return (get_mdec1() >> 0x18) & 1;
     }
-    return func_800722F0();
+    return MDEC_out_sync();
 }
+
+int DMACallback(int, void (*)(void));
 
 int DecDCTinCallback(void (*func)(void)) { return DMACallback(0, func); }
 
 int DecDCToutCallback(void (*func)(void)) { return DMACallback(1, func); }
 
-static u_int volatile* D_80075C54 = (u_int volatile*)0x1F801080;
-static u_int volatile* D_80075C58 = (u_int volatile*)0x1F801084;
-static u_int volatile* D_80075C5C = (u_int volatile*)0x1F801088;
-static u_int volatile* D_80075C60 = (u_int volatile*)0x1F801090;
-static u_int volatile* D_80075C64 = (u_int volatile*)0x1F801094;
+static u_int volatile* d0_madr = (u_int volatile*)0x1F801080;
+static u_int volatile* d0_bcr = (u_int volatile*)0x1F801084;
+static u_int volatile* d0_chcr = (u_int volatile*)0x1F801088;
+static u_int volatile* d1_madr = (u_int volatile*)0x1F801090;
+static u_int volatile* d1_bcr = (u_int volatile*)0x1F801094;
+static u_int volatile* d1_chcr = (u_int volatile*)0x1F801098;
+static u_int volatile* d2_madr = (u_int volatile*)0x1F8010A0;
+static u_int volatile* d2_bcr = (u_int volatile*)0x1F8010A4;
+static u_int volatile* d2_chcr = (u_int volatile*)0x1F8010A8;
+static u_int volatile* d3_madr = (u_int volatile*)0x1F8010B0;
+static u_int volatile* d3_bcr = (u_int volatile*)0x1F8010B4;
+static u_int volatile* d3_chcr = (u_int volatile*)0x1F8010B8;
+static u_int volatile* mdec0 = (u_int volatile*)0x1F801820;
+static u_int volatile* mdec1 = (u_int volatile*)0x1F801824;
 
-static u_int volatile* D_80075C68[] = { (u_int volatile*)0x1F801098,
-    (u_int volatile*)0x1F8010A0, (u_int volatile*)0x1F8010A4, (u_int volatile*)0x1F8010A8,
-    (u_int volatile*)0x1F8010B0, (u_int volatile*)0x1F8010B4,
-    (u_int volatile*)0x1F8010B8 };
-
-/*
-void func_80072050(int arg0) {
+static void MDEC_reset(int arg0)
+{
     switch (arg0) {
     case 0:
-        *D_80075C88 = 0x80000000;
-        *D_80075C5C = 0;
-        *D_80075C68 = 0;
-        *D_80075C88 = 0x60000000;
-        func_80072140(D_80075B44, 32);
-        func_80072140(D_80075BC8, 32);
+        *mdec1 = 0x80000000;
+        *d0_chcr = 0;
+        *d1_chcr = 0;
+        *mdec1 = 0x60000000;
+        MDEC_in(&mdec_iq_y, 32);
+        MDEC_in(&mdec_coef, 32);
         return;
     case 1:
-        *D_80075C88 = 0x80000000;
-        *D_80075C5C = 0;
-        *D_80075C68 = 0;
-        *D_80075C68;
-        *D_80075C88 = 0x60000000;
+        *mdec1 = 0x80000000;
+        *d0_chcr = 0;
+        *d1_chcr = 0;
+        *d1_chcr;
+        *mdec1 = 0x60000000;
         return;
     default:
         printf("MDEC_rest:bad option(%d)\n", arg0);
         return;
     }
 }
-*/
 
-static char const D_800689DC[] = "MDEC_rest:bad option(%d)\n";
+static u_int volatile* d_pcr = (u_int volatile*)0x1F8010F0;
 
-static u_int volatile* D_80075C84 = (u_int volatile*)0x1F801820;
-static u_int volatile* D_80075C88 = (u_int volatile*)0x1F801824;
-static u_int volatile* D_80075C8C = (u_int volatile*)0x1F8010F0;
-
-__asm__(".section .text;"
-        ".set push;"
-        ".set noreorder;"
-        "glabel func_80072050;"
-        "addu     $sp, -0x18;"
-        "addu     $a1, $a0, $zero;"
-        "beqz     $a1, 0f;"
-        "sw       $ra, 0x10($sp);"
-        "addu     $v0, $zero, 0x1;"
-        "beq      $a1, $v0, 1f;"
-        "lui      $v0, (0x8000);"
-        "j        2f;"
-        "nop;"
-        "0:"
-        "lui      $v1, %hi(D_80075C88);"
-        "lw       $v1, %lo(D_80075C88)($v1);"
-        "lui      $v0, (0x8000);"
-        "sw       $v0, 0x0($v1);"
-        "lui      $v0, %hi(D_80075C5C);"
-        "lw       $v0, %lo(D_80075C5C)($v0);"
-        "lui      $a0, %hi(D_80075B44);"
-        "addiu    $a0, %lo(D_80075B44);"
-        "sw       $zero, 0x0($v0);"
-        "lui      $v0, %hi(D_80075C68);"
-        "lw       $v0, %lo(D_80075C68)($v0);"
-        "addu     $a1, $zero, 0x20;"
-        "sw       $zero, 0x0($v0);"
-        "lui      $v1, %hi(D_80075C88);"
-        "lw       $v1, %lo(D_80075C88)($v1);"
-        "lui      $v0, (0x6000);"
-        "jal      func_80072140;"
-        "sw       $v0, 0x0($v1);"
-        "lui      $a0, %hi(D_80075BC8);"
-        "addiu    $a0, %lo(D_80075BC8);"
-        "jal      func_80072140;"
-        "addiu    $a1, $zero, 0x20;"
-        "j        3f;"
-        "nop;"
-        "1:"
-        "lui      $v1, %hi(D_80075C88);"
-        "lw       $v1, %lo(D_80075C88)($v1);"
-        "nop;"
-        "sw       $v0, 0x0($v1);"
-        "lui      $v0, %hi(D_80075C5C);"
-        "lw       $v0, %lo(D_80075C5C)($v0);"
-        "nop;"
-        "sw       $zero, 0x0($v0);"
-        "lui      $v0, %hi(D_80075C68);"
-        "lw       $v0, %lo(D_80075C68)($v0);"
-        "nop;"
-        "sw       $zero, 0x0($v0);"
-        "lui      $v0, %hi(D_80075C68);"
-        "lw       $v0, %lo(D_80075C68)($v0);"
-        "lui      $v1, %hi(D_80075C88);"
-        "lw       $v1, %lo(D_80075C88)($v1);"
-        "lw       $v0, 0x0($v0);"
-        "lui      $v0, (0x6000);"
-        "j        3f;"
-        "sw       $v0, 0x0($v1);"
-        "2:"
-        "lui      $a0, %hi(D_800689DC);"
-        "jal      printf;"
-        "addiu    $a0, %lo(D_800689DC);"
-        "3:"
-        "lw       $ra, 0x10($sp);"
-        "addu     $sp, 0x18;"
-        "j        $ra;"
-        "nop;"
-        "endlabel func_80072050;"
-        ".set pop;");
-
-/*
-void func_80072140(int* arg0, u_int arg1) {
-    func_8007225C();
-    *D_80075C8C |= 0x88;
-    *D_80075C54 = arg0 + 1;
-    *D_80075C58 = ((arg1 >> 5) << 0x10) | 0x20;
-    *D_80075C84 = *arg0;
-    *D_80075C5C = 0x01000201;
+static void MDEC_in(mdec_params* arg0, u_int arg1)
+{
+    MDEC_in_sync();
+    *d_pcr |= 0x88;
+    *d0_madr = (u_int)(arg0->data);
+    *d0_bcr = ((arg1 >> 5) << 0x10) | 0x20;
+    *mdec0 = arg0->unk0;
+    *d0_chcr = 0x01000201;
 }
-*/
 
-__asm__(".section .text;"
-        ".set push;"
-        ".set noreorder;"
-        "glabel func_80072140;"
-        "addu     $sp, -0x20;"
-        "sw       $s1, 0x14($sp);"
-        "addu     $s1, $a0, $zero;"
-        "sw       $s0, 0x10($sp);"
-        "sw       $ra, 0x18($sp);"
-        "jal      func_8007225C;"
-        "addu     $s0, $a1, $zero;"
-        "lui      $v1, %hi(D_80075C8C);"
-        "lw       $v1, %lo(D_80075C8C)($v1);"
-        "srl      $s0, 5;"
-        "lw       $v0, 0x0($v1);"
-        "sll      $s0, 16;"
-        "or       $v0, 0x88;"
-        "sw       $v0, 0x0($v1);"
-        "lui      $v1, %hi(D_80075C54);"
-        "lw       $v1, %lo(D_80075C54)($v1);"
-        "addu     $v0, $s1, 0x4;"
-        "sw       $v0, 0x0($v1);"
-        "lui      $v0, %hi(D_80075C58);"
-        "lw       $v0, %lo(D_80075C58)($v0);"
-        "or       $s0, 0x20;"
-        "sw       $s0, 0x0($v0);"
-        "lui      $v1, %hi(D_80075C84);"
-        "lw       $v1, %lo(D_80075C84)($v1);"
-        "lw       $v0, 0x0($s1);"
-        "lui      $a0, (0x100);"
-        "sw       $v0, 0x0($v1);"
-        "lui      $v0, %hi(D_80075C5C);"
-        "lw       $v0, %lo(D_80075C5C)($v0);"
-        "or       $a0, (0x0201);"
-        "sw       $a0, 0x0($v0);"
-        "lw       $ra, 0x18($sp);"
-        "lw       $s1, 0x14($sp);"
-        "lw       $s0, 0x10($sp);"
-        "j        $ra;"
-        "addu     $sp, 0x20;"
-        "endlabel func_80072140;"
-        ".set pop;");
-
-/*
-void func_800721D0(int arg0, u_int arg1) {
-    func_800722F0();
-    *D_80075C8C |= 0x88;
-    *D_80075C68 = 0;
-    *D_80075C60 = arg0;
-    *D_80075C64 = ((arg1 >> 5) << 0x10) | 0x20;
-    *D_80075C68 = 0x01000200;
+static void MDEC_out(u_long* arg0, u_int arg1)
+{
+    MDEC_out_sync();
+    *d_pcr |= 0x88;
+    *d1_chcr = 0;
+    *d1_madr = (u_int)arg0;
+    *d1_bcr = ((arg1 >> 5) << 0x10) | 0x20;
+    *d1_chcr = 0x01000200;
 }
-*/
 
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800721D0;"
-        "addu     $sp, -0x20;"
-        "sw       $s1, 0x14($sp);"
-        "addu     $s1, $a0, $zero;"
-        "sw       $s0, 0x10($sp);"
-        "sw       $ra, 0x18($sp);"
-        "jal      func_800722F0;"
-        "addu     $s0, $a1, $zero;"
-        "lui      $v1, %hi(D_80075C8C);"
-        "lw       $v1, %lo(D_80075C8C)($v1);"
-        "nop;"
-        "lw       $v0, 0x0($v1);"
-        "srl      $s0, 5;"
-        "or       $v0, 0x88;"
-        "sw       $v0, 0x0($v1);"
-        "lui      $v0, %hi(D_80075C68);"
-        "lw       $v0, %lo(D_80075C68)($v0);"
-        "sll      $s0, 16;"
-        "sw       $zero, 0x0($v0);"
-        "lui      $v0, %hi(D_80075C60);"
-        "lw       $v0, %lo(D_80075C60)($v0);"
-        "or       $s0, 0x20;"
-        "sw       $s1, 0x0($v0);"
-        "lui      $v0, %hi(D_80075C64);"
-        "lw       $v0, %lo(D_80075C64)($v0);"
-        "lui      $v1, (0x100);"
-        "sw       $s0, 0x0($v0);"
-        "lui      $v0, %hi(D_80075C68);"
-        "lw       $v0, %lo(D_80075C68)($v0);"
-        "or       $v1, (0x0200);"
-        "sw       $v1, 0x0($v0);"
-        "lw       $ra, 0x18($sp);"
-        "lw       $s1, 0x14($sp);"
-        "lw       $s0, 0x10($sp);"
-        "j        $ra;"
-        "addu     $sp, 0x20;"
-        "endlabel func_800721D0;"
-        ".set pop;");
+static int timeout(char* arg0);
 
-/*
-int func_8007225C(void) {
-    volatile int sp10;
+static int MDEC_in_sync(void)
+{
+    volatile int retries = 0x100000;
 
-    sp10 = 0x100000;
-    while (*D_80075C88 & 0x20000000) {
-        if (--sp10 == -1) {
-            func_8007239C("MDEC_in_sync");
+    while (*mdec1 & 0x20000000) {
+        if (--retries == -1) {
+            timeout("MDEC_in_sync");
             return -1;
         }
     }
+
     return 0;
 }
-*/
 
-static char const D_800689F8[] = "MDEC_in_sync";
+static int MDEC_out_sync(void)
+{
+    volatile int retries = 0x100000;
 
-__asm__(".section .text;"
-        ".set push;"
-        "glabel func_8007225C;"
-        ".set noreorder;"
-        "addu      $sp, -0x20;"
-        "lui       $v1, %hi(D_80075C88);"
-        "lw        $v1, %lo(D_80075C88)($v1);"
-        "lui       $v0, (0x10);"
-        "sw        $ra, 0x18($sp);"
-        "sw        $v0, 0x10($sp);"
-        "lw        $v0, 0x0($v1);"
-        "lui       $v1, (0x2000);"
-        "and       $v0, $v1;"
-        "beqz      $v0, 2f;"
-        "addu      $v0, $zero, $zero;"
-        "li        $a0, -1;"
-        "0:"
-        "lw        $v0, 0x10($sp);"
-        "nop;"
-        "addu      $v0, -1;"
-        "sw        $v0, 0x10($sp);"
-        "lw        $v0, 0x10($sp);"
-        "nop;"
-        "bne       $v0, $a0, 1f;"
-        "nop;"
-        "lui       $a0, %hi(D_800689F8);"
-        "jal       func_8007239C;"
-        "addiu     $a0, %lo(D_800689F8);"
-        "j         2f;"
-        "li        $v0, -1;"
-        "1:"
-        "lui       $v0, %hi(D_80075C88);"
-        "lw        $v0, %lo(D_80075C88)($v0);"
-        "nop;"
-        "lw        $v0, 0x0($v0);"
-        "nop;"
-        "and       $v0, $v1;"
-        "bnez      $v0, 0b;"
-        "addu      $v0, $zero, $zero;"
-        "2:"
-        "lw        $ra, 0x18($sp);"
-        "addu      $sp, 0x20;"
-        "j         $ra;"
-        "nop;"
-        "endlabel func_8007225C;"
-        ".set pop;");
-
-/*
-int func_800722F0(void) {
-    volatile int sp10;
-
-    sp10 = 0x100000;
-    while (*D_80075C68 & 0x01000000) {
-        if (--sp10 == -1) {
-            func_8007239C("MDEC_out_sync");
+    while (*d1_chcr & 0x01000000) {
+        if (--retries == -1) {
+            timeout("MDEC_out_sync");
             return -1;
         }
     }
+
     return 0;
 }
-*/
 
-__asm__(".section .rodata;");
+static u_int get_mdec1(void) { return *mdec1; }
 
-static char const D_80068A08[] = "MDEC_out_sync";
-
-__asm__(".section .text;"
-        ".set push;"
-        "glabel func_800722F0;"
-        ".set noreorder;"
-        "addu     $sp, -0x20;"
-        "lui      $v1, %hi(D_80075C68);"
-        "lw       $v1, %lo(D_80075C68)($v1);"
-        "lui      $v0, (0x10);"
-        "sw       $ra, 0x18($sp);"
-        "sw       $v0, 0x10($sp);"
-        "lw       $v0, 0x0($v1);"
-        "lui      $v1, (0x100);"
-        "and      $v0, $v1;"
-        "beqz     $v0, 2f;"
-        "addu     $v0, $zero, $zero;"
-        "li       $a0, -0x1;"
-        "0:"
-        "lw       $v0, 0x10($sp);"
-        "nop;"
-        "addu     $v0, -0x1;"
-        "sw       $v0, 0x10($sp);"
-        "lw       $v0, 0x10($sp);"
-        "nop;"
-        "bne      $v0, $a0, 1f;"
-        "nop;"
-        "lui      $a0, %hi(D_80068A08);"
-        "jal      func_8007239C;"
-        "addiu    $a0, %lo(D_80068A08);"
-        "j        2f;"
-        "li       $v0, -0x1;"
-        "1:"
-        "lui      $v0, %hi(D_80075C68);"
-        "lw       $v0, %lo(D_80075C68)($v0);"
-        "nop;"
-        "lw       $v0, 0x0($v0);"
-        "nop;"
-        "and      $v0, $v1;"
-        "bnez     $v0, 0b;"
-        "addu     $v0, $zero, $zero;"
-        "2:"
-        "lw       $ra, 0x18($sp);"
-        "addu     $sp, 0x20;"
-        "j        $ra;"
-        "nop;"
-        "endlabel func_800722F0;"
-        ".set pop;");
-
-u_int func_80072384(void) { return *D_80075C88; }
-
-int func_8007239C(char* arg0)
+static int timeout(char* arg0)
 {
     printf("%s timeout:\n", arg0);
-    *D_80075C88 = 0x80000000;
-    *D_80075C5C = 0;
-    *D_80075C68[0] = 0;
-    *D_80075C68[0];
-    *D_80075C88 = 0x60000000;
+    *mdec1 = 0x80000000;
+    *d0_chcr = 0;
+    *d1_chcr = 0;
+    *d1_chcr;
+    *mdec1 = 0x60000000;
     return 0;
 }
 

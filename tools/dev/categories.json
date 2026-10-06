@@ -164,6 +164,6 @@
     ],
     "exclusions": {
         "names": [],
-        "suffixes": [".data.o", ".rodata.o", ".bss.o"]
+        "suffixes": [".data.s.o", ".rodata.s.o", ".bss.s.o"]
     }
 }

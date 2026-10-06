@@ -26,10 +26,8 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,2MBYTE.OBJ libcd/SYS overlay 25AC ma
 # j/jr/jal delay slots with the preceding instruction, including the tail of a lui/sw macro),
 # not by ASPSX. Feed cc1 output straight to as; only `move` must keep the old addu encoding.
 # libsn/SNMAIN is SN Systems hand-written asm and keeps the ASPSX (maspsx) path.
-$(BUILD)/src/SLUS_010.40/lib%.c.o: MAS := sed -E -e '1i .include "macro.inc"' -e 's/^\tmove\t([^,]+),(.+)$$/\taddu\t\1,\2,$$0/'
-$(BUILD)/src/SLUS_010.40/lib%.c.o: MASFLAGS :=
-$(BUILD)/src/SLUS_010.40/libsn/SNMAIN.c.o: MAS = $(VPYTHON) tools/maspsx/maspsx.py
-$(BUILD)/src/SLUS_010.40/libsn/SNMAIN.c.o: MASFLAGS := --aspsx-version=2.77 --macro-inc
+$(BUILD)/src/SLUS_010.40/lib%.c.o: PREPROCESS.s := sed -E -e '1i .include "macro.inc"' -e 's/^\tmove\t([^,]+),(.+)$$/\taddu\t\1,\2,$$0/'
+$(BUILD)/src/SLUS_010.40/libsn/SNMAIN.c.o: PREPROCESS.s = $(MAS) $(MASFLAGS)
 
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \

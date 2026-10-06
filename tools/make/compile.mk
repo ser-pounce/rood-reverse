@@ -8,7 +8,8 @@ CC1FLAGS ?= -G0 -O2 -Wall -quiet -fno-builtin -funsigned-char -Wno-unused
 MASFLAGS ?= --aspsx-version=2.77 --macro-inc
 
 PREPROCESS.c = $(CPP) $(CPPFLAGS) $<
-COMPILE.c    = $(PREPROCESS.c) | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(COMPILE.s)
+PREPROCESS.s = $(MAS) $(MASFLAGS)
+COMPILE.c    = $(PREPROCESS.c) | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(PREPROCESS.s) | $(COMPILE.s)
 
 $(BUILD)/%.c.o: %.c
 	$(ECHO) Compiling $<

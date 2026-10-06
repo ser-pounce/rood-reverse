@@ -173,7 +173,26 @@ void func_8001DCD4(u_char* addr, u_int size)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/SPU", _spu_FiDMA);
+void _spu_FiDMA(void)
+{
+    u_int i;
+
+    if (D_800308B0 == 0) {
+        _spu_Fw1ts();
+    }
+    D_80030860->regs.spucnt &= ~0x30;
+    i = 0;
+    while (D_80030860->regs.spucnt & 0x30) {
+        if (++i > 0xF00) {
+            break;
+        }
+    }
+    if (D_80030898) {
+        D_80030898();
+    } else {
+        DeliverEvent(0xF0000009, 0x20);
+    }
+}
 
 void _spu_Fr_(u_char* addr, u_short spuAddr, int blocks)
 {

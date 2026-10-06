@@ -48,7 +48,7 @@ $(BUILD)/src/SLUS_010.40/libsn/SNMAIN.o: MASFLAGS := --aspsx-version=2.77 --macr
 # A few PsyQ library units were built without the post-loop CSE pass (stores to one global struct
 # share a single `la base` register instead of per-store lui/sw macros).
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libspu/S_INI libspu/S_SRMD libspu/S_SRMT libapi/PAD libetc/INTR \
-	libds/DSREADY \
+	libds/DSREADY libds/DSSYS_1 \
 ): \
 	CC1FLAGS += -fno-rerun-cse-after-loop
 

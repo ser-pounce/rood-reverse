@@ -762,5 +762,3 @@ int func_800E6178(actorInitializationActor* actor, int options)
     }
     return (short)options >= 0 && (((int)(short)options << 26) < 0);
 }
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/7CD68", func_800E65DC);

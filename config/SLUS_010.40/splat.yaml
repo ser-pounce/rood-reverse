@@ -223,8 +223,8 @@ segments:
       - [0x31D34, c, libgte/REG13]      # |
       - [0x31D40, c, libgte/REG12]      # |
       - [0x31D58, c, libgte/REG11]      # |
-      - [0x31D78, c, libgte/MTX_12]     # |
-      - [0x31D98, c, libgte/MTX_09]     # |
+      - [0x31D78, hasm, libgte/MTX_12]  # |
+      - [0x31D98, hasm, libgte/MTX_09]  # |
       - [0x31DC8, hasm, libgte/MTX_004] # |
       - [0x31F24, hasm, libgte/MTX_06]  # |- Presumably compiled as raw ASM 
       - [0x31F7C, hasm, libgte/MTX_05]  # |

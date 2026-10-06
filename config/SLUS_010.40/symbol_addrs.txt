@@ -562,6 +562,7 @@ _soundFlush = 0x8002F560;
 g_Sound_ProgramCounter = 0x8002F638;
 g_Sound_StereoPanGainTableQ15 = 0x8002F79C;
 g_Sound_LfoTable = 0x800301A0;
+_spu_rev_attr = 0x80030800;
 __initialised = 0x80030FB0;
 __heapbase = 0x80030FB4;
 __heapsize = 0x80030FB8;

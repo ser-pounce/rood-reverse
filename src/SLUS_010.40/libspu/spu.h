@@ -28,6 +28,7 @@ u_int _spu_FsetRXXa(int reg, u_int addr);
 
 extern SpuReverbAttr _spu_rev_attr;
 extern SpuRegs* _spu_RXX;
+extern volatile u_short _spu_tsa;
 extern int _spu_mem_mode_plus;
 extern SpuTransferCallbackProc _spu_transferCallback;
 extern int _spu_AllocBlockNum;

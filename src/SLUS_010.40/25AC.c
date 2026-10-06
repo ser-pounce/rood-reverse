@@ -2371,7 +2371,57 @@ void func_800161C4(int in_SfxId, int in_StopFlags)
     g_Sound_GlobalFlags.UpdateFlags |= 0x110;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001653C);
+void func_8001653C(FSoundChannel* in_Channel, FSoundCommandParams* in_CommandParams,
+    int in_VoiceBit, char* in_ProgramCounter)
+{
+    u_int i;
+    int pan;
+    int volume;
+    int voiceMask;
+
+    in_Channel->unk3C = in_CommandParams->Param1;
+    in_Channel->unk28 = in_CommandParams->Param2;
+    pan = (u_char)in_CommandParams->Param3 << 8;
+    in_Channel->unk6E = 0;
+    in_Channel->ChannelPan = 0x8000;
+    in_Channel->ChannelPanSlideLength = 0;
+    in_Channel->unk6C = pan;
+    volume = ((u_short)in_CommandParams->Param4 & 0x7F) << 8;
+    in_Channel->unk8C = 0;
+    in_Channel->unkDC = volume;
+    voiceMask = 1 << in_CommandParams->ExtParam1;
+    in_Channel->Length1 = 2;
+    in_Channel->unk38 = voiceMask;
+    in_Channel->Length2 = 1;
+    in_Channel->Type = 1;
+    in_Channel->unk58 = -2;
+    in_Channel->unk40 = 0;
+    in_Channel->unk86 = 0;
+    func_80015C9C(in_Channel, in_ProgramCounter);
+    g_Sound_VoiceChannelConfigs[in_Channel->VoiceParams.AssignedVoiceNumber] = NULL;
+    SetVoiceAdsrReleaseRateAndMode(in_Channel->VoiceParams.AssignedVoiceNumber, 5, 3);
+
+    g_Sound_VoiceSchedulerState.ActiveChannelMask |= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.KeyOffFlags |= in_VoiceBit;
+    in_VoiceBit = ~in_VoiceBit;
+    g_Sound_VoiceSchedulerState.KeyOnFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.KeyedFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.NoiseVoiceFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.ReverbVoiceFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.FmVoiceFlags &= in_VoiceBit;
+
+    if (D_80039B64 & 2) {
+        in_VoiceBit = 0x1000;
+        in_Channel = D_80035910;
+        for (i = 12; i != 0; i--, in_Channel++, in_VoiceBit <<= 1) {
+            if ((g_Sound_VoiceSchedulerState.ActiveChannelMask & in_VoiceBit)
+                && !(in_Channel->unk28 & 0x02000000)) {
+                g_Sound_VoiceSchedulerState.ActiveChannelMask &= ~in_VoiceBit;
+                g_Sound_VoiceSchedulerState.unk_Flags_0x10 |= in_VoiceBit;
+            }
+        }
+    }
+}
 
 void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice)
 {

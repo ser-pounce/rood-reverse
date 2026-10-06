@@ -4019,7 +4019,132 @@ long func_80019A58(void)
 
 // https://decomp.me/scratch/qmxvP
 char func_80019FC4(FSoundChannel* channel);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
+extern u_char D_8002F5A0[];
+extern u_char D_8002F600[];
+
+char func_80019FC4(FSoundChannel* channel)
+{
+    u_char* pc;
+    u_int loopTop;
+    FSoundChannelConfig* config;
+    int length;
+    int jumpOffset;
+
+    pc = channel->ProgramCounter;
+    loopTop = channel->LoopStackTop;
+    config = g_pActiveMusicConfig;
+
+    while (1) {
+        if (*pc < 0x9A) {
+            if (*pc >= 0x8F) {
+                channel->SfxMask &= ~5;
+            }
+            return *pc;
+        }
+        if (*pc < 0xA0) {
+            return 0xA0;
+        }
+        length = D_8002F5A0[*pc - 0xA0];
+        if (length != 0) {
+            pc += length;
+            continue;
+        }
+        switch (*pc) {
+        case 0xF0:
+        case 0xF1:
+        case 0xF2:
+        case 0xF3:
+        case 0xF4:
+        case 0xF5:
+        case 0xF6:
+        case 0xF7:
+        case 0xF8:
+        case 0xF9:
+        case 0xFA:
+        case 0xFB:
+            return 0x83;
+        case 0xFC:
+            return 0x84;
+        case 0xFD:
+            return 0x8F;
+        case 0xFE:
+            pc++;
+            length = D_8002F600[*pc];
+            if (length != 0) {
+                pc += length;
+                break;
+            }
+            switch (*pc) {
+            case 0x08:
+            case 0x09:
+                pc++;
+                if (*pc == channel->LoopIterationCount[loopTop] + 1) {
+                    pc++;
+                    loopTop--;
+                    loopTop &= 3;
+                    jumpOffset = pc[0];
+                    jumpOffset += pc[1] << 8;
+                    pc += (short)jumpOffset;
+                } else {
+                    pc += 3;
+                }
+                break;
+            case 0x06:
+            case 0x0E:
+                pc++;
+                jumpOffset = pc[0];
+                jumpOffset += pc[1] << 8;
+                pc += (short)jumpOffset;
+                break;
+            case 0x07:
+                pc++;
+                if (*pc++ <= config->JumpThresholdValue) {
+                    jumpOffset = pc[0];
+                    jumpOffset += pc[1] << 8;
+                    pc += (short)jumpOffset;
+                } else {
+                    pc += 2;
+                }
+                break;
+            case 0x0F:
+                pc = channel->ReturnProgramCounter;
+                break;
+            case 0x1F:
+                pc++;
+                if (config->StatusFlags & 0x10000) {
+                    return 0xA0;
+                }
+                break;
+            }
+            break;
+        case 0xC9:
+            pc++;
+            if (*pc == channel->LoopIterationCount[loopTop] + 1) {
+                pc++;
+                loopTop--;
+                loopTop &= 3;
+            } else {
+                pc = channel->LoopStartPc[loopTop];
+            }
+            break;
+        case 0xCB:
+        case 0xCD:
+        case 0xD1:
+        case 0xDB:
+            channel->SfxMask &= ~5;
+            pc++;
+            break;
+        case 0xCA:
+            if (!(channel->UpdateFlags & 0x200000)) {
+                pc = channel->LoopStartPc[loopTop];
+                break;
+            }
+        default:
+            channel->SfxMask &= ~5;
+            return 0xA0;
+        }
+    }
+}
 
 int func_8001A1F4(int arg0, int arg1)
 {

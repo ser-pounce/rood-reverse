@@ -2,8 +2,8 @@
 #include <malloc.h>
 
 static int __initialised = 0;
-static u_long* __heapbase = NULL;
-static int __heapsize = 0;
+u_long* __heapbase = NULL;
+int __heapsize = 0;
 static int __text = 0x80010AA4;
 static int __textlen = 0x0001EA90;
 static int __data = 0x8002F534;
@@ -14,12 +14,11 @@ static int _[] = {
     0x00067350, 0x00450000 //  ??
 };
 __asm__(".pushsection .sbss;"
+        ".globl __ra_temp;"
         "__ra_temp:;"
         ".size __ra_temp, 4;"
         ".space 8;"
         ".popsection");
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __SN_ENTRY_POINT);
 
 void __main(void)
 {

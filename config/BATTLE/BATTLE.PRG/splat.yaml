@@ -29,6 +29,7 @@ segments:
       - [0xC30, .rodata, 3A1A0]
       - [0xC7C, .rodata, 40564]
       - [0xCF0, .rodata, 44F14]
+      - [0xDF4, .rodata, 49268]
       - [0xE1C, .rodata, 4A0A8]
       - [0x1010, .rodata, 573B8]
       - [0x1024, .rodata, 58578]
@@ -46,7 +47,9 @@ segments:
       - [0x3A1A0, c]
       - [0x40564, c]
       - [0x44F14, c]
-      - [0x4B16C, hasm] # 44F14 includes func_800B28A8 (2.7.2-cdk, jtbl_800695F4)
+      - [0x48C7C, hasm]
+      - [0x49268, c]
+      - [0x4B16C, hasm] # 49268 includes func_800B28A8 (2.7.2-cdk, jtbl_800695F4)
       - [0x4DBAC, c, 4A0A8]
       - [0x573B8, c]
       - [0x58578, c]

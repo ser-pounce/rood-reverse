@@ -1949,7 +1949,40 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
 }
 
 // https://decomp.me/scratch/VmgoV
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
+void func_80015080(u_int in_ReservedVoices)
+{
+    u_int i;
+    u_int reserved = (g_pActiveMusicConfig->ActiveChannelMask
+                         & g_pActiveMusicConfig->AllocatedVoiceMask)
+                   | in_ReservedVoices;
+    FSpuVoiceInfo* pVoice;
+
+    if (g_pSavedMousicConfig != NULL) {
+        reserved |= g_pSavedMousicConfig->ActiveChannelMask
+                  & g_pSavedMousicConfig->AllocatedVoiceMask;
+    }
+
+    for (i = 0, pVoice = g_SpuVoiceInfo; i < VOICE_COUNT; pVoice++, i++) {
+        if (reserved & (1 << i)) {
+            pVoice->pEnvx = 0x7FFF;
+            continue;
+        }
+        SpuGetVoiceEnvelope(i, &pVoice->pEnvx);
+        if (pVoice->pEnvx == 0) {
+            UnassignVoicesFromChannels(g_ActiveMusicChannels, i);
+        } else if (g_pActiveMusicConfig->KeyedMask != 0) {
+            if (func_8001503C(
+                    g_ActiveMusicChannels, g_pActiveMusicConfig->KeyedMask, i)) {
+                pVoice->pEnvx = 0x7FFF;
+            }
+            if (g_pSavedMousicConfig != NULL
+                && func_8001503C(
+                    g_pSecondaryMusicChannels, g_pSavedMousicConfig->KeyedMask, i)) {
+                pVoice->pEnvx = 0x7FFF;
+            }
+        }
+    }
+}
 
 void Sound_ApplyMasterFadeToChannelVolume(
     FSoundChannelConfig* in_Context, FSoundChannel* arg1 __attribute__((unused)))

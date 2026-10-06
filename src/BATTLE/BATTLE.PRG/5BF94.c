@@ -2512,7 +2512,118 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C930C);
+extern int D_800F4CC0;
+extern char D_800EBA78[];
+
+int func_800C930C(int mode)
+{
+    u_int selected = vs_battle_submenuStates[0];
+    vs_battle_menuItem_t* items = vs_battle_menuItems;
+    u_int enabled = vs_main_settings.menuFlags;
+    u_int mask;
+    u_int conditions;
+
+    if (mode) {
+        if (mode == 2 && !vs_main_settings.cursorMemory) {
+            selected = 0;
+        }
+        while (!((enabled >> selected) & 1)) {
+            selected = (selected + 1) % 10;
+        }
+        vs_battle_submenuStates[0] = selected;
+        vs_battle_rMemzero(vs_battle_menuItems, 0xB24);
+        mask = 9;
+        for (mode = 0; mode < 10; ++mode) {
+            if ((enabled >> mode) & 1) {
+                items[mode].animationStep = mask++;
+            }
+        }
+        D_800F4CC0 = -mask;
+        return 0;
+    }
+
+    if (D_800F4CC0 < 0) {
+        ++D_800F4CC0;
+        for (selected = 0; mode < 10; ++mode) {
+            if ((enabled >> mode) & 1) {
+                u_char step = items[mode].animationStep;
+                if (step != 0) {
+                    items[mode].animationStep = --step;
+                }
+                vs_battle_setMenuItem(mode, vs_battle_rowAnimationSteps[step] + 194,
+                    selected * 16 + 18, 126, mode == 10 ? 24 : 0,
+                    (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode]]);
+                ++selected;
+                mask = D_800F4EA0;
+                items[0].unselectable = (mask & 0xB7) != 0;
+                items[1].unselectable = (mask & 0x15F) != 0;
+                items[3].unselectable = (mask & 7) != 0;
+                items[5].unselectable = vs_battle_getCurrentSceneId() == 0;
+            }
+        }
+        return 0;
+    }
+
+    if (vs_main_buttonsPressed.all & PADRright) {
+        vs_battle_playMenuSelectSfx();
+        items[selected].backgroundWidth = items[selected].selected = 1;
+        vs_battle_textBoxes[7].state = 0;
+        return selected + 1;
+    }
+    items[selected].selected = 0;
+    if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+        vs_battle_playMenuLeaveSfx();
+        vs_battle_textBoxes[7].state = 0;
+        return -1;
+    }
+    if (vs_main_buttonRepeat & PADLup) {
+        do {
+            selected = (selected + 9) % 10;
+        } while (!((enabled >> selected) & 1));
+    }
+    if (vs_main_buttonRepeat & PADLdown) {
+        selected = (selected + 1) % 10;
+    }
+    while (!((enabled >> selected) & 1)) {
+        selected = (selected + 1) % 10;
+    }
+    if (selected != vs_battle_submenuStates[0]) {
+        vs_battle_playMenuChangeSfx();
+        vs_battle_submenuStates[0] = selected;
+    }
+    items[selected].selected = 1;
+    D_800F4CC0 = vs_battle_drawCursor(D_800F4CC0, (items[selected].y >> 4) - 1);
+
+    if (items[selected].unselectable) {
+        if (vs_main_buttonsState & (PADLup | PADLdown)) {
+            return 0;
+        }
+        vs_battle_initInformationTextBox(1);
+        vs_battle_textBoxes[7].state = 11;
+        vs_battle_setTextBox(7, D_800EBA78);
+        mask = 0;
+        if (selected == 0) {
+            mask = 0xB7;
+        }
+        if (selected == 1) {
+            mask = 0x15F;
+        }
+        if (selected == 3) {
+            mask = 7;
+        }
+        conditions = D_800F4EA0 & mask;
+        for (mode = 0; mode < 9; ++mode) {
+            if (conditions & (1 << mode)) {
+                break;
+            }
+        }
+        vs_battle_stringContext.strings[0] =
+            (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode + 12]];
+    } else {
+        vs_battle_textBoxes[7].state = 0;
+    }
+    return 0;
+}
 
 void func_800C97BC(void)
 {

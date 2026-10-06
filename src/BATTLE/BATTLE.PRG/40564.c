@@ -1360,7 +1360,79 @@ int func_800AAE9C(D_800F4538_t* actor)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB098);
+extern u_char D_800E8F30[];
+extern u_char D_800E8F90[];
+
+static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
+static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
+
+typedef struct {
+    u_char overlay;
+    u_char x;
+    u_char y;
+    u_char columns;
+} func_800AB098_t;
+
+void func_800AB098(D_800F4538_t* actor, int index, int frame)
+{
+    func_800AB098_t fallback;
+    RECT rect;
+    DR_MOVE* packet;
+    func_800AB098_t* anim;
+    texMapOverlay_t* overlay;
+    int offset;
+    int srcX, srcY, dstX, width, height, slot;
+    int x, y, row, py;
+
+    if (actor->unk183E[D_800E8F2C] == 0xFF) {
+        return;
+    }
+    anim = (func_800AB098_t*)&actor->unk1802[2] + index;
+    if (anim->columns == 0) {
+        fallback.overlay = index ? 7 : 5;
+        offset = index * 4;
+        fallback.x = actor->unk614[offset];
+        fallback.y = actor->unk614[offset + 1];
+        fallback.columns = actor->unk614[offset + 2];
+        if (fallback.columns == 0) {
+            return;
+        }
+        anim = &fallback;
+    }
+    srcX = anim->x;
+    srcY = anim->y;
+    overlay = &actor->texMapOverlays[anim->overlay - 1];
+    dstX = overlay->x;
+    width = overlay->w;
+    height = overlay->h;
+    if (!(*(int*)((u_char*)actor + 0x5AC) & 0x8000000)) {
+        srcX /= 4;
+        width /= 4;
+        dstX /= 4;
+    } else {
+        srcX /= 2;
+        width /= 2;
+        dstX /= 2;
+    }
+    srcX += (frame % anim->columns) * width;
+    srcY += (frame / anim->columns) * height;
+    srcY += actor->unk183E[D_800E8F2C];
+    packet = vs_battlePacketBegin();
+    slot = actor->unk5BB;
+    x = *(short*)(D_800E8F30 + slot * 4);
+    y = *(short*)(D_800E8F30 + slot * 4 + 2);
+    row = D_800E8F90[slot];
+    py = overlay->y;
+    frame = D_800F2450[D_800E8F2C] & 15;
+    rect.x = (frame << 6) + srcX;
+    rect.y = srcY + 256;
+    rect.w = width;
+    rect.h = height;
+    srcY = (y << 8) + (row << 6) + py;
+    SetDrawMove(packet, &rect, dstX + (x << 6), srcY);
+    func_8007A824(packet);
+    vs_battlePacketEnd(packet);
+}
 
 void func_800AB2AC(int arg0)
 {
@@ -1378,11 +1450,6 @@ void func_800AB2AC(int arg0)
     }
 }
 
-extern u_char D_800E8F30[];
-extern u_char D_800E8F90[];
-
-static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
-static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
 void func_800AB358(int index, u_char* arg)
 {
     RECT rect;

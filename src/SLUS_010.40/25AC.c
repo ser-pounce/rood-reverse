@@ -62,6 +62,14 @@ typedef struct {
     int unkC;
 } D_800378C0_t;
 
+// Streaming state for func_80012F10 (instrument bank uploaded in chunks)
+typedef struct {
+    int* pInstrumentDst; // next g_InstrumentInfo word to fill
+    int SpuAddr; // next SPU transfer address; 0 = start a new stream
+    u_int SpuBytesRemaining;
+    u_int InstrumentBytesRemaining;
+} D_80039BC8_t;
+
 static int Sound_IsNotAkaoFile(int*);
 int func_80013588(void*, int);
 int func_800135D8(void*, int, int, int);
@@ -76,6 +84,9 @@ u_int func_80018C30(int);
 long func_80019A58(void);
 static void StopSound(void);
 static void _writeSpu(char* data, u_int len);
+static void _waitTransferAvailable(void);
+void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
+    FSoundInstrumentInfo* in_B, int in_AddrOffset, int in_Count);
 void Sound_Cutscene_OnInitialTransferComplete(void);
 void Sound_Cutscene_InitVoice(int, int, int, int);
 void Sound_Cutscene_BeginPlayback(int, int, void (*)(void));
@@ -130,6 +141,8 @@ extern int D_8003789C;
 extern int D_80039B00;
 extern u_int D_8002F63C[];
 extern int D_80039BCC;
+extern D_80039BC8_t D_80039BC8;
+extern int D_80037850[16];
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -792,7 +805,77 @@ int func_80012EF0(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012F10);
+int func_80012F10(int* in_Data, u_int in_Size, int in_Slot, int in_Wait)
+{
+    int instrumentIndex;
+    int spuAddr;
+    u_int chunk;
+    u_int spuChunk;
+
+    if (g_Sound_GlobalFlags.ControlLatches & 1) {
+        if (D_80039BC8.SpuAddr == 0) {
+            if (Sound_IsNotAkaoFile(in_Data) == 0) {
+                if (in_Data[4] == 0x35100) {
+                    func_80012C14(in_Data, &instrumentIndex, &spuAddr);
+                } else if (in_Data[4] == 0xB100) {
+                    func_80012D9C(in_Data, &instrumentIndex, &spuAddr, in_Slot);
+                } else {
+                    spuAddr = in_Data[4];
+                    instrumentIndex = in_Data[6];
+                }
+                Sound_memcpy32(in_Data, D_80037850, 0x40);
+                in_Data += 0x10;
+                in_Size -= 0x40;
+                D_80037850[4] = spuAddr;
+                D_80039BC8.SpuAddr = spuAddr;
+                D_80037850[6] = instrumentIndex;
+                D_80039BC8.SpuBytesRemaining = D_80037850[5];
+                D_80039BC8.pInstrumentDst = (int*)&g_InstrumentInfo[instrumentIndex];
+                D_80039BC8.InstrumentBytesRemaining =
+                    D_80037850[7] * sizeof(FSoundInstrumentInfo);
+            } else {
+                in_Size = 0;
+                D_80039BC8.SpuBytesRemaining = 0;
+                D_80039BC8.InstrumentBytesRemaining = 0;
+            }
+        }
+        if ((D_80039BC8.InstrumentBytesRemaining != 0) && (in_Size != 0)) {
+            chunk = D_80039BC8.InstrumentBytesRemaining;
+            if (chunk >= in_Size) {
+                chunk = in_Size;
+            }
+            // The original reuses the spuAddr stack slot for the chunk size.
+            spuAddr = chunk;
+            Sound_memcpy32(in_Data, D_80039BC8.pInstrumentDst, spuAddr);
+            in_Data += (u_int)spuAddr / 4;
+            in_Size -= spuAddr;
+            D_80039BC8.pInstrumentDst += (u_int)spuAddr / 4;
+            D_80039BC8.InstrumentBytesRemaining -= spuAddr;
+            if (D_80039BC8.InstrumentBytesRemaining == 0) {
+                Sound_CopyAndRelocateInstruments(&g_InstrumentInfo[D_80037850[6]],
+                    &g_InstrumentInfo[D_80037850[6]], D_80037850[4], D_80037850[7]);
+            }
+        }
+        if ((in_Size != 0) && (D_80039BC8.SpuBytesRemaining != 0)) {
+            spuChunk = D_80039BC8.SpuBytesRemaining;
+            if (spuChunk >= in_Size) {
+                spuChunk = in_Size;
+            }
+            in_Size = spuChunk;
+            SpuSetTransferStartAddr(D_80039BC8.SpuAddr);
+            _writeSpu((char*)in_Data, in_Size);
+            D_80039BC8.SpuAddr += in_Size;
+            D_80039BC8.SpuBytesRemaining -= in_Size;
+            if (in_Wait != 0) {
+                _waitTransferAvailable();
+            }
+        }
+        if (D_80039BC8.SpuBytesRemaining == 0) {
+            g_Sound_GlobalFlags.ControlLatches &= ~1;
+        }
+    }
+    return D_80039BC8.SpuBytesRemaining;
+}
 
 int func_80013188(void* arg0, int arg1)
 {

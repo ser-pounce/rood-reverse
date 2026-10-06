@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P10", SetSemiTrans);
+void SetSemiTrans(void* p, int abe) { setSemiTrans(p, abe); }

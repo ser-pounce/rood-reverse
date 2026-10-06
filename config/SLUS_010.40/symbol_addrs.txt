@@ -565,6 +565,7 @@ g_Sound_LfoTable = 0x800301A0;
 _spu_rev_attr = 0x80030800;
 _spu_RXX = 0x80030860;
 _spu_mem_mode_plus = 0x80030888;
+_spu_transferCallback = 0x80030898;
 _spu_AllocBlockNum = 0x800308C0;
 _spu_AllocLastNum = 0x800308C4;
 _spu_memList = 0x800308C8;

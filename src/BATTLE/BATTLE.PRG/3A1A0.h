@@ -58,7 +58,9 @@ typedef struct {
 
 typedef struct {
     SVECTOR unk0[42];
-    SVECTOR unk150[0x7E];
+    SVECTOR unk150[42];
+    SVECTOR unk2A0[42];
+    SVECTOR unk3F0[42];
     u_short unk540;
     u_short unk542;
     u_char* unk544;

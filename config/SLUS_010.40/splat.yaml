@@ -190,7 +190,7 @@ segments:
       - [0x1F684, c, libcard/A74]
       - [0x1F694, c, libcard/A75]
       - [0x1F6A4, c, libcard/A76]
-      - [0x1F6B4, c, libcard/PATCH]
+      - [0x1F6B4, hasm, libcard/PATCH]
       - [0x1F8D4, c, libcard/END]
       - [0x1F954, c, libcard/FORMAT] # Psyq 4.6 / 4.7
       - [0x1FD14, c, libcard/A79]

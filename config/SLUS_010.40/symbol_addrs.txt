@@ -334,7 +334,6 @@ DsShellOpen = 0x800244AC;
 DsLastCom = 0x800244CC;
 DS_init = 0x80024694;
 DS_reset_members = 0x8002472C;
-DS_close = 0x80024744;
 DS_cw = 0x8002484C;
 DS_vsync_callback = 0x800248C8;
 DS_sync_callback = 0x800248D4;

@@ -3815,7 +3815,70 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BDC9C);
+int func_800BDC9C(u_char* script, short arg1)
+{
+    func_800BDF6C_t* entry;
+    short i;
+    switch (script[0]) {
+    case 234:
+        if ((D_800F4BA4->projectionDistance.unk9 = script[3]) == 0) {
+            D_800F4BA4->projectionDistance.unk2 = script[1] ? (script[1] << 2) : ONE / 8;
+            D_800F4BA4->projectionDistance.unk0 = 1;
+        } else {
+            D_800F4BA4->projectionDistance.unk6 =
+                script[1] ? (script[1] << 2)
+                                - (D_800F4BA4->projectionDistance.unk4 =
+                                        D_800F4BA4->projectionDistance.unk2)
+                          : ONE / 8;
+            D_800F4BA4->projectionDistance.unk1 = script[2];
+            D_800F4BA4->projectionDistance.unk8 = 0;
+        }
+        return 0;
+    case 235:
+        if ((D_800F4BA4->nearClip.unk9 = script[3]) == 0) {
+            D_800F4BA4->nearClip.unk2 = script[1] ? script[1] : 64;
+            D_800F4BA4->nearClip.unk0 = 1;
+        } else {
+            D_800F4BA4->nearClip.unk6 =
+                (script[1] ? script[1] : 64)
+                - (D_800F4BA4->nearClip.unk4 = D_800F4BA4->nearClip.unk2);
+            D_800F4BA4->nearClip.unk1 = script[2];
+            D_800F4BA4->nearClip.unk8 = 0;
+        }
+        return 0;
+    case 236:
+        if ((D_800F4BA4->farClip.unk9 = script[3]) == 0) {
+            D_800F4BA4->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
+            D_800F4BA4->farClip.unk0 = 1;
+        } else {
+            D_800F4BA4->farClip.unk6 =
+                script[1] ? (script[1] << 7)
+                                - (D_800F4BA4->farClip.unk4 = D_800F4BA4->farClip.unk2)
+                          : ONE;
+            D_800F4BA4->farClip.unk1 = script[2];
+            D_800F4BA4->farClip.unk8 = 0;
+        }
+        return 0;
+    case 239:
+        entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
+        if (script[2] == 0) {
+            entry[0].unk9 = entry[1].unk9 = 0;
+            return 0;
+        }
+        for (i = 0; i < 2; ++i, ++entry) {
+            if (entry->unk9 == 0) {
+                entry->unk4 = script[1];
+                entry->unk6 = script[2];
+                entry->unkA = script[3];
+                entry->unk0.u8[1] = script[4];
+                entry->unk9 = script[5];
+                entry->unk8 = 0;
+                break;
+            }
+        }
+        return 0;
+    }
+}
 
 void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
 {

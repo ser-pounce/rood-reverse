@@ -708,7 +708,125 @@ static int _creditsStrWidth(u_char* str)
 }
 
 // https://decomp.me/scratch/86Hv9
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderText);
+void _renderText(_creditsElement* element)
+{
+    void** p;
+    SPRT* sprt;
+    POLY_FT4* poly;
+    u_char* str;
+    short i;
+    short len;
+    u_char c;
+    u_char glyph;
+    u_char charTableOffset;
+    short underline;
+    short x;
+    short y;
+    u_short width;
+    short glyphWidth;
+
+    sprt = *(SPRT**)0x1F800000;
+    charTableOffset = 0;
+    underline = 0;
+
+    if (element->state == 1) {
+        width = element->width = _creditsStrWidth(element->data);
+        element->x = ((320 - width) >> 1) << 8;
+        element->y = 224 << 8;
+        element->state = 2;
+    }
+
+    element->y += _scrollSpeed;
+
+    if (element->y < -(12 << 8)) {
+        element->state = -1;
+        return;
+    }
+
+    y = element->y >> 8;
+    str = element->data;
+    len = *str++;
+    x = element->x >> 8;
+
+    for (i = 0; i < len; ++i, ++str) {
+        c = *str;
+        if (c < 32u) {
+            switch (c) {
+            case 1:
+                charTableOffset = 0;
+                break;
+            case 2:
+                charTableOffset = 112;
+                break;
+            case 3:
+                if (charTableOffset != 0) {
+                    underline = 18;
+                } else {
+                    underline = 17;
+                }
+                break;
+            case 31:
+                --x;
+                break;
+            }
+        } else {
+            glyph = charTableOffset + c - 32;
+            setSprt(sprt);
+            setXY0(sprt, x, y);
+            setUV0(sprt, (glyph & 0xF) * 16, (glyph >> 4) * 16);
+            glyphWidth = _glyphWidths[glyph];
+            setWH(sprt, glyphWidth, 16);
+            setClut(sprt, 960, 480);
+            x += glyphWidth - 1;
+            sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+            addPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 3, sprt);
+            ++sprt;
+        }
+    }
+
+    if (underline != 0) {
+        p = (void**)0x1F800000;
+        x = 160 - ((element->width + 32) >> 1);
+
+        SetSprt(sprt);
+        y += underline;
+        setXY0(sprt, x, y);
+        setUV0(sprt, 0, 208);
+        setWH(sprt, 16, 3);
+        setClut(sprt, 960, 480);
+        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        AddPrim(p[1] + 12, sprt++);
+
+        poly = (POLY_FT4*)sprt;
+        SetPolyFT4(poly);
+        x += 16;
+        poly->x0 = poly->x2 = x;
+        x += element->width;
+        poly->y0 = poly->y1 = y;
+        poly->y2 = poly->y3 = y + 3;
+        poly->u0 = poly->u2 = 8;
+        poly->v2 = poly->v3 = 211;
+        poly->u1 = poly->u3 = 16;
+        poly->v0 = poly->v1 = 208;
+        poly->tpage = 31;
+        poly->clut = getClut(960, 480);
+        poly->x1 = poly->x3 = x;
+        poly->r0 = poly->g0 = poly->b0 = D_800DC19C;
+        AddPrim(p[1] + 12, poly++);
+
+        sprt = (SPRT*)poly;
+        SetSprt(sprt);
+        setUV0(sprt, 168, 208);
+        setXY0(sprt, x, y);
+        setWH(sprt, 16, 3);
+        setClut(sprt, 960, 480);
+        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        AddPrim(p[1] + 12, sprt++);
+    }
+
+    *(SPRT**)0x1F800000 = sprt;
+    *(void**)0x1F800000 = _insertTpage(31, 3);
+}
 
 void _renderCopyright(_creditsElement* arg0)
 {

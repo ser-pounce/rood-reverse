@@ -82,7 +82,7 @@ int func_800135D8(void*, int, int, int);
 void func_8001369C(void);
 static void StartSound(void);
 static void SetVoiceKeyOff(u_int);
-void func_800161C4(int, int);
+void Sound_EvictSfxVoice(int, int);
 void func_8001653C(FSoundChannel*, FSoundCommandParams*, int, char*);
 void Sound_PlaySfxProgram(FSoundCommandParams*, char*, char*, int);
 int func_80016DA8(int);
@@ -2269,7 +2269,7 @@ void Sound_KillMusicConfig(
     }
 }
 
-void func_800161C4(int in_SfxId, int in_StopFlags)
+void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
 {
     u_int i;
     int maxPriority;
@@ -2298,12 +2298,12 @@ void func_800161C4(int in_SfxId, int in_StopFlags)
         pChannel += in_SfxId;
         voiceBit <<= in_SfxId;
         if (activeVoices & voiceBit) {
-            func_800161C4(pChannel->unk3C, 0);
+            Sound_EvictSfxVoice(pChannel->unk3C, 0);
         }
         voiceBit <<= 1;
         pChannel++;
         if (activeVoices & voiceBit) {
-            func_800161C4(pChannel->unk3C, 0);
+            Sound_EvictSfxVoice(pChannel->unk3C, 0);
         }
         return;
     } else if (in_StopFlags & 0x40000000) {
@@ -2455,7 +2455,7 @@ void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_Progra
     }
 
     if ((in_SkipRelease == 0) && (in_CommandParams->Param2 != 0)) {
-        func_800161C4(0, in_CommandParams->Param2);
+        Sound_EvictSfxVoice(0, in_CommandParams->Param2);
     }
 
     while (1) {
@@ -2477,7 +2477,7 @@ void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_Progra
             break;
         }
 
-        func_800161C4(0, 0x40000000);
+        Sound_EvictSfxVoice(0, 0x40000000);
 
         if (activeVoices
             == (g_Sound_VoiceSchedulerState.ActiveChannelMask
@@ -2759,7 +2759,7 @@ void func_8001733C(FSoundCommandParams* in_Params)
 
 void Sound_Cmd_21_unk(FSoundCommandParams* arg0)
 {
-    func_800161C4(arg0->Param1, arg0->Param2);
+    Sound_EvictSfxVoice(arg0->Param1, arg0->Param2);
 }
 
 void Sound_Cmd_C0_unk(FSoundCommandParams* arg0)
@@ -5899,30 +5899,34 @@ void IRQCallbackProc(void)
     }
 }
 
-// https://decomp.me/scratch/OSu3P
-int func_8001CDD0(void)
+// Scans voice pairs 22/23 down to 12/13 for one with no busy voice
+int Sound_Cutscene_FindFreeVoicePair(void)
 {
-    u_int usedVoices;
-    u_int pairMask;
-    int i;
+    u_int BusyMask;
+    int VoiceIndex;
+    u_int Bit;
 
     do {
-        pairMask = 0xC00000;
-        usedVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
-                   | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
-        for (i = 12; i != 0; i -= 2) {
-            if (!(usedVoices & pairMask)) {
-                break;
-            }
-            pairMask >>= 2;
+        Bit = 0x00C00000;
+        VoiceIndex = 12;
+        BusyMask = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                 | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+
+        while (VoiceIndex != 0 && (BusyMask & Bit)) {
+            VoiceIndex -= 2;
+            Bit >>= 2;
         }
-        if (i != 0) {
-            return i + 10;
+
+        if (VoiceIndex != 0) {
+            return VoiceIndex + 10;
         }
-        func_800161C4(0, 0x40000000);
-    } while (usedVoices
+
+        // No free pair: evict the lowest priority SFX voice and retry
+        Sound_EvictSfxVoice(0, 0x40000000);
+    } while (BusyMask
              != (g_Sound_VoiceSchedulerState.ActiveChannelMask
                  | g_Sound_VoiceSchedulerState.unk_Flags_0x10));
+
     return -1;
 }
 
@@ -5934,7 +5938,6 @@ void func_8001CE60(void)
     SpuWrite(temp_s0, 0x800);
 }
 
-int func_8001CDD0(void);
 void func_8001D3D4(void);
 
 void Sound_Cutscene_StartStream(u_int* arg0, int arg1, int arg2)
@@ -5942,7 +5945,7 @@ void Sound_Cutscene_StartStream(u_int* arg0, int arg1, int arg2)
     int VoiceIndex;
     u_int transferSize;
 
-    VoiceIndex = func_8001CDD0();
+    VoiceIndex = Sound_Cutscene_FindFreeVoicePair();
     if (VoiceIndex != -1) {
         u_int* s3;
         g_Sound_Cutscene_StreamState.field19_0x4c.s32 = arg1;

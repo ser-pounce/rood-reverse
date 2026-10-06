@@ -6,5 +6,5 @@ $(BUILD)/data/MENU/MAINMENU.PRG: FIXUP = $(XDELTA) -dfans $@ tools/data/MENU/MAI
 $(BUILD)/data/MENU/MAINMENU.PRG: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG: LDLIBS += $(mainmenu_LDLIBS)
 
-$(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.o,224 278): CC1VER := 2.7.2-cdk
-$(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.o,2D10 C48): CC1FLAGS += -Wno-uninitialized
+$(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.c.o,224 278): CC1VER := 2.7.2-cdk
+$(patsubst %,$(BUILD)/src/MENU/MAINMENU.PRG/%.c.o,2D10 C48): CC1FLAGS += -Wno-uninitialized

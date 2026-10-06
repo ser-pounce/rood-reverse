@@ -1,1 +1,1 @@
-$(BUILD)/src/MENU/MENUF.PRG/%.o: CC1FLAGS += -Wno-uninitialized
+$(BUILD)/src/MENU/MENUF.PRG/%.c.o: CC1FLAGS += -Wno-uninitialized

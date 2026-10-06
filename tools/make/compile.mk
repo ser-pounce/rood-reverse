@@ -10,10 +10,10 @@ MASFLAGS ?= --aspsx-version=2.77 --macro-inc
 PREPROCESS.c = $(CPP) $(CPPFLAGS) $<
 COMPILE.c    = $(PREPROCESS.c) | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(MAS) $(MASFLAGS) | $(COMPILE.s)
 
-$(BUILD)/%.o: %.c
+$(BUILD)/%.c.o: %.c
 	$(ECHO) Compiling $<
 	$(COMPILE.c) $(OUTPUT_OPTION)
 
-$(BUILD)/%.d: CPPFLAGS += -M -MF $@ -MT $(@:.d=.o) -MG
-$(BUILD)/%.d: %.c | $$(@D)/
+$(BUILD)/%.c.d: CPPFLAGS += -M -MF $@ -MT $(@:.d=.o) -MG
+$(BUILD)/%.c.d: %.c | $$(@D)/
 	$(PREPROCESS.c) $(OUTPUT_OPTION)

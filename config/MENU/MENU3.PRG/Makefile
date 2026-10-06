@@ -1,1 +1,1 @@
-$(BUILD)/src/MENU/MENU3.PRG/68C4.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/MENU/MENU3.PRG/68C4.c.o: CC1VER := 2.7.2-cdk

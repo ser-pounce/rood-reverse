@@ -1,8 +1,8 @@
 $(BUILD)/data/EFFECT/%.BIN: LDFLAGS += \
 	--defsym=vs_scratch=0x1F800000
 
-$(BUILD)/src/EFFECT/%.o: CC1VER := 2.8.1-psx
-$(BUILD)/src/EFFECT/%.o: ASFLAGS += -no-pad-sections
+$(BUILD)/src/EFFECT/%.c.o: CC1VER := 2.8.1-psx
+$(BUILD)/src/EFFECT/%.c.o: ASFLAGS += -no-pad-sections
 
 PLGBINS = $(foreach n,$(1),$(BUILD)/data/EFFECT/PLG$(n).BIN)
 

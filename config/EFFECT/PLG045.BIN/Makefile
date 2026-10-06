@@ -1,1 +1,1 @@
-$(BUILD)/src/EFFECT/PLG045.BIN/110.o: CC1FLAGS+= -Wno-uninitialized
+$(BUILD)/src/EFFECT/PLG045.BIN/110.c.o: CC1FLAGS+= -Wno-uninitialized

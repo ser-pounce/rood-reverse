@@ -12,6 +12,6 @@ $(BUILD)/data/%: $(BUILD)/assets/%.vsString.bin | $$(@D)/
 	$(ECHO) Converting $<
 	cp $< $@
 
-%.vsString.o: %.vsString.bin
+%.vsString.yaml.o: %.vsString.bin
 	$(ECHO) Assembling $@
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@

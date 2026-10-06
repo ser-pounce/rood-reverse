@@ -1216,7 +1216,7 @@ parse:
     return result;
 }
 
-void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
+inline void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
 {
     vs_main_memcpy(arg0, arg1, 0x7800);
     arg0->unk0 -= (long)arg1;
@@ -1225,7 +1225,190 @@ void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
     arg0->unk4 += (long)arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", _loadSeq);
+extern u_char D_800E8F2B;
+extern u_char* D_800F22E4;
+extern void* D_800F4528[];
+extern void* D_800F4768;
+
+void func_8009CAEC(D_800F4538_t* arg0, int arg1);
+
+int _loadSeq(vs_battle_objectData* object)
+{
+    int _[2] __attribute__((unused));
+    D_800F4538_t* actor;
+    D_800F4538_t* source;
+    func_8009C378_t* seq;
+    int size;
+    int count;
+    int slot;
+    int i;
+
+    switch (D_800E8F2B) {
+    case 0:
+        D_800F22E4 = (u_char*)object->dataAddr;
+        break;
+    case 1:
+        goto loadEtm;
+    }
+
+    if (object->actorId == 0) {
+        actor = D_800F4538[object->index];
+        if (object->modelId != 0) {
+            if (vs_battleFindSharedSequence(object)) {
+                D_800F22E4 = (u_char*)object->dataAddr;
+            }
+        }
+        if (object->modelId == 0) {
+            if ((u_long)D_800F22E4 < 17) {
+                source = D_800F4538[(int)D_800F22E4];
+                actor->unk5B4 = source->unk5B4;
+                actor->unk5D4 = source->unk5D4;
+                return 0;
+            }
+            actor->unk5B4 = *D_800F22E4;
+            D_800F22E4 += 4;
+            size = *(int*)D_800F22E4;
+            D_800F22E4 += 4;
+            if (size & 3) {
+                size += (4 - size) & 3;
+            }
+            seq = vs_main_allocHeap(size);
+            if (seq == NULL) {
+                return -2;
+            }
+            actor->unk5D4 = seq;
+            goto copy;
+        }
+        if (object->modelId == 0xFF) {
+            D_800F22E4 += 4;
+            size = *(int*)D_800F22E4;
+            D_800F22E4 += 4;
+            if (size & 3) {
+                size += (4 - size) & 3;
+            }
+            seq = vs_main_allocHeap(size);
+            if (seq == NULL) {
+                return -2;
+            }
+            actor->unk5D0 = seq;
+            goto copy;
+        }
+        if ((u_long)D_800F22E4 < 17) {
+            source = D_800F4538[(int)D_800F22E4];
+            actor->unk5B5 = source->unk5B5;
+            seq = source->unk5D8;
+            if (object->index < 2) {
+                if (actor->unk0.unkF == 0) {
+                    seq = D_800F4930;
+                    goto clone;
+                }
+                if (D_800F22E4 == 0) {
+                    seq = vs_main_allocHeap(0x7800);
+                clone:
+                    func_8009C378(seq, source->unk5D8);
+                }
+            }
+            actor->unk5D8 = seq;
+            actor->unk5B1 = object->modelId;
+            return 0;
+        }
+        actor->unk5B5 = *D_800F22E4;
+        D_800F22E4 += 2;
+        size = *(u_short*)D_800F22E4;
+        D_800F22E4 += 2;
+        if (size != 0 && size != actor->unk0.nBones) {
+            return 0;
+        }
+        size = *(int*)D_800F22E4;
+        D_800F22E4 += 4;
+        if (size & 3) {
+            size += (4 - size) & 3;
+        }
+        if (actor->unk0.unkF != 0) {
+            seq = vs_main_allocHeap(size);
+            if (seq == NULL) {
+                return -2;
+            }
+        } else {
+            seq = D_800F4930;
+        }
+        actor->unk5D8 = seq;
+        actor->unk5B1 = object->modelId;
+    copy:
+        vs_main_memcpy(seq, D_800F22E4, size);
+        seq->unk0 = (char*)seq->unk0 + (int)seq;
+        seq->unk4 = (char*)seq->unk4 + (int)seq;
+        return 0;
+    } else if (object->actorId == 3) {
+        D_800F22E4 += 4;
+        size = *(int*)D_800F22E4;
+        D_800F22E4 += 4;
+        if (size & 3) {
+            size += (4 - size) & 3;
+        }
+        seq = D_800F4768;
+        goto copy;
+    } else if (object->actorId == 4 || object->actorId == 5) {
+        actor = D_800F4538[object->index];
+        actor->unk5B6 = *D_800F22E4;
+        D_800F22E4 += 4;
+        size = *(int*)D_800F22E4;
+        D_800F22E4 += 4;
+        if (size & 3) {
+            size += (4 - size) & 3;
+        }
+        seq = vs_main_allocHeap(size);
+        if (seq == NULL) {
+            return -2;
+        }
+        actor->unk5DC[3] = seq;
+        goto copy;
+    } else {
+        slot = object->index - 1;
+        D_800F2450[slot] = 0;
+        if (D_800F4528[slot] != NULL) {
+            return -2;
+        }
+        D_800F4528[slot] = D_800F22E4;
+        count = *(int*)D_800F22E4;
+        D_800F22E4 += 4;
+        for (i = 0; i < count; ++i) {
+            D_800F4628[slot][i] = *(u_short*)D_800F22E4;
+            D_800F22E4 += 4;
+        }
+        for (i = 0; i < count; ++i) {
+            D_800F4938[slot][i] = *(u_short*)D_800F22E4;
+            D_800F22E4 += 4;
+        }
+        D_800F4628[slot][i] = -1;
+        for (i = 0; i < count; ++i) {
+            D_800F4810[slot][i] = *(char**)D_800F22E4;
+            D_800F22E4 += 4;
+        }
+        for (i = 0; i < count; ++i) {
+            D_800F4810[slot][i] += (int)D_800F22E4;
+            seq = (func_8009C378_t*)(D_800F4810[slot][i] + 8);
+            seq->unk0 = (char*)seq->unk0 + (int)(D_800F4810[slot][i] + 8);
+            seq->unk4 = (char*)seq->unk4 + (int)(D_800F4810[slot][i] + 8);
+        }
+        D_800F4810[slot][i] = (char*)-1;
+        for (i = 0; i < 17; ++i) {
+            if (D_800F4538[i] != NULL) {
+                func_8009CAEC(D_800F4538[i], slot);
+            }
+        }
+        if (object->actorId == 1) {
+            return 0;
+        }
+        D_800E8F2B = 1;
+    loadEtm:
+        if (_loadEtm(object) == -1) {
+            return -1;
+        }
+        D_800E8F2B = 0;
+        return 0;
+    }
+}
 
 void func_8009CAEC(D_800F4538_t* arg0, int arg1)
 {
@@ -1259,8 +1442,6 @@ tail:
     }
     arg0->unk183E[arg1] = 0xFF;
 }
-
-extern void* D_800F4528[];
 
 int func_8009CC20(int arg0, int arg1)
 {

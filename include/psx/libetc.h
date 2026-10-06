@@ -63,6 +63,7 @@ extern int PadIdentifier;
 extern "C" {
 #endif
 int CheckCallback(void) ;
+void* InterruptCallback(int irq, void (*func)(void));
 void PadInit(int mode);
 int ResetCallback(void) ;
 int RestartCallback(void) ;

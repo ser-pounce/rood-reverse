@@ -31,6 +31,11 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main
 # under either 2.7.2 build.
 $(BUILD)/src/SLUS_010.40/libc/MEMMOVE.o: CC1VER := 2.7.2-cdk
 
+# libcd SYS_2 was built with -mhard-float: with the FP registers not fixed, loop.c's invariant
+# threshold is larger and the CdControl* retry loops hoist their 1/-1 constants. Every matched
+# libcd/libds function is byte-identical with or without it.
+$(BUILD)/src/SLUS_010.40/libcd/SYS_2.o: CC1FLAGS += -mhard-float
+
 # Sony's PsyQ library objects were assembled by GNU as in reorder mode (the assembler fills
 # j/jr/jal delay slots with the preceding instruction, including the tail of a lui/sw macro),
 # not by ASPSX. Feed cc1 output straight to as; only `move` must keep the old addu encoding.

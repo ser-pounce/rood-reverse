@@ -46,6 +46,17 @@ typedef struct {
 } DS_RESQ;
 
 extern DS_RESQ D_80039DC0;
+
+typedef struct {
+    int flag;
+    u_char intr;
+    u_char result[8];
+} DS_RDY;
+
+extern DS_RDY D_80039CD0; /* DslDataReady / DslDiskError */
+extern DS_RDY D_80039CE0; /* DslDataEnd */
+extern DslCB D_80039E64;
+extern void func_800233B4(u_char, u_char*);
 extern void rescpy(u_char*, u_char*);
 
 void func_800231E4(DS_CQ* p)
@@ -164,7 +175,31 @@ void func_800244EC(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80024590);
+void func_80024590(u_char intr, u_char* result)
+{
+    DS_RDY* p;
+    if (intr == DslDiskError && (result[0] & DslStatShellOpen)) {
+        func_800233B4(DslDiskError, result);
+    }
+    switch (intr) {
+    case DslDataReady:
+    case DslDiskError:
+        p = &D_80039CD0;
+        break;
+    case DslDataEnd:
+        p = &D_80039CE0;
+        break;
+    default:
+        goto end;
+    }
+    p->flag = 1;
+    p->intr = intr;
+    rescpy(p->result, result);
+end:
+    if (D_80039E64) {
+        D_80039E64(intr, result);
+    }
+}
 
 void func_80024664(u_char a)
 {

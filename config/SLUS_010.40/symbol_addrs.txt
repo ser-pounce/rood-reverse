@@ -565,6 +565,7 @@ D_8003081C = 0x8003081C;
 __initialised = 0x80030FB0;
 __heapbase = 0x80030FB4;
 __heapsize = 0x80030FB8;
+D_800327D4 = 0x800327D4;
 _interruptReg = 0x80032834;
 _rootCounter0 = 0x80032838;
 _interruptMasks = 0x8003283C;

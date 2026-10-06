@@ -52,6 +52,7 @@ segments:
       - [0x4B16C, hasm] # 49268 includes func_800B28A8 (2.7.2-cdk, jtbl_800695F4)
       - [0x4DBAC, c, 4A0A8]
       - [0x573B8, c]
+      - [0x58350, hasm]
       - [0x58578, c]
       - [0x5A624, hasm]
       - [0x5BE50, c]

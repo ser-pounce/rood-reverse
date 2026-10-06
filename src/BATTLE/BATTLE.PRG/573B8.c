@@ -564,5 +564,3 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
     *orderingTable = ((u_int)primitive << 8) >> 8;
     vs_scratch.unk0 = primitive + 5;
 }
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0B50);

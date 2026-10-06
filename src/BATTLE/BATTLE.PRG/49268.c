@@ -37,11 +37,11 @@ int func_800A190C(int, int, SVECTOR*, int);
 
 void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
 {
-    MATRIX local;
-    SVECTOR points[2];
+    MATRIX holderRotation;
+    SVECTOR anchors[2];
     weaponTransformScratch* scratch = (void*)0x1F80035C;
-    D_800F4538_t* actor;
-    u_int kind;
+    D_800F4538_t* holder;
+    u_int attachment;
     u_int flags;
     int value;
 
@@ -53,19 +53,19 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
     scratch->translation.vz = scratch->position.vz;
     gte_ldv0((void*)0x1F8003A8);
     gte_rtv0tr2();
-    kind = object->unk6C[8].actorId;
-    if (kind >= 4) {
+    attachment = object->unk6C[8].actorId;
+    if (attachment >= 4) {
         if (object->unk12 == 0xFF) {
             goto rotate;
         }
-        actor = D_800F4538[object->unk12];
-        func_800A190C(object->unk12, 0xF0, &points[0], 1);
-        func_800A190C(object->unk12, 0xF1, &points[1], 1);
+        holder = D_800F4538[object->unk12];
+        func_800A190C(object->unk12, 0xF0, &anchors[0], 1);
+        func_800A190C(object->unk12, 0xF1, &anchors[1], 1);
         gte_SetRotMatrix(camera);
         gte_SetTransMatrix(camera);
-        scratch->translation.vx = (points[0].vx + points[1].vx) / 2;
-        scratch->translation.vy = (points[0].vy + points[1].vy) / 2;
-        scratch->translation.vz = (points[0].vz + points[1].vz) / 2;
+        scratch->translation.vx = (anchors[0].vx + anchors[1].vx) / 2;
+        scratch->translation.vy = (anchors[0].vy + anchors[1].vy) / 2;
+        scratch->translation.vz = (anchors[0].vz + anchors[1].vz) / 2;
         gte_ldv0((void*)0x1F8003A8);
         gte_rtv0tr2();
         scratch->rotation.vx = ((SVECTOR*)&object->unk6C[5])->vx + object->unk24;
@@ -74,12 +74,12 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
             ((SVECTOR*)&object->unk6C[5])->vz + *(short*)&object->unk28;
         gte_stlvnl((void*)0x1F8003D4);
         func_800B17F0((SVECTOR*)0x1F8003E0, (MATRIX*)0x1F8003C0);
-        scratch->rotation.vx = actor->unk0.unk24;
-        scratch->rotation.vy = actor->unk0.facing;
-        scratch->rotation.vz = actor->unk0.unk28;
-        func_800B17F0((SVECTOR*)0x1F8003E0, &local);
-        func_800B196C(&local, (MATRIX*)0x1F8003C0);
-    } else if (kind < 2) {
+        scratch->rotation.vx = holder->unk0.unk24;
+        scratch->rotation.vy = holder->unk0.facing;
+        scratch->rotation.vz = holder->unk0.unk28;
+        func_800B17F0((SVECTOR*)0x1F8003E0, &holderRotation);
+        func_800B196C(&holderRotation, (MATRIX*)0x1F8003C0);
+    } else if (attachment < 2) {
         if (object->unk1A != 0) {
             scratch->rotation.vx = object->unk24;
             scratch->rotation.vy = object->unk26;
@@ -87,6 +87,7 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
             gte_stlvnl((void*)0x1F8003D4);
             RotMatrixYXZ_gte((SVECTOR*)0x1F8003E0, (MATRIX*)0x1F8003C0);
             func_800B196C(camera, (MATRIX*)0x1F8003C0);
+            /* this CompMatrixLV entry is the in-place two-argument form (m0 = m0 * m1) */
             ((void (*)(MATRIX*, MATRIX*))CompMatrixLV)(
                 (MATRIX*)0x1F8003C0, (MATRIX*)&object->unk6C[4]);
             goto composed;
@@ -108,6 +109,7 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
     }
     func_800B196C(camera, &scratch->matrix);
 composed:
+    /* the shared scale vector (D_800F4438) follows the 63 bone matrices */
     func_800B396C(&scratch->matrix, (VECTOR*)&D_800F3C58[63]);
     D_800F3C58[0] = scratch->matrix;
     *(MATRIX*)&object->unk6C[0] = scratch->matrix;

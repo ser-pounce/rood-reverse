@@ -968,7 +968,31 @@ int func_800B7428(u_char* arg0, short arg1)
 }
 
 // https://decomp.me/scratch/hkP4X
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B7490);
+int func_800B7490(u_char* arg0, short arg1)
+{
+    u_char position[12];
+    u_short actor = vs_battle_getShort(arg0 + 1);
+    u_short flag = vs_battle_getShort(arg0 + 3);
+
+    if (actor & 0x1000) {
+        actor &= 0x1F;
+        if (func_8007CF64(actor) == NULL) {
+            vs_battle_setStateFlag(flag, 0xFF);
+            return 0;
+        }
+    } else {
+        actor = func_8007CF18(actor);
+        if (actor == 1) {
+            vs_battle_setStateFlag(flag, 0xFF);
+            return 0;
+        }
+    }
+    func_800A1108(actor, position);
+    vs_battle_setStateFlag(flag, position[0]);
+    vs_battle_setStateFlag(flag + 1, position[1]);
+    vs_battle_setStateFlag(flag + 2, position[2]);
+    return 0;
+}
 
 int func_800B7574(u_char* arg0, short arg1)
 {

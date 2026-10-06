@@ -43,6 +43,12 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libpad/PADIF libpad/PADSEQD libetc/INT
 $(BUILD)/src/SLUS_010.40/libcd/BIOS.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/SLUS_010.40/libcd/BIOS.o: CC1FLAGS += -mmips-as
 
+# libspu SPU was built with the CDK 2.7.2 cc1 (MIPS-as syntax): its newer reorg drops the spurious
+# `addiu v1,v1,-1` after the DMA timeout loops that 2.7.2-psx's mark_target_live_regs emits. All
+# previously matched SPU functions are byte-identical under either compiler.
+$(BUILD)/src/SLUS_010.40/libspu/SPU.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libspu/SPU.o: CC1FLAGS += -mmips-as
+
 # libcd SYS_2 was built with -mhard-float: with the FP registers not fixed, loop.c's invariant
 # threshold is larger and the CdControl* retry loops hoist their 1/-1 constants. Every matched
 # libcd/libds function is byte-identical with or without it.

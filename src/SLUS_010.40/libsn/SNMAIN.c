@@ -1,7 +1,7 @@
 #include "common.h"
 #include <malloc.h>
 
-static int __initialised = 0;
+int __initialised = 0;
 u_long* __heapbase = NULL;
 int __heapsize = 0;
 static int __text = 0x80010AA4;
@@ -48,5 +48,3 @@ void __main(void)
             "lw         $s0, 0x4($sp);"
             "addu       $sp, 0x10;");
 }
-
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsn/SNMAIN", __do_global_dtors);

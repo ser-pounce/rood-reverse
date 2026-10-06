@@ -71,6 +71,7 @@ segments:
       - [0xFD34, c, libspu/S_GRMT]
       - [0xFD44, hasm, libsn/SNENTRY]
       - [0xFDEC, c, libsn/SNMAIN]
+      - [0xFE5C, hasm, libsn/SNDTORS]
       - [0xFEC4, c, libetc/VSYNC]
       - [0x100D4, c, libetc/INTR]
       - [0x10794, c, libetc/INTR_VB]

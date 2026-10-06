@@ -300,8 +300,6 @@ extern int D_800F5918;
 extern int D_800F591C;
 extern D_800F5920_t* D_800F5920;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D6E44);
-
 void func_800D7814(void)
 {
     D_800F568C = NULL;

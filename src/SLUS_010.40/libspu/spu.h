@@ -17,5 +17,14 @@ typedef struct {
     SpuVoiceRegs voice[24];
 } SpuRegs;
 
+typedef struct {
+    u_long addr;
+    u_long size;
+} SpuMallocRec;
+
 extern SpuReverbAttr _spu_rev_attr;
 extern SpuRegs* _spu_RXX;
+extern int _spu_mem_mode_plus;
+extern int _spu_AllocBlockNum;
+extern int _spu_AllocLastNum;
+extern SpuMallocRec* _spu_memList;

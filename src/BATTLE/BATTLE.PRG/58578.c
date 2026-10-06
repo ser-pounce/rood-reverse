@@ -1130,45 +1130,4 @@ void func_800C2B0C(u_short* position, u_int row)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2E24);
-
-void func_800C4650(func_800C4650_t* arg0, int arg1)
-{
-    int i;
-    int type;
-
-    for (i = 0; i < arg1; i++, arg0++) {
-        type = arg0->unk9;
-        if ((type >> 4) == 0) {
-            if (func_800C1564(&D_800EB9B8->unk0[1], arg0->unk0)) {
-                func_8009FD5C(type, 0, arg0->unkA);
-            } else {
-                func_8009FE74(type, arg0->unkA);
-            }
-        }
-    }
-}
-
-int vs_battle_mapStickDeadZone(int arg0)
-{
-    if (arg0 < 64) {
-        return arg0 - 64;
-    }
-    if (arg0 >= 192) {
-        return arg0 - 192;
-    }
-    return 0;
-}
-
-int func_800C4734(void)
-{
-    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk2A != 0)) {
-        return 0;
-    }
-    if ((D_800EB9B8->unk3E == 0) || (vs_main_buttonsState & 0x80)) {
-        return 1;
-    }
-    return 2;
-}
-
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", D_80069860);

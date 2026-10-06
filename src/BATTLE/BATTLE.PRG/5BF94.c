@@ -302,6 +302,7 @@ int _breakArtsUnlocked(void);
 extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
+D_800F53B8_t* func_800CF55C(D_800F53B8_t2* arg0);
 int func_800CE9B0(void);
 char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
@@ -465,6 +466,7 @@ extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
 extern func_800CF0E8_t D_800F5230;
+extern func_800CF0E8_t D_800F53C0;
 extern u_char D_800F5238;
 extern char D_800F5318;
 extern u_int D_800F531C;
@@ -4149,8 +4151,63 @@ void func_800CD0FC(int arg0, u_int arg1)
     }
 }
 
-// https://decomp.me/scratch/qBmPY
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD158);
+void func_800CD158(int id)
+{
+    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    int y = box->y;
+    u_long* ot = D_800F51B8 + id * 4 + 1;
+    int offset;
+    int edge;
+    u_int i;
+    u_int count;
+    u_int brightness;
+    u_int page;
+    u_long* prim;
+
+    edge = box->unk2A;
+    offset = vs_main_frameBuf ? 0 : 320;
+    if (y == 0) {
+        y = edge;
+    } else {
+        y = 240 - edge;
+    }
+    count = box->lineCount * 13 + 4 - edge;
+    if (count > 16) {
+        count = 16;
+    } else if (count < 4) {
+        count = 4;
+    }
+    for (i = 0; i < count; ++i) {
+        brightness = ((count - i) * 128) / (count + 1);
+        prim = vs_battle_setSprite(brightness, (y << 16) | 256, 0x10040, ot);
+        page = ((u_int)(offset + 256) >> 6) | 0x100;
+        prim[1] = page | 0xE1000000;
+        prim[4] = y << 8;
+        prim = vs_battle_setSprite(brightness, y << 16, 0x10100, ot);
+        brightness = ((u_int)offset >> 6) | 0x100;
+        prim[1] = brightness | 0xE1000000;
+        prim[4] = y << 8;
+        if (y < 128) {
+            if (--y < 0) {
+                break;
+            }
+        } else if (++y >= 240) {
+            break;
+        }
+    }
+    if (y < 128) {
+        if (y >= 0) {
+            vs_battle_addTile(ot, 0x60000000, 0, ((y + 1) << 16) | 320);
+        }
+    } else {
+        if (y < 240) {
+            vs_battle_addTile(ot, 0x60000000, y << 16, (0xF00000 - (y << 16)) | 320);
+        }
+        if (box->state == box->unk22 + 1) {
+            func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
+        }
+    }
+}
 
 int func_800CD3A0(int arg0, int arg1)
 {
@@ -4757,7 +4814,55 @@ void func_800CF1A8(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF218);
+char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2)
+{
+    D_800F53B8_t2 spawn;
+    int _[4] __attribute__((unused));
+    char token;
+    int id;
+    int i;
+    D_800F53B8_t* child;
+
+    token = func_800CF49C();
+    spawn.unk0 = (D_800F53B8_t3*)&arg0->unk4;
+    spawn.unk14 = D_800F569C->block8Data;
+    spawn.unk18 = arg0->effectId * 3;
+    spawn.unk1C = NULL;
+    spawn.unk20 = token;
+    D_800F53C0 = *arg0;
+
+    for (i = 0; i < arg0->unk2; ++i) {
+        id = arg0->effectId;
+        if ((id >= 40 && id <= 41) || (id >= 44 && id <= 53)) {
+            spawn.unk4 = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+            spawn.unkC = (D_800F53B8_t3*)&arg0->unk4;
+        } else {
+            switch ((u_short)id) {
+            case 23:
+            case 25:
+                spawn.unk4 = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+                spawn.unkC = (D_800F53B8_t3*)&arg0->unk4;
+                break;
+            default:
+                spawn.unk4 = (D_800F53B8_t3*)&arg0->unk4;
+                spawn.unkC = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+                break;
+            }
+        }
+        spawn.unk8 = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+        spawn.unk10 = *(u_short*)((char*)arg0 + i * 12 + 16);
+        child = func_800CF55C(&spawn);
+        child->unkD1C.unk3C = arg2;
+        child->unkD1C.unk38 = arg0->effectId;
+        if (arg0->effectId == 54) {
+            child->unk14_8 = 4;
+        } else {
+            child->unk14_8 = 2;
+        }
+        func_800CF484(3, child);
+    }
+    return token;
+}
 
 int func_800CF3F8(func_800CF0E8_t* arg0, int arg1)
 {

@@ -67,7 +67,9 @@ int func_8009CC20(int, int);
 int func_8009CE9C(u_int arg0);
 int func_8009CFA0(void);
 int func_8009CFB0(int);
-void func_8009D468(int, int);
+// Unprototyped: _parseShp calls it with only the actor index (the original passes one
+// argument).
+void func_8009D468();
 void func_8009D854(int);
 void func_8009E5C4(int);
 void func_8009F314(int, void*, int);

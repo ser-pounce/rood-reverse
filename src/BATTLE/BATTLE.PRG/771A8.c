@@ -729,7 +729,265 @@ int func_800E0918(movementCheckState* state, int action, int mode)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/771A8", func_800E0A68);
+typedef union {
+    unsigned int raw;
+    struct {
+        short x;
+        short y;
+    } p;
+} movementStepPosition;
+typedef struct {
+    unsigned char unk0;
+    char pad1[6];
+    unsigned char unk7;
+    char pad8[0x2C];
+    directionalCachePoint tile;
+    char pad38[0x14];
+    movementStepPosition position;
+    short z;
+    char pad52[6];
+    movementCheckObject* object;
+    char pad5C[0x60];
+    short clearance;
+    short height;
+    char padC0[0x25];
+    unsigned char actorId;
+    char padE6[0x82];
+    directionalCachePoint destination;
+    char pad16C[0x10];
+    int moveX;
+    int moveZ;
+    int moveY;
+    short angle;
+    char pad18A[0x9E];
+    int unk228;
+} movementStepState;
+typedef struct {
+    char pad0[0x1E];
+    short y;
+    char pad20[0x3C];
+    directionalCachePoint tile;
+    char pad60[0x5DE];
+    unsigned short height;
+} movementStepActor;
+int func_800E02B4(obstructionState*, int, int);
+int func_800E6A6C(int, int, int, int);
+void func_800E1238(func_800E0850_t*, int);
+#define MOVEMENT_STEP_TILES (*(unsigned short(**)[32])0x1F8003C0)
+#define MOVEMENT_STEP_RESULT (*(int*)0x1F8003C8)
+void func_800E0A68(movementStepState* state, int action)
+{
+    int step;
+    int mode;
+    int angle;
+    int x;
+    int z;
+    int ground;
+    int height;
+    int dy;
+    int px;
+    int py;
+    int pz;
+    int top;
+    unsigned int distance;
+    unsigned int denom;
+    unsigned int square;
+    int value;
+    int diff;
+    int offset;
+    movementStepActor* actor;
+
+    if (func_800E0918((void*)state, action, 1)) {
+        return;
+    }
+    if (!(state->object->flags & 0x200000)) {
+        func_800E4B18((void*)state);
+        return;
+    }
+    state->unk7 = 1;
+    if (!func_800E4764((void*)state, &step, &mode)) {
+        goto recover;
+    }
+    x = state->destination.p.x * 128 + 64;
+    z = state->destination.p.z * 128 + 64;
+    angle = ratan2(state->position.p.x - x, state->z - z);
+    angle &= 0xFFF;
+    if (state->unk0 && func_800E45F4(state->tile.raw, state->destination.raw) < 2
+        && (MOVEMENT_STEP_TILES[state->destination.p.z][state->destination.p.x] & 0x40)) {
+        int centerZ;
+        int centerAngle;
+        int selectedHeight;
+        int heading;
+        int rise;
+        int offsetX;
+        int offsetZ;
+        int actorY;
+        actorY = ((movementStepActor*)D_800F4538[state->actorId])->y;
+        rise = func_800E42E0(state->tile.raw);
+        if (actorY >= rise) {
+            selectedHeight = rise + state->height;
+        } else if (D_800F58BC->unk14 && D_800F58BC->unk14 >= actorY) {
+            selectedHeight = D_800F58BC->unk14;
+        } else {
+            selectedHeight = (short)actorY;
+        }
+        rise = selectedHeight - state->position.p.y;
+        if (ABS(rise) < step) {
+            angle = state->tile.p.x * 128 + 64;
+            centerZ = state->tile.p.z * 128 + 64;
+            centerAngle = ratan2(state->position.p.x - angle, state->z - centerZ);
+            state->moveY = selectedHeight << 12;
+            heading = (-centerAngle + ONE * 3 / 4) & 0xFFF;
+            offsetX = state->position.p.x - angle;
+            if (ABS(offsetX) < step) {
+                state->moveX = angle << 12;
+            } else {
+                state->moveX = (state->position.p.x << 12) + step * rcos(heading);
+            }
+            offsetZ = state->z - centerZ;
+            state->moveZ = ABS(offsetZ) < step ? centerZ << 12
+                                               : (state->z << 12) + step * rsin(heading);
+            func_800DEEFC((void*)state, 8);
+            return;
+        }
+        state->moveY = rise;
+        state->moveZ = 0;
+        state->moveX = 0;
+        if (state->moveY > 0 && func_800E02B4((void*)state, 0, 0)) {
+            state->moveY = 0;
+        }
+        func_800DEEFC((void*)state, mode);
+        return;
+    }
+    if ((state->tile.raw & 0xFF00FF) == (state->destination.raw & 0xFF00FF)) {
+        int floorY;
+        int tileX;
+        int deltaX;
+        int tileZ;
+        int deltaZ;
+        if (!state->unk0 || func_800E02B4((void*)state, 0, 0)) {
+        recover:
+            func_800E2CCC((void*)state);
+            return;
+        }
+        floorY = state->height;
+        actor = (movementStepActor*)D_800F4538[state->actorId];
+        if (!(MOVEMENT_STEP_TILES[state->destination.p.z][state->destination.p.x]
+                & 0x20)) {
+            floorY += func_800E42E0(state->destination.raw);
+        }
+        tileX = state->destination.p.x * 128;
+        deltaX = state->position.p.x - 64;
+        state->moveX = tileX - deltaX;
+        tileZ = state->destination.p.z * 128;
+        deltaZ = state->z - 64;
+        state->moveZ = tileZ - deltaZ;
+        state->moveY = floorY - state->position.p.y;
+        if ((state->destination.raw & 0xFF00FF) == (actor->tile.raw & 0xFF00FF)) {
+            state->moveY = actor->y - (actor->height >> 1) - state->position.p.y;
+        }
+        if (state->moveY > 0 && floorY < state->position.p.y + step) {
+            state->moveY = 0;
+        }
+        if (ABS(state->moveX) < step) {
+            state->moveX = 0;
+        }
+        if (ABS(state->moveZ) < step) {
+            state->moveZ = 0;
+        }
+        func_800DEEFC((void*)state, mode);
+        return;
+    }
+    func_800E3600((void*)state, angle, 2);
+    switch (MOVEMENT_STEP_RESULT) {
+    case 5:
+        angle = state->angle * (ONE / 8);
+        if (func_800E0850((void*)state, angle) + state->height < state->position.p.y) {
+        fall:
+            state->moveY = -ONE;
+            state->moveZ = 0;
+            state->moveX = 0;
+        } else {
+            angle = -angle;
+            angle += ONE * 3 / 4;
+            angle &= 0xFFF;
+            state->moveY = 0;
+            state->moveX = rcos(angle);
+            state->moveZ = rsin(angle);
+        }
+        func_800DEEFC((void*)state, mode);
+        return;
+    case 7:
+        height = func_800E42E0(state->destination.raw) + state->height;
+        px = state->position.raw & 0xFFFF;
+        py = (int)state->position.raw >> 16;
+        pz = state->z;
+        ground = func_800E6A6C(px, pz, x, z) + state->clearance;
+        if (D_800F58BC->unk14) {
+            ground = ground < D_800F58BC->unk14 ? D_800F58BC->unk14 : ground;
+        }
+        top = func_800E0850((void*)state, angle) + state->height;
+        ground = top > ground ? ground : top;
+        distance = vs_gte_rsqrt(func_800E4660(x - px, 0, z - pz));
+        value = height + ground;
+        denom = vs_gte_rsqrt(((value << 12) / value) << 12) + ONE;
+        if (!denom) {
+            goto fallback;
+        }
+        value = (distance << 12) / denom;
+        square = value * value;
+        diff = py - ground;
+        offset = ABS(diff);
+        if (py + step < ground) {
+            if (step < height - py) {
+                state->moveY = height - py;
+            } else {
+                state->moveY = 0;
+            }
+            state->moveX = x - px;
+            state->moveZ = z - pz;
+            func_800DEEFC((void*)state, mode);
+            state->unk228 = 0;
+            return;
+        }
+        if ((unsigned int)step >= distance) {
+        fallback:
+            func_800E1238((void*)state, angle);
+            return;
+        }
+        height =
+            (unsigned int)(offset * (step - value) * (step - value)) / square + ground;
+        angle = -angle;
+        angle += ONE * 3 / 4;
+        angle &= 0xFFF;
+        x = (px << 12) + step * rcos(angle);
+        z = (pz << 12) + step * rsin(angle);
+        if (height < ground) {
+            height = ground;
+        } else if (top < height) {
+            if (ground < py) {
+                goto fall;
+            }
+            height = top;
+        }
+        dy = height - py;
+        state->unk228 = 0;
+        if (step < ABS(dy)) {
+            state->moveX = (x >> 12) - px;
+            state->moveZ = (z >> 12) - pz;
+            state->moveY = dy;
+            func_800DEEFC((void*)state, mode);
+        } else {
+            state->moveX = x;
+            state->moveY = height << 12;
+            state->moveZ = z;
+            func_800DEEFC((void*)state, 8);
+        }
+        return;
+    }
+}
+#undef MOVEMENT_STEP_TILES
+#undef MOVEMENT_STEP_RESULT
 
 void func_800E1238(func_800E0850_t* arg0, int arg1)
 {

@@ -73,9 +73,10 @@ typedef struct {
     short unkA;
     short unkC;
     short unkE;
-    void* data;
+    u_short* data;
     vs_main_CdQueueSlot* cdQueueSlot;
-    short unk18[0x1EE];
+    short unk18[240];
+    u_short imageTable[254];
     int unk3F4;
 } gim_t;
 
@@ -297,6 +298,7 @@ typedef struct {
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800CA97C(void);
+void func_800CCA90(int arg0);
 void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
 extern int func_800CE174(func_800D4910_t*, u_int, int);
@@ -2259,7 +2261,130 @@ void func_800C86AC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8778);
+void func_800C8778(void)
+{
+    gim_t* gim = D_800EB9BC;
+    gim_t* second = gim + 1;
+    gim_t* third = gim + 2;
+    gim_t* current;
+    int i;
+    int j;
+    int count;
+    int width;
+    int tiles;
+    int height;
+    int _[2] __attribute__((unused));
+
+    if (gim == NULL) {
+        return;
+    }
+
+    switch (gim->unk0_6) {
+    case 0:
+        break;
+    case 1:
+        if (gim->cdQueueSlot->state != 4) {
+            return;
+        }
+        vs_main_freeCdQueueSlot(gim->cdQueueSlot);
+
+        count = gim->data[0];
+        width = count & 0xFF;
+        j = count >> 8;
+        count = width * j + 4;
+        ((u_char*)&gim->unk4)[0] = width;
+        ((u_char*)&gim->unk4)[1] = j;
+        for (i = 0; i < count; ++i) {
+            gim->imageTable[i] = gim->data[i];
+        }
+
+        if (gim->data[3] != 0) {
+            width = gim->data[count];
+            tiles = width >> 8;
+            ((u_char*)&second->unk4)[0] = width;
+            ((u_char*)&second->unk4)[1] = tiles;
+            width = (width & 0xFF) * tiles + 4;
+            for (i = 0; i < width; ++i) {
+                second->imageTable[i] = gim->data[i + count];
+            }
+            count += width;
+
+            if (gim->data[3] == 2) {
+                width = gim->data[count];
+                tiles = width >> 8;
+                ((u_char*)&third->unk4)[0] = width;
+                ((u_char*)&third->unk4)[1] = tiles;
+                width = (width & 0xFF) * tiles + 4;
+                for (i = 0; i < width; ++i) {
+                    third->imageTable[i] = gim->data[i + count];
+                }
+                count += width;
+            }
+        }
+
+        count = (count + 1) & 0xFFFE;
+        width = (gim->unk2 - 24) * 64;
+        vs_battle_renderImage((width + 512) | 0x1FF0000, gim->data + count, 0x10040);
+
+        for (j = 0; j < 3; ++j) {
+            current = &gim[j];
+            switch (current->imageTable[2]) {
+            case 0:
+                current->unk0_2 = 0;
+                current->unkE = gim->data[count + j * 16];
+                break;
+            case 1:
+                current->unk0_2 = 1;
+                current->unkE = gim->data[count + 64];
+                break;
+            case 2:
+                current->unk0_2 = 1;
+                current->unkE = gim->data[count + 320];
+                current->unk0_12 = 1;
+                vs_battle_renderImage(
+                    (width + 512) | 0x1FF0000, gim->data + (count + 320), 0x10100);
+                break;
+            }
+        }
+
+        vs_main_loadClut(gim->data + (count + 64), 3, 0, 256);
+
+        i = gim->data[1];
+        height = i >> 8;
+        i &= 0xFF;
+        j = (i + 16) / 17;
+        gim->unk0_9 = j;
+        second->unk0_9 = j;
+        third->unk0_9 = j;
+        height *= 16;
+        count += height;
+        func_8007DFF0(gim->unk2, gim->unk0_9, 6);
+
+        while (i > 0) {
+            vs_battle_renderImage((width + 512) | 0x1000000, gim->data + count,
+                i >= 17 ? 0xFF0040 : ((i * 15) << 16) | 64);
+            i -= 17;
+            count += 0x3FC0;
+            width += 64;
+        }
+        gim->unk0_6 = 2;
+        break;
+    case 2:
+        vs_main_freeHeapR(gim->data);
+        for (j = 0; j < 3; ++j) {
+            gim[j].unk0_1 = 0;
+        }
+        gim->unk0_6 = 3;
+        break;
+    case 3:
+        for (j = 0; j < 3; ++j) {
+            if (gim[j].unk0_0) {
+                func_800CCA90(j);
+            }
+        }
+        break;
+    }
+}
 
 int vs_battle_loadMenuPrg(int arg0)
 {

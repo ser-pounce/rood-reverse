@@ -180,7 +180,36 @@ extern u_char D_800DBB7D;
 extern u_short D_800DBB7E;
 extern u_short D_800DBB80;
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
+int func_800688D4(int angle)
+{
+    int value = (int)_trig_table;
+    int quadrant, test, index;
+
+    quadrant = angle & 0x400;
+    test = angle & 0x3FF;
+    if (quadrant) {
+        if (!test) {
+            value = 0x1000;
+            goto negate;
+        }
+        angle = 0x800 - angle;
+    }
+    test = angle & 0x200;
+    index = angle & 0x1FF;
+    if (test) {
+        quadrant = 0x200;
+        index = quadrant - index;
+        value += 2;
+    }
+    index <<= 2;
+    value += index;
+    value = *(u_short*)value;
+negate:
+    if (angle & 0x800) {
+        value = -value;
+    }
+    return value;
+}
 
 // https://decomp.me/scratch/6icWO
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderPhantomPain);

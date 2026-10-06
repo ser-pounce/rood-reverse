@@ -87,6 +87,7 @@ static void _writeSpu(char* data, u_int len);
 static void _waitTransferAvailable(void);
 void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
     FSoundInstrumentInfo* in_B, int in_AddrOffset, int in_Count);
+void Sound_ClearVoiceFromSchedulerState(FSoundChannel* arg0, int arg1);
 void Sound_Cutscene_OnInitialTransferComplete(void);
 void Sound_Cutscene_InitVoice(int, int, int, int);
 void Sound_Cutscene_BeginPlayback(int, int, void (*)(void));
@@ -2396,7 +2397,104 @@ void Sound_KillMusicConfig(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_EvictSfxVoice);
+void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
+{
+    u_int i;
+    int maxPriority;
+    u_int voiceBit = 0x1000;
+    u_int activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                       | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+    FSoundChannel* pChannel = D_80035910;
+
+    if (in_StopFlags & 0x0FFFFFFF) {
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if ((activeVoices & voiceBit) && (pChannel->unk28 & in_StopFlags)) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
+                }
+            }
+        }
+    } else if (in_StopFlags < 0) {
+        pChannel += in_SfxId;
+        voiceBit <<= in_SfxId;
+        if (activeVoices & voiceBit) {
+            Sound_EvictSfxVoice(pChannel->unk3C, 0);
+        }
+        voiceBit <<= 1;
+        pChannel++;
+        if (activeVoices & voiceBit) {
+            Sound_EvictSfxVoice(pChannel->unk3C, 0);
+        }
+        return;
+    } else if (in_StopFlags & 0x40000000) {
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if (pChannel->unk28 != 0) {
+                activeVoices &= ~voiceBit;
+            }
+        }
+        pChannel = D_80035910;
+        voiceBit = 0x1000;
+        maxPriority = 0;
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if ((activeVoices & voiceBit) && (maxPriority < pChannel->unk58)) {
+                maxPriority = pChannel->unk58;
+            }
+        }
+        pChannel = D_80035910;
+        voiceBit = 0x1000;
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if ((activeVoices & voiceBit) && (maxPriority == pChannel->unk58)) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
+                }
+            }
+        }
+    } else {
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if (!(activeVoices & voiceBit)) {
+                continue;
+            }
+            if (in_SfxId == -1) {
+                if (pChannel->unk3C < 0) {
+                    if (pChannel->UpdateFlags & 0x100000) {
+                        pChannel->UpdateFlags |= 0x200000;
+                    } else {
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            } else if (in_SfxId == -2) {
+                if (pChannel->unk28 == 0) {
+                    if (pChannel->UpdateFlags & 0x100000) {
+                        pChannel->UpdateFlags |= 0x200000;
+                    } else {
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            } else if (pChannel->unk3C == in_SfxId) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
+                }
+            }
+        }
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001653C);
 

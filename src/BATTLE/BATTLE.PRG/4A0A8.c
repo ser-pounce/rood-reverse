@@ -17,19 +17,28 @@
 #include <abs.h>
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    char unk4;
-    char unk5;
-    char unk6;
-    char unk7;
-    char unk8[0x1C];
-    VECTOR unk24;
-    char unk34[0x60];
-    VECTOR cameraPos;
-    VECTOR unkA4;
+    u_char mode;
+    u_char ease1;
+    u_char ease2;
+    u_char ease3;
+    u_char time;
+    u_char duration;
+    u_char follow;
+    u_char following;
+    int value;
+    int delta;
+    short angle;
+    short angleDelta;
+    VECTOR start;
+    VECTOR position;
+    VECTOR velocity;
+    VECTOR aux;
+    VECTOR followDelta;
+    VECTOR followPosition;
+    VECTOR previousCamera;
+    VECTOR computed;
+    VECTOR current;
+    VECTOR target;
 } D_800F4BA4_t2;
 
 typedef struct {
@@ -69,7 +78,28 @@ typedef struct {
 } func_800BDF6C_unk180_t;
 
 typedef struct {
-    D_800F4BA4_t2 unk0[2];
+    char unk0;
+    char unk1;
+    short unk2;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    short unk10;
+    short unk12;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
+    short unk1C;
+    short unk1E;
+} func_800BDBB4_t;
+
+typedef struct {
+    D_800F4BA4_t2 lookAt;
+    D_800F4BA4_t2 eye;
     func_800BD57C_t unk168;
     func_800BD57C_t unk174;
     func_800BDF6C_unk180_t projectionDistance;
@@ -89,32 +119,11 @@ typedef struct {
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
-    short unk1FC;
-    short unk1FE;
-    short unk200;
-    char unk202[0x18];
-    short unk21A;
-    short unk21C;
-    short unk21E;
-    short unk220;
-    short unk222;
-    char unk224[0x16];
-    short unk23A;
-    short unk23C;
-    short unk23E;
-    short unk240;
-    char unk242[0x18];
-    short unk25A;
-    short unk25C;
-    short unk25E;
-    short unk260;
-    char unk262[0x16];
-    short unk278;
-    short unk27A;
-    int unk27C;
-    int unk280;
-    int unk284;
-    int unk288;
+    func_800BDBB4_t unk1FC;
+    func_800BDBB4_t unk21C;
+    func_800BDBB4_t unk23C;
+    func_800BDBB4_t unk25C;
+    VECTOR unk27C;
 } D_800F4BA4_t;
 
 typedef struct {
@@ -163,26 +172,6 @@ typedef struct {
 } D_800F4B88_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    short unk1C;
-    short unk1E;
-} func_800BDBB4_t;
-
-typedef struct {
     int unk0;
 } func_800BDBB4_t2;
 
@@ -194,6 +183,7 @@ typedef struct {
 
 short func_8008DC7C(int, int);
 int func_80090C2C(int);
+void func_800A190C(int, int, SVECTOR*, int);
 void func_800AACDC(void);
 int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, func_800BB68C_t*);
@@ -203,6 +193,7 @@ void func_800BBE04(int arg0);
 void func_800BBE94(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BC1CC(short, int);
+int func_800BD2B8(MATRIX*);
 void func_800BD57C(func_800BD57C_t* arg0);
 int func_800BD610(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
@@ -214,6 +205,8 @@ void func_800BE3D0(char arg0);
 void func_800BE5A4(short arg0);
 VECTOR* _vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* _vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
+VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
+void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
 void func_800BFD9C();
@@ -226,6 +219,7 @@ void func_800CEF38(int);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
+static void _toNormalIntegerVector(VECTOR*, VECTOR*);
 
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
@@ -2863,15 +2857,15 @@ void func_800BBBE8(void)
 
     vs_battle_getCameraPosition(&sp20);
     vs_battle_getCameraLookAt(&sp30);
-    _copyVector(&D_800F4BA4->unk0[1].cameraPos, &sp20);
-    _copyVector(&D_800F4BA4->unk0[0].unkA4, &sp20);
-    _copyVector(&D_800F4BA4->unk0[0].cameraPos, &sp30);
-    _copyVector(&D_800F4BA4->unk0[1].unkA4, &sp30);
+    _copyVector(&D_800F4BA4->eye.current, &sp20);
+    _copyVector(&D_800F4BA4->lookAt.target, &sp20);
+    _copyVector(&D_800F4BA4->lookAt.current, &sp30);
+    _copyVector(&D_800F4BA4->eye.target, &sp30);
 
-    D_800F4BA4->unk0[0].unk0 = 0xF;
-    D_800F4BA4->unk0[0].unk6 = D_800F4BA4->unk0[0].unk7 = 0;
-    D_800F4BA4->unk0[1].unk0 = 0xF;
-    D_800F4BA4->unk0[1].unk6 = D_800F4BA4->unk0[1].unk7 = 0;
+    D_800F4BA4->lookAt.mode = 0xF;
+    D_800F4BA4->lookAt.follow = D_800F4BA4->lookAt.following = 0;
+    D_800F4BA4->eye.mode = 0xF;
+    D_800F4BA4->eye.follow = D_800F4BA4->eye.following = 0;
     D_800F4BA4->unk168.unkA = 0;
     D_800F4BA4->unk168.unk2 = 0;
     D_800F4BA4->unk168.unk0 = 1;
@@ -2884,27 +2878,28 @@ void func_800BBBE8(void)
     func_8007DDAC(0);
 
     D_800F4BA4->unk174.unk0 = 1;
-    D_800F4BA4->unk200 = 0x1000;
-    D_800F4BA4->unk1FE = 0x1000;
+    D_800F4BA4->unk1FC.unk4 = ONE;
+    D_800F4BA4->unk1FC.unk2 = ONE;
 
     func_8007DDB8(&D_800E9C0C);
 
-    D_800F4BA4->unk21E = D_800F4BA4->unk220 = D_800F4BA4->unk222 = D_800F4BA4->unk21A = 0;
+    D_800F4BA4->unk21C.unk2 = D_800F4BA4->unk21C.unk4 = D_800F4BA4->unk21C.unk6 =
+        D_800F4BA4->unk1FC.unk1E = 0;
 
     func_8007DDD4(&D_800E9C08);
 
-    D_800F4BA4->unk23A = 0;
-    D_800F4BA4->unk240 = 0x1000;
-    D_800F4BA4->unk23E = 0x1000;
+    D_800F4BA4->unk21C.unk1E = 0;
+    D_800F4BA4->unk23C.unk4 = ONE;
+    D_800F4BA4->unk23C.unk2 = ONE;
 
     func_8007DDF8(&D_800E9C0C);
 
-    D_800F4BA4->unk25A = 0;
+    D_800F4BA4->unk23C.unk1E = 0;
 
     func_8007DE2C(1);
 
-    D_800F4BA4->unk25E = 0x1000;
-    D_800F4BA4->unk27A = D_800F4BA4->unk260 = 0;
+    D_800F4BA4->unk25C.unk2 = ONE;
+    D_800F4BA4->unk25C.unk1E = D_800F4BA4->unk25C.unk4 = 0;
     D_800F4BA4->projectionDistance.unk2 = 0x200;
     D_800F4BA4->projectionDistance.unk9 = 0;
     D_800F4BA4->projectionDistance.unk0 = 1;
@@ -2928,9 +2923,9 @@ void func_800BBE10(u_short arg0)
     int _[4];
     if (arg0 == 0x2000) {
         if (D_800F4BA4->unk1E8 != arg0) {
-            _vectorAdd(&D_800F4BA4->unk0[1].cameraPos, &D_800F4BA4->unk0[1].cameraPos,
-                &D_800F4BA4->unk1EC);
-            _vectorAdd(&D_800F4BA4->unk0[0].cameraPos, &D_800F4BA4->unk0[0].cameraPos,
+            _vectorAdd(
+                &D_800F4BA4->eye.current, &D_800F4BA4->eye.current, &D_800F4BA4->unk1EC);
+            _vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
                 &D_800F4BA4->unk1EC);
         }
     }
@@ -2962,11 +2957,11 @@ void vs_battle_applyCameraState(void)
 
     if (D_800F4BA0 != 0) {
         vs_battle_initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
-        _copyVector(&D_800F4BA4->unk0[0].cameraPos, &cameraLookAt);
-        _copyVector(&D_800F4BA4->unk0[1].cameraPos, &cameraPos);
+        _copyVector(&D_800F4BA4->lookAt.current, &cameraLookAt);
+        _copyVector(&D_800F4BA4->eye.current, &cameraPos);
     } else {
-        _copyVector(&cameraLookAt, &D_800F4BA4->unk0[0].cameraPos);
-        _copyVector(&cameraPos, &D_800F4BA4->unk0[1].cameraPos);
+        _copyVector(&cameraLookAt, &D_800F4BA4->lookAt.current);
+        _copyVector(&cameraPos, &D_800F4BA4->eye.current);
         if (D_800F4BA4->unk1E8 != 0x2000) {
             _vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
             _vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
@@ -3022,13 +3017,13 @@ void func_800BC1CC(short arg0, int arg1)
         return;
     }
     vs_battle_initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
-    _copyVector(&D_800F4BA4->unk0[1].unk24, &sp10);
-    _copyVector(&D_800F4BA4->unk0[0].unk24, &sp20);
+    _copyVector(&D_800F4BA4->eye.position, &sp10);
+    _copyVector(&D_800F4BA4->lookAt.position, &sp20);
     temp_s0 = _vectorMagnitude(_vectorSubtract(
-        (VECTOR*)0x1F800098, &D_800F4BA4->unk0[1].cameraPos, &D_800F4BA4->unk0[1].unk24));
+        (VECTOR*)0x1F800098, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
     temp_v0 = (temp_s0
                   + _vectorMagnitude(_vectorSubtract((VECTOR*)0x1F800098,
-                      &D_800F4BA4->unk0[0].cameraPos, &D_800F4BA4->unk0[0].unk24)))
+                      &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
         D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
@@ -3041,14 +3036,14 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BC2E8);
 
 void func_800BC9E0(void)
 {
-    D_800F4BA4->unk0[1].unkA4.vx = D_800F4BA4->unk0[0].cameraPos.vx;
-    D_800F4BA4->unk0[1].unkA4.vy = D_800F4BA4->unk0[0].cameraPos.vy;
-    D_800F4BA4->unk0[1].unkA4.vz = D_800F4BA4->unk0[0].cameraPos.vz;
-    D_800F4BA4->unk0[0].unkA4.vx = D_800F4BA4->unk0[1].cameraPos.vx;
-    D_800F4BA4->unk0[0].unkA4.vy = D_800F4BA4->unk0[1].cameraPos.vy;
-    D_800F4BA4->unk0[0].unkA4.vz = D_800F4BA4->unk0[1].cameraPos.vz;
-    func_800BCA8C(&D_800F4BA4->unk0[0], &D_800F4BA4->unk0[1]);
-    func_800BCA8C(&D_800F4BA4->unk0[1], &D_800F4BA4->unk0[0]);
+    D_800F4BA4->eye.target.vx = D_800F4BA4->lookAt.current.vx;
+    D_800F4BA4->eye.target.vy = D_800F4BA4->lookAt.current.vy;
+    D_800F4BA4->eye.target.vz = D_800F4BA4->lookAt.current.vz;
+    D_800F4BA4->lookAt.target.vx = D_800F4BA4->eye.current.vx;
+    D_800F4BA4->lookAt.target.vy = D_800F4BA4->eye.current.vy;
+    D_800F4BA4->lookAt.target.vz = D_800F4BA4->eye.current.vz;
+    func_800BCA8C(&D_800F4BA4->lookAt, &D_800F4BA4->eye);
+    func_800BCA8C(&D_800F4BA4->eye, &D_800F4BA4->lookAt);
     func_800BD57C(&D_800F4BA4->unk168);
     func_800BD57C(&D_800F4BA4->unk174);
     func_800BDF6C(&D_800F4BA4->projectionDistance);
@@ -3170,9 +3165,9 @@ void func_800BD57C(func_800BD57C_t* arg0)
 
 int func_800BD610(void)
 {
-    char temp_a2 = D_800F4BA4->unk0[0].unk0 == 0xF;
+    char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
 
-    if (D_800F4BA4->unk0[1].unk0 == 0xF) {
+    if (D_800F4BA4->eye.mode == 0xF) {
         temp_a2 = temp_a2 | 2;
     }
     if (D_800F4BA4->unk168.unkA == 0) {
@@ -3187,7 +3182,7 @@ int func_800BD610(void)
     if (D_800F4BA4->farClip.unk9 == 0) {
         temp_a2 |= 0x20;
     }
-    if (D_800F4BA4->unk27A == 0) {
+    if (D_800F4BA4->unk25C.unk1E == 0) {
         temp_a2 |= 0x40;
     }
     if ((D_800F4BA4->unk1A4.unkB + D_800F4BA4->unk1B0.unkB) == 0) {
@@ -3205,24 +3200,24 @@ void func_800BDAB4(void)
     D_800F1A68_t sp10;
     P_CODE sp20;
 
-    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk1FC) != 0) {
-        sp10.unk0 = D_800F4BA4->unk1FE;
-        sp10.unk4 = D_800F4BA4->unk200;
+    if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
+        sp10.unk0 = D_800F4BA4->unk1FC.unk2;
+        sp10.unk4 = D_800F4BA4->unk1FC.unk4;
         func_8007DDB8(&sp10);
     }
-    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk202[0x1A]) != 0) {
-        sp20.r0 = D_800F4BA4->unk21E;
-        sp20.g0 = D_800F4BA4->unk220;
-        sp20.b0 = D_800F4BA4->unk222;
+    if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
+        sp20.r0 = D_800F4BA4->unk21C.unk2;
+        sp20.g0 = D_800F4BA4->unk21C.unk4;
+        sp20.b0 = D_800F4BA4->unk21C.unk6;
         func_8007DDD4(&sp20);
     }
-    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk224[0x18]) != 0) {
-        sp10.unk0 = D_800F4BA4->unk23E;
-        sp10.unk4 = D_800F4BA4->unk240;
+    if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {
+        sp10.unk0 = D_800F4BA4->unk23C.unk2;
+        sp10.unk4 = D_800F4BA4->unk23C.unk4;
         func_8007DDF8(&sp10);
     }
-    if (func_800BDBB4((func_800BDBB4_t*)&D_800F4BA4->unk242[0x1A]) != 0) {
-        func_800F9BC0(D_800F4BA4->unk25E, D_800F4BA4->unk260);
+    if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
+        func_800F9BC0(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
     }
 }
 
@@ -3312,23 +3307,23 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BE180);
 
 void func_800BE36C(int arg0, int arg1)
 {
-    D_800F4BA4->unk0[0].unk6 = arg0;
-    D_800F4BA4->unk0[0].unk7 = 0;
-    D_800F4BA4->unk0[1].unk6 = arg1;
-    D_800F4BA4->unk0[1].unk7 = 0;
+    D_800F4BA4->lookAt.follow = arg0;
+    D_800F4BA4->lookAt.following = 0;
+    D_800F4BA4->eye.follow = arg1;
+    D_800F4BA4->eye.following = 0;
 }
 
 void func_800BE3A0(void)
 {
     D_800F4BA4_t* c1 = D_800F4BA4;
     D_800F4BA4_t* c2;
-    c1->unk0[1].unk0 = 0xF;
-    c1->unk0[0].unk0 = 0xF;
+    c1->eye.mode = 0xF;
+    c1->lookAt.mode = 0xF;
     c2 = D_800F4BA4;
-    c2->unk0[1].unk7 = 0;
-    c2->unk0[1].unk6 = 0;
-    c2->unk0[0].unk7 = 0;
-    c2->unk0[0].unk6 = 0;
+    c2->eye.following = 0;
+    c2->eye.follow = 0;
+    c2->lookAt.following = 0;
+    c2->lookAt.follow = 0;
 }
 
 void func_800BE3D0(char arg0)
@@ -3350,17 +3345,17 @@ void func_800BE3D0(char arg0)
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
 
-    _copyVector(&D_800F4BA4->unk0[0].cameraPos, &sp10);
-    _copyVector(&D_800F4BA4->unk0[0].unkA4, &sp30);
-    _copyVector(&D_800F4BA4->unk0[1].unkA4, &sp10);
-    _copyVector(&D_800F4BA4->unk0[1].cameraPos, &sp30);
+    _copyVector(&D_800F4BA4->lookAt.current, &sp10);
+    _copyVector(&D_800F4BA4->lookAt.target, &sp30);
+    _copyVector(&D_800F4BA4->eye.target, &sp10);
+    _copyVector(&D_800F4BA4->eye.current, &sp30);
 
-    D_800F4BA4->unk0[0].unk0 = 0xF;
+    D_800F4BA4->lookAt.mode = 0xF;
 
     vs_battle_initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 
-    _copyVector(&D_800F4BA4->unk0[1].unk24, &sp40);
-    _copyVector(&D_800F4BA4->unk0[0].unk24, &sp20);
+    _copyVector(&D_800F4BA4->eye.position, &sp40);
+    _copyVector(&D_800F4BA4->lookAt.position, &sp20);
 
     func_800BC2E8(&D_800E9C28, 0);
     func_800BC2E8(&D_800E9C2C, 0);
@@ -3370,8 +3365,8 @@ void func_800BE53C(D_800F4BA4_t2* arg0)
 {
     VECTOR sp10;
 
-    _vectorSubtract(&sp10, &arg0->cameraPos, &arg0->unk24);
-    arg0->unk5 = ((_vectorMagnitude(&sp10) >> 0xC) * arg0->unk5) / 1000;
+    _vectorSubtract(&sp10, &arg0->current, &arg0->position);
+    arg0->duration = ((_vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
 }
 
 void func_800BE5A4(short arg0)
@@ -3380,13 +3375,14 @@ void func_800BE5A4(short arg0)
     D_800F4BA4_t2* var_a0;
     D_800F4BA4_t2* temp_s1;
 
-    temp_s0 = &D_800F4BA4->unk0[0];
-    temp_s1 = &D_800F4BA4->unk0[1];
+    temp_s0 = &D_800F4BA4->lookAt;
+    temp_s1 = &D_800F4BA4->eye;
 
     if (arg0 == 2) {
         func_800BE53C(temp_s0);
         func_800BE53C(temp_s1);
-        temp_s0->unk5 = temp_s1->unk5 = (temp_s0->unk5 + temp_s1->unk5) >> 1;
+        temp_s0->duration = temp_s1->duration =
+            (temp_s0->duration + temp_s1->duration) >> 1;
 
         return;
     }

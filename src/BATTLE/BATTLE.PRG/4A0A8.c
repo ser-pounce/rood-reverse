@@ -220,6 +220,9 @@ typedef struct {
     MATRIX matrix;
 } cameraMotionScratch;
 
+void func_8007DE88(int*);
+void func_8007DEA8(P_CODE*);
+void func_8007DECC(D_800F1A68_t*);
 short func_8008DC7C(int, int);
 int func_80090C2C(int);
 void func_800A190C(int, int, SVECTOR*, int);
@@ -260,6 +263,7 @@ int vs_battle_setTextBox(int, char*);
 void func_800CB79C(void);
 int vs_battle_dismissTextBox(int);
 void func_800CEF38(int);
+void func_800F9BC0(int, int);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
@@ -3640,9 +3644,126 @@ int func_800BD610(void)
     return temp_a2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BD6C4);
+int func_800BD6C4(u_char* script, short arg1)
+{
+    D_800F1A68_t values;
+    P_CODE color;
+    short mode;
+    short effectValue;
+    switch (script[0]) {
+    case 185:
+        func_8007DE44(vs_battle_getShort(script + 1));
+        return 0;
 
-void func_800F9BC0(int, int);
+    case 186:
+        func_8007DE5C(script[1]);
+        return 0;
+
+    case 228:
+        D_800F4BA4->unk1FC.unk1E = script[4];
+        if (D_800F4BA4->unk1FC.unk1E == 0) {
+            values.unk0 = (script[1] << 7);
+            values.unk4 = (script[2] << 7);
+            func_8007DDB8(&values);
+        } else {
+            D_800F4BA4->unk1FC.unk1C = 0;
+            func_8007DE88(&values.unk0);
+            D_800F4BA4->unk1FC.unk12 =
+                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.unk0);
+            D_800F4BA4->unk1FC.unk14 =
+                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.unk4);
+            D_800F4BA4->unk1FC.unk1 = script[3];
+        }
+        return 0;
+
+    case 229:
+        D_800F4BA4->unk21C.unk1E = script[5];
+        if (D_800F4BA4->unk21C.unk1E == 0) {
+            color.r0 = script[1];
+            color.g0 = script[2];
+            color.b0 = script[3];
+            func_8007DDD4(&color);
+        } else {
+            D_800F4BA4->unk21C.unk1C = 0;
+            func_8007DEA8(&color);
+            D_800F4BA4->unk21C.unk12 = script[1] - (D_800F4BA4->unk21C.unkA = color.r0);
+            D_800F4BA4->unk21C.unk14 = script[2] - (D_800F4BA4->unk21C.unkC = color.g0);
+            D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b0);
+            D_800F4BA4->unk21C.unk1 = script[4];
+        }
+        return 0;
+
+    case 230:
+        D_800F4BA4->unk23C.unk1E = script[4];
+        if (D_800F4BA4->unk23C.unk1E == 0) {
+            values.unk0 = (signed char)script[1];
+            values.unk4 = (signed char)script[2];
+            func_8007DDF8(&values);
+        } else {
+            D_800F4BA4->unk23C.unk1C = 0;
+            func_8007DECC(&values);
+            D_800F4BA4->unk23C.unk12 =
+                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.unk0);
+            D_800F4BA4->unk23C.unk14 =
+                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.unk4);
+            D_800F4BA4->unk23C.unk1 = script[3];
+        }
+        return 0;
+
+    case 231:
+        func_8007DE2C(script[1]);
+        return 0;
+
+    case 237:
+        if (D_800F4BA4->unk25C.unk1E > 0) {
+            return 1;
+        }
+
+        D_800F4BA4->unk25C.unk1E = script[4];
+        if (D_800F4BA4->unk25C.unk1E == 0) {
+            D_800F4BA4->unk25C.unk2 = effectValue = script[1] << 6;
+            D_800F4BA4->unk25C.unk4 = (signed char)script[2];
+            func_800F9BC0(effectValue, D_800F4BA4->unk25C.unk4);
+        } else {
+            D_800F4BA4->unk25C.unk1C = 0;
+            D_800F4BA4->unk25C.unk12 =
+                (script[1] << 6) - (D_800F4BA4->unk25C.unkA = D_800F4BA4->unk25C.unk2);
+            D_800F4BA4->unk25C.unk14 =
+                (signed char)script[2]
+                - (D_800F4BA4->unk25C.unkC = D_800F4BA4->unk25C.unk4);
+            D_800F4BA4->unk25C.unk1 = script[3];
+        }
+        return 0;
+
+    case 191:
+        mode = vs_battle_getShort(script + 1);
+        if (!mode) {
+            func_8007DE2C(0);
+            values.unk0 = values.unk4 = 0;
+            func_8007DDF8(&values);
+            values.unk0 = values.unk4 = ONE;
+            func_8007DDB8(&values);
+            color.r0 = color.g0 = color.b0 = 128;
+            func_8007DDD4(&color);
+            func_8007DE44(0);
+            func_8007DE5C(0);
+            func_8007DD50(0);
+        } else {
+            func_8007DD50(1);
+            func_8007DE2C(0);
+            values.unk0 = 0;
+            values.unk4 = 2;
+            func_8007DDF8(&values);
+            values.unk0 = values.unk4 = ONE;
+            func_8007DDB8(&values);
+            color.r0 = color.g0 = color.b0 = 144;
+            func_8007DE5C(1);
+            func_8007DDD4(&color);
+            func_8007DE44(mode);
+        }
+        return 0;
+    }
+}
 
 void func_800BDAB4(void)
 {

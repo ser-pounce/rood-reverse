@@ -24,6 +24,8 @@ typedef struct {
     u_long size;
 } SpuMallocRec;
 
+u_int _spu_FsetRXXa(int reg, u_int addr);
+
 extern SpuReverbAttr _spu_rev_attr;
 extern SpuRegs* _spu_RXX;
 extern int _spu_mem_mode_plus;

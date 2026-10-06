@@ -43,7 +43,6 @@ extern char D_80010438[]; /* "(%d)\n" */
 
 int func_800209C4(void);
 void func_80022054(void);
-void InterruptCallback(int irq, void (*f)());
 void std_out_puts(char*);
 int printf(char*, ...);
 

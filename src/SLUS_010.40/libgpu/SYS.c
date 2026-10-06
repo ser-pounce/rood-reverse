@@ -58,7 +58,6 @@ extern volatile u_long* D_80033568; /* DMA DPCR */
 extern volatile int D_8003356C; /* command queue write index */
 extern volatile int D_80033570; /* command queue read index */
 
-int DMACallback(int, void (*)(void));
 int func_8002A3E8(int, int, int, int);
 void func_8002A698(void);
 void func_800286B8(char* name, RECT* rect);

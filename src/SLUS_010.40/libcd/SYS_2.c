@@ -1,5 +1,6 @@
 #include "common.h"
 #include <libcd.h>
+#include <libetc.h>
 
 void CD_flush(void);
 int CD_sync(int mode, u_char* result);
@@ -9,7 +10,6 @@ int CD_getsector(void* madr, int size);
 int CD_getsector2(void* madr, int size);
 int CD_datasync(int mode);
 int CD_cw(u_char com, u_char* param, u_char* result, int async);
-void* DMACallback(int dma, void (*func)());
 
 extern CdlCB D_800321FC;
 extern CdlCB D_80032200;

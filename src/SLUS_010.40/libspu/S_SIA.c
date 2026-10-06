@@ -1,7 +1,4 @@
-#include "common.h"
-#include <libspu.h>
-
-extern u_int _spu_FsetRXXa(int reg, u_int addr);
+#include "spu.h"
 
 u_long SpuSetIRQAddr(u_long addr)
 {

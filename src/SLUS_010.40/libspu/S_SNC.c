@@ -1,6 +1,4 @@
-#include "common.h"
-
-extern u_short* D_80030860; /* _spu_RXX */
+#include "spu.h"
 
 long SpuSetNoiseClock(long n_clock)
 {
@@ -13,6 +11,6 @@ long SpuSetNoiseClock(long n_clock)
     } else {
         clock = n_clock;
     }
-    D_80030860[0xD5] = (D_80030860[0xD5] & 0xC0FF) | ((clock & 0x3F) << 8);
+    _spu_RXX->spucnt = (_spu_RXX->spucnt & 0xC0FF) | ((clock & 0x3F) << 8);
     return clock;
 }

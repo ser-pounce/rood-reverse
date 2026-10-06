@@ -1,7 +1,5 @@
-#include "common.h"
-#include <libspu.h>
+#include "spu.h"
 
-extern u_short* D_80030860; /* _spu_RXX */
 extern long D_800307F4; /* _spu_rev_flag */
 extern long D_800307F8; /* _spu_rev_reserve_wa */
 extern long D_800307FC; /* _spu_rev_offsetaddr */
@@ -12,15 +10,15 @@ long SpuSetReverb(long on_off)
     switch (on_off) {
     case 0:
         D_800307F4 = 0;
-        D_80030860[0xD5] &= ~0x80;
+        _spu_RXX->spucnt &= ~0x80;
         break;
     case 1:
         if (D_800307F8 != on_off && _SpuIsInAllocateArea_(D_800307FC)) {
             D_800307F4 = 0;
-            D_80030860[0xD5] &= ~0x80;
+            _spu_RXX->spucnt &= ~0x80;
         } else {
             D_800307F4 = on_off;
-            D_80030860[0xD5] |= 0x80;
+            _spu_RXX->spucnt |= 0x80;
         }
         break;
     }

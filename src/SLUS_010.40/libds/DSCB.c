@@ -1,7 +1,6 @@
 #include "common.h"
 #include <libds.h>
-
-int DMACallback(int, void (*)(void));
+#include <libetc.h>
 
 extern DslCB D_80039E60;
 extern DslCB D_80039E64;
@@ -31,4 +30,4 @@ DslCB DsStartCallback(DslCB func)
     return old;
 }
 
-void(*DsDataCallback(void (*func)())) { return (void*)DMACallback(3, func); }
+void(*DsDataCallback(void (*func)())) { return DMACallback(3, func); }

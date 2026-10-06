@@ -1,5 +1,4 @@
 #include "common.h"
-
-extern void* InterruptCallback(int irq, void (*func)(void));
+#include <libetc.h>
 
 void _SpuCallback(void (*func)(void)) { InterruptCallback(9, func); }

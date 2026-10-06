@@ -1,8 +1,6 @@
-#include "common.h"
-#include <libspu.h>
+#include "spu.h"
 
 extern long D_80030850; /* _spu_isCalled */
-extern volatile SpuTransferCallbackProc D_80030898; /* _spu_transferCallback */
 extern volatile SpuIRQCallbackProc D_8003089C; /* _spu_IRQCallback */
 extern long D_800307E8; /* _spu_EVdma */
 extern void _SpuDataCallback(void (*func)(void));
@@ -16,7 +14,7 @@ void SpuQuit(void)
     if (D_80030850 == 1) {
         D_80030850 = 0;
         EnterCriticalSection();
-        D_80030898 = NULL;
+        _spu_transferCallback = NULL;
         D_8003089C = NULL;
         _SpuDataCallback(NULL);
         CloseEvent(D_800307E8);

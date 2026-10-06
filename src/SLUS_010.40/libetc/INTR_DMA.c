@@ -1,4 +1,5 @@
 #include "common.h"
+#include <libetc.h>
 
 extern volatile u_int* D_80032124;
 extern void (*D_80032128[8])();
@@ -8,7 +9,6 @@ extern int printf(const char*, ...);
 void func_80020100(void);
 void* func_80020280(int ch, void (*func)());
 void func_8002032C(long* ptr, long size);
-void InterruptCallback(int irq, void (*f)());
 
 void* startIntrDMA(void)
 {

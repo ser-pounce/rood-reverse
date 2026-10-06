@@ -1,56 +1,13 @@
-#include "common.h"
-
-/* SPU reverb work registers, 0x1F801DC0-0x1F801DFF */
-typedef struct {
-    u_short dAPF1;
-    u_short dAPF2;
-    u_short vIIR;
-    u_short vCOMB1;
-    u_short vCOMB2;
-    u_short vCOMB3;
-    u_short vCOMB4;
-    u_short vWALL;
-    u_short vAPF1;
-    u_short vAPF2;
-    u_short mLSAME;
-    u_short mRSAME;
-    u_short mLCOMB1;
-    u_short mRCOMB1;
-    u_short mLCOMB2;
-    u_short mRCOMB2;
-    u_short dLSAME;
-    u_short dRSAME;
-    u_short mLDIFF;
-    u_short mRDIFF;
-    u_short mLCOMB3;
-    u_short mRCOMB3;
-    u_short mLCOMB4;
-    u_short mRCOMB4;
-    u_short dLDIFF;
-    u_short dRDIFF;
-    u_short mLAPF1;
-    u_short mRAPF1;
-    u_short mLAPF2;
-    u_short mRAPF2;
-    u_short vLIN;
-    u_short vRIN;
-} SpuReverbRegs;
+#include "spu.h"
 
 typedef struct {
     u_long mask; /* one bit per register, 0 = all */
     SpuReverbRegs regs;
 } SpuReverbParam;
 
-typedef struct {
-    u_short unk0[0xE0];
-    SpuReverbRegs rev; /* 0x1C0 */
-} SpuRegs;
-
-extern SpuRegs* D_80030860; /* _spu_RXX: SPU register base */
-
 #define SET_REVERB_REG(bit, reg)                                                         \
     if (all || (mask & (1 << (bit)))) {                                                  \
-        D_80030860->rev.reg = param->regs.reg;                                           \
+        _spu_RXX->rev.reg = param->regs.reg;                                             \
     }
 
 void _spu_setReverbAttr(SpuReverbParam* param)

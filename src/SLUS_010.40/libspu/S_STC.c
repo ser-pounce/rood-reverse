@@ -1,14 +1,11 @@
-#include "common.h"
-#include <libspu.h>
-
-extern volatile SpuTransferCallbackProc D_80030898; /* _spu_transferCallback */
+#include "spu.h"
 
 SpuTransferCallbackProc SpuSetTransferCallback(SpuTransferCallbackProc func)
 {
-    SpuTransferCallbackProc old = D_80030898;
+    SpuTransferCallbackProc old = _spu_transferCallback;
 
     if (func != old) {
-        D_80030898 = func;
+        _spu_transferCallback = func;
     }
     return old;
 }

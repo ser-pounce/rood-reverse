@@ -3,6 +3,7 @@
 #include <libgpu.h>
 #include <inline_c.h>
 #include "vs_inline_c.h"
+#include <abs.h>
 
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
@@ -424,9 +425,141 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
     return result;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A208C);
-
+SVECTOR* func_800A4A24(int);
+int func_800A3500(int, int);
+void func_800AE4FC(D_800F4538_unk0*, int);
 void func_800A0204(int, int, int, int);
+
+extern u_char D_800E90AC[];
+extern u_char D_800E90B4[];
+
+void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
+{
+    int x;
+    int y;
+    int z;
+    int i;
+    int dz;
+    int minFrames;
+    int accel;
+    int animation;
+    int hangFrames;
+    int frames;
+    int fall;
+    int velocity;
+    SVECTOR* anchor;
+    int _[2] __attribute__((unused));
+
+    if (*(u_int*)((char*)actor + 8) & 0x70000) {
+        return;
+    }
+
+    actor->unk0.unk11 = 6;
+    *(u_int*)((char*)actor + 0x5AC) &= ~0x4000000;
+    if (speed >= actor->unk5B9) {
+        actor->unk0.unk11 = 2;
+    }
+    if (speed < 18) {
+        speed = 18;
+        *(u_int*)((char*)actor + 0x5AC) |= 0x4000000;
+    }
+
+    if (target[1] >= 2) {
+        anchor = func_800A4A24(target[1]);
+        x = anchor->vx;
+        y = anchor->vy;
+        z = anchor->vz;
+    } else {
+        x = target[0] * 128 + 64;
+        z = target[2] * 128 + 64;
+        y = func_800A3500(x, z);
+    }
+
+    *(int*)&actor->unk5EC = *(int*)target;
+    actor->unk1814 = x;
+    actor->unk1818 = z;
+    x -= actor->unk0.position.vx;
+    y -= actor->unk0.position.vy;
+    z -= actor->unk0.position.vz;
+
+    i = x;
+    if (x < 0) {
+        i = -x;
+    }
+    dz = z;
+    if (z < 0) {
+        dz = -z;
+    }
+    if (i < dz) {
+        i = dz;
+    }
+    minFrames = i / speed;
+
+    if (*(u_int*)((char*)actor + 8) & 0x400000) {
+        accel = 1;
+        animation = 33;
+    } else {
+        accel = 6;
+        animation = 47;
+    }
+
+    if (y <= 0) {
+        if (actor->unk0.unkF != 0) {
+            func_800AE4FC(&actor->unk0, 12);
+        }
+        i = y >= -64;
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            i += 3;
+        }
+        hangFrames = D_800E90AC[i];
+        y -= D_800E90B4[i];
+    retry:
+        for (frames = 0, fall = 0, velocity = 0; y < fall; ++frames) {
+            velocity += accel;
+            fall -= velocity / 2;
+        }
+        frames += hangFrames;
+        actor->unk0.unk34.vx = x / frames;
+        actor->unk0.unk34.vz = z / frames;
+        actor->unk0.unk34.vy = -velocity / 2;
+        if (ABS(actor->unk0.unk34.vx) > speed || ABS(actor->unk0.unk34.vz) > speed) {
+            ++hangFrames;
+            y -= ((hangFrames + 1) * accel) / 2;
+            goto retry;
+        }
+    } else {
+        i = 2;
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            i = 5;
+        }
+        hangFrames = D_800E90AC[i];
+        y += D_800E90B4[i];
+        if ((*(u_int*)((char*)actor + 8) & 0x400000) && (y > 128)) {
+            y = 128;
+        }
+        for (frames = 0, fall = 0, velocity = 0; fall < y; ++frames) {
+            velocity += accel;
+            fall += velocity / 2;
+        }
+        frames += hangFrames;
+        if (frames < minFrames) {
+            hangFrames += (minFrames - frames) / 2 + 1;
+            frames = minFrames;
+        }
+        actor->unk0.unk34.vx = x / frames;
+        actor->unk0.unk34.vz = z / frames;
+        actor->unk0.unk34.vy = (-(hangFrames + 1) * accel) / 2;
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            animation = 35;
+        }
+    }
+
+    actor->unk1816 = frames;
+    actor->unk181A = 2;
+    func_800A0204(actor->unk0.unkF, animation, 0, 4);
+    *(u_int*)((char*)actor + 8) = (*(u_int*)((char*)actor + 8) & ~0x70000) | 0x20000;
+    func_800A9EB4(actor->unk0.unkF, facing, 8);
+}
 
 void func_800A249C(int arg0, int arg1)
 {

@@ -359,6 +359,24 @@ typedef struct {
 } zudHeader;
 
 typedef struct {
+    u_char type;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_short flag;
+    u_char flagMin;
+    u_char flagMax;
+    u_char slot;
+    u_char unk9;
+    u_char x;
+    u_char z;
+    u_char y;
+    u_char direction;
+    u_short model;
+    u_char unk10[0x18];
+} mpdObjectSpawn;
+
+typedef struct {
     u_char actorId : 4;
     char unk0_4 : 4;
     char unk1;
@@ -4144,7 +4162,7 @@ void func_800719DC(int arg0 __attribute__((unused))) { func_80070F28(0); }
 
 extern unsigned char D_800E81B4[], D_800E81D4[];
 void func_800A190C(int, int, void*, int);
-void func_800719FC(void)
+void func_800719FC(int arg0 __attribute__((unused)))
 {
     SVECTOR origin;
     D_800F19CC_t2 result;
@@ -4474,7 +4492,86 @@ void func_80072734(int arg0)
 
 void func_80072B9C(void) { _cameraMode = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072BA8);
+typedef struct {
+    u_char id;
+    u_char unk1;
+    u_char flags;
+} actionHeaderView;
+
+extern unsigned char D_800E8194[];
+
+void func_80072BA8(int action)
+{
+    int _[2] __attribute__((unused));
+    func_8006EBF8_t state;
+    int limb;
+    int part;
+    int count;
+    u_char category;
+
+    D_800F19CC->unk8.actionIndex = action;
+    func_800C16DC();
+    func_800C06E0();
+    func_800C0738();
+
+    if (action == 0) {
+        D_800F19CC->unk29A0 = 1;
+        D_800F19CC->unk29A1 = 3;
+        func_800A1108(0, &state);
+        D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29A4 = 4;
+        D_800F19CC->unk29A5 = 4;
+        D_800F19CC->unk29A6 = 4;
+        D_800F19CC->unk29A7 = 0;
+        func_800A190C(0, 250, &D_800F19CC->unk29A8, 0);
+        func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
+
+        D_800F19CC->unk29B0 = 2;
+        D_800F19CC->unk29B1 = 3;
+        func_800A1108(1, &state);
+        D_800F19CC->unk29B2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29B4 = 4;
+        D_800F19CC->unk29B5 = 4;
+        D_800F19CC->unk29B6 = 4;
+        D_800F19CC->unk29B7 = 0;
+        func_800A190C(1, 250, &D_800F19CC->unk29B8, 0);
+        func_800C0700(&D_800F19CC->unk29B0);
+
+        for (limb = 0, count = 0; limb < 6; ++limb) {
+            part = func_800A152C(1, limb, 2);
+            if (part >= 0) {
+                func_800A1B9C(1, limb, (void*)&D_800F19CC->unk29C0[count], 0);
+                D_800F19CC->unk29C0[count].unk8 = func_800A1648(1, part, 0);
+                D_800F19CC->unk29C0[count].unkA = limb;
+                D_800F19CC->unk29C0[count].unk9 = 1;
+                ++count;
+            }
+        }
+        D_800F19CC->unk2C00 = count;
+        func_800C1664(count, (int)D_800F19CC->unk29C0, 0);
+        _cameraMode = 1;
+        return;
+    }
+
+    category = ((actionHeaderView*)&vs_main_actions[action])->flags >> 4;
+    if (D_800E8184[category]) {
+        if (D_800E8194[category]) {
+            if (!D_800E81C4[category]) {
+                func_80072734(0);
+            } else {
+                func_80072734(1);
+            }
+        } else if (!D_800E81C4[category]) {
+            func_80071F68(2);
+        } else {
+            func_80071F68(3);
+        }
+    } else if (D_800E8194[category]) {
+        func_800719FC(4);
+    } else {
+        func_800719DC(6);
+    }
+}
 
 void func_80072EC4(int arg0, u_short arg1)
 {
@@ -5577,7 +5674,7 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_battle_actor* func_800765B0(
-    int index, int actorId, vs_battle_objectData_flags* arg2, int material)
+    int index, int actorId, vs_battle_objectData_flags* arg2, int material, int arg4)
 {
     vs_battle_objectData objData;
     int i;
@@ -7710,7 +7807,60 @@ void vs_battle_setCameraRoll(int arg0) { vs_scratch.camera.angles.vz = arg0; }
 
 int vs_battle_getCameraRoll(void) { return vs_scratch.camera.angles.vz & 0xFFF; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
+extern MATRIX D_8005E218;
+
+void func_8007ACB0(void)
+{
+    static const VECTOR D_800689E8 = { 0, ONE, 0 };
+    VECTOR delta;
+    VECTOR right;
+    VECTOR forward;
+    VECTOR up = D_800689E8;
+    SVECTOR negativePosition;
+    MATRIX roll;
+    int _[8] __attribute__((unused));
+    vs_scratch_t* scratch = &vs_scratch;
+
+    delta.vx = (scratch->camera.position.vx - scratch->camera.lookAt.vx) / ONE;
+    delta.vy = (scratch->camera.lookAt.vy - scratch->camera.position.vy) / ONE;
+    delta.vz = (scratch->camera.lookAt.vz - scratch->camera.position.vz) / ONE;
+    if (!(delta.vx | delta.vz)) {
+        delta.vz = 1;
+    }
+    VectorNormal(&delta, &forward);
+    OuterProduct0(&forward, &up, &right);
+    VectorNormal(&right, &right);
+    OuterProduct0(&right, &forward, &up);
+    VectorNormal(&up, &up);
+    D_8005E218.m[0][0] = scratch->viewMatrix.m[0][0] = -*(u_short*)&right.vx;
+    D_8005E218.m[0][1] = scratch->viewMatrix.m[0][1] = *(u_short*)&right.vy;
+    D_8005E218.m[0][2] = scratch->viewMatrix.m[0][2] = *(u_short*)&right.vz;
+    D_8005E218.m[1][0] = scratch->viewMatrix.m[1][0] = -*(u_short*)&up.vx;
+    D_8005E218.m[1][1] = scratch->viewMatrix.m[1][1] = *(u_short*)&up.vy;
+    D_8005E218.m[1][2] = scratch->viewMatrix.m[1][2] = *(u_short*)&up.vz;
+    D_8005E218.m[2][0] = scratch->viewMatrix.m[2][0] = -*(u_short*)&forward.vx;
+    D_8005E218.m[2][1] = scratch->viewMatrix.m[2][1] = *(u_short*)&forward.vy;
+    D_8005E218.m[2][2] = scratch->viewMatrix.m[2][2] = *(u_short*)&forward.vz;
+    roll.m[1][1] = roll.m[0][0] = rcos(scratch->camera.angles.vz);
+    roll.m[1][0] = rsin(scratch->camera.angles.vz);
+    roll.m[0][1] = -roll.m[1][0];
+    roll.m[2][2] = ONE;
+    roll.m[0][2] = roll.m[1][2] = roll.m[2][0] = roll.m[2][1] = 0;
+    delta.vx = 4608;
+    delta.vy = ONE;
+    delta.vz = ONE;
+    ScaleMatrix(&roll, &delta);
+    func_80041C68(&roll, &scratch->viewMatrix);
+    negativePosition.vx = -scratch->camera.position.vx / ONE;
+    negativePosition.vy = -scratch->camera.position.vy / ONE;
+    negativePosition.vz = -scratch->camera.position.vz / ONE;
+    ApplyMatrix(&scratch->viewMatrix, &negativePosition, (VECTOR*)scratch->viewMatrix.t);
+    delta.vz = delta.vy = delta.vx = scratch->camera.farClip;
+    ScaleMatrix(&scratch->viewMatrix, &delta);
+    scratch->viewMatrix.t[0] = scratch->viewMatrix.t[0] * scratch->camera.farClip / ONE;
+    scratch->viewMatrix.t[1] = scratch->viewMatrix.t[1] * scratch->camera.farClip / ONE;
+    scratch->viewMatrix.t[2] = scratch->viewMatrix.t[2] * scratch->camera.farClip / ONE;
+}
 
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
 {
@@ -14219,7 +14369,234 @@ void func_80089098(void)
 
 int func_80089104(void) { return D_800F18A8; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089114);
+extern int D_800F18E0;
+
+void func_80089114(void)
+{
+    int _[4] __attribute__((unused));
+    int slots[16];
+    union {
+        vs_battle_objectData_flags fields;
+        u_char bytes[4];
+    } data;
+    mpdEnemySpawn* enemy;
+    savedEnemyState* saved;
+    _zndEnemy* template;
+    int i;
+    int visible;
+    u_short param;
+    int j;
+    u_short slot;
+    u_short id;
+    u_int flag;
+    u_int model;
+    u_int min;
+    u_int max;
+
+    if (D_800F18E0 == 0) {
+        return;
+    }
+
+    for (j = 15; j >= 0; --j) {
+        slots[j] = 0;
+    }
+
+    for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
+        enemy = (mpdEnemySpawn*)&_zoneContext.mpdEnemies[i];
+        if (enemy->type == 0) {
+            slot = enemy->slot;
+        } else {
+            slot = ((mpdObjectSpawn*)enemy)->slot;
+        }
+        if (slot < 16) {
+            slots[slot] = 1;
+        }
+    }
+
+    for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
+        enemy = (mpdEnemySpawn*)&_zoneContext.mpdEnemies[i];
+        if (enemy->type == 0) {
+            visible = enemy->hidden == 0;
+
+            switch (enemy->sceneTest) {
+            case 1:
+                if ((u_char)vs_battle_getStateFlag(1) != 0) {
+                    visible = 0;
+                }
+                break;
+            case 2:
+                if ((u_char)vs_battle_getStateFlag(1) != 1) {
+                    visible = 0;
+                }
+                break;
+            case 3:
+                if ((u_char)vs_battle_getStateFlag(2) != 1) {
+                    visible = 0;
+                }
+                break;
+            }
+
+            switch (enemy->flagTest) {
+            case 1:
+                if ((u_char)vs_battle_getStateFlag(0x82) != enemy->flagValue) {
+                    visible = 0;
+                }
+                break;
+            case 2:
+                if ((u_char)vs_battle_getStateFlag(0x82) > enemy->flagValue) {
+                    visible = 0;
+                }
+                break;
+            case 3:
+                if ((u_char)vs_battle_getStateFlag(0x82) < enemy->flagValue) {
+                    visible = 0;
+                }
+                break;
+            }
+
+            switch (enemy->statTest) {
+            case 1:
+                if ((enemy->statValue & 0x3FF)
+                    < vs_battle_characterState->unk3C->currentHP) {
+                    visible = 0;
+                }
+                break;
+            case 2:
+                if (vs_battle_characterState->unk3C->currentHP
+                    < (enemy->statValue & 0x3FF)) {
+                    visible = 0;
+                }
+                break;
+            case 3:
+                if ((u_char)vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                    != (enemy->statValue >> 10)) {
+                    visible = 0;
+                }
+                break;
+            case 4:
+                if ((u_char)vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                    > (enemy->statValue >> 10)) {
+                    visible = 0;
+                }
+                break;
+            case 5:
+                if ((u_char)vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                    < (enemy->statValue >> 10)) {
+                    visible = 0;
+                }
+                break;
+            }
+
+            id = enemy->id;
+            switch (enemy->facing) {
+            case 0:
+            case 3:
+                param = 6;
+                break;
+            case 1:
+                param = 0;
+                break;
+            case 2:
+                param = 1;
+                break;
+            }
+            if (enemy->unk24) {
+                param |= 0x80;
+            }
+
+            template = &_zoneContext.zndEnemies[id];
+            slot = enemy->slot;
+            if (slot == 0) {
+                for (j = 2; j < 10; ++j) {
+                    if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
+                        if (D_8004FE88[template->unk0[2]] != 0) {
+                            if ((vs_battle_actors[j + 4] != NULL)
+                                || (slots[j + 4] != 0)) {
+                                continue;
+                            }
+                            slots[j + 4] = 1;
+                        }
+                        slot = j;
+                        break;
+                    }
+                }
+                if (j >= 10) {
+                    vs_main_nop10(0x86, 0);
+                    if (_zoneContext.unk1C != NULL) {
+                        vs_main_freeHeapR(_zoneContext.unk1C);
+                    }
+                    _zoneContext.unk1C = NULL;
+                    _zoneContext.unk14 = 0;
+                    return;
+                }
+            } else if (D_8004FE88[template->unk0[2]] != 0) {
+                if ((vs_battle_actors[slot + 4] == NULL) && (slots[slot + 4] == 0)) {
+                    slots[slot + 4] = 1;
+                } else {
+                    vs_main_nop10(0x86, 0);
+                    if (_zoneContext.unk1C != NULL) {
+                        vs_main_freeHeapR(_zoneContext.unk1C);
+                    }
+                    _zoneContext.unk1C = NULL;
+                    _zoneContext.unk14 = 0;
+                    return;
+                }
+            }
+
+            if (visible) {
+                if (id == 0x7F) {
+                    data.fields.unk0_0 = enemy->x;
+                    data.fields.unk0_16 = enemy->z;
+                    data.fields.unk0_8 = enemy->direction;
+                    data.fields.unk0_24 = enemy->height << 6;
+                    func_800774FC(slot, 0x7F, 0, 0, 0, 0, &data.fields, param);
+                } else {
+                    func_800775C0(slot, enemy, (vs_battle_charInitData*)template, param);
+                }
+            }
+        } else {
+            flag = (u_char)vs_battle_getStateFlag(((mpdObjectSpawn*)enemy)->flag & 0x3FF);
+            min = ((mpdObjectSpawn*)enemy)->flagMin;
+            max = ((mpdObjectSpawn*)enemy)->flagMax;
+            if ((flag >= min) && (flag <= max)) {
+                data.bytes[0] = ((mpdObjectSpawn*)enemy)->x;
+                data.bytes[2] = ((mpdObjectSpawn*)enemy)->z;
+                data.bytes[1] = ((mpdObjectSpawn*)enemy)->y;
+                data.bytes[3] = ((mpdObjectSpawn*)enemy)->direction * 64;
+                slot = ((mpdObjectSpawn*)enemy)->slot;
+                if (slot == 0xFF) {
+                    for (j = 2; j < 16; ++j) {
+                        if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
+                            slot = j;
+                            break;
+                        }
+                    }
+                    if (j >= 16) {
+                        vs_main_nop10(0x86, 0);
+                        return;
+                    }
+                }
+                param = ((mpdObjectSpawn*)enemy)->model;
+                model = param;
+                func_800765B0(slot, (model >> 12) | (model & 0xF00), &data.fields,
+                    ((model >> 3) & 0x1C) | (data.bytes[3] / 64), 0);
+            }
+        }
+    }
+
+    for (i = 0; i < 32; ++i) {
+        enemy = (mpdEnemySpawn*)&_zoneContext.mpdEnemies[i];
+        saved = func_80069E80(i);
+        if (saved != NULL) {
+            saved->hidden = enemy->hidden;
+        }
+    }
+    if (_zoneContext.unk1C != NULL) {
+        vs_main_freeHeapR(_zoneContext.unk1C);
+    }
+    _zoneContext.unk1C = NULL;
+    _zoneContext.unk14 = 0;
+}
 
 void func_80089888(void)
 {

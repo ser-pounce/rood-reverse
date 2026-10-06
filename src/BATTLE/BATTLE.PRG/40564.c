@@ -1496,7 +1496,102 @@ void func_800AB4F0(void* actor)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB788);
+void func_800AB788(u_char* actor, u_char* object, int arg2)
+{
+    u_char* state;
+    int count;
+    int value;
+    int i;
+    int r;
+    int g;
+    int b;
+    int color;
+    int _[2] __attribute__((unused));
+
+    if (actor == NULL) {
+        count = 16;
+        state = object + 0x64;
+    } else {
+        count = 160;
+        if (!(*(u_int*)(actor + 0x5AC) & 0x8000000)) {
+            count = 16;
+        }
+        state = actor + 0x64;
+    }
+    value = state[1];
+    if (vs_gametime_tickspeed == 4) {
+        if (!(state[2] & 2)) {
+            value += 2;
+            if (value >= 16) {
+                state[2] |= 2;
+            }
+        } else {
+            value -= 2;
+            if (value <= 0) {
+                state[2] &= ~2;
+            }
+        }
+    }
+    if (!(state[2] & 2)) {
+        value += 2;
+        if (value >= 16) {
+            state[2] |= 2;
+        }
+    } else {
+        value -= 2;
+        if (value <= 0) {
+            state[2] &= ~2;
+        }
+    }
+    state[1] = value;
+    for (i = 0; i < count; i++) {
+        if (actor == NULL) {
+            color = ((u_short*)(object + 0x12C))[i];
+        } else {
+            color = ((u_short*)(actor + 0x1424))[i];
+        }
+        if (color != 0) {
+            r = color & 31;
+            g = (color >> 5) & 31;
+            b = (color >> 10) & 31;
+            color &= 0x8000;
+            if (value == 16) {
+                r += 8;
+                if (r > 31) {
+                    r = 31;
+                }
+                g += 18;
+                if (g > 31) {
+                    g = 31;
+                }
+                b += 30;
+            } else {
+                r -= value / 2;
+                if (r < 0) {
+                    r = 0;
+                }
+                g += value / 2;
+                if (g > 31) {
+                    g = 31;
+                }
+                b += value;
+            }
+            if (b > 31) {
+                b = 31;
+            }
+            if (actor == NULL) {
+                ((u_short*)(object + 0x14C))[i] = color | (b << 10) | (g << 5) | r;
+            } else {
+                ((u_short*)(actor + 0x16A4))[i] = color | (b << 10) | (g << 5) | r;
+            }
+        }
+    }
+    if (actor == NULL) {
+        vs_main_loadClut((u_short*)(object + 0x14C), 31, object[15] * 16, count);
+    } else {
+        vs_main_loadClut((u_short*)(actor + 0x16A4), actor[15] + 22, 0, count);
+    }
+}
 
 void func_800A190C(int, int, SVECTOR*, int);
 void func_800A7524(void*, void*);

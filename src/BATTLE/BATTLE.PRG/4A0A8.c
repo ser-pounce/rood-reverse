@@ -4696,4 +4696,93 @@ void func_800BF5F0(u_char* data)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BF850);
+short func_800BFBB8(u_char** arg0, short arg1);
+
+int func_800BF850(void)
+{
+    short i;
+    int _[2] __attribute__((unused));
+
+    if (D_800F4C34 == 0) {
+        return 0;
+    }
+    if (D_800F4C34 == 1) {
+        if (D_800F4BB8 != 0) {
+            D_800F4C34 = 2;
+            D_800F4BB8 = 0;
+            func_800BBBE8();
+            func_8007CEC0();
+            for (i = 0; i < 17; ++i) {
+                D_800F4B70[i] = 0;
+            }
+            return 2;
+        }
+        return 0;
+    }
+    if (D_800F4C34 == 2) {
+        D_800F4C6A = 0;
+        D_800F4C54 = 0;
+        switch ((short)D_800F4BE0) {
+        case 1:
+            func_800BF5F0(D_800F4C30);
+            D_800F4C34 = 4;
+            break;
+        case 2:
+            func_800BF5F0(
+                (u_char*)_mpdRoomDoorSection + ((short*)_mpdRoomDoorSection)[_evtFile]);
+            D_800F4C34 = 4;
+            break;
+        case 0:
+            func_800C00E8(_evtFile, D_800F4C30);
+            D_800F4C34 = 3;
+            break;
+        }
+        return 2;
+    }
+    if (D_800F4C34 == 3) {
+        if (*D_800F4BBC == 4) {
+            vs_main_freeCdQueueSlot((vs_main_CdQueueSlot*)D_800F4BBC);
+            if (D_800F4C54 != 0) {
+                vs_main_memcpy(D_800F4C30, D_800F4C24, 0x1800);
+                vs_main_freeHeapR(D_800F4C24);
+                D_800F4C54 = 0;
+            }
+            func_800BF5F0(D_800F4C30);
+            D_800F4C34 = 4;
+        }
+        return 2;
+    }
+    func_800BBE94();
+    if (D_800F4C22 == 0) {
+        if (func_800BFBB8(D_800F4C38, 0) != 0) {
+            if (D_800F4BB6 == 0 && D_800F4C54 == 0 && D_800F4BE2 == 0) {
+                func_800BC1CC(-1, -1);
+            }
+            D_800F4C22 = 1;
+        }
+        for (i = 1; i < 4; ++i) {
+            if (D_800F4C38[i] != NULL) {
+                func_800BFBB8(&D_800F4C38[i], i);
+            }
+        }
+    }
+    func_800BC9E0();
+    func_800BDAB4();
+    vs_battle_applyCameraState();
+    func_800BB9B0();
+    func_800BBAFC();
+    if (D_800F4BE4 != 0) {
+        func_800BB874();
+    }
+    if (D_800F4C22 != 0 && (u_char)func_800BD610() == 0xFF) {
+        if (D_800F4C54 != 0) {
+            D_800F4C34 = 3;
+            D_800F4BE0 = 0;
+        } else {
+            func_800BFD9C();
+            D_800F4C34 = 0;
+        }
+        D_800F4C22 = 0;
+    }
+    return 2;
+}

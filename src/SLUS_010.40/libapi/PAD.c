@@ -86,7 +86,19 @@ int func_8002EC50(void)
     return 1;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libapi/PAD", func_8002EC88);
+extern volatile unsigned short* D_80033668;
+
+int func_8002EC88(void)
+{
+    volatile int i;
+    int _[2] __attribute__((unused));
+
+    D_80033668[5] = 0;
+    i = 10;
+    while (--i != -1)
+        ;
+    return 0;
+}
 
 int func_8002ECF0(void)
 {

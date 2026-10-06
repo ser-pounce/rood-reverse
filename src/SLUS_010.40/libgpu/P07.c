@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P07", AddPrims);
+void AddPrims(void* ot, void* p0, void* p1) { addPrims(ot, p0, p1); }

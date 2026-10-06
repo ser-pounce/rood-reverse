@@ -59,8 +59,8 @@ $(BUILD)/data/MENU/MENUA.PRG: | $$(@D)/
 	$(ECHO) Touching empty file $@
 	$(TOUCH) $@
 
-$(BUILD)/src/MENU/%.o: CC1VER := 2.8.1-psx
-$(BUILD)/src/MENU/%.o: ASFLAGS += -no-pad-sections
+$(BUILD)/src/MENU/%.c.o: CC1VER := 2.8.1-psx
+$(BUILD)/src/MENU/%.c.o: ASFLAGS += -no-pad-sections
 
 MENUS           := $(patsubst %,MENU/%.PRG, $(addprefix MENU,0 1 2 3 4 5 7 8 9 B C D E F) MAINMENU)
 MENU_BINTARGETS := $(MENUS:%=$(BUILD)/data/%)

@@ -649,7 +649,102 @@ int func_800C1D84(void)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1DC4);
+extern u_char D_800F4CB4;
+
+void func_800C1DC4(D_800EB9B8_unk990* arg0)
+{
+    int sxy;
+    int otz;
+    int gradient;
+    int color0;
+    int color1;
+    int isLeft;
+    int x;
+    int y;
+    int xy;
+    int ringXy;
+    int textXy;
+    int color;
+    u_long* prim;
+    u_long* nextPrim;
+
+    gradient = arg0->unk2;
+    nextPrim = vs_scratch.unk8 - (arg0->unk1 * 4 - 8);
+    if (arg0->unk1 != 0) {
+        gradient = 8;
+    }
+    color0 = 8 - gradient;
+    color0 = vs_battle_uiGradientStop(color0, arg0->unk7 * 8, 0x80);
+    color1 = vs_battle_uiGradientStop(gradient, arg0->unk7 * 8, 0x80);
+
+    xy = arg0->unk4;
+    isLeft = xy < 160;
+    if (isLeft) {
+        y = color0;
+        color0 = color1;
+        color1 = y;
+    }
+    y = arg0->unk6 + D_800F4CB4;
+    x = xy;
+    if (isLeft) {
+        x += 0x42;
+    } else {
+        x += 6;
+    }
+    color = 0x404040;
+    textXy = (x & 0xFFFF) | ((y - 1) << 16);
+    if (arg0->unk1 != 0) {
+        color = 0x808080;
+    }
+    vs_battle_renderTextRawColor(arg0->unk10, textXy, color, nextPrim);
+
+    prim = vs_scratch.unk0;
+    if (gradient != 0) {
+        arg0->unk2 = gradient - 1;
+    }
+    x = arg0->unk4 & 0xFFFF;
+    gradient = (arg0->unk4 < 160) * 2;
+    prim[0] = (*nextPrim & 0xFFFFFF) | 0x0D000000;
+    prim[1] = 0x60000000;
+    prim[2] = ((x + 2 - gradient) & 0xFFFF) | ((y + 2) << 16);
+    prim[3] = (gradient + 0x48) | 0x80000;
+    prim[4] = 0xE1000200;
+    prim[5] = color0 | 0x38000000;
+    prim[6] = x | (y << 16);
+    prim[7] = color1;
+    prim[8] = ((x + 0x48) & 0xFFFF) | (y << 16);
+    prim[9] = color0;
+    prim[10] = x | ((y + 8) << 16);
+    prim[11] = color1;
+    prim[12] = ((x + 0x48) & 0xFFFF) | ((y + 8) << 16);
+    prim[13] = 0xE1000000;
+    *nextPrim = ((u_long)prim << 8) >> 8;
+    prim += 14;
+    vs_scratch.unk0 = prim;
+
+    if (arg0->unk1 != 0) {
+        y += 4;
+        func_800C02A8();
+        gte_ldv0(&arg0->unk8);
+        gte_rtps2();
+        gte_stsxy(&sxy);
+        gte_stotz(&otz);
+        if (arg0->unk4 < 160) {
+            x = (x + 0x47) & 0xFFFF;
+            ringXy = x | (y << 16);
+            func_800C1A40(sxy, ringXy, arg0->unk3 - 2);
+            if (arg0->unk3 >= 18) {
+                func_800C1A40(sxy, ringXy, (arg0->unk3 + 14) & 0x1F);
+            }
+        } else {
+            ringXy = x | (y << 16);
+            func_800C16FC(sxy, ringXy, arg0->unk3 - 2);
+            if (arg0->unk3 >= 18) {
+                func_800C16FC(sxy, ringXy, (arg0->unk3 + 14) & 0x1F);
+            }
+        }
+    }
+}
 
 void func_800C20B4(void)
 {

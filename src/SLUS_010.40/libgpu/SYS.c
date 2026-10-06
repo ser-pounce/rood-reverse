@@ -305,7 +305,8 @@ int func_8002A30C(u_long* p, int n)
     *D_8003354C = 0x04000000;
     if (n != 0) {
         do {
-            *D_80033548 = *p++;
+            u_long v = *p++;
+            *D_80033548 = v;
             i--;
         } while (i != -1);
     }

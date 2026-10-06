@@ -36,7 +36,7 @@ segments:
       - [0x1354, .rodata, 6E644]
       - [0x146C, c]
       - [0x2842C, c]
-      - [0x2EA3C, asm] # Fairly sure entire module is hasm
+      - [0x2EA3C, hasm] # Fairly sure entire module is hasm
       - [0x30DB0, c]
       - [0x38C1C, c]
       - [0x3A1A0, c]

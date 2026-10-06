@@ -163,7 +163,7 @@
         "TITLE.PRG/libpress/LIBPRESS"
     ],
     "exclusions": {
-        "names": ["2EA3C.o"],
+        "names": [],
         "suffixes": [".data.o", ".rodata.o", ".bss.o"]
     }
 }

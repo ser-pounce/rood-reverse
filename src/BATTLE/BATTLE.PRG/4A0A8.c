@@ -227,6 +227,11 @@ typedef struct {
     SVECTOR c;
 } cameraShakeScratch;
 
+typedef struct {
+    u_char low;
+    u_char high;
+} scriptBytePair;
+
 void func_8007DE88(int*);
 void func_8007DEA8(P_CODE*);
 void func_8007DECC(D_800F1A68_t*);
@@ -271,6 +276,7 @@ void func_800CB79C(void);
 int vs_battle_dismissTextBox(int);
 void func_800CEF38(int);
 void func_800F9BC0(int, int);
+int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
@@ -291,6 +297,7 @@ extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_char D_800E9C30[];
+extern u_char* D_800EB588[];
 extern D_800EB9BC_t* D_800EB9BC;
 extern int D_800F19C8;
 extern u_short D_800F4B20;
@@ -298,6 +305,7 @@ extern u_short D_800F4B28[];
 extern D_800F4B30_t D_800F4B30[];
 extern char D_800F4B70[];
 extern D_800F4B88_t D_800F4B88;
+extern char D_800F4B8B;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
 extern void* _mpdClearedSection;
@@ -313,10 +321,12 @@ extern char D_800F4BE4;
 extern void* _mpdRoomDoorSection;
 extern char D_800F4BF8;
 extern char D_800F4C10[];
+extern short D_800F4C22;
 extern void* D_800F4C24;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short D_800F4C4C;
+extern char D_800F4C4E;
 extern short _mpdScriptSection;
 extern short D_800F4C54;
 extern char _textBoxSelectionPending;
@@ -4258,6 +4268,47 @@ int func_800BEC30(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BEC58);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BF5F0);
+void func_800BF5F0(u_char* data)
+{
+    short i;
+    u_char* table;
+    D_800F4BB0 = (u_short*)(data + *(u_short*)(data + 2));
+    table = data + *(u_short*)(data + 4);
+    for (i = 9; i < 16; ++i) {
+        D_800EB588[i] = ((u_short*)table)[i - 8] ? table + ((u_short*)table)[i - 8] : 0;
+    }
+    table = data + *(u_short*)(data + 6);
+    for (i = 0; i < 8; ++i) {
+        D_800F4BC0[i] = ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+    }
+    D_800F4C38[0] = data + 16;
+    D_800F4C38[1] = D_800F4C38[2] = D_800F4C38[3] = 0;
+    D_800F4C2C = 0;
+    D_800F4C68 = 0;
+    vs_battle_setStateFlag(168, 0);
+    D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
+    D_800F4BB9 = 0;
+    D_800F4C4E = 0;
+    _textBoxSelectionPending = 0;
+    D_800F4BE4 = 0;
+    D_800F4BF8 = 0;
+    D_800F4BE2 = 0;
+    D_800F4BB6 = 0;
+    D_800F4C58[0] = 0;
+    D_800F4C22 = 0;
+    for (i = 0; i < 8; ++i) {
+        vs_battle_textBoxStatuses[i] = 0;
+    }
+    for (i = 0; i < 4; ++i) {
+        ((scriptBytePair*)D_800F4B28)[i].low = ((scriptBytePair*)D_800F4B28)[i].high = 0;
+    }
+    D_800F4B8B = 0;
+    D_800F4B30[0].unk3 = D_800F4B30[1].unk3 = D_800F4B30[2].unk3 = 0;
+    D_800F4C69 = vs_main_getcurrentMusicSlot();
+    D_800F4BBC = 0;
+    for (i = 16; i < 32; ++i) {
+        vs_battle_setStateFlag(i, 0);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BF850);

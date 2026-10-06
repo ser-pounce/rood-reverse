@@ -181,13 +181,30 @@ typedef struct {
     char unk2[22];
 } func_800BB68C_t;
 
+typedef struct {
+    int x : 12;
+    int y : 12;
+    u_int alignment : 2;
+    u_int flags : 4;
+} textOffset;
+
+typedef struct {
+    textOffset offset;
+    short x;
+    short y;
+    int distance;
+} textPlacement;
+
 short func_8008DC7C(int, int);
 int func_80090C2C(int);
 void func_800A190C(int, int, SVECTOR*, int);
 void func_800AACDC(void);
+int func_800B6B98(
+    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
 int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, func_800BB68C_t*);
 u_short func_800BB788(func_800BB68C_t* arg0);
+int func_800BB7C4(int arg0, SVECTOR* arg1);
 void func_800BBE10(u_short);
 void func_800BBE04(int arg0);
 void func_800BBE94(void);
@@ -226,6 +243,7 @@ extern int D_800E9B4C[];
 extern char D_800E9B58[];
 extern char D_800E9BE0[];
 extern char D_800E9BE8[];
+extern u_char D_800E9BEC[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
 extern void D_800E9B5C;
@@ -755,7 +773,55 @@ int vs_battle_script_dismissTextBox(u_char* arg0, short arg1)
 // https://decomp.me/scratch/0ihTK
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6B98);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6D48);
+// script[1]   = boxId
+// script[2-3] = anchor id (resolved by func_800BFE50)
+// script[4-5] = flags/type (passed to arg1 of initTextBox)
+// script[6]   = width in characters
+// script[7]   = height in lines
+// script[8]   = ?
+int func_800B6D48(u_char* script, short arg1 __attribute__((unused)))
+{
+    textPlacement placements[4];
+    SVECTOR origin;
+    vs_battle_textBox* box;
+    textPlacement* best = NULL;
+    u_int width;
+    u_int height;
+    int texture;
+    short i;
+
+    func_800BB7C4(func_800BFE50(vs_battle_getShort(script + 2)), &origin);
+    origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
+
+    for (i = 0; i < 4; ++i) {
+        if (func_800B6B98(&origin, script, &placements[i], D_800E9BEC[i])) {
+            best = &placements[i];
+            break;
+        }
+    }
+
+    if (best == NULL) {
+        best = placements;
+        for (i = 1; i < 4; ++i) {
+            if (best->distance > placements[i].distance) {
+                best = &placements[i];
+            }
+        }
+    }
+
+    width = script[6] * 12 + 8;
+    height = script[7] * 13 + 4;
+    vs_battle_initTextBox(script[1], vs_battle_getShort(script + 4), best->x, best->y,
+        script[6], script[7], best->x + (width >> 1), best->y + (height >> 1));
+
+    box = vs_battle_getTextBox(script[1]);
+    // BUG: texture is never initialized
+    box->unk0.unk0_24 = texture;
+    box->unk0.unk0_6 = best->offset.alignment;
+    box->unk0.unk0_12 = best->offset.flags;
+    box->unk2E = script[8];
+    return 0;
+}
 
 int func_800B6F8C(u_char* arg0, short arg1)
 {

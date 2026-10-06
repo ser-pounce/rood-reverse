@@ -78,9 +78,105 @@ void _padInitDirSeq(void)
     D_800335BC = func_8002E478;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADSEQD", func_8002E368);
+int func_8002E368(PadPort* p)
+{
+    if (p->recvBuf[0] == 0xF3) {
+        if (p->curId == 0) {
+            _padCmdParaMode(p, 0);
+            return 0;
+        }
+        if (p->cmdState == 0xFF) {
+            goto para_off;
+        }
+        if (p->loadState == 2) {
+            D_800335A0(p);
+        }
+    }
+    switch (p->cmdState) {
+    case 0:
+        break;
+    case 1:
+        _padCmdParaMode(p, 1);
+        break;
+    case 0xFE:
+    para_off:
+        _padCmdParaMode(p, 0);
+        break;
+    case 0xFF:
+        break;
+    default:
+        if (p->sendFunc != NULL) {
+            p->sendFunc(p);
+        } else {
+            _padSendAtLoadInfo(p);
+        }
+        break;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADSEQD", func_8002E478);
+void func_8002E478(PadPort* p)
+{
+    u_char id;
+    u_char prevId;
+    u_char state;
+    int i;
+
+    id = p->recvBuf[0];
+    if ((id & 0xF0) == 0) {
+        p->sendBuf[0] = 0xFF;
+        p->sendBuf[1] = 0;
+        p->curId = 0;
+        p->sendLen = 0;
+        D_800335A0(p);
+        return;
+    }
+    prevId = p->curId;
+    p->curId = id >> 4;
+    if ((id >> 4) == 0xF) {
+        p->curId = prevId;
+    } else {
+        p->sendBuf[0] = 0;
+        p->sendBuf[1] = p->recvBuf[0];
+        p->sendLen = p->recvLen;
+        for (i = 2; i < p->recvLen; i++) {
+            p->sendBuf[i] = p->recvBuf[i];
+        }
+    }
+    if ((p->recvBuf[1] == 0 && (p->cmdState != 1 || p->sendFunc != NULL) && p->unk50 == 0)
+        || p->curId != prevId) {
+        D_800335A0(p);
+    }
+    state = p->cmdState;
+    p->retry = 0;
+    if (state == 0xFF || (state != 0 && p->cmd == 0)) {
+        return;
+    }
+    if ((u_char)(state - 2) < 0xFC && p->recvBuf[0] != 0xF3) {
+        D_800335A0(p);
+        return;
+    }
+    switch (p->cmdState) {
+    case 0:
+        p->loadState = 1;
+        p->cmdState++;
+        break;
+    case 1:
+        p->index = 0;
+        p->cmdState++;
+        break;
+    case 0xFE:
+        p->cmdState = 0xFF;
+        break;
+    default:
+        if (p->recvFunc != NULL) {
+            p->cmdState += p->recvFunc(p);
+        } else {
+            p->cmdState += _padRecvAtLoadInfo(p);
+        }
+        break;
+    }
+}
 
 void func_8002E6DC(PadPort* p)
 {

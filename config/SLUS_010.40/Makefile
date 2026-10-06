@@ -31,6 +31,12 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main
 # under either 2.7.2 build.
 $(BUILD)/src/SLUS_010.40/libc/MEMMOVE.o: CC1VER := 2.7.2-cdk
 
+# libpad PADIF/PADSEQD and libetc INTR_DMA were built with the CDK 2.7.2 cc1 (MIPS-as syntax): its
+# reorg fills delay slots from branch-target threads (return moves, redundant arg moves), which
+# 2.7.2-psx never does. All matched code in these units is byte-identical either way.
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libpad/PADIF libpad/PADSEQD libetc/INTR_DMA): CC1VER := 2.7.2-cdk
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libpad/PADIF libpad/PADSEQD libetc/INTR_DMA): CC1FLAGS += -mmips-as
+
 # libcd SYS_2 was built with -mhard-float: with the FP registers not fixed, loop.c's invariant
 # threshold is larger and the CdControl* retry loops hoist their 1/-1 constants. Every matched
 # libcd/libds function is byte-identical with or without it.

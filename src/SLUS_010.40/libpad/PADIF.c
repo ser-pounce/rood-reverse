@@ -79,7 +79,21 @@ void func_8002D694(PadPort* p)
     _padSioRW(p, -2);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADIF", func_8002D6DC);
+int func_8002D6DC(PadPort* p)
+{
+    if (D_800335DC == D_800335EC && D_800335D8 != 0) {
+        D_800335CC();
+        D_800335C8();
+    }
+    if (D_8003361C != 0) {
+        D_800335B4(p->unkC);
+        D_800335B4(p->unkC + 1);
+    }
+    if (p->cmd != 0) {
+        return _padSioRW2(p, p->cmd);
+    }
+    return _padSioRW2(p, 0x42);
+}
 
 int func_8002D7B4(PadPort* p)
 {
@@ -100,6 +114,23 @@ int func_8002D7B4(PadPort* p)
     return ret;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADIF", func_8002D860);
+int func_8002D860(PadPort* p)
+{
+    int ret;
+    int last = 0;
+
+    if (D_800335E8 != 0 && (p->recvBuf[0] >> 4) == 8) {
+        last = p->cmd == 0;
+    }
+    D_80033620 = last;
+    if (D_80033620 == 0) {
+        D_800335A8(p);
+    }
+    ret = _padSioRW2(p, (u_char)D_800335A4(p, D_80033620));
+    if (ret == 0x5A || ret == 0 || ret < 0) {
+        return ret;
+    }
+    return -4;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADIF", func_8002D924);

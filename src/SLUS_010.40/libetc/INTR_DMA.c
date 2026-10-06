@@ -43,7 +43,21 @@ void func_80020100(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/INTR_DMA", func_80020280);
+void* func_80020280(int ch, void (*func)())
+{
+    void (*prev)() = D_80032128[ch];
+
+    if (func != prev) {
+        if (func != NULL) {
+            D_80032128[ch] = func;
+            *D_80032124 = (*D_80032124 & 0xFFFFFF) | 0x800000 | (1 << (ch + 16));
+        } else {
+            D_80032128[ch] = NULL;
+            *D_80032124 = ((*D_80032124 & 0xFFFFFF) | 0x800000) & ~(1 << (ch + 16));
+        }
+    }
+    return prev;
+}
 
 void func_8002032C(long* ptr, long size)
 {

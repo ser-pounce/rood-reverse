@@ -17,14 +17,39 @@ typedef struct {
 extern ERSystem D_80032804;
 
 void func_80026360(u_char intr, u_char* result);
+void func_8002663C(u_char intr, u_char* result);
 void func_8002676C(u_char intr, u_char* result);
+void func_800266F4(void);
+DslCB DsStartCallback(DslCB func);
 int DS_lastmode(void);
 DslLOC* DS_lastpos(void);
 int DS_lastread(void);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", DsStartReadySystem);
+int DsStartReadySystem(DslRCB func, int count)
+{
+    if (D_80032804.active == 1) {
+        return 0;
+    }
+    D_80032804.pos = -1;
+    D_80032804.lastPos = 0;
+    D_80032804.request = 0;
+    D_80032804.func = func;
+    D_80032804.count = count;
+    D_80032804.oldReady = DsReadyCallback(func_80026360);
+    D_80032804.oldStart = DsStartCallback(func_8002663C);
+    D_80032804.active = 1;
+    return 1;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", DsEndReadySystem);
+void DsEndReadySystem(void)
+{
+    if (D_80032804.active == 1) {
+        DsReadyCallback(D_80032804.oldReady);
+        DsStartCallback(D_80032804.oldStart);
+        DsCommand(DslPause, NULL, NULL, -1);
+    }
+    D_80032804.active = 0;
+}
 
 int DsReadySystemMode(int mode)
 {
@@ -36,7 +61,23 @@ int DsReadySystemMode(int mode)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", func_80026360);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", func_8002663C);
+void func_8002663C(u_char intr, u_char* result)
+{
+    if (D_80032804.mode != 0 && D_80032804.active != 0) {
+        if (intr == DslComplete) {
+            if (DsQueueLen() == 0) {
+                func_800266F4();
+            }
+        } else {
+            DsReadyCallback(D_80032804.oldReady);
+            DsStartCallback(D_80032804.oldStart);
+            D_80032804.active = 0;
+            if (D_80032804.func != NULL) {
+                D_80032804.func(intr, result, NULL);
+            }
+        }
+    }
+}
 
 void func_800266F4(void)
 {
@@ -59,4 +100,11 @@ void func_8002676C(u_char intr, u_char* result)
 
 int ER_active(void) { return D_80032804.active; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSREADY", ER_clear);
+void ER_clear(void)
+{
+    if (D_80032804.active == 1) {
+        DsReadyCallback(D_80032804.oldReady);
+        DsStartCallback(D_80032804.oldStart);
+    }
+    D_80032804.active = 0;
+}

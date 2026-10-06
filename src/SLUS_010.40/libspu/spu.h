@@ -15,6 +15,8 @@ typedef struct {
 
 typedef struct {
     SpuVoiceRegs voice[24];
+    u_short mvolL;
+    u_short mvolR;
 } SpuRegs;
 
 typedef struct {

@@ -1,13 +1,13 @@
 #include "common.h"
 
-extern long D_80032114;
-extern int* D_80032118;
-extern void (*D_800320F4[8])();
-
+void InterruptCallback(int, void (*)());
 void func_8001FFEC(void);
-void func_80020058(int index, void (*func)());
+void func_80020058(int, void (*)(void));
 void func_80020084(long* ptr, long size);
-void InterruptCallback(int irq, void (*f)());
+
+extern void (*D_800320F4[8])(void);
+extern int D_80032114;
+extern int* D_80032118;
 
 void* startIntrVSync(void)
 {
@@ -30,10 +30,10 @@ void func_8001FFEC(void)
     }
 }
 
-void func_80020058(int index, void (*func)())
+void func_80020058(int index, void (*callback)(void))
 {
-    if (func != D_800320F4[index]) {
-        D_800320F4[index] = func;
+    if (callback != D_800320F4[index]) {
+        D_800320F4[index] = callback;
     }
 }
 

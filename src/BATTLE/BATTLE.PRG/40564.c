@@ -287,47 +287,58 @@ int func_800A92B8(int arg0, int arg1)
     return var_t0;
 }
 
-int func_800A9378(int x, int y, int z, int mode)
+int func_800A9378(int arg0, int arg1, int arg2, int arg3)
 {
-    func_8008D2C0_t platforms[4];
+    func_8008D2C0_t sp10[4];
     int count;
     int i;
 
     D_800F49F4 = 0;
-    count = func_8008D2C0(platforms);
+    count = func_8008D2C0(sp10);
+
     if (count == 0) {
         return 0;
     }
 
     for (i = 0; i < count; ++i) {
-        if (x < platforms[i].x + 64 && x >= platforms[i].x - 64 && z < platforms[i].z + 64
-            && z >= platforms[i].z - 64) {
-            switch (mode) {
-            case 0:
-                if (platforms[i].y < y - 256) {
-                    continue;
-                }
-                break;
-            case 1:
-                if (platforms[i].y < y - 256) {
-                    return platforms[i].y + 96;
-                }
-                continue;
-            case 2:
-                if (platforms[i].y >= y || platforms[i].y < y - 128) {
-                    continue;
-                }
-                break;
-            case 3:
-                if (platforms[i].y < y && platforms[i].y >= y - D_800F4B00) {
-                    return platforms[i].y + 96;
-                }
+        if ((arg0 >= sp10[i].x + 64) || (arg0 < sp10[i].x - 64)) {
+            continue;
+        }
+
+        if ((arg2 >= sp10[i].z + 64) || (arg2 < sp10[i].z - 64)) {
+            continue;
+        }
+
+        switch (arg3) {
+        case 0:
+            if (sp10[i].y < arg1 - 256) {
                 continue;
             }
-            D_800F49F4 = platforms[i].id + 2;
-            return platforms[i].y;
+            break;
+
+        case 1:
+            if (sp10[i].y < arg1 - 256) {
+                return sp10[i].y + 96;
+            }
+            continue;
+
+        case 2:
+            if ((sp10[i].y >= arg1) || (sp10[i].y < arg1 - 128)) {
+                continue;
+            }
+            break;
+
+        case 3:
+            if ((sp10[i].y >= arg1) || (sp10[i].y < arg1 - D_800F4B00)) {
+                continue;
+            }
+            return sp10[i].y + 96;
         }
+
+        D_800F49F4 = sp10[i].id + 2;
+        return sp10[i].y;
     }
+
     return 0;
 }
 

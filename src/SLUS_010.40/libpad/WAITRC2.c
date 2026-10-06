@@ -1,4 +1,5 @@
 #include "common.h"
+#include "WAITRC2.h"
 
 #define RCNT2_COUNT (*(volatile u_short*)0x1F801120)
 #define RCNT2_MODE (*(volatile u_short*)0x1F801124)

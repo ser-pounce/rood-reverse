@@ -209,6 +209,17 @@ typedef struct {
     MATRIX matrix;
 } cameraScratch;
 
+typedef struct {
+    int distance;
+    int steps;
+    char unk8[8];
+    VECTOR delta;
+    VECTOR candidate;
+    VECTOR direction;
+    char unk40[0x30];
+    MATRIX matrix;
+} cameraMotionScratch;
+
 short func_8008DC7C(int, int);
 int func_80090C2C(int);
 void func_800A190C(int, int, SVECTOR*, int);
@@ -3440,7 +3451,59 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCFB4);
+void func_800BCFB4(D_800F4BA4_t2* c)
+{
+    cameraMotionScratch* scratch;
+    cameraMotionScratch* finalScratch;
+    short i;
+    int height;
+    _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
+    _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+    scratch = (cameraMotionScratch*)0x1F800088;
+    scratch->matrix.t[0] = c->position.vx >> 12;
+    scratch->matrix.t[1] = c->position.vy >> 12;
+    scratch->matrix.t[2] = c->position.vz >> 12;
+    setVector(&scratch->delta, c->position.vx - c->computed.vx,
+        func_800BD2B8((MATRIX*)0x1F8000F8) - c->computed.vy,
+        c->position.vz - c->computed.vz);
+    scratch->distance = _vectorMagnitude((VECTOR*)0x1F800098);
+    scratch->steps = scratch->distance / c->value;
+    if (scratch->steps < 2) {
+        c->time = c->duration;
+    } else if (scratch->steps > 10) {
+        scratch->steps = 10;
+    }
+    _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+    _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+    _copyVector((VECTOR*)0x1F8000A8, &c->computed);
+    for (i = 1; i <= ((cameraMotionScratch*)0x1F800088)->steps; ++i) {
+        scratch = (cameraMotionScratch*)0x1F800088;
+        _vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
+        _vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
+        _vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
+        scratch->matrix.t[0] = scratch->candidate.vx >> 12;
+        scratch->matrix.t[1] = scratch->candidate.vy >> 12;
+        scratch->matrix.t[2] = scratch->candidate.vz >> 12;
+        height = func_800BD2B8((MATRIX*)0x1F8000F8);
+        if (height < scratch->candidate.vy) {
+            setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
+                height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
+            _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+            _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+            break;
+        }
+    }
+    _vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
+    finalScratch = (cameraMotionScratch*)0x1F800088;
+    if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
+        && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
+        && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
+        c->time = c->duration;
+    } else {
+        _copyVector(&D_800F4BA4->unk27C, &c->computed);
+        _copyVector(&c->computed, (VECTOR*)0x1F8000A8);
+    }
+}
 
 int func_800BD2B8(MATRIX* arg0)
 {

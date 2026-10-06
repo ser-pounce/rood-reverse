@@ -1597,7 +1597,7 @@ void func_800A190C(int, int, SVECTOR*, int);
 void func_800A7524(void*, void*);
 int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
 int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
-void func_800AC690(int arg0, D_800F45E0_t* arg1);
+void func_800AC690(int arg0, D_800F4538_t* arg1);
 extern u_char D_800F4B19;
 
 void func_800AB9A4(D_800F45E0_t* arg0)
@@ -1644,7 +1644,7 @@ void func_800AB9A4(D_800F45E0_t* arg0)
             temp_a2 = arg0->unk38;
             arg0->unk34 = (short)((short)(u_short)arg0->unk34 / 2);
             *(short*)((char*)arg0 + 0x38) = (short)temp_a2 / 2;
-            func_800AC690(arg0->unkF, arg0);
+            func_800AC690(arg0->unkF, (D_800F4538_t*)arg0);
             if ((u_int)(*(u_short*)((char*)arg0 + 0xA) & 7) >= 4U) {
                 if (arg0->unkF != 0) {
                     func_800AD494(arg0, 0xAB, &sp28);
@@ -2103,8 +2103,300 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
     }
 }
 
-void func_800AC690(int arg0, D_800F45E0_t* arg1);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
+void func_8006F450(SVECTOR*);
+void func_8008C49C(int, int);
+short func_8008DD0C(int, int);
+void func_800ACF54(D_800F45E0_t*);
+void func_800AE828(int, D_800F4538_t*, int);
+void func_800E4C28();
+void func_800E6764(int);
+void func_800E6EB0(int);
+extern u_int* D_800F49F0;
+extern u_char D_800E9278[];
+extern u_char D_800E92E8[];
+extern u_char D_800E92F0[];
+extern u_char D_800E92F8[];
+extern u_char D_800E9300[];
+
+typedef struct {
+    u_int unk0 : 24;
+    u_int timer : 8;
+} func_800AC690_timer_t;
+
+typedef struct {
+    u_int unk0 : 16;
+    u_int state : 3;
+    u_int unk13 : 13;
+} func_800AC690_flags_t;
+
+typedef struct {
+    u_int contact : 4;
+    u_int unk4 : 28;
+} func_800AC690_contact_t;
+
+static inline int func_800AC690_getProfile(D_800F4538_t* actor)
+{
+    u_int flags = *(u_int*)((char*)actor + 8);
+
+    if (flags & 0xF00) {
+        return 3;
+    }
+    if (flags & 0x400000) {
+        return 4;
+    }
+    if (flags & 0x200000) {
+        return 5;
+    }
+    if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+        return 6;
+    }
+    return actor->unk5B0_0 & 3;
+}
+
+void func_800AC690(int arg0, D_800F4538_t* actor)
+{
+    D_800F45E0_t* platform;
+    SVECTOR* position;
+    int profile;
+    int state;
+    int limit;
+    int floor;
+    int y;
+    int ground;
+    int top;
+    int vy;
+    int nextX;
+    int nextZ;
+    int hit;
+    short speed;
+    u_short velocity;
+    signed char timer;
+    u_int flags;
+
+    profile = func_800AC690_getProfile(actor);
+    flags = *(u_int*)((char*)actor + 8);
+    state = (flags >> 16) & 7;
+
+    switch (state) {
+    case 2:
+        if ((signed char)actor->unk0.unk11 > 0) {
+            timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
+            actor->unk0.unk11 = timer;
+            if (timer < 2) {
+                func_800A0204(arg0, D_800E92E8[profile], 0, 8);
+                actor->unk0.unk11 = 0;
+            }
+        } else {
+            if (actor->unk181A == 0) {
+                actor->unk0.unk34.vy = -30;
+            }
+            actor->unk5B7 = 0;
+            *(u_int*)((char*)actor + 8) = (*(u_int*)((char*)actor + 8) & 0xFFF8FFFF) | 0x30000;
+            if (*(u_int*)((char*)actor + 0xC) & 0xF) {
+                func_8008C49C(actor->unk0.unkC_0 - 2, -1);
+                *(u_int*)((char*)actor + 0xC) &= ~0xF;
+            }
+        }
+        break;
+    case 3:
+        if ((signed char)actor->unk0.unk11 > 0) {
+            timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
+            actor->unk0.unk11 = timer;
+            if (timer > 0) {
+                break;
+            }
+            func_800A0204(actor->unk0.unkF, 0x2F, 0, 8);
+            actor->unk0.unk11 = 0;
+        }
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            y = vs_gametime_tickspeed / 2;
+            ((func_800AC690_timer_t*)&actor->unk5B4)->timer += y;
+            limit = 7;
+            y = ((func_800AC690_timer_t*)&actor->unk5B4)->timer >> 1;
+            ((func_800AC690_timer_t*)&actor->unk5B4)->timer -= y * 2;
+        } else {
+            limit = 9;
+            y = (vs_gametime_tickspeed / 2) * state;
+        }
+        velocity = actor->unk0.unk34.vy + y;
+        actor->unk0.unk34.vy = velocity;
+        if ((short)velocity < 0) {
+            y = 1;
+            floor = func_8008DD0C(actor->unk0.position.vx, actor->unk0.position.vz);
+            floor <<= 17;
+            floor >>= 17;
+            if (arg0 != 0) {
+                y = 3;
+                D_800F4B00 = actor->menuCameraHeightOffset + 0x40;
+            }
+            ground = func_800A9378(actor->unk0.position.vx, actor->unk0.position.vy,
+                actor->unk0.position.vz, y);
+            if (ground != 0 && floor < ground) {
+                floor = ground;
+            }
+            top = actor->unk0.position.vy + actor->unk0.unk34.vy - 0xC0;
+            if (top < floor) {
+                actor->unk0.unk34.vy = -actor->unk0.unk34.vy;
+                if (arg0 != 0) {
+                    actor->unk0.unk34.vx = 0;
+                    actor->unk0.unk34.vz = 0;
+                    actor->unk181A = 0;
+                    func_800E4C28(((u_char*)&actor->unk5EC)[0], ((u_char*)&actor->unk5EC)[2]);
+                }
+            }
+        }
+        y = actor->unk0.unk34.vy;
+        if (y <= limit) {
+            if (y >= -limit) {
+                func_800A0204(arg0, D_800E92F0[profile], 0, 16);
+            }
+        } else {
+            func_800A0204(arg0, D_800E92F8[profile], 0, 8);
+        }
+        switch (actor->unk181A) {
+        case 0:
+            if (actor->unk0.unk34.vy < 0) {
+                goto fall;
+            }
+            break;
+        case 1:
+        slide:
+            speed = actor->unk0.unk34.vx;
+            if (speed != 0) {
+                nextX = actor->unk0.position.vx + speed;
+                if (speed > 0) {
+                    hit = actor->unk1814 < nextX;
+                } else {
+                    hit = nextX < actor->unk1814;
+                }
+                if (hit) {
+                    actor->unk0.unk34.vx = 0;
+                }
+            }
+            speed = actor->unk0.unk34.vz;
+            if (speed != 0) {
+                nextZ = actor->unk0.position.vz + speed;
+                if (speed > 0) {
+                    hit = actor->unk1818 < nextZ;
+                } else {
+                    hit = nextZ < actor->unk1818;
+                }
+                if (hit) {
+                    actor->unk0.unk34.vz = 0;
+                }
+            }
+            break;
+        case 2:
+            vy = actor->unk0.unk34.vy;
+            --actor->unk1816;
+            if (vy < 0) {
+                goto fall;
+            }
+            y = func_800A9378(actor->unk0.position.vx + actor->unk0.unk34.vx,
+                actor->unk0.position.vy + vy, actor->unk0.position.vz + actor->unk0.unk34.vz, 2);
+            if (D_800F49F4 != 0 && D_800F49F4 != ((u_char*)&actor->unk5EC)[1]) {
+                actor->unk6E4 = D_800F49F4;
+                actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+                actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+                actor->unk0.unk5D = 0;
+                func_8008C49C(D_800F49F4 - 2, arg0);
+                func_8008C49C(D_800F49F4 - 2, -1);
+                D_800F49F4 = 0;
+                func_800E6764(arg0);
+                goto land;
+            }
+            if (actor->unk1816 > 0) {
+                goto fall;
+            }
+            goto slide;
+        default:
+            break;
+        }
+        position = &actor->unk0.position;
+        y = func_800A6EE8(position, actor->unk0.unk34.vx, actor->unk0.unk34.vz, 1);
+        if (y == 3000 && D_800E9278[*D_800F49F0 & 0x1F] == 20) {
+            if (actor->unk0.position.vy <= 0
+                && actor->unk0.position.vy + actor->unk0.unk34.vy >= 0) {
+                func_8006F450(position);
+            }
+        }
+        top = actor->unk0.position.vy + actor->unk0.unk34.vy;
+        if (top < y) {
+            goto fall;
+        }
+        if (D_800F49F4 != 0) {
+            if (y - top < -0x80) {
+                actor->unk0.unk34.vx = 0;
+                actor->unk0.unk34.vz = 0;
+                goto fall;
+            }
+        }
+    land:
+        if (D_800F49F8 != 0) {
+            platform = D_800F45E0[D_800F49F8];
+            if (platform->unk1A != 0) {
+                actor->unk0.position.vy = platform->unk1E - 0x80;
+                break;
+            }
+        }
+        *(short*)&actor->unk6EE = 0;
+        ((func_800AC690_contact_t*)((char*)actor + 0xC))->contact = (u_char)D_800F49F4;
+        actor->unk0.unk5D = D_800F49F4;
+        actor->unk5AC_28 = D_800F49F8;
+        actor->unk0.unk34.vy = y - actor->unk0.position.vy;
+        ((func_800AC690_flags_t*)((char*)actor + 8))->state = 4;
+        func_800AA698(arg0, &actor->unk0.unk34, 0);
+        floor = actor->unk0.position.vy - ((SVECTOR*)&actor->unk0.unk4C)->vy;
+        floor /= 64;
+        actor->unk0.unk11 = 0;
+        if (y < 3000) {
+            if (actor->unk0.unkF != 0 || !(*(u_int*)((char*)actor + 8) & 0xF00)
+                || ((*(u_int*)((char*)actor + 8) >> 8) & 0xF) >= 6) {
+                if (floor >= 4) {
+                    func_800AE828(arg0, actor, 0x42);
+                    if (floor >= 6 && arg0 == 0) {
+                        actor->unk0.unk11 = 8;
+                    }
+                } else {
+                    func_800AE828(arg0, actor, 0x41);
+                }
+            }
+        }
+        actor->unk181A = 0;
+        *(u_int*)((char*)actor + 0x5AC) &= ~0x04000000;
+        func_800A0204(arg0, D_800E9300[profile], 0, 8);
+        break;
+    fall:
+        func_800AA698(arg0, &actor->unk0.unk34, 0);
+        break;
+    case 4:
+        if (flags & 0x200000) {
+            *(u_int*)((char*)actor + 8) = flags & ~0x200000;
+            *(u_int*)((char*)actor + 8) &= ~0x400000;
+        }
+        func_800ACF54((D_800F45E0_t*)actor);
+        actor->unk0.unk11 -= vs_gametime_tickspeed / 2;
+        if ((signed char)actor->unk0.unk11 < 0) {
+            actor->unk0.unk11 = 0;
+        }
+        if ((signed char)actor->unk0.unk11 == 0) {
+            actor->unk6EC = 0;
+            if (actor->unk0.unkF != 0) {
+                if (!(*(u_int*)((char*)actor + 8) & 0x400000) && actor->unk5CC != 0) {
+                    break;
+                }
+                if (profile != 3) {
+                    func_800A0204(arg0, 1, 0, 8);
+                }
+                func_800E4C28(actor->unk0.currentTileX, actor->unk0.currentTileZ);
+                func_800E6EB0(actor->unk0.unkF);
+            }
+            actor->unk1846 = 0;
+            *(u_int*)((char*)actor + 8) &= 0xFFF8FFFF;
+        }
+        break;
+    }
+}
 
 typedef struct {
     int unk0;

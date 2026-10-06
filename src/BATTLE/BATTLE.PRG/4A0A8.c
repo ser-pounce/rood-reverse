@@ -223,6 +223,7 @@ void func_800BBE10(u_short);
 void func_800BBE04(int arg0);
 void func_800BBE94(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
+void func_800BCFB4(D_800F4BA4_t2*);
 void func_800BC1CC(short, int);
 int func_800BD2B8(MATRIX*);
 void func_800BD57C(func_800BD57C_t* arg0);
@@ -3326,7 +3327,118 @@ void func_800BC9E0(void)
     func_800BE180();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCA8C);
+void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
+{
+    if (c->mode == 15) {
+        return;
+    }
+    if (c->mode != 11) {
+        c->time += vs_gametime_tickspeed >> 1;
+        if (c->time > c->duration) {
+            c->time = c->duration;
+        }
+    }
+    switch (c->mode) {
+    case 2:
+        ((cameraScratch*)0x1F800088)->value =
+            func_800BFEBC(c->ease1, c->time, c->duration);
+        _vectorFixedPointMult(
+            (VECTOR*)0x1F800098, &c->velocity, ((cameraScratch*)0x1F800088)->value);
+        _vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        break;
+    case 3: {
+        cameraScratch* s = (cameraScratch*)0x1F800088;
+        s->value = func_800BFEBC(c->ease1, c->time, c->duration);
+        _vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
+        _vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
+        _vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
+        _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        s->distance = _vectorMagnitude(
+            _vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
+        s->value = c->value
+                 + _fixedPointMult(s->distance - c->value,
+                     func_800BFEBC(c->ease1, c->time, c->duration));
+        _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
+        _vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
+        break;
+    }
+    case 4: {
+        cameraScratch* s = (cameraScratch*)0x1F800088;
+        s->rotation.vz = 0;
+        s->rotation.vx = 0;
+        s->rotation.vy =
+            c->angle
+            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
+        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        s->v1.vz =
+            c->value
+            + _fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
+        s->v1.vx = 0;
+        s->v1.vy = 0;
+        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        s->v1.vy = c->aux.vy
+                 + _fixedPointMult(
+                     c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
+        _vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        break;
+    }
+    case 5: {
+        cameraScratch* s = (cameraScratch*)0x1F800088;
+        s->rotation.vz = 0;
+        s->rotation.vx = 0;
+        s->rotation.vy =
+            c->angle
+            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
+        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        s->v1.vz =
+            c->value
+            + _fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
+        s->v1.vx = 0;
+        s->v1.vy = 0;
+        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        c->computed.vx = c->position.vx + s->v1.vx;
+        c->computed.vz = c->position.vz + s->v1.vz;
+        c->computed.vy = c->start.vy
+                       + _fixedPointMult(
+                           c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
+        break;
+    }
+    case 8:
+        func_800A190C(c->value, c->delta, (SVECTOR*)0x1F8000D8, 2);
+        _vectorAdd(&c->computed,
+            _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
+            &c->velocity);
+        break;
+    case 9:
+        _vectorAdd(&c->computed, &c->velocity, &c->target);
+        break;
+    case 11:
+        func_800BCFB4(c);
+        break;
+    }
+    _copyVector(&c->previousCamera, &c->current);
+    if (c->follow & c->following) {
+        int fraction;
+        cameraScratch* s;
+        _vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
+        fraction = func_800BFEBC(1, c->time, c->duration);
+        s = (cameraScratch*)0x1F800088;
+        s->value = fraction;
+        _vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
+        _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
+        _vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
+    } else {
+        _copyVector(&c->current, &c->computed);
+    }
+    if (c->time == c->duration) {
+        c->mode = 15;
+        if (c->follow) {
+            c->following = 1;
+            _copyVector(&c->followPosition, &c->current);
+            _vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800BCFB4);
 

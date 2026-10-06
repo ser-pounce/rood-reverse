@@ -52,6 +52,12 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,libspu/S_INI libspu/S_SRMD libspu/S_SR
 ): \
 	CC1FLAGS += -fno-rerun-cse-after-loop
 
+# libgpu/SYS was built without the post-loop CSE pass and without -fforce-mem: SetGraphDebug tests
+# the value it just stored (andi a0,0xff) but reloads the field for its printf, and the
+# SetGraphQueue/DrawSyncCallback/MoveImage/MoveImage2 bodies only match with both. Every other
+# matched SYS function is byte-identical either way (func_8002A30C's copy loop is spelled to be).
+$(BUILD)/src/SLUS_010.40/libgpu/SYS.o: CC1FLAGS += -fno-rerun-cse-after-loop -fno-force-mem
+
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

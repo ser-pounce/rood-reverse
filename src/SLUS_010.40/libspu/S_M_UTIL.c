@@ -32,4 +32,7 @@ inline int _SpuIsInAllocateArea(u_long addr)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_M_UTIL", _SpuIsInAllocateArea_);
+int _SpuIsInAllocateArea_(u_long addr)
+{
+    return _SpuIsInAllocateArea(addr << _spu_mem_mode_plus);
+}

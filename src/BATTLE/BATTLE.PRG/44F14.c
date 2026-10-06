@@ -371,7 +371,7 @@ void func_800AB9A4(void*);
 void func_800AC540(int, D_800F4538_t*);
 typedef struct objectAnimationState objectAnimationState;
 void func_800B0908(objectAnimationState*, int);
-void func_800B1A68(void*, MATRIX*);
+void func_800B1A68(D_800F45E0_t*, MATRIX*);
 extern int D_800E9308;
 extern u_char D_800F4B18, D_800F4B19;
 
@@ -593,7 +593,7 @@ void func_800AEF94(MATRIX* camera)
             if ((*(u_int*)((char*)object + 8)) & 0xF00) {
                 func_800AB9A4((D_800F4538_t*)object);
             }
-            func_800B1A68((D_800F4538_t*)object, camera);
+            func_800B1A68((D_800F45E0_t*)object, camera);
         }
         i += 1;
         entries++;
@@ -1338,8 +1338,6 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B17F0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B196C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B1A68);
-
 typedef struct {
     char prefix[0x34];
     u_short tpage, clut;
@@ -1352,6 +1350,133 @@ typedef struct {
     VECTOR scale;
     char* model;
 } weaponTransformScratch;
+extern MATRIX D_800F3C58[];
+extern MATRIX D_800F3C78;
+void func_800B17F0(SVECTOR*, MATRIX*);
+void func_800B196C(MATRIX*, MATRIX*);
+void func_800B396C(MATRIX*, VECTOR*);
+int func_800B3A68(void*, MATRIX*, int, void*);
+void func_800B4594(void*, void*, void*, void*);
+void func_800B5C30(void*, void*, void*, void*);
+int func_800A190C(int, int, SVECTOR*, int);
+
+void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
+{
+    MATRIX local;
+    SVECTOR points[2];
+    weaponTransformScratch* scratch = (void*)0x1F80035C;
+    D_800F4538_t* actor;
+    u_int kind;
+    u_int flags;
+    int value;
+
+    scratch->model = (char*)object->unk68;
+    gte_SetRotMatrix(camera);
+    gte_SetTransMatrix(camera);
+    scratch->translation.vx = scratch->position.vx;
+    scratch->translation.vy = scratch->position.vy + 16;
+    scratch->translation.vz = scratch->position.vz;
+    gte_ldv0((void*)0x1F8003A8);
+    gte_rtv0tr2();
+    kind = object->unk6C[8].actorId;
+    if (kind >= 4) {
+        if (object->unk12 == 0xFF) {
+            goto rotate;
+        }
+        actor = D_800F4538[object->unk12];
+        func_800A190C(object->unk12, 0xF0, &points[0], 1);
+        func_800A190C(object->unk12, 0xF1, &points[1], 1);
+        gte_SetRotMatrix(camera);
+        gte_SetTransMatrix(camera);
+        scratch->translation.vx = (points[0].vx + points[1].vx) / 2;
+        scratch->translation.vy = (points[0].vy + points[1].vy) / 2;
+        scratch->translation.vz = (points[0].vz + points[1].vz) / 2;
+        gte_ldv0((void*)0x1F8003A8);
+        gte_rtv0tr2();
+        scratch->rotation.vx = ((SVECTOR*)&object->unk6C[5])->vx + object->unk24;
+        scratch->rotation.vy = ((SVECTOR*)&object->unk6C[5])->vy + object->unk26;
+        scratch->rotation.vz =
+            ((SVECTOR*)&object->unk6C[5])->vz + *(short*)&object->unk28;
+        gte_stlvnl((void*)0x1F8003D4);
+        func_800B17F0((SVECTOR*)0x1F8003E0, (MATRIX*)0x1F8003C0);
+        scratch->rotation.vx = actor->unk0.unk24;
+        scratch->rotation.vy = actor->unk0.facing;
+        scratch->rotation.vz = actor->unk0.unk28;
+        func_800B17F0((SVECTOR*)0x1F8003E0, &local);
+        func_800B196C(&local, (MATRIX*)0x1F8003C0);
+    } else if (kind < 2) {
+        if (object->unk1A != 0) {
+            scratch->rotation.vx = object->unk24;
+            scratch->rotation.vy = object->unk26;
+            scratch->rotation.vz = *(short*)&object->unk28;
+            gte_stlvnl((void*)0x1F8003D4);
+            RotMatrixYXZ_gte((SVECTOR*)0x1F8003E0, (MATRIX*)0x1F8003C0);
+            func_800B196C(camera, (MATRIX*)0x1F8003C0);
+            ((void (*)(MATRIX*, MATRIX*))CompMatrixLV)(
+                (MATRIX*)0x1F8003C0, (MATRIX*)&object->unk6C[4]);
+            goto composed;
+        }
+        *(MATRIX*)0x1F8003C0 = *(MATRIX*)&object->unk6C[4];
+        gte_stlvnl((void*)0x1F8003D4);
+    } else {
+    rotate:
+        scratch->rotation.vx = ((SVECTOR*)&object->unk6C[5])->vx;
+        scratch->rotation.vy = ((SVECTOR*)&object->unk6C[5])->vy;
+        scratch->rotation.vz = ((SVECTOR*)&object->unk6C[5])->vz;
+        gte_stlvnl(scratch->matrix.t);
+        scratch->rotation.vx += object->unk24;
+        scratch->rotation.vy += object->unk26;
+        scratch->rotation.vz += *(short*)&object->unk28;
+        *(int*)&scratch->rotation &= 0x0FFF0FFF;
+        *(int*)&scratch->rotation.vz &= 0xFFF;
+        func_800B17F0(&scratch->rotation, &scratch->matrix);
+    }
+    func_800B196C(camera, &scratch->matrix);
+composed:
+    func_800B396C(&scratch->matrix, (VECTOR*)&D_800F3C58[63]);
+    D_800F3C58[0] = scratch->matrix;
+    *(MATRIX*)&object->unk6C[0] = scratch->matrix;
+    if (*(int*)&object->unk2C != 0x400040 || object->unk30 != 64) {
+        scratch->scale.vx = object->unk2C;
+        scratch->scale.vy = object->unk2E;
+        scratch->scale.vz = object->unk30;
+        scratch->scale.vx <<= 6;
+        scratch->scale.vy <<= 6;
+        scratch->scale.vz <<= 6;
+        func_800B396C(&scratch->matrix, &scratch->scale);
+        D_800F3C58[0] = scratch->matrix;
+        *(MATRIX*)&object->unk6C[0] = scratch->matrix;
+    }
+    D_800F3C78 = scratch->matrix;
+    *(MATRIX*)&object->unk6C[1] = scratch->matrix;
+    if (*(int*)((char*)object + 8) & 2) {
+        if (func_800B3A68(object, (MATRIX*)&object->unk6C[0], (-vs_main_nearClip) << 2,
+                object->unk68)) {
+            scratch->tpage = GetTPage(0, 0, 0x40, 0x100);
+            if (object->unk64.unk0 != 0
+                || ((*(u_int*)((char*)object + 8) >> 8) & 0xF) >= 6) {
+                scratch->clut = GetClut((object->unkF << 4) + 0x300, 0xFF);
+            } else {
+                scratch->clut = GetClut((object->unkF << 4) + 0x300, 0xED);
+            }
+            flags = *(u_int*)((char*)object + 8);
+            value = 0;
+            if (((flags >> 8) & 0xF) - 4 < 5) {
+                if ((flags & 0xF00) != 0x600)
+                    value = 1;
+            }
+            if (((flags >> 8) & 0xF) >= 12) {
+                value = 1;
+            }
+            if (value) {
+                func_800B5C30(&D_800F2458, object, &object->unk54, scratch->model);
+                return;
+            }
+            func_800B4594(&D_800F2458, object, &object->unk54, scratch->model);
+        }
+    }
+}
+
 typedef struct {
     char prefix[0x20];
     MATRIX matrix;

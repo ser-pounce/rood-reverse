@@ -26,6 +26,11 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o, \
 # before jr). SYS_2 takes the default 2.7.2-psx.
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.o,2MBYTE.OBJ libcd/SYS overlay 25AC main 31B7C): CC1VER := 2.8.1-psx
 
+# libc MEMMOVE was built with the CDK 2.7.2 compiler: its backward copy loop keeps the n-- index
+# (2.7.2-psx strength-reduces it into a pointer walk). Every other libc unit is byte-identical
+# under either 2.7.2 build.
+$(BUILD)/src/SLUS_010.40/libc/MEMMOVE.o: CC1VER := 2.7.2-cdk
+
 # Sony's PsyQ library objects were assembled by GNU as in reorder mode (the assembler fills
 # j/jr/jal delay slots with the preceding instruction, including the tail of a lui/sw macro),
 # not by ASPSX. Feed cc1 output straight to as; only `move` must keep the old addu encoding.

@@ -1,13 +1,13 @@
 /* Shared three-row, sixteen-column tiled ring effect. The overlay supplies its entry
  * point and color table. */
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
-#ifndef VS_TILED_RING_TYPES
-#define VS_TILED_RING_TYPES
+
 typedef struct {
     u_char lifetime;
     u_char effect;
@@ -29,7 +29,7 @@ typedef struct {
     u_char u;
     u_char v;
 } vs_tiledRingUV;
-#endif
+
 extern u_char VS_TILED_RING_COLORS[][4];
 
 int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)

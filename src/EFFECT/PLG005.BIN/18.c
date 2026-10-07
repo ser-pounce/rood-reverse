@@ -1,4 +1,4 @@
-#include "common.h"
+#include "18.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "scratch.h"
@@ -32,7 +32,7 @@ typedef struct {
     int pad[3];
 } unkPrim;
 
-int func_800F9818(func_800D4910_t* arg0, u_int arg1, int arg2)
+int vs_effect_analyze(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     int gridX[9];
     int gridZ[9];

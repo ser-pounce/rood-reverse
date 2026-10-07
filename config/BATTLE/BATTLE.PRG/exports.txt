@@ -231,6 +231,10 @@ func_800CB654
 func_800CB660
 func_800CE64C
 func_800CFE1C
+func_800D2ADC
+func_800D6CCC
+func_800D6CF0
+func_800D6D24
 func_800E6EAC
 vs_battle_actors
 vs_battle_addTile

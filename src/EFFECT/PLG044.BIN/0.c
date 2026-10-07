@@ -1,3 +1,12 @@
-#define VS_TILED_RING_FUNCTION func_800F9800
+#include "0.h"
+#include <stddef.h>
+#include <libgte.h>
+
+#define VS_TILED_RING_FUNCTION vs_effect_solidShock
 #define VS_TILED_RING_COLORS D_800FA6F8
+
+static CVECTOR VS_TILED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
+    { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
+    { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };
+
 #include "src/EFFECT/tiledRings.h"

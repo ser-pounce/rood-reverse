@@ -1,6 +1,6 @@
 $(BUILD)/data/TITLE/TITLE.PRG: $(BUILD)/data/SLUS_010.40.elf
-$(BUILD)/data/TITLE/TITLE.PRG: LDLIBS += $(BUILD)/data/SLUS_010.40.elf
-$(BUILD)/data/TITLE/TITLE.PRG $(BUILD)/data/TITLE/TITLE.PRG.elf: LDSCRIPT := link.ld
+$(BUILD)/data/TITLE/TITLE.PRG: private LDLIBS += $(BUILD)/data/SLUS_010.40.elf
+$(BUILD)/data/TITLE/TITLE.PRG $(BUILD)/data/TITLE/TITLE.PRG.elf: private LDSCRIPT := link.ld
 
 $(BUILD)/src/TITLE/TITLE.PRG/22C.c.o: CPPFLAGS += -D MENUBGSZ=$(strip \
 	$(shell $(SIZE) $(BUILD)/assets/TITLE/TITLE.PRG/_titleScreenBg.rleRgb555.img.png.o | cut -f2 | tail -n 1)\

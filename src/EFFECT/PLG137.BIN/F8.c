@@ -18,4 +18,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FBFDC);
 
 INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FC524);
 
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FD074);
+#define VS_TILED_RING_FUNCTION func_800FD074
+#define VS_TILED_RING_COLORS D_800FE040
+#include "src/EFFECT/tiledRings.h"

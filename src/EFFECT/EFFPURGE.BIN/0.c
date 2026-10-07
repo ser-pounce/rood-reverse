@@ -1,3 +1,4 @@
+#include "src/EFFECT/PLG005.BIN/18.h"
 #include "src/EFFECT/PLG044.BIN/0.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
@@ -471,7 +472,7 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static effectExec _effectEntryPoints[] = { func_800F9818, vs_effect_solidShock,
+static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock,
     func_800FB320, func_800F9800, func_800F9800, vs_spiritSurge_renderTrails,
     func_800FBA00, func_800FC624, func_800FD51C, func_800F98E0, func_800FC0E4, NULL,
     func_800F9800, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
@@ -586,8 +587,8 @@ static _loadFileContext _plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, 
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2) __attribute__((unused));
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    func_800F9818(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
+    vs_effect_analyze(NULL, 2, 0);
+    vs_effect_solidShock(NULL, 2, 0);
     func_800FB320(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);

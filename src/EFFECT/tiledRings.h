@@ -1,6 +1,5 @@
 /* Shared three-row, sixteen-column tiled ring effect. The overlay supplies its entry
  * point and color table. */
-#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

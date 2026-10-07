@@ -230,8 +230,8 @@ func_800CA9C0
 func_800CB654
 func_800CB660
 func_800CE64C
-func_800E6EAC
 func_800CFE1C
+func_800E6EAC
 vs_battle_actors
 vs_battle_addTile
 vs_battle_addVecToSvec
@@ -273,6 +273,7 @@ vs_battle_equipArmor
 vs_battle_equipShield
 vs_battle_equipWeapon
 vs_battle_exec
+vs_battle_getActionFlags
 vs_battle_getCurrentRoomId
 vs_battle_getCurrentSceneId
 vs_battle_getEmptyObjectDataSlot
@@ -280,7 +281,6 @@ vs_battle_getGeomOffset
 vs_battle_getLimbStatus
 vs_battle_getMapCompletion
 vs_battle_getMenuItem
-vs_battle_getActionFlags
 vs_battle_getStatusFlags
 vs_battle_getTextBox
 vs_battle_getTextLineLength
@@ -292,8 +292,8 @@ vs_battle_invalidOpcode
 vs_battle_inWorkshop
 vs_battle_isSpellClassUnlocked
 vs_battle_keystreamBits
-vs_battle_lerpSvector
 vs_battle_lerp2DVector
+vs_battle_lerpSvector
 vs_battle_lerpVector
 vs_battle_limbNames
 vs_battle_loadMenuPrg

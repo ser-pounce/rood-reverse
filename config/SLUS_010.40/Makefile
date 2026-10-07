@@ -1,6 +1,6 @@
 $(BUILD)/data/SLUS_010.40: $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL TITLE/TITLE)
-$(BUILD)/data/SLUS_010.40: LDLIBS += $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL TITLE/TITLE)
-$(BUILD)/data/SLUS_010.40: LDFLAGS += \
+$(BUILD)/data/SLUS_010.40: private LDLIBS += $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL TITLE/TITLE)
+$(BUILD)/data/SLUS_010.40: private LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000 \
 	--defsym=g_pActiveMusicConfig2=0x80037820\

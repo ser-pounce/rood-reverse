@@ -22,5 +22,5 @@ segments:
     align: 4
     subsegments:
     - [0x0, c]
-    - [0xEF8, data, 0]
+    - [0xEF8, .data, 0]
   - [0xF18]

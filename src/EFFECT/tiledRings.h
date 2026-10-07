@@ -30,7 +30,7 @@ typedef struct {
     u_char v;
 } vs_tiledRingUV;
 
-extern u_char VS_TILED_RING_COLORS[][4];
+extern CVECTOR VS_TILED_RING_COLORS[];
 
 int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -53,7 +53,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int fraction;
     int radiusValue;
     int baseAngle;
-    u_char* factorBytes;
+    CVECTOR* factorBytes;
     int cosAngle;
     int sinAngle;
     int speed;
@@ -91,10 +91,10 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         column = vs_battle_sampleCurve(effect->unk17, state->age);
         fraction = func_800CFE1C(effect->unk30, column);
         column = effect->transparencyCurve & 0x7;
-        factorBytes = VS_TILED_RING_COLORS[column];
-        factors[0] = factorBytes[0];
-        factors[1] = factorBytes[1];
-        factors[2] = factorBytes[2];
+        factorBytes = &VS_TILED_RING_COLORS[column];
+        factors[0] = factorBytes->r;
+        factors[1] = factorBytes->g;
+        factors[2] = factorBytes->b;
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
         switch (scratch->flags & 7) {

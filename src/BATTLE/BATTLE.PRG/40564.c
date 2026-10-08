@@ -1763,7 +1763,151 @@ int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
     return var_t0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC168);
+int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference)
+{
+    int i;
+    int changed = 0;
+    int baseR;
+    int baseG;
+    int baseB;
+    int delta;
+
+    for (i = 0; i < count; ++i, ++colors, ++reference) {
+        int b = *colors;
+        int r = b & 31;
+        int g = (b >> 5) & 31;
+
+        b = (b >> 10) & 31;
+
+        switch (mode) {
+        case 0:
+            delta = amount * 2;
+            r -= delta;
+
+            if (r < 0) {
+                r = 0;
+            }
+
+            g -= delta;
+
+            if (g < 0) {
+                g = 0;
+            }
+
+            r |= g << 5;
+
+            if (r != 0) {
+                changed = 1;
+            }
+
+            r |= b << 10;
+            *colors = r | ~0x7FFF;
+            break;
+
+        case 1:
+            delta = amount * 4;
+        fade:
+            b -= delta;
+
+            if (b < 0) {
+                b = 0;
+            }
+
+            r -= delta;
+
+            if (r < 0) {
+                r = 0;
+            }
+
+            g -= delta;
+
+            if (g < 0) {
+                g = 0;
+            }
+
+            r |= g << 5;
+            r |= b << 10;
+
+            if (r != 0) {
+                changed = 1;
+            }
+
+            *colors = r | ~0x7FFF;
+            break;
+
+        case 2:
+            *colors = 0xFFFF;
+            break;
+
+        case 3:
+            r += amount;
+
+            if (r >= 32) {
+                r = 31;
+            }
+
+            g += amount * 2;
+
+            if (g >= 32) {
+                g = 31;
+            }
+
+            b += amount * 2;
+
+            if (b >= 32) {
+                b = 31;
+            }
+
+            r |= g << 5;
+            r |= b << 10;
+            *colors = r | ~0x7FFF;
+            break;
+
+        case 4:
+            baseB = *reference;
+            r -= amount * 2;
+            baseR = baseB & 31;
+            baseG = (baseB >> 5) & 31;
+            baseB = (baseB >> 10) & 31;
+
+            if (r < baseR) {
+                r = baseR;
+            }
+
+            g -= amount * 2;
+
+            if (g < baseG) {
+                g = baseG;
+            }
+
+            b -= amount * 2;
+
+            if (b < baseB) {
+                b = baseB;
+            }
+
+            r |= g << 5;
+            r |= b << 10;
+
+            if (r != (*reference & 0x7FFF)) {
+                changed = 1;
+            }
+
+            *colors = (*reference & 0x8000) | r;
+            break;
+
+        case 5:
+            delta = amount;
+            goto fade;
+
+        case 6:
+            *colors = 0x8000;
+            break;
+        }
+    }
+
+    return changed;
+}
 
 void func_800AC37C(int arg0, int arg1)
 {

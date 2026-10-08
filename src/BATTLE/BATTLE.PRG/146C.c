@@ -4134,7 +4134,158 @@ void func_800719FC(int arg0 __attribute__((unused)))
     _cameraMode = 3;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80071F68);
+void func_80071F68(int arg0)
+{
+    func_8006EBF8_t state;
+    D_800F19CC_t2 result;
+    int i;
+    int action = D_800F19CC->unk8.actionIndex;
+    vs_battle_actor2* attacker;
+    vs_action_t* spec;
+    int count;
+    int j;
+
+    D_800F19CC->unk2988 = arg0;
+    D_800F19CC->unk29A0 = vs_main_actions[action].shape;
+    spec = &vs_main_actions[action];
+    D_800F19CC->unk29A1 = 1;
+    func_800A1108(D_800F19CC->unk8.unk4.unk0.targetActor, &state);
+    D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+    attacker = vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk3C;
+
+    if (spec->rangeX == 0xFF) {
+        D_800F19CC->unk29A4 = attacker->currentRange;
+        D_800F19CC->unk29A5 = attacker->unk39;
+        D_800F19CC->unk29A6 = attacker->unk3A;
+        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle * 8;
+    } else {
+        D_800F19CC->unk29A4 = spec->rangeX;
+        D_800F19CC->unk29A5 = spec->rangeY;
+        D_800F19CC->unk29A6 = spec->rangeZ;
+        D_800F19CC->unk29A7 = spec->angle * 8;
+    }
+
+    func_800A190C(D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A8, 0);
+
+    if (D_800F19CC->unk2984) {
+        func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
+    }
+
+    count = 0;
+
+    for (i = 0; i < 16; ++i) {
+        u_int status = func_800A0BE0(i);
+
+        if (vs_battle_actors[i]
+            && (i != D_800F19CC->unk8.unk4.unk0.targetActor
+                || D_800E81B4[vs_main_actions[action].unk2_4])
+            && (status & 0x3000001) == 1
+            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+            if (D_800E81C4[vs_main_actions[action].unk2_4]) {
+                for (j = 0; j < 6; ++j) {
+                    int part = func_800A152C(i, j, 2);
+
+                    if (part >= 0) {
+                        func_800A1B9C(i, j, &D_800F19CC->unk29C0[count].unk0, 0);
+
+                        if (func_800C1564((void*)&D_800F19CC->unk29A0,
+                                (void*)&D_800F19CC->unk29C0[count])) {
+                            D_800F19CC->unk29C0[count].unk8 = func_800A1648(i, part, 0);
+                            D_800F19CC->unk29C0[count].unkA = j;
+                            D_800F19CC->unk29C0[count].unk9 = i;
+                            func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
+                                i, j, &result);
+                            func_8006F630(
+                                &D_800F19CC->unk29C0[count], &result, &result.unk4C[0]);
+                            ++count;
+                        }
+                    }
+                }
+            } else {
+                func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
+
+                if (func_800C1564((void*)&D_800F19CC->unk29A0,
+                        (void*)&D_800F19CC->unk29C0[count])) {
+                    D_800F19CC->unk29C0[count].unk8 = 16;
+                    D_800F19CC->unk29C0[count].unkA = -1;
+                    D_800F19CC->unk29C0[count].unk9 = i;
+                    func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor, i,
+                        vs_battle_actors[i]->unk3C->unk36, &result);
+                    func_8006F630(&D_800F19CC->unk29C0[count], &result, &result.unk4C[0]);
+                    ++count;
+                }
+            }
+        }
+    }
+
+    if (D_800E81D4[vs_main_actions[action].unk2_4] & 0x80) {
+        _mpdRoomSection13* room = func_8008E370(&i);
+
+        for (j = 0; j < i; ++j) {
+            D_800F19CC->unk29C0[count].unk0.vx = room[j].unk0 * 128 + 64;
+            D_800F19CC->unk29C0[count].unk0.vz = room[j].unk2 * 128 + 64;
+            D_800F19CC->unk29C0[count].unk0.vy =
+                (func_8008DC7C((room[j].unk0 << 7) | 64, (room[j].unk2 << 7) | 64) << 17)
+                >> 17;
+
+            if (room[j].unk10 < 64
+                && func_800C1564(
+                    (void*)&D_800F19CC->unk29A0, (void*)&D_800F19CC->unk29C0[count])) {
+                D_800F19CC_t5* target = &D_800F19CC->unk29C0[count];
+
+                target->unk8 = 16;
+                target->unkA = 16;
+                target->unk9 = j | 0x20;
+                target->unkC = 0;
+
+                if ((u_short)room[j].unkC - 2 < 2u && room[j].unk8 == 0) {
+                    target->unkE = ((attacker->risk + 150) * 100) / 256;
+                } else {
+                    target->unkE = 0;
+                }
+
+                ++count;
+                target->unk14 = 10;
+                target->enemyClass = 0;
+                target->unk16 = 0;
+                target->unk15 = 0;
+                target->unk10 = 0;
+                target->effect = 0;
+            }
+        }
+    }
+
+    D_800F19CC->unk2C00 = count;
+
+    if (D_800F19CC->unk2984) {
+        func_800C1664(count, D_800F19CC->unk29C0, 0);
+    }
+
+    if (D_800F19CC->unk8.unk4.unk0.targetActor) {
+        for (count = 0; count < D_800F19CC->unk2C00; ++count) {
+            if (D_800F19CC->unk29C0[count].unk9
+                    == vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
+                        ->unk10.u16[0]
+                && D_800F19CC->unk29C0[count].unkA
+                       == vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
+                           ->unk10.u16[1]) {
+                D_800F19CC->unk298C = count;
+            }
+        }
+        if (D_800F19CC->unk298C == 0xFF) {
+            for (count = 0; count < D_800F19CC->unk2C00; ++count) {
+                if (D_800F19CC->unk29C0[count].unk9
+                    == vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
+                        ->unk10.u16[0]) {
+                    D_800F19CC->unk298C = count;
+                }
+            }
+        }
+    }
+
+    _cameraMode = 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072734);
 

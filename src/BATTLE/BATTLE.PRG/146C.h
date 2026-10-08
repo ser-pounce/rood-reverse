@@ -567,6 +567,7 @@ typedef struct vs_battle_actor {
     /* 0x0C */ int unkC;
     union {
         u_char u8[4];
+        u_short u16[2];
         int s32;
     /* 0x10 */ } unk10;
     int unk14;

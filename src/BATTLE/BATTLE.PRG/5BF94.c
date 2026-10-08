@@ -3955,7 +3955,34 @@ void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     setVector(&arg1->position, result.vx, result.vy, result.vz);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D037C);
+void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+{
+    int t;
+    SVECTOR start;
+    SVECTOR end;
+    SVECTOR result;
+    if (arg0->mode & 0x80) {
+        start = arg1->saved;
+        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+    } else {
+        end = arg1->saved;
+        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+    }
+    switch ((arg0->mode >> 5) & 3) {
+    case 0:
+        t = (arg1->frame * 3 * ONE) / (arg0->limit + 1) - ONE;
+        break;
+    case 1:
+        t = (-rcos((arg1->frame * (ONE / 2)) / (arg0->limit + 1)) * 3) / 2 + ONE / 2;
+        break;
+    case 2:
+        t = vs_battle_sampleCurve(arg0->curve + 1, arg1->frame) * 96 - ONE;
+        break;
+    }
+    vs_battle_splineInterpolate(
+        &start, &arg1->control0, &arg1->control1, &end, t, &result);
+    setVector(&arg1->position, result.vx, result.vy, result.vz);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0548);
 

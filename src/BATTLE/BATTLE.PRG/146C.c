@@ -6363,10 +6363,10 @@ vs_battle_actor* func_800775C0(
         actor->defeated = 0;
         actor->unk3C->miscItem.id = spawn->itemId;
         actor->unk3C->miscItem.count = spawn->itemCount;
-        *(u_short*)((char*)actor->unk3C + 0x95C) = spawn->item2Id;
-        *((char*)actor->unk3C + 0x95E) = spawn->item2Count;
-        *(u_short*)((char*)actor->unk3C + 0x960) = spawn->item3Id;
-        *((char*)actor->unk3C + 0x962) = spawn->item3Count;
+        actor->unk3C->unk95C.id = spawn->item2Id;
+        actor->unk3C->unk95C.count = spawn->item2Count;
+        actor->unk3C->unk960.id = spawn->item3Id;
+        actor->unk3C->unk960.dropRate = spawn->item3Count;
         do {
             *(actorSpawnSettings*)((char*)actor + 0x30) = spawn->settings;
         } while (0);

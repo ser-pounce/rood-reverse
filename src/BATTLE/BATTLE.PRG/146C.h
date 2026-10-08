@@ -552,7 +552,7 @@ typedef struct {
     /* 0x956 */ u_char unk956_2 : 6;
     /* 0x957 */ u_char unk957;
     /* 0x958 */ vs_battle_uiMisc miscItem;
-    /* 0x95C */ int unk95C;
+    /* 0x95C */ vs_battle_uiMisc unk95C;
     /* 0x960 */ vs_battle_uiMiscRand unk960;
     /* 0x964 */
 } vs_battle_actor2;

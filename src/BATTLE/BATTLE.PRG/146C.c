@@ -572,6 +572,7 @@ extern u_char D_8004EFA0;
 extern u_char D_8004EFB2;
 extern u_char D_8004EFE2;
 extern u_char D_8004F000;
+extern MATRIX D_8005E218;
 extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
@@ -6938,7 +6939,57 @@ void vs_battle_setCameraRoll(int arg0) { vs_scratch.camera.angles.vz = arg0; }
 
 int vs_battle_getCameraRoll(void) { return vs_scratch.camera.angles.vz & 0xFFF; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007ACB0);
+void func_8007ACB0(void)
+{
+    static const VECTOR D_800689E8 = { 0, ONE, 0 };
+    VECTOR delta;
+    VECTOR right;
+    VECTOR forward;
+    VECTOR up = D_800689E8;
+    SVECTOR negativePosition;
+    MATRIX roll;
+    int _[8] __attribute__((unused));
+    vs_scratch_t* scratch = &vs_scratch;
+
+    setVector(&delta, (scratch->camera.position.vx - scratch->camera.lookAt.vx) / ONE,
+        (scratch->camera.lookAt.vy - scratch->camera.position.vy) / ONE,
+        (scratch->camera.lookAt.vz - scratch->camera.position.vz) / ONE);
+
+    if (!(delta.vx | delta.vz)) {
+        delta.vz = 1;
+    }
+
+    VectorNormal(&delta, &forward);
+    OuterProduct0(&forward, &up, &right);
+    VectorNormal(&right, &right);
+    OuterProduct0(&right, &forward, &up);
+    VectorNormal(&up, &up);
+    D_8005E218.m[0][0] = scratch->viewMatrix.m[0][0] = -right.vx;
+    D_8005E218.m[0][1] = scratch->viewMatrix.m[0][1] = right.vy;
+    D_8005E218.m[0][2] = scratch->viewMatrix.m[0][2] = right.vz;
+    D_8005E218.m[1][0] = scratch->viewMatrix.m[1][0] = -up.vx;
+    D_8005E218.m[1][1] = scratch->viewMatrix.m[1][1] = up.vy;
+    D_8005E218.m[1][2] = scratch->viewMatrix.m[1][2] = up.vz;
+    D_8005E218.m[2][0] = scratch->viewMatrix.m[2][0] = -forward.vx;
+    D_8005E218.m[2][1] = scratch->viewMatrix.m[2][1] = forward.vy;
+    D_8005E218.m[2][2] = scratch->viewMatrix.m[2][2] = forward.vz;
+    roll.m[1][1] = roll.m[0][0] = rcos(scratch->camera.angles.vz);
+    roll.m[1][0] = rsin(scratch->camera.angles.vz);
+    roll.m[0][1] = -roll.m[1][0];
+    roll.m[2][2] = ONE;
+    roll.m[0][2] = roll.m[1][2] = roll.m[2][0] = roll.m[2][1] = 0;
+    setVector(&delta, ONE * 9 / 8, ONE, ONE);
+    ScaleMatrix(&roll, &delta);
+    func_80041C68(&roll, &scratch->viewMatrix);
+    setVector(&negativePosition, -scratch->camera.position.vx / ONE,
+        -scratch->camera.position.vy / ONE, -scratch->camera.position.vz / ONE);
+    ApplyMatrix(&scratch->viewMatrix, &negativePosition, (VECTOR*)scratch->viewMatrix.t);
+    delta.vz = delta.vy = delta.vx = scratch->camera.farClip;
+    ScaleMatrix(&scratch->viewMatrix, &delta);
+    scratch->viewMatrix.t[0] = scratch->viewMatrix.t[0] * scratch->camera.farClip / ONE;
+    scratch->viewMatrix.t[1] = scratch->viewMatrix.t[1] * scratch->camera.farClip / ONE;
+    scratch->viewMatrix.t[2] = scratch->viewMatrix.t[2] * scratch->camera.farClip / ONE;
+}
 
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
 {

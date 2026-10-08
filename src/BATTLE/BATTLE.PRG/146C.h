@@ -107,10 +107,7 @@ typedef struct {
 
 typedef struct {
     int unk0[5];
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
+    VECTOR unk14;
     int unk24;
     int unk28;
     int unk2C;
@@ -1086,7 +1083,7 @@ extern _mpdRoomDoorSection_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
 extern int vs_battle_submenuState;
-extern int D_800F1CE0[8];
+extern VECTOR D_800F1CE0[2];
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;
 extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];

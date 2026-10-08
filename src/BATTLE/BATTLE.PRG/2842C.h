@@ -55,6 +55,7 @@ void func_80093788(int);
 void func_800938AC(int);
 void func_80093A70(void);
 void func_80093AB4(void);
+int func_80093F24(int arg0);
 void func_80095B70(int);
 void func_8009722C(void);
 void func_80098160(int);

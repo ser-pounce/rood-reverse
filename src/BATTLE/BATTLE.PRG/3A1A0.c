@@ -36,12 +36,6 @@ typedef struct {
 } collisionScratchView;
 
 typedef struct {
-    unsigned mode : 2;
-    unsigned fast : 1;
-    unsigned reserved : 29;
-} vs_battleMovementModeFlags;
-
-typedef struct {
     int words[2];
 } probePosition;
 
@@ -718,7 +712,8 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
             }
             continue;
         }
-        if ((i == 0) && (*((int*)&actor->unk5B4 - 2) & 0xF0000000)) {
+        if ((i == 0) && actor->unk5AC_28) {
+
             D_800F45E0_t* temp_v1 = D_800F45E0[actor->unk5AC_28];
             if ((arg0 == temp_v1->unk5C) && (arg1 == temp_v1->unk5E)) {
                 return actor;
@@ -787,8 +782,7 @@ int func_800A3E6C(int actorId)
     switch (object->unk6C[8].actorId) {
     case 0:
     case 1:
-        object->unk6C[8].unk2 =
-            D_800E8FD0[object->unk6C[8].unk2 * 4 + D_800F49E8];
+        object->unk6C[8].unk2 = D_800E8FD0[object->unk6C[8].unk2 * 4 + D_800F49E8];
         // fallthrough
     case 2:
         step = 0x80;
@@ -1071,7 +1065,6 @@ void func_800A4828(int arg0, MATRIX* arg1)
 void func_800A48CC(int index, int direction, int distance)
 {
     D_800F4538_t* actor = D_800F4538[index];
-    vs_battleMovementModeFlags* flags = (void*)((char*)actor + 0x5B0);
     if (actor->unk5AC_0 != 0) {
         return;
     }
@@ -1083,17 +1076,17 @@ void func_800A48CC(int index, int direction, int distance)
         return;
     }
     if (distance == 0) {
-        flags->fast = 0;
-        flags->mode = 0;
+        actor->unk5B0_2 = 0;
+        actor->unk5B0_0 = 0;
         func_800A0204(index, 0x2F, 0, 4);
         actor->unk0.unk11 = 6;
         actor->unk0.unkA_0 = 2;
     } else {
-        flags->fast = 0;
-        flags->mode = 1;
+        actor->unk5B0_2 = 0;
+        actor->unk5B0_0 = 1;
         if (distance / ONE >= actor->unk5B9) {
-            flags->mode = 2;
-            flags->fast = 1;
+            actor->unk5B0_0 = 2;
+            actor->unk5B0_2 = 1;
         }
         actor->unk0.unk11 = 0;
         actor->unk0.unkA_0 = 1;
@@ -1127,7 +1120,6 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
     int contactId;
     int current;
     int previous;
-    u_int movement;
 
     switch (mode) {
     case 0:
@@ -1142,8 +1134,8 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
         actor->unk0.position.vy += contact->unk2 - actor->unk17EC.vy;
         break;
     case 1:
-        movement = *(u_int*)((char*)actor + 8) & 0x70000;
-        if (movement == 0x20000 || movement == 0x30000) {
+        if (actor->unk0.unkA_0 == 2 || actor->unk0.unkA_0 == 3) {
+
             return;
         }
         if (actor->unk0.unkC_4 != (contactId = actor->unk0.unkC_0)) {
@@ -1357,9 +1349,8 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     int previousX;
     int previousZ;
     int moveType;
-    int state;
+
     D_800F45E0_t* object;
-    vs_battleMovementModeFlags* flags;
 
     turning = 0;
     if (index >= 17) {
@@ -1438,15 +1429,15 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         if (index != 0) {
             return 3;
         }
-        flags = (void*)((char*)actor + 0x5B0);
         if (distance / ONE >= actor->unk5B9) {
-            if (!(*(u_int*)flags & 4)) {
+            if (!actor->unk5B0_2) {
                 distance = actor->unk5BA << 12;
             }
         } else {
-            flags->fast = 0;
+            actor->unk5B0_2 = 0;
         }
-        moveType = *(u_short*)((char*)actor + 0xA) & 7;
+        moveType = actor->unk0.unkA_0;
+
         if (moveType != 0) {
             if (moveType < 4) {
                 if (distance == 0) {
@@ -1627,7 +1618,8 @@ move:
 
     motion.vy = func_800A6EE8(&actor->unk0.position, motion.vx, motion.vz, 1);
     motion.vy = motion.vy - actor->unk0.position.vy;
-    if (!(*(u_int*)((char*)actor + 8) & 0x1F0000)) {
+    if (!actor->unk0.unkA_0 && !actor->unk0.unkA_3) {
+
         previousArea = actor->unk5AC_28;
         actor->unk5AC_28 = D_800F49F8;
         actor->unk0.unkC_0 = D_800F49F4;
@@ -1676,9 +1668,8 @@ move:
     }
 
     actor->unk5BE = 4;
-    state = *(u_int*)((char*)actor + 8) & 0x70000;
-    if (state != 0) {
-        if (state == 0x10000) {
+    if (actor->unk0.unkA_0) {
+        if (actor->unk0.unkA_0 == 1) {
             actor->unk0.unk34.vx = motion.vx;
             actor->unk0.unk34.vz = motion.vz;
             func_800A0204(index, 0x30, 0, 4);
@@ -1757,7 +1748,8 @@ move:
             actor->unk5AC_28 = (u_short)D_800F4B08.pad >> 8;
             actor->unk6EC = D_800F4B08.vy;
             if (actor->unk5AC_28) {
-                object = D_800F45E0[*(u_int*)((char*)actor + 0x5AC) >> 28];
+                object = D_800F45E0[actor->unk5AC_28];
+
                 if (object->unk1A == 0xFD) {
                     for (i = object->unk6C[8].unk4; i < 15; i++) {
                         motion.vy += (signed char)D_800E91AC[i];
@@ -1874,12 +1866,11 @@ move:
             actor->unk0.unk34.vy = 0;
             func_800A0204(index, 0x2F, 0, 4);
             actor->unk0.unkA_0 = 3;
-            flags = (void*)((char*)actor + 0x5B0);
-            flags->fast = 0;
-            flags->mode = 1;
+            actor->unk5B0_2 = 0;
+            actor->unk5B0_0 = 1;
             if (distance >= actor->unk5B9) {
-                flags->mode = 2;
-                flags->fast = 1;
+                actor->unk5B0_0 = 2;
+                actor->unk5B0_2 = 1;
             }
             actor->unk0.unkC_0 = 0;
             return 3;

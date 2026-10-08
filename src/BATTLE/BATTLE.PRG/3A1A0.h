@@ -238,8 +238,10 @@ typedef struct {
     u_char unk5AC_25 : 2;
     u_char unk5AC_27 : 1;
     u_char unk5AC_28 : 4;
-    u_char unk5B0_0 : 3;
+    u_char unk5B0_0 : 2;
+    u_char unk5B0_2 : 1;
     u_char unk5B0_3 : 1;
+
     u_char unk5B0_4 : 1;
     u_char unk5B0_5 : 1;
     u_char unk5B0_6 : 2;

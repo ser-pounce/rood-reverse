@@ -2079,10 +2079,11 @@ void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
         for (column = 0, output = destination; column < 12; ++column, ++output) {
             u_short source, previous;
             u_int index;
-            if (column & 3)
+            if (column & 3) {
                 packed >>= 4;
-            else
+            } else {
                 packed = *(u_short*)((u_int)pixels + (((column >> 2) + row * 3) << 1));
+            }
             index = packed & 15;
             source = index;
             if (index != 0) {
@@ -3782,12 +3783,14 @@ void func_800CB83C(void)
     for (id = 7; id != -1; --id) {
         box = &vs_battle_textBoxes[id];
         state = box->state;
-        if (state == 0)
+        if (state == 0) {
             continue;
+        }
         flags = *(int*)&box->unk0;
         D_800F4E80 = id;
-        if (flags < 0)
+        if (flags < 0) {
             continue;
+        }
         duration = box->unk22;
         scale = vs_gametime_tickspeed >> 1;
         if (state < 0) {
@@ -3799,8 +3802,9 @@ void func_800CB83C(void)
             scale = ((duration + state + 1) << 16) / duration;
         } else {
             state += scale;
-            if (duration < state)
+            if (duration < state) {
                 state = duration + 1;
+            }
             scale = state - 1;
             switch ((int)(((u_int)flags >> 4) & 3)) {
             case 0:
@@ -3808,16 +3812,17 @@ void func_800CB83C(void)
                 scale = rsin((scale << 10) / duration) * 16;
                 break;
             case 2:
-                if (scale < duration - 1)
+                if (scale < duration - 1) {
                     scale = (scale << 16) / (duration - 2);
-                else
+                } else {
                     goto settle;
+                }
                 break;
             case 3:
                 if (duration >= 3) {
-                    if (scale < duration - 1)
+                    if (scale < duration - 1) {
                         scale = (scale * 0xC000) / (duration - 2) + 0x6000;
-                    else {
+                    } else {
                     settle:
                         scale = scale == duration ? 0x10000 : 0x11000;
                     }
@@ -3846,8 +3851,9 @@ void func_800CB83C(void)
             goto text;
         case 4:
             func_800CD158(id);
-            if (state < 0)
+            if (state < 0) {
                 break;
+            }
             goto text;
         case 6:
         immediate:
@@ -3858,10 +3864,11 @@ void func_800CB83C(void)
             func_800CD3E4(id);
         default:
         text:
-            if (state == duration + 1)
+            if (state == duration + 1) {
                 _printVariableWidthFont(box);
-            else if (state < 0)
+            } else if (state < 0) {
                 _printFixedWidthFont(box, scale);
+            }
             break;
         case 3:
             break;
@@ -3871,8 +3878,9 @@ void func_800CB83C(void)
     D_800EB9CE = D_800EB9CE == 2 ? 0 : D_800EB9CE + 1;
     D_800F51B8 = &D_800F4CD0 + D_800EB9CE * 34;
     ClearOTag(D_800F51B8, 34);
-    if (vs_battle_lowerScreenUiState == 1)
+    if (vs_battle_lowerScreenUiState == 1) {
         _renderTimer(&D_8005046C);
+    }
     func_800CB708();
     vs_battle_keystreamBits(0);
 }
@@ -4130,8 +4138,9 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
     int columns, column, top, fb = 0, page;
     int height, x, y, row, tile, index;
     u_long* prim;
-    if (vs_main_frameBuf == 0)
+    if (vs_main_frameBuf == 0) {
         fb = 320;
+    }
     alpha = image->unk3;
     page = (image->unk2 + image->unk0_9 - 16) << 6;
     if (alpha == 128) {
@@ -4699,8 +4708,9 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
     depth = RotAverage4(&t->previousFirst, &t->currentFirst, &t->previousSecond,
         &t->currentSecond, &xy[0], &xy[1], &xy[2], &xy[3], (long*)&t->projectionDepth,
         (long*)&t->projectionFlags);
-    if ((u_int)(depth - 17) >= 2031)
+    if ((u_int)(depth - 17) >= 2031) {
         return;
+    }
     p = vs_scratch.unk0;
     vs_scratch.unk0 = (char*)p + sizeof(TrailPacket);
     setlen(p, 14);
@@ -4724,8 +4734,9 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
     } else {
         p->poly.code = 0x3E;
         uv = 0x58;
-        if ((t->config.value & 0xF0000) != 0x70000)
+        if ((t->config.value & 0xF0000) != 0x70000) {
             uv = 0x38;
+        }
         p->poly.tpage = uv;
         p->poly.clut = 0x3C30;
         column = t->config.bits.texture % 3U;
@@ -4764,8 +4775,9 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
         func_800A1AF8(t->config.bytes[0], t->config.bytes[1], &t->second[t->index], 1);
         if (++t->age >= 4) {
             segments = 5;
-            if (t->age < 9)
+            if (t->age < 9) {
                 segments = t->age - 3;
+            }
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);
             vs_battle_splineInterpolate(&t->first[t->index],
@@ -4805,10 +4817,12 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
                 }
             }
         }
-        if (t->config.bytes[3] != 255)
+        if (t->config.bytes[3] != 255) {
             --t->config.bytes[3];
-        if (t->config.bytes[3] == 0)
+        }
+        if (t->config.bytes[3] == 0) {
             result = 0;
+        }
         break;
     case 3:
         t->config.bytes[3] = 8;
@@ -5776,8 +5790,9 @@ void func_800CFEF0(D_800F53B8_t* arg0)
                 state->bone = 0;
                 break;
             }
-            if (!(definition->unk0 & 4))
+            if (!(definition->unk0 & 4)) {
                 state->bone = ((u_char*)&definition->unk2)[1];
+            }
         }
         if (definition->unk0 & 0x80) {
             switch (definition->unk0 & 0xC00) {
@@ -5804,8 +5819,9 @@ void func_800CFEF0(D_800F53B8_t* arg0)
                 state->targetBone = 0;
                 break;
             }
-            if (!(definition->unk0 & 0x200))
+            if (!(definition->unk0 & 0x200)) {
                 state->targetBone = ((u_char*)&definition->unk8)[3];
+            }
         }
     }
 }
@@ -7784,8 +7800,9 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     if ((command & 0x1FF) == arg0->unkD1C.unk30->unk2) {
         int kind = (command >> 18) & 3;
         if (kind == 2) {
-            if (D_800F569C->unkCC != 0)
+            if (D_800F569C->unkCC != 0) {
                 func_80046578(D_800F569C->unkCC);
+            }
         } else {
             int bank = kind == 0 ? 0x7E : 0xF00000;
             if (((command >> 20) & 3) == 0) {
@@ -7833,13 +7850,15 @@ int func_800D5A98(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
                     } else {
                         child->unk10[1] = event->actors[0];
                     }
-                    if (++STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2)
+                    if (++STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
                         break;
+                    }
                     STATE->delay += event->delay;
                 } while (STATE->delay == 0);
             }
-            if (STATE->delay != 0)
+            if (STATE->delay != 0) {
                 --STATE->delay;
+            }
         } else if (STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
             if ((*(u_int*)((char*)arg0 + 0x14) & 0xF800) == 0) {
                 spawn.unk14 = D_800F569C->block8Data;
@@ -7889,16 +7908,19 @@ int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
     u_short packed = data[event->unk6];
     int play = 0;
     int i;
-    if ((packed & 511) != actor->unkD1C.unk30->unk2)
+    if ((packed & 511) != actor->unkD1C.unk30->unk2) {
         return result;
+    }
     switch (packed >> 14) {
     case 1:
-        if (actor->unkD1C.unk0.unk0 == 4 && (u_char)actor->unkD1C.unk0.unk4.unk0 == 0)
+        if (actor->unkD1C.unk0.unk0 == 4 && (u_char)actor->unkD1C.unk0.unk4.unk0 == 0) {
             play = 1;
+        }
         break;
     case 2:
-        if (actor->unkD1C.unk18.unk0 == 4 && (u_char)actor->unkD1C.unk18.unk4.unk0 == 0)
+        if (actor->unkD1C.unk18.unk0 == 4 && (u_char)actor->unkD1C.unk18.unk4.unk0 == 0) {
             play = 1;
+        }
         break;
     case 0:
         play = 1;

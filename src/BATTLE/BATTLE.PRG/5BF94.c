@@ -160,8 +160,8 @@ typedef struct {
     u_char unk34;
     u_char unk35;
     char unk36[0x42];
-    func_800CFE98_t unk78;
-    char unk9C[0x22];
+    MATRIX unk78;
+    char unk98[0x26];
     short unkBE;
 } func_800D0C60_t;
 
@@ -238,7 +238,7 @@ typedef struct {
     int unk4;
     u_char unk8;
     u_char unk9;
-    u_char unkA;
+    signed char unkA;
     u_char unkB;
     u_short unkC;
     u_short unkE;
@@ -266,8 +266,7 @@ typedef union {
 } func_800C4794_t;
 
 typedef struct {
-    func_800C1564_t unk0;
-    func_800C1564_t unk10;
+    func_800C1564_t unk0[2];
     short unk20;
     short unk22;
     int unk24;
@@ -277,7 +276,7 @@ typedef struct {
     u_char unk2D;
     u_char unk2E;
     u_char unk2F;
-    u_char unk30;
+    signed char unk30;
     u_char unk31;
     char unk32[2];
     int unk34;
@@ -294,6 +293,34 @@ typedef struct {
     u_int unk0_24 : 2;
     u_int unk0_26 : 4;
 } func_800CCE10_t;
+
+typedef struct {
+    u_short flags;
+    u_char pad2[3];
+    u_char curve;
+    u_char pad6[4];
+    u_short mode;
+    u_char padC[2];
+    u_char limit;
+    u_char padF;
+    u_short unk10;
+    u_short shape12;
+} func_800D0548_arg0;
+
+typedef struct {
+    u_char pad0[6];
+    u_short flags;
+    u_char pad8[6];
+    short frame;
+    u_char pad10[12];
+    VECTOR position;
+    u_char pad2C[32];
+    VECTOR endpoint;
+    u_char pad5C[92];
+    SVECTOR saved;
+    SVECTOR control0;
+    SVECTOR control1;
+} func_800D0548_arg1;
 
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
@@ -315,10 +342,12 @@ void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
-void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
+void func_800CFE98(SVECTOR* arg0, MATRIX* arg1);
 void func_800D0984(int, func_800D0C60_t*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
+void func_800D1718(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
+void func_800D1778(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
 int func_800D12D8(int);
 void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
@@ -450,6 +479,13 @@ extern u_char D_800F522C;
 extern u_char D_800F4C70[2][16];
 extern u_char D_800F4CB0;
 extern u_char D_800F4CB1;
+extern u_char D_800F4C90[8];
+extern u_char D_800F4C98[8];
+extern u_char D_800F4CA0[8];
+extern u_char D_800F4CA8[8];
+extern u_char D_800F4CB2;
+extern u_char D_800F4CB3;
+extern u_char D_800F4CB4;
 extern char D_800F4CB8;
 extern char _fontTable;
 extern int _fontBrightness;
@@ -517,17 +553,17 @@ int func_800C4794(SVECTOR* arg0)
 
     stickX = state->unk38.words[0];
     stickY = state->unk38.words[1];
-    flags = state->unk0.unk4.flags;
+    flags = state->unk0[0].unk4.flags;
     offset.words[0] = stickX;
     offset.words[1] = stickY;
     arg0->pad = 0;
     result = 0;
 
     if (state->unk2A != 0) {
-        arg0->vx = state->unk0.unk8[0];
-        arg0->vy = state->unk0.unk8[1];
-        arg0->vz = state->unk0.unk8[2];
-        func_800C2B0C((SVECTOR*)state->unk0.unk8, state->unk2A - 1);
+        arg0->vx = state->unk0[0].unk8[0];
+        arg0->vy = state->unk0[0].unk8[1];
+        arg0->vz = state->unk0[0].unk8[2];
+        func_800C2B0C((SVECTOR*)state->unk0[0].unk8, state->unk2A - 1);
         return 0;
     }
 
@@ -552,7 +588,7 @@ int func_800C4794(SVECTOR* arg0)
             }
         }
         stickX += offset.vec.vy;
-        stickY = D_800EB9B8->unk0.unk0 & 0x7F;
+        stickY = D_800EB9B8->unk0[0].unk0 & 0x7F;
         if ((u_int)(stickY - 1) < 2) {
             stickY = flags.unk1 * 32;
         } else {
@@ -568,7 +604,7 @@ int func_800C4794(SVECTOR* arg0)
     } else {
         oldX = offset.vec.vx;
         oldZ = offset.vec.vz;
-        angle = -D_800EB9B8->unk0.unk2 - D_800EB9B8->unk22;
+        angle = -D_800EB9B8->unk0[0].unk2 - D_800EB9B8->unk22;
         if ((stickX == 0) && (stickY == 0)) {
             if (vs_main_buttonsState & 0x1000) {
                 stickY = -0x40;
@@ -615,18 +651,18 @@ int func_800C4794(SVECTOR* arg0)
         if (vs_main_buttonsPressed.all & 0x20) {
             vs_battle_playMenuSelectSfx();
             D_800EB9B8->unk38.vec.pad = 1;
-            D_800EB9B8->unk0.unk0 |= 0x80;
-            D_800EB9B8->unk10.unk0 &= 0x7F;
+            D_800EB9B8->unk0[0].unk0 |= 0x80;
+            D_800EB9B8->unk0[1].unk0 &= 0x7F;
         }
     } else if (vs_main_buttonsPressed.all & 0x40) {
         vs_battle_playMenuLeaveSfx();
-        D_800EB9B8->unk0.unk0 &= 0x7F;
-        D_800EB9B8->unk10.unk0 |= 0x80;
+        D_800EB9B8->unk0[0].unk0 &= 0x7F;
+        D_800EB9B8->unk0[1].unk0 |= 0x80;
         D_800EB9B8->unk38.vec.pad = 0;
         for (stickX = 0; stickX < D_800EB9B8->unk2E; ++stickX) {
             trigger = &D_800EB9B8->unk44[stickX];
             if ((trigger->unk9 >> 4) == 0) {
-                func_8009FE74(trigger->unk9, (signed char)trigger->unkA);
+                func_8009FE74(trigger->unk9, trigger->unkA);
             }
         }
     } else if (vs_main_buttonsPressed.all & 0x20) {
@@ -634,10 +670,10 @@ int func_800C4794(SVECTOR* arg0)
         result = 1;
     }
 
-    m = func_800C085C(&D_800EB9B8->unk0.unk4.flags, D_800EB9B8->unk0.unk2);
+    m = func_800C085C(&D_800EB9B8->unk0[0].unk4.flags, D_800EB9B8->unk0[0].unk2);
     func_800C02A8();
     for (;;) {
-        switch (D_800EB9B8->unk0.unk0 & 0x7F) {
+        switch (D_800EB9B8->unk0[0].unk0 & 0x7F) {
         case 1:
             scale = (D_800EB9B8->unk38.vec.vy * 2) / flags.unk1;
             scale = SquareRoot12(0x1000 - scale * scale);
@@ -653,13 +689,13 @@ int func_800C4794(SVECTOR* arg0)
             scale = (-D_800EB9B8->unk38.vec.vy << 7) / flags.unk1;
             break;
         }
-        arg0->vx = D_800EB9B8->unk0.unk8[0];
-        arg0->vy = D_800EB9B8->unk0.unk8[1] + D_800EB9B8->unk38.vec.vy;
-        arg0->vz = D_800EB9B8->unk0.unk8[2];
+        arg0->vx = D_800EB9B8->unk0[0].unk8[0];
+        arg0->vy = D_800EB9B8->unk0[0].unk8[1] + D_800EB9B8->unk38.vec.vy;
+        arg0->vz = D_800EB9B8->unk0[0].unk8[2];
         if (arg0->vy < -1) {
             break;
         }
-        D_800EB9B8->unk38.vec.vy = -D_800EB9B8->unk0.unk8[1] - 2;
+        D_800EB9B8->unk38.vec.vy = -D_800EB9B8->unk0[0].unk8[1] - 2;
     }
 
     func_800C2E24(arg0, m, scale);
@@ -683,8 +719,8 @@ int func_800C4794(SVECTOR* arg0)
         if (arg0->vz >= (value >> 16) * 8) {
             arg0->vz = (value >> 16) * 8 - 1;
         }
-        stickX = arg0->vx - D_800EB9B8->unk0.unk8[0];
-        stickY = arg0->vz - D_800EB9B8->unk0.unk8[2];
+        stickX = arg0->vx - D_800EB9B8->unk0[0].unk8[0];
+        stickY = arg0->vz - D_800EB9B8->unk0[0].unk8[2];
         value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + 0xFFF) / 4096;
         if ((scale != 0) && (value != 0)) {
             D_800EB9B8->unk38.vec.vx =
@@ -694,19 +730,19 @@ int func_800C4794(SVECTOR* arg0)
         }
         stickX = (D_800EB9B8->unk38.vec.vx * scale + 0x800) >> 12;
         stickY = (D_800EB9B8->unk38.vec.vz * scale + 0x800) >> 12;
-        arg0->vx = D_800EB9B8->unk0.unk8[0]
+        arg0->vx = D_800EB9B8->unk0[0].unk8[0]
                  + ((stickX * m->m[0][0] + stickY * m->m[2][0] + 0x800) >> 12);
-        arg0->vz = D_800EB9B8->unk0.unk8[2]
+        arg0->vz = D_800EB9B8->unk0[0].unk8[2]
                  + ((stickX * m->m[0][2] + stickY * m->m[2][2] + 0x800) >> 12);
     }
 
     func_800C28AC(arg0, lockPitch);
-    if (!(D_800EB9B8->unk10.unk0 & 0x80)) {
-        D_800EB9B8->unk10.unk1 = 0;
+    if (!(D_800EB9B8->unk0[1].unk0 & 0x80)) {
+        D_800EB9B8->unk0[1].unk1 = 0;
         stickX = ((int*)arg0)[0];
         stickY = ((int*)arg0)[1];
-        ((int*)D_800EB9B8->unk10.unk8)[0] = stickX;
-        ((int*)D_800EB9B8->unk10.unk8)[1] = stickY;
+        ((int*)D_800EB9B8->unk0[1].unk8)[0] = stickX;
+        ((int*)D_800EB9B8->unk0[1].unk8)[1] = stickY;
     }
     if (result) {
         func_800C4650(D_800EB9B8->unk44, D_800EB9B8->unk2E);
@@ -738,49 +774,51 @@ void func_800C518C(int arg0, void* arg1)
 void func_800C51B4(int mode)
 {
     func_800C5798_t* entries = D_800EB9B8->unk40;
-    int i, group;
+    int i;
+    int group;
     if (D_800EB9B8->unk31) {
-        if (mode != 3) {
-            for (i = 0; i < D_800EB9B8->unk2C; ++i) {
-                group = entries[i].unk9;
-                if (!(group >> 4)) {
-                    void* data;
-                    if (mode == 1) {
-                        func_800C513C(group, (signed char)entries[i].unkA);
-                        data = NULL;
-                    } else {
-                        func_800C5164(group, 0, (signed char)entries[i].unkA);
-                        data = &D_800EB9B8->unk34;
-                    }
-                    func_800C518C(group, data);
-                }
-            }
+        if (mode == 3) {
+            return;
         }
-    } else {
-        i = D_800EB9B8->unk2D;
-        if (i != 255) {
-            if (mode & 1) {
-                group = D_800EB9B8->unk2F;
-                if (!(group >> 4)) {
-                    func_800C513C(group, (signed char)D_800EB9B8->unk30);
-                    func_800C518C(group, NULL);
-                }
+        for (i = 0; i < D_800EB9B8->unk2C; ++i) {
+            void* data;
+            group = entries[i].unk9;
+            if (group >> 4) {
+                continue;
             }
-            if (mode & 2) {
-                D_800EB9B8->unk2F = entries[i].unk9;
-                D_800EB9B8->unk30 = entries[i].unkA;
-                group = D_800EB9B8->unk2F;
-                if (!(group >> 4)) {
-                    func_800C5164(group, 0, (signed char)D_800EB9B8->unk30);
-                    func_800C518C(group, &D_800EB9B8->unk34);
-                }
+            if (mode == 1) {
+                func_800C513C(group, entries[i].unkA);
+                data = NULL;
+            } else {
+                func_800C5164(group, 0, entries[i].unkA);
+                data = &D_800EB9B8->unk34;
             }
+            func_800C518C(group, data);
+        }
+        return;
+    }
+    i = D_800EB9B8->unk2D;
+    if (i == 255) {
+        return;
+    }
+    if (mode & 1) {
+        group = D_800EB9B8->unk2F;
+        if (!(group >> 4)) {
+            func_800C513C(group, D_800EB9B8->unk30);
+            func_800C518C(group, NULL);
         }
     }
+    if (mode & 2) {
+        D_800EB9B8->unk2F = entries[i].unk9;
+        D_800EB9B8->unk30 = entries[i].unkA;
+        group = D_800EB9B8->unk2F;
+        if (group >> 4) {
+            return;
+        }
+        func_800C5164(group, 0, D_800EB9B8->unk30);
+        func_800C518C(group, &D_800EB9B8->unk34);
+    }
 }
-
-extern u_char D_800F4C90[8], D_800F4C98[8], D_800F4CA0[8], D_800F4CA8[8];
-extern u_char D_800F4CB2, D_800F4CB3;
 
 void func_800C5360(int group)
 {
@@ -788,32 +826,37 @@ void func_800C5360(int group)
     int i;
     if (D_800F4CB1 > D_800F4CB0) {
         for (i = 0; i < D_800EB9B8->unk2C; ++i) {
-            if (D_800EB9B8->unk40[i].unk9 == group) {
-                if (!first)
-                    first = i + 1;
-                D_800F4C70[1][D_800F4CB0++] = i;
+            if (D_800EB9B8->unk40[i].unk9 != group) {
+                continue;
             }
+            if (!first) {
+                first = i + 1;
+            }
+            D_800F4C70[1][D_800F4CB0++] = i;
         }
         D_800F4CA0[D_800F4CB2] = first - 1;
         D_800F4C90[D_800F4CB2++] = group;
-    } else {
-        for (i = 0; i < D_800EB9B8->unk2C; ++i) {
-            if (D_800EB9B8->unk40[i].unk9 == group) {
-                if (!first)
-                    first = i + 1;
-                D_800F4C70[0][D_800F4CB1++] = i;
-            }
-        }
-        D_800F4CA8[D_800F4CB3] = first - 1;
-        D_800F4C98[D_800F4CB3++] = group;
+        return;
     }
+    for (i = 0; i < D_800EB9B8->unk2C; ++i) {
+        if (D_800EB9B8->unk40[i].unk9 != group) {
+            continue;
+        }
+        if (!first) {
+            first = i + 1;
+        }
+        D_800F4C70[0][D_800F4CB1++] = i;
+    }
+    D_800F4CA8[D_800F4CB3] = first - 1;
+    D_800F4C98[D_800F4CB3++] = group;
 }
-
-extern u_char D_800F4CB4;
 
 void func_800C553C(void)
 {
-    int size, group, i, count;
+    int size;
+    int group;
+    int i;
+    int count;
     D_800F4CB0 = 0;
     D_800F4CB1 = 0;
     D_800F4CB2 = 0;
@@ -822,21 +865,25 @@ void func_800C553C(void)
         for (group = 0; group < 16; ++group) {
             count = 0;
             for (i = 0; i < D_800EB9B8->unk2C; ++i) {
-                if (D_800EB9B8->unk40[i].unk9 == group)
+                if (D_800EB9B8->unk40[i].unk9 == group) {
                     ++count;
+                }
             }
-            if (count == size)
+            if (count == size) {
                 func_800C5360(group);
+            }
         }
     }
     for (i = 0; i < D_800EB9B8->unk2C; ++i) {
         group = D_800EB9B8->unk40[i].unk9;
-        if (group >> 4)
+        if (group >> 4) {
             func_800C5360(group);
+        }
     }
     i = D_800F4CB1;
-    if (i < D_800F4CB0)
+    if (i < D_800F4CB0) {
         i = D_800F4CB0;
+    }
     D_800F4CB4 = ((16 - i) * 11) >> 1;
 }
 
@@ -959,7 +1006,7 @@ int func_800C58F8(u_char* target)
             }
             break;
         case 17:
-            D_800EB9AC = D_800EB9B8->unk0.unk1 == 2;
+            D_800EB9AC = D_800EB9B8->unk0[0].unk1 == 2;
             D_800EABAA = 21;
             break;
         case 18:
@@ -975,7 +1022,7 @@ int func_800C58F8(u_char* target)
             if (vs_main_buttonsPressed.all & 0x40) {
                 vs_battle_playMenuLeaveSfx();
                 func_800C56C0();
-                D_800EB9AC = D_800EB9B8->unk0.unk1 == 2;
+                D_800EB9AC = D_800EB9B8->unk0[0].unk1 == 2;
                 D_800EABAA = 21;
                 break;
             }
@@ -4370,16 +4417,11 @@ void func_800CD158(int id)
     vs_battle_textBox* box = &vs_battle_textBoxes[id];
     int y = box->y;
     u_long* ot = D_800F51B8 + id * 4 + 1;
-    int offset;
-    int edge;
+    int edge = box->unk2A;
+    int offset = vs_main_frameBuf ? 0 : 320;
     u_int i;
     u_int count;
-    u_int brightness;
-    u_int page;
-    u_long* prim;
 
-    edge = box->unk2A;
-    offset = vs_main_frameBuf ? 0 : 320;
     if (y == 0) {
         y = edge;
     } else {
@@ -4392,14 +4434,15 @@ void func_800CD158(int id)
         count = 4;
     }
     for (i = 0; i < count; ++i) {
-        brightness = ((count - i) * 128) / (count + 1);
-        prim = vs_battle_setSprite(brightness, (y << 16) | 256, 0x10040, ot);
-        page = ((u_int)(offset + 256) >> 6) | 0x100;
-        prim[1] = page | 0xE1000000;
+        u_int brightness = ((count - i) * 128) / (count + 1);
+        u_long* prim =
+            vs_battle_setSprite(brightness, vs_getXY(256, y), vs_getWH(64, 1), ot);
+        u_int page = ((u_int)(offset + 256) >> 6) | 0x100;
+        prim[1] = _get_mode(0, 0, page);
         prim[4] = y << 8;
-        prim = vs_battle_setSprite(brightness, y << 16, 0x10100, ot);
+        prim = vs_battle_setSprite(brightness, vs_getXY(0, y), vs_getWH(256, 1), ot);
         brightness = ((u_int)offset >> 6) | 0x100;
-        prim[1] = brightness | 0xE1000000;
+        prim[1] = _get_mode(0, 0, brightness);
         prim[4] = y << 8;
         if (y < 128) {
             if (--y < 0) {
@@ -4411,15 +4454,16 @@ void func_800CD158(int id)
     }
     if (y < 128) {
         if (y >= 0) {
-            vs_battle_addTile(ot, 0x60000000, 0, ((y + 1) << 16) | 320);
+            vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), 0, vs_getWH(320, y + 1));
         }
-    } else {
-        if (y < 240) {
-            vs_battle_addTile(ot, 0x60000000, y << 16, (0xF00000 - (y << 16)) | 320);
-        }
-        if (box->state == box->unk22 + 1) {
-            func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
-        }
+        return;
+    }
+    if (y < 240) {
+        vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), vs_getXY(0, y),
+            (0xF00000 - (y << 16)) | 320);
+    }
+    if (box->state == box->unk22 + 1) {
+        func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
     }
 }
 
@@ -5657,21 +5701,22 @@ void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
     } while (0);
 }
 
-void func_800CFE7C(func_800CFE98_t* arg0)
+void func_800CFE7C(MATRIX* arg0)
 {
-    arg0->unk10 = 0x1000;
-    arg0->unk8 = 0x1000;
-    arg0->unk0 = 0x1000;
-    arg0->unkC = 0;
-    arg0->unk4 = 0;
+    int* m = (int*)arg0->m;
+    m[4] = ONE;
+    m[2] = ONE;
+    m[0] = ONE;
+    m[3] = 0;
+    m[1] = 0;
 }
 
-void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1)
+void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
 {
     func_800CFE7C(arg1);
-    arg1->unk14.vx = arg0->vx;
-    arg1->unk14.vy = arg0->vy;
-    arg1->unk14.vz = arg0->vz;
+    arg1->t[0] = arg0->vx;
+    arg1->t[1] = arg0->vy;
+    arg1->t[2] = arg0->vz;
 }
 
 typedef struct {
@@ -5764,50 +5809,17 @@ void func_800CFEF0(D_800F53B8_t* arg0)
     }
 }
 
-typedef struct {
-    u_short flags;
-    u_char pad2[3];
-    u_char curve;
-    u_char pad6[4];
-    u_short mode;
-    u_char padC[2];
-    u_char limit;
-    u_char padF;
-    u_short unk10;
-    u_short shape12;
-} func_800D0548_arg0;
-
-typedef struct {
-    u_char pad0[6];
-    u_short flags;
-    u_char pad8[6];
-    short frame;
-    u_char pad10[12];
-    VECTOR position;
-    u_char pad2C[32];
-    VECTOR endpoint;
-    u_char pad5C[92];
-    SVECTOR saved;
-    SVECTOR control0;
-    SVECTOR control1;
-} func_800D0548_arg1;
-
-void func_800D1718(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
-void func_800D1778(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
-
 void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
 {
-    SVECTOR start, end, result;
+    SVECTOR start;
+    SVECTOR end;
+    SVECTOR result;
     if (arg0->mode & 0x80) {
         start = arg1->saved;
-        end.vx = arg1->endpoint.vx;
-        end.vy = arg1->endpoint.vy;
-        end.vz = arg1->endpoint.vz;
+        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
     } else {
         end = arg1->saved;
-        start.vx = arg1->endpoint.vx;
-        start.vy = arg1->endpoint.vy;
-        start.vz = arg1->endpoint.vz;
+        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
     }
     switch ((arg0->mode >> 5) & 3) {
     case 0:
@@ -5821,25 +5833,21 @@ void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
             vs_battle_sampleCurve(arg0->curve + 1, arg1->frame), &result);
         break;
     }
-    arg1->position.vx = result.vx;
-    arg1->position.vy = result.vy;
-    arg1->position.vz = result.vz;
+    setVector(&arg1->position, result.vx, result.vy, result.vz);
 }
 
 void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
 {
     int t;
-    SVECTOR start, end, result;
+    SVECTOR start;
+    SVECTOR end;
+    SVECTOR result;
     if (arg0->mode & 0x80) {
         start = arg1->saved;
-        end.vx = arg1->endpoint.vx;
-        end.vy = arg1->endpoint.vy;
-        end.vz = arg1->endpoint.vz;
+        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
     } else {
         end = arg1->saved;
-        start.vx = arg1->endpoint.vx;
-        start.vy = arg1->endpoint.vy;
-        start.vz = arg1->endpoint.vz;
+        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
     }
     switch ((arg0->mode >> 5) & 3) {
     case 0:
@@ -5854,9 +5862,7 @@ void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     }
     vs_battle_splineInterpolate(
         &start, &arg1->control0, &arg1->control1, &end, t, &result);
-    arg1->position.vx = result.vx;
-    arg1->position.vy = result.vy;
-    arg1->position.vz = result.vz;
+    setVector(&arg1->position, result.vx, result.vy, result.vz);
 }
 
 void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
@@ -5871,10 +5877,8 @@ void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
         func_800D037C(arg0, arg1);
         break;
     }
-    if (arg1->flags & 4) {
-        if (arg0->limit >= arg1->frame) {
-            ++arg1->frame;
-        }
+    if ((arg1->flags & 4) && arg0->limit >= arg1->frame) {
+        ++arg1->frame;
     }
 }
 
@@ -5942,37 +5946,35 @@ void func_800D05F4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
 
 void func_800D0984(int arg0, func_800D0C60_t* arg1, int arg2)
 {
-    VECTOR delta, start, end;
+    VECTOR delta;
+    VECTOR start;
+    VECTOR end;
     SVECTOR offset;
     long distance;
-    start.vx = vs_scratch.camera.lookAt.vx >> 12;
-    start.vy = vs_scratch.camera.lookAt.vy >> 12;
-    start.vz = vs_scratch.camera.lookAt.vz >> 12;
-    end.vx = vs_scratch.camera.position.vx >> 12;
-    end.vy = vs_scratch.camera.position.vy >> 12;
-    end.vz = vs_scratch.camera.position.vz >> 12;
-    vs_battle_lookAt(&start, &end, (MATRIX*)&arg1->unk78);
-    arg1->unk78.unk14.vx = start.vx;
-    arg1->unk78.unk14.vy = start.vy;
-    arg1->unk78.unk14.vz = start.vz;
+    setVector(&start, vs_scratch.camera.lookAt.vx >> 12,
+        vs_scratch.camera.lookAt.vy >> 12, vs_scratch.camera.lookAt.vz >> 12);
+    setVector(&end, vs_scratch.camera.position.vx >> 12,
+        vs_scratch.camera.position.vy >> 12, vs_scratch.camera.position.vz >> 12);
+    vs_battle_lookAt(&start, &end, &arg1->unk78);
+    arg1->unk78.t[0] = start.vx;
+    arg1->unk78.t[1] = start.vy;
+    arg1->unk78.t[2] = start.vz;
     if (arg2) {
-        delta.vx = end.vx - start.vx;
-        delta.vy = end.vy - start.vy;
-        delta.vz = end.vz - start.vz;
+        setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
         distance =
             vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
         offset.vx = offset.vy = 0;
         offset.vz = distance - 0x600;
-        SetRotMatrix((MATRIX*)&arg1->unk78);
-        SetTransMatrix((MATRIX*)&arg1->unk78);
+        SetRotMatrix(&arg1->unk78);
+        SetTransMatrix(&arg1->unk78);
         RotTrans(&offset, &start, &distance);
-        arg1->unk78.unk14.vx = start.vx;
-        arg1->unk78.unk14.vy = start.vy;
-        arg1->unk78.unk14.vz = start.vz;
+        arg1->unk78.t[0] = start.vx;
+        arg1->unk78.t[1] = start.vy;
+        arg1->unk78.t[2] = start.vz;
     }
 }
 
-void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
+void func_800D0B08(MATRIX* arg0) { func_800CFE98(D_800F5310, arg0); }
 
 void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
@@ -5988,7 +5990,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
         ScaleMatrix(&arg2->unk48, &arg2->unk20);
         return;
     }
-    func_800CFE7C((func_800CFE98_t*)&arg2->unk48);
+    func_800CFE7C(&arg2->unk48);
     arg2->unk48.t[2] = 0;
     arg2->unk48.t[1] = 0;
     arg2->unk48.t[0] = 0;
@@ -6270,10 +6272,11 @@ void func_800D197C(VECTOR* position, VECTOR* target, MATRIX* view)
 {
     static const VECTOR initialUp = { 0, -ONE, 0 };
     VECTOR up = initialUp;
-    VECTOR right, forward, translation;
-    forward.vx = target->vx - position->vx;
-    forward.vy = target->vy - position->vy;
-    forward.vz = target->vz - position->vz;
+    VECTOR right;
+    VECTOR forward;
+    VECTOR translation;
+    setVector(&forward, target->vx - position->vx, target->vy - position->vy,
+        target->vz - position->vz);
     VectorNormal(&forward, &forward);
     OuterProduct0(&up, &forward, &right);
     VectorNormal(&right, &right);
@@ -6461,23 +6464,19 @@ void func_800D206C(void)
 
 void func_800D21C0(void)
 {
-    VECTOR start, end, result;
-    start.vx = D_800F5520[0].position.vx >> 12;
-    start.vy = D_800F5520[0].position.vy >> 12;
-    start.vz = D_800F5520[0].position.vz >> 12;
-    end.vx = D_800F5520[1].position.vx >> 12;
-    end.vy = D_800F5520[1].position.vy >> 12;
-    end.vz = D_800F5520[1].position.vz >> 12;
+    VECTOR start;
+    VECTOR end;
+    VECTOR result;
+    setVector(&start, D_800F5520[0].position.vx >> 12, D_800F5520[0].position.vy >> 12,
+        D_800F5520[0].position.vz >> 12);
+    setVector(&end, D_800F5520[1].position.vx >> 12, D_800F5520[1].position.vy >> 12,
+        D_800F5520[1].position.vz >> 12);
     func_800D1884(&start, &end, D_800F55A0, D_800F54D0, &result);
-    D_800F54D8.position.vx = result.vx << 12;
-    D_800F54D8.position.vy = result.vy << 12;
-    D_800F54D8.position.vz = result.vz << 12;
-    start.vx = D_800F5520[0].lookAt.vx >> 12;
-    start.vy = D_800F5520[0].lookAt.vy >> 12;
-    start.vz = D_800F5520[0].lookAt.vz >> 12;
-    end.vx = D_800F5520[1].lookAt.vx >> 12;
-    end.vy = D_800F5520[1].lookAt.vy >> 12;
-    end.vz = D_800F5520[1].lookAt.vz >> 12;
+    setVector(&D_800F54D8.position, result.vx << 12, result.vy << 12, result.vz << 12);
+    setVector(&start, D_800F5520[0].lookAt.vx >> 12, D_800F5520[0].lookAt.vy >> 12,
+        D_800F5520[0].lookAt.vz >> 12);
+    setVector(&end, D_800F5520[1].lookAt.vx >> 12, D_800F5520[1].lookAt.vy >> 12,
+        D_800F5520[1].lookAt.vz >> 12);
     func_800D1884(&start, &end, D_800F55A0, D_800F54D0, &result);
     D_800F54D8.lookAt.vx = result.vx << 12;
     D_800F54D8.lookAt.vy = result.vy << 12;
@@ -6492,23 +6491,19 @@ void func_800D21C0(void)
 
 void func_800D236C(void)
 {
-    VECTOR start, end, result;
-    start.vx = D_800F5520[0].position.vx >> 12;
-    start.vy = D_800F5520[0].position.vy >> 12;
-    start.vz = D_800F5520[0].position.vz >> 12;
-    end.vx = D_800F5520[1].position.vx >> 12;
-    end.vy = D_800F5520[1].position.vy >> 12;
-    end.vz = D_800F5520[1].position.vz >> 12;
+    VECTOR start;
+    VECTOR end;
+    VECTOR result;
+    setVector(&start, D_800F5520[0].position.vx >> 12, D_800F5520[0].position.vy >> 12,
+        D_800F5520[0].position.vz >> 12);
+    setVector(&end, D_800F5520[1].position.vx >> 12, D_800F5520[1].position.vy >> 12,
+        D_800F5520[1].position.vz >> 12);
     func_800D1824(&start, &end, D_800F55A0, D_800F54D0, &result);
-    D_800F54D8.position.vx = result.vx << 12;
-    D_800F54D8.position.vy = result.vy << 12;
-    D_800F54D8.position.vz = result.vz << 12;
-    start.vx = D_800F5520[0].lookAt.vx >> 12;
-    start.vy = D_800F5520[0].lookAt.vy >> 12;
-    start.vz = D_800F5520[0].lookAt.vz >> 12;
-    end.vx = D_800F5520[1].lookAt.vx >> 12;
-    end.vy = D_800F5520[1].lookAt.vy >> 12;
-    end.vz = D_800F5520[1].lookAt.vz >> 12;
+    setVector(&D_800F54D8.position, result.vx << 12, result.vy << 12, result.vz << 12);
+    setVector(&start, D_800F5520[0].lookAt.vx >> 12, D_800F5520[0].lookAt.vy >> 12,
+        D_800F5520[0].lookAt.vz >> 12);
+    setVector(&end, D_800F5520[1].lookAt.vx >> 12, D_800F5520[1].lookAt.vy >> 12,
+        D_800F5520[1].lookAt.vz >> 12);
     func_800D1824(&start, &end, D_800F55A0, D_800F54D0, &result);
     D_800F54D8.lookAt.vx = result.vx << 12;
     D_800F54D8.lookAt.vy = result.vy << 12;

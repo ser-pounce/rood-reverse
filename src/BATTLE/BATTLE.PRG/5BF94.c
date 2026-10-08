@@ -156,8 +156,8 @@ typedef struct {
     u_char unk34;
     u_char unk35;
     char unk36[0x42];
-    func_800CFE98_t unk78;
-    char unk9C[0x22];
+    MATRIX unk78;
+    char unk98[0x26];
     short unkBE;
 } func_800D0C60_t;
 
@@ -345,7 +345,7 @@ void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
-void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
+void func_800CFE98(SVECTOR* arg0, MATRIX* arg1);
 void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
@@ -3909,21 +3909,22 @@ void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
     } while (0);
 }
 
-void func_800CFE7C(func_800CFE98_t* arg0)
+void func_800CFE7C(MATRIX* arg0)
 {
-    arg0->unk10 = 0x1000;
-    arg0->unk8 = 0x1000;
-    arg0->unk0 = 0x1000;
-    arg0->unkC = 0;
-    arg0->unk4 = 0;
+    int* m = (int*)arg0->m;
+    m[4] = ONE;
+    m[2] = ONE;
+    m[0] = ONE;
+    m[3] = 0;
+    m[1] = 0;
 }
 
-void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1)
+void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
 {
     func_800CFE7C(arg1);
-    arg1->unk14.vx = arg0->vx;
-    arg1->unk14.vy = arg0->vy;
-    arg1->unk14.vz = arg0->vz;
+    arg1->t[0] = arg0->vx;
+    arg1->t[1] = arg0->vy;
+    arg1->t[2] = arg0->vz;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFEF0);
@@ -4005,7 +4006,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0984);
 
-void func_800D0B08(func_800CFE98_t* arg0) { func_800CFE98(D_800F5310, arg0); }
+void func_800D0B08(MATRIX* arg0) { func_800CFE98(D_800F5310, arg0); }
 
 void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
@@ -4021,7 +4022,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
         ScaleMatrix(&arg2->unk48, &arg2->unk20);
         return;
     }
-    func_800CFE7C((func_800CFE98_t*)&arg2->unk48);
+    func_800CFE7C(&arg2->unk48);
     arg2->unk48.t[2] = 0;
     arg2->unk48.t[1] = 0;
     arg2->unk48.t[0] = 0;

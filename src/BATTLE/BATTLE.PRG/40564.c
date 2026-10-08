@@ -1716,15 +1716,11 @@ void func_800AB9A4(D_800F45E0_t* arg0)
     signed char target;
     int value;
     u_short* colors;
-    u_int next;
     u_int flags;
-    u_int current;
-    u_int previous;
     vs_battle_wepModels_t* weapon;
 
-    flags = *(u_int*)((char*)arg0 + 8);
-    if (((flags >> 8) & 0xF) < 6) {
-        if (flags & 0x70000) {
+    if (arg0->unk9_0 < 6) {
+        if (arg0->unkA_0) {
             distance = rsin(0x200);
             distance *= arg0->unk63C;
             distance /= ONE;
@@ -1745,10 +1741,10 @@ void func_800AB9A4(D_800F45E0_t* arg0)
             }
         }
     }
-    current = *(u_int*)((char*)arg0 + 8);
+    flags = *(u_int*)((char*)arg0 + 8);
     speed = vs_gametime_tickspeed / 2;
     skip = 0;
-    if (current & 0x80) {
+    if (flags & 0x80) {
         skip = 1;
         if (*(int*)((char*)arg0 + 0x5AC) & 0x08000000) {
             count = 160;
@@ -1763,11 +1759,11 @@ void func_800AB9A4(D_800F45E0_t* arg0)
         count = 16;
         colors = (void*)((char*)arg0 + 0x14C);
         reference = (void*)((char*)arg0 + 0x12C);
-        if ((current & 0xF00) == 0x200) {
+        if (arg0->unk9_0 == 2) {
             speed *= 2;
         }
     }
-    state = (*(u_int*)((char*)arg0 + 8) >> 8) & 0xF;
+    state = arg0->unk9_0;
     switch (state) {
     case 2:
         mode = 0;
@@ -1775,55 +1771,52 @@ void func_800AB9A4(D_800F45E0_t* arg0)
         changed = 0;
     fade:
         changed |= func_800AC168(colors, count - skip, speed, mode, reference);
-        if (*(u_int*)((char*)arg0 + 8) & 0x80) {
+        if (arg0->unk8_7) {
             for (i = 0; i < 2; ++i) {
-            weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
-            if (weapon != NULL) {
-                weaponReference = weapon->unk440;
-                changed |= func_800AC168(
-                    weapon->unk500, weapon->nClutColors, speed, mode, weaponReference);
-            }
+                weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                if (weapon != NULL) {
+                    weaponReference = weapon->unk440;
+                    changed |= func_800AC168(weapon->unk500, weapon->nClutColors, speed,
+                        mode, weaponReference);
+                }
             }
         }
-        if ((*(u_int*)((char*)arg0 + 8) & 0xF00) == 0x300 && changed == 0) {
+        if (arg0->unk9_0 == 3 && changed == 0) {
             arg0->unk54 = 0x404040;
             func_800AC168(colors, count - skip, speed, 2, reference);
-            if (*(u_int*)((char*)arg0 + 8) & 0x80) {
+            if (arg0->unk8_7) {
                 for (i = 0; i < 2; ++i) {
                     weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
                     if (weapon != NULL) {
                         weaponReference = weapon->unk440;
-                        func_800AC168(
-                            weapon->unk500, weapon->nClutColors, speed, 2, weaponReference);
+                        func_800AC168(weapon->unk500, weapon->nClutColors, speed, 2,
+                            weaponReference);
                     }
                 }
             }
         }
     load_cluts:
-        if (*(u_int*)((char*)arg0 + 8) & 0x80) {
+        if (arg0->unk8_7) {
             vs_main_loadClut(arg0->unk1564, arg0->unkF + 4, 0, count);
             for (i = 0, clutOffset = 160; i < 2; ++i, clutOffset += 48) {
                 weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
                 if (weapon != NULL) {
-                    *(u_int*)((char*)weapon + 8) = (*(u_int*)((char*)weapon + 8) & ~0xF00)
-                                                  | (*(u_int*)((char*)arg0 + 8) & 0xF00);
+                    weapon->unk9_0 = arg0->unk9_0;
                     vs_main_loadClut(
                         weapon->unk500, arg0->unkF + 4, clutOffset, weapon->nClutColors);
                 }
             }
         } else {
-            vs_main_loadClut((u_short*)((char*)object + 0x14C), 31, object->unkF * 16, 16);
+            vs_main_loadClut(
+                (u_short*)((char*)object + 0x14C), 31, object->unkF * 16, 16);
         }
         if (changed == 0) {
-            previous = *(u_int*)((char*)arg0 + 8);
-            next = (previous & ~0xF00) | (((((previous >> 8) & 0xF) + 1) & 0xF) << 8);
-            *(u_int*)((char*)arg0 + 8) = next;
-            if (next & 0x80) {
+            ++arg0->unk9_0;
+            if (arg0->unk8_7) {
                 for (i = 0; i < 2; ++i) {
                     weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
                     if (weapon != NULL) {
-                        *(u_int*)((char*)weapon + 8) = (*(u_int*)((char*)weapon + 8) & ~0xF00)
-                                                      | (*(u_int*)((char*)arg0 + 8) & 0xF00);
+                        weapon->unk9_0 = arg0->unk9_0;
                     }
                 }
             }
@@ -1849,7 +1842,7 @@ void func_800AB9A4(D_800F45E0_t* arg0)
             *(int*)((char*)object + 0x34) = 0;
             object->unk12 = 0xFF;
             object->unk26 = (object->unk26 + angle) & 0xFFF;
-            *(int*)((char*)arg0 + 0x5AC) &= ~8;
+            arg0->unk5AC_3 = 0;
             D_800F4B19 = arg0->unk13;
         }
         value = (u_char)arg0->unk54 - speed * 4;
@@ -1922,7 +1915,7 @@ void func_800AB9A4(D_800F45E0_t* arg0)
         changed |= func_800AC0D4(&arg0->unk54, &arg0->unk58, -speed * 8);
         goto fade;
     case 11:
-        *(u_int*)((char*)arg0 + 8) &= ~0xF00;
+        arg0->unk9_0 = 0;
         return;
     case 12:
         changed = 0;
@@ -1934,19 +1927,6 @@ void func_800AB9A4(D_800F45E0_t* arg0)
         goto start_fade;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
 {
@@ -2205,7 +2185,6 @@ static inline int func_800AC690_getProfile(D_800F4538_t* actor)
     return actor->unk5B0_0 & 3;
 }
 
-
 void func_800AC690(int arg0, D_800F4538_t* actor)
 {
     D_800F45E0_t* platform;
@@ -2451,22 +2430,6 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         break;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void func_800ACF54(D_800F4538_t* actor)
 {

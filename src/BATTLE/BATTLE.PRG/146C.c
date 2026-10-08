@@ -15207,7 +15207,139 @@ void func_8008FAC8(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FDC4);
+void func_8008FDC4(void)
+{
+    SVECTOR unused[6] __attribute__((unused));
+    long projection;
+    long flags;
+    TILE* prim;
+    int depth;
+    D_800F1DD4_t* particle;
+    short x;
+    short y;
+    int i;
+    int j;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC == 0) {
+            if (D_800F1BA4 == 0) {
+                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                    if (particle->unkE != 0) {
+                        particle->position.vy += D_800F1D98[1] << particle->unkE;
+                    } else {
+                        particle->unkF += (rand() & 15) - 7;
+                        particle->unkF &= 127;
+                        if (particle->unkD != 0) {
+                            particle->position.vx +=
+                                (D_800F1D98[0] >> 3) + (rsin(particle->unkF << 5) >> 9);
+                            particle->position.vz +=
+                                (D_800F1D98[2] >> 3) - (rcos(particle->unkF << 5) >> 9);
+                            particle->position.vy -= rsin(particle->unkD << 6) >> 9;
+                            ++particle->unkD;
+                            if (particle->unkD > 32) {
+                                particle->unkD = 0;
+                            }
+                        } else {
+                            particle->position.vx +=
+                                (D_800F1D98[0] >> 3) + (rsin(particle->unkF << 5) >> 10);
+                            particle->position.vz +=
+                                (D_800F1D98[2] >> 3) - (rcos(particle->unkF << 5) >> 10);
+                            if ((rand() & 127) == 0) {
+                                particle->unkD = 1;
+                            }
+                        }
+                        particle->position.vy += D_800F1D98[1] >> 3;
+                    }
+                }
+            }
+            particle->unkE = 2;
+            prim = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
+            if ((prim->x0 >= -639) && (prim->x0 < 960) && (depth < 2048)) {
+                if (depth > 4) {
+                    x = prim->x0;
+                    y = prim->y0;
+                    if ((y > 0) && (y < 240) && (x > 0) && (x < 320)) {
+                        setTile(prim);
+                        setSemiTrans(prim, 1);
+                        if (i & 1) {
+                            setWH(prim, 2, 2);
+                        } else {
+                            setWH(prim, 1, 1);
+                        }
+                        setRGB0(prim, 255, 255, 255);
+                        AddPrim(
+                            (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                        particle->unkE = 0;
+                    }
+                    projection = x + (rsin(i << 5) >> 6);
+                    flags = y - (rcos(i << 5) >> 6);
+                    if ((flags > 0) && (flags < 240) && (projection > 0)
+                        && (projection < 320) && (depth > 4)) {
+                        setTile(prim);
+                        setXY0(prim, projection, flags);
+                        setSemiTrans(prim, 1);
+                        if ((i & 1) == 0) {
+                            setWH(prim, 2, 2);
+                        } else {
+                            setWH(prim, 1, 1);
+                        }
+                        setRGB0(prim, 255, 255, 255);
+                        AddPrim(
+                            (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                        particle->unkE = 0;
+                    }
+                    if (particle->unkE == 0) {
+                        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+                        _insertTPage(depth, getTPage(0, 3, 64, 256));
+                    }
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+            if (particle->position.vy > 0) {
+                if ((particle->unkE == 0) && (i & 1)) {
+                    particle->unkC = 1;
+                    particle->unkD = 0;
+                    projection =
+                        (func_8008DC7C(particle->position.vx, particle->position.vz)
+                            << 17)
+                        >> 17;
+                    particle->position.vy = projection;
+                } else {
+                    func_80090A1C(particle);
+                }
+            }
+        } else {
+            prim = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
+            if ((prim->y0 > 0) && (prim->y0 < 240) && (prim->x0 > 0) && (prim->x0 < 320)
+                && (depth > 4)) {
+                setTile(prim);
+                setSemiTrans(prim, 1);
+                setWH(prim, 2, 2);
+                setRGB0(prim, 128 - (particle->unkD << 4), 128 - (particle->unkD << 4),
+                    128 - (particle->unkD << 4));
+                AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+                _insertTPage(depth, getTPage(0, 3, 0, 0));
+                if (D_800F1BA4 == 0) {
+                    particle->unkD += vs_gametime_tickspeed >> 1;
+                }
+                if (particle->unkD >= 8) {
+                    func_80090A1C(particle);
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
 

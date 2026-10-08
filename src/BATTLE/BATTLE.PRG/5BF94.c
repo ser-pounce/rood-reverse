@@ -4663,14 +4663,14 @@ void func_800CD3E4(int index)
     for (n = 0; n <= shape[1]; ++n) {
         for (k = 0; k < shape[n * 4 + 3]; ++k) {
             if ((n != 0) && (n != box->unk0.unk0_12)) {
-                verts = (u_short*)((u_char*)verts + 4);
+                verts += 2;
                 continue;
             }
             v = ((u_char*)verts)[0];
             i = ((u_char*)verts)[1];
             w = ((u_char*)verts)[2];
             h = ((u_char*)verts)[3];
-            verts = (u_short*)((u_char*)verts + 4);
+            verts += 2;
 
             x = POINT_X(v);
             if (POINT_X(i) < x) {

@@ -275,7 +275,9 @@ typedef struct {
     int unk638;
     u_short unk63C;
     u_short menuCameraHeightOffset;
-    u_char unk640[6];
+    u_short collisionRadius;
+    u_short collisionHeight;
+    u_char unk644[2];
     u_short unk646;
     u_int unk648_0 : 16;
     u_int unk648_16 : 1;

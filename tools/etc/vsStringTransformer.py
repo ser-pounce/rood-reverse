@@ -1,6 +1,7 @@
 import sys
 import re
 from ast import literal_eval
+from typing import Match
 from tools.etc.vsString import encode_raw
 
 # Match comments before literals so quotes in comments remain untouched.
@@ -17,7 +18,7 @@ TOKEN_RE = re.compile(
     re.DOTALL,
 )
 
-def encode_c_string_literal(s):
+def encode_c_string_literal(s: str) -> str:
     # C concatenates adjacent literals before interpreting the game encoding.
     # In particular, "L" "v." must produce the single-byte Lv. glyph.
     text = ''.join(
@@ -29,7 +30,7 @@ def encode_c_string_literal(s):
     byte_array = ', '.join(str(b) for b in encoded)
     return '{' + byte_array + '}'
 
-def encode_c_char_literal(s):
+def encode_c_char_literal(s: str) -> str:
     # s includes the surrounding single quotes
     # evaluate to a Python string of length 1 and encode it
     encoded = encode_raw(literal_eval(s))
@@ -38,8 +39,8 @@ def encode_c_char_literal(s):
         return '{' + ', '.join(str(b) for b in encoded) + '}'
     return str(encoded[0])
 
-def process_vsstring_block(block):
-    def replacer(match):
+def process_vsstring_block(block: str) -> str:
+    def replacer(match: Match[str]) -> str:
         if match.group('comment') is not None:
             return match.group(0)
         if match.group('string') is not None:

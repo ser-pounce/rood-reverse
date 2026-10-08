@@ -1,6 +1,8 @@
 #include "common.h"
 #include "146C.h"
+#include "30DB0.h"
 #include "38C1C.h"
+#include "573B8.h"
 #include "5BF94.h"
 #include "gpu.h"
 #include "src/SLUS_010.40/main.h"
@@ -148,17 +150,21 @@ void func_80095258(int, int, D_800F1BAC_t*);
 void func_800957D0(int, int, int);
 void func_800958A4(int, int, D_800F1BAC_t*);
 void func_80095A4C(int, int, D_800F1BAC_t*);
-void func_80095C18(int, char);
-int func_800A1280(int, int, SVECTOR*, int);
+void func_80095C18(int, int);
+int func_80096254(int, int);
 void* func_800962E4();
 void func_8009639C(int);
 void func_80096444(int);
+void func_8009651C(SVECTOR*, int);
 void func_8009695C(int, int, D_800F1BAC_t*);
 void func_800970BC(void);
 
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
+extern int D_80068F04[][4];
+extern u_short D_80068F64[][4];
+extern int D_80068F94[];
 extern RECT D_80068FAC[];
 extern D_800690B4_t D_800690B4[];
 extern const CVECTOR D_80069134[];
@@ -186,6 +192,7 @@ extern char D_800F225B;
 extern char D_800F2260[];
 extern short D_800F2270;
 extern short D_800F2272;
+extern int D_800F2274;
 extern short D_800F2278;
 extern short D_800F227A;
 extern short D_800F227C;
@@ -1737,7 +1744,182 @@ void func_80095B7C(int arg0, int arg1)
     memset(D_800F2260, arg1, 0x10);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095C18);
+void func_80095C18(int actor, int kind)
+{
+    SVECTOR position;
+    SVECTOR other;
+    int _[2] __attribute__((unused));
+    long side;
+    int xy;
+    u_long* prim;
+    u_long* ot;
+
+    if (!(kind & 8)) {
+        int flags;
+        int z;
+        int* corners;
+        u_short* uv;
+
+        if (kind & 0x80) {
+            kind &= 7;
+
+            if (kind < 1 || kind > 4) {
+                kind = 5;
+            }
+        }
+        if (func_800A1280(actor, 251, &position, 0)) {
+            return;
+        }
+        if (func_800A1280(0, 251, &other, 0)) {
+            return;
+        }
+
+        z = position.vz - 16;
+        xy = *(int*)&position;
+
+        if (other.vx + 32 < position.vx) {
+            D_800F2274 &= ~(1 << actor);
+        }
+        if (position.vx < other.vx - 32) {
+            D_800F2274 |= 1 << actor;
+        }
+        if (z < 64) {
+            z = 64;
+        } else if (z >= 2048) {
+            z = 2047;
+        }
+
+        ot = (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + z;
+        side = (D_800F2274 >> actor) & 1;
+
+        switch (kind) {
+        case 0:
+            return;
+        case 1:
+        case 2:
+        case 3:
+            while (kind) {
+                --kind;
+                vs_battle_setSprite(128, xy + kind * 6 + D_80068F94[side], vs_getWH(5, 5),
+                    ot)[4] = vs_getUV0Clut(90, 18, 992, 220);
+            }
+            break;
+        case 4:
+            flags = 0;
+
+            if (position.vx < 16) {
+                position.vx = 16;
+                flags = 1;
+            }
+            if (position.vx > 304) {
+                position.vx = 304;
+                flags |= 2;
+            }
+            if (flags) {
+                if (position.vy < 40) {
+                    position.vy = 40;
+                    flags |= 4;
+                }
+            } else if (position.vy < 8) {
+                position.vy = 40;
+                flags = 4;
+            }
+            if (position.vy > 208) {
+                position.vy = 208;
+                flags |= 8;
+            }
+            if (flags) {
+                func_8009651C(&position, flags);
+                return;
+            }
+
+            side += 2;
+            vs_battle_setSprite(128, xy + D_80068F94[side], vs_getWH(7, 12), ot)[4] =
+                vs_getUV0Clut(152, 17, 992, 220);
+            break;
+        case 5:
+            vs_battle_setSprite(128, xy + D_80068F94[side] + vs_getXY(2, -3),
+                vs_getWH(16, 16), ot)[4] = vs_getUV0Clut(152, 32, 992, 220);
+            break;
+        case 6:
+            side += 4;
+            break;
+        case 7:
+            prim = vs_battle_setSprite(128, xy + vs_getXY(0, -22), vs_getWH(7, 12), ot);
+            prim[1] = _get_mode(0, 0, getTPage(0, 0, 448, 256));
+            prim[4] = vs_getUV0Clut(183, 17, 992, 220);
+            return;
+        }
+
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        corners = D_80068F04[side];
+        uv = D_80068F64[side];
+        prim[0] = vs_getTag(VS_POLY_FT4, *ot);
+        prim[1] = vs_getRGB0(primPolyFT4, 128, 128, 128);
+        prim[2] = func_80096254(xy, corners[0]);
+        prim[3] = uv[0] | (getClut(992, 220) << 16);
+        prim[4] = func_80096254(xy, corners[1]);
+        prim[5] = uv[1] | (getTPage(0, 0, 448, 256) << 16);
+        prim[6] = func_80096254(xy, corners[2]);
+        prim[7] = uv[2];
+        prim[8] = func_80096254(xy, corners[3]);
+        prim[9] = uv[3];
+        *ot = ((u_long)prim << 8) >> 8;
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim + 10;
+    } else {
+        long depth;
+
+        if (func_800A190C(actor, 255, &other, 0) == 0) {
+            if (func_800A190C(0, 255, &position, 0)) {
+                return;
+            }
+
+            position.vx -= other.vx;
+            position.vz -= other.vz;
+            side = ABS(position.vx) + ABS(position.vz);
+
+            if (side < 352) {
+                D_800F2274 &= ~(1 << actor);
+            }
+            if (side > 416) {
+                D_800F2274 |= 1 << actor;
+            }
+
+            side = (D_800F2274 >> actor) & 1;
+
+            if (side) {
+                return;
+            }
+
+            SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+            SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+            other.vy -= 64;
+            RotTransPers(&other, (long*)&position, &depth, &side);
+            ot = ((vs_scratch_t*)0x1F800000)->unk4;
+            position.vx -= 8;
+            position.vy -= 8;
+            xy = *(int*)&position;
+            depth = func_8009F858(actor);
+
+            if (depth >= 0) {
+                if (depth == 0) {
+                    ++D_800F2260[actor];
+
+                    if (!(D_800F2260[actor] & 7)) {
+                        D_800F2260[actor] = 0;
+                    }
+                }
+
+                prim = vs_battle_setSprite(128, xy, vs_getWH(16, 16), ot);
+                prim[1] = _get_mode(0, 0, getTPage(0, 0, 768, 0));
+                prim[4] = ((depth << 4) + 96) | vs_getUV0Clut(0, 32, 976, 223);
+                return;
+            }
+        }
+
+        D_800F2260[actor] = 0;
+    }
+}
 
 int func_80096254(int arg0, int arg1)
 {

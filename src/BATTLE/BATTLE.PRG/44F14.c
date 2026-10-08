@@ -916,7 +916,6 @@ void func_800AEF94(MATRIX* camera)
     D_800F4538_t** weaponActors;
     D_800F45E0_t* object;
     int packedPosition;
-    int flags;
     int weaponActorFlags;
     int i;
     int step;
@@ -939,9 +938,8 @@ void func_800AEF94(MATRIX* camera)
             if (actor->unk0.unk9_0) {
                 func_800AB9A4(actor);
             }
-            flags = (*(u_int*)((char*)actor + 8));
             actor->unk0.unkB_7 = 0;
-            if (flags & 4) {
+            if (actor->unk0.freeze) {
                 if ((actor->unk17E4.unk0 == 1) && actor->unk17E4.unk3 != 0) {
                     int delta;
                     step = vs_gametime_tickspeed / 2;

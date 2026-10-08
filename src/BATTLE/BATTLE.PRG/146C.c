@@ -15158,7 +15158,54 @@ void func_8008FA14(D_800F1DD4_t* arg0)
     arg0->unkF = (rand() & 0xF) + 8;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FAC8);
+void func_8008FAC8(void)
+{
+    long dx;
+    long dy;
+    POLY_G4* prim;
+    int depth;
+    D_800F1DD4_t* particle;
+    int i;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC != 0) {
+            continue;
+        }
+        if (D_800F1BA4 == 0) {
+            particle->position.vy -= particle->unkF * vs_gametime_tickspeed;
+            if (particle->position.vy < -1024) {
+                func_8008FA14(particle);
+            }
+        }
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        depth = RotTransPers(&particle->position, (long*)&prim->x1, &dx, &dy);
+        if ((prim->y1 <= 0) || (prim->y1 >= 240) || (prim->x1 <= 0) || (prim->x1 >= 320)
+            || (depth <= 64) || (depth >= 2048)) {
+            continue;
+        }
+        particle->position.vy += 192;
+        depth = RotTransPers(&particle->position, (long*)&prim->x2, &dx, &dy);
+        particle->position.vy -= 192;
+        dx = (prim->x2 - prim->x1) / 32;
+        dy = (prim->y2 - prim->y1) / 32;
+        prim->x0 = prim->x1 + dx + dy;
+        prim->y0 = prim->y1 + dy - dx;
+        prim->x3 = prim->x1 + dx - dy;
+        prim->y3 = dx + (prim->y1 + dy);
+        setPolyG4(prim);
+        setSemiTrans(prim, 1);
+        setRGB1(prim, 192, 64, 64);
+        setRGB0(prim, 32, 8, 32);
+        setRGB3(prim, 32, 8, 32);
+        setRGB2(prim, 0, 0, 0);
+        AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+        _insertTPage(depth, getTPage(0, 1, 0, 0));
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FDC4);
 

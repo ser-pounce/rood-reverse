@@ -534,6 +534,82 @@ extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
+typedef struct {
+    union {
+        int value;
+        u_char bytes[4];
+        struct {
+            u_int actor : 16, color : 4, texture : 4, life : 8;
+        } bits;
+    } config;
+    int index, age;
+    SVECTOR first[8], second[8], previousFirst, currentFirst, previousSecond,
+        currentSecond;
+    int projectionDepth, projectionFlags;
+} effectTrailState;
+
+typedef struct {
+    u_long tag;
+    POLY_GT4 poly;
+    u_long endPage;
+} TrailPacket;
+
+typedef struct {
+    short rotation[3];
+    u_short flags;
+    u_char pad8[6];
+    short frame;
+    u_char pad10[12];
+    VECTOR position;
+    u_char pad2C[8];
+    u_char actor, bone, targetActor, targetBone;
+    MATRIX world, view, attachment, facing;
+    SVECTOR saved, control0, control1;
+} effectTransformState;
+
+typedef struct {
+    short mass;
+    short gravityScale;
+    int x, y, z;
+    int vx, vy, vz;
+    int fx, fy, fz;
+    int ax, ay, az;
+} effectMotionState;
+
+typedef struct {
+    char prefix[0x62];
+    short targetX, targetY, targetZ;
+    char padding[8];
+    int attraction;
+} effectAttractionView;
+
+typedef struct {
+    u_short unk0;
+    u_char count, unk3;
+    char prefix[12];
+    D_800F53B8_t3_2 target[0];
+} soundEventTargets;
+
+int _printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
+void func_800C7EBC(u_short*, u_int, int, u_int);
+void func_800CD158(int);
+void func_800CD3E4(int);
+void func_800CF988(func_800CF988_t*, int, int, int);
+int _absMax3(int arg0, int arg1, int arg2) __attribute__((unused));
+int _absMax2(int arg0, int arg1) __attribute__((unused));
+void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));
+void func_800D52A4(func_800D2904_t*);
+void func_800D6E24(void);
+int func_800D5088(D_800F53B8_t* arg0);
+void func_80046578(int);
+
+extern int D_8005046C;
+extern u_char* D_800EB588[];
+extern u_short D_800EB98C[16];
+extern char D_800EBA78[];
+extern CVECTOR D_800EC308[], D_800EC2E8[];
+extern int D_800F4CC0;
+
 int func_800C4794(SVECTOR* arg0)
 {
     func_800C56C0_t* state = D_800EB9B8;
@@ -1842,7 +1918,6 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
 #pragma vsstring(end)
 
 // Looks like some unholy union of hasm and compiled code, leaving as raw asm
-int _printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
 __asm__("glabel _printFixedWidthFontChar;"
         "addu       $sp, -8;"
         "addu       $t7, $a0, $zero;"
@@ -2057,9 +2132,6 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
     }
 }
 #pragma vsstring(end)
-
-void func_800C7EBC(u_short*, u_int, int, u_int);
-extern u_short D_800EB98C[16];
 
 void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
 {
@@ -2686,9 +2758,6 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
         }
     }
 }
-
-extern int D_800F4CC0;
-extern char D_800EBA78[];
 
 int func_800C930C(int mode)
 {
@@ -3769,10 +3838,6 @@ void func_800CB7DC(void)
     }
 }
 
-void func_800CD158(int);
-void func_800CD3E4(int);
-extern int D_8005046C;
-
 void func_800CB83C(void)
 {
     int id, state, duration, scale, reverse;
@@ -4492,8 +4557,6 @@ int func_800CD3A0(int arg0, int arg1)
     return var_v1;
 }
 
-extern u_char* D_800EB588[];
-
 #define POINT_X(p) (((short*)&points[p])[0])
 #define POINT_Y(p) (((short*)&points[p])[1])
 
@@ -4677,26 +4740,6 @@ void func_800CD3E4(int index)
 #undef POINT_X
 #undef POINT_Y
 
-typedef struct {
-    union {
-        int value;
-        u_char bytes[4];
-        struct {
-            u_int actor : 16, color : 4, texture : 4, life : 8;
-        } bits;
-    } config;
-    int index, age;
-    SVECTOR first[8], second[8], previousFirst, currentFirst, previousSecond,
-        currentSecond;
-    int projectionDepth, projectionFlags;
-} effectTrailState;
-typedef struct {
-    u_long tag;
-    POLY_GT4 poly;
-    u_long endPage;
-} TrailPacket;
-extern CVECTOR D_800EC308[], D_800EC2E8[];
-void func_800CF988(func_800CF988_t*, int, int, int);
 void func_800CDCBC(effectTrailState* t, int head, int tail)
 {
     long xy[4];
@@ -5621,7 +5664,6 @@ int vs_battle_randUniformInt(int arg0, int arg1)
     return arg0;
 }
 
-int _absMax3(int arg0, int arg1, int arg2) __attribute__((unused));
 int _absMax3(int arg0, int arg1, int arg2)
 {
     int var_v0;
@@ -5642,7 +5684,6 @@ int _absMax3(int arg0, int arg1, int arg2)
     return arg0;
 }
 
-int _absMax2(int arg0, int arg1) __attribute__((unused));
 int _absMax2(int arg0, int arg1)
 {
     int abs0 = arg0 >= 0 ? arg0 : -arg0;
@@ -5705,7 +5746,6 @@ int func_800CFE1C(short* arg0, int arg1)
     return (((arg0[1] - new_var) * arg1) >> 7) + new_var;
 }
 
-void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));
 void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
 {
     int v = svec->vy;
@@ -5733,19 +5773,6 @@ void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
     arg1->t[1] = arg0->vy;
     arg1->t[2] = arg0->vz;
 }
-
-typedef struct {
-    short rotation[3];
-    u_short flags;
-    u_char pad8[6];
-    short frame;
-    u_char pad10[12];
-    VECTOR position;
-    u_char pad2C[8];
-    u_char actor, bone, targetActor, targetBone;
-    MATRIX world, view, attachment, facing;
-    SVECTOR saved, control0, control1;
-} effectTransformState;
 
 void func_800CFEF0(D_800F53B8_t* arg0)
 {
@@ -7455,9 +7482,6 @@ int func_800D4BD0(D_800F53B8_t* arg0)
     return 1;
 }
 
-void func_800D52A4(func_800D2904_t*);
-void func_800D6E24(void);
-
 int func_800D4C18(D_800F53B8_t* arg0)
 {
     func_800D2904_t* next = arg0->unk18;
@@ -7584,7 +7608,6 @@ int func_800D5048(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D5088(D_800F53B8_t* arg0);
 int func_800D5088(D_800F53B8_t* arg0)
 {
     int i;
@@ -7629,22 +7652,6 @@ int func_800D51D8(D_800F53B8_t* arg0)
 void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
-
-typedef struct {
-    short mass;
-    short gravityScale;
-    int x, y, z;
-    int vx, vy, vz;
-    int fx, fy, fz;
-    int ax, ay, az;
-} effectMotionState;
-
-typedef struct {
-    char prefix[0x62];
-    short targetX, targetY, targetZ;
-    char padding[8];
-    int attraction;
-} effectAttractionView;
 
 void func_800D52A4(func_800D2904_t* node)
 {
@@ -7790,8 +7797,6 @@ int func_800D57FC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return ret;
 }
 
-void func_80046578(int);
-
 int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
     SVECTOR position;
@@ -7895,12 +7900,6 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-typedef struct {
-    u_short unk0;
-    u_char count, unk3;
-    char prefix[12];
-    D_800F53B8_t3_2 target[0];
-} soundEventTargets;
 int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
 {
     int result = 1;

@@ -24,6 +24,13 @@ typedef struct {
     short unk6;
 } func_8008D2C0_t;
 
+typedef struct {
+    u_char unk0;
+    u_char overlay;
+    u_char x;
+    u_char y;
+} func_800AB358_t;
+
 void func_8007A824(DR_MOVE*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DA24(int, int);
@@ -1447,7 +1454,55 @@ void func_800AB2AC(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB358);
+void func_800AB358(int index, func_800AB358_t* arg)
+{
+    RECT rect;
+    DR_MOVE* packet;
+    D_800F4538_t* actor = D_800F4538[index];
+    texMapOverlay_t* overlay;
+    int srcX;
+    int srcY;
+    int dstX;
+    int width;
+    int height;
+    int x;
+    int y;
+    int row;
+    int py;
+
+    if (D_800F2450[D_800E8F2C] == 0) {
+        return;
+    }
+
+    srcX = arg->x;
+    srcY = arg->y;
+    srcY += actor->unk183E[D_800E8F2C];
+    overlay = &actor->texMapOverlays[arg->overlay];
+    dstX = overlay->x;
+    width = overlay->w;
+    height = overlay->h;
+
+    if (!(getActorFlags(actor) & 0x8000000)) {
+        srcX /= 4;
+        width /= 4;
+        dstX /= 4;
+    } else {
+        srcX /= 2;
+        width /= 2;
+        dstX /= 2;
+    }
+
+    packet = vs_battlePacketBegin();
+    x = D_800E8F30[actor->unk5BB * 2];
+    y = D_800E8F30[actor->unk5BB * 2 + 1];
+    row = D_800E8F90[actor->unk5BB];
+    py = overlay->y;
+    setRECT(
+        &rect, ((D_800F2450[D_800E8F2C] & 15) * 64) + srcX, srcY + 256, width, height);
+    SetDrawMove(packet, &rect, dstX + (x * 64), (y * 256) + (row * 64) + py);
+    func_8007A824(packet);
+    vs_battlePacketEnd(packet);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB4F0);
 

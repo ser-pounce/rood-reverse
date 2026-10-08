@@ -152,6 +152,8 @@ extern u_int D_8002F63C[];
 extern int D_80039BCC;
 extern D_80039BC8_t D_80039BC8;
 extern int D_80037850[16];
+extern u_char D_8002F5A0[];
+extern u_char D_8002F600[];
 extern FSoundCommandParams D_80037790;
 extern FSoundCommandHandler D_800301E0[];
 
@@ -722,7 +724,7 @@ void func_80012BB8(void* arg0, int arg1)
 
 int vs_sound_spuTransferring(void) { return _isSpuTransfer; }
 
-int func_80012C14(u_int* arg0, int* arg1, int* arg2)
+int func_80012C14(int* arg0, int* arg1, int* arg2)
 {
     int var_a3;
 
@@ -828,7 +830,7 @@ int func_80012F10(int* in_Data, u_int in_Size, int in_Slot, int in_Wait)
         if (D_80039BC8.SpuAddr == 0) {
             if (Sound_IsNotAkaoFile(in_Data) == 0) {
                 if (in_Data[4] == 0x35100) {
-                    func_80012C14((u_int*)in_Data, &instrumentIndex, &spuAddr);
+                    func_80012C14(in_Data, &instrumentIndex, &spuAddr);
                 } else if (in_Data[4] == 0xB100) {
                     func_80012D9C(in_Data, &instrumentIndex, &spuAddr, in_Slot);
                 } else {
@@ -1036,7 +1038,7 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
     if (Sound_IsNotAkaoFile(in_Data) == 0) {
         header = in_Data;
         SpuSetTransferStartAddr(in_SpuAddr);
-        in_Data = ((FAkaoSequence*)in_Data)->Payload;
+        in_Data = header->Payload;
         instruments = in_Data;
         in_Data = instruments + header->unk1C;
         _writeSpu(in_Data, header->unk14);
@@ -1559,66 +1561,56 @@ void func_8001436C(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
 {
     short* Wave;
     int temp;
-    int Volume;
+    int Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
     int Sample;
-    u_int UpdateFlags;
+    u_int UpdateFlags = in_pChannel->UpdateFlags;
 
-    UpdateFlags = in_pChannel->UpdateFlags;
-    Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
-
-    if (UpdateFlags & SOUND_UPDATE_VIBRATO) {
-        if (in_pChannel->VibratoDelayCurrent == 0) {
-            if (--in_pChannel->unkA4 == 0) {
-                in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
-                Wave = in_pChannel->VibratoWave;
-                if (Wave[0] == 0 && Wave[1] == 0) {
-                    in_pChannel->VibratoWave = Wave + Wave[2];
-                }
-                Sample = *in_pChannel->VibratoWave++;
-                temp = (in_pChannel->VibratoBase * Sample) >> 16;
-                if (temp != in_pChannel->VibratoPitch) {
-                    in_pChannel->VibratoPitch = temp;
-                    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
-                    if (temp >= 0) {
-                        in_pChannel->VibratoPitch = temp * 2;
-                    }
-                }
+    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (in_pChannel->VibratoDelayCurrent == 0)
+        && (--in_pChannel->unkA4 == 0)) {
+        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+        Wave = in_pChannel->VibratoWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->VibratoWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->VibratoWave++;
+        temp = (in_pChannel->VibratoBase * Sample) >> 16;
+        if (temp != in_pChannel->VibratoPitch) {
+            in_pChannel->VibratoPitch = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+            if (temp >= 0) {
+                in_pChannel->VibratoPitch = temp * 2;
             }
         }
     }
 
-    if (UpdateFlags & SOUND_UPDATE_TREMOLO) {
-        if (in_pChannel->TremeloDelayCurrent == 0) {
-            if (!(--in_pChannel->unkB6 & 0xFFFF)) {
-                in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
-                Wave = in_pChannel->TremeloWave;
-                if (Wave[0] == 0 && Wave[1] == 0) {
-                    in_pChannel->TremeloWave = Wave + Wave[2];
-                }
-                temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
-                Sample = *in_pChannel->TremeloWave++;
-                temp = (temp * Sample) >> 15;
-                if (temp != in_pChannel->TremeloVolume) {
-                    in_pChannel->TremeloVolume = temp;
-                    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
-                }
-            }
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && (in_pChannel->TremeloDelayCurrent == 0)
+        && !(--in_pChannel->unkB6 & 0xFFFF)) {
+        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+        Wave = in_pChannel->TremeloWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->TremeloWave = Wave + Wave[2];
+        }
+        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremeloWave++;
+        temp = (temp * Sample) >> 15;
+        if (temp != in_pChannel->TremeloVolume) {
+            in_pChannel->TremeloVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
     }
 
-    if (UpdateFlags & SOUND_UPDATE_PAN_LFO) {
-        if (--in_pChannel->AutoPanRateCurrent == 0) {
-            in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
-            Wave = in_pChannel->AutoPanWave;
-            if (Wave[0] == 0 && Wave[1] == 0) {
-                in_pChannel->AutoPanWave = Wave + Wave[2];
-            }
-            Sample = *in_pChannel->AutoPanWave++;
-            temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
-            if (temp != in_pChannel->AutoPanVolume) {
-                in_pChannel->AutoPanVolume = temp;
-                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
-            }
+    if ((UpdateFlags & SOUND_UPDATE_PAN_LFO)
+        && (--in_pChannel->AutoPanRateCurrent == 0)) {
+        in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
+        Wave = in_pChannel->AutoPanWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->AutoPanWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->AutoPanWave++;
+        temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
+        if (temp != in_pChannel->AutoPanVolume) {
+            in_pChannel->AutoPanVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
     }
 
@@ -1635,8 +1627,8 @@ void func_8001436C(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
             (Volume * (int)(((u_int)g_pActiveMusicConfig->A_Volume >> 16) & 0x7F)) >> 7;
         temp = ((in_pChannel->ChannelPan >> 8) + in_pChannel->AutoPanVolume) & 0xFF;
         if (D_80039AFC & 2) {
-            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right =
-                (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.right = (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right;
         } else {
             in_pChannel->VoiceParams.Volume.left =
                 (Volume * g_Sound_StereoPanGainTableQ15[temp]) >> 15;
@@ -1681,66 +1673,54 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
 {
     short* Wave;
     int temp;
-    int Volume;
+    int Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
     int Sample;
-    u_int UpdateFlags;
+    u_int UpdateFlags = in_pChannel->UpdateFlags;
 
-    UpdateFlags = in_pChannel->UpdateFlags;
-    Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
-
-    if (UpdateFlags & SOUND_UPDATE_VIBRATO) {
-        {
-            if (--in_pChannel->unkA4 == 0) {
-                in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
-                Wave = in_pChannel->VibratoWave;
-                if (Wave[0] == 0 && Wave[1] == 0) {
-                    in_pChannel->VibratoWave = Wave + Wave[2];
-                }
-                Sample = *in_pChannel->VibratoWave++;
-                temp = (in_pChannel->VibratoBase * Sample) >> 16;
-                if (temp != in_pChannel->VibratoPitch) {
-                    in_pChannel->VibratoPitch = temp;
-                    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
-                    if (temp >= 0) {
-                        in_pChannel->VibratoPitch = temp * 2;
-                    }
-                }
+    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (--in_pChannel->unkA4 == 0)) {
+        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+        Wave = in_pChannel->VibratoWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->VibratoWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->VibratoWave++;
+        temp = (in_pChannel->VibratoBase * Sample) >> 16;
+        if (temp != in_pChannel->VibratoPitch) {
+            in_pChannel->VibratoPitch = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+            if (temp >= 0) {
+                in_pChannel->VibratoPitch = temp * 2;
             }
         }
     }
 
-    if (UpdateFlags & SOUND_UPDATE_TREMOLO) {
-        {
-            if (!(--in_pChannel->unkB6 & 0xFFFF)) {
-                in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
-                Wave = in_pChannel->TremeloWave;
-                if (Wave[0] == 0 && Wave[1] == 0) {
-                    in_pChannel->TremeloWave = Wave + Wave[2];
-                }
-                temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
-                Sample = *in_pChannel->TremeloWave++;
-                temp = (temp * Sample) >> 15;
-                if (temp != in_pChannel->TremeloVolume) {
-                    in_pChannel->TremeloVolume = temp;
-                    in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
-                }
-            }
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && !(--in_pChannel->unkB6 & 0xFFFF)) {
+        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+        Wave = in_pChannel->TremeloWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->TremeloWave = Wave + Wave[2];
+        }
+        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremeloWave++;
+        temp = (temp * Sample) >> 15;
+        if (temp != in_pChannel->TremeloVolume) {
+            in_pChannel->TremeloVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
     }
 
-    if (UpdateFlags & SOUND_UPDATE_PAN_LFO) {
-        if (--in_pChannel->AutoPanRateCurrent == 0) {
-            in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
-            Wave = in_pChannel->AutoPanWave;
-            if (Wave[0] == 0 && Wave[1] == 0) {
-                in_pChannel->AutoPanWave = Wave + Wave[2];
-            }
-            Sample = *in_pChannel->AutoPanWave++;
-            temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
-            if (temp != in_pChannel->AutoPanVolume) {
-                in_pChannel->AutoPanVolume = temp;
-                in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
-            }
+    if ((UpdateFlags & SOUND_UPDATE_PAN_LFO)
+        && (--in_pChannel->AutoPanRateCurrent == 0)) {
+        in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
+        Wave = in_pChannel->AutoPanWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->AutoPanWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->AutoPanWave++;
+        temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
+        if (temp != in_pChannel->AutoPanVolume) {
+            in_pChannel->AutoPanVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
     }
 
@@ -1762,8 +1742,8 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
             temp = 0x80;
         }
         if (D_80039AFC & 2) {
-            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right =
-                (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.right = (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right;
         } else {
             in_pChannel->VoiceParams.Volume.left =
                 (Volume * g_Sound_StereoPanGainTableQ15[temp]) >> 15;
@@ -1985,19 +1965,17 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
 void func_80015080(u_int in_ReservedVoices)
 {
     u_int i;
-    u_int reserved;
+    u_int reserved = (g_pActiveMusicConfig->ActiveChannelMask
+                         & g_pActiveMusicConfig->AllocatedVoiceMask)
+                   | in_ReservedVoices;
     FSpuVoiceInfo* pVoice;
 
-    reserved = (g_pActiveMusicConfig->ActiveChannelMask
-                   & g_pActiveMusicConfig->AllocatedVoiceMask)
-             | in_ReservedVoices;
     if (g_pSavedMousicConfig != NULL) {
         reserved |= g_pSavedMousicConfig->ActiveChannelMask
                   & g_pSavedMousicConfig->AllocatedVoiceMask;
     }
 
-    pVoice = g_SpuVoiceInfo;
-    for (i = 0; i < VOICE_COUNT; pVoice++, i++) {
+    for (i = 0, pVoice = g_SpuVoiceInfo; i < VOICE_COUNT; pVoice++, i++) {
         if (reserved & (1 << i)) {
             pVoice->pEnvx = 0x7FFF;
             continue;
@@ -2041,17 +2019,14 @@ void Sound_RestoreChannelVolumeFromMasterFade(
 
 void func_80015220(void)
 {
-    u_int KeyOnFlags;
-    u_int ReservedVoices;
+    u_int KeyOnFlags = 0;
+    u_int ReservedVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                         | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14;
     u_int Voices;
     u_int Flags;
     u_int SavedChannels;
     u_int SavedVoices;
     FSoundChannel* pChannel;
-
-    ReservedVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
-                   | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14;
-    KeyOnFlags = 0;
 
     if ((g_pActiveMusicConfig->ActiveChannelMask & g_pActiveMusicConfig->PendingKeyOnMask)
         || ((g_pSavedMousicConfig != NULL)
@@ -2132,10 +2107,9 @@ void func_80015220(void)
     Flags = g_Sound_VoiceSchedulerState.ActiveChannelMask
           & g_Sound_VoiceSchedulerState.KeyedFlags;
     if (Flags != 0) {
-        Voices = 0x1000;
-        pChannel = D_80035910;
         KeyOnFlags |= g_Sound_VoiceSchedulerState.KeyOnFlags;
-        do {
+        for (Voices = 0x1000, pChannel = D_80035910; Flags != 0;
+            Voices <<= 1, pChannel++) {
             if (Flags & Voices) {
                 func_800147CC(pChannel, Voices);
                 if (pChannel->VoiceParams.VoiceParamFlags != 0) {
@@ -2144,9 +2118,7 @@ void func_80015220(void)
                 }
                 Flags &= ~Voices;
             }
-            Voices <<= 1;
-            pChannel++;
-        } while (Flags != 0);
+        }
         D_80037894 = 0;
     }
 
@@ -2265,19 +2237,15 @@ void Sound_ProcessKeyOffRequests(void)
 void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
     int in_ExtraVoiceMask)
 {
-    int VoiceMask;
+    int VoiceMask = 0;
     int SavedKeyedMask;
     int ActiveKeyedMask;
-    int Filter;
+    int Filter = ~(g_Sound_VoiceSchedulerState.ActiveChannelMask
+                   | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14);
     int ActiveMask;
-    int SavedMask;
+    int SavedMask = 0;
 
-    Filter = ~(g_Sound_VoiceSchedulerState.ActiveChannelMask
-               | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14);
-    VoiceMask = 0;
-    SavedMask = 0;
-
-    if (g_pSavedMousicConfig) {
+    if (g_pSavedMousicConfig != NULL) {
         SavedMask = g_pSavedMousicConfig->ActiveChannelMask & in_SavedChannelMask;
         SavedKeyedMask = SavedMask & g_pSavedMousicConfig->KeyedMask;
 
@@ -2297,7 +2265,7 @@ void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveCha
         ActiveMask &= ~g_pActiveMusicConfig->KeyedMask;
     }
 
-    if (g_pSavedMousicConfig && (SavedMask != 0)) {
+    if ((g_pSavedMousicConfig != NULL) && (SavedMask != 0)) {
         ChannelMaskToVoiceMaskFiltered(
             g_pSecondaryMusicChannels, &VoiceMask, SavedMask, Filter);
     }
@@ -2565,14 +2533,10 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
 {
     u_int i;
     int maxPriority;
-    u_int voiceBit;
-    u_int activeVoices;
-    FSoundChannel* pChannel;
-
-    voiceBit = 0x1000;
-    pChannel = D_80035910;
-    activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
-                 | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+    u_int voiceBit = 0x1000;
+    u_int activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                       | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+    FSoundChannel* pChannel = D_80035910;
 
     if (in_StopFlags & 0x0FFFFFFF) {
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
@@ -2608,7 +2572,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
         voiceBit = 0x1000;
         maxPriority = 0;
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
-            if ((activeVoices & voiceBit) && (maxPriority < (int)pChannel->unk58)) {
+            if ((activeVoices & voiceBit) && (maxPriority < pChannel->unk58)) {
                 maxPriority = pChannel->unk58;
             }
         }
@@ -2627,28 +2591,11 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
         }
     } else {
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
-            if (activeVoices & voiceBit) {
-                if (in_SfxId == -1) {
-                    if ((int)pChannel->unk3C < 0) {
-                        if (pChannel->UpdateFlags & 0x100000) {
-                            pChannel->UpdateFlags |= 0x200000;
-                        } else {
-                            g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
-                            Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
-                            pChannel->UpdateFlags = 0;
-                        }
-                    }
-                } else if (in_SfxId == -2) {
-                    if (pChannel->unk28 == 0) {
-                        if (pChannel->UpdateFlags & 0x100000) {
-                            pChannel->UpdateFlags |= 0x200000;
-                        } else {
-                            g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
-                            Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
-                            pChannel->UpdateFlags = 0;
-                        }
-                    }
-                } else if (pChannel->unk3C == in_SfxId) {
+            if (!(activeVoices & voiceBit)) {
+                continue;
+            }
+            if (in_SfxId == -1) {
+                if (pChannel->unk3C < 0) {
                     if (pChannel->UpdateFlags & 0x100000) {
                         pChannel->UpdateFlags |= 0x200000;
                     } else {
@@ -2656,6 +2603,24 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
                         Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
                         pChannel->UpdateFlags = 0;
                     }
+                }
+            } else if (in_SfxId == -2) {
+                if (pChannel->unk28 == 0) {
+                    if (pChannel->UpdateFlags & 0x100000) {
+                        pChannel->UpdateFlags |= 0x200000;
+                    } else {
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            } else if (pChannel->unk3C == in_SfxId) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
                 }
             }
         }
@@ -4455,22 +4420,15 @@ long func_80019A58(void)
 
 // https://decomp.me/scratch/qmxvP
 char func_80019FC4(FSoundChannel* channel);
-extern u_char D_8002F5A0[];
-extern u_char D_8002F600[];
-
 char func_80019FC4(FSoundChannel* channel)
 {
-    u_char* pc;
-    u_int loopTop;
-    FSoundChannelConfig* config;
+    u_char* pc = channel->ProgramCounter;
+    u_int loopTop = channel->LoopStackTop;
+    FSoundChannelConfig* config = g_pActiveMusicConfig;
     int length;
     int jumpOffset;
 
-    pc = channel->ProgramCounter;
-    loopTop = channel->LoopStackTop;
-    config = g_pActiveMusicConfig;
-
-    while (1) {
+    for (;;) {
         if (*pc < 0x9A) {
             if (*pc >= 0x8F) {
                 channel->SfxMask &= ~5;

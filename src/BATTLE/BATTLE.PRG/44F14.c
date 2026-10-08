@@ -920,7 +920,7 @@ void func_800AEF94(MATRIX* camera)
     int weaponActorFlags;
     int i;
     int step;
-    u_int modelHeight;
+    int modelHeight;
     u_char attachmentId;
     vs_battle_wepModels_t** weapons;
     vs_battle_wepModels_t* weapon;
@@ -1102,7 +1102,7 @@ void func_800AEF94(MATRIX* camera)
     frame->depth += 0x10;
     do {
         object = (void*)*entries;
-        if ((object != NULL) && ((u_char)object->unk0 != 0)) {
+        if ((object != NULL) && (object->unk0 != 0)) {
             if (((i == D_800F4B19) && (D_800F4B18 == 0)) || (object->unk1A == 0xF7)) {
                 func_800B0908((objectAnimationState*)object,
                     vs_gametime_tickspeed / 2);
@@ -1112,7 +1112,7 @@ void func_800AEF94(MATRIX* camera)
             modelHeight = object->unk68->unk50;
             *(int*)&objectScratch->offset = packedPosition;
             objectScratch->offset.vy =
-                objectScratch->offset.vy + (int)modelHeight / 2;
+                objectScratch->offset.vy + modelHeight / 2;
             if (object->unk64.unk0 != 0) {
                 func_800AB788(NULL, (D_800F4538_t*)object, 0);
             }

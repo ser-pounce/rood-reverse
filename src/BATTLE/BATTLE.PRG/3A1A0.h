@@ -208,6 +208,20 @@ typedef struct {
 } texMapOverlay_t;
 
 typedef struct {
+    u_char x;
+    u_char y;
+    u_char columns;
+    u_char unk3;
+} D_800F4538_unk614;
+
+typedef struct {
+    u_char overlay;
+    u_char x;
+    u_char y;
+    u_char columns;
+} texMapAnimation_t;
+
+typedef struct {
     D_800F4538_unk0 unk0;
     MATRIX bones[42];
     u_char unk5AC_0 : 2;
@@ -269,7 +283,8 @@ typedef struct {
     void* unk5DC[4];
     SVECTOR unk5EC;
     texMapOverlay_t texMapOverlays[8];
-    u_char unk614[0x24];
+    D_800F4538_unk614 unk614[2];
+    u_char unk61C[0x1C];
     int unk638;
     u_short unk63C;
     u_short menuCameraHeightOffset;
@@ -327,7 +342,8 @@ typedef struct {
     u_char unk17FE;
     u_char unk17FF;
     short unk1800;
-    u_char unk1802[0xA];
+    u_char unk1802[2];
+    texMapAnimation_t unk1804[2];
     D_800F4538_unk180C unk180C[2];
     short unk1814;
     short unk1816;

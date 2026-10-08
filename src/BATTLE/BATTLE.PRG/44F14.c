@@ -955,7 +955,7 @@ void func_800AEF94(MATRIX* camera)
                 func_800AB4F0(actor);
             texture_ready:;
 
-                if ((*(u_int*)((char*)actor + 0x5AC)) & 3) {
+                if (actor->unk5AC_0) {
                     func_800AC540(i, actor);
                 }
                 if (vs_gametime_tickspeed == 4) {
@@ -963,7 +963,7 @@ void func_800AEF94(MATRIX* camera)
                 }
                 func_800AF6E8(actor);
                 actor->unk5B2 = 1;
-                actor->unk5B2 = (((u_int)(*(u_int*)((char*)actor + 0x5B0)) >> 3) & 1) + 1;
+                actor->unk5B2 = actor->unk5B0_3 + 1;
             } else {
                 func_800AEAE8(actor);
             }

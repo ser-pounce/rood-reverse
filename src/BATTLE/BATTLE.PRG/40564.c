@@ -1289,23 +1289,18 @@ void func_800AAC80(RECT* arg0, int arg1, int arg2)
 
 void func_800AACDC(void)
 {
-    void* new_var;
-    RECT sp10;
-    DR_MOVE* temp_s0;
+    RECT rect;
+    DR_MOVE* packet;
 
-    sp10.x = 470;
-    sp10.y = 384;
-    sp10.w = 18;
-    sp10.h = 36;
+    rect.x = 470;
+    rect.y = 384;
+    rect.w = 18;
+    rect.h = 36;
 
-    new_var = (void*)0x1F800000;
-    temp_s0 = *((DR_MOVE**)0x1F800000);
-    new_var = (void*)0x10;
-
-    SetDrawMove(temp_s0, &sp10, 16, 400);
-    func_8007A824(temp_s0);
-
-    *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
+    packet = vs_battlePacketBegin();
+    SetDrawMove(packet, &rect, 16, 400);
+    func_8007A824(packet);
+    vs_battlePacketEnd(packet);
 }
 
 // https://decomp.me/scratch/7lkmC

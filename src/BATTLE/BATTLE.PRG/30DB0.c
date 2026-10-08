@@ -157,7 +157,7 @@ extern int D_800F49D8;
 extern u_int D_800F49E0;
 extern char D_800F49E4;
 
-int vs_battle_getEmptyObjectDataSlot(void)
+inline int vs_battle_getEmptyObjectDataSlot(void)
 {
     int i;
 
@@ -170,22 +170,11 @@ int vs_battle_getEmptyObjectDataSlot(void)
     return -1;
 }
 
-int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
+inline int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
 {
-    int i;
-    int slot;
     vs_battle_objectData* dst;
+    int slot = vs_battle_getEmptyObjectDataSlot();
 
-    for (i = 0; i < 16; ++i) {
-        if (vs_battle_objectDataSlots[i].dataType == 0) {
-            slot = i;
-            goto found;
-        }
-    }
-
-    slot = -1;
-
-found:
     if (slot == -1) {
         return -1;
     }
@@ -1493,31 +1482,6 @@ static inline int vs_battleFindSharedSequence(vs_battle_objectData* arg0)
     return 0;
 }
 
-static inline int vs_battleQueueSequenceObject(vs_battle_objectData* objectData)
-{
-    int i;
-    int slot;
-    vs_battle_objectData* dst;
-
-    for (i = 0; i < 16; ++i) {
-        if (vs_battle_objectDataSlots[i].dataType == 0) {
-            slot = i;
-            goto found;
-        }
-    }
-
-    slot = -1;
-
-found:
-    if (slot == -1) {
-        return -1;
-    }
-
-    dst = &vs_battle_objectDataSlots[slot];
-    *dst = *objectData;
-    return slot;
-}
-
 int func_8009BE5C(vs_battle_objectData* object)
 {
     vs_battle_objectData queued;
@@ -1568,7 +1532,7 @@ int func_8009BE5C(vs_battle_objectData* object)
             queued.index = 0;
             queued.actorId = 3;
             queued.material = model;
-            vs_battleQueueSequenceObject(&queued);
+            vs_battle_populateDataSlot(&queued);
         }
         break;
     case 1:

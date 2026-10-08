@@ -16,6 +16,7 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/INITBTL.PRG/18.h"
 #include <abs.h>
+#include "insertTPage.h"
 #include <libetc.h>
 #include <libgpu.h>
 #include <libgte.h>
@@ -15026,7 +15027,111 @@ void func_8008F30C(int arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F440);
+void func_8008F440(void)
+{
+    SVECTOR vertices[10];
+    long projection;
+    long flags;
+    LINE_G2* line;
+    POLY_FT4* splash;
+    int depth;
+    D_800F1DD4_t* particle;
+    int i;
+    int j;
+    _mpdRoomSection3* cell;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC == 0) {
+            if (D_800F1BA4 == 0) {
+                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                    particle->position.vy += D_800F1D98[1] << particle->unkE;
+                    if (particle->unkE == 0) {
+                        particle->position.vx += D_800F1D98[0];
+                        particle->position.vz += D_800F1D98[2];
+                    }
+                }
+            }
+            particle->unkE = 2;
+            line = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers(&particle->position, (long*)&line->x0, &projection, &flags);
+            if ((line->x0 >= -639) && (line->x0 < 960) && (depth < 2048)) {
+                if ((line->y0 > 0) && (line->y0 < 240) && (line->x0 > 0)
+                    && (line->x0 < 320) && (depth > 4)) {
+                    setVector(&vertices[0], particle->position.vx - D_800F1D98[0],
+                        particle->position.vy - D_800F1D98[1],
+                        particle->position.vz - D_800F1D98[2]);
+                    RotTransPers(&vertices[0], (long*)&line->x1, &projection, &flags);
+                    setLineG2(line);
+                    setSemiTrans(line, 1);
+                    setRGB0(line, 96, 96, 128);
+                    setRGB1(line, 32, 32, 100);
+                    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, line++);
+                    ((vs_scratch_t*)0x1F800000)->unk0 = line;
+                    _insertTPage(depth, getTPage(0, 3, 0, 0));
+                    particle->unkE = 0;
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+            if (particle->position.vy > 0) {
+                if ((particle->unkE == 0) && (i & 1)) {
+                    cell = func_8008B764(
+                        particle->position.vx / 128, particle->position.vz / 128, 0);
+                    if ((cell != NULL) && (cell->unk0_0 != 31)) {
+                        particle->unkC = 1;
+                        projection =
+                            (func_8008DC7C(particle->position.vx, particle->position.vz)
+                                << 17)
+                            >> 17;
+                        particle->position.vy = projection;
+                    } else {
+                        func_80090A1C(particle);
+                    }
+                } else {
+                    func_80090A1C(particle);
+                }
+            }
+        } else {
+            setVector(&vertices[0], particle->position.vx - 24, particle->position.vy,
+                particle->position.vz - 24);
+            setVector(&vertices[1], particle->position.vx + 24, particle->position.vy,
+                particle->position.vz - 24);
+            setVector(&vertices[2], particle->position.vx - 24, particle->position.vy,
+                particle->position.vz + 24);
+            setVector(&vertices[3], particle->position.vx + 24, particle->position.vy,
+                particle->position.vz + 24);
+            splash = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth = RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+                (long*)&splash->x0, (long*)&splash->x1, (long*)&splash->x2,
+                (long*)&splash->x3, &projection, &flags);
+            depth -= 64;
+            if ((depth > 0) && (depth < 2048)) {
+                setPolyFT4(splash);
+                setSemiTrans(splash, 1);
+                setUV4(splash, (particle->unkD >> 1) * 16, 192,
+                    (particle->unkD >> 1) * 16 + 16, 192, (particle->unkD >> 1) * 16, 208,
+                    (particle->unkD >> 1) * 16 + 16, 208);
+                setRGB0(splash, 128, 128, 128);
+                setTPage(splash, 0, 3, 64, 256);
+                setClut(splash, 1008, 226);
+                AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, splash++);
+                ((vs_scratch_t*)0x1F800000)->unk0 = splash;
+                if (D_800F1BA4 == 0) {
+                    particle->unkD += vs_gametime_tickspeed >> 1;
+                }
+                if (particle->unkD >= 8) {
+                    func_80090A1C(particle);
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+        }
+    }
+}
 
 void func_8008F9A4(int arg0, int arg1)
 {

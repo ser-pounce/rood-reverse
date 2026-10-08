@@ -8219,17 +8219,20 @@ int _hitPrerequisiteNever3(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyStrDown(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyStrDown(
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(5, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntDown(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyIntDown(
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(7, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglDown(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAglDown(
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(9, arg1) == 0;
 }
@@ -8341,7 +8344,8 @@ int _hitPrerequisiteCanApplyMagicWard(
     return _hitPrerequisiteCanApplyEffect(18, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyRegen(vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyRegen(
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(17, arg1) == 0;
 }
@@ -8364,7 +8368,8 @@ int _hitPrerequisiteCanApplyNumbness(
     return _hitPrerequisiteCanApplyEffect(15, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyCurse(vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyCurse(
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(16, arg1) == 0;
 }
@@ -8523,7 +8528,8 @@ int _hitPrerequisiteCanApplyExorcise(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyDrain(vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyDrain(
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
         && (_getEnemyClass(arg1) != enemyClassUndead)) {

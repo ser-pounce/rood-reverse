@@ -918,7 +918,7 @@ void func_800AEF94(MATRIX* camera)
                 func_800AB9A4(actor);
             }
             flags = (*(u_int*)((char*)actor + 8));
-            (*(u_int*)((char*)actor + 8)) = (int)(flags & 0x7FFFFFFF);
+            actor->unk0.unkB_7 = 0;
             if (flags & 4) {
                 if ((actor->unk17E4.unk0 == 1) && actor->unk17E4.unk3 != 0) {
                     int delta;
@@ -980,10 +980,10 @@ void func_800AEF94(MATRIX* camera)
                         if (attached->unk0.unk64.unk0 != 0) {
                             func_800AB788(attached, NULL, 0);
                         }
-                        if ((*(u_int*)((char*)attached + 8)) & 0xF00) {
+                        if (attached->unk0.unk9_0) {
                             func_800AB9A4(attached);
                         }
-                        if ((*(u_int*)((char*)actor + 8)) & 4) {
+                        if (actor->unk0.freeze) {
                             if ((attached->unk17E4.unk0 == 1)
                                 && attached->unk17E4.unk3 != 0) {
                                 int delta;
@@ -1043,8 +1043,7 @@ void func_800AEF94(MATRIX* camera)
                 }
             }
             if (((u_short)actor->unk63C >= 0x80U) && ((u_char)actor->unk5CC != 0)) {
-                (*(u_int*)((char*)actor + 8)) =
-                    (int)((*(u_int*)((char*)actor + 8)) | 0x80000000);
+                actor->unk0.unkB_7 = 1;
             }
         }
         i += 1;
@@ -1054,9 +1053,9 @@ void func_800AEF94(MATRIX* camera)
     weapons = vs_battle_wepModels;
     do {
         weapon = *weapons;
-        if ((weapon != NULL) && ((*(u_int*)((char*)weapon + 8)) & 0x10)
+        if ((weapon != NULL) && (weapon->unk8_4)
             && (weapon->unkD != 0)) {
-            actor = weaponActors[(u_char)(*(u_int*)((char*)weapon + 8)) & 0xF];
+            actor = weaponActors[weapon->actorId];
             if (actor != NULL) {
                 weaponActorFlags = (*(u_int*)((char*)actor + 8));
                 if (weaponActorFlags & 1) {
@@ -1551,7 +1550,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                 if ((u_int)(dx - 31) < 8) {
                     trackAnim = 1;
                 }
-            } else if (*(int*)((char*)actor + 8) & 0x200000) {
+            } else if (actor->unk0.unkA_5) {
                 if ((u_int)(dx - 8) < 27) {
                     trackAnim = 1;
                 }

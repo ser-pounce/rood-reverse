@@ -64,8 +64,8 @@ typedef struct {
     u_short unk540;
     u_short unk542;
     u_char* unk544;
-    u_int unk548_0 : 8;
-    u_int unk548_8 : 8;
+    u_char animationId;
+    u_char unk549;
     int unk548_16 : 1;
     int unk548_17 : 1;
     int unk548_18 : 14;
@@ -505,7 +505,8 @@ typedef struct {
     D_800F4538_unk64 unk64;
     D_800F45E0_unk68* unk68;
     D_800F4538_t2 unk6C[42];
-    u_int unk5AC_0 : 4;
+    u_int unk5AC_0 : 3;
+    u_int unk5AC_3 : 1;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;
     u_int unk5AC_8 : 1;
@@ -553,7 +554,8 @@ typedef struct {
     int unk5E0;
     int unk5E4;
     int unk5E8;
-    u_char unk5EC[0x52];
+    u_char unk5EC[0x50];
+    u_short unk63C;
     u_short unk63E;
     u_char unk640[8];
     int unk648;
@@ -585,7 +587,10 @@ typedef struct {
     int unk700;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
-    u_char unk11A4[0x658];
+    u_char unk11A4[0x280];
+    u_short unk1424[0xA0];
+    u_short unk1564[0xA0];
+    u_char unk16A4[0x158];
     u_char unk17FC;
     u_char unk17FD;
     u_char unk17FE;

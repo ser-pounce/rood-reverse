@@ -12,7 +12,7 @@ typedef struct {
 } func_800AAE9C_t;
 
 typedef struct {
-    int unk0;
+    u_char* unk0;
     u_char* unk4;
     u_short unk8[0];
 } func_800AD494_t;
@@ -24,31 +24,91 @@ typedef struct {
     short id;
 } func_8008D2C0_t;
 
+typedef struct {
+    char prefix[4];
+    u_char excluded;
+} actorCollisionExclusion;
+
+typedef struct {
+    u_char overlay;
+    u_char x;
+    u_char y;
+    u_char columns;
+} func_800AB098_t;
+
+typedef struct {
+    u_int unk0 : 24;
+    u_int timer : 8;
+} func_800AC690_timer_t;
+
+typedef struct {
+    u_int unk0 : 16;
+    u_int state : 3;
+    u_int unk13 : 13;
+} func_800AC690_flags_t;
+
+typedef struct {
+    u_int contact : 4;
+    u_int unk4 : 28;
+} func_800AC690_contact_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+} func_800ACF54_t;
+
+void func_8006F450(SVECTOR*);
 void func_8007A824(DR_MOVE*);
+void func_8008C49C(int, int);
 int func_8008D2C0(func_8008D2C0_t*);
+short func_8008DA24(int, int);
+short func_8008DD0C(int, int);
 void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
+void func_800A190C(int, int, SVECTOR*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(void*, int);
+void func_800A7524(void*, void*);
+void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
+void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
-void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
-void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AB098(D_800F4538_t*, int, int);
+int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
+int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
+void func_800AC690(int arg0, D_800F4538_t* arg1);
+void func_800ACF54(D_800F4538_t*);
+void func_800AE47C(D_800F4538_t*);
+void func_800AE828(int, D_800F4538_t*, int);
+void func_800E4C28();
+void func_800E6764(int);
+void func_800E6EB0(int);
 
 extern u_char D_800E8F2C;
+extern u_char D_800E8F30[];
+extern u_char D_800E8F90[];
 extern func_800AAE9C_t D_800E909C[][28];
 extern func_800AAE9C_t D_800E916C[][8];
+extern u_char D_800E9278[];
+extern u_char D_800E92E8[];
+extern u_char D_800E92F0[];
+extern u_char D_800E92F8[];
+extern u_char D_800E9300[];
 extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
+extern u_int* D_800F49F0;
 extern int D_800F49F4;
 extern u_char D_800F49F8;
 extern u_char D_800F49F9;
 extern short D_800F4B00;
+extern u_char D_800F4B19;
+
+static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
+static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
@@ -96,12 +156,6 @@ _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
         return NULL;
     }
 }
-
-int func_800A8E84(D_800F4538_t* arg0, SVECTOR* arg1);
-typedef struct {
-    char prefix[4];
-    u_char excluded;
-} actorCollisionExclusion;
 
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
 {
@@ -496,8 +550,6 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
     }
 }
 
-short func_8008DA24(int, int);
-
 static inline int scanFloor(int arg0, int arg1)
 {
     int var_t0;
@@ -811,7 +863,7 @@ void func_800AA108(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 
             temp_a1 = arg1->unk0_24;
             temp_a1 *= 0x10;
-            temp_a1 %= 0x1000;
+            temp_a1 %= ONE;
             temp_a1 -= temp_s0->unk0.facing;
 
             func_800AA984(arg0, temp_a1, 0);
@@ -923,7 +975,7 @@ void func_800AA490(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
     if (angle == 0 && dz == 0) {
         angle = arg1->unk0_24 * 16;
     } else {
-        angle = 0xC00 - ratan2(dz, angle);
+        angle = ONE * 3 / 4 - ratan2(dz, angle);
         angle %= ONE;
     }
 
@@ -1200,29 +1252,29 @@ void func_800AAA88(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
 {
-    D_800F4538_t* temp_a3 = D_800F4538[arg0];
+    D_800F4538_t* actor = D_800F4538[arg0];
 
-    if (temp_a3 != NULL) {
+    if (actor != NULL) {
 
         if (arg2 == 0) {
-            temp_a3->unk5C8 = 0;
-            temp_a3->unk0.unk2C = arg1->vx;
-            temp_a3->unk0.unk2E = arg1->vy;
-            temp_a3->unk0.unk30 = arg1->vz;
+            actor->unk5C8 = 0;
+            actor->unk0.unk2C = arg1->vx;
+            actor->unk0.unk2E = arg1->vy;
+            actor->unk0.unk30 = arg1->vz;
             return;
         }
 
-        temp_a3->unk0.unk44.vx = arg1->vx - temp_a3->unk0.unk2C;
-        temp_a3->unk0.unk44.vy = arg1->vy - temp_a3->unk0.unk2E;
-        temp_a3->unk0.unk44.vz = arg1->vz - temp_a3->unk0.unk30;
+        actor->unk0.unk44.vx = arg1->vx - actor->unk0.unk2C;
+        actor->unk0.unk44.vy = arg1->vy - actor->unk0.unk2E;
+        actor->unk0.unk44.vz = arg1->vz - actor->unk0.unk30;
 
-        if ((*(int*)&temp_a3->unk0.unk44 == 0)
-            && ((temp_a3->unk0.unk44.vz << 0x10) == 0)) {
-            temp_a3->unk5C8 = 0;
+        if (actor->unk0.unk44.vx == 0 && actor->unk0.unk44.vy == 0
+            && actor->unk0.unk44.vz == 0) {
+            actor->unk5C8 = 0;
             return;
         }
 
-        temp_a3->unk5C8 = arg2;
+        actor->unk5C8 = arg2;
     }
 }
 
@@ -1236,23 +1288,18 @@ void func_800AAC80(RECT* arg0, int arg1, int arg2)
 
 void func_800AACDC(void)
 {
-    void* new_var;
-    RECT sp10;
-    DR_MOVE* temp_s0;
+    RECT rect;
+    DR_MOVE* packet;
 
-    sp10.x = 470;
-    sp10.y = 384;
-    sp10.w = 18;
-    sp10.h = 36;
+    rect.x = 470;
+    rect.y = 384;
+    rect.w = 18;
+    rect.h = 36;
 
-    new_var = (void*)0x1F800000;
-    temp_s0 = *((DR_MOVE**)0x1F800000);
-    new_var = (void*)0x10;
-
-    SetDrawMove(temp_s0, &sp10, 16, 400);
-    func_8007A824(temp_s0);
-
-    *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
+    packet = vs_battlePacketBegin();
+    SetDrawMove(packet, &rect, 16, 400);
+    func_8007A824(packet);
+    vs_battlePacketEnd(packet);
 }
 
 // https://decomp.me/scratch/7lkmC
@@ -1358,19 +1405,6 @@ int func_800AAE9C(D_800F4538_t* actor)
 
     // BUG: no return value, in practice it isn't read by the only caller.
 }
-
-extern u_char D_800E8F30[];
-extern u_char D_800E8F90[];
-
-static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
-static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
-
-typedef struct {
-    u_char overlay;
-    u_char x;
-    u_char y;
-    u_char columns;
-} func_800AB098_t;
 
 void func_800AB098(D_800F4538_t* actor, int index, int frame)
 {
@@ -1659,171 +1693,131 @@ void func_800AB788(u_char* actor, u_char* object, int arg2)
     }
 }
 
-void func_800A190C(int, int, SVECTOR*, int);
-void func_800A7524(void*, void*);
-int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
-int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
-void func_800AC690(int arg0, D_800F4538_t* arg1);
-extern u_char D_800F4B19;
-
 void func_800AB9A4(D_800F45E0_t* arg0)
 {
-    SVECTOR sp18;
-    SVECTOR sp20;
-    u_short* sp28;
-    int sp2C;
-    u_short* sp30;
+    SVECTOR boneA;
+    SVECTOR boneB;
+    u_short* header;
+    int count;
     u_short* reference;
-    int var_s2;
+    u_short* weaponReference;
+    int mode;
     int clutOffset;
-    D_800F45E0_t* var_s5;
-    int temp_v0;
-    int temp_v0_2;
-    int var_a1;
+    D_800F45E0_t* object;
+    int state;
+    int distance;
     int angle;
-    int var_s0;
-    int var_s3;
-    int var_s4;
-    int var_s6;
-    int var_v0;
-    signed char temp_v1_5;
-    int var_v1;
-    u_short* var_fp;
-    u_short temp_a2;
-    u_int temp_v0_3;
-    u_int temp_v1;
-    u_int temp_v1_2;
-    u_int temp_v1_3;
-    u_int var_t0;
-    vs_battle_wepModels_t* weapon0;
+    int i;
+    int changed;
+    int speed;
+    int skip;
+    int capped;
+    signed char target;
+    int value;
+    u_short* colors;
+    u_int flags;
+    vs_battle_wepModels_t* weapon;
 
-    temp_v1 = *(u_int*)((char*)arg0 + 8);
-    if ((u_int)((temp_v1 >> 8) & 0xF) < 6U) {
-        if (temp_v1 & 0x70000) {
-            var_v0 = rsin(0x200) * *(u_short*)((char*)arg0 + 0x63C);
-            var_a1 = var_v0;
-            if (var_v0 < 0) {
-                var_a1 = var_v0 + 0xFFF;
-            }
-            func_800A70DC(arg0, var_a1 >> 0xC);
+    if (arg0->unk9_0 < 6) {
+        if (arg0->unkA_0) {
+            distance = rsin(0x200);
+            distance *= arg0->unk63C;
+            distance /= ONE;
+            func_800A70DC(arg0, distance);
             func_800A7524(arg0, &arg0->unk34);
-            temp_a2 = arg0->unk38;
-            arg0->unk34 = (short)((short)(u_short)arg0->unk34 / 2);
-            *(short*)((char*)arg0 + 0x38) = (short)temp_a2 / 2;
+            arg0->unk34 /= 2;
+            arg0->unk38 /= 2;
             func_800AC690(arg0->unkF, (D_800F4538_t*)arg0);
-            if ((u_int)(*(u_short*)((char*)arg0 + 0xA) & 7) >= 4U) {
+            if (arg0->unkA_0 >= 4) {
                 if (arg0->unkF != 0) {
-                    func_800AD494(arg0, 0xAB, &sp28);
-                    if (sp28 != NULL) {
-                        *(int*)((char*)arg0 + 0x5AC) =
-                            (int)(*(int*)((char*)arg0 + 0x5AC) & 0xFEFFFFFF);
-                        func_800A0204((int)arg0->unkF, 0x47, 0, 8);
-                        *(int*)((char*)arg0 + 0x5AC) =
-                            (int)(*(int*)((char*)arg0 + 0x5AC) | 0x01000000);
+                    func_800AD494(arg0, 0xAB, &header);
+                    if (header != NULL) {
+                        arg0->unk5AC_24 = 0;
+                        func_800A0204(arg0->unkF, 0x47, 0, 8);
+                        arg0->unk5AC_24 = 1;
                     }
                 }
             }
         }
     }
-    temp_v1_2 = *(u_int*)((char*)arg0 + 8);
-    var_s4 = (int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F)) >> 1;
-    var_s6 = 0;
-    if (temp_v1_2 & 0x80) {
-        var_s6 = 1;
+    flags = *(u_int*)((char*)arg0 + 8);
+    speed = vs_gametime_tickspeed / 2;
+    skip = 0;
+    if (flags & 0x80) {
+        skip = 1;
         if (*(int*)((char*)arg0 + 0x5AC) & 0x08000000) {
-            sp2C = 0xA0;
+            count = 160;
         } else {
-            var_s6 = 0;
-            sp2C = 0x10;
+            skip = 0;
+            count = 16;
         }
-        temp_v0 = var_s6 * 2;
-        var_fp = (void*)((char*)arg0 + (temp_v0 + 0x1564));
-        sp30 = (void*)((char*)arg0 + (temp_v0 + 0x1424));
+        colors = arg0->unk1564 + skip;
+        reference = arg0->unk1424 + skip;
     } else {
-        var_s5 = arg0;
-        sp2C = 0x10;
-        var_fp = (void*)((char*)arg0 + 0x14C);
-        sp30 = (void*)((char*)arg0 + 0x12C);
-        if ((temp_v1_2 & 0xF00) == 0x200) {
-            var_s4 *= 2;
+        object = arg0;
+        count = 16;
+        colors = (void*)((char*)arg0 + 0x14C);
+        reference = (void*)((char*)arg0 + 0x12C);
+        if (arg0->unk9_0 == 2) {
+            speed *= 2;
         }
     }
-    temp_v0_2 = ((u_int) * (u_int*)((char*)arg0 + 8) >> 8) & 0xF;
-    switch (temp_v0_2) {
+    state = arg0->unk9_0;
+    switch (state) {
     case 2:
-        var_s2 = 0;
-    block_19:
-        var_s3 = 0;
-    block_20:
-        var_s3 = var_s3 | func_800AC168(var_fp, sp2C - var_s6, var_s4, var_s2, sp30);
-        if (*(u_int*)((char*)arg0 + 8) & 0x80) {
-            var_s0 = 0;
-            do {
-                weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                if (weapon0 != NULL) {
-                    reference = weapon0->unk440;
-                    var_s3 |= func_800AC168(
-                        weapon0->unk500, weapon0->nClutColors, var_s4, var_s2, reference);
+        mode = 0;
+    start_fade:
+        changed = 0;
+    fade:
+        changed |= func_800AC168(colors, count - skip, speed, mode, reference);
+        if (arg0->unk8_7) {
+            for (i = 0; i < 2; ++i) {
+                weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                if (weapon != NULL) {
+                    weaponReference = weapon->unk440;
+                    changed |= func_800AC168(weapon->unk500, weapon->nClutColors, speed,
+                        mode, weaponReference);
                 }
-                var_s0 += 1;
-            } while (var_s0 < 2);
-        }
-        if (((*(u_int*)((char*)arg0 + 8) & 0xF00) == 0x300) && (var_s3 == 0)) {
-            arg0->unk54 = 0x404040;
-            func_800AC168(var_fp, sp2C - var_s6, var_s4, 2, sp30);
-            var_s0 = 0;
-            if (*(u_int*)((char*)arg0 + 8) & 0x80) {
-                do {
-                    weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                    if (weapon0 != NULL) {
-                        reference = weapon0->unk440;
-                        func_800AC168(
-                            weapon0->unk500, weapon0->nClutColors, var_s4, 2, reference);
-                    }
-                    var_s0 += 1;
-                } while (var_s0 < 2);
-                goto block_32;
             }
-            goto block_38;
         }
-    block_32:
-        if (*(u_int*)((char*)arg0 + 8) & 0x80) {
-            vs_main_loadClut((u_short*)&arg0->unk11A4[0x3C0], arg0->unkF + 4, 0, sp2C);
-            var_s0 = 0;
-            clutOffset = 0xA0;
-            do {
-                weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                if (weapon0 != NULL) {
-                    *(u_int*)((char*)weapon0 + 8) =
-                        (int)((*(u_int*)((char*)weapon0 + 8) & ~0xF00)
-                              | (*(u_int*)((char*)arg0 + 8) & 0xF00));
-                    vs_main_loadClut(weapon0->unk500, arg0->unkF + 4, clutOffset,
-                        (u_int)weapon0->nClutColors);
-                }
-                var_s0 += 1;
-                clutOffset += 0x30;
-            } while (var_s0 < 2);
-        } else {
-        block_38:
-            vs_main_loadClut(
-                (u_short*)((char*)var_s5 + 0x14C), 0x1FU, var_s5->unkF * 0x10, 0x10U);
-        }
-        if (var_s3 == 0) {
-            temp_v0_3 = *(u_int*)((char*)arg0 + 8);
-            temp_v1_3 =
-                (temp_v0_3 & ~0xF00) | (((((temp_v0_3 >> 8) & 0xF) + 1) & 0xF) << 8);
-            *(u_int*)((char*)arg0 + 8) = temp_v1_3;
-            var_s0 = 0;
-            if (temp_v1_3 & 0x80) {
-                do {
-                    weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                    if (weapon0 != NULL) {
-                        *(u_int*)((char*)weapon0 + 8) =
-                            (int)((*(u_int*)((char*)weapon0 + 8) & ~0xF00)
-                                  | (*(u_int*)((char*)arg0 + 8) & 0xF00));
+        if (arg0->unk9_0 == 3 && changed == 0) {
+            arg0->unk54 = 0x404040;
+            func_800AC168(colors, count - skip, speed, 2, reference);
+            if (arg0->unk8_7) {
+                for (i = 0; i < 2; ++i) {
+                    weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                    if (weapon != NULL) {
+                        weaponReference = weapon->unk440;
+                        func_800AC168(weapon->unk500, weapon->nClutColors, speed, 2,
+                            weaponReference);
                     }
-                    var_s0 += 1;
-                } while (var_s0 < 2);
+                }
+            }
+        }
+    load_cluts:
+        if (arg0->unk8_7) {
+            vs_main_loadClut(arg0->unk1564, arg0->unkF + 4, 0, count);
+            for (i = 0, clutOffset = 160; i < 2; ++i, clutOffset += 48) {
+                weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                if (weapon != NULL) {
+                    weapon->unk9_0 = arg0->unk9_0;
+                    vs_main_loadClut(
+                        weapon->unk500, arg0->unkF + 4, clutOffset, weapon->nClutColors);
+                }
+            }
+        } else {
+            vs_main_loadClut(
+                (u_short*)((char*)object + 0x14C), 31, object->unkF * 16, 16);
+        }
+        if (changed == 0) {
+            ++arg0->unk9_0;
+            if (arg0->unk8_7) {
+                for (i = 0; i < 2; ++i) {
+                    weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                    if (weapon != NULL) {
+                        weapon->unk9_0 = arg0->unk9_0;
+                    }
+                }
             }
         }
     case 1:
@@ -1831,103 +1825,105 @@ void func_800AB9A4(D_800F45E0_t* arg0)
     default:
         return;
     case 3:
-        var_s3 = 0;
-        var_s2 = 1;
-        goto block_20;
+        changed = 0;
+        mode = 1;
+        goto fade;
     case 4:
         if (*(int*)((char*)arg0 + 0x5AC) & 8) {
-            var_s5 = D_800F45E0[arg0->unk13];
-            func_800A190C(var_s5->unk12, 0xF0, &sp18, 1);
-            func_800A190C(var_s5->unk12, 0xF1, &sp20, 1);
-            var_s5->unk1C = (short)(u_short)arg0->unk1C;
-            var_s5->unk20 = (short)(u_short)arg0->unk20;
-            var_s5->unk1E = ((int)(sp18.vy + sp20.vy) / 2) + 0x3C;
+            object = D_800F45E0[arg0->unk13];
+            func_800A190C(object->unk12, 0xF0, &boneA, 1);
+            func_800A190C(object->unk12, 0xF1, &boneB, 1);
+            object->unk1C = arg0->unk1C;
+            object->unk20 = arg0->unk20;
+            object->unk1E = (boneA.vy + boneB.vy) / 2 + 60;
             angle = (u_short)arg0->unk26;
-            var_s5->unk1A = 0xFC;
-            *(int*)((char*)var_s5 + 0x34) = 0;
-            var_s5->unk12 = 0xFF;
-            var_s5->unk26 = ((u_short)var_s5->unk26 + angle) & 0xFFF;
-            *(int*)((char*)arg0 + 0x5AC) = (int)(*(int*)((char*)arg0 + 0x5AC) & ~8);
+            object->unk1A = 0xFC;
+            *(int*)((char*)object + 0x34) = 0;
+            object->unk12 = 0xFF;
+            object->unk26 = (object->unk26 + angle) & 0xFFF;
+            arg0->unk5AC_3 = 0;
             D_800F4B19 = arg0->unk13;
         }
-        var_v1 = (u_char)arg0->unk54 - (var_s4 * 4);
-        var_s3 = 0;
-        if (var_v1 < 0) {
-            var_v1 = 0;
+        value = (u_char)arg0->unk54 - speed * 4;
+        changed = 0;
+        if (value < 0) {
+            value = 0;
         }
-        if (var_v1 != 0) {
-            var_s3 = 1;
+        if (value != 0) {
+            changed = 1;
         }
-        *(u_char*)&arg0->unk54 = var_v1;
-        *((signed char*)arg0 + 0x55) = var_v1;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 += var_s4 * 2;
-        *((signed char*)arg0 + 0x56) = var_v1;
-        if (var_s0 >= 0x41) {
-            var_s0 = 0x40;
+        *(u_char*)&arg0->unk54 = value;
+        *((signed char*)arg0 + 0x55) = value;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        *((signed char*)arg0 + 0x56) = value;
+        if (i > 64) {
+            i = 64;
         }
-        if (var_s0 != 0x40) {
-            var_s3 = 1;
+        if (i != 64) {
+            changed = 1;
         }
-        arg0->unk6F2 = (u_char)var_s0;
-        goto block_32;
+        arg0->unk6F2 = i;
+        goto load_cluts;
     case 6:
-        var_s2 = 3;
-        var_v1 = *((u_char*)arg0 + 0x57);
-        var_v1 += 1;
-        var_v0 = var_v1 & 255;
-        var_s3 = (u_int)var_v0 < 15;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 += var_s4 * 2;
-        var_v0 = var_s0 < 0x41;
-        *((u_char*)arg0 + 0x57) = var_v1;
-        goto block_60;
+        mode = 3;
+        value = *((u_char*)arg0 + 0x57);
+        value += 1;
+        capped = value & 0xFF;
+        changed = capped < 15u;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        capped = i < 65;
+        *((u_char*)arg0 + 0x57) = value;
+        if (capped == 0) {
+            i = 64;
+        }
+        arg0->unk6F2 = i;
+        goto fade;
     case 7:
-        var_s3 = 0;
-        var_s2 = 1;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 += var_s4 * 2;
-        var_v0 = var_s0 < 0x41;
-        goto block_60;
-    block_60:
-        if (var_v0 == 0) {
-            var_s0 = 0x40;
+        changed = 0;
+        mode = 1;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        capped = i < 65;
+        if (capped == 0) {
+            i = 64;
         }
-        arg0->unk6F2 = (u_char)var_s0;
-        goto block_20;
+        arg0->unk6F2 = i;
+        goto fade;
     case 9:
-        var_s3 = 0;
-        var_s2 = 2;
+        changed = 0;
+        mode = 2;
         *(u_char*)&arg0->unk54 = 0xFF;
-        *((u_char*)arg0 + 0x55) = 255;
-        *((u_char*)arg0 + 0x56) = 255;
-        goto block_20;
+        *((u_char*)arg0 + 0x55) = 0xFF;
+        *((u_char*)arg0 + 0x56) = 0xFF;
+        goto fade;
     case 10:
-        var_s3 = 0;
-        temp_v1_5 = (signed char)arg0->unk6F1;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 -= var_s4 * 2;
-        var_s2 = 4;
-        if (var_s0 < temp_v1_5) {
-            var_s0 = temp_v1_5;
+        changed = 0;
+        target = arg0->unk6F1;
+        i = (signed char)arg0->unk6F2;
+        i -= speed * 2;
+        mode = 4;
+        if (i < target) {
+            i = target;
         }
-        if (var_s0 != temp_v1_5) {
-            var_s3 = 1;
+        if (i != target) {
+            changed = 1;
         }
-        arg0->unk6F2 = (u_char)var_s0;
-        var_s3 = var_s3 | func_800AC0D4(&arg0->unk54, &arg0->unk58, (-var_s4) << 3);
-        goto block_20;
+        arg0->unk6F2 = i;
+        changed |= func_800AC0D4(&arg0->unk54, &arg0->unk58, -speed * 8);
+        goto fade;
     case 11:
-        *(u_int*)((char*)arg0 + 8) = (u_int)(*(u_int*)((char*)arg0 + 8) & ~0xF00);
+        arg0->unk9_0 = 0;
         return;
     case 12:
-        var_s3 = 0;
-        var_s2 = 5;
-        goto block_20;
+        changed = 0;
+        mode = 5;
+        goto fade;
     case 14:
-        arg0->unk6F2 = 0x40;
-        var_s2 = 6;
-        goto block_19;
+        arg0->unk6F2 = 64;
+        mode = 6;
+        goto start_fade;
     }
 }
 
@@ -2169,37 +2165,6 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
     }
 }
 
-void func_8006F450(SVECTOR*);
-void func_8008C49C(int, int);
-short func_8008DD0C(int, int);
-void func_800ACF54(D_800F45E0_t*);
-void func_800AE828(int, D_800F4538_t*, int);
-void func_800E4C28();
-void func_800E6764(int);
-void func_800E6EB0(int);
-extern u_int* D_800F49F0;
-extern u_char D_800E9278[];
-extern u_char D_800E92E8[];
-extern u_char D_800E92F0[];
-extern u_char D_800E92F8[];
-extern u_char D_800E9300[];
-
-typedef struct {
-    u_int unk0 : 24;
-    u_int timer : 8;
-} func_800AC690_timer_t;
-
-typedef struct {
-    u_int unk0 : 16;
-    u_int state : 3;
-    u_int unk13 : 13;
-} func_800AC690_flags_t;
-
-typedef struct {
-    u_int contact : 4;
-    u_int unk4 : 28;
-} func_800AC690_contact_t;
-
 static inline int func_800AC690_getProfile(D_800F4538_t* actor)
 {
     u_int flags = *(u_int*)((char*)actor + 8);
@@ -2213,7 +2178,7 @@ static inline int func_800AC690_getProfile(D_800F4538_t* actor)
     if (flags & 0x200000) {
         return 5;
     }
-    if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+    if (actor->unk5AC_3) {
         return 6;
     }
     return actor->unk5B0_0 & 3;
@@ -2257,11 +2222,10 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 actor->unk0.unk34.vy = -30;
             }
             actor->unk5B7 = 0;
-            *(u_int*)((char*)actor + 8) =
-                (*(u_int*)((char*)actor + 8) & 0xFFF8FFFF) | 0x30000;
-            if (*(u_int*)((char*)actor + 0xC) & 0xF) {
+            actor->unk0.unkA_0 = 3;
+            if (actor->unk0.unkC_0) {
                 func_8008C49C(actor->unk0.unkC_0 - 2, -1);
-                *(u_int*)((char*)actor + 0xC) &= ~0xF;
+                actor->unk0.unkC_0 = 0;
             }
         }
         break;
@@ -2275,7 +2239,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             func_800A0204(actor->unk0.unkF, 0x2F, 0, 8);
             actor->unk0.unk11 = 0;
         }
-        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+        if (actor->unk0.unkA_6) {
             y = vs_gametime_tickspeed / 2;
             ((func_800AC690_timer_t*)&actor->unk5B4)->timer += y;
             limit = 7;
@@ -2409,18 +2373,17 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             }
         }
         *(short*)&actor->unk6EE = 0;
-        ((func_800AC690_contact_t*)((char*)actor + 0xC))->contact = (u_char)D_800F49F4;
+        actor->unk0.unkC_0 = D_800F49F4;
         actor->unk0.unk5D = D_800F49F4;
         actor->unk5AC_28 = D_800F49F8;
         actor->unk0.unk34.vy = y - actor->unk0.position.vy;
-        ((func_800AC690_flags_t*)((char*)actor + 8))->state = 4;
+        actor->unk0.unkA_0 = 4;
         func_800AA698(arg0, &actor->unk0.unk34, 0);
         floor = actor->unk0.position.vy - ((SVECTOR*)&actor->unk0.unk4C)->vy;
         floor /= 64;
         actor->unk0.unk11 = 0;
         if (y < 3000) {
-            if (actor->unk0.unkF != 0 || !(*(u_int*)((char*)actor + 8) & 0xF00)
-                || ((*(u_int*)((char*)actor + 8) >> 8) & 0xF) >= 6) {
+            if (actor->unk0.unkF != 0 || !actor->unk0.unk9_0 || actor->unk0.unk9_0 >= 6) {
                 if (floor >= 4) {
                     func_800AE828(arg0, actor, 0x42);
                     if (floor >= 6 && arg0 == 0) {
@@ -2432,7 +2395,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             }
         }
         actor->unk181A = 0;
-        *(u_int*)((char*)actor + 0x5AC) &= ~0x04000000;
+        actor->unk5AC_26 = 0;
         func_800A0204(arg0, D_800E9300[profile], 0, 8);
         break;
     fall:
@@ -2440,10 +2403,10 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         break;
     case 4:
         if (flags & 0x200000) {
-            *(u_int*)((char*)actor + 8) = flags & ~0x200000;
-            *(u_int*)((char*)actor + 8) &= ~0x400000;
+            actor->unk0.unkA_5 = 0;
+            actor->unk0.unkA_6 = 0;
         }
-        func_800ACF54((D_800F45E0_t*)actor);
+        func_800ACF54(actor);
         actor->unk0.unk11 -= vs_gametime_tickspeed / 2;
         if ((signed char)actor->unk0.unk11 < 0) {
             actor->unk0.unk11 = 0;
@@ -2451,7 +2414,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         if ((signed char)actor->unk0.unk11 == 0) {
             actor->unk6EC = 0;
             if (actor->unk0.unkF != 0) {
-                if (!(*(u_int*)((char*)actor + 8) & 0x400000) && actor->unk5CC != 0) {
+                if (!actor->unk0.unkA_6 && actor->unk5CC != 0) {
                     break;
                 }
                 if (profile != 3) {
@@ -2461,28 +2424,22 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 func_800E6EB0(actor->unk0.unkF);
             }
             actor->unk1846 = 0;
-            *(u_int*)((char*)actor + 8) &= 0xFFF8FFFF;
+            actor->unk0.unkA_0 = 0;
         }
         break;
     }
 }
 
-typedef struct {
-    int unk0;
-    int unk4;
-} func_800ACF54_t;
-
-void func_800ACF54(D_800F45E0_t* arg0)
+void func_800ACF54(D_800F4538_t* actor)
 {
+    *(int*)&actor->unk0.lastTouchedTileX = *(int*)&actor->unk0.currentTileX;
+    *(func_800ACF54_t*)&actor->unk0.unk4C = *(func_800ACF54_t*)&actor->unk0.position;
 
-    arg0->unk60 = *(int*)&arg0->unk5C;
-    *(func_800ACF54_t*)&arg0->unk4C = *(func_800ACF54_t*)&arg0->unk1C;
-
-    if (!(arg0->unkC_0)) {
-        arg0->unk1868 = *(int*)&arg0->unk5C;
+    if (!actor->unk0.unkC_0) {
+        actor->unk1868 = *(int*)&actor->unk0.currentTileX;
     }
 
-    arg0->unk52 = arg0->unk26;
+    actor->unk0.unk52 = actor->unk0.facing;
 }
 
 inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
@@ -2516,12 +2473,8 @@ inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
     arg0->pad = 0;
 }
 
-void func_800AE47C(D_800F4538_t*);
-
-void func_800AD008(void* arg0, void* arg1)
+void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
 {
-    D_800F4538_t* actor = arg0;
-    D_800F4538_unkC54* pose = arg1;
     u_short* header;
     func_800AD494_t* anim;
     u_char* data;
@@ -2534,7 +2487,7 @@ void func_800AD008(void* arg0, void* arg1)
     }
     actor->unk5AC_23 = 0;
     pose->unk540 = 0;
-    ((u_char*)&pose->unk544)[5] = 0;
+    pose->unk549 = 0;
     *(int*)&pose->unk150[41].vx = 0;
     *(int*)&pose->unk150[41].vz = 0;
     pose->unk3F0[41].pad = 0;
@@ -2546,7 +2499,7 @@ void func_800AD008(void* arg0, void* arg1)
     if (header[2] == 0) {
         pose->unk542 = 0xFFFF;
     } else {
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[2];
         i = data[0];
         if (i == 0xFF) {
@@ -2559,10 +2512,10 @@ void func_800AD008(void* arg0, void* arg1)
         pose->unk544 = data;
     }
     pose->unk548_16 = 0;
-    ((u_char*)&pose->unk544)[4] = actor->animationId;
+    pose->animationId = actor->animationId;
     if (header[4] != 0) {
         key = &pose->unk150[41];
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[4];
         func_800ACFA0(key, data, 0xFF);
     }
@@ -2571,18 +2524,18 @@ void func_800AD008(void* arg0, void* arg1)
         header = (u_short*)((u_char*)anim + ((actor->unk0.nBones * 4 + 10) * frame + 8));
     }
     key = &pose->unk0[41];
-    data = (u_char*)anim->unk0;
+    data = anim->unk0;
     data += header[3];
     func_800ACFA0(key, data, frame);
     for (i = 0; i < actor->unk0.nBones; ++i) {
         key = &pose->unk0[i];
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[5 + i];
         func_800ACFA0(key, data, frame);
     }
     if (((u_char*)header)[3] & 1) {
         for (i = 0; i < actor->unk0.nBones; ++i) {
-            data = (u_char*)anim->unk0;
+            data = anim->unk0;
             data += header[actor->unk0.nBones + i + 5];
             if (data[0] == 0xFE && data[1] == 1) {
                 data += 2;

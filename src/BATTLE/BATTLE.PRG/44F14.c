@@ -217,9 +217,9 @@ loop: {
         sfx[0] = 13;
         goto setAnimation;
     case 55:
-        if (state->unk548_8 == 0) {
-            state->unk548_8 = script[1];
-        } else if (--state->unk548_8 == 0) {
+        if (state->unk549 == 0) {
+            state->unk549 = script[1];
+        } else if (--state->unk549 == 0) {
             break;
         }
         state->unk540--;
@@ -1298,7 +1298,7 @@ update_bones:
     frame = (short)state->unk540;
     if ((frame != 1) && !state->unk548_16) {
         lastFrame = frame - 1;
-        if (state->unk548_8 == 0) {
+        if (state->unk549 == 0) {
             if (lastFrame < frameOrOffset) {
                 frameOrOffset = 1;
             }

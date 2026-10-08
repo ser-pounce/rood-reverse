@@ -2011,7 +2011,6 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
     int frames;
     int quadrant;
     int animation;
-    u_int flags;
     u_int state;
     u_int walkState;
     int phase;
@@ -2028,8 +2027,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
         quadrant &= 0xFFF;
         quadrant /= ONE / 4;
     }
-    flags = *(u_int*)((char*)actor + 0x5AC);
-    if (flags & 8) {
+    if (actor->unk5AC_3) {
         next = 0x54;
         if (speed > 0) {
             frames = 4;
@@ -2057,7 +2055,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
         func_800A0204(actor->unk0.unkF, next, 0, frames);
         return;
     }
-    if (flags & 0x8000) {
+    if (actor->unk5AC_15) {
         if ((u_int)(animation - 0x19) < 2) {
             return;
         }
@@ -2067,7 +2065,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
                 next = 0x19;
                 goto queue;
             }
-            *(u_int*)((char*)actor + 0x5AC) = flags & ~0x8000;
+            actor->unk5AC_15 = 0;
             return;
         }
     queue:

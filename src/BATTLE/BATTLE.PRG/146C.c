@@ -15341,7 +15341,133 @@ void func_8008FDC4(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
+void func_80090434(void)
+{
+    SVECTOR unused[4] __attribute__((unused));
+    VECTOR origin;
+    VECTOR velocity;
+    long flags;
+    void* cursor;
+    TILE* prim;
+    D_800F1DD4_t* particle;
+    int x;
+    int y;
+    int color;
+    int brightness;
+    int fade;
+    int j;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    RotTrans((SVECTOR*)D_800F1CE0, &origin, &flags);
+    RotTrans((SVECTOR*)D_800F1D98, &velocity, &flags);
+    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
+    setVector(&origin, (velocity.vx - origin.vx) >> 3, (velocity.vy - origin.vy) >> 3,
+        (velocity.vz - origin.vz) >> 3);
+    if (D_800F1BA4 == 0) {
+        if (D_800F1DC7 != 0) {
+            D_800F1DC7 -= 8;
+        }
+    } else if (D_800F1DC7 < 96) {
+        D_800F1DC7 += 8;
+    }
+    particle = D_800F1DD4;
+    prim = cursor;
+    for (flags = 0; flags < D_800F1DC0; ++flags, ++particle) {
+        if (D_800F1BA4 == 0) {
+            for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                particle->unkF += (rand() & 15) - 7;
+                particle->unkF &= 127;
+                if (particle->unkD != 0) {
+                    particle->position.vx += origin.vx + (rsin(particle->unkF << 5) >> 9);
+                    particle->position.vz += origin.vz - (rcos(particle->unkF << 5) >> 9);
+                    particle->position.vy -= rsin(particle->unkD << 6) >> 9;
+                    ++particle->unkD;
+                    if (particle->unkD > 32) {
+                        particle->unkD = 0;
+                    }
+                } else {
+                    particle->position.vx +=
+                        origin.vx + (rsin(particle->unkF << 5) >> 10);
+                    particle->position.vz +=
+                        origin.vz - (rcos(particle->unkF << 5) >> 10);
+                    if ((rand() & 127) == 0) {
+                        particle->unkD = 1;
+                    }
+                }
+                particle->position.vy += origin.vy;
+                particle->position.vz &= 255;
+                if (particle->position.vx < 0) {
+                    particle->position.vx += 320;
+                }
+                if (particle->position.vx > 320) {
+                    particle->position.vx -= 320;
+                }
+                if (particle->position.vy < 0) {
+                    particle->position.vy += 240;
+                }
+                if (particle->position.vy > 240) {
+                    particle->position.vy -= 240;
+                }
+            }
+        }
+        x = ((particle->position.vx - 160) << 12) / ((particle->position.vz << 2) + 3072)
+          + 160;
+        y = ((particle->position.vy - 120) << 12) / ((particle->position.vz << 2) + 3072)
+          + 120;
+        brightness = (255 - particle->position.vz) / 4;
+        fade = D_800F1DC7 - 32;
+        color = brightness - fade;
+        if (color < 0) {
+            color = 0;
+        }
+        if ((x < 320u) && (y < 240u)) {
+            setTile(prim);
+            setXY0(prim, x, y);
+            setSemiTrans(prim, 1);
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+        }
+        if (((u_short)particle->unk8 < 320) && ((u_short)particle->unkA < 240)) {
+            setTile(prim);
+            setXY0(prim, particle->unk8, particle->unkA);
+            setSemiTrans(prim, 1);
+            color >>= 1;
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+            setTile(prim);
+            setXY0(prim, x - ((x - particle->unk8) * 2), y - ((y - particle->unkA) * 2));
+            setSemiTrans(prim, 1);
+            color >>= 1;
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+        }
+        if (D_800F1BA4 == 0) {
+            particle->unk8 = x;
+            particle->unkA = y;
+        }
+    }
+    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+    _insertTPage(4, getTPage(0, 1, 64, 256));
+}
 
 void func_80090A1C(D_800F1DD4_t* arg0)
 {

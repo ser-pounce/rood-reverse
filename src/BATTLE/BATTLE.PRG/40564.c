@@ -864,7 +864,7 @@ void func_800AA108(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 
             temp_a1 = arg1->unk0_24;
             temp_a1 *= 0x10;
-            temp_a1 %= 0x1000;
+            temp_a1 %= ONE;
             temp_a1 -= temp_s0->unk0.facing;
 
             func_800AA984(arg0, temp_a1, 0);
@@ -976,7 +976,7 @@ void func_800AA490(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
     if (angle == 0 && dz == 0) {
         angle = arg1->unk0_24 * 16;
     } else {
-        angle = 0xC00 - ratan2(dz, angle);
+        angle = ONE * 3 / 4 - ratan2(dz, angle);
         angle %= ONE;
     }
 

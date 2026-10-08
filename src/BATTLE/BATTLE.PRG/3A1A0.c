@@ -154,17 +154,17 @@ void func_800A29A0(D_800F4538_t* arg0)
     temp_v0 = arg0->unk0.unkB_0;
     switch (temp_v0) {
     case 1:
-        (*(u_int*)((char*)arg0 + 8)) = (u_int)((*(u_int*)((char*)arg0 + 8)) & 0xFFDFFFFF);
+        *(u_int*)((char*)arg0 + 8) = (u_int)(*(u_int*)((char*)arg0 + 8) & 0xFFDFFFFF);
         func_800A0204((int)arg0->unk0.unkF, 0x13, 0, 8);
         func_800A01C8((int)arg0->unk0.unkF, 0x14, 8, 0);
         (*(u_char*)((char*)arg0 + 0x57)) = 0;
         var_v0 =
-            ((((*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF) | 0x02000000) & ~0xF00) | 0x600;
+            (((*(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF) | 0x02000000) & ~0xF00) | 0x600;
         goto block_22;
     default:
         return;
     case 2:
-        if ((u_int)(((u_int)(*(u_int*)((char*)arg0 + 8)) >> 8) & 0xF) >= 8U) {
+        if ((u_int)(((u_int) * (u_int*)((char*)arg0 + 8) >> 8) & 0xF) >= 8U) {
             if (arg0->unk0.unk13 == 0xFC) {
                 var_v0_2 =
                     (u_int)(((u_int)(*(u_int*)((char*)D_800F4538[arg0->unk0.unk12] + 8))
@@ -177,20 +177,20 @@ void func_800A29A0(D_800F4538_t* arg0)
                 var_v0_2 = arg0->unk5CC;
             block_8:
                 if (var_v0_2 == 0) {
-                    (*(u_int*)((char*)arg0 + 8)) =
-                        (u_int)(((*(u_int*)((char*)arg0 + 8)) & ~0xF00) | 0x900);
+                    *(u_int*)((char*)arg0 + 8) =
+                        (u_int)((*(u_int*)((char*)arg0 + 8) & ~0xF00) | 0x900);
                     func_800A9C54(arg0->unk0.unkF, (char*)arg0 + 0x5EC, 0);
                     arg0->unk0.facing = (u_short)(*(u_short*)((char*)arg0 + 0x5F2));
                     func_800A0204((int)arg0->unk0.unkF, 0x15, 0, 8);
                     func_800A01C8((int)arg0->unk0.unkF, 0x16, 8, 0);
-                    var_v0 = ((*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF) | 0x03000000;
+                    var_v0 = (*(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF) | 0x03000000;
                     goto block_22;
                 }
             }
         }
         break;
     case 3:
-        if (!((*(u_int*)((char*)arg0 + 8)) & 0xF00)) {
+        if (!arg0->unk0.unk9_0) {
             if (arg0->unk0.unk13 == 0xFC) {
                 var_v0_3 = (*(u_int*)((char*)D_800F4538[arg0->unk0.unk12] + 8)) & 0xF00;
             } else {
@@ -204,15 +204,15 @@ void func_800A29A0(D_800F4538_t* arg0)
             case 5:
                 if ((int)arg0->unk17FD >= 2U) {
                     if ((*(u_int*)((char*)D_800F4538[arg0->unk17FD] + 8)) & 0x0F000000) {
-                        (*(u_int*)((char*)arg0 + 8)) =
-                            (u_int)(((*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF)
+                        *(u_int*)((char*)arg0 + 8) =
+                            (u_int)((*(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF)
                                     | 0x05000000);
                         return;
                     }
                     goto block_21;
                 }
             block_21:
-                var_v0 = (*(u_int*)((char*)arg0 + 8)) & 0xF0FFFFFF;
+                var_v0 = *(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF;
                 goto block_22;
             }
         }
@@ -220,7 +220,7 @@ void func_800A29A0(D_800F4538_t* arg0)
     }
     return;
 block_22:
-    (*(u_int*)((char*)arg0 + 8)) = var_v0;
+    *(u_int*)((char*)arg0 + 8) = var_v0;
 }
 
 void func_800A2C48(D_800F4538_t* arg0)
@@ -242,7 +242,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
     u_int var_v0;
     u_char temp_v1_2;
 
-    temp_v0 = ((u_int)(*(u_int*)((char*)arg0 + 8)) >> 0x1C) & 7;
+    temp_v0 = ((u_int) * (u_int*)((char*)arg0 + 8) >> 0x1C) & 7;
     switch (temp_v0) {
     case 1:
         func_800A0204((int)arg0->unk0.unkF, 9, 0, 8);
@@ -251,8 +251,8 @@ void func_800A2CD4(D_800F4538_t* arg0)
         arg0->unk5CA = (u_short)arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0U;
         if (arg0->unk5CA != 0) {
-            (*(u_int*)((char*)arg0 + 8)) =
-                (u_int)(((*(u_int*)((char*)arg0 + 8)) & 0x8FFFFFFF) | 0x20000000);
+            *(u_int*)((char*)arg0 + 8) =
+                (u_int)((*(u_int*)((char*)arg0 + 8) & 0x8FFFFFFF) | 0x20000000);
             return;
         }
         goto block_10;
@@ -263,8 +263,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
         func_800A9378(
             arg0->unk0.position.vx, arg0->unk0.position.vy, arg0->unk0.position.vz, 2);
         if ((*(int*)&D_800F49F4) != 0) {
-            (*(u_int*)((char*)arg0 + 8)) =
-                (u_int)((*(u_int*)((char*)arg0 + 8)) | 0x200000);
+            *(u_int*)((char*)arg0 + 8) = (u_int)(*(u_int*)((char*)arg0 + 8) | 0x200000);
             goto block_16;
         }
         if (arg0->unk5CA == 0) {
@@ -277,8 +276,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
     case 3:
         if ((arg0->unk0.unk1A == 0) && ((*(u_int*)((char*)arg0 + 0x119C)) & 0x20000)) {
         block_10:
-            (*(u_int*)((char*)arg0 + 8)) =
-                (u_int)((*(u_int*)((char*)arg0 + 8)) & 0xFFDFFFFF);
+            *(u_int*)((char*)arg0 + 8) = (u_int)(*(u_int*)((char*)arg0 + 8) & 0xFFDFFFFF);
             func_800ACF54(arg0);
             func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
             func_800A0204((int)arg0->unk0.unkF, 1, 0, 8);
@@ -294,8 +292,8 @@ void func_800A2CD4(D_800F4538_t* arg0)
         temp_v0_2 = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0U;
         arg0->unk5CA = temp_v0_2;
-        temp_v1 = (*(u_int*)((char*)arg0 + 8)) | 0x200000;
-        (*(u_int*)((char*)arg0 + 8)) = temp_v1;
+        temp_v1 = *(u_int*)((char*)arg0 + 8) | 0x200000;
+        *(u_int*)((char*)arg0 + 8) = temp_v1;
         if (arg0->unk5CA == 0) {
             arg0->unk6E0 = 0;
             goto block_16;
@@ -327,9 +325,9 @@ void func_800A2CD4(D_800F4538_t* arg0)
     }
     return;
 block_21:
-    var_v0 = (*(u_int*)((char*)arg0 + 8)) & 0x8FFFFFFF;
+    var_v0 = *(u_int*)((char*)arg0 + 8) & 0x8FFFFFFF;
 block_22:
-    (*(u_int*)((char*)arg0 + 8)) = var_v0;
+    *(u_int*)((char*)arg0 + 8) = var_v0;
 }
 
 void func_800A2FBC(D_800F4538_t* arg0)
@@ -399,19 +397,19 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
         if (func_800A3310(actorId, position) != 0) {
             func_800A3394(actorId, position);
         }
-        (*(int*)((char*)actor + 0x8)) |= 0x200000;
+        *(u_int*)((char*)actor + 0x8) |= 0x200000;
         func_800A0204(actorId, 8, 0, 0);
     } else {
         if (mode == 0x40 || mode == 0x80) {
-            (*(int*)((char*)actor + 0x8)) |= 0x400000;
+            *(u_int*)((char*)actor + 0x8) |= 0x400000;
         }
         tileType = (u_char)placement->unk0_8;
         if (tileType == 7) {
             actor->unk0.unk5D = 0;
             actor->unk0.position.vy = (short)height;
             actor->unk0.unk34.vy = 0;
-            (*(int*)((char*)actor + 0x8)) =
-                (int)(((*(int*)((char*)actor + 0x8)) & 0xFFF8FFFF) | 0x30000);
+            *(u_int*)((char*)actor + 0x8) =
+                (int)((*(u_int*)((char*)actor + 0x8) & 0xFFF8FFFF) | 0x30000);
         } else {
             if (tileType >= 2U) {
                 anchor = (int*)func_800A4A24((u_char)placement->unk0_8);
@@ -420,10 +418,10 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
                 (*(int*)((char*)actor + 0x17EC)) = (int)anchor[0];
                 (*(int*)((char*)actor + 0x17F0)) = (int)anchor[1];
                 (*(short*)((char*)actor + 0x17F2)) = (short)(u_char)placement->unk0_8;
-                flags = ((*(int*)((char*)actor + 0xC)) & ~0xF)
+                flags = (*(u_int*)((char*)actor + 0xC) & ~0xF)
                       | ((u_char)placement->unk0_8 & 0xF);
-                (*(int*)((char*)actor + 0xC)) = flags;
-                (*(int*)((char*)actor + 0xC)) =
+                *(u_int*)((char*)actor + 0xC) = flags;
+                *(u_int*)((char*)actor + 0xC) =
                     (int)((flags & ~0xF0) | (((u_char)placement->unk0_8 & 0xF) * 0x10));
             }
             func_800A0204(actorId, 1, 0, 0);
@@ -814,7 +812,7 @@ int func_800A3E6C(int actorId)
     int dz;
 
     actor = D_800F4538[actorId];
-    if (*(u_int*)((char*)actor + 0x5AC) & 0x100000) {
+    if (actor->unk5AC_20) {
         return -1;
     }
     objectId = func_800A38E0(actorId);
@@ -870,7 +868,7 @@ int func_800A3E6C(int actorId)
     case 4:
     case 5:
     case 6:
-        if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+        if (actor->unk5AC_3) {
             func_800A0204(actorId, 0x4C, 0, 4);
             func_800AE6C0(actor, 0x2E, 0x2F);
             *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
@@ -966,7 +964,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         actor->unk5AC_3 = 0;
         return;
     }
-    if ((object == NULL) || ((*(int*)((char*)object + 8)) & 0xF00)) {
+    if ((object == NULL) || object->unk9_0) {
         func_800A0204(actor->unk0.unkF, 1, 0, 8);
         return;
     }
@@ -1188,7 +1186,7 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
         actor->unk0.position.vy += contact->unk2 - *(short*)&actor->unk17EC[2];
         break;
     case 1:
-        movement = (*(u_int*)((char*)actor + 8)) & 0x70000;
+        movement = *(u_int*)((char*)actor + 8) & 0x70000;
         if (movement == 0x20000 || movement == 0x30000) {
             return;
         }
@@ -1214,13 +1212,13 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
                 func_8008C49C(actor->unk0.unkC_0 - 2, actor->unk0.unkF);
             } else {
                 func_8008C49C(previous - 2, -1);
-                if (!((*(u_int*)((char*)actor + 8)) & 0x70000)) {
+                if (!actor->unk0.unkA_0) {
                     actor->unk6EE = 0;
                     actor->unk6EF = 0;
                 }
             }
         }
-        if (actor->unk0.unkF == 0 && !((*(u_int*)((char*)actor + 8)) & 0x70000)
+        if (actor->unk0.unkF == 0 && !actor->unk0.unkA_0
             && actor->unk0.unkC_0 != *(short*)&actor->unk17EC[6]) {
             func_800E4BD8(*(short*)&actor->unk17EC[6]);
             *(short*)&actor->unk17EC[6] = 0;
@@ -1264,11 +1262,11 @@ void func_800A4E68(int arg0)
     int temp_v1_4;
 
     temp_s0 = D_800F4538[arg0];
-    temp_v1 = (*(u_int*)((char*)temp_s0 + 8));
+    temp_v1 = *(u_int*)((char*)temp_s0 + 8);
     if (!(temp_v1 & 0xF00) || ((u_int)((temp_v1 >> 8) & 0xF) >= 6U)) {
         if (arg0 == 0) {
             func_800A4A88(temp_s0, 0);
-            if (!((*(u_int*)((char*)temp_s0 + 8)) & 0x70000) || (temp_s0->unk181A == 0)) {
+            if (!temp_s0->unk0.unkA_0 || (temp_s0->unk181A == 0)) {
                 temp_v1_2 = temp_s0->unk1848.unk0;
                 switch (temp_v1_2) { /* switch 1; irregular */
                 case 7: /* switch 1 */
@@ -1281,7 +1279,7 @@ void func_800A4E68(int arg0)
                 block_13:
                     func_800A5280(0, (short)temp_s0->unk1848.unk4, temp_s0->unk1848.unk8,
                         &movement);
-                    if ((*(u_int*)((char*)temp_s0 + 8)) & 0x70000) {
+                    if (temp_s0->unk0.unkA_0) {
                     block_14:
                         func_800AC690(0, temp_s0);
                     }
@@ -1301,7 +1299,7 @@ void func_800A4E68(int arg0)
             if (temp_s0->unk1848.unk0 == 2) {
                 func_800A25EC(temp_s0);
             } else {
-                temp_a0 = (*(u_int*)((char*)temp_s0 + 8));
+                temp_a0 = *(u_int*)((char*)temp_s0 + 8);
                 if (!(temp_a0 & 0x70000)) {
                     if (temp_a0 & 0x0F000000) {
                         func_800A29A0(temp_s0);
@@ -1316,7 +1314,7 @@ void func_800A4E68(int arg0)
                                 movement.vx = (u_short)temp_s0->unk1848.unk6;
                                 func_800A5280(arg0, (short)temp_s0->unk1848.unk4,
                                     temp_s0->unk1848.unk8, &movement);
-                                if ((*(u_int*)((char*)temp_s0 + 8)) & 0x70000) {
+                                if (temp_s0->unk0.unkA_0) {
                                 block_34:
                                     func_800AC690(arg0, temp_s0);
                                 }
@@ -2029,8 +2027,8 @@ int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, SVECTOR* motion)
     actor->unk0.position.vy += offset->vy;
     actor->unk0.position.vz += offset->vz;
     actor->unk0.unkA_3 = 2;
-    if (func_800A76BC(actor, motion, &height, 0) != 3
-        && !(*(int*)((char*)actor + 0x5AC) & 0x2000) && height < 5) {
+    if (func_800A76BC(actor, motion, &height, 0) != 3 && !actor->unk5AC_13
+        && height < 5) {
         height = rsin(ONE / 8);
         height = height * actor->unk63C / ONE;
         if ((D_800F49F9 >> 1) & 1) {
@@ -2117,7 +2115,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
         }
         goto play;
     }
-    if (*(u_int*)((char*)actor + 8) & 0x400000) {
+    if (actor->unk0.unkA_6) {
         if (speed >= actor->unk5B9) {
             next = D_800E90D0[quadrant];
             frames = 20;
@@ -2415,7 +2413,7 @@ void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
 {
     collisionResponseScratch* scratch;
     int x, z;
-    if (*(u_int*)((char*)actor + 0x5AC) & 0x1000) {
+    if (actor->unk5AC_12) {
         scratch = (void*)0x1F8003BC;
         x = 0;
         z = (scratch->contacts[0] != 0) * 16;
@@ -2515,9 +2513,9 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     radius = actor->unk63C;
     diagonal = rsin(ONE / 8) * radius / ONE;
     scratch->unk0 = -0xC0;
-    if (*(u_int*)((char*)actor + 8) & 0x800000) {
+    if (actor->unk0.weaponDrawn) {
         scratch->unk40 = -0x40;
-    } else if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+    } else if (actor->unk5AC_3) {
         scratch->unk0 = -0x140;
         scratch->unk40 = -0x40;
     } else {
@@ -2528,7 +2526,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         scratch->unk40 = -0x100;
         actor->unk5AC_10 = 0;
         actor->unk5AC_12 = 0;
-        if (!(*(u_int*)((char*)actor + 0xC) & 0xF)) {
+        if (!actor->unk0.unkC_0) {
             probeTiles[0] = func_800A8D64(&actor->unk0.position, actor->unk0.unk5D);
             if (probeTiles[0] == NULL) {
                 actor->unk5AC_10 = 1;
@@ -2558,7 +2556,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     func_800A70DC(actor, diagonal);
     func_800A7524(actor, motion);
     actor->unk5AC_10 = 0;
-    if (!(*(u_int*)((char*)actor + 0xC) & 0xF)) {
+    if (!actor->unk0.unkC_0) {
         probeTiles[0] = func_800A8D64(&actor->unk0.position, actor->unk0.unk5D);
         if (probeTiles[0] == NULL) {
             actor->unk5AC_10 = 1;
@@ -2725,7 +2723,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         if (xResults[0] != 0xFF && xResults[1] <= diagonalOffset
             && xResults[2] <= diagonalOffset && xResults[3] <= diagonalOffset
             && xResults[4] <= diagonalOffset) {
-            if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+            if (actor->unk5AC_14) {
                 if (x < 0) {
                     facing = actor->unk17FE;
                     expected = 6;
@@ -2741,7 +2739,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         }
         if (zResults[0] != 0xFF && zResults[1] < 2 && zResults[2] < 2 && zResults[3] < 2
             && zResults[4] < 2) {
-            if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+            if (actor->unk5AC_14) {
                 if (motion->vz < 0) {
                     if (actor->unk17FE == 4) {
                         goto slideX;
@@ -2758,7 +2756,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
             return 2;
         }
     slideX:
-        if (*(u_int*)((char*)actor + 8) & 0x70000) {
+        if (actor->unk0.unkA_0) {
             return 3;
         }
         direction = 6;
@@ -2885,7 +2883,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     if (zResults[0] != 0xFF && zResults[1] <= diagonalOffset
         && zResults[2] <= diagonalOffset && zResults[3] <= diagonalOffset
         && zResults[4] <= diagonalOffset) {
-        if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+        if (actor->unk5AC_14) {
             if (z < 0) {
                 if (actor->unk17FE == 4) {
                     goto slideZ;
@@ -2903,7 +2901,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     }
     if (xResults[0] != 0xFF && xResults[1] < 2 && xResults[2] < 2 && xResults[3] < 2
         && xResults[4] < 2) {
-        if (*(u_int*)((char*)actor + 0x5AC) & 0x4000) {
+        if (actor->unk5AC_14) {
             if (motion->vx < 0) {
                 facing = actor->unk17FE;
                 expected = 6;
@@ -2924,7 +2922,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         return 1;
     }
 slideZ:
-    if (*(u_int*)((char*)actor + 8) & 0x70000) {
+    if (actor->unk0.unkA_0) {
         return 3;
     }
     direction = 4;

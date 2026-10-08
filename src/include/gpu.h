@@ -80,6 +80,18 @@ typedef struct {
     u_long x3y3;
 } VS_POLY_G4;
 
+typedef struct {
+    u_long r0g0b0code;
+    u_long x0y0;
+    u_long u0v0clut;
+    u_long x1y1;
+    u_long u1v1tpage;
+    u_long x2y2;
+    u_long u2v2;
+    u_long x3y3;
+    u_long u3v3;
+} VS_POLY_FT4;
+
 #define vs_getXY(x, y) (((y) << 16) | ((x) & 0xFFFF))
 #define vs_getXY_2(x, y) (((x) & 0xFFFF) | ((y) << 16))
 #define vs_getWH(w, h) vs_getXY((w), (h))

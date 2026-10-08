@@ -7425,7 +7425,31 @@ void func_8007D3F8(void)
 }
 
 // https://decomp.me/scratch/JK0nT
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D41C);
+void func_8007D41C(void)
+{
+    int i;
+    POLY_FT4* poly;
+    SetPolyFT4(&D_800F1ABC->poly[0]);
+    setRGB0(&D_800F1ABC->poly[0], D_800F1A78.r0, D_800F1A78.g0, D_800F1A78.b0);
+    SetSemiTrans(&D_800F1ABC->poly[0], 1);
+    setUV4(&D_800F1ABC->poly[0], 0, 0, 64, 0, 0, 223, 64, 223);
+    for (i = 0; i < 10; ++i) {
+        (i + D_800F1ABC->poly)[0] = D_800F1ABC->poly[0];
+        poly = (POLY_FT4*)(i * sizeof(POLY_FT4) + (u_long)D_800F1ABC);
+        setXY4(poly, i * 64, 0, i * 64 + 64, 0, i * 64, 223, i * 64 + 64, 223);
+        D_800F1ABC->poly[i].tpage = GetTPage(2, 0, i * 64, 0);
+    }
+    setUV4(&D_800F1ABC->poly[4], 0, 0, 63, 0, 0, 223, 63, 223);
+    setUV4(&D_800F1ABC->poly[9], 0, 0, 63, 0, 0, 223, 63, 223);
+    SetSprt(&D_800F1ABC->sprite[0]);
+    setRGB0(&D_800F1ABC->sprite[0], D_800F1A78.r0, D_800F1A78.g0, D_800F1A78.b0);
+    SetSemiTrans(&D_800F1ABC->sprite[0], 1);
+    setUV0(&D_800F1ABC->sprite[0], 0, 0);
+    setWH(&D_800F1ABC->sprite[0], 64, 223);
+    for (i = 0; i < 10; ++i) {
+        (i + D_800F1ABC->sprite)[0] = D_800F1ABC->sprite[0];
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D734);
 

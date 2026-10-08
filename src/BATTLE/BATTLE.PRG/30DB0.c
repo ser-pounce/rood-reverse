@@ -3820,7 +3820,8 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     } else if (!actor->unk0.weaponDrawn && (anim == 41 || anim == 59)) {
         actor->unk0.unkA_3 = 2;
         goto setHeading;
-    } else if (*(int*)&actor->unk0.unk34 == 0 && actor->unk0.unk34.vz == 0) {
+    } else if (actor->unk0.unk34.vx == 0 && actor->unk0.unk34.vy == 0
+               && actor->unk0.unk34.vz == 0) {
         actor->unk0.unkA_3 = 0;
         actor->unk0.unk9_6 = 0;
     }

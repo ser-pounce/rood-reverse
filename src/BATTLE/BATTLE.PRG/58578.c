@@ -5,6 +5,8 @@
 #include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 #include <stddef.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 
 typedef struct {
     char unk0;
@@ -68,14 +70,83 @@ typedef struct {
     short unk18[4];
 } func_800C0FA8_t2;
 
+void func_800C02A8(void);
+MATRIX* func_800C085C(u_char* scale, int angle);
+void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
+void func_800C20B4(void);
+void func_800C253C(int type);
 
 extern D_800EB9B8_t* D_800EB9B8;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C0D78);
+void func_800C0D78(void)
+{
+    func_800C1564_t* shape = (func_800C1564_t*)0x1F800378;
+    int color = 0x10401;
+    short* sine = (short*)0x1F8003B0;
+    int i;
+
+    if (D_800EB9B8 == NULL) {
+        return;
+    }
+
+    for (i = 0; i < 40; ++i) {
+        sine[i] = rsin(i * ONE / 32);
+    }
+
+    for (i = 0; i < 2; color = 0x10104, ++shape, ++i) {
+        MATRIX* m;
+        int type;
+        int j;
+
+        *shape = D_800EB9B8->unk0[i];
+        func_800C02A8();
+        gte_ldv0(shape->unk8);
+        gte_rtps2();
+        gte_stszotz(&D_800EB9B8->unk20);
+        switch (shape->unk0) {
+        case 1:
+            type = 0;
+            break;
+        case 2:
+            shape->unk4.values[1] <<= 1;
+            m = func_800C085C(shape->unk4.values, shape->unk2);
+            for (j = 0; j < 3; ++j) {
+                shape->unk8[j] += m->m[j][1] >> 1;
+            }
+            type = 1;
+            break;
+        case 3:
+            type = 1;
+            break;
+        case 4:
+            shape->unk4.values[3] += 0x80;
+            m = func_800C085C(shape->unk4.values, shape->unk2);
+            for (j = 0; j < 3; ++j) {
+                shape->unk8[j] += m->m[j][1];
+            }
+            type = 2;
+            break;
+        case 5:
+            type = 2;
+            break;
+        case 6:
+            type = 3;
+            break;
+        case 7:
+            type = 4;
+            break;
+        default:
+            continue;
+        }
+        func_800C253C(type);
+        func_800C0B50(shape, color);
+    }
+    func_800C20B4();
+}
 
 void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
 {

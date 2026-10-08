@@ -830,7 +830,47 @@ int func_800C2254(int angle, int index)
     return index;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2368);
+int func_800C2368(int step, int radius, int index)
+{
+    short* basis = (short*)0x1F800398;
+    int base;
+    int i;
+    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+
+    for (base = 0; base < ONE; base += ONE / 4) {
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        int phase = base - step * 4;
+        int point;
+
+        for (point = 0; point <= radius; ++index, ++point, phase += step, ++vertex) {
+            vertex->xyz[0] = (x * rcos(phase)) >> 12;
+            vertex->xyz[1] = y;
+            vertex->xyz[2] = (z * rsin(phase)) >> 12;
+            i = point != 0;
+            vertex->flags = i;
+            x += ONE / 8;
+            y -= ONE / 8;
+            z += ONE / 8;
+        }
+    }
+    radius *= ONE / 8;
+    for (i = 8; i >= 0; --i) {
+        basis[i] = 0;
+    }
+    basis[1] = -radius;
+    basis[3] = radius;
+    basis[8] = radius;
+    index = func_800C2254(step * 7, index);
+    if (radius >= 5) {
+        basis[1] = -ONE / 2;
+        basis[3] = ONE / 2;
+        basis[8] = ONE / 2;
+        index = func_800C2254(step * 4, index);
+    }
+    return index;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C253C);
 

@@ -10876,7 +10876,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
             (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)
             + 0x40;
-        sp860.unk8 = *arg4;
+        *(SVECTOR*)sp860.unk8 = *arg4;
         break;
 
     case 2:
@@ -10890,7 +10890,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
         sp860.unk4.values[2] = vs_main_actions[arg0].aoe_16;
         sp860.unk2 = 0;
         sp860.unk4.values[3] = vs_main_actions[arg0].aoe_24 & 0xF8;
-        sp860.unk8 = *arg5;
+        *(SVECTOR*)sp860.unk8 = *arg5;
         break;
     }
 

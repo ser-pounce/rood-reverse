@@ -2971,7 +2971,60 @@ void func_800CD0FC(int arg0, u_int arg1)
 }
 
 // https://decomp.me/scratch/qBmPY
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD158);
+void func_800CD158(int id)
+{
+    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    int y = box->y;
+    u_long* ot = D_800F51B8 + id * 4 + 1;
+    int edge = box->unk2A;
+    int offset = vs_main_frameBuf ? 0 : 320;
+    u_int i;
+    u_int count;
+
+    if (y == 0) {
+        y = edge;
+    } else {
+        y = 240 - edge;
+    }
+    count = box->lineCount * 13 + 4 - edge;
+    if (count > 16) {
+        count = 16;
+    } else if (count < 4) {
+        count = 4;
+    }
+    for (i = 0; i < count; ++i) {
+        u_int brightness = ((count - i) * 128) / (count + 1);
+        u_long* prim =
+            vs_battle_setSprite(brightness, vs_getXY(256, y), vs_getWH(64, 1), ot);
+        u_int page = ((u_int)(offset + 256) >> 6) | 0x100;
+        prim[1] = _get_mode(0, 0, page);
+        prim[4] = y << 8;
+        prim = vs_battle_setSprite(brightness, vs_getXY(0, y), vs_getWH(256, 1), ot);
+        brightness = ((u_int)offset >> 6) | 0x100;
+        prim[1] = _get_mode(0, 0, brightness);
+        prim[4] = y << 8;
+        if (y < 128) {
+            if (--y < 0) {
+                break;
+            }
+        } else if (++y >= 240) {
+            break;
+        }
+    }
+    if (y < 128) {
+        if (y >= 0) {
+            vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), 0, vs_getWH(320, y + 1));
+        }
+        return;
+    }
+    if (y < 240) {
+        vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), vs_getXY(0, y),
+            (0xF00000 - (y << 16)) | 320);
+    }
+    if (box->state == box->unk22 + 1) {
+        func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
+    }
+}
 
 int func_800CD3A0(int arg0, int arg1)
 {

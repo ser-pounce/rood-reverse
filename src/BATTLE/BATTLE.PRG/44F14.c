@@ -909,12 +909,12 @@ void func_800AEF94(MATRIX* camera)
     do {
         actor = entries[i];
         if ((actor != NULL) && (actor->unk0.nBones != 0)
-            && !((*(u_int*)((char*)actor + 8)) & 1) && (actor->unk0.unk13 != 0xFC)) {
+            && !actor->unk0.skip && (actor->unk0.unk13 != 0xFC)) {
             func_800AAE9C(actor);
             if (actor->unk0.unk64.unk0 != 0) {
                 func_800AB788(actor, NULL, 0);
             }
-            if ((*(u_int*)((char*)actor + 8)) & 0xF00) {
+            if (actor->unk0.unk9_0) {
                 func_800AB9A4(actor);
             }
             flags = (*(u_int*)((char*)actor + 8));
@@ -967,7 +967,7 @@ void func_800AEF94(MATRIX* camera)
             } else {
                 func_800AEAE8(actor);
             }
-            if ((*(u_int*)((char*)actor + 8)) & 0x2000) {
+            if (actor->unk0.unk9_5) {
                 func_800B28A8(
                     actor, &entries[actor->unk0.unk12]->bones[actor->unk0.unk13], 0U);
             } else {
@@ -1270,7 +1270,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
                 return;
             }
         }
-        if ((*(int*)((char*)actor + 8)) & 4) {
+        if (actor->unk0.freeze) {
             if (state->unk542 == (short)state->unk540) {
                 func_800AD714(actor, state, mode);
             }
@@ -1540,14 +1540,14 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     if (actor->unk17FC != -2) {
         trackAnim = 0;
         if (func_800BEB00() != 4) {
-            if (*(int*)((char*)actor + 8) < 0) {
+            if (actor->unk0.unkB_7) {
                 return;
             }
             dx = actor->animationId;
             if (dx >= 100) {
                 dx -= 100;
             }
-            if (*(int*)((char*)actor + 8) & 0x400000) {
+            if (actor->unk0.unkA_6) {
                 if ((u_int)(dx - 31) < 8) {
                     trackAnim = 1;
                 }

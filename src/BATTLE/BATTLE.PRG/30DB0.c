@@ -57,6 +57,7 @@ int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int _loadEtm(vs_battle_objectData*);
 void _loadMaterialPalette(int index, int material);
+void func_8009CAEC(D_800F4538_t* arg0, int arg1);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -73,6 +74,7 @@ void func_800A525C(D_800F4538_t*);
 int func_800A6EE8(short*, int, int, int);
 int func_800A91DC(int, int, int);
 int func_800AAD4C(int, int, int, int);
+void func_800AB098(D_800F4538_t*, int, int);
 void func_800AB2AC(int);
 void func_800AC500(D_800F4538_t*);
 void func_800AD008(void*, void*);
@@ -81,6 +83,7 @@ void func_800AD62C(int, int*, int*, int);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE47C(D_800F4538_t*);
 void func_800AE6C0(D_800F4538_t*, int, int);
+void func_800AE7D8(void*, int, int);
 short func_800BEB00();
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
@@ -91,12 +94,21 @@ extern u_char D_800E8960[];
 extern u_short _etmLbaOffsets[];
 extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
+extern u_short D_800E8A60[];
+extern u_char D_800E8B40[];
 extern u_short D_800E8D00[];
 extern u_char D_800E8E80[];
 extern u_char _loadShpState;
+extern u_short D_800E8E8E[];
+extern u_char D_800E8EA3[];
+extern u_short D_800E8EA8[][4];
+extern u_char D_800E8EFC[][4];
 extern u_char D_800E8F29;
+extern u_char D_800E8F2B;
 extern u_char D_800E8F2C;
 extern u_char _loadEtmState;
+extern u_char D_800E8F30[];
+extern u_char D_800E8F90[];
 extern u_char D_800E8FA8[];
 extern void* D_800E8FB4[];
 extern char D_800E8FC0;
@@ -118,19 +130,32 @@ extern u_short* _etmData;
 extern vs_main_CdFile _etmFile;
 extern vs_main_CdQueueSlot* _etmFileCdSlot;
 extern void* _wepFileEpilog;
+extern u_char* D_800F22B4;
+extern u_char D_800F22B8;
+extern int D_800F22BC;
+extern int D_800F22C0;
+extern int D_800F22C4;
+extern void* D_800F22C8;
+extern int D_800F22D0;
+extern vs_main_CdFile D_800F22D8;
+extern vs_main_CdQueueSlot* D_800F22E0;
+extern u_char* D_800F22E4;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
 extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
 extern char D_800F4448[];
+extern void* D_800F4528[];
 extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
 extern short D_800F4628[4][16];
+extern void* D_800F4768;
 extern char* D_800F4810[4][16];
 extern short D_800F4938[4][16];
 extern int D_800F49D8;
 extern u_int D_800F49E0;
+extern char D_800F49E4;
 
 int vs_battle_getEmptyObjectDataSlot(void)
 {
@@ -1020,17 +1045,6 @@ int _loadShp(vs_battle_objectData* arg0)
     return shpData;
 }
 
-extern u_char D_800E8F30[];
-extern u_char D_800E8F90[];
-extern u_char* D_800F22B4;
-extern u_char D_800F22B8;
-extern int D_800F22BC;
-extern int D_800F22C0;
-extern int D_800F22C4;
-extern void* D_800F4528[];
-
-void func_8009CAEC(D_800F4538_t* arg0, int arg1);
-
 int _parseShp(vs_battle_objectData* object)
 {
     RECT rect;
@@ -1459,12 +1473,6 @@ int func_8009BD90(vs_battle_objectData* arg0)
 }
 
 // https://decomp.me/scratch/wJjuU
-extern u_short D_800E8A60[], D_800E8E8E[], D_800E8EA8[][4];
-extern u_char D_800E8B40[], D_800E8EA3[], D_800E8EFC[][4];
-extern void* D_800F22C8;
-extern int D_800F22D0;
-extern vs_main_CdFile D_800F22D8;
-extern vs_main_CdQueueSlot* D_800F22E0;
 static inline int vs_battleFindSharedSequence(vs_battle_objectData* arg0)
 {
     D_800F4538_t* temp_v1;
@@ -1640,10 +1648,6 @@ inline void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
     arg0->unk0 += (long)arg0;
     arg0->unk4 += (long)arg0;
 }
-
-extern u_char D_800E8F2B;
-extern u_char* D_800F22E4;
-extern void* D_800F4768;
 
 int _loadSeq(vs_battle_objectData* object)
 {
@@ -1921,8 +1925,6 @@ int func_8009CC20(int arg0, int arg1)
     }
     return 0;
 }
-
-void func_800AB098(D_800F4538_t*, int, int);
 
 int func_8009CE9C(u_int arg0)
 {
@@ -3133,7 +3135,6 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
 }
 
 // https://decomp.me/scratch/kQp6H
-extern char D_800F49E4;
 
 void func_8009EFEC(int actorId, SVECTOR* target, int mode)
 {
@@ -3249,8 +3250,6 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
         }
     }
 }
-
-void func_800AE7D8(void*, int, int);
 
 void func_8009F314(int actorId, void* context, int animate)
 {

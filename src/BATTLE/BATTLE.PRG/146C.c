@@ -360,6 +360,44 @@ typedef struct {
     SVECTOR position;
 } actionEffectRequest;
 
+typedef struct {
+    u_char unk0;
+    u_char hidden;
+    short unk2;
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    short strength;
+    short intelligence;
+    short agility;
+    short limbHP[6];
+    short unk1E;
+    int statuses;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+} savedEnemyState;
+
+typedef struct {
+    u_char type;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_short flag;
+    u_char flagMin;
+    u_char flagMax;
+    u_char slot;
+    u_char unk9;
+    u_char x;
+    u_char z;
+    u_char y;
+    u_char direction;
+    u_short model;
+    u_char unk10[0x18];
+} mpdObjectSpawn;
+
 void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
@@ -409,6 +447,7 @@ void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
     int, int, int, int, int, int, vs_battle_objectData_flags*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
+vs_battle_actor* func_800775C0(int, _mpdEnemy*, vs_battle_charInitData*, int);
 int func_80077F70(void);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
@@ -572,6 +611,7 @@ extern u_char D_8004EFA0;
 extern u_char D_8004EFB2;
 extern u_char D_8004EFE2;
 extern u_char D_8004F000;
+extern u_char D_8004FE88[];
 extern MATRIX D_8005E218;
 extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
@@ -611,6 +651,7 @@ extern int D_800F18A8;
 extern int D_800F18AC;
 extern int D_800F18B0;
 extern D_800F18C8_t D_800F18C8;
+extern int D_800F18E0;
 extern void* D_800F18E4;
 extern u_int _cameraMode;
 extern char D_800F18F8;
@@ -5549,7 +5590,7 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_battle_actor* func_800765B0(
-    int index, int actorId, vs_battle_objectData_flags* arg2, int material)
+    int index, int actorId, vs_battle_objectData_flags* arg2, int material, int arg4)
 {
     vs_battle_objectData objData;
     int i;
@@ -13488,7 +13529,246 @@ void func_80089098(void)
 
 int func_80089104(void) { return D_800F18A8; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80089114);
+void func_80089114(void)
+{
+    int _[4] __attribute__((unused));
+    int slots[16];
+    vs_battle_objectData_flags data;
+    _mpdEnemy* enemy;
+    savedEnemyState* saved;
+    _zndEnemy* template;
+    int i;
+    int visible;
+    u_short param;
+    int j;
+    u_short slot;
+    u_short id;
+
+    if (D_800F18E0 == 0) {
+        return;
+    }
+
+    for (j = 15; j >= 0; --j) {
+        slots[j] = 0;
+    }
+
+    for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
+        enemy = &_zoneContext.mpdEnemies[i];
+        slot = (enemy->type == 0) ? enemy->slot : ((mpdObjectSpawn*)enemy)->slot;
+
+        if (slot < 16) {
+            slots[slot] = 1;
+        }
+    }
+
+    for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
+        enemy = &_zoneContext.mpdEnemies[i];
+
+        if (enemy->type == 0) {
+            visible = enemy->hidden == 0;
+
+            switch (enemy->sceneTest) {
+            case 1:
+                if (vs_battle_getStateFlag(1) != 0) {
+                    visible = 0;
+                }
+                break;
+
+            case 2:
+                if (vs_battle_getStateFlag(1) != 1) {
+                    visible = 0;
+                }
+                break;
+
+            case 3:
+                if (vs_battle_getStateFlag(2) != 1) {
+                    visible = 0;
+                }
+                break;
+            }
+
+            switch (enemy->flagTest) {
+            case 1:
+                if (vs_battle_getStateFlag(0x82) != enemy->flagValue) {
+                    visible = 0;
+                }
+                break;
+
+            case 2:
+                if (vs_battle_getStateFlag(0x82) > enemy->flagValue) {
+                    visible = 0;
+                }
+                break;
+
+            case 3:
+                if (vs_battle_getStateFlag(0x82) < enemy->flagValue) {
+                    visible = 0;
+                }
+                break;
+            }
+
+            switch (enemy->statTest) {
+            case 1:
+                if ((enemy->statValue & 0x3FF)
+                    < vs_battle_characterState->unk3C->currentHP) {
+                    visible = 0;
+                }
+                break;
+
+            case 2:
+                if (vs_battle_characterState->unk3C->currentHP
+                    < (enemy->statValue & 0x3FF)) {
+                    visible = 0;
+                }
+                break;
+
+            case 3:
+                if (vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                    != (enemy->statValue >> 10)) {
+                    visible = 0;
+                }
+                break;
+
+            case 4:
+                if (vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                    > (enemy->statValue >> 10)) {
+                    visible = 0;
+                }
+                break;
+
+            case 5:
+                if (vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                    < (enemy->statValue >> 10)) {
+                    visible = 0;
+                }
+                break;
+            }
+
+            id = enemy->id;
+
+            switch (enemy->facing) {
+            case 0:
+            case 3:
+                param = 6;
+                break;
+
+            case 1:
+                param = 0;
+                break;
+
+            case 2:
+                param = 1;
+                break;
+            }
+            if (enemy->unk24) {
+                param |= 0x80;
+            }
+
+            template = &_zoneContext.zndEnemies[id];
+            slot = enemy->slot;
+
+            if (slot == 0) {
+                for (j = 2; j < 10; ++j) {
+                    if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
+                        if (D_8004FE88[template->unk0[2]] != 0) {
+                            if ((vs_battle_actors[j + 4] != NULL)
+                                || (slots[j + 4] != 0)) {
+                                continue;
+                            }
+
+                            slots[j + 4] = 1;
+                        }
+
+                        slot = j;
+                        break;
+                    }
+                }
+                if (j >= 10) {
+                    vs_main_nop10(0x86, 0);
+
+                    if (_zoneContext.unk1C != NULL) {
+                        vs_main_freeHeapR(_zoneContext.unk1C);
+                    }
+
+                    _zoneContext.unk1C = NULL;
+                    _zoneContext.unk14 = 0;
+                    return;
+                }
+            } else if (D_8004FE88[template->unk0[2]] != 0) {
+                if ((vs_battle_actors[slot + 4] == NULL) && (slots[slot + 4] == 0)) {
+                    slots[slot + 4] = 1;
+                } else {
+                    vs_main_nop10(0x86, 0);
+
+                    if (_zoneContext.unk1C != NULL) {
+                        vs_main_freeHeapR(_zoneContext.unk1C);
+                    }
+
+                    _zoneContext.unk1C = NULL;
+                    _zoneContext.unk14 = 0;
+                    return;
+                }
+            }
+
+            if (visible) {
+                if (id == 0x7F) {
+                    data.unk0_0 = enemy->x;
+                    data.unk0_16 = enemy->z;
+                    data.unk0_8 = enemy->direction;
+                    data.unk0_24 = enemy->height * 64;
+                    func_800774FC(slot, 0x7F, 0, 0, 0, 0, &data, param);
+                } else {
+                    func_800775C0(slot, enemy, (vs_battle_charInitData*)template, param);
+                }
+            }
+        } else {
+            u_int flag = vs_battle_getStateFlag(((mpdObjectSpawn*)enemy)->flag & 0x3FF);
+            u_int model;
+            u_int max = ((mpdObjectSpawn*)enemy)->flagMax;
+
+            if ((flag >= ((mpdObjectSpawn*)enemy)->flagMin) && (flag <= max)) {
+                data.unk0_0 = ((mpdObjectSpawn*)enemy)->x;
+                data.unk0_16 = ((mpdObjectSpawn*)enemy)->z;
+                data.unk0_8 = ((mpdObjectSpawn*)enemy)->y;
+                data.unk0_24 = ((mpdObjectSpawn*)enemy)->direction * 64;
+                slot = ((mpdObjectSpawn*)enemy)->slot;
+
+                if (slot == 0xFF) {
+                    for (j = 2; j < 16; ++j) {
+                        if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
+                            slot = j;
+                            break;
+                        }
+                    }
+                    if (j >= 16) {
+                        vs_main_nop10(0x86, 0);
+                        return;
+                    }
+                }
+
+                param = ((mpdObjectSpawn*)enemy)->model;
+                model = param;
+                func_800765B0(slot, (model >> 12) | (model & 0xF00), &data,
+                    ((model >> 3) & 0x1C) | (data.unk0_24 / 64), 0);
+            }
+        }
+    }
+
+    for (i = 0; i < 32; ++i) {
+        enemy = &_zoneContext.mpdEnemies[i];
+        saved = func_80069E80(i);
+
+        if (saved != NULL) {
+            saved->hidden = enemy->hidden;
+        }
+    }
+    if (_zoneContext.unk1C != NULL) {
+        vs_main_freeHeapR(_zoneContext.unk1C);
+    }
+
+    _zoneContext.unk1C = NULL;
+    _zoneContext.unk14 = 0;
+}
 
 void func_80089888(void)
 {
@@ -13557,7 +13837,7 @@ void func_80089A00(void)
                 temp_s2 = &_zoneContext.mpdEnemies[i];
                 temp_v0 = func_80069E80(i);
                 if (temp_v0 != NULL) {
-                    temp_s2->unk2 = temp_v0[1];
+                    temp_s2->hidden = temp_v0[1];
                 }
             }
             break;

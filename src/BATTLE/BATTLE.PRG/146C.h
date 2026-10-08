@@ -654,23 +654,37 @@ typedef struct {
 } vs_battle_manualDisplayState_t;
 
 typedef struct {
-    char unk0[0x464];
+    u_char unk0[0x464];
 } _zndEnemy;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
+    u_char type;
+    u_char index;
+    u_char hidden;
     u_char unk3;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
+    u_char id;
+    u_char slot;
+    u_char flagTest;
+    u_char statTest;
+    u_short flagValue;
+    u_short statValue;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+    u_char settings[8];
+    u_char unk18[2];
+    u_short itemId;
+    u_short item2Id;
+    u_short item3Id;
+    u_char itemCount;
+    u_char item2Count;
+    u_char item3Count;
+    u_char facing;
+    u_char unk24;
+    u_char variant;
+    u_char unk26;
+    u_char sceneTest;
 } _mpdEnemy;
 
 typedef struct {

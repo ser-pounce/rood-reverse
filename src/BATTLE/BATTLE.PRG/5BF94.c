@@ -299,6 +299,34 @@ typedef struct {
     u_int unk0_26 : 4;
 } func_800CCE10_t;
 
+typedef struct {
+    u_short flags;
+    u_char pad2[3];
+    u_char curve;
+    u_char pad6[4];
+    u_short mode;
+    u_char padC[2];
+    u_char limit;
+    u_char padF;
+    u_short unk10;
+    u_short shape12;
+} func_800D0548_arg0;
+
+typedef struct {
+    u_char pad0[6];
+    u_short flags;
+    u_char pad8[6];
+    short frame;
+    u_char pad10[12];
+    VECTOR position;
+    u_char pad2C[32];
+    VECTOR endpoint;
+    u_char pad5C[92];
+    SVECTOR saved;
+    SVECTOR control0;
+    SVECTOR control1;
+} func_800D0548_arg1;
+
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800CA97C(void);
@@ -321,6 +349,8 @@ void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1);
 void func_800D0984(int, void*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
+void func_800D1718(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
+void func_800D1778(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
 int func_800D12D8(int);
 void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
@@ -3898,7 +3928,32 @@ void func_800CFE98(SVECTOR* arg0, func_800CFE98_t* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFEF0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D01E4);
+void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+{
+    SVECTOR start;
+    SVECTOR end;
+    SVECTOR result;
+    if (arg0->mode & 0x80) {
+        start = arg1->saved;
+        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+    } else {
+        end = arg1->saved;
+        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+    }
+    switch ((arg0->mode >> 5) & 3) {
+    case 0:
+        func_800D1778(&start, &end, arg0->limit + 1, arg1->frame, &result);
+        break;
+    case 1:
+        func_800D1718(&start, &end, arg0->limit + 1, arg1->frame, &result);
+        break;
+    case 2:
+        func_800D1778(&start, &end, 128,
+            vs_battle_sampleCurve(arg0->curve + 1, arg1->frame), &result);
+        break;
+    }
+    setVector(&arg1->position, result.vx, result.vy, result.vz);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D037C);
 

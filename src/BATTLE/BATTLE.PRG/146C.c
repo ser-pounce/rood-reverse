@@ -397,7 +397,7 @@ void _endBattleCameraTransition(void);
 void func_80073718(void);
 void func_80073D30(_mpdRoomSectionA*, func_8006EBF8_t*, int);
 void func_80073E30(_mpdRoomSectionA*, int);
-int func_80074798(func_8006EBF8_t*, char*);
+int func_80074798(func_8006EBF8_t*, u_char*);
 void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
@@ -4580,7 +4580,7 @@ void func_80074744(void)
     }
 }
 
-int func_80074798(func_8006EBF8_t* arg0, char* arg1)
+int func_80074798(func_8006EBF8_t* arg0, u_char* arg1)
 {
     int var_v1 = (arg0->unk0.unk4.pad + 0x200) & 0xFFF;
     if (var_v1 < 0) {
@@ -4622,9 +4622,9 @@ int func_80074860(int arg0)
 _mpdRoomSectionA* func_800748B8(int arg0)
 {
     func_8006EBF8_t sp10;
-    char sp20[4];
+    u_char sp20[4];
     _mpdRoomSectionA* temp_s1;
-    char* s0 = sp20;
+    u_char* s0 = sp20;
 
     func_800A1108(arg0, &sp10);
     func_80074798(&sp10, sp20);
@@ -4641,10 +4641,10 @@ _mpdRoomSectionA* func_800748B8(int arg0)
 _mpdRoomSection13* func_80074950(int arg0)
 {
     func_8006EBF8_t sp10;
-    char sp20[4];
+    u_char sp20[4];
     _mpdRoomSection13* temp_v0;
     int temp_s2;
-    char* s1 = sp20;
+    u_char* s1 = sp20;
 
     func_800A1108(arg0, &sp10);
     temp_s2 = func_80074798(&sp10, sp20);
@@ -10857,7 +10857,7 @@ int func_80084D44(vs_action_t* arg0 __attribute__((unused)),
     if (vs_battle_actors[arg2->unk0.targetActor]->unk3C->weapon.blade.id != 0) {
         u_short amount =
             vs_battle_actors[arg2->unk0.targetActor]->unk3C->weapon.currentPp;
-        arg2->limbs[6].effects.value1 += amount;
+        arg2->weaponPp += amount;
         arg2->weaponPpEffect = 1;
     }
 }

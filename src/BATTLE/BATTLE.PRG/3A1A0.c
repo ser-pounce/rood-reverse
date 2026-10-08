@@ -1992,9 +1992,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
     int animation;
     u_int state;
     u_int walkState;
-    int phase;
     int step;
-    u_int result;
 
     animation = actor->animationId;
     if (animation >= 100) {
@@ -2059,12 +2057,8 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
         }
         if ((u_int)(animation - 0xF) < 4 || (u_int)(animation - 0x2E) < 11
             || (u_int)(animation - 9) < 4 || animation == 1 || animation == 6) {
-            state = *(u_int*)((char*)actor + 0x5AC);
-            result = state & ~0x02000000;
-            state >>= 25;
-            state &= 1;
-            result |= (state ^ 1) << 25;
-            *(u_int*)((char*)actor + 0x5AC) = result;
+            state = actor->unk5AC_25;
+            actor->unk5AC_25 ^= 1;
             func_800A0204(actor->unk0.unkF, state + 0x13, 0, 6);
             return;
         }
@@ -2095,12 +2089,10 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
             }
         } else {
         walk_toggle:
-            walkState = *(u_int*)((char*)actor + 0x5AC);
-            phase = (walkState >> 25) & 1;
-            step = (u_char)phase;
+            walkState = actor->unk5AC_25;
+            step = walkState;
             next = step + 0xD;
-            *(u_int*)((char*)actor + 0x5AC) =
-                (walkState & ~0x02000000) | ((phase ^ 1) << 25);
+            actor->unk5AC_25 ^= 1;
             if (quadrant == 2) {
                 next = step + 0xF;
             }

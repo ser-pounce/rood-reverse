@@ -1554,12 +1554,14 @@ int func_8009BE5C(vs_battle_objectData* object)
     case 0:
         sequences = (char*)actor + 0x5F4;
         sectors = *(u_short*)(sequences + 0xA0 + object->modelId * 2) >> 11;
-        if (!sectors)
+        if (!sectors) {
             return 0;
+        }
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = *(u_int*)(sequences + 0x70 + object->modelId * 4);
         if (object->index == 0 && (model = object->modelId) != 0) {
             queued.dataType = 7;
@@ -1572,20 +1574,23 @@ int func_8009BE5C(vs_battle_objectData* object)
     case 1:
     case 2:
         sectors = D_800E8B40[object->modelId];
-        if (!sectors)
+        if (!sectors) {
             return -2;
+        }
         D_800F22C8 = vs_main_allocHeap(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = D_800E8A60[object->modelId] + 0x19797;
         break;
     case 3:
         sectors = D_800E8EA3[(u_char)object->material];
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = D_800E8E8E[(u_char)object->material] + 0x18043;
         break;
     case 4:
@@ -1598,24 +1603,29 @@ int func_8009BE5C(vs_battle_objectData* object)
         }
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = D_800E8EA8[(u_char)object->material][object->modelId] + 0x1943E;
         break;
     case 5:
-        if (object->modelId == 0)
+        if (object->modelId == 0) {
             return 0;
+        }
         --object->modelId;
-        if (actor->unk6E6 == 2)
+        if (actor->unk6E6 == 2) {
             goto special;
+        }
         sectors = *(u_short*)((char*)actor + 0x6CC + object->modelId * 2) >> 11;
-        if (!sectors)
+        if (!sectors) {
             return -2;
+        }
         D_800F22D8.lba = actor->spSeqLbas[object->modelId];
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         break;
     }
     D_800F22D8.size = sectors << 11;
@@ -1623,15 +1633,17 @@ int func_8009BE5C(vs_battle_objectData* object)
     D_800F22E0 = vs_main_allocateCdQueueSlot(&D_800F22D8);
     vs_main_cdEnqueue(D_800F22E0, (void*)object->dataAddr);
 wait:
-    if (D_800F22E0->state != 4)
+    if (D_800F22E0->state != 4) {
         return -1;
+    }
     vs_main_freeCdQueueSlot(D_800F22E0);
     _loadShpState = 2;
     return -1;
 parse:
     result = _loadSeq(object);
-    if (result == -1)
+    if (result == -1) {
         return -1;
+    }
     if (D_800F22D0) {
         D_800F22D0 = 0;
         vs_main_freeHeapR(D_800F22C8);

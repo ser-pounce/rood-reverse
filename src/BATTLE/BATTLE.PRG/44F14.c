@@ -1102,15 +1102,13 @@ void func_800AEF94(MATRIX* camera)
         object = (void*)*entries;
         if ((object != NULL) && (object->unk0 != 0)) {
             if (((i == D_800F4B19) && (D_800F4B18 == 0)) || (object->unk1A == 0xF7)) {
-                func_800B0908((objectAnimationState*)object,
-                    vs_gametime_tickspeed / 2);
+                func_800B0908((objectAnimationState*)object, vs_gametime_tickspeed / 2);
             }
             packedPosition = *(int*)&object->unk1C;
             objectScratch->offset.vz = (u_short)object->unk20;
             modelHeight = object->unk68->unk50;
             *(int*)&objectScratch->offset = packedPosition;
-            objectScratch->offset.vy =
-                objectScratch->offset.vy + modelHeight / 2;
+            objectScratch->offset.vy += modelHeight / 2;
             if (object->unk64.unk0 != 0) {
                 func_800AB788(NULL, (D_800F4538_t*)object, 0);
             }

@@ -22,6 +22,11 @@ typedef struct {
 } D_800EB9B8_unk990;
 
 typedef struct {
+    short xyz[3];
+    short flags;
+} menuShapeVertex;
+
+typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
@@ -40,7 +45,8 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    int unk40[0x254];
+    int unk40[2];
+    menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
 } D_800EB9B8_t;
 
@@ -800,7 +806,29 @@ void func_800C20B4(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2254);
+int func_800C2254(int angle, int index)
+{
+    short (*basis)[3] = (void*)0x1F800398;
+    int point = 0;
+    int phase = angle;
+    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+
+    for (; point < 33; ++index, phase += ONE / 32, ++point, ++vertex) {
+        int component;
+
+        for (component = 0; component < 3; ++component) {
+            int cosine = rcos(phase);
+            int sine = rsin(phase);
+
+            vertex->xyz[component] = basis[0][component]
+                                   + ((basis[1][component] * cosine) >> 12)
+                                   + ((basis[2][component] * sine) >> 12);
+        }
+        component = point != 0;
+        vertex->flags = component;
+    }
+    return index;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2368);
 

@@ -16,19 +16,8 @@ typedef struct {
     short unk0;
     short unk2;
     short unk4;
-} func_800A3054_t;
-
-typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
     short unk6;
 } func_8008D2C0_t;
-
-typedef struct {
-    char unk0[6];
-    short unk6;
-} func_800A6660_t;
 
 typedef struct {
     char prefix[0x2C];
@@ -77,7 +66,7 @@ void func_800A4A88(D_800F4538_t*, int);
 int func_800A51A0(int, SVECTOR*);
 void func_800A525C(D_800F4538_t*);
 int func_800A5280(int, int, int, SVECTOR*);
-void func_800A6660(D_800F4538_t*, int, func_800A6660_t*);
+void func_800A6660(D_800F4538_t*, int, SVECTOR*);
 int func_800A6798(D_800F4538_t*, SVECTOR*, SVECTOR*);
 int func_800A69B4(D_800F4538_t*);
 int func_800A6AA0(D_800F4538_t*, int, int);
@@ -298,17 +287,17 @@ void func_800A2FBC(D_800F4538_t* arg0)
     --arg0->unk5CA;
 }
 
-void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
+void func_800A3054(D_800F4538_t* arg0, SVECTOR* arg1)
 {
     int var_a2;
     int var_a3;
 
     var_a2 = 0x3F;
     var_a3 = 0x3F;
-    if (arg1->unk0 < 0) {
+    if (arg1->vx < 0) {
         var_a2 = -0x3F;
     }
-    if (arg1->unk4 < 0) {
+    if (arg1->vz < 0) {
         var_a3 = -0x3F;
     }
     arg0->unk181A = 1;
@@ -1545,7 +1534,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     }
     facing &= 0xFFF;
     if (distance != 0 && !actor->unk0.unkA_3) {
-        func_800A6660(actor, facing, (func_800A6660_t*)input);
+        func_800A6660(actor, facing, input);
     }
 
 scale:
@@ -1819,7 +1808,7 @@ move:
             } else {
                 func_800AE4FC(&actor->unk0, 0xC);
             }
-            func_800A6660(actor, facing, (func_800A6660_t*)input);
+            func_800A6660(actor, facing, input);
         } else {
             if (result == 4) {
                 actor->unk0.unkA_3 = 2;
@@ -1860,7 +1849,7 @@ move:
                     actor->unk0.unk11 = 0;
                 }
             } else {
-                func_800A3054(actor, (func_800A3054_t*)&motion);
+                func_800A3054(actor, &motion);
             }
             actor->unk0.unk34.vx = motion.vx;
             actor->unk0.unk34.vz = motion.vz;
@@ -1899,7 +1888,7 @@ done:
     return status;
 }
 
-void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
+void func_800A6660(D_800F4538_t* arg0, int arg1, SVECTOR* arg2)
 {
     int delta;
 
@@ -1907,7 +1896,7 @@ void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
         return;
     }
     if (arg0->unk0.unk18 != 0) {
-        if (arg2->unk6 == 0) {
+        if (arg2->pad == 0) {
             delta = arg1 - ((arg0->unk0.facing + arg0->unk0.unk3E) & 0xFFF);
             if (delta >= ONE / 2) {
                 delta -= ONE;

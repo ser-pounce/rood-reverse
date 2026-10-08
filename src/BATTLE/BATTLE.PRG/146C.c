@@ -4287,7 +4287,90 @@ void func_80071F68(int arg0)
     _cameraMode = 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072734);
+void func_80072734(int arg0)
+{
+    func_8006EBF8_t state;
+    vs_battle_actor2* attacker =
+        vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk3C;
+    vs_action_t* spec;
+    int action = D_800F19CC->unk8.actionIndex;
+    int count;
+    int i;
+
+    D_800F19CC->unk2988 = arg0;
+    D_800F19CC->unk29A0 = vs_main_actions[action].shape;
+    spec = &vs_main_actions[action];
+    D_800F19CC->unk29A1 = 2;
+    func_800A1108(D_800F19CC->unk8.unk4.unk0.targetActor, &state);
+    D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+    count = 0;
+
+    // BUG: the angle bits of the range word can never equal 0xFF
+    if ((*(u_int*)&spec->rangeX >> 27) == 0xFF) {
+        D_800F19CC->unk29A4 = attacker->currentRange;
+        D_800F19CC->unk29A5 = attacker->unk39;
+        D_800F19CC->unk29A6 = attacker->unk3A;
+        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle * 8;
+    } else {
+        D_800F19CC->unk29A4 = spec->rangeX;
+        D_800F19CC->unk29A5 = spec->rangeY;
+        D_800F19CC->unk29A6 = spec->rangeZ;
+        D_800F19CC->unk29A7 = spec->angle * 8;
+        D_800F19CC->unk29B2 = 0;
+        D_800F19CC->unk29B0 = spec->aoe_24 & 7;
+        D_800F19CC->unk29B4 = spec->aoe_0;
+        D_800F19CC->unk29B5 = spec->aoe_8;
+        D_800F19CC->unk29B6 = spec->aoe_16;
+        D_800F19CC->unk29B7 = spec->aoe_24 & 0xF8;
+
+        for (i = 0; i < 10; ++i) {
+            u_int status = func_800A0BE0(i);
+
+            if (vs_battle_actors[i] && (status & 0x3000001) == 1
+                && (i != D_800F19CC->unk8.unk4.unk0.targetActor
+                    || D_800E81B4[vs_main_actions[action].unk2_4])
+                && (vs_battle_actors[i]->unk1C
+                    & D_800E81D4[vs_main_actions[action].unk2_4])
+                && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+                if (D_800E81C4[vs_main_actions[action].unk2_4]) {
+                    int limb;
+
+                    for (limb = 0; limb < 6; ++limb) {
+                        int part = func_800A152C(i, limb, 2);
+
+                        if (part >= 0) {
+                            func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
+                            D_800F19CC->unk29C0[count].unk8 = func_800A1648(i, part, 0);
+                            D_800F19CC->unk29C0[count].unkA = limb;
+                            D_800F19CC->unk29C0[count].unk9 = i;
+                            ++count;
+                        }
+                    }
+                } else {
+                    func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
+                    D_800F19CC->unk29C0[count].unkA = -1;
+                    D_800F19CC->unk29C0[count].unk9 = i;
+                    ++count;
+                }
+            }
+        }
+    }
+
+    D_800F19CC->unk2C00 = count;
+    func_800A190C(D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A8, 0);
+
+    if (D_800F19CC->unk8.unk4.unk0.targetActor) {
+        D_800F19CC->unk2998 =
+            *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk10;
+        D_800F19CC->unk2998.pad = 0;
+    }
+    if (D_800F19CC->unk2984) {
+        func_800C05EC(
+            &D_800F19CC->unk29A0, &D_800F19CC->unk29B0, count, D_800F19CC->unk29C0);
+    }
+
+    _cameraMode = 2;
+}
 
 void func_80072B9C(void) { _cameraMode = 0; }
 

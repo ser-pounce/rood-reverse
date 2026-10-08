@@ -1440,7 +1440,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     if (actor->unk0.unkB_0) {
         return 3;
     }
-    if (*(u_int*)((char*)actor + 0x5AC) & 0x100000) {
+    if (actor->unk5AC_20) {
         return 3;
     }
     if ((signed char)actor->unk0.unk11 > 0) {
@@ -1542,7 +1542,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         goto move;
     }
     if (distance == 0) {
-        if ((*(u_int*)((char*)actor + 0x5AC) & 0x8000) && input->pad == 0) {
+        if (actor->unk5AC_15 && input->pad == 0) {
         coast:
             distance = actor->unk1840;
             direction = actor->unk1842;
@@ -1569,7 +1569,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         if (actor->unk6E4 == 0) {
             if (actor->unk1840 != 0 || actor->unk0.unkC_0) {
                 actor->unk1840 = 0;
-            } else if (!(*(u_int*)((char*)actor + 0x5AC) & 0x1000)) {
+            } else if (!actor->unk5AC_12) {
                 animation = actor->animationId;
                 if (animation >= 100) {
                     animation -= 100;
@@ -1646,7 +1646,7 @@ move:
         motion.vx += (signed char)actor->unk6EE;
         motion.vz += (signed char)actor->unk6EF;
     }
-    if (*(u_int*)((char*)actor + 0x5AC) & 0x1000) {
+    if (actor->unk5AC_12) {
         motion.vx /= 4;
         motion.vz /= 4;
     }
@@ -1721,7 +1721,7 @@ move:
         }
     }
 
-    if ((*(u_int*)((char*)actor + 0x5AC) & 0x1000) && speed == 0) {
+    if (actor->unk5AC_12 && speed == 0) {
         if (*(u_short*)((char*)actor + 0x18D6) == actor->unk0.position.vx + motion.vx
             && *(u_short*)((char*)actor + 0x18D8)
                    == actor->unk0.position.vz + motion.vz) {
@@ -1822,7 +1822,7 @@ move:
             }
             actor->unk5AC_28 = (u_short)D_800F4B08.pad >> 8;
             actor->unk6EC = D_800F4B08.vy;
-            if (*(u_int*)((char*)actor + 0x5AC) & 0xF0000000) {
+            if (actor->unk5AC_28) {
                 object = D_800F45E0[*(u_int*)((char*)actor + 0x5AC) >> 28];
                 if (object->unk1A == 0xFD) {
                     for (i = object->unk6C[8].unk4; i < 15; i++) {
@@ -1848,7 +1848,7 @@ move:
             }
         } else if (actor->unk0.unkA_3 == 2) {
         fallStep:
-            if (*(u_int*)((char*)actor + 0x5AC) & 0x1000) {
+            if (actor->unk5AC_12) {
                 motion.vx = 0;
                 motion.vz = 0;
             }
@@ -1864,7 +1864,7 @@ move:
                 }
             }
             if (result >= 2) {
-                if (actor->unk0.unkA_0 && (*(u_int*)((char*)actor + 0x5AC) & 0x1000)) {
+                if (actor->unk0.unkA_0 && actor->unk5AC_12) {
                     goto reject;
                 }
                 if (func_800A69B4(actor) == 0) {

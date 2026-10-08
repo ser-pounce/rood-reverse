@@ -594,7 +594,7 @@ void func_800FA35C(int startState __attribute__((unused)))
 
 static void func_800FA6B8(void)
 {
-    vs_main_bzero(D_800F1CE0, 0x20);
+    vs_main_bzero(D_800F1CE0, sizeof D_800F1CE0);
     vs_main_bzero(&vs_battle_roomData, sizeof vs_battle_roomData);
     vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
     vs_main_bzero(&vs_battle_menu9CursorMemory, sizeof vs_battle_menu9CursorMemory);
@@ -611,5 +611,5 @@ static void func_800FA6B8(void)
     D_800F1CD4 = 8;
     func_8008E88C();
     func_8008B6B4();
-    func_8008EB30(D_800F1CE0);
+    func_8008EB30((int*)D_800F1CE0);
 }

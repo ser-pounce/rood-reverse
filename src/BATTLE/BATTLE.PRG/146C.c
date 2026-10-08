@@ -16,12 +16,16 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/INITBTL.PRG/18.h"
 #include <abs.h>
+#include "insertTPage.h"
 #include <libetc.h>
 #include <libgpu.h>
 #include <libgte.h>
 #include <limits.h>
 #include <memory.h>
 #include <rand.h>
+
+#define CAMERA_INPUT_LOCKED()                                                           \
+    ((D_800F196C == 3) || ((D_800F196C == 2) && ((_cameraMode == 4) || (_cameraMode == 11))))
 
 typedef struct {
     u_char targetActor;
@@ -183,10 +187,7 @@ typedef struct {
 } func_8006EBF8_t2;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
+    SVECTOR position;
     short unk8;
     short unkA;
     char unkC;
@@ -563,6 +564,12 @@ u_int func_8009E4B0(int);
 void func_8009EA14(int, SVECTOR*);
 
 void func_800E685C(int, int, int);
+void func_800719FC(int);
+void func_80071F68(int);
+void func_80072734(int);
+void func_800C05EC(void*, void*, int, void*);
+void func_800C0700(void*);
+void func_800DEEA4(D_800F19CC_t2*);
 
 extern u_char D_8004EF20;
 extern u_char D_8004EF80;
@@ -574,6 +581,8 @@ extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
+extern u_char D_800E8194[];
+extern u_char D_800E81C4[];
 extern char _wepIdCategories[];
 extern u_char D_800E8200[];
 extern int D_800E8204[];
@@ -618,6 +627,8 @@ extern int D_800F19A0;
 extern char D_800F19A8[];
 extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
+extern int D_800F19D8;
+extern int D_800F19EC;
 extern int D_800F1A00;
 extern int D_800F1A04;
 extern u_int _lastValue;
@@ -671,10 +682,10 @@ extern short D_800F1DC2;
 extern short D_800F1DC4;
 extern char D_800F1DC6;
 extern char D_800F1DC8;
-extern signed char D_800F1DC9;
+extern u_char D_800F1DC9;
 extern char D_800F1DCA;
 extern char D_800F1DCB;
-extern u_int* D_800F1DCC;
+extern vs_battle_backgroundLayout* D_800F1DCC;
 extern u_long* D_800F1DD0;
 extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
@@ -2589,7 +2600,158 @@ void _snapLookAtToPosition(VECTOR* arg0)
 }
 
 // https://decomp.me/scratch/axID6
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E158);
+void func_8006E158(void)
+{
+    if (vs_battle_cameraCurrentSpherical.delta.yaw == 0) {
+        if (!CAMERA_INPUT_LOCKED()) {
+            if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADR1) {
+                vs_battle_cameraCurrentSpherical.delta.yaw = 1;
+                vs_battle_cameraCurrentSpherical.delta.pitch =
+                    (vs_battle_cameraCurrentSpherical.values.yaw - 0x200) & ~0x1FF;
+            } else if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADL1) {
+                vs_battle_cameraCurrentSpherical.delta.yaw = 2;
+                vs_battle_cameraCurrentSpherical.delta.pitch =
+                    (vs_battle_cameraCurrentSpherical.values.yaw + 0x200) & ~0x1FF;
+            }
+        }
+    } else {
+        switch (vs_battle_cameraCurrentSpherical.delta.yaw) {
+        case 1:
+            vs_battle_cameraCurrentSpherical.values.yaw -=
+                vs_battle_cameraCurrentSpherical.delta.distance;
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                <= vs_battle_cameraCurrentSpherical.delta.pitch + 0x78) {
+                if (((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADR1)
+                    && !CAMERA_INPUT_LOCKED()) {
+                    vs_battle_cameraCurrentSpherical.delta.pitch =
+                        (vs_battle_cameraCurrentSpherical.delta.pitch - 0x200) & ~0x1FF;
+                }
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 8) {
+                    vs_battle_cameraCurrentSpherical.delta.distance -= 8;
+                }
+            } else if (vs_battle_cameraCurrentSpherical.delta.distance < 40) {
+                vs_battle_cameraCurrentSpherical.delta.distance += 8;
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 40) {
+                    vs_battle_cameraCurrentSpherical.delta.distance = 40;
+                }
+            }
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                <= vs_battle_cameraCurrentSpherical.delta.pitch) {
+                vs_battle_cameraCurrentSpherical.values.yaw &= 0xE00;
+                vs_battle_cameraCurrentSpherical.delta.yaw = 0;
+            }
+            break;
+
+        case 2:
+            vs_battle_cameraCurrentSpherical.values.yaw +=
+                vs_battle_cameraCurrentSpherical.delta.distance;
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                >= vs_battle_cameraCurrentSpherical.delta.pitch - 0x78) {
+                if (((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADL1)
+                    && !CAMERA_INPUT_LOCKED()) {
+                    vs_battle_cameraCurrentSpherical.delta.pitch =
+                        (vs_battle_cameraCurrentSpherical.delta.pitch + 0x200) & ~0x1FF;
+                }
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 8) {
+                    vs_battle_cameraCurrentSpherical.delta.distance -= 8;
+                }
+            } else if (vs_battle_cameraCurrentSpherical.delta.distance < 40) {
+                vs_battle_cameraCurrentSpherical.delta.distance += 8;
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 40) {
+                    vs_battle_cameraCurrentSpherical.delta.distance = 40;
+                }
+            }
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                >= vs_battle_cameraCurrentSpherical.delta.pitch) {
+                vs_battle_cameraCurrentSpherical.values.yaw &= 0xE00;
+                vs_battle_cameraCurrentSpherical.delta.yaw = 0;
+            }
+            break;
+        }
+    }
+
+    if (vs_main_buttonsPressed.all & PADselect) {
+        if (!CAMERA_INPUT_LOCKED()) {
+            switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+            case 0:
+            case 1:
+                vs_battle_cameraCurrentSpherical.delta.mode = 2;
+                break;
+            case 2:
+            case 3:
+                vs_battle_cameraCurrentSpherical.delta.mode = 0;
+                break;
+            }
+        }
+        switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+        case 0:
+        case 1:
+            vs_battle_cameraCurrentSpherical.initialDistance = 0x600;
+            break;
+        case 2:
+        case 3:
+            vs_battle_cameraCurrentSpherical.initialDistance = 0x900;
+            break;
+        }
+    }
+
+    switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+    case 0:
+        if (vs_battle_cameraCurrentSpherical.values.distance <= 0x600) {
+            vs_battle_cameraCurrentSpherical.values.distance = 0x600;
+            vs_battle_cameraCurrentSpherical.delta.mode = 1;
+            return;
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            <= vs_battle_cameraCurrentSpherical.initialDistance + 0xA0) {
+            if (vs_battle_cameraCurrentSpherical.unk24 < -16) {
+                vs_battle_cameraCurrentSpherical.unk24 += 16;
+            } else {
+                vs_battle_cameraCurrentSpherical.unk24 = -16;
+            }
+        } else if (vs_battle_cameraCurrentSpherical.unk24 >= -63) {
+            vs_battle_cameraCurrentSpherical.unk24 -= 16;
+            if (vs_battle_cameraCurrentSpherical.unk24 < -64) {
+                vs_battle_cameraCurrentSpherical.unk24 = -64;
+            }
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            > vs_battle_cameraCurrentSpherical.initialDistance) {
+            vs_battle_cameraCurrentSpherical.values.distance +=
+                vs_battle_cameraCurrentSpherical.unk24;
+        }
+        break;
+
+    case 1:
+        break;
+
+    case 2:
+        if (vs_battle_cameraCurrentSpherical.values.distance >= 0x900) {
+            vs_battle_cameraCurrentSpherical.values.distance = 0x900;
+            vs_battle_cameraCurrentSpherical.delta.mode = 3;
+            return;
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            >= vs_battle_cameraCurrentSpherical.initialDistance - 0xA0) {
+            if (vs_battle_cameraCurrentSpherical.unk24 > 16) {
+                vs_battle_cameraCurrentSpherical.unk24 -= 16;
+            } else {
+                vs_battle_cameraCurrentSpherical.unk24 = 16;
+            }
+        } else if (vs_battle_cameraCurrentSpherical.unk24 < 64) {
+            vs_battle_cameraCurrentSpherical.unk24 += 16;
+            if (vs_battle_cameraCurrentSpherical.unk24 > 64) {
+                vs_battle_cameraCurrentSpherical.unk24 = 64;
+            }
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            < vs_battle_cameraCurrentSpherical.initialDistance) {
+            vs_battle_cameraCurrentSpherical.values.distance +=
+                vs_battle_cameraCurrentSpherical.unk24;
+        }
+        break;
+    }
+}
 
 void func_8006E640(int arg0)
 {
@@ -3219,7 +3381,95 @@ void func_8006FCBC(void)
 
 void func_8006FD0C(void) { _cameraMode = 9; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FD1C);
+void func_8006FD1C(void)
+{
+    _hitEntity_t saved;
+    func_8006EBF8_t position;
+    D_800F19CC_t2* action;
+    int i;
+    int found;
+
+    vs_gametime_tickspeed = 2;
+    action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    if ((action->actionIndex >= 0x8D) && (action->actionIndex < 0xB8)) {
+        func_8009CC20(action->unk4.unk0.targetActor, 5);
+    } else if ((action->actionIndex >= 0xB8) && (action->actionIndex < 0xE0)) {
+        func_8009CC20(action->unk4.unk0.targetActor, 4);
+    }
+
+    if (D_800F19CC->unk0 >= 999) {
+        func_8006FD0C();
+        return;
+    }
+
+    if ((D_800F19CC->battleAbilityInputSuccessful == 1)
+        && (vs_battle_actors[action->unk4C[0].unk0.targetActor]->unk3C->currentHP != 0)) {
+        func_800DEEA4(action);
+        _cameraMode = 8;
+        ++D_800F19CC->unk4;
+        ++D_800F19CC->unk0;
+        func_80085B10(vs_main_settings.mappedChainAbilities[D_800F19CC->unk2C03 - 1],
+            &D_800F19CC->unk854[D_800F19CC->unk0 & 3], &D_800F19CC->unk8, 1);
+        func_80093F24(D_800F19CC->unk0);
+        if (vs_main_scoredata.maxChain < D_800F19CC->unk0) {
+            vs_main_scoredata.maxChain = D_800F19CC->unk0;
+        }
+        if (((u_char)vs_battle_getStateFlag(0x82) >= 10)
+            && (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22)
+            && (vs_main_artsStatus.kills.total
+                < vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills
+                        .battleAbilitiesUnlocked])) {
+            ++vs_main_artsStatus.kills.total;
+        }
+    } else if (D_800F19CC->battleAbilityInputSuccessful == 2) {
+        func_800DEEA4(action);
+        _cameraMode = 8;
+        ++D_800F19CC->unk4;
+        saved = D_800F19CC->unk8.unk4;
+        found = 0;
+        for (i = 0; i < D_800F19CC->unk8.unk4A; ++i) {
+            if ((D_800F19CC->unk8.unk4C[i].unk0.targetActor == 0)
+                && (D_800F19CC->unk8.unk4C[i].hpEffect
+                    || D_800F19CC->unk8.unk4C[i].mpEffect)) {
+                D_800F19CC->unk8.unk4 = D_800F19CC->unk8.unk4C[i];
+                found = 1;
+            }
+        }
+        if (!found) {
+            D_800F19CC->unk8.unk4 = D_800F19CC->unk8.unk4C[0];
+        }
+        D_800F19CC->unk8.unk4.unk0.mp = 0;
+        D_800F19CC->unk8.unk4.unk0.hp = 0;
+        for (i = 0; i < D_800F19CC->unk8.unk4A; ++i) {
+            if (D_800F19CC->unk8.unk4C[i].unk0.targetActor
+                == D_800F19CC->unk8.unk4.unk0.targetActor) {
+                D_800F19CC->unk8.unk4.unk0.hp += D_800F19CC->unk8.unk4C[i].unk0.hp;
+                D_800F19CC->unk8.unk4.unk0.mp += D_800F19CC->unk8.unk4C[i].unk0.mp;
+            }
+        }
+        D_800F19CC->unk8.unk4C[0] = saved;
+        D_800F19CC->unk8.unk4C[0].unk0.targetLimb =
+            vs_battle_actors[D_800F19CC->unk8.unk4C[0].unk0.targetActor]->unk3C->unk36;
+        D_800F19CC->unk8.unk4A = 1;
+        func_800A1108(saved.unk0.targetActor, &position);
+        D_800F19CC->unk8.unk844.vx = position.unk0.unk4.vx;
+        D_800F19CC->unk8.unk844.vz = position.unk0.unk4.vz;
+        D_800F19CC->unk8.unk844.vy = position.unk0.unk4.vy;
+        ++D_800F19CC->unk0;
+        action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+        D_800F19CC->unk2C07 = 1;
+        func_80085B10(vs_main_settings.mappedDefenseAbilities[D_800F19CC->unk2C03 - 1],
+            action, &D_800F19CC->unk8, 1);
+        if ((vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22)
+            && (vs_main_artsStatus.kills.total
+                < vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills
+                        .battleAbilitiesUnlocked])) {
+            ++vs_main_artsStatus.kills.total;
+        }
+    } else {
+        func_8006FD0C();
+    }
+}
 
 void func_80070278(void)
 {
@@ -3527,7 +3777,78 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072734);
 
 void func_80072B9C(void) { _cameraMode = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072BA8);
+void func_80072BA8(int action)
+{
+    int _[2] __attribute__((unused));
+    func_8006EBF8_t state;
+    int limb;
+    int part;
+    int count;
+    u_char category;
+
+    D_800F19CC->unk8.actionIndex = action;
+    func_800C16DC();
+    func_800C06E0();
+    func_800C0738();
+
+    if (action == 0) {
+        D_800F19CC->unk29A0 = 1;
+        D_800F19CC->unk29A1 = 3;
+        func_800A1108(0, &state);
+        D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29A4 = 4;
+        D_800F19CC->unk29A5 = 4;
+        D_800F19CC->unk29A6 = 4;
+        D_800F19CC->unk29A7 = 0;
+        func_800A190C(0, 250, &D_800F19CC->unk29A8, 0);
+        func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
+
+        D_800F19CC->unk29B0 = 2;
+        D_800F19CC->unk29B1 = 3;
+        func_800A1108(1, &state);
+        D_800F19CC->unk29B2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29B4 = 4;
+        D_800F19CC->unk29B5 = 4;
+        D_800F19CC->unk29B6 = 4;
+        D_800F19CC->unk29B7 = 0;
+        func_800A190C(1, 250, &D_800F19CC->unk29B8, 0);
+        func_800C0700(&D_800F19CC->unk29B0);
+
+        for (limb = 0, count = 0; limb < 6; ++limb) {
+            part = func_800A152C(1, limb, 2);
+            if (part >= 0) {
+                func_800A1B9C(1, limb, &D_800F19CC->unk29C0[count].unk0, 0);
+                D_800F19CC->unk29C0[count].unk8 = func_800A1648(1, part, 0);
+                D_800F19CC->unk29C0[count].unkA = limb;
+                D_800F19CC->unk29C0[count].unk9 = 1;
+                ++count;
+            }
+        }
+        D_800F19CC->unk2C00 = count;
+        func_800C1664(count, (int)D_800F19CC->unk29C0, 0);
+        _cameraMode = 1;
+        return;
+    }
+
+    category = vs_main_actions[action].unk2_4;
+    if (D_800E8184[category]) {
+        if (D_800E8194[category]) {
+            if (!D_800E81C4[category]) {
+                func_80072734(0);
+            } else {
+                func_80072734(1);
+            }
+        } else if (!D_800E81C4[category]) {
+            func_80071F68(2);
+        } else {
+            func_80071F68(3);
+        }
+    } else if (D_800E8194[category]) {
+        func_800719FC(4);
+    } else {
+        func_800719DC(6);
+    }
+}
 
 void func_80072EC4(int arg0, u_short arg1)
 {
@@ -5792,7 +6113,86 @@ int func_800792E4(int arg0, int arg1, int arg2)
 }
 
 void func_800793C0(void);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
+void func_800793C0(void)
+{
+    D_800F19CC_t2* action;
+    int ready;
+    int i;
+    int j;
+    u_char actor;
+
+    if ((D_800F19EC == 1) || (D_800F19EC == 3)) {
+        if (vs_main_projectionDistance > 512) {
+            vs_main_projectionDistance -= 64;
+            if (vs_main_projectionDistance <= 512) {
+                vs_main_projectionDistance = 512;
+            }
+            SetGeomScreen(vs_main_projectionDistance);
+        } else if (vs_main_projectionDistance < 512) {
+            vs_main_projectionDistance += 64;
+            if (vs_main_projectionDistance >= 512) {
+                vs_main_projectionDistance = 512;
+            }
+            SetGeomScreen(vs_main_projectionDistance);
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance < D_800F19CC->unk2C0C) {
+            vs_battle_cameraCurrentSpherical.values.distance += 192;
+            if (vs_battle_cameraCurrentSpherical.values.distance > D_800F19CC->unk2C0C) {
+                vs_battle_cameraCurrentSpherical.values.distance = D_800F19CC->unk2C0C;
+            }
+        } else if (vs_battle_cameraCurrentSpherical.values.distance
+                   > D_800F19CC->unk2C0C) {
+            vs_battle_cameraCurrentSpherical.values.distance -= 192;
+            if (vs_battle_cameraCurrentSpherical.values.distance < D_800F19CC->unk2C0C) {
+                vs_battle_cameraCurrentSpherical.values.distance = D_800F19CC->unk2C0C;
+            }
+        }
+    }
+    if ((vs_main_projectionDistance != 512) || (D_800F19D8 != D_800F19CC->unk2C0C)
+        || !_isLookAtAtDestination()) {
+        return;
+    }
+    ready = 1;
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+        action = &D_800F19CC->unk854[i % 4];
+        for (j = 0; j < action->unk4A; ++j) {
+            if ((action->unk4C[j].unk40 == 0)
+                && ((func_8009E4B0(action->unk4C[j].unk0.targetActor) + 1) >= 2)) {
+                ready = 0;
+            }
+        }
+    }
+    if (!ready) {
+        return;
+    }
+    func_8006C40C();
+    func_800CB654(0);
+    func_8009E5C4(D_800F19CC->unk8.unk4.unk0.targetActor);
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+        action = &D_800F19CC->unk854[i % 4];
+        for (j = 0; j < action->unk4A; ++j) {
+            if (action->unk4C[j].unk40 == 0) {
+                func_800792E4(
+                    action->unk4.unk0.targetActor, action->unk4C[j].unk0.targetActor, 1);
+            }
+        }
+    }
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+        action = &D_800F19CC->unk854[i % 4];
+        if (action->unk4.unk40 == 0) {
+            actor = action->unk4.unk0.targetActor;
+            func_800792E4(actor, actor, 1);
+        }
+    }
+    if (D_800F196C == 3) {
+        return;
+    }
+    if (func_800BEC58(12, 0, 0, 0) == 1) {
+        func_80073898();
+        return;
+    }
+    func_8006FB48();
+}
 
 void func_800797BC(void)
 {
@@ -5827,7 +6227,7 @@ void func_80089DC0(int arg0);
 void func_8008C8A8(void);
 int func_80088B6C(void);
 void func_80088B8C(void);
-void func_8008EC48(int arg0);
+void func_8008EC48(VECTOR* arg0);
 void func_8008AC78(void);
 void func_8008B28C(void);
 void func_8007D734(void*);
@@ -7023,7 +7423,31 @@ void func_8007D3F8(void)
 }
 
 // https://decomp.me/scratch/JK0nT
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D41C);
+void func_8007D41C(void)
+{
+    int i;
+    POLY_FT4* poly;
+    SetPolyFT4(&D_800F1ABC->poly[0]);
+    setRGB0(&D_800F1ABC->poly[0], D_800F1A78.r0, D_800F1A78.g0, D_800F1A78.b0);
+    SetSemiTrans(&D_800F1ABC->poly[0], 1);
+    setUV4(&D_800F1ABC->poly[0], 0, 0, 64, 0, 0, 223, 64, 223);
+    for (i = 0; i < 10; ++i) {
+        (i + D_800F1ABC->poly)[0] = D_800F1ABC->poly[0];
+        poly = (POLY_FT4*)(i * sizeof(POLY_FT4) + (u_long)D_800F1ABC);
+        setXY4(poly, i * 64, 0, i * 64 + 64, 0, i * 64, 223, i * 64 + 64, 223);
+        D_800F1ABC->poly[i].tpage = GetTPage(2, 0, i * 64, 0);
+    }
+    setUV4(&D_800F1ABC->poly[4], 0, 0, 63, 0, 0, 223, 63, 223);
+    setUV4(&D_800F1ABC->poly[9], 0, 0, 63, 0, 0, 223, 63, 223);
+    SetSprt(&D_800F1ABC->sprite[0]);
+    setRGB0(&D_800F1ABC->sprite[0], D_800F1A78.r0, D_800F1A78.g0, D_800F1A78.b0);
+    SetSemiTrans(&D_800F1ABC->sprite[0], 1);
+    setUV0(&D_800F1ABC->sprite[0], 0, 0);
+    setWH(&D_800F1ABC->sprite[0], 64, 223);
+    for (i = 0; i < 10; ++i) {
+        (i + D_800F1ABC->sprite)[0] = D_800F1ABC->sprite[0];
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D734);
 
@@ -10846,7 +11270,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
 {
     D_800F19CC_t2 sp10;
     func_800C1564_t sp860;
-    u_short sp870[2];
+    SVECTOR sp870;
     int var_s2;
     int temp_s0;
     int temp_s0_2;
@@ -10902,8 +11326,8 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
         var_s2 = 0;
 
         for (i = 0; i < 6; ++i) {
-            if ((func_800A1B9C(targetActor, i, sp870, 2) >= 0)
-                && (func_800C1564(&sp860, sp870) != 0)) {
+            if ((func_800A1B9C(targetActor, i, &sp870, 2) >= 0)
+                && (func_800C1564(&sp860, (u_short*)&sp870) != 0)) {
                 sp10.unk4C[var_s2].unk40 = 0;
                 sp10.unk4C[var_s2].unk0.targetActor = targetActor;
                 sp10.unk4C[var_s2].unk0.targetLimb = i;
@@ -14416,7 +14840,72 @@ void func_8008EB30(int* arg0)
     var_a0[2] = (arg0[1] & 0xFFFFFF) | 0x30000000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008EC48);
+void func_8008EC48(VECTOR* arg0)
+{
+    VECTOR position;
+    MATRIX matrix;
+    VECTOR* angles;
+    POLY_FT4* prim;
+    int red;
+    int green;
+    int blue;
+
+    if ((D_800F1DC9 != 0) && (D_800F1DCC != NULL)) {
+        if (((D_800F1DCC->width - 1) < 31u) && ((D_800F1DCC->height - 1) < 31u)) {
+            int x = (((vs_scratch_t*)0x1F800000)->camera.angles.vy * D_800F1DB8) / ONE
+                  - D_800F1DB4;
+            int y = (((vs_scratch_t*)0x1F800000)->camera.angles.vx * D_800F1DBA) / ONE;
+            y = D_800F1DB6 - y;
+            func_8009147C(D_800F1DCC, x, y, D_800F1DC8);
+        }
+    } else if (D_800F1DC6 != 0) {
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        setPolyFT4(prim);
+        setXY4(prim, 0, 0, 320, 0, 0, 240, 320, 240);
+        setUV4(prim, 248, 248, 249, 248, 248, 249, 249, 249);
+        if (D_800F1BB0.unk6 != 0) {
+            red = 128 + D_800F1BB0.unk0 * 4;
+            green = 128 + D_800F1BB0.unk1 * 4;
+            blue = 128 + D_800F1BB0.unk2 * 4;
+            red = (short)vs_battle_clamp(red, 0, 255);
+            green = (short)vs_battle_clamp(green, 0, 255);
+            blue = (short)vs_battle_clamp(blue, 0, 255);
+            setRGB0(prim, red, green, blue);
+        } else {
+            setRGB0(prim, 128, 128, 128);
+        }
+        setTPage(prim, 0, 0, 64, 256);
+        setClut(prim, 784, 226);
+        AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 0x1FFC, prim++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+    } else {
+        angles = arg0;
+        if (angles == NULL) {
+            if (vs_battle_roomData.sectionB != NULL) {
+                angles = &vs_battle_roomData.sectionB->unk14;
+            } else {
+                angles = D_800F1CE0;
+            }
+        }
+        setVector(&position, ((vs_scratch_t*)0x1F800000)->camera.position.vx / ONE,
+            ((vs_scratch_t*)0x1F800000)->camera.position.vy / ONE,
+            ((vs_scratch_t*)0x1F800000)->camera.position.vz / ONE);
+        applyVector(&position, ((vs_scratch_t*)0x1F800000)->camera.farClip,
+            ((vs_scratch_t*)0x1F800000)->camera.farClip,
+            ((vs_scratch_t*)0x1F800000)->camera.farClip, *=);
+        applyVector(&position, ONE, ONE, ONE, /=);
+        SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+        SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+        if (((vs_scratch_t*)0x1F800000)->camera.farClip != ONE) {
+            func_80098648(&position, angles, &matrix);
+        } else {
+            func_800985AC(&position, angles, &matrix);
+        }
+        SetRotMatrix(&matrix);
+        SetTransMatrix(&matrix);
+        func_8009820C(D_80068C1C);
+    }
+}
 
 int func_8008EFCC(int arg0)
 {
@@ -14530,15 +15019,119 @@ void func_8008F30C(int arg0, int arg1)
 
     for (i = 0; i < arg0; ++i, ++var_s1) {
         var_s1->unkF = rand() & 0x7F;
-        var_s1->unk0 = rand() % 320;
-        var_s1->unk2 = rand() % 240;
-        var_s1->unk4 = rand() % 256;
+        var_s1->position.vx = rand() % 320;
+        var_s1->position.vy = rand() % 240;
+        var_s1->position.vz = rand() % 256;
         var_s1->unk8 = -1;
         var_s1->unkA = -1;
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008F440);
+void func_8008F440(void)
+{
+    SVECTOR vertices[10];
+    long projection;
+    long flags;
+    LINE_G2* line;
+    POLY_FT4* splash;
+    int depth;
+    D_800F1DD4_t* particle;
+    int i;
+    int j;
+    _mpdRoomSection3* cell;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC == 0) {
+            if (D_800F1BA4 == 0) {
+                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                    particle->position.vy += D_800F1D98[1] << particle->unkE;
+                    if (particle->unkE == 0) {
+                        particle->position.vx += D_800F1D98[0];
+                        particle->position.vz += D_800F1D98[2];
+                    }
+                }
+            }
+            particle->unkE = 2;
+            line = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers(&particle->position, (long*)&line->x0, &projection, &flags);
+            if ((line->x0 >= -639) && (line->x0 < 960) && (depth < 2048)) {
+                if ((line->y0 > 0) && (line->y0 < 240) && (line->x0 > 0)
+                    && (line->x0 < 320) && (depth > 4)) {
+                    setVector(&vertices[0], particle->position.vx - D_800F1D98[0],
+                        particle->position.vy - D_800F1D98[1],
+                        particle->position.vz - D_800F1D98[2]);
+                    RotTransPers(&vertices[0], (long*)&line->x1, &projection, &flags);
+                    setLineG2(line);
+                    setSemiTrans(line, 1);
+                    setRGB0(line, 96, 96, 128);
+                    setRGB1(line, 32, 32, 100);
+                    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, line++);
+                    ((vs_scratch_t*)0x1F800000)->unk0 = line;
+                    _insertTPage(depth, getTPage(0, 3, 0, 0));
+                    particle->unkE = 0;
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+            if (particle->position.vy > 0) {
+                if ((particle->unkE == 0) && (i & 1)) {
+                    cell = func_8008B764(
+                        particle->position.vx / 128, particle->position.vz / 128, 0);
+                    if ((cell != NULL) && (cell->unk0_0 != 31)) {
+                        particle->unkC = 1;
+                        projection =
+                            (func_8008DC7C(particle->position.vx, particle->position.vz)
+                                << 17)
+                            >> 17;
+                        particle->position.vy = projection;
+                    } else {
+                        func_80090A1C(particle);
+                    }
+                } else {
+                    func_80090A1C(particle);
+                }
+            }
+        } else {
+            setVector(&vertices[0], particle->position.vx - 24, particle->position.vy,
+                particle->position.vz - 24);
+            setVector(&vertices[1], particle->position.vx + 24, particle->position.vy,
+                particle->position.vz - 24);
+            setVector(&vertices[2], particle->position.vx - 24, particle->position.vy,
+                particle->position.vz + 24);
+            setVector(&vertices[3], particle->position.vx + 24, particle->position.vy,
+                particle->position.vz + 24);
+            splash = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth = RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+                (long*)&splash->x0, (long*)&splash->x1, (long*)&splash->x2,
+                (long*)&splash->x3, &projection, &flags);
+            depth -= 64;
+            if ((depth > 0) && (depth < 2048)) {
+                setPolyFT4(splash);
+                setSemiTrans(splash, 1);
+                setUV4(splash, (particle->unkD >> 1) * 16, 192,
+                    (particle->unkD >> 1) * 16 + 16, 192, (particle->unkD >> 1) * 16, 208,
+                    (particle->unkD >> 1) * 16 + 16, 208);
+                setRGB0(splash, 128, 128, 128);
+                setTPage(splash, 0, 3, 64, 256);
+                setClut(splash, 1008, 226);
+                AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, splash++);
+                ((vs_scratch_t*)0x1F800000)->unk0 = splash;
+                if (D_800F1BA4 == 0) {
+                    particle->unkD += vs_gametime_tickspeed >> 1;
+                }
+                if (particle->unkD >= 8) {
+                    func_80090A1C(particle);
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+        }
+    }
+}
 
 void func_8008F9A4(int arg0, int arg1)
 {
@@ -14558,18 +15151,323 @@ void func_8008FA14(D_800F1DD4_t* arg0)
 {
     _mpdRoomSectionB* temp_s0 = vs_battle_roomData.sectionB;
 
-    arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
-    arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
-    arg0->unk2 = (rand() % 512) + 0x200;
+    arg0->position.vx = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
+    arg0->position.vz = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
+    arg0->position.vy = (rand() % 512) + 0x200;
     arg0->unkC = 0;
     arg0->unkF = (rand() & 0xF) + 8;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FAC8);
+void func_8008FAC8(void)
+{
+    long dx;
+    long dy;
+    POLY_G4* prim;
+    int depth;
+    D_800F1DD4_t* particle;
+    int i;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008FDC4);
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC != 0) {
+            continue;
+        }
+        if (D_800F1BA4 == 0) {
+            particle->position.vy -= particle->unkF * vs_gametime_tickspeed;
+            if (particle->position.vy < -1024) {
+                func_8008FA14(particle);
+            }
+        }
+        prim = ((vs_scratch_t*)0x1F800000)->unk0;
+        depth = RotTransPers(&particle->position, (long*)&prim->x1, &dx, &dy);
+        if ((prim->y1 <= 0) || (prim->y1 >= 240) || (prim->x1 <= 0) || (prim->x1 >= 320)
+            || (depth <= 64) || (depth >= 2048)) {
+            continue;
+        }
+        particle->position.vy += 192;
+        depth = RotTransPers(&particle->position, (long*)&prim->x2, &dx, &dy);
+        particle->position.vy -= 192;
+        dx = (prim->x2 - prim->x1) / 32;
+        dy = (prim->y2 - prim->y1) / 32;
+        prim->x0 = prim->x1 + dx + dy;
+        prim->y0 = prim->y1 + dy - dx;
+        prim->x3 = prim->x1 + dx - dy;
+        prim->y3 = dx + (prim->y1 + dy);
+        setPolyG4(prim);
+        setSemiTrans(prim, 1);
+        setRGB1(prim, 192, 64, 64);
+        setRGB0(prim, 32, 8, 32);
+        setRGB3(prim, 32, 8, 32);
+        setRGB2(prim, 0, 0, 0);
+        AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+        _insertTPage(depth, getTPage(0, 1, 0, 0));
+    }
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80090434);
+void func_8008FDC4(void)
+{
+    SVECTOR unused[6] __attribute__((unused));
+    long projection;
+    long flags;
+    TILE* prim;
+    int depth;
+    D_800F1DD4_t* particle;
+    short x;
+    short y;
+    int i;
+    int j;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    particle = D_800F1DD4;
+    for (i = 0; i < D_800F1DC0; ++i, ++particle) {
+        if (particle->unkC == 0) {
+            if (D_800F1BA4 == 0) {
+                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                    if (particle->unkE != 0) {
+                        particle->position.vy += D_800F1D98[1] << particle->unkE;
+                    } else {
+                        particle->unkF += (rand() & 15) - 7;
+                        particle->unkF &= 127;
+                        if (particle->unkD != 0) {
+                            particle->position.vx +=
+                                (D_800F1D98[0] >> 3) + (rsin(particle->unkF << 5) >> 9);
+                            particle->position.vz +=
+                                (D_800F1D98[2] >> 3) - (rcos(particle->unkF << 5) >> 9);
+                            particle->position.vy -= rsin(particle->unkD << 6) >> 9;
+                            ++particle->unkD;
+                            if (particle->unkD > 32) {
+                                particle->unkD = 0;
+                            }
+                        } else {
+                            particle->position.vx +=
+                                (D_800F1D98[0] >> 3) + (rsin(particle->unkF << 5) >> 10);
+                            particle->position.vz +=
+                                (D_800F1D98[2] >> 3) - (rcos(particle->unkF << 5) >> 10);
+                            if ((rand() & 127) == 0) {
+                                particle->unkD = 1;
+                            }
+                        }
+                        particle->position.vy += D_800F1D98[1] >> 3;
+                    }
+                }
+            }
+            particle->unkE = 2;
+            prim = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
+            if ((prim->x0 >= -639) && (prim->x0 < 960) && (depth < 2048)) {
+                if (depth > 4) {
+                    x = prim->x0;
+                    y = prim->y0;
+                    if ((y > 0) && (y < 240) && (x > 0) && (x < 320)) {
+                        setTile(prim);
+                        setSemiTrans(prim, 1);
+                        if (i & 1) {
+                            setWH(prim, 2, 2);
+                        } else {
+                            setWH(prim, 1, 1);
+                        }
+                        setRGB0(prim, 255, 255, 255);
+                        AddPrim(
+                            (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                        particle->unkE = 0;
+                    }
+                    projection = x + (rsin(i << 5) >> 6);
+                    flags = y - (rcos(i << 5) >> 6);
+                    if ((flags > 0) && (flags < 240) && (projection > 0)
+                        && (projection < 320) && (depth > 4)) {
+                        setTile(prim);
+                        setXY0(prim, projection, flags);
+                        setSemiTrans(prim, 1);
+                        if ((i & 1) == 0) {
+                            setWH(prim, 2, 2);
+                        } else {
+                            setWH(prim, 1, 1);
+                        }
+                        setRGB0(prim, 255, 255, 255);
+                        AddPrim(
+                            (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                        particle->unkE = 0;
+                    }
+                    if (particle->unkE == 0) {
+                        ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+                        _insertTPage(depth, getTPage(0, 3, 64, 256));
+                    }
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+            if (particle->position.vy > 0) {
+                if ((particle->unkE == 0) && (i & 1)) {
+                    particle->unkC = 1;
+                    particle->unkD = 0;
+                    projection =
+                        (func_8008DC7C(particle->position.vx, particle->position.vz)
+                            << 17)
+                        >> 17;
+                    particle->position.vy = projection;
+                } else {
+                    func_80090A1C(particle);
+                }
+            }
+        } else {
+            prim = ((vs_scratch_t*)0x1F800000)->unk0;
+            depth =
+                RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
+            if ((prim->y0 > 0) && (prim->y0 < 240) && (prim->x0 > 0) && (prim->x0 < 320)
+                && (depth > 4)) {
+                setTile(prim);
+                setSemiTrans(prim, 1);
+                setWH(prim, 2, 2);
+                setRGB0(prim, 128 - (particle->unkD << 4), 128 - (particle->unkD << 4),
+                    128 - (particle->unkD << 4));
+                AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
+                ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+                _insertTPage(depth, getTPage(0, 3, 0, 0));
+                if (D_800F1BA4 == 0) {
+                    particle->unkD += vs_gametime_tickspeed >> 1;
+                }
+                if (particle->unkD >= 8) {
+                    func_80090A1C(particle);
+                }
+            } else {
+                func_80090A1C(particle);
+            }
+        }
+    }
+}
+
+void func_80090434(void)
+{
+    SVECTOR unused[4] __attribute__((unused));
+    VECTOR origin;
+    VECTOR velocity;
+    long flags;
+    void* cursor;
+    TILE* prim;
+    D_800F1DD4_t* particle;
+    int x;
+    int y;
+    int color;
+    int brightness;
+    int fade;
+    int j;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    RotTrans((SVECTOR*)D_800F1CE0, &origin, &flags);
+    RotTrans((SVECTOR*)D_800F1D98, &velocity, &flags);
+    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
+    setVector(&origin, (velocity.vx - origin.vx) >> 3, (velocity.vy - origin.vy) >> 3,
+        (velocity.vz - origin.vz) >> 3);
+    if (D_800F1BA4 == 0) {
+        if (D_800F1DC7 != 0) {
+            D_800F1DC7 -= 8;
+        }
+    } else if (D_800F1DC7 < 96) {
+        D_800F1DC7 += 8;
+    }
+    particle = D_800F1DD4;
+    prim = cursor;
+    for (flags = 0; flags < D_800F1DC0; ++flags, ++particle) {
+        if (D_800F1BA4 == 0) {
+            for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                particle->unkF += (rand() & 15) - 7;
+                particle->unkF &= 127;
+                if (particle->unkD != 0) {
+                    particle->position.vx += origin.vx + (rsin(particle->unkF << 5) >> 9);
+                    particle->position.vz += origin.vz - (rcos(particle->unkF << 5) >> 9);
+                    particle->position.vy -= rsin(particle->unkD << 6) >> 9;
+                    ++particle->unkD;
+                    if (particle->unkD > 32) {
+                        particle->unkD = 0;
+                    }
+                } else {
+                    particle->position.vx +=
+                        origin.vx + (rsin(particle->unkF << 5) >> 10);
+                    particle->position.vz +=
+                        origin.vz - (rcos(particle->unkF << 5) >> 10);
+                    if ((rand() & 127) == 0) {
+                        particle->unkD = 1;
+                    }
+                }
+                particle->position.vy += origin.vy;
+                particle->position.vz &= 255;
+                if (particle->position.vx < 0) {
+                    particle->position.vx += 320;
+                }
+                if (particle->position.vx > 320) {
+                    particle->position.vx -= 320;
+                }
+                if (particle->position.vy < 0) {
+                    particle->position.vy += 240;
+                }
+                if (particle->position.vy > 240) {
+                    particle->position.vy -= 240;
+                }
+            }
+        }
+        x = ((particle->position.vx - 160) << 12) / ((particle->position.vz << 2) + 3072)
+          + 160;
+        y = ((particle->position.vy - 120) << 12) / ((particle->position.vz << 2) + 3072)
+          + 120;
+        brightness = (255 - particle->position.vz) / 4;
+        fade = D_800F1DC7 - 32;
+        color = brightness - fade;
+        if (color < 0) {
+            color = 0;
+        }
+        if ((x < 320u) && (y < 240u)) {
+            setTile(prim);
+            setXY0(prim, x, y);
+            setSemiTrans(prim, 1);
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+        }
+        if (((u_short)particle->unk8 < 320) && ((u_short)particle->unkA < 240)) {
+            setTile(prim);
+            setXY0(prim, particle->unk8, particle->unkA);
+            setSemiTrans(prim, 1);
+            color >>= 1;
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+            setTile(prim);
+            setXY0(prim, x - ((x - particle->unk8) * 2), y - ((y - particle->unkA) * 2));
+            setSemiTrans(prim, 1);
+            color >>= 1;
+            if (flags & 1) {
+                setWH(prim, 2, 2);
+            } else {
+                setWH(prim, 1, 1);
+            }
+            setRGB0(prim, color, color, color);
+            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 4, prim++);
+            cursor += sizeof(TILE);
+        }
+        if (D_800F1BA4 == 0) {
+            particle->unk8 = x;
+            particle->unkA = y;
+        }
+    }
+    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+    _insertTPage(4, getTPage(0, 1, 64, 256));
+}
 
 void func_80090A1C(D_800F1DD4_t* arg0)
 {
@@ -14577,13 +15475,15 @@ void func_80090A1C(D_800F1DD4_t* arg0)
 
     temp_s0 = vs_battle_roomData.sectionB;
     if (temp_s0 != NULL) {
-        arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
-        arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
+        arg0->position.vx =
+            temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
+        arg0->position.vz =
+            temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
     } else {
-        arg0->unk0 = rand() % 4096;
-        arg0->unk4 = rand() % 4096;
+        arg0->position.vx = rand() % 4096;
+        arg0->position.vz = rand() % 4096;
     }
-    arg0->unk2 = (rand() % 512) - 2560;
+    arg0->position.vy = (rand() % 512) - 2560;
     arg0->unkE = 2;
     arg0->unkC = 0;
     arg0->unkD = 0;

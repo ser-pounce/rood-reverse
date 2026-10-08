@@ -6654,7 +6654,7 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
         func_800CE644(0x14);
     }
 
-    func_800D6CCC(node->unk3C);
+    func_800D6CCC((int*)&node->unk3C);
 
     node->unk77 = 0xFF;
     node->previous = NULL;
@@ -6823,7 +6823,7 @@ void func_800D2ADC(
         node = func_800D27F0(arg0);
         node->unk6A = scratch->unk168;
         node->unk6B = scratch->unk16C;
-        func_800D6CF0((func_800D6CF_t*)node->unk3C, def->unk1, def->unk0);
+        func_800D6CF0(&node->unk3C, def->unk1, def->unk0);
     }
 
     sample = def->unk8;
@@ -7501,7 +7501,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
             func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
         }
         if (node->lifetime == -1) {
-            if (((u_char*)node)[0x42] == 0) {
+            if (node->unk3C.unk6 == 0) {
                 if (node->endEvent != 0) {
                     func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
                 }

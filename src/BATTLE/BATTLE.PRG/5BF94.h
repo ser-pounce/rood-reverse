@@ -369,7 +369,7 @@ typedef struct func_800D2904_t {
     int unk18[3];
     int unk24[3];
     int unk30[3];
-    int unk3C[8];
+    func_800D6CF_t unk3C;
     int unk5C;
     u_int unk60_0 : 8;
     u_int unk60_8 : 4;

@@ -6214,13 +6214,13 @@ vs_battle_actor* func_800775C0(
         shieldId = (u_char)init->shield.base.wepId;
         if (D_8004FE88[(u_char)init->unk2]) {
             actor = vs_main_allocHeap(0x3BB4);
-            actor->unk3C = (vs_battle_actor2*)((char*)actor + 0x50);
+            actor->unk3C = (vs_battle_actor2*)(actor + 1);
             actor->unk40 = 2;
             actor->unk44 = (void*)((char*)actor + 0x9B4);
             actor->unk48[0] = (void*)((char*)actor + 0x22B4);
         } else {
             actor = vs_main_allocHeap(0x2E84);
-            actor->unk3C = (vs_battle_actor2*)((char*)actor + 0x50);
+            actor->unk3C = (vs_battle_actor2*)(actor + 1);
             actor->unk40 = 1;
             actor->unk44 = (void*)((char*)actor + 0x9B4);
             actor->unk48[0] = (void*)((char*)actor + 0x22B4);

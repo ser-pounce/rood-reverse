@@ -122,6 +122,12 @@ typedef struct {
     u_char unk27;
 } func_80093914_t2;
 
+typedef struct {
+    u_char count;
+    u_char labels[2];
+    u_char color;
+} D_800690B4_t;
+
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -137,6 +143,7 @@ void func_80094B0C(int, int, D_800F1BAC_t*);
 int func_80094E18(int, int, D_800F1BAC_t*);
 void func_8009506C(int, int, D_800F1BAC_t*);
 void func_80095258(int, int, D_800F1BAC_t*);
+void func_800957D0(int, int, int);
 void func_800958A4(int, int, D_800F1BAC_t*);
 void func_80095A4C(int, int, D_800F1BAC_t*);
 void func_80095C18(int, char);
@@ -151,6 +158,8 @@ extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
 extern RECT D_80068FAC[];
+extern D_800690B4_t D_800690B4[];
+extern const CVECTOR D_80069134[];
 extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
@@ -1535,7 +1544,107 @@ void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
     ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095258);
+void func_80095258(int x, int y, D_800F1BAC_t* p)
+{
+    short slide[] = { 32, 14, 6, 2 };
+    short fade[] = { 5, 9, 13, 15 };
+    RECT* rects[2];
+    int step;
+    int width;
+    int i;
+    POLY_FT4* prim;
+
+    if (D_800690B4[p->unkC].count == 0) {
+        return;
+    }
+    if (p->unkB < 4) {
+        step = p->unkB;
+
+        if (!(p->unkE & 1)) {
+            x += slide[step];
+        }
+    } else if (p->unkB < 6) {
+        step = 5;
+    } else if (p->unkB >= 27) {
+        step = 30 - p->unkB;
+
+        if (!(p->unkE & 1)) {
+            x -= slide[step];
+        }
+    } else {
+        step = 4;
+
+        if (p->unkB >= 25) {
+            step = 5;
+        }
+    }
+    if ((p->unkE & 1) && p->unkB >= 15) {
+        width = p->unkB - 15;
+
+        if (width > 4) {
+            width = 4;
+        }
+
+        func_800957D0(x, y, width);
+    }
+
+    width = 0;
+
+    for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
+        rects[i] = &D_80068FAC[D_800690B4[p->unkC].labels[i]];
+        width += rects[i]->w;
+    }
+
+    x -= width / 2;
+
+    if (p->unkE & 1) {
+        width = 0;
+    } else {
+        width = D_800690B4[p->unkC].color;
+    }
+
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+
+    for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
+        if (x < 320 && x + rects[i]->w >= 0) {
+            setPolyFT4(prim);
+            setXY4(
+                prim, x, y - 6, x + rects[i]->w, y - 6, x, y + 6, x + rects[i]->w, y + 6);
+            setShadeTex(prim, 0);
+
+            if (step == 5) {
+                setRGB0(prim, D_80069134[width].r / 2 + 96, D_80069134[width].g / 2 + 96,
+                    D_80069134[width].b / 2 + 96);
+            } else if (step == 4) {
+                setRGB0(prim, D_80069134[width].r / 2, D_80069134[width].g / 2,
+                    D_80069134[width].b / 2);
+            } else {
+                setRGB0(prim, D_80069134[width].r * fade[step] / 32,
+                    D_80069134[width].g * fade[step] / 32,
+                    D_80069134[width].b * fade[step] / 32);
+            }
+
+            setUV4(prim, rects[i]->x, rects[i]->y, rects[i]->x + rects[i]->w, rects[i]->y,
+                rects[i]->x, rects[i]->y + 12, rects[i]->x + rects[i]->w,
+                rects[i]->y + 12);
+            setSemiTrans(prim, 1);
+
+            if (step != 4) {
+                setTPage(prim, 0, 1, 448, 256);
+                setClut(prim, 960, 220);
+            } else {
+                setTPage(prim, 0, 0, 448, 256);
+                setClut(prim, 976, 220);
+            }
+
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+        }
+
+        x += rects[i]->w;
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+}
 
 void func_800957D0(int arg0, int arg1, int arg2)
 {

@@ -566,6 +566,11 @@ u_int func_8009E4B0(int);
 void func_8009EA14(int, SVECTOR*);
 
 void func_800E685C(int, int, int);
+void func_800719FC(int);
+void func_80071F68(int);
+void func_80072734(int);
+void func_800C05EC(void*, void*, int, void*);
+void func_800C0700(void*);
 void func_800DEEA4(D_800F19CC_t2*);
 
 extern u_char D_8004EF20;
@@ -578,6 +583,8 @@ extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
+extern u_char D_800E8194[];
+extern u_char D_800E81C4[];
 extern char _wepIdCategories[];
 extern u_char D_800E8200[];
 extern int D_800E8204[];
@@ -3770,7 +3777,78 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072734);
 
 void func_80072B9C(void) { _cameraMode = 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80072BA8);
+void func_80072BA8(int action)
+{
+    int _[2] __attribute__((unused));
+    func_8006EBF8_t state;
+    int limb;
+    int part;
+    int count;
+    u_char category;
+
+    D_800F19CC->unk8.actionIndex = action;
+    func_800C16DC();
+    func_800C06E0();
+    func_800C0738();
+
+    if (action == 0) {
+        D_800F19CC->unk29A0 = 1;
+        D_800F19CC->unk29A1 = 3;
+        func_800A1108(0, &state);
+        D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29A4 = 4;
+        D_800F19CC->unk29A5 = 4;
+        D_800F19CC->unk29A6 = 4;
+        D_800F19CC->unk29A7 = 0;
+        func_800A190C(0, 250, &D_800F19CC->unk29A8, 0);
+        func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
+
+        D_800F19CC->unk29B0 = 2;
+        D_800F19CC->unk29B1 = 3;
+        func_800A1108(1, &state);
+        D_800F19CC->unk29B2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29B4 = 4;
+        D_800F19CC->unk29B5 = 4;
+        D_800F19CC->unk29B6 = 4;
+        D_800F19CC->unk29B7 = 0;
+        func_800A190C(1, 250, &D_800F19CC->unk29B8, 0);
+        func_800C0700(&D_800F19CC->unk29B0);
+
+        for (limb = 0, count = 0; limb < 6; ++limb) {
+            part = func_800A152C(1, limb, 2);
+            if (part >= 0) {
+                func_800A1B9C(1, limb, &D_800F19CC->unk29C0[count].unk0, 0);
+                D_800F19CC->unk29C0[count].unk8 = func_800A1648(1, part, 0);
+                D_800F19CC->unk29C0[count].unkA = limb;
+                D_800F19CC->unk29C0[count].unk9 = 1;
+                ++count;
+            }
+        }
+        D_800F19CC->unk2C00 = count;
+        func_800C1664(count, (int)D_800F19CC->unk29C0, 0);
+        _cameraMode = 1;
+        return;
+    }
+
+    category = vs_main_actions[action].unk2_4;
+    if (D_800E8184[category]) {
+        if (D_800E8194[category]) {
+            if (!D_800E81C4[category]) {
+                func_80072734(0);
+            } else {
+                func_80072734(1);
+            }
+        } else if (!D_800E81C4[category]) {
+            func_80071F68(2);
+        } else {
+            func_80071F68(3);
+        }
+    } else if (D_800E8194[category]) {
+        func_800719FC(4);
+    } else {
+        func_800719DC(6);
+    }
+}
 
 void func_80072EC4(int arg0, u_short arg1)
 {

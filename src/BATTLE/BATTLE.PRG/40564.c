@@ -1504,7 +1504,104 @@ void func_800AB358(int index, func_800AB358_t* arg)
     vs_battlePacketEnd(packet);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB4F0);
+void func_800AB4F0(D_800F4538_t* actor)
+{
+    int originX = D_800E8F30[actor->unk5BB * 2] * 64;
+    int originY =
+        (D_800E8F30[actor->unk5BB * 2 + 1] * 256) + (D_800E8F90[actor->unk5BB] * 64);
+    int i;
+    int height;
+
+    for (i = 0; i < 4; ++i) {
+        D_800F4538_unk61C* bounds = &actor->unk61C[i];
+        D_800F4538_unk181C* scroll;
+        texMapOverlay_t* overlay;
+        RECT rect;
+        DR_MOVE* packet;
+        int x;
+        int y;
+        int width;
+        int scrollX;
+        int scrollY;
+        int dx;
+        int dy;
+        int minX;
+        int maxX;
+        int maxY;
+        int dstX;
+
+        if (bounds->w == 0) {
+            continue;
+        }
+
+        scroll = &actor->unk181C[i];
+        scroll->timer += vs_gametime_tickspeed / 2;
+
+        if (scroll->timer <= scroll->interval) {
+            continue;
+        }
+
+        scroll->timer = 0;
+        overlay = &actor->texMapOverlays[i];
+
+        // BUG: height is read before it is first set
+        if (bounds->w == 0 || bounds->w == height) {
+            continue;
+        }
+
+        width = overlay->w;
+        scrollX = scroll->x;
+        dx = scroll->dx;
+        scrollY = scroll->y;
+        dy = scroll->dy;
+        minX = bounds->x;
+        height = overlay->h;
+        x = scrollX + dx;
+        y = scrollY + dy;
+        maxX = minX + bounds->w;
+        maxY = bounds->y + bounds->h;
+
+        if (maxX < x + width || x < minX) {
+            if (bounds->unk6_0) {
+                x -= dx * 2;
+                scroll->dx = -scroll->dx;
+            } else {
+                x = minX;
+            }
+        }
+
+        if (maxY < y + height || y < bounds->y) {
+            if (bounds->unk6_0) {
+                y -= scroll->dy * 2;
+                scroll->dy = -scroll->dy;
+            } else {
+                y = bounds->y;
+            }
+        }
+
+        scroll->x = x;
+        scroll->y = y;
+
+        if (!(getActorFlags(actor) & 0x8000000)) {
+            x /= 4;
+            width /= 4;
+            dstX = overlay->x >> 2;
+        } else {
+            x /= 2;
+            width /= 2;
+            dstX = overlay->x >> 1;
+        }
+
+        rect.x = originX + x;
+        packet = vs_battlePacketBegin();
+        rect.y = originY + y;
+        rect.w = width;
+        rect.h = height;
+        SetDrawMove(packet, &rect, originX + dstX, originY + overlay->y);
+        func_8007A824(packet);
+        vs_battlePacketEnd(packet);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB788);
 

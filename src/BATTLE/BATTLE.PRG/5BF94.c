@@ -4236,9 +4236,9 @@ void func_800D18B4(int arg0, int arg1, int arg2, int arg3)
     vs_battle_lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
 }
 
-void func_800D1904(int arg0, int arg1, int arg2, int arg3)
+int func_800D1904(int arg0, int arg1, int arg2, int arg3)
 {
-    vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
+    return vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
 void func_800D1930(void)
@@ -4412,7 +4412,32 @@ void func_800D206C(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D21C0);
+void func_800D21C0(void)
+{
+    VECTOR start;
+    VECTOR end;
+    VECTOR result;
+    setVector(&start, D_800F5520[0].position.vx >> 12, D_800F5520[0].position.vy >> 12,
+        D_800F5520[0].position.vz >> 12);
+    setVector(&end, D_800F5520[1].position.vx >> 12, D_800F5520[1].position.vy >> 12,
+        D_800F5520[1].position.vz >> 12);
+    func_800D1884(&start, &end, D_800F55A0, D_800F54D0, &result);
+    setVector(&D_800F54D8.position, result.vx << 12, result.vy << 12, result.vz << 12);
+    setVector(&start, D_800F5520[0].lookAt.vx >> 12, D_800F5520[0].lookAt.vy >> 12,
+        D_800F5520[0].lookAt.vz >> 12);
+    setVector(&end, D_800F5520[1].lookAt.vx >> 12, D_800F5520[1].lookAt.vy >> 12,
+        D_800F5520[1].lookAt.vz >> 12);
+    func_800D1884(&start, &end, D_800F55A0, D_800F54D0, &result);
+    D_800F54D8.lookAt.vx = result.vx << 12;
+    D_800F54D8.lookAt.vy = result.vy << 12;
+    D_800F54D8.lookAt.vz = result.vz << 12;
+    D_800F54D8.roll =
+        func_800D1904(D_800F5520[0].roll, D_800F5520[1].roll, D_800F55A0, D_800F54D0);
+    D_800F54D8.farClip = func_800D1904(
+        D_800F5520[0].farClip, D_800F5520[1].farClip, D_800F55A0, D_800F54D0);
+    D_800F54D8.nearClip = func_800D1904(
+        D_800F5520[0].nearClip, D_800F5520[1].nearClip, D_800F55A0, D_800F54D0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D236C);
 

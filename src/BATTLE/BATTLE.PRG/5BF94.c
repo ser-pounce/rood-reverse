@@ -4254,7 +4254,34 @@ void func_800D1930(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D197C);
+void func_800D197C(VECTOR* position, VECTOR* target, MATRIX* view)
+{
+    static const VECTOR initialUp = { 0, -ONE, 0 };
+    VECTOR up = initialUp;
+    VECTOR right;
+    VECTOR forward;
+    VECTOR translation;
+    setVector(&forward, target->vx - position->vx, target->vy - position->vy,
+        target->vz - position->vz);
+    VectorNormal(&forward, &forward);
+    OuterProduct0(&up, &forward, &right);
+    VectorNormal(&right, &right);
+    OuterProduct0(&right, &forward, &up);
+    VectorNormal(&up, &up);
+    view->m[0][0] = -right.vx;
+    view->m[0][1] = -right.vy;
+    view->m[0][2] = -right.vz;
+    view->m[1][0] = up.vx;
+    view->m[1][1] = up.vy;
+    view->m[1][2] = up.vz;
+    view->m[2][0] = forward.vx;
+    view->m[2][1] = forward.vy;
+    view->m[2][2] = forward.vz;
+    ApplyMatrixLV(view, position, &translation);
+    view->t[0] = -translation.vx;
+    view->t[1] = -translation.vy;
+    view->t[2] = -translation.vz;
+}
 
 void func_800D1B18(D_800F54D8_t* arg0)
 {

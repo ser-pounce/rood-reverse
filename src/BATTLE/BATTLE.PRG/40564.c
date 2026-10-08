@@ -1696,162 +1696,136 @@ void func_800AB788(u_char* actor, u_char* object, int arg2)
 
 void func_800AB9A4(D_800F45E0_t* arg0)
 {
-    SVECTOR sp18;
-    SVECTOR sp20;
-    u_short* sp28;
-    int sp2C;
-    u_short* sp30;
+    SVECTOR boneA;
+    SVECTOR boneB;
+    u_short* header;
+    int count;
     u_short* reference;
-    int var_s2;
+    u_short* weaponReference;
+    int mode;
     int clutOffset;
-    D_800F45E0_t* var_s5;
-    int temp_v0;
-    int temp_v0_2;
-    int var_a1;
+    D_800F45E0_t* object;
+    int state;
+    int distance;
     int angle;
-    int var_s0;
-    int var_s3;
-    int var_s4;
-    int var_s6;
-    int var_v0;
-    signed char temp_v1_5;
-    int var_v1;
-    u_short* var_fp;
-    u_short temp_a2;
-    u_int temp_v0_3;
-    u_int temp_v1;
-    u_int temp_v1_2;
-    u_int temp_v1_3;
-    u_int var_t0;
-    vs_battle_wepModels_t* weapon0;
+    int i;
+    int changed;
+    int speed;
+    int skip;
+    int capped;
+    signed char target;
+    int value;
+    u_short* colors;
+    u_int next;
+    u_int flags;
+    u_int current;
+    u_int previous;
+    vs_battle_wepModels_t* weapon;
 
-    temp_v1 = *(u_int*)((char*)arg0 + 8);
-    if ((u_int)((temp_v1 >> 8) & 0xF) < 6U) {
-        if (temp_v1 & 0x70000) {
-            var_v0 = rsin(0x200) * *(u_short*)((char*)arg0 + 0x63C);
-            var_a1 = var_v0;
-            if (var_v0 < 0) {
-                var_a1 = var_v0 + 0xFFF;
-            }
-            func_800A70DC(arg0, var_a1 >> 0xC);
+    flags = *(u_int*)((char*)arg0 + 8);
+    if (((flags >> 8) & 0xF) < 6) {
+        if (flags & 0x70000) {
+            distance = rsin(0x200);
+            distance *= arg0->unk63C;
+            distance /= ONE;
+            func_800A70DC(arg0, distance);
             func_800A7524(arg0, &arg0->unk34);
-            temp_a2 = arg0->unk38;
-            arg0->unk34 = (short)((short)(u_short)arg0->unk34 / 2);
-            *(short*)((char*)arg0 + 0x38) = (short)temp_a2 / 2;
+            arg0->unk34 /= 2;
+            arg0->unk38 /= 2;
             func_800AC690(arg0->unkF, (D_800F4538_t*)arg0);
-            if ((u_int)(*(u_short*)((char*)arg0 + 0xA) & 7) >= 4U) {
+            if (arg0->unkA_0 >= 4) {
                 if (arg0->unkF != 0) {
-                    func_800AD494(arg0, 0xAB, &sp28);
-                    if (sp28 != NULL) {
-                        *(int*)((char*)arg0 + 0x5AC) =
-                            (int)(*(int*)((char*)arg0 + 0x5AC) & 0xFEFFFFFF);
-                        func_800A0204((int)arg0->unkF, 0x47, 0, 8);
-                        *(int*)((char*)arg0 + 0x5AC) =
-                            (int)(*(int*)((char*)arg0 + 0x5AC) | 0x01000000);
+                    func_800AD494(arg0, 0xAB, &header);
+                    if (header != NULL) {
+                        arg0->unk5AC_24 = 0;
+                        func_800A0204(arg0->unkF, 0x47, 0, 8);
+                        arg0->unk5AC_24 = 1;
                     }
                 }
             }
         }
     }
-    temp_v1_2 = *(u_int*)((char*)arg0 + 8);
-    var_s4 = (int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F)) >> 1;
-    var_s6 = 0;
-    if (temp_v1_2 & 0x80) {
-        var_s6 = 1;
+    current = *(u_int*)((char*)arg0 + 8);
+    speed = vs_gametime_tickspeed / 2;
+    skip = 0;
+    if (current & 0x80) {
+        skip = 1;
         if (*(int*)((char*)arg0 + 0x5AC) & 0x08000000) {
-            sp2C = 0xA0;
+            count = 160;
         } else {
-            var_s6 = 0;
-            sp2C = 0x10;
+            skip = 0;
+            count = 16;
         }
-        temp_v0 = var_s6 * 2;
-        var_fp = (void*)((char*)arg0 + (temp_v0 + 0x1564));
-        sp30 = (void*)((char*)arg0 + (temp_v0 + 0x1424));
+        colors = arg0->unk1564 + skip;
+        reference = arg0->unk1424 + skip;
     } else {
-        var_s5 = arg0;
-        sp2C = 0x10;
-        var_fp = (void*)((char*)arg0 + 0x14C);
-        sp30 = (void*)((char*)arg0 + 0x12C);
-        if ((temp_v1_2 & 0xF00) == 0x200) {
-            var_s4 *= 2;
+        object = arg0;
+        count = 16;
+        colors = (void*)((char*)arg0 + 0x14C);
+        reference = (void*)((char*)arg0 + 0x12C);
+        if ((current & 0xF00) == 0x200) {
+            speed *= 2;
         }
     }
-    temp_v0_2 = ((u_int) * (u_int*)((char*)arg0 + 8) >> 8) & 0xF;
-    switch (temp_v0_2) {
+    state = (*(u_int*)((char*)arg0 + 8) >> 8) & 0xF;
+    switch (state) {
     case 2:
-        var_s2 = 0;
-    block_19:
-        var_s3 = 0;
-    block_20:
-        var_s3 = var_s3 | func_800AC168(var_fp, sp2C - var_s6, var_s4, var_s2, sp30);
+        mode = 0;
+    start_fade:
+        changed = 0;
+    fade:
+        changed |= func_800AC168(colors, count - skip, speed, mode, reference);
         if (*(u_int*)((char*)arg0 + 8) & 0x80) {
-            var_s0 = 0;
-            do {
-                weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                if (weapon0 != NULL) {
-                    reference = weapon0->unk440;
-                    var_s3 |= func_800AC168(
-                        weapon0->unk500, weapon0->nClutColors, var_s4, var_s2, reference);
-                }
-                var_s0 += 1;
-            } while (var_s0 < 2);
-        }
-        if (((*(u_int*)((char*)arg0 + 8) & 0xF00) == 0x300) && (var_s3 == 0)) {
-            arg0->unk54 = 0x404040;
-            func_800AC168(var_fp, sp2C - var_s6, var_s4, 2, sp30);
-            var_s0 = 0;
-            if (*(u_int*)((char*)arg0 + 8) & 0x80) {
-                do {
-                    weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                    if (weapon0 != NULL) {
-                        reference = weapon0->unk440;
-                        func_800AC168(
-                            weapon0->unk500, weapon0->nClutColors, var_s4, 2, reference);
-                    }
-                    var_s0 += 1;
-                } while (var_s0 < 2);
-                goto block_32;
+            for (i = 0; i < 2; ++i) {
+            weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+            if (weapon != NULL) {
+                weaponReference = weapon->unk440;
+                changed |= func_800AC168(
+                    weapon->unk500, weapon->nClutColors, speed, mode, weaponReference);
             }
-            goto block_38;
+            }
         }
-    block_32:
-        if (*(u_int*)((char*)arg0 + 8) & 0x80) {
-            vs_main_loadClut((u_short*)&arg0->unk11A4[0x3C0], arg0->unkF + 4, 0, sp2C);
-            var_s0 = 0;
-            clutOffset = 0xA0;
-            do {
-                weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                if (weapon0 != NULL) {
-                    *(u_int*)((char*)weapon0 + 8) =
-                        (int)((*(u_int*)((char*)weapon0 + 8) & ~0xF00)
-                              | (*(u_int*)((char*)arg0 + 8) & 0xF00));
-                    vs_main_loadClut(weapon0->unk500, arg0->unkF + 4, clutOffset,
-                        (u_int)weapon0->nClutColors);
-                }
-                var_s0 += 1;
-                clutOffset += 0x30;
-            } while (var_s0 < 2);
-        } else {
-        block_38:
-            vs_main_loadClut(
-                (u_short*)((char*)var_s5 + 0x14C), 0x1FU, var_s5->unkF * 0x10, 0x10U);
-        }
-        if (var_s3 == 0) {
-            temp_v0_3 = *(u_int*)((char*)arg0 + 8);
-            temp_v1_3 =
-                (temp_v0_3 & ~0xF00) | (((((temp_v0_3 >> 8) & 0xF) + 1) & 0xF) << 8);
-            *(u_int*)((char*)arg0 + 8) = temp_v1_3;
-            var_s0 = 0;
-            if (temp_v1_3 & 0x80) {
-                do {
-                    weapon0 = vs_battle_wepModels[(arg0->unkF * 2) + var_s0];
-                    if (weapon0 != NULL) {
-                        *(u_int*)((char*)weapon0 + 8) =
-                            (int)((*(u_int*)((char*)weapon0 + 8) & ~0xF00)
-                                  | (*(u_int*)((char*)arg0 + 8) & 0xF00));
+        if ((*(u_int*)((char*)arg0 + 8) & 0xF00) == 0x300 && changed == 0) {
+            arg0->unk54 = 0x404040;
+            func_800AC168(colors, count - skip, speed, 2, reference);
+            if (*(u_int*)((char*)arg0 + 8) & 0x80) {
+                for (i = 0; i < 2; ++i) {
+                    weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                    if (weapon != NULL) {
+                        weaponReference = weapon->unk440;
+                        func_800AC168(
+                            weapon->unk500, weapon->nClutColors, speed, 2, weaponReference);
                     }
-                    var_s0 += 1;
-                } while (var_s0 < 2);
+                }
+            }
+        }
+    load_cluts:
+        if (*(u_int*)((char*)arg0 + 8) & 0x80) {
+            vs_main_loadClut(arg0->unk1564, arg0->unkF + 4, 0, count);
+            for (i = 0, clutOffset = 160; i < 2; ++i, clutOffset += 48) {
+                weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                if (weapon != NULL) {
+                    *(u_int*)((char*)weapon + 8) = (*(u_int*)((char*)weapon + 8) & ~0xF00)
+                                                  | (*(u_int*)((char*)arg0 + 8) & 0xF00);
+                    vs_main_loadClut(
+                        weapon->unk500, arg0->unkF + 4, clutOffset, weapon->nClutColors);
+                }
+            }
+        } else {
+            vs_main_loadClut((u_short*)((char*)object + 0x14C), 31, object->unkF * 16, 16);
+        }
+        if (changed == 0) {
+            previous = *(u_int*)((char*)arg0 + 8);
+            next = (previous & ~0xF00) | (((((previous >> 8) & 0xF) + 1) & 0xF) << 8);
+            *(u_int*)((char*)arg0 + 8) = next;
+            if (next & 0x80) {
+                for (i = 0; i < 2; ++i) {
+                    weapon = vs_battle_wepModels[arg0->unkF * 2 + i];
+                    if (weapon != NULL) {
+                        *(u_int*)((char*)weapon + 8) = (*(u_int*)((char*)weapon + 8) & ~0xF00)
+                                                      | (*(u_int*)((char*)arg0 + 8) & 0xF00);
+                    }
+                }
             }
         }
     case 1:
@@ -1859,105 +1833,120 @@ void func_800AB9A4(D_800F45E0_t* arg0)
     default:
         return;
     case 3:
-        var_s3 = 0;
-        var_s2 = 1;
-        goto block_20;
+        changed = 0;
+        mode = 1;
+        goto fade;
     case 4:
         if (*(int*)((char*)arg0 + 0x5AC) & 8) {
-            var_s5 = D_800F45E0[arg0->unk13];
-            func_800A190C(var_s5->unk12, 0xF0, &sp18, 1);
-            func_800A190C(var_s5->unk12, 0xF1, &sp20, 1);
-            var_s5->unk1C = (short)(u_short)arg0->unk1C;
-            var_s5->unk20 = (short)(u_short)arg0->unk20;
-            var_s5->unk1E = ((int)(sp18.vy + sp20.vy) / 2) + 0x3C;
+            object = D_800F45E0[arg0->unk13];
+            func_800A190C(object->unk12, 0xF0, &boneA, 1);
+            func_800A190C(object->unk12, 0xF1, &boneB, 1);
+            object->unk1C = arg0->unk1C;
+            object->unk20 = arg0->unk20;
+            object->unk1E = (boneA.vy + boneB.vy) / 2 + 60;
             angle = (u_short)arg0->unk26;
-            var_s5->unk1A = 0xFC;
-            *(int*)((char*)var_s5 + 0x34) = 0;
-            var_s5->unk12 = 0xFF;
-            var_s5->unk26 = ((u_short)var_s5->unk26 + angle) & 0xFFF;
-            *(int*)((char*)arg0 + 0x5AC) = (int)(*(int*)((char*)arg0 + 0x5AC) & ~8);
+            object->unk1A = 0xFC;
+            *(int*)((char*)object + 0x34) = 0;
+            object->unk12 = 0xFF;
+            object->unk26 = (object->unk26 + angle) & 0xFFF;
+            *(int*)((char*)arg0 + 0x5AC) &= ~8;
             D_800F4B19 = arg0->unk13;
         }
-        var_v1 = (u_char)arg0->unk54 - (var_s4 * 4);
-        var_s3 = 0;
-        if (var_v1 < 0) {
-            var_v1 = 0;
+        value = (u_char)arg0->unk54 - speed * 4;
+        changed = 0;
+        if (value < 0) {
+            value = 0;
         }
-        if (var_v1 != 0) {
-            var_s3 = 1;
+        if (value != 0) {
+            changed = 1;
         }
-        *(u_char*)&arg0->unk54 = var_v1;
-        *((signed char*)arg0 + 0x55) = var_v1;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 += var_s4 * 2;
-        *((signed char*)arg0 + 0x56) = var_v1;
-        if (var_s0 >= 0x41) {
-            var_s0 = 0x40;
+        *(u_char*)&arg0->unk54 = value;
+        *((signed char*)arg0 + 0x55) = value;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        *((signed char*)arg0 + 0x56) = value;
+        if (i > 64) {
+            i = 64;
         }
-        if (var_s0 != 0x40) {
-            var_s3 = 1;
+        if (i != 64) {
+            changed = 1;
         }
-        arg0->unk6F2 = (u_char)var_s0;
-        goto block_32;
+        arg0->unk6F2 = i;
+        goto load_cluts;
     case 6:
-        var_s2 = 3;
-        var_v1 = *((u_char*)arg0 + 0x57);
-        var_v1 += 1;
-        var_v0 = var_v1 & 255;
-        var_s3 = (u_int)var_v0 < 15;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 += var_s4 * 2;
-        var_v0 = var_s0 < 0x41;
-        *((u_char*)arg0 + 0x57) = var_v1;
-        goto block_60;
+        mode = 3;
+        value = *((u_char*)arg0 + 0x57);
+        value += 1;
+        capped = value & 0xFF;
+        changed = capped < 15u;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        capped = i < 65;
+        *((u_char*)arg0 + 0x57) = value;
+        if (capped == 0) {
+            i = 64;
+        }
+        arg0->unk6F2 = i;
+        goto fade;
     case 7:
-        var_s3 = 0;
-        var_s2 = 1;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 += var_s4 * 2;
-        var_v0 = var_s0 < 0x41;
-        goto block_60;
-    block_60:
-        if (var_v0 == 0) {
-            var_s0 = 0x40;
+        changed = 0;
+        mode = 1;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        capped = i < 65;
+        if (capped == 0) {
+            i = 64;
         }
-        arg0->unk6F2 = (u_char)var_s0;
-        goto block_20;
+        arg0->unk6F2 = i;
+        goto fade;
     case 9:
-        var_s3 = 0;
-        var_s2 = 2;
+        changed = 0;
+        mode = 2;
         *(u_char*)&arg0->unk54 = 0xFF;
-        *((u_char*)arg0 + 0x55) = 255;
-        *((u_char*)arg0 + 0x56) = 255;
-        goto block_20;
+        *((u_char*)arg0 + 0x55) = 0xFF;
+        *((u_char*)arg0 + 0x56) = 0xFF;
+        goto fade;
     case 10:
-        var_s3 = 0;
-        temp_v1_5 = (signed char)arg0->unk6F1;
-        var_s0 = (signed char)arg0->unk6F2;
-        var_s0 -= var_s4 * 2;
-        var_s2 = 4;
-        if (var_s0 < temp_v1_5) {
-            var_s0 = temp_v1_5;
+        changed = 0;
+        target = arg0->unk6F1;
+        i = (signed char)arg0->unk6F2;
+        i -= speed * 2;
+        mode = 4;
+        if (i < target) {
+            i = target;
         }
-        if (var_s0 != temp_v1_5) {
-            var_s3 = 1;
+        if (i != target) {
+            changed = 1;
         }
-        arg0->unk6F2 = (u_char)var_s0;
-        var_s3 = var_s3 | func_800AC0D4(&arg0->unk54, &arg0->unk58, (-var_s4) << 3);
-        goto block_20;
+        arg0->unk6F2 = i;
+        changed |= func_800AC0D4(&arg0->unk54, &arg0->unk58, -speed * 8);
+        goto fade;
     case 11:
-        *(u_int*)((char*)arg0 + 8) = (u_int)(*(u_int*)((char*)arg0 + 8) & ~0xF00);
+        *(u_int*)((char*)arg0 + 8) &= ~0xF00;
         return;
     case 12:
-        var_s3 = 0;
-        var_s2 = 5;
-        goto block_20;
+        changed = 0;
+        mode = 5;
+        goto fade;
     case 14:
-        arg0->unk6F2 = 0x40;
-        var_s2 = 6;
-        goto block_19;
+        arg0->unk6F2 = 64;
+        mode = 6;
+        goto start_fade;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
 {

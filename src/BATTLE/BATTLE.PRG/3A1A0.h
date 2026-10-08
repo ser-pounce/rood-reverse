@@ -540,7 +540,8 @@ typedef struct {
     int unk5E0;
     int unk5E4;
     int unk5E8;
-    u_char unk5EC[0x52];
+    u_char unk5EC[0x50];
+    u_short unk63C;
     u_short unk63E;
     u_char unk640[8];
     int unk648;
@@ -572,7 +573,10 @@ typedef struct {
     int unk700;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
-    u_char unk11A4[0x658];
+    u_char unk11A4[0x280];
+    u_short unk1424[0xA0];
+    u_short unk1564[0xA0];
+    u_char unk16A4[0x158];
     u_char unk17FC;
     u_char unk17FD;
     u_char unk17FE;

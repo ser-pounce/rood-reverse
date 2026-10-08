@@ -1029,6 +1029,7 @@ int func_80013588(void* arg0, int arg1)
     return -1;
 }
 
+// https://decomp.me/scratch/xpW1h
 int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
 {
     FAkaoSequence* header;
@@ -2017,6 +2018,7 @@ void Sound_RestoreChannelVolumeFromMasterFade(
     in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
 }
 
+// https://decomp.me/scratch/0wUZ7
 void func_80015220(void)
 {
     u_int KeyOnFlags = 0;

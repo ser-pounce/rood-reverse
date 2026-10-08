@@ -716,8 +716,8 @@ extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
 extern int D_800F19EC;
-extern u_int D_800F1A00;
-extern u_int D_800F1A04;
+extern int D_800F1A00;
+extern int D_800F1A04;
 extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
@@ -5663,7 +5663,7 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_battle_actor* func_800765B0(
-    int index, int actorId, vs_battle_objectData_flags* arg2, int material, int arg4)
+    int index, int actorId, vs_battle_objectData_flags* arg2, int material)
 {
     vs_battle_objectData objData;
     int i;
@@ -5718,7 +5718,7 @@ vs_battle_actor* func_800765B0(
         vs_battle_actors[index] = &temp_v0->unk0.unk0;
 
         func_8007647C(index, actorId);
-        func_800E6178((void*)&temp_v0->unk0.unk0, -1);
+        func_800E6178(&temp_v0->unk0.unk0, -1);
         func_800A087C(index, 0x1846);
 
         return &temp_v0->unk0.unk0;
@@ -6157,7 +6157,7 @@ void func_800773BC(
         func_800A087C(arg1, 0x46);
     }
     arg0->unk38 = 0;
-    func_800E6178((void*)arg0, -1);
+    func_800E6178(arg0, -1);
 }
 
 vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
@@ -8561,7 +8561,7 @@ int func_8007C928(u_int arg0, int arg1, vs_battle_objectData_flags* arg2)
             temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
             func_80076D50(arg0, arg1, 0, 0, 6);
             s0 = func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg2, 0);
-            func_800E6178((void*)*temp_s1, -1);
+            func_800E6178(*temp_s1, -1);
             return s0 + 1;
         }
     }
@@ -12843,6 +12843,11 @@ void func_80085A34(func_80085A34_t* arg0)
 // https://decomp.me/scratch/KrvDw
 int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
 
+// func_80085B10 only matches with these flags typed as unsigned.
+extern u_int D_800F1A00_u __asm__("D_800F1A00");
+extern u_int D_800F1A04_u __asm__("D_800F1A04");
+#define D_800F1A00 D_800F1A00_u
+#define D_800F1A04 D_800F1A04_u
 void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int arg3)
 {
     SVECTOR origin;
@@ -13042,6 +13047,8 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
         _getActionCost(action, attacker, 1);
     }
 }
+#undef D_800F1A00
+#undef D_800F1A04
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4)
 {
@@ -14732,8 +14739,10 @@ void func_80089114(void)
                 }
                 param = ((mpdObjectSpawn*)enemy)->model;
                 model = param;
-                func_800765B0(slot, (model >> 12) | (model & 0xF00), &data.fields,
-                    ((model >> 3) & 0x1C) | (data.bytes[3] / 64), 0);
+                // The original call passes a fifth argument that func_800765B0 ignores.
+                ((vs_battle_actor * (*)(int, int, vs_battle_objectData_flags*, int, int))
+                        func_800765B0)(slot, (model >> 12) | (model & 0xF00),
+                    &data.fields, ((model >> 3) & 0x1C) | (data.bytes[3] / 64), 0);
             }
         }
     }

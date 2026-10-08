@@ -382,7 +382,8 @@ typedef struct func_800D2904_t {
     u_char tickEvent;
     char unk6E[2];
     int unk70;
-    func_800D2904_curves unk74;
+    u_char unk74[3];
+    u_char unk77;
 } func_800D2904_t;
 
 typedef struct {

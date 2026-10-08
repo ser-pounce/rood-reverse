@@ -379,7 +379,7 @@ typedef struct {
     short index;
 } timedSpawnState;
 
-int func_800D5A98(D_800F53B8_t*, timedSpawnState*, int);
+int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
 int func_800D5D74(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5E00(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5F8C(D_800F53B8_t*, func_800D5780_t*);
@@ -4412,6 +4412,7 @@ void func_800CD0FC(int arg0, u_int arg1)
     }
 }
 
+// https://decomp.me/scratch/qBmPY
 void func_800CD158(int id)
 {
     vs_battle_textBox* box = &vs_battle_textBoxes[id];
@@ -6609,7 +6610,7 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
 
     func_800D6CCC(node->unk3C);
 
-    node->unk74.fields.age = 0xFF;
+    node->unk77 = 0xFF;
     node->previous = NULL;
     ++D_800F55F8;
     D_800F55F4 = node->next;
@@ -7274,11 +7275,11 @@ void func_800D2ADC(
     vs_battle_lerp2DVector(def->unk94[3], D_800F5330[sample], scratch->unk14C);
     node = first;
     scratch->unk154.packed = *(int*)&def->rCurve;
-    scratch->unk154.fields.age = node->unk74.fields.age;
+    scratch->unk154.fields.age = node->unk77;
     for (i = 0; i < count; ++i) {
         node->unk5C = scratch->flags;
         value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
-        node->unk74.packed = scratch->unk154.packed;
+        *(int*)node->unk74 = scratch->unk154.packed;
         node->unk70 = value;
         *(u_short*)&node->endEvent = *(u_short*)&def->unk2;
         node->unk60_0 = scratch->unk180;
@@ -7452,7 +7453,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
     node = next;
     while (next != NULL) {
         next = node->next;
-        ++node->unk74.fields.age;
+        ++node->unk77;
         if (node->tickEvent != 0) {
             func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
         }
@@ -7801,27 +7802,28 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-int func_800D5A98(D_800F53B8_t* arg0, timedSpawnState* arg1, int arg2)
+#define STATE ((timedSpawnState*)arg1)
+int func_800D5A98(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
 {
     D_800F53B8_t2 spawn;
     D_800F53B8_t* child;
     struct {
         u_char actors[6];
         u_char final, frame, delay;
-    }* event = (void*)arg1->data;
+    }* event = (void*)STATE->data;
     int result = 1;
 
     if (event->frame <= arg0->unkD1C.unk30->unk2) {
-        if (arg1->index < ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
-            if (arg1->delay == 0) {
+        if (STATE->index < ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+            if (STATE->delay == 0) {
                 do {
                     spawn.unk14 = D_800F569C->block8Data;
                     spawn.unk18 = arg2;
                     spawn.unk10 = 0;
                     spawn.unk0 = D_800F569C->unkD0 + 4;
                     spawn.unk4 = D_800F569C->unkD0 + 4;
-                    spawn.unk8 = D_800F569C->unkD0 + (arg1->index * 12 + 16);
-                    spawn.unkC = D_800F569C->unkD0 + (arg1->index * 12 + 16);
+                    spawn.unk8 = D_800F569C->unkD0 + (STATE->index * 12 + 16);
+                    spawn.unkC = D_800F569C->unkD0 + (STATE->index * 12 + 16);
                     spawn.unk1C = arg0;
                     spawn.unk20 = arg0->unk14_0;
                     child = func_800CE83C(&spawn);
@@ -7831,14 +7833,14 @@ int func_800D5A98(D_800F53B8_t* arg0, timedSpawnState* arg1, int arg2)
                     } else {
                         child->unk10[1] = event->actors[0];
                     }
-                    if (++arg1->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2)
+                    if (++STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2)
                         break;
-                    arg1->delay += event->delay;
-                } while (arg1->delay == 0);
+                    STATE->delay += event->delay;
+                } while (STATE->delay == 0);
             }
-            if (arg1->delay != 0)
-                --arg1->delay;
-        } else if (arg1->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+            if (STATE->delay != 0)
+                --STATE->delay;
+        } else if (STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
             if ((*(u_int*)((char*)arg0 + 0x14) & 0xF800) == 0) {
                 spawn.unk14 = D_800F569C->block8Data;
                 spawn.unk18 = arg2;
@@ -7852,7 +7854,7 @@ int func_800D5A98(D_800F53B8_t* arg0, timedSpawnState* arg1, int arg2)
                 child = func_800CE83C(&spawn);
                 ++arg0->unk14_11;
                 child->unk10[1] = event->final;
-                ++arg1->index;
+                ++STATE->index;
             }
         } else {
             result = 0;
@@ -7860,6 +7862,7 @@ int func_800D5A98(D_800F53B8_t* arg0, timedSpawnState* arg1, int arg2)
     }
     return result;
 }
+#undef STATE
 
 int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
@@ -8248,7 +8251,7 @@ void func_800D6AEC(D_800F53B8_t* arg0, int arg1)
                 temp = func_800D5904(arg0, temp_a1);
                 break;
             case 3:
-                temp = func_800D5A98(arg0, (void*)temp_a1, arg1);
+                temp = func_800D5A98(arg0, temp_a1, arg1);
                 break;
             case 4:
                 temp = func_800D5D74(arg0, temp_a1);

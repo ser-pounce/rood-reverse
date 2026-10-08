@@ -618,6 +618,7 @@ typedef struct {
 
 int func_800A1108(int, void*);
 void func_800A36E0(int, int, func_8006EBF8_t*);
+int func_800A4494(int, SVECTOR*);
 void func_800A48CC(int, int, int);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);

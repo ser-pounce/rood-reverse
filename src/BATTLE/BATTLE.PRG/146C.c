@@ -90,15 +90,17 @@ typedef struct {
 
 typedef struct {
     SVECTOR unk0;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    char unkC;
-    char unkD;
+    u_char unk8;
+    u_char unk9;
+    signed char unkA;
+    char effect;
+    short unkC;
     short unkE;
     int unk10;
-    int unk14;
+    char unk14;
+    char unk15;
+    char unk16;
+    char enemyClass;
 } D_800F19CC_t5;
 
 typedef struct {
@@ -269,79 +271,8 @@ typedef struct {
 } func_8008D2C0_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    short unk8;
-    char unkA;
-    char effect;
-    short unkC;
-    short unkE;
-    int unk10;
-    char unk14;
-    char unk15;
-    char unk16;
-    char enemyClass;
-} func_8006F630_t1;
-
-typedef struct {
-    u_short actionId;
-    char unk2;
-    char unk3;
-} func_8006F630_t2;
-
-typedef struct {
     char bytes[8];
 } actorSpawnSettings;
-
-typedef struct {
-    u_char type;
-    u_char index;
-    u_char hidden;
-    u_char unk3;
-    u_char id;
-    u_char slot;
-    u_char flagTest;
-    u_char statTest;
-    u_short flagValue;
-    u_short statValue;
-    u_char x;
-    u_char direction;
-    u_char z;
-    u_char height;
-    actorSpawnSettings settings;
-    u_char unk18[2];
-    u_short itemId;
-    u_short item2Id;
-    u_short item3Id;
-    u_char itemCount;
-    u_char item2Count;
-    u_char item3Count;
-    u_char facing;
-    u_char unk24;
-    u_char variant;
-    u_char unk26;
-    u_char sceneTest;
-} mpdEnemySpawn;
-
-typedef struct {
-    u_char unk0;
-    u_char hidden;
-    short unk2;
-    short currentHP;
-    short maxHP;
-    short currentMP;
-    short maxMP;
-    short strength;
-    short intelligence;
-    short agility;
-    short limbHP[6];
-    short unk1E;
-    int statuses;
-    u_char x;
-    u_char direction;
-    u_char z;
-    u_char height;
-} savedEnemyState;
 
 typedef struct {
     int unk0;
@@ -357,38 +288,6 @@ typedef struct {
     int weaponEffect;
     int weaponEffectSize;
 } zudHeader;
-
-typedef struct {
-    u_char type;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    u_short flag;
-    u_char flagMin;
-    u_char flagMax;
-    u_char slot;
-    u_char unk9;
-    u_char x;
-    u_char z;
-    u_char y;
-    u_char direction;
-    u_short model;
-    u_char unk10[0x18];
-} mpdObjectSpawn;
-
-typedef struct {
-    u_char actorId : 4;
-    char unk0_4 : 4;
-    char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-} func_8006F630_t3;
 
 typedef struct {
     int count;
@@ -413,7 +312,7 @@ typedef union {
 typedef struct {
     POLY_FT4 poly[10];
     SPRT sprite[10];
-    int unk258[30];
+    DR_MODE drawModes[10];
 } D_800F1ABC_t;
 
 typedef struct {
@@ -454,6 +353,84 @@ typedef struct {
     int unk1C;
     int unk20;
 } func_800A1108_t;
+
+typedef struct {
+    short x;
+    short y;
+    short z;
+    short radius;
+    char reserved8[56];
+    int kind;
+} environmentTarget;
+
+typedef struct {
+    u_short action;
+    char reserved2[72];
+    u_short count;
+    environmentTarget targets[30];
+} environmentTargetList;
+
+typedef struct {
+    u_short type;
+    short reserved2;
+    union {
+        struct {
+            u_char actor;
+            u_char reserved;
+            signed char part;
+            char reserved3;
+        } actor;
+        SVECTOR position;
+    } value;
+} actionEffectTarget;
+
+typedef struct {
+    u_short effect;
+    signed char count;
+    u_char otherCount;
+    actionEffectTarget source;
+    actionEffectTarget targets[16];
+    char others[16];
+    SVECTOR position;
+} actionEffectRequest;
+
+typedef struct {
+    u_char unk0;
+    u_char hidden;
+    short unk2;
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    short strength;
+    short intelligence;
+    short agility;
+    short limbHP[6];
+    short unk1E;
+    int statuses;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+} savedEnemyState;
+
+typedef struct {
+    u_char type;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    u_short flag;
+    u_char flagMin;
+    u_char flagMax;
+    u_char slot;
+    u_char unk9;
+    u_char x;
+    u_char z;
+    u_char y;
+    u_char direction;
+    u_short model;
+    u_char unk10[0x18];
+} mpdObjectSpawn;
 
 void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
@@ -504,6 +481,7 @@ void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
     int, int, int, int, int, int, vs_battle_objectData_flags*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
+vs_battle_actor* func_800775C0(int, _mpdEnemy*, vs_battle_charInitData*, int);
 int func_80077F70(void);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
@@ -557,6 +535,7 @@ void func_80085008(_hitEntity_t*);
 void func_80085390(
     vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
+int func_8008631C(int, int, int, int, void*);
 void func_80086754(int, vs_battle_actor2*);
 void _applyBattleAbilityEffect(_hitEntity_t*);
 void func_80087EF4(vs_battle_actor2*);
@@ -603,6 +582,7 @@ int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
+int func_8008D2C0(func_8008D2C0_t*);
 _mpdRoomSection9* func_8008D438(int, int, int);
 _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
@@ -617,6 +597,7 @@ void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
 _mpdRoomSection13* func_8008E370(int* arg0);
 _mpdRoomSectionA* func_8008E3B8(int* arg0);
+_mpdRoomSection9* func_8008E400(int*);
 void func_8008E480(int arg0);
 void func_8008EC48(VECTOR* arg0);
 void func_800E4C64(int);
@@ -679,13 +660,16 @@ extern u_char D_8004EFB2;
 extern u_char D_8004EFE2;
 extern u_char D_8004F000;
 extern u_char D_8004FE88[];
+extern MATRIX D_8005E218;
 extern char D_8005FFAF;
 extern vs_battle_charInitData* D_800F188C;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
 extern u_char D_800E8194[];
+extern u_char D_800E81B4[];
 extern u_char D_800E81C4[];
+extern u_char D_800E81D4[];
 extern char _wepIdCategories[];
 extern u_char D_800E8200[];
 extern int D_800E8204[];
@@ -716,6 +700,7 @@ extern int D_800F18A8;
 extern int D_800F18AC;
 extern int D_800F18B0;
 extern D_800F18C8_t D_800F18C8;
+extern int D_800F18E0;
 extern void* D_800F18E4;
 extern u_int _cameraMode;
 extern char D_800F18F8;
@@ -768,7 +753,7 @@ extern u_short D_800F1D6C;
 extern int D_800F1D78[5];
 extern char D_800F1DC7;
 extern short D_800F1D68;
-extern signed char D_800F1D6E;
+extern u_char D_800F1D6E;
 extern char D_800F1D6F;
 extern u_char D_800F1D70[];
 extern short D_800F1D98[];
@@ -3297,27 +3282,25 @@ void func_8006F5FC(void)
     func_8009E5C4(0);
 }
 
-void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630_t3* arg2)
+void func_8006F630(D_800F19CC_t5* arg0, D_800F19CC_t2* arg1, _hitEntity_t* arg2)
 {
-    int effect;
+    int effect = vs_main_actions[arg1->actionIndex].hitParams[0].effect;
     u_short var_v0;
-
-    effect = vs_main_actions[arg1->actionId].hitParams[0].effect;
 
     switch (effect) {
     case 0x3A:
     case 0x3E:
-        var_v0 = arg2->unk4;
+        var_v0 = arg2->unk0.hp;
         arg0->effect = effect;
         arg0->unkC = var_v0;
         break;
     case 0x3B:
-        var_v0 = arg2->unk6;
+        var_v0 = arg2->unk0.mp;
         arg0->effect = effect;
         arg0->unkC = var_v0;
         break;
     case 0x3F:
-        var_v0 = arg2->unk6;
+        var_v0 = arg2->unk0.mp;
         arg0->effect = effect;
         arg0->unkC = var_v0;
         break;
@@ -3326,12 +3309,12 @@ void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630
         break;
     }
 
-    arg0->unkE = arg2->unk2;
-    arg0->unk10 = arg2->unk14 & 0x1FFFFFE0;
-    arg0->unk14 = vs_main_actions[arg1->actionId].unk2_4;
+    arg0->unkE = arg2->unk0.hitThreshold;
+    arg0->unk10 = arg2->removeStatuses & 0x1FFFFFE0;
+    arg0->unk14 = vs_main_actions[arg1->actionIndex].unk2_4;
     arg0->unk15 = arg1->unk3;
     arg0->unk16 = arg1->unk2;
-    arg0->enemyClass = vs_battle_actors[arg2->actorId]->unk3C->enemyClass;
+    arg0->enemyClass = vs_battle_actors[arg2->unk0.targetActor & 15]->unk3C->enemyClass;
 }
 
 int _isArtOrAbilityUnlocked(void)
@@ -3652,84 +3635,76 @@ void func_800704D8(void)
     func_8006C39C();
 }
 
-typedef struct {
-    char reserved[0x29C0];
-    struct {
-        SVECTOR position;
-        char kind, actor;
-        signed char limb;
-        char reservedB[13];
-    } targets[23];
-} actionTargetContextView;
-int func_8008631C(int, int, int, int, void*);
-
 void func_8007053C(void)
 {
     D_800F19CC_t2 result;
     int i;
     int kept;
     int action;
+
     D_800F19CC->unk2990 = D_800F19CC->unk2998;
     func_800C06E0();
+
     if (D_800F19CC->unk2990.pad) {
         func_800C16DC();
         func_800C06E0();
         func_800C0738();
         func_800C05B4();
+
         if (!vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0) {
             func_800CB114();
             func_8006FBCC(0);
             return;
         }
+
         func_800704D8();
         return;
     }
+
     action = D_800F19CC->unk8.actionIndex;
     D_800F19CC->unk29B8 = D_800F19CC->unk2990;
     func_800C0700(&D_800F19CC->unk29B0);
     kept = 0;
+
     for (i = 0; i < D_800F19CC->unk2C00; ++i) {
-        if (D_800E81C4[(*(unsigned int*)&vs_main_actions[action] >> 20) & 15]) {
+        if (D_800E81C4[vs_main_actions[action].unk2_4]) {
             if (func_800C1564(
                     (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
-                vs_main_memcpy(&D_800F19CC->unk29C0[kept], &D_800F19CC->unk29C0[i], 24);
+                vs_main_memcpy(&D_800F19CC->unk29C0[kept], &D_800F19CC->unk29C0[i],
+                    sizeof(D_800F19CC_t5));
                 func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
-                    D_800F19CC->unk29C0[kept].unk9,
-                    (signed char)D_800F19CC->unk29C0[kept].unkA, &result);
-                func_8006F630((void*)&D_800F19CC->unk29C0[kept], (void*)&result,
-                    (void*)&result.unk4C[0]);
+                    D_800F19CC->unk29C0[kept].unk9, D_800F19CC->unk29C0[kept].unkA,
+                    &result);
+                func_8006F630(&D_800F19CC->unk29C0[kept], &result, &result.unk4C[0]);
                 ++kept;
             }
         } else if (func_800C1564(
                        (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
             D_800F19CC->unk29C0[kept].unk8 = 16;
-            ((actionTargetContextView*)D_800F19CC)->targets[kept].limb = -1;
+            D_800F19CC->unk29C0[kept].unkA = -1;
             D_800F19CC->unk29C0[kept].unk9 = D_800F19CC->unk29C0[i].unk9;
             D_800F19CC->unk29C0[kept].unk0 = D_800F19CC->unk29C0[i].unk0;
             func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
                 D_800F19CC->unk29C0[kept].unk9,
                 vs_battle_actors[D_800F19CC->unk29C0[kept].unk9]->unk3C->unk36, &result);
-            func_8006F630((void*)&D_800F19CC->unk29C0[kept], (void*)&result,
-                (void*)&result.unk4C[0]);
+            func_8006F630(&D_800F19CC->unk29C0[kept], &result, &result.unk4C[0]);
             ++kept;
         }
     }
+
     D_800F19CC->unk2C00 = kept;
     func_800C1664(kept, (int)D_800F19CC->unk29C0, 1);
     _cameraMode = 3;
 }
 
-void func_8007087C(D_800F19CC_t* arg0)
+void func_8007087C(D_800F19CC_t2* arg0)
 {
     func_8006EBF8_t sp10;
-    SVECTOR* v;
 
-    func_800A1108((char)arg0->unk4, &sp10);
-    ((SVECTOR*)&arg0->unk8.unk4C[29].armorDp)->vx =
-        sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + 0x800);
-    ((SVECTOR*)&arg0->unk8.unk4C[29].armorDp)->vz =
-        sp10.unk0.unk4.vz + rcos(sp10.unk0.unk4.pad + 0x800);
-    ((SVECTOR*)&arg0->unk8.unk4C[29].armorDp)->vy = sp10.unk0.unk4.vy;
+    func_800A1108(arg0->unk4.unk0.targetActor, &sp10);
+    arg0->unk844.vx = sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + ONE / 2);
+    arg0->unk844.vz = sp10.unk0.unk4.vz + rcos(sp10.unk0.unk4.pad + ONE / 2);
+    arg0->unk844.vy = sp10.unk0.unk4.vy;
 }
 
 void func_800708EC(void)
@@ -3758,7 +3733,7 @@ void func_800708EC(void)
     if (D_800F19CC->unk8.unk4.unk40 == 0) {
         if (D_800F19CC->unk29C0[D_800F19CC->unk298C].unk9
             == D_800F19CC->unk8.unk4.unk0.targetActor) {
-            func_8007087C((D_800F19CC_t*)&D_800F19CC->unk8);
+            func_8007087C(&D_800F19CC->unk8);
             return;
         }
         D_800F19CC->unk8.unk844 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk0;
@@ -3800,20 +3775,6 @@ void func_80070B04(void)
 }
 
 // https://decomp.me/scratch/CcHt5
-/* Environment targets overlay the actor-effect records with coordinates. */
-typedef struct {
-    short x, y, z, radius;
-    char reserved8[56];
-    int kind;
-} environmentTarget;
-typedef struct {
-    unsigned short action;
-    char reserved2[72];
-    unsigned short count;
-    environmentTarget targets[30];
-} environmentTargetList;
-_mpdRoomSection9* func_8008E400(int*);
-int func_8008D2C0(func_8008D2C0_t*);
 void func_80070CAC(void)
 {
     func_8008D2C0_t points[4];
@@ -3821,12 +3782,15 @@ void func_80070CAC(void)
     int i;
     _mpdRoomSection9* room;
     environmentTargetList* list = (environmentTargetList*)&D_800F19CC->unk8;
+
     list->count = 0;
-    switch ((int)list->action) {
+
+    switch (list->action) {
     case 93:
     case 241:
         room = func_8008E400(&count);
-        for (i = 0; i < count; i++) {
+
+        for (i = 0; i < count; ++i) {
             if (room[i].unk6 != 16) {
                 list->targets[list->count].kind = 3;
                 list->targets[list->count].x = room[i].unk0 * 128 + 64;
@@ -3836,23 +3800,26 @@ void func_80070CAC(void)
                     >> 17;
                 list->targets[list->count].z = room[i].unk2 * 128 + 64;
                 list->targets[list->count].radius = 128;
-                list->count++;
+                ++list->count;
             }
         }
         break;
+
     case 79:
         count = func_8008D2C0(points);
-        for (i = 0; i < count; i++) {
+
+        for (i = 0; i < count; ++i) {
             list->targets[list->count].kind = 5;
             list->targets[list->count].x = points[i].unk0;
             list->targets[list->count].y = points[i].unk1;
             list->targets[list->count].z = points[i].unk2;
             list->targets[list->count].radius = 64;
-            list->count++;
+            ++list->count;
         }
         break;
     }
-    func_8007087C((D_800F19CC_t*)&D_800F19CC->unk8);
+
+    func_8007087C(&D_800F19CC->unk8);
 }
 
 void func_80070F28(int arg0)
@@ -3986,30 +3953,6 @@ void func_80070F28(int arg0)
     func_8008B4BC(0);
 }
 
-typedef struct {
-    u_short type;
-    short reserved2;
-    union {
-        struct {
-            u_char actor;
-            u_char reserved;
-            signed char part;
-            char reserved3;
-        } actor;
-        SVECTOR position;
-    } value;
-} actionEffectTarget;
-
-typedef struct {
-    u_short effect;
-    signed char count;
-    u_char otherCount;
-    actionEffectTarget source;
-    actionEffectTarget targets[16];
-    char others[16];
-    SVECTOR position;
-} actionEffectRequest;
-
 void func_8007138C(void)
 {
     vs_battle_objectData object;
@@ -4022,9 +3965,9 @@ void func_8007138C(void)
     int j;
     int duplicate;
     int count;
-    vs_battle_actor* actor;
 
     D_800F19CC->battleAbilityInputSuccessful = 0;
+
     if (vs_battle_characterState->unk3C->statuses & 0x8000) {
         D_800F19CC->battleAbilityInputAttempted = 1;
     } else {
@@ -4032,6 +3975,7 @@ void func_8007138C(void)
     }
 
     action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+
     if (!vs_main_actions[action->actionIndex].unk2_0) {
         func_80070278();
         return;
@@ -4042,23 +3986,27 @@ void func_8007138C(void)
     soundPosition.vz = actorPosition.unk0.unk4.vz;
     soundPosition.vy = actorPosition.unk0.unk4.vy;
 
-    if (action->actionIndex < 0x8D) {
+    if (action->actionIndex < 141) {
         func_8009E2E0(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
         vs_main_panSfx(0x7E, 0x34, &soundPosition);
+
         if (!action->unk4.unk0.targetActor) {
             vs_battle_setStateFlag(0xB7, 1);
         }
+
         mode = 2;
-    } else if (action->actionIndex < 0xB8) {
+    } else if (action->actionIndex < 184) {
         func_8009F298(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
         vs_main_panSfx(0x7E, 0x36, &soundPosition);
         mode = 3;
-    } else if (action->actionIndex < 0xE0) {
+    } else if (action->actionIndex < 224) {
         func_8009EFEC(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
         vs_main_panSfx(0x7E, 0x34, &soundPosition);
+
         if (!action->unk4.unk0.targetActor) {
             vs_battle_setStateFlag(0xB9, 1);
         }
+
         mode = 3;
     } else {
         func_8009E2E0(action->unk4.unk0.targetActor, &D_800F19CC->unk8.unk844, 0);
@@ -4075,9 +4023,11 @@ void func_8007138C(void)
         func_800A152C(action->unk4.unk0.targetActor, 255, 2);
 
     count = 0;
+
     for (i = 0; i < action->unk4A; ++i) {
         if (!action->unk4C[i].unk40) {
             duplicate = 0;
+
             for (j = 0; j < count; ++j) {
                 if (!action->unk4C[j].unk40
                     && request.targets[j].value.actor.actor
@@ -4089,6 +4039,7 @@ void func_8007138C(void)
             if (duplicate) {
                 continue;
             }
+
             request.targets[count].type = 4;
             request.targets[count].value.actor.actor = action->unk4C[i].unk0.targetActor;
             request.targets[count].value.actor.reserved = 0;
@@ -4104,6 +4055,7 @@ void func_8007138C(void)
                     func_800A152C(action->unk4C[i].unk0.targetActor,
                         action->unk4C[i].unk0.targetLimb, 2);
             }
+
             ++count;
         } else {
             request.targets[count].type = 5;
@@ -4111,12 +4063,14 @@ void func_8007138C(void)
             ++count;
         }
     }
+
     request.count = count;
 
     for (i = 0; i < 16; ++i) {
         if (vs_battle_actors[i]
             && (vs_battle_actors[i]->unk40 == 1 || vs_battle_actors[i]->unk40 == 2)) {
             duplicate = 0;
+
             for (j = 0; j < action->unk4A; ++j) {
                 // BUG: indexes the hit list with the actor index
                 if (!action->unk4C[j].unk40 && i == action->unk4C[i].unk0.targetActor) {
@@ -4134,20 +4088,22 @@ void func_8007138C(void)
         }
     }
 
-    request.position.vx = action->unk844.vx;
-    request.position.vy = action->unk844.vy;
-    request.position.vz = action->unk844.vz;
-    if (request.effect == 0x27 && action->unk4C[0].unk40 == 4) {
-        request.effect = 0x24;
+    copyVector(&request.position, &action->unk844);
+
+    if (request.effect == 39 && action->unk4C[0].unk40 == 4) {
+        request.effect = 36;
     }
+
     func_800CF0E8((func_800CF0E8_t*)&request, mode, action->unk2);
 
-    if (action->actionIndex >= 0x8D && action->actionIndex < 0xE0) {
-        actor = vs_battle_actors[action->unk4.unk0.targetActor];
+    if (action->actionIndex >= 141 && action->actionIndex < 224) {
+        vs_battle_actor* actor = vs_battle_actors[action->unk4.unk0.targetActor];
+
         object.dataType = 7;
         object.index = action->unk4.unk0.targetActor;
         object.modelId = 0;
-        if (action->actionIndex < 0xB8) {
+
+        if (action->actionIndex < 184) {
             object.actorId = 5;
             object.modelId =
                 actor->unk3C
@@ -4161,32 +4117,33 @@ void func_8007138C(void)
                     .unk2_4;
         } else {
             object.actorId = 4;
-            object.modelId = (action->actionIndex - 0xB8) % 4;
+            object.modelId = (action->actionIndex - 184) % 4;
         }
+
         object.material = actor->equippedWeaponCategory;
         vs_battle_populateDataSlot(&object);
     }
 
     func_800CB654(1);
+
     if (vs_main_settings.information) {
         vs_battle_displaySceneMessage(0xB, action->actionIndex, 1);
     }
+
     _cameraMode = 5;
 }
 
 void func_800719DC(int arg0 __attribute__((unused))) { func_80070F28(0); }
 
-extern unsigned char D_800E81B4[], D_800E81D4[];
 void func_800719FC(int arg0 __attribute__((unused)))
 {
     SVECTOR origin;
     D_800F19CC_t2 result;
-    int action, count, i, limb, part;
-    short dx, dz, dy;
+    int action = D_800F19CC->unk8.actionIndex;
+    int count;
+    int i;
     vs_action_t* spec;
-    vs_battle_actor* actor;
-    unsigned int status;
-    action = D_800F19CC->unk8.actionIndex;
+
     func_800A1AF8(D_800F19CC->unk8.unk4.unk0.targetActor, 0, &origin, 0);
     spec = &vs_main_actions[action];
     D_800F19CC->unk29B0 = spec->shape;
@@ -4195,38 +4152,43 @@ void func_800719FC(int arg0 __attribute__((unused)))
     D_800F19CC->unk29B5 = spec->rangeY;
     D_800F19CC->unk29B6 = spec->rangeZ;
     if (D_800F19CC->unk8.unk4.unk0.targetActor) {
+        short dx;
+        short dz;
+        short dy;
+
         D_800F19CC->unk8.unk844 =
-            *(SVECTOR*)((char*)vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
-                        + 16);
+            *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk10;
         dx = D_800F19CC->unk8.unk844.vx - origin.vx;
         dz = D_800F19CC->unk8.unk844.vz - origin.vz;
         D_800F19CC->unk29B2 = ratan2(dx, dz);
         dy = D_800F19CC->unk8.unk844.vy - origin.vy;
         D_800F19CC->unk29B7 = ratan2(dy, vs_gte_rsqrt(dx * dx + dz * dz)) / 16 + 64;
         D_800F19CC->unk29B8 =
-            *(SVECTOR*)((char*)vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
-                        + 16);
+            *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk10;
     } else {
         D_800F19CC->unk29B7 = 64;
         D_800F19CC->unk29B2 = 0;
     }
     D_800F19CC->unk29B8 = origin;
-    if (D_800F19CC->unk2984)
+    if (D_800F19CC->unk2984) {
         func_800C0700(&D_800F19CC->unk29B0);
+    }
     count = 0;
     for (i = 0; i < 16; ++i) {
-        status = func_800A0BE0(i);
-        actor = vs_battle_actors[i];
-        if (actor
+        u_int status = func_800A0BE0(i);
+
+        if (vs_battle_actors[i]
             && (i != D_800F19CC->unk8.unk4.unk0.targetActor
-                || D_800E81B4[(*(unsigned int*)&vs_main_actions[action] >> 20) & 15])
+                || D_800E81B4[vs_main_actions[action].unk2_4])
             && (status & 0x3000001) == 1
-            && (actor->unk1C
-                & D_800E81D4[(*(unsigned int*)&vs_main_actions[action] >> 20) & 15])
-            && !(actor->unk1C & 0x8000)) {
-            if (D_800E81C4[(*(unsigned int*)&vs_main_actions[action] >> 20) & 15]) {
+            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+            if (D_800E81C4[vs_main_actions[action].unk2_4]) {
+                int limb;
+
                 for (limb = 0; limb < 6; ++limb) {
-                    part = func_800A152C(i, limb, 2);
+                    int part = func_800A152C(i, limb, 2);
+
                     if (part >= 0) {
                         func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
                         if (func_800C1564((void*)&D_800F19CC->unk29B0,
@@ -4236,8 +4198,8 @@ void func_800719FC(int arg0 __attribute__((unused)))
                             D_800F19CC->unk29C0[count].unk9 = i;
                             func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
                                 i, limb, &result);
-                            func_8006F630((void*)&D_800F19CC->unk29C0[count],
-                                (void*)&result, (void*)&result.unk4C[0]);
+                            func_8006F630(
+                                &D_800F19CC->unk29C0[count], &result, &result.unk4C[0]);
                             ++count;
                         }
                     }
@@ -4247,12 +4209,11 @@ void func_800719FC(int arg0 __attribute__((unused)))
                 if (func_800C1564((void*)&D_800F19CC->unk29B0,
                         (void*)&D_800F19CC->unk29C0[count])) {
                     D_800F19CC->unk29C0[count].unk8 = 16;
-                    ((actionTargetContextView*)D_800F19CC)->targets[count].limb = -1;
+                    D_800F19CC->unk29C0[count].unkA = -1;
                     D_800F19CC->unk29C0[count].unk9 = i;
                     func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor, i,
                         vs_battle_actors[i]->unk3C->unk36, &result);
-                    func_8006F630((void*)&D_800F19CC->unk29C0[count], (void*)&result,
-                        (void*)&result.unk4C[0]);
+                    func_8006F630(&D_800F19CC->unk29C0[count], &result, &result.unk4C[0]);
                     ++count;
                 }
             }
@@ -4264,25 +4225,17 @@ void func_800719FC(int arg0 __attribute__((unused)))
     _cameraMode = 3;
 }
 
-// The actor index doubles as the out-count for func_8008E370; j is the limb
-// index for actor targets and the record index for room objects.
 void func_80071F68(int arg0)
 {
     func_8006EBF8_t state;
     D_800F19CC_t2 result;
     int i;
-    int action;
+    int action = D_800F19CC->unk8.actionIndex;
     vs_battle_actor2* attacker;
     vs_action_t* spec;
-    vs_battle_actor* actor;
-    _mpdRoomSection13* room;
-    D_800F19CC_t5* target;
     int count;
     int j;
-    int part;
-    u_int status;
 
-    action = D_800F19CC->unk8.actionIndex;
     D_800F19CC->unk2988 = arg0;
     D_800F19CC->unk29A0 = vs_main_actions[action].shape;
     spec = &vs_main_actions[action];
@@ -4295,34 +4248,38 @@ void func_80071F68(int arg0)
         D_800F19CC->unk29A4 = attacker->currentRange;
         D_800F19CC->unk29A5 = attacker->unk39;
         D_800F19CC->unk29A6 = attacker->unk3A;
-        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle << 3;
+        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle * 8;
     } else {
         D_800F19CC->unk29A4 = spec->rangeX;
         D_800F19CC->unk29A5 = spec->rangeY;
         D_800F19CC->unk29A6 = spec->rangeZ;
-        D_800F19CC->unk29A7 = spec->angle << 3;
+        D_800F19CC->unk29A7 = spec->angle * 8;
     }
 
     func_800A190C(D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A8, 0);
+
     if (D_800F19CC->unk2984) {
         func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
     }
 
     count = 0;
+
     for (i = 0; i < 16; ++i) {
-        status = func_800A0BE0(i);
-        actor = vs_battle_actors[i];
-        if (actor
+        u_int status = func_800A0BE0(i);
+
+        if (vs_battle_actors[i]
             && (i != D_800F19CC->unk8.unk4.unk0.targetActor
                 || D_800E81B4[vs_main_actions[action].unk2_4])
             && (status & 0x3000001) == 1
-            && (actor->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
-            && !(actor->unk1C & 0x8000)) {
+            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
             if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                 for (j = 0; j < 6; ++j) {
-                    part = func_800A152C(i, j, 2);
+                    int part = func_800A152C(i, j, 2);
+
                     if (part >= 0) {
                         func_800A1B9C(i, j, &D_800F19CC->unk29C0[count].unk0, 0);
+
                         if (func_800C1564((void*)&D_800F19CC->unk29A0,
                                 (void*)&D_800F19CC->unk29C0[count])) {
                             D_800F19CC->unk29C0[count].unk8 = func_800A1648(i, part, 0);
@@ -4330,23 +4287,23 @@ void func_80071F68(int arg0)
                             D_800F19CC->unk29C0[count].unk9 = i;
                             func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
                                 i, j, &result);
-                            func_8006F630((void*)&D_800F19CC->unk29C0[count],
-                                (void*)&result, (void*)&result.unk4C[0]);
+                            func_8006F630(
+                                &D_800F19CC->unk29C0[count], &result, &result.unk4C[0]);
                             ++count;
                         }
                     }
                 }
             } else {
                 func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
+
                 if (func_800C1564((void*)&D_800F19CC->unk29A0,
                         (void*)&D_800F19CC->unk29C0[count])) {
                     D_800F19CC->unk29C0[count].unk8 = 16;
-                    ((actionTargetContextView*)D_800F19CC)->targets[count].limb = -1;
+                    D_800F19CC->unk29C0[count].unkA = -1;
                     D_800F19CC->unk29C0[count].unk9 = i;
                     func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor, i,
                         vs_battle_actors[i]->unk3C->unk36, &result);
-                    func_8006F630((void*)&D_800F19CC->unk29C0[count], (void*)&result,
-                        (void*)&result.unk4C[0]);
+                    func_8006F630(&D_800F19CC->unk29C0[count], &result, &result.unk4C[0]);
                     ++count;
                 }
             }
@@ -4354,84 +4311,83 @@ void func_80071F68(int arg0)
     }
 
     if (D_800E81D4[vs_main_actions[action].unk2_4] & 0x80) {
-        room = func_8008E370(&i);
+        _mpdRoomSection13* room = func_8008E370(&i);
+
         for (j = 0; j < i; ++j) {
             D_800F19CC->unk29C0[count].unk0.vx = room[j].unk0 * 128 + 64;
             D_800F19CC->unk29C0[count].unk0.vz = room[j].unk2 * 128 + 64;
             D_800F19CC->unk29C0[count].unk0.vy =
                 (func_8008DC7C((room[j].unk0 << 7) | 64, (room[j].unk2 << 7) | 64) << 17)
                 >> 17;
-            if ((room[j].unk10 < 64)
+
+            if (room[j].unk10 < 64
                 && func_800C1564(
                     (void*)&D_800F19CC->unk29A0, (void*)&D_800F19CC->unk29C0[count])) {
-                target = &D_800F19CC->unk29C0[count];
+                D_800F19CC_t5* target = &D_800F19CC->unk29C0[count];
+
                 target->unk8 = 16;
                 target->unkA = 16;
                 target->unk9 = j | 0x20;
-                *(short*)&target->unkC = 0;
-                if (((u_short)room[j].unkC - 2 < 2u) && (room[j].unk8 == 0)) {
+                target->unkC = 0;
+
+                if ((u_short)room[j].unkC - 2 < 2u && room[j].unk8 == 0) {
                     target->unkE = ((attacker->risk + 150) * 100) / 256;
                 } else {
                     target->unkE = 0;
                 }
+
                 ++count;
-                *((u_char*)target + 20) = 10;
-                *((u_char*)target + 23) = 0;
-                *((u_char*)target + 22) = 0;
-                *((u_char*)target + 21) = 0;
+                target->unk14 = 10;
+                target->enemyClass = 0;
+                target->unk16 = 0;
+                target->unk15 = 0;
                 target->unk10 = 0;
-                target->unkB = 0;
+                target->effect = 0;
             }
         }
     }
 
     D_800F19CC->unk2C00 = count;
+
     if (D_800F19CC->unk2984) {
         func_800C1664(count, (int)D_800F19CC->unk29C0, 0);
     }
 
     if (D_800F19CC->unk8.unk4.unk0.targetActor) {
         for (count = 0; count < D_800F19CC->unk2C00; ++count) {
-            if ((D_800F19CC->unk29C0[count].unk9
-                    == *(u_short*)((char*)vs_battle_actors[D_800F19CC->unk8.unk4.unk0
-                                           .targetActor]
-                                   + 0x10))
-                && (((actionTargetContextView*)D_800F19CC)->targets[count].limb
-                    == *(u_short*)((char*)vs_battle_actors[D_800F19CC->unk8.unk4.unk0
-                                           .targetActor]
-                                   + 0x12))) {
+            if (D_800F19CC->unk29C0[count].unk9
+                    == vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
+                        ->unk10.u16[0]
+                && D_800F19CC->unk29C0[count].unkA
+                       == vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
+                           ->unk10.u16[1]) {
                 D_800F19CC->unk298C = count;
             }
         }
         if (D_800F19CC->unk298C == 0xFF) {
             for (count = 0; count < D_800F19CC->unk2C00; ++count) {
                 if (D_800F19CC->unk29C0[count].unk9
-                    == *(u_short*)((char*)vs_battle_actors[D_800F19CC->unk8.unk4.unk0
-                                           .targetActor]
-                                   + 0x10)) {
+                    == vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
+                        ->unk10.u16[0]) {
                     D_800F19CC->unk298C = count;
                 }
             }
         }
     }
+
     _cameraMode = 1;
 }
 
 void func_80072734(int arg0)
 {
     func_8006EBF8_t state;
-    vs_battle_actor2* attacker;
+    vs_battle_actor2* attacker =
+        vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk3C;
     vs_action_t* spec;
-    vs_battle_actor* actor;
-    int action;
+    int action = D_800F19CC->unk8.actionIndex;
     int count;
     int i;
-    int limb;
-    int part;
-    u_int status;
 
-    attacker = vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk3C;
-    action = D_800F19CC->unk8.actionIndex;
     D_800F19CC->unk2988 = arg0;
     D_800F19CC->unk29A0 = vs_main_actions[action].shape;
     spec = &vs_main_actions[action];
@@ -4440,18 +4396,17 @@ void func_80072734(int arg0)
     D_800F19CC->unk29A2 = state.unk0.unk4.pad;
     count = 0;
 
-    // Tests the angle bits of the whole range word against 0xFF (never true);
-    // the bitfield form of this comparison is folded away by the compiler.
+    // BUG: the angle bits of the range word can never equal 0xFF
     if ((*(u_int*)&spec->rangeX >> 27) == 0xFF) {
         D_800F19CC->unk29A4 = attacker->currentRange;
         D_800F19CC->unk29A5 = attacker->unk39;
         D_800F19CC->unk29A6 = attacker->unk3A;
-        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle << 3;
+        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle * 8;
     } else {
         D_800F19CC->unk29A4 = spec->rangeX;
         D_800F19CC->unk29A5 = spec->rangeY;
         D_800F19CC->unk29A6 = spec->rangeZ;
-        D_800F19CC->unk29A7 = spec->angle << 3;
+        D_800F19CC->unk29A7 = spec->angle * 8;
         D_800F19CC->unk29B2 = 0;
         D_800F19CC->unk29B0 = spec->aoe_24 & 7;
         D_800F19CC->unk29B4 = spec->aoe_0;
@@ -4460,16 +4415,20 @@ void func_80072734(int arg0)
         D_800F19CC->unk29B7 = spec->aoe_24 & 0xF8;
 
         for (i = 0; i < 10; ++i) {
-            status = func_800A0BE0(i);
-            actor = vs_battle_actors[i];
-            if (actor && (status & 0x3000001) == 1
+            u_int status = func_800A0BE0(i);
+
+            if (vs_battle_actors[i] && (status & 0x3000001) == 1
                 && (i != D_800F19CC->unk8.unk4.unk0.targetActor
                     || D_800E81B4[vs_main_actions[action].unk2_4])
-                && (actor->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
-                && !(actor->unk1C & 0x8000)) {
+                && (vs_battle_actors[i]->unk1C
+                    & D_800E81D4[vs_main_actions[action].unk2_4])
+                && !(vs_battle_actors[i]->unk1C & 0x8000)) {
                 if (D_800E81C4[vs_main_actions[action].unk2_4]) {
+                    int limb;
+
                     for (limb = 0; limb < 6; ++limb) {
-                        part = func_800A152C(i, limb, 2);
+                        int part = func_800A152C(i, limb, 2);
+
                         if (part >= 0) {
                             func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
                             D_800F19CC->unk29C0[count].unk8 = func_800A1648(i, part, 0);
@@ -4480,7 +4439,7 @@ void func_80072734(int arg0)
                     }
                 } else {
                     func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
-                    ((actionTargetContextView*)D_800F19CC)->targets[count].limb = -1;
+                    D_800F19CC->unk29C0[count].unkA = -1;
                     D_800F19CC->unk29C0[count].unk9 = i;
                     ++count;
                 }
@@ -4490,16 +4449,17 @@ void func_80072734(int arg0)
 
     D_800F19CC->unk2C00 = count;
     func_800A190C(D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A8, 0);
+
     if (D_800F19CC->unk8.unk4.unk0.targetActor) {
         D_800F19CC->unk2998 =
-            *(SVECTOR*)((char*)vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]
-                        + 16);
+            *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk10;
         D_800F19CC->unk2998.pad = 0;
     }
     if (D_800F19CC->unk2984) {
         func_800C05EC(
             &D_800F19CC->unk29A0, &D_800F19CC->unk29B0, count, D_800F19CC->unk29C0);
     }
+
     _cameraMode = 2;
 }
 
@@ -5679,7 +5639,7 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_battle_actor* func_800765B0(
-    int index, int actorId, vs_battle_objectData_flags* arg2, int material)
+    int index, int actorId, vs_battle_objectData_flags* arg2, int material, int arg4)
 {
     vs_battle_objectData objData;
     int i;
@@ -6193,7 +6153,7 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
 }
 
 vs_battle_actor* func_800775C0(
-    int id, mpdEnemySpawn* spawn, vs_battle_charInitData* init, int flags)
+    int id, _mpdEnemy* spawn, vs_battle_charInitData* init, int flags)
 {
     vs_battle_objectData object;
     vs_main_CdFile file;
@@ -6368,7 +6328,8 @@ vs_battle_actor* func_800775C0(
         actor->unk3C->unk960.id = spawn->item3Id;
         actor->unk3C->unk960.dropRate = spawn->item3Count;
         do {
-            *(actorSpawnSettings*)((char*)actor + 0x30) = spawn->settings;
+            *(actorSpawnSettings*)((char*)actor + 0x30) =
+                *(actorSpawnSettings*)spawn->settings;
         } while (0);
         actor->unk38 = init->unk2C;
 
@@ -7757,8 +7718,6 @@ void vs_battle_setCameraRoll(int arg0) { vs_scratch.camera.angles.vz = arg0; }
 
 int vs_battle_getCameraRoll(void) { return vs_scratch.camera.angles.vz & 0xFFF; }
 
-extern MATRIX D_8005E218;
-
 void func_8007ACB0(void)
 {
     static const VECTOR D_800689E8 = { 0, ONE, 0 };
@@ -7771,39 +7730,38 @@ void func_8007ACB0(void)
     int _[8] __attribute__((unused));
     vs_scratch_t* scratch = &vs_scratch;
 
-    delta.vx = (scratch->camera.position.vx - scratch->camera.lookAt.vx) / ONE;
-    delta.vy = (scratch->camera.lookAt.vy - scratch->camera.position.vy) / ONE;
-    delta.vz = (scratch->camera.lookAt.vz - scratch->camera.position.vz) / ONE;
+    setVector(&delta, (scratch->camera.position.vx - scratch->camera.lookAt.vx) / ONE,
+        (scratch->camera.lookAt.vy - scratch->camera.position.vy) / ONE,
+        (scratch->camera.lookAt.vz - scratch->camera.position.vz) / ONE);
+
     if (!(delta.vx | delta.vz)) {
         delta.vz = 1;
     }
+
     VectorNormal(&delta, &forward);
     OuterProduct0(&forward, &up, &right);
     VectorNormal(&right, &right);
     OuterProduct0(&right, &forward, &up);
     VectorNormal(&up, &up);
-    D_8005E218.m[0][0] = scratch->viewMatrix.m[0][0] = -*(u_short*)&right.vx;
-    D_8005E218.m[0][1] = scratch->viewMatrix.m[0][1] = *(u_short*)&right.vy;
-    D_8005E218.m[0][2] = scratch->viewMatrix.m[0][2] = *(u_short*)&right.vz;
-    D_8005E218.m[1][0] = scratch->viewMatrix.m[1][0] = -*(u_short*)&up.vx;
-    D_8005E218.m[1][1] = scratch->viewMatrix.m[1][1] = *(u_short*)&up.vy;
-    D_8005E218.m[1][2] = scratch->viewMatrix.m[1][2] = *(u_short*)&up.vz;
-    D_8005E218.m[2][0] = scratch->viewMatrix.m[2][0] = -*(u_short*)&forward.vx;
-    D_8005E218.m[2][1] = scratch->viewMatrix.m[2][1] = *(u_short*)&forward.vy;
-    D_8005E218.m[2][2] = scratch->viewMatrix.m[2][2] = *(u_short*)&forward.vz;
+    D_8005E218.m[0][0] = scratch->viewMatrix.m[0][0] = -right.vx;
+    D_8005E218.m[0][1] = scratch->viewMatrix.m[0][1] = right.vy;
+    D_8005E218.m[0][2] = scratch->viewMatrix.m[0][2] = right.vz;
+    D_8005E218.m[1][0] = scratch->viewMatrix.m[1][0] = -up.vx;
+    D_8005E218.m[1][1] = scratch->viewMatrix.m[1][1] = up.vy;
+    D_8005E218.m[1][2] = scratch->viewMatrix.m[1][2] = up.vz;
+    D_8005E218.m[2][0] = scratch->viewMatrix.m[2][0] = -forward.vx;
+    D_8005E218.m[2][1] = scratch->viewMatrix.m[2][1] = forward.vy;
+    D_8005E218.m[2][2] = scratch->viewMatrix.m[2][2] = forward.vz;
     roll.m[1][1] = roll.m[0][0] = rcos(scratch->camera.angles.vz);
     roll.m[1][0] = rsin(scratch->camera.angles.vz);
     roll.m[0][1] = -roll.m[1][0];
     roll.m[2][2] = ONE;
     roll.m[0][2] = roll.m[1][2] = roll.m[2][0] = roll.m[2][1] = 0;
-    delta.vx = 4608;
-    delta.vy = ONE;
-    delta.vz = ONE;
+    setVector(&delta, ONE * 9 / 8, ONE, ONE);
     ScaleMatrix(&roll, &delta);
     func_80041C68(&roll, &scratch->viewMatrix);
-    negativePosition.vx = -scratch->camera.position.vx / ONE;
-    negativePosition.vy = -scratch->camera.position.vy / ONE;
-    negativePosition.vz = -scratch->camera.position.vz / ONE;
+    setVector(&negativePosition, -scratch->camera.position.vx / ONE,
+        -scratch->camera.position.vy / ONE, -scratch->camera.position.vz / ONE);
     ApplyMatrix(&scratch->viewMatrix, &negativePosition, (VECTOR*)scratch->viewMatrix.t);
     delta.vz = delta.vy = delta.vx = scratch->camera.farClip;
     ScaleMatrix(&scratch->viewMatrix, &delta);
@@ -8920,109 +8878,90 @@ void func_8007D41C(void)
 
 void func_8007D734(void* arg0)
 {
-    MATRIX sp18;
+    MATRIX transform;
     VECTOR translation;
     SVECTOR vertex;
-    VECTOR sp50;
-    RECT sp60;
-    int sp68;
-    POLY_FT4* temp_a1;
-    POLY_FT4* temp_v0_2;
-    POLY_FT4* temp_v0_3;
-    POLY_FT4* temp_v0_4;
-    SPRT* temp_a2;
-    int temp_s0;
-    int temp_v0;
-    unsigned short page;
-    int var_s1;
+    VECTOR projected;
+    RECT clip;
+    long flag;
+    int i;
 
-    memset(&sp60, 0, 8);
+    memset(&clip, 0, sizeof(clip));
+
     if (D_800F1B98 == 2) {
-        translation.vx = D_800F1A68.unk0 + 0xA0;
-        translation.vy = D_800F1A68.unk4 + 0x70;
-        RotMatrix_gte((SVECTOR*)D_800F1A28, &sp18);
-        TransMatrix(&sp18, &translation);
-        ScaleMatrix(&sp18, (VECTOR*)D_800F1A30);
-        SetRotMatrix(&sp18);
-        SetTransMatrix(&sp18);
-        if ((D_800F1A28[2] & 0xFFF) || D_800F1A30[0] != 0x1000
+        translation.vx = D_800F1A68.unk0 + 160;
+        translation.vy = D_800F1A68.unk4 + 112;
+        RotMatrix_gte((SVECTOR*)D_800F1A28, &transform);
+        TransMatrix(&transform, &translation);
+        ScaleMatrix(&transform, (VECTOR*)D_800F1A30);
+        SetRotMatrix(&transform);
+        SetTransMatrix(&transform);
+
+        if ((D_800F1A28[2] & 0xFFF) || D_800F1A30[0] != ONE
             || D_800F1A30[1] != D_800F1A30[0]) {
-            var_s1 = 0;
-            do {
-                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->poly)->r0 =
-                    D_800F1A78.r0;
-                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->poly)->g0 =
-                    D_800F1A78.g0;
-                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->poly)->b0 =
-                    D_800F1A78.b0;
-                if (!((unsigned short)D_800F1A2C & 0xFFF) && D_800F1A40) {
-                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1].tpage = GetTPage(
-                        2, D_800F1B9C, var_s1 * 64 + ((vs_main_frameBuf ^ 1) * 320), 0);
+            for (i = 0; i < 5; ++i) {
+                POLY_FT4* topLeft;
+                POLY_FT4* topRight;
+                POLY_FT4* bottomLeft;
+                POLY_FT4* bottomRight;
+
+                setRGB0(&D_800F1ABC->poly[(vs_main_frameBuf * 5) + i], D_800F1A78.r0,
+                    D_800F1A78.g0, D_800F1A78.b0);
+
+                if (!(D_800F1A2C & 0xFFF) && D_800F1A40) {
+                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + i].tpage = GetTPage(
+                        2, D_800F1B9C, i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0);
                 } else {
-                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1].tpage = GetTPage(
-                        2, D_800F1B9C, var_s1 * 64 + ((vs_main_frameBuf & 1) * 320), 0);
+                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + i].tpage = GetTPage(
+                        2, D_800F1B9C, i * 64 + ((vs_main_frameBuf & 1) * 320), 0);
                 }
-                vertex.vx = var_s1 * 64 - 160;
-                vertex.vy = -0x70;
-                vertex.vz = 0;
-                RotTrans(&vertex, &sp50, &sp68);
-                temp_v0_2 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
-                temp_v0_2->x0 = (short)(unsigned short)sp50.vx;
-                temp_v0_2->y0 = (short)(unsigned short)sp50.vy;
-                vertex.vx = var_s1 * 64 - 96;
-                vertex.vy = -0x70;
-                vertex.vz = 0;
-                RotTrans(&vertex, &sp50, &sp68);
-                temp_v0_3 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
-                temp_v0_3->x1 = (short)(unsigned short)sp50.vx;
-                temp_v0_3->y1 = (short)(unsigned short)sp50.vy;
-                vertex.vx = var_s1 * 64 - 160;
-                vertex.vy = 0x6F;
-                vertex.vz = 0;
-                RotTrans(&vertex, &sp50, &sp68);
-                temp_v0_4 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
-                temp_v0_4->x2 = (short)(unsigned short)sp50.vx;
-                temp_v0_4->y2 = (short)(unsigned short)sp50.vy;
-                vertex.vx = var_s1 * 64 - 96;
-                vertex.vy = 0x6F;
-                vertex.vz = 0;
-                RotTrans(&vertex, &sp50, &sp68);
-                temp_a1 = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1];
-                temp_a1->x3 = (short)(unsigned short)sp50.vx;
-                temp_a1->y3 = (short)(unsigned short)sp50.vy;
+
+                setVector(&vertex, i * 64 - 160, -112, 0);
+                RotTrans(&vertex, &projected, &flag);
+                topLeft = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                topLeft->x0 = projected.vx;
+                topLeft->y0 = projected.vy;
+                setVector(&vertex, i * 64 - 96, -112, 0);
+                RotTrans(&vertex, &projected, &flag);
+                topRight = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                topRight->x1 = projected.vx;
+                topRight->y1 = projected.vy;
+                setVector(&vertex, i * 64 - 160, 111, 0);
+                RotTrans(&vertex, &projected, &flag);
+                bottomLeft = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                bottomLeft->x2 = projected.vx;
+                bottomLeft->y2 = projected.vy;
+                setVector(&vertex, i * 64 - 96, 111, 0);
+                RotTrans(&vertex, &projected, &flag);
+                bottomRight = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                bottomRight->x3 = projected.vx;
+                bottomRight->y3 = projected.vy;
                 AddPrim(arg0 + (D_800F1A44 * 4),
-                    &D_800F1ABC->poly[(vs_main_frameBuf * 5) + var_s1]);
-                var_s1 += 1;
-            } while (var_s1 < 5);
+                    &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i]);
+            }
         } else {
-            var_s1 = 0;
-            do {
-                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->sprite)->r0 =
-                    D_800F1A78.r0;
-                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->sprite)->g0 =
-                    D_800F1A78.g0;
-                (((vs_main_frameBuf * 5) + var_s1) + D_800F1ABC->sprite)->b0 =
-                    D_800F1A78.b0;
-                temp_v0 = (vs_main_frameBuf * 5) + var_s1;
-                temp_a2 = (SPRT*)(temp_v0 * sizeof(SPRT) + (u_long)D_800F1ABC
-                                  + sizeof(D_800F1ABC->poly));
-                temp_s0 = var_s1 << 6;
-                temp_a2->x0 = (unsigned short)D_800F1A68.unk0 + temp_s0;
-                temp_a2->y0 = (short)(unsigned short)D_800F1A68.unk4;
-                AddPrim(arg0 + (D_800F1A44 * 4), &D_800F1ABC->sprite[temp_v0]);
-                page = (D_800F1A40 ? GetTPage(2, D_800F1B9C,
-                                         temp_s0 + ((vs_main_frameBuf ^ 1) * 0x140), 0)
+            for (i = 0; i < 5; ++i) {
+                SPRT* sprite;
+                int index;
+                u_short tpage;
+
+                setRGB0(&D_800F1ABC->sprite[(vs_main_frameBuf * 5) + i], D_800F1A78.r0,
+                    D_800F1A78.g0, D_800F1A78.b0);
+                index = (vs_main_frameBuf * 5) + i;
+                sprite = (SPRT*)(index * sizeof(SPRT) + (u_long)D_800F1ABC
+                                 + sizeof(D_800F1ABC->poly));
+                sprite->x0 = D_800F1A68.unk0 + i * 64;
+                sprite->y0 = D_800F1A68.unk4;
+                AddPrim(arg0 + (D_800F1A44 * 4), &D_800F1ABC->sprite[index]);
+                tpage = D_800F1A40 ? GetTPage(2, D_800F1B9C,
+                                         i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0)
                                    : GetTPage(2, D_800F1B9C,
-                                         temp_s0 + ((vs_main_frameBuf & 1) * 0x140), 0));
-                SetDrawMode(
-                    (DR_MODE*)((char*)D_800F1ABC
-                               + ((((vs_main_frameBuf * 5) + var_s1) * 0xC) + 0x258)),
-                    0, 1, page, &sp60);
+                                         i * 64 + ((vs_main_frameBuf & 1) * 320), 0);
+                SetDrawMode(&D_800F1ABC->drawModes[(vs_main_frameBuf * 5) + i], 0, 1,
+                    tpage, &clip);
                 AddPrim(arg0 + (D_800F1A44 * 4),
-                    (DR_MODE*)((char*)D_800F1ABC
-                               + ((((vs_main_frameBuf * 5) + var_s1) * 0xC) + 0x258)));
-                var_s1 += 1;
-            } while (var_s1 < 5);
+                    &D_800F1ABC->drawModes[(vs_main_frameBuf * 5) + i]);
+            }
         }
     }
     if (D_800F1B98 == 1) {
@@ -9031,8 +8970,10 @@ void func_8007D734(void* arg0)
     }
     if (D_800F1B98 >= 3) {
         ++D_800F1B98;
+
         if (D_800F1B98 >= 5) {
             D_800F1B98 = 0;
+
             if (D_800F1ABC != NULL) {
                 vs_main_freeHeapR(D_800F1ABC);
                 D_800F1ABC = NULL;
@@ -14518,17 +14459,12 @@ void func_80089098(void)
 
 int func_80089104(void) { return D_800F18A8; }
 
-extern int D_800F18E0;
-
 void func_80089114(void)
 {
     int _[4] __attribute__((unused));
     int slots[16];
-    union {
-        vs_battle_objectData_flags fields;
-        u_char bytes[4];
-    } data;
-    mpdEnemySpawn* enemy;
+    vs_battle_objectData_flags data;
+    _mpdEnemy* enemy;
     savedEnemyState* saved;
     _zndEnemy* template;
     int i;
@@ -14537,10 +14473,6 @@ void func_80089114(void)
     int j;
     u_short slot;
     u_short id;
-    u_int flag;
-    u_int model;
-    u_int min;
-    u_int max;
 
     if (D_800F18E0 == 0) {
         return;
@@ -14551,35 +14483,35 @@ void func_80089114(void)
     }
 
     for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
-        enemy = (mpdEnemySpawn*)&_zoneContext.mpdEnemies[i];
-        if (enemy->type == 0) {
-            slot = enemy->slot;
-        } else {
-            slot = ((mpdObjectSpawn*)enemy)->slot;
-        }
+        enemy = &_zoneContext.mpdEnemies[i];
+        slot = (enemy->type == 0) ? enemy->slot : ((mpdObjectSpawn*)enemy)->slot;
+
         if (slot < 16) {
             slots[slot] = 1;
         }
     }
 
     for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
-        enemy = (mpdEnemySpawn*)&_zoneContext.mpdEnemies[i];
+        enemy = &_zoneContext.mpdEnemies[i];
+
         if (enemy->type == 0) {
             visible = enemy->hidden == 0;
 
             switch (enemy->sceneTest) {
             case 1:
-                if ((u_char)vs_battle_getStateFlag(1) != 0) {
+                if (vs_battle_getStateFlag(1) != 0) {
                     visible = 0;
                 }
                 break;
+
             case 2:
-                if ((u_char)vs_battle_getStateFlag(1) != 1) {
+                if (vs_battle_getStateFlag(1) != 1) {
                     visible = 0;
                 }
                 break;
+
             case 3:
-                if ((u_char)vs_battle_getStateFlag(2) != 1) {
+                if (vs_battle_getStateFlag(2) != 1) {
                     visible = 0;
                 }
                 break;
@@ -14587,17 +14519,19 @@ void func_80089114(void)
 
             switch (enemy->flagTest) {
             case 1:
-                if ((u_char)vs_battle_getStateFlag(0x82) != enemy->flagValue) {
+                if (vs_battle_getStateFlag(0x82) != enemy->flagValue) {
                     visible = 0;
                 }
                 break;
+
             case 2:
-                if ((u_char)vs_battle_getStateFlag(0x82) > enemy->flagValue) {
+                if (vs_battle_getStateFlag(0x82) > enemy->flagValue) {
                     visible = 0;
                 }
                 break;
+
             case 3:
-                if ((u_char)vs_battle_getStateFlag(0x82) < enemy->flagValue) {
+                if (vs_battle_getStateFlag(0x82) < enemy->flagValue) {
                     visible = 0;
                 }
                 break;
@@ -14610,26 +14544,30 @@ void func_80089114(void)
                     visible = 0;
                 }
                 break;
+
             case 2:
                 if (vs_battle_characterState->unk3C->currentHP
                     < (enemy->statValue & 0x3FF)) {
                     visible = 0;
                 }
                 break;
+
             case 3:
-                if ((u_char)vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                if (vs_battle_getStateFlag(enemy->statValue & 0x3FF)
                     != (enemy->statValue >> 10)) {
                     visible = 0;
                 }
                 break;
+
             case 4:
-                if ((u_char)vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                if (vs_battle_getStateFlag(enemy->statValue & 0x3FF)
                     > (enemy->statValue >> 10)) {
                     visible = 0;
                 }
                 break;
+
             case 5:
-                if ((u_char)vs_battle_getStateFlag(enemy->statValue & 0x3FF)
+                if (vs_battle_getStateFlag(enemy->statValue & 0x3FF)
                     < (enemy->statValue >> 10)) {
                     visible = 0;
                 }
@@ -14637,14 +14575,17 @@ void func_80089114(void)
             }
 
             id = enemy->id;
+
             switch (enemy->facing) {
             case 0:
             case 3:
                 param = 6;
                 break;
+
             case 1:
                 param = 0;
                 break;
+
             case 2:
                 param = 1;
                 break;
@@ -14655,6 +14596,7 @@ void func_80089114(void)
 
             template = &_zoneContext.zndEnemies[id];
             slot = enemy->slot;
+
             if (slot == 0) {
                 for (j = 2; j < 10; ++j) {
                     if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
@@ -14663,17 +14605,21 @@ void func_80089114(void)
                                 || (slots[j + 4] != 0)) {
                                 continue;
                             }
+
                             slots[j + 4] = 1;
                         }
+
                         slot = j;
                         break;
                     }
                 }
                 if (j >= 10) {
                     vs_main_nop10(0x86, 0);
+
                     if (_zoneContext.unk1C != NULL) {
                         vs_main_freeHeapR(_zoneContext.unk1C);
                     }
+
                     _zoneContext.unk1C = NULL;
                     _zoneContext.unk14 = 0;
                     return;
@@ -14683,9 +14629,11 @@ void func_80089114(void)
                     slots[slot + 4] = 1;
                 } else {
                     vs_main_nop10(0x86, 0);
+
                     if (_zoneContext.unk1C != NULL) {
                         vs_main_freeHeapR(_zoneContext.unk1C);
                     }
+
                     _zoneContext.unk1C = NULL;
                     _zoneContext.unk14 = 0;
                     return;
@@ -14694,25 +14642,27 @@ void func_80089114(void)
 
             if (visible) {
                 if (id == 0x7F) {
-                    data.fields.unk0_0 = enemy->x;
-                    data.fields.unk0_16 = enemy->z;
-                    data.fields.unk0_8 = enemy->direction;
-                    data.fields.unk0_24 = enemy->height << 6;
-                    func_800774FC(slot, 0x7F, 0, 0, 0, 0, &data.fields, param);
+                    data.unk0_0 = enemy->x;
+                    data.unk0_16 = enemy->z;
+                    data.unk0_8 = enemy->direction;
+                    data.unk0_24 = enemy->height * 64;
+                    func_800774FC(slot, 0x7F, 0, 0, 0, 0, &data, param);
                 } else {
                     func_800775C0(slot, enemy, (vs_battle_charInitData*)template, param);
                 }
             }
         } else {
-            flag = (u_char)vs_battle_getStateFlag(((mpdObjectSpawn*)enemy)->flag & 0x3FF);
-            min = ((mpdObjectSpawn*)enemy)->flagMin;
-            max = ((mpdObjectSpawn*)enemy)->flagMax;
-            if ((flag >= min) && (flag <= max)) {
-                data.bytes[0] = ((mpdObjectSpawn*)enemy)->x;
-                data.bytes[2] = ((mpdObjectSpawn*)enemy)->z;
-                data.bytes[1] = ((mpdObjectSpawn*)enemy)->y;
-                data.bytes[3] = ((mpdObjectSpawn*)enemy)->direction * 64;
+            u_int flag = vs_battle_getStateFlag(((mpdObjectSpawn*)enemy)->flag & 0x3FF);
+            u_int model;
+            u_int max = ((mpdObjectSpawn*)enemy)->flagMax;
+
+            if ((flag >= ((mpdObjectSpawn*)enemy)->flagMin) && (flag <= max)) {
+                data.unk0_0 = ((mpdObjectSpawn*)enemy)->x;
+                data.unk0_16 = ((mpdObjectSpawn*)enemy)->z;
+                data.unk0_8 = ((mpdObjectSpawn*)enemy)->y;
+                data.unk0_24 = ((mpdObjectSpawn*)enemy)->direction * 64;
                 slot = ((mpdObjectSpawn*)enemy)->slot;
+
                 if (slot == 0xFF) {
                     for (j = 2; j < 16; ++j) {
                         if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
@@ -14725,19 +14675,19 @@ void func_80089114(void)
                         return;
                     }
                 }
+
                 param = ((mpdObjectSpawn*)enemy)->model;
                 model = param;
-                // The original call passes a fifth argument that func_800765B0 ignores.
-                ((vs_battle_actor * (*)(int, int, vs_battle_objectData_flags*, int, int))
-                        func_800765B0)(slot, (model >> 12) | (model & 0xF00),
-                    &data.fields, ((model >> 3) & 0x1C) | (data.bytes[3] / 64), 0);
+                func_800765B0(slot, (model >> 12) | (model & 0xF00), &data,
+                    ((model >> 3) & 0x1C) | (data.unk0_24 / 64), 0);
             }
         }
     }
 
     for (i = 0; i < 32; ++i) {
-        enemy = (mpdEnemySpawn*)&_zoneContext.mpdEnemies[i];
+        enemy = &_zoneContext.mpdEnemies[i];
         saved = func_80069E80(i);
+
         if (saved != NULL) {
             saved->hidden = enemy->hidden;
         }
@@ -14745,6 +14695,7 @@ void func_80089114(void)
     if (_zoneContext.unk1C != NULL) {
         vs_main_freeHeapR(_zoneContext.unk1C);
     }
+
     _zoneContext.unk1C = NULL;
     _zoneContext.unk14 = 0;
 }
@@ -14816,7 +14767,7 @@ void func_80089A00(void)
                 temp_s2 = &_zoneContext.mpdEnemies[i];
                 temp_v0 = func_80069E80(i);
                 if (temp_v0 != NULL) {
-                    temp_s2->unk2 = temp_v0[1];
+                    temp_s2->hidden = temp_v0[1];
                 }
             }
             break;
@@ -16044,101 +15995,107 @@ void func_8008C6B4(int arg0, int arg1)
 
 static short const D_80068BEC[] = { 8, 14, 16, 11, 7, 3, 1 };
 
-typedef struct {
-    unsigned int flags[2];
-    VECTOR positions[4];
-    VECTOR velocities[6];
-} RoomMotionVectors;
-int func_800A4494(int, SVECTOR*);
 int func_8008C8A8(void)
 {
     SVECTOR point;
     _mpdRoomSection12* object;
-    int count, i, tick;
+    int count;
+    int i;
+    int tick;
     int* scene;
     u_int temp;
-    int y;
-    if (D_800F1BA4 || vs_battle_roomData.section12 == NULL || *(u_char*)&D_800F1D6E)
+
+    if (D_800F1BA4 || vs_battle_roomData.section12 == NULL || D_800F1D6E) {
         return;
+    }
     if (D_800F1D68 > 0) {
         D_800F1D68 -= vs_gametime_tickspeed >> 1;
-        if (D_800F1D68 < 30 && vs_main_frameBuf)
+
+        if (D_800F1D68 < 30 && vs_main_frameBuf) {
             func_8008E4DC(D_800F1D6F == 0);
+        }
         if (D_800F1D68 <= 0) {
             func_8008E4DC(0);
             D_800F1D68 = 0;
         }
+
         return;
     }
+
     object = vs_battle_roomData.section12;
-    count = vs_battle_roomData.header.section12Len / sizeof(*object);
+    count = vs_battle_roomData.header.section12Len / sizeof *object;
+
     for (i = 0; i < count; ++i, ++object) {
         if (!object->unk0_9) {
             if (!object->unk0_8 || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
                 for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
                     temp = D_800F1D70[i];
+
                     if (temp < 7) {
                         D_800F1D70[i] = temp + (vs_gametime_tickspeed >> 1);
-                        if (D_800F1D70[i] >= 8)
+
+                        if (D_800F1D70[i] >= 8) {
                             D_800F1D70[i] = 7;
+                        }
                     }
                     if (!object->unk4_0) {
-                        object->unkA8 +=
-                            ((RoomMotionVectors*)object)->velocities[object->unk0_29].vx;
-                        object->unkAC +=
-                            ((RoomMotionVectors*)object)->velocities[object->unk0_29].vy;
-                        object->unkB0 +=
-                            ((RoomMotionVectors*)object)->velocities[object->unk0_29].vz;
+                        object->unkA8 += object->unk48[object->unk0_29].vx;
+                        object->unkAC += object->unk48[object->unk0_29].vy;
+                        object->unkB0 += object->unk48[object->unk0_29].vz;
                         point.vy = -(object->unkAC / ONE);
                         point.vx = object->unkA8 / ONE;
                         point.vz = object->unkB0 / ONE;
+
                         if (func_800A4494(i + 2, &point)) {
-                            object->unkA8 -= ((RoomMotionVectors*)object)
-                                                 ->velocities[object->unk0_29]
-                                                 .vx;
-                            object->unkAC -= ((RoomMotionVectors*)object)
-                                                 ->velocities[object->unk0_29]
-                                                 .vy;
-                            object->unkB0 -= ((RoomMotionVectors*)object)
-                                                 ->velocities[object->unk0_29]
-                                                 .vz;
+                            object->unkA8 -= object->unk48[object->unk0_29].vx;
+                            object->unkAC -= object->unk48[object->unk0_29].vy;
+                            object->unkB0 -= object->unk48[object->unk0_29].vz;
                         } else {
                             ++object->unk4_16;
-                            if (object->unk4_16 >= ((RoomMotionVectors*)object)
-                                    ->velocities[object->unk0_29]
-                                    .pad) {
+
+                            if (object->unk4_16 >= object->unk48[object->unk0_29].pad) {
                                 object->unk4_16 = 0;
                                 object->unk4_0 = 1;
                                 object->unkA8 = object->unk8[object->unk0_27].vx;
                                 object->unkAC = object->unk8[object->unk0_27].vy;
                                 object->unkB0 = object->unk8[object->unk0_27].vz;
-                                if (object->unk0_27 == object->unk4_8)
-                                    *(unsigned int*)&object->unkB4 |= 0x4000;
+
+                                if (object->unk0_27 == object->unk4_8) {
+                                    object->unkB4.unk0_14 = 1;
+                                }
                             }
                         }
                     } else {
                         ++object->unk4_16;
+
                         if (object->unk4_16 >= object->unk8[object->unk0_27].pad) {
                             object->unk4_16 = 0;
                             object->unk4_0 = 0;
                             object->unk0_14 = object->unk0_27;
                             ++object->unk0_29;
-                            *(unsigned int*)&object->unkB4 &= ~0x4000;
+                            object->unkB4.unk0_14 = 0;
+
                             if (object->unk0_14 == 0) {
                                 object->unk0_26 = 1;
                                 object->unk0_29 = 0;
-                            } else if (object->unk0_14 == object->unk0_10)
+                            } else if (object->unk0_14 == object->unk0_10) {
                                 object->unk0_26 = 0;
-                            if (object->unk0_26)
+                            }
+                            if (object->unk0_26) {
                                 ++object->unk0_27;
-                            else
+                            } else {
                                 --object->unk0_27;
+                            }
                         }
                     }
                 }
             }
+
             scene = func_8009195C(object->unk0_0);
+
             if (scene != NULL) {
+                int y;
+
                 scene[1] = object->unkA8 / ONE;
                 y = object->unkAC / ONE;
                 temp = D_80068BEC[D_800F1D70[i]] - y;
@@ -16148,8 +16105,10 @@ int func_8008C8A8(void)
             }
         } else {
             scene = func_8009195C(object->unk0_0);
-            if (scene != NULL)
+
+            if (scene != NULL) {
                 scene[0] |= 0x100;
+            }
         }
     }
 }

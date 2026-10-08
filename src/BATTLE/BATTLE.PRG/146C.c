@@ -278,7 +278,7 @@ typedef union {
 typedef struct {
     POLY_FT4 poly[10];
     SPRT sprite[10];
-    int unk258[30];
+    DR_MODE drawModes[10];
 } D_800F1ABC_t;
 
 typedef struct {
@@ -8097,7 +8097,111 @@ void func_8007D41C(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007D734);
+void func_8007D734(void* arg0)
+{
+    MATRIX transform;
+    VECTOR translation;
+    SVECTOR vertex;
+    VECTOR projected;
+    RECT clip;
+    long flag;
+    int i;
+
+    memset(&clip, 0, sizeof(clip));
+
+    if (D_800F1B98 == 2) {
+        translation.vx = D_800F1A68.unk0 + 160;
+        translation.vy = D_800F1A68.unk4 + 112;
+        RotMatrix_gte((SVECTOR*)D_800F1A28, &transform);
+        TransMatrix(&transform, &translation);
+        ScaleMatrix(&transform, (VECTOR*)D_800F1A30);
+        SetRotMatrix(&transform);
+        SetTransMatrix(&transform);
+
+        if ((D_800F1A28[2] & 0xFFF) || D_800F1A30[0] != ONE
+            || D_800F1A30[1] != D_800F1A30[0]) {
+            for (i = 0; i < 5; ++i) {
+                POLY_FT4* topLeft;
+                POLY_FT4* topRight;
+                POLY_FT4* bottomLeft;
+                POLY_FT4* bottomRight;
+
+                setRGB0(&D_800F1ABC->poly[(vs_main_frameBuf * 5) + i], D_800F1A78.r0,
+                    D_800F1A78.g0, D_800F1A78.b0);
+
+                if (!(D_800F1A2C & 0xFFF) && D_800F1A40) {
+                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + i].tpage = GetTPage(
+                        2, D_800F1B9C, i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0);
+                } else {
+                    D_800F1ABC->poly[(vs_main_frameBuf * 5) + i].tpage = GetTPage(
+                        2, D_800F1B9C, i * 64 + ((vs_main_frameBuf & 1) * 320), 0);
+                }
+
+                setVector(&vertex, i * 64 - 160, -112, 0);
+                RotTrans(&vertex, &projected, &flag);
+                topLeft = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                topLeft->x0 = projected.vx;
+                topLeft->y0 = projected.vy;
+                setVector(&vertex, i * 64 - 96, -112, 0);
+                RotTrans(&vertex, &projected, &flag);
+                topRight = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                topRight->x1 = projected.vx;
+                topRight->y1 = projected.vy;
+                setVector(&vertex, i * 64 - 160, 111, 0);
+                RotTrans(&vertex, &projected, &flag);
+                bottomLeft = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                bottomLeft->x2 = projected.vx;
+                bottomLeft->y2 = projected.vy;
+                setVector(&vertex, i * 64 - 96, 111, 0);
+                RotTrans(&vertex, &projected, &flag);
+                bottomRight = &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i];
+                bottomRight->x3 = projected.vx;
+                bottomRight->y3 = projected.vy;
+                AddPrim(arg0 + (D_800F1A44 * 4),
+                    &D_800F1ABC->poly[(vs_main_frameBuf * 5) + i]);
+            }
+        } else {
+            for (i = 0; i < 5; ++i) {
+                SPRT* sprite;
+                int index;
+                u_short tpage;
+
+                setRGB0(&D_800F1ABC->sprite[(vs_main_frameBuf * 5) + i], D_800F1A78.r0,
+                    D_800F1A78.g0, D_800F1A78.b0);
+                index = (vs_main_frameBuf * 5) + i;
+                sprite = (SPRT*)(index * sizeof(SPRT) + (u_long)D_800F1ABC
+                                 + sizeof(D_800F1ABC->poly));
+                sprite->x0 = D_800F1A68.unk0 + i * 64;
+                sprite->y0 = D_800F1A68.unk4;
+                AddPrim(arg0 + (D_800F1A44 * 4), &D_800F1ABC->sprite[index]);
+                tpage = D_800F1A40 ? GetTPage(2, D_800F1B9C,
+                                         i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0)
+                                   : GetTPage(2, D_800F1B9C,
+                                         i * 64 + ((vs_main_frameBuf & 1) * 320), 0);
+                SetDrawMode(&D_800F1ABC->drawModes[(vs_main_frameBuf * 5) + i], 0, 1,
+                    tpage, &clip);
+                AddPrim(arg0 + (D_800F1A44 * 4),
+                    &D_800F1ABC->drawModes[(vs_main_frameBuf * 5) + i]);
+            }
+        }
+    }
+    if (D_800F1B98 == 1) {
+        D_800F1B98 = 2;
+        return;
+    }
+    if (D_800F1B98 >= 3) {
+        ++D_800F1B98;
+
+        if (D_800F1B98 >= 5) {
+            D_800F1B98 = 0;
+
+            if (D_800F1ABC != NULL) {
+                vs_main_freeHeapR(D_800F1ABC);
+                D_800F1ABC = NULL;
+            }
+        }
+    }
+}
 
 void func_8007DD50(int arg0)
 {

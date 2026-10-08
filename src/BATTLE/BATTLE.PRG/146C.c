@@ -611,7 +611,7 @@ extern vs_battle_actor* D_800F192C;
 extern int D_800F1968;
 extern u_int D_800F196C;
 extern int D_800F19A0;
-extern char D_800F19A8[];
+extern u_char D_800F19A8[];
 extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;

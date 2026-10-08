@@ -630,15 +630,19 @@ int func_800A38E0(int actorId)
     int oldX;
     int oldZ;
     int flags;
-    if (actor == 0)
+    if (actor == 0) {
         return -1;
-    if ((*((u_int*)(((char*)actor) + 0x5AC))) & 3)
+    }
+    if ((*((u_int*)(((char*)actor) + 0x5AC))) & 3) {
         return -1;
+    }
     flags = *((u_int*)(((char*)actor) + 8));
-    if (flags & 0x70000)
+    if (flags & 0x70000) {
         return -1;
-    if (flags & 0x180000)
+    }
+    if (flags & 0x180000) {
         goto fail;
+    }
     direction = actor->unk0.facing + 0x200;
     direction &= 0xFFF;
     direction /= 1024;
@@ -653,54 +657,68 @@ int func_800A38E0(int actorId)
         z += found;
         farZ = oldZ + (found * 2);
     }
-    if ((x < 0) || (z < 0))
+    if ((x < 0) || (z < 0)) {
         return -1;
+    }
     if ((*((u_int*)(((char*)actor) + 0x5AC))) & 8) {
         x = (x * 128) + 64;
         objectId = actor->unk0.unk13;
         object = D_800F45E0[objectId];
         z = (z * 128) + 64;
-        if (object->unk1A != 0)
+        if (object->unk1A != 0) {
             goto fail;
-        if (!func_800A3DB4(x, z, actor->unk0.position.vy - 128))
+        }
+        if (!func_800A3DB4(x, z, actor->unk0.position.vy - 128)) {
             return -1;
+        }
         direction = actor->unk0.position.vy - 384;
-        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz))
+        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
             goto fail;
-        if (direction < func_800A3BC4(x, z))
+        }
+        if (direction < func_800A3BC4(x, z)) {
             return -1;
+        }
         return objectId;
     } else {
         found = func_800A91DC(x, z, 0);
-        if (found == 0)
+        if (found == 0) {
             goto fail;
+        }
         object = D_800F45E0[found];
         objectId = found;
-        if (((*((u_int*)(((char*)object) + 0x16C))) & 0x30) == 0x10)
+        if (((*((u_int*)(((char*)object) + 0x16C))) & 0x30) == 0x10) {
             goto fail;
-        if (object->unk1A != 0)
+        }
+        if (object->unk1A != 0) {
             return -1;
+        }
         x = (x * 128) + 64;
         z = (z * 128) + 64;
         farX = (farX * 128) + 64;
         farZ = (farZ * 128) + 64;
-        if (object->unk1E < (actor->unk0.position.vy - 128))
+        if (object->unk1E < (actor->unk0.position.vy - 128)) {
             return -1;
-        if ((actor->unk0.position.vy + 64) < object->unk1E)
+        }
+        if ((actor->unk0.position.vy + 64) < object->unk1E) {
             return -1;
+        }
         if (((*((u_char*)(((char*)object) + 0x16C))) & 7) < 4U) {
-            if (!func_800A3DB4(farX, farZ, object->unk1E))
+            if (!func_800A3DB4(farX, farZ, object->unk1E)) {
                 return -1;
+            }
         } else {
             direction = actor->unk0.position.vy - 384;
             if (direction
-                < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz))
+                < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
                 return -1;
-            if (direction < func_800A3BC4(x, z))
+            }
+            if (direction < func_800A3BC4(x, z)) {
                 goto fail;
+            }
         }
-        if (func_800A3C00(object, 1) == 0)
+        if (func_800A3C00(object, 1) == 0) {
             return objectId;
+        }
     }
 fail:
     return -1;
@@ -769,10 +787,12 @@ int func_800A3DB4(int x, int z, int minimumHeight)
     ((int*)&offset)[0] = 0;
     ((int*)&offset)[1] = 0;
     height = func_800A6EE8(&offset, x, z, 1);
-    if (height < minimumHeight)
+    if (height < minimumHeight) {
         return 0;
-    if ((*D_800F49F0 >> 20) & 1)
+    }
+    if ((*D_800F49F0 >> 20) & 1) {
         return 0;
+    }
     return func_800A3C34(x / 128, z / 128, height, 1) == NULL;
 }
 
@@ -985,11 +1005,13 @@ int func_800A4494(int contact, SVECTOR* point)
     int radius, x, z, y;
     for (i = 0; i < 17; i++) {
         actor = D_800F4538[i];
-        if (actor == 0 || actor->unk0.skip)
+        if (actor == 0 || actor->unk0.skip) {
             continue;
+        }
         if (actor->unk0.unkC_0 == contact) {
-            if (actor->unk0.unkA_3 != 2)
+            if (actor->unk0.unkA_3 != 2) {
                 continue;
+            }
             dx = point->vx - *(short*)&actor->unk17EC[0];
             dz = point->vz - *(short*)&actor->unk17EC[4];
             actor->unk0.position.vx += dx;
@@ -997,8 +1019,9 @@ int func_800A4494(int contact, SVECTOR* point)
             hit = func_800A46A4(actor);
             actor->unk0.position.vx -= dx;
             actor->unk0.position.vz -= dz;
-            if (!hit)
+            if (!hit) {
                 continue;
+            }
         transition:
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vy = 3;
@@ -1015,17 +1038,21 @@ int func_800A4494(int contact, SVECTOR* point)
             radius = actor->unk63C;
             x = point->vx;
             if (x + 64 < actor->unk0.position.vx - radius
-                || x - 64 > actor->unk0.position.vx + radius)
+                || x - 64 > actor->unk0.position.vx + radius) {
                 continue;
+            }
             z = point->vz;
             if (z + 64 < actor->unk0.position.vz - radius
-                || z - 64 > actor->unk0.position.vz + radius)
+                || z - 64 > actor->unk0.position.vz + radius) {
                 continue;
+            }
             y = actor->unk0.position.vy;
-            if (point->vy < y - 288 || point->vy >= y)
+            if (point->vy < y - 288 || point->vy >= y) {
                 continue;
-            if (actor->unk0.unkA_3 == 2)
+            }
+            if (actor->unk0.unkA_3 == 2) {
                 goto transition;
+            }
             return 1;
         }
     }
@@ -1054,8 +1081,9 @@ int func_800A46A4(D_800F4538_t* actor)
     previous = (void*)((char*)scratch + direction);
     previous->contact = 0;
     for (direction = 0; direction < 8; ++direction) {
-        if (((collisionScratchView*)((char*)scratch + direction))->contact)
+        if (((collisionScratchView*)((char*)scratch + direction))->contact) {
             return 1;
+        }
     }
     return 0;
 }
@@ -1090,10 +1118,12 @@ void func_800A48CC(int index, int direction, int distance)
 {
     D_800F4538_t* actor = D_800F4538[index];
     vs_battleMovementModeFlags* flags = (void*)((char*)actor + 0x5B0);
-    if (actor->unk5AC_0 != 0)
+    if (actor->unk5AC_0 != 0) {
         return;
-    if (actor->unk0.unkA_3 != 0)
+    }
+    if (actor->unk0.unkA_3 != 0) {
         return;
+    }
     if (actor->unk0.unkA_0 != 0) {
         func_800B64A8(index, direction, distance);
         return;
@@ -2305,13 +2335,15 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
         clearCursor = (void*)((char*)clearCursor - 1);
     }
     if (*(u_int*)((char*)actor + 0x5AC) & 0x600) {
-        for (i = 7; i >= 0; i--)
+        for (i = 7; i >= 0; i--) {
             samples->heights[i] = 0;
+        }
         return;
     }
     if (actor->unk0.unkA_3 == 2) {
-        for (i = 0; i < 8; i++)
+        for (i = 0; i < 8; i++) {
             samples->heights[i] = actor->unk0.position.vy;
+        }
         return;
     }
     i = actor->unk63C;
@@ -2337,15 +2369,17 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
     samples->attributes[5] = (*D_800F49F0 >> 5) & 1;
     samples->heights[4] = func_800A6EE8((&actor->unk0.position), 0, i, 0);
     samples->attributes[4] = (*D_800F49F0 >> 5) & 1;
-    if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0)
+    if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0) {
         j = actor->unk0.position.vy - 32;
-    else if (actor->unk1848.unk8 == 0)
+    } else if (actor->unk1848.unk8 == 0) {
         j = actor->unk0.position.vy - 64;
-    else
+    } else {
         j = actor->unk0.position.vy - 96;
+    }
     for (i = 0; i < 8; i++) {
-        if (samples->heights[i] > actor->unk0.position.vy)
+        if (samples->heights[i] > actor->unk0.position.vy) {
             samples->heights[i] = actor->unk0.position.vy;
+        }
         if ((!samples->attributes[i] || !samples->centerAttribute)
             && j >= samples->heights[i]) {
             samples->blocked[i] = 1;
@@ -2359,19 +2393,22 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
         do {
             delta =
                 vs_battleRelativeSampleHeight(samples, i, j - 1, actor->unk0.position.vy);
-            if (delta < -255)
+            if (delta < -255) {
                 return;
+            }
             ++j;
-            if (delta >= -192)
+            if (delta >= -192) {
                 return;
+            }
         } while (j < 3);
         j = 0;
         do {
             delta =
                 vs_battleRelativeSampleHeight(samples, i, j + 2, actor->unk0.position.vy);
             ++j;
-            if (delta < -192)
+            if (delta < -192) {
                 return;
+            }
         } while (j < 5);
         samples->heights[i] = actor->unk0.position.vy;
         actor->unk5AC_12 = 0;
@@ -2390,45 +2427,56 @@ void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
             x = 8;
             z += 8;
         }
-        if (scratch->contacts[2])
+        if (scratch->contacts[2]) {
             x += 16;
+        }
         if (scratch->contacts[3]) {
             x += 8;
             z -= 8;
         }
-        if (scratch->contacts[4])
+        if (scratch->contacts[4]) {
             z -= 16;
+        }
         if (scratch->contacts[5]) {
             x -= 8;
             z -= 8;
         }
-        if (scratch->contacts[6])
+        if (scratch->contacts[6]) {
             x -= 16;
+        }
         if (scratch->contacts[7]) {
             x -= 8;
             z += 8;
         }
-        if (x > 16)
+        if (x > 16) {
             x = 16;
-        if (x < -16)
+        }
+        if (x < -16) {
             x = -16;
-        if (z > 16)
+        }
+        if (z > 16) {
             z = 16;
-        if (z < -16)
+        }
+        if (z < -16) {
             z = -16;
+        }
         if (x != 0) {
             if (x < 0) {
-                if (motion->vx > 0)
+                if (motion->vx > 0) {
                     motion->vx = 0;
-            } else if (motion->vx < 0)
+                }
+            } else if (motion->vx < 0) {
                 motion->vx = 0;
+            }
         }
         if (z != 0) {
             if (z < 0) {
-                if (motion->vz > 0)
+                if (motion->vz > 0) {
                     motion->vz = 0;
-            } else if (motion->vz < 0)
+                }
+            } else if (motion->vz < 0) {
                 motion->vz = 0;
+            }
         }
         motion->vx += x;
         motion->vz += z;

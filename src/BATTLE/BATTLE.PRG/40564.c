@@ -1235,8 +1235,61 @@ void func_800AACDC(void)
     *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
 }
 
-// https://decomp.me/scratch/7lkmC
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AAD4C);
+int func_800AAD4C(int actorId, int index, int value, int mode)
+{
+    D_800F4538_t* actor = D_800F4538[actorId];
+    D_800F4538_unk180C* slot;
+
+    if (actor == NULL) {
+        return -1;
+    }
+
+    if (index >= 2) {
+        return -1;
+    }
+
+    if (mode == 1 && value == 0) {
+        return 0;
+    }
+
+    slot = &actor->unk180C[index];
+
+    switch (mode) {
+    case 0:
+        slot->unk0_4 = 0;
+        break;
+
+    case 1:
+        if (slot->unk0_4 == 1 && slot->unk0_0 == value) {
+            return 0;
+        }
+
+        slot->unk0_0 = value;
+        slot->unk2 = 0;
+
+        slot->unk3 = (index == 1) ? actorId * 10 : 0;
+
+        slot->unk0_4 = mode;
+        break;
+
+    case 2:
+        switch (slot->unk0_4) {
+        case 0:
+            break;
+
+        case 1:
+            slot->unk0_4 = 2;
+            break;
+
+        case 2:
+            slot->unk0_4 = 1;
+            break;
+        }
+        break;
+    }
+
+    return 0;
+}
 
 int func_800AAE9C(D_800F4538_t* actor)
 {

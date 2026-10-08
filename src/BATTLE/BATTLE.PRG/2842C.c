@@ -1,6 +1,8 @@
 #include "common.h"
 #include "146C.h"
 #include "38C1C.h"
+#include "5BF94.h"
+#include "gpu.h"
 #include "src/SLUS_010.40/main.h"
 #include <abs.h>
 #include <memory.h>
@@ -1666,41 +1668,52 @@ void func_800957D0(int arg0, int arg1, int arg2)
     p[0] = prim;
 }
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069240);
+void func_800958A4(int x, int y, D_800F1BAC_t* p)
+{
+    char* timing[] = { "$TOO   FAST!", "$FAST!", "", "$SLOW!", "$TOO   SLOW!" };
+    char* success[] = { "$COOL!", "$GOOD!", "$EXCELLENT!", "$RIGHT   ON!", "$PERFECT!",
+        "$WELL   TIMED!", "$NICE!", "$GREAT!" };
+    short offsets[] = { 64, 16, 4, 1 };
+    int colors[] = { vs_getRGB888(0, 128, 128), vs_getRGB888(32, 128, 96),
+        vs_getRGB888(64, 128, 64), vs_getRGB888(96, 128, 32), vs_getRGB888(128, 128, 0) };
+    int step;
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069250);
+    if (p->unkB < 4) {
+        step = p->unkB;
+        x -= offsets[step];
+    } else if (p->unkB >= 42) {
+        step = 45 - p->unkB;
+        x -= offsets[step];
+    }
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069258);
+    if (p->unkC != 2) {
+        vs_battle_renderTextRawColor(timing[p->unkC], vs_getXY_2(x, y), colors[p->unkC],
+            ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+    } else {
+        vs_battle_renderTextRawColor(success[p->displayTextLen], vs_getXY_2(x, y),
+            vs_getRGB888(64, 128, 64), ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+    }
+}
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_8006925C);
+void func_80095A4C(int x, int y, D_800F1BAC_t* p)
+{
+    char text[16];
+    short offsets[] = { 64, 16, 4, 1 };
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069264);
+    if ((p->unkB < 4) && (p->unkC == 1)) {
+        x -= offsets[p->unkB];
+    } else if (p->unkB >= 87) {
+        x -= offsets[90 - p->unkB];
+    }
+    if (p->unkC == 1) {
+        sprintf(text, "$1 CHAIN");
+    } else {
+        sprintf(text, "$%d CHAINS", p->unkC);
+    }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_800958A4);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069288);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069290);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069298);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692A4);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692B4);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692C0);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692D0);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692D8);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800692E0);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069300);
-
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069308);
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80095A4C);
+    vs_battle_renderTextRawColor(text, vs_getXY_2(x, y), vs_getRGB888(160, 64, 16),
+        ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+}
 
 void func_80095B70(int arg0) { D_800F2270 = arg0; }
 

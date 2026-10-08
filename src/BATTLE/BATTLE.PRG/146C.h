@@ -739,10 +739,10 @@ typedef struct {
         u_short u16;
     } unk8;
     char unkA;
-    char unkB;
+    u_char unkB;
     u_short unkC;
     char unkE;
-    char displayTextLen;
+    u_char displayTextLen;
     short unk10;
     short unk12;
     signed char displayText[4];

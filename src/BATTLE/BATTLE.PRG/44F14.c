@@ -884,8 +884,9 @@ void func_800AEF94(MATRIX* camera)
                 if ((actor->unk17E4.unk0 == 1) && actor->unk17E4.unk3 != 0) {
                     int delta;
                     step = vs_gametime_tickspeed / 2;
-                    if (actor->unk17E4.unk3 < step)
+                    if (actor->unk17E4.unk3 < step) {
                         step = actor->unk17E4.unk3;
+                    }
                     delta = actor->unk17E8.unk2 - actor->unk17E4.unk2;
                     if (delta != 0) {
                         delta *= step;
@@ -906,8 +907,9 @@ void func_800AEF94(MATRIX* camera)
                     previous = entries;
                     do {
                         ++step;
-                        if ((*previous)->unk6E6 == texture)
+                        if ((*previous)->unk6E6 == texture) {
                             goto texture_ready;
+                        }
                         ++previous;
                     } while (step < i);
                 }
@@ -947,8 +949,9 @@ void func_800AEF94(MATRIX* camera)
                                 && attached->unk17E4.unk3 != 0) {
                                 int delta;
                                 step = vs_gametime_tickspeed / 2;
-                                if (attached->unk17E4.unk3 < step)
+                                if (attached->unk17E4.unk3 < step) {
                                     step = attached->unk17E4.unk3;
+                                }
                                 delta = attached->unk17E8.unk2 - attached->unk17E4.unk2;
                                 if (delta != 0) {
                                     delta *= step;
@@ -971,8 +974,9 @@ void func_800AEF94(MATRIX* camera)
                                 previousAttached = entries;
                                 do {
                                     ++step;
-                                    if ((*previousAttached)->unk6E6 == texture)
+                                    if ((*previousAttached)->unk6E6 == texture) {
                                         goto linked_texture_ready;
+                                    }
                                     ++previousAttached;
                                 } while (step < i);
                             }
@@ -1016,12 +1020,15 @@ void func_800AEF94(MATRIX* camera)
             actor = weaponActors[(u_char)(*(u_int*)((char*)weapon + 8)) & 0xF];
             if (actor != NULL) {
                 weaponActorFlags = (*(u_int*)((char*)actor + 8));
-                if (weaponActorFlags & 1)
+                if (weaponActorFlags & 1) {
                     goto weapon_next;
-                if (!(weaponActorFlags & 2))
+                }
+                if (!(weaponActorFlags & 2)) {
                     goto weapon_next;
-                if (weaponActorFlags & 0x1000)
+                }
+                if (weaponActorFlags & 0x1000) {
                     goto weapon_next;
+                }
                 func_800B217C(weapon, &actor->bones[weapon->unkD]);
             }
         }
@@ -1321,8 +1328,9 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
             goto advance;
         } else {
             flags = *data;
-            if (flags == 0)
+            if (flags == 0) {
                 return;
+            }
             if (flags & 0xE0) {
                 count = flags & 0x1F;
                 if (count == 0x1F) {
@@ -1374,8 +1382,9 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
                             count |= data[1];
                             data += 2;
                         }
-                    } else
+                    } else {
                         goto bytes;
+                    }
                 }
                 if (packed & 1) {
                     delta->vz = count;
@@ -1396,8 +1405,9 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
         goto decode;
     advance:
         ++frame;
-        if (frame <= scratch->last)
+        if (frame <= scratch->last) {
             goto decode;
+        }
     }
     data -= (int)((u_char*)(offset + (int)*scratch->data));
     value->pad = (int)data;
@@ -1692,8 +1702,9 @@ void func_800B0908(objectAnimationState* object, int unused)
         --object->rotationTicks;
     }
     mode = object->mode;
-    if (!mode)
+    if (!mode) {
         return;
+    }
     if (mode == 0xFF) {
         if (!object->dx && !object->dz) {
             object->frame = 0;
@@ -1732,19 +1743,22 @@ void func_800B0908(objectAnimationState* object, int unused)
             scratch->rotation.vz = object->position.vz;
             step = object->orientation;
             other = 128;
-            if (step < 2)
+            if (step < 2) {
                 other = -128;
-            if (step & 1)
+            }
+            if (step & 1) {
                 scratch->rotation.vx += other;
-            else
+            } else {
                 scratch->rotation.vz += other;
+            }
             if (func_800A3DB4(
                     scratch->rotation.vx, scratch->rotation.vz, object->position.vy)
                 && func_800A6EE8(&object->position, 0, 0, 1) == object->position.vy) {
                 object->tileX = 0xFF;
                 object->tileZ = 0xFF;
-            } else
+            } else {
                 goto fall;
+            }
         }
         object->position.vx += object->dx;
         object->position.vz += object->dz;
@@ -1829,8 +1843,9 @@ void func_800B0908(objectAnimationState* object, int unused)
             child = (void*)D_800F45E0[step];
             if (child && !(child->flags & 1) && child->parentObject == object->id) {
                 child->position.vy += object->dy;
-                if (!object->mode)
+                if (!object->mode) {
                     child->parentObject = 0xFF;
+                }
             }
             ++step;
         } while (step < 16);
@@ -1841,8 +1856,9 @@ void func_800B0908(objectAnimationState* object, int unused)
         func_800B101C(object);
         goto children;
     } else if (mode == 0xF9) {
-        if (func_800B101C(object))
+        if (func_800B101C(object)) {
             return;
+        }
         goto fall;
     } else if (mode == 0xF7) {
         goto animate;
@@ -1861,8 +1877,9 @@ void func_800B0908(objectAnimationState* object, int unused)
     object->dz -= step;
     object->position.vz += step;
     --object->mode;
-    if (!object->mode && object->parent == 0xFF)
+    if (!object->mode && object->parent == 0xFF) {
         goto fall;
+    }
 }
 
 typedef struct {
@@ -1893,35 +1910,41 @@ int func_800B101C(objectMotionContext* object)
     int frame = object->frame;
     int value;
     int value2;
-    if (frame == 0)
+    if (frame == 0) {
         frame = 1;
+    }
     value = object->mode;
     if (value == 0xFD) {
         object->y += (signed char)D_800E91AC[frame];
         object->rotationX += (signed char)D_800E91BC[frame];
         object->rotationY += (signed char)D_800E91CC[frame];
         object->rotationZ += (signed char)D_800E91DC[frame];
-        if (frame == 14)
+        if (frame == 14) {
             goto complete;
+        }
         goto next;
     } else if (value == 0xFB) {
         value = object->orientation;
         object->z += (signed char)D_800E91F0[frame];
         value2 = (signed char)D_800E91FC[frame];
-        if (value == 0 || value == 3)
+        if (value == 0 || value == 3) {
             value2 = -value2;
-        if (value & 1)
+        }
+        if (value & 1) {
             object->rotationZ += value2;
-        else
+        } else {
             object->rotationX += value2;
-        if (frame == 9)
+        }
+        if (frame == 9) {
             goto complete;
+        }
         goto next;
     } else if (value == 0xFA) {
         object->y += (signed char)D_800E91EC[frame];
         object->deltaY = (signed char)D_800E91EC[frame];
-        if (frame == 3)
+        if (frame == 3) {
             goto complete;
+        }
         goto next;
     } else if (value == 0xF9) {
         int orientation;
@@ -1929,10 +1952,12 @@ int func_800B101C(objectMotionContext* object)
         value = (signed char)D_800E9218[frame];
         orientation = object->orientation;
         value2 = D_800E9228[frame];
-        if (orientation >= 2)
+        if (orientation >= 2) {
             value = -value;
-        if ((u_int)(orientation - 1) < 2)
+        }
+        if ((u_int)(orientation - 1) < 2) {
             value2 = -value2;
+        }
         if (orientation & 1) {
             object->x += value;
             object->rotationZ += value2;
@@ -1965,11 +1990,13 @@ int func_800B101C(objectMotionContext* object)
         object->scaleX = (signed char)D_800E9248[frame];
         object->scaleY = (signed char)D_800E9258[frame];
         object->scaleZ = (signed char)D_800E9268[frame];
-        if (frame == 14)
+        if (frame == 14) {
             goto complete;
+        }
         goto next;
-    } else
+    } else {
         goto next;
+    }
 next:
     object->frame = frame + 1;
     return 1;

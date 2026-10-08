@@ -1335,17 +1335,17 @@ fixUVs:
 
 setupPalettes:
     vs_main_memcpy(
-        actor->unk1424, actor->unk11A4 + object->variant * 0x140, D_800F22B8 * 2);
+        actor->unk1424, actor->unk11A4 + object->variant * 0xA0, D_800F22B8 * 2);
+    vs_main_memcpy(actor->unk1424 + 0xA0, actor->unk1424, D_800F22B8 * 2);
     vs_main_memcpy(actor->unk1424 + 0x140, actor->unk1424, D_800F22B8 * 2);
-    vs_main_memcpy(actor->unk1424 + 0x280, actor->unk1424, D_800F22B8 * 2);
 
     if (object->index == 16) {
-        vs_main_loadClut((u_short*)actor->unk1424, 0x17, 0, D_800F22B8);
+        vs_main_loadClut(actor->unk1424, 0x17, 0, D_800F22B8);
         actor->unk6E8 = D_800F46A8[1].clut1;
         actor->unk6EA = D_800F46A8[1].clut1;
     } else {
-        vs_main_loadClut((u_short*)actor->unk1424, object->index + 4, 0, D_800F22B8);
-        vs_main_loadClut((u_short*)actor->unk1424, object->index + 0x16, 0, D_800F22B8);
+        vs_main_loadClut(actor->unk1424, object->index + 4, 0, D_800F22B8);
+        vs_main_loadClut(actor->unk1424, object->index + 0x16, 0, D_800F22B8);
         actor->unk6E8 = D_800F46A8[object->index].clut0;
         actor->unk6EA = D_800F46A8[object->index].clut1;
     }
@@ -3577,8 +3577,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         var_s0->unk1 = 0;
         var_s0->unk2 = (var_s0->unk2 & 0xFC) | (arg1 & 1);
         if (temp_a3 != NULL) {
-            vs_main_loadClut(
-                (u_short*)temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
+            vs_main_loadClut(temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
         } else {
             vs_main_loadClut(
                 (u_short*)&temp_t0->unk6C[6], 0x1F, temp_t0->unkF * 0x10, 0x10);

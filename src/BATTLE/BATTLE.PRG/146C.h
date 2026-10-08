@@ -65,7 +65,9 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 5;
-    u_int unk0_5 : 3;
+    u_int unk0_5 : 1;
+    u_int unk0_6 : 1;
+    u_int unk0_7 : 1;
     u_int unk0_8 : 1;
     u_int unk0_9 : 1;
     u_int unk0_10 : 3;

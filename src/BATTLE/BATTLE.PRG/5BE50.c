@@ -23,6 +23,11 @@ typedef struct {
 } D_800EB9B8_unk990;
 
 typedef struct {
+    short xyz[3];
+    short flags;
+} menuShapeVertex;
+
+typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
@@ -41,7 +46,8 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    int unk40[0x254];
+    int unk40[2];
+    menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
     int unk4370[81];

@@ -524,10 +524,10 @@ int func_800C4794(SVECTOR* arg0)
     result = 0;
 
     if (state->unk2A != 0) {
-        arg0->vx = state->unk0.unk8.vx;
-        arg0->vy = state->unk0.unk8.vy;
-        arg0->vz = state->unk0.unk8.vz;
-        func_800C2B0C(&state->unk0.unk8, state->unk2A - 1);
+        arg0->vx = state->unk0.unk8[0];
+        arg0->vy = state->unk0.unk8[1];
+        arg0->vz = state->unk0.unk8[2];
+        func_800C2B0C((SVECTOR*)state->unk0.unk8, state->unk2A - 1);
         return 0;
     }
 
@@ -653,13 +653,13 @@ int func_800C4794(SVECTOR* arg0)
             scale = (-D_800EB9B8->unk38.vec.vy << 7) / flags.unk1;
             break;
         }
-        arg0->vx = D_800EB9B8->unk0.unk8.vx;
-        arg0->vy = D_800EB9B8->unk0.unk8.vy + D_800EB9B8->unk38.vec.vy;
-        arg0->vz = D_800EB9B8->unk0.unk8.vz;
+        arg0->vx = D_800EB9B8->unk0.unk8[0];
+        arg0->vy = D_800EB9B8->unk0.unk8[1] + D_800EB9B8->unk38.vec.vy;
+        arg0->vz = D_800EB9B8->unk0.unk8[2];
         if (arg0->vy < -1) {
             break;
         }
-        D_800EB9B8->unk38.vec.vy = -D_800EB9B8->unk0.unk8.vy - 2;
+        D_800EB9B8->unk38.vec.vy = -D_800EB9B8->unk0.unk8[1] - 2;
     }
 
     func_800C2E24(arg0, m, scale);
@@ -683,8 +683,8 @@ int func_800C4794(SVECTOR* arg0)
         if (arg0->vz >= (value >> 16) * 8) {
             arg0->vz = (value >> 16) * 8 - 1;
         }
-        stickX = arg0->vx - D_800EB9B8->unk0.unk8.vx;
-        stickY = arg0->vz - D_800EB9B8->unk0.unk8.vz;
+        stickX = arg0->vx - D_800EB9B8->unk0.unk8[0];
+        stickY = arg0->vz - D_800EB9B8->unk0.unk8[2];
         value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + 0xFFF) / 4096;
         if ((scale != 0) && (value != 0)) {
             D_800EB9B8->unk38.vec.vx =
@@ -694,9 +694,9 @@ int func_800C4794(SVECTOR* arg0)
         }
         stickX = (D_800EB9B8->unk38.vec.vx * scale + 0x800) >> 12;
         stickY = (D_800EB9B8->unk38.vec.vz * scale + 0x800) >> 12;
-        arg0->vx = D_800EB9B8->unk0.unk8.vx
+        arg0->vx = D_800EB9B8->unk0.unk8[0]
                  + ((stickX * m->m[0][0] + stickY * m->m[2][0] + 0x800) >> 12);
-        arg0->vz = D_800EB9B8->unk0.unk8.vz
+        arg0->vz = D_800EB9B8->unk0.unk8[2]
                  + ((stickX * m->m[0][2] + stickY * m->m[2][2] + 0x800) >> 12);
     }
 
@@ -705,8 +705,8 @@ int func_800C4794(SVECTOR* arg0)
         D_800EB9B8->unk10.unk1 = 0;
         stickX = ((int*)arg0)[0];
         stickY = ((int*)arg0)[1];
-        ((int*)&D_800EB9B8->unk10.unk8)[0] = stickX;
-        ((int*)&D_800EB9B8->unk10.unk8)[1] = stickY;
+        ((int*)D_800EB9B8->unk10.unk8)[0] = stickX;
+        ((int*)D_800EB9B8->unk10.unk8)[1] = stickY;
     }
     if (result) {
         func_800C4650(D_800EB9B8->unk44, D_800EB9B8->unk2E);

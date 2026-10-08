@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <inline_c.h>
 #include "vs_inline_c.h"
+#include "gpu.h"
 
 typedef struct {
     char unk0;
@@ -21,6 +22,11 @@ typedef struct {
     SVECTOR unk8;
     char* unk10;
 } D_800EB9B8_unk990;
+
+typedef struct {
+    short xyz[3];
+    short flags;
+} menuShapeVertex;
 
 typedef struct {
     func_800C1564_t unk0[2];
@@ -41,7 +47,8 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    int unk40[0x254];
+    int unk40[2];
+    menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
     int unk4370[81];
@@ -66,17 +73,29 @@ typedef struct {
     short unk18[4];
 } func_800C0FA8_t2;
 
+typedef struct {
+    u_long tag;
+    struct {
+        VS_TILE tile;
+        VS_POLY_G4_TPAGE poly;
+        u_long tpage;
+    } box;
+} labelBoxPrim_t;
+
+void func_800C02A8(void);
+MATRIX* func_800C085C(u_char* scale, int angle);
+void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
-void func_800C253C(int type);
-void func_800C02A8(void);
-MATRIX* func_800C085C(u_char* scale, int angle);
-void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C0758(int phase, int segments, int index);
-int func_800C2368(int step, int radius, int index);
+void func_800C253C(int type);
+int _getCollisionMapDimensions(int arg0);
+int func_800FA188(int x, int z, int* offset);
+int func_800A91DC(int, int, int);
+int func_8008DDA8(int x, int z);
 
 extern short D_800EA234[];
 extern short D_800EA2C4[];
@@ -86,32 +105,32 @@ extern int D_800EA670[];
 extern int D_800EA684[];
 extern int D_800EA698[];
 extern u_char D_800EA6AC;
-
 extern D_800EB9B8_t* D_800EB9B8;
+extern u_char D_800F4CB4;
 
 void func_800C0D78(void)
 {
     func_800C1564_t* shape = (func_800C1564_t*)0x1F800378;
     int color = 0x10401;
-    short* sine;
-    MATRIX* m;
-    int type;
+    short* sine = (short*)0x1F8003B0;
     int i;
-    int j;
 
     if (D_800EB9B8 == NULL) {
         return;
     }
 
-    sine = (short*)0x1F8003B0;
     for (i = 0; i < 40; ++i) {
-        sine[i] = rsin(i << 7);
+        sine[i] = rsin(i * ONE / 32);
     }
 
     for (i = 0; i < 2; color = 0x10104, ++shape, ++i) {
+        MATRIX* m;
+        int type;
+        int j;
+
         *shape = D_800EB9B8->unk0[i];
         func_800C02A8();
-        gte_ldv0(&shape->unk8);
+        gte_ldv0(shape->unk8);
         gte_rtps2();
         gte_stszotz(&D_800EB9B8->unk20);
         switch (shape->unk0) {
@@ -122,7 +141,7 @@ void func_800C0D78(void)
             shape->unk4.values[1] <<= 1;
             m = func_800C085C(shape->unk4.values, shape->unk2);
             for (j = 0; j < 3; ++j) {
-                (&shape->unk8.vx)[j] += m->m[j][1] >> 1;
+                shape->unk8[j] += m->m[j][1] >> 1;
             }
             type = 1;
             break;
@@ -133,7 +152,7 @@ void func_800C0D78(void)
             shape->unk4.values[3] += 0x80;
             m = func_800C085C(shape->unk4.values, shape->unk2);
             for (j = 0; j < 3; ++j) {
-                (&shape->unk8.vx)[j] += m->m[j][1];
+                shape->unk8[j] += m->m[j][1];
             }
             type = 2;
             break;
@@ -162,7 +181,7 @@ void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     char* new_var;
 
     for (i = 0; i < 3; ++i) {
-        arg1->unk10[i] = (&arg0->unk8.vx)[i];
+        arg1->unk10[i] = arg0->unk8[i];
         arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4.values[i]);
     }
 
@@ -340,39 +359,37 @@ int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
         int clip;
     } polygon;
     struct {
-        SVECTOR local;
+        short local[4];
         SVECTOR rotated;
         short origin[4];
     } work;
     MATRIX matrix;
-    int i, x, z, offsetX, offsetZ;
-    short* ptr;
+    int i;
+    int x;
+    int z;
+    int offsetX;
+    int offsetZ;
+    short* local;
     void* base;
     int offset;
 
-    work.origin[0] = shape->unk8.vx;
-    work.origin[1] = shape->unk8.vy;
-    work.origin[2] = shape->unk8.vz;
-    work.local.vx = shape->unk4.values[3] << 4;
-    work.local.vy = -shape->unk2;
-    work.local.vz = 0;
-    ptr = (short*)&work;
-    RotMatrix_gte(&work.local, &matrix);
-    i = 0;
-    base = &work;
-    offset = 16;
-    do {
-        *ptr = *position++ - *(u_short*)(base + offset);
-        offset += 2;
-        ++i;
-        ++ptr;
-    } while (i < 3);
-    ApplyMatrixSV(&matrix, &work.local, &work.rotated);
-    if ((u_short)-work.rotated.vy > (shape->unk4.values[1] << 5)) {
+    work.origin[0] = shape->unk8[0];
+    work.origin[1] = shape->unk8[1];
+    work.origin[2] = shape->unk8[2];
+    work.local[0] = shape->unk4.values[3] << 4;
+    work.local[1] = -shape->unk2;
+    work.local[2] = 0;
+    local = work.local;
+    RotMatrix_gte((SVECTOR*)work.local, &matrix);
+    for (i = 0, base = &work, offset = 16; i < 3; offset += 2, ++i, ++local) {
+        *local = *position++ - *(u_short*)(base + offset);
+    }
+    ApplyMatrixSV(&matrix, (SVECTOR*)work.local, &work.rotated);
+    if ((u_short)-work.rotated.vy > shape->unk4.values[1] * ONE / 128) {
         return 0;
     }
-    x = shape->unk4.values[0] << 5;
-    z = shape->unk4.values[2] << 5;
+    x = shape->unk4.values[0] * ONE / 128;
+    z = shape->unk4.values[2] * ONE / 128;
     if (angled) {
         offsetZ = z;
         offsetX = -x;
@@ -380,12 +397,12 @@ int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
         offsetZ = 0;
         offsetX = offsetZ;
     }
-    i = 0;
     polygon.corners[0] = (u_short)-x | (-offsetZ << 16);
     polygon.corners[1] = -offsetX | (-z << 16);
     polygon.corners[2] = x | (offsetZ << 16);
     polygon.corners[3] = (u_short)offsetX | (z << 16);
     polygon.corners[4] = (u_short)work.rotated.vx | (work.rotated.vz << 16);
+    i = 0;
     do {
         gte_ldsxy3(polygon.corners[4], polygon.corners[i], polygon.corners[(i + 1) & 3]);
         gte_nclip2();
@@ -467,28 +484,17 @@ void func_800C16DC(void)
 void func_800C16FC(int x0, int x1, int count)
 {
     int y0;
-    int y1;
+    int y1 = x1 >> 16;
     int midX;
-    int signY;
-    int signX;
+    int signY = 1;
+    int signX = 1;
     int length;
     int dx;
     int i;
-    int level;
-    int color;
-    int gray;
-    int start;
-    int end;
-    int tail;
-    int near2;
-    int far2;
     int y1Bits;
-    int lineColor;
     int segmentEnd;
     int segmentStart;
 
-    signX = signY = 1;
-    y1 = x1 >> 16;
     x1 = (short)x1;
     y0 = x0 >> 16;
     x0 = (short)x0;
@@ -512,7 +518,11 @@ void func_800C16FC(int x0, int x1, int count)
     segmentStart = 0;
     y1Bits = y1 << 16;
     for (i = 0; i < 16; ++i, segmentEnd += length, segmentStart += length) {
-        level = i - count + 16;
+        int level = i - count + 16;
+        int gray;
+        int color;
+        int start;
+
         if (count < i || level < 0) {
             continue;
         }
@@ -521,13 +531,17 @@ void func_800C16FC(int x0, int x1, int count)
         color = gray | (((level * 255 + (16 - level) * 32) >> 4) << 16);
         start = segmentStart >> 4;
         if (start < dx) {
-            end = segmentEnd >> 4;
+            int end = segmentEnd >> 4;
+
             if (end < dx) {
-                vs_battle_addTile(vs_scratch.unk8, color | 0x42000000,
+                vs_battle_addTile(vs_scratch.unk8,
+                    vs_getRGB0Raw(primLineF2SemiTrans, color),
                     ((x1 - start * signX) & 0xFFFF) | y1Bits,
                     ((x1 - (end - 1) * signX) & 0xFFFF) | y1Bits);
             } else {
-                lineColor = color | 0x42000000;
+                int lineColor = vs_getRGB0Raw(primLineF2SemiTrans, color);
+                int tail;
+
                 vs_battle_addTile(vs_scratch.unk8, lineColor,
                     ((x1 - start * signX) & 0xFFFF) | y1Bits,
                     ((midX + signX) & 0xFFFF) | y1Bits);
@@ -535,47 +549,36 @@ void func_800C16FC(int x0, int x1, int count)
                 if (y1 != y0 - (tail >> 4) * signY) {
                     vs_battle_addTile(vs_scratch.unk8, lineColor,
                         (midX & 0xFFFF) | y1Bits,
-                        ((x0 + (tail >> 5)) & 0xFFFF)
-                            | ((y0 - ((tail + 16) >> 4) * signY) << 16));
+                        vs_getXY_2(x0 + (tail >> 5), y0 - ((tail + 16) >> 4) * signY));
                 }
             }
         } else {
-            far2 = length * (16 - i);
-            near2 = length * (15 - i);
-            vs_battle_addTile(vs_scratch.unk8, color | 0x42000000,
-                ((x0 + (far2 >> 5)) & 0xFFFF) | ((y0 - (far2 >> 4) * signY) << 16),
-                ((x0 + (near2 >> 5)) & 0xFFFF)
-                    | ((y0 - ((near2 + 16) >> 4) * signY) << 16));
+            int far2 = length * (16 - i);
+            int near2 = length * (15 - i);
+
+            vs_battle_addTile(vs_scratch.unk8, vs_getRGB0Raw(primLineF2SemiTrans, color),
+                vs_getXY_2(x0 + (far2 >> 5), y0 - (far2 >> 4) * signY),
+                vs_getXY_2(x0 + (near2 >> 5), y0 - ((near2 + 16) >> 4) * signY));
         }
     }
-    vs_battle_insertTpage(0xE1000020, vs_scratch.unk8);
+    vs_battle_insertTpage(
+        _get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)), vs_scratch.unk8);
 }
 
 void func_800C1A40(int x0, int x1, int count)
 {
     int y0;
-    int y1;
+    int y1 = x1 >> 16;
     int midX;
-    int signY;
-    int signX;
+    int signY = 1;
+    int signX = 1;
     int length;
     int dx;
     int i;
-    int level;
-    int color;
-    int gray;
-    int start;
-    int end;
-    int tail;
-    int near2;
-    int far2;
     int y1Bits;
-    int lineColor;
     int segmentEnd;
     int segmentStart;
 
-    signX = signY = 1;
-    y1 = x1 >> 16;
     x1 = (short)x1;
     y0 = x0 >> 16;
     x0 = (short)x0;
@@ -599,7 +602,11 @@ void func_800C1A40(int x0, int x1, int count)
     segmentStart = 0;
     y1Bits = y1 << 16;
     for (i = 0; i < 16; ++i, segmentEnd += length, segmentStart += length) {
-        level = i - count + 16;
+        int level = i - count + 16;
+        int gray;
+        int color;
+        int start;
+
         if (count < i || level < 0) {
             continue;
         }
@@ -608,13 +615,17 @@ void func_800C1A40(int x0, int x1, int count)
         color = gray | (((level * 255 + (16 - level) * 32) >> 4) << 16);
         start = segmentStart >> 4;
         if (start < dx) {
-            end = segmentEnd >> 4;
+            int end = segmentEnd >> 4;
+
             if (end < dx) {
-                vs_battle_addTile(vs_scratch.unk8, color | 0x42000000,
+                vs_battle_addTile(vs_scratch.unk8,
+                    vs_getRGB0Raw(primLineF2SemiTrans, color),
                     ((x1 + start * signX) & 0xFFFF) | y1Bits,
                     ((x1 + (end - 1) * signX) & 0xFFFF) | y1Bits);
             } else {
-                lineColor = color | 0x42000000;
+                int lineColor = vs_getRGB0Raw(primLineF2SemiTrans, color);
+                int tail;
+
                 vs_battle_addTile(vs_scratch.unk8, lineColor,
                     ((x1 + start * signX) & 0xFFFF) | y1Bits,
                     ((midX - signX) & 0xFFFF) | y1Bits);
@@ -622,20 +633,20 @@ void func_800C1A40(int x0, int x1, int count)
                 if (y1 != y0 - (tail >> 4) * signY) {
                     vs_battle_addTile(vs_scratch.unk8, lineColor,
                         (midX & 0xFFFF) | y1Bits,
-                        ((x0 - (tail >> 5)) & 0xFFFF)
-                            | ((y0 - ((tail + 16) >> 4) * signY) << 16));
+                        vs_getXY_2(x0 - (tail >> 5), y0 - ((tail + 16) >> 4) * signY));
                 }
             }
         } else {
-            far2 = length * (16 - i);
-            near2 = length * (15 - i);
-            vs_battle_addTile(vs_scratch.unk8, color | 0x42000000,
-                ((x0 - (far2 >> 5)) & 0xFFFF) | ((y0 - (far2 >> 4) * signY) << 16),
-                ((x0 - (near2 >> 5)) & 0xFFFF)
-                    | ((y0 - ((near2 + 16) >> 4) * signY) << 16));
+            int far2 = length * (16 - i);
+            int near2 = length * (15 - i);
+
+            vs_battle_addTile(vs_scratch.unk8, vs_getRGB0Raw(primLineF2SemiTrans, color),
+                vs_getXY_2(x0 - (far2 >> 5), y0 - (far2 >> 4) * signY),
+                vs_getXY_2(x0 - (near2 >> 5), y0 - ((near2 + 16) >> 4) * signY));
         }
     }
-    vs_battle_insertTpage(0xE1000020, vs_scratch.unk8);
+    vs_battle_insertTpage(
+        _get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)), vs_scratch.unk8);
 }
 
 int func_800C1D84(void)
@@ -649,27 +660,20 @@ int func_800C1D84(void)
     return 1;
 }
 
-extern u_char D_800F4CB4;
-
 void func_800C1DC4(D_800EB9B8_unk990* arg0)
 {
-    int sxy;
-    int otz;
-    int gradient;
+    int gradient = arg0->unk2;
+    u_long* nextPrim = vs_scratch.unk8 - (arg0->unk1 * 4 - 8);
     int color0;
     int color1;
     int isLeft;
     int x;
     int y;
     int xy;
-    int ringXy;
     int textXy;
     int color;
-    u_long* prim;
-    u_long* nextPrim;
+    labelBoxPrim_t* prim;
 
-    gradient = arg0->unk2;
-    nextPrim = vs_scratch.unk8 - (arg0->unk1 * 4 - 8);
     if (arg0->unk1 != 0) {
         gradient = 8;
     }
@@ -692,7 +696,7 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0)
         x += 6;
     }
     color = 0x404040;
-    textXy = (x & 0xFFFF) | ((y - 1) << 16);
+    textXy = vs_getXY_2(x, y - 1);
     if (arg0->unk1 != 0) {
         color = 0x808080;
     }
@@ -704,25 +708,29 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0)
     }
     x = arg0->unk4 & 0xFFFF;
     gradient = (arg0->unk4 < 160) * 2;
-    prim[0] = (*nextPrim & 0xFFFFFF) | 0x0D000000;
-    prim[1] = 0x60000000;
-    prim[2] = ((x + 2 - gradient) & 0xFFFF) | ((y + 2) << 16);
-    prim[3] = (gradient + 0x48) | 0x80000;
-    prim[4] = 0xE1000200;
-    prim[5] = color0 | 0x38000000;
-    prim[6] = x | (y << 16);
-    prim[7] = color1;
-    prim[8] = ((x + 0x48) & 0xFFFF) | (y << 16);
-    prim[9] = color0;
-    prim[10] = x | ((y + 8) << 16);
-    prim[11] = color1;
-    prim[12] = ((x + 0x48) & 0xFFFF) | ((y + 8) << 16);
-    prim[13] = 0xE1000000;
+    prim->tag = vs_getTag(prim->box, *nextPrim);
+    prim->box.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+    prim->box.tile.x0y0 = vs_getXY_2(x + 2 - gradient, y + 2);
+    prim->box.tile.wh = (gradient + 0x48) | (8 << 16);
+    prim->box.poly.tpage = _get_mode(0, 1, 0);
+    prim->box.poly.r0g0b0code = vs_getRGB0Raw(primPolyG4, color0);
+    prim->box.poly.x0y0 = x | (y << 16);
+    prim->box.poly.r1g1b1 = color1;
+    prim->box.poly.x1y1 = vs_getXY_2(x + 0x48, y);
+    prim->box.poly.r2g2b2 = color0;
+    prim->box.poly.x2y2 = x | ((y + 8) << 16);
+    prim->box.poly.r3g3b3 = color1;
+    prim->box.poly.x3y3 = vs_getXY_2(x + 0x48, y + 8);
+    prim->box.tpage = _get_mode(0, 0, 0);
     *nextPrim = ((u_long)prim << 8) >> 8;
-    prim += 14;
+    ++prim;
     vs_scratch.unk0 = prim;
 
     if (arg0->unk1 != 0) {
+        int sxy;
+        int otz;
+        int ringXy;
+
         y += 4;
         func_800C02A8();
         gte_ldv0(&arg0->unk8);
@@ -817,20 +825,20 @@ void func_800C20B4(void)
     }
 }
 
-typedef struct {
-    short xyz[3], flags;
-} menuCircleVertex;
 int func_800C2254(int angle, int index)
 {
     short (*basis)[3] = (void*)0x1F800398;
-    int point = 0, component;
+    int point = 0;
     int phase = angle;
-    menuCircleVertex* vertex = (void*)((char*)D_800EB9B8 + (index * 8 + 0x48));
-    int cosine, sine;
-    for (; point < 33; ++index, phase += 128, ++point, ++vertex) {
+    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+
+    for (; point < 33; ++index, phase += ONE / 32, ++point, ++vertex) {
+        int component;
+
         for (component = 0; component < 3; ++component) {
-            cosine = rcos(phase);
-            sine = rsin(phase);
+            int cosine = rcos(phase);
+            int sine = rsin(phase);
+
             vertex->xyz[component] = basis[0][component]
                                    + ((basis[1][component] * cosine) >> 12)
                                    + ((basis[2][component] * sine) >> 12);
@@ -845,27 +853,28 @@ int func_800C2368(int step, int radius, int index)
 {
     short* basis = (short*)0x1F800398;
     int base;
-    int point;
-    int phase;
     int i;
-    int x, y, z;
-    menuCircleVertex* vertex = (void*)((char*)D_800EB9B8 + (index * 8 + 0x48));
+    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
 
-    for (base = 0; base < 0x1000; base += 0x400) {
-        z = y = x = 0;
-        phase = base - step * 4;
+    for (base = 0; base < ONE; base += ONE / 4) {
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        int phase = base - step * 4;
+        int point;
+
         for (point = 0; point <= radius; ++index, ++point, phase += step, ++vertex) {
             vertex->xyz[0] = (x * rcos(phase)) >> 12;
             vertex->xyz[1] = y;
             vertex->xyz[2] = (z * rsin(phase)) >> 12;
             i = point != 0;
             vertex->flags = i;
-            x += 0x200;
-            y -= 0x200;
-            z += 0x200;
+            x += ONE / 8;
+            y -= ONE / 8;
+            z += ONE / 8;
         }
     }
-    radius <<= 9;
+    radius *= ONE / 8;
     for (i = 8; i >= 0; --i) {
         basis[i] = 0;
     }
@@ -874,9 +883,9 @@ int func_800C2368(int step, int radius, int index)
     basis[8] = radius;
     index = func_800C2254(step * 7, index);
     if (radius >= 5) {
-        basis[1] = -0x800;
-        basis[3] = 0x800;
-        basis[8] = 0x800;
+        basis[1] = -ONE / 2;
+        basis[3] = ONE / 2;
+        basis[8] = ONE / 2;
         index = func_800C2254(step * 4, index);
     }
     return index;
@@ -886,23 +895,16 @@ void func_800C253C(int type)
 {
     short* basis = (short*)0x1F800398;
     int index = 0;
-    int shape;
+    int shape = D_800EB9B8->unk2A;
+    menuShapeVertex* vertices = D_800EB9B8->unk48;
     int count;
     int command;
-    int i;
-    int j;
-    int n;
-    short* src;
     u_short* commands;
-    menuCircleVertex* vertices;
-    menuCircleVertex* vertex;
 
-    shape = D_800EB9B8->unk2A;
-    vertices = (menuCircleVertex*)((char*)D_800EB9B8 + 0x48);
     if (shape != 0) {
         D_800EB9B8->unk2A = shape - 1;
     }
-    if ((u_int)type < 3) {
+    if (type < 3u) {
         if (type == 0) {
             D_800EB9B8->unk24 += (shape + 1) * 3;
             D_800EB9B8->unk28 += (shape + 1) * 11;
@@ -915,9 +917,12 @@ void func_800C253C(int type)
 
     command = D_800EA438[shape];
     commands = &D_800EA46C[command];
-    count = D_800EA438[shape + 1] - command;
 
-    for (; count > 0; --count) {
+    for (count = D_800EA438[shape + 1] - command; count > 0; --count) {
+        short* src;
+        int i;
+        int j;
+
         command = *commands++;
         switch ((command >> 14) & 3) {
         case 0:
@@ -987,8 +992,6 @@ void func_800C28AC(SVECTOR* position, int arg1)
 {
     int xy;
     int i;
-    int index;
-    int brightness;
     u_long* prim;
     u_long* ot = vs_scratch.unk4 - 4;
 
@@ -1000,35 +1003,36 @@ void func_800C28AC(SVECTOR* position, int arg1)
 
     if (arg1 == 0) {
         prim = vs_scratch.unk0;
-        prim[0] = (*ot & 0xFFFFFF) | 0x9000000;
-        prim[1] = 0x2C808080;
-        prim[2] = xy + 0xFFF7FFF3;
-        prim[3] = 0x37FD38F1;
-        prim[4] = xy + 0xFFF7FFFD;
-        prim[5] = 0xC38E7;
-        prim[6] = xy + 0xFFFEFFF3;
-        prim[7] = 0x3FF1;
-        prim[8] = xy + 0xFFFEFFFD;
-        prim[9] = 0x3FE7;
+        prim[0] = vs_getTag(VS_POLY_FT4, *ot);
+        prim[1] = vs_getRGB0(primPolyFT4, 0x80, 0x80, 0x80);
+        prim[2] = xy + vs_getXY(-13, -9);
+        prim[3] = vs_getUV0Clut(241, 56, 976, 223);
+        prim[4] = xy + vs_getXY(-3, -9);
+        prim[5] = vs_getUV1Tpage(231, 56, 768, 0, clut4Bit, semiTransparencyHalf);
+        prim[6] = xy + vs_getXY(-13, -2);
+        prim[7] = vs_getUV(241, 63);
+        prim[8] = xy + vs_getXY(-3, -2);
+        prim[9] = vs_getUV(231, 63);
         *ot = (u_long)prim;
         prim += 10;
-        prim[0] = (*ot & 0xFFFFFF) | 0x9000000;
-        prim[1] = 0x2C808080;
-        prim[2] = xy + 0x1FFF3;
-        prim[3] = 0x37FD40F1;
-        prim[4] = xy + 0x1FFFD;
-        prim[5] = 0xC40E7;
-        prim[6] = xy + 0x8FFF3;
-        prim[7] = 0x47F1;
-        prim[8] = xy + 0x8FFFD;
-        prim[9] = 0x47E7;
+        prim[0] = vs_getTag(VS_POLY_FT4, *ot);
+        prim[1] = vs_getRGB0(primPolyFT4, 0x80, 0x80, 0x80);
+        prim[2] = xy + vs_getXY(-13, 1);
+        prim[3] = vs_getUV0Clut(241, 64, 976, 223);
+        prim[4] = xy + vs_getXY(-3, 1);
+        prim[5] = vs_getUV1Tpage(231, 64, 768, 0, clut4Bit, semiTransparencyHalf);
+        prim[6] = xy + vs_getXY(-13, 8);
+        prim[7] = vs_getUV(241, 71);
+        prim[8] = xy + vs_getXY(-3, 8);
+        prim[9] = vs_getUV(231, 71);
         *ot = (u_long)prim;
         prim += 10;
         vs_scratch.unk0 = prim;
     }
 
     for (i = 0; i < 3; ++i) {
-        index = i + arg1 * 2;
+        int index = i + arg1 * 2;
+
         prim = vs_battle_setSpriteDefaultTexPage(
             index == 2 ? vs_battle_cursorBrightnessAnimation[D_800EA6AC] : 0x80,
             xy + D_800EA670[index], D_800EA684[index], ot);
@@ -1036,32 +1040,11 @@ void func_800C28AC(SVECTOR* position, int arg1)
     }
 }
 
-int _getCollisionMapDimensions(int arg0);
-int func_800FA188(int x, int z, int* offset);
-int func_800A91DC(int, int, int);
-int func_8008DDA8(int x, int z);
-
-void func_800C2B0C(u_short* position, u_int row)
+void func_800C2B0C(SVECTOR* position, u_int row)
 {
-    int offset;
-    int width;
-    int height;
-    _mpdRoomSection3* room;
+    u_int width;
+    u_int height;
     int column;
-    int tileX;
-    int tileZ;
-    int baseX;
-    int baseZ;
-    int x;
-    int z;
-    int dx;
-    int dz;
-    int height2;
-    int low;
-    int high;
-    int top;
-    int value;
-    int type;
 
     if (row >= 9) {
         return;
@@ -1072,19 +1055,28 @@ void func_800C2B0C(u_short* position, u_int row)
     height = column >> 20;
 
     for (column = 0; column < 9; ++column) {
-        baseX = (short)position[0] >> 7;
-        tileX = column - 4;
-        x = baseX + tileX;
-        baseZ = (short)position[2] >> 7;
-        tileZ = row - 4;
-        z = baseZ + tileZ;
-        value = 0x10000;
-        if (((u_int)x < width) & ((u_int)z < height)) {
-            room = func_8008B764(x, z, 0);
-            if ((room->unk0_5 >> 1) & 1) {
+        int baseX = position->vx >> 7;
+        int tileX = column - 4;
+        int x = baseX + tileX;
+        int baseZ = position->vz >> 7;
+        int tileZ = row - 4;
+        int z = baseZ + tileZ;
+        int value = 0x10000;
+
+        if ((x < width) & (z < height)) {
+            _mpdRoomSection3* room = func_8008B764(x, z, 0);
+
+            if (room->unk0_6) {
                 value = 0xF0800000;
                 D_800EB9B8->unk4AB8[row * 9 + column] = 0;
             } else if (room->unk0_10 < 5 || (room->unk0_18 >> 1)) {
+                int offset;
+                int low;
+                int high;
+                int top;
+                int dx;
+                int dz;
+
                 func_800FA188(x, z, &offset);
                 if (offset != 0) {
                     if (D_800F45E0[func_800A91DC(x, z, 0)]->unk6C[8].actorId < 2) {
@@ -1101,25 +1093,27 @@ void func_800C2B0C(u_short* position, u_int row)
                 top = -0x4000;
                 for (dz = 0; dz < 0x80; dz += 0x20) {
                     for (dx = 0; dx < 0x80; dx += 0x20) {
-                        height2 = func_8008DDA8(x + dx, z + dz);
-                        type = (height2 << 17) >> 17;
-                        type += offset;
-                        if (type < low) {
-                            low = type;
+                        int sample = func_8008DDA8(x + dx, z + dz);
+                        int level = (sample << 17) >> 17;
+
+                        level += offset;
+
+                        if (level < low) {
+                            low = level;
                         }
-                        if (high < type) {
-                            high = type;
+                        if (high < level) {
+                            high = level;
                         }
-                        type = (height2 << 1) >> 17;
-                        if (top < type) {
-                            top = type;
+                        level = (sample << 1) >> 17;
+                        if (top < level) {
+                            top = level;
                         }
                     }
                 }
                 if (value != 0) {
                     value = low == high;
                 }
-                if ((u_int)(room->unk0_10 - 1) < 4) {
+                if (room->unk0_10 - 1 < 4u) {
                     low = high;
                     D_800EB9B8->unk4AB8[row * 9 + column] = room->unk0_10 * 6;
                 }

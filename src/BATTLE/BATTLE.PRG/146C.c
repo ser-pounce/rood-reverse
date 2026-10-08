@@ -629,6 +629,8 @@ extern int D_800F19A0;
 extern char D_800F19A8[];
 extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
+extern int D_800F19D8;
+extern int D_800F19EC;
 extern int D_800F1A00;
 extern int D_800F1A04;
 extern u_int _lastValue;
@@ -6113,7 +6115,86 @@ int func_800792E4(int arg0, int arg1, int arg2)
 }
 
 void func_800793C0(void);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800793C0);
+void func_800793C0(void)
+{
+    D_800F19CC_t2* action;
+    int ready;
+    int i;
+    int j;
+    u_char actor;
+
+    if ((D_800F19EC == 1) || (D_800F19EC == 3)) {
+        if (vs_main_projectionDistance > 512) {
+            vs_main_projectionDistance -= 64;
+            if (vs_main_projectionDistance <= 512) {
+                vs_main_projectionDistance = 512;
+            }
+            SetGeomScreen(vs_main_projectionDistance);
+        } else if (vs_main_projectionDistance < 512) {
+            vs_main_projectionDistance += 64;
+            if (vs_main_projectionDistance >= 512) {
+                vs_main_projectionDistance = 512;
+            }
+            SetGeomScreen(vs_main_projectionDistance);
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance < D_800F19CC->unk2C0C) {
+            vs_battle_cameraCurrentSpherical.values.distance += 192;
+            if (vs_battle_cameraCurrentSpherical.values.distance > D_800F19CC->unk2C0C) {
+                vs_battle_cameraCurrentSpherical.values.distance = D_800F19CC->unk2C0C;
+            }
+        } else if (vs_battle_cameraCurrentSpherical.values.distance
+                   > D_800F19CC->unk2C0C) {
+            vs_battle_cameraCurrentSpherical.values.distance -= 192;
+            if (vs_battle_cameraCurrentSpherical.values.distance < D_800F19CC->unk2C0C) {
+                vs_battle_cameraCurrentSpherical.values.distance = D_800F19CC->unk2C0C;
+            }
+        }
+    }
+    if ((vs_main_projectionDistance != 512) || (D_800F19D8 != D_800F19CC->unk2C0C)
+        || !_isLookAtAtDestination()) {
+        return;
+    }
+    ready = 1;
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+        action = &D_800F19CC->unk854[i % 4];
+        for (j = 0; j < action->unk4A; ++j) {
+            if ((action->unk4C[j].unk40 == 0)
+                && ((func_8009E4B0(action->unk4C[j].unk0.targetActor) + 1) >= 2)) {
+                ready = 0;
+            }
+        }
+    }
+    if (!ready) {
+        return;
+    }
+    func_8006C40C();
+    func_800CB654(0);
+    func_8009E5C4(D_800F19CC->unk8.unk4.unk0.targetActor);
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+        action = &D_800F19CC->unk854[i % 4];
+        for (j = 0; j < action->unk4A; ++j) {
+            if (action->unk4C[j].unk40 == 0) {
+                func_800792E4(
+                    action->unk4.unk0.targetActor, action->unk4C[j].unk0.targetActor, 1);
+            }
+        }
+    }
+    for (i = 0; i < D_800F19CC->unk4; ++i) {
+        action = &D_800F19CC->unk854[i % 4];
+        if (action->unk4.unk40 == 0) {
+            actor = action->unk4.unk0.targetActor;
+            func_800792E4(actor, actor, 1);
+        }
+    }
+    if (D_800F196C == 3) {
+        return;
+    }
+    if (func_800BEC58(12, 0, 0, 0) == 1) {
+        func_80073898();
+        return;
+    }
+    func_8006FB48();
+}
 
 void func_800797BC(void)
 {

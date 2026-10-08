@@ -67,7 +67,8 @@ typedef struct {
     u_int unk0_13 : 3;
     char unk2;
     char unk3;
-    short unk4;
+    u_char columns;
+    u_char rows;
     short id;
     short unk8;
     short unkA;
@@ -285,6 +286,8 @@ typedef struct {
     func_800C5798_t* unk44;
     char unk48[0x948];
     func_800C56C0_t2 unk990[24];
+    char unkB70[0x3EE4];
+    char textBuffer[200];
 } func_800C56C0_t;
 
 typedef struct {
@@ -1274,8 +1277,8 @@ int func_800C58F8(u_char* target)
             }
             vs_battle_stringContext.integers[0] = entry->unkC;
             vs_battle_stringContext.integers[1] = entry->unkE;
-            vs_battle_printf((char*)D_800EB9B8 + 0x4A54, D_800EA984);
-            vs_battle_setTextBox(7, (char*)D_800EB9B8 + 0x4A54);
+            vs_battle_printf(D_800EB9B8->textBuffer, D_800EA984);
+            vs_battle_setTextBox(7, D_800EB9B8->textBuffer);
             break;
         case 20:
             *target = D_800EB9B8->unk2D;
@@ -2412,8 +2415,8 @@ void func_800C8778(void)
         width = count & 0xFF;
         j = count >> 8;
         count = width * j + 4;
-        ((u_char*)&gim->unk4)[0] = width;
-        ((u_char*)&gim->unk4)[1] = j;
+        gim->columns = width;
+        gim->rows = j;
         for (i = 0; i < count; ++i) {
             gim->imageTable[i] = gim->data[i];
         }
@@ -2421,8 +2424,8 @@ void func_800C8778(void)
         if (gim->data[3] != 0) {
             width = gim->data[count];
             tiles = width >> 8;
-            ((u_char*)&second->unk4)[0] = width;
-            ((u_char*)&second->unk4)[1] = tiles;
+            second->columns = width;
+            second->rows = tiles;
             width = (width & 0xFF) * tiles + 4;
             for (i = 0; i < width; ++i) {
                 second->imageTable[i] = gim->data[i + count];
@@ -2432,8 +2435,8 @@ void func_800C8778(void)
             if (gim->data[3] == 2) {
                 width = gim->data[count];
                 tiles = width >> 8;
-                ((u_char*)&third->unk4)[0] = width;
-                ((u_char*)&third->unk4)[1] = tiles;
+                third->columns = width;
+                third->rows = tiles;
                 width = (width & 0xFF) * tiles + 4;
                 for (i = 0; i < width; ++i) {
                     third->imageTable[i] = gim->data[i + count];
@@ -3955,10 +3958,10 @@ void func_800CBBCC(gim_t* image, int clut, u_long* ot)
     int alpha = image->unk3;
     int background;
     int quadColor;
-    u_short* tiles = (u_short*)((char*)image + 0x200);
+    u_short* tiles = &image->imageTable[4];
     int scale = image->unkC & 0x3FFF;
-    int columns = ((u_char*)&image->unk4)[0];
-    int rows = ((u_char*)&image->unk4)[1];
+    int columns = image->columns;
+    int rows = image->rows;
     int color;
     short* columnX;
     short* rowY;
@@ -4102,7 +4105,7 @@ void func_800CC204(gim_t* image, int clut, u_long* ot)
 {
     short left[240];
     short right[240];
-    u_short* tiles = (u_short*)((char*)image + 0x200);
+    u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
     u_short* widths = (u_short*)image->unk18;
     int page = image->unk2 - 18;
@@ -4198,7 +4201,7 @@ void func_800CC5C0(u_long* arg0, int arg1)
 void func_800CC600(gim_t* image, int clut, u_long* ot)
 {
     int alpha, inverse;
-    u_short* tiles = (u_short*)((char*)image + 0x200);
+    u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
     int columns, column, top, fb = 0, page;
     int height, x, y, row, tile, index;
@@ -4216,8 +4219,8 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
     alpha |= 256;
     inverse += 7;
     alpha += 7;
-    columns = ((u_char*)&image->unk4)[0];
-    height = ((u_char*)&image->unk4)[1] * 15;
+    columns = image->columns;
+    height = image->rows * 15;
     {
         int offset = (height >> 1) - 120;
         top = image->unkA - offset;
@@ -4241,7 +4244,7 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
             }
         }
         x = image->unkA + 120;
-        for (y = 0; y < ((u_char*)&image->unk4)[1]; y++) {
+        for (y = 0; y < image->rows; y++) {
             tile = tiles[y * columns + column];
             if (tile) {
                 prim = vs_battle_setSprite(

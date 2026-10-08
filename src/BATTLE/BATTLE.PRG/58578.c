@@ -5,6 +5,7 @@
 #include "573B8.h"
 #include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
+#include <memory.h>
 #include <stddef.h>
 #include <inline_c.h>
 #include "vs_inline_c.h"
@@ -49,6 +50,10 @@ typedef struct {
     int unk40[2];
     menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
+    char unkB70[0x3800];
+    int unk4370[81];
+    char unk44B4[0x604];
+    u_char unk4AB8[81];
 } D_800EB9B8_t;
 
 typedef struct {
@@ -87,6 +92,10 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
 int func_800C0758(int phase, int segments, int index);
 void func_800C253C(int type);
+int _getCollisionMapDimensions(int arg0);
+int func_800FA188(int x, int z, int* offset);
+int func_800A91DC(int, int, int);
+int func_8008DDA8(int x, int z);
 
 extern short D_800EA234[];
 extern short D_800EA2C4[];
@@ -1031,7 +1040,89 @@ void func_800C28AC(SVECTOR* position, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2B0C);
+void func_800C2B0C(SVECTOR* position, u_int row)
+{
+    u_int width;
+    u_int height;
+    int column;
+
+    if (row >= 9) {
+        return;
+    }
+    memset(&D_800EB9B8->unk4AB8[row * 9], 0, 9);
+    column = _getCollisionMapDimensions(0);
+    width = (column & 0xFFFF) >> 4;
+    height = column >> 20;
+
+    for (column = 0; column < 9; ++column) {
+        int baseX = position->vx >> 7;
+        int tileX = column - 4;
+        int x = baseX + tileX;
+        int baseZ = position->vz >> 7;
+        int tileZ = row - 4;
+        int z = baseZ + tileZ;
+        int value = 0x10000;
+
+        if ((x < width) & (z < height)) {
+            _mpdRoomSection3* room = func_8008B764(x, z, 0);
+
+            if (room->unk0_6) {
+                value = 0xF0800000;
+                D_800EB9B8->unk4AB8[row * 9 + column] = 0;
+            } else if (room->unk0_10 < 5 || (room->unk0_18 >> 1)) {
+                int offset;
+                int low;
+                int high;
+                int top;
+                int dx;
+                int dz;
+
+                func_800FA188(x, z, &offset);
+                if (offset != 0) {
+                    if (D_800F45E0[func_800A91DC(x, z, 0)]->unk6C[8].actorId < 2) {
+                        value = 0;
+                        offset += 0x20;
+                    } else {
+                        offset += 0x10;
+                    }
+                }
+                x <<= 7;
+                z <<= 7;
+                low = 0x4000;
+                high = -0x4000;
+                top = -0x4000;
+                for (dz = 0; dz < 0x80; dz += 0x20) {
+                    for (dx = 0; dx < 0x80; dx += 0x20) {
+                        int sample = func_8008DDA8(x + dx, z + dz);
+                        int level = (sample << 17) >> 17;
+
+                        level += offset;
+
+                        if (level < low) {
+                            low = level;
+                        }
+                        if (high < level) {
+                            high = level;
+                        }
+                        level = (sample << 1) >> 17;
+                        if (top < level) {
+                            top = level;
+                        }
+                    }
+                }
+                if (value != 0) {
+                    value = low == high;
+                }
+                if (room->unk0_10 - 1 < 4u) {
+                    low = high;
+                    D_800EB9B8->unk4AB8[row * 9 + column] = room->unk0_10 * 6;
+                }
+                value |= ((top + 0x30) << 17) | ((low & 0x7FFF) << 2);
+            }
+        }
+        D_800EB9B8->unk4370[row * 9 + column] = value;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2E24);
 

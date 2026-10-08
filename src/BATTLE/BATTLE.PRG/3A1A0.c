@@ -8,7 +8,11 @@ typedef struct {
     int unk0;
     int pad04[5];
     D_800F45E0_t* unk18;
-    short unk1C[18];
+    short heights[8];
+    u_char blocked[8];
+    u_char attributes[8];
+    u_char centerAttribute;
+    u_char pad3D[3];
     int unk40;
 } D_1F8003BC_t;
 
@@ -20,26 +24,8 @@ typedef struct {
 } func_8008D2C0_t;
 
 typedef struct {
-    char prefix[0x2C];
-    u_char contact, nextContact;
-} collisionScratchView;
-
-typedef struct {
     int words[2];
 } probePosition;
-
-typedef struct {
-    char prefix[0x1C];
-    short heights[8];
-    u_char blocked[8];
-    u_char attributes[8];
-    u_char centerAttribute;
-} ActorCollisionSamples;
-
-typedef struct {
-    char prefix[0x2C];
-    u_char contacts[8];
-} collisionResponseScratch;
 
 void func_8008C49C(int, int);
 int func_8008D2C0(func_8008D2C0_t*);
@@ -998,11 +984,10 @@ int func_800A4494(int contact, SVECTOR* point)
 
 int func_800A46A4(D_800F4538_t* actor)
 {
-    collisionScratchView* scratch = (void*)0x1F8003BC;
+    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
     int saved = actor->unk0.unkC_0;
     int radius = actor->unk63C;
     int direction;
-    collisionScratchView *hit, *previous;
     actor->unk0.unkC_0 = 0;
     actor->unk0.unkA_3 = 0;
     actor->unk0.unk9_6 = 0;
@@ -1010,15 +995,13 @@ int func_800A46A4(D_800F4538_t* actor)
     actor->unk0.unkC_0 = saved;
     actor->unk0.unkA_3 = 2;
     direction = (u_short)actor->unk1800 >> 9;
-    hit = (void*)((char*)scratch + direction);
-    hit->contact = 0;
-    hit->nextContact = 0;
+    scratch->blocked[direction] = 0;
+    scratch->blocked[direction + 1] = 0;
     --direction;
     direction &= 7;
-    previous = (void*)((char*)scratch + direction);
-    previous->contact = 0;
+    scratch->blocked[direction] = 0;
     for (direction = 0; direction < 8; ++direction) {
-        if (((collisionScratchView*)((char*)scratch + direction))->contact) {
+        if (scratch->blocked[direction]) {
             return 1;
         }
     }
@@ -2227,21 +2210,22 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 }
 
 static inline int vs_battleRelativeSampleHeight(
-    ActorCollisionSamples* samples, int sector, int offset, int y)
+    D_1F8003BC_t* samples, int sector, int offset, int y)
 {
     return samples->heights[(sector + offset) & 7] - y;
 }
 void func_800A70DC(D_800F4538_t* actor, int diagonal)
 {
-    ActorCollisionSamples* samples = (void*)0x1F8003BC;
-    ActorCollisionSamples* clearCursor;
+    D_1F8003BC_t* samples = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* clearCursor;
+
     int i, j, negativeRadius, negativeDiagonal, delta;
     actor->unk5AC_12 = 0;
     i = 7;
-    clearCursor = (void*)((char*)samples + i);
+    clearCursor = (D_1F8003BC_t*)((char*)samples + i);
     for (; i >= 0; i--) {
         clearCursor->blocked[0] = 0;
-        clearCursor = (void*)((char*)clearCursor - 1);
+        clearCursor = (D_1F8003BC_t*)((char*)clearCursor - 1);
     }
     if (actor->unk5AC_9 || actor->unk5AC_10) {
 
@@ -2327,34 +2311,34 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
 
 void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
 {
-    collisionResponseScratch* scratch;
+    D_1F8003BC_t* scratch;
     int x, z;
     if (actor->unk5AC_12) {
-        scratch = (void*)0x1F8003BC;
+        scratch = (D_1F8003BC_t*)0x1F8003BC;
         x = 0;
-        z = (scratch->contacts[0] != 0) * 16;
-        if (scratch->contacts[1]) {
+        z = (scratch->blocked[0] != 0) * 16;
+        if (scratch->blocked[1]) {
             x = 8;
             z += 8;
         }
-        if (scratch->contacts[2]) {
+        if (scratch->blocked[2]) {
             x += 16;
         }
-        if (scratch->contacts[3]) {
+        if (scratch->blocked[3]) {
             x += 8;
             z -= 8;
         }
-        if (scratch->contacts[4]) {
+        if (scratch->blocked[4]) {
             z -= 16;
         }
-        if (scratch->contacts[5]) {
+        if (scratch->blocked[5]) {
             x -= 8;
             z -= 8;
         }
-        if (scratch->contacts[6]) {
+        if (scratch->blocked[6]) {
             x -= 16;
         }
-        if (scratch->contacts[7]) {
+        if (scratch->blocked[7]) {
             x -= 8;
             z += 8;
         }
@@ -2450,7 +2434,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         }
         probe.vx = actor->unk0.position.vx + motion->vx;
         probe.vz = actor->unk0.position.vz + motion->vz;
-        scratch->unk1C[0] = actor->unk0.position.vy;
+        scratch->heights[0] = actor->unk0.position.vy;
         scratch->unk0 = 0;
         xResults[0] = func_800A8B34(&probe, 0);
         D_800F4B08 = probe;
@@ -2969,7 +2953,7 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
     int q;
     D_1F8003BC_t* sb = (D_1F8003BC_t*)0x1F8003BC;
     D_800F45E0_t* actor = sb->unk18;
-    int limit = sb->unk1C[arg1 & 7];
+    int limit = sb->heights[arg1 & 7];
 
     if (actor->unk5AC_9 << 9) {
         return 0;

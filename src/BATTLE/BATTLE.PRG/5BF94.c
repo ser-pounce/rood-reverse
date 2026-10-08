@@ -346,7 +346,7 @@ func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, MATRIX* arg1);
-void func_800D0984(int, void*, int);
+void func_800D0984(int, func_800D0C60_t*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D1718(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
@@ -4004,7 +4004,35 @@ void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0984);
+void func_800D0984(int arg0, func_800D0C60_t* arg1, int arg2)
+{
+    VECTOR delta;
+    VECTOR start;
+    VECTOR end;
+    SVECTOR offset;
+    long distance;
+    setVector(&start, vs_scratch.camera.lookAt.vx >> 12,
+        vs_scratch.camera.lookAt.vy >> 12, vs_scratch.camera.lookAt.vz >> 12);
+    setVector(&end, vs_scratch.camera.position.vx >> 12,
+        vs_scratch.camera.position.vy >> 12, vs_scratch.camera.position.vz >> 12);
+    vs_battle_lookAt(&start, &end, &arg1->unk78);
+    arg1->unk78.t[0] = start.vx;
+    arg1->unk78.t[1] = start.vy;
+    arg1->unk78.t[2] = start.vz;
+    if (arg2) {
+        setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
+        distance =
+            vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+        offset.vx = offset.vy = 0;
+        offset.vz = distance - 0x600;
+        SetRotMatrix(&arg1->unk78);
+        SetTransMatrix(&arg1->unk78);
+        RotTrans(&offset, &start, &distance);
+        arg1->unk78.t[0] = start.vx;
+        arg1->unk78.t[1] = start.vy;
+        arg1->unk78.t[2] = start.vz;
+    }
+}
 
 void func_800D0B08(MATRIX* arg0) { func_800CFE98(D_800F5310, arg0); }
 

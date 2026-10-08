@@ -1765,8 +1765,9 @@ move:
             actor->unk17FF = 0;
             actor->unk0.currentTileX = actor->unk0.position.vx / 128;
             actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
-            if ((*(int*)((char*)actor + 0x60) & 0xFF00FF)
-                    != (*(int*)((char*)actor + 0x5C) & 0xFF00FF)
+            if (actor->unk0.lastTouchedTileX != actor->unk0.currentTileX
+                || actor->unk0.lastTouchedTileZ != actor->unk0.currentTileZ
+
                 || actor->unk0.unk61 != actor->unk0.unkC_0) {
                 actor->unk0.lastTouchedTileX = D_800F4B08.vx / 128;
                 actor->unk0.lastTouchedTileZ = D_800F4B08.vz / 128;
@@ -2253,7 +2254,8 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
         clearCursor->blocked[0] = 0;
         clearCursor = (void*)((char*)clearCursor - 1);
     }
-    if (*(u_int*)((char*)actor + 0x5AC) & 0x600) {
+    if (actor->unk5AC_9 || actor->unk5AC_10) {
+
         for (i = 7; i >= 0; i--) {
             samples->heights[i] = 0;
         }

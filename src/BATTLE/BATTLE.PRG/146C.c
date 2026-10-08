@@ -320,6 +320,22 @@ typedef struct {
     int unk20;
 } func_800A1108_t;
 
+typedef struct {
+    short x;
+    short y;
+    short z;
+    short radius;
+    char reserved8[56];
+    int kind;
+} environmentTarget;
+
+typedef struct {
+    u_short action;
+    char reserved2[72];
+    u_short count;
+    environmentTarget targets[30];
+} environmentTargetList;
+
 void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
@@ -460,6 +476,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
 int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
+int func_8008D2C0(func_8008D2C0_t*);
 _mpdRoomSection9* func_8008D438(int, int, int);
 _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
@@ -474,6 +491,7 @@ void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
 _mpdRoomSection13* func_8008E370(int* arg0);
 _mpdRoomSectionA* func_8008E3B8(int* arg0);
+_mpdRoomSection9* func_8008E400(int*);
 void func_8008E480(int arg0);
 void func_800E4C64(int);
 void func_8008E4DC(int);
@@ -3562,17 +3580,14 @@ void func_8007053C(void)
     _cameraMode = 3;
 }
 
-void func_8007087C(D_800F19CC_t* arg0)
+void func_8007087C(D_800F19CC_t2* arg0)
 {
     func_8006EBF8_t sp10;
-    SVECTOR* v;
 
-    func_800A1108((char)arg0->unk4, &sp10);
-    ((SVECTOR*)&arg0->unk8.unk4C[29].armorDp)->vx =
-        sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + 0x800);
-    ((SVECTOR*)&arg0->unk8.unk4C[29].armorDp)->vz =
-        sp10.unk0.unk4.vz + rcos(sp10.unk0.unk4.pad + 0x800);
-    ((SVECTOR*)&arg0->unk8.unk4C[29].armorDp)->vy = sp10.unk0.unk4.vy;
+    func_800A1108(arg0->unk4.unk0.targetActor, &sp10);
+    arg0->unk844.vx = sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + ONE / 2);
+    arg0->unk844.vz = sp10.unk0.unk4.vz + rcos(sp10.unk0.unk4.pad + ONE / 2);
+    arg0->unk844.vy = sp10.unk0.unk4.vy;
 }
 
 void func_800708EC(void)
@@ -3601,7 +3616,7 @@ void func_800708EC(void)
     if (D_800F19CC->unk8.unk4.unk40 == 0) {
         if (D_800F19CC->unk29C0[D_800F19CC->unk298C].unk9
             == D_800F19CC->unk8.unk4.unk0.targetActor) {
-            func_8007087C((D_800F19CC_t*)&D_800F19CC->unk8);
+            func_8007087C(&D_800F19CC->unk8);
             return;
         }
         D_800F19CC->unk8.unk844 = D_800F19CC->unk29C0[D_800F19CC->unk298C].unk0;
@@ -3643,7 +3658,52 @@ void func_80070B04(void)
 }
 
 // https://decomp.me/scratch/CcHt5
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80070CAC);
+void func_80070CAC(void)
+{
+    func_8008D2C0_t points[4];
+    int count;
+    int i;
+    _mpdRoomSection9* room;
+    environmentTargetList* list = (environmentTargetList*)&D_800F19CC->unk8;
+
+    list->count = 0;
+
+    switch (list->action) {
+    case 93:
+    case 241:
+        room = func_8008E400(&count);
+
+        for (i = 0; i < count; ++i) {
+            if (room[i].unk6 != 16) {
+                list->targets[list->count].kind = 3;
+                list->targets[list->count].x = room[i].unk0 * 128 + 64;
+                list->targets[list->count].y =
+                    (func_8008DC7C((room[i].unk0 << 7) | 64, (room[i].unk2 << 7) | 64)
+                        << 17)
+                    >> 17;
+                list->targets[list->count].z = room[i].unk2 * 128 + 64;
+                list->targets[list->count].radius = 128;
+                ++list->count;
+            }
+        }
+        break;
+
+    case 79:
+        count = func_8008D2C0(points);
+
+        for (i = 0; i < count; ++i) {
+            list->targets[list->count].kind = 5;
+            list->targets[list->count].x = points[i].unk0;
+            list->targets[list->count].y = points[i].unk1;
+            list->targets[list->count].z = points[i].unk2;
+            list->targets[list->count].radius = 64;
+            ++list->count;
+        }
+        break;
+    }
+
+    func_8007087C(&D_800F19CC->unk8);
+}
 
 void func_80070F28(int arg0)
 {

@@ -273,7 +273,9 @@ typedef struct {
     int unk638;
     u_short unk63C;
     u_short menuCameraHeightOffset;
-    u_char unk640[6];
+    u_short unk640;
+    u_short unk642;
+    u_short unk644;
     u_short unk646;
     u_int unk648_0 : 16;
     u_int unk648_16 : 1;
@@ -593,6 +595,15 @@ typedef struct {
     int unk1868;
     int unk187C;
 } D_800F45E0_t;
+
+typedef struct {
+    int unk0;
+    u_char excluded[17];
+    u_char pad15[3];
+    D_800F45E0_t* unk18;
+    short unk1C[18];
+    int unk40;
+} D_1F8003BC_t;
 
 int func_800A1108(int, void*);
 void func_800A36E0(int, int, func_8006EBF8_t*);

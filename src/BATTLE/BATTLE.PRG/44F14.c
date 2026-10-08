@@ -421,13 +421,10 @@ loop: {
     case 30:
     case 31:
         arg = op - 30;
-        {
-            int i = arg * 4;
-            actor->unk1802[i + 2] = script[1];
-            actor->unk1802[i + 3] = script[2];
-            actor->unk1802[i + 4] = script[3];
-            actor->unk1802[i + 5] = script[4];
-        }
+        actor->unk1804[arg].overlay = script[1];
+        actor->unk1804[arg].x = script[2];
+        actor->unk1804[arg].y = script[3];
+        actor->unk1804[arg].columns = script[4];
         break;
     case 32:
         func_800AAD4C(id, 1, 1, 1);

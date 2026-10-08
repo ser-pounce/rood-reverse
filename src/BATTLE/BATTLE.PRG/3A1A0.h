@@ -210,6 +210,43 @@ typedef struct {
 } texMapOverlay_t;
 
 typedef struct {
+    u_char x;
+    u_char y;
+    u_char columns;
+    u_char unk3;
+} D_800F4538_unk614;
+
+typedef struct {
+    u_char overlay;
+    u_char x;
+    u_char y;
+    u_char columns;
+} texMapAnimation_t;
+
+typedef struct {
+    u_char x;
+    u_char y;
+    u_char w;
+    u_char h;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6_0 : 1;
+    u_char unk6_1 : 7;
+    u_char unk7;
+} D_800F4538_unk61C;
+
+typedef struct {
+    u_char x;
+    u_char y;
+    signed char dx;
+    signed char dy;
+    u_char interval;
+    u_char timer;
+    u_char unk6;
+    u_char unk7;
+} D_800F4538_unk181C;
+
+typedef struct {
     D_800F4538_unk0 unk0;
     MATRIX bones[42];
     u_char unk5AC_0 : 2;
@@ -275,13 +312,13 @@ typedef struct {
     void* unk5DC[4];
     SVECTOR unk5EC;
     texMapOverlay_t texMapOverlays[8];
-    u_char unk614[0x24];
-    int unk638;
+    D_800F4538_unk614 unk614[2];
+    D_800F4538_unk61C unk61C[4];
     u_short unk63C;
     u_short menuCameraHeightOffset;
     u_short collisionRadius;
     u_short collisionHeight;
-    u_char unk644[2];
+    u_short unk644;
     u_short unk646;
     u_int unk648_0 : 16;
     u_int unk648_16 : 1;
@@ -325,7 +362,8 @@ typedef struct {
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
     u_short unk11A4[0x140];
-    u_short unk1424[0x1E0];
+    u_short unk1424[0x140];
+    u_short unk16A4[0xA0];
     D_800F4538_unk64 unk17E4;
     D_800F4538_unk64 unk17E8;
     SVECTOR unk17EC;
@@ -335,13 +373,14 @@ typedef struct {
     u_char unk17FE;
     u_char unk17FF;
     short unk1800;
-    u_char unk1802[0xA];
+    u_char unk1802[2];
+    texMapAnimation_t unk1804[2];
     D_800F4538_unk180C unk180C[2];
     short unk1814;
     short unk1816;
     short unk1818;
     short unk181A;
-    u_char unk181C[0x20];
+    D_800F4538_unk181C unk181C[4];
     short unk183C;
     u_char unk183E[2];
     short unk1840;
@@ -615,6 +654,19 @@ typedef struct {
     int unk1868;
     int unk187C;
 } D_800F45E0_t;
+
+typedef struct {
+    int unk0;
+    u_char excluded[17];
+    u_char pad15[3];
+    D_800F45E0_t* unk18;
+    short heights[8];
+    u_char blocked[8];
+    u_char attributes[8];
+    u_char centerAttribute;
+    u_char pad3D[3];
+    int unk40;
+} D_1F8003BC_t;
 
 int func_800A1108(int, void*);
 void func_800A36E0(int, int, func_8006EBF8_t*);

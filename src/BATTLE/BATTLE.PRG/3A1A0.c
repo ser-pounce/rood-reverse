@@ -5,18 +5,6 @@
 #include <abs.h>
 
 typedef struct {
-    int unk0;
-    int pad04[5];
-    D_800F45E0_t* unk18;
-    short heights[8];
-    u_char blocked[8];
-    u_char attributes[8];
-    u_char centerAttribute;
-    u_char pad3D[3];
-    int unk40;
-} D_1F8003BC_t;
-
-typedef struct {
     short unk0;
     short unk2;
     short unk4;

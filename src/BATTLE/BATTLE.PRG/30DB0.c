@@ -1057,8 +1057,8 @@ int _parseShp(vs_battle_objectData* object)
     int x;
     int y;
     u_short* joint;
-    u_char* bounds;
-    u_char* state;
+    D_800F4538_unk61C* bounds;
+    D_800F4538_unk181C* state;
     int texV;
 
     if (D_800E8F29 == 0) {
@@ -1337,7 +1337,7 @@ setupPalettes:
     vs_main_memcpy(
         actor->unk1424, actor->unk11A4 + object->variant * 0xA0, D_800F22B8 * 2);
     vs_main_memcpy(actor->unk1424 + 0xA0, actor->unk1424, D_800F22B8 * 2);
-    vs_main_memcpy(actor->unk1424 + 0x140, actor->unk1424, D_800F22B8 * 2);
+    vs_main_memcpy(actor->unk16A4, actor->unk1424, D_800F22B8 * 2);
 
     if (object->index == 16) {
         vs_main_loadClut(actor->unk1424, 0x17, 0, D_800F22B8);
@@ -1398,14 +1398,14 @@ setupPalettes:
     }
 
     for (i = 0; i < 4; ++i) {
-        state = &actor->unk181C[i * 8];
-        bounds = &actor->unk614[i * 8 + 8];
-        state[0] = bounds[0];
-        state[1] = bounds[1];
-        state[2] = bounds[4];
-        state[3] = bounds[5];
-        state[4] = bounds[7];
-        state[5] = 0;
+        state = &actor->unk181C[i];
+        bounds = &actor->unk61C[i];
+        state->x = bounds->x;
+        state->y = bounds->y;
+        state->dx = bounds->unk4;
+        state->dy = bounds->unk5;
+        state->interval = bounds->unk7;
+        state->timer = 0;
     }
 
     actor->unk5DC[0] = NULL;
@@ -3764,8 +3764,8 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     if (!keepFlag15) {
         actor->unk5AC_15 = 0;
     }
-    actor->unk1802[2] = 0;
-    actor->unk1802[6] = 0;
+    actor->unk1804[0].overlay = 0;
+    actor->unk1804[1].overlay = 0;
     func_800AAD4C(actorId, 1, 1, 1);
     func_800AC500(actor);
     if (((*(int*)((char*)actor + 0x5AC)) & 0x8000) && !keepFlag15) {

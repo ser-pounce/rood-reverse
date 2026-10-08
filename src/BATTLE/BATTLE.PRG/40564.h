@@ -1,11 +1,12 @@
 #pragma once
+#include "3A1A0.h"
 #include "func_8006EBF8_t.h"
 #include <stddef.h>
 #include <libgte.h>
 #include <libgpu.h>
-#include "3A1A0.h"
 
 void func_800A97EC(int, func_8006EBF8_t_fields*, int, int);
+void func_800A9988(int, SVECTOR*, int, int);
 void func_800A9C54(int, func_8006EBF8_t_fields*, int);
 void func_800A9CDC(int, func_8006EBF8_t_fields*, int);
 void func_800A9D90(int, SVECTOR*, int);
@@ -16,7 +17,7 @@ void func_800A9FD0(int, SVECTOR*, int);
 void func_800AA850(int, u_short, int);
 void func_800AABD0(int, SVECTOR*, int);
 int func_800AAD4C(int, int, int, int);
-void func_800AB4F0(void*);
+void func_800AB4F0(D_800F4538_t*);
 void func_800AC37C(int, int);
 void func_800AD008(D_800F4538_t*, D_800F4538_unkC54*);
 int func_800AD494(void*, int, u_short**);

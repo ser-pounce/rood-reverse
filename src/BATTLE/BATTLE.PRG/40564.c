@@ -128,7 +128,7 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
                 continue;
             if (((actorCollisionExclusion*)((char*)scratch + i))->excluded)
                 continue;
-            radius = *(u_short*)&other->unk640[0];
+            radius = other->collisionRadius;
             if (other->unk0.position.vx + radius < position->vx)
                 continue;
             if (position->vx < other->unk0.position.vx - radius)
@@ -138,10 +138,10 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
             if (position->vz < other->unk0.position.vz - radius)
                 continue;
             if (other->unk0.position.vy
-                < actor->unk0.position.vy - *(u_short*)&actor->unk640[2])
+                < actor->unk0.position.vy - actor->collisionHeight)
                 continue;
             if (actor->unk0.position.vy
-                < other->unk0.position.vy - *(u_short*)&other->unk640[2])
+                < other->unk0.position.vy - other->collisionHeight)
                 continue;
             return 0;
         }
@@ -164,8 +164,8 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
     flags = *(u_int*)((char*)actor + 0x5AC);
     if (flags & 0x800)
         return flags & 0x800;
-    radius = *(u_short*)&actor->unk640[0];
-    minY = actor->unk0.position.vy - *(u_short*)&actor->unk640[2];
+    radius = actor->collisionRadius;
+    minY = actor->unk0.position.vy - actor->collisionHeight;
     minX = actor->unk0.position.vx - radius;
     maxX = actor->unk0.position.vx + radius;
     minZ = actor->unk0.position.vz - radius;
@@ -186,7 +186,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
             goto next_actor;
         if ((otherFlags & 0xF000000) == 0x2000000)
             goto next_actor;
-        otherRadius = *(u_short*)&other->unk640[0];
+        otherRadius = other->collisionRadius;
         if (other->unk0.position.vx + otherRadius < minX)
             goto next_actor;
         if (maxX < other->unk0.position.vx - otherRadius)
@@ -197,8 +197,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
             goto next_actor;
         if (other->unk0.position.vy < minY)
             goto next_actor;
-        if (actor->unk0.position.vy
-            < other->unk0.position.vy - *(u_short*)&other->unk640[2])
+        if (actor->unk0.position.vy < other->unk0.position.vy - other->collisionHeight)
             goto next_actor;
         ((actorCollisionExclusion*)((char*)scratch + i))->excluded = 1;
         otherX = other->unk0.position.vx;

@@ -57,6 +57,7 @@ int func_8009BE5C(vs_battle_objectData*);
 int _loadSeq(vs_battle_objectData*);
 int _loadEtm(vs_battle_objectData*);
 void _loadMaterialPalette(int index, int material);
+void func_8009CAEC(D_800F4538_t* arg0, int arg1);
 int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
@@ -73,6 +74,7 @@ void func_800A525C(D_800F4538_t*);
 int func_800A6EE8(short*, int, int, int);
 int func_800A91DC(int, int, int);
 int func_800AAD4C(int, int, int, int);
+void func_800AB098(D_800F4538_t*, int, int);
 void func_800AB2AC(int);
 void func_800AC500(D_800F4538_t*);
 void func_800AD008(void*, void*);
@@ -81,6 +83,7 @@ void func_800AD62C(int, int*, int*, int);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE47C(D_800F4538_t*);
 void func_800AE6C0(D_800F4538_t*, int, int);
+void func_800AE7D8(void*, int, int);
 short func_800BEB00();
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
@@ -91,12 +94,21 @@ extern u_char D_800E8960[];
 extern u_short _etmLbaOffsets[];
 extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
+extern u_short D_800E8A60[];
+extern u_char D_800E8B40[];
 extern u_short D_800E8D00[];
 extern u_char D_800E8E80[];
 extern u_char _loadShpState;
+extern u_short D_800E8E8E[];
+extern u_char D_800E8EA3[];
+extern u_short D_800E8EA8[][4];
+extern u_char D_800E8EFC[][4];
 extern u_char D_800E8F29;
+extern u_char D_800E8F2B;
 extern u_char D_800E8F2C;
 extern u_char _loadEtmState;
+extern u_char D_800E8F30[];
+extern u_char D_800E8F90[];
 extern u_char D_800E8FA8[];
 extern void* D_800E8FB4[];
 extern char D_800E8FC0;
@@ -118,21 +130,34 @@ extern u_short* _etmData;
 extern vs_main_CdFile _etmFile;
 extern vs_main_CdQueueSlot* _etmFileCdSlot;
 extern void* _wepFileEpilog;
+extern u_char* D_800F22B4;
+extern u_char D_800F22B8;
+extern int D_800F22BC;
+extern int D_800F22C0;
+extern int D_800F22C4;
+extern void* D_800F22C8;
+extern int D_800F22D0;
+extern vs_main_CdFile D_800F22D8;
+extern vs_main_CdQueueSlot* D_800F22E0;
+extern u_char* D_800F22E4;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
 extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
 extern char D_800F4448[];
+extern void* D_800F4528[];
 extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
 extern short D_800F4628[4][16];
+extern void* D_800F4768;
 extern char* D_800F4810[4][16];
 extern short D_800F4938[4][16];
 extern int D_800F49D8;
 extern u_int D_800F49E0;
+extern char D_800F49E4;
 
-int vs_battle_getEmptyObjectDataSlot(void)
+inline int vs_battle_getEmptyObjectDataSlot(void)
 {
     int i;
 
@@ -145,22 +170,11 @@ int vs_battle_getEmptyObjectDataSlot(void)
     return -1;
 }
 
-int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
+inline int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
 {
-    int i;
-    int slot;
     vs_battle_objectData* dst;
+    int slot = vs_battle_getEmptyObjectDataSlot();
 
-    for (i = 0; i < 16; ++i) {
-        if (vs_battle_objectDataSlots[i].dataType == 0) {
-            slot = i;
-            goto found;
-        }
-    }
-
-    slot = -1;
-
-found:
     if (slot == -1) {
         return -1;
     }
@@ -1020,17 +1034,6 @@ int _loadShp(vs_battle_objectData* arg0)
     return shpData;
 }
 
-extern u_char D_800E8F30[];
-extern u_char D_800E8F90[];
-extern u_char* D_800F22B4;
-extern u_char D_800F22B8;
-extern int D_800F22BC;
-extern int D_800F22C0;
-extern int D_800F22C4;
-extern void* D_800F4528[];
-
-void func_8009CAEC(D_800F4538_t* arg0, int arg1);
-
 int _parseShp(vs_battle_objectData* object)
 {
     RECT rect;
@@ -1104,8 +1107,8 @@ int _parseShp(vs_battle_objectData* object)
         if (modelId == 0x7F) {
             actor->unk6E6 = modelId;
             actor->unk0.unkF = object->index;
-            *(u_short*)&actor->unk640[0] = 0x40;
-            *(u_short*)&actor->unk640[2] = 10000;
+            actor->collisionRadius = 0x40;
+            actor->collisionHeight = 10000;
             func_8009D468(actor->unk0.unkF);
             actor->unk0.skip = 0;
             func_800A30A0(actor->unk0.unkF, (func_80089888_t*)&object->unkC, 0, 1);
@@ -1332,17 +1335,17 @@ fixUVs:
 
 setupPalettes:
     vs_main_memcpy(
-        actor->unk1424, actor->unk11A4 + object->variant * 0x140, D_800F22B8 * 2);
+        actor->unk1424, actor->unk11A4 + object->variant * 0xA0, D_800F22B8 * 2);
+    vs_main_memcpy(actor->unk1424 + 0xA0, actor->unk1424, D_800F22B8 * 2);
     vs_main_memcpy(actor->unk1424 + 0x140, actor->unk1424, D_800F22B8 * 2);
-    vs_main_memcpy(actor->unk1424 + 0x280, actor->unk1424, D_800F22B8 * 2);
 
     if (object->index == 16) {
-        vs_main_loadClut((u_short*)actor->unk1424, 0x17, 0, D_800F22B8);
+        vs_main_loadClut(actor->unk1424, 0x17, 0, D_800F22B8);
         actor->unk6E8 = D_800F46A8[1].clut1;
         actor->unk6EA = D_800F46A8[1].clut1;
     } else {
-        vs_main_loadClut((u_short*)actor->unk1424, object->index + 4, 0, D_800F22B8);
-        vs_main_loadClut((u_short*)actor->unk1424, object->index + 0x16, 0, D_800F22B8);
+        vs_main_loadClut(actor->unk1424, object->index + 4, 0, D_800F22B8);
+        vs_main_loadClut(actor->unk1424, object->index + 0x16, 0, D_800F22B8);
         actor->unk6E8 = D_800F46A8[object->index].clut0;
         actor->unk6EA = D_800F46A8[object->index].clut1;
     }
@@ -1371,9 +1374,9 @@ setupPalettes:
     actor->unk5AC_8 = 0;
     actor->unk5C2 = 8;
     actor->unk5C0 = 0x20;
-    actor->unk0.unk2C = 0x1000;
-    actor->unk0.unk2E = 0x1000;
-    actor->unk0.unk30 = 0x1000;
+    actor->unk0.unk2C = ONE;
+    actor->unk0.unk2E = ONE;
+    actor->unk0.unk30 = ONE;
     actor->unk5B2 = 1;
     actor->unk0.unkC_0 = 0;
     actor->unk0.unkC_4 = 0;
@@ -1388,9 +1391,9 @@ setupPalettes:
     for (i = 0; i < actor->unk0.nBones; ++i) {
         armature = &actor->unk0.unk68->armatures[i];
         if (armature->unk8 >= 3 && armature->unk8 < 7) {
-            joint = (u_short*)&actor->unk1880[(armature->unk8 - 3) * 4];
+            joint = actor->unk1880[armature->unk8 - 3];
             joint[1] = 0;
-            joint[0] = *(u_short*)&armature->unkA;
+            joint[0] = armature->unkA;
         }
     }
 
@@ -1459,12 +1462,6 @@ int func_8009BD90(vs_battle_objectData* arg0)
 }
 
 // https://decomp.me/scratch/wJjuU
-extern u_short D_800E8A60[], D_800E8E8E[], D_800E8EA8[][4];
-extern u_char D_800E8B40[], D_800E8EA3[], D_800E8EFC[][4];
-extern void* D_800F22C8;
-extern int D_800F22D0;
-extern vs_main_CdFile D_800F22D8;
-extern vs_main_CdQueueSlot* D_800F22E0;
 static inline int vs_battleFindSharedSequence(vs_battle_objectData* arg0)
 {
     D_800F4538_t* temp_v1;
@@ -1483,31 +1480,6 @@ static inline int vs_battleFindSharedSequence(vs_battle_objectData* arg0)
         }
     }
     return 0;
-}
-
-static inline int vs_battleQueueSequenceObject(vs_battle_objectData* objectData)
-{
-    int i;
-    int slot;
-    vs_battle_objectData* dst;
-
-    for (i = 0; i < 16; ++i) {
-        if (vs_battle_objectDataSlots[i].dataType == 0) {
-            slot = i;
-            goto found;
-        }
-    }
-
-    slot = -1;
-
-found:
-    if (slot == -1) {
-        return -1;
-    }
-
-    dst = &vs_battle_objectDataSlots[slot];
-    *dst = *objectData;
-    return slot;
 }
 
 int func_8009BE5C(vs_battle_objectData* object)
@@ -1546,38 +1518,43 @@ int func_8009BE5C(vs_battle_objectData* object)
     case 0:
         sequences = (char*)actor + 0x5F4;
         sectors = *(u_short*)(sequences + 0xA0 + object->modelId * 2) >> 11;
-        if (!sectors)
+        if (!sectors) {
             return 0;
+        }
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = *(u_int*)(sequences + 0x70 + object->modelId * 4);
         if (object->index == 0 && (model = object->modelId) != 0) {
             queued.dataType = 7;
             queued.index = 0;
             queued.actorId = 3;
             queued.material = model;
-            vs_battleQueueSequenceObject(&queued);
+            vs_battle_populateDataSlot(&queued);
         }
         break;
     case 1:
     case 2:
         sectors = D_800E8B40[object->modelId];
-        if (!sectors)
+        if (!sectors) {
             return -2;
+        }
         D_800F22C8 = vs_main_allocHeap(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = D_800E8A60[object->modelId] + 0x19797;
         break;
     case 3:
         sectors = D_800E8EA3[(u_char)object->material];
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = D_800E8E8E[(u_char)object->material] + 0x18043;
         break;
     case 4:
@@ -1590,24 +1567,29 @@ int func_8009BE5C(vs_battle_objectData* object)
         }
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         D_800F22D8.lba = D_800E8EA8[(u_char)object->material][object->modelId] + 0x1943E;
         break;
     case 5:
-        if (object->modelId == 0)
+        if (object->modelId == 0) {
             return 0;
+        }
         --object->modelId;
-        if (actor->unk6E6 == 2)
+        if (actor->unk6E6 == 2) {
             goto special;
-        sectors = *(u_short*)((char*)actor + 0x6CC + object->modelId * 2) >> 11;
-        if (!sectors)
+        }
+        sectors = actor->spSeqSizes[object->modelId] >> 11;
+        if (!sectors) {
             return -2;
+        }
         D_800F22D8.lba = actor->spSeqLbas[object->modelId];
         D_800F22C8 = vs_main_allocHeapR(sectors << 11);
         object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8)
+        if (!D_800F22C8) {
             return -2;
+        }
         break;
     }
     D_800F22D8.size = sectors << 11;
@@ -1615,15 +1597,17 @@ int func_8009BE5C(vs_battle_objectData* object)
     D_800F22E0 = vs_main_allocateCdQueueSlot(&D_800F22D8);
     vs_main_cdEnqueue(D_800F22E0, (void*)object->dataAddr);
 wait:
-    if (D_800F22E0->state != 4)
+    if (D_800F22E0->state != 4) {
         return -1;
+    }
     vs_main_freeCdQueueSlot(D_800F22E0);
     _loadShpState = 2;
     return -1;
 parse:
     result = _loadSeq(object);
-    if (result == -1)
+    if (result == -1) {
         return -1;
+    }
     if (D_800F22D0) {
         D_800F22D0 = 0;
         vs_main_freeHeapR(D_800F22C8);
@@ -1640,10 +1624,6 @@ inline void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
     arg0->unk0 += (long)arg0;
     arg0->unk4 += (long)arg0;
 }
-
-extern u_char D_800E8F2B;
-extern u_char* D_800F22E4;
-extern void* D_800F4768;
 
 int _loadSeq(vs_battle_objectData* object)
 {
@@ -1921,8 +1901,6 @@ int func_8009CC20(int arg0, int arg1)
     }
     return 0;
 }
-
-void func_800AB098(D_800F4538_t*, int, int);
 
 int func_8009CE9C(u_int arg0)
 {
@@ -2606,7 +2584,7 @@ void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
             if (dx == 0 && dz == 0) {
                 angle = actor->unk0.facing;
             } else {
-                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
+                angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
             }
 
             angle -= actor->unk0.facing;
@@ -2769,16 +2747,11 @@ void func_8009E700(int actorId, int animation)
 {
     D_800F4538_t* actor;
     D_800F45E0_t* object;
-    int objectState;
-    int state;
-    int action;
     int facing;
     int direction;
     int distance;
     int tileDx;
     int tileDz;
-    u_int movementFlags;
-    u_int flags;
     int currentAnimation;
     int reactionAnimation;
     int baseAnimation;
@@ -2786,45 +2759,34 @@ void func_8009E700(int actorId, int animation)
     actor = D_800F4538[actorId];
     if (actor == NULL) {
         object = D_800F45E0[actorId];
-        if ((object != NULL)
-            && ((objectState = object->unk1A, (objectState == 0xF9))
-                || (objectState == 0xFF))
-            && ((*(u_char*)((char*)object + 0x170)) == 0)) {
+        if (object != NULL && (object->unk1A == 0xF9 || object->unk1A == 0xFF)
+            && object->unk6C[8].unk4 == 0) {
             object->unk1A = 0;
         }
     } else {
         currentAnimation = actor->animationId;
         if ((currentAnimation != 0xC6) && (currentAnimation != 0xC8)
-            && ((actor->unk0.unkF != 0)
-                || (((*(int*)((char*)actor + 8)) & 0x184000) != 0x80000))) {
-            flags = (*(int*)((char*)actor + 8));
-            if (((u_int)((flags >> 0x10) & 7) < 2U)
-                && (state = flags & 0x70000000, (state != 0x20000000))
-                && (state != 0x50000000)) {
-                action = flags & 0x0F000000;
-                if (action == 0x3000000) {
+            && (actor->unk0.unkF != 0 || actor->unk0.unkA_3 != 1 || actor->unk0.unk9_6)) {
+            if (actor->unk0.unkA_0 < 2 && actor->unk0.unkB_4 != 2
+                && actor->unk0.unkB_4 != 5) {
+                if (actor->unk0.unkB_0 == 3) {
                     func_800A2C48(actor);
-                } else if (action != 0) {
+                } else if (actor->unk0.unkB_0 != 0) {
                     goto resetState;
                 }
                 {
-                    movementFlags = (*(int*)((char*)actor + 8));
-                    if ((movementFlags & 0x180000) == 0x100000) {
-                        if ((*(int*)((char*)actor + 0x18)) != 0) {
+                    if (actor->unk0.unkA_3 == 2) {
+                        if (actor->unk0.unk18 != 0 || actor->unk0.unk1A != 0) {
                             actor->unk0.unk1A = 0;
                             actor->unk0.unk18 = 0;
-                            actor->unk0.position.vx = (u_short)actor->unk0.position.vx
-                                                    + (u_short)actor->unk0.unk34.vx;
-                            actor->unk0.position.vy = (u_short)actor->unk0.position.vy
-                                                    + (u_short)actor->unk0.unk34.vy;
-                            actor->unk0.position.vz = (u_short)actor->unk0.position.vz
-                                                    + (u_short)actor->unk0.unk34.vz;
-                            actor->unk0.facing =
-                                (u_short)actor->unk0.facing + (u_short)actor->unk0.unk3E;
+                            actor->unk0.position.vx += actor->unk0.unk34.vx;
+                            actor->unk0.position.vy += actor->unk0.unk34.vy;
+                            actor->unk0.position.vz += actor->unk0.unk34.vz;
+                            actor->unk0.facing += actor->unk0.unk3E;
                         }
-                    } else if (!(movementFlags & 0xF00)) {
+                    } else if (actor->unk0.unk9_0 == 0) {
                         baseAnimation = actor->animationId;
-                        if ((int)baseAnimation >= 0x65) {
+                        if (baseAnimation > 100) {
                             baseAnimation -= 0x64;
                         }
                         if (baseAnimation != 0x62) {
@@ -2841,9 +2803,9 @@ void func_8009E700(int actorId, int animation)
                                 } else {
                                     distance = 2;
                                 moveFromReaction:
-                                    facing = actor->unk0.facing + 0x200;
+                                    facing = actor->unk0.facing + ONE / 8;
                                     facing &= 0xFFF;
-                                    facing /= 1024;
+                                    facing /= ONE / 4;
                                     direction = facing;
                                     tileDx = 0;
                                     tileDz = 0;
@@ -2860,8 +2822,8 @@ void func_8009E700(int actorId, int animation)
                                         tileDz);
                                 }
                             }
-                            if ((*(int*)((char*)actor + 0x5AC)) & 8) {
-                                func_800A0204((int)actor->unk0.unkF, 0x4B, 0, 0xC);
+                            if (actor->unk5AC_3) {
+                                func_800A0204(actor->unk0.unkF, 0x4B, 0, 0xC);
                             } else {
                                 func_800A0204(actorId, animation, 0, 0x10);
                                 actor->unk1846 = 0;
@@ -2871,14 +2833,13 @@ void func_8009E700(int actorId, int animation)
                 }
             }
         resetState:
-            if (((*(int*)((char*)actor + 8)) & 0x180000) != 0x100000) {
-                (*(int*)((char*)actor + 8)) =
-                    (u_int)((*(int*)((char*)actor + 8)) & 0xFFE7FFFF);
+            if (actor->unk0.unkA_3 != 2) {
+                actor->unk0.unkA_3 = 0;
             }
             actor->unk5C8 = 0;
             actor->unk0.unk18 = 0;
             actor->unk0.unk1A = 0;
-            (*(int*)((char*)actor + 8)) = (u_int)((*(int*)((char*)actor + 8)) & ~0x4000);
+            actor->unk0.unk9_6 = 0;
             func_800A0ABC(actorId);
         }
     }
@@ -3133,7 +3094,6 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
 }
 
 // https://decomp.me/scratch/kQp6H
-extern char D_800F49E4;
 
 void func_8009EFEC(int actorId, SVECTOR* target, int mode)
 {
@@ -3157,13 +3117,13 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
             if ((dx == 0) && (dz == 0)) {
                 angle = actor->unk0.facing;
             } else {
-                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
+                angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
             }
             angle = angle - actor->unk0.facing;
-            if (angle > 0x800) {
-                angle -= 0x1000;
-            } else if (angle < -0x800) {
-                angle += 0x1000;
+            if (angle > ONE / 2) {
+                angle -= ONE;
+            } else if (angle < -ONE / 2) {
+                angle += ONE;
             }
             facingDelta = angle;
         } else {
@@ -3250,53 +3210,38 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-void func_800AE7D8(void*, int, int);
-
 void func_8009F314(int actorId, void* context, int animate)
 {
     u_short* animation;
     D_800F4538_t* actor;
     D_800F45E0_t* object;
-    int flags;
     int animationId;
 
     actor = D_800F4538[actorId];
     if (actor != NULL) {
-        flags = (*(int*)((char*)actor + 8));
-        if ((flags & 0x270000) || ((flags & 0x180000) == 0x100000)) {
-            if ((*(int*)((char*)actor + 0xC)) & 0xF) {
-                func_8008C49C(((u_char)(*(int*)((char*)actor + 0xC)) & 0xF) - 2, -1);
-                (*(int*)((char*)actor + 0xC)) =
-                    (int)((*(int*)((char*)actor + 0xC)) & ~0xF);
+        if (actor->unk0.unkA_0 || actor->unk0.unkA_5 || actor->unk0.unkA_3 == 2) {
+            if (actor->unk0.unkC_0) {
+                func_8008C49C(actor->unk0.unkC_0 - 2, -1);
+                actor->unk0.unkC_0 = 0;
             }
             actor->unk0.unk1A = 0;
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vz = 0;
-            if (actor->unk0.unkF == 0) {
-                if (((*(int*)((char*)actor + 8)) & 0x70000) == 0x30000) {
-                    if (actor->unk0.unk34.vy <= 0) {
-                        goto setVerticalSpeed;
-                    }
-                } else {
-                    goto setFallingSpeed;
-                }
-            } else {
-            setVerticalSpeed:
-            setFallingSpeed:
+            if (actor->unk0.unkF != 0 || actor->unk0.unkA_0 != 3
+                || actor->unk0.unk34.vy <= 0) {
                 actor->unk0.unk34.vy = -6;
             }
             actor->unk181A = 0;
-            (*(int*)((char*)actor + 8)) =
-                (int)(((*(int*)((char*)actor + 8)) & 0xFFF8FFFF) | 0x30000);
+            actor->unk0.unkA_0 = 3;
         }
         if (animate != 0) {
             animationId = 0x46;
-            if ((*(int*)((char*)actor + 0x5AC)) & 8) {
+            if (actor->unk5AC_3) {
                 animationId = 0x3A;
             }
             func_800AD494(actor, 0xABU, (int*)&animation);
             if (animation != NULL) {
-                if (!((*(int*)((char*)actor + 8)) & 0x70000)) {
+                if (actor->unk0.unkA_0 == 0) {
                     animationId = 0x47;
                 }
             }
@@ -3306,14 +3251,14 @@ void func_8009F314(int actorId, void* context, int animate)
         } else {
             actor->unk0.unk9_0 = 2;
         }
-        if ((u_char)actor->unk17FD >= 2U) {
-            func_8009F314((int)actor->unk17FD, context, animate);
+        if (actor->unk17FD >= 2) {
+            func_8009F314(actor->unk17FD, context, animate);
         }
     } else {
         object = D_800F45E0[actorId];
         if (object != NULL) {
             object->unk1A = 0xF7;
-            *(u_char*)((char*)object + 0x170) = 0;
+            object->unk6C[8].unk4 = 0;
             func_800AE7D8(object, 0x32, 0);
         }
     }
@@ -3632,8 +3577,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         var_s0->unk1 = 0;
         var_s0->unk2 = (var_s0->unk2 & 0xFC) | (arg1 & 1);
         if (temp_a3 != NULL) {
-            vs_main_loadClut(
-                (u_short*)temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
+            vs_main_loadClut(temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
         } else {
             vs_main_loadClut(
                 (u_short*)&temp_t0->unk6C[6], 0x1F, temp_t0->unkF * 0x10, 0x10);
@@ -3875,7 +3819,8 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     } else if (!actor->unk0.weaponDrawn && (anim == 41 || anim == 59)) {
         actor->unk0.unkA_3 = 2;
         goto setHeading;
-    } else if (*(int*)&actor->unk0.unk34 == 0 && actor->unk0.unk34.vz == 0) {
+    } else if (actor->unk0.unk34.vx == 0 && actor->unk0.unk34.vy == 0
+               && actor->unk0.unk34.vz == 0) {
         actor->unk0.unkA_3 = 0;
         actor->unk0.unk9_6 = 0;
     }

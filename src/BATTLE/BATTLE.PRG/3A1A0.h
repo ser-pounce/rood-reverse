@@ -79,8 +79,7 @@ typedef struct {
     u_char unk7;
     u_char unk8;
     u_char unk9;
-    u_char unkA;
-    u_char unkB;
+    u_short unkA;
     u_char unkC;
     u_char unkD;
     u_char unkE;
@@ -279,7 +278,9 @@ typedef struct {
     int unk638;
     u_short unk63C;
     u_short menuCameraHeightOffset;
-    u_char unk640[6];
+    u_short collisionRadius;
+    u_short collisionHeight;
+    u_char unk644[2];
     u_short unk646;
     u_int unk648_0 : 16;
     u_int unk648_16 : 1;
@@ -297,7 +298,9 @@ typedef struct {
     u_int btSeqLbas[12];
     u_short chainAttackAnimationIds[12];
     u_int spSeqLbas[4];
-    int unk6BC[8];
+    int unk6BC[4];
+    u_short spSeqSizes[4];
+    int unk6D4[2];
     int unk6DC;
     u_char unk6E0;
     u_char unk6E1;
@@ -320,8 +323,8 @@ typedef struct {
     SVECTOR unk6FC;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
-    u_char unk11A4[0x280];
-    u_char unk1424[0x3C0];
+    u_short unk11A4[0x140];
+    u_short unk1424[0x1E0];
     D_800F4538_unk64 unk17E4;
     D_800F4538_unk64 unk17E8;
     SVECTOR unk17EC;
@@ -353,7 +356,7 @@ typedef struct {
     D_800F4538_unk1864 unk1864;
     int unk1868;
     int unk187C;
-    u_char unk1880[0x10];
+    u_short unk1880[4][2];
     u_char unk1890[2][0x20];
     u_char unk18D0[2];
     u_short unk18D2;

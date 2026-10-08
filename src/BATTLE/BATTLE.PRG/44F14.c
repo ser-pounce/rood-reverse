@@ -112,6 +112,37 @@ extern struct {
     int scales[3];
 } D_800F2458;
 
+struct frameScratch {
+    int unused;
+    int depth;
+};
+
+struct animationFrameScratch {
+    char prefix[8];
+    int first, last;
+    u_char** data;
+};
+
+struct objectAnimationState {
+    char prefix[8];
+    int flags;
+    char padC[3];
+    u_char id, pad10;
+    signed char delay;
+    u_char parent, pad13;
+    int pad14;
+    short rotationTicks, mode;
+    SVECTOR position;
+    short rx, ry, rz, pad2A;
+    short sx, sy, sz, pad32;
+    short dx, dy, dz, orientation;
+    short drx, dry, drz;
+    char pad42[0x1A];
+    u_char tileX, pad5D, tileZ, pad5F;
+    char pad60[0x10C];
+    u_char material, durability, pad16E, parentObject, frame;
+};
+
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     int op;
@@ -875,11 +906,6 @@ void func_800AEEC4(D_800F4538_t* arg0)
     arg0->unk17E4.unk3 -= var_a2;
 }
 
-struct frameScratch {
-    int unused;
-    int depth;
-};
-
 void func_800AEF94(MATRIX* camera)
 {
     /* The original routine reserves 0x30 bytes of unused local storage. */
@@ -1211,11 +1237,6 @@ void func_800AF960(D_800F45E0_t* arg0)
     }
 }
 
-struct animationFrameScratch {
-    char prefix[8];
-    int first, last;
-    u_char** data;
-};
 void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     u_short* header;
@@ -1677,25 +1698,6 @@ void func_800B07DC(D_800F4538_t* actor)
     scratch->offset.vy += actor->unk0.position.vy;
 }
 
-struct objectAnimationState {
-    char prefix[8];
-    int flags;
-    char padC[3];
-    u_char id, pad10;
-    signed char delay;
-    u_char parent, pad13;
-    int pad14;
-    short rotationTicks, mode;
-    SVECTOR position;
-    short rx, ry, rz, pad2A;
-    short sx, sy, sz, pad32;
-    short dx, dy, dz, orientation;
-    short drx, dry, drz;
-    char pad42[0x1A];
-    u_char tileX, pad5D, tileZ, pad5F;
-    char pad60[0x10C];
-    u_char material, durability, pad16E, parentObject, frame;
-};
 void func_800B0908(objectAnimationState* object, int unused)
 {
     actorTransformScratch* scratch = (void*)0x1F80035C;

@@ -469,11 +469,11 @@ loop: {
         lo = script[2];
         motion->unkA = ((delta << 8) | lo) - motion->unk8;
     }
-        if (motion->unkA < -0x800) {
-            motion->unkA += 0x1000;
+        if (motion->unkA < -ONE / 2) {
+            motion->unkA += ONE;
         }
-        if (motion->unkA > 0x800) {
-            motion->unkA -= 0x1000;
+        if (motion->unkA > ONE / 2) {
+            motion->unkA -= ONE;
         }
         arg = script[3];
         if (arg == 0) {
@@ -515,11 +515,11 @@ loop: {
         }
         delta = point[2];
         motion->unkA = delta - motion->unk8;
-        if (motion->unkA < -0x800) {
-            motion->unkA += 0x1000;
+        if (motion->unkA < -ONE / 2) {
+            motion->unkA += ONE;
         }
-        if (motion->unkA > 0x800) {
-            motion->unkA -= 0x1000;
+        if (motion->unkA > ONE / 2) {
+            motion->unkA -= ONE;
         }
         if (motion->unk4 == 0) {
             motion->unk8 = (motion->unk8 + motion->unkA) & 0xFFF;
@@ -784,7 +784,7 @@ void func_800AEAE8(D_800F4538_t* actor)
     D_800F2458.scales[0] = 64;
     D_800F2458.scales[1] = 64;
     D_800F2458.scales[2] = 64;
-    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == 4096) {
+    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
         scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
         scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
         scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
@@ -793,9 +793,9 @@ void func_800AEAE8(D_800F4538_t* actor)
         scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk2E / 8192;
         scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk30 / 8192;
     }
-    scratch->offset.vx = scratch->offset.vx * actor->unk183C / 4096;
-    scratch->offset.vy = scratch->offset.vy * actor->unk183C / 4096;
-    scratch->offset.vz = scratch->offset.vz * actor->unk183C / 4096;
+    scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
+    scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;
+    scratch->offset.vz = scratch->offset.vz * actor->unk183C / ONE;
     func_800B07DC(actor);
     scratch->angleX = actor->unk0.unk14;
     scratch->angleY = actor->unk0.unk16;
@@ -818,11 +818,11 @@ void func_800AECA0(MATRIX* source)
     rotation.m[1][1] = rotation.m[0][0] = rcos(-camera->angle);
     rotation.m[1][0] = rsin(-camera->angle);
     rotation.m[0][1] = -rotation.m[1][0];
-    rotation.m[2][2] = 4096;
+    rotation.m[2][2] = ONE;
     rotation.m[0][2] = rotation.m[1][2] = rotation.m[2][0] = rotation.m[2][1] = 0;
     scratch->scale.vx = 3640;
-    scratch->scale.vy = 4096;
-    scratch->scale.vz = 4096;
+    scratch->scale.vy = ONE;
+    scratch->scale.vz = ONE;
     ScaleMatrix(&scratch->matrix, &scratch->scale);
     func_80041C68(&scratch->matrix, &rotation);
     scratch->matrix = rotation;
@@ -1462,7 +1462,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     int trackAnim;
     D_800F4538_t* other;
 
-    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == 4096) {
+    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
         scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
         scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
         scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
@@ -1471,9 +1471,9 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
         scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk30 / 8192;
         scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk2C / 8192;
     }
-    scratch->offset.vx = scratch->offset.vx * actor->unk183C / 4096;
-    scratch->offset.vy = scratch->offset.vy * actor->unk183C / 4096;
-    scratch->offset.vz = scratch->offset.vz * actor->unk183C / 4096;
+    scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
+    scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;
+    scratch->offset.vz = scratch->offset.vz * actor->unk183C / ONE;
 
     if (arg1 == 0) {
         if (actor->unk5C8 != 0) {
@@ -1501,8 +1501,8 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
             --actor->unk0.unk18;
         }
         if (actor->unk5B0_4) {
-            actor->unk704.unk0[0].vx = 0x800;
-            actor->unkC54.unk0[0].vx = 0x800;
+            actor->unk704.unk0[0].vx = ONE / 2;
+            actor->unkC54.unk0[0].vx = ONE / 2;
         }
         if (actor->unk0.unk1A != 0) {
             dx = actor->unk0.unk34.vx / actor->unk0.unk1A;
@@ -1586,7 +1586,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                 dx = other->unk0.position.vx - actor->unk0.position.vx;
                 dz = other->unk0.position.vz - actor->unk0.position.vz;
             }
-            yaw = 0xC00 - ratan2(dz, dx);
+            yaw = ONE * 3 / 4 - ratan2(dz, dx);
             yaw &= 0xFFF;
             yaw -= actor->unk0.facing;
             dx *= dx;
@@ -1605,14 +1605,14 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                    - actor->unk0.position.vy;
             }
             pitch = ratan2(dx, dz);
-            pitch -= 0x400;
+            pitch -= ONE / 4;
             pitch &= 0xFFF;
         }
-        if (yaw >= 0x800) {
-            yaw -= 0x1000;
+        if (yaw >= ONE / 2) {
+            yaw -= ONE;
         }
-        if (yaw < -0x800) {
-            yaw += 0x1000;
+        if (yaw < -ONE / 2) {
+            yaw += ONE;
         }
         if (yaw > 800) {
             yaw = 800;
@@ -1620,11 +1620,11 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
         if (yaw < -800) {
             yaw = -800;
         }
-        if (pitch >= 0x800) {
-            pitch -= 0x1000;
+        if (pitch >= ONE / 2) {
+            pitch -= ONE;
         }
-        if (pitch < -0x800) {
-            pitch += 0x1000;
+        if (pitch < -ONE / 2) {
+            pitch += ONE;
         }
         if (pitch > 800) {
             pitch = 800;

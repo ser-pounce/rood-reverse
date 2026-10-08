@@ -784,11 +784,11 @@ int func_800A3E6C(int actorId)
 
     object->unk34 = 0;
     object->unk38 = 0;
-    switch ((*(u_char*)((char*)object + 0x16C)) & 7) {
+    switch (object->unk6C[8].actorId) {
     case 0:
     case 1:
-        *(u_char*)((char*)object + 0x16E) =
-            D_800E8FD0[*(u_char*)((char*)object + 0x16E) * 4 + D_800F49E8];
+        object->unk6C[8].unk2 =
+            D_800E8FD0[object->unk6C[8].unk2 * 4 + D_800F49E8];
         // fallthrough
     case 2:
         step = 0x80;
@@ -817,7 +817,7 @@ int func_800A3E6C(int actorId)
         object->unk36 = 0;
         func_800AE6C0(actor, 0x2C, 0x2D);
         func_800A0204(actorId, height + 0x4F, 0, 4);
-        *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
+        actor->unk5AC_20 = 1;
         func_800E4C1C(
             (object->unk1C + object->unk34) / 128, (object->unk20 + object->unk38) / 128);
         break;
@@ -827,11 +827,11 @@ int func_800A3E6C(int actorId)
         if (actor->unk5AC_3) {
             func_800A0204(actorId, 0x4C, 0, 4);
             func_800AE6C0(actor, 0x2E, 0x2F);
-            *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
+            actor->unk5AC_20 = 1;
         } else {
             func_800A0204(actorId, height + 0x47, 0, 4);
             func_800AE6C0(actor, 0x2C, 0x2D);
-            *(u_int*)((char*)actor + 0x5AC) |= 0x100000;
+            actor->unk5AC_20 = 1;
         }
         dx = 0;
         dz = 0;
@@ -877,7 +877,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
 
     object = D_800F45E0[D_800E90A8];
     if (mode == 2) {
-        switch ((*(u_char*)((char*)object + 0x16C)) & 7) {
+        switch (object->unk6C[8].actorId) {
         case 0:
         case 1:
             object->unk1A = 0xF9;
@@ -889,7 +889,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
             object->unk1A = 0xFE;
             break;
         }
-        *(u_char*)((char*)object + 0x170) = 0;
+        object->unk6C[8].unk4 = 0;
         func_800E68A0(object);
         return;
     }
@@ -926,7 +926,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     }
     func_800E4C28(object->unk5C, object->unk5E);
     func_800E68A0(object);
-    if (((*(int*)((char*)object + 0x16C)) & 0x30) == 0x20) {
+    if (object->unk6C[8].unk0_4 == 2) {
         func_800E68A0(object);
     }
     step = -0x80;

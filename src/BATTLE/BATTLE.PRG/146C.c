@@ -566,6 +566,7 @@ u_int func_8009E4B0(int);
 void func_8009EA14(int, SVECTOR*);
 
 void func_800E685C(int, int, int);
+void func_800DEEA4(D_800F19CC_t2*);
 
 extern u_char D_8004EF20;
 extern u_char D_8004EF80;
@@ -3373,7 +3374,95 @@ void func_8006FCBC(void)
 
 void func_8006FD0C(void) { _cameraMode = 9; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006FD1C);
+void func_8006FD1C(void)
+{
+    _hitEntity_t saved;
+    func_8006EBF8_t position;
+    D_800F19CC_t2* action;
+    int i;
+    int found;
+
+    vs_gametime_tickspeed = 2;
+    action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+    if ((action->actionIndex >= 0x8D) && (action->actionIndex < 0xB8)) {
+        func_8009CC20(action->unk4.unk0.targetActor, 5);
+    } else if ((action->actionIndex >= 0xB8) && (action->actionIndex < 0xE0)) {
+        func_8009CC20(action->unk4.unk0.targetActor, 4);
+    }
+
+    if (D_800F19CC->unk0 >= 999) {
+        func_8006FD0C();
+        return;
+    }
+
+    if ((D_800F19CC->battleAbilityInputSuccessful == 1)
+        && (vs_battle_actors[action->unk4C[0].unk0.targetActor]->unk3C->currentHP != 0)) {
+        func_800DEEA4(action);
+        _cameraMode = 8;
+        ++D_800F19CC->unk4;
+        ++D_800F19CC->unk0;
+        func_80085B10(vs_main_settings.mappedChainAbilities[D_800F19CC->unk2C03 - 1],
+            &D_800F19CC->unk854[D_800F19CC->unk0 & 3], &D_800F19CC->unk8, 1);
+        func_80093F24(D_800F19CC->unk0);
+        if (vs_main_scoredata.maxChain < D_800F19CC->unk0) {
+            vs_main_scoredata.maxChain = D_800F19CC->unk0;
+        }
+        if (((u_char)vs_battle_getStateFlag(0x82) >= 10)
+            && (vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22)
+            && (vs_main_artsStatus.kills.total
+                < vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills
+                        .battleAbilitiesUnlocked])) {
+            ++vs_main_artsStatus.kills.total;
+        }
+    } else if (D_800F19CC->battleAbilityInputSuccessful == 2) {
+        func_800DEEA4(action);
+        _cameraMode = 8;
+        ++D_800F19CC->unk4;
+        saved = D_800F19CC->unk8.unk4;
+        found = 0;
+        for (i = 0; i < D_800F19CC->unk8.unk4A; ++i) {
+            if ((D_800F19CC->unk8.unk4C[i].unk0.targetActor == 0)
+                && (D_800F19CC->unk8.unk4C[i].hpEffect
+                    || D_800F19CC->unk8.unk4C[i].mpEffect)) {
+                D_800F19CC->unk8.unk4 = D_800F19CC->unk8.unk4C[i];
+                found = 1;
+            }
+        }
+        if (!found) {
+            D_800F19CC->unk8.unk4 = D_800F19CC->unk8.unk4C[0];
+        }
+        D_800F19CC->unk8.unk4.unk0.mp = 0;
+        D_800F19CC->unk8.unk4.unk0.hp = 0;
+        for (i = 0; i < D_800F19CC->unk8.unk4A; ++i) {
+            if (D_800F19CC->unk8.unk4C[i].unk0.targetActor
+                == D_800F19CC->unk8.unk4.unk0.targetActor) {
+                D_800F19CC->unk8.unk4.unk0.hp += D_800F19CC->unk8.unk4C[i].unk0.hp;
+                D_800F19CC->unk8.unk4.unk0.mp += D_800F19CC->unk8.unk4C[i].unk0.mp;
+            }
+        }
+        D_800F19CC->unk8.unk4C[0] = saved;
+        D_800F19CC->unk8.unk4C[0].unk0.targetLimb =
+            vs_battle_actors[D_800F19CC->unk8.unk4C[0].unk0.targetActor]->unk3C->unk36;
+        D_800F19CC->unk8.unk4A = 1;
+        func_800A1108(saved.unk0.targetActor, &position);
+        D_800F19CC->unk8.unk844.vx = position.unk0.unk4.vx;
+        D_800F19CC->unk8.unk844.vz = position.unk0.unk4.vz;
+        D_800F19CC->unk8.unk844.vy = position.unk0.unk4.vy;
+        ++D_800F19CC->unk0;
+        action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+        D_800F19CC->unk2C07 = 1;
+        func_80085B10(vs_main_settings.mappedDefenseAbilities[D_800F19CC->unk2C03 - 1],
+            action, &D_800F19CC->unk8, 1);
+        if ((vs_main_artsStatus.kills.battleAbilitiesUnlocked < 22)
+            && (vs_main_artsStatus.kills.total
+                < vs_main_battleAbilitiesPointsRequirements[vs_main_artsStatus.kills
+                        .battleAbilitiesUnlocked])) {
+            ++vs_main_artsStatus.kills.total;
+        }
+    } else {
+        func_8006FD0C();
+    }
+}
 
 void func_80070278(void)
 {

@@ -17,11 +17,12 @@ typedef struct {
         func_800C1564_flags flags;
         u_char values[4];
     } unk4;
-    SVECTOR unk8;
+    short unk8[4];
 } func_800C1564_t;
 
 int vs_battle_mapStickDeadZone(int);
 int func_800C1564(func_800C1564_t* arg0, u_short* arg1);
+void func_800C1664(int arg0, int arg1, int arg2);
 void func_800C16DC();
 int func_800C4734(void);
 void func_800C0D78(void);

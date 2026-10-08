@@ -629,27 +629,27 @@ int func_800A38E0(int actorId)
     int found;
     int oldX;
     int oldZ;
-    int flags;
-    if (actor == 0) {
+
+    if (actor == NULL) {
         return -1;
     }
-    if ((*((u_int*)(((char*)actor) + 0x5AC))) & 3) {
+    if (actor->unk5AC_0 != 0) {
         return -1;
     }
-    flags = *((u_int*)(((char*)actor) + 8));
-    if (flags & 0x70000) {
+    if (actor->unk0.unkA_0 != 0) {
         return -1;
     }
-    if (flags & 0x180000) {
-        goto fail;
+    if (actor->unk0.unkA_3 != 0) {
+        return -1;
     }
     direction = actor->unk0.facing + ONE / 8;
     direction &= 0xFFF;
     direction /= ONE / 4;
     D_800F49E8 = direction;
-    oldX = (farX = (x = actor->unk0.currentTileX));
-    oldZ = (farZ = (z = actor->unk0.currentTileZ));
-    found = (direction < 2) ? (-1) : (1);
+    oldX = farX = x = actor->unk0.currentTileX;
+    oldZ = farZ = z = actor->unk0.currentTileZ;
+    found = direction < 2 ? -1 : 1;
+
     if (direction & 1) {
         x += found;
         farX = oldX + (found * 2);
@@ -660,20 +660,20 @@ int func_800A38E0(int actorId)
     if ((x < 0) || (z < 0)) {
         return -1;
     }
-    if ((*((u_int*)(((char*)actor) + 0x5AC))) & 8) {
+    if (actor->unk5AC_3) {
         x = (x * 128) + 64;
         objectId = actor->unk0.unk13;
         object = D_800F45E0[objectId];
         z = (z * 128) + 64;
         if (object->unk1A != 0) {
-            goto fail;
+            return -1;
         }
         if (!func_800A3DB4(x, z, actor->unk0.position.vy - 128)) {
             return -1;
         }
         direction = actor->unk0.position.vy - 384;
         if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
-            goto fail;
+            return -1;
         }
         if (direction < func_800A3BC4(x, z)) {
             return -1;
@@ -682,12 +682,12 @@ int func_800A38E0(int actorId)
     } else {
         found = func_800A91DC(x, z, 0);
         if (found == 0) {
-            goto fail;
+            return -1;
         }
         object = D_800F45E0[found];
         objectId = found;
-        if (((*((u_int*)(((char*)object) + 0x16C))) & 0x30) == 0x10) {
-            goto fail;
+        if (object->unk6C[8].unk0_4 == 1) {
+            return -1;
         }
         if (object->unk1A != 0) {
             return -1;
@@ -702,7 +702,8 @@ int func_800A38E0(int actorId)
         if ((actor->unk0.position.vy + 64) < object->unk1E) {
             return -1;
         }
-        if (((*((u_char*)(((char*)object) + 0x16C))) & 7) < 4U) {
+        if (object->unk6C[8].actorId < 4) {
+
             if (!func_800A3DB4(farX, farZ, object->unk1E)) {
                 return -1;
             }
@@ -713,14 +714,13 @@ int func_800A38E0(int actorId)
                 return -1;
             }
             if (direction < func_800A3BC4(x, z)) {
-                goto fail;
+                return -1;
             }
         }
         if (func_800A3C00(object, 1) == 0) {
             return objectId;
         }
     }
-fail:
     return -1;
 }
 

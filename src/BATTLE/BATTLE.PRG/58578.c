@@ -17,18 +17,8 @@ typedef struct {
     short unk4;
     char unk6;
     char unk7;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    char unkC;
-    char unkD;
-    char unkE;
-    char unkF;
-    char unk10;
-    char unk11;
-    char unk12;
-    char unk13;
+    SVECTOR unk8;
+    char* unk10;
 } D_800EB9B8_unk990;
 
 typedef struct {
@@ -71,6 +61,15 @@ typedef struct {
     short unk18[4];
 } func_800C0FA8_t2;
 
+typedef struct {
+    u_long tag;
+    struct {
+        VS_TILE tile;
+        VS_POLY_G4_TPAGE poly;
+        u_long tpage;
+    } box;
+} labelBoxPrim_t;
+
 void func_800C02A8(void);
 MATRIX* func_800C085C(u_char* scale, int angle);
 void func_800C0B50(func_800C1564_t* shape, int color);
@@ -82,6 +81,7 @@ void func_800C20B4(void);
 void func_800C253C(int type);
 
 extern D_800EB9B8_t* D_800EB9B8;
+extern u_char D_800F4CB4;
 
 void func_800C0D78(void)
 {
@@ -635,7 +635,99 @@ int func_800C1D84(void)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1DC4);
+void func_800C1DC4(D_800EB9B8_unk990* arg0)
+{
+    int gradient = arg0->unk2;
+    u_long* nextPrim = vs_scratch.unk8 - (arg0->unk1 * 4 - 8);
+    int color0;
+    int color1;
+    int isLeft;
+    int x;
+    int y;
+    int xy;
+    int textXy;
+    int color;
+    labelBoxPrim_t* prim;
+
+    if (arg0->unk1 != 0) {
+        gradient = 8;
+    }
+    color0 = 8 - gradient;
+    color0 = vs_battle_uiGradientStop(color0, arg0->unk7 * 8, 0x80);
+    color1 = vs_battle_uiGradientStop(gradient, arg0->unk7 * 8, 0x80);
+
+    xy = arg0->unk4;
+    isLeft = xy < 160;
+    if (isLeft) {
+        y = color0;
+        color0 = color1;
+        color1 = y;
+    }
+    y = arg0->unk6 + D_800F4CB4;
+    x = xy;
+    if (isLeft) {
+        x += 0x42;
+    } else {
+        x += 6;
+    }
+    color = 0x404040;
+    textXy = vs_getXY_2(x, y - 1);
+    if (arg0->unk1 != 0) {
+        color = 0x808080;
+    }
+    vs_battle_renderTextRawColor(arg0->unk10, textXy, color, nextPrim);
+
+    prim = vs_scratch.unk0;
+    if (gradient != 0) {
+        arg0->unk2 = gradient - 1;
+    }
+    x = arg0->unk4 & 0xFFFF;
+    gradient = (arg0->unk4 < 160) * 2;
+    prim->tag = vs_getTag(prim->box, *nextPrim);
+    prim->box.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+    prim->box.tile.x0y0 = vs_getXY_2(x + 2 - gradient, y + 2);
+    prim->box.tile.wh = (gradient + 0x48) | (8 << 16);
+    prim->box.poly.tpage = _get_mode(0, 1, 0);
+    prim->box.poly.r0g0b0code = vs_getRGB0Raw(primPolyG4, color0);
+    prim->box.poly.x0y0 = x | (y << 16);
+    prim->box.poly.r1g1b1 = color1;
+    prim->box.poly.x1y1 = vs_getXY_2(x + 0x48, y);
+    prim->box.poly.r2g2b2 = color0;
+    prim->box.poly.x2y2 = x | ((y + 8) << 16);
+    prim->box.poly.r3g3b3 = color1;
+    prim->box.poly.x3y3 = vs_getXY_2(x + 0x48, y + 8);
+    prim->box.tpage = _get_mode(0, 0, 0);
+    *nextPrim = ((u_long)prim << 8) >> 8;
+    ++prim;
+    vs_scratch.unk0 = prim;
+
+    if (arg0->unk1 != 0) {
+        int sxy;
+        int otz;
+        int ringXy;
+
+        y += 4;
+        func_800C02A8();
+        gte_ldv0(&arg0->unk8);
+        gte_rtps2();
+        gte_stsxy(&sxy);
+        gte_stotz(&otz);
+        if (arg0->unk4 < 160) {
+            x = (x + 0x47) & 0xFFFF;
+            ringXy = x | (y << 16);
+            func_800C1A40(sxy, ringXy, arg0->unk3 - 2);
+            if (arg0->unk3 >= 18) {
+                func_800C1A40(sxy, ringXy, (arg0->unk3 + 14) & 0x1F);
+            }
+        } else {
+            ringXy = x | (y << 16);
+            func_800C16FC(sxy, ringXy, arg0->unk3 - 2);
+            if (arg0->unk3 >= 18) {
+                func_800C16FC(sxy, ringXy, (arg0->unk3 + 14) & 0x1F);
+            }
+        }
+    }
+}
 
 void func_800C20B4(void)
 {

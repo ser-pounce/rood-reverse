@@ -30,7 +30,8 @@ typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
-    int unk24;
+    short unk24;
+    short unk26;
     short unk28;
     short unk2A;
     char unk2C;
@@ -39,8 +40,7 @@ typedef struct {
     char unk2F;
     char unk30;
     char unk31;
-    char unk32;
-    char unk33;
+    short unk32;
     int unk34;
     int unk38;
     short unk3C;
@@ -84,8 +84,13 @@ int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
+int func_800C0758(int phase, int segments, int index);
 void func_800C253C(int type);
 
+extern short D_800EA234[];
+extern short D_800EA2C4[];
+extern u_char D_800EA438[];
+extern u_short D_800EA46C[];
 extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800F4CB4;
 
@@ -872,7 +877,83 @@ int func_800C2368(int step, int radius, int index)
     return index;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C253C);
+void func_800C253C(int type)
+{
+    short* basis = (short*)0x1F800398;
+    int index = 0;
+    int shape = D_800EB9B8->unk2A;
+    menuShapeVertex* vertices = D_800EB9B8->unk48;
+    int count;
+    int command;
+    u_short* commands;
+
+    if (shape != 0) {
+        D_800EB9B8->unk2A = shape - 1;
+    }
+    if (type < 3u) {
+        if (type == 0) {
+            D_800EB9B8->unk24 += (shape + 1) * 3;
+            D_800EB9B8->unk28 += (shape + 1) * 11;
+        }
+        D_800EB9B8->unk26 += (shape * 2 + 1) * 7;
+        shape += type * 16;
+    } else {
+        shape = type + 0x2D;
+    }
+
+    command = D_800EA438[shape];
+    commands = &D_800EA46C[command];
+
+    for (count = D_800EA438[shape + 1] - command; count > 0; --count) {
+        short* src;
+        int i;
+        int j;
+
+        command = *commands++;
+        switch ((command >> 14) & 3) {
+        case 0:
+            src = &D_800EA234[(command << 2) & 0x7C];
+            for (i = 0; i < 3; ++i) {
+                basis[i] = *src++;
+            }
+            for (i = 4; i < 11; ++i) {
+                basis[i] = 0;
+            }
+            j = (command >> 3) & 0x1C;
+            i = *src;
+            basis[(0x546465 >> j) & 0xF] = i;
+            basis[(0x8A998A >> j) & 0xF] = i;
+            i = (command >> 9) & 0x1C;
+            if (i == 0) {
+                i = 0x20;
+            }
+            index = func_800C0758((command >> 6) & 0x1C, i, index);
+            break;
+        case 1:
+            index = func_800C2368(command & 0x3FF, ((command >> 10) & 7) + 1, index);
+            break;
+        case 2:
+            src = &D_800EA2C4[command & 0x3FF];
+            command = ((command >> 10) & 7) + 2;
+            for (j = 0; j < 2; ++j) {
+                for (i = command; i > 0; --i) {
+                    vertices[index].xyz[0] = src[0];
+                    src[0] = -vertices[index].xyz[0];
+                    vertices[index].xyz[1] = src[1];
+                    vertices[index].xyz[2] = src[2];
+                    src[2] = -vertices[index].xyz[2];
+                    vertices[index].flags = 1;
+                    ++index;
+                    src += 3;
+                }
+                vertices[index - command].flags = 0;
+                src -= command * 3;
+            }
+            break;
+        }
+    }
+    D_800EB9B8->unk32 = index;
+}
 
 void* func_800C282C(void)
 {

@@ -7,6 +7,7 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "573B8.h"
+#include "58578.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "src/SLUS_010.40/31724.h"
@@ -246,7 +247,7 @@ typedef struct {
     int unk4;
     u_char unk8;
     u_char unk9;
-    u_char unkA;
+    signed char unkA;
     u_char unkB;
     u_char unkC;
     u_char unkD;
@@ -270,7 +271,19 @@ typedef struct {
 } func_800C56C0_t2;
 
 typedef struct {
-    char unk0[0x34];
+    func_800C1564_t unk0[2];
+    short unk20;
+    short unk22;
+    int unk24;
+    short unk28;
+    short unk2A;
+    u_char unk2C;
+    u_char unk2D;
+    u_char unk2E;
+    u_char unk2F;
+    signed char unk30;
+    u_char unk31;
+    char unk32[2];
     int unk34;
     int unk38;
     int unk3C;
@@ -481,7 +494,54 @@ void func_800C518C(int arg0, void* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C51B4);
+void func_800C51B4(int mode)
+{
+    func_800C5798_t* entries = D_800EB9B8->unk40;
+    int i;
+    int group;
+    if (D_800EB9B8->unk31) {
+        if (mode == 3) {
+            return;
+        }
+        for (i = 0; i < D_800EB9B8->unk2C; ++i) {
+            void* data;
+            group = entries[i].unk9;
+            if (group >> 4) {
+                continue;
+            }
+            if (mode == 1) {
+                func_800C513C(group, entries[i].unkA);
+                data = NULL;
+            } else {
+                func_800C5164(group, 0, entries[i].unkA);
+                data = &D_800EB9B8->unk34;
+            }
+            func_800C518C(group, data);
+        }
+        return;
+    }
+    i = D_800EB9B8->unk2D;
+    if (i == 255) {
+        return;
+    }
+    if (mode & 1) {
+        group = D_800EB9B8->unk2F;
+        if (!(group >> 4)) {
+            func_800C513C(group, D_800EB9B8->unk30);
+            func_800C518C(group, NULL);
+        }
+    }
+    if (mode & 2) {
+        D_800EB9B8->unk2F = entries[i].unk9;
+        D_800EB9B8->unk30 = entries[i].unkA;
+        group = D_800EB9B8->unk2F;
+        if (group >> 4) {
+            return;
+        }
+        func_800C5164(group, 0, D_800EB9B8->unk30);
+        func_800C518C(group, &D_800EB9B8->unk34);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5360);
 

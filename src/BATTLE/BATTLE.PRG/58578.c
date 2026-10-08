@@ -326,7 +326,68 @@ int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1384);
+int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
+{
+    struct {
+        int corners[5];
+        int clip;
+    } polygon;
+    struct {
+        short local[4];
+        SVECTOR rotated;
+        short origin[4];
+    } work;
+    MATRIX matrix;
+    int i;
+    int x;
+    int z;
+    int offsetX;
+    int offsetZ;
+    short* local;
+    void* base;
+    int offset;
+
+    work.origin[0] = shape->unk8[0];
+    work.origin[1] = shape->unk8[1];
+    work.origin[2] = shape->unk8[2];
+    work.local[0] = shape->unk4.values[3] << 4;
+    work.local[1] = -shape->unk2;
+    work.local[2] = 0;
+    local = work.local;
+    RotMatrix_gte((SVECTOR*)work.local, &matrix);
+    for (i = 0, base = &work, offset = 16; i < 3; offset += 2, ++i, ++local) {
+        *local = *position++ - *(u_short*)(base + offset);
+    }
+    ApplyMatrixSV(&matrix, (SVECTOR*)work.local, &work.rotated);
+    if ((u_short)-work.rotated.vy > shape->unk4.values[1] * ONE / 128) {
+        return 0;
+    }
+    x = shape->unk4.values[0] * ONE / 128;
+    z = shape->unk4.values[2] * ONE / 128;
+    if (angled) {
+        offsetZ = z;
+        offsetX = -x;
+    } else {
+        offsetZ = 0;
+        offsetX = offsetZ;
+    }
+    polygon.corners[0] = (u_short)-x | (-offsetZ << 16);
+    polygon.corners[1] = -offsetX | (-z << 16);
+    polygon.corners[2] = x | (offsetZ << 16);
+    polygon.corners[3] = (u_short)offsetX | (z << 16);
+    polygon.corners[4] = (u_short)work.rotated.vx | (work.rotated.vz << 16);
+    i = 0;
+    do {
+        gte_ldsxy3(polygon.corners[4], polygon.corners[i], polygon.corners[(i + 1) & 3]);
+        gte_nclip2();
+        gte_stopz(&polygon.clip);
+        if (polygon.clip < 0) {
+            return 0;
+        }
+        ++i;
+    } while (i < 4);
+    return 1;
+}
 
 int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
 {

@@ -2026,7 +2026,6 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
             frames = 10;
         }
         func_800A0204(actor->unk0.unkF, next, 0, frames);
-
         return;
     }
     if (actor->unk5AC_15) {
@@ -2037,13 +2036,14 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
         if ((u_int)(animation - 0x12) >= 2) {
             if (animation == 0x14 || animation == 0x11) {
                 next = 0x19;
-                goto queue;
+            } else {
+                actor->unk5AC_15 = 0;
+                return;
             }
-            actor->unk5AC_15 = 0;
-            return;
         }
-    queue:
-        func_800AD494(actor, next, &entry);
+
+        func_800AD494
+(actor, next, &entry);
         if (entry == NULL) {
             next = 6;
         }

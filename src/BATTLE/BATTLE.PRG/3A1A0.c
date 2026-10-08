@@ -1316,21 +1316,8 @@ void func_800A4E68(int actorId)
 
 int func_800A51A0(int arg0, SVECTOR* arg1)
 {
-    func_8008D2C0_t sp10[4];
-    func_8008D2C0_t* p;
-    int n;
-    int i;
+    func_8008D2C0_t* p = func_800A4A24(arg0);
 
-    arg0 -= 2;
-    n = func_8008D2C0(sp10);
-    for (i = 0; i < n; i++) {
-        if (sp10[i].unk6 == arg0) {
-            p = &sp10[i];
-            goto found;
-        }
-    }
-    p = NULL;
-found:
     if (p->unk0 + 0x40 < arg1->vx) {
         return 0;
     }

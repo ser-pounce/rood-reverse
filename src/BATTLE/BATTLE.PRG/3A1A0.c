@@ -1437,7 +1437,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     if (actor->unk5AC_0 != 0) {
         return 3;
     }
-    if (*(u_int*)((char*)actor + 8) & 0x0F000000) {
+    if (actor->unk0.unkB_0) {
         return 3;
     }
     if (*(u_int*)((char*)actor + 0x5AC) & 0x100000) {
@@ -1446,8 +1446,8 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     if ((signed char)actor->unk0.unk11 > 0) {
         return 3;
     }
-    if ((*(u_int*)((char*)actor + 8) & 0x180000) == 0x100000) {
-        if ((*(u_int*)((char*)actor + 0xC) & 0xF)) {
+    if (actor->unk0.unkA_3 == 2) {
+        if (actor->unk0.unkC_0) {
             func_800ACF54(actor);
             if (D_800F1D6E[actor->unk0.unkC_0] == 7
                 && func_800A6EE8(&actor->unk0.position, 0, 0, 1)
@@ -1477,7 +1477,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         if (distance >= actor->unk5B9 << 12) {
             distance = actor->unk5BA << 12;
         }
-    } else if (*(u_int*)((char*)actor + 8) & 0x180000) {
+    } else if (actor->unk0.unkA_3) {
         i = (direction - (u_short)actor->unk1800) & 0xFFF;
         if (distance == 0) {
             return 3;
@@ -1499,7 +1499,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         func_800A0204(index, 1, 0, 10);
     }
 
-    if (*(u_int*)((char*)actor + 8) & 0x70000) {
+    if (actor->unk0.unkA_0) {
         if (index != 0) {
             return 3;
         }
@@ -1567,7 +1567,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
             actor->unk1846 = 0;
         }
         if (actor->unk6E4 == 0) {
-            if (actor->unk1840 != 0 || (*(u_int*)((char*)actor + 0xC) & 0xF)) {
+            if (actor->unk1840 != 0 || actor->unk0.unkC_0) {
                 actor->unk1840 = 0;
             } else if (!(*(u_int*)((char*)actor + 0x5AC) & 0x1000)) {
                 animation = actor->animationId;
@@ -1618,7 +1618,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         facing = input->vx;
     }
     facing &= 0xFFF;
-    if (distance != 0 && !(*(u_int*)((char*)actor + 8) & 0x180000)) {
+    if (distance != 0 && !actor->unk0.unkA_3) {
         func_800A6660(actor, facing, (func_800A6660_t*)input);
     }
 
@@ -1638,7 +1638,7 @@ scale:
     motion.vz = rsin(angle) * speed / 0x1000000;
 
 move:
-    if ((*(u_int*)((char*)actor + 8) & 0x70000) == 0x30000) {
+    if (actor->unk0.unkA_0 == 3) {
         if (actor->unk0.position.vy > 0) {
             actor->unk6EE = 0;
             actor->unk6EF = 0;
@@ -1670,16 +1670,16 @@ move:
         break;
     case 3:
         distance = 0;
-        if ((*(u_int*)((char*)actor + 8) & 0x180000) == 0x100000) {
+        if (actor->unk0.unkA_3 == 2) {
             return 3;
         }
         if (turning) {
             actor->unk0.unkA_0 = 3;
         }
-        if (*(u_int*)((char*)actor + 8) & 0x70000) {
+        if (actor->unk0.unkA_0) {
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vz = 0;
-            if ((*(u_int*)((char*)actor + 8) & 0x70000) == 0x10000) {
+            if (actor->unk0.unkA_0 == 1) {
                 func_800A0204(index, 0x30, 0, 2);
                 actor->unk0.unkA_0 = 2;
             }
@@ -1781,7 +1781,7 @@ move:
         if (result >= 5) {
             actor->unk17FF = 0;
         blocked:
-            if (*(u_int*)((char*)actor + 8) & 0x180000) {
+            if (actor->unk0.unkA_3) {
                 return 3;
             }
         reject:
@@ -1798,14 +1798,12 @@ move:
             status = 3;
             goto done;
         }
-        if (result >= 2
-            && ((*(u_int*)((char*)actor + 8) & 0x800000) || (actor->unk5AC_3))) {
+        if (result >= 2 && (actor->unk0.weaponDrawn || actor->unk5AC_3)) {
             goto blocked;
         }
-        if (!(*(u_int*)((char*)actor + 8) & 0x70000) && input->pad == 0 && result != 1
-            && actor->unk17FF < 8) {
+        if (!actor->unk0.unkA_0 && input->pad == 0 && result != 1 && actor->unk17FF < 8) {
             actor->unk17FF++;
-            if ((*(u_int*)((char*)actor + 8) & 0x180000) != 0x100000) {
+            if (actor->unk0.unkA_3 != 2) {
                 goto blocked;
             }
             return 3;
@@ -1816,7 +1814,7 @@ move:
         motion.vz = D_800F4B08.vz - actor->unk0.position.vz;
         actor->unk0.unkC_0 = D_800F4B08.pad;
         if (result == 4) {
-            if ((*(u_int*)((char*)actor + 8) & 0x180000) == 0x100000) {
+            if (actor->unk0.unkA_3 == 2) {
                 goto fallStep;
             }
             if (func_800A6798(actor, &motion, &saved) == 0) {
@@ -1848,7 +1846,7 @@ move:
                 actor->unk0.lastTouchedTileZ = D_800F4B08.vz / 128;
                 actor->unk0.unk61 = actor->unk0.unkC_0;
             }
-        } else if ((*(u_int*)((char*)actor + 8) & 0x180000) == 0x100000) {
+        } else if (actor->unk0.unkA_3 == 2) {
         fallStep:
             if (*(u_int*)((char*)actor + 0x5AC) & 0x1000) {
                 motion.vx = 0;
@@ -1866,8 +1864,7 @@ move:
                 }
             }
             if (result >= 2) {
-                if ((*(u_int*)((char*)actor + 8) & 0x70000)
-                    && (*(u_int*)((char*)actor + 0x5AC) & 0x1000)) {
+                if (actor->unk0.unkA_0 && (*(u_int*)((char*)actor + 0x5AC) & 0x1000)) {
                     goto reject;
                 }
                 if (func_800A69B4(actor) == 0) {
@@ -1888,7 +1885,7 @@ move:
             actor->unk0.unkA_3 = 1;
             actor->unk1800 = (actor->unk0.facing + actor->unk0.unk3E) & 0xFFF;
             actor->unk0.unk9_6 = 1;
-        } else if ((*(u_int*)((char*)actor + 8) & 0x180000) == 0x100000) {
+        } else if (actor->unk0.unkA_3 == 2) {
             func_800A0204(index, D_800E90C6, 0, 4);
             if (index == 0) {
                 func_800AE6C0(actor, 0x2A, 0x2B);
@@ -1916,12 +1913,12 @@ move:
     }
 
     if (motion.vy > 0) {
-        if ((*(u_int*)((char*)actor + 8) & 0x180000) == 0x100000) {
+        if (actor->unk0.unkA_3 == 2) {
             motion.vx = 0;
             motion.vz = 0;
             goto fall;
         }
-        if (*(u_int*)((char*)actor + 0xC) & 0xF) {
+        if (actor->unk0.unkC_0) {
             func_800A9378(actor->unk0.position.vx, actor->unk0.position.vy,
                 actor->unk0.position.vz, 0);
             actor->unk0.unkC_0 = D_800F49F4;
@@ -1929,8 +1926,7 @@ move:
         if (motion.vy >= 0x40) {
             if (input->pad == 0) {
                 if (motion.vy >= 0x100) {
-                    if ((*(u_int*)((char*)actor + 8) & 0x180000) != 0x100000
-                        && actor->unk17FF < 8) {
+                    if (actor->unk0.unkA_3 != 2 && actor->unk17FF < 8) {
                         actor->unk17FF++;
                         goto blocked;
                     }
@@ -1971,7 +1967,7 @@ land:
     func_800AA698(index, &motion, 0);
 
 done:
-    if (!(*(u_int*)((char*)actor + 8) & 0x70000)) {
+    if (!actor->unk0.unkA_0) {
         func_800A6AA0(actor, distance, direction);
     }
     return status;

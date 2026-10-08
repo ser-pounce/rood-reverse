@@ -1095,7 +1095,7 @@ void func_800AEF94(MATRIX* camera)
             if (object->unk64.unk0 != 0) {
                 func_800AB788(NULL, (D_800F4538_t*)object, 0);
             }
-            if ((*(u_int*)((char*)object + 8)) & 0xF00) {
+            if (object->unk9_0) {
                 func_800AB9A4((D_800F4538_t*)object);
             }
             func_800B1A68((D_800F45E0_t*)object, camera);

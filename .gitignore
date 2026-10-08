@@ -11,6 +11,7 @@
 /nonmatchings/
 /tools/.sysdeps
 /tools/python
+/tools/objdiff
 /tools/old-gcc
 /tools/mkpsxiso
 /tools/xdelta

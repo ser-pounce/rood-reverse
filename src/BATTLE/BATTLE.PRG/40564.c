@@ -30,6 +30,7 @@ void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800A70DC(D_800F4538_t*, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
@@ -46,9 +47,30 @@ extern char D_800F49DC;
 extern u_char D_800F49E4;
 extern int D_800F49F4;
 extern u_char D_800F49F8;
+extern u_char D_800F49F9;
 extern short D_800F4B00;
 
 #define getActorFlags(actor) (*((int*)&(actor)->unk5B4 - 2))
+
+// Inlined copy of 3A1A0 func_800A4A24
+static inline func_8008D2C0_t* func_800A4A24(int id)
+{
+    func_8008D2C0_t platforms[4];
+    int count;
+    int i;
+
+    id -= 2;
+    count = func_8008D2C0(platforms);
+
+    for (i = 0; i < count; ++i) {
+        if (platforms[i].unk6 == id) {
+            // BUG: returns stack variable
+            return &platforms[i];
+        }
+    }
+
+    return NULL;
+}
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
@@ -343,7 +365,95 @@ int func_800A9378(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9530);
+int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
+{
+    int position = actor->unk63C;
+    int direction = D_800F49F9 >> 1;
+    int edge;
+    int surface;
+    int distance;
+
+    actor->unk1800 = direction * (ONE / 4);
+
+    if (actor->unk0.unkC_0) {
+        func_8008D2C0_t* platform = func_800A4A24(actor->unk0.unkC_0);
+
+        edge = 65;
+
+        if (direction < 2) {
+            position = -position;
+        } else {
+            edge = -65;
+        }
+
+        if (direction & 1) {
+            position += actor->unk0.position.vx;
+            edge += platform->unk0;
+            offset->vx = edge - position;
+        } else {
+            position += actor->unk0.position.vz;
+            edge += platform->unk4;
+            offset->vz = edge - position;
+        }
+    } else {
+        edge = 0;
+
+        if (direction < 2) {
+            position = -position;
+        } else {
+            edge = 127;
+        }
+
+        if (direction & 1) {
+            position += actor->unk0.position.vx;
+            offset->vx = edge - (position & 127);
+        } else {
+            position += actor->unk0.position.vz;
+            offset->vz = edge - (position & 127);
+        }
+
+        if (offset->vx > 32) {
+            offset->vx -= 64;
+        }
+
+        if (offset->vx < -32) {
+            offset->vx += 64;
+        }
+
+        if (offset->vz > 32) {
+            offset->vz -= 64;
+        }
+
+        if (offset->vz < -32) {
+            offset->vz += 64;
+        }
+
+        if (getActorFlags(actor) & 0xF0000000) {
+            offset->vy += 12;
+        }
+
+        offset->vy += 8;
+    }
+
+    surface = actor->unk0.unkC_0;
+    actor->unk0.unkC_0 = 0;
+    actor->unk0.position.vx += offset->vx;
+    actor->unk0.position.vz += offset->vz;
+    distance = rsin(ONE / 8);
+    distance *= actor->unk63C;
+    distance /= ONE;
+    func_800A70DC(actor, distance);
+    actor->unk0.position.vx -= offset->vx;
+    actor->unk0.position.vz -= offset->vz;
+    actor->unk0.unkC_0 = surface;
+
+    if (actor->unk5AC_12 << 12) {
+        actor->unk5AC_12 = 0;
+        return 0;
+    }
+
+    return 1;
+}
 
 void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 {

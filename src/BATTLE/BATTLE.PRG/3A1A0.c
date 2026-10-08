@@ -1460,7 +1460,10 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
                 if (input->pad == 0) {
                     goto coast;
                 }
-                goto done;
+                if (!actor->unk0.unkA_0) {
+                    func_800A6AA0(actor, distance, direction);
+                }
+                return status;
             }
             actor->unk1846 = 0;
         }
@@ -1529,7 +1532,10 @@ scale:
         }
     }
     if (speed <= 0) {
-        goto done;
+        if (!actor->unk0.unkA_0) {
+            func_800A6AA0(actor, distance, direction);
+        }
+        return status;
     }
     angle = ONE * 3 / 4 - direction;
     motion.vx = rcos(angle) * speed / 0x1000000;
@@ -2042,8 +2048,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
             }
         }
 
-        func_800AD494
-(actor, next, &entry);
+        func_800AD494(actor, next, &entry);
         if (entry == NULL) {
             next = 6;
         }

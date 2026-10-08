@@ -24,31 +24,91 @@ typedef struct {
     short id;
 } func_8008D2C0_t;
 
+typedef struct {
+    char prefix[4];
+    u_char excluded;
+} actorCollisionExclusion;
+
+typedef struct {
+    u_char overlay;
+    u_char x;
+    u_char y;
+    u_char columns;
+} func_800AB098_t;
+
+typedef struct {
+    u_int unk0 : 24;
+    u_int timer : 8;
+} func_800AC690_timer_t;
+
+typedef struct {
+    u_int unk0 : 16;
+    u_int state : 3;
+    u_int unk13 : 13;
+} func_800AC690_flags_t;
+
+typedef struct {
+    u_int contact : 4;
+    u_int unk4 : 28;
+} func_800AC690_contact_t;
+
+typedef struct {
+    int unk0;
+    int unk4;
+} func_800ACF54_t;
+
+void func_8006F450(SVECTOR*);
 void func_8007A824(DR_MOVE*);
+void func_8008C49C(int, int);
 int func_8008D2C0(func_8008D2C0_t*);
+short func_8008DA24(int, int);
+short func_8008DD0C(int, int);
 void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
+void func_800A190C(int, int, SVECTOR*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(void*, int);
+void func_800A7524(void*, void*);
+void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
+void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
-void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
-void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AB098(D_800F4538_t*, int, int);
+int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
+int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
+void func_800AC690(int arg0, D_800F4538_t* arg1);
+void func_800ACF54(D_800F45E0_t*);
+void func_800AE47C(D_800F4538_t*);
+void func_800AE828(int, D_800F4538_t*, int);
+void func_800E4C28();
+void func_800E6764(int);
+void func_800E6EB0(int);
 
 extern u_char D_800E8F2C;
+extern u_char D_800E8F30[];
+extern u_char D_800E8F90[];
 extern func_800AAE9C_t D_800E909C[][28];
 extern func_800AAE9C_t D_800E916C[][8];
+extern u_char D_800E9278[];
+extern u_char D_800E92E8[];
+extern u_char D_800E92F0[];
+extern u_char D_800E92F8[];
+extern u_char D_800E9300[];
 extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
+extern u_int* D_800F49F0;
 extern int D_800F49F4;
 extern u_char D_800F49F8;
 extern u_char D_800F49F9;
 extern short D_800F4B00;
+extern u_char D_800F4B19;
+
+static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
+static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
@@ -96,12 +156,6 @@ _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
         return NULL;
     }
 }
-
-int func_800A8E84(D_800F4538_t* arg0, SVECTOR* arg1);
-typedef struct {
-    char prefix[4];
-    u_char excluded;
-} actorCollisionExclusion;
 
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
 {
@@ -496,8 +550,6 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
         actor->unk5AC_2 = 0;
     }
 }
-
-short func_8008DA24(int, int);
 
 static inline int scanFloor(int arg0, int arg1)
 {
@@ -1360,19 +1412,6 @@ int func_800AAE9C(D_800F4538_t* actor)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-extern u_char D_800E8F30[];
-extern u_char D_800E8F90[];
-
-static inline DR_MOVE* vs_battlePacketBegin(void) { return *(DR_MOVE**)0x1F800000; }
-static inline void vs_battlePacketEnd(DR_MOVE* p) { *(DR_MOVE**)0x1F800000 = p + 1; }
-
-typedef struct {
-    u_char overlay;
-    u_char x;
-    u_char y;
-    u_char columns;
-} func_800AB098_t;
-
 void func_800AB098(D_800F4538_t* actor, int index, int frame)
 {
     func_800AB098_t fallback;
@@ -1659,13 +1698,6 @@ void func_800AB788(u_char* actor, u_char* object, int arg2)
         vs_main_loadClut((u_short*)(actor + 0x16A4), actor[15] + 22, 0, count);
     }
 }
-
-void func_800A190C(int, int, SVECTOR*, int);
-void func_800A7524(void*, void*);
-int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
-int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
-void func_800AC690(int arg0, D_800F4538_t* arg1);
-extern u_char D_800F4B19;
 
 void func_800AB9A4(D_800F45E0_t* arg0)
 {
@@ -2170,37 +2202,6 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
     }
 }
 
-void func_8006F450(SVECTOR*);
-void func_8008C49C(int, int);
-short func_8008DD0C(int, int);
-void func_800ACF54(D_800F45E0_t*);
-void func_800AE828(int, D_800F4538_t*, int);
-void func_800E4C28();
-void func_800E6764(int);
-void func_800E6EB0(int);
-extern u_int* D_800F49F0;
-extern u_char D_800E9278[];
-extern u_char D_800E92E8[];
-extern u_char D_800E92F0[];
-extern u_char D_800E92F8[];
-extern u_char D_800E9300[];
-
-typedef struct {
-    u_int unk0 : 24;
-    u_int timer : 8;
-} func_800AC690_timer_t;
-
-typedef struct {
-    u_int unk0 : 16;
-    u_int state : 3;
-    u_int unk13 : 13;
-} func_800AC690_flags_t;
-
-typedef struct {
-    u_int contact : 4;
-    u_int unk4 : 28;
-} func_800AC690_contact_t;
-
 static inline int func_800AC690_getProfile(D_800F4538_t* actor)
 {
     u_int flags = *(u_int*)((char*)actor + 8);
@@ -2468,11 +2469,6 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
     }
 }
 
-typedef struct {
-    int unk0;
-    int unk4;
-} func_800ACF54_t;
-
 void func_800ACF54(D_800F45E0_t* arg0)
 {
 
@@ -2516,8 +2512,6 @@ inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
     arg0 += 84;
     arg0->pad = 0;
 }
-
-void func_800AE47C(D_800F4538_t*);
 
 void func_800AD008(void* arg0, void* arg1)
 {

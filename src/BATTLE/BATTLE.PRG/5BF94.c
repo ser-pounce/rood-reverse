@@ -3984,7 +3984,22 @@ void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     setVector(&arg1->position, result.vx, result.vy, result.vz);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0548);
+void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+{
+    switch (arg0->flags & 0x3000) {
+    case 0:
+        break;
+    case 0x1000:
+        func_800D01E4(arg0, arg1);
+        break;
+    case 0x2000:
+        func_800D037C(arg0, arg1);
+        break;
+    }
+    if ((arg1->flags & 4) && arg0->limit >= arg1->frame) {
+        ++arg1->frame;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
 

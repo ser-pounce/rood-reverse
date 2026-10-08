@@ -745,7 +745,7 @@ typedef struct {
     char displayTextLen;
     short unk10;
     short unk12;
-    char displayText[4];
+    signed char displayText[4];
 } D_800F1BAC_t;
 
 typedef struct {

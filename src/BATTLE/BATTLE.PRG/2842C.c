@@ -134,6 +134,7 @@ int func_8009406C(int, int, int, int);
 void func_80094844(short*, D_800F1BAC_t*);
 void func_80094AF8(D_800F1BAC_t*);
 void func_80094B0C(int, int, D_800F1BAC_t*);
+int func_80094E18(int, int, D_800F1BAC_t*);
 void func_8009506C(int, int, D_800F1BAC_t*);
 void func_80095258(int, int, D_800F1BAC_t*);
 void func_800958A4(int, int, D_800F1BAC_t*);
@@ -1395,7 +1396,70 @@ void func_80094AF8(D_800F1BAC_t* arg0)
     arg0->unk6 = arg0->unk6 - 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094B0C);
+void func_80094B0C(int x, int y, D_800F1BAC_t* p)
+{
+    CVECTOR colors[] = { { 128, 128, 128, 0 }, { 0, 128, 0, 0 }, { 128, 0, 128, 0 },
+        { 0, 128, 128, 0 } };
+    signed char bounce[] = { 0, -6, -12, -14, -16, -10, -5, -1, 0, -3, -6, -7, -8, -5, -3,
+        -1, 0, -2, -1, 0 };
+    int frame = 15;
+    int color;
+    int offset;
+    int i;
+    POLY_FT4* prim;
+
+    if (p->unkE >= 3) {
+        if (!(p->unkC & 0x8000)) {
+            y -= p->unkB >> 1;
+        } else {
+            y += p->unkB >> 1;
+        }
+
+        i = func_80094E18(x, y, p);
+        color = 0;
+        offset = 0;
+    } else {
+        if (p->unkB < 16) {
+            frame = p->unkB;
+        }
+
+        color = (p->unkE & 1) << 1;
+        i = p->displayTextLen * 3;
+
+        if (!(p->unkC & 0x8000)) {
+            offset = bounce[frame];
+            ++color;
+        } else {
+            offset = bounce[frame + 4];
+        }
+    }
+
+    x += i - 6;
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+
+    for (i = p->displayTextLen - 1; i >= 0; --i, x -= 6) {
+        int digitY = y + offset;
+
+        offset /= 2;
+
+        if (x + 8 >= 328u) {
+            continue;
+        }
+
+        setPolyFT4(prim);
+        setXY4(prim, x, digitY - 6, x + 8, digitY - 6, x, digitY + 6, x + 8, digitY + 6);
+        setShadeTex(prim, 0);
+        setRGB0(prim, colors[color].r, colors[color].g, colors[color].b);
+        setUV4(prim, (p->displayText[i] - '0') * 8 + 64, 0,
+            (p->displayText[i] - '0') * 8 + 72, 0, (p->displayText[i] - '0') * 8 + 64, 12,
+            (p->displayText[i] - '0') * 8 + 72, 12);
+        setTPage(prim, 0, 0, 768, 0);
+        setClut(prim, 832, 223);
+        AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094E18);
 

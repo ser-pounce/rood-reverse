@@ -331,14 +331,14 @@ typedef struct {
     int PitchSlide;
     u_int UpdateFlags;
     int unk38;
-    u_int unk3C;
+    int unk3C;
     int unk40;
     u_int unk44;
     int Volume;
     int VolumeSlideStep;
     int PitchSlideStep;
     int FinePitchDelta;
-    u_int unk58;
+    int unk58;
     int unk5C;
     int unk60;
     u_short Type;

@@ -67,7 +67,8 @@ typedef struct {
     u_int unk0_13 : 3;
     char unk2;
     char unk3;
-    short unk4;
+    u_char columns;
+    u_char rows;
     short id;
     short unk8;
     short unkA;
@@ -285,6 +286,8 @@ typedef struct {
     func_800C5798_t* unk44;
     char unk48[0x948];
     func_800C56C0_t2 unk990[24];
+    char unkB70[0x3EE4];
+    char textBuffer[200];
 } func_800C56C0_t;
 
 typedef struct {
@@ -534,6 +537,82 @@ extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
+typedef struct {
+    union {
+        int value;
+        u_char bytes[4];
+        struct {
+            u_int actor : 16, color : 4, texture : 4, life : 8;
+        } bits;
+    } config;
+    int index, age;
+    SVECTOR first[8], second[8], previousFirst, currentFirst, previousSecond,
+        currentSecond;
+    int projectionDepth, projectionFlags;
+} effectTrailState;
+
+typedef struct {
+    u_long tag;
+    POLY_GT4 poly;
+    u_long endPage;
+} TrailPacket;
+
+typedef struct {
+    short rotation[3];
+    u_short flags;
+    u_char pad8[6];
+    short frame;
+    u_char pad10[12];
+    VECTOR position;
+    u_char pad2C[8];
+    u_char actor, bone, targetActor, targetBone;
+    MATRIX world, view, attachment, facing;
+    SVECTOR saved, control0, control1;
+} effectTransformState;
+
+typedef struct {
+    short mass;
+    short gravityScale;
+    int x, y, z;
+    int vx, vy, vz;
+    int fx, fy, fz;
+    int ax, ay, az;
+} effectMotionState;
+
+typedef struct {
+    char prefix[0x62];
+    short targetX, targetY, targetZ;
+    char padding[8];
+    int attraction;
+} effectAttractionView;
+
+typedef struct {
+    u_short unk0;
+    u_char count, unk3;
+    char prefix[12];
+    D_800F53B8_t3_2 target[0];
+} soundEventTargets;
+
+int _printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
+void func_800C7EBC(u_short*, u_int, int, u_int);
+void func_800CD158(int);
+void func_800CD3E4(int);
+void func_800CF988(func_800CF988_t*, int, int, int);
+int _absMax3(int arg0, int arg1, int arg2) __attribute__((unused));
+int _absMax2(int arg0, int arg1) __attribute__((unused));
+void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));
+void func_800D52A4(func_800D2904_t*);
+void func_800D6E24(void);
+int func_800D5088(D_800F53B8_t* arg0);
+void func_80046578(int);
+
+extern int D_8005046C;
+extern u_char* D_800EB588[];
+extern u_short D_800EB98C[16];
+extern char D_800EBA78[];
+extern CVECTOR D_800EC308[], D_800EC2E8[];
+extern int D_800F4CC0;
+
 int func_800C4794(SVECTOR* arg0)
 {
     func_800C56C0_t* state = D_800EB9B8;
@@ -623,7 +702,7 @@ int func_800C4794(SVECTOR* arg0)
         offset.vec.vz += (-stickX * rsin(angle) + stickY * rcos(angle) + 0x200) >> 10;
         scale =
             vs_gte_rsqrt(offset.vec.vx * offset.vec.vx + offset.vec.vz * offset.vec.vz);
-        if (scale > 0x1000) {
+        if (scale > ONE) {
             stickX = offset.vec.vx - oldX;
             stickY = offset.vec.vz - oldZ;
             offset.vec.vx = (offset.vec.vx << 12) / scale;
@@ -676,11 +755,11 @@ int func_800C4794(SVECTOR* arg0)
         switch (D_800EB9B8->unk0[0].unk0 & 0x7F) {
         case 1:
             scale = (D_800EB9B8->unk38.vec.vy * 2) / flags.unk1;
-            scale = SquareRoot12(0x1000 - scale * scale);
+            scale = SquareRoot12(ONE - scale * scale);
             break;
         case 2:
         case 3:
-            scale = 0x1000;
+            scale = ONE;
             break;
         case 4:
             scale = ((flags.unk1 * 32 + D_800EB9B8->unk38.vec.vy) << 7) / flags.unk1;
@@ -699,10 +778,10 @@ int func_800C4794(SVECTOR* arg0)
     }
 
     func_800C2E24(arg0, m, scale);
-    stickX = (D_800EB9B8->unk38.vec.vx * scale + 0x800) >> 12;
-    stickY = (D_800EB9B8->unk38.vec.vz * scale + 0x800) >> 12;
-    arg0->vx += (stickX * m->m[0][0] + stickY * m->m[2][0] + 0x800) >> 12;
-    arg0->vz += (stickX * m->m[0][2] + stickY * m->m[2][2] + 0x800) >> 12;
+    stickX = (D_800EB9B8->unk38.vec.vx * scale + ONE / 2) >> 12;
+    stickY = (D_800EB9B8->unk38.vec.vz * scale + ONE / 2) >> 12;
+    arg0->vx += (stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12;
+    arg0->vz += (stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12;
 
     value = _getCollisionMapDimensions(0);
     if (((u_int)arg0->vx >= (value & 0xFFFF) * 8)
@@ -721,19 +800,19 @@ int func_800C4794(SVECTOR* arg0)
         }
         stickX = arg0->vx - D_800EB9B8->unk0[0].unk8[0];
         stickY = arg0->vz - D_800EB9B8->unk0[0].unk8[2];
-        value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + 0xFFF) / 4096;
+        value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + ONE - 1) / ONE;
         if ((scale != 0) && (value != 0)) {
             D_800EB9B8->unk38.vec.vx =
                 (((stickX * m->m[2][2] - stickY * m->m[2][0]) / value) << 12) / scale;
             D_800EB9B8->unk38.vec.vz =
                 (((-stickX * m->m[0][2] + stickY * m->m[0][0]) / value) << 12) / scale;
         }
-        stickX = (D_800EB9B8->unk38.vec.vx * scale + 0x800) >> 12;
-        stickY = (D_800EB9B8->unk38.vec.vz * scale + 0x800) >> 12;
+        stickX = (D_800EB9B8->unk38.vec.vx * scale + ONE / 2) >> 12;
+        stickY = (D_800EB9B8->unk38.vec.vz * scale + ONE / 2) >> 12;
         arg0->vx = D_800EB9B8->unk0[0].unk8[0]
-                 + ((stickX * m->m[0][0] + stickY * m->m[2][0] + 0x800) >> 12);
+                 + ((stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12);
         arg0->vz = D_800EB9B8->unk0[0].unk8[2]
-                 + ((stickX * m->m[0][2] + stickY * m->m[2][2] + 0x800) >> 12);
+                 + ((stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12);
     }
 
     func_800C28AC(arg0, lockPitch);
@@ -1198,8 +1277,8 @@ int func_800C58F8(u_char* target)
             }
             vs_battle_stringContext.integers[0] = entry->unkC;
             vs_battle_stringContext.integers[1] = entry->unkE;
-            vs_battle_printf((char*)D_800EB9B8 + 0x4A54, D_800EA984);
-            vs_battle_setTextBox(7, (char*)D_800EB9B8 + 0x4A54);
+            vs_battle_printf(D_800EB9B8->textBuffer, D_800EA984);
+            vs_battle_setTextBox(7, D_800EB9B8->textBuffer);
             break;
         case 20:
             *target = D_800EB9B8->unk2D;
@@ -1842,7 +1921,6 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
 #pragma vsstring(end)
 
 // Looks like some unholy union of hasm and compiled code, leaving as raw asm
-int _printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
 __asm__("glabel _printFixedWidthFontChar;"
         "addu       $sp, -8;"
         "addu       $t7, $a0, $zero;"
@@ -2058,9 +2136,6 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
 }
 #pragma vsstring(end)
 
-void func_800C7EBC(u_short*, u_int, int, u_int);
-extern u_short D_800EB98C[16];
-
 void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
 {
     RECT rect;
@@ -2079,10 +2154,11 @@ void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
         for (column = 0, output = destination; column < 12; ++column, ++output) {
             u_short source, previous;
             u_int index;
-            if (column & 3)
+            if (column & 3) {
                 packed >>= 4;
-            else
+            } else {
                 packed = *(u_short*)((u_int)pixels + (((column >> 2) + row * 3) << 1));
+            }
             index = packed & 15;
             source = index;
             if (index != 0) {
@@ -2339,8 +2415,8 @@ void func_800C8778(void)
         width = count & 0xFF;
         j = count >> 8;
         count = width * j + 4;
-        ((u_char*)&gim->unk4)[0] = width;
-        ((u_char*)&gim->unk4)[1] = j;
+        gim->columns = width;
+        gim->rows = j;
         for (i = 0; i < count; ++i) {
             gim->imageTable[i] = gim->data[i];
         }
@@ -2348,8 +2424,8 @@ void func_800C8778(void)
         if (gim->data[3] != 0) {
             width = gim->data[count];
             tiles = width >> 8;
-            ((u_char*)&second->unk4)[0] = width;
-            ((u_char*)&second->unk4)[1] = tiles;
+            second->columns = width;
+            second->rows = tiles;
             width = (width & 0xFF) * tiles + 4;
             for (i = 0; i < width; ++i) {
                 second->imageTable[i] = gim->data[i + count];
@@ -2359,8 +2435,8 @@ void func_800C8778(void)
             if (gim->data[3] == 2) {
                 width = gim->data[count];
                 tiles = width >> 8;
-                ((u_char*)&third->unk4)[0] = width;
-                ((u_char*)&third->unk4)[1] = tiles;
+                third->columns = width;
+                third->rows = tiles;
                 width = (width & 0xFF) * tiles + 4;
                 for (i = 0; i < width; ++i) {
                     third->imageTable[i] = gim->data[i + count];
@@ -2685,9 +2761,6 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
         }
     }
 }
-
-extern int D_800F4CC0;
-extern char D_800EBA78[];
 
 int func_800C930C(int mode)
 {
@@ -3768,10 +3841,6 @@ void func_800CB7DC(void)
     }
 }
 
-void func_800CD158(int);
-void func_800CD3E4(int);
-extern int D_8005046C;
-
 void func_800CB83C(void)
 {
     int id, state, duration, scale, reverse;
@@ -3782,12 +3851,14 @@ void func_800CB83C(void)
     for (id = 7; id != -1; --id) {
         box = &vs_battle_textBoxes[id];
         state = box->state;
-        if (state == 0)
+        if (state == 0) {
             continue;
+        }
         flags = *(int*)&box->unk0;
         D_800F4E80 = id;
-        if (flags < 0)
+        if (flags < 0) {
             continue;
+        }
         duration = box->unk22;
         scale = vs_gametime_tickspeed >> 1;
         if (state < 0) {
@@ -3799,8 +3870,9 @@ void func_800CB83C(void)
             scale = ((duration + state + 1) << 16) / duration;
         } else {
             state += scale;
-            if (duration < state)
+            if (duration < state) {
                 state = duration + 1;
+            }
             scale = state - 1;
             switch ((int)(((u_int)flags >> 4) & 3)) {
             case 0:
@@ -3808,16 +3880,17 @@ void func_800CB83C(void)
                 scale = rsin((scale << 10) / duration) * 16;
                 break;
             case 2:
-                if (scale < duration - 1)
+                if (scale < duration - 1) {
                     scale = (scale << 16) / (duration - 2);
-                else
+                } else {
                     goto settle;
+                }
                 break;
             case 3:
                 if (duration >= 3) {
-                    if (scale < duration - 1)
+                    if (scale < duration - 1) {
                         scale = (scale * 0xC000) / (duration - 2) + 0x6000;
-                    else {
+                    } else {
                     settle:
                         scale = scale == duration ? 0x10000 : 0x11000;
                     }
@@ -3846,8 +3919,9 @@ void func_800CB83C(void)
             goto text;
         case 4:
             func_800CD158(id);
-            if (state < 0)
+            if (state < 0) {
                 break;
+            }
             goto text;
         case 6:
         immediate:
@@ -3858,10 +3932,11 @@ void func_800CB83C(void)
             func_800CD3E4(id);
         default:
         text:
-            if (state == duration + 1)
+            if (state == duration + 1) {
                 _printVariableWidthFont(box);
-            else if (state < 0)
+            } else if (state < 0) {
                 _printFixedWidthFont(box, scale);
+            }
             break;
         case 3:
             break;
@@ -3871,8 +3946,9 @@ void func_800CB83C(void)
     D_800EB9CE = D_800EB9CE == 2 ? 0 : D_800EB9CE + 1;
     D_800F51B8 = &D_800F4CD0 + D_800EB9CE * 34;
     ClearOTag(D_800F51B8, 34);
-    if (vs_battle_lowerScreenUiState == 1)
+    if (vs_battle_lowerScreenUiState == 1) {
         _renderTimer(&D_8005046C);
+    }
     func_800CB708();
     vs_battle_keystreamBits(0);
 }
@@ -3882,10 +3958,10 @@ void func_800CBBCC(gim_t* image, int clut, u_long* ot)
     int alpha = image->unk3;
     int background;
     int quadColor;
-    u_short* tiles = (u_short*)((char*)image + 0x200);
+    u_short* tiles = &image->imageTable[4];
     int scale = image->unkC & 0x3FFF;
-    int columns = ((u_char*)&image->unk4)[0];
-    int rows = ((u_char*)&image->unk4)[1];
+    int columns = image->columns;
+    int rows = image->rows;
     int color;
     short* columnX;
     short* rowY;
@@ -4029,7 +4105,7 @@ void func_800CC204(gim_t* image, int clut, u_long* ot)
 {
     short left[240];
     short right[240];
-    u_short* tiles = (u_short*)((char*)image + 0x200);
+    u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
     u_short* widths = (u_short*)image->unk18;
     int page = image->unk2 - 18;
@@ -4125,13 +4201,14 @@ void func_800CC5C0(u_long* arg0, int arg1)
 void func_800CC600(gim_t* image, int clut, u_long* ot)
 {
     int alpha, inverse;
-    u_short* tiles = (u_short*)((char*)image + 0x200);
+    u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
     int columns, column, top, fb = 0, page;
     int height, x, y, row, tile, index;
     u_long* prim;
-    if (vs_main_frameBuf == 0)
+    if (vs_main_frameBuf == 0) {
         fb = 320;
+    }
     alpha = image->unk3;
     page = (image->unk2 + image->unk0_9 - 16) << 6;
     if (alpha == 128) {
@@ -4142,8 +4219,8 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
     alpha |= 256;
     inverse += 7;
     alpha += 7;
-    columns = ((u_char*)&image->unk4)[0];
-    height = ((u_char*)&image->unk4)[1] * 15;
+    columns = image->columns;
+    height = image->rows * 15;
     {
         int offset = (height >> 1) - 120;
         top = image->unkA - offset;
@@ -4167,7 +4244,7 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
             }
         }
         x = image->unkA + 120;
-        for (y = 0; y < ((u_char*)&image->unk4)[1]; y++) {
+        for (y = 0; y < image->rows; y++) {
             tile = tiles[y * columns + column];
             if (tile) {
                 prim = vs_battle_setSprite(
@@ -4483,8 +4560,6 @@ int func_800CD3A0(int arg0, int arg1)
     return var_v1;
 }
 
-extern u_char* D_800EB588[];
-
 #define POINT_X(p) (((short*)&points[p])[0])
 #define POINT_Y(p) (((short*)&points[p])[1])
 
@@ -4588,14 +4663,14 @@ void func_800CD3E4(int index)
     for (n = 0; n <= shape[1]; ++n) {
         for (k = 0; k < shape[n * 4 + 3]; ++k) {
             if ((n != 0) && (n != box->unk0.unk0_12)) {
-                verts = (u_short*)((u_char*)verts + 4);
+                verts += 2;
                 continue;
             }
             v = ((u_char*)verts)[0];
             i = ((u_char*)verts)[1];
             w = ((u_char*)verts)[2];
             h = ((u_char*)verts)[3];
-            verts = (u_short*)((u_char*)verts + 4);
+            verts += 2;
 
             x = POINT_X(v);
             if (POINT_X(i) < x) {
@@ -4668,26 +4743,6 @@ void func_800CD3E4(int index)
 #undef POINT_X
 #undef POINT_Y
 
-typedef struct {
-    union {
-        int value;
-        u_char bytes[4];
-        struct {
-            u_int actor : 16, color : 4, texture : 4, life : 8;
-        } bits;
-    } config;
-    int index, age;
-    SVECTOR first[8], second[8], previousFirst, currentFirst, previousSecond,
-        currentSecond;
-    int projectionDepth, projectionFlags;
-} effectTrailState;
-typedef struct {
-    u_long tag;
-    POLY_GT4 poly;
-    u_long endPage;
-} TrailPacket;
-extern CVECTOR D_800EC308[], D_800EC2E8[];
-void func_800CF988(func_800CF988_t*, int, int, int);
 void func_800CDCBC(effectTrailState* t, int head, int tail)
 {
     long xy[4];
@@ -4699,8 +4754,9 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
     depth = RotAverage4(&t->previousFirst, &t->currentFirst, &t->previousSecond,
         &t->currentSecond, &xy[0], &xy[1], &xy[2], &xy[3], (long*)&t->projectionDepth,
         (long*)&t->projectionFlags);
-    if ((u_int)(depth - 17) >= 2031)
+    if ((u_int)(depth - 17) >= 2031) {
         return;
+    }
     p = vs_scratch.unk0;
     vs_scratch.unk0 = (char*)p + sizeof(TrailPacket);
     setlen(p, 14);
@@ -4724,8 +4780,9 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
     } else {
         p->poly.code = 0x3E;
         uv = 0x58;
-        if ((t->config.value & 0xF0000) != 0x70000)
+        if ((t->config.value & 0xF0000) != 0x70000) {
             uv = 0x38;
+        }
         p->poly.tpage = uv;
         p->poly.clut = 0x3C30;
         column = t->config.bits.texture % 3U;
@@ -4764,18 +4821,19 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
         func_800A1AF8(t->config.bytes[0], t->config.bytes[1], &t->second[t->index], 1);
         if (++t->age >= 4) {
             segments = 5;
-            if (t->age < 9)
+            if (t->age < 9) {
                 segments = t->age - 3;
+            }
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);
             vs_battle_splineInterpolate(&t->first[t->index],
                 &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
-                &t->first[(t->index - 3) & 7], -4096, &t->previousFirst);
+                &t->first[(t->index - 3) & 7], -ONE, &t->previousFirst);
             vs_battle_splineInterpolate(&t->second[t->index],
                 &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
-                &t->second[(t->index - 3) & 7], -4096, &t->previousSecond);
+                &t->second[(t->index - 3) & 7], -ONE, &t->previousSecond);
             weight = (segments + 1) * 2;
-            for (span = -2048; span < 0; span += 2048) {
+            for (span = -ONE / 2; span < 0; span += ONE / 2) {
                 vs_battle_splineInterpolate(&t->first[t->index],
                     &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
                     &t->first[(t->index - 3) & 7], span, &t->currentFirst);
@@ -4788,7 +4846,7 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
                 t->previousSecond = t->currentSecond;
             }
             for (span = 0; span < segments; ++span) {
-                for (phase = 0; phase < 4096; phase += 2048) {
+                for (phase = 0; phase < ONE; phase += ONE / 2) {
                     vs_battle_splineInterpolate(&t->first[((t->index - span) & 7)],
                         &t->first[((t->index - span) - 1) & 7],
                         &t->first[((t->index - span) - 2) & 7],
@@ -4805,10 +4863,12 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
                 }
             }
         }
-        if (t->config.bytes[3] != 255)
+        if (t->config.bytes[3] != 255) {
             --t->config.bytes[3];
-        if (t->config.bytes[3] == 0)
+        }
+        if (t->config.bytes[3] == 0) {
             result = 0;
+        }
         break;
     case 3:
         t->config.bytes[3] = 8;
@@ -5607,7 +5667,6 @@ int vs_battle_randUniformInt(int arg0, int arg1)
     return arg0;
 }
 
-int _absMax3(int arg0, int arg1, int arg2) __attribute__((unused));
 int _absMax3(int arg0, int arg1, int arg2)
 {
     int var_v0;
@@ -5628,7 +5687,6 @@ int _absMax3(int arg0, int arg1, int arg2)
     return arg0;
 }
 
-int _absMax2(int arg0, int arg1) __attribute__((unused));
 int _absMax2(int arg0, int arg1)
 {
     int abs0 = arg0 >= 0 ? arg0 : -arg0;
@@ -5691,7 +5749,6 @@ int func_800CFE1C(short* arg0, int arg1)
     return (((arg0[1] - new_var) * arg1) >> 7) + new_var;
 }
 
-void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));
 void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
 {
     int v = svec->vy;
@@ -5719,19 +5776,6 @@ void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
     arg1->t[1] = arg0->vy;
     arg1->t[2] = arg0->vz;
 }
-
-typedef struct {
-    short rotation[3];
-    u_short flags;
-    u_char pad8[6];
-    short frame;
-    u_char pad10[12];
-    VECTOR position;
-    u_char pad2C[8];
-    u_char actor, bone, targetActor, targetBone;
-    MATRIX world, view, attachment, facing;
-    SVECTOR saved, control0, control1;
-} effectTransformState;
 
 void func_800CFEF0(D_800F53B8_t* arg0)
 {
@@ -5776,8 +5820,9 @@ void func_800CFEF0(D_800F53B8_t* arg0)
                 state->bone = 0;
                 break;
             }
-            if (!(definition->unk0 & 4))
+            if (!(definition->unk0 & 4)) {
                 state->bone = ((u_char*)&definition->unk2)[1];
+            }
         }
         if (definition->unk0 & 0x80) {
             switch (definition->unk0 & 0xC00) {
@@ -5804,8 +5849,9 @@ void func_800CFEF0(D_800F53B8_t* arg0)
                 state->targetBone = 0;
                 break;
             }
-            if (!(definition->unk0 & 0x200))
+            if (!(definition->unk0 & 0x200)) {
                 state->targetBone = ((u_char*)&definition->unk8)[3];
+            }
         }
     }
 }
@@ -6049,7 +6095,7 @@ void func_800D0D08(D_800F53B8_t* arg0)
                     rcos(state->saved.pad);
                 ((int*)&state->attachment)[1] = rsin(state->saved.pad);
                 ((int*)&state->attachment)[3] = -((int*)&state->attachment)[1];
-                ((int*)&state->attachment)[2] = 0x1000;
+                ((int*)&state->attachment)[2] = ONE;
             }
             CompMatrix(&state->attachment, &scratch->unk48, &state->world);
         } else {
@@ -6608,7 +6654,7 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
         func_800CE644(0x14);
     }
 
-    func_800D6CCC(node->unk3C);
+    func_800D6CCC((int*)&node->unk3C);
 
     node->unk77 = 0xFF;
     node->previous = NULL;
@@ -6777,7 +6823,7 @@ void func_800D2ADC(
         node = func_800D27F0(arg0);
         node->unk6A = scratch->unk168;
         node->unk6B = scratch->unk16C;
-        func_800D6CF0((func_800D6CF_t*)node->unk3C, def->unk1, def->unk0);
+        func_800D6CF0(&node->unk3C, def->unk1, def->unk0);
     }
 
     sample = def->unk8;
@@ -7049,7 +7095,7 @@ void func_800D2ADC(
             scratch->unk188 = scratch->unk184;
         }
     ring:
-        step = 0x1000 / scratch->unk184;
+        step = ONE / scratch->unk184;
         if ((scratch->flags & 0x1800) != 0x1000) {
             D_800EC328 %= scratch->unk188;
             angle = D_800EC328 * step + 0x200;
@@ -7073,8 +7119,8 @@ void func_800D2ADC(
                 prevZ = z;
                 if ((scratch->flags & 0x1800) != 0x800) {
                     value = SquareRoot12(((rand() * range) >> 15) + sample);
-                    if (value > 0x1000) {
-                        value = 0x1000;
+                    if (value > ONE) {
+                        value = ONE;
                     }
                     scratch->unk2C.vx = (scratch->unk2C.vx * value) >> 12;
                     scratch->unk2C.vz = (scratch->unk2C.vz * value) >> 12;
@@ -7134,7 +7180,7 @@ void func_800D2ADC(
             RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
             gte_SetRotMatrix(scratch);
             *(int*)&scratch->unk2C = 0;
-            scratch->unk2C.vz = 0x1000;
+            scratch->unk2C.vz = ONE;
             RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
             if (scratch->flags & 0x40000) {
                 vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
@@ -7163,7 +7209,7 @@ void func_800D2ADC(
             RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
             gte_SetRotMatrix(scratch);
             *(int*)&scratch->unk2C = 0;
-            scratch->unk2C.vz = 0x1000;
+            scratch->unk2C.vz = ONE;
             RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
             gte_SetRotMatrix(matrix);
             vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
@@ -7439,9 +7485,6 @@ int func_800D4BD0(D_800F53B8_t* arg0)
     return 1;
 }
 
-void func_800D52A4(func_800D2904_t*);
-void func_800D6E24(void);
-
 int func_800D4C18(D_800F53B8_t* arg0)
 {
     func_800D2904_t* next = arg0->unk18;
@@ -7458,7 +7501,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
             func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
         }
         if (node->lifetime == -1) {
-            if (((u_char*)node)[0x42] == 0) {
+            if (node->unk3C.unk6 == 0) {
                 if (node->endEvent != 0) {
                     func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
                 }
@@ -7568,7 +7611,6 @@ int func_800D5048(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D5088(D_800F53B8_t* arg0);
 int func_800D5088(D_800F53B8_t* arg0)
 {
     int i;
@@ -7613,22 +7655,6 @@ int func_800D51D8(D_800F53B8_t* arg0)
 void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
-
-typedef struct {
-    short mass;
-    short gravityScale;
-    int x, y, z;
-    int vx, vy, vz;
-    int fx, fy, fz;
-    int ax, ay, az;
-} effectMotionState;
-
-typedef struct {
-    char prefix[0x62];
-    short targetX, targetY, targetZ;
-    char padding[8];
-    int attraction;
-} effectAttractionView;
 
 void func_800D52A4(func_800D2904_t* node)
 {
@@ -7774,8 +7800,6 @@ int func_800D57FC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return ret;
 }
 
-void func_80046578(int);
-
 int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
     SVECTOR position;
@@ -7784,8 +7808,9 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     if ((command & 0x1FF) == arg0->unkD1C.unk30->unk2) {
         int kind = (command >> 18) & 3;
         if (kind == 2) {
-            if (D_800F569C->unkCC != 0)
+            if (D_800F569C->unkCC != 0) {
                 func_80046578(D_800F569C->unkCC);
+            }
         } else {
             int bank = kind == 0 ? 0x7E : 0xF00000;
             if (((command >> 20) & 3) == 0) {
@@ -7833,13 +7858,15 @@ int func_800D5A98(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
                     } else {
                         child->unk10[1] = event->actors[0];
                     }
-                    if (++STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2)
+                    if (++STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
                         break;
+                    }
                     STATE->delay += event->delay;
                 } while (STATE->delay == 0);
             }
-            if (STATE->delay != 0)
+            if (STATE->delay != 0) {
                 --STATE->delay;
+            }
         } else if (STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
             if ((*(u_int*)((char*)arg0 + 0x14) & 0xF800) == 0) {
                 spawn.unk14 = D_800F569C->block8Data;
@@ -7876,12 +7903,6 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-typedef struct {
-    u_short unk0;
-    u_char count, unk3;
-    char prefix[12];
-    D_800F53B8_t3_2 target[0];
-} soundEventTargets;
 int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
 {
     int result = 1;
@@ -7889,16 +7910,19 @@ int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
     u_short packed = data[event->unk6];
     int play = 0;
     int i;
-    if ((packed & 511) != actor->unkD1C.unk30->unk2)
+    if ((packed & 511) != actor->unkD1C.unk30->unk2) {
         return result;
+    }
     switch (packed >> 14) {
     case 1:
-        if (actor->unkD1C.unk0.unk0 == 4 && (u_char)actor->unkD1C.unk0.unk4.unk0 == 0)
+        if (actor->unkD1C.unk0.unk0 == 4 && (u_char)actor->unkD1C.unk0.unk4.unk0 == 0) {
             play = 1;
+        }
         break;
     case 2:
-        if (actor->unkD1C.unk18.unk0 == 4 && (u_char)actor->unkD1C.unk18.unk4.unk0 == 0)
+        if (actor->unkD1C.unk18.unk0 == 4 && (u_char)actor->unkD1C.unk18.unk4.unk0 == 0) {
             play = 1;
+        }
         break;
     case 0:
         play = 1;

@@ -35,6 +35,114 @@ extern u_char D_800E92DC[];
 extern int D_800F1868;
 extern u_short D_800E9A28[][4];
 
+typedef struct {
+    char prefix[0x3A];
+    u_short angleX, angleY;
+    char padding[0x16];
+    SVECTOR offset;
+    char padding2[8];
+    MATRIX matrix;
+    SVECTOR rotation;
+} actorTransformScratch;
+
+typedef struct {
+    char prefix[0x64];
+    MATRIX matrix;
+    char gap[8];
+    VECTOR scale;
+} cameraTransformScratch;
+
+typedef struct objectAnimationState objectAnimationState;
+typedef struct {
+    int unk0;
+    int unk4;
+} intPair;
+
+typedef struct {
+    char prefix[8];
+    u_int flags;
+    char paddingC[3];
+    u_char objectId;
+    char padding10[0xA];
+    short mode;
+    short x, y, z, padding22;
+    short rotationX, rotationY, rotationZ, padding2A;
+    short scaleX, scaleY, scaleZ, padding32, padding34;
+    short deltaY, padding38, orientation;
+    char padding3C[0xF0];
+    char savedState[32];
+    char state[32];
+    char padding16C[2];
+    u_char material, padding16F, frame;
+} objectMotionContext;
+
+void func_800B07DC(D_800F4538_t*);
+void func_80041C68(MATRIX*, MATRIX*);
+void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
+void func_800AAE9C(void*);
+void func_800AB4F0(void*);
+void func_800AB788(void*, void*, int);
+void func_800AB9A4(void*);
+void func_800AC540(int, D_800F4538_t*);
+void func_800B0908(objectAnimationState*, int);
+void func_800B1A68(D_800F45E0_t*, MATRIX*);
+void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
+void func_800AFDE8(int, SVECTOR*, int);
+int func_800A92B8(int x, int z);
+int vs_gte_rsqrt(int);
+int func_800B101C();
+int func_800A3DB4(int, int, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800E6898(void*);
+void func_800E4C28(int, int);
+int func_800A0104(int, int);
+
+extern MATRIX D_8005E218;
+extern u_char D_800E91AC[], D_800E91BC[], D_800E91CC[], D_800E91DC[];
+extern u_char D_800E91EC[], D_800E91F0[], D_800E91FC[], D_800E9208[];
+extern u_char D_800E9218[], D_800E9228[], D_800E9238[], D_800E9248[];
+extern u_char D_800E9258[], D_800E9268[];
+extern int D_800E9308;
+extern MATRIX D_800F4910;
+extern MATRIX D_800F49B8;
+extern u_char D_800F49F8;
+extern u_char D_800F4B18, D_800F4B19;
+extern struct {
+    char prefix[0x1FD0];
+    int scales[3];
+} D_800F2458;
+
+struct frameScratch {
+    int unused;
+    int depth;
+};
+
+struct animationFrameScratch {
+    char prefix[8];
+    int first, last;
+    u_char** data;
+};
+
+struct objectAnimationState {
+    char prefix[8];
+    int flags;
+    char padC[3];
+    u_char id, pad10;
+    signed char delay;
+    u_char parent, pad13;
+    int pad14;
+    short rotationTicks, mode;
+    SVECTOR position;
+    short rx, ry, rz, pad2A;
+    short sx, sy, sz, pad32;
+    short dx, dy, dz, orientation;
+    short drx, dry, drz;
+    char pad42[0x1A];
+    u_char tileX, pad5D, tileZ, pad5F;
+    char pad60[0x10C];
+    u_char material, durability, pad16E, parentObject, frame;
+};
+
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     int op;
@@ -109,9 +217,9 @@ loop: {
         sfx[0] = 13;
         goto setAnimation;
     case 55:
-        if (((u_char*)state)[0x549] == 0) {
-            ((u_char*)state)[0x549] = script[1];
-        } else if (--((u_char*)state)[0x549] == 0) {
+        if (state->unk548_8 == 0) {
+            state->unk548_8 = script[1];
+        } else if (--state->unk548_8 == 0) {
             break;
         }
         state->unk540--;
@@ -290,7 +398,7 @@ loop: {
         if (mode == 2) {
             delta = -packed;
         }
-        ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[op - 36] += delta;
+        ((short*)((SVECTOR*)actor->unk0.unk68->vertexOffset + arg))[op - 36] += delta;
         actor->unk5AC_23 = 1;
         break;
     case 39:
@@ -300,17 +408,13 @@ loop: {
         arg = packed & 0x1FF;
         packed >>= 9;
         if (mode == 2) {
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[0] -= packed;
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[1] -=
-                (signed char)script[3];
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[2] -=
-                (signed char)script[4];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vx -= packed;
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vy -= (signed char)script[3];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vz -= (signed char)script[4];
         } else {
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[0] += packed;
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[1] +=
-                (signed char)script[3];
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[2] +=
-                (signed char)script[4];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vx += packed;
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vy += (signed char)script[3];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vz += (signed char)script[4];
         }
         actor->unk5AC_23 = 1;
         break;
@@ -392,11 +496,11 @@ loop: {
         lo = script[2];
         motion->unkA = ((delta << 8) | lo) - motion->unk8;
     }
-        if (motion->unkA < -0x800) {
-            motion->unkA += 0x1000;
+        if (motion->unkA < -ONE / 2) {
+            motion->unkA += ONE;
         }
-        if (motion->unkA > 0x800) {
-            motion->unkA -= 0x1000;
+        if (motion->unkA > ONE / 2) {
+            motion->unkA -= ONE;
         }
         arg = script[3];
         if (arg == 0) {
@@ -438,11 +542,11 @@ loop: {
         }
         delta = point[2];
         motion->unkA = delta - motion->unk8;
-        if (motion->unkA < -0x800) {
-            motion->unkA += 0x1000;
+        if (motion->unkA < -ONE / 2) {
+            motion->unkA += ONE;
         }
-        if (motion->unkA > 0x800) {
-            motion->unkA -= 0x1000;
+        if (motion->unkA > ONE / 2) {
+            motion->unkA -= ONE;
         }
         if (motion->unk4 == 0) {
             motion->unk8 = (motion->unk8 + motion->unkA) & 0xFFF;
@@ -701,54 +805,28 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
     }
 }
 
-typedef struct {
-    char prefix[0x3A];
-    u_short angleX, angleY;
-    char padding[0x16];
-    SVECTOR offset;
-    char padding2[8];
-    MATRIX matrix;
-    SVECTOR rotation;
-} actorTransformScratch;
-extern struct {
-    char prefix[0x1FD0];
-    int scales[3];
-} D_800F2458;
-void func_800B07DC(D_800F4538_t*);
-
 void func_800AEAE8(D_800F4538_t* actor)
 {
     actorTransformScratch* scratch = (void*)0x1F80035C;
     D_800F2458.scales[0] = 64;
     D_800F2458.scales[1] = 64;
     D_800F2458.scales[2] = 64;
-    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == 4096) {
-        scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
-        scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
-        scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
+    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
+        scratch->offset.vx = actor->unk704.unk0[41].vx >> 1;
+        scratch->offset.vy = actor->unk704.unk0[41].vy >> 1;
+        scratch->offset.vz = actor->unk704.unk0[41].vz >> 1;
     } else {
-        scratch->offset.vx = *(short*)((char*)actor + 0x84C) * actor->unk0.unk2C / 8192;
-        scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk2E / 8192;
-        scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk30 / 8192;
+        scratch->offset.vx = actor->unk704.unk0[41].vx * actor->unk0.unk2C / 8192;
+        scratch->offset.vy = actor->unk704.unk0[41].vy * actor->unk0.unk2E / 8192;
+        scratch->offset.vz = actor->unk704.unk0[41].vz * actor->unk0.unk30 / 8192;
     }
-    scratch->offset.vx = scratch->offset.vx * actor->unk183C / 4096;
-    scratch->offset.vy = scratch->offset.vy * actor->unk183C / 4096;
-    scratch->offset.vz = scratch->offset.vz * actor->unk183C / 4096;
+    scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
+    scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;
+    scratch->offset.vz = scratch->offset.vz * actor->unk183C / ONE;
     func_800B07DC(actor);
     scratch->angleX = actor->unk0.unk14;
     scratch->angleY = actor->unk0.unk16;
 }
-
-extern MATRIX D_8005E218;
-extern MATRIX D_800F4910;
-extern MATRIX D_800F49B8;
-void func_80041C68(MATRIX*, MATRIX*);
-typedef struct {
-    char prefix[0x64];
-    MATRIX matrix;
-    char gap[8];
-    VECTOR scale;
-} cameraTransformScratch;
 
 void func_800AECA0(MATRIX* source)
 {
@@ -767,11 +845,11 @@ void func_800AECA0(MATRIX* source)
     rotation.m[1][1] = rotation.m[0][0] = rcos(-camera->angle);
     rotation.m[1][0] = rsin(-camera->angle);
     rotation.m[0][1] = -rotation.m[1][0];
-    rotation.m[2][2] = 4096;
+    rotation.m[2][2] = ONE;
     rotation.m[0][2] = rotation.m[1][2] = rotation.m[2][0] = rotation.m[2][1] = 0;
     scratch->scale.vx = 3640;
-    scratch->scale.vy = 4096;
-    scratch->scale.vz = 4096;
+    scratch->scale.vy = ONE;
+    scratch->scale.vz = ONE;
     ScaleMatrix(&scratch->matrix, &scratch->scale);
     func_80041C68(&scratch->matrix, &rotation);
     scratch->matrix = rotation;
@@ -788,7 +866,6 @@ void func_800AECA0(MATRIX* source)
     D_800F49B8.t[2] = source->t[2];
 }
 
-void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
 void func_800AEEC4(D_800F4538_t* arg0)
 {
     int _[2] __attribute__((unused));
@@ -825,22 +902,6 @@ void func_800AEEC4(D_800F4538_t* arg0)
     arg0->unk17E4.unk3 -= var_a2;
 }
 
-void func_800AAE9C(void*);
-void func_800AB4F0(void*);
-void func_800AB788(void*, void*, int);
-void func_800AB9A4(void*);
-void func_800AC540(int, D_800F4538_t*);
-typedef struct objectAnimationState objectAnimationState;
-void func_800B0908(objectAnimationState*, int);
-void func_800B1A68(D_800F45E0_t*, MATRIX*);
-extern int D_800E9308;
-extern u_char D_800F4B18, D_800F4B19;
-
-struct frameScratch {
-    int unused;
-    int depth;
-};
-
 void func_800AEF94(MATRIX* camera)
 {
     /* The original routine reserves 0x30 bytes of unused local storage. */
@@ -855,11 +916,10 @@ void func_800AEF94(MATRIX* camera)
     D_800F4538_t** weaponActors;
     D_800F45E0_t* object;
     int packedPosition;
-    int flags;
     int weaponActorFlags;
     int i;
     int step;
-    u_int modelHeight;
+    int modelHeight;
     u_char attachmentId;
     vs_battle_wepModels_t** weapons;
     vs_battle_wepModels_t* weapon;
@@ -869,23 +929,23 @@ void func_800AEF94(MATRIX* camera)
     entries = D_800F4538;
     do {
         actor = entries[i];
-        if ((actor != NULL) && (actor->unk0.nBones != 0)
-            && !((*(u_int*)((char*)actor + 8)) & 1) && (actor->unk0.unk13 != 0xFC)) {
+        if ((actor != NULL) && (actor->unk0.nBones != 0) && !actor->unk0.skip
+            && (actor->unk0.unk13 != 0xFC)) {
             func_800AAE9C(actor);
             if (actor->unk0.unk64.unk0 != 0) {
                 func_800AB788(actor, NULL, 0);
             }
-            if ((*(u_int*)((char*)actor + 8)) & 0xF00) {
+            if (actor->unk0.unk9_0) {
                 func_800AB9A4(actor);
             }
-            flags = (*(u_int*)((char*)actor + 8));
-            (*(u_int*)((char*)actor + 8)) = (int)(flags & 0x7FFFFFFF);
-            if (flags & 4) {
+            actor->unk0.unkB_7 = 0;
+            if (actor->unk0.freeze) {
                 if ((actor->unk17E4.unk0 == 1) && actor->unk17E4.unk3 != 0) {
                     int delta;
                     step = vs_gametime_tickspeed / 2;
-                    if (actor->unk17E4.unk3 < step)
+                    if (actor->unk17E4.unk3 < step) {
                         step = actor->unk17E4.unk3;
+                    }
                     delta = actor->unk17E8.unk2 - actor->unk17E4.unk2;
                     if (delta != 0) {
                         delta *= step;
@@ -906,15 +966,16 @@ void func_800AEF94(MATRIX* camera)
                     previous = entries;
                     do {
                         ++step;
-                        if ((*previous)->unk6E6 == texture)
+                        if ((*previous)->unk6E6 == texture) {
                             goto texture_ready;
+                        }
                         ++previous;
                     } while (step < i);
                 }
                 func_800AB4F0(actor);
             texture_ready:;
 
-                if ((*(u_int*)((char*)actor + 0x5AC)) & 3) {
+                if (actor->unk5AC_0) {
                     func_800AC540(i, actor);
                 }
                 if (vs_gametime_tickspeed == 4) {
@@ -922,11 +983,11 @@ void func_800AEF94(MATRIX* camera)
                 }
                 func_800AF6E8(actor);
                 actor->unk5B2 = 1;
-                actor->unk5B2 = (((u_int)(*(u_int*)((char*)actor + 0x5B0)) >> 3) & 1) + 1;
+                actor->unk5B2 = actor->unk5B0_3 + 1;
             } else {
                 func_800AEAE8(actor);
             }
-            if ((*(u_int*)((char*)actor + 8)) & 0x2000) {
+            if (actor->unk0.unk9_5) {
                 func_800B28A8(
                     actor, &entries[actor->unk0.unk12]->bones[actor->unk0.unk13], 0U);
             } else {
@@ -939,16 +1000,17 @@ void func_800AEF94(MATRIX* camera)
                         if (attached->unk0.unk64.unk0 != 0) {
                             func_800AB788(attached, NULL, 0);
                         }
-                        if ((*(u_int*)((char*)attached + 8)) & 0xF00) {
+                        if (attached->unk0.unk9_0) {
                             func_800AB9A4(attached);
                         }
-                        if ((*(u_int*)((char*)actor + 8)) & 4) {
+                        if (actor->unk0.freeze) {
                             if ((attached->unk17E4.unk0 == 1)
                                 && attached->unk17E4.unk3 != 0) {
                                 int delta;
                                 step = vs_gametime_tickspeed / 2;
-                                if (attached->unk17E4.unk3 < step)
+                                if (attached->unk17E4.unk3 < step) {
                                     step = attached->unk17E4.unk3;
+                                }
                                 delta = attached->unk17E8.unk2 - attached->unk17E4.unk2;
                                 if (delta != 0) {
                                     delta *= step;
@@ -971,8 +1033,9 @@ void func_800AEF94(MATRIX* camera)
                                 previousAttached = entries;
                                 do {
                                     ++step;
-                                    if ((*previousAttached)->unk6E6 == texture)
+                                    if ((*previousAttached)->unk6E6 == texture) {
                                         goto linked_texture_ready;
+                                    }
                                     ++previousAttached;
                                 } while (step < i);
                             }
@@ -1000,8 +1063,7 @@ void func_800AEF94(MATRIX* camera)
                 }
             }
             if (((u_short)actor->unk63C >= 0x80U) && ((u_char)actor->unk5CC != 0)) {
-                (*(u_int*)((char*)actor + 8)) =
-                    (int)((*(u_int*)((char*)actor + 8)) | 0x80000000);
+                actor->unk0.unkB_7 = 1;
             }
         }
         i += 1;
@@ -1011,17 +1073,19 @@ void func_800AEF94(MATRIX* camera)
     weapons = vs_battle_wepModels;
     do {
         weapon = *weapons;
-        if ((weapon != NULL) && ((*(u_int*)((char*)weapon + 8)) & 0x10)
-            && (weapon->unkD != 0)) {
-            actor = weaponActors[(u_char)(*(u_int*)((char*)weapon + 8)) & 0xF];
+        if ((weapon != NULL) && weapon->unk8_4 && (weapon->unkD != 0)) {
+            actor = weaponActors[weapon->actorId];
             if (actor != NULL) {
                 weaponActorFlags = (*(u_int*)((char*)actor + 8));
-                if (weaponActorFlags & 1)
+                if (weaponActorFlags & 1) {
                     goto weapon_next;
-                if (!(weaponActorFlags & 2))
+                }
+                if (!(weaponActorFlags & 2)) {
                     goto weapon_next;
-                if (weaponActorFlags & 0x1000)
+                }
+                if (weaponActorFlags & 0x1000) {
                     goto weapon_next;
+                }
                 func_800B217C(weapon, &actor->bones[weapon->unkD]);
             }
         }
@@ -1033,28 +1097,25 @@ void func_800AEF94(MATRIX* camera)
     frame = (void*)0x1F800000;
     i = 0;
     entries = (void*)D_800F45E0;
-    frame->depth = (int)(frame->depth + 0x10);
+    frame->depth += 0x10;
     do {
         object = (void*)*entries;
-        if ((object != NULL) && ((u_char)object->unk0 != 0)) {
+        if ((object != NULL) && (object->unk0 != 0)) {
             if (((i == D_800F4B19) && (D_800F4B18 == 0)) || (object->unk1A == 0xF7)) {
-                func_800B0908((objectAnimationState*)object,
-                    (int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F))
-                        >> 1);
+                func_800B0908((objectAnimationState*)object, vs_gametime_tickspeed / 2);
             }
             packedPosition = *(int*)&object->unk1C;
             objectScratch->offset.vz = (u_short)object->unk20;
-            modelHeight = (*(int*)((char*)object->unk68 + 0x50));
+            modelHeight = object->unk68->unk50;
             *(int*)&objectScratch->offset = packedPosition;
-            objectScratch->offset.vy =
-                (u_short)(objectScratch->offset.vy + ((int)modelHeight / 2));
+            objectScratch->offset.vy += modelHeight / 2;
             if (object->unk64.unk0 != 0) {
                 func_800AB788(NULL, (D_800F4538_t*)object, 0);
             }
-            if ((*(u_int*)((char*)object + 8)) & 0xF00) {
+            if (object->unk9_0) {
                 func_800AB9A4((D_800F4538_t*)object);
             }
-            func_800B1A68((D_800F45E0_t*)object, camera);
+            func_800B1A68(object, camera);
         }
         i += 1;
         entries++;
@@ -1080,32 +1141,30 @@ void func_800AF6E8(D_800F4538_t* arg0)
         if (v5b2 != 1) {
             int next = arg0->unk5CC + 0xFF;
             arg0->unk5CC = v5b2 + next;
+        }
+
+        if (v5b2 != 1 && arg0->unk5CC >= arg0->unk5CD) {
+            arg0->unk5CC = 0;
+            arg0->unk5CD = 0;
+        } else {
+            func_800B147C(&arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC,
+                arg0->unk5CD);
+
+            arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
+            arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;
+
+            func_800B002C(arg0, 0);
+
+            ++arg0->unk5CC;
 
             if (arg0->unk5CC >= arg0->unk5CD) {
                 arg0->unk5CC = 0;
                 arg0->unk5CD = 0;
-                goto tail;
             }
+            return;
         }
-
-        func_800B147C(
-            &arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC, arg0->unk5CD);
-
-        arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
-        arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;
-
-        func_800B002C(arg0, 0);
-
-        ++arg0->unk5CC;
-
-        if (arg0->unk5CC >= arg0->unk5CD) {
-            arg0->unk5CC = 0;
-            arg0->unk5CD = 0;
-        }
-        return;
     }
 
-tail:
     vs_main_memcpy(&arg0->unk704, &arg0->unkC54, sizeof(arg0->unk704));
     func_800B002C(arg0, 0);
 }
@@ -1143,7 +1202,6 @@ void func_800AF844(SVECTOR* dst, SVECTOR* src, int count)
     }
 }
 
-void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
 void func_800AF960(D_800F45E0_t* arg0)
 {
     int temp_lo;
@@ -1170,12 +1228,6 @@ void func_800AF960(D_800F45E0_t* arg0)
     }
 }
 
-struct animationFrameScratch {
-    char prefix[8];
-    int first, last;
-    u_char** data;
-};
-void func_800AFDE8(int, SVECTOR*, int);
 void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     u_short* header;
@@ -1194,7 +1246,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     u_char** data;
     u_char queuedAnimation;
 
-    (*(int*)((char*)state + 0x548)) = (int)((*(int*)((char*)state + 0x548)) & 0xFFFDFFFF);
+    state->unk548_17 = 0;
     frameOrOffset = (short)state->unk540;
     i = 0;
     if (actor->unk5B2 != 0) {
@@ -1217,8 +1269,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
             --shadow->unk5;
         }
         if ((short)state->unk540 >= (int)(u_short)actor->unk5BC) {
-            (*(int*)((char*)state + 0x548)) =
-                (int)((*(int*)((char*)state + 0x548)) | 0x20000);
+            state->unk548_17 = 1;
             queuedAnimation = actor->unk6E0;
             if (queuedAnimation != 0) {
                 func_800A0618((int)actor->unk0.unkF, (int)actor->unk6E0,
@@ -1227,15 +1278,14 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
                 return;
             }
         }
-        if ((*(int*)((char*)actor + 8)) & 4) {
+        if (actor->unk0.freeze) {
             if (state->unk542 == (short)state->unk540) {
                 func_800AD714(actor, state, mode);
             }
         }
         if ((short)state->unk540 >= (int)(u_short)actor->unk5BC) {
             state->unk540 -= 1;
-            (*(int*)((char*)state + 0x548)) =
-                (int)((*(int*)((char*)state + 0x548)) | 0x10000);
+            state->unk548_16 = 1;
         }
         state->unk540 += 1;
         i += 1;
@@ -1246,9 +1296,9 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     }
 update_bones:
     frame = (short)state->unk540;
-    if ((frame != 1) && !((*(int*)((char*)state + 0x548)) & 0x10000)) {
+    if ((frame != 1) && !state->unk548_16) {
         lastFrame = frame - 1;
-        if ((*((u_char*)state + 0x549)) == 0) {
+        if (state->unk548_8 == 0) {
             if (lastFrame < frameOrOffset) {
                 frameOrOffset = 1;
             }
@@ -1302,7 +1352,7 @@ update_bones:
 void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 {
     struct animationFrameScratch* scratch = (void*)0x1F8003EC;
-    SVECTOR* delta = (void*)((char*)value + 0x2A0);
+    SVECTOR* delta = value + 84;
     u_char* data = (u_char*)(u_int)(u_short)value->pad;
     int nextFrame = (u_short)delta->pad;
     int frame = scratch->first;
@@ -1321,8 +1371,9 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
             goto advance;
         } else {
             flags = *data;
-            if (flags == 0)
+            if (flags == 0) {
                 return;
+            }
             if (flags & 0xE0) {
                 count = flags & 0x1F;
                 if (count == 0x1F) {
@@ -1374,8 +1425,9 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
                             count |= data[1];
                             data += 2;
                         }
-                    } else
+                    } else {
                         goto bytes;
+                    }
                 }
                 if (packed & 1) {
                     delta->vz = count;
@@ -1396,23 +1448,14 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
         goto decode;
     advance:
         ++frame;
-        if (frame <= scratch->last)
+        if (frame <= scratch->last) {
             goto decode;
+        }
     }
     data -= (int)((u_char*)(offset + (int)*scratch->data));
     value->pad = (int)data;
     delta->pad = nextFrame;
 }
-
-int func_800A92B8(int x, int z);
-int vs_gte_rsqrt(int);
-short func_800BEB00(void);
-extern u_char D_800F49F8;
-
-typedef struct {
-    int unk0;
-    int unk4;
-} intPair;
 
 void func_800B002C(D_800F4538_t* actor, int arg1)
 {
@@ -1425,18 +1468,18 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     int trackAnim;
     D_800F4538_t* other;
 
-    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == 4096) {
-        scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
-        scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
-        scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
+    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
+        scratch->offset.vx = actor->unk704.unk0[41].vx >> 1;
+        scratch->offset.vy = actor->unk704.unk0[41].vy >> 1;
+        scratch->offset.vz = actor->unk704.unk0[41].vz >> 1;
     } else {
-        scratch->offset.vx = *(short*)((char*)actor + 0x84C) * actor->unk0.unk2E / 8192;
-        scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk30 / 8192;
-        scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk2C / 8192;
+        scratch->offset.vx = actor->unk704.unk0[41].vx * actor->unk0.unk2E / 8192;
+        scratch->offset.vy = actor->unk704.unk0[41].vy * actor->unk0.unk30 / 8192;
+        scratch->offset.vz = actor->unk704.unk0[41].vz * actor->unk0.unk2C / 8192;
     }
-    scratch->offset.vx = scratch->offset.vx * actor->unk183C / 4096;
-    scratch->offset.vy = scratch->offset.vy * actor->unk183C / 4096;
-    scratch->offset.vz = scratch->offset.vz * actor->unk183C / 4096;
+    scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
+    scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;
+    scratch->offset.vz = scratch->offset.vz * actor->unk183C / ONE;
 
     if (arg1 == 0) {
         if (actor->unk5C8 != 0) {
@@ -1464,8 +1507,8 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
             --actor->unk0.unk18;
         }
         if (actor->unk5B0_4) {
-            actor->unk704.unk0[0].vx = 0x800;
-            actor->unkC54.unk0[0].vx = 0x800;
+            actor->unk704.unk0[0].vx = ONE / 2;
+            actor->unkC54.unk0[0].vx = ONE / 2;
         }
         if (actor->unk0.unk1A != 0) {
             dx = actor->unk0.unk34.vx / actor->unk0.unk1A;
@@ -1505,18 +1548,18 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     if (actor->unk17FC != -2) {
         trackAnim = 0;
         if (func_800BEB00() != 4) {
-            if (*(int*)((char*)actor + 8) < 0) {
+            if (actor->unk0.unkB_7) {
                 return;
             }
             dx = actor->animationId;
             if (dx >= 100) {
                 dx -= 100;
             }
-            if (*(int*)((char*)actor + 8) & 0x400000) {
+            if (actor->unk0.unkA_6) {
                 if ((u_int)(dx - 31) < 8) {
                     trackAnim = 1;
                 }
-            } else if (*(int*)((char*)actor + 8) & 0x200000) {
+            } else if (actor->unk0.unkA_5) {
                 if ((u_int)(dx - 8) < 27) {
                     trackAnim = 1;
                 }
@@ -1549,7 +1592,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                 dx = other->unk0.position.vx - actor->unk0.position.vx;
                 dz = other->unk0.position.vz - actor->unk0.position.vz;
             }
-            yaw = 0xC00 - ratan2(dz, dx);
+            yaw = ONE * 3 / 4 - ratan2(dz, dx);
             yaw &= 0xFFF;
             yaw -= actor->unk0.facing;
             dx *= dx;
@@ -1568,14 +1611,14 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                    - actor->unk0.position.vy;
             }
             pitch = ratan2(dx, dz);
-            pitch -= 0x400;
+            pitch -= ONE / 4;
             pitch &= 0xFFF;
         }
-        if (yaw >= 0x800) {
-            yaw -= 0x1000;
+        if (yaw >= ONE / 2) {
+            yaw -= ONE;
         }
-        if (yaw < -0x800) {
-            yaw += 0x1000;
+        if (yaw < -ONE / 2) {
+            yaw += ONE;
         }
         if (yaw > 800) {
             yaw = 800;
@@ -1583,11 +1626,11 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
         if (yaw < -800) {
             yaw = -800;
         }
-        if (pitch >= 0x800) {
-            pitch -= 0x1000;
+        if (pitch >= ONE / 2) {
+            pitch -= ONE;
         }
-        if (pitch < -0x800) {
-            pitch += 0x1000;
+        if (pitch < -ONE / 2) {
+            pitch += ONE;
         }
         if (pitch > 800) {
             pitch = 800;
@@ -1646,30 +1689,6 @@ void func_800B07DC(D_800F4538_t* actor)
     scratch->offset.vy += actor->unk0.position.vy;
 }
 
-struct objectAnimationState {
-    char prefix[8];
-    int flags;
-    char padC[3];
-    u_char id, pad10;
-    signed char delay;
-    u_char parent, pad13;
-    int pad14;
-    short rotationTicks, mode;
-    SVECTOR position;
-    short rx, ry, rz, pad2A;
-    short sx, sy, sz, pad32;
-    short dx, dy, dz, orientation;
-    short drx, dry, drz;
-    char pad42[0x1A];
-    u_char tileX, pad5D, tileZ, pad5F;
-    char pad60[0x10C];
-    u_char material, durability, pad16E, parentObject, frame;
-};
-int func_800B101C();
-int func_800A3DB4(int, int, int);
-int func_800A6EE8(SVECTOR*, int, int, int);
-void func_800E6898(void*);
-void func_800E4C28(int, int);
 void func_800B0908(objectAnimationState* object, int unused)
 {
     actorTransformScratch* scratch = (void*)0x1F80035C;
@@ -1692,8 +1711,9 @@ void func_800B0908(objectAnimationState* object, int unused)
         --object->rotationTicks;
     }
     mode = object->mode;
-    if (!mode)
+    if (!mode) {
         return;
+    }
     if (mode == 0xFF) {
         if (!object->dx && !object->dz) {
             object->frame = 0;
@@ -1732,19 +1752,22 @@ void func_800B0908(objectAnimationState* object, int unused)
             scratch->rotation.vz = object->position.vz;
             step = object->orientation;
             other = 128;
-            if (step < 2)
+            if (step < 2) {
                 other = -128;
-            if (step & 1)
+            }
+            if (step & 1) {
                 scratch->rotation.vx += other;
-            else
+            } else {
                 scratch->rotation.vz += other;
+            }
             if (func_800A3DB4(
                     scratch->rotation.vx, scratch->rotation.vz, object->position.vy)
                 && func_800A6EE8(&object->position, 0, 0, 1) == object->position.vy) {
                 object->tileX = 0xFF;
                 object->tileZ = 0xFF;
-            } else
+            } else {
                 goto fall;
+            }
         }
         object->position.vx += object->dx;
         object->position.vz += object->dz;
@@ -1829,8 +1852,9 @@ void func_800B0908(objectAnimationState* object, int unused)
             child = (void*)D_800F45E0[step];
             if (child && !(child->flags & 1) && child->parentObject == object->id) {
                 child->position.vy += object->dy;
-                if (!object->mode)
+                if (!object->mode) {
                     child->parentObject = 0xFF;
+                }
             }
             ++step;
         } while (step < 16);
@@ -1841,8 +1865,9 @@ void func_800B0908(objectAnimationState* object, int unused)
         func_800B101C(object);
         goto children;
     } else if (mode == 0xF9) {
-        if (func_800B101C(object))
+        if (func_800B101C(object)) {
             return;
+        }
         goto fall;
     } else if (mode == 0xF7) {
         goto animate;
@@ -1861,67 +1886,51 @@ void func_800B0908(objectAnimationState* object, int unused)
     object->dz -= step;
     object->position.vz += step;
     --object->mode;
-    if (!object->mode && object->parent == 0xFF)
+    if (!object->mode && object->parent == 0xFF) {
         goto fall;
+    }
 }
-
-typedef struct {
-    char prefix[8];
-    u_int flags;
-    char paddingC[3];
-    u_char objectId;
-    char padding10[0xA];
-    short mode;
-    short x, y, z, padding22;
-    short rotationX, rotationY, rotationZ, padding2A;
-    short scaleX, scaleY, scaleZ, padding32, padding34;
-    short deltaY, padding38, orientation;
-    char padding3C[0xF0];
-    char savedState[32];
-    char state[32];
-    char padding16C[2];
-    u_char material, padding16F, frame;
-} objectMotionContext;
-extern u_char D_800E91AC[], D_800E91BC[], D_800E91CC[], D_800E91DC[];
-extern u_char D_800E91EC[], D_800E91F0[], D_800E91FC[], D_800E9208[];
-extern u_char D_800E9218[], D_800E9228[], D_800E9238[], D_800E9248[];
-extern u_char D_800E9258[], D_800E9268[];
-int func_800A0104(int, int);
 
 int func_800B101C(objectMotionContext* object)
 {
     int frame = object->frame;
     int value;
     int value2;
-    if (frame == 0)
+    if (frame == 0) {
         frame = 1;
+    }
     value = object->mode;
     if (value == 0xFD) {
         object->y += (signed char)D_800E91AC[frame];
         object->rotationX += (signed char)D_800E91BC[frame];
         object->rotationY += (signed char)D_800E91CC[frame];
         object->rotationZ += (signed char)D_800E91DC[frame];
-        if (frame == 14)
+        if (frame == 14) {
             goto complete;
+        }
         goto next;
     } else if (value == 0xFB) {
         value = object->orientation;
         object->z += (signed char)D_800E91F0[frame];
         value2 = (signed char)D_800E91FC[frame];
-        if (value == 0 || value == 3)
+        if (value == 0 || value == 3) {
             value2 = -value2;
-        if (value & 1)
+        }
+        if (value & 1) {
             object->rotationZ += value2;
-        else
+        } else {
             object->rotationX += value2;
-        if (frame == 9)
+        }
+        if (frame == 9) {
             goto complete;
+        }
         goto next;
     } else if (value == 0xFA) {
         object->y += (signed char)D_800E91EC[frame];
         object->deltaY = (signed char)D_800E91EC[frame];
-        if (frame == 3)
+        if (frame == 3) {
             goto complete;
+        }
         goto next;
     } else if (value == 0xF9) {
         int orientation;
@@ -1929,10 +1938,12 @@ int func_800B101C(objectMotionContext* object)
         value = (signed char)D_800E9218[frame];
         orientation = object->orientation;
         value2 = D_800E9228[frame];
-        if (orientation >= 2)
+        if (orientation >= 2) {
             value = -value;
-        if ((u_int)(orientation - 1) < 2)
+        }
+        if ((u_int)(orientation - 1) < 2) {
             value2 = -value2;
+        }
         if (orientation & 1) {
             object->x += value;
             object->rotationZ += value2;
@@ -1965,11 +1976,13 @@ int func_800B101C(objectMotionContext* object)
         object->scaleX = (signed char)D_800E9248[frame];
         object->scaleY = (signed char)D_800E9258[frame];
         object->scaleZ = (signed char)D_800E9268[frame];
-        if (frame == 14)
+        if (frame == 14) {
             goto complete;
+        }
         goto next;
-    } else
+    } else {
         goto next;
+    }
 next:
     object->frame = frame + 1;
     return 1;

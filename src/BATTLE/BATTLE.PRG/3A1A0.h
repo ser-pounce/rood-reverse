@@ -64,7 +64,8 @@ typedef struct {
     u_short unk540;
     u_short unk542;
     u_char* unk544;
-    int unk548_0 : 16;
+    u_int unk548_0 : 8;
+    u_int unk548_8 : 8;
     int unk548_16 : 1;
     int unk548_17 : 1;
     int unk548_18 : 14;
@@ -433,6 +434,8 @@ typedef struct {
 typedef struct {
     u_char unk0[0x3C];
     void* unk3C;
+    u_char unk40[0x10];
+    int unk50;
 } D_800F45E0_unk68;
 
 typedef struct {

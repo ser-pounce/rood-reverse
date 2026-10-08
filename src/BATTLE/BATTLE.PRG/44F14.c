@@ -1099,28 +1099,27 @@ void func_800AEF94(MATRIX* camera)
     frame = (void*)0x1F800000;
     i = 0;
     entries = (void*)D_800F45E0;
-    frame->depth = (int)(frame->depth + 0x10);
+    frame->depth += 0x10;
     do {
         object = (void*)*entries;
         if ((object != NULL) && ((u_char)object->unk0 != 0)) {
             if (((i == D_800F4B19) && (D_800F4B18 == 0)) || (object->unk1A == 0xF7)) {
                 func_800B0908((objectAnimationState*)object,
-                    (int)(vs_gametime_tickspeed + ((u_int)vs_gametime_tickspeed >> 0x1F))
-                        >> 1);
+                    vs_gametime_tickspeed / 2);
             }
             packedPosition = *(int*)&object->unk1C;
             objectScratch->offset.vz = (u_short)object->unk20;
             modelHeight = object->unk68->unk50;
             *(int*)&objectScratch->offset = packedPosition;
             objectScratch->offset.vy =
-                (u_short)(objectScratch->offset.vy + ((int)modelHeight / 2));
+                objectScratch->offset.vy + (int)modelHeight / 2;
             if (object->unk64.unk0 != 0) {
                 func_800AB788(NULL, (D_800F4538_t*)object, 0);
             }
             if (object->unk9_0) {
                 func_800AB9A4((D_800F4538_t*)object);
             }
-            func_800B1A68((D_800F45E0_t*)object, camera);
+            func_800B1A68(object, camera);
         }
         i += 1;
         entries++;

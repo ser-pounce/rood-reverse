@@ -12,7 +12,7 @@ typedef struct {
 } func_800AAE9C_t;
 
 typedef struct {
-    int unk0;
+    u_char* unk0;
     u_char* unk4;
     u_short unk8[0];
 } func_800AD494_t;
@@ -1253,29 +1253,29 @@ void func_800AAA88(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
 {
-    D_800F4538_t* temp_a3 = D_800F4538[arg0];
+    D_800F4538_t* actor = D_800F4538[arg0];
 
-    if (temp_a3 != NULL) {
+    if (actor != NULL) {
 
         if (arg2 == 0) {
-            temp_a3->unk5C8 = 0;
-            temp_a3->unk0.unk2C = arg1->vx;
-            temp_a3->unk0.unk2E = arg1->vy;
-            temp_a3->unk0.unk30 = arg1->vz;
+            actor->unk5C8 = 0;
+            actor->unk0.unk2C = arg1->vx;
+            actor->unk0.unk2E = arg1->vy;
+            actor->unk0.unk30 = arg1->vz;
             return;
         }
 
-        temp_a3->unk0.unk44.vx = arg1->vx - temp_a3->unk0.unk2C;
-        temp_a3->unk0.unk44.vy = arg1->vy - temp_a3->unk0.unk2E;
-        temp_a3->unk0.unk44.vz = arg1->vz - temp_a3->unk0.unk30;
+        actor->unk0.unk44.vx = arg1->vx - actor->unk0.unk2C;
+        actor->unk0.unk44.vy = arg1->vy - actor->unk0.unk2E;
+        actor->unk0.unk44.vz = arg1->vz - actor->unk0.unk30;
 
-        if ((*(int*)&temp_a3->unk0.unk44 == 0)
-            && ((temp_a3->unk0.unk44.vz << 0x10) == 0)) {
-            temp_a3->unk5C8 = 0;
+        if (actor->unk0.unk44.vx == 0 && actor->unk0.unk44.vy == 0
+            && actor->unk0.unk44.vz == 0) {
+            actor->unk5C8 = 0;
             return;
         }
 
-        temp_a3->unk5C8 = arg2;
+        actor->unk5C8 = arg2;
     }
 }
 
@@ -2508,10 +2508,8 @@ inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
     arg0->pad = 0;
 }
 
-void func_800AD008(void* arg0, void* arg1)
+void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
 {
-    D_800F4538_t* actor = arg0;
-    D_800F4538_unkC54* pose = arg1;
     u_short* header;
     func_800AD494_t* anim;
     u_char* data;
@@ -2524,7 +2522,7 @@ void func_800AD008(void* arg0, void* arg1)
     }
     actor->unk5AC_23 = 0;
     pose->unk540 = 0;
-    ((u_char*)&pose->unk544)[5] = 0;
+    pose->unk549 = 0;
     *(int*)&pose->unk150[41].vx = 0;
     *(int*)&pose->unk150[41].vz = 0;
     pose->unk3F0[41].pad = 0;
@@ -2536,7 +2534,7 @@ void func_800AD008(void* arg0, void* arg1)
     if (header[2] == 0) {
         pose->unk542 = 0xFFFF;
     } else {
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[2];
         i = data[0];
         if (i == 0xFF) {
@@ -2549,10 +2547,10 @@ void func_800AD008(void* arg0, void* arg1)
         pose->unk544 = data;
     }
     pose->unk548_16 = 0;
-    ((u_char*)&pose->unk544)[4] = actor->animationId;
+    pose->animationId = actor->animationId;
     if (header[4] != 0) {
         key = &pose->unk150[41];
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[4];
         func_800ACFA0(key, data, 0xFF);
     }
@@ -2561,18 +2559,18 @@ void func_800AD008(void* arg0, void* arg1)
         header = (u_short*)((u_char*)anim + ((actor->unk0.nBones * 4 + 10) * frame + 8));
     }
     key = &pose->unk0[41];
-    data = (u_char*)anim->unk0;
+    data = anim->unk0;
     data += header[3];
     func_800ACFA0(key, data, frame);
     for (i = 0; i < actor->unk0.nBones; ++i) {
         key = &pose->unk0[i];
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[5 + i];
         func_800ACFA0(key, data, frame);
     }
     if (((u_char*)header)[3] & 1) {
         for (i = 0; i < actor->unk0.nBones; ++i) {
-            data = (u_char*)anim->unk0;
+            data = anim->unk0;
             data += header[actor->unk0.nBones + i + 5];
             if (data[0] == 0xFE && data[1] == 1) {
                 data += 2;

@@ -184,7 +184,8 @@ typedef struct {
     u_int unk4_8 : 2;
     u_int unk4_10 : 6;
     u_int unk4_16 : 16;
-    VECTOR unk8[10];
+    VECTOR unk8[4];
+    VECTOR unk48[6];
     int unkA8;
     int unkAC;
     int unkB0;

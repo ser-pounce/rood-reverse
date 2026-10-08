@@ -320,7 +320,7 @@ typedef struct {
     u_char unk1424[0x3C0];
     D_800F4538_unk64 unk17E4;
     D_800F4538_unk64 unk17E8;
-    u_char unk17EC[8];
+    SVECTOR unk17EC;
     SVECTOR unk17F4;
     signed char unk17FC;
     u_char unk17FD;
@@ -352,6 +352,10 @@ typedef struct {
     u_char unk1880[0x10];
     u_char unk1890[2][0x20];
     u_char unk18D0[2];
+    u_short unk18D2;
+    u_short unk18D4;
+    u_short unk18D6;
+    u_short unk18D8;
 } D_800F4538_t;
 
 typedef struct {

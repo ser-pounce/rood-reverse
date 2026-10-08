@@ -1293,7 +1293,101 @@ void func_800941FC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094844);
+void func_80094844(short* pos, D_800F1BAC_t* label)
+{
+    int i;
+
+    if (label->unk10 == ONE && label->unk12 == ONE) {
+        label->unk10 = 0;
+        label->unk12 = 0;
+
+        if (D_800F227C > 0) {
+            int x;
+            int y;
+
+            for (i = 0; i < D_800F227C; ++i) {
+                x = pos[0] - D_800F1CBC[i].vx;
+                y = pos[1] - D_800F1CBC[i].vy;
+
+                if (ABS(x) < 24 && ABS(y) < 10) {
+                    break;
+                }
+            }
+
+            if (i != D_800F227C) {
+                int j;
+                int dx;
+                int dy;
+
+                i = 0;
+
+                for (dy = 0; dy < 48; dy += 8) {
+                    for (dx = 0; dx < 32; dx += 8) {
+                        for (j = 0; j < D_800F227C; ++j) {
+                            y = pos[1] + dy - D_800F1CBC[j].vy;
+
+                            if (ABS(y) < 10) {
+                                x = pos[0] + dx - D_800F1CBC[j].vx;
+
+                                if (ABS(x) < 24) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (j == D_800F227C) {
+                            i = 1;
+                            goto done;
+                        }
+
+                        for (j = 0; j < D_800F227C; ++j) {
+                            y = pos[1] + dy - D_800F1CBC[j].vy;
+
+                            if (ABS(y) < 10) {
+                                x = pos[0] - dx - D_800F1CBC[j].vx;
+
+                                if (ABS(x) < 24) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (j == D_800F227C) {
+                            i = 1;
+                            dx = -dx;
+                            goto done;
+                        }
+                    }
+                }
+
+            done:
+                if (i) {
+                    label->unk10 = dx;
+                    label->unk12 = dy;
+                }
+            }
+        }
+    }
+
+    pos[0] += label->unk10;
+    pos[1] += label->unk12;
+    D_800F1CBC[D_800F227C].vx = pos[0];
+    D_800F1CBC[D_800F227C].vy = pos[1];
+
+    if (pos[0] < 32) {
+        pos[0] = 32;
+    }
+
+    if (pos[0] > 288) {
+        pos[0] = 288;
+    }
+
+    if (pos[1] > 200) {
+        pos[1] = 200;
+    }
+
+    ++D_800F227C;
+}
 
 void func_80094AF8(D_800F1BAC_t* arg0)
 {

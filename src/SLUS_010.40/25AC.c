@@ -697,7 +697,7 @@ void func_80012BB8(void* arg0, int arg1)
 
 int vs_sound_spuTransferring(void) { return _isSpuTransfer; }
 
-int func_80012C14(u_int* arg0, int* arg1, int* arg2)
+int func_80012C14(int* arg0, int* arg1, int* arg2)
 {
     int var_a3;
 

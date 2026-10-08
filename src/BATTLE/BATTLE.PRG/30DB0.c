@@ -2747,7 +2747,6 @@ void func_8009E700(int actorId, int animation)
 {
     D_800F4538_t* actor;
     D_800F45E0_t* object;
-    int objectState;
     int state;
     int action;
     int facing;
@@ -2764,10 +2763,8 @@ void func_8009E700(int actorId, int animation)
     actor = D_800F4538[actorId];
     if (actor == NULL) {
         object = D_800F45E0[actorId];
-        if ((object != NULL)
-            && ((objectState = object->unk1A, (objectState == 0xF9))
-                || (objectState == 0xFF))
-            && (object->unk6C[8].unk4 == 0)) {
+        if (object != NULL && (object->unk1A == 0xF9 || object->unk1A == 0xFF)
+            && object->unk6C[8].unk4 == 0) {
             object->unk1A = 0;
         }
     } else {
@@ -2776,9 +2773,8 @@ void func_8009E700(int actorId, int animation)
             && ((actor->unk0.unkF != 0)
                 || (((*(int*)((char*)actor + 8)) & 0x184000) != 0x80000))) {
             flags = (*(int*)((char*)actor + 8));
-            if (((u_int)((flags >> 0x10) & 7) < 2U)
-                && (state = flags & 0x70000000, (state != 0x20000000))
-                && (state != 0x50000000)) {
+            if (((flags >> 16) & 7) < 2 && (state = flags & 0x70000000) != 0x20000000
+                && state != 0x50000000) {
                 action = flags & 0x0F000000;
                 if (action == 0x3000000) {
                     func_800A2C48(actor);
@@ -2791,18 +2787,14 @@ void func_8009E700(int actorId, int animation)
                         if ((*(int*)((char*)actor + 0x18)) != 0) {
                             actor->unk0.unk1A = 0;
                             actor->unk0.unk18 = 0;
-                            actor->unk0.position.vx = (u_short)actor->unk0.position.vx
-                                                    + (u_short)actor->unk0.unk34.vx;
-                            actor->unk0.position.vy = (u_short)actor->unk0.position.vy
-                                                    + (u_short)actor->unk0.unk34.vy;
-                            actor->unk0.position.vz = (u_short)actor->unk0.position.vz
-                                                    + (u_short)actor->unk0.unk34.vz;
-                            actor->unk0.facing =
-                                (u_short)actor->unk0.facing + (u_short)actor->unk0.unk3E;
+                            actor->unk0.position.vx += actor->unk0.unk34.vx;
+                            actor->unk0.position.vy += actor->unk0.unk34.vy;
+                            actor->unk0.position.vz += actor->unk0.unk34.vz;
+                            actor->unk0.facing += actor->unk0.unk3E;
                         }
                     } else if (!(movementFlags & 0xF00)) {
                         baseAnimation = actor->animationId;
-                        if ((int)baseAnimation >= 0x65) {
+                        if (baseAnimation > 100) {
                             baseAnimation -= 0x64;
                         }
                         if (baseAnimation != 0x62) {
@@ -2839,7 +2831,7 @@ void func_8009E700(int actorId, int animation)
                                 }
                             }
                             if (actor->unk5AC_3) {
-                                func_800A0204((int)actor->unk0.unkF, 0x4B, 0, 0xC);
+                                func_800A0204(actor->unk0.unkF, 0x4B, 0, 0xC);
                             } else {
                                 func_800A0204(actorId, animation, 0, 0x10);
                                 actor->unk1846 = 0;
@@ -2850,13 +2842,12 @@ void func_8009E700(int actorId, int animation)
             }
         resetState:
             if (((*(int*)((char*)actor + 8)) & 0x180000) != 0x100000) {
-                (*(int*)((char*)actor + 8)) =
-                    (u_int)((*(int*)((char*)actor + 8)) & 0xFFE7FFFF);
+                (*(int*)((char*)actor + 8)) &= ~0x180000;
             }
             actor->unk5C8 = 0;
             actor->unk0.unk18 = 0;
             actor->unk0.unk1A = 0;
-            (*(int*)((char*)actor + 8)) = (u_int)((*(int*)((char*)actor + 8)) & ~0x4000);
+            (*(int*)((char*)actor + 8)) &= ~0x4000;
             func_800A0ABC(actorId);
         }
     }
@@ -3232,29 +3223,24 @@ void func_8009F314(int actorId, void* context, int animate)
     u_short* animation;
     D_800F4538_t* actor;
     D_800F45E0_t* object;
-    int flags;
     int animationId;
 
     actor = D_800F4538[actorId];
     if (actor != NULL) {
-        flags = (*(int*)((char*)actor + 8));
-        if ((flags & 0x270000) || ((flags & 0x180000) == 0x100000)) {
-            if ((*(int*)((char*)actor + 0xC)) & 0xF) {
-                func_8008C49C(((u_char)(*(int*)((char*)actor + 0xC)) & 0xF) - 2, -1);
-                (*(int*)((char*)actor + 0xC)) =
-                    (int)((*(int*)((char*)actor + 0xC)) & ~0xF);
+        if (actor->unk0.unkA_0 || actor->unk0.unkA_5 || actor->unk0.unkA_3 == 2) {
+            if (actor->unk0.unkC_0) {
+                func_8008C49C(actor->unk0.unkC_0 - 2, -1);
+                actor->unk0.unkC_0 = 0;
             }
             actor->unk0.unk1A = 0;
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vz = 0;
-            if (actor->unk0.unkF != 0
-                || ((*(int*)((char*)actor + 8)) & 0x70000) != 0x30000
+            if (actor->unk0.unkF != 0 || actor->unk0.unkA_0 != 3
                 || actor->unk0.unk34.vy <= 0) {
                 actor->unk0.unk34.vy = -6;
             }
             actor->unk181A = 0;
-            (*(int*)((char*)actor + 8)) =
-                (int)(((*(int*)((char*)actor + 8)) & 0xFFF8FFFF) | 0x30000);
+            actor->unk0.unkA_0 = 3;
         }
         if (animate != 0) {
             animationId = 0x46;
@@ -3263,7 +3249,7 @@ void func_8009F314(int actorId, void* context, int animate)
             }
             func_800AD494(actor, 0xABU, (int*)&animation);
             if (animation != NULL) {
-                if (!((*(int*)((char*)actor + 8)) & 0x70000)) {
+                if (actor->unk0.unkA_0 == 0) {
                     animationId = 0x47;
                 }
             }
@@ -3273,8 +3259,8 @@ void func_8009F314(int actorId, void* context, int animate)
         } else {
             actor->unk0.unk9_0 = 2;
         }
-        if ((u_char)actor->unk17FD >= 2U) {
-            func_8009F314((int)actor->unk17FD, context, animate);
+        if (actor->unk17FD >= 2) {
+            func_8009F314(actor->unk17FD, context, animate);
         }
     } else {
         object = D_800F45E0[actorId];

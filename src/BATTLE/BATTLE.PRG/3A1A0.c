@@ -2641,7 +2641,12 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
                     goto slideX;
                 }
             }
-            goto acceptX;
+            motion->vz = 0;
+            *result = xResults[0];
+            D_800F4B08 = xProbe;
+            D_800F49F0 = probeTiles[0];
+            D_800F49F9 = probeDirections[0];
+            return 1;
         }
         if (zResults[0] != 0xFF && zResults[1] < 2 && zResults[2] < 2 && zResults[3] < 2
             && zResults[4] < 2) {
@@ -2819,7 +2824,6 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
                 goto slideZ;
             }
         }
-    acceptX:
         motion->vz = 0;
         *result = xResults[0];
         D_800F4B08 = xProbe;

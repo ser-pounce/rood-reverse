@@ -1,6 +1,6 @@
 #include "spu.h"
 
-int _SpuIsInAllocateArea(u_long addr)
+inline int _SpuIsInAllocateArea(u_long addr)
 {
     SpuMallocRec* list = _spu_memList;
     int i;
@@ -20,6 +20,7 @@ int _SpuIsInAllocateArea(u_long addr)
         }
 
         start = list[i].addr & 0x0FFFFFFF;
+
         if (start >= addr) {
             return 1;
         }
@@ -33,33 +34,5 @@ int _SpuIsInAllocateArea(u_long addr)
 
 int _SpuIsInAllocateArea_(u_long addr)
 {
-    SpuMallocRec* list = _spu_memList;
-    int i;
-
-    addr <<= _spu_mem_mode_plus;
-
-    if (list == NULL) {
-        return 0;
-    }
-
-    for (i = 0;; ++i) {
-        u_long start;
-
-        if (list[i].addr & 0x80000000) {
-            continue;
-        }
-        if (list[i].addr & 0x40000000) {
-            break;
-        }
-
-        start = list[i].addr & 0x0FFFFFFF;
-        if (start >= addr) {
-            return 1;
-        }
-        if (start + list[i].size > addr) {
-            return 1;
-        }
-    }
-
-    return 0;
+    return _SpuIsInAllocateArea(addr << _spu_mem_mode_plus);
 }

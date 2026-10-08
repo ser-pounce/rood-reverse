@@ -7,5 +7,6 @@ SpuTransferCallbackProc SpuSetTransferCallback(SpuTransferCallbackProc func)
     if (func != old) {
         _spu_transferCallback = func;
     }
+
     return old;
 }

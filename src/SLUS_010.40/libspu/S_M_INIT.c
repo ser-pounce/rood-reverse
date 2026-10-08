@@ -12,5 +12,6 @@ long SpuInitMalloc(long num, char* top)
         rec->size = (0x10000 << _spu_mem_mode_plus) - 0x1010;
         return num;
     }
+
     return 0;
 }

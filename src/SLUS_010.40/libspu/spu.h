@@ -72,7 +72,7 @@ extern SpuReverbAttr _spu_rev_attr;
 extern SpuRegs* _spu_RXX;
 extern volatile u_short _spu_tsa;
 extern int _spu_mem_mode_plus;
+extern volatile SpuTransferCallbackProc _spu_transferCallback;
 extern int _spu_AllocBlockNum;
 extern int _spu_AllocLastNum;
 extern SpuMallocRec* _spu_memList;
-extern volatile SpuTransferCallbackProc _spu_transferCallback;

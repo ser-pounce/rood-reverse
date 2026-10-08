@@ -23,6 +23,9 @@
 #include <memory.h>
 #include <rand.h>
 
+#define CAMERA_INPUT_LOCKED()                                                           \
+    ((D_800F196C == 3) || ((D_800F196C == 2) && ((_cameraMode == 4) || (_cameraMode == 11))))
+
 typedef struct {
     u_char targetActor;
     signed char targetLimb;
@@ -2589,7 +2592,158 @@ void _snapLookAtToPosition(VECTOR* arg0)
 }
 
 // https://decomp.me/scratch/axID6
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006E158);
+void func_8006E158(void)
+{
+    if (vs_battle_cameraCurrentSpherical.delta.yaw == 0) {
+        if (!CAMERA_INPUT_LOCKED()) {
+            if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADR1) {
+                vs_battle_cameraCurrentSpherical.delta.yaw = 1;
+                vs_battle_cameraCurrentSpherical.delta.pitch =
+                    (vs_battle_cameraCurrentSpherical.values.yaw - 0x200) & ~0x1FF;
+            } else if ((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADL1) {
+                vs_battle_cameraCurrentSpherical.delta.yaw = 2;
+                vs_battle_cameraCurrentSpherical.delta.pitch =
+                    (vs_battle_cameraCurrentSpherical.values.yaw + 0x200) & ~0x1FF;
+            }
+        }
+    } else {
+        switch (vs_battle_cameraCurrentSpherical.delta.yaw) {
+        case 1:
+            vs_battle_cameraCurrentSpherical.values.yaw -=
+                vs_battle_cameraCurrentSpherical.delta.distance;
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                <= vs_battle_cameraCurrentSpherical.delta.pitch + 0x78) {
+                if (((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADR1)
+                    && !CAMERA_INPUT_LOCKED()) {
+                    vs_battle_cameraCurrentSpherical.delta.pitch =
+                        (vs_battle_cameraCurrentSpherical.delta.pitch - 0x200) & ~0x1FF;
+                }
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 8) {
+                    vs_battle_cameraCurrentSpherical.delta.distance -= 8;
+                }
+            } else if (vs_battle_cameraCurrentSpherical.delta.distance < 40) {
+                vs_battle_cameraCurrentSpherical.delta.distance += 8;
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 40) {
+                    vs_battle_cameraCurrentSpherical.delta.distance = 40;
+                }
+            }
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                <= vs_battle_cameraCurrentSpherical.delta.pitch) {
+                vs_battle_cameraCurrentSpherical.values.yaw &= 0xE00;
+                vs_battle_cameraCurrentSpherical.delta.yaw = 0;
+            }
+            break;
+
+        case 2:
+            vs_battle_cameraCurrentSpherical.values.yaw +=
+                vs_battle_cameraCurrentSpherical.delta.distance;
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                >= vs_battle_cameraCurrentSpherical.delta.pitch - 0x78) {
+                if (((vs_main_buttonsPreviousState & (PADL1 | PADR1)) == PADL1)
+                    && !CAMERA_INPUT_LOCKED()) {
+                    vs_battle_cameraCurrentSpherical.delta.pitch =
+                        (vs_battle_cameraCurrentSpherical.delta.pitch + 0x200) & ~0x1FF;
+                }
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 8) {
+                    vs_battle_cameraCurrentSpherical.delta.distance -= 8;
+                }
+            } else if (vs_battle_cameraCurrentSpherical.delta.distance < 40) {
+                vs_battle_cameraCurrentSpherical.delta.distance += 8;
+                if (vs_battle_cameraCurrentSpherical.delta.distance > 40) {
+                    vs_battle_cameraCurrentSpherical.delta.distance = 40;
+                }
+            }
+            if (vs_battle_cameraCurrentSpherical.values.yaw
+                >= vs_battle_cameraCurrentSpherical.delta.pitch) {
+                vs_battle_cameraCurrentSpherical.values.yaw &= 0xE00;
+                vs_battle_cameraCurrentSpherical.delta.yaw = 0;
+            }
+            break;
+        }
+    }
+
+    if (vs_main_buttonsPressed.all & PADselect) {
+        if (!CAMERA_INPUT_LOCKED()) {
+            switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+            case 0:
+            case 1:
+                vs_battle_cameraCurrentSpherical.delta.mode = 2;
+                break;
+            case 2:
+            case 3:
+                vs_battle_cameraCurrentSpherical.delta.mode = 0;
+                break;
+            }
+        }
+        switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+        case 0:
+        case 1:
+            vs_battle_cameraCurrentSpherical.initialDistance = 0x600;
+            break;
+        case 2:
+        case 3:
+            vs_battle_cameraCurrentSpherical.initialDistance = 0x900;
+            break;
+        }
+    }
+
+    switch (vs_battle_cameraCurrentSpherical.delta.mode) {
+    case 0:
+        if (vs_battle_cameraCurrentSpherical.values.distance <= 0x600) {
+            vs_battle_cameraCurrentSpherical.values.distance = 0x600;
+            vs_battle_cameraCurrentSpherical.delta.mode = 1;
+            return;
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            <= vs_battle_cameraCurrentSpherical.initialDistance + 0xA0) {
+            if (vs_battle_cameraCurrentSpherical.unk24 < -16) {
+                vs_battle_cameraCurrentSpherical.unk24 += 16;
+            } else {
+                vs_battle_cameraCurrentSpherical.unk24 = -16;
+            }
+        } else if (vs_battle_cameraCurrentSpherical.unk24 >= -63) {
+            vs_battle_cameraCurrentSpherical.unk24 -= 16;
+            if (vs_battle_cameraCurrentSpherical.unk24 < -64) {
+                vs_battle_cameraCurrentSpherical.unk24 = -64;
+            }
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            > vs_battle_cameraCurrentSpherical.initialDistance) {
+            vs_battle_cameraCurrentSpherical.values.distance +=
+                vs_battle_cameraCurrentSpherical.unk24;
+        }
+        break;
+
+    case 1:
+        break;
+
+    case 2:
+        if (vs_battle_cameraCurrentSpherical.values.distance >= 0x900) {
+            vs_battle_cameraCurrentSpherical.values.distance = 0x900;
+            vs_battle_cameraCurrentSpherical.delta.mode = 3;
+            return;
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            >= vs_battle_cameraCurrentSpherical.initialDistance - 0xA0) {
+            if (vs_battle_cameraCurrentSpherical.unk24 > 16) {
+                vs_battle_cameraCurrentSpherical.unk24 -= 16;
+            } else {
+                vs_battle_cameraCurrentSpherical.unk24 = 16;
+            }
+        } else if (vs_battle_cameraCurrentSpherical.unk24 < 64) {
+            vs_battle_cameraCurrentSpherical.unk24 += 16;
+            if (vs_battle_cameraCurrentSpherical.unk24 > 64) {
+                vs_battle_cameraCurrentSpherical.unk24 = 64;
+            }
+        }
+        if (vs_battle_cameraCurrentSpherical.values.distance
+            < vs_battle_cameraCurrentSpherical.initialDistance) {
+            vs_battle_cameraCurrentSpherical.values.distance +=
+                vs_battle_cameraCurrentSpherical.unk24;
+        }
+        break;
+    }
+}
 
 void func_8006E640(int arg0)
 {

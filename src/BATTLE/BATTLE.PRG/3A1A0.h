@@ -423,6 +423,8 @@ typedef struct {
 typedef struct {
     u_char unk0[0x3C];
     void* unk3C;
+    u_char unk40[0x10];
+    int unk50;
 } D_800F45E0_unk68;
 
 typedef struct {

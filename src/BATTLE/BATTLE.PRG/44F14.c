@@ -1110,7 +1110,7 @@ void func_800AEF94(MATRIX* camera)
             }
             packedPosition = *(int*)&object->unk1C;
             objectScratch->offset.vz = (u_short)object->unk20;
-            modelHeight = (*(int*)((char*)object->unk68 + 0x50));
+            modelHeight = object->unk68->unk50;
             *(int*)&objectScratch->offset = packedPosition;
             objectScratch->offset.vy =
                 (u_short)(objectScratch->offset.vy + ((int)modelHeight / 2));
@@ -1357,7 +1357,7 @@ update_bones:
 void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 {
     struct animationFrameScratch* scratch = (void*)0x1F8003EC;
-    SVECTOR* delta = (void*)((char*)value + 0x2A0);
+    SVECTOR* delta = value + 84;
     u_char* data = (u_char*)(u_int)(u_short)value->pad;
     int nextFrame = (u_short)delta->pad;
     int frame = scratch->first;

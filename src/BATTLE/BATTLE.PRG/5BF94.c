@@ -699,7 +699,7 @@ int func_800C4794(SVECTOR* arg0)
         offset.vec.vz += (-stickX * rsin(angle) + stickY * rcos(angle) + 0x200) >> 10;
         scale =
             vs_gte_rsqrt(offset.vec.vx * offset.vec.vx + offset.vec.vz * offset.vec.vz);
-        if (scale > 0x1000) {
+        if (scale > ONE) {
             stickX = offset.vec.vx - oldX;
             stickY = offset.vec.vz - oldZ;
             offset.vec.vx = (offset.vec.vx << 12) / scale;
@@ -752,11 +752,11 @@ int func_800C4794(SVECTOR* arg0)
         switch (D_800EB9B8->unk0[0].unk0 & 0x7F) {
         case 1:
             scale = (D_800EB9B8->unk38.vec.vy * 2) / flags.unk1;
-            scale = SquareRoot12(0x1000 - scale * scale);
+            scale = SquareRoot12(ONE - scale * scale);
             break;
         case 2:
         case 3:
-            scale = 0x1000;
+            scale = ONE;
             break;
         case 4:
             scale = ((flags.unk1 * 32 + D_800EB9B8->unk38.vec.vy) << 7) / flags.unk1;
@@ -775,10 +775,10 @@ int func_800C4794(SVECTOR* arg0)
     }
 
     func_800C2E24(arg0, m, scale);
-    stickX = (D_800EB9B8->unk38.vec.vx * scale + 0x800) >> 12;
-    stickY = (D_800EB9B8->unk38.vec.vz * scale + 0x800) >> 12;
-    arg0->vx += (stickX * m->m[0][0] + stickY * m->m[2][0] + 0x800) >> 12;
-    arg0->vz += (stickX * m->m[0][2] + stickY * m->m[2][2] + 0x800) >> 12;
+    stickX = (D_800EB9B8->unk38.vec.vx * scale + ONE / 2) >> 12;
+    stickY = (D_800EB9B8->unk38.vec.vz * scale + ONE / 2) >> 12;
+    arg0->vx += (stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12;
+    arg0->vz += (stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12;
 
     value = _getCollisionMapDimensions(0);
     if (((u_int)arg0->vx >= (value & 0xFFFF) * 8)
@@ -797,19 +797,19 @@ int func_800C4794(SVECTOR* arg0)
         }
         stickX = arg0->vx - D_800EB9B8->unk0[0].unk8[0];
         stickY = arg0->vz - D_800EB9B8->unk0[0].unk8[2];
-        value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + 0xFFF) / 4096;
+        value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + ONE - 1) / ONE;
         if ((scale != 0) && (value != 0)) {
             D_800EB9B8->unk38.vec.vx =
                 (((stickX * m->m[2][2] - stickY * m->m[2][0]) / value) << 12) / scale;
             D_800EB9B8->unk38.vec.vz =
                 (((-stickX * m->m[0][2] + stickY * m->m[0][0]) / value) << 12) / scale;
         }
-        stickX = (D_800EB9B8->unk38.vec.vx * scale + 0x800) >> 12;
-        stickY = (D_800EB9B8->unk38.vec.vz * scale + 0x800) >> 12;
+        stickX = (D_800EB9B8->unk38.vec.vx * scale + ONE / 2) >> 12;
+        stickY = (D_800EB9B8->unk38.vec.vz * scale + ONE / 2) >> 12;
         arg0->vx = D_800EB9B8->unk0[0].unk8[0]
-                 + ((stickX * m->m[0][0] + stickY * m->m[2][0] + 0x800) >> 12);
+                 + ((stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12);
         arg0->vz = D_800EB9B8->unk0[0].unk8[2]
-                 + ((stickX * m->m[0][2] + stickY * m->m[2][2] + 0x800) >> 12);
+                 + ((stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12);
     }
 
     func_800C28AC(arg0, lockPitch);
@@ -4825,12 +4825,12 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
             SetTransMatrix(&vs_scratch.viewMatrix);
             vs_battle_splineInterpolate(&t->first[t->index],
                 &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
-                &t->first[(t->index - 3) & 7], -4096, &t->previousFirst);
+                &t->first[(t->index - 3) & 7], -ONE, &t->previousFirst);
             vs_battle_splineInterpolate(&t->second[t->index],
                 &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
-                &t->second[(t->index - 3) & 7], -4096, &t->previousSecond);
+                &t->second[(t->index - 3) & 7], -ONE, &t->previousSecond);
             weight = (segments + 1) * 2;
-            for (span = -2048; span < 0; span += 2048) {
+            for (span = -ONE / 2; span < 0; span += ONE / 2) {
                 vs_battle_splineInterpolate(&t->first[t->index],
                     &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
                     &t->first[(t->index - 3) & 7], span, &t->currentFirst);
@@ -4843,7 +4843,7 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
                 t->previousSecond = t->currentSecond;
             }
             for (span = 0; span < segments; ++span) {
-                for (phase = 0; phase < 4096; phase += 2048) {
+                for (phase = 0; phase < ONE; phase += ONE / 2) {
                     vs_battle_splineInterpolate(&t->first[((t->index - span) & 7)],
                         &t->first[((t->index - span) - 1) & 7],
                         &t->first[((t->index - span) - 2) & 7],
@@ -6092,7 +6092,7 @@ void func_800D0D08(D_800F53B8_t* arg0)
                     rcos(state->saved.pad);
                 ((int*)&state->attachment)[1] = rsin(state->saved.pad);
                 ((int*)&state->attachment)[3] = -((int*)&state->attachment)[1];
-                ((int*)&state->attachment)[2] = 0x1000;
+                ((int*)&state->attachment)[2] = ONE;
             }
             CompMatrix(&state->attachment, &scratch->unk48, &state->world);
         } else {
@@ -7092,7 +7092,7 @@ void func_800D2ADC(
             scratch->unk188 = scratch->unk184;
         }
     ring:
-        step = 0x1000 / scratch->unk184;
+        step = ONE / scratch->unk184;
         if ((scratch->flags & 0x1800) != 0x1000) {
             D_800EC328 %= scratch->unk188;
             angle = D_800EC328 * step + 0x200;
@@ -7116,8 +7116,8 @@ void func_800D2ADC(
                 prevZ = z;
                 if ((scratch->flags & 0x1800) != 0x800) {
                     value = SquareRoot12(((rand() * range) >> 15) + sample);
-                    if (value > 0x1000) {
-                        value = 0x1000;
+                    if (value > ONE) {
+                        value = ONE;
                     }
                     scratch->unk2C.vx = (scratch->unk2C.vx * value) >> 12;
                     scratch->unk2C.vz = (scratch->unk2C.vz * value) >> 12;
@@ -7177,7 +7177,7 @@ void func_800D2ADC(
             RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
             gte_SetRotMatrix(scratch);
             *(int*)&scratch->unk2C = 0;
-            scratch->unk2C.vz = 0x1000;
+            scratch->unk2C.vz = ONE;
             RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
             if (scratch->flags & 0x40000) {
                 vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
@@ -7206,7 +7206,7 @@ void func_800D2ADC(
             RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
             gte_SetRotMatrix(scratch);
             *(int*)&scratch->unk2C = 0;
-            scratch->unk2C.vz = 0x1000;
+            scratch->unk2C.vz = ONE;
             RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
             gte_SetRotMatrix(matrix);
             vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);

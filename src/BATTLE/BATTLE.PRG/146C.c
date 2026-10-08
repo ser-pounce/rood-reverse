@@ -186,10 +186,7 @@ typedef struct {
 } func_8006EBF8_t2;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
+    SVECTOR position;
     short unk8;
     short unkA;
     char unkC;
@@ -15021,9 +15018,9 @@ void func_8008F30C(int arg0, int arg1)
 
     for (i = 0; i < arg0; ++i, ++var_s1) {
         var_s1->unkF = rand() & 0x7F;
-        var_s1->unk0 = rand() % 320;
-        var_s1->unk2 = rand() % 240;
-        var_s1->unk4 = rand() % 256;
+        var_s1->position.vx = rand() % 320;
+        var_s1->position.vy = rand() % 240;
+        var_s1->position.vz = rand() % 256;
         var_s1->unk8 = -1;
         var_s1->unkA = -1;
     }
@@ -15049,9 +15046,9 @@ void func_8008FA14(D_800F1DD4_t* arg0)
 {
     _mpdRoomSectionB* temp_s0 = vs_battle_roomData.sectionB;
 
-    arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
-    arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
-    arg0->unk2 = (rand() % 512) + 0x200;
+    arg0->position.vx = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
+    arg0->position.vz = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
+    arg0->position.vy = (rand() % 512) + 0x200;
     arg0->unkC = 0;
     arg0->unkF = (rand() & 0xF) + 8;
 }
@@ -15068,13 +15065,15 @@ void func_80090A1C(D_800F1DD4_t* arg0)
 
     temp_s0 = vs_battle_roomData.sectionB;
     if (temp_s0 != NULL) {
-        arg0->unk0 = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
-        arg0->unk4 = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
+        arg0->position.vx =
+            temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
+        arg0->position.vz =
+            temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
     } else {
-        arg0->unk0 = rand() % 4096;
-        arg0->unk4 = rand() % 4096;
+        arg0->position.vx = rand() % 4096;
+        arg0->position.vz = rand() % 4096;
     }
-    arg0->unk2 = (rand() % 512) - 2560;
+    arg0->position.vy = (rand() % 512) - 2560;
     arg0->unkE = 2;
     arg0->unkC = 0;
     arg0->unkD = 0;

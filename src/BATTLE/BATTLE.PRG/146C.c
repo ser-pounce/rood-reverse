@@ -562,12 +562,20 @@ void _applyBattleAbilityEffect(_hitEntity_t*);
 void func_80087EF4(vs_battle_actor2*);
 int func_800882F4(void);
 int func_80088554(void);
+int func_80088B6C(void);
+void func_80088B8C(void);
 void func_80088CA0(void);
+void func_80089098(void);
 void func_80089114(void);
 void func_80089CE4(void);
 void func_80089D04(void);
+void _finishLoadZnd(int id);
+void func_80089DC0(int arg0);
+void func_8008A3A0(void);
 void func_8008A6FC(void);
 int func_8008ABF0(int arg0);
+void func_8008AC78(void);
+void func_8008B28C(void);
 void func_8008B320(void);
 void func_8008B390(int arg0, int* arg1);
 int func_8008B4C8(char arg0);
@@ -594,6 +602,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
 int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
+int func_8008C8A8(void);
 _mpdRoomSection9* func_8008D438(int, int, int);
 _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
@@ -609,6 +618,7 @@ void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
 _mpdRoomSection13* func_8008E370(int* arg0);
 _mpdRoomSectionA* func_8008E3B8(int* arg0);
 void func_8008E480(int arg0);
+void func_8008EC48(VECTOR* arg0);
 void func_800E4C64(int);
 void func_8008E4DC(int);
 void _loadMpdLootSection(void* arg0);
@@ -654,9 +664,13 @@ void func_800E685C(int, int, int);
 void func_800719FC(int);
 void func_80071F68(int);
 void func_80072734(int);
+void func_8007D734(void*);
+void func_8007DF98(void);
 void func_800C05EC(void*, void*, int, void*);
 void func_800C0700(void*);
 void func_800DEEA4(D_800F19CC_t2*);
+int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
+void func_800FA35C(int);
 
 extern u_char D_8004EF20;
 extern u_char D_8004EF80;
@@ -664,7 +678,9 @@ extern u_char D_8004EFA0;
 extern u_char D_8004EFB2;
 extern u_char D_8004EFE2;
 extern u_char D_8004F000;
+extern u_char D_8004FE88[];
 extern char D_8005FFAF;
+extern vs_battle_charInitData* D_800F188C;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
@@ -6176,9 +6192,6 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
     return 0;
 }
 
-extern u_char D_8004FE88[];
-extern vs_battle_charInitData* D_800F188C;
-
 vs_battle_actor* func_800775C0(
     int id, mpdEnemySpawn* spawn, vs_battle_charInitData* init, int flags)
 {
@@ -7144,23 +7157,7 @@ void func_8007983C(void)
     }
 }
 
-void _finishLoadZnd(int id);
-void func_80089DC0(int arg0);
-int func_8008C8A8(void);
-int func_80088B6C(void);
-void func_80088B8C(void);
-void func_8008EC48(VECTOR* arg0);
-void func_8008AC78(void);
-void func_8008B28C(void);
-void func_8007D734(void*);
-void func_8007DF98(void);
-void func_8008A3A0(void);
-void func_80089098(void);
-
 // https://decomp.me/scratch/CQo8q
-void vs_battle_exec(void);
-void func_800FA35C(int);
-
 void vs_battle_exec(void)
 {
     func_8006EBF8_t position;
@@ -12841,8 +12838,6 @@ void func_80085A34(func_80085A34_t* arg0)
 }
 
 // https://decomp.me/scratch/KrvDw
-int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
-
 void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int arg3)
 {
     SVECTOR origin;

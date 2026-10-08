@@ -145,7 +145,88 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A8FD4);
+int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
+{
+    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* clear;
+    D_800F4538_t** entry;
+    int flags;
+    int i;
+    int radius;
+    int minX;
+    int maxX;
+    int minY;
+    int minZ;
+    int maxZ;
+
+    for (i = 16, clear = (D_1F8003BC_t*)((u_char*)scratch + 16); i >= 0; --i) {
+        clear->excluded[0] = 0;
+        clear = (D_1F8003BC_t*)((u_char*)clear - 1);
+    }
+
+    flags = getActorFlags(actor);
+
+    if (flags & 0x800) {
+        return flags & 0x800;
+    }
+
+    radius = actor->unk640;
+    minY = actor->unk0.position.vy - actor->unk642;
+    minX = actor->unk0.position.vx - radius;
+    maxX = actor->unk0.position.vx + radius;
+    minZ = actor->unk0.position.vz - radius;
+    maxZ = actor->unk0.position.vz + radius;
+    i = 2;
+
+    if (flags & 8) {
+        minY -= 128;
+    }
+
+    for (entry = &D_800F4538[i]; i < 17; ++entry) {
+        D_800F4538_t* other = *entry;
+        int otherRadius;
+        int dx;
+        int dz;
+        int oldDistance;
+
+        if (other != NULL
+            && !(other->unk0.skip || (getActorFlags(other) & 0x1000000)
+                 || other->unk0.unk13 == 0xFC || other->unk0.unkB_0 == 2)) {
+            otherRadius = other->unk640;
+
+            if (!(other->unk0.position.vx + otherRadius < minX
+                    || maxX < other->unk0.position.vx - otherRadius
+                    || other->unk0.position.vz + otherRadius < minZ
+                    || maxZ < other->unk0.position.vz - otherRadius
+                    || other->unk0.position.vy < minY
+                    || actor->unk0.position.vy
+                           < other->unk0.position.vy - other->unk642)) {
+                scratch->excluded[i] = 1;
+                dx = other->unk0.position.vx - actor->unk0.position.vx;
+                dx *= dx;
+                dz = other->unk0.position.vz - actor->unk0.position.vz;
+                dz *= dz;
+                oldDistance = dx + dz;
+                dx = other->unk0.position.vx - (actor->unk0.position.vx + motion->vx);
+                dx *= dx;
+                dz = other->unk0.position.vz - (actor->unk0.position.vz + motion->vz);
+                dz *= dz;
+                dx += dz;
+                ++i;
+
+                if (dx < oldDistance) {
+                    return 0;
+                }
+
+                continue;
+            }
+        }
+
+        ++i;
+    }
+
+    return 1;
+}
 
 int func_800A91DC(int arg0, int arg1, int arg2)
 {

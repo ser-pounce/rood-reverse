@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG135.BIN/nonmatchings/E0", func_800F98E0);
+#define VS_CLOSED_RING_FUNCTION func_800F98E0
+#define VS_CLOSED_RING_COLORS D_800FC96C
+#include "src/EFFECT/closedRings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG135.BIN/nonmatchings/E0", func_800FA84C);
 

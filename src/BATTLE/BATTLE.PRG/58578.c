@@ -2,6 +2,7 @@
 #include "146C.h"
 #include "30DB0.h"
 #include "58578.h"
+#include "573B8.h"
 #include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 #include <stddef.h>
@@ -91,6 +92,10 @@ extern short D_800EA234[];
 extern short D_800EA2C4[];
 extern u_char D_800EA438[];
 extern u_short D_800EA46C[];
+extern int D_800EA670[];
+extern int D_800EA684[];
+extern int D_800EA698[];
+extern u_char D_800EA6AC;
 extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800F4CB4;
 
@@ -974,7 +979,57 @@ void* func_800C282C(void)
     return (void*)0x1F800350;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C28AC);
+void func_800C28AC(SVECTOR* position, int arg1)
+{
+    int xy;
+    int i;
+    u_long* prim;
+    u_long* ot = vs_scratch.unk4 - 4;
+
+    gte_ldv0(position);
+    gte_rtps2();
+    gte_stsxy(&xy);
+
+    D_800EA6AC = (D_800EA6AC + 1) & 0xF;
+
+    if (arg1 == 0) {
+        prim = vs_scratch.unk0;
+        prim[0] = vs_getTag(VS_POLY_FT4, *ot);
+        prim[1] = vs_getRGB0(primPolyFT4, 0x80, 0x80, 0x80);
+        prim[2] = xy + vs_getXY(-13, -9);
+        prim[3] = vs_getUV0Clut(241, 56, 976, 223);
+        prim[4] = xy + vs_getXY(-3, -9);
+        prim[5] = vs_getUV1Tpage(231, 56, 768, 0, clut4Bit, semiTransparencyHalf);
+        prim[6] = xy + vs_getXY(-13, -2);
+        prim[7] = vs_getUV(241, 63);
+        prim[8] = xy + vs_getXY(-3, -2);
+        prim[9] = vs_getUV(231, 63);
+        *ot = (u_long)prim;
+        prim += 10;
+        prim[0] = vs_getTag(VS_POLY_FT4, *ot);
+        prim[1] = vs_getRGB0(primPolyFT4, 0x80, 0x80, 0x80);
+        prim[2] = xy + vs_getXY(-13, 1);
+        prim[3] = vs_getUV0Clut(241, 64, 976, 223);
+        prim[4] = xy + vs_getXY(-3, 1);
+        prim[5] = vs_getUV1Tpage(231, 64, 768, 0, clut4Bit, semiTransparencyHalf);
+        prim[6] = xy + vs_getXY(-13, 8);
+        prim[7] = vs_getUV(241, 71);
+        prim[8] = xy + vs_getXY(-3, 8);
+        prim[9] = vs_getUV(231, 71);
+        *ot = (u_long)prim;
+        prim += 10;
+        vs_scratch.unk0 = prim;
+    }
+
+    for (i = 0; i < 3; ++i) {
+        int index = i + arg1 * 2;
+
+        prim = vs_battle_setSpriteDefaultTexPage(
+            index == 2 ? vs_battle_cursorBrightnessAnimation[D_800EA6AC] : 0x80,
+            xy + D_800EA670[index], D_800EA684[index], ot);
+        prim[4] = D_800EA698[index];
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2B0C);
 

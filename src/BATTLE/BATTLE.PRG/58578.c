@@ -540,7 +540,89 @@ void func_800C16FC(int x0, int x1, int count)
         _get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)), vs_scratch.unk8);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C1A40);
+void func_800C1A40(int x0, int x1, int count)
+{
+    int y0;
+    int y1 = x1 >> 16;
+    int midX;
+    int signY = 1;
+    int signX = 1;
+    int length;
+    int dx;
+    int i;
+    int y1Bits;
+    int segmentEnd;
+    int segmentStart;
+
+    x1 = (short)x1;
+    y0 = x0 >> 16;
+    x0 = (short)x0;
+    length = y0 - y1;
+    if (length < 0) {
+        signY = -1;
+        length = -length;
+    }
+    if (length & 1) {
+        y0 -= signY;
+    }
+    length >>= 1;
+    midX = x0 - length;
+    dx = midX - x1;
+    if (dx < 0) {
+        signX = -1;
+        dx = -dx;
+    }
+    length = length * 2 + dx;
+    segmentEnd = length;
+    segmentStart = 0;
+    y1Bits = y1 << 16;
+    for (i = 0; i < 16; ++i, segmentEnd += length, segmentStart += length) {
+        int level = i - count + 16;
+        int gray;
+        int color;
+        int start;
+
+        if (count < i || level < 0) {
+            continue;
+        }
+        gray = ((level * 3) << 6) >> 4;
+        gray |= gray << 8;
+        color = gray | (((level * 255 + (16 - level) * 32) >> 4) << 16);
+        start = segmentStart >> 4;
+        if (start < dx) {
+            int end = segmentEnd >> 4;
+
+            if (end < dx) {
+                vs_battle_addTile(vs_scratch.unk8,
+                    vs_getRGB0Raw(primLineF2SemiTrans, color),
+                    ((x1 + start * signX) & 0xFFFF) | y1Bits,
+                    ((x1 + (end - 1) * signX) & 0xFFFF) | y1Bits);
+            } else {
+                int lineColor = vs_getRGB0Raw(primLineF2SemiTrans, color);
+                int tail;
+
+                vs_battle_addTile(vs_scratch.unk8, lineColor,
+                    ((x1 + start * signX) & 0xFFFF) | y1Bits,
+                    ((midX - signX) & 0xFFFF) | y1Bits);
+                tail = length * (15 - i);
+                if (y1 != y0 - (tail >> 4) * signY) {
+                    vs_battle_addTile(vs_scratch.unk8, lineColor,
+                        (midX & 0xFFFF) | y1Bits,
+                        vs_getXY_2(x0 - (tail >> 5), y0 - ((tail + 16) >> 4) * signY));
+                }
+            }
+        } else {
+            int far2 = length * (16 - i);
+            int near2 = length * (15 - i);
+
+            vs_battle_addTile(vs_scratch.unk8, vs_getRGB0Raw(primLineF2SemiTrans, color),
+                vs_getXY_2(x0 - (far2 >> 5), y0 - (far2 >> 4) * signY),
+                vs_getXY_2(x0 - (near2 >> 5), y0 - ((near2 + 16) >> 4) * signY));
+        }
+    }
+    vs_battle_insertTpage(
+        _get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)), vs_scratch.unk8);
+}
 
 int func_800C1D84(void)
 {

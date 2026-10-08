@@ -89,19 +89,6 @@ typedef struct {
 } D_800F19CC_t2;
 
 typedef struct {
-    SVECTOR unk0;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    char unkC;
-    char unkD;
-    short unkE;
-    int unk10;
-    int unk14;
-} D_800F19CC_t5;
-
-typedef struct {
     u_int unk0;
     u_int unk4;
     D_800F19CC_t2 unk8;
@@ -3825,7 +3812,7 @@ void func_80072BA8(int action)
             }
         }
         D_800F19CC->unk2C00 = count;
-        func_800C1664(count, (int)D_800F19CC->unk29C0, 0);
+        func_800C1664(count, D_800F19CC->unk29C0, 0);
         _cameraMode = 1;
         return;
     }

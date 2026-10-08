@@ -236,7 +236,8 @@ typedef struct {
     u_int unk5AC_22 : 1;
     u_int unk5AC_23 : 1;
     u_int unk5AC_24 : 1;
-    u_int unk5AC_25 : 2;
+    u_int unk5AC_25 : 1;
+    u_int unk5AC_26 : 1;
     u_int unk5AC_27 : 1;
     u_int unk5AC_28 : 4;
     u_char unk5B0_0 : 3;

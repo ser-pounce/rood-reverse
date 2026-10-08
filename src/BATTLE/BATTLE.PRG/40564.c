@@ -79,7 +79,7 @@ void func_800AB098(D_800F4538_t*, int, int);
 int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
 int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
 void func_800AC690(int arg0, D_800F4538_t* arg1);
-void func_800ACF54(D_800F45E0_t*);
+void func_800ACF54(D_800F4538_t*);
 void func_800AE47C(D_800F4538_t*);
 void func_800AE828(int, D_800F4538_t*, int);
 void func_800E4C28();
@@ -2199,11 +2199,12 @@ static inline int func_800AC690_getProfile(D_800F4538_t* actor)
     if (flags & 0x200000) {
         return 5;
     }
-    if (*(u_int*)((char*)actor + 0x5AC) & 8) {
+    if (actor->unk5AC_3) {
         return 6;
     }
     return actor->unk5B0_0 & 3;
 }
+
 
 void func_800AC690(int arg0, D_800F4538_t* actor)
 {
@@ -2243,11 +2244,10 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 actor->unk0.unk34.vy = -30;
             }
             actor->unk5B7 = 0;
-            *(u_int*)((char*)actor + 8) =
-                (*(u_int*)((char*)actor + 8) & 0xFFF8FFFF) | 0x30000;
-            if (*(u_int*)((char*)actor + 0xC) & 0xF) {
+            actor->unk0.unkA_0 = 3;
+            if (actor->unk0.unkC_0) {
                 func_8008C49C(actor->unk0.unkC_0 - 2, -1);
-                *(u_int*)((char*)actor + 0xC) &= ~0xF;
+                actor->unk0.unkC_0 = 0;
             }
         }
         break;
@@ -2261,7 +2261,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             func_800A0204(actor->unk0.unkF, 0x2F, 0, 8);
             actor->unk0.unk11 = 0;
         }
-        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+        if (actor->unk0.unkA_6) {
             y = vs_gametime_tickspeed / 2;
             ((func_800AC690_timer_t*)&actor->unk5B4)->timer += y;
             limit = 7;
@@ -2395,18 +2395,17 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             }
         }
         *(short*)&actor->unk6EE = 0;
-        ((func_800AC690_contact_t*)((char*)actor + 0xC))->contact = (u_char)D_800F49F4;
+        actor->unk0.unkC_0 = D_800F49F4;
         actor->unk0.unk5D = D_800F49F4;
         actor->unk5AC_28 = D_800F49F8;
         actor->unk0.unk34.vy = y - actor->unk0.position.vy;
-        ((func_800AC690_flags_t*)((char*)actor + 8))->state = 4;
+        actor->unk0.unkA_0 = 4;
         func_800AA698(arg0, &actor->unk0.unk34, 0);
         floor = actor->unk0.position.vy - ((SVECTOR*)&actor->unk0.unk4C)->vy;
         floor /= 64;
         actor->unk0.unk11 = 0;
         if (y < 3000) {
-            if (actor->unk0.unkF != 0 || !(*(u_int*)((char*)actor + 8) & 0xF00)
-                || ((*(u_int*)((char*)actor + 8) >> 8) & 0xF) >= 6) {
+            if (actor->unk0.unkF != 0 || !actor->unk0.unk9_0 || actor->unk0.unk9_0 >= 6) {
                 if (floor >= 4) {
                     func_800AE828(arg0, actor, 0x42);
                     if (floor >= 6 && arg0 == 0) {
@@ -2418,7 +2417,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             }
         }
         actor->unk181A = 0;
-        *(u_int*)((char*)actor + 0x5AC) &= ~0x04000000;
+        actor->unk5AC_26 = 0;
         func_800A0204(arg0, D_800E9300[profile], 0, 8);
         break;
     fall:
@@ -2426,10 +2425,10 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         break;
     case 4:
         if (flags & 0x200000) {
-            *(u_int*)((char*)actor + 8) = flags & ~0x200000;
-            *(u_int*)((char*)actor + 8) &= ~0x400000;
+            actor->unk0.unkA_5 = 0;
+            actor->unk0.unkA_6 = 0;
         }
-        func_800ACF54((D_800F45E0_t*)actor);
+        func_800ACF54(actor);
         actor->unk0.unk11 -= vs_gametime_tickspeed / 2;
         if ((signed char)actor->unk0.unk11 < 0) {
             actor->unk0.unk11 = 0;
@@ -2437,7 +2436,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         if ((signed char)actor->unk0.unk11 == 0) {
             actor->unk6EC = 0;
             if (actor->unk0.unkF != 0) {
-                if (!(*(u_int*)((char*)actor + 8) & 0x400000) && actor->unk5CC != 0) {
+                if (!actor->unk0.unkA_6 && actor->unk5CC != 0) {
                     break;
                 }
                 if (profile != 3) {
@@ -2447,23 +2446,38 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 func_800E6EB0(actor->unk0.unkF);
             }
             actor->unk1846 = 0;
-            *(u_int*)((char*)actor + 8) &= 0xFFF8FFFF;
+            actor->unk0.unkA_0 = 0;
         }
         break;
     }
 }
 
-void func_800ACF54(D_800F45E0_t* arg0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void func_800ACF54(D_800F4538_t* actor)
 {
+    *(int*)&actor->unk0.lastTouchedTileX = *(int*)&actor->unk0.currentTileX;
+    *(func_800ACF54_t*)&actor->unk0.unk4C = *(func_800ACF54_t*)&actor->unk0.position;
 
-    arg0->unk60 = *(int*)&arg0->unk5C;
-    *(func_800ACF54_t*)&arg0->unk4C = *(func_800ACF54_t*)&arg0->unk1C;
-
-    if (!(arg0->unkC_0)) {
-        arg0->unk1868 = *(int*)&arg0->unk5C;
+    if (!actor->unk0.unkC_0) {
+        actor->unk1868 = *(int*)&actor->unk0.currentTileX;
     }
 
-    arg0->unk52 = arg0->unk26;
+    actor->unk0.unk52 = actor->unk0.facing;
 }
 
 inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)

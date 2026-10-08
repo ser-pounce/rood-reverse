@@ -150,7 +150,9 @@ void func_800970BC(void);
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
+extern RECT D_80068FAC[];
 extern char D_800691E4[];
+extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
 extern short D_800F1D00;
@@ -1461,7 +1463,34 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
     ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80094E18);
+int func_80094E18(int x, int y, D_800F1BAC_t* p)
+{
+    RECT* rect = &D_80068FAC[D_800E861C[p->unkE - 3]];
+    POLY_FT4* prim = ((vs_scratch_t*)0x1F800000)->unk0;
+    int sign = p->unkC;
+    int width = (p->displayTextLen * 6 + rect->w + 12) / 2;
+
+    x -= width;
+    setPolyFT4(prim);
+    setXY4(prim, x, y - 6, x + rect->w, y - 6, x, y + 6, x + rect->w, y + 6);
+    setShadeTex(prim, 1);
+    setUV4(prim, rect->x, rect->y, rect->x + rect->w, rect->y, rect->x, rect->y + 12,
+        rect->x + rect->w, rect->y + 12);
+    setTPage(prim, 0, 0, 448, 256);
+    setClut(prim, 976, 220);
+    sign = (sign & 0x8000) ? 0 : 8;
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+    x += rect->w + 4;
+    setPolyFT4(prim);
+    setXY4(prim, x, y - 5, x + 8, y - 5, x, y + 5, x + 8, y + 5);
+    setUV4(prim, sign + 154, 76, sign + 162, 76, sign + 154, 86, sign + 162, 86);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 864, 223);
+    setShadeTex(prim, 1);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+    return width;
+}
 
 void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
 {

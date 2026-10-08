@@ -186,9 +186,9 @@ loop: {
         sfx[0] = 13;
         goto setAnimation;
     case 55:
-        if (((u_char*)state)[0x549] == 0) {
-            ((u_char*)state)[0x549] = script[1];
-        } else if (--((u_char*)state)[0x549] == 0) {
+        if (state->unk548_8 == 0) {
+            state->unk548_8 = script[1];
+        } else if (--state->unk548_8 == 0) {
             break;
         }
         state->unk540--;
@@ -1238,7 +1238,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     u_char** data;
     u_char queuedAnimation;
 
-    (*(int*)((char*)state + 0x548)) = (int)((*(int*)((char*)state + 0x548)) & 0xFFFDFFFF);
+    state->unk548_17 = 0;
     frameOrOffset = (short)state->unk540;
     i = 0;
     if (actor->unk5B2 != 0) {
@@ -1261,8 +1261,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
             --shadow->unk5;
         }
         if ((short)state->unk540 >= (int)(u_short)actor->unk5BC) {
-            (*(int*)((char*)state + 0x548)) =
-                (int)((*(int*)((char*)state + 0x548)) | 0x20000);
+            state->unk548_17 = 1;
             queuedAnimation = actor->unk6E0;
             if (queuedAnimation != 0) {
                 func_800A0618((int)actor->unk0.unkF, (int)actor->unk6E0,
@@ -1278,8 +1277,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
         }
         if ((short)state->unk540 >= (int)(u_short)actor->unk5BC) {
             state->unk540 -= 1;
-            (*(int*)((char*)state + 0x548)) =
-                (int)((*(int*)((char*)state + 0x548)) | 0x10000);
+            state->unk548_16 = 1;
         }
         state->unk540 += 1;
         i += 1;
@@ -1290,9 +1288,9 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     }
 update_bones:
     frame = (short)state->unk540;
-    if ((frame != 1) && !((*(int*)((char*)state + 0x548)) & 0x10000)) {
+    if ((frame != 1) && !state->unk548_16) {
         lastFrame = frame - 1;
-        if ((*((u_char*)state + 0x549)) == 0) {
+        if (state->unk548_8 == 0) {
             if (lastFrame < frameOrOffset) {
                 frameOrOffset = 1;
             }

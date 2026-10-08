@@ -29,11 +29,7 @@ typedef struct {
 } D_800EB9B8_unk990;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    func_800C1564_t unk10;
+    func_800C1564_t unk0[2];
     short unk20;
     short unk22;
     int unk24;
@@ -454,7 +450,7 @@ void func_800C4650(func_800C4650_t* arg0, int arg1)
     for (i = 0; i < arg1; i++, arg0++) {
         type = arg0->unk9;
         if ((type >> 4) == 0) {
-            if (func_800C1564(&D_800EB9B8->unk10, arg0->unk0)) {
+            if (func_800C1564(&D_800EB9B8->unk0[1], arg0->unk0)) {
                 func_8009FD5C(type, 0, arg0->unkA);
             } else {
                 func_8009FE74(type, arg0->unkA);

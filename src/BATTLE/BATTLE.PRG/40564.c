@@ -31,6 +31,16 @@ typedef struct {
     u_char y;
 } func_800AB358_t;
 
+typedef struct {
+    u_char unk0[0xF];
+    u_char unkF;
+    u_char unk10[0x54];
+    D_800F4538_unk64 unk64;
+    u_char unk68[0xC4];
+    u_short unk12C[16];
+    u_short unk14C[16];
+} func_800AB788_t;
+
 void func_8007A824(DR_MOVE*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DA24(int, int);
@@ -1603,7 +1613,123 @@ void func_800AB4F0(D_800F4538_t* actor)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB788);
+void func_800AB788(D_800F4538_t* actor, func_800AB788_t* object, int arg2)
+{
+    D_800F4538_unk64* state;
+    int count;
+    int value;
+    int i;
+    int _[2] __attribute__((unused));
+
+    if (actor == NULL) {
+        count = 16;
+        state = &object->unk64;
+    } else {
+        count = 160;
+
+        if (!(getActorFlags(actor) & 0x8000000)) {
+            count = 16;
+        }
+
+        state = &actor->unk0.unk64;
+    }
+
+    value = state->unk1;
+
+    if (vs_gametime_tickspeed == 4) {
+        if (!(state->unk2 & 2)) {
+            value += 2;
+
+            if (value >= 16) {
+                state->unk2 |= 2;
+            }
+        } else {
+            value -= 2;
+
+            if (value <= 0) {
+                state->unk2 &= ~2;
+            }
+        }
+    }
+
+    if (!(state->unk2 & 2)) {
+        value += 2;
+
+        if (value >= 16) {
+            state->unk2 |= 2;
+        }
+    } else {
+        value -= 2;
+
+        if (value <= 0) {
+            state->unk2 &= ~2;
+        }
+    }
+
+    state->unk1 = value;
+
+    for (i = 0; i < count; ++i) {
+        int r;
+        int g;
+        int b;
+        int color = (actor == NULL) ? object->unk12C[i] : actor->unk1424[i];
+
+        if (color == 0) {
+            continue;
+        }
+
+        r = color & 31;
+        g = (color >> 5) & 31;
+        b = (color >> 10) & 31;
+        color &= 0x8000;
+
+        if (value == 16) {
+            r += 8;
+
+            if (r > 31) {
+                r = 31;
+            }
+
+            g += 18;
+
+            if (g > 31) {
+                g = 31;
+            }
+
+            b += 30;
+        } else {
+            r -= value / 2;
+
+            if (r < 0) {
+                r = 0;
+            }
+
+            g += value / 2;
+
+            if (g > 31) {
+                g = 31;
+            }
+
+            b += value;
+        }
+
+        if (b > 31) {
+            b = 31;
+        }
+
+        if (actor == NULL) {
+            object->unk14C[i] = color | (b << 10) | (g << 5) | r;
+        } else {
+            actor->unk16A4[i] = color | (b << 10) | (g << 5) | r;
+        }
+    }
+
+    if (actor == NULL) {
+        vs_main_loadClut(object->unk14C, 31, object->unkF * 16, count);
+    } else {
+        vs_main_loadClut(actor->unk16A4, actor->unk0.unkF + 22, 0, count);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB9A4);
 

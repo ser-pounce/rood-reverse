@@ -62,6 +62,14 @@ typedef struct {
     int unkC;
 } D_800378C0_t;
 
+// Streaming state for func_80012F10 (instrument bank uploaded in chunks)
+typedef struct {
+    int* pInstrumentDst; // next g_InstrumentInfo word to fill
+    int SpuAddr; // next SPU transfer address; 0 = start a new stream
+    u_int SpuBytesRemaining;
+    u_int InstrumentBytesRemaining;
+} D_80039BC8_t;
+
 static int Sound_IsNotAkaoFile(int*);
 int func_80013588(void*, int);
 int func_800135D8(void*, int, int, int);
@@ -76,6 +84,10 @@ u_int func_80018C30(int);
 long func_80019A58(void);
 static void StopSound(void);
 static void _writeSpu(char* data, u_int len);
+static void _waitTransferAvailable(void);
+void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
+    FSoundInstrumentInfo* in_B, int in_AddrOffset, int in_Count);
+void Sound_ClearVoiceFromSchedulerState(FSoundChannel* arg0, int arg1);
 void Sound_Cutscene_OnInitialTransferComplete(void);
 void Sound_Cutscene_InitVoice(int, int, int, int);
 void Sound_Cutscene_BeginPlayback(int, int, void (*)(void));
@@ -86,6 +98,8 @@ void IRQCallbackProc(void);
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
+void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
+    int in_ExtraVoiceMask);
 void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
@@ -130,6 +144,10 @@ extern int D_8003789C;
 extern int D_80039B00;
 extern u_int D_8002F63C[];
 extern int D_80039BCC;
+extern D_80039BC8_t D_80039BC8;
+extern int D_80037850[16];
+extern u_char D_8002F5A0[];
+extern u_char D_8002F600[];
 
 extern FSoundChannelConfig* g_pActiveMusicConfig;
 extern FSoundVoiceSchedulerState g_Sound_VoiceSchedulerState;
@@ -164,6 +182,7 @@ extern int g_Sound_TempoMultiplier;
 extern int D_80039B48;
 extern int g_Sound_LfoPhase;
 extern FSoundVoiceModeFlags g_Sound_VoiceModeFlags;
+extern int D_80037894;
 
 int InitSound(void)
 {
@@ -697,7 +716,7 @@ void func_80012BB8(void* arg0, int arg1)
 
 int vs_sound_spuTransferring(void) { return _isSpuTransfer; }
 
-int func_80012C14(u_int* arg0, int* arg1, int* arg2)
+int func_80012C14(int* arg0, int* arg1, int* arg2)
 {
     int var_a3;
 
@@ -792,7 +811,77 @@ int func_80012EF0(void)
     return 0;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80012F10);
+int func_80012F10(int* in_Data, u_int in_Size, int in_Slot, int in_Wait)
+{
+    int instrumentIndex;
+    int spuAddr;
+    u_int chunk;
+    u_int spuChunk;
+
+    if (g_Sound_GlobalFlags.ControlLatches & 1) {
+        if (D_80039BC8.SpuAddr == 0) {
+            if (Sound_IsNotAkaoFile(in_Data) == 0) {
+                if (in_Data[4] == 0x35100) {
+                    func_80012C14(in_Data, &instrumentIndex, &spuAddr);
+                } else if (in_Data[4] == 0xB100) {
+                    func_80012D9C(in_Data, &instrumentIndex, &spuAddr, in_Slot);
+                } else {
+                    spuAddr = in_Data[4];
+                    instrumentIndex = in_Data[6];
+                }
+                Sound_memcpy32(in_Data, D_80037850, 0x40);
+                in_Data += 0x10;
+                in_Size -= 0x40;
+                D_80037850[4] = spuAddr;
+                D_80039BC8.SpuAddr = spuAddr;
+                D_80037850[6] = instrumentIndex;
+                D_80039BC8.SpuBytesRemaining = D_80037850[5];
+                D_80039BC8.pInstrumentDst = (int*)&g_InstrumentInfo[instrumentIndex];
+                D_80039BC8.InstrumentBytesRemaining =
+                    D_80037850[7] * sizeof(FSoundInstrumentInfo);
+            } else {
+                in_Size = 0;
+                D_80039BC8.SpuBytesRemaining = 0;
+                D_80039BC8.InstrumentBytesRemaining = 0;
+            }
+        }
+        if ((D_80039BC8.InstrumentBytesRemaining != 0) && (in_Size != 0)) {
+            chunk = D_80039BC8.InstrumentBytesRemaining;
+            if (chunk >= in_Size) {
+                chunk = in_Size;
+            }
+            // The original reuses the spuAddr stack slot for the chunk size.
+            spuAddr = chunk;
+            Sound_memcpy32(in_Data, D_80039BC8.pInstrumentDst, spuAddr);
+            in_Data += (u_int)spuAddr / 4;
+            in_Size -= spuAddr;
+            D_80039BC8.pInstrumentDst += (u_int)spuAddr / 4;
+            D_80039BC8.InstrumentBytesRemaining -= spuAddr;
+            if (D_80039BC8.InstrumentBytesRemaining == 0) {
+                Sound_CopyAndRelocateInstruments(&g_InstrumentInfo[D_80037850[6]],
+                    &g_InstrumentInfo[D_80037850[6]], D_80037850[4], D_80037850[7]);
+            }
+        }
+        if ((in_Size != 0) && (D_80039BC8.SpuBytesRemaining != 0)) {
+            spuChunk = D_80039BC8.SpuBytesRemaining;
+            if (spuChunk >= in_Size) {
+                spuChunk = in_Size;
+            }
+            in_Size = spuChunk;
+            SpuSetTransferStartAddr(D_80039BC8.SpuAddr);
+            _writeSpu((char*)in_Data, in_Size);
+            D_80039BC8.SpuAddr += in_Size;
+            D_80039BC8.SpuBytesRemaining -= in_Size;
+            if (in_Wait != 0) {
+                _waitTransferAvailable();
+            }
+        }
+        if (D_80039BC8.SpuBytesRemaining == 0) {
+            g_Sound_GlobalFlags.ControlLatches &= ~1;
+        }
+    }
+    return D_80039BC8.SpuBytesRemaining;
+}
 
 int func_80013188(void* arg0, int arg1)
 {
@@ -933,7 +1022,29 @@ int func_80013588(void* arg0, int arg1)
 }
 
 // https://decomp.me/scratch/xpW1h
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800135D8);
+int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
+{
+    FAkaoSequence* header;
+    FSoundInstrumentInfo* instruments;
+
+    _waitTransferAvailable();
+    if (Sound_IsNotAkaoFile(in_Data) == 0) {
+        header = in_Data;
+        SpuSetTransferStartAddr(in_SpuAddr);
+        in_Data = header->Payload;
+        instruments = in_Data;
+        in_Data = instruments + header->unk1C;
+        _writeSpu(in_Data, header->unk14);
+        Sound_CopyAndRelocateInstruments(instruments,
+            &g_InstrumentInfo[in_FirstInstrument], in_SpuAddr, header->unk1C);
+        if (in_Wait != 0) {
+            _waitTransferAvailable();
+        }
+        return 0;
+    }
+    _isSpuTransfer = -1;
+    return -1;
+}
 
 // https://decomp.me/scratch/nDizh
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
@@ -1439,9 +1550,236 @@ void Sound_UpdateSlidesAndDelays(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001436C);
+void func_8001436C(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    short* Wave;
+    int temp;
+    int Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
+    int Sample;
+    u_int UpdateFlags = in_pChannel->UpdateFlags;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_800147CC);
+    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (in_pChannel->VibratoDelayCurrent == 0)
+        && (--in_pChannel->unkA4 == 0)) {
+        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+        Wave = in_pChannel->VibratoWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->VibratoWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->VibratoWave++;
+        temp = (in_pChannel->VibratoBase * Sample) >> 16;
+        if (temp != in_pChannel->VibratoPitch) {
+            in_pChannel->VibratoPitch = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+            if (temp >= 0) {
+                in_pChannel->VibratoPitch = temp * 2;
+            }
+        }
+    }
+
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && (in_pChannel->TremeloDelayCurrent == 0)
+        && !(--in_pChannel->unkB6 & 0xFFFF)) {
+        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+        Wave = in_pChannel->TremeloWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->TremeloWave = Wave + Wave[2];
+        }
+        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremeloWave++;
+        temp = (temp * Sample) >> 15;
+        if (temp != in_pChannel->TremeloVolume) {
+            in_pChannel->TremeloVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+    }
+
+    if ((UpdateFlags & SOUND_UPDATE_PAN_LFO)
+        && (--in_pChannel->AutoPanRateCurrent == 0)) {
+        in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
+        Wave = in_pChannel->AutoPanWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->AutoPanWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->AutoPanWave++;
+        temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
+        if (temp != in_pChannel->AutoPanVolume) {
+            in_pChannel->AutoPanVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+    }
+
+    if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_VOL) {
+        Volume = ((short)((in_pChannel - 1)->VoiceParams.SampleRate * 2)
+                     * (in_pChannel->VolumeBalance >> 8))
+              >> 7;
+        in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+    }
+
+    if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
+        Volume += in_pChannel->TremeloVolume;
+        Volume =
+            (Volume * (int)(((u_int)g_pActiveMusicConfig->A_Volume >> 16) & 0x7F)) >> 7;
+        temp = ((in_pChannel->ChannelPan >> 8) + in_pChannel->AutoPanVolume) & 0xFF;
+        if (D_80039AFC & 2) {
+            in_pChannel->VoiceParams.Volume.right = (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right;
+        } else {
+            in_pChannel->VoiceParams.Volume.left =
+                (Volume * g_Sound_StereoPanGainTableQ15[temp]) >> 15;
+            in_pChannel->VoiceParams.Volume.right =
+                (Volume * g_Sound_StereoPanGainTableQ15[temp ^ 0xFF]) >> 15;
+        }
+    }
+
+    if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_PITCH) {
+        Sample = (in_pChannel - 1)->VoiceParams.SampleRate + in_pChannel->VibratoPitch
+               + (in_pChannel->PitchSlide >> 16);
+        temp = g_Sound_MasterPitchScaleQ16_16 & 0xFF0000;
+        if (temp != 0) {
+            temp >>= 16;
+            if (temp < 0x80) {
+                Sample += (Sample * temp) >> 7;
+            } else {
+                Sample = (Sample * temp) >> 8;
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate =
+            (in_pChannel->FinePitchDelta + Sample) & 0x3FFF;
+        in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+    } else if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_SAMPLE_RATE) {
+        Sample = in_pChannel->PitchBase + in_pChannel->VibratoPitch
+               + (in_pChannel->PitchSlide >> 16);
+        temp = g_Sound_MasterPitchScaleQ16_16 & 0xFF0000;
+        if (temp != 0) {
+            temp >>= 16;
+            if (temp < 0x80) {
+                Sample += (Sample * temp) >> 7;
+            } else {
+                Sample = (Sample * temp) >> 8;
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate =
+            (in_pChannel->FinePitchDelta + Sample) & 0x3FFF;
+    }
+}
+
+void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+{
+    short* Wave;
+    int temp;
+    int Volume = ((in_pChannel->Volume >> 16) * (in_pChannel->VolumeBalance >> 8)) >> 7;
+    int Sample;
+    u_int UpdateFlags = in_pChannel->UpdateFlags;
+
+    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (--in_pChannel->unkA4 == 0)) {
+        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+        Wave = in_pChannel->VibratoWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->VibratoWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->VibratoWave++;
+        temp = (in_pChannel->VibratoBase * Sample) >> 16;
+        if (temp != in_pChannel->VibratoPitch) {
+            in_pChannel->VibratoPitch = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+            if (temp >= 0) {
+                in_pChannel->VibratoPitch = temp * 2;
+            }
+        }
+    }
+
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && !(--in_pChannel->unkB6 & 0xFFFF)) {
+        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+        Wave = in_pChannel->TremeloWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->TremeloWave = Wave + Wave[2];
+        }
+        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremeloWave++;
+        temp = (temp * Sample) >> 15;
+        if (temp != in_pChannel->TremeloVolume) {
+            in_pChannel->TremeloVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+    }
+
+    if ((UpdateFlags & SOUND_UPDATE_PAN_LFO)
+        && (--in_pChannel->AutoPanRateCurrent == 0)) {
+        in_pChannel->AutoPanRateCurrent = in_pChannel->AutoPanRatePhase;
+        Wave = in_pChannel->AutoPanWave;
+        if (Wave[0] == 0 && Wave[1] == 0) {
+            in_pChannel->AutoPanWave = Wave + Wave[2];
+        }
+        Sample = *in_pChannel->AutoPanWave++;
+        temp = ((in_pChannel->AutoPanDepth >> 8) * Sample) >> 15;
+        if (temp != in_pChannel->AutoPanVolume) {
+            in_pChannel->AutoPanVolume = temp;
+            in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+        }
+    }
+
+    if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_VOL) {
+        Volume = ((short)((in_pChannel - 1)->VoiceParams.SampleRate * 2)
+                     * (in_pChannel->VolumeBalance >> 8))
+              >> 7;
+        in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
+    }
+
+    if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
+        Volume += in_pChannel->TremeloVolume;
+        if (!(in_pChannel->unk28 & 0x2000000)) {
+            Volume = (Volume * (in_pChannel->unkDC >> 8)) >> 7;
+            temp = ((in_pChannel->ChannelPan + in_pChannel->unk6C) >> 8)
+                 + in_pChannel->AutoPanVolume + 0x80;
+            temp &= 0xFF;
+        } else {
+            temp = 0x80;
+        }
+        if (D_80039AFC & 2) {
+            in_pChannel->VoiceParams.Volume.right = (Volume * D_8002F89C) >> 15;
+            in_pChannel->VoiceParams.Volume.left = in_pChannel->VoiceParams.Volume.right;
+        } else {
+            in_pChannel->VoiceParams.Volume.left =
+                (Volume * g_Sound_StereoPanGainTableQ15[temp]) >> 15;
+            in_pChannel->VoiceParams.Volume.right =
+                (Volume * g_Sound_StereoPanGainTableQ15[temp ^ 0xFF]) >> 15;
+        }
+    }
+
+    if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_PITCH) {
+        Sample = (in_pChannel - 1)->VoiceParams.SampleRate + in_pChannel->VibratoPitch
+               + (in_pChannel->PitchSlide >> 16);
+        if (!(in_pChannel->unk28 & 0x2000000)) {
+            temp = in_pChannel->unk40 & 0xFF00;
+            if (temp != 0) {
+                temp >>= 8;
+                if (temp < 0x80) {
+                    Sample += (Sample * temp) >> 7;
+                } else {
+                    Sample = (Sample * temp) >> 8;
+                }
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate =
+            (in_pChannel->FinePitchDelta + Sample) & 0x3FFF;
+        in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
+    } else if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_SAMPLE_RATE) {
+        Sample = in_pChannel->PitchBase + in_pChannel->VibratoPitch
+               + (in_pChannel->PitchSlide >> 16);
+        if (!(in_pChannel->unk28 & 0x2000000)) {
+            temp = in_pChannel->unk40 & 0xFF00;
+            if (temp != 0) {
+                temp >>= 8;
+                if (temp < 0x80) {
+                    Sample += (Sample * temp) >> 7;
+                } else {
+                    Sample = (Sample * temp) >> 8;
+                }
+            }
+        }
+        in_pChannel->VoiceParams.SampleRate =
+            (in_pChannel->FinePitchDelta + Sample) & 0x3FFF;
+    }
+}
 
 void UnassignVoicesFromChannels(FSoundChannel* in_pChannel, int);
 
@@ -1617,7 +1955,40 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
 }
 
 // https://decomp.me/scratch/VmgoV
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015080);
+void func_80015080(u_int in_ReservedVoices)
+{
+    u_int i;
+    u_int reserved = (g_pActiveMusicConfig->ActiveChannelMask
+                         & g_pActiveMusicConfig->AllocatedVoiceMask)
+                   | in_ReservedVoices;
+    FSpuVoiceInfo* pVoice;
+
+    if (g_pSavedMousicConfig != NULL) {
+        reserved |= g_pSavedMousicConfig->ActiveChannelMask
+                  & g_pSavedMousicConfig->AllocatedVoiceMask;
+    }
+
+    for (i = 0, pVoice = g_SpuVoiceInfo; i < VOICE_COUNT; pVoice++, i++) {
+        if (reserved & (1 << i)) {
+            pVoice->pEnvx = 0x7FFF;
+            continue;
+        }
+        SpuGetVoiceEnvelope(i, &pVoice->pEnvx);
+        if (pVoice->pEnvx == 0) {
+            UnassignVoicesFromChannels(g_ActiveMusicChannels, i);
+        } else if (g_pActiveMusicConfig->KeyedMask != 0) {
+            if (func_8001503C(
+                    g_ActiveMusicChannels, g_pActiveMusicConfig->KeyedMask, i)) {
+                pVoice->pEnvx = 0x7FFF;
+            }
+            if (g_pSavedMousicConfig != NULL
+                && func_8001503C(
+                    g_pSecondaryMusicChannels, g_pSavedMousicConfig->KeyedMask, i)) {
+                pVoice->pEnvx = 0x7FFF;
+            }
+        }
+    }
+}
 
 void Sound_ApplyMasterFadeToChannelVolume(
     FSoundChannelConfig* in_Context, FSoundChannel* arg1 __attribute__((unused)))
@@ -1640,7 +2011,146 @@ void Sound_RestoreChannelVolumeFromMasterFade(
 }
 
 // https://decomp.me/scratch/0wUZ7
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015220);
+void func_80015220(void)
+{
+    u_int KeyOnFlags = 0;
+    u_int ReservedVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                         | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14;
+    u_int Voices;
+    u_int Flags;
+    u_int SavedChannels;
+    u_int SavedVoices;
+    FSoundChannel* pChannel;
+
+    if ((g_pActiveMusicConfig->ActiveChannelMask & g_pActiveMusicConfig->PendingKeyOnMask)
+        || ((g_pSavedMousicConfig != NULL)
+            && (g_pSavedMousicConfig->ActiveChannelMask
+                & g_pSavedMousicConfig->PendingKeyOnMask))) {
+        func_80015080(ReservedVoices);
+    }
+
+    if (g_pSavedMousicConfig != NULL) {
+        if (g_Sound_GlobalFlags.MixBehavior & 0x100) {
+            Sound_ApplyMasterFadeToChannelVolume(
+                g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+        }
+
+        g_pActiveMusicConfig = g_pSavedMousicConfig;
+        SavedChannels = (g_pActiveMusicConfig->ActiveChannelMask
+                            & g_pActiveMusicConfig->ActiveNoteMask)
+                      & ~(g_pActiveMusicConfig->AllocatedVoiceMask & ReservedVoices);
+        SavedVoices =
+            (SavedChannels & g_pActiveMusicConfig->AllocatedVoiceMask) & ~ReservedVoices;
+        if (SavedChannels & g_pActiveMusicConfig->KeyedMask) {
+            func_80014D70(g_pSecondaryMusicChannels,
+                SavedChannels & g_pActiveMusicConfig->KeyedMask, SavedVoices,
+                &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask &= ~g_pActiveMusicConfig->KeyedMask;
+            SavedChannels &= ~g_pActiveMusicConfig->KeyedMask;
+        }
+
+        g_pActiveMusicConfig = &D_800366F0;
+        Flags = (g_pActiveMusicConfig->ActiveChannelMask
+                    & g_pActiveMusicConfig->ActiveNoteMask)
+              & ~(g_pActiveMusicConfig->AllocatedVoiceMask
+                  & (SavedVoices | ReservedVoices));
+        Voices = SavedVoices | ReservedVoices;
+        Voices = (Flags & g_pActiveMusicConfig->AllocatedVoiceMask) & ~Voices;
+        if (Flags & g_pActiveMusicConfig->KeyedMask) {
+            func_80014D70(g_ActiveMusicChannels, Flags & g_pActiveMusicConfig->KeyedMask,
+                Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask &= ~g_pActiveMusicConfig->KeyedMask;
+            Flags &= ~g_pActiveMusicConfig->KeyedMask;
+        }
+
+        if (SavedChannels != 0) {
+            g_pActiveMusicConfig = g_pSavedMousicConfig;
+            SavedVoices &= ~Voices;
+            func_80014D70(
+                g_pSecondaryMusicChannels, SavedChannels, SavedVoices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask = 0;
+            g_pActiveMusicConfig = &D_800366F0;
+        }
+
+        if (Flags != 0) {
+            func_80014D70(g_ActiveMusicChannels, Flags, Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask = 0;
+        }
+
+        if (g_Sound_GlobalFlags.MixBehavior & 0x100) {
+            Sound_RestoreChannelVolumeFromMasterFade(
+                g_pSavedMousicConfig, g_pSecondaryMusicChannels);
+        }
+    } else {
+        Flags = (g_pActiveMusicConfig->ActiveChannelMask
+                    & g_pActiveMusicConfig->ActiveNoteMask)
+              & ~(g_pActiveMusicConfig->AllocatedVoiceMask & ReservedVoices);
+        Voices = (Flags & g_pActiveMusicConfig->AllocatedVoiceMask) & ~ReservedVoices;
+        if (Flags & g_pActiveMusicConfig->KeyedMask) {
+            func_80014D70(g_ActiveMusicChannels, Flags & g_pActiveMusicConfig->KeyedMask,
+                Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask &= ~g_pActiveMusicConfig->KeyedMask;
+            Flags &= ~g_pActiveMusicConfig->KeyedMask;
+        }
+        if (Flags != 0) {
+            func_80014D70(g_ActiveMusicChannels, Flags, Voices, &KeyOnFlags);
+            g_pActiveMusicConfig->PendingKeyOnMask = 0;
+        }
+    }
+
+    Flags = g_Sound_VoiceSchedulerState.ActiveChannelMask
+          & g_Sound_VoiceSchedulerState.KeyedFlags;
+    if (Flags != 0) {
+        KeyOnFlags |= g_Sound_VoiceSchedulerState.KeyOnFlags;
+        for (Voices = 0x1000, pChannel = D_80035910; Flags != 0;
+            Voices <<= 1, pChannel++) {
+            if (Flags & Voices) {
+                func_800147CC(pChannel, Voices);
+                if (pChannel->VoiceParams.VoiceParamFlags != 0) {
+                    SetVoiceParamsByFlags(pChannel->VoiceParams.AssignedVoiceNumber,
+                        &pChannel->VoiceParams, pChannel->UpdateFlags);
+                }
+                Flags &= ~Voices;
+            }
+        }
+        D_80037894 = 0;
+    }
+
+    Flags = g_Sound_GlobalFlags.UpdateFlags;
+    if (Flags & 0x80) {
+        SpuSetReverbModeDepth(
+            g_pActiveMusicConfig->RevDepth >> 12, g_pActiveMusicConfig->RevDepth >> 12);
+        g_Sound_GlobalFlags.UpdateFlags &= ~0x80;
+    }
+    if (Flags & 0x10) {
+        if (g_Sound_VoiceSchedulerState.ActiveChannelMask != 0) {
+            SpuSetNoiseClock(g_Sound_VoiceSchedulerState.NoiseClock);
+        } else {
+            SpuSetNoiseClock(g_pActiveMusicConfig->NoiseClock);
+        }
+        g_Sound_GlobalFlags.UpdateFlags &= ~0x10;
+    }
+    if (Flags & 0x100) {
+        func_80015970(&g_Sound_VoiceModeFlags.Noise,
+            g_pSavedMousicConfig->NoiseChannelFlags,
+            g_pActiveMusicConfig->NoiseChannelFlags,
+            g_Sound_VoiceSchedulerState.NoiseVoiceFlags);
+        func_80015970(&g_Sound_VoiceModeFlags.Reverb,
+            g_pSavedMousicConfig->ReverbChannelFlags,
+            g_pActiveMusicConfig->ReverbChannelFlags,
+            g_Sound_VoiceSchedulerState.ReverbVoiceFlags);
+        func_80015970(&g_Sound_VoiceModeFlags.Fm, g_pSavedMousicConfig->FmChannelFlags,
+            g_pActiveMusicConfig->FmChannelFlags,
+            g_Sound_VoiceSchedulerState.FmVoiceFlags);
+        SetVoiceReverbMode(g_Sound_VoiceModeFlags.Reverb);
+        SetVoiceNoiseMode(g_Sound_VoiceModeFlags.Noise);
+        SetVoiceFmMode(g_Sound_VoiceModeFlags.Fm);
+        g_Sound_GlobalFlags.UpdateFlags &= ~0x100;
+    }
+    if (KeyOnFlags != 0) {
+        SetVoiceKeyOn(KeyOnFlags);
+    }
+}
 
 void ChannelMaskToVoiceMaskFiltered(FSoundChannel* in_Channel, int* io_VoiceMask,
     int in_ChannelMask, int in_VoiceMaskFilter)
@@ -1718,7 +2228,51 @@ void Sound_ProcessKeyOffRequests(void)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015970);
+void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
+    int in_ExtraVoiceMask)
+{
+    int VoiceMask = 0;
+    int SavedKeyedMask;
+    int ActiveKeyedMask;
+    int Filter = ~(g_Sound_VoiceSchedulerState.ActiveChannelMask
+                   | g_Sound_VoiceSchedulerState.unk_Flags_0x10 | D_80039B14);
+    int ActiveMask;
+    int SavedMask = 0;
+
+    if (g_pSavedMousicConfig != NULL) {
+        SavedMask = g_pSavedMousicConfig->ActiveChannelMask & in_SavedChannelMask;
+        SavedKeyedMask = SavedMask & g_pSavedMousicConfig->KeyedMask;
+
+        if (SavedKeyedMask != 0) {
+            ChannelMaskToVoiceMaskFiltered(
+                g_pSecondaryMusicChannels, &VoiceMask, SavedKeyedMask, Filter);
+            SavedMask &= ~g_pSavedMousicConfig->KeyedMask;
+        }
+    }
+
+    ActiveMask = g_pActiveMusicConfig->ActiveChannelMask & in_ActiveChannelMask;
+    ActiveKeyedMask = ActiveMask & g_pActiveMusicConfig->KeyedMask;
+
+    if (ActiveKeyedMask != 0) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_ActiveMusicChannels, &VoiceMask, ActiveKeyedMask, Filter);
+        ActiveMask &= ~g_pActiveMusicConfig->KeyedMask;
+    }
+
+    if ((g_pSavedMousicConfig != NULL) && (SavedMask != 0)) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_pSecondaryMusicChannels, &VoiceMask, SavedMask, Filter);
+    }
+
+    if (ActiveMask != 0) {
+        ChannelMaskToVoiceMaskFiltered(
+            g_ActiveMusicChannels, &VoiceMask, ActiveMask, Filter);
+    }
+
+    VoiceMask |= in_ExtraVoiceMask;
+    *out_VoiceMask = VoiceMask;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+}
 
 // 0x20 toggles whether we use the alternate sample bank
 #define SOUND_BANK_FLAG_ALT_SAMPLE_BANK (1u << 6) // 0x40
@@ -1845,9 +2399,156 @@ void Sound_KillMusicConfig(
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_EvictSfxVoice);
+void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
+{
+    u_int i;
+    int maxPriority;
+    u_int voiceBit = 0x1000;
+    u_int activeVoices = g_Sound_VoiceSchedulerState.ActiveChannelMask
+                       | g_Sound_VoiceSchedulerState.unk_Flags_0x10;
+    FSoundChannel* pChannel = D_80035910;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001653C);
+    if (in_StopFlags & 0x0FFFFFFF) {
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if ((activeVoices & voiceBit) && (pChannel->unk28 & in_StopFlags)) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
+                }
+            }
+        }
+    } else if (in_StopFlags < 0) {
+        pChannel += in_SfxId;
+        voiceBit <<= in_SfxId;
+        if (activeVoices & voiceBit) {
+            Sound_EvictSfxVoice(pChannel->unk3C, 0);
+        }
+        voiceBit <<= 1;
+        pChannel++;
+        if (activeVoices & voiceBit) {
+            Sound_EvictSfxVoice(pChannel->unk3C, 0);
+        }
+        return;
+    } else if (in_StopFlags & 0x40000000) {
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if (pChannel->unk28 != 0) {
+                activeVoices &= ~voiceBit;
+            }
+        }
+        pChannel = D_80035910;
+        voiceBit = 0x1000;
+        maxPriority = 0;
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if ((activeVoices & voiceBit) && (maxPriority < pChannel->unk58)) {
+                maxPriority = pChannel->unk58;
+            }
+        }
+        pChannel = D_80035910;
+        voiceBit = 0x1000;
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if ((activeVoices & voiceBit) && (maxPriority == pChannel->unk58)) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
+                }
+            }
+        }
+    } else {
+        for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
+            if (!(activeVoices & voiceBit)) {
+                continue;
+            }
+            if (in_SfxId == -1) {
+                if (pChannel->unk3C < 0) {
+                    if (pChannel->UpdateFlags & 0x100000) {
+                        pChannel->UpdateFlags |= 0x200000;
+                    } else {
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            } else if (in_SfxId == -2) {
+                if (pChannel->unk28 == 0) {
+                    if (pChannel->UpdateFlags & 0x100000) {
+                        pChannel->UpdateFlags |= 0x200000;
+                    } else {
+                        g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                        Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                        pChannel->UpdateFlags = 0;
+                    }
+                }
+            } else if (pChannel->unk3C == in_SfxId) {
+                if (pChannel->UpdateFlags & 0x100000) {
+                    pChannel->UpdateFlags |= 0x200000;
+                } else {
+                    g_Sound_VoiceSchedulerState.KeyOffFlags |= voiceBit;
+                    Sound_ClearVoiceFromSchedulerState(pChannel, voiceBit);
+                    pChannel->UpdateFlags = 0;
+                }
+            }
+        }
+    }
+    g_Sound_GlobalFlags.UpdateFlags |= 0x110;
+}
+
+void func_8001653C(FSoundChannel* in_Channel, FSoundCommandParams* in_CommandParams,
+    int in_VoiceBit, char* in_ProgramCounter)
+{
+    u_int i;
+    int pan;
+    int volume;
+    int voiceMask;
+
+    in_Channel->unk3C = in_CommandParams->Param1;
+    in_Channel->unk28 = in_CommandParams->Param2;
+    pan = (u_char)in_CommandParams->Param3 << 8;
+    in_Channel->unk6E = 0;
+    in_Channel->ChannelPan = 0x8000;
+    in_Channel->ChannelPanSlideLength = 0;
+    in_Channel->unk6C = pan;
+    volume = ((u_short)in_CommandParams->Param4 & 0x7F) << 8;
+    in_Channel->unk8C = 0;
+    in_Channel->unkDC = volume;
+    voiceMask = 1 << in_CommandParams->ExtParam1;
+    in_Channel->Length1 = 2;
+    in_Channel->unk38 = voiceMask;
+    in_Channel->Length2 = 1;
+    in_Channel->Type = 1;
+    in_Channel->unk58 = -2;
+    in_Channel->unk40 = 0;
+    in_Channel->unk86 = 0;
+    func_80015C9C(in_Channel, in_ProgramCounter);
+    g_Sound_VoiceChannelConfigs[in_Channel->VoiceParams.AssignedVoiceNumber] = NULL;
+    SetVoiceAdsrReleaseRateAndMode(in_Channel->VoiceParams.AssignedVoiceNumber, 5, 3);
+
+    g_Sound_VoiceSchedulerState.ActiveChannelMask |= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.KeyOffFlags |= in_VoiceBit;
+    in_VoiceBit = ~in_VoiceBit;
+    g_Sound_VoiceSchedulerState.KeyOnFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.KeyedFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.NoiseVoiceFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.ReverbVoiceFlags &= in_VoiceBit;
+    g_Sound_VoiceSchedulerState.FmVoiceFlags &= in_VoiceBit;
+
+    if (D_80039B64 & 2) {
+        in_VoiceBit = 0x1000;
+        in_Channel = D_80035910;
+        for (i = 12; i != 0; i--, in_Channel++, in_VoiceBit <<= 1) {
+            if ((g_Sound_VoiceSchedulerState.ActiveChannelMask & in_VoiceBit)
+                && !(in_Channel->unk28 & 0x02000000)) {
+                g_Sound_VoiceSchedulerState.ActiveChannelMask &= ~in_VoiceBit;
+                g_Sound_VoiceSchedulerState.unk_Flags_0x10 |= in_VoiceBit;
+            }
+        }
+    }
+}
 
 void FreeVoiceChannels(FSoundChannel* in_Channel, u_int in_Voice)
 {
@@ -3326,7 +4027,125 @@ long func_80019A58(void)
 
 // https://decomp.me/scratch/qmxvP
 char func_80019FC4(FSoundChannel* channel);
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80019FC4);
+char func_80019FC4(FSoundChannel* channel)
+{
+    u_char* pc = channel->ProgramCounter;
+    u_int loopTop = channel->LoopStackTop;
+    FSoundChannelConfig* config = g_pActiveMusicConfig;
+    int length;
+    int jumpOffset;
+
+    for (;;) {
+        if (*pc < 0x9A) {
+            if (*pc >= 0x8F) {
+                channel->SfxMask &= ~5;
+            }
+            return *pc;
+        }
+        if (*pc < 0xA0) {
+            return 0xA0;
+        }
+        length = D_8002F5A0[*pc - 0xA0];
+        if (length != 0) {
+            pc += length;
+            continue;
+        }
+        switch (*pc) {
+        case 0xF0:
+        case 0xF1:
+        case 0xF2:
+        case 0xF3:
+        case 0xF4:
+        case 0xF5:
+        case 0xF6:
+        case 0xF7:
+        case 0xF8:
+        case 0xF9:
+        case 0xFA:
+        case 0xFB:
+            return 0x83;
+        case 0xFC:
+            return 0x84;
+        case 0xFD:
+            return 0x8F;
+        case 0xFE:
+            pc++;
+            length = D_8002F600[*pc];
+            if (length != 0) {
+                pc += length;
+                break;
+            }
+            switch (*pc) {
+            case 0x08:
+            case 0x09:
+                pc++;
+                if (*pc == channel->LoopIterationCount[loopTop] + 1) {
+                    pc++;
+                    loopTop--;
+                    loopTop &= 3;
+                    jumpOffset = pc[0];
+                    jumpOffset += pc[1] << 8;
+                    pc += (short)jumpOffset;
+                } else {
+                    pc += 3;
+                }
+                break;
+            case 0x06:
+            case 0x0E:
+                pc++;
+                jumpOffset = pc[0];
+                jumpOffset += pc[1] << 8;
+                pc += (short)jumpOffset;
+                break;
+            case 0x07:
+                pc++;
+                if (*pc++ <= config->JumpThresholdValue) {
+                    jumpOffset = pc[0];
+                    jumpOffset += pc[1] << 8;
+                    pc += (short)jumpOffset;
+                } else {
+                    pc += 2;
+                }
+                break;
+            case 0x0F:
+                pc = channel->ReturnProgramCounter;
+                break;
+            case 0x1F:
+                pc++;
+                if (config->StatusFlags & 0x10000) {
+                    return 0xA0;
+                }
+                break;
+            }
+            break;
+        case 0xC9:
+            pc++;
+            if (*pc == channel->LoopIterationCount[loopTop] + 1) {
+                pc++;
+                loopTop--;
+                loopTop &= 3;
+            } else {
+                pc = channel->LoopStartPc[loopTop];
+            }
+            break;
+        case 0xCB:
+        case 0xCD:
+        case 0xD1:
+        case 0xDB:
+            channel->SfxMask &= ~5;
+            pc++;
+            break;
+        case 0xCA:
+            if (!(channel->UpdateFlags & 0x200000)) {
+                pc = channel->LoopStartPc[loopTop];
+                break;
+            }
+        default:
+            channel->SfxMask &= ~5;
+            return 0xA0;
+        }
+    }
+}
 
 int func_8001A1F4(int arg0, int arg1)
 {

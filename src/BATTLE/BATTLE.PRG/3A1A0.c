@@ -146,81 +146,60 @@ extern char D_800F4B18;
 
 void func_800A29A0(D_800F4538_t* arg0)
 {
-    int temp_v0;
-    u_int var_v0;
-    int var_v0_2;
-    int var_v0_3;
+    int busy;
 
-    temp_v0 = arg0->unk0.unkB_0;
-    switch (temp_v0) {
+    switch (arg0->unk0.unkB_0) {
     case 1:
-        *(u_int*)((char*)arg0 + 8) = (u_int)(*(u_int*)((char*)arg0 + 8) & 0xFFDFFFFF);
-        func_800A0204((int)arg0->unk0.unkF, 0x13, 0, 8);
-        func_800A01C8((int)arg0->unk0.unkF, 0x14, 8, 0);
-        (*(u_char*)((char*)arg0 + 0x57)) = 0;
-        var_v0 =
-            (((*(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF) | 0x02000000) & ~0xF00) | 0x600;
-        goto block_22;
-    default:
+        arg0->unk0.unkA_5 = 0;
+        func_800A0204(arg0->unk0.unkF, 0x13, 0, 8);
+        func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
+        *((u_char*)arg0 + 0x57) = 0;
+        arg0->unk0.unkB_0 = 2;
+        arg0->unk0.unk9_0 = 6;
         return;
     case 2:
-        if ((u_int)(((u_int) * (u_int*)((char*)arg0 + 8) >> 8) & 0xF) >= 8U) {
-            if (arg0->unk0.unk13 == 0xFC) {
-                var_v0_2 =
-                    (u_int)(((u_int)(*(u_int*)((char*)D_800F4538[arg0->unk0.unk12] + 8))
-                                >> 8)
-                            & 0xF)
-                    < 9U;
-                goto block_8;
-            }
-            if ((*(u_int*)((char*)arg0 + 0x119C)) & 0x20000) {
-                var_v0_2 = arg0->unk5CC;
-            block_8:
-                if (var_v0_2 == 0) {
-                    *(u_int*)((char*)arg0 + 8) =
-                        (u_int)((*(u_int*)((char*)arg0 + 8) & ~0xF00) | 0x900);
-                    func_800A9C54(arg0->unk0.unkF, (char*)arg0 + 0x5EC, 0);
-                    arg0->unk0.facing = (u_short)(*(u_short*)((char*)arg0 + 0x5F2));
-                    func_800A0204((int)arg0->unk0.unkF, 0x15, 0, 8);
-                    func_800A01C8((int)arg0->unk0.unkF, 0x16, 8, 0);
-                    var_v0 = (*(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF) | 0x03000000;
-                    goto block_22;
-                }
-            }
+        if (arg0->unk0.unk9_0 < 8) {
+            return;
         }
-        break;
+        if (arg0->unk0.unk13 == 0xFC) {
+            busy = D_800F4538[arg0->unk0.unk12]->unk0.unk9_0 < 9;
+        } else if (arg0->unkC54.unk548_17) {
+            busy = arg0->unk5CC;
+        } else {
+            return;
+        }
+        if (busy == 0) {
+            arg0->unk0.unk9_0 = 9;
+            func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC, 0);
+            arg0->unk0.facing = arg0->unk5EC.pad;
+            func_800A0204(arg0->unk0.unkF, 0x15, 0, 8);
+            func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
+            arg0->unk0.unkB_0 = 3;
+        }
+        return;
     case 3:
-        if (!arg0->unk0.unk9_0) {
-            if (arg0->unk0.unk13 == 0xFC) {
-                var_v0_3 = (*(u_int*)((char*)D_800F4538[arg0->unk0.unk12] + 8)) & 0xF00;
-            } else {
-                var_v0_3 = arg0->unk5CC;
-            }
-            if (var_v0_3 == 0) {
-                func_800A0204((int)arg0->unk0.unkF, 1, 0, 8);
-            case 4:
-                func_800ACF54(arg0);
-                func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
-            case 5:
-                if ((int)arg0->unk17FD >= 2U) {
-                    if ((*(u_int*)((char*)D_800F4538[arg0->unk17FD] + 8)) & 0x0F000000) {
-                        *(u_int*)((char*)arg0 + 8) =
-                            (u_int)((*(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF)
-                                    | 0x05000000);
-                        return;
-                    }
-                    goto block_21;
-                }
-            block_21:
-                var_v0 = *(u_int*)((char*)arg0 + 8) & 0xF0FFFFFF;
-                goto block_22;
-            }
+        if (arg0->unk0.unk9_0) {
+            return;
         }
-        break;
+        if (arg0->unk0.unk13 == 0xFC ? D_800F4538[arg0->unk0.unk12]->unk0.unk9_0
+                                     : arg0->unk5CC) {
+            return;
+        }
+
+        func_800A0204(arg0->unk0.unkF, 1, 0, 8);
+        // fallthrough
+    case 4:
+        func_800ACF54(arg0);
+        func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
+        // fallthrough
+    case 5:
+        if (arg0->unk17FD >= 2 && D_800F4538[arg0->unk17FD]->unk0.unkB_0) {
+            arg0->unk0.unkB_0 = 5;
+            return;
+        }
+        arg0->unk0.unkB_0 = 0;
+        return;
     }
-    return;
-block_22:
-    *(u_int*)((char*)arg0 + 8) = var_v0;
 }
 
 void func_800A2C48(D_800F4538_t* arg0)

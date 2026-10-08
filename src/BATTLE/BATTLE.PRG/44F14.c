@@ -785,13 +785,13 @@ void func_800AEAE8(D_800F4538_t* actor)
     D_800F2458.scales[1] = 64;
     D_800F2458.scales[2] = 64;
     if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
-        scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
-        scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
-        scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
+        scratch->offset.vx = actor->unk704.unk0[41].vx >> 1;
+        scratch->offset.vy = actor->unk704.unk0[41].vy >> 1;
+        scratch->offset.vz = actor->unk704.unk0[41].vz >> 1;
     } else {
-        scratch->offset.vx = *(short*)((char*)actor + 0x84C) * actor->unk0.unk2C / 8192;
-        scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk2E / 8192;
-        scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk30 / 8192;
+        scratch->offset.vx = actor->unk704.unk0[41].vx * actor->unk0.unk2C / 8192;
+        scratch->offset.vy = actor->unk704.unk0[41].vy * actor->unk0.unk2E / 8192;
+        scratch->offset.vz = actor->unk704.unk0[41].vz * actor->unk0.unk30 / 8192;
     }
     scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
     scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;
@@ -1463,13 +1463,13 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     D_800F4538_t* other;
 
     if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
-        scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
-        scratch->offset.vy = (short)*(u_short*)((char*)actor + 0x84E) >> 1;
-        scratch->offset.vz = (short)*(u_short*)((char*)actor + 0x850) >> 1;
+        scratch->offset.vx = actor->unk704.unk0[41].vx >> 1;
+        scratch->offset.vy = actor->unk704.unk0[41].vy >> 1;
+        scratch->offset.vz = actor->unk704.unk0[41].vz >> 1;
     } else {
-        scratch->offset.vx = *(short*)((char*)actor + 0x84C) * actor->unk0.unk2E / 8192;
-        scratch->offset.vy = *(short*)((char*)actor + 0x84E) * actor->unk0.unk30 / 8192;
-        scratch->offset.vz = *(short*)((char*)actor + 0x850) * actor->unk0.unk2C / 8192;
+        scratch->offset.vx = actor->unk704.unk0[41].vx * actor->unk0.unk2E / 8192;
+        scratch->offset.vy = actor->unk704.unk0[41].vy * actor->unk0.unk30 / 8192;
+        scratch->offset.vz = actor->unk704.unk0[41].vz * actor->unk0.unk2C / 8192;
     }
     scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
     scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;

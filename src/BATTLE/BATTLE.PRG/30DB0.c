@@ -1580,7 +1580,7 @@ int func_8009BE5C(vs_battle_objectData* object)
         if (actor->unk6E6 == 2) {
             goto special;
         }
-        sectors = *(u_short*)((char*)actor + 0x6CC + object->modelId * 2) >> 11;
+        sectors = actor->spSeqSizes[object->modelId] >> 11;
         if (!sectors) {
             return -2;
         }

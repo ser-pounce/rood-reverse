@@ -293,7 +293,9 @@ typedef struct {
     u_int btSeqLbas[12];
     u_short chainAttackAnimationIds[12];
     u_int spSeqLbas[4];
-    int unk6BC[8];
+    int unk6BC[4];
+    u_short spSeqSizes[4];
+    int unk6D4[2];
     int unk6DC;
     u_char unk6E0;
     u_char unk6E1;

@@ -738,14 +738,14 @@ typedef struct {
         char u8[2];
         u_short u16;
     } unk8;
-    char unkA;
-    char unkB;
+    u_char unkA;
+    u_char unkB;
     u_short unkC;
-    char unkE;
-    char displayTextLen;
+    u_char unkE;
+    u_char displayTextLen;
     short unk10;
     short unk12;
-    char displayText[4];
+    signed char displayText[4];
 } D_800F1BAC_t;
 
 typedef struct {
@@ -1078,7 +1078,7 @@ extern void* vs_battle_sceneBuffer;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
 extern _mpdRoomSection vs_battle_roomData;
-extern void* D_800F1CBC;
+extern DVECTOR* D_800F1CBC;
 extern _mpdRoomDoorSection_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;

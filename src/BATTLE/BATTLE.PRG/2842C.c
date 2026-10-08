@@ -1,5 +1,10 @@
 #include "common.h"
 #include "146C.h"
+#include "30DB0.h"
+#include "38C1C.h"
+#include "573B8.h"
+#include "5BF94.h"
+#include "gpu.h"
 #include "src/SLUS_010.40/main.h"
 #include <abs.h>
 #include <memory.h>
@@ -175,6 +180,12 @@ typedef struct {
     u_char unk3;
 } func_80092548_t;
 
+typedef struct {
+    u_char count;
+    u_char labels[2];
+    u_char color;
+} D_800690B4_t;
+
 short func_8008DC7C(int, int);
 void func_8008F29C(int, int);
 void func_8008F30C(int, int);
@@ -184,7 +195,6 @@ void func_8008FAC8(void);
 void func_8008FDC4(void);
 void func_80090434(void);
 void func_80090B28(void);
-int vs_battle_clamp(short, int, int);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
 int func_80092B04(func_80092B04_t*, int, D_800F1DD8_t*);
@@ -193,14 +203,24 @@ void func_80092EDC(func_80092F74_t* arg0);
 int func_8009306C(func_80092F74_t* arg0);
 int func_80093364(func_80092F74_t* arg0);
 int func_8009406C(int, int, int, int);
+void func_80094844(short*, D_800F1BAC_t*);
+void func_80094AF8(D_800F1BAC_t*);
+void func_80094B0C(int, int, D_800F1BAC_t*);
 int func_80094E18(int, int, D_800F1BAC_t*);
+void func_8009506C(int, int, D_800F1BAC_t*);
+void func_80095258(int, int, D_800F1BAC_t*);
+void func_800957D0(int, int, int);
+void func_800958A4(int, int, D_800F1BAC_t*);
+void func_80095A4C(int, int, D_800F1BAC_t*);
 void func_80095C18(int, int);
-int func_800A1280(int, int, SVECTOR*, int);
-int func_800A152C(int, int, int);
-int func_800A190C(int, int, SVECTOR*, int);
-int func_800A1AF8(int, int, u_short*, int);
+int func_80096254(int, int);
 void* func_800962E4();
+void func_8009639C(int);
 void func_80096444(int);
+void func_8009651C(SVECTOR*, int);
+void func_8009695C(int, int, D_800F1BAC_t*);
+void func_800970BC(void);
+int vs_battle_clamp(short, int, int);
 
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
@@ -208,22 +228,12 @@ extern char D_80068EB4[];
 extern int D_80068F04[][4];
 extern u_short D_80068F64[][4];
 extern int D_80068F94[];
-extern int D_800F2274;
-int func_80096254(int, int);
-int func_8009F858(int);
-u_long* vs_battle_setSprite(int, int, int, u_long*);
-void func_8009651C(SVECTOR*, int);
-extern char D_800691E4[];
 extern RECT D_80068FAC[];
-typedef struct {
-    u_char count;
-    u_char labels[2];
-    u_char color;
-} CombatLabel;
-extern CombatLabel D_800690B4[];
+extern D_800690B4_t D_800690B4[];
 extern const CVECTOR D_80069134[];
 extern const RECT D_80069144[];
 extern const RECT D_8006917C[];
+extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
@@ -248,20 +258,11 @@ extern char D_800F225B;
 extern char D_800F2260[];
 extern short D_800F2270;
 extern short D_800F2272;
+extern int D_800F2274;
 extern short D_800F2278;
 extern short D_800F227A;
 extern short D_800F227C;
 extern short D_800F227E;
-void func_800970BC(void);
-void func_80094844(short*, D_800F1BAC_t*);
-void func_80094AF8(D_800F1BAC_t*);
-void func_80094B0C(int, int, D_800F1BAC_t*);
-void func_8009506C(int, int, D_800F1BAC_t*);
-void func_80095258(int, int, D_800F1BAC_t*);
-void func_800958A4(int, int, D_800F1BAC_t*);
-void func_80095A4C(int, int, D_800F1BAC_t*);
-void func_8009695C(int, int, D_800F1BAC_t*);
-void func_8009639C(int);
 extern SVECTOR D_800F2280;
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068EB4);
@@ -1507,7 +1508,7 @@ int func_80093B68(int arg0, int arg1, int arg2, int arg3)
     }
     p = func_800962E4();
     if (limb != 255) {
-        result = func_800A1AF8(arg0, limb, (u_short*)p, 2);
+        result = func_800A1AF8(arg0, limb, (SVECTOR*)p, 2);
     } else {
         result = func_800A190C(arg0, 255, (SVECTOR*)p, 2);
     }
@@ -1688,64 +1689,75 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800691E4);
 
 void func_800941FC(void)
 {
-    SVECTOR position;
-    short screen[2];
     long p;
-    long flag;
     D_800F1BAC_t* label;
     int removed;
     int i;
-    int visible;
 
     if (D_800F2272 > 0) {
         --D_800F2272;
         func_800970BC();
     }
+
     if (D_800F1BA4 == 0) {
         D_800F2278 += vs_gametime_tickspeed / 2;
     }
+
     if (D_800F2278 > 20) {
         label = *D_800F1BAC;
         D_800F2278 = 0;
+
         for (i = 0; i < D_800F227E; ++i, ++label) {
-            if (label->unk8.u8[0] == 6) {
-                if (--label->unk6 == -1) {
-                    for (p = 0; p < i; ++p) {
-                        if ((*D_800F1BAC)[p].unk8.u8[0] == 6) {
-                            (*D_800F1BAC)[p].unk12 += 10;
-                        }
+            if (label->unk8.u8[0] == 6 && --label->unk6 == -1) {
+                for (p = 0; p < i; ++p) {
+                    if ((*D_800F1BAC)[p].unk8.u8[0] == 6) {
+                        (*D_800F1BAC)[p].unk12 += 10;
                     }
                 }
             }
         }
     }
+
     removed = 0;
     label = *D_800F1BAC;
     D_800F227C = 0;
+
     for (i = 0; i < D_800F227E; ++i, ++label) {
+        SVECTOR position;
+        short screen[2];
+        long flag;
+        int visible;
+
         if (label->unk8.u8[0] == 0) {
             continue;
         }
+
         if (label->unk8.u8[0] < 3) {
-            if (func_800A190C(label->unk8.u8[1], 0xFB, &position, 0) != 0) {
-                goto remove;
+            if (func_800A190C(label->unk8.u8[1], 251, &position, 0) != 0) {
+                label->unk8.u8[0] = 0;
+                ++removed;
+                continue;
             }
+
             if (position.vy > 0) {
                 position.vy = 0;
             }
-            position.vx += label->unk0;
-            position.vy += label->unk2;
-            position.vz += label->unk4;
+
+            applyVector(&position, label->unk0, label->unk2, label->unk4, +=);
             visible = RotTransPers(&position, (long*)screen, &p, &flag);
+
             if (screen[0] < 32) {
                 screen[0] = 32;
             }
+
             if (screen[0] > 288) {
                 screen[0] = 288;
             }
+
             if (screen[1] < 40) {
                 screen[1] = 40;
             }
+
             if (screen[1] > 200) {
                 screen[1] = 200;
             }
@@ -1754,60 +1766,81 @@ void func_800941FC(void)
         } else {
             visible = 1;
         }
+
         if (visible <= 0) {
-            goto remove;
+            label->unk8.u8[0] = 0;
+            ++removed;
+            continue;
         }
+
         switch (label->unk8.u8[0]) {
         case 1:
             if (label->unk6 <= 0) {
                 label->unkE &= 0x7F;
                 screen[1] += 8;
                 func_80094844(screen, label);
+
                 if (label->unkE == 2) {
                     func_8009506C(screen[0], screen[1], label);
                 } else {
                     func_80094B0C(screen[0], screen[1], label);
                 }
+
                 label->unkB += vs_gametime_tickspeed / 2;
+
                 if (label->unkB >= 10) {
                     label->unk6 = -1;
                 }
-                if (label->unkB < 31) {
-                    break;
+
+                if (label->unkB >= 31) {
+                    label->unk8.u8[0] = 0;
+                    ++removed;
                 }
-                goto remove;
+                break;
             }
+
             screen[1] += 8;
             func_80094844(screen, label);
+
             if (label->unkE & 0x80) {
                 label->unkE &= 0x7F;
                 func_80094AF8(label);
                 break;
             }
-            goto waiting;
-        case 2:
-            if (label->unk6 > 0) {
-                goto waiting;
-            }
-            screen[1] -= label->displayTextLen;
-            if (label->unk8.u8[1] != 0 || D_800F227A == 0) {
-                if (label->unkE == 2) {
-                    func_8009506C(screen[0], screen[1], label);
-                } else {
-                    func_80095258(screen[0], screen[1], label);
-                }
-            }
+
             label->unkB += vs_gametime_tickspeed / 2;
+
             if (label->unkB >= 10) {
-                label->unk6 = -1;
-            }
-            if (label->unkB >= 31) {
-                label->unk8.u8[0] = 0;
-                ++removed;
+                func_80094AF8(label);
             }
             break;
-        waiting:
+        case 2:
+            if (label->unk6 <= 0) {
+                screen[1] -= label->displayTextLen;
+
+                if (label->unk8.u8[1] != 0 || D_800F227A == 0) {
+                    if (label->unkE == 2) {
+                        func_8009506C(screen[0], screen[1], label);
+                    } else {
+                        func_80095258(screen[0], screen[1], label);
+                    }
+                }
+
+                label->unkB += vs_gametime_tickspeed / 2;
+
+                if (label->unkB >= 10) {
+                    label->unk6 = -1;
+                }
+
+                if (label->unkB >= 31) {
+                    label->unk8.u8[0] = 0;
+                    ++removed;
+                }
+                break;
+            }
+
             label->unkB += vs_gametime_tickspeed / 2;
+
             if (label->unkB >= 10) {
                 func_80094AF8(label);
             }
@@ -1815,6 +1848,7 @@ void func_800941FC(void)
         case 3:
             func_8009506C(screen[0], screen[1], label);
             label->unkB += vs_gametime_tickspeed / 2;
+
             if (label->unkB >= 31) {
                 label->unk8.u8[0] = 0;
                 ++removed;
@@ -1823,6 +1857,7 @@ void func_800941FC(void)
         case 4:
             func_800958A4(44, 48, label);
             label->unkB += vs_gametime_tickspeed / 2;
+
             if (label->unkB >= 46) {
                 label->unk8.u8[0] = 0;
                 ++removed;
@@ -1831,6 +1866,7 @@ void func_800941FC(void)
         case 5:
             func_80095A4C(44, 64, label);
             label->unkB += vs_gametime_tickspeed / 2;
+
             if (label->unkB >= 91) {
                 label->unk8.u8[0] = 0;
                 ++removed;
@@ -1840,11 +1876,15 @@ void func_800941FC(void)
             if (label->unk6 >= 0) {
                 break;
             }
+
             func_8009695C(8, 172, label);
+
             if (D_800F1BA4 != 0) {
                 break;
             }
+
             label->unkB += vs_gametime_tickspeed / 2;
+
             if (label->unkB >= 61) {
                 label->unk8.u8[0] = 0;
                 ++removed;
@@ -1854,11 +1894,8 @@ void func_800941FC(void)
         case 7:
             break;
         }
-        continue;
-    remove:
-        label->unk8.u8[0] = 0;
-        ++removed;
     }
+
     if (removed > 0) {
         func_8009639C(removed);
     }
@@ -1867,50 +1904,62 @@ void func_800941FC(void)
 void func_80094844(short* pos, D_800F1BAC_t* label)
 {
     int i;
-    int j;
-    int dx;
-    int dy;
-    int x;
-    int y;
 
-    if (label->unk10 == 0x1000 && label->unk12 == 0x1000) {
+    if (label->unk10 == ONE && label->unk12 == ONE) {
         label->unk10 = 0;
         label->unk12 = 0;
+
         if (D_800F227C > 0) {
-            for (i = 0; i < D_800F227C; i++) {
-                x = pos[0] - ((DVECTOR*)D_800F1CBC)[i].vx;
-                y = pos[1] - ((DVECTOR*)D_800F1CBC)[i].vy;
+            int x;
+            int y;
+
+            for (i = 0; i < D_800F227C; ++i) {
+                x = pos[0] - D_800F1CBC[i].vx;
+                y = pos[1] - D_800F1CBC[i].vy;
+
                 if (ABS(x) < 24 && ABS(y) < 10) {
                     break;
                 }
             }
+
             if (i != D_800F227C) {
-                // i is reused as the "free spot found" flag
+                int j;
+                int dx;
+                int dy;
+
                 i = 0;
+
                 for (dy = 0; dy < 48; dy += 8) {
                     for (dx = 0; dx < 32; dx += 8) {
-                        for (j = 0; j < D_800F227C; j++) {
-                            y = pos[1] + dy - ((DVECTOR*)D_800F1CBC)[j].vy;
+                        for (j = 0; j < D_800F227C; ++j) {
+                            y = pos[1] + dy - D_800F1CBC[j].vy;
+
                             if (ABS(y) < 10) {
-                                x = pos[0] + dx - ((DVECTOR*)D_800F1CBC)[j].vx;
+                                x = pos[0] + dx - D_800F1CBC[j].vx;
+
                                 if (ABS(x) < 24) {
                                     break;
                                 }
                             }
                         }
+
                         if (j == D_800F227C) {
                             i = 1;
                             goto done;
                         }
-                        for (j = 0; j < D_800F227C; j++) {
-                            y = pos[1] + dy - ((DVECTOR*)D_800F1CBC)[j].vy;
+
+                        for (j = 0; j < D_800F227C; ++j) {
+                            y = pos[1] + dy - D_800F1CBC[j].vy;
+
                             if (ABS(y) < 10) {
-                                x = pos[0] - dx - ((DVECTOR*)D_800F1CBC)[j].vx;
+                                x = pos[0] - dx - D_800F1CBC[j].vx;
+
                                 if (ABS(x) < 24) {
                                     break;
                                 }
                             }
                         }
+
                         if (j == D_800F227C) {
                             i = 1;
                             dx = -dx;
@@ -1918,6 +1967,7 @@ void func_80094844(short* pos, D_800F1BAC_t* label)
                         }
                     }
                 }
+
             done:
                 if (i) {
                     label->unk10 = dx;
@@ -1926,20 +1976,25 @@ void func_80094844(short* pos, D_800F1BAC_t* label)
             }
         }
     }
+
     pos[0] += label->unk10;
     pos[1] += label->unk12;
-    ((DVECTOR*)D_800F1CBC)[D_800F227C].vx = pos[0];
-    ((DVECTOR*)D_800F1CBC)[D_800F227C].vy = pos[1];
+    D_800F1CBC[D_800F227C].vx = pos[0];
+    D_800F1CBC[D_800F227C].vy = pos[1];
+
     if (pos[0] < 32) {
         pos[0] = 32;
     }
+
     if (pos[0] > 288) {
         pos[0] = 288;
     }
+
     if (pos[1] > 200) {
         pos[1] = 200;
     }
-    D_800F227C++;
+
+    ++D_800F227C;
 }
 
 void func_80094AF8(D_800F1BAC_t* arg0)
@@ -1958,15 +2013,15 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
     int color;
     int offset;
     int i;
-    int digitY;
-    void* cursor;
     POLY_FT4* prim;
+
     if (p->unkE >= 3) {
         if (!(p->unkC & 0x8000)) {
             y -= p->unkB >> 1;
         } else {
             y += p->unkB >> 1;
         }
+
         i = func_80094E18(x, y, p);
         color = 0;
         offset = 0;
@@ -1974,8 +2029,10 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
         if (p->unkB < 16) {
             frame = p->unkB;
         }
+
         color = (p->unkE & 1) << 1;
         i = p->displayTextLen * 3;
+
         if (!(p->unkC & 0x8000)) {
             offset = bounce[frame];
             ++color;
@@ -1983,29 +2040,32 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
             offset = bounce[frame + 4];
         }
     }
+
     x += i - 6;
-    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
-    prim = cursor;
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+
     for (i = p->displayTextLen - 1; i >= 0; --i, x -= 6) {
-        digitY = y + offset;
+        int digitY = y + offset;
+
         offset /= 2;
-        if ((u_int)(x + 8) < 328) {
-            setPolyFT4(prim);
-            setXY4(
-                prim, x, digitY - 6, x + 8, digitY - 6, x, digitY + 6, x + 8, digitY + 6);
-            setShadeTex(prim, 0);
-            setRGB0(prim, colors[color].r, colors[color].g, colors[color].b);
-            setUV4(prim, (((signed char*)p + i)[20] - '0') * 8 + 64, 0,
-                (((signed char*)p + i)[20] - '0') * 8 + 72, 0,
-                (((signed char*)p + i)[20] - '0') * 8 + 64, 12,
-                (((signed char*)p + i)[20] - '0') * 8 + 72, 12);
-            setTPage(prim, 0, 0, 768, 0);
-            setClut(prim, 832, 223);
-            cursor += sizeof(POLY_FT4);
-            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
+
+        if (x + 8 >= 328u) {
+            continue;
         }
+
+        setPolyFT4(prim);
+        setXY4(prim, x, digitY - 6, x + 8, digitY - 6, x, digitY + 6, x + 8, digitY + 6);
+        setShadeTex(prim, 0);
+        setRGB0(prim, colors[color].r, colors[color].g, colors[color].b);
+        setUV4(prim, (p->displayText[i] - '0') * 8 + 64, 0,
+            (p->displayText[i] - '0') * 8 + 72, 0, (p->displayText[i] - '0') * 8 + 64, 12,
+            (p->displayText[i] - '0') * 8 + 72, 12);
+        setTPage(prim, 0, 0, 768, 0);
+        setClut(prim, 832, 223);
+        AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
     }
-    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 
 int func_80094E18(int x, int y, D_800F1BAC_t* p)
@@ -2014,6 +2074,7 @@ int func_80094E18(int x, int y, D_800F1BAC_t* p)
     POLY_FT4* prim = ((vs_scratch_t*)0x1F800000)->unk0;
     int sign = p->unkC;
     int width = (p->displayTextLen * 6 + rect->w + 12) / 2;
+
     x -= width;
     setPolyFT4(prim);
     setXY4(prim, x, y - 6, x + rect->w, y - 6, x, y + 6, x + rect->w, y + 6);
@@ -2088,12 +2149,13 @@ void func_80095258(int x, int y, D_800F1BAC_t* p)
     int width;
     int i;
     POLY_FT4* prim;
-    void* cursor;
+
     if (D_800690B4[p->unkC].count == 0) {
         return;
     }
     if (p->unkB < 4) {
         step = p->unkB;
+
         if (!(p->unkE & 1)) {
             x += slide[step];
         }
@@ -2101,57 +2163,68 @@ void func_80095258(int x, int y, D_800F1BAC_t* p)
         step = 5;
     } else if (p->unkB >= 27) {
         step = 30 - p->unkB;
+
         if (!(p->unkE & 1)) {
             x -= slide[step];
         }
     } else {
         step = 4;
+
         if (p->unkB >= 25) {
             step = 5;
         }
     }
     if ((p->unkE & 1) && p->unkB >= 15) {
         width = p->unkB - 15;
+
         if (width > 4) {
             width = 4;
         }
+
         func_800957D0(x, y, width);
     }
+
     width = 0;
+
     for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
         rects[i] = &D_80068FAC[D_800690B4[p->unkC].labels[i]];
         width += rects[i]->w;
     }
+
     x -= width / 2;
+
     if (p->unkE & 1) {
         width = 0;
     } else {
         width = D_800690B4[p->unkC].color;
     }
-    cursor = ((vs_scratch_t*)0x1F800000)->unk0;
-    prim = cursor;
+
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+
     for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
         if (x < 320 && x + rects[i]->w >= 0) {
             setPolyFT4(prim);
             setXY4(
                 prim, x, y - 6, x + rects[i]->w, y - 6, x, y + 6, x + rects[i]->w, y + 6);
             setShadeTex(prim, 0);
+
             if (step == 5) {
                 setRGB0(prim, D_80069134[width].r / 2 + 96, D_80069134[width].g / 2 + 96,
                     D_80069134[width].b / 2 + 96);
             } else if (step == 4) {
-                prim->r0 = D_80069134[width].r / 2;
-                prim->g0 = D_80069134[width].g / 2;
-                prim->b0 = D_80069134[width].b / 2;
+                setRGB0(prim, D_80069134[width].r / 2, D_80069134[width].g / 2,
+                    D_80069134[width].b / 2);
             } else {
                 setRGB0(prim, D_80069134[width].r * fade[step] / 32,
                     D_80069134[width].g * fade[step] / 32,
                     D_80069134[width].b * fade[step] / 32);
             }
+
             setUV4(prim, rects[i]->x, rects[i]->y, rects[i]->x + rects[i]->w, rects[i]->y,
                 rects[i]->x, rects[i]->y + 12, rects[i]->x + rects[i]->w,
                 rects[i]->y + 12);
             setSemiTrans(prim, 1);
+
             if (step != 4) {
                 setTPage(prim, 0, 1, 448, 256);
                 setClut(prim, 960, 220);
@@ -2159,12 +2232,14 @@ void func_80095258(int x, int y, D_800F1BAC_t* p)
                 setTPage(prim, 0, 0, 448, 256);
                 setClut(prim, 976, 220);
             }
+
             AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 20, prim++);
-            cursor += sizeof(POLY_FT4);
         }
+
         x += rects[i]->w;
     }
-    ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 
 void func_800957D0(int arg0, int arg1, int arg2)
@@ -2193,28 +2268,24 @@ void func_800958A4(int x, int y, D_800F1BAC_t* p)
     char* success[] = { "$COOL!", "$GOOD!", "$EXCELLENT!", "$RIGHT   ON!", "$PERFECT!",
         "$WELL   TIMED!", "$NICE!", "$GREAT!" };
     short offsets[] = { 64, 16, 4, 1 };
-    int colors[] = { 0x808000, 0x608020, 0x408040, 0x208060, 0x8080 };
+    int colors[] = { vs_getRGB888(0, 128, 128), vs_getRGB888(32, 128, 96),
+        vs_getRGB888(64, 128, 64), vs_getRGB888(96, 128, 32), vs_getRGB888(128, 128, 0) };
     int step;
-    short* slide = offsets;
+
     if (p->unkB < 4) {
         step = p->unkB;
+        x -= offsets[step];
     } else if (p->unkB >= 42) {
         step = 45 - p->unkB;
-    } else {
-        goto draw;
+        x -= offsets[step];
     }
-    {
-        short* entry = slide;
-        entry += step;
-        x -= *entry;
-    }
-draw:
+
     if (p->unkC != 2) {
-        vs_battle_renderTextRawColor(timing[p->unkC], (x & 0xFFFF) | (y << 16),
-            colors[p->unkC], ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+        vs_battle_renderTextRawColor(timing[p->unkC], vs_getXY_2(x, y), colors[p->unkC],
+            ((vs_scratch_t*)0x1F800000)->unk4 - 16);
     } else {
-        vs_battle_renderTextRawColor(success[p->displayTextLen], (x & 0xFFFF) | (y << 16),
-            0x408040, ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+        vs_battle_renderTextRawColor(success[p->displayTextLen], vs_getXY_2(x, y),
+            vs_getRGB888(64, 128, 64), ((vs_scratch_t*)0x1F800000)->unk4 - 16);
     }
 }
 
@@ -2222,6 +2293,7 @@ void func_80095A4C(int x, int y, D_800F1BAC_t* p)
 {
     char text[16];
     short offsets[] = { 64, 16, 4, 1 };
+
     if ((p->unkB < 4) && (p->unkC == 1)) {
         x -= offsets[p->unkB];
     } else if (p->unkB >= 87) {
@@ -2232,8 +2304,9 @@ void func_80095A4C(int x, int y, D_800F1BAC_t* p)
     } else {
         sprintf(text, "$%d CHAINS", p->unkC);
     }
-    vs_battle_renderTextRawColor(
-        text, (x & 0xFFFF) | (y << 16), 0x1040A0, ((vs_scratch_t*)0x1F800000)->unk4 - 16);
+
+    vs_battle_renderTextRawColor(text, vs_getXY_2(x, y), vs_getRGB888(160, 64, 16),
+        ((vs_scratch_t*)0x1F800000)->unk4 - 16);
 }
 
 void func_80095B70(int arg0) { D_800F2270 = arg0; }
@@ -2260,20 +2333,22 @@ void func_80095C18(int actor, int kind)
 {
     SVECTOR position;
     SVECTOR other;
-    int reserved[2];
-    long depth;
+    int _[2] __attribute__((unused));
     long side;
     int xy;
     u_long* prim;
     u_long* ot;
-    int flags;
-    int z;
-    int* corners;
-    u_short* uv;
+
     if (!(kind & 8)) {
+        int flags;
+        int z;
+        int* corners;
+        u_short* uv;
+
         if (kind & 0x80) {
             kind &= 7;
-            if ((u_int)(kind - 1) >= 4) {
+
+            if (kind < 1 || kind > 4) {
                 kind = 5;
             }
         }
@@ -2283,8 +2358,10 @@ void func_80095C18(int actor, int kind)
         if (func_800A1280(0, 251, &other, 0)) {
             return;
         }
+
         z = position.vz - 16;
         xy = *(int*)&position;
+
         if (other.vx + 32 < position.vx) {
             D_800F2274 &= ~(1 << actor);
         }
@@ -2296,8 +2373,10 @@ void func_80095C18(int actor, int kind)
         } else if (z >= 2048) {
             z = 2047;
         }
+
         ot = (u_long*)((vs_scratch_t*)0x1F800000)->unk4 + z;
         side = (D_800F2274 >> actor) & 1;
+
         switch (kind) {
         case 0:
             return;
@@ -2306,12 +2385,13 @@ void func_80095C18(int actor, int kind)
         case 3:
             while (kind) {
                 --kind;
-                vs_battle_setSprite(
-                    128, xy + kind * 6 + D_80068F94[side], 0x50005, ot)[4] = 0x373E125A;
+                vs_battle_setSprite(128, xy + kind * 6 + D_80068F94[side], vs_getWH(5, 5),
+                    ot)[4] = vs_getUV0Clut(90, 18, 992, 220);
             }
             break;
         case 4:
             flags = 0;
+
             if (position.vx < 16) {
                 position.vx = 16;
                 flags = 1;
@@ -2337,31 +2417,34 @@ void func_80095C18(int actor, int kind)
                 func_8009651C(&position, flags);
                 return;
             }
+
             side += 2;
-            vs_battle_setSprite(128, xy + D_80068F94[side], 0xC0007, ot)[4] = 0x373E1198;
+            vs_battle_setSprite(128, xy + D_80068F94[side], vs_getWH(7, 12), ot)[4] =
+                vs_getUV0Clut(152, 17, 992, 220);
             break;
         case 5:
-            vs_battle_setSprite(
-                128, xy + D_80068F94[side] + 0xFFFD0002, 0x100010, ot)[4] = 0x373E2098;
+            vs_battle_setSprite(128, xy + D_80068F94[side] + vs_getXY(2, -3),
+                vs_getWH(16, 16), ot)[4] = vs_getUV0Clut(152, 32, 992, 220);
             break;
         case 6:
             side += 4;
             break;
         case 7:
-            prim = vs_battle_setSprite(128, xy + 0xFFEA0000, 0xC0007, ot);
-            prim[1] = 0xE1000017;
-            prim[4] = 0x373E11B7;
+            prim = vs_battle_setSprite(128, xy + vs_getXY(0, -22), vs_getWH(7, 12), ot);
+            prim[1] = _get_mode(0, 0, getTPage(0, 0, 448, 256));
+            prim[4] = vs_getUV0Clut(183, 17, 992, 220);
             return;
         }
+
         prim = ((vs_scratch_t*)0x1F800000)->unk0;
         corners = D_80068F04[side];
         uv = D_80068F64[side];
-        prim[0] = (*ot & 0xFFFFFF) | 0x9000000;
-        prim[1] = 0x2C808080;
+        prim[0] = vs_getTag(VS_POLY_FT4, *ot);
+        prim[1] = vs_getRGB0(primPolyFT4, 128, 128, 128);
         prim[2] = func_80096254(xy, corners[0]);
-        prim[3] = uv[0] | 0x373E0000;
+        prim[3] = uv[0] | (getClut(992, 220) << 16);
         prim[4] = func_80096254(xy, corners[1]);
-        prim[5] = uv[1] | 0x170000;
+        prim[5] = uv[1] | (getTPage(0, 0, 448, 256) << 16);
         prim[6] = func_80096254(xy, corners[2]);
         prim[7] = uv[2];
         prim[8] = func_80096254(xy, corners[3]);
@@ -2369,23 +2452,30 @@ void func_80095C18(int actor, int kind)
         *ot = ((u_long)prim << 8) >> 8;
         ((vs_scratch_t*)0x1F800000)->unk0 = prim + 10;
     } else {
+        long depth;
+
         if (func_800A190C(actor, 255, &other, 0) == 0) {
             if (func_800A190C(0, 255, &position, 0)) {
                 return;
             }
+
             position.vx -= other.vx;
             position.vz -= other.vz;
             side = ABS(position.vx) + ABS(position.vz);
+
             if (side < 352) {
                 D_800F2274 &= ~(1 << actor);
             }
             if (side > 416) {
                 D_800F2274 |= 1 << actor;
             }
+
             side = (D_800F2274 >> actor) & 1;
+
             if (side) {
                 return;
             }
+
             SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
             SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
             other.vy -= 64;
@@ -2395,19 +2485,23 @@ void func_80095C18(int actor, int kind)
             position.vy -= 8;
             xy = *(int*)&position;
             depth = func_8009F858(actor);
+
             if (depth >= 0) {
                 if (depth == 0) {
                     ++D_800F2260[actor];
+
                     if (!(D_800F2260[actor] & 7)) {
                         D_800F2260[actor] = 0;
                     }
                 }
-                prim = vs_battle_setSprite(128, xy, 0x100010, ot);
-                prim[1] = 0xE100000C;
-                prim[4] = ((depth << 4) + 96) | 0x37FD2000;
+
+                prim = vs_battle_setSprite(128, xy, vs_getWH(16, 16), ot);
+                prim[1] = _get_mode(0, 0, getTPage(0, 0, 768, 0));
+                prim[4] = ((depth << 4) + 96) | vs_getUV0Clut(0, 32, 976, 223);
                 return;
             }
         }
+
         D_800F2260[actor] = 0;
     }
 }
@@ -2486,6 +2580,7 @@ void func_8009651C(SVECTOR* position, int direction)
     int y = position->vy;
     int index;
     POLY_FT4* prim;
+
     if (direction == 4) {
         index = 0;
     } else if (direction == 6) {
@@ -2505,6 +2600,7 @@ void func_8009651C(SVECTOR* position, int direction)
     } else {
         return;
     }
+
     prim = ((vs_scratch_t*)0x1F800000)->unk0;
     setPolyFT4(prim);
     setShadeTex(prim, 1);
@@ -2601,19 +2697,18 @@ int func_80096768(int arg0, int arg1, int arg2)
 
 void func_8009695C(int x, int y, D_800F1BAC_t* p)
 {
-    u_char colors[2][4] = { { 128, 64, 0, 0 }, { 0, 64, 128, 0 } };
+    CVECTOR colors[] = { { 128, 64, 0, 0 }, { 0, 64, 128, 0 } };
     int negative;
     int positive;
     int i;
-    POLY_FT4* prim;
+    POLY_FT4* prim = ((vs_scratch_t*)0x1F800000)->unk0;
 
-    prim = ((vs_scratch_t*)0x1F800000)->unk0;
     y -= p->unk12;
     negative = p->unkC & 0x8000;
     positive = !negative;
 
     setPolyFT4(prim);
-    setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+    setRGB0(prim, colors[positive].r, colors[positive].g, colors[positive].b);
     setXY4(prim, x, y, x + D_80069144[p->unkE].w, y, x, y + D_80069144[p->unkE].h,
         x + D_80069144[p->unkE].w, y + D_80069144[p->unkE].h);
     setUV4(prim, D_80069144[p->unkE].x, D_80069144[p->unkE].y,
@@ -2627,7 +2722,7 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
 
     x += D_80069144[p->unkE].w + 2;
     setPolyFT4(prim);
-    setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+    setRGB0(prim, colors[positive].r, colors[positive].g, colors[positive].b);
     setXY4(prim, x, y, x + D_8006917C[p->unkA].w, y, x, y + D_8006917C[p->unkA].h,
         x + D_8006917C[p->unkA].w, y + D_8006917C[p->unkA].h);
     setUV4(prim, D_8006917C[p->unkA].x, D_8006917C[p->unkA].y,
@@ -2641,7 +2736,7 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
 
     x += D_8006917C[p->unkA].w + 2;
     setPolyFT4(prim);
-    setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+    setRGB0(prim, colors[positive].r, colors[positive].g, colors[positive].b);
     setXY4(prim, x, y - 1, x + 8, y - 1, x, y + 7, x + 8, y + 7);
     setUV4(prim, positive * 8 + 120, 208, positive * 8 + 128, 208, positive * 8 + 120,
         216, positive * 8 + 128, 216);
@@ -2651,9 +2746,10 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
 
     x += 2;
     x += p->displayTextLen * 5;
+
     for (i = p->displayTextLen - 1; i >= 0; --i, x -= 5) {
         setPolyFT4(prim);
-        setRGB0(prim, colors[positive][0], colors[positive][1], colors[positive][2]);
+        setRGB0(prim, colors[positive].r, colors[positive].g, colors[positive].b);
         prim->x0 = x;
         prim->x1 = x + 6;
         prim->y0 = y - 1;
@@ -2662,14 +2758,13 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
         prim->y2 = y + 9;
         prim->x3 = x + 6;
         prim->y3 = y + 9;
-        setUV4(prim, (((signed char*)p + i)[20] - '0') * 6, 0,
-            (((signed char*)p + i)[20] - '0') * 6 + 6, 0,
-            (((signed char*)p + i)[20] - '0') * 6, 10,
-            (((signed char*)p + i)[20] - '0') * 6 + 6, 10);
+        setUV4(prim, (p->displayText[i] - '0') * 6, 0, (p->displayText[i] - '0') * 6 + 6,
+            0, (p->displayText[i] - '0') * 6, 10, (p->displayText[i] - '0') * 6 + 6, 10);
         setTPage(prim, 0, 0, 768, 0);
         setClut(prim, 832, 223);
         AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 8, prim++);
     }
+
     ((vs_scratch_t*)0x1F800000)->unk0 = prim;
 }
 

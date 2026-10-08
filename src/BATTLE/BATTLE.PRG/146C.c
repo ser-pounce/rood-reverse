@@ -716,8 +716,8 @@ extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
 extern int D_800F19EC;
-extern int D_800F1A00;
-extern int D_800F1A04;
+extern u_int D_800F1A00;
+extern u_int D_800F1A04;
 extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
@@ -12843,11 +12843,6 @@ void func_80085A34(func_80085A34_t* arg0)
 // https://decomp.me/scratch/KrvDw
 int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
 
-// func_80085B10 only matches with these flags typed as unsigned.
-extern u_int D_800F1A00_u __asm__("D_800F1A00");
-extern u_int D_800F1A04_u __asm__("D_800F1A04");
-#define D_800F1A00 D_800F1A00_u
-#define D_800F1A04 D_800F1A04_u
 void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int arg3)
 {
     SVECTOR origin;
@@ -13047,8 +13042,6 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
         _getActionCost(action, attacker, 1);
     }
 }
-#undef D_800F1A00
-#undef D_800F1A04
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4)
 {

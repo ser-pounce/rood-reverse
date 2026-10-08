@@ -424,6 +424,12 @@ extern u_char D_800F522C;
 extern u_char D_800F4C70[2][16];
 extern u_char D_800F4CB0;
 extern u_char D_800F4CB1;
+extern u_char D_800F4C90[8];
+extern u_char D_800F4C98[8];
+extern u_char D_800F4CA0[8];
+extern u_char D_800F4CA8[8];
+extern u_char D_800F4CB2;
+extern u_char D_800F4CB3;
 extern char D_800F4CB8;
 extern char _fontTable;
 extern int _fontBrightness;
@@ -543,7 +549,36 @@ void func_800C51B4(int mode)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C5360);
+void func_800C5360(int group)
+{
+    int first = 0;
+    int i;
+    if (D_800F4CB1 > D_800F4CB0) {
+        for (i = 0; i < D_800EB9B8->unk2C; ++i) {
+            if (D_800EB9B8->unk40[i].unk9 != group) {
+                continue;
+            }
+            if (!first) {
+                first = i + 1;
+            }
+            D_800F4C70[1][D_800F4CB0++] = i;
+        }
+        D_800F4CA0[D_800F4CB2] = first - 1;
+        D_800F4C90[D_800F4CB2++] = group;
+        return;
+    }
+    for (i = 0; i < D_800EB9B8->unk2C; ++i) {
+        if (D_800EB9B8->unk40[i].unk9 != group) {
+            continue;
+        }
+        if (!first) {
+            first = i + 1;
+        }
+        D_800F4C70[0][D_800F4CB1++] = i;
+    }
+    D_800F4CA8[D_800F4CB3] = first - 1;
+    D_800F4C98[D_800F4CB3++] = group;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C553C);
 

@@ -4611,12 +4611,12 @@ int func_80074798(func_8006EBF8_t* arg0, char* arg1)
 int func_80074860(int arg0)
 {
     func_8006EBF8_t sp10;
-    char sp20[4];
+    u_char sp20[4];
 
     func_800A1108(arg0, &sp10);
     func_80074798(&sp10, sp20);
     // BUG: arg2 should be an actor ID?
-    return func_800BEC58(4, 0, (int)sp20, 1) == 1;
+    return func_800BEC58(4, 0, sp20, 1) == 1;
 }
 
 _mpdRoomSectionA* func_800748B8(int arg0)

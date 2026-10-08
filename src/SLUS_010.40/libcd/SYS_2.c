@@ -119,7 +119,7 @@ int CdGetSector(void* madr, int size) { return CD_getsector(madr, size) == 0; }
 
 int CdGetSector2(void* madr, int size) { return CD_getsector2(madr, size) == 0; }
 
-void(*CdDataCallback(void (*func)())) { return DMACallback(3, func); }
+void(*CdDataCallback(void (*func)())) { return (void*)DMACallback(3, func); }
 
 int CdDataSync(int mode) { return CD_datasync(mode); }
 

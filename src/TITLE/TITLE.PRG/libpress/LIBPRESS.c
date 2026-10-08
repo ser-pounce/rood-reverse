@@ -117,9 +117,9 @@ int DecDCToutSync(int mode)
     return MDEC_out_sync();
 }
 
-int DecDCTinCallback(void (*func)(void)) { return (int)DMACallback(0, func); }
+int DecDCTinCallback(void (*func)(void)) { return DMACallback(0, func); }
 
-int DecDCToutCallback(void (*func)(void)) { return (int)DMACallback(1, func); }
+int DecDCToutCallback(void (*func)(void)) { return DMACallback(1, func); }
 
 static u_int volatile* d0_madr = (u_int volatile*)0x1F801080;
 static u_int volatile* d0_bcr = (u_int volatile*)0x1F801084;

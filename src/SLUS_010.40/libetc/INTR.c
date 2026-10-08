@@ -4,7 +4,7 @@
 
 typedef struct {
     int unk0;
-    void* (*unk4)(int, void (*)());
+    int (*unk4)(int, void (*)());
     void (*unk8)(int, void (*)());
     void (*unkC)(void);
     void (*unk10)(void);
@@ -39,7 +39,7 @@ void ResetCallback(void) { D_800320D4->unkC(); }
 
 void InterruptCallback(int irq, void (*f)()) { D_800320D4->unk8(irq, f); }
 
-void* DMACallback(int dma, void (*f)()) { return D_800320D4->unk4(dma, f); }
+int DMACallback(int dma, void (*f)()) { return D_800320D4->unk4(dma, f); }
 
 int VSyncCallback(void (*f)()) { return D_800320D4->unk14(4, f); }
 

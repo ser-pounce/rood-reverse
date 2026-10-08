@@ -1391,9 +1391,9 @@ setupPalettes:
     for (i = 0; i < actor->unk0.nBones; ++i) {
         armature = &actor->unk0.unk68->armatures[i];
         if (armature->unk8 >= 3 && armature->unk8 < 7) {
-            joint = (u_short*)&actor->unk1880[(armature->unk8 - 3) * 4];
+            joint = actor->unk1880[armature->unk8 - 3];
             joint[1] = 0;
-            joint[0] = *(u_short*)&armature->unkA;
+            joint[0] = armature->unkA;
         }
     }
 

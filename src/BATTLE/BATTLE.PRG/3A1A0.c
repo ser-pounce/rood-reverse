@@ -2011,7 +2011,8 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
         if (animation == 0x5F) {
             return;
         }
-        goto play;
+        func_800A0204(actor->unk0.unkF, next, 0, frames);
+        return;
     }
     if (actor->unk0.unkA_6) {
         if (speed >= actor->unk5B9) {
@@ -2024,8 +2025,8 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
             next = 1;
             frames = 10;
         }
-    play:
         func_800A0204(actor->unk0.unkF, next, 0, frames);
+
         return;
     }
     if (actor->unk5AC_15) {

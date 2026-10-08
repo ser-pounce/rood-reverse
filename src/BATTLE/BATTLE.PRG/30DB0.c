@@ -2803,7 +2803,7 @@ void func_8009E700(int actorId, int animation)
         if ((object != NULL)
             && ((objectState = object->unk1A, (objectState == 0xF9))
                 || (objectState == 0xFF))
-            && ((*(u_char*)((char*)object + 0x170)) == 0)) {
+            && (object->unk6C[8].unk4 == 0)) {
             object->unk1A = 0;
         }
     } else {
@@ -2874,7 +2874,7 @@ void func_8009E700(int actorId, int animation)
                                         tileDz);
                                 }
                             }
-                            if ((*(int*)((char*)actor + 0x5AC)) & 8) {
+                            if (actor->unk5AC_3) {
                                 func_800A0204((int)actor->unk0.unkF, 0x4B, 0, 0xC);
                             } else {
                                 func_800A0204(actorId, animation, 0, 0x10);
@@ -3283,17 +3283,9 @@ void func_8009F314(int actorId, void* context, int animate)
             actor->unk0.unk1A = 0;
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vz = 0;
-            if (actor->unk0.unkF == 0) {
-                if (((*(int*)((char*)actor + 8)) & 0x70000) == 0x30000) {
-                    if (actor->unk0.unk34.vy <= 0) {
-                        goto setVerticalSpeed;
-                    }
-                } else {
-                    goto setFallingSpeed;
-                }
-            } else {
-            setVerticalSpeed:
-            setFallingSpeed:
+            if (actor->unk0.unkF != 0
+                || ((*(int*)((char*)actor + 8)) & 0x70000) != 0x30000
+                || actor->unk0.unk34.vy <= 0) {
                 actor->unk0.unk34.vy = -6;
             }
             actor->unk181A = 0;
@@ -3302,7 +3294,7 @@ void func_8009F314(int actorId, void* context, int animate)
         }
         if (animate != 0) {
             animationId = 0x46;
-            if ((*(int*)((char*)actor + 0x5AC)) & 8) {
+            if (actor->unk5AC_3) {
                 animationId = 0x3A;
             }
             func_800AD494(actor, 0xABU, (int*)&animation);
@@ -3324,7 +3316,7 @@ void func_8009F314(int actorId, void* context, int animate)
         object = D_800F45E0[actorId];
         if (object != NULL) {
             object->unk1A = 0xF7;
-            *(u_char*)((char*)object + 0x170) = 0;
+            object->unk6C[8].unk4 = 0;
             func_800AE7D8(object, 0x32, 0);
         }
     }

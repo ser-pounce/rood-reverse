@@ -35,6 +35,83 @@ extern u_char D_800E92DC[];
 extern int D_800F1868;
 extern u_short D_800E9A28[][4];
 
+typedef struct {
+    char prefix[0x3A];
+    u_short angleX, angleY;
+    char padding[0x16];
+    SVECTOR offset;
+    char padding2[8];
+    MATRIX matrix;
+    SVECTOR rotation;
+} actorTransformScratch;
+
+typedef struct {
+    char prefix[0x64];
+    MATRIX matrix;
+    char gap[8];
+    VECTOR scale;
+} cameraTransformScratch;
+
+typedef struct objectAnimationState objectAnimationState;
+typedef struct {
+    int unk0;
+    int unk4;
+} intPair;
+
+typedef struct {
+    char prefix[8];
+    u_int flags;
+    char paddingC[3];
+    u_char objectId;
+    char padding10[0xA];
+    short mode;
+    short x, y, z, padding22;
+    short rotationX, rotationY, rotationZ, padding2A;
+    short scaleX, scaleY, scaleZ, padding32, padding34;
+    short deltaY, padding38, orientation;
+    char padding3C[0xF0];
+    char savedState[32];
+    char state[32];
+    char padding16C[2];
+    u_char material, padding16F, frame;
+} objectMotionContext;
+
+void func_800B07DC(D_800F4538_t*);
+void func_80041C68(MATRIX*, MATRIX*);
+void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
+void func_800AAE9C(void*);
+void func_800AB4F0(void*);
+void func_800AB788(void*, void*, int);
+void func_800AB9A4(void*);
+void func_800AC540(int, D_800F4538_t*);
+void func_800B0908(objectAnimationState*, int);
+void func_800B1A68(D_800F45E0_t*, MATRIX*);
+void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
+void func_800AFDE8(int, SVECTOR*, int);
+int func_800A92B8(int x, int z);
+int vs_gte_rsqrt(int);
+int func_800B101C();
+int func_800A3DB4(int, int, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800E6898(void*);
+void func_800E4C28(int, int);
+int func_800A0104(int, int);
+
+extern MATRIX D_8005E218;
+extern u_char D_800E91AC[], D_800E91BC[], D_800E91CC[], D_800E91DC[];
+extern u_char D_800E91EC[], D_800E91F0[], D_800E91FC[], D_800E9208[];
+extern u_char D_800E9218[], D_800E9228[], D_800E9238[], D_800E9248[];
+extern u_char D_800E9258[], D_800E9268[];
+extern int D_800E9308;
+extern MATRIX D_800F4910;
+extern MATRIX D_800F49B8;
+extern u_char D_800F49F8;
+extern u_char D_800F4B18, D_800F4B19;
+extern struct {
+    char prefix[0x1FD0];
+    int scales[3];
+} D_800F2458;
+
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     int op;
@@ -701,21 +778,6 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
     }
 }
 
-typedef struct {
-    char prefix[0x3A];
-    u_short angleX, angleY;
-    char padding[0x16];
-    SVECTOR offset;
-    char padding2[8];
-    MATRIX matrix;
-    SVECTOR rotation;
-} actorTransformScratch;
-extern struct {
-    char prefix[0x1FD0];
-    int scales[3];
-} D_800F2458;
-void func_800B07DC(D_800F4538_t*);
-
 void func_800AEAE8(D_800F4538_t* actor)
 {
     actorTransformScratch* scratch = (void*)0x1F80035C;
@@ -738,17 +800,6 @@ void func_800AEAE8(D_800F4538_t* actor)
     scratch->angleX = actor->unk0.unk14;
     scratch->angleY = actor->unk0.unk16;
 }
-
-extern MATRIX D_8005E218;
-extern MATRIX D_800F4910;
-extern MATRIX D_800F49B8;
-void func_80041C68(MATRIX*, MATRIX*);
-typedef struct {
-    char prefix[0x64];
-    MATRIX matrix;
-    char gap[8];
-    VECTOR scale;
-} cameraTransformScratch;
 
 void func_800AECA0(MATRIX* source)
 {
@@ -788,7 +839,6 @@ void func_800AECA0(MATRIX* source)
     D_800F49B8.t[2] = source->t[2];
 }
 
-void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
 void func_800AEEC4(D_800F4538_t* arg0)
 {
     int _[2] __attribute__((unused));
@@ -824,17 +874,6 @@ void func_800AEEC4(D_800F4538_t* arg0)
 
     arg0->unk17E4.unk3 -= var_a2;
 }
-
-void func_800AAE9C(void*);
-void func_800AB4F0(void*);
-void func_800AB788(void*, void*, int);
-void func_800AB9A4(void*);
-void func_800AC540(int, D_800F4538_t*);
-typedef struct objectAnimationState objectAnimationState;
-void func_800B0908(objectAnimationState*, int);
-void func_800B1A68(D_800F45E0_t*, MATRIX*);
-extern int D_800E9308;
-extern u_char D_800F4B18, D_800F4B19;
 
 struct frameScratch {
     int unused;
@@ -1150,7 +1189,6 @@ void func_800AF844(SVECTOR* dst, SVECTOR* src, int count)
     }
 }
 
-void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
 void func_800AF960(D_800F45E0_t* arg0)
 {
     int temp_lo;
@@ -1182,7 +1220,6 @@ struct animationFrameScratch {
     int first, last;
     u_char** data;
 };
-void func_800AFDE8(int, SVECTOR*, int);
 void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     u_short* header;
@@ -1413,16 +1450,6 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
     value->pad = (int)data;
     delta->pad = nextFrame;
 }
-
-int func_800A92B8(int x, int z);
-int vs_gte_rsqrt(int);
-short func_800BEB00(void);
-extern u_char D_800F49F8;
-
-typedef struct {
-    int unk0;
-    int unk4;
-} intPair;
 
 void func_800B002C(D_800F4538_t* actor, int arg1)
 {
@@ -1675,11 +1702,6 @@ struct objectAnimationState {
     char pad60[0x10C];
     u_char material, durability, pad16E, parentObject, frame;
 };
-int func_800B101C();
-int func_800A3DB4(int, int, int);
-int func_800A6EE8(SVECTOR*, int, int, int);
-void func_800E6898(void*);
-void func_800E4C28(int, int);
 void func_800B0908(objectAnimationState* object, int unused)
 {
     actorTransformScratch* scratch = (void*)0x1F80035C;
@@ -1881,29 +1903,6 @@ void func_800B0908(objectAnimationState* object, int unused)
         goto fall;
     }
 }
-
-typedef struct {
-    char prefix[8];
-    u_int flags;
-    char paddingC[3];
-    u_char objectId;
-    char padding10[0xA];
-    short mode;
-    short x, y, z, padding22;
-    short rotationX, rotationY, rotationZ, padding2A;
-    short scaleX, scaleY, scaleZ, padding32, padding34;
-    short deltaY, padding38, orientation;
-    char padding3C[0xF0];
-    char savedState[32];
-    char state[32];
-    char padding16C[2];
-    u_char material, padding16F, frame;
-} objectMotionContext;
-extern u_char D_800E91AC[], D_800E91BC[], D_800E91CC[], D_800E91DC[];
-extern u_char D_800E91EC[], D_800E91F0[], D_800E91FC[], D_800E9208[];
-extern u_char D_800E9218[], D_800E9228[], D_800E9238[], D_800E9248[];
-extern u_char D_800E9258[], D_800E9268[];
-int func_800A0104(int, int);
 
 int func_800B101C(objectMotionContext* object)
 {

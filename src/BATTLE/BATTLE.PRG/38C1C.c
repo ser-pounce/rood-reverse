@@ -300,7 +300,7 @@ int func_800A1B28(int arg0, int arg1, u_short* arg2, int arg3)
     return 0;
 }
 
-int func_800A1B9C(int arg0, int arg1, u_short* arg2, int arg3)
+int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     int var_v0 = func_800A152C(arg0, arg1, 2);
 
@@ -308,7 +308,7 @@ int func_800A1B9C(int arg0, int arg1, u_short* arg2, int arg3)
         return var_v0;
     }
 
-    var_v0 = func_800A1C10(arg0, var_v0, arg2, arg3);
+    var_v0 = func_800A1C10(arg0, var_v0, (u_short*)arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;

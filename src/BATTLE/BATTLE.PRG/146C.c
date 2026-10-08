@@ -11089,7 +11089,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
 {
     D_800F19CC_t2 sp10;
     func_800C1564_t sp860;
-    u_short sp870[2];
+    SVECTOR sp870;
     int var_s2;
     int temp_s0;
     int temp_s0_2;
@@ -11145,8 +11145,8 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
         var_s2 = 0;
 
         for (i = 0; i < 6; ++i) {
-            if ((func_800A1B9C(targetActor, i, sp870, 2) >= 0)
-                && (func_800C1564(&sp860, sp870) != 0)) {
+            if ((func_800A1B9C(targetActor, i, &sp870, 2) >= 0)
+                && (func_800C1564(&sp860, (u_short*)&sp870) != 0)) {
                 sp10.unk4C[var_s2].unk40 = 0;
                 sp10.unk4C[var_s2].unk0.targetActor = targetActor;
                 sp10.unk4C[var_s2].unk0.targetLimb = i;

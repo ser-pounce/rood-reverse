@@ -5,6 +5,7 @@ SortIncludes: Never
 AlignOperands: AlignAfterOperator
 BreakBeforeBinaryOperators: NonAssignment
 BreakStringLiterals: false
+InsertBraces: true
 SkipMacroDefinitionBody: true
 WhitespaceSensitiveMacros: [INCLUDE_ASM, INCLUDE_RODATA]
 ...

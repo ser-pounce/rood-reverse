@@ -908,8 +908,8 @@ void func_800AEF94(MATRIX* camera)
     entries = D_800F4538;
     do {
         actor = entries[i];
-        if ((actor != NULL) && (actor->unk0.nBones != 0)
-            && !actor->unk0.skip && (actor->unk0.unk13 != 0xFC)) {
+        if ((actor != NULL) && (actor->unk0.nBones != 0) && !actor->unk0.skip
+            && (actor->unk0.unk13 != 0xFC)) {
             func_800AAE9C(actor);
             if (actor->unk0.unk64.unk0 != 0) {
                 func_800AB788(actor, NULL, 0);
@@ -1053,8 +1053,7 @@ void func_800AEF94(MATRIX* camera)
     weapons = vs_battle_wepModels;
     do {
         weapon = *weapons;
-        if ((weapon != NULL) && (weapon->unk8_4)
-            && (weapon->unkD != 0)) {
+        if ((weapon != NULL) && weapon->unk8_4 && (weapon->unkD != 0)) {
             actor = weaponActors[weapon->actorId];
             if (actor != NULL) {
                 weaponActorFlags = (*(u_int*)((char*)actor + 8));
@@ -1125,32 +1124,30 @@ void func_800AF6E8(D_800F4538_t* arg0)
         if (v5b2 != 1) {
             int next = arg0->unk5CC + 0xFF;
             arg0->unk5CC = v5b2 + next;
+        }
+
+        if (v5b2 != 1 && arg0->unk5CC >= arg0->unk5CD) {
+            arg0->unk5CC = 0;
+            arg0->unk5CD = 0;
+        } else {
+            func_800B147C(&arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC,
+                arg0->unk5CD);
+
+            arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
+            arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;
+
+            func_800B002C(arg0, 0);
+
+            ++arg0->unk5CC;
 
             if (arg0->unk5CC >= arg0->unk5CD) {
                 arg0->unk5CC = 0;
                 arg0->unk5CD = 0;
-                goto tail;
             }
+            return;
         }
-
-        func_800B147C(
-            &arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC, arg0->unk5CD);
-
-        arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
-        arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;
-
-        func_800B002C(arg0, 0);
-
-        ++arg0->unk5CC;
-
-        if (arg0->unk5CC >= arg0->unk5CD) {
-            arg0->unk5CC = 0;
-            arg0->unk5CD = 0;
-        }
-        return;
     }
 
-tail:
     vs_main_memcpy(&arg0->unk704, &arg0->unkC54, sizeof(arg0->unk704));
     func_800B002C(arg0, 0);
 }

@@ -1385,9 +1385,9 @@ setupPalettes:
     actor->unk5AC_8 = 0;
     actor->unk5C2 = 8;
     actor->unk5C0 = 0x20;
-    actor->unk0.unk2C = 0x1000;
-    actor->unk0.unk2E = 0x1000;
-    actor->unk0.unk30 = 0x1000;
+    actor->unk0.unk2C = ONE;
+    actor->unk0.unk2E = ONE;
+    actor->unk0.unk30 = ONE;
     actor->unk5B2 = 1;
     actor->unk0.unkC_0 = 0;
     actor->unk0.unkC_4 = 0;
@@ -2608,7 +2608,7 @@ void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
             if (dx == 0 && dz == 0) {
                 angle = actor->unk0.facing;
             } else {
-                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
+                angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
             }
 
             angle -= actor->unk0.facing;
@@ -2843,9 +2843,9 @@ void func_8009E700(int actorId, int animation)
                                 } else {
                                     distance = 2;
                                 moveFromReaction:
-                                    facing = actor->unk0.facing + 0x200;
+                                    facing = actor->unk0.facing + ONE / 8;
                                     facing &= 0xFFF;
-                                    facing /= 1024;
+                                    facing /= ONE / 4;
                                     direction = facing;
                                     tileDx = 0;
                                     tileDz = 0;
@@ -3158,13 +3158,13 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
             if ((dx == 0) && (dz == 0)) {
                 angle = actor->unk0.facing;
             } else {
-                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
+                angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
             }
             angle = angle - actor->unk0.facing;
-            if (angle > 0x800) {
-                angle -= 0x1000;
-            } else if (angle < -0x800) {
-                angle += 0x1000;
+            if (angle > ONE / 2) {
+                angle -= ONE;
+            } else if (angle < -ONE / 2) {
+                angle += ONE;
             }
             facingDelta = angle;
         } else {

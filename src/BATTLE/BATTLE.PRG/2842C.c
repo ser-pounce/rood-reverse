@@ -1987,7 +1987,57 @@ void func_80096444(int arg0)
     vs_main_bzero(&(*D_800F1BAC)[D_800F227E], sizeof(*D_800F1BAC)[D_800F227E]);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009651C);
+void func_8009651C(SVECTOR* position, int direction)
+{
+    int dx[] = { -8, 0, 7, 10, 7, 0, -8, -11 };
+    int dy[] = { -8, -11, -8, 0, 7, 10, 7, 0 };
+    int x = position->vx;
+    int y = position->vy;
+    int index;
+    POLY_FT4* prim;
+
+    if (direction == 4) {
+        index = 0;
+    } else if (direction == 6) {
+        index = 1;
+    } else if (direction == 2) {
+        index = 2;
+    } else if (direction == 10) {
+        index = 3;
+    } else if (direction == 8) {
+        index = 4;
+    } else if (direction == 9) {
+        index = 5;
+    } else if (direction == 1) {
+        index = 6;
+    } else if (direction == 5) {
+        index = 7;
+    } else {
+        return;
+    }
+
+    prim = ((vs_scratch_t*)0x1F800000)->unk0;
+    setPolyFT4(prim);
+    setShadeTex(prim, 1);
+    setXY0(prim, dx[index] + x, dy[index] + y);
+    index += 2;
+    index &= 7;
+    prim->x1 = dx[index] + x;
+    prim->y1 = dy[index] + y;
+    index += 2;
+    index &= 7;
+    prim->x3 = dx[index] + x;
+    prim->y3 = dy[index] + y;
+    index += 2;
+    index &= 7;
+    prim->x2 = dx[index] + x;
+    prim->y2 = dy[index] + y;
+    setUV4(prim, 48, 48, 63, 48, 48, 63, 63, 63);
+    setTPage(prim, 0, 0, 768, 0);
+    setClut(prim, 976, 223);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 - 16, prim++);
+    ((vs_scratch_t*)0x1F800000)->unk0 = prim;
+}
 
 int func_80096768(int arg0, int arg1, int arg2)
 {

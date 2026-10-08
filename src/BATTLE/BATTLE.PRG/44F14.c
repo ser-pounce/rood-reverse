@@ -398,7 +398,7 @@ loop: {
         if (mode == 2) {
             delta = -packed;
         }
-        ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[op - 36] += delta;
+        ((short*)((SVECTOR*)actor->unk0.unk68->vertexOffset + arg))[op - 36] += delta;
         actor->unk5AC_23 = 1;
         break;
     case 39:
@@ -408,17 +408,13 @@ loop: {
         arg = packed & 0x1FF;
         packed >>= 9;
         if (mode == 2) {
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[0] -= packed;
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[1] -=
-                (signed char)script[3];
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[2] -=
-                (signed char)script[4];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vx -= packed;
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vy -= (signed char)script[3];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vz -= (signed char)script[4];
         } else {
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[0] += packed;
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[1] +=
-                (signed char)script[3];
-            ((short*)((char*)actor->unk0.unk68->vertexOffset + arg * 8))[2] +=
-                (signed char)script[4];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vx += packed;
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vy += (signed char)script[3];
+            ((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vz += (signed char)script[4];
         }
         actor->unk5AC_23 = 1;
         break;

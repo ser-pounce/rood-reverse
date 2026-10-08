@@ -12879,7 +12879,7 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
             result->unk4C[i].unk0.targetActor = source->unk4C[i].unk0.targetActor;
             result->unk4C[i].unk0.targetLimb = source->unk4C[i].unk0.targetLimb;
         } else if ((u_int)result->unk4C[i].unk40 < 6) {
-            *(SVECTOR*)&result->unk4C[i].unk0 = *(SVECTOR*)&source->unk4C[i].unk0;
+            result->unk4C[i].unk0 = source->unk4C[i].unk0;
         }
     }
     result->unk844 = source->unk844;

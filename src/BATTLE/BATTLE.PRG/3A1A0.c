@@ -643,9 +643,9 @@ int func_800A38E0(int actorId)
     if (flags & 0x180000) {
         goto fail;
     }
-    direction = actor->unk0.facing + 0x200;
+    direction = actor->unk0.facing + ONE / 8;
     direction &= 0xFFF;
-    direction /= 1024;
+    direction /= ONE / 4;
     D_800F49E8 = direction;
     oldX = (farX = (x = actor->unk0.currentTileX));
     oldZ = (farZ = (z = actor->unk0.currentTileZ));
@@ -985,11 +985,11 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         object->unk38 += step;
     }
     facing = ((u_short)object->unk26 + ((4 - D_800F49E8) << 10)) & 0xFFF;
-    direction = facing + 0x200;
+    direction = facing + ONE / 8;
     direction &= 0xFFF;
     object->unk26 = facing;
-    direction /= 1024;
-    object->unk26 = direction * 1024;
+    direction /= ONE / 4;
+    object->unk26 = direction * (ONE / 4);
     object->unk5C = -1;
     object->unk1A = 8;
     object->unk12 = actor->unk0.unkF;
@@ -1069,7 +1069,7 @@ int func_800A46A4(D_800F4538_t* actor)
     actor->unk0.unkC_0 = 0;
     actor->unk0.unkA_3 = 0;
     actor->unk0.unk9_6 = 0;
-    func_800A70DC(actor, rsin(512) * radius / 4096);
+    func_800A70DC(actor, rsin(ONE / 8) * radius / ONE);
     actor->unk0.unkC_0 = saved;
     actor->unk0.unkA_3 = 2;
     direction = (u_short)actor->unk1800 >> 9;
@@ -1137,7 +1137,7 @@ void func_800A48CC(int index, int direction, int distance)
     } else {
         flags->fast = 0;
         flags->mode = 1;
-        if (distance / 4096 >= actor->unk5B9) {
+        if (distance / ONE >= actor->unk5B9) {
             flags->mode = 2;
             flags->fast = 1;
         }
@@ -1467,7 +1467,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
             return 3;
         }
         i = (direction - (u_short)actor->unk1800) & 0xFFF;
-        if ((u_int)(i - 0x400) <= 0x800) {
+        if ((u_int)(i - ONE / 4) <= ONE / 2) {
             goto fall;
         }
         if (actor->unk0.unk1A != 0) {
@@ -1482,10 +1482,10 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         if (distance == 0) {
             return 3;
         }
-        if (i <= 0x400) {
+        if (i <= ONE / 4) {
             return 3;
         }
-        if (i >= 0xC00) {
+        if (i >= ONE * 3 / 4) {
             return 3;
         }
         turning = 1;
@@ -1504,7 +1504,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
             return 3;
         }
         flags = (void*)((char*)actor + 0x5B0);
-        if (distance / 4096 >= actor->unk5B9) {
+        if (distance / ONE >= actor->unk5B9) {
             if (!(*(u_int*)flags & 4)) {
                 distance = actor->unk5BA << 12;
             }
@@ -1595,7 +1595,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     }
 
     actor->unk5AC_15 = 0;
-    actor->unk1840 = distance / 4096;
+    actor->unk1840 = distance / ONE;
     if (distance >= actor->unk5B9 << 12) {
         i = actor->unk1846;
         i += vs_gametime_tickspeed / 2;
@@ -1633,7 +1633,7 @@ scale:
     if (speed <= 0) {
         goto done;
     }
-    angle = 0xC00 - direction;
+    angle = ONE * 3 / 4 - direction;
     motion.vx = rcos(angle) * speed / 0x1000000;
     motion.vz = rsin(angle) * speed / 0x1000000;
 
@@ -1654,7 +1654,7 @@ move:
     status = func_800A76BC(actor, &motion, &result, input->pad);
     switch (status) {
     case 0:
-        distance = speed / 4096;
+        distance = speed / ONE;
         break;
     case 1:
         distance = motion.vx;
@@ -2035,8 +2035,8 @@ int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, SVECTOR* motion)
     actor->unk0.unkA_3 = 2;
     if (func_800A76BC(actor, motion, &height, 0) != 3
         && !(*(int*)((char*)actor + 0x5AC) & 0x2000) && height < 5) {
-        height = rsin(0x200);
-        height = height * actor->unk63C / 4096;
+        height = rsin(ONE / 8);
+        height = height * actor->unk63C / ONE;
         if ((D_800F49F9 >> 1) & 1) {
             offset->vz = height;
         } else {
@@ -2103,9 +2103,9 @@ int func_800A6AA0(D_800F4538_t* actor, int speed, int direction)
     }
     quadrant = 0;
     if (actor->unk1848.unk0 == 1) {
-        quadrant = (short)actor->unk1848.unk6 - (short)actor->unk1848.unk4 + 0x200;
+        quadrant = (short)actor->unk1848.unk6 - (short)actor->unk1848.unk4 + ONE / 8;
         quadrant &= 0xFFF;
-        quadrant /= 1024;
+        quadrant /= ONE / 4;
     }
     flags = *(u_int*)((char*)actor + 0x5AC);
     if (flags & 8) {
@@ -2387,8 +2387,8 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
         }
     }
     if (actor->unk0.unkA_0) {
-        i = (short)actor->unk1848.unk4 + 256;
-        i /= 512;
+        i = (short)actor->unk1848.unk4 + ONE / 16;
+        i /= ONE / 8;
         j = 0;
         do {
             delta =
@@ -2517,7 +2517,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     actor->unk5AC_14 = actor->unk5AC_13;
     actor->unk5AC_13 = 0;
     radius = actor->unk63C;
-    diagonal = rsin(0x200) * radius / 4096;
+    diagonal = rsin(ONE / 8) * radius / ONE;
     scratch->unk0 = -0xC0;
     if (*(u_int*)((char*)actor + 8) & 0x800000) {
         scratch->unk40 = -0x40;

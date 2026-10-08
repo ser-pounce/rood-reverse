@@ -880,15 +880,17 @@ typedef struct {
 
 typedef struct {
     SVECTOR unk0;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    char unkC;
-    char unkD;
+    u_char unk8;
+    u_char unk9;
+    signed char unkA;
+    char effect;
+    short unkC;
     short unkE;
     int unk10;
-    int unk14;
+    char unk14;
+    char unk15;
+    char unk16;
+    char enemyClass;
 } D_800F19CC_t5;
 
 void func_80069C6C(int);

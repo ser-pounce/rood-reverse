@@ -256,41 +256,6 @@ typedef struct {
 } func_8008D2C0_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    short unk8;
-    char unkA;
-    char effect;
-    short unkC;
-    short unkE;
-    int unk10;
-    char unk14;
-    char unk15;
-    char unk16;
-    char enemyClass;
-} func_8006F630_t1;
-
-typedef struct {
-    u_short actionId;
-    char unk2;
-    char unk3;
-} func_8006F630_t2;
-
-typedef struct {
-    u_char actorId : 4;
-    char unk0_4 : 4;
-    char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-} func_8006F630_t3;
-
-typedef struct {
     int count;
     _mpdRoomDoorSection_t* values[0];
 } D_800F1D08_t;
@@ -457,6 +422,7 @@ void func_80085008(_hitEntity_t*);
 void func_80085390(
     vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
+int func_8008631C(int, int, int, int, void*);
 void func_80086754(int, vs_battle_actor2*);
 void _applyBattleAbilityEffect(_hitEntity_t*);
 void func_80087EF4(vs_battle_actor2*);
@@ -3181,27 +3147,25 @@ void func_8006F5FC(void)
     func_8009E5C4(0);
 }
 
-void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630_t3* arg2)
+void func_8006F630(D_800F19CC_t5* arg0, D_800F19CC_t2* arg1, _hitEntity_t* arg2)
 {
-    int effect;
+    int effect = vs_main_actions[arg1->actionIndex].hitParams[0].effect;
     u_short var_v0;
-
-    effect = vs_main_actions[arg1->actionId].hitParams[0].effect;
 
     switch (effect) {
     case 0x3A:
     case 0x3E:
-        var_v0 = arg2->unk4;
+        var_v0 = arg2->unk0.hp;
         arg0->effect = effect;
         arg0->unkC = var_v0;
         break;
     case 0x3B:
-        var_v0 = arg2->unk6;
+        var_v0 = arg2->unk0.mp;
         arg0->effect = effect;
         arg0->unkC = var_v0;
         break;
     case 0x3F:
-        var_v0 = arg2->unk6;
+        var_v0 = arg2->unk0.mp;
         arg0->effect = effect;
         arg0->unkC = var_v0;
         break;
@@ -3210,12 +3174,12 @@ void func_8006F630(func_8006F630_t1* arg0, func_8006F630_t2* arg1, func_8006F630
         break;
     }
 
-    arg0->unkE = arg2->unk2;
-    arg0->unk10 = arg2->unk14 & 0x1FFFFFE0;
-    arg0->unk14 = vs_main_actions[arg1->actionId].unk2_4;
+    arg0->unkE = arg2->unk0.hitThreshold;
+    arg0->unk10 = arg2->removeStatuses & 0x1FFFFFE0;
+    arg0->unk14 = vs_main_actions[arg1->actionIndex].unk2_4;
     arg0->unk15 = arg1->unk3;
     arg0->unk16 = arg1->unk2;
-    arg0->enemyClass = vs_battle_actors[arg2->actorId]->unk3C->enemyClass;
+    arg0->enemyClass = vs_battle_actors[arg2->unk0.targetActor & 15]->unk3C->enemyClass;
 }
 
 int _isArtOrAbilityUnlocked(void)
@@ -3536,7 +3500,67 @@ void func_800704D8(void)
     func_8006C39C();
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8007053C);
+void func_8007053C(void)
+{
+    D_800F19CC_t2 result;
+    int i;
+    int kept;
+    int action;
+
+    D_800F19CC->unk2990 = D_800F19CC->unk2998;
+    func_800C06E0();
+
+    if (D_800F19CC->unk2990.pad) {
+        func_800C16DC();
+        func_800C06E0();
+        func_800C0738();
+        func_800C05B4();
+
+        if (!vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0) {
+            func_800CB114();
+            func_8006FBCC(0);
+            return;
+        }
+
+        func_800704D8();
+        return;
+    }
+
+    action = D_800F19CC->unk8.actionIndex;
+    D_800F19CC->unk29B8 = D_800F19CC->unk2990;
+    func_800C0700(&D_800F19CC->unk29B0);
+    kept = 0;
+
+    for (i = 0; i < D_800F19CC->unk2C00; ++i) {
+        if (D_800E81C4[vs_main_actions[action].unk2_4]) {
+            if (func_800C1564(
+                    (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
+                vs_main_memcpy(&D_800F19CC->unk29C0[kept], &D_800F19CC->unk29C0[i],
+                    sizeof(D_800F19CC_t5));
+                func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
+                    D_800F19CC->unk29C0[kept].unk9, D_800F19CC->unk29C0[kept].unkA,
+                    &result);
+                func_8006F630(&D_800F19CC->unk29C0[kept], &result, &result.unk4C[0]);
+                ++kept;
+            }
+        } else if (func_800C1564(
+                       (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
+            D_800F19CC->unk29C0[kept].unk8 = 16;
+            D_800F19CC->unk29C0[kept].unkA = -1;
+            D_800F19CC->unk29C0[kept].unk9 = D_800F19CC->unk29C0[i].unk9;
+            D_800F19CC->unk29C0[kept].unk0 = D_800F19CC->unk29C0[i].unk0;
+            func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
+                D_800F19CC->unk29C0[kept].unk9,
+                vs_battle_actors[D_800F19CC->unk29C0[kept].unk9]->unk3C->unk36, &result);
+            func_8006F630(&D_800F19CC->unk29C0[kept], &result, &result.unk4C[0]);
+            ++kept;
+        }
+    }
+
+    D_800F19CC->unk2C00 = kept;
+    func_800C1664(kept, D_800F19CC->unk29C0, 1);
+    _cameraMode = 3;
+}
 
 void func_8007087C(D_800F19CC_t* arg0)
 {

@@ -2747,15 +2747,11 @@ void func_8009E700(int actorId, int animation)
 {
     D_800F4538_t* actor;
     D_800F45E0_t* object;
-    int state;
-    int action;
     int facing;
     int direction;
     int distance;
     int tileDx;
     int tileDz;
-    u_int movementFlags;
-    u_int flags;
     int currentAnimation;
     int reactionAnimation;
     int baseAnimation;
@@ -2770,21 +2766,17 @@ void func_8009E700(int actorId, int animation)
     } else {
         currentAnimation = actor->animationId;
         if ((currentAnimation != 0xC6) && (currentAnimation != 0xC8)
-            && ((actor->unk0.unkF != 0)
-                || (((*(int*)((char*)actor + 8)) & 0x184000) != 0x80000))) {
-            flags = (*(int*)((char*)actor + 8));
-            if (((flags >> 16) & 7) < 2 && (state = flags & 0x70000000) != 0x20000000
-                && state != 0x50000000) {
-                action = flags & 0x0F000000;
-                if (action == 0x3000000) {
+            && (actor->unk0.unkF != 0 || actor->unk0.unkA_3 != 1 || actor->unk0.unk9_6)) {
+            if (actor->unk0.unkA_0 < 2 && actor->unk0.unkB_4 != 2
+                && actor->unk0.unkB_4 != 5) {
+                if (actor->unk0.unkB_0 == 3) {
                     func_800A2C48(actor);
-                } else if (action != 0) {
+                } else if (actor->unk0.unkB_0 != 0) {
                     goto resetState;
                 }
                 {
-                    movementFlags = (*(int*)((char*)actor + 8));
-                    if ((movementFlags & 0x180000) == 0x100000) {
-                        if ((*(int*)((char*)actor + 0x18)) != 0) {
+                    if (actor->unk0.unkA_3 == 2) {
+                        if (actor->unk0.unk18 != 0 || actor->unk0.unk1A != 0) {
                             actor->unk0.unk1A = 0;
                             actor->unk0.unk18 = 0;
                             actor->unk0.position.vx += actor->unk0.unk34.vx;
@@ -2792,7 +2784,7 @@ void func_8009E700(int actorId, int animation)
                             actor->unk0.position.vz += actor->unk0.unk34.vz;
                             actor->unk0.facing += actor->unk0.unk3E;
                         }
-                    } else if (!(movementFlags & 0xF00)) {
+                    } else if (actor->unk0.unk9_0 == 0) {
                         baseAnimation = actor->animationId;
                         if (baseAnimation > 100) {
                             baseAnimation -= 0x64;
@@ -2841,13 +2833,13 @@ void func_8009E700(int actorId, int animation)
                 }
             }
         resetState:
-            if (((*(int*)((char*)actor + 8)) & 0x180000) != 0x100000) {
-                (*(int*)((char*)actor + 8)) &= ~0x180000;
+            if (actor->unk0.unkA_3 != 2) {
+                actor->unk0.unkA_3 = 0;
             }
             actor->unk5C8 = 0;
             actor->unk0.unk18 = 0;
             actor->unk0.unk1A = 0;
-            (*(int*)((char*)actor + 8)) &= ~0x4000;
+            actor->unk0.unk9_6 = 0;
             func_800A0ABC(actorId);
         }
     }

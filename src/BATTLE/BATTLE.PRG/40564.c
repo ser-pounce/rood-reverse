@@ -26,6 +26,7 @@ typedef struct {
 
 void func_8007A824(DR_MOVE*);
 int func_8008D2C0(func_8008D2C0_t*);
+short func_8008DA24(int, int);
 void func_800A0204(int, int, int, int);
 void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
@@ -276,7 +277,7 @@ int func_800A91DC(int arg0, int arg1, int arg2)
     return var_t3;
 }
 
-int func_800A92B8(int arg0, int arg1)
+inline int func_800A92B8(int arg0, int arg1)
 {
     int var_t0;
     int i;
@@ -507,7 +508,92 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800A9988);
+void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
+{
+    D_800F4538_t* actor = D_800F4538[id];
+    int angle;
+    int dz;
+
+    if (arg2 == 0 && arg3 == 0) {
+        u_short facing = target->pad;
+
+        if (facing == 0x8000) {
+            angle = target->vx - actor->unk0.position.vx;
+            dz = target->vz - actor->unk0.position.vz;
+
+            if (angle == 0 && dz == 0) {
+                angle = (short)facing;
+            } else {
+                angle = ONE * 3 / 4 - ratan2(dz, angle);
+                angle &= 0xFFF;
+            }
+
+            angle = (short)angle;
+            actor->unk0.facing = angle;
+        } else {
+            actor->unk0.facing = facing;
+        }
+
+        actor->unk0.unk18 = 0;
+        func_800A9D90(id, target, 0);
+        return;
+    }
+
+    angle = target->vx - actor->unk0.position.vx;
+    dz = target->vz - actor->unk0.position.vz;
+
+    if (angle == 0 && dz == 0) {
+        u_short facing = target->pad;
+
+        if (facing == 0x8000) {
+            return;
+        }
+
+        angle = (short)facing;
+    } else {
+        angle = ONE * 3 / 4 - ratan2(dz, angle);
+        angle &= 0xFFF;
+    }
+
+    angle = (short)angle;
+    func_800A9EB4(id, angle, arg3);
+
+    if (arg2 == -1) {
+        actor->unk5C4 = actor->unk5C2;
+    } else {
+        actor->unk5C4 = arg2;
+    }
+
+    if (arg3 == -1) {
+        actor->unk5C6 = actor->unk5C0;
+    } else {
+        actor->unk5C6 = arg3;
+    }
+
+    actor->unk5EC.vx = target->vx;
+    actor->unk5EC.vz = target->vz;
+    angle = (u_short)target->vy;
+
+    if (angle == 0x8000) {
+        angle = func_8008DA24(target->vx, target->vz);
+        angle <<= 17;
+        angle >>= 17;
+        // BUG: passes the x tile twice
+        dz = func_800A92B8(target->vx / 128, target->vx / 128);
+
+        if (dz != 0) {
+            angle = dz;
+        }
+
+        actor->unk5EC.vy = angle;
+    } else {
+        actor->unk5EC.vy = angle;
+    }
+
+    actor->unk5EC.pad = target->pad;
+    actor->unk5AC_0 = 1;
+    actor->unk5AC_2 = 0;
+}
 
 void func_800A9C54(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 {

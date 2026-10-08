@@ -1149,8 +1149,6 @@ int func_800B784C(u_char* arg0, short arg1)
     return 0;
 }
 
-void func_800A9988(int, SVECTOR*, int, int);
-
 int func_800B792C(u_char* arg0, short arg1)
 {
     func_8006EBF8_t sp10;

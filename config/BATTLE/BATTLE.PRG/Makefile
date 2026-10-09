@@ -14,7 +14,7 @@ $(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14): CC1VER := 2.7.2-c
 $(patsubst %,$(buildDir)/%.c.o,146C 4A0A8 5BF94):  CC1FLAGS += -Wno-return-type -Wno-uninitialized
 $(buildDir)/40564.c.o $(buildDir)/573B8.c.o: CC1FLAGS += -Wno-return-type
 $(buildDir)/30DB0.c.o: CC1FLAGS += -Wno-return-type -Wno-sign-compare -Wno-uninitialized
-$(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 6E644): CC1FLAGS += -Wno-uninitialized
+$(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 6E644): CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/$(battle.prg)/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

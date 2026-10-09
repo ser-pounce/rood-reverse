@@ -4059,13 +4059,13 @@ void func_8007138C(void)
             object.actorId = 5;
             object.modelId =
                 actor->unk3C
-                    ->armor[((u_short*)&actor->unkC)[0]][((u_short*)&actor->unkC)[1]]
+                    ->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
                     .unk2_4;
         } else if (object.index) {
             object.actorId = 5;
             object.modelId =
                 actor->unk3C
-                    ->armor[((u_short*)&actor->unkC)[0]][((u_short*)&actor->unkC)[1]]
+                    ->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
                     .unk2_4;
         } else {
             object.actorId = 4;

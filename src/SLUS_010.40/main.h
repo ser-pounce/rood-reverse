@@ -60,22 +60,22 @@ enum actionTypes {
 enum enemyClasses { enemyClassUndead = 2 };
 
 typedef struct {
-    char id;
-    char unk1;
-    char unk2_0 : 1;
-    char type : 3;
+    u_char id;
+    u_char unk1;
+    u_char unk2_0 : 1;
+    u_char type : 3;
     u_char unk2_4 : 4;
-    char cost;
-    char rangeX;
-    char rangeY;
-    char rangeZ;
+    u_char cost;
+    u_char rangeX;
+    u_char rangeY;
+    u_char rangeZ;
     u_char shape : 3;
     u_char angle : 5;
     u_char aoe_0;
     u_char aoe_8;
     u_char aoe_16;
     u_char aoe_24;
-    char flags_0;
+    u_char flags_0;
     u_int flagsD_0 : 4;
     u_int flagsD_4 : 2;
     u_int flagsD_6 : 1;

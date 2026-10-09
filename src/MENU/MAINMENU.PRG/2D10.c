@@ -1522,8 +1522,9 @@ int vs_mainMenu_copyItem(int itemCategory, vs_main_inventory_t* targetInventory,
 
             temp_a0 = &target[slot - 1];
 
-            if (temp_a0->id != source->id)
+            if (temp_a0->id != source->id) {
                 continue;
+            }
 
             if (write != 0) {
                 int space_left = 100 - temp_a0->count;

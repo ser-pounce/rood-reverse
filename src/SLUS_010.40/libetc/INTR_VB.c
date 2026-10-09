@@ -1,6 +1,6 @@
 #include "common.h"
+#include <libetc.h>
 
-void InterruptCallback(int, void (*)());
 void func_8001FFEC(void);
 void func_80020058(int, void (*)(void));
 void func_80020084(void*, int);

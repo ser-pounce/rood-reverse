@@ -1,3 +1,17 @@
-#include "common.h"
+#include "spu.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_M_INIT", SpuInitMalloc);
+long SpuInitMalloc(long num, char* top)
+{
+    SpuMallocRec* rec = (SpuMallocRec*)top;
+
+    if (num > 0) {
+        rec->addr = 0x40001010;
+        _spu_memList = rec;
+        _spu_AllocLastNum = 0;
+        _spu_AllocBlockNum = num;
+        rec->size = (0x10000 << _spu_mem_mode_plus) - 0x1010;
+        return num;
+    }
+
+    return 0;
+}

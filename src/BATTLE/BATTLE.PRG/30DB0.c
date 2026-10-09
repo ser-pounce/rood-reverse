@@ -2510,8 +2510,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         var_s0->unk1 = 0;
         var_s0->unk2 = (var_s0->unk2 & 0xFC) | (arg1 & 1);
         if (temp_a3 != NULL) {
-            vs_main_loadClut(
-                (u_short*)temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
+            vs_main_loadClut(temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
         } else {
             vs_main_loadClut(
                 (u_short*)&temp_t0->unk6C[6], 0x1F, temp_t0->unkF * 0x10, 0x10);

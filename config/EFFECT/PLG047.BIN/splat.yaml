@@ -7,11 +7,8 @@ options:
   src_path: src/EFFECT/PLG047.BIN
   asset_path: build/assets/EFFECT/PLG047.BIN
   ld_script_path: build/config/EFFECT/PLG047.BIN/link.ld
-  symbol_addrs_path:
-    - config/SLUS_010.40/symbol_addrs.txt
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/EFFECT/PLG047.BIN/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/EFFECT/PLG047.BIN/undefined_syms_auto.txt
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 
 segments:
@@ -22,5 +19,5 @@ segments:
     align: 4
     subsegments:
     - [0, c]
-    - [0xF6C, data, 0]
+    - [0xF6C, .data, 0]
   - [0xF8C]

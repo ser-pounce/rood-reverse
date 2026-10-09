@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "3A1A0.h"
 #include <libgpu.h>
 #include <inline_c.h>
@@ -18,7 +19,10 @@ int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
+int func_800A6EE8(SVECTOR*, int, int, int);
+_mpdRoomSection3* func_800A8D64(SVECTOR*, int);
 void func_800A9EB4(int, int, int);
+void func_800AC690(int, D_800F45E0_t*);
 void func_800B07DC(D_800F4538_t*);
 
 extern MATRIX D_800F49B8;
@@ -493,7 +497,49 @@ void func_800A2574(int arg0, short arg1)
     temp_s1->unk0.unkB_4 = 6;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A25EC);
+void func_800A25EC(D_800F4538_t* actor)
+{
+    SVECTOR next;
+
+    actor->unk0.unkA_5 = 0;
+    setVector(&next, actor->unk1848.unk10.vx, 0, actor->unk1848.unk10.vz);
+    next.vy = func_800A6EE8(&actor->unk0.position, next.vx, next.vz, 1);
+
+    if (next.vy == -3000) {
+        return;
+    }
+
+    next.vx += actor->unk0.position.vx;
+    next.vz += actor->unk0.position.vz;
+
+    if (func_800A8D64(&next, 0) == NULL) {
+        return;
+    }
+
+    actor->unk0.position.vx = next.vx;
+    actor->unk0.position.vz = next.vz;
+
+    if (actor->unk0.unkA_0) {
+        func_800AC690(actor->unk0.unkF, (D_800F45E0_t*)actor);
+    } else {
+        short height = next.vy;
+
+        if (height > actor->unk0.position.vy && height - actor->unk0.position.vy >= 64) {
+            setVector(&actor->unk0.unk34, 0, 0, 0);
+            func_800A0204(actor->unk0.unkF, 47, 0, 4);
+            actor->unk181A = 0;
+            actor->unk0.unkA_3 = 0;
+            actor->unk0.unk9_6 = 0;
+            actor->unk0.unkA_0 = 3;
+        } else {
+            actor->unk0.position.vy = height;
+        }
+    }
+
+    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+    actor->unk0.unk5D = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A2790);
 

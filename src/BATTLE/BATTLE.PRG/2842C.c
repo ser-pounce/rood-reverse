@@ -134,7 +134,11 @@ typedef struct {
 
 void func_8008F29C(int, int);
 void func_8008F30C(int, int);
+void func_8008F440(void);
 void func_8008F9A4(int, int);
+void func_8008FAC8(void);
+void func_8008FDC4(void);
+void func_80090434(void);
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -177,6 +181,7 @@ extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
+extern u_short D_800F1CDC;
 extern short D_800F1D00;
 extern short D_800F1D98[];
 extern short D_800F1DA4;
@@ -268,7 +273,66 @@ void func_80090C2C(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090EEC);
+void func_80090EEC(void)
+{
+    int masks[] = { 0xF, 0x1F, 0x3F, 0x7F };
+    _mpdRoomSectionB* room = vs_battle_roomData.sectionB;
+
+    if ((room == NULL) || (D_800F1DCA == 0)) {
+        return;
+    }
+
+    if ((D_800F1BA4 == 0) && (D_800F1DCB != 0)) {
+        int changed = 0;
+
+        if ((D_800F1CDC & masks[room->unk3A]) == 0) {
+            if ((rand() & 7) < 3) {
+                D_800F1D98[7] *= -1;
+            }
+
+            D_800F1D98[5] += D_800F1D98[7];
+            D_800F1D98[5] &= 0xFFF;
+            D_800F1D98[5] = vs_battle_clamp(D_800F1D98[5], room->unk36, room->unk38);
+            changed = 1;
+        }
+        if (((D_800F1CDC + 30) & masks[room->unk46]) == 0) {
+            if ((rand() & 7) < 3) {
+                D_800F1D98[9] *= -1;
+            }
+
+            D_800F1D98[4] += D_800F1D98[9];
+            D_800F1D98[4] = vs_battle_clamp(D_800F1D98[4], room->unk42, room->unk44);
+            changed = 1;
+        }
+        if (((D_800F1CDC + 60) & masks[room->unk40]) == 0) {
+            if ((rand() & 7) < 3) {
+                D_800F1D98[8] *= -1;
+            }
+
+            D_800F1DC4 += D_800F1D98[8];
+            D_800F1DC4 = vs_battle_clamp(D_800F1DC4, room->unk3C, room->unk3E);
+            func_8009121C();
+            changed = 1;
+        }
+        if (changed != 0) {
+            func_80090B28();
+        }
+    }
+    switch (D_800F1DCA) {
+    case 1:
+        func_8008F440();
+        break;
+    case 2:
+        func_8008FDC4();
+        break;
+    case 3:
+        func_80090434();
+        break;
+    case 4:
+        func_8008FAC8();
+        break;
+    }
+}
 
 short vs_battle_clamp(short arg0, int arg1, int arg2)
 {

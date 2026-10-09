@@ -576,7 +576,7 @@ int func_80093764(int);
 void func_80093824(int);
 void func_80093A14(void);
 void func_80093B04(void*);
-void func_80093B68(int arg0, int arg1, int arg2, int arg3);
+void func_80093B68(int arg0, int arg1, u_int arg2, int arg3);
 int vs_battle_renderBattleAbilityTimingResult(int);
 void func_80093FEC(int, int, int, int);
 void func_80093914(int);

@@ -746,10 +746,7 @@ typedef struct {
 } _sphericalCamera;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
+    SVECTOR unk0;
     union {
         char u8[2];
         u_short u16;

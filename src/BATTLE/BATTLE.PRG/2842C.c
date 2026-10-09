@@ -1502,7 +1502,104 @@ int func_80093B04(u_short* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093B68);
+int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
+{
+    SVECTOR position;
+    int limb;
+    int i;
+    int count;
+    int frame;
+    int flags;
+    int result;
+    int amount;
+    D_800F1BAC_t* p;
+
+    if (arg1 != -1) {
+        limb = func_800A152C(arg0, arg1, 2);
+
+        if (limb < 0) {
+            return -2;
+        }
+    } else {
+        limb = 255;
+    }
+
+    i = 0;
+    count = 0;
+    frame = 0;
+
+    for (p = *D_800F1BAC; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 1) && (p->unk8.u8[1] == arg0) && (p->unk0.pad >= 0)) {
+            frame = p->unkB;
+            ++count;
+        }
+    }
+
+    i = 0;
+    flags = 0;
+
+    for (p = *D_800F1BAC; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 1) && (p->unk8.u8[1] == arg0) && (p->unkA == limb)
+            && (p->unk0.pad == count - 1)) {
+            flags = 128;
+            break;
+        }
+    }
+
+    p = func_800962E4();
+
+    if (limb != 255) {
+        result = func_800A1AF8(arg0, limb, &p->unk0, 2);
+    } else {
+        result = func_800A190C(arg0, 255, &p->unk0, 2);
+    }
+
+    if (result != 0) {
+        return -2;
+    }
+
+    if (arg3 & 128) {
+        if (func_800A1280(arg0, 251, &position, 0) != 0) {
+            return 0;
+        }
+
+        if (position.vx > 320u) {
+            return 0;
+        }
+
+        if (position.vy > 240u) {
+            return 0;
+        }
+    }
+
+    arg3 &= 127;
+
+    if (func_800A190C(arg0, 251, &position, 0) != 0) {
+        return -2;
+    }
+
+    p->unk10 = ONE;
+    p->unk12 = ONE;
+    applyVector(&p->unk0, position.vx, position.vy, position.vz, -=);
+    p->unk8.u8[0] = 1;
+    p->unk0.pad = count;
+    p->unkB = frame;
+    p->unk8.u8[1] = arg0;
+    p->unkA = limb;
+    p->unkE = arg3 | flags;
+    amount = arg2 & 0x7FFF;
+
+    if (amount > 999) {
+        p->unkC = 999 | ((arg2 >> 16) & 0x8000);
+    } else {
+        p->unkC = amount | ((arg2 >> 16) & 0x8000);
+    }
+
+    sprintf(p->displayText, D_800691E4, p->unkC & 0x7FFF);
+    p->displayTextLen = strlen(p->displayText);
+    ++D_800F227E;
+    return 0;
+}
 
 int vs_battle_renderBattleAbilityTimingResult(int arg0)
 {
@@ -1581,7 +1678,7 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     for (; i < D_800F227E; ++i, ++p) {
         if ((p->unk8.u8[0] == 2) && (p->unk8.u8[1] == arg0)) {
             frame = p->displayTextLen + 0xC;
-            if (p->unk6 >= 0) {
+            if (p->unk0.pad >= 0) {
                 kind = p->unkB;
                 ++found;
             }
@@ -1602,10 +1699,8 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     }
     arg3 &= 0x7F;
     p->unk8.u8[0] = 2;
-    p->unk0 = 0;
-    p->unk2 = 0;
-    p->unk4 = 0;
-    p->unk6 = found;
+    setVector(&p->unk0, 0, 0, 0);
+    p->unk0.pad = found;
     if (frame < 0x25) {
         p->displayTextLen = frame;
     } else {
@@ -1659,7 +1754,7 @@ void func_800941FC(void)
         D_800F2278 = 0;
 
         for (i = 0; i < D_800F227E; ++i, ++label) {
-            if (label->unk8.u8[0] == 6 && --label->unk6 == -1) {
+            if (label->unk8.u8[0] == 6 && --label->unk0.pad == -1) {
                 for (p = 0; p < i; ++p) {
                     if ((*D_800F1BAC)[p].unk8.u8[0] == 6) {
                         (*D_800F1BAC)[p].unk12 += 10;
@@ -1694,7 +1789,7 @@ void func_800941FC(void)
                 position.vy = 0;
             }
 
-            applyVector(&position, label->unk0, label->unk2, label->unk4, +=);
+            addVector(&position, &label->unk0);
             visible = RotTransPers(&position, (long*)screen, &p, &flag);
 
             if (screen[0] < 32) {
@@ -1713,7 +1808,7 @@ void func_800941FC(void)
                 screen[1] = 200;
             }
         } else if (label->unk8.u8[0] == 3) {
-            visible = RotTransPers((SVECTOR*)label, (long*)screen, &p, &flag);
+            visible = RotTransPers(&label->unk0, (long*)screen, &p, &flag);
         } else {
             visible = 1;
         }
@@ -1726,7 +1821,7 @@ void func_800941FC(void)
 
         switch (label->unk8.u8[0]) {
         case 1:
-            if (label->unk6 <= 0) {
+            if (label->unk0.pad <= 0) {
                 label->unkE &= 0x7F;
                 screen[1] += 8;
                 func_80094844(screen, label);
@@ -1740,7 +1835,7 @@ void func_800941FC(void)
                 label->unkB += vs_gametime_tickspeed / 2;
 
                 if (label->unkB >= 10) {
-                    label->unk6 = -1;
+                    label->unk0.pad = -1;
                 }
 
                 if (label->unkB >= 31) {
@@ -1766,7 +1861,7 @@ void func_800941FC(void)
             }
             break;
         case 2:
-            if (label->unk6 <= 0) {
+            if (label->unk0.pad <= 0) {
                 screen[1] -= label->displayTextLen;
 
                 if (label->unk8.u8[1] != 0 || D_800F227A == 0) {
@@ -1780,7 +1875,7 @@ void func_800941FC(void)
                 label->unkB += vs_gametime_tickspeed / 2;
 
                 if (label->unkB >= 10) {
-                    label->unk6 = -1;
+                    label->unk0.pad = -1;
                 }
 
                 if (label->unkB >= 31) {
@@ -1824,7 +1919,7 @@ void func_800941FC(void)
             }
             break;
         case 6:
-            if (label->unk6 >= 0) {
+            if (label->unk0.pad >= 0) {
                 break;
             }
 
@@ -1951,7 +2046,7 @@ void func_80094844(short* pos, D_800F1BAC_t* label)
 void func_80094AF8(D_800F1BAC_t* arg0)
 {
     arg0->unkB = 0;
-    arg0->unk6 = arg0->unk6 - 1;
+    --arg0->unk0.pad;
 }
 
 void func_80094B0C(int x, int y, D_800F1BAC_t* p)
@@ -2626,7 +2721,7 @@ int func_80096768(int arg0, int arg1, int arg2)
         p = func_800962E4();
         p->unk8.u8[0] = 7;
         p->unk8.u8[1] = 0x7F;
-        p->unk6 = count;
+        p->unk0.pad = count;
         p->unk12 = 0;
         p->unkB = 0;
         p->unkE = arg0;

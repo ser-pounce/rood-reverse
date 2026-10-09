@@ -3,6 +3,15 @@
 #include <libgpu.h>
 #include <inline_c.h>
 #include "vs_inline_c.h"
+#include "src/SLUS_010.40/31724.h"
+
+typedef struct {
+    u_char unk0[0x4C];
+    SVECTOR position;
+    SVECTOR offset;
+    u_char unk5C[8];
+    MATRIX matrix;
+} func_800A1DE8_t;
 
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
@@ -10,6 +19,7 @@ int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
 void func_800A9EB4(int, int, int);
+void func_800B07DC(D_800F4538_t*);
 
 extern MATRIX D_800F49B8;
 
@@ -374,7 +384,55 @@ int func_800A1C10(int actorId, int bone, SVECTOR* result, int endpoint)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1DE8);
+MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
+{
+    MATRIX zeroTranslation;
+    long flag;
+    func_800A1DE8_t* scratch = (void*)0x1F80035C;
+    D_800F4538_t* actor = D_800F4538[actorId];
+
+    if (actor == NULL) {
+        D_800F4538_t* object = (D_800F4538_t*)D_800F45E0[actorId];
+
+        if (object == NULL) {
+            return NULL;
+        }
+
+        scratch->matrix = object->bones[bone];
+    } else if ((bone & 0xF0) == 0x40) {
+        vs_battle_wepModels_t* weapon = vs_battle_wepModels[actorId * 2];
+
+        if (weapon == NULL) {
+            return NULL;
+        }
+
+        scratch->matrix = *(weapon->unk20 + bone - 0x3F);
+    } else if (bone == 0xFF) {
+        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
+            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
+            scratch->offset.vy * actor->unk183C / ONE,
+            scratch->offset.vz * actor->unk183C / ONE);
+        func_800B07DC(actor);
+        scratch->matrix.t[0] = scratch->offset.vx;
+        scratch->matrix.t[1] = scratch->offset.vy;
+        scratch->matrix.t[2] = scratch->offset.vz;
+        return &scratch->matrix;
+    } else {
+        scratch->matrix = actor->bones[bone];
+    }
+
+    func_80041C68(&D_800F49B8, &scratch->matrix);
+    SetRotMatrix(&D_800F49B8);
+    zeroTranslation.t[0] = 0;
+    zeroTranslation.t[1] = 0;
+    zeroTranslation.t[2] = 0;
+    SetTransMatrix(&zeroTranslation);
+    setVector(&scratch->position, scratch->matrix.t[0] - D_800F49B8.t[0],
+        scratch->matrix.t[1] - D_800F49B8.t[1], scratch->matrix.t[2] - D_800F49B8.t[2]);
+    RotTrans(&scratch->position, (VECTOR*)scratch->matrix.t, &flag);
+    return &scratch->matrix;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A208C);
 

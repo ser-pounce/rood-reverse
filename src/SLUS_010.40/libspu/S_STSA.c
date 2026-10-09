@@ -1,3 +1,11 @@
-#include "common.h"
+#include "spu.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_STSA", SpuSetTransferStartAddr);
+u_long SpuSetTransferStartAddr(u_long addr)
+{
+    if ((addr < 0x1010) || (addr > 0x7FFF8)) {
+        return 0;
+    }
+
+    _spu_tsa = _spu_FsetRXXa(-1, addr);
+    return _spu_tsa << _spu_mem_mode_plus;
+}

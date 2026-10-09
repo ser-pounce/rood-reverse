@@ -46,6 +46,10 @@ typedef struct {
     int unk3C;
     int unk40;
     int unk44;
+    menuShapeVertex unk48[297];
+    u_char unk990[0x3B24];
+    short unk44B4[0x302];
+    u_char unk4AB8[0x64];
 } D_800EB9B8_t;
 
 extern D_800EB9B8_t* D_800EB9B8;
@@ -56,6 +60,7 @@ void func_800A0204(int, int, int, int);
 extern void func_800BBDDC(void);
 int func_800BFE34(u_char*);
 void func_800C0150(void);
+void vs_battle_rMemzero(void*, int);
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {
@@ -353,7 +358,78 @@ __asm__("glabel vs_battle_playSfx10;"
         "addu     $sp, 0x8;"
         "endlabel vs_battle_playMenuChangeSfx;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C031C);
+void func_800C031C(void)
+{
+    int index;
+    int x;
+    int y;
+    short* edges;
+
+    if (D_800EB9B8 == NULL) {
+        D_800EB9B8 = vs_main_allocHeap(sizeof *D_800EB9B8);
+    }
+
+    vs_battle_rMemzero(D_800EB9B8, sizeof *D_800EB9B8);
+    index = 0;
+    D_800EB9B8->unk2D = -1;
+    edges = D_800EB9B8->unk44B4;
+
+    for (y = 0;; ++y) {
+        for (x = 0; x < 9; ++x) {
+            edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+        }
+
+        if (y == 9) {
+            break;
+        }
+
+        for (x = 0; x < 10; ++x) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+        }
+    }
+
+    for (x = 0;; ++x) {
+        for (y = 9; y > 0; --y) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+        }
+
+        if (x == 9) {
+            break;
+        }
+
+        for (y = 9; y >= 0; --y) {
+            edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+        }
+    }
+
+    for (y = 9;; --y) {
+        for (x = 9; x > 0; --x) {
+            edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+        }
+
+        if (y == 0) {
+            break;
+        }
+
+        for (x = 9; x >= 0; --x) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+        }
+    }
+
+    for (x = 9;; --x) {
+        for (y = 0; y < 9; ++y) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+        }
+
+        if (x == 0) {
+            break;
+        }
+
+        for (y = 0; y < 10; ++y) {
+            edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+        }
+    }
+}
 
 void func_800C05B4(void)
 {

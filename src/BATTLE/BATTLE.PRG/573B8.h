@@ -1,6 +1,11 @@
 #pragma once
 #include <stddef.h>
 
+typedef struct {
+    short xyz[3];
+    short flags;
+} menuShapeVertex;
+
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);
 int func_800BFE50(u_short);

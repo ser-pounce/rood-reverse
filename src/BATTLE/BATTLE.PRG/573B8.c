@@ -6,8 +6,14 @@
 #include "build/src/include/lbas.h"
 #include <libetc.h>
 
+typedef struct {
+    u_char curve;
+    signed char power;
+} D_800F4B28_t;
+
 extern u_char D_800E9C30[];
 extern int (*_opcodeFunctionTable[])(u_char*, short);
+extern D_800F4B28_t D_800F4B28[];
 extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
@@ -152,7 +158,60 @@ int func_800BFE50(u_short arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFEBC);
+int func_800BFEBC(short mode, short frame, short duration)
+{
+    short position = frame;
+    int value;
+    int power;
+    int i;
+
+    if (frame > duration) {
+        position = duration;
+    }
+
+    switch (mode) {
+    case 0:
+        return position * ONE / duration;
+    case 1:
+        return rsin(position * (ONE / 4) / duration);
+    case 2:
+        return (rcos(position * (ONE / 2) / duration + ONE / 2) + ONE) >> 1;
+    case 3:
+        return rsin(position * (ONE / 4) / duration - ONE / 4) + ONE;
+    default:
+        mode -= 4;
+        power = D_800F4B28[mode].power;
+        value = position * ONE / duration;
+
+        if (power != 0) {
+            if (power > 0) {
+                for (i = 0; i < power; ++i) {
+                    value = (value * value) >> 12;
+                }
+            } else {
+                value = ONE - value;
+
+                for (i = 0; i < -power; ++i) {
+                    value = (value * value) >> 12;
+                }
+
+                value = ONE - value;
+            }
+        }
+
+        switch (D_800F4B28[mode].curve) {
+        case 1:
+            return rsin(value / 4);
+        case 2:
+            return (rcos(value / 2 + ONE / 2) + ONE) >> 1;
+        case 3:
+            return rsin(value / 4 - ONE / 4) + ONE;
+        case 0:
+        default:
+            return value;
+        }
+    }
+}
 
 void func_800C00E8(int arg0, void* arg1)
 {

@@ -111,17 +111,60 @@ typedef struct {
 } D_800F5620_t;
 
 typedef struct {
-    char unk0[4];
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-} func_800CF988_t2;
+    u_int actor : 8;
+    u_int bone : 8;
+    u_int color : 4;
+    u_int texture : 4;
+    u_int life : 8;
+} effectTrailConfig;
 
 typedef struct {
-    char unk0[8];
-    func_800CF988_t2 unk8[4];
-} func_800CF988_t;
+    effectTrailConfig config;
+    int index;
+    int age;
+    SVECTOR first[8];
+    SVECTOR second[8];
+    SVECTOR previousFirst;
+    SVECTOR currentFirst;
+    SVECTOR previousSecond;
+    SVECTOR currentSecond;
+    long projectionDepth;
+    long projectionFlags;
+} effectTrailState;
+
+typedef struct {
+    u_long tag;
+    u_long mode;
+    u_char r0;
+    u_char g0;
+    u_char b0;
+    u_char code;
+    long xy0;
+    u_short uv0;
+    u_short clut;
+    u_char r1;
+    u_char g1;
+    u_char b1;
+    u_char pad1;
+    long xy1;
+    u_short uv1;
+    u_short tpage;
+    u_char r2;
+    u_char g2;
+    u_char b2;
+    u_char pad2;
+    long xy2;
+    u_short uv2;
+    u_short pad3;
+    u_char r3;
+    u_char g3;
+    u_char b3;
+    u_char pad4;
+    long xy3;
+    u_short uv3;
+    u_short pad5;
+    u_long endMode;
+} TrailPacket;
 
 typedef struct {
     char unk0[0xC];
@@ -348,6 +391,7 @@ void func_800CF514(int arg0);
 void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
+void func_800CF988(TrailPacket*, int, int, int);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, MATRIX* arg1);
 void func_800D0984(int, func_800D0C60_t*, int);
@@ -453,6 +497,8 @@ extern func_800CCE10_t D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
+extern CVECTOR D_800EC2E8[];
+extern CVECTOR D_800EC308[];
 extern effectExec D_800EC324[];
 extern char D_800EC32C[];
 extern u_char D_800EC330[][2][4];
@@ -3807,7 +3853,65 @@ int func_800CD3A0(int arg0, int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3E4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CDCBC);
+void func_800CDCBC(effectTrailState* t, int head, int tail)
+{
+    long xy[4];
+
+    int depth = RotAverage4(&t->previousFirst, &t->currentFirst, &t->previousSecond,
+        &t->currentSecond, &xy[0], &xy[1], &xy[2], &xy[3], &t->projectionDepth,
+        &t->projectionFlags);
+    TrailPacket* p;
+
+    if (depth < 17 || depth >= 2048) {
+        return;
+    }
+
+    p = vs_scratch.unk0;
+    vs_scratch.unk0 = p + 1;
+    setlen(p, 14);
+    p->code = primPolyGT4;
+    p->mode = _get_mode(0, 0, 0);
+    p->endMode = _get_mode(0, 1, 0);
+    p->xy0 = xy[0];
+    p->xy1 = xy[1];
+    p->xy2 = xy[2];
+    p->xy3 = xy[3];
+
+    if ((*(u_int*)&t->config & 0xF00000) == 0x600000) {
+        p->r0 = p->r1 = D_800EC308[t->config.color].r * head - 128;
+        p->g0 = p->g1 = D_800EC308[t->config.color].g * head - 128;
+        p->b0 = p->b1 = D_800EC308[t->config.color].b * head - 128;
+        p->r2 = p->r3 = D_800EC308[t->config.color].r * tail - 128;
+        p->g2 = p->g3 = D_800EC308[t->config.color].g * tail - 128;
+        p->b2 = p->b3 = D_800EC308[t->config.color].b * tail - 128;
+        func_800CF988(p, head, head, 0);
+        addPrim(vs_scratch.unk4 + depth * 4, p);
+    } else {
+        u_char column;
+        u_char row;
+        u_short uv;
+
+        p->code = primPolyGT4SemiTrans;
+        p->tpage = ((*(u_int*)&t->config & 0xF0000) != 0x70000)
+                     ? getTPage(0, 1, 512, 256)
+                     : getTPage(0, 2, 512, 256);
+        p->clut = getClut(768, 240);
+        column = t->config.texture % 3U;
+        row = t->config.texture / 3U;
+        uv = column * 2560 + row * 40;
+        p->uv0 = uv + vs_getUV(104, 72);
+        p->uv2 = uv + vs_getUV(135, 72);
+        p->uv1 = uv + vs_getUV(104, 79);
+        p->uv3 = uv + vs_getUV(135, 79);
+        p->r0 = p->r1 = (D_800EC2E8[t->config.color].r * head) / 8;
+        p->g0 = p->g1 = (D_800EC2E8[t->config.color].g * head) / 8;
+        p->b0 = p->b1 = (D_800EC2E8[t->config.color].b * head) / 8;
+        p->r2 = p->r3 = (D_800EC2E8[t->config.color].r * tail) / 8;
+        p->g2 = p->g3 = (D_800EC2E8[t->config.color].g * tail) / 8;
+        p->b2 = p->b3 = (D_800EC2E8[t->config.color].b * tail) / 8;
+        addPrim(vs_scratch.unk4 + depth * 4, p);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
 
@@ -4435,7 +4539,7 @@ void func_800CF8BC(void)
 
 void func_800CF920(void) { D_800F522C = 0; }
 
-void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
+void func_800CF92C(int arg0, int arg1, int arg2, u_short* arg3)
 {
     int var_v1;
     int temp_a1;
@@ -4459,36 +4563,36 @@ void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
     *arg3 = var_v1 | temp_a1 << 8;
 }
 
-void func_800CF988(func_800CF988_t* arg0, int arg1, int arg2, int arg3)
+void func_800CF988(TrailPacket* arg0, int arg1, int arg2, int arg3)
 {
     int page;
     int offset;
     int left = 320;
 
-    if (arg0->unk8[0].unk4 < left) {
-        left = arg0->unk8[0].unk4;
+    if ((short)arg0->xy0 < left) {
+        left = (short)arg0->xy0;
     }
 
-    if (arg0->unk8[1].unk4 < left) {
-        left = arg0->unk8[1].unk4;
+    if ((short)arg0->xy1 < left) {
+        left = (short)arg0->xy1;
     }
 
-    if (arg0->unk8[2].unk4 < left) {
-        left = arg0->unk8[2].unk4;
+    if ((short)arg0->xy2 < left) {
+        left = (short)arg0->xy2;
     }
 
-    if (arg0->unk8[3].unk4 < left) {
-        left = arg0->unk8[3].unk4;
+    if ((short)arg0->xy3 < left) {
+        left = (short)arg0->xy3;
     }
 
     left &= ~0x3F;
     page = left / 64;
-    arg0->unk8[1].unkA = ((vs_main_frameBuf & 1) ? page : page + 5) | arg3 | 0x100;
+    arg0->tpage = ((vs_main_frameBuf & 1) ? page : page + 5) | arg3 | 0x100;
     offset = arg1 - left;
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[0].unk4, &arg0->unk8[0].unk8);
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[1].unk4, &arg0->unk8[1].unk8);
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[2].unk4, &arg0->unk8[2].unk8);
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[3].unk4, &arg0->unk8[3].unk8);
+    func_800CF92C(offset, arg2, arg0->xy0, &arg0->uv0);
+    func_800CF92C(offset, arg2, arg0->xy1, &arg0->uv1);
+    func_800CF92C(offset, arg2, arg0->xy2, &arg0->uv2);
+    func_800CF92C(offset, arg2, arg0->xy3, &arg0->uv3);
 }
 
 void func_800CFAAC(func_800CFAAC_t* arg0)

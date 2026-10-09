@@ -41,6 +41,7 @@ u_long* vs_battle_setSpriteDefaultTexPage(
 u_long* vs_battle_setSprite(int brightnessTransparency, int xy, int wh, u_long* nextPrim);
 
 void func_800C031C(void);
+int func_800C0758(int phase, int segments, int index);
 void func_800C05B4(void);
 void func_800C06E0(void);
 void func_800C0738(void);

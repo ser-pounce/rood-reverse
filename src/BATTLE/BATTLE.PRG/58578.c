@@ -85,7 +85,6 @@ int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
-int func_800C0758(int phase, int segments, int index);
 void func_800C253C(int type);
 int _getCollisionMapDimensions(int arg0);
 int func_800FA188(int x, int z, int* offset);

@@ -490,7 +490,33 @@ void func_800C0738(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0758);
+int func_800C0758(int phase, int segments, int index)
+{
+    short* sine = (void*)0x1F8003B0;
+    short (*basis)[4] = (void*)0x1F800398;
+    int i;
+    int component;
+    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+
+    for (i = 0; i <= segments; ++index, ++i, ++vertex) {
+        for (component = 0; component < 3; ++component) {
+            vertex->xyz[component] =
+                basis[0][component]
+                + ((basis[1][component] * sine[(i + phase + 8) & 31]) >> 12)
+                + ((basis[2][component] * sine[(i + phase) & 31]) >> 12);
+        }
+
+        component = i != 0;
+
+        if (component && segments != 32) {
+            component += segments - i < 2;
+        }
+
+        vertex->flags = component;
+    }
+
+    return index;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C085C);
 

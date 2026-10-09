@@ -12,16 +12,16 @@ typedef struct {
 } func_800AAE9C_t;
 
 typedef struct {
-    u_char* unk0;
+    int unk0;
     u_char* unk4;
     u_short unk8[0];
 } func_800AD494_t;
 
 typedef struct {
-    short x;
-    short y;
-    short z;
-    short id;
+    short unk0;
+    short unk2;
+    short unk4;
+    short unk6;
 } func_8008D2C0_t;
 
 typedef struct {
@@ -57,11 +57,6 @@ typedef struct {
     u_int unk4 : 28;
 } func_800AC690_contact_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-} func_800ACF54_t;
-
 void func_8006F450(SVECTOR*);
 void func_8007A824(DR_MOVE*);
 void func_8008C49C(int, int);
@@ -75,16 +70,14 @@ void func_800A190C(int, int, SVECTOR*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
 void func_800A7524(void*, void*);
-void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
-void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
+void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
+void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
 void func_800AB098(D_800F4538_t*, int, int);
-int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2);
-int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* reference);
-void func_800AC690(int arg0, D_800F4538_t* arg1);
-void func_800ACF54(D_800F4538_t*);
+void func_800AC690(int arg0, D_800F4538_t* actor);
+void func_800ACF54(D_800F45E0_t*);
 void func_800AE47C(D_800F4538_t*);
 void func_800AE828(int, D_800F4538_t*, int);
 void func_800E4C28();
@@ -134,7 +127,7 @@ static inline func_8008D2C0_t* func_800A4A24(int id)
     count = func_8008D2C0(platforms);
 
     for (i = 0; i < count; ++i) {
-        if (platforms[i].id == id) {
+        if (platforms[i].unk6 == id) {
             // BUG: returns stack variable
             return &platforms[i];
         }
@@ -221,15 +214,14 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
             continue;
         }
 
-        radius = other->collisionRadius;
+        radius = other->unk640;
 
         if (other->unk0.position.vx + radius < position->vx
             || position->vx < other->unk0.position.vx - radius
             || other->unk0.position.vz + radius < position->vz
             || position->vz < other->unk0.position.vz - radius
-            || other->unk0.position.vy < actor->unk0.position.vy - actor->collisionHeight
-            || actor->unk0.position.vy
-                   < other->unk0.position.vy - other->collisionHeight) {
+            || other->unk0.position.vy < actor->unk0.position.vy - actor->unk642
+            || actor->unk0.position.vy < other->unk0.position.vy - other->unk642) {
             continue;
         }
 
@@ -264,8 +256,8 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
         return flags & 0x800;
     }
 
-    radius = actor->collisionRadius;
-    minY = actor->unk0.position.vy - actor->collisionHeight;
+    radius = actor->unk640;
+    minY = actor->unk0.position.vy - actor->unk642;
     minX = actor->unk0.position.vx - radius;
     maxX = actor->unk0.position.vx + radius;
     minZ = actor->unk0.position.vz - radius;
@@ -286,7 +278,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
         if (other != NULL
             && !(other->unk0.skip || (getActorFlags(other) & 0x1000000)
                  || other->unk0.unk13 == 0xFC || other->unk0.unkB_0 == 2)) {
-            otherRadius = other->collisionRadius;
+            otherRadius = other->unk640;
 
             if (!(other->unk0.position.vx + otherRadius < minX
                     || maxX < other->unk0.position.vx - otherRadius
@@ -294,7 +286,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
                     || maxZ < other->unk0.position.vz - otherRadius
                     || other->unk0.position.vy < minY
                     || actor->unk0.position.vy
-                           < other->unk0.position.vy - other->collisionHeight)) {
+                           < other->unk0.position.vy - other->unk642)) {
                 scratch->excluded[i] = 1;
                 dx = other->unk0.position.vx - actor->unk0.position.vx;
                 dx *= dx;
@@ -396,42 +388,42 @@ int func_800A9378(int arg0, int arg1, int arg2, int arg3)
     }
 
     for (i = 0; i < count; ++i) {
-        if ((arg0 >= sp10[i].x + 64) || (arg0 < sp10[i].x - 64)) {
+        if ((arg0 >= sp10[i].unk0 + 64) || (arg0 < sp10[i].unk0 - 64)) {
             continue;
         }
 
-        if ((arg2 >= sp10[i].z + 64) || (arg2 < sp10[i].z - 64)) {
+        if ((arg2 >= sp10[i].unk4 + 64) || (arg2 < sp10[i].unk4 - 64)) {
             continue;
         }
 
         switch (arg3) {
         case 0:
-            if (sp10[i].y < arg1 - 256) {
+            if (sp10[i].unk2 < arg1 - 256) {
                 continue;
             }
             break;
 
         case 1:
-            if (sp10[i].y < arg1 - 256) {
-                return sp10[i].y + 96;
+            if (sp10[i].unk2 < arg1 - 256) {
+                return sp10[i].unk2 + 96;
             }
             continue;
 
         case 2:
-            if ((sp10[i].y >= arg1) || (sp10[i].y < arg1 - 128)) {
+            if ((sp10[i].unk2 >= arg1) || (sp10[i].unk2 < arg1 - 128)) {
                 continue;
             }
             break;
 
         case 3:
-            if ((sp10[i].y >= arg1) || (sp10[i].y < arg1 - D_800F4B00)) {
+            if ((sp10[i].unk2 >= arg1) || (sp10[i].unk2 < arg1 - D_800F4B00)) {
                 continue;
             }
-            return sp10[i].y + 96;
+            return sp10[i].unk2 + 96;
         }
 
-        D_800F49F4 = sp10[i].id + 2;
-        return sp10[i].y;
+        D_800F49F4 = sp10[i].unk6 + 2;
+        return sp10[i].unk2;
     }
 
     return 0;
@@ -460,11 +452,11 @@ int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
 
         if (direction & 1) {
             position += actor->unk0.position.vx;
-            edge += platform->x;
+            edge += platform->unk0;
             offset->vx = edge - position;
         } else {
             position += actor->unk0.position.vz;
-            edge += platform->z;
+            edge += platform->unk4;
             offset->vz = edge - position;
         }
     } else {
@@ -862,7 +854,7 @@ void func_800AA108(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
 
             temp_a1 = arg1->unk0_24;
             temp_a1 *= 0x10;
-            temp_a1 %= ONE;
+            temp_a1 %= 0x1000;
             temp_a1 -= temp_s0->unk0.facing;
 
             func_800AA984(arg0, temp_a1, 0);
@@ -974,7 +966,7 @@ void func_800AA490(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
     if (angle == 0 && dz == 0) {
         angle = arg1->unk0_24 * 16;
     } else {
-        angle = ONE * 3 / 4 - ratan2(dz, angle);
+        angle = 0xC00 - ratan2(dz, angle);
         angle %= ONE;
     }
 
@@ -1251,29 +1243,29 @@ void func_800AAA88(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
 {
-    D_800F4538_t* actor = D_800F4538[arg0];
+    D_800F4538_t* temp_a3 = D_800F4538[arg0];
 
-    if (actor != NULL) {
+    if (temp_a3 != NULL) {
 
         if (arg2 == 0) {
-            actor->unk5C8 = 0;
-            actor->unk0.unk2C = arg1->vx;
-            actor->unk0.unk2E = arg1->vy;
-            actor->unk0.unk30 = arg1->vz;
+            temp_a3->unk5C8 = 0;
+            temp_a3->unk0.unk2C = arg1->vx;
+            temp_a3->unk0.unk2E = arg1->vy;
+            temp_a3->unk0.unk30 = arg1->vz;
             return;
         }
 
-        actor->unk0.unk44.vx = arg1->vx - actor->unk0.unk2C;
-        actor->unk0.unk44.vy = arg1->vy - actor->unk0.unk2E;
-        actor->unk0.unk44.vz = arg1->vz - actor->unk0.unk30;
+        temp_a3->unk0.unk44.vx = arg1->vx - temp_a3->unk0.unk2C;
+        temp_a3->unk0.unk44.vy = arg1->vy - temp_a3->unk0.unk2E;
+        temp_a3->unk0.unk44.vz = arg1->vz - temp_a3->unk0.unk30;
 
-        if (actor->unk0.unk44.vx == 0 && actor->unk0.unk44.vy == 0
-            && actor->unk0.unk44.vz == 0) {
-            actor->unk5C8 = 0;
+        if ((*(int*)&temp_a3->unk0.unk44 == 0)
+            && ((temp_a3->unk0.unk44.vz << 0x10) == 0)) {
+            temp_a3->unk5C8 = 0;
             return;
         }
 
-        actor->unk5C8 = arg2;
+        temp_a3->unk5C8 = arg2;
     }
 }
 
@@ -1287,18 +1279,23 @@ void func_800AAC80(RECT* arg0, int arg1, int arg2)
 
 void func_800AACDC(void)
 {
-    RECT rect;
-    DR_MOVE* packet;
+    void* new_var;
+    RECT sp10;
+    DR_MOVE* temp_s0;
 
-    rect.x = 470;
-    rect.y = 384;
-    rect.w = 18;
-    rect.h = 36;
+    sp10.x = 470;
+    sp10.y = 384;
+    sp10.w = 18;
+    sp10.h = 36;
 
-    packet = vs_battlePacketBegin();
-    SetDrawMove(packet, &rect, 16, 400);
-    func_8007A824(packet);
-    vs_battlePacketEnd(packet);
+    new_var = (void*)0x1F800000;
+    temp_s0 = *((DR_MOVE**)0x1F800000);
+    new_var = (void*)0x10;
+
+    SetDrawMove(temp_s0, &sp10, 16, 400);
+    func_8007A824(temp_s0);
+
+    *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
 }
 
 int func_800AAD4C(int actorId, int index, int value, int mode)
@@ -2519,7 +2516,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             actor->unk0.unkA_5 = 0;
             actor->unk0.unkA_6 = 0;
         }
-        func_800ACF54(actor);
+        func_800ACF54((D_800F45E0_t*)actor);
         actor->unk0.unk11 -= vs_gametime_tickspeed / 2;
         if ((signed char)actor->unk0.unk11 < 0) {
             actor->unk0.unk11 = 0;
@@ -2543,19 +2540,56 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
     }
 }
 
-void func_800ACF54(D_800F4538_t* actor)
-{
-    *(int*)&actor->unk0.lastTouchedTileX = *(int*)&actor->unk0.currentTileX;
-    *(func_800ACF54_t*)&actor->unk0.unk4C = *(func_800ACF54_t*)&actor->unk0.position;
+typedef struct {
+    int unk0;
+    int unk4;
+} func_800ACF54_t;
 
-    if (!actor->unk0.unkC_0) {
-        actor->unk1868 = *(int*)&actor->unk0.currentTileX;
+void func_800ACF54(D_800F45E0_t* arg0)
+{
+
+    arg0->unk60 = *(int*)&arg0->unk5C;
+    *(func_800ACF54_t*)&arg0->unk4C = *(func_800ACF54_t*)&arg0->unk1C;
+
+    if (!(arg0->unkC_0)) {
+        arg0->unk1868 = *(int*)&arg0->unk5C;
     }
 
-    actor->unk0.unk52 = actor->unk0.facing;
+    arg0->unk52 = arg0->unk26;
 }
 
-inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
+void func_800ACFA0(short* arg0, u_char* arg1, int arg2)
+{
+    int a3;
+    a3 = arg1[0];
+    a3 <<= 8;
+    a3 |= arg1[1];
+    a3 *= 2;
+    arg0[0] = a3;
+
+    a3 = arg1[2];
+    a3 <<= 8;
+    a3 |= arg1[3];
+    a3 *= 2;
+    arg0[1] = a3;
+
+    a3 = arg1[4];
+    a3 <<= 8;
+    a3 |= arg1[5];
+    a3 *= 2;
+    arg0[2] = a3;
+
+    arg0[3] = 6;
+
+    if (arg2 != 0xFF) {
+        arg0[3] = 0;
+    }
+
+    arg0[339] = 0;
+}
+
+// Inlined copy of func_800ACFA0
+static inline void func_800ACFA0_inline(SVECTOR* arg0, u_char* arg1, int arg2)
 {
     int a3;
     a3 = arg1[0];
@@ -2612,7 +2646,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     if (header[2] == 0) {
         pose->unk542 = 0xFFFF;
     } else {
-        data = anim->unk0;
+        data = (u_char*)anim->unk0;
         data += header[2];
         i = data[0];
         if (i == 0xFF) {
@@ -2628,32 +2662,32 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     pose->animationId = actor->animationId;
     if (header[4] != 0) {
         key = &pose->unk150[41];
-        data = anim->unk0;
+        data = (u_char*)anim->unk0;
         data += header[4];
-        func_800ACFA0(key, data, 0xFF);
+        func_800ACFA0_inline(key, data, 0xFF);
     }
     frame = ((u_char*)header)[2];
     if (frame != 0xFF) {
         header = (u_short*)((u_char*)anim + ((actor->unk0.nBones * 4 + 10) * frame + 8));
     }
     key = &pose->unk0[41];
-    data = anim->unk0;
+    data = (u_char*)anim->unk0;
     data += header[3];
-    func_800ACFA0(key, data, frame);
+    func_800ACFA0_inline(key, data, frame);
     for (i = 0; i < actor->unk0.nBones; ++i) {
         key = &pose->unk0[i];
-        data = anim->unk0;
+        data = (u_char*)anim->unk0;
         data += header[5 + i];
-        func_800ACFA0(key, data, frame);
+        func_800ACFA0_inline(key, data, frame);
     }
     if (((u_char*)header)[3] & 1) {
         for (i = 0; i < actor->unk0.nBones; ++i) {
-            data = anim->unk0;
+            data = (u_char*)anim->unk0;
             data += header[actor->unk0.nBones + i + 5];
             if (data[0] == 0xFE && data[1] == 1) {
                 data += 2;
                 key = &pose->unk150[i];
-                func_800ACFA0(key, data, frame);
+                func_800ACFA0_inline(key, data, frame);
                 pose->unk150[i].pad = 0;
                 pose->unk150[i].vx >>= 1;
                 pose->unk150[i].vy >>= 1;

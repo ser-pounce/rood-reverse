@@ -1107,8 +1107,8 @@ int _parseShp(vs_battle_objectData* object)
         if (modelId == 0x7F) {
             actor->unk6E6 = modelId;
             actor->unk0.unkF = object->index;
-            actor->collisionRadius = 0x40;
-            actor->collisionHeight = 10000;
+            actor->unk640 = 0x40;
+            actor->unk642 = 10000;
             func_8009D468(actor->unk0.unkF);
             actor->unk0.skip = 0;
             func_800A30A0(actor->unk0.unkF, (func_80089888_t*)&object->unkC, 0, 1);
@@ -1334,8 +1334,8 @@ fixUVs:
     }
 
 setupPalettes:
-    vs_main_memcpy(
-        actor->unk1424, actor->unk11A4 + object->variant * 0xA0, D_800F22B8 * 2);
+    vs_main_memcpy(actor->unk1424, (u_short*)actor->unk11A4 + object->variant * 0xA0,
+        D_800F22B8 * 2);
     vs_main_memcpy(actor->unk1424 + 0xA0, actor->unk1424, D_800F22B8 * 2);
     vs_main_memcpy(actor->unk16A4, actor->unk1424, D_800F22B8 * 2);
 

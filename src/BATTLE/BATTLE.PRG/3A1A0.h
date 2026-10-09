@@ -316,8 +316,8 @@ typedef struct {
     D_800F4538_unk61C unk61C[4];
     u_short unk63C;
     u_short menuCameraHeightOffset;
-    u_short collisionRadius;
-    u_short collisionHeight;
+    u_short unk640;
+    u_short unk642;
     u_short unk644;
     u_short unk646;
     u_int unk648_0 : 16;
@@ -361,7 +361,7 @@ typedef struct {
     SVECTOR unk6FC;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
-    u_short unk11A4[0x140];
+    u_char unk11A4[0x280];
     u_short unk1424[0x140];
     u_short unk16A4[0xA0];
     D_800F4538_unk64 unk17E4;
@@ -660,11 +660,7 @@ typedef struct {
     u_char excluded[17];
     u_char pad15[3];
     D_800F45E0_t* unk18;
-    short heights[8];
-    u_char blocked[8];
-    u_char attributes[8];
-    u_char centerAttribute;
-    u_char pad3D[3];
+    short unk1C[18];
     int unk40;
 } D_1F8003BC_t;
 

@@ -220,7 +220,6 @@ void func_80096444(int);
 void func_8009651C(SVECTOR*, int);
 void func_8009695C(int, int, D_800F1BAC_t*);
 void func_800970BC(void);
-int vs_battle_clamp(short, int, int);
 
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);

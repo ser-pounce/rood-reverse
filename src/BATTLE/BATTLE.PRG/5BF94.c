@@ -403,6 +403,9 @@ void func_800AE68C(int, int);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
+extern u_char D_800EB708[];
+extern u_char D_800EB7B4[];
+extern u_char D_800EB7D4[];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
 extern func_800C56C0_t* D_800EB9B8;
@@ -714,8 +717,96 @@ void func_800C64D0(u_long* arg0, int* arg1)
     *arg1 = (int)((*arg1 & 0xFF000000) | temp_t0);
 }
 
-INCLUDE_ASM(
-    "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_renderTextRawColor);
+void vs_battle_renderTextRawColor(char const* text, int x, int color, u_long* nextPrim)
+{
+    u_long* prim = vs_scratch.unk0;
+    int y = x >> 16;
+    u_char c;
+
+    x = (short)x;
+
+    if (nextPrim == NULL) {
+        nextPrim = vs_scratch.unk8;
+    }
+
+    prim[0] = (((u_long)(prim + 2) << 8) >> 8) | 0x01000000;
+    prim[1] = _get_mode(0, 0, getTPage(0, 0, 768, 0));
+    prim += 2;
+
+    while ((c = *text++) != 0) {
+        u_int width;
+        u_int index;
+
+        c -= ' ';
+
+        if (c >= '[' - ' ') {
+            if (c == '[' - ' ') {
+                --x;
+            }
+        } else if (c - ('#' - ' ') < 2u) {
+            u_char const* scan;
+            u_char ch;
+
+            for (width = 0, scan = text; (ch = *scan++) != 0;) {
+                ch -= ' ';
+
+                if (ch > '[' - ' ') {
+                    continue;
+                }
+
+                width += (D_800EB7B4[ch >> 1] >> ((ch << 2) & 4)) & 0xF;
+                ch -= 'A' - ' ';
+
+                if (ch <= 'Z' - 'A') {
+                    index = *scan - 'A';
+
+                    if (index <= 'Z' - 'A') {
+                        index += ch * 26;
+                        width -= (D_800EB708[index >> 2] >> ((index & 3) * 2)) & 3;
+                    }
+                }
+            }
+
+            x -= width >> (c - ('#' - ' '));
+        } else {
+            width = (D_800EB7B4[c >> 1] >> ((c << 2) & 4)) & 0xF;
+
+            if (width == 0) {
+                continue;
+            }
+
+            index = D_800EB7D4[c];
+            prim[0] = (((u_long)(prim + 5) << 8) >> 8) | 0x04000000;
+            prim[1] = vs_getRGB0Raw(primSprt, color);
+            prim[2] = vs_getXY_2(x, y);
+            prim[3] = vs_getUV0Clut(index & 0xFE, (index & 1) * 10 + 76, 864, 223);
+            prim[4] = vs_getWH(width, 10);
+
+            if (c == '*' - ' ') {
+                prim[2] = vs_getXY_2(x - 1, y - 1);
+                prim[3] = vs_getUV0Clut(232, 75, 864, 223);
+                prim[4] = vs_getWH(width, 11);
+            }
+
+            prim += 5;
+            x += width;
+            c -= 'A' - ' ';
+
+            if (c <= 'Z' - 'A') {
+                index = *text - 'A';
+
+                if (index <= 'Z' - 'A') {
+                    index += c * 26;
+                    x -= (D_800EB708[index >> 2] >> ((index & 3) * 2)) & 3;
+                }
+            }
+        }
+    }
+
+    *prim = *nextPrim & 0xFFFFFF;
+    *nextPrim = ((u_long)vs_scratch.unk0 << 8) >> 8;
+    vs_scratch.unk0 = prim + 1;
+}
 
 void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim)
 {

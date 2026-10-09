@@ -9347,8 +9347,9 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram)
                 vs_main_gametimeUpdate(0);
             } else if (_diskGetState() == diskReadInit) {
                 vs_main_gametimeUpdate(0);
-            } else
+            } else {
                 break;
+            }
         }
     }
     return result;
@@ -10580,8 +10581,9 @@ static void _saveClutBase(int slot)
     int i;
 
     if (_clutState.active != 0) {
-        for (i = 0; i < 256; ++i)
+        for (i = 0; i < 256; ++i) {
             _clutState.slots[slot].clutBase[i] = _clutBuffer[slot][i];
+        }
     }
 }
 

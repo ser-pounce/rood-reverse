@@ -675,9 +675,9 @@ extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
 extern int D_800F1A20;
-extern short D_800F1A28[];
+extern SVECTOR D_800F1A28;
 extern short D_800F1A2C;
-extern int D_800F1A30[];
+extern VECTOR D_800F1A30;
 extern int D_800F1A40;
 extern u_int D_800F1A44;
 extern int D_800F1A50[];
@@ -4058,14 +4058,12 @@ void func_8007138C(void)
         if (action->actionIndex < 184) {
             object.actorId = 5;
             object.modelId =
-                actor->unk3C
-                    ->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
+                actor->unk3C->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
                     .unk2_4;
         } else if (object.index) {
             object.actorId = 5;
             object.modelId =
-                actor->unk3C
-                    ->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
+                actor->unk3C->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
                     .unk2_4;
         } else {
             object.actorId = 4;
@@ -8086,12 +8084,8 @@ void func_8007D360(void)
     D_800F1B98 = 0;
     D_800F1B9C = 0;
     D_800F1A20 = 0;
-    D_800F1A28[0] = 0;
-    D_800F1A28[1] = 0;
-    D_800F1A28[2] = 0;
-    D_800F1A30[0] = 0x1000;
-    D_800F1A30[1] = 0x1000;
-    D_800F1A30[2] = 0;
+    setVector(&D_800F1A28, 0, 0, 0);
+    setVector(&D_800F1A30, ONE, ONE, 0);
     D_800F1A78.r0 = 0x80;
     D_800F1A78.g0 = 0x80;
     D_800F1A78.b0 = 0x80;
@@ -8153,14 +8147,14 @@ void func_8007D734(void* arg0)
     if (D_800F1B98 == 2) {
         translation.vx = D_800F1A68.unk0 + 160;
         translation.vy = D_800F1A68.unk4 + 112;
-        RotMatrix_gte((SVECTOR*)D_800F1A28, &transform);
+        RotMatrix_gte(&D_800F1A28, &transform);
         TransMatrix(&transform, &translation);
-        ScaleMatrix(&transform, (VECTOR*)D_800F1A30);
+        ScaleMatrix(&transform, &D_800F1A30);
         SetRotMatrix(&transform);
         SetTransMatrix(&transform);
 
-        if ((D_800F1A28[2] & 0xFFF) || D_800F1A30[0] != ONE
-            || D_800F1A30[1] != D_800F1A30[0]) {
+        if ((D_800F1A28.vz & 0xFFF) || D_800F1A30.vx != ONE
+            || D_800F1A30.vy != D_800F1A30.vx) {
             for (i = 0; i < 5; ++i) {
                 POLY_FT4* topLeft;
                 POLY_FT4* topRight;
@@ -8261,8 +8255,8 @@ void func_8007DDAC(int arg0) { D_800F1A2C = arg0; }
 
 void func_8007DDB8(D_800F1A68_t* arg0)
 {
-    D_800F1A30[0] = arg0->unk0;
-    D_800F1A30[1] = arg0->unk4;
+    D_800F1A30.vx = arg0->unk0;
+    D_800F1A30.vy = arg0->unk4;
 }
 
 void func_8007DDD4(P_CODE* arg0) { D_800F1A78 = *arg0; }
@@ -8288,8 +8282,8 @@ short func_8007DE78(void) { return D_800F1A2C; }
 
 void func_8007DE88(int* arg0)
 {
-    arg0[0] = *D_800F1A30;
-    arg0[1] = *D_800F1A30;
+    arg0[0] = D_800F1A30.vx;
+    arg0[1] = D_800F1A30.vx;
     arg0[2] = 0;
 }
 

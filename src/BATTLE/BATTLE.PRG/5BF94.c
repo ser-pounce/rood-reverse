@@ -3424,7 +3424,103 @@ void func_800CC5C0(u_long* arg0, int arg1)
         arg0, arg1 | 0xE3000000, (arg1 + 0x13F) | 0xE403BC00, arg1 | 0xE5000000);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC600);
+void func_800CC600(gim_t* image, int clut, u_long* ot)
+{
+    int alpha;
+    int inverse;
+    u_short* tiles = &image->imageTable[4];
+    int mode = image->unk0_2;
+    int columns;
+    int column;
+    int top;
+    int fb = 0;
+    int page;
+    int height;
+    int x;
+    int y;
+
+    if (vs_main_frameBuf == 0) {
+        fb = 320;
+    }
+
+    alpha = image->unk3;
+    page = (image->unk2 + image->unk0_9 - 16) * 64;
+
+    if (alpha == 128) {
+        func_800CBBCC(image, clut, ot);
+        return;
+    }
+
+    inverse = 128 - alpha;
+    alpha |= 256;
+    inverse += 7;
+    alpha += 7;
+    columns = image->columns;
+    height = image->rows * 15;
+    top = image->unkA + 120 - (height >> 1);
+
+    for (column = 0; column < columns; ++column) {
+        u_long* prim = vs_battle_setSprite(
+            384, (column * 64) | (top << 16), 64 | (height << 16), ot);
+
+        prim[1] = _get_mode(0, 0, getTPage(2, 1, page, 256));
+        func_800CC5C0(ot, fb);
+
+        for (y = height - 15; y >= 0; y -= 15) {
+            for (x = 32; x >= 0; x -= 32) {
+                prim = vs_battle_setSprite(384, x | (y << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 2, page, 256));
+                prim[4] = vs_getUV(x, y);
+                func_800CC580(ot, page);
+                prim = vs_battle_setSprite(
+                    alpha, (x + column * 64) | ((top + y) << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 1, page, 256));
+                prim[4] = vs_getUV(x, y);
+                func_800CC5C0(ot, fb);
+            }
+        }
+
+        x = image->unkA + 120;
+
+        for (y = 0; y < image->rows; ++y) {
+            int tile = tiles[y * columns + column];
+            int atlas;
+            int uv;
+            int tx;
+
+            if (!tile) {
+                continue;
+            }
+
+            atlas = tile >> 2;
+            prim = vs_battle_setSprite(
+                128, (((y * 30 - height) >> 1) + x - top) << 16, vs_getWH(64, 15), ot);
+            uv = ((tile * 64) & 192) | ((atlas & 31) * 15 << 8) | clut;
+            tx = ((image->unk2 - 18) * 64) + (atlas & 448);
+            prim[4] = uv;
+            prim[1] = _get_mode(0, 0, getTPage(mode, 0, tx, 256));
+        }
+
+        func_800CC580(ot, page);
+
+        for (y = 0; y < height; y += 15) {
+            for (x = 0; x < 64; x += 32) {
+                prim = vs_battle_setSprite(
+                    inverse, (x + column * 64) | ((top + y) << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 0, fb + column * 64, 0));
+                prim[4] = vs_getUV(x, top + y);
+                func_800CC5C0(ot, fb);
+                prim = vs_battle_setSprite(128, x | (y << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 0, fb + column * 64, 0));
+                prim[4] = vs_getUV(x, top + y);
+                func_800CC580(ot, page);
+            }
+        }
+
+        vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), 0, 64 | (height << 16));
+        func_800CC580(ot, page);
+    }
+}
 
 void func_800CCA90(int arg0)
 {

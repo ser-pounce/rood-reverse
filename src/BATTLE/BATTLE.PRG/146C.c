@@ -16015,9 +16015,9 @@ void func_8008EC48(VECTOR* arg0)
             red = 128 + D_800F1BB0.unk0 * 4;
             green = 128 + D_800F1BB0.unk1 * 4;
             blue = 128 + D_800F1BB0.unk2 * 4;
-            red = (short)vs_battle_clamp(red, 0, 255);
-            green = (short)vs_battle_clamp(green, 0, 255);
-            blue = (short)vs_battle_clamp(blue, 0, 255);
+            red = vs_battle_clamp(red, 0, 255);
+            green = vs_battle_clamp(green, 0, 255);
+            blue = vs_battle_clamp(blue, 0, 255);
             setRGB0(prim, red, green, blue);
         } else {
             setRGB0(prim, 128, 128, 128);

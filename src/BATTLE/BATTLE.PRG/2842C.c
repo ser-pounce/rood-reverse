@@ -132,6 +132,9 @@ typedef struct {
     u_char color;
 } D_800690B4_t;
 
+void func_8008F29C(int, int);
+void func_8008F30C(int, int);
+void func_8008F9A4(int, int);
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -183,6 +186,7 @@ extern short D_800F1DBC;
 extern short D_800F1DC0;
 extern short D_800F1DC2;
 extern short D_800F1DC4;
+extern char D_800F1DCA;
 extern char D_800F1DCB;
 extern void* D_800F1DD4;
 extern D_800F1DD8_t D_800F1DD8[];
@@ -201,11 +205,72 @@ extern SVECTOR D_800F2280;
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068EB4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090C2C);
+void func_80090C2C(int arg0)
+{
+    _mpdRoomSectionB* room = vs_battle_roomData.sectionB;
+
+    if (room != NULL) {
+        int sound = -2;
+
+        D_800F1D98[7] = 1;
+        D_800F1D98[9] = 1;
+        D_800F1D98[8] = 1;
+        D_800F1D98[4] = room->unk42;
+        D_800F1D98[5] = room->unk36;
+        D_800F1DCA = arg0;
+        D_800F1DC4 = room->unk3C;
+        func_8009121C();
+        func_80090B28();
+
+        switch (arg0) {
+        case 0:
+            break;
+        case 1:
+            func_8008F29C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 4,
+                              4, 128),
+                arg0);
+            sound = 21;
+            break;
+        case 2:
+            func_8008F29C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 4,
+                              4, 128),
+                arg0);
+            break;
+        case 3:
+            func_8008F30C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 4,
+                              4, 128),
+                arg0);
+            break;
+        case 4:
+            func_8008F9A4(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 2,
+                              4, 128),
+                arg0);
+            break;
+        }
+
+        if (D_800F1DBC != -1) {
+            if ((D_800F1DBC >= 0) && (D_800F1DBC != sound)) {
+                func_80045D64(0x200, D_800F1DBC);
+            }
+            if (sound >= 0) {
+                vs_main_playSfxDefault(0x200, sound);
+            }
+
+            D_800F1DBC = sound;
+        }
+    } else if (D_800F1DBC >= 0) {
+        func_80045D64(0x200, D_800F1DBC);
+        D_800F1DBC = -2;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090EEC);
 
-int vs_battle_clamp(short arg0, int arg1, int arg2)
+short vs_battle_clamp(short arg0, int arg1, int arg2)
 {
     short var_t0;
     short var_v1;

@@ -127,6 +127,40 @@ typedef struct {
 } func_80093914_t2;
 
 typedef struct {
+    int geometryOffset;
+    char unk4[3];
+    u_char delay;
+    u_char baseU;
+    u_char baseV;
+    u_char frameCount;
+    u_char columns;
+    u_char frameWidth;
+    u_char frameHeight;
+    u_char tick;
+    u_char frame;
+    u_char u[4];
+    u_char v[4];
+} func_80091C6C_t;
+
+typedef struct {
+    char unk0[0xF];
+    u_char type;
+    char unk10[3];
+    u_char u2;
+    char unk14[3];
+    u_char v2;
+    u_char u0;
+    u_char v0;
+    char unk1A[2];
+    u_char u1;
+    u_char v1;
+    char unk1E[5];
+    u_char u3;
+    char unk24[3];
+    u_char v3;
+} func_80091C6C_t2;
+
+typedef struct {
     u_char count;
     u_char labels[2];
     u_char color;
@@ -584,7 +618,47 @@ void func_80091B04(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091C6C);
+int func_80091C6C(func_80091C6C_t* arg0)
+{
+    func_80091C6C_t* quad = arg0;
+    void* base = vs_battle_roomData.geometrySection;
+
+    if (++arg0->tick > arg0->delay) {
+        int u;
+        int v;
+        func_80091C6C_t2* polygon;
+
+        arg0->tick = 0;
+
+        if (++arg0->frame >= arg0->frameCount) {
+            arg0->frame = 0;
+        }
+
+        u = arg0->baseU + arg0->frameWidth * (arg0->frame % arg0->columns);
+        v = arg0->baseV + arg0->frameHeight * (arg0->frame / arg0->columns);
+        polygon = base + arg0->geometryOffset;
+
+        if ((polygon->type & 0x3C) == 0x34) {
+            polygon->u0 = arg0->u[0] + u;
+            polygon->u1 = arg0->u[1] + u;
+            polygon->u2 = arg0->u[2] + u;
+            polygon->v0 = arg0->v[0] + v;
+            polygon->v1 = arg0->v[1] + v;
+            polygon->v2 = arg0->v[2] + v;
+        } else {
+            polygon->u0 = quad->u[0] + u;
+            polygon->u1 = quad->u[1] + u;
+            polygon->u2 = quad->u[2] + u;
+            polygon->u3 = quad->u[3] + u;
+            polygon->v0 = quad->v[0] + v;
+            polygon->v1 = quad->v[1] + v;
+            polygon->v2 = quad->v[2] + v;
+            polygon->v3 = quad->v[3] + v;
+        }
+    }
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091E10);
 

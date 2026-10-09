@@ -229,8 +229,9 @@ int func_800FB0CC(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         func_800D6D24(&state->texture);
         texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
-        for (column = 0; column < 17; ++column)
+        for (column = 0; column < 17; ++column) {
             v[column] = texture->v0 + ((texture->v1 * column) / 16);
+        }
 
         u[0] = texture->u0;
         u[2] = u[0] + texture->u1;

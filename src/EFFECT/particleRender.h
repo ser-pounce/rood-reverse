@@ -38,8 +38,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
     int width;
 
     width = func_800CFE1C(arg0->unk30, vs_battle_sampleCurve(arg0->unk17, arg3->unkC));
-    if (!width)
+    if (!width) {
         width = 1;
+    }
 
     vs_battle_lerpSvector(
         arg0->unk34[4], vs_battle_sampleCurve(arg0->unkE, arg3->unkC), &arg1->unk108);
@@ -111,8 +112,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
 
         width = arg1->unk108.vx / 2;
         screenStart = screenPoints;
-        if (arg1->unk108.vy)
+        if (arg1->unk108.vy) {
             width += (rand() % arg1->unk108.vy) / 2;
+        }
         offsetX = (rcos(angles[0]) * width) >> 0xC;
         offsetY = (rsin(angles[0]) * width) >> 0xC;
         quad.unk4.x0 = screenStart[0].vx + offsetX;
@@ -127,8 +129,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
         quad.unk4.v2 = bottomV;
         for (segment = 0; segment < 7; ++segment) {
             width = arg1->unk108.vx / 2;
-            if (arg1->unk108.vy)
+            if (arg1->unk108.vy) {
                 width += (rand() % arg1->unk108.vy) / 2;
+            }
             angleOrDepth = (angles[segment] + angles[segment + 1]) / 2;
             offsetX = (rcos(angleOrDepth) * width) >> 0xC;
             offsetY = (rsin(angleOrDepth) * width) >> 0xC;
@@ -161,8 +164,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
                     angleOrDepth = -11;
                     break;
                 case 5:
-                    if (vs_main_nearClip < angleOrDepth - 16)
+                    if (vs_main_nearClip < angleOrDepth - 16) {
                         angleOrDepth -= 16;
+                    }
                     break;
                 }
                 prim = vs_scratch.unk0;
@@ -198,8 +202,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
         }
 
         width = arg1->unk108.vx / 2;
-        if (arg1->unk108.vy)
+        if (arg1->unk108.vy) {
             width += (rand() % arg1->unk108.vy) / 2;
+        }
         offsetX = (rcos(angles[segment]) * width) >> 0xC;
         offsetY = (rsin(angles[segment]) * width) >> 0xC;
         quad.unk4.x1 = ((u_short*)screenStart)[segment * 2 + 2] + offsetX;
@@ -228,8 +233,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
                 angleOrDepth = -11;
                 break;
             case 5:
-                if (vs_main_nearClip < angleOrDepth - 16)
+                if (vs_main_nearClip < angleOrDepth - 16) {
                     angleOrDepth -= 16;
+                }
                 break;
             }
             prim = vs_scratch.unk0;

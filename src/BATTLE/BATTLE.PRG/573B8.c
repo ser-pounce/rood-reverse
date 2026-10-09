@@ -158,8 +158,9 @@ int func_800BFEBC(short mode, short frame, short duration)
 {
     short position = frame;
     int value, power, i, magnitude;
-    if (frame > duration)
+    if (frame > duration) {
         position = duration;
+    }
     switch (mode) {
     case 0:
         return (position << 12) / duration;
@@ -175,13 +176,15 @@ int func_800BFEBC(short mode, short frame, short duration)
         value = (position << 12) / duration;
         if (power != 0) {
             if (power > 0) {
-                for (i = 0; i < power; ++i)
+                for (i = 0; i < power; ++i) {
                     value = (value * value) >> 12;
+                }
             } else {
                 value = 0x1000 - value;
                 magnitude = -power;
-                for (i = 0; i < magnitude; ++i)
+                for (i = 0; i < magnitude; ++i) {
                     value = (value * value) >> 12;
+                }
                 value = 0x1000 - value;
             }
         }
@@ -346,43 +349,56 @@ void func_800C031C(void)
     int index;
     int x, y;
     short* edges;
-    if (D_800EB9B8 == NULL)
+    if (D_800EB9B8 == NULL) {
         D_800EB9B8 = vs_main_allocHeap(0x4B1C);
+    }
     vs_battle_rMemzero(D_800EB9B8, 0x4B1C);
     index = 0;
     D_800EB9B8->unk2D = -1;
     edges = (short*)((char*)D_800EB9B8 + 0x44B4);
     for (y = 0;; ++y) {
-        for (x = 0; x < 9; ++x)
+        for (x = 0; x < 9; ++x) {
             edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
-        if (y == 9)
+        }
+        if (y == 9) {
             break;
-        for (x = 0; x < 10; ++x)
+        }
+        for (x = 0; x < 10; ++x) {
             edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+        }
     }
     for (x = 0;; ++x) {
-        for (y = 9; y > 0; --y)
+        for (y = 9; y > 0; --y) {
             edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
-        if (x == 9)
+        }
+        if (x == 9) {
             break;
-        for (y = 9; y >= 0; --y)
+        }
+        for (y = 9; y >= 0; --y) {
             edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+        }
     }
     for (y = 9;; --y) {
-        for (x = 9; x > 0; --x)
+        for (x = 9; x > 0; --x) {
             edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
-        if (y == 0)
+        }
+        if (y == 0) {
             break;
-        for (x = 9; x >= 0; --x)
+        }
+        for (x = 9; x >= 0; --x) {
             edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+        }
     }
     for (x = 9;; --x) {
-        for (y = 0; y < 9; ++y)
+        for (y = 0; y < 9; ++y) {
             edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
-        if (x == 0)
+        }
+        if (x == 0) {
             break;
-        for (y = 0; y < 10; ++y)
+        }
+        for (y = 0; y < 10; ++y) {
             edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+        }
     }
 }
 
@@ -464,8 +480,9 @@ int func_800C0758(int phase, int segments, int index)
                 + ((basis[2][component] * trig[(i + phase) & 31]) >> 12);
         }
         component = i != 0;
-        if (component && segments != 32)
+        if (component && segments != 32) {
             component += segments - i < 2;
+        }
         vertex->flags = component;
     }
     return index;
@@ -514,8 +531,9 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
     u_long link;
     u_long* primitive;
     u_long* orderingTable;
-    if ((u_int)depth >= 2048)
+    if ((u_int)depth >= 2048) {
         return;
+    }
     dy = end->vy - start->vy;
     dx = end->vx - start->vx;
     angle = 0;
@@ -523,10 +541,12 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
     if (shift) {
         ax = dx;
         ay = dy;
-        if (ax < 0)
+        if (ax < 0) {
             ax = -ax;
-        if (ay < 0)
+        }
+        if (ay < 0) {
             ay = -ay;
+        }
         shift = 512;
         if (ax < ay) {
             angle = ax << 9;
@@ -539,19 +559,22 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
             angle = D_80040A14[angle];
         }
         shift = 1024;
-        if (ax != dx)
+        if (ax != dx) {
             angle = shift - angle;
+        }
         angle *= 2;
-        if (ay != dy)
+        if (ay != dy) {
             angle = -angle;
+        }
     }
     shift = 30 - (((angle + 256) >> 8) & 14);
     ay = start->vx + ((0x4FC5 << shift) >> 30);
     ax = start->vy + ((0xFC54 << shift) >> 30);
-    if (intensity < 0)
+    if (intensity < 0) {
         intensity = 0;
-    else if (intensity >= 64)
+    } else if (intensity >= 64) {
         intensity = 63;
+    }
     primitive = vs_scratch.unk0;
     orderingTable = (u_long*)vs_scratch.unk4 + depth;
     link = *orderingTable;

@@ -330,8 +330,9 @@ int func_800A1C10(int actorId, int bone, u_short* result, int endpoint)
     vs_battle_wepModels_t* weapon;
     if (actor == NULL) {
         actor = (D_800F4538_t*)D_800F45E0[actorId];
-        if (actor == NULL)
+        if (actor == NULL) {
             return -1;
+        }
         model = actor->unk0.unk68;
     }
     matrix = func_800A1DE8(actorId, bone, &D_800F49B8);
@@ -346,14 +347,16 @@ int func_800A1C10(int actorId, int bone, u_short* result, int endpoint)
     if ((bone & 0xF0) == 0x40) {
         weapon = vs_battle_wepModels[actorId * 2];
         bone -= 0x3F;
-        if (weapon == NULL)
+        if (weapon == NULL) {
             return -1;
+        }
         model = *(D_800F4538_unk68**)((char*)weapon + 0x1C);
     }
-    if (endpoint == 1)
+    if (endpoint == 1) {
         local.vx = -(u_short)model->armatures[bone].unk0;
-    else
+    } else {
         local.vx = -model->armatures[bone].unk0 / 2;
+    }
     gte_SetRotMatrix(matrix);
     gte_SetTransMatrix(matrix);
     gte_ldv0(&local);
@@ -387,13 +390,15 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
     MATRIX* result;
     if (actor == NULL) {
         D_800F45E0_t* object = D_800F45E0[actorId];
-        if (object == NULL)
+        if (object == NULL) {
             return NULL;
+        }
         scratch->matrix = *(MATRIX*)&object->unk6C[bone];
     } else if ((bone & 0xF0) == 0x40) {
         weapon = vs_battle_wepModels[actorId * 2];
-        if (weapon == NULL)
+        if (weapon == NULL) {
             return NULL;
+        }
         scratch->matrix = ((MATRIX*)((char*)weapon + 32))[bone - 63];
     } else if (bone == 255) {
         scratch->offset.vx = (short)*(u_short*)((char*)actor + 0x84C) >> 1;
@@ -628,12 +633,14 @@ void func_800A25EC(D_800F4538_t* actor)
     next.vy = 0;
     next.vz = actor->unk1848.unk10.vz;
     next.vy = func_800A6EE8(&actor->unk0.position, next.vx, next.vz, 1);
-    if (next.vy == -3000)
+    if (next.vy == -3000) {
         return;
+    }
     next.vx += actor->unk0.position.vx;
     next.vz += actor->unk0.position.vz;
-    if (func_800A8D64(&next, 0) == NULL)
+    if (func_800A8D64(&next, 0) == NULL) {
         return;
+    }
     actor->unk0.position.vx = next.vx;
     actor->unk0.position.vz = next.vz;
     if (*(u_int*)((char*)actor + 8) & 0x70000) {
@@ -677,15 +684,17 @@ void func_800A2790(D_800F4538_t* actor)
     func_800AA850(actor->unk0.unkF, actor->unk1848.unk6, 12);
     animation = 1;
     if (speed > 0) {
-        if (delta.vy < -2)
+        if (delta.vy < -2) {
             animation = 32;
-        else {
+        } else {
             animation = 31;
-            if (delta.vy >= 3)
+            if (delta.vy >= 3) {
                 animation = 34;
+            }
         }
-        if (speed >= 12)
+        if (speed >= 12) {
             animation += 6;
+        }
     }
     if (actor->animationId != animation) {
         func_800A0204(actor->unk0.unkF, animation, 0, 4);

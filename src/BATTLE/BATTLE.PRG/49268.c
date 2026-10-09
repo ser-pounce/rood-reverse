@@ -139,8 +139,9 @@ composed:
             flags = *(u_int*)((char*)object + 8);
             value = 0;
             if (((flags >> 8) & 0xF) - 4 < 5) {
-                if ((flags & 0xF00) != 0x600)
+                if ((flags & 0xF00) != 0x600) {
                     value = 1;
+                }
             }
             if (((flags >> 8) & 0xF) >= 12) {
                 value = 1;
@@ -188,8 +189,9 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
         value /= weapon->unk13;
         weapon->unk11 = current + value;
         --weapon->unk13;
-        if ((*(int*)&weapon->clutSlotOffset & 0xFF00FF00) == 0)
+        if ((*(int*)&weapon->clutSlotOffset & 0xFF00FF00) == 0) {
             *(int*)((char*)weapon + 8) &= ~0x10;
+        }
     }
     if (weapon->unk11 != 64) {
         value = weapon->unk11;
@@ -228,8 +230,9 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
     }
     if (*(int*)((char*)actor + 8) & 2) {
         if (*(short*)((char*)actor + 0x1E) >= 256) {
-            if (actor->unk0.unkF == 0 || func_800BEB00() != 4)
+            if (actor->unk0.unkF == 0 || func_800BEB00() != 4) {
                 return;
+            }
         }
         if (func_800B3A68(weapon, &((weaponMatrix*)weapon)->matrix,
                 (-vs_main_nearClip) << 2, weapon->offsets)) {
@@ -239,11 +242,13 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
             value = 0;
             if (((flags >> 8 & 15) - 4) < 5) {
                 value = 1;
-                if ((flags & 0xF00) == 0x600)
+                if ((flags & 0xF00) == 0x600) {
                     value = 0;
+                }
             }
-            if ((flags & 0xF00) == 0xF00)
+            if ((flags & 0xF00) == 0xF00) {
                 value = 1;
+            }
             if (*(int*)((char*)weapon + 8) & 0x40) {
                 color.r = weapon->unk5C0;
                 color.g = weapon->unk5C0;

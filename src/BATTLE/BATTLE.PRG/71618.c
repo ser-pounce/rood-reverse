@@ -243,17 +243,20 @@ int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
     int active = 0;
     short point[3];
     int x, z, y;
-    if (!state->count)
+    if (!state->count) {
         return 0;
+    }
     id = entry->targetId;
-    if (id == 16 || !((candidateMovementState**)0x1F80037C)[id])
+    if (id == 16 || !((candidateMovementState**)0x1F80037C)[id]) {
         return 0;
+    }
     switch (state->mode) {
     case 1:
     normal:
         limit = 0x1F80;
-        if (!(state->flags & 8))
+        if (!(state->flags & 8)) {
             limit = vs_gte_rsqrt(entry->distanceSquared) + (state->maxRange << 5);
+        }
         limit = limit * limit;
         if ((state->targets[id].bytes[0] >> 6) == 2) {
             distance = entry->distanceSquared;
@@ -267,8 +270,9 @@ int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
                 distance = limit;
                 {
                     unsigned int minimum = 0x64000;
-                    if (distance < minimum)
+                    if (distance < minimum) {
                         distance = minimum;
+                    }
                 }
             }
             flag = 1;
@@ -276,16 +280,20 @@ int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
         distance = vs_gte_rsqrt(distance);
         if (active) {
             D_800F58BC->unk24++;
-            if (state->distances[id] < limit && (state->targets[entry->targetId].raw & 1))
+            if (state->distances[id] < limit
+                && (state->targets[entry->targetId].raw & 1)) {
                 func_800D836C((void*)state);
+            }
         }
     move:
-        if (func_800DB370((void*)state, id, distance, flag))
+        if (func_800DB370((void*)state, id, distance, flag)) {
             return 1;
+        }
         return func_800DB74C((void*)state, id) != 0;
     case 2:
-        if (!func_800DBCB4((void*)state, (void*)entry))
+        if (!func_800DBCB4((void*)state, (void*)entry)) {
             goto normal;
+        }
         if (entry->flag1) {
             point[0] = (state->destination.bytes[0] << 7) + 64;
             point[2] = (state->destination.bytes[2] << 7) + 64;
@@ -295,8 +303,9 @@ int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
                     state->height, ((candidateMovementState*)D_800F5878[id])->height));
             distance =
                 (int)distance < vs_gte_rsqrt(entry->distanceSquared) - entry->range;
-            if (distance)
+            if (distance) {
                 goto normal;
+            }
         }
         x = (state->next.bytes[0] << 7) + 64;
         z = (state->next.bytes[2] << 7) + 64;
@@ -338,43 +347,52 @@ int func_800DA1D4(actionCandidateState* state)
     case 0:
         entry = state->entries[0];
         id = entry->targetId;
-        if (func_800D9E18((void*)state, entry))
+        if (func_800D9E18((void*)state, entry)) {
             return 1;
+        }
         for (i = 1; i < state->count; i++) {
             entry = state->entries[i];
-            if (entry->threshold < D_800F58BC->unk18 && entry->targetId != id)
+            if (entry->threshold < D_800F58BC->unk18 && entry->targetId != id) {
                 return func_800D9E18((void*)state, entry);
+            }
         }
         return 0;
     case 1:
         func_800D82CC((void*)state);
         if ((state->targets[0].flags >> 6) == 3) {
-            if (func_800DB370(state, 0, 640, 1))
+            if (func_800DB370(state, 0, 640, 1)) {
                 return 1;
-            if (func_800DB74C(state, 0))
+            }
+            if (func_800DB74C(state, 0)) {
                 return 1;
+            }
         }
         id = state->entries[0]->targetId;
         if ((state->targets[id].flags >> 6) == 3) {
             flag = 1;
             distance = 640;
         } else {
-            if (state->count < 2)
+            if (state->count < 2) {
                 return 0;
+            }
             flag = 0;
             distance = vs_gte_rsqrt(state->entries[1]->distanceSquared);
         }
-        if (func_800DB370(state, id, distance, flag))
+        if (func_800DB370(state, id, distance, flag)) {
             return 1;
-        if (func_800DB74C(state, id))
+        }
+        if (func_800DB74C(state, id)) {
             return 1;
+        }
     case 2:
         func_800D82CC((void*)state);
         if ((state->targets[0].flags >> 6) == 3) {
-            if (func_800DB370(state, 0, 640, 1))
+            if (func_800DB370(state, 0, 640, 1)) {
                 return 1;
-            if (func_800DB74C(state, 0))
+            }
+            if (func_800DB74C(state, 0)) {
                 return 1;
+            }
         }
         for (actor = vs_battle_actors[0]; actor; actor = actor->next) {
             int candidate = actor->id;
@@ -387,10 +405,12 @@ int func_800DA1D4(actionCandidateState* state)
             }
         }
         if (id >= 0) {
-            if (func_800DB370(state, id, 640, 1))
+            if (func_800DB370(state, id, 640, 1)) {
                 return 1;
-            if (func_800DB74C(state, id))
+            }
+            if (func_800DB74C(state, id)) {
                 return 1;
+            }
         }
         break;
     }
@@ -487,13 +507,16 @@ int func_800DA4BC(da4bcState* state, da4bcEntry* entry)
         radius = radius * radius;
         D_800F58BC->unk24++;
         if (state->distances[target] < (unsigned int)radius) {
-            if (state->targets[entry->flagsC & 15] & 1)
+            if (state->targets[entry->flagsC & 15] & 1) {
                 func_800D836C((void*)state);
+            }
         }
-        if (func_800DB370((void*)state, target, distance, 1))
+        if (func_800DB370((void*)state, target, distance, 1)) {
             return 1;
-        if (func_800DB74C((void*)state, target))
+        }
+        if (func_800DB74C((void*)state, target)) {
             return 1;
+        }
     }
     return result;
 }
@@ -503,8 +526,9 @@ int func_800DA5CC(da4bcState* state)
     da4bcEntry* entry = state->entries[0];
     int target;
 
-    if (!state->pending && func_800DA4BC(state, entry))
+    if (!state->pending && func_800DA4BC(state, entry)) {
         return 1;
+    }
     target = state->target16;
     if (target < 16) {
         if (func_800DB370((void*)state, target, 288, 1)) {
@@ -515,8 +539,9 @@ int func_800DA5CC(da4bcState* state)
             }
             return 1;
         }
-        if (func_800DB74C((void*)state, target))
+        if (func_800DB74C((void*)state, target)) {
             return 1;
+        }
     }
     return 0;
 }
@@ -525,12 +550,14 @@ int func_800DA6A4(da4bcState* state)
 {
     int target;
 
-    if (state->flagE)
+    if (state->flagE) {
         return func_800DB61C((void*)state, 1);
+    }
     target = func_800DBB2C(state, 0, 3);
     if (target >= 0 && func_800DBB2C(state, 0, 2) >= 0
-        && func_800DB370((void*)state, target, 1024, 1))
+        && func_800DB370((void*)state, target, 1024, 1)) {
         return 1;
+    }
     return func_800DA1D4((void*)state);
 }
 
@@ -553,8 +580,9 @@ int func_800DA738(da4bcState* state)
     target = state->target16;
     valid = (unsigned int)~candidate >> 31;
     if (state->id != target && target != 16) {
-        if (((da4bcState**)0x1F80037C)[target])
+        if (((da4bcState**)0x1F80037C)[target]) {
             active = ((unsigned char)state->targets[target] >> 6) == 2;
+        }
     }
     oldFlag = state->flagF;
     state->flagF = active;
@@ -574,8 +602,9 @@ int func_800DA738(da4bcState* state)
                 sinA = rsin(angleA);
                 dot = cosA * cosB + sinA * rsin(angleB);
                 dot >>= 12;
-                if (state->timer44)
+                if (state->timer44) {
                     state->timer44--;
+                }
                 if (dot >= -1200 || state->timer44) {
                     func_800E1388((void*)state, tile,
                         ratan2(point.b[0] - (tile.raw & 255),
@@ -583,13 +612,15 @@ int func_800DA738(da4bcState* state)
                         320);
                     ((unsigned char*)state)[1] = 1;
                     func_800E50A0(state, 0, 0);
-                    if (!state->timer44)
+                    if (!state->timer44) {
                         state->timer44 = 10;
+                    }
                     return 1;
                 }
             }
-        } else
+        } else {
             goto fallback;
+        }
     }
     if (active) {
         if (valid
@@ -598,20 +629,24 @@ int func_800DA738(da4bcState* state)
             func_800E2CCC((void*)state);
             return 1;
         }
-        if (func_800DB370((void*)state, target, 320, 1))
+        if (func_800DB370((void*)state, target, 320, 1)) {
             return 1;
-        if (func_800DB74C((void*)state, target))
+        }
+        if (func_800DB74C((void*)state, target)) {
             return 1;
+        }
     }
 fallback:
     if (valid) {
         if (oldFlag) {
-            if ((unsigned int)func_800E45D4(128) < 128)
+            if ((unsigned int)func_800E45D4(128) < 128) {
                 state->flag18 = 1;
+            }
             func_800D8260((void*)state, 6, 0);
         }
-        if (func_800DB61C((void*)state, 1))
+        if (func_800DB61C((void*)state, 1)) {
             return 1;
+        }
     }
     return func_800DB61C((void*)state, 1);
 }
@@ -619,12 +654,14 @@ fallback:
 int func_800DAA6C(da4bcState* state)
 {
     if (state->flagE) {
-        if (!func_800DB61C((void*)state, 1))
+        if (!func_800DB61C((void*)state, 1)) {
             func_800DB5B0(state);
+        }
         return 1;
     }
-    if (!func_800DA1D4((void*)state))
+    if (!func_800DA1D4((void*)state)) {
         func_800DB5FC(state);
+    }
     return 1;
 }
 
@@ -634,8 +671,9 @@ int func_800DAAD8(da4bcState* state)
     int target;
     da4bcActor* actor;
 
-    if (!state->pending && func_800DA4BC(state, entry))
+    if (!state->pending && func_800DA4BC(state, entry)) {
         return 1;
+    }
     target = state->target16;
     if (target < 16) {
         if (func_800DB370((void*)state, target, 384, 0)) {
@@ -646,8 +684,9 @@ int func_800DAAD8(da4bcState* state)
             }
             return 1;
         }
-        if (func_800DB74C((void*)state, target))
+        if (func_800DB74C((void*)state, target)) {
             return 1;
+        }
     }
     for (actor = (da4bcActor*)vs_battle_actors[0]; actor; actor = actor->next) {
         if (((da4bcTargetState*)state)->targets[actor->id].mode != 3
@@ -682,8 +721,9 @@ extern int D_800F58E0;
 int func_800DAC80(actionSetupContext* context, func_800DCAA0_t* action)
 {
     D_800F4538_t* actor;
-    if (!func_800DBD80(context, action))
+    if (!func_800DBD80(context, action)) {
         return 0;
+    }
     func_800D836C((void*)context);
     if (func_800D826C(context)) {
         context->action = action;
@@ -695,10 +735,11 @@ int func_800DAC80(actionSetupContext* context, func_800DCAA0_t* action)
         }
         func_800DEEFC((void*)context, 15);
         if (func_800DBC60(context, action)) {
-            if (context->kind == 0)
+            if (context->kind == 0) {
                 context->cooldown = *((u_char*)D_800F58BC + 8);
-            else
+            } else {
                 context->cooldown = 50;
+            }
         }
         return 1;
     }
@@ -768,8 +809,9 @@ int func_800DAD9C(actionDispatchState* state)
     actionDispatchModel* model;
     for (i = 0; i < state->count; i++) {
         entry = state->entries[i];
-        if (func_800DAC80((void*)state, (void*)entry))
+        if (func_800DAC80((void*)state, (void*)entry)) {
             return 1;
+        }
     }
     entry = &state->fallback;
     if ((entry->flags4 >> 5) & 255) {
@@ -779,8 +821,9 @@ int func_800DAD9C(actionDispatchState* state)
                 entry->flagsC = (entry->flagsC & ~15) | (actor->id & 15);
                 model = (actionDispatchModel*)D_800F45E0[actor->id];
                 if (model->id && model->status == 0) {
-                    if (func_800DAC80((void*)state, (void*)entry))
+                    if (func_800DAC80((void*)state, (void*)entry)) {
                         return 1;
+                    }
                 }
             }
         }
@@ -797,21 +840,23 @@ void func_800DAED0(void)
         state = ((actionDispatchState**)0x1F80037C)[actor->id];
         if (!state->f14 || state->f1D) {
             value = func_800E45B4();
-            if (D_800F16F4 < value)
+            if (D_800F16F4 < value) {
                 func_800DEEFC((void*)state, 17);
-            else {
+            } else {
                 *(int*)0x1F8003FC = value;
                 if (state->f14 && state->f1D) {
                     if (D_800F5878[0]) {
                         if ((((actionDispatchModel*)D_800F4538[0])->flags & 0x180000)
                             && (coordinate =
                                     ((actionDispatchModel*)D_800F4538[0])->position[1],
-                                state->position[1] < coordinate))
+                                state->position[1] < coordinate)) {
                             height = -((actionDispatchState*)D_800F5878[0])->depth;
-                        else
+                        } else {
                             height = ((actionDispatchState*)D_800F5878[0])->height;
-                    } else
+                        }
+                    } else {
                         height = -64;
+                    }
                     state->distance = func_800E4624(state->position,
                         ((actionDispatchActor*)vs_battle_actors[0])->model->position,
                         state->height, height);

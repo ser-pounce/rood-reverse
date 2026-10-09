@@ -64,8 +64,9 @@ void func_800231E4(DS_CQ* p)
     int i;
     p->id = 0;
     p->com = 0;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
         p->param[i] = 0;
+    }
     p->pparam = 0;
     p->x10 = 0;
     p->x14 = 0;
@@ -134,8 +135,9 @@ void DsFlush(void)
         DS_CQ* e = &D_80039CF0.q[i];
         e->id = 0;
         e->com = 0;
-        for (j = 0; j < 4; j++)
+        for (j = 0; j < 4; j++) {
             e->param[j] = 0;
+        }
         e->pparam = 0;
         e->x10 = 0;
         e->x14 = 0;
@@ -203,6 +205,7 @@ end:
 
 void func_80024664(u_char a)
 {
-    if (D_80039E68)
+    if (D_80039E68) {
         D_80039E68(a);
+    }
 }

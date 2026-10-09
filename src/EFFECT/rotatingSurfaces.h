@@ -83,19 +83,22 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         curveIndex = effect->transparencyCurve;
         if (curveIndex) {
             sample = D_800F569C->curveBlock->curveSizes[curveIndex];
-            if (sample >= 2)
+            if (sample >= 2) {
                 --sample;
+            }
             for (initIndex = 0; initIndex < 5; ++initIndex) {
                 state->factors[initIndex] =
                     D_800F569C->curves[effect->transparencyCurve][sample * initIndex / 4]
                     * 2;
-                if (state->factors[initIndex] == 256)
+                if (state->factors[initIndex] == 256) {
                     state->factors[initIndex] = 255;
+                }
             }
         } else {
             maxFactor = 255;
-            for (initIndex = 4; initIndex >= 0; --initIndex)
+            for (initIndex = 4; initIndex >= 0; --initIndex) {
                 state->factors[initIndex] = maxFactor;
+            }
         }
         func_800D6CCC((int*)&state->texture);
         func_800D6CF0(&state->texture, effect->unkCA, effect->unkCB);
@@ -182,21 +185,24 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             angleAccel += scratch->unkC8.vz;
             angleSpeed += angleAccel + scratch->unkC8.vy;
             baseAngle += angleSpeed + scratch->unkC8.vx;
-            if (effect->rCurve)
+            if (effect->rCurve) {
                 colors[row].r = state->factors[row]
                               * vs_battle_sampleCurve(effect->rCurve, state->age) / 128;
-            else
+            } else {
                 colors[row].r = state->factors[row];
-            if (effect->gCurve)
+            }
+            if (effect->gCurve) {
                 colors[row].g = state->factors[row]
                               * vs_battle_sampleCurve(effect->gCurve, state->age) / 128;
-            else
+            } else {
                 colors[row].g = state->factors[row];
-            if (effect->bCurve)
+            }
+            if (effect->bCurve) {
                 colors[row].b = state->factors[row]
                               * vs_battle_sampleCurve(effect->bCurve, state->age) / 128;
-            else
+            } else {
                 colors[row].b = state->factors[row];
+            }
             colors[row].cd = primPolyGT4SemiTrans;
         }
         if (scratch->flags & 0x20000) {
@@ -216,11 +222,13 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
         func_800D6D24(&state->texture);
         texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
-        for (sample = 0; sample < VS_ROTATING_SURFACE_U_SEGMENTS + 1; ++sample)
+        for (sample = 0; sample < VS_ROTATING_SURFACE_U_SEGMENTS + 1; ++sample) {
             u[sample] =
                 texture->u0 + texture->u1 * sample / VS_ROTATING_SURFACE_U_SEGMENTS;
-        for (sample = 0; sample < 5; ++sample)
+        }
+        for (sample = 0; sample < 5; ++sample) {
             v[sample] = texture->v0 + texture->v1 * sample / 4;
+        }
         for (row = 0; row < 4; ++row) {
             for (column = 0; column < 15; ++column) {
                 depth = (depths[row][column] + depths[row][column + 1]
@@ -283,8 +291,9 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         ++state->age;
         if (state->lifetime) {
             --state->lifetime;
-            if (!state->lifetime)
+            if (!state->lifetime) {
                 alive = 0;
+            }
         }
         break;
     }

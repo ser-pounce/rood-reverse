@@ -251,8 +251,9 @@ void parcpy(u_char* dst, u_char* src)
     int i;
     if (src) {
         if (dst) {
-            for (i = 0; i < 4; i++)
+            for (i = 0; i < 4; i++) {
                 *dst++ = *src++;
+            }
         }
     } else if (dst) {
         *dst = 0;
@@ -264,8 +265,9 @@ void rescpy(u_char* dst, u_char* src)
     int i;
     if (src) {
         if (dst) {
-            for (i = 0; i < 8; i++)
+            for (i = 0; i < 8; i++) {
                 *dst++ = *src++;
+            }
         }
     } else if (dst) {
         *dst = 0;

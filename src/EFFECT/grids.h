@@ -151,39 +151,47 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
         if (effect->rCurve) {
             sample = vs_battle_sampleCurve(effect->rCurve, state->age) * 2;
-            if (sample < 256)
+            if (sample < 256) {
                 color.r = sample;
-            else
+            } else {
                 color.r = 255;
-        } else
+            }
+        } else {
             color.r = 128;
+        }
         if (effect->gCurve) {
             sample = vs_battle_sampleCurve(effect->gCurve, state->age) * 2;
-            if (sample < 256)
+            if (sample < 256) {
                 color.g = sample;
-            else
+            } else {
                 color.g = 255;
-        } else
+            }
+        } else {
             color.g = 128;
+        }
         if (effect->bCurve) {
             sample = vs_battle_sampleCurve(effect->bCurve, state->age) * 2;
-            if (sample < 256)
+            if (sample < 256) {
                 color.b = sample;
-            else
+            } else {
                 color.b = 255;
-        } else
+            }
+        } else {
             color.b = 128;
+        }
         color.cd = 0x2E;
         scroll = state->uScroll;
         state->uScroll = (scroll + scratch->unk12C[0]) % effect->unk94[0][0];
         uvBase = state->u + scroll;
-        for (sample = 0; sample < 9; ++sample)
+        for (sample = 0; sample < 9; ++sample) {
             u[sample] = uvBase + effect->unk94[0][0] * sample / 8;
+        }
         scroll = state->vScroll;
         state->vScroll = (scroll + scratch->unk12C[1]) % effect->unk94[0][2];
         uvBase = state->v + scroll;
-        for (sample = 0; sample < 9; ++sample)
+        for (sample = 0; sample < 9; ++sample) {
             v[sample] = uvBase + effect->unk94[0][2] * sample / 8;
+        }
         if (scratch->flags & 0x20000) {
             SetRotMatrix(&battle->unk1C[effect->unkC8].unk58);
             SetTransMatrix(&battle->unk1C[effect->unkC8].unk58);
@@ -222,8 +230,9 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                         depth = -11;
                         break;
                     case 5:
-                        if (depth - 16 > vs_main_nearClip)
+                        if (depth - 16 > vs_main_nearClip) {
                             depth -= 16;
+                        }
                         break;
                     }
                     prim = vs_scratch.unk0;
@@ -252,8 +261,9 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         ++state->age;
         if (state->lifetime) {
             --state->lifetime;
-            if (!state->lifetime)
+            if (!state->lifetime) {
                 alive = 0;
+            }
         }
         break;
     case 3:

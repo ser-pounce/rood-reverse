@@ -152,14 +152,15 @@ void func_800DBFE4(actorTimerState* state)
 {
     int value;
     if (state->timer8E && ++state->timer8E) {
-        if (state->timer8E < 8)
+        if (state->timer8E < 8) {
             value = 0;
-        else if (state->timer8E < 16)
+        } else if (state->timer8E < 16) {
             value = 1;
-        else if (state->timer8E < 24)
+        } else if (state->timer8E < 24) {
             value = 2;
-        else
+        } else {
             value = 3;
+        }
         if (state->timer8E <= 120) {
             func_800D820C(state->id, value + 1);
             return;
@@ -168,13 +169,15 @@ void func_800DBFE4(actorTimerState* state)
         func_800D82CC((void*)state);
     }
     if (state->timer9A) {
-        if (--state->timer9A)
+        if (--state->timer9A) {
             func_800D820C(state->id, 4);
-        else
+        } else {
             func_800D820C(state->id, 0);
+        }
     }
-    if (state->timer98)
+    if (state->timer98) {
         state->timer98--;
+    }
 }
 void func_800DC0D0(void)
 {
@@ -197,8 +200,9 @@ void func_800DC0D0(void)
                     changed = 1;
                 }
                 state->phase += state->direction;
-                if (changed)
+                if (changed) {
                     break;
+                }
             }
             state = state->next;
         } while (state);

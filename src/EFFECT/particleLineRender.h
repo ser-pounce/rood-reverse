@@ -28,8 +28,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
     SVECTOR* controlPoints;
     vs_particleLine* prim;
     width = func_800CFE1C(arg0->unk30, vs_battle_sampleCurve(arg0->unk17, arg3->unkC));
-    if (!width)
+    if (!width) {
         width = 1;
+    }
 
     if (arg0->rCurve != 0) {
         segment = vs_battle_sampleCurve(arg0->rCurve, arg3->unkC) * 2;
@@ -100,8 +101,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
                     depth = -11;
                     break;
                 case 5:
-                    if (vs_main_nearClip < depth - 16)
+                    if (vs_main_nearClip < depth - 16) {
                         depth -= 16;
+                    }
                     break;
                 }
                 prim = vs_scratch.unk0;

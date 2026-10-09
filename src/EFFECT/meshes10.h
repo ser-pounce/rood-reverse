@@ -85,51 +85,63 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         if (effect->rCurve) {
             index = vs_battle_sampleCurve(effect->rCurve, state->age) * 2;
             color = index;
-            if (color >= 256)
+            if (color >= 256) {
                 color = 255;
+            }
             colors[0].r = color;
-        } else
+        } else {
             colors[0].r = 128;
+        }
         if (effect->gCurve) {
             index = vs_battle_sampleCurve(effect->gCurve, state->age) * 2;
             color = index;
-            if (color >= 256)
+            if (color >= 256) {
                 color = 255;
+            }
             colors[0].g = color;
-        } else
+        } else {
             colors[0].g = 128;
+        }
         if (effect->bCurve) {
             index = vs_battle_sampleCurve(effect->bCurve, state->age) * 2;
             color = index;
-            if (color >= 256)
+            if (color >= 256) {
                 color = 255;
+            }
             colors[0].b = color;
-        } else
+        } else {
             colors[0].b = 128;
+        }
         if (effect->unk34[2][0]) {
             index = vs_battle_sampleCurve(effect->unk34[2][0], state->age) * 2;
             color = index;
-            if (index >= 256)
+            if (index >= 256) {
                 color = 255;
+            }
             colors[1].r = color;
-        } else
+        } else {
             colors[1].r = 128;
+        }
         if (effect->unk34[2][2]) {
             index = vs_battle_sampleCurve(effect->unk34[2][2], state->age) * 2;
             color = index;
-            if (index >= 256)
+            if (index >= 256) {
                 color = 255;
+            }
             colors[1].g = color;
-        } else
+        } else {
             colors[1].g = 128;
+        }
         if (effect->unk34[2][4]) {
             index = vs_battle_sampleCurve(effect->unk34[2][4], state->age) * 2;
             color = index;
-            if (index >= 256)
+            if (index >= 256) {
                 color = 255;
+            }
             colors[1].b = color;
-        } else
+        } else {
             colors[1].b = 128;
+        }
         do {
             colors[0].cd = 0x36;
             colors[1].cd = 0x36;
@@ -244,8 +256,9 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         ++state->age;
         if (state->lifetime) {
             --state->lifetime;
-            if (!state->lifetime)
+            if (!state->lifetime) {
                 alive = 0;
+            }
         }
         break;
     }

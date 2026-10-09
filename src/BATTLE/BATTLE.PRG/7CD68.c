@@ -261,7 +261,7 @@ void func_800E5710(actionMetadataState* state)
         state->maxActionCost = 1;
         return;
     }
-    for (row = 0; row < 6; row++)
+    for (row = 0; row < 6; row++) {
         for (column = 0; column < 4; column++) {
             id = state->stats->slots[row][column].id;
             action = (void*)&vs_main_actions[id];
@@ -272,26 +272,31 @@ void func_800E5710(actionMetadataState* state)
                 func_800E5600((int)state, id, vs_gte_rsqrt(entry->rangeSquared));
             entry->longRange =
                 entry->rangeSquared > 0x51000 && !(action->flagsC & 0x20000000);
-            if (mask & 0x4198)
+            if (mask & 0x4198) {
                 entry->f1 = 1;
-            if (mask & 0x154)
+            }
+            if (mask & 0x154) {
                 entry->f2 = 1;
-            if (mask & 0xA)
+            }
+            if (mask & 0xA) {
                 entry->kind = 1;
-            else if (mask & 0x40A0)
+            } else if (mask & 0x40A0) {
                 entry->kind = 2;
-            else if (mask & 0x1954)
+            } else if (mask & 0x1954) {
                 entry->kind = 3;
+            }
             entry->special = ((unsigned char*)D_800F58BC)[10]
                           && (action->flags.raw & 0xE0000) != 0x20000
                           && (action->flags.raw & 0xE0000) != 0x60000
                           && (mask & 0x4000) != 0;
             if ((action->flags.raw & 0xE0000) == 0x20000) {
                 unsigned int value = action->flags.bytes[3];
-                if (state->maxActionCost < value)
+                if (state->maxActionCost < value) {
                     state->maxActionCost = value;
+                }
             }
         }
+    }
 }
 
 void func_800E5998(void)
@@ -418,8 +423,9 @@ void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
     int i, temp;
     rangeSquared = D_80069C1C[(settings->half[1] & 28) >> 2];
     state->rangeSquared = rangeSquared;
-    if (rangeSquared > 0x23FFFF)
+    if (rangeSquared > 0x23FFFF) {
         rangeSquared = 0x240000;
+    }
     state->limit = rangeSquared;
     state->angle = D_800F17B8[settings->half[1] & 3][0];
     state->cosine = rcos((state->angle / 2) * 4096 / 360);
@@ -429,17 +435,20 @@ void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
     state->f2D = 0;
     if (D_800F58C0) {
         for (i = 0; i < 8; i++) {
-            if (D_800F58C8[i] >> 15)
+            if (D_800F58C8[i] >> 15) {
                 break;
+            }
         }
-        if (i != 8)
+        if (i != 8) {
             state->f2D = (settings->raw >> 12) & 1;
+        }
     }
     state->fB2 = ((settings->raw >> 10) & 3) + 1;
     state->fB0 = D_800F17C8[(settings->raw >> 8) & 3][0];
     step = 128;
-    if (state->collisionRadius > 128)
+    if (state->collisionRadius > 128) {
         step = 32;
+    }
     state->fBA = (step * D_800F17D8[(settings->raw >> 2) & 3]) >> 4;
     state->f23 = 1;
     state->f21 = settings->byte[3] & 1;
@@ -453,8 +462,9 @@ void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
     state->fD8 = D_80069C3C[(settings->raw >> 4) & 7].third;
     state->f27 = (settings->raw >> 27) & 1;
     state->f30 = (settings->raw >> 25) & 1;
-    if (!(state->flags & 0xC0))
+    if (!(state->flags & 0xC0)) {
         state->f32 = D_80069C18[state->f31];
+    }
     state->f33 = settings->byte[0] >> 7;
     temp = actor->flags34.bits.mode;
     state->f26 = temp >> 1;
@@ -469,8 +479,9 @@ void func_800E5A9C(actorSettingsState* state, actorSettingsWord* settings)
         state->callback = func_800E7F8C;
         state->f19 = 1;
         func_800E7660(state);
-    } else
+    } else {
         state->callback = D_800F1790[(actor->flags.raw >> 4) & 31];
+    }
     state->f16 = 16;
     func_800E5998();
     func_800E5710((void*)state);
@@ -660,8 +671,9 @@ int func_800E6178(actorInitializationActor* actor, int options)
     int i, kind, temp, packed;
     unsigned int radius, range;
     unsigned short result[4];
-    if (actor->attributes & 0x15)
+    if (actor->attributes & 0x15) {
         D_800F590C |= 1 << id;
+    }
     if (!actor->field40) {
         kind = actor->model->kind & 7;
         if (kind == 2 || kind == 4) {
@@ -673,8 +685,9 @@ int func_800E6178(actorInitializationActor* actor, int options)
             }
         }
     }
-    if (!(actor->attributes & 5))
+    if (!(actor->attributes & 5)) {
         return 0;
+    }
     state = vs_main_allocHeap(0x484);
     D_800F5878[id] = (void*)state;
     func_800E4288(state, 0x484);
@@ -686,12 +699,13 @@ int func_800E6178(actorInitializationActor* actor, int options)
     func_800A190C(state->id, 250, result, 0);
     state->field82 = result[1] - model->position[1];
     radius = model->radius;
-    if (!id)
+    if (!id) {
         state->radius = 40;
-    else if (radius < 63)
+    } else if (radius < 63) {
         state->radius = radius;
-    else
+    } else {
         state->radius = 62;
+    }
     if (radius > 128) {
         state->stepHeight = 32;
         state->collisionRadius = radius;
@@ -711,23 +725,27 @@ int func_800E6178(actorInitializationActor* actor, int options)
     state->field225 = stats->field32;
     state->field226 = stats->field31;
     state->field227 = stats->field33;
-    if (state->field224 & 8)
+    if (state->field224 & 8) {
         state->distance = state->field226 << 7;
-    else if (state->field225 & 8)
+    } else if (state->field225 & 8) {
         state->distance = state->field227 << 7;
+    }
     func_800E6828(state);
     range = state->field226;
-    if (range < state->field227)
+    if (range < state->field227) {
         range = state->field227;
+    }
     state->maxRange = range;
     packed = actor->field38;
-    if (actor->field34 & 1)
+    if (actor->field34 & 1) {
         func_800E5A74(&packed, (void*)&actor->field30);
+    }
     func_800E5A9C((void*)state, (void*)&packed);
     func_800E7370(state);
     temp = state->distance - 64;
-    if (state->rangeSquared < (unsigned int)(temp * temp))
+    if (state->rangeSquared < (unsigned int)(temp * temp)) {
         state->distance = vs_gte_rsqrt(state->rangeSquared) - 64;
+    }
     state->fieldBC = -256;
     state->fieldBE = -128;
     state->fieldB8 = model->field63E;

@@ -262,8 +262,9 @@ int func_800FA490(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         func_800D6D24(&state->texture);
         texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
-        for (column = 0; column < 5; ++column)
+        for (column = 0; column < 5; ++column) {
             u[column] = texture->u0 + ((texture->u1 * column) / 4);
+        }
 
         v[0] = texture->v0;
         v[2] = v[0] + texture->v1;
@@ -521,8 +522,9 @@ int func_800FDEC4(func_800D4910_t* arg0, u_int arg1, int arg2)
         case 0:
             func_800FD9A4(state, &state->unk88);
             scratch->unk170 = rsin(scratch->unkE8.vx);
-            if (scratch->unk170 > 0)
+            if (scratch->unk170 > 0) {
                 scratch->unk170 = -scratch->unk170;
+            }
             scratch->unk178 = rcos(scratch->unkE8.vx);
             scratch->unk174 = rsin(scratch->unkE8.vy);
             scratch->unk17C = rcos(scratch->unkE8.vy);
@@ -557,8 +559,9 @@ int func_800FDEC4(func_800D4910_t* arg0, u_int arg1, int arg2)
         D_800F5520[0] = state->startCamera;
         D_800F5520[1] = state->endCamera;
         ++state->age;
-        if (!--state->lifetime)
+        if (!--state->lifetime) {
             alive = 0;
+        }
         break;
     case 3:
         state->lifetime = 1;

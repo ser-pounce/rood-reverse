@@ -237,10 +237,11 @@ void func_800DC888(actionStatSnapshot* stats)
     ok = 1;
     if (ok) {
         for (i = -1; i < ((actionStatApplication*)D_800F5900)->count; i++) {
-            if (i < 0)
+            if (i < 0) {
                 entry = &((actionStatApplication*)D_800F5900)->first;
-            else
+            } else {
                 entry = &((actionStatApplication*)D_800F5900)->entries[i];
+            }
             if (!entry->skip) {
                 row = &stats[entry->actor];
                 func_800DC30C(&row->hp, &row->maxHP, entry->hp, entry->modes & 3);
@@ -331,28 +332,35 @@ static inline int actionStatusScore(actionStatSnapshot* stats, int id)
     actionStatSnapshot* row =
         (actionStatSnapshot*)(id * sizeof(actionStatSnapshot) + (int)stats);
     noCost = ((actionScoreState*)D_800F5878[row->unknown & 15])->maxActionCost == 0;
-    for (i = 0; i < 32; i++)
-        if (row->status & (1 << i))
-            if (i != 12 || !noCost)
+    for (i = 0; i < 32; i++) {
+        if (row->status & (1 << i)) {
+            if (i != 12 || !noCost) {
                 sum += D_80069BD0[i];
-    if (!row->hp)
+            }
+        }
+    }
+    if (!row->hp) {
         sum -= 128;
-    if ((row->hp << 7) < row->maxHP * 44)
+    }
+    if ((row->hp << 7) < row->maxHP * 44) {
         sum -= 84;
+    }
     return sum;
 }
 static inline int actionHpRatio(actionStatSnapshot* stats, int id)
 {
     int d = stats[id].maxHP;
-    if (d == 0)
+    if (d == 0) {
         return 0;
+    }
     return (stats[id].hp << 7) / d;
 }
 static inline int actionMpRatio(actionStatSnapshot* stats, int id)
 {
     int d = stats[id].maxMP;
-    if (d == 0)
+    if (d == 0) {
         return 0;
+    }
     return (stats[id].mp << 7) / d;
 }
 static inline int actionExtraRatio(actionStatSnapshot* stats, int id)
@@ -360,10 +368,12 @@ static inline int actionExtraRatio(actionStatSnapshot* stats, int id)
     actionStatSnapshot* row =
         (actionStatSnapshot*)(id * sizeof(actionStatSnapshot) + (int)stats);
     int extra = 0;
-    if (row->limit10)
+    if (row->limit10) {
         extra = (row->value10 << 7) / row->limit10;
-    if (row->limit14)
+    }
+    if (row->limit14) {
         extra += (row->value14 << 7) / row->limit14;
+    }
     return extra;
 }
 void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int mode,
@@ -374,8 +384,9 @@ void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int
     actionStatSnapshot* stats;
     int id;
     unsigned int kind;
-    if (action)
+    if (action) {
         flags = action->flags;
+    }
     if ((flags & 32) && (rand() & 127) < 115) {
         candidate->score = 0x80000000;
         return;
@@ -395,16 +406,19 @@ void func_800DCC94(actionScoreState* state, actionCandidateEntry* candidate, int
         id = actor->id;
         kind = state->targets[id].classification;
         kind >>= 6;
-        if (kind == 1)
+        if (kind == 1) {
             continue;
+        }
         value = func_800DC284(actionStatusScore(stats, id), actionHpRatio(stats, id),
             actionMpRatio(stats, id), actionExtraRatio(stats, id));
-        if (kind != 2)
+        if (kind != 2) {
             value = -value;
+        }
         candidate->score += value;
     }
-    if (special)
+    if (special) {
         candidate->score++;
+    }
     candidate->score = (candidate->score << 7) + candidate->weight;
 }
 
@@ -456,38 +470,47 @@ void func_800DD000(actionReactionState* state, actionStatApplication* app)
     actionReactionState* other;
     actionStatDelta* entry;
     actionReactionAction* info;
-    if (!app || app->first.skip)
+    if (!app || app->first.skip) {
         return;
+    }
     own = state->id;
-    if (!own)
+    if (!own) {
         return;
+    }
     info = (void*)&vs_main_actions[app->action];
     bad = 0;
-    if (((info->effect1 >> 7) & 63) == 3 || ((info->effect2 >> 7) & 63) == 3)
+    if (((info->effect1 >> 7) & 63) == 3 || ((info->effect2 >> 7) & 63) == 3) {
         bad = 1;
-    if (bad)
+    }
+    if (bad) {
         return;
+    }
     source = app->first.actor;
     action = app->action;
     other = (void*)D_800F5878[source];
     for (i = 0; i < app->count; i++) {
         entry = &app->entries[i];
-        if (entry->skip || entry->actor != own || source == own)
+        if (entry->skip || entry->actor != own || source == own) {
             continue;
-        if (state->mode == 1)
+        }
+        if (state->mode == 1) {
             state->mode = 2;
+        }
         if (func_800DC48C(action, state->id)) {
-            if (source == 0 && state->flag13 == 0 && state->flag27)
+            if (source == 0 && state->flag13 == 0 && state->flag27) {
                 func_800DC210(state, 0);
-            else if ((other->targets[0].b.flags >> 6) == 3)
+            } else if ((other->targets[0].b.flags >> 6) == 3) {
                 func_800DC19C(state);
+            }
         }
         state->targets[source].p.timer = 28;
         if (func_800DC484(action, state->id)) {
-            if (D_800F5920 && source == 0 && (entry->modes & 3) != 2 && entry->hp > 0)
+            if (D_800F5920 && source == 0 && (entry->modes & 3) != 2 && entry->hp > 0) {
                 ((actionReactionMotion*)D_800F5920)->flag = 0;
-            if (source == 0 && state->flag27)
+            }
+            if (source == 0 && state->flag27) {
                 func_800DC19C(state);
+            }
             if (state->flag30 && (state->flag20 == 0 || source == 0)) {
                 func_800DC784(state, source);
             } else if (state->targets[source].p.classification != 3) {
@@ -498,8 +521,9 @@ void func_800DD000(actionReactionState* state, actionStatApplication* app)
                     state->targets[source].p.counter = 127;
                     state->targets[source].p.previous =
                         state->targets[source].p.classification;
-                    if (state->flag20)
+                    if (state->flag20) {
                         func_800DC784(state, source);
+                    }
                 }
             }
         }
@@ -520,16 +544,18 @@ void func_800DD344(actionReactionState* state)
         for (actor = (void*)vs_battle_actors[0]; actor; actor = actor->next) {
             id = actor->id;
             firstOther = (void*)D_800F5878[id];
-            if (id == state->id || id == 0 || firstOther->flag2C == 3)
+            if (id == state->id || id == 0 || firstOther->flag2C == 3) {
                 classification = 2;
-            else if (!firstOther->flag13) {
+            } else if (!firstOther->flag13) {
                 if ((firstOther->targets[0].b.flags >> 6) == 3) {
                     classification = 3;
                     state->targets[id].p.counter = 0;
-                } else
+                } else {
                     classification = 1;
-            } else
+                }
+            } else {
                 classification = 1;
+            }
             state->targets[id].p.classification = classification;
         }
     } else if (state->flag21) {
@@ -549,11 +575,13 @@ void func_800DD344(actionReactionState* state)
                                 && (allyState->targets[state->id].b.flags >> 6) == 2
                                 && (allyState->targets[id].p.classification == 2
                                     || (allyState->targets[id].p.counter
-                                        && allyState->targets[id].p.previous == 2)))
+                                        && allyState->targets[id].p.previous == 2))) {
                                 break;
+                            }
                         }
-                        if (!ally)
+                        if (!ally) {
                             func_800DC784(state, id);
+                        }
                     }
                 }
             }
@@ -1289,8 +1317,9 @@ int func_800DEC88(void* arg0)
             state->f19A = 0;
             func_800E685C(state->id, actor->stats->f31, actor->stats->f33);
             func_800DD604((actionChoiceState*)state);
-            if (context && !context->f44 && context->id == state->id)
+            if (context && !context->f44 && context->id == state->id) {
                 state->timer = 0;
+            }
         }
         func_800DC810((void*)context);
         for (actor = (actorEvaluationActor*)vs_battle_actors[0]; actor;
@@ -1302,15 +1331,17 @@ int func_800DEC88(void* arg0)
             state = (actorEvaluationState*)D_800F5878[actor->id];
             func_800DE3E4((actionPlanState*)state);
             if (state->f13) {
-                if (actor->flags & 32)
+                if (actor->flags & 32) {
                     func_800D821C(state);
-                else
+                } else {
                     func_800D820C(state->id, 128);
+                }
             }
         }
         D_800F58BC->unk18 = 0;
-        if (D_800F5900)
+        if (D_800F5900) {
             vs_main_freeHeapR(D_800F5900);
+        }
     }
     return 0;
 }

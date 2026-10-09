@@ -129,8 +129,9 @@ unsigned int func_800D8400(
     int count, i, result;
     unsigned int directions, quadrant;
     int nearest;
-    if (state->disabled)
+    if (state->disabled) {
         return 0;
+    }
     dest.p.status = 1;
     source = state->position;
     if (first == second) {
@@ -138,15 +139,17 @@ unsigned int func_800D8400(
         count = 1;
     } else {
         quadrant = (direction & 0xFFF) >> 10;
-        if ((direction & 0x3FF) > 512)
+        if ((direction & 0x3FF) > 512) {
             nearest = ((quadrant + 1) & 3) * 2;
-        else
+        } else {
             nearest = quadrant * 2;
+        }
         direction = nearest;
-        if (direction != first)
+        if (direction != first) {
             directions = (first << 16) | direction;
-        else
+        } else {
             directions = (second << 16) | direction;
+        }
         count = 2;
     }
     for (i = 0; i < count; i++) {
@@ -156,19 +159,24 @@ unsigned int func_800D8400(
         result = func_800D96C8(state, source.raw, dest.raw, direction);
         if (result > 0) {
             result = func_800D954C(state, dest.raw);
-            if (result < 0)
+            if (result < 0) {
                 goto blocked;
-            if (result)
+            }
+            if (result) {
                 goto done;
+            }
             return 0;
         }
-        if (result < 0)
+        if (result < 0) {
             goto blocked;
+        }
         dest.raw = func_800DB93C(state, dest.raw, direction, source.raw);
-        if (dest.p.status == 1)
+        if (dest.p.status == 1) {
             goto done;
-        if (dest.p.status)
+        }
+        if (dest.p.status) {
             goto blocked;
+        }
     }
     return 0;
 blocked:
@@ -212,8 +220,9 @@ int func_800D85D8(actionCandidateState* state)
         entry = state->entries[i];
         if (entry->weight && entry->threshold <= D_800F58BC->unk18) {
             if (!func_800E4CF4(state, entry, entry->targetId)
-                || !func_800E4DF8(state, entry->row, entry->column))
+                || !func_800E4DF8(state, entry->row, entry->column)) {
                 entry->weight = 0;
+            }
         }
     }
     if (state->count > 0 && !state->entries[0]->weight) {
@@ -232,15 +241,18 @@ done:
     if (!state->count) {
         actor = vs_battle_actors[0];
         while (actor) {
-            if ((state->targets[actor->id].flags >> 6) == 3)
+            if ((state->targets[actor->id].flags >> 6) == 3) {
                 break;
+            }
             actor = actor->next;
         }
         value = 2;
-        if (!actor)
+        if (!actor) {
             value = 3;
-    } else
+        }
+    } else {
         value = D_800F58BC->unk18 + 30 < state->entries[0]->threshold;
+    }
     state->status = value;
     return changed;
 }

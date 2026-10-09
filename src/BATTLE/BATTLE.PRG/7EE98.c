@@ -335,26 +335,32 @@ void func_800E7960(trackingMotionState* state)
     }
     state->context->active = 0;
     radius = vs_gte_rsqrt(motion->radiusSquared);
-    if (radius < 1024)
+    if (radius < 1024) {
         radius += 32;
-    if (radius > 1024)
+    }
+    if (radius > 1024) {
         radius -= 32;
+    }
     difference = radius - 1024;
-    if (difference < 0)
+    if (difference < 0) {
         difference = -difference;
-    if (difference < 32)
+    }
+    if (difference < 32) {
         radius = 1024;
+    }
     motion->radiusSquared = radius * radius;
     center[0] = 0x7C0000;
     difference = motion->height - 160;
-    if (difference < 0)
+    if (difference < 0) {
         difference = -difference;
-    if (difference < 16)
+    }
+    if (difference < 16) {
         motion->height = 160;
-    else if (motion->height < 160)
+    } else if (motion->height < 160) {
         motion->height += 12;
-    else
+    } else {
         motion->height -= 12;
+    }
     center[1] = motion->height << 12;
     center[2] = 0x7C0000;
     playerAngle = ratan2(0x7C0 - ((trackingMotionActor*)D_800F4538[0])->x,
@@ -368,30 +374,36 @@ void func_800E7960(trackingMotionState* state)
         heading = playerAngle + 0x800;
     }
     sign = -1;
-    if (D_800F5918 >= 0)
+    if (D_800F5918 >= 0) {
         sign = 1;
+    }
     cosCurrent = rcos(-currentAngle + 0xC00);
     sinTarget = rsin(-heading + 0xC00);
     sinCurrent = rsin(-currentAngle + 0xC00);
     cosTarget = rcos(-heading + 0xC00);
     aligned = ((cosCurrent * sinTarget - sinCurrent * cosTarget) * sign) >= 0;
     if (aligned) {
-        if (ABS(D_800F5918) > 0x280000)
+        if (ABS(D_800F5918) > 0x280000) {
             delta = D_800F5918 / 8 + (sign << 16);
-        else
+        } else {
             delta = sign << 16;
-    } else
+        }
+    } else {
         delta = D_800F5918 / 4 + (sign << 16);
+    }
     if (tracking || rcos(currentAngle - heading) < rcos(222)) {
-        if (!aligned)
+        if (!aligned) {
             delta = -delta;
+        }
     }
     D_800F5918 += delta;
     sign = -1;
-    if (D_800F5918 >= 0)
+    if (D_800F5918 >= 0) {
         sign = 1;
-    if (ABS(D_800F5918) > 0x820000)
+    }
+    if (ABS(D_800F5918) > 0x820000) {
         D_800F5918 = sign * 0x820000;
+    }
     ratio = (state->stats->current << 16) / state->stats->maximum;
     if (!motion->stateC) {
         if ((!motion->phase && ratio < 0xC000)
@@ -429,24 +441,29 @@ void func_800E7960(trackingMotionState* state)
         scale = 10;
     }
     denominator &= 0xFFF;
-    if (denominator > 0x800)
+    if (denominator > 0x800) {
         denominator = 0x1000 - denominator;
+    }
     if (!denominator) {
         denominator = 1;
         scale = 0;
     }
     magnitude = ABS(D_800F5918);
     correction = magnitude * scale / denominator;
-    if (ABS(correction) > magnitude * 4)
+    if (ABS(correction) > magnitude * 4) {
         correction = (correction >> 31) * magnitude * 4;
+    }
     D_800F591C += correction >> 16;
-    if (D_800F591C < -100)
+    if (D_800F591C < -100) {
         D_800F591C = -100;
-    if (D_800F591C > 500)
+    }
+    if (D_800F591C > 500) {
         D_800F591C = 500;
+    }
     state->targetY = center[1] - (D_800F591C << 12);
-    if (state->targetY >= 0xFF000)
+    if (state->targetY >= 0xFF000) {
         state->targetY = 0xFF000;
+    }
     func_800DEEFC((void*)state, 8);
 }
 

@@ -173,23 +173,26 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         color = colorStart;
         factor = &factors[0];
         do {
-            if (effect->rCurve)
+            if (effect->rCurve) {
                 maxSpeed =
                     *factor * vs_battle_sampleCurve(effect->rCurve, state->age) / 128;
-            else
+            } else {
                 maxSpeed = (u_char)*factor;
+            }
             color[0] = maxSpeed;
-            if (effect->gCurve)
+            if (effect->gCurve) {
                 maxSpeed =
                     *factor * vs_battle_sampleCurve(effect->gCurve, state->age) / 128;
-            else
+            } else {
                 maxSpeed = (u_char)*factor;
+            }
             color[1] = maxSpeed;
-            if (effect->bCurve)
+            if (effect->bCurve) {
                 maxSpeed =
                     *factor * vs_battle_sampleCurve(effect->bCurve, state->age) / 128;
-            else
+            } else {
                 maxSpeed = (u_char)*factor;
+            }
             color[2] = maxSpeed;
             {
                 *(color++ + 3) = primPolyGT4SemiTrans;
@@ -215,14 +218,16 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800D6D24(&state->texture);
         texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
 #ifdef VS_RING_TRANSPOSED
-        for (column = 0; column < 9; ++column)
+        for (column = 0; column < 9; ++column) {
             u[column] = texture->v0 + texture->v1 * column / 8;
+        }
         v[0] = texture->u0;
         v[2] = v[0] + texture->u1;
         v[1] = texture->u0 + ((texture->u1 * fraction) >> 12);
 #else
-        for (column = 0; column < 9; ++column)
+        for (column = 0; column < 9; ++column) {
             u[column] = texture->u0 + texture->u1 * column / 8;
+        }
         v[0] = texture->v0;
         v[2] = v[0] + texture->v1;
         v[1] = texture->v0 + ((texture->v1 * fraction) >> 12);
@@ -297,8 +302,9 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         ++state->age;
         if (state->lifetime) {
             --state->lifetime;
-            if (!state->lifetime)
+            if (!state->lifetime) {
                 alive = 0;
+            }
         }
         break;
     }

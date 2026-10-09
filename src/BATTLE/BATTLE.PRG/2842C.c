@@ -17,19 +17,10 @@ typedef struct {
     void* unk4;
     short unk8;
     short unkA;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
+    VECTOR unkC;
     SVECTOR unk1C;
-    short unk24;
-    short unk26;
-    short unk28;
-    short unk2A;
-    short unk2C;
-    short unk2E;
-    short unk30;
-    short unk32;
+    SVECTOR unk24;
+    SVECTOR unk2C;
 } func_80092F74_t;
 
 typedef struct {
@@ -209,6 +200,7 @@ typedef struct {
     u_char color;
 } D_800690B4_t;
 
+short func_8008DC7C(int, int);
 void func_8008F29C(int, int);
 void func_8008F30C(int, int);
 void func_8008F440(void);
@@ -995,15 +987,13 @@ void func_800927AC(D_800F1DD8_t* arg0)
             int* entry = func_8009195C(elem->unk8);
             elem->unk0 = entry;
             if (entry != NULL) {
-                elem->unkC = entry[1] * 16;
-                elem->unk10 = entry[2] * 16;
-                elem->unk14 = entry[3] * 16;
+                setVector(&elem->unkC, entry[1] * 16, entry[2] * 16, entry[3] * 16);
                 setVector(&elem->unk1C, entry[4], entry[5], entry[6]);
             }
         } else {
             elem->unk0 = NULL;
         }
-        elem->unk18 = 0;
+        elem->unkC.pad = 0;
         elem->unk1C.pad = 0;
         if (elem->unk0 == NULL) {
             elem->unk8 = -1;
@@ -1095,78 +1085,71 @@ int func_80092B04(func_80092B04_t* arg0, int arg1, D_800F1DD8_t* arg2)
 
 int func_80092C68(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    int x = arg0->unkC / 16 - arg1->unk4[0].s16[0];
+    int x = arg0->unkC.vx / 16 - arg1->unk4[0].s16[0];
     int y;
     int z;
     int d;
 
-    arg0->unk24 = arg1->unk4[1].u16[1] - ABS(x);
-    y = arg0->unk10 / 16 - arg1->unk4[0].s16[1];
-    arg0->unk26 = arg1->unk4[1].u16[1] - ABS(y);
-    z = arg0->unk14 / 16;
+    arg0->unk24.vx = arg1->unk4[1].u16[1] - ABS(x);
+    y = arg0->unkC.vy / 16 - arg1->unk4[0].s16[1];
+    arg0->unk24.vy = arg1->unk4[1].u16[1] - ABS(y);
+    z = arg0->unkC.vz / 16;
     z -= arg1->unk4[1].s16[0];
-    arg0->unk28 = arg1->unk4[1].u16[1] - ABS(z);
+    arg0->unk24.vz = arg1->unk4[1].u16[1] - ABS(z);
 
-    d = arg0->unk24;
+    d = arg0->unk24.vx;
 
     if (d > 0) {
-        z = arg0->unkC - (arg1->unk4[0].s16[0] << 4);
+        z = arg0->unkC.vx - (arg1->unk4[0].s16[0] << 4);
         if (z < 0) {
-            arg0->unk24 = -d;
+            arg0->unk24.vx = -d;
         }
     } else {
-        arg0->unk24 = 0;
+        arg0->unk24.vx = 0;
     }
 
-    d = arg0->unk26;
+    d = arg0->unk24.vy;
 
     if (d > 0) {
-        if (arg0->unk10 - (arg1->unk4[0].s16[1] << 4) < 0) {
-            arg0->unk26 = -d;
+        if (arg0->unkC.vy - (arg1->unk4[0].s16[1] << 4) < 0) {
+            arg0->unk24.vy = -d;
         }
     } else {
-        arg0->unk26 = 0;
+        arg0->unk24.vy = 0;
     }
 
-    d = arg0->unk28;
+    d = arg0->unk24.vz;
 
     if (d > 0) {
-        if (arg0->unk14 - (arg1->unk4[1].s16[0] << 4) < 0) {
-            arg0->unk28 = -d;
+        if (arg0->unkC.vz - (arg1->unk4[1].s16[0] << 4) < 0) {
+            arg0->unk24.vz = -d;
         }
     } else {
-        arg0->unk28 = 0;
+        arg0->unk24.vz = 0;
     }
 
-    arg0->unk24 /= 4;
-    arg0->unk26 /= 4;
-    arg0->unk28 /= 4;
-    arg0->unk2A = arg1->unk4[2].u16[0] + 1;
-    arg0->unk2C = (arg0->unk24 & 0x1F) - 16;
-    arg0->unk2E = (arg0->unk26 & 0x3F) - 32;
-    arg0->unk30 = 0;
-    arg0->unk32 = 0;
+    applyVector(&arg0->unk24, 4, 4, 4, /=);
+    arg0->unk24.pad = arg1->unk4[2].u16[0] + 1;
+    setVector(
+        &arg0->unk2C, (arg0->unk24.vx & 0x1F) - 16, (arg0->unk24.vy & 0x3F) - 32, 0);
+    arg0->unk2C.pad = 0;
     return 0;
 }
 
 int func_80092E14(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    arg0->unk24 = arg1->unk4[0].u16[0];
-    arg0->unk26 = arg1->unk4[0].u16[1];
-    arg0->unk28 = arg1->unk4[1].u16[0];
-    arg0->unk2A = arg1->unk4[1].u16[1];
-    arg0->unk2C = arg1->unk4[2].u16[0];
-    arg0->unk2E = arg1->unk4[2].u16[1];
-    arg0->unk30 = arg1->unk4[3].u16[0];
-    arg0->unk32 = arg1->unk4[3].u16[1];
+    setVector(
+        &arg0->unk24, arg1->unk4[0].u16[0], arg1->unk4[0].u16[1], arg1->unk4[1].u16[0]);
+    arg0->unk24.pad = arg1->unk4[1].u16[1];
+    setVector(
+        &arg0->unk2C, arg1->unk4[2].u16[0], arg1->unk4[2].u16[1], arg1->unk4[3].u16[0]);
+    arg0->unk2C.pad = arg1->unk4[3].u16[1];
     return 0;
 }
 
 int func_80092E7C(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    arg0->unkC = arg1->unk4[0].s32;
-    arg0->unk10 = arg1->unk4[1].s32;
-    arg0->unk14 = arg1->unk4[2].s32;
+    setVector(&arg0->unkC, arg1->unk4[0].s32, arg1->unk4[1].s32, arg1->unk4[2].s32);
     setVector(&arg0->unk1C, arg1->unk4[3].s32, arg1->unk14, arg1->unk18);
     func_80092EDC(arg0);
     return 0;
@@ -1176,9 +1159,9 @@ void func_80092EDC(func_80092F74_t* arg0)
 {
     if (arg0->unk8 >= 0) {
         int* temp_v1 = arg0->unk0;
-        temp_v1[1] = arg0->unkC / 16;
-        temp_v1[2] = arg0->unk10 / 16;
-        temp_v1[3] = arg0->unk14 / 16;
+        temp_v1[1] = arg0->unkC.vx / 16;
+        temp_v1[2] = arg0->unkC.vy / 16;
+        temp_v1[3] = arg0->unkC.vz / 16;
 
         temp_v1[4] = arg0->unk1C.vx;
         temp_v1[5] = arg0->unk1C.vy;
@@ -1222,36 +1205,77 @@ int func_80092FBC(func_80092F74_t* arg0, func_80092F74_t2* arg1)
             return 0;
         }
     } else {
-        ++arg0->unk18;
-        if (arg0->unk18 >= new_var->unk4[0].u16[0]) {
-            arg0->unk18 = 0;
+        ++arg0->unkC.pad;
+        if (arg0->unkC.pad >= new_var->unk4[0].u16[0]) {
+            arg0->unkC.pad = 0;
             return 0;
         }
     }
     return 1;
 }
 
-int func_8009306C(func_80092F74_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009306C);
+int func_8009306C(func_80092F74_t* arg0)
+{
+    int height;
+
+    addVector(&arg0->unkC, &arg0->unk24);
+    addVector(&arg0->unk1C, &arg0->unk2C);
+    applyVector(&arg0->unk1C, 0xFFF, 0xFFF, 0xFFF, &=);
+
+    height = func_8008DC7C(arg0->unkC.vx / 16, arg0->unkC.vz / 16) << 17;
+    height >>= 17;
+
+    if (height < arg0->unkC.vy / 16) {
+        ++arg0->unk1C.pad;
+
+        if ((arg0->unk1C.pad < 3) && (arg0->unk24.pad > 0)) {
+            int velocity;
+
+            arg0->unkC.vy = height * 16;
+            velocity = arg0->unk24.vy / -(ABS(arg0->unk24.pad) + 2);
+            arg0->unk24.vx /= 2;
+            arg0->unk24.vz /= 2;
+            applyVector(&arg0->unk2C, 2, 2, 2, /=);
+            arg0->unk24.vy = velocity;
+        } else {
+            arg0->unk1C.pad = 0;
+            return 0;
+        }
+    }
+
+    if (arg0->unk24.pad != 0) {
+        arg0->unk24.vx -= (arg0->unk24.vx * arg0->unk24.pad) / 16;
+        arg0->unk24.vz -= (arg0->unk24.vz * arg0->unk24.pad) / 16;
+    }
+
+    arg0->unk24.vy += 16;
+
+    if (arg0->unk2C.pad != 0) {
+        applyVector(&arg0->unk2C, (arg0->unk2C.vx * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vy * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vz * arg0->unk2C.pad) / 16, -=);
+    }
+
+    func_80092EDC(arg0);
+    return 1;
+}
 
 int func_80093364(func_80092F74_t* arg0)
 {
-    arg0->unkC += arg0->unk24;
-    arg0->unk10 += arg0->unk26;
-    arg0->unk14 += arg0->unk28;
-    applyVector(&arg0->unk1C, arg0->unk2C, arg0->unk2E, arg0->unk30, +=);
+    addVector(&arg0->unkC, &arg0->unk24);
+    addVector(&arg0->unk1C, &arg0->unk2C);
     applyVector(&arg0->unk1C, 0xFFF, 0xFFF, 0xFFF, &=);
 
-    if (arg0->unk2A != 0) {
-        arg0->unk24 -= (arg0->unk24 * arg0->unk2A) / 16;
-        arg0->unk26 -= (arg0->unk26 * arg0->unk2A) / 16;
-        arg0->unk28 -= (arg0->unk28 * arg0->unk2A) / 16;
+    if (arg0->unk24.pad != 0) {
+        applyVector(&arg0->unk24, (arg0->unk24.vx * arg0->unk24.pad) / 16,
+            (arg0->unk24.vy * arg0->unk24.pad) / 16,
+            (arg0->unk24.vz * arg0->unk24.pad) / 16, -=);
     }
 
-    if (arg0->unk32 != 0) {
-        arg0->unk2C -= (arg0->unk2C * arg0->unk32) / 16;
-        arg0->unk2E -= (arg0->unk2E * arg0->unk32) / 16;
-        arg0->unk30 -= (arg0->unk30 * arg0->unk32) / 16;
+    if (arg0->unk2C.pad != 0) {
+        applyVector(&arg0->unk2C, (arg0->unk2C.vx * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vy * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vz * arg0->unk2C.pad) / 16, -=);
     }
 
     func_80092EDC(arg0);

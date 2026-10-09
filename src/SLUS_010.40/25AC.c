@@ -1346,37 +1346,42 @@ void SetVoiceParamsByFlags(u_int in_VoiceIndex, FSoundVoiceParams* in_VoiceParam
     if (flags & VOICE_PARAM_SAMPLE_RATE) {
         flags &= ~VOICE_PARAM_SAMPLE_RATE;
         SetVoiceSampleRate(in_VoiceIndex, in_VoiceParams->SampleRate);
-        if (flags == 0)
+        if (flags == 0) {
             return;
+        }
     }
 
     if (flags & VOICE_PARAM_VOLUME) {
         flags &= ~VOICE_PARAM_VOLUME;
         SetVoiceVolume(in_VoiceIndex, in_VoiceParams->Volume.left,
             in_VoiceParams->Volume.right, in_VoiceParams->VolumeScale);
-        if (flags == 0)
+        if (flags == 0) {
             return;
+        }
     }
 
     if (flags & VOICE_PARAM_START_ADDR) {
         flags &= ~VOICE_PARAM_START_ADDR;
         SetVoiceStartAddr(in_VoiceIndex, in_VoiceParams->StartAddress);
-        if (flags == 0)
+        if (flags == 0) {
             return;
+        }
     }
 
     if (flags & VOICE_PARAM_LOOP_ADDR) {
         flags &= ~VOICE_PARAM_LOOP_ADDR;
         SetVoiceRepeatAddr(in_VoiceIndex, in_VoiceParams->LoopAddress);
-        if (flags == 0)
+        if (flags == 0) {
             return;
+        }
     }
 
     if (flags & VOICE_PARAM_ADSR_UPPER) {
         flags &= ~VOICE_PARAM_ADSR_UPPER;
         SetVoiceAdsrUpper(in_VoiceIndex, in_VoiceParams->AdsrUpper);
-        if (flags == 0)
+        if (flags == 0) {
             return;
+        }
     }
 
     if (flags & VOICE_PARAM_ADSR_LOWER) {

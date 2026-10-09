@@ -12,4 +12,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG082.BIN/nonmatchings/128", func_800FB338);
 
 INCLUDE_ASM("build/src/EFFECT/PLG082.BIN/nonmatchings/128", func_800FB5CC);
 
-INCLUDE_ASM("build/src/EFFECT/PLG082.BIN/nonmatchings/128", func_800FC11C);
+#define VS_CLOSED_RING_FUNCTION func_800FC11C
+#define VS_CLOSED_RING_COLORS D_800FD08C
+#include "src/EFFECT/closedRings.h"

@@ -280,10 +280,11 @@ void DecDCTvlcBuild(u_short* arg0)
                     *var_a2 = *(var_a2 - i);
                     ++var_a2;
                 }
-            } else
+            } else {
                 for (; var_a1 >= 0; --var_a1) {
                     *var_a2++ = *var_a3++;
                 }
+            }
         } else {
             i = 0;
             if (var_a1 != 240) {

@@ -1,3 +1,6 @@
-#include "common.h"
+#include "spu.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_GVEA", SpuGetVoiceEnvelope);
+void SpuGetVoiceEnvelope(int vNum, short* envx)
+{
+    *envx = (&_spu_RXX->voice[vNum])->envx;
+}

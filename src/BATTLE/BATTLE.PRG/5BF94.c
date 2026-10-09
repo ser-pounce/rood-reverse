@@ -74,7 +74,7 @@ typedef struct {
     u_short unkE;
     u_short* data;
     vs_main_CdQueueSlot* cdQueueSlot;
-    short unk18[240];
+    u_short unk18[240];
     u_short imageTable[254];
     int unk3F4;
 } gim_t;
@@ -1766,7 +1766,7 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
     gim->unk0_0 = 1;
 
     if (gim->unk0_3 == 2) {
-        short* p = gim->unk18;
+        u_short* p = gim->unk18;
         int angle = vs_battle_keystreamBits(9);
         int target = vs_battle_keystreamBits(10);
 
@@ -3313,7 +3313,104 @@ void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
         ((var_s1 + 0x100) >> 6) | new_var | 0xE1000000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC204);
+void func_800CC204(gim_t* image, int clut, u_long* ot)
+{
+    short left[240];
+    short right[240];
+    u_short* tiles = &image->imageTable[4];
+    int mode = image->unk0_2;
+    u_short* widths = image->unk18;
+    int page = image->unk2 - 18;
+    int color = image->unkE;
+    int y;
+    int column;
+    int end = image->unk3;
+    int x = image->unkC & 0x3FFF;
+
+    if (x == ONE) {
+        image->unk3 = 128;
+        func_800CBBCC(image, clut, ot);
+        image->unk3 = end;
+        return;
+    }
+
+    if (x < ONE) {
+        for (y = 0; y < 240; ++y) {
+            column = (widths[y] * x) >> 12;
+
+            if (end) {
+                left[y] = 320 - column;
+                right[y] = 320;
+            } else {
+                left[y] = 0;
+                right[y] = column;
+            }
+        }
+    } else {
+        for (y = 0; y < 240; ++y) {
+            column = (widths[y] * (x - ONE)) >> 12;
+
+            if (end) {
+                left[y] = 0;
+                right[y] = 320 - column;
+            } else {
+                left[y] = column;
+                right[y] = 320;
+            }
+        }
+    }
+
+    for (y = 0; y < 240; ++y) {
+        for (column = 0; column < 5; ++column) {
+            int tile;
+
+            x = left[y];
+
+            if (x >= (column + 1) * 64) {
+                continue;
+            }
+
+            end = right[y];
+
+            if (end <= column * 64) {
+                continue;
+            }
+
+            if (x < column * 64) {
+                x = column * 64;
+            }
+
+            if (end > (column + 1) * 64) {
+                end = (column + 1) * 64;
+            }
+
+            tile = tiles[(y / 15) * 5 + column];
+
+            if (tile) {
+                int tpage = getTPage(mode, 1, (page + (tile >> 8)) * 64, 256);
+
+            draw:
+                do {
+                    u_long* prim = vs_battle_setSprite(128, x | (y << 16),
+                        (x & 1) ? vs_getWH(1, 1) : ((end - x) | 0x10000), ot);
+
+                    prim[1] = tpage | _get_mode(0, 0, 0);
+                    prim[4] = (((tile & 3) * 64) + (x & 0x3F))
+                            | ((((tile >> 2) & 0x1F) * 15 + (y % 15)) << 8) | clut;
+                } while (0);
+                if (x & 1) {
+                    ++x;
+                    goto draw;
+                }
+            } else if (color) {
+                vs_battle_addTile(ot,
+                    ((color & 0x1F) << 3) | ((color & 0x3E0) << 6)
+                        | ((color & 0x7C00) << 9) | 0x40000000,
+                    (x & 0xFFFF) | (y << 16), (end - 1) | (y << 16));
+            }
+        }
+    }
+}
 
 void func_800CC580(u_long* arg0, int arg1)
 {

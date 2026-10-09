@@ -329,6 +329,7 @@ typedef struct {
 
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
+void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
 void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
@@ -406,6 +407,7 @@ extern int _menuLbas[];
 extern u_char D_800EB708[];
 extern u_char D_800EB7B4[];
 extern u_char D_800EB7D4[];
+extern u_short D_800EB98C[16];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
 extern func_800C56C0_t* D_800EB9B8;
@@ -1564,8 +1566,48 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
 }
 #pragma vsstring(end)
 
-void func_800C7EBC(void*, int, int, int);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7EBC);
+void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
+{
+    RECT rect;
+    u_short pixels[36];
+    u_short packed;
+    int row;
+    int column;
+    u_short* output;
+    u_int inverse = 0x10000 - alpha;
+
+    setRECT(&rect, (glyph % 21) * 3 + 832, (glyph / 21) * 12, 3, 12);
+    StoreImage(&rect, (u_long*)pixels);
+    DrawSync(0);
+
+    for (row = 0; row < 12; ++row, destination += stride) {
+        for (column = 0, output = destination; column < 12; ++column, ++output) {
+            u_short source;
+            u_int index;
+
+            if (column & 3) {
+                packed >>= 4;
+            } else {
+                packed = pixels[(column >> 2) + row * 3];
+            }
+
+            index = packed & 15;
+            source = index;
+
+            if (index == 0) {
+                continue;
+            }
+
+            source = D_800EB98C[source];
+            *output =
+                (((((*output & 31) * inverse) + ((source & 31) * alpha)) >> 16) & 31)
+                | (((((*output & 0x3E0) * inverse) + ((source & 0x3E0) * alpha)) >> 16)
+                    & 0x3E0)
+                | (((((*output & 0x7C00) * inverse) + ((source & 0x7C00) * alpha)) >> 16)
+                    & 0x7C00);
+        }
+    }
+}
 
 #pragma vsstring(start)
 void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)

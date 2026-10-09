@@ -78,7 +78,6 @@ typedef struct {
 } labelBoxPrim_t;
 
 void func_800C02A8(void);
-MATRIX* func_800C085C(u_char* scale, int angle);
 void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);

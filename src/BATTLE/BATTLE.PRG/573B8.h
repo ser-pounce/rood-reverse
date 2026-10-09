@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <libgte.h>
 
 typedef struct {
     short xyz[3];
@@ -42,6 +43,7 @@ u_long* vs_battle_setSprite(int brightnessTransparency, int xy, int wh, u_long* 
 
 void func_800C031C(void);
 int func_800C0758(int phase, int segments, int index);
+MATRIX* func_800C085C(u_char* scale, int angle);
 void func_800C05B4(void);
 void func_800C06E0(void);
 void func_800C0738(void);

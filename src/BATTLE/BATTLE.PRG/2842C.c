@@ -47,7 +47,7 @@ typedef struct {
     int unk0;
     char unk4;
     char unk5;
-    char unk6;
+    u_char unk6;
     char unk7;
     int unk8;
     int unkC;
@@ -190,6 +190,18 @@ typedef struct {
     int scrollStep;
     RECT rect;
 } func_80091FE8_t;
+
+typedef struct {
+    u_char count;
+    u_char unk1;
+    u_char active;
+    u_char unk3;
+} func_80092548_t;
+
+typedef struct {
+    short size;
+    short type;
+} func_80092548_t2;
 
 typedef struct {
     u_char count;
@@ -866,7 +878,99 @@ int func_800923F8(D_800F1DD8_t2* arg0)
 
 int func_80092540(void) { return 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80092548);
+void func_80092548(void)
+{
+    int sizes[] = { 24, 20, 32, 0, 0, 0, 36 };
+    void* data;
+    int count;
+    int length;
+    int index;
+    int consumed;
+
+    D_800F2258 = -1;
+    D_800F1D00 = 0;
+    D_800F225A = 0;
+
+    if ((int)vs_battle_roomData.header.textureEffectsSectionLen > 0) {
+        data = vs_battle_roomData.textureEffectsSection;
+        length = vs_battle_roomData.header.textureEffectsSectionLen;
+        consumed = 0;
+        count = 0;
+
+        while (consumed < length) {
+            D_800F1DD8_t2* effect = data;
+
+            if (effect->unk6 < 7 && sizes[effect->unk6] != 0) {
+                D_800F1DD8[count].unk4 = effect;
+                D_800F1DD8[count].unk0 = effect->unk5 == 0;
+                D_800F1DD8[count].unk2 = 1;
+                D_800F1DD8[count].unk3 = 0;
+                D_800F1DD8[count].unk1 = effect->unk6;
+                effect->unk4 = 1;
+                consumed += sizes[effect->unk6];
+                data += sizes[effect->unk6];
+                ++count;
+            } else {
+                consumed = length;
+            }
+        }
+
+        D_800F225A = count;
+    }
+
+    D_800F225B = 0;
+
+    if ((int)vs_battle_roomData.header.sectionDLen <= 0) {
+        return;
+    }
+
+    data = vs_battle_roomData.sectionD;
+    count = vs_battle_roomData.header.sectionDLen;
+    length = 0;
+
+    for (index = 64; length < count; ++index) {
+        func_80092548_t* script = data;
+        D_800F1DD8_t* entry = &D_800F1DD8[index];
+        func_80092548_t2* chunk;
+        int size;
+
+        entry->unk0 = script->active;
+        entry->unk1 = script->count;
+        entry->unk2 = 1;
+        entry->unk3 = 0;
+        entry->unk4 = data;
+        entry->unk8 = data;
+
+        if (entry->unk0 != 0) {
+            func_800927AC(entry);
+        }
+
+        size = entry->unk1 + 4;
+
+        if ((entry->unk1 & 3) != 0) {
+            int alignedSize = entry->unk1 + 8;
+
+            size = alignedSize - (entry->unk1 & 3);
+        }
+
+        data += size;
+        length += size;
+
+        chunk = data;
+        size = chunk->type == 11 ? 4 : chunk->size;
+
+        while (size != 0) {
+            data += size;
+            length += size;
+            chunk = data;
+            size = chunk->type == 11 ? 4 : chunk->size;
+        }
+
+        length += 4;
+        data += 4;
+        ++D_800F225B;
+    }
+}
 
 void func_800927AC(D_800F1DD8_t* arg0)
 {

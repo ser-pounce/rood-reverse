@@ -254,8 +254,8 @@ typedef struct {
     _mpdRoomSection9* section9;
     _mpdRoomSectionA* sectionA;
     _mpdRoomSectionB* sectionB;
-    int textureEffectsSection;
-    int sectionD;
+    void* textureEffectsSection;
+    void* sectionD;
     _mpdRoomSectionE* sectionE;
     vs_battle_scene* sectionF;
     u_short* section10;

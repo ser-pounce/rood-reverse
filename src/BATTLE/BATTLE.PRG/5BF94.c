@@ -3913,7 +3913,92 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
+int func_800CE174(func_800D4910_t* node, u_int mode, int config)
+{
+    effectTrailState* t = node->unk8;
+    int result = 1;
+
+    switch (mode) {
+    case 1:
+        t = vs_main_allocHeapR(sizeof *t);
+        node->unk8 = t;
+        t->index = 0;
+        t->age = 0;
+        *(int*)&t->config = config;
+        break;
+    case 2:
+        t->index = (t->index + 1) & 7;
+        func_800A1AF8(t->config.actor, t->config.bone, &t->first[t->index], 0);
+        func_800A1AF8(t->config.actor, t->config.bone, &t->second[t->index], 1);
+
+        if (++t->age >= 4) {
+            int segments = (t->age < 9) ? t->age - 3 : 5;
+            int phase;
+            int span;
+            int weight;
+
+            SetRotMatrix(&vs_scratch.viewMatrix);
+            SetTransMatrix(&vs_scratch.viewMatrix);
+            vs_battle_splineInterpolate(&t->first[t->index],
+                &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
+                &t->first[(t->index - 3) & 7], -ONE, &t->previousFirst);
+            vs_battle_splineInterpolate(&t->second[t->index],
+                &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
+                &t->second[(t->index - 3) & 7], -ONE, &t->previousSecond);
+            weight = (segments + 1) * 2;
+
+            for (span = -ONE / 2; span < 0; span += ONE / 2) {
+                vs_battle_splineInterpolate(&t->first[t->index],
+                    &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
+                    &t->first[(t->index - 3) & 7], span, &t->currentFirst);
+                vs_battle_splineInterpolate(&t->second[t->index],
+                    &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
+                    &t->second[(t->index - 3) & 7], span, &t->currentSecond);
+                func_800CDCBC(t, weight / 2, (weight - 1) / 2);
+                --weight;
+                t->previousFirst = t->currentFirst;
+                t->previousSecond = t->currentSecond;
+            }
+
+            for (span = 0; span < segments; ++span) {
+                for (phase = 0; phase < ONE; phase += ONE / 2) {
+                    vs_battle_splineInterpolate(&t->first[(t->index - span) & 7],
+                        &t->first[(t->index - span - 1) & 7],
+                        &t->first[(t->index - span - 2) & 7],
+                        &t->first[(t->index - span - 3) & 7], phase, &t->currentFirst);
+                    vs_battle_splineInterpolate(&t->second[(t->index - span) & 7],
+                        &t->second[(t->index - span - 1) & 7],
+                        &t->second[(t->index - span - 2) & 7],
+                        &t->second[(t->index - span - 3) & 7], phase, &t->currentSecond);
+                    func_800CDCBC(t, weight / 2, (weight - 1) / 2);
+                    --weight;
+                    t->previousFirst = t->currentFirst;
+                    t->previousSecond = t->currentSecond;
+                }
+            }
+        }
+
+        if (t->config.life != 255) {
+            --t->config.life;
+        }
+
+        if (t->config.life == 0) {
+            result = 0;
+        }
+
+        break;
+    case 3:
+        t->config.life = 8;
+        break;
+    case 4:
+        vs_main_freeHeapR(t);
+        node->unk8 = NULL;
+        result = 0;
+        break;
+    }
+
+    return result;
+}
 
 int func_800CE644(int arg0 __attribute__((unused))) { }
 

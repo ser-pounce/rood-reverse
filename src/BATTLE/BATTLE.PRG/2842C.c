@@ -181,6 +181,17 @@ typedef struct {
 } func_80091E10_t;
 
 typedef struct {
+    u_char tick;
+    u_char frame;
+    u_char frameCount;
+    u_char columns;
+    char unk4[3];
+    u_char delay;
+    int scrollStep;
+    RECT rect;
+} func_80091FE8_t;
+
+typedef struct {
     u_char count;
     u_char labels[2];
     u_char color;
@@ -736,7 +747,68 @@ int func_80091E10(func_80091E10_t* arg0)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091FE8);
+int func_80091FE8(func_80091FE8_t* arg0)
+{
+    RECT source;
+    RECT halfSource;
+
+    if (++arg0->tick > arg0->delay) {
+        int destX;
+        int destY;
+        int halfDestX;
+        int halfSourceX;
+
+        arg0->rect.x -= 320;
+        arg0->rect.y += 256;
+        arg0->tick = 0;
+
+        if (arg0->scrollStep == 0) {
+            if (++arg0->frame > arg0->frameCount) {
+                arg0->frame = 1;
+            }
+
+            setRECT(&source, arg0->rect.x + arg0->rect.w * (arg0->frame % arg0->columns),
+                arg0->rect.y + arg0->rect.h * (arg0->frame / arg0->columns), arg0->rect.w,
+                arg0->rect.h);
+        } else {
+            arg0->frame += arg0->scrollStep;
+
+            if (arg0->frame >= arg0->rect.h) {
+                arg0->frame = 0;
+            }
+
+            setRECT(&source, arg0->rect.x + arg0->rect.w / 2, arg0->rect.y + arg0->frame,
+                arg0->rect.w / 2, arg0->rect.h - arg0->frame);
+        }
+
+        halfDestX = (arg0->rect.x % 64) / 2 - 64;
+        destX = halfDestX + (arg0->rect.x & 0x3C0);
+        destY = (arg0->rect.y % 256) / 2 + (arg0->rect.y & 0x100);
+        halfSourceX = (source.x % 64) / 2 - 64;
+        setRECT(&halfSource, halfSourceX + (source.x & 0x3C0),
+            (source.y % 256) / 2 + (source.y & 0x100), source.w / 2, source.h / 2);
+        MoveImage(&source, arg0->rect.x, arg0->rect.y);
+        MoveImage(&halfSource, destX, destY);
+
+        if (arg0->scrollStep != 0 && arg0->frame != 0) {
+            int wrapY;
+
+            source.y = arg0->rect.y;
+            source.h = arg0->frame;
+            wrapY = arg0->rect.y + arg0->rect.h - arg0->frame;
+            destY = (wrapY % 256) / 2 + (wrapY & 0x100);
+            halfSource.y = (source.y % 256) / 2 + (source.y & 0x100);
+            halfSource.h = source.h / 2;
+            MoveImage(&source, arg0->rect.x, wrapY);
+            MoveImage(&halfSource, destX, destY);
+        }
+
+        arg0->rect.x += 320;
+        arg0->rect.y -= 256;
+    }
+
+    return 1;
+}
 
 int func_800923F8(D_800F1DD8_t2* arg0)
 {

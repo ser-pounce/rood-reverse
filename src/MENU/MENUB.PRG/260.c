@@ -758,8 +758,9 @@ static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
     slot->grip = _copyGripToInventory(&arg0->grip, index);
 
     for (i = 0; i < 3; i++) {
-        if (arg0->gems[i].id != 0)
+        if (arg0->gems[i].id != 0) {
             slot->gems[i] = _copyGemToInventory(&arg0->gems[i], index);
+        }
     }
 
     vs_battle_rMemcpy(slot->name, arg0->name, sizeof slot->name);

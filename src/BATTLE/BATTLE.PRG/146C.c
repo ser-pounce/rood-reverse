@@ -30,8 +30,8 @@
 typedef struct {
     u_char targetActor;
     signed char targetLimb;
-    char hitThreshold;
-    char unk3;
+    u_char hitThreshold;
+    u_char unk3;
     short hp;
     short mp;
 } func_8008631C_t2;
@@ -87,19 +87,6 @@ typedef struct {
     _hitEntity_t unk4C[30];
     SVECTOR unk844;
 } D_800F19CC_t2;
-
-typedef struct {
-    SVECTOR unk0;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-    char unkC;
-    char unkD;
-    short unkE;
-    int unk10;
-    int unk14;
-} D_800F19CC_t5;
 
 typedef struct {
     u_int unk0;
@@ -410,7 +397,7 @@ void _endBattleCameraTransition(void);
 void func_80073718(void);
 void func_80073D30(_mpdRoomSectionA*, func_8006EBF8_t*, int);
 void func_80073E30(_mpdRoomSectionA*, int);
-int func_80074798(func_8006EBF8_t*, char*);
+int func_80074798(func_8006EBF8_t*, u_char*);
 void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
@@ -588,7 +575,7 @@ extern u_char D_800E8200[];
 extern int D_800E8204[];
 extern u_short D_800E82F4[];
 extern int (*_hitFunctions[])(vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
-extern int (*_attackPrerequisiteFunctions[])(vs_action_t*, char*);
+extern int (*_attackPrerequisiteFunctions[])(vs_action_t*, u_char*);
 extern void (*_actionEffectMediators[])(
     vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
 extern short (*_statCalculators[])(vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
@@ -624,7 +611,7 @@ extern vs_battle_actor* D_800F192C;
 extern int D_800F1968;
 extern u_int D_800F196C;
 extern int D_800F19A0;
-extern char D_800F19A8[];
+extern u_char D_800F19A8[];
 extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
@@ -3825,7 +3812,7 @@ void func_80072BA8(int action)
             }
         }
         D_800F19CC->unk2C00 = count;
-        func_800C1664(count, (int)D_800F19CC->unk29C0, 0);
+        func_800C1664(count, D_800F19CC->unk29C0, 0);
         _cameraMode = 1;
         return;
     }
@@ -4593,7 +4580,7 @@ void func_80074744(void)
     }
 }
 
-int func_80074798(func_8006EBF8_t* arg0, char* arg1)
+int func_80074798(func_8006EBF8_t* arg0, u_char* arg1)
 {
     int var_v1 = (arg0->unk0.unk4.pad + 0x200) & 0xFFF;
     if (var_v1 < 0) {
@@ -4624,20 +4611,20 @@ int func_80074798(func_8006EBF8_t* arg0, char* arg1)
 int func_80074860(int arg0)
 {
     func_8006EBF8_t sp10;
-    char sp20[4];
+    u_char sp20[4];
 
     func_800A1108(arg0, &sp10);
     func_80074798(&sp10, sp20);
     // BUG: arg2 should be an actor ID?
-    return func_800BEC58(4, 0, (int)sp20, 1) == 1;
+    return func_800BEC58(4, 0, sp20, 1) == 1;
 }
 
 _mpdRoomSectionA* func_800748B8(int arg0)
 {
     func_8006EBF8_t sp10;
-    char sp20[4];
+    u_char sp20[4];
     _mpdRoomSectionA* temp_s1;
-    char* s0 = sp20;
+    u_char* s0 = sp20;
 
     func_800A1108(arg0, &sp10);
     func_80074798(&sp10, sp20);
@@ -4654,10 +4641,10 @@ _mpdRoomSectionA* func_800748B8(int arg0)
 _mpdRoomSection13* func_80074950(int arg0)
 {
     func_8006EBF8_t sp10;
-    char sp20[4];
+    u_char sp20[4];
     _mpdRoomSection13* temp_v0;
     int temp_s2;
-    char* s1 = sp20;
+    u_char* s1 = sp20;
 
     func_800A1108(arg0, &sp10);
     temp_s2 = func_80074798(&sp10, sp20);
@@ -8181,68 +8168,71 @@ int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
 int _getEnemyClass(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->enemyClass; }
 
 int _hitPrerequisiteNever0(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
 int _hitPrerequisiteAlways0(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 1;
 }
 
 int _hitPrerequisiteAlways1(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 1;
 }
 
 int _hitPrerequisiteAlways2(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 1;
 }
 
-int _hitPrerequisiteUndead(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteUndead(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _getEnemyClass(arg1) == enemyClassUndead;
 }
 
-int _hitPrerequisiteNotUndead(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteNotUndead(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _getEnemyClass(arg1) != enemyClassUndead;
 }
 
 int _hitPrerequisiteNever1(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
 int _hitPrerequisiteNever2(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
 int _hitPrerequisiteNever3(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1 __attribute__((unused)))
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
 {
     return 0;
 }
 
-int _hitPrerequisiteCanApplyStrDown(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyStrDown(
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(5, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntDown(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyIntDown(
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(7, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglDown(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyAglDown(
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(9, arg1) == 0;
 }
@@ -8282,22 +8272,22 @@ int _hitPrerequisiteCanApplyEquipDown(vs_action_t* arg0, u_char* arg1)
 }
 
 int _hitPrerequisiteCanApplyHalfMove(
-    vs_action_t* arg0 __attribute__((unused)), char* arg1)
+    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(4, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyStrUp(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyStrUp(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(6, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntUp(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyIntUp(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(8, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglUp(vs_action_t* arg0 __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyAglUp(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(10, arg1) == 0;
 }
@@ -8337,47 +8327,49 @@ int _hitPrerequisiteCanApplyEquipUp(vs_action_t* arg0, u_char* arg1)
 }
 
 int _hitPrerequisiteCanApplyQuicken(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(11, arg1) == 0;
 }
 
 int _hitPrerequisiteCanApplySilence(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(12, arg1) == 0;
 }
 
 int _hitPrerequisiteCanApplyMagicWard(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(18, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyRegen(vs_action_t* action __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyRegen(
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(17, arg1) == 0;
 }
 
 int _hitPrerequisiteCanApplyParalysis(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(13, arg1) == 0;
 }
 
 int _hitPrerequisiteCanApplyPoison(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(14, arg1) == 0;
 }
 
 int _hitPrerequisiteCanApplyNumbness(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(15, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyCurse(vs_action_t* action __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyCurse(
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(16, arg1) == 0;
 }
@@ -8521,13 +8513,13 @@ int _hitPrerequisiteCanApplyWaterDefenseUp(
 }
 
 int _hitPrerequisiteCanApplyBanish(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(29, arg1) == 0;
 }
 
 int _hitPrerequisiteCanApplyExorcise(
-    vs_action_t* action __attribute__((unused)), char* arg1)
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
         && (_getEnemyClass(arg1) == enemyClassUndead)) {
@@ -8536,7 +8528,8 @@ int _hitPrerequisiteCanApplyExorcise(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyDrain(vs_action_t* action __attribute__((unused)), char* arg1)
+int _hitPrerequisiteCanApplyDrain(
+    vs_action_t* action __attribute__((unused)), u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
         && (_getEnemyClass(arg1) != enemyClassUndead)) {
@@ -8545,13 +8538,13 @@ int _hitPrerequisiteCanApplyDrain(vs_action_t* action __attribute__((unused)), c
     return 0;
 }
 
-int _hitPrerequisiteUnused0(vs_action_t* action __attribute__((unused)), char* arg1) { }
+int _hitPrerequisiteUnused0(vs_action_t* action __attribute__((unused)), u_char* arg1) { }
 
-int _hitPrerequisiteUnused1(vs_action_t* action __attribute__((unused)), char* arg1) { }
+int _hitPrerequisiteUnused1(vs_action_t* action __attribute__((unused)), u_char* arg1) { }
 
-int _hitPrerequisiteUnused2(vs_action_t* action __attribute__((unused)), char* arg1) { }
+int _hitPrerequisiteUnused2(vs_action_t* action __attribute__((unused)), u_char* arg1) { }
 
-int _canPerformAttack(vs_action_t* action, char* arg1, int hitNumber)
+int _canPerformAttack(vs_action_t* action, u_char* arg1, int hitNumber)
 {
     if (hitNumber != 0) {
         if ((action->hitParams[hitNumber].prerequisiteFunction == 1) && (arg1[3] == 4)) {
@@ -10870,7 +10863,7 @@ int func_80084D44(vs_action_t* arg0 __attribute__((unused)),
     if (vs_battle_actors[arg2->unk0.targetActor]->unk3C->weapon.blade.id != 0) {
         u_short amount =
             vs_battle_actors[arg2->unk0.targetActor]->unk3C->weapon.currentPp;
-        arg2->limbs[6].effects.value1 += amount;
+        arg2->weaponPp += amount;
         arg2->weaponPpEffect = 1;
     }
 }
@@ -10914,7 +10907,7 @@ int func_80084EEC(
     vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0 = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
-    arg2->limbs[6].effects.value1 += temp_v0;
+    arg2->weaponPp += temp_v0;
     arg2->weaponPpEffect = 2;
 }
 

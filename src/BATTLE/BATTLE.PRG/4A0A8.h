@@ -9,7 +9,7 @@ void func_800BEBEC(void);
 char vs_battle_getStateFlag(short);
 void vs_battle_setStateFlag(short id, char value);
 int func_800BEC30(void);
-short func_800BEC58(int, int, int, int);
+short func_800BEC58(int, int, u_char*, int);
 int vs_battle_invalidOpcode(u_char*, short);
 int func_800B66F4(u_char*, short);
 int func_800B6724(u_char*, short);

@@ -4299,7 +4299,7 @@ int func_800A0024(int, void*);
 int func_800A92B8(int, int);
 int func_8007CFCC(int);
 
-short func_800BEC58(int arg0, int arg1, int arg2, int arg3)
+short func_800BEC58(int arg0, int arg1, u_char* arg2, int arg3)
 {
     char buf[64];
     func_8006EBF8_t position;

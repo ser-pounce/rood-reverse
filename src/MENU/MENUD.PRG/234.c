@@ -2019,12 +2019,15 @@ int func_80106784(int arg0, int arg1)
     }
 
     if (arg0 == 0) {
-        if (func_801066DC(1, 1) != 0)
+        if (func_801066DC(1, 1) != 0) {
             return 2;
-        if (func_801066DC(2, 1) != 0)
+        }
+        if (func_801066DC(2, 1) != 0) {
             return 2;
-        if (func_801066DC(5, _getWeaponsubItemCount(arg1)) != 0)
+        }
+        if (func_801066DC(5, _getWeaponsubItemCount(arg1)) != 0) {
             return 2;
+        }
     }
 
     if (arg0 == 3 && func_801066DC(5, _getShieldsubItemCount(arg1)) != 0) {

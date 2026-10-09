@@ -47,7 +47,7 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    int unk40[2];
+    D_800F19CC_t5* unk40[2];
     menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
@@ -450,7 +450,7 @@ int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
     return ret;
 }
 
-void func_800C1664(int arg0, int arg1, int arg2)
+void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2)
 {
     int var_a0;
     int var_v0;

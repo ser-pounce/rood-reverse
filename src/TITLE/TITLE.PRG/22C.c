@@ -528,10 +528,12 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
             state = loadReady;
             break;
         }
-        if (event < memcardInternalEventIoEnd)
+        if (event < memcardInternalEventIoEnd) {
             break;
-        if (event >= memcardInternalEventNone)
+        }
+        if (event >= memcardInternalEventNone) {
             break;
+        }
         state = init;
         break;
     case loadReady:

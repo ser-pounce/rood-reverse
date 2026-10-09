@@ -878,6 +878,19 @@ typedef struct {
     short unk6;
 } func_8006CE70_t;
 
+typedef struct {
+    SVECTOR unk0;
+    char unk8;
+    char unk9;
+    char unkA;
+    char unkB;
+    char unkC;
+    char unkD;
+    short unkE;
+    int unk10;
+    int unk14;
+} D_800F19CC_t5;
+
 void func_80069C6C(int);
 void func_8006CDB8(int);
 void func_8006CA20(int, func_8006CE70_t*);

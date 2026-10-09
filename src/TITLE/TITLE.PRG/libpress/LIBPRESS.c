@@ -1,4 +1,5 @@
 #include "common.h"
+#include "src/SLUS_010.40/libetc/INTR.h"
 #include <libpress.h>
 #include <libetc.h>
 #include <stdio.h>

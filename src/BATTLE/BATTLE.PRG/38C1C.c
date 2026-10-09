@@ -1,11 +1,13 @@
 #include "common.h"
 #include "3A1A0.h"
 #include <libgpu.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
-int func_800A1C10(int arg0, int arg1, u_short* arg2, int arg3);
+int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
 void func_800A9EB4(int, int, int);
 
@@ -263,7 +265,7 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
         }
     }
 
-    var_v0 = func_800A1C10(arg0, var_v0, (u_short*)arg2, arg3);
+    var_v0 = func_800A1C10(arg0, var_v0, arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;
@@ -272,7 +274,7 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
     return 0;
 }
 
-int func_800A1AF8(int arg0, int arg1, u_short* arg2, int arg3)
+int func_800A1AF8(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     int var_v0 = func_800A1C10(arg0, arg1, arg2, arg3);
 
@@ -283,7 +285,7 @@ int func_800A1AF8(int arg0, int arg1, u_short* arg2, int arg3)
     return 0;
 }
 
-int func_800A1B28(int arg0, int arg1, u_short* arg2, int arg3)
+int func_800A1B28(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     int var_v0 = func_800A152C(arg0, arg1, 1);
 
@@ -308,7 +310,7 @@ int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3)
         return var_v0;
     }
 
-    var_v0 = func_800A1C10(arg0, var_v0, (u_short*)arg2, arg3);
+    var_v0 = func_800A1C10(arg0, var_v0, arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;
@@ -317,7 +319,60 @@ int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1C10);
+int func_800A1C10(int actorId, int bone, SVECTOR* result, int endpoint)
+{
+    SVECTOR local;
+    VECTOR transformed;
+    D_800F4538_t* actor = D_800F4538[actorId];
+    D_800F4538_unk68* model = actor->unk0.unk68;
+    MATRIX* matrix;
+
+    if (actor == NULL) {
+        actor = (D_800F4538_t*)D_800F45E0[actorId];
+
+        if (actor == NULL) {
+            return -1;
+        }
+
+        model = actor->unk0.unk68;
+    }
+
+    matrix = func_800A1DE8(actorId, bone, &D_800F49B8);
+
+    if (endpoint == 0) {
+        setVector(result, matrix->t[0], matrix->t[1], matrix->t[2]);
+        return 0;
+    }
+
+    local.vy = 0;
+    local.vz = 0;
+
+    if ((bone & 0xF0) == 0x40) {
+        vs_battle_wepModels_t* weapon = vs_battle_wepModels[actorId * 2];
+
+        bone -= 0x3F;
+
+        if (weapon == NULL) {
+            return -1;
+        }
+
+        model = (D_800F4538_unk68*)weapon->offsets;
+    }
+
+    if (endpoint == 1) {
+        local.vx = -model->armatures[bone].unk0;
+    } else {
+        local.vx = -model->armatures[bone].unk0 / 2;
+    }
+
+    gte_SetRotMatrix(matrix);
+    gte_SetTransMatrix(matrix);
+    gte_ldv0(&local);
+    gte_rtv0tr2();
+    gte_stlvnl(&transformed);
+    setVector(result, transformed.vx, transformed.vy, transformed.vz);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1DE8);
 

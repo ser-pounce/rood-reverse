@@ -22,6 +22,7 @@ MATRIX* func_800A1DE8(int, int, MATRIX*);
 int func_800A6EE8(SVECTOR*, int, int, int);
 _mpdRoomSection3* func_800A8D64(SVECTOR*, int);
 void func_800A9EB4(int, int, int);
+void func_800AA850(int, int, int);
 void func_800AC690(int, D_800F45E0_t*);
 void func_800B07DC(D_800F4538_t*);
 
@@ -541,9 +542,40 @@ void func_800A25EC(D_800F4538_t* actor)
     actor->unk0.unk5D = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A2790);
+void func_800A2790(D_800F4538_t* actor)
+{
+    VECTOR delta;
+    int speed = actor->unk1848.unk8;
+    int animation;
 
-void func_800AA850(int, int, int);
+    setVector(&delta, actor->unk1848.unk10.vx * speed / (ONE * ONE),
+        actor->unk1848.unk10.vy * speed / (ONE * ONE),
+        actor->unk1848.unk10.vz * speed / (ONE * ONE));
+    addVector(&actor->unk0.position, &delta);
+    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+    actor->unk0.unkA_5 = 1;
+    func_800AA850(actor->unk0.unkF, actor->unk1848.unk6, 12);
+    animation = 1;
+
+    if (speed > 0) {
+        if (delta.vy < -2) {
+            animation = 32;
+        } else if (delta.vy >= 3) {
+            animation = 34;
+        } else {
+            animation = 31;
+        }
+
+        if (speed >= 12) {
+            animation += 6;
+        }
+    }
+
+    if (actor->animationId != animation) {
+        func_800A0204(actor->unk0.unkF, animation, 0, 4);
+    }
+}
 
 void func_800A291C(D_800F4538_t* arg0)
 {

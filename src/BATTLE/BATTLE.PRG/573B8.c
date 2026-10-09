@@ -5,12 +5,14 @@
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
 #include <libetc.h>
+#include "gpu.h"
 
 typedef struct {
     u_char curve;
     signed char power;
 } D_800F4B28_t;
 
+extern u_char D_80040A14[];
 extern u_char D_800E9C30[];
 extern int (*_opcodeFunctionTable[])(u_char*, short);
 extern D_800F4B28_t D_800F4B28[];
@@ -547,6 +549,87 @@ MATRIX* func_800C085C(u_char* scale, int angle)
     return (void*)scratch;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0990);
+void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
+{
+    int depth = (start->vz + end->vz) >> 1;
+    int dx;
+    int dy;
+    int ax;
+    int ay;
+    int angle;
+    int shift;
+    u_long link;
+    u_long* primitive;
+    u_long* orderingTable;
+
+    if (depth >= 2048u) {
+        return;
+    }
+
+    dy = end->vy - start->vy;
+    dx = end->vx - start->vx;
+    angle = 0;
+    shift = dy | dx;
+
+    if (shift) {
+        ax = dx;
+        ay = dy;
+
+        if (ax < 0) {
+            ax = -ax;
+        }
+
+        if (ay < 0) {
+            ay = -ay;
+        }
+
+        shift = ONE / 8;
+
+        if (ax < ay) {
+            angle = ax << 9;
+            angle /= ay;
+            angle = D_80040A14[angle];
+            angle = shift - angle;
+        } else {
+            angle = ay << 9;
+            angle /= ax;
+            angle = D_80040A14[angle];
+        }
+
+        shift = ONE / 4;
+
+        if (ax != dx) {
+            angle = shift - angle;
+        }
+
+        angle *= 2;
+
+        if (ay != dy) {
+            angle = -angle;
+        }
+    }
+
+    shift = 30 - (((angle + 256) >> 8) & 14);
+    ay = start->vx + ((0x4FC5 << shift) >> 30);
+    ax = start->vy + ((0xFC54 << shift) >> 30);
+
+    if (intensity < 0) {
+        intensity = 0;
+    } else if (intensity >= 64) {
+        intensity = 63;
+    }
+
+    primitive = vs_scratch.unk0;
+    orderingTable = vs_scratch.unk4;
+    orderingTable += depth;
+    link = *orderingTable & 0xFFFFFF;
+    primitive[1] = _get_mode(0, 1, 0);
+    primitive[3] = vs_getXY_2(ay, ax);
+    primitive[0] = link | 0x04000000;
+    primitive[2] = (((color << 8) >> 8) * intensity) | ((color >> 24) << 24);
+    primitive[4] = *(u_long*)end;
+    *orderingTable = ((u_long)primitive << 8) >> 8;
+    vs_scratch.unk0 = primitive + 5;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0B50);

@@ -43,7 +43,7 @@ typedef struct {
     u_char state;
     u_char w;
     u_char backgroundWidth;
-    u_char _ __attribute__((unused));
+    u_char animationStep;
     u_char gradientState;
     u_char isScrollable;
     u_char selected;
@@ -451,7 +451,7 @@ char* vs_battle_printf(char*, char*);
 /**
  * Renders ASCII text and chains it to the provided OT.
  */
-void vs_battle_renderTextRawColor(char const* text, int xy, int color, void* nextPrim);
+void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long* nextPrim);
 
 /**
  * Same as vs_battle_renderTextRawColor, except color is predefined as gray midpoint

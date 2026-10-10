@@ -24,11 +24,6 @@ typedef struct {
 } D_800EB9B8_unk990;
 
 typedef struct {
-    short xyz[3];
-    short flags;
-} menuShapeVertex;
-
-typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
@@ -83,14 +78,12 @@ typedef struct {
 } labelBoxPrim_t;
 
 void func_800C02A8(void);
-MATRIX* func_800C085C(u_char* scale, int angle);
 void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
-int func_800C0758(int phase, int segments, int index);
 void func_800C253C(int type);
 int _getCollisionMapDimensions(int arg0);
 int func_800FA188(int x, int z, int* offset);

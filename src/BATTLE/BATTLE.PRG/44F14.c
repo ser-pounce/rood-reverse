@@ -5,6 +5,7 @@
 #include "3A1A0.h"
 #include "44F14.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/31724.h"
 
 void func_8008EB04(int*, int*);
 int func_800A91DC(int, int, int);
@@ -13,8 +14,11 @@ void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, u_char*);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 
+extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
 extern u_char D_800E9278[];
+extern MATRIX D_800F4910;
+extern MATRIX D_800F49B8;
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AD714);
 
@@ -264,7 +268,38 @@ void func_800AEAE8(D_800F4538_t* actor)
     scratch->unk3C = actor->unk0.unk16;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AECA0);
+void func_800AECA0(MATRIX* source)
+{
+    MATRIX roll;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    vs_scratch_t* view = (void*)0x1F800000;
+    int i;
+
+    for (i = 0; i < 3; ++i) {
+        scratch->matrix.m[0][i] = D_8005E218.m[i][0];
+        scratch->matrix.m[1][i] = D_8005E218.m[i][1];
+        scratch->matrix.m[2][i] = D_8005E218.m[i][2];
+    }
+
+    roll.m[1][1] = roll.m[0][0] = rcos(-view->camera.angles.vz);
+    roll.m[1][0] = rsin(-view->camera.angles.vz);
+    roll.m[0][1] = -roll.m[1][0];
+    roll.m[2][2] = ONE;
+    roll.m[0][2] = roll.m[1][2] = roll.m[2][0] = roll.m[2][1] = 0;
+    setVector(&scratch->scale, 3640, ONE, ONE);
+    ScaleMatrix(&scratch->matrix, &scratch->scale);
+    func_80041C68(&scratch->matrix, &roll);
+    scratch->matrix = roll;
+    i = ONE * ONE / view->camera.farClip;
+    setVector(&scratch->scale, i, i, i);
+    ScaleMatrix(&scratch->matrix, &scratch->scale);
+    // BUG: copies from the stack slot of the pointer, not from the matrix it points to
+    D_800F4910 = *(MATRIX*)&source;
+    D_800F49B8 = scratch->matrix;
+    D_800F49B8.t[0] = source->t[0];
+    D_800F49B8.t[1] = source->t[1];
+    D_800F49B8.t[2] = source->t[2];
+}
 
 void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
 void func_800AEEC4(D_800F4538_t* arg0)

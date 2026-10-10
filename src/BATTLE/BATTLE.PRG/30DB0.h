@@ -30,8 +30,10 @@ typedef struct {
     u_short unk3C;
     u_char unk3E[0x16];
     SVECTOR offset;
-    u_char unk5C[0x28];
+    u_char unk5C[8];
+    MATRIX matrix;
     SVECTOR rotation;
+    VECTOR scale;
 } D_1F80035C_t;
 
 typedef struct {

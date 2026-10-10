@@ -356,7 +356,7 @@ typedef struct {
     void* block12Data;
     void* block13Data;
     int unkCC;
-    void* unkD0;
+    actionEffectRequest* unkD0;
 } D_800F569C_t;
 
 typedef struct func_800D2904_t {

@@ -336,6 +336,23 @@ typedef struct {
     SVECTOR control1;
 } func_800D0548_arg1;
 
+typedef struct {
+    u_char actors[6];
+    u_char final;
+    u_char frame;
+    u_char delay;
+} func_800D5A98_t;
+
+typedef struct {
+    func_800D5A98_t* event;
+    func_800D5780_t2 unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    short delay;
+    short index;
+} func_800D5A98_t2;
+
 void func_80046578(int);
 int _getCollisionMapDimensions(int);
 void func_800C02A8(void);
@@ -398,7 +415,7 @@ void func_800D5738(func_800D5780_t*);
 int func_800D5780(func_800D5780_t*);
 int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
-int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
+int func_800D5A98(D_800F53B8_t*, func_800D5A98_t2*, int);
 int func_800D5D74(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5E00(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5F8C(D_800F53B8_t*, func_800D5780_t*);
@@ -6701,7 +6718,69 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return func_800D5780(arg1);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
+int func_800D5A98(D_800F53B8_t* arg0, func_800D5A98_t2* arg1, int arg2)
+{
+    D_800F53B8_t2 spawn;
+    func_800D5A98_t* event = arg1->event;
+    D_800F53B8_t* child;
+    int result = 1;
+
+    if (event->frame > arg0->unkD1C.unk30->unk2) {
+        return result;
+    }
+
+    if (arg1->index < D_800F569C->unkD0->count) {
+        while (arg1->delay == 0) {
+            spawn.unk14 = D_800F569C->block8Data;
+            spawn.unk18 = arg2;
+            spawn.unk10 = 0;
+            spawn.unk0 = &D_800F569C->unkD0->source;
+            spawn.unk4 = &D_800F569C->unkD0->source;
+            spawn.unk8 = &D_800F569C->unkD0->targets[arg1->index];
+            spawn.unkC = &D_800F569C->unkD0->targets[arg1->index];
+            spawn.unk1C = arg0;
+            spawn.unk20 = arg0->unk14_0;
+            child = func_800CE83C(&spawn);
+            ++arg0->unk14_11;
+
+            if (spawn.unk8->type == 4) {
+                child->unk10[1] = event->actors[spawn.unk8->value.actor.unk1];
+            } else {
+                child->unk10[1] = event->actors[0];
+            }
+
+            if (++arg1->index == D_800F569C->unkD0->count) {
+                break;
+            }
+
+            arg1->delay += event->delay;
+        }
+
+        if (arg1->delay != 0) {
+            --arg1->delay;
+        }
+    } else if (arg1->index == D_800F569C->unkD0->count) {
+        if ((*(u_int*)((char*)arg0 + 0x14) & 0xF800) == 0) {
+            spawn.unk14 = D_800F569C->block8Data;
+            spawn.unk18 = arg2;
+            spawn.unk10 = 0;
+            spawn.unk0 = &D_800F569C->unkD0->source;
+            spawn.unk4 = &D_800F569C->unkD0->source;
+            spawn.unk8 = &D_800F569C->unkD0->targets[0];
+            spawn.unkC = &D_800F569C->unkD0->targets[0];
+            spawn.unk1C = arg0;
+            spawn.unk20 = arg0->unk14_0;
+            child = func_800CE83C(&spawn);
+            ++arg0->unk14_11;
+            child->unk10[1] = event->final;
+            ++arg1->index;
+        }
+    } else {
+        result = 0;
+    }
+
+    return result;
+}
 
 int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
@@ -7050,7 +7129,7 @@ void func_800D6AEC(D_800F53B8_t* arg0, int arg1)
                 temp = func_800D5904(arg0, temp_a1);
                 break;
             case 3:
-                temp = func_800D5A98(arg0, temp_a1, arg1);
+                temp = func_800D5A98(arg0, (func_800D5A98_t2*)temp_a1, arg1);
                 break;
             case 4:
                 temp = func_800D5D74(arg0, temp_a1);

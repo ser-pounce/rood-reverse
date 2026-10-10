@@ -117,25 +117,42 @@ typedef struct func_800E78F4_t {
     u_char unk7;
     char unk8[0xB];
     u_char unk13;
-    char unk14[0x20];
+    char unk14[2];
+    signed char unk16;
+    char unk17[0x1D];
     u_char unk34;
     char unk35;
     u_char unk36;
-    char unk37[0x17];
+    char unk37;
+    int unk38;
+    char unk3C[0x12];
     short unk4E;
     char unk50[4];
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
-    char unk60[0x53];
+    char unk60[0x28];
+    u_char unk88;
+    char unk89[5];
+    u_short unk8E;
+    char unk90[8];
+    u_short unk98;
+    u_short unk9A;
+    char unk9C[0x17];
     u_char unkB3;
     char unkB4[0xA];
     short unkBE;
-    char unkC0[0x6F];
+    char unkC0[0x3B];
+    u_char unkFB;
+    char unkFC[0x2E];
+    u_char unk12A;
+    char unk12B[4];
     u_char unk12F;
     char unk130;
     u_char unk131;
-    char unk132[0xD];
+    char unk132[6];
+    u_short unk138;
+    char unk13A[5];
     u_char unk13F;
     func_800DCAA0_t unk140;
     char unk150[0x2C];
@@ -207,26 +224,6 @@ typedef struct {
 } func_800DEEA4_t;
 
 typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    func_800DEB10_t2* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-
-typedef struct {
     short tableCount;
     u_short dataOffset;
     int tableOffsets[0];
@@ -251,6 +248,7 @@ void _parsePfileBlock13(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
+void func_800D820C(int, int);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
@@ -276,8 +274,8 @@ int func_800E42EC(int, int);
 int func_800E45D4(int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
 void func_800E4B18(func_800E78F4_t*);
-void func_800E4C8C(func_800DEEA4_t2*);
-void func_800E4CE8(func_800DEEA4_t2* arg0);
+void func_800E4C8C(func_800E78F4_t*);
+void func_800E4CE8(func_800E78F4_t* arg0);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
@@ -299,7 +297,7 @@ extern effectExec D_800F56A8[];
 extern func_800CF0E8_t* D_800F5798;
 extern D_800F569C_t D_800F57A0;
 extern int D_800F5874;
-extern func_800DEEA4_t2* D_800F5878[];
+extern func_800E78F4_t* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
@@ -676,7 +674,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D820C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D821C);
 
-void func_800D8260(func_800DEEA4_t2* arg0, int arg1, int arg2)
+void func_800D8260(func_800E78F4_t* arg0, int arg1, int arg2)
 {
     arg0->unk138 = arg1;
     arg0->unk12A = arg2;
@@ -981,7 +979,44 @@ void func_800DBF00(func_800E78F4_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBFE4);
+void func_800DBFE4(func_800E78F4_t* arg0)
+{
+    if (arg0->unk8E != 0 && ++arg0->unk8E != 0) {
+        int frame;
+
+        if (arg0->unk8E < 8) {
+            frame = 0;
+        } else if (arg0->unk8E < 16) {
+            frame = 1;
+        } else if (arg0->unk8E < 24) {
+            frame = 2;
+        } else {
+            frame = 3;
+        }
+
+        if (arg0->unk8E <= 120) {
+            func_800D820C(arg0->unk88, frame + 1);
+            return;
+        }
+
+        func_800E4C8C(arg0);
+        func_800D82CC(arg0);
+    }
+
+    if (arg0->unk9A != 0) {
+        if (--arg0->unk9A != 0) {
+            func_800D820C(arg0->unk88, 4);
+        } else {
+            func_800D820C(arg0->unk88, 0);
+        }
+    }
+
+    if (arg0->unk98 != 0) {
+        --arg0->unk98;
+    }
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC0D0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC19C);
 
@@ -1077,7 +1112,7 @@ void func_800DEB10(func_800DEEA4_t* arg0)
 {
     int i;
     int j;
-    func_800DEEA4_t2* entry;
+    func_800E78F4_t* entry;
     func_800DEB10_t2* temp_t1;
 
     if (arg0 == NULL) {
@@ -1130,7 +1165,7 @@ void func_800DEEA4(func_800DEEA4_t* arg0)
 {
     if (arg0 != NULL) {
         if (arg0->unk44 == 0) {
-            func_800DEEA4_t2* entry = D_800F5878[arg0->unk4];
+            func_800E78F4_t* entry = D_800F5878[arg0->unk4];
 
             if (entry != NULL) {
                 entry->unk9A = 0;
@@ -1405,7 +1440,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4C64);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4C8C);
 
-void func_800E4CE8(func_800DEEA4_t2* arg0) { arg0->unk38 = -1; }
+void func_800E4CE8(func_800E78F4_t* arg0) { arg0->unk38 = -1; }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E4CF4);
 

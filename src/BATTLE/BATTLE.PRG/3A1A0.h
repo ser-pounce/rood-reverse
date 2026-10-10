@@ -178,7 +178,7 @@ typedef struct {
     int unk4C;
     short unk50;
     short unk52;
-    int unk54;
+    CVECTOR unk54;
     D_800F4538_unk58_2 unk58;
     u_char currentTileX;
     u_char unk5D;

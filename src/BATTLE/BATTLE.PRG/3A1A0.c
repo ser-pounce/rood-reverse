@@ -21,7 +21,6 @@ typedef struct {
     short unk6;
 } func_800A6660_t;
 
-u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
 void func_800AECA0(MATRIX*);
@@ -37,8 +36,10 @@ int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 void func_800AA850(int, short, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
+void func_800ACF54(D_800F4538_t*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800E4C28(int, int);
 int func_800E75EC(void);
 int func_8009E180(D_800F4538_t*, SVECTOR*);
 
@@ -50,7 +51,72 @@ extern SVECTOR D_800F4B08;
 extern char D_800F4B18;
 extern u_char D_800E9278[];
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
+void func_800A29A0(D_800F4538_t* arg0)
+{
+    int busy;
+
+    switch (arg0->unk0.unkB_0) {
+    case 1:
+        arg0->unk0.unkA_5 = 0;
+        func_800A0204(arg0->unk0.unkF, 0x13, 0, 8);
+        func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
+        arg0->unk0.unk54.cd = 0;
+        arg0->unk0.unkB_0 = 2;
+        arg0->unk0.unk9_0 = 6;
+        return;
+
+    case 2:
+        if (arg0->unk0.unk9_0 < 8) {
+            return;
+        }
+
+        if (arg0->unk0.unk13 == 0xFC) {
+            busy = D_800F4538[arg0->unk0.unk12]->unk0.unk9_0 < 9;
+        } else if (arg0->unkC54.unk548_17) {
+            busy = arg0->unk5CC;
+        } else {
+            return;
+        }
+
+        if (busy == 0) {
+            arg0->unk0.unk9_0 = 9;
+            func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC, 0);
+            arg0->unk0.facing = arg0->unk5EC.pad;
+            func_800A0204(arg0->unk0.unkF, 0x15, 0, 8);
+            func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
+            arg0->unk0.unkB_0 = 3;
+        }
+
+        return;
+
+    case 3:
+        if (arg0->unk0.unk9_0) {
+            return;
+        }
+
+        if (arg0->unk0.unk13 == 0xFC ? D_800F4538[arg0->unk0.unk12]->unk0.unk9_0
+                                     : arg0->unk5CC) {
+            return;
+        }
+
+        func_800A0204(arg0->unk0.unkF, 1, 0, 8);
+        // fallthrough
+
+    case 4:
+        func_800ACF54(arg0);
+        func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
+        // fallthrough
+
+    case 5:
+        if (arg0->unk17FD >= 2 && D_800F4538[arg0->unk17FD]->unk0.unkB_0) {
+            arg0->unk0.unkB_0 = 5;
+            return;
+        }
+
+        arg0->unk0.unkB_0 = 0;
+        return;
+    }
+}
 
 void func_800A2C48(D_800F4538_t* arg0)
 {

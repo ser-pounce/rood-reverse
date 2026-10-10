@@ -49,7 +49,9 @@ static char _[2] __attribute__((unused));
 static u_int _slotSelectionHistory[5];
 
 /**
- *
+ * Records the selection order for a slot, or clears the history when index is
+ * outside the five tracked slots.
+ * @param index Zero-based slot to record; values of five or more clear history.
  */
 static void _pushSelectionHistory(int index)
 {
@@ -72,6 +74,12 @@ static void _pushSelectionHistory(int index)
     vs_battle_rMemzero(_slotSelectionHistory, sizeof _slotSelectionHistory);
 }
 
+/**
+ * Removes a slot from selection history or pops the most recently recorded slot.
+ * @param index Zero-based slot to clear; values of five or more request a pop.
+ * @return Zero when clearing or when history is empty; otherwise the popped
+ *         slot number (one-based).
+ */
 static int _popSelectionHistory(int index)
 {
     int i;
@@ -96,6 +104,9 @@ static int _popSelectionHistory(int index)
     return 0;
 }
 
+/**
+ * Creates the menu header and refreshes equipment statistics.
+ */
 static void _initMenuItem(int textOffset, int icon)
 {
     int a0;
@@ -124,6 +135,9 @@ static void _initMenuItem(int textOffset, int icon)
     vs_mainMenu_renderEquipStats(1);
 }
 
+/**
+ * Copies one menu row into another and deactivates the source row.
+ */
 static void _copyMenuItem(int source, int target)
 {
     if (source != target) {
@@ -133,6 +147,11 @@ static void _copyMenuItem(int source, int target)
     }
 }
 
+/**
+ * Displays and processes the two-choice yes/no prompt.
+ * @param arg0 Nonzero initializes the prompt; zero advances its state.
+ * @return Zero while pending, one for Yes, two for No, or three for cancel.
+ */
 static int _confirmationPrompt(int arg0)
 {
     static char cursorState = 0;
@@ -197,6 +216,12 @@ static int _confirmationPrompt(int arg0)
     return action;
 }
 
+/**
+ * Displays the three-choice confirmation used by combine operations.
+ * @param arg0 Nonzero initializes the prompt and marks that option as the
+ *             combine-cancellation choice; zero advances its state.
+ * @return Zero while pending, one for Yes, two for No, or three for cancel.
+ */
 static int _confirmCombine(int arg0)
 {
     static char cursorState = 0;
@@ -278,6 +303,10 @@ static int _confirmCombine(int arg0)
     return action;
 }
 
+/**
+ * Disassembles a weapon into its constituent blade, grip, and gems.
+ * @param weaponIndex Zero-based weapon inventory index.
+ */
 static void _disassembleWeapon(int weaponIndex)
 {
     int i;
@@ -306,6 +335,13 @@ static void _disassembleWeapon(int weaponIndex)
     vs_mainMenu_rebuildInventory(0);
 }
 
+/**
+ * Assembles a weapon and updates component ownership in the inventory.
+ * @param bladeIndex Zero-based blade inventory index.
+ * @param gripIndex Zero-based grip inventory index.
+ * @param gemInfo Packed gem inventory indices, one byte per grip slot; zero is
+ *                an empty slot.
+ */
 static void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
 {
     int i;
@@ -341,6 +377,10 @@ static void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
     vs_mainMenu_rebuildInventory(0);
 }
 
+/**
+ * Detaches all installed gems from a shield.
+ * @param index Zero-based shield inventory index.
+ */
 static void _disassembleShield(int index)
 {
     int i;
@@ -356,6 +396,10 @@ static void _disassembleShield(int index)
     }
 }
 
+/**
+ * Checks whether a blade category is supported by a grip category.
+ * @return Nonzero when compatible; null components are treated as compatible.
+ */
 static int _isValidGrip(vs_main_inventoryBlade* blade, vs_main_inventoryGrip* grip)
 {
     static u_short _validGripFlags[] = { 0, 0xE, 0xF0, 0x100, 0x200 };
@@ -366,6 +410,12 @@ static int _isValidGrip(vs_main_inventoryBlade* blade, vs_main_inventoryGrip* gr
     return (1 << blade->category) & _validGripFlags[grip->category];
 }
 
+/**
+ * Leaves item slot selection and restores the surrounding menu display.
+ * @param arg0 Nonzero restores the equipment/stat panels.
+ * @return -2 when the right-side up button requests return to battle; otherwise
+ *         -1.
+ */
 static int _leaveItemSlotSelection(int arg0)
 {
 
@@ -391,6 +441,12 @@ static char _itemCount;
 static char _itemsListWindow;
 static char _rowInfoUnused;
 
+/**
+ * Builds the shared scrollable item list from paired title/description strings.
+ * @param count Number of rows.
+ * @param text Title and description pointers, two entries per row.
+ * @param rowTypes Packed row flags and display metadata, one value per row.
+ */
 static void _populateItemsList(int count, char** text, int* rowTypes)
 {
     int j;
@@ -448,8 +504,17 @@ static void _populateItemsList(int count, char** text, int* rowTypes)
     _rowInfoUnused = (j >> 19) & 0x7F;
 }
 
+/**
+ * Returns the active list row once the shared list has been closed.
+ * @return -1 while the shared list is open; otherwise the stored row/result.
+ */
 static int _getSelectedRow(void) { return _itemsList == NULL ? _itemsListSelection : -1; }
 
+/**
+ * Advances list animations and handles scrolling, selection, and cancel.
+ * @param arg0 Nonzero enables the selection sound; bit 1 suppresses the
+ *             back-navigation sound.
+ */
 static void _navigateItemsList(int arg0)
 {
     static char cursorAnimState = 0;
@@ -658,7 +723,11 @@ static void _navigateItemsList(int arg0)
     }
 }
 
-static void _setUiStats(int arg0, int arg1)
+/**
+ * Resets the stat display and shows stats for the specified blade, grip, or assembled
+ * weapon (when both parameters are provided).
+ */
+static void _setUiStats(int blade, int grip)
 {
     int var_v1;
 
@@ -666,17 +735,17 @@ static void _setUiStats(int arg0, int arg1)
     vs_mainMenu_setRangeRisk(0, 0, 0, 1);
     vs_mainMenu_equipmentSubtype = 0;
 
-    var_v1 = arg0 != 0;
-    if (arg1 != 0) {
+    var_v1 = blade != 0;
+    if (grip != 0) {
         var_v1 += 2;
     }
 
     switch (var_v1) {
     case 1:
-        vs_mainMenu_setStatsFromBlade(arg0);
+        vs_mainMenu_setStatsFromBlade(blade);
         break;
     case 2:
-        vs_mainMenu_setStatsFromGrip(arg1);
+        vs_mainMenu_setStatsFromGrip(grip);
         break;
     case 3:
         vs_mainMenu_setStatsFromWeapon(_combiningItem + 1);
@@ -687,25 +756,31 @@ static void _setUiStats(int arg0, int arg1)
     vs_mainMenu_renderDpPpBars(11);
 }
 
-static void _assembleBladeMenuHeader(int arg0)
+/**
+ * Draws the blade-assembly header from a packed component selection.
+ * @param arg0 Low four bits specify the header; bits 4-9 and 10-15 carry the
+ *             blade and grip indices used to update the preview.
+ */
+static void _assembleBladeMenuHeader(int bladeGrip)
 {
     vs_battle_menuItem_t* menuItem;
 
-    int s1 = arg0 >> 4;
-    int s2 = (arg0 >> 10);
-    int new_var = s1 & 0x3F;
-    int new_var2 = s2 & 0x3F;
-    arg0 &= 0xF;
+    int blade = (bladeGrip >> 4) & 0x3F;
+    int grip = (bladeGrip >> 10) & 0x3F;
+    bladeGrip &= 0xF;
     menuItem = vs_battle_setMenuItem(32, 16, 18, 164, 8,
         (char*)(&vs_mainMenu_menu12Text
-                [vs_mainMenu_menu12Text[arg0 + VS_MENU12_BIN_INDEX_assemble]]));
+                [vs_mainMenu_menu12Text[bladeGrip + VS_MENU12_BIN_INDEX_assemble]]));
     menuItem->rowIcon = 24;
     menuItem->selected = 1;
-    if (arg0 == 0) {
-        _setUiStats(new_var, new_var2);
+    if (bladeGrip == 0) {
+        _setUiStats(blade, grip);
     }
 }
 
+/**
+ * Starts the slide-in animation for a menu header row.
+ */
 static void _initMenuHeader(int arg0)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0);
@@ -716,6 +791,14 @@ static void _initMenuHeader(int arg0)
 
 static char _availableItems[64];
 
+/**
+ * Lists candidate blades while assembling a weapon.
+ * @param params Nonzero initializes the selector: bit 7 is the init marker,
+ *               low seven bits hold the blade index, and the upper byte holds
+ *               the selected grip index. Zero polls the selector.
+ * @return Zero while pending, -2 when cancelled to battle, or the selected
+ *         one-based blade index (zero may represent the empty placeholder).
+ */
 static int _assembleBladeMenu(int params)
 {
     static int selectedRow;
@@ -829,6 +912,14 @@ static int _assembleBladeMenu(int params)
     return 0;
 }
 
+/**
+ * Lists candidate grips while assembling a weapon.
+ * @param params Nonzero initializes the selector: bit 7 is the init marker,
+ *               low seven bits hold the grip index, and the upper byte holds
+ *               the selected blade index. Zero polls the selector.
+ * @return Zero while pending, -2 when cancelled to battle, or the selected
+ *         one-based grip index (zero may represent the empty placeholder).
+ */
 static int _assembleGripMenu(int params)
 {
     static int D_8010BC04;
@@ -944,6 +1035,13 @@ static int _assembleGripMenu(int params)
     return 0;
 }
 
+/**
+ * Lists candidate gems for the requested weapon gem slot.
+ * @param params Nonzero initializes the selector using packed slot, current
+ *               gem-list, and gem-index data; zero polls it.
+ * @return Zero while pending, -2 when cancelled to battle, or the selected
+ *         one-based gem index (zero clears the slot).
+ */
 static int _attachGem(int params)
 {
     static int D_8010BC0C;
@@ -1046,6 +1144,9 @@ static int _attachGem(int params)
     return 0;
 }
 
+/**
+ * Disassembles the in-progress weapon and exits assembly selection.
+ */
 static int _leaveAssembleMenu(void)
 {
     _disassembleWeapon(_combiningItem);
@@ -1054,10 +1155,17 @@ static int _leaveAssembleMenu(void)
 
 static char _workshopMaterials[] = { 0, 0xE, 0x18, 0x38, 0xC0, 0x3E, 0xFE };
 
+/**
+ * Runs the weapon assembly screen.
+ * @param arg0 Nonzero initializes the screen; zero advances it.
+ * @return Zero while active, -2 when returning to battle, or a nonzero
+ *         completion result.
+ */
 static int _assembleMenu(int arg0)
 {
-    static int D_8010BB38[] = { 0x000A008D, 0x001A0094, 0x002A0094, 0x003A009B,
-        0x004A009B, 0x005A009B, 0x006A009B };
+    static int _cursorPositions[] = { vs_getXY(141, 10), vs_getXY(148, 26),
+        vs_getXY(148, 42), vs_getXY(155, 58), vs_getXY(155, 74), vs_getXY(155, 90),
+        vs_getXY(155, 106) };
 
     static char D_8010BB54 = 0;
     static char D_8010BB55 = 0;
@@ -1122,7 +1230,7 @@ static int _assembleMenu(int arg0)
     switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuItem(0x111, 0x18);
+            _initMenuItem(VS_MENU12_BIN_OFFSET_assemble, 0x18);
             vs_mainMenu_equipmentSubtype = 0;
             state = 1;
         }
@@ -1341,7 +1449,7 @@ static int _assembleMenu(int arg0)
 
                 vs_mainmenu_setInformationMessage(menuText[1]);
 
-                i = D_8010BB38[selectedOption + 1];
+                i = _cursorPositions[selectedOption + 1];
 
                 if (selectedOption == (gemSlots + 2)) {
                     i += 0xFFFC0000;
@@ -1485,6 +1593,9 @@ static int _assembleMenu(int arg0)
     return 0;
 }
 
+/**
+ * Adds one gem selector row to the item detail display.
+ */
 static void _addGemSelector(int arg0 __attribute__((unused)), int arg1)
 {
     vs_battle_menuItem_t* temp_v0 =
@@ -1495,6 +1606,13 @@ static void _addGemSelector(int arg0 __attribute__((unused)), int arg1)
     temp_v0->fontColor = 1;
 }
 
+/**
+ * Replaces the installed gems on the current weapon or shield and exits.
+ * @param gems Three gem inventory indices, with zero for empty slots.
+ * @param isShield Nonzero selects the shield rather than weapon in the shared
+ *                 combining-item slot.
+ * @return The item-slot selection exit result.
+ */
 static int _attachGems(char* gems, int isShield)
 {
     int i;
@@ -1538,6 +1656,13 @@ static int _attachGems(char* gems, int isShield)
     return _leaveItemSlotSelection(1);
 }
 
+/**
+ * Runs the gem attachment screen for a selected weapon or shield.
+ * @param arg0 Nonzero initializes the screen (one for weapons, two for shields);
+ *             zero advances it.
+ * @return Zero while active, -1 when returning to the parent menu, or another
+ *         nonzero completion/cancel result.
+ */
 static int _attachGemsMenu(int arg0)
 {
     static char D_8010BB56 = 0;
@@ -1883,6 +2008,11 @@ static int _attachGemsMenu(int arg0)
     return 0;
 }
 
+/**
+ * Presents the weapon/shield choice and dispatches to gem attachment.
+ * @param arg0 Nonzero initializes the top-level menu; zero advances it.
+ * @return Zero while active, a negative cancellation code, or the child result.
+ */
 static int _attachGemsTopMenu(int arg0)
 {
     static char state;
@@ -1960,6 +2090,13 @@ static int _attachGemsTopMenu(int arg0)
     return 0;
 }
 
+/**
+ * Lists weapons or shields and confirms their disassembly.
+ * @param arg0 Nonzero initializes the screen (one for weapons, two for
+ *             shields); zero advances it.
+ * @return Zero while active, -1 after successful disassembly, -2 when returning
+ *         to battle, or another negative exit code.
+ */
 static int _disassembleMenu(int arg0)
 {
     static int selectedRow;
@@ -2140,6 +2277,11 @@ static int _disassembleMenu(int arg0)
     return 0;
 }
 
+/**
+ * Presents the weapon/shield choice and dispatches to disassembly.
+ * @param arg0 Nonzero initializes the top-level menu; zero advances it.
+ * @return Zero while active, or the child menu's completion/cancellation code.
+ */
 static int _disassembleTopMenu(int arg0)
 {
     static char state;
@@ -2223,6 +2365,12 @@ static int _disassembleTopMenu(int arg0)
     return 0;
 }
 
+/**
+ * Selects a weapon and runs rename logic.
+ * @param arg0 Nonzero initializes the screen; zero advances it.
+ * @return Zero while active, one when text entry is ready, -2 when returning to
+ *         battle, or the list's negative cancellation result.
+ */
 static int _renameWeaponMenu(int arg0)
 {
     static int selectedRow;
@@ -2352,6 +2500,12 @@ static int _renameWeaponMenu(int arg0)
     return 0;
 }
 
+/**
+ * Confirms and repairs eligible inventory equipment.
+ * @param arg0 Nonzero initializes the screen; zero advances it.
+ * @return Zero while active, -1 after repair or declining, or -2 when returning
+ *         to battle.
+ */
 static int _repairMenu(int arg0)
 {
     static int returnedFromPrompt;
@@ -2495,6 +2649,12 @@ static int _repairMenu(int arg0)
 
 static void* _sydData = NULL;
 
+/**
+ * Loads the combination data file for blades, shields, or armor.
+ * @param id One-based file selector (1 blade, 2 shield, 3 armor); zero polls
+ *           the active asynchronous load.
+ * @return Zero while loading; one when complete or when no load is active.
+ */
 static int _loadSyd(int id)
 {
     static int _sydLbas[] = { VS_BLADE_SYD_LBA, VS_SHIELD_SYD_LBA, VS_ARMOR_SYD_LBA };
@@ -2528,6 +2688,11 @@ static int _loadSyd(int id)
     return 0;
 }
 
+/**
+ * Creates the result/placeholder row used by combination screens.
+ * @param itemType Menu text category for the empty placeholder.
+ * @param index Item name index, or zero for the placeholder.
+ */
 static vs_battle_menuItem_t* _setItemRow(int itemType, int index)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(0, 155, 18, 165, 0,
@@ -2539,6 +2704,9 @@ static vs_battle_menuItem_t* _setItemRow(int itemType, int index)
     return menuItem;
 }
 
+/**
+ * Creates and starts the slide-in animation for a combination result row.
+ */
 static vs_battle_menuItem_t* _initItemRow(int itemType, int index)
 {
     vs_battle_menuItem_t* menuItem;
@@ -2558,6 +2726,12 @@ static vs_main_inventoryBlade _bladeBuf;
 static char _combiningBladeIds[2];
 static char _1[2] __attribute__((unused));
 
+/**
+ * Rebuilds the combination preview and displays the chosen component's
+ * or result's stats.
+ * @param arg0 One-based selected component (one/two), three for the combined
+ *             preview, or zero to clear the preview.
+ */
 static void _setCombineBladeUi(int arg0)
 {
     int i;
@@ -2618,6 +2792,12 @@ static void _setCombineBladeUi(int arg0)
     }
 }
 
+/**
+ * Lists blades eligible to fill a selected slot in a blade combination.
+ * @param arg0 Nonzero initializes the selector with slot 1 or 2; zero polls it.
+ * @return Zero while pending, -2 when cancelled to battle, or the selected
+ *         one-based blade index.
+ */
 static int _selectBlade(int arg0)
 {
     static int selectedRow;
@@ -2733,6 +2913,9 @@ static int _selectBlade(int arg0)
     return 0;
 }
 
+/**
+ * Sets the blade row's category, material, and equipped-state icon.
+ */
 static void _setBladeMenuItem(
     vs_battle_menuItem_t* menuItem, vs_main_inventoryBlade* blade)
 {
@@ -2747,6 +2930,12 @@ static void _setBladeMenuItem(
     }
 }
 
+/**
+ * Manages blade combination flow.
+ * @param arg0 Nonzero initializes the screen; zero advances it.
+ * @return Zero while active, -1 while waiting for the result object load,
+ *         -2 when returning to battle, or a nonzero completion result.
+ */
 static int _combineBladeMenu(int arg0)
 {
     static char D_8010BB74 = 0;
@@ -3122,6 +3311,9 @@ static int _combineBladeMenu(int arg0)
     return 0;
 }
 
+/**
+ * Populates stat display from a shield.
+ */
 static void _setShieldUi(vs_main_inventoryShield* shield)
 {
     int i;
@@ -3152,6 +3344,12 @@ static vs_main_inventoryArmor* _combineShields(
 static vs_main_inventoryShield _shieldBuf;
 static u_char _itemsToCombine[16];
 
+/**
+ * Rebuilds the shield combination preview and displays the selected item's
+ * statistics.
+ * @param arg0 One-based selected component (one/two), three for the combined
+ *             preview, or zero to clear the preview.
+ */
 static void _initCombineShields(int arg0)
 {
     u_int temp_v1;
@@ -3200,6 +3398,9 @@ static void _initCombineShields(int arg0)
     }
 }
 
+/**
+ * Builds a shield list row while temporarily hiding its installed gems.
+ */
 static void _initUiShield(
     vs_main_inventoryShield* shield, char** menuText, int* rowTypes, char* stringBuf)
 {
@@ -3211,6 +3412,12 @@ static void _initUiShield(
     *(int*)shield->gems = gems;
 }
 
+/**
+ * Lists shields eligible to fill a selected slot in a shield combination.
+ * @param arg0 Nonzero initializes the selector with slot 1 or 2; zero polls it.
+ * @return Zero while pending, -2 when cancelled to battle, or the selected
+ *         one-based shield index.
+ */
 static int _selectShields(int arg0)
 {
     static int D_8010BC68;
@@ -3335,6 +3542,9 @@ static int _selectShields(int arg0)
     return 0;
 }
 
+/**
+ * Sets a shield row's icon, material, and equipped state indicator.
+ */
 static void _setShieldMenuItem(
     vs_battle_menuItem_t* menuItem, vs_main_inventoryShield* shield)
 {
@@ -3343,6 +3553,12 @@ static void _setShieldMenuItem(
     menuItem->outsetIcon = shield->isEquipped != 0;
 }
 
+/**
+ * Runs the shield combination flow.
+ * @param arg0 Nonzero initializes the screen; zero advances it.
+ * @return Zero while active, -1 while waiting for the result object load,
+ *         -2 when returning to battle, or a nonzero completion result.
+ */
 static int _combineShieldMenu(int arg0)
 {
     static char D_8010BB75 = 0;
@@ -3396,7 +3612,7 @@ static int _combineShieldMenu(int arg0)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        _initMenuItem(0x48F, 0x1B);
+        _initMenuItem(VS_MENU12_BIN_OFFSET_combineShield, 0x1B);
         // Fallthrough
 
     case 1:
@@ -3722,6 +3938,12 @@ static vs_main_inventoryArmor _armorBuf;
 static char _combiningArmorIds[2];
 static char _2[2] __attribute__((unused));
 
+/**
+ * Rebuilds the armor combination preview and displays the selected item's
+ * statistics.
+ * @param arg0 One-based selected component (one/two), three for the combined
+ *             preview, or zero to clear the preview.
+ */
 static void _initCombineArmor(int arg0)
 {
     int var_a0;
@@ -3788,6 +4010,12 @@ static void _initCombineArmor(int arg0)
     }
 }
 
+/**
+ * Lists armor eligible to fill a selected slot in an armor combination.
+ * @param arg0 Nonzero initializes the selector with slot 1 or 2; zero polls it.
+ * @return Zero while pending, -2 when cancelled to battle, or the selected
+ *         one-based armor index.
+ */
 static int _initUiArmor(int arg0)
 {
     static int D_8010BC74;
@@ -3892,6 +4120,9 @@ static int _initUiArmor(int arg0)
     return 0;
 }
 
+/**
+ * Sets an armor row's category icon, material, and equipped-state indicator.
+ */
 static void _setArmorMenuItem(
     vs_battle_menuItem_t* menuItem, vs_main_inventoryArmor* armor)
 {
@@ -3900,6 +4131,12 @@ static void _setArmorMenuItem(
     menuItem->outsetIcon = armor->limb != 0;
 }
 
+/**
+ * Runs the armor combination flow.
+ * @param arg0 Nonzero initializes the screen; zero advances it.
+ * @return Zero while active, -1 while waiting for the result object load,
+ *         -2 when returning to battle, or a nonzero completion result.
+ */
 static int _combineArmorMenu(int arg0)
 {
     static char D_8010BB76 = 0;
@@ -3945,7 +4182,7 @@ static int _combineArmorMenu(int arg0)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        _initMenuItem(0x497, 0x1C);
+        _initMenuItem(VS_MENU12_BIN_OFFSET_combineArmor, 0x1C);
         // Fallthrough
     case 1:
         var_s1 = _armorBuf.id;
@@ -4184,14 +4421,18 @@ static int _combineArmorMenu(int arg0)
     return 0;
 }
 
-static int _countArmor(int arg0)
+/**
+ * Counts inventory items available to the corresponding combination screen.
+ * @param arg0 Zero for blades, one for shields, or two for armor.
+ */
+static int _countItems(int category)
 {
     int i;
 
     vs_main_inventoryArmor* armor = vs_main_inventory.armor;
     int count = 0;
 
-    if (arg0 == 2) {
+    if (category == 2) {
         for (i = 0; i < 16; ++i, ++armor) {
             int var_v1 = 0;
             if (armor->id != 0) {
@@ -4200,11 +4441,18 @@ static int _countArmor(int arg0)
             count += var_v1;
         }
     } else {
-        count = vs_mainMenu_getItemCount((arg0 * 2) | 1, NULL);
+        count = vs_mainMenu_getItemCount((category * 2) | 1, NULL);
     }
     return count;
 }
 
+/**
+ * Presents the blade/shield/armor combination choice and dispatches the
+ * selected combination flow.
+ * @param arg0 Nonzero initializes the top-level menu; zero advances it.
+ * @return Zero while active, -1 while waiting for combination data, or the
+ *         selected child flow's completion/cancellation result.
+ */
 static int _combineTopMenu(int arg0)
 {
     static int (*combineMenus[])(
@@ -4229,7 +4477,7 @@ static int _combineTopMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 3; ++i) {
-                int count = _countArmor(i);
+                int count = _countItems(i);
                 text[i * 2] = (char*)&vs_mainMenu_menu12Text
                     [vs_mainMenu_menu12Text[i + VS_MENU12_BIN_INDEX_blade]];
                 text[i * 2 + 1] =
@@ -4294,6 +4542,12 @@ static int _combineTopMenu(int arg0)
     return 0;
 }
 
+/**
+ * Processes the setup menu.
+ * @param state Pointer to the menu state; updated on each call.
+ * @return Always zero; menu completion and transitions are communicated through
+ *         state and global menu state.
+ */
 int vs_menuC_exec(u_char* state)
 {
     static char D_8010BC7F;
@@ -4494,6 +4748,15 @@ int vs_menuC_exec(u_char* state)
     return 0;
 }
 
+/**
+ * Combines class/affinity values.
+ * @param first First six class or seven affinity values.
+ * @param second Second six class or seven affinity values.
+ * @param result Receives the combined values.
+ * @param materialsDifferent Nonzero selects the different-material factors.
+ * @param setAffinities Nonzero processes seven affinity values; zero processes
+ *                      six class values.
+ */
 static void _setClassAffinities(signed char* first, signed char* second,
     signed char* result, int materialsDifferent, int setAffinities)
 {
@@ -4592,6 +4855,13 @@ static void _setClassAffinities(signed char* first, signed char* second,
     }
 }
 
+/**
+ * Combines the three attack type values.
+ * @param first First type-value array (entries 1 through 3 are used).
+ * @param second Second type-value array (entries 1 through 3 are used).
+ * @param result Receives the combined type values.
+ * @param materialsDifferent Nonzero selects the different-material factors.
+ */
 static void _setTypeValues(
     signed char* first, signed char* second, signed char* result, int materialsDifferent)
 {
@@ -4654,6 +4924,14 @@ static char* _combinationResults;
 static char* _materialResults;
 static void* _bladeCombinationInitData;
 
+/**
+ * Produces a blade combination according to the table and two source blades.
+ * @param first First source blade.
+ * @param second Second source blade.
+ * @param result Output blade structure, also returned.
+ * @param sydData Loaded blade combination data.
+ * @return result.
+ */
 static vs_main_inventoryBlade* _combineBlades(vs_main_inventoryBlade* first,
     vs_main_inventoryBlade* second, vs_main_inventoryBlade* result, void* sydData)
 {
@@ -4724,6 +5002,14 @@ typedef struct {
 
 static _armorInfo* _shieldCombinationInitData;
 
+/**
+ * Produces a shield combination according to the table and two source shields.
+ * @param first First source shield's armor base.
+ * @param second Second source shield's armor base.
+ * @param result Output shield armor base, also returned.
+ * @param sydData Loaded shield combination data.
+ * @return result.
+ */
 static vs_main_inventoryArmor* _combineShields(vs_main_inventoryArmor* first,
     vs_main_inventoryArmor* second, vs_main_inventoryArmor* result, void* sydData)
 {
@@ -4765,6 +5051,14 @@ static vs_main_inventoryArmor* _combineShields(vs_main_inventoryArmor* first,
 
 static _armorInfo* _combinationInitData;
 
+/**
+ * Produces an armor combination according to the table and two source items.
+ * @param first First source armor item.
+ * @param second Second source armor item.
+ * @param result Output armor structure, also returned.
+ * @param sydData Loaded armor combination data.
+ * @return result.
+ */
 static vs_main_inventoryArmor* _combineArmor(vs_main_inventoryArmor* first,
     vs_main_inventoryArmor* second, vs_main_inventoryArmor* result, void* sydData)
 {

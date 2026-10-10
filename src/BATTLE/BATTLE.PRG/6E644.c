@@ -88,7 +88,10 @@ typedef struct {
     u_int unk1 : 1;
     u_int unk2 : 1;
     u_int unk3 : 1;
-    u_int unk4 : 28;
+    u_int unk4 : 1;
+    u_int unk5 : 1;
+    u_int unk6 : 16;
+    u_int unk22 : 10;
 } func_800DCAA0_t2;
 
 typedef struct {
@@ -108,9 +111,14 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
-    u_int unk0_0 : 6;
+    u_int unk0_0 : 2;
+    u_int unk0_2 : 1;
+    u_int unk0_3 : 2;
+    u_int unk0_5 : 1;
     u_int unk0_6 : 1;
-    u_int unk0_7 : 25;
+    u_int unk0_7 : 1;
+    u_int unk0_8 : 16;
+    u_int unk0_24 : 8;
     u_int unk4;
 } func_800DD604_t;
 
@@ -137,7 +145,9 @@ typedef struct func_800E78F4_t {
     char unk14[2];
     signed char unk16;
     u_char unk17;
-    char unk18[0x13];
+    char unk18[3];
+    u_char unk1B;
+    char unk1C[0xF];
     u_char unk2B;
     char unk2C[8];
     u_char unk34;
@@ -151,7 +161,9 @@ typedef struct func_800E78F4_t {
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
-    char unk60[0x28];
+    char unk60[0x22];
+    short unk82;
+    char unk84[4];
     u_char unk88;
     char unk89[5];
     u_short unk8E;
@@ -309,8 +321,13 @@ int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DC284(int, int, int, int);
+void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
+void func_800DC344(func_800E78F4_t*, func_800DCAA0_t*);
 void func_800DC424(func_800DC888_t*);
+int func_800DC484(int, int);
+int func_800DC48C(int, int);
+void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
@@ -318,12 +335,14 @@ int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
+void func_800E4288(void*, int);
 int func_800E42EC(int, int);
 int func_800E45D4(int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
+int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
 int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
@@ -352,6 +371,7 @@ extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
 extern func_800DEEA4_t* D_800F5900;
+extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
@@ -1346,7 +1366,154 @@ void func_800DD604(func_800E78F4_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD7CC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD918);
+void func_800DD918(func_800E78F4_t* arg0, int arg1)
+{
+    func_800DCAA0_t* list = (func_800DCAA0_t*)0x1F80030C;
+    func_800DCAA0_t* candidate;
+    int pass;
+    int row;
+    int col;
+    int limb;
+    int part;
+    int last;
+    vs_battle_actor* actor;
+    func_800E78F4_t* target;
+
+    func_800E4288(list, sizeof *list);
+    list[0].unk8 = 256;
+    list[0].unk4_13 = arg1;
+    func_800DCC94(arg0, list, 0, NULL);
+    func_800DC2E0(&list[1], list);
+    list[1].unk4_13 = arg1;
+    candidate = &list[1];
+
+    for (row = 0; row < 6; ++row) {
+        for (col = 0; col < 4; ++col) {
+            int action = arg0->unk5C->armor[row][col].id;
+            func_800DD604_t* config = &arg0->unk230[row][col];
+            vs_action_t* info = &vs_main_actions[action];
+            int flag;
+
+            if (action == 0 || !config->unk0_7) {
+                continue;
+            }
+
+            list[1].unk4_3 = col;
+            list[1].unk4_0 = row;
+            list[1].unk4_5 = action;
+            flag = info->flagsE.unk13;
+            list[1].unk10.unk1 = info->flagsE.unk7 | flag;
+            list[1].unk10.unk2 = info->flagsE.unk12;
+            list[1].unk10.unk3 = config->unk0_2;
+            list[1].unk10.unk6 = config->unk0_8;
+            list[1].unk8 = config->unk4;
+
+            for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+                u_int id = actor->id;
+
+                if (D_800F5878[id]->unk1B) {
+                    continue;
+                }
+
+                list[1].unkC_0 = id;
+                list[1].unk10.unk4 = func_800DC484(action, id);
+                list[1].unk10.unk5 = func_800DC48C(action, id);
+                list[1].unk10.unk0 = config->unk0_5 && list[1].unk10.unk4;
+
+                if (!func_800E4CF4(arg0, candidate, id) || D_800F5904[id][action]) {
+                    continue;
+                }
+
+                switch (config->unk0_3) {
+                case 1:
+                    func_800DCC94(arg0, candidate, 1, info);
+                    func_800DC4F0(candidate, info);
+
+                    if (list[1].unk0 > list[0].unk0) {
+                        func_800DC344(arg0, candidate);
+                    }
+                    break;
+
+                case 2:
+                    last = -1;
+                    func_800DC2E0(&list[2], list);
+                    func_800DC2E0(&list[3], list);
+
+                    for (limb = 0; limb < 6; ++limb) {
+                        int chance;
+
+                        if ((actor->unk3C->limbs + limb)->maxHp == 0) {
+                            continue;
+                        }
+
+                        last = limb;
+                        list[1].unkC_4 = last;
+                        func_800DCC94(arg0, candidate, 2, info);
+                        chance = list[1].unkC_19;
+
+                        if ((rand() & 0x7F) < chance && list[1].unk0 > list[2].unk0) {
+                            func_800DC2E0(&list[2], candidate);
+                        }
+
+                        if (list[1].unk0 > list[3].unk0) {
+                            func_800DC2E0(&list[3], &list[1]);
+                        }
+                    }
+
+                    part = rand();
+                    part = (part & 3) + ((part >> 2) & 1) + ((part >> 3) & 1);
+
+                    if ((actor->unk3C->limbs + part)->maxHp == 0 && last >= 0) {
+                        part = last;
+                    }
+
+                    if (part >= 0) {
+                        list[1].unkC_4 = part;
+                        func_800DC4F0(&list[1], info);
+                    }
+
+                    if (list[2].unk0 > list[0].unk0) {
+                        func_800DC344(arg0, &list[2]);
+                    } else if (list[0].unk0 < list[3].unk0) {
+                        func_800DC344(arg0, &list[3]);
+                    }
+                    break;
+
+                case 3:
+                    target = D_800F5878[actor->id];
+                    func_800DC2E0(&list[2], list);
+                    func_800DC2E0(&list[3], list);
+                    list[1].unkC_7 = 0;
+
+                    for (pass = 0; pass < 1; ++pass) {
+                        int chance;
+
+                        list[1].unkC_7 = ABS(target->unk82);
+                        func_800DCC94(arg0, candidate, 3, info);
+                        chance = list[1].unkC_19;
+
+                        if ((rand() & 0x7F) < chance && list[1].unk0 > list[2].unk0) {
+                            func_800DC2E0(&list[2], candidate);
+                        }
+
+                        if (list[1].unk0 > list[3].unk0) {
+                            func_800DC2E0(&list[3], &list[1]);
+                        }
+                    }
+
+                    func_800DC4F0(&list[1], info);
+
+                    if (list[2].unk0 > list[0].unk0) {
+                        func_800DC344(arg0, &list[2]);
+                    } else if (list[0].unk0 < list[3].unk0) {
+                        func_800DC344(arg0, &list[3]);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE030);
 

@@ -84,8 +84,24 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    u_int unk4;
-} func_800E78F4_t2;
+    u_int unk4_0 : 3;
+    u_int unk4_3 : 2;
+    u_int unk4_5 : 8;
+    u_int unk4_13 : 16;
+    u_int unk4_29 : 3;
+    int unk8;
+    u_int unkC_0 : 4;
+    u_int unkC_4 : 3;
+    u_int unkC_7 : 12;
+    u_int unkC_19 : 8;
+    u_int unkC_27 : 5;
+} func_800DCAA0_t;
+
+typedef struct {
+    u_int unk0_0 : 6;
+    u_int unk0_6 : 2;
+    u_int unk0_8 : 24;
+} func_800DA1D4_t;
 
 typedef struct func_800E78F4_t {
     char unk0[0x4E];
@@ -96,11 +112,14 @@ typedef struct func_800E78F4_t {
     vs_battle_actor2* unk5C;
     char unk60[0xCF];
     u_char unk12F;
-    char unk130[0x70];
+    char unk130;
+    u_char unk131;
+    char unk132[0x6E];
     struct func_800E78F4_t* unk1A0;
-    char unk1A4[0x28C];
-    func_800E78F4_t2* unk430;
-    char unk434[0x3C];
+    func_800DA1D4_t unk1A4[16];
+    u_int unk1E4[16];
+    char unk224[0x20C];
+    func_800DCAA0_t* unk430[16];
     int unk470;
 } func_800E78F4_t;
 
@@ -161,20 +180,6 @@ typedef struct {
     char unk0[0x88];
     u_char unk88;
 } func_800DCAA0_t1;
-
-typedef struct {
-    int unk0;
-    u_int unk4_0 : 3;
-    u_int unk4_3 : 2;
-    u_int unk4_5 : 8;
-    u_int unk4_13 : 19;
-    int unk8;
-    u_int unkC_0 : 4;
-    u_int unkC_4 : 3;
-    u_int unkC_7 : 12;
-    u_int unkC_19 : 8;
-    u_int unkC_27 : 5;
-} func_800DCAA0_t;
 
 typedef struct {
     u_char unk0;
@@ -246,7 +251,10 @@ int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
-int func_800DBCB4(func_800E78F4_t*, func_800E78F4_t2*);
+int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DB370(func_800E78F4_t*, int, int, int);
+int func_800DB74C(func_800E78F4_t*, int);
+int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(int);
 void func_800DEEFC(func_800E0850_t*, int);
@@ -688,7 +696,106 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9DD8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9E18);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA1D4);
+int func_800DA1D4(func_800E78F4_t* arg0)
+{
+    int i;
+    int id = -1;
+    u_int nearest = -1;
+    int flag;
+    int distance;
+    func_800DCAA0_t* entry;
+    vs_battle_actor* actor;
+
+    switch (arg0->unk131) {
+    case 0:
+        entry = arg0->unk430[0];
+        id = entry->unkC_0;
+
+        if (func_800D9E18(arg0, entry)) {
+            return 1;
+        }
+
+        for (i = 1; i < arg0->unk470; ++i) {
+            entry = arg0->unk430[i];
+
+            if (entry->unk4_13 < D_800F58BC->unk18 && entry->unkC_0 != id) {
+                return func_800D9E18(arg0, entry);
+            }
+        }
+
+        return 0;
+
+    case 1:
+        func_800D82CC(arg0);
+
+        if (arg0->unk1A4[0].unk0_6 == 3) {
+            if (func_800DB370(arg0, 0, 640, 1)) {
+                return 1;
+            }
+
+            if (func_800DB74C(arg0, 0)) {
+                return 1;
+            }
+        }
+
+        id = arg0->unk430[0]->unkC_0;
+
+        if (arg0->unk1A4[id].unk0_6 == 3) {
+            flag = 1;
+            distance = 640;
+        } else {
+            if (arg0->unk470 < 2) {
+                return 0;
+            }
+
+            flag = 0;
+            distance = vs_gte_rsqrt(arg0->unk430[1]->unk8);
+        }
+
+        if (func_800DB370(arg0, id, distance, flag)) {
+            return 1;
+        }
+
+        if (func_800DB74C(arg0, id)) {
+            return 1;
+        }
+        // Fallthrough
+
+    case 2:
+        func_800D82CC(arg0);
+
+        if (arg0->unk1A4[0].unk0_6 == 3) {
+            if (func_800DB370(arg0, 0, 640, 1)) {
+                return 1;
+            }
+
+            if (func_800DB74C(arg0, 0)) {
+                return 1;
+            }
+        }
+
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            if (arg0->unk1A4[actor->id].unk0_6 == 3
+                && arg0->unk1E4[actor->id] < nearest) {
+                nearest = arg0->unk1E4[actor->id];
+                id = actor->id;
+            }
+        }
+
+        if (id >= 0) {
+            if (func_800DB370(arg0, id, 640, 1)) {
+                return 1;
+            }
+
+            if (func_800DB74C(arg0, id)) {
+                return 1;
+            }
+        }
+        break;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA4BC);
 
@@ -1422,8 +1529,8 @@ int func_800E78F4(func_800E78F4_t* arg0)
     int a;
     int b;
 
-    if (arg0->unk470 != 0 && func_800DBCB4(arg0, arg0->unk430)) {
-        a = (u_short)(arg0->unk430->unk4 >> 13);
+    if (arg0->unk470 != 0 && func_800DBCB4(arg0, arg0->unk430[0])) {
+        a = arg0->unk430[0]->unk4_13;
         b = D_800F58BC->unk18;
         r = a < b;
     }

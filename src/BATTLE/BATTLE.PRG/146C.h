@@ -1038,7 +1038,7 @@ void vs_battle_setNearClip(int arg0);
 void func_8007DD50(int);
 void func_8007DDAC(int arg0);
 void func_8007DDB8(D_800F1A68_t* arg0);
-void func_8007DDD4(P_CODE* arg0);
+void func_8007DDD4(CVECTOR* arg0);
 void func_8007DDF8(D_800F1A68_t* arg0);
 void func_8007DE2C(int arg0);
 void func_8007DE44(u_int arg0);

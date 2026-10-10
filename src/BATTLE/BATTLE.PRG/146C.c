@@ -15177,7 +15177,6 @@ int func_8008C8A8(void)
     }
 }
 
-// https://decomp.me/scratch/YpZTC
 void func_8008CEB0(void)
 {
     int _[8] __attribute__((unused));
@@ -15192,70 +15191,63 @@ void func_8008CEB0(void)
     int count;
     _mpdRoomSection3* cell;
     int height;
-    union {
-        _mpdRoomSection3 cell;
-        int y;
-    } temp;
-
     int coordinate;
+    int y;
 
     SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
-    if (vs_battle_roomData.section12 != NULL) {
-        object = vs_battle_roomData.section12;
-        count = vs_battle_roomData.header.section12Len / sizeof(_mpdRoomSection12);
-        for (i = 0; i < count; ++i, ++object) {
-            if (!object->unk0_9 && func_8009195C(object->unk0_0) != NULL) {
-                cell = func_8008B764(
-                    object->unkA8 / (ONE * 128), object->unkB0 / (ONE * 128), 0);
-                temp.cell = *cell;
-                if (!temp.cell.unk0_17
-                    || (temp.cell.unk0_0 >= 15 && temp.cell.unk0_0 < 19)) {
-                    coordinate = object->unkA8 / ONE;
-                    height = func_8008DC7C(coordinate, object->unkB0 / ONE);
-                    height = (unsigned int)height << 17;
-                    height >>= 17;
-                    coordinate = object->unkAC;
-                    coordinate /= ONE;
-                    temp.y = coordinate;
-                    temp.y = -temp.y;
-                    if (height > temp.y) {
-                        shade = (height - temp.y) / 2;
-                        if (shade >= 224) {
-                            shade = 223;
-                        }
-                        shade = 255 - shade;
-                        polygon = ((vs_scratch_t*)0x1F800000)->unk0;
-                        vertices[0].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
-                        vertices[0].vy = height;
-                        vertices[0].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
-                        vertices[1].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
-                        vertices[1].vy = height;
-                        vertices[1].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
-                        vertices[2].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
-                        vertices[2].vy = height;
-                        vertices[2].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
-                        vertices[3].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
-                        vertices[3].vy = height;
-                        vertices[3].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
-                        depth = RotAverage4(&vertices[0], &vertices[1], &vertices[2],
-                            &vertices[3], (long*)&polygon->x0, (long*)&polygon->x1,
-                            (long*)&polygon->x2, (long*)&polygon->x3, &projection,
-                            &flags);
-                        if (depth > 4 && depth < 2048) {
-                            setPolyF4(polygon);
-                            setSemiTrans(polygon, 1);
-                            setRGB0(
-                                polygon, shade / 2 + 16, shade / 2 + 16, shade / 2 + 16);
-                            AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth,
-                                polygon++);
-                            ((vs_scratch_t*)0x1F800000)->unk0 = polygon;
-                            _insertTPage(depth, getTPage(0, 2, 0, 0));
-                        }
-                    }
-                }
-            }
+    if (vs_battle_roomData.section12 == NULL) {
+        return;
+    }
+    object = vs_battle_roomData.section12;
+    count = vs_battle_roomData.header.section12Len / sizeof(_mpdRoomSection12);
+    for (i = 0; i < count; ++i, ++object) {
+        if (object->unk0_9 || func_8009195C(object->unk0_0) == NULL) {
+            continue;
         }
+        cell = func_8008B764(object->unkA8 / (ONE * 128), object->unkB0 / (ONE * 128), 0);
+        if (cell->unk0_17 && (cell->unk0_0 < 15 || cell->unk0_0 >= 19)) {
+            continue;
+        }
+        coordinate = object->unkA8 / ONE;
+        height = func_8008DC7C(coordinate, object->unkB0 / ONE);
+        height = (unsigned int)height << 17;
+        height >>= 17;
+        coordinate = object->unkAC;
+        y = (coordinate /= -ONE);
+        if (height <= y) {
+            continue;
+        }
+        shade = (height - y) / 2;
+        if (shade > 223) {
+            shade = 223;
+        }
+        shade = 255 - shade;
+        polygon = ((vs_scratch_t*)0x1F800000)->unk0;
+        vertices[0].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[0].vy = height;
+        vertices[0].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
+        vertices[1].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[1].vy = height;
+        vertices[1].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
+        vertices[2].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[2].vy = height;
+        vertices[2].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
+        vertices[3].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[3].vy = height;
+        vertices[3].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
+        depth = RotAverage4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+            (long*)&polygon->x0, (long*)&polygon->x1, (long*)&polygon->x2,
+            (long*)&polygon->x3, &projection, &flags);
+        if (depth <= 4 || depth >= 2048) {
+            continue;
+        }
+        setPolyF4(polygon);
+        setSemiTrans(polygon, 1);
+        setRGB0(polygon, shade / 2 + 16, shade / 2 + 16, shade / 2 + 16);
+        AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, polygon++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = polygon;
+        _insertTPage(depth, getTPage(0, 2, 0, 0));
     }
 }
 

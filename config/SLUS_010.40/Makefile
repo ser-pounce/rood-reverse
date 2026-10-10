@@ -12,17 +12,17 @@ $(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
 $(BUILD)/src/SLUS_010.40/main.c.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.c.o: MASFLAGS += --expand-div
 
-# -no-pad-sections: C units (.c.o) and hand-written hasm units (.s.o, which the hasm rule
-# otherwise assembles with section padding).
-# libgte mixes C (REG13, REG11) and hasm units, so its list gets both suffixes.
-noPadLibgte := $(addprefix libgte/, \
-	MTX_005 REG13 REG12 REG11 MTX_12 MTX_09 MTX_004 \
-	MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00 \
-)
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o, \
-	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31B7C main libcd/SYS libcd/SYS_2 $(noPadLibgte) \
-) $(patsubst %,$(BUILD)/src/SLUS_010.40/%.s.o, \
-	libsn/SNENTRY libsn/SNDTORS 31724 31C0C 32154 $(noPadLibgte) \
+	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31B7C main libcd/SYS libcd/SYS_2 \
+	$(addprefix libgte/, REG13 REG11) \
+): ASFLAGS += -no-pad-sections
+
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.s.o, \
+	libsn/SNENTRY libsn/SNDTORS 31724 31C0C 32154 \
+	$(addprefix libgte/, \
+		MTX_005 REG12 MTX_12 MTX_09 MTX_004 MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 \
+		MTX_07 CMB_00 \
+	) \
 ): ASFLAGS += -no-pad-sections
 
 # libcd SYS is one PsyQ object, split at the CdReset/CdFlush boundary: CdReset only matches under

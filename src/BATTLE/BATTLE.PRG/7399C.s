@@ -91,7 +91,7 @@ glabel func_800DC284
     mtc2    $t2, $11 /* handwritten instruction */
     nop
     nop
-    mvmva   0, 0, 3, 3, 0
+    rtir0
     mflo    $a1
     mfc2    $a0, $25 /* handwritten instruction */
     jr      $ra

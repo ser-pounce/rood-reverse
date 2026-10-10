@@ -90,7 +90,7 @@ glabel func_800C0B50
     lwc2    $1, 0x4($s6)
     beqz    $s1, .L800C0D48
     addiu   $s1, $s1, -0x1
-    mvmva   1, 1, 0, 1, 0
+    llv0bk
     mfc2    $s2, $9
     mfc2    $a2, $10
     mfc2    $s5, $11

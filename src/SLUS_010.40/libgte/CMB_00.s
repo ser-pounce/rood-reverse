@@ -1,6 +1,7 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: single-nop gte hazard
 glabel RotTransPers4
     lwc2    $0, 0($a0)
     lwc2    $1, 4($a0)

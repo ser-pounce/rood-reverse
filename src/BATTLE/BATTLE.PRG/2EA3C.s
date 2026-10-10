@@ -1105,7 +1105,7 @@ glabel func_8009820C
     lwc2    $1, 0x4($a0)
     lw      $t9, 0x8($a0)
     addiu   $t0, $t0, -0x1
-    mvmva   1, 0, 0, 0, 0
+    rtv0tr
     sw      $t9, 0xC($t1)
     swc2    $25, 0x0($t1)
     swc2    $26, 0x4($t1)
@@ -1301,7 +1301,7 @@ glabel func_800983F8
     mtc2    $t0, $0
     mtc2    $t2, $1
     lw      $t0, (0x1F800064 & 0xFFFF)($s2)
-    mvmva   1, 0, 0, 0, 0
+    rtv0tr
     .nop
     negu    $t1, $s3
     sh      $s4, 0x20($s0)
@@ -1372,7 +1372,7 @@ glabel func_800985AC
     mtc2    $t0, $0
     mtc2    $t2, $1
     addiu   $t1, $s2, 0x14
-    mvmva   1, 0, 0, 0, 0
+    rtv0tr
     lui     $a3, (0x1F8003FC >> 16)
     lw      $ra, (0x1F8003F0 & 0xFFFF)($a3)
     lw      $s0, (0x1F8003F4 & 0xFFFF)($a3)
@@ -1440,7 +1440,7 @@ glabel func_80098648
     mtc2    $t0, $0
     mtc2    $t2, $1
     addiu   $t1, $s2, 0x14
-    mvmva   1, 0, 0, 0, 0
+    rtv0tr
     lui     $a3, (0x1F8003FC >> 16)
     lw      $ra, (0x1F8003F0 & 0xFFFF)($a3)
     lw      $s0, (0x1F8003F4 & 0xFFFF)($a3)
@@ -1635,7 +1635,7 @@ glabel func_800989B8
     mtc2    $t5, $0
     mtc2    $t4, $1
     sll     $t6, $t2, 16
-    mvmva   1, 0, 0, 3, 0
+    rtv0
     lw      $t0, 0x0($a1)
     lw      $t3, 0xC($a1)
     srl     $t5, $t0, 16
@@ -1647,7 +1647,7 @@ glabel func_800989B8
     mtc2    $t5, $0
     mtc2    $t6, $1
     sll     $a2, $a2, 16
-    mvmva   1, 0, 0, 3, 0
+    rtv0
     and     $t7, $t1, $t9
     andi    $t8, $t0, 0xFFFF
     or      $t7, $t7, $t8
@@ -1659,7 +1659,7 @@ glabel func_800989B8
     mtc2    $t7, $0
     mtc2    $t3, $1
     andi    $t1, $t1, 0xFFFF
-    mvmva   1, 0, 0, 3, 0
+    rtv0
     addu    $v0, $zero, $a1
     or      $t1, $t1, $a2
     sw      $t1, 0x8($a1)

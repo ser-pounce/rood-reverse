@@ -1,6 +1,8 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: temp register usage
+# hasm: single-nop gte hazard
 glabel ApplyMatrix
     lw      $t0, 0($a0)
     lw      $t1, 4($a0)
@@ -15,7 +17,7 @@ glabel ApplyMatrix
     lwc2    $0, 0($a1)
     lwc2    $1, 4($a1)
     .nop
-    MVMVA   1, 0, 0, 3, 0
+    RTV0
     swc2    $25, 0($a2)
     swc2    $26, 4($a2)
     swc2    $27, 8($a2)

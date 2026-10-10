@@ -273,7 +273,7 @@ glabel func_80041C68
     mtc2    $t5, $0
     mtc2    $t4, $1
     addu    $v0, $zero, $a2
-    mvmva   1, 0, 0, 3, 0
+    rtv0
     lw      $t0, 0x0($a1)
     lw      $t3, 0xC($a1)
     sll     $t6, $t2, 16
@@ -286,7 +286,7 @@ glabel func_80041C68
     mtc2    $t5, $0
     mtc2    $t6, $1
     sll     $a2, $a2, 16
-    mvmva   1, 0, 0, 3, 0
+    rtv0
     and     $t7, $t1, $t9
     andi    $t8, $t0, 0xFFFF
     or      $t7, $t7, $t8
@@ -298,7 +298,7 @@ glabel func_80041C68
     mtc2    $t7, $0
     mtc2    $t3, $1
     andi    $t1, $t1, 0xFFFF
-    mvmva   1, 0, 0, 3, 0
+    rtv0
     or      $t1, $t1, $a2
     sw      $t1, 0x8($v0)
     sll     $t0, $t0, 16

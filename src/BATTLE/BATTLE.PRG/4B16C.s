@@ -1427,7 +1427,7 @@ glabel func_800B4B14
     mtc2    $t0, $1
     lw      $t2, (0x1F8003C0 & 0xFFFF)($s7)
     lw      $t3, (0x1F8003C4 & 0xFFFF)($s7)
-    mvmva   1, 0, 0, 0, 0
+    rtv0tr
     lw      $t4, (0x1F8003C8 & 0xFFFF)($s7)
     lw      $t5, (0x1F8003CC & 0xFFFF)($s7)
     lw      $t6, (0x1F8003D0 & 0xFFFF)($s7)

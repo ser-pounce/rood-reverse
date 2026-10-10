@@ -1,6 +1,9 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: unconditional b branch
+# hasm: temp register usage
+# hasm: single-nop gte hazard
 glabel ApplyMatrixLV
     lw      $t0, 0($a0)
     lw      $t1, 4($a0)
@@ -54,7 +57,7 @@ glabel ApplyMatrixLV
     mtc2    $t4, $10
     mtc2    $t5, $11
     .nop
-    MVMVA   0, 0, 3, 3, 0
+    RTIR0
     mfc2    $t3, $25
     mfc2    $t4, $26
     mfc2    $t5, $27
@@ -62,7 +65,7 @@ glabel ApplyMatrixLV
     mtc2    $t1, $10
     mtc2    $t2, $11
     .nop
-    MVMVA   1, 0, 3, 3, 0
+    RTIR12
     bgez    $t3, 0f
     .nop
     negu    $t3, $t3

@@ -165,7 +165,7 @@ glabel func_800D6E44
     mtc2    $s0, $1
     nop
     nop
-    mvmva   1, 0, 0, 0, 0
+    rtv0tr
     mfc2    $s0, $26
     nop
     bgtz    $s0, .L800D77D4
@@ -571,7 +571,7 @@ glabel func_800D6E44
     lw      $a3, 0x0($s4)
     lhu     $t0, -0x10($t1)
     lhu     $a0, -0xE($t1)
-    mvmva   1, 1, 0, 1, 0
+    llv0bk
     nop
     andi    $v0, $a0, 0xFF00
     addu    $v0, $t0, $v0
@@ -588,7 +588,7 @@ glabel func_800D6E44
     sll     $v1, $s0, 16
     addu    $v0, $v0, $v1
     sw      $v0, 0x8($a2)
-    mvmva   1, 1, 1, 1, 0
+    llv1bk
     andi    $v0, $a3, 0x8000
     beqz    $v0, .L800D76A0
     nop
@@ -605,7 +605,7 @@ glabel func_800D6E44
     sll     $v1, $s0, 16
     addu    $v0, $v0, $v1
     sw      $v0, 0x10($a2)
-    mvmva   1, 1, 2, 1, 0
+    llv2bk
     lw      $v0, (0x1F800000 & 0xFFFF)($s7)
     lw      $v1, 0x4($fp)
     addiu   $v0, $v0, 0x28
@@ -627,7 +627,7 @@ glabel func_800D6E44
     sll     $v1, $a3, 16
     or      $v0, $v0, $v1
     sw      $v0, 0xC($a2)
-    mvmva   1, 1, 0, 1, 0
+    llv0bk
     addiu   $t1, $t1, 0x18
     lw      $a0, 0x4($fp)
     addiu   $s4, $s4, 0x18

@@ -107,6 +107,14 @@ typedef struct {
 } vs_action_t;
 
 typedef struct {
+    int unk0;
+    u_short unk4;
+    u_short unk6;
+    int unk8;
+    int unkC;
+} vs_main_statusEffectParams_t;
+
+typedef struct {
     int currentMusicSlot;
     u_int unk4;
     u_int unk8;
@@ -451,7 +459,7 @@ extern vs_main_CdFile vs_main_zndFiles[256];
  * 512 pairs of zone and map IDs.
  */
 extern char vs_main_locationZoneMapIds[];
-extern int vs_main_statusEffectParams[][4];
+extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
 extern char D_8004FCCC[];
 extern char D_8004FDD0[];
 extern u_short vs_main_artsPointsRequirements[][4];

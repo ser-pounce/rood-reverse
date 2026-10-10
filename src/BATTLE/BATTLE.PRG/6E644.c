@@ -344,11 +344,13 @@ void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
 int func_800E4DF8(func_800E78F4_t*, int, int);
+void func_800E4F14(func_800E78F4_t*);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
 
+extern u_int D_80069BBC[];
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
 extern int D_800F5330[];
@@ -1515,7 +1517,102 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE030);
+void func_800DE030(int arg0)
+{
+    vs_battle_actor* actor;
+    int ticks = (arg0 >> 5) + (arg0 >> 9);
+
+    D_800F58BC->unk18 += arg0;
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        vs_battle_actor2* stats = actor->unk3C;
+        int statuses = stats->statuses;
+        func_800E78F4_t* state;
+        int i;
+        int limb;
+        int amount;
+        int row;
+        int column;
+
+        if (D_800F58BC->unk18 > 2880) {
+            for (limb = 0; limb < 6; ++limb) {
+                vs_battle_uiEquipment_limb* limbs = &stats->limbs[limb];
+
+                limbs->hp += 2;
+
+                if (limbs->hp > limbs->maxHp) {
+                    limbs->hp = limbs->maxHp;
+                }
+            }
+        }
+
+        if (stats->limbs[stats->unk34].hp >= 2 || stats->limbs[stats->unk35].hp >= 2) {
+            statuses &= ~0x10;
+        }
+
+        amount = arg0 / 240;
+
+        if (amount > 0) {
+            stats->currentHP += amount - 1;
+        }
+
+        if (stats->currentHP > stats->maxHP) {
+            stats->currentHP = stats->maxHP;
+        }
+
+        amount = arg0 / 180;
+
+        if (amount > 0) {
+            stats->currentMP += amount - 1;
+        }
+
+        if (stats->currentMP > stats->maxMP) {
+            stats->currentMP = stats->maxMP;
+        }
+
+        if (statuses & 0x4000) {
+            int scale = stats->maxHP * 5;
+
+            stats->currentHP -= ticks / vs_main_statusEffectParams[14].unk6 * scale / 100;
+
+            if (stats->currentHP < 0) {
+                stats->currentHP = 0;
+            }
+        }
+
+        if (statuses & 0x20000) {
+            int scale = stats->maxHP * 5;
+
+            stats->currentHP += ticks / vs_main_statusEffectParams[17].unk6 * scale / 100;
+
+            if (stats->currentHP < 0) {
+                stats->currentHP = 0;
+            }
+        }
+
+        for (i = 0; i < 5; ++i) {
+            if (statuses & D_80069BBC[i]) {
+                int duration = stats->statusTimers[i];
+
+                duration = duration * 32 - duration * 2;
+
+                if (D_800F58BC->unk18 >= duration) {
+                    statuses &= ~D_80069BBC[i];
+                }
+            }
+        }
+
+        stats->statuses = statuses;
+        state = D_800F5878[actor->id];
+        func_800E4F14(state);
+
+        for (row = 0; row < 6; ++row) {
+            for (column = 0; column < 4; ++column) {
+                func_800E4DF8(state, row, column);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE3E4);
 

@@ -1204,7 +1204,93 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
     actor->unk5AC_12 = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A7524);
+void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
+{
+    D_1F8003BC_t* scratch;
+    int x;
+    int z;
+
+    if (!actor->unk5AC_12) {
+        return;
+    }
+
+    scratch = (D_1F8003BC_t*)0x1F8003BC;
+    x = 0;
+    z = (scratch->blocked[0] != 0) * 16;
+
+    if (scratch->blocked[1]) {
+        x = 8;
+        z += 8;
+    }
+
+    if (scratch->blocked[2]) {
+        x += 16;
+    }
+
+    if (scratch->blocked[3]) {
+        x += 8;
+        z -= 8;
+    }
+
+    if (scratch->blocked[4]) {
+        z -= 16;
+    }
+
+    if (scratch->blocked[5]) {
+        x -= 8;
+        z -= 8;
+    }
+
+    if (scratch->blocked[6]) {
+        x -= 16;
+    }
+
+    if (scratch->blocked[7]) {
+        x -= 8;
+        z += 8;
+    }
+
+    if (x > 16) {
+        x = 16;
+    }
+
+    if (x < -16) {
+        x = -16;
+    }
+
+    if (z > 16) {
+        z = 16;
+    }
+
+    if (z < -16) {
+        z = -16;
+    }
+
+    if (x != 0) {
+        if (x < 0) {
+            if (motion->vx > 0) {
+                motion->vx = 0;
+            }
+        } else if (motion->vx < 0) {
+            motion->vx = 0;
+        }
+    }
+
+    if (z != 0) {
+        if (z < 0) {
+            if (motion->vz > 0) {
+                motion->vz = 0;
+            }
+        } else if (motion->vz < 0) {
+            motion->vz = 0;
+        }
+    }
+
+    motion->vx += x;
+    motion->vz += z;
+    actor->unk6EE = 0;
+    actor->unk6EF = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
 

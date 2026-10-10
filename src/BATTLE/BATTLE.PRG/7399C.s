@@ -5,6 +5,9 @@
 
 .section .text, "ax"
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: saved registers outside frame
 glabel func_800DC19C
     lbu     $v0, 0x13($a0)
     addiu   $sp, $sp, -0x20
@@ -72,6 +75,7 @@ glabel func_800DC210
     addiu   $sp, $sp, 0x20
 endlabel func_800DC210
 
+# hasm: trapping arithmetic
 glabel func_800DC284
     addiu   $v0, $zero, 0x6
     mult    $v0, $a0

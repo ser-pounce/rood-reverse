@@ -5,6 +5,9 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel _patch_card_info
     lui     $at, %hi(D_8003FED8)
     sw      $ra, %lo(D_8003FED8)($at)
@@ -25,6 +28,7 @@ glabel _patch_card_info
     .nop
 endlabel _patch_card_info
 
+# hasm: custom register abi
 glabel func_8002EEF8
     lhu     $t7, 0xA($v1)
     lui     $t0, (0x0 >> 16)
@@ -40,6 +44,8 @@ glabel func_8002EEF8
     .nop
 endlabel func_8002EEF8
 
+# hasm: cross-function control flow
+# hasm: custom register abi
 glabel func_8002EF24
     lw      $v0, 0x1074($v1)
     .nop
@@ -62,6 +68,7 @@ glabel func_8002EF24
     .nop
 endlabel func_8002EF24
 
+# hasm: cross-function control flow
 glabel func_8002EF68
     lui     $v0, %hi(D_A000DFAC)
     addiu   $v0, $v0, %lo(D_A000DFAC)
@@ -75,6 +82,9 @@ glabel func_8002EF68
 endlabel func_8002EF68
     .nop
 
+# hasm: code patching
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel _patch_card
     lui     $at, %hi(D_8003FED8)
     sw      $ra, %lo(D_8003FED8)($at)
@@ -116,6 +126,9 @@ glabel _patch_card
     .nop
 endlabel _patch_card
 
+# hasm: code patching
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel _patch_card2
     lui     $at, %hi(D_8003FED8)
     sw      $ra, %lo(D_8003FED8)($at)
@@ -148,6 +161,7 @@ glabel _patch_card2
     .nop
 endlabel _patch_card2
 
+# hasm: code patching
 glabel _copy_memcard_patch
     ori     $v0, $zero, 0xDF80
     lui     $t2, %hi(func_8002EEF8)

@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel _ExitCard
     lui     $at, %hi(D_8003FEE8)
     sw      $ra, %lo(D_8003FEE8)($at)

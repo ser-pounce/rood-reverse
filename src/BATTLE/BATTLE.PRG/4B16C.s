@@ -71,6 +71,9 @@ glabel func_800B396C
     sh      $t6, 0x10($v0)
 endlabel func_800B396C
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_800B3A68
     or      $t0, $a3, $zero
     lui     $a3, (0x1F800378 >> 16)
@@ -244,6 +247,10 @@ glabel func_800B3A68
     lw      $gp, (0x1F800378 & 0xFFFF)($a3)
 endlabel func_800B3A68
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
+# hasm: single-nop gte hazard
 glabel func_800B3CF0
     lui     $t0, (0x1F800390 >> 16)
     sw      $s0, (0x1F800358 & 0xFFFF)($t0)
@@ -822,6 +829,9 @@ glabel func_800B3CF0
     lw      $fp, (0x1F800380 & 0xFFFF)($t0)
 endlabel func_800B3CF0
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_800B4594
     lui     $t0, (0x1F800390 >> 16)
     sw      $s0, (0x1F800358 & 0xFFFF)($t0)
@@ -1192,6 +1202,9 @@ glabel func_800B4594
     lw      $fp, (0x1F800380 & 0xFFFF)($t0)
 endlabel func_800B4594
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_800B4B14
     lui     $t0, (0x1F800348 >> 16)
     sw      $s0, (0x1F800320 & 0xFFFF)($t0)
@@ -1626,6 +1639,10 @@ glabel func_800B4B14
     lw      $fp, (0x1F800348 & 0xFFFF)($t0)
 endlabel func_800B4B14
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
+# hasm: single-nop gte hazard
 glabel func_800B516C
     lui     $t0, (0x1F800390 >> 16)
     sw      $s0, (0x1F800358 & 0xFFFF)($t0)
@@ -2364,6 +2381,9 @@ glabel func_800B516C
     lw      $fp, (0x1F800380 & 0xFFFF)($t0)
 endlabel func_800B516C
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_800B5C30
     lui     $t0, (0x1F800390 >> 16)
     sw      $s0, (0x1F800358 & 0xFFFF)($t0)

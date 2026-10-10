@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: split div
 glabel SetFogNear
     sll     $v0, $a0, 2
     addu    $v0, $v0, $a0
@@ -19,6 +20,7 @@ glabel SetFogNear
     .nop
 endlabel SetFogNear
 
+# hasm: single-nop gte hazard
 glabel Square0
     lwc2    $9, 0x0($a0)
     lwc2    $10, 0x4($a0)
@@ -32,6 +34,8 @@ glabel Square0
     addu    $v0, $a1, $zero
 endlabel Square0
 
+# hasm: temp register usage
+# hasm: single-nop gte hazard
 glabel OuterProduct0
     cfc2    $t5, $0
     cfc2    $t6, $2
@@ -57,6 +61,7 @@ glabel OuterProduct0
     .nop
 endlabel OuterProduct0
 
+# hasm: single-nop gte hazard
 glabel DpqColor
     lwc2    $6, 0x0($a0)
     mtc2    $a1, $8
@@ -68,6 +73,9 @@ glabel DpqColor
     .nop
 endlabel DpqColor
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel InvSquareRoot
     mtc2    $a0, $30
     lui     $v0, %hi(D_80040D98)
@@ -96,6 +104,11 @@ glabel InvSquareRoot
     sw      $t0, 0x0($a1)
 endlabel InvSquareRoot
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: temp register usage
 glabel VectorNormalS
     lw      $t0, 0x0($a0)
     addu    $a3, $ra, $zero
@@ -106,6 +119,9 @@ glabel VectorNormalS
     addu    $ra, $a3, $zero
 endlabel VectorNormalS
 
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: temp register usage
 glabel VectorNormal
     lw      $t0, 0x0($a0)
     lw      $t1, 0x4($a0)
@@ -119,6 +135,9 @@ glabel VectorNormal
     sw      $t2, 0x8($a1)
 endlabel VectorNormal
 
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: temp register usage
 glabel VectorNormalSS
     lw      $t0, 0x0($a0)
     addu    $a3, $ra, $zero
@@ -137,6 +156,9 @@ glabel VectorNormalSS
     sh      $t2, 0x4($a1)
 endlabel VectorNormalSS
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: custom register abi
 glabel func_80041AF4
     mtc2    $t0, $9
     mtc2    $t1, $10
@@ -182,6 +204,8 @@ glabel func_80041AF4
     srav    $t2, $t2, $t6
 endlabel func_80041AF4
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
 glabel vs_gte_rsqrt
     mtc2    $a0, $30
     lui     $v0, %hi(D_80040C18)
@@ -211,6 +235,8 @@ glabel vs_gte_rsqrt
     srl     $v0, $t0, 12
 endlabel vs_gte_rsqrt
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
 glabel SquareRoot12
     mtc2    $a0, $30
     lui     $v0, %hi(D_80040C18)
@@ -245,6 +271,7 @@ glabel SquareRoot12
     addu    $v0, $t3, $zero
 endlabel SquareRoot12
 
+# hasm: cross-function control flow
 glabel CompMatrixLV
     j       .L80041C6C
     addu    $a2, $zero, $a0

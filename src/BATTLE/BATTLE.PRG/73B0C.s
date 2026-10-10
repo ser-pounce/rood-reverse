@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
 glabel func_800DC30C
     lh      $t0, 0x0($a0)
     addiu   $v0, $zero, 0x2
@@ -24,6 +25,8 @@ glabel func_800DC30C
     sh      $a3, 0x0($a0)
 endlabel func_800DC30C
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800DC344
     lw      $v0, 0x470($a0)
     addiu   $t3, $zero, 0x14
@@ -62,6 +65,8 @@ glabel func_800DC344
     addu    $a0, $v1, $zero
 endlabel func_800DC344
 
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
 glabel func_800DC3CC
     lw      $a2, 0x470($a0)
     addu    $a1, $zero, $zero
@@ -72,6 +77,7 @@ glabel func_800DC3CC
     nop
 endlabel func_800DC3CC
 
+# hasm: cross-function control flow
 glabel func_800DC3E8
     lw      $t0, 0x18($a0)
     addiu   $a2, $zero, 0x528

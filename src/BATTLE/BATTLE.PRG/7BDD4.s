@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: temp register usage
 glabel func_800E45D4
     lui     $a1, (0x1F8003F8 >> 16)
     lh      $t0, (0x1F8003F8 & 0xFFFF)($a1)
@@ -16,6 +18,8 @@ glabel func_800E45D4
     and     $v0, $t0, $a0
 endlabel func_800E45D4
 
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel func_800E45F4
     sll     $t0, $a0, 24
     srl     $t0, $t0, 24
@@ -23,6 +27,11 @@ glabel func_800E45F4
     srl     $t1, $t1, 24
 endlabel func_800E45F4
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: temp register usage
 glabel func_800E4604
     sll     $t2, $a1, 24
     srl     $t2, $t2, 24
@@ -34,6 +43,9 @@ glabel func_800E4604
     addu    $a1, $zero, $zero
 endlabel func_800E4604
 
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel func_800E4624
     lw      $t6, 0x0($a0)
     lh      $t2, 0x4($a0)
@@ -52,6 +64,7 @@ glabel func_800E4624
     sub     $a2, $t2, $t5 /* handwritten instruction */
 endlabel func_800E4624
 
+# hasm: trapping arithmetic
 glabel func_800E4660
     mtc2    $a0, $9 /* handwritten instruction */
     mtc2    $a1, $10 /* handwritten instruction */
@@ -67,6 +80,9 @@ glabel func_800E4660
     add     $v0, $v0, $a2 /* handwritten instruction */
 endlabel func_800E4660
 
+# hasm: trapping arithmetic
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel func_800E4690
     addiu   $sp, $sp, -0x20
     sw      $t0, 0x0($sp)
@@ -125,6 +141,7 @@ glabel func_800E4690
     addu    $ra, $a3, $zero
 endlabel func_800E4690
 
+# hasm: unconditional b branch
 glabel func_800E4764
     lw      $t1, 0x224($a0)
     addiu   $v0, $zero, 0xA
@@ -164,6 +181,11 @@ glabel func_800E4764
     nop
 endlabel func_800E4764
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel func_800E47E4
     lbu     $a2, 0xC($a0)
     addu    $t6, $ra, $zero
@@ -218,6 +240,9 @@ glabel func_800E47E4
     slt     $v0, $v0, $zero
 endlabel func_800E47E4
 
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel func_800E48A8
     addu    $t3, $a0, $zero
     addu    $t4, $a1, $zero
@@ -241,12 +266,16 @@ glabel func_800E48A8
     sb      $t4, 0xB($a1)
 endlabel func_800E48A8
 
+# hasm: cross-function control flow
 glabel func_800E48F8
     lbu     $v0, 0x89($a0)
     addiu   $v1, $zero, 0x1
     bne     $v1, $v0, .L800E4BB4
 endlabel func_800E48F8
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800E4904
     lui     $a1, (0x1F80037C >> 16)
     lbu     $a3, 0xE5($a0)
@@ -307,6 +336,9 @@ glabel func_800E4904
     bgez    $zero, .L800E4AFC
 endlabel func_800E4904
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: custom register abi
 glabel func_800E49D8
     lui     $t0, (0x1F8003F4 >> 16)
     addiu   $sp, $sp, -0x20
@@ -393,11 +425,16 @@ glabel func_800E49D8
     addiu   $sp, $sp, 0x20
 endlabel func_800E49D8
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800E4B10
     bgez    $zero, .L800E4B1C
     addi    $a1, $zero, 0xB /* handwritten instruction */
 endlabel func_800E4B10
 
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
 glabel func_800E4B18
     addi    $a1, $zero, 0xC /* handwritten instruction */
 .L800E4B1C:
@@ -407,6 +444,8 @@ glabel func_800E4B18
     sw      $a2, 0x170($a0)
 endlabel func_800E4B18
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800E4B2C
     lbu     $t0, 0x19B($a0)
     lw      $t1, 0x168($a0)
@@ -427,6 +466,10 @@ glabel func_800E4B2C
     sw      $v1, 0x180($a0)
 endlabel func_800E4B2C
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: saved registers outside frame
 glabel func_800E4B70
     lbu     $v0, 0x1A($a0)
     addiu   $sp, $sp, -0x20
@@ -450,6 +493,7 @@ glabel func_800E4B70
     jr      $ra
 endlabel func_800E4B70
 
+# hasm: trapping arithmetic
 glabel func_800E4BB8
     addi    $a3, $zero, -0xFE2 /* handwritten instruction */
     lb      $a2, 0x23($a0)
@@ -462,11 +506,15 @@ glabel func_800E4BB8
     sw      $a1, 0x190($a0)
 endlabel func_800E4BB8
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800E4BD8
     bgez    $zero, .L800E4BE4
     addiu   $a3, $zero, 0x1
 endlabel func_800E4BD8
 
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
 glabel func_800E4BE0
     addu    $a3, $zero, $zero
 .L800E4BE4:
@@ -488,12 +536,17 @@ glabel func_800E4BE0
     sb      $v1, 0xE($a1)
 endlabel func_800E4BE0
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800E4C1C
     addi    $a3, $zero, 0x1 /* handwritten instruction */
     bgez    $zero, .L800E4C30
     ori     $a2, $zero, 0x80
 endlabel func_800E4C1C
 
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel func_800E4C28
     addu    $a3, $zero, $zero
     ori     $a2, $zero, 0xFF7F
@@ -514,6 +567,7 @@ glabel func_800E4C28
     sh      $t2, 0x0($t0)
 endlabel func_800E4C28
 
+# hasm: cross-function control flow
 glabel func_800E4C64
     beqz    $a0, .L800E4BB4
     lui     $a1, %hi(D_800F5878)
@@ -527,6 +581,7 @@ glabel func_800E4C64
     sb      $a1, 0x13F($a0)
 endlabel func_800E4C64
 
+# hasm: cross-function control flow
 glabel func_800E4C8C
     lui     $a1, %hi(D_800F4538)
     addiu   $a1, $a1, %lo(D_800F4538)

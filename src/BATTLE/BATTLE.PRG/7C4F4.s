@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: reserved register usage
 glabel func_800E4CF4
     lw      $t0, 0x4($a1)
     lui     $v0, %hi(D_800F5878)
@@ -75,6 +77,8 @@ glabel func_800E4CF4
     addu    $v0, $zero, $zero
 endlabel func_800E4CF4
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
 glabel func_800E4DF8
     lw      $t0, 0x54($a0)
     addiu   $t1, $zero, 0xDC

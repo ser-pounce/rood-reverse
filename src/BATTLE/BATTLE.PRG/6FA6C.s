@@ -14,6 +14,9 @@ alabel L800D8278
     xori    $v0, $v0, 0x1
 endlabel func_800D826C
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800D8280
     lbu     $v0, 0x12A($a0)
     addu    $t0, $a0, $zero
@@ -28,6 +31,7 @@ glabel func_800D8280
     jr      $ra
 endlabel func_800D8280
 
+# hasm: cross-function control flow
 glabel func_800D82A8
     lui     $a1, (0x800F5878 >> 16)
     beqz    $a0, .L800D82A4
@@ -40,6 +44,10 @@ glabel func_800D82A8
     nop
 endlabel func_800D82A8
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: saved registers outside frame
 glabel func_800D82CC
     addiu   $sp, $sp, -0x30
     sw      $ra, 0x18($sp)
@@ -85,6 +93,7 @@ glabel func_800D82CC
     sb      $v0, 0x12($s2)
 endlabel func_800D82CC
 
+# hasm: cross-function control flow
 glabel func_800D836C
     lhu     $t0, 0x8E($a0)
     lui     $v1, %hi(D_800F58BC)

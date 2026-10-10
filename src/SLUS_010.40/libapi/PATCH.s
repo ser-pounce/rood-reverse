@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel EnablePAD
     lui     $t1, %hi(jtbl_8003FEC0)
     lw      $t1, %lo(jtbl_8003FEC0)($t1)
@@ -13,6 +15,8 @@ glabel EnablePAD
     .nop
 endlabel EnablePAD
 
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel DisablePAD
     lui     $t1, %hi(jtbl_8003FEC4)
     lw      $t1, %lo(jtbl_8003FEC4)($t1)
@@ -21,6 +25,9 @@ glabel DisablePAD
     .nop
 endlabel DisablePAD
 
+# hasm: trapping arithmetic
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel _patch_pad
     lui     $at, %hi(D_8003FEB8)
     sw      $ra, %lo(D_8003FEB8)($at)

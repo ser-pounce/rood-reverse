@@ -5,6 +5,12 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_800DEEFC
     sll     $a3, $a1, 2
     lui     $a2, (0x1F8003C8 >> 16)

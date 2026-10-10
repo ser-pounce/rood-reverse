@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: temp register usage
 glabel func_800DC2E0
     lw      $t0, 0x0($a1)
     lw      $t1, 0x4($a1)

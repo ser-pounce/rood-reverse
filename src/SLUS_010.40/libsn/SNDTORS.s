@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: temp register usage
 glabel __do_global_dtors
     lui     $t0, %hi(__initialised)
     lw      $t0, %lo(__initialised)($t0)

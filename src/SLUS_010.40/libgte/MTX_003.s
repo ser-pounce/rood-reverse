@@ -1,6 +1,10 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
+# hasm: temp register usage
+# hasm: single-nop gte hazard
 glabel CompMatrix
     lw      $t0, 0($a0)
     lw      $t1, 4($a0)

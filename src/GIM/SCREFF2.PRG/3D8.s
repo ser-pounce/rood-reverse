@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: single-nop gte hazard
 glabel func_800F9BD8
     addiu   $sp, $sp, -0x8
     lui     $t5, (0x1F800088 >> 16)

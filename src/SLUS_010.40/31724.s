@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: cross-function control flow
 glabel rcos
     addiu   $a0, $a0, 0x400
 endlabel rcos
@@ -42,6 +43,7 @@ glabel rsin
     .nop
 endlabel rsin
 
+# hasm: cross-function control flow
 glabel RotMatrixYXZ_gte
     lw      $v0, 0x0($a0)
     lw      $t8, 0x4($a0)
@@ -140,6 +142,8 @@ alabel D_80040FA8
     sw      $t4, 0xC($v0)
 endlabel RotMatrixYXZ_gte
 
+# hasm: custom register abi
+# hasm: temp register usage
 glabel func_80041104
     addu    $t1, $a2, $t8
     lw      $t0, 0x0($t1)
@@ -206,6 +210,7 @@ glabel func_80041104
     negu    $t0, $t0
 endlabel func_80041104
 
+# hasm: cross-function control flow
 glabel RotMatrix_gte
     lw      $v0, 0x0($a0)
     lw      $t8, 0x4($a0)

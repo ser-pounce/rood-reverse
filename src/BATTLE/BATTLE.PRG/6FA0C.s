@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: cross-function control flow
 glabel func_800D820C
     beqz    $a0, L800D8278
     addu    $v0, $zero, $zero
@@ -12,6 +13,8 @@ glabel func_800D820C
     nop
 endlabel func_800D820C
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800D821C
     addiu   $a1, $zero, 0x0
     addiu   $sp, $sp, -0x20

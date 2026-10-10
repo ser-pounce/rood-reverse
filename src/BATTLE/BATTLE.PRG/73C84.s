@@ -5,11 +5,14 @@
 
 .section .text, "ax"
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800DC484
     bgez    $zero, .L800DC490
     addiu   $v0, $zero, 0xF
 endlabel func_800DC484
 
+# hasm: cross-function control flow
 glabel func_800DC48C
     addiu   $v0, $zero, 0xE
 .L800DC490:
@@ -40,6 +43,9 @@ glabel func_800DC48C
     jr      $ra
 endlabel func_800DC48C
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800DC4F0
     addiu   $a2, $zero, 0x1
     lw      $t0, 0x4($a0)
@@ -76,6 +82,10 @@ glabel func_800DC4F0
     sw      $a3, 0x0($t3)
 endlabel func_800DC4F0
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: saved registers outside frame
 glabel func_800DC574
     addiu   $sp, $sp, -0x30
     sw      $ra, 0x18($sp)
@@ -132,6 +142,10 @@ glabel func_800DC574
     nop
 endlabel func_800DC574
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: reserved register usage
 glabel func_800DC638
     addiu   $sp, $sp, -0x80
     sw      $ra, 0x78($sp)
@@ -226,6 +240,9 @@ glabel func_800DC638
     jr      $ra
 endlabel func_800DC638
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
 glabel func_800DC784
     sll     $a1, $a1, 2
     addiu   $sp, $sp, -0x30
@@ -266,6 +283,10 @@ glabel func_800DC784
     sw      $s2, 0x1A4($s1)
 endlabel func_800DC784
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel func_800DC810
     addiu   $sp, $sp, -0x30
     sw      $ra, 0x18($sp)

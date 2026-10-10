@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: saved registers outside frame
 glabel func_800E3D5C
     addu    $v1, $a1, $zero
     mtc2    $ra, $25

@@ -5,6 +5,9 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: saved registers outside frame
 glabel func_800E3BC8
     lw      $t0, 0x168($a0)
     lui     $t8, (0x3FFFFF >> 16)
@@ -82,6 +85,8 @@ alabel func_800E3C30
     nop
 endlabel func_800E3BC8
 
+# hasm: trapping arithmetic
+# hasm: custom register abi
 glabel func_800E3CDC
     lw      $t0, 0x194($a0)
     lui     $a3, (0xFF00FF >> 16)

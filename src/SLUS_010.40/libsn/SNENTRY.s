@@ -5,6 +5,9 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel __SN_ENTRY_POINT
     lui     $v0, %hi(__ra_temp)
     addiu   $v0, $v0, %lo(__ra_temp)

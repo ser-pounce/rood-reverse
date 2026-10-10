@@ -31,6 +31,10 @@ glabel func_800DBC60
     addu    $v0, $zero, $zero
 endlabel func_800DBC60
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel func_800DBCB4
     lhu     $t0, 0x90($a0)
     addu    $t9, $ra, $zero
@@ -48,6 +52,10 @@ glabel func_800DBCB4
     bgez    $zero, .L800DBCA4
 endlabel func_800DBCB4
 
+# hasm: unconditional b branch
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel func_800DBCEC
     lui     $t8, %hi(vs_battle_actors)
     addiu   $t8, $t8, %lo(vs_battle_actors)

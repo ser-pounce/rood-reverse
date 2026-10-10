@@ -1,6 +1,7 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: temp register usage
 glabel SetRotMatrix
     lw      $t0, 0($a0)
     lw      $t1, 4($a0)

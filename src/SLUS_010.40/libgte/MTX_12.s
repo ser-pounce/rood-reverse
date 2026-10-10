@@ -1,6 +1,7 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: temp register usage
 glabel SetTransMatrix
     lw      $t0, 20($a0)
     lw      $t1, 24($a0)

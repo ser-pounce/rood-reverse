@@ -5,6 +5,9 @@
 
 .section .text, "ax"
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel func_800DBD80
     lw      $t4, 0xC($a1)
     addu    $t7, $ra, $zero

@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_8009723C
     lui     $a3, (0x1F8003FC >> 16)
     sw      $fp, (0x1F8003D4 & 0xFFFF)($a3)
@@ -95,6 +97,10 @@ glabel func_8009723C
     lw      $s7, (0x1F8003FC & 0xFFFF)($a3)
 endlabel func_8009723C
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_80097388
     sw      $ra, 0x3C4($a3)
     sw      $s0, 0x3C8($a3)
@@ -495,6 +501,8 @@ alabel D_800978F8
     .nop
 endlabel func_80097388
 
+# hasm: reserved register usage
+# hasm: temp register usage
 glabel func_8009797C
     lw      $s0, 0x0($a0)
     lw      $s4, 0x4($a0)
@@ -535,6 +543,8 @@ glabel func_8009797C
     addu    $s5, $s5, $s1
 endlabel func_8009797C
 
+# hasm: reserved register usage
+# hasm: temp register usage
 glabel func_80097A10
     mtc2    $s0, $0
     mtc2    $s1, $1
@@ -595,6 +605,10 @@ glabel func_80097A10
     addu    $s5, $s5, $s1
 endlabel func_80097A10
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_80097AEC
     addiu   $fp, $fp, -0x2C
     sw      $ra, 0x0($fp)
@@ -731,6 +745,10 @@ glabel func_80097AEC
     addiu   $fp, $fp, 0x2C
 endlabel func_80097AEC
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_80097CF0
     addiu   $fp, $fp, -0x2C
     sw      $ra, 0x0($fp)
@@ -899,6 +917,7 @@ glabel func_80097CF0
     addiu   $fp, $fp, 0x2C
 endlabel func_80097CF0
 
+# hasm: reserved register usage
 glabel func_80097F70
     lbu     $s3, 0x8($s0)
     lbu     $s4, 0x8($s1)
@@ -943,6 +962,10 @@ glabel func_80097F70
     sb      $s4, 0x7($s2)
 endlabel func_80097F70
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: reserved register usage
+# hasm: temp register usage
 glabel func_80098014
     sra     $t4, $t0, 16
     sra     $t5, $t1, 16
@@ -1008,6 +1031,8 @@ glabel func_80098014
     or      $at, $zero, $zero
 endlabel func_80098014
 
+# hasm: custom register abi
+# hasm: reserved register usage
 glabel func_800980F8
     srl     $t9, $t9, 2
     slti    $at, $t9, 0x8
@@ -1038,6 +1063,7 @@ glabel func_800980F8
     or      $at, $zero, $zero
 endlabel func_800980F8
 
+# hasm: code patching
 glabel func_80098160
     lui     $v0, %hi(func_800980F8)
     addiu   $v0, $v0, %lo(func_800980F8)
@@ -1048,6 +1074,7 @@ glabel func_80098160
     .nop
 endlabel func_80098160
 
+# hasm: code patching
 glabel func_8009817C
     lui     $v0, %hi(func_800980F8)
     addiu   $v0, $v0, %lo(func_800980F8)
@@ -1057,6 +1084,7 @@ glabel func_8009817C
     .nop
 endlabel func_8009817C
 
+# hasm: code patching
 glabel func_80098194
     lui     $v0, %hi(D_80097590)
     addiu   $v0, $v0, %lo(D_80097590)
@@ -1069,6 +1097,7 @@ glabel func_80098194
     .nop
 endlabel func_80098194
 
+# hasm: code patching
 glabel func_800981B8
     lui     $v0, %hi(func_80098014)
     addiu   $v0, $v0, %lo(func_80098014)
@@ -1093,6 +1122,8 @@ glabel func_800981B8
     .nop
 endlabel func_800981B8
 
+# hasm: unconditional b branch
+# hasm: reserved register usage
 glabel func_8009820C
     lui     $a3, (0x1F800100 >> 16)
     ori     $t1, $a3, (0x1F800100 & 0xFFFF)
@@ -1227,6 +1258,10 @@ glabel func_8009820C
     sw      $a2, (0x1F800000 & 0xFFFF)($a3)
 endlabel func_8009820C
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_800983F8
     lui     $at, (0x1F800030 >> 16)
     sw      $ra, (0x1F8003E0 & 0xFFFF)($at)
@@ -1342,6 +1377,9 @@ glabel func_800983F8
     lw      $s2, (0x1F8003EC & 0xFFFF)($at)
 endlabel func_800983F8
 
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: temp register usage
 glabel func_800985AC
     lui     $a3, (0x1F8003FC >> 16)
     sw      $ra, (0x1F8003F0 & 0xFFFF)($a3)
@@ -1384,6 +1422,10 @@ glabel func_800985AC
     lw      $s2, (0x1F8003FC & 0xFFFF)($a3)
 endlabel func_800985AC
 
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: split div
+# hasm: temp register usage
 glabel func_80098648
     lui     $a3, (0x1F8003C0 >> 16)
     lui     $t0, (0x1000000 >> 16)
@@ -1452,6 +1494,8 @@ glabel func_80098648
     lw      $s2, (0x1F8003FC & 0xFFFF)($a3)
 endlabel func_80098648
 
+# hasm: cross-function control flow
+# hasm: custom register abi
 glabel func_8009874C
     lui     $a2, %hi(_trig_table)
     addiu   $a2, $a2, %lo(_trig_table)
@@ -1548,6 +1592,8 @@ alabel D_80098760
     sw      $t4, 0xC($v0)
 endlabel func_8009874C
 
+# hasm: custom register abi
+# hasm: temp register usage
 glabel func_800988BC
     addu    $t1, $a2, $t8
     lw      $t0, 0x0($t1)
@@ -1614,6 +1660,7 @@ glabel func_800988BC
     negu    $t0, $t0
 endlabel func_800988BC
 
+# hasm: temp register usage
 glabel func_800989B8
     lw      $t0, 0x0($a0)
     lw      $t1, 0x4($a0)
@@ -1680,6 +1727,7 @@ glabel func_800989B8
     sw      $t5, 0xC($a1)
 endlabel func_800989B8
 
+# hasm: cross-function control flow
 glabel func_80098AB4
     addiu   $a0, $a0, 0x400
 endlabel func_80098AB4
@@ -1717,6 +1765,8 @@ glabel func_80098AB8
     .nop
 endlabel func_80098AB8
 
+# hasm: cross-function control flow
+# hasm: temp register usage
 glabel func_80098B1C
     lui     $t0, %hi(vs_battle_roomData)
     addiu   $t0, $t0, %lo(vs_battle_roomData)
@@ -1727,6 +1777,8 @@ glabel func_80098B1C
     .nop
 endlabel func_80098B1C
 
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_80098B38
     lui     $at, (0x1F800218 >> 16)
     sw      $ra, (0x1F800200 & 0xFFFF)($at)
@@ -1800,6 +1852,8 @@ glabel func_80098B38
     .nop
 endlabel func_80098B38
 
+# hasm: reserved register usage
+# hasm: split div
 glabel func_80098C3C
     lw      $t4, 0x8($a2)
     lw      $t5, 0x10($a2)
@@ -1883,6 +1937,10 @@ glabel func_80098C3C
     or      $v0, $zero, $zero
 endlabel func_80098C3C
 
+# hasm: unconditional b branch
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_80098D6C
     beq     $a0, $a1, .L80098DC0
     addu    $v0, $ra, $zero
@@ -1947,6 +2005,9 @@ glabel func_80098D6C
     .nop
 endlabel func_80098D6C
 
+# hasm: custom register abi
+# hasm: reserved register usage
+# hasm: temp register usage
 glabel func_80098E50
     .nop
     lw      $t6, 0x0($t3)
@@ -2020,6 +2081,7 @@ glabel func_80098E50
     or      $t6, $t6, $t5
 endlabel func_80098E50
 
+# hasm: reserved register usage
 glabel vs_battle_initSceneAndGetRoomNames
     lw      $v0, 0x0($a0)
     addiu   $a1, $a0, 0x4
@@ -2041,6 +2103,9 @@ glabel vs_battle_initSceneAndGetRoomNames
     addu    $v0, $a1, $zero
 endlabel vs_battle_initSceneAndGetRoomNames
 
+# hasm: unconditional b branch
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel func_80098F8C
     lw      $v0, 0x0($a0)
     lui     $a3, (0x1F8003E8 >> 16)
@@ -2401,6 +2466,7 @@ glabel func_80098F8C
     .nop
 endlabel func_80098F8C
 
+# hasm: temp register usage
 glabel vs_battle_getGeomOffset
     cfc2    $t0, $24
     cfc2    $t1, $25
@@ -2412,6 +2478,7 @@ glabel vs_battle_getGeomOffset
     .nop
 endlabel vs_battle_getGeomOffset
 
+# hasm: temp register usage
 glabel vs_battle_setGeomOffset
     lw      $t0, 0x0($a0)
     lw      $t1, 0x4($a0)
@@ -2423,6 +2490,7 @@ glabel vs_battle_setGeomOffset
     .nop
 endlabel vs_battle_setGeomOffset
 
+# hasm: reserved register usage
 glabel func_80099514
     lui     $a3, %hi(vs_battle_roomData)
     addiu   $a3, $a3, %lo(vs_battle_roomData)

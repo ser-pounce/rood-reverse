@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
 glabel func_800E6694
     lui     $t0, %hi(D_800F5878)
     addiu   $t0, $t0, %lo(D_800F5878)
@@ -36,6 +37,8 @@ alabel L800E66F8
     or      $v0, $v0, $t6
 endlabel func_800E6694
 
+# hasm: cross-function control flow
+# hasm: reserved register usage
 glabel func_800E6700
     lui     $a1, %hi(vs_battle_actors)
     addiu   $a1, $a1, %lo(vs_battle_actors)
@@ -64,6 +67,9 @@ glabel func_800E6700
     jr      $ra
 endlabel func_800E6700
 
+# hasm: cross-function control flow
+# hasm: saved registers outside frame
+# hasm: temp register usage
 glabel func_800E6764
     addiu   $t0, $zero, 0x1
 .L800E6768:
@@ -78,6 +84,10 @@ glabel func_800E6764
     jr      $ra
 endlabel func_800E6764
 
+# hasm: trapping arithmetic
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: temp register usage
 glabel func_800E678C
     addu    $t0, $zero, $zero
     addu    $t8, $ra, $zero

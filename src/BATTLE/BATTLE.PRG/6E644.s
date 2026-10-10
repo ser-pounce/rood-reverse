@@ -15,6 +15,7 @@ enddlabel jtbl_80069B54
 
 .section .text, "ax"
 
+# hasm: split div
 glabel func_800D6E44
     addiu   $sp, $sp, -0x48
     sw      $s1, 0x24($sp)

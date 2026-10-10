@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: trapping arithmetic
+# hasm: split div
 glabel func_800B147C
     lw      $t0, 0x10($sp)
     sll     $v0, $a3, 12
@@ -181,6 +183,8 @@ glabel func_800B147C
     nop
 endlabel func_800B147C
 
+# hasm: custom register abi
+# hasm: temp register usage
 glabel func_800B16F4
     addu    $t1, $a2, $t8
     lw      $t0, 0x0($t1)
@@ -247,6 +251,7 @@ glabel func_800B16F4
     negu    $t0, $t0
 endlabel func_800B16F4
 
+# hasm: cross-function control flow
 glabel func_800B17F0
     lw      $v0, 0x0($a0)
     lw      $t8, 0x4($a0)
@@ -346,6 +351,7 @@ alabel D_800B180C
     sw      $t7, 0x8($v0)
 endlabel func_800B17F0
 
+# hasm: temp register usage
 glabel func_800B196C
     lw      $t0, 0x0($a0)
     lw      $t1, 0x4($a0)

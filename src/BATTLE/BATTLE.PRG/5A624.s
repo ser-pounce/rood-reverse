@@ -5,6 +5,7 @@
 
 .section .text, "ax"
 
+# hasm: reserved register usage
 glabel func_800C2E24
     addiu   $sp, $sp, -0x38
     sw      $fp, 0x30($sp)

@@ -177,6 +177,26 @@ typedef struct {
 } pFileBlock9;
 
 typedef struct {
+    u_short flags;
+    u_short unk2;
+    u_char unk4;
+    u_char curve;
+    u_char unk6;
+    u_char unk7;
+    u_char pad8[2];
+    u_short mode;
+    u_char padC[2];
+    u_short limit : 8;
+    u_short radius : 4;
+    u_short radiusJitter : 4;
+    u_short unk10;
+    u_short shape12;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t;
+
+typedef struct {
     u_short count;
     u_short dataOffset;
     u_char curveSizes[0];
@@ -330,7 +350,7 @@ typedef struct {
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;
-    void* block10Data;
+    func_800D0B30_t* block10Data;
     pFileBlock3* block3Data;
     u_char* block11Data;
     void* block12Data;

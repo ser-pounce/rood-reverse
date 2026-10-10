@@ -189,22 +189,13 @@ typedef struct {
     SVECTOR unk8;
     VECTOR unk10;
     VECTOR unk20;
-    int unk30[6];
+    int unk30[2];
+    VECTOR target;
     MATRIX unk48;
     int unk5C;
     int unk60;
     int unk64;
 } func_800D0B30_t2;
-
-typedef struct {
-    u_char unk0[0x34];
-    u_char unk34;
-    u_char unk35;
-    char unk36[0x42];
-    MATRIX unk78;
-    char unk98[0x26];
-    short unkBE;
-} func_800D0C60_t;
 
 typedef struct {
     short unk0;
@@ -268,21 +259,6 @@ typedef struct {
 } pFileBlock11;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    int unk8;
-    int unkC;
-    int unk10;
-    short unk14[6];
-    short unk20[6];
-    short unk2C[6];
-} func_800D0B30_t;
-
-typedef struct {
     int unk0;
     int unk4;
     u_char unk8;
@@ -340,29 +316,21 @@ typedef struct {
 } func_800CCE10_t;
 
 typedef struct {
-    u_short flags;
-    u_char pad2[3];
-    u_char curve;
-    u_char pad6[4];
-    u_short mode;
-    u_char padC[2];
-    u_short limit : 8;
-    u_short radius : 4;
-    u_short radiusJitter : 4;
-    u_short unk10;
-    u_short shape12;
-} func_800D0548_arg0;
-
-typedef struct {
-    u_char pad0[6];
+    short rotation[3];
     u_short flags;
     u_char pad8[6];
     short frame;
     u_char pad10[12];
     VECTOR position;
-    u_char pad2C[32];
-    VECTOR endpoint;
-    u_char pad5C[92];
+    u_char pad2C[8];
+    u_char actor;
+    u_char bone;
+    u_char targetActor;
+    u_char targetBone;
+    MATRIX world;
+    MATRIX view;
+    MATRIX attachment;
+    MATRIX facing;
     SVECTOR saved;
     SVECTOR control0;
     SVECTOR control1;
@@ -400,7 +368,7 @@ void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
 void func_800CF988(TrailPacket*, int, int, int);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, MATRIX* arg1);
-void func_800D0984(int, func_800D0C60_t*, int);
+void func_800D0984(D_800F53B8_t*, func_800D0548_arg1*, int);
 void func_800D0D08(D_800F53B8_t*);
 void func_800D1104(int);
 void func_800D1718(SVECTOR*, SVECTOR*, int, int, SVECTOR*);
@@ -5431,17 +5399,17 @@ void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFEF0);
 
-void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+void func_800D01E4(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 {
     SVECTOR start;
     SVECTOR end;
     SVECTOR result;
     if (arg0->mode & 0x80) {
         start = arg1->saved;
-        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&end, arg1->world.t[0], arg1->world.t[1], arg1->world.t[2]);
     } else {
         end = arg1->saved;
-        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&start, arg1->world.t[0], arg1->world.t[1], arg1->world.t[2]);
     }
     switch ((arg0->mode >> 5) & 3) {
     case 0:
@@ -5458,7 +5426,7 @@ void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     setVector(&arg1->position, result.vx, result.vy, result.vz);
 }
 
-void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+void func_800D037C(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 {
     int t;
     SVECTOR start;
@@ -5466,10 +5434,10 @@ void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     SVECTOR result;
     if (arg0->mode & 0x80) {
         start = arg1->saved;
-        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&end, arg1->world.t[0], arg1->world.t[1], arg1->world.t[2]);
     } else {
         end = arg1->saved;
-        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&start, arg1->world.t[0], arg1->world.t[1], arg1->world.t[2]);
     }
     switch ((arg0->mode >> 5) & 3) {
     case 0:
@@ -5487,7 +5455,7 @@ void func_800D037C(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     setVector(&arg1->position, result.vx, result.vy, result.vz);
 }
 
-void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+void func_800D0548(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 {
     switch (arg0->flags & 0x3000) {
     case 0:
@@ -5504,7 +5472,7 @@ void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     }
 }
 
-void func_800D05F4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+void func_800D05F4(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 {
     SVECTOR control0;
     SVECTOR control1;
@@ -5520,9 +5488,9 @@ void func_800D05F4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
 
     if (arg0->mode & 0x80) {
         setVector(&start, arg1->saved.vx, arg1->saved.vy, arg1->saved.vz);
-        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&end, arg1->world.t[0], arg1->world.t[1], arg1->world.t[2]);
     } else {
-        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&start, arg1->world.t[0], arg1->world.t[1], arg1->world.t[2]);
         setVector(&end, arg1->saved.vx, arg1->saved.vy, arg1->saved.vz);
     }
 
@@ -5563,7 +5531,7 @@ void func_800D05F4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     setVector(&arg1->control1, end.vx, end.vy, end.vz);
 }
 
-void func_800D0984(int arg0, func_800D0C60_t* arg1, int arg2)
+void func_800D0984(D_800F53B8_t* arg0, func_800D0548_arg1* arg1, int arg2)
 {
     VECTOR delta;
     VECTOR start;
@@ -5574,22 +5542,22 @@ void func_800D0984(int arg0, func_800D0C60_t* arg1, int arg2)
         vs_scratch.camera.lookAt.vy >> 12, vs_scratch.camera.lookAt.vz >> 12);
     setVector(&end, vs_scratch.camera.position.vx >> 12,
         vs_scratch.camera.position.vy >> 12, vs_scratch.camera.position.vz >> 12);
-    vs_battle_lookAt(&start, &end, &arg1->unk78);
-    arg1->unk78.t[0] = start.vx;
-    arg1->unk78.t[1] = start.vy;
-    arg1->unk78.t[2] = start.vz;
+    vs_battle_lookAt(&start, &end, &arg1->attachment);
+    arg1->attachment.t[0] = start.vx;
+    arg1->attachment.t[1] = start.vy;
+    arg1->attachment.t[2] = start.vz;
     if (arg2) {
         setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
         distance =
             vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
         offset.vx = offset.vy = 0;
         offset.vz = distance - 0x600;
-        SetRotMatrix(&arg1->unk78);
-        SetTransMatrix(&arg1->unk78);
+        SetRotMatrix(&arg1->attachment);
+        SetTransMatrix(&arg1->attachment);
         RotTrans(&offset, &start, &distance);
-        arg1->unk78.t[0] = start.vx;
-        arg1->unk78.t[1] = start.vy;
-        arg1->unk78.t[2] = start.vz;
+        arg1->attachment.t[0] = start.vx;
+        arg1->attachment.t[1] = start.vy;
+        arg1->attachment.t[2] = start.vz;
     }
 }
 
@@ -5597,7 +5565,7 @@ void func_800D0B08(MATRIX* arg0) { func_800CFE98(D_800F5310, arg0); }
 
 void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 {
-    if (arg0->unk0 & 1) {
+    if (arg0->flags & 1) {
         vs_battle_lerpSvector(arg0->unk14, D_800F5330[arg0->unk6], &arg2->unk8);
         arg1->vx += arg2->unk8.vx;
         arg1->vy = arg1->vy + arg2->unk8.vy;
@@ -5615,30 +5583,115 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
     arg2->unk48.t[0] = 0;
 }
 
-void func_800D0C60(int arg0, func_800D0C60_t* arg1)
+void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 {
     func_8006EBF8_t sp10;
     int sp20[2];
 
-    if (arg1->unk34 < 0x10U) {
-        func_800A1720(arg1->unk34, arg1->unk35, &arg1->unk78, sp20);
-        func_800A1108(arg1->unk34, &sp10);
-        arg1->unkBE = sp10.unk0.unk4.pad;
+    if (arg1->actor < 0x10U) {
+        func_800A1720(arg1->actor, arg1->bone, &arg1->attachment, sp20);
+        func_800A1108(arg1->actor, &sp10);
+        arg1->saved.pad = sp10.unk0.unk4.pad;
         return;
     }
 
-    switch (arg1->unk34) {
+    switch (arg1->actor) {
     case 0x10:
     case 0x11:
-        func_800D0984(arg0, arg1, arg1->unk34 != 0x10);
+        func_800D0984(arg0, arg1, arg1->actor != 0x10);
         break;
     case 0x12:
-        func_800D0B08(&arg1->unk78);
+        func_800D0B08(&arg1->attachment);
         break;
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
+void func_800D0D08(D_800F53B8_t* arg0)
+{
+    int i;
+    func_800D0B30_t2* scratch = (func_800D0B30_t2*)0x1F8002C8;
+
+    for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
+        func_800D0B30_t* definition = &D_800F569C->block10Data[i];
+        func_800D0548_arg1* state = (func_800D0548_arg1*)&arg0->unk1C[i];
+
+        func_800D0B30(definition, (SVECTOR*)state->rotation, scratch);
+
+        if ((definition->flags & 0x80) && state->targetActor != 0xFF
+            && ((definition->flags & 0x100) || !(state->flags & 2))) {
+            if (state->targetActor == 0x12) {
+                setVector(&state->saved, D_800F5230.position.vx, D_800F5230.position.vy,
+                    D_800F5230.position.vz);
+            } else {
+                func_800A1AF8(state->targetActor, state->targetBone, &state->saved, 0);
+            }
+
+            state->flags |= 2;
+        }
+
+        if (state->actor != 0xFF && ((definition->flags & 0x20) || !(state->flags & 1))) {
+            func_800D0C60(arg0, state);
+            state->flags |= 1;
+        }
+
+        if (definition->flags & 2) {
+            if ((definition->flags & 0xC000) == 0x4000) {
+                ((int*)&state->attachment)[0] = ((int*)&state->attachment)[4] =
+                    rcos(state->saved.pad);
+                ((int*)&state->attachment)[1] = rsin(state->saved.pad);
+                ((int*)&state->attachment)[3] = -((int*)&state->attachment)[1];
+                ((int*)&state->attachment)[2] = ONE;
+            }
+
+            CompMatrix(&state->attachment, &scratch->unk48, &state->world);
+        } else {
+            state->world = scratch->unk48;
+        }
+
+        if ((definition->flags & 0x3000) == 0x2000 && !(state->flags & 8)) {
+            func_800D05F4(definition, state);
+            state->flags |= 8;
+        }
+
+        if (definition->flags & 0x80) {
+            func_800D0548(definition, state);
+        }
+
+        if (definition->flags & 0x40) {
+            state->world.t[0] = state->position.vx;
+            state->world.t[1] = state->position.vy;
+            state->world.t[2] = state->position.vz;
+        } else {
+            state->world.t[0] += state->position.vx;
+            state->world.t[1] += state->position.vy;
+            state->world.t[2] += state->position.vz;
+        }
+
+        if ((short)definition->flags & 0x8000) {
+            if (definition->flags & 0x4000) {
+                setVector(
+                    &scratch->target, state->saved.vx, state->saved.vy, state->saved.vz);
+            } else {
+                setVector(&scratch->target, state->attachment.t[0],
+                    state->attachment.t[1], state->attachment.t[2]);
+            }
+
+            if (scratch->target.vx != state->world.t[0]
+                || scratch->target.vy != state->world.t[1]
+                || scratch->target.vz != state->world.t[2]) {
+                vs_battle_lookAt(
+                    (VECTOR*)state->world.t, &scratch->target, &state->facing);
+                state->facing.t[0] = state->world.t[0];
+                state->facing.t[1] = state->world.t[1];
+                state->facing.t[2] = state->world.t[2];
+            }
+
+            CompMatrix(&state->facing, &scratch->unk48, &state->world);
+        }
+
+        CompMatrix(&vs_scratch.viewMatrix, &state->world, &state->view);
+    }
+}
 
 void func_800D1104(int arg0)
 {

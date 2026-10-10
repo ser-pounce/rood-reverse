@@ -11,6 +11,12 @@ static u_short _menuStrings[] = {
 
 static char _simpleMapValues[] = { 3, 1, 0 };
 
+/**
+ * Runs the simple map setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _simpleMapOptionMenu(int init)
 {
     static int state = 0;
@@ -65,6 +71,12 @@ static int _simpleMapOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the ability timing setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _abilityTimingOptionMenu(int init)
 {
     static int state = 0;
@@ -117,6 +129,12 @@ static int _abilityTimingOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the weapon status setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _weaponStatusOptionMenu(int init)
 {
     static int state = 0;
@@ -169,6 +187,12 @@ static int _weaponStatusOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the armor status setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _armorStatusOptionMenu(int init)
 {
     static int state = 0;
@@ -222,6 +246,12 @@ static int _armorStatusOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the cursor memory setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _cursorMemoryOptionMenu(int init)
 {
     static int state = 0;
@@ -274,6 +304,12 @@ static int _cursorMemoryOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the information display setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _informationOptionMenu(int init)
 {
     static int state = 0;
@@ -325,6 +361,12 @@ static int _informationOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the puzzle mode setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _puzzleModeOptionMenu(int init)
 {
     static int state = 0;
@@ -378,6 +420,12 @@ static int _puzzleModeOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the sound mode setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _soundOptionMenu(int init)
 {
     static int state = 0;
@@ -429,6 +477,12 @@ static int _soundOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Runs the vibration setting submenu.
+ *
+ * @return Zero while initializing or waiting, -2 when returning to battle, or
+ * the selected option row plus one.
+ */
 static int _vibrationOptionMenu(int init)
 {
     static int state = 0;
@@ -486,6 +540,14 @@ static int _vibrationOptionMenu(int init)
     return 0;
 }
 
+/**
+ * Handles the settings menu and its option submenus.
+ *
+ * Advances the menu state over successive calls, applying chosen
+ * settings and handling exits to either the main menu or battle.
+ *
+ * @return One when an exit transition completes, otherwise zero.
+ */
 int vs_menu8_exec(u_char* state)
 {
     enum state {

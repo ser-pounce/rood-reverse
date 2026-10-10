@@ -385,6 +385,8 @@ void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
 void func_800CCA90(int);
 void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
+void func_800CD158(int);
+void func_800CD3E4(int);
 int _breakArtsUnlocked(void);
 extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
@@ -456,6 +458,7 @@ void func_800D8060(void*);
 void vs_effpurge_exec(void);
 void func_800AE68C(int, int);
 
+extern int D_8005046C;
 extern u_int _gimLbas[];
 extern int _menuLbas[];
 extern u_char D_800EB708[];
@@ -3427,7 +3430,125 @@ void func_800CB7DC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB83C);
+void func_800CB83C(void)
+{
+    int id;
+
+    for (id = 7; id != -1; --id) {
+        vs_battle_textBox* box = &vs_battle_textBoxes[id];
+        int state = box->state;
+        int duration;
+        int scale;
+
+        if (state == 0) {
+            continue;
+        }
+
+        D_800F4E80 = id;
+
+        if (box->unk0.unk0_31) {
+            continue;
+        }
+
+        duration = box->unk22;
+        scale = vs_gametime_tickspeed >> 1;
+
+        if (state < 0) {
+            state -= scale;
+
+            if (state < -duration) {
+                box->state = 0;
+                continue;
+            }
+
+            scale = ((duration + state + 1) << 16) / duration;
+        } else {
+            state += scale;
+
+            if (duration < state) {
+                state = duration + 1;
+            }
+
+            scale = state - 1;
+
+            switch (box->unk0.unk0_4) {
+            case 0:
+            case 1:
+                scale = rsin(scale * (ONE / 4) / duration) * 16;
+                break;
+            case 2:
+                if (scale < duration - 1) {
+                    scale = (scale << 16) / (duration - 2);
+                } else {
+                    scale = scale == duration ? 0x10000 : 0x11000;
+                }
+                break;
+            case 3:
+                if (duration >= 3) {
+                    if (scale < duration - 1) {
+                        scale = (scale * 0xC000) / (duration - 2) + 0x6000;
+                    } else {
+                        scale = scale == duration ? 0x10000 : 0x11000;
+                    }
+                }
+                break;
+            }
+        }
+
+        box->state = state;
+        box->unk24 = (box->x * scale + box->centerX * (0x10000 - scale)) >> 16;
+        box->unk26 = (box->y * scale + box->centerY * (0x10000 - scale)) >> 16;
+        box->unk28 = ((box->charsPerLine * 12 + 10) * scale) >> 16;
+        box->unk2A = ((box->lineCount * 13 + 4) * scale) >> 16;
+
+        switch (box->unk0.unk0_0) {
+        case 0:
+            if (state < 0) {
+                _renderTextImmediate(box, scale);
+                break;
+            }
+
+            goto text;
+        case 4:
+            func_800CD158(id);
+
+            if (state < 0) {
+                break;
+            }
+
+            goto text;
+        case 6:
+            _renderTextImmediate(box, scale);
+            break;
+        case 2:
+        case 7:
+            func_800CD3E4(id);
+
+        default:
+        text:
+            if (state == duration + 1) {
+                _printVariableWidthFont(box);
+            } else if (state < 0) {
+                _printFixedWidthFont(box, scale);
+            }
+            break;
+        case 3:
+            break;
+        }
+    }
+
+    AddPrims(vs_scratch.unk4 - 24, D_800F51B8, D_800F51B8 + 33);
+    D_800EB9CE = D_800EB9CE == 2 ? 0 : D_800EB9CE + 1;
+    D_800F51B8 = &D_800F4CD0 + D_800EB9CE * 34;
+    ClearOTag(D_800F51B8, 34);
+
+    if (vs_battle_lowerScreenUiState == 1) {
+        _renderTimer(&D_8005046C);
+    }
+
+    func_800CB708();
+    vs_battle_keystreamBits(0);
+}
 
 void func_800CBBCC(gim_t* image, int clut, u_long* ot)
 {

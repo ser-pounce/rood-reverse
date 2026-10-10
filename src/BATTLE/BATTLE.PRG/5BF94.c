@@ -459,6 +459,7 @@ void vs_effpurge_exec(void);
 void func_800AE68C(int, int);
 
 extern int D_8005046C;
+extern u_char* D_800EB588[];
 extern u_int _gimLbas[];
 extern int _menuLbas[];
 extern u_char D_800EB708[];
@@ -4206,7 +4207,191 @@ int func_800CD3A0(int arg0, int arg1)
     return var_v1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3E4);
+#define POINT_X(p) (((short*)&points[p])[0])
+#define POINT_Y(p) (((short*)&points[p])[1])
+
+void func_800CD3E4(int index)
+{
+    u_long* ot = D_800F51B8 + index * 4;
+    u_int part;
+    vs_battle_textBox* box = &vs_battle_textBoxes[index];
+    u_short* verts = (u_short*)D_800EB588[box->unk0.unk0_8];
+    u_char* shape;
+    int header;
+    int* points = (int*)0x1F800088;
+    short* out;
+    u_long* prim;
+    int x = box->unk24;
+    int y = box->unk26;
+    int w = box->unk28;
+    int h = box->unk2A;
+    int flip;
+    int i;
+    int n;
+    u_char count;
+    int k;
+    int v;
+
+    if (verts == NULL) {
+        return;
+    }
+
+    out = (short*)0x1F800088;
+    flip = box->unk0.unk0_6;
+    shape = (u_char*)verts;
+    part = ((int*)shape)[box->unk0.unk0_12];
+    verts = (u_short*)(shape + (shape[1] + 1) * 4);
+    count = shape[2];
+    header = *(int*)shape;
+
+    for (i = 0; i < count; ++i) {
+        v = func_800CD3A0(verts[i], flip);
+        *out++ = x + (((v & 0xFF) * w) >> 8);
+        *out++ = y + (((v >> 8) * h) >> 8);
+    }
+    if ((u_int)(box->unk0.unk0_12 - 1) < ((header >> 8) & 0xFF)) {
+        v = func_800CD3A0(verts[part & 0xFF], flip);
+
+        for (; i < (header & 0xFF); ++i) {
+            n = func_800CD3A0(verts[i], flip);
+            k = n >> 8;
+            n &= 0xFF;
+
+            if (n >= 0x80) {
+                n -= 0x100;
+            }
+            if (k >= 0x80) {
+                k -= 0x100;
+            }
+
+            *out++ = x + (((n + (v & 0xFF)) * w) >> 8);
+            *out++ = y + (((k + (v >> 8)) * h) >> 8);
+        }
+    } else {
+        part = 0xFFFF;
+    }
+
+    verts += header & 0xFF;
+
+    i = (header >> 16) & 0xFF;
+
+    for (n = 0; n < i; ++n) {
+        if (n == (part & 0xFF)) {
+            v = 0;
+
+            for (k = 0; k < box->unk0.unk0_12; ++k) {
+                v += shape[k * 4 + 2];
+            }
+            for (k = 0; k < shape[box->unk0.unk0_12 * 4 + 2]; ++k) {
+                vs_battle_addTile(
+                    ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v + k]);
+                n = v + k;
+            }
+
+            v = n;
+            n = (part >> 8) & 0xFF;
+            vs_battle_addTile(
+                ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v]);
+        }
+
+        v = (n + 1) % i;
+        vs_battle_addTile(
+            ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v]);
+    }
+
+    vs_battle_insertTpage(0xE2000000, ot + 2);
+
+    prim = vs_scratch.unk0;
+    flip = box->brightness;
+    flip = flip | (flip << 8) | (flip << 16);
+
+    for (n = 0; n <= shape[1]; ++n) {
+        for (k = 0; k < shape[n * 4 + 3]; ++k) {
+            int quad;
+
+            if ((n != 0) && (n != box->unk0.unk0_12)) {
+                verts += 2;
+                continue;
+            }
+
+            v = ((u_char*)verts)[0];
+            i = ((u_char*)verts)[1];
+            w = ((u_char*)verts)[2];
+            h = ((u_char*)verts)[3];
+            verts += 2;
+
+            x = POINT_X(v);
+
+            if (POINT_X(i) < x) {
+                x = POINT_X(i);
+            }
+            if (POINT_X(w) < x) {
+                x = POINT_X(w);
+            }
+
+            y = POINT_Y(v);
+
+            if (POINT_Y(i) < y) {
+                y = POINT_Y(i);
+            }
+            if (POINT_Y(w) < y) {
+                y = POINT_Y(w);
+            }
+
+            quad = (h != 0xFF) * 2;
+
+            if (quad) {
+                if (POINT_X(h) < x) {
+                    x = POINT_X(h);
+                }
+                if (POINT_Y(h) < y) {
+                    y = POINT_Y(h);
+                }
+            } else {
+                h = 0;
+            }
+
+            prim[0] = (ot[2] & 0xFFFFFF) | ((quad + 7) << 24);
+            prim[1] = flip | ((quad + 9) << 26);
+            x = (x >> 6) << 6;
+            y = (y >> 6) << 6;
+            prim[2] = points[v];
+            prim[3] = ((POINT_X(v) - x) & 0xFF) | (((POINT_Y(v) - y) << 8) & 0xFF00)
+                    | (getClut(992, 220) << 16);
+            prim[4] = points[i];
+            prim[5] = ((POINT_X(i) - x) & 0xFF) | (((POINT_Y(i) - y) << 8) & 0xFF00)
+                    | (getTPage(0, 0, 448, 256) << 16);
+            prim[6] = points[w];
+            prim[7] = ((POINT_X(w) - x) & 0xFF) | (((POINT_Y(w) - y) << 8) & 0xFF00);
+            prim[8] = points[h];
+            prim[9] = ((POINT_X(h) - x) & 0xFF) | (((POINT_Y(h) - y) << 8) & 0xFF00);
+            ot[2] = ((u_long)prim << 8) >> 8;
+            prim += quad + 8;
+
+            prim[0] = (ot[1] & 0xFFFFFF) | 0x0C000000;
+            prim[1] = (quad + 8) << 26;
+            prim[2] = ((POINT_X(v) + 2) & 0xFFFF) | ((POINT_Y(v) + 2) << 16);
+            prim[3] = ((POINT_X(i) + 2) & 0xFFFF) | ((POINT_Y(i) + 2) << 16);
+            prim[4] = ((POINT_X(w) + 2) & 0xFFFF) | ((POINT_Y(w) + 2) << 16);
+            prim[5] = quad ? ((POINT_X(h) + 2) & 0xFFFF) | ((POINT_Y(h) + 2) << 16) : 0;
+            prim[6] = 0x48000000;
+            prim[7] = prim[2];
+            prim[8] = prim[3];
+            prim[9] = prim[quad + 3];
+            prim[10] = prim[4];
+            prim[11] = prim[2];
+            prim[12] = 0x55555555;
+            ot[1] = ((u_long)prim << 8) >> 8;
+            prim += 13;
+        }
+    }
+
+    vs_scratch.unk0 = prim;
+    vs_battle_addTile(ot + 2, _get_mode(0, 0, getTPage(0, 0, 448, 256)), 0xE2000318, 0);
+}
+
+#undef POINT_X
+#undef POINT_Y
 
 void func_800CDCBC(effectTrailState* t, int head, int tail)
 {

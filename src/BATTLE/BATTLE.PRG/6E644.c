@@ -137,7 +137,8 @@ typedef struct func_800E78F4_t {
     u_char unk131;
     char unk132[0xD];
     u_char unk13F;
-    char unk140[0x3C];
+    func_800DCAA0_t unk140;
+    char unk150[0x2C];
     int unk17C;
     int unk180;
     int unk184;
@@ -163,6 +164,7 @@ typedef struct {
     func_800E78F4_t* unk1C;
     func_800E78F4_t* unk20;
     int unk24;
+    vs_battle_actor* unk28[4];
 } D_800F58BC_t;
 
 typedef struct {
@@ -875,7 +877,43 @@ int func_800DAC80(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAD9C);
+int func_800DAD9C(func_800E78F4_t* arg0)
+{
+    int i;
+    int j;
+    func_800DCAA0_t* entry;
+
+    for (i = 0; i < arg0->unk470; ++i) {
+        entry = arg0->unk430[i];
+
+        if (func_800DAC80(arg0, entry)) {
+            return 1;
+        }
+    }
+
+    entry = &arg0->unk140;
+
+    if (entry->unk4_5) {
+        for (j = 0; j < 4; ++j) {
+            vs_battle_actor* actor = D_800F58BC->unk28[j];
+
+            if (actor != NULL) {
+                D_800F45E0_t* model;
+
+                entry->unkC_0 = actor->id;
+                model = D_800F45E0[actor->id];
+
+                if (model->unk12 && model->unk1A == 0 && func_800DAC80(arg0, entry)) {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAED0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DB0BC);
 

@@ -15179,20 +15179,9 @@ int func_8008C8A8(void)
 
 void func_8008CEB0(void)
 {
-    int _[8] __attribute__((unused));
-    SVECTOR vertices[4];
-    long projection;
-    long flags;
-    POLY_F4* polygon;
-    int depth;
-    int shade;
     _mpdRoomSection12* object;
     int i;
     int count;
-    _mpdRoomSection3* cell;
-    int height;
-    int coordinate;
-    int y;
 
     SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
@@ -15202,6 +15191,18 @@ void func_8008CEB0(void)
     object = vs_battle_roomData.section12;
     count = vs_battle_roomData.header.section12Len / sizeof(_mpdRoomSection12);
     for (i = 0; i < count; ++i, ++object) {
+        int _[8] __attribute__((unused));
+        SVECTOR vertices[4];
+        long projection;
+        long flags;
+        POLY_F4* polygon;
+        int depth;
+        int shade;
+        _mpdRoomSection3* cell;
+        int height;
+        int coordinate;
+        int y;
+
         if (object->unk0_9 || func_8009195C(object->unk0_0) == NULL) {
             continue;
         }
@@ -15211,7 +15212,7 @@ void func_8008CEB0(void)
         }
         coordinate = object->unkA8 / ONE;
         height = func_8008DC7C(coordinate, object->unkB0 / ONE);
-        height = (unsigned int)height << 17;
+        height <<= 17;
         height >>= 17;
         coordinate = object->unkAC;
         y = (coordinate /= -ONE);

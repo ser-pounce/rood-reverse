@@ -226,7 +226,7 @@ segments:
       - [0x31FC8, c, libgte/SMP_05]     # |
       - [0x31FEC, hasm, libgte/SMP_04]  # |
       - [0x32014, hasm, libgte/SMP_02]  # |
-      - [0x32040, c, libgte/CMB_02]     # |
+      - [0x32040, hasm, libgte/CMB_02]  # |
       - [0x320BC, c, libgte/MTX_07]     # |
       - [0x320DC, c, libgte/CMB_00]     # |
       - [0x32154, asm]

@@ -16,7 +16,9 @@ typedef struct padPort {
     struct padPort* unk10;
     int unk14;
     int unk18;
-    char unk1C[0xC];
+    char unk1C[0x4];
+    int unk20;
+    char unk24[0x4];
     u_char* unk28;
     u_char* unk2C;
     u_char* unk30;

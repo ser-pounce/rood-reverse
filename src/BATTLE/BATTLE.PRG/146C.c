@@ -682,7 +682,7 @@ extern int D_800F1A40;
 extern u_int D_800F1A44;
 extern int D_800F1A50[];
 extern D_800F1A68_t D_800F1A68;
-extern P_CODE D_800F1A78;
+extern CVECTOR D_800F1A78;
 extern char D_800F1A9C[];
 extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
@@ -8086,9 +8086,9 @@ void func_8007D360(void)
     D_800F1A20 = 0;
     setVector(&D_800F1A28, 0, 0, 0);
     setVector(&D_800F1A30, ONE, ONE, 0);
-    D_800F1A78.r0 = 0x80;
-    D_800F1A78.g0 = 0x80;
-    D_800F1A78.b0 = 0x80;
+    D_800F1A78.r = 0x80;
+    D_800F1A78.g = 0x80;
+    D_800F1A78.b = 0x80;
     D_800F1A9C[0] = 0x80;
     D_800F1A9C[1] = 0x80;
     D_800F1A9C[2] = 0x80;
@@ -8111,7 +8111,7 @@ void func_8007D41C(void)
     int i;
     POLY_FT4* poly;
     SetPolyFT4(&D_800F1ABC->poly[0]);
-    setRGB0(&D_800F1ABC->poly[0], D_800F1A78.r0, D_800F1A78.g0, D_800F1A78.b0);
+    setRGB0(&D_800F1ABC->poly[0], D_800F1A78.r, D_800F1A78.g, D_800F1A78.b);
     SetSemiTrans(&D_800F1ABC->poly[0], 1);
     setUV4(&D_800F1ABC->poly[0], 0, 0, 64, 0, 0, 223, 64, 223);
     for (i = 0; i < 10; ++i) {
@@ -8123,7 +8123,7 @@ void func_8007D41C(void)
     setUV4(&D_800F1ABC->poly[4], 0, 0, 63, 0, 0, 223, 63, 223);
     setUV4(&D_800F1ABC->poly[9], 0, 0, 63, 0, 0, 223, 63, 223);
     SetSprt(&D_800F1ABC->sprite[0]);
-    setRGB0(&D_800F1ABC->sprite[0], D_800F1A78.r0, D_800F1A78.g0, D_800F1A78.b0);
+    setRGB0(&D_800F1ABC->sprite[0], D_800F1A78.r, D_800F1A78.g, D_800F1A78.b);
     SetSemiTrans(&D_800F1ABC->sprite[0], 1);
     setUV0(&D_800F1ABC->sprite[0], 0, 0);
     setWH(&D_800F1ABC->sprite[0], 64, 223);
@@ -8161,8 +8161,8 @@ void func_8007D734(void* arg0)
                 POLY_FT4* bottomLeft;
                 POLY_FT4* bottomRight;
 
-                setRGB0(&D_800F1ABC->poly[(vs_main_frameBuf * 5) + i], D_800F1A78.r0,
-                    D_800F1A78.g0, D_800F1A78.b0);
+                setRGB0(&D_800F1ABC->poly[(vs_main_frameBuf * 5) + i], D_800F1A78.r,
+                    D_800F1A78.g, D_800F1A78.b);
 
                 if (!(D_800F1A2C & 0xFFF) && D_800F1A40) {
                     D_800F1ABC->poly[(vs_main_frameBuf * 5) + i].tpage = GetTPage(
@@ -8201,8 +8201,8 @@ void func_8007D734(void* arg0)
                 int index;
                 u_short tpage;
 
-                setRGB0(&D_800F1ABC->sprite[(vs_main_frameBuf * 5) + i], D_800F1A78.r0,
-                    D_800F1A78.g0, D_800F1A78.b0);
+                setRGB0(&D_800F1ABC->sprite[(vs_main_frameBuf * 5) + i], D_800F1A78.r,
+                    D_800F1A78.g, D_800F1A78.b);
                 index = (vs_main_frameBuf * 5) + i;
                 sprite = (SPRT*)(index * sizeof(SPRT) + (u_long)D_800F1ABC
                                  + sizeof(D_800F1ABC->poly));
@@ -8259,7 +8259,7 @@ void func_8007DDB8(D_800F1A68_t* arg0)
     D_800F1A30.vy = arg0->unk4;
 }
 
-void func_8007DDD4(P_CODE* arg0) { D_800F1A78 = *arg0; }
+void func_8007DDD4(CVECTOR* arg0) { D_800F1A78 = *arg0; }
 
 void func_8007DDF8(D_800F1A68_t* arg0) { D_800F1A68 = *arg0; }
 
@@ -8287,7 +8287,7 @@ void func_8007DE88(int* arg0)
     arg0[2] = 0;
 }
 
-void func_8007DEA8(P_CODE* arg0) { *arg0 = D_800F1A78; }
+void func_8007DEA8(CVECTOR* arg0) { *arg0 = D_800F1A78; }
 
 void func_8007DECC(D_800F1A68_t* arg0) { *arg0 = D_800F1A68; }
 

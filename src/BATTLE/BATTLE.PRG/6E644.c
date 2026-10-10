@@ -98,7 +98,8 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
-    u_int unk0_0 : 6;
+    u_int unk0_0 : 1;
+    u_int unk0_1 : 5;
     u_int unk0_6 : 2;
     u_int unk0_8 : 24;
 } func_800DA1D4_t;
@@ -110,7 +111,9 @@ typedef struct func_800E78F4_t {
     func_800DEB10_t2* unk54;
     char unk58[4];
     vs_battle_actor2* unk5C;
-    char unk60[0xCF];
+    char unk60[0x53];
+    u_char unkB3;
+    char unkB4[0x7B];
     u_char unk12F;
     char unk130;
     u_char unk131;
@@ -129,6 +132,7 @@ typedef struct {
     char unk1A[2];
     func_800E78F4_t* unk1C;
     func_800E78F4_t* unk20;
+    int unk24;
 } D_800F58BC_t;
 
 typedef struct {
@@ -254,6 +258,7 @@ short func_8008DC7C(int, int);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 int func_800DB74C(func_800E78F4_t*, int);
+int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(int);
@@ -797,7 +802,41 @@ int func_800DA1D4(func_800E78F4_t* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA4BC);
+int func_800DA4BC(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
+{
+    if (func_800DB8AC(arg0, arg1)) {
+        int id = arg1->unkC_0;
+        int distance = vs_gte_rsqrt(arg1->unk8);
+        int range = distance + arg0->unkB3 * 32;
+
+        range *= range;
+        ++D_800F58BC->unk24;
+
+        if (arg0->unk1E4[id] < range && arg0->unk1A4[arg1->unkC_0].unk0_0) {
+            func_800D836C(arg0);
+        }
+
+        if (func_800DB370(arg0, id, distance, 1)) {
+            return 1;
+        }
+
+        if (func_800DB74C(arg0, id)) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA5CC);
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA6A4);
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA738);
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAA6C);
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAAD8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAC80);
 

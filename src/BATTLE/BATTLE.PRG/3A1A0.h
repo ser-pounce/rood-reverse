@@ -384,7 +384,7 @@ typedef struct {
     int unk1868;
     int unk187C;
     u_char unk1880[0x10];
-    u_char unk1890[2][0x20];
+    MATRIX unk1890[2];
     u_char unk18D0[2];
 } D_800F4538_t;
 

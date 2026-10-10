@@ -1943,7 +1943,7 @@ void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2)
                 return;
             }
         } else if (arg0->unk18D0[i] == 0) {
-            func_800A1720(arg0->unk0.unkF, arg1, arg0->unk1890[i], &sp10);
+            func_800A1720(arg0->unk0.unkF, arg1, &arg0->unk1890[i], &sp10);
             temp_s2->unkC = i + 1;
             arg0->unk18D0[i] = arg1;
             return;

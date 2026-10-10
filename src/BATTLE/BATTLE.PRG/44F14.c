@@ -849,4 +849,20 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B26B8);
+void func_800B26B8(D_800F4538_t* actor, MATRIX* parent, int bone, int saved)
+{
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+
+    scratch->matrix = *(actor->unk1890 + saved - 1);
+    func_800B196C(parent, &scratch->matrix);
+    gte_SetRotMatrix(parent);
+    gte_SetTransMatrix(parent);
+    --saved;
+    setVector(&scratch->position, actor->unk1890[saved].t[0], actor->unk1890[saved].t[1],
+        actor->unk1890[saved].t[2]);
+    gte_ldv0(&scratch->position);
+    gte_rtv0tr2();
+    gte_stlvnl(scratch->matrix.t);
+    D_800F3C58.bones[bone] = scratch->matrix;
+    actor->bones[bone] = scratch->matrix;
+}

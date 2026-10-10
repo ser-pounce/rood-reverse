@@ -408,7 +408,6 @@ void func_800D8060(void*);
 void vs_effpurge_exec(void);
 void func_800AE68C(int, int);
 void func_800C4650(func_800C5798_t* arg0, int arg1);
-MATRIX* func_800C085C(func_800C1564_flags* arg0, int arg1);
 void func_800C02A8(void);
 void func_800C28AC(SVECTOR* arg0, int arg1);
 void func_800C2B0C(SVECTOR* arg0, int arg1);
@@ -749,7 +748,7 @@ int func_800C4794(SVECTOR* arg0)
         result = 1;
     }
 
-    m = func_800C085C(&D_800EB9B8->unk0[0].unk4.flags, D_800EB9B8->unk0[0].unk2);
+    m = func_800C085C(D_800EB9B8->unk0[0].unk4.values, D_800EB9B8->unk0[0].unk2);
     func_800C02A8();
     for (;;) {
         switch (D_800EB9B8->unk0[0].unk0 & 0x7F) {

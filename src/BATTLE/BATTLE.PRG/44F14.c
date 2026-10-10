@@ -237,7 +237,32 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEAE8);
+void func_800AEAE8(D_800F4538_t* actor)
+{
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+
+    D_800F2458.unk1FD0[0] = 64;
+    D_800F2458.unk1FD0[1] = 64;
+    D_800F2458.unk1FD0[2] = 64;
+
+    if (actor->unk0.unk2C == ONE && actor->unk0.unk2E == ONE
+        && actor->unk0.unk30 == ONE) {
+        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
+            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+    } else {
+        setVector(&scratch->offset,
+            actor->unk704.unk0[41].vx * actor->unk0.unk2C / (ONE * 2),
+            actor->unk704.unk0[41].vy * actor->unk0.unk2E / (ONE * 2),
+            actor->unk704.unk0[41].vz * actor->unk0.unk30 / (ONE * 2));
+    }
+
+    setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
+        scratch->offset.vy * actor->unk183C / ONE,
+        scratch->offset.vz * actor->unk183C / ONE);
+    func_800B07DC(actor);
+    scratch->unk3A = actor->unk0.unk14;
+    scratch->unk3C = actor->unk0.unk16;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AECA0);
 

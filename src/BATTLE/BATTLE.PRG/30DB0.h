@@ -18,12 +18,30 @@ typedef struct {
 } D_800F4590_t;
 
 typedef struct {
+    u_char unk0[0x1FD0];
+    int unk1FD0[3];
+    int unk1FDC;
+    u_short unk1FE0;
+} D_800F2458_t;
+
+typedef struct {
+    u_char unk0[0x3A];
+    u_short unk3A;
+    u_short unk3C;
+    u_char unk3E[0x16];
+    SVECTOR offset;
+    u_char unk5C[0x28];
+    SVECTOR rotation;
+} D_1F80035C_t;
+
+typedef struct {
     short tpage;
     short clut0;
     short clut1;
     u_char refCount;
 } vs_battle_texInfo_t;
 
+extern D_800F2458_t D_800F2458;
 extern D_800F4590_t* D_800F4590[];
 extern int D_800F4594;
 extern _wepModelOffsets* vs_battle_commonWepBuffs[];

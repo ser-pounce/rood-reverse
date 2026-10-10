@@ -15,11 +15,6 @@
 #include <memory.h>
 
 typedef struct {
-    u_char unk0[0x1FE0];
-    u_short unk1FE0;
-} D_800F2458_t;
-
-typedef struct {
     u_char unk0;
     u_char unk1;
     u_char unk2;
@@ -39,11 +34,6 @@ typedef struct {
     int unk8;
     int unkC;
 } D_800E8FB4_t;
-
-typedef struct {
-    u_char unk0[0x84];
-    SVECTOR unk84;
-} D_1F80035C_t;
 
 void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
@@ -115,7 +105,6 @@ extern vs_main_CdQueueSlot* _etmFileCdSlot;
 extern void* _wepFileEpilog;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
-extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
 extern char D_800F4448[];
 extern int D_800F457C;
@@ -2642,10 +2631,10 @@ int func_800A0104(int index, int material)
 
     obj->unk6C[8].unk2 = material;
     material *= 4;
-    ((D_1F80035C_t*)0x1F80035C)->unk84.vx = D_800E9030[material] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->unk84.vy = D_800E9030[material + 1] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->unk84.vz = D_800E9030[material + 2] * (ONE / 4);
-    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->unk84, (MATRIX*)&obj->unk6C[4]);
+    ((D_1F80035C_t*)0x1F80035C)->rotation.vx = D_800E9030[material] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->rotation.vy = D_800E9030[material + 1] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->rotation.vz = D_800E9030[material + 2] * (ONE / 4);
+    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, (MATRIX*)&obj->unk6C[4]);
     obj->unk18 = 0;
     *(int*)&obj->unk24 = 0;
     obj->unk28 = 0;

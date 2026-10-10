@@ -1,6 +1,7 @@
 #include "common.h"
 #include "30DB0.h"
 #include "3A1A0.h"
+#include "44F14.h"
 #include "../../SLUS_010.40/main.h"
 
 typedef struct {
@@ -23,8 +24,6 @@ typedef struct {
 
 u_int func_800A29A0(void*);
 u_int func_800A9C54(u_char, void*, int);
-void func_800AEAE8(void*);
-void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);

@@ -13,7 +13,7 @@ class P(KaitaiStruct):
 
     class BlockType(IntEnum):
         type0 = 0
-        type1 = 1
+        textures = 1
         type2 = 2
         type3 = 3
         curves = 4
@@ -113,16 +113,16 @@ class P(KaitaiStruct):
                     self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.Curves(_io__raw_body, self, self._root)
+                elif _on == P.BlockType.textures:
+                    pass
+                    self._raw_body = self._io.read_bytes(self.size - 4)
+                    _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
+                    self.body = P.Textures(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type0:
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
                     _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
                     self.body = P.RawBody(_io__raw_body, self, self._root)
-                elif _on == P.BlockType.type1:
-                    pass
-                    self._raw_body = self._io.read_bytes(self.size - 4)
-                    _io__raw_body = KaitaiStream(BytesIO(self._raw_body))
-                    self.body = P.Type1Body(_io__raw_body, self, self._root)
                 elif _on == P.BlockType.type10:
                     pass
                     self._raw_body = self._io.read_bytes(self.size - 4)
@@ -182,10 +182,10 @@ class P(KaitaiStruct):
                 if _on == P.BlockType.curves:
                     pass
                     self.body._fetch_instances()
-                elif _on == P.BlockType.type0:
+                elif _on == P.BlockType.textures:
                     pass
                     self.body._fetch_instances()
-                elif _on == P.BlockType.type1:
+                elif _on == P.BlockType.type0:
                     pass
                     self.body._fetch_instances()
                 elif _on == P.BlockType.type10:
@@ -371,32 +371,60 @@ class P(KaitaiStruct):
             return getattr(self, '_m_section', None)
 
 
-    class Type11Body(KaitaiStruct):
+    class TextureData(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(P.Type11Body, self).__init__(_io)
+            super(P.TextureData, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
 
         def _read(self):
-            self.num_offsets = self._io.read_u4le()
-            self.offsets = []
-            for i in range(self.num_offsets):
-                self.offsets.append(self._io.read_u2le())
-
-            self.data = self._io.read_bytes_full()
+            self.clut_x = self._io.read_bits_int_le(6)
+            self.clut_y = self._io.read_bits_int_le(10)
+            self.tpage_x = self._io.read_bits_int_le(4)
+            self.tpage_y = self._io.read_bits_int_le(1) != 0
+            self.tpage_abr = self._io.read_bits_int_le(2)
+            self.tpage_tp = self._io.read_bits_int_le(2)
+            self.tpage_dtd = self._io.read_bits_int_le(1) != 0
+            self.tpage_dfe = self._io.read_bits_int_le(1) != 0
+            self.reserved = self._io.read_bits_int_le(5)
+            self.u = self._io.read_u1()
+            self.v = self._io.read_u1()
+            self.w = self._io.read_u1()
+            self.h = self._io.read_u1()
+            self.x0 = self._io.read_s2le()
+            self.y0 = self._io.read_s2le()
+            self.x1 = self._io.read_s2le()
+            self.y1 = self._io.read_s2le()
+            self.x2 = self._io.read_s2le()
+            self.y2 = self._io.read_s2le()
+            self.x3 = self._io.read_s2le()
+            self.y3 = self._io.read_s2le()
 
 
         def _fetch_instances(self):
             pass
-            for i in range(len(self.offsets)):
-                pass
 
 
-
-    class Type1Body(KaitaiStruct):
+    class TextureTable(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(P.Type1Body, self).__init__(_io)
+            super(P.TextureTable, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self._read()
+
+        def _read(self):
+            self.unk0 = self._io.read_u2le()
+            self.data_index = self._io.read_u2le()
+
+
+        def _fetch_instances(self):
+            pass
+
+
+    class Textures(KaitaiStruct):
+        def __init__(self, _io, _parent=None, _root=None):
+            super(P.Textures, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
@@ -434,55 +462,34 @@ class P(KaitaiStruct):
             self._m_data = []
             i = 0
             while not self._io.is_eof():
-                self._m_data.append(P.Type1Data(self._io, self, self._root))
+                self._m_data.append(P.TextureData(self._io, self, self._root))
                 i += 1
 
             self._io.seek(_pos)
             return getattr(self, '_m_data', None)
 
 
-    class Type1Data(KaitaiStruct):
+    class Type11Body(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
-            super(P.Type1Data, self).__init__(_io)
+            super(P.Type11Body, self).__init__(_io)
             self._parent = _parent
             self._root = _root
             self._read()
 
         def _read(self):
-            self.clut_x = self._io.read_bits_int_le(6)
-            self.clut_y = self._io.read_bits_int_le(10)
-            self.tpage_x = self._io.read_bits_int_le(4)
-            self.tpage_y = self._io.read_bits_int_le(1) != 0
-            self.tpage_abr = self._io.read_bits_int_le(2)
-            self.tpage_tp = self._io.read_bits_int_le(2)
-            self.tpage_dtd = self._io.read_bits_int_le(1) != 0
-            self.tpage_dfe = self._io.read_bits_int_le(1) != 0
-            self.reserved = self._io.read_bits_int_le(5)
-            self.u0 = self._io.read_u1()
-            self.v0 = self._io.read_u1()
-            self.u1 = self._io.read_u1()
-            self.v1 = self._io.read_u1()
-            self.unk_8 = self._io.read_bytes(16)
+            self.num_offsets = self._io.read_u4le()
+            self.offsets = []
+            for i in range(self.num_offsets):
+                self.offsets.append(self._io.read_u2le())
+
+            self.data = self._io.read_bytes_full()
 
 
         def _fetch_instances(self):
             pass
+            for i in range(len(self.offsets)):
+                pass
 
-
-    class Type1Table(KaitaiStruct):
-        def __init__(self, _io, _parent=None, _root=None):
-            super(P.Type1Table, self).__init__(_io)
-            self._parent = _parent
-            self._root = _root
-            self._read()
-
-        def _read(self):
-            self.unk0 = self._io.read_u2le()
-            self.data_index = self._io.read_u2le()
-
-
-        def _fetch_instances(self):
-            pass
 
 
     class Type2Body(KaitaiStruct):

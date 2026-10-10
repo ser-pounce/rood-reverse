@@ -233,12 +233,12 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         for (column = 0; column < VS_CLOSED_RING_TEXTURE_COLUMNS + 1; ++column) {
             u[column] =
-                texture->u0 + ((texture->u1 * column) / VS_CLOSED_RING_TEXTURE_COLUMNS);
+                texture->u + ((texture->w * column) / VS_CLOSED_RING_TEXTURE_COLUMNS);
         }
 
-        v[0] = texture->v0;
-        v[2] = v[0] + texture->v1;
-        v[1] = texture->v0 + ((texture->v1 * fraction) >> 12);
+        v[0] = texture->v;
+        v[2] = v[0] + texture->h;
+        v[1] = texture->v + ((texture->h * fraction) >> 12);
 
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             int depth;

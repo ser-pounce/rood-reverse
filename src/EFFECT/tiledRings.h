@@ -219,12 +219,12 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         func_800D6D24(&state->texture);
         texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
-        uv[0][0].u = uv[0][2].u = uv[1][0].u = uv[1][2].u = texture->u0;
-        uv[0][1].u = uv[0][3].u = uv[1][1].u = uv[1][3].u = uv[0][0].u + texture->u1;
-        uv[0][0].v = uv[0][1].v = texture->v0;
+        uv[0][0].u = uv[0][2].u = uv[1][0].u = uv[1][2].u = texture->u;
+        uv[0][1].u = uv[0][3].u = uv[1][1].u = uv[1][3].u = uv[0][0].u + texture->w;
+        uv[0][0].v = uv[0][1].v = texture->v;
         uv[0][2].v = uv[0][3].v = uv[1][0].v = uv[1][1].v =
-            uv[0][0].v + ((texture->v1 * fraction) >> 12);
-        uv[1][2].v = uv[1][3].v = texture->v0 + texture->v1;
+            uv[0][0].v + ((texture->h * fraction) >> 12);
+        uv[1][2].v = uv[1][3].v = texture->v + texture->h;
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             for (drawColumn = 0; drawColumn < 15; ++drawColumn) {
                 depth = (depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1]

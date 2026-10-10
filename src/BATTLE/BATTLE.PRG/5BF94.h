@@ -303,11 +303,18 @@ typedef struct {
 typedef struct {
     short clut;
     short tpage;
-    u_char u0;
-    u_char v0;
-    u_char u1;
-    u_char v1;
-    u_char unk8[0x10];
+    u_char u;
+    u_char v;
+    u_char w;
+    u_char h;
+    short x0;
+    short y0;
+    short x1;
+    short y1;
+    short x2;
+    short y2;
+    short x3;
+    short y3;
 } pFileBlock1Data;
 
 typedef struct {

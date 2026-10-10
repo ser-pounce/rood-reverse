@@ -1,6 +1,8 @@
 #include "common.h"
 #include <rand.h>
 #include <abs.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 #include "146C.h"
 #include "3A1A0.h"
 #include "44F14.h"
@@ -570,7 +572,27 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B002C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B07DC);
+void func_800B07DC(D_800F4538_t* actor)
+{
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+
+    setVector(
+        &scratch->rotation, actor->unk0.unk24, actor->unk0.facing, actor->unk0.unk28);
+    RotMatrixYXZ_gte(&scratch->rotation, &scratch->matrix);
+    scratch->matrix.t[0] = 0;
+    scratch->matrix.t[1] = 0;
+    scratch->matrix.t[2] = 0;
+    gte_SetRotMatrix(&scratch->matrix);
+    gte_SetTransMatrix(&scratch->matrix);
+    gte_ldv0(&scratch->offset);
+    gte_rtv0tr2();
+    gte_stlvnl(scratch->matrix.t);
+    setVector(&scratch->offset, scratch->matrix.t[0], scratch->matrix.t[1],
+        scratch->matrix.t[2]);
+    scratch->offset.vx += actor->unk0.position.vx;
+    scratch->offset.vz += actor->unk0.position.vz;
+    scratch->offset.vy += actor->unk0.position.vy;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B0908);
 

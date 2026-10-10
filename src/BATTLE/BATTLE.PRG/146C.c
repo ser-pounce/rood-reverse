@@ -526,20 +526,12 @@ void _applyBattleAbilityEffect(_hitEntity_t*);
 void func_80087EF4(vs_battle_actor2*);
 int func_800882F4(void);
 int func_80088554(void);
-int func_80088B6C(void);
-void func_80088B8C(void);
 void func_80088CA0(void);
-void func_80089098(void);
 void func_80089114(void);
 void func_80089CE4(void);
 void func_80089D04(void);
-void _finishLoadZnd(int id);
-void func_80089DC0(int arg0);
-void func_8008A3A0(void);
 void func_8008A6FC(void);
 int func_8008ABF0(int arg0);
-void func_8008AC78(void);
-void func_8008B28C(void);
 void func_8008B320(void);
 void func_8008B390(int arg0, int* arg1);
 int func_8008B4C8(char arg0);
@@ -584,7 +576,6 @@ _mpdRoomSection13* func_8008E370(int* arg0);
 _mpdRoomSectionA* func_8008E3B8(int* arg0);
 _mpdRoomSection9* func_8008E400(int*);
 void func_8008E480(int arg0);
-void func_8008EC48(VECTOR* arg0);
 void func_800E4C64(int);
 void func_8008E4DC(int);
 void _loadMpdLootSection(void* arg0);
@@ -630,8 +621,6 @@ void func_800E685C(int, int, int);
 void func_800719FC(int);
 void func_80071F68(int);
 void func_80072734(int);
-void func_8007D734(void*);
-void func_8007DF98(void);
 void func_800C05EC(void*, void*, int, void*);
 void func_800C0700(void*);
 void func_800DEEA4(D_800F19CC_t2*);
@@ -708,9 +697,9 @@ extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
 extern int D_800F1A20;
-extern short D_800F1A28[];
+extern SVECTOR D_800F1A28;
 extern short D_800F1A2C;
-extern int D_800F1A30[];
+extern VECTOR D_800F1A30;
 extern int D_800F1A40;
 extern u_int D_800F1A44;
 extern int D_800F1A50[];
@@ -4091,14 +4080,12 @@ void func_8007138C(void)
         if (action->actionIndex < 184) {
             object.actorId = 5;
             object.modelId =
-                actor->unk3C
-                    ->armor[((u_short*)&actor->unkC)[0]][((u_short*)&actor->unkC)[1]]
+                actor->unk3C->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
                     .unk2_4;
         } else if (object.index) {
             object.actorId = 5;
             object.modelId =
-                actor->unk3C
-                    ->armor[((u_short*)&actor->unkC)[0]][((u_short*)&actor->unkC)[1]]
+                actor->unk3C->armor[(u_short)actor->unkC][(u_short)(actor->unkC >> 16)]
                     .unk2_4;
         } else {
             object.actorId = 4;
@@ -7103,7 +7090,20 @@ void func_8007983C(void)
     }
 }
 
+void _finishLoadZnd(int id);
+void func_80089DC0(int arg0);
+int func_80088B6C(void);
+void func_80088B8C(void);
+void func_8008EC48(VECTOR* arg0);
+void func_8008AC78(void);
+void func_8008B28C(void);
+void func_8007D734(void*);
+void func_8007DF98(void);
+void func_8008A3A0(void);
+void func_80089098(void);
+
 // https://decomp.me/scratch/CQo8q
+void vs_battle_exec(void);
 void vs_battle_exec(void)
 {
     func_8006EBF8_t position;
@@ -8809,12 +8809,8 @@ void func_8007D360(void)
     D_800F1B98 = 0;
     D_800F1B9C = 0;
     D_800F1A20 = 0;
-    D_800F1A28[0] = 0;
-    D_800F1A28[1] = 0;
-    D_800F1A28[2] = 0;
-    D_800F1A30[0] = 0x1000;
-    D_800F1A30[1] = 0x1000;
-    D_800F1A30[2] = 0;
+    setVector(&D_800F1A28, 0, 0, 0);
+    setVector(&D_800F1A30, ONE, ONE, 0);
     D_800F1A78.r0 = 0x80;
     D_800F1A78.g0 = 0x80;
     D_800F1A78.b0 = 0x80;
@@ -8876,14 +8872,14 @@ void func_8007D734(void* arg0)
     if (D_800F1B98 == 2) {
         translation.vx = D_800F1A68.unk0 + 160;
         translation.vy = D_800F1A68.unk4 + 112;
-        RotMatrix_gte((SVECTOR*)D_800F1A28, &transform);
+        RotMatrix_gte(&D_800F1A28, &transform);
         TransMatrix(&transform, &translation);
-        ScaleMatrix(&transform, (VECTOR*)D_800F1A30);
+        ScaleMatrix(&transform, &D_800F1A30);
         SetRotMatrix(&transform);
         SetTransMatrix(&transform);
 
-        if ((D_800F1A28[2] & 0xFFF) || D_800F1A30[0] != ONE
-            || D_800F1A30[1] != D_800F1A30[0]) {
+        if ((D_800F1A28.vz & 0xFFF) || D_800F1A30.vx != ONE
+            || D_800F1A30.vy != D_800F1A30.vx) {
             for (i = 0; i < 5; ++i) {
                 POLY_FT4* topLeft;
                 POLY_FT4* topRight;
@@ -8984,8 +8980,8 @@ void func_8007DDAC(int arg0) { D_800F1A2C = arg0; }
 
 void func_8007DDB8(D_800F1A68_t* arg0)
 {
-    D_800F1A30[0] = arg0->unk0;
-    D_800F1A30[1] = arg0->unk4;
+    D_800F1A30.vx = arg0->unk0;
+    D_800F1A30.vy = arg0->unk4;
 }
 
 void func_8007DDD4(P_CODE* arg0) { D_800F1A78 = *arg0; }
@@ -9011,8 +9007,8 @@ short func_8007DE78(void) { return D_800F1A2C; }
 
 void func_8007DE88(int* arg0)
 {
-    arg0[0] = *D_800F1A30;
-    arg0[1] = *D_800F1A30;
+    arg0[0] = D_800F1A30.vx;
+    arg0[1] = D_800F1A30.vx;
     arg0[2] = 0;
 }
 
@@ -12770,6 +12766,7 @@ void func_80085A34(func_80085A34_t* arg0)
 }
 
 // https://decomp.me/scratch/KrvDw
+// https://decomp.me/scratch/KrvDw
 void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int arg3)
 {
     SVECTOR origin;
@@ -16104,8 +16101,80 @@ int func_8008C8A8(void)
     }
 }
 
-// https://decomp.me/scratch/YpZTC
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008CEB0);
+void func_8008CEB0(void)
+{
+    _mpdRoomSection12* object;
+    int i;
+    int count;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    if (vs_battle_roomData.section12 == NULL) {
+        return;
+    }
+    object = vs_battle_roomData.section12;
+    count = vs_battle_roomData.header.section12Len / sizeof(_mpdRoomSection12);
+    for (i = 0; i < count; ++i, ++object) {
+        int _[8] __attribute__((unused));
+        SVECTOR vertices[4];
+        long projection;
+        long flags;
+        POLY_F4* polygon;
+        int depth;
+        int shade;
+        _mpdRoomSection3* cell;
+        int height;
+        int coordinate;
+        int y;
+
+        if (object->unk0_9 || func_8009195C(object->unk0_0) == NULL) {
+            continue;
+        }
+        cell = func_8008B764(object->unkA8 / (ONE * 128), object->unkB0 / (ONE * 128), 0);
+        if (cell->unk0_17 && (cell->unk0_0 < 15 || cell->unk0_0 >= 19)) {
+            continue;
+        }
+        coordinate = object->unkA8 / ONE;
+        height = func_8008DC7C(coordinate, object->unkB0 / ONE);
+        height <<= 17;
+        height >>= 17;
+        coordinate = object->unkAC;
+        y = (coordinate /= -ONE);
+        if (height <= y) {
+            continue;
+        }
+        shade = (height - y) / 2;
+        if (shade > 223) {
+            shade = 223;
+        }
+        shade = 255 - shade;
+        polygon = ((vs_scratch_t*)0x1F800000)->unk0;
+        vertices[0].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[0].vy = height;
+        vertices[0].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
+        vertices[1].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[1].vy = height;
+        vertices[1].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
+        vertices[2].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[2].vy = height;
+        vertices[2].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
+        vertices[3].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[3].vy = height;
+        vertices[3].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
+        depth = RotAverage4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+            (long*)&polygon->x0, (long*)&polygon->x1, (long*)&polygon->x2,
+            (long*)&polygon->x3, &projection, &flags);
+        if (depth <= 4 || depth >= 2048) {
+            continue;
+        }
+        setPolyF4(polygon);
+        setSemiTrans(polygon, 1);
+        setRGB0(polygon, shade / 2 + 16, shade / 2 + 16, shade / 2 + 16);
+        AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, polygon++);
+        ((vs_scratch_t*)0x1F800000)->unk0 = polygon;
+        _insertTPage(depth, getTPage(0, 2, 0, 0));
+    }
+}
 
 int func_8008D2C0(func_8008D2C0_t arg0[])
 {
@@ -16842,7 +16911,7 @@ void func_8008E938(void)
     }
 }
 
-void func_80090C2C(int);
+int func_80090C2C(int);
 
 int func_8008EA90(int arg0)
 {

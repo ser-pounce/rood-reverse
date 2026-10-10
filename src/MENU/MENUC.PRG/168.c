@@ -4450,8 +4450,7 @@ static int _countItems(int category)
  * Presents the blade/shield/armor combination choice and dispatches the
  * selected combination flow.
  * @param arg0 Nonzero initializes the top-level menu; zero advances it.
- * @return Zero while active, -1 while waiting for combination data, or the
- *         selected child flow's completion/cancellation result.
+ * @return Positive values indicate completion, negative cancellation, zero otherwise.
  */
 static int _combineTopMenu(int arg0)
 {

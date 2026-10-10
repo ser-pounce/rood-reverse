@@ -22,6 +22,10 @@ typedef struct {
     short unk6;
 } func_800A6660_t;
 
+typedef struct {
+    int words[2];
+} func_800A6798_t;
+
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
 void func_800AECA0(MATRIX*);
@@ -46,6 +50,7 @@ void func_800ACF54(D_800F4538_t*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
+int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 void func_800E4BD8(int);
 void func_800E4BE0(int);
 void func_800E4C28(int, int);
@@ -939,7 +944,54 @@ void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6798);
+int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, SVECTOR* motion)
+{
+    func_800A6798_t saved;
+    int height;
+    int valid = 0;
+
+    if (actor->unk6EC <= D_800F4B08.vy) {
+        return 0;
+    }
+
+    offset->vx = 0;
+    offset->vz = 0;
+    offset->vy += 236;
+    saved = *(func_800A6798_t*)&actor->unk0.position;
+    addVector(&actor->unk0.position, offset);
+    actor->unk0.unkA_3 = 2;
+
+    if (func_800A76BC(actor, motion, &height, 0) != 3 && !actor->unk5AC_13
+        && height < 5) {
+        height = rsin(ONE / 8);
+        height = height * actor->unk63C / ONE;
+
+        if ((D_800F49F9 >> 1) & 1) {
+            offset->vz = height;
+        } else {
+            offset->vx = height;
+        }
+
+        height = func_800A6EE8(&D_800F4B08, offset->vx, offset->vz, 1);
+        height -= D_800F4B08.vy;
+
+        if (height > -64) {
+            height = func_800A6EE8(&D_800F4B08, -offset->vx, -offset->vz, 1);
+            height -= D_800F4B08.vy;
+        }
+
+        if (height > -64) {
+            valid = 1;
+        }
+    }
+
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
+    offset->vx = 0;
+    offset->vz = 0;
+    *(func_800A6798_t*)&actor->unk0.position = saved;
+    return valid;
+}
 
 int func_800A69B4(D_800F4538_t* arg0)
 {

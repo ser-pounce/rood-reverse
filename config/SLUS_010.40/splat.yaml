@@ -214,21 +214,21 @@ segments:
       - [0x30A10, rodata, 31724]
       - [0x31418, rodata, 32154]
       - [0x31724, asm]
-      - [0x31D08, c, libgte/MTX_005] # |
-      - [0x31D34, c, libgte/REG13]   # |
-      - [0x31D40, c, libgte/REG12]   # |
-      - [0x31D58, c, libgte/REG11]   # |
-      - [0x31D78, c, libgte/MTX_12]  # |
-      - [0x31D98, c, libgte/MTX_09]  # |
-      - [0x31DC8, c, libgte/MTX_004] # |
-      - [0x31F24, c, libgte/MTX_06]  # |- Presumably compiled as raw ASM 
-      - [0x31F7C, c, libgte/MTX_05]  # |
-      - [0x31FC8, c, libgte/SMP_05]  # |
-      - [0x31FEC, c, libgte/SMP_04]  # |
-      - [0x32014, c, libgte/SMP_02]  # |
-      - [0x32040, c, libgte/CMB_02]  # |
-      - [0x320BC, c, libgte/MTX_07]  # |
-      - [0x320DC, c, libgte/CMB_00]  # |
+      - [0x31D08, hasm, libgte/MTX_005] # |
+      - [0x31D34, c, libgte/REG13]      # |
+      - [0x31D40, c, libgte/REG12]      # |
+      - [0x31D58, c, libgte/REG11]      # |
+      - [0x31D78, c, libgte/MTX_12]     # |
+      - [0x31D98, c, libgte/MTX_09]     # |
+      - [0x31DC8, c, libgte/MTX_004]    # |
+      - [0x31F24, c, libgte/MTX_06]     # |- Presumably compiled as raw ASM 
+      - [0x31F7C, c, libgte/MTX_05]     # |
+      - [0x31FC8, c, libgte/SMP_05]     # |
+      - [0x31FEC, c, libgte/SMP_04]     # |
+      - [0x32014, c, libgte/SMP_02]     # |
+      - [0x32040, c, libgte/CMB_02]     # |
+      - [0x320BC, c, libgte/MTX_07]     # |
+      - [0x320DC, c, libgte/CMB_00]     # |
       - [0x32154, asm]
   - start: 0x32568
     type: code

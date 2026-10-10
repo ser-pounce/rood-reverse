@@ -32,8 +32,11 @@ void func_800B17F0(SVECTOR*, MATRIX*);
 void func_800B196C(MATRIX*, MATRIX*);
 void func_800B396C(MATRIX*, VECTOR*);
 int func_800B3A68(void*, MATRIX*, int, void*);
+void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
 void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
 void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+short func_800BEB00(void);
 
 extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
@@ -755,6 +758,95 @@ composed:
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B217C);
+void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
+{
+    CVECTOR color;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_800F4538_t* actor = D_800F4538[weapon->actorId];
+    int value;
+    int i;
+
+    scratch->model = (D_800F4538_unk68*)weapon->offsets;
+    scratch->matrix = *source;
+
+    if (weapon->unk13 != 0) {
+        int target = weapon->unk12;
+        int current = weapon->unk11;
+
+        value = target - current;
+        value /= weapon->unk13;
+        weapon->unk11 = current + value;
+        --weapon->unk13;
+
+        if (weapon->unk11 == 0 && weapon->unk13 == 0) {
+            weapon->unk8_4 = 0;
+        }
+    }
+
+    if (weapon->unk11 != 64) {
+        value = weapon->unk11;
+        value *= 64;
+        setVector(&scratch->scale, value, value, value);
+        func_800B396C(&scratch->matrix, &scratch->scale);
+    }
+
+    D_800F3C58.bones[0] = scratch->matrix;
+    weapon->unk20[0] = scratch->matrix;
+    scratch->position.vx = scratch->position.vy = 0;
+
+    for (i = 1; i < weapon->nBones; ++i) {
+        int parentBone = scratch->model->armatures[i].unk4;
+
+        scratch->parent = &weapon->unk20[parentBone];
+        gte_SetRotMatrix(scratch->parent);
+        gte_SetTransMatrix(scratch->parent);
+        setVector(&scratch->position, -scratch->model->armatures[parentBone].unk0, 0, 0);
+        gte_ldv0(&scratch->position);
+        gte_rtv0tr2();
+        scratch->rotation.vx = weapon->unkBoneInfo[i].vx;
+        scratch->rotation.vy = weapon->unkBoneInfo[i].vy;
+        scratch->rotation.vz = weapon->unkBoneInfo[i].vz;
+        gte_stlvnl(scratch->matrix.t);
+        *(int*)&scratch->rotation &= 0x0FFF0FFF;
+        *(int*)&scratch->rotation.vz &= 0xFFF;
+        func_800B17F0(&scratch->rotation, &scratch->matrix);
+        func_800B196C(&D_800F3C58.bones[parentBone], &scratch->matrix);
+        D_800F3C58.bones[i] = scratch->matrix;
+        weapon->unk20[i] = scratch->matrix;
+    }
+
+    if (!actor->unk0.visible
+        || (actor->unk0.position.vy >= 256
+            && (actor->unk0.unkF == 0 || func_800BEB00() != 4))) {
+        return;
+    }
+
+    if (!func_800B3A68(
+            weapon, &weapon->unk20[0], -vs_main_nearClip * 4, weapon->offsets)) {
+        return;
+    }
+
+    scratch->tpage = vs_battle_wepTextures[weapon->texSlot].tpage;
+    scratch->clut = vs_battle_wepTextures[weapon->clutSlotOffset].clut0;
+    value = actor->unk0.unk9_0 >= 4 && actor->unk0.unk9_0 < 9 && actor->unk0.unk9_0 != 6;
+
+    if (actor->unk0.unk9_0 == 15) {
+        value = 1;
+    }
+
+    if (weapon->unk8_6) {
+        color.r = weapon->unk5C0;
+        color.g = weapon->unk5C0;
+        color.b = weapon->unk5C0;
+    } else {
+        *(int*)&color = *(int*)&actor->unk0.unk54;
+    }
+
+    if (value) {
+        func_800B516C(&D_800F2458, weapon, &color, scratch->model);
+    } else {
+        func_800B3CF0(&D_800F2458, weapon, &color, scratch->model);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B26B8);

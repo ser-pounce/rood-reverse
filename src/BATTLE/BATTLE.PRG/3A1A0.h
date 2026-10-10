@@ -417,7 +417,7 @@ typedef struct {
     short unk1A;
     _wepModelOffsets* offsets;
     MATRIX unk20[4];
-    u_char unkBoneInfo[4][8];
+    SVECTOR unkBoneInfo[4];
     u_short palettes[7][64];
     u_short unk440[96];
     u_short unk500[96];

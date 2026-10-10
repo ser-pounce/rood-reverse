@@ -34,7 +34,8 @@ typedef struct {
     u_char unk3E[0xE];
     SVECTOR position;
     SVECTOR offset;
-    u_char unk5C[8];
+    MATRIX* parent;
+    int unk60;
     MATRIX matrix;
     SVECTOR rotation;
     VECTOR scale;

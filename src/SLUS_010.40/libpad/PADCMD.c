@@ -138,8 +138,8 @@ int _padSetActAlign(PadPort* p, u_char* data)
 
 void func_8002D3B8(PadPort* p)
 {
-    p->cmd = 0x4D;
     p->cmdData = p->actAlign;
+    p->cmd = 0x4D;
     p->cmdLen = 6;
 }
 

@@ -50,6 +50,14 @@ static char _lootClaimed;
 #include "src/MENU/items2.h"
 #include "src/MENU/_renderAshley.h"
 
+/**
+ * Manages transitions between menu categories.
+ *
+ * Pass a nonzero category to begin changing category; pass zero on later calls
+ * to advance the transition already in progress.
+ *
+ * @return Nonzero when the transition completes.
+ */
 static int _topLevelMenuTransition(int category)
 {
     enum state { init };
@@ -213,6 +221,14 @@ static int _topLevelMenuTransition(int category)
 
 static void _updateLootList(void);
 
+/**
+ * Disassembles the selected weapon or shield.
+ *
+ * Pass a nonzero item index to initialize the operation; pass zero on later
+ * calls to advance the state.
+ *
+ * @return Nonzero when the operation and its exit animation complete.
+ */
 static int _disassembleItem(int itemIndex)
 {
     enum state {
@@ -430,6 +446,15 @@ static int _disassembleItem(int itemIndex)
     return 0;
 }
 
+/**
+ * Consolidates misc loot stacks, optionally applying the
+ * changes after confirmation.
+ *
+ * Pass a nonzero loot index to initialize the operation; pass zero on later
+ * calls to advance it.
+ *
+ * @return Nonzero when the operation completes.
+ */
 static int _consolidateMiscItems(int lootIndex)
 {
     static char cursorMemory = 0;
@@ -678,6 +703,12 @@ static int _consolidateMiscItems(int lootIndex)
     return 0;
 }
 
+/**
+ * Copies a looted blade into the first free inventory slot.
+ *
+ * @param weapon Associated weapon index, or zero when the blade is not assembled.
+ * @return The one-based inventory index, or zero if no slot is available.
+ */
 static int _copyBladeToInventory(vs_main_inventoryBlade* source, int weapon)
 {
     int index = 1;
@@ -698,6 +729,13 @@ static int _copyBladeToInventory(vs_main_inventoryBlade* source, int weapon)
     return index;
 }
 
+/**
+ * Copies a looted grip into the first free inventory slot.
+ *
+ * @param weaponIndex Associated weapon index, or zero when the grip is not
+ * assembled.
+ * @return The one-based inventory index, or zero if no slot is available.
+ */
 static int _copyGripToInventory(vs_main_inventoryGrip* source, int weaponIndex)
 {
     int index = 1;
@@ -718,6 +756,13 @@ static int _copyGripToInventory(vs_main_inventoryGrip* source, int weaponIndex)
     return index;
 }
 
+/**
+ * Copies a looted gem into the first free inventory slot.
+ *
+ * @param item Encoded index of the weapon or shield to which the gem is set,
+ * or zero when it is not attached.
+ * @return The one-based inventory index, or zero if no slot is available.
+ */
 static int _copyGemToInventory(vs_main_inventoryGem* source, int item)
 {
     int index = 1;
@@ -738,6 +783,12 @@ static int _copyGemToInventory(vs_main_inventoryGem* source, int item)
     return index;
 }
 
+/**
+ * Adds a looted weapon and its blade, grip, and gems to the inventory.
+ *
+ * @param arg0 Looted weapon and component data.
+ * @return The one-based weapon index, or zero if no weapon slot is available.
+ */
 static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
 {
     int i;
@@ -768,6 +819,11 @@ static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
     return index;
 }
 
+/**
+ * Copies a looted armor piece into the first free inventory slot.
+ *
+ * @return The one-based inventory index, or zero if no slot is available.
+ */
 static int _copyArmorToInventory(vs_main_inventoryArmor* source)
 {
     int index = 1;
@@ -787,6 +843,12 @@ static int _copyArmorToInventory(vs_main_inventoryArmor* source)
     return index;
 }
 
+/**
+ * Adds a looted shield and its gems to the inventory.
+ *
+ * @param arg0 Looted shield and attached gem data.
+ * @return The one-based shield index, or zero if no shield slot is available.
+ */
 static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
 {
     int i;
@@ -816,6 +878,11 @@ static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
     return index;
 }
 
+/**
+ * Copies a looted miscellaneous item into the first free inventory slot.
+ *
+ * @return The one-based inventory index, or zero if no slot is available.
+ */
 static int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
 {
     int index = 1;
@@ -834,6 +901,9 @@ static int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
     return index;
 }
 
+/**
+ * Rechecks which loot items can be claimed and updates loot paging.
+ */
 static void _updateLootList(void)
 {
     int i;
@@ -872,6 +942,11 @@ static void _updateLootList(void)
     }
 }
 
+/**
+ * Appends an item to the loot list.
+ *
+ * @param itemIndex One-based inventory index; stored in the list as zero-based.
+ */
 static void _addLootToList(int itemCategory, int itemIndex)
 {
     _lootListItem* item = &_lootList[_lootListCount++];
@@ -883,6 +958,13 @@ static void _addLootToList(int itemCategory, int itemIndex)
 static char* _itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "ARMOR",
     "GEM", "MISC" };
 
+/**
+ * Counts items of a category represented by a loot-list entry, including the
+ * components of assembled weapons and shields when counting gems.
+ *
+ * @param arg0 Inventory item category to count.
+ * @param arg1 Loot-list entry whose item and components are counted.
+ */
 static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
 {
     int i;
@@ -927,6 +1009,9 @@ static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
     return count;
 }
 
+/**
+ * Draws inventory capacities, item counts, and loot-menu controls.
+ */
 void _displayInventoryCapacities(int edgeX)
 {
     int itemCountPos;
@@ -1019,11 +1104,23 @@ void _displayInventoryCapacities(int edgeX)
     vs_mainmenu_renderButton(buttonIdCross, edgeX + 176, 126, NULL);
 }
 
+/**
+ * Tests whether a loot difficulty bitmask allows a drop at the current setting.
+ *
+ * @param arg0 Difficulty flags from a loot entry.
+ * @return Nonzero when the bit corresponding to the current difficulty is set.
+ */
 static int _droppableUnderCurrentDifficulty(int arg0)
 {
     return arg0 & (vs_main_stateFlags.difficulty + 1);
 }
 
+/**
+ * Copies all eligible items from a battle loot record into the working
+ * inventory and appends them to the loot list.
+ *
+ * @param arg0 Battle loot record to apply.
+ */
 void _applyLootList(vs_battle_loot* arg0)
 {
     int i;
@@ -1070,6 +1167,10 @@ void _applyLootList(vs_battle_loot* arg0)
     _updateLootList();
 }
 
+/**
+ * Rebuilds the working inventory from a loot-list chain, or from the current
+ * battle loot record when no chain is supplied.
+ */
 static void _applyAllLootLists(vs_battle_lootListNode* node)
 {
     vs_battle_rMemzero(_inventory, sizeof *_inventory);
@@ -1084,6 +1185,10 @@ static void _applyAllLootLists(vs_battle_lootListNode* node)
     }
 }
 
+/**
+ * Draws the visible page of loot items, preserving their scroll and animation
+ * state.
+ */
 static void _displayCurrentLoot(int x)
 {
     char gradientStates[256];
@@ -1207,6 +1312,10 @@ static void _displayCurrentLoot(int x)
     _gradientStateIndex = _lootListOffset;
 }
 
+/**
+ * Displays an item's description in the information box using the working
+ * inventory data.
+ */
 static void _populateLootItem(int lootIndex)
 {
     char* menuText[2];
@@ -1257,6 +1366,14 @@ static void _populateLootItem(int lootIndex)
     vs_battle_memcpy(&vs_main_inventory, _inventoryBackup, sizeof vs_main_inventory);
 }
 
+/**
+ * Runs the discard-loot confirmation.
+ *
+ * Pass a nonzero value to initialize the prompt; pass zero on subsequent
+ * calls. A positive result indicates a completed discard choice.
+ *
+ * @return Zero while pending, -1 when cancelled, or a positive discard result.
+ */
 static int _discardItems(int init)
 {
     static char cursorAnimStep = 0;
@@ -1382,6 +1499,14 @@ static int _discardItems(int init)
     return 0;
 }
 
+/**
+ * Opens the selected item's organization submenu or advances the active menu.
+ *
+ * Pass an item pointer to initialize the menu; pass NULL to process it.
+ *
+ * @return Zero while pending, -1 when cancelled, or the selected action:
+ * 1 for the category inventory menu, 2 to disassemble, or 3 to consolidate.
+ */
 static int _organizeInventory(_lootListItem* loot)
 {
     static char cursorAnimState = 0;
@@ -1484,6 +1609,16 @@ static int _organizeInventory(_lootListItem* loot)
 
 static void _setKeyFlag(int arg0);
 
+/**
+ * Processes loot-menu input and advances discard, organization, and item
+ * removal operations.
+ *
+ * Pass a nonzero value to initialize the menu; pass zero on subsequent calls.
+ *
+ * @return Zero while the menu is active, or the completed discard result.
+ *
+ * @param initialize Nonzero to reset the menu state, zero to process it.
+ */
 int _processLootMenu(int initialize)
 {
     enum state {
@@ -1807,6 +1942,12 @@ int _processLootMenu(int initialize)
     return 0;
 }
 
+/**
+ * Runs the battle loot menu, including initialization, drawing, and teardown.
+ *
+ * @param state Caller-owned menu state, updated on each call.
+ * @return Nonzero when the menu has finished and its resources are released.
+ */
 int vs_menuB_exec(u_char* state)
 {
     static char _0 __attribute__((unused));
@@ -1959,6 +2100,11 @@ int vs_menuB_exec(u_char* state)
     return 0;
 }
 
+/**
+ * Sets the battle state flag associated with a key.
+ *
+ * @param arg0 Item ID; only IDs greater than 457 set a flag.
+ */
 static void _setKeyFlag(int arg0)
 {
     if (arg0 > 457) {

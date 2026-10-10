@@ -8,6 +8,7 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
+#include <rand.h>
 
 struct func_800D4910_t;
 
@@ -119,7 +120,10 @@ typedef struct func_800E78F4_t {
     u_char unk13;
     char unk14[2];
     signed char unk16;
-    char unk17[0x1D];
+    u_char unk17;
+    char unk18[0x13];
+    u_char unk2B;
+    char unk2C[8];
     u_char unk34;
     char unk35;
     u_char unk36;
@@ -200,12 +204,8 @@ typedef struct {
 } D_800F5920_t;
 
 typedef struct {
-    char unk0[0x88];
-    u_char unk88;
-} func_800DCAA0_t1;
-
-typedef struct {
-    int unk0;
+    u_int unk0_0 : 4;
+    u_int unk0_4 : 28;
     short unk4;
     short unk6;
     short unk8;
@@ -291,7 +291,9 @@ int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DC284(int, int, int, int);
 void func_800DC30C(short*, short*, int, int);
+void func_800DC424(func_800DC888_t*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
@@ -1120,7 +1122,7 @@ void func_800DC888(func_800DC888_t* arg0)
 }
 
 void func_800DCAA0(
-    func_800DCAA0_t1* arg0, func_800DC888_t* arg1, func_800DCAA0_t* arg2, int arg3)
+    func_800E78F4_t* arg0, func_800DC888_t* arg1, func_800DCAA0_t* arg2, int arg3)
 {
     SVECTOR sp20;
     SVECTOR sp28;
@@ -1166,7 +1168,124 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069B68);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", D_80069BBC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DCC94);
+static inline int _getStatusScore(func_800DC888_t* stats)
+{
+    static const signed char statusScores[] = { -51, -39, -39, -39, -26, -51, 50, -13, 12,
+        -13, 12, 25, -51, -26, -45, -26, -39, 76, 19, -13, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 0, 0, 0 };
+    int score = 0;
+    int i;
+    int noCost = D_800F5878[stats->unk0_0]->unk17 == 0;
+
+    for (i = 0; i < 32; ++i) {
+        if (stats->unkC & (1 << i) && (i != 12 || !noCost)) {
+            score += statusScores[i];
+        }
+    }
+
+    if (stats->unk4 == 0) {
+        score -= 128;
+    }
+
+    if (stats->unk4 * 128 < stats->unk6 * 44) {
+        score -= 84;
+    }
+
+    return score;
+}
+
+static inline int _getHpRatio(func_800DC888_t* stats, int id)
+{
+    if (stats[id].unk6 == 0) {
+        return 0;
+    }
+
+    return stats[id].unk4 * 128 / stats[id].unk6;
+}
+
+static inline int _getMpRatio(func_800DC888_t* stats, int id)
+{
+    if (stats[id].unkA == 0) {
+        return 0;
+    }
+
+    return stats[id].unk8 * 128 / stats[id].unkA;
+}
+
+static inline int _getExtraRatio(func_800DC888_t* stats, int id)
+{
+    int ratio = 0;
+
+    if (stats[id].unk12 != 0) {
+        ratio = stats[id].unk10 * 128 / stats[id].unk12;
+    }
+
+    if (stats[id].unk16 != 0) {
+        ratio += stats[id].unk14 * 128 / stats[id].unk16;
+    }
+
+    return ratio;
+}
+
+void func_800DCC94(
+    func_800E78F4_t* arg0, func_800DCAA0_t* arg1, int arg2, vs_action_t* arg3)
+{
+    int special = 0;
+    vs_actionFlags_t flags = { 0 };
+    vs_battle_actor* actor;
+    func_800DC888_t* stats;
+
+    if (arg3 != NULL) {
+        flags = arg3->flagsE;
+    }
+
+    if (flags.unk5 && (rand() & 0x7F) < 115) {
+        arg1->unk0 = 0x80000000;
+        return;
+    }
+
+    arg1->unk0 = 0;
+    arg1->unkC_19 = 128;
+    stats = (func_800DC888_t*)0x1F80018C;
+    func_800DC424(stats);
+
+    if (arg0->unk2B && flags.unk4) {
+        special = 1;
+        arg1->unkC_19 = 40;
+    } else if (arg2 != 0) {
+        func_800DCAA0(arg0, stats, arg1, arg2);
+        func_800DCBD8(arg1);
+    }
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        int id = actor->id;
+        int kind = arg0->unk1A4[id].unk0_6;
+        int value;
+
+        if (kind == 1) {
+            continue;
+        }
+
+        value = func_800DC284(_getStatusScore(&stats[id]), _getHpRatio(stats, id),
+            _getMpRatio(stats, id), _getExtraRatio(stats, id));
+
+        if (kind != 2) {
+            value = -value;
+        }
+
+        arg1->unk0 += value;
+    }
+
+    if (special) {
+        ++arg1->unk0;
+    }
+
+    arg1->unk0 = arg1->unk0 * 128 + arg1->unkC_19;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD000);
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD344);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD604);
 
@@ -1564,9 +1683,9 @@ int func_800E5600(int arg0, int actionId, u_int arg2)
     int r = 0;
     int v;
 
-    if (action->flagsE_13 << 0x1D) {
+    if (action->flagsE.unk13 << 0x1D) {
         r = action->aoe_8 << 5;
-    } else if (action->flagsE_3 << 0x17) {
+    } else if (action->flagsE.unk7 << 0x17) {
         v = func_800E5568((func_800E5568_t*)&action->aoe_0);
         if (v < arg2) {
             r = v;

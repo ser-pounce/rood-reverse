@@ -24,11 +24,6 @@ typedef struct {
 } D_800EB9B8_unk990;
 
 typedef struct {
-    short xyz[3];
-    short flags;
-} menuShapeVertex;
-
-typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
@@ -83,14 +78,12 @@ typedef struct {
 } labelBoxPrim_t;
 
 void func_800C02A8(void);
-MATRIX* func_800C085C(u_char* scale, int angle);
 void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
-int func_800C0758(int phase, int segments, int index);
 void func_800C253C(int type);
 int _getCollisionMapDimensions(int arg0);
 int func_800FA188(int x, int z, int* offset);
@@ -1122,47 +1115,6 @@ void func_800C2B0C(SVECTOR* position, u_int row)
         }
         D_800EB9B8->unk4370[row * 9 + column] = value;
     }
-}
-
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2E24);
-
-void func_800C4650(func_800C4650_t* arg0, int arg1)
-{
-    int i;
-    int type;
-
-    for (i = 0; i < arg1; i++, arg0++) {
-        type = arg0->unk9;
-        if ((type >> 4) == 0) {
-            if (func_800C1564(&D_800EB9B8->unk0[1], arg0->unk0)) {
-                func_8009FD5C(type, 0, arg0->unkA);
-            } else {
-                func_8009FE74(type, arg0->unkA);
-            }
-        }
-    }
-}
-
-int vs_battle_mapStickDeadZone(int arg0)
-{
-    if (arg0 < 64) {
-        return arg0 - 64;
-    }
-    if (arg0 >= 192) {
-        return arg0 - 192;
-    }
-    return 0;
-}
-
-int func_800C4734(void)
-{
-    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk2A != 0)) {
-        return 0;
-    }
-    if ((D_800EB9B8->unk3E == 0) || (vs_main_buttonsState & 0x80)) {
-        return 1;
-    }
-    return 2;
 }
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", D_80069860);

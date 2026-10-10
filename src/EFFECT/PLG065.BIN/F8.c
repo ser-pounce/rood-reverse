@@ -1,19 +1,42 @@
 #include "common.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/32154.h"
+#include "vs_inline_c.h"
+#include "gpu.h"
+#include <inline_c.h>
+#include <rand.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800F98F8);
+#define VS_ROTATING_SURFACE_FUNCTION func_800F98F8
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FA7B0
 #define VS_CLOSED_RING_COLORS D_800FD934
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FB71C);
+#define VS_RING_FUNCTION func_800FB71C
+#define VS_RING_COLORS D_800FD954
+#include "src/EFFECT/rings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FC340);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FC340
+#define VS_PARTICLE_TARGET_FUNCTION func_800FCAC8
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FCCE0
+#define VS_PARTICLE_RENDER_FUNCTION func_800FD190
+#define VS_PARTICLE_CORNER_STATE D_800FD974
+#include "src/EFFECT/particleSetup.h"
+#undef VS_PARTICLE_ORIGIN_FUNCTION
+#undef VS_PARTICLE_TARGET_FUNCTION
+#undef VS_PARTICLE_CONTROL_FUNCTION
+#undef VS_PARTICLE_RENDER_FUNCTION
+#undef VS_PARTICLE_CORNER_STATE
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCAC8);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FD190
+#include "src/EFFECT/particleLineRender.h"
+#undef VS_PARTICLE_RENDER_FUNCTION
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCCE0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FD190);
-
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FD6C0);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FC340
+#define VS_PARTICLE_TARGET_FUNCTION func_800FCAC8
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FCCE0
+#define VS_PARTICLE_RENDER_FUNCTION func_800FD190
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FD6C0
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"

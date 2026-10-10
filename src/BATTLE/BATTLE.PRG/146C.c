@@ -256,6 +256,25 @@ typedef struct {
 } func_8008D2C0_t;
 
 typedef struct {
+    char bytes[8];
+} actorSpawnSettings;
+
+typedef struct {
+    int unk0;
+    int unk4;
+    int model;
+    int unkC;
+    int blade;
+    int unk14;
+    int shield;
+    int unk1C;
+    int effect;
+    int effectSize;
+    int weaponEffect;
+    int weaponEffectSize;
+} zudHeader;
+
+typedef struct {
     int count;
     _mpdRoomDoorSection_t* values[0];
 } D_800F1D08_t;
@@ -576,7 +595,7 @@ int func_80093764(int);
 void func_80093824(int);
 void func_80093A14(void);
 void func_80093B04(void*);
-void func_80093B68(int arg0, int arg1, int arg2, int arg3);
+void func_80093B68(int arg0, int arg1, u_int arg2, int arg3);
 int vs_battle_renderBattleAbilityTimingResult(int);
 void func_80093FEC(int, int, int, int);
 void func_80093914(int);
@@ -605,6 +624,8 @@ void func_80072734(int);
 void func_800C05EC(void*, void*, int, void*);
 void func_800C0700(void*);
 void func_800DEEA4(D_800F19CC_t2*);
+int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
+void func_800FA35C(int);
 
 extern u_char D_8004EF20;
 extern u_char D_8004EF80;
@@ -615,6 +636,7 @@ extern u_char D_8004F000;
 extern u_char D_8004FE88[];
 extern MATRIX D_8005E218;
 extern char D_8005FFAF;
+extern vs_battle_charInitData* D_800F188C;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
@@ -669,8 +691,8 @@ extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
 extern int D_800F19EC;
-extern int D_800F1A00;
-extern int D_800F1A04;
+extern u_int D_800F1A00;
+extern u_int D_800F1A04;
 extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
@@ -6102,7 +6124,215 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_800775C0);
+vs_battle_actor* func_800775C0(
+    int id, _mpdEnemy* spawn, vs_battle_charInitData* init, int flags)
+{
+    vs_battle_objectData object;
+    vs_main_CdFile file;
+    vs_battle_actor* actor;
+    zudHeader* zud;
+    savedEnemyState* saved;
+    int zudIndex;
+    int bladeId;
+    int shieldId;
+    int loaded;
+    int i;
+    int category;
+    int height;
+
+    if (vs_battle_actors[id] == NULL) {
+        zudIndex = init->mpdIdentifer;
+        bladeId = (u_char)init->weapon.blade.wepId;
+        shieldId = (u_char)init->shield.base.wepId;
+        if (D_8004FE88[(u_char)init->unk2]) {
+            actor = vs_main_allocHeap(0x3BB4);
+            actor->unk3C = (vs_battle_actor2*)(actor + 1);
+            actor->unk40 = 2;
+            actor->unk44 = (void*)((char*)actor + 0x9B4);
+            actor->unk48[0] = (void*)((char*)actor + 0x22B4);
+        } else {
+            actor = vs_main_allocHeap(0x2E84);
+            actor->unk3C = (vs_battle_actor2*)(actor + 1);
+            actor->unk40 = 1;
+            actor->unk44 = (void*)((char*)actor + 0x9B4);
+            actor->unk48[0] = (void*)((char*)actor + 0x22B4);
+            actor->unk48[1] = (void*)((char*)actor + 0x289C);
+        }
+        category = 10;
+        if (bladeId) {
+            category = init->weapon.blade.category;
+        }
+        actor->equippedWeaponCategory = category;
+
+        loaded = 0;
+        if (_zoneContext.unk1C != NULL) {
+            if (zudIndex + 1 == _zoneContext.unk14) {
+                loaded = 1;
+            } else {
+                vs_main_freeHeapR(_zoneContext.unk1C);
+                _zoneContext.unk1C = NULL;
+                _zoneContext.unk14 = 0;
+            }
+        }
+        if (!loaded) {
+            file.lba = _zoneContext.zudFiles[zudIndex].lba;
+            file.size = _zoneContext.zudFiles[zudIndex].size;
+            if (_zoneContext.unk18 != NULL) {
+                vs_main_nop9(0xA7, 0);
+            }
+            _zoneContext.unk18 = vs_main_allocateCdQueueSlot(&file);
+            _zoneContext.unk1C = vs_main_allocHeapR(file.size);
+            vs_main_cdEnqueuePriority(_zoneContext.unk18, _zoneContext.unk1C);
+            while (_zoneContext.unk18->state != 4) {
+                vs_main_gametimeUpdate(0);
+            }
+            vs_main_freeCdQueueSlot(_zoneContext.unk18);
+            _zoneContext.unk18 = NULL;
+            _zoneContext.unk14 = zudIndex + 1;
+        }
+
+        zud = _zoneContext.unk1C;
+        object.dataType = 2;
+        object.index = id;
+        object.dataAddr = zud->model + (u_long)zud;
+        object.modelId = (u_char)_zoneContext.zndEnemies[zudIndex].unk0[2];
+        if ((D_80061078[D_80060064].zndId == _zoneContext.zndId)
+            && (D_80061078[D_80060064].mapId == _zoneContext.mapId)
+            && ((saved = func_80069E80(spawn->index)) != NULL)) {
+            object.unkC.unk0_0 = saved->x;
+            object.unkC.unk0_16 = saved->z;
+            object.unkC.unk0_8 = saved->direction;
+            height = saved->height;
+            object.unkC.unk0_8 &= 1;
+        } else {
+            object.unkC.unk0_0 = spawn->x;
+            object.unkC.unk0_16 = spawn->z;
+            object.unkC.unk0_8 = spawn->direction;
+            height = spawn->height << 6;
+            object.unkC.unk0_8 &= 1;
+        }
+        object.unkC.unk0_24 = height;
+        object.unk4 = actor->unk44;
+        object.actorId = 0xFF;
+        object.variant = spawn->variant & 1;
+        object.material = init->unk24;
+        vs_battle_populateDataSlot(&object);
+
+        if ((u_char)init->unk2 != 0x7F) {
+            if (D_8004FE88[(u_char)init->unk2]) {
+                object.dataType = 1;
+                object.index = id + 4;
+                object.modelId = (u_char)D_800F188C[zudIndex].unk2 + 1;
+                object.unk4 = actor->unk48[0];
+                object.actorId = id;
+                object.unk11 = 0xFC;
+                object.variant = 0;
+                vs_battle_populateDataSlot(&object);
+            } else {
+                if (bladeId) {
+                    object.dataType = 4;
+                    object.index = id * 2;
+                    object.dataAddr = zud->blade + (u_long)zud;
+                    object.modelId = bladeId;
+                    object.unk4 = actor->unk48[0];
+                    object.actorId = id;
+                    object.unk11 = 0xF0;
+                    object.material = init->weapon.material;
+                    vs_battle_populateDataSlot(&object);
+                }
+                if (shieldId) {
+                    object.dataType = 4;
+                    object.index = id * 2 + 1;
+                    object.dataAddr = zud->shield + (u_long)zud;
+                    object.modelId = shieldId;
+                    object.unk4 = actor->unk48[1];
+                    object.actorId = id;
+                    object.unk11 = 0xF1;
+                    object.material = init->shield.material;
+                    vs_battle_populateDataSlot(&object);
+                }
+            }
+            if (((id < 2) || ((flags & 3) == 1)) && zud->weaponEffectSize) {
+                object.dataType = 8;
+                object.index = id;
+                object.dataAddr = zud->weaponEffect + (u_long)zud;
+                object.actorId = 0;
+                object.modelId = actor->equippedWeaponCategory;
+                vs_battle_populateDataSlot(&object);
+            }
+            if (zud->effectSize) {
+                object.dataType = 8;
+                object.index = id;
+                object.dataAddr = zud->effect + (u_long)zud;
+                object.actorId = 0;
+                object.modelId = 0;
+                vs_battle_populateDataSlot(&object);
+            }
+        }
+
+        while (vs_battle_getEmptyObjectDataSlot()) {
+            vs_battle_processObjectDataQueue();
+            vs_main_gametimeUpdate(0);
+        }
+
+        vs_battle_actors[id] = actor;
+        func_80076F24(id, init, bladeId, shieldId, flags, 1);
+        if (actor->weaponDrawn & 1) {
+            func_800A087C(id, 0x1846);
+        } else {
+            func_800A087C(id, 0x46);
+        }
+        func_800A0204(id, 0, 0, 0);
+        func_800A0AFC(id, actor->unk3C->unk31 << 12, actor->unk3C->unk33 << 12);
+        if (actor->unk1C & 7) {
+            actor->next = vs_battle_actors[0]->next;
+            vs_battle_actors[0]->next = actor;
+        }
+        actor->unk1E = spawn->facing;
+        actor->unk1F = spawn->unk26;
+        actor->unk27 = spawn->index;
+        actor->unk29 = 0;
+        actor->defeated = 0;
+        actor->unk3C->miscItem.id = spawn->itemId;
+        actor->unk3C->miscItem.count = spawn->itemCount;
+        actor->unk3C->unk95C.id = spawn->item2Id;
+        actor->unk3C->unk95C.count = spawn->item2Count;
+        actor->unk3C->unk960.id = spawn->item3Id;
+        actor->unk3C->unk960.dropRate = spawn->item3Count;
+        do {
+            *(actorSpawnSettings*)((char*)actor + 0x30) =
+                *(actorSpawnSettings*)spawn->settings;
+        } while (0);
+        actor->unk38 = init->unk2C;
+
+        if ((D_80061078[D_80060064].zndId == _zoneContext.zndId)
+            && (D_80061078[D_80060064].mapId == _zoneContext.mapId)
+            && ((saved = func_80069E80(spawn->index)) != NULL)) {
+            actor->unk3C->currentHP = saved->currentHP;
+            actor->unk3C->maxHP = saved->maxHP;
+            actor->unk3C->currentMP = saved->currentMP;
+            actor->unk3C->maxMP = saved->maxMP;
+            actor->unk3C->strength = actor->unk3C->totalStrength = saved->strength;
+            actor->unk3C->intelligence = actor->unk3C->totalIntelligence =
+                saved->intelligence;
+            actor->unk3C->agility = actor->unk3C->totalAgility = saved->agility;
+            for (i = 0; i < 6; ++i) {
+                actor->unk3C->limbs[i].hp = saved->limbHP[i];
+            }
+            func_80086FA8(saved->statuses, actor->unk3C);
+            i = func_800E6178((void*)actor, saved->unk2);
+        } else {
+            i = func_800E6178((void*)actor, -1);
+        }
+        if (i == 0) {
+            func_8009DF3C(id, spawn->unk26);
+        } else {
+            func_8009DF3C(id, 0);
+        }
+        return actor;
+    }
+    return NULL;
+}
 
 int _isLookAtAtDestination(void)
 {
@@ -6874,7 +7104,502 @@ void func_80089098(void);
 
 // https://decomp.me/scratch/CQo8q
 void vs_battle_exec(void);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", vs_battle_exec);
+void vs_battle_exec(void)
+{
+    func_8006EBF8_t position;
+    int skipCameraUpdate;
+    u_long* ot;
+    u_int status;
+    int ready;
+    int i;
+    D_800F18EC_t* menu;
+    int result;
+    int shortcut;
+
+    D_800F1858 = 0;
+    func_800FA35C(vs_main_startState);
+    while (1) {
+        _finishLoadZnd(D_800F1AB0.zndId);
+        do {
+            func_80089DC0(D_800F1AB0.mpdId);
+            D_800F1858 = 0;
+            do {
+                do {
+                    if (vs_main_processPadState() == -1) {
+                        break;
+                    }
+                    ot = D_80055C80[vs_main_frameBuf];
+                    D_800F1870 = ot;
+                    vs_scratch.unk8 = ot + 2;
+                    vs_scratch.unk4 = ot + 18;
+                    ClearOTagR(ot, 0x822);
+                    vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
+                    AddPrim(ot, &D_800F1970[vs_main_frameBuf]);
+                    if (((vs_main_startState == 3) || (vs_main_startState == 4))
+                        && (vs_main_buttonsPressed.all & 0x9FF)) {
+                        vs_main_resetGame();
+                    }
+                    func_8008C8A8();
+                    status = func_800A0BE0(0);
+                    func_800A1108(0, &position);
+
+                    if ((vs_battle_screenTransitionStep != 1)
+                        && (vs_battle_screenTransitionStep != 2)
+                        && (vs_battle_screenTransitionStep != 4)) {
+                        skipCameraUpdate = 0;
+                        switch (D_800F196C) {
+                        case 0:
+                            break;
+
+                        case 1:
+                            if (status & 0x2000) {
+                                break;
+                            }
+                            if (func_800BEC58(0x20, 0, 0, 0) == 1) {
+                                func_80073898();
+                                break;
+                            }
+                            if (func_80074BAC(0, (u_char*)&position)) {
+                                break;
+                            }
+                            if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                && !(status & 0x4000) && (D_800F1858 == 0)
+                                && (vs_main_buttonsPreviousState & 1)) {
+                                func_8007352C();
+                                break;
+                            }
+                            if (D_800F1858 != 0) {
+                                if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                    && !(status & 0x4000) && func_800CACD0(0, 0)) {
+                                    func_8007357C(0, 0);
+                                    D_800F1858 = 0;
+                                    break;
+                                }
+                            } else if ((vs_main_buttonsPressed.all & PADRup)
+                                       && !(vs_main_buttonsPreviousState & 1)) {
+                                if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                    && !(status & 0x4000)) {
+                                    if (func_800CACD0(0, 0)) {
+                                        func_8007357C(0, 0);
+                                        break;
+                                    }
+                                } else {
+                                    D_800F1858 = 1;
+                                }
+                            }
+                            if (vs_main_buttonsPressed.all & PADRdown) {
+                                if (func_800A38E0(0) >= 0) {
+                                    if (!(vs_battle_characterState->weaponDrawn & 1)) {
+                                        func_800A3E6C(0);
+                                        break;
+                                    }
+                                } else if (!(status & 0x3F4000)) {
+                                    i = func_800A3760(0, 0xA0, 0x80);
+                                    if ((i >= 0) && (vs_battle_actors[i]->unk24 == 4)
+                                        && (func_800BEC58(4, 0, i, 0) == 1)) {
+                                        func_80073898();
+                                        break;
+                                    }
+                                    if (func_80074860(0)) {
+                                        func_80073898();
+                                        break;
+                                    }
+                                    result = (int)func_800748B8(0);
+                                    if (result) {
+                                        if (!func_80073AFC((_mpdRoomSectionA*)result)) {
+                                            func_80073AA4();
+                                            break;
+                                        }
+                                    } else {
+                                        result = (int)func_80074950(0);
+                                        if (result) {
+                                            func_80074050((_mpdRoomSectionA*)result, 0);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!(status & 0x4000)) {
+                                if (!(status & 0x180000)
+                                    && (vs_main_buttonsPressed.all & (PADj | PADstart))) {
+                                    _initBattleCameraTransition();
+                                    break;
+                                }
+                                if (vs_main_buttonsPressed.all & PADRright) {
+                                    if (vs_battle_characterState->weaponDrawn & 1) {
+                                        if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                            && !(vs_battle_characterState->unk3C->statuses
+                                                 & 0x2000)) {
+                                            vs_main_playSfxDefault(0x7E, 9);
+                                            func_80072EC4(0, 1);
+                                            skipCameraUpdate = 1;
+                                            break;
+                                        }
+                                        vs_main_playSfxDefault(0x7E, 0xC);
+                                    } else if (!(status & 0x180000)) {
+                                        func_800734C0();
+                                        break;
+                                    }
+                                }
+                                if ((vs_main_buttonsPressed.all & PADRdown)
+                                    && (vs_battle_characterState->weaponDrawn & 1)) {
+                                    func_800734C0();
+                                    break;
+                                }
+                            }
+                            if (func_8006E7F0()) {
+                                break;
+                            }
+                            switch (func_80075554()) {
+                            case 1:
+                                func_80073898();
+                                break;
+                            case 2:
+                                D_800F18FC = 0;
+                                func_8006FB48();
+                                break;
+                            }
+                            break;
+
+                        case 2:
+                            func_8006E640(0);
+                            break;
+
+                        case 3:
+                            if (_cameraMode == 1) {
+                                func_8006E158();
+                                func_800A4D8C();
+                                _setCameraPositionFromAngles(
+                                    &vs_battle_cameraCurrentSpherical.values);
+                                if (vs_battle_cameraCurrentSpherical.delta.yaw != 0) {
+                                    break;
+                                }
+                                if ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
+                                    || (vs_battle_cameraCurrentSpherical.delta.mode
+                                        == 3)) {
+                                    ready = 1;
+                                    for (i = 0; i < 16; ++i) {
+                                        if ((vs_battle_actors[i] != NULL)
+                                            && (func_800A0BE0(i) & 0x20004000)) {
+                                            ready = 0;
+                                            break;
+                                        }
+                                    }
+                                    if (ready) {
+                                        func_80073870();
+                                    }
+                                }
+                            } else {
+                                func_800C8778();
+                                func_80075554();
+                                if (func_800BEC58(0xFF, 0, 0, 0) == 0) {
+                                    if ((vs_main_startState == 3)
+                                        || (vs_main_startState == 4)) {
+                                        vs_main_resetGame();
+                                    } else {
+                                        func_800738E4();
+                                    }
+                                }
+                            }
+                            break;
+
+                        case 4:
+                            if (func_800CEEBC()) {
+                                func_800CEF74(0);
+                            }
+                            if (!(D_800F1868 & 3)) {
+                                func_80073484();
+                            }
+                            break;
+
+                        case 5:
+                            if (_cameraMode == 1) {
+                                func_800C97BC();
+                                menu = func_800CB66C();
+                                D_800F18EC = menu;
+                                if (menu->unk0 == 2) {
+                                    func_800735F8(menu);
+                                }
+                            }
+                            break;
+
+                        case 6:
+                            if (vs_main_buttonsPreviousState & 1) {
+                                func_800C9F88();
+                                if (vs_main_buttonsPressed.all & PADRright) {
+                                    shortcut = 1;
+                                } else if (vs_main_buttonsPressed.all & PADRup) {
+                                    shortcut = 2;
+                                } else if (vs_main_buttonsPressed.all & PADRleft) {
+                                    shortcut = 3;
+                                } else if (vs_main_buttonsPressed.all & PADRdown) {
+                                    shortcut = 4;
+                                } else if (vs_main_buttonsPressed.all & PADLup) {
+                                    shortcut = 5;
+                                } else if (vs_main_buttonsPressed.all & PADLdown) {
+                                    shortcut = 6;
+                                } else if (vs_main_buttonsPressed.all & PADLright) {
+                                    shortcut = 7;
+                                } else if (vs_main_buttonsPressed.all & PADLleft) {
+                                    shortcut = 8;
+                                } else {
+                                    break;
+                                }
+                                if (vs_battle_validateShortcutSelection(shortcut)) {
+                                    func_8007357C(0, 0);
+                                }
+                            } else {
+                                func_80073554();
+                            }
+                            break;
+
+                        case 7:
+                            switch (_cameraMode) {
+                            case 0:
+                                func_80074580();
+                                break;
+                            case 1:
+                                _checkFirstPersonViewExit();
+                                func_8006EC7C();
+                                break;
+                            case 2:
+                                func_80074744();
+                                if (vs_main_buttonsPressed.all & (PADj | PADstart)) {
+                                    _initBattleCameraTransition();
+                                }
+                                break;
+                            }
+                            break;
+
+                        case 8:
+                            switch (_cameraMode) {
+                            case 1:
+                                if (!func_8007418C()) {
+                                    func_800741D4();
+                                }
+                                break;
+                            case 2:
+                                if (!func_80074294()) {
+                                    func_80074314();
+                                }
+                                break;
+                            case 4:
+                                func_80074374();
+                                if (_isLookAtAtDestination()) {
+                                    func_800DEC88(&D_800F19CC->unk854[0]);
+                                    func_8006FBCC(0);
+                                    D_800F196C = 2;
+                                }
+                                break;
+                            }
+                            _setCameraPositionFromAngles(
+                                &vs_battle_cameraCurrentSpherical.values);
+                            break;
+
+                        case 9:
+                            switch (_cameraMode) {
+                            case 1:
+                                if (!func_80074120()) {
+                                    func_800741D4();
+                                }
+                                break;
+                            case 2:
+                                if (func_8007424C()) {
+                                    func_800743E0();
+                                }
+                                break;
+                            case 3:
+                                if (!func_800744B8()) {
+                                    func_800742A4();
+                                }
+                                break;
+                            case 4:
+                                ready = func_80074374();
+                                if (_isLookAtAtDestination() && ready) {
+                                    func_800CB50C();
+                                    func_8006FBCC(0);
+                                    D_800F196C = 2;
+                                }
+                                break;
+                            }
+                            _setCameraPositionFromAngles(
+                                &vs_battle_cameraCurrentSpherical.values);
+                            break;
+
+                        case 10:
+                            func_800B64A8(0, 0, 0);
+                            if (!func_8009E4B0(0)) {
+                                func_8007350C();
+                            }
+                            break;
+
+                        case 11:
+                            if (!func_800CB45C()) {
+                                func_80073ACC();
+                            }
+                            break;
+
+                        case 12:
+                            if (!func_800A47C4()) {
+                                func_8006F5CC();
+                            }
+                            break;
+                        }
+                    } else {
+                        if (D_800F196C == 3) {
+                            func_800C8778();
+                        } else if (!(status & 0x2000)) {
+                            func_8006E7F0();
+                        }
+                    }
+
+                    func_800BF850();
+                    switch (D_800F196C) {
+                    case 1:
+                    case 10:
+                    case 12:
+                        func_8006EBF8();
+                        break;
+                    case 2:
+                        switch (_cameraMode) {
+                        case 7 ... 10:
+                            break;
+                        default:
+                            _setCameraPositionFromAngles(
+                                &vs_battle_cameraCurrentSpherical.values);
+                            break;
+                        }
+                        break;
+                    }
+
+                    func_80069D78();
+                    func_8007ACB0();
+                    SetRotMatrix(&vs_scratch.viewMatrix);
+                    SetTransMatrix(&vs_scratch.viewMatrix);
+                    if (!skipCameraUpdate) {
+                        switch (D_800F196C) {
+                        case 0:
+                        case 1:
+                            if ((vs_battle_screenTransitionStep != 1)
+                                && (vs_battle_screenTransitionStep != 2)
+                                && (vs_battle_screenTransitionStep != 4)) {
+                                switch (func_80088B6C()) {
+                                case 1:
+                                    func_80073898();
+                                    break;
+                                case 2:
+                                    D_800F18FC = 0;
+                                    func_8006FB48();
+                                    break;
+                                }
+                            }
+                            break;
+                        case 2:
+                            func_80088B8C();
+                            switch (_cameraMode) {
+                            case 1:
+                                func_80078248();
+                                break;
+                            case 2:
+                                func_800782E4();
+                                break;
+                            case 3:
+                                func_80078364();
+                                break;
+                            case 4:
+                                _handleCombatCameraZoom();
+                                break;
+                            case 5:
+                                func_80078748();
+                                break;
+                            case 6:
+                                func_800787F0();
+                                break;
+                            case 7:
+                                func_80078AB4();
+                                break;
+                            case 8:
+                                func_80079030();
+                                break;
+                            case 9:
+                                func_80079050();
+                                break;
+                            case 10:
+                                func_800790BC();
+                                break;
+                            case 11:
+                                func_800793C0();
+                                break;
+                            case 12:
+                                func_800797BC();
+                                break;
+                            case 13:
+                                func_8007980C();
+                                break;
+                            case 14:
+                                func_8007983C();
+                                break;
+                            }
+                            if (_cameraMode < 4) {
+                                if (_cameraMode != 0) {
+                                    func_800C0D78();
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if (D_800F190C) {
+                        func_8008EC48(NULL);
+                        func_8008AC78();
+                        func_8008B28C();
+                        SetGeomOffset(160, 112);
+                        if (D_800F190C) {
+                            func_800AEF94(&vs_scratch.viewMatrix);
+                            vs_battle_processObjectDataQueue();
+                            SetRotMatrix(&vs_scratch.viewMatrix);
+                            SetTransMatrix(&vs_scratch.viewMatrix);
+                            func_800941FC();
+                        }
+                    }
+                    i = 0;
+                    D_800F1868 = func_800CF060();
+                    func_800CA2DC();
+                    func_800CB83C();
+                    for (; i < vs_gametime_tickspeed / 2; ++i) {
+                        vs_main_setVibrateParams();
+                        func_80047FFC();
+                        func_800481C0();
+                        func_800483FC();
+                    }
+                    _drawScreenTransition(ot);
+                    func_8007D734(ot);
+                    if (D_800F196C == 1) {
+                        func_800E511C();
+                    } else if (D_800F196C == 3) {
+                        func_800E5308();
+                    }
+                    if ((D_800F1B98 == 1) || (D_800F1B98 == 2)) {
+                        SetDrawStp(&D_800F1988[vs_main_frameBuf], 1);
+                        AddPrim(ot + 0x820, &D_800F1988[vs_main_frameBuf]);
+                    } else {
+                        SetDrawStp(&D_800F1988[vs_main_frameBuf], 0);
+                        AddPrim(ot + 0x820, &D_800F1988[vs_main_frameBuf]);
+                    }
+                    func_800E45B4();
+                    func_8007629C(ot + 0x821);
+                    func_8007DF98();
+                } while (!(((vs_battle_screenTransitionStep == 1)
+                               || (vs_battle_screenTransitionStep == 2))
+                           && (vs_battle_screenTransitionAlpha == 255)));
+            } while (!(((vs_battle_screenTransitionStep == 1)
+                           || (vs_battle_screenTransitionStep == 2))
+                       && (vs_battle_screenTransitionAlpha == 255)));
+            func_8008A3A0();
+        } while (vs_battle_screenTransitionStep != 2);
+        func_80089098();
+    }
+}
 
 void func_8007A824(int* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
 
@@ -12041,7 +12766,206 @@ void func_80085A34(func_80085A34_t* arg0)
 }
 
 // https://decomp.me/scratch/KrvDw
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085B10);
+// https://decomp.me/scratch/KrvDw
+void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int arg3)
+{
+    SVECTOR origin;
+    SVECTOR position;
+    SVECTOR impact;
+    vs_action_t* spec;
+    vs_battle_actor2* attacker;
+    vs_battle_actor2* stats;
+    _hitEntity_t* user;
+    _hitEntity_t* entry;
+    int i;
+    int hit;
+    int redirected;
+    int best;
+    short max;
+    int target;
+    int limb;
+    __typeof__(spec->hitParams[0]) params;
+
+    spec = &vs_main_actions[action];
+    func_800856F8(result);
+    result->actionIndex = action;
+    func_80085718(&result->unk4);
+    result->unk4.unk40 = source->unk4.unk40;
+    if (result->unk4.unk40 == 0) {
+        result->unk4.unk0.targetActor = source->unk4.unk0.targetActor;
+        result->unk4.unk0.targetLimb = source->unk4.unk0.targetLimb;
+        attacker = vs_battle_actors[result->unk4.unk0.targetActor]->unk3C;
+        func_800A1AF8(result->unk4.unk0.targetActor, 0, &origin, 0);
+    } else {
+        attacker = NULL;
+    }
+
+    result->unk4A = source->unk4A;
+    for (i = 0; i < source->unk4A; ++i) {
+        func_80085718(&result->unk4C[i]);
+        result->unk4C[i].unk40 = source->unk4C[i].unk40;
+        if (result->unk4C[i].unk40 == 0) {
+            result->unk4C[i].unk0.targetActor = source->unk4C[i].unk0.targetActor;
+            result->unk4C[i].unk0.targetLimb = source->unk4C[i].unk0.targetLimb;
+        } else if ((u_int)result->unk4C[i].unk40 < 6) {
+            result->unk4C[i].unk0 = source->unk4C[i].unk0;
+        }
+    }
+    result->unk844 = source->unk844;
+
+    best = 0;
+    max = 0;
+    if (spec->hitParams[0].affinity != 0) {
+        best = spec->hitParams[0].affinity - 1;
+    } else if (attacker != NULL) {
+        if ((vs_battle_actors[attacker->unk957]->weaponDrawn & 1)
+            && attacker->weapon.blade.id) {
+            for (i = 0; i < 7; ++i) {
+                if (max < attacker->weapon.classAffinityCurrent.affinity[0][i]) {
+                    max = attacker->weapon.classAffinityCurrent.affinity[0][i];
+                    best = i;
+                }
+            }
+        }
+    } else {
+        best = 0;
+    }
+    result->unk2 = best;
+
+    params = spec->hitParams[0];
+    if ((params.statCalculator == 2) || (params.statCalculator == 25)) {
+        if (params.type == 0) {
+            if (attacker->weapon.blade.id) {
+                result->unk3 = attacker->weapon.damageType;
+            } else {
+                result->unk3 = 1;
+            }
+        } else {
+            result->unk3 = params.type;
+        }
+    } else {
+        result->unk3 = params.type;
+    }
+    hit = 0;
+    user = &result->unk4;
+    _lastValue = 0;
+    D_800F1A04 = 0;
+    D_800F1A00 = 0;
+    for (; hit < 2; ++hit) {
+        switch (spec->hitParams[hit].prerequisiteFunction) {
+        case 6:
+        case 7:
+        case 8:
+            func_80085390(spec, &result->unk4, result->unk4C, arg3, hit);
+            break;
+
+        case 3:
+            if (result->unk4.unk40 != 0) {
+                break;
+            }
+            entry = &result->unk4;
+            stats = vs_battle_actors[result->unk4.unk0.targetActor]->unk3C;
+            D_800F1A00 = 1;
+            D_800F1A04 = _doesAttackHit(spec, entry, entry, hit, arg3);
+            if ((D_800F1A04 != 0) || (arg3 == 0)) {
+                func_80085390(spec, entry, entry, arg3, hit);
+                if (arg3 && stats->unk956_0) {
+                    func_80085718(entry);
+                    entry->unk0.unk3 = 4;
+                }
+                func_80085008(entry);
+            }
+            break;
+
+        case 0:
+            break;
+
+        default:
+            for (i = 0; i < result->unk4A; ++i) {
+                entry = &result->unk4C[i];
+                redirected = 0;
+                if (arg3 && (*(int*)&spec->flags_0 & 0x4000)) {
+                    if (entry->unk40 == 0) {
+                        func_80077F14(
+                            entry->unk0.targetActor, entry->unk0.targetLimb, &position);
+                    } else {
+                        position = *(SVECTOR*)&entry->unk0;
+                    }
+                    redirected = func_800E6C34(
+                        &origin, &position, &impact, result->unk4.unk0.targetActor);
+                    if (redirected) {
+                        if (impact.pad == 0) {
+                            entry->unk40 = 1;
+                            *(SVECTOR*)&entry->unk0 = impact;
+                            entry->unk0.mp = 0x80;
+                            result->unk48 = 1;
+                        } else {
+                            if ((u_short)impact.pad < 17) {
+                                target = impact.pad;
+                                if ((target - 1) != entry->unk0.targetActor) {
+                                    entry->unk0.targetActor = impact.pad - 1;
+                                    entry->unk0.targetLimb =
+                                        vs_battle_actors[entry->unk0.targetActor]
+                                            ->unk3C->unk36;
+                                    result->unk48 = 1;
+                                }
+                            }
+                            redirected = 0;
+                        }
+                    }
+                }
+                if (redirected) {
+                    continue;
+                }
+                if (entry->unk40 != 0) {
+                    continue;
+                }
+                stats = vs_battle_actors[entry->unk0.targetActor]->unk3C;
+                D_800F1A00 = _canPerformAttack(spec, (char*)entry, hit);
+                if (D_800F1A00 != 0) {
+                    D_800F1A04 = _doesAttackHit(spec, user, entry, hit, arg3);
+                    if ((D_800F1A04 != 0) || (arg3 == 0)) {
+
+                        func_80085390(spec, user, entry, arg3, hit);
+                        target = entry->unk0.targetActor;
+                        if ((vs_battle_actors[target]->unk27 == 0x80) && (target != 0)
+                            && stats->unk956_0) {
+                            limb = (u_char)entry->unk0.targetLimb;
+                            func_80085718(entry);
+                            entry->unk0.targetActor = target;
+                            entry->unk0.unk3 = 4;
+                            entry->unk0.targetLimb = limb;
+                        }
+                        if (arg3 && stats->unk956_0) {
+                            limb = (u_char)entry->unk0.targetLimb;
+                            target = entry->unk0.targetActor;
+                            func_80085718(entry);
+                            entry->unk0.unk3 = 4;
+                            entry->unk0.targetActor = target;
+                            entry->unk0.targetLimb = limb;
+                        }
+                        func_80085008(entry);
+                    }
+                } else if (hit == 0) {
+                    entry->unk0.hitThreshold = 0xFF;
+                }
+            }
+            break;
+        }
+    }
+
+    func_80085A34((func_80085A34_t*)&result->unk4);
+    for (i = 0; i < result->unk4A; ++i) {
+        func_80085A34((func_80085A34_t*)&result->unk4C[i]);
+    }
+    if ((D_800F19CC->unk0 == 0) && arg3) {
+        *source = *result;
+    }
+    if (arg3 && (attacker != NULL)) {
+        func_800859B4(action, attacker, 1);
+        _getActionCost(action, attacker, 1);
+    }
+}
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4)
 {
@@ -16087,9 +17011,9 @@ void func_8008EC48(VECTOR* arg0)
             red = 128 + D_800F1BB0.unk0 * 4;
             green = 128 + D_800F1BB0.unk1 * 4;
             blue = 128 + D_800F1BB0.unk2 * 4;
-            red = (short)vs_battle_clamp(red, 0, 255);
-            green = (short)vs_battle_clamp(green, 0, 255);
-            blue = (short)vs_battle_clamp(blue, 0, 255);
+            red = vs_battle_clamp(red, 0, 255);
+            green = vs_battle_clamp(green, 0, 255);
+            blue = vs_battle_clamp(blue, 0, 255);
             setRGB0(prim, red, green, blue);
         } else {
             setRGB0(prim, 128, 128, 128);

@@ -1,3 +1,15 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libc/MEMMOVE", memmove);
+void* memmove(u_char* dst, u_char* src, int n)
+{
+    if (dst >= src) {
+        while (n-- > 0) {
+            dst[n] = src[n];
+        }
+    } else {
+        while (n-- > 0) {
+            *dst++ = *src++;
+        }
+    }
+    return dst;
+}

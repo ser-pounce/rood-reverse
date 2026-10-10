@@ -58,11 +58,14 @@ typedef struct {
 
 typedef struct {
     SVECTOR unk0[42];
-    SVECTOR unk150[0x7E];
+    SVECTOR unk150[42];
+    SVECTOR unk2A0[42];
+    SVECTOR unk3F0[42];
     u_short unk540;
     u_short unk542;
     u_char* unk544;
-    int unk548_0 : 16;
+    u_char animationId;
+    u_char unk549;
     int unk548_16 : 1;
     int unk548_17 : 1;
     int unk548_18 : 14;
@@ -77,8 +80,7 @@ typedef struct {
     u_char unk7;
     u_char unk8;
     u_char unk9;
-    u_char unkA;
-    u_char unkB;
+    u_short unkA;
     u_char unkC;
     u_char unkD;
     u_char unkE;
@@ -253,28 +255,32 @@ typedef struct {
     u_char unk5AC_4 : 2;
     u_char unk5AC_6 : 1;
     u_char momentumStop : 1;
-    u_int unk5AC_8 : 1;
-    u_int unk5AC_9 : 1;
-    u_int unk5AC_10 : 1;
-    u_int unk5AC_11 : 1;
-    u_int unk5AC_12 : 1;
-    u_int unk5AC_13 : 1;
-    u_int unk5AC_14 : 1;
-    u_int unk5AC_15 : 1;
-    u_int unk5AC_16 : 1;
-    u_int unk5AC_17 : 1;
-    u_int unk5AC_18 : 1;
-    u_int unk5AC_19 : 1;
-    u_int unk5AC_20 : 1;
-    u_int unk5AC_21 : 1;
-    u_int unk5AC_22 : 1;
-    u_int unk5AC_23 : 1;
-    u_int unk5AC_24 : 1;
-    u_int unk5AC_25 : 2;
-    u_int unk5AC_27 : 1;
-    u_int unk5AC_28 : 4;
-    u_char unk5B0_0 : 3;
+    u_char unk5AC_8 : 1;
+    u_char unk5AC_9 : 1;
+    u_char unk5AC_10 : 1;
+    u_char unk5AC_11 : 1;
+    u_char unk5AC_12 : 1;
+    u_char unk5AC_13 : 1;
+    u_char unk5AC_14 : 1;
+    u_char unk5AC_15 : 1;
+    u_char unk5AC_16 : 1;
+    u_char unk5AC_17 : 1;
+    u_char unk5AC_18 : 1;
+    u_char unk5AC_19 : 1;
+    u_char unk5AC_20 : 1;
+    u_char unk5AC_21 : 1;
+    u_char unk5AC_22 : 1;
+    u_char unk5AC_23 : 1;
+    u_char unk5AC_24 : 1;
+    u_char unk5AC_25 : 1;
+    u_char unk5AC_26 : 1;
+    u_char unk5AC_27 : 1;
+
+    u_char unk5AC_28 : 4;
+    u_char unk5B0_0 : 2;
+    u_char unk5B0_2 : 1;
     u_char unk5B0_3 : 1;
+
     u_char unk5B0_4 : 1;
     u_char unk5B0_5 : 1;
     u_char unk5B0_6 : 2;
@@ -330,7 +336,9 @@ typedef struct {
     u_int btSeqLbas[12];
     u_short chainAttackAnimationIds[12];
     u_int spSeqLbas[4];
-    int unk6BC[8];
+    int unk6BC[4];
+    u_short spSeqSizes[4];
+    int unk6D4[2];
     int unk6DC;
     u_char unk6E0;
     u_char unk6E1;
@@ -358,7 +366,7 @@ typedef struct {
     u_short unk16A4[0xA0];
     D_800F4538_unk64 unk17E4;
     D_800F4538_unk64 unk17E8;
-    u_char unk17EC[8];
+    SVECTOR unk17EC;
     SVECTOR unk17F4;
     signed char unk17FC;
     u_char unk17FD;
@@ -388,9 +396,13 @@ typedef struct {
     D_800F4538_unk1864 unk1864;
     int unk1868;
     int unk187C;
-    u_char unk1880[0x10];
+    u_short unk1880[4][2];
     u_char unk1890[2][0x20];
     u_char unk18D0[2];
+    u_short unk18D2;
+    u_short unk18D4;
+    u_short unk18D6;
+    u_short unk18D8;
 } D_800F4538_t;
 
 typedef struct {
@@ -421,23 +433,7 @@ typedef struct {
     short unk18;
     short unk1A;
     _wepModelOffsets* offsets;
-    short unk20;
-    short unk22;
-    short unk24;
-    short unk26;
-    int unk28[12];
-    D_800F4538_unk58_2 unk58;
-    char unk5C;
-    char unk5D;
-    char unk5E;
-    char unk5F;
-    int unk60;
-    u_char unk64;
-    u_char unk65;
-    u_char unk66;
-    u_char unk67;
-    int unk68;
-    u_char unk6C[0x34];
+    MATRIX unk20[4];
     u_char unkBoneInfo[4][8];
     u_short palettes[7][64];
     u_short unk440[96];
@@ -461,6 +457,8 @@ typedef struct {
 typedef struct {
     u_char unk0[0x3C];
     void* unk3C;
+    u_char unk40[0x10];
+    int unk50;
 } D_800F45E0_unk68;
 
 typedef struct {
@@ -511,7 +509,8 @@ typedef struct {
     short unk32;
     short unk34;
     short unk36;
-    int unk38;
+    short unk38;
+    short unk3A;
     int unk3C;
     int unk40;
     int unk44;
@@ -529,7 +528,8 @@ typedef struct {
     D_800F4538_unk64 unk64;
     D_800F45E0_unk68* unk68;
     D_800F4538_t2 unk6C[42];
-    u_int unk5AC_0 : 4;
+    u_int unk5AC_0 : 3;
+    u_int unk5AC_3 : 1;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;
     u_int unk5AC_8 : 1;
@@ -577,7 +577,8 @@ typedef struct {
     int unk5E0;
     int unk5E4;
     int unk5E8;
-    u_char unk5EC[0x52];
+    u_char unk5EC[0x50];
+    u_short unk63C;
     u_short unk63E;
     u_char unk640[8];
     int unk648;
@@ -609,7 +610,10 @@ typedef struct {
     int unk700;
     D_800F4538_unkC54 unk704;
     D_800F4538_unkC54 unkC54;
-    u_char unk11A4[0x658];
+    u_char unk11A4[0x280];
+    u_short unk1424[0xA0];
+    u_short unk1564[0xA0];
+    u_char unk16A4[0x158];
     u_char unk17FC;
     u_char unk17FD;
     u_char unk17FE;
@@ -656,7 +660,7 @@ void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);
 int func_800A3760(int, int, int);
 int func_800A38E0(int);
-void func_800A3E6C(int);
+int func_800A3E6C(int);
 int func_800A47C4(void);
 void func_800A4E68(int);
 

@@ -254,8 +254,8 @@ typedef struct {
     _mpdRoomSection9* section9;
     _mpdRoomSectionA* sectionA;
     _mpdRoomSectionB* sectionB;
-    int textureEffectsSection;
-    int sectionD;
+    void* textureEffectsSection;
+    void* sectionD;
     _mpdRoomSectionE* sectionE;
     vs_battle_scene* sectionF;
     u_short* section10;
@@ -553,7 +553,7 @@ typedef struct {
     /* 0x956 */ u_char unk956_2 : 6;
     /* 0x957 */ u_char unk957;
     /* 0x958 */ vs_battle_uiMisc miscItem;
-    /* 0x95C */ int unk95C;
+    /* 0x95C */ vs_battle_uiMisc unk95C;
     /* 0x960 */ vs_battle_uiMiscRand unk960;
     /* 0x964 */
 } vs_battle_actor2;
@@ -746,10 +746,7 @@ typedef struct {
 } _sphericalCamera;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
+    SVECTOR unk0;
     union {
         char u8[2];
         u_short u16;
@@ -969,6 +966,7 @@ void func_8007B1B8(int, int, short, short, short);
 void func_8007B29C(int, int, int, short, short, short);
 void func_8007B344(int, int, short, short, short);
 void func_8007B9A0(void);
+void func_8007B9CC(void);
 int func_8007B9FC(void);
 void func_8007BA98(int, int, int, int);
 void func_8007BBB8(int, int);

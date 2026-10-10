@@ -20,10 +20,13 @@
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
 #include "vs_string.h"
 #include "gpu.h"
+#include "vs_inline_c.h"
+#include "gpu.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
 #include <abs.h>
+#include <inline_c.h>
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -65,15 +68,17 @@ typedef struct {
     u_int unk0_13 : 3;
     char unk2;
     char unk3;
-    short unk4;
+    u_char columns;
+    u_char rows;
     short id;
     short unk8;
     short unkA;
     short unkC;
-    short unkE;
-    void* data;
+    u_short unkE;
+    u_short* data;
     vs_main_CdQueueSlot* cdQueueSlot;
-    short unk18[0x1EE];
+    u_short unk18[240];
+    u_short imageTable[254];
     int unk3F4;
 } gim_t;
 
@@ -109,17 +114,60 @@ typedef struct {
 } D_800F5620_t;
 
 typedef struct {
-    char unk0[4];
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-} func_800CF988_t2;
+    u_int actor : 8;
+    u_int bone : 8;
+    u_int color : 4;
+    u_int texture : 4;
+    u_int life : 8;
+} effectTrailConfig;
 
 typedef struct {
-    char unk0[8];
-    func_800CF988_t2 unk8[4];
-} func_800CF988_t;
+    effectTrailConfig config;
+    int index;
+    int age;
+    SVECTOR first[8];
+    SVECTOR second[8];
+    SVECTOR previousFirst;
+    SVECTOR currentFirst;
+    SVECTOR previousSecond;
+    SVECTOR currentSecond;
+    long projectionDepth;
+    long projectionFlags;
+} effectTrailState;
+
+typedef struct {
+    u_long tag;
+    u_long mode;
+    u_char r0;
+    u_char g0;
+    u_char b0;
+    u_char code;
+    long xy0;
+    u_short uv0;
+    u_short clut;
+    u_char r1;
+    u_char g1;
+    u_char b1;
+    u_char pad1;
+    long xy1;
+    u_short uv1;
+    u_short tpage;
+    u_char r2;
+    u_char g2;
+    u_char b2;
+    u_char pad2;
+    long xy2;
+    u_short uv2;
+    u_short pad3;
+    u_char r3;
+    u_char g3;
+    u_char b3;
+    u_char pad4;
+    long xy3;
+    u_short uv3;
+    u_short pad5;
+    u_long endMode;
+} TrailPacket;
 
 typedef struct {
     char unk0[0xC];
@@ -144,7 +192,8 @@ typedef struct {
     SVECTOR unk8;
     VECTOR unk10;
     VECTOR unk20;
-    int unk30[6];
+    int unk30[2];
+    VECTOR target;
     MATRIX unk48;
     int unk5C;
     int unk60;
@@ -210,19 +259,6 @@ typedef struct {
 } D_800F54B8_t;
 
 typedef struct {
-    VECTOR position;
-    VECTOR lookAt;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int roll;
-    int nearClip;
-    int projectionDistance;
-    int farClip;
-} D_800F54D8_t;
-
-typedef struct {
     int count;
     short offsets[0];
 } pFileBlock11;
@@ -249,10 +285,9 @@ typedef struct {
     u_char unk9;
     signed char unkA;
     u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    short unkE;
-    int unk10;
+    u_short unkC;
+    u_short unkE;
+    u_int unk10;
     u_char unk14;
     u_char unk15;
     u_char unk16;
@@ -270,6 +305,11 @@ typedef struct {
     char* limbName;
 } func_800C56C0_t2;
 
+typedef union {
+    SVECTOR vec;
+    int words[2];
+} func_800C4794_t;
+
 typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
@@ -285,11 +325,13 @@ typedef struct {
     u_char unk31;
     char unk32[2];
     int unk34;
-    int unk38;
-    int unk3C;
+    func_800C4794_t unk38;
     func_800C5798_t* unk40;
-    char unk44[0x94C];
+    func_800C5798_t* unk44;
+    char unk48[0x948];
     func_800C56C0_t2 unk990[24];
+    char unkB70[0x3EE4];
+    char textBuffer[200];
 } func_800C56C0_t;
 
 typedef struct {
@@ -329,12 +371,15 @@ typedef struct {
 
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
+void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
+void func_800CCA90(int);
 void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 int _breakArtsUnlocked(void);
 extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
+D_800F53B8_t* func_800CF55C(D_800F53B8_t2* arg0);
 int func_800CE9B0(void);
 char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
@@ -344,6 +389,7 @@ void func_800CF514(int arg0);
 void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
+void func_800CF988(TrailPacket*, int, int, int);
 void func_800CFEF0(D_800F53B8_t*);
 void func_800CFE98(SVECTOR* arg0, MATRIX* arg1);
 void func_800D0984(int, func_800D0C60_t*, int);
@@ -375,6 +421,13 @@ void func_800D5738(func_800D5780_t*);
 int func_800D5780(func_800D5780_t*);
 int func_800D57FC(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5904(D_800F53B8_t*, func_800D5780_t*);
+typedef struct {
+    u_char* data;
+    char prefix[8];
+    short delay;
+    short index;
+} timedSpawnState;
+
 int func_800D5A98(D_800F53B8_t*, func_800D5780_t*, int);
 int func_800D5D74(D_800F53B8_t*, func_800D5780_t*);
 int func_800D5E00(D_800F53B8_t*, func_800D5780_t*);
@@ -400,9 +453,25 @@ int func_800D7EF4(void);
 void func_800D8060(void*);
 void vs_effpurge_exec(void);
 void func_800AE68C(int, int);
+void func_800C4650(func_800C5798_t* arg0, int arg1);
+void func_800C02A8(void);
+void func_800C28AC(SVECTOR* arg0, int arg1);
+void func_800C2B0C(SVECTOR* arg0, int arg1);
+void func_800C2E24(SVECTOR* arg0, MATRIX* arg1, int arg2);
+void* func_800C282C(void);
+int _getCollisionMapDimensions(int arg0);
+int func_800C1D84(void);
 
 extern u_int _gimLbas[];
 extern int _menuLbas[];
+extern u_char D_800EABAA;
+extern char D_800EA984[];
+extern char D_800EA9B6[];
+extern char D_800EAA54[];
+extern u_char D_800EB708[];
+extern u_char D_800EB7B4[];
+extern u_char D_800EB7D4[];
+extern u_short D_800EB98C[16];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
 extern func_800C56C0_t* D_800EB9B8;
@@ -416,6 +485,7 @@ extern union {
 } D_800EB9D0;
 extern u_int* _menuBgUnpackedBuf;
 extern int* D_800EB9D8;
+extern char D_800EBA78[];
 extern u_int D_800EBBB8[];
 extern u_int D_800EBBC0[];
 extern int D_800EBBDC[];
@@ -432,6 +502,10 @@ extern u_char D_800EBCC8[];
 extern int D_800EBCD0[];
 extern u_short D_800EBCE0[];
 extern u_char D_800EBCE8;
+extern int D_800EBCEC[];
+extern int D_800EBD14[];
+extern u_int D_800EBD3C[];
+extern u_short D_800EBD64;
 extern u_char _spellClassCounts[];
 extern u_char* _spellIds[];
 extern char D_800EBD68[];
@@ -444,7 +518,10 @@ extern func_800CCE10_t D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
+extern CVECTOR D_800EC2E8[];
+extern CVECTOR D_800EC308[];
 extern effectExec D_800EC324[];
+extern int D_800EC328;
 extern char D_800EC32C[];
 extern u_char D_800EC330[][2][4];
 extern u_char D_800EC368[][5][4];
@@ -464,6 +541,7 @@ extern u_char D_800F4CB4;
 extern char D_800F4CB8;
 extern char _fontTable;
 extern int _fontBrightness;
+extern int D_800F4CC0;
 extern u_long D_800F4CD0;
 extern char vs_battle_shortcutInvoked;
 extern char D_800F4E68;
@@ -479,6 +557,7 @@ extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
 extern func_800CF0E8_t D_800F5230;
+extern func_800CF0E8_t D_800F53C0;
 extern u_char D_800F5238;
 extern char D_800F5318;
 extern u_int D_800F531C;
@@ -508,7 +587,266 @@ extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C4794);
+typedef struct {
+    short rotation[3];
+    u_short flags;
+    u_char pad8[6];
+    short frame;
+    u_char pad10[12];
+    VECTOR position;
+    u_char pad2C[8];
+    u_char actor, bone, targetActor, targetBone;
+    MATRIX world, view, attachment, facing;
+    SVECTOR saved, control0, control1;
+} effectTransformState;
+
+typedef struct {
+    short mass;
+    short gravityScale;
+    int x, y, z;
+    int vx, vy, vz;
+    int fx, fy, fz;
+    int ax, ay, az;
+} effectMotionState;
+
+typedef struct {
+    char prefix[0x62];
+    short targetX, targetY, targetZ;
+    char padding[8];
+    int attraction;
+} effectAttractionView;
+
+typedef struct {
+    u_short unk0;
+    u_char count, unk3;
+    char prefix[12];
+    D_800F53B8_t3_2 target[0];
+} soundEventTargets;
+
+void func_800CD158(int);
+void func_800CD3E4(int);
+void func_800D52A4(func_800D2904_t*);
+void func_800D6E24(void);
+void func_80046578(int);
+
+extern int D_8005046C;
+extern u_char* D_800EB588[];
+
+int func_800C4794(SVECTOR* arg0)
+{
+    func_800C56C0_t* state = D_800EB9B8;
+    func_800C4794_t offset;
+    int result;
+    int lockPitch;
+    func_800C1564_flags flags;
+    int stickX;
+    int stickY;
+    int oldX;
+    int oldZ;
+    int angle;
+    int scale;
+    int value;
+    MATRIX* m;
+    func_800C5798_t* trigger;
+
+    stickX = state->unk38.words[0];
+    stickY = state->unk38.words[1];
+    flags = state->unk0[0].unk4.flags;
+    offset.words[0] = stickX;
+    offset.words[1] = stickY;
+    arg0->pad = 0;
+    result = 0;
+
+    if (state->unk2A != 0) {
+        arg0->vx = state->unk0[0].unk8[0];
+        arg0->vy = state->unk0[0].unk8[1];
+        arg0->vz = state->unk0[0].unk8[2];
+        func_800C2B0C((SVECTOR*)state->unk0[0].unk8, state->unk2A - 1);
+        return 0;
+    }
+
+    func_800C282C();
+    lockPitch = 0;
+    stickX = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickX);
+    stickY = vs_battle_mapStickDeadZone(vs_main_stickPosBuf.rStickY);
+    arg0->pad = 0;
+
+    if ((offset.vec.pad == 0) || (vs_main_buttonsState & 0x80)) {
+        lockPitch = 1;
+    }
+
+    if (lockPitch) {
+        stickX = stickY >> 3;
+        if (stickX == 0) {
+            if (vs_main_buttonsState & 0x1000) {
+                stickX = -8;
+            }
+            if (vs_main_buttonsState & 0x4000) {
+                stickX += 8;
+            }
+        }
+        stickX += offset.vec.vy;
+        stickY = D_800EB9B8->unk0[0].unk0 & 0x7F;
+        if ((u_int)(stickY - 1) < 2) {
+            stickY = flags.unk1 * 32;
+        } else {
+            stickY = 0;
+        }
+        if (stickX < -flags.unk1 * 32) {
+            stickX = -flags.unk1 * 32;
+        }
+        if (stickY < stickX) {
+            stickX = stickY;
+        }
+        D_800EB9B8->unk38.vec.vy = stickX;
+    } else {
+        oldX = offset.vec.vx;
+        oldZ = offset.vec.vz;
+        angle = -D_800EB9B8->unk0[0].unk2 - D_800EB9B8->unk22;
+        if ((stickX == 0) && (stickY == 0)) {
+            if (vs_main_buttonsState & 0x1000) {
+                stickY = -0x40;
+            }
+            if (vs_main_buttonsState & 0x4000) {
+                stickY = 0x40;
+            }
+            if (vs_main_buttonsState & 0x8000) {
+                stickX = -0x40;
+            }
+            if (vs_main_buttonsState & 0x2000) {
+                stickX = 0x40;
+            }
+        }
+        offset.vec.vx += (-stickX * rcos(angle) - stickY * rsin(angle) + 0x200) >> 10;
+        offset.vec.vz += (-stickX * rsin(angle) + stickY * rcos(angle) + 0x200) >> 10;
+        scale =
+            vs_gte_rsqrt(offset.vec.vx * offset.vec.vx + offset.vec.vz * offset.vec.vz);
+        if (scale > ONE) {
+            stickX = offset.vec.vx - oldX;
+            stickY = offset.vec.vz - oldZ;
+            offset.vec.vx = (offset.vec.vx << 12) / scale;
+            offset.vec.vz = (offset.vec.vz << 12) / scale;
+            scale =
+                (ratan2(offset.vec.vx, offset.vec.vz) - ratan2(stickX, stickY)) & 0xFFF;
+            if ((u_int)(scale - 8) >= 0xFF0) {
+                offset.vec.vx = oldX;
+                offset.vec.vz = oldZ;
+            }
+        }
+        D_800EB9B8->unk38.vec.vx = offset.vec.vx;
+        D_800EB9B8->unk38.vec.vz = offset.vec.vz;
+    }
+
+    if (offset.vec.pad != 0) {
+        func_800C4650(D_800EB9B8->unk44, D_800EB9B8->unk2E);
+    }
+    if (offset.vec.pad == 0) {
+        if (vs_main_buttonsPressed.all & 0x40) {
+            vs_battle_playMenuLeaveSfx();
+            arg0->pad = 1;
+            return 1;
+        }
+        if (vs_main_buttonsPressed.all & 0x20) {
+            vs_battle_playMenuSelectSfx();
+            D_800EB9B8->unk38.vec.pad = 1;
+            D_800EB9B8->unk0[0].unk0 |= 0x80;
+            D_800EB9B8->unk0[1].unk0 &= 0x7F;
+        }
+    } else if (vs_main_buttonsPressed.all & 0x40) {
+        vs_battle_playMenuLeaveSfx();
+        D_800EB9B8->unk0[0].unk0 &= 0x7F;
+        D_800EB9B8->unk0[1].unk0 |= 0x80;
+        D_800EB9B8->unk38.vec.pad = 0;
+        for (stickX = 0; stickX < D_800EB9B8->unk2E; ++stickX) {
+            trigger = &D_800EB9B8->unk44[stickX];
+            if ((trigger->unk9 >> 4) == 0) {
+                func_8009FE74(trigger->unk9, trigger->unkA);
+            }
+        }
+    } else if (vs_main_buttonsPressed.all & 0x20) {
+        vs_battle_playMenuSelectSfx();
+        result = 1;
+    }
+
+    m = func_800C085C(D_800EB9B8->unk0[0].unk4.values, D_800EB9B8->unk0[0].unk2);
+    func_800C02A8();
+    for (;;) {
+        switch (D_800EB9B8->unk0[0].unk0 & 0x7F) {
+        case 1:
+            scale = (D_800EB9B8->unk38.vec.vy * 2) / flags.unk1;
+            scale = SquareRoot12(ONE - scale * scale);
+            break;
+        case 2:
+        case 3:
+            scale = ONE;
+            break;
+        case 4:
+            scale = ((flags.unk1 * 32 + D_800EB9B8->unk38.vec.vy) << 7) / flags.unk1;
+            break;
+        case 5:
+            scale = (-D_800EB9B8->unk38.vec.vy << 7) / flags.unk1;
+            break;
+        }
+        arg0->vx = D_800EB9B8->unk0[0].unk8[0];
+        arg0->vy = D_800EB9B8->unk0[0].unk8[1] + D_800EB9B8->unk38.vec.vy;
+        arg0->vz = D_800EB9B8->unk0[0].unk8[2];
+        if (arg0->vy < -1) {
+            break;
+        }
+        D_800EB9B8->unk38.vec.vy = -D_800EB9B8->unk0[0].unk8[1] - 2;
+    }
+
+    func_800C2E24(arg0, m, scale);
+    stickX = (D_800EB9B8->unk38.vec.vx * scale + ONE / 2) >> 12;
+    stickY = (D_800EB9B8->unk38.vec.vz * scale + ONE / 2) >> 12;
+    arg0->vx += (stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12;
+    arg0->vz += (stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12;
+
+    value = _getCollisionMapDimensions(0);
+    if (((u_int)arg0->vx >= (value & 0xFFFF) * 8)
+        || ((u_int)arg0->vz >= (value >> 16) * 8)) {
+        if (arg0->vx < 0) {
+            arg0->vx = 0;
+        }
+        if (arg0->vx >= (value & 0xFFFF) * 8) {
+            arg0->vx = (value & 0xFFFF) * 8 - 1;
+        }
+        if (arg0->vz < 0) {
+            arg0->vz = 0;
+        }
+        if (arg0->vz >= (value >> 16) * 8) {
+            arg0->vz = (value >> 16) * 8 - 1;
+        }
+        stickX = arg0->vx - D_800EB9B8->unk0[0].unk8[0];
+        stickY = arg0->vz - D_800EB9B8->unk0[0].unk8[2];
+        value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + ONE - 1) / ONE;
+        if ((scale != 0) && (value != 0)) {
+            D_800EB9B8->unk38.vec.vx =
+                (((stickX * m->m[2][2] - stickY * m->m[2][0]) / value) << 12) / scale;
+            D_800EB9B8->unk38.vec.vz =
+                (((-stickX * m->m[0][2] + stickY * m->m[0][0]) / value) << 12) / scale;
+        }
+        stickX = (D_800EB9B8->unk38.vec.vx * scale + ONE / 2) >> 12;
+        stickY = (D_800EB9B8->unk38.vec.vz * scale + ONE / 2) >> 12;
+        arg0->vx = D_800EB9B8->unk0[0].unk8[0]
+                 + ((stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12);
+        arg0->vz = D_800EB9B8->unk0[0].unk8[2]
+                 + ((stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12);
+    }
+
+    func_800C28AC(arg0, lockPitch);
+    if (!(D_800EB9B8->unk0[1].unk0 & 0x80)) {
+        D_800EB9B8->unk0[1].unk1 = 0;
+        stickX = ((int*)arg0)[0];
+        stickY = ((int*)arg0)[1];
+        ((int*)D_800EB9B8->unk0[1].unk8)[0] = stickX;
+        ((int*)D_800EB9B8->unk0[1].unk8)[1] = stickY;
+    }
+    if (result) {
+        func_800C4650(D_800EB9B8->unk44, D_800EB9B8->unk2E);
+    }
+    return result;
+}
 
 void func_800C513C(int arg0, int arg1)
 {
@@ -699,7 +1037,279 @@ char* _getStatusString(uint arg0)
     return (char*)&vs_battle_statusStrings[VS_statusStrings_OFFSET_empty];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
+int func_800C58F8(u_char* target)
+{
+    func_800C56C0_t2* item;
+    func_800C5798_t* entry;
+    int i;
+    int value;
+    int prev;
+    int type;
+
+    if (target == NULL) {
+        D_800EABAA = 0;
+        return 0;
+    }
+    if (D_800EABAA == 0) {
+        D_800EB9B8->unk34 = 0x808080;
+        vs_battle_initInformationTextBox(0);
+        func_800C51B4(2);
+        func_800C553C();
+        if (D_800EB9B8->unk2C == 0) {
+            D_800EABAA = 16;
+        }
+    }
+
+    *target = 0xFF;
+
+    if (D_800EABAA < 16) {
+        if ((D_800EABAA >= D_800F4CB1) && (D_800EABAA >= D_800F4CB0)) {
+            D_800EABAA = 18;
+        } else {
+            if (D_800EABAA < D_800F4CB1) {
+                i = D_800F4C70[0][D_800EABAA];
+                item = func_800C5798(i, 2, D_800EABAA);
+                if (D_800EABAA != 0) {
+                    prev = D_800F4C70[0][D_800EABAA - 1];
+                    if (D_800EB9B8->unk40[i].unk9 != D_800EB9B8->unk40[prev].unk9) {
+                        item->unk7 = 1 - D_800EB9B8->unk990[prev].unk7;
+                    } else {
+                        item->unk7 = D_800EB9B8->unk990[prev].unk7;
+                    }
+                }
+            }
+            if (D_800EABAA < D_800F4CB0) {
+                i = D_800F4C70[1][D_800EABAA];
+                item = func_800C5798(i, 3, D_800EABAA);
+                if (D_800EABAA != 0) {
+                    prev = D_800F4C70[1][D_800EABAA - 1];
+                    if (D_800EB9B8->unk40[i].unk9 != D_800EB9B8->unk40[prev].unk9) {
+                        item->unk7 = 1 - D_800EB9B8->unk990[prev].unk7;
+                    } else {
+                        item->unk7 = D_800EB9B8->unk990[prev].unk7;
+                    }
+                }
+            }
+        nextState:
+            ++D_800EABAA;
+        }
+    } else {
+        switch (D_800EABAA) {
+        case 16:
+            vs_battle_textBoxes[7].unk0.unk0_8 = 1;
+            vs_battle_setTextBox(7, (char*)&D_800EBDDC[D_800EBDDC[0]]);
+            if (vs_main_buttonsPressed.all & 0x60) {
+                vs_battle_playMenuLeaveSfx();
+                D_800EABAA = 17;
+            }
+            break;
+        case 17:
+            D_800EB9AC = D_800EB9B8->unk0[0].unk1 == 2;
+            D_800EABAA = 21;
+            break;
+        case 18:
+            if (func_800C1D84() == 0) {
+                break;
+            }
+            goto nextState;
+        case 19:
+            if (++D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] == 0x22) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0x12;
+            }
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 0;
+            if (vs_main_buttonsPressed.all & 0x40) {
+                vs_battle_playMenuLeaveSfx();
+                func_800C56C0();
+                D_800EB9AC = D_800EB9B8->unk0[0].unk1 == 2;
+                D_800EABAA = 21;
+                break;
+            }
+            *target = D_800EB9B8->unk2D;
+            if (vs_main_buttonsPressed.all & 0x20) {
+                func_800C56C0();
+                D_800EABAA = 20;
+                break;
+            }
+            value = D_800EB9B8->unk2D;
+            if (vs_main_buttonRepeat & 1) {
+                for (i = 0; i < D_800F4CB3; ++i) {
+                    if (D_800F4C98[i] == D_800EB9B8->unk40[value].unk9) {
+                        break;
+                    }
+                }
+                if (i != D_800F4CB3) {
+                    if (++i == D_800F4CB3) {
+                        if (D_800F4CB2 == 0) {
+                            goto selected;
+                        }
+                        goto firstOfRow1;
+                    }
+                    D_800EB9B8->unk2D = D_800F4CA8[i];
+                    goto selected;
+                }
+                for (i = 0; i < D_800F4CB2; ++i) {
+                    if (D_800F4C90[i] == D_800EB9B8->unk40[value].unk9) {
+                        break;
+                    }
+                }
+                if (++i == D_800F4CB2) {
+                    goto firstOfRow0;
+                }
+                D_800EB9B8->unk2D = D_800F4CA0[i];
+                goto selected;
+            }
+            for (i = 0; i < D_800F4CB1; ++i) {
+                if (D_800F4C70[0][i] == value) {
+                    break;
+                }
+            }
+            if (i != D_800F4CB1) {
+                if ((vs_main_buttonsPressed.all & 0x8000) && (D_800F4CB0 != 0)) {
+                    if (i >= D_800F4CB0) {
+                        i = D_800F4CB0 - 1;
+                    }
+                    goto row1;
+                }
+                do {
+                    if (vs_main_buttonRepeat & 0x1000) {
+                        if (i == 0) {
+                            if (D_800F4CB0 != 0) {
+                                goto lastOfRow1;
+                            }
+                            i = D_800F4CB1 - 1;
+                        } else {
+                            --i;
+                        }
+                    }
+                } while (0);
+                if (vs_main_buttonRepeat & 0x4000) {
+                    if (i != D_800F4CB1 - 1) {
+                        ++i;
+                    } else {
+                        i = 0;
+                        if (D_800F4CB0 != 0) {
+                            goto firstOfRow1;
+                        }
+                    }
+                }
+                D_800EB9B8->unk2D = D_800F4C70[0][i];
+                goto selected;
+            lastOfRow1:
+                D_800EB9B8->unk2D = D_800F4C70[1][D_800F4CB0 - 1];
+                goto selected;
+            firstOfRow1:
+                D_800EB9B8->unk2D = D_800F4C70[1][0];
+                goto selected;
+            lastOfRow0:
+                D_800EB9B8->unk2D = D_800F4C70[0][D_800F4CB1 - 1];
+                goto selected;
+            firstOfRow0:
+                D_800EB9B8->unk2D = D_800F4C70[0][0];
+                goto selected;
+            }
+            for (i = 0; i < D_800F4CB0; ++i) {
+                if (D_800F4C70[1][i] == value) {
+                    break;
+                }
+            }
+            if (vs_main_buttonsPressed.all & 0x2000) {
+                if (i >= D_800F4CB1) {
+                    i = D_800F4CB1 - 1;
+                }
+                D_800EB9B8->unk2D = D_800F4C70[0][i];
+                goto selected;
+            }
+            if (vs_main_buttonRepeat & 0x1000) {
+                if (i == 0) {
+                    goto lastOfRow0;
+                }
+                --i;
+            }
+            if (vs_main_buttonRepeat & 0x4000) {
+                if (i == D_800F4CB0 - 1) {
+                    goto firstOfRow0;
+                }
+                ++i;
+            }
+        row1:
+            D_800EB9B8->unk2D = D_800F4C70[1][i];
+        selected:
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 1;
+            if (value != D_800EB9B8->unk2D) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0;
+                vs_battle_playMenuChangeSfx();
+                func_800C51B4(3);
+            }
+            entry = &D_800EB9B8->unk40[D_800EB9B8->unk2D];
+            i = entry->unk9;
+            type = entry->unk8;
+            if (i >> 4) {
+                vs_battle_stringContext.strings[0] = (char*)&vs_battle_statusStrings
+                    [vs_battle_statusStrings[(i >> 5) + VS_statusStrings_INDEX_blocker]];
+            } else if (type == 16) {
+                vs_battle_stringContext.strings[0] = vs_battle_actors[i]->unk3C->name;
+            } else {
+                vs_battle_stringContext.strings[0] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings[type]];
+            }
+            for (value = 1; value < 6; ++value) {
+                vs_battle_stringContext.strings[value] = D_800EAA54;
+            }
+            value = entry->unkB;
+            if ((type == 16) && !(i >> 4) && (vs_battle_actors[i]->unk1C & 0x10)) {
+                value = 5;
+                vs_battle_stringContext.strings[1] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unkE == 0 ? VS_statusStrings_INDEX_indestructable
+                                              : VS_statusStrings_INDEX__3]];
+            } else if (value == 0x3A) {
+                value = 1;
+            } else if (value == 0x3B) {
+                value = 2;
+            } else if (value == 0x3E) {
+                value = 3;
+            } else if (value == 0x3F) {
+                value = 4;
+            } else {
+                vs_battle_stringContext.strings[1] = D_800EA9B6;
+                vs_battle_stringContext.strings[6] = _getStatusString(entry->unk10);
+                value = 0;
+            }
+            vs_battle_stringContext.strings[2] =
+                (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                        [entry->unk14 + VS_statusStrings_INDEX_indestructable]];
+            if (value != 0) {
+                if (value < 5) {
+                    vs_battle_stringContext.strings[1] =
+                        (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                                [VS_statusStrings_INDEX_mpTemplate - (value & 1)]];
+                    vs_battle_stringContext.strings[5] =
+                        (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                                [entry->unk17 + VS_statusStrings_INDEX_human]];
+                }
+                vs_battle_stringContext.strings[3] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unk15 + VS_statusStrings_INDEX_empty]];
+                vs_battle_stringContext.strings[4] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unk16 + VS_statusStrings_INDEX_physical]];
+            }
+            vs_battle_stringContext.integers[0] = entry->unkC;
+            vs_battle_stringContext.integers[1] = entry->unkE;
+            vs_battle_printf(D_800EB9B8->textBuffer, D_800EA984);
+            vs_battle_setTextBox(7, D_800EB9B8->textBuffer);
+            break;
+        case 20:
+            *target = D_800EB9B8->unk2D;
+            // fallthrough
+        case 21:
+            vs_battle_dismissTextBox(7);
+            func_800C06E0();
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_800C64D0(u_long* arg0, int* arg1)
 {
@@ -714,8 +1324,96 @@ void func_800C64D0(u_long* arg0, int* arg1)
     *arg1 = (int)((*arg1 & 0xFF000000) | temp_t0);
 }
 
-INCLUDE_ASM(
-    "build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", vs_battle_renderTextRawColor);
+void vs_battle_renderTextRawColor(char const* text, int x, int color, u_long* nextPrim)
+{
+    u_long* prim = vs_scratch.unk0;
+    int y = x >> 16;
+    u_char c;
+
+    x = (short)x;
+
+    if (nextPrim == NULL) {
+        nextPrim = vs_scratch.unk8;
+    }
+
+    prim[0] = (((u_long)(prim + 2) << 8) >> 8) | 0x01000000;
+    prim[1] = _get_mode(0, 0, getTPage(0, 0, 768, 0));
+    prim += 2;
+
+    while ((c = *text++) != 0) {
+        u_int width;
+        u_int index;
+
+        c -= ' ';
+
+        if (c >= '[' - ' ') {
+            if (c == '[' - ' ') {
+                --x;
+            }
+        } else if (c - ('#' - ' ') < 2u) {
+            u_char const* scan;
+            u_char ch;
+
+            for (width = 0, scan = text; (ch = *scan++) != 0;) {
+                ch -= ' ';
+
+                if (ch > '[' - ' ') {
+                    continue;
+                }
+
+                width += (D_800EB7B4[ch >> 1] >> ((ch << 2) & 4)) & 0xF;
+                ch -= 'A' - ' ';
+
+                if (ch <= 'Z' - 'A') {
+                    index = *scan - 'A';
+
+                    if (index <= 'Z' - 'A') {
+                        index += ch * 26;
+                        width -= (D_800EB708[index >> 2] >> ((index & 3) * 2)) & 3;
+                    }
+                }
+            }
+
+            x -= width >> (c - ('#' - ' '));
+        } else {
+            width = (D_800EB7B4[c >> 1] >> ((c << 2) & 4)) & 0xF;
+
+            if (width == 0) {
+                continue;
+            }
+
+            index = D_800EB7D4[c];
+            prim[0] = (((u_long)(prim + 5) << 8) >> 8) | 0x04000000;
+            prim[1] = vs_getRGB0Raw(primSprt, color);
+            prim[2] = vs_getXY_2(x, y);
+            prim[3] = vs_getUV0Clut(index & 0xFE, (index & 1) * 10 + 76, 864, 223);
+            prim[4] = vs_getWH(width, 10);
+
+            if (c == '*' - ' ') {
+                prim[2] = vs_getXY_2(x - 1, y - 1);
+                prim[3] = vs_getUV0Clut(232, 75, 864, 223);
+                prim[4] = vs_getWH(width, 11);
+            }
+
+            prim += 5;
+            x += width;
+            c -= 'A' - ' ';
+
+            if (c <= 'Z' - 'A') {
+                index = *text - 'A';
+
+                if (index <= 'Z' - 'A') {
+                    index += c * 26;
+                    x -= (D_800EB708[index >> 2] >> ((index & 3) * 2)) & 3;
+                }
+            }
+        }
+    }
+
+    *prim = *nextPrim & 0xFFFFFF;
+    *nextPrim = ((u_long)vs_scratch.unk0 << 8) >> 8;
+    vs_scratch.unk0 = prim + 1;
+}
 
 void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim)
 {
@@ -1473,8 +2171,48 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
 }
 #pragma vsstring(end)
 
-void func_800C7EBC(void*, int, int, int);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C7EBC);
+void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
+{
+    RECT rect;
+    u_short pixels[36];
+    u_short packed;
+    int row;
+    int column;
+    u_short* output;
+    u_int inverse = 0x10000 - alpha;
+
+    setRECT(&rect, (glyph % 21) * 3 + 832, (glyph / 21) * 12, 3, 12);
+    StoreImage(&rect, (u_long*)pixels);
+    DrawSync(0);
+
+    for (row = 0; row < 12; ++row, destination += stride) {
+        for (column = 0, output = destination; column < 12; ++column, ++output) {
+            u_short source;
+            u_int index;
+
+            if (column & 3) {
+                packed >>= 4;
+            } else {
+                packed = pixels[(column >> 2) + row * 3];
+            }
+
+            index = packed & 15;
+            source = index;
+
+            if (index == 0) {
+                continue;
+            }
+
+            source = D_800EB98C[source];
+            *output =
+                (((((*output & 31) * inverse) + ((source & 31) * alpha)) >> 16) & 31)
+                | (((((*output & 0x3E0) * inverse) + ((source & 0x3E0) * alpha)) >> 16)
+                    & 0x3E0)
+                | (((((*output & 0x7C00) * inverse) + ((source & 0x7C00) * alpha)) >> 16)
+                    & 0x7C00);
+        }
+    }
+}
 
 #pragma vsstring(start)
 void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
@@ -1628,7 +2366,7 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
     gim->unk0_0 = 1;
 
     if (gim->unk0_3 == 2) {
-        short* p = gim->unk18;
+        u_short* p = gim->unk18;
         int angle = vs_battle_keystreamBits(9);
         int target = vs_battle_keystreamBits(10);
 
@@ -1681,7 +2419,141 @@ void func_800C86AC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C8778);
+void func_800C8778(void)
+{
+    gim_t* gim = D_800EB9BC;
+    gim_t* second = gim + 1;
+    gim_t* third = gim + 2;
+    int i;
+    int j;
+    int count;
+    int width;
+    int height;
+    int _[2] __attribute__((unused));
+
+    if (gim == NULL) {
+        return;
+    }
+
+    switch (gim->unk0_6) {
+    case 0:
+        break;
+    case 1:
+        if (gim->cdQueueSlot->state != 4) {
+            return;
+        }
+
+        vs_main_freeCdQueueSlot(gim->cdQueueSlot);
+
+        count = gim->data[0];
+        width = count & 0xFF;
+        j = count >> 8;
+        count = width * j + 4;
+        gim->columns = width;
+        gim->rows = j;
+
+        for (i = 0; i < count; ++i) {
+            gim->imageTable[i] = gim->data[i];
+        }
+
+        if (gim->data[3] != 0) {
+            int tiles;
+
+            width = gim->data[count];
+            tiles = width >> 8;
+            second->columns = width;
+            second->rows = tiles;
+            width = (width & 0xFF) * tiles + 4;
+
+            for (i = 0; i < width; ++i) {
+                second->imageTable[i] = gim->data[i + count];
+            }
+
+            count += width;
+
+            if (gim->data[3] == 2) {
+                width = gim->data[count];
+                tiles = width >> 8;
+                third->columns = width;
+                third->rows = tiles;
+                width = (width & 0xFF) * tiles + 4;
+
+                for (i = 0; i < width; ++i) {
+                    third->imageTable[i] = gim->data[i + count];
+                }
+
+                count += width;
+            }
+        }
+
+        count = (count + 1) & 0xFFFE;
+        width = (gim->unk2 - 24) * 64;
+        vs_battle_renderImage((width + 512) | 0x1FF0000, gim->data + count, 0x10040);
+
+        for (j = 0; j < 3; ++j) {
+            gim_t* current = &gim[j];
+
+            switch (current->imageTable[2]) {
+            case 0:
+                current->unk0_2 = 0;
+                current->unkE = gim->data[count + j * 16];
+                break;
+            case 1:
+                current->unk0_2 = 1;
+                current->unkE = gim->data[count + 64];
+                break;
+            case 2:
+                current->unk0_2 = 1;
+                current->unkE = gim->data[count + 320];
+                current->unk0_12 = 1;
+                vs_battle_renderImage(
+                    (width + 512) | 0x1FF0000, gim->data + (count + 320), 0x10100);
+                break;
+            }
+        }
+
+        vs_main_loadClut(gim->data + (count + 64), 3, 0, 256);
+
+        i = gim->data[1];
+        height = i >> 8;
+        i &= 0xFF;
+        j = (i + 16) / 17;
+        gim->unk0_9 = j;
+        second->unk0_9 = j;
+        third->unk0_9 = j;
+        height *= 16;
+        count += height;
+        func_8007DFF0(gim->unk2, gim->unk0_9, 6);
+
+        while (i > 0) {
+            vs_battle_renderImage((width + 512) | 0x1000000, gim->data + count,
+                i >= 17 ? 0xFF0040 : ((i * 15) << 16) | 64);
+            i -= 17;
+            count += 0x3FC0;
+            width += 64;
+        }
+
+        gim->unk0_6 = 2;
+        break;
+    case 2:
+        vs_main_freeHeapR(gim->data);
+
+        for (j = 0; j < 3; ++j) {
+            gim[j].unk0_1 = 0;
+        }
+
+        gim->unk0_6 = 3;
+        break;
+    case 3:
+        for (j = 0; j < 3; ++j) {
+            if (gim[j].unk0_0) {
+                func_800CCA90(j);
+            }
+        }
+
+        break;
+    }
+}
 
 int vs_battle_loadMenuPrg(int arg0)
 {
@@ -1936,7 +2808,142 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C930C);
+int func_800C930C(int mode)
+{
+    u_int selected = vs_battle_submenuStates[0];
+    vs_battle_menuItem_t* items = vs_battle_menuItems;
+    u_int enabled = vs_main_settings.menuFlags;
+    u_int mask;
+
+    if (mode) {
+        if (mode == 2 && !vs_main_settings.cursorMemory) {
+            selected = 0;
+        }
+
+        while (!((enabled >> selected) & 1)) {
+            selected = (selected + 1) % 10;
+        }
+
+        vs_battle_submenuStates[0] = selected;
+        vs_battle_rMemzero(vs_battle_menuItems, 0xB24);
+        mask = 9;
+
+        for (mode = 0; mode < 10; ++mode) {
+            if ((enabled >> mode) & 1) {
+                items[mode].animationStep = mask++;
+            }
+        }
+
+        D_800F4CC0 = -mask;
+        return 0;
+    }
+
+    if (D_800F4CC0 < 0) {
+        ++D_800F4CC0;
+
+        for (selected = 0, mode = 0; mode < 10; ++mode) {
+            u_char step;
+
+            if (!((enabled >> mode) & 1)) {
+                continue;
+            }
+
+            step = items[mode].animationStep;
+
+            if (step != 0) {
+                items[mode].animationStep = --step;
+            }
+
+            vs_battle_setMenuItem(mode, vs_battle_rowAnimationSteps[step] + 194,
+                selected * 16 + 18, 126, mode == 10 ? 24 : 0,
+                (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode]]);
+            ++selected;
+            mask = D_800F4EA0;
+            items[0].unselectable = (mask & 0xB7) != 0;
+            items[1].unselectable = (mask & 0x15F) != 0;
+            items[3].unselectable = (mask & 7) != 0;
+            items[5].unselectable = vs_battle_getCurrentSceneId() == 0;
+        }
+
+        return 0;
+    }
+
+    if (vs_main_buttonsPressed.all & PADRright) {
+        vs_battle_playMenuSelectSfx();
+        items[selected].backgroundWidth = items[selected].selected = 1;
+        vs_battle_textBoxes[7].state = 0;
+        return selected + 1;
+    }
+
+    items[selected].selected = 0;
+
+    if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
+        vs_battle_playMenuLeaveSfx();
+        vs_battle_textBoxes[7].state = 0;
+        return -1;
+    }
+
+    if (vs_main_buttonRepeat & PADLup) {
+        do {
+            selected = (selected + 9) % 10;
+        } while (!((enabled >> selected) & 1));
+    }
+
+    if (vs_main_buttonRepeat & PADLdown) {
+        selected = (selected + 1) % 10;
+    }
+    while (!((enabled >> selected) & 1)) {
+        selected = (selected + 1) % 10;
+    }
+
+    if (selected != vs_battle_submenuStates[0]) {
+        vs_battle_playMenuChangeSfx();
+        vs_battle_submenuStates[0] = selected;
+    }
+
+    items[selected].selected = 1;
+    D_800F4CC0 = vs_battle_drawCursor(D_800F4CC0, (items[selected].y >> 4) - 1);
+
+    if (items[selected].unselectable) {
+        u_int conditions;
+
+        if (vs_main_buttonsState & (PADLup | PADLdown)) {
+            return 0;
+        }
+
+        vs_battle_initInformationTextBox(1);
+        vs_battle_textBoxes[7].state = 11;
+        vs_battle_setTextBox(7, D_800EBA78);
+        mask = 0;
+
+        if (selected == 0) {
+            mask = 0xB7;
+        }
+
+        if (selected == 1) {
+            mask = 0x15F;
+        }
+
+        if (selected == 3) {
+            mask = 7;
+        }
+
+        conditions = D_800F4EA0 & mask;
+
+        for (mode = 0; mode < 9; ++mode) {
+            if (conditions & (1 << mode)) {
+                break;
+            }
+        }
+
+        vs_battle_stringContext.strings[0] =
+            (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode + 12]];
+    } else {
+        vs_battle_textBoxes[7].state = 0;
+    }
+
+    return 0;
+}
 
 void func_800C97BC(void)
 {
@@ -2278,8 +3285,175 @@ void func_800C9FE8(void)
     D_800EBC78 = 0;
 }
 
-// https://decomp.me/scratch/NSW3O
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
+void func_800CA2DC(void)
+{
+    u_long* prim;
+    vs_battle_actor2* actor;
+    void* ot;
+    int i;
+    int j;
+    int k;
+    int rightX;
+    u_int flags;
+    u_int count;
+    int selected;
+
+    actor = vs_battle_characterState->unk3C;
+    ot = vs_scratch.unk4 - 4;
+    func_800C9FE8();
+
+    if (D_800EB9CC == 1) {
+        if ((u_char)D_800EB9CD < 4) {
+            D_800EBD64 = 0;
+            ++D_800EB9CD;
+        }
+    } else if (D_800EB9CD != 0) {
+        --D_800EB9CD;
+    }
+
+    if (D_800EB9CD != 0) {
+        prim = vs_battle_setSprite(0x140,
+            ((((u_char)D_800EB9CD * 3 - 4) << 16) - D_800EB9B0) | 0xEC, 0xA0049,
+            vs_scratch.unk4 - 0xC);
+        prim[1] = 0xE1000017;
+        k = rsin(D_800EBD64 & 0x7FF);
+        prim[4] = 0x373D0040;
+        prim[2] += k >> 5;
+        D_800EBD64 += vs_gametime_tickspeed * 64;
+    }
+
+    if (D_800EB9AF != 0) {
+        if (D_800EB9B0 == 0x200000) {
+            return;
+        }
+        D_800EB9B0 += 0x80000;
+    } else {
+        k = vs_battle_textBoxes[7].state;
+        if (!(vs_battle_lowerScreenUiState & 2)
+            && ((k == 0) || (k != vs_battle_textBoxes[7].unk22 + 1))) {
+            k = 0xB80008;
+            for (i = 0; i < 5; ++i) {
+                j = i + (D_800EB9CC & 1) * 5;
+                prim = vs_battle_setSpriteDefaultTexPage(
+                    0, k + D_800EBCEC[j], D_800EBD14[j], ot);
+                prim[2] = D_800EBC54[vs_battle_getLimbStatus(
+                              &vs_battle_characterState->unk3C->limbs[i])]
+                        | 0x64000000;
+                prim[4] = D_800EBD3C[j];
+            }
+        }
+        if (D_800EB9B0 != 0) {
+            D_800EB9B0 -= 0x80000;
+        }
+    }
+
+    _renderStatBar(0, actor->currentHP, actor->maxHP);
+    _renderStatBar(1, actor->currentMP, actor->maxMP);
+    if ((k = actor->risk) != 0) {
+        _renderStatBar(2, k, 100);
+    }
+    if (k == 0) {
+        vs_battle_renderTextRaw(
+            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.unk4 - 0xC);
+    }
+
+    if (D_800EB9AE != 0) {
+        return;
+    }
+
+    flags = vs_battle_getStatusFlags(actor);
+    count = 0;
+    selected = 0xFF;
+    for (j = 0; j < 32; ++j) {
+        if ((flags >> j) & 1) {
+            if (j == D_800EB9D0.u8[1]) {
+                selected = count;
+            }
+            ++count;
+        }
+    }
+    for (j = 0; j < 3; ++j) {
+        if (!((flags >> D_800EB9D0.u8[j]) & 1)) {
+            D_800EB9D0.u8[j] = 0xFF;
+        }
+    }
+
+    if (count == 0) {
+        return;
+    }
+
+    j = D_800EB9D0.u8[3];
+    if (j == 12) {
+        D_800EB9D0.u8[0] = D_800EB9D0.u8[1];
+        D_800EB9D0.u8[1] = D_800EB9D0.u8[2];
+        D_800EB9D0.u8[2] = 0xFF;
+        i = (D_800EB9D0.u8[1] + 1) & 0xFF;
+        for (k = 0; k < 32; ++k, ++i) {
+            i %= 32;
+            if (((flags >> i) & 1) && (i != D_800EB9D0.u8[1])) {
+                D_800EB9D0.u8[2] = i;
+                break;
+            }
+        }
+    }
+
+    k = 1; // dead store kept for codegen: count == 1 below is compared against this
+           // register
+    if ((D_800EB9D0.u8[0] == D_800EB9D0.u8[2]) && (D_800EB9D0.u8[1] != 0xFF)) {
+        if ((count == 1) && (j < 3)) {
+            j = 0;
+        }
+        if ((count == 2) && (D_800EB9D0.u8[0] != 0xFF) && ((u_int)(j - 12) < 3)) {
+            j = 12;
+        }
+    }
+
+    k = -8;
+    if (j >= 9) {
+        if (j < 12) {
+            k = 8 - j * 2;
+        } else {
+            k = 24 - j * 2;
+        }
+    }
+
+    if ((++j != D_800EB9D0.u8[3]) && (vs_gametime_tickspeed == 4)) {
+        j = (j + 1) & 0xE;
+    }
+    rightX = k + 16;
+    D_800EB9D0.u8[3] = j & 0xF;
+    func_800C9CB4(D_800EB9D0.u8[2], rightX, 1);
+    ot -= 4;
+    func_800C9CB4(D_800EB9D0.u8[1], k, 1);
+    func_800C9CB4(D_800EB9D0.u8[1], rightX, 0);
+    func_800C9CB4(D_800EB9D0.u8[0], k, 0);
+
+    k = 0x80000 - D_800EB9B0;
+    if (count < 3) {
+        for (i = 0; i < count; ++i) {
+            prim =
+                vs_battle_setSpriteDefaultTexPage(0x80, (0x94 + i * 3) | k, 0x40004, ot);
+            prim[4] = 0x37F40C1A;
+        }
+        return;
+    }
+
+    j = k + 0x30000;
+    if (selected != 0xFF) {
+        prim = vs_battle_setSprite(
+            0x80, ((selected & 7) * 3 + 0x94) | (!(selected & 8) ? k : j), 0x40004, ot);
+        prim[4] = 0x37F40C1A;
+    }
+    i = 25;
+    if (count < 9) {
+        i = count * 3 + 1;
+    } else {
+        prim = vs_battle_setSprite(0x80, j | 0x94, ((count - 8) * 3 + 1) | 0x40000, ot);
+        prim[4] = 0x37F40C00;
+    }
+    prim = vs_battle_setSpriteDefaultTexPage(0x80, k | 0x94, i | 0x40000, ot);
+    prim[4] = 0x37F40C00;
+}
 
 void func_800CA97C(void)
 {
@@ -2740,9 +3914,253 @@ void func_800CB7DC(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CB83C);
+void func_800CB83C(void)
+{
+    int id, state, duration, scale, reverse;
+    int x, cx, y, cy, width, height;
+    int flags;
+    vs_battle_textBox* box;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CBBCC);
+    for (id = 7; id != -1; --id) {
+        box = &vs_battle_textBoxes[id];
+        state = box->state;
+        if (state == 0) {
+            continue;
+        }
+        flags = *(int*)&box->unk0;
+        D_800F4E80 = id;
+        if (flags < 0) {
+            continue;
+        }
+        duration = box->unk22;
+        scale = vs_gametime_tickspeed >> 1;
+        if (state < 0) {
+            state -= scale;
+            if (state < -duration) {
+                box->state = 0;
+                continue;
+            }
+            scale = ((duration + state + 1) << 16) / duration;
+        } else {
+            state += scale;
+            if (duration < state) {
+                state = duration + 1;
+            }
+            scale = state - 1;
+            switch ((int)(((u_int)flags >> 4) & 3)) {
+            case 0:
+            case 1:
+                scale = rsin((scale << 10) / duration) * 16;
+                break;
+            case 2:
+                if (scale < duration - 1) {
+                    scale = (scale << 16) / (duration - 2);
+                } else {
+                    goto settle;
+                }
+                break;
+            case 3:
+                if (duration >= 3) {
+                    if (scale < duration - 1) {
+                        scale = (scale * 0xC000) / (duration - 2) + 0x6000;
+                    } else {
+                    settle:
+                        scale = scale == duration ? 0x10000 : 0x11000;
+                    }
+                }
+                break;
+            }
+        }
+        x = box->x * scale;
+        reverse = 0x10000 - scale;
+        cx = box->centerX * reverse;
+        y = box->y * scale;
+        cy = box->centerY * reverse;
+        width = (box->charsPerLine * 12 + 10) * scale;
+        height = (box->lineCount * 13 + 4) * scale;
+        box->state = state;
+        box->unk24 = (x + cx) >> 16;
+        box->unk26 = (y + cy) >> 16;
+        box->unk28 = width >> 16;
+        box->unk2A = height >> 16;
+        switch (box->unk0.unk0_0) {
+        case 0:
+            if (state < 0) {
+                _renderTextImmediate(box, scale);
+                break;
+            }
+            goto text;
+        case 4:
+            func_800CD158(id);
+            if (state < 0) {
+                break;
+            }
+            goto text;
+        case 6:
+        immediate:
+            _renderTextImmediate(box, scale);
+            break;
+        case 2:
+        case 7:
+            func_800CD3E4(id);
+        default:
+        text:
+            if (state == duration + 1) {
+                _printVariableWidthFont(box);
+            } else if (state < 0) {
+                _printFixedWidthFont(box, scale);
+            }
+            break;
+        case 3:
+            break;
+        }
+    }
+    AddPrims((u_long*)vs_scratch.unk4 - 6, D_800F51B8, D_800F51B8 + 33);
+    D_800EB9CE = D_800EB9CE == 2 ? 0 : D_800EB9CE + 1;
+    D_800F51B8 = &D_800F4CD0 + D_800EB9CE * 34;
+    ClearOTag(D_800F51B8, 34);
+    if (vs_battle_lowerScreenUiState == 1) {
+        _renderTimer(&D_8005046C);
+    }
+    func_800CB708();
+    vs_battle_keystreamBits(0);
+}
+
+void func_800CBBCC(gim_t* image, int clut, u_long* ot)
+{
+    int alpha = image->unk3;
+    int background;
+    int quadColor;
+    u_short* tiles = &image->imageTable[4];
+    int scale = image->unkC & 0x3FFF;
+    int columns = image->columns;
+    int rows = image->rows;
+    int color;
+    short* columnX = (short*)(0x1F800400 - (columns + 1) * 2);
+    short* rowY = columnX - (rows + 1);
+    int i;
+    int j = image->unk8 + 160;
+
+    for (i = 0; i <= columns; ++i) {
+        columnX[i] = (((i * 2 - columns) * scale) >> 7) + j;
+    }
+
+    j = image->unkA + 120;
+
+    for (i = 0; i <= rows; ++i) {
+        rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
+    }
+
+    color = image->unkE;
+
+    if (color) {
+        int r = ((color << 3) & 0xF8) * alpha;
+        int g = ((color >> 2) & 0xF8) * alpha;
+        int b = ((color >> 7) & 0xF8) * alpha;
+
+        background =
+            (r >> 7) | ((g >> 7) << 8) | ((b >> 7) << 16) | ((D_800F51C8 + 48) << 25);
+
+        i = rowY[0];
+
+        if (i > 0) {
+            vs_battle_addTile(ot, background, 0, 320 | (i << 16));
+        }
+
+        i = rowY[rows];
+
+        if (i < 240) {
+            vs_battle_addTile(ot, background, i << 16, 320 | (0xF00000 - (i << 16)));
+        }
+
+        i = columnX[0];
+
+        if (i > 0) {
+            vs_battle_addTile(ot, background, 0, i | 0xF00000);
+        }
+
+        i = columnX[columns];
+
+        if (i < 320) {
+            vs_battle_addTile(ot, background, i & 0xFFFF, (320 - i) | 0xF00000);
+        }
+    }
+
+    quadColor = alpha | (alpha << 8) | (alpha << 16) | ((D_800F51C8 + 22) << 25);
+    alpha |= D_800F51C8 << 8;
+
+    for (j = 0; j < rows; ++j) {
+        int top = rowY[j];
+        int bottom;
+
+        if (top >= 240) {
+            continue;
+        }
+
+        bottom = rowY[j + 1];
+
+        if (bottom < 0) {
+            continue;
+        }
+
+        for (i = 0; i < columns; ++i) {
+            int left = columnX[i];
+            int right;
+            int tile;
+
+            if (left >= 320) {
+                continue;
+            }
+
+            right = columnX[i + 1];
+
+            if (right < 0) {
+                continue;
+            }
+
+            tile = tiles[i + j * columns];
+
+            if (tile) {
+                u_long* prim;
+                int v = tile * 64;
+                int u = v & 0xC0;
+                int tpage;
+
+                v = (v & 0x1F00) * 15;
+                tpage = getTPage(image->unk0_2, 1,
+                    ((image->unk2 - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
+
+                if (scale == ONE) {
+                    prim = vs_battle_setSprite(
+                        alpha, left | (top << 16), vs_getWH(64, 15), ot);
+                } else {
+                    int x0 = left & 0xFFFF;
+                    int u1 = u + 64;
+
+                    u1 -= u1 >> 8;
+                    prim = vs_scratch.unk0;
+                    prim[0] = (*ot & 0xFFFFFF) | 0xA000000;
+                    prim[2] = quadColor;
+                    prim[3] = x0 | (top << 16);
+                    prim[5] = right | (top << 16);
+                    prim[6] = u1 | v | (tpage << 16);
+                    prim[7] = x0 | (bottom << 16);
+                    prim[8] = u | (v + 0xF00);
+                    prim[9] = right | (bottom << 16);
+                    prim[10] = u1 | (v + 0xF00);
+                    *ot = ((u_long)prim << 8) >> 8;
+                    vs_scratch.unk0 = prim + 11;
+                }
+
+                prim[1] = tpage | _get_mode(0, 0, 0);
+                prim[4] = u | v | clut;
+            } else if (color && (color != 0x8000 || !D_800F51C8)) {
+                vs_battle_addTile(ot, background, (left & 0xFFFF) | (top << 16),
+                    (right - left) | ((bottom - top) << 16));
+            }
+        }
+    }
+}
 
 void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
 {
@@ -2772,7 +4190,110 @@ void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
         ((var_s1 + 0x100) >> 6) | new_var | 0xE1000000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC204);
+/* Draws a tiled image wiped in horizontally: per scanline the visible span is
+   [left[y], right[y]) from the per-line widths at unk18 scaled by unkC (below ONE
+   the image wipes in, above ONE it wipes out; unk3 picks the side). Each 64x15
+   tile cell is drawn as one sprite per scanline, odd start columns first as a
+   1-pixel sprite. The original reuses x/end for the scale/side and column for the
+   scaled width. */
+void func_800CC204(gim_t* image, int clut, u_long* ot)
+{
+    short left[240];
+    short right[240];
+    u_short* tiles = &image->imageTable[4];
+    int mode = image->unk0_2;
+    u_short* widths = image->unk18;
+    int page = image->unk2 - 18;
+    int color = image->unkE;
+    int y;
+    int column;
+    int end = image->unk3;
+    int x = image->unkC & 0x3FFF;
+
+    if (x == ONE) {
+        image->unk3 = 128;
+        func_800CBBCC(image, clut, ot);
+        image->unk3 = end;
+        return;
+    }
+
+    if (x < ONE) {
+        for (y = 0; y < 240; ++y) {
+            column = (widths[y] * x) >> 12;
+
+            if (end) {
+                left[y] = 320 - column;
+                right[y] = 320;
+            } else {
+                left[y] = 0;
+                right[y] = column;
+            }
+        }
+    } else {
+        for (y = 0; y < 240; ++y) {
+            column = (widths[y] * (x - ONE)) >> 12;
+
+            if (end) {
+                left[y] = 0;
+                right[y] = 320 - column;
+            } else {
+                left[y] = column;
+                right[y] = 320;
+            }
+        }
+    }
+
+    for (y = 0; y < 240; ++y) {
+        for (column = 0; column < 5; ++column) {
+            int tile;
+
+            x = left[y];
+
+            if (x >= (column + 1) * 64) {
+                continue;
+            }
+
+            end = right[y];
+
+            if (end <= column * 64) {
+                continue;
+            }
+
+            if (x < column * 64) {
+                x = column * 64;
+            }
+
+            if (end > (column + 1) * 64) {
+                end = (column + 1) * 64;
+            }
+
+            tile = tiles[(y / 15) * 5 + column];
+
+            if (tile) {
+                int tpage = getTPage(mode, 1, (page + (tile >> 8)) * 64, 256);
+
+            draw:
+                do {
+                    u_long* prim = vs_battle_setSprite(128, x | (y << 16),
+                        (x & 1) ? vs_getWH(1, 1) : ((end - x) | 0x10000), ot);
+
+                    prim[1] = tpage | _get_mode(0, 0, 0);
+                    prim[4] = (((tile & 3) * 64) + (x & 0x3F))
+                            | ((((tile >> 2) & 0x1F) * 15 + (y % 15)) << 8) | clut;
+                } while (0);
+                if (x & 1) {
+                    ++x;
+                    goto draw;
+                }
+            } else if (color) {
+                vs_battle_addTile(ot,
+                    ((color & 0x1F) << 3) | ((color & 0x3E0) << 6)
+                        | ((color & 0x7C00) << 9) | 0x40000000,
+                    (x & 0xFFFF) | (y << 16), (end - 1) | (y << 16));
+            }
+        }
+    }
+}
 
 void func_800CC580(u_long* arg0, int arg1)
 {
@@ -2786,7 +4307,103 @@ void func_800CC5C0(u_long* arg0, int arg1)
         arg0, arg1 | 0xE3000000, (arg1 + 0x13F) | 0xE403BC00, arg1 | 0xE5000000);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CC600);
+void func_800CC600(gim_t* image, int clut, u_long* ot)
+{
+    int alpha;
+    int inverse;
+    u_short* tiles = &image->imageTable[4];
+    int mode = image->unk0_2;
+    int columns;
+    int column;
+    int top;
+    int fb = 0;
+    int page;
+    int height;
+    int x;
+    int y;
+
+    if (vs_main_frameBuf == 0) {
+        fb = 320;
+    }
+
+    alpha = image->unk3;
+    page = (image->unk2 + image->unk0_9 - 16) * 64;
+
+    if (alpha == 128) {
+        func_800CBBCC(image, clut, ot);
+        return;
+    }
+
+    inverse = 128 - alpha;
+    alpha |= 256;
+    inverse += 7;
+    alpha += 7;
+    columns = image->columns;
+    height = image->rows * 15;
+    top = image->unkA + 120 - (height >> 1);
+
+    for (column = 0; column < columns; ++column) {
+        u_long* prim = vs_battle_setSprite(
+            384, (column * 64) | (top << 16), 64 | (height << 16), ot);
+
+        prim[1] = _get_mode(0, 0, getTPage(2, 1, page, 256));
+        func_800CC5C0(ot, fb);
+
+        for (y = height - 15; y >= 0; y -= 15) {
+            for (x = 32; x >= 0; x -= 32) {
+                prim = vs_battle_setSprite(384, x | (y << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 2, page, 256));
+                prim[4] = vs_getUV(x, y);
+                func_800CC580(ot, page);
+                prim = vs_battle_setSprite(
+                    alpha, (x + column * 64) | ((top + y) << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 1, page, 256));
+                prim[4] = vs_getUV(x, y);
+                func_800CC5C0(ot, fb);
+            }
+        }
+
+        x = image->unkA + 120;
+
+        for (y = 0; y < image->rows; ++y) {
+            int tile = tiles[y * columns + column];
+            int atlas;
+            int uv;
+            int tx;
+
+            if (!tile) {
+                continue;
+            }
+
+            atlas = tile >> 2;
+            prim = vs_battle_setSprite(
+                128, (((y * 30 - height) >> 1) + x - top) << 16, vs_getWH(64, 15), ot);
+            uv = ((tile * 64) & 192) | ((atlas & 31) * 15 << 8) | clut;
+            tx = ((image->unk2 - 18) * 64) + (atlas & 448);
+            prim[4] = uv;
+            prim[1] = _get_mode(0, 0, getTPage(mode, 0, tx, 256));
+        }
+
+        func_800CC580(ot, page);
+
+        for (y = 0; y < height; y += 15) {
+            for (x = 0; x < 64; x += 32) {
+                prim = vs_battle_setSprite(
+                    inverse, (x + column * 64) | ((top + y) << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 0, fb + column * 64, 0));
+                prim[4] = vs_getUV(x, top + y);
+                func_800CC5C0(ot, fb);
+                prim = vs_battle_setSprite(128, x | (y << 16), vs_getWH(32, 15), ot);
+                prim[1] = _get_mode(0, 0, getTPage(2, 0, fb + column * 64, 0));
+                prim[4] = vs_getUV(x, top + y);
+                func_800CC580(ot, page);
+            }
+        }
+
+        vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), 0, 64 | (height << 16));
+        func_800CC580(ot, page);
+    }
+}
 
 void func_800CCA90(int arg0)
 {
@@ -3071,11 +4688,335 @@ int func_800CD3A0(int arg0, int arg1)
     return var_v1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CD3E4);
+#define POINT_X(p) (((short*)&points[p])[0])
+#define POINT_Y(p) (((short*)&points[p])[1])
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CDCBC);
+/* Draws the frame of text box `index` from shape D_800EB588[unk0_8]: header word
+   (b0 vertex count, b1 part count, b2 outline vertex count) followed by one word per
+   part (b0/b1 outline join indices, b2 outline length, b3 polygon count), the packed
+   x/y vertices (flipped by func_800CD3A0) and 4-byte polygons (0xFF = triangle).
+   The original reuses its locals heavily: w/h/flip become polygon vertex 2/3 and the
+   colour, i/n/k/v change roles between the passes. */
+void func_800CD3E4(int index)
+{
+    u_long* ot;
+    u_int part;
+    vs_battle_textBox* box;
+    u_short* verts;
+    u_char* shape;
+    int header;
+    int* points;
+    short* out;
+    u_long* prim;
+    int x;
+    int y;
+    int w;
+    int h;
+    int flip;
+    int i;
+    int n;
+    u_char count;
+    int k;
+    int v;
+    int quad;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CE174);
+    points = (int*)0x1F800088;
+    box = &vs_battle_textBoxes[index];
+    x = box->unk24;
+    y = box->unk26;
+    w = box->unk28;
+    h = box->unk2A;
+    verts = (u_short*)D_800EB588[box->unk0.unk0_8];
+    ot = D_800F51B8 + index * 4;
+    if (verts == NULL) {
+        return;
+    }
+    out = (short*)0x1F800088;
+    flip = box->unk0.unk0_6;
+    shape = (u_char*)verts;
+    part = ((int*)shape)[box->unk0.unk0_12];
+    verts = (u_short*)(shape + (shape[1] + 1) * 4);
+    count = shape[2];
+    header = *(int*)shape;
+
+    for (i = 0; i < count; ++i) {
+        v = func_800CD3A0(verts[i], flip);
+        *out++ = x + (((v & 0xFF) * w) >> 8);
+        *out++ = y + (((v >> 8) * h) >> 8);
+    }
+    if ((u_int)(box->unk0.unk0_12 - 1) < ((header >> 8) & 0xFF)) {
+        v = func_800CD3A0(verts[part & 0xFF], flip);
+        for (; i < (header & 0xFF); ++i) {
+            n = func_800CD3A0(verts[i], flip);
+            k = n >> 8;
+            n &= 0xFF;
+            if (n >= 0x80) {
+                n -= 0x100;
+            }
+            if (k >= 0x80) {
+                k -= 0x100;
+            }
+            *out++ = x + (((n + (v & 0xFF)) * w) >> 8);
+            *out++ = y + (((k + (v >> 8)) * h) >> 8);
+        }
+    } else {
+        part = 0xFFFF;
+    }
+    verts += header & 0xFF;
+
+    i = (header >> 16) & 0xFF;
+    for (n = 0; n < i;) {
+        if (n == (part & 0xFF)) {
+            v = 0;
+            for (k = 0; k < box->unk0.unk0_12; ++k) {
+                v += shape[k * 4 + 2];
+            }
+            for (k = 0; k < shape[box->unk0.unk0_12 * 4 + 2]; ++k) {
+                vs_battle_addTile(ot + 2, 0x40303030, points[n], points[v + k]);
+                n = v + k;
+            }
+            v = n;
+            n = (part >> 8) & 0xFF;
+            vs_battle_addTile(ot + 2, 0x40303030, points[n], points[v]);
+        }
+        v = (n + 1) % i;
+        vs_battle_addTile(ot + 2, 0x40303030, points[n], points[v]);
+        n = n + 1;
+    }
+    vs_battle_insertTpage(0xE2000000, ot + 2);
+
+    prim = vs_scratch.unk0;
+    flip = box->brightness;
+    flip = flip | (flip << 8) | (flip << 16);
+    for (n = 0; n <= shape[1]; ++n) {
+        for (k = 0; k < shape[n * 4 + 3]; ++k) {
+            if ((n != 0) && (n != box->unk0.unk0_12)) {
+                verts += 2;
+                continue;
+            }
+            v = ((u_char*)verts)[0];
+            i = ((u_char*)verts)[1];
+            w = ((u_char*)verts)[2];
+            h = ((u_char*)verts)[3];
+            verts += 2;
+
+            x = POINT_X(v);
+            if (POINT_X(i) < x) {
+                x = POINT_X(i);
+            }
+            if (POINT_X(w) < x) {
+                x = POINT_X(w);
+            }
+            y = POINT_Y(v);
+            if (POINT_Y(i) < y) {
+                y = POINT_Y(i);
+            }
+            if (POINT_Y(w) < y) {
+                y = POINT_Y(w);
+            }
+            quad = (h != 0xFF) * 2;
+            if (quad) {
+                if (POINT_X(h) < x) {
+                    x = POINT_X(h);
+                }
+                if (POINT_Y(h) < y) {
+                    y = POINT_Y(h);
+                }
+            } else {
+                h = 0;
+            }
+
+            prim[0] = (ot[2] & 0xFFFFFF) | ((quad + 7) << 24);
+            prim[1] = flip | ((quad + 9) << 26);
+            x = (x >> 6) << 6;
+            y = (y >> 6) << 6;
+            prim[2] = points[v];
+            prim[3] = ((POINT_X(v) - x) & 0xFF) | (((POINT_Y(v) - y) << 8) & 0xFF00)
+                    | 0x373E0000;
+            prim[4] = points[i];
+            prim[5] =
+                ((POINT_X(i) - x) & 0xFF) | (((POINT_Y(i) - y) << 8) & 0xFF00) | 0x170000;
+            prim[6] = points[w];
+            prim[7] = ((POINT_X(w) - x) & 0xFF) | (((POINT_Y(w) - y) << 8) & 0xFF00);
+            prim[8] = points[h];
+            prim[9] = ((POINT_X(h) - x) & 0xFF) | (((POINT_Y(h) - y) << 8) & 0xFF00);
+            ot[2] = ((u_long)prim << 8) >> 8;
+            prim += quad + 8;
+
+            prim[0] = (ot[1] & 0xFFFFFF) | 0x0C000000;
+            prim[1] = (quad + 8) << 26;
+            prim[2] = ((POINT_X(v) + 2) & 0xFFFF) | ((POINT_Y(v) + 2) << 16);
+            prim[3] = ((POINT_X(i) + 2) & 0xFFFF) | ((POINT_Y(i) + 2) << 16);
+            prim[4] = ((POINT_X(w) + 2) & 0xFFFF) | ((POINT_Y(w) + 2) << 16);
+            if (quad) {
+                prim[5] = ((POINT_X(h) + 2) & 0xFFFF) | ((POINT_Y(h) + 2) << 16);
+            } else {
+                prim[5] = 0;
+            }
+            prim[6] = 0x48000000;
+            prim[7] = prim[2];
+            prim[8] = prim[3];
+            prim[9] = prim[quad + 3];
+            prim[10] = prim[4];
+            prim[11] = prim[2];
+            prim[12] = 0x55555555;
+            ot[1] = ((u_long)prim << 8) >> 8;
+            prim += 13;
+        }
+    }
+    vs_scratch.unk0 = prim;
+    vs_battle_addTile(ot + 2, 0xE1000017, 0xE2000318, 0);
+}
+
+#undef POINT_X
+#undef POINT_Y
+
+void func_800CDCBC(effectTrailState* t, int head, int tail)
+{
+    long xy[4];
+
+    int depth = RotAverage4(&t->previousFirst, &t->currentFirst, &t->previousSecond,
+        &t->currentSecond, &xy[0], &xy[1], &xy[2], &xy[3], &t->projectionDepth,
+        &t->projectionFlags);
+    TrailPacket* p;
+
+    if (depth < 17 || depth >= 2048) {
+        return;
+    }
+
+    p = vs_scratch.unk0;
+    vs_scratch.unk0 = p + 1;
+    setlen(p, 14);
+    p->code = primPolyGT4;
+    p->mode = _get_mode(0, 0, 0);
+    p->endMode = _get_mode(0, 1, 0);
+    p->xy0 = xy[0];
+    p->xy1 = xy[1];
+    p->xy2 = xy[2];
+    p->xy3 = xy[3];
+
+    if ((*(u_int*)&t->config & 0xF00000) == 0x600000) {
+        p->r0 = p->r1 = D_800EC308[t->config.color].r * head - 128;
+        p->g0 = p->g1 = D_800EC308[t->config.color].g * head - 128;
+        p->b0 = p->b1 = D_800EC308[t->config.color].b * head - 128;
+        p->r2 = p->r3 = D_800EC308[t->config.color].r * tail - 128;
+        p->g2 = p->g3 = D_800EC308[t->config.color].g * tail - 128;
+        p->b2 = p->b3 = D_800EC308[t->config.color].b * tail - 128;
+        func_800CF988(p, head, head, 0);
+        addPrim(vs_scratch.unk4 + depth * 4, p);
+    } else {
+        u_char column;
+        u_char row;
+        u_short uv;
+
+        p->code = primPolyGT4SemiTrans;
+        p->tpage = ((*(u_int*)&t->config & 0xF0000) != 0x70000)
+                     ? getTPage(0, 1, 512, 256)
+                     : getTPage(0, 2, 512, 256);
+        p->clut = getClut(768, 240);
+        column = t->config.texture % 3U;
+        row = t->config.texture / 3U;
+        uv = column * 2560 + row * 40;
+        p->uv0 = uv + vs_getUV(104, 72);
+        p->uv2 = uv + vs_getUV(135, 72);
+        p->uv1 = uv + vs_getUV(104, 79);
+        p->uv3 = uv + vs_getUV(135, 79);
+        p->r0 = p->r1 = (D_800EC2E8[t->config.color].r * head) / 8;
+        p->g0 = p->g1 = (D_800EC2E8[t->config.color].g * head) / 8;
+        p->b0 = p->b1 = (D_800EC2E8[t->config.color].b * head) / 8;
+        p->r2 = p->r3 = (D_800EC2E8[t->config.color].r * tail) / 8;
+        p->g2 = p->g3 = (D_800EC2E8[t->config.color].g * tail) / 8;
+        p->b2 = p->b3 = (D_800EC2E8[t->config.color].b * tail) / 8;
+        addPrim(vs_scratch.unk4 + depth * 4, p);
+    }
+}
+
+int func_800CE174(func_800D4910_t* node, u_int mode, int config)
+{
+    effectTrailState* t = node->unk8;
+    int result = 1;
+
+    switch (mode) {
+    case 1:
+        t = vs_main_allocHeapR(sizeof *t);
+        node->unk8 = t;
+        t->index = 0;
+        t->age = 0;
+        *(int*)&t->config = config;
+        break;
+    case 2:
+        t->index = (t->index + 1) & 7;
+        func_800A1AF8(t->config.actor, t->config.bone, &t->first[t->index], 0);
+        func_800A1AF8(t->config.actor, t->config.bone, &t->second[t->index], 1);
+
+        if (++t->age >= 4) {
+            int segments = (t->age < 9) ? t->age - 3 : 5;
+            int phase;
+            int span;
+            int weight;
+
+            SetRotMatrix(&vs_scratch.viewMatrix);
+            SetTransMatrix(&vs_scratch.viewMatrix);
+            vs_battle_splineInterpolate(&t->first[t->index],
+                &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
+                &t->first[(t->index - 3) & 7], -ONE, &t->previousFirst);
+            vs_battle_splineInterpolate(&t->second[t->index],
+                &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
+                &t->second[(t->index - 3) & 7], -ONE, &t->previousSecond);
+            weight = (segments + 1) * 2;
+
+            for (span = -ONE / 2; span < 0; span += ONE / 2) {
+                vs_battle_splineInterpolate(&t->first[t->index],
+                    &t->first[(t->index - 1) & 7], &t->first[(t->index - 2) & 7],
+                    &t->first[(t->index - 3) & 7], span, &t->currentFirst);
+                vs_battle_splineInterpolate(&t->second[t->index],
+                    &t->second[(t->index - 1) & 7], &t->second[(t->index - 2) & 7],
+                    &t->second[(t->index - 3) & 7], span, &t->currentSecond);
+                func_800CDCBC(t, weight / 2, (weight - 1) / 2);
+                --weight;
+                t->previousFirst = t->currentFirst;
+                t->previousSecond = t->currentSecond;
+            }
+
+            for (span = 0; span < segments; ++span) {
+                for (phase = 0; phase < ONE; phase += ONE / 2) {
+                    vs_battle_splineInterpolate(&t->first[(t->index - span) & 7],
+                        &t->first[(t->index - span - 1) & 7],
+                        &t->first[(t->index - span - 2) & 7],
+                        &t->first[(t->index - span - 3) & 7], phase, &t->currentFirst);
+                    vs_battle_splineInterpolate(&t->second[(t->index - span) & 7],
+                        &t->second[(t->index - span - 1) & 7],
+                        &t->second[(t->index - span - 2) & 7],
+                        &t->second[(t->index - span - 3) & 7], phase, &t->currentSecond);
+                    func_800CDCBC(t, weight / 2, (weight - 1) / 2);
+                    --weight;
+                    t->previousFirst = t->currentFirst;
+                    t->previousSecond = t->currentSecond;
+                }
+            }
+        }
+
+        if (t->config.life != 255) {
+            --t->config.life;
+        }
+
+        if (t->config.life == 0) {
+            result = 0;
+        }
+
+        break;
+    case 3:
+        t->config.life = 8;
+        break;
+    case 4:
+        vs_main_freeHeapR(t);
+        node->unk8 = NULL;
+        result = 0;
+        break;
+    }
+
+    return result;
+}
 
 int func_800CE644(int arg0 __attribute__((unused))) { }
 
@@ -3511,7 +5452,55 @@ void func_800CF1A8(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF218);
+char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2)
+{
+    D_800F53B8_t2 spawn;
+    int _[4] __attribute__((unused));
+    char token;
+    int id;
+    int i;
+    D_800F53B8_t* child;
+
+    token = func_800CF49C();
+    spawn.unk0 = (D_800F53B8_t3*)&arg0->unk4;
+    spawn.unk14 = D_800F569C->block8Data;
+    spawn.unk18 = arg0->effectId * 3;
+    spawn.unk1C = NULL;
+    spawn.unk20 = token;
+    D_800F53C0 = *arg0;
+
+    for (i = 0; i < arg0->unk2; ++i) {
+        id = arg0->effectId;
+        if ((id >= 40 && id <= 41) || (id >= 44 && id <= 53)) {
+            spawn.unk4 = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+            spawn.unkC = (D_800F53B8_t3*)&arg0->unk4;
+        } else {
+            switch ((u_short)id) {
+            case 23:
+            case 25:
+                spawn.unk4 = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+                spawn.unkC = (D_800F53B8_t3*)&arg0->unk4;
+                break;
+            default:
+                spawn.unk4 = (D_800F53B8_t3*)&arg0->unk4;
+                spawn.unkC = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+                break;
+            }
+        }
+        spawn.unk8 = (D_800F53B8_t3*)((char*)arg0 + (i * 12 + 16));
+        spawn.unk10 = *(u_short*)((char*)arg0 + i * 12 + 16);
+        child = func_800CF55C(&spawn);
+        child->unkD1C.unk3C = arg2;
+        child->unkD1C.unk38 = arg0->effectId;
+        if (arg0->effectId == 54) {
+            child->unk14_8 = 4;
+        } else {
+            child->unk14_8 = 2;
+        }
+        func_800CF484(3, child);
+    }
+    return token;
+}
 
 int func_800CF3F8(func_800CF0E8_t* arg0, int arg1)
 {
@@ -3701,7 +5690,7 @@ void func_800CF8BC(void)
 
 void func_800CF920(void) { D_800F522C = 0; }
 
-void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
+void func_800CF92C(int arg0, int arg1, int arg2, u_short* arg3)
 {
     int var_v1;
     int temp_a1;
@@ -3725,36 +5714,36 @@ void func_800CF92C(int arg0, int arg1, int arg2, short* arg3)
     *arg3 = var_v1 | temp_a1 << 8;
 }
 
-void func_800CF988(func_800CF988_t* arg0, int arg1, int arg2, int arg3)
+void func_800CF988(TrailPacket* arg0, int arg1, int arg2, int arg3)
 {
     int page;
     int offset;
     int left = 320;
 
-    if (arg0->unk8[0].unk4 < left) {
-        left = arg0->unk8[0].unk4;
+    if ((short)arg0->xy0 < left) {
+        left = (short)arg0->xy0;
     }
 
-    if (arg0->unk8[1].unk4 < left) {
-        left = arg0->unk8[1].unk4;
+    if ((short)arg0->xy1 < left) {
+        left = (short)arg0->xy1;
     }
 
-    if (arg0->unk8[2].unk4 < left) {
-        left = arg0->unk8[2].unk4;
+    if ((short)arg0->xy2 < left) {
+        left = (short)arg0->xy2;
     }
 
-    if (arg0->unk8[3].unk4 < left) {
-        left = arg0->unk8[3].unk4;
+    if ((short)arg0->xy3 < left) {
+        left = (short)arg0->xy3;
     }
 
     left &= ~0x3F;
     page = left / 64;
-    arg0->unk8[1].unkA = ((vs_main_frameBuf & 1) ? page : page + 5) | arg3 | 0x100;
+    arg0->tpage = ((vs_main_frameBuf & 1) ? page : page + 5) | arg3 | 0x100;
     offset = arg1 - left;
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[0].unk4, &arg0->unk8[0].unk8);
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[1].unk4, &arg0->unk8[1].unk8);
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[2].unk4, &arg0->unk8[2].unk8);
-    func_800CF92C(offset, arg2, *(int*)&arg0->unk8[3].unk4, &arg0->unk8[3].unk8);
+    func_800CF92C(offset, arg2, arg0->xy0, &arg0->uv0);
+    func_800CF92C(offset, arg2, arg0->xy1, &arg0->uv1);
+    func_800CF92C(offset, arg2, arg0->xy2, &arg0->uv2);
+    func_800CF92C(offset, arg2, arg0->xy3, &arg0->uv3);
 }
 
 void func_800CFAAC(func_800CFAAC_t* arg0)
@@ -3927,7 +5916,84 @@ void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
     arg1->t[2] = arg0->vz;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFEF0);
+void func_800CFEF0(D_800F53B8_t* arg0)
+{
+    int i;
+    for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
+        func_800D0B30_t* definition = &((func_800D0B30_t*)D_800F569C->block10Data)[i];
+        effectTransformState* state = (void*)&arg0->unk1C[i];
+        state->rotation[0] = definition->unk8;
+        state->rotation[1] = definition->unkC;
+        state->rotation[2] = definition->unk10;
+        state->position.vx = 0;
+        state->position.vy = 0;
+        state->position.vz = 0;
+        func_800CFE7C((void*)&state->facing);
+        state->flags = 0;
+        state->frame = 0;
+        *(int*)&state->actor = 0;
+        if (definition->unk0 & 2) {
+            switch (definition->unk0 & 0x18) {
+            case 0x10:
+                if (arg0->unkD1C.unk24.unk0 == 4) {
+                    state->actor = ((u_char*)&arg0->unkD1C.unk24.unk4)[0];
+                    state->bone = ((u_char*)&arg0->unkD1C.unk24.unk4)[2];
+                } else {
+                    state->actor = 0xFF;
+                    func_800CFE98(
+                        (SVECTOR*)&arg0->unkD1C.unk24.unk4, (void*)&state->attachment);
+                }
+                break;
+            case 8:
+                if (arg0->unkD1C.unkC.unk0 == 4) {
+                    state->actor = ((u_char*)&arg0->unkD1C.unkC.unk4)[0];
+                    state->bone = ((u_char*)&arg0->unkD1C.unkC.unk4)[2];
+                } else {
+                    state->actor = 0xFF;
+                    func_800CFE98(
+                        (SVECTOR*)&arg0->unkD1C.unkC.unk4, (void*)&state->attachment);
+                }
+                break;
+            case 0:
+                state->actor = (u_char)definition->unk2;
+                state->bone = 0;
+                break;
+            }
+            if (!(definition->unk0 & 4)) {
+                state->bone = ((u_char*)&definition->unk2)[1];
+            }
+        }
+        if (definition->unk0 & 0x80) {
+            switch (definition->unk0 & 0xC00) {
+            case 0x800:
+                if (arg0->unkD1C.unk24.unk0 == 4) {
+                    state->targetActor = ((u_char*)&arg0->unkD1C.unk24.unk4)[0];
+                    state->targetBone = ((u_char*)&arg0->unkD1C.unk24.unk4)[2];
+                } else {
+                    state->targetActor = 0xFF;
+                    state->saved = *(SVECTOR*)&arg0->unkD1C.unk24.unk4;
+                }
+                break;
+            case 0x400:
+                if (arg0->unkD1C.unkC.unk0 == 4) {
+                    state->targetActor = ((u_char*)&arg0->unkD1C.unkC.unk4)[0];
+                    state->targetBone = ((u_char*)&arg0->unkD1C.unkC.unk4)[2];
+                } else {
+                    state->targetActor = 0xFF;
+                    state->saved = *(SVECTOR*)&arg0->unkD1C.unkC.unk4;
+                }
+                break;
+            case 0:
+                state->targetActor = ((u_char*)&definition->unk8)[2] & 31;
+                state->targetBone = 0;
+                break;
+            }
+            if (!(definition->unk0 & 0x200)) {
+                state->targetBone = ((u_char*)&definition->unk8)[3];
+            }
+        }
+    }
+}
 
 void func_800D01E4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
 {
@@ -4002,7 +6068,67 @@ void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
+void func_800D05F4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+{
+    SVECTOR control0, control1;
+    VECTOR delta, start, end;
+    MATRIX transform;
+    long distance;
+    int radius0, radius1, angle0, angle1;
+
+    if (arg0->mode & 0x80) {
+        start.vx = arg1->saved.vx;
+        start.vy = arg1->saved.vy;
+        start.vz = arg1->saved.vz;
+        end.vx = arg1->endpoint.vx;
+        end.vy = arg1->endpoint.vy;
+        end.vz = arg1->endpoint.vz;
+    } else {
+        start.vx = arg1->endpoint.vx;
+        start.vy = arg1->endpoint.vy;
+        start.vz = arg1->endpoint.vz;
+        end.vx = arg1->saved.vx;
+        end.vy = arg1->saved.vy;
+        end.vz = arg1->saved.vz;
+    }
+    delta.vx = end.vx - start.vx;
+    delta.vy = end.vy - start.vy;
+    delta.vz = end.vz - start.vz;
+    distance =
+        vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+    control0.vz = distance * (((arg0->shape12 >> 8) & 15) - 8) / 8;
+    control1.vz = distance + distance * ((arg0->shape12 >> 12) - 8) / 8;
+    radius1 = (*(u_short*)&arg0->limit >> 3) & 0x1E0;
+    radius0 = radius1;
+    if (*(u_short*)&arg0->limit & 0xF000) {
+        radius0 = radius1 + rand() % ((*(u_short*)&arg0->limit >> 12) << 5);
+        radius1 += rand() % ((*(u_short*)&arg0->limit >> 12) << 5);
+    }
+    angle1 = ((u_char)arg0->shape12 & 15) << 8;
+    angle0 = angle1;
+    if (arg0->shape12 & 0xF0) {
+        angle0 = angle1 + rand() % ((arg0->shape12 * 16) & 0xF00);
+        angle1 += rand() % ((arg0->shape12 * 16) & 0xF00);
+    }
+    control0.vx = (rcos(angle0) * radius0) >> 12;
+    control0.vy = (rsin(angle0) * radius0) >> 12;
+    control1.vx = (rcos(angle1) * radius1) >> 12;
+    control1.vy = (rsin(angle1) * radius1) >> 12;
+    vs_battle_lookAt(&start, &end, &transform);
+    transform.t[0] = start.vx;
+    transform.t[1] = start.vy;
+    transform.t[2] = start.vz;
+    SetRotMatrix(&transform);
+    SetTransMatrix(&transform);
+    RotTrans(&control0, &start, &distance);
+    RotTrans(&control1, &end, &distance);
+    arg1->control0.vx = start.vx;
+    arg1->control0.vy = start.vy;
+    arg1->control0.vz = start.vz;
+    arg1->control1.vx = end.vx;
+    arg1->control1.vy = end.vy;
+    arg1->control1.vz = end.vz;
+}
 
 void func_800D0984(int arg0, func_800D0C60_t* arg1, int arg2)
 {
@@ -4079,7 +6205,81 @@ void func_800D0C60(int arg0, func_800D0C60_t* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D0D08);
+void func_800D0D08(D_800F53B8_t* arg0)
+{
+    int i;
+    func_800D0B30_t2* scratch = (void*)0x1F8002C8;
+    for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
+        func_800D0B30_t* definition = &((func_800D0B30_t*)D_800F569C->block10Data)[i];
+        effectTransformState* state = (void*)&arg0->unk1C[i];
+        func_800D0B30(definition, (SVECTOR*)state, scratch);
+        if ((definition->unk0 & 0x80) && state->targetActor != 0xFF
+            && ((definition->unk0 & 0x100) || !(state->flags & 2))) {
+            if (state->targetActor == 0x12) {
+                state->saved.vx = D_800F5230.unkE0.vx;
+                state->saved.vy = D_800F5230.unkE0.vy;
+                state->saved.vz = D_800F5230.unkE0.vz;
+            } else {
+                func_800A1AF8(state->targetActor, state->targetBone, &state->saved, 0);
+            }
+            state->flags |= 2;
+        }
+        if (state->actor != 0xFF && ((definition->unk0 & 0x20) || !(state->flags & 1))) {
+            func_800D0C60((int)arg0, (void*)state);
+            state->flags |= 1;
+        }
+        if (definition->unk0 & 2) {
+            if ((definition->unk0 & 0xC000) == 0x4000) {
+                ((int*)&state->attachment)[0] = ((int*)&state->attachment)[4] =
+                    rcos(state->saved.pad);
+                ((int*)&state->attachment)[1] = rsin(state->saved.pad);
+                ((int*)&state->attachment)[3] = -((int*)&state->attachment)[1];
+                ((int*)&state->attachment)[2] = ONE;
+            }
+            CompMatrix(&state->attachment, &scratch->unk48, &state->world);
+        } else {
+            state->world = scratch->unk48;
+        }
+        if ((definition->unk0 & 0x3000) == 0x2000 && !(state->flags & 8)) {
+            func_800D05F4((void*)definition, (void*)state);
+            state->flags |= 8;
+        }
+        if (definition->unk0 & 0x80) {
+            func_800D0548((void*)definition, (void*)state);
+        }
+        if (definition->unk0 & 0x40) {
+            state->world.t[0] = state->position.vx;
+            state->world.t[1] = state->position.vy;
+            state->world.t[2] = state->position.vz;
+        } else {
+            state->world.t[0] += state->position.vx;
+            state->world.t[1] += state->position.vy;
+            state->world.t[2] += state->position.vz;
+        }
+        if ((short)definition->unk0 & 0x8000) {
+            if (definition->unk0 & 0x4000) {
+                scratch->target.vx = state->saved.vx;
+                scratch->target.vy = state->saved.vy;
+                scratch->target.vz = state->saved.vz;
+            } else {
+                scratch->target.vx = state->attachment.t[0];
+                scratch->target.vy = state->attachment.t[1];
+                scratch->target.vz = state->attachment.t[2];
+            }
+            if (scratch->target.vx != state->world.t[0]
+                || scratch->target.vy != state->world.t[1]
+                || scratch->target.vz != state->world.t[2]) {
+                vs_battle_lookAt(
+                    (VECTOR*)state->world.t, &scratch->target, &state->facing);
+                state->facing.t[0] = state->world.t[0];
+                state->facing.t[1] = state->world.t[1];
+                state->facing.t[2] = state->world.t[2];
+            }
+            CompMatrix(&state->facing, &scratch->unk48, &state->world);
+        }
+        CompMatrix(&vs_scratch.viewMatrix, &state->world, &state->view);
+    }
+}
 
 void func_800D1104(int arg0)
 {
@@ -4293,7 +6493,43 @@ void func_800D1B18(D_800F54D8_t* arg0)
     arg0->farClip = vs_scratch.camera.farClip;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1B80);
+void func_800D1B80(D_800F54D8_t* camera)
+{
+    VECTOR offset, position;
+    MATRIX unusedTransform;
+    SVECTOR unusedRotation;
+    int dx, dz, yaw, pitch, horizontal;
+    dx = (camera->position.vx - camera->lookAt.vx) >> 12;
+    dz = (camera->position.vz - camera->lookAt.vz) >> 12;
+    yaw = ratan2(dx, dz);
+    offset.vx = rcos(yaw) * (camera->unk20 >> 12);
+    offset.vz = -rsin(yaw) * (camera->unk20 >> 12);
+    pitch = ratan2(
+        (camera->position.vy - camera->lookAt.vy) >> 12, vs_gte_rsqrt(dx * dx + dz * dz));
+    offset.vy = -rsin(pitch) * (camera->unk28 >> 12);
+    horizontal = -rcos(pitch) * (camera->unk28 >> 12);
+    offset.vy += rcos(pitch) * (camera->unk24 >> 12);
+    horizontal += -rsin(pitch) * (camera->unk24 >> 12);
+    offset.vx += rsin(yaw) * (horizontal >>= 12);
+    offset.vz += rcos(yaw) * horizontal;
+    position.vx = camera->position.vx + offset.vx;
+    position.vy = camera->position.vy + offset.vy;
+    position.vz = camera->position.vz + offset.vz;
+    vs_battle_setCameraPosition(&position);
+    position.vx = camera->lookAt.vx + offset.vx;
+    position.vy = camera->lookAt.vy + offset.vy;
+    position.vz = camera->lookAt.vz + offset.vz;
+    vs_battle_setCameraLookAt(&position);
+    {
+        int rollOffset = camera->unk2C - 0x8000;
+        vs_battle_setCameraRoll(camera->roll + rollOffset);
+    }
+    vs_battle_setNearClip(camera->nearClip);
+    vs_battle_setProjectionDistance(camera->projectionDistance);
+    /* This original call site does not initialize the setter's second argument. */
+    ((void (*)())vs_battle_setFarClip)(camera->farClip);
+    func_8007ACB0();
+}
 
 void func_800D1DE4(int arg0) { D_800F5518 |= arg0; }
 
@@ -4557,7 +6793,7 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
         func_800CE644(0x14);
     }
 
-    func_800D6CCC(node->unk3C);
+    func_800D6CCC((int*)&node->unk3C);
 
     node->unk77 = 0xFF;
     node->previous = NULL;
@@ -4660,7 +6896,582 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
     arg1->unk14 = arg0->unk98.vz + arg0->unk34.vz * ONE;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2ADC);
+/* Uniform integer between a and b (inclusive) using 30 random bits. */
+#define RAND_UNIFORM_WIDE(a, b)                                                    \
+    ((a) == (b)  ? (a)                                                             \
+     : (b) < (a) ? (rand() + (rand() << 16)) % ((a) - (b) + 1) + (b)               \
+                 : (rand() + (rand() << 16)) % ((b) - (a) + 1) + (a))
+
+void func_800D2ADC(
+    D_800F53B8_t* arg0, int event, int arg2, int arg3, func_800FB4C0_t* parent)
+{
+    int _[4] __attribute__((unused));
+    int frame;
+    int count;
+    int i;
+    int sample;
+    int step;
+    int angle;
+    int x;
+    int z;
+    int value;
+    func_800D2904_t* node;
+    func_800D2904_t* first;
+    MATRIX* matrix;
+    int prevX;
+    int prevZ;
+    int range;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg0* def = &D_800F569C->block5Data->unk4[event];
+
+    scratch->flags = def->flags;
+    scratch->unk28 = scratch->flags;
+    scratch->unk168 = def->unkC8;
+    scratch->unk16C = def->unkC9;
+
+    if (arg2 != 0) {
+        scratch->unk180 = arg2;
+    } else if (def->transparencyCurve != 0) {
+        scratch->unk180 = def->transparencyCurve;
+    } else if (parent != NULL) {
+        scratch->unk180 = parent->unk60;
+    } else {
+        scratch->unk180 = 4;
+    }
+
+    if (parent != NULL && arg3 == 0) {
+        arg3 = parent->unk60_8 & 0xF;
+    }
+
+    frame = arg0->unk14_16;
+    sample = def->unk16;
+    if (frame % func_800CFE1C(def->unkC0, D_800F5330[sample]) != 0) {
+        return;
+    }
+
+    gte_zrtr();
+
+    matrix = &arg0->unk1C[scratch->unk168].unk38;
+    sample = def->unk15;
+    count = func_800CFE1C(def->unkBC, D_800F5330[sample]);
+    if (count + D_800F55F8 >= D_800F55F0) {
+        count = D_800F55F0 - D_800F55F8;
+    }
+
+    for (i = 0; i < count; ++i) {
+        node = func_800D27F0(arg0);
+        node->unk6A = scratch->unk168;
+        node->unk6B = scratch->unk16C;
+        func_800D6CF0(&node->unk3C, def->unk1, def->unk0);
+    }
+
+    sample = def->unk8;
+    vs_battle_lerpVector(def->unk18, D_800F5330[sample], &scratch->unk98);
+    first = node;
+
+    switch (scratch->flags & 7) {
+    case 0:
+        break;
+    case 1:
+        vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
+        break;
+    case 2:
+        scratch->unk98.vx += matrix->t[0];
+        scratch->unk98.vy += matrix->t[1];
+        scratch->unk98.vz += matrix->t[2];
+        break;
+    case 4:
+        if (parent != NULL) {
+            scratch->unk98.vx += parent->unkC.vx >> 12;
+            scratch->unk98.vy += parent->unkC.vy >> 12;
+            scratch->unk98.vz += parent->unkC.vz >> 12;
+        }
+        break;
+    }
+
+    scratch->unk98.vx <<= 12;
+    scratch->unk98.vy <<= 12;
+    scratch->unk98.vz <<= 12;
+
+    sample = def->unk9;
+    vs_battle_lerpVector(def->unk24, D_800F5330[sample], &scratch->unkA8);
+    node = first;
+    sample = def->unk17;
+    sample = func_800CFE1C(def->unk30, D_800F5330[sample]);
+    SetRotMatrix(matrix);
+    gte_zrtr();
+
+    switch (scratch->flags & 0x38) {
+    case 0:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = (scratch->unkA8.vy * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            angle = rand();
+            scratch->unk174 = rsin(angle);
+            scratch->unk17C = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                scratch->unk2C.vy =
+                    vs_battle_randUniformInt(scratch->unkA8.vy, scratch->unkD8.vy);
+                scratch->unk2C.vz =
+                    vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                goto scale0;
+            case 0x800:
+            case 0x1000:
+                vs_battle_vecToSvec(&scratch->unkA8, &scratch->unk2C);
+            scale0:
+                scratch->unk2C.vx =
+                    (((scratch->unk2C.vx * scratch->unk178) >> 12) * scratch->unk17C)
+                    >> 12;
+                scratch->unk2C.vy =
+                    (((scratch->unk2C.vy * scratch->unk178) >> 12) * scratch->unk174)
+                    >> 12;
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 8:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = (scratch->unkA8.vy * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                angle = rand();
+                if (angle & 1) {
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                } else {
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(-scratch->unkA8.vx, -scratch->unkD8.vx);
+                }
+                if (angle & 2) {
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, scratch->unkD8.vy);
+                } else {
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(-scratch->unkA8.vy, -scratch->unkD8.vy);
+                }
+                if (angle & 4) {
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                } else {
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(-scratch->unkA8.vz, -scratch->unkD8.vz);
+                }
+                break;
+            case 0x800:
+                switch (rand() % 6) {
+                case 0:
+                    scratch->unk2C.vx = scratch->unkA8.vx;
+                    goto face_x;
+                case 1:
+                    scratch->unk2C.vx = -scratch->unkA8.vx;
+                face_x:
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
+                    break;
+                case 2:
+                    scratch->unk2C.vy = scratch->unkA8.vy;
+                    goto face_y;
+                case 3:
+                    scratch->unk2C.vy = -scratch->unkA8.vy;
+                face_y:
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
+                    break;
+                case 4:
+                    scratch->unk2C.vz = scratch->unkA8.vz;
+                    goto face_z;
+                case 5:
+                    scratch->unk2C.vz = -scratch->unkA8.vz;
+                face_z:
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    break;
+                }
+                break;
+            case 0x1000:
+                D_800EC328 = (D_800EC328 + 1) & 7;
+                scratch->unk2C.vx =
+                    (D_800EC328 & 1) ? scratch->unkA8.vx : -scratch->unkA8.vx;
+                scratch->unk2C.vy =
+                    (D_800EC328 & 2) ? scratch->unkA8.vy : -scratch->unkA8.vy;
+                scratch->unk2C.vz =
+                    (D_800EC328 & 4) ? scratch->unkA8.vz : -scratch->unkA8.vz;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 16:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = scratch->unkA8.vy;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                scratch->unk2C.vz =
+                    vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                goto scale16;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale16:
+                scratch->unk2C.vy = vs_gte_rsqrt(
+                    RAND_UNIFORM_WIDE(scratch->unkA8.vy * scratch->unkA8.vy, 0));
+                scratch->unk2C.vx =
+                    (((scratch->unk2C.vx * scratch->unk178) >> 12) * scratch->unk2C.vy)
+                    / scratch->unkA8.vy;
+                scratch->unk2C.vz =
+                    (((scratch->unk2C.vz * scratch->unk170) >> 12) * scratch->unk2C.vy)
+                    / scratch->unkA8.vy;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 24:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vx * scratch->unkA8.vx,
+                        scratch->unkD8.vx * scratch->unkD8.vx));
+                scratch->unk2C.vz =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vz * scratch->unkA8.vz,
+                        scratch->unkD8.vz * scratch->unkD8.vz));
+                goto scale24;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale24:
+                scratch->unk2C.vx = (scratch->unk2C.vx * scratch->unk178) >> 12;
+                scratch->unk2C.vy = vs_battle_randUniformInt(scratch->unkA8.vy, 0);
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 32:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vx * scratch->unkA8.vx,
+                        scratch->unkD8.vx * scratch->unkD8.vx));
+                scratch->unk2C.vz =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vz * scratch->unkA8.vz,
+                        scratch->unkD8.vz * scratch->unkD8.vz));
+                goto scale32;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale32:
+                scratch->unk2C.vy = 0;
+                scratch->unk2C.vx = (scratch->unk2C.vx * scratch->unk178) >> 12;
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 40:
+        scratch->unk184 = 4;
+        scratch->unk188 = 4;
+        goto ring;
+
+    case 48:
+        scratch->unk184 = def->unkCA;
+        if (scratch->unk184 == 0) {
+            scratch->unk184 = 1;
+        }
+        scratch->unk188 = def->unkCB;
+        if (scratch->unk188 == 0) {
+            scratch->unk188 = scratch->unk184;
+        }
+    ring:
+        step = ONE / scratch->unk184;
+        if ((scratch->flags & 0x1800) != 0x1000) {
+            D_800EC328 %= scratch->unk188;
+            angle = D_800EC328 * step + 0x200;
+            prevX = (rcos(angle) * scratch->unkA8.vx) >> 12;
+            prevZ = (rsin(angle) * scratch->unkA8.vz) >> 12;
+        }
+        for (i = 0; i < count; ++i) {
+            range = 0x1194 - sample;
+            D_800EC328 = (D_800EC328 + 1) % scratch->unk188;
+            angle = D_800EC328 * step + 0x200;
+            x = (rcos(angle) * scratch->unkA8.vx) >> 12;
+            z = (rsin(angle) * scratch->unkA8.vz) >> 12;
+            if ((scratch->flags & 0x1800) == 0x1000) {
+                scratch->unk2C.vx = x;
+                scratch->unk2C.vz = z;
+            } else {
+                value = rand() >> 3;
+                scratch->unk2C.vx = (((x - prevX) * value) >> 12) + prevX;
+                scratch->unk2C.vz = (((z - prevZ) * value) >> 12) + prevZ;
+                prevX = x;
+                prevZ = z;
+                if ((scratch->flags & 0x1800) != 0x800) {
+                    value = SquareRoot12(((rand() * range) >> 15) + sample);
+                    if (value > ONE) {
+                        value = ONE;
+                    }
+                    scratch->unk2C.vx = (scratch->unk2C.vx * value) >> 12;
+                    scratch->unk2C.vz = (scratch->unk2C.vz * value) >> 12;
+                }
+            }
+            scratch->unk2C.vy = 0;
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unkC;
+    vs_battle_lerp2DVector(def->unk94[2], D_800F5330[sample], scratch->unk118);
+    scratch->unk118[0] <<= 5;
+    scratch->unk118[1] <<= 5;
+    sample = def->unkB;
+    vs_battle_lerpVector(def->unk34[1], D_800F5330[sample], &scratch->unkC8);
+    sample = def->unkA;
+    vs_battle_lerpVector(def->unk34[0], D_800F5330[sample], &scratch->unkE8);
+    node = first;
+
+    switch (scratch->flags & 0xE000) {
+    case 0x4000:
+        if (arg0->unkD1C.unkC.unk0 == 4) {
+            func_800A1AF8(((u_char*)&arg0->unkD1C.unkC.unk4)[0],
+                ((u_char*)&arg0->unkD1C.unkC.unk4)[2], &scratch->unk2C, 0);
+        } else {
+            scratch->unk2C = *(SVECTOR*)&arg0->unkD1C.unkC.unk4;
+        }
+        goto aim;
+    case 0x6000:
+        if (arg0->unkD1C.unk24.unk0 == 4) {
+            func_800A1AF8(((u_char*)&arg0->unkD1C.unk24.unk4)[0],
+                ((u_char*)&arg0->unkD1C.unk24.unk4)[2], &scratch->unk2C, 0);
+        } else {
+            scratch->unk2C = *(SVECTOR*)&arg0->unkD1C.unk24.unk4;
+        }
+    aim:
+        vs_battle_svecToVec(&scratch->unk2C, &scratch->unk34);
+        scratch->unk44.vx = scratch->unk98.vx >> 12;
+        scratch->unk44.vy = scratch->unk98.vy >> 12;
+        scratch->unk44.vz = scratch->unk98.vz >> 12;
+        vs_battle_lookAt(&scratch->unk44, &scratch->unk34, &scratch->unk64);
+        matrix = &scratch->unk64;
+    case 0:
+        for (i = 0; i < count; ++i) {
+            scratch->unk2C.vx =
+                scratch->unkE8.vx
+                + vs_battle_randUniformInt(scratch->unkC8.vx, -scratch->unkC8.vx);
+            scratch->unk2C.vy =
+                scratch->unkE8.vy
+                + vs_battle_randUniformInt(scratch->unkC8.vy, -scratch->unkC8.vy);
+            scratch->unk2C.vz =
+                scratch->unkE8.vz
+                + vs_battle_randUniformInt(scratch->unkC8.vz, -scratch->unkC8.vz);
+            RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
+            gte_SetRotMatrix(scratch);
+            *(int*)&scratch->unk2C = 0;
+            scratch->unk2C.vz = ONE;
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            if (scratch->flags & 0x40000) {
+                vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
+                gte_SetRotMatrix(matrix);
+                ApplyRotMatrix(&scratch->unk2C, &scratch->unkB8);
+            }
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node = node->next;
+        }
+        break;
+    case 0x8000:
+        for (i = 0; i < count; ++i) {
+            scratch->unk2C.vx =
+                scratch->unkE8.vx
+                + vs_battle_randUniformInt(scratch->unkC8.vx, -scratch->unkC8.vx);
+            scratch->unk2C.vy =
+                scratch->unkE8.vy
+                + vs_battle_randUniformInt(scratch->unkC8.vy, -scratch->unkC8.vy);
+            scratch->unk2C.vz =
+                scratch->unkE8.vz
+                + vs_battle_randUniformInt(scratch->unkC8.vz, -scratch->unkC8.vz);
+            RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
+            gte_SetRotMatrix(scratch);
+            *(int*)&scratch->unk2C = 0;
+            scratch->unk2C.vz = ONE;
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            gte_SetRotMatrix(matrix);
+            vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node = node->next;
+        }
+        break;
+    case 0x2000:
+        for (i = 0; i < count; ++i) {
+            scratch->unkB8.vx = (scratch->unk98.vx - node->unkC) >> 12;
+            scratch->unkB8.vy = (scratch->unk98.vy - node->unk10) >> 12;
+            scratch->unkB8.vz = (scratch->unk98.vz - node->unk14) >> 12;
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            if (scratch->unkB8.vx != 0 || scratch->unkB8.vy != 0
+                || scratch->unkB8.vz != 0) {
+                VectorNormal(&scratch->unkB8, &scratch->unkB8);
+                node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
+                node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
+                node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            } else {
+                node->unk18[1] = scratch->unk120;
+                node->unk18[2] = 0;
+                node->unk18[0] = 0;
+            }
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unkD;
+    vs_battle_lerpSvector(def->unk34[2], D_800F5330[sample], &scratch->unkF8);
+    vs_battle_lerpSvector(def->unk34[3], D_800F5330[sample], &scratch->unk100);
+    sample = def->unkE;
+    vs_battle_lerpSvector(def->unk34[4], D_800F5330[sample], &scratch->unk108);
+    vs_battle_lerpSvector(def->unk34[5], D_800F5330[sample], &scratch->unk110);
+    node = first;
+    for (i = 0; i < count; ++i) {
+        node->unk24[0] = vs_battle_randUniformInt(scratch->unkF8.vx, scratch->unk100.vx);
+        node->unk24[1] = vs_battle_randUniformInt(scratch->unkF8.vy, scratch->unk100.vy);
+        node->unk24[2] = vs_battle_randUniformInt(scratch->unkF8.vz, scratch->unk100.vz);
+        node->unk30[0] = vs_battle_randUniformInt(scratch->unk108.vx, scratch->unk110.vx);
+        node->unk30[1] = vs_battle_randUniformInt(scratch->unk108.vy, scratch->unk110.vy);
+        node->unk30[2] = vs_battle_randUniformInt(scratch->unk108.vz, scratch->unk110.vz);
+        node = node->next;
+    }
+
+    sample = def->unk12;
+    vs_battle_lerp2DVector(def->unk94[0], D_800F5330[sample], scratch->unk124);
+    sample = def->unk13;
+    vs_battle_lerp2DVector(def->unk94[1], D_800F5330[sample], scratch->unk12C);
+    sample = def->unk14;
+    vs_battle_lerp2DVector(def->unk94[4], D_800F5330[sample], scratch->unk134);
+    node = first;
+    for (i = 0; i < count; ++i) {
+        node->unk8 = vs_battle_randUniformInt(scratch->unk124[0], scratch->unk124[1]);
+        node->unkA = vs_battle_randUniformInt(scratch->unk12C[0], scratch->unk12C[1]);
+        node->lifetime = vs_battle_randUniformInt(scratch->unk134[0], scratch->unk134[1]);
+        node = node->next;
+    }
+
+    sample = def->unkF;
+    vs_battle_lerpSvector(def->unk34[6], D_800F5330[sample], &scratch->unk13C);
+    sample = def->unk10;
+    vs_battle_lerpSvector(def->unk34[7], D_800F5330[sample], &scratch->unk144);
+    node = first;
+
+    switch (scratch->flags & 0x1C0) {
+    case 0:
+    case 0x40:
+        for (i = 0; i < count; ++i) {
+            node->unk62[0] = scratch->unk13C.vx;
+            node->unk62[1] = scratch->unk13C.vy;
+            node->unk62[2] = scratch->unk13C.vz;
+            node = node->next;
+        }
+        break;
+    case 0xC0:
+        for (i = 0; i < count; ++i) {
+            node->unk62[0] =
+                arg0->unk1C[scratch->unk16C].unk38.t[0] + scratch->unk13C.vx
+                + vs_battle_randUniformInt(scratch->unk144.vx, -scratch->unk144.vy);
+            node->unk62[1] =
+                arg0->unk1C[scratch->unk16C].unk38.t[1] + scratch->unk13C.vy
+                + vs_battle_randUniformInt(scratch->unk144.vy, -scratch->unk144.vy);
+            node->unk62[2] =
+                arg0->unk1C[scratch->unk16C].unk38.t[2] + scratch->unk13C.vz
+                + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz);
+            node = node->next;
+        }
+        break;
+    case 0x80:
+    case 0x140:
+        for (i = 0; i < count; ++i) {
+            node->unk62[2] = 0;
+            node->unk62[1] = 0;
+            node->unk62[0] = 0;
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unk11;
+    vs_battle_lerp2DVector(def->unk94[3], D_800F5330[sample], scratch->unk14C);
+    node = first;
+    scratch->unk154.packed = *(int*)&def->rCurve;
+    scratch->unk154.fields.age = node->unk77;
+    for (i = 0; i < count; ++i) {
+        node->unk5C = scratch->flags;
+        value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
+        *(int*)node->unk74 = scratch->unk154.packed;
+        node->unk70 = value;
+        *(u_short*)&node->endEvent = *(u_short*)&def->unk2;
+        node->unk60_0 = scratch->unk180;
+        node->unk60_8 = arg3;
+        node = node->next;
+    }
+}
 
 void func_800D46DC(int arg0, D_800F53B8_t* arg1)
 {
@@ -4814,7 +7625,38 @@ int func_800D4BD0(D_800F53B8_t* arg0)
 }
 
 int func_800D4C18(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4C18);
+int func_800D4C18(D_800F53B8_t* arg0)
+{
+    func_800D2904_t* next = arg0->unk18;
+    func_800D2904_t* node;
+
+    func_800D52A4(next);
+    /* The original caller supplies arguments to this argument-free wrapper. */
+    ((void (*)())func_800D6E24)(arg0->unk18, (void*)0x1F80015C);
+    node = next;
+    while (next != NULL) {
+        next = node->next;
+        ++node->unk77;
+        if (node->tickEvent != 0) {
+            func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
+        }
+        if (node->lifetime == -1) {
+            if (node->unk3C.unk6 == 0) {
+                if (node->endEvent != 0) {
+                    func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
+                }
+                func_800D2888(node, arg0);
+            }
+        } else if (--node->lifetime == 0) {
+            if (node->endEvent != 0) {
+                func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
+            }
+            func_800D2888(node, arg0);
+        }
+        node = next;
+    }
+    return 1;
+}
 
 int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
 {
@@ -4955,7 +7797,49 @@ void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D52A4);
+void func_800D52A4(func_800D2904_t* node)
+{
+    VECTOR direction;
+    effectMotionState* state;
+    int damping;
+    int drag = D_800F5618;
+    int gravityX = D_800F5620.unk0;
+    int gravityY = D_800F5620.unk4;
+    int gravityZ = D_800F5620.unk8;
+
+    for (; node != NULL; node = node->next) {
+        state = (effectMotionState*)&node->unk8;
+        damping = node->unk8 - drag;
+        state->vx = (state->vx * damping + (state->fx << 12)) / node->unk8
+                  + ((gravityX * state->gravityScale) >> 12);
+        state->x += state->vx;
+        state->vy = (state->vy * damping + (state->fy << 12)) / node->unk8
+                  + ((gravityY * state->gravityScale) >> 12);
+        state->y += state->vy;
+        state->vz = (state->vz * damping + (state->fz << 12)) / node->unk8
+                  + ((gravityZ * state->gravityScale) >> 12);
+        state->z += state->vz;
+        damping = ((effectAttractionView*)node)->attraction;
+        if (damping != 0) {
+            direction.vx = ((effectAttractionView*)node)->targetX - (state->x >> 12);
+            direction.vy = ((effectAttractionView*)node)->targetY - (state->y >> 12);
+            direction.vz = ((effectAttractionView*)node)->targetZ - (state->z >> 12);
+            if (direction.vx != 0 || direction.vy != 0 || direction.vz != 0) {
+                VectorNormal(&direction, &direction);
+                direction.vx = (direction.vx * damping) >> 12;
+                direction.vy = (direction.vy * damping) >> 12;
+                direction.vz = (direction.vz * damping) >> 12;
+            }
+            state->fx += state->ax + direction.vx;
+            state->fy += state->ay + direction.vy;
+            state->fz += state->az + direction.vz;
+        } else {
+            state->fx += state->ax;
+            state->fy += state->ay;
+            state->fz += state->az;
+        }
+    }
+}
 
 void* _getPFileBlock3section(pFileBlock3* arg0, int arg1)
 {
@@ -5057,9 +7941,96 @@ int func_800D57FC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5904);
+int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    SVECTOR position;
+    u_int* commands = (u_int*)arg1->unk0;
+    u_int command = commands[arg1->unk6];
+    if ((command & 0x1FF) == arg0->unkD1C.unk30->unk2) {
+        int kind = (command >> 18) & 3;
+        if (kind == 2) {
+            if (D_800F569C->unkCC != 0) {
+                func_80046578(D_800F569C->unkCC);
+            }
+        } else {
+            int bank = kind == 0 ? 0x7E : 0xF00000;
+            if (((command >> 20) & 3) == 0) {
+                vs_main_playSfxDefault(bank, (command >> 9) & 0x1FF);
+            } else {
+                position.vx = arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[0];
+                position.vy = arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[1];
+                position.vz = arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[2];
+                vs_main_panSfx(bank, (commands[arg1->unk6] >> 9) & 0x1FF, &position);
+            }
+        }
+        return func_800D5780(arg1);
+    }
+    return 1;
+}
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
+#define STATE ((timedSpawnState*)arg1)
+int func_800D5A98(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
+{
+    D_800F53B8_t2 spawn;
+    D_800F53B8_t* child;
+    struct {
+        u_char actors[6];
+        u_char final, frame, delay;
+    }* event = (void*)STATE->data;
+    int result = 1;
+
+    if (event->frame <= arg0->unkD1C.unk30->unk2) {
+        if (STATE->index < ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+            if (STATE->delay == 0) {
+                do {
+                    spawn.unk14 = D_800F569C->block8Data;
+                    spawn.unk18 = arg2;
+                    spawn.unk10 = 0;
+                    spawn.unk0 = D_800F569C->unkD0 + 4;
+                    spawn.unk4 = D_800F569C->unkD0 + 4;
+                    spawn.unk8 = D_800F569C->unkD0 + (STATE->index * 12 + 16);
+                    spawn.unkC = D_800F569C->unkD0 + (STATE->index * 12 + 16);
+                    spawn.unk1C = arg0;
+                    spawn.unk20 = arg0->unk14_0;
+                    child = func_800CE83C(&spawn);
+                    ++arg0->unk14_11;
+                    if (spawn.unk8->unk0.unk0 == 4) {
+                        child->unk10[1] = event->actors[((u_char*)spawn.unk8)[5]];
+                    } else {
+                        child->unk10[1] = event->actors[0];
+                    }
+                    if (++STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+                        break;
+                    }
+                    STATE->delay += event->delay;
+                } while (STATE->delay == 0);
+            }
+            if (STATE->delay != 0) {
+                --STATE->delay;
+            }
+        } else if (STATE->index == ((func_800D6894_t*)D_800F569C->unkD0)->unk2) {
+            if ((*(u_int*)((char*)arg0 + 0x14) & 0xF800) == 0) {
+                spawn.unk14 = D_800F569C->block8Data;
+                spawn.unk18 = arg2;
+                spawn.unk10 = 0;
+                spawn.unk0 = D_800F569C->unkD0 + 4;
+                spawn.unk4 = D_800F569C->unkD0 + 4;
+                spawn.unk8 = D_800F569C->unkD0 + 16;
+                spawn.unkC = D_800F569C->unkD0 + 16;
+                spawn.unk1C = arg0;
+                spawn.unk20 = arg0->unk14_0;
+                child = func_800CE83C(&spawn);
+                ++arg0->unk14_11;
+                child->unk10[1] = event->final;
+                ++STATE->index;
+            }
+        } else {
+            result = 0;
+        }
+    }
+    return result;
+}
+#undef STATE
 
 int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {
@@ -5073,7 +8044,49 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5E00);
+int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
+{
+    int result = 1;
+    u_short* data = (u_short*)event->unk0;
+    u_short packed = data[event->unk6];
+    int play = 0;
+    int i;
+    if ((packed & 511) != actor->unkD1C.unk30->unk2) {
+        return result;
+    }
+    switch (packed >> 14) {
+    case 1:
+        if (actor->unkD1C.unk0.unk0 == 4 && (u_char)actor->unkD1C.unk0.unk4.unk0 == 0) {
+            play = 1;
+        }
+        break;
+    case 2:
+        if (actor->unkD1C.unk18.unk0 == 4 && (u_char)actor->unkD1C.unk18.unk4.unk0 == 0) {
+            play = 1;
+        }
+        break;
+    case 0:
+        play = 1;
+        break;
+    case 3:
+        for (i = 0; i < ((soundEventTargets*)D_800F569C->unkD0)->count; ++i) {
+            if (((soundEventTargets*)D_800F569C->unkD0)->target[i].unk0 == 4
+                && (u_char)((soundEventTargets*)D_800F569C->unkD0)->target[i].unk4.unk0
+                       == 0) {
+                play = 1;
+                break;
+            }
+        }
+        break;
+    }
+    if (play) {
+        char* sound = (char*)D_800F569C->block11Data;
+        func_800433B4(
+            sound + ((short*)(sound + 4))[(data[event->unk6] >> 9) & 31], 255, 1);
+    }
+    result = func_800D5780(event);
+    return result;
+}
 
 int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 {

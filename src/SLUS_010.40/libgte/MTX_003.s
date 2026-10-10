@@ -1,6 +1,10 @@
 .include "macro.inc"
 .set noreorder
 
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
+# hasm: temp register usage
+# hasm: single-nop gte hazard
 glabel CompMatrix
     lw      $t0, 0($a0)
     lw      $t1, 4($a0)
@@ -20,7 +24,7 @@ glabel CompMatrix
     mtc2    $t0, $0
     mtc2    $t2, $1
     .nop
-    MVMVA   1, 0, 0, 3, 0
+    RTV0
     lhu     $t0, 2($a1)
     lw      $t1, 8($a1)
     lh      $t2, 0xE($a1)
@@ -32,7 +36,7 @@ glabel CompMatrix
     mtc2    $t0, $0
     mtc2    $t2, $1
     .nop
-    MVMVA   1, 0, 0, 3, 0
+    RTV0
     lhu     $t0, 4($a1)
     lw      $t1, 8($a1)
     lw      $t2, 0x10($a1)
@@ -44,7 +48,7 @@ glabel CompMatrix
     mtc2    $t0, $0
     mtc2    $t2, $1
     .nop
-    MVMVA   1, 0, 0, 3, 0
+    RTV0
     and     $t3, 0xFFFF
     sll     $t6, 16
     or      $t6, $t3
@@ -64,7 +68,7 @@ glabel CompMatrix
     mtc2    $t5, $0
     mtc2    $t2, $1
     .nop
-    MVMVA   1, 0, 0, 3, 0
+    RTV0
     sll     $t4, 16
     and     $t0, 0xFFFF
     or      $t0, $t4

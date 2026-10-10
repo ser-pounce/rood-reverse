@@ -9,12 +9,14 @@ $(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
 
 $(buildDir)/%.c.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.c.o: ASFLAGS += -no-pad-sections
+# Split units assembled from hasm (NNNNN.s in src) keep -no-pad-sections as before the .c.o/.s.o suffix change.
+$(buildDir)/%.s.o: ASFLAGS += -no-pad-sections
 
-$(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14): CC1VER := 2.7.2-cdk
+$(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14 49268): CC1VER := 2.7.2-cdk
 $(patsubst %,$(buildDir)/%.c.o,146C 4A0A8 5BF94):  CC1FLAGS += -Wno-return-type -Wno-uninitialized
 $(buildDir)/40564.c.o $(buildDir)/573B8.c.o: CC1FLAGS += -Wno-return-type
 $(buildDir)/30DB0.c.o: CC1FLAGS += -Wno-return-type -Wno-sign-compare -Wno-uninitialized
-$(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 6E644): CC1FLAGS += -Wno-uninitialized
+$(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 6F014): CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/$(battle.prg)/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

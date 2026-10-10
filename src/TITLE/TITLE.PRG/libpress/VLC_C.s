@@ -13,6 +13,9 @@ D_80075CBC:
 
 .text
 
+# hasm: trapping arithmetic
+# hasm: reserved register usage
+# hasm: temp register usage
 glabel DecDCTvlcSize2
     size = $a0
     previous = $v0
@@ -29,6 +32,9 @@ glabel DecDCTvlcSize2
     sw        $at, 0($t0)
 endlabel DecDCTvlcSize2
 
+# hasm: trapping arithmetic
+# hasm: unconditional b branch
+# hasm: reserved register usage
 glabel DecDCTvlc2
     bs = $a0
     buf = $a1

@@ -1,22 +1,22 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800F98F8);
+#define VS_MESH10_FUNCTION func_800F98F8
+#define VS_MESH10_VERTICES D_800FDF8C
+#define VS_MESH10_FACES D_800FDFDC
+#include "src/EFFECT/meshes10.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FA404);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FA404
+#define VS_TRAIL_TARGET_FUNCTION func_800FABA0
+#define VS_TRAIL_CONTROL_FUNCTION func_800FADB8
+#define VS_TRAIL_INIT_FUNCTION func_800FB27C
+#define VS_TRAIL_UPDATE_FUNCTION func_800FB3F4
+#define VS_TRAIL_RENDER_FUNCTION func_800FB580
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FBFDC
+#define VS_TRAIL_CORNER_STATE D_800FE03C
+#include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FABA0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FADB8);
-
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FB27C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FB3F4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FB580);
-
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FBFDC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG137.BIN/nonmatchings/F8", func_800FC524);
+#define VS_GRID_FUNCTION func_800FC524
+#include "src/EFFECT/grids.h"
 
 #define VS_TILED_RING_FUNCTION func_800FD074
 #define VS_TILED_RING_COLORS D_800FE040

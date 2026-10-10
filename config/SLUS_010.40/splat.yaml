@@ -29,7 +29,7 @@ segments:
       - [0x9D4, .rodata, libetc/VSYNC]
       - [0x9E4, .rodata, libetc/INTR]
       - [0xA54, .rodata, libetc/INTR_DMA]
-      - [0xA84, .rodata, libcd/SYS]
+      - [0xA84, .rodata, libcd/SYS_2]
       - [0xC44, .rodata, libcd/BIOS]
       - [0xCF4, .rodata, libcd/C_011]
       - [0xD14, .rodata, libds/DSSYS_2]
@@ -69,7 +69,9 @@ segments:
       - [0xFB64, c, libspu/S_CRWA]
       - [0xFD04, c, libspu/S_SRMD]
       - [0xFD34, c, libspu/S_GRMT]
-      - [0xFD44, c, libsn/SNMAIN]
+      - [0xFD44, hasm, libsn/SNENTRY]
+      - [0xFDEC, c, libsn/SNMAIN]
+      - [0xFE5C, hasm, libsn/SNDTORS]
       - [0xFEC4, c, libetc/VSYNC]
       - [0x100D4, c, libetc/INTR]
       - [0x10794, c, libetc/INTR_VB]
@@ -77,6 +79,8 @@ segments:
       - [0x10B54, c, libetc/VMODE]
       - [0x10B84, c, libcd/CDROM]
       - [0x10BB4, c, libcd/SYS]
+      - [0x10C5C, c, libcd/SYS_2]
+      - [0x111C0, pad]
       - [0x111C4, c, libcd/BIOS]
       - [0x12934, c, libcd/C_002]
       - [0x12994, c, libcd/C_003]
@@ -183,13 +187,13 @@ segments:
       - [0x1F544, c, libapi/A19]
       - [0x1F554, c, libapi/A20]
       - [0x1F564, c, libapi/A21]
-      - [0x1F574, c, libapi/PATCH]
+      - [0x1F574, hasm, libapi/PATCH]
       - [0x1F614, hasm, libapi/CHCLRPAD]
       - [0x1F684, c, libcard/A74]
       - [0x1F694, c, libcard/A75]
       - [0x1F6A4, c, libcard/A76]
-      - [0x1F6B4, c, libcard/PATCH]
-      - [0x1F8D4, c, libcard/END]
+      - [0x1F6B4, hasm, libcard/PATCH]
+      - [0x1F8D4, hasm, libcard/END]
       - [0x1F954, c, libcard/FORMAT] # Psyq 4.6 / 4.7
       - [0x1FD14, c, libcard/A79]
       - [0x1FD24, c, libcard/A92]
@@ -213,23 +217,25 @@ segments:
     subsegments:
       - [0x30A10, rodata, 31724]
       - [0x31418, rodata, 32154]
-      - [0x31724, asm]
-      - [0x31D08, c, libgte/MTX_005] # |
-      - [0x31D34, c, libgte/REG13]   # |
-      - [0x31D40, c, libgte/REG12]   # |
-      - [0x31D58, c, libgte/REG11]   # |
-      - [0x31D78, c, libgte/MTX_12]  # |
-      - [0x31D98, c, libgte/MTX_09]  # |
-      - [0x31DC8, c, libgte/MTX_004] # |
-      - [0x31F24, c, libgte/MTX_06]  # |- Presumably compiled as raw ASM 
-      - [0x31F7C, c, libgte/MTX_05]  # |
-      - [0x31FC8, c, libgte/SMP_05]  # |
-      - [0x31FEC, c, libgte/SMP_04]  # |
-      - [0x32014, c, libgte/SMP_02]  # |
-      - [0x32040, c, libgte/CMB_02]  # |
-      - [0x320BC, c, libgte/MTX_07]  # |
-      - [0x320DC, c, libgte/CMB_00]  # |
-      - [0x32154, asm]
+      - [0x31724, hasm]
+      - [0x31B7C, c]
+      - [0x31C0C, hasm]
+      - [0x31D08, hasm, libgte/MTX_005] # |
+      - [0x31D34, c, libgte/REG13]      # |
+      - [0x31D40, hasm, libgte/REG12]   # |
+      - [0x31D58, c, libgte/REG11]      # |
+      - [0x31D78, hasm, libgte/MTX_12]  # |
+      - [0x31D98, hasm, libgte/MTX_09]  # |
+      - [0x31DC8, hasm, libgte/MTX_004] # |
+      - [0x31F24, hasm, libgte/MTX_06]  # |- Presumably compiled as raw ASM 
+      - [0x31F7C, hasm, libgte/MTX_05]  # |
+      - [0x31FC8, hasm, libgte/SMP_05]  # |
+      - [0x31FEC, hasm, libgte/SMP_04]  # |
+      - [0x32014, hasm, libgte/SMP_02]  # |
+      - [0x32040, hasm, libgte/CMB_02]  # |
+      - [0x320BC, hasm, libgte/MTX_07]  # |
+      - [0x320DC, hasm, libgte/CMB_00]  # |
+      - [0x32154, hasm]
   - start: 0x32568
     type: code
     vram: 0x80041D68

@@ -1,34 +1,54 @@
 #include "common.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/32154.h"
+#include "vs_inline_c.h"
+#include "gpu.h"
+#include <inline_c.h>
+#include <rand.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800F99F0);
+#define VS_SURFACE_FUNCTION func_800F99F0
+#define VS_SURFACE_VERTICES D_800FF75C
+#define VS_SURFACE_REPEAT
+#include "src/EFFECT/surfaces.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FA588
 #define VS_CLOSED_RING_COLORS D_800FF9DC
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FB4F8);
+#define VS_GRID_FUNCTION func_800FB4F8
+#include "src/EFFECT/grids.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FC048);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FC048
+#define VS_TRAIL_TARGET_FUNCTION func_800FC7E4
+#define VS_TRAIL_CONTROL_FUNCTION func_800FC9FC
+#define VS_TRAIL_INIT_FUNCTION func_800FCEC0
+#define VS_TRAIL_UPDATE_FUNCTION func_800FD038
+#define VS_TRAIL_RENDER_FUNCTION func_800FD1C4
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FDC20
+#define VS_TRAIL_CORNER_STATE D_800FF9FC
+#include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FC7E4);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FE168
+#define VS_PARTICLE_TARGET_FUNCTION func_800FE8F0
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FEB08
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEFB8
+#define VS_PARTICLE_CORNER_STATE D_800FFA00
+#include "src/EFFECT/particleSetup.h"
+#undef VS_PARTICLE_ORIGIN_FUNCTION
+#undef VS_PARTICLE_TARGET_FUNCTION
+#undef VS_PARTICLE_CONTROL_FUNCTION
+#undef VS_PARTICLE_RENDER_FUNCTION
+#undef VS_PARTICLE_CORNER_STATE
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FC9FC);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEFB8
+#include "src/EFFECT/particleLineRender.h"
+#undef VS_PARTICLE_RENDER_FUNCTION
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FCEC0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FD038);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FD1C4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FDC20);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FE168);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FE8F0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FEB08);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FEFB8);
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FF4E8);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FE168
+#define VS_PARTICLE_TARGET_FUNCTION func_800FE8F0
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FEB08
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEFB8
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FF4E8
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"

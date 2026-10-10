@@ -1,3 +1,16 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
+#include <libetc.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/E02", LoadClut2);
+u_short LoadClut2(u_long* clut, int x, int y)
+{
+    RECT rect;
+
+    rect.w = 16;
+    rect.x = x;
+    rect.y = y;
+    rect.h = 1;
+    LoadImage(&rect, clut);
+    return GetClut(x, y);
+}

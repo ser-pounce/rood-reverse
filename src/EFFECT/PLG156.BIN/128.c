@@ -1,13 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800F9928);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800F9928
+#define VS_PARTICLE_TARGET_FUNCTION func_800FA0B0
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FA2C8
+#define VS_PARTICLE_RENDER_FUNCTION func_800FA778
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FB338
+#define VS_PARTICLE_CORNER_STATE D_800FC11C
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FA0B0);
+#include "src/EFFECT/particleRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FA2C8);
+#include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FA778);
-
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FB338);
-
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FB5CC);
+#define VS_GRID_FUNCTION func_800FB5CC
+#include "src/EFFECT/grids.h"

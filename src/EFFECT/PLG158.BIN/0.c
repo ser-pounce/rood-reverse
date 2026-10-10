@@ -1,12 +1,25 @@
 #include "common.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/32154.h"
+#include "vs_inline_c.h"
+#include "gpu.h"
+#include <inline_c.h>
+#include <rand.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG158.BIN/nonmatchings/0", func_800F9800);
+#define VS_SURFACE_FUNCTION func_800F9800
+#define VS_SURFACE_VERTICES D_800FCE38
+#define VS_SURFACE_REPEAT
+#include "src/EFFECT/surfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG158.BIN/nonmatchings/0", func_800FA398);
+#define VS_MIRROR_SURFACE_FUNCTION func_800FA398
+#define VS_MIRROR_SURFACE_VERTICES D_800FD0B8
+#include "src/EFFECT/mirroredSurfaces.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FB00C
 #define VS_CLOSED_RING_COLORS D_800FD338
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG158.BIN/nonmatchings/0", func_800FBF7C);
+#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_FUNCTION func_800FBF7C
+#include "src/EFFECT/rotatingSurfaces.h"

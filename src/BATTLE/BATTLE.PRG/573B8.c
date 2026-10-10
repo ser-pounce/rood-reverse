@@ -5,9 +5,17 @@
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
 #include <libetc.h>
+#include "gpu.h"
 
+typedef struct {
+    u_char curve;
+    signed char power;
+} D_800F4B28_t;
+
+extern u_char D_80040A14[];
 extern u_char D_800E9C30[];
 extern int (*_opcodeFunctionTable[])(u_char*, short);
+extern D_800F4B28_t D_800F4B28[];
 extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
@@ -40,6 +48,10 @@ typedef struct {
     int unk3C;
     int unk40;
     int unk44;
+    menuShapeVertex unk48[297];
+    u_char unk990[0x3B24];
+    short unk44B4[0x302];
+    u_char unk4AB8[0x64];
 } D_800EB9B8_t;
 
 extern D_800EB9B8_t* D_800EB9B8;
@@ -50,6 +62,7 @@ void func_800A0204(int, int, int, int);
 extern void func_800BBDDC(void);
 int func_800BFE34(u_char*);
 void func_800C0150(void);
+void vs_battle_rMemzero(void*, int);
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {
@@ -152,7 +165,60 @@ int func_800BFE50(u_short arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800BFEBC);
+int func_800BFEBC(short mode, short frame, short duration)
+{
+    short position = frame;
+    int value;
+    int power;
+    int i;
+
+    if (frame > duration) {
+        position = duration;
+    }
+
+    switch (mode) {
+    case 0:
+        return position * ONE / duration;
+    case 1:
+        return rsin(position * (ONE / 4) / duration);
+    case 2:
+        return (rcos(position * (ONE / 2) / duration + ONE / 2) + ONE) >> 1;
+    case 3:
+        return rsin(position * (ONE / 4) / duration - ONE / 4) + ONE;
+    default:
+        mode -= 4;
+        power = D_800F4B28[mode].power;
+        value = position * ONE / duration;
+
+        if (power != 0) {
+            if (power > 0) {
+                for (i = 0; i < power; ++i) {
+                    value = (value * value) >> 12;
+                }
+            } else {
+                value = ONE - value;
+
+                for (i = 0; i < -power; ++i) {
+                    value = (value * value) >> 12;
+                }
+
+                value = ONE - value;
+            }
+        }
+
+        switch (D_800F4B28[mode].curve) {
+        case 1:
+            return rsin(value / 4);
+        case 2:
+            return (rcos(value / 2 + ONE / 2) + ONE) >> 1;
+        case 3:
+            return rsin(value / 4 - ONE / 4) + ONE;
+        case 0:
+        default:
+            return value;
+        }
+    }
+}
 
 void func_800C00E8(int arg0, void* arg1)
 {
@@ -294,7 +360,78 @@ __asm__("glabel vs_battle_playSfx10;"
         "addu     $sp, 0x8;"
         "endlabel vs_battle_playMenuChangeSfx;");
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C031C);
+void func_800C031C(void)
+{
+    int index;
+    int x;
+    int y;
+    short* edges;
+
+    if (D_800EB9B8 == NULL) {
+        D_800EB9B8 = vs_main_allocHeap(sizeof *D_800EB9B8);
+    }
+
+    vs_battle_rMemzero(D_800EB9B8, sizeof *D_800EB9B8);
+    index = 0;
+    D_800EB9B8->unk2D = -1;
+    edges = D_800EB9B8->unk44B4;
+
+    for (y = 0;; ++y) {
+        for (x = 0; x < 9; ++x) {
+            edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+        }
+
+        if (y == 9) {
+            break;
+        }
+
+        for (x = 0; x < 10; ++x) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+        }
+    }
+
+    for (x = 0;; ++x) {
+        for (y = 9; y > 0; --y) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+        }
+
+        if (x == 9) {
+            break;
+        }
+
+        for (y = 9; y >= 0; --y) {
+            edges[index++] = x + (y << 4) + ((x + 1) << 8) + (y << 12);
+        }
+    }
+
+    for (y = 9;; --y) {
+        for (x = 9; x > 0; --x) {
+            edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+        }
+
+        if (y == 0) {
+            break;
+        }
+
+        for (x = 9; x >= 0; --x) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y - 1) << 12);
+        }
+    }
+
+    for (x = 9;; --x) {
+        for (y = 0; y < 9; ++y) {
+            edges[index++] = x + (y << 4) + (x << 8) + ((y + 1) << 12);
+        }
+
+        if (x == 0) {
+            break;
+        }
+
+        for (y = 0; y < 10; ++y) {
+            edges[index++] = x + (y << 4) + ((x - 1) << 8) + (y << 12);
+        }
+    }
+}
 
 void func_800C05B4(void)
 {
@@ -355,10 +492,142 @@ void func_800C0738(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0758);
+int func_800C0758(int phase, int segments, int index)
+{
+    short* sine = (void*)0x1F8003B0;
+    short (*basis)[4] = (void*)0x1F800398;
+    int i;
+    int component;
+    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C085C);
+    for (i = 0; i <= segments; ++index, ++i, ++vertex) {
+        for (component = 0; component < 3; ++component) {
+            vertex->xyz[component] =
+                basis[0][component]
+                + ((basis[1][component] * sine[(i + phase + 8) & 31]) >> 12)
+                + ((basis[2][component] * sine[(i + phase) & 31]) >> 12);
+        }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0990);
+        component = i != 0;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/573B8", func_800C0B50);
+        if (component && segments != 32) {
+            component += segments - i < 2;
+        }
+
+        vertex->flags = component;
+    }
+
+    return index;
+}
+
+MATRIX* func_800C085C(u_char* scale, int angle)
+{
+    short* scratch = (void*)0x1F800350;
+    MATRIX* rotation = (void*)0x1F800330;
+    int axis;
+    int component;
+
+    scratch[0] = -(scale[3] * 16);
+    scratch[1] = angle;
+    scratch[2] = 0;
+    RotMatrixYXZ_gte((SVECTOR*)scratch, rotation);
+
+    for (axis = 0; axis < 3; ++axis) {
+        for (component = 0; component < 3; ++component) {
+            scratch[component] = axis == component ? scale[axis] * 32 : 0;
+        }
+
+        ApplyMatrixSV(rotation, (SVECTOR*)scratch, (SVECTOR*)&scratch[8 + axis * 4]);
+    }
+
+    for (axis = 0; axis < 3; ++axis) {
+        for (component = 0; component < 3; ++component) {
+            scratch[axis * 3 + component] = scratch[8 + component * 4 + axis];
+        }
+    }
+
+    return (void*)scratch;
+}
+
+void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
+{
+    int depth = (start->vz + end->vz) >> 1;
+    int dx;
+    int dy;
+    int ax;
+    int ay;
+    int angle;
+    int shift;
+    u_long link;
+    u_long* primitive;
+    u_long* orderingTable;
+
+    if (depth >= 2048u) {
+        return;
+    }
+
+    dy = end->vy - start->vy;
+    dx = end->vx - start->vx;
+    angle = 0;
+    shift = dy | dx;
+
+    if (shift) {
+        ax = dx;
+        ay = dy;
+
+        if (ax < 0) {
+            ax = -ax;
+        }
+
+        if (ay < 0) {
+            ay = -ay;
+        }
+
+        shift = ONE / 8;
+
+        if (ax < ay) {
+            angle = ax << 9;
+            angle /= ay;
+            angle = D_80040A14[angle];
+            angle = shift - angle;
+        } else {
+            angle = ay << 9;
+            angle /= ax;
+            angle = D_80040A14[angle];
+        }
+
+        shift = ONE / 4;
+
+        if (ax != dx) {
+            angle = shift - angle;
+        }
+
+        angle *= 2;
+
+        if (ay != dy) {
+            angle = -angle;
+        }
+    }
+
+    shift = 30 - (((angle + 256) >> 8) & 14);
+    ay = start->vx + ((0x4FC5 << shift) >> 30);
+    ax = start->vy + ((0xFC54 << shift) >> 30);
+
+    if (intensity < 0) {
+        intensity = 0;
+    } else if (intensity >= 64) {
+        intensity = 63;
+    }
+
+    primitive = vs_scratch.unk0;
+    orderingTable = vs_scratch.unk4;
+    orderingTable += depth;
+    link = *orderingTable & 0xFFFFFF;
+    primitive[1] = _get_mode(0, 1, 0);
+    primitive[3] = vs_getXY_2(ay, ax);
+    primitive[0] = link | 0x04000000;
+    primitive[2] = (((color << 8) >> 8) * intensity) | ((color >> 24) << 24);
+    primitive[4] = *(u_long*)end;
+    *orderingTable = ((u_long)primitive << 8) >> 8;
+    vs_scratch.unk0 = primitive + 5;
+}

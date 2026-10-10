@@ -1,3 +1,16 @@
 #include "common.h"
+#include <libcd.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/C_008", init_ring_status);
+extern u_long* D_80039C48;
+
+void init_ring_status(int start, u_int count)
+{
+    u_int i = 0;
+
+    if (count != 0) {
+        do {
+            u_long* p = D_80039C48 + (i + start) * HEADER_SIZE;
+            *p = 0;
+        } while (++i < count);
+    }
+}

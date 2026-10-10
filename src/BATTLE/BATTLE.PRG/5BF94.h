@@ -43,7 +43,7 @@ typedef struct {
     u_char state;
     u_char w;
     u_char backgroundWidth;
-    u_char _ __attribute__((unused));
+    u_char animationStep;
     u_char gradientState;
     u_char isScrollable;
     u_char selected;
@@ -237,7 +237,7 @@ typedef struct {
     short unk30[2];
     short unk34[8][6];
     short unk94[5][4];
-    int unkBC;
+    short unkBC[2];
     short unkC0[2];
     u_char rCurve;
     u_char gCurve;
@@ -249,12 +249,23 @@ typedef struct {
     u_char unkCB;
 } func_800FA098_arg0;
 
+typedef union {
+    int packed;
+    struct {
+        u_char rCurve;
+        u_char gCurve;
+        u_char bCurve;
+        u_char age;
+    } fields;
+} func_800D2904_curves;
+
 typedef struct {
     VECTOR unk0;
     VECTOR unk10;
     int unk20;
     u_int flags;
-    int unk28;
+    u_short unk28;
+    u_short unk2A;
     SVECTOR unk2C;
     VECTOR unk34;
     VECTOR unk44;
@@ -278,14 +289,16 @@ typedef struct {
     int unk134[2];
     SVECTOR unk13C;
     SVECTOR unk144;
-    u_char unk14C[0x1C];
+    int unk14C[2];
+    func_800D2904_curves unk154;
+    u_char unk158[0x10];
     int unk168;
     int unk16C;
     int unk170;
     int unk174;
     int unk178;
     int unk17C;
-    int unk180;
+    u_char unk180;
     int unk184;
     int unk188;
 } func_800FA098_arg1;
@@ -332,17 +345,44 @@ typedef struct {
     void* unkD0;
 } D_800F569C_t;
 
+typedef struct {
+    VECTOR position;
+    VECTOR lookAt;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int roll;
+    int nearClip;
+    int projectionDistance;
+    int farClip;
+} D_800F54D8_t;
+
 typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
-    char unk8[4];
+    short unk8;
+    short unkA;
     int unkC;
     int unk10;
     int unk14;
-    VECTOR unk18;
-    u_char unk28[0x14];
-    int unk3C[8];
-    char unk5C[0x1B];
+    int unk18[3];
+    int unk24[3];
+    int unk30[3];
+    func_800D6CF_t unk3C;
+    int unk5C;
+    u_int unk60_0 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 4;
+    short unk62[3];
+    short lifetime;
+    u_char unk6A;
+    u_char unk6B;
+    u_char endEvent;
+    u_char tickEvent;
+    char unk6E[2];
+    int unk70;
+    u_char unk74[3];
     u_char unk77;
 } func_800D2904_t;
 
@@ -366,7 +406,9 @@ typedef struct {
     u_char unk37;
     MATRIX unk38;
     MATRIX unk58;
-    u_char unk78[0x58];
+    u_char unk78[0x46];
+    short unkBE;
+    u_char unkC0[0x10];
 } func_800CE714_t2_2;
 
 typedef struct {
@@ -430,8 +472,10 @@ typedef struct {
     u_char unk0[0xC];
     VECTOR unkC;
     u_char unk1C[0x44];
-    u_char unk60;
-    u_char unk61[23];
+    u_int unk60 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 20;
+    u_char unk64[20];
 } func_800FB4C0_t;
 
 enum vs_battle_limbStatus {
@@ -451,7 +495,7 @@ char* vs_battle_printf(char*, char*);
 /**
  * Renders ASCII text and chains it to the provided OT.
  */
-void vs_battle_renderTextRawColor(char const* text, int xy, int color, void* nextPrim);
+void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long* nextPrim);
 
 /**
  * Same as vs_battle_renderTextRawColor, except color is predefined as gray midpoint

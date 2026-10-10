@@ -1,14 +1,39 @@
 #include "common.h"
+#include "146C.h"
 #include "3A1A0.h"
 #include <libgpu.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
+#include <abs.h>
+#include "src/SLUS_010.40/31724.h"
 
+typedef struct {
+    u_char unk0[0x4C];
+    SVECTOR position;
+    SVECTOR offset;
+    u_char unk5C[8];
+    MATRIX matrix;
+} func_800A1DE8_t;
+
+void func_80041C68(MATRIX*, MATRIX*);
 void func_8009DF3C(int, int);
+void func_800A0204(int, int, int, int);
 int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
-int func_800A1C10(int arg0, int arg1, u_short* arg2, int arg3);
+int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
+int func_800A3500(int, int);
+SVECTOR* func_800A4A24(int);
+int func_800A6EE8(SVECTOR*, int, int, int);
+_mpdRoomSection3* func_800A8D64(SVECTOR*, int);
 void func_800A9EB4(int, int, int);
+void func_800AA850(int, int, int);
+void func_800AC690(int, D_800F45E0_t*);
+void func_800AE4FC(D_800F4538_unk0*, int);
+void func_800B07DC(D_800F4538_t*);
 
+extern u_char D_800E90AC[];
+extern u_char D_800E90B4[];
 extern MATRIX D_800F49B8;
 
 int func_800A141C(int arg0, int arg1, int arg2, int arg3)
@@ -263,7 +288,7 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
         }
     }
 
-    var_v0 = func_800A1C10(arg0, var_v0, (u_short*)arg2, arg3);
+    var_v0 = func_800A1C10(arg0, var_v0, arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;
@@ -272,7 +297,7 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
     return 0;
 }
 
-int func_800A1AF8(int arg0, int arg1, u_short* arg2, int arg3)
+int func_800A1AF8(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     int var_v0 = func_800A1C10(arg0, arg1, arg2, arg3);
 
@@ -283,7 +308,7 @@ int func_800A1AF8(int arg0, int arg1, u_short* arg2, int arg3)
     return 0;
 }
 
-int func_800A1B28(int arg0, int arg1, u_short* arg2, int arg3)
+int func_800A1B28(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     int var_v0 = func_800A152C(arg0, arg1, 1);
 
@@ -308,7 +333,7 @@ int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3)
         return var_v0;
     }
 
-    var_v0 = func_800A1C10(arg0, var_v0, (u_short*)arg2, arg3);
+    var_v0 = func_800A1C10(arg0, var_v0, arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;
@@ -317,13 +342,238 @@ int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1C10);
+int func_800A1C10(int actorId, int bone, SVECTOR* result, int endpoint)
+{
+    SVECTOR local;
+    VECTOR transformed;
+    D_800F4538_t* actor = D_800F4538[actorId];
+    D_800F4538_unk68* model = actor->unk0.unk68;
+    MATRIX* matrix;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A1DE8);
+    if (actor == NULL) {
+        actor = (D_800F4538_t*)D_800F45E0[actorId];
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A208C);
+        if (actor == NULL) {
+            return -1;
+        }
 
-void func_800A0204(int, int, int, int);
+        model = actor->unk0.unk68;
+    }
+
+    matrix = func_800A1DE8(actorId, bone, &D_800F49B8);
+
+    if (endpoint == 0) {
+        setVector(result, matrix->t[0], matrix->t[1], matrix->t[2]);
+        return 0;
+    }
+
+    local.vy = 0;
+    local.vz = 0;
+
+    if ((bone & 0xF0) == 0x40) {
+        vs_battle_wepModels_t* weapon = vs_battle_wepModels[actorId * 2];
+
+        bone -= 0x3F;
+
+        if (weapon == NULL) {
+            return -1;
+        }
+
+        model = (D_800F4538_unk68*)weapon->offsets;
+    }
+
+    if (endpoint == 1) {
+        local.vx = -model->armatures[bone].unk0;
+    } else {
+        local.vx = -model->armatures[bone].unk0 / 2;
+    }
+
+    gte_SetRotMatrix(matrix);
+    gte_SetTransMatrix(matrix);
+    gte_ldv0(&local);
+    gte_rtv0tr2();
+    gte_stlvnl(&transformed);
+    setVector(result, transformed.vx, transformed.vy, transformed.vz);
+    return 0;
+}
+
+MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
+{
+    MATRIX zeroTranslation;
+    long flag;
+    func_800A1DE8_t* scratch = (void*)0x1F80035C;
+    D_800F4538_t* actor = D_800F4538[actorId];
+
+    if (actor == NULL) {
+        D_800F4538_t* object = (D_800F4538_t*)D_800F45E0[actorId];
+
+        if (object == NULL) {
+            return NULL;
+        }
+
+        scratch->matrix = object->bones[bone];
+    } else if ((bone & 0xF0) == 0x40) {
+        vs_battle_wepModels_t* weapon = vs_battle_wepModels[actorId * 2];
+
+        if (weapon == NULL) {
+            return NULL;
+        }
+
+        scratch->matrix = *(weapon->unk20 + bone - 0x3F);
+    } else if (bone == 0xFF) {
+        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
+            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
+            scratch->offset.vy * actor->unk183C / ONE,
+            scratch->offset.vz * actor->unk183C / ONE);
+        func_800B07DC(actor);
+        scratch->matrix.t[0] = scratch->offset.vx;
+        scratch->matrix.t[1] = scratch->offset.vy;
+        scratch->matrix.t[2] = scratch->offset.vz;
+        return &scratch->matrix;
+    } else {
+        scratch->matrix = actor->bones[bone];
+    }
+
+    func_80041C68(&D_800F49B8, &scratch->matrix);
+    SetRotMatrix(&D_800F49B8);
+    zeroTranslation.t[0] = 0;
+    zeroTranslation.t[1] = 0;
+    zeroTranslation.t[2] = 0;
+    SetTransMatrix(&zeroTranslation);
+    setVector(&scratch->position, scratch->matrix.t[0] - D_800F49B8.t[0],
+        scratch->matrix.t[1] - D_800F49B8.t[1], scratch->matrix.t[2] - D_800F49B8.t[2]);
+    RotTrans(&scratch->position, (VECTOR*)scratch->matrix.t, &flag);
+    return &scratch->matrix;
+}
+
+void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
+{
+    int x;
+    int y;
+    int z;
+    int i;
+    int dz;
+    int minFrames;
+    int accel;
+    int animation;
+    int hangFrames;
+    int frames;
+    int fall;
+    int velocity;
+    SVECTOR* anchor;
+    int _[2] __attribute__((unused));
+
+    if (*(u_int*)((char*)actor + 8) & 0x70000) {
+        return;
+    }
+
+    actor->unk0.unk11 = 6;
+    *(u_int*)((char*)actor + 0x5AC) &= ~0x4000000;
+    if (speed >= actor->unk5B9) {
+        actor->unk0.unk11 = 2;
+    }
+    if (speed < 18) {
+        speed = 18;
+        *(u_int*)((char*)actor + 0x5AC) |= 0x4000000;
+    }
+
+    if (target[1] >= 2) {
+        anchor = func_800A4A24(target[1]);
+        x = anchor->vx;
+        y = anchor->vy;
+        z = anchor->vz;
+    } else {
+        x = target[0] * 128 + 64;
+        z = target[2] * 128 + 64;
+        y = func_800A3500(x, z);
+    }
+
+    *(int*)&actor->unk5EC = *(int*)target;
+    actor->unk1814 = x;
+    actor->unk1818 = z;
+    x -= actor->unk0.position.vx;
+    y -= actor->unk0.position.vy;
+    z -= actor->unk0.position.vz;
+
+    i = x;
+    if (x < 0) {
+        i = -x;
+    }
+    dz = z;
+    if (z < 0) {
+        dz = -z;
+    }
+    if (i < dz) {
+        i = dz;
+    }
+    minFrames = i / speed;
+
+    if (*(u_int*)((char*)actor + 8) & 0x400000) {
+        accel = 1;
+        animation = 33;
+    } else {
+        accel = 6;
+        animation = 47;
+    }
+
+    if (y <= 0) {
+        if (actor->unk0.unkF != 0) {
+            func_800AE4FC(&actor->unk0, 12);
+        }
+        i = y >= -64;
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            i += 3;
+        }
+        hangFrames = D_800E90AC[i];
+        y -= D_800E90B4[i];
+    retry:
+        for (frames = 0, fall = 0, velocity = 0; y < fall; ++frames) {
+            velocity += accel;
+            fall -= velocity / 2;
+        }
+        frames += hangFrames;
+        actor->unk0.unk34.vx = x / frames;
+        actor->unk0.unk34.vz = z / frames;
+        actor->unk0.unk34.vy = -velocity / 2;
+        if (ABS(actor->unk0.unk34.vx) > speed || ABS(actor->unk0.unk34.vz) > speed) {
+            ++hangFrames;
+            y -= ((hangFrames + 1) * accel) / 2;
+            goto retry;
+        }
+    } else {
+        i = 2;
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            i = 5;
+        }
+        hangFrames = D_800E90AC[i];
+        y += D_800E90B4[i];
+        if ((*(u_int*)((char*)actor + 8) & 0x400000) && (y > 128)) {
+            y = 128;
+        }
+        for (frames = 0, fall = 0, velocity = 0; fall < y; ++frames) {
+            velocity += accel;
+            fall += velocity / 2;
+        }
+        frames += hangFrames;
+        if (frames < minFrames) {
+            hangFrames += (minFrames - frames) / 2 + 1;
+            frames = minFrames;
+        }
+        actor->unk0.unk34.vx = x / frames;
+        actor->unk0.unk34.vz = z / frames;
+        actor->unk0.unk34.vy = (-(hangFrames + 1) * accel) / 2;
+        if (*(u_int*)((char*)actor + 8) & 0x400000) {
+            animation = 35;
+        }
+    }
+
+    actor->unk1816 = frames;
+    actor->unk181A = 2;
+    func_800A0204(actor->unk0.unkF, animation, 0, 4);
+    *(u_int*)((char*)actor + 8) = (*(u_int*)((char*)actor + 8) & ~0x70000) | 0x20000;
+    func_800A9EB4(actor->unk0.unkF, facing, 8);
+}
 
 void func_800A249C(int arg0, int arg1)
 {
@@ -380,11 +630,84 @@ void func_800A2574(int arg0, short arg1)
     temp_s1->unk0.unkB_4 = 6;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A25EC);
+void func_800A25EC(D_800F4538_t* actor)
+{
+    SVECTOR next;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/38C1C", func_800A2790);
+    actor->unk0.unkA_5 = 0;
+    setVector(&next, actor->unk1848.unk10.vx, 0, actor->unk1848.unk10.vz);
+    next.vy = func_800A6EE8(&actor->unk0.position, next.vx, next.vz, 1);
 
-void func_800AA850(int, int, int);
+    if (next.vy == -3000) {
+        return;
+    }
+
+    next.vx += actor->unk0.position.vx;
+    next.vz += actor->unk0.position.vz;
+
+    if (func_800A8D64(&next, 0) == NULL) {
+        return;
+    }
+
+    actor->unk0.position.vx = next.vx;
+    actor->unk0.position.vz = next.vz;
+
+    if (actor->unk0.unkA_0) {
+        func_800AC690(actor->unk0.unkF, (D_800F45E0_t*)actor);
+    } else {
+        short height = next.vy;
+
+        if (height > actor->unk0.position.vy && height - actor->unk0.position.vy >= 64) {
+            setVector(&actor->unk0.unk34, 0, 0, 0);
+            func_800A0204(actor->unk0.unkF, 47, 0, 4);
+            actor->unk181A = 0;
+            actor->unk0.unkA_3 = 0;
+            actor->unk0.unk9_6 = 0;
+            actor->unk0.unkA_0 = 3;
+        } else {
+            actor->unk0.position.vy = height;
+        }
+    }
+
+    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+    actor->unk0.unk5D = 0;
+}
+
+void func_800A2790(D_800F4538_t* actor)
+{
+    VECTOR delta;
+    int speed = actor->unk1848.unk8;
+    int animation;
+
+    setVector(&delta, actor->unk1848.unk10.vx * speed / (ONE * ONE),
+        actor->unk1848.unk10.vy * speed / (ONE * ONE),
+        actor->unk1848.unk10.vz * speed / (ONE * ONE));
+    addVector(&actor->unk0.position, &delta);
+    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+    actor->unk0.unkA_5 = 1;
+    func_800AA850(actor->unk0.unkF, actor->unk1848.unk6, 12);
+    animation = 1;
+
+    if (speed > 0) {
+        if (delta.vy < -2) {
+            animation = 32;
+        } else if (delta.vy >= 3) {
+            animation = 34;
+        } else {
+            animation = 31;
+        }
+
+        if (speed >= 12) {
+            animation += 6;
+        }
+    }
+
+    if (actor->animationId != animation) {
+        func_800A0204(actor->unk0.unkF, animation, 0, 4);
+    }
+}
 
 void func_800A291C(D_800F4538_t* arg0)
 {

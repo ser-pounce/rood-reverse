@@ -1,17 +1,55 @@
 #include "common.h"
+#include <libds.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsMix);
+extern int CD_vol(DslATV*);
+extern int CD_getsector(void*, int);
+extern int CD_getsector2(void*, int);
+extern int CD_datasync(int);
+extern int D_80032204;
+extern DslLOC* DS_lastpos(void);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsGetSector);
+int DsMix(DslATV* vol)
+{
+    CD_vol(vol);
+    return 1;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsGetSector2);
+int DsGetSector(void* madr, int size) { return CD_getsector(madr, size) == 0; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsDataSync);
+int DsGetSector2(void* madr, int size) { return CD_getsector2(madr, size) == 0; }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsIntToPos);
+int DsDataSync(int mode) { return CD_datasync(mode); }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsPosToInt);
+DslLOC* DsIntToPos(int i, DslLOC* p)
+{
+    int sec, min;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsSetDebug);
+    i += 150;
+    sec = i / 75;
+    min = sec / 60;
+    p->sector = itob(i % 75);
+    p->second = itob(sec % 60);
+    p->minute = itob(min);
+    return p;
+}
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_3", DsLastPos);
+int DsPosToInt(DslLOC* p)
+{
+    return (btoi(p->minute) * 60 + btoi(p->second)) * 75 + btoi(p->sector) - 150;
+}
+
+int DsSetDebug(int level)
+{
+    int old = D_80032204;
+    D_80032204 = level;
+    return old;
+}
+
+DslLOC* DsLastPos(DslLOC* p)
+{
+    if (p != NULL) {
+        *p = *DS_lastpos();
+        return p;
+    }
+    return DS_lastpos();
+}

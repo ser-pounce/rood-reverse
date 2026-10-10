@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P26", SetTile);
+void SetTile(TILE* p) { setTile(p); }

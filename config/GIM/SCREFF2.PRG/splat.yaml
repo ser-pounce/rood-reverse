@@ -22,4 +22,6 @@ segments:
     align: 4
     subsegments:
       - [0x00, c]
+      - [0x3D8, hasm]
+      - [0x5E8, c]
   - [0x914]

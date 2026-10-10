@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <inline_c.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgte/REG13", SetGeomScreen);
+void SetGeomScreen(long h) { gte_SetGeomScreen(h); }

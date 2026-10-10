@@ -104,30 +104,60 @@ typedef struct {
     u_int unk0_8 : 24;
 } func_800DA1D4_t;
 
+typedef struct {
+    int unk0;
+    int unk4;
+    u_int unk8_0 : 21;
+    u_int unk8_21 : 1;
+    u_int unk8_22 : 10;
+} func_800E1238_t;
+
 typedef struct func_800E78F4_t {
-    char unk0[0x4E];
-    u_short unk4E;
+    char unk0[7];
+    u_char unk7;
+    char unk8[0xB];
+    u_char unk13;
+    char unk14[0x20];
+    u_char unk34;
+    char unk35;
+    u_char unk36;
+    char unk37[0x17];
+    short unk4E;
     char unk50[4];
     func_800DEB10_t2* unk54;
-    char unk58[4];
+    func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
     char unk60[0x53];
     u_char unkB3;
-    char unkB4[0x7B];
+    char unkB4[0xA];
+    short unkBE;
+    char unkC0[0x6F];
     u_char unk12F;
     char unk130;
     u_char unk131;
-    char unk132[0x6E];
+    char unk132[0xD];
+    u_char unk13F;
+    char unk140[0x3C];
+    int unk17C;
+    int unk180;
+    int unk184;
+    short unk188;
+    char unk18A[0x16];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
-    char unk224[0x20C];
+    char unk224[4];
+    int unk228;
+    func_800DCAA0_t* unk22C;
+    char unk230[0x200];
     func_800DCAA0_t* unk430[16];
     int unk470;
 } func_800E78F4_t;
 
 typedef struct {
-    char unk0[0x18];
+    char unk0[8];
+    u_char unk8;
+    char unk9[0xF];
     u_short unk18;
     char unk1A[2];
     func_800E78F4_t* unk1C;
@@ -149,36 +179,6 @@ typedef struct {
     char unk18[4];
     u_char unk1C;
 } D_800F5920_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_int unk8_0 : 21;
-    u_int unk8_21 : 1;
-    u_int unk8_22 : 10;
-} func_800E1238_t;
-
-typedef struct {
-    char unk0[7];
-    u_char unk7;
-    char unk8[0x2C];
-    u_char unk34;
-    char unk35;
-    u_char unk36;
-    char unk37[0x17];
-    short unk4E;
-    char unk50[8];
-    func_800E1238_t* unk58;
-    char unk5C[0x62];
-    short unkBE;
-    char unkC0[0xBC];
-    int unk17C;
-    int unk180;
-    int unk184;
-    short unk188;
-    char unk18A[0x9E];
-    int unk228;
-} func_800E0850_t;
 
 typedef struct {
     char unk0[0x88];
@@ -249,6 +249,7 @@ void _parsePfileBlock13(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
+int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
 int func_8008631C(int, int, int, int, void*);
@@ -259,21 +260,24 @@ int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 int func_800DB74C(func_800E78F4_t*, int);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(int);
-void func_800DEEFC(func_800E0850_t*, int);
-int func_800E0678(func_800E0850_t*, int);
-int func_800E0918(func_800E0850_t*, int, int);
-void func_800E2CCC(func_800E0850_t*);
-void func_800E3600(func_800E0850_t*, int, int);
+void func_800DEEFC(func_800E78F4_t*, int);
+int func_800E0678(func_800E78F4_t*, int);
+int func_800E0918(func_800E78F4_t*, int, int);
+void func_800E2CCC(func_800E78F4_t*);
+void func_800E3600(func_800E78F4_t*, int, int);
 int func_800E42EC(int, int);
-int func_800E4764(func_800E0850_t*, int*, int*);
-void func_800E4B18(func_800E0850_t*);
+int func_800E45D4(int);
+int func_800E4764(func_800E78F4_t*, int*, int*);
+void func_800E4B18(func_800E78F4_t*);
 void func_800E4C8C(func_800DEEA4_t2*);
 void func_800E4CE8(func_800DEEA4_t2* arg0);
 void func_800E5EC0(int, int, int);
-void func_800E678C(func_800E0850_t*);
+void func_800E678C(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
 
@@ -297,6 +301,7 @@ extern func_800DEEA4_t2* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
 extern u_short (*D_800F58D0)[32];
+extern int D_800F58E0;
 extern func_800DEEA4_t* D_800F5900;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
@@ -838,7 +843,37 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAA6C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAAD8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAC80);
+int func_800DAC80(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
+{
+    if (!func_800DBD80(arg0, arg1)) {
+        return 0;
+    }
+
+    func_800D836C(arg0);
+
+    if (func_800D826C(arg0)) {
+        D_800F4538_t* actor;
+
+        arg0->unk22C = arg1;
+        D_800F58E0 = 1;
+        actor = D_800F4538[arg1->unkC_0];
+
+        if (actor != NULL && actor->unk0.unkA_3) {
+            arg1->unkC_4 = func_800E45D4(2);
+            arg1->unkC_7 = 217;
+        }
+
+        func_800DEEFC(arg0, 15);
+
+        if (func_800DBC60(arg0, arg1)) {
+            arg0->unk13F = arg0->unk13 == 0 ? D_800F58BC->unk8 : 50;
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAD9C);
 
@@ -1140,7 +1175,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E02B4);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0678);
 
-int func_800E0850(func_800E0850_t* arg0, u_int arg1)
+int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
 {
     int min = 0;
     int count = 1;
@@ -1164,7 +1199,7 @@ int func_800E0850(func_800E0850_t* arg0, u_int arg1)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0918);
 
-void func_800E1238(func_800E0850_t* arg0, int arg1)
+void func_800E1238(func_800E78F4_t* arg0, int arg1)
 {
     int sp10;
     int sp14;

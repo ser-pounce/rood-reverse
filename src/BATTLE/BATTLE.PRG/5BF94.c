@@ -346,8 +346,9 @@ typedef struct {
     u_char pad6[4];
     u_short mode;
     u_char padC[2];
-    u_char limit;
-    u_char padF;
+    u_short limit : 8;
+    u_short radius : 4;
+    u_short radiusJitter : 4;
     u_short unk10;
     u_short shape12;
 } func_800D0548_arg0;
@@ -5503,7 +5504,64 @@ void func_800D0548(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D05F4);
+void func_800D05F4(func_800D0548_arg0* arg0, func_800D0548_arg1* arg1)
+{
+    SVECTOR control0;
+    SVECTOR control1;
+    VECTOR delta;
+    VECTOR start;
+    VECTOR end;
+    MATRIX transform;
+    long distance;
+    int radius0;
+    int radius1;
+    int angle0;
+    int angle1;
+
+    if (arg0->mode & 0x80) {
+        setVector(&start, arg1->saved.vx, arg1->saved.vy, arg1->saved.vz);
+        setVector(&end, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+    } else {
+        setVector(&start, arg1->endpoint.vx, arg1->endpoint.vy, arg1->endpoint.vz);
+        setVector(&end, arg1->saved.vx, arg1->saved.vy, arg1->saved.vz);
+    }
+
+    setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
+    distance =
+        vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+    control0.vz = distance * (((arg0->shape12 >> 8) & 15) - 8) / 8;
+    control1.vz = distance + distance * ((arg0->shape12 >> 12) - 8) / 8;
+    radius1 = arg0->radius * 32;
+    radius0 = radius1;
+
+    if (arg0->radiusJitter) {
+        radius0 = radius1 + rand() % (arg0->radiusJitter * 32);
+        radius1 += rand() % (arg0->radiusJitter * 32);
+    }
+
+    angle1 = ((u_char)arg0->shape12 & 15) << 8;
+    angle0 = angle1;
+
+    if (arg0->shape12 & 0xF0) {
+        angle0 = angle1 + rand() % ((arg0->shape12 * 16) & 0xF00);
+        angle1 += rand() % ((arg0->shape12 * 16) & 0xF00);
+    }
+
+    control0.vx = (rcos(angle0) * radius0) >> 12;
+    control0.vy = (rsin(angle0) * radius0) >> 12;
+    control1.vx = (rcos(angle1) * radius1) >> 12;
+    control1.vy = (rsin(angle1) * radius1) >> 12;
+    vs_battle_lookAt(&start, &end, &transform);
+    transform.t[0] = start.vx;
+    transform.t[1] = start.vy;
+    transform.t[2] = start.vz;
+    SetRotMatrix(&transform);
+    SetTransMatrix(&transform);
+    RotTrans(&control0, &start, &distance);
+    RotTrans(&control1, &end, &distance);
+    setVector(&arg1->control0, start.vx, start.vy, start.vz);
+    setVector(&arg1->control1, end.vx, end.vy, end.vz);
+}
 
 void func_800D0984(int arg0, func_800D0C60_t* arg1, int arg2)
 {

@@ -26,6 +26,7 @@ u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
 void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
+void func_800B64A8(int, int, int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
@@ -700,7 +701,46 @@ void func_800A4828(int arg0, MATRIX* arg1)
     temp_s1->unk0.visible = visible;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);
+void func_800A48CC(int index, int direction, int distance)
+{
+    D_800F4538_t* actor = D_800F4538[index];
+
+    if (actor->unk5AC_0 != 0) {
+        return;
+    }
+
+    if (actor->unk0.unkA_3 != 0) {
+        return;
+    }
+
+    if (actor->unk0.unkA_0 != 0) {
+        func_800B64A8(index, direction, distance);
+        return;
+    }
+
+    if (distance == 0) {
+        actor->unk5B0_2 = 0;
+        actor->unk5B0_0 = 0;
+        func_800A0204(index, 0x2F, 0, 4);
+        actor->unk0.unk11 = 6;
+        actor->unk0.unkA_0 = 2;
+    } else {
+        actor->unk5B0_2 = 0;
+        actor->unk5B0_0 = 1;
+
+        if (distance / ONE >= actor->unk5B9) {
+            actor->unk5B0_0 = 2;
+            actor->unk5B0_2 = 1;
+        }
+
+        actor->unk0.unk11 = 0;
+        actor->unk0.unkA_0 = 1;
+    }
+
+    actor->unk1848.unk0 = 7;
+    actor->unk1848.unk4 = direction;
+    actor->unk1848.unk8 = distance;
+}
 
 func_8008D2C0_t* func_800A4A24(int arg0)
 {

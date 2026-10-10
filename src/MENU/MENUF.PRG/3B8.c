@@ -1016,7 +1016,7 @@ int _renderTimeAttackStart(void)
     static int countdownOffsets[] = { 121, 93, 67, 43, 25, 12, 3, 0 };
     static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
         { 0x107A, 0x107A, 0x1000 } };
-    static P_CODE colors[] = { { 220, 80, 64 }, { 64, 128, 220 }, { 128, 128, 128 } };
+    static CVECTOR colors[] = { { 220, 80, 64 }, { 64, 128, 220 }, { 128, 128, 128 } };
 
     int temp_v1_2;
     int x;

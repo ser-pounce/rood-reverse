@@ -19,14 +19,14 @@ void _renderTextureFadeInTint(int x, int y, int texId, CVECTOR colors[])
         _disMap[texId].x + _disMap[texId].w, _disMap[texId].y + _disMap[texId].h);
 
     if (colors[0].cd < 8) {
-        setRGB0(poly, (colors[0].r * colors[0].cd) / 8,
-            (colors[0].g * colors[0].cd) / 8, (colors[0].b * colors[0].cd) / 8);
-        setRGB1(poly, (colors[1].r * colors[0].cd) / 8,
-            (colors[1].g * colors[0].cd) / 8, (colors[1].b * colors[0].cd) / 8);
-        setRGB2(poly, (colors[0].r * colors[0].cd) / 8,
-            (colors[0].g * colors[0].cd) / 8, (colors[0].b * colors[0].cd) / 8);
-        setRGB3(poly, (colors[1].r * colors[0].cd) / 8,
-            (colors[1].g * colors[0].cd) / 8, (colors[1].b * colors[0].cd) / 8);
+        setRGB0(poly, (colors[0].r * colors[0].cd) / 8, (colors[0].g * colors[0].cd) / 8,
+            (colors[0].b * colors[0].cd) / 8);
+        setRGB1(poly, (colors[1].r * colors[0].cd) / 8, (colors[1].g * colors[0].cd) / 8,
+            (colors[1].b * colors[0].cd) / 8);
+        setRGB2(poly, (colors[0].r * colors[0].cd) / 8, (colors[0].g * colors[0].cd) / 8,
+            (colors[0].b * colors[0].cd) / 8);
+        setRGB3(poly, (colors[1].r * colors[0].cd) / 8, (colors[1].g * colors[0].cd) / 8,
+            (colors[1].b * colors[0].cd) / 8);
     } else {
         setRGB0(poly, colors[0].r, colors[0].g, colors[0].b);
         setRGB1(poly, colors[1].r, colors[1].g, colors[1].b);

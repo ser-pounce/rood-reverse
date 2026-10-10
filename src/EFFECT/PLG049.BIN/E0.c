@@ -541,9 +541,9 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
         sp10.unk4.y2 = spF0[0].vy - temp_a1_2;
 
         sp10.unk4.u0 = sp10.unk4.u2 =
-            temp_s7->u0 + ((temp_s7->u1 * temp_s1->trailCollapseCounter) / 8);
-        spF8 = temp_s7->v0;
-        spFC = temp_s7->v0 + temp_s7->v1;
+            temp_s7->u + ((temp_s7->w * temp_s1->trailCollapseCounter) / 8);
+        spF8 = temp_s7->v;
+        spFC = temp_s7->v + temp_s7->h;
         sp10.unk4.v0 = spF8;
         sp10.unk4.v2 = spFC;
         sp10.unk4.r0 =
@@ -571,8 +571,8 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
             sp10.unk4.y3 = temp2[1].vy - temp_a1_2;
 
             sp10.unk4.u1 = sp10.unk4.u3 =
-                temp_s7->u0
-                + ((temp_s7->u1 * ((temp_s1->trailCollapseCounter - j) - 1)) / 8);
+                temp_s7->u
+                + ((temp_s7->w * ((temp_s1->trailCollapseCounter - j) - 1)) / 8);
             sp10.unk4.v1 = spF8;
             sp10.unk4.v3 = spFC;
             sp10.unk4.r1 =
@@ -635,7 +635,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
         sp10.unk4.y1 = ((u_short*)spF0)[j * 2 + 3] + temp_a1_2;
         sp10.unk4.x3 = ((u_short*)spF0)[j * 2 + 2] - temp_s0;
         sp10.unk4.y3 = ((u_short*)spF0)[j * 2 + 3] - temp_a1_2;
-        sp10.unk4.u1 = sp10.unk4.u3 = temp_s7->u0;
+        sp10.unk4.u1 = sp10.unk4.u3 = temp_s7->u;
         sp10.unk4.v1 = spF8;
         sp10.unk4.v3 = spFC;
         sp10.unk4.r1 = (spC0.r * arg3->sampledTransparencyCurve[0]) >> 7;

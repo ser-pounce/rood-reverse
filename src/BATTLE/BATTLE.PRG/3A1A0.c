@@ -68,6 +68,12 @@ extern SVECTOR D_800F4B08;
 extern char D_800F4B18;
 extern u_char D_800E9278[];
 
+static inline int vs_battleRelativeSampleHeight(
+    D_1F8003BC_t* samples, int sector, int offset, int y)
+{
+    return samples->unk1C[(sector + offset) & 7] - y;
+}
+
 void func_800A29A0(D_800F4538_t* arg0)
 {
     int busy;
@@ -1099,7 +1105,104 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
     return -3000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A70DC);
+void func_800A70DC(D_800F4538_t* actor, int diagonal)
+{
+    D_1F8003BC_t* samples = (D_1F8003BC_t*)0x1F8003BC;
+    int i;
+    int j;
+    int delta;
+
+    actor->unk5AC_12 = 0;
+
+    for (i = 0; i < 8; ++i) {
+        samples->blocked[i] = 0;
+    }
+
+    if (actor->unk5AC_9 || actor->unk5AC_10) {
+        for (i = 0; i < 8; ++i) {
+            samples->unk1C[i] = 0;
+        }
+
+        return;
+    }
+
+    if (actor->unk0.unkA_3 == 2) {
+        for (i = 0; i < 8; ++i) {
+            samples->unk1C[i] = actor->unk0.position.vy;
+        }
+
+        return;
+    }
+
+    i = actor->unk63C;
+    samples->centerAttribute = (*func_800A8D64(&actor->unk0.position, 0) >> 5) & 1;
+    samples->unk1C[0] = func_800A6EE8(&actor->unk0.position, 0, -i, 0);
+    samples->attributes[0] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[6] = func_800A6EE8(&actor->unk0.position, i, 0, 0);
+    samples->attributes[6] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[2] = func_800A6EE8(&actor->unk0.position, -i, 0, 0);
+    samples->attributes[2] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[7] = func_800A6EE8(&actor->unk0.position, diagonal, -diagonal, 0);
+    samples->attributes[7] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[1] = func_800A6EE8(&actor->unk0.position, -diagonal, -diagonal, 0);
+    samples->attributes[1] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[3] = func_800A6EE8(&actor->unk0.position, -diagonal, diagonal, 0);
+    samples->attributes[3] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[5] = func_800A6EE8(&actor->unk0.position, diagonal, diagonal, 0);
+    samples->attributes[5] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[4] = func_800A6EE8(&actor->unk0.position, 0, i, 0);
+    samples->attributes[4] = (*D_800F49F0 >> 5) & 1;
+
+    if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0) {
+        j = actor->unk0.position.vy - 32;
+    } else if (actor->unk1848.unk8 == 0) {
+        j = actor->unk0.position.vy - 64;
+    } else {
+        j = actor->unk0.position.vy - 96;
+    }
+
+    for (i = 0; i < 8; ++i) {
+        if (samples->unk1C[i] > actor->unk0.position.vy) {
+            samples->unk1C[i] = actor->unk0.position.vy;
+        }
+
+        if ((!samples->attributes[i] || !samples->centerAttribute)
+            && j >= samples->unk1C[i]) {
+            samples->blocked[i] = 1;
+            actor->unk5AC_12 = 1;
+        }
+    }
+
+    if (!actor->unk0.unkA_0) {
+        return;
+    }
+
+    i = actor->unk1848.unk4 + ONE / 16;
+    i /= ONE / 8;
+
+    for (j = 0; j < 3; ++j) {
+        delta = vs_battleRelativeSampleHeight(samples, i, j - 1, actor->unk0.position.vy);
+
+        if (delta < -255) {
+            return;
+        }
+
+        if (delta >= -192) {
+            return;
+        }
+    }
+
+    for (j = 0; j < 5; ++j) {
+        delta = vs_battleRelativeSampleHeight(samples, i, j + 2, actor->unk0.position.vy);
+
+        if (delta < -192) {
+            return;
+        }
+    }
+
+    samples->unk1C[i] = actor->unk0.position.vy;
+    actor->unk5AC_12 = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A7524);
 

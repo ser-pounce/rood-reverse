@@ -106,7 +106,7 @@ typedef struct {
     u_char unk1;
     u_char unk2;
     u_char unk3;
-    u_short unk4;
+    short unk4;
     short unk6;
     u_int unk8;
     int unkC;

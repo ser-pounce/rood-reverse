@@ -28,10 +28,13 @@ void func_800B28A8(void*, MATRIX*, int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
+int func_800A3BC4(int, int);
+int func_800A3DB4(int, int, int);
 short func_8008DC7C(int, int);
 short func_8008DA24(int, int);
 u_int* func_800A8D64(SVECTOR*, int);
 int func_800B13CC(int, int, int);
+int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 void func_800AA850(int, short, int);
@@ -43,6 +46,7 @@ void func_800E4C28(int, int);
 int func_800E75EC(void);
 int func_8009E180(D_800F4538_t*, SVECTOR*);
 
+extern int D_800F49E8;
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
 extern u_char D_800F49F8;
@@ -340,7 +344,135 @@ int func_800A3760(int arg0, int arg1, int arg2)
     return best;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A38E0);
+int func_800A38E0(int actorId)
+{
+    D_800F4538_t* actor = D_800F4538[actorId];
+    D_800F45E0_t* object;
+    int direction;
+    int x;
+    int z;
+    int farX;
+    int farZ;
+    int objectId;
+    int found;
+    int oldX;
+    int oldZ;
+
+    if (actor == NULL) {
+        return -1;
+    }
+
+    if (actor->unk5AC_0 != 0) {
+        return -1;
+    }
+
+    if (actor->unk0.unkA_0 != 0) {
+        return -1;
+    }
+
+    if (actor->unk0.unkA_3 != 0) {
+        return -1;
+    }
+
+    direction = actor->unk0.facing + ONE / 8;
+    direction &= 0xFFF;
+    direction /= ONE / 4;
+    D_800F49E8 = direction;
+    oldX = farX = x = actor->unk0.currentTileX;
+    oldZ = farZ = z = actor->unk0.currentTileZ;
+    found = direction < 2 ? -1 : 1;
+
+    if (direction & 1) {
+        x += found;
+        farX = oldX + found * 2;
+    } else {
+        z += found;
+        farZ = oldZ + found * 2;
+    }
+
+    if (x < 0 || z < 0) {
+        return -1;
+    }
+
+    if (actor->unk5AC_3) {
+        x = x * 128 + 64;
+        objectId = actor->unk0.unk13;
+        object = D_800F45E0[objectId];
+        z = z * 128 + 64;
+
+        if (object->unk1A != 0) {
+            return -1;
+        }
+
+        if (!func_800A3DB4(x, z, actor->unk0.position.vy - 128)) {
+            return -1;
+        }
+
+        direction = actor->unk0.position.vy - 384;
+
+        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
+            return -1;
+        }
+
+        if (direction < func_800A3BC4(x, z)) {
+            return -1;
+        }
+
+        return objectId;
+    }
+
+    found = func_800A91DC(x, z, 0);
+
+    if (found == 0) {
+        return -1;
+    }
+
+    object = D_800F45E0[found];
+    objectId = found;
+
+    if (object->unk6C[8].unk0_4 == 1) {
+        return -1;
+    }
+
+    if (object->unk1A != 0) {
+        return -1;
+    }
+
+    x = x * 128 + 64;
+    z = z * 128 + 64;
+    farX = farX * 128 + 64;
+    farZ = farZ * 128 + 64;
+
+    if (object->unk1E < actor->unk0.position.vy - 128) {
+        return -1;
+    }
+
+    if (actor->unk0.position.vy + 64 < object->unk1E) {
+        return -1;
+    }
+
+    if (object->unk6C[8].actorId < 4) {
+        if (!func_800A3DB4(farX, farZ, object->unk1E)) {
+            return -1;
+        }
+    } else {
+        direction = actor->unk0.position.vy - 384;
+
+        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
+            return -1;
+        }
+
+        if (direction < func_800A3BC4(x, z)) {
+            return -1;
+        }
+    }
+
+    if (func_800A3C00(object, 1) == 0) {
+        return objectId;
+    }
+
+    return -1;
+}
 
 int func_800A3BC4(int arg0, int arg1)
 {

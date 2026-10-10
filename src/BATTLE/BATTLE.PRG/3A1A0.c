@@ -27,6 +27,7 @@ void func_800AEAE8(void*);
 void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
 void func_800B64A8(int, int, int);
+int func_8008C49C(int, int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
@@ -45,6 +46,8 @@ void func_800ACF54(D_800F4538_t*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
+void func_800E4BD8(int);
+void func_800E4BE0(int);
 void func_800E4C28(int, int);
 void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
@@ -742,7 +745,7 @@ void func_800A48CC(int index, int direction, int distance)
     actor->unk1848.unk8 = distance;
 }
 
-func_8008D2C0_t* func_800A4A24(int arg0)
+inline func_8008D2C0_t* func_800A4A24(int arg0)
 {
     func_8008D2C0_t sp10[4];
     int temp_v0;
@@ -760,7 +763,80 @@ func_8008D2C0_t* func_800A4A24(int arg0)
     return NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A88);
+void func_800A4A88(D_800F4538_t* actor, int mode)
+{
+    func_8008D2C0_t* contact;
+    int contactId;
+    int current;
+    int previous;
+
+    switch (mode) {
+    case 0:
+        if (actor->unk0.unkC_0 == 0) {
+            return;
+        }
+
+        contact = func_800A4A24(actor->unk0.unkC_0);
+        actor->unk6EE = contact->unk0 - actor->unk17EC.vx;
+        actor->unk6EF = contact->unk4 - actor->unk17EC.vz;
+        actor->unk0.position.vx += actor->unk6EE;
+        actor->unk0.position.vz += actor->unk6EF;
+        actor->unk0.position.vy += contact->unk2 - actor->unk17EC.vy;
+        break;
+
+    case 1:
+        if (actor->unk0.unkA_0 == 2 || actor->unk0.unkA_0 == 3) {
+            return;
+        }
+
+        if (actor->unk0.unkC_4 != (contactId = actor->unk0.unkC_0)) {
+            if (actor->unk0.unkF == 0 && contactId != 0
+                && contactId != actor->unk17EC.pad) {
+                func_800E4BE0(contactId);
+            }
+
+            actor->unk6EE = 0;
+            actor->unk6EF = 0;
+        }
+
+        if (actor->unk0.unkC_0 == 0) {
+            return;
+        }
+
+        contact = func_800A4A24(actor->unk0.unkC_0);
+        break;
+
+    case 2:
+        current = actor->unk0.unkC_0;
+        previous = actor->unk0.unkC_4;
+
+        if (current != previous) {
+            if (actor->unk0.unkC_0 != 0) {
+                actor->unk17EC.pad = current;
+                func_8008C49C(actor->unk0.unkC_0 - 2, actor->unk0.unkF);
+            } else {
+                func_8008C49C(previous - 2, -1);
+
+                if (!actor->unk0.unkA_0) {
+                    actor->unk6EE = 0;
+                    actor->unk6EF = 0;
+                }
+            }
+        }
+
+        if (actor->unk0.unkF == 0 && !actor->unk0.unkA_0
+            && actor->unk0.unkC_0 != actor->unk17EC.pad) {
+            func_800E4BD8(actor->unk17EC.pad);
+            actor->unk17EC.pad = 0;
+        }
+
+        actor->unk0.unk5D = actor->unk0.unkC_0;
+        actor->unk0.unkC_4 = actor->unk0.unkC_0;
+        return;
+    }
+
+    setVector(&actor->unk17EC, contact->unk0, contact->unk2, contact->unk4);
+}
 
 void func_800A4D8C(void)
 {

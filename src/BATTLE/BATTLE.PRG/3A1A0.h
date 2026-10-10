@@ -343,8 +343,8 @@ typedef struct {
     short unk6E8;
     short unk6EA;
     short unk6EC;
-    u_char unk6EE;
-    u_char unk6EF;
+    signed char unk6EE;
+    signed char unk6EF;
     u_char unk6F0;
     u_char unk6F1;
     u_char unk6F2;
@@ -359,7 +359,7 @@ typedef struct {
     u_short unk16A4[0xA0];
     D_800F4538_unk64 unk17E4;
     D_800F4538_unk64 unk17E8;
-    u_char unk17EC[8];
+    SVECTOR unk17EC;
     SVECTOR unk17F4;
     signed char unk17FC;
     u_char unk17FD;

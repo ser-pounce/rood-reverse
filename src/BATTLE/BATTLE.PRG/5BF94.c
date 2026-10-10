@@ -392,6 +392,7 @@ void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
 void func_800CF514(int arg0);
+D_800F53B8_t* func_800CF55C(D_800F53B8_t2*);
 void func_800CF614(D_800F53B8_t*);
 func_800D4910_t* func_800CF694(D_800F53B8_t*, effectExec, int);
 void func_800CF70C(D_800F53B8_t*, func_800D4910_t*);
@@ -4966,7 +4967,58 @@ void func_800CF1A8(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF218);
+char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
+{
+    D_800F53B8_t2 spawn;
+    int _[4] __attribute__((unused));
+    char token = func_800CF49C();
+    int i;
+
+    spawn.unk0 = &arg0->source;
+    spawn.unk14 = D_800F569C->block8Data;
+    spawn.unk18 = arg0->effectId * 3;
+    spawn.unk1C = NULL;
+    spawn.unk20 = token;
+    D_800F53C0 = *arg0;
+
+    for (i = 0; i < arg0->count; ++i) {
+        D_800F53B8_t* child;
+        int id = arg0->effectId;
+
+        if ((id >= 40 && id <= 41) || (id >= 44 && id <= 53)) {
+            spawn.unk4 = &arg0->targets[i];
+            spawn.unkC = &arg0->source;
+        } else {
+            switch ((u_short)id) {
+            case 23:
+            case 25:
+                spawn.unk4 = &arg0->targets[i];
+                spawn.unkC = &arg0->source;
+                break;
+            default:
+                spawn.unk4 = &arg0->source;
+                spawn.unkC = &arg0->targets[i];
+                break;
+            }
+        }
+
+        spawn.unk8 = &arg0->targets[i];
+        spawn.unk10 = arg0->targets[i].type;
+        child = func_800CF55C(&spawn);
+        child->unkD1C.unk3C = arg2;
+        child->unkD1C.unk38 = arg0->effectId;
+
+        if (arg0->effectId == 54) {
+            child->unk14_8 = 4;
+        } else {
+            child->unk14_8 = 2;
+        }
+
+        func_800CF484(3, child);
+    }
+
+    return token;
+}
 
 int func_800CF3F8(actionEffectRequest* arg0, int arg1)
 {

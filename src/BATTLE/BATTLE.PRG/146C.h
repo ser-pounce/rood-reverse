@@ -254,8 +254,8 @@ typedef struct {
     _mpdRoomSection9* section9;
     _mpdRoomSectionA* sectionA;
     _mpdRoomSectionB* sectionB;
-    int textureEffectsSection;
-    int sectionD;
+    void* textureEffectsSection;
+    void* sectionD;
     _mpdRoomSectionE* sectionE;
     vs_battle_scene* sectionF;
     u_short* section10;
@@ -746,10 +746,7 @@ typedef struct {
 } _sphericalCamera;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
+    SVECTOR unk0;
     union {
         char u8[2];
         u_short u16;

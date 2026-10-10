@@ -595,7 +595,7 @@ int func_80093764(int);
 void func_80093824(int);
 void func_80093A14(void);
 void func_80093B04(void*);
-void func_80093B68(int arg0, int arg1, int arg2, int arg3);
+void func_80093B68(int arg0, int arg1, u_int arg2, int arg3);
 int vs_battle_renderBattleAbilityTimingResult(int);
 void func_80093FEC(int, int, int, int);
 void func_80093914(int);
@@ -17011,9 +17011,9 @@ void func_8008EC48(VECTOR* arg0)
             red = 128 + D_800F1BB0.unk0 * 4;
             green = 128 + D_800F1BB0.unk1 * 4;
             blue = 128 + D_800F1BB0.unk2 * 4;
-            red = (short)vs_battle_clamp(red, 0, 255);
-            green = (short)vs_battle_clamp(green, 0, 255);
-            blue = (short)vs_battle_clamp(blue, 0, 255);
+            red = vs_battle_clamp(red, 0, 255);
+            green = vs_battle_clamp(green, 0, 255);
+            blue = vs_battle_clamp(blue, 0, 255);
             setRGB0(prim, red, green, blue);
         } else {
             setRGB0(prim, 128, 128, 128);

@@ -25,15 +25,20 @@ typedef struct {
 } D_800F2458_t;
 
 typedef struct {
-    u_char unk0[0x3A];
+    u_char unk0[0x34];
+    u_short tpage;
+    u_short clut;
+    u_short unk38;
     u_short unk3A;
     u_short unk3C;
-    u_char unk3E[0x16];
+    u_char unk3E[0xE];
+    SVECTOR position;
     SVECTOR offset;
     u_char unk5C[8];
     MATRIX matrix;
     SVECTOR rotation;
     VECTOR scale;
+    D_800F4538_unk68* model;
 } D_1F80035C_t;
 
 typedef struct {

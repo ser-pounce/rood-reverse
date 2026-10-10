@@ -291,7 +291,7 @@ int func_800A91DC(int arg0, int arg1, int arg2)
         D_800F45E0_t* temp_v1 = D_800F45E0[i];
         if ((temp_v1 != NULL) && !(temp_v1->unk8_0)
             && ((arg2 == 0) || (temp_v1->unk1A == 0)) && (temp_v1->unk12 == 0xFF)
-            && (temp_v1->unk6C[8].unk3 == temp_v1->unk12) && (temp_v1->unk5C == arg0)
+            && (temp_v1->unk16C.unk3 == temp_v1->unk12) && (temp_v1->unk5C == arg0)
             && (temp_v1->unk5E == arg1) && (var_t2 >= temp_v1->unk1E)) {
             var_t2 = temp_v1->unk1E;
             var_t3 = i;

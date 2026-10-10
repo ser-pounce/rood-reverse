@@ -4,6 +4,7 @@
 #include <inline_c.h>
 #include "vs_inline_c.h"
 #include "146C.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
 #include "../../SLUS_010.40/main.h"
@@ -16,16 +17,29 @@ typedef struct {
     u_char** data;
 } D_1F8003EC_t;
 
+typedef struct {
+    MATRIX bones[63];
+    VECTOR scale;
+} D_800F3C58_t;
+
 void func_8008EB04(int*, int*);
 int func_800A91DC(int, int, int);
 u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
 void func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int, u_char*);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
+void func_800B17F0(SVECTOR*, MATRIX*);
+void func_800B196C(MATRIX*, MATRIX*);
+void func_800B396C(MATRIX*, VECTOR*);
+int func_800B3A68(void*, MATRIX*, int, void*);
+void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
 
 extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
 extern u_char D_800E9278[];
+extern D_800F3C58_t D_800F3C58;
+extern MATRIX D_800F3C78;
 extern MATRIX D_800F4910;
 extern MATRIX D_800F49B8;
 
@@ -179,8 +193,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
     if (*((int*)&arg1->unk5B4 - 2) & 0xF0000000) {
         id = D_800E91A4[D_800F45E0[func_800A91DC(arg1->unk0.currentTileX,
                                        arg1->unk0.currentTileZ, 1)]
-                ->unk6C[8]
-                .actorId];
+                ->unk16C.actorId];
     } else {
         floor = arg1->unk0.unk5D;
         id = 0xD;
@@ -607,7 +620,7 @@ int func_800B13CC(int arg0, int arg1, int arg2)
 
         D_800F45E0_t* temp_v1 = D_800F45E0[i];
 
-        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && !(temp_v1->unk6C[8].unk0_3)
+        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && !(temp_v1->unk16C.unk0_3)
             && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
 
             int temp_v1_2 = temp_v1->unk1E;
@@ -635,7 +648,112 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B17F0);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B196C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B1A68);
+void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
+{
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    u_int attachment;
+    int value;
+
+    scratch->model = object->unk68;
+    gte_SetRotMatrix(camera);
+    gte_SetTransMatrix(camera);
+    setVector(&scratch->position, scratch->offset.vx, scratch->offset.vy + 16,
+        scratch->offset.vz);
+    gte_ldv0(&scratch->position);
+    gte_rtv0tr2();
+    attachment = object->unk16C.actorId;
+
+    if (attachment >= 4) {
+        MATRIX holderRotation;
+        SVECTOR anchors[2];
+        D_800F4538_t* holder;
+
+        if (object->unk12 == 0xFF) {
+            goto rotate;
+        }
+
+        holder = D_800F4538[object->unk12];
+        func_800A190C(object->unk12, 0xF0, &anchors[0], 1);
+        func_800A190C(object->unk12, 0xF1, &anchors[1], 1);
+        gte_SetRotMatrix(camera);
+        gte_SetTransMatrix(camera);
+        setVector(&scratch->position, (anchors[0].vx + anchors[1].vx) / 2,
+            (anchors[0].vy + anchors[1].vy) / 2, (anchors[0].vz + anchors[1].vz) / 2);
+        gte_ldv0(&scratch->position);
+        gte_rtv0tr2();
+        setVector(&scratch->rotation, object->unk10C.vx + object->unk24,
+            object->unk10C.vy + object->unk26, object->unk10C.vz + object->unk28);
+        gte_stlvnl(scratch->matrix.t);
+        func_800B17F0(&scratch->rotation, &scratch->matrix);
+        setVector(&scratch->rotation, holder->unk0.unk24, holder->unk0.facing,
+            holder->unk0.unk28);
+        func_800B17F0(&scratch->rotation, &holderRotation);
+        func_800B196C(&holderRotation, &scratch->matrix);
+    } else if (attachment < 2) {
+        if (object->unk1A != 0) {
+            setVector(&scratch->rotation, object->unk24, object->unk26, object->unk28);
+            gte_stlvnl(scratch->matrix.t);
+            RotMatrixYXZ_gte(&scratch->rotation, &scratch->matrix);
+            func_800B196C(camera, &scratch->matrix);
+            MulMatrix(&scratch->matrix, &object->unk6C[4]);
+            goto composed;
+        }
+
+        scratch->matrix = object->unk6C[4];
+        gte_stlvnl(scratch->matrix.t);
+    } else {
+    rotate:
+        copyVector(&scratch->rotation, &object->unk10C);
+        gte_stlvnl(scratch->matrix.t);
+        applyVector(&scratch->rotation, object->unk24, object->unk26, object->unk28, +=);
+        *(int*)&scratch->rotation &= 0x0FFF0FFF;
+        *(int*)&scratch->rotation.vz &= 0xFFF;
+        func_800B17F0(&scratch->rotation, &scratch->matrix);
+    }
+
+    func_800B196C(camera, &scratch->matrix);
+composed:
+    func_800B396C(&scratch->matrix, &D_800F3C58.scale);
+    D_800F3C58.bones[0] = scratch->matrix;
+    object->unk6C[0] = scratch->matrix;
+
+    if (object->unk2C != 64 || object->unk2E != 64 || object->unk30 != 64) {
+        setVector(&scratch->scale, object->unk2C, object->unk2E, object->unk30);
+        applyVector(&scratch->scale, 64, 64, 64, *=);
+        func_800B396C(&scratch->matrix, &scratch->scale);
+        D_800F3C58.bones[0] = scratch->matrix;
+        object->unk6C[0] = scratch->matrix;
+    }
+
+    D_800F3C78 = scratch->matrix;
+    object->unk6C[1] = scratch->matrix;
+
+    if (!object->unk8_1
+        || !func_800B3A68(
+            object, &object->unk6C[0], -vs_main_nearClip * 4, object->unk68)) {
+        return;
+    }
+
+    scratch->tpage = GetTPage(0, 0, 64, 256);
+
+    if (object->unk64.unk0 != 0 || object->unk9_0 >= 6) {
+        scratch->clut = GetClut(object->unkF * 16 + 768, 255);
+    } else {
+        scratch->clut = GetClut(object->unkF * 16 + 768, 237);
+    }
+
+    value = object->unk9_0 >= 4 && object->unk9_0 < 9 && object->unk9_0 != 6;
+
+    if (object->unk9_0 >= 12) {
+        value = 1;
+    }
+
+    if (value) {
+        func_800B5C30(&D_800F2458, object, &object->unk54, scratch->model);
+    } else {
+        func_800B4594(&D_800F2458, object, &object->unk54, scratch->model);
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B217C);
 

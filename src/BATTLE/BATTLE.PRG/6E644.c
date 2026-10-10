@@ -205,19 +205,47 @@ typedef struct {
 } func_800DCAA0_t1;
 
 typedef struct {
+    int unk0;
+    short unk4;
+    short unk6;
+    short unk8;
+    short unkA;
+    u_int unkC;
+    short unk10;
+    short unk12;
+    short unk14;
+    short unk16;
+} func_800DC888_t;
+
+typedef struct {
     u_char unk0;
     char unk1;
     u_char unk2;
-    char unk3[0x3D];
+    char unk3;
+    short unk4;
+    short unk6;
+    char unk8[0xC];
+    u_int unk14;
+    u_int unk18;
+    u_int unk1C_0 : 2;
+    u_int unk1C_2 : 2;
+    u_int unk1C_4 : 14;
+    u_int unk1C_18 : 2;
+    u_int unk1C_20 : 2;
+    u_int unk1C_22 : 2;
+    u_int unk1C_24 : 8;
+    char unk20[0x18];
+    short unk38;
+    char unk3A[2];
+    short unk3C;
+    char unk3E[2];
     int unk40;
 } func_800DEB10_t;
 
 typedef struct {
     u_short unk0;
     char unk2[2];
-    u_char unk4;
-    char unk5[0x3F];
-    int unk44;
+    func_800DEB10_t unk4;
     char unk48[2];
     u_short unk4A;
     func_800DEB10_t unk4C[0];
@@ -263,8 +291,9 @@ int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC30C(short*, short*, int, int);
 void func_800DC810(func_800DEEA4_t*);
-void func_800DC888(int);
+void func_800DC888(func_800DC888_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
@@ -1050,9 +1079,48 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC784);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC810);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC888);
+void func_800DC888(func_800DC888_t* arg0)
+{
+    int i;
+    func_800DC888_t* row;
 
-void func_800DCAA0(func_800DCAA0_t1* arg0, int arg1, func_800DCAA0_t* arg2, int arg3)
+    if (D_800F5900->unk4.unk40 == 0) {
+        vs_action_t* action = &vs_main_actions[D_800F5900->unk0];
+
+        row = &arg0[D_800F5900->unk4.unk0];
+
+        switch (action->type) {
+        case actionTypeSpell:
+            func_800DC30C(&row->unk8, &row->unkA, action->cost, 1);
+            break;
+
+        case actionTypeBreakArt:
+            func_800DC30C(&row->unk4, &row->unk6, action->cost, 1);
+            break;
+
+        case actionTypeBaseAttack:
+            func_800DC30C(&row->unk10, &row->unk12, action->cost, 1);
+            break;
+        }
+    }
+
+    for (i = -1; i < D_800F5900->unk4A; ++i) {
+        func_800DEB10_t* entry = i < 0 ? &D_800F5900->unk4 : &D_800F5900->unk4C[i];
+
+        if (entry->unk40 == 0) {
+            row = &arg0[entry->unk0];
+            func_800DC30C(&row->unk4, &row->unk6, entry->unk4, entry->unk1C_0);
+            func_800DC30C(&row->unk8, &row->unkA, entry->unk6, entry->unk1C_2);
+            func_800DC30C(&row->unk10, &row->unk12, entry->unk38, entry->unk1C_18);
+            func_800DC30C(&row->unk14, &row->unk16, entry->unk3C, entry->unk1C_22);
+            row->unkC |= entry->unk14;
+            row->unkC &= ~entry->unk18;
+        }
+    }
+}
+
+void func_800DCAA0(
+    func_800DCAA0_t1* arg0, func_800DC888_t* arg1, func_800DCAA0_t* arg2, int arg3)
 {
     SVECTOR sp20;
     SVECTOR sp28;
@@ -1119,11 +1187,11 @@ void func_800DEB10(func_800DEEA4_t* arg0)
         return;
     }
 
-    if (arg0->unk44 != 0) {
+    if (arg0->unk4.unk40 != 0) {
         return;
     }
 
-    entry = D_800F5878[arg0->unk4];
+    entry = D_800F5878[arg0->unk4.unk0];
     temp_t1 = entry->unk54;
 
     if (entry == NULL) {
@@ -1164,8 +1232,8 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEC88);
 void func_800DEEA4(func_800DEEA4_t* arg0)
 {
     if (arg0 != NULL) {
-        if (arg0->unk44 == 0) {
-            func_800E78F4_t* entry = D_800F5878[arg0->unk4];
+        if (arg0->unk4.unk40 == 0) {
+            func_800E78F4_t* entry = D_800F5878[arg0->unk4.unk0];
 
             if (entry != NULL) {
                 entry->unk9A = 0;

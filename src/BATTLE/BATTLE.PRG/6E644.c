@@ -84,6 +84,14 @@ typedef struct {
 } func_800DEB10_t2;
 
 typedef struct {
+    u_int unk0 : 1;
+    u_int unk1 : 1;
+    u_int unk2 : 1;
+    u_int unk3 : 1;
+    u_int unk4 : 28;
+} func_800DCAA0_t2;
+
+typedef struct {
     int unk0;
     u_int unk4_0 : 3;
     u_int unk4_3 : 2;
@@ -96,7 +104,15 @@ typedef struct {
     u_int unkC_7 : 12;
     u_int unkC_19 : 8;
     u_int unkC_27 : 5;
+    func_800DCAA0_t2 unk10;
 } func_800DCAA0_t;
+
+typedef struct {
+    u_int unk0_0 : 6;
+    u_int unk0_6 : 1;
+    u_int unk0_7 : 25;
+    u_int unk4;
+} func_800DD604_t;
 
 typedef struct {
     u_int unk0_0 : 1;
@@ -159,7 +175,7 @@ typedef struct func_800E78F4_t {
     char unk13A[5];
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk150[0x2C];
+    char unk154[0x28];
     int unk17C;
     int unk180;
     int unk184;
@@ -171,7 +187,8 @@ typedef struct func_800E78F4_t {
     char unk224[4];
     int unk228;
     func_800DCAA0_t* unk22C;
-    char unk230[0x200];
+    func_800DD604_t unk230[6][4];
+    char unk2F0[0x140];
     func_800DCAA0_t* unk430[16];
     int unk470;
 } func_800E78F4_t;
@@ -307,6 +324,7 @@ int func_800E4764(func_800E78F4_t*, int*, int*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
+int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
@@ -1287,7 +1305,46 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD000);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD344);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD604);
+void func_800DD604(func_800E78F4_t* arg0)
+{
+    u_int best = 0;
+    int row;
+    int col;
+    func_800DCAA0_t* choice = &arg0->unk140;
+    vs_battle_actor2* stats = arg0->unk5C;
+
+    for (row = 0; row < 6; ++row) {
+        for (col = 0; col < 4; ++col) {
+            int action = stats->armor[row][col].id;
+            func_800DD604_t* config = &arg0->unk230[row][col];
+            func_800DCAA0_t2 flags;
+
+            if (!func_800E4DF8(arg0, row, col) || !config->unk0_6
+                || best >= config->unk4) {
+                continue;
+            }
+
+            best = config->unk4;
+            choice->unk8 = best;
+            choice->unk4_3 = col;
+            choice->unk4_0 = row;
+            choice->unk4_5 = action;
+            choice->unk10.unk1 = 0;
+            flags = choice->unk10;
+            flags.unk2 = vs_main_actions[action].flagsE.unk12;
+            choice->unkC_19 = 128;
+            flags.unk0 = 0;
+            flags.unk3 = 0;
+            choice->unk10 = flags;
+        }
+    }
+
+    if (best == 0) {
+        choice->unk4_5 = 0;
+    }
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD7CC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD918);
 

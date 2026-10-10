@@ -1,5 +1,6 @@
 #include "common.h"
 #include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "../../SLUS_010.40/main.h"
 
@@ -43,9 +44,11 @@ void func_800ACF54(D_800F4538_t*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800E4C28(int, int);
+void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
 int func_8009E180(D_800F4538_t*, SVECTOR*);
 
+extern int D_800E90A8;
 extern int D_800F49E8;
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
@@ -552,7 +555,92 @@ int func_800A3DB4(int x, int z, int minimumHeight)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3E6C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A41D0);
+void func_800A41D0(D_800F4538_t* actor, int mode)
+{
+    D_800F45E0_t* object = D_800F45E0[D_800E90A8];
+    int direction;
+    int step;
+    int facing;
+
+    if (mode == 2) {
+        switch (object->unk6C[8].actorId) {
+        case 0:
+        case 1:
+            object->unk1A = 0xF9;
+            break;
+        case 2:
+            object->unk1A = 0xFF;
+            break;
+        case 3:
+            object->unk1A = 0xFE;
+            break;
+        }
+
+        object->unk6C[8].unk4 = 0;
+        func_800E68A0(object);
+        return;
+    }
+
+    if (mode == 1) {
+        SVECTOR points[2];
+        int x = actor->unk0.currentTileX;
+        int z = actor->unk0.currentTileZ;
+        step = D_800F49E8 < 2 ? -1 : 1;
+
+        if (D_800F49E8 & 1) {
+            x += step;
+        } else {
+            z += step;
+        }
+
+        step = D_800F49E8;
+        object->unk5C = x;
+        object->unk5E = z;
+        object->unk1C = x * 128 + 64;
+        object->unk20 = z * 128 + 64;
+        object->unk26 = (object->unk26 + step * (ONE / 4)) & 0xFFF;
+        func_800A190C(object->unk12, 0xF0, &points[0], 1);
+        func_800A190C(object->unk12, 0xF1, &points[1], 1);
+        object->unk1E = (points[0].vy + points[1].vy) / 2 + 60;
+        object->unk1A = 0xFC;
+        object->unk36 = 24;
+        object->unk12 = 0xFF;
+        actor->unk5AC_3 = 0;
+        return;
+    }
+
+    if (object == NULL || object->unk9_0) {
+        func_800A0204(actor->unk0.unkF, 1, 0, 8);
+        return;
+    }
+
+    func_800E4C28(object->unk5C, object->unk5E);
+    func_800E68A0(object);
+
+    if (object->unk6C[8].unk0_4 == 2) {
+        func_800E68A0(object);
+    }
+
+    step = D_800F49E8 < 2 ? 128 : -128;
+
+    if (D_800F49E8 & 1) {
+        object->unk34 += step;
+    } else {
+        object->unk38 += step;
+    }
+
+    facing = (object->unk26 + (4 - D_800F49E8) * (ONE / 4)) & 0xFFF;
+    direction = facing + ONE / 8;
+    direction &= 0xFFF;
+    object->unk26 = facing;
+    direction /= ONE / 4;
+    object->unk26 = direction * (ONE / 4);
+    object->unk5C = -1;
+    object->unk1A = 8;
+    object->unk12 = actor->unk0.unkF;
+    actor->unk0.unk13 = D_800E90A8;
+    actor->unk5AC_3 = 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
 

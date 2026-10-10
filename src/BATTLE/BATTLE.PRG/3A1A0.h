@@ -487,7 +487,7 @@ typedef struct {
     short unk20;
     short unk22;
     short unk24;
-    short unk26;
+    u_short unk26;
     int unk28;
     short unk2C;
     short unk2E;
@@ -495,7 +495,8 @@ typedef struct {
     short unk32;
     short unk34;
     short unk36;
-    int unk38;
+    short unk38;
+    short unk3A;
     int unk3C;
     int unk40;
     int unk44;

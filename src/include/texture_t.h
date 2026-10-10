@@ -13,6 +13,6 @@ typedef struct {
 
 extern _texture_t _disMap[];
 
-static void _renderTextureFadeInTint(int, int, int, P_CODE[]);
-static void _renderTexturePopIn(int, int, int, P_CODE*);
-static void _renderTextureWipe(int, int, int, P_CODE*, int);
+static void _renderTextureFadeInTint(int, int, int, CVECTOR[]);
+static void _renderTexturePopIn(int, int, int, CVECTOR[]);
+static void _renderTextureWipe(int, int, int, CVECTOR[], int);

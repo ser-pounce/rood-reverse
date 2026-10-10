@@ -220,7 +220,7 @@ segments:
       - [0x31D58, c, libgte/REG11]      # |
       - [0x31D78, c, libgte/MTX_12]     # |
       - [0x31D98, c, libgte/MTX_09]     # |
-      - [0x31DC8, c, libgte/MTX_004]    # |
+      - [0x31DC8, hasm, libgte/MTX_004] # |
       - [0x31F24, c, libgte/MTX_06]     # |- Presumably compiled as raw ASM 
       - [0x31F7C, c, libgte/MTX_05]     # |
       - [0x31FC8, c, libgte/SMP_05]     # |

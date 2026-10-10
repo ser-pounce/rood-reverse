@@ -14,11 +14,11 @@ $(BUILD)/src/SLUS_010.40/25AC.c.o: MASFLAGS += --expand-div
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o, \
 	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC main \
-	$(addprefix libgte/, REG13 REG12 REG11 MTX_12 MTX_09 MTX_004 MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00) \
+	$(addprefix libgte/, REG13 REG12 REG11 MTX_12 MTX_09 MTX_06 MTX_05 SMP_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00) \
 ): ASFLAGS += -no-pad-sections
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/libgte/%.s.o, \
-	MTX_005 \
+	MTX_005 MTX_004 \
 ): ASFLAGS += -no-pad-sections
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,2MBYTE.OBJ libcd/SYS overlay 25AC main): CC1VER := 2.8.1-psx

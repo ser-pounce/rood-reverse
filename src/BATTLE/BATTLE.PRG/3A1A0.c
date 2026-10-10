@@ -43,6 +43,7 @@ int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800ACF54(D_800F4538_t*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800A70DC(D_800F4538_t*, int);
 void func_800E4C28(int, int);
 void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
@@ -644,7 +645,34 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A46A4);
+int func_800A46A4(D_800F4538_t* actor)
+{
+    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    int saved = actor->unk0.unkC_0;
+    int radius = actor->unk63C;
+    int direction;
+
+    actor->unk0.unkC_0 = 0;
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
+    func_800A70DC(actor, rsin(ONE / 8) * radius / ONE);
+    actor->unk0.unkC_0 = saved;
+    actor->unk0.unkA_3 = 2;
+    direction = actor->unk1800 >> 9;
+    scratch->blocked[direction] = 0;
+    scratch->blocked[direction + 1] = 0;
+    --direction;
+    direction &= 7;
+    scratch->blocked[direction] = 0;
+
+    for (direction = 0; direction < 8; ++direction) {
+        if (scratch->blocked[direction]) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 int func_800A47C4(void)
 {

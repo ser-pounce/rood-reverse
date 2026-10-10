@@ -364,7 +364,7 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    short unk1800;
+    u_short unk1800;
     u_char unk1802[2];
     texMapAnimation_t unk1804[2];
     D_800F4538_unk180C unk180C[2];
@@ -625,7 +625,11 @@ typedef struct {
     u_char excluded[17];
     u_char pad15[3];
     D_800F45E0_t* unk18;
-    short unk1C[18];
+    short unk1C[8];
+    u_char blocked[8];
+    u_char attributes[8];
+    u_char centerAttribute;
+    u_char pad3D[3];
     int unk40;
 } D_1F8003BC_t;
 

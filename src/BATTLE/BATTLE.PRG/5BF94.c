@@ -336,6 +336,7 @@ typedef struct {
     SVECTOR control1;
 } func_800D0548_arg1;
 
+void func_80046578(int);
 int _getCollisionMapDimensions(int);
 void func_800C02A8(void);
 void* func_800C282C(void);
@@ -6669,7 +6670,36 @@ int func_800D57FC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5904);
+int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
+{
+    SVECTOR position;
+    u_long* commands = arg1->unk0;
+    u_long command = commands[arg1->unk6];
+
+    if ((command & 0x1FF) != arg0->unkD1C.unk30->unk2) {
+        return 1;
+    }
+
+    if (((command >> 18) & 3) == 2) {
+        if (D_800F569C->unkCC != 0) {
+            func_80046578(D_800F569C->unkCC);
+        }
+    } else {
+        int bank = ((command >> 18) & 3) == 0 ? 0x7E : 0xF00000;
+
+        if (((command >> 20) & 3) == 0) {
+            vs_main_playSfxDefault(bank, (command >> 9) & 0x1FF);
+        } else {
+            setVector(&position,
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[0],
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[1],
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[2]);
+            vs_main_panSfx(bank, (commands[arg1->unk6] >> 9) & 0x1FF, &position);
+        }
+    }
+
+    return func_800D5780(arg1);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D5A98);
 

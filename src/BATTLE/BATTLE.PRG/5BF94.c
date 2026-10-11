@@ -6378,9 +6378,9 @@ void func_800D6CCC(int* arg0)
     arg0[7] = 0;
 }
 
-void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2)
+void func_800D6CF0(func_800D6CF_t* arg0, int textureIndex, int arg2)
 {
-    arg0->unk16 = arg1;
+    arg0->textureIndex = textureIndex;
     arg0->unk18 = (u_char*)D_800F569C->block2Data + D_800F569C->block2Data[arg2 + 2];
     arg0->unkE = 0;
     arg0->unk6 = 0;
@@ -6400,7 +6400,8 @@ void func_800D6D24(func_800D6CF_t* arg0)
 
         switch (w & 0xF0000000) {
         case 0:
-            arg0->textureInfo = D_800F569C->textureInfoTable[arg0->unk16] + (w & 0xFFFF);
+            arg0->textureInfo =
+                D_800F569C->textureInfoTable[arg0->textureIndex] + (w & 0xFFFF);
             *(short*)&arg0->unk6 = (w >> 16) & 0x3FFF;
             arg0->unkE += 4;
             return;

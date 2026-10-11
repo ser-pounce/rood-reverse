@@ -1,4 +1,3 @@
-#include "common.h"
 #include "146C.h"
 #include "30DB0.h"
 #include "38C1C.h"
@@ -231,7 +230,6 @@ void func_800970BC(void);
 
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
-extern char D_80068EB4[];
 extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
@@ -263,7 +261,8 @@ extern short D_800F227C;
 extern short D_800F227E;
 extern SVECTOR D_800F2280;
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068EB4);
+static char const D_80068EB4[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x40, 0x5E,
+    0x67, 0x6E, 0x74, 0x79, 0x7C, 0x7E, 0x7F };
 
 void func_80090C2C(int arg0)
 {

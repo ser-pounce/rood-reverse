@@ -499,7 +499,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     func_800D6D24(&arg3->unkC);
 
-    temp_s7 = &D_800F569C->block1Data[arg3->unkC.unk1C->dataIndex];
+    temp_s7 = &D_800F569C->block1Data[arg3->unkC.textureInfo->dataIndex];
 
     for (i = 0; i < arg3->trailcount; ++i) {
         _trail* temp_s1 = &arg3->trails[i];

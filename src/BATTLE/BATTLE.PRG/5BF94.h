@@ -206,7 +206,7 @@ typedef struct {
     u_char unk16;
     u_char unk17;
     u_char* unk18;
-    pFileBlock1Indices* unk1C;
+    pFileBlock1Indices* textureInfo;
 } func_800D6CF_t;
 
 typedef struct {

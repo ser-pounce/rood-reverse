@@ -218,7 +218,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
+        texture = &D_800F569C->block1Data[state->texture.textureInfo->dataIndex];
         uv[0][0].u = uv[0][2].u = uv[1][0].u = uv[1][2].u = texture->u;
         uv[0][1].u = uv[0][3].u = uv[1][1].u = uv[1][3].u = uv[0][0].u + texture->w;
         uv[0][0].v = uv[0][1].v = texture->v;

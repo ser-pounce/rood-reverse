@@ -229,7 +229,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
+        texture = &D_800F569C->block1Data[state->texture.textureInfo->dataIndex];
 
         for (column = 0; column < VS_CLOSED_RING_TEXTURE_COLUMNS + 1; ++column) {
             u[column] =

@@ -366,7 +366,7 @@ void _parsePfileBlock1(pFileBlock1* block)
     D_800F569C->block1Data = (void*)block + block->dataOffset;
 
     for (i = 0; i < D_800F569C->block1TableCount; ++i) {
-        D_800F569C->block1Tables[i] = (void*)block + block->tableOffsets[i];
+        D_800F569C->textureInfoTable[i] = (void*)block + block->tableOffsets[i];
     }
 }
 

@@ -194,12 +194,6 @@ typedef struct {
     short type;
 } func_80092548_t2;
 
-typedef struct {
-    u_char count;
-    u_char labels[2];
-    u_char color;
-} D_800690B4_t;
-
 short func_8008DC7C(int, int);
 void func_8008F29C(int, int);
 void func_8008F30C(int, int);
@@ -238,14 +232,6 @@ void func_800970BC(void);
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
 extern char D_80068EB4[];
-extern int D_80068F04[][4];
-extern u_short D_80068F64[][4];
-extern int D_80068F94[];
-extern RECT D_80068FAC[];
-extern D_800690B4_t D_800690B4[];
-extern const CVECTOR D_80069134[];
-extern const RECT D_80069144[];
-extern const RECT D_8006917C[];
 extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
@@ -1715,20 +1701,68 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F04);
+static int const D_80068F04[][4] = { {
+                                         vs_getXY(-6, -22),
+                                         vs_getXY(18, -22),
+                                         vs_getXY(-6, 1),
+                                         vs_getXY(18, 1),
+                                     },
+    {
+        vs_getXY(-17, -22),
+        vs_getXY(7, -22),
+        vs_getXY(-17, 1),
+        vs_getXY(7, 1),
+    },
+    {
+        vs_getXY(-10, -29),
+        vs_getXY(20, -29),
+        vs_getXY(-10, 1),
+        vs_getXY(20, 1),
+    },
+    {
+        vs_getXY(-19, -29),
+        vs_getXY(9, -29),
+        vs_getXY(-19, 1),
+        vs_getXY(9, 1),
+    },
+    {
+        vs_getXY(-9, -16),
+        vs_getXY(11, -16),
+        vs_getXY(-9, -3),
+        vs_getXY(11, -3),
+    },
+    {
+        vs_getXY(-10, -16),
+        vs_getXY(10, -16),
+        vs_getXY(-10, -3),
+        vs_getXY(10, -3),
+    } };
 
+extern u_short D_80068F64[][4];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F64);
 
+extern int D_80068F94[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F94);
 
+extern RECT D_80068FAC[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068FAC);
 
+typedef struct {
+    u_char count;
+    u_char labels[2];
+    u_char color;
+} D_800690B4_t;
+
+extern D_800690B4_t D_800690B4[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800690B4);
 
+extern const CVECTOR D_80069134[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069134);
 
+extern const RECT D_80069144[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069144);
 
+extern const RECT D_8006917C[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_8006917C);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_800691E4);
@@ -2388,7 +2422,7 @@ void func_80095C18(int actor, int kind)
     if (!(kind & 8)) {
         int flags;
         int z;
-        int* corners;
+        int const* corners;
         u_short* uv;
 
         if (kind & 0x80) {

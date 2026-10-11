@@ -68,7 +68,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int column;
     int drawRow;
     int drawColumn;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
 
     switch (arg1) {
     case 1:
@@ -229,16 +229,16 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
+        texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
 
         for (column = 0; column < VS_CLOSED_RING_TEXTURE_COLUMNS + 1; ++column) {
             u[column] =
-                texture->u0 + ((texture->u1 * column) / VS_CLOSED_RING_TEXTURE_COLUMNS);
+                texture->u + ((texture->w * column) / VS_CLOSED_RING_TEXTURE_COLUMNS);
         }
 
-        v[0] = texture->v0;
-        v[2] = v[0] + texture->v1;
-        v[1] = texture->v0 + ((texture->v1 * fraction) >> 12);
+        v[0] = texture->v;
+        v[2] = v[0] + texture->h;
+        v[1] = texture->v + ((texture->h * fraction) >> 12);
 
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             int depth;

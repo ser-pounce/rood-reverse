@@ -145,7 +145,7 @@ extern int _illustLbas[];
 extern int _illustSizes[];
 extern _texture_t _disMap[];
 extern u_char D_800DB876;
-extern P_CODE D_800DBAA8[];
+extern CVECTOR D_800DBAA8[];
 extern short titleThresholds[];
 extern u_int rankScores[];
 extern short D_800DBB68;
@@ -1924,7 +1924,7 @@ void func_8006C3CC(int arg0)
 
 static void _renderCongratulations(int arg0, int arg1, int arg2)
 {
-    extern P_CODE D_800DBA7C[2];
+    extern CVECTOR D_800DBA7C[2];
 
     if (arg2 < 0) {
         arg2 = 0;
@@ -1935,8 +1935,8 @@ static void _renderCongratulations(int arg0, int arg1, int arg2)
     }
 
     if (arg2 > 0) {
-        D_800DBA7C[0].code = arg2;
-        D_800DBA7C[1].code = arg2;
+        D_800DBA7C[0].cd = arg2;
+        D_800DBA7C[1].cd = arg2;
         arg0 = arg0 - ((_disMap[22].w + _disMap[23].w) >> 1);
         _renderTexturePopIn(arg0, arg1, 0x16, D_800DBA7C);
         _renderTexturePopIn(arg0 + _disMap[22].w, arg1, 0x17, &D_800DBA7C[1]);
@@ -1945,7 +1945,7 @@ static void _renderCongratulations(int arg0, int arg1, int arg2)
 
 static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern P_CODE D_800DBA88[];
+    extern CVECTOR D_800DBA88[];
 
     char sp10[10];
     int i;
@@ -1962,7 +1962,7 @@ static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((u
 
     if (arg2 > 0) {
 
-        D_800DBA88[0].code = arg2;
+        D_800DBA88[0].cd = arg2;
 
         sprintf(sp10, "%09d", _score);
 
@@ -1996,7 +1996,7 @@ static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((u
 static void _renderIncrementalScore(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern P_CODE D_800DBA90[];
+    extern CVECTOR D_800DBA90[];
 
     char sp18[16];
     int temp_s2;
@@ -2070,7 +2070,7 @@ static void _renderIncrementalScore(
 static void _renderMapCompletion(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern P_CODE D_800DBA98[];
+    extern CVECTOR D_800DBA98[];
 
     char sp10[2];
     int i;
@@ -2086,7 +2086,7 @@ static void _renderMapCompletion(
 
     if (arg2 > 0) {
 
-        D_800DBA98[0].code = arg2;
+        D_800DBA98[0].cd = arg2;
 
         sprintf(sp10, "%03d", _mapCompletion);
 
@@ -2113,7 +2113,7 @@ static void _renderMapCompletion(
 static void _renderIncrementalMapCompletion(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern P_CODE D_800DBAA0[];
+    extern CVECTOR D_800DBAA0[];
 
     char sp18[2];
     int temp_s4;
@@ -2189,14 +2189,14 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        D_800DBAA8[0].code = timer;
+        D_800DBAA8[0].cd = timer;
         _renderTextureFadeInTint(x - (D_800DB876 >> 1), y, 12, D_800DBAA8);
     }
 }
 
 void _renderRiskbreakerRank(int x, int y, int timer)
 {
-    extern P_CODE D_800DBAB0[];
+    extern CVECTOR D_800DBAB0[];
 
     int xInset;
     int i;
@@ -2213,7 +2213,7 @@ void _renderRiskbreakerRank(int x, int y, int timer)
 
     if (timer > 0) {
 
-        D_800DBAB0[0].code = timer;
+        D_800DBAB0[0].cd = timer;
 
         for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
             xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;

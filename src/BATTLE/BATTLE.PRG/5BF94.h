@@ -190,7 +190,7 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short dataIndex;
-} pFileBlock1Indices;
+} pFileTextureInfo;
 
 typedef struct {
     int unk0;
@@ -203,10 +203,10 @@ typedef struct {
     u_short unkE;
     int unk10;
     short unk14;
-    u_char unk16;
+    u_char textureIndex;
     u_char unk17;
     u_char* unk18;
-    pFileBlock1Indices* unk1C;
+    pFileTextureInfo* textureInfo;
 } func_800D6CF_t;
 
 typedef struct {
@@ -316,12 +316,19 @@ typedef struct {
 typedef struct {
     short clut;
     short tpage;
-    u_char u0;
-    u_char v0;
-    u_char u1;
-    u_char v1;
-    u_char unk8[0x10];
-} pFileBlock1Data;
+    u_char u;
+    u_char v;
+    u_char w;
+    u_char h;
+    short x0;
+    short y0;
+    short x1;
+    short y1;
+    short x2;
+    short y2;
+    short x3;
+    short y3;
+} pFileTexture;
 
 typedef struct {
     int unk0;
@@ -331,8 +338,8 @@ typedef struct {
     pFileCurveBlock* curveBlock;
     char* block8Data;
     int block1TableCount;
-    pFileBlock1Indices* block1Tables[4];
-    pFileBlock1Data* block1Data;
+    pFileTextureInfo* textureInfoTable[4];
+    pFileTexture* textures;
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;
@@ -673,7 +680,7 @@ void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
 void func_800D2ADC(D_800F53B8_t*, int, int, int, func_800FB4C0_t*);
 void func_800D6CCC(int* arg0);
-void func_800D6CF0(func_800D6CF_t* arg0, int arg1, int arg2);
+void func_800D6CF0(func_800D6CF_t* arg0, int textureIndex, int arg2);
 
 extern u_short vs_battle_menuStrings[];
 extern char* vs_battle_limbNames[];

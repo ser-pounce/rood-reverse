@@ -62,7 +62,7 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int cosAngle, sinAngle;
     MATRIX* actorMatrix;
     vs_rotatingSurfacePrim* prim;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
 
     alive = 1;
     state = arg0->unk8;
@@ -221,13 +221,12 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
+        texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
         for (sample = 0; sample < VS_ROTATING_SURFACE_U_SEGMENTS + 1; ++sample) {
-            u[sample] =
-                texture->u0 + texture->u1 * sample / VS_ROTATING_SURFACE_U_SEGMENTS;
+            u[sample] = texture->u + texture->w * sample / VS_ROTATING_SURFACE_U_SEGMENTS;
         }
         for (sample = 0; sample < 5; ++sample) {
-            v[sample] = texture->v0 + texture->v1 * sample / 4;
+            v[sample] = texture->v + texture->h * sample / 4;
         }
         for (row = 0; row < 4; ++row) {
             for (column = 0; column < 15; ++column) {

@@ -33,7 +33,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
     int angleOrDepth;
     int segment;
     vs_particlePrim* prim;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
     DVECTOR* point;
     int width;
 
@@ -78,7 +78,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
 
     func_800D6D24(&arg3->unk10);
 
-    texture = &D_800F569C->block1Data[arg3->unk10.unk1C->dataIndex];
+    texture = &D_800F569C->textures[arg3->unk10.textureInfo->dataIndex];
 
     for (particleIndex = 0; particleIndex < arg3->unk2; ++particleIndex) {
 
@@ -122,9 +122,9 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
         quad.unk4.x2 = screenStart[0].vx - offsetX;
         quad.unk4.y2 = screenStart[0].vy - offsetY;
 
-        quad.unk4.u0 = quad.unk4.u2 = texture->u0;
-        topV = texture->v0;
-        bottomV = topV + texture->v1;
+        quad.unk4.u0 = quad.unk4.u2 = texture->u;
+        topV = texture->v;
+        bottomV = topV + texture->h;
         quad.unk4.v0 = topV;
         quad.unk4.v2 = bottomV;
         for (segment = 0; segment < 7; ++segment) {
@@ -142,7 +142,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
             quad.unk4.y3 = point[1].vy - offsetY;
 
             quad.unk4.u1 = quad.unk4.u3 =
-                texture->u0 + ((texture->u1 * curveSamples[segment + 1]) / 0x3000);
+                texture->u + ((texture->w * curveSamples[segment + 1]) / 0x3000);
             quad.unk4.v1 = topV;
             quad.unk4.v3 = bottomV;
             angleOrDepth = (depths[segment] + depths[segment + 1]) / 2;
@@ -211,7 +211,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
         quad.unk4.y1 = ((u_short*)screenStart)[segment * 2 + 3] + offsetY;
         quad.unk4.x3 = ((u_short*)screenStart)[segment * 2 + 2] - offsetX;
         quad.unk4.y3 = ((u_short*)screenStart)[segment * 2 + 3] - offsetY;
-        quad.unk4.u1 = quad.unk4.u3 = texture->u0 + texture->u1;
+        quad.unk4.u1 = quad.unk4.u3 = texture->u + texture->w;
         quad.unk4.v1 = topV;
         quad.unk4.v3 = bottomV;
         angleOrDepth = (depths[segment] + depths[segment + 1]) / 2;

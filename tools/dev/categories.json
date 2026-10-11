@@ -128,6 +128,7 @@
     ],
     "complete_units": [
         "SLUS_010.40/overlay",
+        "BATTLE.PRG/2842C",
         "INITBTL.PRG/18",
         "INITBTL.PRG/FB0",
         "INITBTL.PRG/12AC",

@@ -63,7 +63,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     int drawRow;
     int drawColumn;
     vs_transposedRingPrim* prim;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
     alive = 1;
     state = arg0->unk8;
     battle = D_800F53BC;
@@ -220,14 +220,14 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
+        texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
         for (column = 0; column < 17; ++column) {
-            v[column] = texture->v0 + ((texture->v1 * column) / 16);
+            v[column] = texture->v + ((texture->h * column) / 16);
         }
 
-        u[0] = texture->u0;
-        u[2] = u[0] + texture->u1;
-        u[1] = texture->u0 + ((texture->u1 * fraction) >> 12);
+        u[0] = texture->u;
+        u[2] = u[0] + texture->w;
+        u[1] = texture->u + ((texture->w * fraction) >> 12);
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             for (drawColumn = 0; drawColumn < 15; ++drawColumn) {
                 depth = (((depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1])

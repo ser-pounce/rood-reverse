@@ -41,7 +41,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int alive;
     MATRIX* actorMatrix;
     int color, index, depth;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
     u_char* face;
     vs_mesh10Prim* prim;
     alive = 1;
@@ -194,15 +194,15 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             gte_stszotz(&depths[index]);
         }
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
-        uv[1].u = texture->u0 + texture->u1 / 4;
-        uv[2].u = texture->u0 + texture->u1 * 3 / 4;
-        uv[0].u = uv[4].u = texture->u0 + texture->u1 / 2;
-        uv[3].u = texture->u0;
-        uv[5].u = uv[3].u + texture->u1;
-        uv[1].v = uv[2].v = texture->v0 + texture->v1 / 2;
-        uv[0].v = texture->v0;
-        uv[3].v = uv[4].v = uv[5].v = uv[0].v + texture->v1;
+        texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
+        uv[1].u = texture->u + texture->w / 4;
+        uv[2].u = texture->u + texture->w * 3 / 4;
+        uv[0].u = uv[4].u = texture->u + texture->w / 2;
+        uv[3].u = texture->u;
+        uv[5].u = uv[3].u + texture->w;
+        uv[1].v = uv[2].v = texture->v + texture->h / 2;
+        uv[0].v = texture->v;
+        uv[3].v = uv[4].v = uv[5].v = uv[0].v + texture->h;
         for (index = 0; index < 16; ++index) {
             depth = (depths[VS_MESH10_FACES[index][0]] + depths[VS_MESH10_FACES[index][1]]
                         + depths[VS_MESH10_FACES[index][2]])

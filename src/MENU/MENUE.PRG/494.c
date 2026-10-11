@@ -237,9 +237,9 @@ static vs_main_CdFile const _helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(
     mkHfoPair(HELP07), mkHfoPair(HELP08), mkHfoPair(HELP09), mkHfoPair(HELP10),
     mkHfoPair(HELP11), mkHfoPair(HELP12), mkHfoPair(HELP13), mkHfoPair(HELP14) };
 
-static P_CODE const _colorStops0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
+static CVECTOR const _colorStops0[] = { { 0, 0x20, 0x50, 0 }, { 0x19, 0x82, 0x6C, 0 },
     { 0x40, 0x30, 0x66, 0 }, { 0x40, 0x38, 0x20, 0 } };
-static P_CODE const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
+static CVECTOR const _colorStops1[] = { { 0, 0x5, 0x33, 0 }, { 0x1, 0x28, 0x26, 0 },
     { 0x8, 0x8, 0x20, 0 }, { 0x10, 0x10, 0x8, 0 } };
 
 static int _showMenu(void)
@@ -721,10 +721,10 @@ static void _setPageBg(int x, int y, int w, int h, int color)
     poly = *(POLY_G4**)getScratchAddr(0);
     setPolyG4(poly);
     setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - 1, (y + h) - 1);
-    setRGB0(poly, _colorStops0[color].r0, _colorStops0[color].g0, _colorStops0[color].b0);
-    setRGB1(poly, _colorStops1[color].r0, _colorStops1[color].g0, _colorStops1[color].b0);
-    setRGB2(poly, _colorStops0[color].r0, _colorStops0[color].g0, _colorStops0[color].b0);
-    setRGB3(poly, _colorStops1[color].r0, _colorStops1[color].g0, _colorStops1[color].b0);
+    setRGB0(poly, _colorStops0[color].r, _colorStops0[color].g, _colorStops0[color].b);
+    setRGB1(poly, _colorStops1[color].r, _colorStops1[color].g, _colorStops1[color].b);
+    setRGB2(poly, _colorStops0[color].r, _colorStops0[color].g, _colorStops0[color].b);
+    setRGB3(poly, _colorStops1[color].r, _colorStops1[color].g, _colorStops1[color].b);
 
     p = (u_long**)getScratchAddr(0);
     AddPrim(p[1] + 7, poly++);

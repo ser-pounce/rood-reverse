@@ -58,7 +58,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     u_char* colorStart;
     u_char* color;
     vs_ringPrim* prim;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
     func_800FA098_arg0* effect;
     vs_ringState* state;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
@@ -216,21 +216,21 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
         func_800D6D24(&state->texture);
-        texture = &D_800F569C->block1Data[state->texture.unk1C->dataIndex];
+        texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
 #ifdef VS_RING_TRANSPOSED
         for (column = 0; column < 9; ++column) {
-            u[column] = texture->v0 + texture->v1 * column / 8;
+            u[column] = texture->v + texture->h * column / 8;
         }
-        v[0] = texture->u0;
-        v[2] = v[0] + texture->u1;
-        v[1] = texture->u0 + ((texture->u1 * fraction) >> 12);
+        v[0] = texture->u;
+        v[2] = v[0] + texture->w;
+        v[1] = texture->u + ((texture->w * fraction) >> 12);
 #else
         for (column = 0; column < 9; ++column) {
-            u[column] = texture->u0 + texture->u1 * column / 8;
+            u[column] = texture->u + texture->w * column / 8;
         }
-        v[0] = texture->v0;
-        v[2] = v[0] + texture->v1;
-        v[1] = texture->v0 + ((texture->v1 * fraction) >> 12);
+        v[0] = texture->v;
+        v[2] = v[0] + texture->h;
+        v[1] = texture->v + ((texture->h * fraction) >> 12);
 #endif
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             for (drawColumn = 0; drawColumn < 8; ++drawColumn) {

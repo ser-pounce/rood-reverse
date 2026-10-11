@@ -478,10 +478,10 @@ static const vs_main_CdFile _monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
 /**
  * Stops used for the green and purple UI backgrounds
  */
-static const P_CODE _bgColorStops0[] = { { 0, 65, 107 }, { 25, 130, 108 },
+static const CVECTOR _bgColorStops0[] = { { 0, 65, 107 }, { 25, 130, 108 },
     { 64, 48, 102 }, { 64, 56, 32 } };
 
-static const P_CODE _bgColorStops1[] = { { 0, 5, 51 }, { 1, 40, 38 }, { 8, 8, 32 },
+static const CVECTOR _bgColorStops1[] = { { 0, 5, 51 }, { 1, 40, 38 }, { 8, 8, 32 },
     { 16, 16, 8 } };
 
 static u_short _menuText[] = {
@@ -1563,10 +1563,10 @@ void _renderEnemyInfoBg(int x, int y, int w, int h, int color)
     for (i = y, var_s7 = w; i < ((y + h) - 1); ++i, --var_s7) {
         setLineG2(line);
         setXY2(line, x, i, (x + var_s7) - 1, i);
-        setRGB0(line, _bgColorStops0[color].r0, _bgColorStops0[color].g0,
-            _bgColorStops0[color].b0);
-        setRGB1(line, _bgColorStops1[color].r0, _bgColorStops1[color].g0,
-            _bgColorStops1[color].b0);
+        setRGB0(line, _bgColorStops0[color].r, _bgColorStops0[color].g,
+            _bgColorStops0[color].b);
+        setRGB1(line, _bgColorStops1[color].r, _bgColorStops1[color].g,
+            _bgColorStops1[color].b);
 
         AddPrim(*((void**)getScratchAddr(1)) + 0x1C, line++);
     }
@@ -1608,12 +1608,12 @@ void _renderGradientQuad(int x, int y, int w, int h, int color)
 
     polyG4 = scratch[0];
     setPolyG4(polyG4);
-    r0 = _bgColorStops0[color].r0;
-    g0 = _bgColorStops0[color].g0;
-    b0 = _bgColorStops0[color].b0;
-    r1 = _bgColorStops1[color].r0;
-    g1 = _bgColorStops1[color].g0;
-    b1 = _bgColorStops1[color].b0;
+    r0 = _bgColorStops0[color].r;
+    g0 = _bgColorStops0[color].g;
+    b0 = _bgColorStops0[color].b;
+    r1 = _bgColorStops1[color].r;
+    g1 = _bgColorStops1[color].g;
+    b1 = _bgColorStops1[color].b;
 
     setXY4(polyG4, x, y, a3, y, x, a2, a3, a2);
     setRGB0(polyG4, r0, g0, b0);

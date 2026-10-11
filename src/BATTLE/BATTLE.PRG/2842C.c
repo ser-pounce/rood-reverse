@@ -17,19 +17,10 @@ typedef struct {
     void* unk4;
     short unk8;
     short unkA;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
+    VECTOR unkC;
     SVECTOR unk1C;
-    short unk24;
-    short unk26;
-    short unk28;
-    short unk2A;
-    short unk2C;
-    short unk2E;
-    short unk30;
-    short unk32;
+    SVECTOR unk24;
+    SVECTOR unk2C;
 } func_80092F74_t;
 
 typedef struct {
@@ -47,7 +38,7 @@ typedef struct {
     int unk0;
     char unk4;
     char unk5;
-    char unk6;
+    u_char unk6;
     char unk7;
     int unk8;
     int unkC;
@@ -127,11 +118,96 @@ typedef struct {
 } func_80093914_t2;
 
 typedef struct {
+    int geometryOffset;
+    char unk4[3];
+    u_char delay;
+    u_char baseU;
+    u_char baseV;
+    u_char frameCount;
+    u_char columns;
+    u_char frameWidth;
+    u_char frameHeight;
+    u_char tick;
+    u_char frame;
+    u_char u[4];
+    u_char v[4];
+} func_80091C6C_t;
+
+typedef struct {
+    char unk0[0xF];
+    u_char type;
+    char unk10[3];
+    u_char u2;
+    char unk14[3];
+    u_char v2;
+    u_char u0;
+    u_char v0;
+    char unk1A[2];
+    u_char u1;
+    u_char v1;
+    char unk1E[5];
+    u_char u3;
+    char unk24[3];
+    u_char v3;
+} func_80091C6C_t2;
+
+typedef struct {
+    int geometryOffset;
+    char unk4[3];
+    u_char delay;
+    u_char baseU;
+    u_char baseV;
+    u_char width;
+    u_char height;
+    u_char currentU;
+    u_char currentV;
+    u_char windowWidth;
+    u_char windowHeight;
+    signed char stepU;
+    signed char stepV;
+    u_char tick;
+    char unk13;
+    u_char u[4];
+    u_char v[4];
+} func_80091E10_t;
+
+typedef struct {
+    u_char tick;
+    u_char frame;
+    u_char frameCount;
+    u_char columns;
+    char unk4[3];
+    u_char delay;
+    int scrollStep;
+    RECT rect;
+} func_80091FE8_t;
+
+typedef struct {
+    u_char count;
+    u_char unk1;
+    u_char active;
+    u_char unk3;
+} func_80092548_t;
+
+typedef struct {
+    short size;
+    short type;
+} func_80092548_t2;
+
+typedef struct {
     u_char count;
     u_char labels[2];
     u_char color;
 } D_800690B4_t;
 
+short func_8008DC7C(int, int);
+void func_8008F29C(int, int);
+void func_8008F30C(int, int);
+void func_8008F440(void);
+void func_8008F9A4(int, int);
+void func_8008FAC8(void);
+void func_8008FDC4(void);
+void func_80090434(void);
 void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
@@ -174,6 +250,7 @@ extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];
+extern u_short D_800F1CDC;
 extern short D_800F1D00;
 extern short D_800F1D98[];
 extern short D_800F1DA4;
@@ -183,6 +260,7 @@ extern short D_800F1DBC;
 extern short D_800F1DC0;
 extern short D_800F1DC2;
 extern short D_800F1DC4;
+extern char D_800F1DCA;
 extern char D_800F1DCB;
 extern void* D_800F1DD4;
 extern D_800F1DD8_t D_800F1DD8[];
@@ -201,11 +279,131 @@ extern SVECTOR D_800F2280;
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068EB4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090C2C);
+void func_80090C2C(int arg0)
+{
+    _mpdRoomSectionB* room = vs_battle_roomData.sectionB;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80090EEC);
+    if (room != NULL) {
+        int sound = -2;
 
-int vs_battle_clamp(short arg0, int arg1, int arg2)
+        D_800F1D98[7] = 1;
+        D_800F1D98[9] = 1;
+        D_800F1D98[8] = 1;
+        D_800F1D98[4] = room->unk42;
+        D_800F1D98[5] = room->unk36;
+        D_800F1DCA = arg0;
+        D_800F1DC4 = room->unk3C;
+        func_8009121C();
+        func_80090B28();
+
+        switch (arg0) {
+        case 0:
+            break;
+        case 1:
+            func_8008F29C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 4,
+                              4, 128),
+                arg0);
+            sound = 21;
+            break;
+        case 2:
+            func_8008F29C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 4,
+                              4, 128),
+                arg0);
+            break;
+        case 3:
+            func_8008F30C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 4,
+                              4, 128),
+                arg0);
+            break;
+        case 4:
+            func_8008F9A4(vs_battle_clamp((room->unk48[1].s16[0] / 128)
+                                              * (room->unk48[1].s16[1] / 128) / 2,
+                              4, 128),
+                arg0);
+            break;
+        }
+
+        if (D_800F1DBC != -1) {
+            if ((D_800F1DBC >= 0) && (D_800F1DBC != sound)) {
+                func_80045D64(0x200, D_800F1DBC);
+            }
+            if (sound >= 0) {
+                vs_main_playSfxDefault(0x200, sound);
+            }
+
+            D_800F1DBC = sound;
+        }
+    } else if (D_800F1DBC >= 0) {
+        func_80045D64(0x200, D_800F1DBC);
+        D_800F1DBC = -2;
+    }
+}
+
+void func_80090EEC(void)
+{
+    int masks[] = { 0xF, 0x1F, 0x3F, 0x7F };
+    _mpdRoomSectionB* room = vs_battle_roomData.sectionB;
+
+    if ((room == NULL) || (D_800F1DCA == 0)) {
+        return;
+    }
+
+    if ((D_800F1BA4 == 0) && (D_800F1DCB != 0)) {
+        int changed = 0;
+
+        if ((D_800F1CDC & masks[room->unk3A]) == 0) {
+            if ((rand() & 7) < 3) {
+                D_800F1D98[7] *= -1;
+            }
+
+            D_800F1D98[5] += D_800F1D98[7];
+            D_800F1D98[5] &= 0xFFF;
+            D_800F1D98[5] = vs_battle_clamp(D_800F1D98[5], room->unk36, room->unk38);
+            changed = 1;
+        }
+        if (((D_800F1CDC + 30) & masks[room->unk46]) == 0) {
+            if ((rand() & 7) < 3) {
+                D_800F1D98[9] *= -1;
+            }
+
+            D_800F1D98[4] += D_800F1D98[9];
+            D_800F1D98[4] = vs_battle_clamp(D_800F1D98[4], room->unk42, room->unk44);
+            changed = 1;
+        }
+        if (((D_800F1CDC + 60) & masks[room->unk40]) == 0) {
+            if ((rand() & 7) < 3) {
+                D_800F1D98[8] *= -1;
+            }
+
+            D_800F1DC4 += D_800F1D98[8];
+            D_800F1DC4 = vs_battle_clamp(D_800F1DC4, room->unk3C, room->unk3E);
+            func_8009121C();
+            changed = 1;
+        }
+        if (changed != 0) {
+            func_80090B28();
+        }
+    }
+    switch (D_800F1DCA) {
+    case 1:
+        func_8008F440();
+        break;
+    case 2:
+        func_8008FDC4();
+        break;
+    case 3:
+        func_80090434();
+        break;
+    case 4:
+        func_8008FAC8();
+        break;
+    }
+}
+
+short vs_battle_clamp(short arg0, int arg1, int arg2)
 {
     short var_t0;
     short var_v1;
@@ -293,7 +491,66 @@ void func_80091468(int arg0, int arg1)
     D_800F1DB6 = arg1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009147C);
+void func_8009147C(vs_battle_backgroundLayout* arg0, int arg1, int arg2, int arg3)
+{
+    void* buffer = ((vs_scratch_t*)0x1F800000)->unk0;
+    vs_battle_backgroundTile* tiles = arg0->tiles;
+    int cosStep = rcos(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * 32;
+    int sinStep = rsin(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * 32;
+    int row;
+    int col;
+    TILE* background;
+
+    for (row = 0; row < arg0->height * 32; row += 32) {
+        int y = row - arg2;
+        POLY_GT4* prim = buffer;
+
+        for (col = 0; col < 1024; col += 32) {
+            int x = ((col + arg1) & 1023) - 512;
+            int screenX = rcos(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * x
+                        - rsin(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * y;
+            int screenY = rsin(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * x
+                        + rcos(((vs_scratch_t*)0x1F800000)->camera.angles.vz) * y;
+            vs_battle_backgroundTile* tile;
+
+            if ((screenX < -64 * ONE) || (screenX > 384 * ONE) || (screenY < -64 * ONE)
+                || (screenY > 304 * ONE)) {
+                continue;
+            }
+
+            tile = &tiles[(row / 32) * arg0->width + (col / 32) % arg0->width];
+
+            if ((tile->uv.w == 0) && (tile->uv.h == 0)) {
+                continue;
+            }
+
+            setPolyGT4(prim);
+            setXY4(prim, screenX / ONE, screenY / ONE, (screenX + cosStep) / ONE,
+                (screenY + sinStep) / ONE, (screenX - sinStep) / ONE,
+                (screenY + cosStep) / ONE, (screenX + cosStep - sinStep) / ONE,
+                (screenY + sinStep + cosStep) / ONE);
+            setRGB0(prim, tile->colors[0].r, tile->colors[0].g, tile->colors[0].b);
+            setRGB1(prim, tile->colors[1].r, tile->colors[1].g, tile->colors[1].b);
+            setRGB2(prim, tile->colors[2].r, tile->colors[2].g, tile->colors[2].b);
+            setRGB3(prim, tile->colors[3].r, tile->colors[3].g, tile->colors[3].b);
+            setUV4(prim, tile->uv.x, tile->uv.y, tile->uv.x + tile->uv.w, tile->uv.y,
+                tile->uv.x, tile->uv.y + tile->uv.h, tile->uv.x + tile->uv.w,
+                tile->uv.y + tile->uv.h);
+            prim->tpage = arg3 | (tile->colors[1].cd << 7);
+            prim->clut = getClut(768, 238);
+            buffer += sizeof(POLY_GT4);
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 0x1FFC, prim++);
+        }
+    }
+
+    background = buffer;
+    setTile(background);
+    setRGB0(background, 0, 0, 0);
+    setXY0(background, 0, 0);
+    setWH(background, 320, 240);
+    AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 0x1FFC, background);
+    ((vs_scratch_t*)0x1F800000)->unk0 = background + 1;
+}
 
 void func_800918E8(int arg0)
 {
@@ -396,11 +653,166 @@ void func_80091B04(void)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091C6C);
+int func_80091C6C(func_80091C6C_t* arg0)
+{
+    func_80091C6C_t* quad = arg0;
+    void* base = vs_battle_roomData.geometrySection;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091E10);
+    if (++arg0->tick > arg0->delay) {
+        int u;
+        int v;
+        func_80091C6C_t2* polygon;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80091FE8);
+        arg0->tick = 0;
+
+        if (++arg0->frame >= arg0->frameCount) {
+            arg0->frame = 0;
+        }
+
+        u = arg0->baseU + arg0->frameWidth * (arg0->frame % arg0->columns);
+        v = arg0->baseV + arg0->frameHeight * (arg0->frame / arg0->columns);
+        polygon = base + arg0->geometryOffset;
+
+        if ((polygon->type & 0x3C) == 0x34) {
+            polygon->u0 = arg0->u[0] + u;
+            polygon->u1 = arg0->u[1] + u;
+            polygon->u2 = arg0->u[2] + u;
+            polygon->v0 = arg0->v[0] + v;
+            polygon->v1 = arg0->v[1] + v;
+            polygon->v2 = arg0->v[2] + v;
+        } else {
+            polygon->u0 = quad->u[0] + u;
+            polygon->u1 = quad->u[1] + u;
+            polygon->u2 = quad->u[2] + u;
+            polygon->u3 = quad->u[3] + u;
+            polygon->v0 = quad->v[0] + v;
+            polygon->v1 = quad->v[1] + v;
+            polygon->v2 = quad->v[2] + v;
+            polygon->v3 = quad->v[3] + v;
+        }
+    }
+
+    return 1;
+}
+
+int func_80091E10(func_80091E10_t* arg0)
+{
+    func_80091E10_t* quad = arg0;
+    void* base = vs_battle_roomData.geometrySection;
+
+    if (++arg0->tick > arg0->delay) {
+        int u = arg0->currentU;
+        int v = arg0->currentV;
+        func_80091C6C_t2* polygon;
+
+        u += arg0->stepU;
+        v += arg0->stepV;
+        arg0->tick = 0;
+
+        if (u < arg0->baseU) {
+            u = arg0->baseU + arg0->width - arg0->windowWidth;
+        }
+
+        if (v < arg0->baseV) {
+            v = arg0->baseV + arg0->height - arg0->windowHeight;
+        }
+
+        if (arg0->baseU + arg0->width < u + arg0->windowWidth) {
+            u = arg0->baseU;
+        }
+
+        if (arg0->baseV + arg0->height < v + arg0->windowHeight) {
+            v = arg0->baseV;
+        }
+
+        arg0->currentU = u;
+        arg0->currentV = v;
+        polygon = base + arg0->geometryOffset;
+
+        if ((polygon->type & 0x3C) == 0x34) {
+            polygon->u0 = arg0->u[0] + u;
+            polygon->u1 = arg0->u[1] + u;
+            polygon->u2 = arg0->u[2] + u;
+            polygon->v0 = arg0->v[0] + v;
+            polygon->v1 = arg0->v[1] + v;
+            polygon->v2 = arg0->v[2] + v;
+        } else {
+            polygon->u0 = quad->u[0] + u;
+            polygon->u1 = quad->u[1] + u;
+            polygon->u2 = quad->u[2] + u;
+            polygon->u3 = quad->u[3] + u;
+            polygon->v0 = quad->v[0] + v;
+            polygon->v1 = quad->v[1] + v;
+            polygon->v2 = quad->v[2] + v;
+            polygon->v3 = quad->v[3] + v;
+        }
+    }
+
+    return 1;
+}
+
+int func_80091FE8(func_80091FE8_t* arg0)
+{
+    RECT source;
+    RECT halfSource;
+
+    if (++arg0->tick > arg0->delay) {
+        int destX;
+        int destY;
+        int halfDestX;
+        int halfSourceX;
+
+        arg0->rect.x -= 320;
+        arg0->rect.y += 256;
+        arg0->tick = 0;
+
+        if (arg0->scrollStep == 0) {
+            if (++arg0->frame > arg0->frameCount) {
+                arg0->frame = 1;
+            }
+
+            setRECT(&source, arg0->rect.x + arg0->rect.w * (arg0->frame % arg0->columns),
+                arg0->rect.y + arg0->rect.h * (arg0->frame / arg0->columns), arg0->rect.w,
+                arg0->rect.h);
+        } else {
+            arg0->frame += arg0->scrollStep;
+
+            if (arg0->frame >= arg0->rect.h) {
+                arg0->frame = 0;
+            }
+
+            setRECT(&source, arg0->rect.x + arg0->rect.w / 2, arg0->rect.y + arg0->frame,
+                arg0->rect.w / 2, arg0->rect.h - arg0->frame);
+        }
+
+        halfDestX = (arg0->rect.x % 64) / 2 - 64;
+        destX = halfDestX + (arg0->rect.x & 0x3C0);
+        destY = (arg0->rect.y % 256) / 2 + (arg0->rect.y & 0x100);
+        halfSourceX = (source.x % 64) / 2 - 64;
+        setRECT(&halfSource, halfSourceX + (source.x & 0x3C0),
+            (source.y % 256) / 2 + (source.y & 0x100), source.w / 2, source.h / 2);
+        MoveImage(&source, arg0->rect.x, arg0->rect.y);
+        MoveImage(&halfSource, destX, destY);
+
+        if (arg0->scrollStep != 0 && arg0->frame != 0) {
+            int wrapY;
+
+            source.y = arg0->rect.y;
+            source.h = arg0->frame;
+            wrapY = arg0->rect.y + arg0->rect.h - arg0->frame;
+            destY = (wrapY % 256) / 2 + (wrapY & 0x100);
+            halfSource.y = (source.y % 256) / 2 + (source.y & 0x100);
+            halfSource.h = source.h / 2;
+            MoveImage(&source, arg0->rect.x, wrapY);
+            MoveImage(&halfSource, destX, destY);
+        }
+
+        arg0->rect.x += 320;
+        arg0->rect.y -= 256;
+    }
+
+    return 1;
+}
 
 int func_800923F8(D_800F1DD8_t2* arg0)
 {
@@ -458,7 +870,99 @@ int func_800923F8(D_800F1DD8_t2* arg0)
 
 int func_80092540(void) { return 0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80092548);
+void func_80092548(void)
+{
+    int sizes[] = { 24, 20, 32, 0, 0, 0, 36 };
+    void* data;
+    int count;
+    int length;
+    int index;
+    int consumed;
+
+    D_800F2258 = -1;
+    D_800F1D00 = 0;
+    D_800F225A = 0;
+
+    if ((int)vs_battle_roomData.header.textureEffectsSectionLen > 0) {
+        data = vs_battle_roomData.textureEffectsSection;
+        length = vs_battle_roomData.header.textureEffectsSectionLen;
+        consumed = 0;
+        count = 0;
+
+        while (consumed < length) {
+            D_800F1DD8_t2* effect = data;
+
+            if (effect->unk6 < 7 && sizes[effect->unk6] != 0) {
+                D_800F1DD8[count].unk4 = effect;
+                D_800F1DD8[count].unk0 = effect->unk5 == 0;
+                D_800F1DD8[count].unk2 = 1;
+                D_800F1DD8[count].unk3 = 0;
+                D_800F1DD8[count].unk1 = effect->unk6;
+                effect->unk4 = 1;
+                consumed += sizes[effect->unk6];
+                data += sizes[effect->unk6];
+                ++count;
+            } else {
+                consumed = length;
+            }
+        }
+
+        D_800F225A = count;
+    }
+
+    D_800F225B = 0;
+
+    if ((int)vs_battle_roomData.header.sectionDLen <= 0) {
+        return;
+    }
+
+    data = vs_battle_roomData.sectionD;
+    count = vs_battle_roomData.header.sectionDLen;
+    length = 0;
+
+    for (index = 64; length < count; ++index) {
+        func_80092548_t* script = data;
+        D_800F1DD8_t* entry = &D_800F1DD8[index];
+        func_80092548_t2* chunk;
+        int size;
+
+        entry->unk0 = script->active;
+        entry->unk1 = script->count;
+        entry->unk2 = 1;
+        entry->unk3 = 0;
+        entry->unk4 = data;
+        entry->unk8 = data;
+
+        if (entry->unk0 != 0) {
+            func_800927AC(entry);
+        }
+
+        size = entry->unk1 + 4;
+
+        if ((entry->unk1 & 3) != 0) {
+            int alignedSize = entry->unk1 + 8;
+
+            size = alignedSize - (entry->unk1 & 3);
+        }
+
+        data += size;
+        length += size;
+
+        chunk = data;
+        size = chunk->type == 11 ? 4 : chunk->size;
+
+        while (size != 0) {
+            data += size;
+            length += size;
+            chunk = data;
+            size = chunk->type == 11 ? 4 : chunk->size;
+        }
+
+        length += 4;
+        data += 4;
+        ++D_800F225B;
+    }
+}
 
 void func_800927AC(D_800F1DD8_t* arg0)
 {
@@ -483,15 +987,13 @@ void func_800927AC(D_800F1DD8_t* arg0)
             int* entry = func_8009195C(elem->unk8);
             elem->unk0 = entry;
             if (entry != NULL) {
-                elem->unkC = entry[1] * 16;
-                elem->unk10 = entry[2] * 16;
-                elem->unk14 = entry[3] * 16;
+                setVector(&elem->unkC, entry[1] * 16, entry[2] * 16, entry[3] * 16);
                 setVector(&elem->unk1C, entry[4], entry[5], entry[6]);
             }
         } else {
             elem->unk0 = NULL;
         }
-        elem->unk18 = 0;
+        elem->unkC.pad = 0;
         elem->unk1C.pad = 0;
         if (elem->unk0 == NULL) {
             elem->unk8 = -1;
@@ -583,78 +1085,71 @@ int func_80092B04(func_80092B04_t* arg0, int arg1, D_800F1DD8_t* arg2)
 
 int func_80092C68(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    int x = arg0->unkC / 16 - arg1->unk4[0].s16[0];
+    int x = arg0->unkC.vx / 16 - arg1->unk4[0].s16[0];
     int y;
     int z;
     int d;
 
-    arg0->unk24 = arg1->unk4[1].u16[1] - ABS(x);
-    y = arg0->unk10 / 16 - arg1->unk4[0].s16[1];
-    arg0->unk26 = arg1->unk4[1].u16[1] - ABS(y);
-    z = arg0->unk14 / 16;
+    arg0->unk24.vx = arg1->unk4[1].u16[1] - ABS(x);
+    y = arg0->unkC.vy / 16 - arg1->unk4[0].s16[1];
+    arg0->unk24.vy = arg1->unk4[1].u16[1] - ABS(y);
+    z = arg0->unkC.vz / 16;
     z -= arg1->unk4[1].s16[0];
-    arg0->unk28 = arg1->unk4[1].u16[1] - ABS(z);
+    arg0->unk24.vz = arg1->unk4[1].u16[1] - ABS(z);
 
-    d = arg0->unk24;
+    d = arg0->unk24.vx;
 
     if (d > 0) {
-        z = arg0->unkC - (arg1->unk4[0].s16[0] << 4);
+        z = arg0->unkC.vx - (arg1->unk4[0].s16[0] << 4);
         if (z < 0) {
-            arg0->unk24 = -d;
+            arg0->unk24.vx = -d;
         }
     } else {
-        arg0->unk24 = 0;
+        arg0->unk24.vx = 0;
     }
 
-    d = arg0->unk26;
+    d = arg0->unk24.vy;
 
     if (d > 0) {
-        if (arg0->unk10 - (arg1->unk4[0].s16[1] << 4) < 0) {
-            arg0->unk26 = -d;
+        if (arg0->unkC.vy - (arg1->unk4[0].s16[1] << 4) < 0) {
+            arg0->unk24.vy = -d;
         }
     } else {
-        arg0->unk26 = 0;
+        arg0->unk24.vy = 0;
     }
 
-    d = arg0->unk28;
+    d = arg0->unk24.vz;
 
     if (d > 0) {
-        if (arg0->unk14 - (arg1->unk4[1].s16[0] << 4) < 0) {
-            arg0->unk28 = -d;
+        if (arg0->unkC.vz - (arg1->unk4[1].s16[0] << 4) < 0) {
+            arg0->unk24.vz = -d;
         }
     } else {
-        arg0->unk28 = 0;
+        arg0->unk24.vz = 0;
     }
 
-    arg0->unk24 /= 4;
-    arg0->unk26 /= 4;
-    arg0->unk28 /= 4;
-    arg0->unk2A = arg1->unk4[2].u16[0] + 1;
-    arg0->unk2C = (arg0->unk24 & 0x1F) - 16;
-    arg0->unk2E = (arg0->unk26 & 0x3F) - 32;
-    arg0->unk30 = 0;
-    arg0->unk32 = 0;
+    applyVector(&arg0->unk24, 4, 4, 4, /=);
+    arg0->unk24.pad = arg1->unk4[2].u16[0] + 1;
+    setVector(
+        &arg0->unk2C, (arg0->unk24.vx & 0x1F) - 16, (arg0->unk24.vy & 0x3F) - 32, 0);
+    arg0->unk2C.pad = 0;
     return 0;
 }
 
 int func_80092E14(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    arg0->unk24 = arg1->unk4[0].u16[0];
-    arg0->unk26 = arg1->unk4[0].u16[1];
-    arg0->unk28 = arg1->unk4[1].u16[0];
-    arg0->unk2A = arg1->unk4[1].u16[1];
-    arg0->unk2C = arg1->unk4[2].u16[0];
-    arg0->unk2E = arg1->unk4[2].u16[1];
-    arg0->unk30 = arg1->unk4[3].u16[0];
-    arg0->unk32 = arg1->unk4[3].u16[1];
+    setVector(
+        &arg0->unk24, arg1->unk4[0].u16[0], arg1->unk4[0].u16[1], arg1->unk4[1].u16[0]);
+    arg0->unk24.pad = arg1->unk4[1].u16[1];
+    setVector(
+        &arg0->unk2C, arg1->unk4[2].u16[0], arg1->unk4[2].u16[1], arg1->unk4[3].u16[0]);
+    arg0->unk2C.pad = arg1->unk4[3].u16[1];
     return 0;
 }
 
 int func_80092E7C(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    arg0->unkC = arg1->unk4[0].s32;
-    arg0->unk10 = arg1->unk4[1].s32;
-    arg0->unk14 = arg1->unk4[2].s32;
+    setVector(&arg0->unkC, arg1->unk4[0].s32, arg1->unk4[1].s32, arg1->unk4[2].s32);
     setVector(&arg0->unk1C, arg1->unk4[3].s32, arg1->unk14, arg1->unk18);
     func_80092EDC(arg0);
     return 0;
@@ -664,9 +1159,9 @@ void func_80092EDC(func_80092F74_t* arg0)
 {
     if (arg0->unk8 >= 0) {
         int* temp_v1 = arg0->unk0;
-        temp_v1[1] = arg0->unkC / 16;
-        temp_v1[2] = arg0->unk10 / 16;
-        temp_v1[3] = arg0->unk14 / 16;
+        temp_v1[1] = arg0->unkC.vx / 16;
+        temp_v1[2] = arg0->unkC.vy / 16;
+        temp_v1[3] = arg0->unkC.vz / 16;
 
         temp_v1[4] = arg0->unk1C.vx;
         temp_v1[5] = arg0->unk1C.vy;
@@ -710,36 +1205,77 @@ int func_80092FBC(func_80092F74_t* arg0, func_80092F74_t2* arg1)
             return 0;
         }
     } else {
-        ++arg0->unk18;
-        if (arg0->unk18 >= new_var->unk4[0].u16[0]) {
-            arg0->unk18 = 0;
+        ++arg0->unkC.pad;
+        if (arg0->unkC.pad >= new_var->unk4[0].u16[0]) {
+            arg0->unkC.pad = 0;
             return 0;
         }
     }
     return 1;
 }
 
-int func_8009306C(func_80092F74_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_8009306C);
+int func_8009306C(func_80092F74_t* arg0)
+{
+    int height;
+
+    addVector(&arg0->unkC, &arg0->unk24);
+    addVector(&arg0->unk1C, &arg0->unk2C);
+    applyVector(&arg0->unk1C, 0xFFF, 0xFFF, 0xFFF, &=);
+
+    height = func_8008DC7C(arg0->unkC.vx / 16, arg0->unkC.vz / 16) << 17;
+    height >>= 17;
+
+    if (height < arg0->unkC.vy / 16) {
+        ++arg0->unk1C.pad;
+
+        if ((arg0->unk1C.pad < 3) && (arg0->unk24.pad > 0)) {
+            int velocity;
+
+            arg0->unkC.vy = height * 16;
+            velocity = arg0->unk24.vy / -(ABS(arg0->unk24.pad) + 2);
+            arg0->unk24.vx /= 2;
+            arg0->unk24.vz /= 2;
+            applyVector(&arg0->unk2C, 2, 2, 2, /=);
+            arg0->unk24.vy = velocity;
+        } else {
+            arg0->unk1C.pad = 0;
+            return 0;
+        }
+    }
+
+    if (arg0->unk24.pad != 0) {
+        arg0->unk24.vx -= (arg0->unk24.vx * arg0->unk24.pad) / 16;
+        arg0->unk24.vz -= (arg0->unk24.vz * arg0->unk24.pad) / 16;
+    }
+
+    arg0->unk24.vy += 16;
+
+    if (arg0->unk2C.pad != 0) {
+        applyVector(&arg0->unk2C, (arg0->unk2C.vx * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vy * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vz * arg0->unk2C.pad) / 16, -=);
+    }
+
+    func_80092EDC(arg0);
+    return 1;
+}
 
 int func_80093364(func_80092F74_t* arg0)
 {
-    arg0->unkC += arg0->unk24;
-    arg0->unk10 += arg0->unk26;
-    arg0->unk14 += arg0->unk28;
-    applyVector(&arg0->unk1C, arg0->unk2C, arg0->unk2E, arg0->unk30, +=);
+    addVector(&arg0->unkC, &arg0->unk24);
+    addVector(&arg0->unk1C, &arg0->unk2C);
     applyVector(&arg0->unk1C, 0xFFF, 0xFFF, 0xFFF, &=);
 
-    if (arg0->unk2A != 0) {
-        arg0->unk24 -= (arg0->unk24 * arg0->unk2A) / 16;
-        arg0->unk26 -= (arg0->unk26 * arg0->unk2A) / 16;
-        arg0->unk28 -= (arg0->unk28 * arg0->unk2A) / 16;
+    if (arg0->unk24.pad != 0) {
+        applyVector(&arg0->unk24, (arg0->unk24.vx * arg0->unk24.pad) / 16,
+            (arg0->unk24.vy * arg0->unk24.pad) / 16,
+            (arg0->unk24.vz * arg0->unk24.pad) / 16, -=);
     }
 
-    if (arg0->unk32 != 0) {
-        arg0->unk2C -= (arg0->unk2C * arg0->unk32) / 16;
-        arg0->unk2E -= (arg0->unk2E * arg0->unk32) / 16;
-        arg0->unk30 -= (arg0->unk30 * arg0->unk32) / 16;
+    if (arg0->unk2C.pad != 0) {
+        applyVector(&arg0->unk2C, (arg0->unk2C.vx * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vy * arg0->unk2C.pad) / 16,
+            (arg0->unk2C.vz * arg0->unk2C.pad) / 16, -=);
     }
 
     func_80092EDC(arg0);
@@ -966,7 +1502,104 @@ int func_80093B04(u_short* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", func_80093B68);
+int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
+{
+    SVECTOR position;
+    int limb;
+    int i;
+    int count;
+    int frame;
+    int flags;
+    int result;
+    int amount;
+    D_800F1BAC_t* p;
+
+    if (arg1 != -1) {
+        limb = func_800A152C(arg0, arg1, 2);
+
+        if (limb < 0) {
+            return -2;
+        }
+    } else {
+        limb = 255;
+    }
+
+    i = 0;
+    count = 0;
+    frame = 0;
+
+    for (p = *D_800F1BAC; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 1) && (p->unk8.u8[1] == arg0) && (p->unk0.pad >= 0)) {
+            frame = p->unkB;
+            ++count;
+        }
+    }
+
+    i = 0;
+    flags = 0;
+
+    for (p = *D_800F1BAC; i < D_800F227E; ++i, ++p) {
+        if ((p->unk8.u8[0] == 1) && (p->unk8.u8[1] == arg0) && (p->unkA == limb)
+            && (p->unk0.pad == count - 1)) {
+            flags = 128;
+            break;
+        }
+    }
+
+    p = func_800962E4();
+
+    if (limb != 255) {
+        result = func_800A1AF8(arg0, limb, &p->unk0, 2);
+    } else {
+        result = func_800A190C(arg0, 255, &p->unk0, 2);
+    }
+
+    if (result != 0) {
+        return -2;
+    }
+
+    if (arg3 & 128) {
+        if (func_800A1280(arg0, 251, &position, 0) != 0) {
+            return 0;
+        }
+
+        if (position.vx > 320u) {
+            return 0;
+        }
+
+        if (position.vy > 240u) {
+            return 0;
+        }
+    }
+
+    arg3 &= 127;
+
+    if (func_800A190C(arg0, 251, &position, 0) != 0) {
+        return -2;
+    }
+
+    p->unk10 = ONE;
+    p->unk12 = ONE;
+    applyVector(&p->unk0, position.vx, position.vy, position.vz, -=);
+    p->unk8.u8[0] = 1;
+    p->unk0.pad = count;
+    p->unkB = frame;
+    p->unk8.u8[1] = arg0;
+    p->unkA = limb;
+    p->unkE = arg3 | flags;
+    amount = arg2 & 0x7FFF;
+
+    if (amount > 999) {
+        p->unkC = 999 | ((arg2 >> 16) & 0x8000);
+    } else {
+        p->unkC = amount | ((arg2 >> 16) & 0x8000);
+    }
+
+    sprintf(p->displayText, D_800691E4, p->unkC & 0x7FFF);
+    p->displayTextLen = strlen(p->displayText);
+    ++D_800F227E;
+    return 0;
+}
 
 int vs_battle_renderBattleAbilityTimingResult(int arg0)
 {
@@ -1045,7 +1678,7 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     for (; i < D_800F227E; ++i, ++p) {
         if ((p->unk8.u8[0] == 2) && (p->unk8.u8[1] == arg0)) {
             frame = p->displayTextLen + 0xC;
-            if (p->unk6 >= 0) {
+            if (p->unk0.pad >= 0) {
                 kind = p->unkB;
                 ++found;
             }
@@ -1066,10 +1699,8 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     }
     arg3 &= 0x7F;
     p->unk8.u8[0] = 2;
-    p->unk0 = 0;
-    p->unk2 = 0;
-    p->unk4 = 0;
-    p->unk6 = found;
+    setVector(&p->unk0, 0, 0, 0);
+    p->unk0.pad = found;
     if (frame < 0x25) {
         p->displayTextLen = frame;
     } else {
@@ -1123,7 +1754,7 @@ void func_800941FC(void)
         D_800F2278 = 0;
 
         for (i = 0; i < D_800F227E; ++i, ++label) {
-            if (label->unk8.u8[0] == 6 && --label->unk6 == -1) {
+            if (label->unk8.u8[0] == 6 && --label->unk0.pad == -1) {
                 for (p = 0; p < i; ++p) {
                     if ((*D_800F1BAC)[p].unk8.u8[0] == 6) {
                         (*D_800F1BAC)[p].unk12 += 10;
@@ -1158,7 +1789,7 @@ void func_800941FC(void)
                 position.vy = 0;
             }
 
-            applyVector(&position, label->unk0, label->unk2, label->unk4, +=);
+            addVector(&position, &label->unk0);
             visible = RotTransPers(&position, (long*)screen, &p, &flag);
 
             if (screen[0] < 32) {
@@ -1177,7 +1808,7 @@ void func_800941FC(void)
                 screen[1] = 200;
             }
         } else if (label->unk8.u8[0] == 3) {
-            visible = RotTransPers((SVECTOR*)label, (long*)screen, &p, &flag);
+            visible = RotTransPers(&label->unk0, (long*)screen, &p, &flag);
         } else {
             visible = 1;
         }
@@ -1190,7 +1821,7 @@ void func_800941FC(void)
 
         switch (label->unk8.u8[0]) {
         case 1:
-            if (label->unk6 <= 0) {
+            if (label->unk0.pad <= 0) {
                 label->unkE &= 0x7F;
                 screen[1] += 8;
                 func_80094844(screen, label);
@@ -1204,7 +1835,7 @@ void func_800941FC(void)
                 label->unkB += vs_gametime_tickspeed / 2;
 
                 if (label->unkB >= 10) {
-                    label->unk6 = -1;
+                    label->unk0.pad = -1;
                 }
 
                 if (label->unkB >= 31) {
@@ -1230,7 +1861,7 @@ void func_800941FC(void)
             }
             break;
         case 2:
-            if (label->unk6 <= 0) {
+            if (label->unk0.pad <= 0) {
                 screen[1] -= label->displayTextLen;
 
                 if (label->unk8.u8[1] != 0 || D_800F227A == 0) {
@@ -1244,7 +1875,7 @@ void func_800941FC(void)
                 label->unkB += vs_gametime_tickspeed / 2;
 
                 if (label->unkB >= 10) {
-                    label->unk6 = -1;
+                    label->unk0.pad = -1;
                 }
 
                 if (label->unkB >= 31) {
@@ -1288,7 +1919,7 @@ void func_800941FC(void)
             }
             break;
         case 6:
-            if (label->unk6 >= 0) {
+            if (label->unk0.pad >= 0) {
                 break;
             }
 
@@ -1415,7 +2046,7 @@ void func_80094844(short* pos, D_800F1BAC_t* label)
 void func_80094AF8(D_800F1BAC_t* arg0)
 {
     arg0->unkB = 0;
-    arg0->unk6 = arg0->unk6 - 1;
+    --arg0->unk0.pad;
 }
 
 void func_80094B0C(int x, int y, D_800F1BAC_t* p)
@@ -2090,7 +2721,7 @@ int func_80096768(int arg0, int arg1, int arg2)
         p = func_800962E4();
         p->unk8.u8[0] = 7;
         p->unk8.u8[1] = 0x7F;
-        p->unk6 = count;
+        p->unk0.pad = count;
         p->unk12 = 0;
         p->unkB = 0;
         p->unkE = arg0;

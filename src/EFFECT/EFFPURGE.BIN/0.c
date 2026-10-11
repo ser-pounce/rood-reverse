@@ -1,6 +1,7 @@
 #include "src/EFFECT/PLG005.BIN/18.h"
 #include "src/EFFECT/PLG044.BIN/0.h"
 #include "src/EFFECT/PLG047.BIN/0.h"
+#include "src/EFFECT/PLG051.BIN/0.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
@@ -476,7 +477,7 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
 static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock,
     func_800FB320, vs_effect_vulcanLance, func_800F9800, vs_spiritSurge_renderTrails,
     func_800FBA00, func_800FC624, func_800FD51C, func_800F98E0, func_800FC0E4, NULL,
-    func_800F9800, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
+    vs_effect_exorcism, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
     func_800FA368, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
     func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354,
     func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL,
@@ -599,7 +600,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FD51C(NULL, 2, 0);
     func_800F98E0(NULL, 2, 0);
     func_800FC0E4(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
+    vs_effect_exorcism(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
     func_800F9818(NULL, 2, 0);
     func_800FA368(NULL, 2, 0);

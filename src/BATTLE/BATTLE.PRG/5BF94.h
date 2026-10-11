@@ -43,7 +43,7 @@ typedef struct {
     u_char state;
     u_char w;
     u_char backgroundWidth;
-    u_char _ __attribute__((unused));
+    u_char animationStep;
     u_char gradientState;
     u_char isScrollable;
     u_char selected;
@@ -303,11 +303,18 @@ typedef struct {
 typedef struct {
     short clut;
     short tpage;
-    u_char u0;
-    u_char v0;
-    u_char u1;
-    u_char v1;
-    u_char unk8[0x10];
+    u_char u;
+    u_char v;
+    u_char w;
+    u_char h;
+    short x0;
+    short y0;
+    short x1;
+    short y1;
+    short x2;
+    short y2;
+    short x3;
+    short y3;
 } pFileBlock1Data;
 
 typedef struct {
@@ -451,7 +458,7 @@ char* vs_battle_printf(char*, char*);
 /**
  * Renders ASCII text and chains it to the provided OT.
  */
-void vs_battle_renderTextRawColor(char const* text, int xy, int color, void* nextPrim);
+void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long* nextPrim);
 
 /**
  * Same as vs_battle_renderTextRawColor, except color is predefined as gray midpoint

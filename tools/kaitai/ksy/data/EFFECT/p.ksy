@@ -13,7 +13,7 @@ seq:
 enums:
   block_type:
     0: type0
-    1: type1
+    1: textures
     2: type2
     3: type3
     4: curves
@@ -40,7 +40,7 @@ types:
           switch-on: type
           cases:
             'block_type::type0': raw_body
-            'block_type::type1': type1_body
+            'block_type::textures': textures
             'block_type::type2': type2_body
             'block_type::type3': type3_body
             'block_type::curves': curves
@@ -58,7 +58,7 @@ types:
       - id: data
         size-eos: true
 
-  type1_body:
+  textures:
     seq:
       - id: num_table_offsets
         type: u2
@@ -71,17 +71,17 @@ types:
     instances:
       data:
         pos: data_offset
-        type: type1_data
+        type: texture_data
         repeat: eos
         
-  type1_table:
+  texture_table:
     seq:
       - id: unk0
         type: u2
       - id: data_index
         type: u2
         
-  type1_data:
+  texture_data:
     seq:
       - id: clut_x
         type: b6
@@ -101,16 +101,30 @@ types:
         type: b1
       - id: reserved
         type: b5
-      - id: u0
+      - id: u
         type: u1
-      - id: v0
+      - id: v
         type: u1
-      - id: u1
+      - id: w
         type: u1
-      - id: v1
+      - id: h
         type: u1
-      - id: unk_8
-        size: 0x10
+      - id: x0
+        type: s2
+      - id: y0
+        type: s2
+      - id: x1
+        type: s2
+      - id: y1
+        type: s2
+      - id: x2
+        type: s2
+      - id: y2
+        type: s2
+      - id: x3
+        type: s2
+      - id: y3
+        type: s2
         
   type2_body:
     seq:

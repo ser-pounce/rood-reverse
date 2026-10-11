@@ -165,6 +165,10 @@ char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 static long _memcardEventDescriptors[8];
 
+/**
+ * Returns the first signalled memorycard event of the requested type, or
+ * memcardInternalEventNone when none of the four events is signalled.
+ */
 static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 {
     int i;
@@ -177,6 +181,9 @@ static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
     return i;
 }
 
+/**
+ * Tests each event in the selected memorycard event group to clear its signal.
+ */
 static void _resetMemcardEvents(int type)
 {
     int i;
@@ -186,6 +193,9 @@ static void _resetMemcardEvents(int type)
     }
 }
 
+/**
+ * Uploads an image to VRAM and waits for the transfer to finish.
+ */
 static void _renderImage(int xy, void* arg1, int wh)
 {
     RECT rect;
@@ -196,6 +206,9 @@ static void _renderImage(int xy, void* arg1, int wh)
     DrawSync(0);
 }
 
+/**
+ * Reads an image from VRAM into a buffer and waits for the transfer.
+ */
 static void _readImage(int xy, void* buffer, int wh)
 {
     RECT rect;
@@ -206,6 +219,9 @@ static void _readImage(int xy, void* buffer, int wh)
     DrawSync(0);
 }
 
+/**
+ * Copies count bytes in reverse order.
+ */
 static void _rMemcpy(void* dst, void const* src, int count)
 {
     do {
@@ -214,6 +230,11 @@ static void _rMemcpy(void* dst, void const* src, int count)
     } while (count != 0);
 }
 
+/**
+ * Builds the permanent save filename in a reusable static buffer.
+ *
+ * @param port Zero selects memorycard port 1; any other value selects port 2.
+ */
 static char* _memcardMakeFilename(int port, int fileNo)
 {
     static char _filename[32];
@@ -225,6 +246,11 @@ static char* _memcardMakeFilename(int port, int fileNo)
     return _filename;
 }
 
+/**
+ * Builds the temporary save filename in a reusable static buffer.
+ *
+ * @param port Zero selects memorycard port 1; any other value selects port 2.
+ */
 static char* _memcardMakeTempFilename(int port, int fileNo)
 {
     static char _filename[32];
@@ -244,6 +270,11 @@ static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
 static saveFileInfo_t* _saveFileInfo;
 
+/**
+ * Finds the save slot with the greatest generation number.
+ *
+ * @return Zero-based slot index; returns zero when no active slot is found.
+ */
 static u_int _getNewestSaveFile(void)
 {
     u_int i;
@@ -261,6 +292,11 @@ static u_int _getNewestSaveFile(void)
     return fileIndex;
 }
 
+/**
+ * Finds the active save by matching its identity and generation to settings.
+ *
+ * @return One-based file number, or zero when the active save is absent.
+ */
 static int _findCurrentSaveOnActiveMemcard(void)
 {
     int i;
@@ -278,6 +314,12 @@ static int _findCurrentSaveOnActiveMemcard(void)
     return 0;
 }
 
+/**
+ * Recognizes a save filename and decodes its permanent or temporary slot.
+ *
+ * @return 1-5 for permanent files, -1 to -5 for temporary files, or zero if
+ * the name is not a save file.
+ */
 static int _memcardFileNumberFromFilename(char* filename)
 {
     int i;
@@ -304,6 +346,12 @@ static int _memcardFileNumberFromFilename(char* filename)
     return 0;
 }
 
+/**
+ * Checksums the requested save-data sectors and validates the info sector.
+ *
+ * @return Nonzero if a sector checksum differs or the info-sector checksum is
+ * nonzero; otherwise zero.
+ */
 static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 {
     int checksum;
@@ -334,6 +382,9 @@ static int _verifySaveChecksums(savedata_t data[], int sectorCount)
     return checksum != 0;
 }
 
+/**
+ * Decodes count bytes in place using the save format's key-driven byte stream.
+ */
 static void _decode(u_int key, void* buf, int count)
 {
     for (; count != 0; --count) {
@@ -342,6 +393,14 @@ static void _decode(u_int key, void* buf, int count)
     }
 }
 
+/**
+ * Reads and verifies the metadata for a one-based save file number.
+ *
+ * @param id Packs the memorycard port in the high bits and the file number
+ * in the low bits.
+ * @return Zero if valid metadata was read, or one if all read/validation
+ * attempts failed.
+ */
 static int _readSaveFileInfo(int id)
 {
     saveFileInfo_t saveInfo[4];
@@ -374,6 +433,9 @@ static int _readSaveFileInfo(int id)
     return 1;
 }
 
+/**
+ * Checks whether a recognized memorycard save filename ends in id.
+ */
 static int _memcardSaveIdExists(int id)
 {
     int i;
@@ -388,6 +450,11 @@ static int _memcardSaveIdExists(int id)
     return 0;
 }
 
+/**
+ * Removes temporary files when the corresponding permanent file also exists.
+ *
+ * @return A bit per removed temporary slot, or 0x80 if an erase fails.
+ */
 static int _deleteRedundantTempFiles(int port)
 {
     int i;
@@ -405,6 +472,11 @@ static int _deleteRedundantTempFiles(int port)
     return ret;
 }
 
+/**
+ * Scans a card, validates save metadata, and marks available save slots.
+ *
+ * @return Nonzero if cleanup of redundant temporary files fails.
+ */
 static int _initSaveFileInfo(int port)
 {
     long fileNo;
@@ -463,6 +535,11 @@ static int _initSaveFileInfo(int port)
     return 0;
 }
 
+/**
+ * Creates an empty permanent save file, first erasing any existing file.
+ *
+ * @return Zero on success, or -1 if the file cannot be created.
+ */
 static int _createSaveFile(int port, int id)
 {
     long file;
@@ -477,6 +554,12 @@ static int _createSaveFile(int port, int id)
     return -1;
 }
 
+/**
+ * Initializes or advances the stateful memorycard detect/load operation.
+ *
+ * A nonzero initPort starts polling that card (1 or 2); subsequent calls with
+ * zero advance the state and report pending, completion, timeout, or unformatted state.
+ */
 static enum memcardEventHandler_e _memcardEventHandler(int initPort)
 {
     enum state {
@@ -589,6 +672,12 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
     return memcardEventPending;
 }
 
+/**
+ * Decodes and validates the loaded save, optionally applying it to game state.
+ *
+ * @return One for invalid data, zero when valid (and applied when write is
+ * nonzero).
+ */
 static int _applyLoadedSaveFile(int write)
 {
     int blockCount;
@@ -637,6 +726,12 @@ static int _applyLoadedSaveFile(int write)
     return 0;
 }
 
+/**
+ * Builds the save metadata and payload from current game state, then encodes
+ * the protected save-data region.
+ *
+ * @param targetFile Zero-based target slot used in the displayed save metadata.
+ */
 static void _packageGameSaveData(int targetFile)
 {
     static const u_short D_8010286C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
@@ -765,6 +860,14 @@ static u_short _filePreviousProgressCounter;
 static u_short _fileProgressPosition;
 static int _fileProgressCounter;
 
+/**
+ * Reads a permanent or temporary save.
+ *
+ * A nonzero portFileno selects the card, file and temporary-file mode; call
+ * again with zero to poll the read.
+ *
+ * @return Zero while pending, one when the read completes, or -1 after errors.
+ */
 static int _loadSaveData(int portFileno)
 {
     enum state { init = 0, reading = 1 };
@@ -846,6 +949,14 @@ static int _loadSaveData(int portFileno)
     return errors == 3 ? -1 : 0;
 }
 
+/**
+ * Saves and verifies a save file.
+ *
+ * A nonzero portFile selects the card and one-based destination file; call
+ * again with zero to progress the write.
+ *
+ * @return Zero while pending, one on verified success, or -1 on failure.
+ */
 static int _saveFile(int portFile)
 {
     enum state {
@@ -960,6 +1071,12 @@ static int _saveFile(int portFile)
     return errors == 3 ? -1 : 0;
 }
 
+/**
+ * Loads memorycard support data and installs card event handlers.
+ *
+ * Call with nonzero init to start initialization and with zero to poll;
+ * returns one when ready and zero otherwise.
+ */
 static int _initMemcard(int init)
 {
     enum state {
@@ -1038,6 +1155,9 @@ static int _initMemcard(int init)
     return 0;
 }
 
+/**
+ * Disables and closes memorycard events and releases the support data.
+ */
 static void _shutdownMemcard(void)
 {
     int i;
@@ -1062,6 +1182,9 @@ static fileMenuElements_t _fileMenuElements[10];
 static char _2[8] __attribute__((unused));
 static primBuf_t _primBuf;
 
+/**
+ * Draws a textured sprite using packed coordinates, UV/CLUT, size and tpage.
+ */
 static void _drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
@@ -1093,6 +1216,9 @@ enum vs_fileMenuUiIds_e {
     vs_uiids_dot = 9,
 };
 
+/**
+ * Draws the selected UI element at the desired position.
+ */
 static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
     static int _saveInfoUVClut[] = { vs_getUV0Clut(248, 8, 832, 223),
@@ -1107,6 +1233,9 @@ static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
     _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id], 0xC);
 }
 
+/**
+ * Draws value starting at its requested decimal place and advancing right.
+ */
 static void _renderInteger(int xy, u_int value, u_int placeDivisor)
 {
     do {
@@ -1118,6 +1247,9 @@ static void _renderInteger(int xy, u_int value, u_int placeDivisor)
     } while (placeDivisor != 0);
 }
 
+/**
+ * Returns the number of decimal digits in a nonnegative integer.
+ */
 static int _countDigits(int val)
 {
     int i;
@@ -1132,6 +1264,9 @@ static int _countDigits(int val)
 
 enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
+/**
+ * Draws the HP or MP label, current/max values, and proportional status bar.
+ */
 void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
     static char _digitDivisors[] = { 0, 1, 10, 100 };
@@ -1212,6 +1347,9 @@ static int _selectCursorXy;
 static char* _memoryCardMessage;
 static char _isSaving;
 
+/**
+ * Draws the save / load progress bar.
+ */
 static void _fileProcessingAnim(int x, int y)
 {
     char* new_var __attribute__((unused));
@@ -1256,6 +1394,9 @@ static void _fileProcessingAnim(int x, int y)
     }
 }
 
+/**
+ * Draws the completion flash for a file operation.
+ */
 static void _fileProcessingCompleteAnim(int colour, int y)
 {
     int yOfst;
@@ -1300,6 +1441,9 @@ static void _fileProcessingCompleteAnim(int colour, int y)
 static u_char _selectCursorColor;
 static char _fileMenuScreenFade;
 
+/**
+ * Resets menu elements, progress, fade, cursor and message state.
+ */
 static void _initFileMenu(void)
 {
     _memoryCardMessage = 0;
@@ -1311,6 +1455,11 @@ static void _initFileMenu(void)
     memset(&_fileMenuElements, 0, sizeof _fileMenuElements);
 }
 
+/**
+ * Initializes an element and performs some text preprocessing.
+ *
+ * @return The initialized element in the shared file-menu element array.
+ */
 static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
 {
     fileMenuElements_t* element;
@@ -1349,11 +1498,17 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
     return element;
 }
 
+/**
+ * Clears one element in menu element array.
+ */
 static void _clearFileMenuElement(int id)
 {
     memset(&_fileMenuElements[id], 0, sizeof _fileMenuElements[id]);
 }
 
+/**
+ * Reports whether all file-menu elements have finished their animations.
+ */
 static int _fileMenuElementsActive(void)
 {
     int i;
@@ -1363,6 +1518,9 @@ static int _fileMenuElementsActive(void)
     return i == 10;
 }
 
+/**
+ * Draws a glyph (or applies a spacing control) and returns the next x position.
+ */
 static int _printCharacter(u_int c, int x, int y, int clut)
 {
     static int glyphWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -1406,6 +1564,11 @@ enum _findCurrentSave_e {
     findSavePending = 0
 };
 
+/**
+ * Searches both cards asynchronously for the save matching current settings.
+ *
+ * A nonzero init restarts the search; subsequent calls return the current state.
+ */
 static int _findCurrentSave(int init)
 {
     static char state;
@@ -1469,6 +1632,11 @@ enum maskedHandler_e {
     memcardMaskedHandlerComplete = 1
 };
 
+/**
+ * Starts or polls a card operation, mapping its result through a stored mask.
+ *
+ * A nonzero portMask starts polling; zero advances the operation.
+ */
 static enum maskedHandler_e maskedHandler(int portMask)
 {
     static char mask;
@@ -1501,6 +1669,9 @@ static enum maskedHandler_e maskedHandler(int portMask)
     return memcardMaskedHandlerPending;
 }
 
+/**
+ * Prints a vs-encoded string.
+ */
 static void _printString(char* text, int x, int y, int clut)
 {
     static char arrowState = 0;
@@ -1541,6 +1712,9 @@ static void _printString(char* text, int x, int y, int clut)
     }
 }
 
+/**
+ * Linearly blends RGB channels; factor ranges from zero to eight.
+ */
 static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 {
     int component;
@@ -1558,6 +1732,9 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
     return colourOut;
 }
 
+/**
+ * Selects and blends the background colours for the two animation factors.
+ */
 static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
     static int colors1[] = { vs_getRGB888(0x40, 0x30, 0x66),
@@ -1582,6 +1759,9 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     return _interpolateRGB(color1, color2, outerFactor);
 }
 
+/**
+ * Draws a menu element and updates its animation state.
+ */
 static void _drawFileMenuElement(fileMenuElements_t* element)
 {
     u_long clut[130];
@@ -1765,6 +1945,9 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
     }
 }
 
+/**
+ * Draws the menu elements, message area, cursor and fade.
+ */
 static void _drawFileMenu(int framebuf)
 {
     int _[2];
@@ -1889,6 +2072,9 @@ static void _drawFileMenu(int framebuf)
     }
 }
 
+/**
+ * Draws the static background texture for the file menu.
+ */
 static void _drawFileMenuBg(void)
 {
     _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
@@ -1897,6 +2083,12 @@ static void _drawFileMenuBg(void)
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }
 
+/**
+ * Initializes or advances the shared Yes/No confirmation prompt.
+ *
+ * A nonzero arg0 initializes the prompt; polling returns 1 for Yes, -1 for No,
+ * or zero while the prompt is active.
+ */
 static int _promptConfirm(int arg0)
 {
     enum state {
@@ -1960,6 +2152,12 @@ static int _promptConfirm(int arg0)
     return 0;
 }
 
+/**
+ * Initializes or advances the overwrite confirmation using _promptConfirm.
+ *
+ * Returns the prompt's selection after its exit animation, or zero while
+ * pending.
+ */
 static int _promptOverwrite(int arg0)
 {
     static int confirmed;
@@ -1992,6 +2190,12 @@ static int _promptOverwrite(int arg0)
     return 0;
 }
 
+/**
+ * Confirms and formats a memory card through the asynchronous card event flow.
+ *
+ * A nonzero initPort starts the prompt; returns one on format success, -1 on
+ * cancellation/error, or zero while pending.
+ */
 static int _promptFormat(int initPort)
 {
     enum state { promptConfirm = 0, initEvents = 1, handleEvents = 2, format = 3 };
@@ -2064,6 +2268,12 @@ static char _dataNotSaved;
 static char _containerDataEmpty;
 static char _backupMainSetting;
 
+/**
+ * Runs the paged save-slot menu and its overwrite, save and verification flow.
+ *
+ * A nonzero initPort initializes the menu; polling returns one after a save,
+ * -1 when leaving without saving, or zero while active.
+ */
 static int _showSaveFilesMenu(int initPort)
 {
     enum state {
@@ -2318,6 +2528,12 @@ static int _showSaveFilesMenu(int initPort)
     return 0;
 }
 
+/**
+ * Runs card selection and then opens the slot menu for that card.
+ *
+ * A nonzero initPort starts selection; polling returns one when the save flow
+ * completes, -1 when cancelled, or zero while active.
+ */
 static int _selectSaveMemoryCard(int initPort)
 {
     enum state {
@@ -2448,6 +2664,12 @@ static int _selectSaveMemoryCard(int initPort)
     return 0;
 }
 
+/**
+ * Runs the save/container slot chooser and handles unsaved container data.
+ *
+ * A nonzero initState initializes the requested entry state; returns one when
+ * a card-save flow completes, -1 when leaving without saving, or zero pending.
+ */
 static int _showSaveMenu(int initState)
 {
     enum state {
@@ -2647,6 +2869,12 @@ static int _showSaveMenu(int initState)
     return 0;
 }
 
+/**
+ * Runs the paged load slot menu and applies the selected save asynchronously.
+ *
+ * A nonzero initPort initializes the menu; returns one after a successful
+ * load, -1 on cancellation, or zero while active.
+ */
 static int _showLoadFilesMenu(int initPort)
 {
     enum state {
@@ -2826,6 +3054,12 @@ static int _showLoadFilesMenu(int initPort)
     return 0;
 }
 
+/**
+ * Runs memorycard selection and opens the load slot menu for that card.
+ *
+ * A nonzero initPort initializes selection; polling returns a positive result
+ * after a load, a negative result on cancel/error, or zero while pending.
+ */
 static long _selectLoadMemoryCard(int initPort)
 {
     enum state {
@@ -2943,6 +3177,13 @@ static long _selectLoadMemoryCard(int initPort)
     return 0;
 }
 
+/**
+ * Runs the initial slot chooser and asynchronous load flow for game over/data
+ * menus.
+ *
+ * A nonzero initFadeout initializes the menu; returns one when a save is
+ * selected, -1 when cancelled, or zero while active.
+ */
 static int _loadFileMenu(int initFadeout)
 {
     enum state {
@@ -3065,6 +3306,12 @@ static int _loadFileMenu(int initFadeout)
     return 0;
 }
 
+/**
+ * Starts loading one of the built-in intro saves or polls its completion.
+ *
+ * Actions 1 and 2 select the two bundled saves; action zero polls and applies
+ * the loaded data when ready.
+ */
 static int _loadIntroSaveFile(int action)
 {
     static vs_main_CdQueueSlot* _opmcimgSlot;
@@ -3140,6 +3387,11 @@ static u_short _menuItemTextClut[][16] = {
         vs_getRGB5551(31, 26, 18, 1), vs_getRGB5551(31, 27, 22, 1) }
 };
 
+/**
+ * Loads the game-over screen assets asynchronously.
+ *
+ * A nonzero arg0 starts loading; zero polls until the assets are uploaded.
+ */
 static int _initGameOver(int arg0)
 {
 
@@ -3176,6 +3428,9 @@ static int _initGameOver(int arg0)
     }
 }
 
+/**
+ * Interpolates the 16-entry 5-bit RGB palette between two menu item palettes.
+ */
 static void _setMenuItemClut(
     short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
 {
@@ -3211,6 +3466,12 @@ static void _setMenuItemClut(
     }
 }
 
+/**
+ * Animates the game over screen and returns the selected action after fading.
+ *
+ * A nonzero init resets the animation. The completed selection is one for
+ * continue/load and two for return to title.
+ */
 static int _displayGameOverScreen(int init)
 {
     static short clut[2][16];
@@ -3335,6 +3596,10 @@ static int _displayGameOverScreen(int init)
     return 0;
 }
 
+/**
+ * Drives the game over screen, allowing a save load, intro restart, or return
+ * to the title screen.
+ */
 int vs_menu7_gameOver(u_char* state)
 {
     enum state {
@@ -3453,6 +3718,12 @@ static u_short _containerStrings[] = {
 #include "build/assets/MENU/MENU7.PRG/container.vsString"
 };
 
+/**
+ * Initializes or advances the container menu's animated Yes/No prompt.
+ *
+ * initParams selects the initial option in bit 0 and whether the menu button
+ * may cancel in bit 2; polling returns 1 for Yes, -1 for No, or zero pending.
+ */
 static int _promptYesNo(int initParams)
 {
     enum state { init, animWait, handleInput, returnSelection };
@@ -3527,6 +3798,9 @@ static int _promptYesNo(int initParams)
 
 static u_short _containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 
+/**
+ * Returns a pointer to the start of a container index section.
+ */
 static void* _getContainerIndexOffset(int section, vs_menu_containerIndices* indices)
 {
     int i = 0;
@@ -3540,6 +3814,10 @@ static void* _getContainerIndexOffset(int section, vs_menu_containerIndices* ind
     return (u_short*)indices + offset;
 }
 
+/**
+ * Copies selected container inventory entries and remaps their cross-item
+ * references into the target's compacted indices.
+ */
 void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     vs_menu_containerIndices* toCopy)
 {
@@ -3660,6 +3938,9 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     vs_main_freeHeapR(targetIndices);
 }
 
+/**
+ * Runs the container check/save flow and updates the active game container.
+ */
 int vs_menu7_saveContainerMenu(u_char* state)
 {
     enum state {
@@ -3870,6 +4151,9 @@ int vs_menu7_saveContainerMenu(u_char* state)
     return 0;
 }
 
+/**
+ * Renders the current play time in the data menu.
+ */
 static void _drawPlayTime(void)
 {
     static char* _playTime = "00:00:00:00";
@@ -3896,6 +4180,10 @@ static void _drawPlayTime(void)
     vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, vs_scratch.unk4 - 0x14);
 }
 
+/**
+ * Drives the save/load data menu, including memorycard initialization and
+ * transitions back to gameplay.
+ */
 int vs_menu7_dataMenu(u_char* state)
 {
     enum state {

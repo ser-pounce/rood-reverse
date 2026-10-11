@@ -1701,85 +1701,34 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-static int const D_80068F04[][4] = { {
-                                         vs_getXY(-6, -22),
-                                         vs_getXY(18, -22),
-                                         vs_getXY(-6, 1),
-                                         vs_getXY(18, 1),
-                                     },
-    {
-        vs_getXY(-17, -22),
-        vs_getXY(7, -22),
-        vs_getXY(-17, 1),
-        vs_getXY(7, 1),
-    },
-    {
-        vs_getXY(-10, -29),
-        vs_getXY(20, -29),
-        vs_getXY(-10, 1),
-        vs_getXY(20, 1),
-    },
-    {
-        vs_getXY(-19, -29),
-        vs_getXY(9, -29),
-        vs_getXY(-19, 1),
-        vs_getXY(9, 1),
-    },
-    {
-        vs_getXY(-9, -16),
-        vs_getXY(11, -16),
-        vs_getXY(-9, -3),
-        vs_getXY(11, -3),
-    },
-    {
-        vs_getXY(-10, -16),
-        vs_getXY(10, -16),
-        vs_getXY(-10, -3),
-        vs_getXY(10, -3),
-    } };
+static int const D_80068F04[][4] = { { vs_getXY(-6, -22), vs_getXY(18, -22),
+                                         vs_getXY(-6, 1), vs_getXY(18, 1) },
+    { vs_getXY(-17, -22), vs_getXY(7, -22), vs_getXY(-17, 1), vs_getXY(7, 1) },
+    { vs_getXY(-10, -29), vs_getXY(20, -29), vs_getXY(-10, 1), vs_getXY(20, 1) },
+    { vs_getXY(-19, -29), vs_getXY(9, -29), vs_getXY(-19, 1), vs_getXY(9, 1) },
+    { vs_getXY(-9, -16), vs_getXY(11, -16), vs_getXY(-9, -3), vs_getXY(11, -3) },
+    { vs_getXY(-10, -16), vs_getXY(10, -16), vs_getXY(-10, -3), vs_getXY(10, -3) } };
 
-static u_short const D_80068F64[][4] = { {
-                                             vs_getUV(64, 16),
-                                             vs_getUV(88, 16),
-                                             vs_getUV(64, 39),
-                                             vs_getUV(88, 39),
-                                         },
-    {
-        vs_getUV(87, 16),
-        vs_getUV(63, 16),
-        vs_getUV(87, 39),
-        vs_getUV(63, 39),
-    },
-    {
-        vs_getUV(121, 17),
-        vs_getUV(151, 17),
-        vs_getUV(121, 47),
-        vs_getUV(151, 47),
-    },
-    {
-        vs_getUV(150, 17),
-        vs_getUV(120, 17),
-        vs_getUV(150, 47),
-        vs_getUV(120, 47),
-    },
-    {
-        vs_getUV(160, 17),
-        vs_getUV(180, 17),
-        vs_getUV(160, 30),
-        vs_getUV(180, 30),
-    },
-    {
-        vs_getUV(179, 17),
-        vs_getUV(159, 17),
-        vs_getUV(179, 30),
-        vs_getUV(159, 30),
-    } };
+static u_short const D_80068F64[][4] = { { vs_getUV(64, 16), vs_getUV(88, 16),
+                                             vs_getUV(64, 39), vs_getUV(88, 39) },
+    { vs_getUV(87, 16), vs_getUV(63, 16), vs_getUV(87, 39), vs_getUV(63, 39) },
+    { vs_getUV(121, 17), vs_getUV(151, 17), vs_getUV(121, 47), vs_getUV(151, 47) },
+    { vs_getUV(150, 17), vs_getUV(120, 17), vs_getUV(150, 47), vs_getUV(120, 47) },
+    { vs_getUV(160, 17), vs_getUV(180, 17), vs_getUV(160, 30), vs_getUV(180, 30) },
+    { vs_getUV(179, 17), vs_getUV(159, 17), vs_getUV(179, 30), vs_getUV(159, 30) } };
 
-extern int D_80068F94[];
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F94);
+static int const D_80068F94[] = { vs_getXY(-2, -16), vs_getXY(-14, -16), vs_getXY(0, -21),
+    vs_getXY(-7, -21), vs_getXY(3, -11), vs_getXY(3, -11) };
 
-extern RECT D_80068FAC[];
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068FAC);
+static RECT const D_80068FAC[] = { { 0, 64, 36, 12 }, { 0, 64, 24, 12 },
+    { 24, 64, 20, 12 }, { 44, 64, 24, 12 }, { 224, 64, 16, 12 }, { 212, 76, 32, 12 },
+    { 150, 64, 26, 12 }, { 68, 64, 40, 12 }, { 108, 64, 30, 12 }, { 138, 64, 50, 12 },
+    { 188, 64, 36, 12 }, { 0, 76, 52, 12 }, { 52, 76, 30, 12 }, { 144, 88, 58, 12 },
+    { 120, 76, 60, 12 }, { 180, 76, 30, 12 }, { 136, 88, 8, 12 }, { 104, 88, 32, 12 },
+    { 76, 88, 40, 12 }, { 0, 88, 16, 12 }, { 20, 88, 20, 12 }, { 40, 88, 30, 12 },
+    { 72, 88, 32, 12 }, { 102, 76, 16, 12 }, { 220, 100, 18, 12 }, { 152, 52, 26, 12 },
+    { 182, 40, 30, 12 }, { 214, 40, 24, 12 }, { 152, 52, 28, 12 }, { 180, 52, 40, 12 },
+    { 220, 52, 30, 12 }, { 108, 64, 30, 12 }, { 216, 28, 28, 12 } };
 
 typedef struct {
     u_char count;
@@ -2184,7 +2133,7 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
 
 int func_80094E18(int x, int y, D_800F1BAC_t* p)
 {
-    RECT* rect = &D_80068FAC[D_800E861C[p->unkE - 3]];
+    RECT const* rect = &D_80068FAC[D_800E861C[p->unkE - 3]];
     POLY_FT4* prim = ((vs_scratch_t*)0x1F800000)->unk0;
     int sign = p->unkC;
     int width = (p->displayTextLen * 6 + rect->w + 12) / 2;
@@ -2258,7 +2207,7 @@ void func_80095258(int x, int y, D_800F1BAC_t* p)
 {
     short slide[] = { 32, 14, 6, 2 };
     short fade[] = { 5, 9, 13, 15 };
-    RECT* rects[2];
+    RECT const* rects[2];
     int step;
     int width;
     int i;

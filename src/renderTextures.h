@@ -1,11 +1,11 @@
 #include "texture_t.h"
 
-void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
+void _renderTextureFadeInTint(int x, int y, int texId, CVECTOR colors[])
 {
     POLY_GT4* poly;
     void** p;
 
-    if (colors[0].code == 0) {
+    if (colors[0].cd == 0) {
         return;
     }
 
@@ -18,25 +18,25 @@ void _renderTextureFadeInTint(int x, int y, int texId, P_CODE colors[])
         _disMap[texId].y, _disMap[texId].x, _disMap[texId].y + _disMap[texId].h,
         _disMap[texId].x + _disMap[texId].w, _disMap[texId].y + _disMap[texId].h);
 
-    if (colors[0].code < 8) {
-        setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
-            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-        setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
-            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-        setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
-            (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-        setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
-            (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
+    if (colors[0].cd < 8) {
+        setRGB0(poly, (colors[0].r * colors[0].cd) / 8, (colors[0].g * colors[0].cd) / 8,
+            (colors[0].b * colors[0].cd) / 8);
+        setRGB1(poly, (colors[1].r * colors[0].cd) / 8, (colors[1].g * colors[0].cd) / 8,
+            (colors[1].b * colors[0].cd) / 8);
+        setRGB2(poly, (colors[0].r * colors[0].cd) / 8, (colors[0].g * colors[0].cd) / 8,
+            (colors[0].b * colors[0].cd) / 8);
+        setRGB3(poly, (colors[1].r * colors[0].cd) / 8, (colors[1].g * colors[0].cd) / 8,
+            (colors[1].b * colors[0].cd) / 8);
     } else {
-        setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-        setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-        setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-        setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+        setRGB0(poly, colors[0].r, colors[0].g, colors[0].b);
+        setRGB1(poly, colors[1].r, colors[1].g, colors[1].b);
+        setRGB2(poly, colors[0].r, colors[0].g, colors[0].b);
+        setRGB3(poly, colors[1].r, colors[1].g, colors[1].b);
     }
 
     setSemiTrans(poly, 1);
 
-    if (colors[0].code < 8) {
+    if (colors[0].cd < 8) {
         poly->clut = _disMap[texId].clut + 1;
         poly->tpage = _disMap[texId].tpage | 0x20;
     } else {
@@ -57,12 +57,12 @@ static inline int _adjust(int component, int weight)
     return ret / 4;
 }
 
-void _renderTexturePopIn(int x, int y, int texId, P_CODE colors[])
+void _renderTexturePopIn(int x, int y, int texId, CVECTOR colors[])
 {
     POLY_GT4* poly;
     void** p;
 
-    if (colors[0].code != 0) {
+    if (colors[0].cd != 0) {
         poly = *(void**)0x1F800000;
 
         setPolyGT4(poly);
@@ -73,45 +73,45 @@ void _renderTexturePopIn(int x, int y, int texId, P_CODE colors[])
             _disMap[texId].y + _disMap[texId].h, _disMap[texId].x + _disMap[texId].w,
             _disMap[texId].y + _disMap[texId].h);
 
-        if (colors[0].code < 8) {
-            setRGB0(poly, (colors[0].r0 * colors[0].code) / 8,
-                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-            setRGB1(poly, (colors[1].r0 * colors[0].code) / 8,
-                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-            setRGB2(poly, (colors[0].r0 * colors[0].code) / 8,
-                (colors[0].g0 * colors[0].code) / 8, (colors[0].b0 * colors[0].code) / 8);
-            setRGB3(poly, (colors[1].r0 * colors[0].code) / 8,
-                (colors[1].g0 * colors[0].code) / 8, (colors[1].b0 * colors[0].code) / 8);
-        } else if (colors[0].code == 8) {
+        if (colors[0].cd < 8) {
+            setRGB0(poly, (colors[0].r * colors[0].cd) / 8,
+                (colors[0].g * colors[0].cd) / 8, (colors[0].b * colors[0].cd) / 8);
+            setRGB1(poly, (colors[1].r * colors[0].cd) / 8,
+                (colors[1].g * colors[0].cd) / 8, (colors[1].b * colors[0].cd) / 8);
+            setRGB2(poly, (colors[0].r * colors[0].cd) / 8,
+                (colors[0].g * colors[0].cd) / 8, (colors[0].b * colors[0].cd) / 8);
+            setRGB3(poly, (colors[1].r * colors[0].cd) / 8,
+                (colors[1].g * colors[0].cd) / 8, (colors[1].b * colors[0].cd) / 8);
+        } else if (colors[0].cd == 8) {
             setRGB0(poly, 192, 192, 192);
             setRGB1(poly, 192, 192, 192);
             setRGB2(poly, 192, 192, 192);
             setRGB3(poly, 192, 192, 192);
-        } else if (colors[0].code == 9) {
+        } else if (colors[0].cd == 9) {
             setRGB0(poly, 224, 224, 224);
             setRGB1(poly, 224, 224, 224);
             setRGB2(poly, 224, 224, 224);
             setRGB3(poly, 224, 224, 224);
-        } else if (colors[0].code < 14) {
-            int temp_a0 = colors[0].code - 10;
-            setRGB0(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
-                _adjust(colors[0].b0, temp_a0));
-            setRGB1(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
-                _adjust(colors[1].b0, temp_a0));
-            setRGB2(poly, _adjust(colors[0].r0, temp_a0), _adjust(colors[0].g0, temp_a0),
-                _adjust(colors[0].b0, temp_a0));
-            setRGB3(poly, _adjust(colors[1].r0, temp_a0), _adjust(colors[1].g0, temp_a0),
-                _adjust(colors[1].b0, temp_a0));
+        } else if (colors[0].cd < 14) {
+            int temp_a0 = colors[0].cd - 10;
+            setRGB0(poly, _adjust(colors[0].r, temp_a0), _adjust(colors[0].g, temp_a0),
+                _adjust(colors[0].b, temp_a0));
+            setRGB1(poly, _adjust(colors[1].r, temp_a0), _adjust(colors[1].g, temp_a0),
+                _adjust(colors[1].b, temp_a0));
+            setRGB2(poly, _adjust(colors[0].r, temp_a0), _adjust(colors[0].g, temp_a0),
+                _adjust(colors[0].b, temp_a0));
+            setRGB3(poly, _adjust(colors[1].r, temp_a0), _adjust(colors[1].g, temp_a0),
+                _adjust(colors[1].b, temp_a0));
         } else {
-            setRGB0(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-            setRGB1(poly, colors[1].r0, colors[1].g0, colors[1].b0);
-            setRGB2(poly, colors[0].r0, colors[0].g0, colors[0].b0);
-            setRGB3(poly, colors[1].r0, colors[1].g0, colors[1].b0);
+            setRGB0(poly, colors[0].r, colors[0].g, colors[0].b);
+            setRGB1(poly, colors[1].r, colors[1].g, colors[1].b);
+            setRGB2(poly, colors[0].r, colors[0].g, colors[0].b);
+            setRGB3(poly, colors[1].r, colors[1].g, colors[1].b);
         }
 
         setSemiTrans(poly, 1);
 
-        if (colors[0].code < 10) {
+        if (colors[0].cd < 10) {
             poly->clut = _disMap[texId].clut + getClut(16, 0);
             poly->tpage = _disMap[texId].tpage | getTPage(0, 1, 0, 0);
         } else {
@@ -127,7 +127,7 @@ void _renderTexturePopIn(int x, int y, int texId, P_CODE colors[])
     }
 }
 
-void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
+void _renderTextureWipe(int x, int y, int texId, CVECTOR arg3[], int arg4)
 {
     int temp_a1;
     int var_a0;
@@ -148,10 +148,10 @@ void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
             _disMap[texId].x + _disMap[texId].w, _disMap[texId].y, _disMap[texId].x,
             _disMap[texId].y + _disMap[texId].h, _disMap[texId].x + _disMap[texId].w,
             _disMap[texId].y + _disMap[texId].h);
-        setRGB0(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-        setRGB1(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
-        setRGB2(poly, arg3[0].r0, arg3[0].g0, arg3[0].b0);
-        setRGB3(poly, arg3[1].r0, arg3[1].g0, arg3[1].b0);
+        setRGB0(poly, arg3[0].r, arg3[0].g, arg3[0].b);
+        setRGB1(poly, arg3[1].r, arg3[1].g, arg3[1].b);
+        setRGB2(poly, arg3[0].r, arg3[0].g, arg3[0].b);
+        setRGB3(poly, arg3[1].r, arg3[1].g, arg3[1].b);
         setSemiTrans(poly, 1);
 
         poly->clut = _disMap[texId].clut;
@@ -197,10 +197,10 @@ void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
                 var_a0 = 0;
             }
 
-            setRGB0(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
-                (arg3[0].b0 * var_a0) / 64);
-            setRGB2(poly, (arg3[0].r0 * var_a0) / 64, (arg3[0].g0 * var_a0) / 64,
-                (arg3[0].b0 * var_a0) / 64);
+            setRGB0(poly, (arg3[0].r * var_a0) / 64, (arg3[0].g * var_a0) / 64,
+                (arg3[0].b * var_a0) / 64);
+            setRGB2(poly, (arg3[0].r * var_a0) / 64, (arg3[0].g * var_a0) / 64,
+                (arg3[0].b * var_a0) / 64);
 
             var_a0 = arg4 - temp_a1;
 
@@ -212,10 +212,10 @@ void _renderTextureWipe(int x, int y, int texId, P_CODE arg3[], int arg4)
                 var_a0 = 0;
             }
 
-            setRGB1(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
-                (arg3[1].b0 * var_a0) / 64);
-            setRGB3(poly, (arg3[1].r0 * var_a0) / 64, (arg3[1].g0 * var_a0) / 64,
-                (arg3[1].b0 * var_a0) / 64);
+            setRGB1(poly, (arg3[1].r * var_a0) / 64, (arg3[1].g * var_a0) / 64,
+                (arg3[1].b * var_a0) / 64);
+            setRGB3(poly, (arg3[1].r * var_a0) / 64, (arg3[1].g * var_a0) / 64,
+                (arg3[1].b * var_a0) / 64);
 
             setSemiTrans(poly, 1);
 

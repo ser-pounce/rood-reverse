@@ -233,7 +233,7 @@ typedef struct {
 } scriptBytePair;
 
 void func_8007DE88(int*);
-void func_8007DEA8(P_CODE*);
+void func_8007DEA8(CVECTOR*);
 void func_8007DECC(D_800F1A68_t*);
 short func_8008DC7C(int, int);
 int func_80090C2C(int);
@@ -2979,7 +2979,7 @@ void func_800BBAFC(void)
     }
 }
 
-extern P_CODE D_800E9C08;
+extern CVECTOR D_800E9C08;
 extern D_800F1A68_t D_800E9C0C;
 
 void func_800BBBE8(void)
@@ -3662,7 +3662,7 @@ int func_800BD610(void)
 int func_800BD6C4(u_char* script, short arg1)
 {
     D_800F1A68_t values;
-    P_CODE color;
+    CVECTOR color;
     short mode;
     short effectValue;
     switch (script[0]) {
@@ -3694,16 +3694,16 @@ int func_800BD6C4(u_char* script, short arg1)
     case 229:
         D_800F4BA4->unk21C.unk1E = script[5];
         if (D_800F4BA4->unk21C.unk1E == 0) {
-            color.r0 = script[1];
-            color.g0 = script[2];
-            color.b0 = script[3];
+            color.r = script[1];
+            color.g = script[2];
+            color.b = script[3];
             func_8007DDD4(&color);
         } else {
             D_800F4BA4->unk21C.unk1C = 0;
             func_8007DEA8(&color);
-            D_800F4BA4->unk21C.unk12 = script[1] - (D_800F4BA4->unk21C.unkA = color.r0);
-            D_800F4BA4->unk21C.unk14 = script[2] - (D_800F4BA4->unk21C.unkC = color.g0);
-            D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b0);
+            D_800F4BA4->unk21C.unk12 = script[1] - (D_800F4BA4->unk21C.unkA = color.r);
+            D_800F4BA4->unk21C.unk14 = script[2] - (D_800F4BA4->unk21C.unkC = color.g);
+            D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b);
             D_800F4BA4->unk21C.unk1 = script[4];
         }
         return 0;
@@ -3758,7 +3758,7 @@ int func_800BD6C4(u_char* script, short arg1)
             func_8007DDF8(&values);
             values.unk0 = values.unk4 = ONE;
             func_8007DDB8(&values);
-            color.r0 = color.g0 = color.b0 = 128;
+            color.r = color.g = color.b = 128;
             func_8007DDD4(&color);
             func_8007DE44(0);
             func_8007DE5C(0);
@@ -3771,7 +3771,7 @@ int func_800BD6C4(u_char* script, short arg1)
             func_8007DDF8(&values);
             values.unk0 = values.unk4 = ONE;
             func_8007DDB8(&values);
-            color.r0 = color.g0 = color.b0 = 144;
+            color.r = color.g = color.b = 144;
             func_8007DE5C(1);
             func_8007DDD4(&color);
             func_8007DE44(mode);
@@ -3783,7 +3783,7 @@ int func_800BD6C4(u_char* script, short arg1)
 void func_800BDAB4(void)
 {
     D_800F1A68_t sp10;
-    P_CODE sp20;
+    CVECTOR sp20;
 
     if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
         sp10.unk0 = D_800F4BA4->unk1FC.unk2;
@@ -3791,9 +3791,9 @@ void func_800BDAB4(void)
         func_8007DDB8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
-        sp20.r0 = D_800F4BA4->unk21C.unk2;
-        sp20.g0 = D_800F4BA4->unk21C.unk4;
-        sp20.b0 = D_800F4BA4->unk21C.unk6;
+        sp20.r = D_800F4BA4->unk21C.unk2;
+        sp20.g = D_800F4BA4->unk21C.unk4;
+        sp20.b = D_800F4BA4->unk21C.unk6;
         func_8007DDD4(&sp20);
     }
     if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {

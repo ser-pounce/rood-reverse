@@ -1016,7 +1016,7 @@ int _renderTimeAttackStart(void)
     static int countdownOffsets[] = { 121, 93, 67, 43, 25, 12, 3, 0 };
     static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
         { 0x107A, 0x107A, 0x1000 } };
-    static P_CODE colors[] = { { 220, 80, 64 }, { 64, 128, 220 }, { 128, 128, 128 } };
+    static CVECTOR colors[] = { { 220, 80, 64 }, { 64, 128, 220 }, { 128, 128, 128 } };
 
     int temp_v1_2;
     int x;
@@ -1145,7 +1145,7 @@ int _renderTimeAttackStart(void)
 
 void _renderTimeAttackHeader(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
+    static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (timer < 0) {
         timer = 0;
@@ -1157,8 +1157,8 @@ void _renderTimeAttackHeader(int x, int y, int timer)
 
     if (timer > 0) {
 
-        colors[0].code = timer;
-        colors[1].code = timer;
+        colors[0].cd = timer;
+        colors[1].cd = timer;
         x -= (_disMap[disIndexAttack0TimeAttack].w
                  + _disMap[disIndexAttack0TimeAttack + 1].w)
           >> 1;
@@ -1331,7 +1331,7 @@ void _pulseCubePuzzleEnd(int arg0)
 
 void _renderCongratulations(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
+    static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (timer < 0) {
         timer = 0;
@@ -1342,8 +1342,8 @@ void _renderCongratulations(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
-        colors[1].code = timer;
+        colors[0].cd = timer;
+        colors[1].cd = timer;
         x -= (_disMap[disIndexRank0Congratulations].w
                  + _disMap[disIndexRank0Congratulations + 1].w)
           >> 1;
@@ -1356,7 +1356,7 @@ void _renderCongratulations(int x, int y, int timer)
 
 void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
+    static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[16];
     int i;
@@ -1371,7 +1371,7 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
+        colors[0].cd = timer;
 
         sprintf(buf, "%09d", _score);
 
@@ -1408,7 +1408,7 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 
 void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
+    static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[16];
     int temp_s2;
@@ -1485,7 +1485,7 @@ void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((un
 
 void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unused)))
 {
-    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
+    static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[4];
     int i;
@@ -1499,7 +1499,7 @@ void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unuse
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
+        colors[0].cd = timer;
 
         sprintf(buf, "%03d", _mapCompletion);
 
@@ -1527,7 +1527,7 @@ void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unuse
 void _renderIncrementalMapCompletion(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    static P_CODE colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
+    static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
     char buf[8];
     int temp_s4;
@@ -1597,7 +1597,7 @@ void _renderIncrementalMapCompletion(
 
 void _renderRiskbreakerRankHeader(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 200, 80, 20 }, { 200, 80, 20 } };
+    static CVECTOR colors[] = { { 200, 80, 20 }, { 200, 80, 20 } };
 
     if (timer < 0) {
         timer = 0;
@@ -1608,7 +1608,7 @@ void _renderRiskbreakerRankHeader(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
+        colors[0].cd = timer;
 
         _renderTextureFadeInTint(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
             disIndexRank0RiskbreakerRank, colors);
@@ -1617,7 +1617,7 @@ void _renderRiskbreakerRankHeader(int x, int y, int timer)
 
 void _renderRiskbreakerRank(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+    static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
     int xInset;
     int i;
@@ -1634,7 +1634,7 @@ void _renderRiskbreakerRank(int x, int y, int timer)
 
     if (timer > 0) {
 
-        colors[0].code = timer;
+        colors[0].cd = timer;
 
         for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
             xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
@@ -1653,7 +1653,7 @@ void _renderRiskbreakerRank(int x, int y, int timer)
 
 void _renderTimeAttackResultsHeader(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+    static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
     if (timer < 0) {
         timer = 0;
@@ -1664,7 +1664,7 @@ void _renderTimeAttackResultsHeader(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
+        colors[0].cd = timer;
         x -= (_disMap[disIndexTime0TimeAttackResults].w
                  + _disMap[disIndexTime0TimeAttackResults + 1].w)
           >> 1;
@@ -1707,7 +1707,7 @@ void _renderTimeAttackRating(int x, int y, int arg2)
 
 void _renderTimeAttackRatingWipe(int x, int y, int arg2)
 {
-    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+    static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
     int arg3;
 
@@ -1995,7 +1995,7 @@ void _renderAnimatedStatWheel(int x, int y, int texId);
 
 void _renderStatWheel(int x, int y, int timer, int arg3)
 {
-    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 } };
+    static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 } };
 
     RECT sp18;
     char buf[8];
@@ -2018,7 +2018,7 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
 
     if (timer > 0) {
 
-        colors[0].code = timer;
+        colors[0].cd = timer;
         x -= (_disMap[11].w + _disMap[26].w + _disMap[14].w + _disMap[24].w + 0xE) >> 1;
 
         _renderTextureFadeInTint(x, y, disIndexRank0Bonus, colors);
@@ -2639,7 +2639,7 @@ void _renderChicken(int arg0, int arg1)
 
 void _renderEvolveOrDie(int x, int y, int step)
 {
-    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
+    static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (step < 0) {
         step = 0;
@@ -2650,8 +2650,8 @@ void _renderEvolveOrDie(int x, int y, int step)
     }
 
     if (step > 0) {
-        colors[0].code = step;
-        colors[1].code = step;
+        colors[0].cd = step;
+        colors[1].cd = step;
         x -= (_disMap[disIndexIq0EvolveOrDie].w + _disMap[disIndexIq0EvolveOrDie + 1].w)
           >> 1;
 
@@ -2663,7 +2663,7 @@ void _renderEvolveOrDie(int x, int y, int step)
 
 void _renderFoodchain(int x, int y, int timer)
 {
-    static P_CODE colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
+    static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
     if (timer < 0) {
         timer = 0;
@@ -2674,8 +2674,8 @@ void _renderFoodchain(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
-        colors[1].code = timer;
+        colors[0].cd = timer;
+        colors[1].cd = timer;
         x -= (_disMap[disIndexIq0Foodchain].w + _disMap[disIndexIq0Foodchain + 1].w) >> 1;
 
         _renderTexturePopIn(x, y, disIndexIq0Foodchain, colors);
@@ -2711,7 +2711,7 @@ void _renderCubePuzzleTime(int x, int y, int timer)
 
 void _renderCubePuzzleRank(int x, int y, int timer, int rank)
 {
-    static P_CODE colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
+    static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
     if (timer < 0) {
         timer = 0;
@@ -2722,7 +2722,7 @@ void _renderCubePuzzleRank(int x, int y, int timer, int rank)
     }
 
     if (timer > 0) {
-        colors[0].code = timer;
+        colors[0].cd = timer;
 
         _renderTexturePopIn(x - (_disMap[rank + disIndexIq1GameDesigner].w >> 1), y,
             rank + disIndexIq1GameDesigner, colors);

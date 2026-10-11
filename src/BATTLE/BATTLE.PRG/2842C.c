@@ -1738,8 +1738,42 @@ static int const D_80068F04[][4] = { {
         vs_getXY(10, -3),
     } };
 
-extern u_short D_80068F64[][4];
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F64);
+static u_short const D_80068F64[][4] = { {
+                                             vs_getUV(64, 16),
+                                             vs_getUV(88, 16),
+                                             vs_getUV(64, 39),
+                                             vs_getUV(88, 39),
+                                         },
+    {
+        vs_getUV(87, 16),
+        vs_getUV(63, 16),
+        vs_getUV(87, 39),
+        vs_getUV(63, 39),
+    },
+    {
+        vs_getUV(121, 17),
+        vs_getUV(151, 17),
+        vs_getUV(121, 47),
+        vs_getUV(151, 47),
+    },
+    {
+        vs_getUV(150, 17),
+        vs_getUV(120, 17),
+        vs_getUV(150, 47),
+        vs_getUV(120, 47),
+    },
+    {
+        vs_getUV(160, 17),
+        vs_getUV(180, 17),
+        vs_getUV(160, 30),
+        vs_getUV(180, 30),
+    },
+    {
+        vs_getUV(179, 17),
+        vs_getUV(159, 17),
+        vs_getUV(179, 30),
+        vs_getUV(159, 30),
+    } };
 
 extern int D_80068F94[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80068F94);
@@ -2423,7 +2457,7 @@ void func_80095C18(int actor, int kind)
         int flags;
         int z;
         int const* corners;
-        u_short* uv;
+        u_short const* uv;
 
         if (kind & 0x80) {
             kind &= 7;

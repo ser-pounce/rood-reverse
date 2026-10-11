@@ -315,7 +315,7 @@ typedef struct {
     short y2;
     short x3;
     short y3;
-} pFileBlock1Data;
+} pFileTexture;
 
 typedef struct {
     int unk0;
@@ -326,7 +326,7 @@ typedef struct {
     char* block8Data;
     int block1TableCount;
     pFileTextureInfo* textureInfoTable[4];
-    pFileBlock1Data* block1Data;
+    pFileTexture* block1Data;
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;

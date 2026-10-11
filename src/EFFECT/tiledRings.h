@@ -65,7 +65,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int drawRow;
     int drawColumn;
     vs_tiledRingPrim* prim;
-    pFileBlock1Data* texture;
+    pFileTexture* texture;
     switch (arg1) {
     case 1:
         state = vs_main_allocHeapR(sizeof(*state));

@@ -461,7 +461,7 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     DVECTOR* spF0;
     int i;
     int j;
-    pFileBlock1Data* temp_s7;
+    pFileTexture* temp_s7;
 
     vs_battle_lerpSvector(arg0->unk34[4],
         vs_battle_sampleCurve(arg0->unkE, arg3->curveSampleDistance), &arg1->unk108);

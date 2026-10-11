@@ -326,7 +326,7 @@ typedef struct {
     char* block8Data;
     int block1TableCount;
     pFileTextureInfo* textureInfoTable[4];
-    pFileTexture* block1Data;
+    pFileTexture* textures;
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;

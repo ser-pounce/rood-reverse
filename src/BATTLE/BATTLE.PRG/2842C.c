@@ -1744,11 +1744,12 @@ struct {
     { 2, { 17, 20 }, 2 }, { 2, { 17, 21 }, 2 }, { 2, { 17, 22 }, 2 }, { 0, { 0, 0 }, 0 },
     { 0, { 0, 0 }, 0 }, { 0, { 0, 0 }, 0 } };
 
-extern const CVECTOR D_80069134[];
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069134);
+static CVECTOR const D_80069134[] = { { 208, 208, 208 }, { 64, 192, 255 },
+    { 255, 208, 48 }, { 160, 224, 96 } };
 
-extern const RECT D_80069144[];
-INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_80069144);
+static const RECT D_80069144[] = { { 72, 160, 32, 8 }, { 76, 168, 28, 8 },
+    { 78, 176, 26, 8 }, { 78, 184, 26, 8 }, { 82, 192, 22, 8 }, { 82, 200, 22, 8 },
+    { 82, 208, 22, 8 } };
 
 extern const RECT D_8006917C[];
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/2842C", D_8006917C);

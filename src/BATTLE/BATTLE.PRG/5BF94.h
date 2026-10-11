@@ -190,7 +190,7 @@ typedef struct {
 typedef struct {
     u_short unk0;
     u_short dataIndex;
-} pFileBlock1Indices;
+} pFileTextureInfo;
 
 typedef struct {
     int unk0;
@@ -206,7 +206,7 @@ typedef struct {
     u_char unk16;
     u_char unk17;
     u_char* unk18;
-    pFileBlock1Indices* textureInfo;
+    pFileTextureInfo* textureInfo;
 } func_800D6CF_t;
 
 typedef struct {
@@ -325,7 +325,7 @@ typedef struct {
     pFileCurveBlock* curveBlock;
     char* block8Data;
     int block1TableCount;
-    pFileBlock1Indices* block1Tables[4];
+    pFileTextureInfo* block1Tables[4];
     pFileBlock1Data* block1Data;
     int block2Count;
     u_short* block2Data;

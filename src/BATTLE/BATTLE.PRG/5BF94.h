@@ -377,12 +377,6 @@ typedef struct {
 } func_800CE714_t2_2;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    func_8006CE70_t unk4;
-} D_800F53B8_t3_2;
-
-typedef struct {
     u_short unk0_0 : 8;
     u_short unk0_8 : 8;
 } func_800D5780_t2;
@@ -405,10 +399,10 @@ typedef struct {
 } D_800F53B8_t4;
 
 typedef struct {
-    D_800F53B8_t3_2 unk0;
-    D_800F53B8_t3_2 unkC;
-    D_800F53B8_t3_2 unk18;
-    D_800F53B8_t3_2 unk24;
+    actionEffectTarget unk0;
+    actionEffectTarget unkC;
+    actionEffectTarget unk18;
+    actionEffectTarget unk24;
     D_800F53B8_t4* unk30;
     func_800D4910_t* unk34;
     short unk38;
@@ -585,9 +579,9 @@ void vs_battle_renderImage(int xy, void* buffer, int wh);
 void func_800CE64C(void);
 int func_800CEEBC(void);
 int func_800CEF74(int);
-int func_800CF0E8(func_800CF0E8_t*, int, int);
+int func_800CF0E8(actionEffectRequest*, int, int);
 void func_800CF1A8(void);
-int func_800CF3F8(func_800CF0E8_t*, int);
+int func_800CF3F8(actionEffectRequest*, int);
 int func_800CF48C(void);
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);

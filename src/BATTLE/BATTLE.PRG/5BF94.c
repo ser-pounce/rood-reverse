@@ -80,10 +80,10 @@ typedef struct {
 } gim_t;
 
 typedef struct {
-    D_800F53B8_t3* unk0;
-    D_800F53B8_t3* unk4;
-    D_800F53B8_t3* unk8;
-    D_800F53B8_t3* unkC;
+    actionEffectTarget* unk0;
+    actionEffectTarget* unk4;
+    actionEffectTarget* unk8;
+    actionEffectTarget* unkC;
     int unk10;
     char* unk14;
     int unk18;
@@ -214,11 +214,6 @@ typedef struct {
     unsigned char unk6;
     unsigned char unk7;
 } func_800D6310_t;
-
-typedef struct {
-    char unk0[0x10];
-    D_800F53B8_t3_2 unk10[16];
-} func_800D6048_t;
 
 typedef struct {
     u_int unk0_0 : 9;
@@ -392,7 +387,7 @@ extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CE9B0(void);
-char func_800CF218(func_800CF0E8_t* arg0, int arg1, int arg2);
+char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
@@ -545,8 +540,6 @@ extern vs_main_CdQueueSlot* D_800F5218;
 extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
-extern func_800CF0E8_t D_800F5230;
-extern u_char D_800F5238;
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
@@ -560,7 +553,6 @@ extern D_800F54B8_t D_800F54B8[];
 extern short D_800F54D0;
 extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
-extern D_800F53B8_t3 D_800F5234;
 extern char D_800F5518;
 extern D_800F54D8_t D_800F5520[2];
 extern short D_800F55A0;
@@ -4599,10 +4591,10 @@ void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
         *(int*)&arg1->unk1C[i].unk34 = 0;
     }
 
-    arg1->unkD1C.unk0 = arg0->unk0->unk0;
-    arg1->unkD1C.unkC = arg0->unk4->unk0;
-    arg1->unkD1C.unk18 = arg0->unk8->unk0;
-    arg1->unkD1C.unk24 = arg0->unkC->unk0;
+    arg1->unkD1C.unk0 = *arg0->unk0;
+    arg1->unkD1C.unkC = *arg0->unk4;
+    arg1->unkD1C.unk18 = *arg0->unk8;
+    arg1->unkD1C.unk24 = *arg0->unkC;
 
     arg1->unkD1C.unk30 = 0;
     arg1->unkD1C.unk34 = 0;
@@ -4905,11 +4897,11 @@ int func_800CEF74(int arg0)
         if (D_800F521C & (1 << arg0)) {
             char* a1 = D_800F569C->block8Data;
             sp10.unk18 = arg0 * 3;
-            sp10.unk0 = &D_800F5234;
-            sp10.unk4 = &D_800F5234;
+            sp10.unk0 = &D_800F5230.source;
+            sp10.unk4 = &D_800F5230.source;
             sp10.unk10 = 0;
-            sp10.unk8 = (D_800F53B8_t3*)&D_800F5234.unkC;
-            sp10.unkC = (D_800F53B8_t3*)&D_800F5234.unkC;
+            sp10.unk8 = &D_800F5230.targets[0];
+            sp10.unkC = &D_800F5230.targets[0];
             sp10.unk1C = 0;
             sp10.unk20 = D_800F5318;
             sp10.unk14 = a1;
@@ -4939,11 +4931,11 @@ int func_800CF060(void)
     return temp_s1 | temp_s0;
 }
 
-int func_800CF0E8(func_800CF0E8_t* arg0, int arg1, int arg2)
+int func_800CF0E8(actionEffectRequest* arg0, int arg1, int arg2)
 {
     D_800F5230 = *arg0;
 
-    if ((arg1 != 0) && (arg0->unk4 == 4)) {
+    if ((arg1 != 0) && (arg0->source.type == 4)) {
         D_800F522C = arg1;
         D_800F54A9 = arg2;
     }
@@ -4976,7 +4968,7 @@ void func_800CF1A8(void)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CF218);
 
-int func_800CF3F8(func_800CF0E8_t* arg0, int arg1)
+int func_800CF3F8(actionEffectRequest* arg0, int arg1)
 {
     int _[4] __attribute__((unused));
     func_800D7890(0);
@@ -4985,7 +4977,7 @@ int func_800CF3F8(func_800CF0E8_t* arg0, int arg1)
     return func_800CF218(arg0, 0, arg1);
 }
 
-int func_800CF458(func_800CF0E8_t* arg0, int arg1, int arg2)
+int func_800CF458(actionEffectRequest* arg0, int arg1, int arg2)
 {
     return func_800CF218(arg0, arg1, arg2);
 }
@@ -5112,21 +5104,17 @@ void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
 
 void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 54;
-    sp10.unk2 = 1;
-    sp10.unk4 = 5;
-    sp10.unk10 = 5;
-    sp10.unk8.s16 = 0;
-    sp10.unkA.s16 = 0;
-    sp10.unkC = 0;
-    sp10.unk14.u16 = 0;
-    sp10.unk16.u16 = 0;
-    sp10.unk18 = 0;
-    sp10.unk3 = 0;
-    func_800CF3F8(&sp10, (arg0 & 0xFF) | ((arg1 & 0xFF) << 8) | ((arg2 & 0xF) << 0x10)
-                             | ((arg3 & 0xF) << 0x14) | 0xFF000000);
+    request.effectId = 54;
+    request.count = 1;
+    request.source.type = 5;
+    request.targets[0].type = 5;
+    setVector(&request.source.value.position, 0, 0, 0);
+    setVector(&request.targets[0].value.position, 0, 0, 0);
+    request.otherCount = 0;
+    func_800CF3F8(&request, (arg0 & 0xFF) | ((arg1 & 0xFF) << 8) | ((arg2 & 0xF) << 0x10)
+                                | ((arg3 & 0xF) << 0x14) | 0xFF000000);
 }
 
 void func_800CF830(int arg0, int arg1)
@@ -5147,19 +5135,17 @@ void func_800CF830(int arg0, int arg1)
 
 void func_800CF8BC(void)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 56;
-    sp10.unk2 = 1;
-    sp10.unk4 = 4;
-    sp10.unkA.u8[0] = 0;
-    sp10.unk10 = 5;
-    sp10.unk14.u16 = 0;
-    sp10.unk16.u16 = 0;
-    sp10.unk18 = 0;
-    sp10.unk3 = 0;
-    sp10.unk8.u8[0] = D_800F5238;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = 56;
+    request.count = 1;
+    request.source.type = 4;
+    request.source.value.actor.part = 0;
+    request.targets[0].type = 5;
+    setVector(&request.targets[0].value.position, 0, 0, 0);
+    request.otherCount = 0;
+    request.source.value.actor.actor = D_800F5230.source.value.actor.actor;
+    func_800CF3F8(&request, 0);
 }
 
 void func_800CF920(void) { D_800F522C = 0; }
@@ -6152,7 +6138,7 @@ int func_800D4778(D_800F53B8_t* arg0)
 
     sp10.unk14 = arg0->unkC;
     sp10.unk18 = func_800D5198(arg0);
-    sp10.unk0 = &arg0->unkD1C;
+    sp10.unk0 = &arg0->unkD1C.unk0;
     func_800CE83C(&sp10);
     return 1;
 }
@@ -6287,8 +6273,8 @@ int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
 
 int func_800D4D64(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk0.unk0 == 4) {
-        func_8006CDB8((u_char)arg0->unkD1C.unk0.unk4.unk0);
+    if (arg0->unkD1C.unk0.type == 4) {
+        func_8006CDB8(arg0->unkD1C.unk0.value.actor.actor);
     }
     return 1;
 }
@@ -6543,10 +6529,11 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D6310_t* temp_s0 = (func_800D6310_t*)arg1->unk0 + arg1->unk6;
 
     if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
-        if ((arg0->unkD1C.unkC.unk0 == 4)
-            && (func_800A0BE0((char)arg0->unkD1C.unkC.unk4.unk0) & 2)) {
-            func_8007B29C(temp_s0->unk7, temp_s0->unk2, (char)arg0->unkD1C.unkC.unk4.unk0,
-                temp_s0->unk4 - 0x80, temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
+        if ((arg0->unkD1C.unkC.type == 4)
+            && (func_800A0BE0(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
+            func_8007B29C(temp_s0->unk7, temp_s0->unk2,
+                arg0->unkD1C.unkC.value.actor.actor, temp_s0->unk4 - 0x80,
+                temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
         }
         return func_800D5780(arg1);
     }
@@ -6563,17 +6550,19 @@ int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
     }
 
     if (arg2 != 0) {
-        func_800D6048_t* effect = (func_800D6048_t*)&D_800F5230;
-        for (i = 0; i < D_800F5230.unk2; ++i) {
-            if ((effect->unk10[i].unk0 == 4)
-                && (func_800A0BE0(effect->unk10[i].unk4.unk0 & 0xFF) & 2)) {
-                func_8007B29C(entry->unk7, entry->unk2, effect->unk10[i].unk4.unk0 & 0xFF,
-                    entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+        actionEffectRequest* effect = &D_800F5230;
+
+        for (i = 0; i < D_800F5230.count; ++i) {
+            if ((effect->targets[i].type == 4)
+                && (func_800A0BE0(effect->targets[i].value.actor.actor) & 2)) {
+                func_8007B29C(entry->unk7, entry->unk2,
+                    effect->targets[i].value.actor.actor, entry->unk4 - 128,
+                    entry->unk5 - 128, entry->unk6 - 128);
             }
         }
-    } else if ((arg0->unkD1C.unk24.unk0 == 4)
-               && (func_800A0BE0(arg0->unkD1C.unk24.unk4.unk0 & 0xFF) & 2)) {
-        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.unk4.unk0 & 0xFF,
+    } else if ((arg0->unkD1C.unk24.type == 4)
+               && (func_800A0BE0(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
+        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.value.actor.actor,
             entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
     }
     return func_800D5780(arg1);
@@ -6585,9 +6574,9 @@ int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D6310_t* temp_s2 = (func_800D6310_t*)(arg1->unk0 + (arg1->unk6 * 2));
 
     if (temp_s2->unk0 == arg0->unkD1C.unk30->unk2) {
-        for (i = 0; i < D_800F5230.unk3; ++i) {
-            if (func_800A0BE0(D_800F5230.unkD0[i]) & 2) {
-                func_8007B29C(temp_s2->unk7, temp_s2->unk2, D_800F5230.unkD0[i],
+        for (i = 0; i < D_800F5230.otherCount; ++i) {
+            if (func_800A0BE0(D_800F5230.others[i]) & 2) {
+                func_8007B29C(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
                     temp_s2->unk4 - 0x80, (temp_s2->unk5 - 0x80), (temp_s2->unk6 - 0x80));
             }
         }
@@ -6622,26 +6611,28 @@ int func_800D6310(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
 void func_800D6388(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk18.unk0 == 4) {
-        func_8006CB04((u_char)arg0->unkD1C.unk18.unk4.unk0, NULL);
+    if (arg0->unkD1C.unk18.type == 4) {
+        func_8006CB04(arg0->unkD1C.unk18.value.actor.actor, NULL);
     } else {
-        func_8006CB04(arg0->unkD1C.unk18.unk4.unk6, &arg0->unkD1C.unk18.unk4);
+        func_8006CB04(
+            arg0->unkD1C.unk18.value.position.pad, &arg0->unkD1C.unk18.value.position);
     }
 }
 
 void func_800D63D0(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk0.unk0 == 4) {
-        func_8006CA20((u_char)arg0->unkD1C.unk0.unk4.unk0, NULL);
+    if (arg0->unkD1C.unk0.type == 4) {
+        func_8006CA20(arg0->unkD1C.unk0.value.actor.actor, NULL);
     } else {
-        func_8006CA20(arg0->unkD1C.unk0.unk4.unk6, &arg0->unkD1C.unk0.unk4);
+        func_8006CA20(
+            arg0->unkD1C.unk0.value.position.pad, &arg0->unkD1C.unk0.value.position);
     }
 }
 
 void func_800D6418(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk18.unk0 == 5) {
-        func_8006CDD8(&arg0->unkD1C.unk18.unk4);
+    if (arg0->unkD1C.unk18.type == 5) {
+        func_8006CDD8(&arg0->unkD1C.unk18.value.position);
     }
 }
 
@@ -6666,8 +6657,8 @@ void func_800D6554(void) { func_8006CE50(); }
 
 void func_800D6574(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk0.unk0 == 4) {
-        func_8006CDB8((u_char)arg0->unkD1C.unk0.unk4.unk0);
+    if (arg0->unkD1C.unk0.type == 4) {
+        func_8006CDB8(arg0->unkD1C.unk0.value.actor.actor);
     }
 }
 
@@ -6680,12 +6671,12 @@ void func_800D65A8(func_800D6508_t* arg0, char arg1)
 void func_800D65D8(D_800F53B8_t* arg0, u_char arg1)
 {
 
-    if (arg0->unkD1C.unkC.unk0 == 4) {
+    if (arg0->unkD1C.unkC.type == 4) {
         if (arg1 != 0) {
-            func_8009F898((u_char)arg0->unkD1C.unkC.unk4.unk0, 1, arg1);
+            func_8009F898(arg0->unkD1C.unkC.value.actor.actor, 1, arg1);
 
         } else {
-            func_8009F898((u_char)arg0->unkD1C.unkC.unk4.unk0, 0, 0);
+            func_8009F898(arg0->unkD1C.unkC.value.actor.actor, 0, 0);
         }
     }
 }
@@ -6694,22 +6685,22 @@ void func_800D6628(D_800F53B8_t* arg0, u_char arg1)
 {
     int var;
 
-    if (arg0->unkD1C.unkC.unk0 == 4) {
+    if (arg0->unkD1C.unkC.type == 4) {
         if (arg1 < 4) {
-            func_800AE68C((u_char)arg0->unkD1C.unkC.unk4.unk0, arg1);
+            func_800AE68C(arg0->unkD1C.unkC.value.actor.actor, arg1);
         } else {
             do {
                 var = rand() % 3;
             } while (var == D_800EC4B8);
-            func_800AE68C((u_char)arg0->unkD1C.unkC.unk4.unk0, D_800EC4B8 = var);
+            func_800AE68C(arg0->unkD1C.unkC.value.actor.actor, D_800EC4B8 = var);
         }
     }
 }
 
 void func_800D66CC(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk18.unk0 == 5) {
-        func_8006CE70(&arg0->unkD1C.unk18.unk4);
+    if (arg0->unkD1C.unk18.type == 5) {
+        func_8006CE70(&arg0->unkD1C.unk18.value.position);
     }
 }
 
@@ -6742,8 +6733,8 @@ void func_800D67C4(D_800F53B8_t* arg0, u_char arg1)
 
 void func_800D6860(D_800F53B8_t* arg0)
 {
-    if (arg0->unkD1C.unk24.unk0 == 4) {
-        func_80069C6C((u_char)arg0->unkD1C.unk24.unk4.unk0);
+    if (arg0->unkD1C.unk24.type == 4) {
+        func_80069C6C(arg0->unkD1C.unk24.value.actor.actor);
     }
 }
 

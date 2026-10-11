@@ -230,7 +230,6 @@ void func_800970BC(void);
 
 extern int (*D_800E85CC[])(D_800F1DD8_t2*);
 extern int (*D_800E85E8[])(func_80092B04_t*, func_80092B04_t2*);
-extern char D_800691E4[];
 extern int D_800E861C[];
 extern short D_800E8634[];
 extern RECT D_800E8640[];

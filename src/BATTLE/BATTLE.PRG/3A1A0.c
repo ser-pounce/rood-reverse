@@ -2,6 +2,7 @@
 #include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
+#include "44F14.h"
 #include "../../SLUS_010.40/main.h"
 
 typedef struct {
@@ -27,8 +28,6 @@ typedef struct {
 } func_800A6798_t;
 
 u_int func_800A9C54(u_char, void*, int);
-void func_800AEAE8(void*);
-void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
 void func_800B64A8(int, int, int);
 int func_8008C49C(int, int);
@@ -449,7 +448,7 @@ int func_800A38E0(int actorId)
     object = D_800F45E0[found];
     objectId = found;
 
-    if (object->unk6C[8].unk0_4 == 1) {
+    if (object->unk16C.unk0_4 == 1) {
         return -1;
     }
 
@@ -470,7 +469,7 @@ int func_800A38E0(int actorId)
         return -1;
     }
 
-    if (object->unk6C[8].actorId < 4) {
+    if (object->unk16C.actorId < 4) {
         if (!func_800A3DB4(farX, farZ, object->unk1E)) {
             return -1;
         }
@@ -579,7 +578,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     int facing;
 
     if (mode == 2) {
-        switch (object->unk6C[8].actorId) {
+        switch (object->unk16C.actorId) {
         case 0:
         case 1:
             object->unk1A = 0xF9;
@@ -594,7 +593,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
             break;
         }
 
-        object->unk6C[8].unk4 = 0;
+        object->unk16C.unk4 = 0;
         func_800E68A0(object);
         return;
     }
@@ -635,7 +634,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     func_800E4C28(object->unk5C, object->unk5E);
     func_800E68A0(object);
 
-    if (object->unk6C[8].unk0_4 == 2) {
+    if (object->unk16C.unk0_4 == 2) {
         func_800E68A0(object);
     }
 

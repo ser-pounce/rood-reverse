@@ -18,12 +18,38 @@ typedef struct {
 } D_800F4590_t;
 
 typedef struct {
+    u_char unk0[0x1FD0];
+    int unk1FD0[3];
+    int unk1FDC;
+    u_short unk1FE0;
+} D_800F2458_t;
+
+typedef struct {
+    u_char unk0[0x34];
+    u_short tpage;
+    u_short clut;
+    u_short unk38;
+    u_short unk3A;
+    u_short unk3C;
+    u_char unk3E[0xE];
+    SVECTOR position;
+    SVECTOR offset;
+    MATRIX* parent;
+    int unk60;
+    MATRIX matrix;
+    SVECTOR rotation;
+    VECTOR scale;
+    D_800F4538_unk68* model;
+} D_1F80035C_t;
+
+typedef struct {
     short tpage;
     short clut0;
     short clut1;
     u_char refCount;
 } vs_battle_texInfo_t;
 
+extern D_800F2458_t D_800F2458;
 extern D_800F4590_t* D_800F4590[];
 extern int D_800F4594;
 extern _wepModelOffsets* vs_battle_commonWepBuffs[];

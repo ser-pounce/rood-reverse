@@ -1654,7 +1654,7 @@ void func_800DEB10(func_800DEEA4_t* arg0)
                 if (elem->unk40 == 0) {
                     D_800F45E0_t* actor = D_800F45E0[elem->unk0];
 
-                    if ((actor == NULL) || ((0x14 >> actor->unk6C[8].actorId) & 1)) {
+                    if ((actor == NULL) || ((0x14 >> actor->unk16C.actorId) & 1)) {
                         func_800E4CE8(entry);
                         return;
                     }

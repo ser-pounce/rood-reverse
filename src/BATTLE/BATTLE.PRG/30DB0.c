@@ -15,11 +15,6 @@
 #include <memory.h>
 
 typedef struct {
-    u_char unk0[0x1FE0];
-    u_short unk1FE0;
-} D_800F2458_t;
-
-typedef struct {
     u_char unk0;
     u_char unk1;
     u_char unk2;
@@ -39,11 +34,6 @@ typedef struct {
     int unk8;
     int unkC;
 } D_800E8FB4_t;
-
-typedef struct {
-    u_char unk0[0x84];
-    SVECTOR unk84;
-} D_1F80035C_t;
 
 void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
@@ -115,7 +105,6 @@ extern vs_main_CdQueueSlot* _etmFileCdSlot;
 extern void* _wepFileEpilog;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
-extern D_800F2458_t D_800F2458;
 extern VECTOR D_800F4438;
 extern char D_800F4448[];
 extern int D_800F457C;
@@ -269,7 +258,7 @@ int func_80099900(vs_battle_objectData* arg0)
     for (i = 0; i < 16; ++i) {
         if ((i != arg0->index)
             && ((D_800F45E0[i] != NULL)
-                && (D_800F45E0[i]->unk6C[8].actorId == arg0->actorId))) {
+                && (D_800F45E0[i]->unk16C.actorId == arg0->actorId))) {
             arg0->dataAddr = i;
             return 1;
         }
@@ -285,7 +274,7 @@ int func_8009998C(vs_battle_objectData* arg0)
     int temp_s0;
     int j;
     int var_v0_2;
-    D_800F4538_t2* var_s0;
+    u_short* var_s0;
     int i;
     D_800F45E0_t* s1;
     D_800E8FB4_t* temp_v1_2;
@@ -304,7 +293,7 @@ int func_8009998C(vs_battle_objectData* arg0)
 
     for (i = 0; i < 16; ++i) {
         if ((i != arg0->index) && (D_800F45E0[i] != NULL)
-            && (D_800F45E0[i]->unk6C[8].actorId == arg0->actorId)) {
+            && (D_800F45E0[i]->unk16C.actorId == arg0->actorId)) {
             arg0->dataAddr = i;
             var_v0_2 = 1;
             goto exit;
@@ -325,7 +314,7 @@ exit:
             return -2;
         }
 
-        temp_v1_2 = s1->unk68->unk3C;
+        temp_v1_2 = s1->unk68->polyOffset;
         j = arg0->actorId;
 
         if (j >= 6) {
@@ -335,19 +324,19 @@ exit:
         func_80099E7C(temp_v1_2, temp_s0, 1, D_800E8FA8[j * 2], D_800E8FA8[j * 2 + 1]);
     }
 
-    var_s0 = &s1->unk6C[6];
+    var_s0 = s1->unk12C;
 
     s1->unkF = arg0->index;
-    s1->unk6C[8].actorId = arg0->actorId;
+    s1->unk16C.actorId = arg0->actorId;
 
-    vs_main_memcpy(var_s0, (s1->unk6C[8].actorId << 5) + D_800F4448, sizeof *var_s0);
-    vs_main_loadClut((void*)var_s0, 0xD, s1->unkF * 0x10, 0x10);
+    vs_main_memcpy(var_s0, (s1->unk16C.actorId * 32) + D_800F4448, sizeof s1->unk12C);
+    vs_main_loadClut(var_s0, 0xD, s1->unkF * 0x10, 0x10);
 
-    s1->unk6C[8].unk3 = 0xFF;
+    s1->unk16C.unk3 = 0xFF;
     s1->unk12 = 0xFF;
 
-    if (s1->unk6C[8].actorId == 1) {
-        s1->unk6C[8].unk1 = arg0->unk11;
+    if (s1->unk16C.actorId == 1) {
+        s1->unk16C.unk1 = arg0->unk11;
     }
 
     s1->unk54 = 0x808080;
@@ -365,19 +354,19 @@ exit:
     s1->unk1E = func_800A6EE8(&s1->unk1C, 0, 0, 1) - (arg0->variant << 7);
     func_800A0104(arg0->index, arg0->material);
     func_800E6898(s1);
-    s1->unk6C[8].unk0_4 = 0;
+    s1->unk16C.unk0_4 = 0;
 
-    if (s1->unk6C[8].actorId > 4) {
+    if (s1->unk16C.actorId > 4) {
 
         for (j = 0; j < arg0->index; ++j) {
             temp_a0 = D_800F45E0[j];
             if ((temp_a0 != NULL) && (*(int*)&temp_a0->unk5C == *(int*)&s1->unk5C)
                 && (temp_a0->unk1E == (s1->unk1E + 0x80))
-                && (temp_a0->unk6C[8].actorId > 4)) {
-                if (temp_a0->unk6C[8].actorId != s1->unk6C[8].actorId) {
-                    s1->unk6C[8].unk0_4 = 1;
+                && (temp_a0->unk16C.actorId > 4)) {
+                if (temp_a0->unk16C.actorId != s1->unk16C.actorId) {
+                    s1->unk16C.unk0_4 = 1;
                 } else {
-                    s1->unk6C[8].unk0_4 = 2;
+                    s1->unk16C.unk0_4 = 2;
                     s1->unk1E = s1->unk1E - 0x80;
                     func_800E6898(s1);
                 }
@@ -410,12 +399,12 @@ int func_80099D6C(int arg0)
     }
 
     sp10.index = arg0;
-    sp10.actorId = temp_s0->unk6C[8].actorId;
+    sp10.actorId = temp_s0->unk16C.actorId;
 
     for (i = 0; i < 16; ++i) {
         vs_battle_objectData* a2 = &sp10;
         if ((i != a2->index) && (D_800F45E0[i] != NULL)
-            && (D_800F45E0[i]->unk6C[8].actorId == a2->actorId)) {
+            && (D_800F45E0[i]->unk16C.actorId == a2->actorId)) {
             a2->dataAddr = i;
             found = 1;
             goto exit;
@@ -2205,7 +2194,7 @@ void func_8009F530(int arg0)
     int i;
     D_800F45E0_t* temp_s0 = D_800F45E0[arg0];
 
-    temp_s0->unk6C[8].unk0_3 = 1;
+    temp_s0->unk16C.unk0_3 = 1;
     temp_s4 = func_800A91DC(temp_s0->unk5C, temp_s0->unk5E, 0);
     temp_v0 = func_8009F794(temp_s0);
 
@@ -2215,20 +2204,20 @@ void func_8009F530(int arg0)
         temp_s1->unk1A = 0xFC;
         func_800E68A0(temp_s1);
 
-        if (temp_s1->unk6C[8].unk0_4 == 2) {
+        if (temp_s1->unk16C.unk0_4 == 2) {
             func_800E68A0(temp_s1);
         }
 
         for (i = 0; i < 16; ++i) {
             temp_s0 = D_800F45E0[i];
             if ((temp_s0 != NULL) && (temp_s0 != temp_s1) && !(temp_s0->unk8_0)) {
-                temp_s0->unk6C[8].unk3 = 0xFF;
-                if ((temp_s0->unk1A == 0) && !(temp_s0->unk6C[8].unk0_3)
+                temp_s0->unk16C.unk3 = 0xFF;
+                if ((temp_s0->unk1A == 0) && !(temp_s0->unk16C.unk0_3)
                     && (temp_s0->unk12 == 0xFF) && (temp_s0->unk5C == temp_s1->unk5C)
                     && (temp_s0->unk5D == temp_s1->unk5D)
                     && (temp_s0->unk5E == temp_s1->unk5E)
                     && (temp_s0->unk1E <= temp_s1->unk1E)) {
-                    temp_s0->unk6C[8].unk3 = temp_v0;
+                    temp_s0->unk16C.unk3 = temp_v0;
                 }
             }
         }
@@ -2277,7 +2266,7 @@ int func_8009F794(D_800F45E0_t* arg0)
     for (i = 0; i < 16; ++i) {
         temp_v1 = D_800F45E0[i];
         if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && (temp_v1->unk1A == 0)
-            && !(temp_v1->unk6C[8].unk0_3) && (temp_v1->unk12 == 0xFF)
+            && !(temp_v1->unk16C.unk0_3) && (temp_v1->unk12 == 0xFF)
             && (t1 == *(int*)&temp_v1->unk5C)) {
             temp_v1_2 = temp_v1->unk1E;
             if ((arg0->unk1E >= temp_v1_2) && (var_a3 < temp_v1_2)) {
@@ -2297,11 +2286,11 @@ int func_8009F858(int arg0)
         return -1;
     }
 
-    if (temp_a0->unk6C[8].actorId != 1) {
+    if (temp_a0->unk16C.actorId != 1) {
         return -1;
     }
 
-    return temp_a0->unk6C[8].unk1;
+    return temp_a0->unk16C.unk1;
 }
 
 void func_8009F898(int arg0, int arg1, int arg2)
@@ -2512,8 +2501,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         if (temp_a3 != NULL) {
             vs_main_loadClut(temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
         } else {
-            vs_main_loadClut(
-                (u_short*)&temp_t0->unk6C[6], 0x1F, temp_t0->unkF * 0x10, 0x10);
+            vs_main_loadClut(temp_t0->unk12C, 0x1F, temp_t0->unkF * 16, 16);
         }
     }
 
@@ -2612,7 +2600,7 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
         return -1;
     }
 
-    if ((temp_s0->unk6C[8].unk0_3)) {
+    if ((temp_s0->unk16C.unk0_3)) {
         return -1;
     }
 
@@ -2621,7 +2609,7 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
     }
 
     *(int*)&arg1->unk0 = *(int*)&temp_s0->unk5C;
-    arg1->unk3 = temp_s0->unk6C[8].unk2;
+    arg1->unk3 = temp_s0->unk16C.unk2;
     var_v0_2 = func_800A6EE8(&temp_s0->unk1C, 0, 0, 0) - temp_s0->unk1E;
     if (var_v0_2 < 0) {
         var_v0_2 += 0x7F;
@@ -2636,16 +2624,16 @@ int func_800A0104(int index, int material)
 {
     D_800F45E0_t* obj = D_800F45E0[index];
 
-    if ((obj == NULL) || (obj->unk6C[8].actorId >= 2)) {
+    if ((obj == NULL) || (obj->unk16C.actorId >= 2)) {
         return -1;
     }
 
-    obj->unk6C[8].unk2 = material;
+    obj->unk16C.unk2 = material;
     material *= 4;
-    ((D_1F80035C_t*)0x1F80035C)->unk84.vx = D_800E9030[material] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->unk84.vy = D_800E9030[material + 1] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->unk84.vz = D_800E9030[material + 2] * (ONE / 4);
-    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->unk84, (MATRIX*)&obj->unk6C[4]);
+    ((D_1F80035C_t*)0x1F80035C)->rotation.vx = D_800E9030[material] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->rotation.vy = D_800E9030[material + 1] * (ONE / 4);
+    ((D_1F80035C_t*)0x1F80035C)->rotation.vz = D_800E9030[material + 2] * (ONE / 4);
+    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, &obj->unk6C[4]);
     obj->unk18 = 0;
     *(int*)&obj->unk24 = 0;
     obj->unk28 = 0;

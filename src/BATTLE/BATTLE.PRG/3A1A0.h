@@ -21,11 +21,6 @@ typedef struct {
     u_char unk6;
     u_char unk7;
     int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
 } D_800F4538_t2;
 
 typedef struct {
@@ -390,7 +385,7 @@ typedef struct {
     int unk1868;
     int unk187C;
     u_char unk1880[0x10];
-    u_char unk1890[2][0x20];
+    MATRIX unk1890[2];
     u_char unk18D0[2];
 } D_800F4538_t;
 
@@ -423,7 +418,7 @@ typedef struct {
     short unk1A;
     _wepModelOffsets* offsets;
     MATRIX unk20[4];
-    u_char unkBoneInfo[4][8];
+    SVECTOR unkBoneInfo[4];
     u_short palettes[7][64];
     u_short unk440[96];
     u_short unk500[96];
@@ -442,11 +437,6 @@ typedef struct {
     int unk5E0;
     int unk5E4;
 } vs_battle_wepModels_t;
-
-typedef struct {
-    u_char unk0[0x3C];
-    void* unk3C;
-} D_800F45E0_unk68;
 
 typedef struct {
     char unk0;
@@ -513,8 +503,14 @@ typedef struct {
     char unk5F;
     int unk60;
     D_800F4538_unk64 unk64;
-    D_800F45E0_unk68* unk68;
-    D_800F4538_t2 unk6C[42];
+    D_800F4538_unk68* unk68;
+    MATRIX unk6C[5];
+    SVECTOR unk10C;
+    u_char unk114[0x18];
+    u_short unk12C[16];
+    u_char unk14C[0x20];
+    D_800F4538_t2 unk16C;
+    u_char unk178[0x434];
     u_int unk5AC_0 : 4;
     u_int unk5AC_4 : 2;
     u_int unk5AC_6 : 2;

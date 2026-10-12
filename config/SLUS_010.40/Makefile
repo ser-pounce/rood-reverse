@@ -33,6 +33,17 @@ $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1FLAGS += -mmips-as
 $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: PREPROCESS.s = $(PSQ_PATCH) | $(PYTHON) tools/etc/aspsx_divu.py
 
+# libgpu SYS (sys.c 1.140) was built by the compiler of the PsyQ libraries: GCC 2.7.2 with the
+# GCC 2.8-style changes reproduced by tools/etc/patch_cc1.py, and -mhard-float (with the FP
+# registers fixed, loop.c's lower invariant threshold keeps _exeque's status constants in the loop).
+$(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1VER := 2.7.2-psyq
+$(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1FLAGS += -mhard-float
+
+# libgpu FONT: the same PsyQ library compiler; FntFlush reads its text through a signed char
+# (lb), as the PsyQ libraries were built with -fsigned-char.
+$(BUILD)/src/SLUS_010.40/libgpu/FONT.c.o: CC1VER := 2.7.2-psyq
+$(BUILD)/src/SLUS_010.40/libgpu/FONT.c.o: CC1FLAGS += -mhard-float -fsigned-char
+
 # Isolate the callback initializer: its shared interior-field base and return delay
 # slot match CDK 2.7.2 in MIPS-as mode; the rest of PADMAIN keeps its compiler.
 $(BUILD)/src/SLUS_010.40/libpad/PADMAIN_VSYNC.c.o: CC1VER := 2.7.2-cdk

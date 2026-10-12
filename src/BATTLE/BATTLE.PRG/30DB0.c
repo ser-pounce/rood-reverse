@@ -329,7 +329,7 @@ exit:
     s1->unkF = arg0->index;
     s1->unk16C.actorId = arg0->actorId;
 
-    vs_main_memcpy(var_s0, (s1->unk16C.actorId << 5) + D_800F4448, sizeof s1->unk12C);
+    vs_main_memcpy(var_s0, (s1->unk16C.actorId * 32) + D_800F4448, sizeof s1->unk12C);
     vs_main_loadClut(var_s0, 0xD, s1->unkF * 0x10, 0x10);
 
     s1->unk16C.unk3 = 0xFF;

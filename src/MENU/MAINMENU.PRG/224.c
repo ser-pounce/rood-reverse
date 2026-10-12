@@ -113,7 +113,7 @@ void func_800F9CB0(void)
         }
     }
 
-    func_8009D468(1, i);
+    func_8009D468(1);
 
     temp_s0->unk0.position.vx = 0;
     temp_s0->unk0.position.vy = 0;

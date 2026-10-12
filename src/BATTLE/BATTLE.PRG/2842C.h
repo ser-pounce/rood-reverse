@@ -32,7 +32,7 @@ typedef struct {
     u_char actorId;
     char unk11;
     char material;
-    char variant;
+    u_char variant;
 } vs_battle_objectData;
 
 short vs_battle_clamp(short arg0, int arg1, int arg2);
@@ -71,7 +71,7 @@ int func_8009CC20(int, int);
 int func_8009CE9C(u_int arg0);
 int func_8009CFA0(void);
 int func_8009CFB0(int);
-void func_8009D468(int, int);
+void func_8009D468(int);
 void func_8009D854(int);
 void func_8009E5C4(int);
 void func_8009F314(int, void*, int);

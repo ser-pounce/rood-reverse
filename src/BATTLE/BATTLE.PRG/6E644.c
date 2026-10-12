@@ -170,9 +170,8 @@ typedef struct func_800E78F4_t {
     u_char unk36;
     char unk37;
     int unk38;
-    char unk3C[0x12];
-    short unk4E;
-    char unk50[4];
+    char unk3C[0x10];
+    SVECTOR unk4C;
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
@@ -317,6 +316,17 @@ typedef struct {
     u_char data[0];
 } p_file_t;
 
+typedef struct {
+    u_short x : 5;
+    u_short z : 5;
+    u_short unk0_10 : 5;
+    u_short active : 1;
+} D_800F58C8_t2;
+
+typedef struct {
+    D_800F58C8_t2 unk0[8];
+} D_800F58C8_t;
+
 void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
@@ -364,8 +374,10 @@ int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
+int func_800E42D4(int, int);
 int func_800E42EC(int, int);
 int func_800E45D4(int);
+u_int func_800E4660(int, int, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
@@ -397,6 +409,7 @@ extern int D_800F5874;
 extern func_800E78F4_t* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
+extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
 extern func_800DEEA4_t* D_800F5900;
@@ -1679,7 +1692,40 @@ void func_800DD604(func_800E78F4_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD7CC);
+void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
+{
+    int i;
+    u_int nearest = -1;
+    u_short(*map)[32] = *(u_short(**)[32])0x1F8003BC;
+
+    *(u_short(**)[32])0x1F8003BC = D_800F58D0;
+
+    for (i = 0; i < 8; ++i) {
+        int x;
+        int z;
+        int dx;
+        int dz;
+        u_int distance;
+
+        if (!D_800F58C8->unk0[i].active) {
+            continue;
+        }
+
+        x = D_800F58C8->unk0[i].x * 128 + 64;
+        z = D_800F58C8->unk0[i].z * 128 + 64;
+        dx = arg0->unk4C.vx - x;
+        dz = arg0->unk4C.vz - z;
+        distance = func_800E4660(dx, arg0->unk4C.vy - func_800E42D4(x, z), dz);
+
+        if (distance < nearest) {
+            arg1->unk0 = D_800F58C8->unk0[i].x;
+            nearest = distance;
+            arg1->unk2 = D_800F58C8->unk0[i].z;
+        }
+    }
+
+    *(u_short(**)[32])0x1F8003BC = map;
+}
 
 void func_800DD918(func_800E78F4_t* arg0, int arg1)
 {
@@ -2127,7 +2173,7 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
     c = rcos(angle);
     s = rsin(angle);
 
-    if (func_800E0850(arg0, arg1) + arg0->unkBE < arg0->unk4E) {
+    if (func_800E0850(arg0, arg1) + arg0->unkBE < arg0->unk4C.vy) {
         arg0->unk184 = -ONE;
         arg0->unk180 = 0;
         arg0->unk17C = 0;
@@ -2563,7 +2609,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
                     temp_a1->unk8 = 0x80;
                 }
 
-                temp_s0->unk12 = arg0->unk4E;
+                temp_s0->unk12 = arg0->unk4C.vy;
                 arg0->unk470 = temp_s0->unk17;
                 temp_s0->unk16 = 0;
             } else {

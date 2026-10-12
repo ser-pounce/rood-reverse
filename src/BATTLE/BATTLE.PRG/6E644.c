@@ -156,11 +156,13 @@ typedef struct func_800E78F4_t {
     u_char unk1B;
     char unk1C[4];
     u_char unk20;
-    char unk21[6];
+    u_char unk21;
+    char unk22[5];
     u_char unk27;
     char unk28[3];
     u_char unk2B;
-    char unk2C[4];
+    u_char unk2C;
+    char unk2D[3];
     u_char unk30;
     char unk31[3];
     u_char unk34;
@@ -1574,7 +1576,69 @@ void func_800DD000(func_800E78F4_t* arg0, func_800DEEA4_t* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD344);
+void func_800DD344(func_800E78F4_t* arg0)
+{
+    vs_battle_actor* actor;
+    vs_battle_actor* target;
+    vs_battle_actor* ally;
+
+    if (arg0->unk13) {
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            int id = actor->id;
+            func_800E78F4_t* other = D_800F5878[id];
+            int kind;
+
+            if (id == arg0->unk88 || id == 0 || other->unk2C == 3) {
+                kind = 2;
+            } else if (!other->unk13) {
+                if (other->unk1A4[0].unk0_6 == 3) {
+                    kind = 3;
+                    arg0->unk1A4[id].unk0_20 = 0;
+                } else {
+                    kind = 1;
+                }
+            } else {
+                kind = 1;
+            }
+
+            arg0->unk1A4[id].unk0_6 = kind;
+        }
+    } else if (arg0->unk21) {
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            func_800E78F4_t* other = D_800F5878[actor->id];
+
+            if (arg0->unk1A4[actor->id].unk0_6 != 2
+                || other->unk1A4[arg0->unk88].unk0_6 != 2) {
+                continue;
+            }
+
+            for (target = vs_battle_actors[0]; target != NULL; target = target->next) {
+                int id = target->id;
+
+                if (arg0->unk1A4[id].unk0_6 != 1 || !arg0->unk1A4[id].unk0_0
+                    || other->unk1A4[id].unk0_6 != 3) {
+                    continue;
+                }
+
+                for (ally = vs_battle_actors[0]; ally != NULL; ally = ally->next) {
+                    func_800E78F4_t* allyState = D_800F5878[ally->id];
+
+                    if (arg0->unk1A4[ally->id].unk0_6 == 2
+                        && allyState->unk1A4[arg0->unk88].unk0_6 == 2
+                        && (allyState->unk1A4[id].unk0_6 == 2
+                            || (allyState->unk1A4[id].unk0_20
+                                && allyState->unk1A4[id].unk0_28 == 2))) {
+                        break;
+                    }
+                }
+
+                if (ally == NULL) {
+                    func_800DC784(arg0, id);
+                }
+            }
+        }
+    }
+}
 
 void func_800DD604(func_800E78F4_t* arg0)
 {

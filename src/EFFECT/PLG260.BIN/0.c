@@ -3,4 +3,7 @@
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include <libgte.h>
 
-INCLUDE_ASM("build/src/EFFECT/PLG260.BIN/nonmatchings/0", func_800F9800);
+#define VS_MESH10_FUNCTION func_800F9800
+#define VS_MESH10_VERTICES D_800FA32C
+#define VS_MESH10_FACES D_800FA37C
+#include "src/EFFECT/meshes10.h"

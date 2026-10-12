@@ -2501,7 +2501,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         if (temp_a3 != NULL) {
             vs_main_loadClut(temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
         } else {
-            vs_main_loadClut(temp_t0->unk12C, 0x1F, temp_t0->unkF * 0x10, 0x10);
+            vs_main_loadClut(temp_t0->unk12C, 0x1F, temp_t0->unkF * 16, 16);
         }
     }
 

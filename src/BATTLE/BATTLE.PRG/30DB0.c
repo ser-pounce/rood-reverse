@@ -2808,8 +2808,121 @@ void func_8009E634(D_800F4538_t* arg0)
     }
 }
 
-// https://decomp.me/scratch/ajofv
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009E700);
+void func_8009E700(int actorId, int animation)
+{
+    D_800F4538_t* actor = D_800F4538[actorId];
+    int baseAnimation;
+    int distance;
+
+    if (actor == NULL) {
+        D_800F45E0_t* object = D_800F45E0[actorId];
+
+        if (object != NULL && (object->unk1A == 0xF9 || object->unk1A == 0xFF)
+            && object->unk16C.unk4 == 0) {
+            object->unk1A = 0;
+        }
+
+        return;
+    }
+
+    if (actor->animationId == 198 || actor->animationId == 200) {
+        return;
+    }
+
+    if (actor->unk0.unkF == 0 && actor->unk0.unkA_3 == 1 && !actor->unk0.unk9_6) {
+        return;
+    }
+
+    if (actor->unk0.unkA_0 >= 2 || actor->unk0.unkB_4 == 2 || actor->unk0.unkB_4 == 5) {
+        goto resetState;
+    }
+
+    if (actor->unk0.unkB_0 == 3) {
+        func_800A2C48(actor);
+    } else if (actor->unk0.unkB_0 != 0) {
+        goto resetState;
+    }
+
+    if (actor->unk0.unkA_3 == 2) {
+        if (actor->unk0.unk18 != 0 || actor->unk0.unk1A != 0) {
+            actor->unk0.unk1A = 0;
+            actor->unk0.unk18 = 0;
+            addVector(&actor->unk0.position, &actor->unk0.unk34);
+            actor->unk0.facing += actor->unk0.unk3E;
+        }
+
+        goto resetState;
+    }
+
+    if (actor->unk0.unk9_0 != 0) {
+        goto resetState;
+    }
+
+    baseAnimation = actor->animationId;
+
+    if (baseAnimation > 100) {
+        baseAnimation -= 100;
+    }
+
+    if (baseAnimation == 98) {
+        goto resetState;
+    }
+
+    distance = 1;
+
+    if (actor->unk0.unkF == 0) {
+        int reactionAnimation = actor->animationId;
+
+        if ((reactionAnimation >= 79 && reactionAnimation <= 82)
+            || (reactionAnimation >= 71 && reactionAnimation <= 74)
+            || reactionAnimation == 76) {
+            int direction;
+            int tileDx;
+            int tileDz;
+
+            if (reactionAnimation >= 79 && reactionAnimation <= 82) {
+                distance = 2;
+            }
+
+            direction = actor->unk0.facing + ONE / 8;
+            direction &= 0xFFF;
+            direction /= ONE / 4;
+            tileDx = 0;
+            tileDz = 0;
+
+            if (direction < 2) {
+                distance = -distance;
+            }
+
+            if (direction & 1) {
+                tileDx = distance;
+            } else {
+                tileDz = distance;
+            }
+
+            func_800E4C28(actor->unk0.currentTileX + tileDx,
+                actor->unk0.currentTileZ + tileDz, tileDx, tileDz);
+        }
+    }
+
+    if (actor->unk5AC_3) {
+        func_800A0204(actor->unk0.unkF, 75, 0, 12);
+    } else {
+        func_800A0204(actorId, animation, 0, 16);
+        actor->unk1846 = 0;
+    }
+
+resetState:
+    if (actor->unk0.unkA_3 != 2) {
+        actor->unk0.unkA_3 = 0;
+    }
+
+    actor->unk5C8 = 0;
+    actor->unk0.unk18 = 0;
+    actor->unk0.unk1A = 0;
+    actor->unk0.unk9_6 = 0;
+    func_800A0ABC(actorId);
+}
 
 void func_8009EA14(int arg0, SVECTOR* arg1)
 {

@@ -1055,7 +1055,9 @@ void func_8008A6FC(void);
  * - Bit 2: action locked
  */
 int vs_battle_getActionFlags(int actorId, int actionId);
+void func_8008B1FC(void*);
 void func_8008B430(D_800F4538_unk58_2*, int);
+void func_8008B590(MATRIX*, int);
 _mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 void func_8008B6B4(void);
@@ -1063,10 +1065,13 @@ int func_8008B808(int, int, int, int);
 int vs_battle_getCurrentSceneId(void);
 int vs_battle_inWorkshop(void);
 void vs_battle_setDoorEntered2(int arg0);
+void func_8008C0C0(void);
 void func_8008C40C(void);
+void func_8008CEB0(void);
 void func_8008D594(int);
 void func_8008D5A0(int);
 void vs_battle_parseTim(u_long*, TIM_IMAGE*);
+void func_8008DF14(void);
 int vs_battle_getMapCompletion(void);
 void func_8008E224(int, int);
 int func_8008E470(void);

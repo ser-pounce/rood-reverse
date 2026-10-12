@@ -663,6 +663,7 @@ extern char D_800F1A9C[];
 extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;
+extern int D_800F1BA0;
 extern u_short D_800F1BA4;
 extern D_800F1BB0_t D_800F1BB0;
 extern short D_800F1BB6;
@@ -14388,7 +14389,140 @@ int func_8008ABF0(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008AC78);
+void func_8008AC78(void)
+{
+    vs_battle_geomOffset originalOffset;
+    vs_battle_geomOffset mapOffset;
+    RECT mapArea;
+    MATRIX mapMatrix;
+    DR_AREA* drawArea;
+    LINE_G4* border;
+    LINE_G2* edge;
+    LINE_G2* nextLine;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    func_8008DF14();
+    func_8009627C();
+    func_8008C0C0();
+
+    if (D_800F1BA4 == 0) {
+        int i;
+
+        for (i = 0; i < (vs_gametime_tickspeed >> 1); ++i) {
+            func_80091B04();
+        }
+    }
+
+    func_8008CEB0();
+    func_80090EEC();
+
+    if (*(u_short*)&vs_battle_roomData != 0x101) {
+        return;
+    }
+
+    if (vs_battle_roomData.geometrySection != NULL) {
+        int facing = ((vs_scratch_t*)0x1F800000)->camera.angles.vy;
+        int facing0 = 1 << (((0x9C0 - facing) & 0xFFF) >> 9);
+        int facing1 = 1 << (((0x840 - facing) & 0xFFF) >> 9);
+        int facing2 = 1 << (((0x900 - facing) & 0xFFF) >> 9);
+        ((vs_scratch_t*)0x1F800000)->firstPersonViewFacing =
+            (((vs_scratch_t*)0x1F800000)->firstPersonViewFacing & ~0xFF) | facing0
+            | facing1 | facing2;
+        func_8008B1FC(vs_battle_roomData.geometrySection);
+    }
+
+    if (*(u_short*)&vs_battle_roomData != 0x101 || !(vs_main_settings.simpleMap & 1)
+        || vs_battle_roomData.sectionF == NULL) {
+        return;
+    }
+
+    if (D_800F1CD6 != 0) {
+        if (++D_800F1CD4 > 8) {
+            D_800F1CD4 = 8;
+        }
+    } else {
+        D_800F1CD4 -= 2;
+
+        if (D_800F1CD4 < 0) {
+            D_800F1CD4 = 0;
+        }
+    }
+
+    if (D_800F1CD4 <= 0) {
+        return;
+    }
+
+    func_8008B590(&mapMatrix, 0x800 - ((vs_scratch_t*)0x1F800000)->camera.angles.vy);
+    SetRotMatrix(&mapMatrix);
+    drawArea = ((vs_scratch_t*)0x1F800000)->unk0;
+    SetDrawArea(drawArea, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, drawArea);
+    ++drawArea;
+    ((vs_scratch_t*)0x1F800000)->unk0 = drawArea;
+
+    if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x < 320) {
+        mapArea.x = 216;
+    } else {
+        mapArea.x = 536;
+    }
+
+    mapArea.y = 156;
+    mapArea.w = 96;
+    mapArea.h = 64;
+    mapOffset.y = 196;
+    mapOffset.x = 392 - (D_800F1CD4 << 4);
+    vs_battle_getGeomOffset(&originalOffset);
+    vs_battle_setGeomOffset(&mapOffset);
+    func_80098F8C(vs_battle_roomData.sectionF);
+    vs_battle_setGeomOffset(&originalOffset);
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    drawArea = ((vs_scratch_t*)0x1F800000)->unk0;
+    SetDrawArea(drawArea, &mapArea);
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, drawArea);
+    ++drawArea;
+    ((vs_scratch_t*)0x1F800000)->unk0 = drawArea;
+
+    if (!(vs_main_settings.simpleMap & 2)) {
+        return;
+    }
+
+    border = (LINE_G4*)drawArea;
+    setLineG4(border);
+    setXY4(border, 215, 155, 313, 155, 313, 220, 215, 220);
+    setSemiTrans(border, 1);
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, border++);
+    // Retain the frame pointer for the color update below.
+    nextLine = (LINE_G2*)border--;
+    setLineG2(nextLine);
+    setSemiTrans(nextLine, 1);
+    setXY2(nextLine, 215, 220, 215, 155);
+    edge = nextLine++;
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, edge);
+    ((vs_scratch_t*)0x1F800000)->unk0 = nextLine;
+    _insertTPage(5, getTPage(0, 3, 0, 0));
+
+    if (vs_battle_characterState->weaponDrawn == 1) {
+        int pulse = rsin(D_800F1BA0 << 8) / 64;
+        int shade;
+        D_800F1BA0 += vs_gametime_tickspeed / 2;
+        shade = 128 - pulse;
+        setRGB0(border, shade, 0, 0);
+        setRGB1(border, shade + 32, 0, 0);
+        setRGB2(border, shade + 63, 0, 0);
+        setRGB3(border, shade + 32, 0, 0);
+        setRGB0(edge, shade + 32, 0, 0);
+        setRGB1(edge, shade, 0, 0);
+    } else {
+        D_800F1BA0 = 0;
+        setRGB0(border, 0, 128, 0);
+        setRGB1(border, 0, 192, 0);
+        setRGB2(border, 0, 255, 0);
+        setRGB3(border, 0, 192, 0);
+        setRGB0(edge, 0, 192, 0);
+        setRGB1(edge, 0, 128, 0);
+    }
+}
 
 void func_8008B1FC(void* arg0)
 {

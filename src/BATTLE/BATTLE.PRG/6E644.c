@@ -143,7 +143,7 @@ typedef struct func_800E78F4_t {
     char unk8[0xB];
     u_char unk13;
     char unk14[2];
-    signed char unk16;
+    int unk16 : 8;
     u_char unk17;
     char unk18[3];
     u_char unk1B;
@@ -174,11 +174,14 @@ typedef struct func_800E78F4_t {
     u_char unkB3;
     char unkB4[0xA];
     short unkBE;
-    char unkC0[0x3B];
+    char unkC0[0x29];
+    u_char unkE9;
+    char unkEA[0x11];
     u_char unkFB;
     char unkFC[0x2E];
     u_char unk12A;
-    char unk12B[4];
+    char unk12B[3];
+    u_char unk12E;
     u_char unk12F;
     char unk130;
     u_char unk131;
@@ -187,7 +190,9 @@ typedef struct func_800E78F4_t {
     char unk13A[5];
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[0x28];
+    char unk154[8];
+    u_char unk15C;
+    char unk15D[0x1F];
     int unk17C;
     int unk180;
     int unk184;
@@ -911,7 +916,35 @@ int func_800DA4BC(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA5CC);
+int func_800DA5CC(func_800E78F4_t* arg0)
+{
+    func_800DCAA0_t* entry = arg0->unk430[0];
+    int id;
+
+    if (!arg0->unk131 && func_800DA4BC(arg0, entry)) {
+        return 1;
+    }
+
+    id = arg0->unk16;
+
+    if (id < 16) {
+        if (func_800DB370(arg0, id, 288, 1)) {
+            if (arg0->unkE9 == 1 && arg0->unk12E != 7) {
+                arg0->unk15C = entry->unkC_0;
+                func_800E678C(arg0);
+                func_800E2CCC(arg0);
+            }
+
+            return 1;
+        }
+
+        if (func_800DB74C(arg0, id)) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA6A4);
 

@@ -188,8 +188,8 @@ typedef struct func_800E78F4_t {
     u_char unk12A;
     char unk12B[3];
     u_char unk12E;
-    u_char unk12F;
-    char unk130;
+    signed char unk12F;
+    signed char unk130;
     u_char unk131;
     char unk132[6];
     u_short unk138;
@@ -1210,7 +1210,41 @@ void func_800DBFE4(func_800E78F4_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC0D0);
+void func_800DC0D0(void)
+{
+    func_800E78F4_t* state;
+    int changed = 0;
+
+    if (D_800F58BC->unk1C == NULL) {
+        return;
+    }
+
+    state = D_800F58BC->unk1C;
+
+    do {
+        func_800DEB10_t2* data = state->unk54;
+
+        if (state->unk1A4[0].unk0_6 != 2) {
+            if (state->unk12F == 0) {
+                state->unk130 = 1;
+                data->unkB_2 = 1;
+                changed = 1;
+            } else if (state->unk12F == 16) {
+                state->unk130 = -1;
+                data->unkB_2 = 2;
+                changed = 1;
+            }
+
+            state->unk12F += state->unk130;
+
+            if (changed) {
+                break;
+            }
+        }
+
+        state = state->unk1A0;
+    } while (state != NULL);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DC19C);
 

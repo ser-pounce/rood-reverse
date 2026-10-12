@@ -126,7 +126,11 @@ typedef struct {
     u_int unk0_0 : 1;
     u_int unk0_1 : 5;
     u_int unk0_6 : 2;
-    u_int unk0_8 : 24;
+    u_int unk0_8 : 12;
+    u_int unk0_20 : 7;
+    u_int unk0_27 : 1;
+    u_int unk0_28 : 2;
+    u_int unk0_30 : 2;
 } func_800DA1D4_t;
 
 typedef struct {
@@ -989,7 +993,49 @@ int func_800DAA6C(func_800E78F4_t* arg0)
     return 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAAD8);
+int func_800DAAD8(func_800E78F4_t* arg0)
+{
+    func_800DCAA0_t* entry = arg0->unk430[0];
+    int id;
+    vs_battle_actor* actor;
+
+    if (!arg0->unk131 && func_800DA4BC(arg0, entry)) {
+        return 1;
+    }
+
+    id = arg0->unk16;
+
+    if (id < 16) {
+        if (func_800DB370(arg0, id, 384, 0)) {
+            if (arg0->unkE9 == 1 && arg0->unk12E != 7) {
+                arg0->unk15C = entry->unkC_0;
+                func_800E678C(arg0);
+                func_800E2CCC(arg0);
+            }
+
+            return 1;
+        }
+
+        if (func_800DB74C(arg0, id)) {
+            return 1;
+        }
+    }
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        if (arg0->unk1A4[actor->id].unk0_6 != 3 && arg0->unk1A4[actor->id].unk0_20) {
+            arg0->unk1A4[actor->id].unk0_6 = 3;
+
+            if (func_800DB61C(arg0, 0)) {
+                arg0->unk1A4[actor->id].unk0_6 = arg0->unk1A4[actor->id].unk0_28;
+                return 1;
+            }
+
+            arg0->unk1A4[actor->id].unk0_6 = arg0->unk1A4[actor->id].unk0_28;
+        }
+    }
+
+    return 0;
+}
 
 int func_800DAC80(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 {

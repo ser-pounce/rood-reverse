@@ -39,6 +39,22 @@ $(BUILD)/src/SLUS_010.40/libpad/PADMAIN_VSYNC.c.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/SLUS_010.40/libpad/PADMAIN_VSYNC.c.o: CC1FLAGS += -mmips-as
 $(patsubst %,$(BUILD)/src/SLUS_010.40/libpad/%.c.o,PADMAIN PADMAIN_VSYNC PADMAIN_2): ASFLAGS += -no-pad-sections
 
+# DS_stop and DS_cw match CDK MIPS-as scheduling without the post-loop CSE pass
+# (-fno-rerun-cse-after-loop for libds, as found in noprompt/rood-reverse#186).
+# The leading reset callback stays in DSSYS_1 on the default compiler.
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_1_2.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_1_2.c.o: CC1FLAGS += -mmips-as -fno-rerun-cse-after-loop
+$(patsubst %,$(BUILD)/src/SLUS_010.40/libds/%.c.o,DSSYS_1 DSSYS_1_2): ASFLAGS += -no-pad-sections
+
+# Queue/ready helpers retain shared global bases without the post-loop CSE pass.
+$(patsubst %,$(BUILD)/src/SLUS_010.40/libds/%.c.o,DSSYS_2_QUEUE DSSYS_2): CC1FLAGS += -fno-rerun-cse-after-loop
+$(patsubst %,$(BUILD)/src/SLUS_010.40/libds/%.c.o,DSSYS_2_QUEUE DSSYS_2_FLUSH DSSYS_2 DSSYS_2_2): ASFLAGS += -no-pad-sections
+
+# DS_CQ_flush's forward parameter-clear loop is reversed and strength-reduced
+# by CDK with post-loop CSE enabled.
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2_FLUSH.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2_FLUSH.c.o: CC1FLAGS += -mmips-as
+
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

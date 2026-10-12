@@ -1072,7 +1072,7 @@ void func_800C2B0C(SVECTOR* position, u_int row)
 
                 func_800FA188(x, z, &offset);
                 if (offset != 0) {
-                    if (D_800F45E0[func_800A91DC(x, z, 0)]->unk6C[8].actorId < 2) {
+                    if (D_800F45E0[func_800A91DC(x, z, 0)]->unk16C.actorId < 2) {
                         value = 0;
                         offset += 0x20;
                     } else {

@@ -260,8 +260,8 @@ void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
         break;
 
     case 0x80:
-        applyVector(&arg1->unk13C, D_800F5230.unkE0.vx, D_800F5230.unkE0.vy,
-            D_800F5230.unkE0.vz, +=);
+        applyVector(&arg1->unk13C, D_800F5230.position.vx, D_800F5230.position.vy,
+            D_800F5230.position.vz, +=);
         break;
     }
 

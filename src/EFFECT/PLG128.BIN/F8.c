@@ -98,9 +98,9 @@ void func_800FDA04(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t
         arg1->unk13C.vz += arg2->unk1C[arg3->unkC9].unk38.t[2];
         break;
     case 0x80:
-        arg1->unk13C.vx += D_800F5230.unkE0.vx;
-        arg1->unk13C.vy += D_800F5230.unkE0.vy;
-        arg1->unk13C.vz += D_800F5230.unkE0.vz;
+        arg1->unk13C.vx += D_800F5230.position.vx;
+        arg1->unk13C.vy += D_800F5230.position.vy;
+        arg1->unk13C.vz += D_800F5230.position.vz;
         break;
     }
     arg0->unk98.vx = arg1->unk13C.vx;

@@ -21,11 +21,6 @@ typedef struct {
     u_char unk6;
     u_char unk7;
     int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
 } D_800F4538_t2;
 
 typedef struct {
@@ -108,7 +103,7 @@ typedef struct {
     u_char unk1;
     u_char unk2;
     u_char unk3;
-    u_short unk4;
+    short unk4;
     short unk6;
     u_int unk8;
     int unkC;
@@ -180,7 +175,7 @@ typedef struct {
     int unk4C;
     short unk50;
     short unk52;
-    int unk54;
+    CVECTOR unk54;
     D_800F4538_unk58_2 unk58;
     u_char currentTileX;
     u_char unk5D;
@@ -275,7 +270,6 @@ typedef struct {
     u_char unk5AC_25 : 1;
     u_char unk5AC_26 : 1;
     u_char unk5AC_27 : 1;
-
     u_char unk5AC_28 : 4;
     u_char unk5B0_0 : 2;
     u_char unk5B0_2 : 1;
@@ -350,8 +344,8 @@ typedef struct {
     short unk6E8;
     short unk6EA;
     short unk6EC;
-    u_char unk6EE;
-    u_char unk6EF;
+    signed char unk6EE;
+    signed char unk6EF;
     u_char unk6F0;
     u_char unk6F1;
     u_char unk6F2;
@@ -372,7 +366,7 @@ typedef struct {
     u_char unk17FD;
     u_char unk17FE;
     u_char unk17FF;
-    short unk1800;
+    u_short unk1800;
     u_char unk1802[2];
     texMapAnimation_t unk1804[2];
     D_800F4538_unk180C unk180C[2];
@@ -396,8 +390,8 @@ typedef struct {
     D_800F4538_unk1864 unk1864;
     int unk1868;
     int unk187C;
-    u_short unk1880[4][2];
-    u_char unk1890[2][0x20];
+    u_char unk1880[0x10];
+    MATRIX unk1890[2];
     u_char unk18D0[2];
     u_short unk18D2;
     u_short unk18D4;
@@ -434,7 +428,7 @@ typedef struct {
     short unk1A;
     _wepModelOffsets* offsets;
     MATRIX unk20[4];
-    u_char unkBoneInfo[4][8];
+    SVECTOR unkBoneInfo[4];
     u_short palettes[7][64];
     u_short unk440[96];
     u_short unk500[96];
@@ -453,13 +447,6 @@ typedef struct {
     int unk5E0;
     int unk5E4;
 } vs_battle_wepModels_t;
-
-typedef struct {
-    u_char unk0[0x3C];
-    void* unk3C;
-    u_char unk40[0x10];
-    int unk50;
-} D_800F45E0_unk68;
 
 typedef struct {
     char unk0;
@@ -501,7 +488,7 @@ typedef struct {
     short unk20;
     short unk22;
     short unk24;
-    short unk26;
+    u_short unk26;
     int unk28;
     short unk2C;
     short unk2E;
@@ -526,8 +513,14 @@ typedef struct {
     char unk5F;
     int unk60;
     D_800F4538_unk64 unk64;
-    D_800F45E0_unk68* unk68;
-    D_800F4538_t2 unk6C[42];
+    D_800F4538_unk68* unk68;
+    MATRIX unk6C[5];
+    SVECTOR unk10C;
+    u_char unk114[0x18];
+    u_short unk12C[16];
+    u_char unk14C[0x20];
+    D_800F4538_t2 unk16C;
+    u_char unk178[0x434];
     u_int unk5AC_0 : 3;
     u_int unk5AC_3 : 1;
     u_int unk5AC_4 : 2;
@@ -644,7 +637,11 @@ typedef struct {
     u_char excluded[17];
     u_char pad15[3];
     D_800F45E0_t* unk18;
-    short unk1C[18];
+    short unk1C[8];
+    u_char blocked[8];
+    u_char attributes[8];
+    u_char centerAttribute;
+    u_char pad3D[3];
     int unk40;
 } D_1F8003BC_t;
 

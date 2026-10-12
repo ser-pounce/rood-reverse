@@ -1,6 +1,8 @@
 #include "common.h"
 #include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
+#include "44F14.h"
 #include "../../SLUS_010.40/main.h"
 #include <abs.h>
 
@@ -18,81 +20,42 @@ typedef struct {
 } func_8008D2C0_t;
 
 typedef struct {
-    short heights[8];
-    u_char blocked[8];
-    u_char attributes[8];
-    u_char centerAttribute;
-} D_1F8003BC_samples_t;
+    char unk0[6];
+    short unk6;
+} func_800A6660_t;
 
 typedef struct {
     int words[2];
-} probePosition;
+} func_800A6798_t;
 
-void func_8008C49C(int, int);
+u_int func_800A9C54(u_char, void*, int);
+void func_800B64A8(int, int, int);
+int func_8008C49C(int, int);
 int func_8008D2C0(func_8008D2C0_t*);
-short func_8008DA24(int, int);
-short func_8008DC7C(int, int);
 short func_8008DD0C(int arg0, int arg1);
-int func_8009E180(D_800F4538_t*, SVECTOR*);
-int func_800A190C(int, int, SVECTOR*, int);
-void func_800A25EC(D_800F4538_t*);
-void func_800A2790(D_800F4538_t*);
-void func_800A291C(D_800F4538_t*);
-void func_800A29A0(D_800F4538_t*);
-void func_800A2CD4(D_800F4538_t*);
-void func_800A2FBC(D_800F4538_t*);
-inline int func_800A3310(int, SVECTOR*);
-void func_800A3394(int, SVECTOR*);
-int func_800A3500(int, int);
-int func_800A3BC4(int, int);
 D_800F4538_t* func_800A3C34(int, int, int, int);
-int func_800A3DB4(int x, int z, int minimumHeight);
-int func_800A46A4(D_800F4538_t*);
-func_8008D2C0_t* func_800A4A24(int);
-void func_800A4A88(D_800F4538_t*, int);
-int func_800A51A0(int, SVECTOR*);
-void func_800A525C(D_800F4538_t*);
-int func_800A5280(int, int, int, SVECTOR*);
-void func_800A6660(D_800F4538_t*, int, SVECTOR*);
-int func_800A6798(D_800F4538_t*, SVECTOR*, SVECTOR*);
-int func_800A69B4(D_800F4538_t*);
-int func_800A6AA0(D_800F4538_t*, int, int);
-int func_800A6EE8(SVECTOR*, int, int, int);
-void func_800A70DC(D_800F4538_t*, int);
-int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
-int func_800A8B34(SVECTOR* arg0, int arg1);
+int func_800A3BC4(int, int);
+int func_800A3DB4(int, int, int);
+short func_8008DC7C(int, int);
+short func_8008DA24(int, int);
 u_int* func_800A8D64(SVECTOR*, int);
-int func_800A8E84(D_800F45E0_t*, SVECTOR*);
-int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion);
+int func_800B13CC(int, int, int);
 int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
-int func_800A9530(D_800F4538_t*, SVECTOR*);
-u_int func_800A9C54(u_char, void*, int);
-void func_800A9EB4(int, short, int);
-void func_800AA454(int, func_8006EBF8_t_fields*, int);
-void func_800AA600(int, SVECTOR*, int);
-void func_800AA620(int, SVECTOR*, int);
-void func_800AA698(int, SVECTOR*, int);
 void func_800AA850(int, short, int);
-void func_800AC690(int, D_800F4538_t*);
+int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800ACF54(D_800F4538_t*);
-int func_800AD494(void*, int, u_short**);
-void func_800AE4FC(D_800F4538_unk0*, int);
-void func_800AE6C0(D_800F4538_t*, int, int);
-void func_800AEAE8(D_800F4538_t*);
-void func_800AECA0(MATRIX*);
 void func_800B0908(D_800F45E0_t*, int);
-int func_800B13CC(int, int, int);
-void func_800B28A8(void*, MATRIX*, int);
-void func_800B64A8(int, int, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800A70DC(D_800F4538_t*, int);
+int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 void func_800E4BD8(int);
 void func_800E4BE0(int);
-void func_800E4C1C(int, int);
-void func_800E4C28();
+void func_800E4C28(int, int);
 void func_800E68A0(D_800F45E0_t*);
-void func_800E6B24(u_char);
 int func_800E75EC(void);
+int func_8009E180(D_800F4538_t*, SVECTOR*);
 
 extern u_char D_800E8FD0[];
 extern int D_800E90A8;
@@ -103,7 +66,6 @@ extern u_char D_800E90C6;
 extern u_char D_800E90CC[];
 extern u_char D_800E90D0[];
 extern u_char D_800E91AC[];
-extern u_char D_800E9278[];
 extern u_char D_800F1D6E[];
 extern int D_800F49E8;
 extern u_int* D_800F49F0;
@@ -113,13 +75,13 @@ extern u_char D_800F49F9;
 extern SVECTOR D_800F4B08;
 extern short D_800F4B0A;
 extern char D_800F4B18;
+extern u_char D_800E9278[];
 
-// D_1F8003BC_t::unk1C holds 8 terrain sample heights followed by per-direction
-// blocked flags, tile attributes and the center tile attribute (D_1F8003BC_samples_t).
-#define sampleBlocked(samples) (((D_1F8003BC_samples_t*)(samples)->unk1C)->blocked)
-#define sampleAttributes(samples) (((D_1F8003BC_samples_t*)(samples)->unk1C)->attributes)
-#define sampleCenterAttribute(samples)                                                   \
-    (((D_1F8003BC_samples_t*)(samples)->unk1C)->centerAttribute)
+static inline int vs_battleRelativeSampleHeight(
+    D_1F8003BC_t* samples, int sector, int offset, int y)
+{
+    return samples->unk1C[(sector + offset) & 7] - y;
+}
 
 void func_800A29A0(D_800F4538_t* arg0)
 {
@@ -130,14 +92,16 @@ void func_800A29A0(D_800F4538_t* arg0)
         arg0->unk0.unkA_5 = 0;
         func_800A0204(arg0->unk0.unkF, 0x13, 0, 8);
         func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
-        *((u_char*)arg0 + 0x57) = 0;
+        arg0->unk0.unk54.cd = 0;
         arg0->unk0.unkB_0 = 2;
         arg0->unk0.unk9_0 = 6;
         return;
+
     case 2:
         if (arg0->unk0.unk9_0 < 8) {
             return;
         }
+
         if (arg0->unk0.unk13 == 0xFC) {
             busy = D_800F4538[arg0->unk0.unk12]->unk0.unk9_0 < 9;
         } else if (arg0->unkC54.unk548_17) {
@@ -145,6 +109,7 @@ void func_800A29A0(D_800F4538_t* arg0)
         } else {
             return;
         }
+
         if (busy == 0) {
             arg0->unk0.unk9_0 = 9;
             func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC, 0);
@@ -153,26 +118,33 @@ void func_800A29A0(D_800F4538_t* arg0)
             func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
             arg0->unk0.unkB_0 = 3;
         }
+
         return;
+
     case 3:
         if (arg0->unk0.unk9_0) {
             return;
         }
+
         if (arg0->unk0.unk13 == 0xFC ? D_800F4538[arg0->unk0.unk12]->unk0.unk9_0
                                      : arg0->unk5CC) {
             return;
         }
+
         func_800A0204(arg0->unk0.unkF, 1, 0, 8);
         // fallthrough
+
     case 4:
         func_800ACF54(arg0);
         func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
         // fallthrough
+
     case 5:
         if (arg0->unk17FD >= 2 && D_800F4538[arg0->unk17FD]->unk0.unkB_0) {
             arg0->unk0.unkB_0 = 5;
             return;
         }
+
         arg0->unk0.unkB_0 = 0;
         return;
     }
@@ -281,17 +253,17 @@ void func_800A2FBC(D_800F4538_t* arg0)
     --arg0->unk5CA;
 }
 
-void func_800A3054(D_800F4538_t* arg0, SVECTOR* arg1)
+void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
 {
     int var_a2;
     int var_a3;
 
     var_a2 = 0x3F;
     var_a3 = 0x3F;
-    if (arg1->vx < 0) {
+    if (arg1->unk0 < 0) {
         var_a2 = -0x3F;
     }
-    if (arg1->vz < 0) {
+    if (arg1->unk4 < 0) {
         var_a3 = -0x3F;
     }
     arg0->unk181A = 1;
@@ -564,15 +536,19 @@ int func_800A38E0(int actorId)
     if (actor == NULL) {
         return -1;
     }
+
     if (actor->unk5AC_0 != 0) {
         return -1;
     }
+
     if (actor->unk0.unkA_0 != 0) {
         return -1;
     }
+
     if (actor->unk0.unkA_3 != 0) {
         return -1;
     }
+
     direction = actor->unk0.facing + ONE / 8;
     direction &= 0xFFF;
     direction /= ONE / 4;
@@ -583,75 +559,93 @@ int func_800A38E0(int actorId)
 
     if (direction & 1) {
         x += found;
-        farX = oldX + (found * 2);
+        farX = oldX + found * 2;
     } else {
         z += found;
-        farZ = oldZ + (found * 2);
+        farZ = oldZ + found * 2;
     }
-    if ((x < 0) || (z < 0)) {
+
+    if (x < 0 || z < 0) {
         return -1;
     }
+
     if (actor->unk5AC_3) {
-        x = (x * 128) + 64;
+        x = x * 128 + 64;
         objectId = actor->unk0.unk13;
         object = D_800F45E0[objectId];
-        z = (z * 128) + 64;
+        z = z * 128 + 64;
+
         if (object->unk1A != 0) {
             return -1;
         }
+
         if (!func_800A3DB4(x, z, actor->unk0.position.vy - 128)) {
             return -1;
         }
+
         direction = actor->unk0.position.vy - 384;
+
         if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
             return -1;
         }
+
         if (direction < func_800A3BC4(x, z)) {
             return -1;
         }
-        return objectId;
-    } else {
-        found = func_800A91DC(x, z, 0);
-        if (found == 0) {
-            return -1;
-        }
-        object = D_800F45E0[found];
-        objectId = found;
-        if (object->unk6C[8].unk0_4 == 1) {
-            return -1;
-        }
-        if (object->unk1A != 0) {
-            return -1;
-        }
-        x = (x * 128) + 64;
-        z = (z * 128) + 64;
-        farX = (farX * 128) + 64;
-        farZ = (farZ * 128) + 64;
-        if (object->unk1E < (actor->unk0.position.vy - 128)) {
-            return -1;
-        }
-        if ((actor->unk0.position.vy + 64) < object->unk1E) {
-            return -1;
-        }
-        if (object->unk6C[8].actorId < 4) {
 
-            if (!func_800A3DB4(farX, farZ, object->unk1E)) {
-                return -1;
-            }
-        } else {
-            direction = actor->unk0.position.vy - 384;
-            if (direction
-                < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
-                return -1;
-            }
-            if (direction < func_800A3BC4(x, z)) {
-                return -1;
-            }
+        return objectId;
+    }
+
+    found = func_800A91DC(x, z, 0);
+
+    if (found == 0) {
+        return -1;
+    }
+
+    object = D_800F45E0[found];
+    objectId = found;
+
+    if (object->unk16C.unk0_4 == 1) {
+        return -1;
+    }
+
+    if (object->unk1A != 0) {
+        return -1;
+    }
+
+    x = x * 128 + 64;
+    z = z * 128 + 64;
+    farX = farX * 128 + 64;
+    farZ = farZ * 128 + 64;
+
+    if (object->unk1E < actor->unk0.position.vy - 128) {
+        return -1;
+    }
+
+    if (actor->unk0.position.vy + 64 < object->unk1E) {
+        return -1;
+    }
+
+    if (object->unk16C.actorId < 4) {
+        if (!func_800A3DB4(farX, farZ, object->unk1E)) {
+            return -1;
         }
-        if (func_800A3C00(object, 1) == 0) {
-            return objectId;
+    } else {
+        direction = actor->unk0.position.vy - 384;
+
+        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
+            return -1;
+        }
+
+        if (direction < func_800A3BC4(x, z)) {
+            return -1;
         }
     }
+
+    if (func_800A3C00(object, 1) == 0) {
+        return objectId;
+    }
+
     return -1;
 }
 
@@ -695,8 +689,7 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
             }
             continue;
         }
-        if ((i == 0) && actor->unk5AC_28) {
-
+        if ((i == 0) && (*((int*)&actor->unk5B4 - 2) & 0xF0000000)) {
             D_800F45E0_t* temp_v1 = D_800F45E0[actor->unk5AC_28];
             if ((arg0 == temp_v1->unk5C) && (arg1 == temp_v1->unk5E)) {
                 return actor;
@@ -714,17 +707,21 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
 
 int func_800A3DB4(int x, int z, int minimumHeight)
 {
-    SVECTOR offset;
+    SVECTOR origin;
     int height;
-    ((int*)&offset)[0] = 0;
-    ((int*)&offset)[1] = 0;
-    height = func_800A6EE8(&offset, x, z, 1);
+
+    *(int*)&origin.vx = 0;
+    *(int*)&origin.vz = 0;
+    height = func_800A6EE8(&origin, x, z, 1);
+
     if (height < minimumHeight) {
         return 0;
     }
+
     if ((*D_800F49F0 >> 20) & 1) {
         return 0;
     }
+
     return func_800A3C34(x / 128, z / 128, height, 1) == NULL;
 }
 
@@ -762,10 +759,10 @@ int func_800A3E6C(int actorId)
 
     object->unk34 = 0;
     object->unk38 = 0;
-    switch (object->unk6C[8].actorId) {
+    switch (object->unk16C.actorId) {
     case 0:
     case 1:
-        object->unk6C[8].unk2 = D_800E8FD0[object->unk6C[8].unk2 * 4 + D_800F49E8];
+        object->unk16C.unk2 = D_800E8FD0[object->unk16C.unk2 * 4 + D_800F49E8];
         // fallthrough
     case 2:
         step = 0x80;
@@ -844,78 +841,81 @@ int func_800A3E6C(int actorId)
 
 void func_800A41D0(D_800F4538_t* actor, int mode)
 {
-    SVECTOR points[2];
-    D_800F45E0_t* object;
+    D_800F45E0_t* object = D_800F45E0[D_800E90A8];
     int direction;
     int step;
     int facing;
-    int x;
-    int z;
 
-    object = D_800F45E0[D_800E90A8];
     if (mode == 2) {
-        switch (object->unk6C[8].actorId) {
+        switch (object->unk16C.actorId) {
         case 0:
         case 1:
             object->unk1A = 0xF9;
             break;
+
         case 2:
             object->unk1A = 0xFF;
             break;
+
         case 3:
             object->unk1A = 0xFE;
             break;
         }
-        object->unk6C[8].unk4 = 0;
+
+        object->unk16C.unk4 = 0;
         func_800E68A0(object);
         return;
     }
+
     if (mode == 1) {
-        step = 1;
-        x = actor->unk0.currentTileX;
-        z = actor->unk0.currentTileZ;
-        if (D_800F49E8 < 2) {
-            step = -1;
-        }
+        SVECTOR points[2];
+        int x = actor->unk0.currentTileX;
+        int z = actor->unk0.currentTileZ;
+        step = D_800F49E8 < 2 ? -1 : 1;
+
         if (D_800F49E8 & 1) {
             x += step;
         } else {
             z += step;
         }
+
         step = D_800F49E8;
         object->unk5C = x;
         object->unk5E = z;
-        object->unk1C = (x << 7) + 0x40;
-        object->unk20 = (z << 7) + 0x40;
-        object->unk26 = (object->unk26 + (step << 10)) & 0xFFF;
+        object->unk1C = x * 128 + 64;
+        object->unk20 = z * 128 + 64;
+        object->unk26 = (object->unk26 + step * (ONE / 4)) & 0xFFF;
         func_800A190C(object->unk12, 0xF0, &points[0], 1);
         func_800A190C(object->unk12, 0xF1, &points[1], 1);
-        object->unk1E = (points[0].vy + points[1].vy) / 2 + 0x3C;
+        object->unk1E = (points[0].vy + points[1].vy) / 2 + 60;
         object->unk1A = 0xFC;
-        object->unk36 = 0x18;
+        object->unk36 = 24;
         object->unk12 = 0xFF;
         actor->unk5AC_3 = 0;
         return;
     }
-    if ((object == NULL) || object->unk9_0) {
+
+    if (object == NULL || object->unk9_0) {
         func_800A0204(actor->unk0.unkF, 1, 0, 8);
         return;
     }
+
     func_800E4C28(object->unk5C, object->unk5E);
     func_800E68A0(object);
-    if (object->unk6C[8].unk0_4 == 2) {
+
+    if (object->unk16C.unk0_4 == 2) {
         func_800E68A0(object);
     }
-    step = -0x80;
-    if (D_800F49E8 < 2) {
-        step = 0x80;
-    }
+
+    step = D_800F49E8 < 2 ? 128 : -128;
+
     if (D_800F49E8 & 1) {
         object->unk34 += step;
     } else {
         object->unk38 += step;
     }
-    facing = ((u_short)object->unk26 + ((4 - D_800F49E8) << 10)) & 0xFFF;
+
+    facing = (object->unk26 + (4 - D_800F49E8) * (ONE / 4)) & 0xFFF;
     direction = facing + ONE / 8;
     direction &= 0xFFF;
     object->unk26 = facing;
@@ -996,23 +996,26 @@ int func_800A46A4(D_800F4538_t* actor)
     int saved = actor->unk0.unkC_0;
     int radius = actor->unk63C;
     int direction;
+
     actor->unk0.unkC_0 = 0;
     actor->unk0.unkA_3 = 0;
     actor->unk0.unk9_6 = 0;
     func_800A70DC(actor, rsin(ONE / 8) * radius / ONE);
     actor->unk0.unkC_0 = saved;
     actor->unk0.unkA_3 = 2;
-    direction = (u_short)actor->unk1800 >> 9;
-    sampleBlocked(scratch)[direction] = 0;
-    sampleBlocked(scratch)[direction + 1] = 0;
+    direction = actor->unk1800 >> 9;
+    scratch->blocked[direction] = 0;
+    scratch->blocked[direction + 1] = 0;
     --direction;
     direction &= 7;
-    sampleBlocked(scratch)[direction] = 0;
+    scratch->blocked[direction] = 0;
+
     for (direction = 0; direction < 8; ++direction) {
-        if (sampleBlocked(scratch)[direction]) {
+        if (scratch->blocked[direction]) {
             return 1;
         }
     }
+
     return 0;
 }
 
@@ -1045,16 +1048,20 @@ void func_800A4828(int arg0, MATRIX* arg1)
 void func_800A48CC(int index, int direction, int distance)
 {
     D_800F4538_t* actor = D_800F4538[index];
+
     if (actor->unk5AC_0 != 0) {
         return;
     }
+
     if (actor->unk0.unkA_3 != 0) {
         return;
     }
+
     if (actor->unk0.unkA_0 != 0) {
         func_800B64A8(index, direction, distance);
         return;
     }
+
     if (distance == 0) {
         actor->unk5B0_2 = 0;
         actor->unk5B0_0 = 0;
@@ -1064,13 +1071,16 @@ void func_800A48CC(int index, int direction, int distance)
     } else {
         actor->unk5B0_2 = 0;
         actor->unk5B0_0 = 1;
+
         if (distance / ONE >= actor->unk5B9) {
             actor->unk5B0_0 = 2;
             actor->unk5B0_2 = 1;
         }
+
         actor->unk0.unk11 = 0;
         actor->unk0.unkA_0 = 1;
     }
+
     actor->unk1848.unk0 = 7;
     actor->unk1848.unk4 = direction;
     actor->unk1848.unk8 = distance;
@@ -1106,58 +1116,67 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
         if (actor->unk0.unkC_0 == 0) {
             return;
         }
+
         contact = func_800A4A24(actor->unk0.unkC_0);
         actor->unk6EE = contact->unk0 - actor->unk17EC.vx;
         actor->unk6EF = contact->unk4 - actor->unk17EC.vz;
-        actor->unk0.position.vx += (signed char)actor->unk6EE;
-        actor->unk0.position.vz += (signed char)actor->unk6EF;
+        actor->unk0.position.vx += actor->unk6EE;
+        actor->unk0.position.vz += actor->unk6EF;
         actor->unk0.position.vy += contact->unk2 - actor->unk17EC.vy;
         break;
+
     case 1:
         if (actor->unk0.unkA_0 == 2 || actor->unk0.unkA_0 == 3) {
-
             return;
         }
+
         if (actor->unk0.unkC_4 != (contactId = actor->unk0.unkC_0)) {
             if (actor->unk0.unkF == 0 && contactId != 0
                 && contactId != actor->unk17EC.pad) {
                 func_800E4BE0(contactId);
             }
+
             actor->unk6EE = 0;
             actor->unk6EF = 0;
         }
+
         if (actor->unk0.unkC_0 == 0) {
             return;
         }
+
         contact = func_800A4A24(actor->unk0.unkC_0);
         break;
+
     case 2:
         current = actor->unk0.unkC_0;
         previous = actor->unk0.unkC_4;
+
         if (current != previous) {
             if (actor->unk0.unkC_0 != 0) {
                 actor->unk17EC.pad = current;
                 func_8008C49C(actor->unk0.unkC_0 - 2, actor->unk0.unkF);
             } else {
                 func_8008C49C(previous - 2, -1);
+
                 if (!actor->unk0.unkA_0) {
                     actor->unk6EE = 0;
                     actor->unk6EF = 0;
                 }
             }
         }
+
         if (actor->unk0.unkF == 0 && !actor->unk0.unkA_0
             && actor->unk0.unkC_0 != actor->unk17EC.pad) {
             func_800E4BD8(actor->unk17EC.pad);
             actor->unk17EC.pad = 0;
         }
+
         actor->unk0.unk5D = actor->unk0.unkC_0;
         actor->unk0.unkC_4 = actor->unk0.unkC_0;
         return;
     }
-    actor->unk17EC.vx = contact->unk0;
-    actor->unk17EC.vy = contact->unk2;
-    actor->unk17EC.vz = contact->unk4;
+
+    setVector(&actor->unk17EC, contact->unk0, contact->unk2, contact->unk4);
 }
 
 void func_800A4D8C(void)
@@ -1287,8 +1306,21 @@ void func_800A4E68(int actorId)
 
 int func_800A51A0(int arg0, SVECTOR* arg1)
 {
-    func_8008D2C0_t* p = func_800A4A24(arg0);
+    func_8008D2C0_t sp10[4];
+    func_8008D2C0_t* p;
+    int n;
+    int i;
 
+    arg0 -= 2;
+    n = func_8008D2C0(sp10);
+    for (i = 0; i < n; i++) {
+        if (sp10[i].unk6 == arg0) {
+            p = &sp10[i];
+            goto found;
+        }
+    }
+    p = NULL;
+found:
     if (p->unk0 + 0x40 < arg1->vx) {
         return 0;
     }
@@ -1719,7 +1751,7 @@ move:
             }
             return 3;
         }
-        *(probePosition*)&saved = *(probePosition*)&motion;
+        *(func_800A6798_t*)&saved = *(func_800A6798_t*)&motion;
         motion.vx = D_800F4B08.vx - actor->unk0.position.vx;
         motion.vy = D_800F4B08.vy - actor->unk0.position.vy;
         motion.vz = D_800F4B08.vz - actor->unk0.position.vz;
@@ -1737,7 +1769,7 @@ move:
                 object = D_800F45E0[actor->unk5AC_28];
 
                 if (object->unk1A == 0xFD) {
-                    for (i = object->unk6C[8].unk4; i < 15; i++) {
+                    for (i = object->unk16C.unk4; i < 15; i++) {
                         motion.vy += (signed char)D_800E91AC[i];
                         actor->unk6EC += (signed char)D_800E91AC[i];
                     }
@@ -1885,7 +1917,7 @@ done:
     return status;
 }
 
-void func_800A6660(D_800F4538_t* arg0, int arg1, SVECTOR* arg2)
+void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
 {
     int delta;
 
@@ -1893,7 +1925,7 @@ void func_800A6660(D_800F4538_t* arg0, int arg1, SVECTOR* arg2)
         return;
     }
     if (arg0->unk0.unk18 != 0) {
-        if (arg2->pad == 0) {
+        if (arg2->unk6 == 0) {
             delta = arg1 - ((arg0->unk0.facing + arg0->unk0.unk3E) & 0xFFF);
             if (delta >= ONE / 2) {
                 delta -= ONE;
@@ -1927,44 +1959,50 @@ void func_800A6660(D_800F4538_t* arg0, int arg1, SVECTOR* arg2)
 
 int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, SVECTOR* motion)
 {
-    probePosition saved;
+    func_800A6798_t saved;
     int height;
     int valid = 0;
-    if (actor->unk6EC <= D_800F4B0A) {
+
+    if (actor->unk6EC <= D_800F4B08.vy) {
         return 0;
     }
+
     offset->vx = 0;
     offset->vz = 0;
-    offset->vy += 0xEC;
-    saved = *(probePosition*)&actor->unk0.position;
-    actor->unk0.position.vx += offset->vx;
-    actor->unk0.position.vy += offset->vy;
-    actor->unk0.position.vz += offset->vz;
+    offset->vy += 236;
+    saved = *(func_800A6798_t*)&actor->unk0.position;
+    addVector(&actor->unk0.position, offset);
     actor->unk0.unkA_3 = 2;
+
     if (func_800A76BC(actor, motion, &height, 0) != 3 && !actor->unk5AC_13
         && height < 5) {
         height = rsin(ONE / 8);
         height = height * actor->unk63C / ONE;
+
         if ((D_800F49F9 >> 1) & 1) {
             offset->vz = height;
         } else {
             offset->vx = height;
         }
+
         height = func_800A6EE8(&D_800F4B08, offset->vx, offset->vz, 1);
         height -= D_800F4B08.vy;
-        if (height >= -0x3F) {
+
+        if (height > -64) {
             height = func_800A6EE8(&D_800F4B08, -offset->vx, -offset->vz, 1);
             height -= D_800F4B08.vy;
-            if (height >= -0x3F) {
-                valid = 1;
-            }
+        }
+
+        if (height > -64) {
+            valid = 1;
         }
     }
+
     actor->unk0.unkA_3 = 0;
     actor->unk0.unk9_6 = 0;
     offset->vx = 0;
     offset->vz = 0;
-    *(probePosition*)&actor->unk0.position = saved;
+    *(func_800A6798_t*)&actor->unk0.position = saved;
     return valid;
 }
 
@@ -2215,61 +2253,54 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
     return -3000;
 }
 
-static inline int vs_battleRelativeSampleHeight(
-    D_1F8003BC_t* samples, int sector, int offset, int y)
-{
-    return samples->unk1C[(sector + offset) & 7] - y;
-}
 void func_800A70DC(D_800F4538_t* actor, int diagonal)
 {
     D_1F8003BC_t* samples = (D_1F8003BC_t*)0x1F8003BC;
-    D_1F8003BC_t* clearCursor;
+    int i;
+    int j;
+    int delta;
 
-    int i, j, negativeRadius, negativeDiagonal, delta;
     actor->unk5AC_12 = 0;
-    i = 7;
-    clearCursor = (D_1F8003BC_t*)((char*)samples + i);
-    for (; i >= 0; i--) {
-        sampleBlocked(clearCursor)[0] = 0;
-        clearCursor = (D_1F8003BC_t*)((char*)clearCursor - 1);
-    }
-    if (actor->unk5AC_9 || actor->unk5AC_10) {
 
-        for (i = 7; i >= 0; i--) {
+    for (i = 0; i < 8; ++i) {
+        samples->blocked[i] = 0;
+    }
+
+    if (actor->unk5AC_9 || actor->unk5AC_10) {
+        for (i = 0; i < 8; ++i) {
             samples->unk1C[i] = 0;
         }
+
         return;
     }
+
     if (actor->unk0.unkA_3 == 2) {
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; ++i) {
             samples->unk1C[i] = actor->unk0.position.vy;
         }
+
         return;
     }
+
     i = actor->unk63C;
-    negativeRadius = -i;
-    sampleCenterAttribute(samples) =
-        (*func_800A8D64((&actor->unk0.position), 0) >> 5) & 1;
-    samples->unk1C[0] = func_800A6EE8((&actor->unk0.position), 0, negativeRadius, 0);
-    sampleAttributes(samples)[0] = (*D_800F49F0 >> 5) & 1;
-    samples->unk1C[6] = func_800A6EE8((&actor->unk0.position), i, 0, 0);
-    sampleAttributes(samples)[6] = (*D_800F49F0 >> 5) & 1;
-    samples->unk1C[2] = func_800A6EE8((&actor->unk0.position), negativeRadius, 0, 0);
-    sampleAttributes(samples)[2] = (*D_800F49F0 >> 5) & 1;
-    negativeDiagonal = -diagonal;
-    samples->unk1C[7] =
-        func_800A6EE8((&actor->unk0.position), diagonal, negativeDiagonal, 0);
-    sampleAttributes(samples)[7] = (*D_800F49F0 >> 5) & 1;
-    samples->unk1C[1] =
-        func_800A6EE8((&actor->unk0.position), negativeDiagonal, negativeDiagonal, 0);
-    sampleAttributes(samples)[1] = (*D_800F49F0 >> 5) & 1;
-    samples->unk1C[3] =
-        func_800A6EE8((&actor->unk0.position), negativeDiagonal, diagonal, 0);
-    sampleAttributes(samples)[3] = (*D_800F49F0 >> 5) & 1;
-    samples->unk1C[5] = func_800A6EE8((&actor->unk0.position), diagonal, diagonal, 0);
-    sampleAttributes(samples)[5] = (*D_800F49F0 >> 5) & 1;
-    samples->unk1C[4] = func_800A6EE8((&actor->unk0.position), 0, i, 0);
-    sampleAttributes(samples)[4] = (*D_800F49F0 >> 5) & 1;
+    samples->centerAttribute = (*func_800A8D64(&actor->unk0.position, 0) >> 5) & 1;
+    samples->unk1C[0] = func_800A6EE8(&actor->unk0.position, 0, -i, 0);
+    samples->attributes[0] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[6] = func_800A6EE8(&actor->unk0.position, i, 0, 0);
+    samples->attributes[6] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[2] = func_800A6EE8(&actor->unk0.position, -i, 0, 0);
+    samples->attributes[2] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[7] = func_800A6EE8(&actor->unk0.position, diagonal, -diagonal, 0);
+    samples->attributes[7] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[1] = func_800A6EE8(&actor->unk0.position, -diagonal, -diagonal, 0);
+    samples->attributes[1] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[3] = func_800A6EE8(&actor->unk0.position, -diagonal, diagonal, 0);
+    samples->attributes[3] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[5] = func_800A6EE8(&actor->unk0.position, diagonal, diagonal, 0);
+    samples->attributes[5] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[4] = func_800A6EE8(&actor->unk0.position, 0, i, 0);
+    samples->attributes[4] = (*D_800F49F0 >> 5) & 1;
+
     if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0) {
         j = actor->unk0.position.vy - 32;
     } else if (actor->unk1848.unk8 == 0) {
@@ -2277,113 +2308,136 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
     } else {
         j = actor->unk0.position.vy - 96;
     }
-    for (i = 0; i < 8; i++) {
+
+    for (i = 0; i < 8; ++i) {
         if (samples->unk1C[i] > actor->unk0.position.vy) {
             samples->unk1C[i] = actor->unk0.position.vy;
         }
-        if ((!sampleAttributes(samples)[i] || !sampleCenterAttribute(samples))
+
+        if ((!samples->attributes[i] || !samples->centerAttribute)
             && j >= samples->unk1C[i]) {
-            sampleBlocked(samples)[i] = 1;
+            samples->blocked[i] = 1;
             actor->unk5AC_12 = 1;
         }
     }
-    if (actor->unk0.unkA_0) {
-        i = (short)actor->unk1848.unk4 + ONE / 16;
-        i /= ONE / 8;
-        j = 0;
-        do {
-            delta =
-                vs_battleRelativeSampleHeight(samples, i, j - 1, actor->unk0.position.vy);
-            if (delta < -255) {
-                return;
-            }
-            ++j;
-            if (delta >= -192) {
-                return;
-            }
-        } while (j < 3);
-        j = 0;
-        do {
-            delta =
-                vs_battleRelativeSampleHeight(samples, i, j + 2, actor->unk0.position.vy);
-            ++j;
-            if (delta < -192) {
-                return;
-            }
-        } while (j < 5);
-        samples->unk1C[i] = actor->unk0.position.vy;
-        actor->unk5AC_12 = 0;
+
+    if (!actor->unk0.unkA_0) {
+        return;
     }
+
+    i = actor->unk1848.unk4 + ONE / 16;
+    i /= ONE / 8;
+
+    for (j = 0; j < 3; ++j) {
+        delta = vs_battleRelativeSampleHeight(samples, i, j - 1, actor->unk0.position.vy);
+
+        if (delta < -255) {
+            return;
+        }
+
+        if (delta >= -192) {
+            return;
+        }
+    }
+
+    for (j = 0; j < 5; ++j) {
+        delta = vs_battleRelativeSampleHeight(samples, i, j + 2, actor->unk0.position.vy);
+
+        if (delta < -192) {
+            return;
+        }
+    }
+
+    samples->unk1C[i] = actor->unk0.position.vy;
+    actor->unk5AC_12 = 0;
 }
 
 void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
 {
     D_1F8003BC_t* scratch;
-    int x, z;
-    if (actor->unk5AC_12) {
-        scratch = (D_1F8003BC_t*)0x1F8003BC;
-        x = 0;
-        z = (sampleBlocked(scratch)[0] != 0) * 16;
-        if (sampleBlocked(scratch)[1]) {
-            x = 8;
-            z += 8;
-        }
-        if (sampleBlocked(scratch)[2]) {
-            x += 16;
-        }
-        if (sampleBlocked(scratch)[3]) {
-            x += 8;
-            z -= 8;
-        }
-        if (sampleBlocked(scratch)[4]) {
-            z -= 16;
-        }
-        if (sampleBlocked(scratch)[5]) {
-            x -= 8;
-            z -= 8;
-        }
-        if (sampleBlocked(scratch)[6]) {
-            x -= 16;
-        }
-        if (sampleBlocked(scratch)[7]) {
-            x -= 8;
-            z += 8;
-        }
-        if (x > 16) {
-            x = 16;
-        }
-        if (x < -16) {
-            x = -16;
-        }
-        if (z > 16) {
-            z = 16;
-        }
-        if (z < -16) {
-            z = -16;
-        }
-        if (x != 0) {
-            if (x < 0) {
-                if (motion->vx > 0) {
-                    motion->vx = 0;
-                }
-            } else if (motion->vx < 0) {
+    int x;
+    int z;
+
+    if (!actor->unk5AC_12) {
+        return;
+    }
+
+    scratch = (D_1F8003BC_t*)0x1F8003BC;
+    x = 0;
+    z = (scratch->blocked[0] != 0) * 16;
+
+    if (scratch->blocked[1]) {
+        x = 8;
+        z += 8;
+    }
+
+    if (scratch->blocked[2]) {
+        x += 16;
+    }
+
+    if (scratch->blocked[3]) {
+        x += 8;
+        z -= 8;
+    }
+
+    if (scratch->blocked[4]) {
+        z -= 16;
+    }
+
+    if (scratch->blocked[5]) {
+        x -= 8;
+        z -= 8;
+    }
+
+    if (scratch->blocked[6]) {
+        x -= 16;
+    }
+
+    if (scratch->blocked[7]) {
+        x -= 8;
+        z += 8;
+    }
+
+    if (x > 16) {
+        x = 16;
+    }
+
+    if (x < -16) {
+        x = -16;
+    }
+
+    if (z > 16) {
+        z = 16;
+    }
+
+    if (z < -16) {
+        z = -16;
+    }
+
+    if (x != 0) {
+        if (x < 0) {
+            if (motion->vx > 0) {
                 motion->vx = 0;
             }
+        } else if (motion->vx < 0) {
+            motion->vx = 0;
         }
-        if (z != 0) {
-            if (z < 0) {
-                if (motion->vz > 0) {
-                    motion->vz = 0;
-                }
-            } else if (motion->vz < 0) {
+    }
+
+    if (z != 0) {
+        if (z < 0) {
+            if (motion->vz > 0) {
                 motion->vz = 0;
             }
+        } else if (motion->vz < 0) {
+            motion->vz = 0;
         }
-        motion->vx += x;
-        motion->vz += z;
-        actor->unk6EE = 0;
-        actor->unk6EF = 0;
     }
+
+    motion->vx += x;
+    motion->vz += z;
+    actor->unk6EE = 0;
+    actor->unk6EF = 0;
 }
 
 int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOnly)
@@ -2560,7 +2614,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         probe.vx = actor->unk0.position.vx + motion->vx + offset;
         probe.vz = actor->unk0.position.vz;
         xResults[0] = func_800A8B34(&probe, direction);
-        *(probePosition*)&xProbe = *(probePosition*)&probe;
+        *(func_800A6798_t*)&xProbe = *(func_800A6798_t*)&probe;
         probeDirections[0] = direction;
         direction -= 2;
         probeTiles[0] = D_800F49F0;
@@ -2594,7 +2648,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         probe.vx = actor->unk0.position.vx;
         probe.vz = actor->unk0.position.vz + motion->vz + offset;
         zResults[0] = func_800A8B34(&probe, direction);
-        *(probePosition*)&zProbe = *(probePosition*)&probe;
+        *(func_800A6798_t*)&zProbe = *(func_800A6798_t*)&probe;
         probeDirections[1] = direction;
         direction -= 2;
         probeTiles[1] = D_800F49F0;

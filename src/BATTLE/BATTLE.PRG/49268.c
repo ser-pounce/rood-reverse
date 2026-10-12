@@ -4,305 +4,261 @@
 #include <inline_c.h>
 #include "vs_inline_c.h"
 #include "146C.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
 #include "../../SLUS_010.40/main.h"
-
-extern struct {
-    char prefix[0x1FD0];
-    int scales[3];
-} D_800F2458;
+#include "../../SLUS_010.40/31724.h"
 
 typedef struct {
-    char prefix[0x34];
-    u_short tpage, clut;
-    char pad38[0x14];
-    SVECTOR translation, position;
-    MATRIX* parent;
-    int pad60;
-    MATRIX matrix;
-    SVECTOR rotation;
+    u_char unk0[8];
+    int first;
+    int last;
+    u_char** data;
+} D_1F8003EC_t;
+
+typedef struct {
+    MATRIX bones[63];
     VECTOR scale;
-    char* model;
-} weaponTransformScratch;
-extern MATRIX D_800F3C58[];
-extern MATRIX D_800F3C78;
+} D_800F3C58_t;
+
+void func_8008EB04(int*, int*);
+int func_800A91DC(int, int, int);
+u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
+void func_800AF844(SVECTOR*, SVECTOR*, int);
+void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 void func_800B17F0(SVECTOR*, MATRIX*);
 void func_800B196C(MATRIX*, MATRIX*);
 void func_800B396C(MATRIX*, VECTOR*);
 int func_800B3A68(void*, MATRIX*, int, void*);
-void func_800B4594(void*, void*, void*, void*);
-void func_800B5C30(void*, void*, void*, void*);
-int func_800A190C(int, int, SVECTOR*, int);
+void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
+void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
+void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+short func_800BEB00(void);
+
+extern MATRIX D_8005E218;
+extern u_char D_800E91A4[];
+extern u_char D_800E9278[];
+extern D_800F3C58_t D_800F3C58;
+extern MATRIX D_800F3C78;
+extern MATRIX D_800F4910;
+extern MATRIX D_800F49B8;
 
 void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
 {
-    MATRIX holderRotation;
-    SVECTOR anchors[2];
-    weaponTransformScratch* scratch = (void*)0x1F80035C;
-    D_800F4538_t* holder;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
     u_int attachment;
-    u_int flags;
     int value;
 
-    scratch->model = (char*)object->unk68;
+    scratch->model = object->unk68;
     gte_SetRotMatrix(camera);
     gte_SetTransMatrix(camera);
-    scratch->translation.vx = scratch->position.vx;
-    scratch->translation.vy = scratch->position.vy + 16;
-    scratch->translation.vz = scratch->position.vz;
-    gte_ldv0((void*)0x1F8003A8);
+    setVector(&scratch->position, scratch->offset.vx, scratch->offset.vy + 16,
+        scratch->offset.vz);
+    gte_ldv0(&scratch->position);
     gte_rtv0tr2();
-    attachment = object->unk6C[8].actorId;
+    attachment = object->unk16C.actorId;
+
     if (attachment >= 4) {
+        MATRIX holderRotation;
+        SVECTOR anchors[2];
+        D_800F4538_t* holder;
+
         if (object->unk12 == 0xFF) {
             goto rotate;
         }
+
         holder = D_800F4538[object->unk12];
         func_800A190C(object->unk12, 0xF0, &anchors[0], 1);
         func_800A190C(object->unk12, 0xF1, &anchors[1], 1);
         gte_SetRotMatrix(camera);
         gte_SetTransMatrix(camera);
-        scratch->translation.vx = (anchors[0].vx + anchors[1].vx) / 2;
-        scratch->translation.vy = (anchors[0].vy + anchors[1].vy) / 2;
-        scratch->translation.vz = (anchors[0].vz + anchors[1].vz) / 2;
-        gte_ldv0((void*)0x1F8003A8);
+        setVector(&scratch->position, (anchors[0].vx + anchors[1].vx) / 2,
+            (anchors[0].vy + anchors[1].vy) / 2, (anchors[0].vz + anchors[1].vz) / 2);
+        gte_ldv0(&scratch->position);
         gte_rtv0tr2();
-        scratch->rotation.vx = ((SVECTOR*)&object->unk6C[5])->vx + object->unk24;
-        scratch->rotation.vy = ((SVECTOR*)&object->unk6C[5])->vy + object->unk26;
-        scratch->rotation.vz =
-            ((SVECTOR*)&object->unk6C[5])->vz + *(short*)&object->unk28;
-        gte_stlvnl((void*)0x1F8003D4);
-        func_800B17F0((SVECTOR*)0x1F8003E0, (MATRIX*)0x1F8003C0);
-        scratch->rotation.vx = holder->unk0.unk24;
-        scratch->rotation.vy = holder->unk0.facing;
-        scratch->rotation.vz = holder->unk0.unk28;
-        func_800B17F0((SVECTOR*)0x1F8003E0, &holderRotation);
-        func_800B196C(&holderRotation, (MATRIX*)0x1F8003C0);
+        setVector(&scratch->rotation, object->unk10C.vx + object->unk24,
+            object->unk10C.vy + object->unk26, object->unk10C.vz + object->unk28);
+        gte_stlvnl(scratch->matrix.t);
+        func_800B17F0(&scratch->rotation, &scratch->matrix);
+        setVector(&scratch->rotation, holder->unk0.unk24, holder->unk0.facing,
+            holder->unk0.unk28);
+        func_800B17F0(&scratch->rotation, &holderRotation);
+        func_800B196C(&holderRotation, &scratch->matrix);
     } else if (attachment < 2) {
         if (object->unk1A != 0) {
-            scratch->rotation.vx = object->unk24;
-            scratch->rotation.vy = object->unk26;
-            scratch->rotation.vz = *(short*)&object->unk28;
-            gte_stlvnl((void*)0x1F8003D4);
-            RotMatrixYXZ_gte((SVECTOR*)0x1F8003E0, (MATRIX*)0x1F8003C0);
-            func_800B196C(camera, (MATRIX*)0x1F8003C0);
-            /* this CompMatrixLV entry is the in-place two-argument form (m0 = m0 * m1) */
-            ((void (*)(MATRIX*, MATRIX*))CompMatrixLV)(
-                (MATRIX*)0x1F8003C0, (MATRIX*)&object->unk6C[4]);
+            setVector(&scratch->rotation, object->unk24, object->unk26, object->unk28);
+            gte_stlvnl(scratch->matrix.t);
+            RotMatrixYXZ_gte(&scratch->rotation, &scratch->matrix);
+            func_800B196C(camera, &scratch->matrix);
+            MulMatrix(&scratch->matrix, &object->unk6C[4]);
             goto composed;
         }
-        *(MATRIX*)0x1F8003C0 = *(MATRIX*)&object->unk6C[4];
-        gte_stlvnl((void*)0x1F8003D4);
+
+        scratch->matrix = object->unk6C[4];
+        gte_stlvnl(scratch->matrix.t);
     } else {
     rotate:
-        scratch->rotation.vx = ((SVECTOR*)&object->unk6C[5])->vx;
-        scratch->rotation.vy = ((SVECTOR*)&object->unk6C[5])->vy;
-        scratch->rotation.vz = ((SVECTOR*)&object->unk6C[5])->vz;
+        copyVector(&scratch->rotation, &object->unk10C);
         gte_stlvnl(scratch->matrix.t);
-        scratch->rotation.vx += object->unk24;
-        scratch->rotation.vy += object->unk26;
-        scratch->rotation.vz += *(short*)&object->unk28;
+        applyVector(&scratch->rotation, object->unk24, object->unk26, object->unk28, +=);
         *(int*)&scratch->rotation &= 0x0FFF0FFF;
         *(int*)&scratch->rotation.vz &= 0xFFF;
         func_800B17F0(&scratch->rotation, &scratch->matrix);
     }
+
     func_800B196C(camera, &scratch->matrix);
 composed:
-    /* the shared scale vector (D_800F4438) follows the 63 bone matrices */
-    func_800B396C(&scratch->matrix, (VECTOR*)&D_800F3C58[63]);
-    D_800F3C58[0] = scratch->matrix;
-    *(MATRIX*)&object->unk6C[0] = scratch->matrix;
-    if (*(int*)&object->unk2C != 0x400040 || object->unk30 != 64) {
-        scratch->scale.vx = object->unk2C;
-        scratch->scale.vy = object->unk2E;
-        scratch->scale.vz = object->unk30;
-        scratch->scale.vx <<= 6;
-        scratch->scale.vy <<= 6;
-        scratch->scale.vz <<= 6;
+    func_800B396C(&scratch->matrix, &D_800F3C58.scale);
+    D_800F3C58.bones[0] = scratch->matrix;
+    object->unk6C[0] = scratch->matrix;
+
+    if (object->unk2C != 64 || object->unk2E != 64 || object->unk30 != 64) {
+        setVector(&scratch->scale, object->unk2C, object->unk2E, object->unk30);
+        applyVector(&scratch->scale, 64, 64, 64, *=);
         func_800B396C(&scratch->matrix, &scratch->scale);
-        D_800F3C58[0] = scratch->matrix;
-        *(MATRIX*)&object->unk6C[0] = scratch->matrix;
+        D_800F3C58.bones[0] = scratch->matrix;
+        object->unk6C[0] = scratch->matrix;
     }
+
     D_800F3C78 = scratch->matrix;
-    *(MATRIX*)&object->unk6C[1] = scratch->matrix;
-    if (*(int*)((char*)object + 8) & 2) {
-        if (func_800B3A68(object, (MATRIX*)&object->unk6C[0], (-vs_main_nearClip) << 2,
-                object->unk68)) {
-            scratch->tpage = GetTPage(0, 0, 0x40, 0x100);
-            if (object->unk64.unk0 != 0
-                || ((*(u_int*)((char*)object + 8) >> 8) & 0xF) >= 6) {
-                scratch->clut = GetClut((object->unkF << 4) + 0x300, 0xFF);
-            } else {
-                scratch->clut = GetClut((object->unkF << 4) + 0x300, 0xED);
-            }
-            flags = *(u_int*)((char*)object + 8);
-            value = 0;
-            if (((flags >> 8) & 0xF) - 4 < 5) {
-                if ((flags & 0xF00) != 0x600) {
-                    value = 1;
-                }
-            }
-            if (((flags >> 8) & 0xF) >= 12) {
-                value = 1;
-            }
-            if (value) {
-                func_800B5C30(&D_800F2458, object, &object->unk54, scratch->model);
-                return;
-            }
-            func_800B4594(&D_800F2458, object, &object->unk54, scratch->model);
-        }
+    object->unk6C[1] = scratch->matrix;
+
+    if (!object->unk8_1
+        || !func_800B3A68(
+            object, &object->unk6C[0], -vs_main_nearClip * 4, object->unk68)) {
+        return;
+    }
+
+    scratch->tpage = GetTPage(0, 0, 64, 256);
+
+    if (object->unk64.unk0 != 0 || object->unk9_0 >= 6) {
+        scratch->clut = GetClut(object->unkF * 16 + 768, 255);
+    } else {
+        scratch->clut = GetClut(object->unkF * 16 + 768, 237);
+    }
+
+    value = object->unk9_0 >= 4 && object->unk9_0 < 9 && object->unk9_0 != 6;
+
+    if (object->unk9_0 >= 12) {
+        value = 1;
+    }
+
+    if (value) {
+        func_800B5C30(&D_800F2458, object, &object->unk54, scratch->model);
+    } else {
+        func_800B4594(&D_800F2458, object, &object->unk54, scratch->model);
     }
 }
-
-typedef struct {
-    char prefix[0x20];
-    MATRIX matrix;
-} weaponMatrix;
-typedef struct {
-    char prefix[0xA0];
-    SVECTOR rotation;
-} weaponRotation;
-extern MATRIX D_800F3C58[];
-void func_800B17F0(SVECTOR*, MATRIX*);
-void func_800B196C(MATRIX*, MATRIX*);
-void func_800B396C(MATRIX*, VECTOR*);
-int func_800B3A68(void*, MATRIX*, int, void*);
-short func_800BEB00(void);
-void func_800B516C(void*, void*, void*, void*);
-void func_800B3CF0(void*, void*, void*, void*);
 
 void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
 {
     CVECTOR color;
-    weaponTransformScratch* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
     D_800F4538_t* actor = D_800F4538[weapon->actorId];
-    int value, i, parentOffset, parentBone, current, target, length;
-    weaponRotation* rotation;
-    unsigned int flags;
-    scratch->model = (char*)weapon->offsets;
-    *(MATRIX*)0x1F8003C0 = *source;
+    int value;
+    int i;
+
+    scratch->model = (D_800F4538_unk68*)weapon->offsets;
+    scratch->matrix = *source;
+
     if (weapon->unk13 != 0) {
-        target = weapon->unk12;
-        current = weapon->unk11;
+        int target = weapon->unk12;
+        int current = weapon->unk11;
+
         value = target - current;
         value /= weapon->unk13;
         weapon->unk11 = current + value;
         --weapon->unk13;
-        if ((*(int*)&weapon->clutSlotOffset & 0xFF00FF00) == 0) {
-            *(int*)((char*)weapon + 8) &= ~0x10;
+
+        if (weapon->unk11 == 0 && weapon->unk13 == 0) {
+            weapon->unk8_4 = 0;
         }
     }
+
     if (weapon->unk11 != 64) {
         value = weapon->unk11;
-        value <<= 6;
-        scratch->scale.vx = value;
-        scratch->scale.vy = value;
-        scratch->scale.vz = value;
+        value *= 64;
+        setVector(&scratch->scale, value, value, value);
         func_800B396C(&scratch->matrix, &scratch->scale);
     }
-    D_800F3C58[0] = scratch->matrix;
-    ((weaponMatrix*)weapon)->matrix = scratch->matrix;
-    scratch->translation.vx = scratch->translation.vy = 0;
+
+    D_800F3C58.bones[0] = scratch->matrix;
+    weapon->unk20[0] = scratch->matrix;
+    scratch->position.vx = scratch->position.vy = 0;
+
     for (i = 1; i < weapon->nBones; ++i) {
-        parentBone = *(u_char*)(scratch->model + (i << 4) + 0x44);
-        parentOffset = parentBone << 5;
-        scratch->parent = (MATRIX*)((char*)weapon + (parentOffset + 0x20));
+        int parentBone = scratch->model->armatures[i].unk4;
+
+        scratch->parent = &weapon->unk20[parentBone];
         gte_SetRotMatrix(scratch->parent);
         gte_SetTransMatrix(scratch->parent);
-        length = *(u_short*)(scratch->model + (parentBone << 4) + 0x40);
-        scratch->translation.vy = 0;
-        scratch->translation.vz = 0;
-        scratch->translation.vx = -length;
-        gte_ldv0(&scratch->translation);
+        setVector(&scratch->position, -scratch->model->armatures[parentBone].unk0, 0, 0);
+        gte_ldv0(&scratch->position);
         gte_rtv0tr2();
-        rotation = (weaponRotation*)((char*)weapon + (i << 3));
-        scratch->rotation.vx = rotation->rotation.vx;
-        scratch->rotation.vy = rotation->rotation.vy;
-        scratch->rotation.vz = rotation->rotation.vz;
+        scratch->rotation.vx = weapon->unkBoneInfo[i].vx;
+        scratch->rotation.vy = weapon->unkBoneInfo[i].vy;
+        scratch->rotation.vz = weapon->unkBoneInfo[i].vz;
         gte_stlvnl(scratch->matrix.t);
         *(int*)&scratch->rotation &= 0x0FFF0FFF;
         *(int*)&scratch->rotation.vz &= 0xFFF;
         func_800B17F0(&scratch->rotation, &scratch->matrix);
-        func_800B196C((MATRIX*)(parentOffset + (int)D_800F3C58), &scratch->matrix);
-        D_800F3C58[i] = scratch->matrix;
-        ((weaponMatrix*)((char*)weapon + (i << 5)))->matrix = scratch->matrix;
+        func_800B196C(&D_800F3C58.bones[parentBone], &scratch->matrix);
+        D_800F3C58.bones[i] = scratch->matrix;
+        weapon->unk20[i] = scratch->matrix;
     }
-    if (*(int*)((char*)actor + 8) & 2) {
-        if (*(short*)((char*)actor + 0x1E) >= 256) {
-            if (actor->unk0.unkF == 0 || func_800BEB00() != 4) {
-                return;
-            }
-        }
-        if (func_800B3A68(weapon, &((weaponMatrix*)weapon)->matrix,
-                (-vs_main_nearClip) << 2, weapon->offsets)) {
-            scratch->tpage = vs_battle_wepTextures[weapon->texSlot].tpage;
-            scratch->clut = vs_battle_wepTextures[weapon->clutSlotOffset].clut0;
-            flags = *(u_int*)((char*)actor + 8);
-            value = 0;
-            if (((flags >> 8 & 15) - 4) < 5) {
-                value = 1;
-                if ((flags & 0xF00) == 0x600) {
-                    value = 0;
-                }
-            }
-            if ((flags & 0xF00) == 0xF00) {
-                value = 1;
-            }
-            if (*(int*)((char*)weapon + 8) & 0x40) {
-                color.r = weapon->unk5C0;
-                color.g = weapon->unk5C0;
-                color.b = weapon->unk5C0;
-            } else {
-                *(int*)&color = *(int*)((char*)actor + 0x54);
-            }
-            if (value) {
-                func_800B516C(&D_800F2458, weapon, &color, scratch->model);
-                return;
-            }
-            func_800B3CF0(&D_800F2458, weapon, &color, scratch->model);
-        }
+
+    if (!actor->unk0.visible
+        || (actor->unk0.position.vy >= 256
+            && (actor->unk0.unkF == 0 || func_800BEB00() != 4))) {
+        return;
+    }
+
+    if (!func_800B3A68(
+            weapon, &weapon->unk20[0], -vs_main_nearClip * 4, weapon->offsets)) {
+        return;
+    }
+
+    scratch->tpage = vs_battle_wepTextures[weapon->texSlot].tpage;
+    scratch->clut = vs_battle_wepTextures[weapon->clutSlotOffset].clut0;
+    value = actor->unk0.unk9_0 >= 4 && actor->unk0.unk9_0 < 9 && actor->unk0.unk9_0 != 6;
+
+    if (actor->unk0.unk9_0 == 15) {
+        value = 1;
+    }
+
+    if (weapon->unk8_6) {
+        color.r = weapon->unk5C0;
+        color.g = weapon->unk5C0;
+        color.b = weapon->unk5C0;
+    } else {
+        *(int*)&color = *(int*)&actor->unk0.unk54;
+    }
+
+    if (value) {
+        func_800B516C(&D_800F2458, weapon, &color, scratch->model);
+    } else {
+        func_800B3CF0(&D_800F2458, weapon, &color, scratch->model);
     }
 }
 
-typedef struct {
-    char prefix[0x1870];
-    MATRIX matrix;
-} savedBoneMatrix;
-typedef struct {
-    char prefix[0x6C];
-    MATRIX matrix;
-} actorBoneMatrix;
-typedef struct {
-    char prefix[0x4C];
-    SVECTOR translation;
-} boneTransformScratch;
-extern MATRIX D_800F3C58[];
-void func_800B196C(MATRIX*, MATRIX*);
-void func_800B26B8(void* actor, MATRIX* parent, int bone, int saved)
+void func_800B26B8(D_800F4538_t* actor, MATRIX* parent, int bone, int saved)
 {
-    boneTransformScratch* scratch = (void*)0x1F80035C;
-    MATRIX* matrix = (void*)0x1F8003C0;
-    char* savedAddress;
-    int boneOffset;
-    actorBoneMatrix* destination;
-    MATRIX* table;
-    *matrix = ((savedBoneMatrix*)((saved << 5) + (int)actor))->matrix;
-    func_800B196C(parent, matrix);
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+
+    scratch->matrix = *(actor->unk1890 + saved - 1);
+    func_800B196C(parent, &scratch->matrix);
     gte_SetRotMatrix(parent);
     gte_SetTransMatrix(parent);
-    savedAddress = (char*)actor + ((saved - 1) << 5);
-    scratch->translation.vx = *(u_short*)(savedAddress + 0x18A4);
-    scratch->translation.vy = *(u_short*)(savedAddress + 0x18A8);
-    scratch->translation.vz = *(u_short*)(savedAddress + 0x18AC);
-    gte_ldv0((void*)0x1F8003A8);
+    --saved;
+    setVector(&scratch->position, actor->unk1890[saved].t[0], actor->unk1890[saved].t[1],
+        actor->unk1890[saved].t[2]);
+    gte_ldv0(&scratch->position);
     gte_rtv0tr2();
-    gte_stlvnl((void*)0x1F8003D4);
-    table = D_800F3C58;
-    boneOffset = bone << 5;
-    *(MATRIX*)(boneOffset + (int)table) = *matrix;
-    destination = (void*)(boneOffset + (int)actor);
-    destination->matrix = *matrix;
+    gte_stlvnl(scratch->matrix.t);
+    D_800F3C58.bones[bone] = scratch->matrix;
+    actor->bones[bone] = scratch->matrix;
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/49268", func_800B28A8);

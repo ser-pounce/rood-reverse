@@ -4,18 +4,47 @@
 #include <inline_c.h>
 #include "vs_inline_c.h"
 #include "146C.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
 #include "../../SLUS_010.40/main.h"
+#include "../../SLUS_010.40/31724.h"
+
+typedef struct {
+    u_char unk0[8];
+    int first;
+    int last;
+    u_char** data;
+} D_1F8003EC_t;
+
+typedef struct {
+    MATRIX bones[63];
+    VECTOR scale;
+} D_800F3C58_t;
 
 void func_8008EB04(int*, int*);
 int func_800A91DC(int, int, int);
 u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
+int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
+void func_800B17F0(SVECTOR*, MATRIX*);
+void func_800B196C(MATRIX*, MATRIX*);
+void func_800B396C(MATRIX*, VECTOR*);
+int func_800B3A68(void*, MATRIX*, int, void*);
+void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
+void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
+void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+short func_800BEB00(void);
 
+extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
 extern u_char D_800E9278[];
+extern D_800F3C58_t D_800F3C58;
+extern MATRIX D_800F3C78;
+extern MATRIX D_800F4910;
+extern MATRIX D_800F49B8;
 
 void func_800AB358(int index, u_char* arg);
 void func_800A41D0(D_800F4538_t* actor, int mode);
@@ -97,20 +126,13 @@ void func_800E6898(void*);
 void func_800E4C28(int, int);
 int func_800A0104(int, int);
 
-extern MATRIX D_8005E218;
 extern u_char D_800E91AC[], D_800E91BC[], D_800E91CC[], D_800E91DC[];
 extern u_char D_800E91EC[], D_800E91F0[], D_800E91FC[], D_800E9208[];
 extern u_char D_800E9218[], D_800E9228[], D_800E9238[], D_800E9248[];
 extern u_char D_800E9258[], D_800E9268[];
 extern int D_800E9308;
-extern MATRIX D_800F4910;
-extern MATRIX D_800F49B8;
 extern u_char D_800F49F8;
 extern u_char D_800F4B18, D_800F4B19;
-extern struct {
-    char prefix[0x1FD0];
-    int scales[3];
-} D_800F2458;
 
 struct frameScratch {
     int unused;
@@ -731,8 +753,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
     if (*((int*)&arg1->unk5B4 - 2) & 0xF0000000) {
         id = D_800E91A4[D_800F45E0[func_800A91DC(arg1->unk0.currentTileX,
                                        arg1->unk0.currentTileZ, 1)]
-                ->unk6C[8]
-                .actorId];
+                ->unk16C.actorId];
     } else {
         floor = arg1->unk0.unk5D;
         id = 0xD;
@@ -804,58 +825,57 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
 
 void func_800AEAE8(D_800F4538_t* actor)
 {
-    actorTransformScratch* scratch = (void*)0x1F80035C;
-    D_800F2458.scales[0] = 64;
-    D_800F2458.scales[1] = 64;
-    D_800F2458.scales[2] = 64;
-    if (*(int*)&actor->unk0.unk2C == 0x10001000 && actor->unk0.unk30 == ONE) {
-        scratch->offset.vx = actor->unk704.unk0[41].vx >> 1;
-        scratch->offset.vy = actor->unk704.unk0[41].vy >> 1;
-        scratch->offset.vz = actor->unk704.unk0[41].vz >> 1;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+
+    D_800F2458.unk1FD0[0] = 64;
+    D_800F2458.unk1FD0[1] = 64;
+    D_800F2458.unk1FD0[2] = 64;
+
+    if (actor->unk0.unk2C == ONE && actor->unk0.unk2E == ONE
+        && actor->unk0.unk30 == ONE) {
+        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
+            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
     } else {
-        scratch->offset.vx = actor->unk704.unk0[41].vx * actor->unk0.unk2C / 8192;
-        scratch->offset.vy = actor->unk704.unk0[41].vy * actor->unk0.unk2E / 8192;
-        scratch->offset.vz = actor->unk704.unk0[41].vz * actor->unk0.unk30 / 8192;
+        setVector(&scratch->offset,
+            actor->unk704.unk0[41].vx * actor->unk0.unk2C / (ONE * 2),
+            actor->unk704.unk0[41].vy * actor->unk0.unk2E / (ONE * 2),
+            actor->unk704.unk0[41].vz * actor->unk0.unk30 / (ONE * 2));
     }
-    scratch->offset.vx = scratch->offset.vx * actor->unk183C / ONE;
-    scratch->offset.vy = scratch->offset.vy * actor->unk183C / ONE;
-    scratch->offset.vz = scratch->offset.vz * actor->unk183C / ONE;
+
+    setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
+        scratch->offset.vy * actor->unk183C / ONE,
+        scratch->offset.vz * actor->unk183C / ONE);
     func_800B07DC(actor);
-    scratch->angleX = actor->unk0.unk14;
-    scratch->angleY = actor->unk0.unk16;
+    scratch->unk3A = actor->unk0.unk14;
+    scratch->unk3C = actor->unk0.unk16;
 }
 
 void func_800AECA0(MATRIX* source)
 {
-    MATRIX rotation;
-    cameraTransformScratch* scratch = (void*)0x1F80035C;
-    struct {
-        char prefix[0x5C];
-        int angle, unused, zoom;
-    }* camera = (void*)0x1F800000;
+    MATRIX roll;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    vs_scratch_t* view = (void*)0x1F800000;
     int i;
+
     for (i = 0; i < 3; ++i) {
         scratch->matrix.m[0][i] = D_8005E218.m[i][0];
         scratch->matrix.m[1][i] = D_8005E218.m[i][1];
         scratch->matrix.m[2][i] = D_8005E218.m[i][2];
     }
-    rotation.m[1][1] = rotation.m[0][0] = rcos(-camera->angle);
-    rotation.m[1][0] = rsin(-camera->angle);
-    rotation.m[0][1] = -rotation.m[1][0];
-    rotation.m[2][2] = ONE;
-    rotation.m[0][2] = rotation.m[1][2] = rotation.m[2][0] = rotation.m[2][1] = 0;
-    scratch->scale.vx = 3640;
-    scratch->scale.vy = ONE;
-    scratch->scale.vz = ONE;
+
+    roll.m[1][1] = roll.m[0][0] = rcos(-view->camera.angles.vz);
+    roll.m[1][0] = rsin(-view->camera.angles.vz);
+    roll.m[0][1] = -roll.m[1][0];
+    roll.m[2][2] = ONE;
+    roll.m[0][2] = roll.m[1][2] = roll.m[2][0] = roll.m[2][1] = 0;
+    setVector(&scratch->scale, 3640, ONE, ONE);
     ScaleMatrix(&scratch->matrix, &scratch->scale);
-    func_80041C68(&scratch->matrix, &rotation);
-    scratch->matrix = rotation;
-    i = 0x1000000 / camera->zoom;
-    scratch->scale.vx = i;
-    scratch->scale.vy = i;
-    scratch->scale.vz = i;
+    func_80041C68(&scratch->matrix, &roll);
+    scratch->matrix = roll;
+    i = ONE * ONE / view->camera.farClip;
+    setVector(&scratch->scale, i, i, i);
     ScaleMatrix(&scratch->matrix, &scratch->scale);
-    /* Preserve the original copy from the parameter home area. */
+    // BUG: copies from the stack slot of the pointer, not from the matrix it points to
     D_800F4910 = *(MATRIX*)&source;
     D_800F49B8 = scratch->matrix;
     D_800F49B8.t[0] = source->t[0];
@@ -863,6 +883,7 @@ void func_800AECA0(MATRIX* source)
     D_800F49B8.t[2] = source->t[2];
 }
 
+void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
 void func_800AEEC4(D_800F4538_t* arg0)
 {
     int _[2] __attribute__((unused));
@@ -1103,7 +1124,7 @@ void func_800AEF94(MATRIX* camera)
             }
             packedPosition = *(int*)&object->unk1C;
             objectScratch->offset.vz = (u_short)object->unk20;
-            modelHeight = object->unk68->unk50;
+            modelHeight = *(int*)((u_char*)object->unk68 + 0x50);
             *(int*)&objectScratch->offset = packedPosition;
             objectScratch->offset.vy += modelHeight / 2;
             if (object->unk64.unk0 != 0) {
@@ -1138,30 +1159,32 @@ void func_800AF6E8(D_800F4538_t* arg0)
         if (v5b2 != 1) {
             int next = arg0->unk5CC + 0xFF;
             arg0->unk5CC = v5b2 + next;
-        }
-
-        if (v5b2 != 1 && arg0->unk5CC >= arg0->unk5CD) {
-            arg0->unk5CC = 0;
-            arg0->unk5CD = 0;
-        } else {
-            func_800B147C(&arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC,
-                arg0->unk5CD);
-
-            arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
-            arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;
-
-            func_800B002C(arg0, 0);
-
-            ++arg0->unk5CC;
 
             if (arg0->unk5CC >= arg0->unk5CD) {
                 arg0->unk5CC = 0;
                 arg0->unk5CD = 0;
+                goto tail;
             }
-            return;
         }
+
+        func_800B147C(
+            &arg0->unk704, &arg0->unkC54, arg0->unk0.nBones, arg0->unk5CC, arg0->unk5CD);
+
+        arg0->unk704.unk548_16 = arg0->unkC54.unk548_16;
+        arg0->unk704.unk548_17 = arg0->unkC54.unk548_17;
+
+        func_800B002C(arg0, 0);
+
+        ++arg0->unk5CC;
+
+        if (arg0->unk5CC >= arg0->unk5CD) {
+            arg0->unk5CC = 0;
+            arg0->unk5CD = 0;
+        }
+        return;
     }
 
+tail:
     vs_main_memcpy(&arg0->unk704, &arg0->unkC54, sizeof(arg0->unk704));
     func_800B002C(arg0, 0);
 }
@@ -1199,6 +1222,7 @@ void func_800AF844(SVECTOR* dst, SVECTOR* src, int count)
     }
 }
 
+void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
 void func_800AF960(D_800F45E0_t* arg0)
 {
     int temp_lo;
@@ -1348,33 +1372,40 @@ update_bones:
 
 void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 {
-    struct animationFrameScratch* scratch = (void*)0x1F8003EC;
-    SVECTOR* delta = value + 84;
+    D_1F8003EC_t* scratch = (void*)0x1F8003EC;
+    SVECTOR* delta = &value[84];
     u_char* data = (u_char*)(u_int)(u_short)value->pad;
     int nextFrame = (u_short)delta->pad;
-    int frame = scratch->first;
-    int flags, count, packed;
-    data += (int)((u_char*)(offset + (int)*scratch->data));
-    if (frame <= scratch->last) {
-    decode:
-        if (nextFrame >= frame) {
-            value->vx += delta->vx;
-            value->vy += delta->vy;
-            value->vz += delta->vz;
-            if (rotation) {
-                *(int*)value &= 0x1FFF1FFF;
-                value->vz &= 0x1FFF;
+    int frame;
+
+    data += offset + (int)*scratch->data;
+
+    for (frame = scratch->first; frame <= scratch->last; ++frame) {
+        while (1) {
+            int flags;
+            int count;
+
+            if (nextFrame >= frame) {
+                addVector(value, delta);
+
+                if (rotation) {
+                    *(int*)value &= 0x1FFF1FFF;
+                    value->vz &= 0x1FFF;
+                }
+                break;
             }
-            goto advance;
-        } else {
+
             flags = *data;
+
             if (flags == 0) {
                 return;
             }
+
             if (flags & 0xE0) {
                 count = flags & 0x1F;
+
                 if (count == 0x1F) {
-                    nextFrame += 0x20;
+                    nextFrame += 32;
                     nextFrame += data[1];
                     data += 2;
                 } else {
@@ -1382,7 +1413,10 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
                     ++data;
                 }
             } else {
+                int packed;
+
                 count = flags & 3;
+
                 if (count == 3) {
                     nextFrame += 4;
                     nextFrame += data[1];
@@ -1391,65 +1425,60 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
                     nextFrame += count + 1;
                     ++data;
                 }
+
                 flags <<= 3;
-                {
-                    count = ((signed char*)data)[0];
-                    count <<= 8;
-                    count |= data[1];
-                    data += 2;
-                }
+                count = (signed char)data[0];
+                count <<= 8;
+                count |= data[1];
+                data += 2;
                 packed = count;
                 count >>= 3;
+
                 if (packed & 4) {
                     delta->vx = count;
                     flags &= 0x60;
+
                     if (packed & 3) {
-                        {
-                            count = ((signed char*)data)[0];
-                            count <<= 8;
-                            count |= data[1];
-                            data += 2;
-                        }
+                        count = (signed char)data[0];
+                        count <<= 8;
+                        count |= data[1];
+                        data += 2;
                     }
                 }
+
                 if (packed & 2) {
                     delta->vy = count;
                     flags &= 0xA0;
+
                     if (packed & 1) {
-                        {
-                            count = ((signed char*)data)[0];
-                            count <<= 8;
-                            count |= data[1];
-                            data += 2;
-                        }
-                    } else {
-                        goto bytes;
+                        count = (signed char)data[0];
+                        count <<= 8;
+                        count |= data[1];
+                        data += 2;
                     }
                 }
+
                 if (packed & 1) {
                     delta->vz = count;
                     flags &= 0xC0;
                 }
             }
-        bytes:
+
             if (flags & 0x80) {
                 delta->vx = (signed char)*data++;
             }
+
             if (flags & 0x40) {
                 delta->vy = (signed char)*data++;
             }
+
             if (flags & 0x20) {
                 delta->vz = (signed char)*data++;
             }
         }
-        goto decode;
-    advance:
-        ++frame;
-        if (frame <= scratch->last) {
-            goto decode;
-        }
     }
-    data -= (int)((u_char*)(offset + (int)*scratch->data));
+
+    data -= offset + (int)*scratch->data;
     value->pad = (int)data;
     delta->pad = nextFrame;
 }
@@ -1665,10 +1694,10 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
 
 void func_800B07DC(D_800F4538_t* actor)
 {
-    actorTransformScratch* scratch = (void*)0x1F80035C;
-    scratch->rotation.vx = actor->unk0.unk24;
-    scratch->rotation.vy = actor->unk0.facing;
-    scratch->rotation.vz = actor->unk0.unk28;
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+
+    setVector(
+        &scratch->rotation, actor->unk0.unk24, actor->unk0.facing, actor->unk0.unk28);
     RotMatrixYXZ_gte(&scratch->rotation, &scratch->matrix);
     scratch->matrix.t[0] = 0;
     scratch->matrix.t[1] = 0;
@@ -1678,9 +1707,8 @@ void func_800B07DC(D_800F4538_t* actor)
     gte_ldv0(&scratch->offset);
     gte_rtv0tr2();
     gte_stlvnl(scratch->matrix.t);
-    scratch->offset.vx = scratch->matrix.t[0];
-    scratch->offset.vy = scratch->matrix.t[1];
-    scratch->offset.vz = scratch->matrix.t[2];
+    setVector(&scratch->offset, scratch->matrix.t[0], scratch->matrix.t[1],
+        scratch->matrix.t[2]);
     scratch->offset.vx += actor->unk0.position.vx;
     scratch->offset.vz += actor->unk0.position.vz;
     scratch->offset.vy += actor->unk0.position.vy;
@@ -1998,7 +2026,7 @@ int func_800B13CC(int arg0, int arg1, int arg2)
 
         D_800F45E0_t* temp_v1 = D_800F45E0[i];
 
-        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && !(temp_v1->unk6C[8].unk0_3)
+        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && !(temp_v1->unk16C.unk0_3)
             && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
 
             int temp_v1_2 = temp_v1->unk1E;

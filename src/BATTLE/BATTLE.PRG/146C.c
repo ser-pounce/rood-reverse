@@ -356,30 +356,6 @@ typedef struct {
 } environmentTargetList;
 
 typedef struct {
-    u_short type;
-    short reserved2;
-    union {
-        struct {
-            u_char actor;
-            u_char reserved;
-            signed char part;
-            char reserved3;
-        } actor;
-        SVECTOR position;
-    } value;
-} actionEffectTarget;
-
-typedef struct {
-    u_short effect;
-    signed char count;
-    u_char otherCount;
-    actionEffectTarget source;
-    actionEffectTarget targets[16];
-    char others[16];
-    SVECTOR position;
-} actionEffectRequest;
-
-typedef struct {
     u_char unk0;
     u_char hidden;
     short unk2;
@@ -709,6 +685,7 @@ extern char D_800F1A9C[];
 extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;
+extern int D_800F1BA0;
 extern u_short D_800F1BA4;
 extern D_800F1BB0_t D_800F1BB0;
 extern short D_800F1BB6;
@@ -1972,7 +1949,7 @@ void func_8006C4C4(int arg0, _hitEntity_t* arg1, int targetLimb)
 
     sp10.unk12 = temp_s0->unk2;
 
-    func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
+    func_800CF3F8((actionEffectRequest*)&sp10, 0);
 }
 
 int func_8006C5AC(int arg0)
@@ -2126,7 +2103,7 @@ int func_8006C84C(int arg0)
     return 1;
 }
 
-void func_8006CA20(int arg0, func_8006CE70_t* arg1)
+void func_8006CA20(int arg0, SVECTOR* arg1)
 {
     D_800F19CC_t2* temp_s0;
 
@@ -2171,20 +2148,19 @@ void func_8006CD60(u_int* arg0, int arg1, int arg2)
 
 void func_8006CDB8(int arg0) { func_8009D854(arg0); }
 
-void func_8006CDD8(func_8006CE70_t* arg0)
+void func_8006CDD8(SVECTOR* arg0)
 {
-    _mpdRoomSection9* temp_v0 =
-        func_8008D438((short)arg0->unk0 / 128, arg0->unk4 / 128, 0);
+    _mpdRoomSection9* section = func_8008D438(arg0->vx / 128, arg0->vz / 128, 0);
 
-    if (temp_v0 != NULL) {
-        func_8008DEAC(temp_v0, 1);
-        func_800E68EC(temp_v0->unk0, temp_v0->unk2);
+    if (section != NULL) {
+        func_8008DEAC(section, 1);
+        func_800E68EC(section->unk0, section->unk2);
     }
 }
 
 void func_8006CE50(void) { func_8008D5A0(0xB4); }
 
-void func_8006CE70(func_8006CE70_t* arg0)
+void func_8006CE70(SVECTOR* arg0)
 {
     int sp10;
     _mpdRoomSectionA* temp_v0;
@@ -2192,15 +2168,15 @@ void func_8006CE70(func_8006CE70_t* arg0)
     int new_var2 = 4;
     int new_var3 = 2;
 
-    switch (arg0->unk6 & 0x1F0) {
+    switch (arg0->pad & 0x1F0) {
     case 0x10:
         temp_v0 = func_8008E3B8(&sp10);
 
-        if ((temp_v0[arg0->unk6 & 0xF].unk0.unk8.lock.state < new_var2)
-            && (temp_v0[arg0->unk6 & 0xF].unk0.unk8.lock.state >= new_var3)
+        if ((temp_v0[arg0->pad & 0xF].unk0.unk8.lock.state < new_var2)
+            && (temp_v0[arg0->pad & 0xF].unk0.unk8.lock.state >= new_var3)
             && (func_8007F434() != 0)) {
 
-            temp_v0[arg0->unk6 & 0xF].unk0.unk8.lock.state = 0;
+            temp_v0[arg0->pad & 0xF].unk0.unk8.lock.state = 0;
 
             vs_main_playSfxDefault(0x7E, 0x3F);
             vs_main_playSfxDefault(0x7E, 0x40);
@@ -2215,12 +2191,12 @@ void func_8006CE70(func_8006CE70_t* arg0)
     case 0x100:
         temp_v0_2 = func_8008E370(&sp10);
 
-        if ((temp_v0_2[arg0->unk6 & 0xF].unkC < new_var2)
-            && (temp_v0_2[arg0->unk6 & 0xF].unkC >= 2)
-            && !vs_battle_getStateFlag(temp_v0_2[arg0->unk6 & 0xF].unk10 + 0x3C0)
+        if ((temp_v0_2[arg0->pad & 0xF].unkC < new_var2)
+            && (temp_v0_2[arg0->pad & 0xF].unkC >= 2)
+            && !vs_battle_getStateFlag(temp_v0_2[arg0->pad & 0xF].unk10 + 0x3C0)
             && (func_8007F434() != 0)) {
 
-            temp_v0_2[arg0->unk6 & 0xF].unkC = 0;
+            temp_v0_2[arg0->pad & 0xF].unkC = 0;
 
             vs_main_playSfxDefault(0x7E, 0x3F);
             vs_main_playSfxDefault(0x7E, 0x40);
@@ -3192,37 +3168,37 @@ int _stepCameraTransition(void)
     return 0;
 }
 
-void func_8006F450(func_800CF0E8_t* arg0)
+void func_8006F450(u_short* arg0)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 36;
-    sp10.unk2 = 1;
-    sp10.unk4 = 4;
-    sp10.unk3 = 0;
-    sp10.unk8.u8[0] = 0;
-    sp10.unk10 = 5;
-    sp10.unk14.u16 = arg0->effectId;
-    sp10.unk18 = arg0->unk4;
-    sp10.unk16.u16 = 0;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = 36;
+    request.count = 1;
+    request.source.type = 4;
+    request.otherCount = 0;
+    request.source.value.actor.actor = 0;
+    request.targets[0].type = 5;
+    request.targets[0].value.position.vx = arg0[0];
+    request.targets[0].value.position.vz = arg0[2];
+    request.targets[0].value.position.vy = 0;
+    func_800CF3F8(&request, 0);
 }
 
 void func_8006F4B0(func_8006EBF8_t3* arg0)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 33;
-    sp10.unk2 = 1;
-    sp10.unk4 = 4;
-    sp10.unk3 = 0;
-    sp10.unk8.u8[0] = 0;
-    sp10.unk10 = 5;
-    sp10.unk14.u16 = (arg0->unk0.fields.unk0_0 << 7) + 0x40;
-    sp10.unk18 = (arg0->unk0.fields.unk0_16 << 7) + 0x40;
-    sp10.unk16.u16 = arg0->unk4.vy;
+    request.effectId = 33;
+    request.count = 1;
+    request.source.type = 4;
+    request.otherCount = 0;
+    request.source.value.actor.actor = 0;
+    request.targets[0].type = 5;
+    request.targets[0].value.position.vx = arg0->unk0.fields.unk0_0 * 128 + 64;
+    request.targets[0].value.position.vz = arg0->unk0.fields.unk0_16 * 128 + 64;
+    request.targets[0].value.position.vy = arg0->unk4.vy;
     if (!(D_800F1868 & 2)) {
-        func_800CF3F8(&sp10, 0);
+        func_800CF3F8(&request, 0);
     }
 }
 
@@ -3321,16 +3297,16 @@ int _isArtOrAbilityUnlocked(void)
 
 void func_8006F848(void)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 20;
-    sp10.unk2 = 1;
-    sp10.unk4 = 5;
-    sp10.unk10 = 4;
-    sp10.unk3 = 0;
-    sp10.unk14.u8[0] = 0;
-    sp10.unk16.u8[0] = 0xFD;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = 20;
+    request.count = 1;
+    request.source.type = 5;
+    request.targets[0].type = 4;
+    request.otherCount = 0;
+    request.targets[0].value.actor.actor = 0;
+    request.targets[0].value.actor.part = 0xFD;
+    func_800CF3F8(&request, 0);
 }
 
 void func_8006F89C(void)
@@ -3988,11 +3964,11 @@ void func_8007138C(void)
         mode = 1;
     }
 
-    request.effect = vs_main_actions[action->actionIndex].unk1;
+    request.effectId = vs_main_actions[action->actionIndex].unk1;
     request.otherCount = 0;
     request.source.type = 4;
     request.source.value.actor.actor = action->unk4.unk0.targetActor;
-    request.source.value.actor.reserved = 0;
+    request.source.value.actor.unk1 = 0;
     request.source.value.actor.part =
         func_800A152C(action->unk4.unk0.targetActor, 255, 2);
 
@@ -4016,7 +3992,7 @@ void func_8007138C(void)
 
             request.targets[count].type = 4;
             request.targets[count].value.actor.actor = action->unk4C[i].unk0.targetActor;
-            request.targets[count].value.actor.reserved = 0;
+            request.targets[count].value.actor.unk1 = 0;
             request.targets[count].value.actor.part = func_800A152C(
                 action->unk4C[i].unk0.targetActor, action->unk4C[i].unk0.targetLimb, 2);
             // BUG: tests the limb of the entry at the output index
@@ -4064,11 +4040,11 @@ void func_8007138C(void)
 
     copyVector(&request.position, &action->unk844);
 
-    if (request.effect == 39 && action->unk4C[0].unk40 == 4) {
-        request.effect = 36;
+    if (request.effectId == 39 && action->unk4C[0].unk40 == 4) {
+        request.effectId = 36;
     }
 
-    func_800CF0E8((func_800CF0E8_t*)&request, mode, action->unk2);
+    func_800CF0E8(&request, mode, action->unk2);
 
     if (action->actionIndex >= 141 && action->actionIndex < 224) {
         vs_battle_actor* actor = vs_battle_actors[action->unk4.unk0.targetActor];
@@ -4636,24 +4612,24 @@ void _endBattleCameraTransition(void)
 
 void func_800733F8(int arg0)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = arg0;
+    request.effectId = arg0;
     D_800F196C = 4;
-    sp10.unk2 = 1;
-    sp10.unk3 = 0;
-    sp10.unk4 = 4;
-    sp10.unk8.u8[0] = 0;
-    sp10.unk8.u8[1] = 0;
-    sp10.unkA.u8[0] = 0;
-    sp10.unk10 = 4;
-    sp10.unk14.u8[0] = 0;
-    sp10.unk14.u8[1] = 0;
-    sp10.unk16.u8[0] = 0;
-    sp10.unkE0.vz = 0;
-    sp10.unkE0.vy = 0;
-    sp10.unkE0.vx = 0;
-    func_800CF0E8(&sp10, 0, 0);
+    request.count = 1;
+    request.otherCount = 0;
+    request.source.type = 4;
+    request.source.value.actor.actor = 0;
+    request.source.value.actor.unk1 = 0;
+    request.source.value.actor.part = 0;
+    request.targets[0].type = 4;
+    request.targets[0].value.actor.actor = 0;
+    request.targets[0].value.actor.unk1 = 0;
+    request.targets[0].value.actor.part = 0;
+    request.position.vz = 0;
+    request.position.vy = 0;
+    request.position.vx = 0;
+    func_800CF0E8(&request, 0, 0);
     vs_gametime_tickspeed = 4;
     func_800CB654(1);
     func_8008B4C8(0);
@@ -4932,7 +4908,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
 
 void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActor)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
     D_800F19CC->unk8.unk4.unk40 = 3;
     D_800F19CC->unk8.unk4A = 1;
@@ -4946,14 +4922,14 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
     D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
     D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
-    sp10.effectId = arg0->unk0.unk6 + 6;
-    sp10.unk4 = 5;
-    sp10.unk10 = 4;
-    sp10.unk2 = 1;
-    sp10.unk3 = 0;
-    sp10.unk14.u8[0] = targetActor;
-    sp10.unk16.u8[0] = 0xFD;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = arg0->unk0.unk6 + 6;
+    request.source.type = 5;
+    request.targets[0].type = 4;
+    request.count = 1;
+    request.otherCount = 0;
+    request.targets[0].value.actor.actor = targetActor;
+    request.targets[0].value.actor.part = 0xFD;
+    func_800CF3F8(&request, 0);
 }
 
 void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
@@ -8129,32 +8105,32 @@ int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
 
 void func_8007BE20(int arg0, int arg1)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
     int i;
 
-    int var_a2 = 0;
-    vs_battle_actor** var_a3 = vs_battle_actors;
+    int count = 0;
+    vs_battle_actor** actors = vs_battle_actors;
 
-    sp10.unk2 = 1;
-    sp10.unk4 = 5;
-    sp10.effectId = arg0;
-    sp10.unk3 = 0;
-    sp10.unkC = 0;
-    sp10.unkA.s16 = 0;
-    sp10.unk8.s16 = 0;
-    sp10.unk10 = 4;
-    sp10.unk14.u8[0] = arg1;
-    sp10.unk16.u8[0] = 0;
+    request.count = 1;
+    request.source.type = 5;
+    request.effectId = arg0;
+    request.otherCount = 0;
+    request.source.value.position.vz = 0;
+    request.source.value.position.vy = 0;
+    request.source.value.position.vx = 0;
+    request.targets[0].type = 4;
+    request.targets[0].value.actor.actor = arg1;
+    request.targets[0].value.actor.part = 0;
 
     for (i = 0; i < 16; ++i) {
-        if ((var_a3[i] != NULL) && (i != arg1)) {
-            sp10.unkD0[var_a2] = i;
-            ++var_a2;
+        if ((actors[i] != NULL) && (i != arg1)) {
+            request.others[count] = i;
+            ++count;
         }
     }
 
-    sp10.unk3 = var_a2;
-    func_800CF0E8(&sp10, 0, 0);
+    request.otherCount = count;
+    func_800CF0E8(&request, 0, 0);
 }
 
 void func_8007BEC4(int arg0) { func_800CEF74(arg0); }
@@ -9681,10 +9657,10 @@ int func_8007F434(void)
 
 int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
 {
-    int* params = vs_main_statusEffectParams[debuff];
+    vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[debuff];
     vs_battle_actor2* temp_a1 = vs_battle_actors[*arg1]->unk3C;
 
-    if ((!(params[0] & temp_a1->unk944)) && (!(params[3] & temp_a1->statuses))) {
+    if ((!(params->unk0 & temp_a1->unk944)) && (!(params->unkC & temp_a1->statuses))) {
         return 0;
     }
     return 1;
@@ -10745,17 +10721,17 @@ int _setApplicableStatuses(int arg0, _hitEntity_t* entity)
 {
     int inflict = 0;
     int remove = 0;
-    int* params = vs_main_statusEffectParams[arg0];
+    vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
     vs_battle_actor2* temp_a2 = vs_battle_actors[entity->unk0.targetActor]->unk3C;
 
     if (temp_a2->unk957 != 128) {
 
         int temp_t0 = temp_a2->statuses;
 
-        if (!(temp_t0 & params[3])) {
-            remove = params[0] & ~temp_a2->unk944 & (~temp_t0 | params[2]);
+        if (!(temp_t0 & params->unkC)) {
+            remove = params->unk0 & ~temp_a2->unk944 & (~temp_t0 | params->unk8);
             entity->removeStatuses |= remove;
-            inflict = params[2] & temp_a2->statuses;
+            inflict = params->unk8 & temp_a2->statuses;
             entity->inflictStatuses |= inflict;
         }
     }
@@ -10766,10 +10742,10 @@ int _setApplicableStatuses(int arg0, _hitEntity_t* entity)
 int _setInflictedStatuses(int arg0, _hitEntity_t* entity)
 {
     int ret = 0;
-    int* params = vs_main_statusEffectParams[arg0];
+    vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
 
     if (vs_battle_actors[entity->unk0.targetActor]->unk3C->unk957 != 128) {
-        ret = params[0] & vs_battle_actors[entity->unk0.targetActor]->unk3C->statuses;
+        ret = params->unk0 & vs_battle_actors[entity->unk0.targetActor]->unk3C->statuses;
         entity->inflictStatuses |= ret;
     }
 
@@ -12542,7 +12518,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_a2 = temp_s3->limbs[i].hp;
                 break;
             }
-            if (!(temp_s3->statuses & vs_main_statusEffectParams[D_800E8200[i]][0])) {
+            if (!(temp_s3->statuses & vs_main_statusEffectParams[D_800E8200[i]].unk0)) {
                 var_v1 = var_a2 << 0x10;
                 var_v1 = 0x10000 < var_v1;
                 if (!var_v1) {
@@ -15337,7 +15313,140 @@ int func_8008ABF0(int arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8008AC78);
+void func_8008AC78(void)
+{
+    vs_battle_geomOffset originalOffset;
+    vs_battle_geomOffset mapOffset;
+    RECT mapArea;
+    MATRIX mapMatrix;
+    DR_AREA* drawArea;
+    LINE_G4* border;
+    LINE_G2* edge;
+    LINE_G2* nextLine;
+
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    func_8008DF14();
+    func_8009627C();
+    func_8008C0C0();
+
+    if (D_800F1BA4 == 0) {
+        int i;
+
+        for (i = 0; i < (vs_gametime_tickspeed >> 1); ++i) {
+            func_80091B04();
+        }
+    }
+
+    func_8008CEB0();
+    func_80090EEC();
+
+    if (*(u_short*)&vs_battle_roomData != 0x101) {
+        return;
+    }
+
+    if (vs_battle_roomData.geometrySection != NULL) {
+        int facing = ((vs_scratch_t*)0x1F800000)->camera.angles.vy;
+        int facing0 = 1 << (((0x9C0 - facing) & 0xFFF) >> 9);
+        int facing1 = 1 << (((0x840 - facing) & 0xFFF) >> 9);
+        int facing2 = 1 << (((0x900 - facing) & 0xFFF) >> 9);
+        ((vs_scratch_t*)0x1F800000)->firstPersonViewFacing =
+            (((vs_scratch_t*)0x1F800000)->firstPersonViewFacing & ~0xFF) | facing0
+            | facing1 | facing2;
+        func_8008B1FC(vs_battle_roomData.geometrySection);
+    }
+
+    if (*(u_short*)&vs_battle_roomData != 0x101 || !(vs_main_settings.simpleMap & 1)
+        || vs_battle_roomData.sectionF == NULL) {
+        return;
+    }
+
+    if (D_800F1CD6 != 0) {
+        if (++D_800F1CD4 > 8) {
+            D_800F1CD4 = 8;
+        }
+    } else {
+        D_800F1CD4 -= 2;
+
+        if (D_800F1CD4 < 0) {
+            D_800F1CD4 = 0;
+        }
+    }
+
+    if (D_800F1CD4 <= 0) {
+        return;
+    }
+
+    func_8008B590(&mapMatrix, 0x800 - ((vs_scratch_t*)0x1F800000)->camera.angles.vy);
+    SetRotMatrix(&mapMatrix);
+    drawArea = ((vs_scratch_t*)0x1F800000)->unk0;
+    SetDrawArea(drawArea, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, drawArea);
+    ++drawArea;
+    ((vs_scratch_t*)0x1F800000)->unk0 = drawArea;
+
+    if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x < 320) {
+        mapArea.x = 216;
+    } else {
+        mapArea.x = 536;
+    }
+
+    mapArea.y = 156;
+    mapArea.w = 96;
+    mapArea.h = 64;
+    mapOffset.y = 196;
+    mapOffset.x = 392 - (D_800F1CD4 << 4);
+    vs_battle_getGeomOffset(&originalOffset);
+    vs_battle_setGeomOffset(&mapOffset);
+    func_80098F8C(vs_battle_roomData.sectionF);
+    vs_battle_setGeomOffset(&originalOffset);
+    SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
+    drawArea = ((vs_scratch_t*)0x1F800000)->unk0;
+    SetDrawArea(drawArea, &mapArea);
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, drawArea);
+    ++drawArea;
+    ((vs_scratch_t*)0x1F800000)->unk0 = drawArea;
+
+    if (!(vs_main_settings.simpleMap & 2)) {
+        return;
+    }
+
+    border = (LINE_G4*)drawArea;
+    setLineG4(border);
+    setXY4(border, 215, 155, 313, 155, 313, 220, 215, 220);
+    setSemiTrans(border, 1);
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, border++);
+    // Retain the frame pointer for the color update below.
+    nextLine = (LINE_G2*)border--;
+    setLineG2(nextLine);
+    setSemiTrans(nextLine, 1);
+    setXY2(nextLine, 215, 220, 215, 155);
+    edge = nextLine++;
+    AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, edge);
+    ((vs_scratch_t*)0x1F800000)->unk0 = nextLine;
+    _insertTPage(5, getTPage(0, 3, 0, 0));
+
+    if (vs_battle_characterState->weaponDrawn == 1) {
+        int pulse = rsin(D_800F1BA0 << 8) / 64;
+        int shade;
+        D_800F1BA0 += vs_gametime_tickspeed / 2;
+        shade = 128 - pulse;
+        setRGB0(border, shade, 0, 0);
+        setRGB1(border, shade + 32, 0, 0);
+        setRGB2(border, shade + 63, 0, 0);
+        setRGB3(border, shade + 32, 0, 0);
+        setRGB0(edge, shade + 32, 0, 0);
+        setRGB1(edge, shade, 0, 0);
+    } else {
+        D_800F1BA0 = 0;
+        setRGB0(border, 0, 128, 0);
+        setRGB1(border, 0, 192, 0);
+        setRGB2(border, 0, 255, 0);
+        setRGB3(border, 0, 192, 0);
+        setRGB0(edge, 0, 192, 0);
+        setRGB1(edge, 0, 128, 0);
+    }
+}
 
 void func_8008B1FC(void* arg0)
 {

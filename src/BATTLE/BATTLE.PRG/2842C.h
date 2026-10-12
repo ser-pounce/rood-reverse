@@ -36,6 +36,7 @@ typedef struct {
 } vs_battle_objectData;
 
 short vs_battle_clamp(short arg0, int arg1, int arg2);
+void func_80090EEC(void);
 void func_80091314(int);
 void func_80091320(int);
 void func_8009134C(int, int);
@@ -47,6 +48,7 @@ int func_80091998(int);
 int func_800919D8(int);
 int func_80091A1C(int, int);
 int func_80091A78(int, int);
+void func_80091B04(void);
 void func_80092548(void);
 int func_8009291C(int);
 int func_800936F8(int);
@@ -57,6 +59,7 @@ void func_80093A70(void);
 void func_80093AB4(void);
 int func_80093F24(int arg0);
 void func_80095B70(int);
+void func_8009627C(void);
 void func_8009722C(void);
 void func_80098160(int);
 void func_80098194(int);

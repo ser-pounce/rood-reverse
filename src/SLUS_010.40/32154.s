@@ -272,10 +272,10 @@ glabel SquareRoot12
 endlabel SquareRoot12
 
 # hasm: cross-function control flow
-glabel CompMatrixLV
+glabel MulMatrix
     j       .L80041C6C
     addu    $a2, $zero, $a0
-endlabel CompMatrixLV
+endlabel MulMatrix
 
 glabel func_80041C68
     addu    $a2, $zero, $a1

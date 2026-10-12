@@ -177,6 +177,26 @@ typedef struct {
 } pFileBlock9;
 
 typedef struct {
+    u_short flags;
+    u_short unk2;
+    u_char unk4;
+    u_char curve;
+    u_char unk6;
+    u_char unk7;
+    u_char pad8[2];
+    u_short mode;
+    u_char padC[2];
+    u_short limit : 8;
+    u_short radius : 4;
+    u_short radiusJitter : 4;
+    u_short unk10;
+    u_short shape12;
+    short unk14[6];
+    short unk20[6];
+    short unk2C[6];
+} func_800D0B30_t;
+
+typedef struct {
     u_short count;
     u_short dataOffset;
     u_char curveSizes[0];
@@ -330,13 +350,13 @@ typedef struct {
     int block2Count;
     u_short* block2Data;
     pFileBlock9* block9Data;
-    void* block10Data;
+    func_800D0B30_t* block10Data;
     pFileBlock3* block3Data;
     u_char* block11Data;
     void* block12Data;
     void* block13Data;
     int unkCC;
-    void* unkD0;
+    actionEffectRequest* unkD0;
 } D_800F569C_t;
 
 typedef struct func_800D2904_t {
@@ -377,12 +397,6 @@ typedef struct {
 } func_800CE714_t2_2;
 
 typedef struct {
-    u_short unk0;
-    u_short unk2;
-    func_8006CE70_t unk4;
-} D_800F53B8_t3_2;
-
-typedef struct {
     u_short unk0_0 : 8;
     u_short unk0_8 : 8;
 } func_800D5780_t2;
@@ -405,10 +419,10 @@ typedef struct {
 } D_800F53B8_t4;
 
 typedef struct {
-    D_800F53B8_t3_2 unk0;
-    D_800F53B8_t3_2 unkC;
-    D_800F53B8_t3_2 unk18;
-    D_800F53B8_t3_2 unk24;
+    actionEffectTarget unk0;
+    actionEffectTarget unkC;
+    actionEffectTarget unk18;
+    actionEffectTarget unk24;
     D_800F53B8_t4* unk30;
     func_800D4910_t* unk34;
     short unk38;
@@ -585,9 +599,9 @@ void vs_battle_renderImage(int xy, void* buffer, int wh);
 void func_800CE64C(void);
 int func_800CEEBC(void);
 int func_800CEF74(int);
-int func_800CF0E8(func_800CF0E8_t*, int, int);
+int func_800CF0E8(actionEffectRequest*, int, int);
 void func_800CF1A8(void);
-int func_800CF3F8(func_800CF0E8_t*, int);
+int func_800CF3F8(actionEffectRequest*, int);
 int func_800CF48C(void);
 void func_800CF7A8(int, int, int, int);
 void func_800CF830(int, int);

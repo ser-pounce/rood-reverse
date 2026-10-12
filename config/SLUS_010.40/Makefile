@@ -78,6 +78,10 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/libds/%.c.o,DSSYS_1 DSSYS_1_2): ASFLAGS +=
 
 # Queue/ready helpers retain shared global bases without the post-loop CSE pass.
 $(patsubst %,$(BUILD)/src/SLUS_010.40/libds/%.c.o,DSSYS_2_QUEUE DSSYS_2): CC1FLAGS += -fno-rerun-cse-after-loop
+# DsInit/DsReset keep their count-down loop counter only under CDK in MIPS-as mode; every
+# other matched DSSYS_2 function is byte-identical under either compiler.
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2.c.o: CC1FLAGS += -mmips-as
 $(patsubst %,$(BUILD)/src/SLUS_010.40/libds/%.c.o,DSSYS_2_QUEUE DSSYS_2_FLUSH DSSYS_2 DSSYS_2_2): ASFLAGS += -no-pad-sections
 
 # DS_CQ_flush's forward parameter-clear loop is reversed and strength-reduced

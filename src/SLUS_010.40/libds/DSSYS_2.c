@@ -22,9 +22,114 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80023614);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80023838);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsInit);
+typedef struct {
+    DslCB sync;
+    DslCB ready;
+    DslCB start;
+} DS_CBS;
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsReset);
+extern DS_CBS D_80039E60;
+extern DS_RDY D_80039CC0[3];
+extern int DS_system_active(void);
+extern void func_800231E4(DS_CQ*);
+extern void DS_init(void);
+extern void DS_sync_callback(DslCB);
+extern void DS_ready_callback(DslCB);
+extern void DS_start_callback(DslCB);
+extern void DS_vsync_callback(DslCB);
+extern void ER_clear(void);
+extern void func_80023614(u_char, u_char*);
+extern void func_80024590(u_char, u_char*);
+extern void func_80024664(u_char, u_char*);
+extern void func_800244EC(void);
+
+int DsInit(void)
+{
+    DS_CBS* cbs;
+    DS_RDY* rdy;
+    int i;
+    int j;
+    int k;
+
+    if (DS_system_active()) {
+        return 0;
+    }
+    cbs = &D_80039E60;
+    cbs->sync = NULL;
+    cbs->ready = NULL;
+    cbs->start = NULL;
+    rdy = D_80039CC0;
+    rdy[2].flag = 0;
+    rdy[1].flag = 0;
+    rdy[0].flag = 0;
+    rdy[2].intr = 0;
+    rdy[1].intr = 0;
+    rdy[0].intr = 0;
+    for (i = 0; i < 8; i++) {
+        D_80039CC0[0].result[i] = 0;
+        D_80039CC0[1].result[i] = 0;
+        D_80039CC0[2].result[i] = 0;
+    }
+    for (j = 0; j < DslMaxCOMMANDS; j++) {
+        func_800231E4(&D_80039CF0.q[j]);
+    }
+    D_80039DB4 = 0;
+    D_80039DB0 = 0;
+    D_80039DB8 = 0;
+    for (k = 0; k < 8; k++) {
+        D_80039DC0.ent[k].id = 0;
+    }
+    D_80039DC0.idx = 0;
+    DS_init();
+    DS_sync_callback((DslCB)func_80023614);
+    DS_ready_callback((DslCB)func_80024590);
+    DS_start_callback((DslCB)func_80024664);
+    DS_vsync_callback((DslCB)func_800244EC);
+    ER_clear();
+    DsReadySystemMode(0);
+    return 1;
+}
+
+int DsReset(void)
+{
+    DS_CBS* cbs;
+    DS_RDY* rdy;
+    int i;
+    int j;
+    int k;
+
+    DS_stop();
+    cbs = &D_80039E60;
+    cbs->sync = NULL;
+    cbs->ready = NULL;
+    cbs->start = NULL;
+    rdy = D_80039CC0;
+    rdy[2].flag = 0;
+    rdy[1].flag = 0;
+    rdy[0].flag = 0;
+    rdy[2].intr = 0;
+    rdy[1].intr = 0;
+    rdy[0].intr = 0;
+    for (i = 0; i < 8; i++) {
+        D_80039CC0[0].result[i] = 0;
+        D_80039CC0[1].result[i] = 0;
+        D_80039CC0[2].result[i] = 0;
+    }
+    for (j = 0; j < DslMaxCOMMANDS; j++) {
+        func_800231E4(&D_80039CF0.q[j]);
+    }
+    D_80039DB4 = 0;
+    D_80039DB0 = 0;
+    D_80039DB8 = 0;
+    for (k = 0; k < 8; k++) {
+        D_80039DC0.ent[k].id = 0;
+    }
+    D_80039DC0.idx = 0;
+    ER_clear();
+    DsReadySystemMode(0);
+    DS_restart();
+    return 1;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsClose);
 

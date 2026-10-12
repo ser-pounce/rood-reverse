@@ -33,6 +33,17 @@ $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1FLAGS += -mmips-as
 $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: PREPROCESS.s = $(PSQ_PATCH) | $(PYTHON) tools/etc/aspsx_divu.py
 
+# libcd bios.c 1.86 from CD_sync on (BIOS_2) matches the PsyQ library compiler built without
+# strength reduction. Original object padding is explicit in splat.yaml.
+$(BUILD)/src/SLUS_010.40/libcd/BIOS_2.c.o: CC1VER := 2.7.2-psyq
+$(BUILD)/src/SLUS_010.40/libcd/BIOS_2.c.o: CC1FLAGS += -mhard-float -fno-strength-reduce
+$(patsubst %,$(BUILD)/src/SLUS_010.40/libcd/%.c.o,BIOS BIOS_2): ASFLAGS += -no-pad-sections
+
+# StGetNext preserves volatile stream-header reads and the SDK ring-size load.
+# The typed PsyZ/SotN pattern matches CDK MIPS-as; the PSX compiler adds masks.
+$(BUILD)/src/SLUS_010.40/libcd/C_009.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libcd/C_009.c.o: CC1FLAGS += -mmips-as
+
 # libgpu SYS (sys.c 1.140) was built by the compiler of the PsyQ libraries: GCC 2.7.2 with the
 # GCC 2.8-style changes reproduced by tools/etc/patch_cc1.py, and -mhard-float (with the FP
 # registers fixed, loop.c's lower invariant threshold keeps _exeque's status constants in the loop).

@@ -31,6 +31,9 @@ segments:
       - [0xA54, .rodata, libetc/INTR_DMA]
       - [0xA84, .rodata, libcd/SYS]
       - [0xC44, .rodata, libcd/BIOS]
+      - [0xC58, .rodata, libcd/BIOS_2]
+      # Original 12 bytes of rodata padding at the end of the libcd BIOS object.
+      - [0xCE8, pad]
       - [0xCF4, .rodata, libcd/C_011]
       - [0xD14, .rodata, libds/DSSYS_2]
       - [0xD84, .rodata, libds/DSSYS_1_2]
@@ -78,6 +81,9 @@ segments:
       - [0x10B84, c, libcd/CDROM]
       - [0x10BB4, c, libcd/SYS]
       - [0x111C4, c, libcd/BIOS]
+      - [0x11728, c, libcd/BIOS_2]
+      # Original 8 bytes of text padding at the end of the libcd BIOS object.
+      - [0x1292C, pad]
       - [0x12934, c, libcd/C_002]
       - [0x12994, c, libcd/C_003]
       - [0x12A14, c, libcd/C_004]

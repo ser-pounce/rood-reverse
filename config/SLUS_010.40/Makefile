@@ -55,6 +55,14 @@ $(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1FLAGS += -mhard-float
 $(BUILD)/src/SLUS_010.40/libgpu/FONT.c.o: CC1VER := 2.7.2-psyq
 $(BUILD)/src/SLUS_010.40/libgpu/FONT.c.o: CC1FLAGS += -mhard-float -fsigned-char
 
+# libetc INTR (intr.c 1.75): the PsyQ library compiler with -mhard-float.
+$(BUILD)/src/SLUS_010.40/libetc/INTR.c.o: CC1VER := 2.7.2-psyq
+$(BUILD)/src/SLUS_010.40/libetc/INTR.c.o: CC1FLAGS += -mhard-float
+
+# libcard FORMAT (_card_format and its write-and-verify helper): the PsyQ library compiler.
+$(BUILD)/src/SLUS_010.40/libcard/FORMAT.c.o: CC1VER := 2.7.2-psyq
+$(BUILD)/src/SLUS_010.40/libcard/FORMAT.c.o: CC1FLAGS += -mhard-float
+
 # Isolate the callback initializer: its shared interior-field base and return delay
 # slot match CDK 2.7.2 in MIPS-as mode; the rest of PADMAIN keeps its compiler.
 $(BUILD)/src/SLUS_010.40/libpad/PADMAIN_VSYNC.c.o: CC1VER := 2.7.2-cdk

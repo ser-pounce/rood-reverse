@@ -16,6 +16,8 @@
 #define VS_SURFACE_TEXTURE_COLUMN(column) (column)
 #endif
 
+#ifndef VS_SURFACE_TYPES
+#define VS_SURFACE_TYPES
 typedef struct {
     u_char lifetime;
     u_char effect;
@@ -33,6 +35,7 @@ typedef struct {
     POLY_GT4 poly;
     int drawMode;
 } vs_surfacePrim;
+#endif
 
 extern SVECTOR VS_SURFACE_VERTICES[5][16];
 

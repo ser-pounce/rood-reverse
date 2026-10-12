@@ -67,6 +67,7 @@ int func_800AD494(D_800F4538_t*, int, int*);
 void func_800AD62C(int, int*, int*, int);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE6C0(D_800F4538_t*, int, int);
+void func_800AE7D8(void*, int, int);
 short func_800BEB00();
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
@@ -3298,7 +3299,64 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009F314);
+void func_8009F314(int actorId, void* context, int animate)
+{
+    int found;
+    D_800F4538_t* actor = D_800F4538[actorId];
+
+    if (actor != NULL) {
+        if (actor->unk0.unkA_0 || actor->unk0.unkA_5 || actor->unk0.unkA_3 == 2) {
+            if (actor->unk0.unkC_0) {
+                func_8008C49C(actor->unk0.unkC_0 - 2, -1);
+                actor->unk0.unkC_0 = 0;
+            }
+
+            actor->unk0.unk1A = 0;
+            actor->unk0.unk34.vx = 0;
+            actor->unk0.unk34.vz = 0;
+
+            if (actor->unk0.unkF != 0 || actor->unk0.unkA_0 != 3
+                || actor->unk0.unk34.vy <= 0) {
+                actor->unk0.unk34.vy = -6;
+            }
+
+            actor->unk181A = 0;
+            actor->unk0.unkA_0 = 3;
+        }
+
+        if (animate != 0) {
+            int animationId = 0x46;
+
+            if (actor->unk5AC_3) {
+                animationId = 0x3A;
+            }
+
+            func_800AD494(actor, 0xAB, &found);
+
+            if (found != 0 && actor->unk0.unkA_0 == 0) {
+                animationId = 0x47;
+            }
+
+            func_800A0204(actorId, animationId, 0, 6);
+            func_8009FD38(actor);
+            actor->unk0.unk9_0 = 1;
+        } else {
+            actor->unk0.unk9_0 = 2;
+        }
+
+        if (actor->unk17FD >= 2) {
+            func_8009F314(actor->unk17FD, context, animate);
+        }
+    } else {
+        D_800F45E0_t* object = D_800F45E0[actorId];
+
+        if (object != NULL) {
+            object->unk1A = 0xF7;
+            object->unk16C.unk4 = 0;
+            func_800AE7D8(object, 50, 0);
+        }
+    }
+}
 
 void func_8009F530(int arg0)
 {

@@ -337,30 +337,6 @@ typedef struct {
 } environmentTargetList;
 
 typedef struct {
-    u_short type;
-    short reserved2;
-    union {
-        struct {
-            u_char actor;
-            u_char reserved;
-            signed char part;
-            char reserved3;
-        } actor;
-        SVECTOR position;
-    } value;
-} actionEffectTarget;
-
-typedef struct {
-    u_short effect;
-    signed char count;
-    u_char otherCount;
-    actionEffectTarget source;
-    actionEffectTarget targets[16];
-    char others[16];
-    SVECTOR position;
-} actionEffectRequest;
-
-typedef struct {
     u_char unk0;
     u_char hidden;
     short unk2;
@@ -1950,7 +1926,7 @@ void func_8006C4C4(int arg0, _hitEntity_t* arg1, int targetLimb)
 
     sp10.unk12 = temp_s0->unk2;
 
-    func_800CF3F8((func_800CF0E8_t*)&sp10, 0);
+    func_800CF3F8((actionEffectRequest*)&sp10, 0);
 }
 
 int func_8006C5AC(int arg0)
@@ -2104,7 +2080,7 @@ int func_8006C84C(int arg0)
     return 1;
 }
 
-void func_8006CA20(int arg0, func_8006CE70_t* arg1)
+void func_8006CA20(int arg0, SVECTOR* arg1)
 {
     D_800F19CC_t2* temp_s0;
 
@@ -2149,20 +2125,19 @@ void func_8006CD60(u_int* arg0, int arg1, int arg2)
 
 void func_8006CDB8(int arg0) { func_8009D854(arg0); }
 
-void func_8006CDD8(func_8006CE70_t* arg0)
+void func_8006CDD8(SVECTOR* arg0)
 {
-    _mpdRoomSection9* temp_v0 =
-        func_8008D438((short)arg0->unk0 / 128, arg0->unk4 / 128, 0);
+    _mpdRoomSection9* section = func_8008D438(arg0->vx / 128, arg0->vz / 128, 0);
 
-    if (temp_v0 != NULL) {
-        func_8008DEAC(temp_v0, 1);
-        func_800E68EC(temp_v0->unk0, temp_v0->unk2);
+    if (section != NULL) {
+        func_8008DEAC(section, 1);
+        func_800E68EC(section->unk0, section->unk2);
     }
 }
 
 void func_8006CE50(void) { func_8008D5A0(0xB4); }
 
-void func_8006CE70(func_8006CE70_t* arg0)
+void func_8006CE70(SVECTOR* arg0)
 {
     int sp10;
     _mpdRoomSectionA* temp_v0;
@@ -2170,15 +2145,15 @@ void func_8006CE70(func_8006CE70_t* arg0)
     int new_var2 = 4;
     int new_var3 = 2;
 
-    switch (arg0->unk6 & 0x1F0) {
+    switch (arg0->pad & 0x1F0) {
     case 0x10:
         temp_v0 = func_8008E3B8(&sp10);
 
-        if ((temp_v0[arg0->unk6 & 0xF].unk0.unk8.lock.state < new_var2)
-            && (temp_v0[arg0->unk6 & 0xF].unk0.unk8.lock.state >= new_var3)
+        if ((temp_v0[arg0->pad & 0xF].unk0.unk8.lock.state < new_var2)
+            && (temp_v0[arg0->pad & 0xF].unk0.unk8.lock.state >= new_var3)
             && (func_8007F434() != 0)) {
 
-            temp_v0[arg0->unk6 & 0xF].unk0.unk8.lock.state = 0;
+            temp_v0[arg0->pad & 0xF].unk0.unk8.lock.state = 0;
 
             vs_main_playSfxDefault(0x7E, 0x3F);
             vs_main_playSfxDefault(0x7E, 0x40);
@@ -2193,12 +2168,12 @@ void func_8006CE70(func_8006CE70_t* arg0)
     case 0x100:
         temp_v0_2 = func_8008E370(&sp10);
 
-        if ((temp_v0_2[arg0->unk6 & 0xF].unkC < new_var2)
-            && (temp_v0_2[arg0->unk6 & 0xF].unkC >= 2)
-            && !vs_battle_getStateFlag(temp_v0_2[arg0->unk6 & 0xF].unk10 + 0x3C0)
+        if ((temp_v0_2[arg0->pad & 0xF].unkC < new_var2)
+            && (temp_v0_2[arg0->pad & 0xF].unkC >= 2)
+            && !vs_battle_getStateFlag(temp_v0_2[arg0->pad & 0xF].unk10 + 0x3C0)
             && (func_8007F434() != 0)) {
 
-            temp_v0_2[arg0->unk6 & 0xF].unkC = 0;
+            temp_v0_2[arg0->pad & 0xF].unkC = 0;
 
             vs_main_playSfxDefault(0x7E, 0x3F);
             vs_main_playSfxDefault(0x7E, 0x40);
@@ -3170,37 +3145,37 @@ int _stepCameraTransition(void)
     return 0;
 }
 
-void func_8006F450(func_800CF0E8_t* arg0)
+void func_8006F450(u_short* arg0)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 36;
-    sp10.unk2 = 1;
-    sp10.unk4 = 4;
-    sp10.unk3 = 0;
-    sp10.unk8.u8[0] = 0;
-    sp10.unk10 = 5;
-    sp10.unk14.u16 = arg0->effectId;
-    sp10.unk18 = arg0->unk4;
-    sp10.unk16.u16 = 0;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = 36;
+    request.count = 1;
+    request.source.type = 4;
+    request.otherCount = 0;
+    request.source.value.actor.actor = 0;
+    request.targets[0].type = 5;
+    request.targets[0].value.position.vx = arg0[0];
+    request.targets[0].value.position.vz = arg0[2];
+    request.targets[0].value.position.vy = 0;
+    func_800CF3F8(&request, 0);
 }
 
 void func_8006F4B0(func_8006EBF8_t3* arg0)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 33;
-    sp10.unk2 = 1;
-    sp10.unk4 = 4;
-    sp10.unk3 = 0;
-    sp10.unk8.u8[0] = 0;
-    sp10.unk10 = 5;
-    sp10.unk14.u16 = (arg0->unk0.fields.unk0_0 << 7) + 0x40;
-    sp10.unk18 = (arg0->unk0.fields.unk0_16 << 7) + 0x40;
-    sp10.unk16.u16 = arg0->unk4.vy;
+    request.effectId = 33;
+    request.count = 1;
+    request.source.type = 4;
+    request.otherCount = 0;
+    request.source.value.actor.actor = 0;
+    request.targets[0].type = 5;
+    request.targets[0].value.position.vx = arg0->unk0.fields.unk0_0 * 128 + 64;
+    request.targets[0].value.position.vz = arg0->unk0.fields.unk0_16 * 128 + 64;
+    request.targets[0].value.position.vy = arg0->unk4.vy;
     if (!(D_800F1868 & 2)) {
-        func_800CF3F8(&sp10, 0);
+        func_800CF3F8(&request, 0);
     }
 }
 
@@ -3299,16 +3274,16 @@ int _isArtOrAbilityUnlocked(void)
 
 void func_8006F848(void)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = 20;
-    sp10.unk2 = 1;
-    sp10.unk4 = 5;
-    sp10.unk10 = 4;
-    sp10.unk3 = 0;
-    sp10.unk14.u8[0] = 0;
-    sp10.unk16.u8[0] = 0xFD;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = 20;
+    request.count = 1;
+    request.source.type = 5;
+    request.targets[0].type = 4;
+    request.otherCount = 0;
+    request.targets[0].value.actor.actor = 0;
+    request.targets[0].value.actor.part = 0xFD;
+    func_800CF3F8(&request, 0);
 }
 
 void func_8006F89C(void)
@@ -3966,11 +3941,11 @@ void func_8007138C(void)
         mode = 1;
     }
 
-    request.effect = vs_main_actions[action->actionIndex].unk1;
+    request.effectId = vs_main_actions[action->actionIndex].unk1;
     request.otherCount = 0;
     request.source.type = 4;
     request.source.value.actor.actor = action->unk4.unk0.targetActor;
-    request.source.value.actor.reserved = 0;
+    request.source.value.actor.unk1 = 0;
     request.source.value.actor.part =
         func_800A152C(action->unk4.unk0.targetActor, 255, 2);
 
@@ -3994,7 +3969,7 @@ void func_8007138C(void)
 
             request.targets[count].type = 4;
             request.targets[count].value.actor.actor = action->unk4C[i].unk0.targetActor;
-            request.targets[count].value.actor.reserved = 0;
+            request.targets[count].value.actor.unk1 = 0;
             request.targets[count].value.actor.part = func_800A152C(
                 action->unk4C[i].unk0.targetActor, action->unk4C[i].unk0.targetLimb, 2);
             // BUG: tests the limb of the entry at the output index
@@ -4042,11 +4017,11 @@ void func_8007138C(void)
 
     copyVector(&request.position, &action->unk844);
 
-    if (request.effect == 39 && action->unk4C[0].unk40 == 4) {
-        request.effect = 36;
+    if (request.effectId == 39 && action->unk4C[0].unk40 == 4) {
+        request.effectId = 36;
     }
 
-    func_800CF0E8((func_800CF0E8_t*)&request, mode, action->unk2);
+    func_800CF0E8(&request, mode, action->unk2);
 
     if (action->actionIndex >= 141 && action->actionIndex < 224) {
         vs_battle_actor* actor = vs_battle_actors[action->unk4.unk0.targetActor];
@@ -4614,24 +4589,24 @@ void _endBattleCameraTransition(void)
 
 void func_800733F8(int arg0)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
-    sp10.effectId = arg0;
+    request.effectId = arg0;
     D_800F196C = 4;
-    sp10.unk2 = 1;
-    sp10.unk3 = 0;
-    sp10.unk4 = 4;
-    sp10.unk8.u8[0] = 0;
-    sp10.unk8.u8[1] = 0;
-    sp10.unkA.u8[0] = 0;
-    sp10.unk10 = 4;
-    sp10.unk14.u8[0] = 0;
-    sp10.unk14.u8[1] = 0;
-    sp10.unk16.u8[0] = 0;
-    sp10.unkE0.vz = 0;
-    sp10.unkE0.vy = 0;
-    sp10.unkE0.vx = 0;
-    func_800CF0E8(&sp10, 0, 0);
+    request.count = 1;
+    request.otherCount = 0;
+    request.source.type = 4;
+    request.source.value.actor.actor = 0;
+    request.source.value.actor.unk1 = 0;
+    request.source.value.actor.part = 0;
+    request.targets[0].type = 4;
+    request.targets[0].value.actor.actor = 0;
+    request.targets[0].value.actor.unk1 = 0;
+    request.targets[0].value.actor.part = 0;
+    request.position.vz = 0;
+    request.position.vy = 0;
+    request.position.vx = 0;
+    func_800CF0E8(&request, 0, 0);
     vs_gametime_tickspeed = 4;
     func_800CB654(1);
     func_8008B4C8(0);
@@ -4910,7 +4885,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
 
 void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActor)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
 
     D_800F19CC->unk8.unk4.unk40 = 3;
     D_800F19CC->unk8.unk4A = 1;
@@ -4924,14 +4899,14 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
     D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
     D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
-    sp10.effectId = arg0->unk0.unk6 + 6;
-    sp10.unk4 = 5;
-    sp10.unk10 = 4;
-    sp10.unk2 = 1;
-    sp10.unk3 = 0;
-    sp10.unk14.u8[0] = targetActor;
-    sp10.unk16.u8[0] = 0xFD;
-    func_800CF3F8(&sp10, 0);
+    request.effectId = arg0->unk0.unk6 + 6;
+    request.source.type = 5;
+    request.targets[0].type = 4;
+    request.count = 1;
+    request.otherCount = 0;
+    request.targets[0].value.actor.actor = targetActor;
+    request.targets[0].value.actor.part = 0xFD;
+    func_800CF3F8(&request, 0);
 }
 
 void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
@@ -7404,32 +7379,32 @@ int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
 
 void func_8007BE20(int arg0, int arg1)
 {
-    func_800CF0E8_t sp10;
+    actionEffectRequest request;
     int i;
 
-    int var_a2 = 0;
-    vs_battle_actor** var_a3 = vs_battle_actors;
+    int count = 0;
+    vs_battle_actor** actors = vs_battle_actors;
 
-    sp10.unk2 = 1;
-    sp10.unk4 = 5;
-    sp10.effectId = arg0;
-    sp10.unk3 = 0;
-    sp10.unkC = 0;
-    sp10.unkA.s16 = 0;
-    sp10.unk8.s16 = 0;
-    sp10.unk10 = 4;
-    sp10.unk14.u8[0] = arg1;
-    sp10.unk16.u8[0] = 0;
+    request.count = 1;
+    request.source.type = 5;
+    request.effectId = arg0;
+    request.otherCount = 0;
+    request.source.value.position.vz = 0;
+    request.source.value.position.vy = 0;
+    request.source.value.position.vx = 0;
+    request.targets[0].type = 4;
+    request.targets[0].value.actor.actor = arg1;
+    request.targets[0].value.actor.part = 0;
 
     for (i = 0; i < 16; ++i) {
-        if ((var_a3[i] != NULL) && (i != arg1)) {
-            sp10.unkD0[var_a2] = i;
-            ++var_a2;
+        if ((actors[i] != NULL) && (i != arg1)) {
+            request.others[count] = i;
+            ++count;
         }
     }
 
-    sp10.unk3 = var_a2;
-    func_800CF0E8(&sp10, 0, 0);
+    request.otherCount = count;
+    func_800CF0E8(&request, 0, 0);
 }
 
 void func_8007BEC4(int arg0) { func_800CEF74(arg0); }

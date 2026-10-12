@@ -448,7 +448,7 @@ int func_800A38E0(int actorId)
     object = D_800F45E0[found];
     objectId = found;
 
-    if (object->unk6C[8].unk0_4 == 1) {
+    if (object->unk16C.unk0_4 == 1) {
         return -1;
     }
 
@@ -469,7 +469,7 @@ int func_800A38E0(int actorId)
         return -1;
     }
 
-    if (object->unk6C[8].actorId < 4) {
+    if (object->unk16C.actorId < 4) {
         if (!func_800A3DB4(farX, farZ, object->unk1E)) {
             return -1;
         }
@@ -578,7 +578,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     int facing;
 
     if (mode == 2) {
-        switch (object->unk6C[8].actorId) {
+        switch (object->unk16C.actorId) {
         case 0:
         case 1:
             object->unk1A = 0xF9;
@@ -593,7 +593,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
             break;
         }
 
-        object->unk6C[8].unk4 = 0;
+        object->unk16C.unk4 = 0;
         func_800E68A0(object);
         return;
     }
@@ -634,7 +634,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     func_800E4C28(object->unk5C, object->unk5E);
     func_800E68A0(object);
 
-    if (object->unk6C[8].unk0_4 == 2) {
+    if (object->unk16C.unk0_4 == 2) {
         func_800E68A0(object);
     }
 

@@ -1,12 +1,20 @@
 /* Shared five-row, sixteen-column radial surface effect with per-row color factors.
- * The texture spans the whole surface once. The overlay supplies its entry point and
- * vertex table. */
+ * The texture spans the whole surface once unless the overlay defines
+ * VS_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns. The
+ * overlay supplies its entry point and vertex table. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
+
+#ifdef VS_SURFACE_TEXTURE_COLUMNS
+#define VS_SURFACE_TEXTURE_COLUMN(column) ((column) & (VS_SURFACE_TEXTURE_COLUMNS - 1))
+#else
+#define VS_SURFACE_TEXTURE_COLUMNS 16
+#define VS_SURFACE_TEXTURE_COLUMN(column) (column)
+#endif
 
 typedef struct {
     u_char lifetime;
@@ -34,7 +42,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int screen[5][16];
     int depths[5][16];
     CVECTOR colors[5];
-    u_char u[17];
+    u_char u[VS_SURFACE_TEXTURE_COLUMNS + 1];
     u_char v[5];
     D_800F53B8_t* battle;
     int alive;
@@ -201,8 +209,8 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800D6D24(&state->texture);
         texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
 
-        for (sample = 0; sample < 17; ++sample) {
-            u[sample] = texture->u + texture->w * sample / 16;
+        for (sample = 0; sample < VS_SURFACE_TEXTURE_COLUMNS + 1; ++sample) {
+            u[sample] = texture->u + texture->w * sample / VS_SURFACE_TEXTURE_COLUMNS;
         }
 
         for (sample = 0; sample < 5; ++sample) {
@@ -232,8 +240,8 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 *(int*)&prim->poly.x3 = screen[row + 1][column + 1];
                 *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 = *(int*)&colors[row];
                 *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 = *(int*)&colors[row + 1];
-                prim->poly.u0 = prim->poly.u2 = u[column];
-                prim->poly.u1 = prim->poly.u3 = u[column + 1];
+                prim->poly.u0 = prim->poly.u2 = u[VS_SURFACE_TEXTURE_COLUMN(column)];
+                prim->poly.u1 = prim->poly.u3 = u[VS_SURFACE_TEXTURE_COLUMN(column) + 1];
                 prim->poly.v0 = prim->poly.v1 = v[row];
                 prim->poly.v2 = prim->poly.v3 = v[row + 1];
                 prim->poly.tpage = texture->tpage;
@@ -262,8 +270,8 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             *(int*)&prim->poly.x3 = screen[row + 1][0];
             *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 = *(int*)&colors[row];
             *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 = *(int*)&colors[row + 1];
-            prim->poly.u0 = prim->poly.u2 = u[column];
-            prim->poly.u1 = prim->poly.u3 = u[column + 1];
+            prim->poly.u0 = prim->poly.u2 = u[VS_SURFACE_TEXTURE_COLUMN(column)];
+            prim->poly.u1 = prim->poly.u3 = u[VS_SURFACE_TEXTURE_COLUMN(column) + 1];
             prim->poly.v0 = prim->poly.v1 = v[row];
             prim->poly.v2 = prim->poly.v3 = v[row + 1];
             prim->poly.tpage = texture->tpage;
@@ -299,3 +307,5 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 }
 #undef VS_SURFACE_FUNCTION
 #undef VS_SURFACE_VERTICES
+#undef VS_SURFACE_TEXTURE_COLUMNS
+#undef VS_SURFACE_TEXTURE_COLUMN

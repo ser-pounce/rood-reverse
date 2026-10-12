@@ -7,37 +7,28 @@ typedef struct {
 } _loadFileContext;
 
 typedef struct {
+    u_short type;
+    u_short unk2;
+    union {
+        struct {
+            u_int actor : 8;
+            u_int unk1 : 8;
+            u_int part : 8;
+            u_int unk3 : 8;
+        } actor;
+        SVECTOR position;
+    } value;
+} actionEffectTarget;
+
+typedef struct {
     u_short effectId;
-    char unk2;
-    char unk3;
-    u_short unk4;
-    short unk6;
-    union {
-        char u8[2];
-        short s16;
-    } unk8;
-    union {
-        char u8[2];
-        short s16;
-    } unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    union {
-        char u8[2];
-        u_short u16;
-    } unk14;
-    union {
-        char u8[2];
-        u_short u16;
-    } unk16;
-    short unk18;
-    short unk1A;
-    int unk1C[45];
-    char unkD0[16];
-    SVECTOR unkE0;
-} func_800CF0E8_t;
+    u_char count;
+    u_char otherCount;
+    actionEffectTarget source;
+    actionEffectTarget targets[16];
+    u_char others[16];
+    SVECTOR position;
+} actionEffectRequest;
 
 typedef struct func_800D4910_t func_800D4910_t;
 
@@ -81,7 +72,8 @@ void func_800E5308(void);
 int vs_battle_getMainMenuLba(void);
 int vs_battle_loadEffPurge(void);
 
+extern actionEffectRequest D_800F5230;
+extern actionEffectRequest D_800F53C0;
 extern int D_800F5684;
 extern void* vs_battle_pfileBuf;
 extern _loadFileContext vs_battle_pFileLoadContext;
-extern func_800CF0E8_t D_800F5230;

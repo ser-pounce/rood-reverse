@@ -60,6 +60,18 @@ enum actionTypes {
 enum enemyClasses { enemyClassUndead = 2 };
 
 typedef struct {
+    u_short unk0 : 4;
+    u_short unk4 : 1;
+    u_short unk5 : 1;
+    u_short unk6 : 1;
+    u_short unk7 : 1;
+    u_short unk8 : 4;
+    u_short unk12 : 1;
+    u_short unk13 : 1;
+    u_short unk14 : 2;
+} vs_actionFlags_t;
+
+typedef struct {
     u_char id;
     u_char unk1;
     u_char unk2_0 : 1;
@@ -80,11 +92,7 @@ typedef struct {
     u_int flagsD_4 : 2;
     u_int flagsD_6 : 1;
     u_int unlocked : 1;
-    u_int flagsE_0 : 7;
-    u_int flagsE_3 : 1;
-    u_int flagsE_4 : 5;
-    u_int flagsE_13 : 1;
-    u_int flagsE_14 : 2;
+    vs_actionFlags_t flagsE;
     int unk10;
     struct {
         u_int effect : 7;
@@ -97,6 +105,14 @@ typedef struct {
     } hitParams[2];
     char name[24];
 } vs_action_t;
+
+typedef struct {
+    int unk0;
+    u_short unk4;
+    u_short unk6;
+    int unk8;
+    int unkC;
+} vs_main_statusEffectParams_t;
 
 typedef struct {
     int currentMusicSlot;
@@ -443,7 +459,7 @@ extern vs_main_CdFile vs_main_zndFiles[256];
  * 512 pairs of zone and map IDs.
  */
 extern char vs_main_locationZoneMapIds[];
-extern int vs_main_statusEffectParams[][4];
+extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
 extern char D_8004FCCC[];
 extern char D_8004FDD0[];
 extern u_short vs_main_artsPointsRequirements[][4];

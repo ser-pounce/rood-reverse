@@ -440,7 +440,7 @@ typedef struct {
 } vs_battle_actor4;
 
 typedef struct {
-    short id;
+    u_short id;
     char index : 4;
     char unk2_4 : 4;
     char unk3;
@@ -886,12 +886,6 @@ typedef struct {
 } vs_battle_charInitData;
 
 typedef struct {
-    int unk0;
-    short unk4;
-    short unk6;
-} func_8006CE70_t;
-
-typedef struct {
     SVECTOR unk0;
     u_char unk8;
     u_char unk9;
@@ -908,8 +902,8 @@ typedef struct {
 
 void func_80069C6C(int);
 void func_8006CDB8(int);
-void func_8006CA20(int, func_8006CE70_t*);
-void func_8006CB04(int, func_8006CE70_t*);
+void func_8006CA20(int, SVECTOR*);
+void func_8006CB04(int, SVECTOR*);
 void func_80069FC4(int, int);
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_main_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_main_inventoryGrip*);
@@ -937,9 +931,9 @@ void vs_battle_nop0(vs_battle_actor2*);
 void func_8006C480(int, int);
 void func_8006C4A4(int, int);
 int func_8006C84C(int);
-void func_8006CDD8(func_8006CE70_t*);
+void func_8006CDD8(SVECTOR*);
 void func_8006CE50(void);
-void func_8006CE70(func_8006CE70_t*);
+void func_8006CE70(SVECTOR*);
 int vs_battle_getCameraRoll(void);
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
 

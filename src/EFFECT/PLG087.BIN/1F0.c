@@ -1,6 +1,9 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800F99F0);
+#define VS_SURFACE_FUNCTION func_800F99F0
+#define VS_SURFACE_VERTICES D_800FF75C
+#define VS_SURFACE_TEXTURE_COLUMNS 4
+#include "src/EFFECT/surfaces.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FA588
 #define VS_CLOSED_RING_COLORS D_800FF9DC

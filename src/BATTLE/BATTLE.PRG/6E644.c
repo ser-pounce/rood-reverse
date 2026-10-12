@@ -140,6 +140,8 @@ typedef struct {
     u_int unk8_0 : 21;
     u_int unk8_21 : 1;
     u_int unk8_22 : 10;
+    char unkC[0x10];
+    SVECTOR unk1C;
 } func_800E1238_t;
 
 typedef struct func_800E78F4_t {
@@ -181,12 +183,16 @@ typedef struct func_800E78F4_t {
     u_char unk88;
     char unk89[5];
     u_short unk8E;
-    char unk90[8];
+    char unk90[2];
+    u_short unk92;
+    char unk94[4];
     u_short unk98;
     u_short unk9A;
     char unk9C[0x17];
     u_char unkB3;
-    char unkB4[0xA];
+    char unkB4[4];
+    short unkB8;
+    char unkBA[4];
     short unkBE;
     char unkC0[0x27];
     u_char unkE7;
@@ -330,6 +336,13 @@ typedef struct {
 typedef struct {
     D_800F58C8_t2 unk0[8];
 } D_800F58C8_t;
+
+typedef struct {
+    char unk0[2];
+    u_char unk2;
+    char unk3;
+    u_char unk4[8];
+} D_1F8003D0_t;
 
 typedef struct {
     func_800DEEA4_t unk0;
@@ -2187,7 +2200,90 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFBCC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E02B4);
+int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
+{
+    func_8008D2C0_t points[4];
+    int x;
+    int y;
+    int z;
+    int i;
+    int dx;
+    int dy;
+    int dz;
+    u_int radius;
+    u_int height;
+    vs_battle_actor* actor;
+
+    if ((((D_1F8003D0_t*)0x1F8003D0)->unk2 >> arg1) & 1) {
+        return ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1];
+    }
+
+    x = arg0->unk4C.vx + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dx);
+    y = arg0->unk4C.vy;
+    z = arg0->unk4C.vz + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
+
+    for (i = func_8008D2C0(points) - 1; i != -1; --i) {
+        dx = points[i].unk0 - x;
+        dy = points[i].unk1 - y;
+        dz = points[i].unk2 - z;
+
+        if (arg2
+            && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dx < 0 && dx > 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz > 0 && dz < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz < 0 && dz > 0))) {
+            continue;
+        }
+
+        radius = arg0->unk92 + 96;
+        height = (arg0->unkB8 + 32) >> 1;
+
+        if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
+            ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
+            ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = 1;
+            return 1;
+        }
+    }
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[actor->id];
+        func_800E1238_t* model = other->unk58;
+
+        if (other->unk88 == arg0->unk88 || other->unk88 == 0) {
+            continue;
+        }
+
+        dx = model->unk1C.vx - x;
+        dy = model->unk1C.vy - y;
+        dz = model->unk1C.vz - z;
+
+        if (arg2
+            && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dx < 0 && dx > 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz > 0 && dz < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz < 0 && dz > 0))) {
+            continue;
+        }
+
+        radius = other->unk92 + arg0->unk92 + other->unkB3;
+
+        if (other->unk88 == 0) {
+            height = -1;
+        } else {
+            height = (arg0->unkB8 + other->unkB8) >> 1;
+        }
+
+        if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
+            ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
+            ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = actor->id + 1;
+            return actor->id + 1;
+        }
+    }
+
+    ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
+    ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = 0;
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0678);
 

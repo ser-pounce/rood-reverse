@@ -440,7 +440,7 @@ typedef struct {
 } vs_battle_actor4;
 
 typedef struct {
-    short id;
+    u_short id;
     char index : 4;
     char unk2_4 : 4;
     char unk3;

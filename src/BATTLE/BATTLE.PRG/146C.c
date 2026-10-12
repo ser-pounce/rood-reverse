@@ -8931,10 +8931,10 @@ int func_8007F434(void)
 
 int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
 {
-    int* params = vs_main_statusEffectParams[debuff];
+    vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[debuff];
     vs_battle_actor2* temp_a1 = vs_battle_actors[*arg1]->unk3C;
 
-    if ((!(params[0] & temp_a1->unk944)) && (!(params[3] & temp_a1->statuses))) {
+    if ((!(params->unk0 & temp_a1->unk944)) && (!(params->unkC & temp_a1->statuses))) {
         return 0;
     }
     return 1;
@@ -9995,17 +9995,17 @@ int _setApplicableStatuses(int arg0, _hitEntity_t* entity)
 {
     int inflict = 0;
     int remove = 0;
-    int* params = vs_main_statusEffectParams[arg0];
+    vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
     vs_battle_actor2* temp_a2 = vs_battle_actors[entity->unk0.targetActor]->unk3C;
 
     if (temp_a2->unk957 != 128) {
 
         int temp_t0 = temp_a2->statuses;
 
-        if (!(temp_t0 & params[3])) {
-            remove = params[0] & ~temp_a2->unk944 & (~temp_t0 | params[2]);
+        if (!(temp_t0 & params->unkC)) {
+            remove = params->unk0 & ~temp_a2->unk944 & (~temp_t0 | params->unk8);
             entity->removeStatuses |= remove;
-            inflict = params[2] & temp_a2->statuses;
+            inflict = params->unk8 & temp_a2->statuses;
             entity->inflictStatuses |= inflict;
         }
     }
@@ -10016,10 +10016,10 @@ int _setApplicableStatuses(int arg0, _hitEntity_t* entity)
 int _setInflictedStatuses(int arg0, _hitEntity_t* entity)
 {
     int ret = 0;
-    int* params = vs_main_statusEffectParams[arg0];
+    vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
 
     if (vs_battle_actors[entity->unk0.targetActor]->unk3C->unk957 != 128) {
-        ret = params[0] & vs_battle_actors[entity->unk0.targetActor]->unk3C->statuses;
+        ret = params->unk0 & vs_battle_actors[entity->unk0.targetActor]->unk3C->statuses;
         entity->inflictStatuses |= ret;
     }
 
@@ -11792,7 +11792,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_a2 = temp_s3->limbs[i].hp;
                 break;
             }
-            if (!(temp_s3->statuses & vs_main_statusEffectParams[D_800E8200[i]][0])) {
+            if (!(temp_s3->statuses & vs_main_statusEffectParams[D_800E8200[i]].unk0)) {
                 var_v1 = var_a2 << 0x10;
                 var_v1 = 0x10000 < var_v1;
                 if (!var_v1) {

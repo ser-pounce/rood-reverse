@@ -126,7 +126,8 @@ typedef struct {
     u_int unk0_0 : 1;
     u_int unk0_1 : 5;
     u_int unk0_6 : 2;
-    u_int unk0_8 : 12;
+    u_int unk0_8 : 7;
+    u_int unk0_15 : 5;
     u_int unk0_20 : 7;
     u_int unk0_27 : 1;
     u_int unk0_28 : 2;
@@ -153,9 +154,15 @@ typedef struct func_800E78F4_t {
     u_char unk17;
     char unk18[3];
     u_char unk1B;
-    char unk1C[0xF];
+    char unk1C[4];
+    u_char unk20;
+    char unk21[6];
+    u_char unk27;
+    char unk28[3];
     u_char unk2B;
-    char unk2C[8];
+    char unk2C[4];
+    u_char unk30;
+    char unk31[3];
     u_char unk34;
     char unk35;
     u_char unk36;
@@ -186,7 +193,8 @@ typedef struct func_800E78F4_t {
     u_char unkFB;
     char unkFC[0x2E];
     u_char unk12A;
-    char unk12B[3];
+    char unk12B[2];
+    u_char unk12D;
     u_char unk12E;
     signed char unk12F;
     signed char unk130;
@@ -335,6 +343,8 @@ int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC19C(func_800E78F4_t*);
+void func_800DC210(func_800E78F4_t*, int);
 int func_800DC284(int, int, int, int);
 void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
@@ -343,6 +353,7 @@ void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
+void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
@@ -1480,7 +1491,88 @@ void func_800DCC94(
     arg1->unk0 = arg1->unk0 * 128 + arg1->unkC_19;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD000);
+void func_800DD000(func_800E78F4_t* arg0, func_800DEEA4_t* arg1)
+{
+    int id;
+    int source;
+    int action;
+    int i;
+    int skip;
+    vs_action_t* info;
+    func_800E78F4_t* other;
+
+    if (arg1 == NULL || arg1->unk4.unk40) {
+        return;
+    }
+
+    id = arg0->unk88;
+
+    if (id == 0) {
+        return;
+    }
+
+    info = &vs_main_actions[arg1->unk0];
+    skip = info->hitParams[0].prerequisiteFunction == 3
+        || info->hitParams[1].prerequisiteFunction == 3;
+
+    if (skip) {
+        return;
+    }
+
+    source = arg1->unk4.unk0;
+    action = arg1->unk0;
+    other = D_800F5878[source];
+
+    for (i = 0; i < arg1->unk4A; ++i) {
+        func_800DEB10_t* entry = &arg1->unk4C[i];
+
+        if (entry->unk40 || entry->unk0 != id || source == id) {
+            continue;
+        }
+
+        if (arg0->unk12D == 1) {
+            arg0->unk12D = 2;
+        }
+
+        if (func_800DC48C(action, arg0->unk88)) {
+            if (source == 0 && arg0->unk13 == 0 && arg0->unk27) {
+                func_800DC210(arg0, 0);
+            } else if (other->unk1A4[0].unk0_6 == 3) {
+                func_800DC19C(arg0);
+            }
+        }
+
+        arg0->unk1A4[source].unk0_15 = 28;
+
+        if (!func_800DC484(action, arg0->unk88)) {
+            continue;
+        }
+
+        if (D_800F5920 != NULL && source == 0 && entry->unk1C_0 != 2 && entry->unk4 > 0) {
+            D_800F5920->unkA = 0;
+        }
+
+        if (source == 0 && arg0->unk27) {
+            func_800DC19C(arg0);
+        }
+
+        if (arg0->unk30 && (arg0->unk20 == 0 || source == 0)) {
+            func_800DC784(arg0, source);
+        } else if (arg0->unk1A4[source].unk0_6 != 3) {
+            if (other->unk1A4[id].unk0_20) {
+                other->unk1A4[id].unk0_20 = 0;
+                other->unk1A4[id].unk0_6 = other->unk1A4[id].unk0_28;
+            } else {
+                arg0->unk1A4[source].unk0_20 = 127;
+                arg0->unk1A4[source].unk0_28 = arg0->unk1A4[source].unk0_6;
+
+                if (arg0->unk20) {
+                    func_800DC784(arg0, source);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DD344);
 

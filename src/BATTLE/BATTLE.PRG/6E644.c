@@ -322,6 +322,8 @@ int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
+void func_800DB5B0(func_800E78F4_t*);
+void func_800DB5FC(func_800E78F4_t*);
 int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
@@ -970,7 +972,22 @@ int func_800DA6A4(func_800E78F4_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA738);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAA6C);
+int func_800DAA6C(func_800E78F4_t* arg0)
+{
+    if (arg0->unkE) {
+        if (!func_800DB61C(arg0, 1)) {
+            func_800DB5B0(arg0);
+        }
+
+        return 1;
+    }
+
+    if (!func_800DA1D4(arg0)) {
+        func_800DB5FC(arg0);
+    }
+
+    return 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAAD8);
 

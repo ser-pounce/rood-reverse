@@ -140,7 +140,9 @@ typedef struct {
 typedef struct func_800E78F4_t {
     char unk0[7];
     u_char unk7;
-    char unk8[0xB];
+    char unk8[6];
+    u_char unkE;
+    char unkF[4];
     u_char unk13;
     char unk14[2];
     int unk16 : 8;
@@ -320,8 +322,10 @@ int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
+int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
@@ -946,7 +950,23 @@ int func_800DA5CC(func_800E78F4_t* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA6A4);
+int func_800DA6A4(func_800E78F4_t* arg0)
+{
+    int id;
+
+    if (arg0->unkE) {
+        return func_800DB61C(arg0, 1);
+    }
+
+    id = func_800DBB2C(arg0, NULL, 3);
+
+    if (id >= 0 && func_800DBB2C(arg0, NULL, 2) >= 0
+        && func_800DB370(arg0, id, 1024, 1)) {
+        return 1;
+    }
+
+    return func_800DA1D4(arg0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA738);
 

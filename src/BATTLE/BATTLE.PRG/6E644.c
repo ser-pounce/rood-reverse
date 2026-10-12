@@ -188,7 +188,9 @@ typedef struct func_800E78F4_t {
     u_char unkB3;
     char unkB4[0xA];
     short unkBE;
-    char unkC0[0x29];
+    char unkC0[0x27];
+    u_char unkE7;
+    u_char unkE8;
     u_char unkE9;
     char unkEA[0x11];
     u_char unkFB;
@@ -212,7 +214,9 @@ typedef struct func_800E78F4_t {
     int unk180;
     int unk184;
     short unk188;
-    char unk18A[0x16];
+    char unk18A[0x10];
+    u_char unk19A;
+    char unk19B[5];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
@@ -327,6 +331,14 @@ typedef struct {
     D_800F58C8_t2 unk0[8];
 } D_800F58C8_t;
 
+typedef struct {
+    func_800DEEA4_t unk0;
+    char unk4C[0x980];
+    func_800DCAA0_t unk9CC[3][16];
+    u_char unkD8C[16][256];
+    func_800DCAA0_t unk1D8C[16];
+} func_800DEC88_t;
+
 void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
@@ -337,6 +349,7 @@ void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
 void func_800D820C(int, int);
+void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
@@ -368,6 +381,7 @@ void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
 void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
+void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
@@ -387,6 +401,7 @@ int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
+void func_800E685C(int, int, int);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
 
@@ -412,6 +427,8 @@ extern D_800F58BC_t* D_800F58BC;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
+extern func_800DCAA0_t (*D_800F58EC)[16];
+extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
@@ -2026,7 +2043,66 @@ void func_800DEB10(func_800DEEA4_t* arg0)
     func_800E4C8C(entry);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DEC88);
+int func_800DEC88(void* arg0)
+{
+    func_800DEEA4_t* action = arg0;
+    func_800DEC88_t* heap;
+    vs_battle_actor* actor;
+
+    D_800F58BC->unk18 = 0;
+    heap = vs_main_allocHeapR(sizeof *heap);
+    D_800F5900 = &heap->unk0;
+    D_800F58EC = heap->unk9CC;
+    D_800F5904 = heap->unkD8C;
+    D_800F58F8 = heap->unk1D8C;
+
+    if (heap != NULL) {
+        func_800DEB10(action);
+
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            func_800E78F4_t* state = D_800F5878[actor->id];
+
+            state->unkE8 = 0;
+            state->unkE7 = 0;
+            state->unk19A = 0;
+            func_800E685C(state->unk88, actor->unk3C->unk31, actor->unk3C->unk33);
+            func_800DD604(state);
+
+            if (action != NULL && action->unk4.unk40 == 0
+                && action->unk4.unk0 == state->unk88) {
+                state->unk9A = 0;
+            }
+        }
+
+        func_800DC810(action);
+
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            D_800F5878[actor->id]->unk1B = actor->unk3C->currentHP == 0;
+        }
+
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            func_800E78F4_t* state = D_800F5878[actor->id];
+
+            func_800DE3E4(state);
+
+            if (state->unk13) {
+                if (actor->unk8 & 0x20) {
+                    func_800D821C(state);
+                } else {
+                    func_800D820C(state->unk88, 128);
+                }
+            }
+        }
+
+        D_800F58BC->unk18 = 0;
+
+        if (D_800F5900 != NULL) {
+            vs_main_freeHeapR(D_800F5900);
+        }
+    }
+
+    return 0;
+}
 
 void func_800DEEA4(func_800DEEA4_t* arg0)
 {

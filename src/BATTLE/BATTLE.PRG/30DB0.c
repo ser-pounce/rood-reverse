@@ -74,11 +74,17 @@ void func_800E68A0(D_800F45E0_t*);
 extern u_short _shpLbaOffsets[];
 extern u_char _shpFileSectorSizes[];
 extern u_char D_800E8960[];
+extern u_short D_800E8A60[];
+extern u_char D_800E8B40[];
 extern u_short _etmLbaOffsets[];
 extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
 extern u_short D_800E8D00[];
 extern u_char D_800E8E80[];
+extern u_short D_800E8E8E[];
+extern u_char D_800E8EA3[];
+extern u_short D_800E8EA8[][4];
+extern u_char D_800E8EFC[][4];
 extern u_char _loadShpState;
 extern u_char D_800E8F29;
 extern u_char D_800E8F2C;
@@ -111,6 +117,10 @@ extern u_char D_800F22B8;
 extern int D_800F22BC;
 extern int D_800F22C0;
 extern int D_800F22C4;
+extern void* D_800F22C8;
+extern int D_800F22D0;
+extern vs_main_CdFile D_800F22D8;
+extern vs_main_CdQueueSlot* D_800F22E0;
 extern u_char D_800F244F[];
 extern u_char D_800F2450[];
 extern VECTOR D_800F4438;
@@ -138,7 +148,7 @@ int vs_battle_getEmptyObjectDataSlot(void)
     return -1;
 }
 
-int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
+inline int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
 {
     int i;
     int slot;
@@ -1431,7 +1441,7 @@ setupPalettes:
     return 0;
 }
 
-int func_8009BD90(vs_battle_objectData* arg0)
+inline int func_8009BD90(vs_battle_objectData* arg0)
 {
     D_800F4538_t* temp_v1;
     int var_a2;
@@ -1451,8 +1461,174 @@ int func_8009BD90(vs_battle_objectData* arg0)
     return 0;
 }
 
-// https://decomp.me/scratch/wJjuU
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/30DB0", func_8009BE5C);
+int func_8009BE5C(vs_battle_objectData* object)
+{
+    vs_battle_objectData queued;
+    D_800F4538_t* actor = D_800F4538[object->index];
+    u_int sectors;
+    shpHeader_t* header;
+    int result;
+    int model;
+
+    switch (_loadShpState) {
+    case 0:
+        switch (object->actorId) {
+        case 0:
+            if (object->index != 0 && func_8009BD90(object)) {
+                D_800F22D0 = 0;
+                goto parse;
+            }
+
+            D_800F22D0 = 1;
+            break;
+
+        case 1:
+        case 2:
+            D_800F22D0 = 0;
+            break;
+
+        default:
+            D_800F22D0 = 1;
+            break;
+        }
+        // Fallthrough
+
+    default:
+        switch (object->actorId) {
+        case 0:
+            header = (shpHeader_t*)actor->texMapOverlays;
+            sectors = header->btSeqSizes[object->modelId] >> 11;
+
+            if (!sectors) {
+                return 0;
+            }
+
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = header->btSeqLbas[object->modelId];
+
+            if (object->index == 0 && (model = object->modelId) != 0) {
+                queued.dataType = 7;
+                queued.index = 0;
+                queued.actorId = 3;
+                queued.material = model;
+                vs_battle_populateDataSlot(&queued);
+            }
+            break;
+
+        case 1:
+        case 2:
+            sectors = D_800E8B40[object->modelId];
+
+            if (!sectors) {
+                return -2;
+            }
+
+            D_800F22C8 = vs_main_allocHeap(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = D_800E8A60[object->modelId] + 0x19797;
+            break;
+
+        case 3:
+            sectors = D_800E8EA3[object->material];
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = D_800E8E8E[object->material] + 0x18043;
+            break;
+
+        case 4:
+        special:
+            sectors = D_800E8EFC[object->material][object->modelId];
+
+            if (!sectors) {
+                sectors = D_800E8EFC[2][0];
+                object->material = 2;
+                object->modelId = 0;
+            }
+
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = D_800E8EA8[object->material][object->modelId] + 0x1943E;
+            break;
+
+        case 5:
+            if (object->modelId == 0) {
+                return 0;
+            }
+
+            --object->modelId;
+
+            if (actor->unk6E6 == 2) {
+                goto special;
+            }
+
+            sectors = actor->spSeqSizes[object->modelId] >> 11;
+
+            if (!sectors) {
+                return -2;
+            }
+
+            D_800F22D8.lba = actor->spSeqLbas[object->modelId];
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+            break;
+        }
+
+        D_800F22D8.size = sectors << 11;
+        _loadShpState = 1;
+        D_800F22E0 = vs_main_allocateCdQueueSlot(&D_800F22D8);
+        vs_main_cdEnqueue(D_800F22E0, (void*)object->dataAddr);
+        // Fallthrough
+
+    case 1:
+        if (D_800F22E0->state != 4) {
+            return -1;
+        }
+
+        vs_main_freeCdQueueSlot(D_800F22E0);
+        _loadShpState = 2;
+        return -1;
+
+    case 2:
+    parse:
+        result = _loadSeq(object);
+
+        if (result == -1) {
+            return -1;
+        }
+        if (D_800F22D0) {
+            D_800F22D0 = 0;
+            vs_main_freeHeapR(D_800F22C8);
+        }
+
+        _loadShpState = 0;
+        return result;
+    }
+}
 
 void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
 {

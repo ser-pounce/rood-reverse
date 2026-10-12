@@ -227,6 +227,20 @@ typedef struct {
     u_char unk7;
 } D_800F4538_unk61C;
 
+// The 0xE8-byte SHP header that _parseShp copies to an actor's texMapOverlays
+typedef struct {
+    texMapOverlay_t texMapOverlays[8];
+    D_800F4538_unk614 unk20[2];
+    D_800F4538_unk61C unk28[4];
+    u_char unk48[0x28];
+    u_int btSeqLbas[12];
+    u_short btSeqSizes[12];
+    u_int spSeqLbas[4];
+    int unkC8[4];
+    u_short spSeqSizes[4];
+    int unkE0[2];
+} shpHeader_t;
+
 typedef struct {
     u_char x;
     u_char y;
@@ -325,7 +339,9 @@ typedef struct {
     u_int btSeqLbas[12];
     u_short chainAttackAnimationIds[12];
     u_int spSeqLbas[4];
-    int unk6BC[8];
+    int unk6BC[4];
+    u_short spSeqSizes[4];
+    int unk6D4[2];
     int unk6DC;
     u_char unk6E0;
     u_char unk6E1;

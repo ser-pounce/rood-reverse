@@ -31,7 +31,7 @@ typedef struct {
     vs_battle_objectData_flags unkC;
     u_char actorId;
     char unk11;
-    char material;
+    u_char material;
     u_char variant;
 } vs_battle_objectData;
 

@@ -508,7 +508,7 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
                 count = flags & 0x1F;
 
                 if (count == 0x1F) {
-                    nextFrame += 0x20;
+                    nextFrame += 32;
                     nextFrame += data[1];
                     data += 2;
                 } else {

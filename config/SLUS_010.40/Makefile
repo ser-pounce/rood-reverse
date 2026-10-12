@@ -33,6 +33,12 @@ $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1FLAGS += -mmips-as
 $(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: PREPROCESS.s = $(PSQ_PATCH) | $(PYTHON) tools/etc/aspsx_divu.py
 
+# Isolate the callback initializer: its shared interior-field base and return delay
+# slot match CDK 2.7.2 in MIPS-as mode; the rest of PADMAIN keeps its compiler.
+$(BUILD)/src/SLUS_010.40/libpad/PADMAIN_VSYNC.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libpad/PADMAIN_VSYNC.c.o: CC1FLAGS += -mmips-as
+$(patsubst %,$(BUILD)/src/SLUS_010.40/libpad/%.c.o,PADMAIN PADMAIN_VSYNC PADMAIN_2): ASFLAGS += -no-pad-sections
+
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

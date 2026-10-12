@@ -164,6 +164,10 @@ segments:
       - [0x1BF44, c, libgpu/P41]
       - [0x1BFE4, c, libpad/PADENTRY]
       - [0x1C4A4, c, libpad/PADMAIN]
+      - [0x1C5BC, c, libpad/PADMAIN_VSYNC]
+      - [0x1C5E8, c, libpad/PADMAIN_2]
+      # Original PADMAIN object ends with 12 zero bytes of assembler padding.
+      - [0x1D268, pad]
       - [0x1D274, c, libapi/L02]
       - [0x1D284, c, libapi/L03]
       - [0x1D294, c, libpad/PADCMD]

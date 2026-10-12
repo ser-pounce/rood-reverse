@@ -4237,11 +4237,11 @@ void func_800CD3E4(int index)
             k = n >> 8;
             n &= 0xFF;
 
-            if (n >= 0x80) {
-                n -= 0x100;
+            if (n >= 128) {
+                n -= 256;
             }
-            if (k >= 0x80) {
-                k -= 0x100;
+            if (k >= 128) {
+                k -= 256;
             }
 
             *out++ = x + (((n + (v & 0xFF)) * w) >> 8);

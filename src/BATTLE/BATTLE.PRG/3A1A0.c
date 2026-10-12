@@ -1,5 +1,6 @@
 #include "common.h"
 #include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "../../SLUS_010.40/main.h"
 
@@ -21,27 +22,44 @@ typedef struct {
     short unk6;
 } func_800A6660_t;
 
-u_int func_800A29A0(void*);
+typedef struct {
+    int words[2];
+} func_800A6798_t;
+
 u_int func_800A9C54(u_char, void*, int);
 void func_800AEAE8(void*);
 void func_800AECA0(MATRIX*);
 void func_800B28A8(void*, MATRIX*, int);
+void func_800B64A8(int, int, int);
+int func_8008C49C(int, int);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
+int func_800A3BC4(int, int);
+int func_800A3DB4(int, int, int);
 short func_8008DC7C(int, int);
 short func_8008DA24(int, int);
 u_int* func_800A8D64(SVECTOR*, int);
 int func_800B13CC(int, int, int);
+int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 void func_800AA850(int, short, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
+void func_800ACF54(D_800F4538_t*);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800A70DC(D_800F4538_t*, int);
+int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
+void func_800E4BD8(int);
+void func_800E4BE0(int);
+void func_800E4C28(int, int);
+void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
 int func_8009E180(D_800F4538_t*, SVECTOR*);
 
+extern int D_800E90A8;
+extern int D_800F49E8;
 extern u_int* D_800F49F0;
 extern u_short D_800F49F4;
 extern u_char D_800F49F8;
@@ -50,7 +68,78 @@ extern SVECTOR D_800F4B08;
 extern char D_800F4B18;
 extern u_char D_800E9278[];
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A29A0);
+static inline int vs_battleRelativeSampleHeight(
+    D_1F8003BC_t* samples, int sector, int offset, int y)
+{
+    return samples->unk1C[(sector + offset) & 7] - y;
+}
+
+void func_800A29A0(D_800F4538_t* arg0)
+{
+    int busy;
+
+    switch (arg0->unk0.unkB_0) {
+    case 1:
+        arg0->unk0.unkA_5 = 0;
+        func_800A0204(arg0->unk0.unkF, 0x13, 0, 8);
+        func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
+        arg0->unk0.unk54.cd = 0;
+        arg0->unk0.unkB_0 = 2;
+        arg0->unk0.unk9_0 = 6;
+        return;
+
+    case 2:
+        if (arg0->unk0.unk9_0 < 8) {
+            return;
+        }
+
+        if (arg0->unk0.unk13 == 0xFC) {
+            busy = D_800F4538[arg0->unk0.unk12]->unk0.unk9_0 < 9;
+        } else if (arg0->unkC54.unk548_17) {
+            busy = arg0->unk5CC;
+        } else {
+            return;
+        }
+
+        if (busy == 0) {
+            arg0->unk0.unk9_0 = 9;
+            func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC, 0);
+            arg0->unk0.facing = arg0->unk5EC.pad;
+            func_800A0204(arg0->unk0.unkF, 0x15, 0, 8);
+            func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
+            arg0->unk0.unkB_0 = 3;
+        }
+
+        return;
+
+    case 3:
+        if (arg0->unk0.unk9_0) {
+            return;
+        }
+
+        if (arg0->unk0.unk13 == 0xFC ? D_800F4538[arg0->unk0.unk12]->unk0.unk9_0
+                                     : arg0->unk5CC) {
+            return;
+        }
+
+        func_800A0204(arg0->unk0.unkF, 1, 0, 8);
+        // fallthrough
+
+    case 4:
+        func_800ACF54(arg0);
+        func_800E4C28(arg0->unk0.currentTileX, arg0->unk0.currentTileZ);
+        // fallthrough
+
+    case 5:
+        if (arg0->unk17FD >= 2 && D_800F4538[arg0->unk17FD]->unk0.unkB_0) {
+            arg0->unk0.unkB_0 = 5;
+            return;
+        }
+
+        arg0->unk0.unkB_0 = 0;
+        return;
+    }
+}
 
 void func_800A2C48(D_800F4538_t* arg0)
 {
@@ -274,7 +363,135 @@ int func_800A3760(int arg0, int arg1, int arg2)
     return best;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A38E0);
+int func_800A38E0(int actorId)
+{
+    D_800F4538_t* actor = D_800F4538[actorId];
+    D_800F45E0_t* object;
+    int direction;
+    int x;
+    int z;
+    int farX;
+    int farZ;
+    int objectId;
+    int found;
+    int oldX;
+    int oldZ;
+
+    if (actor == NULL) {
+        return -1;
+    }
+
+    if (actor->unk5AC_0 != 0) {
+        return -1;
+    }
+
+    if (actor->unk0.unkA_0 != 0) {
+        return -1;
+    }
+
+    if (actor->unk0.unkA_3 != 0) {
+        return -1;
+    }
+
+    direction = actor->unk0.facing + ONE / 8;
+    direction &= 0xFFF;
+    direction /= ONE / 4;
+    D_800F49E8 = direction;
+    oldX = farX = x = actor->unk0.currentTileX;
+    oldZ = farZ = z = actor->unk0.currentTileZ;
+    found = direction < 2 ? -1 : 1;
+
+    if (direction & 1) {
+        x += found;
+        farX = oldX + found * 2;
+    } else {
+        z += found;
+        farZ = oldZ + found * 2;
+    }
+
+    if (x < 0 || z < 0) {
+        return -1;
+    }
+
+    if (actor->unk5AC_3) {
+        x = x * 128 + 64;
+        objectId = actor->unk0.unk13;
+        object = D_800F45E0[objectId];
+        z = z * 128 + 64;
+
+        if (object->unk1A != 0) {
+            return -1;
+        }
+
+        if (!func_800A3DB4(x, z, actor->unk0.position.vy - 128)) {
+            return -1;
+        }
+
+        direction = actor->unk0.position.vy - 384;
+
+        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
+            return -1;
+        }
+
+        if (direction < func_800A3BC4(x, z)) {
+            return -1;
+        }
+
+        return objectId;
+    }
+
+    found = func_800A91DC(x, z, 0);
+
+    if (found == 0) {
+        return -1;
+    }
+
+    object = D_800F45E0[found];
+    objectId = found;
+
+    if (object->unk6C[8].unk0_4 == 1) {
+        return -1;
+    }
+
+    if (object->unk1A != 0) {
+        return -1;
+    }
+
+    x = x * 128 + 64;
+    z = z * 128 + 64;
+    farX = farX * 128 + 64;
+    farZ = farZ * 128 + 64;
+
+    if (object->unk1E < actor->unk0.position.vy - 128) {
+        return -1;
+    }
+
+    if (actor->unk0.position.vy + 64 < object->unk1E) {
+        return -1;
+    }
+
+    if (object->unk6C[8].actorId < 4) {
+        if (!func_800A3DB4(farX, farZ, object->unk1E)) {
+            return -1;
+        }
+    } else {
+        direction = actor->unk0.position.vy - 384;
+
+        if (direction < func_800A3BC4(actor->unk0.position.vx, actor->unk0.position.vz)) {
+            return -1;
+        }
+
+        if (direction < func_800A3BC4(x, z)) {
+            return -1;
+        }
+    }
+
+    if (func_800A3C00(object, 1) == 0) {
+        return objectId;
+    }
+
+    return -1;
+}
 
 int func_800A3BC4(int arg0, int arg1)
 {
@@ -332,15 +549,147 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
     return NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3DB4);
+int func_800A3DB4(int x, int z, int minimumHeight)
+{
+    SVECTOR origin;
+    int height;
+
+    *(int*)&origin.vx = 0;
+    *(int*)&origin.vz = 0;
+    height = func_800A6EE8(&origin, x, z, 1);
+
+    if (height < minimumHeight) {
+        return 0;
+    }
+
+    if ((*D_800F49F0 >> 20) & 1) {
+        return 0;
+    }
+
+    return func_800A3C34(x / 128, z / 128, height, 1) == NULL;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3E6C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A41D0);
+void func_800A41D0(D_800F4538_t* actor, int mode)
+{
+    D_800F45E0_t* object = D_800F45E0[D_800E90A8];
+    int direction;
+    int step;
+    int facing;
+
+    if (mode == 2) {
+        switch (object->unk6C[8].actorId) {
+        case 0:
+        case 1:
+            object->unk1A = 0xF9;
+            break;
+
+        case 2:
+            object->unk1A = 0xFF;
+            break;
+
+        case 3:
+            object->unk1A = 0xFE;
+            break;
+        }
+
+        object->unk6C[8].unk4 = 0;
+        func_800E68A0(object);
+        return;
+    }
+
+    if (mode == 1) {
+        SVECTOR points[2];
+        int x = actor->unk0.currentTileX;
+        int z = actor->unk0.currentTileZ;
+        step = D_800F49E8 < 2 ? -1 : 1;
+
+        if (D_800F49E8 & 1) {
+            x += step;
+        } else {
+            z += step;
+        }
+
+        step = D_800F49E8;
+        object->unk5C = x;
+        object->unk5E = z;
+        object->unk1C = x * 128 + 64;
+        object->unk20 = z * 128 + 64;
+        object->unk26 = (object->unk26 + step * (ONE / 4)) & 0xFFF;
+        func_800A190C(object->unk12, 0xF0, &points[0], 1);
+        func_800A190C(object->unk12, 0xF1, &points[1], 1);
+        object->unk1E = (points[0].vy + points[1].vy) / 2 + 60;
+        object->unk1A = 0xFC;
+        object->unk36 = 24;
+        object->unk12 = 0xFF;
+        actor->unk5AC_3 = 0;
+        return;
+    }
+
+    if (object == NULL || object->unk9_0) {
+        func_800A0204(actor->unk0.unkF, 1, 0, 8);
+        return;
+    }
+
+    func_800E4C28(object->unk5C, object->unk5E);
+    func_800E68A0(object);
+
+    if (object->unk6C[8].unk0_4 == 2) {
+        func_800E68A0(object);
+    }
+
+    step = D_800F49E8 < 2 ? 128 : -128;
+
+    if (D_800F49E8 & 1) {
+        object->unk34 += step;
+    } else {
+        object->unk38 += step;
+    }
+
+    facing = (object->unk26 + (4 - D_800F49E8) * (ONE / 4)) & 0xFFF;
+    direction = facing + ONE / 8;
+    direction &= 0xFFF;
+    object->unk26 = facing;
+    direction /= ONE / 4;
+    object->unk26 = direction * (ONE / 4);
+    object->unk5C = -1;
+    object->unk1A = 8;
+    object->unk12 = actor->unk0.unkF;
+    actor->unk0.unk13 = D_800E90A8;
+    actor->unk5AC_3 = 1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A46A4);
+int func_800A46A4(D_800F4538_t* actor)
+{
+    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    int saved = actor->unk0.unkC_0;
+    int radius = actor->unk63C;
+    int direction;
+
+    actor->unk0.unkC_0 = 0;
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
+    func_800A70DC(actor, rsin(ONE / 8) * radius / ONE);
+    actor->unk0.unkC_0 = saved;
+    actor->unk0.unkA_3 = 2;
+    direction = actor->unk1800 >> 9;
+    scratch->blocked[direction] = 0;
+    scratch->blocked[direction + 1] = 0;
+    --direction;
+    direction &= 7;
+    scratch->blocked[direction] = 0;
+
+    for (direction = 0; direction < 8; ++direction) {
+        if (scratch->blocked[direction]) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 int func_800A47C4(void)
 {
@@ -368,9 +717,48 @@ void func_800A4828(int arg0, MATRIX* arg1)
     temp_s1->unk0.visible = visible;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A48CC);
+void func_800A48CC(int index, int direction, int distance)
+{
+    D_800F4538_t* actor = D_800F4538[index];
 
-func_8008D2C0_t* func_800A4A24(int arg0)
+    if (actor->unk5AC_0 != 0) {
+        return;
+    }
+
+    if (actor->unk0.unkA_3 != 0) {
+        return;
+    }
+
+    if (actor->unk0.unkA_0 != 0) {
+        func_800B64A8(index, direction, distance);
+        return;
+    }
+
+    if (distance == 0) {
+        actor->unk5B0_2 = 0;
+        actor->unk5B0_0 = 0;
+        func_800A0204(index, 0x2F, 0, 4);
+        actor->unk0.unk11 = 6;
+        actor->unk0.unkA_0 = 2;
+    } else {
+        actor->unk5B0_2 = 0;
+        actor->unk5B0_0 = 1;
+
+        if (distance / ONE >= actor->unk5B9) {
+            actor->unk5B0_0 = 2;
+            actor->unk5B0_2 = 1;
+        }
+
+        actor->unk0.unk11 = 0;
+        actor->unk0.unkA_0 = 1;
+    }
+
+    actor->unk1848.unk0 = 7;
+    actor->unk1848.unk4 = direction;
+    actor->unk1848.unk8 = distance;
+}
+
+inline func_8008D2C0_t* func_800A4A24(int arg0)
 {
     func_8008D2C0_t sp10[4];
     int temp_v0;
@@ -388,7 +776,80 @@ func_8008D2C0_t* func_800A4A24(int arg0)
     return NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4A88);
+void func_800A4A88(D_800F4538_t* actor, int mode)
+{
+    func_8008D2C0_t* contact;
+    int contactId;
+    int current;
+    int previous;
+
+    switch (mode) {
+    case 0:
+        if (actor->unk0.unkC_0 == 0) {
+            return;
+        }
+
+        contact = func_800A4A24(actor->unk0.unkC_0);
+        actor->unk6EE = contact->unk0 - actor->unk17EC.vx;
+        actor->unk6EF = contact->unk4 - actor->unk17EC.vz;
+        actor->unk0.position.vx += actor->unk6EE;
+        actor->unk0.position.vz += actor->unk6EF;
+        actor->unk0.position.vy += contact->unk2 - actor->unk17EC.vy;
+        break;
+
+    case 1:
+        if (actor->unk0.unkA_0 == 2 || actor->unk0.unkA_0 == 3) {
+            return;
+        }
+
+        if (actor->unk0.unkC_4 != (contactId = actor->unk0.unkC_0)) {
+            if (actor->unk0.unkF == 0 && contactId != 0
+                && contactId != actor->unk17EC.pad) {
+                func_800E4BE0(contactId);
+            }
+
+            actor->unk6EE = 0;
+            actor->unk6EF = 0;
+        }
+
+        if (actor->unk0.unkC_0 == 0) {
+            return;
+        }
+
+        contact = func_800A4A24(actor->unk0.unkC_0);
+        break;
+
+    case 2:
+        current = actor->unk0.unkC_0;
+        previous = actor->unk0.unkC_4;
+
+        if (current != previous) {
+            if (actor->unk0.unkC_0 != 0) {
+                actor->unk17EC.pad = current;
+                func_8008C49C(actor->unk0.unkC_0 - 2, actor->unk0.unkF);
+            } else {
+                func_8008C49C(previous - 2, -1);
+
+                if (!actor->unk0.unkA_0) {
+                    actor->unk6EE = 0;
+                    actor->unk6EF = 0;
+                }
+            }
+        }
+
+        if (actor->unk0.unkF == 0 && !actor->unk0.unkA_0
+            && actor->unk0.unkC_0 != actor->unk17EC.pad) {
+            func_800E4BD8(actor->unk17EC.pad);
+            actor->unk17EC.pad = 0;
+        }
+
+        actor->unk0.unk5D = actor->unk0.unkC_0;
+        actor->unk0.unkC_4 = actor->unk0.unkC_0;
+        return;
+    }
+
+    setVector(&actor->unk17EC, contact->unk0, contact->unk2, contact->unk4);
+}
 
 void func_800A4D8C(void)
 {
@@ -491,7 +952,54 @@ void func_800A6660(D_800F4538_t* arg0, int arg1, func_800A6660_t* arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6798);
+int func_800A6798(D_800F4538_t* actor, SVECTOR* offset, SVECTOR* motion)
+{
+    func_800A6798_t saved;
+    int height;
+    int valid = 0;
+
+    if (actor->unk6EC <= D_800F4B08.vy) {
+        return 0;
+    }
+
+    offset->vx = 0;
+    offset->vz = 0;
+    offset->vy += 236;
+    saved = *(func_800A6798_t*)&actor->unk0.position;
+    addVector(&actor->unk0.position, offset);
+    actor->unk0.unkA_3 = 2;
+
+    if (func_800A76BC(actor, motion, &height, 0) != 3 && !actor->unk5AC_13
+        && height < 5) {
+        height = rsin(ONE / 8);
+        height = height * actor->unk63C / ONE;
+
+        if ((D_800F49F9 >> 1) & 1) {
+            offset->vz = height;
+        } else {
+            offset->vx = height;
+        }
+
+        height = func_800A6EE8(&D_800F4B08, offset->vx, offset->vz, 1);
+        height -= D_800F4B08.vy;
+
+        if (height > -64) {
+            height = func_800A6EE8(&D_800F4B08, -offset->vx, -offset->vz, 1);
+            height -= D_800F4B08.vy;
+        }
+
+        if (height > -64) {
+            valid = 1;
+        }
+    }
+
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
+    offset->vx = 0;
+    offset->vz = 0;
+    *(func_800A6798_t*)&actor->unk0.position = saved;
+    return valid;
+}
 
 int func_800A69B4(D_800F4538_t* arg0)
 {
@@ -599,9 +1107,192 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
     return -3000;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A70DC);
+void func_800A70DC(D_800F4538_t* actor, int diagonal)
+{
+    D_1F8003BC_t* samples = (D_1F8003BC_t*)0x1F8003BC;
+    int i;
+    int j;
+    int delta;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A7524);
+    actor->unk5AC_12 = 0;
+
+    for (i = 0; i < 8; ++i) {
+        samples->blocked[i] = 0;
+    }
+
+    if (actor->unk5AC_9 || actor->unk5AC_10) {
+        for (i = 0; i < 8; ++i) {
+            samples->unk1C[i] = 0;
+        }
+
+        return;
+    }
+
+    if (actor->unk0.unkA_3 == 2) {
+        for (i = 0; i < 8; ++i) {
+            samples->unk1C[i] = actor->unk0.position.vy;
+        }
+
+        return;
+    }
+
+    i = actor->unk63C;
+    samples->centerAttribute = (*func_800A8D64(&actor->unk0.position, 0) >> 5) & 1;
+    samples->unk1C[0] = func_800A6EE8(&actor->unk0.position, 0, -i, 0);
+    samples->attributes[0] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[6] = func_800A6EE8(&actor->unk0.position, i, 0, 0);
+    samples->attributes[6] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[2] = func_800A6EE8(&actor->unk0.position, -i, 0, 0);
+    samples->attributes[2] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[7] = func_800A6EE8(&actor->unk0.position, diagonal, -diagonal, 0);
+    samples->attributes[7] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[1] = func_800A6EE8(&actor->unk0.position, -diagonal, -diagonal, 0);
+    samples->attributes[1] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[3] = func_800A6EE8(&actor->unk0.position, -diagonal, diagonal, 0);
+    samples->attributes[3] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[5] = func_800A6EE8(&actor->unk0.position, diagonal, diagonal, 0);
+    samples->attributes[5] = (*D_800F49F0 >> 5) & 1;
+    samples->unk1C[4] = func_800A6EE8(&actor->unk0.position, 0, i, 0);
+    samples->attributes[4] = (*D_800F49F0 >> 5) & 1;
+
+    if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0) {
+        j = actor->unk0.position.vy - 32;
+    } else if (actor->unk1848.unk8 == 0) {
+        j = actor->unk0.position.vy - 64;
+    } else {
+        j = actor->unk0.position.vy - 96;
+    }
+
+    for (i = 0; i < 8; ++i) {
+        if (samples->unk1C[i] > actor->unk0.position.vy) {
+            samples->unk1C[i] = actor->unk0.position.vy;
+        }
+
+        if ((!samples->attributes[i] || !samples->centerAttribute)
+            && j >= samples->unk1C[i]) {
+            samples->blocked[i] = 1;
+            actor->unk5AC_12 = 1;
+        }
+    }
+
+    if (!actor->unk0.unkA_0) {
+        return;
+    }
+
+    i = actor->unk1848.unk4 + ONE / 16;
+    i /= ONE / 8;
+
+    for (j = 0; j < 3; ++j) {
+        delta = vs_battleRelativeSampleHeight(samples, i, j - 1, actor->unk0.position.vy);
+
+        if (delta < -255) {
+            return;
+        }
+
+        if (delta >= -192) {
+            return;
+        }
+    }
+
+    for (j = 0; j < 5; ++j) {
+        delta = vs_battleRelativeSampleHeight(samples, i, j + 2, actor->unk0.position.vy);
+
+        if (delta < -192) {
+            return;
+        }
+    }
+
+    samples->unk1C[i] = actor->unk0.position.vy;
+    actor->unk5AC_12 = 0;
+}
+
+void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
+{
+    D_1F8003BC_t* scratch;
+    int x;
+    int z;
+
+    if (!actor->unk5AC_12) {
+        return;
+    }
+
+    scratch = (D_1F8003BC_t*)0x1F8003BC;
+    x = 0;
+    z = (scratch->blocked[0] != 0) * 16;
+
+    if (scratch->blocked[1]) {
+        x = 8;
+        z += 8;
+    }
+
+    if (scratch->blocked[2]) {
+        x += 16;
+    }
+
+    if (scratch->blocked[3]) {
+        x += 8;
+        z -= 8;
+    }
+
+    if (scratch->blocked[4]) {
+        z -= 16;
+    }
+
+    if (scratch->blocked[5]) {
+        x -= 8;
+        z -= 8;
+    }
+
+    if (scratch->blocked[6]) {
+        x -= 16;
+    }
+
+    if (scratch->blocked[7]) {
+        x -= 8;
+        z += 8;
+    }
+
+    if (x > 16) {
+        x = 16;
+    }
+
+    if (x < -16) {
+        x = -16;
+    }
+
+    if (z > 16) {
+        z = 16;
+    }
+
+    if (z < -16) {
+        z = -16;
+    }
+
+    if (x != 0) {
+        if (x < 0) {
+            if (motion->vx > 0) {
+                motion->vx = 0;
+            }
+        } else if (motion->vx < 0) {
+            motion->vx = 0;
+        }
+    }
+
+    if (z != 0) {
+        if (z < 0) {
+            if (motion->vz > 0) {
+                motion->vz = 0;
+            }
+        } else if (motion->vz < 0) {
+            motion->vz = 0;
+        }
+    }
+
+    motion->vx += x;
+    motion->vz += z;
+    actor->unk6EE = 0;
+    actor->unk6EF = 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
 

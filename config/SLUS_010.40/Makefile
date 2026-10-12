@@ -26,6 +26,13 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,2MBYTE.OBJ libcd/SYS overlay 25AC ma
 $(BUILD)/src/SLUS_010.40/lib%.c.o: PREPROCESS.s = $(PSQ_PATCH)
 $(BUILD)/src/SLUS_010.40/libsn/SNMAIN.c.o: PREPROCESS.s = $(MAS) $(MASFLAGS)
 
+# libspu SPU was built with the CDK 2.7.2 cc1 (MIPS-as syntax); recipe established in
+# noprompt/rood-reverse#186. ASPSX expanded unsigned divides with the divide first and an empty
+# delay slot (_spu_FsetRXXa); GNU as would move the divide into the zero check's delay slot.
+$(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: CC1FLAGS += -mmips-as
+$(BUILD)/src/SLUS_010.40/libspu/SPU.c.o: PREPROCESS.s = $(PSQ_PATCH) | $(PYTHON) tools/etc/aspsx_divu.py
+
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
 	config/ENDING/ENDING.PRG/symbol_addrs.txt

@@ -584,9 +584,11 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         case 1:
             object->unk1A = 0xF9;
             break;
+
         case 2:
             object->unk1A = 0xFF;
             break;
+
         case 3:
             object->unk1A = 0xFE;
             break;

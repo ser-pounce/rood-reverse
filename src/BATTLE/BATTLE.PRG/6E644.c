@@ -750,7 +750,15 @@ void func_800D8260(func_800E78F4_t* arg0, int arg1, int arg2)
     arg0->unk12A = arg2;
 }
 
-INCLUDE_ASM("src/BATTLE/BATTLE.PRG/hasm", func_800D826C);
+// hasm: func_800D820C and func_800D836C branch into the shared return.
+__asm__("glabel func_800D826C;"
+        "lhu     $v0, 0x8E($a0);"
+        "nop;"
+        "slt     $v0, 32;"
+        ".L800D8278:;"
+        "j       $ra;"
+        "xor     $v0, 1;"
+        "endlabel func_800D826C;");
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8280);
 

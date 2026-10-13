@@ -750,7 +750,12 @@ void func_800D8260(func_800E78F4_t* arg0, int arg1, int arg2)
     arg0->unk12A = arg2;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D826C);
+int func_800D826C(func_800E78F4_t* state)
+{
+    int count = state->unk8E;
+
+    return count >= 32;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8280);
 

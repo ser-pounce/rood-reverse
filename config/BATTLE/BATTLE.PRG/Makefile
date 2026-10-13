@@ -4,6 +4,10 @@ buildDir   := $(BUILD)/src/$(battle.prg)
 $(BUILD)/data/$(battle.prg): LDFLAGS += \
 	--defsym=vs_scratch=0x1F800000
 
+# Shared return targeted by handwritten routines.
+$(BUILD)/data/$(battle.prg) $(BUILD)/data/$(battle.prg).elf: LDFLAGS += \
+	--defsym=.L800D8278=func_800D826C+0xC
+
 $(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
 	--retain-symbols-file=config/BATTLE/BATTLE.PRG/exports.txt
 

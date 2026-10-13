@@ -4,7 +4,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800F9AD0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA258);
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA470);
+#define VS_RIBBON_FUNCTION func_800FA470
+#include "src/EFFECT/ribbon.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FA920);
 

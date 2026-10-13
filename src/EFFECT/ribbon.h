@@ -16,6 +16,11 @@
 #include <inline_c.h>
 #include <rand.h>
 
+/* The overlay may hold more than one ribbon, so this header gets included twice
+ * into the same translation unit. The types are guarded; the function is not. */
+#ifndef VS_RIBBON_TYPES
+#define VS_RIBBON_TYPES
+
 /* One ribbon segment. The two source points bracket the two transformed points
  * the orienter writes back. */
 typedef struct {
@@ -32,6 +37,8 @@ typedef struct {
     int unk8;
     int distance;
 } vs_ribbonList;
+
+#endif /* VS_RIBBON_TYPES */
 
 /* Load the look-at matrix into $0-$4 and the eye vector into $5-$7. The staging
  * registers and the coprocessor indices are all part of the original encoding,
@@ -112,8 +119,8 @@ void VS_RIBBON_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
         scratch->unk34.vy = node->to.vy - node->from.vy;
         scratch->unk34.vz = node->to.vz - node->from.vz;
         rsqrt = vs_gte_rsqrt(scratch->unk34.vx * scratch->unk34.vx
-            + scratch->unk34.vy * scratch->unk34.vy
-            + scratch->unk34.vz * scratch->unk34.vz);
+                             + scratch->unk34.vy * scratch->unk34.vy
+                             + scratch->unk34.vz * scratch->unk34.vz);
 
         curve = vs_battle_sampleCurve(effect->unk12, list->distance);
         vs_battle_lerp2DVector(&effect->unk94[0][0], curve, &scratch->unk124[0]);
@@ -133,16 +140,16 @@ void VS_RIBBON_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
         /* The test reads the short directly; the arithmetic reloads it widened,
          * which is why the two loads do not collapse into one. */
         if (scratch->unkF8.vx != 0) {
-            alongA = scratch->unk118[0] + rand() % scratch->unkF8.vx
-                - scratch->unkF8.vx / 2;
+            alongA =
+                scratch->unk118[0] + rand() % scratch->unkF8.vx - scratch->unkF8.vx / 2;
         } else {
             alongA = scratch->unk118[0];
         }
         offsets[0].vz = (rsqrt * alongA) / 256;
 
         if (scratch->unkF8.vy != 0) {
-            alongB = scratch->unk118[1] + rand() % scratch->unkF8.vy
-                - scratch->unkF8.vy / 2;
+            alongB =
+                scratch->unk118[1] + rand() % scratch->unkF8.vy - scratch->unkF8.vy / 2;
         } else {
             alongB = scratch->unk118[1];
         }

@@ -6,7 +6,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800FA478);
 
 INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800FAC00);
 
-INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800FAE18);
+#define VS_RIBBON_FUNCTION func_800FAE18
+#include "src/EFFECT/ribbon.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800FB2C8);
 

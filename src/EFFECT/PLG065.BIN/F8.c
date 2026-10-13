@@ -12,7 +12,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FC340);
 
 INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCAC8);
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCCE0);
+#define VS_RIBBON_FUNCTION func_800FCCE0
+#include "src/EFFECT/ribbon.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FD190);
 

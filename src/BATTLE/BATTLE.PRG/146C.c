@@ -505,6 +505,7 @@ int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
+D_800F1D08_t* func_8008BAC8(int, int, int);
 _mpdRoomSectionA* func_8008BC04(int, int, int);
 void func_8008BD74(_mpdRoomSectionA*);
 int func_8008BEBC(_mpdRoomSectionA* arg0);
@@ -5339,8 +5340,177 @@ void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1)
     func_8008C40C();
 }
 
-int func_80074BAC(int, u_char*);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80074BAC);
+int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
+{
+    func_8006EBF8_t3* coordinates = position;
+    int flags;
+    u_int cellIndex;
+    int layer;
+    int actorOffset;
+    int result = 0;
+    _mpdRoomSection3* cell;
+    vs_battle_actor* actor;
+
+    flags = func_800A0BE0(actorIndex);
+    layer = (u_int)flags >> 14;
+    layer &= 1;
+    cellIndex = flags & 0x70000;
+
+    if (cellIndex != 0) {
+        cell = func_8008B764(0, 0, cellIndex >> 16);
+    } else {
+        cell = func_8008B764(coordinates->unk0.fields.unk0_0,
+            coordinates->unk0.fields.unk0_16, coordinates->unk0.fields.unk0_8);
+    }
+
+    if (vs_battle_screenTransitionStep != 0) {
+        return 0;
+    }
+
+    if (flags & 0x1000000) {
+        return 0;
+    }
+
+    actorOffset = actorIndex * sizeof(*vs_battle_actors);
+    actor = *(vs_battle_actor**)((char*)vs_battle_actors + actorOffset);
+
+    if ((coordinates->unk0.value & 0xFFFFFF) != (actor->unk2C.s32 & 0xFFFFFF)
+        || layer != actor->unk2C.u8[3] || (flags & 0x70000)) {
+        if (D_800F196C != 3) {
+            _mpdRoomSection9* trigger;
+
+            if (cell->unk0_13 && func_800BEC58(2, 0, NULL, 0) == 1) {
+                func_80073898();
+                actor->unk2C.s32 = coordinates->unk0.value;
+                actor->unk2C.u8[3] = layer;
+
+                if (cell->unk0_16) {
+                    trigger = func_8008D438(coordinates->unk0.fields.unk0_0,
+                        coordinates->unk0.fields.unk0_16,
+                        coordinates->unk0.fields.unk0_8);
+
+                    if (trigger != NULL && trigger->unk6 == 0x10) {
+                        func_8006F4B0(position);
+                    }
+                }
+
+                func_800A0ABC(actorIndex);
+                return 1;
+            }
+
+            if (cell->unk0_16 && !(flags & 0x504000)) {
+                trigger = func_8008D438(coordinates->unk0.fields.unk0_0,
+                    coordinates->unk0.fields.unk0_16, coordinates->unk0.fields.unk0_8);
+
+                if (trigger != NULL) {
+                    if (trigger->unk6 != 0x10) {
+                        func_80073F7C((_mpdRoomSectionA*)trigger, position, actorIndex);
+                        actor->unk2C.s32 = coordinates->unk0.value;
+                        actor->unk2C.u8[3] = layer;
+                        return 1;
+                    }
+
+                    func_8006F4B0(position);
+                }
+            }
+
+            if (cell->unk0_14 && !(flags & 0x4000)) {
+                D_800F1D08_t* doors;
+                int i;
+
+                cellIndex = flags & 0x70000;
+
+                if (cellIndex != 0) {
+                    if (flags & 0x20000000) {
+                        doors = NULL;
+                    } else {
+                        doors = func_8008BAC8(0, 0, cellIndex >> 16);
+                    }
+                } else {
+                    doors = func_8008BAC8(coordinates->unk0.fields.unk0_0,
+                        coordinates->unk0.fields.unk0_16,
+                        coordinates->unk0.fields.unk0_8);
+                }
+
+                if (doors != NULL) {
+                    for (i = 0; i < doors->count; ++i) {
+                        _mpdRoomDoorSection_t* door = doors->values[i];
+
+                        if ((u_char)vs_battle_getStateFlag(door->unk6_0) < door->unk4_0) {
+                            continue;
+                        }
+
+                        if (door->zndId == _zoneContext.zndId) {
+                            func_8007C4E0(door, 0, 8);
+                        } else {
+                            func_8007C5C0(door, 0, 8);
+                        }
+
+                        func_800A0ABC(actorIndex);
+                        func_8008B8F8((void*)doors->values[i]);
+                        return 1;
+                    }
+                }
+            }
+        }
+
+        if (!(flags & 0x104000)) {
+            actor->unk2C.s32 = coordinates->unk0.value;
+        }
+
+        actor->unk2C.u8[3] = layer;
+    }
+
+    if (result == 0 && cell->unk0_17 && position->unk4.vy >= 17) {
+        _mpdRoomDoorSection_t destination;
+
+        flags = func_8008D418();
+
+        if ((u_int)(flags + 1) >= 2) {
+            destination.zndId = flags / 65536;
+            destination.mpdId = flags % 65536;
+            destination.unk4_8 = destination.unk2.unk0_0 =
+                coordinates->unk0.fields.unk0_0;
+            destination.unk6_10 = destination.unk2.unk0_5 =
+                coordinates->unk0.fields.unk0_16;
+            destination.unk2.unk0_10 = coordinates->unk0.fields.unk0_8;
+            destination.unk2.unk0_13 = 7;
+            destination.unk4_13 = coordinates->unk0.fields.unk0_24 >> 6;
+            destination.unk4_15 = 0;
+            destination.unk6_15 = 0;
+
+            if (destination.zndId == _zoneContext.zndId) {
+                func_8007C4E0(&destination, 0, 8);
+            } else {
+                func_8007C5C0(&destination, 0, 8);
+            }
+
+            func_800A0ABC(actorIndex);
+            func_8008B8F8(NULL);
+            return 0;
+        }
+
+        if (actor->unk3C->currentHP <= 20) {
+            if (actor->unk3C->currentHP != 0) {
+                func_80093B68(actor->unk3C->unk957, 0, 0x80000014, 0);
+            }
+
+            actor->unk3C->currentHP = 0;
+            func_80074A20(actor->unk3C->unk957);
+            return 1;
+        }
+
+        actor->unk3C->currentHP -= 20;
+        vs_battle_setDoorEntered();
+        func_8007C4E0(&D_800F1AB0, 0, 8);
+        func_80093B68(actor->unk3C->unk957, 0, 0x80000014, 0);
+        func_800A0ABC(actorIndex);
+        func_8008B8F8((void*)&D_800F1AB0);
+        return 1;
+    }
+
+    return 0;
+}
 
 int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
 {

@@ -5,6 +5,8 @@
 
 .section .text, "ax"
 
+# hasm: cross-function control flow
+# func_800D820C and func_800D836C branch into the shared return L800D8278.
 glabel func_800D826C
     lhu     $v0, 0x8E($a0)
     nop

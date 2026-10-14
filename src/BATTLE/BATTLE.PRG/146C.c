@@ -5343,7 +5343,7 @@ void func_80074B14(int arg0, func_8006EBF8_t_fields* arg1)
 int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
 {
     func_8006EBF8_t3* coordinates = position;
-    int flags;
+    int flags = func_800A0BE0(actorIndex);
     u_int cellIndex;
     int layer;
     int actorOffset;
@@ -5351,7 +5351,6 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
     _mpdRoomSection3* cell;
     vs_battle_actor* actor;
 
-    flags = func_800A0BE0(actorIndex);
     layer = (u_int)flags >> 14;
     layer &= 1;
     cellIndex = flags & 0x70000;
@@ -5389,7 +5388,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
                         coordinates->unk0.fields.unk0_16,
                         coordinates->unk0.fields.unk0_8);
 
-                    if (trigger != NULL && trigger->unk6 == 0x10) {
+                    if (trigger != NULL && trigger->unk6 == 16) {
                         func_8006F4B0(position);
                     }
                 }
@@ -5403,7 +5402,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
                     coordinates->unk0.fields.unk0_16, coordinates->unk0.fields.unk0_8);
 
                 if (trigger != NULL) {
-                    if (trigger->unk6 != 0x10) {
+                    if (trigger->unk6 != 16) {
                         func_80073F7C((_mpdRoomSectionA*)trigger, position, actorIndex);
                         actor->unk2C.s32 = coordinates->unk0.value;
                         actor->unk2C.u8[3] = layer;
@@ -5436,7 +5435,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
                     for (i = 0; i < doors->count; ++i) {
                         _mpdRoomDoorSection_t* door = doors->values[i];
 
-                        if ((u_char)vs_battle_getStateFlag(door->unk6_0) < door->unk4_0) {
+                        if (vs_battle_getStateFlag(door->unk6_0) < door->unk4_0) {
                             continue;
                         }
 

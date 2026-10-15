@@ -54,6 +54,8 @@ int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 void func_800A2FBC(D_800F4538_t*);
 inline int func_800A3310(int, SVECTOR*);
 void func_800A3394(int, SVECTOR*);
+int func_800A46A4(D_800F4538_t*);
+void func_800A4A88(D_800F4538_t*, int);
 inline func_8008D2C0_t* func_800A4A24(int);
 void func_800A9EB4(int, short, int);
 void func_800AA454(int, func_8006EBF8_t_fields*, int);
@@ -937,7 +939,76 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     actor->unk5AC_3 = 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4494);
+int func_800A4494(int contact, SVECTOR* point)
+{
+    int i;
+
+    for (i = 0; i < 17; ++i) {
+        D_800F4538_t* actor = D_800F4538[i];
+
+        if (actor == NULL || actor->unk0.skip) {
+            continue;
+        }
+
+        if (actor->unk0.unkC_0 == contact) {
+            int dx;
+            int dz;
+            int hit;
+
+            if (actor->unk0.unkA_3 != 2) {
+                continue;
+            }
+
+            dx = point->vx - actor->unk17EC.vx;
+            dz = point->vz - actor->unk17EC.vz;
+            actor->unk0.position.vx += dx;
+            actor->unk0.position.vz += dz;
+            hit = func_800A46A4(actor);
+            actor->unk0.position.vx -= dx;
+            actor->unk0.position.vz -= dz;
+
+            if (!hit) {
+                continue;
+            }
+
+        transition:
+            setVector(&actor->unk0.unk34, 0, 3, 0);
+            actor->unk6EE = 0;
+            actor->unk6EF = 0;
+            actor->unk0.unkA_0 = 3;
+            actor->unk0.unkA_3 = 0;
+            actor->unk0.unk9_6 = 0;
+            actor->unk0.unkC_0 = 0;
+            func_800A4A88(actor, 2);
+            return 1;
+        } else {
+            int radius = actor->unk63C;
+
+            if (point->vx + 64 < actor->unk0.position.vx - radius
+                || point->vx - 64 > actor->unk0.position.vx + radius) {
+                continue;
+            }
+
+            if (point->vz + 64 < actor->unk0.position.vz - radius
+                || point->vz - 64 > actor->unk0.position.vz + radius) {
+                continue;
+            }
+
+            if (point->vy < actor->unk0.position.vy - 288
+                || point->vy >= actor->unk0.position.vy) {
+                continue;
+            }
+
+            if (actor->unk0.unkA_3 == 2) {
+                goto transition;
+            }
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 int func_800A46A4(D_800F4538_t* actor)
 {

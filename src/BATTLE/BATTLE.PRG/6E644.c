@@ -143,8 +143,12 @@ typedef struct {
     u_int unk8_0 : 21;
     u_int unk8_21 : 1;
     u_int unk8_22 : 10;
-    char unkC[0x10];
+    char unkC[8];
+    short unk14;
+    char unk16[6];
     SVECTOR unk1C;
+    char unk24[2];
+    short unk26;
 } func_800E1238_t;
 
 typedef struct {
@@ -159,7 +163,9 @@ typedef struct func_800E78F4_t {
     u_char unk2;
     char unk3[4];
     u_char unk7;
-    char unk8[6];
+    char unk8;
+    u_char unk9;
+    char unkA[4];
     u_char unkE;
     char unkF[4];
     u_char unk13;
@@ -224,10 +230,14 @@ typedef struct func_800E78F4_t {
     u_char unk131;
     char unk132[6];
     u_short unk138;
-    char unk13A[5];
+    u_short unk13A;
+    u_short unk13C;
+    char unk13E;
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[8];
+    char unk154[4];
+    short unk158;
+    short unk15A;
     u_char unk15C;
     u_char unk15D;
     u_short unk15E;
@@ -238,7 +248,8 @@ typedef struct func_800E78F4_t {
     int unk180;
     int unk184;
     short unk188;
-    char unk18A[0x10];
+    short unk18A;
+    char unk18C[0xE];
     u_char unk19A;
     char unk19B[5];
     struct func_800E78F4_t* unk1A0;
@@ -434,6 +445,7 @@ void func_800E4288(void*, int);
 int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
+int func_800E4320(int, int);
 int func_800E45D4(int);
 u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 u_int func_800E4660(int, int, int);
@@ -2805,7 +2817,70 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2B2C);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2CCC);
+void func_800E2CCC(func_800E78F4_t* arg0)
+{
+    func_800E1238_t* model = arg0->unk58;
+    int direction;
+
+    if ((model->unk8_21 << 21) && arg0->unk228++ > 120 && (arg0->unk15E & 6)
+        && (arg0->unk15E & 0x30) && func_800D954C(arg0, arg0->unk34) > 0) {
+        func_800E678C(arg0);
+        func_800E4B10(arg0);
+        return;
+    }
+
+    if (arg0->unk15C != 16) {
+        direction = ratan2(arg0->unk4C.vx - D_800F4538[arg0->unk15C]->unk0.position.vx,
+                        arg0->unk4C.vz - D_800F4538[arg0->unk15C]->unk0.position.vz)
+                  & 0xFFF;
+        arg0->unk18A = direction;
+        arg0->unk13A = arg0->unk13C;
+        func_800DEEFC(arg0, 4);
+    } else if (arg0->unk9) {
+        direction =
+            ratan2(arg0->unk4C.vx - arg0->unk158, arg0->unk4C.vz - arg0->unk15A) & 0xFFF;
+        arg0->unk188 = direction;
+        arg0->unk13A = arg0->unk13C;
+        func_800DEEFC(arg0, 3);
+    } else {
+        int i;
+        int nx;
+        int nz;
+        u_char* bounds;
+        int bestHeight = 0x80000000;
+        int bestDirection = -1;
+        u_int source = *(u_int*)&arg0->unk34;
+        u_int x = source & 0xFF;
+        u_int z = (source >> 16) & 0xFF;
+        u_int angle = model->unk26 + model->unk14;
+        u_int quadrant = (angle & 0xFFF) / (ONE / 4);
+
+        direction = (angle & 0x3FF) > ONE / 8 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
+
+        for (i = 0, bounds = (u_char*)0x1F8003DC; i < 4; ++i) {
+            direction = (direction + i * 2) & 7;
+            nx = (x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx) & 0xFF;
+            nz = (z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz) & 0xFF;
+
+            if (nx < bounds[0] && nz < bounds[1]) {
+                int height = (func_800E4320(nx, nz) << 17) >> 17;
+
+                if (height > bestHeight) {
+                    bestDirection = direction;
+                    bestHeight = height;
+                }
+            }
+        }
+
+        if (bestDirection < 0) {
+            func_800DEEFC(arg0, 0);
+        } else {
+            arg0->unk18A = bestDirection * (ONE / 8);
+            arg0->unk13A = arg0->unk13C;
+            func_800DEEFC(arg0, 4);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2F5C);
 

@@ -2691,7 +2691,32 @@ u_char func_800E1850(u_char arg0, u_int arg1, int arg2)
     return arg0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1908);
+void func_800E1908(func_800E78F4_t* arg0)
+{
+    u_char* tile =
+        &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
+    int old = *tile;
+    func_800DEB10_t2* actor = arg0->unk54;
+    int result;
+
+    *tile = func_800E1850(old, *(u_int*)&arg0->unk34, arg0->unk4C.vy);
+    func_800E3600(arg0,
+        ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180) & 0xFFF, 0);
+    *tile = old;
+    result = *(int*)0x1F8003C8;
+
+    if ((0xA0 >> result) & 1) {
+        actor->unk9 = 9;
+
+        if (result == 5) {
+            actor->unkC = arg0->unk188 << 9;
+        } else {
+            actor->unkC = arg0->unk188;
+        }
+    }
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E19FC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1BB8);
 

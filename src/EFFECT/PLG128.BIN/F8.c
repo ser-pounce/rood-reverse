@@ -27,7 +27,10 @@ void func_800FF3C0(
 void func_800FF54C(
     func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800F98F8);
+#define VS_SURFACE_FUNCTION func_800F98F8
+#define VS_SURFACE_VERTICES D_801004F0
+#define VS_SURFACE_TEXTURE_COLUMNS 4
+#include "src/EFFECT/surfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FA490);
 
@@ -35,7 +38,9 @@ INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FB400);
 
 INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FC2BC);
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FCE0C);
+#define VS_SURFACE_FUNCTION func_800FCE0C
+#define VS_SURFACE_VERTICES D_80100790
+#include "src/EFFECT/surfaces.h"
 
 void func_800FD9A4(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1)
 {

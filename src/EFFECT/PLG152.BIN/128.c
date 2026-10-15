@@ -1,6 +1,7 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800F9928);
+#define VS_GRID_FUNCTION func_800F9928
+#include "src/EFFECT/grids.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800FA478);
 

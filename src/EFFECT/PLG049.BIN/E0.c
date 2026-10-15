@@ -834,5 +834,5 @@ INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FBA00);
 /**
  * Column of light and particles on cast
  */
-int func_800FD51C(func_800D4910_t* arg0, u_int arg1, int arg2);
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FD51C);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FD51C
+#include "src/EFFECT/rotatingSurfaces.h"

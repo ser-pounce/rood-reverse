@@ -524,7 +524,7 @@ typedef struct {
     SVECTOR unk10C;
     u_char unk114[0x18];
     u_short unk12C[16];
-    u_char unk14C[0x20];
+    u_short unk14C[16];
     D_800F4538_t2 unk16C;
     u_char unk178[0x434];
     u_int unk5AC_0 : 4;

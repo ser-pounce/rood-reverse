@@ -7,6 +7,7 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
+#include "4A0A8.h"
 #include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
@@ -27,8 +28,13 @@ void func_8008EB04(int*, int*);
 void func_800A41D0(D_800F4538_t*, int);
 int func_800A91DC(int, int, int);
 int func_800AAD4C(int, int, int, int);
+int func_800AAE9C(D_800F4538_t*);
 void func_800AB358(int, u_char*);
+void func_800AB4F0(D_800F4538_t*);
+void func_800AB788(D_800F4538_t*, D_800F45E0_t*, int);
+void func_800AB9A4(void*);
 void func_800AC440(D_800F4538_t*, int, int);
+void func_800AC540(int, D_800F4538_t*);
 void func_800AD008(void*, void*);
 u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
@@ -37,9 +43,11 @@ void func_800AE474(u_char*);
 void func_800AE6C0(D_800F4538_t*, int, int);
 void func_800AE828(int, D_800F4538_t*, int);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
+void func_800B0908(D_800F45E0_t*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 void func_800B17F0(SVECTOR*, MATRIX*);
 void func_800B196C(MATRIX*, MATRIX*);
+void func_800B1A68(D_800F45E0_t*, MATRIX*);
 void func_800B396C(MATRIX*, VECTOR*);
 int func_800B3A68(void*, MATRIX*, int, void*);
 void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
@@ -54,12 +62,15 @@ extern u_char D_800E91A4[];
 extern u_char D_800E9278[];
 extern u_char D_800E9298[];
 extern u_char D_800E92DC[];
+extern int D_800E9308;
 extern u_short D_800E9A28[][4];
 extern int D_800F1868;
 extern D_800F3C58_t D_800F3C58;
 extern MATRIX D_800F3C78;
 extern MATRIX D_800F4910;
 extern MATRIX D_800F49B8;
+extern char D_800F4B18;
+extern u_char D_800F4B19;
 
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
@@ -827,44 +838,211 @@ void func_800AECA0(MATRIX* source)
     D_800F49B8.t[2] = source->t[2];
 }
 
-void func_800AEEC4(D_800F4538_t* arg0) __attribute__((unused));
-void func_800AEEC4(D_800F4538_t* arg0)
+inline void func_800AEEC4(D_800F4538_t* actor)
 {
     int _[2] __attribute__((unused));
-    int var_a2;
-    int v0;
-    int temp_v1 = arg0->unk17E4.unk0;
+    int step;
+    int delta;
 
-    if ((temp_v1 != 1) || (arg0->unk17E4.unk3 == 0)) {
+    if (actor->unk17E4.unk0 != 1 || actor->unk17E4.unk3 == 0) {
         return;
     }
 
-    var_a2 = vs_gametime_tickspeed / 2;
+    step = vs_gametime_tickspeed / 2;
 
-    if (arg0->unk17E4.unk3 < var_a2) {
-        var_a2 = arg0->unk17E4.unk3;
+    if (actor->unk17E4.unk3 < step) {
+        step = actor->unk17E4.unk3;
     }
 
-    temp_v1 = arg0->unk17E8.unk2 - arg0->unk17E4.unk2;
+    delta = actor->unk17E8.unk2 - actor->unk17E4.unk2;
 
-    if (temp_v1 != 0) {
-        temp_v1 *= var_a2;
-        v0 = temp_v1 / arg0->unk17E4.unk3;
-        arg0->unk17E4.unk2 = arg0->unk17E4.unk2 + v0;
+    if (delta != 0) {
+        delta *= step;
+        delta /= actor->unk17E4.unk3;
+        actor->unk17E4.unk2 += delta;
     }
 
-    temp_v1 = arg0->unk17E8.unk1 - arg0->unk17E4.unk1;
+    delta = actor->unk17E8.unk1 - actor->unk17E4.unk1;
 
-    if (temp_v1 != 0) {
-        temp_v1 *= var_a2;
-        v0 = temp_v1 / arg0->unk17E4.unk3;
-        arg0->unk17E4.unk1 = arg0->unk17E4.unk1 + v0;
+    if (delta != 0) {
+        delta *= step;
+        delta /= actor->unk17E4.unk3;
+        actor->unk17E4.unk1 += delta;
     }
 
-    arg0->unk17E4.unk3 -= var_a2;
+    actor->unk17E4.unk3 -= step;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AEF94);
+void func_800AEF94(MATRIX* camera)
+{
+    D_1F80035C_t* scratch;
+    D_800F4538_t* actor;
+    vs_scratch_t* view;
+    int i;
+    int j;
+    int _[10] __attribute__((unused));
+
+    func_800AECA0(camera);
+
+    for (i = 0; i < 17; ++i) {
+        actor = D_800F4538[i];
+
+        if (actor == NULL || actor->unk0.nBones == 0 || actor->unk0.skip
+            || actor->unk0.unk13 == 0xFC) {
+            continue;
+        }
+
+        func_800AAE9C(actor);
+
+        if (actor->unk0.unk64.unk0 != 0) {
+            func_800AB788(actor, NULL, 0);
+        }
+
+        if (actor->unk0.unk9_0) {
+            func_800AB9A4(actor);
+        }
+
+        actor->unk0.unkB_7 = 0;
+
+        if (actor->unk0.freeze) {
+            func_800AEEC4(actor);
+
+            for (j = 0; j < i; ++j) {
+                if (D_800F4538[j]->unk6E6 == actor->unk6E6) {
+                    goto loaded;
+                }
+            }
+
+            func_800AB4F0(actor);
+        loaded:
+            if (actor->unk5AC_0) {
+                func_800AC540(i, actor);
+            }
+
+            if (vs_gametime_tickspeed == 4) {
+                actor->unk5B2 *= 2;
+            }
+
+            func_800AF6E8(actor);
+            actor->unk5B2 = 1;
+            actor->unk5B2 = actor->unk5B0_3 + 1;
+        } else {
+            func_800AEAE8(actor);
+        }
+
+        if (actor->unk0.unk9_5) {
+            func_800B28A8(
+                actor, &D_800F4538[actor->unk0.unk12]->bones[actor->unk0.unk13], 0);
+        } else {
+            func_800B28A8(actor, camera, 0);
+
+            if (actor->unk17FD != 0) {
+                if (actor->unk17FD >= 2) {
+                    D_800F4538_t* attached = D_800F4538[actor->unk17FD];
+
+                    func_800AAE9C(attached);
+
+                    if (attached->unk0.unk64.unk0 != 0) {
+                        func_800AB788(attached, NULL, 0);
+                    }
+
+                    if (attached->unk0.unk9_0) {
+                        func_800AB9A4(attached);
+                    }
+
+                    if (actor->unk0.freeze) {
+                        func_800AEEC4(attached);
+
+                        for (j = 0; j < i; ++j) {
+                            if (D_800F4538[j]->unk6E6 == attached->unk6E6) {
+                                goto attachedLoaded;
+                            }
+                        }
+
+                        func_800AB4F0(attached);
+                    attachedLoaded:;
+                    }
+                }
+
+                view = (void*)0x1F800000;
+                view->unk4 += actor->unk6F4.unk3 * 4;
+                applyVector(&actor->unk0.position, actor->unk6F4.unk0, actor->unk6F4.unk1,
+                    actor->unk6F4.unk2, +=);
+                func_800B002C(actor, actor->unk17FD);
+                func_800B28A8(actor, camera, actor->unk17FD);
+                view->unk4 -= actor->unk6F4.unk3 * 4;
+                applyVector(&actor->unk0.position, actor->unk6F4.unk0, actor->unk6F4.unk1,
+                    actor->unk6F4.unk2, -=);
+            }
+        }
+
+        if (actor->unk63C >= 0x80 && actor->unk5CC != 0) {
+            actor->unk0.unkB_7 = 1;
+        }
+    }
+
+    for (i = 0; i < 20; ++i) {
+        vs_battle_wepModels_t* weapon = vs_battle_wepModels[i];
+
+        if (weapon == NULL || !weapon->unk8_4 || weapon->unkD == 0) {
+            continue;
+        }
+
+        actor = D_800F4538[weapon->actorId];
+
+        if (actor == NULL || actor->unk0.skip) {
+            continue;
+        }
+
+        if (!actor->unk0.visible) {
+            continue;
+        }
+
+        if (actor->unk0.unk9_4) {
+            continue;
+        }
+
+        func_800B217C(weapon, &actor->bones[weapon->unkD]);
+    }
+
+    scratch = (void*)0x1F80035C;
+    view = (void*)0x1F800000;
+    view->unk4 += 16;
+
+    for (i = 0; i < 16; ++i) {
+        D_800F45E0_t* object = D_800F45E0[i];
+        int position;
+        int height;
+
+        if (object == NULL || object->unk0 == 0) {
+            continue;
+        }
+
+        if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk1A == 0xF7) {
+            func_800B0908(object, vs_gametime_tickspeed / 2);
+        }
+
+        position = *(int*)&object->unk1C;
+        scratch->offset.vz = object->unk20;
+        height = object->unk68->armatures[1].unk0;
+        *(int*)&scratch->offset = position;
+        scratch->offset.vy += height / 2;
+
+        if (object->unk64.unk0 != 0) {
+            func_800AB788(NULL, object, 0);
+        }
+
+        if (object->unk9_0) {
+            func_800AB9A4(object);
+        }
+
+        func_800B1A68(object, camera);
+    }
+
+    D_800F4B18 = 0;
+    view->unk4 -= 16;
+    ++D_800E9308;
+}
 
 void func_800AF6E8(D_800F4538_t* arg0)
 {

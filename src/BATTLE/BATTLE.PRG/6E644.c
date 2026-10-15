@@ -396,7 +396,8 @@ typedef struct {
 } D_800F58C8_t;
 
 typedef struct {
-    char unk0[2];
+    u_char unk0;
+    u_char unk1;
     u_char unk2;
     char unk3;
     u_char unk4[8];
@@ -2864,7 +2865,35 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0678);
+int func_800E0678(func_800E78F4_t* arg0, int arg1)
+{
+    if ((((D_1F8003D0_t*)0x1F8003D0)->unk0 >> arg1) & 1) {
+        return (((D_1F8003D0_t*)0x1F8003D0)->unk1 & (1 << arg1)) > 0;
+    }
+
+    if (!func_800E02B4(arg0, arg1, 1)) {
+        int x = arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx;
+        int z = arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz;
+
+        if (x <= D_800F58BC->unk0 && x >= D_800F58BC->unk2 && z <= D_800F58BC->unk1
+            && z >= D_800F58BC->unk3 && !((*(u_short(**)[32])0x1F8003C0)[z][x] & 0x40)
+            && (((vs_battle_movementPosition*)&arg0->unk38)->x != x
+                || ((vs_battle_movementPosition*)&arg0->unk38)->z != z)) {
+            if (D_800F58BC->unk14
+                && func_800E42EC(x, z) + arg0->unkBE < D_800F58BC->unk14) {
+                return 0;
+            }
+
+            ((D_1F8003D0_t*)0x1F8003D0)->unk0 |= 1 << arg1;
+            ((D_1F8003D0_t*)0x1F8003D0)->unk1 |= 1 << arg1;
+            return 1;
+        }
+    }
+
+    ((D_1F8003D0_t*)0x1F8003D0)->unk0 |= 1 << arg1;
+    ((D_1F8003D0_t*)0x1F8003D0)->unk1 &= ~(1 << arg1);
+    return 0;
+}
 
 int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
 {

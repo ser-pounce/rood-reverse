@@ -2864,18 +2864,18 @@ void func_800E2CCC(func_800E78F4_t* arg0)
         u_char* bounds;
         int bestHeight = 0x80000000;
         int bestDirection = -1;
-        u_int source = *(u_int*)&arg0->unk34;
-        u_int x = source & 0xFF;
-        u_int z = (source >> 16) & 0xFF;
+        vs_battle_movementPosition source = arg0->unk34;
+        u_int x = source.x;
+        u_int z = source.z;
+        u_int z2 = z;
         u_int angle = model->unk26 + model->unk14;
         u_int quadrant = (angle & 0xFFF) / (ONE / 4);
-
         direction = (angle & 0x3FF) > ONE / 8 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
 
         for (i = 0, bounds = (u_char*)0x1F8003DC; i < 4; ++i) {
             direction = (direction + i * 2) & 7;
             nx = (x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx) & 0xFF;
-            nz = (z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz) & 0xFF;
+            nz = (z2 + ((D_800F16EC_t*)0x1F8003EC)[direction].dz) & 0xFF;
 
             if (nx < bounds[0] && nz < bounds[1]) {
                 int height = (func_800E4320(nx, nz) << 17) >> 17;

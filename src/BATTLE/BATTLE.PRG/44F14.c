@@ -8,7 +8,6 @@
 #include "3A1A0.h"
 #include "44F14.h"
 #include "4A0A8.h"
-#include "5BF94.h"
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
@@ -26,7 +25,9 @@ typedef struct {
 } D_800F3C58_t;
 
 void func_8008EB04(int*, int*);
+int func_800A3DB4(int, int, int);
 void func_800A41D0(D_800F4538_t*, int);
+int func_800A6EE8(SVECTOR*, int, int, int);
 int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800AAD4C(int, int, int, int);
@@ -47,6 +48,7 @@ void func_800AE828(int, D_800F4538_t*, int);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800AFDE8(int, SVECTOR*, int);
 void func_800B0908(D_800F45E0_t*, int);
+int func_800B101C(D_800F45E0_t*);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 void func_800B17F0(SVECTOR*, MATRIX*);
 void func_800B196C(MATRIX*, MATRIX*);
@@ -58,7 +60,10 @@ void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
 void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
 void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
 short func_800BEB00(void);
+int func_800CEF74(int);
 void func_800CF8BC(void);
+void func_800E4C28(int, int);
+void func_800E6898(void*);
 
 extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
@@ -1622,7 +1627,219 @@ void func_800B07DC(D_800F4538_t* actor)
     scratch->offset.vy += actor->unk0.position.vy;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B0908);
+void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
+{
+    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    int step;
+    int mode;
+    int other;
+    if (object->unk11) {
+        --object->unk11;
+        return;
+    }
+
+    if (object->unk18) {
+        step = object->unk3C / object->unk18;
+        object->unk3C -= step;
+        object->unk24 = (object->unk24 + step) & 0xFFF;
+        step = object->unk3E / object->unk18;
+        object->unk3E -= step;
+        object->unk26 = (object->unk26 + step) & 0xFFF;
+        step = object->unk40 / object->unk18;
+        object->unk40 -= step;
+        object->unk28 = (object->unk28 + step) & 0xFFF;
+        --object->unk18;
+    }
+
+    mode = object->unk1A;
+    if (mode == 0) {
+        return;
+    }
+
+    if (mode == 0xFF) {
+        if (object->unk34 == 0 && object->unk38 == 0) {
+            object->unk16C.unk4 = 0;
+            goto fall;
+        }
+
+        object->unk16C.unk4 = 1;
+        step = object->unk34 / 2;
+        object->unk34 -= step;
+        object->unk1C += step;
+        if (object->unk34 < 0) {
+            if (object->unk34 >= -1) {
+                object->unk1C += object->unk34;
+                object->unk34 = 0;
+            }
+        } else if (object->unk34 < 2) {
+            object->unk1C += object->unk34;
+            object->unk34 = 0;
+        }
+
+        step = object->unk38 / 2;
+        object->unk38 -= step;
+        object->unk20 += step;
+        if (object->unk38 < 0) {
+            if (object->unk38 >= -1) {
+                object->unk20 += object->unk38;
+                object->unk38 = 0;
+            }
+        } else if (object->unk38 < 2) {
+            object->unk20 += object->unk38;
+            object->unk38 = 0;
+        }
+
+        return;
+    } else if (mode == 0xFE) {
+        if ((object->unk1C & 0x7F) == 0x40 && (object->unk20 & 0x7F) == 0x40) {
+            scratch->rotation.vx = object->unk1C;
+            scratch->rotation.vz = object->unk20;
+            step = object->unk3A;
+            other = 128;
+            if (step < 2) {
+                other = -128;
+            }
+
+            if (step & 1) {
+                scratch->rotation.vx += other;
+            } else {
+                scratch->rotation.vz += other;
+            }
+
+            if (func_800A3DB4(scratch->rotation.vx, scratch->rotation.vz, object->unk1E)
+                && func_800A6EE8((SVECTOR*)&object->unk1C, 0, 0, 1) == object->unk1E) {
+                object->unk5C = 0xFF;
+                object->unk5E = 0xFF;
+            } else {
+                goto fall;
+            }
+        }
+
+        object->unk1C += object->unk34;
+        object->unk20 += object->unk38;
+        return;
+    } else if (mode == 0xFD) {
+        if (!func_800B101C(object)) {
+            func_800E6898(object);
+            func_800E6898(object);
+            func_800E4C28(object->unk5C, object->unk5E);
+        }
+
+        return;
+    } else if (mode == 0xFC) {
+        u_short y;
+
+    fall:
+        object->unk5C = object->unk1C / 128;
+        object->unk5E = object->unk20 / 128;
+        step = func_800A6EE8((SVECTOR*)&object->unk1C, 0, 0, 2);
+        if (object->unk1E < step) {
+            object->unk36 += 3;
+            object->unk1E += object->unk36;
+            if (object->unk1E < step) {
+                object->unk1A = 0xFC;
+                goto children;
+            }
+        }
+
+        y = object->unk1E;
+        object->unk1E = step;
+        object->unk36 += step - y;
+        other = object->unk16C.actorId;
+        if (other >= 5) {
+            object->unk16C.unk0_4 = 0;
+            other = func_800A91DC(object->unk5C, object->unk5E, 1);
+            if (other) {
+                other = D_800F45E0[other]->unk16C.actorId;
+                if (other >= 5) {
+                    if (other == object->unk16C.actorId) {
+                        object->unk1A = 0xFD;
+                        object->unk16C.unk4 = 0;
+                        object->unk16C.unk0_4 = 2;
+                        vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
+                    } else {
+                        object->unk16C.unk0_4 = 1;
+                        vs_main_panSfx(0x7E, 0x31, (SVECTOR*)&object->unk1C);
+                        object->unk1A = 0;
+                        func_800E6898(object);
+                        func_800E4C28(object->unk5C, object->unk5E);
+                    }
+
+                    goto children;
+                }
+            }
+        }
+
+        object->unk5C = object->unk1C / 128;
+        object->unk5E = object->unk20 / 128;
+        func_800E6898(object);
+        func_800E4C28(object->unk5C, object->unk5E);
+        if (object->unk16C.actorId == 1) {
+            if (--object->unk16C.unk1 == 0) {
+                object->unk1A = 0xF8;
+                object->unk16C.unk4 = 0;
+                return;
+            }
+        }
+
+        step = object->unk1A;
+        if (step == 0xFE) {
+            vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
+            object->unk1A = 0xFB;
+            object->unk16C.unk4 = 0;
+        } else if (step == 0xFF || step == 0xF9) {
+            object->unk1A = 0;
+        } else {
+            vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
+            object->unk1A = 0xFA;
+            object->unk16C.unk4 = 0;
+        }
+    children:
+        for (step = 0; step < 16; ++step) {
+            D_800F45E0_t* child = D_800F45E0[step];
+
+            if (child != NULL && !child->unk8_0 && child->unk16C.unk3 == object->unkF) {
+                child->unk1E += object->unk36;
+                if (object->unk1A == 0) {
+                    child->unk16C.unk3 = 0xFF;
+                }
+            }
+        }
+
+        return;
+    } else if (mode == 0xFB) {
+        func_800B101C(object);
+        return;
+    } else if (mode == 0xFA) {
+        func_800B101C(object);
+        goto children;
+    } else if (mode == 0xF9) {
+        if (func_800B101C(object)) {
+            return;
+        }
+
+        goto fall;
+    } else if (mode == 0xF7) {
+        func_800B101C(object);
+        return;
+    } else if (mode == 0xF8) {
+        func_800B101C(object);
+        return;
+    }
+
+    step = object->unk34 / object->unk1A;
+    object->unk34 -= step;
+    object->unk1C += step;
+    step = object->unk36 / object->unk1A;
+    object->unk36 -= step;
+    object->unk1E += step;
+    step = object->unk38 / object->unk1A;
+    object->unk38 -= step;
+    object->unk20 += step;
+    if (--object->unk1A == 0 && object->unk12 == 0xFF) {
+        goto fall;
+    }
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B101C);
 

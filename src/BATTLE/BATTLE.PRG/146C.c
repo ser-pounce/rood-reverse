@@ -8121,7 +8121,7 @@ int func_8007CF80(int arg0)
     return var_a2;
 }
 
-char func_8007CFCC(int arg0)
+int func_8007CFCC(int arg0)
 {
     if (vs_battle_actors[arg0] != 0) {
         return vs_battle_actors[arg0]->unk26;

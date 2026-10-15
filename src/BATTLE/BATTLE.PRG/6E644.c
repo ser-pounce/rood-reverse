@@ -163,7 +163,8 @@ typedef struct {
 } vs_battle_movementPosition;
 
 typedef struct func_800E78F4_t {
-    char unk0[2];
+    char unk0;
+    u_char unk1;
     u_char unk2;
     char unk3[4];
     u_char unk7;
@@ -232,7 +233,8 @@ typedef struct func_800E78F4_t {
     signed char unk12F;
     signed char unk130;
     u_char unk131;
-    char unk132[6];
+    char unk132[2];
+    vs_battle_movementPosition unk134;
     u_short unk138;
     u_short unk13A;
     u_short unk13C;
@@ -423,6 +425,8 @@ void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 void func_800DB5B0(func_800E78F4_t*);
+void func_800DB5B8(func_800E78F4_t*, vs_battle_movementPosition, int);
+void func_800DB5DC(func_800E78F4_t*, vs_battle_movementPosition, int);
 void func_800DB5FC(func_800E78F4_t*);
 int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
@@ -460,6 +464,7 @@ int func_800E42EC(int, int);
 int func_800E4320(int, int);
 int func_800E45D4(int);
 u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
+int func_800E4624(SVECTOR*, SVECTOR*, int, int);
 u_int func_800E4660(int, int, int);
 int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
@@ -965,7 +970,127 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D98E8);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9DD8);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D9E18);
+int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
+{
+    int id;
+    int flag;
+    u_int distance;
+    u_int limit;
+    int active = 0;
+    SVECTOR point;
+    int x;
+    int z;
+    int y;
+
+    if (!arg0->unk470) {
+        return 0;
+    }
+
+    id = arg1->unkC_0;
+
+    if (id == 16 || !((func_800E78F4_t**)0x1F80037C)[id]) {
+        return 0;
+    }
+
+    switch (arg0->unk12E) {
+    case 1:
+    normal:
+        limit = 0x1F80;
+
+        if (!(arg0->unk15E & 8)) {
+            limit = vs_gte_rsqrt(arg1->unk8) + arg0->unkB3 * 32;
+        }
+
+        limit = limit * limit;
+
+        if (arg0->unk1A4[id].unk0_6 == 2) {
+            distance = arg1->unk8;
+            flag = 0;
+            active = 1;
+        } else {
+            if (func_800DB8AC(arg0, arg1)) {
+                distance = arg1->unk8;
+                active = 1;
+            } else {
+                u_int minimum;
+
+                distance = limit;
+                minimum = 640 * 640;
+
+                if (distance < minimum) {
+                    distance = minimum;
+                }
+            }
+
+            flag = 1;
+        }
+
+        distance = vs_gte_rsqrt(distance);
+
+        if (active) {
+            ++D_800F58BC->unk24;
+
+            if (arg0->unk1E4[id] < limit && arg0->unk1A4[arg1->unkC_0].unk0_0) {
+                func_800D836C(arg0);
+            }
+        }
+
+    move:
+        if (func_800DB370(arg0, id, distance, flag)) {
+            return 1;
+        }
+
+        return func_800DB74C(arg0, id) != 0;
+
+    case 2:
+        if (!func_800DBCB4(arg0, arg1)) {
+            goto normal;
+        }
+
+        if (arg1->unk10.unk1) {
+            point.vx = arg0->unk134.x * 128 + 64;
+            point.vz = arg0->unk134.z * 128 + 64;
+            point.vy = func_800E42D4(point.vx, point.vz);
+
+            if (vs_gte_rsqrt(func_800E4624(&point, &D_800F4538[id]->unk0.position,
+                    arg0->unk82, D_800F5878[id]->unk82))
+                < vs_gte_rsqrt(arg1->unk8) - arg1->unk10.unk6) {
+                goto normal;
+            }
+        }
+
+        x = arg0->unk168.x * 128 + 64;
+        z = arg0->unk168.z * 128 + 64;
+        y = func_800E42D4(x, z);
+
+        if (func_800E4660(x - arg0->unk4C.vx, y - arg0->unk4C.vy, z - arg0->unk4C.vz)
+            <= 65535) {
+            arg0->unk15C = id;
+            func_800DB5B8(arg0, arg0->unk134, 2);
+        } else {
+            arg0->unk1 = 1;
+            func_800DB5DC(arg0, arg0->unk134, 256);
+        }
+
+        return 1;
+
+    case 4:
+        return func_800DB61C(arg0, 0);
+
+    case 7:
+        func_800D82CC(arg0);
+        id = 0;
+        flag = 1;
+
+        if (arg0->unk1A4[id].unk0_6 == 3) {
+            distance = 640;
+            goto move;
+        }
+        break;
+    }
+
+    return 0;
+}
 
 int func_800DA1D4(func_800E78F4_t* arg0)
 {

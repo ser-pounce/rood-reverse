@@ -22,6 +22,8 @@ enum vs_primType {
     primPolyFT3 = 0x24,
     primPolyFT4 = 0x2C,
     primPolyFT4ShadeTex = primPolyFT4 | primShadeTex,
+    primPolyGT3 = 0x34,
+    primPolyGT3SemiTrans = primPolyGT3 | primSemiTrans,
     primPolyG4 = 0x38,
     primPolyG4SemiTrans = primPolyG4 | primSemiTrans,
     primPolyGT4 = 0x3C,

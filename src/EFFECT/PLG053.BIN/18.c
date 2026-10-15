@@ -1,5 +1,3 @@
-#include "common.h"
-
 #define VS_GRID_FUNCTION func_800F9818
 #include "src/EFFECT/grids.h"
 

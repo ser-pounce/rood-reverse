@@ -114,7 +114,8 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
-    u_int unk0_0 : 2;
+    u_int unk0_0 : 1;
+    u_int unk0_1 : 1;
     u_int unk0_2 : 1;
     u_int unk0_3 : 2;
     u_int unk0_5 : 1;
@@ -271,7 +272,9 @@ typedef struct {
     u_char unk3;
     char unk4[4];
     u_char unk8;
-    char unk9[0xB];
+    char unk9;
+    u_char unkA;
+    char unkB[9];
     int unk14;
     u_short unk18;
     char unk1A[2];
@@ -3016,7 +3019,7 @@ int func_800E5568(func_800E5568_t* arg0)
     return ((r << 5) * ABS(v)) >> 12;
 }
 
-int func_800E5600(int arg0, int actionId, u_int arg2)
+int func_800E5600(func_800E78F4_t* arg0, int actionId, u_int arg2)
 {
     vs_action_t* action = &vs_main_actions[actionId];
     int r = 0;
@@ -3051,7 +3054,52 @@ int func_800E5698(func_800E5698_t* arg0, int actionId)
     return v * v;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E5710);
+void func_800E5710(func_800E78F4_t* arg0)
+{
+    int row;
+    int column;
+
+    if (!arg0->unk88) {
+        arg0->unk17 = 1;
+        return;
+    }
+
+    for (row = 0; row < 6; ++row) {
+        for (column = 0; column < 4; ++column) {
+            int id = arg0->unk5C->armor[row][column].id;
+            vs_action_t* action = &vs_main_actions[id];
+            func_800DD604_t* entry = &arg0->unk230[row][column];
+            int mask = 1 << action->unk2_4;
+
+            entry->unk4 = func_800E5698((func_800E5698_t*)arg0, id);
+            entry->unk0_8 = func_800E5600(arg0, id, vs_gte_rsqrt(entry->unk4));
+            entry->unk0_5 = entry->unk4 > 0x51000 && !action->flagsE.unk13;
+
+            if (mask & 0x4198) {
+                entry->unk0_1 = 1;
+            }
+
+            if (mask & 0x154) {
+                entry->unk0_2 = 1;
+            }
+
+            if (mask & 0xA) {
+                entry->unk0_3 = 1;
+            } else if (mask & 0x40A0) {
+                entry->unk0_3 = 2;
+            } else if (mask & 0x1954) {
+                entry->unk0_3 = 3;
+            }
+
+            entry->unk0_6 = D_800F58BC->unkA && action->type != actionTypeSpell
+                         && action->type != actionTypeBreakArt && (mask & 0x4000) != 0;
+
+            if (action->type == actionTypeSpell && arg0->unk17 < action->cost) {
+                arg0->unk17 = action->cost;
+            }
+        }
+    }
+}
 
 void func_800E5998(void)
 {

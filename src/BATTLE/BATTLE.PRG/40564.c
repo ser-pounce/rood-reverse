@@ -32,16 +32,6 @@ typedef struct {
 } func_800AB358_t;
 
 typedef struct {
-    u_char unk0[0xF];
-    u_char unkF;
-    u_char unk10[0x54];
-    D_800F4538_unk64 unk64;
-    u_char unk68[0xC4];
-    u_short unk12C[16];
-    u_short unk14C[16];
-} func_800AB788_t;
-
-typedef struct {
     u_int unk0 : 24;
     u_int timer : 8;
 } func_800AC690_timer_t;
@@ -1648,7 +1638,7 @@ void func_800AB4F0(D_800F4538_t* actor)
     }
 }
 
-void func_800AB788(D_800F4538_t* actor, func_800AB788_t* object, int arg2)
+void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
 {
     D_800F4538_unk64* state;
     int count;
@@ -2540,11 +2530,6 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
     }
 }
 
-typedef struct {
-    int unk0;
-    int unk4;
-} func_800ACF54_t;
-
 void func_800ACF54(D_800F45E0_t* arg0)
 {
 
@@ -2637,7 +2622,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     pose->unk549 = 0;
     *(int*)&pose->unk150[41].vx = 0;
     *(int*)&pose->unk150[41].vz = 0;
-    pose->unk3F0[41].pad = 0;
+    pose->unk150[125].pad = 0;
 
     anim = (func_800AD494_t*)func_800AD494(actor, actor->animationId, &header);
     if (anim == NULL) {
@@ -2659,7 +2644,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
         pose->unk544 = data;
     }
     pose->unk548_16 = 0;
-    pose->animationId = actor->animationId;
+    pose->unk548 = actor->animationId;
     if (header[4] != 0) {
         key = &pose->unk150[41];
         data = (u_char*)anim->unk0;
@@ -2704,14 +2689,14 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
                     pose->unk150[i].pad = 3;
                 }
             }
-            pose->unk3F0[i].pad = 0;
+            (&pose->unk150[84])[i].pad = 0;
         }
     } else {
         for (i = 0; i < actor->unk0.nBones; ++i) {
             *(int*)&pose->unk150[i].vx = 0x400040;
             *(int*)&pose->unk150[i].vz = 0x40;
             pose->unk150[i].pad = 0;
-            pose->unk3F0[i].pad = 0;
+            (&pose->unk150[84])[i].pad = 0;
         }
     }
 }

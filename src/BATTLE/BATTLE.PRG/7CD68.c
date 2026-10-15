@@ -112,7 +112,8 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
-    u_int unk0_0 : 2;
+    u_int unk0_0 : 1;
+    u_int unk0_1 : 1;
     u_int unk0_2 : 1;
     u_int unk0_3 : 2;
     u_int unk0_5 : 1;
@@ -141,14 +142,32 @@ typedef struct {
     u_int unk8_0 : 21;
     u_int unk8_21 : 1;
     u_int unk8_22 : 10;
-    char unkC[0x10];
+    char unkC[8];
+    short unk14;
+    char unk16[6];
     SVECTOR unk1C;
+    char unk24[2];
+    short unk26;
+    char unk28[0x588];
+    u_int unk5B0_0 : 4;
+    u_int unk5B0_4 : 1;
 } func_800E1238_t;
 
+typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
+
 typedef struct func_800E78F4_t {
-    char unk0[7];
+    char unk0[2];
+    u_char unk2;
+    char unk3[4];
     u_char unk7;
-    char unk8[6];
+    char unk8;
+    u_char unk9;
+    char unkA[4];
     u_char unkE;
     char unkF[4];
     u_char unk13;
@@ -160,7 +179,8 @@ typedef struct func_800E78F4_t {
     char unk1C[4];
     u_char unk20;
     u_char unk21;
-    char unk22[5];
+    char unk22[4];
+    u_char unk26;
     u_char unk27;
     char unk28[3];
     u_char unk2B;
@@ -168,10 +188,7 @@ typedef struct func_800E78F4_t {
     char unk2D[3];
     u_char unk30;
     char unk31[3];
-    u_char unk34;
-    char unk35;
-    u_char unk36;
-    char unk37;
+    vs_battle_movementPosition unk34;
     int unk38;
     char unk3C[0x10];
     SVECTOR unk4C;
@@ -195,13 +212,17 @@ typedef struct func_800E78F4_t {
     short unkB8;
     char unkBA[4];
     short unkBE;
-    char unkC0[0x27];
+    char unkC0[0x10];
+    short unkD0;
+    char unkD2[0x15];
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
     char unkEA[0x11];
     u_char unkFB;
-    char unkFC[0x2E];
+    char unkFC[0x20];
+    vs_battle_movementPosition unk11C;
+    char unk120[0xA];
     u_char unk12A;
     char unk12B[2];
     u_char unk12D;
@@ -211,17 +232,26 @@ typedef struct func_800E78F4_t {
     u_char unk131;
     char unk132[6];
     u_short unk138;
-    char unk13A[5];
+    u_short unk13A;
+    u_short unk13C;
+    char unk13E;
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[8];
+    char unk154[4];
+    short unk158;
+    short unk15A;
     u_char unk15C;
-    char unk15D[0x1F];
+    u_char unk15D;
+    u_short unk15E;
+    char unk160[8];
+    vs_battle_movementPosition unk168;
+    char unk16C[0x10];
     int unk17C;
     int unk180;
     int unk184;
     short unk188;
-    char unk18A[0x10];
+    short unk18A;
+    char unk18C[0xE];
     u_char unk19A;
     char unk19B[5];
     struct func_800E78F4_t* unk1A0;
@@ -231,19 +261,21 @@ typedef struct func_800E78F4_t {
     int unk228;
     func_800DCAA0_t* unk22C;
     func_800DD604_t unk230[6][4];
-    char unk2F0[0x140];
+    func_800DCAA0_t unk2F0[16];
     func_800DCAA0_t* unk430[16];
     int unk470;
 } func_800E78F4_t;
 
 typedef struct {
-    u_char maxX;
-    u_char maxZ;
-    u_char minX;
-    u_char minZ;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     char unk4[4];
     u_char unk8;
-    char unk9[0xB];
+    char unk9;
+    u_char unkA;
+    char unkB[9];
     int unk14;
     u_short unk18;
     char unk1A[2];
@@ -254,17 +286,23 @@ typedef struct {
 } D_800F58BC_t;
 
 typedef struct {
-    char unk0[0xA];
+    u_short unk0;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    char unk8[2];
     u_char unkA;
-    char unkB;
+    u_char unkB;
     short unkC;
     short unkE;
-    char unk10[2];
-    u_short unk12;
-    char unk14[2];
+    short unk10;
+    short unk12;
+    u_char unk14;
+    char unk15;
     u_char unk16;
     u_char unk17;
-    char unk18[4];
+    short unk18;
+    short unk1A;
     u_char unk1C;
 } D_800F5920_t;
 
@@ -376,6 +414,10 @@ int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
+int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
+int func_800D96C8(
+    func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 void func_800DB5B0(func_800E78F4_t*);
@@ -393,10 +435,13 @@ int func_800DC284(int, int, int, int);
 void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
 void func_800DC344(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC3CC(func_800E78F4_t*);
+void func_800DC3E8(vs_battle_actor2*, vs_battle_actor2*);
 void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
+void func_800DC574(func_800E78F4_t*, int);
 void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
@@ -408,11 +453,18 @@ void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
 int func_800E42D4(int, int);
+int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
+int func_800E4320(int, int);
 int func_800E45D4(int);
+u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 u_int func_800E4660(int, int, int);
+int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
+void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
+void func_800E4B2C(func_800E78F4_t*, int);
+void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
@@ -427,6 +479,7 @@ void func_800E7960(func_800E78F4_t*);
 extern u_int D_80069BBC[];
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
+extern short D_800F17DC[][2];
 extern int D_800F5330[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
@@ -447,7 +500,10 @@ extern D_800F58BC_t* D_800F58BC;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
+extern vs_battle_actor2* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];
+extern int D_800F58F0;
+extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
@@ -526,7 +582,7 @@ int func_800E5568(func_800E5568_t* arg0)
     return ((r << 5) * ABS(v)) >> 12;
 }
 
-int func_800E5600(int arg0, int actionId, u_int arg2)
+int func_800E5600(func_800E78F4_t* arg0, int actionId, u_int arg2)
 {
     vs_action_t* action = &vs_main_actions[actionId];
     int r = 0;
@@ -561,80 +617,48 @@ int func_800E5698(func_800E5698_t* arg0, int actionId)
     return v * v;
 }
 
-typedef union {
-    unsigned int raw;
-    unsigned char bytes[4];
-} actionMetadataWord;
-typedef struct {
-    actionMetadataWord flags;
-    char pad[8];
-    unsigned int flagsC;
-    char rest[36];
-} actionMetadataAction;
-typedef struct {
-    unsigned short id, pad;
-} actionMetadataSlot;
-typedef struct {
-    char pad[0x8C0];
-    actionMetadataSlot slots[6][4];
-} actionMetadataStats;
-typedef struct {
-    unsigned int f0 : 1, f1 : 1, f2 : 1, kind : 2, longRange : 1, special : 1, f7 : 1,
-        radius : 16, high : 8;
-    unsigned int rangeSquared;
-} actionMetadataEntry;
-typedef struct {
-    char pad0[0x17];
-    unsigned char maxActionCost;
-    char pad18[0x44];
-    actionMetadataStats* stats;
-    char pad60[0x28];
-    unsigned char id;
-    char pad89[0x1A7];
-    actionMetadataEntry entries[6][4];
-} actionMetadataState;
-void func_800E5710(actionMetadataState* state)
+void func_800E5710(func_800E78F4_t* arg0)
 {
-    int row, column, id, mask;
-    actionMetadataAction* action;
-    actionMetadataEntry* entry;
-    if (!state->id) {
-        state->maxActionCost = 1;
+    int row;
+    int column;
+
+    if (!arg0->unk88) {
+        arg0->unk17 = 1;
         return;
     }
-    for (row = 0; row < 6; row++) {
-        for (column = 0; column < 4; column++) {
-            id = state->stats->slots[row][column].id;
-            action = (void*)&vs_main_actions[id];
-            entry = &state->entries[row][column];
-            mask = 1 << ((action->flags.raw >> 20) & 15);
-            entry->rangeSquared = func_800E5698((void*)state, id);
-            entry->radius =
-                func_800E5600((int)state, id, vs_gte_rsqrt(entry->rangeSquared));
-            entry->longRange =
-                entry->rangeSquared > 0x51000 && !(action->flagsC & 0x20000000);
+
+    for (row = 0; row < 6; ++row) {
+        for (column = 0; column < 4; ++column) {
+            int id = arg0->unk5C->armor[row][column].id;
+            vs_action_t* action = &vs_main_actions[id];
+            func_800DD604_t* entry = &arg0->unk230[row][column];
+            int mask = 1 << action->unk2_4;
+
+            entry->unk4 = func_800E5698((func_800E5698_t*)arg0, id);
+            entry->unk0_8 = func_800E5600(arg0, id, vs_gte_rsqrt(entry->unk4));
+            entry->unk0_5 = entry->unk4 > 0x51000 && !action->flagsE.unk13;
+
             if (mask & 0x4198) {
-                entry->f1 = 1;
+                entry->unk0_1 = 1;
             }
+
             if (mask & 0x154) {
-                entry->f2 = 1;
+                entry->unk0_2 = 1;
             }
+
             if (mask & 0xA) {
-                entry->kind = 1;
+                entry->unk0_3 = 1;
             } else if (mask & 0x40A0) {
-                entry->kind = 2;
+                entry->unk0_3 = 2;
             } else if (mask & 0x1954) {
-                entry->kind = 3;
+                entry->unk0_3 = 3;
             }
-            entry->special = ((unsigned char*)D_800F58BC)[10]
-                          && (action->flags.raw & 0xE0000) != 0x20000
-                          && (action->flags.raw & 0xE0000) != 0x60000
-                          && (mask & 0x4000) != 0;
-            if ((action->flags.raw & 0xE0000) == 0x20000) {
-                unsigned int value = action->flags.bytes[3];
-                if (state->maxActionCost < value) {
-                    state->maxActionCost = value;
-                }
+
+            entry->unk0_6 = D_800F58BC->unkA && action->type != actionTypeSpell
+                         && action->type != actionTypeBreakArt && (mask & 0x4000) != 0;
+
+            if (action->type == actionTypeSpell && arg0->unk17 < action->cost) {
+                arg0->unk17 = action->cost;
             }
         }
     }

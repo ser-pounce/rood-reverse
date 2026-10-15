@@ -112,7 +112,8 @@ typedef struct {
 } func_800DCAA0_t;
 
 typedef struct {
-    u_int unk0_0 : 2;
+    u_int unk0_0 : 1;
+    u_int unk0_1 : 1;
     u_int unk0_2 : 1;
     u_int unk0_3 : 2;
     u_int unk0_5 : 1;
@@ -141,14 +142,32 @@ typedef struct {
     u_int unk8_0 : 21;
     u_int unk8_21 : 1;
     u_int unk8_22 : 10;
-    char unkC[0x10];
+    char unkC[8];
+    short unk14;
+    char unk16[6];
     SVECTOR unk1C;
+    char unk24[2];
+    short unk26;
+    char unk28[0x588];
+    u_int unk5B0_0 : 4;
+    u_int unk5B0_4 : 1;
 } func_800E1238_t;
 
+typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
+
 typedef struct func_800E78F4_t {
-    char unk0[7];
+    char unk0[2];
+    u_char unk2;
+    char unk3[4];
     u_char unk7;
-    char unk8[6];
+    char unk8;
+    u_char unk9;
+    char unkA[4];
     u_char unkE;
     char unkF[4];
     u_char unk13;
@@ -160,7 +179,8 @@ typedef struct func_800E78F4_t {
     char unk1C[4];
     u_char unk20;
     u_char unk21;
-    char unk22[5];
+    char unk22[4];
+    u_char unk26;
     u_char unk27;
     char unk28[3];
     u_char unk2B;
@@ -168,10 +188,7 @@ typedef struct func_800E78F4_t {
     char unk2D[3];
     u_char unk30;
     char unk31[3];
-    u_char unk34;
-    char unk35;
-    u_char unk36;
-    char unk37;
+    vs_battle_movementPosition unk34;
     int unk38;
     char unk3C[0x10];
     SVECTOR unk4C;
@@ -195,13 +212,17 @@ typedef struct func_800E78F4_t {
     short unkB8;
     char unkBA[4];
     short unkBE;
-    char unkC0[0x27];
+    char unkC0[0x10];
+    short unkD0;
+    char unkD2[0x15];
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
     char unkEA[0x11];
     u_char unkFB;
-    char unkFC[0x2E];
+    char unkFC[0x20];
+    vs_battle_movementPosition unk11C;
+    char unk120[0xA];
     u_char unk12A;
     char unk12B[2];
     u_char unk12D;
@@ -211,17 +232,26 @@ typedef struct func_800E78F4_t {
     u_char unk131;
     char unk132[6];
     u_short unk138;
-    char unk13A[5];
+    u_short unk13A;
+    u_short unk13C;
+    char unk13E;
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[8];
+    char unk154[4];
+    short unk158;
+    short unk15A;
     u_char unk15C;
-    char unk15D[0x1F];
+    u_char unk15D;
+    u_short unk15E;
+    char unk160[8];
+    vs_battle_movementPosition unk168;
+    char unk16C[0x10];
     int unk17C;
     int unk180;
     int unk184;
     short unk188;
-    char unk18A[0x10];
+    short unk18A;
+    char unk18C[0xE];
     u_char unk19A;
     char unk19B[5];
     struct func_800E78F4_t* unk1A0;
@@ -231,19 +261,21 @@ typedef struct func_800E78F4_t {
     int unk228;
     func_800DCAA0_t* unk22C;
     func_800DD604_t unk230[6][4];
-    char unk2F0[0x140];
+    func_800DCAA0_t unk2F0[16];
     func_800DCAA0_t* unk430[16];
     int unk470;
 } func_800E78F4_t;
 
 typedef struct {
-    u_char maxX;
-    u_char maxZ;
-    u_char minX;
-    u_char minZ;
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
     char unk4[4];
     u_char unk8;
-    char unk9[0xB];
+    char unk9;
+    u_char unkA;
+    char unkB[9];
     int unk14;
     u_short unk18;
     char unk1A[2];
@@ -254,17 +286,23 @@ typedef struct {
 } D_800F58BC_t;
 
 typedef struct {
-    char unk0[0xA];
+    u_short unk0;
+    u_char unk2;
+    u_char unk3;
+    int unk4;
+    char unk8[2];
     u_char unkA;
-    char unkB;
+    u_char unkB;
     short unkC;
     short unkE;
-    char unk10[2];
-    u_short unk12;
-    char unk14[2];
+    short unk10;
+    short unk12;
+    u_char unk14;
+    char unk15;
     u_char unk16;
     u_char unk17;
-    char unk18[4];
+    short unk18;
+    short unk1A;
     u_char unk1C;
 } D_800F5920_t;
 
@@ -376,6 +414,10 @@ int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
+int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
+int func_800D96C8(
+    func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 void func_800DB5B0(func_800E78F4_t*);
@@ -393,10 +435,13 @@ int func_800DC284(int, int, int, int);
 void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
 void func_800DC344(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC3CC(func_800E78F4_t*);
+void func_800DC3E8(vs_battle_actor2*, vs_battle_actor2*);
 void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
+void func_800DC574(func_800E78F4_t*, int);
 void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
@@ -408,11 +453,18 @@ void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
 int func_800E42D4(int, int);
+int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
+int func_800E4320(int, int);
 int func_800E45D4(int);
+u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 u_int func_800E4660(int, int, int);
+int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
+void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
+void func_800E4B2C(func_800E78F4_t*, int);
+void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
@@ -421,10 +473,13 @@ void func_800E4F14(func_800E78F4_t*);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);
+int func_800E7698(func_800E78F4_t*);
+void func_800E7960(func_800E78F4_t*);
 
 extern u_int D_80069BBC[];
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
+extern short D_800F17DC[][2];
 extern int D_800F5330[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
@@ -444,7 +499,10 @@ extern D_800F58BC_t* D_800F58BC;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
+extern vs_battle_actor2* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];
+extern int D_800F58F0;
+extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
@@ -480,18 +538,6 @@ typedef struct {
     int unk228;
 } func_800E0850_t;
 
-typedef struct movementRecoveryState movementRecoveryState;
-typedef struct radialMotionState radialMotionState;
-int func_800E7698(radialMotionState*);
-typedef struct trackingMotionState trackingMotionState;
-void func_800E7960(trackingMotionState*);
-
-typedef union {
-    unsigned int raw;
-    struct {
-        unsigned int x : 8, y : 8, z : 8, status : 8;
-    } p;
-} vs_battle_movementPosition;
 unsigned int func_800E4660(int, int, int);
 
 typedef struct {
@@ -505,37 +551,6 @@ typedef struct {
 unsigned int func_800E4660(int, int, int);
 
 typedef struct {
-    char pad0[8];
-    unsigned int flags;
-    char padC[8];
-    short angle14;
-    char pad16[0x10];
-    short angle26;
-} movementRecoveryContext;
-struct movementRecoveryState {
-    char pad0[9];
-    unsigned char flag9;
-    char padA[0x2A];
-    vs_battle_movementPosition position;
-    char pad38[0x14];
-    short x;
-    char pad4E[2];
-    short z;
-    char pad52[6];
-    movementRecoveryContext* context;
-    char pad5C[0xDE];
-    unsigned short timer, duration;
-    char pad13E[0x1A];
-    short targetX, targetZ;
-    unsigned char targetActor;
-    char pad15D;
-    unsigned short flags;
-    char pad160[0x28];
-    unsigned short facing188, facing18A;
-    char pad18C[0x9C];
-    int counter;
-};
-typedef struct {
     unsigned short first, second;
     unsigned char third, pad;
 } actorSettingsEntry;
@@ -544,80 +559,50 @@ extern unsigned char D_800F17D8[], D_80069C18[];
 extern actorSettingsEntry D_80069C3C[];
 int func_800E7F8C(func_800E78F4_t*);
 
-typedef struct {
-    char pad[0x5B0];
-    unsigned int a : 4, active : 1, b : 27;
-} radialMotionContext;
-struct radialMotionState {
-    char pad[0x4C];
-    short x, y, z;
-    char pad52[6];
-    radialMotionContext* context;
-    char pad5C[0x120];
-    int targetX, targetZ, targetY;
-    char pad188[0x2E8];
-    int field470;
-};
-typedef struct {
-    short facing;
-    unsigned char state, flag3;
-    char pad4[6];
-    unsigned char flagA, frame;
-    char padC[4];
-    short angle;
-    char pad12[6];
-    short x, z;
-} radialMotion;
-typedef struct {
-    char pad[8];
-    unsigned int flags;
-} radialMotionActor;
-extern short D_800F17DC[][2];
-unsigned int func_800E4660(int, int, int);
-int func_800E7698(radialMotionState* state)
+int func_800E7698(func_800E78F4_t* arg0)
 {
-    radialMotionContext* context = state->context;
-    radialMotion* motion = (radialMotion*)D_800F5920;
+    func_800E1238_t* model = arg0->unk58;
+    D_800F5920_t* motion = D_800F5920;
     int angle;
-    state->field470 = 0;
-    context->active = motion->frame < 14;
-    func_800E4660(0x7C0 - state->x, 0, 0x7C0 - state->z);
-    switch (motion->state) {
+
+    arg0->unk470 = 0;
+    model->unk5B0_4 = motion->unkB < 14;
+    func_800E4660(0x7C0 - arg0->unk4C.vx, 0, 0x7C0 - arg0->unk4C.vz);
+
+    switch (motion->unk2) {
     case 0:
-        motion->flagA = 1;
-        angle = ratan2(state->x - 0x7C0, state->z - 0x7C0) & 0xFFF;
-        angle = -angle;
-        angle += 0xC00;
-        motion->angle = angle & 0xFFF;
-        motion->frame = 0;
-        motion->state++;
-        motion->x = state->x;
-        motion->z = state->z;
+        motion->unkA = 1;
+        angle = ratan2(arg0->unk4C.vx - 0x7C0, arg0->unk4C.vz - 0x7C0) & 0xFFF;
+        motion->unk10 = (-angle + ONE * 3 / 4) & 0xFFF;
+        motion->unkB = 0;
+        ++motion->unk2;
+        motion->unk18 = arg0->unk4C.vx;
+        motion->unk1A = arg0->unk4C.vz;
         break;
     case 1:
-        if (!D_800F17DC[motion->frame][0] && !D_800F17DC[motion->frame][1]) {
-            if (((radialMotionActor*)D_800F4538[0])->flags & 0x70000) {
-                func_800E2CCC((void*)state);
+        if (!D_800F17DC[motion->unkB][0] && !D_800F17DC[motion->unkB][1]) {
+            if (D_800F4538[0]->unk0.unkA_0) {
+                func_800E2CCC(arg0);
                 return 0;
             }
-            motion->state = 0;
-            angle = ratan2(0x7C0 - state->x, 0x7C0 - state->z) & 0xFFF;
-            angle = -angle;
-            angle += 0xC00;
-            motion->facing = angle & 0xFFF;
-            context->active = 0;
+
+            motion->unk2 = 0;
+            angle = ratan2(0x7C0 - arg0->unk4C.vx, 0x7C0 - arg0->unk4C.vz) & 0xFFF;
+            motion->unk0 = (-angle + ONE * 3 / 4) & 0xFFF;
+            model->unk5B0_4 = 0;
             return 1;
         }
         break;
     }
-    angle = rcos(motion->angle);
-    state->targetX = (state->x << 12) + D_800F17DC[motion->frame][0] * angle;
-    angle = rsin(motion->angle);
-    state->targetZ = (state->z << 12) + D_800F17DC[motion->frame][0] * angle;
-    state->targetY = (state->y + D_800F17DC[motion->frame][1]) << 12;
-    func_800DEEFC((void*)state, 8);
-    motion->flag3 = 0;
-    motion->frame++;
+
+    arg0->unk17C =
+        arg0->unk4C.vx * ONE + D_800F17DC[motion->unkB][0] * rcos(motion->unk10);
+    arg0->unk180 =
+        arg0->unk4C.vz * ONE + D_800F17DC[motion->unkB][0] * rsin(motion->unk10);
+    arg0->unk184 = (arg0->unk4C.vy + D_800F17DC[motion->unkB][1]) * ONE;
+    func_800DEEFC(arg0, 8);
+    motion->unk3 = 0;
+    ++motion->unkB;
     return 0;
 }
 
@@ -635,190 +620,188 @@ int func_800E78F4(func_800E78F4_t* arg0)
     return r;
 }
 
-typedef struct {
-    char pad[0x18];
-    short current, maximum;
-} trackingMotionStats;
-struct trackingMotionState {
-    char pad[0x4C];
-    short x, y, z;
-    char pad52[6];
-    radialMotionContext* context;
-    trackingMotionStats* stats;
-    char pad60[0xFC];
-    unsigned char targetActor;
-    char pad15D[0x1F];
-    int targetX, targetZ, targetY;
-};
-typedef struct {
-    unsigned short facing;
-    unsigned char state, flag3;
-    int radiusSquared;
-    char pad8[4];
-    short stateC, stateE, angle, height;
-    unsigned char phase;
-    char pad15[7];
-    unsigned char initialized;
-} trackingMotion;
-typedef struct {
-    char pad[0x1C];
-    short x, y, z;
-} trackingMotionActor;
-int rand(void);
-int vs_gte_rsqrt(int);
-unsigned int func_800E4660(int, int, int);
-void func_800E7960(trackingMotionState* state)
+void func_800E7960(func_800E78F4_t* arg0)
 {
-    trackingMotion* motion = (trackingMotion*)D_800F5920;
-    int center[3], playerAngle, currentAngle, tracking;
-    int radius, heading, sign, cosCurrent, sinTarget, sinCurrent, cosTarget, aligned,
-        delta, ratio, angle, adjust, denominator, scale, magnitude;
+    D_800F5920_t* motion = D_800F5920;
+    int center[3];
+    int playerAngle;
+    int currentAngle;
+    int tracking;
+    int radius;
+    int heading;
+    int sign;
+    int cosCurrent;
+    int sinTarget;
+    int sinCurrent;
+    int cosTarget;
+    int aligned;
+    int delta;
+    int ratio;
+    int denominator;
+    int scale;
+    int magnitude;
     int oppositeAngle;
-    int initialAngle, currentHeading, targetHeading, facing, trig, correction, difference;
-    if (!motion->initialized) {
-        initialAngle = ratan2(0x7C0 - state->x, 0x7C0 - state->z) & 0xFFF;
-        initialAngle = -initialAngle;
-        initialAngle += 0xC00;
-        motion->facing = initialAngle & 0xFFF;
-        motion->height = state->y;
-        motion->initialized = 1;
+    int facing;
+    int correction;
+    int difference;
+
+    if (!motion->unk1C) {
+        int initialAngle = ratan2(0x7C0 - arg0->unk4C.vx, 0x7C0 - arg0->unk4C.vz) & 0xFFF;
+
+        motion->unk0 = (-initialAngle + ONE * 3 / 4) & 0xFFF;
+        motion->unk12 = arg0->unk4C.vy;
+        motion->unk1C = 1;
     }
-    if (!motion->flag3) {
-        motion->radiusSquared = func_800E4660(0x7C0 - state->x, 0, 0x7C0 - state->z);
-        motion->flag3++;
+
+    if (!motion->unk3) {
+        motion->unk4 = func_800E4660(0x7C0 - arg0->unk4C.vx, 0, 0x7C0 - arg0->unk4C.vz);
+        ++motion->unk3;
     }
-    state->context->active = 0;
-    radius = vs_gte_rsqrt(motion->radiusSquared);
+
+    arg0->unk58->unk5B0_4 = 0;
+    radius = vs_gte_rsqrt(motion->unk4);
+
     if (radius < 1024) {
         radius += 32;
     }
+
     if (radius > 1024) {
         radius -= 32;
     }
+
     difference = radius - 1024;
-    if (difference < 0) {
-        difference = -difference;
-    }
+    difference = ABS(difference);
+
     if (difference < 32) {
         radius = 1024;
     }
-    motion->radiusSquared = radius * radius;
-    center[0] = 0x7C0000;
-    difference = motion->height - 160;
-    if (difference < 0) {
-        difference = -difference;
-    }
+
+    motion->unk4 = radius * radius;
+    center[0] = 0x7C0 * ONE;
+    difference = motion->unk12 - 160;
+
+    difference = ABS(difference);
+
     if (difference < 16) {
-        motion->height = 160;
-    } else if (motion->height < 160) {
-        motion->height += 12;
+        motion->unk12 = 160;
+    } else if (motion->unk12 < 160) {
+        motion->unk12 += 12;
     } else {
-        motion->height -= 12;
+        motion->unk12 -= 12;
     }
-    center[1] = motion->height << 12;
-    center[2] = 0x7C0000;
-    playerAngle = ratan2(0x7C0 - ((trackingMotionActor*)D_800F4538[0])->x,
-        0x7C0 - ((trackingMotionActor*)D_800F4538[0])->z);
-    currentAngle = ratan2(0x7C0 - state->x, 0x7C0 - state->z);
-    if (func_800E78F4((void*)state) && func_800D826C((void*)state)) {
+
+    center[1] = motion->unk12 * ONE;
+    center[2] = 0x7C0 * ONE;
+    playerAngle = ratan2(
+        0x7C0 - D_800F4538[0]->unk0.position.vx, 0x7C0 - D_800F4538[0]->unk0.position.vz);
+    currentAngle = ratan2(0x7C0 - arg0->unk4C.vx, 0x7C0 - arg0->unk4C.vz);
+
+    if (func_800E78F4(arg0) && func_800D826C(arg0)) {
         heading = playerAngle;
         tracking = 1;
     } else {
         tracking = 0;
-        heading = playerAngle + 0x800;
+        heading = playerAngle + ONE / 2;
     }
-    sign = -1;
-    if (D_800F5918 >= 0) {
-        sign = 1;
-    }
-    cosCurrent = rcos(-currentAngle + 0xC00);
-    sinTarget = rsin(-heading + 0xC00);
-    sinCurrent = rsin(-currentAngle + 0xC00);
-    cosTarget = rcos(-heading + 0xC00);
+
+    sign = D_800F5918 >= 0 ? 1 : -1;
+    cosCurrent = rcos(-currentAngle + ONE * 3 / 4);
+    sinTarget = rsin(-heading + ONE * 3 / 4);
+    sinCurrent = rsin(-currentAngle + ONE * 3 / 4);
+    cosTarget = rcos(-heading + ONE * 3 / 4);
     aligned = ((cosCurrent * sinTarget - sinCurrent * cosTarget) * sign) >= 0;
+
     if (aligned) {
-        if (ABS(D_800F5918) > 0x280000) {
-            delta = D_800F5918 / 8 + (sign << 16);
-        } else {
-            delta = sign << 16;
-        }
+        delta = ABS(D_800F5918) > 0x280000 ? D_800F5918 / 8 + (sign << 16) : sign << 16;
     } else {
         delta = D_800F5918 / 4 + (sign << 16);
     }
-    if (tracking || rcos(currentAngle - heading) < rcos(222)) {
-        if (!aligned) {
-            delta = -delta;
-        }
+
+    if ((tracking || rcos(currentAngle - heading) < rcos(222)) && !aligned) {
+        delta = -delta;
     }
+
     D_800F5918 += delta;
-    sign = -1;
-    if (D_800F5918 >= 0) {
-        sign = 1;
-    }
+    sign = D_800F5918 >= 0 ? 1 : -1;
+
     if (ABS(D_800F5918) > 0x820000) {
         D_800F5918 = sign * 0x820000;
     }
-    ratio = (state->stats->current << 16) / state->stats->maximum;
-    if (!motion->stateC) {
-        if ((!motion->phase && ratio < 0xC000)
-            || (motion->phase == 1 && ratio < 0x4000)) {
-            motion->phase++;
-            goto trigger;
+
+    ratio = (arg0->unk5C->currentHP << 16) / arg0->unk5C->maxHP;
+
+    if (!motion->unkC) {
+        if ((!motion->unk14 && ratio < 0xC000)
+            || (motion->unk14 == 1 && ratio < 0x4000)) {
+            ++motion->unk14;
+            do {
+                motion->unkE = 1;
+            } while (0);
         } else if (ABS(D_800F5918) < 0x40000 && tracking && D_800F591C < 30
                    && !(rand() & 511)) {
-        trigger:
-            motion->stateE = 1;
+            motion->unkE = 1;
         }
     }
-    motion->facing += D_800F5918 >> 16;
-    facing = motion->facing;
-    state->targetActor = 0;
-    trig = rcos(facing);
-    state->targetX = center[0] + radius * trig;
-    trig = rsin(facing);
-    state->targetZ = center[2] + radius * trig;
+
+    motion->unk0 += D_800F5918 >> 16;
+    facing = motion->unk0;
+    arg0->unk15C = 0;
+    arg0->unk17C = center[0] + radius * rcos(facing);
+    arg0->unk180 = center[2] + radius * rsin(facing);
+
     if (tracking) {
         if (aligned) {
             denominator = currentAngle - playerAngle;
             scale = -80 - D_800F591C;
         } else {
-            oppositeAngle = currentAngle - 0x800;
+            oppositeAngle = currentAngle - ONE / 2;
             denominator = playerAngle - oppositeAngle;
             scale = 300 - D_800F591C;
         }
     } else if (aligned) {
-        oppositeAngle = currentAngle - 0x800;
+        oppositeAngle = currentAngle - ONE / 2;
         denominator = playerAngle - oppositeAngle;
         scale = 300 - D_800F591C;
     } else {
         denominator = ABS(D_800F5918) >> 16;
         scale = 10;
     }
+
     denominator &= 0xFFF;
-    if (denominator > 0x800) {
-        denominator = 0x1000 - denominator;
+
+    if (denominator > ONE / 2) {
+        denominator = ONE - denominator;
     }
+
     if (!denominator) {
         denominator = 1;
         scale = 0;
     }
+
     magnitude = ABS(D_800F5918);
     correction = magnitude * scale / denominator;
+
     if (ABS(correction) > magnitude * 4) {
         correction = (correction >> 31) * magnitude * 4;
     }
+
     D_800F591C += correction >> 16;
+
     if (D_800F591C < -100) {
         D_800F591C = -100;
     }
+
     if (D_800F591C > 500) {
         D_800F591C = 500;
     }
-    state->targetY = center[1] - (D_800F591C << 12);
-    if (state->targetY >= 0xFF000) {
-        state->targetY = 0xFF000;
+
+    arg0->unk184 = center[1] - D_800F591C * ONE;
+
+    if (arg0->unk184 >= 0xFF000) {
+        arg0->unk184 = 0xFF000;
     }
-    func_800DEEFC((void*)state, 8);
+
+    func_800DEEFC(arg0, 8);
 }
 
 int func_800E7F8C(func_800E78F4_t* arg0)

@@ -52,14 +52,17 @@ typedef struct {
 } D_800F4538_unk1864;
 
 typedef struct {
+    int unk0;
+    int unk4;
+} func_800ACF54_t;
+
+typedef struct {
     SVECTOR unk0[42];
-    SVECTOR unk150[42];
-    SVECTOR unk2A0[42];
-    SVECTOR unk3F0[42];
-    u_short unk540;
+    SVECTOR unk150[0x7E];
+    short unk540;
     u_short unk542;
     u_char* unk544;
-    u_char animationId;
+    u_char unk548;
     u_char unk549;
     int unk548_16 : 1;
     int unk548_17 : 1;
@@ -303,7 +306,7 @@ typedef struct {
     u_char unk5B9;
     u_char unk5BA;
     u_char unk5BB;
-    short unk5BC;
+    u_short unk5BC;
     short unk5BE;
     u_short unk5C0;
     u_short unk5C2;
@@ -491,7 +494,7 @@ typedef struct {
     u_char unkE;
     u_char unkF;
     u_char unk10;
-    u_char unk11;
+    signed char unk11;
     u_char unk12;
     u_char unk13;
     int unk14;
@@ -503,7 +506,8 @@ typedef struct {
     short unk22;
     short unk24;
     u_short unk26;
-    int unk28;
+    u_short unk28;
+    short unk2A;
     short unk2C;
     short unk2E;
     short unk30;
@@ -512,8 +516,10 @@ typedef struct {
     short unk36;
     short unk38;
     short unk3A;
-    int unk3C;
-    int unk40;
+    short unk3C;
+    short unk3E;
+    short unk40;
+    short unk42;
     int unk44;
     int unk48;
     int unk4C;
@@ -532,7 +538,7 @@ typedef struct {
     SVECTOR unk10C;
     u_char unk114[0x18];
     u_short unk12C[16];
-    u_char unk14C[0x20];
+    u_short unk14C[16];
     D_800F4538_t2 unk16C;
     u_char unk178[0x434];
     u_int unk5AC_0 : 3;

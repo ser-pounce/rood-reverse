@@ -2707,16 +2707,18 @@ void func_800E1388(
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E153C);
 
-u_char func_800E1850(u_char arg0, u_int arg1, int arg2)
+u_char func_800E1850(u_char arg0, vs_battle_movementPosition arg1, int arg2)
 {
-    int x = arg1 & 0xFF;
-    int z = (arg1 >> 16) & 0xFF;
+    int x = arg1.x;
+    int z = arg1.z;
     int i;
+
+    int z2 = z;
 
     for (i = 0; i < 8; ++i) {
         if ((arg0 >> i) & 1) {
             if (func_800E42EC(x + ((D_800F16EC_t*)0x1F8003EC)[i].dx,
-                    z + ((D_800F16EC_t*)0x1F8003EC)[i].dz)
+                    z2 + ((D_800F16EC_t*)0x1F8003EC)[i].dz)
                 > arg2) {
                 arg0 &= ~(1 << i);
             }
@@ -2733,7 +2735,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     func_800DEB10_t2* actor = arg0->unk54;
     int result;
 
-    *tile = func_800E1850(old, *(u_int*)&arg0->unk34, arg0->unk4C.vy);
+    *tile = func_800E1850(old, arg0->unk34, arg0->unk4C.vy);
     func_800E3600(arg0,
         ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180) & 0xFFF, 0);
     *tile = old;

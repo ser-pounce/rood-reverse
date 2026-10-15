@@ -4,4 +4,6 @@
 #define VS_TILED_RING_COLORS D_800FB664
 #include "src/EFFECT/tiledRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG143.BIN/nonmatchings/0", func_800FA6F8);
+#define VS_CLOSED_RING_FUNCTION func_800FA6F8
+#define VS_CLOSED_RING_COLORS D_800FB684
+#include "src/EFFECT/closedRings.h"

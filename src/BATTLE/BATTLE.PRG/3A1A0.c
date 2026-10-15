@@ -51,6 +51,9 @@ int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
 int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 void func_800A2FBC(D_800F4538_t*);
+inline int func_800A3310(int, SVECTOR*);
+void func_800A3394(int, SVECTOR*);
+inline func_8008D2C0_t* func_800A4A24(int);
 void func_800A9EB4(int, short, int);
 void func_800AA620(int, SVECTOR*, int);
 void func_800E4BD8(int);
@@ -275,7 +278,85 @@ void func_800A3054(D_800F4538_t* arg0, func_800A3054_t* arg1)
     arg0->unk1818 = (u_short)arg0->unk0.position.vz + var_a3;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A30A0);
+void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode)
+{
+    D_800F4538_t* actor = D_800F4538[actorId];
+    short z;
+    int value;
+
+    *(int*)&actor->unk0.currentTileX = *(int*)placement;
+    actor->unk0.position.vx = placement->unk0_0 * 128 + 64;
+    z = placement->unk0_16 * 128 + 64;
+    actor->unk0.position.vz = z;
+    actor->unk0.position.vy = func_800A3500(actor->unk0.position.vx, z);
+
+    if (mode == 16 || mode == 32) {
+        int ceiling = func_800E75EC();
+        SVECTOR* position;
+
+        if (ceiling == 0) {
+            value = -384;
+        } else {
+            value = ceiling - actor->unk0.position.vy;
+
+            if (value > -128) {
+                value = -128;
+            }
+        }
+
+        position = &actor->unk0.position;
+        actor->unk0.position.vy += value;
+
+        if (func_800A3310(actorId, position) != 0) {
+            func_800A3394(actorId, position);
+        }
+
+        actor->unk0.unkA_5 = 1;
+        func_800A0204(actorId, 8, 0, 0);
+    } else {
+        u_char tileType;
+
+        if (mode == 64 || mode == 128) {
+            actor->unk0.unkA_6 = 1;
+        }
+
+        tileType = placement->unk0_8;
+
+        if (tileType == 7) {
+            actor->unk0.unk5D = 0;
+            actor->unk0.position.vy = height;
+            actor->unk0.unk34.vy = 0;
+            actor->unk0.unkA_0 = 3;
+        } else {
+            if (tileType >= 2) {
+                int* anchor = (int*)func_800A4A24(placement->unk0_8);
+                *(int*)&actor->unk0.position.vx = anchor[0];
+                *(int*)&actor->unk0.position.vz = anchor[1];
+                *(int*)&actor->unk17EC.vx = anchor[0];
+                *(int*)&actor->unk17EC.vz = anchor[1];
+                actor->unk17EC.pad = placement->unk0_8;
+                actor->unk0.unkC_0 = placement->unk0_8;
+                actor->unk0.unkC_4 = placement->unk0_8;
+            }
+
+            func_800A0204(actorId, 1, 0, 0);
+        }
+    }
+
+    func_800ACF54(actor);
+    actor->unk0.unk1A = 0;
+    value = placement->unk0_24;
+    actor->unk0.unk3E = 0;
+    actor->unk0.unk18 = 0;
+    actor->unk18D2 = 0;
+    actor->unk18D4 = 0;
+    actor->unk18D6 = 0;
+    actor->unk18D8 = 0;
+    value *= 16;
+    actor->unk0.facing = value;
+    func_800A0ABC(actorId);
+    actor->unk6E4 = 0;
+}
 
 inline int func_800A3310(int arg0, SVECTOR* arg1)
 {

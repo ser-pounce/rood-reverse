@@ -409,6 +409,10 @@ typedef struct {
     u_short unk1880[4][2];
     MATRIX unk1890[2];
     u_char unk18D0[2];
+    u_short unk18D2;
+    u_short unk18D4;
+    u_short unk18D6;
+    u_short unk18D8;
 } D_800F4538_t;
 
 typedef struct {

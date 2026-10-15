@@ -1,7 +1,8 @@
+#include "0.h"
 #include <stddef.h>
 #include <libgte.h>
 
-#define VS_MESH10_FUNCTION func_800F9800
+#define VS_MESH10_FUNCTION vs_effect_trinityPulse_0
 #define VS_MESH10_VERTICES D_800FB29C
 #define VS_MESH10_FACES D_800FB2EC
 
@@ -26,7 +27,7 @@ static u_char VS_MESH10_FACES[][6] = { { 0, 4, 6, 0, 2, 4 }, { 4, 5, 6, 2, 8, 4 
 
 #include "src/EFFECT/meshes10.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800FA30C
+#define VS_CLOSED_RING_FUNCTION vs_effect_trinityPulse_1
 #define VS_CLOSED_RING_COLORS D_800FB34C
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 

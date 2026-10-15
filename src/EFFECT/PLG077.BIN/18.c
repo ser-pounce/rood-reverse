@@ -6,6 +6,9 @@ INCLUDE_ASM("build/src/EFFECT/PLG077.BIN/nonmatchings/18", func_800FA324);
 
 INCLUDE_ASM("build/src/EFFECT/PLG077.BIN/nonmatchings/18", func_800FB294);
 
-INCLUDE_ASM("build/src/EFFECT/PLG077.BIN/nonmatchings/18", func_800FBDE4);
+#define VS_SURFACE_FUNCTION func_800FBDE4
+#define VS_SURFACE_VERTICES D_800FD9D8
+#define VS_SURFACE_TEXTURE_COLUMNS 4
+#include "src/EFFECT/surfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG077.BIN/nonmatchings/18", func_800FC97C);

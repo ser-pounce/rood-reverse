@@ -4,7 +4,9 @@
 #include "src/EFFECT/PLG051.BIN/0.h"
 #include "src/EFFECT/PLG053.BIN/18.h"
 #include "src/EFFECT/PLG085.BIN/18.h"
+#include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
+#include "src/EFFECT/PLG246.BIN/0.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
@@ -510,8 +512,8 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     func_800FBAC8, func_800FC6EC, func_800F9800, func_800F9800, func_800FB4B8,
     func_800FBA00, NULL, func_800F98E0, NULL, func_800FC42C, vs_effect_acidFlow_0,
     vs_effect_acidFlow_1, func_800F98F8, func_800FBFDC, func_800FC524, func_800FD074,
-    func_800F9818, func_800FA6D0, func_800FB2F4, func_800FBE44, func_800F9818,
-    func_800FA710, func_800FB320, func_800FB4B8, func_800F9818, func_800FA368,
+    func_800F9818, func_800FA6D0, func_800FB2F4, func_800FBE44, vs_effect_sunder_0,
+    vs_effect_sunder_1, func_800FB320, func_800FB4B8, func_800F9818, func_800FA368,
     func_800FB2D8, func_800FBEFC, func_800F9800, func_800FA6F8, func_800F9800,
     func_800F9800, func_800F99D8, func_800FA8D0, func_800FC8C4, func_800FCB38,
     func_800FF334, func_800F98F8, func_800FB89C, func_800FB4B8, func_800FBA00,
@@ -530,7 +532,7 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     func_800FD654, func_800F9800, func_800F9800, func_800F9818, func_800FA710,
     func_800FAC78, func_800FB4C0, func_800F9800, func_800FA770, func_800FB62C,
     func_800FC56C, func_800FAC78, func_800FAC78, func_800F98F8, func_800FA7F0,
-    func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL, func_800F9800,
+    func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL, vs_effect_246,
     NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800F9800, func_800F9800,
     func_800FA6BC, func_800F9800, func_800FB5B0, func_800FCE78, func_800F9800,
     func_800F9800, func_800F9800, NULL, func_800F9910, func_800FA4A8, func_800FB0CC,
@@ -760,8 +762,8 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA6D0(NULL, 2, 0);
     func_800FB2F4(NULL, 2, 0);
     func_800FBE44(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA710(NULL, 2, 0);
+    vs_effect_sunder_0(NULL, 2, 0);
+    vs_effect_sunder_1(NULL, 2, 0);
     func_800FB320(NULL, 2, 0);
     func_800FB4B8(NULL, 2, 0);
     func_800F9818(NULL, 2, 0);
@@ -858,7 +860,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FCF18(NULL, 2, 0);
     func_800FB4B8(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
+    vs_effect_246(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
     func_800FA6B8(NULL, 2, 0);
     func_800FB2DC(NULL, 2, 0);

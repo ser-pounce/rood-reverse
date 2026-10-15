@@ -150,6 +150,9 @@ typedef struct {
     SVECTOR unk1C;
     char unk24[2];
     short unk26;
+    char unk28[0x588];
+    u_int unk5B0_0 : 4;
+    u_int unk5B0_4 : 1;
 } func_800E1238_t;
 
 typedef struct {
@@ -285,17 +288,21 @@ typedef struct {
 } D_800F58BC_t;
 
 typedef struct {
-    char unk0[0xA];
+    short unk0;
+    u_char unk2;
+    u_char unk3;
+    char unk4[6];
     u_char unkA;
-    char unkB;
+    u_char unkB;
     short unkC;
     short unkE;
-    char unk10[2];
+    short unk10;
     u_short unk12;
     char unk14[2];
     u_char unk16;
     u_char unk17;
-    char unk18[4];
+    short unk18;
+    short unk1A;
     u_char unk1C;
 } D_800F5920_t;
 
@@ -472,6 +479,7 @@ void func_800E7960(func_800E78F4_t*);
 extern u_int D_80069BBC[];
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
+extern short D_800F17DC[][2];
 extern int D_800F5330[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
@@ -3242,7 +3250,52 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7608);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7660);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7698);
+int func_800E7698(func_800E78F4_t* arg0)
+{
+    func_800E1238_t* model = arg0->unk58;
+    D_800F5920_t* motion = D_800F5920;
+    int angle;
+
+    arg0->unk470 = 0;
+    model->unk5B0_4 = motion->unkB < 14;
+    func_800E4660(0x7C0 - arg0->unk4C.vx, 0, 0x7C0 - arg0->unk4C.vz);
+
+    switch (motion->unk2) {
+    case 0:
+        motion->unkA = 1;
+        angle = ratan2(arg0->unk4C.vx - 0x7C0, arg0->unk4C.vz - 0x7C0) & 0xFFF;
+        motion->unk10 = (-angle + ONE * 3 / 4) & 0xFFF;
+        motion->unkB = 0;
+        ++motion->unk2;
+        motion->unk18 = arg0->unk4C.vx;
+        motion->unk1A = arg0->unk4C.vz;
+        break;
+    case 1:
+        if (!D_800F17DC[motion->unkB][0] && !D_800F17DC[motion->unkB][1]) {
+            if (D_800F4538[0]->unk0.unkA_0) {
+                func_800E2CCC(arg0);
+                return 0;
+            }
+
+            motion->unk2 = 0;
+            angle = ratan2(0x7C0 - arg0->unk4C.vx, 0x7C0 - arg0->unk4C.vz) & 0xFFF;
+            motion->unk0 = (-angle + ONE * 3 / 4) & 0xFFF;
+            model->unk5B0_4 = 0;
+            return 1;
+        }
+        break;
+    }
+
+    arg0->unk17C =
+        arg0->unk4C.vx * ONE + D_800F17DC[motion->unkB][0] * rcos(motion->unk10);
+    arg0->unk180 =
+        arg0->unk4C.vz * ONE + D_800F17DC[motion->unkB][0] * rsin(motion->unk10);
+    arg0->unk184 = (arg0->unk4C.vy + D_800F17DC[motion->unkB][1]) * ONE;
+    func_800DEEFC(arg0, 8);
+    motion->unk3 = 0;
+    ++motion->unkB;
+    return 0;
+}
 
 int func_800E78F4(func_800E78F4_t* arg0)
 {

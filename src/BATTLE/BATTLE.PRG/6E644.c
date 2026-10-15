@@ -128,7 +128,8 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 5;
+    u_int unk0_1 : 4;
+    u_int unk0_5 : 1;
     u_int unk0_6 : 2;
     u_int unk0_8 : 7;
     u_int unk0_15 : 5;
@@ -137,6 +138,13 @@ typedef struct {
     u_int unk0_28 : 2;
     u_int unk0_30 : 2;
 } func_800DA1D4_t;
+
+typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
 
 typedef struct {
     int unk0;
@@ -150,17 +158,12 @@ typedef struct {
     SVECTOR unk1C;
     char unk24[2];
     short unk26;
-    char unk28[0x588];
+    char unk28[0x34];
+    vs_battle_movementPosition unk5C;
+    char unk60[0x550];
     u_int unk5B0_0 : 4;
     u_int unk5B0_4 : 1;
 } func_800E1238_t;
-
-typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
 
 typedef struct func_800E78F4_t {
     char unk0;
@@ -172,12 +175,14 @@ typedef struct func_800E78F4_t {
     u_char unk9;
     char unkA[4];
     u_char unkE;
-    char unkF[4];
+    u_char unkF;
+    char unk10[3];
     u_char unk13;
     char unk14[2];
     int unk16 : 8;
     u_char unk17;
-    char unk18[3];
+    u_char unk18;
+    char unk19[2];
     u_char unk1B;
     char unk1C[4];
     u_char unk20;
@@ -193,7 +198,9 @@ typedef struct func_800E78F4_t {
     char unk31[3];
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[0x10];
+    char unk3C[8];
+    u_char unk44;
+    char unk45[7];
     SVECTOR unk4C;
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
@@ -455,6 +462,7 @@ void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
+void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
@@ -477,6 +485,7 @@ void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
 int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
+void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);
@@ -1267,7 +1276,89 @@ int func_800DA6A4(func_800E78F4_t* arg0)
     return func_800DA1D4(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DA738);
+int func_800DA738(func_800E78F4_t* arg0)
+{
+    vs_battle_movementPosition point;
+    int active = 0;
+    int old;
+    int candidate = func_800DBB2C(arg0, &point, 3);
+    int target = arg0->unk16;
+    int valid = candidate >= 0;
+
+    if (arg0->unk88 != target && target != 16 && ((func_800E78F4_t**)0x1F80037C)[target]
+        && arg0->unk1A4[target].unk0_6 == 2) {
+        active = 1;
+    }
+
+    old = arg0->unkF;
+    arg0->unkF = active;
+
+    if (valid && active && arg0->unk1A4[target].unk0_5) {
+        int x;
+        int z;
+        vs_battle_movementPosition tile = ((func_800E1238_t*)D_800F4538[target])->unk5C;
+        int angle =
+            ratan2(point.x * 128 - (x = D_800F4538[target]->unk0.position.vx - 64),
+                point.z * 128 - (z = D_800F4538[target]->unk0.position.vz - 64));
+        int heading = ratan2(arg0->unk4C.vx - D_800F4538[target]->unk0.position.vx,
+            arg0->unk4C.vz - D_800F4538[target]->unk0.position.vz);
+        int cosAngle = rcos(angle);
+        int cosHeading = rcos(heading);
+        int sinAngle = rsin(angle);
+        int dot = cosAngle * cosHeading + sinAngle * rsin(heading);
+
+        dot >>= 12;
+
+        if (arg0->unk44) {
+            --arg0->unk44;
+        }
+
+        if (dot >= -1200 || arg0->unk44) {
+            func_800E1388(arg0, tile, ratan2(point.x - tile.x, point.z - tile.z), 320);
+            arg0->unk1 = 1;
+            func_800E50A0(arg0, 0, 0);
+
+            if (!arg0->unk44) {
+                arg0->unk44 = 10;
+            }
+
+            return 1;
+        }
+    }
+
+    if (active) {
+        if (valid
+            && ((func_800E78F4_t**)0x1F80037C)[target]->unk1E4[candidate] < 384 * 384) {
+            arg0->unk15C = target;
+            func_800E2CCC(arg0);
+            return 1;
+        }
+
+        if (func_800DB370(arg0, target, 320, 1)) {
+            return 1;
+        }
+
+        if (func_800DB74C(arg0, target)) {
+            return 1;
+        }
+    }
+
+    if (valid) {
+        if (old) {
+            if (func_800E45D4(128) < 128u) {
+                arg0->unk18 = 1;
+            }
+
+            func_800D8260(arg0, 6, 0);
+        }
+
+        if (func_800DB61C(arg0, 1)) {
+            return 1;
+        }
+    }
+
+    return func_800DB61C(arg0, 1);
+}
 
 int func_800DAA6C(func_800E78F4_t* arg0)
 {

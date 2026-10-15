@@ -2001,11 +2001,6 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 void func_800AC690(int arg0, D_800F45E0_t* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
 
-typedef struct {
-    int unk0;
-    int unk4;
-} func_800ACF54_t;
-
 void func_800ACF54(D_800F45E0_t* arg0)
 {
 

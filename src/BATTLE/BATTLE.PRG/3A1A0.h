@@ -52,6 +52,11 @@ typedef struct {
 } D_800F4538_unk1864;
 
 typedef struct {
+    int unk0;
+    int unk4;
+} func_800ACF54_t;
+
+typedef struct {
     SVECTOR unk0[42];
     SVECTOR unk150[0x7E];
     short unk540;

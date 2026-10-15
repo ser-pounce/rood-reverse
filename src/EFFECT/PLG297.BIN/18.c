@@ -9,6 +9,7 @@
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG297.BIN/nonmatchings/18", func_800FB3FC);
+#define VS_GRID_FUNCTION func_800FB3FC
+#include "src/EFFECT/grids.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG297.BIN/nonmatchings/18", func_800FBF4C);

@@ -105,6 +105,14 @@ int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     int drawOp;
     short delta;
     short packed;
+    D_800F4538_t* target5;
+    D_800F4538_t* target7;
+    D_800F4538_t* target8;
+    int lo51;
+    int lo52;
+    int lo53a;
+    int lo53b;
+    int lo54;
     D_800F4538_unk1864* motion = &actor->unk1864;
     int id = actor->unk0.unkF;
     u_char* script = state->unk544;
@@ -115,6 +123,7 @@ loop:
     switch (mode) {
     case 0:
         break;
+
     case 1:
         if (op == 44 || op == 25 || (op >= 29 && op < 47) || (op >= 16 && op < 19)
             || (op >= 51 && op < 55) || (op >= 56 && op < 58) || (op >= 32 && op < 40)) {
@@ -122,11 +131,13 @@ loop:
         }
 
         goto next;
+
     case 2:
         if (op < 36 || op >= 40) {
             goto next;
         }
         break;
+
     case 3:
         if (op != 2) {
             goto next;
@@ -139,21 +150,26 @@ loop:
     case 14:
         func_8006C480(id, script[1]);
         break;
+
     case 15:
         func_8006C4A4(id, script[1]);
         break;
+
     case 29:
         actor->unk5AC_21 = 1;
         actor->unk1802[0] = 0;
         actor->unk5AC_22 = 0;
         actor->unk1802[1] = 0x20;
         break;
+
     case 44:
         func_800AB358(id, script);
         break;
+
     case 28:
         func_800A41D0(actor, script[1]);
         break;
+
     case 23:
         arg = actor->animationId - 1;
     playAnimation:
@@ -163,13 +179,16 @@ loop:
 
         func_800A0204(id, arg, 0, 0);
         goto reload;
+
     case 24:
         arg = actor->animationId + 1;
         goto playAnimation;
+
     case 19:
         arg = script[1];
         sfx[0] = 13;
         goto setAnimation;
+
     case 55:
         if (state->unk549 == 0) {
             state->unk549 = script[1];
@@ -179,12 +198,14 @@ loop:
 
         --state->unk540;
         return 0;
+
     case 20:
         arg = script[1];
         sfx[0] = 1;
     setAnimation:
         func_800A0204(id, sfx[0], 0, arg);
         goto reload;
+
     case 26:
     case 27:
         arg = 0;
@@ -215,20 +236,23 @@ loop:
             weapon->unk13 = sfx[0];
         }
         break;
+
     case 21:
         func_800A0204(id, script[1], 0, 0);
         actor->unk5AC_16 = 0;
         goto reload;
+
     case 22:
         arg = script[1];
         sfx[0] = script[2];
         func_800A0204(id, arg, 0, sfx[0]);
         actor->unk5AC_16 = 0;
         goto reload;
+
     case 4:
         arg = script[1];
 
-        if (arg == 0x58) {
+        if (arg == 88) {
             if (actor->unk5B1 == 0 || !actor->unk0.weaponDrawn) {
                 arg = D_800E92DC[0];
             } else {
@@ -240,26 +264,25 @@ loop:
             func_800AE6C0(actor, arg, 0);
         }
         break;
-    case 5: {
-        D_800F4538_t* target;
 
+    case 5:
         arg = script[1];
-        target = D_800F4538[id];
+        target5 = D_800F4538[id];
         sfx[1] = script[2];
 
-        if (target->unk17E4.unk0 == 2) {
+        if (target5->unk17E4.unk0 == 2) {
             sfx[0] = 0x80;
         } else {
-            if (target->unk0.unk9_0 || target->unk0.unk9_4 || !target->unk0.unk9_7
-                || target->unk0.unkA_0 || target->unk0.unkA_3 || target->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target->unk6FC, 0);
+            if (target5->unk0.unk9_0 || target5->unk0.unk9_4 || !target5->unk0.unk9_7
+                || target5->unk0.unkA_0 || target5->unk0.unkA_3 || target5->unk0.unkA_5) {
+                func_800A1280(id, 0xFF, &target5->unk6FC, 0);
             }
 
             sfx[0] =
-                vs_main_computeSfxPan(*(int*)&target->unk6FC, target->unk6FC.vz) >> 16;
+                vs_main_computeSfxPan(*(int*)&target5->unk6FC, target5->unk6FC.vz) >> 16;
 
-            if (target->unk17E4.unk1 != 0) {
-                sfx[0] = target->unk17E4.unk1;
+            if (target5->unk17E4.unk1 != 0) {
+                sfx[0] = target5->unk17E4.unk1;
             }
         }
 
@@ -267,35 +290,33 @@ loop:
             vs_main_playSfx(0x7E, arg, sfx[0], sfx[1]);
         }
         break;
-    }
-    case 7: {
-        D_800F4538_t* target;
 
+    case 7:
         arg = script[1];
-        target = D_800F4538[id];
+        target7 = D_800F4538[id];
 
-        if (target->unk17E4.unk0 == 2) {
+        if (target7->unk17E4.unk0 == 2) {
             sfx[0] = 0x80;
             sfx[1] = 0;
         } else {
             int value;
 
-            if (target->unk0.unk9_0 || target->unk0.unk9_4 || !target->unk0.unk9_7
-                || target->unk0.unkA_0 || target->unk0.unkA_3 || target->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target->unk6FC, 0);
+            if (target7->unk0.unk9_0 || target7->unk0.unk9_4 || !target7->unk0.unk9_7
+                || target7->unk0.unkA_0 || target7->unk0.unkA_3 || target7->unk0.unkA_5) {
+                func_800A1280(id, 0xFF, &target7->unk6FC, 0);
             }
 
-            value = vs_main_computeSfxPan(*(int*)&target->unk6FC, target->unk6FC.vz);
+            value = vs_main_computeSfxPan(*(int*)&target7->unk6FC, target7->unk6FC.vz);
             sfx[0] = value >> 16;
 
-            if (target->unk17E4.unk1 != 0) {
-                sfx[0] = target->unk17E4.unk1;
+            if (target7->unk17E4.unk1 != 0) {
+                sfx[0] = target7->unk17E4.unk1;
             }
 
             sfx[1] = value & 0xFFFF;
 
-            if (target->unk17E4.unk2 != 0) {
-                sfx[1] = target->unk17E4.unk2;
+            if (target7->unk17E4.unk2 != 0) {
+                sfx[1] = target7->unk17E4.unk2;
             }
         }
 
@@ -303,27 +324,25 @@ loop:
             vs_main_playSfx(0xFF000, arg, sfx[0], sfx[1]);
         }
         break;
-    }
-    case 8: {
-        D_800F4538_t* target;
 
+    case 8:
         arg = script[1];
-        target = D_800F4538[id];
+        target8 = D_800F4538[id];
         sfx[1] = script[2];
 
-        if (target->unk17E4.unk0 == 2) {
+        if (target8->unk17E4.unk0 == 2) {
             sfx[0] = 0x80;
         } else {
-            if (target->unk0.unk9_0 || target->unk0.unk9_4 || !target->unk0.unk9_7
-                || target->unk0.unkA_0 || target->unk0.unkA_3 || target->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target->unk6FC, 0);
+            if (target8->unk0.unk9_0 || target8->unk0.unk9_4 || !target8->unk0.unk9_7
+                || target8->unk0.unkA_0 || target8->unk0.unkA_3 || target8->unk0.unkA_5) {
+                func_800A1280(id, 0xFF, &target8->unk6FC, 0);
             }
 
             sfx[0] =
-                vs_main_computeSfxPan(*(int*)&target->unk6FC, target->unk6FC.vz) >> 16;
+                vs_main_computeSfxPan(*(int*)&target8->unk6FC, target8->unk6FC.vz) >> 16;
 
-            if (target->unk17E4.unk1 != 0) {
-                sfx[0] = target->unk17E4.unk1;
+            if (target8->unk17E4.unk1 != 0) {
+                sfx[0] = target8->unk17E4.unk1;
             }
         }
 
@@ -331,16 +350,19 @@ loop:
             vs_main_playSfx(0xFF000, arg, sfx[0], sfx[1]);
         }
         break;
-    }
+
     case 6:
         func_80045D64(0x7E, script[1]);
         break;
+
     case 9:
         func_80045D64(0xFF000, script[1]);
         break;
+
     case 11:
         func_800AE828(id, actor, op);
         break;
+
     case 1:
         func_800AD008(actor, state);
         actor->unk5AC_16 = 1;
@@ -349,11 +371,13 @@ loop:
         script = state->unk544;
         state->unk540 = 0;
         goto check;
+
     case 12:
         if (!actor->unk5AC_16) {
             func_800CEF74(script[1]);
         }
         break;
+
     case 13:
         if (D_800F1868 == 1 && !actor->unk5AC_18) {
             func_800AD008(actor, state);
@@ -363,12 +387,14 @@ loop:
 
         actor->unk5AC_18 = 0;
         break;
+
     case 2:
         if (func_8006C84C(id) == 0) {
             sfx[0] = 1;
             goto setAnimation;
         }
         break;
+
     case 36:
     case 37:
     case 38:
@@ -386,6 +412,7 @@ loop:
         (&((SVECTOR*)actor->unk0.unk68->vertexOffset)[arg].vx)[op - 36] += delta;
         actor->unk5AC_23 = 1;
         break;
+
     case 39:
         delta = script[1];
         packed = delta << 8;
@@ -403,6 +430,7 @@ loop:
 
         actor->unk5AC_23 = 1;
         break;
+
     case 30:
     case 31:
         arg = op - 30;
@@ -411,37 +439,44 @@ loop:
         actor->unk1804[arg].y = script[3];
         actor->unk1804[arg].columns = script[4];
         break;
+
     case 32:
         func_800AAD4C(id, 1, 1, 1);
         break;
+
     case 33:
         func_800AAD4C(id, 1, 1, 0);
         break;
+
     case 34:
         func_800AAD4C(id, 1, 0, 1);
         break;
+
     case 35:
         func_800AAD4C(id, 1, 0, 0);
         break;
+
     case 40:
         func_800AE46C(script);
         break;
+
     case 41:
         func_800AE474(script);
         script += 5;
         break;
+
     case 10:
         func_800AE4FC(&actor->unk0, script[1]);
         break;
+
     case 25:
         actor->unk5AC_20 = 1;
         break;
-    case 51: {
-        int lo;
+
+    case 51:
         delta = script[1];
-        lo = script[2];
-        motion->unk10 = ((delta << 8) | lo) - motion->unkC;
-    }
+        lo51 = script[2];
+        motion->unk10 = ((delta << 8) | lo51) - motion->unkC;
 
     setFrames:
         arg = script[3];
@@ -453,36 +488,31 @@ loop:
 
         motion->unk5 = arg;
         break;
-    case 52: {
-        int lo;
+
+    case 52:
         delta = script[1];
-        lo = script[2];
-        motion->unk12 = ((delta << 8) | lo) - motion->unkE;
-    }
+        lo52 = script[2];
+        motion->unk12 = ((delta << 8) | lo52) - motion->unkE;
 
         goto setFrames;
-    case 53: {
-        int lo;
-        delta = script[1];
-        lo = script[2];
-        motion->unk10 = ((delta << 8) | lo) - motion->unkC;
-    }
 
-        {
-            int lo;
-            delta = script[3];
-            lo = script[4];
-            motion->unk12 = ((delta << 8) | lo) - motion->unkE;
-        }
+    case 53:
+        delta = script[1];
+        lo53a = script[2];
+        motion->unk10 = ((delta << 8) | lo53a) - motion->unkC;
+
+        delta = script[3];
+        lo53b = script[4];
+        motion->unk12 = ((delta << 8) | lo53b) - motion->unkE;
 
         arg = script[5];
         goto translate;
-    case 54: {
-        int lo;
+
+    case 54:
         delta = script[1];
-        lo = script[2];
-        motion->unkA = ((delta << 8) | lo) - motion->unk8;
-    }
+        lo54 = script[2];
+        motion->unkA = ((delta << 8) | lo54) - motion->unk8;
+
         if (motion->unkA < -ONE / 2) {
             motion->unkA += ONE;
         }
@@ -499,10 +529,12 @@ loop:
 
         motion->unk4 = arg;
         break;
+
     case 56:
     case 57:
         func_800AC440(actor, script[1], op - 56);
         break;
+
     case 58:
         actor->unk0.unk9_0 = 2;
 
@@ -510,18 +542,22 @@ loop:
             D_800F4538[actor->unk17FD]->unk0.unk9_0 = 2;
         }
         break;
+
     case 59:
         actor->unk0.unk34.vy = 3;
         actor->unk0.unkA_0 = 3;
         actor->unk0.unkA_3 = 0;
         actor->unk0.unk9_6 = 0;
         break;
+
     case 61:
         actor->unk5B0_3 = 0;
         break;
+
     case 62:
         actor->unk5B0_3 = 1;
         break;
+
     case 60:
         arg = script[1];
         point = D_800E9A28[0];
@@ -549,14 +585,17 @@ loop:
             motion->unk8 = (motion->unk8 + motion->unkA) & 0xFFF;
         }
         break;
+
     case 63:
         if (!actor->unk5AC_16) {
             func_800CF8BC();
         }
         break;
+
     case 64:
         actor->unk5AC_20 = 0;
         break;
+
     case 0:
     default:
         state->unk542 = 0xFFFF;
@@ -567,7 +606,7 @@ next:
     script += D_800E9298[op];
     arg = *script;
 
-    if (arg == 0xFF) {
+    if (arg == 255) {
         arg = script[1] + 0xFF;
         script += 2;
     } else {
@@ -911,7 +950,7 @@ void func_800AEF94(MATRIX* camera)
         actor = D_800F4538[i];
 
         if (actor == NULL || actor->unk0.nBones == 0 || actor->unk0.skip
-            || actor->unk0.unk13 == 0xFC) {
+            || actor->unk0.unk13 == 252) {
             continue;
         }
 
@@ -999,7 +1038,7 @@ void func_800AEF94(MATRIX* camera)
             }
         }
 
-        if (actor->unk63C >= 0x80 && actor->unk5CC != 0) {
+        if (actor->unk63C >= 128 && actor->unk5CC != 0) {
             actor->unk0.unkB_7 = 1;
         }
     }
@@ -1041,7 +1080,7 @@ void func_800AEF94(MATRIX* camera)
             continue;
         }
 
-        if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk1A == 0xF7) {
+        if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk1A == 247) {
             func_800B0908(object, vs_gametime_tickspeed / 2);
         }
 
@@ -1670,7 +1709,7 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         return;
     }
 
-    if (mode == 0xFF) {
+    if (mode == 255) {
         if (object->unk34 == 0 && object->unk38 == 0) {
             object->unk16C.unk4 = 0;
             goto fall;
@@ -1704,8 +1743,8 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         }
 
         return;
-    } else if (mode == 0xFE) {
-        if ((object->unk1C & 0x7F) == 0x40 && (object->unk20 & 0x7F) == 0x40) {
+    } else if (mode == 254) {
+        if ((object->unk1C & 0x7F) == 64 && (object->unk20 & 0x7F) == 64) {
             scratch->rotation.vx = object->unk1C;
             scratch->rotation.vz = object->unk20;
             step = object->unk3A;
@@ -1732,7 +1771,7 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         object->unk1C += object->unk34;
         object->unk20 += object->unk38;
         return;
-    } else if (mode == 0xFD) {
+    } else if (mode == 253) {
         if (!func_800B101C(object)) {
             func_800E6898(object);
             func_800E6898(object);
@@ -1740,7 +1779,7 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         }
 
         return;
-    } else if (mode == 0xFC) {
+    } else if (mode == 252) {
         u_short y;
 
     fall:
@@ -1797,11 +1836,11 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         }
 
         step = object->unk1A;
-        if (step == 0xFE) {
+        if (step == 254) {
             vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
             object->unk1A = 0xFB;
             object->unk16C.unk4 = 0;
-        } else if (step == 0xFF || step == 0xF9) {
+        } else if (step == 255 || step == 249) {
             object->unk1A = 0;
         } else {
             vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
@@ -1821,22 +1860,22 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         }
 
         return;
-    } else if (mode == 0xFB) {
+    } else if (mode == 251) {
         func_800B101C(object);
         return;
-    } else if (mode == 0xFA) {
+    } else if (mode == 250) {
         func_800B101C(object);
         goto children;
-    } else if (mode == 0xF9) {
+    } else if (mode == 249) {
         if (func_800B101C(object)) {
             return;
         }
 
         goto fall;
-    } else if (mode == 0xF7) {
+    } else if (mode == 247) {
         func_800B101C(object);
         return;
-    } else if (mode == 0xF8) {
+    } else if (mode == 248) {
         func_800B101C(object);
         return;
     }
@@ -1850,7 +1889,7 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
     step = object->unk38 / object->unk1A;
     object->unk38 -= step;
     object->unk20 += step;
-    if (--object->unk1A == 0 && object->unk12 == 0xFF) {
+    if (--object->unk1A == 0 && object->unk12 == 255) {
         goto fall;
     }
 }
@@ -1867,7 +1906,7 @@ int func_800B101C(D_800F45E0_t* object)
 
     value = object->unk1A;
 
-    if (value == 0xFD) {
+    if (value == 253) {
         object->unk1E += D_800E91AC[frame];
         object->unk24 += D_800E91BC[frame];
         object->unk26 += D_800E91CC[frame];
@@ -1876,7 +1915,7 @@ int func_800B101C(D_800F45E0_t* object)
         if (frame == 14) {
             goto complete;
         }
-    } else if (value == 0xFB) {
+    } else if (value == 251) {
         value = object->unk3A;
         object->unk20 += D_800E91F0[frame];
         delta = D_800E91FC[frame];
@@ -1894,14 +1933,14 @@ int func_800B101C(D_800F45E0_t* object)
         if (frame == 9) {
             goto complete;
         }
-    } else if (value == 0xFA) {
+    } else if (value == 250) {
         object->unk1E += D_800E91EC[frame];
         object->unk36 = D_800E91EC[frame];
 
         if (frame == 3) {
             goto complete;
         }
-    } else if (value == 0xF9) {
+    } else if (value == 249) {
         int orientation;
 
         object->unk1E += D_800E9208[frame];
@@ -1929,7 +1968,7 @@ int func_800B101C(D_800F45E0_t* object)
             func_800A0104(object->unkF, object->unk16C.unk2);
             goto complete;
         }
-    } else if (value == 0xF8) {
+    } else if (value == 248) {
         if (frame >= 9) {
             object->unk1E += 3;
 
@@ -1943,7 +1982,7 @@ int func_800B101C(D_800F45E0_t* object)
                 goto complete;
             }
         }
-    } else if (value == 0xF7) {
+    } else if (value == 247) {
         object->unk1E += D_800E9238[frame];
         object->unk2C = D_800E9248[frame];
         object->unk2E = D_800E9258[frame];

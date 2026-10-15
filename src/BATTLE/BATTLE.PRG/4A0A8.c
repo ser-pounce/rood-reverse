@@ -1912,6 +1912,7 @@ int func_800B92F4(u_char* script, short arg1 __attribute__((unused)))
         }
 
         goto finishState;
+
     case 14:
         if (D_800F4BF8 == 0) {
             if (vs_battle_getStateFlag(0xB6) == 1) {
@@ -1932,6 +1933,7 @@ int func_800B92F4(u_char* script, short arg1 __attribute__((unused)))
         vs_battle_setStateFlag(0xB6, 0);
         D_800F4BF8 = 0;
         return 4;
+
     case 13:
         if (D_800F4BF8 == 0) {
             vs_battle_setStateFlag(0xB6, 1);
@@ -1941,6 +1943,7 @@ int func_800B92F4(u_char* script, short arg1 __attribute__((unused)))
         }
 
         goto finishTransition;
+
     case 15:
         if (D_800F4BF8 == 0) {
             func_8007B9CC();
@@ -1955,6 +1958,7 @@ int func_800B92F4(u_char* script, short arg1 __attribute__((unused)))
         }
 
         return 1;
+
     default:
         if (D_800F4BF8 == 0) {
             func_800CACD0(script[1], 2);
@@ -4402,7 +4406,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
     short left;
     int right;
 
-    if (type == 0xFF) {
+    if (type == 255) {
         if (D_800F4C34 == 0) {
             return 0;
         }
@@ -4422,7 +4426,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
         }
     }
 
-    if (type == 0x40) {
+    if (type == 64) {
         _evtFile = arg1;
         D_800F4BE0 = 0;
         D_800F4C34 = 1;
@@ -4468,6 +4472,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
                 D_800F4C34 = 1;
                 D_800F4BA8 = 0;
                 return 1;
+
             case 1:
                 func_800A1108(0, &position);
 
@@ -4478,6 +4483,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 3;
                 break;
+
             case 2:
                 func_800A1108(0, &position);
 
@@ -4490,10 +4496,12 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 5;
                 break;
+
             case 3:
                 left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
                 right = p[3];
                 goto compare;
+
             case 15:
                 left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
                 right = vs_battle_getStateFlag(((p[2] & 3) << 8) | p[3]);
@@ -4504,26 +4512,31 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
                         result = 1;
                     }
                     break;
+
                 case 0x10:
                     if (left >= right) {
                         result = 1;
                     }
                     break;
+
                 case 0x20:
                     if (left == right) {
                         result = 1;
                     }
                     break;
+
                 case 0x30:
                     if (left != right) {
                         result = 1;
                     }
                     break;
+
                 case 0x40:
                     if (left < right) {
                         result = 1;
                     }
                     break;
+
                 case 0x50:
                     if (left > right) {
                         result = 1;
@@ -4533,6 +4546,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 4;
                 break;
+
             case 4:
                 left = vs_battle_getShort(p + 1);
 
@@ -4546,6 +4560,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 3;
                 break;
+
             case 5:
                 left = flagValue = func_8007CF80(p[1]);
                 flagId = vs_battle_getShort(p + 2);
@@ -4559,6 +4574,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 4;
                 break;
+
             case 6:
                 if (mode == 0) {
                     actorId = func_800BFE50(vs_battle_getShort(p + 1));
@@ -4572,6 +4588,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 5;
                 break;
+
             case 7:
                 actorId = func_800BFE50(vs_battle_getShort(p + 1));
 
@@ -4592,6 +4609,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 5;
                 break;
+
             case 8:
                 if (mode == 1 && arg2[0] == p[1] && arg2[2] == p[2]) {
                     result = 1;
@@ -4599,6 +4617,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 3;
                 break;
+
             case 9:
                 if (!(func_800A0BE0(0) & 0x104000)) {
                     result = 1;
@@ -4606,6 +4625,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 ++p;
                 break;
+
             case 10:
                 left = flagValue =
                     vs_battle_itemIdIsInInventory(vs_battle_getShort(p + 1));
@@ -4620,6 +4640,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 5;
                 break;
+
             case 11:
                 if ((short)func_800A0024(p[1], &position) >= 0
                     && position.unk0.unk0.fields.unk0_0 == p[2]
@@ -4632,6 +4653,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 6;
                 break;
+
             case 12:
                 left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
                 flagId = vs_battle_getShort(p + 3);
@@ -4645,6 +4667,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 5;
                 break;
+
             case 13:
                 actorId = func_800BFE50(vs_battle_getShort(p + 1));
 
@@ -4662,6 +4685,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 5;
                 break;
+
             case 14:
                 actorId = func_800BFE50(vs_battle_getShort(p + 1));
 
@@ -4681,6 +4705,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 7;
                 break;
+
             case 16:
                 actorId = func_800BFE50(vs_battle_getShort(p + 1));
 
@@ -4695,10 +4720,12 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
 
                 p += 3;
                 break;
+
             case 0xFE:
                 negate = 1;
                 ++p;
                 continue;
+
             default:
                 sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *p);
                 break;
@@ -4791,10 +4818,12 @@ int func_800BF850(void)
             func_800BF5F0(D_800F4C30);
             D_800F4C34 = 4;
             break;
+
         case 2:
             func_800BF5F0(_mpdRoomDoorSection + ((short*)_mpdRoomDoorSection)[_evtFile]);
             D_800F4C34 = 4;
             break;
+
         case 0:
             func_800C00E8(_evtFile, D_800F4C30);
             D_800F4C34 = 3;
@@ -4849,7 +4878,7 @@ int func_800BF850(void)
         func_800BB874();
     }
 
-    if (D_800F4C22 != 0 && (u_char)func_800BD610() == 0xFF) {
+    if (D_800F4C22 != 0 && (u_char)func_800BD610() == 255) {
         if (D_800F4C54 != 0) {
             D_800F4C34 = 3;
             D_800F4BE0 = 0;

@@ -3,6 +3,7 @@
 #include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
+#include "40564.h"
 #include "44F14.h"
 #include "6E644.h"
 #include "../SLUS_010.40/main.h"
@@ -66,8 +67,6 @@ int func_800A91DC(int, int, int);
 int func_800AAD4C(int, int, int, int);
 void func_800AB2AC(int);
 void func_800AC500(D_800F4538_t*);
-void func_800AD008(void*, void*);
-int func_800AD494(D_800F4538_t*, int, int*);
 void func_800AD62C(int, int*, int*, int);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE47C(D_800F4538_t*);
@@ -2491,7 +2490,7 @@ void func_8009DDF4(int arg0, SVECTOR* arg1)
 
 void func_8009DF3C(int arg0, int arg1)
 {
-    int sp10[2];
+    u_short* frames[2];
     D_800F4538_t* temp_s2 = D_800F4538[arg0];
 
     int var_s0 = 0;
@@ -2518,8 +2517,9 @@ void func_8009DF3C(int arg0, int arg1)
         }
         ++var_s0;
         var_s1 = 8;
-        func_800AD494(temp_s2, var_s0, sp10);
-        if (sp10[0] == 0) {
+        func_800AD494(temp_s2, var_s0, frames);
+
+        if (frames[0] == NULL) {
             var_s0 = 6;
             var_s1 = 0x10;
         }
@@ -2639,7 +2639,7 @@ void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
 {
     u_char sp10[2] = { 0x55, 0x58 };
     u_char sp18[2] = { 0x57, 0x59 };
-    int sp20;
+    u_short* frames;
     int angle;
     int diff;
     int anim;
@@ -2687,9 +2687,9 @@ void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
         anim += 100;
     }
 
-    func_800AD494(actor, anim, &sp20);
+    func_800AD494(actor, anim, &frames);
 
-    if (sp20 == 0) {
+    if (frames == NULL) {
         anim = sp18[arg2];
         if (actor->unk0.weaponDrawn) {
             anim += 100;
@@ -3181,7 +3181,7 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
 
 void func_8009EFEC(int actorId, SVECTOR* target, int mode)
 {
-    int found;
+    u_short* found;
     D_800F4538_t* actor = D_800F4538[actorId];
     int value;
 
@@ -3217,7 +3217,7 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
         func_800AD494(actor, 0xBF, &found);
         value = 0xBF;
 
-        if (found == 0) {
+        if (found == NULL) {
             value = 0xC1;
         }
 
@@ -3226,7 +3226,7 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
     } else if (mode == 1) {
         func_800AD494(actor, 0xFF, &found);
 
-        if (found == 0) {
+        if (found == NULL) {
             D_800F4538_t* fallbackActor = D_800F4538[actorId];
 
             if (fallbackActor != NULL) {
@@ -3293,12 +3293,13 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
 
 void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
 {
-    int sp10;
+    u_short* frames;
 
     func_8009EFEC(arg0, arg1, arg2);
     if (arg2 == 1) {
-        func_800AD494(D_800F4538[arg0], 0xFE, &sp10);
-        if (sp10 != 0) {
+        func_800AD494(D_800F4538[arg0], 0xFE, &frames);
+
+        if (frames != NULL) {
             func_800A01C8((int)arg0, 0xFE, 8, 0);
         }
     }
@@ -3306,7 +3307,7 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
 
 void func_8009F314(int actorId, void* context, int animate)
 {
-    int found;
+    u_short* found;
     D_800F4538_t* actor = D_800F4538[actorId];
 
     if (actor != NULL) {
@@ -3338,7 +3339,7 @@ void func_8009F314(int actorId, void* context, int animate)
 
             func_800AD494(actor, 0xAB, &found);
 
-            if (found != 0 && actor->unk0.unkA_0 == 0) {
+            if (found != NULL && actor->unk0.unkA_0 == 0) {
                 animationId = 0x47;
             }
 
@@ -3838,7 +3839,7 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     D_800F4538_t* actor;
     int keepFlag15;
     int anim;
-    int found;
+    void* found;
 
     if (animation == 0) {
         return 0;
@@ -3936,7 +3937,7 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     }
 
 retry:
-    found = func_800AD494(actor, anim, (int*)&frames);
+    found = func_800AD494(actor, anim, &frames);
 
     if (found == 0 || frames == NULL) {
         actor->unk5AC_15 = 0;

@@ -64,7 +64,7 @@ void func_800A9EB4(int, short, int);
 void func_800AA454(int, func_8006EBF8_t_fields*, int);
 void func_800AA620(int, SVECTOR*, int);
 void func_800AC690(int, D_800F4538_t*);
-int func_800AD494(void*, int, u_short**);
+void* func_800AD494(void*, int, u_short**);
 void func_800E4BD8(int);
 void func_800E4BE0(int);
 void func_800E68A0(D_800F45E0_t*);

@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG263.BIN/nonmatchings/110", func_800F9910);
+#define VS_SURFACE_FUNCTION func_800F9910
+#define VS_SURFACE_VERTICES D_800FDCB0
+#include "src/EFFECT/surfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG263.BIN/nonmatchings/110", func_800FA4A8);
 

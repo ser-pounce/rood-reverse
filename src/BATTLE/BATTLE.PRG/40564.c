@@ -31,16 +31,6 @@ typedef struct {
     u_char y;
 } func_800AB358_t;
 
-typedef struct {
-    u_char unk0[0xF];
-    u_char unkF;
-    u_char unk10[0x54];
-    D_800F4538_unk64 unk64;
-    u_char unk68[0xC4];
-    u_short unk12C[16];
-    u_short unk14C[16];
-} func_800AB788_t;
-
 void func_8007A824(DR_MOVE*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DA24(int, int);
@@ -1613,7 +1603,7 @@ void func_800AB4F0(D_800F4538_t* actor)
     }
 }
 
-void func_800AB788(D_800F4538_t* actor, func_800AB788_t* object, int arg2)
+void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
 {
     D_800F4538_unk64* state;
     int count;
@@ -2010,11 +2000,6 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 
 void func_800AC690(int arg0, D_800F45E0_t* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
-
-typedef struct {
-    int unk0;
-    int unk4;
-} func_800ACF54_t;
 
 void func_800ACF54(D_800F45E0_t* arg0)
 {

@@ -3813,7 +3813,7 @@ int func_800A0104(int index, int material)
     RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, &obj->unk6C[4]);
     obj->unk18 = 0;
     *(int*)&obj->unk24 = 0;
-    obj->unk28 = 0;
+    *(int*)&obj->unk28 = 0;
     return 0;
 }
 

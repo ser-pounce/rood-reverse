@@ -43,6 +43,7 @@ void func_800AE474(u_char*);
 void func_800AE6C0(D_800F4538_t*, int, int);
 void func_800AE828(int, D_800F4538_t*, int);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
+void func_800AFDE8(int, SVECTOR*, int);
 void func_800B0908(D_800F45E0_t*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 void func_800B17F0(SVECTOR*, MATRIX*);
@@ -1123,8 +1124,7 @@ void func_800AF844(SVECTOR* dst, SVECTOR* src, int count)
     }
 }
 
-void func_800AF960(D_800F45E0_t* arg0) __attribute__((unused));
-void func_800AF960(D_800F45E0_t* arg0)
+inline void func_800AF960(D_800F4538_t* arg0)
 {
     int temp_lo;
 
@@ -1150,7 +1150,91 @@ void func_800AF960(D_800F45E0_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800AFA28);
+void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
+{
+    u_short* header;
+    D_1F8003EC_t* scratch = (void*)0x1F8003EC;
+    int first;
+    int last;
+    int i;
+    u_short track;
+    u_char** data;
+
+    state->unk548_17 = 0;
+    first = state->unk540;
+
+    for (i = 0; i < actor->unk5B2; ++i) {
+        func_800AF960(actor);
+
+        if (state->unk540 >= actor->unk5BC) {
+            state->unk548_17 = 1;
+
+            if (actor->unk6E0 != 0) {
+                func_800A0618(
+                    actor->unk0.unkF, actor->unk6E0, actor->unk6E1, actor->unk6E2);
+                actor->unk6E0 = 0;
+                return;
+            }
+        }
+
+        if (actor->unk0.freeze && state->unk542 == state->unk540) {
+            func_800AD714(actor, state, mode);
+        }
+
+        if (state->unk540 >= actor->unk5BC) {
+            --state->unk540;
+            state->unk548_16 = 1;
+        }
+
+        ++state->unk540;
+    }
+
+    if (state->unk540 == 1 || state->unk548_16) {
+        return;
+    }
+
+    if (state->unk549 != 0) {
+        return;
+    }
+
+    last = state->unk540 - 1;
+
+    if (last < first) {
+        first = 1;
+    }
+
+    if (first == 0) {
+        first = 1;
+    }
+
+    data = func_800AD494(actor, actor->animationId, &header);
+
+    if (data == NULL) {
+        return;
+    }
+
+    scratch->first = first;
+    scratch->last = last;
+    scratch->data = data;
+
+    track = header[4];
+
+    if (track != 0) {
+        func_800AFDE8(track, &state->unk150[41], 0);
+        applyVector(&actor->unk0.position, state->unk150[41].vx / 4,
+            state->unk150[41].vy / 4, state->unk150[41].vz / 4, +=);
+    }
+
+    func_800AFDE8(header[3], &state->unk0[41], 0);
+
+    for (i = 0; i < actor->unk0.nBones; ++i) {
+        func_800AFDE8(header[i + 5], &state->unk0[i], 1);
+
+        if (((u_char*)header)[3] & 2) {
+            func_800AFDE8(header[i + actor->unk0.nBones + 5], &state->unk150[i], 0);
+        }
+    }
+}
 
 void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 {

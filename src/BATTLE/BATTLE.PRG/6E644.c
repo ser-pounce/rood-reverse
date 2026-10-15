@@ -2119,7 +2119,7 @@ static inline int _snapshotActorStats(void)
 {
     vs_battle_actor* actor;
 
-    D_800F58E8 = vs_main_allocHeapR(sizeof(vs_battle_actor2) * 16);
+    D_800F58E8 = vs_main_allocHeapR(sizeof *D_800F58E8 * 16);
 
     if (D_800F58E8 == NULL) {
         return 0;
@@ -3365,10 +3365,7 @@ void func_800E7960(func_800E78F4_t* arg0)
     }
 
     difference = radius - 1024;
-
-    if (difference < 0) {
-        difference = -difference;
-    }
+    difference = ABS(difference);
 
     if (difference < 32) {
         radius = 1024;
@@ -3378,9 +3375,7 @@ void func_800E7960(func_800E78F4_t* arg0)
     center[0] = 0x7C0 * ONE;
     difference = motion->unk12 - 160;
 
-    if (difference < 0) {
-        difference = -difference;
-    }
+    difference = ABS(difference);
 
     if (difference < 16) {
         motion->unk12 = 160;

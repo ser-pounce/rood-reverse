@@ -184,7 +184,8 @@ typedef struct func_800E78F4_t {
     u_char unk18;
     char unk19[2];
     u_char unk1B;
-    char unk1C[4];
+    u_char unk1C;
+    char unk1D[3];
     u_char unk20;
     u_char unk21;
     char unk22[4];
@@ -228,9 +229,11 @@ typedef struct func_800E78F4_t {
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
-    char unkEA[0x11];
+    char unkEA[0x10];
+    u_char unkFA;
     u_char unkFB;
-    char unkFC[0x20];
+    char unkFC[0x1C];
+    u_char unk118[4];
     vs_battle_movementPosition unk11C;
     char unk120[0xA];
     u_char unk12A;
@@ -1491,7 +1494,91 @@ int func_800DAD9C(func_800E78F4_t* arg0)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DAED0);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DB0BC);
+int func_800DB0BC(func_800E78F4_t* arg0)
+{
+    if (D_800F5920 == NULL) {
+        if ((*(u_int*)&arg0->unk34 & 0xFF00FF) == (arg0->unk38 & 0xFF00FF)) {
+            arg0->unk2 = 1;
+
+            if (!arg0->unkFA) {
+                u_char directions[4];
+                vs_battle_movementPosition probe;
+                u_int angle = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
+                    arg0->unk4C.vz - arg0->unk168.z * 128 - 64);
+                u_int quadrant;
+                int first;
+                int second;
+                int i;
+
+                angle &= 0xFFF;
+                first = (angle >> 9) & 7;
+                second = ((angle >> 9) + 2) & 7;
+                quadrant = angle / (ONE / 4);
+
+                if (((angle & 0x3FF) > ONE / 8 ? ((quadrant + 1) & 3) * 2 : quadrant * 2)
+                    == first) {
+                    directions[0] = first;
+                    directions[1] = second;
+                } else {
+                    directions[0] = second;
+                    directions[1] = first;
+                }
+
+                if (func_800E45D4(2)) {
+                    directions[2] = (first + 4) & 7;
+                    directions[3] = (second + 4) & 7;
+                } else {
+                    directions[2] = (second + 4) & 7;
+                    directions[3] = (first + 4) & 7;
+                }
+
+                *(u_int*)arg0->unk118 = *(u_int*)directions;
+                *(u_int*)&probe = 0;
+
+                for (i = 0; i < 4; ++i) {
+                    probe.x =
+                        arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dx;
+                    probe.z =
+                        arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dz;
+
+                    if (func_800D954C(arg0, probe) > 0) {
+                        arg0->unkFA = i;
+                        break;
+                    }
+                }
+
+                ++arg0->unkFA;
+            }
+
+            if (arg0->unkFA >= 5) {
+                func_800E4CE8(arg0);
+                arg0->unk1C = 0;
+                arg0->unkFA = 0;
+                return 0;
+            }
+
+            arg0->unk168.x =
+                arg0->unk34.x
+                + ((D_800F16EC_t*)0x1F8003EC)[arg0->unk118[arg0->unkFA - 1]].dx;
+            arg0->unk168.z =
+                arg0->unk34.z
+                + ((D_800F16EC_t*)0x1F8003EC)[arg0->unk118[arg0->unkFA - 1]].dz;
+            arg0->unk15C = arg0->unkFB;
+
+            if (func_800D954C(arg0, arg0->unk168) > 0) {
+                func_800E50A0(arg0, 0, 0);
+            } else {
+                ++arg0->unkFA;
+            }
+
+            return 1;
+        }
+
+        arg0->unkFA = 0;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DB370);
 

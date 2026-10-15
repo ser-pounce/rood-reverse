@@ -370,6 +370,7 @@ int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
+void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 void func_800DB5B0(func_800E78F4_t*);
@@ -841,7 +842,55 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D836C);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D8400);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D85D8);
+int func_800D85D8(func_800E78F4_t* arg0)
+{
+    int i;
+    int changed = 0;
+    u_char status;
+    vs_battle_actor* actor;
+
+    for (i = 0; i < arg0->unk470; ++i) {
+        func_800DCAA0_t* entry = arg0->unk430[i];
+
+        if (entry->unkC_19 && entry->unk4_13 <= D_800F58BC->unk18
+            && (!func_800E4CF4(arg0, entry, entry->unkC_0)
+                || !func_800E4DF8(arg0, entry->unk4_0, entry->unk4_3))) {
+            entry->unkC_19 = 0;
+        }
+    }
+
+    if (arg0->unk470 > 0 && !arg0->unk430[0]->unkC_19) {
+        changed = 1;
+
+        for (i = 1; i < arg0->unk470; ++i) {
+            func_800DCAA0_t* entry = arg0->unk430[i];
+
+            if (entry->unkC_19) {
+                arg0->unk430[0] = entry;
+                func_800D9DD8(arg0);
+                goto done;
+            }
+        }
+
+        arg0->unk470 = 0;
+    }
+
+done:
+    if (!arg0->unk470) {
+        for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+            if (arg0->unk1A4[actor->id].unk0_6 == 3) {
+                break;
+            }
+        }
+
+        status = actor == NULL ? 3 : 2;
+    } else {
+        status = D_800F58BC->unk18 + 30 < arg0->unk430[0]->unk4_13;
+    }
+
+    arg0->unk131 = status;
+    return changed;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800D87E8);
 

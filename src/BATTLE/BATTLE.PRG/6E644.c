@@ -10,6 +10,9 @@
 #include <abs.h>
 #include <rand.h>
 
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+
 struct func_800D4910_t;
 
 typedef struct {
@@ -159,7 +162,8 @@ typedef struct func_800E78F4_t {
     char unk1C[4];
     u_char unk20;
     u_char unk21;
-    char unk22[5];
+    char unk22[4];
+    u_char unk26;
     u_char unk27;
     char unk28[3];
     u_char unk2B;
@@ -230,7 +234,7 @@ typedef struct func_800E78F4_t {
     int unk228;
     func_800DCAA0_t* unk22C;
     func_800DD604_t unk230[6][4];
-    char unk2F0[0x140];
+    func_800DCAA0_t unk2F0[16];
     func_800DCAA0_t* unk430[16];
     int unk470;
 } func_800E78F4_t;
@@ -388,10 +392,13 @@ int func_800DC284(int, int, int, int);
 void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
 void func_800DC344(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC3CC(func_800E78F4_t*);
+void func_800DC3E8(vs_battle_actor2*, vs_battle_actor2*);
 void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
+void func_800DC574(func_800E78F4_t*, int);
 void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
@@ -441,7 +448,10 @@ extern D_800F58BC_t* D_800F58BC;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
+extern vs_battle_actor2* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];
+extern int D_800F58F0;
+extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
@@ -2052,7 +2062,171 @@ void func_800DE030(int arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DE3E4);
+static inline int _snapshotActorStats(void)
+{
+    vs_battle_actor* actor;
+
+    D_800F58E8 = vs_main_allocHeapR(sizeof(vs_battle_actor2) * 16);
+
+    if (D_800F58E8 == NULL) {
+        return 0;
+    }
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        func_800DC3E8(actor->unk3C, &D_800F58E8[actor->id]);
+    }
+
+    return 1;
+}
+
+static inline void _restoreActorStats(void)
+{
+    vs_battle_actor* actor;
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        func_800DC3E8(&D_800F58E8[actor->id], actor->unk3C);
+    }
+
+    vs_main_freeHeapR(D_800F58E8);
+}
+
+void func_800DE3E4(func_800E78F4_t* arg0)
+{
+    int delays[3] = { 0, 455, 2900 };
+    int quotas[3] = { 10, 3, 3 };
+    int selected[3];
+    int row;
+    int column;
+    int pass;
+    int i;
+    int j;
+    int delay;
+    int minDelay;
+    vs_battle_actor* actor;
+    vs_battle_actor2* stats = arg0->unk5C;
+    vs_battle_actor* self;
+
+    D_800F58F0 = 0;
+    D_800F58F4 = 0;
+
+    for (row = 0; row < 6; ++row) {
+        for (column = 0; column < 4; ++column) {
+            for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+                D_800F5904[actor->id][stats->armor[row][column].id] = 0;
+            }
+        }
+    }
+
+    arg0->unk470 = 0;
+
+    if (arg0->unk88 == 0) {
+        return;
+    }
+
+    if (_snapshotActorStats()) {
+        minDelay = MAX(arg0->unk13F, arg0->unk5C->unk954 / 35);
+        D_800F58BC->unk18 = 0;
+
+        for (pass = 0; pass < 3; ++pass) {
+            delay = MAX(delays[pass], minDelay);
+            func_800DE030(delay);
+            func_800DD918(arg0, (short)delay);
+            func_800DC3CC(arg0);
+
+            if (pass == 1) {
+                selected[1] = MAX(16 - selected[0] - quotas[2], 0);
+                selected[pass] = MIN(selected[1], arg0->unk470);
+            } else {
+                selected[pass] = MIN(arg0->unk470, quotas[pass]);
+            }
+
+            for (i = 0; i < selected[pass]; ++i) {
+                func_800DC2E0(&D_800F58EC[pass][i], arg0->unk430[i]);
+            }
+
+            for (i = selected[pass]; i < arg0->unk470; ++i) {
+                D_800F5904[arg0->unk430[i]->unkC_0][arg0->unk430[i]->unk4_5] = 0;
+            }
+
+            arg0->unk470 = 0;
+        }
+
+        for (pass = 0; pass < 3; ++pass) {
+            for (j = 0; j < selected[pass]; ++j) {
+                int index = arg0->unk470;
+                func_800DCAA0_t* entry = &arg0->unk2F0[index];
+
+                func_800DC2E0(entry, &D_800F58EC[pass][j]);
+                arg0->unk430[index] = entry;
+                arg0->unk470 = index + 1;
+
+                if (index + 1 >= 16) {
+                    goto restore;
+                }
+            }
+        }
+
+        if (arg0->unk470 == 0 && arg0->unk26) {
+            for (i = 0; i < D_800F58F0; ++i) {
+                func_800DCAA0_t* fallback = &arg0->unk2F0[i];
+
+                func_800DC2E0(fallback, &D_800F58F8[i]);
+                fallback->unkC_19 = 128;
+                arg0->unk430[i] = fallback;
+            }
+
+            arg0->unk470 = D_800F58F0;
+            func_800DC3CC(arg0);
+        }
+
+    restore:
+        _restoreActorStats();
+        D_800F58BC->unk18 = 0;
+    } else {
+        func_800DD918(arg0, 0);
+        func_800DC3CC(arg0);
+    }
+
+    if (arg0->unk470 >= 2) {
+        for (pass = 0; pass < 3; ++pass) {
+            if (selected[pass] != 0) {
+                func_800DC574(arg0, selected[pass]);
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < arg0->unk470; ++i) {
+        if (i > 0 && arg0->unk430[i]->unk4_13 - arg0->unk430[0]->unk4_13 < 80) {
+            arg0->unk430[i]->unk4_13 = arg0->unk430[0]->unk4_13 + 80;
+        }
+
+        arg0->unk430[i]->unk4_13 += rand() & 7;
+    }
+
+    func_800D85D8(arg0);
+
+    if (arg0->unk470 == 0) {
+        arg0->unk12E = 7;
+    } else {
+        func_800D9DD8(arg0);
+    }
+
+    if (D_800F5920 == NULL) {
+        return;
+    }
+
+    self = (vs_battle_actor*)arg0->unk54;
+
+    if (vs_battle_getStateFlag(0xA6) == 4 && self->unk9 == 24 && self->unkC == 4) {
+        vs_battle_setStateFlag(0xA6, 5);
+    }
+
+    if (D_800F5920->unk16 && self->subType - 172 < 2u) {
+        D_800F5920->unk17 = arg0->unk470;
+        arg0->unk470 = 0;
+    }
+}
 
 void func_800DEB10(func_800DEEA4_t* arg0)
 {

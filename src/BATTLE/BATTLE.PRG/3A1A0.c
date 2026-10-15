@@ -64,6 +64,7 @@ void func_800A9EB4(int, short, int);
 void func_800AA454(int, func_8006EBF8_t_fields*, int);
 void func_800AA620(int, SVECTOR*, int);
 void func_800AC690(int, D_800F4538_t*);
+int func_800AD494(void*, int, u_short**);
 void func_800E4BD8(int);
 void func_800E4BE0(int);
 void func_800E68A0(D_800F45E0_t*);
@@ -72,6 +73,8 @@ int func_8009E180(D_800F4538_t*, SVECTOR*);
 
 extern u_char D_800E8FD0[];
 extern int D_800E90A8;
+extern u_char D_800E90CC[];
+extern u_char D_800E90D0[];
 extern int D_800F49E8;
 extern u_int* D_800F49F0;
 extern int D_800F49F4;
@@ -1483,7 +1486,166 @@ int func_800A69B4(D_800F4538_t* arg0)
     return ret;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A6AA0);
+int func_800A6AA0(D_800F4538_t* actor, int speed)
+{
+    int next;
+    int frames;
+    int quadrant;
+    int animation = actor->animationId;
+
+    if (animation >= 100) {
+        animation -= 100;
+    }
+
+    quadrant = 0;
+
+    if (actor->unk1848.unk0 == 1) {
+        quadrant = actor->unk1848.unk6 - actor->unk1848.unk4 + ONE / 8;
+        quadrant &= 0xFFF;
+        quadrant /= ONE / 4;
+    }
+
+    if (actor->unk5AC_3) {
+        next = 84;
+
+        if (speed > 0) {
+            frames = 4;
+        } else {
+            next = 75;
+            frames = 10;
+        }
+
+        if (animation == 95) {
+            return;
+        }
+
+        func_800A0204(actor->unk0.unkF, next, 0, frames);
+        return;
+    }
+
+    if (actor->unk0.unkA_6) {
+        if (speed >= actor->unk5B9) {
+            next = D_800E90D0[quadrant];
+            frames = 20;
+        } else if (speed > 0) {
+            next = D_800E90CC[quadrant];
+            frames = 20;
+        } else {
+            next = 1;
+            frames = 10;
+        }
+
+        func_800A0204(actor->unk0.unkF, next, 0, frames);
+        return;
+    }
+
+    if (actor->unk5AC_15) {
+        u_short* entry;
+
+        if (animation >= 25 && animation <= 26) {
+            return;
+        }
+
+        next = 26;
+
+        if (animation < 18 || animation > 19) {
+            if (animation == 20 || animation == 17) {
+                next = 25;
+            } else {
+                actor->unk5AC_15 = 0;
+                return;
+            }
+        }
+
+        func_800AD494(actor, next, &entry);
+
+        if (entry == NULL) {
+            next = 6;
+        }
+
+        func_800A0204(actor->unk0.unkF, next, 0, 8);
+    } else if (speed >= actor->unk5B9 - 1) {
+        if (animation >= 19 && animation <= 20) {
+            return;
+        }
+
+        if ((animation >= 15 && animation <= 18) || (animation >= 46 && animation <= 56)
+            || (animation >= 9 && animation <= 12) || animation == 1 || animation == 6) {
+            u_int state = actor->unk5AC_25;
+            actor->unk5AC_25 ^= 1;
+            func_800A0204(actor->unk0.unkF, state + 19, 0, 6);
+            return;
+        }
+
+        next = 19;
+
+        if (animation == 13 || animation == 15) {
+            next = 20;
+        }
+
+        func_800A01C8(actor->unk0.unkF, next, 4, 0);
+        return;
+    } else if (speed > 0) {
+        int step;
+
+        if ((animation < 46 || animation > 56) && (animation < 9 || animation > 12)) {
+            if (animation >= 13 && animation <= 14) {
+                if (quadrant != 2) {
+                    return;
+                }
+            } else if (animation >= 15 && animation <= 16) {
+                if (quadrant == 2) {
+                    return;
+                }
+            } else if (animation != 1 && animation != 6 && animation != 17
+                       && animation != 18) {
+                goto walk_start;
+            }
+        }
+
+        step = actor->unk5AC_25;
+        next = step + 13;
+        actor->unk5AC_25 ^= 1;
+
+        if (quadrant == 2) {
+            next = step + 15;
+        }
+
+        func_800A0204(actor->unk0.unkF, next, 0, 6);
+        return;
+
+    walk_start:
+        next = 13;
+
+        if (animation == 19 || animation == 15 || animation == 13) {
+            ++next;
+        }
+
+        if (quadrant == 2) {
+            next += 2;
+        }
+
+        func_800A01C8(actor->unk0.unkF, next, 4, 0);
+        return;
+    } else {
+        if (animation >= 13 && animation <= 16) {
+            func_800A0204(actor->unk0.unkF, 6, 0, 10);
+            func_800A01C8(actor->unk0.unkF, 1, 10, 0);
+            return;
+        }
+
+        if (animation != 1 && actor->unk1848.unk0 != 6) {
+            func_800A0204(actor->unk0.unkF, 1, 0, 10);
+            actor->unk5B3 = 0;
+        }
+
+        actor->unk5B3 += vs_gametime_tickspeed / 2;
+
+        if (actor->unk5B3 >= 250) {
+            actor->unk5B3 = 250;
+        }
+    }
+}
 
 int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 {

@@ -11,4 +11,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG129.BIN/nonmatchings/0", func_800FA424);
 
 INCLUDE_ASM("build/src/EFFECT/PLG129.BIN/nonmatchings/0", func_800FBAC8);
 
-INCLUDE_ASM("build/src/EFFECT/PLG129.BIN/nonmatchings/0", func_800FC6EC);
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
+#define VS_ROTATING_SURFACE_FUNCTION func_800FC6EC
+#include "src/EFFECT/rotatingSurfaces.h"

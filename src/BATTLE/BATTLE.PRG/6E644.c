@@ -147,6 +147,13 @@ typedef struct {
     SVECTOR unk1C;
 } func_800E1238_t;
 
+typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
+
 typedef struct func_800E78F4_t {
     char unk0[7];
     u_char unk7;
@@ -171,10 +178,7 @@ typedef struct func_800E78F4_t {
     char unk2D[3];
     u_char unk30;
     char unk31[3];
-    u_char unk34;
-    char unk35;
-    u_char unk36;
-    char unk37;
+    vs_battle_movementPosition unk34;
     int unk38;
     char unk3C[0x10];
     SVECTOR unk4C;
@@ -219,7 +223,11 @@ typedef struct func_800E78F4_t {
     func_800DCAA0_t unk140;
     char unk154[8];
     u_char unk15C;
-    char unk15D[0x1F];
+    char unk15D;
+    u_short unk15E;
+    char unk160[8];
+    vs_battle_movementPosition unk168;
+    char unk16C[0x10];
     int unk17C;
     int unk180;
     int unk184;
@@ -242,7 +250,8 @@ typedef struct func_800E78F4_t {
 typedef struct {
     char unk0[8];
     u_char unk8;
-    char unk9[0xF];
+    char unk9[0xB];
+    int unk14;
     u_short unk18;
     char unk1A[2];
     func_800E78F4_t* unk1C;
@@ -374,6 +383,7 @@ int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
+int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -410,11 +420,16 @@ void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
 int func_800E42D4(int, int);
+int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
 int func_800E45D4(int);
+u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 u_int func_800E4660(int, int, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
+void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
+void func_800E4B2C(func_800E78F4_t*, int);
+void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
@@ -2521,8 +2536,8 @@ int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
     arg1 = (arg1 >> 9) & 6;
     while (--count != -1) {
         if (func_800E0678(arg0, arg1) != 0) {
-            int h = func_800E42EC(arg0->unk34 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx,
-                arg0->unk36 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
+            int h = func_800E42EC(arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx,
+                arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
             if (h < min) {
                 min = h;
             }
@@ -2532,7 +2547,37 @@ int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
     return min;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0918);
+int func_800E0918(func_800E78F4_t* arg0, int arg1, int arg2)
+{
+    void (*callback)(func_800E78F4_t*, int) = arg2 ? func_800E4B2C : func_800E4B70;
+
+    if (arg0->unk15E & 6) {
+        u_int distance = func_800E45F4(arg0->unk168, arg0->unk34);
+
+        if (arg2 && distance < 16) {
+            if (!(arg0->unk58->unk8_21 << 21)) {
+                callback(arg0, arg1);
+                return 1;
+            }
+        } else if (D_800F58BC->unk14
+                   && func_800E42E0(arg0->unk34) + arg0->unkBE < D_800F58BC->unk14) {
+            if (arg0->unk58->unk8_21 << 21) {
+                if (func_800D954C(arg0, arg0->unk34) > 0) {
+                    func_800E678C(arg0);
+                    func_800E4B10(arg0);
+                    return 1;
+                }
+            } else {
+                callback(arg0, arg1);
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E0A68);
 
 void func_800E1238(func_800E78F4_t* arg0, int arg1)
 {

@@ -63,6 +63,7 @@ void func_800E6178(vs_battle_actor*, int);
 short func_800E6694(int);
 void func_800E6700(int);
 void func_800E68EC(int, int);
+void func_800E6B24(int);
 void func_800E6EAC(void);
 void func_800E6F1C(void);
 void func_800E7454(vs_battle_actor*);

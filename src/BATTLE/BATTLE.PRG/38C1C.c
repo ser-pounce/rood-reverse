@@ -33,7 +33,6 @@ MATRIX* func_800A1DE8(int, int, MATRIX*);
 func_8008D2C0_t* func_800A4A24(int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 _mpdRoomSection3* func_800A8D64(SVECTOR*, int);
-void func_800AC690(int, D_800F45E0_t*);
 
 extern u_char D_800E90AC[];
 extern u_char D_800E90B4[];
@@ -674,7 +673,7 @@ void func_800A25EC(D_800F4538_t* actor)
     actor->unk0.position.vz = next.vz;
 
     if (actor->unk0.unkA_0) {
-        func_800AC690(actor->unk0.unkF, (D_800F45E0_t*)actor);
+        func_800AC690(actor->unk0.unkF, actor);
     } else {
         short height = next.vy;
 

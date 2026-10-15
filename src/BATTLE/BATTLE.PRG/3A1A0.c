@@ -56,10 +56,14 @@ inline int func_800A3310(int, SVECTOR*);
 void func_800A3394(int, SVECTOR*);
 int func_800A46A4(D_800F4538_t*);
 void func_800A4A88(D_800F4538_t*, int);
+int func_800A51A0(int, SVECTOR*);
+void func_800A525C(D_800F4538_t*);
+int func_800A5280(int, int, int, SVECTOR*);
 inline func_8008D2C0_t* func_800A4A24(int);
 void func_800A9EB4(int, short, int);
 void func_800AA454(int, func_8006EBF8_t_fields*, int);
 void func_800AA620(int, SVECTOR*, int);
+void func_800AC690(int, D_800F4538_t*);
 void func_800E4BD8(int);
 void func_800E4BE0(int);
 void func_800E68A0(D_800F45E0_t*);
@@ -1216,7 +1220,114 @@ void func_800A4D8C(void)
     D_800F4B18 = 1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A4E68);
+void func_800A4E68(int actorId)
+{
+    SVECTOR movement;
+    D_800F4538_t* actor = D_800F4538[actorId];
+
+    if (actor->unk0.unk9_0 != 0 && actor->unk0.unk9_0 < 6) {
+        return;
+    }
+
+    if (actorId == 0) {
+        func_800A4A88(actor, 0);
+
+        if (actor->unk0.unkA_0 && actor->unk181A != 0) {
+            func_800AC690(0, actor);
+        } else {
+            switch (actor->unk1848.unk0) {
+            case 7:
+            case 0:
+                movement.pad = 0;
+                goto move;
+
+            case 1:
+                movement.pad = 1;
+                movement.vx = actor->unk1848.unk6;
+            move:
+                func_800A5280(0, actor->unk1848.unk4, actor->unk1848.unk8, &movement);
+
+                if (actor->unk0.unkA_0) {
+                    func_800AC690(0, actor);
+                }
+
+                break;
+
+            case 2:
+                func_800A25EC(actor);
+                break;
+            }
+        }
+
+        func_800A4A88(actor, 1);
+        func_800A4A88(actor, 2);
+    } else {
+        func_800A4A88(actor, 0);
+
+        if (actor->unk1848.unk0 == 2) {
+            func_800A25EC(actor);
+        } else if (actor->unk0.unkA_0) {
+            func_800AC690(actorId, actor);
+        } else if (actor->unk0.unkB_0) {
+            func_800A29A0(actor);
+        } else if (actor->unk0.unkB_4) {
+            func_800A2CD4(actor);
+        } else {
+            switch (actor->unk1848.unk0) {
+            case 1:
+                if (actor->unk0.unkB_7) {
+                    break;
+                }
+
+                if (actor->unk0.unkA_5) {
+                    break;
+                }
+
+                movement.pad = 1;
+                movement.vx = actor->unk1848.unk6;
+                func_800A5280(
+                    actorId, actor->unk1848.unk4, actor->unk1848.unk8, &movement);
+
+                if (actor->unk0.unkA_0) {
+                    func_800AC690(actorId, actor);
+                }
+
+                break;
+
+            case 3:
+                func_800A2790(actor);
+                break;
+
+            case 4:
+                func_800A291C(actor);
+                break;
+            }
+        }
+
+        if (actor->unk6E4 != 0) {
+            if (actor->unk0.unkC_0 == actor->unk6E4) {
+                actor->unk0.unkC_0 = 0;
+            }
+
+            if (func_800A51A0(actor->unk6E4, &actor->unk0.position) == 0) {
+                actor->unk6E4 = 0;
+                func_800E6B24(actor->unk0.unkF);
+            }
+
+            if (actor->unk181A == 1) {
+                actor->unk1814 = actor->unk0.position.vx;
+                actor->unk1818 = actor->unk0.position.vz;
+            }
+        }
+
+        func_800A4A88(actor, 1);
+        func_800A4A88(actor, 2);
+        actor->unk0.currentTileX = actor->unk0.position.vx / 128;
+        actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+    }
+
+    func_800A525C(actor);
+}
 
 int func_800A51A0(int arg0, SVECTOR* arg1)
 {

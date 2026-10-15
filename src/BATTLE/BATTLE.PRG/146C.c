@@ -518,6 +518,7 @@ void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
 int func_8008D2C0(func_8008D2C0_t*);
+int func_8008D418(void);
 _mpdRoomSection9* func_8008D438(int, int, int);
 _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
 void func_8008D5A0(int);
@@ -5345,13 +5346,12 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
     func_8006EBF8_t3* coordinates = position;
     int flags = func_800A0BE0(actorIndex);
     u_int cellIndex;
-    int layer;
     int actorOffset;
     int result = 0;
     _mpdRoomSection3* cell;
     vs_battle_actor* actor;
+    int layer = (u_int)flags >> 14;
 
-    layer = (u_int)flags >> 14;
     layer &= 1;
     cellIndex = flags & 0x70000;
 

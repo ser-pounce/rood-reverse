@@ -592,7 +592,6 @@ void func_800AE47C(D_800F4538_t* arg0)
 {
     u_short* sp10;
     int var_v1;
-    void* var_a3;
 
     u_char** v0 = func_800AD494(arg0, arg0->animationId, &sp10);
     u_char* temp_a3 = *v0;
@@ -601,16 +600,16 @@ void func_800AE47C(D_800F4538_t* arg0)
     var_v1 = temp_a3[0];
 
     if (var_v1 == 0xFF) {
-        var_a3 = temp_a3 + 2;
         var_v1 = temp_a3[1] + 0xFF;
+        temp_a3 = temp_a3 + 2;
     } else {
-        var_a3 = temp_a3 + 1;
+        temp_a3 = temp_a3 + 1;
     }
 
     arg0->unk704.unk542 = var_v1;
-    arg0->unk704.unk544 = var_a3;
+    arg0->unk704.unk544 = temp_a3;
 
-    ((int (*)())func_800AD714)(arg0, &arg0->unk704, 2, var_a3);
+    func_800AD714(arg0, &arg0->unk704, 2);
 }
 
 void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)

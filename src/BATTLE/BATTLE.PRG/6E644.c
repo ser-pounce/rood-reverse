@@ -169,7 +169,10 @@ typedef struct func_800E78F4_t {
     char unk0;
     u_char unk1;
     u_char unk2;
-    char unk3[4];
+    char unk3;
+    u_char unk4;
+    u_char unk5;
+    char unk6;
     u_char unk7;
     char unk8;
     u_char unk9;
@@ -183,7 +186,8 @@ typedef struct func_800E78F4_t {
     int unk16 : 8;
     u_char unk17;
     u_char unk18;
-    char unk19[2];
+    char unk19;
+    u_char unk1A;
     u_char unk1B;
     u_char unk1C;
     char unk1D[3];
@@ -192,7 +196,9 @@ typedef struct func_800E78F4_t {
     char unk22[4];
     u_char unk26;
     u_char unk27;
-    char unk28[3];
+    char unk28;
+    u_char unk29;
+    char unk2A;
     u_char unk2B;
     u_char unk2C;
     char unk2D[3];
@@ -469,6 +475,7 @@ void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
 void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
+int func_800DFBCC(func_800E78F4_t*, int, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
@@ -489,6 +496,7 @@ void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
+void func_800E4BB8(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
@@ -3143,7 +3151,56 @@ void func_800E1908(func_800E78F4_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E19FC);
+void func_800E19FC(func_800E78F4_t* arg0)
+{
+    int current;
+    int next;
+
+    arg0->unk4 = 0;
+    arg0->unk5 = 1;
+
+    if (arg0->unk1A) {
+        func_800E1908(arg0);
+        return;
+    }
+
+    current = (*(u_short(**)[32])0x1F8003C0)[arg0->unk34.z][arg0->unk34.x] & 15;
+    next = (*(u_short(**)[32])0x1F8003C0)[arg0->unk168.z][arg0->unk168.x] & 15;
+
+    if (current != next) {
+        if (arg0->unk29) {
+            int mode = func_800DFBCC(arg0, current, next);
+
+            if (mode == 6) {
+                arg0->unk17C = arg0->unk168.x * 128 + 64;
+                arg0->unk180 = arg0->unk168.z * 128 + 64;
+
+                if (((*(u_short(**)[32])0x1F8003C0)[arg0->unk168.z][arg0->unk168.x] & 15)
+                    != ((*(u_short(**)[32])0x1F8003C0)[arg0->unk34.z][arg0->unk34.x]
+                        & 15)) {
+                    arg0->unk2 = 1;
+                    ((D_1F8003D0_t*)0x1F8003D0)->unk0 = 0;
+                }
+            } else {
+                func_800E4BB8(arg0);
+
+                if (mode == 5) {
+                    func_800E4B70(arg0, arg0->unk188 * (ONE / 8));
+                } else {
+                    func_800DEEFC(arg0, mode);
+                }
+
+                return;
+            }
+        } else {
+            arg0->unk2 = 1;
+            ((D_1F8003D0_t*)0x1F8003D0)->unk0 = 0;
+        }
+    }
+
+    func_800E3600(arg0,
+        ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180) & 0xFFF, 0);
+}
 
 int func_800E1BB8(
     func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int arg2, int arg3)

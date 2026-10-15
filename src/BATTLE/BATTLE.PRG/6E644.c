@@ -248,7 +248,11 @@ typedef struct func_800E78F4_t {
 } func_800E78F4_t;
 
 typedef struct {
-    char unk0[8];
+    u_char unk0;
+    u_char unk1;
+    u_char unk2;
+    u_char unk3;
+    char unk4[4];
     u_char unk8;
     char unk9[0xB];
     int unk14;
@@ -2631,7 +2635,41 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1388);
+void func_800E1388(
+    func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2, u_int arg3)
+{
+    vs_battle_movementPosition dest;
+    int i;
+    int angle = (-arg2 + ONE * 3 / 4) & 0xFFF;
+    u_int step = arg3 >> 3;
+
+    for (i = 0; i < 8; ++i, arg3 -= step) {
+        int x = ((int)(arg3 * rcos(angle)) >> 12) + 64;
+        int z;
+
+        dest.x = (arg1.x * 128 + x) >> 7;
+        z = ((int)(arg3 * rsin(angle)) >> 12) + 64;
+        dest.z = (arg1.z * 128 + z) >> 7;
+
+        if (func_800D954C(arg0, dest) > 0) {
+            break;
+        }
+    }
+
+    if (dest.x < D_800F58BC->unk2) {
+        dest.x = D_800F58BC->unk2;
+    } else if (dest.x > D_800F58BC->unk0) {
+        dest.x = D_800F58BC->unk0;
+    }
+
+    if (dest.z < D_800F58BC->unk3) {
+        dest.z = D_800F58BC->unk3;
+    } else if (dest.z > D_800F58BC->unk1) {
+        dest.z = D_800F58BC->unk1;
+    }
+
+    arg0->unk168 = dest;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E153C);
 

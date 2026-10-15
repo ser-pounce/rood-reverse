@@ -3434,10 +3434,11 @@ void func_800E7960(func_800E78F4_t* arg0)
         if ((!motion->unk14 && ratio < 0xC000)
             || (motion->unk14 == 1 && ratio < 0x4000)) {
             ++motion->unk14;
-            goto trigger;
+            do {
+                motion->unkE = 1;
+            } while (0);
         } else if (ABS(D_800F5918) < 0x40000 && tracking && D_800F591C < 30
                    && !(rand() & 511)) {
-        trigger:
             motion->unkE = 1;
         }
     }

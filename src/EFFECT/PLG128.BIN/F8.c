@@ -36,7 +36,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FA490);
 
 INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FB400);
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FC2BC);
+#define VS_GRID_FUNCTION func_800FC2BC
+#include "src/EFFECT/grids.h"
 
 #define VS_SURFACE_FUNCTION func_800FCE0C
 #define VS_SURFACE_VERTICES D_80100790

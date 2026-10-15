@@ -2810,8 +2810,8 @@ void func_8009E634(D_800F4538_t* arg0)
         } else {
             var_a3 = var_a0;
         }
-        func_800E4C28(arg0->unk0.currentTileX + var_a2, arg0->unk0.currentTileZ + var_a3,
-            var_a2, var_a3);
+
+        func_800E4C28(arg0->unk0.currentTileX + var_a2, arg0->unk0.currentTileZ + var_a3);
     }
 }
 
@@ -2907,8 +2907,8 @@ void func_8009E700(int actorId, int animation)
                 tileDz = distance;
             }
 
-            func_800E4C28(actor->unk0.currentTileX + tileDx,
-                actor->unk0.currentTileZ + tileDz, tileDx, tileDz);
+            func_800E4C28(
+                actor->unk0.currentTileX + tileDx, actor->unk0.currentTileZ + tileDz);
         }
     }
 

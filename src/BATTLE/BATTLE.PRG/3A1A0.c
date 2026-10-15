@@ -3,6 +3,7 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
+#include "6E644.h"
 #include "../../SLUS_010.40/main.h"
 
 typedef struct {
@@ -55,14 +56,15 @@ inline int func_800A3310(int, SVECTOR*);
 void func_800A3394(int, SVECTOR*);
 inline func_8008D2C0_t* func_800A4A24(int);
 void func_800A9EB4(int, short, int);
+void func_800AA454(int, func_8006EBF8_t_fields*, int);
 void func_800AA620(int, SVECTOR*, int);
 void func_800E4BD8(int);
 void func_800E4BE0(int);
-void func_800E4C28(int, int);
 void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
 int func_8009E180(D_800F4538_t*, SVECTOR*);
 
+extern u_char D_800E8FD0[];
 extern int D_800E90A8;
 extern int D_800F49E8;
 extern u_int* D_800F49F0;
@@ -736,7 +738,115 @@ int func_800A3DB4(int x, int z, int minimumHeight)
     return func_800A3C34(x / 128, z / 128, height, 1) == NULL;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A3E6C);
+int func_800A3E6C(int actorId)
+{
+    SVECTOR position;
+    func_8006EBF8_t_fields tile;
+    D_800F4538_t* actor = D_800F4538[actorId];
+    D_800F45E0_t* object;
+    int objectId;
+    int height;
+    int step;
+    int dx;
+    int dz;
+
+    if (actor->unk5AC_20) {
+        return -1;
+    }
+
+    objectId = func_800A38E0(actorId);
+
+    if (objectId == -1) {
+        return -1;
+    }
+
+    object = D_800F45E0[objectId];
+    object->unk3A = D_800F49E8;
+    D_800E90A8 = objectId;
+    height = actor->unk0.position.vy - object->unk1E;
+    height /= 64;
+    ++height;
+    object->unk34 = 0;
+    object->unk38 = 0;
+
+    switch (object->unk16C.actorId) {
+    case 0:
+    case 1:
+        object->unk16C.unk2 = D_800E8FD0[object->unk16C.unk2 * 4 + D_800F49E8];
+        // fallthrough
+    case 2:
+        step = D_800F49E8 < 2 ? -128 : 128;
+
+        if (D_800F49E8 & 1) {
+            object->unk34 = step;
+        } else {
+            object->unk38 = step;
+        }
+
+        goto move;
+
+    case 3:
+        object->unk34 = 0;
+        object->unk38 = 0;
+        step = D_800F49E8 < 2 ? -32 : 32;
+
+        if (D_800F49E8 & 1) {
+            object->unk34 = step;
+        } else {
+            object->unk38 = step;
+        }
+
+    move:
+        object->unk36 = 0;
+        func_800AE6C0(actor, 44, 45);
+        func_800A0204(actorId, height + 79, 0, 4);
+        actor->unk5AC_20 = 1;
+        func_800E4C1C(
+            (object->unk1C + object->unk34) / 128, (object->unk20 + object->unk38) / 128);
+        break;
+
+    case 4:
+    case 5:
+    case 6:
+        if (actor->unk5AC_3) {
+            func_800A0204(actorId, 76, 0, 4);
+            func_800AE6C0(actor, 46, 47);
+            actor->unk5AC_20 = 1;
+        } else {
+            func_800A0204(actorId, height + 71, 0, 4);
+            func_800AE6C0(actor, 44, 45);
+            actor->unk5AC_20 = 1;
+        }
+
+        dx = 0;
+        dz = 0;
+        step = D_800F49E8 < 2 ? -1 : 1;
+
+        if (D_800F49E8 & 1) {
+            dx = step;
+        } else {
+            dz = step;
+        }
+
+        func_800E4C1C(actor->unk0.currentTileX + dx, actor->unk0.currentTileZ + dz);
+        break;
+    }
+
+    *(int*)&tile = *(int*)&actor->unk0.currentTileX;
+    step = D_800F49E8 < 2 ? -1 : 1;
+
+    if (D_800F49E8 & 1) {
+        tile.unk0_0 += step;
+    } else {
+        tile.unk0_16 += step;
+    }
+
+    func_800AA454(actorId, &tile, 4);
+    position.vx = actor->unk0.currentTileX * 128 + 64;
+    position.vz = actor->unk0.currentTileZ * 128 + 64;
+    position.vy = actor->unk0.position.vy;
+    func_800AA620(actorId, &position, 4);
+}
 
 void func_800A41D0(D_800F4538_t* actor, int mode)
 {

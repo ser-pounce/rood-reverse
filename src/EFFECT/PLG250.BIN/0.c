@@ -6,7 +6,7 @@
 #include <inline_c.h>
 #include <rand.h>
 
-#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
 #define VS_ROTATING_SURFACE_FUNCTION func_800F9800
 #include "src/EFFECT/rotatingSurfaces.h"
 

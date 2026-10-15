@@ -11,7 +11,7 @@
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
 #define VS_ROTATING_SURFACE_FUNCTION func_800FA770
 #include "src/EFFECT/rotatingSurfaces.h"
 

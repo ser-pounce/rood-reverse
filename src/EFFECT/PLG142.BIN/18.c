@@ -18,6 +18,6 @@
 #define VS_RING_COLORS D_800FCDD8
 #include "src/EFFECT/rings.h"
 
-#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
 #define VS_ROTATING_SURFACE_FUNCTION func_800FBEFC
 #include "src/EFFECT/rotatingSurfaces.h"

@@ -10,7 +10,7 @@
 #define VS_MIRROR_SURFACE_VERTICES D_800FE5C4
 #include "src/EFFECT/mirroredSurfaces.h"
 
-#define VS_ROTATING_SURFACE_REPEAT
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
 #define VS_ROTATING_SURFACE_FUNCTION func_800FA48C
 #include "src/EFFECT/rotatingSurfaces.h"
 

@@ -4,7 +4,8 @@
 #define VS_CLOSED_RING_COLORS D_800FD824
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG167.BIN/nonmatchings/E0", func_800FA84C);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FA84C
+#include "src/EFFECT/rotatingSurfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG167.BIN/nonmatchings/E0", func_800FB704);
 

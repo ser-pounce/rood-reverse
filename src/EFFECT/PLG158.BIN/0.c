@@ -12,4 +12,6 @@ INCLUDE_ASM("build/src/EFFECT/PLG158.BIN/nonmatchings/0", func_800FA398);
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG158.BIN/nonmatchings/0", func_800FBF7C);
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
+#define VS_ROTATING_SURFACE_FUNCTION func_800FBF7C
+#include "src/EFFECT/rotatingSurfaces.h"

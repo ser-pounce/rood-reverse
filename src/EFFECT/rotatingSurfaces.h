@@ -177,7 +177,7 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 int sinAngle;
 
                 vertices[row][quadrant].vx = cosAngle =
-                    (radiusValue * rcos(baseAngle + column * 256)) >> 12;
+                    (radiusValue * rcos(baseAngle + column * (ONE / 16))) >> 12;
                 vertices[row][column + 12].vz = vertices[row][column + 8].vx =
                     -(vertices[row][column + 4].vz = cosAngle);
                 sinAngle = (radiusValue * rsin(baseAngle + column * 256)) >> 12;

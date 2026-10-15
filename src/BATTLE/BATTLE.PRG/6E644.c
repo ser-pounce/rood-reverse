@@ -230,7 +230,8 @@ typedef struct func_800E78F4_t {
     u_char unkB3;
     int unkB4;
     short unkB8;
-    char unkBA[4];
+    u_short unkBA;
+    char unkBC[2];
     short unkBE;
     u_short unkC0;
     u_short unkC2;
@@ -248,7 +249,10 @@ typedef struct func_800E78F4_t {
     char unkEA[0x10];
     u_char unkFA;
     u_char unkFB;
-    char unkFC[0x1C];
+    char unkFC[0xC];
+    vs_battle_movementPosition unk108;
+    u_char unk10C;
+    char unk10D[0xB];
     u_char unk118[4];
     vs_battle_movementPosition unk11C;
     char unk120[0xA];
@@ -282,7 +286,7 @@ typedef struct func_800E78F4_t {
     int unk180;
     int unk184;
     short unk188;
-    short unk18A;
+    int unk18A : 16;
     char unk18C[0xE];
     u_char unk19A;
     char unk19B[5];
@@ -296,6 +300,8 @@ typedef struct func_800E78F4_t {
     func_800DCAA0_t unk2F0[16];
     func_800DCAA0_t* unk430[16];
     int unk470;
+    char unk474[0xD];
+    u_char unk481;
 } func_800E78F4_t;
 
 typedef struct {
@@ -490,6 +496,7 @@ void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
 int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
+int func_800E4180(func_800E78F4_t*, int, int, int);
 void func_800E4288(void*, int);
 int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
@@ -3450,7 +3457,65 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E23AC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E2B2C);
+int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
+{
+    func_800E1238_t* model = arg0->unk58;
+    int angle;
+
+    if (arg1 == arg0->unk88) {
+        func_800DEEFC(arg0, 0);
+        return 1;
+    }
+
+    if (!arg0->unkBA) {
+        return 0;
+    }
+
+    if (arg0->unk481) {
+        if (func_800E4180(arg0, 128, 3, 6)) {
+            return 1;
+        }
+
+        arg0->unk10C = 0;
+        goto failed;
+    }
+
+    angle = ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180);
+
+    if ((*(u_int*)&arg0->unk168 & 0xFF00FF) != (*(u_int*)&arg0->unk108 & 0xFF00FF)
+        && arg0->unk1A4[arg1].unk0_5 && !arg0->unk10C) {
+        arg0->unk10C = 1;
+        arg0->unk18A = angle;
+        arg0->unk108 = arg0->unk168;
+    }
+
+    if (!arg0->unk10C) {
+        return 0;
+    }
+
+    arg0->unk13A = arg0->unkBA;
+
+    if (((model->unk26 + model->unk14) & 0xFFF) == (arg0->unk18A & 0xFFF)) {
+        if (!arg0->unk1A4[arg1].unk0_5) {
+            if (func_800E4180(arg0, 128, 1, 6)) {
+                return 1;
+            }
+
+            arg0->unk10C = 0;
+            goto failed;
+        }
+
+        arg0->unk10C = 1;
+        arg0->unk18A = angle & 0xFFF;
+        arg0->unk108 = arg0->unk168;
+    }
+
+    func_800DEEFC(arg0, 4);
+    return 1;
+
+failed:
+    return 0;
+}
 
 void func_800E2CCC(func_800E78F4_t* arg0)
 {

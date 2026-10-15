@@ -284,7 +284,8 @@ typedef struct {
     u_char unk5AC_22 : 1;
     u_char unk5AC_23 : 1;
     u_char unk5AC_24 : 1;
-    u_char unk5AC_25 : 2;
+    u_char unk5AC_25 : 1;
+    u_char unk5AC_26 : 1;
     u_char unk5AC_27 : 1;
     u_char unk5AC_28 : 4;
     u_char unk5B0_0 : 2;
@@ -661,6 +662,7 @@ void func_800A48CC(int, int, int);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);
 void func_800A35A8(void);
+int func_800A3500(int, int);
 D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);

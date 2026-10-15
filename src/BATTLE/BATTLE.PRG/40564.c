@@ -1043,7 +1043,7 @@ void func_800AA698(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AA82C(int arg0, short arg1, int arg2) { func_800AA984(arg0, arg1, arg2); }
 
-void func_800AA850(int arg0, u_short arg1, int arg2)
+void func_800AA850(int arg0, short arg1, int arg2)
 {
     short temp_a1;
     short var_v1;
@@ -1978,18 +1978,18 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 
     case 2:
         if (arg1->unk0.unk1A == 0) {
-            int temp_a1;
+            u_short facing;
 
             func_800A0204(arg0, 1, 0, 8);
 
-            temp_a1 = (u_short)arg1->unk5EC.pad;
+            facing = arg1->unk5EC.pad;
 
-            if (temp_a1 != 0x8000) {
-                temp_a1 = temp_a1 & 0xFFF;
+            if (facing != 32768) {
+                facing = facing & 0xFFF;
                 if ((arg1->unk5AC_2 << 2) == 0) {
-                    func_800A9EB4(arg0, temp_a1, arg1->unk5C6);
+                    func_800A9EB4(arg0, facing, arg1->unk5C6);
                 } else {
-                    func_800AA850(arg0, temp_a1, arg1->unk5C6);
+                    func_800AA850(arg0, facing, arg1->unk5C6);
                 }
             }
             arg1->unk5AC_0 = 0;

@@ -273,6 +273,7 @@ short vs_battle_getShort(u_char*);
 int func_800BFEBC(int, int, int);
 int vs_battle_setTextBox(int, char*);
 void func_800CB79C(void);
+textOffset func_800CCE10(int, int, int, int);
 int vs_battle_dismissTextBox(int);
 void func_800CEF38(int);
 void func_800F9BC0(int, int);
@@ -818,8 +819,49 @@ int vs_battle_script_dismissTextBox(u_char* arg0, short arg1)
     return 0;
 }
 
-// https://decomp.me/scratch/0ihTK
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B6B98);
+int func_800B6B98(
+    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction)
+{
+    short dx = 0;
+    short dy = 0;
+    short width;
+    short height;
+    int delta;
+    short x;
+    short y;
+
+    result->offset = func_800CCE10(
+        script[5] & 0xF, (origin->vz ^ direction) * 4, script[6], script[7]);
+    result->x = x = origin->vx + result->offset.x;
+    result->y = y = origin->vy + result->offset.y;
+    height = script[7] * 13 + 4;
+    width = script[6] * 12 + 8;
+
+    if (x < 4) {
+        result->x = 4;
+        delta = 4 - x;
+        dx = delta;
+    } else if (x + width > 320) {
+        result->x = width = 320 - width;
+        dx = width - x;
+    }
+
+    if (y < 4) {
+        result->y = 4;
+        delta = 4 - y;
+        dy = delta;
+    } else if (y + height > 216) {
+        result->y = height = 216 - height;
+        dy = height - y;
+    }
+
+    if (dx == 0 && dy == 0) {
+        return 1;
+    }
+
+    result->distance = vs_gte_rsqrt(dx * dx + dy * dy);
+    return 0;
+}
 
 // script[1]   = boxId
 // script[2-3] = anchor id (resolved by func_800BFE50)

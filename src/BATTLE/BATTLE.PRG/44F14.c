@@ -25,6 +25,7 @@ typedef struct {
 } D_800F3C58_t;
 
 void func_8008EB04(int*, int*);
+int func_800A0104(int, int);
 int func_800A3DB4(int, int, int);
 void func_800A41D0(D_800F4538_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
@@ -67,6 +68,20 @@ void func_800E6898(void*);
 
 extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
+extern signed char D_800E91AC[];
+extern signed char D_800E91BC[];
+extern signed char D_800E91CC[];
+extern signed char D_800E91DC[];
+extern signed char D_800E91EC[];
+extern signed char D_800E91F0[];
+extern signed char D_800E91FC[];
+extern signed char D_800E9208[];
+extern signed char D_800E9218[];
+extern u_char D_800E9228[];
+extern signed char D_800E9238[];
+extern signed char D_800E9248[];
+extern signed char D_800E9258[];
+extern signed char D_800E9268[];
 extern u_char D_800E9278[];
 extern u_char D_800E9298[];
 extern u_char D_800E92DC[];
@@ -1841,7 +1856,112 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/44F14", func_800B101C);
+int func_800B101C(D_800F45E0_t* object)
+{
+    int frame = object->unk16C.unk4;
+    int value;
+    int delta;
+
+    if (frame == 0) {
+        frame = 1;
+    }
+
+    value = object->unk1A;
+
+    if (value == 0xFD) {
+        object->unk1E += D_800E91AC[frame];
+        object->unk24 += D_800E91BC[frame];
+        object->unk26 += D_800E91CC[frame];
+        object->unk28 += D_800E91DC[frame];
+
+        if (frame == 14) {
+            goto complete;
+        }
+    } else if (value == 0xFB) {
+        value = object->unk3A;
+        object->unk20 += D_800E91F0[frame];
+        delta = D_800E91FC[frame];
+
+        if (value == 0 || value == 3) {
+            delta = -delta;
+        }
+
+        if (value & 1) {
+            object->unk28 += delta;
+        } else {
+            object->unk24 += delta;
+        }
+
+        if (frame == 9) {
+            goto complete;
+        }
+    } else if (value == 0xFA) {
+        object->unk1E += D_800E91EC[frame];
+        object->unk36 = D_800E91EC[frame];
+
+        if (frame == 3) {
+            goto complete;
+        }
+    } else if (value == 0xF9) {
+        int orientation;
+
+        object->unk1E += D_800E9208[frame];
+        value = D_800E9218[frame];
+        orientation = object->unk3A;
+        delta = D_800E9228[frame];
+
+        if (orientation >= 2) {
+            value = -value;
+        }
+
+        if (orientation == 1 || orientation == 2) {
+            delta = -delta;
+        }
+
+        if (orientation & 1) {
+            object->unk1C += value;
+            object->unk28 += delta;
+        } else {
+            object->unk20 += value;
+            object->unk24 += delta;
+        }
+
+        if (frame == 14) {
+            func_800A0104(object->unkF, object->unk16C.unk2);
+            goto complete;
+        }
+    } else if (value == 0xF8) {
+        if (frame >= 9) {
+            object->unk1E += 3;
+
+            if (frame == 9) {
+                vs_main_memcpy(object->unk14C, object->unk12C, sizeof object->unk14C);
+                object->unk9_0 = 0xC;
+            }
+
+            if (frame == 40) {
+                func_80099D6C(object->unkF);
+                goto complete;
+            }
+        }
+    } else if (value == 0xF7) {
+        object->unk1E += D_800E9238[frame];
+        object->unk2C = D_800E9248[frame];
+        object->unk2E = D_800E9258[frame];
+        object->unk30 = D_800E9268[frame];
+
+        if (frame == 14) {
+            goto complete;
+        }
+    }
+
+    object->unk16C.unk4 = frame + 1;
+    return 1;
+
+complete:
+    object->unk1A = 0;
+    return 0;
+}
 
 int func_800B13CC(int arg0, int arg1, int arg2)
 {

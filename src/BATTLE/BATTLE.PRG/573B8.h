@@ -9,6 +9,7 @@ typedef struct {
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);
+short func_800BFBB8(u_char**, short);
 int func_800BFE50(u_short);
 void func_800C00E8(int, void*);
 

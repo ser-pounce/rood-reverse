@@ -968,6 +968,7 @@ void func_8007BBD8(int, int, int);
 void func_8007C4D4(void);
 int func_8007C8F8(int);
 void func_8007CE74(int);
+void func_8007CEC0(void);
 int func_8007CF80(int);
 void func_8007BCCC(void);
 void func_8007BD3C(int);

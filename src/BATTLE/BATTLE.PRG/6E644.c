@@ -169,12 +169,12 @@ typedef struct func_800E78F4_t {
     char unk0;
     u_char unk1;
     u_char unk2;
-    char unk3;
+    u_char unk3;
     u_char unk4;
     u_char unk5;
     char unk6;
     u_char unk7;
-    char unk8;
+    u_char unk8;
     u_char unk9;
     char unkA[3];
     u_char unkD;
@@ -232,9 +232,16 @@ typedef struct func_800E78F4_t {
     short unkB8;
     char unkBA[4];
     short unkBE;
-    char unkC0[0x10];
+    u_short unkC0;
+    u_short unkC2;
+    int unkC4;
+    char unkC8[8];
     short unkD0;
-    char unkD2[0x15];
+    u_short unkD2;
+    u_short unkD4;
+    u_short unkD6;
+    u_char unkD8;
+    char unkD9[0xE];
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
@@ -443,6 +450,7 @@ short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+int D_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -479,6 +487,7 @@ int func_800DFBCC(func_800E78F4_t*, int, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
+int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
@@ -3274,7 +3283,170 @@ int func_800E1BB8(
     return arg2 < arg0->unk15D;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1EAC);
+static inline int _randomHeading(int direction)
+{
+    int offset = func_800E45D4(512);
+    int angle = direction * 512;
+
+    offset += 65280;
+    return angle + offset;
+}
+
+void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int arg2)
+{
+    int rate = arg0->unkD8;
+    u_short rest = arg0->unkD4;
+    u_short move = arg0->unkD6;
+    int value;
+    int (*check)(func_800E78F4_t*, int);
+
+    ++arg0->unkC2;
+    check = (arg0->unk58->unk8_21 << 21) ? func_800E0678 : D_800D9B6C;
+
+    if (arg0->unk12D == 1) {
+        if (arg0->unkC2 < 31) {
+            return;
+        }
+
+        if (func_800E45D4(128) < 44u) {
+            arg0->unk12D = 2;
+        } else {
+            arg0->unkC2 = 0;
+            return;
+        }
+    }
+
+    if (arg0->unkC2 == move) {
+        if (func_800E45D4(128) < 44u) {
+            arg0->unkC2 = 0;
+        }
+    } else if (arg0->unkC2 >= rest + move) {
+        arg0->unkC2 = func_800E45D4(128) < 44u ? move : 0;
+    }
+
+    arg0->unk2 = 1;
+    *(u_char*)0x1F8003D0 = 0;
+
+    value = arg0->unkC2 < move;
+
+    if (value) {
+        int heading;
+        int result;
+
+        if (arg2 >= 63) {
+            int i;
+            int side;
+            int step;
+
+            if (!arg0->unkC0 || !func_800E45D4(1 << rate) || !arg0->unkD2) {
+                value = func_800E45D4(4096) % arg2 + 128;
+                arg0->unkC0 = 1;
+                arg0->unkD2 = 60;
+                arg0->unkC4 = value * value;
+                heading = func_800E45D4(4) * 2;
+
+                for (i = 0; i < 4; ++i) {
+                    int direction = (heading + i * 2) & 7;
+
+                    if (check(arg0, direction)) {
+                        arg0->unkD0 = _randomHeading(direction);
+                        break;
+                    }
+                }
+
+                if (i == 4) {
+                    arg0->unkD0 = func_800E45D4(4096);
+                }
+            }
+
+            if (!arg0->unk8) {
+                arg0->unkD2 = 60;
+            } else if (arg0->unkD2) {
+                --arg0->unkD2;
+            }
+
+            if (arg0->unk15E & 8) {
+                func_800E1388(arg0, arg0->unk34, arg0->unkD0, arg0->unkB4);
+            }
+
+            for (side = arg0->unkD0 >> 9, step = 0; step < 2;
+                side = (side + 2) & 7, ++step) {
+                int x = arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[side].dx;
+                int z = arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[side].dz;
+
+                if (D_800F58BC->unk1 < z || z < D_800F58BC->unk3 || D_800F58BC->unk0 < x
+                    || x < D_800F58BC->unk2
+                    || ((*(u_short(**)[32])0x1F8003C0)[z][x] & 0x800)) {
+                    arg0->unkD2 = 0;
+                    break;
+                }
+            }
+
+            func_800E50A0(arg0, 1, arg0->unkD0);
+            return;
+        }
+
+        arg0->unk3 = 1;
+
+        if (!func_800E45D4(1 << rate)) {
+            arg0->unkC0 = 0;
+        }
+
+        switch (arg0->unkC0) {
+        case 0:
+            arg0->unkD0 = -1;
+            arg0->unk15D = 0;
+            arg0->unkD2 = 60;
+            ++arg0->unkC0;
+            func_800E2CCC(arg0);
+            return;
+
+        case 1:
+            result = func_800E1BB8(arg0, arg1, arg2, 3);
+
+            if (result < 0) {
+                arg0->unkC0 = 0;
+            } else if (result > 0) {
+                ++arg0->unkC0;
+                arg0->unk168 = arg0->unk11C;
+            }
+            break;
+
+        case 2:
+            arg0->unk168 = arg0->unk11C;
+
+            if (arg0->unk15E & 8) {
+                heading = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
+                              arg0->unk4C.vz - arg0->unk168.z * 128 - 64)
+                        & 0xFFF;
+                arg0->unk48 = arg0->unk168;
+                func_800E1388(arg0, arg0->unk34, heading, arg0->unkB4);
+            }
+
+            func_800E50A0(arg0, 0, 0);
+
+            if (!arg0->unk8) {
+                arg0->unkD2 = 60;
+            } else if (arg0->unkD2) {
+                --arg0->unkD2;
+            }
+
+            if ((*(u_int*)&arg0->unk168 & 0xFF00FF) == (*(u_int*)&arg0->unk34 & 0xFF00FF)
+                || !arg0->unkD2) {
+                arg0->unkC0 = 0;
+            }
+
+            return;
+
+        default:
+            arg0->unkC0 = 0;
+        }
+    }
+
+    func_800E2CCC(arg0);
+}
+
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E23AC);
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
 

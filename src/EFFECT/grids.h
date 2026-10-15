@@ -227,7 +227,7 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                               / 4
                           + scratch->unkA8.vz;
 
-                if (depth >= 0x800 || depth <= vs_main_nearClip) {
+                if ((depth >= ONE / 2) || (depth <= vs_main_nearClip)) {
                     continue;
                 }
 

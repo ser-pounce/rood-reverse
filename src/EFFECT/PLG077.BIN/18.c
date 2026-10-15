@@ -344,7 +344,7 @@ int func_800FA324(func_800D4910_t* arg0, u_int arg1, int arg2)
 
 #define VS_SURFACE_FUNCTION func_800FBDE4
 #define VS_SURFACE_VERTICES D_800FD9D8
-#define VS_SURFACE_REPEAT
+#define VS_SURFACE_TEXTURE_COLUMNS 4
 #include "src/EFFECT/surfaces.h"
 
 extern u_char D_800FDC58[][4];

@@ -127,7 +127,12 @@ typedef struct {
     u_int unk0_0 : 1;
     u_int unk0_1 : 5;
     u_int unk0_6 : 2;
-    u_int unk0_8 : 24;
+    u_int unk0_8 : 7;
+    u_int unk0_15 : 5;
+    u_int unk0_20 : 7;
+    u_int unk0_27 : 1;
+    u_int unk0_28 : 2;
+    u_int unk0_30 : 2;
 } func_800DA1D4_t;
 
 typedef struct {
@@ -136,29 +141,40 @@ typedef struct {
     u_int unk8_0 : 21;
     u_int unk8_21 : 1;
     u_int unk8_22 : 10;
+    char unkC[0x10];
+    SVECTOR unk1C;
 } func_800E1238_t;
 
 typedef struct func_800E78F4_t {
     char unk0[7];
     u_char unk7;
-    char unk8[0xB];
+    char unk8[6];
+    u_char unkE;
+    char unkF[4];
     u_char unk13;
     char unk14[2];
-    signed char unk16;
+    int unk16 : 8;
     u_char unk17;
     char unk18[3];
     u_char unk1B;
-    char unk1C[0xF];
+    char unk1C[4];
+    u_char unk20;
+    u_char unk21;
+    char unk22[5];
+    u_char unk27;
+    char unk28[3];
     u_char unk2B;
-    char unk2C[8];
+    u_char unk2C;
+    char unk2D[3];
+    u_char unk30;
+    char unk31[3];
     u_char unk34;
     char unk35;
     u_char unk36;
     char unk37;
     int unk38;
-    char unk3C[0x12];
-    short unk4E;
-    char unk50[4];
+    char unk3C[0x10];
+    SVECTOR unk4C;
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
@@ -168,32 +184,46 @@ typedef struct func_800E78F4_t {
     u_char unk88;
     char unk89[5];
     u_short unk8E;
-    char unk90[8];
+    char unk90[2];
+    u_short unk92;
+    char unk94[4];
     u_short unk98;
     u_short unk9A;
     char unk9C[0x17];
     u_char unkB3;
-    char unkB4[0xA];
+    char unkB4[4];
+    short unkB8;
+    char unkBA[4];
     short unkBE;
-    char unkC0[0x3B];
+    char unkC0[0x27];
+    u_char unkE7;
+    u_char unkE8;
+    u_char unkE9;
+    char unkEA[0x11];
     u_char unkFB;
     char unkFC[0x2E];
     u_char unk12A;
-    char unk12B[4];
-    u_char unk12F;
-    char unk130;
+    char unk12B[2];
+    u_char unk12D;
+    u_char unk12E;
+    signed char unk12F;
+    signed char unk130;
     u_char unk131;
     char unk132[6];
     u_short unk138;
     char unk13A[5];
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[0x28];
+    char unk154[8];
+    u_char unk15C;
+    char unk15D[0x1F];
     int unk17C;
     int unk180;
     int unk184;
     short unk188;
-    char unk18A[0x16];
+    char unk18A[0x10];
+    u_char unk19A;
+    char unk19B[5];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
@@ -302,6 +332,32 @@ typedef struct {
     u_char data[0];
 } p_file_t;
 
+typedef struct {
+    u_short x : 5;
+    u_short z : 5;
+    u_short unk0_10 : 5;
+    u_short active : 1;
+} D_800F58C8_t2;
+
+typedef struct {
+    D_800F58C8_t2 unk0[8];
+} D_800F58C8_t;
+
+typedef struct {
+    char unk0[2];
+    u_char unk2;
+    char unk3;
+    u_char unk4[8];
+} D_1F8003D0_t;
+
+typedef struct {
+    func_800DEEA4_t unk0;
+    char unk4C[0x980];
+    func_800DCAA0_t unk9CC[3][16];
+    u_char unkD8C[16][256];
+    func_800DCAA0_t unk1D8C[16];
+} func_800DEC88_t;
+
 void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
@@ -312,6 +368,7 @@ void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
 void func_800D820C(int, int);
+void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
@@ -321,11 +378,17 @@ int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
+void func_800DB5B0(func_800E78F4_t*);
+void func_800DB5FC(func_800E78F4_t*);
+int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC19C(func_800E78F4_t*);
+void func_800DC210(func_800E78F4_t*, int);
 int func_800DC284(int, int, int, int);
 void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
@@ -334,14 +397,18 @@ void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
+void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
+void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
 void func_800E1238(func_800E78F4_t*, int);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
+int func_800E42D4(int, int);
 int func_800E42EC(int, int);
 int func_800E45D4(int);
+u_int func_800E4660(int, int, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
@@ -351,6 +418,7 @@ int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
+void func_800E685C(int, int, int);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
 
@@ -373,8 +441,11 @@ extern int D_800F5874;
 extern func_800E78F4_t* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
+extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
+extern func_800DCAA0_t (*D_800F58EC)[16];
+extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
@@ -795,86 +866,88 @@ typedef struct {
 #define OBSTRUCTION_DIRECTIONS ((D_800F16EC_t*)0x1F8003EC)
 #define OBSTRUCTION_STATES ((obstructionState**)0x1F80037C)
 
-int func_800E02B4(obstructionState* state, int direction, int ahead)
+int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 {
-    obstructionVector points[4];
-    int x, y, z, i, dx, dy, dz;
-    unsigned int radius, height;
+    func_8008D2C0_t points[4];
+    int x;
+    int y;
+    int z;
+    int i;
+    int dx;
+    int dy;
+    int dz;
+    u_int radius;
+    u_int height;
     vs_battle_actor* actor;
-    obstructionState* other;
-    obstructionModel* model;
-    if ((OBSTRUCTION_CACHE->tested >> direction) & 1) {
-        return OBSTRUCTION_CACHE->result[direction];
+
+    if ((((D_1F8003D0_t*)0x1F8003D0)->unk2 >> arg1) & 1) {
+        return ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1];
     }
-    x = state->position.x + ahead * (state->step * OBSTRUCTION_DIRECTIONS[direction].dx);
-    y = state->position.y;
-    z = state->position.z + ahead * (state->step * OBSTRUCTION_DIRECTIONS[direction].dz);
-    i = func_8008D2C0((void*)points);
-    for (i = i - 1; i != -1; i--) {
-        dx = points[i].x - x;
-        dy = points[i].y - y;
-        dz = points[i].z - z;
-        if (ahead) {
-            if (OBSTRUCTION_DIRECTIONS[direction].dx > 0 && dx < 0) {
-                continue;
-            }
-            if (OBSTRUCTION_DIRECTIONS[direction].dx < 0 && dx > 0) {
-                continue;
-            }
-            if (OBSTRUCTION_DIRECTIONS[direction].dz > 0 && dz < 0) {
-                continue;
-            }
-            if (OBSTRUCTION_DIRECTIONS[direction].dz < 0 && dz > 0) {
-                continue;
-            }
+
+    x = arg0->unk4C.vx + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dx);
+    y = arg0->unk4C.vy;
+    z = arg0->unk4C.vz + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
+
+    for (i = func_8008D2C0(points) - 1; i != -1; --i) {
+        dx = points[i].unk0 - x;
+        dy = points[i].unk1 - y;
+        dz = points[i].unk2 - z;
+
+        if (arg2
+            && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dx < 0 && dx > 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz > 0 && dz < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz < 0 && dz > 0))) {
+            continue;
         }
-        radius = state->radius + 96;
-        height = (state->height + 32) >> 1;
-        if ((unsigned int)ABS(dx) <= radius && (unsigned int)ABS(dz) <= radius
-            && (unsigned int)ABS(dy) <= height) {
-            OBSTRUCTION_CACHE->tested |= 1 << direction;
-            OBSTRUCTION_CACHE->result[direction] = 1;
+
+        radius = arg0->unk92 + 96;
+        height = (arg0->unkB8 + 32) >> 1;
+
+        if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
+            ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
+            ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = 1;
             return 1;
         }
     }
-    for (actor = vs_battle_actors[0]; actor; actor = actor->next) {
-        other = OBSTRUCTION_STATES[actor->id];
-        model = other->model;
-        if (other->id == state->id || !other->id) {
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[actor->id];
+        func_800E1238_t* model = other->unk58;
+
+        if (other->unk88 == arg0->unk88 || other->unk88 == 0) {
             continue;
         }
-        dx = model->position.x - x;
-        dy = model->position.y - y;
-        dz = model->position.z - z;
-        if (ahead) {
-            if (OBSTRUCTION_DIRECTIONS[direction].dx > 0 && dx < 0) {
-                continue;
-            }
-            if (OBSTRUCTION_DIRECTIONS[direction].dx < 0 && dx > 0) {
-                continue;
-            }
-            if (OBSTRUCTION_DIRECTIONS[direction].dz > 0 && dz < 0) {
-                continue;
-            }
-            if (OBSTRUCTION_DIRECTIONS[direction].dz < 0 && dz > 0) {
-                continue;
-            }
+
+        dx = model->unk1C.vx - x;
+        dy = model->unk1C.vy - y;
+        dz = model->unk1C.vz - z;
+
+        if (arg2
+            && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dx < 0 && dx > 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz > 0 && dz < 0)
+                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz < 0 && dz > 0))) {
+            continue;
         }
-        radius = other->radius + state->radius + other->step;
-        if (!other->id) {
+
+        radius = other->unk92 + arg0->unk92 + other->unkB3;
+
+        if (other->unk88 == 0) {
             height = -1;
         } else {
-            height = (state->height + other->height) >> 1;
+            height = (arg0->unkB8 + other->unkB8) >> 1;
         }
-        if ((unsigned int)ABS(dx) <= radius && (unsigned int)ABS(dz) <= radius
-            && (unsigned int)ABS(dy) <= height) {
-            OBSTRUCTION_CACHE->tested |= 1 << direction;
-            OBSTRUCTION_CACHE->result[direction] = actor->id + 1;
+
+        if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
+            ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
+            ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = actor->id + 1;
             return actor->id + 1;
         }
     }
-    OBSTRUCTION_CACHE->tested |= 1 << direction;
-    OBSTRUCTION_CACHE->result[direction] = 0;
+
+    ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
+    ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = 0;
     return 0;
 }
 
@@ -949,7 +1022,7 @@ int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
     }
     arg1 = (arg1 >> 9) & 6;
     while (--count != -1) {
-        if (func_800E0678((void*)arg0, arg1) != 0) {
+        if (func_800E0678(arg0, arg1) != 0) {
             int h = func_800E42EC(arg0->unk34 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx,
                 arg0->unk36 + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
             if (h < min) {
@@ -1057,7 +1130,6 @@ typedef struct {
     char pad60[0x5DE];
     unsigned short height;
 } movementStepActor;
-int func_800E02B4(obstructionState*, int, int);
 int func_800E6A6C(int, int, int, int);
 #define MOVEMENT_STEP_TILES (*(unsigned short(**)[32])0x1F8003C0)
 #define MOVEMENT_STEP_RESULT (*(int*)0x1F8003C8)
@@ -1283,12 +1355,12 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
     int c;
     int s;
 
-    if (func_800E0918((void*)arg0, arg1, 0) != 0) {
+    if (func_800E0918(arg0, arg1, 0) != 0) {
         return;
     }
 
     if (func_800E4764(arg0, &sp10, &sp14) == 0) {
-        func_800E2CCC((void*)arg0);
+        func_800E2CCC(arg0);
         return;
     }
 
@@ -1297,7 +1369,7 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
 
     if (*(int*)0x1F8003C8 != 5 && *(int*)0x1F8003C8 != 7) {
         func_800E678C(arg0);
-        func_800E2CCC((void*)arg0);
+        func_800E2CCC(arg0);
         return;
     }
 
@@ -1309,7 +1381,7 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
     c = rcos(angle);
     s = rsin(angle);
 
-    if (func_800E0850(arg0, arg1) + arg0->unkBE < arg0->unk4E) {
+    if (func_800E0850(arg0, arg1) + arg0->unkBE < arg0->unk4C.vy) {
         arg0->unk184 = -ONE;
         arg0->unk180 = 0;
         arg0->unk17C = 0;

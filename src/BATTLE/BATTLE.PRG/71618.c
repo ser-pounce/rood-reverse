@@ -127,7 +127,12 @@ typedef struct {
     u_int unk0_0 : 1;
     u_int unk0_1 : 5;
     u_int unk0_6 : 2;
-    u_int unk0_8 : 24;
+    u_int unk0_8 : 7;
+    u_int unk0_15 : 5;
+    u_int unk0_20 : 7;
+    u_int unk0_27 : 1;
+    u_int unk0_28 : 2;
+    u_int unk0_30 : 2;
 } func_800DA1D4_t;
 
 typedef struct {
@@ -136,29 +141,40 @@ typedef struct {
     u_int unk8_0 : 21;
     u_int unk8_21 : 1;
     u_int unk8_22 : 10;
+    char unkC[0x10];
+    SVECTOR unk1C;
 } func_800E1238_t;
 
 typedef struct func_800E78F4_t {
     char unk0[7];
     u_char unk7;
-    char unk8[0xB];
+    char unk8[6];
+    u_char unkE;
+    char unkF[4];
     u_char unk13;
     char unk14[2];
-    signed char unk16;
+    int unk16 : 8;
     u_char unk17;
     char unk18[3];
     u_char unk1B;
-    char unk1C[0xF];
+    char unk1C[4];
+    u_char unk20;
+    u_char unk21;
+    char unk22[5];
+    u_char unk27;
+    char unk28[3];
     u_char unk2B;
-    char unk2C[8];
+    u_char unk2C;
+    char unk2D[3];
+    u_char unk30;
+    char unk31[3];
     u_char unk34;
     char unk35;
     u_char unk36;
     char unk37;
     int unk38;
-    char unk3C[0x12];
-    short unk4E;
-    char unk50[4];
+    char unk3C[0x10];
+    SVECTOR unk4C;
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
@@ -168,32 +184,46 @@ typedef struct func_800E78F4_t {
     u_char unk88;
     char unk89[5];
     u_short unk8E;
-    char unk90[8];
+    char unk90[2];
+    u_short unk92;
+    char unk94[4];
     u_short unk98;
     u_short unk9A;
     char unk9C[0x17];
     u_char unkB3;
-    char unkB4[0xA];
+    char unkB4[4];
+    short unkB8;
+    char unkBA[4];
     short unkBE;
-    char unkC0[0x3B];
+    char unkC0[0x27];
+    u_char unkE7;
+    u_char unkE8;
+    u_char unkE9;
+    char unkEA[0x11];
     u_char unkFB;
     char unkFC[0x2E];
     u_char unk12A;
-    char unk12B[4];
-    u_char unk12F;
-    char unk130;
+    char unk12B[2];
+    u_char unk12D;
+    u_char unk12E;
+    signed char unk12F;
+    signed char unk130;
     u_char unk131;
     char unk132[6];
     u_short unk138;
     char unk13A[5];
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[0x28];
+    char unk154[8];
+    u_char unk15C;
+    char unk15D[0x1F];
     int unk17C;
     int unk180;
     int unk184;
     short unk188;
-    char unk18A[0x16];
+    char unk18A[0x10];
+    u_char unk19A;
+    char unk19B[5];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
@@ -302,6 +332,32 @@ typedef struct {
     u_char data[0];
 } p_file_t;
 
+typedef struct {
+    u_short x : 5;
+    u_short z : 5;
+    u_short unk0_10 : 5;
+    u_short active : 1;
+} D_800F58C8_t2;
+
+typedef struct {
+    D_800F58C8_t2 unk0[8];
+} D_800F58C8_t;
+
+typedef struct {
+    char unk0[2];
+    u_char unk2;
+    char unk3;
+    u_char unk4[8];
+} D_1F8003D0_t;
+
+typedef struct {
+    func_800DEEA4_t unk0;
+    char unk4C[0x980];
+    func_800DCAA0_t unk9CC[3][16];
+    u_char unkD8C[16][256];
+    func_800DCAA0_t unk1D8C[16];
+} func_800DEC88_t;
+
 void func_800D5260(VECTOR*);
 void func_800D5294(int*);
 void func_800D7890(int arg0);
@@ -312,6 +368,7 @@ void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
 void func_800D8060(p_file_t* arg0);
 void func_800D820C(int, int);
+void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
@@ -320,11 +377,17 @@ int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DC7C(int, int);
 int func_800DB370(func_800E78F4_t*, int, int, int);
+void func_800DB5B0(func_800E78F4_t*);
+void func_800DB5FC(func_800E78F4_t*);
+int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
+int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBCB4(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DC19C(func_800E78F4_t*);
+void func_800DC210(func_800E78F4_t*, int);
 int func_800DC284(int, int, int, int);
 void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
@@ -333,16 +396,20 @@ void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
+void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
+void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
 void func_800E4288(void*, int);
+int func_800E42D4(int, int);
 int func_800E42EC(int, int);
 int func_800E45D4(int);
+u_int func_800E4660(int, int, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
@@ -352,6 +419,7 @@ int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
+void func_800E685C(int, int, int);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
 
@@ -374,8 +442,11 @@ extern int D_800F5874;
 extern func_800E78F4_t* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
+extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
+extern func_800DCAA0_t (*D_800F58EC)[16];
+extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
@@ -507,7 +578,6 @@ int func_800E4624(short*, short*, int, int);
 unsigned int func_800E4660(int, int, int);
 void func_800DB5B8(candidateMovementState*, unsigned int, int);
 void func_800DB5DC(candidateMovementState*, unsigned int, int);
-int func_800DB61C(candidateMovementState*, int);
 int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
 {
     int id, flag;
@@ -622,7 +692,7 @@ int func_800DA1D4(func_800E78F4_t* arg0)
         entry = arg0->unk430[0];
         id = entry->unkC_0;
 
-        if (func_800D9E18((void*)arg0, (void*)entry)) {
+        if (func_800D9E18(arg0, entry)) {
             return 1;
         }
 
@@ -630,7 +700,7 @@ int func_800DA1D4(func_800E78F4_t* arg0)
             entry = arg0->unk430[i];
 
             if (entry->unk4_13 < D_800F58BC->unk18 && entry->unkC_0 != id) {
-                return func_800D9E18((void*)arg0, (void*)entry);
+                return func_800D9E18(arg0, entry);
             }
         }
 
@@ -779,9 +849,6 @@ typedef struct {
     unsigned int target : 4, pad : 28;
 } da4bcEntryTarget;
 
-int func_800DBB2C(void*, void*, int);
-void func_800DB5B0(void*);
-void func_800DB5FC(void*);
 void func_800E50A0(void*, int, int);
 void func_800E1388(func_800D8400_t*, vs_battle_movementPosition, int, unsigned int);
 
@@ -811,44 +878,52 @@ int func_800DA4BC(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
     return 0;
 }
 
-int func_800DA5CC(da4bcState* state)
+int func_800DA5CC(func_800E78F4_t* arg0)
 {
-    da4bcEntry* entry = state->entries[0];
-    int target;
+    func_800DCAA0_t* entry = arg0->unk430[0];
+    int id;
 
-    if (!state->pending && func_800DA4BC((void*)state, (void*)entry)) {
+    if (!arg0->unk131 && func_800DA4BC(arg0, entry)) {
         return 1;
     }
-    target = state->target16;
-    if (target < 16) {
-        if (func_800DB370((void*)state, target, 288, 1)) {
-            if (state->mode == 1 && state->action != 7) {
-                state->target15C = ((da4bcEntryTarget*)&entry->flagsC)->target;
-                func_800E678C((void*)state);
-                func_800E2CCC((void*)state);
+
+    id = arg0->unk16;
+
+    if (id < 16) {
+        if (func_800DB370(arg0, id, 288, 1)) {
+            if (arg0->unkE9 == 1 && arg0->unk12E != 7) {
+                arg0->unk15C = entry->unkC_0;
+                func_800E678C(arg0);
+                func_800E2CCC(arg0);
             }
+
             return 1;
         }
-        if (func_800DB74C((void*)state, target)) {
+
+        if (func_800DB74C(arg0, id)) {
             return 1;
         }
     }
+
     return 0;
 }
 
-int func_800DA6A4(da4bcState* state)
+int func_800DA6A4(func_800E78F4_t* arg0)
 {
-    int target;
+    int id;
 
-    if (state->flagE) {
-        return func_800DB61C((void*)state, 1);
+    if (arg0->unkE) {
+        return func_800DB61C(arg0, 1);
     }
-    target = func_800DBB2C(state, 0, 3);
-    if (target >= 0 && func_800DBB2C(state, 0, 2) >= 0
-        && func_800DB370((void*)state, target, 1024, 1)) {
+
+    id = func_800DBB2C(arg0, NULL, 3);
+
+    if (id >= 0 && func_800DBB2C(arg0, NULL, 2) >= 0
+        && func_800DB370(arg0, id, 1024, 1)) {
         return 1;
     }
-    return func_800DA1D4((void*)state);
+
+    return func_800DA1D4(arg0);
 }
 
 int func_800DA738(da4bcState* state)
@@ -941,56 +1016,64 @@ fallback:
     return func_800DB61C((void*)state, 1);
 }
 
-int func_800DAA6C(da4bcState* state)
+int func_800DAA6C(func_800E78F4_t* arg0)
 {
-    if (state->flagE) {
-        if (!func_800DB61C((void*)state, 1)) {
-            func_800DB5B0(state);
+    if (arg0->unkE) {
+        if (!func_800DB61C(arg0, 1)) {
+            func_800DB5B0(arg0);
         }
+
         return 1;
     }
-    if (!func_800DA1D4((void*)state)) {
-        func_800DB5FC(state);
+
+    if (!func_800DA1D4(arg0)) {
+        func_800DB5FC(arg0);
     }
+
     return 1;
 }
 
-int func_800DAAD8(da4bcState* state)
+int func_800DAAD8(func_800E78F4_t* arg0)
 {
-    da4bcEntry* entry = state->entries[0];
-    int target;
-    da4bcActor* actor;
+    func_800DCAA0_t* entry = arg0->unk430[0];
+    int id;
+    vs_battle_actor* actor;
 
-    if (!state->pending && func_800DA4BC((void*)state, (void*)entry)) {
+    if (!arg0->unk131 && func_800DA4BC(arg0, entry)) {
         return 1;
     }
-    target = state->target16;
-    if (target < 16) {
-        if (func_800DB370((void*)state, target, 384, 0)) {
-            if (state->mode == 1 && state->action != 7) {
-                state->target15C = ((da4bcEntryTarget*)&entry->flagsC)->target;
-                func_800E678C((void*)state);
-                func_800E2CCC((void*)state);
+
+    id = arg0->unk16;
+
+    if (id < 16) {
+        if (func_800DB370(arg0, id, 384, 0)) {
+            if (arg0->unkE9 == 1 && arg0->unk12E != 7) {
+                arg0->unk15C = entry->unkC_0;
+                func_800E678C(arg0);
+                func_800E2CCC(arg0);
             }
+
             return 1;
         }
-        if (func_800DB74C((void*)state, target)) {
+
+        if (func_800DB74C(arg0, id)) {
             return 1;
         }
     }
-    for (actor = (da4bcActor*)vs_battle_actors[0]; actor; actor = actor->next) {
-        if (((da4bcTargetState*)state)->targets[actor->id].mode != 3
-            && ((da4bcTargetState*)state)->targets[actor->id].category) {
-            ((da4bcTargetState*)state)->targets[actor->id].mode = 3;
-            if (func_800DB61C((void*)state, 0)) {
-                ((da4bcTargetState*)state)->targets[actor->id].mode =
-                    ((da4bcTargetState*)state)->targets[actor->id].oldMode;
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        if (arg0->unk1A4[actor->id].unk0_6 != 3 && arg0->unk1A4[actor->id].unk0_20) {
+            arg0->unk1A4[actor->id].unk0_6 = 3;
+
+            if (func_800DB61C(arg0, 0)) {
+                arg0->unk1A4[actor->id].unk0_6 = arg0->unk1A4[actor->id].unk0_28;
                 return 1;
             }
-            ((da4bcTargetState*)state)->targets[actor->id].mode =
-                ((da4bcTargetState*)state)->targets[actor->id].oldMode;
+
+            arg0->unk1A4[actor->id].unk0_6 = arg0->unk1A4[actor->id].unk0_28;
         }
     }
+
     return 0;
 }
 

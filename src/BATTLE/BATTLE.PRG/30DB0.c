@@ -64,7 +64,6 @@ void func_800A525C(D_800F4538_t*);
 int func_800A6EE8(short*, int, int, int);
 int func_800A91DC(int, int, int);
 int func_800AAD4C(int, int, int, int);
-void func_800AB098(D_800F4538_t*, int, int);
 void func_800AB2AC(int);
 void func_800AC500(D_800F4538_t*);
 void func_800AD008(void*, void*);
@@ -81,23 +80,23 @@ void func_800E68A0(D_800F45E0_t*);
 extern u_short _shpLbaOffsets[];
 extern u_char _shpFileSectorSizes[];
 extern u_char D_800E8960[];
+extern u_short D_800E8A60[];
+extern u_char D_800E8B40[];
 extern u_short _etmLbaOffsets[];
 extern u_char _etmFileSectorSizes[];
 extern u_char _wepFileSectorOffsets[];
-extern u_short D_800E8A60[];
-extern u_char D_800E8B40[];
 extern u_short D_800E8D00[];
 extern u_char D_800E8E80[];
-extern u_char _loadShpState;
 extern u_short D_800E8E8E[];
 extern u_char D_800E8EA3[];
 extern u_short D_800E8EA8[][4];
 extern u_char D_800E8EFC[][4];
+extern u_char _loadShpState;
 extern u_char D_800E8F29;
 extern u_char D_800E8F2B;
 extern u_char D_800E8F2C;
 extern u_char _loadEtmState;
-extern u_char D_800E8F30[];
+extern short D_800E8F30[];
 extern u_char D_800E8F90[];
 extern u_char D_800E8FA8[];
 extern void* D_800E8FB4[];
@@ -146,7 +145,7 @@ extern int D_800F49D8;
 extern u_int D_800F49E0;
 extern char D_800F49E4;
 
-inline int vs_battle_getEmptyObjectDataSlot(void)
+int vs_battle_getEmptyObjectDataSlot(void)
 {
     int i;
 
@@ -161,9 +160,20 @@ inline int vs_battle_getEmptyObjectDataSlot(void)
 
 inline int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
 {
+    int i;
+    int slot;
     vs_battle_objectData* dst;
-    int slot = vs_battle_getEmptyObjectDataSlot();
 
+    for (i = 0; i < 16; ++i) {
+        if (vs_battle_objectDataSlots[i].dataType == 0) {
+            slot = i;
+            goto found;
+        }
+    }
+
+    slot = -1;
+
+found:
     if (slot == -1) {
         return -1;
     }
@@ -1028,9 +1038,7 @@ int _parseShp(vs_battle_objectData* object)
     RECT rect;
     vs_battle_objectData queued;
     D_800F4538_t* actor;
-    D_800F4538_t* other;
     D_800F4538_unk68* model;
-    _armature_t* armature;
     u_char* data;
     u_char* pData;
     int size;
@@ -1039,22 +1047,13 @@ int _parseShp(vs_battle_objectData* object)
     int n;
     int lo;
     int hi;
-    int modelId;
     int vertices;
     int k;
     int corner;
-    int x;
-    int y;
-    u_short* joint;
-    D_800F4538_unk61C* bounds;
-    D_800F4538_unk181C* state;
     int texV;
 
     if (D_800E8F29 == 0) {
         if (object->index == 0 && object->modelId == 6) {
-            int originX;
-            int originY;
-
             data = (u_char*)object->dataAddr;
             actor = D_800F4538[0];
             data += 0xF4;
@@ -1068,33 +1067,31 @@ int _parseShp(vs_battle_objectData* object)
             data += i + 4;
             data += 8;
             vs_main_memcpy(actor->unk11A4, data, D_800F22B8 * 4);
-            originX = *(short*)(D_800E8F30 + actor->unk5BB * 4) << 6;
-            rect.x = originX;
-            originY = (*(short*)(D_800E8F30 + actor->unk5BB * 4 + 2) << 8)
-                    + (D_800E8F90[actor->unk5BB] << 6);
-            rect.y = originY;
-            rect.w = D_800F22C0 / 2;
-            rect.h = D_800F22C4;
+            setRECT(&rect, D_800E8F30[actor->unk5BB * 2] * 64,
+                D_800E8F30[actor->unk5BB * 2 + 1] * 256 + D_800E8F90[actor->unk5BB] * 64,
+                D_800F22C0 / 2, D_800F22C4);
             LoadImage(&rect, (u_long*)(data + D_800F22B8 * 4));
             object->variant = 0;
             goto setupPalettes;
         }
 
         actor = D_800F4538[object->index];
+
         if (actor == NULL) {
             D_800F4538[object->index] = object->unk4;
             actor = D_800F4538[object->index];
+
             if (actor == NULL) {
                 return -2;
             }
+
             memset(actor, 0, 0x1900);
             actor->unk5BB = 0xFF;
             actor->unk0.unk12 = 0xFF;
         }
 
-        modelId = object->modelId;
-        if (modelId == 0x7F) {
-            actor->unk6E6 = modelId;
+        if (object->modelId == 0x7F) {
+            actor->unk6E6 = 0x7F;
             actor->unk0.unkF = object->index;
             actor->unk640 = 0x40;
             actor->unk642 = 10000;
@@ -1105,25 +1102,31 @@ int _parseShp(vs_battle_objectData* object)
             return 0;
         }
 
-        if ((u_long)object->dataAddr < 17) {
+        if (object->dataAddr < 17) {
         copyShared:
             vs_main_memcpy(actor, D_800F4538[object->dataAddr], 0x1900);
+
             if (actor->unk5B0_5 && actor->unk5BB != 0xFF) {
                 for (i = 0; i < actor->unk0.unk8_4 + 1; ++i) {
                     ++D_800F46A8[actor->unk5BB + i].refCount;
                 }
             }
+
             *(vs_battle_objectData_flags*)&actor->unk0.currentTileX = object->unkC;
-            if (*(u_int*)((char*)actor + 0x5AC) & 0x08000000) {
+
+            if (actor->unk5AC_27) {
                 D_800F22B8 = 0xA0;
             } else {
                 D_800F22B8 = 0x10;
             }
+
             goto setupPalettes;
         }
+
         if (func_8009AC24(object)) {
             goto copyShared;
         }
+
         actor->unk6E6 = object->modelId;
         data = (u_char*)object->dataAddr;
     } else if (D_800E8F29 == 1) {
@@ -1138,19 +1141,21 @@ int _parseShp(vs_battle_objectData* object)
     *(int*)&actor->unk0.nQuads = *(int*)(data + 4);
     data += 8;
     vs_main_memcpy(actor->texMapOverlays, data, 0xE8);
-    data += 0xE8;
+    data += 232;
     size = *(int*)data;
     data += 4;
     model = vs_main_allocHeap(size);
     memcpy(model, data, size);
-    model->akaoOffset = (char*)model->akaoOffset + (int)model;
-    model->groupOffset = (char*)model->groupOffset + (int)model;
-    model->vertexOffset = (char*)model->vertexOffset + (int)model;
-    model->polyOffset = (char*)model->polyOffset + (int)model;
+    model->akaoOffset += (u_long)model;
+    model->groupOffset += (u_long)model;
+    model->vertexOffset += (u_long)model;
+    model->polyOffset += (u_long)model;
     actor->unk0.unk68 = model;
+
     if (model == NULL) {
         return -2;
     }
+
     data += size;
 
     queued.dataType = 8;
@@ -1169,14 +1174,20 @@ int _parseShp(vs_battle_objectData* object)
     data += 4;
 
     if (size == 4) {
+        D_800F4538_t* other;
+
         size = *(int*)data;
+
         for (i = 0; i < 17; ++i) {
             other = D_800F4538[i];
+
             if (other != NULL && other->unk6E6 == size) {
                 break;
             }
         }
-        D_800F22B8 = actor->unk0.unkE = other->unk0.unkE;
+
+        actor->unk0.unkE = other->unk0.unkE;
+        D_800F22B8 = actor->unk0.unkE;
         vs_main_memcpy(actor->unk11A4, other->unk11A4, D_800F22B8 * 4);
         actor->unk5BB = other->unk5BB;
         actor->unk0.unk8_3 = other->unk0.unk8_3;
@@ -1186,17 +1197,20 @@ int _parseShp(vs_battle_objectData* object)
     }
 
     D_800F22BC = *data;
-    actor->unk5AC_27 = (u_char)D_800F22BC;
+    actor->unk5AC_27 = D_800F22BC;
     actor->unk0.unk8_3 = D_800F22BC >> 4;
-    data++;
+    ++data;
     D_800F22C0 = *data++ * 2;
     D_800F22C4 = *data++ * 2;
-    actor->unk0.unkE = D_800F22B8 = *data++;
+    D_800F22B8 = *data++;
+    actor->unk0.unkE = D_800F22B8;
 
     n = D_800F22C4 / 64;
+
     if (D_800F22C0 == 0x100) {
         n = 8;
     }
+
     actor->unk0.unk8_4 = n - 1;
 
     if (object->index == 1 || object->index == 16) {
@@ -1219,6 +1233,7 @@ int _parseShp(vs_battle_objectData* object)
             goto fallback;
         }
         break;
+
     case 3:
     case 4:
         for (i = lo; i < hi; ++i) {
@@ -1234,35 +1249,39 @@ int _parseShp(vs_battle_objectData* object)
                 i += n - 1;
             }
         }
+
         goto fallback;
+
     case 8:
         for (i = lo; i < hi; ++i) {
             if (D_800F46A8[i].refCount != 0) {
                 break;
             }
         }
-        if (i == hi) {
-            goto allFree;
+        if (i != hi) {
+        fallback:
+            if (func_8007DFF0(31, 1, 4) == 0) {
+                actor->unk5BB = 0;
+                actor->unk0.unk8_4 = 0;
+                ++D_800F46A8[0].refCount;
+                goto setupPalettes;
+            }
+
+            i = 20;
+        } else {
+            i = lo;
         }
-    fallback:
-        if (func_8007DFF0(31, 1, 4) == 0) {
-            actor->unk5BB = 0;
-            actor->unk0.unk8_4 = 0;
-            ++D_800F46A8[0].refCount;
-            goto setupPalettes;
-        }
-        i = 20;
-        break;
-    allFree:
-        i = lo;
         break;
     }
+
 found:
     for (j = 0; j < n; ++j) {
         D_800F46A8[i + j].refCount = 1;
     }
+
     actor->unk5BB = i;
-    if (*(u_int*)((char*)actor + 0x5AC) & 0x08000000) {
+
+    if (actor->unk5AC_27) {
         D_800F46A8[actor->unk5BB].tpage |= 0x80;
     } else {
         D_800F46A8[actor->unk5BB].tpage &= ~0x180;
@@ -1270,13 +1289,9 @@ found:
 
     vs_main_memcpy(actor->unk11A4, data, D_800F22B8 * 4);
     data += D_800F22B8 * 4;
-    x = *(short*)(D_800E8F30 + actor->unk5BB * 4) << 6;
-    rect.x = x;
-    y = (*(short*)(D_800E8F30 + actor->unk5BB * 4 + 2) << 8)
-      + (D_800E8F90[actor->unk5BB] << 6);
-    rect.y = y;
-    rect.w = D_800F22C0 / 2;
-    rect.h = D_800F22C4;
+    setRECT(&rect, D_800E8F30[actor->unk5BB * 2] * 64,
+        D_800E8F30[actor->unk5BB * 2 + 1] * 256 + D_800E8F90[actor->unk5BB] * 64,
+        D_800F22C0 / 2, D_800F22C4);
     LoadImage(&rect, (u_long*)data);
     data += D_800F22C0 * D_800F22C4;
     D_800E8F29 = 1;
@@ -1286,12 +1301,13 @@ found:
 fixUVs:
     j = actor->unk0.nOther + actor->unk0.nTriangles + actor->unk0.nQuads;
     pData = actor->unk0.unk68->polyOffset;
-    texV = D_800E8F90[actor->unk5BB] << 6;
+    texV = D_800E8F90[actor->unk5BB] * 64;
 
     switch (actor->unk0.unk8_3) {
     case 0:
-        for (k = 0; k < j; k++) {
+        for (k = 0; k < j; ++k) {
             vertices = 4;
+
             if (*pData == primPolyFT3) {
                 pData += 10;
                 vertices = 3;
@@ -1304,8 +1320,9 @@ fixUVs:
             }
         }
         break;
+
     default:
-        for (k = 0; k < j; k++) {
+        for (k = 0; k < j; ++k) {
             if (pData[11] == 0x34) {
                 pData[6] += 0;
                 pData[7] += texV;
@@ -1323,8 +1340,7 @@ fixUVs:
     }
 
 setupPalettes:
-    vs_main_memcpy(actor->unk1424, (u_short*)actor->unk11A4 + object->variant * 0xA0,
-        D_800F22B8 * 2);
+    vs_main_memcpy(actor->unk1424, actor->unk11A4[object->variant], D_800F22B8 * 2);
     vs_main_memcpy(actor->unk1424 + 0xA0, actor->unk1424, D_800F22B8 * 2);
     vs_main_memcpy(actor->unk16A4, actor->unk1424, D_800F22B8 * 2);
 
@@ -1378,17 +1394,20 @@ setupPalettes:
     actor->unk183C = D_800F4438.vx;
 
     for (i = 0; i < actor->unk0.nBones; ++i) {
-        armature = &actor->unk0.unk68->armatures[i];
+        _armature_t* armature = &actor->unk0.unk68->armatures[i];
+
         if (armature->unk8 >= 3 && armature->unk8 < 7) {
-            joint = (u_short*)&actor->unk1880[(armature->unk8 - 3) * 4];
+            u_short* joint = actor->unk1880[armature->unk8 - 3];
+
             joint[1] = 0;
             joint[0] = armature->unkA;
         }
     }
 
     for (i = 0; i < 4; ++i) {
-        state = &actor->unk181C[i];
-        bounds = &actor->unk61C[i];
+        D_800F4538_unk181C* state = &actor->unk181C[i];
+        D_800F4538_unk61C* bounds = &actor->unk61C[i];
+
         state->x = bounds->x;
         state->y = bounds->y;
         state->dx = bounds->unk4;
@@ -1399,6 +1418,7 @@ setupPalettes:
 
     actor->unk5DC[0] = NULL;
     actor->unk5DC[1] = NULL;
+
     for (i = 0; i < 3; ++i) {
         if (D_800F4528[i] != NULL) {
             func_8009CAEC(actor, i);
@@ -1426,32 +1446,12 @@ setupPalettes:
         actor->unk0.unk12 = 0xFF;
         func_8009FF08(object->index, object->actorId, object->unk11, 0);
     }
+
     D_800E8F29 = 0;
     return 0;
 }
 
-int func_8009BD90(vs_battle_objectData* arg0)
-{
-    D_800F4538_t* temp_v1;
-    int var_a2;
-    int t1 = D_800F4538[arg0->index]->unk6E6;
-    for (var_a2 = (arg0->index >= 2) * 2; var_a2 < 17; ++var_a2) {
-        if (var_a2 != arg0->index) {
-            temp_v1 = D_800F4538[var_a2];
-            if ((temp_v1 != NULL) && (temp_v1->unk6E6 == t1)) {
-                if ((arg0->modelId == 0 && temp_v1->unk5D4 != 0)
-                    || (arg0->modelId != 0 && temp_v1->unk5B1 == arg0->modelId)) {
-                    arg0->dataAddr = var_a2;
-                    return 1;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-// https://decomp.me/scratch/wJjuU
-static inline int vs_battleFindSharedSequence(vs_battle_objectData* arg0)
+inline int func_8009BD90(vs_battle_objectData* arg0)
 {
     D_800F4538_t* temp_v1;
     int var_a2;
@@ -1475,143 +1475,178 @@ int func_8009BE5C(vs_battle_objectData* object)
 {
     vs_battle_objectData queued;
     D_800F4538_t* actor = D_800F4538[object->index];
-    unsigned sectors;
-    char* sequences;
+    u_int sectors;
+    shpHeader_t* header;
     int result;
     int model;
+
     switch (_loadShpState) {
     case 0:
         switch (object->actorId) {
         case 0:
-            if (object->index != 0 && vs_battleFindSharedSequence(object)) {
+            if (object->index != 0 && func_8009BD90(object)) {
                 D_800F22D0 = 0;
                 goto parse;
             }
-            goto allocate;
+
+            D_800F22D0 = 1;
+            break;
+
         case 1:
         case 2:
             D_800F22D0 = 0;
             break;
+
         default:
-        allocate:
             D_800F22D0 = 1;
             break;
         }
-        break;
+        // Fallthrough
+
+    default:
+        switch (object->actorId) {
+        case 0:
+            header = (shpHeader_t*)actor->texMapOverlays;
+            sectors = header->btSeqSizes[object->modelId] >> 11;
+
+            if (!sectors) {
+                return 0;
+            }
+
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = header->btSeqLbas[object->modelId];
+
+            if (object->index == 0 && (model = object->modelId) != 0) {
+                queued.dataType = 7;
+                queued.index = 0;
+                queued.actorId = 3;
+                queued.material = model;
+                vs_battle_populateDataSlot(&queued);
+            }
+            break;
+
+        case 1:
+        case 2:
+            sectors = D_800E8B40[object->modelId];
+
+            if (!sectors) {
+                return -2;
+            }
+
+            D_800F22C8 = vs_main_allocHeap(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = D_800E8A60[object->modelId] + 0x19797;
+            break;
+
+        case 3:
+            sectors = D_800E8EA3[object->material];
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = D_800E8E8E[object->material] + 0x18043;
+            break;
+
+        case 4:
+        special:
+            sectors = D_800E8EFC[object->material][object->modelId];
+
+            if (!sectors) {
+                sectors = D_800E8EFC[2][0];
+                object->material = 2;
+                object->modelId = 0;
+            }
+
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+
+            D_800F22D8.lba = D_800E8EA8[object->material][object->modelId] + 0x1943E;
+            break;
+
+        case 5:
+            if (object->modelId == 0) {
+                return 0;
+            }
+
+            --object->modelId;
+
+            if (actor->unk6E6 == 2) {
+                goto special;
+            }
+
+            sectors = actor->spSeqSizes[object->modelId] >> 11;
+
+            if (!sectors) {
+                return -2;
+            }
+
+            D_800F22D8.lba = actor->spSeqLbas[object->modelId];
+            D_800F22C8 = vs_main_allocHeapR(sectors << 11);
+            object->dataAddr = (u_long)D_800F22C8;
+
+            if (!D_800F22C8) {
+                return -2;
+            }
+            break;
+        }
+
+        D_800F22D8.size = sectors << 11;
+        _loadShpState = 1;
+        D_800F22E0 = vs_main_allocateCdQueueSlot(&D_800F22D8);
+        vs_main_cdEnqueue(D_800F22E0, (void*)object->dataAddr);
+        // Fallthrough
+
     case 1:
-        goto wait;
-    case 2:
-        goto parse;
-    }
-    switch (object->actorId) {
-    case 0:
-        sequences = (char*)actor + 0x5F4;
-        sectors = *(u_short*)(sequences + 0xA0 + object->modelId * 2) >> 11;
-        if (!sectors) {
-            return 0;
+        if (D_800F22E0->state != 4) {
+            return -1;
         }
-        D_800F22C8 = vs_main_allocHeapR(sectors << 11);
-        object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8) {
-            return -2;
-        }
-        D_800F22D8.lba = *(u_int*)(sequences + 0x70 + object->modelId * 4);
-        if (object->index == 0 && (model = object->modelId) != 0) {
-            queued.dataType = 7;
-            queued.index = 0;
-            queued.actorId = 3;
-            queued.material = model;
-            vs_battle_populateDataSlot(&queued);
-        }
-        break;
-    case 1:
-    case 2:
-        sectors = D_800E8B40[object->modelId];
-        if (!sectors) {
-            return -2;
-        }
-        D_800F22C8 = vs_main_allocHeap(sectors << 11);
-        object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8) {
-            return -2;
-        }
-        D_800F22D8.lba = D_800E8A60[object->modelId] + 0x19797;
-        break;
-    case 3:
-        sectors = D_800E8EA3[(u_char)object->material];
-        D_800F22C8 = vs_main_allocHeapR(sectors << 11);
-        object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8) {
-            return -2;
-        }
-        D_800F22D8.lba = D_800E8E8E[(u_char)object->material] + 0x18043;
-        break;
-    case 4:
-    special:
-        sectors = D_800E8EFC[(u_char)object->material][object->modelId];
-        if (!sectors) {
-            sectors = D_800E8EFC[2][0];
-            object->material = 2;
-            object->modelId = 0;
-        }
-        D_800F22C8 = vs_main_allocHeapR(sectors << 11);
-        object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8) {
-            return -2;
-        }
-        D_800F22D8.lba = D_800E8EA8[(u_char)object->material][object->modelId] + 0x1943E;
-        break;
-    case 5:
-        if (object->modelId == 0) {
-            return 0;
-        }
-        --object->modelId;
-        if (actor->unk6E6 == 2) {
-            goto special;
-        }
-        sectors = actor->spSeqSizes[object->modelId] >> 11;
-        if (!sectors) {
-            return -2;
-        }
-        D_800F22D8.lba = actor->spSeqLbas[object->modelId];
-        D_800F22C8 = vs_main_allocHeapR(sectors << 11);
-        object->dataAddr = (u_long)D_800F22C8;
-        if (!D_800F22C8) {
-            return -2;
-        }
-        break;
-    }
-    D_800F22D8.size = sectors << 11;
-    _loadShpState = 1;
-    D_800F22E0 = vs_main_allocateCdQueueSlot(&D_800F22D8);
-    vs_main_cdEnqueue(D_800F22E0, (void*)object->dataAddr);
-wait:
-    if (D_800F22E0->state != 4) {
+
+        vs_main_freeCdQueueSlot(D_800F22E0);
+        _loadShpState = 2;
         return -1;
+
+    case 2:
+    parse:
+        result = _loadSeq(object);
+
+        if (result == -1) {
+            return -1;
+        }
+        if (D_800F22D0) {
+            D_800F22D0 = 0;
+            vs_main_freeHeapR(D_800F22C8);
+        }
+
+        _loadShpState = 0;
+        return result;
     }
-    vs_main_freeCdQueueSlot(D_800F22E0);
-    _loadShpState = 2;
-    return -1;
-parse:
-    result = _loadSeq(object);
-    if (result == -1) {
-        return -1;
-    }
-    if (D_800F22D0) {
-        D_800F22D0 = 0;
-        vs_main_freeHeapR(D_800F22C8);
-    }
-    _loadShpState = 0;
-    return result;
 }
 
 inline void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
 {
     vs_main_memcpy(arg0, arg1, 0x7800);
-    arg0->unk0 -= (long)arg1;
-    arg0->unk4 -= (long)arg1;
-    arg0->unk0 += (long)arg0;
-    arg0->unk4 += (long)arg0;
+    arg0->unk0 -= (u_long)arg1;
+    arg0->unk4 -= (u_long)arg1;
+    arg0->unk0 += (u_long)arg0;
+    arg0->unk4 += (u_long)arg0;
 }
 
 int _loadSeq(vs_battle_objectData* object)
@@ -1628,165 +1663,198 @@ int _loadSeq(vs_battle_objectData* object)
     switch (D_800E8F2B) {
     case 0:
         D_800F22E4 = (u_char*)object->dataAddr;
-        break;
-    case 1:
-        goto loadEtm;
-    }
+        // Fallthrough
 
-    if (object->actorId == 0) {
-        actor = D_800F4538[object->index];
-        if (object->modelId != 0) {
-            if (vs_battleFindSharedSequence(object)) {
+    default:
+        if (object->actorId == 0) {
+            actor = D_800F4538[object->index];
+
+            if (object->modelId != 0 && func_8009BD90(object)) {
                 D_800F22E4 = (u_char*)object->dataAddr;
             }
-        }
-        if (object->modelId == 0) {
-            if ((u_long)D_800F22E4 < 17) {
-                source = D_800F4538[(int)D_800F22E4];
-                actor->unk5B4 = source->unk5B4;
-                actor->unk5D4 = source->unk5D4;
-                return 0;
-            }
-            actor->unk5B4 = *D_800F22E4;
-            D_800F22E4 += 4;
-            size = *(int*)D_800F22E4;
-            D_800F22E4 += 4;
-            if (size & 3) {
-                size += (4 - size) & 3;
-            }
-            seq = vs_main_allocHeap(size);
-            if (seq == NULL) {
-                return -2;
-            }
-            actor->unk5D4 = seq;
-            goto copy;
-        }
-        if (object->modelId == 0xFF) {
-            D_800F22E4 += 4;
-            size = *(int*)D_800F22E4;
-            D_800F22E4 += 4;
-            if (size & 3) {
-                size += (4 - size) & 3;
-            }
-            seq = vs_main_allocHeap(size);
-            if (seq == NULL) {
-                return -2;
-            }
-            actor->unk5D0 = seq;
-            goto copy;
-        }
-        if ((u_long)D_800F22E4 < 17) {
-            source = D_800F4538[(int)D_800F22E4];
-            actor->unk5B5 = source->unk5B5;
-            seq = source->unk5D8;
-            if (object->index < 2) {
+            if (object->modelId == 0) {
+                if ((u_long)D_800F22E4 < 17) {
+                    source = D_800F4538[(u_long)D_800F22E4];
+                    actor->unk5B4 = source->unk5B4;
+                    actor->unk5D4 = source->unk5D4;
+                    return 0;
+                }
+
+                actor->unk5B4 = *D_800F22E4;
+                D_800F22E4 += 4;
+                size = *(int*)D_800F22E4;
+                D_800F22E4 += 4;
+
+                if (size & 3) {
+                    size += (4 - size) & 3;
+                }
+
+                seq = vs_main_allocHeap(size);
+
+                if (seq == NULL) {
+                    return -2;
+                }
+
+                actor->unk5D4 = seq;
+            } else if (object->modelId == 0xFF) {
+                D_800F22E4 += 4;
+                size = *(int*)D_800F22E4;
+                D_800F22E4 += 4;
+
+                if (size & 3) {
+                    size += (4 - size) & 3;
+                }
+
+                seq = vs_main_allocHeap(size);
+
+                if (seq == NULL) {
+                    return -2;
+                }
+
+                actor->unk5D0 = seq;
+            } else if ((u_long)D_800F22E4 < 17) {
+                source = D_800F4538[(u_long)D_800F22E4];
+                actor->unk5B5 = source->unk5B5;
+                seq = source->unk5D8;
+
+                if (object->index >= 2) {
+                    actor->unk5D8 = seq;
+                    actor->unk5B1 = object->modelId;
+                    return 0;
+                }
                 if (actor->unk0.unkF == 0) {
                     seq = D_800F4930;
-                    goto clone;
-                }
-                if (D_800F22E4 == 0) {
+                } else if (D_800F22E4 == 0) {
                     seq = vs_main_allocHeap(0x7800);
-                clone:
-                    func_8009C378(seq, source->unk5D8);
+                } else {
+                    actor->unk5D8 = seq;
+                    actor->unk5B1 = object->modelId;
+                    return 0;
                 }
+
+                func_8009C378(seq, source->unk5D8);
+                actor->unk5D8 = seq;
+                actor->unk5B1 = object->modelId;
+                return 0;
+            } else {
+                actor->unk5B5 = *D_800F22E4;
+                D_800F22E4 += 2;
+                size = *(u_short*)D_800F22E4;
+                D_800F22E4 += 2;
+
+                if (size != 0 && size != actor->unk0.nBones) {
+                    return 0;
+                }
+
+                size = *(int*)D_800F22E4;
+                D_800F22E4 += 4;
+
+                if (size & 3) {
+                    size += (4 - size) & 3;
+                }
+                if (actor->unk0.unkF != 0) {
+                    seq = vs_main_allocHeap(size);
+
+                    if (seq == NULL) {
+                        return -2;
+                    }
+                } else {
+                    seq = D_800F4930;
+                }
+
+                actor->unk5D8 = seq;
+                actor->unk5B1 = object->modelId;
             }
-            actor->unk5D8 = seq;
-            actor->unk5B1 = object->modelId;
+
+        copy:
+            vs_main_memcpy(seq, D_800F22E4, size);
+            seq->unk0 += (u_long)seq;
+            seq->unk4 += (u_long)seq;
             return 0;
-        }
-        actor->unk5B5 = *D_800F22E4;
-        D_800F22E4 += 2;
-        size = *(u_short*)D_800F22E4;
-        D_800F22E4 += 2;
-        if (size != 0 && size != actor->unk0.nBones) {
-            return 0;
-        }
-        size = *(int*)D_800F22E4;
-        D_800F22E4 += 4;
-        if (size & 3) {
-            size += (4 - size) & 3;
-        }
-        if (actor->unk0.unkF != 0) {
+        } else if (object->actorId == 3) {
+            D_800F22E4 += 4;
+            size = *(int*)D_800F22E4;
+            D_800F22E4 += 4;
+
+            if (size & 3) {
+                size += (4 - size) & 3;
+            }
+
+            seq = D_800F4768;
+            goto copy;
+        } else if (object->actorId == 4 || object->actorId == 5) {
+            actor = D_800F4538[object->index];
+            actor->unk5B6 = *D_800F22E4;
+            D_800F22E4 += 4;
+            size = *(int*)D_800F22E4;
+            D_800F22E4 += 4;
+
+            if (size & 3) {
+                size += (4 - size) & 3;
+            }
+
             seq = vs_main_allocHeap(size);
+
             if (seq == NULL) {
                 return -2;
             }
+
+            actor->unk5DC[3] = seq;
+            goto copy;
         } else {
-            seq = D_800F4930;
-        }
-        actor->unk5D8 = seq;
-        actor->unk5B1 = object->modelId;
-    copy:
-        vs_main_memcpy(seq, D_800F22E4, size);
-        seq->unk0 = (char*)seq->unk0 + (int)seq;
-        seq->unk4 = (char*)seq->unk4 + (int)seq;
-        return 0;
-    } else if (object->actorId == 3) {
-        D_800F22E4 += 4;
-        size = *(int*)D_800F22E4;
-        D_800F22E4 += 4;
-        if (size & 3) {
-            size += (4 - size) & 3;
-        }
-        seq = D_800F4768;
-        goto copy;
-    } else if (object->actorId == 4 || object->actorId == 5) {
-        actor = D_800F4538[object->index];
-        actor->unk5B6 = *D_800F22E4;
-        D_800F22E4 += 4;
-        size = *(int*)D_800F22E4;
-        D_800F22E4 += 4;
-        if (size & 3) {
-            size += (4 - size) & 3;
-        }
-        seq = vs_main_allocHeap(size);
-        if (seq == NULL) {
-            return -2;
-        }
-        actor->unk5DC[3] = seq;
-        goto copy;
-    } else {
-        slot = object->index - 1;
-        D_800F2450[slot] = 0;
-        if (D_800F4528[slot] != NULL) {
-            return -2;
-        }
-        D_800F4528[slot] = D_800F22E4;
-        count = *(int*)D_800F22E4;
-        D_800F22E4 += 4;
-        for (i = 0; i < count; ++i) {
-            D_800F4628[slot][i] = *(u_short*)D_800F22E4;
-            D_800F22E4 += 4;
-        }
-        for (i = 0; i < count; ++i) {
-            D_800F4938[slot][i] = *(u_short*)D_800F22E4;
-            D_800F22E4 += 4;
-        }
-        D_800F4628[slot][i] = -1;
-        for (i = 0; i < count; ++i) {
-            D_800F4810[slot][i] = *(char**)D_800F22E4;
-            D_800F22E4 += 4;
-        }
-        for (i = 0; i < count; ++i) {
-            D_800F4810[slot][i] += (int)D_800F22E4;
-            seq = (func_8009C378_t*)(D_800F4810[slot][i] + 8);
-            seq->unk0 = (char*)seq->unk0 + (int)(D_800F4810[slot][i] + 8);
-            seq->unk4 = (char*)seq->unk4 + (int)(D_800F4810[slot][i] + 8);
-        }
-        D_800F4810[slot][i] = (char*)-1;
-        for (i = 0; i < 17; ++i) {
-            if (D_800F4538[i] != NULL) {
-                func_8009CAEC(D_800F4538[i], slot);
+            slot = object->index - 1;
+            D_800F2450[slot] = 0;
+
+            if (D_800F4528[slot] != NULL) {
+                return -2;
             }
+
+            D_800F4528[slot] = D_800F22E4;
+            count = *(int*)D_800F22E4;
+            D_800F22E4 += 4;
+
+            for (i = 0; i < count; ++i) {
+                D_800F4628[slot][i] = *(u_short*)D_800F22E4;
+                D_800F22E4 += 4;
+            }
+            for (i = 0; i < count; ++i) {
+                D_800F4938[slot][i] = *(u_short*)D_800F22E4;
+                D_800F22E4 += 4;
+            }
+
+            D_800F4628[slot][i] = -1;
+
+            for (i = 0; i < count; ++i) {
+                D_800F4810[slot][i] = *(char**)D_800F22E4;
+                D_800F22E4 += 4;
+            }
+            for (i = 0; i < count; ++i) {
+                D_800F4810[slot][i] += (u_long)D_800F22E4;
+                seq = (func_8009C378_t*)(D_800F4810[slot][i] + 8);
+                seq->unk0 += (u_long)(D_800F4810[slot][i] + 8);
+                seq->unk4 += (u_long)(D_800F4810[slot][i] + 8);
+            }
+
+            D_800F4810[slot][i] = (char*)-1;
+
+            for (i = 0; i < 17; ++i) {
+                if (D_800F4538[i] != NULL) {
+                    func_8009CAEC(D_800F4538[i], slot);
+                }
+            }
+            if (object->actorId == 1) {
+                return 0;
+            }
+
+            D_800E8F2B = 1;
         }
-        if (object->actorId == 1) {
-            return 0;
-        }
-        D_800E8F2B = 1;
-    loadEtm:
+        // Fallthrough
+
+    case 1:
         if (_loadEtm(object) == -1) {
             return -1;
         }
+
         D_800E8F2B = 0;
         return 0;
     }
@@ -1836,7 +1904,9 @@ int func_8009CC20(int arg0, int arg1)
         if (arg0 >= 17) {
             return -1;
         }
+
         actor = D_800F4538[arg0];
+
         if (actor == NULL) {
             return -1;
         }
@@ -1846,50 +1916,64 @@ int func_8009CC20(int arg0, int arg1)
         if (arg0 != 0) {
             objectData.index = arg0;
             objectData.modelId = actor->unk5B1;
+
             if (arg0 == 1 && actor->unk6E6 == 0) {
                 vs_main_freeHeap(actor->unk5D8);
-            } else if (!vs_battleFindSharedSequence(&objectData)) {
+            } else if (!func_8009BD90(&objectData)) {
                 vs_main_freeHeap(actor->unk5D8);
             }
         }
+
         actor->unk5D8 = NULL;
         actor->unk5B1 = 0;
         actor->unk5B5 = 0;
         break;
+
     case 1:
     case 2:
         --arg0;
+
         for (i = 0; i < 17; ++i) {
             actor = D_800F4538[i];
+
             if (actor != NULL) {
                 actor->unk5DC[arg0] = NULL;
             }
         }
+
         i = func_8009D208(arg0 + 1);
+
         if (i < 0) {
             return i;
         }
         if (D_800F4528[arg0] != NULL) {
             vs_main_freeHeap(D_800F4528[arg0]);
         }
+
         D_800F4528[arg0] = NULL;
         break;
+
     case 4:
     case 5:
         actor = D_800F4538[arg0];
+
         if (actor == NULL) {
             return -1;
         }
         if (actor->unk5DC[3] == NULL) {
             return 0;
         }
+
         vs_main_freeHeap(actor->unk5DC[3]);
         actor->unk5DC[3] = NULL;
         actor->unk5B6 = 0;
         break;
     }
+
     return 0;
 }
+
+void func_800AB098(D_800F4538_t*, int, int);
 
 int func_8009CE9C(u_int arg0)
 {
@@ -2070,7 +2154,7 @@ void func_8009D458(void) { }
 
 void func_8009D460(void) { }
 
-void func_8009D468(int arg0, int arg1)
+void func_8009D468(int arg0)
 {
     D_800F4538_unk64 sp10;
     int var_a2;
@@ -2573,7 +2657,7 @@ void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
             if (dx == 0 && dz == 0) {
                 angle = actor->unk0.facing;
             } else {
-                angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
+                angle = (0xC00 - ratan2(dz, dx)) & 0xFFF;
             }
 
             angle -= actor->unk0.facing;
@@ -2731,107 +2815,120 @@ void func_8009E634(D_800F4538_t* arg0)
     }
 }
 
-// https://decomp.me/scratch/ajofv
 void func_8009E700(int actorId, int animation)
 {
-    D_800F4538_t* actor;
-    D_800F45E0_t* object;
-    int facing;
-    int direction;
-    int distance;
-    int tileDx;
-    int tileDz;
-    int currentAnimation;
-    int reactionAnimation;
+    D_800F4538_t* actor = D_800F4538[actorId];
     int baseAnimation;
+    int distance;
 
-    actor = D_800F4538[actorId];
     if (actor == NULL) {
-        object = D_800F45E0[actorId];
+        D_800F45E0_t* object = D_800F45E0[actorId];
+
         if (object != NULL && (object->unk1A == 0xF9 || object->unk1A == 0xFF)
             && object->unk16C.unk4 == 0) {
             object->unk1A = 0;
         }
-    } else {
-        currentAnimation = actor->animationId;
-        if ((currentAnimation != 0xC6) && (currentAnimation != 0xC8)
-            && (actor->unk0.unkF != 0 || actor->unk0.unkA_3 != 1 || actor->unk0.unk9_6)) {
-            if (actor->unk0.unkA_0 < 2 && actor->unk0.unkB_4 != 2
-                && actor->unk0.unkB_4 != 5) {
-                if (actor->unk0.unkB_0 == 3) {
-                    func_800A2C48(actor);
-                } else if (actor->unk0.unkB_0 != 0) {
-                    goto resetState;
-                }
-                {
-                    if (actor->unk0.unkA_3 == 2) {
-                        if (actor->unk0.unk18 != 0 || actor->unk0.unk1A != 0) {
-                            actor->unk0.unk1A = 0;
-                            actor->unk0.unk18 = 0;
-                            actor->unk0.position.vx += actor->unk0.unk34.vx;
-                            actor->unk0.position.vy += actor->unk0.unk34.vy;
-                            actor->unk0.position.vz += actor->unk0.unk34.vz;
-                            actor->unk0.facing += actor->unk0.unk3E;
-                        }
-                    } else if (actor->unk0.unk9_0 == 0) {
-                        baseAnimation = actor->animationId;
-                        if (baseAnimation > 100) {
-                            baseAnimation -= 0x64;
-                        }
-                        if (baseAnimation != 0x62) {
-                            distance = 1;
-                            if (actor->unk0.unkF == 0) {
-                                reactionAnimation = actor->animationId;
-                                if ((u_int)(reactionAnimation - 0x4F) >= 4U) {
-                                    if (((u_int)(reactionAnimation - 0x47) >= 4U)
-                                        && (reactionAnimation != 0x4C)) {
 
-                                    } else {
-                                        goto moveFromReaction;
-                                    }
-                                } else {
-                                    distance = 2;
-                                moveFromReaction:
-                                    facing = actor->unk0.facing + ONE / 8;
-                                    facing &= 0xFFF;
-                                    facing /= ONE / 4;
-                                    direction = facing;
-                                    tileDx = 0;
-                                    tileDz = 0;
-                                    if (direction < 2) {
-                                        distance = -distance;
-                                    }
-                                    if (direction & 1) {
-                                        tileDx = distance;
-                                    } else {
-                                        tileDz = distance;
-                                    }
-                                    func_800E4C28(actor->unk0.currentTileX + tileDx,
-                                        actor->unk0.currentTileZ + tileDz, tileDx,
-                                        tileDz);
-                                }
-                            }
-                            if (actor->unk5AC_3) {
-                                func_800A0204(actor->unk0.unkF, 0x4B, 0, 0xC);
-                            } else {
-                                func_800A0204(actorId, animation, 0, 0x10);
-                                actor->unk1846 = 0;
-                            }
-                        }
-                    }
-                }
-            }
-        resetState:
-            if (actor->unk0.unkA_3 != 2) {
-                actor->unk0.unkA_3 = 0;
-            }
-            actor->unk5C8 = 0;
-            actor->unk0.unk18 = 0;
+        return;
+    }
+
+    if (actor->animationId == 198 || actor->animationId == 200) {
+        return;
+    }
+
+    if (actor->unk0.unkF == 0 && actor->unk0.unkA_3 == 1 && !actor->unk0.unk9_6) {
+        return;
+    }
+
+    if (actor->unk0.unkA_0 >= 2 || actor->unk0.unkB_4 == 2 || actor->unk0.unkB_4 == 5) {
+        goto resetState;
+    }
+
+    if (actor->unk0.unkB_0 == 3) {
+        func_800A2C48(actor);
+    } else if (actor->unk0.unkB_0 != 0) {
+        goto resetState;
+    }
+
+    if (actor->unk0.unkA_3 == 2) {
+        if (actor->unk0.unk18 != 0 || actor->unk0.unk1A != 0) {
             actor->unk0.unk1A = 0;
-            actor->unk0.unk9_6 = 0;
-            func_800A0ABC(actorId);
+            actor->unk0.unk18 = 0;
+            addVector(&actor->unk0.position, &actor->unk0.unk34);
+            actor->unk0.facing += actor->unk0.unk3E;
+        }
+
+        goto resetState;
+    }
+
+    if (actor->unk0.unk9_0 != 0) {
+        goto resetState;
+    }
+
+    baseAnimation = actor->animationId;
+
+    if (baseAnimation > 100) {
+        baseAnimation -= 100;
+    }
+
+    if (baseAnimation == 98) {
+        goto resetState;
+    }
+
+    distance = 1;
+
+    if (actor->unk0.unkF == 0) {
+        int reactionAnimation = actor->animationId;
+
+        if ((reactionAnimation >= 79 && reactionAnimation <= 82)
+            || (reactionAnimation >= 71 && reactionAnimation <= 74)
+            || reactionAnimation == 76) {
+            int direction;
+            int tileDx;
+            int tileDz;
+
+            if (reactionAnimation >= 79 && reactionAnimation <= 82) {
+                distance = 2;
+            }
+
+            direction = actor->unk0.facing + ONE / 8;
+            direction &= 0xFFF;
+            direction /= ONE / 4;
+            tileDx = 0;
+            tileDz = 0;
+
+            if (direction < 2) {
+                distance = -distance;
+            }
+
+            if (direction & 1) {
+                tileDx = distance;
+            } else {
+                tileDz = distance;
+            }
+
+            func_800E4C28(actor->unk0.currentTileX + tileDx,
+                actor->unk0.currentTileZ + tileDz, tileDx, tileDz);
         }
     }
+
+    if (actor->unk5AC_3) {
+        func_800A0204(actor->unk0.unkF, 75, 0, 12);
+    } else {
+        func_800A0204(actorId, animation, 0, 16);
+        actor->unk1846 = 0;
+    }
+
+resetState:
+    if (actor->unk0.unkA_3 != 2) {
+        actor->unk0.unkA_3 = 0;
+    }
+
+    actor->unk5C8 = 0;
+    actor->unk0.unk18 = 0;
+    actor->unk0.unk1A = 0;
+    actor->unk0.unk9_6 = 0;
+    func_800A0ABC(actorId);
 }
 
 void func_8009EA14(int arg0, SVECTOR* arg1)
@@ -3082,106 +3179,114 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
     func_8006C84C(arg0);
 }
 
-// https://decomp.me/scratch/kQp6H
-
 void func_8009EFEC(int actorId, SVECTOR* target, int mode)
 {
-    int animation;
-    D_800F4538_t* fallbackActor;
-    D_800F4538_t* actor;
-    int facingDelta;
-    int angle;
-    int dz;
-    int dx;
-    int pitch;
-    int reactionAnimation;
+    int found;
+    D_800F4538_t* actor = D_800F4538[actorId];
     int value;
-    int verticalAngle;
 
-    actor = D_800F4538[actorId];
     if (mode == 0) {
+        int facingDelta;
+
         if (target != NULL) {
-            dx = target->vx - actor->unk0.position.vx;
-            dz = target->vz - actor->unk0.position.vz;
-            if ((dx == 0) && (dz == 0)) {
-                angle = actor->unk0.facing;
-            } else {
-                angle = (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
-            }
-            angle = angle - actor->unk0.facing;
+            int dx = target->vx - actor->unk0.position.vx;
+            int dz = target->vz - actor->unk0.position.vz;
+            int angle = (dx == 0 && dz == 0) ? actor->unk0.facing
+                                             : (ONE * 3 / 4 - ratan2(dz, dx)) & 0xFFF;
+
+            angle -= actor->unk0.facing;
+
             if (angle > ONE / 2) {
                 angle -= ONE;
             } else if (angle < -ONE / 2) {
                 angle += ONE;
             }
+
             facingDelta = angle;
         } else {
             facingDelta = 0;
         }
+
         actor->unk0.unk3E = facingDelta;
-        actor->unk0.unk18 = 0xA;
-        if ((u_short)actor->unk63C >= 0x80U) {
-            actor->unk0.unk18 = 0x14;
+        actor->unk0.unk18 = 10;
+
+        if (actor->unk63C >= 0x80) {
+            actor->unk0.unk18 = 20;
         }
-        func_800AD494(actor, 0xBFU, &animation);
+
+        func_800AD494(actor, 0xBF, &found);
         value = 0xBF;
-        if (animation == NULL) {
+
+        if (found == 0) {
             value = 0xC1;
         }
+
         func_800A0204(actorId, value, 0, 8);
         func_8009FD38(actor);
-        return;
     } else if (mode == 1) {
-        func_800AD494(actor, 0xFFU, &animation);
-        if (animation == NULL) {
-            fallbackActor = D_800F4538[actorId];
+        func_800AD494(actor, 0xFF, &found);
+
+        if (found == 0) {
+            D_800F4538_t* fallbackActor = D_800F4538[actorId];
+
             if (fallbackActor != NULL) {
+                int pitch;
+                int reactionAnimation;
+
                 fallbackActor->unk0.unk3E = func_8009E180(fallbackActor, target);
-                fallbackActor->unk0.unk18 = 0xA;
-                if ((u_short)fallbackActor->unk63C >= 0x81U) {
-                    fallbackActor->unk0.unk18 = 0x14;
+                fallbackActor->unk0.unk18 = 10;
+
+                if (fallbackActor->unk63C > 0x80) {
+                    fallbackActor->unk0.unk18 = 20;
                 }
+
                 pitch = func_8009E228(fallbackActor, target);
                 reactionAnimation = 0x48;
-                if (pitch >= -0xE4) {
+
+                if (pitch >= -228) {
                     reactionAnimation = 0x49;
-                    if (pitch >= 0xAC) {
+
+                    if (pitch >= 172) {
                         reactionAnimation = 0x4A;
                     }
                 }
+
                 func_800A0204(actorId, reactionAnimation, 0, 6);
                 func_8009FD38(fallbackActor);
-                return;
             }
         } else {
             SVECTOR origin;
-            verticalAngle = 0;
+            int verticalAngle = 0;
+
             if (target != NULL) {
                 value = target->vx - actor->unk0.position.vx;
                 value = value * value;
                 verticalAngle = target->vz - actor->unk0.position.vz;
+
                 if (value < 0) {
                     value = -value;
                 }
+
                 verticalAngle = verticalAngle * verticalAngle;
+
                 if (verticalAngle < 0) {
                     verticalAngle = -verticalAngle;
                 }
+
                 value = vs_gte_rsqrt(value + verticalAngle);
                 func_800A1AF8(actor->unk0.unkF, 0, &origin, 0);
                 verticalAngle = ratan2(target->vy - origin.vy, value);
             }
-            if (verticalAngle < -0xE4) {
+
+            if (verticalAngle < -228) {
                 D_800F49E4 = 0;
+            } else if (verticalAngle >= 172) {
+                D_800F49E4 = 2;
             } else {
-                if (verticalAngle >= 0xAC) {
-                    D_800F49E4 = 2;
-                } else {
-                    D_800F49E4 = 1;
-                }
+                D_800F49E4 = 1;
             }
+
             func_800A0204(actorId, 0xFF, 0, 8);
-            return;
         }
     }
 }
@@ -3201,54 +3306,59 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
 
 void func_8009F314(int actorId, void* context, int animate)
 {
-    u_short* animation;
-    D_800F4538_t* actor;
-    D_800F45E0_t* object;
-    int animationId;
+    int found;
+    D_800F4538_t* actor = D_800F4538[actorId];
 
-    actor = D_800F4538[actorId];
     if (actor != NULL) {
         if (actor->unk0.unkA_0 || actor->unk0.unkA_5 || actor->unk0.unkA_3 == 2) {
             if (actor->unk0.unkC_0) {
                 func_8008C49C(actor->unk0.unkC_0 - 2, -1);
                 actor->unk0.unkC_0 = 0;
             }
+
             actor->unk0.unk1A = 0;
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vz = 0;
+
             if (actor->unk0.unkF != 0 || actor->unk0.unkA_0 != 3
                 || actor->unk0.unk34.vy <= 0) {
                 actor->unk0.unk34.vy = -6;
             }
+
             actor->unk181A = 0;
             actor->unk0.unkA_0 = 3;
         }
+
         if (animate != 0) {
-            animationId = 0x46;
+            int animationId = 0x46;
+
             if (actor->unk5AC_3) {
                 animationId = 0x3A;
             }
-            func_800AD494(actor, 0xABU, (int*)&animation);
-            if (animation != NULL) {
-                if (actor->unk0.unkA_0 == 0) {
-                    animationId = 0x47;
-                }
+
+            func_800AD494(actor, 0xAB, &found);
+
+            if (found != 0 && actor->unk0.unkA_0 == 0) {
+                animationId = 0x47;
             }
+
             func_800A0204(actorId, animationId, 0, 6);
             func_8009FD38(actor);
             actor->unk0.unk9_0 = 1;
         } else {
             actor->unk0.unk9_0 = 2;
         }
+
         if (actor->unk17FD >= 2) {
             func_8009F314(actor->unk17FD, context, animate);
         }
     } else {
-        object = D_800F45E0[actorId];
+        D_800F45E0_t* object = D_800F45E0[actorId];
+
         if (object != NULL) {
             object->unk1A = 0xF7;
             object->unk16C.unk4 = 0;
-            func_800AE7D8(object, 0x32, 0);
+            func_800AE7D8(object, 50, 0);
         }
     }
 }
@@ -3733,32 +3843,41 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     if (animation == 0) {
         return 0;
     }
+
     actor = D_800F4538[actorId];
+
     if (actor == NULL) {
         return -1;
     }
-    if ((*(int*)((char*)actor + 0x5AC)) & 0x1000000) {
+    if (actor->unk5AC_24) {
         return 0;
     }
+
     actor->unk5AC_16 = 0;
-    if ((*(int*)((char*)actor + 0x5AC)) & 0x800000) {
+
+    if (actor->unk5AC_23) {
         func_800AE47C(actor);
     }
+
     actor->unk5AC_23 = 0;
     keepFlag15 = 0;
+
     if (animation == 25 || animation == 26) {
         keepFlag15 = 1;
     }
     if (!keepFlag15) {
         actor->unk5AC_15 = 0;
     }
+
     actor->unk1804[0].overlay = 0;
     actor->unk1804[1].overlay = 0;
     func_800AAD4C(actorId, 1, 1, 1);
     func_800AC500(actor);
-    if (((*(int*)((char*)actor + 0x5AC)) & 0x8000) && !keepFlag15) {
+
+    if (actor->unk5AC_15 && !keepFlag15) {
         actor->unk5AC_15 = 0;
     }
+
     anim = animation;
     actor->unk5B0_3 = 0;
 
@@ -3770,6 +3889,7 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
         } else if (actor->unk0.unkA_0 == 3) {
             if (anim == 1) {
                 anim = 48;
+
                 if (actor->unk0.unkA_6) {
                     anim = 35;
                 }
@@ -3788,6 +3908,7 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
                 anim = 75;
             } else if (anim == 13) {
                 anim = 84;
+
                 if (actor->animationId == anim) {
                     return 0;
                 }
@@ -3800,6 +3921,7 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     }
 
     actor->unk5AC_20 = 0;
+
     if (!actor->unk0.weaponDrawn && (anim == 36 || anim == 39)) {
         actor->unk0.unkA_3 = 1;
     setHeading:
@@ -3815,17 +3937,20 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
 
 retry:
     found = func_800AD494(actor, anim, (int*)&frames);
+
     if (found == 0 || frames == NULL) {
         actor->unk5AC_15 = 0;
+
         if (anim == 0) {
-            // Returns without a value (v0 holds the updated flags word).
             return;
         }
+
         anim = 0;
         goto retry;
     }
 
     actor->animationId = anim;
+
     if (func_800BEB00() == 4 || actor->unk187C != found || D_800F49DC != actor->unk6E3) {
         actor->unk6E3 = D_800F49DC;
         actor->unk187C = found;
@@ -3833,6 +3958,7 @@ retry:
         func_800AD008(actor, &actor->unkC54);
         actor->unk6E0 = 0;
         func_800A06B8(actor, blendFrames);
+
         if (actor->unk63C >= 0x80) {
             blendFrames *= 2;
         }
@@ -3844,6 +3970,7 @@ retry:
             actor->unk5CC = 0;
         }
     }
+
     return 0;
 }
 

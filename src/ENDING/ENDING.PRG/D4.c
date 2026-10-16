@@ -173,7 +173,40 @@ extern int _incrementingScore;
 extern int _incrementingMapCompletion;
 extern u_char _riskbreakerRanks[][4];
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
+int func_800688D4(int angle)
+{
+    int value = (int)_trig_table;
+    int quadrant = angle & 0x400;
+    int test = angle & 0x3FF;
+
+    if (quadrant && !test) {
+        value = ONE;
+    } else {
+        int index;
+
+        if (quadrant) {
+            angle = ONE / 2 - angle;
+        }
+
+        test = angle & 0x200;
+        index = angle & 0x1FF;
+
+        if (test) {
+            quadrant = 512;
+            index = quadrant - index;
+            value += 2;
+        }
+
+        value += index * 4;
+        value = *(u_short*)value;
+    }
+
+    if (angle & 0x800) {
+        value = -value;
+    }
+
+    return value;
+}
 
 // https://decomp.me/scratch/6icWO
 INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderPhantomPain);

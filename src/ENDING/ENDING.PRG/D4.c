@@ -6,6 +6,7 @@
 #include "gpu.h"
 #include "texture_t.h"
 #include "scratch.h"
+#include <abs.h>
 #include <libapi.h>
 #include <libetc.h>
 #include <memory.h>
@@ -144,6 +145,9 @@ extern u_char D_800DB876;
 extern CVECTOR D_800DBAA8[];
 extern short titleThresholds[];
 extern u_int rankScores[];
+extern int D_800DBB18;
+extern int D_800DBB1C;
+extern u_char D_800DBB28[4][16];
 extern short D_800DBB68;
 extern short D_800DBB6A;
 extern u_short D_800DBB6C;
@@ -208,8 +212,113 @@ int func_800688D4(int angle)
     return value;
 }
 
-// https://decomp.me/scratch/6icWO
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderPhantomPain);
+void _renderPhantomPain(_creditsElement* element)
+{
+    SVECTOR rot;
+    SVECTOR vertices[4];
+    MATRIX matrix;
+    long p;
+    long flag;
+    u_short brightness;
+    u_short scale;
+    u_short i;
+    u_short j;
+    POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
+
+    memset(&rot, 0, sizeof rot);
+
+    switch (element->state) {
+    case 1:
+        D_800DBB18 = 0;
+        element->currentStep = 0;
+        element->state = 2;
+        D_800DBB1C = 0;
+
+        for (i = 0; i < 4; ++i) {
+            int shift = 2;
+            int d = 2 - i;
+            int dy = (ABS(d) << shift) * (ABS(d) << shift);
+
+            for (j = 0; j < 16; ++j) {
+                int dx = 8 - j;
+
+                dx = ABS(dx) * 18;
+                D_800DBB28[i][j] = vs_gte_rsqrt(dx * dx + dy);
+            }
+        }
+        /* fallthrough */
+
+    case 2:
+        brightness = element->currentStep * 128 / 90;
+        ++D_800DBB1C;
+
+        if (++element->currentStep == 90) {
+            element->currentStep = 0;
+            element->state = 3;
+        }
+        break;
+
+    case 3:
+        brightness = 128;
+
+        if (++element->currentStep == 120) {
+            element->currentStep = 0;
+            element->state = 4;
+        }
+        break;
+
+    case 4:
+        brightness = (90 - element->currentStep) * 128 / 90;
+
+        if (++element->currentStep == 90) {
+            element->state = -1;
+        }
+        break;
+    }
+
+    D_800DBB18 += 200;
+    scale = (_ease(easeModeEaseIn, 90 - D_800DBB1C, 90) * 65) >> 10;
+
+    RotMatrix_gte(&rot, &matrix);
+    matrix.t[0] = matrix.t[1] = 0;
+    matrix.t[2] = 512;
+    SetRotMatrix(&matrix);
+    SetTransMatrix(&matrix);
+
+    for (i = 0; i < 4; ++i) {
+        for (j = 0; j < 16; ++j) {
+            vertices[0].vx = vertices[2].vx = j * 9 - 72;
+            vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
+            vertices[0].vy = vertices[1].vy = i * 4 - 8;
+            vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
+            vertices[0].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
+            vertices[1].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
+            vertices[2].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
+            vertices[3].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale)
+                >> 12;
+
+            SetPolyFT4(poly);
+            setSemiTrans(poly, 1);
+            RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+                (long*)&poly->x0, (long*)&poly->x1, (long*)&poly->x2, (long*)&poly->x3,
+                &p, &flag);
+            poly->u0 = poly->u2 = j * 9;
+            poly->u1 = poly->u3 = (j + 1) * 9;
+            poly->v0 = poly->v1 = i * 4 + 180;
+            poly->v2 = poly->v3 = (i + 1) * 4 + 180;
+            poly->clut = getClut(896, 83);
+            poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
+            poly->r0 = poly->g0 = poly->b0 = brightness;
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, poly++);
+        }
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = poly;
+}
 
 void _renderFin(_creditsElement* arg0)
 {

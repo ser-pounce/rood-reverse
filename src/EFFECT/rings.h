@@ -1,18 +1,24 @@
-/* Shared three-row textured ring effect. The overlay supplies its entry point and color
- * table. */
-#include "common.h"
+/* Shared three-row, nine-column textured ring effect. The overlay supplies its entry
+ * point and color table, and defines VS_RING_TRANSPOSED when its texture runs along the
+ * rows instead of the columns. */
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
-#ifndef VS_RING_TYPES
-#define VS_RING_TYPES
+
 typedef struct {
-    u_char lifetime, effect;
+    u_char lifetime;
+    u_char effect;
     short pad;
-    int radius, radiusSpeed, height, heightSpeed, angle, age;
+    int radius;
+    int radiusSpeed;
+    int height;
+    int heightSpeed;
+    int angle;
+    int age;
     func_800D6CF_t texture;
 } vs_ringState;
 typedef struct {
@@ -20,8 +26,8 @@ typedef struct {
     POLY_GT4 poly;
     int drawMode;
 } vs_ringPrim;
-#endif
-extern u_char VS_RING_COLORS[][4];
+
+extern CVECTOR VS_RING_COLORS[];
 
 int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -32,40 +38,27 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int depths[3][9];
     int factors[3];
     CVECTOR colors[3];
-    u_char u[9];
-    u_char v[3];
+    u_char columnUV[9];
+    u_char rowUV[3];
     func_800FB4C0_t child;
-    D_800F53B8_t* battle;
-    int alive;
+    vs_ringState* state = arg0->unk8;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg0* effect;
+    D_800F53B8_t* battle = D_800F53BC;
+    int alive = 1;
     MATRIX* actorMatrix;
     int fraction;
     int radiusValue;
     int baseAngle;
-    u_char* factorBytes;
-    int baseAngleCopy;
-    int angle;
-    int angleA, angleB;
-    int cosAngle;
-    int sinAngle;
+    CVECTOR* factorBytes;
     int speed;
     int maxSpeed;
     int row;
     int column;
-    int depth;
     int drawRow;
     int drawColumn;
-    int* factor;
-    u_char* colorStart;
-    u_char* color;
-    vs_ringPrim* prim;
     pFileTexture* texture;
-    func_800FA098_arg0* effect;
-    vs_ringState* state;
-    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
 
-    alive = 1;
-    state = arg0->unk8;
-    battle = D_800F53BC;
     switch (arg1) {
     case 1:
         state = vs_main_allocHeapR(sizeof *state);
@@ -82,32 +75,36 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800D6CCC((int*)&state->texture);
         func_800D6CF0(&state->texture, effect->unk1, effect->unk0);
         break;
-    case 2: {
+
+    case 2:
         effect = &D_800F569C->block5Data->unk4[state->effect];
         scratch->flags = effect->flags;
         actorMatrix = &battle->unk1C[effect->unkC8].unk38;
         effect = &D_800F569C->block5Data->unk4[state->effect];
         fraction = func_800CFE1C(
             effect->unk30, vs_battle_sampleCurve(effect->unk17, state->age));
-        column = ((u_char*)effect)[7];
-        factorBytes = (u_char*)VS_RING_COLORS + (column & 0x1C);
-        factors[0] = factorBytes[0];
-        factors[1] = factorBytes[1];
-        factors[2] = factorBytes[2];
+        column = effect->transparencyCurve & 0x7;
+        factorBytes = &VS_RING_COLORS[column];
+        factors[0] = factorBytes->r;
+        factors[1] = factorBytes->g;
+        factors[2] = factorBytes->b;
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
+
         switch (scratch->flags & 7) {
         case 0:
             break;
+
         case 1:
             vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
             break;
+
         case 2:
-            scratch->unk98.vx += actorMatrix->t[0];
-            scratch->unk98.vy += actorMatrix->t[1];
-            scratch->unk98.vz += actorMatrix->t[2];
+            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
+                actorMatrix->t[2], +=);
             break;
         }
+
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
         column = vs_battle_sampleCurve(effect->unkD, state->age);
@@ -121,12 +118,14 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerp2DVector(effect->unk94[2],
             vs_battle_sampleCurve(effect->unkC, state->age), scratch->unk118);
         state->radiusSpeed += scratch->unk108.vx;
+
         radiusValue = state->radius += scratch->unkF8.vx + state->radiusSpeed;
         height[0] = 0;
         radius[0] = radiusValue + scratch->unkA8.vx;
         state->heightSpeed += scratch->unk108.vy;
         state->height += scratch->unkF8.vy + state->heightSpeed;
         radius[2] = state->height + scratch->unkA8.vy;
+
         column = rsin(scratch->unkE8.vx);
         height[2] = (radius[2] * column) >> 12;
         radius[1] = (radius[2] * fraction) >> 12;
@@ -134,11 +133,14 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         row = rcos(scratch->unkE8.vx);
         radius[1] = ((radius[1] * row) >> 12) + radius[0];
         radius[2] = ((radius[2] * row) >> 12) + radius[0];
+
         do {
             speed = scratch->unk118[0];
             maxSpeed = scratch->unk118[1];
         } while (0);
+
         row = state->angle;
+
         if (speed != maxSpeed) {
             if (maxSpeed < speed) {
                 speed = rand() % (scratch->unk118[0] - scratch->unk118[1] + 1)
@@ -148,18 +150,24 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                       + scratch->unk118[0];
             }
         }
+
         maxSpeed = row + speed;
         baseAngle = state->angle = maxSpeed;
         vs_battle_lerpVector(effect->unk34[1],
             vs_battle_sampleCurve(effect->unkB, state->age), &scratch->unkC8);
-        column = 0;
-        do {
-            baseAngleCopy = baseAngle;
-            angleA = baseAngleCopy + (scratch->unkC8.vx * column) / 8;
-            angleB = -scratch->unkC8.vy / 2 + ((angle = scratch->unkC8.vy) * column) / 8;
+
+        for (column = 0; column < 9; ++column) {
+            int angle;
+            int angleA = baseAngle + (scratch->unkC8.vx * column) / 8;
+            int angleB =
+                -scratch->unkC8.vy / 2 + ((angle = scratch->unkC8.vy) * column) / 8;
+            int cosAngle;
+            int sinAngle;
+
             angle = angleA + angleB;
             cosAngle = rcos(angle);
             sinAngle = rsin(angle);
+
             for (row = 0; row < 3; ++row) {
                 vertices[row][column].vx =
                     scratch->unk98.vx + ((radius[row] * cosAngle) >> 12);
@@ -167,39 +175,36 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                     scratch->unk98.vz + ((radius[row] * sinAngle) >> 12);
                 vertices[row][column].vy = height[row] + scratch->unk98.vy;
             }
-            ++column;
-        } while (column < 9);
-        colorStart = (u_char*)colors;
-        color = colorStart;
-        factor = &factors[0];
-        do {
+        }
+
+        for (row = 0; row < 3; ++row) {
             if (effect->rCurve) {
-                maxSpeed =
-                    *factor * vs_battle_sampleCurve(effect->rCurve, state->age) / 128;
+                colors[row].r =
+                    (factors[row] * vs_battle_sampleCurve(effect->rCurve, state->age))
+                    / 128;
             } else {
-                maxSpeed = (u_char)*factor;
+                colors[row].r = factors[row];
             }
-            color[0] = maxSpeed;
+
             if (effect->gCurve) {
-                maxSpeed =
-                    *factor * vs_battle_sampleCurve(effect->gCurve, state->age) / 128;
+                colors[row].g =
+                    (factors[row] * vs_battle_sampleCurve(effect->gCurve, state->age))
+                    / 128;
             } else {
-                maxSpeed = (u_char)*factor;
+                colors[row].g = factors[row];
             }
-            color[1] = maxSpeed;
+
             if (effect->bCurve) {
-                maxSpeed =
-                    *factor * vs_battle_sampleCurve(effect->bCurve, state->age) / 128;
+                colors[row].b =
+                    (factors[row] * vs_battle_sampleCurve(effect->bCurve, state->age))
+                    / 128;
             } else {
-                maxSpeed = (u_char)*factor;
+                colors[row].b = factors[row];
             }
-            color[2] = maxSpeed;
-            {
-                *(color++ + 3) = primPolyGT4SemiTrans;
-                color += 3;
-            }
-            ++factor;
-        } while ((column = (int)color) < (int)(colorStart + 12));
+
+            colors[row].cd = primPolyGT4SemiTrans;
+        }
+
         if (scratch->flags & 0x20000) {
             SetRotMatrix(&battle->unk1C[effect->unkC8].unk58);
             SetTransMatrix(&battle->unk1C[effect->unkC8].unk58);
@@ -207,6 +212,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);
         }
+
         for (drawRow = 0; drawRow < 3; ++drawRow) {
             for (drawColumn = 0; drawColumn < 9; ++drawColumn) {
                 gte_ldv0(&vertices[drawRow][drawColumn]);
@@ -215,79 +221,84 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 gte_stszotz(&depths[drawRow][drawColumn]);
             }
         }
+
         func_800D6D24(&state->texture);
         texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
+
 #ifdef VS_RING_TRANSPOSED
         for (column = 0; column < 9; ++column) {
-            u[column] = texture->v + texture->h * column / 8;
+            columnUV[column] = texture->v + texture->h * column / 8;
         }
-        v[0] = texture->u;
-        v[2] = v[0] + texture->w;
-        v[1] = texture->u + ((texture->w * fraction) >> 12);
+
+        rowUV[0] = texture->u;
+        rowUV[2] = rowUV[0] + texture->w;
+        rowUV[1] = texture->u + ((texture->w * fraction) >> 12);
 #else
         for (column = 0; column < 9; ++column) {
-            u[column] = texture->u + texture->w * column / 8;
+            columnUV[column] = texture->u + texture->w * column / 8;
         }
-        v[0] = texture->v;
-        v[2] = v[0] + texture->h;
-        v[1] = texture->v + ((texture->h * fraction) >> 12);
+
+        rowUV[0] = texture->v;
+        rowUV[2] = rowUV[0] + texture->h;
+        rowUV[1] = texture->v + ((texture->h * fraction) >> 12);
 #endif
+
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             for (drawColumn = 0; drawColumn < 8; ++drawColumn) {
-                depth = (depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1]
-                            + depths[drawRow + 1][drawColumn]
-                            + depths[drawRow + 1][drawColumn + 1])
-                      / 4;
-                if (depth < 0x800 && vs_main_nearClip < depth) {
-                    prim = vs_scratch.unk0;
-                    vs_scratch.unk0 = prim + 1;
-                    prim->poly.tag = 0xE1000000;
-                    prim->drawMode = 0xE1000200;
-                    *(int*)&prim->poly.x0 = screen[drawRow][drawColumn];
-#ifdef VS_RING_TRANSPOSED
-                    *(int*)&prim->poly.x2 = screen[drawRow][drawColumn + 1];
-                    *(int*)&prim->poly.x1 = screen[drawRow + 1][drawColumn];
-#else
-                    *(int*)&prim->poly.x1 = screen[drawRow][drawColumn + 1];
-                    *(int*)&prim->poly.x2 = screen[drawRow + 1][drawColumn];
-#endif
-                    *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
-#ifdef VS_RING_TRANSPOSED
-                    *(int*)&prim->poly.r0 = *(int*)&prim->poly.r2 =
-                        *(int*)&colors[drawRow];
-                    *(int*)&prim->poly.r1 = *(int*)&prim->poly.r3 =
-                        *(int*)&colors[drawRow + 1];
-                    prim->poly.u0 = prim->poly.u2 = v[drawRow];
-                    prim->poly.u1 = prim->poly.u3 = v[drawRow + 1];
-                    prim->poly.v0 = prim->poly.v1 = u[drawColumn];
-                    prim->poly.v2 = prim->poly.v3 = u[drawColumn + 1];
-#else
-                    *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 =
-                        *(int*)&colors[drawRow];
-                    *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 =
-                        *(int*)&colors[drawRow + 1];
-                    prim->poly.u0 = prim->poly.u2 = u[drawColumn];
-                    prim->poly.u1 = prim->poly.u3 = u[drawColumn + 1];
-                    prim->poly.v0 = prim->poly.v1 = v[drawRow];
-                    prim->poly.v2 = prim->poly.v3 = v[drawRow + 1];
-#endif
-                    prim->poly.tpage = texture->tpage;
-                    prim->poly.clut = texture->clut;
-                    prim->tag =
-                        (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
-                    ((u_long*)vs_scratch.unk4)[depth] =
-                        (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
-                        | ((u_long)prim & 0xFFFFFF);
+                int depth = (depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1]
+                                + depths[drawRow + 1][drawColumn]
+                                + depths[drawRow + 1][drawColumn + 1])
+                          / 4;
+                vs_ringPrim* prim;
+
+                if (depth >= 0x800 || depth <= vs_main_nearClip) {
+                    continue;
                 }
+
+                prim = vs_scratch.unk0;
+                vs_scratch.unk0 = prim + 1;
+                prim->poly.tag = _get_mode(0, 0, 0);
+                prim->drawMode = _get_mode(0, 1, 0);
+                *(int*)&prim->poly.x0 = screen[drawRow][drawColumn];
+#ifdef VS_RING_TRANSPOSED
+                *(int*)&prim->poly.x2 = screen[drawRow][drawColumn + 1];
+                *(int*)&prim->poly.x1 = screen[drawRow + 1][drawColumn];
+                *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
+                *(int*)&prim->poly.r0 = *(int*)&prim->poly.r2 = *(int*)&colors[drawRow];
+                *(int*)&prim->poly.r1 = *(int*)&prim->poly.r3 =
+                    *(int*)&colors[drawRow + 1];
+                prim->poly.u0 = prim->poly.u2 = rowUV[drawRow];
+                prim->poly.u1 = prim->poly.u3 = rowUV[drawRow + 1];
+                prim->poly.v0 = prim->poly.v1 = columnUV[drawColumn];
+                prim->poly.v2 = prim->poly.v3 = columnUV[drawColumn + 1];
+#else
+                *(int*)&prim->poly.x1 = screen[drawRow][drawColumn + 1];
+                *(int*)&prim->poly.x2 = screen[drawRow + 1][drawColumn];
+                *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
+                *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 = *(int*)&colors[drawRow];
+                *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 =
+                    *(int*)&colors[drawRow + 1];
+                prim->poly.u0 = prim->poly.u2 = columnUV[drawColumn];
+                prim->poly.u1 = prim->poly.u3 = columnUV[drawColumn + 1];
+                prim->poly.v0 = prim->poly.v1 = rowUV[drawRow];
+                prim->poly.v2 = prim->poly.v3 = rowUV[drawRow + 1];
+#endif
+                prim->poly.tpage = texture->tpage;
+                prim->poly.clut = texture->clut;
+                prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
+                ((u_long*)vs_scratch.unk4)[depth] =
+                    (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+                    | (((u_long)prim) & 0xFFFFFF);
             }
         }
+
         if (effect->unk3) {
             child.unk60 = 0;
+
             if (effect->flags & 0x20000) {
                 SetRotMatrix(actorMatrix);
                 SetTransMatrix(actorMatrix);
-                setVector(&scratch->unk2C, scratch->unk98.vx, scratch->unk98.vy,
-                    scratch->unk98.vz);
+                copyVector(&scratch->unk2C, &scratch->unk98);
                 gte_ldv0(&scratch->unk2C);
                 gte_rtv0tr2();
                 gte_stlvnl(&scratch->unk34);
@@ -297,27 +308,32 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 setVector(&child.unkC, scratch->unk98.vx * ONE, scratch->unk98.vy * ONE,
                     scratch->unk98.vz * ONE);
             }
+
             func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
         }
+
         ++state->age;
+
         if (state->lifetime) {
             --state->lifetime;
+
             if (!state->lifetime) {
                 alive = 0;
             }
         }
         break;
-    }
+
     case 3:
         state->lifetime = 1;
         break;
+
     case 4:
         alive = 0;
         break;
     }
+
     return alive;
 }
 #undef VS_RING_FUNCTION
 #undef VS_RING_COLORS
-
 #undef VS_RING_TRANSPOSED

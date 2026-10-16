@@ -15,9 +15,14 @@
 #define VS_SURFACE_TEXTURE_COLUMNS 4
 #include "src/EFFECT/surfaces.h"
 
+/* rings.h defines its state types unguarded, so rename them for this second copy. */
+#define vs_ringState vs_ringState2
+#define vs_ringPrim vs_ringPrim2
 #define VS_RING_FUNCTION func_800FBAC8
 #define VS_RING_COLORS D_800FD918
 #include "src/EFFECT/rings.h"
+#undef vs_ringState
+#undef vs_ringPrim
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
 #define VS_ROTATING_SURFACE_FUNCTION func_800FC6EC

@@ -821,8 +821,9 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
 /**
  * Concentric text circles over caster
  */
-int func_800FBA00(func_800D4910_t* arg0, u_int arg1, int arg2);
-INCLUDE_ASM("build/src/EFFECT/PLG049.BIN/nonmatchings/E0", func_800FBA00);
+#define VS_RING_FUNCTION func_800FBA00
+#define VS_RING_COLORS D_800FE3D8
+#include "src/EFFECT/rings.h"
 
 /**
  * Target impact

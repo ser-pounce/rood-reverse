@@ -62,7 +62,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADCMD", _padSetActAlign)
 
 void func_8002D3B8(padPort* arg0)
 {
-    arg0->unk2C = (u_char*)arg0->unk20;
+    arg0->unk2C = arg0->unk20;
     arg0->unk37 = 0x4D;
     arg0->unk36 = 6;
 }

@@ -33,7 +33,7 @@ typedef struct {
 } AkaoTimeStamp;
 
 typedef struct {
-    char magic[4];
+    int magic;
     u_short id;
     u_short length;
     u_short reverb_type;
@@ -60,6 +60,8 @@ typedef struct {
     int unk4;
     int unk8;
     int unkC;
+    int unk10;
+    int unk14;
 } D_800378C0_t;
 
 typedef struct {
@@ -78,6 +80,10 @@ typedef struct {
     u_int InstrumentBytesRemaining;
 } D_80039BC8_t;
 
+#define AKAO_MAGIC ('A' | ('K' << 8) | ('A' << 16) | ('O' << 24))
+
+typedef void (*FSoundCommandHandler)(FSoundCommandParams*);
+
 static int Sound_IsNotAkaoFile(int*);
 int func_80013588(void*, int);
 int func_800135D8(void*, int, int, int);
@@ -88,7 +94,7 @@ void Sound_EvictSfxVoice(int, int);
 void func_8001653C(FSoundChannel*, FSoundCommandParams*, int, char*);
 void Sound_PlaySfxProgram(FSoundCommandParams*, char*, char*, int);
 int func_80016DA8(int);
-u_int func_80018C30(int);
+u_int func_80018C30(u_int);
 long func_80019A58(void);
 static void StopSound(void);
 static void _writeSpu(char* data, u_int len);
@@ -147,7 +153,9 @@ extern char D_80039AF2;
 extern int D_8002F548;
 extern u_short D_8002F54C;
 extern int D_8002F550[];
+extern FSoundCommandHandler D_800301E0[];
 extern FSoundCommandParams D_80037788;
+extern FSoundCommandParams D_80037790;
 extern int D_80037898;
 extern int D_8003789C;
 extern int D_80039B00;
@@ -3821,7 +3829,163 @@ void Sound_SetReverbMode(int in_ReverbMode)
     }
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80018C30);
+u_int func_80018C30(u_int in_Command)
+{
+    AkaoSeqHeader* pSequence;
+    FSoundCommandParams* pParams;
+    int fadeLength;
+    void* pData;
+    u_int result = 0;
+
+    DisableEvent(_soundEvent);
+    in_Command &= 0xFF;
+    pParams = &D_80037790;
+
+    switch (in_Command) {
+    case 0x10:
+    case 0x12:
+    case 0x19:
+    case 0x1A:
+        pSequence = D_800378C0.unk0;
+
+        if (pSequence->magic == AKAO_MAGIC) {
+            g_Sound_GlobalFlags.ControlLatches &= ~0x7700;
+
+            if (g_pActiveMusicConfig->MusicId != pSequence->id
+                || (g_pSavedMousicConfig != NULL
+                    && g_pSavedMousicConfig->MusicId != g_pActiveMusicConfig->MusicId)) {
+                Sound_SetReverbMode(pSequence->reverb_type);
+                pParams->Param1 = (u_int)pSequence;
+                pParams->Param3 = pSequence->id;
+
+                switch (in_Command) {
+                case 0x12:
+                    pParams->Param4 = D_800378C0.unk4;
+                    break;
+
+                case 0x19:
+                    pParams->ExtParam1 = D_800378C0.unk4;
+                    break;
+
+                case 0x1A:
+                    fadeLength = D_800378C0.unk4;
+
+                    if (fadeLength == 0) {
+                        fadeLength = 1;
+                    }
+
+                    pParams->ExtParam1 = fadeLength;
+                    pParams->ExtParam2 = D_800378C0.unk8;
+                    break;
+                }
+
+                result = pSequence->id;
+            } else {
+                in_Command = 0;
+                result = 0;
+            }
+        } else {
+            in_Command = 0;
+            result = -1;
+        }
+        break;
+
+    case 0x14:
+        if (Sound_IsNotAkaoFile(D_800378C0.unk0) != 0) {
+            result = -1;
+            break;
+        }
+
+        pData = D_800378C0.unk0;
+        g_pActiveMusicConfig->StatusFlags |= 0x10000;
+        D_80037788.Param1 = (u_int)pData;
+        result = ((AkaoSeqHeader*)D_800378C0.unk0)->id;
+        break;
+
+    case 0x16:
+        if (*(int*)D_800378C0.unk0 == AKAO_MAGIC
+            && *(int*)D_800378C0.unk4 == AKAO_MAGIC) {
+            pSequence = (AkaoSeqHeader*)D_800378C0.unk4;
+            g_Sound_GlobalFlags.ControlLatches &= ~0x7700;
+            Sound_SetReverbMode(pSequence->reverb_type);
+            D_800378C0.unk4 = pSequence->id;
+            Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
+            g_pActiveMusicConfig->MusicId = pSequence->id;
+            Sound_memcpy32(
+                g_ActiveMusicChannels, D_800378E8, sizeof g_ActiveMusicChannels);
+            Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+            pSequence = D_800378C0.unk0;
+            D_800378C0.unk0 = (void*)(u_int)pSequence->id;
+            Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
+            g_pSavedMousicConfig = &g_PushedMusicConfig;
+            g_pSecondaryMusicChannels = D_800378E8;
+            g_pActiveMusicConfig->MusicId = pSequence->id;
+            g_PushedMusicConfig.ActiveChannelMask &= ~g_PushedMusicConfig.unk30;
+            g_Sound_GlobalFlags.ControlLatches |= 0x100;
+        }
+
+        in_Command = 0;
+        break;
+
+    case 0x17:
+        if (g_Sound_GlobalFlags.ControlLatches & 0x1100) {
+            if (g_Sound_GlobalFlags.ControlLatches & 0x100) {
+                g_Sound_GlobalFlags.ControlLatches |= 0x4000;
+            } else {
+                g_Sound_GlobalFlags.ControlLatches |= 0x400;
+            }
+        }
+
+        in_Command = 0;
+        break;
+
+    case 0xD8:
+        pParams->Param1 = (u_int)D_800378C0.unk0;
+        D_800301E0[0xD0](pParams);
+        in_Command = 0xD4;
+        break;
+
+    case 0xD9:
+        pParams->Param1 = (u_int)D_800378C0.unk0;
+        pParams->Param2 = D_800378C0.unk4;
+        D_800301E0[0xD1](pParams);
+        in_Command = 0xD5;
+        break;
+
+    case 0xDA:
+        pParams->Param1 = (u_int)D_800378C0.unk0;
+        pParams->Param2 = D_800378C0.unk4;
+        pParams->Param3 = D_800378C0.unk8;
+        D_800301E0[0xD2](pParams);
+        in_Command = 0xD6;
+        break;
+
+    case 0x99:
+        D_800301E0[0x9B](pParams);
+        D_800301E0[0x9D](pParams);
+        in_Command = 0x9F;
+        break;
+
+    case 0x98:
+        D_800301E0[0x9A](pParams);
+        D_800301E0[0x9C](pParams);
+        in_Command = 0x9E;
+        break;
+
+    default:
+        pParams->Param1 = (u_int)D_800378C0.unk0;
+        pParams->Param2 = D_800378C0.unk4;
+        pParams->Param3 = D_800378C0.unk8;
+        pParams->Param4 = D_800378C0.unkC;
+        pParams->ExtParam1 = D_800378C0.unk10;
+        pParams->ExtParam2 = D_800378C0.unk14;
+        break;
+    }
+
+    D_800301E0[in_Command](pParams);
+    EnableEvent(_soundEvent);
+    return result;
+}
 
 void UpdateCdVolume(void)
 {

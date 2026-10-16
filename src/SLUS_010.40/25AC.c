@@ -101,6 +101,7 @@ void func_80015BAC(void);
 void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
     int in_ExtraVoiceMask);
 void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
+void Sound_memswp32(void* in_A, void* in_B, u_int in_Size);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
 int func_8001A22C(int, u_int);
@@ -2837,7 +2838,104 @@ void Sound_MarkScheduledSfxChannelsVolumeDirty(void)
     };
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", Sound_SetMusicSequence);
+void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState)
+{
+    int delta;
+    u_int mask;
+    u_int channelBit;
+    int count;
+    FSoundChannel* pChannel;
+    FSoundChannelConfig* pConfig;
+
+    if (in_SwapWithSavedState == 0) {
+        Sound_memcpy32(&g_PushedMusicConfig, &D_800366F0, 0x80);
+        Sound_memcpy32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
+    } else {
+        Sound_memswp32(&g_PushedMusicConfig, &D_800366F0, 0x80);
+        Sound_memswp32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
+    }
+
+    g_pActiveMusicConfig->StatusFlags &= ~0x60;
+    g_pActiveMusicConfig->StatusFlags |=
+        in_Sequence->unk14 == D_80036770.unk4 ? 0x40 : 0x20;
+
+    delta = (int)in_Sequence - D_800366F0.unk38;
+    g_pActiveMusicConfig->unk38 = (int)in_Sequence;
+    g_pActiveMusicConfig->PendingKeyOnMask = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= 0x90;
+    g_pActiveMusicConfig->SequencePatchTable =
+        (FAkaoSequence*)((char*)g_pActiveMusicConfig->SequencePatchTable + delta);
+    mask = g_pActiveMusicConfig->ActiveChannelMask;
+    g_pActiveMusicConfig->KeymapTable =
+        (u_short*)((char*)g_pActiveMusicConfig->KeymapTable + delta);
+    g_pActiveMusicConfig->PendingKeyOnMask = g_pActiveMusicConfig->ActiveNoteMask;
+    pChannel = g_ActiveMusicChannels;
+
+    for (count = 32, channelBit = 1; count != 0; --count, ++pChannel, channelBit <<= 1) {
+        if (mask & channelBit) {
+            pChannel->ProgramCounter += delta;
+            pChannel->Keymap += delta;
+            pChannel->LoopStartPc[0] += delta;
+            pChannel->LoopStartPc[1] += delta;
+            pChannel->LoopStartPc[2] += delta;
+            pChannel->LoopStartPc[3] += delta;
+            pChannel->Length1 += 2;
+            pChannel->Length2 += 2;
+            pChannel->VoiceParams.VoiceParamFlags |= 0x1FF93;
+            Sound_MapInstrumentToAltSampleBank(
+                g_pActiveMusicConfig->StatusFlags, pChannel);
+        } else {
+            pChannel->Length1 = 4;
+            pChannel->Length2 = 2;
+            pChannel->ProgramCounter = (char*)&g_Sound_ProgramCounter;
+        }
+
+        pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+    }
+
+    if (g_pSavedMousicConfig != NULL) {
+        mask = func_80015D38(
+            g_pSecondaryMusicChannels, g_pSavedMousicConfig->ActiveChannelMask);
+    } else {
+        mask = 0;
+    }
+
+    pConfig = g_pActiveMusicConfig;
+    pConfig->PendingKeyOffMask = 0;
+    g_PushedMusicConfig.MusicId = 0;
+    g_Sound_VoiceSchedulerState.KeyOffFlags |=
+        ~mask & 0xFFFFFF & ~(g_Sound_VoiceSchedulerState.ActiveChannelMask | D_80039B14);
+    g_Sound_GlobalFlags.UpdateFlags |= 0x100;
+
+    if (in_SwapWithSavedState != 0) {
+        delta = pConfig->RevDepth + pConfig->unk5C * pConfig->ReverbDepthSlideLength;
+        channelBit = 48;
+        delta &= ~0xFFF;
+
+        if (pConfig->ReverbDepthSlideLength != 0) {
+            channelBit = pConfig->ReverbDepthSlideLength;
+        }
+
+        if (g_pSavedMousicConfig != NULL) {
+            pConfig->RevDepth = g_pSavedMousicConfig->RevDepth;
+        }
+
+        g_pActiveMusicConfig->RevDepth &= ~0xFFF;
+        delta -= g_pActiveMusicConfig->RevDepth;
+
+        if (delta != 0) {
+            g_pActiveMusicConfig->unk5C = delta / (int)channelBit;
+            g_pActiveMusicConfig->ReverbDepthSlideLength = channelBit;
+        } else {
+            g_pActiveMusicConfig->ReverbDepthSlideLength = 0;
+        }
+    }
+
+    if (D_80039B64 & 1) {
+        g_pActiveMusicConfig->unk1C = g_pActiveMusicConfig->ActiveChannelMask;
+        g_pActiveMusicConfig->ActiveChannelMask = 0;
+    }
+}
 
 int func_80016DA8(int flags)
 {

@@ -553,7 +553,7 @@ typedef struct {
     /* 0x956 */ u_char unk956_2 : 6;
     /* 0x957 */ u_char unk957;
     /* 0x958 */ vs_battle_uiMisc miscItem;
-    /* 0x95C */ int unk95C;
+    /* 0x95C */ vs_battle_uiMisc unk95C;
     /* 0x960 */ vs_battle_uiMiscRand unk960;
     /* 0x964 */
 } vs_battle_actor2;
@@ -659,6 +659,10 @@ typedef struct {
 } _zndEnemy;
 
 typedef struct {
+    u_char bytes[8];
+} actorSpawnSettings;
+
+typedef struct {
     u_char type;
     u_char index;
     u_char hidden;
@@ -673,7 +677,7 @@ typedef struct {
     u_char direction;
     u_char z;
     u_char height;
-    u_char settings[8];
+    actorSpawnSettings settings;
     u_char unk18[2];
     u_short itemId;
     u_short item2Id;
@@ -858,7 +862,7 @@ typedef struct {
 
 typedef struct {
     u_short subType;
-    char unk2;
+    u_char unk2;
     u_int reach : 5;
     u_int unk3_5 : 3;
     char name[24];

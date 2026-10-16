@@ -7,7 +7,9 @@
 #define VS_CLOSED_RING_COLORS D_800FD934
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FB71C);
+#define VS_RING_FUNCTION func_800FB71C
+#define VS_RING_COLORS D_800FD954
+#include "src/EFFECT/rings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FC340);
 

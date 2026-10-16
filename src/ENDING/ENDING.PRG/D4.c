@@ -705,8 +705,120 @@ static int _creditsStrWidth(u_char* str)
     return width;
 }
 
-// https://decomp.me/scratch/86Hv9
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderText);
+void _renderText(_creditsElement* element)
+{
+    u_char* str;
+    short i;
+    short len;
+    short x;
+    short y;
+    SPRT* sprt = ((vs_scratch_t*)0x1F800000)->unk0;
+    u_char charTableOffset = 0;
+    short underline = 0;
+
+    if (element->state == 1) {
+        u_short width = element->width = _creditsStrWidth(element->data);
+        element->x = ((320 - width) >> 1) << 8;
+        element->y = 224 << 8;
+        element->state = 2;
+    }
+
+    element->y += _scrollSpeed;
+
+    if (element->y < -(12 << 8)) {
+        element->state = -1;
+        return;
+    }
+
+    y = element->y >> 8;
+    str = element->data;
+    len = *str++;
+    x = element->x >> 8;
+
+    for (i = 0; i < len; ++i, ++str) {
+        u_char c = *str;
+
+        if (c < ' ') {
+            switch (c) {
+            case 1:
+                charTableOffset = 0;
+                break;
+
+            case 2:
+                charTableOffset = 112;
+                break;
+
+            case 3:
+                underline = charTableOffset != 0 ? 18 : 17;
+                break;
+
+            case 31:
+                --x;
+                break;
+            }
+        } else {
+            u_char glyph = charTableOffset + c - ' ';
+            short glyphWidth;
+
+            setSprt(sprt);
+            setXY0(sprt, x, y);
+            setUV0(sprt, (glyph & 0xF) * 16, (glyph >> 4) * 16);
+            glyphWidth = _glyphWidths[glyph];
+            setWH(sprt, glyphWidth, 16);
+            setClut(sprt, 960, 480);
+            x += glyphWidth - 1;
+            sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+            addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
+            ++sprt;
+        }
+    }
+
+    if (underline != 0) {
+        vs_scratch_t* scratch = (vs_scratch_t*)0x1F800000;
+        POLY_FT4* poly;
+
+        x = 160 - ((element->width + 32) >> 1);
+
+        SetSprt(sprt);
+        y += underline;
+        setXY0(sprt, x, y);
+        setUV0(sprt, 0, 208);
+        setWH(sprt, 16, 3);
+        setClut(sprt, 960, 480);
+        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        AddPrim(scratch->unk4 + 12, sprt++);
+
+        poly = (POLY_FT4*)sprt;
+        SetPolyFT4(poly);
+        x += 16;
+        poly->x0 = poly->x2 = x;
+        x += element->width;
+        poly->y0 = poly->y1 = y;
+        poly->y2 = poly->y3 = y + 3;
+        poly->u0 = poly->u2 = 8;
+        poly->v2 = poly->v3 = 211;
+        poly->u1 = poly->u3 = 16;
+        poly->v0 = poly->v1 = 208;
+        poly->tpage = getTPage(clut4Bit, semiTransparencyHalf, 960, 256);
+        poly->clut = getClut(960, 480);
+        poly->x1 = poly->x3 = x;
+        poly->r0 = poly->g0 = poly->b0 = D_800DC19C;
+        AddPrim(scratch->unk4 + 12, poly++);
+
+        sprt = (SPRT*)poly;
+        SetSprt(sprt);
+        setUV0(sprt, 168, 208);
+        setXY0(sprt, x, y);
+        setWH(sprt, 16, 3);
+        setClut(sprt, 960, 480);
+        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        AddPrim(scratch->unk4 + 12, sprt++);
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = sprt;
+    ((vs_scratch_t*)0x1F800000)->unk0 =
+        _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
+}
 
 void _renderCopyright(_creditsElement* arg0)
 {

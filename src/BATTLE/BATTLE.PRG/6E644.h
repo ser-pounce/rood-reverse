@@ -64,6 +64,7 @@ short func_800E6694(int);
 void func_800E6700(int);
 void func_800E68EC(int, int);
 void func_800E6B24(int);
+int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
 void func_800E6EAC(void);
 void func_800E6F1C(void);
 void func_800E7454(vs_battle_actor*);

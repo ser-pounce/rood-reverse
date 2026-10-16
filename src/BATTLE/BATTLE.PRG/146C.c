@@ -211,22 +211,6 @@ typedef struct {
 } func_80077DF0_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20[8];
-    int unk40;
-} func_80085A34_t;
-
-typedef struct {
     short unk0;
     char unk2;
     char unk3;
@@ -647,8 +631,8 @@ extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
 extern int D_800F19EC;
-extern int D_800F1A00;
-extern int D_800F1A04;
+extern u_int D_800F1A00;
+extern u_int D_800F1A04;
 extern u_int _lastValue;
 extern int D_800F1A0C;
 extern short _armorDpAdjustmentAmounts[];
@@ -12152,41 +12136,264 @@ void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
     }
 }
 
-void func_80085A34(func_80085A34_t* arg0)
+void func_80085A34(_hitEntity_t* arg0)
 {
     int i;
     u_int var_a1;
 
     if (arg0->unk40 == 0) {
-        if (arg0->unk2 == 0xFF) {
-            arg0->unk2 = 0;
+        if (arg0->unk0.hitThreshold == 255) {
+            arg0->unk0.hitThreshold = 0;
         }
-        if (arg0->unk3 == 6) {
-            var_a1 = arg0->unk1C;
+
+        if (arg0->unk0.unk3 == 6) {
+            // The 2-bit effect fields from hpEffect on, read as one word
+            var_a1 = *(u_int*)(&arg0->inflictStatuses + 1);
             if (var_a1 != 0) {
                 for (i = 0; i < 9; var_a1 /= 4, ++i) {
                     switch (var_a1 & 3) {
                     case 2:
-                        arg0->unk3 = 5;
+                        arg0->unk0.unk3 = 5;
                         return;
                     case 1:
-                        arg0->unk3 = 0;
+                        arg0->unk0.unk3 = 0;
                         return;
                     case 3:
-                        arg0->unk3 = 1;
+                        arg0->unk0.unk3 = 1;
                         return;
                     }
                 }
-            } else if ((arg0->unk14 | arg0->unk18) == 0) {
-                arg0->unk3 = 4;
-                arg0->unk2 = 0;
+            } else if ((arg0->removeStatuses | arg0->inflictStatuses) == 0) {
+                arg0->unk0.unk3 = 4;
+                arg0->unk0.hitThreshold = 0;
             }
         }
     }
 }
 
-// https://decomp.me/scratch/KrvDw
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_80085B10);
+void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int arg3)
+{
+    SVECTOR origin;
+    SVECTOR position;
+    SVECTOR impact;
+    vs_battle_actor2* attacker;
+    vs_battle_actor2* stats;
+    _hitEntity_t* entry;
+    int i;
+    int hit;
+    int redirected;
+    int target;
+    u_char limb;
+    vs_action_t* spec = &vs_main_actions[action];
+    _hitEntity_t* user;
+    int best;
+    short max;
+
+    func_800856F8(result);
+    result->actionIndex = action;
+    func_80085718(&result->unk4);
+    result->unk4.unk40 = source->unk4.unk40;
+
+    if (result->unk4.unk40 == 0) {
+        result->unk4.unk0.targetActor = source->unk4.unk0.targetActor;
+        result->unk4.unk0.targetLimb = source->unk4.unk0.targetLimb;
+        attacker = vs_battle_actors[result->unk4.unk0.targetActor]->unk3C;
+        func_800A1AF8(result->unk4.unk0.targetActor, 0, &origin, 0);
+    } else {
+        attacker = NULL;
+    }
+
+    result->unk4A = source->unk4A;
+
+    for (i = 0; i < source->unk4A; ++i) {
+        func_80085718(&result->unk4C[i]);
+        result->unk4C[i].unk40 = source->unk4C[i].unk40;
+
+        if (result->unk4C[i].unk40 == 0) {
+            result->unk4C[i].unk0.targetActor = source->unk4C[i].unk0.targetActor;
+            result->unk4C[i].unk0.targetLimb = source->unk4C[i].unk0.targetLimb;
+        } else if (result->unk4C[i].unk40 < 6u) {
+            result->unk4C[i].unk0 = source->unk4C[i].unk0;
+        }
+    }
+
+    result->unk844 = source->unk844;
+    best = 0;
+    max = 0;
+
+    if (spec->hitParams[0].affinity != 0) {
+        best = spec->hitParams[0].affinity - 1;
+    } else if (attacker != NULL) {
+        if ((vs_battle_actors[attacker->unk957]->weaponDrawn & 1)
+            && attacker->weapon.blade.id) {
+            for (i = 0; i < 7; ++i) {
+                if (max < attacker->weapon.classAffinityCurrent.affinity[0][i]) {
+                    max = attacker->weapon.classAffinityCurrent.affinity[0][i];
+                    best = i;
+                }
+            }
+        }
+    } else {
+        best = 0;
+    }
+
+    result->unk2 = best;
+
+    if ((spec->hitParams[0].statCalculator == 2)
+        || (spec->hitParams[0].statCalculator == 25)) {
+        if (spec->hitParams[0].type == 0) {
+            if (attacker->weapon.blade.id) {
+                result->unk3 = attacker->weapon.damageType;
+            } else {
+                result->unk3 = 1;
+            }
+        } else {
+            result->unk3 = spec->hitParams[0].type;
+        }
+    } else {
+        result->unk3 = spec->hitParams[0].type;
+    }
+
+    hit = 0;
+    user = &result->unk4;
+    _lastValue = 0;
+    D_800F1A04 = 0;
+    D_800F1A00 = 0;
+
+    for (; hit < 2; ++hit) {
+        switch (spec->hitParams[hit].prerequisiteFunction) {
+        case 6:
+        case 7:
+        case 8:
+            func_80085390(spec, &result->unk4, result->unk4C, arg3, hit);
+            break;
+
+        case 3:
+            if (result->unk4.unk40 != 0) {
+                break;
+            }
+
+            entry = &result->unk4;
+            stats = vs_battle_actors[result->unk4.unk0.targetActor]->unk3C;
+            D_800F1A00 = 1;
+            D_800F1A04 = _doesAttackHit(spec, entry, entry, hit, arg3);
+
+            if ((D_800F1A04 != 0) || (arg3 == 0)) {
+                func_80085390(spec, entry, entry, arg3, hit);
+
+                if (arg3 && stats->unk956_0) {
+                    func_80085718(entry);
+                    entry->unk0.unk3 = 4;
+                }
+
+                func_80085008(entry);
+            }
+            break;
+
+        case 0:
+            break;
+
+        default:
+            for (i = 0; i < result->unk4A; ++i) {
+                entry = &result->unk4C[i];
+                redirected = 0;
+
+                if (arg3 && (*(int*)&spec->flags_0 & 0x4000)) {
+                    if (entry->unk40 == 0) {
+                        func_80077F14(
+                            entry->unk0.targetActor, entry->unk0.targetLimb, &position);
+                    } else {
+                        position = *(SVECTOR*)&entry->unk0;
+                    }
+
+                    redirected = func_800E6C34(
+                        &origin, &position, &impact, result->unk4.unk0.targetActor);
+
+                    if (redirected) {
+                        if (impact.pad == 0) {
+                            entry->unk40 = 1;
+                            *(SVECTOR*)&entry->unk0 = impact;
+                            entry->unk0.mp = 128;
+                            result->unk48 = 1;
+                        } else {
+                            if (impact.pad < 17u) {
+                                target = impact.pad;
+
+                                if ((target - 1) != entry->unk0.targetActor) {
+                                    entry->unk0.targetActor = impact.pad - 1;
+                                    entry->unk0.targetLimb =
+                                        vs_battle_actors[entry->unk0.targetActor]
+                                            ->unk3C->unk36;
+                                    result->unk48 = 1;
+                                }
+                            }
+
+                            redirected = 0;
+                        }
+                    }
+                }
+
+                if (redirected) {
+                    continue;
+                }
+
+                if (entry->unk40 != 0) {
+                    continue;
+                }
+
+                stats = vs_battle_actors[entry->unk0.targetActor]->unk3C;
+                D_800F1A00 = _canPerformAttack(spec, (u_char*)entry, hit);
+
+                if (D_800F1A00 != 0) {
+                    D_800F1A04 = _doesAttackHit(spec, user, entry, hit, arg3);
+
+                    if ((D_800F1A04 != 0) || (arg3 == 0)) {
+                        func_80085390(spec, user, entry, arg3, hit);
+                        target = entry->unk0.targetActor;
+
+                        if ((vs_battle_actors[target]->unk27 == 128) && (target != 0)
+                            && stats->unk956_0) {
+                            limb = entry->unk0.targetLimb;
+                            func_80085718(entry);
+                            entry->unk0.targetActor = target;
+                            entry->unk0.unk3 = 4;
+                            entry->unk0.targetLimb = limb;
+                        }
+
+                        if (arg3 && stats->unk956_0) {
+                            limb = entry->unk0.targetLimb;
+                            target = entry->unk0.targetActor;
+                            func_80085718(entry);
+                            entry->unk0.unk3 = 4;
+                            entry->unk0.targetActor = target;
+                            entry->unk0.targetLimb = limb;
+                        }
+
+                        func_80085008(entry);
+                    }
+                } else if (hit == 0) {
+                    entry->unk0.hitThreshold = 0xFF;
+                }
+            }
+            break;
+        }
+    }
+
+    func_80085A34(&result->unk4);
+
+    for (i = 0; i < result->unk4A; ++i) {
+        func_80085A34(&result->unk4C[i]);
+    }
+
+    if ((D_800F19CC->unk0 == 0) && arg3) {
+        *source = *result;
+    }
+
+    if (arg3 && (attacker != NULL)) {
+        func_800859B4(action, attacker, 1);
+        _getActionCost(action, attacker, 1);
+    }
+}
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4)
 {

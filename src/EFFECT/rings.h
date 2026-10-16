@@ -1,5 +1,6 @@
 /* Shared three-row, nine-column textured ring effect. The overlay supplies its entry
- * point and color table. */
+ * point and color table, and defines VS_RING_TRANSPOSED when its texture runs along the
+ * rows instead of the columns. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -224,6 +225,15 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800D6D24(&state->texture);
         texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
 
+#ifdef VS_RING_TRANSPOSED
+        for (column = 0; column < 9; ++column) {
+            columnUV[column] = texture->v + texture->h * column / 8;
+        }
+
+        rowUV[0] = texture->u;
+        rowUV[2] = rowUV[0] + texture->w;
+        rowUV[1] = texture->u + ((texture->w * fraction) >> 12);
+#else
         for (column = 0; column < 9; ++column) {
             columnUV[column] = texture->u + texture->w * column / 8;
         }
@@ -231,6 +241,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         rowUV[0] = texture->v;
         rowUV[2] = rowUV[0] + texture->h;
         rowUV[1] = texture->v + ((texture->h * fraction) >> 12);
+#endif
 
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             for (drawColumn = 0; drawColumn < 8; ++drawColumn) {
@@ -249,6 +260,18 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 prim->poly.tag = _get_mode(0, 0, 0);
                 prim->drawMode = _get_mode(0, 1, 0);
                 *(int*)&prim->poly.x0 = screen[drawRow][drawColumn];
+#ifdef VS_RING_TRANSPOSED
+                *(int*)&prim->poly.x2 = screen[drawRow][drawColumn + 1];
+                *(int*)&prim->poly.x1 = screen[drawRow + 1][drawColumn];
+                *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
+                *(int*)&prim->poly.r0 = *(int*)&prim->poly.r2 = *(int*)&colors[drawRow];
+                *(int*)&prim->poly.r1 = *(int*)&prim->poly.r3 =
+                    *(int*)&colors[drawRow + 1];
+                prim->poly.u0 = prim->poly.u2 = rowUV[drawRow];
+                prim->poly.u1 = prim->poly.u3 = rowUV[drawRow + 1];
+                prim->poly.v0 = prim->poly.v1 = columnUV[drawColumn];
+                prim->poly.v2 = prim->poly.v3 = columnUV[drawColumn + 1];
+#else
                 *(int*)&prim->poly.x1 = screen[drawRow][drawColumn + 1];
                 *(int*)&prim->poly.x2 = screen[drawRow + 1][drawColumn];
                 *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
@@ -259,6 +282,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 prim->poly.u1 = prim->poly.u3 = columnUV[drawColumn + 1];
                 prim->poly.v0 = prim->poly.v1 = rowUV[drawRow];
                 prim->poly.v2 = prim->poly.v3 = rowUV[drawRow + 1];
+#endif
                 prim->poly.tpage = texture->tpage;
                 prim->poly.clut = texture->clut;
                 prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
@@ -312,3 +336,4 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 }
 #undef VS_RING_FUNCTION
 #undef VS_RING_COLORS
+#undef VS_RING_TRANSPOSED

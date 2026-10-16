@@ -5925,7 +5925,41 @@ void func_800D1B18(D_800F54D8_t* arg0)
     arg0->farClip = vs_scratch.camera.farClip;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D1B80);
+void func_800D1B80(D_800F54D8_t* camera)
+{
+    VECTOR offset;
+    VECTOR position;
+    int _[10];
+    int dx = (camera->position.vx - camera->lookAt.vx) >> 12;
+    int dz = (camera->position.vz - camera->lookAt.vz) >> 12;
+    int yaw = ratan2(dx, dz);
+    int pitch;
+    int horizontal;
+
+    offset.vx = rcos(yaw) * (camera->unk20 >> 12);
+    offset.vz = -rsin(yaw) * (camera->unk20 >> 12);
+    pitch = ratan2(
+        (camera->position.vy - camera->lookAt.vy) >> 12, vs_gte_rsqrt(dx * dx + dz * dz));
+    offset.vy = -rsin(pitch) * (camera->unk28 >> 12);
+    horizontal = -rcos(pitch) * (camera->unk28 >> 12);
+    offset.vy += rcos(pitch) * (camera->unk24 >> 12);
+    horizontal += -rsin(pitch) * (camera->unk24 >> 12);
+    offset.vx += rsin(yaw) * (horizontal >> 12);
+    offset.vz += rcos(yaw) * (horizontal >> 12);
+    setVector(&position, camera->position.vx + offset.vx, camera->position.vy + offset.vy,
+        camera->position.vz + offset.vz);
+    vs_battle_setCameraPosition(&position);
+    setVector(&position, camera->lookAt.vx + offset.vx, camera->lookAt.vy + offset.vy,
+        camera->lookAt.vz + offset.vz);
+    vs_battle_setCameraLookAt(&position);
+    vs_battle_setCameraRoll(camera->roll - 32768 + camera->unk2C);
+    vs_battle_setNearClip(camera->nearClip);
+    vs_battle_setProjectionDistance(camera->projectionDistance);
+    // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous call
+    // and whether the far clip reaches func_80098194 is unpredictable
+    ((void (*)(int))vs_battle_setFarClip)(camera->farClip);
+    func_8007ACB0();
+}
 
 void func_800D1DE4(int arg0) { D_800F5518 |= arg0; }
 

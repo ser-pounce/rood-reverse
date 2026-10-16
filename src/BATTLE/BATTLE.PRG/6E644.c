@@ -3444,6 +3444,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
 
         default:
             arg0->unkC0 = 0;
+            break;
         }
     }
 

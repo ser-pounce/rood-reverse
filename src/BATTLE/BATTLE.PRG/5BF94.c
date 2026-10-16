@@ -316,27 +316,6 @@ typedef struct {
 } func_800CCE10_t;
 
 typedef struct {
-    short rotation[3];
-    u_short flags;
-    u_char pad8[6];
-    short frame;
-    u_char pad10[12];
-    VECTOR position;
-    u_char pad2C[8];
-    u_char actor;
-    u_char bone;
-    u_char targetActor;
-    u_char targetBone;
-    MATRIX world;
-    MATRIX view;
-    MATRIX attachment;
-    MATRIX facing;
-    SVECTOR saved;
-    SVECTOR control0;
-    SVECTOR control1;
-} func_800D0548_arg1;
-
-typedef struct {
     u_char actors[6];
     u_char final;
     u_char frame;
@@ -4567,18 +4546,18 @@ void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
     arg1->unk14_16 = 0;
 
     for (i = 0; i < 16; ++i) {
-        ((short*)&arg1->unk1C[i].unk4)[1] = 0;
-        arg1->unk1C[i].unk4 = 0;
-        arg1->unk1C[i].unk0 = 0;
-        arg1->unk1C[i].unkC = 0;
+        arg1->unk1C[i].flags = 0;
+        *(int*)&arg1->unk1C[i].rotation[2] = 0;
+        *(int*)&arg1->unk1C[i].rotation[0] = 0;
+        *(int*)&arg1->unk1C[i].unkC = 0;
         arg1->unk1C[i].unk8 = 0;
-        arg1->unk1C[i].unk18 = 0;
-        arg1->unk1C[i].unk14 = 0;
-        arg1->unk1C[i].unk10 = 0;
-        arg1->unk1C[i].unk30 = 0;
-        arg1->unk1C[i].unk2C = 0;
-        arg1->unk1C[i].unk28 = 0;
-        *(int*)&arg1->unk1C[i].unk34 = 0;
+        arg1->unk1C[i].unk10[2] = 0;
+        arg1->unk1C[i].unk10[1] = 0;
+        arg1->unk1C[i].unk10[0] = 0;
+        arg1->unk1C[i].unk2C[1] = 0;
+        arg1->unk1C[i].unk2C[0] = 0;
+        arg1->unk1C[i].position.pad = 0;
+        *(int*)&arg1->unk1C[i].actor = 0;
     }
 
     arg1->unkD1C.unk0 = *arg0->unk0;
@@ -5417,7 +5396,90 @@ void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
     arg1->t[2] = arg0->vz;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CFEF0);
+void func_800CFEF0(D_800F53B8_t* arg0)
+{
+    int i;
+
+    for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
+        func_800D0B30_t* definition = &D_800F569C->block10Data[i];
+        func_800D0548_arg1* state = &arg0->unk1C[i];
+
+        state->rotation[0] = definition->unk8;
+        state->rotation[1] = definition->unkC;
+        state->rotation[2] = definition->unk10;
+        setVector(&state->position, 0, 0, 0);
+        func_800CFE7C(&state->facing);
+        state->flags = 0;
+        state->frame = 0;
+        *(int*)&state->actor = 0;
+
+        if (definition->flags & 2) {
+            switch (definition->flags & 0x18) {
+            case 0x10:
+                if (arg0->unkD1C.unk24.type == 4) {
+                    state->actor = arg0->unkD1C.unk24.value.actor.actor;
+                    state->bone = arg0->unkD1C.unk24.value.actor.part;
+                } else {
+                    state->actor = 0xFF;
+                    func_800CFE98(&arg0->unkD1C.unk24.value.position, &state->attachment);
+                }
+                break;
+
+            case 8:
+                if (arg0->unkD1C.unkC.type == 4) {
+                    state->actor = arg0->unkD1C.unkC.value.actor.actor;
+                    state->bone = arg0->unkD1C.unkC.value.actor.part;
+                } else {
+                    state->actor = 0xFF;
+                    func_800CFE98(&arg0->unkD1C.unkC.value.position, &state->attachment);
+                }
+                break;
+
+            case 0:
+                state->actor = definition->unk2;
+                state->bone = 0;
+                break;
+            }
+
+            if (!(definition->flags & 4)) {
+                state->bone = definition->unk3;
+            }
+        }
+
+        if (definition->flags & 0x80) {
+            switch (definition->flags & 0xC00) {
+            case 0x800:
+                if (arg0->unkD1C.unk24.type == 4) {
+                    state->targetActor = arg0->unkD1C.unk24.value.actor.actor;
+                    state->targetBone = arg0->unkD1C.unk24.value.actor.part;
+                } else {
+                    state->targetActor = 0xFF;
+                    state->saved = arg0->unkD1C.unk24.value.position;
+                }
+                break;
+
+            case 0x400:
+                if (arg0->unkD1C.unkC.type == 4) {
+                    state->targetActor = arg0->unkD1C.unkC.value.actor.actor;
+                    state->targetBone = arg0->unkD1C.unkC.value.actor.part;
+                } else {
+                    state->targetActor = 0xFF;
+                    state->saved = arg0->unkD1C.unkC.value.position;
+                }
+                break;
+
+            case 0:
+                state->targetActor = definition->mode & 31;
+                state->targetBone = 0;
+                break;
+            }
+
+            if (!(definition->flags & 0x200)) {
+                state->targetBone = ((u_char*)&definition->mode)[1];
+            }
+        }
+    }
+}
 
 void func_800D01E4(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 {
@@ -5633,7 +5695,7 @@ void func_800D0D08(D_800F53B8_t* arg0)
 
     for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
         func_800D0B30_t* definition = &D_800F569C->block10Data[i];
-        func_800D0548_arg1* state = (func_800D0548_arg1*)&arg0->unk1C[i];
+        func_800D0548_arg1* state = &arg0->unk1C[i];
 
         func_800D0B30(definition, (SVECTOR*)state->rotation, scratch);
 
@@ -6431,11 +6493,11 @@ int func_800D49A4(D_800F53B8_t* arg0)
     if (((u_short)(arg0->unkD1C.unk38 - 6) < 16) || (arg0->unkD1C.unk38 == 0x21)
         || (arg0->unkD1C.unk38 == 0x24)) {
         for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
-            arg0->unk1C[i].unk20 = -0x80;
+            arg0->unk1C[i].position.vy = -128;
         }
     } else if ((arg0->unkD1C.unk38 == 0x38) && (arg0->unk10[3] == 0x2B)) {
         for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
-            arg0->unk1C[i].unk20 = 0x80;
+            arg0->unk1C[i].position.vy = 128;
         }
     }
     return 1;
@@ -6821,9 +6883,9 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
             vs_main_playSfxDefault(bank, (command >> 9) & 0x1FF);
         } else {
             setVector(&position,
-                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[0],
-                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[1],
-                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[2]);
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].world.t[0],
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].world.t[1],
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].world.t[2]);
             vs_main_panSfx(bank, (commands[arg1->unk6] >> 9) & 0x1FF, &position);
         }
     }
@@ -7069,7 +7131,7 @@ void func_800D6418(D_800F53B8_t* arg0)
 void func_800D6448(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
 {
     func_800D78B8();
-    func_800CF7A8(arg0->unk1C[arg1].unk34, arg0->unk1C[arg1].unk35, arg2 % 10, arg2 / 10);
+    func_800CF7A8(arg0->unk1C[arg1].actor, arg0->unk1C[arg1].bone, arg2 % 10, arg2 / 10);
     func_800D78CC();
 }
 
@@ -7138,9 +7200,9 @@ void func_800D66FC(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
 {
     func_800D1B18(D_800F5520);
     func_800D1B18(&D_800F5520[1]);
-    D_800F5520[1].lookAt.vx = arg0->unk1C[arg1].unk38.t[0] * ONE;
-    D_800F5520[1].lookAt.vy = arg0->unk1C[arg1].unk38.t[1] * ONE;
-    D_800F5520[1].lookAt.vz = arg0->unk1C[arg1].unk38.t[2] * ONE;
+    D_800F5520[1].lookAt.vx = arg0->unk1C[arg1].world.t[0] * ONE;
+    D_800F5520[1].lookAt.vy = arg0->unk1C[arg1].world.t[1] * ONE;
+    D_800F5520[1].lookAt.vz = arg0->unk1C[arg1].world.t[2] * ONE;
     D_800F54D0 = 0;
     if (arg2 == 0) {
         arg2 = 1;

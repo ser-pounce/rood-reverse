@@ -41,7 +41,7 @@ static void func_800F98E0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     vs_battle_lerpVector(arg0->unk18,
         vs_battle_sampleCurve(arg0->unk8, arg3->curveSampleDistance), &arg1->unk98);
 
-    matrix = &arg2->unk1C[arg0->unkC8].unk38;
+    matrix = &arg2->unk1C[arg0->unkC8].world;
 
     // Determines trail origin:
     switch (arg1->flags & 7) {
@@ -251,8 +251,8 @@ static void func_800FA07C(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
         break;
 
     case 0xC0:
-        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].unk38.t[0],
-            arg2->unk1C[arg0->unkC9].unk38.t[1], arg2->unk1C[arg0->unkC9].unk38.t[2], +=);
+        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].world.t[0],
+            arg2->unk1C[arg0->unkC9].world.t[1], arg2->unk1C[arg0->unkC9].world.t[2], +=);
         break;
 
     case 0x80:
@@ -490,8 +490,8 @@ void func_800FAA70(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     spC0.cd = primPolyGT4SemiTrans;
 
     if (arg1->flags & 0x20000) {
-        SetRotMatrix(&arg2->unk1C[arg0->unkC8].unk58);
-        SetTransMatrix(&arg2->unk1C[arg0->unkC8].unk58);
+        SetRotMatrix(&arg2->unk1C[arg0->unkC8].view);
+        SetTransMatrix(&arg2->unk1C[arg0->unkC8].view);
     } else {
         SetRotMatrix(&vs_scratch.viewMatrix);
         SetTransMatrix(&vs_scratch.viewMatrix);
@@ -755,8 +755,8 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
 
                 if (temp_s3->flags & 0x20000) {
 
-                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
-                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
+                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
+                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
 
                     setVector(&s4->unk2C,
                         temp_s0->trails[trail]

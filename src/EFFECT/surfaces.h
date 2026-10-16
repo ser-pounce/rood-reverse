@@ -111,7 +111,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     case 2:
         effect = &D_800F569C->block5Data->unk4[state->effect];
         scratch->flags = effect->flags;
-        actorMatrix = &battle->unk1C[effect->unkC8].unk38;
+        actorMatrix = &battle->unk1C[effect->unkC8].world;
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
@@ -193,8 +193,8 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         if (scratch->flags & 0x20000) {
-            SetRotMatrix(&battle->unk1C[effect->unkC8].unk58);
-            SetTransMatrix(&battle->unk1C[effect->unkC8].unk58);
+            SetRotMatrix(&battle->unk1C[effect->unkC8].view);
+            SetTransMatrix(&battle->unk1C[effect->unkC8].view);
         } else {
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);

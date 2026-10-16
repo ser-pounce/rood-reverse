@@ -2,6 +2,8 @@
 #include "40564.h"
 #include "146C.h"
 #include "3A1A0.h"
+#include "44F14.h"
+#include "6E644.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
@@ -12,7 +14,7 @@ typedef struct {
 } func_800AAE9C_t;
 
 typedef struct {
-    int unk0;
+    u_char* unk0;
     u_char* unk4;
     u_short unk8[0];
 } func_800AD494_t;
@@ -31,6 +33,35 @@ typedef struct {
     u_char y;
 } func_800AB358_t;
 
+void func_8007A824(DR_MOVE*);
+int func_8008D2C0(func_8008D2C0_t*);
+short func_8008DA24(int, int);
+void func_800A1720(int, int, void*, int*);
+int func_800A6EE8(SVECTOR*, int, int, int);
+void func_800A70DC(D_800F4538_t*, int);
+void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
+void func_800AA984(int, short, int);
+void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
+void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
+void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
+void func_800AB098(D_800F4538_t*, int, int);
+
+extern u_char D_800E8F2C;
+extern short D_800E8F30[];
+extern u_char D_800E8F90[];
+extern func_800AAE9C_t D_800E909C[][28];
+extern func_800AAE9C_t D_800E916C[][8];
+extern u_char D_800F2450[];
+extern void* D_800F4768;
+extern char D_800F49DC;
+extern u_char D_800F49E4;
+extern int D_800F49F4;
+extern u_char D_800F49F8;
+extern u_char D_800F49F9;
+extern short D_800F4B00;
+
+#define getActorFlags(actor) (*((int*)&(actor)->unk5B4 - 2))
+
 typedef struct {
     u_int unk0 : 24;
     u_int timer : 8;
@@ -48,54 +79,22 @@ typedef struct {
 } func_800AC690_contact_t;
 
 void func_8006F450(SVECTOR*);
-void func_8007A824(DR_MOVE*);
+int func_800A190C(int, int, SVECTOR*, int);
 void func_8008C49C(int, int);
-int func_8008D2C0(func_8008D2C0_t*);
-short func_8008DA24(int, int);
 short func_8008DD0C(int, int);
-void func_800A0204(int, int, int, int);
-void func_800A1280(int, int, SVECTOR*, int);
-void func_800A1720(int, int, void*, int*);
-void func_800A190C(int, int, SVECTOR*, int);
-int func_800A6EE8(SVECTOR*, int, int, int);
-void func_800A70DC(D_800F4538_t*, int);
 void func_800A7524(void*, void*);
-void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
-void func_800AA984(int, short, int);
-void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
-void func_800AA290(int, func_8006EBF8_t_fields*, int, int);
-void func_800AA490(int, func_8006EBF8_t_fields*, int, int);
-void func_800AB098(D_800F4538_t*, int, int);
-void func_800AC690(int arg0, D_800F4538_t* actor);
 void func_800ACF54(D_800F45E0_t*);
-void func_800AE47C(D_800F4538_t*);
 void func_800AE828(int, D_800F4538_t*, int);
-void func_800E4C28();
 void func_800E6764(int);
 void func_800E6EB0(int);
 
-extern u_char D_800E8F2C;
-extern short D_800E8F30[];
-extern u_char D_800E8F90[];
-extern func_800AAE9C_t D_800E909C[][28];
-extern func_800AAE9C_t D_800E916C[][8];
 extern u_char D_800E9278[];
 extern u_char D_800E92E8[];
 extern u_char D_800E92F0[];
 extern u_char D_800E92F8[];
 extern u_char D_800E9300[];
-extern u_char D_800F2450[];
-extern void* D_800F4768;
-extern char D_800F49DC;
-extern u_char D_800F49E4;
 extern u_int* D_800F49F0;
-extern int D_800F49F4;
-extern u_char D_800F49F8;
-extern u_char D_800F49F9;
-extern short D_800F4B00;
 extern u_char D_800F4B19;
-
-#define getActorFlags(actor) (*((int*)&(actor)->unk5B4 - 2))
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {
@@ -1078,7 +1077,7 @@ void func_800AA698(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AA82C(int arg0, short arg1, int arg2) { func_800AA984(arg0, arg1, arg2); }
 
-void func_800AA850(int arg0, u_short arg1, int arg2)
+void func_800AA850(int arg0, short arg1, int arg2)
 {
     short temp_a1;
     short var_v1;
@@ -2245,18 +2244,18 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 
     case 2:
         if (arg1->unk0.unk1A == 0) {
-            int temp_a1;
+            u_short facing;
 
             func_800A0204(arg0, 1, 0, 8);
 
-            temp_a1 = (u_short)arg1->unk5EC.pad;
+            facing = arg1->unk5EC.pad;
 
-            if (temp_a1 != 0x8000) {
-                temp_a1 = temp_a1 & 0xFFF;
+            if (facing != 32768) {
+                facing = facing & 0xFFF;
                 if ((arg1->unk5AC_2 << 2) == 0) {
-                    func_800A9EB4(arg0, temp_a1, arg1->unk5C6);
+                    func_800A9EB4(arg0, facing, arg1->unk5C6);
                 } else {
-                    func_800AA850(arg0, temp_a1, arg1->unk5C6);
+                    func_800AA850(arg0, facing, arg1->unk5C6);
                 }
             }
             arg1->unk5AC_0 = 0;
@@ -2543,38 +2542,7 @@ void func_800ACF54(D_800F45E0_t* arg0)
     arg0->unk52 = arg0->unk26;
 }
 
-void func_800ACFA0(short* arg0, u_char* arg1, int arg2)
-{
-    int a3;
-    a3 = arg1[0];
-    a3 <<= 8;
-    a3 |= arg1[1];
-    a3 *= 2;
-    arg0[0] = a3;
-
-    a3 = arg1[2];
-    a3 <<= 8;
-    a3 |= arg1[3];
-    a3 *= 2;
-    arg0[1] = a3;
-
-    a3 = arg1[4];
-    a3 <<= 8;
-    a3 |= arg1[5];
-    a3 *= 2;
-    arg0[2] = a3;
-
-    arg0[3] = 6;
-
-    if (arg2 != 0xFF) {
-        arg0[3] = 0;
-    }
-
-    arg0[339] = 0;
-}
-
-// Inlined copy of func_800ACFA0
-static inline void func_800ACFA0_inline(SVECTOR* arg0, u_char* arg1, int arg2)
+inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
 {
     int a3;
     a3 = arg1[0];
@@ -2614,70 +2582,83 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     int frame;
     int i;
 
-    if (*(int*)((u_char*)actor + 0x5AC) & 0x800000) {
+    if (actor->unk5AC_23) {
         func_800AE47C(actor);
     }
+
     actor->unk5AC_23 = 0;
     pose->unk540 = 0;
     pose->unk549 = 0;
     *(int*)&pose->unk150[41].vx = 0;
     *(int*)&pose->unk150[41].vz = 0;
-    pose->unk150[125].pad = 0;
+    pose->unk3F0[41].pad = 0;
+    anim = func_800AD494(actor, actor->animationId, &header);
 
-    anim = (func_800AD494_t*)func_800AD494(actor, actor->animationId, &header);
     if (anim == NULL) {
         return;
     }
+
     if (header[2] == 0) {
         pose->unk542 = 0xFFFF;
     } else {
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[2];
         i = data[0];
-        if (i == 0xFF) {
-            i = data[1] + 0xFF;
+
+        if (i == 255) {
+            i = data[1] + 255;
             data += 2;
         } else {
-            data += 1;
+            ++data;
         }
+
         pose->unk542 = i;
         pose->unk544 = data;
     }
+
     pose->unk548_16 = 0;
     pose->unk548 = actor->animationId;
+
     if (header[4] != 0) {
         key = &pose->unk150[41];
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[4];
-        func_800ACFA0_inline(key, data, 0xFF);
+        func_800ACFA0(key, data, 0xFF);
     }
+
     frame = ((u_char*)header)[2];
-    if (frame != 0xFF) {
-        header = (u_short*)((u_char*)anim + ((actor->unk0.nBones * 4 + 10) * frame + 8));
+
+    if (frame != 255) {
+        header = (u_short*)((u_char*)anim->unk8 + (actor->unk0.nBones * 4 + 10) * frame);
     }
+
     key = &pose->unk0[41];
-    data = (u_char*)anim->unk0;
+    data = anim->unk0;
     data += header[3];
-    func_800ACFA0_inline(key, data, frame);
+    func_800ACFA0(key, data, frame);
+
     for (i = 0; i < actor->unk0.nBones; ++i) {
         key = &pose->unk0[i];
-        data = (u_char*)anim->unk0;
+        data = anim->unk0;
         data += header[5 + i];
-        func_800ACFA0_inline(key, data, frame);
+        func_800ACFA0(key, data, frame);
     }
+
     if (((u_char*)header)[3] & 1) {
         for (i = 0; i < actor->unk0.nBones; ++i) {
-            data = (u_char*)anim->unk0;
+            data = anim->unk0;
             data += header[actor->unk0.nBones + i + 5];
-            if (data[0] == 0xFE && data[1] == 1) {
+
+            if (data[0] == 254 && data[1] == 1) {
                 data += 2;
                 key = &pose->unk150[i];
-                func_800ACFA0_inline(key, data, frame);
+                func_800ACFA0(key, data, frame);
                 pose->unk150[i].pad = 0;
                 pose->unk150[i].vx >>= 1;
                 pose->unk150[i].vy >>= 1;
                 pose->unk150[i].vz >>= 1;
-                if (frame == 0xFF) {
+
+                if (frame == 255) {
                     pose->unk150[i].pad = 8;
                 }
             } else {
@@ -2685,23 +2666,25 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
                 pose->unk150[i].vy = data[1];
                 pose->unk150[i].vz = data[2];
                 pose->unk150[i].pad = 0;
-                if (frame == 0xFF) {
+
+                if (frame == 255) {
                     pose->unk150[i].pad = 3;
                 }
             }
-            (&pose->unk150[84])[i].pad = 0;
+
+            pose->unk3F0[i].pad = 0;
         }
     } else {
         for (i = 0; i < actor->unk0.nBones; ++i) {
             *(int*)&pose->unk150[i].vx = 0x400040;
             *(int*)&pose->unk150[i].vz = 0x40;
             pose->unk150[i].pad = 0;
-            (&pose->unk150[84])[i].pad = 0;
+            pose->unk3F0[i].pad = 0;
         }
     }
 }
 
-int func_800AD494(void* arg0, int arg1, u_short** arg2)
+void* func_800AD494(void* arg0, int arg1, u_short** arg2)
 {
     D_800F4538_t* actor = arg0;
     func_800AD494_t* p;
@@ -2768,7 +2751,8 @@ int func_800AD494(void* arg0, int arg1, u_short** arg2)
     } else {
         *arg2 = &p->unk8[(((actor->unk0.nBones * 4) + 10) * idx) >> 1];
     }
-    return (int)p;
+
+    return p;
 }
 
 void func_800AD62C(int arg0, int* arg1, int* arg2)

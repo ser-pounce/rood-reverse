@@ -58,7 +58,9 @@ typedef struct {
 
 typedef struct {
     SVECTOR unk0[42];
-    SVECTOR unk150[0x7E];
+    SVECTOR unk150[42];
+    SVECTOR unk2A0[42];
+    SVECTOR unk3F0[42];
     short unk540;
     u_short unk542;
     u_char* unk544;
@@ -406,7 +408,7 @@ typedef struct {
     u_char unk1863;
     D_800F4538_unk1864 unk1864;
     int unk1868;
-    int unk187C;
+    void* unk187C;
     u_short unk1880[4][2];
     MATRIX unk1890[2];
     u_char unk18D0[2];
@@ -672,6 +674,7 @@ void func_800A48CC(int, int, int);
 void func_800A4D8C(void);
 void func_800A30A0(int, func_80089888_t*, int, int);
 void func_800A35A8(void);
+int func_800A3500(int, int);
 D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1);
 void func_800A4828(int, MATRIX*);
 void func_800A9D24(int, SVECTOR*, int);

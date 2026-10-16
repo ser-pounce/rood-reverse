@@ -24,7 +24,6 @@ typedef struct {
 
 void func_8008EB04(int*, int*);
 int func_800A91DC(int, int, int);
-u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
 void func_800B17F0(SVECTOR*, MATRIX*);

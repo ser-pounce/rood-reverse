@@ -6,6 +6,7 @@
 #include "146C.h"
 #include "38C1C.h"
 #include "3A1A0.h"
+#include "40564.h"
 #include "44F14.h"
 #include "4A0A8.h"
 #include "../../SLUS_010.40/main.h"
@@ -39,8 +40,6 @@ void func_800AB788(D_800F4538_t*, D_800F45E0_t*, int);
 void func_800AB9A4(void*);
 void func_800AC440(D_800F4538_t*, int, int);
 void func_800AC540(int, D_800F4538_t*);
-void func_800AD008(void*, void*);
-u_char** func_800AD494(D_800F4538_t*, u_char, u_short**);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE46C(u_char*);
 void func_800AE474(u_char*);

@@ -126,7 +126,8 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 5;
+    u_int unk0_1 : 4;
+    u_int unk0_5 : 1;
     u_int unk0_6 : 2;
     u_int unk0_8 : 7;
     u_int unk0_15 : 5;
@@ -135,6 +136,13 @@ typedef struct {
     u_int unk0_28 : 2;
     u_int unk0_30 : 2;
 } func_800DA1D4_t;
+
+typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
 
 typedef struct {
     int unk0;
@@ -148,41 +156,47 @@ typedef struct {
     SVECTOR unk1C;
     char unk24[2];
     short unk26;
-    char unk28[0x588];
+    char unk28[0x34];
+    vs_battle_movementPosition unk5C;
+    char unk60[0x550];
     u_int unk5B0_0 : 4;
     u_int unk5B0_4 : 1;
 } func_800E1238_t;
 
-typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
-
 typedef struct func_800E78F4_t {
-    char unk0[2];
+    char unk0;
+    u_char unk1;
     u_char unk2;
-    char unk3[4];
+    u_char unk3;
+    u_char unk4;
+    u_char unk5;
+    char unk6;
     u_char unk7;
-    char unk8;
+    u_char unk8;
     u_char unk9;
-    char unkA[4];
+    char unkA[3];
+    u_char unkD;
     u_char unkE;
-    char unkF[4];
+    u_char unkF;
+    char unk10[3];
     u_char unk13;
     char unk14[2];
     int unk16 : 8;
     u_char unk17;
-    char unk18[3];
+    u_char unk18;
+    char unk19;
+    u_char unk1A;
     u_char unk1B;
-    char unk1C[4];
+    u_char unk1C;
+    char unk1D[3];
     u_char unk20;
     u_char unk21;
     char unk22[4];
     u_char unk26;
     u_char unk27;
-    char unk28[3];
+    char unk28;
+    u_char unk29;
+    char unk2A;
     u_char unk2B;
     u_char unk2C;
     char unk2D[3];
@@ -190,7 +204,10 @@ typedef struct func_800E78F4_t {
     char unk31[3];
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[0x10];
+    char unk3C[8];
+    u_char unk44;
+    char unk45[3];
+    vs_battle_movementPosition unk48;
     SVECTOR unk4C;
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
@@ -199,7 +216,8 @@ typedef struct func_800E78F4_t {
     short unk82;
     char unk84[4];
     u_char unk88;
-    char unk89[5];
+    char unk89[3];
+    u_short unk8C;
     u_short unk8E;
     char unk90[2];
     u_short unk92;
@@ -208,19 +226,32 @@ typedef struct func_800E78F4_t {
     u_short unk9A;
     char unk9C[0x17];
     u_char unkB3;
-    char unkB4[4];
+    int unkB4;
     short unkB8;
-    char unkBA[4];
+    u_short unkBA;
+    char unkBC[2];
     short unkBE;
-    char unkC0[0x10];
+    u_short unkC0;
+    u_short unkC2;
+    int unkC4;
+    char unkC8[8];
     short unkD0;
-    char unkD2[0x15];
+    u_short unkD2;
+    u_short unkD4;
+    u_short unkD6;
+    u_char unkD8;
+    char unkD9[0xE];
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
-    char unkEA[0x11];
+    char unkEA[0x10];
+    u_char unkFA;
     u_char unkFB;
-    char unkFC[0x20];
+    char unkFC[0xC];
+    vs_battle_movementPosition unk108;
+    u_char unk10C;
+    char unk10D[0xB];
+    u_char unk118[4];
     vs_battle_movementPosition unk11C;
     char unk120[0xA];
     u_char unk12A;
@@ -230,7 +261,8 @@ typedef struct func_800E78F4_t {
     signed char unk12F;
     signed char unk130;
     u_char unk131;
-    char unk132[6];
+    char unk132[2];
+    vs_battle_movementPosition unk134;
     u_short unk138;
     u_short unk13A;
     u_short unk13C;
@@ -245,12 +277,14 @@ typedef struct func_800E78F4_t {
     u_short unk15E;
     char unk160[8];
     vs_battle_movementPosition unk168;
-    char unk16C[0x10];
+    char unk16C[4];
+    vs_battle_movementPosition unk170;
+    char unk174[8];
     int unk17C;
     int unk180;
     int unk184;
     short unk188;
-    short unk18A;
+    int unk18A : 16;
     char unk18C[0xE];
     u_char unk19A;
     char unk19B[5];
@@ -264,6 +298,8 @@ typedef struct func_800E78F4_t {
     func_800DCAA0_t unk2F0[16];
     func_800DCAA0_t* unk430[16];
     int unk470;
+    char unk474[0xD];
+    u_char unk481;
 } func_800E78F4_t;
 
 typedef struct {
@@ -382,7 +418,8 @@ typedef struct {
 } D_800F58C8_t;
 
 typedef struct {
-    char unk0[2];
+    u_char unk0;
+    u_char unk1;
     u_char unk2;
     char unk3;
     u_char unk4[8];
@@ -417,9 +454,13 @@ short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+int D_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
+int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 void func_800DB5B0(func_800E78F4_t*);
+void func_800DB5B8(func_800E78F4_t*, vs_battle_movementPosition, int);
+void func_800DB5DC(func_800E78F4_t*, vs_battle_movementPosition, int);
 void func_800DB5FC(func_800E78F4_t*);
 int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
@@ -446,10 +487,14 @@ void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
 void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
+int func_800DFBCC(func_800E78F4_t*, int, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
+void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
+int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
+int func_800E4180(func_800E78F4_t*, int, int, int);
 void func_800E4288(void*, int);
 int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
@@ -457,6 +502,7 @@ int func_800E42EC(int, int);
 int func_800E4320(int, int);
 int func_800E45D4(int);
 u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
+int func_800E4624(SVECTOR*, SVECTOR*, int, int);
 u_int func_800E4660(int, int, int);
 int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
@@ -464,11 +510,13 @@ void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
+void func_800E4BB8(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
 int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
+void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);
@@ -557,176 +605,127 @@ typedef struct {
     int unk470;
 } func_800DEEA4_t2;
 typedef struct movementRecoveryState movementRecoveryState;
-void func_800D8260(func_800DEEA4_t2* arg0, int arg1, int arg2);
+void func_800D8260(func_800E78F4_t* arg0, int arg1, int arg2);
 
-typedef union {
-    unsigned int raw;
-    vs_battle_movementPosition p;
-} vs_battle_movementTile;
-typedef struct {
-    unsigned char pad[7];
-    unsigned char disabled;
-    unsigned char rest[0x2C];
-    vs_battle_movementTile position;
-    char unk38[0x130];
-    vs_battle_movementTile destination;
-} func_800D8400_t;
-
-typedef struct {
-    int score;
-    unsigned int row : 3, column : 2, action : 8, threshold : 16, pad29 : 3;
-    unsigned int distanceSquared;
-    unsigned int targetId : 4, part : 3, heading : 12, weight : 8, padC27 : 5;
-    unsigned int low : 1, flag1 : 1, flag2 : 1, flag3 : 1, flag4 : 1, flag5 : 1,
-        range : 16, high : 10;
-} actionCandidateEntry;
-typedef struct {
-    unsigned char flags, pad[3];
-} actionCandidateTarget;
-typedef struct {
-    char pad0[0x131];
-    unsigned char status;
-    char pad132[0x72];
-    actionCandidateTarget targets[16];
-    unsigned int targetDistancesSquared[16];
-    char pad224[0x20C];
-    actionCandidateEntry* entries[16];
-    int count;
-} actionCandidateState;
-
-int func_800E4624(short*, short*, int, int);
-extern int D_800F16F4;
-
-typedef union {
-    unsigned int raw;
-    unsigned char bytes[4];
-} candidateMovementWord;
-typedef struct candidateMovementState {
-    char pad0[1];
-    unsigned char f1;
-    char pad2[74];
-    short position[3];
-    char pad52[48];
-    short height;
-    char pad84[47];
-    unsigned char maxRange;
-    char padB4[122];
-    unsigned char mode;
-    char pad12F[5];
-    candidateMovementWord destination;
-    char pad138[36];
-    unsigned char target;
-    char pad15D[1];
-    unsigned short flags;
-    char pad160[8];
-    candidateMovementWord next;
-    char pad16C[56];
-    candidateMovementWord targets[16];
-    unsigned int distances[16];
-    char pad224[588];
-    int count;
-} candidateMovementState;
-int func_800E42D4(int, int);
-int func_800E4624(short*, short*, int, int);
-unsigned int func_800E4660(int, int, int);
-void func_800DB5B8(candidateMovementState*, unsigned int, int);
-void func_800DB5DC(candidateMovementState*, unsigned int, int);
-int func_800D9E18(candidateMovementState* state, actionCandidateEntry* entry)
+int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 {
-    int id, flag;
-    unsigned int distance, limit;
+    int id;
+    int flag;
+    u_int distance;
+    u_int limit;
     int active = 0;
-    short point[3];
-    int x, z, y;
-    if (!state->count) {
+    SVECTOR point;
+    int x;
+    int z;
+    int y;
+
+    if (!arg0->unk470) {
         return 0;
     }
-    id = entry->targetId;
-    if (id == 16 || !((candidateMovementState**)0x1F80037C)[id]) {
+
+    id = arg1->unkC_0;
+
+    if (id == 16 || !((func_800E78F4_t**)0x1F80037C)[id]) {
         return 0;
     }
-    switch (state->mode) {
+
+    switch (arg0->unk12E) {
     case 1:
     normal:
         limit = 0x1F80;
-        if (!(state->flags & 8)) {
-            limit = vs_gte_rsqrt(entry->distanceSquared) + (state->maxRange << 5);
+
+        if (!(arg0->unk15E & 8)) {
+            limit = vs_gte_rsqrt(arg1->unk8) + arg0->unkB3 * 32;
         }
+
         limit = limit * limit;
-        if ((state->targets[id].bytes[0] >> 6) == 2) {
-            distance = entry->distanceSquared;
+
+        if (arg0->unk1A4[id].unk0_6 == 2) {
+            distance = arg1->unk8;
             flag = 0;
             active = 1;
         } else {
-            if (func_800DB8AC((void*)state, (void*)entry)) {
-                distance = entry->distanceSquared;
+            if (func_800DB8AC(arg0, arg1)) {
+                distance = arg1->unk8;
                 active = 1;
             } else {
+                u_int minimum;
+
                 distance = limit;
-                {
-                    unsigned int minimum = 0x64000;
-                    if (distance < minimum) {
-                        distance = minimum;
-                    }
+                minimum = 640 * 640;
+
+                if (distance < minimum) {
+                    distance = minimum;
                 }
             }
+
             flag = 1;
         }
+
         distance = vs_gte_rsqrt(distance);
+
         if (active) {
-            D_800F58BC->unk24++;
-            if (state->distances[id] < limit
-                && (state->targets[entry->targetId].raw & 1)) {
-                func_800D836C((void*)state);
+            ++D_800F58BC->unk24;
+
+            if (arg0->unk1E4[id] < limit && arg0->unk1A4[arg1->unkC_0].unk0_0) {
+                func_800D836C(arg0);
             }
         }
+
     move:
-        if (func_800DB370((void*)state, id, distance, flag)) {
+        if (func_800DB370(arg0, id, distance, flag)) {
             return 1;
         }
-        return func_800DB74C((void*)state, id) != 0;
+
+        return func_800DB74C(arg0, id) != 0;
+
     case 2:
-        if (!func_800DBCB4((void*)state, (void*)entry)) {
+        if (!func_800DBCB4(arg0, arg1)) {
             goto normal;
         }
-        if (entry->flag1) {
-            point[0] = (state->destination.bytes[0] << 7) + 64;
-            point[2] = (state->destination.bytes[2] << 7) + 64;
-            point[1] = func_800E42D4(point[0], point[2]);
-            distance =
-                vs_gte_rsqrt(func_800E4624(point, (short*)&D_800F4538[id]->unk0.position,
-                    state->height, ((candidateMovementState*)D_800F5878[id])->height));
-            distance =
-                (int)distance < vs_gte_rsqrt(entry->distanceSquared) - entry->range;
-            if (distance) {
+
+        if (arg1->unk10.unk1) {
+            point.vx = arg0->unk134.x * 128 + 64;
+            point.vz = arg0->unk134.z * 128 + 64;
+            point.vy = func_800E42D4(point.vx, point.vz);
+
+            if (vs_gte_rsqrt(func_800E4624(&point, &D_800F4538[id]->unk0.position,
+                    arg0->unk82, D_800F5878[id]->unk82))
+                < vs_gte_rsqrt(arg1->unk8) - arg1->unk10.unk6) {
                 goto normal;
             }
         }
-        x = (state->next.bytes[0] << 7) + 64;
-        z = (state->next.bytes[2] << 7) + 64;
+
+        x = arg0->unk168.x * 128 + 64;
+        z = arg0->unk168.z * 128 + 64;
         y = func_800E42D4(x, z);
-        if (func_800E4660(
-                x - state->position[0], y - state->position[1], z - state->position[2])
-            <= 0xFFFF) {
-            state->target = id;
-            func_800DB5B8(state, state->destination.raw, 2);
+
+        if (func_800E4660(x - arg0->unk4C.vx, y - arg0->unk4C.vy, z - arg0->unk4C.vz)
+            <= 65535) {
+            arg0->unk15C = id;
+            func_800DB5B8(arg0, arg0->unk134, 2);
         } else {
-            state->f1 = 1;
-            func_800DB5DC(state, state->destination.raw, 256);
+            arg0->unk1 = 1;
+            func_800DB5DC(arg0, arg0->unk134, 256);
         }
+
         return 1;
+
     case 4:
-        return func_800DB61C(state, 0);
+        return func_800DB61C(arg0, 0);
+
     case 7:
-        func_800D82CC((void*)state);
+        func_800D82CC(arg0);
         id = 0;
         flag = 1;
-        if ((state->targets[id].bytes[0] >> 6) == 3) {
+
+        if (arg0->unk1A4[id].unk0_6 == 3) {
             distance = 640;
             goto move;
         }
         break;
     }
+
     return 0;
 }
 
@@ -831,80 +830,6 @@ int func_800DA1D4(func_800E78F4_t* arg0)
     return 0;
 }
 
-typedef struct {
-    unsigned int unk0, unk4, distance, flagsC;
-} da4bcEntry;
-
-typedef struct {
-    char pad0[14];
-    unsigned char flagE, flagF;
-    char pad10[6];
-    signed int target16 : 8;
-    char pad17;
-    unsigned char flag18;
-    char pad19[27];
-    unsigned int tile;
-    char pad38[12];
-    unsigned char timer44;
-    char pad45[7];
-    short x;
-    char pad4E[2];
-    short z;
-    char pad52[54];
-    unsigned char id;
-    char pad89[42];
-    unsigned char radius;
-    char padB4[53];
-    unsigned char mode;
-    char padEA[68];
-    unsigned char action;
-    char pad12F[2];
-    unsigned char pending;
-    char pad132[42];
-    unsigned char target15C;
-    char pad15D[71];
-    unsigned int targets[16];
-    unsigned int distances[16];
-    char pad224[524];
-    da4bcEntry* entries[16];
-} da4bcState;
-
-typedef union {
-    unsigned int raw;
-    unsigned char b[4];
-} da4bcPoint;
-
-typedef struct {
-    char pad0[28];
-    short x;
-    char pad1E[2];
-    short z;
-    char pad22[58];
-    vs_battle_movementTile tile;
-} da4bcModel;
-
-typedef struct {
-    unsigned int pad0 : 6, mode : 2, pad8 : 12, category : 7, pad27 : 1, oldMode : 2,
-        pad30 : 2;
-} da4bcTargetBits;
-
-typedef struct {
-    char pad[0x1A4];
-    da4bcTargetBits targets[16];
-} da4bcTargetState;
-
-typedef struct da4bcActor {
-    struct da4bcActor* next;
-    int id;
-} da4bcActor;
-
-typedef struct {
-    unsigned int target : 4, pad : 28;
-} da4bcEntryTarget;
-
-void func_800E50A0(void*, int, int);
-void func_800E1388(func_800D8400_t*, vs_battle_movementTile, int, unsigned int);
-
 int func_800DA4BC(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 {
     if (func_800DB8AC(arg0, arg1)) {
@@ -979,94 +904,88 @@ int func_800DA6A4(func_800E78F4_t* arg0)
     return func_800DA1D4(arg0);
 }
 
-int func_800DA738(da4bcState* state)
+int func_800DA738(func_800E78F4_t* arg0)
 {
-    da4bcPoint point;
-    int oldFlag, candidate;
-    unsigned char* pointPtr;
-    int centerX, centerZ;
-    int angleA, angleB, cosA, cosB, sinA, dot;
-    vs_battle_movementTile tile;
-    unsigned int valid;
-    int target;
+    vs_battle_movementPosition point;
     int active = 0;
-    da4bcModel** models;
-    da4bcModel* first;
-    da4bcModel* second;
+    int old;
+    int candidate = func_800DBB2C(arg0, &point, 3);
+    int target = arg0->unk16;
+    int valid = candidate >= 0;
 
-    candidate = func_800DBB2C(state, &point, 3);
-    target = state->target16;
-    valid = (unsigned int)~candidate >> 31;
-    if (state->id != target && target != 16) {
-        if (((da4bcState**)0x1F80037C)[target]) {
-            active = ((unsigned char)state->targets[target] >> 6) == 2;
-        }
+    if (arg0->unk88 != target && target != 16 && ((func_800E78F4_t**)0x1F80037C)[target]
+        && arg0->unk1A4[target].unk0_6 == 2) {
+        active = 1;
     }
-    oldFlag = state->flagF;
-    state->flagF = active;
-    if (valid) {
-        if (active) {
-            if ((state->targets[target] >> 5) & 1) {
-                models = (da4bcModel**)&D_800F4538[target];
-                first = *models;
-                pointPtr = point.b;
-                tile = first->tile;
-                angleA = ratan2((point.b[0] << 7) - (centerX = first->x - 64),
-                    (point.b[2] << 7) - (centerZ = first->z - 64));
-                second = *models;
-                angleB = ratan2(state->x - second->x, state->z - second->z);
-                cosA = rcos(angleA);
-                cosB = rcos(angleB);
-                sinA = rsin(angleA);
-                dot = cosA * cosB + sinA * rsin(angleB);
-                dot >>= 12;
-                if (state->timer44) {
-                    state->timer44--;
-                }
-                if (dot >= -1200 || state->timer44) {
-                    func_800E1388((void*)state, tile,
-                        ratan2(point.b[0] - (tile.raw & 255),
-                            pointPtr[2] - ((tile.raw >> 16) & 255)),
-                        320);
-                    ((unsigned char*)state)[1] = 1;
-                    func_800E50A0(state, 0, 0);
-                    if (!state->timer44) {
-                        state->timer44 = 10;
-                    }
-                    return 1;
-                }
+
+    old = arg0->unkF;
+    arg0->unkF = active;
+
+    if (valid && active && arg0->unk1A4[target].unk0_5) {
+        int x;
+        int z;
+        vs_battle_movementPosition tile = ((func_800E1238_t*)D_800F4538[target])->unk5C;
+        int angle =
+            ratan2(point.x * 128 - (x = D_800F4538[target]->unk0.position.vx - 64),
+                point.z * 128 - (z = D_800F4538[target]->unk0.position.vz - 64));
+        int heading = ratan2(arg0->unk4C.vx - D_800F4538[target]->unk0.position.vx,
+            arg0->unk4C.vz - D_800F4538[target]->unk0.position.vz);
+        int cosAngle = rcos(angle);
+        int cosHeading = rcos(heading);
+        int sinAngle = rsin(angle);
+        int dot = cosAngle * cosHeading + sinAngle * rsin(heading);
+
+        dot >>= 12;
+
+        if (arg0->unk44) {
+            --arg0->unk44;
+        }
+
+        if (dot >= -1200 || arg0->unk44) {
+            func_800E1388(arg0, tile, ratan2(point.x - tile.x, point.z - tile.z), 320);
+            arg0->unk1 = 1;
+            func_800E50A0(arg0, 0, 0);
+
+            if (!arg0->unk44) {
+                arg0->unk44 = 10;
             }
-        } else {
-            goto fallback;
+
+            return 1;
         }
     }
+
     if (active) {
         if (valid
-            && ((da4bcState**)0x1F80037C)[target]->distances[candidate] <= 0x23FFF) {
-            state->target15C = target;
-            func_800E2CCC((void*)state);
+            && ((func_800E78F4_t**)0x1F80037C)[target]->unk1E4[candidate] < 384 * 384) {
+            arg0->unk15C = target;
+            func_800E2CCC(arg0);
             return 1;
         }
-        if (func_800DB370((void*)state, target, 320, 1)) {
+
+        if (func_800DB370(arg0, target, 320, 1)) {
             return 1;
         }
-        if (func_800DB74C((void*)state, target)) {
+
+        if (func_800DB74C(arg0, target)) {
             return 1;
         }
     }
-fallback:
+
     if (valid) {
-        if (oldFlag) {
-            if ((unsigned int)func_800E45D4(128) < 128) {
-                state->flag18 = 1;
+        if (old) {
+            if (func_800E45D4(128) < 128u) {
+                arg0->unk18 = 1;
             }
-            func_800D8260((void*)state, 6, 0);
+
+            func_800D8260(arg0, 6, 0);
         }
-        if (func_800DB61C((void*)state, 1)) {
+
+        if (func_800DB61C(arg0, 1)) {
             return 1;
         }
     }
-    return func_800DB61C((void*)state, 1);
+
+    return func_800DB61C(arg0, 1);
 }
 
 int func_800DAA6C(func_800E78F4_t* arg0)
@@ -1288,8 +1207,9 @@ void func_800DAED0(void)
                     } else {
                         height = -64;
                     }
-                    state->distance = func_800E4624(state->position,
-                        ((actionDispatchActor*)vs_battle_actors[0])->model->position,
+                    state->distance = func_800E4624((SVECTOR*)state->position,
+                        (SVECTOR*)((actionDispatchActor*)vs_battle_actors[0])
+                            ->model->position,
                         state->height, height);
                     func_800DAD9C((void*)state);
                 } else {
@@ -1315,114 +1235,85 @@ void func_800DAED0(void)
     }
 }
 
-typedef union {
-    u_int raw;
-    struct {
-        u_char x, y, z, status;
-    } p;
-} stuckMovementPosition;
-
-typedef struct {
-    char unk0[2];
-    u_char stuck;
-    char unk3[0x19];
-    u_char unk1C;
-    char unk1D[0x17];
-    stuckMovementPosition position;
-    stuckMovementPosition previous;
-    char unk3C[0x10];
-    short x;
-    char unk4E[2];
-    short z;
-    char unk52[0xA8];
-    u_char detourStep;
-    u_char unkFB;
-    char unkFC[0x1C];
-    u_char detourDirections[4];
-    char unk11C[0x40];
-    u_char unk15C;
-    char unk15D[0xB];
-    stuckMovementPosition destination;
-} stuckMovementState;
-
-int func_800DB0BC(stuckMovementState* state)
+int func_800DB0BC(func_800E78F4_t* arg0)
 {
-    u_char directions[4];
-    u_int probe;
-    u_int angle;
-    u_int quadrant;
-    int first;
-    int second;
-    int i;
-
-    if (D_800F5920 == NULL) {
-        if ((state->position.raw & 0xFF00FF) == (state->previous.raw & 0xFF00FF)) {
-            state->stuck = 1;
-            if (state->detourStep == 0) {
-                angle = ratan2(state->x - state->destination.p.x * 128 - 64,
-                    state->z - state->destination.p.z * 128 - 64);
-                angle &= 0xFFF;
-                first = (angle >> 9) & 7;
-                second = ((angle >> 9) + 2) & 7;
-                quadrant = angle >> 10;
-                if (((angle & 0x3FF) > 512 ? ((quadrant + 1) & 3) * 2 : quadrant * 2)
-                    == first) {
-                    directions[0] = first;
-                    directions[1] = second;
-                } else {
-                    directions[0] = second;
-                    directions[1] = first;
-                }
-                if (func_800E45D4(2)) {
-                    directions[2] = (first + 4) & 7;
-                    directions[3] = (second + 4) & 7;
-                } else {
-                    directions[2] = (second + 4) & 7;
-                    directions[3] = (first + 4) & 7;
-                }
-                *(u_int*)state->detourDirections = *(u_int*)directions;
-                probe = 0;
-                for (i = 0; i < 4; ++i) {
-                    ((u_char*)&probe)[0] = state->position.p.x
-                                         + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dx;
-                    ((u_char*)&probe)[2] = state->position.p.z
-                                         + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dz;
-                    if (func_800D954C(
-                            (func_800E78F4_t*)state, *(vs_battle_movementPosition*)&probe)
-                        > 0) {
-                        state->detourStep = i;
-                        break;
-                    }
-                }
-                state->detourStep++;
-            }
-            if (state->detourStep >= 5) {
-                func_800E4CE8((void*)state);
-                state->unk1C = 0;
-                state->detourStep = 0;
-                return 0;
-            }
-            state->destination.p.x =
-                state->position.p.x
-                + ((D_800F16EC_t*)0x1F8003EC)[state->detourDirections[state->detourStep
-                                                                      - 1]]
-                      .dx;
-            state->destination.p.z =
-                state->position.p.z
-                + ((D_800F16EC_t*)0x1F8003EC)[state->detourDirections[state->detourStep
-                                                                      - 1]]
-                      .dz;
-            state->unk15C = state->unkFB;
-            if (func_800D954C((func_800E78F4_t*)state,
-                    *(vs_battle_movementPosition*)&state->destination)
-                > 0) {
-                func_800E50A0(state, 0, 0);
-            } else {
-                state->detourStep++;
-            }
-            return 1;
-        }
-        state->detourStep = 0;
+    if (D_800F5920 != NULL) {
+        return 0;
     }
+
+    if ((*(u_int*)&arg0->unk34 & 0xFF00FF) == (arg0->unk38 & 0xFF00FF)) {
+        arg0->unk2 = 1;
+
+        if (!arg0->unkFA) {
+            u_char directions[4];
+            vs_battle_movementPosition probe;
+            u_int angle = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
+                arg0->unk4C.vz - arg0->unk168.z * 128 - 64);
+            u_int quadrant;
+            int first;
+            int second;
+            int i;
+
+            angle &= 0xFFF;
+            first = (angle >> 9) & 7;
+            second = ((angle >> 9) + 2) & 7;
+            quadrant = angle / (ONE / 4);
+
+            if (((angle & 0x3FF) > ONE / 8 ? ((quadrant + 1) & 3) * 2 : quadrant * 2)
+                == first) {
+                directions[0] = first;
+                directions[1] = second;
+            } else {
+                directions[0] = second;
+                directions[1] = first;
+            }
+
+            if (func_800E45D4(2)) {
+                directions[2] = (first + 4) & 7;
+                directions[3] = (second + 4) & 7;
+            } else {
+                directions[2] = (second + 4) & 7;
+                directions[3] = (first + 4) & 7;
+            }
+
+            *(u_int*)arg0->unk118 = *(u_int*)directions;
+            *(u_int*)&probe = 0;
+
+            for (i = 0; i < 4; ++i) {
+                probe.x = arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dx;
+                probe.z = arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dz;
+
+                if (func_800D954C(arg0, probe) > 0) {
+                    arg0->unkFA = i;
+                    break;
+                }
+            }
+
+            ++arg0->unkFA;
+        }
+
+        if (arg0->unkFA >= 5) {
+            func_800E4CE8(arg0);
+            arg0->unk1C = 0;
+            arg0->unkFA = 0;
+            return 0;
+        }
+
+        arg0->unk168.x =
+            arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[arg0->unk118[arg0->unkFA - 1]].dx;
+        arg0->unk168.z =
+            arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[arg0->unk118[arg0->unkFA - 1]].dz;
+        arg0->unk15C = arg0->unkFB;
+
+        if (func_800D954C(arg0, arg0->unk168) > 0) {
+            func_800E50A0(arg0, 0, 0);
+        } else {
+            ++arg0->unkFA;
+        }
+
+        return 1;
+    }
+
+    arg0->unkFA = 0;
     return 0;
 }

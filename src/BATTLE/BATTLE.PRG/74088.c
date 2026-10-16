@@ -129,7 +129,8 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 5;
+    u_int unk0_1 : 4;
+    u_int unk0_5 : 1;
     u_int unk0_6 : 2;
     u_int unk0_8 : 7;
     u_int unk0_15 : 5;
@@ -138,6 +139,13 @@ typedef struct {
     u_int unk0_28 : 2;
     u_int unk0_30 : 2;
 } func_800DA1D4_t;
+
+typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
 
 typedef struct {
     int unk0;
@@ -151,41 +159,47 @@ typedef struct {
     SVECTOR unk1C;
     char unk24[2];
     short unk26;
-    char unk28[0x588];
+    char unk28[0x34];
+    vs_battle_movementPosition unk5C;
+    char unk60[0x550];
     u_int unk5B0_0 : 4;
     u_int unk5B0_4 : 1;
 } func_800E1238_t;
 
-typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
-
 typedef struct func_800E78F4_t {
-    char unk0[2];
+    char unk0;
+    u_char unk1;
     u_char unk2;
-    char unk3[4];
+    u_char unk3;
+    u_char unk4;
+    u_char unk5;
+    char unk6;
     u_char unk7;
-    char unk8;
+    u_char unk8;
     u_char unk9;
-    char unkA[4];
+    char unkA[3];
+    u_char unkD;
     u_char unkE;
-    char unkF[4];
+    u_char unkF;
+    char unk10[3];
     u_char unk13;
     char unk14[2];
     int unk16 : 8;
     u_char unk17;
-    char unk18[3];
+    u_char unk18;
+    char unk19;
+    u_char unk1A;
     u_char unk1B;
-    char unk1C[4];
+    u_char unk1C;
+    char unk1D[3];
     u_char unk20;
     u_char unk21;
     char unk22[4];
     u_char unk26;
     u_char unk27;
-    char unk28[3];
+    char unk28;
+    u_char unk29;
+    char unk2A;
     u_char unk2B;
     u_char unk2C;
     char unk2D[3];
@@ -193,7 +207,10 @@ typedef struct func_800E78F4_t {
     char unk31[3];
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[0x10];
+    char unk3C[8];
+    u_char unk44;
+    char unk45[3];
+    vs_battle_movementPosition unk48;
     SVECTOR unk4C;
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
@@ -202,7 +219,8 @@ typedef struct func_800E78F4_t {
     short unk82;
     char unk84[4];
     u_char unk88;
-    char unk89[5];
+    char unk89[3];
+    u_short unk8C;
     u_short unk8E;
     char unk90[2];
     u_short unk92;
@@ -211,19 +229,32 @@ typedef struct func_800E78F4_t {
     u_short unk9A;
     char unk9C[0x17];
     u_char unkB3;
-    char unkB4[4];
+    int unkB4;
     short unkB8;
-    char unkBA[4];
+    u_short unkBA;
+    char unkBC[2];
     short unkBE;
-    char unkC0[0x10];
+    u_short unkC0;
+    u_short unkC2;
+    int unkC4;
+    char unkC8[8];
     short unkD0;
-    char unkD2[0x15];
+    u_short unkD2;
+    u_short unkD4;
+    u_short unkD6;
+    u_char unkD8;
+    char unkD9[0xE];
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
-    char unkEA[0x11];
+    char unkEA[0x10];
+    u_char unkFA;
     u_char unkFB;
-    char unkFC[0x20];
+    char unkFC[0xC];
+    vs_battle_movementPosition unk108;
+    u_char unk10C;
+    char unk10D[0xB];
+    u_char unk118[4];
     vs_battle_movementPosition unk11C;
     char unk120[0xA];
     u_char unk12A;
@@ -233,7 +264,8 @@ typedef struct func_800E78F4_t {
     signed char unk12F;
     signed char unk130;
     u_char unk131;
-    char unk132[6];
+    char unk132[2];
+    vs_battle_movementPosition unk134;
     u_short unk138;
     u_short unk13A;
     u_short unk13C;
@@ -248,12 +280,14 @@ typedef struct func_800E78F4_t {
     u_short unk15E;
     char unk160[8];
     vs_battle_movementPosition unk168;
-    char unk16C[0x10];
+    char unk16C[4];
+    vs_battle_movementPosition unk170;
+    char unk174[8];
     int unk17C;
     int unk180;
     int unk184;
     short unk188;
-    short unk18A;
+    int unk18A : 16;
     char unk18C[0xE];
     u_char unk19A;
     char unk19B[5];
@@ -267,6 +301,8 @@ typedef struct func_800E78F4_t {
     func_800DCAA0_t unk2F0[16];
     func_800DCAA0_t* unk430[16];
     int unk470;
+    char unk474[0xD];
+    u_char unk481;
 } func_800E78F4_t;
 
 typedef struct {
@@ -385,7 +421,8 @@ typedef struct {
 } D_800F58C8_t;
 
 typedef struct {
-    char unk0[2];
+    u_char unk0;
+    u_char unk1;
     u_char unk2;
     char unk3;
     u_char unk4[8];
@@ -421,10 +458,13 @@ short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+int D_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
 void func_800DB5B0(func_800E78F4_t*);
+void func_800DB5B8(func_800E78F4_t*, vs_battle_movementPosition, int);
+void func_800DB5DC(func_800E78F4_t*, vs_battle_movementPosition, int);
 void func_800DB5FC(func_800E78F4_t*);
 int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
@@ -451,10 +491,14 @@ void func_800DC810(func_800DEEA4_t*);
 void func_800DC888(func_800DC888_t*);
 void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
+int func_800DFBCC(func_800E78F4_t*, int, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
+void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
+int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
 void func_800E2CCC(func_800E78F4_t*);
 void func_800E3600(func_800E78F4_t*, int, int);
+int func_800E4180(func_800E78F4_t*, int, int, int);
 void func_800E4288(void*, int);
 int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
@@ -462,6 +506,7 @@ int func_800E42EC(int, int);
 int func_800E4320(int, int);
 int func_800E45D4(int);
 u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
+int func_800E4624(SVECTOR*, SVECTOR*, int, int);
 u_int func_800E4660(int, int, int);
 int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
@@ -469,11 +514,13 @@ void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
+void func_800E4BB8(func_800E78F4_t*);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
 int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
+void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);

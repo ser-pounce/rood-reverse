@@ -2,6 +2,7 @@
 #include "40564.h"
 #include "146C.h"
 #include "3A1A0.h"
+#include "44F14.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
@@ -12,7 +13,7 @@ typedef struct {
 } func_800AAE9C_t;
 
 typedef struct {
-    int unk0;
+    u_char* unk0;
     u_char* unk4;
     u_short unk8[0];
 } func_800AD494_t;
@@ -34,8 +35,6 @@ typedef struct {
 void func_8007A824(DR_MOVE*);
 int func_8008D2C0(func_8008D2C0_t*);
 short func_8008DA24(int, int);
-void func_800A0204(int, int, int, int);
-void func_800A1280(int, int, SVECTOR*, int);
 void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
@@ -1043,7 +1042,7 @@ void func_800AA698(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AA82C(int arg0, short arg1, int arg2) { func_800AA984(arg0, arg1, arg2); }
 
-void func_800AA850(int arg0, u_short arg1, int arg2)
+void func_800AA850(int arg0, short arg1, int arg2)
 {
     short temp_a1;
     short var_v1;
@@ -1978,18 +1977,18 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 
     case 2:
         if (arg1->unk0.unk1A == 0) {
-            int temp_a1;
+            u_short facing;
 
             func_800A0204(arg0, 1, 0, 8);
 
-            temp_a1 = (u_short)arg1->unk5EC.pad;
+            facing = arg1->unk5EC.pad;
 
-            if (temp_a1 != 0x8000) {
-                temp_a1 = temp_a1 & 0xFFF;
+            if (facing != 32768) {
+                facing = facing & 0xFFF;
                 if ((arg1->unk5AC_2 << 2) == 0) {
-                    func_800A9EB4(arg0, temp_a1, arg1->unk5C6);
+                    func_800A9EB4(arg0, facing, arg1->unk5C6);
                 } else {
-                    func_800AA850(arg0, temp_a1, arg1->unk5C6);
+                    func_800AA850(arg0, facing, arg1->unk5C6);
                 }
             }
             arg1->unk5AC_0 = 0;
@@ -1998,7 +1997,6 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
     }
 }
 
-void func_800AC690(int arg0, D_800F45E0_t* arg1);
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
 
 void func_800ACF54(D_800F45E0_t* arg0)
@@ -2014,39 +2012,149 @@ void func_800ACF54(D_800F45E0_t* arg0)
     arg0->unk52 = arg0->unk26;
 }
 
-void func_800ACFA0(short* arg0, u_char* arg1, int arg2)
+inline void func_800ACFA0(SVECTOR* arg0, u_char* arg1, int arg2)
 {
     int a3;
     a3 = arg1[0];
     a3 <<= 8;
     a3 |= arg1[1];
     a3 *= 2;
-    arg0[0] = a3;
+    arg0->vx = a3;
 
     a3 = arg1[2];
     a3 <<= 8;
     a3 |= arg1[3];
     a3 *= 2;
-    arg0[1] = a3;
+    arg0->vy = a3;
 
     a3 = arg1[4];
     a3 <<= 8;
     a3 |= arg1[5];
     a3 *= 2;
-    arg0[2] = a3;
+    arg0->vz = a3;
 
-    arg0[3] = 6;
+    arg0->pad = 6;
 
     if (arg2 != 0xFF) {
-        arg0[3] = 0;
+        arg0->pad = 0;
     }
 
-    arg0[339] = 0;
+    arg0 += 84;
+    arg0->pad = 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AD008);
+void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
+{
+    u_short* header;
+    func_800AD494_t* anim;
+    u_char* data;
+    SVECTOR* key;
+    int frame;
+    int i;
 
-int func_800AD494(void* arg0, int arg1, u_short** arg2)
+    if (actor->unk5AC_23) {
+        func_800AE47C(actor);
+    }
+
+    actor->unk5AC_23 = 0;
+    pose->unk540 = 0;
+    pose->unk549 = 0;
+    *(int*)&pose->unk150[41].vx = 0;
+    *(int*)&pose->unk150[41].vz = 0;
+    pose->unk3F0[41].pad = 0;
+    anim = func_800AD494(actor, actor->animationId, &header);
+
+    if (anim == NULL) {
+        return;
+    }
+
+    if (header[2] == 0) {
+        pose->unk542 = 0xFFFF;
+    } else {
+        data = anim->unk0;
+        data += header[2];
+        i = data[0];
+
+        if (i == 255) {
+            i = data[1] + 255;
+            data += 2;
+        } else {
+            ++data;
+        }
+
+        pose->unk542 = i;
+        pose->unk544 = data;
+    }
+
+    pose->unk548_16 = 0;
+    pose->unk548 = actor->animationId;
+
+    if (header[4] != 0) {
+        key = &pose->unk150[41];
+        data = anim->unk0;
+        data += header[4];
+        func_800ACFA0(key, data, 0xFF);
+    }
+
+    frame = ((u_char*)header)[2];
+
+    if (frame != 255) {
+        header = (u_short*)((u_char*)anim->unk8 + (actor->unk0.nBones * 4 + 10) * frame);
+    }
+
+    key = &pose->unk0[41];
+    data = anim->unk0;
+    data += header[3];
+    func_800ACFA0(key, data, frame);
+
+    for (i = 0; i < actor->unk0.nBones; ++i) {
+        key = &pose->unk0[i];
+        data = anim->unk0;
+        data += header[5 + i];
+        func_800ACFA0(key, data, frame);
+    }
+
+    if (((u_char*)header)[3] & 1) {
+        for (i = 0; i < actor->unk0.nBones; ++i) {
+            data = anim->unk0;
+            data += header[actor->unk0.nBones + i + 5];
+
+            if (data[0] == 254 && data[1] == 1) {
+                data += 2;
+                key = &pose->unk150[i];
+                func_800ACFA0(key, data, frame);
+                pose->unk150[i].pad = 0;
+                pose->unk150[i].vx >>= 1;
+                pose->unk150[i].vy >>= 1;
+                pose->unk150[i].vz >>= 1;
+
+                if (frame == 255) {
+                    pose->unk150[i].pad = 8;
+                }
+            } else {
+                pose->unk150[i].vx = data[0];
+                pose->unk150[i].vy = data[1];
+                pose->unk150[i].vz = data[2];
+                pose->unk150[i].pad = 0;
+
+                if (frame == 255) {
+                    pose->unk150[i].pad = 3;
+                }
+            }
+
+            pose->unk3F0[i].pad = 0;
+        }
+    } else {
+        for (i = 0; i < actor->unk0.nBones; ++i) {
+            *(int*)&pose->unk150[i].vx = 0x400040;
+            *(int*)&pose->unk150[i].vz = 0x40;
+            pose->unk150[i].pad = 0;
+            pose->unk3F0[i].pad = 0;
+        }
+    }
+}
+
+void* func_800AD494(void* arg0, int arg1, u_short** arg2)
 {
     D_800F4538_t* actor = arg0;
     func_800AD494_t* p;
@@ -2113,7 +2221,8 @@ int func_800AD494(void* arg0, int arg1, u_short** arg2)
     } else {
         *arg2 = &p->unk8[(((actor->unk0.nBones * 4) + 10) * idx) >> 1];
     }
-    return (int)p;
+
+    return p;
 }
 
 void func_800AD62C(int arg0, int* arg1, int* arg2)

@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800F9AE8);
+#define VS_TILED_RING_FUNCTION func_800F9AE8
+#define VS_TILED_RING_COLORS D_800FFD98
+#include "src/EFFECT/tiledRings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FA9E0);
 

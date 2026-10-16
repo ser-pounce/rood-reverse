@@ -16,7 +16,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FB4D8);
 
 INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FBA18);
 
-INCLUDE_ASM("build/src/EFFECT/PLG165.BIN/nonmatchings/F8", func_800FC8D0);
+#define VS_GRID_FUNCTION func_800FC8D0
+#include "src/EFFECT/grids.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FD420
 #define VS_CLOSED_RING_COLORS D_800FE390

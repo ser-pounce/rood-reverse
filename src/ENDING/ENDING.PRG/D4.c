@@ -98,7 +98,7 @@ static int _renderElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _parseCreditsScript(void);
 static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
-void func_8006AF64(void);
+int func_8006AF64(void);
 static int _drawScreen(u_long*);
 static void func_8006B884(void);
 static int _ease(short mode, short currentStep, short totalSteps);
@@ -151,6 +151,13 @@ extern u_char D_800DBB28[4][16];
 extern short D_800DBB68;
 extern short D_800DBB6A;
 extern u_short D_800DBB6C;
+extern u_char* D_800DBB70;
+extern u_char* D_800DBB74;
+extern u_char* D_800DBB78;
+extern u_char D_800DBB7C;
+extern u_char D_800DBB7D;
+extern u_short D_800DBB7E;
+extern u_short D_800DBB80;
 extern _creditsElement _creditsElements[];
 extern u_char D_800DC188;
 extern u_char D_800DC189;
@@ -162,7 +169,7 @@ extern short _scrollSpeed;
 extern short D_800DC19A;
 extern u_short D_800DC19C;
 extern void* D_800DC1A0;
-extern func_8006A9C0_t2* D_800DC1A4;
+extern void* D_800DC1A4;
 extern void* D_800DC1A8[];
 extern u_int _rank;
 extern int _clearCount;
@@ -1303,7 +1310,81 @@ static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
     D_800DC1A4 = arg0;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
+int func_8006AF64(void)
+{
+    short i;
+
+    if (D_800DB72C == 0) {
+        return 0;
+    }
+
+    if (D_800DB72C == 1) {
+        D_800DB72C = 2;
+        D_800DBB74 = D_800DC1A0;
+        D_800DBB78 = D_800DC1A4;
+    }
+
+    while (1) {
+        u_char op;
+
+        if (VSync(1) - D_800DC19A > 200) {
+            return 0;
+        }
+
+        op = *D_800DBB74;
+
+        if (!(op & 0x80)) {
+            if (op == 127) {
+                D_800DB72C = 0;
+                return 1;
+            }
+
+            if (op == 125) {
+                ++D_800DBB74;
+                D_800DBB7E = *D_800DBB74++;
+                D_800DBB7C = *D_800DBB74++;
+
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = D_800DBB7C;
+                }
+            } else if (op == 126) {
+                ++D_800DBB74;
+                D_800DBB7E = *D_800DBB74++;
+                D_800DBB7C = *D_800DBB74++;
+                D_800DBB7D = *D_800DBB74++;
+
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = D_800DBB7C;
+                    *D_800DBB78++ = D_800DBB7D;
+                }
+            } else {
+                D_800DBB7E = *D_800DBB74++;
+
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = *D_800DBB74++;
+                }
+            }
+        } else {
+            D_800DBB7E = ((op >> 4) & 7) + 3;
+            D_800DBB80 = ((D_800DBB74[0] & 0xF) << 8) + D_800DBB74[1];
+            D_800DBB74 += 2;
+            D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+
+            for (i = 0; i < D_800DBB7E; ++i) {
+                *D_800DBB78++ = *D_800DBB70++;
+            }
+
+            while (*D_800DBB74 == 124) {
+                D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+                ++D_800DBB74;
+
+                for (i = 0; i < D_800DBB7E; ++i) {
+                    *D_800DBB78++ = *D_800DBB70++;
+                }
+            }
+        }
+    }
+}
 
 static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
 {

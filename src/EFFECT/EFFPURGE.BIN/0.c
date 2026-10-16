@@ -8,6 +8,7 @@
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
 #include "src/EFFECT/PLG260.BIN/0.h"
+#include "src/EFFECT/PLG273.BIN/0.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
@@ -539,7 +540,7 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     func_800F9800, vs_effect_plg260, NULL, func_800F9910, func_800FA4A8, func_800FB0CC,
     func_800FDA1C, func_800F9AE8, func_800FBD60, func_800FDBAC, func_800FFB04,
     func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0,
-    func_800FCE78, func_800F9818, func_800FA368, func_800FB2D8, func_800F9800,
+    func_800FCE78, func_800F9818, func_800FA368, func_800FB2D8, vs_effect_plg273,
     func_800FB338, func_800FB5CC, func_800FC11C, func_800FB320, func_800FB4D0,
     func_800FBA18, func_800FC568, func_800F9818, func_800FA48C, func_800FB3FC,
     func_800FBF4C, func_800F9910, func_800FBF94, func_800FC228, func_800FD198,
@@ -891,7 +892,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800F9818(NULL, 2, 0);
     func_800FA368(NULL, 2, 0);
     func_800FB2D8(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
+    vs_effect_plg273(NULL, 2, 0);
     func_800FB338(NULL, 2, 0);
     func_800FB5CC(NULL, 2, 0);
     func_800FC11C(NULL, 2, 0);

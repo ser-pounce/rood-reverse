@@ -34,7 +34,9 @@ void func_800FF54C(
 
 INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FA490);
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FB400);
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
+#define VS_ROTATING_SURFACE_FUNCTION func_800FB400
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_GRID_FUNCTION func_800FC2BC
 #include "src/EFFECT/grids.h"

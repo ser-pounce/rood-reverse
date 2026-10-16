@@ -32,9 +32,14 @@ void func_800FF54C(
 #define VS_SURFACE_TEXTURE_COLUMNS 4
 #include "src/EFFECT/surfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FA490);
+#define VS_CLOSED_RING_FUNCTION func_800FA490
+#define VS_CLOSED_RING_COLORS D_80100770
+#define VS_CLOSED_RING_TEXTURE_COLUMNS 4
+#include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FB400);
+#define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
+#define VS_ROTATING_SURFACE_FUNCTION func_800FB400
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_GRID_FUNCTION func_800FC2BC
 #include "src/EFFECT/grids.h"

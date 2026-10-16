@@ -4390,7 +4390,7 @@ int func_800BEC30(void)
     return 1;
 }
 
-short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
+short func_800BEC58(short type, int arg1, int arg2, short mode)
 {
     char buf[64];
     func_8006EBF8_t position;
@@ -4581,7 +4581,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
                     otherActorId = func_800BFE50(vs_battle_getShort(p + 3));
 
                     if (actorId != 1 && otherActorId != 1 && arg1 == actorId
-                        && (u_long)arg2 == otherActorId) {
+                        && arg2 == otherActorId) {
                         result = 1;
                     }
                 }
@@ -4611,7 +4611,7 @@ short func_800BEC58(short type, int arg1, u_char* arg2, short mode)
                 break;
 
             case 8:
-                if (mode == 1 && arg2[0] == p[1] && arg2[2] == p[2]) {
+                if (mode == 1 && ((u_char*)arg2)[0] == p[1] && ((u_char*)arg2)[2] == p[2]) {
                     result = 1;
                 }
 

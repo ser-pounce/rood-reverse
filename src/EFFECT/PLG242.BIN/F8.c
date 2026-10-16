@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG242.BIN/nonmatchings/F8", func_800F98F8);
+#define VS_TILED_RING_FUNCTION func_800F98F8
+#define VS_TILED_RING_COLORS D_800FD460
+#include "src/EFFECT/tiledRings.h"
 
 #define VS_GRID_FUNCTION func_800FA7F0
 #include "src/EFFECT/grids.h"

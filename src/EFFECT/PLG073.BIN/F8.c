@@ -20,7 +20,8 @@ INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FC590);
 
 INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FCFEC);
 
-INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FD534);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FD534
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_GRID_FUNCTION func_800FE3EC
 #include "src/EFFECT/grids.h"

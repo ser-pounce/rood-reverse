@@ -5,7 +5,8 @@
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG086.BIN/nonmatchings/F8", func_800FA868);
+#define VS_ROTATING_SURFACE_FUNCTION func_800FA868
+#include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_GRID_FUNCTION func_800FB720
 #include "src/EFFECT/grids.h"

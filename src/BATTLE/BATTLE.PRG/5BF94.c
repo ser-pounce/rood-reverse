@@ -6285,9 +6285,9 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
         arg0->unk34.vy = arg0->unk2C.vy;
         arg0->unk34.vz = arg0->unk2C.vz;
     }
-    arg1->unkC = arg0->unk98.vx + arg0->unk34.vx * ONE;
-    arg1->unk10 = arg0->unk98.vy + arg0->unk34.vy * ONE;
-    arg1->unk14 = arg0->unk98.vz + arg0->unk34.vz * ONE;
+
+    setVector(&arg1->motion.position, arg0->unk98.vx + arg0->unk34.vx * ONE,
+        arg0->unk98.vy + arg0->unk34.vy * ONE, arg0->unk98.vz + arg0->unk34.vz * ONE);
 }
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2ADC);
@@ -6585,7 +6585,51 @@ void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D52A4);
+void func_800D52A4(func_800D2904_t* node)
+{
+    VECTOR direction;
+    int drag = D_800F5618;
+    int gravityX = D_800F5620.unk0;
+    int gravityY = D_800F5620.unk4;
+    int gravityZ = D_800F5620.unk8;
+
+    for (; node != NULL; node = node->next) {
+        func_800D52A4_t* motion = &node->motion;
+        int scale = motion->mass - drag;
+
+        motion->velocity.vx =
+            (motion->velocity.vx * scale + motion->force.vx * ONE) / motion->mass
+            + ((gravityX * motion->gravityScale) >> 12);
+        motion->position.vx += motion->velocity.vx;
+        motion->velocity.vy =
+            (motion->velocity.vy * scale + motion->force.vy * ONE) / motion->mass
+            + ((gravityY * motion->gravityScale) >> 12);
+        motion->position.vy += motion->velocity.vy;
+        motion->velocity.vz =
+            (motion->velocity.vz * scale + motion->force.vz * ONE) / motion->mass
+            + ((gravityZ * motion->gravityScale) >> 12);
+        motion->position.vz += motion->velocity.vz;
+        scale = node->unk70;
+
+        if (scale != 0) {
+            setVector(&direction, node->unk62[0] - (motion->position.vx >> 12),
+                node->unk62[1] - (motion->position.vy >> 12),
+                node->unk62[2] - (motion->position.vz >> 12));
+
+            if (direction.vx != 0 || direction.vy != 0 || direction.vz != 0) {
+                VectorNormal(&direction, &direction);
+                setVector(&direction, (direction.vx * scale) >> 12,
+                    (direction.vy * scale) >> 12, (direction.vz * scale) >> 12);
+            }
+
+            applyVector(&motion->force, motion->acceleration.vx + direction.vx,
+                motion->acceleration.vy + direction.vy, motion->acceleration.vz + direction.vz,
+                +=);
+        } else {
+            addVector(&motion->force, &motion->acceleration);
+        }
+    }
+}
 
 void* _getPFileBlock3section(pFileBlock3* arg0, int arg1)
 {

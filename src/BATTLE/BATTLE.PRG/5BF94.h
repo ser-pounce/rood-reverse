@@ -359,17 +359,31 @@ typedef struct {
     actionEffectRequest* unkD0;
 } D_800F569C_t;
 
+typedef struct {
+    int vx;
+    int vy;
+    int vz;
+} func_800D52A4_t2;
+
+typedef struct {
+    short mass;
+    short gravityScale;
+    func_800D52A4_t2 position;
+    func_800D52A4_t2 velocity;
+    func_800D52A4_t2 force;
+    func_800D52A4_t2 acceleration;
+} func_800D52A4_t;
+
 typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
-    char unk8[4];
-    int unkC;
-    int unk10;
-    int unk14;
-    VECTOR unk18;
-    u_char unk28[0x14];
+    func_800D52A4_t motion;
     int unk3C[8];
-    char unk5C[0x1B];
+    char unk5C[6];
+    short unk62[3];
+    char unk68[8];
+    int unk70;
+    u_char unk74[3];
     u_char unk77;
 } func_800D2904_t;
 

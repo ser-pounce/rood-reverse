@@ -3475,7 +3475,7 @@ int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
         }
 
         arg0->unk10C = 0;
-        goto failed;
+        return 0;
     }
 
     angle = ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180);
@@ -3501,11 +3501,11 @@ int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
 
             arg0->unk10C = 0;
             goto failed;
+        } else {
+            arg0->unk10C = 1;
+            arg0->unk18A = angle & 0xFFF;
+            arg0->unk108 = arg0->unk168;
         }
-
-        arg0->unk10C = 1;
-        arg0->unk18A = angle & 0xFFF;
-        arg0->unk108 = arg0->unk168;
     }
 
     func_800DEEFC(arg0, 4);

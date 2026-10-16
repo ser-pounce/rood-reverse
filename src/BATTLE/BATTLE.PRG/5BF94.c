@@ -409,6 +409,7 @@ void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
 u_short func_800D5198(D_800F53B8_t*);
 int func_800D51D8(D_800F53B8_t* arg0);
+void func_800D52A4(func_800D2904_t*);
 void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
@@ -430,6 +431,7 @@ void func_800D67C4(D_800F53B8_t*, u_char);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
+void func_800D6E24(func_800D2904_t*, void*);
 void func_800D7890(int);
 void func_800D78B8(void);
 void func_800D78CC(void);
@@ -6187,7 +6189,7 @@ func_800D2904_t* func_800D27F0(D_800F53B8_t* arg0)
         func_800CE644(0x14);
     }
 
-    func_800D6CCC(node->unk3C);
+    func_800D6CCC((int*)&node->unk3C);
 
     node->unk77 = 0xFF;
     node->previous = NULL;
@@ -6443,8 +6445,41 @@ int func_800D4BD0(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4C18(D_800F53B8_t* arg0);
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D4C18);
+int func_800D4C18(D_800F53B8_t* arg0)
+{
+    func_800D2904_t* next = arg0->unk18;
+    func_800D2904_t* node;
+
+    func_800D52A4(next);
+    func_800D6E24(arg0->unk18, (void*)0x1F80015C);
+
+    for (node = next; next != NULL; node = next) {
+        next = node->next;
+        ++node->unk77;
+
+        if (node->tickEvent != 0) {
+            func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, node);
+        }
+
+        if (node->lifetime == -1) {
+            if (node->unk3C.unk6 == 0) {
+                if (node->endEvent != 0) {
+                    func_800D2ADC(arg0, node->endEvent - 1, 0, 0, node);
+                }
+
+                func_800D2888(node, arg0);
+            }
+        } else if (--node->lifetime == 0) {
+            if (node->endEvent != 0) {
+                func_800D2ADC(arg0, node->endEvent - 1, 0, 0, node);
+            }
+
+            func_800D2888(node, arg0);
+        }
+    }
+
+    return 1;
+}
 
 int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
 {
@@ -7311,4 +7346,4 @@ void func_800D6D24(func_800D6CF_t* arg0)
     }
 }
 
-void func_800D6E24(void) { func_800D6E44(); }
+void func_800D6E24(func_800D2904_t* node, void* arg1) { func_800D6E44(node); }

@@ -40,7 +40,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     CVECTOR colors[3];
     u_char columnUV[9];
     u_char rowUV[3];
-    func_800FB4C0_t child;
+    func_800D2904_t child;
     vs_ringState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
@@ -302,10 +302,10 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 gte_ldv0(&scratch->unk2C);
                 gte_rtv0tr2();
                 gte_stlvnl(&scratch->unk34);
-                setVector(&child.unkC, scratch->unk34.vx * ONE, scratch->unk34.vy * ONE,
+                setVector(&child.motion.position, scratch->unk34.vx * ONE, scratch->unk34.vy * ONE,
                     scratch->unk34.vz * ONE);
             } else {
-                setVector(&child.unkC, scratch->unk98.vx * ONE, scratch->unk98.vy * ONE,
+                setVector(&child.motion.position, scratch->unk98.vx * ONE, scratch->unk98.vy * ONE,
                     scratch->unk98.vz * ONE);
             }
 

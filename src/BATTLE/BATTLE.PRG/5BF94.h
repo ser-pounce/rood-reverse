@@ -378,10 +378,16 @@ typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
     func_800D52A4_t motion;
-    int unk3C[8];
-    char unk5C[6];
+    func_800D6CF_t unk3C;
+    char unk5C[4];
+    u_char unk60;
+    char unk61;
     short unk62[3];
-    char unk68[8];
+    short lifetime;
+    char unk6A[2];
+    u_char endEvent;
+    u_char tickEvent;
+    char unk6E[2];
     int unk70;
     u_char unk74[3];
     u_char unk77;
@@ -460,14 +466,6 @@ typedef struct D_800F53B8_t {
     func_800CE714_t2_2 unk1C[16];
     D_800F53B8_t3 unkD1C;
 } D_800F53B8_t;
-
-typedef struct {
-    u_char unk0[0xC];
-    VECTOR unkC;
-    u_char unk1C[0x44];
-    u_char unk60;
-    u_char unk61[23];
-} func_800FB4C0_t;
 
 enum vs_battle_limbStatus {
     limbStatusCritical,
@@ -662,7 +660,7 @@ void vs_battle_splineInterpolate(
 
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
-void func_800D2ADC(D_800F53B8_t*, int, int, int, func_800FB4C0_t*);
+void func_800D2ADC(D_800F53B8_t*, int, int, int, func_800D2904_t*);
 void func_800D6CCC(int* arg0);
 void func_800D6CF0(func_800D6CF_t* arg0, int textureIndex, int arg2);
 

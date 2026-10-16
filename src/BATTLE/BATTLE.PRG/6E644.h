@@ -42,7 +42,7 @@ struct func_800D4910_t {
 
 void func_800D2698(int);
 void func_800D8038(int);
-void func_800D6E44(void);
+void func_800D6E44(void*);
 void func_800D7814(void);
 void func_800D78F0(void);
 void vs_battle_configurePlg(int, int, int);

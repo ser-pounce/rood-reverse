@@ -22,4 +22,5 @@ INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FCFEC);
 
 INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FD534);
 
-INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FE3EC);
+#define VS_GRID_FUNCTION func_800FE3EC
+#include "src/EFFECT/grids.h"

@@ -1,3 +1,8 @@
 #include "common.h"
+#include <libapi.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcard/CARD", _card_clear);
+long _card_clear(long chan)
+{
+    _new_card();
+    return _card_write(chan, 0x3F, NULL);
+}

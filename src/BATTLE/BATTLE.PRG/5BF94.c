@@ -20,10 +20,12 @@
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
 #include "vs_string.h"
 #include "gpu.h"
+#include "vs_inline_c.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
 #include <abs.h>
+#include <inline_c.h>
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -241,19 +243,6 @@ typedef struct {
 } D_800F54B8_t;
 
 typedef struct {
-    VECTOR position;
-    VECTOR lookAt;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int roll;
-    int nearClip;
-    int projectionDistance;
-    int farClip;
-} D_800F54D8_t;
-
-typedef struct {
     int count;
     short offsets[0];
 } pFileBlock11;
@@ -306,6 +295,8 @@ typedef struct {
     func_800C5798_t* unk44;
     char unk48[0x948];
     func_800C56C0_t2 unk990[24];
+    char unkB70[0x3EE4];
+    char textBuffer[200];
 } func_800C56C0_t;
 
 typedef struct {
@@ -376,6 +367,7 @@ void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
 void func_800D1930(void);
 void func_800D1B18(D_800F54D8_t*);
 void func_800D1B80(D_800F54D8_t*);
+void func_800D52A4(func_800D2904_t*);
 void func_800D206C(void);
 void func_800D21C0(void);
 void func_800D236C(void);
@@ -535,6 +527,53 @@ extern int D_800F5610;
 extern int D_800F5618;
 extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
+
+typedef struct {
+    u_char unk0[0x34];
+    u_char unk34;
+    u_char unk35;
+    char unk36[0x42];
+    MATRIX unk78;
+    char unk98[0x26];
+    short unkBE;
+} func_800D0C60_t;
+typedef struct {
+    char unk0[0x10];
+    actionEffectTarget unk10[16];
+} func_800D6048_t;
+typedef union {
+    SVECTOR vec;
+    int words[2];
+} func_800C4794_t;
+typedef struct {
+    u_short flags;
+    u_char pad2[3];
+    u_char curve;
+    u_char pad6[4];
+    u_short mode;
+    u_char padC[2];
+    u_char limit;
+    u_char padF;
+    u_short unk10;
+    u_short shape12;
+} func_800D0548_arg0;
+typedef struct {
+    u_int unk60_0 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 20;
+} func_800D2904_flags;
+int func_800C1D84(void);
+extern u_char D_800EABAA;
+extern char D_800EA984[];
+extern char D_800EA9B6[];
+extern char D_800EAA54[];
+extern int D_800EBCEC[];
+extern int D_800EBD14[];
+extern u_int D_800EBD3C[];
+extern u_short D_800EBD64;
+extern int D_800EC328;
+extern u_char D_800F5238;
+extern D_800F53B8_t3 D_800F5234;
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -954,7 +993,279 @@ char* _getStatusString(uint arg0)
     return (char*)&vs_battle_statusStrings[VS_statusStrings_OFFSET_empty];
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800C58F8);
+int func_800C58F8(u_char* target)
+{
+    func_800C56C0_t2* item;
+    func_800C5798_t* entry;
+    int i;
+    int value;
+    int prev;
+    int type;
+
+    if (target == NULL) {
+        D_800EABAA = 0;
+        return 0;
+    }
+    if (D_800EABAA == 0) {
+        D_800EB9B8->unk34 = 0x808080;
+        vs_battle_initInformationTextBox(0);
+        func_800C51B4(2);
+        func_800C553C();
+        if (D_800EB9B8->unk2C == 0) {
+            D_800EABAA = 16;
+        }
+    }
+
+    *target = 0xFF;
+
+    if (D_800EABAA < 16) {
+        if ((D_800EABAA >= D_800F4CB1) && (D_800EABAA >= D_800F4CB0)) {
+            D_800EABAA = 18;
+        } else {
+            if (D_800EABAA < D_800F4CB1) {
+                i = D_800F4C70[0][D_800EABAA];
+                item = func_800C5798(i, 2, D_800EABAA);
+                if (D_800EABAA != 0) {
+                    prev = D_800F4C70[0][D_800EABAA - 1];
+                    if (D_800EB9B8->unk40[i].unk9 != D_800EB9B8->unk40[prev].unk9) {
+                        item->unk7 = 1 - D_800EB9B8->unk990[prev].unk7;
+                    } else {
+                        item->unk7 = D_800EB9B8->unk990[prev].unk7;
+                    }
+                }
+            }
+            if (D_800EABAA < D_800F4CB0) {
+                i = D_800F4C70[1][D_800EABAA];
+                item = func_800C5798(i, 3, D_800EABAA);
+                if (D_800EABAA != 0) {
+                    prev = D_800F4C70[1][D_800EABAA - 1];
+                    if (D_800EB9B8->unk40[i].unk9 != D_800EB9B8->unk40[prev].unk9) {
+                        item->unk7 = 1 - D_800EB9B8->unk990[prev].unk7;
+                    } else {
+                        item->unk7 = D_800EB9B8->unk990[prev].unk7;
+                    }
+                }
+            }
+        nextState:
+            ++D_800EABAA;
+        }
+    } else {
+        switch (D_800EABAA) {
+        case 16:
+            vs_battle_textBoxes[7].unk0.unk0_8 = 1;
+            vs_battle_setTextBox(7, (char*)&D_800EBDDC[D_800EBDDC[0]]);
+            if (vs_main_buttonsPressed.all & 0x60) {
+                vs_battle_playMenuLeaveSfx();
+                D_800EABAA = 17;
+            }
+            break;
+        case 17:
+            D_800EB9AC = D_800EB9B8->unk0[0].unk1 == 2;
+            D_800EABAA = 21;
+            break;
+        case 18:
+            if (func_800C1D84() == 0) {
+                break;
+            }
+            goto nextState;
+        case 19:
+            if (++D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] == 0x22) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0x12;
+            }
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 0;
+            if (vs_main_buttonsPressed.all & 0x40) {
+                vs_battle_playMenuLeaveSfx();
+                func_800C56C0();
+                D_800EB9AC = D_800EB9B8->unk0[0].unk1 == 2;
+                D_800EABAA = 21;
+                break;
+            }
+            *target = D_800EB9B8->unk2D;
+            if (vs_main_buttonsPressed.all & 0x20) {
+                func_800C56C0();
+                D_800EABAA = 20;
+                break;
+            }
+            value = D_800EB9B8->unk2D;
+            if (vs_main_buttonRepeat & 1) {
+                for (i = 0; i < D_800F4CB3; ++i) {
+                    if (D_800F4C98[i] == D_800EB9B8->unk40[value].unk9) {
+                        break;
+                    }
+                }
+                if (i != D_800F4CB3) {
+                    if (++i == D_800F4CB3) {
+                        if (D_800F4CB2 == 0) {
+                            goto selected;
+                        }
+                        goto firstOfRow1;
+                    }
+                    D_800EB9B8->unk2D = D_800F4CA8[i];
+                    goto selected;
+                }
+                for (i = 0; i < D_800F4CB2; ++i) {
+                    if (D_800F4C90[i] == D_800EB9B8->unk40[value].unk9) {
+                        break;
+                    }
+                }
+                if (++i == D_800F4CB2) {
+                    goto firstOfRow0;
+                }
+                D_800EB9B8->unk2D = D_800F4CA0[i];
+                goto selected;
+            }
+            for (i = 0; i < D_800F4CB1; ++i) {
+                if (D_800F4C70[0][i] == value) {
+                    break;
+                }
+            }
+            if (i != D_800F4CB1) {
+                if ((vs_main_buttonsPressed.all & 0x8000) && (D_800F4CB0 != 0)) {
+                    if (i >= D_800F4CB0) {
+                        i = D_800F4CB0 - 1;
+                    }
+                    goto row1;
+                }
+                do {
+                    if (vs_main_buttonRepeat & 0x1000) {
+                        if (i == 0) {
+                            if (D_800F4CB0 != 0) {
+                                goto lastOfRow1;
+                            }
+                            i = D_800F4CB1 - 1;
+                        } else {
+                            --i;
+                        }
+                    }
+                } while (0);
+                if (vs_main_buttonRepeat & 0x4000) {
+                    if (i != D_800F4CB1 - 1) {
+                        ++i;
+                    } else {
+                        i = 0;
+                        if (D_800F4CB0 != 0) {
+                            goto firstOfRow1;
+                        }
+                    }
+                }
+                D_800EB9B8->unk2D = D_800F4C70[0][i];
+                goto selected;
+            lastOfRow1:
+                D_800EB9B8->unk2D = D_800F4C70[1][D_800F4CB0 - 1];
+                goto selected;
+            firstOfRow1:
+                D_800EB9B8->unk2D = D_800F4C70[1][0];
+                goto selected;
+            lastOfRow0:
+                D_800EB9B8->unk2D = D_800F4C70[0][D_800F4CB1 - 1];
+                goto selected;
+            firstOfRow0:
+                D_800EB9B8->unk2D = D_800F4C70[0][0];
+                goto selected;
+            }
+            for (i = 0; i < D_800F4CB0; ++i) {
+                if (D_800F4C70[1][i] == value) {
+                    break;
+                }
+            }
+            if (vs_main_buttonsPressed.all & 0x2000) {
+                if (i >= D_800F4CB1) {
+                    i = D_800F4CB1 - 1;
+                }
+                D_800EB9B8->unk2D = D_800F4C70[0][i];
+                goto selected;
+            }
+            if (vs_main_buttonRepeat & 0x1000) {
+                if (i == 0) {
+                    goto lastOfRow0;
+                }
+                --i;
+            }
+            if (vs_main_buttonRepeat & 0x4000) {
+                if (i == D_800F4CB0 - 1) {
+                    goto firstOfRow0;
+                }
+                ++i;
+            }
+        row1:
+            D_800EB9B8->unk2D = D_800F4C70[1][i];
+        selected:
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 1;
+            if (value != D_800EB9B8->unk2D) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0;
+                vs_battle_playMenuChangeSfx();
+                func_800C51B4(3);
+            }
+            entry = &D_800EB9B8->unk40[D_800EB9B8->unk2D];
+            i = entry->unk9;
+            type = entry->unk8;
+            if (i >> 4) {
+                vs_battle_stringContext.strings[0] = (char*)&vs_battle_statusStrings
+                    [vs_battle_statusStrings[(i >> 5) + VS_statusStrings_INDEX_blocker]];
+            } else if (type == 16) {
+                vs_battle_stringContext.strings[0] = vs_battle_actors[i]->unk3C->name;
+            } else {
+                vs_battle_stringContext.strings[0] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings[type]];
+            }
+            for (value = 1; value < 6; ++value) {
+                vs_battle_stringContext.strings[value] = D_800EAA54;
+            }
+            value = entry->unkB;
+            if ((type == 16) && !(i >> 4) && (vs_battle_actors[i]->unk1C & 0x10)) {
+                value = 5;
+                vs_battle_stringContext
+                    .strings[1] = (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                        [(u_short)entry->unkE == 0 ? VS_statusStrings_INDEX_indestructable
+                                                   : VS_statusStrings_INDEX__3]];
+            } else if (value == 0x3A) {
+                value = 1;
+            } else if (value == 0x3B) {
+                value = 2;
+            } else if (value == 0x3E) {
+                value = 3;
+            } else if (value == 0x3F) {
+                value = 4;
+            } else {
+                vs_battle_stringContext.strings[1] = D_800EA9B6;
+                vs_battle_stringContext.strings[6] = _getStatusString(entry->unk10);
+                value = 0;
+            }
+            vs_battle_stringContext.strings[2] =
+                (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                        [entry->unk14 + VS_statusStrings_INDEX_indestructable]];
+            if (value != 0) {
+                if (value < 5) {
+                    vs_battle_stringContext.strings[1] =
+                        (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                                [VS_statusStrings_INDEX_mpTemplate - (value & 1)]];
+                    vs_battle_stringContext.strings[5] =
+                        (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                                [entry->unk17 + VS_statusStrings_INDEX_human]];
+                }
+                vs_battle_stringContext.strings[3] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unk15 + VS_statusStrings_INDEX_empty]];
+                vs_battle_stringContext.strings[4] =
+                    (char*)&vs_battle_statusStrings[vs_battle_statusStrings
+                            [entry->unk16 + VS_statusStrings_INDEX_physical]];
+            }
+            vs_battle_stringContext.integers[0] = *(u_short*)&entry->unkC;
+            vs_battle_stringContext.integers[1] = (u_short)entry->unkE;
+            vs_battle_printf(D_800EB9B8->textBuffer, D_800EA984);
+            vs_battle_setTextBox(7, D_800EB9B8->textBuffer);
+            break;
+        case 20:
+            *target = D_800EB9B8->unk2D;
+            // fallthrough
+        case 21:
+            vs_battle_dismissTextBox(7);
+            func_800C06E0();
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_800C64D0(u_long* arg0, int* arg1)
 {
@@ -2931,7 +3242,175 @@ void func_800C9FE8(void)
 }
 
 // https://decomp.me/scratch/NSW3O
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
+void func_800CA2DC(void)
+{
+    u_long* prim;
+    vs_battle_actor2* actor;
+    void* ot;
+    int i;
+    int j;
+    int k;
+    int rightX;
+    u_int flags;
+    u_int count;
+    int selected;
+
+    actor = vs_battle_characterState->unk3C;
+    ot = vs_scratch.unk4 - 4;
+    func_800C9FE8();
+
+    if (D_800EB9CC == 1) {
+        if ((u_char)D_800EB9CD < 4) {
+            D_800EBD64 = 0;
+            ++D_800EB9CD;
+        }
+    } else if (D_800EB9CD != 0) {
+        --D_800EB9CD;
+    }
+
+    if (D_800EB9CD != 0) {
+        prim = vs_battle_setSprite(0x140,
+            ((((u_char)D_800EB9CD * 3 - 4) << 16) - D_800EB9B0) | 0xEC, 0xA0049,
+            vs_scratch.unk4 - 0xC);
+        prim[1] = 0xE1000017;
+        k = rsin(D_800EBD64 & 0x7FF);
+        prim[4] = 0x373D0040;
+        prim[2] += k >> 5;
+        D_800EBD64 += vs_gametime_tickspeed * 64;
+    }
+
+    if (D_800EB9AF != 0) {
+        if (D_800EB9B0 == 0x200000) {
+            return;
+        }
+        D_800EB9B0 += 0x80000;
+    } else {
+        k = vs_battle_textBoxes[7].state;
+        if (!(vs_battle_lowerScreenUiState & 2)
+            && ((k == 0) || (k != vs_battle_textBoxes[7].unk22 + 1))) {
+            k = 0xB80008;
+            for (i = 0; i < 5; ++i) {
+                j = i + (D_800EB9CC & 1) * 5;
+                prim = vs_battle_setSpriteDefaultTexPage(
+                    0, k + D_800EBCEC[j], D_800EBD14[j], ot);
+                prim[2] = D_800EBC54[vs_battle_getLimbStatus(
+                              &vs_battle_characterState->unk3C->limbs[i])]
+                        | 0x64000000;
+                prim[4] = D_800EBD3C[j];
+            }
+        }
+        if (D_800EB9B0 != 0) {
+            D_800EB9B0 -= 0x80000;
+        }
+    }
+
+    _renderStatBar(0, actor->currentHP, actor->maxHP);
+    _renderStatBar(1, actor->currentMP, actor->maxMP);
+    if ((k = actor->risk) != 0) {
+        _renderStatBar(2, k, 100);
+    }
+    if (k == 0) {
+        vs_battle_renderTextRaw(
+            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.unk4 - 0xC);
+    }
+
+    if (D_800EB9AE != 0) {
+        return;
+    }
+
+    flags = vs_battle_getStatusFlags(actor);
+    count = 0;
+    selected = 0xFF;
+    for (j = 0; j < 32; ++j) {
+        if ((flags >> j) & 1) {
+            if (j == D_800EB9D0.u8[1]) {
+                selected = count;
+            }
+            ++count;
+        }
+    }
+    for (j = 0; j < 3; ++j) {
+        if (!((flags >> D_800EB9D0.u8[j]) & 1)) {
+            D_800EB9D0.u8[j] = 0xFF;
+        }
+    }
+
+    if (count == 0) {
+        return;
+    }
+
+    j = D_800EB9D0.u8[3];
+    if (j == 12) {
+        D_800EB9D0.u8[0] = D_800EB9D0.u8[1];
+        D_800EB9D0.u8[1] = D_800EB9D0.u8[2];
+        D_800EB9D0.u8[2] = 0xFF;
+        i = (D_800EB9D0.u8[1] + 1) & 0xFF;
+        for (k = 0; k < 32; ++k, ++i) {
+            i %= 32;
+            if (((flags >> i) & 1) && (i != D_800EB9D0.u8[1])) {
+                D_800EB9D0.u8[2] = i;
+                break;
+            }
+        }
+    }
+
+    k = 1; // dead store kept for codegen: count == 1 below is compared against this
+           // register
+    if ((D_800EB9D0.u8[0] == D_800EB9D0.u8[2]) && (D_800EB9D0.u8[1] != 0xFF)) {
+        if ((count == 1) && (j < 3)) {
+            j = 0;
+        }
+        if ((count == 2) && (D_800EB9D0.u8[0] != 0xFF) && ((u_int)(j - 12) < 3)) {
+            j = 12;
+        }
+    }
+
+    k = -8;
+    if (j >= 9) {
+        if (j < 12) {
+            k = 8 - j * 2;
+        } else {
+            k = 24 - j * 2;
+        }
+    }
+
+    if ((++j != D_800EB9D0.u8[3]) && (vs_gametime_tickspeed == 4)) {
+        j = (j + 1) & 0xE;
+    }
+    rightX = k + 16;
+    D_800EB9D0.u8[3] = j & 0xF;
+    func_800C9CB4(D_800EB9D0.u8[2], rightX, 1);
+    ot -= 4;
+    func_800C9CB4(D_800EB9D0.u8[1], k, 1);
+    func_800C9CB4(D_800EB9D0.u8[1], rightX, 0);
+    func_800C9CB4(D_800EB9D0.u8[0], k, 0);
+
+    k = 0x80000 - D_800EB9B0;
+    if (count < 3) {
+        for (i = 0; i < count; ++i) {
+            prim =
+                vs_battle_setSpriteDefaultTexPage(0x80, (0x94 + i * 3) | k, 0x40004, ot);
+            prim[4] = 0x37F40C1A;
+        }
+        return;
+    }
+
+    j = k + 0x30000;
+    if (selected != 0xFF) {
+        prim = vs_battle_setSprite(
+            0x80, ((selected & 7) * 3 + 0x94) | (!(selected & 8) ? k : j), 0x40004, ot);
+        prim[4] = 0x37F40C1A;
+    }
+    i = 25;
+    if (count < 9) {
+        i = count * 3 + 1;
+    } else {
+        prim = vs_battle_setSprite(0x80, j | 0x94, ((count - 8) * 3 + 1) | 0x40000, ot);
+        prim[4] = 0x37F40C00;
+    }
+    prim = vs_battle_setSpriteDefaultTexPage(0x80, k | 0x94, i | 0x40000, ot);
+    prim[4] = 0x37F40C00;
+}
 
 void func_800CA97C(void)
 {
@@ -6388,7 +6867,590 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
         arg0->unk98.vy + arg0->unk34.vy * ONE, arg0->unk98.vz + arg0->unk34.vz * ONE);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800D2ADC);
+/* Uniform integer between a and b (inclusive) using 30 random bits. */
+#define RAND_UNIFORM_WIDE(a, b)                                                    \
+    ((a) == (b)  ? (a)                                                             \
+     : (b) < (a) ? (rand() + (rand() << 16)) % ((a) - (b) + 1) + (b)               \
+                 : (rand() + (rand() << 16)) % ((b) - (a) + 1) + (a))
+
+void func_800D2ADC(
+    D_800F53B8_t* arg0, int event, int arg2, int arg3, func_800D2904_t* parent)
+{
+    int _[4] __attribute__((unused));
+    int frame;
+    int count;
+    int i;
+    int sample;
+    int step;
+    int angle;
+    int x;
+    int z;
+    int value;
+    func_800D2904_t* node;
+    func_800D2904_t* first;
+    MATRIX* matrix;
+    int prevX;
+    int prevZ;
+    int range;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg0* def = &D_800F569C->block5Data->unk4[event];
+
+    scratch->flags = def->flags;
+    scratch->unk28 = scratch->flags;
+    scratch->unk168 = def->unkC8;
+    scratch->unk16C = def->unkC9;
+
+    if (arg2 != 0) {
+        scratch->unk180 = arg2;
+    } else if (def->transparencyCurve != 0) {
+        scratch->unk180 = def->transparencyCurve;
+    } else if (parent != NULL) {
+        scratch->unk180 = parent->unk60;
+    } else {
+        scratch->unk180 = 4;
+    }
+
+    if (parent != NULL && arg3 == 0) {
+        arg3 = ((func_800D2904_flags*)&parent->unk60)->unk60_8 & 0xF;
+    }
+
+    frame = arg0->unk14_16;
+    sample = def->unk16;
+    if (frame % func_800CFE1C(def->unkC0, D_800F5330[sample]) != 0) {
+        return;
+    }
+
+    gte_zrtr();
+
+    matrix = &arg0->unk1C[scratch->unk168].world;
+    sample = def->unk15;
+    count = func_800CFE1C(def->unkBC, D_800F5330[sample]);
+    if (count + D_800F55F8 >= D_800F55F0) {
+        count = D_800F55F0 - D_800F55F8;
+    }
+
+    for (i = 0; i < count; ++i) {
+        node = func_800D27F0(arg0);
+        node->unk6A[0] = scratch->unk168;
+        node->unk6A[1] = scratch->unk16C;
+        func_800D6CF0(&node->unk3C, def->unk1, def->unk0);
+    }
+
+    sample = def->unk8;
+    vs_battle_lerpVector(def->unk18, D_800F5330[sample], &scratch->unk98);
+    first = node;
+
+    switch (scratch->flags & 7) {
+    case 0:
+        break;
+    case 1:
+        vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
+        break;
+    case 2:
+        scratch->unk98.vx += matrix->t[0];
+        scratch->unk98.vy += matrix->t[1];
+        scratch->unk98.vz += matrix->t[2];
+        break;
+    case 4:
+        if (parent != NULL) {
+            scratch->unk98.vx += parent->motion.position.vx >> 12;
+            scratch->unk98.vy += parent->motion.position.vy >> 12;
+            scratch->unk98.vz += parent->motion.position.vz >> 12;
+        }
+        break;
+    }
+
+    scratch->unk98.vx <<= 12;
+    scratch->unk98.vy <<= 12;
+    scratch->unk98.vz <<= 12;
+
+    sample = def->unk9;
+    vs_battle_lerpVector(def->unk24, D_800F5330[sample], &scratch->unkA8);
+    node = first;
+    sample = def->unk17;
+    sample = func_800CFE1C(def->unk30, D_800F5330[sample]);
+    SetRotMatrix(matrix);
+    gte_zrtr();
+
+    switch (scratch->flags & 0x38) {
+    case 0:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = (scratch->unkA8.vy * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            angle = rand();
+            scratch->unk174 = rsin(angle);
+            scratch->unk17C = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                scratch->unk2C.vy =
+                    vs_battle_randUniformInt(scratch->unkA8.vy, scratch->unkD8.vy);
+                scratch->unk2C.vz =
+                    vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                goto scale0;
+            case 0x800:
+            case 0x1000:
+                vs_battle_vecToSvec(&scratch->unkA8, &scratch->unk2C);
+            scale0:
+                scratch->unk2C.vx =
+                    (((scratch->unk2C.vx * scratch->unk178) >> 12) * scratch->unk17C)
+                    >> 12;
+                scratch->unk2C.vy =
+                    (((scratch->unk2C.vy * scratch->unk178) >> 12) * scratch->unk174)
+                    >> 12;
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 8:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = (scratch->unkA8.vy * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                angle = rand();
+                if (angle & 1) {
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                } else {
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(-scratch->unkA8.vx, -scratch->unkD8.vx);
+                }
+                if (angle & 2) {
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, scratch->unkD8.vy);
+                } else {
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(-scratch->unkA8.vy, -scratch->unkD8.vy);
+                }
+                if (angle & 4) {
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                } else {
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(-scratch->unkA8.vz, -scratch->unkD8.vz);
+                }
+                break;
+            case 0x800:
+                switch (rand() % 6) {
+                case 0:
+                    scratch->unk2C.vx = scratch->unkA8.vx;
+                    goto face_x;
+                case 1:
+                    scratch->unk2C.vx = -scratch->unkA8.vx;
+                face_x:
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
+                    break;
+                case 2:
+                    scratch->unk2C.vy = scratch->unkA8.vy;
+                    goto face_y;
+                case 3:
+                    scratch->unk2C.vy = -scratch->unkA8.vy;
+                face_y:
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    scratch->unk2C.vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
+                    break;
+                case 4:
+                    scratch->unk2C.vz = scratch->unkA8.vz;
+                    goto face_z;
+                case 5:
+                    scratch->unk2C.vz = -scratch->unkA8.vz;
+                face_z:
+                    scratch->unk2C.vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    scratch->unk2C.vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    break;
+                }
+                break;
+            case 0x1000:
+                D_800EC328 = (D_800EC328 + 1) & 7;
+                scratch->unk2C.vx =
+                    (D_800EC328 & 1) ? scratch->unkA8.vx : -scratch->unkA8.vx;
+                scratch->unk2C.vy =
+                    (D_800EC328 & 2) ? scratch->unkA8.vy : -scratch->unkA8.vy;
+                scratch->unk2C.vz =
+                    (D_800EC328 & 4) ? scratch->unkA8.vz : -scratch->unkA8.vz;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 16:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vy = scratch->unkA8.vy;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_battle_randUniformInt(scratch->unkA8.vx, scratch->unkD8.vx);
+                scratch->unk2C.vz =
+                    vs_battle_randUniformInt(scratch->unkA8.vz, scratch->unkD8.vz);
+                goto scale16;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale16:
+                scratch->unk2C.vy = vs_gte_rsqrt(
+                    RAND_UNIFORM_WIDE(scratch->unkA8.vy * scratch->unkA8.vy, 0));
+                scratch->unk2C.vx =
+                    (((scratch->unk2C.vx * scratch->unk178) >> 12) * scratch->unk2C.vy)
+                    / scratch->unkA8.vy;
+                scratch->unk2C.vz =
+                    (((scratch->unk2C.vz * scratch->unk170) >> 12) * scratch->unk2C.vy)
+                    / scratch->unkA8.vy;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 24:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vx * scratch->unkA8.vx,
+                        scratch->unkD8.vx * scratch->unkD8.vx));
+                scratch->unk2C.vz =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vz * scratch->unkA8.vz,
+                        scratch->unkD8.vz * scratch->unkD8.vz));
+                goto scale24;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale24:
+                scratch->unk2C.vx = (scratch->unk2C.vx * scratch->unk178) >> 12;
+                scratch->unk2C.vy = vs_battle_randUniformInt(scratch->unkA8.vy, 0);
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 32:
+        scratch->unkD8.vx = (scratch->unkA8.vx * sample) >> 12;
+        scratch->unkD8.vz = (scratch->unkA8.vz * sample) >> 12;
+        for (i = 0; i < count; ++i) {
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            switch (scratch->flags & 0x1800) {
+            case 0:
+                scratch->unk2C.vx =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vx * scratch->unkA8.vx,
+                        scratch->unkD8.vx * scratch->unkD8.vx));
+                scratch->unk2C.vz =
+                    vs_gte_rsqrt(RAND_UNIFORM_WIDE(scratch->unkA8.vz * scratch->unkA8.vz,
+                        scratch->unkD8.vz * scratch->unkD8.vz));
+                goto scale32;
+            case 0x800:
+            case 0x1000:
+                scratch->unk2C.vx = scratch->unkA8.vx;
+                scratch->unk2C.vz = scratch->unkA8.vz;
+            scale32:
+                scratch->unk2C.vy = 0;
+                scratch->unk2C.vx = (scratch->unk2C.vx * scratch->unk178) >> 12;
+                scratch->unk2C.vz = (scratch->unk2C.vz * scratch->unk170) >> 12;
+                break;
+            }
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+
+    case 40:
+        scratch->unk184 = 4;
+        scratch->unk188 = 4;
+        goto ring;
+
+    case 48:
+        scratch->unk184 = def->unkCA;
+        if (scratch->unk184 == 0) {
+            scratch->unk184 = 1;
+        }
+        scratch->unk188 = def->unkCB;
+        if (scratch->unk188 == 0) {
+            scratch->unk188 = scratch->unk184;
+        }
+    ring:
+        step = ONE / scratch->unk184;
+        if ((scratch->flags & 0x1800) != 0x1000) {
+            D_800EC328 %= scratch->unk188;
+            angle = D_800EC328 * step + 0x200;
+            prevX = (rcos(angle) * scratch->unkA8.vx) >> 12;
+            prevZ = (rsin(angle) * scratch->unkA8.vz) >> 12;
+        }
+        for (i = 0; i < count; ++i) {
+            range = 0x1194 - sample;
+            D_800EC328 = (D_800EC328 + 1) % scratch->unk188;
+            angle = D_800EC328 * step + 0x200;
+            x = (rcos(angle) * scratch->unkA8.vx) >> 12;
+            z = (rsin(angle) * scratch->unkA8.vz) >> 12;
+            if ((scratch->flags & 0x1800) == 0x1000) {
+                scratch->unk2C.vx = x;
+                scratch->unk2C.vz = z;
+            } else {
+                value = rand() >> 3;
+                scratch->unk2C.vx = (((x - prevX) * value) >> 12) + prevX;
+                scratch->unk2C.vz = (((z - prevZ) * value) >> 12) + prevZ;
+                prevX = x;
+                prevZ = z;
+                if ((scratch->flags & 0x1800) != 0x800) {
+                    value = SquareRoot12(((rand() * range) >> 15) + sample);
+                    if (value > ONE) {
+                        value = ONE;
+                    }
+                    scratch->unk2C.vx = (scratch->unk2C.vx * value) >> 12;
+                    scratch->unk2C.vz = (scratch->unk2C.vz * value) >> 12;
+                }
+            }
+            scratch->unk2C.vy = 0;
+            func_800D2A38(scratch, node);
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unkC;
+    vs_battle_lerp2DVector(def->unk94[2], D_800F5330[sample], scratch->unk118);
+    scratch->unk118[0] <<= 5;
+    scratch->unk118[1] <<= 5;
+    sample = def->unkB;
+    vs_battle_lerpVector(def->unk34[1], D_800F5330[sample], &scratch->unkC8);
+    sample = def->unkA;
+    vs_battle_lerpVector(def->unk34[0], D_800F5330[sample], &scratch->unkE8);
+    node = first;
+
+    switch (scratch->flags & 0xE000) {
+    case 0x4000:
+        if (arg0->unkD1C.unkC.type == 4) {
+            func_800A1AF8(((u_char*)&arg0->unkD1C.unkC.value)[0],
+                ((u_char*)&arg0->unkD1C.unkC.value)[2], &scratch->unk2C, 0);
+        } else {
+            scratch->unk2C = arg0->unkD1C.unkC.value.position;
+        }
+        goto aim;
+    case 0x6000:
+        if (arg0->unkD1C.unk24.type == 4) {
+            func_800A1AF8(((u_char*)&arg0->unkD1C.unk24.value)[0],
+                ((u_char*)&arg0->unkD1C.unk24.value)[2], &scratch->unk2C, 0);
+        } else {
+            scratch->unk2C = arg0->unkD1C.unk24.value.position;
+        }
+    aim:
+        vs_battle_svecToVec(&scratch->unk2C, &scratch->unk34);
+        scratch->unk44.vx = scratch->unk98.vx >> 12;
+        scratch->unk44.vy = scratch->unk98.vy >> 12;
+        scratch->unk44.vz = scratch->unk98.vz >> 12;
+        vs_battle_lookAt(&scratch->unk44, &scratch->unk34, &scratch->unk64);
+        matrix = &scratch->unk64;
+    case 0:
+        for (i = 0; i < count; ++i) {
+            scratch->unk2C.vx =
+                scratch->unkE8.vx
+                + vs_battle_randUniformInt(scratch->unkC8.vx, -scratch->unkC8.vx);
+            scratch->unk2C.vy =
+                scratch->unkE8.vy
+                + vs_battle_randUniformInt(scratch->unkC8.vy, -scratch->unkC8.vy);
+            scratch->unk2C.vz =
+                scratch->unkE8.vz
+                + vs_battle_randUniformInt(scratch->unkC8.vz, -scratch->unkC8.vz);
+            RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
+            gte_SetRotMatrix(scratch);
+            *(int*)&scratch->unk2C = 0;
+            scratch->unk2C.vz = ONE;
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            if (scratch->flags & 0x40000) {
+                vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
+                gte_SetRotMatrix(matrix);
+                ApplyRotMatrix(&scratch->unk2C, &scratch->unkB8);
+            }
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            node->motion.velocity.vx = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->motion.velocity.vy = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->motion.velocity.vz = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node = node->next;
+        }
+        break;
+    case 0x8000:
+        for (i = 0; i < count; ++i) {
+            scratch->unk2C.vx =
+                scratch->unkE8.vx
+                + vs_battle_randUniformInt(scratch->unkC8.vx, -scratch->unkC8.vx);
+            scratch->unk2C.vy =
+                scratch->unkE8.vy
+                + vs_battle_randUniformInt(scratch->unkC8.vy, -scratch->unkC8.vy);
+            scratch->unk2C.vz =
+                scratch->unkE8.vz
+                + vs_battle_randUniformInt(scratch->unkC8.vz, -scratch->unkC8.vz);
+            RotMatrix_gte(&scratch->unk2C, (MATRIX*)scratch);
+            gte_SetRotMatrix(scratch);
+            *(int*)&scratch->unk2C = 0;
+            scratch->unk2C.vz = ONE;
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            gte_SetRotMatrix(matrix);
+            vs_battle_vecToSvec(&scratch->unkB8, &scratch->unk2C);
+            RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            node->motion.velocity.vx = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->motion.velocity.vy = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->motion.velocity.vz = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node = node->next;
+        }
+        break;
+    case 0x2000:
+        for (i = 0; i < count; ++i) {
+            scratch->unkB8.vx = (scratch->unk98.vx - node->motion.position.vx) >> 12;
+            scratch->unkB8.vy = (scratch->unk98.vy - node->motion.position.vy) >> 12;
+            scratch->unkB8.vz = (scratch->unk98.vz - node->motion.position.vz) >> 12;
+            scratch->unk120 =
+                vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
+            if (scratch->unkB8.vx != 0 || scratch->unkB8.vy != 0
+                || scratch->unkB8.vz != 0) {
+                VectorNormal(&scratch->unkB8, &scratch->unkB8);
+                node->motion.velocity.vx = (scratch->unkB8.vx * scratch->unk120) >> 12;
+                node->motion.velocity.vy = (scratch->unkB8.vy * scratch->unk120) >> 12;
+                node->motion.velocity.vz = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            } else {
+                node->motion.velocity.vy = scratch->unk120;
+                node->motion.velocity.vz = 0;
+                node->motion.velocity.vx = 0;
+            }
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unkD;
+    vs_battle_lerpSvector(def->unk34[2], D_800F5330[sample], &scratch->unkF8);
+    vs_battle_lerpSvector(def->unk34[3], D_800F5330[sample], &scratch->unk100);
+    sample = def->unkE;
+    vs_battle_lerpSvector(def->unk34[4], D_800F5330[sample], &scratch->unk108);
+    vs_battle_lerpSvector(def->unk34[5], D_800F5330[sample], &scratch->unk110);
+    node = first;
+    for (i = 0; i < count; ++i) {
+        node->motion.force.vx =
+            vs_battle_randUniformInt(scratch->unkF8.vx, scratch->unk100.vx);
+        node->motion.force.vy =
+            vs_battle_randUniformInt(scratch->unkF8.vy, scratch->unk100.vy);
+        node->motion.force.vz =
+            vs_battle_randUniformInt(scratch->unkF8.vz, scratch->unk100.vz);
+        node->motion.acceleration.vx =
+            vs_battle_randUniformInt(scratch->unk108.vx, scratch->unk110.vx);
+        node->motion.acceleration.vy =
+            vs_battle_randUniformInt(scratch->unk108.vy, scratch->unk110.vy);
+        node->motion.acceleration.vz =
+            vs_battle_randUniformInt(scratch->unk108.vz, scratch->unk110.vz);
+        node = node->next;
+    }
+
+    sample = def->unk12;
+    vs_battle_lerp2DVector(def->unk94[0], D_800F5330[sample], scratch->unk124);
+    sample = def->unk13;
+    vs_battle_lerp2DVector(def->unk94[1], D_800F5330[sample], scratch->unk12C);
+    sample = def->unk14;
+    vs_battle_lerp2DVector(def->unk94[4], D_800F5330[sample], scratch->unk134);
+    node = first;
+    for (i = 0; i < count; ++i) {
+        node->motion.mass =
+            vs_battle_randUniformInt(scratch->unk124[0], scratch->unk124[1]);
+        node->motion.gravityScale =
+            vs_battle_randUniformInt(scratch->unk12C[0], scratch->unk12C[1]);
+        node->lifetime = vs_battle_randUniformInt(scratch->unk134[0], scratch->unk134[1]);
+        node = node->next;
+    }
+
+    sample = def->unkF;
+    vs_battle_lerpSvector(def->unk34[6], D_800F5330[sample], &scratch->unk13C);
+    sample = def->unk10;
+    vs_battle_lerpSvector(def->unk34[7], D_800F5330[sample], &scratch->unk144);
+    node = first;
+
+    switch (scratch->flags & 0x1C0) {
+    case 0:
+    case 0x40:
+        for (i = 0; i < count; ++i) {
+            node->unk62[0] = scratch->unk13C.vx;
+            node->unk62[1] = scratch->unk13C.vy;
+            node->unk62[2] = scratch->unk13C.vz;
+            node = node->next;
+        }
+        break;
+    case 0xC0:
+        for (i = 0; i < count; ++i) {
+            node->unk62[0] =
+                arg0->unk1C[scratch->unk16C].world.t[0] + scratch->unk13C.vx
+                + vs_battle_randUniformInt(scratch->unk144.vx, -scratch->unk144.vy);
+            node->unk62[1] =
+                arg0->unk1C[scratch->unk16C].world.t[1] + scratch->unk13C.vy
+                + vs_battle_randUniformInt(scratch->unk144.vy, -scratch->unk144.vy);
+            node->unk62[2] =
+                arg0->unk1C[scratch->unk16C].world.t[2] + scratch->unk13C.vz
+                + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz);
+            node = node->next;
+        }
+        break;
+    case 0x80:
+    case 0x140:
+        for (i = 0; i < count; ++i) {
+            node->unk62[2] = 0;
+            node->unk62[1] = 0;
+            node->unk62[0] = 0;
+            node = node->next;
+        }
+        break;
+    }
+
+    sample = def->unk11;
+    vs_battle_lerp2DVector(def->unk94[3], D_800F5330[sample], scratch->unk14C);
+    node = first;
+    scratch->unk154.packed = *(int*)&def->rCurve;
+    scratch->unk154.fields.age = node->unk77;
+    for (i = 0; i < count; ++i) {
+        *(int*)node->unk5C = scratch->flags;
+        value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
+        *(int*)node->unk74 = scratch->unk154.packed;
+        node->unk70 = value;
+        *(u_short*)&node->endEvent = *(u_short*)&def->unk2;
+        node->unk60 = scratch->unk180;
+        ((func_800D2904_flags*)&node->unk60)->unk60_8 = arg3;
+        node = node->next;
+    }
+}
 
 void func_800D46DC(int arg0, D_800F53B8_t* arg1)
 {

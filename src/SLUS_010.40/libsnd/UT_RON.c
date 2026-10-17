@@ -1,3 +1,5 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsnd/UT_RON", SsUtReverbOn);
+extern void _SpuInit(int mode);
+
+void SsUtReverbOn(void) { _SpuInit(1); }

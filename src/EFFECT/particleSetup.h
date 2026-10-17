@@ -2,6 +2,7 @@
  * particle. The overlay supplies the entry points and the corner counter. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 #include <rand.h>
@@ -212,3 +213,44 @@ void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
         addVector(point, &scratch->unk98);
     }
 }
+
+#ifdef VS_PARTICLE_TARGET_FUNCTION
+void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
+    D_800F53B8_t* battle, func_800FA098_arg3* state)
+{
+    int i;
+
+    vs_battle_lerpSvector(effect->unk34[6],
+        vs_battle_sampleCurve(effect->unkF, state->unkC), &scratch->unk13C);
+    vs_battle_lerpSvector(effect->unk34[7],
+        vs_battle_sampleCurve(effect->unk10, state->unkC), &scratch->unk144);
+
+    switch (scratch->flags & 0x1C0) {
+    case 0xC0:
+        applyVector(&scratch->unk13C, battle->unk1C[effect->unkC9].world.t[0],
+            battle->unk1C[effect->unkC9].world.t[1],
+            battle->unk1C[effect->unkC9].world.t[2], +=);
+        break;
+
+    case 0x80:
+        applyVector(&scratch->unk13C, D_800F5230.position.vx, D_800F5230.position.vy,
+            D_800F5230.position.vz, +=);
+        break;
+
+    case 0:
+        break;
+    }
+
+    for (i = 0; i < state->unk2; ++i) {
+        SVECTOR* target = &state->unk4[i * 4 + 3];
+
+        setVector(target,
+            scratch->unk13C.vx
+                + vs_battle_randUniformInt(scratch->unk144.vx, -scratch->unk144.vx),
+            scratch->unk13C.vy
+                + vs_battle_randUniformInt(scratch->unk144.vy, -scratch->unk144.vy),
+            scratch->unk13C.vz
+                + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz));
+    }
+}
+#endif

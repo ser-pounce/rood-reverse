@@ -374,8 +374,38 @@ void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg
     }
 }
 
+void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+{
+    int speed;
+    int i;
+
+    vs_battle_lerp2DVector(arg0->unk94[4], 0, arg1->unk134);
+
+    speed = func_800CFE1C(arg0->unk30, 0) * ONE;
+
+    for (i = 0; i < arg3->trailcount; ++i) {
+        int stepCount = vs_battle_randUniformInt(arg1->unk134[0], arg1->unk134[1]);
+
+        if (stepCount == 0) {
+            stepCount = 1;
+        }
+
+        arg3->trails[i].stepCount = stepCount;
+        arg3->trails[i].splineSampleCount = 1;
+        arg3->trails[i].trailCollapseCounter = TRAIL_SAMPLE_COUNT - 1;
+        arg3->trails[i].currentSplineSample = 0;
+        arg3->trails[i].splineSamples[0] = arg3->trails[i].splinePoints[0];
+        arg3->trails[i].splineProgress = 0;
+        arg3->trails[i].speed = speed;
+        arg3->trails[i].unk =
+            ((6 * ONE * ONE / (stepCount * stepCount)) - ((speed * 2) / stepCount));
+    }
+}
+
 #undef VS_TRAIL_ORIGIN_FUNCTION
 #undef VS_TRAIL_TARGET_FUNCTION
 #undef VS_TRAIL_CONTROL_FUNCTION
+#undef VS_TRAIL_INIT_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

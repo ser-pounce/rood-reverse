@@ -77,6 +77,32 @@ def decode_highcolor(width: int, height: int, colors: list[Img.Rgb5], output_pat
     img.save(output_path, pnginfo=info)
 
 
+def decode_tim(tim: Img.Tim, output_path: Path) -> None:
+    info = PngInfo()
+    info.add_text('tim_offset', f'{tim.rect.x},{tim.rect.y}')
+
+    if tim.has_clut:
+        clut = [c.raw for c in tim.clut.clut.colors]
+        info.add_text(
+            'tim_clut_rect',
+            ','.join(map(str, (tim.clut.rect.x, tim.clut.rect.y, tim.clut.rect.w, tim.clut.rect.h))),
+        )
+        info.add(b'clUb', struct.pack(f'<{len(clut)}H', *clut), after_idat=True)
+
+    if tim.mode == 2:
+        decode_highcolor(tim.rect.w, tim.rect.h, tim.indices.indices, output_path, info)
+    else:
+        bpp = 4 if tim.mode == 0 else 8
+        decode_grayscale(
+            bytes(tim.indices.indices),
+            tim.rect.w * 16 // bpp,
+            tim.rect.h,
+            bpp,
+            output_path,
+            info,
+        )
+
+
 CLUT_CHUNK_AFTER  = b'clUa'
 CLUT_CHUNK_BEFORE = b'clUb'
 

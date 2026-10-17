@@ -5,38 +5,22 @@ from pathlib import Path
 from typing import cast
 
 from PIL import Image
-from PIL.PngImagePlugin import PngInfo, PngImageFile
+from PIL.PngImagePlugin import PngImageFile
 
-from tools.kaitai.parsers.lib.img import Img
 from tools.kaitai.parsers.data.SMALL.img_dis import ImgDis
-from tools.libdata.img import decode_grayscale, decode_highcolor, encode_highColor, get_chunk, get_png_bit_depth, pack_4bpp
+from tools.libdata.img import (
+    decode_tim,
+    encode_highColor,
+    get_chunk,
+    get_png_bit_depth,
+    pack_4bpp,
+)
 
 
 # pypng: Can output 4/8 bit grascale .pngs, but doesn't offer a nice
 # interface for chunks.
 # Pillow: Has excellent chunk support but no 4/8 bit grayscale support.
 # Pillow wins on overall simplicity.
-
-
-def decode_clut(section: Img.Clutsection, info: PngInfo) -> None:
-    clut = [c.raw for c in section.clut.colors]
-    info.add_text('tim_clut_rect', ','.join(map(str, (section.rect.x, section.rect.y, section.rect.w, section.rect.h))))
-    info.add(b'clUb', struct.pack(f'<{len(clut)}H', *clut), after_idat=True)
-
-
-def decode_tim(tim: Img.Tim, output_path: Path) -> None:
-    info = PngInfo()
-    info.add_text('tim_offset', f'{tim.rect.x},{tim.rect.y}')
-
-    if tim.has_clut:
-        decode_clut(tim.clut, info)
-
-    if tim.mode == 2:
-        decode_highcolor(tim.rect.w, tim.rect.h, tim.indices.indices, output_path, info)
-        
-    else:
-        bpp = 4 if tim.mode == 0 else 8
-        decode_grayscale(bytes(tim.indices.indices), tim.rect.w * 16 // bpp, tim.rect.h, bpp, output_path, info)
 
 
 def parse_ints(raw: str | None, count: int) -> tuple[int, ...]:

@@ -3,7 +3,10 @@
 #define VS_ROTATING_SURFACE_FUNCTION func_800F98F8
 #include "src/EFFECT/rotatingSurfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FA7B0);
+#define VS_RING_FUNCTION func_800FA7B0
+#define VS_RING_COLORS D_800FEC68
+#define VS_RING_TRANSPOSED
+#include "src/EFFECT/rings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FB3D4);
 

@@ -23,7 +23,7 @@ segments:
     subsegments:
       - [0x0, .rodata, D4]
       - [0xD4, c]
-      - [0x5BFC, credits, credits]
+      - [0x5BFC, credits, _credits]
       - [0x777C, data]
       - [0x72F30, .data, illustLbas]
       - [0x72FB0, data]

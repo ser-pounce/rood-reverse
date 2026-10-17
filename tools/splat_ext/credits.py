@@ -3,7 +3,7 @@ from pathlib import Path
 from splat.segtypes.segment import Segment
 from splat.util import options
 
-from tools.data.ENDING.ENDING_PRG.credits import dump_credits
+from tools.data.ENDING.ENDING_PRG._credits import dump_credits
 
 
 class PSXSegCredits(Segment):

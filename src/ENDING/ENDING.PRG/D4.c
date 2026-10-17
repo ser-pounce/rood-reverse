@@ -120,7 +120,6 @@ static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
-extern u_char D_8006E3FC[];
 extern u_char _glyphWidths[];
 extern func_8006A9C0_t2 D_8007005C;
 extern func_8006A9C0_t2 D_8007709C;
@@ -997,6 +996,8 @@ static void func_8006A4D8(_creditsElement* element)
 
 void vs_ending_exec(void)
 {
+    extern u_char _credits[];
+
     vs_main_CdFile file;
     short i;
     vs_main_CdQueueSlot* slot;
@@ -1045,7 +1046,7 @@ void vs_ending_exec(void)
     DrawSync(0);
     SetDispMask(1);
 
-    _creditsBytestreamHead = D_8006E3FC;
+    _creditsBytestreamHead = _credits;
     _scrollSpeed = -128;
     D_800DC188 = 0;
     _textStreamDelay = 0;

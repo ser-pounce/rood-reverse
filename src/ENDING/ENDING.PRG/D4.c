@@ -117,44 +117,6 @@ static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
-extern int D_800DBB18;
-extern int D_800DBB1C;
-extern u_char D_800DBB28[4][16];
-extern short D_800DBB68;
-extern short D_800DBB6A;
-extern u_short D_800DBB6C;
-extern u_char* D_800DBB70;
-extern u_char* D_800DBB74;
-extern u_char* D_800DBB78;
-extern u_char D_800DBB7C;
-extern u_char D_800DBB7D;
-extern u_short D_800DBB7E;
-extern u_short D_800DBB80;
-extern _creditsElement _creditsElements[];
-extern u_char D_800DC188;
-extern u_char D_800DC189;
-extern u_char _skipInvoked;
-extern int D_800DC18C;
-extern int _textStreamDelay;
-extern u_char* _creditsBytestreamHead;
-extern short _scrollSpeed;
-extern short D_800DC19A;
-extern u_short D_800DC19C;
-extern void* D_800DC1A0;
-extern void* D_800DC1A4;
-extern void* D_800DC1A8[];
-extern u_int _rank;
-extern int _clearCount;
-extern u_int _score;
-extern int _mapCompletion;
-extern u_int _onScreenMapCompletion;
-extern int _onScreenScore;
-extern int _submenuState;
-extern int D_800DC20C;
-extern int D_800DC210;
-extern int _incrementingScore;
-extern int _incrementingMapCompletion;
-
 int func_800688D4(int angle)
 {
     int value = (int)_trig_table;
@@ -192,6 +154,11 @@ int func_800688D4(int angle)
 
 void _renderPhantomPain(_creditsElement* element)
 {
+    static int D_800DBB18;
+    static int D_800DBB1C;
+    static int _[2] __attribute__((unused));
+    static u_char D_800DBB28[4][16];
+
     SVECTOR rot;
     SVECTOR vertices[4];
     MATRIX matrix;
@@ -362,6 +329,19 @@ void _renderFin(_creditsElement* arg0)
     p[new_var] = sprt;
     p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
+
+static _creditsElement _creditsElements[32];
+static u_char D_800DC188;
+static u_char D_800DC189;
+static u_char _skipInvoked;
+static u_char _0 __attribute__((unused));
+static int D_800DC18C;
+static int _textStreamDelay;
+static u_char* _creditsBytestreamHead;
+static short _scrollSpeed;
+static short D_800DC19A;
+static u_short D_800DC19C;
+static u_short _1 __attribute__((unused));
 
 void _renderVagrantStory(_creditsElement* element)
 {
@@ -574,8 +554,17 @@ static _timData* D_800DB7B0 = &_illustSydney;
 static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
 
+static void* D_800DC1A0;
+static void* D_800DC1A4;
+static void* D_800DC1A8[16];
+
 static void _renderllustration(_creditsElement* element)
 {
+    static short D_800DBB68;
+    static short D_800DBB6A;
+    static u_short D_800DBB6C;
+    static u_short _ __attribute__((unused));
+
     SPRT* sprt;
     short temp_v0;
     void** p;
@@ -1316,6 +1305,15 @@ static void func_8006AF44(_timData* arg0, void* arg1)
 
 int func_8006AF64(void)
 {
+    static u_char* D_800DBB70;
+    static u_char* D_800DBB74;
+    static u_char* D_800DBB78;
+    static u_char D_800DBB7C;
+    static u_char D_800DBB7D;
+    static u_short D_800DBB7E;
+    static u_short D_800DBB80;
+    static u_char _[6] __attribute__((unused));
+
     short i;
 
     if (D_800DB72C == 0) {
@@ -1681,6 +1679,18 @@ static void _updateTitles(void)
     }
 }
 
+static vs_main_CdQueueSlot* cdSlot;
+static void* timData;
+static u_int _rank;
+static int _clearCount;
+static u_int _score;
+static int _mapCompletion;
+static u_int _onScreenMapCompletion;
+static int _onScreenScore;
+static int _submenuState;
+static int D_800DC20C;
+static int D_800DC210;
+
 static void func_8006BD78(void)
 {
     int temp_s0;
@@ -1723,9 +1733,6 @@ static int func_8006BE04(void)
         { VS_ENDSCR14_DIS_LBA, VS_ENDSCR14_DIS_SIZE },
         { VS_ENDSCR15_DIS_LBA, VS_ENDSCR15_DIS_SIZE },
     };
-
-    extern vs_main_CdQueueSlot* cdSlot;
-    extern void* timData;
 
     TIM_IMAGE sp10;
     int i;
@@ -2125,6 +2132,8 @@ static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((u
     }
 }
 
+static int _incrementingScore;
+
 static void _renderIncrementalScore(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
@@ -2247,6 +2256,8 @@ static void _renderMapCompletion(
         _renderTextureFadeInTint(arg0, arg1 + 8, 0x13, D_800DBA98);
     }
 }
+
+static int _incrementingMapCompletion;
 
 static void _renderIncrementalMapCompletion(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))

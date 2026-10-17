@@ -6,6 +6,7 @@
 #include "gpu.h"
 #include "texture_t.h"
 #include "scratch.h"
+#include <abs.h>
 #include <libapi.h>
 #include <libetc.h>
 #include <memory.h>
@@ -97,7 +98,7 @@ static int _renderElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _parseCreditsScript(void);
 static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
-void func_8006AF64(void);
+int func_8006AF64(void);
 static int _drawScreen(u_long*);
 static void func_8006B884(void);
 static int _ease(short mode, short currentStep, short totalSteps);
@@ -144,9 +145,19 @@ extern u_char D_800DB876;
 extern CVECTOR D_800DBAA8[];
 extern short titleThresholds[];
 extern u_int rankScores[];
+extern int D_800DBB18;
+extern int D_800DBB1C;
+extern u_char D_800DBB28[4][16];
 extern short D_800DBB68;
 extern short D_800DBB6A;
 extern u_short D_800DBB6C;
+extern u_char* D_800DBB70;
+extern u_char* D_800DBB74;
+extern u_char* D_800DBB78;
+extern u_char D_800DBB7C;
+extern u_char D_800DBB7D;
+extern u_short D_800DBB7E;
+extern u_short D_800DBB80;
 extern _creditsElement _creditsElements[];
 extern u_char D_800DC188;
 extern u_char D_800DC189;
@@ -158,7 +169,7 @@ extern short _scrollSpeed;
 extern short D_800DC19A;
 extern u_short D_800DC19C;
 extern void* D_800DC1A0;
-extern func_8006A9C0_t2* D_800DC1A4;
+extern void* D_800DC1A4;
 extern void* D_800DC1A8[];
 extern u_int _rank;
 extern int _clearCount;
@@ -173,10 +184,148 @@ extern int _incrementingScore;
 extern int _incrementingMapCompletion;
 extern u_char _riskbreakerRanks[][4];
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_800688D4);
+int func_800688D4(int angle)
+{
+    int value = (int)_trig_table;
+    int quadrant = angle & 0x400;
+    int test = angle & 0x3FF;
 
-// https://decomp.me/scratch/6icWO
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderPhantomPain);
+    if (quadrant && !test) {
+        value = ONE;
+    } else {
+        int index;
+
+        if (quadrant) {
+            angle = ONE / 2 - angle;
+        }
+
+        test = angle & 0x200;
+        index = angle & 0x1FF;
+
+        if (test) {
+            quadrant = 512;
+            index = quadrant - index;
+            value += 2;
+        }
+
+        value += index * 4;
+        value = *(u_short*)value;
+    }
+
+    if (angle & 0x800) {
+        value = -value;
+    }
+
+    return value;
+}
+
+void _renderPhantomPain(_creditsElement* element)
+{
+    SVECTOR rot;
+    SVECTOR vertices[4];
+    MATRIX matrix;
+    long p;
+    long flag;
+    u_short brightness;
+    u_short scale;
+    u_short i;
+    u_short j;
+    POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
+
+    memset(&rot, 0, sizeof rot);
+
+    switch (element->state) {
+    case 1:
+        D_800DBB18 = 0;
+        element->currentStep = 0;
+        element->state = 2;
+        D_800DBB1C = 0;
+
+        for (i = 0; i < 4; ++i) {
+            int shift = 2;
+            int d = 2 - i;
+            int dy = (ABS(d) << shift) * (ABS(d) << shift);
+
+            for (j = 0; j < 16; ++j) {
+                int dx = 8 - j;
+
+                dx = ABS(dx) * 18;
+                D_800DBB28[i][j] = vs_gte_rsqrt(dx * dx + dy);
+            }
+        }
+        /* fallthrough */
+
+    case 2:
+        brightness = element->currentStep * 128 / 90;
+        ++D_800DBB1C;
+
+        if (++element->currentStep == 90) {
+            element->currentStep = 0;
+            element->state = 3;
+        }
+        break;
+
+    case 3:
+        brightness = 128;
+
+        if (++element->currentStep == 120) {
+            element->currentStep = 0;
+            element->state = 4;
+        }
+        break;
+
+    case 4:
+        brightness = (90 - element->currentStep) * 128 / 90;
+
+        if (++element->currentStep == 90) {
+            element->state = -1;
+        }
+        break;
+    }
+
+    D_800DBB18 += 200;
+    scale = (_ease(easeModeEaseIn, 90 - D_800DBB1C, 90) * 65) >> 10;
+
+    RotMatrix_gte(&rot, &matrix);
+    matrix.t[0] = matrix.t[1] = 0;
+    matrix.t[2] = 512;
+    SetRotMatrix(&matrix);
+    SetTransMatrix(&matrix);
+
+    for (i = 0; i < 4; ++i) {
+        for (j = 0; j < 16; ++j) {
+            vertices[0].vx = vertices[2].vx = j * 9 - 72;
+            vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
+            vertices[0].vy = vertices[1].vy = i * 4 - 8;
+            vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
+            vertices[0].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
+            vertices[1].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
+            vertices[2].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
+            vertices[3].vz =
+                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale)
+                >> 12;
+
+            SetPolyFT4(poly);
+            setSemiTrans(poly, 1);
+            RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
+                (long*)&poly->x0, (long*)&poly->x1, (long*)&poly->x2, (long*)&poly->x3,
+                &p, &flag);
+            poly->u0 = poly->u2 = j * 9;
+            poly->u1 = poly->u3 = (j + 1) * 9;
+            poly->v0 = poly->v1 = i * 4 + 180;
+            poly->v2 = poly->v3 = (i + 1) * 4 + 180;
+            poly->clut = getClut(896, 83);
+            poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
+            poly->r0 = poly->g0 = poly->b0 = brightness;
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, poly++);
+        }
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = poly;
+}
 
 void _renderFin(_creditsElement* arg0)
 {
@@ -563,8 +712,120 @@ static int _creditsStrWidth(u_char* str)
     return width;
 }
 
-// https://decomp.me/scratch/86Hv9
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", _renderText);
+void _renderText(_creditsElement* element)
+{
+    u_char* str;
+    short i;
+    short len;
+    short x;
+    short y;
+    SPRT* sprt = ((vs_scratch_t*)0x1F800000)->unk0;
+    u_char charTableOffset = 0;
+    short underline = 0;
+
+    if (element->state == 1) {
+        u_short width = element->width = _creditsStrWidth(element->data);
+        element->x = ((320 - width) >> 1) << 8;
+        element->y = 224 << 8;
+        element->state = 2;
+    }
+
+    element->y += _scrollSpeed;
+
+    if (element->y < -(12 << 8)) {
+        element->state = -1;
+        return;
+    }
+
+    y = element->y >> 8;
+    str = element->data;
+    len = *str++;
+    x = element->x >> 8;
+
+    for (i = 0; i < len; ++i, ++str) {
+        u_char c = *str;
+
+        if (c < ' ') {
+            switch (c) {
+            case 1:
+                charTableOffset = 0;
+                break;
+
+            case 2:
+                charTableOffset = 112;
+                break;
+
+            case 3:
+                underline = charTableOffset != 0 ? 18 : 17;
+                break;
+
+            case 31:
+                --x;
+                break;
+            }
+        } else {
+            u_char glyph = charTableOffset + c - ' ';
+            short glyphWidth;
+
+            setSprt(sprt);
+            setXY0(sprt, x, y);
+            setUV0(sprt, (glyph & 0xF) * 16, (glyph >> 4) * 16);
+            glyphWidth = _glyphWidths[glyph];
+            setWH(sprt, glyphWidth, 16);
+            setClut(sprt, 960, 480);
+            x += glyphWidth - 1;
+            sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+            addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
+            ++sprt;
+        }
+    }
+
+    if (underline != 0) {
+        vs_scratch_t* scratch = (vs_scratch_t*)0x1F800000;
+        POLY_FT4* poly;
+
+        x = 160 - ((element->width + 32) >> 1);
+
+        SetSprt(sprt);
+        y += underline;
+        setXY0(sprt, x, y);
+        setUV0(sprt, 0, 208);
+        setWH(sprt, 16, 3);
+        setClut(sprt, 960, 480);
+        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        AddPrim(scratch->unk4 + 12, sprt++);
+
+        poly = (POLY_FT4*)sprt;
+        SetPolyFT4(poly);
+        x += 16;
+        poly->x0 = poly->x2 = x;
+        x += element->width;
+        poly->y0 = poly->y1 = y;
+        poly->y2 = poly->y3 = y + 3;
+        poly->u0 = poly->u2 = 8;
+        poly->v2 = poly->v3 = 211;
+        poly->u1 = poly->u3 = 16;
+        poly->v0 = poly->v1 = 208;
+        poly->tpage = getTPage(clut4Bit, semiTransparencyHalf, 960, 256);
+        poly->clut = getClut(960, 480);
+        poly->x1 = poly->x3 = x;
+        poly->r0 = poly->g0 = poly->b0 = D_800DC19C;
+        AddPrim(scratch->unk4 + 12, poly++);
+
+        sprt = (SPRT*)poly;
+        SetSprt(sprt);
+        setUV0(sprt, 168, 208);
+        setXY0(sprt, x, y);
+        setWH(sprt, 16, 3);
+        setClut(sprt, 960, 480);
+        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        AddPrim(scratch->unk4 + 12, sprt++);
+    }
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = sprt;
+    ((vs_scratch_t*)0x1F800000)->unk0 =
+        _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
+}
 
 void _renderCopyright(_creditsElement* arg0)
 {
@@ -1049,7 +1310,81 @@ static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
     D_800DC1A4 = arg0;
 }
 
-INCLUDE_ASM("build/src/ENDING/ENDING.PRG/nonmatchings/D4", func_8006AF64);
+int func_8006AF64(void)
+{
+    short i;
+
+    if (D_800DB72C == 0) {
+        return 0;
+    }
+
+    if (D_800DB72C == 1) {
+        D_800DB72C = 2;
+        D_800DBB74 = D_800DC1A0;
+        D_800DBB78 = D_800DC1A4;
+    }
+
+    while (1) {
+        u_char op;
+
+        if (VSync(1) - D_800DC19A > 200) {
+            return 0;
+        }
+
+        op = *D_800DBB74;
+
+        if (!(op & 0x80)) {
+            if (op == 127) {
+                D_800DB72C = 0;
+                return 1;
+            }
+
+            if (op == 125) {
+                ++D_800DBB74;
+                D_800DBB7E = *D_800DBB74++;
+                D_800DBB7C = *D_800DBB74++;
+
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = D_800DBB7C;
+                }
+            } else if (op == 126) {
+                ++D_800DBB74;
+                D_800DBB7E = *D_800DBB74++;
+                D_800DBB7C = *D_800DBB74++;
+                D_800DBB7D = *D_800DBB74++;
+
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = D_800DBB7C;
+                    *D_800DBB78++ = D_800DBB7D;
+                }
+            } else {
+                D_800DBB7E = *D_800DBB74++;
+
+                for (i = 0; i <= D_800DBB7E; ++i) {
+                    *D_800DBB78++ = *D_800DBB74++;
+                }
+            }
+        } else {
+            D_800DBB7E = ((op >> 4) & 7) + 3;
+            D_800DBB80 = ((D_800DBB74[0] & 0xF) << 8) + D_800DBB74[1];
+            D_800DBB74 += 2;
+            D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+
+            for (i = 0; i < D_800DBB7E; ++i) {
+                *D_800DBB78++ = *D_800DBB70++;
+            }
+
+            while (*D_800DBB74 == 124) {
+                D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+                ++D_800DBB74;
+
+                for (i = 0; i < D_800DBB7E; ++i) {
+                    *D_800DBB78++ = *D_800DBB70++;
+                }
+            }
+        }
+    }
+}
 
 static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
 {

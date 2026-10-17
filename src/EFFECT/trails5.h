@@ -671,11 +671,147 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     }
 }
 
+int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
+{
+    func_800D2904_t child;
+    func_800FA098_arg0* effect;
+    int trail;
+    int j;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA76C_arg3* state = arg0->unk8;
+    D_800F53B8_t* battle = D_800F53BC;
+    int alive = 1;
+
+    switch (arg1) {
+    case 1:
+        state = vs_main_allocHeapR(sizeof *state + 8);
+        arg0->unk8 = state;
+        state->unk1 = arg2 >> 8;
+        state->unk0 = arg2;
+        state->curveSampleDistance = 0;
+        effect = &D_800F569C->block5Data->unk4[state->unk1];
+        trail = effect->unkC0[0];
+
+        if (trail > 16) {
+            trail = 16;
+        }
+
+        state->trails = vs_main_allocHeapR(trail * sizeof *state->trails);
+        state->trailcount = trail;
+        state->unk3 = 0;
+
+        if (effect->transparencyCurve != 0) {
+            trail = D_800F569C->curveBlock->curveSizes[effect->transparencyCurve];
+
+            if (trail > 1) {
+                --trail;
+            }
+
+            for (j = 0; j < TRAIL_SAMPLE_COUNT; ++j) {
+                state->sampledTransparencyCurve[j] =
+                    D_800F569C->curves[effect->transparencyCurve]
+                                      [(j * trail) / (TRAIL_SAMPLE_COUNT - 1)];
+            }
+        } else {
+            for (j = 0; j < TRAIL_SAMPLE_COUNT; ++j) {
+                state->sampledTransparencyCurve[j] = 128;
+            }
+        }
+
+        func_800D6CCC((int*)&state->unkC);
+        func_800D6CF0(&state->unkC, effect->unk1, effect->unk0);
+        break;
+
+    case 2:
+        effect = &D_800F569C->block5Data->unk4[state->unk1];
+        scratch->flags = effect->flags;
+
+        if (state->unk3 == 0) {
+            VS_TRAIL_ORIGIN_FUNCTION(effect, scratch, battle, state);
+            VS_TRAIL_TARGET_FUNCTION(effect, scratch, battle, state);
+            VS_TRAIL_CONTROL_FUNCTION(effect, scratch, battle, state);
+            VS_TRAIL_INIT_FUNCTION(effect, scratch, battle, state);
+            state->unk3 = 1;
+        }
+
+        VS_TRAIL_UPDATE_FUNCTION(effect, scratch, battle, state);
+        VS_TRAIL_RENDER_FUNCTION(effect, scratch, battle, state);
+
+        if (effect->unk3 != 0) {
+            for (trail = 0; trail < state->trailcount; ++trail) {
+                child.unk60 = 0;
+
+                if (effect->flags & 0x20000) {
+                    SetRotMatrix(&battle->unk1C[effect->unkC8].world);
+                    SetTransMatrix(&battle->unk1C[effect->unkC8].world);
+                    setVector(&scratch->unk2C,
+                        state->trails[trail]
+                            .splineSamples[state->trails[trail].currentSplineSample]
+                            .vx,
+                        state->trails[trail]
+                            .splineSamples[state->trails[trail].currentSplineSample]
+                            .vy,
+                        state->trails[trail]
+                            .splineSamples[state->trails[trail].currentSplineSample]
+                            .vz);
+
+                    gte_ldv0(&scratch->unk2C);
+                    gte_rtv0tr2();
+                    gte_stlvnl(&scratch->unk34);
+
+                    setVector(&child.motion.position, scratch->unk34.vx * ONE,
+                        scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
+                } else {
+                    setVector(&child.motion.position,
+                        state->trails[trail]
+                                .splineSamples[state->trails[trail].currentSplineSample]
+                                .vx
+                            * ONE,
+                        state->trails[trail]
+                                .splineSamples[state->trails[trail].currentSplineSample]
+                                .vy
+                            * ONE,
+                        state->trails[trail]
+                                .splineSamples[state->trails[trail].currentSplineSample]
+                                .vz
+                            * ONE);
+                }
+
+                func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
+            }
+        }
+
+        ++state->curveSampleDistance;
+
+        if (state->unk0 != 0) {
+            --state->unk0;
+
+            if (!state->unk0) {
+                alive = 0;
+                vs_main_freeHeapR(state->trails);
+            }
+        }
+        break;
+
+    case 3:
+        state->unk0 = 1;
+        break;
+
+    case 4:
+        alive = 0;
+        vs_main_freeHeapR(state->trails);
+        break;
+    }
+
+    return alive;
+}
+
 #undef VS_TRAIL_ORIGIN_FUNCTION
 #undef VS_TRAIL_TARGET_FUNCTION
 #undef VS_TRAIL_CONTROL_FUNCTION
 #undef VS_TRAIL_INIT_FUNCTION
 #undef VS_TRAIL_UPDATE_FUNCTION
 #undef VS_TRAIL_RENDER_FUNCTION
+#undef VS_TRAIL_DISPATCH_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

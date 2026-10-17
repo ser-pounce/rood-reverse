@@ -4,7 +4,9 @@
 #define TRAIL_SAMPLE_COUNT 5
 
 #include "src/EFFECT/trails.h"
+#include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
+#include <inline_c.h>
 #include <rand.h>
 
 extern int VS_TRAIL_CORNER_STATE;
@@ -272,7 +274,108 @@ void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     }
 }
 
+void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+{
+    SVECTOR control0;
+    SVECTOR control1;
+    int i;
+    int length;
+    int angle0;
+    int angle1;
+    int radius0;
+    int radius1;
+
+    for (i = 0; i < arg3->trailcount; ++i) {
+        SVECTOR* points = arg3->trails[i].splinePoints;
+
+        setVector(&arg1->unk34, points[3].vx - points[0].vx, points[3].vy - points[0].vy,
+            points[3].vz - points[0].vz);
+
+        length = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
+                              + (arg1->unk34.vy * arg1->unk34.vy)
+                              + (arg1->unk34.vz * arg1->unk34.vz));
+
+        vs_battle_lerp2DVector(arg0->unk94[0],
+            vs_battle_sampleCurve(arg0->unk12, arg3->curveSampleDistance), arg1->unk124);
+        vs_battle_lerp2DVector(arg0->unk94[1],
+            vs_battle_sampleCurve(arg0->unk13, arg3->curveSampleDistance), arg1->unk12C);
+        vs_battle_lerp2DVector(arg0->unk94[2],
+            vs_battle_sampleCurve(arg0->unkC, arg3->curveSampleDistance), arg1->unk118);
+        vs_battle_lerpVector(arg0->unk34[1],
+            vs_battle_sampleCurve(arg0->unkB, arg3->curveSampleDistance), &arg1->unkC8);
+        vs_battle_lerpVector(arg0->unk34[0],
+            vs_battle_sampleCurve(arg0->unkA, arg3->curveSampleDistance), &arg1->unkE8);
+        vs_battle_lerpSvector(arg0->unk34[2],
+            vs_battle_sampleCurve(arg0->unkD, arg3->curveSampleDistance), &arg1->unkF8);
+
+        if (arg1->unkF8.vx != 0) {
+            int offset =
+                (arg1->unk118[0] + (rand() % arg1->unkF8.vx)) - (arg1->unkF8.vx / 2);
+            if (&arg1->unk34) {
+                control0.vz = (length * offset) / 256;
+            } else {
+                control0.vz = (length * offset) / 256;
+            }
+        } else {
+            control0.vz = (length * arg1->unk118[0]) / 256;
+        }
+
+        if (arg1->unkF8.vy != 0) {
+            int offset =
+                (arg1->unk118[1] + (rand() % arg1->unkF8.vy)) - (arg1->unkF8.vy / 2);
+            control1.vz = length + ((length * offset) / 256);
+        } else {
+            control1.vz = length + ((length * arg1->unk118[1]) / 256);
+        }
+
+        radius0 = arg1->unk124[0];
+
+        if (arg1->unk124[1] != 0) {
+            radius0 += rand() % arg1->unk124[1];
+        }
+
+        radius1 = arg1->unk12C[0];
+
+        if (arg1->unk12C[1] != 0) {
+            radius1 += rand() % arg1->unk12C[1];
+        }
+
+        angle0 = arg1->unkE8.vx;
+
+        if (arg1->unkC8.vx != 0) {
+            angle0 += (rand() % (arg1->unkC8.vx * 2)) - arg1->unkC8.vx;
+        }
+
+        angle1 = arg1->unkE8.vy;
+
+        if (arg1->unkC8.vy != 0) {
+            angle1 += (rand() % (arg1->unkC8.vy * 2)) - arg1->unkC8.vy;
+        }
+
+        control0.vx = (rcos(angle0) * radius0) >> 0xC;
+        control0.vy = (rsin(angle0) * radius0) >> 0xC;
+        control1.vx = (rcos(angle1) * radius1) >> 0xC;
+        control1.vy = (rsin(angle1) * radius1) >> 0xC;
+
+        vs_battle_svecToVec(points, &arg1->unk34);
+        vs_battle_svecToVec(points + 3, &arg1->unk44);
+        vs_battle_lookAt(&arg1->unk34, &arg1->unk44, &arg1->unk64);
+        gte_SetRotMatrix(&arg1->unk64);
+        gte_SetTransVector2(&arg1->unk34);
+        gte_ldv0(&control0);
+        gte_rtv0tr2();
+        gte_stlvnl(&arg1->unk34);
+        vs_battle_vecToSvec(&arg1->unk34, points + 1);
+        gte_ldv0(&control1);
+        gte_rtv0tr2();
+        gte_stlvnl(&arg1->unk44);
+        vs_battle_vecToSvec(&arg1->unk44, points + 2);
+    }
+}
+
 #undef VS_TRAIL_ORIGIN_FUNCTION
 #undef VS_TRAIL_TARGET_FUNCTION
+#undef VS_TRAIL_CONTROL_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

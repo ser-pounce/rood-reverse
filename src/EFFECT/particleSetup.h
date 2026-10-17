@@ -3,6 +3,7 @@
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
+#include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 #include <rand.h>
@@ -252,3 +253,103 @@ void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
                 + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz));
     }
 }
+
+#ifdef VS_PARTICLE_CONTROL_FUNCTION
+void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
+    D_800F53B8_t* battle, func_800FA098_arg3* state)
+{
+    int i;
+
+    for (i = 0; i < state->unk2; ++i) {
+        SVECTOR startOffset;
+        SVECTOR endOffset;
+        SVECTOR* points = &state->unk4[i * 4];
+        int distance;
+        int startAngle;
+        int endAngle;
+        int startRadius;
+        int endRadius;
+
+        setVector(&scratch->unk34, points[3].vx - points[0].vx,
+            points[3].vy - points[0].vy, points[3].vz - points[0].vz);
+        distance = vs_gte_rsqrt(scratch->unk34.vx * scratch->unk34.vx
+                                + scratch->unk34.vy * scratch->unk34.vy
+                                + scratch->unk34.vz * scratch->unk34.vz);
+        vs_battle_lerp2DVector(effect->unk94[0],
+            vs_battle_sampleCurve(effect->unk12, state->unkC), scratch->unk124);
+        vs_battle_lerp2DVector(effect->unk94[1],
+            vs_battle_sampleCurve(effect->unk13, state->unkC), scratch->unk12C);
+        vs_battle_lerp2DVector(effect->unk94[2],
+            vs_battle_sampleCurve(effect->unkC, state->unkC), scratch->unk118);
+        vs_battle_lerpVector(effect->unk34[1],
+            vs_battle_sampleCurve(effect->unkB, state->unkC), &scratch->unkC8);
+        vs_battle_lerpVector(effect->unk34[0],
+            vs_battle_sampleCurve(effect->unkA, state->unkC), &scratch->unkE8);
+        vs_battle_lerpSvector(effect->unk34[2],
+            vs_battle_sampleCurve(effect->unkD, state->unkC), &scratch->unkF8);
+
+        if (scratch->unkF8.vx != 0) {
+            int along =
+                scratch->unk118[0] + rand() % scratch->unkF8.vx - scratch->unkF8.vx / 2;
+
+            if (&scratch->unk34) {
+                startOffset.vz = distance * along / 256;
+            } else {
+                startOffset.vz = distance * along / 256;
+            }
+        } else {
+            startOffset.vz = distance * scratch->unk118[0] / 256;
+        }
+
+        if (scratch->unkF8.vy != 0) {
+            int along =
+                scratch->unk118[1] + rand() % scratch->unkF8.vy - scratch->unkF8.vy / 2;
+            endOffset.vz = distance + distance * along / 256;
+        } else {
+            endOffset.vz = distance + distance * scratch->unk118[1] / 256;
+        }
+
+        startRadius = scratch->unk124[0];
+
+        if (scratch->unk124[1] != 0) {
+            startRadius += rand() % scratch->unk124[1];
+        }
+
+        endRadius = scratch->unk12C[0];
+
+        if (scratch->unk12C[1] != 0) {
+            endRadius += rand() % scratch->unk12C[1];
+        }
+
+        startAngle = scratch->unkE8.vx;
+
+        if (scratch->unkC8.vx != 0) {
+            startAngle += rand() % (scratch->unkC8.vx * 2) - scratch->unkC8.vx;
+        }
+
+        endAngle = scratch->unkE8.vy;
+
+        if (scratch->unkC8.vy != 0) {
+            endAngle += rand() % (scratch->unkC8.vy * 2) - scratch->unkC8.vy;
+        }
+
+        startOffset.vx = (rcos(startAngle) * startRadius) >> 12;
+        startOffset.vy = (rsin(startAngle) * startRadius) >> 12;
+        endOffset.vx = (rcos(endAngle) * endRadius) >> 12;
+        endOffset.vy = (rsin(endAngle) * endRadius) >> 12;
+        vs_battle_svecToVec(points, &scratch->unk34);
+        vs_battle_svecToVec(points + 3, &scratch->unk44);
+        vs_battle_lookAt(&scratch->unk34, &scratch->unk44, &scratch->unk64);
+        gte_SetRotMatrix(&scratch->unk64);
+        gte_SetTransVector2(&scratch->unk34);
+        gte_ldv0(&startOffset);
+        gte_rtv0tr2();
+        gte_stlvnl(&scratch->unk34);
+        vs_battle_vecToSvec(&scratch->unk34, points + 1);
+        gte_ldv0(&endOffset);
+        gte_rtv0tr2();
+        gte_stlvnl(&scratch->unk44);
+        vs_battle_vecToSvec(&scratch->unk44, points + 2);
+    }
+}
+#endif

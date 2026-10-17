@@ -21,4 +21,10 @@
 #define VS_GRID_FUNCTION func_800FD4F4
 #include "src/EFFECT/grids.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FE044);
+#define vs_ringState vs_ringState2
+#define vs_ringPrim vs_ringPrim2
+#define VS_RING_FUNCTION func_800FE044
+#define VS_RING_COLORS D_800FEC8C
+#include "src/EFFECT/rings.h"
+#undef vs_ringState
+#undef vs_ringPrim

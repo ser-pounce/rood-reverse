@@ -1,6 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800F9928);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800F9928
+#define VS_PARTICLE_CORNER_STATE D_800FC11C
+#include "src/EFFECT/particleSetup.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG156.BIN/nonmatchings/128", func_800FA0B0);
 

@@ -66,14 +66,11 @@ typedef struct {
 typedef struct {
     int size;
     RECT rect;
-    char data[0];
+    u_char data[0];
 } func_8006A9C0_t;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
+    int unk0;
     int unk4;
     func_8006A9C0_t unk8;
 } func_8006A9C0_t2;

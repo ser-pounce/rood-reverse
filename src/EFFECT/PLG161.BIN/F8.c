@@ -8,19 +8,15 @@
 #define VS_RING_TRANSPOSED
 #include "src/EFFECT/rings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FB3D4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FBB70);
-
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FBD88);
-
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FC260);
-
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FC3D8);
-
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FC564);
-
-INCLUDE_ASM("build/src/EFFECT/PLG161.BIN/nonmatchings/F8", func_800FCFB4);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FB3D4
+#define VS_TRAIL_TARGET_FUNCTION func_800FBB70
+#define VS_TRAIL_CONTROL_FUNCTION func_800FBD88
+#define VS_TRAIL_INIT_FUNCTION func_800FC260
+#define VS_TRAIL_UPDATE_FUNCTION func_800FC3D8
+#define VS_TRAIL_RENDER_FUNCTION func_800FC564
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FCFB4
+#define VS_TRAIL_CORNER_STATE D_800FEC88
+#include "src/EFFECT/trails9.h"
 
 #define VS_GRID_FUNCTION func_800FD4F4
 #include "src/EFFECT/grids.h"

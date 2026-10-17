@@ -236,6 +236,43 @@ void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     }
 }
 
+void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+{
+    int i;
+
+    vs_battle_lerpSvector(arg0->unk34[6],
+        vs_battle_sampleCurve(arg0->unkF, arg3->curveSampleDistance), &arg1->unk13C);
+    vs_battle_lerpSvector(arg0->unk34[7],
+        vs_battle_sampleCurve(arg0->unk10, arg3->curveSampleDistance), &arg1->unk144);
+
+    switch (arg1->flags & 0x1C0) {
+    case 0:
+        break;
+
+    case 0xC0:
+        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].world.t[0],
+            arg2->unk1C[arg0->unkC9].world.t[1], arg2->unk1C[arg0->unkC9].world.t[2], +=);
+        break;
+
+    case 0x80:
+        applyVector(&arg1->unk13C, D_800F5230.position.vx, D_800F5230.position.vy,
+            D_800F5230.position.vz, +=);
+        break;
+    }
+
+    for (i = 0; i < arg3->trailcount; ++i) {
+        SVECTOR* target = &arg3->trails[i].splinePoints[3];
+
+        setVector(target,
+            arg1->unk13C.vx + vs_battle_randUniformInt(arg1->unk144.vx, -arg1->unk144.vx),
+            arg1->unk13C.vy + vs_battle_randUniformInt(arg1->unk144.vy, -arg1->unk144.vy),
+            arg1->unk13C.vz
+                + vs_battle_randUniformInt(arg1->unk144.vz, -arg1->unk144.vz));
+    }
+}
+
 #undef VS_TRAIL_ORIGIN_FUNCTION
+#undef VS_TRAIL_TARGET_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

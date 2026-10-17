@@ -6,8 +6,15 @@
 #include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
+#include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+
+typedef struct {
+    int tag;
+    POLY_GT4 poly;
+    int drawMode;
+} vs_trailPrim;
 
 extern int VS_TRAIL_CORNER_STATE;
 
@@ -446,10 +453,229 @@ void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
     }
 }
 
+void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+{
+    vs_trailPrim quad;
+    DVECTOR screen[TRAIL_SAMPLE_COUNT + 1];
+    int depths[TRAIL_SAMPLE_COUNT + 1];
+    int angles[TRAIL_SAMPLE_COUNT - 1];
+    CVECTOR color;
+    int _[TRAIL_SAMPLE_COUNT + 1] __attribute__((unused));
+    DVECTOR* points;
+    int i;
+    int j;
+    pFileTexture* texture;
+
+    vs_battle_lerpSvector(arg0->unk34[4],
+        vs_battle_sampleCurve(arg0->unkE, arg3->curveSampleDistance), &arg1->unk108);
+
+    if (arg0->rCurve != 0) {
+        j = vs_battle_sampleCurve(arg0->rCurve, arg3->curveSampleDistance) * 2;
+        color.r = j <= 255 ? j : 255;
+    } else {
+        color.r = 128;
+    }
+
+    if (arg0->gCurve != 0) {
+        j = vs_battle_sampleCurve(arg0->gCurve, arg3->curveSampleDistance) * 2;
+        color.g = j <= 255 ? j : 255;
+    } else {
+        color.g = 128;
+    }
+
+    if (arg0->bCurve != 0) {
+        j = vs_battle_sampleCurve(arg0->bCurve, arg3->curveSampleDistance) * 2;
+        color.b = j <= 255 ? j : 255;
+    } else {
+        color.b = 128;
+    }
+
+    color.cd = primPolyGT4SemiTrans;
+
+    if (arg1->flags & 0x20000) {
+        SetRotMatrix(&arg2->unk1C[arg0->unkC8].view);
+        SetTransMatrix(&arg2->unk1C[arg0->unkC8].view);
+    } else {
+        SetRotMatrix(&vs_scratch.viewMatrix);
+        SetTransMatrix(&vs_scratch.viewMatrix);
+    }
+
+    func_800D6D24(&arg3->unkC);
+
+    texture = &D_800F569C->textures[arg3->unkC.textureInfo->dataIndex];
+
+    for (i = 0; i < arg3->trailcount; ++i) {
+        _trail* trail = &arg3->trails[i];
+        SVECTOR* samples = trail->splineSamples;
+        vs_trailPrim* prim;
+        int dx;
+        int dy;
+        int sample;
+        int top;
+        int bottom;
+
+        if (trail->splineSampleCount < 2) {
+            continue;
+        }
+
+        sample = trail->currentSplineSample;
+
+        for (j = 0; j < trail->splineSampleCount; ++j) {
+            gte_ldv0(&samples[sample]);
+            gte_rtps2();
+            gte_stsxy(&screen[j]);
+            gte_stszotz(&depths[j]);
+            sample = (sample + TRAIL_SAMPLE_COUNT - 1) % TRAIL_SAMPLE_COUNT;
+        }
+
+        for (j = 0; j < trail->splineSampleCount - 1; ++j) {
+            DVECTOR* p = &screen[j];
+            angles[j] = ratan2(p[1].vy - p[0].vy, p[1].vx - p[0].vx) - ONE / 4;
+        }
+
+        sample = arg1->unk108.vx / 2;
+        dx = (rcos(angles[0]) * sample) >> 0xC;
+        dy = (rsin(angles[0]) * sample) >> 0xC;
+        points = screen;
+        quad.poly.x0 = points[0].vx + dx;
+        quad.poly.y0 = points[0].vy + dy;
+        quad.poly.x2 = points[0].vx - dx;
+        quad.poly.y2 = points[0].vy - dy;
+
+        quad.poly.u0 = quad.poly.u2 =
+            texture->u
+            + ((texture->w * trail->trailCollapseCounter) / (TRAIL_SAMPLE_COUNT - 1));
+        top = texture->v;
+        bottom = texture->v + texture->h;
+        quad.poly.v0 = top;
+        quad.poly.v2 = bottom;
+        setRGB0(&quad.poly,
+            (color.r * arg3->sampledTransparencyCurve[trail->trailCollapseCounter]) >> 7,
+            (color.g * arg3->sampledTransparencyCurve[trail->trailCollapseCounter]) >> 7,
+            (color.b * arg3->sampledTransparencyCurve[trail->trailCollapseCounter]) >> 7);
+        quad.poly.code = color.cd;
+
+        for (j = 0; j < trail->splineSampleCount - 2; ++j) {
+            DVECTOR* point;
+            int angle = (angles[j] + angles[j + 1]) / 2;
+
+            if (((angles[j + 1] - angles[j]) + (ONE / 2 - 1)) >= (ONE - 1u)) {
+                angle += ONE / 2;
+            }
+
+            dx = (rcos(angle) * sample) >> 0xC;
+            dy = (rsin(angle) * sample) >> 0xC;
+            point = &points[j];
+            quad.poly.x1 = point[1].vx + dx;
+            quad.poly.y1 = point[1].vy + dy;
+            quad.poly.x3 = point[1].vx - dx;
+            quad.poly.y3 = point[1].vy - dy;
+
+            quad.poly.u1 = quad.poly.u3 =
+                texture->u
+                + ((texture->w * ((trail->trailCollapseCounter - j) - 1))
+                    / (TRAIL_SAMPLE_COUNT - 1));
+            quad.poly.v1 = top;
+            quad.poly.v3 = bottom;
+            setRGB1(&quad.poly,
+                (color.r
+                    * arg3->sampledTransparencyCurve[trail->trailCollapseCounter - j - 1])
+                    >> 7,
+                (color.g
+                    * arg3->sampledTransparencyCurve[trail->trailCollapseCounter - j - 1])
+                    >> 7,
+                (color.b
+                    * arg3->sampledTransparencyCurve[trail->trailCollapseCounter - j - 1])
+                    >> 7);
+            quad.poly.p1 = color.cd;
+
+            dx = (depths[j] + depths[j + 1]) / 2;
+
+            if (dx < 2048 && dx > vs_main_nearClip) {
+                prim = vs_scratch.unk0;
+                vs_scratch.unk0 = prim + 1;
+                setlen(prim, 14);
+                setcode(&prim->poly, primPolyGT4SemiTrans);
+                prim->poly.tag = _get_mode(0, 0, 0);
+                prim->drawMode = _get_mode(0, 1, 0);
+                prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
+                ((u_long*)vs_scratch.unk4)[dx] =
+                    (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000)
+                    | ((u_long)prim & 0xFFFFFF);
+                *(int*)&prim->poly.r0 = *(int*)&quad.poly.r0;
+                *(int*)&prim->poly.r1 = *(int*)&quad.poly.r1;
+                *(int*)&prim->poly.r2 = *(int*)&quad.poly.r0;
+                *(int*)&prim->poly.r3 = *(int*)&quad.poly.r1;
+                *(int*)&prim->poly.x0 = *(int*)&quad.poly.x0;
+                *(int*)&prim->poly.x1 = *(int*)&quad.poly.x1;
+                *(int*)&prim->poly.x2 = *(int*)&quad.poly.x2;
+                *(int*)&prim->poly.x3 = *(int*)&quad.poly.x3;
+                *(short*)&prim->poly.u0 = *(short*)&quad.poly.u0;
+                *(short*)&prim->poly.u1 = *(short*)&quad.poly.u1;
+                *(short*)&prim->poly.u2 = *(short*)&quad.poly.u2;
+                *(short*)&prim->poly.u3 = *(short*)&quad.poly.u3;
+                prim->poly.tpage = texture->tpage;
+                prim->poly.clut = texture->clut;
+            }
+
+            *(int*)&quad.poly.x0 = *(int*)&quad.poly.x1;
+            *(int*)&quad.poly.x2 = *(int*)&quad.poly.x3;
+            *(short*)&quad.poly.u0 = *(short*)&quad.poly.u1;
+            *(short*)&quad.poly.u2 = *(short*)&quad.poly.u3;
+            *(int*)&quad.poly.r0 = *(int*)&quad.poly.r1;
+        }
+
+        dx = (rcos(angles[j]) * sample) >> 0xC;
+        dy = (rsin(angles[j]) * sample) >> 0xC;
+        quad.poly.x1 = ((u_short*)points)[j * 2 + 2] + dx;
+        quad.poly.y1 = ((u_short*)points)[j * 2 + 3] + dy;
+        quad.poly.x3 = ((u_short*)points)[j * 2 + 2] - dx;
+        quad.poly.y3 = ((u_short*)points)[j * 2 + 3] - dy;
+        quad.poly.u1 = quad.poly.u3 = texture->u;
+        quad.poly.v1 = top;
+        quad.poly.v3 = bottom;
+        setRGB1(&quad.poly, (color.r * arg3->sampledTransparencyCurve[0]) >> 7,
+            (color.g * arg3->sampledTransparencyCurve[0]) >> 7,
+            (color.b * arg3->sampledTransparencyCurve[0]) >> 7);
+
+        dx = (depths[j] + depths[j + 1]) / 2;
+
+        if (dx >= 2048 || dx <= vs_main_nearClip) {
+            continue;
+        }
+
+        prim = vs_scratch.unk0;
+        vs_scratch.unk0 = prim + 1;
+        setlen(prim, 14);
+        setcode(&prim->poly, primPolyGT4SemiTrans);
+        prim->poly.tag = _get_mode(0, 0, 0);
+        prim->drawMode = _get_mode(0, 1, 0);
+        prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
+        ((u_long*)vs_scratch.unk4)[dx] =
+            (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000) | ((u_long)prim & 0xFFFFFF);
+        *(int*)&prim->poly.r0 = *(int*)&quad.poly.r0;
+        *(int*)&prim->poly.r1 = *(int*)&quad.poly.r1;
+        *(int*)&prim->poly.r2 = *(int*)&quad.poly.r0;
+        *(int*)&prim->poly.r3 = *(int*)&quad.poly.r1;
+        *(int*)&prim->poly.x0 = *(int*)&quad.poly.x0;
+        *(int*)&prim->poly.x1 = *(int*)&quad.poly.x1;
+        *(int*)&prim->poly.x2 = *(int*)&quad.poly.x2;
+        *(int*)&prim->poly.x3 = *(int*)&quad.poly.x3;
+        *(short*)&prim->poly.u0 = *(short*)&quad.poly.u0;
+        *(short*)&prim->poly.u1 = *(short*)&quad.poly.u1;
+        *(short*)&prim->poly.u2 = *(short*)&quad.poly.u2;
+        *(short*)&prim->poly.u3 = *(short*)&quad.poly.u3;
+        prim->poly.tpage = texture->tpage;
+        prim->poly.clut = texture->clut;
+    }
+}
+
 #undef VS_TRAIL_ORIGIN_FUNCTION
 #undef VS_TRAIL_TARGET_FUNCTION
 #undef VS_TRAIL_CONTROL_FUNCTION
 #undef VS_TRAIL_INIT_FUNCTION
 #undef VS_TRAIL_UPDATE_FUNCTION
+#undef VS_TRAIL_RENDER_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

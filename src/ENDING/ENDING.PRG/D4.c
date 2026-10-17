@@ -118,12 +118,20 @@ static void _determineRank(void);
 static void _updateScore(void);
 
 extern u_char _glyphWidths[];
+static u_char D_800DB72C = 0;
+static int _illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA, VS_ILLUST08_BIN_LBA,
+    VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA, VS_ILLUST12_BIN_LBA,
+    VS_ILLUST13_BIN_LBA, VS_ILLUST14_BIN_LBA, VS_ILLUST15_BIN_LBA, VS_ILLUST16_BIN_LBA, 0,
+    0, 0, 0, 0 };
+
+static int _illustSizes[] = { VS_ILLUST06_BIN_SIZE, VS_ILLUST07_BIN_SIZE, VS_ILLUST08_BIN_SIZE,
+    VS_ILLUST09_BIN_SIZE, VS_ILLUST10_BIN_SIZE, VS_ILLUST11_BIN_SIZE,
+    VS_ILLUST12_BIN_SIZE, VS_ILLUST13_BIN_SIZE, VS_ILLUST14_BIN_SIZE,
+    VS_ILLUST15_BIN_SIZE, VS_ILLUST16_BIN_SIZE, 0, 0, 0, 0, 0 };
+
 extern int _countableRooms[];
-extern u_char D_800DB72C;
 extern _timData* D_800DB7B0;
 extern u_short _illustrationTimers[];
-extern int _illustLbas[];
-extern int _illustSizes[];
 extern _texture_t _disMap[];
 extern u_char D_800DB876;
 extern CVECTOR D_800DBAA8[];

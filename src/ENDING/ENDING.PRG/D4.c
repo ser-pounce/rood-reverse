@@ -66,17 +66,14 @@ typedef struct {
 typedef struct {
     int size;
     RECT rect;
-    char data[0];
-} func_8006A9C0_t;
+    u_char data[0];
+} _timChunk;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    func_8006A9C0_t unk8;
-} func_8006A9C0_t2;
+    int magic;
+    int flags;
+    _timChunk chunk;
+} _timData;
 
 enum easeMode {
     easeModeLinear,
@@ -92,12 +89,12 @@ static void func_8006B9B4(void);
 static void _setDrawEnv(DRAWENV*);
 static void func_8006A888(void);
 static void* _insertTpage(int tPage, int otOffset);
-static void func_8006A9C0(func_8006A9C0_t2*);
+static void func_8006A9C0(_timData*);
 static void _resetElements(void);
 static int _renderElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _parseCreditsScript(void);
-static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
+static void func_8006AF44(_timData* arg0, void* arg1);
 int func_8006AF64(void);
 static int _drawScreen(u_long*);
 static void func_8006B884(void);
@@ -120,23 +117,10 @@ static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
-extern u_char D_8006E3FC[];
 extern u_char _glyphWidths[];
-extern func_8006A9C0_t2 D_8007005C;
-extern func_8006A9C0_t2 D_8007709C;
-extern func_8006A9C0_t2 D_80088ABC;
-extern func_8006A9C0_t2 D_8009A4DC;
-extern func_8006A9C0_t2 D_800ABEFC;
-extern func_8006A9C0_t2 D_800BD91C;
-extern func_8006A9C0_t2 D_800CF33C;
-extern func_8006A9C0_t2 D_800D7F7C;
-extern func_8006A9C0_t2 D_800D837C;
-extern func_8006A9C0_t2 D_800D975C;
-extern func_8006A9C0_t2 D_800DB09C;
-extern func_8006A9C0_t2 D_800DB26C;
 extern int _countableRooms[];
 extern u_char D_800DB72C;
-extern func_8006A9C0_t2* D_800DB7B0;
+extern _timData* D_800DB7B0;
 extern u_short _illustrationTimers[];
 extern int _illustLbas[];
 extern int _illustSizes[];
@@ -997,6 +981,20 @@ static void func_8006A4D8(_creditsElement* element)
 
 void vs_ending_exec(void)
 {
+    extern u_char _credits[];
+    extern _timData _creditsFont;
+    extern _timData _illustSydney;
+    extern _timData _illustMerlose;
+    extern _timData _illustDragon;
+    extern _timData _illustSamantha;
+    extern _timData _illustDuane;
+    extern _timData _creditsBg;
+    extern _timData _devCopyright;
+    extern _timData _titleLogo;
+    extern _timData _shugeki;
+    extern _timData _fin;
+    extern _timData _episodeLogo;
+
     vs_main_CdFile file;
     short i;
     vs_main_CdQueueSlot* slot;
@@ -1010,18 +1008,18 @@ void vs_ending_exec(void)
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
 
-    func_8006A9C0(&D_8007005C);
-    func_8006A9C0(&D_800CF33C);
-    func_8006A9C0(&D_800D7F7C);
-    func_8006A9C0(&D_800D975C);
-    func_8006A9C0(&D_800D837C);
-    func_8006A9C0(&D_800DB09C);
-    func_8006A9C0(&D_800DB26C);
-    func_8006A9C0(&D_8007709C);
-    func_8006A9C0(&D_80088ABC);
-    func_8006A9C0(&D_8009A4DC);
-    func_8006A9C0(&D_800ABEFC);
-    func_8006A9C0(&D_800BD91C);
+    func_8006A9C0(&_creditsFont);
+    func_8006A9C0(&_creditsBg);
+    func_8006A9C0(&_devCopyright);
+    func_8006A9C0(&_shugeki);
+    func_8006A9C0(&_titleLogo);
+    func_8006A9C0(&_fin);
+    func_8006A9C0(&_episodeLogo);
+    func_8006A9C0(&_illustSydney);
+    func_8006A9C0(&_illustMerlose);
+    func_8006A9C0(&_illustDragon);
+    func_8006A9C0(&_illustSamantha);
+    func_8006A9C0(&_illustDuane);
 
     for (i = 5; i < 16; ++i) {
         file.lba = _illustLbas[i - 5];
@@ -1045,7 +1043,7 @@ void vs_ending_exec(void)
     DrawSync(0);
     SetDispMask(1);
 
-    _creditsBytestreamHead = D_8006E3FC;
+    _creditsBytestreamHead = _credits;
     _scrollSpeed = -128;
     D_800DC188 = 0;
     _textStreamDelay = 0;
@@ -1111,18 +1109,18 @@ static void* _insertTpage(int tPage, int otOffset)
     return drTpage;
 }
 
-static void func_8006A9C0(func_8006A9C0_t2* arg0)
+static void func_8006A9C0(_timData* tim)
 {
     RECT rect;
-    func_8006A9C0_t* p = &arg0->unk8;
+    _timChunk* p = &tim->chunk;
 
-    if (arg0->unk4 & 8) {
+    if (tim->flags & 8) {
         rect.x = p->rect.x;
         rect.y = p->rect.y;
         rect.w = p->rect.w;
         rect.h = p->rect.h;
         LoadImage(&rect, (void*)p->data);
-        p = (func_8006A9C0_t*)((void*)arg0 + (p->size + 8));
+        p = (_timChunk*)((void*)tim + (p->size + 8));
     }
 
     rect.x = p->rect.x;
@@ -1303,7 +1301,7 @@ static int _ease(short mode, short currentStep, short totalSteps)
     }
 }
 
-static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
+static void func_8006AF44(_timData* arg0, void* arg1)
 {
     D_800DB72C = 1;
     D_800DC1A0 = arg1;

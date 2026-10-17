@@ -36,7 +36,6 @@ _renderTextureWipe = 0x8006DA18;
 _parseTim = 0x8006DF70;
 _determineRank = 0x8006DFD0;
 _updateScore = 0x8006E074;
-_glyphWidths = 0x8006FF7C;
 _illustLbas = 0x800DB730;
 _illustSizes = 0x800DB770;
 _countableRooms = 0x800DB7D4;

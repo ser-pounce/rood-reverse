@@ -20,9 +20,6 @@ def dump_tim(
 
 
 class PSXSegTim(Segment):
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.subtract_over_white = False
 
     def out_path(self) -> Path:
         type_extension = f".{self.type}" if options.opts.image_type_in_extension else ""

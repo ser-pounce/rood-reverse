@@ -15,3 +15,11 @@ $(BUILD)/assets/ENDING/ENDING.PRG/%.yaml.bin: $(BUILD)/assets/ENDING/ENDING.PRG/
 $(BUILD)/assets/ENDING/ENDING.PRG/%.yaml.o: $(BUILD)/assets/ENDING/ENDING.PRG/%.yaml.bin | $$(@D)/
 	$(ECHO) Assembling $@
 	$(OBJCOPY) $(OBJCOPYFLAGS) --add-symbol $*=.data:0 $< $@
+
+$(BUILD)/assets/ENDING/ENDING.PRG/%.tim.png.bin: $(BUILD)/assets/ENDING/ENDING.PRG/%.tim.png | $$(@D)/
+	$(ECHO) Converting $<
+	$(VPYTHON) -m tools.data.ENDING.ENDING_PRG.tim $< $@
+
+$(BUILD)/assets/ENDING/ENDING.PRG/%.tim.png.o: $(BUILD)/assets/ENDING/ENDING.PRG/%.tim.png.bin | $$(@D)/
+	$(ECHO) Assembling $@
+	$(OBJCOPY) $(OBJCOPYFLAGS) --add-symbol $*=.data:0 $< $@

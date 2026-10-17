@@ -773,8 +773,8 @@ int vs_spiritSurge_renderTrails(func_800D4910_t* arg0, u_int arg1, int arg2)
                     gte_rtv0tr2();
                     gte_stlvnl(&s4->unk34);
 
-                    setVector(&sp18.motion.position, s4->unk34.vx * ONE, s4->unk34.vy * ONE,
-                        s4->unk34.vz * ONE);
+                    setVector(&sp18.motion.position, s4->unk34.vx * ONE,
+                        s4->unk34.vy * ONE, s4->unk34.vz * ONE);
                 } else {
                     setVector(&sp18.motion.position,
                         temp_s0->trails[trail]

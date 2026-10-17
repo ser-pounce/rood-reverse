@@ -232,11 +232,11 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 gte_ldv0(&scratch->unk2C);
                 gte_rtv0tr2();
                 gte_stlvnl(&scratch->unk34);
-                setVector(&child.motion.position, scratch->unk34.vx * ONE, scratch->unk34.vy * ONE,
-                    scratch->unk34.vz * ONE);
+                setVector(&child.motion.position, scratch->unk34.vx * ONE,
+                    scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
             } else {
-                setVector(&child.motion.position, scratch->unk98.vx * ONE, scratch->unk98.vy * ONE,
-                    scratch->unk98.vz * ONE);
+                setVector(&child.motion.position, scratch->unk98.vx * ONE,
+                    scratch->unk98.vy * ONE, scratch->unk98.vz * ONE);
             }
 
             func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);

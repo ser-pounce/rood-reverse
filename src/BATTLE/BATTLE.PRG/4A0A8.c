@@ -4611,7 +4611,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 8:
-                if (mode == 1 && ((u_char*)arg2)[0] == p[1] && ((u_char*)arg2)[2] == p[2]) {
+                if (mode == 1 && ((u_char*)arg2)[0] == p[1]
+                    && ((u_char*)arg2)[2] == p[2]) {
                     result = 1;
                 }
 

@@ -6017,8 +6017,8 @@ void func_800D1B80(D_800F54D8_t* camera)
     vs_battle_setCameraRoll(camera->roll - 32768 + camera->unk2C);
     vs_battle_setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
-    // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous call
-    // and whether the far clip reaches func_80098194 is unpredictable
+    // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
+    // call and whether the far clip reaches func_80098194 is unpredictable
     ((void (*)(int))vs_battle_setFarClip)(camera->farClip);
     func_8007ACB0();
 }
@@ -6754,8 +6754,8 @@ void func_800D52A4(func_800D2904_t* node)
             }
 
             applyVector(&motion->force, motion->acceleration.vx + direction.vx,
-                motion->acceleration.vy + direction.vy, motion->acceleration.vz + direction.vz,
-                +=);
+                motion->acceleration.vy + direction.vy,
+                motion->acceleration.vz + direction.vz, +=);
         } else {
             addVector(&motion->force, &motion->acceleration);
         }

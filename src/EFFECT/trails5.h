@@ -403,9 +403,53 @@ void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     }
 }
 
+void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
+    func_800FA098_arg1* arg1 __attribute__((unused)),
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+{
+    int i;
+
+    for (i = 0; i < arg3->trailcount; ++i) {
+        _trail* trail = &arg3->trails[i];
+
+        if (trail->trailCollapseCounter == 0) {
+            continue;
+        }
+
+        if (arg3->curveSampleDistance >= trail->stepCount) {
+            --trail->trailCollapseCounter;
+
+            if (trail->trailCollapseCounter < trail->stepCount) {
+                --trail->splineSampleCount;
+            }
+        } else {
+            int currentStep = trail->stepCount - arg3->curveSampleDistance;
+            int speed = trail->speed;
+
+            speed += ((6 * ONE * ONE - (trail->splineProgress * 2))
+                         / (currentStep * currentStep))
+                   - ((speed * 2) / currentStep);
+            trail->speed = speed;
+            trail->splineProgress += speed;
+            trail->currentSplineSample =
+                (trail->currentSplineSample + 1) % TRAIL_SAMPLE_COUNT;
+
+            vs_battle_splineInterpolate(&trail->splinePoints[0], &trail->splinePoints[1],
+                &trail->splinePoints[2], &trail->splinePoints[3],
+                (trail->splineProgress >> 0xC) - ONE,
+                &trail->splineSamples[trail->currentSplineSample]);
+
+            if (trail->splineSampleCount < TRAIL_SAMPLE_COUNT) {
+                ++trail->splineSampleCount;
+            }
+        }
+    }
+}
+
 #undef VS_TRAIL_ORIGIN_FUNCTION
 #undef VS_TRAIL_TARGET_FUNCTION
 #undef VS_TRAIL_CONTROL_FUNCTION
 #undef VS_TRAIL_INIT_FUNCTION
+#undef VS_TRAIL_UPDATE_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

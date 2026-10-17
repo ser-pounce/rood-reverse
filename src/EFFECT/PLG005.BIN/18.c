@@ -88,7 +88,7 @@ int vs_effect_analyze(func_800D4910_t* arg0, u_int arg1, int arg2)
     case 2:
         s7 = &D_800F569C->block5Data->unk4[fp->unk1];
         s6->flags = s7->flags;
-        m = &sp5A0->unk1C[s7->unkC8].unk38;
+        m = &sp5A0->unk1C[s7->unkC8].world;
         vs_battle_lerpVector(s7->unk18,
             vs_battle_sampleCurve(s7->unk8, fp->curveSampleDistance), &s6->unk98);
         switch (s6->flags & 7) {
@@ -206,8 +206,8 @@ int vs_effect_analyze(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         if (s6->flags & 0x20000) {
-            SetRotMatrix(&sp5A0->unk1C[s7->unkC8].unk58);
-            SetTransMatrix(&sp5A0->unk1C[s7->unkC8].unk58);
+            SetRotMatrix(&sp5A0->unk1C[s7->unkC8].view);
+            SetTransMatrix(&sp5A0->unk1C[s7->unkC8].view);
         } else {
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);

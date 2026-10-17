@@ -81,9 +81,9 @@ void func_800FDA04(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t
         vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
         break;
     case 2:
-        arg1->unk98.vx += arg2->unk1C[arg3->unkC8].unk38.t[0];
-        arg1->unk98.vy += arg2->unk1C[arg3->unkC8].unk38.t[1];
-        arg1->unk98.vz += arg2->unk1C[arg3->unkC8].unk38.t[2];
+        arg1->unk98.vx += arg2->unk1C[arg3->unkC8].world.t[0];
+        arg1->unk98.vy += arg2->unk1C[arg3->unkC8].world.t[1];
+        arg1->unk98.vz += arg2->unk1C[arg3->unkC8].world.t[2];
         break;
     }
     arg0->unk88.vx = arg1->unk98.vx;
@@ -93,9 +93,9 @@ void func_800FDA04(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t
     case 0:
         break;
     case 0xC0:
-        arg1->unk13C.vx += arg2->unk1C[arg3->unkC9].unk38.t[0];
-        arg1->unk13C.vy += arg2->unk1C[arg3->unkC9].unk38.t[1];
-        arg1->unk13C.vz += arg2->unk1C[arg3->unkC9].unk38.t[2];
+        arg1->unk13C.vx += arg2->unk1C[arg3->unkC9].world.t[0];
+        arg1->unk13C.vy += arg2->unk1C[arg3->unkC9].world.t[1];
+        arg1->unk13C.vz += arg2->unk1C[arg3->unkC9].world.t[2];
         break;
     case 0x80:
         arg1->unk13C.vx += D_800F5230.position.vx;
@@ -118,18 +118,20 @@ void func_800FDC80(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t
         vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
         break;
     case 2:
-        arg1->unk98.vx += arg2->unk1C[arg3->unkC8].unk38.t[0];
-        arg1->unk98.vy += arg2->unk1C[arg3->unkC8].unk38.t[1];
-        arg1->unk98.vz += arg2->unk1C[arg3->unkC8].unk38.t[2];
+        arg1->unk98.vx += arg2->unk1C[arg3->unkC8].world.t[0];
+        arg1->unk98.vy += arg2->unk1C[arg3->unkC8].world.t[1];
+        arg1->unk98.vz += arg2->unk1C[arg3->unkC8].world.t[2];
         break;
     }
     arg0->unk98.vx = arg1->unk98.vx;
     arg0->unk98.vy = arg1->unk98.vy;
     arg0->unk98.vz = arg1->unk98.vz;
-    arg0->unk88.vx = arg1->unk98.vx
-                   + ((-arg1->unk144.vx * rsin(arg2->unk1C[arg3->unkC8].unkBE)) >> 12);
-    arg0->unk88.vz = arg1->unk98.vz
-                   + ((-arg1->unk144.vx * rcos(arg2->unk1C[arg3->unkC8].unkBE)) >> 12);
+    arg0->unk88.vx =
+        arg1->unk98.vx
+        + ((-arg1->unk144.vx * rsin(arg2->unk1C[arg3->unkC8].saved.pad)) >> 12);
+    arg0->unk88.vz =
+        arg1->unk98.vz
+        + ((-arg1->unk144.vx * rcos(arg2->unk1C[arg3->unkC8].saved.pad)) >> 12);
     arg0->unk88.vy = arg1->unk98.vy;
 }
 

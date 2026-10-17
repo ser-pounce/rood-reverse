@@ -45,7 +45,7 @@ void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     vs_battle_lerpVector(arg0->unk18,
         vs_battle_sampleCurve(arg0->unk8, arg3->curveSampleDistance), &arg1->unk98);
 
-    matrix = &arg2->unk1C[arg0->unkC8].unk38;
+    matrix = &arg2->unk1C[arg0->unkC8].world;
 
     // Determines trail origin:
     switch (arg1->flags & 7) {
@@ -255,8 +255,8 @@ void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
         break;
 
     case 0xC0:
-        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].unk38.t[0],
-            arg2->unk1C[arg0->unkC9].unk38.t[1], arg2->unk1C[arg0->unkC9].unk38.t[2], +=);
+        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].world.t[0],
+            arg2->unk1C[arg0->unkC9].world.t[1], arg2->unk1C[arg0->unkC9].world.t[2], +=);
         break;
 
     case 0x80:
@@ -497,8 +497,8 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     spC0.cd = primPolyGT4SemiTrans;
 
     if (arg1->flags & 0x20000) {
-        SetRotMatrix(&arg2->unk1C[arg0->unkC8].unk58);
-        SetTransMatrix(&arg2->unk1C[arg0->unkC8].unk58);
+        SetRotMatrix(&arg2->unk1C[arg0->unkC8].view);
+        SetTransMatrix(&arg2->unk1C[arg0->unkC8].view);
     } else {
         SetRotMatrix(&vs_scratch.viewMatrix);
         SetTransMatrix(&vs_scratch.viewMatrix);
@@ -676,7 +676,7 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
 
 int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    func_800FB4C0_t sp18;
+    func_800D2904_t sp18;
     func_800FA098_arg0* temp_s3;
     int trail;
     int j;
@@ -750,8 +750,8 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 sp18.unk60 = 0;
 
                 if (temp_s3->flags & 0x20000) {
-                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
-                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
+                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
+                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
                     s4->unk2C.vx =
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
@@ -769,21 +769,21 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                     gte_rtv0tr2();
                     gte_stlvnl(&s4->unk34);
 
-                    sp18.unkC.vx = s4->unk34.vx * ONE;
-                    sp18.unkC.vy = s4->unk34.vy * ONE;
-                    sp18.unkC.vz = s4->unk34.vz * ONE;
+                    sp18.motion.position.vx = s4->unk34.vx * ONE;
+                    sp18.motion.position.vy = s4->unk34.vy * ONE;
+                    sp18.motion.position.vz = s4->unk34.vz * ONE;
                 } else {
-                    sp18.unkC.vx =
+                    sp18.motion.position.vx =
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
                             .vx
                         * ONE;
-                    sp18.unkC.vy =
+                    sp18.motion.position.vy =
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
                             .vy
                         * ONE;
-                    sp18.unkC.vz =
+                    sp18.motion.position.vz =
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
                             .vz

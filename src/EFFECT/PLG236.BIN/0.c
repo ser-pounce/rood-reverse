@@ -50,7 +50,7 @@ int func_800FB62C(func_800D4910_t* arg0, u_int arg1, int arg2)
     u_char u[3];
     u_char v[17];
     MATRIX unusedTransform;
-    func_800FB4C0_t child;
+    func_800D2904_t child;
     vs_transposedRingState* state;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
@@ -96,7 +96,7 @@ int func_800FB62C(func_800D4910_t* arg0, u_int arg1, int arg2)
     case 2: {
         effect = &D_800F569C->block5Data->unk4[state->effect];
         scratch->flags = effect->flags;
-        actorMatrix = &battle->unk1C[effect->unkC8].unk38;
+        actorMatrix = &battle->unk1C[effect->unkC8].world;
         effect = &D_800F569C->block5Data->unk4[state->effect];
         column = vs_battle_sampleCurve(effect->unk17, state->age);
         fraction = func_800CFE1C(effect->unk30, column);
@@ -213,8 +213,8 @@ int func_800FB62C(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         if (scratch->flags & 0x20000) {
-            SetRotMatrix(&battle->unk1C[effect->unkC8].unk58);
-            SetTransMatrix(&battle->unk1C[effect->unkC8].unk58);
+            SetRotMatrix(&battle->unk1C[effect->unkC8].view);
+            SetTransMatrix(&battle->unk1C[effect->unkC8].view);
         } else {
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);
@@ -311,13 +311,13 @@ int func_800FB62C(func_800D4910_t* arg0, u_int arg1, int arg2)
                 gte_ldv0(&scratch->unk2C);
                 gte_rtv0tr2();
                 gte_stlvnl(&scratch->unk34);
-                (&child.unkC)->vx = scratch->unk34.vx * 4096,
-                (&child.unkC)->vy = scratch->unk34.vy * 4096,
-                (&child.unkC)->vz = scratch->unk34.vz * 4096;
+                (&child.motion.position)->vx = scratch->unk34.vx * 4096,
+                (&child.motion.position)->vy = scratch->unk34.vy * 4096,
+                (&child.motion.position)->vz = scratch->unk34.vz * 4096;
             } else {
-                (&child.unkC)->vx = scratch->unk98.vx * 4096,
-                (&child.unkC)->vy = scratch->unk98.vy * 4096,
-                (&child.unkC)->vz = scratch->unk98.vz * 4096;
+                (&child.motion.position)->vx = scratch->unk98.vx * 4096,
+                (&child.motion.position)->vy = scratch->unk98.vy * 4096,
+                (&child.motion.position)->vz = scratch->unk98.vz * 4096;
             }
             func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
         }

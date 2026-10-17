@@ -307,27 +307,6 @@ typedef struct {
 } func_800CCE10_t;
 
 typedef struct {
-    short rotation[3];
-    u_short flags;
-    u_char pad8[6];
-    short frame;
-    u_char pad10[12];
-    VECTOR position;
-    u_char pad2C[8];
-    u_char actor;
-    u_char bone;
-    u_char targetActor;
-    u_char targetBone;
-    MATRIX world;
-    MATRIX view;
-    MATRIX attachment;
-    MATRIX facing;
-    SVECTOR saved;
-    SVECTOR control0;
-    SVECTOR control1;
-} func_800D0548_arg1;
-
-typedef struct {
     u_char actors[6];
     u_char final;
     u_char frame;
@@ -401,6 +380,7 @@ void func_800D46DC(int, D_800F53B8_t*);
 u_char func_800D5170(D_800F53B8_t*);
 u_short func_800D5198(D_800F53B8_t*);
 int func_800D51D8(D_800F53B8_t* arg0);
+void func_800D52A4(func_800D2904_t*);
 void func_800D55A4(D_800F53B8_t*, int, int);
 void func_800D5700(func_800D5780_t*);
 void func_800D5738(func_800D5780_t*);
@@ -422,6 +402,7 @@ void func_800D67C4(D_800F53B8_t*, u_char);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
+void func_800D6E24(func_800D2904_t*, void*);
 void func_800D7890(int);
 void func_800D78B8(void);
 void func_800D78CC(void);
@@ -576,6 +557,11 @@ typedef struct {
     u_short unk10;
     u_short shape12;
 } func_800D0548_arg0;
+typedef struct {
+    u_int unk60_0 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 20;
+} func_800D2904_flags;
 int func_800C1D84(void);
 extern u_char D_800EABAA;
 extern char D_800EA984[];
@@ -588,54 +574,6 @@ extern u_short D_800EBD64;
 extern int D_800EC328;
 extern u_char D_800F5238;
 extern D_800F53B8_t3 D_800F5234;
-typedef struct {
-    short rotation[3];
-    u_short flags;
-    u_char pad8[6];
-    short frame;
-    u_char pad10[12];
-    VECTOR position;
-    u_char pad2C[8];
-    u_char actor, bone, targetActor, targetBone;
-    MATRIX world, view, attachment, facing;
-    SVECTOR saved, control0, control1;
-} effectTransformState;
-/* func_800CFEF0 reads the rotation words of block 10 entries as ints. */
-typedef struct {
-    u_short unk0;
-    u_short unk2;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    int unk8;
-    int unkC;
-    int unk10;
-    short unk14[6];
-    short unk20[6];
-    short unk2C[6];
-} effectDefinitionView;
-typedef struct {
-    short mass;
-    short gravityScale;
-    int x, y, z;
-    int vx, vy, vz;
-    int fx, fy, fz;
-    int ax, ay, az;
-} effectMotionState;
-typedef struct {
-    char prefix[0x62];
-    short targetX, targetY, targetZ;
-    char padding[8];
-    int attraction;
-} effectAttractionView;
-typedef struct {
-    u_short unk0;
-    u_char count, unk3;
-    char prefix[12];
-    actionEffectTarget target[0];
-} soundEventTargets;
-void func_800D6E24(void);
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -5087,18 +5025,18 @@ void func_800CE714(D_800F53B8_t2* arg0, D_800F53B8_t* arg1)
     arg1->unk14_16 = 0;
 
     for (i = 0; i < 16; ++i) {
-        ((short*)&arg1->unk1C[i].unk4)[1] = 0;
-        arg1->unk1C[i].unk4 = 0;
-        arg1->unk1C[i].unk0 = 0;
-        arg1->unk1C[i].unkC = 0;
+        arg1->unk1C[i].flags = 0;
+        *(int*)&arg1->unk1C[i].rotation[2] = 0;
+        *(int*)&arg1->unk1C[i].rotation[0] = 0;
+        *(int*)&arg1->unk1C[i].unkC = 0;
         arg1->unk1C[i].unk8 = 0;
-        arg1->unk1C[i].unk18 = 0;
-        arg1->unk1C[i].unk14 = 0;
-        arg1->unk1C[i].unk10 = 0;
-        arg1->unk1C[i].unk30 = 0;
-        arg1->unk1C[i].unk2C = 0;
-        arg1->unk1C[i].unk28 = 0;
-        *(int*)&arg1->unk1C[i].unk34 = 0;
+        arg1->unk1C[i].unk10[2] = 0;
+        arg1->unk1C[i].unk10[1] = 0;
+        arg1->unk1C[i].unk10[0] = 0;
+        arg1->unk1C[i].unk2C[1] = 0;
+        arg1->unk1C[i].unk2C[0] = 0;
+        arg1->unk1C[i].position.pad = 0;
+        *(int*)&arg1->unk1C[i].actor = 0;
     }
 
     arg1->unkD1C.unk0 = *arg0->unk0;
@@ -5940,78 +5878,83 @@ void func_800CFE98(SVECTOR* arg0, MATRIX* arg1)
 void func_800CFEF0(D_800F53B8_t* arg0)
 {
     int i;
+
     for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
-        effectDefinitionView* definition =
-            &((effectDefinitionView*)D_800F569C->block10Data)[i];
-        effectTransformState* state = (void*)&arg0->unk1C[i];
+        func_800D0B30_t* definition = &D_800F569C->block10Data[i];
+        func_800D0548_arg1* state = &arg0->unk1C[i];
+
         state->rotation[0] = definition->unk8;
         state->rotation[1] = definition->unkC;
         state->rotation[2] = definition->unk10;
-        state->position.vx = 0;
-        state->position.vy = 0;
-        state->position.vz = 0;
-        func_800CFE7C((void*)&state->facing);
+        setVector(&state->position, 0, 0, 0);
+        func_800CFE7C(&state->facing);
         state->flags = 0;
         state->frame = 0;
         *(int*)&state->actor = 0;
-        if (definition->unk0 & 2) {
-            switch (definition->unk0 & 0x18) {
+
+        if (definition->flags & 2) {
+            switch (definition->flags & 0x18) {
             case 0x10:
                 if (arg0->unkD1C.unk24.type == 4) {
-                    state->actor = ((u_char*)&arg0->unkD1C.unk24.value)[0];
-                    state->bone = ((u_char*)&arg0->unkD1C.unk24.value)[2];
+                    state->actor = arg0->unkD1C.unk24.value.actor.actor;
+                    state->bone = arg0->unkD1C.unk24.value.actor.part;
                 } else {
                     state->actor = 0xFF;
-                    func_800CFE98(
-                        (SVECTOR*)&arg0->unkD1C.unk24.value, (void*)&state->attachment);
+                    func_800CFE98(&arg0->unkD1C.unk24.value.position, &state->attachment);
                 }
                 break;
+
             case 8:
                 if (arg0->unkD1C.unkC.type == 4) {
-                    state->actor = ((u_char*)&arg0->unkD1C.unkC.value)[0];
-                    state->bone = ((u_char*)&arg0->unkD1C.unkC.value)[2];
+                    state->actor = arg0->unkD1C.unkC.value.actor.actor;
+                    state->bone = arg0->unkD1C.unkC.value.actor.part;
                 } else {
                     state->actor = 0xFF;
-                    func_800CFE98(
-                        (SVECTOR*)&arg0->unkD1C.unkC.value, (void*)&state->attachment);
+                    func_800CFE98(&arg0->unkD1C.unkC.value.position, &state->attachment);
                 }
                 break;
+
             case 0:
-                state->actor = (u_char)definition->unk2;
+                state->actor = definition->unk2;
                 state->bone = 0;
                 break;
             }
-            if (!(definition->unk0 & 4)) {
-                state->bone = ((u_char*)&definition->unk2)[1];
+
+            if (!(definition->flags & 4)) {
+                state->bone = definition->unk3;
             }
         }
-        if (definition->unk0 & 0x80) {
-            switch (definition->unk0 & 0xC00) {
+
+        if (definition->flags & 0x80) {
+            switch (definition->flags & 0xC00) {
             case 0x800:
                 if (arg0->unkD1C.unk24.type == 4) {
-                    state->targetActor = ((u_char*)&arg0->unkD1C.unk24.value)[0];
-                    state->targetBone = ((u_char*)&arg0->unkD1C.unk24.value)[2];
+                    state->targetActor = arg0->unkD1C.unk24.value.actor.actor;
+                    state->targetBone = arg0->unkD1C.unk24.value.actor.part;
                 } else {
                     state->targetActor = 0xFF;
                     state->saved = arg0->unkD1C.unk24.value.position;
                 }
                 break;
+
             case 0x400:
                 if (arg0->unkD1C.unkC.type == 4) {
-                    state->targetActor = ((u_char*)&arg0->unkD1C.unkC.value)[0];
-                    state->targetBone = ((u_char*)&arg0->unkD1C.unkC.value)[2];
+                    state->targetActor = arg0->unkD1C.unkC.value.actor.actor;
+                    state->targetBone = arg0->unkD1C.unkC.value.actor.part;
                 } else {
                     state->targetActor = 0xFF;
                     state->saved = arg0->unkD1C.unkC.value.position;
                 }
                 break;
+
             case 0:
-                state->targetActor = ((u_char*)&definition->unk8)[2] & 31;
+                state->targetActor = definition->mode & 31;
                 state->targetBone = 0;
                 break;
             }
-            if (!(definition->unk0 & 0x200)) {
-                state->targetBone = ((u_char*)&definition->unk8)[3];
+
+            if (!(definition->flags & 0x200)) {
+                state->targetBone = ((u_char*)&definition->mode)[1];
             }
         }
     }
@@ -6231,7 +6174,7 @@ void func_800D0D08(D_800F53B8_t* arg0)
 
     for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
         func_800D0B30_t* definition = &D_800F569C->block10Data[i];
-        func_800D0548_arg1* state = (func_800D0548_arg1*)&arg0->unk1C[i];
+        func_800D0548_arg1* state = &arg0->unk1C[i];
 
         func_800D0B30(definition, (SVECTOR*)state->rotation, scratch);
 
@@ -6525,13 +6468,15 @@ void func_800D1B18(D_800F54D8_t* arg0)
 
 void func_800D1B80(D_800F54D8_t* camera)
 {
-    VECTOR offset, position;
-    MATRIX unusedTransform;
-    SVECTOR unusedRotation;
-    int dx, dz, yaw, pitch, horizontal;
-    dx = (camera->position.vx - camera->lookAt.vx) >> 12;
-    dz = (camera->position.vz - camera->lookAt.vz) >> 12;
-    yaw = ratan2(dx, dz);
+    VECTOR offset;
+    VECTOR position;
+    int _[10];
+    int dx = (camera->position.vx - camera->lookAt.vx) >> 12;
+    int dz = (camera->position.vz - camera->lookAt.vz) >> 12;
+    int yaw = ratan2(dx, dz);
+    int pitch;
+    int horizontal;
+
     offset.vx = rcos(yaw) * (camera->unk20 >> 12);
     offset.vz = -rsin(yaw) * (camera->unk20 >> 12);
     pitch = ratan2(
@@ -6540,24 +6485,20 @@ void func_800D1B80(D_800F54D8_t* camera)
     horizontal = -rcos(pitch) * (camera->unk28 >> 12);
     offset.vy += rcos(pitch) * (camera->unk24 >> 12);
     horizontal += -rsin(pitch) * (camera->unk24 >> 12);
-    offset.vx += rsin(yaw) * (horizontal >>= 12);
-    offset.vz += rcos(yaw) * horizontal;
-    position.vx = camera->position.vx + offset.vx;
-    position.vy = camera->position.vy + offset.vy;
-    position.vz = camera->position.vz + offset.vz;
+    offset.vx += rsin(yaw) * (horizontal >> 12);
+    offset.vz += rcos(yaw) * (horizontal >> 12);
+    setVector(&position, camera->position.vx + offset.vx, camera->position.vy + offset.vy,
+        camera->position.vz + offset.vz);
     vs_battle_setCameraPosition(&position);
-    position.vx = camera->lookAt.vx + offset.vx;
-    position.vy = camera->lookAt.vy + offset.vy;
-    position.vz = camera->lookAt.vz + offset.vz;
+    setVector(&position, camera->lookAt.vx + offset.vx, camera->lookAt.vy + offset.vy,
+        camera->lookAt.vz + offset.vz);
     vs_battle_setCameraLookAt(&position);
-    {
-        int rollOffset = camera->unk2C - 0x8000;
-        vs_battle_setCameraRoll(camera->roll + rollOffset);
-    }
+    vs_battle_setCameraRoll(camera->roll - 32768 + camera->unk2C);
     vs_battle_setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
-    /* This original call site does not initialize the setter's second argument. */
-    ((void (*)())vs_battle_setFarClip)(camera->farClip);
+    // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
+    // call and whether the far clip reaches func_80098194 is unpredictable
+    ((void (*)(int))vs_battle_setFarClip)(camera->farClip);
     func_8007ACB0();
 }
 
@@ -6921,9 +6862,9 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
         arg0->unk34.vy = arg0->unk2C.vy;
         arg0->unk34.vz = arg0->unk2C.vz;
     }
-    arg1->unkC = arg0->unk98.vx + arg0->unk34.vx * ONE;
-    arg1->unk10 = arg0->unk98.vy + arg0->unk34.vy * ONE;
-    arg1->unk14 = arg0->unk98.vz + arg0->unk34.vz * ONE;
+
+    setVector(&arg1->motion.position, arg0->unk98.vx + arg0->unk34.vx * ONE,
+        arg0->unk98.vy + arg0->unk34.vy * ONE, arg0->unk98.vz + arg0->unk34.vz * ONE);
 }
 
 /* Uniform integer between a and b (inclusive) using 30 random bits. */
@@ -6933,7 +6874,7 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
                  : (rand() + (rand() << 16)) % ((b) - (a) + 1) + (a))
 
 void func_800D2ADC(
-    D_800F53B8_t* arg0, int event, int arg2, int arg3, func_800FB4C0_t* parent)
+    D_800F53B8_t* arg0, int event, int arg2, int arg3, func_800D2904_t* parent)
 {
     int _[4] __attribute__((unused));
     int frame;
@@ -6970,7 +6911,7 @@ void func_800D2ADC(
     }
 
     if (parent != NULL && arg3 == 0) {
-        arg3 = parent->unk60_8 & 0xF;
+        arg3 = ((func_800D2904_flags*)&parent->unk60)->unk60_8 & 0xF;
     }
 
     frame = arg0->unk14_16;
@@ -6981,7 +6922,7 @@ void func_800D2ADC(
 
     gte_zrtr();
 
-    matrix = &arg0->unk1C[scratch->unk168].unk38;
+    matrix = &arg0->unk1C[scratch->unk168].world;
     sample = def->unk15;
     count = func_800CFE1C(def->unkBC, D_800F5330[sample]);
     if (count + D_800F55F8 >= D_800F55F0) {
@@ -6990,8 +6931,8 @@ void func_800D2ADC(
 
     for (i = 0; i < count; ++i) {
         node = func_800D27F0(arg0);
-        node->unk6A = scratch->unk168;
-        node->unk6B = scratch->unk16C;
+        node->unk6A[0] = scratch->unk168;
+        node->unk6A[1] = scratch->unk16C;
         func_800D6CF0(&node->unk3C, def->unk1, def->unk0);
     }
 
@@ -7012,9 +6953,9 @@ void func_800D2ADC(
         break;
     case 4:
         if (parent != NULL) {
-            scratch->unk98.vx += parent->unkC.vx >> 12;
-            scratch->unk98.vy += parent->unkC.vy >> 12;
-            scratch->unk98.vz += parent->unkC.vz >> 12;
+            scratch->unk98.vx += parent->motion.position.vx >> 12;
+            scratch->unk98.vy += parent->motion.position.vy >> 12;
+            scratch->unk98.vz += parent->motion.position.vz >> 12;
         }
         break;
     }
@@ -7358,9 +7299,9 @@ void func_800D2ADC(
             }
             scratch->unk120 =
                 vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
-            node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
-            node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
-            node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node->motion.velocity.vx = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->motion.velocity.vy = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->motion.velocity.vz = (scratch->unkB8.vz * scratch->unk120) >> 12;
             node = node->next;
         }
         break;
@@ -7385,29 +7326,29 @@ void func_800D2ADC(
             RotTrans(&scratch->unk2C, &scratch->unkB8, &scratch->unkB8.pad);
             scratch->unk120 =
                 vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
-            node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
-            node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
-            node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+            node->motion.velocity.vx = (scratch->unkB8.vx * scratch->unk120) >> 12;
+            node->motion.velocity.vy = (scratch->unkB8.vy * scratch->unk120) >> 12;
+            node->motion.velocity.vz = (scratch->unkB8.vz * scratch->unk120) >> 12;
             node = node->next;
         }
         break;
     case 0x2000:
         for (i = 0; i < count; ++i) {
-            scratch->unkB8.vx = (scratch->unk98.vx - node->unkC) >> 12;
-            scratch->unkB8.vy = (scratch->unk98.vy - node->unk10) >> 12;
-            scratch->unkB8.vz = (scratch->unk98.vz - node->unk14) >> 12;
+            scratch->unkB8.vx = (scratch->unk98.vx - node->motion.position.vx) >> 12;
+            scratch->unkB8.vy = (scratch->unk98.vy - node->motion.position.vy) >> 12;
+            scratch->unkB8.vz = (scratch->unk98.vz - node->motion.position.vz) >> 12;
             scratch->unk120 =
                 vs_battle_randUniformInt(scratch->unk118[0], scratch->unk118[1]);
             if (scratch->unkB8.vx != 0 || scratch->unkB8.vy != 0
                 || scratch->unkB8.vz != 0) {
                 VectorNormal(&scratch->unkB8, &scratch->unkB8);
-                node->unk18[0] = (scratch->unkB8.vx * scratch->unk120) >> 12;
-                node->unk18[1] = (scratch->unkB8.vy * scratch->unk120) >> 12;
-                node->unk18[2] = (scratch->unkB8.vz * scratch->unk120) >> 12;
+                node->motion.velocity.vx = (scratch->unkB8.vx * scratch->unk120) >> 12;
+                node->motion.velocity.vy = (scratch->unkB8.vy * scratch->unk120) >> 12;
+                node->motion.velocity.vz = (scratch->unkB8.vz * scratch->unk120) >> 12;
             } else {
-                node->unk18[1] = scratch->unk120;
-                node->unk18[2] = 0;
-                node->unk18[0] = 0;
+                node->motion.velocity.vy = scratch->unk120;
+                node->motion.velocity.vz = 0;
+                node->motion.velocity.vx = 0;
             }
             node = node->next;
         }
@@ -7422,12 +7363,18 @@ void func_800D2ADC(
     vs_battle_lerpSvector(def->unk34[5], D_800F5330[sample], &scratch->unk110);
     node = first;
     for (i = 0; i < count; ++i) {
-        node->unk24[0] = vs_battle_randUniformInt(scratch->unkF8.vx, scratch->unk100.vx);
-        node->unk24[1] = vs_battle_randUniformInt(scratch->unkF8.vy, scratch->unk100.vy);
-        node->unk24[2] = vs_battle_randUniformInt(scratch->unkF8.vz, scratch->unk100.vz);
-        node->unk30[0] = vs_battle_randUniformInt(scratch->unk108.vx, scratch->unk110.vx);
-        node->unk30[1] = vs_battle_randUniformInt(scratch->unk108.vy, scratch->unk110.vy);
-        node->unk30[2] = vs_battle_randUniformInt(scratch->unk108.vz, scratch->unk110.vz);
+        node->motion.force.vx =
+            vs_battle_randUniformInt(scratch->unkF8.vx, scratch->unk100.vx);
+        node->motion.force.vy =
+            vs_battle_randUniformInt(scratch->unkF8.vy, scratch->unk100.vy);
+        node->motion.force.vz =
+            vs_battle_randUniformInt(scratch->unkF8.vz, scratch->unk100.vz);
+        node->motion.acceleration.vx =
+            vs_battle_randUniformInt(scratch->unk108.vx, scratch->unk110.vx);
+        node->motion.acceleration.vy =
+            vs_battle_randUniformInt(scratch->unk108.vy, scratch->unk110.vy);
+        node->motion.acceleration.vz =
+            vs_battle_randUniformInt(scratch->unk108.vz, scratch->unk110.vz);
         node = node->next;
     }
 
@@ -7439,8 +7386,10 @@ void func_800D2ADC(
     vs_battle_lerp2DVector(def->unk94[4], D_800F5330[sample], scratch->unk134);
     node = first;
     for (i = 0; i < count; ++i) {
-        node->unk8 = vs_battle_randUniformInt(scratch->unk124[0], scratch->unk124[1]);
-        node->unkA = vs_battle_randUniformInt(scratch->unk12C[0], scratch->unk12C[1]);
+        node->motion.mass =
+            vs_battle_randUniformInt(scratch->unk124[0], scratch->unk124[1]);
+        node->motion.gravityScale =
+            vs_battle_randUniformInt(scratch->unk12C[0], scratch->unk12C[1]);
         node->lifetime = vs_battle_randUniformInt(scratch->unk134[0], scratch->unk134[1]);
         node = node->next;
     }
@@ -7464,13 +7413,13 @@ void func_800D2ADC(
     case 0xC0:
         for (i = 0; i < count; ++i) {
             node->unk62[0] =
-                arg0->unk1C[scratch->unk16C].unk38.t[0] + scratch->unk13C.vx
+                arg0->unk1C[scratch->unk16C].world.t[0] + scratch->unk13C.vx
                 + vs_battle_randUniformInt(scratch->unk144.vx, -scratch->unk144.vy);
             node->unk62[1] =
-                arg0->unk1C[scratch->unk16C].unk38.t[1] + scratch->unk13C.vy
+                arg0->unk1C[scratch->unk16C].world.t[1] + scratch->unk13C.vy
                 + vs_battle_randUniformInt(scratch->unk144.vy, -scratch->unk144.vy);
             node->unk62[2] =
-                arg0->unk1C[scratch->unk16C].unk38.t[2] + scratch->unk13C.vz
+                arg0->unk1C[scratch->unk16C].world.t[2] + scratch->unk13C.vz
                 + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz);
             node = node->next;
         }
@@ -7492,13 +7441,13 @@ void func_800D2ADC(
     scratch->unk154.packed = *(int*)&def->rCurve;
     scratch->unk154.fields.age = node->unk77;
     for (i = 0; i < count; ++i) {
-        node->unk5C = scratch->flags;
+        *(int*)node->unk5C = scratch->flags;
         value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
         *(int*)node->unk74 = scratch->unk154.packed;
         node->unk70 = value;
         *(u_short*)&node->endEvent = *(u_short*)&def->unk2;
-        node->unk60_0 = scratch->unk180;
-        node->unk60_8 = arg3;
+        node->unk60 = scratch->unk180;
+        ((func_800D2904_flags*)&node->unk60)->unk60_8 = arg3;
         node = node->next;
     }
 }
@@ -7606,11 +7555,11 @@ int func_800D49A4(D_800F53B8_t* arg0)
     if (((u_short)(arg0->unkD1C.unk38 - 6) < 16) || (arg0->unkD1C.unk38 == 0x21)
         || (arg0->unkD1C.unk38 == 0x24)) {
         for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
-            arg0->unk1C[i].unk20 = -0x80;
+            arg0->unk1C[i].position.vy = -128;
         }
     } else if ((arg0->unkD1C.unk38 == 0x38) && (arg0->unk10[3] == 0x2B)) {
         for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
-            arg0->unk1C[i].unk20 = 0x80;
+            arg0->unk1C[i].position.vy = 128;
         }
     }
     return 1;
@@ -7654,37 +7603,39 @@ int func_800D4BD0(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4C18(D_800F53B8_t* arg0);
 int func_800D4C18(D_800F53B8_t* arg0)
 {
     func_800D2904_t* next = arg0->unk18;
     func_800D2904_t* node;
 
     func_800D52A4(next);
-    /* The original caller supplies arguments to this argument-free wrapper. */
-    ((void (*)())func_800D6E24)(arg0->unk18, (void*)0x1F80015C);
-    node = next;
-    while (next != NULL) {
+    func_800D6E24(arg0->unk18, (void*)0x1F80015C);
+
+    for (node = next; next != NULL; node = next) {
         next = node->next;
         ++node->unk77;
+
         if (node->tickEvent != 0) {
-            func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, (void*)node);
+            func_800D2ADC(arg0, node->tickEvent - 1, 0, 0, node);
         }
+
         if (node->lifetime == -1) {
             if (node->unk3C.unk6 == 0) {
                 if (node->endEvent != 0) {
-                    func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
+                    func_800D2ADC(arg0, node->endEvent - 1, 0, 0, node);
                 }
+
                 func_800D2888(node, arg0);
             }
         } else if (--node->lifetime == 0) {
             if (node->endEvent != 0) {
-                func_800D2ADC(arg0, node->endEvent - 1, 0, 0, (void*)node);
+                func_800D2ADC(arg0, node->endEvent - 1, 0, 0, node);
             }
+
             func_800D2888(node, arg0);
         }
-        node = next;
     }
+
     return 1;
 }
 
@@ -7830,43 +7781,45 @@ void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 void func_800D52A4(func_800D2904_t* node)
 {
     VECTOR direction;
-    effectMotionState* state;
-    int damping;
     int drag = D_800F5618;
     int gravityX = D_800F5620.unk0;
     int gravityY = D_800F5620.unk4;
     int gravityZ = D_800F5620.unk8;
 
     for (; node != NULL; node = node->next) {
-        state = (effectMotionState*)&node->unk8;
-        damping = node->unk8 - drag;
-        state->vx = (state->vx * damping + (state->fx << 12)) / node->unk8
-                  + ((gravityX * state->gravityScale) >> 12);
-        state->x += state->vx;
-        state->vy = (state->vy * damping + (state->fy << 12)) / node->unk8
-                  + ((gravityY * state->gravityScale) >> 12);
-        state->y += state->vy;
-        state->vz = (state->vz * damping + (state->fz << 12)) / node->unk8
-                  + ((gravityZ * state->gravityScale) >> 12);
-        state->z += state->vz;
-        damping = ((effectAttractionView*)node)->attraction;
-        if (damping != 0) {
-            direction.vx = ((effectAttractionView*)node)->targetX - (state->x >> 12);
-            direction.vy = ((effectAttractionView*)node)->targetY - (state->y >> 12);
-            direction.vz = ((effectAttractionView*)node)->targetZ - (state->z >> 12);
+        func_800D52A4_t* motion = &node->motion;
+        int scale = motion->mass - drag;
+
+        motion->velocity.vx =
+            (motion->velocity.vx * scale + motion->force.vx * ONE) / motion->mass
+            + ((gravityX * motion->gravityScale) >> 12);
+        motion->position.vx += motion->velocity.vx;
+        motion->velocity.vy =
+            (motion->velocity.vy * scale + motion->force.vy * ONE) / motion->mass
+            + ((gravityY * motion->gravityScale) >> 12);
+        motion->position.vy += motion->velocity.vy;
+        motion->velocity.vz =
+            (motion->velocity.vz * scale + motion->force.vz * ONE) / motion->mass
+            + ((gravityZ * motion->gravityScale) >> 12);
+        motion->position.vz += motion->velocity.vz;
+        scale = node->unk70;
+
+        if (scale != 0) {
+            setVector(&direction, node->unk62[0] - (motion->position.vx >> 12),
+                node->unk62[1] - (motion->position.vy >> 12),
+                node->unk62[2] - (motion->position.vz >> 12));
+
             if (direction.vx != 0 || direction.vy != 0 || direction.vz != 0) {
                 VectorNormal(&direction, &direction);
-                direction.vx = (direction.vx * damping) >> 12;
-                direction.vy = (direction.vy * damping) >> 12;
-                direction.vz = (direction.vz * damping) >> 12;
+                setVector(&direction, (direction.vx * scale) >> 12,
+                    (direction.vy * scale) >> 12, (direction.vz * scale) >> 12);
             }
-            state->fx += state->ax + direction.vx;
-            state->fy += state->ay + direction.vy;
-            state->fz += state->az + direction.vz;
+
+            applyVector(&motion->force, motion->acceleration.vx + direction.vx,
+                motion->acceleration.vy + direction.vy,
+                motion->acceleration.vz + direction.vz, +=);
         } else {
-            state->fx += state->ax;
-            state->fy += state->ay;
-            state->fz += state->az;
+            addVector(&motion->force, &motion->acceleration);
         }
     }
 }
@@ -7992,9 +7945,9 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
             vs_main_playSfxDefault(bank, (command >> 9) & 0x1FF);
         } else {
             setVector(&position,
-                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[0],
-                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[1],
-                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].unk38.t[2]);
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].world.t[0],
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].world.t[1],
+                arg0->unk1C[(commands[arg1->unk6] >> 22) & 63].world.t[2]);
             vs_main_panSfx(bank, (commands[arg1->unk6] >> 9) & 0x1FF, &position);
         }
     }
@@ -8240,7 +8193,7 @@ void func_800D6418(D_800F53B8_t* arg0)
 void func_800D6448(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
 {
     func_800D78B8();
-    func_800CF7A8(arg0->unk1C[arg1].unk34, arg0->unk1C[arg1].unk35, arg2 % 10, arg2 / 10);
+    func_800CF7A8(arg0->unk1C[arg1].actor, arg0->unk1C[arg1].bone, arg2 % 10, arg2 / 10);
     func_800D78CC();
 }
 
@@ -8309,9 +8262,9 @@ void func_800D66FC(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
 {
     func_800D1B18(D_800F5520);
     func_800D1B18(&D_800F5520[1]);
-    D_800F5520[1].lookAt.vx = arg0->unk1C[arg1].unk38.t[0] * ONE;
-    D_800F5520[1].lookAt.vy = arg0->unk1C[arg1].unk38.t[1] * ONE;
-    D_800F5520[1].lookAt.vz = arg0->unk1C[arg1].unk38.t[2] * ONE;
+    D_800F5520[1].lookAt.vx = arg0->unk1C[arg1].world.t[0] * ONE;
+    D_800F5520[1].lookAt.vy = arg0->unk1C[arg1].world.t[1] * ONE;
+    D_800F5520[1].lookAt.vz = arg0->unk1C[arg1].world.t[2] * ONE;
     D_800F54D0 = 0;
     if (arg2 == 0) {
         arg2 = 1;
@@ -8551,4 +8504,4 @@ void func_800D6D24(func_800D6CF_t* arg0)
     }
 }
 
-void func_800D6E24(void) { func_800D6E44(); }
+void func_800D6E24(func_800D2904_t* node, void* arg1) { func_800D6E44(node); }

@@ -1071,20 +1071,20 @@ void func_800E6828(actorInitializationState*);
 void func_800E7370(actorInitializationState*);
 void func_800E72D0(void);
 
-int func_800E6178(actorInitializationActor* actor, int options)
+int func_800E6178(vs_battle_actor* actor, int options)
 {
     actorInitializationState* state;
     actorInitializationModel* model;
     actorInitializationStats* stats;
-    int id = actor->id;
+    int id = ((actorInitializationActor*)actor)->id;
     int i, kind, temp, packed;
     unsigned int radius, range;
     unsigned short result[4];
-    if (actor->attributes & 0x15) {
+    if (((actorInitializationActor*)actor)->attributes & 0x15) {
         D_800F590C |= 1 << id;
     }
-    if (!actor->field40) {
-        kind = actor->model->kind & 7;
+    if (!((actorInitializationActor*)actor)->field40) {
+        kind = ((actorInitializationActor*)actor)->model->kind & 7;
         if (kind == 2 || kind == 4) {
             for (i = 0; i < 4; i++) {
                 if (!((int*)D_800F58BC)[10 + i]) {
@@ -1094,17 +1094,17 @@ int func_800E6178(actorInitializationActor* actor, int options)
             }
         }
     }
-    if (!(actor->attributes & 5)) {
+    if (!(((actorInitializationActor*)actor)->attributes & 5)) {
         return 0;
     }
     state = vs_main_allocHeap(0x484);
     D_800F5878[id] = (void*)state;
     func_800E4288(state, 0x484);
     state->id = id;
-    state->actor = actor;
-    model = actor->model;
+    state->actor = (actorInitializationActor*)actor;
+    model = ((actorInitializationActor*)actor)->model;
     state->model = model;
-    state->stats = actor->stats;
+    state->stats = ((actorInitializationActor*)actor)->stats;
     func_800A190C(state->id, 250, result, 0);
     state->field82 = result[1] - model->position[1];
     radius = model->radius;
@@ -1129,7 +1129,7 @@ int func_800E6178(actorInitializationActor* actor, int options)
     state->field8A = 0;
     state->field103 = 1;
     state->field2A = func_800A152C(id, 2, 3) >= 0;
-    stats = actor->stats;
+    stats = ((actorInitializationActor*)actor)->stats;
     state->field224 = stats->field30;
     state->field225 = stats->field32;
     state->field226 = stats->field31;
@@ -1145,9 +1145,9 @@ int func_800E6178(actorInitializationActor* actor, int options)
         range = state->field227;
     }
     state->maxRange = range;
-    packed = actor->field38;
-    if (actor->field34 & 1) {
-        func_800E5A74(&packed, (void*)&actor->field30);
+    packed = ((actorInitializationActor*)actor)->field38;
+    if (((actorInitializationActor*)actor)->field34 & 1) {
+        func_800E5A74(&packed, (void*)&((actorInitializationActor*)actor)->field30);
     }
     func_800E5A9C((void*)state, (void*)&packed);
     func_800E7370(state);
@@ -1170,16 +1170,16 @@ int func_800E6178(actorInitializationActor* actor, int options)
             state->next = model->tile.raw;
             func_800DEEFC((void*)state, 12);
         } else if ((short)options < 0 || !(((int)(short)options << 26) < 0)) {
-            if (actor->field1F) {
+            if (((actorInitializationActor*)actor)->field1F) {
                 func_800DEEFC((void*)state, 1);
                 state->field12D = 1;
             }
         }
     }
-    actor->flags.bytes.b1 = 0;
-    actor->flags.bits.f26 = 0;
-    actor->flags.bits.f24 = 0;
-    state->field124 = actor->flags.bytes.b1;
+    ((actorInitializationActor*)actor)->flags.bytes.b1 = 0;
+    ((actorInitializationActor*)actor)->flags.bits.f26 = 0;
+    ((actorInitializationActor*)actor)->flags.bits.f24 = 0;
+    state->field124 = ((actorInitializationActor*)actor)->flags.bytes.b1;
     state->previous = -1;
     state->options = (short)options;
     func_800E72D0();

@@ -659,6 +659,10 @@ typedef struct {
 } _zndEnemy;
 
 typedef struct {
+    u_char bytes[8];
+} actorSpawnSettings;
+
+typedef struct {
     u_char type;
     u_char index;
     u_char hidden;
@@ -673,7 +677,7 @@ typedef struct {
     u_char direction;
     u_char z;
     u_char height;
-    u_char settings[8];
+    actorSpawnSettings settings;
     u_char unk18[2];
     u_short itemId;
     u_short item2Id;
@@ -858,7 +862,7 @@ typedef struct {
 
 typedef struct {
     u_short subType;
-    char unk2;
+    u_char unk2;
     u_int reach : 5;
     u_int unk3_5 : 3;
     char name[24];

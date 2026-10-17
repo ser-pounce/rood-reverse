@@ -33,7 +33,7 @@ typedef struct {
 } AkaoTimeStamp;
 
 typedef struct {
-    char magic[4];
+    int magic;
     u_short id;
     u_short length;
     u_short reverb_type;
@@ -64,6 +64,14 @@ typedef struct {
     int unk14;
 } D_800378C0_t;
 
+typedef struct {
+    int magic;
+    int count;
+    int flags;
+    int unkC;
+    int offsets[4];
+} func_8001733C_t;
+
 // Streaming state for func_80012F10 (instrument bank uploaded in chunks)
 typedef struct {
     int* pInstrumentDst; // next g_InstrumentInfo word to fill
@@ -72,7 +80,7 @@ typedef struct {
     u_int InstrumentBytesRemaining;
 } D_80039BC8_t;
 
-#define AKAO_MAGIC 0x4F414B41 // 'AKAO'
+#define AKAO_MAGIC ('A' | ('K' << 8) | ('A' << 16) | ('O' << 24))
 
 typedef void (*FSoundCommandHandler)(FSoundCommandParams*);
 
@@ -107,6 +115,7 @@ void func_80015BAC(void);
 void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
     int in_ExtraVoiceMask);
 void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
+void Sound_memswp32(void* in_A, void* in_B, u_int in_Size);
 void UpdateCdVolume(void);
 int func_8001A1F4(int, int);
 int func_8001A22C(int, u_int);
@@ -144,7 +153,9 @@ extern char D_80039AF2;
 extern int D_8002F548;
 extern u_short D_8002F54C;
 extern int D_8002F550[];
+extern FSoundCommandHandler D_800301E0[];
 extern FSoundCommandParams D_80037788;
+extern FSoundCommandParams D_80037790;
 extern int D_80037898;
 extern int D_8003789C;
 extern int D_80039B00;
@@ -2376,33 +2387,32 @@ u_int func_80015D38(FSoundChannel* arg0, u_int arg1)
     return var_a3;
 }
 
-// https://decomp.me/scratch/1nmK4
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
 {
-    FAkaoSequence* pSequence;
-    u_int channelMask;
     u_int mask;
     u_int i;
     FSoundChannel* pChannel;
-    u_short* pChannelOffsets;
     FSoundChannelConfig* pConfig;
-    char* pRegion;
-    int updateFlags;
+    void* pRegion;
+    FAkaoSequence* pSequence = in_Sequence;
+    u_short* pChannelOffsets = (u_short*)in_Sequence;
+    u_int channelMask;
 
-    pSequence = in_Sequence;
-    pChannelOffsets = (u_short*)in_Sequence;
     g_pActiveMusicConfig->unk38 = (int)in_Sequence;
     channelMask = in_Sequence->ChannelEnableMask;
+
     if (g_pSavedMousicConfig != NULL) {
         mask = func_80015D38(
             g_pSecondaryMusicChannels, g_pSavedMousicConfig->ActiveChannelMask);
     } else {
         mask = 0;
     }
+
     g_Sound_VoiceSchedulerState.KeyOffFlags |=
         ~mask & 0xFFFFFF & ~(g_Sound_VoiceSchedulerState.ActiveChannelMask | D_80039B14);
     pConfig = g_pActiveMusicConfig;
     pConfig->PendingKeyOffMask = 0;
+
     if (D_80039B64 & 1) {
         pConfig->ActiveChannelMask = 0;
         pConfig->unk1C |= channelMask;
@@ -2416,12 +2426,12 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     g_pActiveMusicConfig->StatusFlags &= ~0x61;
     g_pActiveMusicConfig->StatusFlags |=
         pSequence->unk14 == D_80036770.unk4 ? 0x40 : 0x20;
-    pRegion = (char*)pSequence + (pSequence->PatchRegionOffset + 0x30);
+    pRegion = (char*)&pSequence->PatchRegionOffset + pSequence->PatchRegionOffset;
     g_pActiveMusicConfig->SequencePatchTable =
-        pSequence->PatchRegionOffset != 0 ? (FAkaoSequence*)pRegion : NULL;
-    pRegion = (char*)pSequence + (pSequence->KeymapRegionOffset + 0x34);
+        pSequence->PatchRegionOffset != 0 ? pRegion : NULL;
+    pRegion = (char*)&pSequence->KeymapRegionOffset + pSequence->KeymapRegionOffset;
     g_pActiveMusicConfig->KeymapTable =
-        pSequence->KeymapRegionOffset != 0 ? (u_short*)pRegion : NULL;
+        pSequence->KeymapRegionOffset != 0 ? pRegion : NULL;
     g_pActiveMusicConfig->SomeIndexRelatedToSpuVoiceInfo = 0;
     g_pActiveMusicConfig->unk2C = pSequence->unk38;
     g_pActiveMusicConfig->unk30 = pSequence->unk3C;
@@ -2429,9 +2439,12 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     mask = 1;
     i = 0;
     pChannel = g_ActiveMusicChannels;
-    pChannelOffsets += 0x20;
-    while (i < 0x20) {
+    pChannelOffsets += 32;
+
+    while (i < 32) {
         if (channelMask & mask) {
+            int updateFlags;
+
             pChannel->ProgramCounter = (char*)pChannelOffsets + *pChannelOffsets;
             pChannel->Length1 = 4;
             pChannel->Length2 = 2;
@@ -2467,7 +2480,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
             pChannel->VibratoDepthSlideLength = 0;
             pChannel->FmTimer = 0;
             pChannel->NoiseTimer = 0;
-            pChannelOffsets++;
+            ++pChannelOffsets;
             func_8001B094(pChannel, 0);
         } else {
             pChannel->Length1 = 3;
@@ -2477,10 +2490,11 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
             pChannel->VoiceParams.AdsrUpper =
                 (pChannel->VoiceParams.AdsrUpper & 0xFFE0) | 5;
         }
+
         pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
         channelMask &= ~mask;
-        pChannel++;
-        i++;
+        ++pChannel;
+        ++i;
         mask <<= 1;
     }
 
@@ -2842,8 +2856,6 @@ void Sound_MarkScheduledSfxChannelsVolumeDirty(void)
     };
 }
 
-void Sound_memswp32(void* in_A, void* in_B, u_int in_Size);
-
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState)
 {
     int delta;
@@ -2855,10 +2867,10 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
 
     if (in_SwapWithSavedState == 0) {
         Sound_memcpy32(&g_PushedMusicConfig, &D_800366F0, 0x80);
-        Sound_memcpy32(D_800378E8, g_ActiveMusicChannels, 0x2200);
+        Sound_memcpy32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
     } else {
         Sound_memswp32(&g_PushedMusicConfig, &D_800366F0, 0x80);
-        Sound_memswp32(D_800378E8, g_ActiveMusicChannels, 0x2200);
+        Sound_memswp32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
     }
 
     g_pActiveMusicConfig->StatusFlags &= ~0x60;
@@ -2875,10 +2887,9 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     g_pActiveMusicConfig->KeymapTable =
         (u_short*)((char*)g_pActiveMusicConfig->KeymapTable + delta);
     g_pActiveMusicConfig->PendingKeyOnMask = g_pActiveMusicConfig->ActiveNoteMask;
-
     pChannel = g_ActiveMusicChannels;
-    for (count = 0x20, channelBit = 1; count != 0;
-        count--, pChannel++, channelBit <<= 1) {
+
+    for (count = 32, channelBit = 1; count != 0; --count, ++pChannel, channelBit <<= 1) {
         if (mask & channelBit) {
             pChannel->ProgramCounter += delta;
             pChannel->Keymap += delta;
@@ -2896,6 +2907,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
             pChannel->Length2 = 2;
             pChannel->ProgramCounter = (char*)&g_Sound_ProgramCounter;
         }
+
         pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
     }
 
@@ -2905,6 +2917,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     } else {
         mask = 0;
     }
+
     pConfig = g_pActiveMusicConfig;
     pConfig->PendingKeyOffMask = 0;
     g_PushedMusicConfig.MusicId = 0;
@@ -2914,16 +2927,20 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
 
     if (in_SwapWithSavedState != 0) {
         delta = pConfig->RevDepth + pConfig->unk5C * pConfig->ReverbDepthSlideLength;
-        channelBit = 0x30;
+        channelBit = 48;
         delta &= ~0xFFF;
+
         if (pConfig->ReverbDepthSlideLength != 0) {
             channelBit = pConfig->ReverbDepthSlideLength;
         }
+
         if (g_pSavedMousicConfig != NULL) {
             pConfig->RevDepth = g_pSavedMousicConfig->RevDepth;
         }
+
         g_pActiveMusicConfig->RevDepth &= ~0xFFF;
         delta -= g_pActiveMusicConfig->RevDepth;
+
         if (delta != 0) {
             g_pActiveMusicConfig->unk5C = delta / (int)channelBit;
             g_pActiveMusicConfig->ReverbDepthSlideLength = channelBit;
@@ -3081,10 +3098,9 @@ void Sound_Cmd_20_unk(FSoundCommandParams* arg0)
     Sound_PlaySfxProgram(arg0, akaoOffset, akaoData, 0);
 }
 
-// https://decomp.me/scratch/wOmFh
 void func_8001733C(FSoundCommandParams* in_Params)
 {
-    int* header;
+    func_8001733C_t* header;
     int* offsets;
     char* data;
     u_short* entry;
@@ -3092,25 +3108,25 @@ void func_8001733C(FSoundCommandParams* in_Params)
     char* programCounter2;
     int count;
 
-    in_Params->ExtParam1 = func_80016DA8(((int*)in_Params->Param1)[2]);
-    header = (int*)in_Params->Param1;
-    offsets = header + 4;
-    count = header[1];
+    in_Params->ExtParam1 = func_80016DA8(((func_8001733C_t*)in_Params->Param1)->flags);
+    header = (func_8001733C_t*)in_Params->Param1;
+    offsets = header->offsets;
+    count = header->count;
     data = (char*)header;
-    data += 32; // skip the header
+    data += sizeof *header;
 
     entry = (u_short*)(data + *offsets);
-    programCounter1 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 4);
-    entry++;
-    programCounter2 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 2);
+    programCounter1 = *entry == 65535 ? NULL : (char*)(*entry + (int)entry + 4);
+    ++entry;
+    programCounter2 = *entry == 65535 ? NULL : (char*)(*entry + (int)entry + 2);
     Sound_PlaySfxProgram(in_Params, programCounter1, programCounter2, 0);
 
     while (--count != 0) {
-        offsets++;
+        ++offsets;
         entry = (u_short*)(data + *offsets);
-        programCounter1 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 4);
-        entry++;
-        programCounter2 = *entry == 0xFFFF ? NULL : (char*)(*entry + (int)entry + 2);
+        programCounter1 = *entry == 65535 ? NULL : (char*)(*entry + (int)entry + 4);
+        ++entry;
+        programCounter2 = *entry == 65535 ? NULL : (char*)(*entry + (int)entry + 2);
         Sound_PlaySfxProgram(in_Params, programCounter1, programCounter2, 1);
     }
 }
@@ -3819,10 +3835,10 @@ u_int func_80018C30(u_int in_Command)
 {
     AkaoSeqHeader* pSequence;
     FSoundCommandParams* pParams;
-    u_int result;
     int fadeLength;
+    void* pData;
+    u_int result = 0;
 
-    result = 0;
     DisableEvent(_soundEvent);
     in_Command &= 0xFF;
     pParams = &D_80037790;
@@ -3832,32 +3848,39 @@ u_int func_80018C30(u_int in_Command)
     case 0x12:
     case 0x19:
     case 0x1A:
-        pSequence = (AkaoSeqHeader*)D_800378C0.unk0;
-        if (*(int*)pSequence->magic == AKAO_MAGIC) {
+        pSequence = D_800378C0.unk0;
+
+        if (pSequence->magic == AKAO_MAGIC) {
             g_Sound_GlobalFlags.ControlLatches &= ~0x7700;
-            if ((g_pActiveMusicConfig->MusicId != pSequence->id)
-                || ((g_pSavedMousicConfig != NULL)
-                    && (g_pSavedMousicConfig->MusicId
-                        != g_pActiveMusicConfig->MusicId))) {
+
+            if (g_pActiveMusicConfig->MusicId != pSequence->id
+                || (g_pSavedMousicConfig != NULL
+                    && g_pSavedMousicConfig->MusicId != g_pActiveMusicConfig->MusicId)) {
                 Sound_SetReverbMode(pSequence->reverb_type);
                 pParams->Param1 = (u_int)pSequence;
                 pParams->Param3 = pSequence->id;
+
                 switch (in_Command) {
                 case 0x12:
                     pParams->Param4 = D_800378C0.unk4;
                     break;
+
                 case 0x19:
                     pParams->ExtParam1 = D_800378C0.unk4;
                     break;
+
                 case 0x1A:
                     fadeLength = D_800378C0.unk4;
+
                     if (fadeLength == 0) {
                         fadeLength = 1;
                     }
+
                     pParams->ExtParam1 = fadeLength;
                     pParams->ExtParam2 = D_800378C0.unk8;
                     break;
                 }
+
                 result = pSequence->id;
             } else {
                 in_Command = 0;
@@ -3868,31 +3891,32 @@ u_int func_80018C30(u_int in_Command)
             result = -1;
         }
         break;
-    case 0x14: {
-        void* pData;
 
+    case 0x14:
         if (Sound_IsNotAkaoFile(D_800378C0.unk0) != 0) {
             result = -1;
             break;
         }
+
         pData = D_800378C0.unk0;
         g_pActiveMusicConfig->StatusFlags |= 0x10000;
         D_80037788.Param1 = (u_int)pData;
         result = ((AkaoSeqHeader*)D_800378C0.unk0)->id;
         break;
-    }
+
     case 0x16:
-        if ((*(int*)D_800378C0.unk0 == AKAO_MAGIC)
-            && (*(int*)D_800378C0.unk4 == AKAO_MAGIC)) {
+        if (*(int*)D_800378C0.unk0 == AKAO_MAGIC
+            && *(int*)D_800378C0.unk4 == AKAO_MAGIC) {
             pSequence = (AkaoSeqHeader*)D_800378C0.unk4;
             g_Sound_GlobalFlags.ControlLatches &= ~0x7700;
             Sound_SetReverbMode(pSequence->reverb_type);
             D_800378C0.unk4 = pSequence->id;
             Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
             g_pActiveMusicConfig->MusicId = pSequence->id;
-            Sound_memcpy32(g_ActiveMusicChannels, D_800378E8, 0x2200);
+            Sound_memcpy32(
+                g_ActiveMusicChannels, D_800378E8, sizeof g_ActiveMusicChannels);
             Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
-            pSequence = (AkaoSeqHeader*)D_800378C0.unk0;
+            pSequence = D_800378C0.unk0;
             D_800378C0.unk0 = (void*)(u_int)pSequence->id;
             Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
             g_pSavedMousicConfig = &g_PushedMusicConfig;
@@ -3901,8 +3925,10 @@ u_int func_80018C30(u_int in_Command)
             g_PushedMusicConfig.ActiveChannelMask &= ~g_PushedMusicConfig.unk30;
             g_Sound_GlobalFlags.ControlLatches |= 0x100;
         }
+
         in_Command = 0;
         break;
+
     case 0x17:
         if (g_Sound_GlobalFlags.ControlLatches & 0x1100) {
             if (g_Sound_GlobalFlags.ControlLatches & 0x100) {
@@ -3911,19 +3937,23 @@ u_int func_80018C30(u_int in_Command)
                 g_Sound_GlobalFlags.ControlLatches |= 0x400;
             }
         }
+
         in_Command = 0;
         break;
+
     case 0xD8:
         pParams->Param1 = (u_int)D_800378C0.unk0;
         D_800301E0[0xD0](pParams);
         in_Command = 0xD4;
         break;
+
     case 0xD9:
         pParams->Param1 = (u_int)D_800378C0.unk0;
         pParams->Param2 = D_800378C0.unk4;
         D_800301E0[0xD1](pParams);
         in_Command = 0xD5;
         break;
+
     case 0xDA:
         pParams->Param1 = (u_int)D_800378C0.unk0;
         pParams->Param2 = D_800378C0.unk4;
@@ -3931,16 +3961,19 @@ u_int func_80018C30(u_int in_Command)
         D_800301E0[0xD2](pParams);
         in_Command = 0xD6;
         break;
+
     case 0x99:
         D_800301E0[0x9B](pParams);
         D_800301E0[0x9D](pParams);
         in_Command = 0x9F;
         break;
+
     case 0x98:
         D_800301E0[0x9A](pParams);
         D_800301E0[0x9C](pParams);
         in_Command = 0x9E;
         break;
+
     default:
         pParams->Param1 = (u_int)D_800378C0.unk0;
         pParams->Param2 = D_800378C0.unk4;
@@ -3950,6 +3983,7 @@ u_int func_80018C30(u_int in_Command)
         pParams->ExtParam2 = D_800378C0.unk14;
         break;
     }
+
     D_800301E0[in_Command](pParams);
     EnableEvent(_soundEvent);
     return result;

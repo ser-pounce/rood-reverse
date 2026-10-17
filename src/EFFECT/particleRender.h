@@ -69,8 +69,8 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
     color.cd = primPolyGT4SemiTrans;
 
     if (arg1->flags & 0x20000) {
-        SetRotMatrix(&arg2->unk1C[arg0->unkC8].unk58);
-        SetTransMatrix(&arg2->unk1C[arg0->unkC8].unk58);
+        SetRotMatrix(&arg2->unk1C[arg0->unkC8].view);
+        SetTransMatrix(&arg2->unk1C[arg0->unkC8].view);
     } else {
         SetRotMatrix(&vs_scratch.viewMatrix);
         SetTransMatrix(&vs_scratch.viewMatrix);

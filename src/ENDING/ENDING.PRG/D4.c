@@ -6,11 +6,11 @@
 #include "gpu.h"
 #include "texture_t.h"
 #include "scratch.h"
+#include <abs.h>
 #include <libapi.h>
 #include <libetc.h>
 #include <memory.h>
 #include <stdio.h>
-#include <abs.h>
 
 typedef struct _creditsElement {
     void (*renderer)(struct _creditsElement*);
@@ -66,17 +66,14 @@ typedef struct {
 typedef struct {
     int size;
     RECT rect;
-    char data[0];
-} func_8006A9C0_t;
+    u_char data[0];
+} _timChunk;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    func_8006A9C0_t unk8;
-} func_8006A9C0_t2;
+    int magic;
+    int flags;
+    _timChunk chunk;
+} _timData;
 
 enum easeMode {
     easeModeLinear,
@@ -92,12 +89,12 @@ static void func_8006B9B4(void);
 static void _setDrawEnv(DRAWENV*);
 static void func_8006A888(void);
 static void* _insertTpage(int tPage, int otOffset);
-static void func_8006A9C0(func_8006A9C0_t2*);
+static void func_8006A9C0(_timData*);
 static void _resetElements(void);
 static int _renderElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _parseCreditsScript(void);
-static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1);
+static void func_8006AF44(_timData* arg0, void* arg1);
 int func_8006AF64(void);
 static int _drawScreen(u_long*);
 static void func_8006B884(void);
@@ -120,26 +117,10 @@ static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
-extern int D_800DBB18;
-extern int D_800DBB1C;
-extern u_char D_800DBB28[4][16];
-extern u_char D_8006E3FC[];
 extern u_char _glyphWidths[];
-extern func_8006A9C0_t2 D_8007005C;
-extern func_8006A9C0_t2 D_8007709C;
-extern func_8006A9C0_t2 D_80088ABC;
-extern func_8006A9C0_t2 D_8009A4DC;
-extern func_8006A9C0_t2 D_800ABEFC;
-extern func_8006A9C0_t2 D_800BD91C;
-extern func_8006A9C0_t2 D_800CF33C;
-extern func_8006A9C0_t2 D_800D7F7C;
-extern func_8006A9C0_t2 D_800D837C;
-extern func_8006A9C0_t2 D_800D975C;
-extern func_8006A9C0_t2 D_800DB09C;
-extern func_8006A9C0_t2 D_800DB26C;
 extern int _countableRooms[];
 extern u_char D_800DB72C;
-extern func_8006A9C0_t2* D_800DB7B0;
+extern _timData* D_800DB7B0;
 extern u_short _illustrationTimers[];
 extern int _illustLbas[];
 extern int _illustSizes[];
@@ -148,9 +129,19 @@ extern u_char D_800DB876;
 extern CVECTOR D_800DBAA8[];
 extern short titleThresholds[];
 extern u_int rankScores[];
+extern int D_800DBB18;
+extern int D_800DBB1C;
+extern u_char D_800DBB28[4][16];
 extern short D_800DBB68;
 extern short D_800DBB6A;
 extern u_short D_800DBB6C;
+extern u_char* D_800DBB70;
+extern u_char* D_800DBB74;
+extern u_char* D_800DBB78;
+extern u_char D_800DBB7C;
+extern u_char D_800DBB7D;
+extern u_short D_800DBB7E;
+extern u_short D_800DBB80;
 extern _creditsElement _creditsElements[];
 extern u_char D_800DC188;
 extern u_char D_800DC189;
@@ -162,7 +153,7 @@ extern short _scrollSpeed;
 extern short D_800DC19A;
 extern u_short D_800DC19C;
 extern void* D_800DC1A0;
-extern func_8006A9C0_t2* D_800DC1A4;
+extern void* D_800DC1A4;
 extern void* D_800DC1A8[];
 extern u_int _rank;
 extern int _clearCount;
@@ -176,42 +167,39 @@ extern int D_800DC210;
 extern int _incrementingScore;
 extern int _incrementingMapCompletion;
 extern u_char _riskbreakerRanks[][4];
-extern u_char* D_800DBB70;
-extern u_char* D_800DBB74;
-extern u_char* D_800DBB78;
-extern u_char D_800DBB7C;
-extern u_char D_800DBB7D;
-extern u_short D_800DBB7E;
-extern u_short D_800DBB80;
 
 int func_800688D4(int angle)
 {
     int value = (int)_trig_table;
-    int quadrant, test, index;
+    int quadrant = angle & 0x400;
+    int test = angle & 0x3FF;
 
-    quadrant = angle & 0x400;
-    test = angle & 0x3FF;
-    if (quadrant) {
-        if (!test) {
-            value = 0x1000;
-            goto negate;
+    if (quadrant && !test) {
+        value = ONE;
+    } else {
+        int index;
+
+        if (quadrant) {
+            angle = ONE / 2 - angle;
         }
-        angle = 0x800 - angle;
+
+        test = angle & 0x200;
+        index = angle & 0x1FF;
+
+        if (test) {
+            quadrant = 512;
+            index = quadrant - index;
+            value += 2;
+        }
+
+        value += index * 4;
+        value = *(u_short*)value;
     }
-    test = angle & 0x200;
-    index = angle & 0x1FF;
-    if (test) {
-        quadrant = 0x200;
-        index = quadrant - index;
-        value += 2;
-    }
-    index <<= 2;
-    value += index;
-    value = *(u_short*)value;
-negate:
+
     if (angle & 0x800) {
         value = -value;
     }
+
     return value;
 }
 
@@ -226,14 +214,9 @@ void _renderPhantomPain(_creditsElement* element)
     u_short scale;
     u_short i;
     u_short j;
-    POLY_FT4* poly;
-    int dx;
-    int dy;
-    int shift;
-    int d;
+    POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
 
-    poly = *(POLY_FT4**)0x1F800000;
-    memset(&rot, 0, sizeof(rot));
+    memset(&rot, 0, sizeof rot);
 
     switch (element->state) {
     case 1:
@@ -243,11 +226,13 @@ void _renderPhantomPain(_creditsElement* element)
         D_800DBB1C = 0;
 
         for (i = 0; i < 4; ++i) {
-            shift = 2;
-            d = 2 - i;
-            dy = (ABS(d) << shift) * (ABS(d) << shift);
+            int shift = 2;
+            int d = 2 - i;
+            int dy = (ABS(d) << shift) * (ABS(d) << shift);
+
             for (j = 0; j < 16; ++j) {
-                dx = 8 - j;
+                int dx = 8 - j;
+
                 dx = ABS(dx) * 18;
                 D_800DBB28[i][j] = vs_gte_rsqrt(dx * dx + dy);
             }
@@ -255,8 +240,9 @@ void _renderPhantomPain(_creditsElement* element)
         /* fallthrough */
 
     case 2:
-        brightness = (element->currentStep << 7) / 90;
+        brightness = element->currentStep * 128 / 90;
         ++D_800DBB1C;
+
         if (++element->currentStep == 90) {
             element->currentStep = 0;
             element->state = 3;
@@ -265,6 +251,7 @@ void _renderPhantomPain(_creditsElement* element)
 
     case 3:
         brightness = 128;
+
         if (++element->currentStep == 120) {
             element->currentStep = 0;
             element->state = 4;
@@ -272,7 +259,8 @@ void _renderPhantomPain(_creditsElement* element)
         break;
 
     case 4:
-        brightness = ((90 - element->currentStep) << 7) / 90;
+        brightness = (90 - element->currentStep) * 128 / 90;
+
         if (++element->currentStep == 90) {
             element->state = -1;
         }
@@ -280,7 +268,7 @@ void _renderPhantomPain(_creditsElement* element)
     }
 
     D_800DBB18 += 200;
-    scale = (_ease(3, 90 - D_800DBB1C, 90) * 65) >> 10;
+    scale = (_ease(easeModeEaseIn, 90 - D_800DBB1C, 90) * 65) >> 10;
 
     RotMatrix_gte(&rot, &matrix);
     matrix.t[0] = matrix.t[1] = 0;
@@ -314,12 +302,13 @@ void _renderPhantomPain(_creditsElement* element)
             poly->v0 = poly->v1 = i * 4 + 180;
             poly->v2 = poly->v3 = (i + 1) * 4 + 180;
             poly->clut = getClut(896, 83);
-            poly->tpage = 46;
+            poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
             poly->r0 = poly->g0 = poly->b0 = brightness;
-            AddPrim(((void**)0x1F800000)[1] + 12, poly++);
+            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, poly++);
         }
     }
-    *(POLY_FT4**)0x1F800000 = poly;
+
+    ((vs_scratch_t*)0x1F800000)->unk0 = poly;
 }
 
 void _renderFin(_creditsElement* arg0)
@@ -707,30 +696,19 @@ static int _creditsStrWidth(u_char* str)
     return width;
 }
 
-// https://decomp.me/scratch/86Hv9
 void _renderText(_creditsElement* element)
 {
-    void** p;
-    SPRT* sprt;
-    POLY_FT4* poly;
     u_char* str;
     short i;
     short len;
-    u_char c;
-    u_char glyph;
-    u_char charTableOffset;
-    short underline;
     short x;
     short y;
-    u_short width;
-    short glyphWidth;
-
-    sprt = *(SPRT**)0x1F800000;
-    charTableOffset = 0;
-    underline = 0;
+    SPRT* sprt = ((vs_scratch_t*)0x1F800000)->unk0;
+    u_char charTableOffset = 0;
+    short underline = 0;
 
     if (element->state == 1) {
-        width = element->width = _creditsStrWidth(element->data);
+        u_short width = element->width = _creditsStrWidth(element->data);
         element->x = ((320 - width) >> 1) << 8;
         element->y = 224 << 8;
         element->state = 2;
@@ -749,28 +727,30 @@ void _renderText(_creditsElement* element)
     x = element->x >> 8;
 
     for (i = 0; i < len; ++i, ++str) {
-        c = *str;
-        if (c < 32u) {
+        u_char c = *str;
+
+        if (c < ' ') {
             switch (c) {
             case 1:
                 charTableOffset = 0;
                 break;
+
             case 2:
                 charTableOffset = 112;
                 break;
+
             case 3:
-                if (charTableOffset != 0) {
-                    underline = 18;
-                } else {
-                    underline = 17;
-                }
+                underline = charTableOffset != 0 ? 18 : 17;
                 break;
+
             case 31:
                 --x;
                 break;
             }
         } else {
-            glyph = charTableOffset + c - 32;
+            u_char glyph = charTableOffset + c - ' ';
+            short glyphWidth;
+
             setSprt(sprt);
             setXY0(sprt, x, y);
             setUV0(sprt, (glyph & 0xF) * 16, (glyph >> 4) * 16);
@@ -779,13 +759,15 @@ void _renderText(_creditsElement* element)
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
             sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
-            addPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 3, sprt);
+            addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
             ++sprt;
         }
     }
 
     if (underline != 0) {
-        p = (void**)0x1F800000;
+        vs_scratch_t* scratch = (vs_scratch_t*)0x1F800000;
+        POLY_FT4* poly;
+
         x = 160 - ((element->width + 32) >> 1);
 
         SetSprt(sprt);
@@ -795,7 +777,7 @@ void _renderText(_creditsElement* element)
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
         sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
-        AddPrim(p[1] + 12, sprt++);
+        AddPrim(scratch->unk4 + 12, sprt++);
 
         poly = (POLY_FT4*)sprt;
         SetPolyFT4(poly);
@@ -808,11 +790,11 @@ void _renderText(_creditsElement* element)
         poly->v2 = poly->v3 = 211;
         poly->u1 = poly->u3 = 16;
         poly->v0 = poly->v1 = 208;
-        poly->tpage = 31;
+        poly->tpage = getTPage(clut4Bit, semiTransparencyHalf, 960, 256);
         poly->clut = getClut(960, 480);
         poly->x1 = poly->x3 = x;
         poly->r0 = poly->g0 = poly->b0 = D_800DC19C;
-        AddPrim(p[1] + 12, poly++);
+        AddPrim(scratch->unk4 + 12, poly++);
 
         sprt = (SPRT*)poly;
         SetSprt(sprt);
@@ -821,11 +803,12 @@ void _renderText(_creditsElement* element)
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
         sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
-        AddPrim(p[1] + 12, sprt++);
+        AddPrim(scratch->unk4 + 12, sprt++);
     }
 
-    *(SPRT**)0x1F800000 = sprt;
-    *(void**)0x1F800000 = _insertTpage(31, 3);
+    ((vs_scratch_t*)0x1F800000)->unk0 = sprt;
+    ((vs_scratch_t*)0x1F800000)->unk0 =
+        _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
 void _renderCopyright(_creditsElement* arg0)
@@ -998,6 +981,20 @@ static void func_8006A4D8(_creditsElement* element)
 
 void vs_ending_exec(void)
 {
+    extern u_char _credits[];
+    extern _timData _creditsFont;
+    extern _timData _illustSydney;
+    extern _timData _illustMerlose;
+    extern _timData _illustDragon;
+    extern _timData _illustSamantha;
+    extern _timData _illustDuane;
+    extern _timData _creditsBg;
+    extern _timData _devCopyright;
+    extern _timData _titleLogo;
+    extern _timData _shugeki;
+    extern _timData _fin;
+    extern _timData _episodeLogo;
+
     vs_main_CdFile file;
     short i;
     vs_main_CdQueueSlot* slot;
@@ -1011,18 +1008,18 @@ void vs_ending_exec(void)
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
 
-    func_8006A9C0(&D_8007005C);
-    func_8006A9C0(&D_800CF33C);
-    func_8006A9C0(&D_800D7F7C);
-    func_8006A9C0(&D_800D975C);
-    func_8006A9C0(&D_800D837C);
-    func_8006A9C0(&D_800DB09C);
-    func_8006A9C0(&D_800DB26C);
-    func_8006A9C0(&D_8007709C);
-    func_8006A9C0(&D_80088ABC);
-    func_8006A9C0(&D_8009A4DC);
-    func_8006A9C0(&D_800ABEFC);
-    func_8006A9C0(&D_800BD91C);
+    func_8006A9C0(&_creditsFont);
+    func_8006A9C0(&_creditsBg);
+    func_8006A9C0(&_devCopyright);
+    func_8006A9C0(&_shugeki);
+    func_8006A9C0(&_titleLogo);
+    func_8006A9C0(&_fin);
+    func_8006A9C0(&_episodeLogo);
+    func_8006A9C0(&_illustSydney);
+    func_8006A9C0(&_illustMerlose);
+    func_8006A9C0(&_illustDragon);
+    func_8006A9C0(&_illustSamantha);
+    func_8006A9C0(&_illustDuane);
 
     for (i = 5; i < 16; ++i) {
         file.lba = _illustLbas[i - 5];
@@ -1046,7 +1043,7 @@ void vs_ending_exec(void)
     DrawSync(0);
     SetDispMask(1);
 
-    _creditsBytestreamHead = D_8006E3FC;
+    _creditsBytestreamHead = _credits;
     _scrollSpeed = -128;
     D_800DC188 = 0;
     _textStreamDelay = 0;
@@ -1112,18 +1109,18 @@ static void* _insertTpage(int tPage, int otOffset)
     return drTpage;
 }
 
-static void func_8006A9C0(func_8006A9C0_t2* arg0)
+static void func_8006A9C0(_timData* tim)
 {
     RECT rect;
-    func_8006A9C0_t* p = &arg0->unk8;
+    _timChunk* p = &tim->chunk;
 
-    if (arg0->unk4 & 8) {
+    if (tim->flags & 8) {
         rect.x = p->rect.x;
         rect.y = p->rect.y;
         rect.w = p->rect.w;
         rect.h = p->rect.h;
         LoadImage(&rect, (void*)p->data);
-        p = (func_8006A9C0_t*)((void*)arg0 + (p->size + 8));
+        p = (_timChunk*)((void*)tim + (p->size + 8));
     }
 
     rect.x = p->rect.x;
@@ -1304,20 +1301,16 @@ static int _ease(short mode, short currentStep, short totalSteps)
     }
 }
 
-static void func_8006AF44(func_8006A9C0_t2* arg0, void* arg1)
+static void func_8006AF44(_timData* arg0, void* arg1)
 {
     D_800DB72C = 1;
     D_800DC1A0 = arg1;
     D_800DC1A4 = arg0;
 }
 
-/* Incrementally decompresses the stream queued by func_8006AF44, yielding
-   once the frame budget (200 VSync ticks since D_800DC19A) is used up.
-   Returns 1 when the end-of-stream marker (0x7F) is reached, 0 otherwise. */
 int func_8006AF64(void)
 {
     short i;
-    u_char op;
 
     if (D_800DB72C == 0) {
         return 0;
@@ -1326,59 +1319,63 @@ int func_8006AF64(void)
     if (D_800DB72C == 1) {
         D_800DB72C = 2;
         D_800DBB74 = D_800DC1A0;
-        D_800DBB78 = (u_char*)D_800DC1A4;
+        D_800DBB78 = D_800DC1A4;
     }
 
     while (1) {
-        if ((VSync(1) - D_800DC19A) > 200) {
+        u_char op;
+
+        if (VSync(1) - D_800DC19A > 200) {
             return 0;
         }
 
         op = *D_800DBB74;
 
         if (!(op & 0x80)) {
-            if (op == 0x7F) {
+            if (op == 127) {
                 D_800DB72C = 0;
                 return 1;
             }
-            if (op == 0x7D) {
-                // 0x7D: u8 count, u8 value: fill count + 1 bytes
+
+            if (op == 125) {
                 ++D_800DBB74;
                 D_800DBB7E = *D_800DBB74++;
                 D_800DBB7C = *D_800DBB74++;
+
                 for (i = 0; i <= D_800DBB7E; ++i) {
                     *D_800DBB78++ = D_800DBB7C;
                 }
-            } else if (op == 0x7E) {
-                // 0x7E: u8 count, u8 value0, u8 value1: fill count + 1 byte pairs
+            } else if (op == 126) {
                 ++D_800DBB74;
                 D_800DBB7E = *D_800DBB74++;
                 D_800DBB7C = *D_800DBB74++;
                 D_800DBB7D = *D_800DBB74++;
+
                 for (i = 0; i <= D_800DBB7E; ++i) {
                     *D_800DBB78++ = D_800DBB7C;
                     *D_800DBB78++ = D_800DBB7D;
                 }
             } else {
-                // 0x00-0x7C: copy op + 1 literal bytes
                 D_800DBB7E = *D_800DBB74++;
+
                 for (i = 0; i <= D_800DBB7E; ++i) {
                     *D_800DBB78++ = *D_800DBB74++;
                 }
             }
         } else {
-            // 1LLLOOOO OOOOOOOO: copy L + 3 bytes from offset O + 1 back,
-            // repeated while followed by 0x7C
             D_800DBB7E = ((op >> 4) & 7) + 3;
             D_800DBB80 = ((D_800DBB74[0] & 0xF) << 8) + D_800DBB74[1];
             D_800DBB74 += 2;
             D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+
             for (i = 0; i < D_800DBB7E; ++i) {
                 *D_800DBB78++ = *D_800DBB70++;
             }
-            while (*D_800DBB74 == 0x7C) {
+
+            while (*D_800DBB74 == 124) {
                 D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
                 ++D_800DBB74;
+
                 for (i = 0; i < D_800DBB7E; ++i) {
                     *D_800DBB78++ = *D_800DBB70++;
                 }

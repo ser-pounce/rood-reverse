@@ -23,9 +23,6 @@ typedef struct {
 
 extern int D_800FB5B4;
 
-void func_800FA760(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA098_arg3*);
-
 void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
     func_800FA098_arg3* arg3)
 {
@@ -389,7 +386,8 @@ void func_800FA2B0(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
     }
 }
 
-INCLUDE_ASM("build/src/EFFECT/PLG045.BIN/nonmatchings/110", func_800FA760);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FA760
+#include "src/EFFECT/particleRender.h"
 
 int func_800FB320(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

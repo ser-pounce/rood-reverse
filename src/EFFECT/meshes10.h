@@ -36,7 +36,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int depths[10];
     CVECTOR colors[2];
     vs_mesh10UV uv[6];
-    func_800FB4C0_t child;
+    func_800D2904_t child;
     vs_mesh10State* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
@@ -63,7 +63,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     case 2:
         effect = &D_800F569C->block5Data->unk4[state->effect];
         scratch->flags = effect->flags;
-        actorMatrix = &battle->unk1C[effect->unkC8].unk38;
+        actorMatrix = &battle->unk1C[effect->unkC8].world;
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
@@ -163,8 +163,8 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         } while (0);
 
         if (scratch->flags & 0x20000) {
-            SetRotMatrix(&battle->unk1C[effect->unkC8].unk58);
-            SetTransMatrix(&battle->unk1C[effect->unkC8].unk58);
+            SetRotMatrix(&battle->unk1C[effect->unkC8].view);
+            SetTransMatrix(&battle->unk1C[effect->unkC8].view);
         } else {
             SetRotMatrix(&vs_scratch.viewMatrix);
             SetTransMatrix(&vs_scratch.viewMatrix);
@@ -232,11 +232,11 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 gte_ldv0(&scratch->unk2C);
                 gte_rtv0tr2();
                 gte_stlvnl(&scratch->unk34);
-                setVector(&child.unkC, scratch->unk34.vx * ONE, scratch->unk34.vy * ONE,
-                    scratch->unk34.vz * ONE);
+                setVector(&child.motion.position, scratch->unk34.vx * ONE,
+                    scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
             } else {
-                setVector(&child.unkC, scratch->unk98.vx * ONE, scratch->unk98.vy * ONE,
-                    scratch->unk98.vz * ONE);
+                setVector(&child.motion.position, scratch->unk98.vx * ONE,
+                    scratch->unk98.vy * ONE, scratch->unk98.vz * ONE);
             }
 
             func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);

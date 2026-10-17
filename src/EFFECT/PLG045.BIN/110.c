@@ -46,7 +46,7 @@ void func_800F9910(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     vs_battle_lerpVector(
         arg0->unk18, vs_battle_sampleCurve(arg0->unk8, arg3->unkC), &arg1->unk98);
-    temp_s0 = &arg2->unk1C[arg0->unkC8].unk38;
+    temp_s0 = &arg2->unk1C[arg0->unkC8].world;
 
     switch (arg1->flags & 7) {
     case 0:
@@ -264,9 +264,8 @@ void func_800FA098(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1, D_800F53B
 
     switch (arg1->flags & 0x1C0) {
     case 0xC0:
-        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].unk38.t[0];
-        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].unk38.t[1];
-        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].unk38.t[2];
+        applyVector(&arg1->unk13C, arg2->unk1C[arg0->unkC9].world.t[0],
+            arg2->unk1C[arg0->unkC9].world.t[1], arg2->unk1C[arg0->unkC9].world.t[2], +=);
         break;
     case 0x80:
         arg1->unk13C.vx += D_800F5230.position.vx;

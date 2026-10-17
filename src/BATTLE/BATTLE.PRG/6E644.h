@@ -42,7 +42,7 @@ struct func_800D4910_t {
 
 void func_800D2698(int);
 void func_800D8038(int);
-void func_800D6E44(void);
+void func_800D6E44(void*);
 void func_800D7814(void);
 void func_800D78F0(void);
 void vs_battle_configurePlg(int, int, int);
@@ -59,11 +59,12 @@ void func_800E4C28(int, int);
 int func_800E5154(void);
 void func_800E5998(void);
 void func_800E6158(void);
-void func_800E6178(vs_battle_actor*, int);
+int func_800E6178(vs_battle_actor*, int);
 short func_800E6694(int);
 void func_800E6700(int);
 void func_800E68EC(int, int);
 void func_800E6B24(int);
+int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
 void func_800E6EAC(void);
 void func_800E6F1C(void);
 void func_800E7454(vs_battle_actor*);

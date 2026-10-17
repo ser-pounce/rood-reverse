@@ -78,7 +78,7 @@ INCLUDE_ASM("build/src/EFFECT/PLG128.BIN/nonmatchings/F8", func_800FF54C);
 
 int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    func_800FB4C0_t sp18;
+    func_800D2904_t sp18;
     func_800FA098_arg0* temp_s3;
     int trail;
     int j;
@@ -152,8 +152,8 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
                 sp18.unk60 = 0;
 
                 if (temp_s3->flags & 0x20000) {
-                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
-                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].unk38);
+                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
+                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
                     s4->unk2C.vx =
                         temp_s0->trails[trail]
                             .splineSamples[temp_s0->trails[trail].currentSplineSample]
@@ -171,25 +171,22 @@ int func_800FFFA8(func_800D4910_t* arg0, u_int arg1, int arg2)
                     gte_rtv0tr2();
                     gte_stlvnl(&s4->unk34);
 
-                    sp18.unkC.vx = s4->unk34.vx * ONE;
-                    sp18.unkC.vy = s4->unk34.vy * ONE;
-                    sp18.unkC.vz = s4->unk34.vz * ONE;
+                    setVector(&sp18.motion.position, s4->unk34.vx * ONE,
+                        s4->unk34.vy * ONE, s4->unk34.vz * ONE);
                 } else {
-                    sp18.unkC.vx =
+                    setVector(&sp18.motion.position,
                         temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vx
-                        * ONE;
-                    sp18.unkC.vy =
+                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                                .vx
+                            * ONE,
                         temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vy
-                        * ONE;
-                    sp18.unkC.vz =
+                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                                .vy
+                            * ONE,
                         temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
-                            .vz
-                        * ONE;
+                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                                .vz
+                            * ONE);
                 }
 
                 func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);

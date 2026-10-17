@@ -178,14 +178,15 @@ typedef struct {
 
 typedef struct {
     u_short flags;
-    u_short unk2;
+    u_char unk2;
+    u_char unk3;
     u_char unk4;
     u_char curve;
     u_char unk6;
     u_char unk7;
-    u_char pad8[2];
+    u_short unk8;
     u_short mode;
-    u_char padC[2];
+    u_short unkC;
     u_short limit : 8;
     u_short radius : 4;
     u_short radiusJitter : 4;
@@ -359,42 +360,61 @@ typedef struct {
     actionEffectRequest* unkD0;
 } D_800F569C_t;
 
+typedef struct {
+    int vx;
+    int vy;
+    int vz;
+} func_800D52A4_t2;
+
+typedef struct {
+    short mass;
+    short gravityScale;
+    func_800D52A4_t2 position;
+    func_800D52A4_t2 velocity;
+    func_800D52A4_t2 force;
+    func_800D52A4_t2 acceleration;
+} func_800D52A4_t;
+
 typedef struct func_800D2904_t {
     struct func_800D2904_t* previous;
     struct func_800D2904_t* next;
-    char unk8[4];
-    int unkC;
-    int unk10;
-    int unk14;
-    VECTOR unk18;
-    u_char unk28[0x14];
-    int unk3C[8];
-    char unk5C[0x1B];
+    func_800D52A4_t motion;
+    func_800D6CF_t unk3C;
+    char unk5C[4];
+    u_char unk60;
+    char unk61;
+    short unk62[3];
+    short lifetime;
+    char unk6A[2];
+    u_char endEvent;
+    u_char tickEvent;
+    char unk6E[2];
+    int unk70;
+    u_char unk74[3];
     u_char unk77;
 } func_800D2904_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
+    short rotation[3];
+    u_short flags;
     int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int unk30;
-    u_char unk34;
-    u_char unk35;
-    u_char unk36;
-    u_char unk37;
-    MATRIX unk38;
-    MATRIX unk58;
-    u_char unk78[0x58];
-} func_800CE714_t2_2;
+    short unkC;
+    short frame;
+    int unk10[3];
+    VECTOR position;
+    int unk2C[2];
+    u_char actor;
+    u_char bone;
+    u_char targetActor;
+    u_char targetBone;
+    MATRIX world;
+    MATRIX view;
+    MATRIX attachment;
+    MATRIX facing;
+    SVECTOR saved;
+    SVECTOR control0;
+    SVECTOR control1;
+} func_800D0548_arg1;
 
 typedef struct {
     u_short unk0_0 : 8;
@@ -443,17 +463,9 @@ typedef struct D_800F53B8_t {
     u_int unk14_11 : 5;
     u_int unk14_16 : 16;
     func_800D2904_t* unk18;
-    func_800CE714_t2_2 unk1C[16];
+    func_800D0548_arg1 unk1C[16];
     D_800F53B8_t3 unkD1C;
 } D_800F53B8_t;
-
-typedef struct {
-    u_char unk0[0xC];
-    VECTOR unkC;
-    u_char unk1C[0x44];
-    u_char unk60;
-    u_char unk61[23];
-} func_800FB4C0_t;
 
 enum vs_battle_limbStatus {
     limbStatusCritical,
@@ -648,7 +660,7 @@ void vs_battle_splineInterpolate(
 
 void vs_battle_svecToVec(SVECTOR* arg0, VECTOR* arg1);
 void vs_battle_vecToSvec(VECTOR* arg0, SVECTOR* arg1);
-void func_800D2ADC(D_800F53B8_t*, int, int, int, func_800FB4C0_t*);
+void func_800D2ADC(D_800F53B8_t*, int, int, int, func_800D2904_t*);
 void func_800D6CCC(int* arg0);
 void func_800D6CF0(func_800D6CF_t* arg0, int textureIndex, int arg2);
 

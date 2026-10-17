@@ -1,4 +1,3 @@
-#include "common.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -12,112 +11,7 @@
 #include <memory.h>
 #include <stdio.h>
 
-typedef struct _creditsElement {
-    void (*renderer)(struct _creditsElement*);
-    u_char* data;
-    short state;
-    u_short currentStep;
-    u_short illustId;
-    u_short width;
-    int x;
-    int y;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-} _creditsElement;
-
-typedef struct {
-    int unk0;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    u_char unk1C;
-    u_char unk1D;
-    u_char unk1E;
-    u_char unk1F;
-    short unk20;
-    short unk22;
-    short unk24;
-    short unk26;
-    u_char unk28;
-    u_char unk29;
-    u_char unk2A;
-    u_char unk2B;
-    short unk2C;
-    short unk2E;
-} func_80069388_t;
-
-typedef struct {
-    int size;
-    RECT rect;
-    u_char data[0];
-} _timChunk;
-
-typedef struct {
-    int magic;
-    int flags;
-    _timChunk chunk;
-} _timData;
-
-enum easeMode {
-    easeModeLinear,
-    easeModeEaseOut,
-    easeModeEaseInOut,
-    easeModeEaseIn,
-};
-
-void _renderPhantomPain(_creditsElement* arg0);
-void _renderVagrantStory(_creditsElement* arg0);
-void _renderText(_creditsElement* arg0);
-static void func_8006B9B4(void);
-static void _setDrawEnv(DRAWENV*);
-static void func_8006A888(void);
-static void* _insertTpage(int tPage, int otOffset);
-static void func_8006A9C0(_timData*);
-static void _resetElements(void);
-static int _renderElements(void);
-static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
-static void _parseCreditsScript(void);
-static void func_8006AF44(_timData* arg0, void* arg1);
-int func_8006AF64(void);
-static int _drawScreen(u_long*);
-static void func_8006B884(void);
-static int _ease(short mode, short currentStep, short totalSteps);
-static void _updateClearGameStats(void);
-static void func_8006B930(void);
-static void _checkStreamXaEnd(void);
-static void func_8006BD78(void);
-static int func_8006BE04(void);
-static int _renderCongratulationsScreen(void);
-void func_8006C3CC(int);
-static void _renderCongratulations(int arg0, int arg1, int arg2);
-static void _renderScore(int, int, int, int);
-static void _renderIncrementalScore(int, int, int, int);
-static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
-static void _renderIncrementalMapCompletion(int, int, int, int);
-static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
-void _renderRiskbreakerRank(int, int, int);
-static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
-static void _determineRank(void);
-static void _updateScore(void);
-
-int func_800688D4(int angle)
+static int func_800688D4(int angle)
 {
     int value = (int)_trig_table;
     int quadrant = angle & 0x400;
@@ -152,7 +46,33 @@ int func_800688D4(int angle)
     return value;
 }
 
-void _renderPhantomPain(_creditsElement* element)
+typedef struct _creditsElement {
+    void (*renderer)(struct _creditsElement*);
+    u_char* data;
+    short state;
+    u_short currentStep;
+    u_short illustId;
+    u_short width;
+    int x;
+    int y;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+} _creditsElement;
+
+enum easeMode {
+    easeModeLinear,
+    easeModeEaseOut,
+    easeModeEaseInOut,
+    easeModeEaseIn,
+};
+
+static int _ease(short mode, short currentStep, short totalSteps);
+
+static void _renderPhantomPain(_creditsElement* element)
 {
     static int D_800DBB18;
     static int D_800DBB1C;
@@ -265,7 +185,9 @@ void _renderPhantomPain(_creditsElement* element)
     ((vs_scratch_t*)0x1F800000)->unk0 = poly;
 }
 
-void _renderFin(_creditsElement* arg0)
+static void* _insertTpage(int tPage, int otOffset);
+
+static void _renderFin(_creditsElement* arg0)
 {
     int temp_a0_2;
     int temp_a0;
@@ -343,7 +265,7 @@ static short D_800DC19A;
 static u_short D_800DC19C;
 static u_short _1 __attribute__((unused));
 
-void _renderVagrantStory(_creditsElement* element)
+static void _renderVagrantStory(_creditsElement* element)
 {
     SPRT* sprt;
     int var_fp;
@@ -427,6 +349,40 @@ static int _inverseDistanceFromScreencenter(int arg0, int arg1)
     arg1 -= 112;
     return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
 }
+
+typedef struct {
+    int unk0;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
+    u_char unk1C;
+    u_char unk1D;
+    u_char unk1E;
+    u_char unk1F;
+    short unk20;
+    short unk22;
+    short unk24;
+    short unk26;
+    u_char unk28;
+    u_char unk29;
+    u_char unk2A;
+    u_char unk2B;
+    short unk2C;
+    short unk2E;
+} func_80069388_t;
 
 static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
     __attribute__((unused));
@@ -548,6 +504,18 @@ static int _illustSizes[] = { VS_ILLUST06_BIN_SIZE, VS_ILLUST07_BIN_SIZE,
     VS_ILLUST11_BIN_SIZE, VS_ILLUST12_BIN_SIZE, VS_ILLUST13_BIN_SIZE,
     VS_ILLUST14_BIN_SIZE, VS_ILLUST15_BIN_SIZE, VS_ILLUST16_BIN_SIZE, 0, 0, 0, 0, 0 };
 
+typedef struct {
+    int size;
+    RECT rect;
+    u_char data[0];
+} _timChunk;
+
+typedef struct {
+    int magic;
+    int flags;
+    _timChunk chunk;
+} _timData;
+
 extern _timData _illustSydney;
 static _timData* D_800DB7B0 = &_illustSydney;
 
@@ -557,6 +525,9 @@ static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 160
 static void* D_800DC1A0;
 static void* D_800DC1A4;
 static void* D_800DC1A8[16];
+
+static void func_8006A9C0(_timData*);
+static void func_8006AF44(_timData* arg0, void* arg1);
 
 static void _renderllustration(_creditsElement* element)
 {
@@ -692,7 +663,7 @@ static int _creditsStrWidth(u_char* str)
     return width;
 }
 
-void _renderText(_creditsElement* element)
+static void _renderText(_creditsElement* element)
 {
     u_char* str;
     short i;
@@ -807,7 +778,7 @@ void _renderText(_creditsElement* element)
         _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
-void _renderCopyright(_creditsElement* arg0)
+static void _renderCopyright(_creditsElement* arg0)
 {
     void** p = (void**)0x1F800000;
     SPRT* sprt = p[0];
@@ -975,6 +946,16 @@ static void func_8006A4D8(_creditsElement* element)
     s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
+static void func_8006B9B4(void);
+static void _setDrawEnv(DRAWENV*);
+static void func_8006A888(void);
+static void _resetElements(void);
+static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
+static void func_8006B884(void);
+static void _updateClearGameStats(void);
+static void _checkStreamXaEnd(void);
+static void func_8006BD78(void);
+
 void vs_ending_exec(void)
 {
     extern u_char _credits[];
@@ -1070,6 +1051,12 @@ static void _setDrawEnv(DRAWENV* drawenv)
     drawenv->tpage = 0x20;
 }
 
+static int _renderElements(void);
+static void _parseCreditsScript(void);
+static int func_8006AF64(void);
+static int _drawScreen(u_long*);
+static void func_8006B930(void);
+
 static void func_8006A888(void)
 {
     while (D_800DC188 == 0) {
@@ -1153,7 +1140,7 @@ static int _renderElements(void)
     return var_s3;
 }
 
-_creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
+static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
     short i;
     _creditsElement* element = &_creditsElements[1];
@@ -1170,7 +1157,7 @@ _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
     SystemError('M', 100);
 }
 
-_creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
+static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
 {
     if (_creditsElements[0].state == 0) {
         _creditsElements[0].renderer = renderer;
@@ -1303,7 +1290,7 @@ static void func_8006AF44(_timData* arg0, void* arg1)
     D_800DC1A4 = arg0;
 }
 
-int func_8006AF64(void)
+static int func_8006AF64(void)
 {
     static u_char* D_800DBB70;
     static u_char* D_800DBB74;
@@ -1691,6 +1678,10 @@ static int _submenuState;
 static int D_800DC20C;
 static int D_800DC210;
 
+static int func_8006BE04(void);
+static int _renderCongratulationsScreen(void);
+static void _renderCongratulations(int arg0, int arg1, int arg2);
+
 static void func_8006BD78(void)
 {
     int temp_s0;
@@ -1711,6 +1702,10 @@ static void func_8006BD78(void)
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
     } while (temp_s0 == 0);
 }
+
+static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
+static void _determineRank(void);
+static void _updateScore(void);
 
 static int func_8006BE04(void)
 {
@@ -1855,6 +1850,14 @@ static int func_8006BE04(void)
     return 0;
 }
 
+static void func_8006C3CC(int);
+static void _renderScore(int, int, int, int);
+static void _renderIncrementalScore(int, int, int, int);
+static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderIncrementalMapCompletion(int, int, int, int);
+static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+static void _renderRiskbreakerRank(int, int, int);
+
 static int _renderCongratulationsScreen(void)
 {
     if (D_800DC210 == 0) {
@@ -1898,7 +1901,7 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
-void func_8006C3CC(int arg0)
+static void func_8006C3CC(int arg0)
 {
     int var_s2;
     int i;
@@ -2351,7 +2354,7 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
     }
 }
 
-void _renderRiskbreakerRank(int x, int y, int timer)
+static void _renderRiskbreakerRank(int x, int y, int timer)
 {
     static CVECTOR D_800DBAB0[] = {
         { 128, 128, 128 },

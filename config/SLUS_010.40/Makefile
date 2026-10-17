@@ -1,5 +1,6 @@
-$(BUILD)/data/SLUS_010.40: $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL TITLE/TITLE)
-$(BUILD)/data/SLUS_010.40: private LDLIBS += $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL TITLE/TITLE)
+SLUS_010_LDLIBS := $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL ENDING/ENDING TITLE/TITLE)
+$(BUILD)/data/SLUS_010.40: $(SLUS_010_LDLIBS)
+$(BUILD)/data/SLUS_010.40: private LDLIBS += $(SLUS_010_LDLIBS)
 $(BUILD)/data/SLUS_010.40: private LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000 \
@@ -27,5 +28,4 @@ $(BUILD)/src/SLUS_010.40/lib%.c.o: PREPROCESS.s = $(PSQ_PATCH)
 $(BUILD)/src/SLUS_010.40/libsn/SNMAIN.c.o: PREPROCESS.s = $(MAS) $(MASFLAGS)
 
 $(BUILD)/config/SLUS_010.40/link.d: \
-	config/BATTLE/BATTLE.PRG/symbol_addrs.txt \
-	config/ENDING/ENDING.PRG/symbol_addrs.txt
+	config/BATTLE/BATTLE.PRG/symbol_addrs.txt

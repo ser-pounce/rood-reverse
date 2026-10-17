@@ -1,4 +1,3 @@
-#include "common.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -12,163 +11,7 @@
 #include <memory.h>
 #include <stdio.h>
 
-typedef struct _creditsElement {
-    void (*renderer)(struct _creditsElement*);
-    u_char* data;
-    short state;
-    u_short currentStep;
-    u_short illustId;
-    u_short width;
-    int x;
-    int y;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-} _creditsElement;
-
-typedef struct {
-    int unk0;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    u_char unk1C;
-    u_char unk1D;
-    u_char unk1E;
-    u_char unk1F;
-    short unk20;
-    short unk22;
-    short unk24;
-    short unk26;
-    u_char unk28;
-    u_char unk29;
-    u_char unk2A;
-    u_char unk2B;
-    short unk2C;
-    short unk2E;
-} func_80069388_t;
-
-typedef struct {
-    int size;
-    RECT rect;
-    u_char data[0];
-} _timChunk;
-
-typedef struct {
-    int magic;
-    int flags;
-    _timChunk chunk;
-} _timData;
-
-enum easeMode {
-    easeModeLinear,
-    easeModeEaseOut,
-    easeModeEaseInOut,
-    easeModeEaseIn,
-};
-
-void _renderPhantomPain(_creditsElement* arg0);
-void _renderVagrantStory(_creditsElement* arg0);
-void _renderText(_creditsElement* arg0);
-static void func_8006B9B4(void);
-static void _setDrawEnv(DRAWENV*);
-static void func_8006A888(void);
-static void* _insertTpage(int tPage, int otOffset);
-static void func_8006A9C0(_timData*);
-static void _resetElements(void);
-static int _renderElements(void);
-static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
-static void _parseCreditsScript(void);
-static void func_8006AF44(_timData* arg0, void* arg1);
-int func_8006AF64(void);
-static int _drawScreen(u_long*);
-static void func_8006B884(void);
-static int _ease(short mode, short currentStep, short totalSteps);
-static void _updateClearGameStats(void);
-static void func_8006B930(void);
-static void _checkStreamXaEnd(void);
-static void func_8006BD78(void);
-static int func_8006BE04(void);
-static int _renderCongratulationsScreen(void);
-void func_8006C3CC(int);
-static void _renderCongratulations(int arg0, int arg1, int arg2);
-static void _renderScore(int, int, int, int);
-static void _renderIncrementalScore(int, int, int, int);
-static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
-static void _renderIncrementalMapCompletion(int, int, int, int);
-static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
-void _renderRiskbreakerRank(int, int, int);
-static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
-static void _determineRank(void);
-static void _updateScore(void);
-
-extern u_char _glyphWidths[];
-extern int _countableRooms[];
-extern u_char D_800DB72C;
-extern _timData* D_800DB7B0;
-extern u_short _illustrationTimers[];
-extern int _illustLbas[];
-extern int _illustSizes[];
-extern _texture_t _disMap[];
-extern u_char D_800DB876;
-extern CVECTOR D_800DBAA8[];
-extern short titleThresholds[];
-extern u_int rankScores[];
-extern int D_800DBB18;
-extern int D_800DBB1C;
-extern u_char D_800DBB28[4][16];
-extern short D_800DBB68;
-extern short D_800DBB6A;
-extern u_short D_800DBB6C;
-extern u_char* D_800DBB70;
-extern u_char* D_800DBB74;
-extern u_char* D_800DBB78;
-extern u_char D_800DBB7C;
-extern u_char D_800DBB7D;
-extern u_short D_800DBB7E;
-extern u_short D_800DBB80;
-extern _creditsElement _creditsElements[];
-extern u_char D_800DC188;
-extern u_char D_800DC189;
-extern u_char _skipInvoked;
-extern int D_800DC18C;
-extern int _textStreamDelay;
-extern u_char* _creditsBytestreamHead;
-extern short _scrollSpeed;
-extern short D_800DC19A;
-extern u_short D_800DC19C;
-extern void* D_800DC1A0;
-extern void* D_800DC1A4;
-extern void* D_800DC1A8[];
-extern u_int _rank;
-extern int _clearCount;
-extern u_int _score;
-extern int _mapCompletion;
-extern u_int _onScreenMapCompletion;
-extern int _onScreenScore;
-extern int _submenuState;
-extern int D_800DC20C;
-extern int D_800DC210;
-extern int _incrementingScore;
-extern int _incrementingMapCompletion;
-extern u_char _riskbreakerRanks[][4];
-
-int func_800688D4(int angle)
+static int func_800688D4(int angle)
 {
     int value = (int)_trig_table;
     int quadrant = angle & 0x400;
@@ -203,8 +46,39 @@ int func_800688D4(int angle)
     return value;
 }
 
-void _renderPhantomPain(_creditsElement* element)
+typedef struct _creditsElement {
+    void (*renderer)(struct _creditsElement*);
+    u_char* data;
+    short state;
+    u_short currentStep;
+    u_short illustId;
+    u_short width;
+    int x;
+    int y;
+    int unk18;
+    int unk1C;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+} _creditsElement;
+
+enum easeMode {
+    easeModeLinear,
+    easeModeEaseOut,
+    easeModeEaseInOut,
+    easeModeEaseIn,
+};
+
+static int _ease(short mode, short currentStep, short totalSteps);
+
+static void _renderPhantomPain(_creditsElement* element)
 {
+    static int D_800DBB18;
+    static int D_800DBB1C;
+    static int _[2] __attribute__((unused));
+    static u_char D_800DBB28[4][16];
+
     SVECTOR rot;
     SVECTOR vertices[4];
     MATRIX matrix;
@@ -311,7 +185,9 @@ void _renderPhantomPain(_creditsElement* element)
     ((vs_scratch_t*)0x1F800000)->unk0 = poly;
 }
 
-void _renderFin(_creditsElement* arg0)
+static void* _insertTpage(int tPage, int otOffset);
+
+static void _renderFin(_creditsElement* arg0)
 {
     int temp_a0_2;
     int temp_a0;
@@ -376,7 +252,20 @@ void _renderFin(_creditsElement* arg0)
     p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
-void _renderVagrantStory(_creditsElement* element)
+static _creditsElement _creditsElements[32];
+static u_char D_800DC188;
+static u_char D_800DC189;
+static u_char _skipInvoked;
+static u_char _0 __attribute__((unused));
+static int D_800DC18C;
+static int _textStreamDelay;
+static u_char* _creditsBytestreamHead;
+static short _scrollSpeed;
+static short D_800DC19A;
+static u_short D_800DC19C;
+static u_short _1 __attribute__((unused));
+
+static void _renderVagrantStory(_creditsElement* element)
 {
     SPRT* sprt;
     int var_fp;
@@ -460,6 +349,40 @@ static int _inverseDistanceFromScreencenter(int arg0, int arg1)
     arg1 -= 112;
     return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
 }
+
+typedef struct {
+    int unk0;
+    u_char unk4;
+    u_char unk5;
+    u_char unk6;
+    u_char unk7;
+    short unk8;
+    short unkA;
+    short unkC;
+    short unkE;
+    u_char unk10;
+    u_char unk11;
+    u_char unk12;
+    u_char unk13;
+    short unk14;
+    short unk16;
+    short unk18;
+    short unk1A;
+    u_char unk1C;
+    u_char unk1D;
+    u_char unk1E;
+    u_char unk1F;
+    short unk20;
+    short unk22;
+    short unk24;
+    short unk26;
+    u_char unk28;
+    u_char unk29;
+    u_char unk2A;
+    u_char unk2B;
+    short unk2C;
+    short unk2E;
+} func_80069388_t;
 
 static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
     __attribute__((unused));
@@ -569,8 +492,50 @@ static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
     arg0->unk28 = arg0->unk29 = arg0->unk2A;
 }
 
+static u_char D_800DB72C = 0;
+
+static int _illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA,
+    VS_ILLUST08_BIN_LBA, VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA,
+    VS_ILLUST12_BIN_LBA, VS_ILLUST13_BIN_LBA, VS_ILLUST14_BIN_LBA, VS_ILLUST15_BIN_LBA,
+    VS_ILLUST16_BIN_LBA, 0, 0, 0, 0, 0 };
+
+static int _illustSizes[] = { VS_ILLUST06_BIN_SIZE, VS_ILLUST07_BIN_SIZE,
+    VS_ILLUST08_BIN_SIZE, VS_ILLUST09_BIN_SIZE, VS_ILLUST10_BIN_SIZE,
+    VS_ILLUST11_BIN_SIZE, VS_ILLUST12_BIN_SIZE, VS_ILLUST13_BIN_SIZE,
+    VS_ILLUST14_BIN_SIZE, VS_ILLUST15_BIN_SIZE, VS_ILLUST16_BIN_SIZE, 0, 0, 0, 0, 0 };
+
+typedef struct {
+    int size;
+    RECT rect;
+    u_char data[0];
+} _timChunk;
+
+typedef struct {
+    int magic;
+    int flags;
+    _timChunk chunk;
+} _timData;
+
+extern _timData _illustSydney;
+static _timData* D_800DB7B0 = &_illustSydney;
+
+static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
+    1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
+
+static void* D_800DC1A0;
+static void* D_800DC1A4;
+static void* D_800DC1A8[16];
+
+static void func_8006A9C0(_timData*);
+static void func_8006AF44(_timData* arg0, void* arg1);
+
 static void _renderllustration(_creditsElement* element)
 {
+    static short D_800DBB68;
+    static short D_800DBB6A;
+    static u_short D_800DBB6C;
+    static u_short _ __attribute__((unused));
+
     SPRT* sprt;
     short temp_v0;
     void** p;
@@ -658,6 +623,8 @@ static void _renderllustration(_creditsElement* element)
     p[0] = _insertTpage(getTPage(1, 2, D_800DBB6A + 64, 256), 4);
 }
 
+extern u_char _glyphWidths[];
+
 static int _creditsStrWidth(u_char* str)
 {
     short width;
@@ -696,7 +663,7 @@ static int _creditsStrWidth(u_char* str)
     return width;
 }
 
-void _renderText(_creditsElement* element)
+static void _renderText(_creditsElement* element)
 {
     u_char* str;
     short i;
@@ -811,7 +778,7 @@ void _renderText(_creditsElement* element)
         _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
-void _renderCopyright(_creditsElement* arg0)
+static void _renderCopyright(_creditsElement* arg0)
 {
     void** p = (void**)0x1F800000;
     SPRT* sprt = p[0];
@@ -979,11 +946,20 @@ static void func_8006A4D8(_creditsElement* element)
     s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
+static void func_8006B9B4(void);
+static void _setDrawEnv(DRAWENV*);
+static void func_8006A888(void);
+static void _resetElements(void);
+static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
+static void func_8006B884(void);
+static void _updateClearGameStats(void);
+static void _checkStreamXaEnd(void);
+static void func_8006BD78(void);
+
 void vs_ending_exec(void)
 {
     extern u_char _credits[];
     extern _timData _creditsFont;
-    extern _timData _illustSydney;
     extern _timData _illustMerlose;
     extern _timData _illustDragon;
     extern _timData _illustSamantha;
@@ -1075,6 +1051,12 @@ static void _setDrawEnv(DRAWENV* drawenv)
     drawenv->tpage = 0x20;
 }
 
+static int _renderElements(void);
+static void _parseCreditsScript(void);
+static int func_8006AF64(void);
+static int _drawScreen(u_long*);
+static void func_8006B930(void);
+
 static void func_8006A888(void)
 {
     while (D_800DC188 == 0) {
@@ -1158,7 +1140,7 @@ static int _renderElements(void)
     return var_s3;
 }
 
-_creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
+static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
     short i;
     _creditsElement* element = &_creditsElements[1];
@@ -1175,7 +1157,7 @@ _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
     SystemError('M', 100);
 }
 
-_creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
+static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
 {
     if (_creditsElements[0].state == 0) {
         _creditsElements[0].renderer = renderer;
@@ -1308,8 +1290,17 @@ static void func_8006AF44(_timData* arg0, void* arg1)
     D_800DC1A4 = arg0;
 }
 
-int func_8006AF64(void)
+static int func_8006AF64(void)
 {
+    static u_char* D_800DBB70;
+    static u_char* D_800DBB74;
+    static u_char* D_800DBB78;
+    static u_char D_800DBB7C;
+    static u_char D_800DBB7D;
+    static u_short D_800DBB7E;
+    static u_short D_800DBB80;
+    static u_char _[6] __attribute__((unused));
+
     short i;
 
     if (D_800DB72C == 0) {
@@ -1564,6 +1555,10 @@ static void func_8006B9B4(void)
 
 static void _checkStreamXaEnd(void) { vs_main_checkStreamXaEnd(); }
 
+static int _countableRooms[] = { 0xFF3FFE00, 0xBEBFDFF7, 0xFFFFFDE8, 0xDFFFFE6F,
+    0xFFFFF807, 0xFFFBE87D, 0xF007FFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFDFFFFF,
+    0xFFFFFFFF, 0x0EFFFFFF, 0x00000000, 0x00000000, 0x00000000 };
+
 static void _updateTitles(void)
 {
     int i;
@@ -1671,6 +1666,22 @@ static void _updateTitles(void)
     }
 }
 
+static vs_main_CdQueueSlot* cdSlot;
+static void* timData;
+static u_int _rank;
+static int _clearCount;
+static u_int _score;
+static int _mapCompletion;
+static u_int _onScreenMapCompletion;
+static int _onScreenScore;
+static int _submenuState;
+static int D_800DC20C;
+static int D_800DC210;
+
+static int func_8006BE04(void);
+static int _renderCongratulationsScreen(void);
+static void _renderCongratulations(int arg0, int arg1, int arg2);
+
 static void func_8006BD78(void)
 {
     int temp_s0;
@@ -1691,6 +1702,10 @@ static void func_8006BD78(void)
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
     } while (temp_s0 == 0);
 }
+
+static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
+static void _determineRank(void);
+static void _updateScore(void);
 
 static int func_8006BE04(void)
 {
@@ -1713,9 +1728,6 @@ static int func_8006BE04(void)
         { VS_ENDSCR14_DIS_LBA, VS_ENDSCR14_DIS_SIZE },
         { VS_ENDSCR15_DIS_LBA, VS_ENDSCR15_DIS_SIZE },
     };
-
-    extern vs_main_CdQueueSlot* cdSlot;
-    extern void* timData;
 
     TIM_IMAGE sp10;
     int i;
@@ -1838,6 +1850,14 @@ static int func_8006BE04(void)
     return 0;
 }
 
+static void func_8006C3CC(int);
+static void _renderScore(int, int, int, int);
+static void _renderIncrementalScore(int, int, int, int);
+static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderIncrementalMapCompletion(int, int, int, int);
+static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+static void _renderRiskbreakerRank(int, int, int);
+
 static int _renderCongratulationsScreen(void)
 {
     if (D_800DC210 == 0) {
@@ -1881,7 +1901,7 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
-void func_8006C3CC(int arg0)
+static void func_8006C3CC(int arg0)
 {
     int var_s2;
     int i;
@@ -1919,9 +1939,131 @@ void func_8006C3CC(int arg0)
     *(void**)0x1F800000 = poly;
 }
 
+enum disIndices {
+    disIndexRank1Grand = 27,
+    disIndexRank1Master,
+    disIndexRank1Breaker,
+    disIndexRank1Paladin,
+    disIndexRank1Gladiator,
+    disIndexRank1Raging,
+    disIndexRank1Berserker,
+    disIndexRank1Radiant,
+    disIndexRank1Couragous,
+    disIndexRank1Adventurer,
+    disIndexRank1Knight,
+    disIndexRank1Archer = 39,
+    disIndexRank1DareDevil = 42,
+    disIndexRank1Blade = 44,
+    disIndexRank2Of = 48,
+    disIndexRank2Mystic = 55,
+    disIndexRank2Wanderer,
+    disIndexRank2Destroyer,
+    disIndexRank2Gladiator,
+    disIndexRank2Spectrebane,
+    disIndexRank2Normal,
+    disIndexRank2Phantom,
+    disIndexRank2Fighter,
+    disIndexRank2Demon,
+    disIndexRank2Eater,
+    disIndexRank2Agent,
+    disIndexRank2Dragon,
+    disIndexRank2Slayer,
+    disIndexRank2Cartographer
+};
+
+static _texture_t _disMap[] = {
+    { 0, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 14, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 28, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 42, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 56, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 70, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 84, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 98, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 112, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 126, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 240, 16, 4, 8, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 148, 4, 60, 16, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 4, 24, 156, 16, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 4, 44, 38, 18, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 50, 44, 44, 18, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 98, 44, 38, 18, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 144, 44, 30, 18, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 182, 44, 34, 18, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 0, 64, 66, 22, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 104, 70, 12, 12, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 118, 70, 28, 14, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 0, 88, 170, 22, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 8, 118, 152, 24, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 8, 150, 152, 24, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 200, 82, 10, 10, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 216, 82, 8, 6, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 232, 82, 6, 12, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
+    { 30, 12, 66, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 98, 12, 70, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 170, 12, 76, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 70, 36, 72, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 144, 36, 102, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 78, 60, 70, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 152, 60, 94, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 38, 84, 80, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 118, 84, 122, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 46, 108, 118, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 166, 108, 74, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 78, 132, 94, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 172, 132, 74, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 82, 156, 86, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 170, 156, 76, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 60, 180, 96, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 158, 180, 88, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 120, 204, 54, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 178, 204, 68, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 56, 228, 114, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 172, 228, 72, 24, getTPage(0, 0, 896, 256), vs_getUV(240, 127) },
+    { 110, 12, 26, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 138, 12, 54, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 194, 12, 52, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 64, 36, 88, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 182, 36, 64, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 90, 60, 90, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 184, 60, 62, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 82, 84, 66, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 148, 84, 98, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 42, 108, 102, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 144, 108, 102, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 50, 132, 116, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 168, 132, 78, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 74, 156, 92, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 166, 156, 80, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 58, 180, 68, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 130, 180, 52, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 184, 180, 62, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 106, 204, 78, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 188, 204, 58, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+    { 106, 228, 140, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
+};
+
+static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1Master,
+                                             disIndexRank1Breaker },
+    { 2, disIndexRank1Grand, disIndexRank1Paladin },
+    { 2, disIndexRank1Radiant, disIndexRank1Knight },
+    { 2, disIndexRank1Raging, disIndexRank1Berserker },
+    { 2, disIndexRank2Dragon, disIndexRank2Slayer },
+    { 2, disIndexRank1Couragous, disIndexRank1Adventurer },
+    { 2, disIndexRank1Master, disIndexRank1Gladiator },
+    { 2, disIndexRank1Blade, disIndexRank1Master },
+    { 2, disIndexRank2Mystic, disIndexRank2Wanderer }, { 1, disIndexRank1Paladin },
+    { 1, disIndexRank2Spectrebane }, { 1, disIndexRank2Destroyer },
+    { 1, disIndexRank1Berserker }, { 1, disIndexRank1DareDevil },
+    { 1, disIndexRank1Gladiator }, { 2, disIndexRank2Normal, disIndexRank2Agent } };
+
 static void _renderCongratulations(int arg0, int arg1, int arg2)
 {
-    extern CVECTOR D_800DBA7C[2];
+    static CVECTOR D_800DBA7C[] = {
+        { 128, 96, 64 },
+        { 200, 180, 160 },
+        { 128, 96, 64 },
+    };
 
     if (arg2 < 0) {
         arg2 = 0;
@@ -1942,7 +2084,10 @@ static void _renderCongratulations(int arg0, int arg1, int arg2)
 
 static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern CVECTOR D_800DBA88[];
+    static CVECTOR D_800DBA88[] = {
+        { 100, 180, 220 },
+        { 100, 180, 220 },
+    };
 
     char sp10[10];
     int i;
@@ -1990,10 +2135,15 @@ static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((u
     }
 }
 
+static int _incrementingScore;
+
 static void _renderIncrementalScore(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern CVECTOR D_800DBA90[];
+    static CVECTOR D_800DBA90[] = {
+        { 100, 180, 220 },
+        { 100, 180, 220 },
+    };
 
     char sp18[16];
     int temp_s2;
@@ -2067,7 +2217,10 @@ static void _renderIncrementalScore(
 static void _renderMapCompletion(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern CVECTOR D_800DBA98[];
+    static CVECTOR D_800DBA98[] = {
+        { 100, 180, 220 },
+        { 100, 180, 220 },
+    };
 
     char sp10[2];
     int i;
@@ -2107,10 +2260,15 @@ static void _renderMapCompletion(
     }
 }
 
+static int _incrementingMapCompletion;
+
 static void _renderIncrementalMapCompletion(
     int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
 {
-    extern CVECTOR D_800DBAA0[];
+    static CVECTOR D_800DBAA0[] = {
+        { 100, 180, 220 },
+        { 100, 180, 220 },
+    };
 
     char sp18[2];
     int temp_s4;
@@ -2177,6 +2335,11 @@ static void _renderIncrementalMapCompletion(
 
 static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 {
+    static CVECTOR D_800DBAA8[] = {
+        { 200, 80, 20 },
+        { 200, 80, 20 },
+    };
+
     if (timer < 0) {
         timer = 0;
     }
@@ -2187,13 +2350,16 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 
     if (timer > 0) {
         D_800DBAA8[0].cd = timer;
-        _renderTextureFadeInTint(x - (D_800DB876 >> 1), y, 12, D_800DBAA8);
+        _renderTextureFadeInTint(x - (_disMap[12].w >> 1), y, 12, D_800DBAA8);
     }
 }
 
-void _renderRiskbreakerRank(int x, int y, int timer)
+static void _renderRiskbreakerRank(int x, int y, int timer)
 {
-    extern CVECTOR D_800DBAB0[];
+    static CVECTOR D_800DBAB0[] = {
+        { 128, 128, 128 },
+        { 128, 128, 128 },
+    };
 
     int xInset;
     int i;
@@ -2251,6 +2417,11 @@ static void _parseTim(u_int* data, TIM_IMAGE* tim)
 
 static void _determineRank(void)
 {
+    static short titleThresholds[16] = { 16, 12, 8 };
+    static u_int rankScores[] = { 100000000, 75000000, 60000000, 40000000, 32000000,
+        24000000, 16000000, 12000000, 8000000, 5000000, 4000000, 3000000, 2000000,
+        1000000, 500000, 0 };
+
     int unlockedTitles;
     int flag;
     int i;

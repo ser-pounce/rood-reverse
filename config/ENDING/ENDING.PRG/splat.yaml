@@ -7,12 +7,8 @@ options:
   src_path: src/ENDING/ENDING.PRG
   asset_path: build/assets/ENDING/ENDING.PRG
   ld_script_path: build/config/ENDING/ENDING.PRG/link.ld
-  symbol_addrs_path: 
-    - config/ENDING/ENDING.PRG/symbol_addrs.txt
-    - config/ENDING/ENDING.PRG/symbol_addrs_private.txt
-    - config/SLUS_010.40/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/ENDING/ENDING.PRG/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/ENDING/ENDING.PRG/undefined_syms_auto.txt
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 segments:
   - name: ENDING.PRG

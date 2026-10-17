@@ -4,7 +4,9 @@
 #define VS_TILED_RING_COLORS D_800FEF3C
 #include "src/EFFECT/tiledRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FA7F0);
+#define VS_RING_FUNCTION func_800FA7F0
+#define VS_RING_COLORS D_800FEF5C
+#include "src/EFFECT/rings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FB414);
 

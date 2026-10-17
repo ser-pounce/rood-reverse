@@ -8,7 +8,9 @@
 #define VS_RING_COLORS D_800FEF5C
 #include "src/EFFECT/rings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FB414);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FB414
+#define VS_TRAIL_CORNER_STATE D_800FEF7C
+#include "src/EFFECT/trails5.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG073.BIN/nonmatchings/F8", func_800FBBB0);
 

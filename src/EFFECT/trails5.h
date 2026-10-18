@@ -592,7 +592,7 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
 
             dx = (depths[j] + depths[j + 1]) / 2;
 
-            if (dx < 2048 && dx > vs_main_nearClip) {
+            if ((dx < ONE / 2) && (dx > vs_main_nearClip)) {
                 prim = vs_scratch.unk0;
                 vs_scratch.unk0 = prim + 1;
                 setlen(prim, 14);
@@ -641,7 +641,7 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
 
         dx = (depths[j] + depths[j + 1]) / 2;
 
-        if (dx >= 2048 || dx <= vs_main_nearClip) {
+        if ((dx >= ONE / 2) || (dx <= vs_main_nearClip)) {
             continue;
         }
 
@@ -696,7 +696,7 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             trail = 16;
         }
 
-        state->trails = vs_main_allocHeapR(trail * sizeof *state->trails);
+        state->trails = vs_main_allocHeapR(sizeof *state->trails * trail);
         state->trailcount = trail;
         state->unk3 = 0;
 

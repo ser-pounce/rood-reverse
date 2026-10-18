@@ -267,12 +267,10 @@ static u_short _1 __attribute__((unused));
 
 static void _renderVagrantStory(_creditsElement* element)
 {
-    SPRT* sprt;
-    int var_fp;
-    void** s0;
-    int new_var;
-
-    sprt = *(SPRT**)0x1F800000;
+    int brightness;
+    void** p;
+    int index;
+    SPRT* sprt = *(SPRT**)0x1F800000;
 
     switch (element->state) {
     case 1:
@@ -283,7 +281,7 @@ static void _renderVagrantStory(_creditsElement* element)
         /* fallthrough */
 
     case 2:
-        var_fp = (_masterBrightness * ++element->currentStep) / 60;
+        brightness = (_masterBrightness * ++element->currentStep) / 60;
 
         if (element->currentStep == 60) {
             element->state = 3;
@@ -292,7 +290,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case 3:
-        var_fp = _masterBrightness;
+        brightness = _masterBrightness;
 
         if (++element->currentStep == 60) {
             element->state = 4;
@@ -300,7 +298,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case 4:
-        var_fp = _masterBrightness;
+        brightness = _masterBrightness;
         element->y += _scrollSpeed;
 
         if (element->y < -(60 << 8)) {
@@ -316,14 +314,14 @@ static void _renderVagrantStory(_creditsElement* element)
     setUV0(sprt, 0, 96);
     setWH(sprt, 208, 48);
     setClut(sprt, 896, 80);
-    sprt->r0 = sprt->g0 = sprt->b0 = var_fp;
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    s0 = (void**)0x1F800000;
-    setaddr(sprt, getaddr(s0[1] + 12));
-    setaddr(s0[1] + 12, sprt++);
+    p = (void**)0x1F800000;
+    setaddr(sprt, getaddr(p[1] + 12));
+    setaddr(p[1] + 12, sprt++);
 
-    new_var = 0;
-    s0[new_var] = sprt;
+    index = 0;
+    p[index] = sprt;
 
     sprt = _insertTpage(0x2E, 3);
 
@@ -333,13 +331,13 @@ static void _renderVagrantStory(_creditsElement* element)
     setUV0(sprt, 0, 0x60);
     setWH(sprt, 0xD0, 0x30);
     setClut(sprt, 896, 81);
-    sprt->r0 = sprt->g0 = sprt->b0 = var_fp;
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    setaddr(sprt, getaddr(s0[1] + 12));
-    setaddr(s0[1] + 12, sprt++);
+    setaddr(sprt, getaddr(p[1] + 12));
+    setaddr(p[1] + 12, sprt++);
 
-    s0[new_var] = sprt;
-    s0[new_var] = _insertTpage(0x4E, 3);
+    p[index] = sprt;
+    p[index] = _insertTpage(0x4E, 3);
     return;
 }
 

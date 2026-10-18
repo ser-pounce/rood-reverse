@@ -1070,17 +1070,15 @@ static void _parseCreditsScript(void)
 {
     enum opcodes { wait = 1 };
 
-    u_char* bytestream;
-    int op;
-    int delay;
-
     if (_textStreamDelay != 0) {
         --_textStreamDelay;
         return;
     }
 
     while (1) {
-        bytestream = _creditsBytestreamHead;
+        int op;
+        int delay;
+        u_char* bytestream = _creditsBytestreamHead;
 
         switch (bytestream[0]) {
 

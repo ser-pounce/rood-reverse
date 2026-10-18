@@ -1183,11 +1183,11 @@ static int _ease(short mode, short currentStep, short totalSteps)
     }
 }
 
-static void _initTimDecompress(_timData* arg0, void* arg1)
+static void _initTimDecompress(_timData* targetBuf, void* compressedData)
 {
     D_800DB72C = 1;
-    D_800DC1A0 = arg1;
-    D_800DC1A4 = arg0;
+    D_800DC1A0 = compressedData;
+    D_800DC1A4 = targetBuf;
 }
 
 static int func_8006AF64(void)

@@ -433,7 +433,7 @@ static void* _currentDecompressedIllust;
 static void* _compressedIllustBufs[16];
 
 static void _loadTim(_timData*);
-static void _initTimDecompress(_timData* arg0, void* arg1);
+static void _initTimDecompress(_timData*, void*);
 
 static void _renderllustration(_creditsElement* element)
 {

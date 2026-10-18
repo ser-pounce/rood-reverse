@@ -1575,7 +1575,7 @@ static int _mapCompletion;
 static u_int _onScreenMapCompletion;
 static int _onScreenScore;
 static int _submenuState;
-static int D_800DC20C;
+static int _screenTimer;
 static int D_800DC210;
 
 static int _initCongratulationsScreen(void);
@@ -1682,7 +1682,7 @@ static int _initCongratulationsScreen(void)
         mapCompletion = 0;
         _onScreenMapCompletion = 0;
         _onScreenScore = 0;
-        D_800DC20C = 0;
+        _screenTimer = 0;
         D_800DC210 = 0;
         _clearCount = vs_main_stateFlags.clearCount;
 
@@ -1762,42 +1762,42 @@ static int _renderCongratulationsScreen(void)
 {
     if (D_800DC210 == 0) {
 
-        if (D_800DC20C == 0xD0) {
+        if (_screenTimer == 0xD0) {
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
         }
 
-        func_8006C3CC(D_800DC20C);
-        _renderCongratulations(0xA0, 0x28, D_800DC20C);
-        _renderIncrementalScore(0xA0, 0x50, D_800DC20C - 0x20, D_800DC210);
-        _renderIncrementalMapCompletion(0xA0, 0x66, D_800DC20C - 0x70, D_800DC210);
-        _renderRiskbreakerRankHeader(0xA0, 0x8A, D_800DC20C - 0xC0);
-        _renderRiskbreakerRank(0xA0, 0x9A, D_800DC20C - 0xD0);
+        func_8006C3CC(_screenTimer);
+        _renderCongratulations(0xA0, 0x28, _screenTimer);
+        _renderIncrementalScore(0xA0, 0x50, _screenTimer - 0x20, D_800DC210);
+        _renderIncrementalMapCompletion(0xA0, 0x66, _screenTimer - 0x70, D_800DC210);
+        _renderRiskbreakerRankHeader(0xA0, 0x8A, _screenTimer - 0xC0);
+        _renderRiskbreakerRank(0xA0, 0x9A, _screenTimer - 0xD0);
 
-        if (D_800DC20C >= 0x1001) {
-            D_800DC20C = 0x1000;
+        if (_screenTimer > 4096) {
+            _screenTimer = 4096;
         }
 
         if (vs_main_buttonsPressed.all != 0) {
             D_800DC210 = 1;
-            D_800DC20C = 0;
+            _screenTimer = 0;
         }
 
     } else {
 
-        func_8006C3CC(8 - D_800DC20C);
-        _renderCongratulations(0xA0, 0x28, 8 - D_800DC20C);
-        _renderScore(0xA0, 0x50, 8 - D_800DC20C, 3);
-        _renderMapCompletion(0xA0, 0x66, 8 - D_800DC20C, 3);
-        _renderRiskbreakerRankHeader(0xA0, 0x8A, 8 - D_800DC20C);
-        _renderRiskbreakerRank(0xA0, 0x9A, 8 - D_800DC20C);
+        func_8006C3CC(8 - _screenTimer);
+        _renderCongratulations(0xA0, 0x28, 8 - _screenTimer);
+        _renderScore(0xA0, 0x50, 8 - _screenTimer, 3);
+        _renderMapCompletion(0xA0, 0x66, 8 - _screenTimer, 3);
+        _renderRiskbreakerRankHeader(0xA0, 0x8A, 8 - _screenTimer);
+        _renderRiskbreakerRank(0xA0, 0x9A, 8 - _screenTimer);
 
-        if (D_800DC20C >= 8) {
+        if (_screenTimer >= 8) {
             return 1;
         }
     }
 
-    ++D_800DC20C;
+    ++_screenTimer;
     return 0;
 }
 

@@ -1839,8 +1839,10 @@ static void _fadeIn(int timer)
 enum disIndices {
     disIndexRank0Comma = 10,
     disIndexRank0Score = 18,
-    disIndexRank0Pts = 20,
-    disIndexRank0Congratulations = 22,
+    disIndexRank0Percent,
+    disIndexRank0Pts,
+    disIndexRank0MapCompleted,
+    disIndexRank0Congratulations,
     disIndexRank0Colon = 26,
     disIndexRank1Grand,
     disIndexRank1Master,
@@ -2115,49 +2117,48 @@ static void _renderIncrementalScore(
     _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, temp_s2);
 }
 
-static void _renderMapCompletion(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBA98[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp10[2];
+    char buf[2];
     int i;
-    int v0;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
+    if (timer > 0) {
 
-        D_800DBA98[0].cd = arg2;
+        colors[0].cd = timer;
 
-        sprintf(sp10, "%03d", _mapCompletion);
+        sprintf(buf, "%03d", _mapCompletion);
 
-        arg0 -= ((_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1);
+        x -= ((_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
+                  + _disMap[disIndexRank0Percent].w + 38)
+              >> 1);
 
-        _renderTextureFadeInTint(arg0, arg1, 0x15, D_800DBA98);
+        _renderTextureFadeInTint(x, y, disIndexRank0MapCompleted, colors);
 
-        arg0 += _disMap[21].w;
+        x += _disMap[disIndexRank0MapCompleted].w;
 
-        _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA98);
+        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
-        v0 = arg0 + 2;
-        arg0 = v0 + _disMap[26].w;
+        x += _disMap[disIndexRank0Colon].w + 2;
 
         for (i = 0; i < 3; ++i) {
-            _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - '0', D_800DBA98);
-            arg0 += 12;
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            x += 12;
         }
 
-        _renderTextureFadeInTint(arg0, arg1 + 8, 0x13, D_800DBA98);
+        _renderTextureFadeInTint(x, y + 8, disIndexRank0Percent, colors);
     }
 }
 

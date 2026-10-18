@@ -1,20 +1,16 @@
-/* Shared particle origin, target, and control-point generation.
- * The including effect supplies its original function and state symbols. */
-#include "common.h"
-#include "src/SLUS_010.40/32154.h"
+/* Shared textured particle setup: the origin, target and spline control points of each
+ * particle. The overlay supplies the entry points and the corner counter. */
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
+#include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
-#include <rand.h>
 #include <inline_c.h>
+#include <rand.h>
 
+/* Guarded so an overlay with several particle sets can include this again. */
 #ifndef VS_PARTICLE_SETUP_TYPES
 #define VS_PARTICLE_SETUP_TYPES
-
-typedef struct {
-    short unk0;
-    short unk2;
-} func_800FA098_arg3_2;
 
 typedef struct {
     u_char unk0;
@@ -30,189 +26,154 @@ typedef struct {
 
 extern int VS_PARTICLE_CORNER_STATE;
 
-void VS_PARTICLE_RENDER_FUNCTION(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA098_arg3*);
-
-void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA098_arg3* arg3)
+void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
+    D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
-    int sp10;
-    SVECTOR* temp_s1;
-    int temp_a1;
-    int temp_lo;
-    int temp_s0_2;
-    int temp_s3;
-    int temp_v0;
-    int temp_v0_4;
-    int var_fp;
+    int startX;
+    SVECTOR* point;
+    int step;
+    int angle;
+    int startZ;
     int i;
-    u_short var_a0_2;
-    u_short var_v1;
-    u_short var_v1_2;
-    MATRIX* temp_s0;
+    MATRIX* world;
 
     vs_battle_lerpVector(
-        arg0->unk18, vs_battle_sampleCurve(arg0->unk8, arg3->unkC), &arg1->unk98);
-    temp_s0 = &arg2->unk1C[arg0->unkC8].world;
+        effect->unk18, vs_battle_sampleCurve(effect->unk8, state->unkC), &scratch->unk98);
+    world = &battle->unk1C[effect->unkC8].world;
 
-    switch (arg1->flags & 7) {
+    switch (scratch->flags & 7) {
     case 0:
         break;
+
     case 1:
-        vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
+        vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
         break;
+
     case 2:
-        arg1->unk98.vx += temp_s0->t[0];
-        arg1->unk98.vy += temp_s0->t[1];
-        arg1->unk98.vz += temp_s0->t[2];
+        applyVector(&scratch->unk98, world->t[0], world->t[1], world->t[2], +=);
         break;
     }
 
     vs_battle_lerpVector(
-        arg0->unk24, vs_battle_sampleCurve(arg0->unk9, arg3->unkC), &arg1->unkA8);
-    SetRotMatrix(temp_s0);
+        effect->unk24, vs_battle_sampleCurve(effect->unk9, state->unkC), &scratch->unkA8);
+    SetRotMatrix(world);
     gte_zrtr();
 
-    switch (arg1->flags & 0x38) {
+    switch (scratch->flags & 0x38) {
     case 0:
-        for (i = 0; i < arg3->unk2; ++i) {
+        for (i = 0; i < state->unk2; ++i) {
+            point = &state->unk4[i * 4];
+            angle = rand();
+            scratch->unk170 = rsin(angle);
+            scratch->unk178 = rcos(angle);
+            angle = rand();
+            scratch->unk174 = rsin(angle);
+            scratch->unk17C = rcos(angle);
+            setVector(point,
+                (((scratch->unkA8.vx * scratch->unk178) >> 12) * scratch->unk17C) >> 12,
+                (((scratch->unkA8.vy * scratch->unk178) >> 12) * scratch->unk174) >> 12,
+                (scratch->unkA8.vz * scratch->unk170) >> 12);
 
-            temp_s1 = arg3->unk4 + (i * 4);
-
-            temp_v0 = rand();
-            arg1->unk170 = rsin(temp_v0);
-            arg1->unk178 = rcos(temp_v0);
-
-            temp_v0 = rand();
-            arg1->unk174 = rsin(temp_v0);
-            arg1->unk17C = rcos(temp_v0);
-
-            temp_s1->vx =
-                (((arg1->unkA8.vx * arg1->unk178) >> 0xC) * arg1->unk17C) >> 0xC;
-            temp_s1->vy =
-                (((arg1->unkA8.vy * arg1->unk178) >> 0xC) * arg1->unk174) >> 0xC;
-            temp_s1->vz = (arg1->unkA8.vz * arg1->unk170) >> 0xC;
-
-            if (arg1->flags & 0x40000) {
-                ApplyRotMatrix(temp_s1, &arg1->unk34);
-                temp_s1->vx = arg1->unk34.vx;
-                temp_s1->vy = arg1->unk34.vy;
-                temp_s1->vz = arg1->unk34.vz;
+            if (scratch->flags & 0x40000) {
+                ApplyRotMatrix(point, &scratch->unk34);
+                copyVector(point, &scratch->unk34);
             }
 
-            temp_s1->vx += arg1->unk98.vx;
-            temp_s1->vy += arg1->unk98.vy;
-            temp_s1->vz += arg1->unk98.vz;
+            addVector(point, &scratch->unk98);
         }
+
         return;
 
     case 8:
-        for (i = 0; i < arg3->unk2; ++i) {
+        for (i = 0; i < state->unk2; ++i) {
+            point = &state->unk4[i * 4];
 
-            temp_s1 = arg3->unk4 + i * 4;
-
-            switch (arg1->flags & 0x1800) {
-            case 0x0:
+            switch (scratch->flags & 0x1800) {
+            case 0:
             case 0x800:
                 switch (rand() % 6) {
                 case 0:
-                    temp_s1->vx = arg1->unkA8.vx;
-                    goto jump1;
+                    point->vx = scratch->unkA8.vx;
+                    goto randomYZ;
 
                 case 1:
-                    temp_s1->vx = -arg1->unkA8.vx;
-                jump1:
-                    temp_s1->vy =
-                        vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
-                    temp_s1->vz =
-                        vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    point->vx = -scratch->unkA8.vx;
+                randomYZ:
+                    point->vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
+                    point->vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
                     break;
 
                 case 2:
-                    temp_s1->vy = arg1->unkA8.vy;
-                    goto jump2;
+                    point->vy = scratch->unkA8.vy;
+                    goto randomXZ;
 
                 case 3:
-                    temp_s1->vy = -arg1->unkA8.vy;
-                jump2:
-                    temp_s1->vx =
-                        vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vz =
-                        vs_battle_randUniformInt(arg1->unkA8.vz, -arg1->unkA8.vz);
+                    point->vy = -scratch->unkA8.vy;
+                randomXZ:
+                    point->vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    point->vz =
+                        vs_battle_randUniformInt(scratch->unkA8.vz, -scratch->unkA8.vz);
                     break;
 
                 case 4:
-                    temp_s1->vz = arg1->unkA8.vz;
-                    goto jump3;
+                    point->vz = scratch->unkA8.vz;
+                    goto randomXY;
 
                 case 5:
-                    temp_s1->vz = -arg1->unkA8.vz;
-                jump3:
-                    temp_s1->vx =
-                        vs_battle_randUniformInt(arg1->unkA8.vx, -arg1->unkA8.vx);
-                    temp_s1->vy =
-                        vs_battle_randUniformInt(arg1->unkA8.vy, -arg1->unkA8.vy);
+                    point->vz = -scratch->unkA8.vz;
+                randomXY:
+                    point->vx =
+                        vs_battle_randUniformInt(scratch->unkA8.vx, -scratch->unkA8.vx);
+                    point->vy =
+                        vs_battle_randUniformInt(scratch->unkA8.vy, -scratch->unkA8.vy);
                     break;
                 }
                 break;
 
             case 0x1000:
-                temp_a1 = VS_PARTICLE_CORNER_STATE + 1;
-                VS_PARTICLE_CORNER_STATE = temp_a1 & 7;
-
-                var_a0_2 = arg1->unkA8.vx;
-                if (!(VS_PARTICLE_CORNER_STATE & 1)) {
-                    var_a0_2 = -var_a0_2;
-                }
-                temp_s1->vx = var_a0_2;
-
-                var_v1 = arg1->unkA8.vy;
-                if (!(VS_PARTICLE_CORNER_STATE & 2)) {
-                    var_v1 = -var_v1;
-                }
-                temp_s1->vy = var_v1;
-
-                var_v1_2 = arg1->unkA8.vz;
-                if (!(VS_PARTICLE_CORNER_STATE & 4)) {
-                    var_v1_2 = -var_v1_2;
-                }
-                temp_s1->vz = var_v1_2;
-
+                VS_PARTICLE_CORNER_STATE = (VS_PARTICLE_CORNER_STATE + 1) & 7;
+                setVector(point,
+                    (VS_PARTICLE_CORNER_STATE & 1) ? scratch->unkA8.vx
+                                                   : -scratch->unkA8.vx,
+                    (VS_PARTICLE_CORNER_STATE & 2) ? scratch->unkA8.vy
+                                                   : -scratch->unkA8.vy,
+                    (VS_PARTICLE_CORNER_STATE & 4) ? scratch->unkA8.vz
+                                                   : -scratch->unkA8.vz);
                 break;
             }
 
-            if (arg1->flags & 0x40000) {
-                ApplyRotMatrix(temp_s1, &arg1->unk34);
-                temp_s1->vx = arg1->unk34.vx;
-                temp_s1->vy = arg1->unk34.vy;
-                temp_s1->vz = arg1->unk34.vz;
+            if (scratch->flags & 0x40000) {
+                ApplyRotMatrix(point, &scratch->unk34);
+                copyVector(point, &scratch->unk34);
             }
 
-            temp_s1->vx = temp_s1->vx + arg1->unk98.vx;
-            temp_s1->vy = temp_s1->vy + arg1->unk98.vy;
-            temp_s1->vz = temp_s1->vz + arg1->unk98.vz;
+            addVector(point, &scratch->unk98);
         }
+
         return;
 
     case 16:
     case 24:
     case 32:
     case 40:
-        arg1->unk184 = 4;
-        arg1->unk188 = 4;
+        scratch->unk184 = 4;
+        scratch->unk188 = 4;
         break;
 
     case 48:
-        arg1->unk184 = arg0->unkCA;
+        scratch->unk184 = effect->unkCA;
 
-        if (arg1->unk184 == 0) {
-            arg1->unk184 = 1;
+        if (scratch->unk184 == 0) {
+            scratch->unk184 = 1;
         }
 
-        arg1->unk188 = arg0->unkCB;
+        scratch->unk188 = effect->unkCB;
 
-        if (arg1->unk188 == 0) {
-            arg1->unk188 = arg1->unk184;
+        if (scratch->unk188 == 0) {
+            scratch->unk188 = scratch->unk184;
         }
         break;
 
@@ -220,179 +181,179 @@ void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* a
         return;
     }
 
-    temp_lo = 0x1000 / arg1->unk184;
+    step = ONE / scratch->unk184;
 
-    if ((arg1->flags & 0x1800) != 0x1000) {
-        VS_PARTICLE_CORNER_STATE %= arg1->unk188;
-        temp_s0_2 = (VS_PARTICLE_CORNER_STATE * temp_lo) + 0x200;
-        sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
-        var_fp = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+    if ((scratch->flags & 0x1800) != 0x1000) {
+        VS_PARTICLE_CORNER_STATE %= scratch->unk188;
+        angle = VS_PARTICLE_CORNER_STATE * step + ONE / 8;
+        startX = (rcos(angle) * scratch->unkA8.vx) >> 12;
+        startZ = (rsin(angle) * scratch->unkA8.vz) >> 12;
     }
 
-    for (i = 0; i < arg3->unk2; ++i) {
-        temp_s1 = arg3->unk4 + (i * 4);
-        VS_PARTICLE_CORNER_STATE = (VS_PARTICLE_CORNER_STATE + 1) % arg1->unk188;
-        temp_s0_2 = (VS_PARTICLE_CORNER_STATE * temp_lo) + 0x200;
-        temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
-        temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+    for (i = 0; i < state->unk2; ++i) {
+        int x;
+        int z;
 
-        if ((arg1->flags & 0x1800) == 0x1000) {
-            temp_s1->vx = temp_s3;
-            temp_s1->vz = temp_s0_2;
+        point = &state->unk4[i * 4];
+        VS_PARTICLE_CORNER_STATE = (VS_PARTICLE_CORNER_STATE + 1) % scratch->unk188;
+        angle = VS_PARTICLE_CORNER_STATE * step + ONE / 8;
+        x = (rcos(angle) * scratch->unkA8.vx) >> 12;
+        z = (rsin(angle) * scratch->unkA8.vz) >> 12;
+
+        if ((scratch->flags & 0x1800) == 0x1000) {
+            point->vx = x;
+            point->vz = z;
         } else {
-            temp_v0_4 = rand() >> 3;
-            temp_s1->vx = (((temp_s3 - sp10) * temp_v0_4) >> 0xC) + sp10;
-            temp_s1->vz = (((temp_s0_2 - var_fp) * temp_v0_4) >> 0xC) + var_fp;
+            int t = rand() >> 3;
+
+            point->vx = (((x - startX) * t) >> 12) + startX;
+            point->vz = (((z - startZ) * t) >> 12) + startZ;
         }
 
-        temp_s1->vy = 0;
+        point->vy = 0;
 
-        if (arg1->flags & 0x40000) {
-            ApplyRotMatrix(temp_s1, &arg1->unk34);
-            temp_s1->vx = arg1->unk34.vx;
-            temp_s1->vy = arg1->unk34.vy;
-            temp_s1->vz = arg1->unk34.vz;
+        if (scratch->flags & 0x40000) {
+            ApplyRotMatrix(point, &scratch->unk34);
+            copyVector(point, &scratch->unk34);
         }
-        temp_s1->vx += arg1->unk98.vx;
-        temp_s1->vy += arg1->unk98.vy;
-        temp_s1->vz += arg1->unk98.vz;
+
+        addVector(point, &scratch->unk98);
     }
 }
 
-void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA098_arg3* arg3)
+void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
+    D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
     int i;
 
-    vs_battle_lerpSvector(
-        arg0->unk34[6], vs_battle_sampleCurve(arg0->unkF, arg3->unkC), &arg1->unk13C);
-    vs_battle_lerpSvector(
-        arg0->unk34[7], vs_battle_sampleCurve(arg0->unk10, arg3->unkC), &arg1->unk144);
+    vs_battle_lerpSvector(effect->unk34[6],
+        vs_battle_sampleCurve(effect->unkF, state->unkC), &scratch->unk13C);
+    vs_battle_lerpSvector(effect->unk34[7],
+        vs_battle_sampleCurve(effect->unk10, state->unkC), &scratch->unk144);
 
-    switch (arg1->flags & 0x1C0) {
+    switch (scratch->flags & 0x1C0) {
     case 0xC0:
-        arg1->unk13C.vx += arg2->unk1C[arg0->unkC9].world.t[0];
-        arg1->unk13C.vy += arg2->unk1C[arg0->unkC9].world.t[1];
-        arg1->unk13C.vz += arg2->unk1C[arg0->unkC9].world.t[2];
+        applyVector(&scratch->unk13C, battle->unk1C[effect->unkC9].world.t[0],
+            battle->unk1C[effect->unkC9].world.t[1],
+            battle->unk1C[effect->unkC9].world.t[2], +=);
         break;
+
     case 0x80:
-        arg1->unk13C.vx += D_800F5230.position.vx;
-        arg1->unk13C.vy += D_800F5230.position.vy;
-        arg1->unk13C.vz += D_800F5230.position.vz;
+        applyVector(&scratch->unk13C, D_800F5230.position.vx, D_800F5230.position.vy,
+            D_800F5230.position.vz, +=);
         break;
+
     case 0:
         break;
     }
 
-    for (i = 0; i < arg3->unk2; ++i) {
-        SVECTOR* temp_s0 = &arg3->unk4[i * 4 + 3];
-        temp_s0->vx =
-            arg1->unk13C.vx + vs_battle_randUniformInt(arg1->unk144.vx, -arg1->unk144.vx);
-        temp_s0->vy =
-            arg1->unk13C.vy + vs_battle_randUniformInt(arg1->unk144.vy, -arg1->unk144.vy);
-        temp_s0->vz =
-            arg1->unk13C.vz + vs_battle_randUniformInt(arg1->unk144.vz, -arg1->unk144.vz);
+    for (i = 0; i < state->unk2; ++i) {
+        SVECTOR* target = &state->unk4[i * 4 + 3];
+
+        setVector(target,
+            scratch->unk13C.vx
+                + vs_battle_randUniformInt(scratch->unk144.vx, -scratch->unk144.vx),
+            scratch->unk13C.vy
+                + vs_battle_randUniformInt(scratch->unk144.vy, -scratch->unk144.vy),
+            scratch->unk13C.vz
+                + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz));
     }
 }
 
-void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA098_arg3* arg3)
+void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
+    D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
-    SVECTOR sp10;
-    SVECTOR sp18;
     int i;
-    int temp_s0;
-    int var_s0;
-    int var_s1;
-    int var_s3;
-    int var_s4;
 
-    for (i = 0; i < arg3->unk2; ++i) {
+    for (i = 0; i < state->unk2; ++i) {
+        SVECTOR startOffset;
+        SVECTOR endOffset;
+        SVECTOR* points = &state->unk4[i * 4];
+        int distance;
+        int startAngle;
+        int endAngle;
+        int startRadius;
+        int endRadius;
 
-        SVECTOR* temp_s5 = &arg3->unk4[i * 4];
+        setVector(&scratch->unk34, points[3].vx - points[0].vx,
+            points[3].vy - points[0].vy, points[3].vz - points[0].vz);
+        distance = vs_gte_rsqrt(scratch->unk34.vx * scratch->unk34.vx
+                                + scratch->unk34.vy * scratch->unk34.vy
+                                + scratch->unk34.vz * scratch->unk34.vz);
+        vs_battle_lerp2DVector(effect->unk94[0],
+            vs_battle_sampleCurve(effect->unk12, state->unkC), scratch->unk124);
+        vs_battle_lerp2DVector(effect->unk94[1],
+            vs_battle_sampleCurve(effect->unk13, state->unkC), scratch->unk12C);
+        vs_battle_lerp2DVector(effect->unk94[2],
+            vs_battle_sampleCurve(effect->unkC, state->unkC), scratch->unk118);
+        vs_battle_lerpVector(effect->unk34[1],
+            vs_battle_sampleCurve(effect->unkB, state->unkC), &scratch->unkC8);
+        vs_battle_lerpVector(effect->unk34[0],
+            vs_battle_sampleCurve(effect->unkA, state->unkC), &scratch->unkE8);
+        vs_battle_lerpSvector(effect->unk34[2],
+            vs_battle_sampleCurve(effect->unkD, state->unkC), &scratch->unkF8);
 
-        arg1->unk34.vx = temp_s5[3].vx - temp_s5[0].vx;
-        arg1->unk34.vy = temp_s5[3].vy - temp_s5[0].vy;
-        arg1->unk34.vz = temp_s5[3].vz - temp_s5[0].vz;
+        if (scratch->unkF8.vx != 0) {
+            int along =
+                scratch->unk118[0] + rand() % scratch->unkF8.vx - scratch->unkF8.vx / 2;
 
-        temp_s0 = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
-                               + (arg1->unk34.vy * arg1->unk34.vy)
-                               + (arg1->unk34.vz * arg1->unk34.vz));
-
-        vs_battle_lerp2DVector(
-            arg0->unk94[0], vs_battle_sampleCurve(arg0->unk12, arg3->unkC), arg1->unk124);
-        vs_battle_lerp2DVector(
-            arg0->unk94[1], vs_battle_sampleCurve(arg0->unk13, arg3->unkC), arg1->unk12C);
-        vs_battle_lerp2DVector(
-            arg0->unk94[2], vs_battle_sampleCurve(arg0->unkC, arg3->unkC), arg1->unk118);
-        vs_battle_lerpVector(
-            arg0->unk34[1], vs_battle_sampleCurve(arg0->unkB, arg3->unkC), &arg1->unkC8);
-        vs_battle_lerpVector(
-            arg0->unk34[0], vs_battle_sampleCurve(arg0->unkA, arg3->unkC), &arg1->unkE8);
-        vs_battle_lerpSvector(
-            arg0->unk34[2], vs_battle_sampleCurve(arg0->unkD, arg3->unkC), &arg1->unkF8);
-
-        if (arg1->unkF8.vx != 0) {
-            int var_v0_2 =
-                (arg1->unk118[0] + (rand() % arg1->unkF8.vx)) - (arg1->unkF8.vx / 2);
-            if (&arg1->unk34) {
-                sp10.vz = (temp_s0 * var_v0_2) / 256;
+            if (&scratch->unk34) {
+                startOffset.vz = distance * along / 256;
             } else {
-                sp10.vz = (temp_s0 * var_v0_2) / 256;
+                startOffset.vz = distance * along / 256;
             }
         } else {
-            sp10.vz = (temp_s0 * arg1->unk118[0]) / 256;
+            startOffset.vz = distance * scratch->unk118[0] / 256;
         }
 
-        if (arg1->unkF8.vy != 0) {
-            int var_v0_3 =
-                (arg1->unk118[1] + (rand() % arg1->unkF8.vy)) - (arg1->unkF8.vy / 2);
-            sp18.vz = temp_s0 + ((temp_s0 * var_v0_3) / 256);
+        if (scratch->unkF8.vy != 0) {
+            int along =
+                scratch->unk118[1] + rand() % scratch->unkF8.vy - scratch->unkF8.vy / 2;
+            endOffset.vz = distance + distance * along / 256;
         } else {
-            sp18.vz = temp_s0 + ((temp_s0 * arg1->unk118[1]) / 256);
+            endOffset.vz = distance + distance * scratch->unk118[1] / 256;
         }
 
-        var_s3 = arg1->unk124[0];
+        startRadius = scratch->unk124[0];
 
-        if (arg1->unk124[1] != 0) {
-            var_s3 += rand() % arg1->unk124[1];
+        if (scratch->unk124[1] != 0) {
+            startRadius += rand() % scratch->unk124[1];
         }
 
-        var_s4 = arg1->unk12C[0];
+        endRadius = scratch->unk12C[0];
 
-        if (arg1->unk12C[1] != 0) {
-            var_s4 += rand() % arg1->unk12C[1];
+        if (scratch->unk12C[1] != 0) {
+            endRadius += rand() % scratch->unk12C[1];
         }
 
-        var_s0 = arg1->unkE8.vx;
+        startAngle = scratch->unkE8.vx;
 
-        if (arg1->unkC8.vx != 0) {
-            var_s0 += (rand() % (arg1->unkC8.vx * 2)) - arg1->unkC8.vx;
+        if (scratch->unkC8.vx != 0) {
+            startAngle += rand() % (scratch->unkC8.vx * 2) - scratch->unkC8.vx;
         }
 
-        var_s1 = arg1->unkE8.vy;
+        endAngle = scratch->unkE8.vy;
 
-        if (arg1->unkC8.vy != 0) {
-            var_s1 += (rand() % (arg1->unkC8.vy * 2)) - arg1->unkC8.vy;
+        if (scratch->unkC8.vy != 0) {
+            endAngle += rand() % (scratch->unkC8.vy * 2) - scratch->unkC8.vy;
         }
 
-        sp10.vx = (rcos(var_s0) * var_s3) >> 0xC;
-        sp10.vy = (rsin(var_s0) * var_s3) >> 0xC;
-        sp18.vx = (rcos(var_s1) * var_s4) >> 0xC;
-        sp18.vy = (rsin(var_s1) * var_s4) >> 0xC;
-
-        vs_battle_svecToVec(temp_s5, &arg1->unk34);
-        vs_battle_svecToVec(temp_s5 + 3, &arg1->unk44);
-        vs_battle_lookAt(&arg1->unk34, &arg1->unk44, &arg1->unk64);
-        gte_SetRotMatrix(&arg1->unk64);
-        gte_SetTransVector2(&arg1->unk34);
-        gte_ldv0(&sp10);
+        startOffset.vx = (rcos(startAngle) * startRadius) >> 12;
+        startOffset.vy = (rsin(startAngle) * startRadius) >> 12;
+        endOffset.vx = (rcos(endAngle) * endRadius) >> 12;
+        endOffset.vy = (rsin(endAngle) * endRadius) >> 12;
+        vs_battle_svecToVec(points, &scratch->unk34);
+        vs_battle_svecToVec(points + 3, &scratch->unk44);
+        vs_battle_lookAt(&scratch->unk34, &scratch->unk44, &scratch->unk64);
+        gte_SetRotMatrix(&scratch->unk64);
+        gte_SetTransVector2(&scratch->unk34);
+        gte_ldv0(&startOffset);
         gte_rtv0tr2();
-        gte_stlvnl(&arg1->unk34);
-        vs_battle_vecToSvec(&arg1->unk34, temp_s5 + 1);
-        gte_ldv0(&sp18);
+        gte_stlvnl(&scratch->unk34);
+        vs_battle_vecToSvec(&scratch->unk34, points + 1);
+        gte_ldv0(&endOffset);
         gte_rtv0tr2();
-        gte_stlvnl(&arg1->unk44);
-        vs_battle_vecToSvec(&arg1->unk44, temp_s5 + 2);
+        gte_stlvnl(&scratch->unk44);
+        vs_battle_vecToSvec(&scratch->unk44, points + 2);
     }
 }

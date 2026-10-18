@@ -1533,7 +1533,8 @@ void func_800DE3E4(func_800E78F4_t* arg0)
 
     self = (vs_battle_actor*)arg0->unk54;
 
-    if (vs_battle_getStateFlag(0xA6) == 4 && self->unk9 == 24 && self->unkC == 4) {
+    if (vs_battle_getStateFlag(0xA6) == 4 && self->command.fields.unk9 == 24
+        && self->unkC == 4) {
         vs_battle_setStateFlag(0xA6, 5);
     }
 
@@ -1640,7 +1641,7 @@ int func_800DEC88(void* arg0)
             func_800DE3E4(state);
 
             if (state->unk13) {
-                if (actor->unk8 & 0x20) {
+                if (actor->command.fields.unk8 & 0x20) {
                     func_800D821C(state);
                 } else {
                     func_800D820C(state->unk88, 128);

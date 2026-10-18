@@ -1,95 +1,95 @@
-/* Shared particle allocation and update lifecycle; include after particleSetup.h. */
+/* Shared textured particle effect entry point. Include after particleSetup.h and
+ * particleRender.h; the overlay supplies the entry points. */
+
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/SLUS_010.40/main.h"
 
 int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    func_800FA098_arg0* temp_s2;
-    int var_a0;
-    short var_v0;
-    func_800FA098_arg1* a2 = (func_800FA098_arg1*)0x1F8001D0;
-    func_800FA098_arg3* temp_s1 = arg0->unk8;
-    D_800F53B8_t* temp_s0 = D_800F53BC;
-    int s3 = 1;
+    func_800FA098_arg0* effect;
+    int count;
+    short largest;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg3* state = arg0->unk8;
+    D_800F53B8_t* battle = D_800F53BC;
+    int alive = 1;
 
     switch (arg1) {
     case 1:
 #ifdef VS_PARTICLE_UNTEXTURED
-        /* This variant uses only the state prefix, without texture animation. */
-        temp_s1 = vs_main_allocHeapR(0x10);
+        /* The untextured variant allocates only the state prefix, without the texture
+         * animation. */
+        state = vs_main_allocHeapR(0x10);
 #else
-        temp_s1 = vs_main_allocHeapR(0x30);
+        state = vs_main_allocHeapR(sizeof *state);
 #endif
-        arg0->unk8 = temp_s1;
-        temp_s1->unk1 = arg2 >> 8;
-        temp_s1->unk0 = arg2;
-        temp_s1->unkC = 0;
-        temp_s1->unk8 = 0;
-        temp_s2 = &D_800F569C->block5Data->unk4[temp_s1->unk1];
+        arg0->unk8 = state;
+        state->unk1 = arg2 >> 8;
+        state->unk0 = arg2;
+        state->unkC = 0;
+        state->unk8 = 0;
+        effect = &D_800F569C->block5Data->unk4[state->unk1];
+        largest =
+            effect->unkC0[1] < effect->unkC0[0] ? effect->unkC0[0] : effect->unkC0[1];
+        count = largest;
 
-        var_v0 = temp_s2->unkC0[1];
-        if (temp_s2->unkC0[1] < temp_s2->unkC0[0]) {
-            var_v0 = temp_s2->unkC0[0];
+        if (count > 8) {
+            count = 8;
         }
 
-        var_a0 = var_v0;
-
-        if (var_a0 >= 9) {
-            var_a0 = 8;
-        }
-
-        temp_s1->unk4 = vs_main_allocHeapR(var_a0 << 5);
+        state->unk4 = vs_main_allocHeapR(count * 32);
 #ifndef VS_PARTICLE_UNTEXTURED
-        func_800D6CCC((int*)(&temp_s1->unk10));
-        func_800D6CF0(&temp_s1->unk10, temp_s2->unk1, temp_s2->unk0);
+        func_800D6CCC((int*)&state->unk10);
+        func_800D6CF0(&state->unk10, effect->unk1, effect->unk0);
 #endif
         break;
 
     case 2:
-        temp_s2 = &D_800F569C->block5Data->unk4[temp_s1->unk1];
+        effect = &D_800F569C->block5Data->unk4[state->unk1];
 #ifdef VS_PARTICLE_UNTEXTURED
-        a2->flags = temp_s2->flags & 0x3FFFFFF;
+        scratch->flags = effect->flags & 0x3FFFFFF;
 #else
-        a2->flags = temp_s2->flags;
+        scratch->flags = effect->flags;
 #endif
-        temp_s1->unk2 = func_800CFE1C(
-            temp_s2->unkC0, vs_battle_sampleCurve(temp_s2->unk16, temp_s1->unkC));
+        state->unk2 = func_800CFE1C(
+            effect->unkC0, vs_battle_sampleCurve(effect->unk16, state->unkC));
 
-        if (temp_s1->unk2 >= 9) {
-            temp_s1->unk2 = 8;
+        if (state->unk2 > 8) {
+            state->unk2 = 8;
         }
 
-        if (temp_s1->unk8 <= 0) {
-            VS_PARTICLE_ORIGIN_FUNCTION(temp_s2, a2, temp_s0, temp_s1);
-            VS_PARTICLE_TARGET_FUNCTION(temp_s2, a2, temp_s0, temp_s1);
-            temp_s1->unk8 = temp_s2->unk34[5][2];
+        if (state->unk8 <= 0) {
+            VS_PARTICLE_ORIGIN_FUNCTION(effect, scratch, battle, state);
+            VS_PARTICLE_TARGET_FUNCTION(effect, scratch, battle, state);
+            state->unk8 = effect->unk34[5][2];
         }
 
-        temp_s1->unk8 = (temp_s1->unk8 - 1);
+        --state->unk8;
+        VS_PARTICLE_CONTROL_FUNCTION(effect, scratch, battle, state);
+        VS_PARTICLE_RENDER_FUNCTION(effect, scratch, battle, state);
+        ++state->unkC;
 
-        VS_PARTICLE_CONTROL_FUNCTION(temp_s2, a2, temp_s0, temp_s1);
-        VS_PARTICLE_RENDER_FUNCTION(temp_s2, a2, temp_s0, temp_s1);
+        if (state->unk0 != 0) {
+            --state->unk0;
 
-        ++temp_s1->unkC;
-
-        if (temp_s1->unk0 != 0) {
-            --temp_s1->unk0;
-            if (!temp_s1->unk0) {
-                vs_main_freeHeapR(temp_s1->unk4);
-                s3 = 0;
+            if (state->unk0 == 0) {
+                vs_main_freeHeapR(state->unk4);
+                alive = 0;
             }
         }
         break;
 
     case 3:
-        temp_s1->unk0 = 1;
+        state->unk0 = 1;
         break;
 
     case 4:
-        vs_main_freeHeapR(temp_s1->unk4);
-        s3 = 0;
+        vs_main_freeHeapR(state->unk4);
+        alive = 0;
         break;
     }
 
-    return s3;
+    return alive;
 }
 
 #undef VS_PARTICLE_ORIGIN_FUNCTION
@@ -98,5 +98,4 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_PARTICLE_RENDER_FUNCTION
 #undef VS_PARTICLE_DISPATCH_FUNCTION
 #undef VS_PARTICLE_CORNER_STATE
-
 #undef VS_PARTICLE_UNTEXTURED

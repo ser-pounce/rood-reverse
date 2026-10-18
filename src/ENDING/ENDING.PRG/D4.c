@@ -2248,7 +2248,7 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 
 static void _renderRiskbreakerRank(int x, int y, int timer)
 {
-    static CVECTOR D_800DBAB0[] = {
+    static CVECTOR colors[] = {
         { 128, 128, 128 },
         { 128, 128, 128 },
     };
@@ -2268,7 +2268,7 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
 
     if (timer > 0) {
 
-        D_800DBAB0[0].cd = timer;
+        colors[0].cd = timer;
 
         for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
             xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
@@ -2278,7 +2278,7 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
         x -= xInset;
 
         for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
-            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], D_800DBAB0);
+            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], colors);
 
             x += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
         }
@@ -2289,7 +2289,6 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
 
 static void _parseTim(u_int* data, TIM_IMAGE* tim)
 {
-
     ++data;
     tim->mode = *data;
     ++data;

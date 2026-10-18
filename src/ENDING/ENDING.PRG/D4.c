@@ -2165,74 +2165,74 @@ static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((u
 static int _incrementingMapCompletion;
 
 static void _renderIncrementalMapCompletion(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+    int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBAA0[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp18[2];
+    char buf[2];
     int temp_s4;
     int i;
-    int v0;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 <= 0) {
+    if (timer <= 0) {
         return;
     }
 
-    temp_s4 = arg0 + arg2 * 8;
+    temp_s4 = x + timer * 8;
 
-    if (_mapCompletion != 0 && arg2 >= 32) {
+    if (_mapCompletion != 0 && timer >= 32) {
 
         if (_onScreenMapCompletion == 0) {
             _incrementingMapCompletion = 1;
-            vs_main_playSfxDefault(0x7E, 0x72);
+            vs_main_playSfxDefault(126, 114);
         }
 
         if ((_onScreenMapCompletion == _mapCompletion)
             && (_incrementingMapCompletion != 0)) {
             _incrementingMapCompletion = 0;
-            func_80045D64(0x7E, 0x72);
-            vs_main_playSfxDefault(0x7E, 0x73);
+            func_80045D64(126, 114);
+            vs_main_playSfxDefault(126, 115);
         }
     }
 
-    if (arg2 >= 32) {
+    if (timer >= 32) {
         if (_mapCompletion >= 32u) {
-            _onScreenMapCompletion = (u_int)(_mapCompletion * (arg2 - 32)) >> 5;
+            _onScreenMapCompletion = (u_int)(_mapCompletion * (timer - 32)) >> 5;
         } else if (_onScreenMapCompletion < _mapCompletion) {
             _onScreenMapCompletion += 1;
         }
     }
 
-    sprintf(sp18, "%03d", _onScreenMapCompletion);
+    sprintf(buf, "%03d", _onScreenMapCompletion);
 
-    arg0 -= ((int)(_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1);
+    x -= ((_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
+              + _disMap[disIndexRank0Percent].w + 38)
+          >> 1);
 
-    _renderTextureWipe(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
+    _renderTextureWipe(x, y, disIndexRank0MapCompleted, colors, temp_s4);
 
-    arg0 += _disMap[21].w;
+    x += _disMap[disIndexRank0MapCompleted].w;
 
-    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_800DBAA0, temp_s4);
+    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s4);
 
-    v0 = arg0 + 2;
-    arg0 = v0 + _disMap[26].w;
+    x += _disMap[disIndexRank0Colon].w + 2;
 
     for (i = 0; i < 3; ++i) {
-        _renderTextureWipe(arg0, arg1 + 3, sp18[i] - '0', D_800DBAA0, temp_s4);
-        arg0 += 12;
+        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s4);
+        x += 12;
     }
 
-    _renderTextureWipe(arg0, arg1 + 8, 0x13, D_800DBAA0, temp_s4);
+    _renderTextureWipe(x, y + 8, disIndexRank0Percent, colors, temp_s4);
 }
 
 static void _renderRiskbreakerRankHeader(int x, int y, int timer)

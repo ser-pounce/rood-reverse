@@ -1,10 +1,10 @@
 import struct
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from PIL import Image
-from PIL.PngImagePlugin import PngInfo
+from PIL.PngImagePlugin import PngImageFile, PngInfo
 
 from tools.kaitai.parsers.lib.img import Img
 
@@ -101,6 +101,74 @@ def decode_tim(tim: Img.Tim, output_path: Path) -> None:
             output_path,
             info,
         )
+
+
+# pypng can write 4/8-bit grayscale PNGs, but its chunk API is awkward; Pillow
+# handles PNG metadata and private chunks more simply.
+def _parse_ints(raw: str | None, count: int) -> tuple[int, ...]:
+    if not raw:
+        raise ValueError('No values present')
+
+    parts = raw.split(',')
+
+    if len(parts) != count:
+        raise ValueError(f'Requested {count} values, {len(parts)} present')
+    try:
+        return tuple(int(p.strip()) for p in parts)
+    except ValueError:
+        raise ValueError('Error when parsing values')
+
+
+def _encode_clut(img: PngImageFile, mode: int) -> bytes:
+    clut_bytes = get_chunk(img, 'clUb')
+
+    if clut_bytes is not None:
+        clut = list(struct.unpack(f'<{len(clut_bytes) // 2}H', clut_bytes))
+        packed_clut_bytes = struct.pack(f'<{len(clut)}H', *clut)
+        clut_len = 12 + len(packed_clut_bytes)
+        clut_rect = _parse_ints(img.text.get('tim_clut_rect'), 4)
+
+        out = struct.pack('<II', 0x10, mode | 8)
+        out += struct.pack('<I4h', clut_len, *clut_rect) + packed_clut_bytes
+    else:
+        out = struct.pack('<II', 0x10, mode)
+
+    return out
+
+
+def _build_tim(img: PngImageFile, pixel_data: bytes, width: int, mode: int) -> bytes:
+    img_offset = _parse_ints(img.text.get('tim_offset'), 2)
+    out = _encode_clut(img, mode)
+    out += struct.pack('<I4h', 12 + len(pixel_data), img_offset[0], img_offset[1], width, img.height)
+    out += pixel_data
+    return out
+
+
+def _encode_grayscale(img: PngImageFile) -> bytes:
+    pixel_data = img.tobytes()
+    filename = img.filename
+    assert isinstance(filename, str)
+    bitdepth = get_png_bit_depth(Path(filename))
+
+    if bitdepth == 4:
+        pixel_data = pack_4bpp(pixel_data)
+
+    return _build_tim(img, pixel_data, img.width * bitdepth // 16, 1 if bitdepth == 8 else 0)
+
+
+def encode_tim(png_path: Path) -> bytes:
+    img = Image.open(png_path)
+    img.load()
+    img = cast(PngImageFile, img)
+
+    if img.mode == 'RGB':
+        return _build_tim(img, encode_highColor(img), img.width, 2)
+
+    elif img.mode == 'P':
+        return _encode_grayscale(img)
+
+    else:
+        raise ValueError(f'Unsupported PNG mode for TIM encode: {img.mode}')
 
 
 CLUT_CHUNK_AFTER  = b'clUa'

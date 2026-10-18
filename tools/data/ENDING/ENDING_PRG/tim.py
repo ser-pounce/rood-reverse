@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from tools.data.SMALL.DIS import encode_tim
+from tools.libdata.img import encode_tim
 
 
 def main(argv: list[str] | None = None) -> int:

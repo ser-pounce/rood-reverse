@@ -2041,80 +2041,78 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 static int _incrementingScore;
 
 static void _renderIncrementalScore(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+    int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBA90[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp18[16];
+    char buf[16];
     int temp_s2;
-    int var_s1;
     int i;
-    int v0;
     int v1;
 
-    var_s1 = arg2;
-
-    if (var_s1 < 0) {
-        var_s1 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (var_s1 > 64) {
-        var_s1 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (var_s1 > 0) {
-        temp_s2 = arg0 + (var_s1 * 8);
-
-        if (_score != 0 && var_s1 >= 32) {
-
-            if (_onScreenScore == 0) {
-                _incrementingScore = 1;
-                vs_main_playSfxDefault(0x7E, 0x72);
-            }
-
-            if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
-                _incrementingScore = 0;
-                func_80045D64(0x7E, 0x72);
-                vs_main_playSfxDefault(0x7E, 0x73);
-            }
-        }
-
-        if (var_s1 >= 32) {
-            _onScreenScore = ((u_int)_score >> 5) * (var_s1 - 32);
-        }
-
-        if (var_s1 == 64) {
-            _onScreenScore = _score;
-        }
-
-        sprintf(sp18, "%09d", _onScreenScore);
-
-        v1 = _disMap[18].w + _disMap[26].w + _disMap[20].w;
-        arg0 -= (_disMap[10].w * 2 + v1 + 0x74) >> 1;
-
-        _renderTextureWipe(arg0, arg1, 0x12, D_800DBA90, temp_s2);
-
-        arg0 += _disMap[18].w;
-
-        _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_800DBA90, temp_s2);
-
-        v0 = arg0 + 2;
-        arg0 = v0 + _disMap[26].w;
-
-        for (i = 0; i < 9; ++i) {
-            _renderTextureWipe(arg0, arg1 + 3, sp18[i] - '0', D_800DBA90, temp_s2);
-            arg0 += 12;
-            if ((i == 2) || (i == 5)) {
-                _renderTextureWipe(arg0, arg1 + 0xE, 0xA, D_800DBA90, temp_s2);
-                arg0 += 3 + _disMap[10].w;
-            }
-        }
-
-        _renderTextureWipe(arg0, arg1 + 8, 0x14, D_800DBA90, temp_s2);
+    if (timer <= 0) {
+        return;
     }
+
+    temp_s2 = x + (timer * 8);
+
+    if (_score != 0 && timer >= 32) {
+
+        if (_onScreenScore == 0) {
+            _incrementingScore = 1;
+            vs_main_playSfxDefault(126, 114);
+        }
+
+        if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
+            _incrementingScore = 0;
+            func_80045D64(126, 114);
+            vs_main_playSfxDefault(126, 115);
+        }
+    }
+
+    if (timer >= 32) {
+        _onScreenScore = (_score >> 5) * (timer - 32);
+    }
+
+    if (timer == 64) {
+        _onScreenScore = _score;
+    }
+
+    sprintf(buf, "%09d", _onScreenScore);
+
+    v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+       + _disMap[disIndexRank0Pts].w;
+    x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
+
+    _renderTextureWipe(x, y, disIndexRank0Score, colors, temp_s2);
+
+    x += _disMap[disIndexRank0Score].w;
+
+    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s2);
+
+    x += _disMap[disIndexRank0Colon].w + 2;
+
+    for (i = 0; i < 9; ++i) {
+        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
+        x += 12;
+        if ((i == 2) || (i == 5)) {
+            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
+            x += 3 + _disMap[disIndexRank0Comma].w;
+        }
+    }
+
+    _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, temp_s2);
 }
 
 static void _renderMapCompletion(

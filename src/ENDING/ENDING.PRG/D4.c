@@ -11,7 +11,9 @@
 #include <memory.h>
 #include <stdio.h>
 
-static int func_800688D4(int angle)
+// Almost a byte-identical copy of rsin except for register differences
+
+static int _sin(int angle)
 {
     int value = (int)_trig_table;
     int quadrant = angle & 0x400;
@@ -156,15 +158,13 @@ static void _renderPhantomPain(_creditsElement* element)
             vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
             vertices[0].vy = vertices[1].vy = i * 4 - 8;
             vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
-            vertices[0].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
+            vertices[0].vz = (_sin(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
             vertices[1].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
+                (_sin(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
             vertices[2].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
+                (_sin(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
             vertices[3].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale)
-                >> 12;
+                (_sin(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale) >> 12;
 
             SetPolyFT4(poly);
             setSemiTrans(poly, 1);
@@ -364,8 +364,8 @@ static int _distanceFromScreencenter(int x, int y)
 #define FADE_IN(i) FADE(i, base + RADIAL_TERM(i), CLAMP_HI)
 #define FADE_OUT(i) FADE(i, base - RADIAL_TERM(i), CLAMP_LO)
 
-__attribute__((unused)) 
-static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
+__attribute__((unused)) static void _updateRadialFadePoly(
+    POLY_GT4* poly, short progress, short fadeOut)
 {
     short base;
     short level;
@@ -1275,8 +1275,8 @@ static int func_8006AF64(void)
     }
 }
 
-__attribute__((unused))
-static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
+__attribute__((unused)) static void func_8006B324(
+    short arg0, short arg1, int arg2, u_char* arg3)
 {
     int temp_v0;
     u_char var_v1_2;

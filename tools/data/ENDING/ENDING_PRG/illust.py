@@ -4,9 +4,8 @@ from pathlib import Path
 
 from kaitaistruct import KaitaiStream
 
-from tools.data.SMALL.DIS import encode_tim
 from tools.kaitai.parsers.lib.img import Img
-from tools.libdata.img import decode_tim
+from tools.libdata.img import decode_tim, encode_tim
 
 # ---------------------------------------------------------------------------
 # Stream format

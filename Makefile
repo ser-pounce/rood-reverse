@@ -40,7 +40,7 @@ image: $(BUILD)/$(DISKIMAGE)
 
 BINARIES := SLUS_010.40 $(addsuffix .PRG, TITLE/TITLE BATTLE/BATTLE BATTLE/INITBTL GIM/SCREFF2 ENDING/ENDING)
 
-include $(patsubst %,config/%/Makefile,EFFECT MENU SMALL)
+include $(patsubst %,config/%/Makefile,EFFECT MENU SMALL ENDING)
 
 BINTARGETS := $(BINARIES:%=$(BUILD)/data/%)
 TARGETS    += $(BINTARGETS)

@@ -9,6 +9,8 @@
 #include <inline_c.h>
 #include <rand.h>
 
+#ifndef VS_RING_TYPES
+#define VS_RING_TYPES
 typedef struct {
     u_char lifetime;
     u_char effect;
@@ -26,6 +28,7 @@ typedef struct {
     POLY_GT4 poly;
     int drawMode;
 } vs_ringPrim;
+#endif
 
 extern CVECTOR VS_RING_COLORS[];
 

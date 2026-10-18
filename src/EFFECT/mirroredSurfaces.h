@@ -35,7 +35,7 @@ typedef struct {
     int drawMode;
 } vs_mirrorSurfacePrim;
 
-extern SVECTOR VS_MIRROR_SURFACE_VERTICES[5][16];
+extern SVECTOR VS_SURFACE_VERTICES[5][16];
 
 int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -155,30 +155,25 @@ int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 for (column = 0; column < 16; ++column) {
                     vertices[row][column].vx =
                         scratch->unk98.vx
-                        + ((VS_MIRROR_SURFACE_VERTICES[4 - row][column].vx * radiusValue)
-                            >> 12);
+                        + ((VS_SURFACE_VERTICES[4 - row][column].vx * radiusValue) >> 12);
                     vertices[row][column].vz =
                         scratch->unk98.vz
-                        + ((VS_MIRROR_SURFACE_VERTICES[4 - row][column].vz * radiusValue)
-                            >> 12);
+                        + ((VS_SURFACE_VERTICES[4 - row][column].vz * radiusValue) >> 12);
                     vertices[row][column].vy =
                         scratch->unk98.vy
-                        + ((VS_MIRROR_SURFACE_VERTICES[4 - row][column].vy * heightValue)
-                            >> 12);
+                        + ((VS_SURFACE_VERTICES[4 - row][column].vy * heightValue) >> 12);
                 }
             } else {
                 for (column = 0; column < 16; ++column) {
                     vertices[row][column].vx =
                         scratch->unk98.vx
-                        + ((VS_MIRROR_SURFACE_VERTICES[row - 4][column].vx * radiusValue)
-                            >> 12);
+                        + ((VS_SURFACE_VERTICES[row - 4][column].vx * radiusValue) >> 12);
                     vertices[row][column].vz =
                         scratch->unk98.vz
-                        + ((VS_MIRROR_SURFACE_VERTICES[row - 4][column].vz * radiusValue)
-                            >> 12);
+                        + ((VS_SURFACE_VERTICES[row - 4][column].vz * radiusValue) >> 12);
                     vertices[row][column].vy =
                         scratch->unk98.vy
-                        + ((-VS_MIRROR_SURFACE_VERTICES[row - 4][column].vy * heightValue)
+                        + ((-VS_SURFACE_VERTICES[row - 4][column].vy * heightValue)
                             >> 12);
                 }
             }
@@ -328,7 +323,7 @@ int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 #undef VS_MIRROR_SURFACE_FUNCTION
-#undef VS_MIRROR_SURFACE_VERTICES
+#undef VS_SURFACE_VERTICES
 #undef VS_MIRROR_SURFACE_REPEAT
 #undef VS_MIRROR_SURFACE_TEXTURE_COLUMNS
 #undef VS_MIRROR_SURFACE_TEXTURE_COLUMN

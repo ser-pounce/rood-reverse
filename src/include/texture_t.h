@@ -11,8 +11,6 @@ typedef struct {
     u_short clut;
 } _texture_t;
 
-extern _texture_t _disMap[];
-
 static void _renderTextureFadeInTint(int, int, int, CVECTOR[]);
 static void _renderTexturePopIn(int, int, int, CVECTOR[]);
 static void _renderTextureWipe(int, int, int, CVECTOR[], int);

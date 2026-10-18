@@ -6030,7 +6030,7 @@ void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     D_8005DFD4 = 0;
     D_8005DFD8 = 0;
     vs_main_screenWidth = arg0;
-    D_8005DFDA = temp_s3;
+    vs_main_screenHeight = temp_s3;
     vs_main_drawEnv[1].dtd = 1;
     vs_main_drawEnv[0].dtd = 1;
     vs_main_drawEnv[1].dfe = 0;

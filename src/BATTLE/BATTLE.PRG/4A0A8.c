@@ -3042,7 +3042,7 @@ void func_800BB874(void)
 
     ++D_800F4B20;
 
-    for (i = 0; i < D_8005DFDA; ++i) {
+    for (i = 0; i < vs_main_screenHeight; ++i) {
         u_short v;
         temp_v0_2 = (((i + (D_800F4B20 >> 1)) & 1) << 5);
         v = temp_v0_2;

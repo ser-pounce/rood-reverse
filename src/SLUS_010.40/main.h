@@ -469,7 +469,7 @@ extern void* D_80055C80[];
 extern short D_8005DFD4;
 extern short vs_main_screenWidth;
 extern short D_8005DFD8;
-extern u_short D_8005DFDA;
+extern u_short vs_main_screenHeight;
 extern u_int D_8005E040;
 extern void* D_8005E0C0[];
 extern int vs_main_nearClip;

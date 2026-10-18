@@ -1347,7 +1347,7 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
     D_8005DFD4 = 0;
     D_8005DFD8 = 0;
     vs_main_screenWidth = w;
-    D_8005DFDA = fbHeight;
+    vs_main_screenHeight = fbHeight;
     vs_main_drawEnv[1].dtd = 0;
     vs_main_drawEnv[0].dtd = 0;
     vs_main_drawEnv[1].isbg = 1;

@@ -1837,8 +1837,12 @@ static void _fadeIn(int timer)
 }
 
 enum disIndices {
+    disIndexRank0Comma = 10,
+    disIndexRank0Score = 18,
+    disIndexRank0Pts = 20,
     disIndexRank0Congratulations = 22,
-    disIndexRank1Grand = 27,
+    disIndexRank0Colon = 26,
+    disIndexRank1Grand,
     disIndexRank1Master,
     disIndexRank1Breaker,
     disIndexRank1Paladin,
@@ -1975,65 +1979,62 @@ static void _renderCongratulations(int x, int y, int timer)
         colors[0].cd = timer;
         colors[1].cd = timer;
         x = x
-             - ((_disMap[disIndexRank0Congratulations].w
-                    + _disMap[disIndexRank0Congratulations + 1].w)
-                 >> 1);
+          - ((_disMap[disIndexRank0Congratulations].w
+                 + _disMap[disIndexRank0Congratulations + 1].w)
+              >> 1);
         _renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
         _renderTexturePopIn(x + _disMap[disIndexRank0Congratulations].w, y,
             disIndexRank0Congratulations + 1, &colors[1]);
     }
 }
 
-static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBA88[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp10[10];
+    char buf[10];
     int i;
-    int v0;
     int v1;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
+    if (timer > 0) {
 
-        D_800DBA88[0].cd = arg2;
+        colors[0].cd = timer;
 
-        sprintf(sp10, "%09d", _score);
+        sprintf(buf, "%09d", _score);
 
-        v1 = _disMap[18].w + _disMap[26].w + _disMap[20].w;
-        arg0 -= (_disMap[10].w * 2 + v1 + 0x74) >> 1;
+        v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+           + _disMap[disIndexRank0Pts].w;
+        x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
 
-        _renderTextureFadeInTint(arg0, arg1, 0x12, D_800DBA88);
+        _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
 
-        arg0 += _disMap[18].w;
+        x += _disMap[disIndexRank0Score].w;
 
-        _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA88);
+        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
-        v0 = arg0 + 2;
-        arg0 = v0 + _disMap[26].w;
+        x += _disMap[disIndexRank0Colon].w + 2;
 
         for (i = 0; i < 9; ++i) {
-            _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - 0x30, D_800DBA88);
-            arg0 += 12;
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            x += 12;
             if ((i == 2) || (i == 5)) {
-                int v0;
-                _renderTextureFadeInTint(arg0, arg1 + 0xE, 0xA, D_800DBA88);
-                v0 = arg0 + 3;
-                arg0 = v0 + _disMap[10].w;
+                _renderTextureFadeInTint(x, y + 14, 10, colors);
+                x += _disMap[disIndexRank0Comma].w + 3;
             }
         }
 
-        _renderTextureFadeInTint(arg0, arg1 + 8, 0x14, D_800DBA88);
+        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
     }
 }
 

@@ -417,7 +417,7 @@ typedef struct {
 } _timData;
 
 extern _timData _illustSydney;
-static _timData* D_800DB7B0 = &_illustSydney;
+static _timData* _decompressedIllustData = &_illustSydney;
 
 static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
@@ -445,7 +445,7 @@ static void _renderllustration(_creditsElement* element)
     switch (temp_v0) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
-            func_8006AF44(D_800DB7B0, _compressedIllustBufs[element->illustId + 1]);
+            func_8006AF44(_decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
@@ -482,7 +482,7 @@ static void _renderllustration(_creditsElement* element)
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
-                _loadTim(D_800DB7B0);
+                _loadTim(_decompressedIllustData);
             }
             element->state = 1;
         }

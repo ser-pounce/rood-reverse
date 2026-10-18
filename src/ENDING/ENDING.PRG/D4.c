@@ -1284,53 +1284,43 @@ static int _decompressTim(void)
     }
 }
 
-__attribute__((unused)) static void func_8006B324(
-    short arg0, short arg1, int arg2, u_char* arg3)
+__attribute__((unused)) static void _renderString(
+    short x, short y, int clut, u_char* string)
 {
-    int temp_v0;
-    u_char var_v1_2;
-    int var_v1;
-    SPRT_8* var_a2;
-    u_long** t4;
+    int c;
+    SPRT_8* sprt = *(void**)0x1F800000;
 
-    var_v1 = *arg3;
-    var_a2 = *(void**)0x1F800000;
+    for (c = *string; c != 0; c = *++string, x += 7) {
+        int temp_v0 = c - ' ';
+        u_char c_2 = temp_v0;
 
-    while (var_v1 != 0) {
+        if (((temp_v0 & 0xFF) < 96u) && (c_2 != 0)) {
+            u_long** ot;
 
-        temp_v0 = var_v1 - 32;
-        var_v1_2 = temp_v0;
-
-        if (((temp_v0 & 0xFF) < 96u) && (var_v1_2 != 0)) {
-
-            if (var_v1_2 == 60) {
-                var_v1_2 = 15;
+            if (c_2 == ('\\' - ' ')) {
+                c_2 = 15;
             }
 
-            if (var_v1_2 > 64) {
-                var_v1_2 -= 32;
+            if (c_2 > ('`' - ' ')) {
+                c_2 -= 32;
             }
 
-            setSprt8(var_a2);
-            setShadeTex(var_a2, 1);
-            setXY0(var_a2, arg0, arg1);
-            setUV0(var_a2, (var_v1_2 & 0xF) * 8, (var_v1_2 & 0xF0) / 2);
-            setClut(var_a2, 960, arg2 + 32);
+            setSprt8(sprt);
+            setShadeTex(sprt, 1);
+            setXY0(sprt, x, y);
+            setUV0(sprt, (c_2 & 0xF) * 8, (c_2 & 0xF0) / 2);
+            setClut(sprt, 960, clut + 32);
 
-            t4 = (u_long**)0x1F800000;
-            setaddr(var_a2, *t4[1] & 0xFFFFFF);
-            setaddr(t4[1], var_a2);
+            ot = (u_long**)0x1F800000;
+            setaddr(sprt, *ot[1] & 0xFFFFFF);
+            setaddr(ot[1], sprt);
 
-            ++var_a2;
+            ++sprt;
         }
-
-        ++arg3;
-        var_v1 = *arg3;
-        arg0 += 7;
     }
 
-    *(void**)0x1F800000 = var_a2;
-    *(void**)0x1F800000 = _insertTpage(0xF, 0);
+    *(void**)0x1F800000 = sprt;
+    *(void**)0x1F800000 = _insertTpage(getTPage(0, 0, 960, 0), 0);
 }
 
 static void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)

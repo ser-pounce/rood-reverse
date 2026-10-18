@@ -1284,7 +1284,7 @@ static int _decompressTim(void)
     }
 }
 
-__attribute__((unused)) static void _renderString(
+__attribute__((unused)) static void _renderDebugString(
     short x, short y, int clut, u_char* string)
 {
     int c;
@@ -1323,23 +1323,23 @@ __attribute__((unused)) static void _renderString(
     *(void**)0x1F800000 = _insertTpage(getTPage(0, 0, 960, 0), 0);
 }
 
-static void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b)
 {
     RECT rect;
-    int temp_s1;
+    int fbHeight;
 
     rect = (RECT) { 0, 0, 1024, 512 };
 
     SetDispMask(0);
-    SetGeomOffset(arg0 / 2, (arg1 + (int)((u_int)arg1 >> 0x1F)) >> 1);
-    SetGeomScreen(arg2);
+    SetGeomOffset(w / 2, h / 2);
+    SetGeomScreen(projectionDistance);
 
-    temp_s1 = arg1 - 0x10;
+    fbHeight = h - 16;
 
-    SetDefDrawEnv(vs_main_drawEnv, 0, 0, arg0, temp_s1);
-    SetDefDispEnv(vs_main_dispEnv, arg0, 0, arg0, temp_s1);
-    SetDefDrawEnv(&vs_main_drawEnv[1], arg0, 0, arg0, temp_s1);
-    SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, arg0, temp_s1);
+    SetDefDrawEnv(vs_main_drawEnv, 0, 0, w, fbHeight);
+    SetDefDispEnv(vs_main_dispEnv, w, 0, w, fbHeight);
+    SetDefDrawEnv(&vs_main_drawEnv[1], w, 0, w, fbHeight);
+    SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, w, fbHeight);
 
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
@@ -1347,18 +1347,18 @@ static void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int 
     D_8005DFD4 = 0;
     D_8005DFD8 = 0;
     vs_main_screenWidth = w;
-    D_8005DFDA = temp_s1;
+    D_8005DFDA = fbHeight;
     vs_main_drawEnv[1].dtd = 0;
     vs_main_drawEnv[0].dtd = 0;
     vs_main_drawEnv[1].isbg = 1;
     vs_main_drawEnv[0].isbg = 1;
-    setRGB0(&vs_main_drawEnv[0], arg3, arg4, arg5);
-    setRGB0(&vs_main_drawEnv[1], arg3, arg4, arg5);
+    setRGB0(&vs_main_drawEnv[0], r, g, b);
+    setRGB0(&vs_main_drawEnv[1], r, g, b);
 
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
-    FntLoad(0x3C0, 0);
-    SetDumpFnt(FntOpen(0x28, 0x10, 0x200, 0x100, 0, 0x200));
+    FntLoad(960, 0);
+    SetDumpFnt(FntOpen(40, 16, 512, 256, 0, 512));
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
 
@@ -1426,7 +1426,7 @@ static void _do_updateClearGameStats(void)
 
 static void func_8006B884(void)
 {
-    func_8006B450(0x140, 0xF0, 0x200, 0, 0, 0);
+    _initVideo(320, 240, 0x200, 0, 0, 0);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
     D_8005E0C0[0] = vs_main_allocHeap(0x20000);
     D_8005E0C0[1] = vs_main_allocHeap(0x20000);

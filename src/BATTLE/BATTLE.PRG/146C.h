@@ -561,10 +561,17 @@ typedef struct {
 typedef struct vs_battle_actor {
     /* 0x00 */ struct vs_battle_actor* next;
     /* 0x04 */ int id;
-    /* 0x08 */ u_char unk8;
-    /* 0x09 */ u_char unk9;
-    /* 0x0A */ u_char unkA;
-    /* 0x0B */ u_char unkB;
+    /* 0x08 */ union {
+        u_int value;
+        struct {
+            u_int unk8 : 8;
+            u_int unk9 : 8;
+            u_int unkA : 8;
+            u_int unkB_0 : 2;
+            u_int unkB_2 : 2;
+            u_int unkB_4 : 4;
+        } fields;
+    } command;
     /* 0x0C */ int unkC;
     union {
         u_char u8[4];

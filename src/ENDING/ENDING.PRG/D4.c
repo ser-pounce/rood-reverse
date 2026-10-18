@@ -1750,7 +1750,7 @@ static int _initCongratulationsScreen(void)
     return 0;
 }
 
-static void func_8006C3CC(int);
+static void _fadeIn(int);
 static void _renderScore(int, int, int, int);
 static void _renderIncrementalScore(int, int, int, int);
 static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
@@ -1767,7 +1767,7 @@ static int _renderCongratulationsScreen(void)
             vs_main_playSfxDefault(0x7E, 0x78);
         }
 
-        func_8006C3CC(_screenTimer);
+        _fadeIn(_screenTimer);
         _renderCongratulations(0xA0, 0x28, _screenTimer);
         _renderIncrementalScore(0xA0, 0x50, _screenTimer - 0x20, D_800DC210);
         _renderIncrementalMapCompletion(0xA0, 0x66, _screenTimer - 0x70, D_800DC210);
@@ -1785,7 +1785,7 @@ static int _renderCongratulationsScreen(void)
 
     } else {
 
-        func_8006C3CC(8 - _screenTimer);
+        _fadeIn(8 - _screenTimer);
         _renderCongratulations(0xA0, 0x28, 8 - _screenTimer);
         _renderScore(0xA0, 0x50, 8 - _screenTimer, 3);
         _renderMapCompletion(0xA0, 0x66, 8 - _screenTimer, 3);
@@ -1801,7 +1801,7 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
-static void func_8006C3CC(int arg0)
+static void _fadeIn(int arg0)
 {
     int var_s2;
     int i;

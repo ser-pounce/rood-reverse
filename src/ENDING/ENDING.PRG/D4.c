@@ -405,6 +405,8 @@ static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
             poly->b3 = 128;
         }
 
+        poly->r3 = poly->g3 = poly->b3;
+
     } else {
 
         temp_s0 = ((0x50 - progress) << 7) / 80;
@@ -453,9 +455,9 @@ static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
         } else {
             poly->b3 = 0;
         }
-    }
 
-    poly->r3 = poly->g3 = poly->b3;
+        poly->r3 = poly->g3 = poly->b3;
+    }
 }
 
 static u_char D_800DB72C = 0;

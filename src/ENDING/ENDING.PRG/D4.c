@@ -262,7 +262,7 @@ static int _textStreamDelay;
 static u_char* _creditsBytestreamHead;
 static short _scrollSpeed;
 static short D_800DC19A;
-static u_short D_800DC19C;
+static u_short _masterBrightness;
 static u_short _1 __attribute__((unused));
 
 static void _renderVagrantStory(_creditsElement* element)
@@ -283,7 +283,7 @@ static void _renderVagrantStory(_creditsElement* element)
         /* fallthrough */
 
     case 2:
-        var_fp = (D_800DC19C * ++element->currentStep) / 60;
+        var_fp = (_masterBrightness * ++element->currentStep) / 60;
 
         if (element->currentStep == 60) {
             element->state = 3;
@@ -292,7 +292,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case 3:
-        var_fp = D_800DC19C;
+        var_fp = _masterBrightness;
 
         if (++element->currentStep == 60) {
             element->state = 4;
@@ -300,7 +300,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case 4:
-        var_fp = D_800DC19C;
+        var_fp = _masterBrightness;
         element->y += _scrollSpeed;
 
         if (element->y < -(60 << 8)) {
@@ -462,7 +462,7 @@ static void _renderllustration(_creditsElement* element)
         /* fallthrough */
 
     case 1:
-        D_800DBB68 = (D_800DC19C * element->currentStep) / 80;
+        D_800DBB68 = (_masterBrightness * element->currentStep) / 80;
 
         if (++element->currentStep == 80) {
             int var_a0 = 3;
@@ -485,7 +485,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 3:
-        D_800DBB68 = (D_800DC19C * (80 - element->currentStep)) / 80;
+        D_800DBB68 = (_masterBrightness * (80 - element->currentStep)) / 80;
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
@@ -632,7 +632,7 @@ static void _renderText(_creditsElement* element)
             setWH(sprt, glyphWidth, 16);
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
-            sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+            sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
             addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
             ++sprt;
         }
@@ -650,7 +650,7 @@ static void _renderText(_creditsElement* element)
         setUV0(sprt, 0, 208);
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
-        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
         AddPrim(scratch->unk4 + 12, sprt++);
 
         poly = (POLY_FT4*)sprt;
@@ -667,7 +667,7 @@ static void _renderText(_creditsElement* element)
         poly->tpage = getTPage(clut4Bit, semiTransparencyHalf, 960, 256);
         poly->clut = getClut(960, 480);
         poly->x1 = poly->x3 = x;
-        poly->r0 = poly->g0 = poly->b0 = D_800DC19C;
+        poly->r0 = poly->g0 = poly->b0 = _masterBrightness;
         AddPrim(scratch->unk4 + 12, poly++);
 
         sprt = (SPRT*)poly;
@@ -676,7 +676,7 @@ static void _renderText(_creditsElement* element)
         setXY0(sprt, x, y);
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
-        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
         AddPrim(scratch->unk4 + 12, sprt++);
     }
 
@@ -709,7 +709,7 @@ static void _renderCopyright(_creditsElement* arg0)
     setUV0(sprt, 0, 0x30);
     setWH(sprt, 0x78, 0x10);
     setClut(sprt, 960, 64);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
 
     setaddr(sprt, ((u_long*)p[1])[3]);
     setaddr(p[1] + 12, sprt++);
@@ -734,7 +734,7 @@ static void _renderBackground(_creditsElement* arg0 __attribute__((unused)))
     setUV0(sprt, 0, 10);
     setWH(sprt, 256, 204);
     setClut(sprt, 780, 255);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
@@ -744,7 +744,7 @@ static void _renderBackground(_creditsElement* arg0 __attribute__((unused)))
     setXY0(sprt, 256, 10);
     setWH(sprt, 64, 204);
     setClut(sprt, 780, 255);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
@@ -805,7 +805,7 @@ static void _backgroundFadeIn(_creditsElement* element)
         element->state = -1;
     }
 
-    D_800DC19C = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
+    _masterBrightness = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
 }
 
 static void _backgroundFadeOut(_creditsElement* element)
@@ -823,7 +823,7 @@ static void _backgroundFadeOut(_creditsElement* element)
         element->state = -1;
     }
 
-    D_800DC19C = 128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
+    _masterBrightness = 128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
 }
 
 static void _renderFadeOut(_creditsElement* element)
@@ -918,7 +918,7 @@ void vs_ending_exec(void)
         vs_main_freeCdQueueSlot(slot);
     }
 
-    D_800DC19C = 0;
+    _masterBrightness = 0;
     _skipInvoked = 0;
 
     _resetElements();

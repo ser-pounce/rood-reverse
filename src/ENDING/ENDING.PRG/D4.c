@@ -1837,6 +1837,7 @@ static void _fadeIn(int timer)
 }
 
 enum disIndices {
+    disIndexRank0Congratulations = 22,
     disIndexRank1Grand = 27,
     disIndexRank1Master,
     disIndexRank1Breaker,
@@ -1954,28 +1955,32 @@ static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1M
     { 1, disIndexRank1Berserker }, { 1, disIndexRank1DareDevil },
     { 1, disIndexRank1Gladiator }, { 2, disIndexRank2Normal, disIndexRank2Agent } };
 
-static void _renderCongratulations(int arg0, int arg1, int arg2)
+static void _renderCongratulations(int x, int y, int timer)
 {
-    static CVECTOR D_800DBA7C[] = {
+    static CVECTOR colors[] = {
         { 128, 96, 64 },
         { 200, 180, 160 },
         { 128, 96, 64 },
     };
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_800DBA7C[0].cd = arg2;
-        D_800DBA7C[1].cd = arg2;
-        arg0 = arg0 - ((_disMap[22].w + _disMap[23].w) >> 1);
-        _renderTexturePopIn(arg0, arg1, 0x16, D_800DBA7C);
-        _renderTexturePopIn(arg0 + _disMap[22].w, arg1, 0x17, &D_800DBA7C[1]);
+    if (timer > 0) {
+        colors[0].cd = timer;
+        colors[1].cd = timer;
+        x = x
+             - ((_disMap[disIndexRank0Congratulations].w
+                    + _disMap[disIndexRank0Congratulations + 1].w)
+                 >> 1);
+        _renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
+        _renderTexturePopIn(x + _disMap[disIndexRank0Congratulations].w, y,
+            disIndexRank0Congratulations + 1, &colors[1]);
     }
 }
 

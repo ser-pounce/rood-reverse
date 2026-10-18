@@ -1199,13 +1199,15 @@ static void _initTimDecompress(_timData* targetBuf, void* compressedData)
 
 static int _decompressTim(void)
 {
-    static u_char* D_800DBB70;
-    static u_char* D_800DBB74;
-    static u_char* D_800DBB78;
-    static u_char D_800DBB7C;
-    static u_char D_800DBB7D;
-    static u_short D_800DBB7E;
-    static u_short D_800DBB80;
+    enum opcodes { singleByteRle = 0x7D, doubleByteRle, endOfStream, backReferenceFlag };
+
+    static u_char* backReference;
+    static u_char* compressedStream;
+    static u_char* decompressedStream;
+    static u_char rleByte0;
+    static u_char rleByte1;
+    static u_short byteCount;
+    static u_short backReferencePos;
     static u_char _[6] __attribute__((unused));
 
     short i;
@@ -1216,8 +1218,8 @@ static int _decompressTim(void)
 
     if (_compressionState == decompressionStateReady) {
         _compressionState = decompressionStateActive;
-        D_800DBB74 = _currentCompressedIllust;
-        D_800DBB78 = _currentDecompressedIllust;
+        compressedStream = _currentCompressedIllust;
+        decompressedStream = _currentDecompressedIllust;
     }
 
     while (1) {
@@ -1227,55 +1229,55 @@ static int _decompressTim(void)
             return 0;
         }
 
-        op = *D_800DBB74;
+        op = *compressedStream;
 
-        if (!(op & 0x80)) {
-            if (op == 127) {
+        if (!(op & backReferenceFlag)) {
+            if (op == endOfStream) {
                 _compressionState = decompressionStateIdle;
                 return 1;
             }
 
-            if (op == 125) {
-                ++D_800DBB74;
-                D_800DBB7E = *D_800DBB74++;
-                D_800DBB7C = *D_800DBB74++;
+            if (op == singleByteRle) {
+                ++compressedStream;
+                byteCount = *compressedStream++;
+                rleByte0 = *compressedStream++;
 
-                for (i = 0; i <= D_800DBB7E; ++i) {
-                    *D_800DBB78++ = D_800DBB7C;
+                for (i = 0; i <= byteCount; ++i) {
+                    *decompressedStream++ = rleByte0;
                 }
-            } else if (op == 126) {
-                ++D_800DBB74;
-                D_800DBB7E = *D_800DBB74++;
-                D_800DBB7C = *D_800DBB74++;
-                D_800DBB7D = *D_800DBB74++;
+            } else if (op == doubleByteRle) {
+                ++compressedStream;
+                byteCount = *compressedStream++;
+                rleByte0 = *compressedStream++;
+                rleByte1 = *compressedStream++;
 
-                for (i = 0; i <= D_800DBB7E; ++i) {
-                    *D_800DBB78++ = D_800DBB7C;
-                    *D_800DBB78++ = D_800DBB7D;
+                for (i = 0; i <= byteCount; ++i) {
+                    *decompressedStream++ = rleByte0;
+                    *decompressedStream++ = rleByte1;
                 }
             } else {
-                D_800DBB7E = *D_800DBB74++;
+                byteCount = *compressedStream++;
 
-                for (i = 0; i <= D_800DBB7E; ++i) {
-                    *D_800DBB78++ = *D_800DBB74++;
+                for (i = 0; i <= byteCount; ++i) {
+                    *decompressedStream++ = *compressedStream++;
                 }
             }
         } else {
-            D_800DBB7E = ((op >> 4) & 7) + 3;
-            D_800DBB80 = ((D_800DBB74[0] & 0xF) << 8) + D_800DBB74[1];
-            D_800DBB74 += 2;
-            D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+            byteCount = ((op >> 4) & 7) + 3;
+            backReferencePos = ((compressedStream[0] & 0xF) << 8) + compressedStream[1];
+            compressedStream += 2;
+            backReference = decompressedStream - backReferencePos - 1;
 
-            for (i = 0; i < D_800DBB7E; ++i) {
-                *D_800DBB78++ = *D_800DBB70++;
+            for (i = 0; i < byteCount; ++i) {
+                *decompressedStream++ = *backReference++;
             }
 
-            while (*D_800DBB74 == 124) {
-                D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
-                ++D_800DBB74;
+            while (*compressedStream == 124) {
+                backReference = decompressedStream - backReferencePos - 1;
+                ++compressedStream;
 
-                for (i = 0; i < D_800DBB7E; ++i) {
-                    *D_800DBB78++ = *D_800DBB70++;
+                for (i = 0; i < byteCount; ++i) {
+                    *decompressedStream++ = *backReference++;
                 }
             }
         }

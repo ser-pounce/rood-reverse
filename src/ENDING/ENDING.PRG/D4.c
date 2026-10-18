@@ -819,7 +819,7 @@ static void _backgroundFadeOut(_creditsElement* arg0)
     D_800DC19C = 128 - ((_ease(easeModeLinear, arg0->currentStep, 128) << 7) >> 0xC);
 }
 
-static void func_8006A4D8(_creditsElement* element)
+static void _renderFadeOut(_creditsElement* element)
 {
     void** s2 = (void**)0x1F800000;
     TILE* temp_s0 = s2[0];
@@ -969,7 +969,7 @@ static void func_8006A888(void)
         func_8006AF64();
 
         if ((vs_main_buttonsPressed.all & PADstart) && (_skipInvoked == 0)) {
-            _addRenderer(func_8006A4D8);
+            _addRenderer(_renderFadeOut);
             _skipInvoked = 1;
         }
 

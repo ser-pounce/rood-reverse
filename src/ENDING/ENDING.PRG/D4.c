@@ -254,7 +254,7 @@ static void _renderFin(_creditsElement* arg0)
 
 static _creditsElement _creditsElements[32];
 static u_char _creditsComplete;
-static u_char D_800DC189;
+static u_char _isFadedOut;
 static u_char _skipInvoked;
 static u_char _0 __attribute__((unused));
 static int D_800DC18C;
@@ -801,29 +801,29 @@ static void _backgroundFadeIn(_creditsElement* element)
     }
 
     if (++element->currentStep == 128) {
-        D_800DC189 = 0;
+        _isFadedOut = 0;
         element->state = -1;
     }
 
     D_800DC19C = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
 }
 
-static void _backgroundFadeOut(_creditsElement* arg0)
+static void _backgroundFadeOut(_creditsElement* element)
 {
-    if (arg0->state == 1) {
-        arg0->state = 2;
-        arg0->currentStep = 0;
-        D_800DC189 = 1;
+    if (element->state == 1) {
+        element->state = 2;
+        element->currentStep = 0;
+        _isFadedOut = 1;
     }
 
-    if (++arg0->currentStep == 128) {
-        if (arg0->width != 0) {
+    if (++element->currentStep == 128) {
+        if (element->width != 0) {
             _creditsComplete = 1;
         }
-        arg0->state = -1;
+        element->state = -1;
     }
 
-    D_800DC19C = 128 - ((_ease(easeModeLinear, arg0->currentStep, 128) << 7) >> 0xC);
+    D_800DC19C = 128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
 }
 
 static void _renderFadeOut(_creditsElement* element)
@@ -931,7 +931,7 @@ void vs_ending_exec(void)
     _creditsComplete = 0;
     _textStreamDelay = 0;
     D_800DC18C = 0;
-    D_800DC189 = 1;
+    _isFadedOut = 1;
 
     _streamEndingXa();
     _renderCredits();

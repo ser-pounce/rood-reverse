@@ -424,7 +424,7 @@ static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 160
 
 static void* D_800DC1A0;
 static void* D_800DC1A4;
-static void* D_800DC1A8[16];
+static void* _compressedIllustBufs[16];
 
 static void _loadTim(_timData*);
 static void func_8006AF44(_timData* arg0, void* arg1);
@@ -445,7 +445,7 @@ static void _renderllustration(_creditsElement* element)
     switch (temp_v0) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
-            func_8006AF44(D_800DB7B0, D_800DC1A8[element->illustId + 1]);
+            func_8006AF44(D_800DB7B0, _compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
@@ -900,9 +900,9 @@ void vs_ending_exec(void)
     for (i = 5; i < 16; ++i) {
         file.lba = _illustLbas[i - 5];
         file.size = _illustSizes[i - 5];
-        D_800DC1A8[i] = vs_main_allocHeapR(file.size);
+        _compressedIllustBufs[i] = vs_main_allocHeapR(file.size);
         slot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueuePriority(slot, D_800DC1A8[i]);
+        vs_main_cdEnqueuePriority(slot, _compressedIllustBufs[i]);
 
         do {
             vs_main_gametimeUpdate(0);
@@ -932,7 +932,7 @@ void vs_ending_exec(void)
     SetDispMask(0);
 
     for (i = 5; i < 16; ++i) {
-        vs_main_freeHeapR(D_800DC1A8[i]);
+        vs_main_freeHeapR(_compressedIllustBufs[i]);
     }
 
     _checkStreamXaEnd();

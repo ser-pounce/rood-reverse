@@ -708,16 +708,13 @@ static void _renderCopyright(_creditsElement* element)
     p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
 }
 
-static void _renderBackground(_creditsElement* arg0 __attribute__((unused)))
+static void _renderBackground(_creditsElement* element __attribute__((unused)))
 {
     TILE* tile;
     POLY_G4* poly;
-    SPRT* sprt;
-    void** data;
+    void** data = (void**)0x1F800000;
+    SPRT* sprt = data[0];
 
-    data = (void**)0x1F800000;
-
-    sprt = data[0];
     SetSprt(sprt);
     setXY0(sprt, 0, 10);
     setUV0(sprt, 0, 10);

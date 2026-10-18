@@ -350,43 +350,9 @@ static int _inverseDistanceFromScreencenter(int arg0, int arg1)
     return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
 }
 
-typedef struct {
-    int unk0;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    u_char unk1C;
-    u_char unk1D;
-    u_char unk1E;
-    u_char unk1F;
-    short unk20;
-    short unk22;
-    short unk24;
-    short unk26;
-    u_char unk28;
-    u_char unk29;
-    u_char unk2A;
-    u_char unk2B;
-    short unk2C;
-    short unk2E;
-} func_80069388_t;
-
-static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
+static void func_80069388(POLY_GT4* poly, short arg1, short arg2)
     __attribute__((unused));
-static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
+static void func_80069388(POLY_GT4* poly, short arg1, short arg2)
 {
     short temp_s0;
     short v0;
@@ -394,102 +360,102 @@ static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
     if (arg2 == 0) {
         temp_s0 = (arg1 * 128) / 80;
         v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk8, arg0->unkA)) << 7)
+           + (((200 - _inverseDistanceFromScreencenter(poly->x0, poly->y0)) << 7)
                / 400);
 
         if (v0 < 0x81) {
-            arg0->unk6 = v0;
+            poly->b0 = v0;
         } else {
-            arg0->unk6 = 128;
+            poly->b0 = 128;
         }
 
-        arg0->unk4 = arg0->unk5 = arg0->unk6;
+        poly->r0 = poly->g0 = poly->b0;
 
         v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk14, arg0->unk16)) << 7)
+           + (((200 - _inverseDistanceFromScreencenter(poly->x1, poly->y1)) << 7)
                / 400);
 
         if (v0 < 0x81) {
-            arg0->unk12 = v0;
+            poly->b1 = v0;
         } else {
-            arg0->unk12 = 128;
+            poly->b1 = 128;
         }
 
-        arg0->unk10 = arg0->unk11 = arg0->unk12;
+        poly->r1 = poly->g1 = poly->b1;
 
         v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk20, arg0->unk22)) << 7)
+           + (((200 - _inverseDistanceFromScreencenter(poly->x2, poly->y2)) << 7)
                / 400);
 
         if (v0 < 0x81) {
-            arg0->unk1E = v0;
+            poly->b2 = v0;
         } else {
-            arg0->unk1E = 128;
+            poly->b2 = 128;
         }
 
-        arg0->unk1C = arg0->unk1D = arg0->unk1E;
+        poly->r2 = poly->g2 = poly->b2;
 
         v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk2C, arg0->unk2E)) << 7)
+           + (((200 - _inverseDistanceFromScreencenter(poly->x3, poly->y3)) << 7)
                / 400);
 
         if (v0 < 0x81) {
-            arg0->unk2A = v0;
+            poly->b3 = v0;
         } else {
-            arg0->unk2A = 128;
+            poly->b3 = 128;
         }
 
     } else {
 
         temp_s0 = ((0x50 - arg1) << 7) / 80;
         v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk8, arg0->unkA)) << 7)
+           - (((200 - _inverseDistanceFromScreencenter(poly->x0, poly->y0)) << 7)
                / 400);
 
         if (v0 >= 0) {
-            arg0->unk6 = v0;
+            poly->b0 = v0;
         } else {
-            arg0->unk6 = 0;
+            poly->b0 = 0;
         }
 
-        arg0->unk4 = arg0->unk5 = arg0->unk6;
+        poly->r0 = poly->g0 = poly->b0;
 
         v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk14, arg0->unk16)) << 7)
+           - (((200 - _inverseDistanceFromScreencenter(poly->x1, poly->y1)) << 7)
                / 400);
 
         if (v0 >= 0) {
-            arg0->unk12 = v0;
+            poly->b1 = v0;
         } else {
-            arg0->unk12 = 0;
+            poly->b1 = 0;
         }
 
-        arg0->unk10 = arg0->unk11 = arg0->unk12;
+        poly->r1 = poly->g1 = poly->b1;
 
         v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk20, arg0->unk22)) << 7)
+           - (((200 - _inverseDistanceFromScreencenter(poly->x2, poly->y2)) << 7)
                / 400);
 
         if (v0 >= 0) {
-            arg0->unk1E = v0;
+            poly->b2 = v0;
         } else {
-            arg0->unk1E = 0;
+            poly->b2 = 0;
         }
 
-        arg0->unk1C = arg0->unk1D = arg0->unk1E;
+        poly->r2 = poly->g2 = poly->b2;
 
         v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk2C, arg0->unk2E)) << 7)
+           - (((200 - _inverseDistanceFromScreencenter(poly->x3, poly->y3)) << 7)
                / 400);
 
         if (v0 >= 0) {
-            arg0->unk2A = v0;
+            poly->b3 = v0;
         } else {
-            arg0->unk2A = 0;
+            poly->b3 = 0;
         }
     }
 
-    arg0->unk28 = arg0->unk29 = arg0->unk2A;
+    poly->r3 = poly->g3 = poly->b3;
 }
 
 static u_char D_800DB72C = 0;

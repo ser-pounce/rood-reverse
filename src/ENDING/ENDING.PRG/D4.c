@@ -1394,7 +1394,7 @@ static void _do_updateClearGameStats(void)
     _updateTitles();
     vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
 
-    for (i = 0x10; i < 0x440; ++i) {
+    for (i = 16; i < 1088; ++i) {
         ((u_char*)&vs_main_stateFlags)[i] = 0;
     }
 
@@ -1619,8 +1619,6 @@ static int _initCongratulationsScreen(void)
 
     TIM_IMAGE tim;
     int i;
-    int mapCompletion;
-    int chestsOpened;
 
     if (_submenuState == 0) {
 
@@ -1664,6 +1662,8 @@ static int _initCongratulationsScreen(void)
         ++_submenuState;
 
     } else if (_submenuState == 2) {
+        int mapCompletion;
+        int chestsOpened;
 
         vs_main_freeHeapR(timData);
 

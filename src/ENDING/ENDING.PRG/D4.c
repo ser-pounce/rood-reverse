@@ -262,7 +262,7 @@ static int _currentCreditsFrame;
 static int _textStreamDelay;
 static u_char* _creditsBytestreamHead;
 static short _scrollSpeed;
-static short D_800DC19A;
+static short _frameStartVsync;
 static u_short _masterBrightness;
 static u_short _1 __attribute__((unused));
 
@@ -824,7 +824,8 @@ static void _backgroundFadeOut(_creditsElement* element)
         element->state = -1;
     }
 
-    _masterBrightness = 128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
+    _masterBrightness =
+        128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
 }
 
 static void _renderFadeOut(_creditsElement* element)
@@ -969,7 +970,7 @@ static void _renderCredits(void)
 {
     while (_creditsComplete == 0) {
 
-        D_800DC19A = VSync(1);
+        _frameStartVsync = VSync(1);
 
         _beginFrame();
         _parseCreditsScript();
@@ -1226,7 +1227,7 @@ static int _decompressTim(void)
     while (1) {
         u_char op;
 
-        if (VSync(1) - D_800DC19A > 200) {
+        if (VSync(1) - _frameStartVsync > 200) {
             return 0;
         }
 
@@ -1577,7 +1578,7 @@ static u_int _onScreenMapCompletion;
 static int _onScreenScore;
 static int _submenuState;
 static int _screenTimer;
-static int D_800DC210;
+static int _congratulationsAnimSkip;
 
 static int _initCongratulationsScreen(void);
 static int _renderCongratulationsScreen(void);
@@ -1684,7 +1685,7 @@ static int _initCongratulationsScreen(void)
         _onScreenMapCompletion = 0;
         _onScreenScore = 0;
         _screenTimer = 0;
-        D_800DC210 = 0;
+        _congratulationsAnimSkip = 0;
         _clearCount = vs_main_stateFlags.clearCount;
 
         for (i = 0; i < 16; ++i) {
@@ -1761,7 +1762,7 @@ static void _renderRiskbreakerRank(int, int, int);
 
 static int _renderCongratulationsScreen(void)
 {
-    if (D_800DC210 == 0) {
+    if (_congratulationsAnimSkip == 0) {
 
         if (_screenTimer == 208) {
             vs_main_playSfxDefault(126, 119);
@@ -1770,8 +1771,9 @@ static int _renderCongratulationsScreen(void)
 
         _fadeIn(_screenTimer);
         _renderCongratulations(160, 40, _screenTimer);
-        _renderIncrementalScore(160, 80, _screenTimer - 32, D_800DC210);
-        _renderIncrementalMapCompletion(160, 102, _screenTimer - 112, D_800DC210);
+        _renderIncrementalScore(160, 80, _screenTimer - 32, _congratulationsAnimSkip);
+        _renderIncrementalMapCompletion(
+            160, 102, _screenTimer - 112, _congratulationsAnimSkip);
         _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
         _renderRiskbreakerRank(160, 154, _screenTimer - 208);
 
@@ -1780,7 +1782,7 @@ static int _renderCongratulationsScreen(void)
         }
 
         if (vs_main_buttonsPressed.all != 0) {
-            D_800DC210 = 1;
+            _congratulationsAnimSkip = 1;
             _screenTimer = 0;
         }
 

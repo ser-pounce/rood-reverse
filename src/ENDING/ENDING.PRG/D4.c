@@ -435,18 +435,16 @@ static void _initTimDecompress(_timData*, void*);
 
 static void _renderllustration(_creditsElement* element)
 {
-    static short D_800DBB68;
-    static short D_800DBB6A;
-    static u_short D_800DBB6C;
+    static short brightness;
+    static short tpageX;
+    static u_short clutY;
     static u_short _ __attribute__((unused));
 
     SPRT* sprt;
-    short temp_v0;
     void** p;
+    short state = element->state - 1;
 
-    temp_v0 = element->state - 1;
-
-    switch (temp_v0) {
+    switch (state) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
             _initTimDecompress(
@@ -455,12 +453,12 @@ static void _renderllustration(_creditsElement* element)
 
         element->currentStep = 0;
         element->state = 2;
-        D_800DBB6A = (element->illustId % 5) * 192;
-        D_800DBB6C = (element->illustId % 5) + 480;
+        tpageX = (element->illustId % 5) * 192;
+        clutY = (element->illustId % 5) + 480;
         /* fallthrough */
 
     case 1:
-        D_800DBB68 = (_masterBrightness * element->currentStep) / 80;
+        brightness = (_masterBrightness * element->currentStep) / 80;
 
         if (++element->currentStep == 80) {
             int var_a0 = 3;
@@ -473,7 +471,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 2:
-        D_800DBB68 = 128;
+        brightness = 128;
 
         if (++element->currentStep == _illustrationTimers[element->illustId]) {
             element->currentStep = 0;
@@ -483,7 +481,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 3:
-        D_800DBB68 = (_masterBrightness * (80 - element->currentStep)) / 80;
+        brightness = (_masterBrightness * (80 - element->currentStep)) / 80;
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
@@ -494,7 +492,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 4:
-        D_800DBB68 = 0x80;
+        brightness = 128;
         break;
     }
 
@@ -503,50 +501,43 @@ static void _renderllustration(_creditsElement* element)
 
     SetSprt(sprt);
     setXY0(sprt, 0, 0);
-    setWH(sprt, 0xA0, 0xE0);
+    setWH(sprt, 160, 224);
     setUV0(sprt, 0, 0);
     setSemiTrans(sprt, 1);
-    setClut(sprt, 0, D_800DBB6C);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DBB68;
+    setClut(sprt, 0, clutY);
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
     AddPrim(p[1] + 0x10, sprt++);
 
     p[0] = sprt;
-    sprt = _insertTpage(getTPage(1, 2, D_800DBB6A, 256), 4);
+    sprt = _insertTpage(getTPage(1, 2, tpageX, 256), 4);
 
     SetSprt(sprt);
-    setXY0(sprt, 0xA0, 0);
-    setWH(sprt, 0xA0, 0xE0);
-    setUV0(sprt, 0x20, 0);
+    setXY0(sprt, 160, 0);
+    setWH(sprt, 160, 224);
+    setUV0(sprt, 32, 0);
     setSemiTrans(sprt, 1);
-    setClut(sprt, 0, D_800DBB6C);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DBB68;
+    setClut(sprt, 0, clutY);
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
     AddPrim(p[1] + 0x10, sprt++);
 
     p[0] = sprt;
-    p[0] = _insertTpage(getTPage(1, 2, D_800DBB6A + 64, 256), 4);
+    p[0] = _insertTpage(getTPage(1, 2, tpageX + 64, 256), 4);
 }
 
 extern u_char _glyphWidths[];
 
 static int _creditsStrWidth(u_char* str)
 {
-    short width;
-    short i;
-    unsigned short charTableOffset;
-    short len;
-    int c;
-    int new_var;
-
-    len = *str++;
-    width = 0;
-    charTableOffset = 0;
-    i = 0;
+    short len = *str++;
+    short width = 0;
+    unsigned short charTableOffset = 0;
+    short i = 0;
 
     for (i = 0; i < len; ++i, ++str) {
-
-        c = *str;
+        int _;
+        int c = *str;
 
         if (c < 32u) {
             switch (c) {
@@ -561,7 +552,7 @@ static int _creditsStrWidth(u_char* str)
                 break;
             }
         } else {
-            width += _glyphWidths[(charTableOffset - (new_var = 32)) + c] - 1;
+            width += _glyphWidths[(charTableOffset - (_ = 32)) + c] - 1;
         }
     }
 

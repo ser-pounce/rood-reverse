@@ -7,7 +7,7 @@
 #include <rand.h>
 
 #define VS_MIRROR_SURFACE_FUNCTION func_800F9818
-#define VS_MIRROR_SURFACE_VERTICES D_800FCB70
+#define VS_SURFACE_VERTICES D_800FCB70
 #include "src/EFFECT/mirroredSurfaces.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FA48C

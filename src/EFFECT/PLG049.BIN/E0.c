@@ -1,3 +1,8 @@
+#include "common.h"
+
+/**
+ * Text rays from caster to target
+ */
 #define VS_TRAIL_ORIGIN_FUNCTION func_800F98E0
 #define VS_TRAIL_TARGET_FUNCTION func_800FA07C
 #define VS_TRAIL_CONTROL_FUNCTION func_800FA294

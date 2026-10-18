@@ -20,7 +20,40 @@
 #define VS_TRAIL_RENDER_FUNCTION func_800FC904
 #define VS_TRAIL_DISPATCH_FUNCTION func_800FD354
 #define VS_TRAIL_CORNER_STATE D_800FF9B8
+/* This overlay has both a nine-sample and a five-sample trail. trails.h is only
+ * included once, so the nine-sample copy gets its own type names here and the
+ * five-sample types are written out below. */
+#define _trail vs_trail9
+#define func_800FA76C_arg3 vs_trail9State
+#define vs_trailPrim vs_trail9Prim
 #include "src/EFFECT/trails9.h"
+#undef _trail
+#undef func_800FA76C_arg3
+#undef vs_trailPrim
+#undef TRAIL_SAMPLE_COUNT
+
+typedef struct {
+    SVECTOR splinePoints[4];
+    u_char stepCount;
+    u_char splineSampleCount;
+    u_char trailCollapseCounter;
+    u_char currentSplineSample;
+    SVECTOR splineSamples[5];
+    int splineProgress;
+    int speed;
+    int unk;
+} _trail;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char trailcount;
+    u_char unk3;
+    _trail* trails;
+    int curveSampleDistance;
+    func_800D6CF_t unkC;
+    u_char sampledTransparencyCurve[0];
+} func_800FA76C_arg3;
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FD894
 #define VS_TRAIL_TARGET_FUNCTION func_800FE030

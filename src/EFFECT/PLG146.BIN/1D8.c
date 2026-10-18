@@ -5,7 +5,7 @@
 #include "src/EFFECT/tiledRings.h"
 
 #define VS_MIRROR_SURFACE_FUNCTION func_800FA8D0
-#define VS_MIRROR_SURFACE_VERTICES D_800FF89C
+#define VS_SURFACE_VERTICES D_800FF89C
 #include "src/EFFECT/mirroredSurfaces.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FB544

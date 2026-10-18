@@ -1,11 +1,9 @@
-/*
- * Byte-identical nine-sample trail routines shared by several effect overlays.
- * Each including module supplies its original function and state symbols.
- */
+/* Shared nine-sample trail effect. The overlay supplies the seven routine names and
+ * the corner counter that VS_TRAIL_ORIGIN_FUNCTION steps through. */
+
 #define TRAIL_SAMPLE_COUNT 9
 
-#include "common.h"
-#include "src/EFFECT/trails9Types.h"
+#include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
@@ -14,33 +12,27 @@
 #include <rand.h>
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    POLY_GT4 unk4;
-    int unk38;
-} vs_trail9Prim;
+    u_long tag;
+    POLY_GT4 poly;
+    int drawMode;
+} vs_trailPrim;
 
 extern int VS_TRAIL_CORNER_STATE;
 
 static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, vs_trail9State* arg3)
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
 {
-    int sp10;
-    int sp14;
+    int startX;
+    int startZ;
     MATRIX* matrix;
     SVECTOR* splinePoint;
-    int temp_a1;
-    int temp_lo;
-    int temp_s0_2;
-    int temp_s3;
-    int temp_v0;
-    int temp_v0_4;
+    int corner;
+    int angleStep;
+    int cornerAngle;
     int i;
-    u_short var_a0;
-    u_short var_v1;
-    u_short var_v1_2;
+    u_short cornerX;
+    u_short cornerY;
+    u_short cornerZ;
 
     vs_battle_lerpVector(arg0->unk18,
         vs_battle_sampleCurve(arg0->unk8, arg3->curveSampleDistance), &arg1->unk98);
@@ -69,16 +61,17 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     switch (arg1->flags & 0x38) {
     case 0:
         for (i = 0; i < arg3->trailcount; ++i) {
+            int angle;
 
             splinePoint = &arg3->trails[i].splinePoints[0];
 
-            temp_v0 = rand();
-            arg1->unk170 = rsin(temp_v0);
-            arg1->unk178 = rcos(temp_v0);
+            angle = rand();
+            arg1->unk170 = rsin(angle);
+            arg1->unk178 = rcos(angle);
 
-            temp_v0 = rand();
-            arg1->unk174 = rsin(temp_v0);
-            arg1->unk17C = rcos(temp_v0);
+            angle = rand();
+            arg1->unk174 = rsin(angle);
+            arg1->unk17C = rcos(angle);
 
             setVector(splinePoint,
                 ((((arg1->unkA8.vx * arg1->unk178) >> 0xC) * arg1->unk17C) >> 0xC),
@@ -92,6 +85,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 
             addVector(splinePoint, &arg1->unk98);
         }
+
         return;
 
     case 8:
@@ -105,6 +99,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
                 switch (rand() % 6) {
                 case 0:
                     splinePoint->vx = arg1->unkA8.vx;
+
                     if (0) {
                     case 1:
                         splinePoint->vx = -arg1->unkA8.vx;
@@ -118,6 +113,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 
                 case 2:
                     splinePoint->vy = arg1->unkA8.vy;
+
                     if (0) {
                     case 3:
                         splinePoint->vy = -arg1->unkA8.vy;
@@ -131,6 +127,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 
                 case 4:
                     splinePoint->vz = arg1->unkA8.vz;
+
                     if (0) {
                     case 5:
                         splinePoint->vz = -arg1->unkA8.vz;
@@ -146,27 +143,32 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
                 break;
 
             case 0x1000:
-                temp_a1 = VS_TRAIL_CORNER_STATE + 1;
-                VS_TRAIL_CORNER_STATE = temp_a1 & 7;
+                corner = VS_TRAIL_CORNER_STATE + 1;
+                VS_TRAIL_CORNER_STATE = corner & 7;
 
-                var_a0 = arg1->unkA8.vx;
-                if (!(temp_a1 & 1)) {
-                    var_a0 = -var_a0;
+                cornerX = arg1->unkA8.vx;
+
+                if (!(corner & 1)) {
+                    cornerX = -cornerX;
                 }
 
-                splinePoint->vx = var_a0;
+                splinePoint->vx = cornerX;
 
-                var_v1 = arg1->unkA8.vy;
-                if (!(temp_a1 & 2)) {
-                    var_v1 = -var_v1;
-                }
-                splinePoint->vy = var_v1;
+                cornerY = arg1->unkA8.vy;
 
-                var_v1_2 = arg1->unkA8.vz;
-                if (!(temp_a1 & 4)) {
-                    var_v1_2 = -var_v1_2;
+                if (!(corner & 2)) {
+                    cornerY = -cornerY;
                 }
-                splinePoint->vz = var_v1_2;
+
+                splinePoint->vy = cornerY;
+
+                cornerZ = arg1->unkA8.vz;
+
+                if (!(corner & 4)) {
+                    cornerZ = -cornerZ;
+                }
+
+                splinePoint->vz = cornerZ;
 
                 break;
             }
@@ -191,10 +193,13 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 
     case 48:
         arg1->unk184 = arg0->unkCA;
+
         if (arg1->unk184 == 0) {
             arg1->unk184 = 1;
         }
+
         arg1->unk188 = arg0->unkCB;
+
         if (arg1->unk188 == 0) {
             arg1->unk188 = arg1->unk184;
         }
@@ -204,29 +209,33 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
         return;
     }
 
-    temp_lo = ONE / arg1->unk184;
+    angleStep = ONE / arg1->unk184;
 
     if ((arg1->flags & 0x1800) != 0x1000) {
-        VS_TRAIL_CORNER_STATE = VS_TRAIL_CORNER_STATE % arg1->unk188;
-        temp_s0_2 = (VS_TRAIL_CORNER_STATE * temp_lo) + ONE / 8;
-        sp10 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
-        sp14 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+        VS_TRAIL_CORNER_STATE %= arg1->unk188;
+        cornerAngle = (VS_TRAIL_CORNER_STATE * angleStep) + ONE / 8;
+        startX = (rcos(cornerAngle) * arg1->unkA8.vx) >> 0xC;
+        startZ = (rsin(cornerAngle) * arg1->unkA8.vz) >> 0xC;
     }
 
     for (i = 0; i < arg3->trailcount; ++i) {
+        int x;
+        int z;
+
         splinePoint = &arg3->trails[i].splinePoints[0];
         VS_TRAIL_CORNER_STATE = (VS_TRAIL_CORNER_STATE + 1) % arg1->unk188;
-        temp_s0_2 = (VS_TRAIL_CORNER_STATE * temp_lo) + ONE / 8;
-        temp_s3 = (rcos(temp_s0_2) * arg1->unkA8.vx) >> 0xC;
-        temp_s0_2 = (rsin(temp_s0_2) * arg1->unkA8.vz) >> 0xC;
+        cornerAngle = (VS_TRAIL_CORNER_STATE * angleStep) + ONE / 8;
+        x = (rcos(cornerAngle) * arg1->unkA8.vx) >> 0xC;
+        z = (rsin(cornerAngle) * arg1->unkA8.vz) >> 0xC;
 
         if ((arg1->flags & 0x1800) == 0x1000) {
-            splinePoint->vx = temp_s3;
-            splinePoint->vz = temp_s0_2;
+            splinePoint->vx = x;
+            splinePoint->vz = z;
         } else {
-            temp_v0_4 = rand() >> 3;
-            splinePoint->vx = (((temp_s3 - sp10) * temp_v0_4) >> 0xC) + sp10;
-            splinePoint->vz = (((temp_s0_2 - sp14) * temp_v0_4) >> 0xC) + sp14;
+            int blend = rand() >> 3;
+
+            splinePoint->vx = (((x - startX) * blend) >> 0xC) + startX;
+            splinePoint->vz = (((z - startZ) * blend) >> 0xC) + startZ;
         }
 
         splinePoint->vy = 0;
@@ -241,7 +250,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, vs_trail9State* arg3)
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
 {
     int i;
 
@@ -276,28 +285,28 @@ static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
-    SVECTOR sp10;
-    SVECTOR sp18;
-    int temp_s0;
+    SVECTOR offset1;
+    SVECTOR offset2;
+    int distance;
     int i;
-    int var_s0;
-    int var_s1;
-    int var_s3;
-    int var_s4;
+    int angle1;
+    int angle2;
+    int radius1;
+    int radius2;
 
     do {
         for (i = 0; i < arg3->trailcount; ++i) {
 
-            SVECTOR* temp_s5 = arg3->trails[i].splinePoints;
+            SVECTOR* points = arg3->trails[i].splinePoints;
 
-            setVector(&arg1->unk34, temp_s5[3].vx - temp_s5[0].vx,
-                temp_s5[3].vy - temp_s5[0].vy, temp_s5[3].vz - temp_s5[0].vz);
+            setVector(&arg1->unk34, points[3].vx - points[0].vx,
+                points[3].vy - points[0].vy, points[3].vz - points[0].vz);
 
-            temp_s0 = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
-                                   + (arg1->unk34.vy * arg1->unk34.vy)
-                                   + (arg1->unk34.vz * arg1->unk34.vz));
+            distance = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
+                                    + (arg1->unk34.vy * arg1->unk34.vy)
+                                    + (arg1->unk34.vz * arg1->unk34.vz));
             vs_battle_lerp2DVector(arg0->unk94[0],
                 vs_battle_sampleCurve(arg0->unk12, arg3->curveSampleDistance),
                 arg1->unk124);
@@ -318,81 +327,81 @@ static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_ar
                 &arg1->unkF8);
 
             if (arg1->unkF8.vx != 0) {
-                int var_v0_2 =
+                int spread =
                     (arg1->unk118[0] + (rand() % arg1->unkF8.vx)) - (arg1->unkF8.vx / 2);
-                sp10.vz = (temp_s0 * var_v0_2) / 256;
+                offset1.vz = (distance * spread) / 256;
             } else {
-                sp10.vz = (temp_s0 * arg1->unk118[0]) / 256;
+                offset1.vz = (distance * arg1->unk118[0]) / 256;
             }
 
             if (arg1->unkF8.vy != 0) {
-                int var_v0_3 =
+                int spread =
                     (arg1->unk118[1] + (rand() % arg1->unkF8.vy)) - (arg1->unkF8.vy / 2);
-                sp18.vz = temp_s0 + ((temp_s0 * var_v0_3) / 256);
+                offset2.vz = distance + ((distance * spread) / 256);
             } else {
-                sp18.vz = temp_s0 + ((temp_s0 * arg1->unk118[1]) / 256);
+                offset2.vz = distance + ((distance * arg1->unk118[1]) / 256);
             }
 
-            var_s3 = arg1->unk124[0];
+            radius1 = arg1->unk124[0];
 
-            var_s0 = arg1->unk124[1] != 0;
-            if (var_s0) {
-                var_s3 += rand() % arg1->unk124[1];
+            angle1 = arg1->unk124[1] != 0;
+            if (angle1) {
+                radius1 += rand() % arg1->unk124[1];
             }
 
-            var_s4 = arg1->unk12C[0];
+            radius2 = arg1->unk12C[0];
 
             if (arg1->unk12C[1] != 0) {
-                var_s4 += rand() % arg1->unk12C[1];
+                radius2 += rand() % arg1->unk12C[1];
             }
 
-            var_s0 = arg1->unkE8.vx;
+            angle1 = arg1->unkE8.vx;
 
             if (arg1->unkC8.vx != 0) {
-                var_s0 += (rand() % (arg1->unkC8.vx * 2)) - arg1->unkC8.vx;
+                angle1 += (rand() % (arg1->unkC8.vx * 2)) - arg1->unkC8.vx;
             }
 
-            var_s1 = arg1->unkE8.vy;
+            angle2 = arg1->unkE8.vy;
 
             if (arg1->unkC8.vy != 0) {
                 if (&arg1->unk34) {
-                    var_s1 += (rand() % (arg1->unkC8.vy * 2)) - arg1->unkC8.vy;
+                    angle2 += (rand() % (arg1->unkC8.vy * 2)) - arg1->unkC8.vy;
                 } else {
-                    var_s1 += (rand() % (arg1->unkC8.vy * 2)) - arg1->unkC8.vy;
+                    angle2 += (rand() % (arg1->unkC8.vy * 2)) - arg1->unkC8.vy;
                 }
             }
 
-            sp10.vx = (rcos(var_s0) * var_s3) >> 0xC;
-            sp10.vy = (rsin(var_s0) * var_s3) >> 0xC;
-            sp18.vx = (rcos(var_s1) * var_s4) >> 0xC;
-            sp18.vy = (rsin(var_s1) * var_s4) >> 0xC;
+            offset1.vx = (rcos(angle1) * radius1) >> 0xC;
+            offset1.vy = (rsin(angle1) * radius1) >> 0xC;
+            offset2.vx = (rcos(angle2) * radius2) >> 0xC;
+            offset2.vy = (rsin(angle2) * radius2) >> 0xC;
 
-            vs_battle_svecToVec(temp_s5, &arg1->unk34);
-            vs_battle_svecToVec(temp_s5 + 3, &arg1->unk44);
+            vs_battle_svecToVec(points, &arg1->unk34);
+            vs_battle_svecToVec(points + 3, &arg1->unk44);
             vs_battle_lookAt(&arg1->unk34, &arg1->unk44, &arg1->unk64);
             gte_SetRotMatrix(&arg1->unk64);
             gte_SetTransVector2(&arg1->unk34);
-            gte_ldv0(&sp10);
+            gte_ldv0(&offset1);
             gte_rtv0tr2();
             gte_stlvnl(&arg1->unk34);
-            vs_battle_vecToSvec(&arg1->unk34, temp_s5 + 1);
-            gte_ldv0(&sp18);
+            vs_battle_vecToSvec(&arg1->unk34, points + 1);
+            gte_ldv0(&offset2);
             gte_rtv0tr2();
             gte_stlvnl(&arg1->unk44);
-            vs_battle_vecToSvec(&arg1->unk44, temp_s5 + 2);
+            vs_battle_vecToSvec(&arg1->unk44, points + 2);
         }
     } while (0);
 }
 
 static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     int speed;
     int i;
 
     vs_battle_lerp2DVector(arg0->unk94[4], 0, arg1->unk134);
 
-    speed = func_800CFE1C(arg0->unk30, 0) << 0xC;
+    speed = func_800CFE1C(arg0->unk30, 0) * ONE;
 
     for (i = 0; i < arg3->trailcount; ++i) {
         int stepCount = vs_battle_randUniformInt(arg1->unk134[0], arg1->unk134[1]);
@@ -413,95 +422,85 @@ static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1*
 
 static void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
     func_800FA098_arg1* arg1 __attribute__((unused)),
-    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
 {
     int i;
 
     for (i = 0; i < arg3->trailcount; ++i) {
 
-        vs_trail9* temp_s0 = &arg3->trails[i];
+        _trail* trail = &arg3->trails[i];
 
-        if (temp_s0->trailCollapseCounter == 0) {
+        if (trail->trailCollapseCounter == 0) {
             continue;
         }
 
-        if (arg3->curveSampleDistance >= temp_s0->stepCount) {
-            --temp_s0->trailCollapseCounter;
-            if (temp_s0->trailCollapseCounter < temp_s0->stepCount) {
-                --temp_s0->splineSampleCount;
+        if (arg3->curveSampleDistance >= trail->stepCount) {
+            --trail->trailCollapseCounter;
+            if (trail->trailCollapseCounter < trail->stepCount) {
+                --trail->splineSampleCount;
             }
         } else {
-            int currentStep = temp_s0->stepCount - arg3->curveSampleDistance;
-            int speed = temp_s0->speed;
+            int currentStep = trail->stepCount - arg3->curveSampleDistance;
+            int speed = trail->speed;
 
-            speed += ((0x06000000 - (temp_s0->splineProgress * 2))
-                         / (currentStep * currentStep))
-                   - ((speed * 2) / currentStep);
-            temp_s0->speed = speed;
-            temp_s0->splineProgress += speed;
-            temp_s0->currentSplineSample = (temp_s0->currentSplineSample + 1) % 9;
+            speed +=
+                ((0x06000000 - (trail->splineProgress * 2)) / (currentStep * currentStep))
+                - ((speed * 2) / currentStep);
+            trail->speed = speed;
+            trail->splineProgress += speed;
+            trail->currentSplineSample = (trail->currentSplineSample + 1) % 9;
 
-            vs_battle_splineInterpolate(&temp_s0->splinePoints[0],
-                &temp_s0->splinePoints[1], &temp_s0->splinePoints[2],
-                &temp_s0->splinePoints[3], (temp_s0->splineProgress >> 0xC) - ONE,
-                &temp_s0->splineSamples[temp_s0->currentSplineSample]);
+            vs_battle_splineInterpolate(&trail->splinePoints[0], &trail->splinePoints[1],
+                &trail->splinePoints[2], &trail->splinePoints[3],
+                (trail->splineProgress >> 0xC) - ONE,
+                &trail->splineSamples[trail->currentSplineSample]);
 
-            if (temp_s0->splineSampleCount < 9) {
-                ++temp_s0->splineSampleCount;
+            if (trail->splineSampleCount < 9) {
+                ++trail->splineSampleCount;
             }
         }
     }
 }
 
 void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, vs_trail9State* arg3)
+    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
 {
-    vs_trail9Prim sp10;
-    DVECTOR sp50[10];
-    int sp78[10];
-    int spA0[8];
-    CVECTOR spC0;
+    vs_trailPrim quad;
+    DVECTOR screen[10];
+    int depths[10];
+    int angles[8];
+    CVECTOR color;
     int _[10] __attribute__((unused));
-    DVECTOR* spF0;
+    DVECTOR* points;
     int i;
-    int spF8;
-    int spFC;
-    vs_trail9* temp_s1;
-    int temp_a1_2;
-    int temp_s0;
-    int var_s0_2;
     int j;
-    vs_trail9Prim* temp_a3;
-    pFileTexture* temp_s7;
-    SVECTOR* temp;
-    DVECTOR* temp2;
-    int temp_s3;
+    pFileTexture* texture;
 
     vs_battle_lerpSvector(arg0->unk34[4],
         vs_battle_sampleCurve(arg0->unkE, arg3->curveSampleDistance), &arg1->unk108);
 
     if (arg0->rCurve != 0) {
         j = vs_battle_sampleCurve(arg0->rCurve, arg3->curveSampleDistance) * 2;
-        spC0.r = j <= 255 ? j : 255;
+        color.r = j <= 255 ? j : 255;
     } else {
-        spC0.r = 128;
+        color.r = 128;
     }
 
     if (arg0->gCurve != 0) {
         j = vs_battle_sampleCurve(arg0->gCurve, arg3->curveSampleDistance) * 2;
-        spC0.g = j <= 255 ? j : 255;
+        color.g = j <= 255 ? j : 255;
     } else {
-        spC0.g = 128;
+        color.g = 128;
     }
 
     if (arg0->bCurve != 0) {
         j = vs_battle_sampleCurve(arg0->bCurve, arg3->curveSampleDistance) * 2;
-        spC0.b = j <= 255 ? j : 255;
+        color.b = j <= 255 ? j : 255;
     } else {
-        spC0.b = 128;
+        color.b = 128;
     }
 
-    spC0.cd = primPolyGT4SemiTrans;
+    color.cd = primPolyGT4SemiTrans;
 
     if (arg1->flags & 0x20000) {
         SetRotMatrix(&arg2->unk1C[arg0->unkC8].view);
@@ -513,314 +512,317 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
 
     func_800D6D24(&arg3->unkC);
 
-    temp_s7 = &D_800F569C->textures[arg3->unkC.textureInfo->dataIndex];
+    texture = &D_800F569C->textures[arg3->unkC.textureInfo->dataIndex];
 
     for (i = 0; i < arg3->trailcount; ++i) {
+        _trail* trail = &arg3->trails[i];
+        SVECTOR* samples = trail->splineSamples;
+        vs_trailPrim* prim;
+        int dx;
+        int dy;
+        int sample;
+        int vTop;
+        int vBottom;
 
-        temp_s1 = &arg3->trails[i];
-
-        temp = temp_s1->splineSamples;
-        if (temp_s1->splineSampleCount >= 2) {
-            temp_s3 = temp_s1->currentSplineSample;
-            for (j = 0; j < temp_s1->splineSampleCount; ++j) {
-                gte_ldv0(&temp[temp_s3]);
-                gte_rtps2();
-                gte_stsxy(&sp50[j]);
-                gte_stszotz(&sp78[j]);
-                temp_s3 = (temp_s3 + 8) % 9;
-            }
-
-            for (j = 0; j < (temp_s1->splineSampleCount - 1); ++j) {
-                DVECTOR* p = &sp50[j];
-                spA0[j] = ratan2(p[1].vy - p[0].vy, p[1].vx - p[0].vx);
-                spA0[j] -= 0x400;
-            }
-
-            temp_s3 = arg1->unk108.vx / 2;
-            temp_s0 = (rcos(spA0[0]) * temp_s3) >> 0xC;
-            temp_a1_2 = (rsin(spA0[0]) * temp_s3) >> 0xC;
-            spF0 = sp50;
-            sp10.unk4.x0 = spF0[0].vx + temp_s0;
-            sp10.unk4.y0 = spF0[0].vy + temp_a1_2;
-            sp10.unk4.x2 = spF0[0].vx - temp_s0;
-            sp10.unk4.y2 = spF0[0].vy - temp_a1_2;
-
-            sp10.unk4.u0 = sp10.unk4.u2 =
-                temp_s7->u + ((temp_s7->w * temp_s1->trailCollapseCounter) / 8);
-            spF8 = temp_s7->v;
-            spFC = temp_s7->v + temp_s7->h;
-            sp10.unk4.v0 = spF8;
-            sp10.unk4.v2 = spFC;
-            sp10.unk4.r0 =
-                (spC0.r * arg3->sampledTransparencyCurve[temp_s1->trailCollapseCounter])
-                >> 7;
-            sp10.unk4.g0 =
-                (spC0.g * arg3->sampledTransparencyCurve[temp_s1->trailCollapseCounter])
-                >> 7;
-            sp10.unk4.b0 =
-                (spC0.b * arg3->sampledTransparencyCurve[temp_s1->trailCollapseCounter])
-                >> 7;
-            sp10.unk4.code = spC0.cd;
-
-            for (j = 0; j < (temp_s1->splineSampleCount - 2); ++j) {
-                var_s0_2 = (spA0[j] + spA0[j + 1]) / 2;
-
-                if (((spA0[j + 1] - spA0[j]) + 0x7FF) >= 0xFFFU) {
-                    var_s0_2 += 0x800;
-                }
-
-                temp_s0 = (rcos(var_s0_2) * temp_s3) >> 0xC;
-                temp_a1_2 = (rsin(var_s0_2) * temp_s3) >> 0xC;
-                temp2 = &spF0[j];
-                sp10.unk4.x1 = temp2[1].vx + temp_s0;
-                sp10.unk4.y1 = temp2[1].vy + temp_a1_2;
-                sp10.unk4.x3 = temp2[1].vx - temp_s0;
-                sp10.unk4.y3 = temp2[1].vy - temp_a1_2;
-
-                sp10.unk4.u1 = sp10.unk4.u3 =
-                    temp_s7->u
-                    + ((temp_s7->w * ((temp_s1->trailCollapseCounter - j) - 1)) / 8);
-                sp10.unk4.v1 = spF8;
-                sp10.unk4.v3 = spFC;
-                sp10.unk4.r1 =
-                    ((spC0.r
-                         * arg3->sampledTransparencyCurve[temp_s1->trailCollapseCounter
-                                                          - j - 1])
-                        >> 7);
-                sp10.unk4.g1 =
-                    ((spC0.g
-                         * arg3->sampledTransparencyCurve[temp_s1->trailCollapseCounter
-                                                          - j - 1])
-                        >> 7);
-                sp10.unk4.b1 =
-                    ((spC0.b
-                         * arg3->sampledTransparencyCurve[temp_s1->trailCollapseCounter
-                                                          - j - 1])
-                        >> 7);
-                sp10.unk4.p1 = spC0.cd;
-
-                temp_s0 = (sp78[j] + sp78[j + 1]) / 2;
-
-                if ((temp_s0 < 0x800) && (vs_main_nearClip < temp_s0)) {
-                    temp_a3 = vs_scratch.unk0;
-                    vs_scratch.unk0 = temp_a3 + 1;
-                    temp_a3->unk3 = 0xE;
-                    temp_a3->unk4.code = primPolyGT4SemiTrans;
-                    temp_a3->unk4.tag = 0xE1000000;
-                    temp_a3->unk38 = 0xE1000200;
-                    *(int*)&temp_a3->unk0 =
-                        (((u_long*)vs_scratch.unk4)[temp_s0] & 0xFFFFFF) | 0x0E000000;
-                    ((u_long*)vs_scratch.unk4)[temp_s0] =
-                        (((u_long*)vs_scratch.unk4)[temp_s0] & 0xFF000000)
-                        | ((u_long)temp_a3 & 0xFFFFFF);
-                    *(int*)&temp_a3->unk4.r0 = *(int*)&sp10.unk4.r0;
-                    *(int*)&temp_a3->unk4.r1 = *(int*)&sp10.unk4.r1;
-                    *(int*)&temp_a3->unk4.r2 = *(int*)&sp10.unk4.r0;
-                    *(int*)&temp_a3->unk4.r3 = *(int*)&sp10.unk4.r1;
-                    *(int*)&temp_a3->unk4.x0 = *(int*)&sp10.unk4.x0;
-                    *(int*)&temp_a3->unk4.x1 = *(int*)&sp10.unk4.x1;
-                    *(int*)&temp_a3->unk4.x2 = *(int*)&sp10.unk4.x2;
-                    *(int*)&temp_a3->unk4.x3 = *(int*)&sp10.unk4.x3;
-                    *(short*)&temp_a3->unk4.u0 = *(short*)&sp10.unk4.u0;
-                    *(short*)&temp_a3->unk4.u1 = *(short*)&sp10.unk4.u1;
-                    *(short*)&temp_a3->unk4.u2 = *(short*)&sp10.unk4.u2;
-                    *(short*)&temp_a3->unk4.u3 = *(short*)&sp10.unk4.u3;
-                    *(short*)&temp_a3->unk4.tpage = temp_s7->tpage;
-                    *(short*)&temp_a3->unk4.clut = temp_s7->clut;
-                }
-                *(int*)&sp10.unk4.x0 = *(int*)&sp10.unk4.x1;
-                *(int*)&sp10.unk4.x2 = *(int*)&sp10.unk4.x3;
-                *(short*)&sp10.unk4.u0 = *(short*)&sp10.unk4.u1;
-                *(short*)&sp10.unk4.u2 = *(short*)&sp10.unk4.u3;
-                *(int*)&sp10.unk4.r0 = *(int*)&sp10.unk4.r1;
-            }
-
-            temp_s0 = (rcos(spA0[j]) * temp_s3) >> 0xC;
-            temp_a1_2 = (rsin(spA0[j]) * temp_s3) >> 0xC;
-            sp10.unk4.x1 = ((u_short*)spF0)[j * 2 + 2] + temp_s0;
-            sp10.unk4.y1 = ((u_short*)spF0)[j * 2 + 3] + temp_a1_2;
-            sp10.unk4.x3 = ((u_short*)spF0)[j * 2 + 2] - temp_s0;
-            sp10.unk4.y3 = ((u_short*)spF0)[j * 2 + 3] - temp_a1_2;
-            sp10.unk4.u1 = sp10.unk4.u3 = temp_s7->u;
-            sp10.unk4.v1 = spF8;
-            sp10.unk4.v3 = spFC;
-            sp10.unk4.r1 = (spC0.r * arg3->sampledTransparencyCurve[0]) >> 7;
-            sp10.unk4.g1 = (spC0.g * arg3->sampledTransparencyCurve[0]) >> 7;
-            sp10.unk4.b1 = (spC0.b * arg3->sampledTransparencyCurve[0]) >> 7;
-
-            temp_s0 = (sp78[j] + sp78[j + 1]) / 2;
-
-            if ((temp_s0 < 0x800) && (vs_main_nearClip < temp_s0)) {
-                temp_a3 = vs_scratch.unk0;
-                vs_scratch.unk0 = temp_a3 + 1;
-                temp_a3->unk3 = 0xE;
-                temp_a3->unk4.code = primPolyGT4SemiTrans;
-                temp_a3->unk4.tag = 0xE1000000;
-                temp_a3->unk38 = 0xE1000200;
-                *(int*)&temp_a3->unk0 =
-                    (((u_long*)vs_scratch.unk4)[temp_s0] & 0xFFFFFF) | 0x0E000000;
-                ((u_long*)vs_scratch.unk4)[temp_s0] =
-                    (((u_long*)vs_scratch.unk4)[temp_s0] & 0xFF000000)
-                    | ((u_long)temp_a3 & 0xFFFFFF);
-                *(int*)&temp_a3->unk4.r0 = *(int*)&sp10.unk4.r0;
-                *(int*)&temp_a3->unk4.r1 = *(int*)&sp10.unk4.r1;
-                *(int*)&temp_a3->unk4.r2 = *(int*)&sp10.unk4.r0;
-                *(int*)&temp_a3->unk4.r3 = *(int*)&sp10.unk4.r1;
-                *(int*)&temp_a3->unk4.x0 = *(int*)&sp10.unk4.x0;
-                *(int*)&temp_a3->unk4.x1 = *(int*)&sp10.unk4.x1;
-                *(int*)&temp_a3->unk4.x2 = *(int*)&sp10.unk4.x2;
-                *(int*)&temp_a3->unk4.x3 = *(int*)&sp10.unk4.x3;
-                *(short*)&temp_a3->unk4.u0 = *(short*)&sp10.unk4.u0;
-                *(short*)&temp_a3->unk4.u1 = *(short*)&sp10.unk4.u1;
-                *(short*)&temp_a3->unk4.u2 = *(short*)&sp10.unk4.u2;
-                *(short*)&temp_a3->unk4.u3 = *(short*)&sp10.unk4.u3;
-                *(short*)&temp_a3->unk4.tpage = temp_s7->tpage;
-                *(short*)&temp_a3->unk4.clut = temp_s7->clut;
-            }
+        if (trail->splineSampleCount < 2) {
+            continue;
         }
+
+        sample = trail->currentSplineSample;
+
+        for (j = 0; j < trail->splineSampleCount; ++j) {
+            gte_ldv0(&samples[sample]);
+            gte_rtps2();
+            gte_stsxy(&screen[j]);
+            gte_stszotz(&depths[j]);
+            sample = (sample + 8) % 9;
+        }
+
+        for (j = 0; j < (trail->splineSampleCount - 1); ++j) {
+            DVECTOR* p = &screen[j];
+            angles[j] = ratan2(p[1].vy - p[0].vy, p[1].vx - p[0].vx);
+            angles[j] -= ONE / 4;
+        }
+
+        sample = arg1->unk108.vx / 2;
+        dx = (rcos(angles[0]) * sample) >> 0xC;
+        dy = (rsin(angles[0]) * sample) >> 0xC;
+        points = screen;
+        setXY0(&quad.poly, points[0].vx + dx, points[0].vy + dy);
+        quad.poly.x2 = points[0].vx - dx;
+        quad.poly.y2 = points[0].vy - dy;
+
+        quad.poly.u0 = quad.poly.u2 =
+            texture->u + ((texture->w * trail->trailCollapseCounter) / 8);
+        vTop = texture->v;
+        vBottom = texture->v + texture->h;
+        quad.poly.v0 = vTop;
+        quad.poly.v2 = vBottom;
+        setRGB0(&quad.poly,
+            (color.r * arg3->sampledTransparencyCurve[trail->trailCollapseCounter]) >> 7,
+            (color.g * arg3->sampledTransparencyCurve[trail->trailCollapseCounter]) >> 7,
+            (color.b * arg3->sampledTransparencyCurve[trail->trailCollapseCounter]) >> 7);
+        quad.poly.code = color.cd;
+
+        for (j = 0; j < (trail->splineSampleCount - 2); ++j) {
+            DVECTOR* point;
+            int angle = (angles[j] + angles[j + 1]) / 2;
+
+            if (((angles[j + 1] - angles[j]) + (ONE / 2 - 1)) >= (ONE - 1u)) {
+                angle += ONE / 2;
+            }
+
+            dx = (rcos(angle) * sample) >> 0xC;
+            dy = (rsin(angle) * sample) >> 0xC;
+            point = &points[j];
+            quad.poly.x1 = point[1].vx + dx;
+            quad.poly.y1 = point[1].vy + dy;
+            quad.poly.x3 = point[1].vx - dx;
+            quad.poly.y3 = point[1].vy - dy;
+
+            quad.poly.u1 = quad.poly.u3 =
+                texture->u + ((texture->w * ((trail->trailCollapseCounter - j) - 1)) / 8);
+            quad.poly.v1 = vTop;
+            quad.poly.v3 = vBottom;
+            quad.poly.r1 =
+                ((color.r
+                     * arg3
+                         ->sampledTransparencyCurve[trail->trailCollapseCounter - j - 1])
+                    >> 7);
+            quad.poly.g1 =
+                ((color.g
+                     * arg3
+                         ->sampledTransparencyCurve[trail->trailCollapseCounter - j - 1])
+                    >> 7);
+            quad.poly.b1 =
+                ((color.b
+                     * arg3
+                         ->sampledTransparencyCurve[trail->trailCollapseCounter - j - 1])
+                    >> 7);
+            quad.poly.p1 = color.cd;
+
+            dx = (depths[j] + depths[j + 1]) / 2;
+
+            if ((dx < ONE / 2) && (vs_main_nearClip < dx)) {
+                prim = vs_scratch.unk0;
+                vs_scratch.unk0 = prim + 1;
+                setlen(prim, 0xE);
+                prim->poly.code = primPolyGT4SemiTrans;
+                prim->poly.tag = _get_mode(0, 0, 0);
+                prim->drawMode = _get_mode(0, 1, 0);
+                prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
+                ((u_long*)vs_scratch.unk4)[dx] =
+                    (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000)
+                    | ((u_long)prim & 0xFFFFFF);
+                *(int*)&prim->poly.r0 = *(int*)&quad.poly.r0;
+                *(int*)&prim->poly.r1 = *(int*)&quad.poly.r1;
+                *(int*)&prim->poly.r2 = *(int*)&quad.poly.r0;
+                *(int*)&prim->poly.r3 = *(int*)&quad.poly.r1;
+                *(int*)&prim->poly.x0 = *(int*)&quad.poly.x0;
+                *(int*)&prim->poly.x1 = *(int*)&quad.poly.x1;
+                *(int*)&prim->poly.x2 = *(int*)&quad.poly.x2;
+                *(int*)&prim->poly.x3 = *(int*)&quad.poly.x3;
+                *(short*)&prim->poly.u0 = *(short*)&quad.poly.u0;
+                *(short*)&prim->poly.u1 = *(short*)&quad.poly.u1;
+                *(short*)&prim->poly.u2 = *(short*)&quad.poly.u2;
+                *(short*)&prim->poly.u3 = *(short*)&quad.poly.u3;
+                prim->poly.tpage = texture->tpage;
+                prim->poly.clut = texture->clut;
+            }
+
+            *(int*)&quad.poly.x0 = *(int*)&quad.poly.x1;
+            *(int*)&quad.poly.x2 = *(int*)&quad.poly.x3;
+            *(short*)&quad.poly.u0 = *(short*)&quad.poly.u1;
+            *(short*)&quad.poly.u2 = *(short*)&quad.poly.u3;
+            *(int*)&quad.poly.r0 = *(int*)&quad.poly.r1;
+        }
+
+        dx = (rcos(angles[j]) * sample) >> 0xC;
+        dy = (rsin(angles[j]) * sample) >> 0xC;
+        quad.poly.x1 = ((u_short*)points)[j * 2 + 2] + dx;
+        quad.poly.y1 = ((u_short*)points)[j * 2 + 3] + dy;
+        quad.poly.x3 = ((u_short*)points)[j * 2 + 2] - dx;
+        quad.poly.y3 = ((u_short*)points)[j * 2 + 3] - dy;
+        quad.poly.u1 = quad.poly.u3 = texture->u;
+        quad.poly.v1 = vTop;
+        quad.poly.v3 = vBottom;
+        setRGB1(&quad.poly, (color.r * arg3->sampledTransparencyCurve[0]) >> 7,
+            (color.g * arg3->sampledTransparencyCurve[0]) >> 7,
+            (color.b * arg3->sampledTransparencyCurve[0]) >> 7);
+
+        dx = (depths[j] + depths[j + 1]) / 2;
+
+        if ((dx >= ONE / 2) || (dx <= vs_main_nearClip)) {
+            continue;
+        }
+
+        prim = vs_scratch.unk0;
+        vs_scratch.unk0 = prim + 1;
+        setlen(prim, 0xE);
+        setcode(&prim->poly, primPolyGT4SemiTrans);
+        prim->poly.tag = _get_mode(0, 0, 0);
+        prim->drawMode = _get_mode(0, 1, 0);
+        prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
+        ((u_long*)vs_scratch.unk4)[dx] =
+            (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000) | ((u_long)prim & 0xFFFFFF);
+        *(int*)&prim->poly.r0 = *(int*)&quad.poly.r0;
+        *(int*)&prim->poly.r1 = *(int*)&quad.poly.r1;
+        *(int*)&prim->poly.r2 = *(int*)&quad.poly.r0;
+        *(int*)&prim->poly.r3 = *(int*)&quad.poly.r1;
+        *(int*)&prim->poly.x0 = *(int*)&quad.poly.x0;
+        *(int*)&prim->poly.x1 = *(int*)&quad.poly.x1;
+        *(int*)&prim->poly.x2 = *(int*)&quad.poly.x2;
+        *(int*)&prim->poly.x3 = *(int*)&quad.poly.x3;
+        *(short*)&prim->poly.u0 = *(short*)&quad.poly.u0;
+        *(short*)&prim->poly.u1 = *(short*)&quad.poly.u1;
+        *(short*)&prim->poly.u2 = *(short*)&quad.poly.u2;
+        *(short*)&prim->poly.u3 = *(short*)&quad.poly.u3;
+        prim->poly.tpage = texture->tpage;
+        prim->poly.clut = texture->clut;
     }
 }
 
-/* Shared nine-sample trail lifecycle. */
 int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    func_800D2904_t sp18;
-    func_800FA098_arg0* temp_s3;
+    func_800D2904_t child;
+    func_800FA098_arg0* effect;
     int trail;
     int j;
-    vs_trail9State* temp_v0;
+    func_800FA76C_arg3* newState;
 
-    func_800FA098_arg1* s4 = (func_800FA098_arg1*)0x1F8001D0;
-    vs_trail9State* temp_s0 = arg0->unk8;
-    D_800F53B8_t* temp_s5 = D_800F53BC;
-    int s6 = 1;
+    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA76C_arg3* state = arg0->unk8;
+    D_800F53B8_t* battle = D_800F53BC;
+    int alive = 1;
 
     switch (arg1) {
     case 1:
-        temp_v0 = vs_main_allocHeapR(sizeof *temp_v0 + 12);
-        arg0->unk8 = temp_v0;
-        temp_v0->unk1 = arg2 >> 8;
-        temp_v0->unk0 = arg2;
-        temp_v0->curveSampleDistance = 0;
-        temp_s3 = &D_800F569C->block5Data->unk4[temp_v0->unk1];
-        trail = temp_s3->unkC0[0];
+        newState = vs_main_allocHeapR(sizeof *newState + 12);
+        arg0->unk8 = newState;
+        newState->unk1 = arg2 >> 8;
+        newState->unk0 = arg2;
+        newState->curveSampleDistance = 0;
+        effect = &D_800F569C->block5Data->unk4[newState->unk1];
+        trail = effect->unkC0[0];
 
         if (trail > 8) {
             trail = 8;
         }
 
-        temp_v0->trails = vs_main_allocHeapR(trail * sizeof *temp_v0->trails);
-        temp_v0->trailcount = trail;
-        temp_v0->unk3 = 0;
+        newState->trails = vs_main_allocHeapR(sizeof *newState->trails * trail);
+        newState->trailcount = trail;
+        newState->unk3 = 0;
 
-        if (temp_s3->transparencyCurve != 0) {
+        if (effect->transparencyCurve != 0) {
 
             // bad var reuse, trail = length of curve
-            trail = D_800F569C->curveBlock->curveSizes[temp_s3->transparencyCurve];
+            trail = D_800F569C->curveBlock->curveSizes[effect->transparencyCurve];
 
             if (trail > 1) {
                 --trail;
             }
 
             for (j = 0; j < 9; ++j) {
-                temp_v0->sampledTransparencyCurve[j] =
-                    D_800F569C->curves[temp_s3->transparencyCurve][(j * trail) / 8];
+                newState->sampledTransparencyCurve[j] =
+                    D_800F569C->curves[effect->transparencyCurve][(j * trail) / 8];
             }
 
         } else {
             for (j = 0; j < 9; ++j) {
-                temp_v0->sampledTransparencyCurve[j] = 128;
+                newState->sampledTransparencyCurve[j] = 128;
             }
         }
 
-        func_800D6CCC((int*)&temp_v0->unkC);
-        func_800D6CF0(&temp_v0->unkC, temp_s3->unk1, temp_s3->unk0);
+        func_800D6CCC((int*)&newState->unkC);
+        func_800D6CF0(&newState->unkC, effect->unk1, effect->unk0);
 
         break;
 
     case 2:
-        temp_s3 = &D_800F569C->block5Data->unk4[temp_s0->unk1];
-        s4->flags = temp_s3->flags;
+        effect = &D_800F569C->block5Data->unk4[state->unk1];
+        scratch->flags = effect->flags;
 
-        if (temp_s0->unk3 == 0) {
-            VS_TRAIL_ORIGIN_FUNCTION(temp_s3, s4, temp_s5, temp_s0);
-            VS_TRAIL_TARGET_FUNCTION(temp_s3, s4, temp_s5, temp_s0);
-            VS_TRAIL_CONTROL_FUNCTION(temp_s3, s4, temp_s5, temp_s0);
-            VS_TRAIL_INIT_FUNCTION(temp_s3, s4, temp_s5, temp_s0);
-            temp_s0->unk3 = 1;
+        if (state->unk3 == 0) {
+            VS_TRAIL_ORIGIN_FUNCTION(effect, scratch, battle, state);
+            VS_TRAIL_TARGET_FUNCTION(effect, scratch, battle, state);
+            VS_TRAIL_CONTROL_FUNCTION(effect, scratch, battle, state);
+            VS_TRAIL_INIT_FUNCTION(effect, scratch, battle, state);
+            state->unk3 = 1;
         }
 
-        VS_TRAIL_UPDATE_FUNCTION(temp_s3, s4, temp_s5, temp_s0);
-        VS_TRAIL_RENDER_FUNCTION(temp_s3, s4, temp_s5, temp_s0);
+        VS_TRAIL_UPDATE_FUNCTION(effect, scratch, battle, state);
+        VS_TRAIL_RENDER_FUNCTION(effect, scratch, battle, state);
 
-        if (temp_s3->unk3 != 0) {
-            for (trail = 0; trail < temp_s0->trailcount; ++trail) {
+        if (effect->unk3 != 0) {
+            for (trail = 0; trail < state->trailcount; ++trail) {
 
-                sp18.unk60 = 0;
+                child.unk60 = 0;
 
-                if (temp_s3->flags & 0x20000) {
+                if (effect->flags & 0x20000) {
 
-                    SetRotMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
-                    SetTransMatrix(&temp_s5->unk1C[temp_s3->unkC8].world);
+                    SetRotMatrix(&battle->unk1C[effect->unkC8].world);
+                    SetTransMatrix(&battle->unk1C[effect->unkC8].world);
 
-                    setVector(&s4->unk2C,
-                        temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                    setVector(&scratch->unk2C,
+                        state->trails[trail]
+                            .splineSamples[state->trails[trail].currentSplineSample]
                             .vx,
-                        temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                        state->trails[trail]
+                            .splineSamples[state->trails[trail].currentSplineSample]
                             .vy,
-                        temp_s0->trails[trail]
-                            .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                        state->trails[trail]
+                            .splineSamples[state->trails[trail].currentSplineSample]
                             .vz);
 
-                    gte_ldv0(&s4->unk2C);
+                    gte_ldv0(&scratch->unk2C);
                     gte_rtv0tr2();
-                    gte_stlvnl(&s4->unk34);
+                    gte_stlvnl(&scratch->unk34);
 
-                    setVector(&sp18.motion.position, s4->unk34.vx * ONE,
-                        s4->unk34.vy * ONE, s4->unk34.vz * ONE);
+                    setVector(&child.motion.position, scratch->unk34.vx * ONE,
+                        scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
                 } else {
-                    setVector(&sp18.motion.position,
-                        temp_s0->trails[trail]
-                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                    setVector(&child.motion.position,
+                        state->trails[trail]
+                                .splineSamples[state->trails[trail].currentSplineSample]
                                 .vx
                             * ONE,
-                        temp_s0->trails[trail]
-                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                        state->trails[trail]
+                                .splineSamples[state->trails[trail].currentSplineSample]
                                 .vy
                             * ONE,
-                        temp_s0->trails[trail]
-                                .splineSamples[temp_s0->trails[trail].currentSplineSample]
+                        state->trails[trail]
+                                .splineSamples[state->trails[trail].currentSplineSample]
                                 .vz
                             * ONE);
                 }
-                func_800D2ADC(temp_s5, temp_s3->unk3 - 1, 0, 0, &sp18);
+
+                func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
             }
         }
 
-        ++temp_s0->curveSampleDistance;
+        ++state->curveSampleDistance;
 
-        if (temp_s0->unk0 != 0) {
-            --temp_s0->unk0;
-            if (!temp_s0->unk0) {
-                vs_main_freeHeapR(temp_s0->trails);
-                s6 = 0;
+        if (state->unk0 != 0) {
+            --state->unk0;
+
+            if (!state->unk0) {
+                vs_main_freeHeapR(state->trails);
+                alive = 0;
             }
         }
         break;
 
     case 3:
-        temp_s0->unk0 = 1;
+        state->unk0 = 1;
         break;
 
     case 4:
-        vs_main_freeHeapR(temp_s0->trails);
-        s6 = 0;
+        vs_main_freeHeapR(state->trails);
+        alive = 0;
         break;
     }
 
-    return s6;
+    return alive;
 }
 
 #undef VS_TRAIL_ORIGIN_FUNCTION
@@ -831,4 +833,3 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_TRAIL_RENDER_FUNCTION
 #undef VS_TRAIL_DISPATCH_FUNCTION
 #undef VS_TRAIL_CORNER_STATE
-#undef TRAIL_SAMPLE_COUNT

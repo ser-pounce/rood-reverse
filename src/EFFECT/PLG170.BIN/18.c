@@ -7,7 +7,7 @@
 #include <rand.h>
 
 #define VS_MIRROR_SURFACE_FUNCTION func_800F9818
-#define VS_MIRROR_SURFACE_VERTICES D_800FE5C4
+#define VS_SURFACE_VERTICES D_800FE5C4
 #include "src/EFFECT/mirroredSurfaces.h"
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4

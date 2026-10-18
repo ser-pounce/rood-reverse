@@ -21,11 +21,6 @@
 #define VS_GRID_FUNCTION func_800FD4F4
 #include "src/EFFECT/grids.h"
 
-/* rings.h defines its state types unguarded, so rename them for this second copy. */
-#define vs_ringState vs_ringState2
-#define vs_ringPrim vs_ringPrim2
 #define VS_RING_FUNCTION func_800FE044
 #define VS_RING_COLORS D_800FEC8C
 #include "src/EFFECT/rings.h"
-#undef vs_ringState
-#undef vs_ringPrim

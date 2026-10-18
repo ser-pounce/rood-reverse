@@ -10,7 +10,7 @@
 #include "src/EFFECT/rotatingSurfaces.h"
 
 #define VS_MIRROR_SURFACE_FUNCTION func_800FA6B8
-#define VS_MIRROR_SURFACE_VERTICES D_800FCEC0
+#define VS_SURFACE_VERTICES D_800FCEC0
 #include "src/EFFECT/mirroredSurfaces.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FB32C

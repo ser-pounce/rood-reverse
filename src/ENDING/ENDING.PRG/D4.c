@@ -2031,7 +2031,7 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
             _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
             x += 12;
             if ((i == 2) || (i == 5)) {
-                _renderTextureFadeInTint(x, y + 14, 10, colors);
+                _renderTextureFadeInTint(x, y + 14, disIndexRank0Comma, colors);
                 x += _disMap[disIndexRank0Comma].w + 3;
             }
         }

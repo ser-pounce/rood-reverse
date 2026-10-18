@@ -427,7 +427,7 @@ static void* D_800DC1A4;
 static void* _compressedIllustBufs[16];
 
 static void _loadTim(_timData*);
-static void func_8006AF44(_timData* arg0, void* arg1);
+static void _initTimDecompress(_timData* arg0, void* arg1);
 
 static void _renderllustration(_creditsElement* element)
 {
@@ -445,7 +445,7 @@ static void _renderllustration(_creditsElement* element)
     switch (temp_v0) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
-            func_8006AF44(_decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
+            _initTimDecompress(_decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
@@ -1183,7 +1183,7 @@ static int _ease(short mode, short currentStep, short totalSteps)
     }
 }
 
-static void func_8006AF44(_timData* arg0, void* arg1)
+static void _initTimDecompress(_timData* arg0, void* arg1)
 {
     D_800DB72C = 1;
     D_800DC1A0 = arg1;

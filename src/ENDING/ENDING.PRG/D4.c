@@ -1655,8 +1655,8 @@ static int _initCongratulationsScreen(void)
 
             if (tim.paddr != NULL) {
                 tim.prect->x = 832 + i * 64;
-                tim.prect->y = 0x100;
-                tim.prect->h = 0xFF;
+                tim.prect->y = 256;
+                tim.prect->h = 255;
                 LoadImage(tim.prect, tim.paddr);
             }
 

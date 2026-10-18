@@ -526,7 +526,7 @@ static void* D_800DC1A0;
 static void* D_800DC1A4;
 static void* D_800DC1A8[16];
 
-static void func_8006A9C0(_timData*);
+static void _loadTim(_timData*);
 static void func_8006AF44(_timData* arg0, void* arg1);
 
 static void _renderllustration(_creditsElement* element)
@@ -582,7 +582,7 @@ static void _renderllustration(_creditsElement* element)
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
-                func_8006A9C0(D_800DB7B0);
+                _loadTim(D_800DB7B0);
             }
             element->state = 1;
         }
@@ -984,18 +984,18 @@ void vs_ending_exec(void)
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
 
-    func_8006A9C0(&_creditsFont);
-    func_8006A9C0(&_creditsBg);
-    func_8006A9C0(&_devCopyright);
-    func_8006A9C0(&_shugeki);
-    func_8006A9C0(&_titleLogo);
-    func_8006A9C0(&_fin);
-    func_8006A9C0(&_episodeLogo);
-    func_8006A9C0(&_illustSydney);
-    func_8006A9C0(&_illustMerlose);
-    func_8006A9C0(&_illustDragon);
-    func_8006A9C0(&_illustSamantha);
-    func_8006A9C0(&_illustDuane);
+    _loadTim(&_creditsFont);
+    _loadTim(&_creditsBg);
+    _loadTim(&_devCopyright);
+    _loadTim(&_shugeki);
+    _loadTim(&_titleLogo);
+    _loadTim(&_fin);
+    _loadTim(&_episodeLogo);
+    _loadTim(&_illustSydney);
+    _loadTim(&_illustMerlose);
+    _loadTim(&_illustDragon);
+    _loadTim(&_illustSamantha);
+    _loadTim(&_illustDuane);
 
     for (i = 5; i < 16; ++i) {
         file.lba = _illustLbas[i - 5];
@@ -1091,7 +1091,7 @@ static void* _insertTpage(int tPage, int otOffset)
     return drTpage;
 }
 
-static void func_8006A9C0(_timData* tim)
+static void _loadTim(_timData* tim)
 {
     RECT rect;
     _timChunk* p = &tim->chunk;

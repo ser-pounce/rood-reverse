@@ -962,7 +962,7 @@ static int _renderElements(void);
 static void _parseCreditsScript(void);
 static int _decompressTim(void);
 static int _drawScreen(u_long*);
-static void func_8006B930(void);
+static void _beginFrame(void);
 
 static void _renderCredits(void)
 {
@@ -970,7 +970,7 @@ static void _renderCredits(void)
 
         D_800DC19A = VSync(1);
 
-        func_8006B930();
+        _beginFrame();
         _parseCreditsScript();
         _renderElements();
         _decompressTim();
@@ -1436,7 +1436,7 @@ static void _initEnvironment(void)
 
 static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 
-static void func_8006B930(void)
+static void _beginFrame(void)
 {
     void* temp_a0;
 
@@ -1584,23 +1584,23 @@ static void _renderCongratulations(int arg0, int arg1, int arg2);
 
 static void func_8006BD78(void)
 {
-    int temp_s0;
+    int done;
 
     _submenuState = 0;
     SetDispMask(1);
 
     do {
-        func_8006B930();
-        temp_s0 = _initCongratulationsScreen();
+        _beginFrame();
+        done = _initCongratulationsScreen();
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
-    } while (temp_s0 == 0);
+    } while (done == 0);
 
     do {
-        func_8006B930();
-        temp_s0 = _renderCongratulationsScreen();
+        _beginFrame();
+        done = _renderCongratulationsScreen();
         VSync(0);
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
-    } while (temp_s0 == 0);
+    } while (done == 0);
 }
 
 static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);

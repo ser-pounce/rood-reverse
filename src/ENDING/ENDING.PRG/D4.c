@@ -11,7 +11,9 @@
 #include <memory.h>
 #include <stdio.h>
 
-static int func_800688D4(int angle)
+// Almost a byte-identical copy of rsin except for register differences
+
+static int _sin(int angle)
 {
     int value = (int)_trig_table;
     int quadrant = angle & 0x400;
@@ -156,15 +158,13 @@ static void _renderPhantomPain(_creditsElement* element)
             vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
             vertices[0].vy = vertices[1].vy = i * 4 - 8;
             vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
-            vertices[0].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
+            vertices[0].vz = (_sin(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
             vertices[1].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
+                (_sin(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
             vertices[2].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
+                (_sin(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
             vertices[3].vz =
-                (func_800688D4(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale)
-                >> 12;
+                (_sin(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale) >> 12;
 
             SetPolyFT4(poly);
             setSemiTrans(poly, 1);
@@ -253,7 +253,7 @@ static void _renderFin(_creditsElement* arg0)
 }
 
 static _creditsElement _creditsElements[32];
-static u_char D_800DC188;
+static u_char _creditsComplete;
 static u_char D_800DC189;
 static u_char _skipInvoked;
 static u_char _0 __attribute__((unused));
@@ -343,156 +343,62 @@ static void _renderVagrantStory(_creditsElement* element)
     return;
 }
 
-static int _inverseDistanceFromScreencenter(int arg0, int arg1)
+static int _distanceFromScreencenter(int x, int y)
 {
-    arg0 -= 160;
-    arg1 -= 112;
-    return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
+    x -= 160;
+    y -= 112;
+    return vs_gte_rsqrt(x * x + y * y);
 }
 
-typedef struct {
-    int unk0;
-    u_char unk4;
-    u_char unk5;
-    u_char unk6;
-    u_char unk7;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    u_char unk10;
-    u_char unk11;
-    u_char unk12;
-    u_char unk13;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    u_char unk1C;
-    u_char unk1D;
-    u_char unk1E;
-    u_char unk1F;
-    short unk20;
-    short unk22;
-    short unk24;
-    short unk26;
-    u_char unk28;
-    u_char unk29;
-    u_char unk2A;
-    u_char unk2B;
-    short unk2C;
-    short unk2E;
-} func_80069388_t;
+#define CLAMP_HI(v) ((v) < 129 ? (v) : 128)
+#define CLAMP_LO(v) ((v) >= 0 ? (v) : 0)
 
-static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
-    __attribute__((unused));
-static void func_80069388(func_80069388_t* arg0, short arg1, short arg2)
+#define RADIAL_TERM(i) \
+    (((200 - _distanceFromScreencenter(poly->x##i, poly->y##i)) * 128) / 400)
+
+#define FADE(i, expr, clamp)                                                   \
+    level = (expr);                                                            \
+    poly->b##i = clamp(level);                                                 \
+    poly->r##i = poly->g##i = poly->b##i;
+
+#define FADE_IN(i) FADE(i, base + RADIAL_TERM(i), CLAMP_HI)
+#define FADE_OUT(i) FADE(i, base - RADIAL_TERM(i), CLAMP_LO)
+
+__attribute__((unused)) static void _updateRadialFadePoly(
+    POLY_GT4* poly, short progress, short fadeOut)
 {
-    short temp_s0;
-    short v0;
+    short base;
+    short level;
 
-    if (arg2 == 0) {
-        temp_s0 = (arg1 * 128) / 80;
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk8, arg0->unkA)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            arg0->unk6 = v0;
-        } else {
-            arg0->unk6 = 128;
-        }
-
-        arg0->unk4 = arg0->unk5 = arg0->unk6;
-
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk14, arg0->unk16)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            arg0->unk12 = v0;
-        } else {
-            arg0->unk12 = 128;
-        }
-
-        arg0->unk10 = arg0->unk11 = arg0->unk12;
-
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk20, arg0->unk22)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            arg0->unk1E = v0;
-        } else {
-            arg0->unk1E = 128;
-        }
-
-        arg0->unk1C = arg0->unk1D = arg0->unk1E;
-
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(arg0->unk2C, arg0->unk2E)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            arg0->unk2A = v0;
-        } else {
-            arg0->unk2A = 128;
-        }
-
+    if (fadeOut == 0) {
+        base = (progress * 128) / 80;
+        FADE_IN(0);
+        FADE_IN(1);
+        FADE_IN(2);
+        FADE_IN(3);
     } else {
-
-        temp_s0 = ((0x50 - arg1) << 7) / 80;
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk8, arg0->unkA)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            arg0->unk6 = v0;
-        } else {
-            arg0->unk6 = 0;
-        }
-
-        arg0->unk4 = arg0->unk5 = arg0->unk6;
-
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk14, arg0->unk16)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            arg0->unk12 = v0;
-        } else {
-            arg0->unk12 = 0;
-        }
-
-        arg0->unk10 = arg0->unk11 = arg0->unk12;
-
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk20, arg0->unk22)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            arg0->unk1E = v0;
-        } else {
-            arg0->unk1E = 0;
-        }
-
-        arg0->unk1C = arg0->unk1D = arg0->unk1E;
-
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(arg0->unk2C, arg0->unk2E)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            arg0->unk2A = v0;
-        } else {
-            arg0->unk2A = 0;
-        }
+        base = ((80 - progress) * 128) / 80;
+        FADE_OUT(0);
+        FADE_OUT(1);
+        FADE_OUT(2);
+        FADE_OUT(3);
     }
-
-    arg0->unk28 = arg0->unk29 = arg0->unk2A;
 }
 
-static u_char D_800DB72C = 0;
+#undef CLAMP_HI
+#undef CLAMP_LO
+#undef RADIAL_TERM
+#undef FADE
+#undef FADE_IN
+#undef FADE_OUT
+
+enum decompressionState {
+    decompressionStateIdle,
+    decompressionStateReady,
+    decompressionStateActive,
+};
+
+static u_char _compressionState = decompressionStateIdle;
 
 static int _illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA,
     VS_ILLUST08_BIN_LBA, VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA,
@@ -517,17 +423,17 @@ typedef struct {
 } _timData;
 
 extern _timData _illustSydney;
-static _timData* D_800DB7B0 = &_illustSydney;
+static _timData* _decompressedIllustData = &_illustSydney;
 
 static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
 
-static void* D_800DC1A0;
-static void* D_800DC1A4;
-static void* D_800DC1A8[16];
+static void* _currentCompressedIllust;
+static void* _currentDecompressedIllust;
+static void* _compressedIllustBufs[16];
 
-static void func_8006A9C0(_timData*);
-static void func_8006AF44(_timData* arg0, void* arg1);
+static void _loadTim(_timData*);
+static void _initTimDecompress(_timData*, void*);
 
 static void _renderllustration(_creditsElement* element)
 {
@@ -545,7 +451,8 @@ static void _renderllustration(_creditsElement* element)
     switch (temp_v0) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
-            func_8006AF44(D_800DB7B0, D_800DC1A8[element->illustId + 1]);
+            _initTimDecompress(
+                _decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
@@ -582,7 +489,7 @@ static void _renderllustration(_creditsElement* element)
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
-                func_8006A9C0(D_800DB7B0);
+                _loadTim(_decompressedIllustData);
             }
             element->state = 1;
         }
@@ -911,7 +818,7 @@ static void _backgroundFadeOut(_creditsElement* arg0)
 
     if (++arg0->currentStep == 128) {
         if (arg0->width != 0) {
-            D_800DC188 = 1;
+            _creditsComplete = 1;
         }
         arg0->state = -1;
     }
@@ -919,7 +826,7 @@ static void _backgroundFadeOut(_creditsElement* arg0)
     D_800DC19C = 128 - ((_ease(easeModeLinear, arg0->currentStep, 128) << 7) >> 0xC);
 }
 
-static void func_8006A4D8(_creditsElement* element)
+static void _renderFadeOut(_creditsElement* element)
 {
     void** s2 = (void**)0x1F800000;
     TILE* temp_s0 = s2[0];
@@ -930,7 +837,7 @@ static void func_8006A4D8(_creditsElement* element)
     }
 
     if (++element->currentStep == 128) {
-        D_800DC188 = 1;
+        _creditsComplete = 1;
     }
 
     SetTile(temp_s0);
@@ -946,15 +853,15 @@ static void func_8006A4D8(_creditsElement* element)
     s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
-static void func_8006B9B4(void);
+static void _streamEndingXa(void);
 static void _setDrawEnv(DRAWENV*);
-static void func_8006A888(void);
+static void _renderCredits(void);
 static void _resetElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
-static void func_8006B884(void);
+static void _initEnvironment(void);
 static void _updateClearGameStats(void);
 static void _checkStreamXaEnd(void);
-static void func_8006BD78(void);
+static void _congratulationsScreen(void);
 
 void vs_ending_exec(void)
 {
@@ -975,7 +882,7 @@ void vs_ending_exec(void)
     short i;
     vs_main_CdQueueSlot* slot;
 
-    func_8006B884();
+    _initEnvironment();
     SetGeomOffset(0xA0, 0x70);
     SetGeomScreen(0x200);
     _setDrawEnv(vs_main_drawEnv);
@@ -984,25 +891,25 @@ void vs_ending_exec(void)
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
 
-    func_8006A9C0(&_creditsFont);
-    func_8006A9C0(&_creditsBg);
-    func_8006A9C0(&_devCopyright);
-    func_8006A9C0(&_shugeki);
-    func_8006A9C0(&_titleLogo);
-    func_8006A9C0(&_fin);
-    func_8006A9C0(&_episodeLogo);
-    func_8006A9C0(&_illustSydney);
-    func_8006A9C0(&_illustMerlose);
-    func_8006A9C0(&_illustDragon);
-    func_8006A9C0(&_illustSamantha);
-    func_8006A9C0(&_illustDuane);
+    _loadTim(&_creditsFont);
+    _loadTim(&_creditsBg);
+    _loadTim(&_devCopyright);
+    _loadTim(&_shugeki);
+    _loadTim(&_titleLogo);
+    _loadTim(&_fin);
+    _loadTim(&_episodeLogo);
+    _loadTim(&_illustSydney);
+    _loadTim(&_illustMerlose);
+    _loadTim(&_illustDragon);
+    _loadTim(&_illustSamantha);
+    _loadTim(&_illustDuane);
 
     for (i = 5; i < 16; ++i) {
         file.lba = _illustLbas[i - 5];
         file.size = _illustSizes[i - 5];
-        D_800DC1A8[i] = vs_main_allocHeapR(file.size);
+        _compressedIllustBufs[i] = vs_main_allocHeapR(file.size);
         slot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueuePriority(slot, D_800DC1A8[i]);
+        vs_main_cdEnqueuePriority(slot, _compressedIllustBufs[i]);
 
         do {
             vs_main_gametimeUpdate(0);
@@ -1021,23 +928,23 @@ void vs_ending_exec(void)
 
     _creditsBytestreamHead = _credits;
     _scrollSpeed = -128;
-    D_800DC188 = 0;
+    _creditsComplete = 0;
     _textStreamDelay = 0;
     D_800DC18C = 0;
     D_800DC189 = 1;
 
-    func_8006B9B4();
-    func_8006A888();
+    _streamEndingXa();
+    _renderCredits();
     vs_main_checkStreamXaEnd();
     SetDispMask(0);
 
     for (i = 5; i < 16; ++i) {
-        vs_main_freeHeapR(D_800DC1A8[i]);
+        vs_main_freeHeapR(_compressedIllustBufs[i]);
     }
 
     _checkStreamXaEnd();
     _updateClearGameStats();
-    func_8006BD78();
+    _congratulationsScreen();
 }
 
 static void _setDrawEnv(DRAWENV* drawenv)
@@ -1053,23 +960,23 @@ static void _setDrawEnv(DRAWENV* drawenv)
 
 static int _renderElements(void);
 static void _parseCreditsScript(void);
-static int func_8006AF64(void);
+static int _decompressTim(void);
 static int _drawScreen(u_long*);
-static void func_8006B930(void);
+static void _beginFrame(void);
 
-static void func_8006A888(void)
+static void _renderCredits(void)
 {
-    while (D_800DC188 == 0) {
+    while (_creditsComplete == 0) {
 
         D_800DC19A = VSync(1);
 
-        func_8006B930();
+        _beginFrame();
         _parseCreditsScript();
         _renderElements();
-        func_8006AF64();
+        _decompressTim();
 
         if ((vs_main_buttonsPressed.all & PADstart) && (_skipInvoked == 0)) {
-            _addRenderer(func_8006A4D8);
+            _addRenderer(_renderFadeOut);
             _skipInvoked = 1;
         }
 
@@ -1091,7 +998,7 @@ static void* _insertTpage(int tPage, int otOffset)
     return drTpage;
 }
 
-static void func_8006A9C0(_timData* tim)
+static void _loadTim(_timData* tim)
 {
     RECT rect;
     _timChunk* p = &tim->chunk;
@@ -1260,7 +1167,7 @@ static void _parseCreditsScript(void)
 
         // 0xFF End of stream
         case 255:
-            D_800DC188 = 1;
+            _creditsComplete = 1;
             return;
 
         default:
@@ -1283,34 +1190,36 @@ static int _ease(short mode, short currentStep, short totalSteps)
     }
 }
 
-static void func_8006AF44(_timData* arg0, void* arg1)
+static void _initTimDecompress(_timData* targetBuf, void* compressedData)
 {
-    D_800DB72C = 1;
-    D_800DC1A0 = arg1;
-    D_800DC1A4 = arg0;
+    _compressionState = decompressionStateReady;
+    _currentCompressedIllust = compressedData;
+    _currentDecompressedIllust = targetBuf;
 }
 
-static int func_8006AF64(void)
+static int _decompressTim(void)
 {
-    static u_char* D_800DBB70;
-    static u_char* D_800DBB74;
-    static u_char* D_800DBB78;
-    static u_char D_800DBB7C;
-    static u_char D_800DBB7D;
-    static u_short D_800DBB7E;
-    static u_short D_800DBB80;
+    enum opcodes { singleByteRle = 0x7D, doubleByteRle, endOfStream, backReferenceFlag };
+
+    static u_char* backReference;
+    static u_char* compressedStream;
+    static u_char* decompressedStream;
+    static u_char rleByte0;
+    static u_char rleByte1;
+    static u_short byteCount;
+    static u_short backReferencePos;
     static u_char _[6] __attribute__((unused));
 
     short i;
 
-    if (D_800DB72C == 0) {
+    if (_compressionState == decompressionStateIdle) {
         return 0;
     }
 
-    if (D_800DB72C == 1) {
-        D_800DB72C = 2;
-        D_800DBB74 = D_800DC1A0;
-        D_800DBB78 = D_800DC1A4;
+    if (_compressionState == decompressionStateReady) {
+        _compressionState = decompressionStateActive;
+        compressedStream = _currentCompressedIllust;
+        decompressedStream = _currentDecompressedIllust;
     }
 
     while (1) {
@@ -1320,145 +1229,136 @@ static int func_8006AF64(void)
             return 0;
         }
 
-        op = *D_800DBB74;
+        op = *compressedStream;
 
-        if (!(op & 0x80)) {
-            if (op == 127) {
-                D_800DB72C = 0;
+        if (!(op & backReferenceFlag)) {
+            if (op == endOfStream) {
+                _compressionState = decompressionStateIdle;
                 return 1;
             }
 
-            if (op == 125) {
-                ++D_800DBB74;
-                D_800DBB7E = *D_800DBB74++;
-                D_800DBB7C = *D_800DBB74++;
+            if (op == singleByteRle) {
+                ++compressedStream;
+                byteCount = *compressedStream++;
+                rleByte0 = *compressedStream++;
 
-                for (i = 0; i <= D_800DBB7E; ++i) {
-                    *D_800DBB78++ = D_800DBB7C;
+                for (i = 0; i <= byteCount; ++i) {
+                    *decompressedStream++ = rleByte0;
                 }
-            } else if (op == 126) {
-                ++D_800DBB74;
-                D_800DBB7E = *D_800DBB74++;
-                D_800DBB7C = *D_800DBB74++;
-                D_800DBB7D = *D_800DBB74++;
+            } else if (op == doubleByteRle) {
+                ++compressedStream;
+                byteCount = *compressedStream++;
+                rleByte0 = *compressedStream++;
+                rleByte1 = *compressedStream++;
 
-                for (i = 0; i <= D_800DBB7E; ++i) {
-                    *D_800DBB78++ = D_800DBB7C;
-                    *D_800DBB78++ = D_800DBB7D;
+                for (i = 0; i <= byteCount; ++i) {
+                    *decompressedStream++ = rleByte0;
+                    *decompressedStream++ = rleByte1;
                 }
             } else {
-                D_800DBB7E = *D_800DBB74++;
+                byteCount = *compressedStream++;
 
-                for (i = 0; i <= D_800DBB7E; ++i) {
-                    *D_800DBB78++ = *D_800DBB74++;
+                for (i = 0; i <= byteCount; ++i) {
+                    *decompressedStream++ = *compressedStream++;
                 }
             }
         } else {
-            D_800DBB7E = ((op >> 4) & 7) + 3;
-            D_800DBB80 = ((D_800DBB74[0] & 0xF) << 8) + D_800DBB74[1];
-            D_800DBB74 += 2;
-            D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
+            byteCount = ((op >> 4) & 7) + 3;
+            backReferencePos = ((compressedStream[0] & 0xF) << 8) + compressedStream[1];
+            compressedStream += 2;
+            backReference = decompressedStream - backReferencePos - 1;
 
-            for (i = 0; i < D_800DBB7E; ++i) {
-                *D_800DBB78++ = *D_800DBB70++;
+            for (i = 0; i < byteCount; ++i) {
+                *decompressedStream++ = *backReference++;
             }
 
-            while (*D_800DBB74 == 124) {
-                D_800DBB70 = D_800DBB78 - D_800DBB80 - 1;
-                ++D_800DBB74;
+            while (*compressedStream == 124) {
+                backReference = decompressedStream - backReferencePos - 1;
+                ++compressedStream;
 
-                for (i = 0; i < D_800DBB7E; ++i) {
-                    *D_800DBB78++ = *D_800DBB70++;
+                for (i = 0; i < byteCount; ++i) {
+                    *decompressedStream++ = *backReference++;
                 }
             }
         }
     }
 }
 
-static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
+__attribute__((unused)) static void _renderDebugString(
+    short x, short y, int clut, u_char* string)
 {
-    int temp_v0;
-    u_char var_v1_2;
-    int var_v1;
-    SPRT_8* var_a2;
-    u_long** t4;
+    int c;
+    SPRT_8* sprt = *(void**)0x1F800000;
 
-    var_v1 = *arg3;
-    var_a2 = *(void**)0x1F800000;
+    for (c = *string; c != 0; c = *++string, x += 7) {
+        int temp_v0 = c - ' ';
+        u_char c_2 = temp_v0;
 
-    while (var_v1 != 0) {
+        if (((temp_v0 & 0xFF) < 96u) && (c_2 != 0)) {
+            u_long** ot;
 
-        temp_v0 = var_v1 - 32;
-        var_v1_2 = temp_v0;
-
-        if (((temp_v0 & 0xFF) < 96u) && (var_v1_2 != 0)) {
-
-            if (var_v1_2 == 60) {
-                var_v1_2 = 15;
+            if (c_2 == ('\\' - ' ')) {
+                c_2 = 15;
             }
 
-            if (var_v1_2 > 64) {
-                var_v1_2 -= 32;
+            if (c_2 > ('`' - ' ')) {
+                c_2 -= 32;
             }
 
-            setSprt8(var_a2);
-            setShadeTex(var_a2, 1);
-            setXY0(var_a2, arg0, arg1);
-            setUV0(var_a2, (var_v1_2 & 0xF) * 8, (var_v1_2 & 0xF0) / 2);
-            setClut(var_a2, 960, arg2 + 32);
+            setSprt8(sprt);
+            setShadeTex(sprt, 1);
+            setXY0(sprt, x, y);
+            setUV0(sprt, (c_2 & 0xF) * 8, (c_2 & 0xF0) / 2);
+            setClut(sprt, 960, clut + 32);
 
-            t4 = (u_long**)0x1F800000;
-            setaddr(var_a2, *t4[1] & 0xFFFFFF);
-            setaddr(t4[1], var_a2);
+            ot = (u_long**)0x1F800000;
+            setaddr(sprt, *ot[1] & 0xFFFFFF);
+            setaddr(ot[1], sprt);
 
-            ++var_a2;
+            ++sprt;
         }
-
-        ++arg3;
-        var_v1 = *arg3;
-        arg0 += 7;
     }
 
-    *(void**)0x1F800000 = var_a2;
-    *(void**)0x1F800000 = _insertTpage(0xF, 0);
+    *(void**)0x1F800000 = sprt;
+    *(void**)0x1F800000 = _insertTpage(getTPage(0, 0, 960, 0), 0);
 }
 
-static void func_8006B450(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b)
 {
     RECT rect;
-    int temp_s1;
+    int fbHeight;
 
     rect = (RECT) { 0, 0, 1024, 512 };
 
     SetDispMask(0);
-    SetGeomOffset(arg0 / 2, (arg1 + (int)((u_int)arg1 >> 0x1F)) >> 1);
-    SetGeomScreen(arg2);
+    SetGeomOffset(w / 2, h / 2);
+    SetGeomScreen(projectionDistance);
 
-    temp_s1 = arg1 - 0x10;
+    fbHeight = h - 16;
 
-    SetDefDrawEnv(vs_main_drawEnv, 0, 0, arg0, temp_s1);
-    SetDefDispEnv(vs_main_dispEnv, arg0, 0, arg0, temp_s1);
-    SetDefDrawEnv(&vs_main_drawEnv[1], arg0, 0, arg0, temp_s1);
-    SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, arg0, temp_s1);
+    SetDefDrawEnv(vs_main_drawEnv, 0, 0, w, fbHeight);
+    SetDefDispEnv(vs_main_dispEnv, w, 0, w, fbHeight);
+    SetDefDrawEnv(&vs_main_drawEnv[1], w, 0, w, fbHeight);
+    SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, w, fbHeight);
 
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
 
     D_8005DFD4 = 0;
     D_8005DFD8 = 0;
-    D_8005DFD6 = arg0;
-    D_8005DFDA = temp_s1;
+    vs_main_screenWidth = w;
+    vs_main_screenHeight = fbHeight;
     vs_main_drawEnv[1].dtd = 0;
     vs_main_drawEnv[0].dtd = 0;
     vs_main_drawEnv[1].isbg = 1;
     vs_main_drawEnv[0].isbg = 1;
-    setRGB0(&vs_main_drawEnv[0], arg3, arg4, arg5);
-    setRGB0(&vs_main_drawEnv[1], arg3, arg4, arg5);
+    setRGB0(&vs_main_drawEnv[0], r, g, b);
+    setRGB0(&vs_main_drawEnv[1], r, g, b);
 
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
-    FntLoad(0x3C0, 0);
-    SetDumpFnt(FntOpen(0x28, 0x10, 0x200, 0x100, 0, 0x200));
+    FntLoad(960, 0);
+    SetDumpFnt(FntOpen(40, 16, 512, 256, 0, 512));
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
 
@@ -1524,9 +1424,9 @@ static void _do_updateClearGameStats(void)
     D_80061068.mpdId = 0;
 }
 
-static void func_8006B884(void)
+static void _initEnvironment(void)
 {
-    func_8006B450(0x140, 0xF0, 0x200, 0, 0, 0);
+    _initVideo(320, 240, 512, 0, 0, 0);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
     D_8005E0C0[0] = vs_main_allocHeap(0x20000);
     D_8005E0C0[1] = vs_main_allocHeap(0x20000);
@@ -1536,7 +1436,7 @@ static void func_8006B884(void)
 
 static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 
-static void func_8006B930(void)
+static void _beginFrame(void)
 {
     void* temp_a0;
 
@@ -1548,7 +1448,7 @@ static void func_8006B930(void)
     vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
 }
 
-static void func_8006B9B4(void)
+static void _streamEndingXa(void)
 {
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }
@@ -1675,39 +1575,39 @@ static int _mapCompletion;
 static u_int _onScreenMapCompletion;
 static int _onScreenScore;
 static int _submenuState;
-static int D_800DC20C;
+static int _screenTimer;
 static int D_800DC210;
 
-static int func_8006BE04(void);
+static int _initCongratulationsScreen(void);
 static int _renderCongratulationsScreen(void);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
 
-static void func_8006BD78(void)
+static void _congratulationsScreen(void)
 {
-    int temp_s0;
+    int done;
 
     _submenuState = 0;
     SetDispMask(1);
 
     do {
-        func_8006B930();
-        temp_s0 = func_8006BE04();
+        _beginFrame();
+        done = _initCongratulationsScreen();
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
-    } while (temp_s0 == 0);
+    } while (done == 0);
 
     do {
-        func_8006B930();
-        temp_s0 = _renderCongratulationsScreen();
+        _beginFrame();
+        done = _renderCongratulationsScreen();
         VSync(0);
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
-    } while (temp_s0 == 0);
+    } while (done == 0);
 }
 
 static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
-static int func_8006BE04(void)
+static int _initCongratulationsScreen(void)
 {
     static const vs_main_CdFile endScrDisFiles[] = {
         { VS_END_DIS_LBA, VS_END_DIS_SIZE },
@@ -1729,15 +1629,15 @@ static int func_8006BE04(void)
         { VS_ENDSCR15_DIS_LBA, VS_ENDSCR15_DIS_SIZE },
     };
 
-    TIM_IMAGE sp10;
+    TIM_IMAGE tim;
     int i;
-    int var_a1;
-    int var_v1;
+    int mapCompletion;
+    int chestsOpened;
 
     if (_submenuState == 0) {
 
-        timData = vs_main_allocHeapR(endScrDisFiles->size);
-        cdSlot = vs_main_allocateCdQueueSlot(endScrDisFiles);
+        timData = vs_main_allocHeapR(endScrDisFiles[0].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&endScrDisFiles[0]);
 
         vs_main_cdEnqueue(cdSlot, timData);
 
@@ -1751,23 +1651,23 @@ static int func_8006BE04(void)
 
         for (i = 0; i < 3; ++i) {
 
-            _parseTim(timData + i * 0x8220, &sp10);
+            _parseTim(timData + i * 0x8220, &tim);
 
-            if (sp10.paddr != NULL) {
-                sp10.prect->x = 832 + i * 64;
-                sp10.prect->y = 0x100;
-                sp10.prect->h = 0xFF;
-                LoadImage(sp10.prect, sp10.paddr);
+            if (tim.paddr != NULL) {
+                tim.prect->x = 832 + i * 64;
+                tim.prect->y = 256;
+                tim.prect->h = 255;
+                LoadImage(tim.prect, tim.paddr);
             }
 
             if (i == 0) {
-                if (sp10.caddr != NULL) {
-                    sp10.crect->x = 0x300;
-                    sp10.crect->y = 0x1FF;
-                    sp10.crect->w = 0x80;
-                    sp10.crect->h = 1;
-                    *sp10.caddr = 0;
-                    LoadImage(sp10.crect, sp10.caddr);
+                if (tim.caddr != NULL) {
+                    tim.crect->x = 768;
+                    tim.crect->y = 511;
+                    tim.crect->w = 128;
+                    tim.crect->h = 1;
+                    *tim.caddr = 0;
+                    LoadImage(tim.crect, tim.caddr);
                 }
             }
         }
@@ -1779,10 +1679,10 @@ static int func_8006BE04(void)
 
         vs_main_freeHeapR(timData);
 
-        var_a1 = 0;
+        mapCompletion = 0;
         _onScreenMapCompletion = 0;
         _onScreenScore = 0;
-        D_800DC20C = 0;
+        _screenTimer = 0;
         D_800DC210 = 0;
         _clearCount = vs_main_stateFlags.clearCount;
 
@@ -1791,25 +1691,25 @@ static int func_8006BE04(void)
             for (flag = 0; flag < 32; ++flag) {
                 int v = 1;
                 if (vs_main_mapStatus.roomFlags[i] & _countableRooms[i] & (v << flag)) {
-                    ++var_a1;
+                    ++mapCompletion;
                 }
             }
         }
 
-        var_v1 = 0;
+        chestsOpened = 0;
 
         for (i = 0; i < 64; ++i) {
             if (vs_main_stateFlags.chestsOpened[i] != 0) {
-                ++var_v1;
+                ++chestsOpened;
             }
         }
 
-        if (vs_main_scoredata.mapCompletion < var_a1) {
-            vs_main_scoredata.mapCompletion = var_a1;
+        if (vs_main_scoredata.mapCompletion < mapCompletion) {
+            vs_main_scoredata.mapCompletion = mapCompletion;
         }
 
-        if (vs_main_scoredata.openedChestCount < var_v1) {
-            vs_main_scoredata.openedChestCount = var_v1;
+        if (vs_main_scoredata.openedChestCount < chestsOpened) {
+            vs_main_scoredata.openedChestCount = chestsOpened;
         }
 
         _mapCompletion = (vs_main_scoredata.mapCompletion * 100) / 361;
@@ -1828,12 +1728,12 @@ static int func_8006BE04(void)
             return 0;
         }
 
-        _parseTim(timData, &sp10);
+        _parseTim(timData, &tim);
 
-        if (sp10.paddr != NULL) {
-            sp10.prect->x = 0;
-            sp10.prect->y = 0x100;
-            LoadImage(sp10.prect, sp10.paddr);
+        if (tim.paddr != NULL) {
+            tim.prect->x = 0;
+            tim.prect->y = 256;
+            LoadImage(tim.prect, tim.paddr);
         }
 
         vs_main_freeCdQueueSlot(cdSlot);
@@ -1850,7 +1750,7 @@ static int func_8006BE04(void)
     return 0;
 }
 
-static void func_8006C3CC(int);
+static void _fadeIn(int);
 static void _renderScore(int, int, int, int);
 static void _renderIncrementalScore(int, int, int, int);
 static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
@@ -1862,85 +1762,89 @@ static int _renderCongratulationsScreen(void)
 {
     if (D_800DC210 == 0) {
 
-        if (D_800DC20C == 0xD0) {
-            vs_main_playSfxDefault(0x7E, 0x77);
-            vs_main_playSfxDefault(0x7E, 0x78);
+        if (_screenTimer == 208) {
+            vs_main_playSfxDefault(126, 119);
+            vs_main_playSfxDefault(126, 120);
         }
 
-        func_8006C3CC(D_800DC20C);
-        _renderCongratulations(0xA0, 0x28, D_800DC20C);
-        _renderIncrementalScore(0xA0, 0x50, D_800DC20C - 0x20, D_800DC210);
-        _renderIncrementalMapCompletion(0xA0, 0x66, D_800DC20C - 0x70, D_800DC210);
-        _renderRiskbreakerRankHeader(0xA0, 0x8A, D_800DC20C - 0xC0);
-        _renderRiskbreakerRank(0xA0, 0x9A, D_800DC20C - 0xD0);
+        _fadeIn(_screenTimer);
+        _renderCongratulations(160, 40, _screenTimer);
+        _renderIncrementalScore(160, 80, _screenTimer - 32, D_800DC210);
+        _renderIncrementalMapCompletion(160, 102, _screenTimer - 112, D_800DC210);
+        _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
+        _renderRiskbreakerRank(160, 154, _screenTimer - 208);
 
-        if (D_800DC20C >= 0x1001) {
-            D_800DC20C = 0x1000;
+        if (_screenTimer > 4096) {
+            _screenTimer = 4096;
         }
 
         if (vs_main_buttonsPressed.all != 0) {
             D_800DC210 = 1;
-            D_800DC20C = 0;
+            _screenTimer = 0;
         }
 
     } else {
 
-        func_8006C3CC(8 - D_800DC20C);
-        _renderCongratulations(0xA0, 0x28, 8 - D_800DC20C);
-        _renderScore(0xA0, 0x50, 8 - D_800DC20C, 3);
-        _renderMapCompletion(0xA0, 0x66, 8 - D_800DC20C, 3);
-        _renderRiskbreakerRankHeader(0xA0, 0x8A, 8 - D_800DC20C);
-        _renderRiskbreakerRank(0xA0, 0x9A, 8 - D_800DC20C);
+        _fadeIn(8 - _screenTimer);
+        _renderCongratulations(160, 40, 8 - _screenTimer);
+        _renderScore(160, 80, 8 - _screenTimer, 3);
+        _renderMapCompletion(160, 102, 8 - _screenTimer, 3);
+        _renderRiskbreakerRankHeader(160, 138, 8 - _screenTimer);
+        _renderRiskbreakerRank(160, 154, 8 - _screenTimer);
 
-        if (D_800DC20C >= 8) {
+        if (_screenTimer >= 8) {
             return 1;
         }
     }
 
-    ++D_800DC20C;
+    ++_screenTimer;
     return 0;
 }
 
-static void func_8006C3CC(int arg0)
+static void _fadeIn(int timer)
 {
-    int var_s2;
     int i;
-    int temp_s4;
+    int brightness;
     POLY_FT4* poly;
 
-    if (arg0 < 0) {
-        arg0 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg0 > 64) {
-        arg0 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    temp_s4 = arg0 * 2;
+    brightness = timer * 2;
 
-    if (arg0 <= 0) {
+    if (timer <= 0) {
         return;
     }
 
     poly = *(void**)0x1F800000;
-    var_s2 = 64;
 
     for (i = 0; i < 5; ++i) {
         setPolyFT4(poly);
         setXY4(poly, i * 64, 8, 64 + i * 64, 8, i * 64, 232, 64 + i * 64, 232);
         setUV4(poly, 0, 0, 64, 0, 0, 224, 64, 224);
-        setRGB0(poly, temp_s4, temp_s4, temp_s4);
+        setRGB0(poly, brightness, brightness, brightness);
         setClut(poly, 0, 0);
         poly->tpage = (i + 16) | getTPage(3, 0, 0, 0);
         AddPrim(*((void**)0x1F800004) + 0x1FF8, poly++);
-        var_s2 += 64;
     }
 
     *(void**)0x1F800000 = poly;
 }
 
 enum disIndices {
-    disIndexRank1Grand = 27,
+    disIndexRank0Comma = 10,
+    disIndexRank0Score = 18,
+    disIndexRank0Percent,
+    disIndexRank0Pts,
+    disIndexRank0MapCompleted,
+    disIndexRank0Congratulations,
+    disIndexRank0Colon = 26,
+    disIndexRank1Grand,
     disIndexRank1Master,
     disIndexRank1Breaker,
     disIndexRank1Paladin,
@@ -2057,280 +1961,279 @@ static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1M
     { 1, disIndexRank1Berserker }, { 1, disIndexRank1DareDevil },
     { 1, disIndexRank1Gladiator }, { 2, disIndexRank2Normal, disIndexRank2Agent } };
 
-static void _renderCongratulations(int arg0, int arg1, int arg2)
+static void _renderCongratulations(int x, int y, int timer)
 {
-    static CVECTOR D_800DBA7C[] = {
+    static CVECTOR colors[] = {
         { 128, 96, 64 },
         { 200, 180, 160 },
         { 128, 96, 64 },
     };
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
-        D_800DBA7C[0].cd = arg2;
-        D_800DBA7C[1].cd = arg2;
-        arg0 = arg0 - ((_disMap[22].w + _disMap[23].w) >> 1);
-        _renderTexturePopIn(arg0, arg1, 0x16, D_800DBA7C);
-        _renderTexturePopIn(arg0 + _disMap[22].w, arg1, 0x17, &D_800DBA7C[1]);
+    if (timer > 0) {
+        colors[0].cd = timer;
+        colors[1].cd = timer;
+        x = x
+          - ((_disMap[disIndexRank0Congratulations].w
+                 + _disMap[disIndexRank0Congratulations + 1].w)
+              >> 1);
+        _renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
+        _renderTexturePopIn(x + _disMap[disIndexRank0Congratulations].w, y,
+            disIndexRank0Congratulations + 1, &colors[1]);
     }
 }
 
-static void _renderScore(int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBA88[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp10[10];
+    char buf[10];
     int i;
-    int v0;
     int v1;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
+    if (timer > 0) {
 
-        D_800DBA88[0].cd = arg2;
+        colors[0].cd = timer;
 
-        sprintf(sp10, "%09d", _score);
+        sprintf(buf, "%09d", _score);
 
-        v1 = _disMap[18].w + _disMap[26].w + _disMap[20].w;
-        arg0 -= (_disMap[10].w * 2 + v1 + 0x74) >> 1;
+        v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+           + _disMap[disIndexRank0Pts].w;
+        x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
 
-        _renderTextureFadeInTint(arg0, arg1, 0x12, D_800DBA88);
+        _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
 
-        arg0 += _disMap[18].w;
+        x += _disMap[disIndexRank0Score].w;
 
-        _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA88);
+        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
-        v0 = arg0 + 2;
-        arg0 = v0 + _disMap[26].w;
+        x += _disMap[disIndexRank0Colon].w + 2;
 
         for (i = 0; i < 9; ++i) {
-            _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - 0x30, D_800DBA88);
-            arg0 += 12;
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            x += 12;
             if ((i == 2) || (i == 5)) {
-                int v0;
-                _renderTextureFadeInTint(arg0, arg1 + 0xE, 0xA, D_800DBA88);
-                v0 = arg0 + 3;
-                arg0 = v0 + _disMap[10].w;
+                _renderTextureFadeInTint(x, y + 14, disIndexRank0Comma, colors);
+                x += _disMap[disIndexRank0Comma].w + 3;
             }
         }
 
-        _renderTextureFadeInTint(arg0, arg1 + 8, 0x14, D_800DBA88);
+        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
     }
 }
 
 static int _incrementingScore;
 
 static void _renderIncrementalScore(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+    int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBA90[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp18[16];
+    char buf[16];
     int temp_s2;
-    int var_s1;
     int i;
-    int v0;
     int v1;
 
-    var_s1 = arg2;
-
-    if (var_s1 < 0) {
-        var_s1 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (var_s1 > 64) {
-        var_s1 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (var_s1 > 0) {
-        temp_s2 = arg0 + (var_s1 * 8);
-
-        if (_score != 0 && var_s1 >= 32) {
-
-            if (_onScreenScore == 0) {
-                _incrementingScore = 1;
-                vs_main_playSfxDefault(0x7E, 0x72);
-            }
-
-            if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
-                _incrementingScore = 0;
-                func_80045D64(0x7E, 0x72);
-                vs_main_playSfxDefault(0x7E, 0x73);
-            }
-        }
-
-        if (var_s1 >= 32) {
-            _onScreenScore = ((u_int)_score >> 5) * (var_s1 - 32);
-        }
-
-        if (var_s1 == 64) {
-            _onScreenScore = _score;
-        }
-
-        sprintf(sp18, "%09d", _onScreenScore);
-
-        v1 = _disMap[18].w + _disMap[26].w + _disMap[20].w;
-        arg0 -= (_disMap[10].w * 2 + v1 + 0x74) >> 1;
-
-        _renderTextureWipe(arg0, arg1, 0x12, D_800DBA90, temp_s2);
-
-        arg0 += _disMap[18].w;
-
-        _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_800DBA90, temp_s2);
-
-        v0 = arg0 + 2;
-        arg0 = v0 + _disMap[26].w;
-
-        for (i = 0; i < 9; ++i) {
-            _renderTextureWipe(arg0, arg1 + 3, sp18[i] - '0', D_800DBA90, temp_s2);
-            arg0 += 12;
-            if ((i == 2) || (i == 5)) {
-                _renderTextureWipe(arg0, arg1 + 0xE, 0xA, D_800DBA90, temp_s2);
-                arg0 += 3 + _disMap[10].w;
-            }
-        }
-
-        _renderTextureWipe(arg0, arg1 + 8, 0x14, D_800DBA90, temp_s2);
+    if (timer <= 0) {
+        return;
     }
+
+    temp_s2 = x + (timer * 8);
+
+    if (_score != 0 && timer >= 32) {
+
+        if (_onScreenScore == 0) {
+            _incrementingScore = 1;
+            vs_main_playSfxDefault(126, 114);
+        }
+
+        if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
+            _incrementingScore = 0;
+            func_80045D64(126, 114);
+            vs_main_playSfxDefault(126, 115);
+        }
+    }
+
+    if (timer >= 32) {
+        _onScreenScore = (_score >> 5) * (timer - 32);
+    }
+
+    if (timer == 64) {
+        _onScreenScore = _score;
+    }
+
+    sprintf(buf, "%09d", _onScreenScore);
+
+    v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+       + _disMap[disIndexRank0Pts].w;
+    x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
+
+    _renderTextureWipe(x, y, disIndexRank0Score, colors, temp_s2);
+
+    x += _disMap[disIndexRank0Score].w;
+
+    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s2);
+
+    x += _disMap[disIndexRank0Colon].w + 2;
+
+    for (i = 0; i < 9; ++i) {
+        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
+        x += 12;
+
+        if ((i == 2) || (i == 5)) {
+            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
+            x += 3 + _disMap[disIndexRank0Comma].w;
+        }
+    }
+
+    _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, temp_s2);
 }
 
-static void _renderMapCompletion(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBA98[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp10[2];
+    char buf[2];
     int i;
-    int v0;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 > 0) {
+    if (timer > 0) {
 
-        D_800DBA98[0].cd = arg2;
+        colors[0].cd = timer;
 
-        sprintf(sp10, "%03d", _mapCompletion);
+        sprintf(buf, "%03d", _mapCompletion);
 
-        arg0 -= ((_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1);
+        x -= ((_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
+                  + _disMap[disIndexRank0Percent].w + 38)
+              >> 1);
 
-        _renderTextureFadeInTint(arg0, arg1, 0x15, D_800DBA98);
+        _renderTextureFadeInTint(x, y, disIndexRank0MapCompleted, colors);
 
-        arg0 += _disMap[21].w;
+        x += _disMap[disIndexRank0MapCompleted].w;
 
-        _renderTextureFadeInTint(arg0, arg1 + 7, 0x1A, D_800DBA98);
+        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
-        v0 = arg0 + 2;
-        arg0 = v0 + _disMap[26].w;
+        x += _disMap[disIndexRank0Colon].w + 2;
 
         for (i = 0; i < 3; ++i) {
-            _renderTextureFadeInTint(arg0, arg1 + 3, sp10[i] - '0', D_800DBA98);
-            arg0 += 12;
+            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            x += 12;
         }
 
-        _renderTextureFadeInTint(arg0, arg1 + 8, 0x13, D_800DBA98);
+        _renderTextureFadeInTint(x, y + 8, disIndexRank0Percent, colors);
     }
 }
 
 static int _incrementingMapCompletion;
 
 static void _renderIncrementalMapCompletion(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+    int x, int y, int timer, int _ __attribute__((unused)))
 {
-    static CVECTOR D_800DBAA0[] = {
+    static CVECTOR colors[] = {
         { 100, 180, 220 },
         { 100, 180, 220 },
     };
 
-    char sp18[2];
+    char buf[2];
     int temp_s4;
     int i;
-    int v0;
 
-    if (arg2 < 0) {
-        arg2 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg2 > 64) {
-        arg2 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    if (arg2 <= 0) {
+    if (timer <= 0) {
         return;
     }
 
-    temp_s4 = arg0 + arg2 * 8;
+    temp_s4 = x + timer * 8;
 
-    if (_mapCompletion != 0 && arg2 >= 32) {
+    if (_mapCompletion != 0 && timer >= 32) {
 
         if (_onScreenMapCompletion == 0) {
             _incrementingMapCompletion = 1;
-            vs_main_playSfxDefault(0x7E, 0x72);
+            vs_main_playSfxDefault(126, 114);
         }
 
         if ((_onScreenMapCompletion == _mapCompletion)
             && (_incrementingMapCompletion != 0)) {
             _incrementingMapCompletion = 0;
-            func_80045D64(0x7E, 0x72);
-            vs_main_playSfxDefault(0x7E, 0x73);
+            func_80045D64(126, 114);
+            vs_main_playSfxDefault(126, 115);
         }
     }
 
-    if (arg2 >= 32) {
+    if (timer >= 32) {
         if (_mapCompletion >= 32u) {
-            _onScreenMapCompletion = (u_int)(_mapCompletion * (arg2 - 32)) >> 5;
+            _onScreenMapCompletion = (u_int)(_mapCompletion * (timer - 32)) >> 5;
         } else if (_onScreenMapCompletion < _mapCompletion) {
             _onScreenMapCompletion += 1;
         }
     }
 
-    sprintf(sp18, "%03d", _onScreenMapCompletion);
+    sprintf(buf, "%03d", _onScreenMapCompletion);
 
-    arg0 -= ((int)(_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1);
+    x -= ((_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
+              + _disMap[disIndexRank0Percent].w + 38)
+          >> 1);
 
-    _renderTextureWipe(arg0, arg1, 0x15, D_800DBAA0, temp_s4);
+    _renderTextureWipe(x, y, disIndexRank0MapCompleted, colors, temp_s4);
 
-    arg0 += _disMap[21].w;
+    x += _disMap[disIndexRank0MapCompleted].w;
 
-    _renderTextureWipe(arg0, arg1 + 7, 0x1A, D_800DBAA0, temp_s4);
+    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s4);
 
-    v0 = arg0 + 2;
-    arg0 = v0 + _disMap[26].w;
+    x += _disMap[disIndexRank0Colon].w + 2;
 
     for (i = 0; i < 3; ++i) {
-        _renderTextureWipe(arg0, arg1 + 3, sp18[i] - '0', D_800DBAA0, temp_s4);
-        arg0 += 12;
+        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s4);
+        x += 12;
     }
 
-    _renderTextureWipe(arg0, arg1 + 8, 0x13, D_800DBAA0, temp_s4);
+    _renderTextureWipe(x, y + 8, disIndexRank0Percent, colors, temp_s4);
 }
 
 static void _renderRiskbreakerRankHeader(int x, int y, int timer)

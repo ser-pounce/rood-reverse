@@ -3042,7 +3042,7 @@ void func_800BB874(void)
 
     ++D_800F4B20;
 
-    for (i = 0; i < D_8005DFDA; ++i) {
+    for (i = 0; i < vs_main_screenHeight; ++i) {
         u_short v;
         temp_v0_2 = (((i + (D_800F4B20 >> 1)) & 1) << 5);
         v = temp_v0_2;
@@ -3052,7 +3052,7 @@ void func_800BB874(void)
             setSemiTrans(var_s3, 1);
             var_s3->x0 = 0;
             var_s3->y0 = var_s3->y1 = i;
-            var_s3->x1 = D_8005DFD6;
+            var_s3->x1 = vs_main_screenWidth;
             p = (void**)0x1F800000;
             AddPrim(p[2], var_s3++);
         }

@@ -257,7 +257,7 @@ static u_char _creditsComplete;
 static u_char _isFadedOut;
 static u_char _skipInvoked;
 static u_char _0 __attribute__((unused));
-static int D_800DC18C;
+static int _currentCreditsFrame;
 static int _textStreamDelay;
 static u_char* _creditsBytestreamHead;
 static short _scrollSpeed;
@@ -930,7 +930,7 @@ void vs_ending_exec(void)
     _scrollSpeed = -128;
     _creditsComplete = 0;
     _textStreamDelay = 0;
-    D_800DC18C = 0;
+    _currentCreditsFrame = 0;
     _isFadedOut = 1;
 
     _streamEndingXa();
@@ -982,7 +982,7 @@ static void _renderCredits(void)
 
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
 
-        ++D_800DC18C;
+        ++_currentCreditsFrame;
     }
 }
 

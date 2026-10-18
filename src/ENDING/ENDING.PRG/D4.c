@@ -76,18 +76,18 @@ static int _ease(short mode, short currentStep, short totalSteps);
 
 static void _renderPhantomPain(_creditsElement* element)
 {
-    static int D_800DBB18;
-    static int D_800DBB1C;
+    static int wavePhase;
+    static int rippleAge;
     static int _[2] __attribute__((unused));
-    static u_char D_800DBB28[4][16];
+    static u_char rippleDist[4][16];
 
     SVECTOR rot;
     SVECTOR vertices[4];
     MATRIX matrix;
-    long p;
+    long depthCue;
     long flag;
     u_short brightness;
-    u_short scale;
+    u_short amplitude;
     u_short i;
     u_short j;
     POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
@@ -96,28 +96,28 @@ static void _renderPhantomPain(_creditsElement* element)
 
     switch (element->state) {
     case 1:
-        D_800DBB18 = 0;
+        wavePhase = 0;
         element->currentStep = 0;
         element->state = 2;
-        D_800DBB1C = 0;
+        rippleAge = 0;
 
         for (i = 0; i < 4; ++i) {
             int shift = 2;
-            int d = 2 - i;
-            int dy = (ABS(d) << shift) * (ABS(d) << shift);
+            int rowOffset = 2 - i;
+            int dy = (ABS(rowOffset) << shift) * (ABS(rowOffset) << shift);
 
             for (j = 0; j < 16; ++j) {
                 int dx = 8 - j;
 
                 dx = ABS(dx) * 18;
-                D_800DBB28[i][j] = vs_gte_rsqrt(dx * dx + dy);
+                rippleDist[i][j] = vs_gte_rsqrt(dx * dx + dy);
             }
         }
         /* fallthrough */
 
     case 2:
         brightness = element->currentStep * 128 / 90;
-        ++D_800DBB1C;
+        ++rippleAge;
 
         if (++element->currentStep == 90) {
             element->currentStep = 0;
@@ -143,8 +143,8 @@ static void _renderPhantomPain(_creditsElement* element)
         break;
     }
 
-    D_800DBB18 += 200;
-    scale = (_ease(easeModeEaseIn, 90 - D_800DBB1C, 90) * 65) >> 10;
+    wavePhase += 200;
+    amplitude = (_ease(easeModeEaseIn, 90 - rippleAge, 90) * 65) >> 10;
 
     RotMatrix_gte(&rot, &matrix);
     matrix.t[0] = matrix.t[1] = 0;
@@ -158,19 +158,20 @@ static void _renderPhantomPain(_creditsElement* element)
             vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
             vertices[0].vy = vertices[1].vy = i * 4 - 8;
             vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
-            vertices[0].vz = (_sin(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
+            vertices[0].vz = (_sin(wavePhase + rippleDist[i][j] * 400) * amplitude) >> 12;
+            // BUG: out of bounds read when i == 3 or j == 15
             vertices[1].vz =
-                (_sin(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
+                (_sin(wavePhase + rippleDist[i][j + 1] * 400) * amplitude) >> 12;
             vertices[2].vz =
-                (_sin(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
+                (_sin(wavePhase + rippleDist[i + 1][j] * 400) * amplitude) >> 12;
             vertices[3].vz =
-                (_sin(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale) >> 12;
+                (_sin(wavePhase + rippleDist[i + 1][j + 1] * 400) * amplitude) >> 12;
 
             SetPolyFT4(poly);
             setSemiTrans(poly, 1);
             RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
                 (long*)&poly->x0, (long*)&poly->x1, (long*)&poly->x2, (long*)&poly->x3,
-                &p, &flag);
+                &depthCue, &flag);
             poly->u0 = poly->u2 = j * 9;
             poly->u1 = poly->u3 = (j + 1) * 9;
             poly->v0 = poly->v1 = i * 4 + 180;

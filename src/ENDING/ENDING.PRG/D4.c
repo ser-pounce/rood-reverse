@@ -1353,24 +1353,24 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
     vs_main_frameDuration = 0;
 }
 
-static int _drawScreen(u_long* arg0)
+static int _drawScreen(u_long* ot)
 {
     int _[2];
-    int temp_s1;
+    int vSync;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
 
     DrawSync(0);
 
-    temp_s1 = vs_main_gametimeUpdate(0);
+    vSync = vs_main_gametimeUpdate(0);
 
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
-    DrawOTag(arg0);
+    DrawOTag(ot);
 
     ++vs_main_frameDuration;
 
-    return temp_s1;
+    return vSync;
 }
 
 static void _updateTitles(void);

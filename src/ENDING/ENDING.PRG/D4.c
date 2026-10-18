@@ -674,38 +674,38 @@ static void _renderText(_creditsElement* element)
         _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
-static void _renderCopyright(_creditsElement* arg0)
+static void _renderCopyright(_creditsElement* element)
 {
+    int index;
     void** p = (void**)0x1F800000;
     SPRT* sprt = p[0];
-    int new_var;
 
-    if (arg0->state == 1) {
-        arg0->x = 100 << 8;
-        arg0->y = 224 << 8;
-        arg0->state = 2;
+    if (element->state == 1) {
+        element->x = 100 << 8;
+        element->y = 224 << 8;
+        element->state = 2;
     }
 
-    arg0->y += _scrollSpeed;
+    element->y += _scrollSpeed;
 
-    if (arg0->y < -(12 << 8)) {
-        arg0->state = -1;
+    if (element->y < -(12 << 8)) {
+        element->state = -1;
         return;
     }
 
     SetSprt(sprt);
-    setXY0(sprt, arg0->x >> 8, arg0->y >> 8);
-    setUV0(sprt, 0, 0x30);
-    setWH(sprt, 0x78, 0x10);
+    setXY0(sprt, element->x >> 8, element->y >> 8);
+    setUV0(sprt, 0, 48);
+    setWH(sprt, 120, 16);
     setClut(sprt, 960, 64);
     sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
 
     setaddr(sprt, ((u_long*)p[1])[3]);
     setaddr(p[1] + 12, sprt++);
 
-    new_var = 0;
-    p[new_var] = sprt;
-    p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
+    index = 0;
+    p[index] = sprt;
+    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
 }
 
 static void _renderBackground(_creditsElement* arg0 __attribute__((unused)))

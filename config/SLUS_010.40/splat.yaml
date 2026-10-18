@@ -10,7 +10,6 @@ options:
   symbol_addrs_path: 
     - config/SLUS_010.40/symbol_addrs.txt
     - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-    - config/ENDING/ENDING.PRG/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/SLUS_010.40/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/SLUS_010.40/undefined_syms_auto.txt
   subalign: 4

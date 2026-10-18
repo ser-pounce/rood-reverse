@@ -1,8 +1,9 @@
+$(BUILD)/data/ENDING/ENDING.PRG: $(BUILD)/data/SLUS_010.40.elf
+$(BUILD)/data/ENDING/ENDING.PRG: private LDLIBS += $(BUILD)/data/SLUS_010.40.elf
+$(BUILD)/data/ENDING/ENDING.PRG $(BUILD)/data/ENDING/ENDING.PRG.elf: private LDSCRIPT := link.ld
+
 $(BUILD)/data/ENDING/ENDING.PRG: LDFLAGS += \
 	--defsym=vs_scratch=0x1F800000
-
-$(BUILD)/data/ENDING/ENDING.PRG.elf: LDFLAGS += \
-	--retain-symbols-file=config/MENU/ENDING.PRG/exports.txt
 
 $(BUILD)/src/ENDING/ENDING.PRG/D4.c.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/ENDING/ENDING.PRG/D4.c.o: CC1VER := 2.8.1-psx

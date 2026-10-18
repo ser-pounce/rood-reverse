@@ -870,8 +870,8 @@ void vs_ending_exec(void)
     vs_main_CdQueueSlot* slot;
 
     _initEnvironment();
-    SetGeomOffset(0xA0, 0x70);
-    SetGeomScreen(0x200);
+    SetGeomOffset(160, 112);
+    SetGeomScreen(512);
     _setDrawEnv(vs_main_drawEnv);
     _setDrawEnv(&vs_main_drawEnv[1]);
 
@@ -980,8 +980,10 @@ static void* _insertTpage(int tPage, int otOffset)
 
     scratch = (void**)0x1F800000;
     drTpage = scratch[0];
+
     SetDrawTPage(drTpage, 0, 1, tPage & 0xFFFF);
     AddPrim(scratch[1] + (otOffset * 4), drTpage++);
+    
     return drTpage;
 }
 

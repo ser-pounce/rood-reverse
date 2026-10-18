@@ -350,15 +350,15 @@ static int _inverseDistanceFromScreencenter(int arg0, int arg1)
     return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
 }
 
-static void func_80069388(POLY_GT4* poly, short arg1, short arg2)
+static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
     __attribute__((unused));
-static void func_80069388(POLY_GT4* poly, short arg1, short arg2)
+static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
 {
     short temp_s0;
     short v0;
 
-    if (arg2 == 0) {
-        temp_s0 = (arg1 * 128) / 80;
+    if (fadeOut == 0) {
+        temp_s0 = (progress * 128) / 80;
         v0 = temp_s0
            + (((200 - _inverseDistanceFromScreencenter(poly->x0, poly->y0)) << 7)
                / 400);
@@ -407,7 +407,7 @@ static void func_80069388(POLY_GT4* poly, short arg1, short arg2)
 
     } else {
 
-        temp_s0 = ((0x50 - arg1) << 7) / 80;
+        temp_s0 = ((0x50 - progress) << 7) / 80;
         v0 = temp_s0
            - (((200 - _inverseDistanceFromScreencenter(poly->x0, poly->y0)) << 7)
                / 400);

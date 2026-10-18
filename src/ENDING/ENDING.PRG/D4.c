@@ -422,8 +422,8 @@ static _timData* _decompressedIllustData = &_illustSydney;
 static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
 
-static void* D_800DC1A0;
-static void* D_800DC1A4;
+static void* _currentCompressedIllust;
+static void* _currentDecompressedIllust;
 static void* _compressedIllustBufs[16];
 
 static void _loadTim(_timData*);
@@ -1186,8 +1186,8 @@ static int _ease(short mode, short currentStep, short totalSteps)
 static void _initTimDecompress(_timData* targetBuf, void* compressedData)
 {
     D_800DB72C = 1;
-    D_800DC1A0 = compressedData;
-    D_800DC1A4 = targetBuf;
+    _currentCompressedIllust = compressedData;
+    _currentDecompressedIllust = targetBuf;
 }
 
 static int func_8006AF64(void)
@@ -1209,8 +1209,8 @@ static int func_8006AF64(void)
 
     if (D_800DB72C == 1) {
         D_800DB72C = 2;
-        D_800DBB74 = D_800DC1A0;
-        D_800DBB78 = D_800DC1A4;
+        D_800DBB74 = _currentCompressedIllust;
+        D_800DBB78 = _currentDecompressedIllust;
     }
 
     while (1) {

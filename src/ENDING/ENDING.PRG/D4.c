@@ -2227,7 +2227,7 @@ static void _renderIncrementalMapCompletion(
 
 static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 {
-    static CVECTOR D_800DBAA8[] = {
+    static CVECTOR colors[] = {
         { 200, 80, 20 },
         { 200, 80, 20 },
     };
@@ -2241,8 +2241,8 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        D_800DBAA8[0].cd = timer;
-        _renderTextureFadeInTint(x - (_disMap[12].w >> 1), y, 12, D_800DBAA8);
+        colors[0].cd = timer;
+        _renderTextureFadeInTint(x - (_disMap[12].w >> 1), y, 12, colors);
     }
 }
 

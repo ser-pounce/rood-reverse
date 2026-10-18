@@ -5,6 +5,7 @@ _card_load
 _trig_table
 AddPrim
 ApplyMatrix
+ApplyRotMatrix
 ClearImage
 ClearOTagR
 close
@@ -12,9 +13,9 @@ CloseEvent
 D_80050468
 D_80055C80
 D_8005DFD4
-D_8005DFD6
+vs_main_screenWidth
 D_8005DFD8
-D_8005DFDA
+vs_main_screenHeight
 D_8005E0C0
 D_8005FF30
 D_8006003A
@@ -61,6 +62,7 @@ printf
 PutDispEnv
 PutDrawEnv
 rand
+ratan2
 rcos
 read
 rename

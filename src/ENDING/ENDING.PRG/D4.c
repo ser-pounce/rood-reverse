@@ -343,122 +343,54 @@ static void _renderVagrantStory(_creditsElement* element)
     return;
 }
 
-static int _inverseDistanceFromScreencenter(int x, int y)
+static int _distanceFromScreencenter(int x, int y)
 {
     x -= 160;
     y -= 112;
     return vs_gte_rsqrt(x * x + y * y);
 }
 
-static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
-    __attribute__((unused));
+#define CLAMP_HI(v) ((v) < 129 ? (v) : 128)
+#define CLAMP_LO(v) ((v) >= 0 ? (v) : 0)
+
+#define RADIAL_TERM(i) \
+    (((200 - _distanceFromScreencenter(poly->x##i, poly->y##i)) * 128) / 400)
+
+#define FADE(i, expr, clamp)                                                   \
+    level = (expr);                                                            \
+    poly->b##i = clamp(level);                                                 \
+    poly->r##i = poly->g##i = poly->b##i;
+
+#define FADE_IN(i) FADE(i, base + RADIAL_TERM(i), CLAMP_HI)
+#define FADE_OUT(i) FADE(i, base - RADIAL_TERM(i), CLAMP_LO)
+
+__attribute__((unused)) 
 static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
 {
-    short temp_s0;
-    short v0;
+    short base;
+    short level;
 
     if (fadeOut == 0) {
-        temp_s0 = (progress * 128) / 80;
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(poly->x0, poly->y0)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            poly->b0 = v0;
-        } else {
-            poly->b0 = 128;
-        }
-
-        poly->r0 = poly->g0 = poly->b0;
-
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(poly->x1, poly->y1)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            poly->b1 = v0;
-        } else {
-            poly->b1 = 128;
-        }
-
-        poly->r1 = poly->g1 = poly->b1;
-
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(poly->x2, poly->y2)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            poly->b2 = v0;
-        } else {
-            poly->b2 = 128;
-        }
-
-        poly->r2 = poly->g2 = poly->b2;
-
-        v0 = temp_s0
-           + (((200 - _inverseDistanceFromScreencenter(poly->x3, poly->y3)) << 7)
-               / 400);
-
-        if (v0 < 0x81) {
-            poly->b3 = v0;
-        } else {
-            poly->b3 = 128;
-        }
-
-        poly->r3 = poly->g3 = poly->b3;
-
+        base = (progress * 128) / 80;
+        FADE_IN(0);
+        FADE_IN(1);
+        FADE_IN(2);
+        FADE_IN(3);
     } else {
-
-        temp_s0 = ((0x50 - progress) << 7) / 80;
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(poly->x0, poly->y0)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            poly->b0 = v0;
-        } else {
-            poly->b0 = 0;
-        }
-
-        poly->r0 = poly->g0 = poly->b0;
-
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(poly->x1, poly->y1)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            poly->b1 = v0;
-        } else {
-            poly->b1 = 0;
-        }
-
-        poly->r1 = poly->g1 = poly->b1;
-
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(poly->x2, poly->y2)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            poly->b2 = v0;
-        } else {
-            poly->b2 = 0;
-        }
-
-        poly->r2 = poly->g2 = poly->b2;
-
-        v0 = temp_s0
-           - (((200 - _inverseDistanceFromScreencenter(poly->x3, poly->y3)) << 7)
-               / 400);
-
-        if (v0 >= 0) {
-            poly->b3 = v0;
-        } else {
-            poly->b3 = 0;
-        }
-
-        poly->r3 = poly->g3 = poly->b3;
+        base = ((80 - progress) * 128) / 80;
+        FADE_OUT(0);
+        FADE_OUT(1);
+        FADE_OUT(2);
+        FADE_OUT(3);
     }
 }
+
+#undef CLAMP_HI
+#undef CLAMP_LO
+#undef RADIAL_TERM
+#undef FADE
+#undef FADE_IN
+#undef FADE_OUT
 
 static u_char D_800DB72C = 0;
 
@@ -1343,6 +1275,7 @@ static int func_8006AF64(void)
     }
 }
 
+__attribute__((unused))
 static void func_8006B324(short arg0, short arg1, int arg2, u_char* arg3)
 {
     int temp_v0;

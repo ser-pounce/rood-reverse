@@ -1013,6 +1013,7 @@ static void _resetElements(void)
 {
     short i;
     _creditsElement* element = _creditsElements;
+
     for (i = 0; i < 32; ++i, ++element) {
         element->state = 0;
     }
@@ -1021,19 +1022,19 @@ static void _resetElements(void)
 static int _renderElements(void)
 {
     short i;
-    short var_s3 = 0;
+    short elementsRendered = 0;
     _creditsElement* element = _creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
         if (element->state < 0) {
             element->state = 0;
         } else if (element->state > 0) {
-            ++var_s3;
+            ++elementsRendered;
             element->renderer(element);
         }
     }
 
-    return var_s3;
+    return elementsRendered;
 }
 
 static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))

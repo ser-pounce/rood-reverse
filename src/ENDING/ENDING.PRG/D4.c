@@ -392,7 +392,13 @@ __attribute__((unused)) static void _updateRadialFadePoly(
 #undef FADE_IN
 #undef FADE_OUT
 
-static u_char D_800DB72C = 0;
+enum decompressionState {
+    decompressionStateIdle,
+    decompressionStateReady,
+    decompressionStateActive,
+};
+
+static u_char _compressionState = decompressionStateIdle;
 
 static int _illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA,
     VS_ILLUST08_BIN_LBA, VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA,
@@ -445,7 +451,8 @@ static void _renderllustration(_creditsElement* element)
     switch (temp_v0) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
-            _initTimDecompress(_decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
+            _initTimDecompress(
+                _decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
@@ -1185,7 +1192,7 @@ static int _ease(short mode, short currentStep, short totalSteps)
 
 static void _initTimDecompress(_timData* targetBuf, void* compressedData)
 {
-    D_800DB72C = 1;
+    _compressionState = decompressionStateReady;
     _currentCompressedIllust = compressedData;
     _currentDecompressedIllust = targetBuf;
 }
@@ -1203,12 +1210,12 @@ static int func_8006AF64(void)
 
     short i;
 
-    if (D_800DB72C == 0) {
+    if (_compressionState == decompressionStateIdle) {
         return 0;
     }
 
-    if (D_800DB72C == 1) {
-        D_800DB72C = 2;
+    if (_compressionState == decompressionStateReady) {
+        _compressionState = decompressionStateActive;
         D_800DBB74 = _currentCompressedIllust;
         D_800DBB78 = _currentDecompressedIllust;
     }
@@ -1224,7 +1231,7 @@ static int func_8006AF64(void)
 
         if (!(op & 0x80)) {
             if (op == 127) {
-                D_800DB72C = 0;
+                _compressionState = decompressionStateIdle;
                 return 1;
             }
 

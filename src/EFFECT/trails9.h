@@ -401,7 +401,7 @@ static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1*
 
     vs_battle_lerp2DVector(arg0->unk94[4], 0, arg1->unk134);
 
-    speed = func_800CFE1C(arg0->unk30, 0) << 0xC;
+    speed = func_800CFE1C(arg0->unk30, 0) * ONE;
 
     for (i = 0; i < arg3->trailcount; ++i) {
         int stepCount = vs_battle_randUniformInt(arg1->unk134[0], arg1->unk134[1]);
@@ -548,8 +548,7 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
         dx = (rcos(angles[0]) * sample) >> 0xC;
         dy = (rsin(angles[0]) * sample) >> 0xC;
         points = screen;
-        quad.poly.x0 = points[0].vx + dx;
-        quad.poly.y0 = points[0].vy + dy;
+        setXY0(&quad.poly, points[0].vx + dx, points[0].vy + dy);
         quad.poly.x2 = points[0].vx - dx;
         quad.poly.y2 = points[0].vy - dy;
 
@@ -647,13 +646,13 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
         quad.poly.u1 = quad.poly.u3 = texture->u;
         quad.poly.v1 = vTop;
         quad.poly.v3 = vBottom;
-        quad.poly.r1 = (color.r * arg3->sampledTransparencyCurve[0]) >> 7;
-        quad.poly.g1 = (color.g * arg3->sampledTransparencyCurve[0]) >> 7;
-        quad.poly.b1 = (color.b * arg3->sampledTransparencyCurve[0]) >> 7;
+        setRGB1(&quad.poly, (color.r * arg3->sampledTransparencyCurve[0]) >> 7,
+            (color.g * arg3->sampledTransparencyCurve[0]) >> 7,
+            (color.b * arg3->sampledTransparencyCurve[0]) >> 7);
 
         dx = (depths[j] + depths[j + 1]) / 2;
 
-        if (dx >= ONE / 2 || dx <= vs_main_nearClip) {
+        if ((dx >= ONE / 2) || (dx <= vs_main_nearClip)) {
             continue;
         }
 
@@ -710,7 +709,7 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             trail = 8;
         }
 
-        newState->trails = vs_main_allocHeapR(trail * sizeof *newState->trails);
+        newState->trails = vs_main_allocHeapR(sizeof *newState->trails * trail);
         newState->trailcount = trail;
         newState->unk3 = 0;
 

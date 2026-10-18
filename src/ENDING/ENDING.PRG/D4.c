@@ -1578,7 +1578,7 @@ static int _submenuState;
 static int D_800DC20C;
 static int D_800DC210;
 
-static int func_8006BE04(void);
+static int _initCongratulationsScreen(void);
 static int _renderCongratulationsScreen(void);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
 
@@ -1591,7 +1591,7 @@ static void func_8006BD78(void)
 
     do {
         func_8006B930();
-        temp_s0 = func_8006BE04();
+        temp_s0 = _initCongratulationsScreen();
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
     } while (temp_s0 == 0);
 
@@ -1607,7 +1607,7 @@ static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
-static int func_8006BE04(void)
+static int _initCongratulationsScreen(void)
 {
     static const vs_main_CdFile endScrDisFiles[] = {
         { VS_END_DIS_LBA, VS_END_DIS_SIZE },
@@ -1629,15 +1629,15 @@ static int func_8006BE04(void)
         { VS_ENDSCR15_DIS_LBA, VS_ENDSCR15_DIS_SIZE },
     };
 
-    TIM_IMAGE sp10;
+    TIM_IMAGE tim;
     int i;
-    int var_a1;
-    int var_v1;
+    int mapCompletion;
+    int chestsOpened;
 
     if (_submenuState == 0) {
 
-        timData = vs_main_allocHeapR(endScrDisFiles->size);
-        cdSlot = vs_main_allocateCdQueueSlot(endScrDisFiles);
+        timData = vs_main_allocHeapR(endScrDisFiles[0].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&endScrDisFiles[0]);
 
         vs_main_cdEnqueue(cdSlot, timData);
 
@@ -1651,23 +1651,23 @@ static int func_8006BE04(void)
 
         for (i = 0; i < 3; ++i) {
 
-            _parseTim(timData + i * 0x8220, &sp10);
+            _parseTim(timData + i * 0x8220, &tim);
 
-            if (sp10.paddr != NULL) {
-                sp10.prect->x = 832 + i * 64;
-                sp10.prect->y = 0x100;
-                sp10.prect->h = 0xFF;
-                LoadImage(sp10.prect, sp10.paddr);
+            if (tim.paddr != NULL) {
+                tim.prect->x = 832 + i * 64;
+                tim.prect->y = 0x100;
+                tim.prect->h = 0xFF;
+                LoadImage(tim.prect, tim.paddr);
             }
 
             if (i == 0) {
-                if (sp10.caddr != NULL) {
-                    sp10.crect->x = 0x300;
-                    sp10.crect->y = 0x1FF;
-                    sp10.crect->w = 0x80;
-                    sp10.crect->h = 1;
-                    *sp10.caddr = 0;
-                    LoadImage(sp10.crect, sp10.caddr);
+                if (tim.caddr != NULL) {
+                    tim.crect->x = 0x300;
+                    tim.crect->y = 0x1FF;
+                    tim.crect->w = 0x80;
+                    tim.crect->h = 1;
+                    *tim.caddr = 0;
+                    LoadImage(tim.crect, tim.caddr);
                 }
             }
         }
@@ -1679,7 +1679,7 @@ static int func_8006BE04(void)
 
         vs_main_freeHeapR(timData);
 
-        var_a1 = 0;
+        mapCompletion = 0;
         _onScreenMapCompletion = 0;
         _onScreenScore = 0;
         D_800DC20C = 0;
@@ -1691,25 +1691,25 @@ static int func_8006BE04(void)
             for (flag = 0; flag < 32; ++flag) {
                 int v = 1;
                 if (vs_main_mapStatus.roomFlags[i] & _countableRooms[i] & (v << flag)) {
-                    ++var_a1;
+                    ++mapCompletion;
                 }
             }
         }
 
-        var_v1 = 0;
+        chestsOpened = 0;
 
         for (i = 0; i < 64; ++i) {
             if (vs_main_stateFlags.chestsOpened[i] != 0) {
-                ++var_v1;
+                ++chestsOpened;
             }
         }
 
-        if (vs_main_scoredata.mapCompletion < var_a1) {
-            vs_main_scoredata.mapCompletion = var_a1;
+        if (vs_main_scoredata.mapCompletion < mapCompletion) {
+            vs_main_scoredata.mapCompletion = mapCompletion;
         }
 
-        if (vs_main_scoredata.openedChestCount < var_v1) {
-            vs_main_scoredata.openedChestCount = var_v1;
+        if (vs_main_scoredata.openedChestCount < chestsOpened) {
+            vs_main_scoredata.openedChestCount = chestsOpened;
         }
 
         _mapCompletion = (vs_main_scoredata.mapCompletion * 100) / 361;
@@ -1728,12 +1728,12 @@ static int func_8006BE04(void)
             return 0;
         }
 
-        _parseTim(timData, &sp10);
+        _parseTim(timData, &tim);
 
-        if (sp10.paddr != NULL) {
-            sp10.prect->x = 0;
-            sp10.prect->y = 0x100;
-            LoadImage(sp10.prect, sp10.paddr);
+        if (tim.paddr != NULL) {
+            tim.prect->x = 0;
+            tim.prect->y = 256;
+            LoadImage(tim.prect, tim.paddr);
         }
 
         vs_main_freeCdQueueSlot(cdSlot);

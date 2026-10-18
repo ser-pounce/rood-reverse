@@ -848,7 +848,7 @@ static void _renderFadeOut(_creditsElement* element)
 
 static void func_8006B9B4(void);
 static void _setDrawEnv(DRAWENV*);
-static void func_8006A888(void);
+static void _renderCredits(void);
 static void _resetElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void func_8006B884(void);
@@ -927,7 +927,7 @@ void vs_ending_exec(void)
     D_800DC189 = 1;
 
     func_8006B9B4();
-    func_8006A888();
+    _renderCredits();
     vs_main_checkStreamXaEnd();
     SetDispMask(0);
 
@@ -957,7 +957,7 @@ static int func_8006AF64(void);
 static int _drawScreen(u_long*);
 static void func_8006B930(void);
 
-static void func_8006A888(void)
+static void _renderCredits(void)
 {
     while (_creditsComplete == 0) {
 

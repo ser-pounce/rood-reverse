@@ -815,8 +815,8 @@ static void _backgroundFadeOut(_creditsElement* element)
 
 static void _renderFadeOut(_creditsElement* element)
 {
-    void** s2 = (void**)0x1F800000;
-    TILE* temp_s0 = s2[0];
+    void** p = (void**)0x1F800000;
+    TILE* tile = p[0];
 
     if (element->state == 1) {
         element->currentStep = 0;
@@ -827,17 +827,17 @@ static void _renderFadeOut(_creditsElement* element)
         _creditsComplete = 1;
     }
 
-    SetTile(temp_s0);
-    setSemiTrans(temp_s0, 1);
-    temp_s0->r0 = temp_s0->g0 = temp_s0->b0 =
+    SetTile(tile);
+    setSemiTrans(tile, 1);
+    tile->r0 = tile->g0 = tile->b0 =
         (_ease(easeModeEaseOut, element->currentStep, 128) * 255) >> 0xC;
-    setWH(temp_s0, 320, 240);
-    setXY0(temp_s0, 0, 0);
+    setWH(tile, 320, 240);
+    setXY0(tile, 0, 0);
 
-    AddPrim(s2[1], temp_s0++);
+    AddPrim(p[1], tile++);
 
-    s2[0] = temp_s0;
-    s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
+    p[0] = tile;
+    p[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
 static void _streamEndingXa(void);

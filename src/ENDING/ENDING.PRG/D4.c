@@ -1762,17 +1762,17 @@ static int _renderCongratulationsScreen(void)
 {
     if (D_800DC210 == 0) {
 
-        if (_screenTimer == 0xD0) {
-            vs_main_playSfxDefault(0x7E, 0x77);
-            vs_main_playSfxDefault(0x7E, 0x78);
+        if (_screenTimer == 208) {
+            vs_main_playSfxDefault(126, 119);
+            vs_main_playSfxDefault(126, 120);
         }
 
         _fadeIn(_screenTimer);
-        _renderCongratulations(0xA0, 0x28, _screenTimer);
-        _renderIncrementalScore(0xA0, 0x50, _screenTimer - 0x20, D_800DC210);
-        _renderIncrementalMapCompletion(0xA0, 0x66, _screenTimer - 0x70, D_800DC210);
-        _renderRiskbreakerRankHeader(0xA0, 0x8A, _screenTimer - 0xC0);
-        _renderRiskbreakerRank(0xA0, 0x9A, _screenTimer - 0xD0);
+        _renderCongratulations(160, 40, _screenTimer);
+        _renderIncrementalScore(160, 80, _screenTimer - 32, D_800DC210);
+        _renderIncrementalMapCompletion(160, 102, _screenTimer - 112, D_800DC210);
+        _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
+        _renderRiskbreakerRank(160, 154, _screenTimer - 208);
 
         if (_screenTimer > 4096) {
             _screenTimer = 4096;
@@ -1786,11 +1786,11 @@ static int _renderCongratulationsScreen(void)
     } else {
 
         _fadeIn(8 - _screenTimer);
-        _renderCongratulations(0xA0, 0x28, 8 - _screenTimer);
-        _renderScore(0xA0, 0x50, 8 - _screenTimer, 3);
-        _renderMapCompletion(0xA0, 0x66, 8 - _screenTimer, 3);
-        _renderRiskbreakerRankHeader(0xA0, 0x8A, 8 - _screenTimer);
-        _renderRiskbreakerRank(0xA0, 0x9A, 8 - _screenTimer);
+        _renderCongratulations(160, 40, 8 - _screenTimer);
+        _renderScore(160, 80, 8 - _screenTimer, 3);
+        _renderMapCompletion(160, 102, 8 - _screenTimer, 3);
+        _renderRiskbreakerRankHeader(160, 138, 8 - _screenTimer);
+        _renderRiskbreakerRank(160, 154, 8 - _screenTimer);
 
         if (_screenTimer >= 8) {
             return 1;
@@ -1801,39 +1801,36 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
-static void _fadeIn(int arg0)
+static void _fadeIn(int timer)
 {
-    int var_s2;
     int i;
-    int temp_s4;
+    int brightness;
     POLY_FT4* poly;
 
-    if (arg0 < 0) {
-        arg0 = 0;
+    if (timer < 0) {
+        timer = 0;
     }
 
-    if (arg0 > 64) {
-        arg0 = 64;
+    if (timer > 64) {
+        timer = 64;
     }
 
-    temp_s4 = arg0 * 2;
+    brightness = timer * 2;
 
-    if (arg0 <= 0) {
+    if (timer <= 0) {
         return;
     }
 
     poly = *(void**)0x1F800000;
-    var_s2 = 64;
 
     for (i = 0; i < 5; ++i) {
         setPolyFT4(poly);
         setXY4(poly, i * 64, 8, 64 + i * 64, 8, i * 64, 232, 64 + i * 64, 232);
         setUV4(poly, 0, 0, 64, 0, 0, 224, 64, 224);
-        setRGB0(poly, temp_s4, temp_s4, temp_s4);
+        setRGB0(poly, brightness, brightness, brightness);
         setClut(poly, 0, 0);
         poly->tpage = (i + 16) | getTPage(3, 0, 0, 0);
         AddPrim(*((void**)0x1F800004) + 0x1FF8, poly++);
-        var_s2 += 64;
     }
 
     *(void**)0x1F800000 = poly;

@@ -3052,7 +3052,7 @@ void func_800BB874(void)
             setSemiTrans(var_s3, 1);
             var_s3->x0 = 0;
             var_s3->y0 = var_s3->y1 = i;
-            var_s3->x1 = D_8005DFD6;
+            var_s3->x1 = vs_main_screenWidth;
             p = (void**)0x1F800000;
             AddPrim(p[2], var_s3++);
         }

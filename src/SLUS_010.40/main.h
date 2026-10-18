@@ -467,7 +467,7 @@ extern u_short vs_main_battleAbilitiesPointsRequirements[];
 extern D_80050468_t D_80050468;
 extern void* D_80055C80[];
 extern short D_8005DFD4;
-extern short D_8005DFD6;
+extern short vs_main_screenWidth;
 extern short D_8005DFD8;
 extern u_short D_8005DFDA;
 extern u_int D_8005E040;

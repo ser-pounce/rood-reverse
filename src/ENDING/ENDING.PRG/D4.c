@@ -2108,6 +2108,7 @@ static void _renderIncrementalScore(
     for (i = 0; i < 9; ++i) {
         _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
         x += 12;
+
         if ((i == 2) || (i == 5)) {
             _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
             x += 3 + _disMap[disIndexRank0Comma].w;

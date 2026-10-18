@@ -343,11 +343,11 @@ static void _renderVagrantStory(_creditsElement* element)
     return;
 }
 
-static int _inverseDistanceFromScreencenter(int arg0, int arg1)
+static int _inverseDistanceFromScreencenter(int x, int y)
 {
-    arg0 -= 160;
-    arg1 -= 112;
-    return vs_gte_rsqrt(arg0 * arg0 + arg1 * arg1);
+    x -= 160;
+    y -= 112;
+    return vs_gte_rsqrt(x * x + y * y);
 }
 
 static void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)

@@ -1,7 +1,7 @@
 #include "common.h"
 
 #define VS_MIRROR_SURFACE_FUNCTION func_800F9910
-#define VS_MIRROR_SURFACE_VERTICES D_800FE0CC
+#define VS_SURFACE_VERTICES D_800FE0CC
 #include "src/EFFECT/mirroredSurfaces.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG300.BIN/nonmatchings/110", func_800FA584);

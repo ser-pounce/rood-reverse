@@ -57,6 +57,7 @@ D_800F4E98
 D_800F4EA0
 D_800F4EE8
 D_800F4FDB
+D_800F5230
 D_800F5310
 D_800F53BC
 D_800F569C
@@ -302,6 +303,7 @@ vs_battle_lerpVector
 vs_battle_limbNames
 vs_battle_loadMenuPrg
 vs_battle_loadObjectDataState
+vs_battle_lookAt
 vs_battle_lowerScreenUiState
 vs_battle_manualDisplayState
 vs_battle_mapCompletionFlags
@@ -324,6 +326,7 @@ vs_battle_populateDataSlot
 vs_battle_printf
 vs_battle_printVariableWidthFontChar
 vs_battle_processObjectDataQueue
+vs_battle_randUniformInt
 vs_battle_renderImage
 vs_battle_renderMenuItem
 vs_battle_renderStatBar
@@ -388,17 +391,20 @@ vs_battle_setTextBox
 vs_battle_shamanSpellIds
 vs_battle_shortcutInvoked
 vs_battle_sorcererSpellIds
+vs_battle_splineInterpolate
 vs_battle_statusIconTexOffsets
 vs_battle_statusStrings
 vs_battle_stringBuf
 vs_battle_stringContext
 vs_battle_submenuState
 vs_battle_submenuStates
+vs_battle_svecToVec
 vs_battle_textBoxes
 vs_battle_toBCD
 vs_battle_uiGradientStop
 vs_battle_unlockedBattleAbility
 vs_battle_unlockedBreakArt
+vs_battle_vecToSvec
 vs_battle_warlockSpellIds
 vs_battle_wepModels
 vs_battle_wepTextures

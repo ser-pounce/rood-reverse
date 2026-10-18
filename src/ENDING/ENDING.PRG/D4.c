@@ -188,50 +188,49 @@ static void _renderPhantomPain(_creditsElement* element)
 
 static void* _insertTpage(int tPage, int otOffset);
 
-static void _renderFin(_creditsElement* arg0)
+static void _renderFin(_creditsElement* element)
 {
-    int temp_a0_2;
-    int temp_a0;
-    int temp_v0;
-    u_char var_s0;
+    int step0;
+    int step1;
+    u_char brightness;
     void** p;
-    int new_var;
+    int index;
 
     SPRT* sprt = *(SPRT**)0x1F800000;
 
-    switch (arg0->state) {
+    switch (element->state) {
     case 1:
-        arg0->currentStep = 0;
-        arg0->state = 2;
+        element->currentStep = 0;
+        element->state = 2;
         /* fallthrough */
 
     case 2:
-        temp_v0 = arg0->currentStep;
-        arg0->currentStep = temp_v0 + 1;
-        var_s0 = (temp_v0 << 7) / 60;
+        step0 = element->currentStep;
+        element->currentStep = step0 + 1;
+        brightness = (step0 << 7) / 60;
 
-        if (arg0->currentStep == 60) {
-            arg0->currentStep = 0;
-            arg0->state = 3;
+        if (element->currentStep == 60) {
+            element->currentStep = 0;
+            element->state = 3;
         }
         break;
 
     case 3:
-        var_s0 = 128;
+        brightness = 128;
 
-        if (++arg0->currentStep == 240) {
-            arg0->currentStep = 0;
-            arg0->state = 4;
+        if (++element->currentStep == 240) {
+            element->currentStep = 0;
+            element->state = 4;
         }
         break;
 
     case 4:
-        temp_a0 = arg0->currentStep;
-        arg0->currentStep = temp_a0 + 1;
-        var_s0 = ((0x3C - temp_a0) << 7) / 60;
+        step1 = element->currentStep;
+        element->currentStep = step1 + 1;
+        brightness = ((60 - step1) << 7) / 60;
 
-        if (arg0->currentStep == 60) {
-            arg0->state = -1;
+        if (element->currentStep == 60) {
+            element->state = -1;
         }
 
         break;
@@ -241,16 +240,16 @@ static void _renderFin(_creditsElement* arg0)
     setXY0(sprt, 248, 184);
     setUV0(sprt, 0, 160);
     setWH(sprt, 36, 17);
-    sprt->r0 = sprt->g0 = sprt->b0 = var_s0;
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
     setClut(sprt, 896, 82);
 
     p = (void**)0x1F800000;
     setaddr(sprt, ((u_long*)p[1])[1]);
     setaddr(p[1] + 4, sprt++);
 
-    new_var = 0;
-    p[new_var] = sprt;
-    p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
+    index = 0;
+    p[index] = sprt;
+    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
 static _creditsElement _creditsElements[32];

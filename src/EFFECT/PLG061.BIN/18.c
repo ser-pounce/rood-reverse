@@ -12,8 +12,32 @@
 
 #define VS_RING_FUNCTION func_800FAF00
 #define VS_RING_COLORS D_800FCD10
+
+static CVECTOR VS_RING_COLORS[] = {
+    { 255, 255, 255 },
+    { 128, 128, 128 },
+    { 255, 128, 0 },
+    { 0, 128, 255 },
+    { 0, 255, 0 },
+    { 255, 0, 255 },
+    { 0, 128, 0 },
+    { 128, 0, 128 },
+};
+
 #include "src/EFFECT/rings.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FBB24
 #define VS_CLOSED_RING_COLORS D_800FCD30
+
+static CVECTOR VS_CLOSED_RING_COLORS[] = {
+    { 255, 255, 255 },
+    { 128, 128, 128 },
+    { 255, 128, 0 },
+    { 0, 128, 255 },
+    { 0, 255, 0 },
+    { 255, 0, 255 },
+    { 0, 128, 0 },
+    { 128, 0, 128 },
+};
+
 #include "src/EFFECT/closedRings.h"

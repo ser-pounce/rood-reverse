@@ -5,7 +5,10 @@
 #define VS_MESH10_FACES D_800FCD54
 #include "src/EFFECT/meshes10.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG153.BIN/nonmatchings/110", func_800FA41C);
+#define VS_RING_FUNCTION func_800FA41C
+#define VS_RING_COLORS D_800FCDB4
+#define VS_RING_TRANSPOSED
+#include "src/EFFECT/rings.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG153.BIN/nonmatchings/110", func_800FB040);
 

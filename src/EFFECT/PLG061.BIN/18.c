@@ -1,7 +1,10 @@
-#include "common.h"
+#include "18.h"
 
 #define VS_SURFACE_FUNCTION func_800F9818
 #define VS_SURFACE_VERTICES D_800FCA90
+
+#include "src/EFFECT/sphericalSurfaceVertices.h"
+
 #include "src/EFFECT/surfaces.h"
 
 #define VS_GRID_FUNCTION func_800FA3B0

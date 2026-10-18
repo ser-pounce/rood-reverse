@@ -983,7 +983,7 @@ static void* _insertTpage(int tPage, int otOffset)
 
     SetDrawTPage(drTpage, 0, 1, tPage & 0xFFFF);
     AddPrim(scratch[1] + (otOffset * 4), drTpage++);
-    
+
     return drTpage;
 }
 

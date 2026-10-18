@@ -853,7 +853,7 @@ static void _renderFadeOut(_creditsElement* element)
     s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
-static void func_8006B9B4(void);
+static void _streamEndingXa(void);
 static void _setDrawEnv(DRAWENV*);
 static void _renderCredits(void);
 static void _resetElements(void);
@@ -933,7 +933,7 @@ void vs_ending_exec(void)
     D_800DC18C = 0;
     D_800DC189 = 1;
 
-    func_8006B9B4();
+    _streamEndingXa();
     _renderCredits();
     vs_main_checkStreamXaEnd();
     SetDispMask(0);
@@ -1448,7 +1448,7 @@ static void func_8006B930(void)
     vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
 }
 
-static void func_8006B9B4(void)
+static void _streamEndingXa(void)
 {
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }

@@ -858,7 +858,7 @@ static void _setDrawEnv(DRAWENV*);
 static void _renderCredits(void);
 static void _resetElements(void);
 static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
-static void func_8006B884(void);
+static void _initEnvironment(void);
 static void _updateClearGameStats(void);
 static void _checkStreamXaEnd(void);
 static void func_8006BD78(void);
@@ -882,7 +882,7 @@ void vs_ending_exec(void)
     short i;
     vs_main_CdQueueSlot* slot;
 
-    func_8006B884();
+    _initEnvironment();
     SetGeomOffset(0xA0, 0x70);
     SetGeomScreen(0x200);
     _setDrawEnv(vs_main_drawEnv);
@@ -1424,9 +1424,9 @@ static void _do_updateClearGameStats(void)
     D_80061068.mpdId = 0;
 }
 
-static void func_8006B884(void)
+static void _initEnvironment(void)
 {
-    _initVideo(320, 240, 0x200, 0, 0, 0);
+    _initVideo(320, 240, 512, 0, 0, 0);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
     D_8005E0C0[0] = vs_main_allocHeap(0x20000);
     D_8005E0C0[1] = vs_main_allocHeap(0x20000);

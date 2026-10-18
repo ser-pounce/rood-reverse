@@ -861,7 +861,7 @@ static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
 static void _initEnvironment(void);
 static void _updateClearGameStats(void);
 static void _checkStreamXaEnd(void);
-static void func_8006BD78(void);
+static void _congratulationsScreen(void);
 
 void vs_ending_exec(void)
 {
@@ -944,7 +944,7 @@ void vs_ending_exec(void)
 
     _checkStreamXaEnd();
     _updateClearGameStats();
-    func_8006BD78();
+    _congratulationsScreen();
 }
 
 static void _setDrawEnv(DRAWENV* drawenv)
@@ -1582,7 +1582,7 @@ static int _initCongratulationsScreen(void);
 static int _renderCongratulationsScreen(void);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
 
-static void func_8006BD78(void)
+static void _congratulationsScreen(void)
 {
     int done;
 

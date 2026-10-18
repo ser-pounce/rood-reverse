@@ -960,7 +960,7 @@ static void _setDrawEnv(DRAWENV* drawenv)
 
 static int _renderElements(void);
 static void _parseCreditsScript(void);
-static int func_8006AF64(void);
+static int _decompressTim(void);
 static int _drawScreen(u_long*);
 static void func_8006B930(void);
 
@@ -973,7 +973,7 @@ static void _renderCredits(void)
         func_8006B930();
         _parseCreditsScript();
         _renderElements();
-        func_8006AF64();
+        _decompressTim();
 
         if ((vs_main_buttonsPressed.all & PADstart) && (_skipInvoked == 0)) {
             _addRenderer(_renderFadeOut);
@@ -1197,7 +1197,7 @@ static void _initTimDecompress(_timData* targetBuf, void* compressedData)
     _currentDecompressedIllust = targetBuf;
 }
 
-static int func_8006AF64(void)
+static int _decompressTim(void)
 {
     static u_char* D_800DBB70;
     static u_char* D_800DBB74;

@@ -12,7 +12,8 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FB2C8
 #include "src/EFFECT/particleRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG152.BIN/nonmatchings/128", func_800FBE88);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FBE88
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_CLOSED_RING_FUNCTION func_800FC11C
 #define VS_CLOSED_RING_COLORS D_800FD08C

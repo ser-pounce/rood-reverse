@@ -5,6 +5,7 @@ _card_load
 _trig_table
 AddPrim
 ApplyMatrix
+ApplyRotMatrix
 ClearImage
 ClearOTagR
 close
@@ -61,6 +62,7 @@ printf
 PutDispEnv
 PutDrawEnv
 rand
+ratan2
 rcos
 read
 rename

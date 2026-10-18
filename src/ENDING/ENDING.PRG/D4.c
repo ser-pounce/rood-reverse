@@ -1279,10 +1279,10 @@ __attribute__((unused)) static void _renderDebugString(
     SPRT_8* sprt = *(void**)0x1F800000;
 
     for (c = *string; c != 0; c = *++string, x += 7) {
-        int temp_v0 = c - ' ';
-        u_char c_2 = temp_v0;
+        int cTemp = c - ' ';
+        u_char c_2 = cTemp;
 
-        if (((temp_v0 & 0xFF) < 96u) && (c_2 != 0)) {
+        if (((cTemp & 0xFF) < 96u) && (c_2 != 0)) {
             u_long** ot;
 
             if (c_2 == ('\\' - ' ')) {

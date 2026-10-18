@@ -253,7 +253,7 @@ static void _renderFin(_creditsElement* arg0)
 }
 
 static _creditsElement _creditsElements[32];
-static u_char D_800DC188;
+static u_char _creditsComplete;
 static u_char D_800DC189;
 static u_char _skipInvoked;
 static u_char _0 __attribute__((unused));
@@ -811,7 +811,7 @@ static void _backgroundFadeOut(_creditsElement* arg0)
 
     if (++arg0->currentStep == 128) {
         if (arg0->width != 0) {
-            D_800DC188 = 1;
+            _creditsComplete = 1;
         }
         arg0->state = -1;
     }
@@ -830,7 +830,7 @@ static void _renderFadeOut(_creditsElement* element)
     }
 
     if (++element->currentStep == 128) {
-        D_800DC188 = 1;
+        _creditsComplete = 1;
     }
 
     SetTile(temp_s0);
@@ -921,7 +921,7 @@ void vs_ending_exec(void)
 
     _creditsBytestreamHead = _credits;
     _scrollSpeed = -128;
-    D_800DC188 = 0;
+    _creditsComplete = 0;
     _textStreamDelay = 0;
     D_800DC18C = 0;
     D_800DC189 = 1;
@@ -959,7 +959,7 @@ static void func_8006B930(void);
 
 static void func_8006A888(void)
 {
-    while (D_800DC188 == 0) {
+    while (_creditsComplete == 0) {
 
         D_800DC19A = VSync(1);
 
@@ -1160,7 +1160,7 @@ static void _parseCreditsScript(void)
 
         // 0xFF End of stream
         case 255:
-            D_800DC188 = 1;
+            _creditsComplete = 1;
             return;
 
         default:

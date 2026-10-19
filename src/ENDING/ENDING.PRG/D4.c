@@ -15,7 +15,7 @@
 
 static int _sin(int angle)
 {
-    int value = (int)_trig_table;
+    u_long value = (u_long)_trig_table;
     int quadrant = angle & 0x400;
     int test = angle & 0x3FF;
 
@@ -534,7 +534,7 @@ static int _creditsStrWidth(u_char* str)
         int _;
         int c = *str;
 
-        if (c < 32u) {
+        if ((unsigned)c < 32u) {
             switch (c) {
             case 1:
                 charTableOffset = 0;
@@ -1034,6 +1034,8 @@ static int _renderElements(void)
 
 static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
+    extern void SystemError(char, long) __attribute__((noreturn));
+    
     short i;
     _creditsElement* element = &_creditsElements[1];
 
@@ -1350,7 +1352,7 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
 
 static int _drawScreen(u_long* ot)
 {
-    int _[2];
+    int _[2] __attribute__((unused));
     int vSync;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
@@ -1379,7 +1381,7 @@ static void _do_updateClearGameStats(void)
         vs_main_scoredata.completionTimeMinutes =
             (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
     } else {
-        int minutes = (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
+        u_int minutes = (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
         if (minutes < vs_main_scoredata.completionTimeMinutes) {
             vs_main_scoredata.completionTimeMinutes = minutes;
             vs_main_scoredata.clearCount = vs_main_stateFlags.clearCount;
@@ -1554,9 +1556,9 @@ static void* timData;
 static u_int _rank;
 static int _clearCount;
 static u_int _score;
-static int _mapCompletion;
+static u_int _mapCompletion;
 static u_int _onScreenMapCompletion;
-static int _onScreenScore;
+static u_int _onScreenScore;
 static int _submenuState;
 static int _screenTimer;
 static int _congratulationsAnimSkip;
@@ -1657,8 +1659,8 @@ static int _initCongratulationsScreen(void)
         ++_submenuState;
 
     } else if (_submenuState == 2) {
-        int mapCompletion;
-        int chestsOpened;
+        u_int mapCompletion;
+        u_int chestsOpened;
 
         vs_main_freeHeapR(timData);
 

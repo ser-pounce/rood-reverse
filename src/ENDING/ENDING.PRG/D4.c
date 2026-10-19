@@ -1064,7 +1064,21 @@ static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
 
 static void _parseCreditsScript(void)
 {
-    enum opcodes { wait = 1 };
+    enum opcodes {
+        waitOp = 1,
+        textOp,
+        enableBgOp,
+        specialOp,
+        copyrightSpecialOp = 0,
+        titleSpecialOp,
+        finSpecialOp,
+        episodeSpecialOp,
+        fadeInOp = 5,
+        fadeOutOp,
+        freezeOp,
+        setTimerOp,
+        endStreamOp = 0xFF,
+    };
 
     if (_textStreamDelay != 0) {
         --_textStreamDelay;
@@ -1078,79 +1092,79 @@ static void _parseCreditsScript(void)
 
         switch (bytestream[0]) {
 
-        // 0x1 Wait: u8 duration
-        case wait:
+        // Wait: u8 duration
+        case waitOp:
             _creditsBytestreamHead = bytestream + 1;
             delay = bytestream[1] * 2;
             _creditsBytestreamHead = bytestream + 2;
             _textStreamDelay = delay;
             return;
 
-        // 0x2 Render text: u8 len
-        case 2:
+        // Render text: u8 len
+        case textOp:
             _creditsBytestreamHead = bytestream + 1;
             _addRenderer(_renderText)->data = _creditsBytestreamHead;
             _creditsBytestreamHead += _creditsBytestreamHead[0] + 1;
             break;
 
-        // 0x3 Enable background illustrations
-        case 3:
+        // Enable background illustrations
+        case enableBgOp:
             _creditsBytestreamHead = bytestream + 1;
             _addRenderer(_renderllustration)->illustId = 0;
             break;
 
-        // 0x4 Render special: u8 secondary op
-        case 4:
+        // Render special: u8 secondary op
+        case specialOp:
             _creditsBytestreamHead = bytestream + 1;
             op = bytestream[1];
             _creditsBytestreamHead = bytestream + 2;
 
             switch (op) {
-            case 0:
+            case copyrightSpecialOp:
                 _addRenderer(_renderCopyright);
                 break;
 
-            case 1:
+            case titleSpecialOp:
                 _addRenderer(_renderVagrantStory);
                 break;
 
-            case 2:
+            case finSpecialOp:
                 _addRenderer(_renderFin);
                 break;
 
-            case 3:
+            case episodeSpecialOp:
                 _addRenderer(_renderPhantomPain);
                 break;
             }
             break;
 
-        // 0x5 Fade in
-        case 5:
+        // Fade in
+        case fadeInOp:
             _creditsBytestreamHead = bytestream + 1;
             _replaceMainRenderer(_backgroundFadeIn);
             break;
 
-        // 0x6 Fade out
-        case 6:
+        // Fade out
+        case fadeOutOp:
             _creditsBytestreamHead = bytestream + 1;
             _replaceMainRenderer(_backgroundFadeOut)->width = 0;
             break;
 
-        // 0x7 Freeze scrolling
-        case 7:
+        // Freeze scrolling
+        case freezeOp:
             _creditsBytestreamHead = bytestream + 1;
             _scrollSpeed = 0;
             break;
 
-        // 0x8 Set illustration timer: u8 illustration id, u16 duration
-        case 8:
+        // Set illustration timer: u8 illustration id, u16 duration
+        case setTimerOp:
             *(_illustrationTimers + bytestream[1]) =
                 (bytestream[2] + (bytestream[3] << 8)) - 160;
             _creditsBytestreamHead = bytestream + 4;
             break;
 
-        // 0xFF End of stream
-        case 255:
+        // End of stream
+        case endStreamOp:
             _creditsComplete = 1;
             return;
 

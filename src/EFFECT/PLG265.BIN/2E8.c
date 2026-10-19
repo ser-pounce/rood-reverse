@@ -14,26 +14,24 @@ INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FB830);
 
 INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FBD60);
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FBFD4);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FBFD4
+#define VS_TRAIL_TARGET_FUNCTION func_800FC770
+#define VS_TRAIL_CONTROL_FUNCTION func_800FC988
+#define VS_TRAIL_INIT_FUNCTION func_800FCE4C
+#define VS_TRAIL_UPDATE_FUNCTION func_800FCFC4
+#define VS_TRAIL_RENDER_FUNCTION func_800FD150
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FDBAC
+#define VS_TRAIL_CORNER_STATE D_800FFDBC
+#include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FC770);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FE0F4
+#define VS_PARTICLE_TARGET_FUNCTION func_800FE87C
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FEA94
+#define VS_PARTICLE_CORNER_STATE D_800FFDC0
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FC988);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEF44
+#include "src/EFFECT/particleRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FCE4C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FCFC4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FD150);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FDBAC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FE0F4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FE87C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FEA94);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FEF44);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FFB04);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FFB04
+#include "src/EFFECT/particleDispatch.h"

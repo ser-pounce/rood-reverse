@@ -30,6 +30,7 @@ INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FBD60);
 #define VS_PARTICLE_CORNER_STATE D_800FFDC0
 #include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FEF44);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEF44
+#include "src/EFFECT/particleRender.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FFB04);

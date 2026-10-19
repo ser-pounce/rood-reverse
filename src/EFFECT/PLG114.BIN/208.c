@@ -1,10 +1,10 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG114.BIN/nonmatchings/208", func_800F9A08);
-
-INCLUDE_ASM("build/src/EFFECT/PLG114.BIN/nonmatchings/208", func_800FA190);
-
-INCLUDE_ASM("build/src/EFFECT/PLG114.BIN/nonmatchings/208", func_800FA3A8);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800F9A08
+#define VS_PARTICLE_TARGET_FUNCTION func_800FA190
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FA3A8
+#define VS_PARTICLE_CORNER_STATE D_800FCCA0
+#include "src/EFFECT/particleSetup.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG114.BIN/nonmatchings/208", func_800FA858);
 

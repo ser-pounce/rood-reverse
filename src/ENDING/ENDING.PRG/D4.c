@@ -6,7 +6,6 @@
 #include "texture_t.h"
 #include "scratch.h"
 #include <abs.h>
-#include <libapi.h>
 #include <libetc.h>
 #include <memory.h>
 #include <stdio.h>
@@ -1035,7 +1034,7 @@ static int _renderElements(void)
 static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
     extern void SystemError(char, long) __attribute__((noreturn));
-    
+
     short i;
     _creditsElement* element = &_creditsElements[1];
 

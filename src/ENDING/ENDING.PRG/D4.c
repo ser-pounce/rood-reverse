@@ -201,7 +201,7 @@ static void _renderFin(_creditsElement* element)
     case 2:
         step0 = element->currentStep;
         element->currentStep = step0 + 1;
-        brightness = (step0 << 7) / 60;
+        brightness = (step0 * 128) / 60;
 
         if (element->currentStep == 60) {
             element->currentStep = 0;
@@ -221,7 +221,7 @@ static void _renderFin(_creditsElement* element)
     case 4:
         step1 = element->currentStep;
         element->currentStep = step1 + 1;
-        brightness = ((60 - step1) << 7) / 60;
+        brightness = ((60 - step1) * 128) / 60;
 
         if (element->currentStep == 60) {
             element->state = -1;
@@ -268,8 +268,8 @@ static void _renderVagrantStory(_creditsElement* element)
 
     switch (element->state) {
     case 1:
-        element->x = 61 << 8;
-        element->y = 80 << 8;
+        element->x = 61 * 256;
+        element->y = 80 * 256;
         element->currentStep = 0;
         element->state = 2;
         /* fallthrough */
@@ -322,8 +322,8 @@ static void _renderVagrantStory(_creditsElement* element)
     SetSprt(sprt);
     setSemiTrans(sprt, 1);
     setXY0(sprt, element->x >> 8, element->y >> 8);
-    setUV0(sprt, 0, 0x60);
-    setWH(sprt, 0xD0, 0x30);
+    setUV0(sprt, 0, 96);
+    setWH(sprt, 208, 48);
     setClut(sprt, 896, 81);
     sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
@@ -533,7 +533,7 @@ static int _creditsStrWidth(u_char* str)
         int _;
         int c = *str;
 
-        if ((unsigned)c < 32u) {
+        if ((unsigned)c < ' ') {
             switch (c) {
             case 1:
                 charTableOffset = 0;

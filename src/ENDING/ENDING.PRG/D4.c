@@ -57,12 +57,7 @@ typedef struct _creditsElement {
     u_short width;
     int x;
     int y;
-    int unk18 __attribute__((unused));
-    int unk1C __attribute__((unused));
-    int unk20 __attribute__((unused));
-    int unk24 __attribute__((unused));
-    int unk28 __attribute__((unused));
-    int unk2C __attribute__((unused));
+    int _[6] __attribute__((unused));
 } _creditsElement;
 
 enum easeMode {

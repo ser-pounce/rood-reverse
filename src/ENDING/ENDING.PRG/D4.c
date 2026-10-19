@@ -6,7 +6,6 @@
 #include "texture_t.h"
 #include "scratch.h"
 #include <abs.h>
-#include <libapi.h>
 #include <libetc.h>
 #include <memory.h>
 #include <stdio.h>
@@ -15,7 +14,7 @@
 
 static int _sin(int angle)
 {
-    int value = (int)_trig_table;
+    u_long value = (u_long)_trig_table;
     int quadrant = angle & 0x400;
     int test = angle & 0x3FF;
 
@@ -57,12 +56,7 @@ typedef struct _creditsElement {
     u_short width;
     int x;
     int y;
-    int unk18;
-    int unk1C;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
+    int _[6] __attribute__((unused));
 } _creditsElement;
 
 enum easeMode {
@@ -76,18 +70,18 @@ static int _ease(short mode, short currentStep, short totalSteps);
 
 static void _renderPhantomPain(_creditsElement* element)
 {
-    static int D_800DBB18;
-    static int D_800DBB1C;
+    static int wavePhase;
+    static int rippleAge;
     static int _[2] __attribute__((unused));
-    static u_char D_800DBB28[4][16];
+    static u_char rippleDist[4][16];
 
     SVECTOR rot;
     SVECTOR vertices[4];
     MATRIX matrix;
-    long p;
+    long depthCue;
     long flag;
     u_short brightness;
-    u_short scale;
+    u_short amplitude;
     u_short i;
     u_short j;
     POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
@@ -96,28 +90,28 @@ static void _renderPhantomPain(_creditsElement* element)
 
     switch (element->state) {
     case 1:
-        D_800DBB18 = 0;
+        wavePhase = 0;
         element->currentStep = 0;
         element->state = 2;
-        D_800DBB1C = 0;
+        rippleAge = 0;
 
         for (i = 0; i < 4; ++i) {
             int shift = 2;
-            int d = 2 - i;
-            int dy = (ABS(d) << shift) * (ABS(d) << shift);
+            int rowOffset = 2 - i;
+            int dy = (ABS(rowOffset) << shift) * (ABS(rowOffset) << shift);
 
             for (j = 0; j < 16; ++j) {
                 int dx = 8 - j;
 
                 dx = ABS(dx) * 18;
-                D_800DBB28[i][j] = vs_gte_rsqrt(dx * dx + dy);
+                rippleDist[i][j] = vs_gte_rsqrt(dx * dx + dy);
             }
         }
         /* fallthrough */
 
     case 2:
         brightness = element->currentStep * 128 / 90;
-        ++D_800DBB1C;
+        ++rippleAge;
 
         if (++element->currentStep == 90) {
             element->currentStep = 0;
@@ -143,8 +137,8 @@ static void _renderPhantomPain(_creditsElement* element)
         break;
     }
 
-    D_800DBB18 += 200;
-    scale = (_ease(easeModeEaseIn, 90 - D_800DBB1C, 90) * 65) >> 10;
+    wavePhase += 200;
+    amplitude = (_ease(easeModeEaseIn, 90 - rippleAge, 90) * 65) >> 10;
 
     RotMatrix_gte(&rot, &matrix);
     matrix.t[0] = matrix.t[1] = 0;
@@ -158,19 +152,20 @@ static void _renderPhantomPain(_creditsElement* element)
             vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
             vertices[0].vy = vertices[1].vy = i * 4 - 8;
             vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
-            vertices[0].vz = (_sin(D_800DBB18 + D_800DBB28[i][j] * 400) * scale) >> 12;
+            vertices[0].vz = (_sin(wavePhase + rippleDist[i][j] * 400) * amplitude) >> 12;
+            // BUG: out of bounds read when i == 3 or j == 15
             vertices[1].vz =
-                (_sin(D_800DBB18 + D_800DBB28[i][j + 1] * 400) * scale) >> 12;
+                (_sin(wavePhase + rippleDist[i][j + 1] * 400) * amplitude) >> 12;
             vertices[2].vz =
-                (_sin(D_800DBB18 + D_800DBB28[i + 1][j] * 400) * scale) >> 12;
+                (_sin(wavePhase + rippleDist[i + 1][j] * 400) * amplitude) >> 12;
             vertices[3].vz =
-                (_sin(D_800DBB18 + D_800DBB28[i + 1][j + 1] * 400) * scale) >> 12;
+                (_sin(wavePhase + rippleDist[i + 1][j + 1] * 400) * amplitude) >> 12;
 
             SetPolyFT4(poly);
             setSemiTrans(poly, 1);
             RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
                 (long*)&poly->x0, (long*)&poly->x1, (long*)&poly->x2, (long*)&poly->x3,
-                &p, &flag);
+                &depthCue, &flag);
             poly->u0 = poly->u2 = j * 9;
             poly->u1 = poly->u3 = (j + 1) * 9;
             poly->v0 = poly->v1 = i * 4 + 180;
@@ -187,50 +182,49 @@ static void _renderPhantomPain(_creditsElement* element)
 
 static void* _insertTpage(int tPage, int otOffset);
 
-static void _renderFin(_creditsElement* arg0)
+static void _renderFin(_creditsElement* element)
 {
-    int temp_a0_2;
-    int temp_a0;
-    int temp_v0;
-    u_char var_s0;
+    int step0;
+    int step1;
+    u_char brightness;
     void** p;
-    int new_var;
+    int index;
 
     SPRT* sprt = *(SPRT**)0x1F800000;
 
-    switch (arg0->state) {
+    switch (element->state) {
     case 1:
-        arg0->currentStep = 0;
-        arg0->state = 2;
+        element->currentStep = 0;
+        element->state = 2;
         /* fallthrough */
 
     case 2:
-        temp_v0 = arg0->currentStep;
-        arg0->currentStep = temp_v0 + 1;
-        var_s0 = (temp_v0 << 7) / 60;
+        step0 = element->currentStep;
+        element->currentStep = step0 + 1;
+        brightness = (step0 * 128) / 60;
 
-        if (arg0->currentStep == 60) {
-            arg0->currentStep = 0;
-            arg0->state = 3;
+        if (element->currentStep == 60) {
+            element->currentStep = 0;
+            element->state = 3;
         }
         break;
 
     case 3:
-        var_s0 = 128;
+        brightness = 128;
 
-        if (++arg0->currentStep == 240) {
-            arg0->currentStep = 0;
-            arg0->state = 4;
+        if (++element->currentStep == 240) {
+            element->currentStep = 0;
+            element->state = 4;
         }
         break;
 
     case 4:
-        temp_a0 = arg0->currentStep;
-        arg0->currentStep = temp_a0 + 1;
-        var_s0 = ((0x3C - temp_a0) << 7) / 60;
+        step1 = element->currentStep;
+        element->currentStep = step1 + 1;
+        brightness = ((60 - step1) * 128) / 60;
 
-        if (arg0->currentStep == 60) {
-            arg0->state = -1;
+        if (element->currentStep == 60) {
+            element->state = -1;
         }
 
         break;
@@ -240,50 +234,48 @@ static void _renderFin(_creditsElement* arg0)
     setXY0(sprt, 248, 184);
     setUV0(sprt, 0, 160);
     setWH(sprt, 36, 17);
-    sprt->r0 = sprt->g0 = sprt->b0 = var_s0;
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
     setClut(sprt, 896, 82);
 
     p = (void**)0x1F800000;
     setaddr(sprt, ((u_long*)p[1])[1]);
     setaddr(p[1] + 4, sprt++);
 
-    new_var = 0;
-    p[new_var] = sprt;
-    p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
+    index = 0;
+    p[index] = sprt;
+    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
 static _creditsElement _creditsElements[32];
 static u_char _creditsComplete;
-static u_char D_800DC189;
+static u_char _isFadedOut;
 static u_char _skipInvoked;
 static u_char _0 __attribute__((unused));
-static int D_800DC18C;
+static int _currentCreditsFrame;
 static int _textStreamDelay;
 static u_char* _creditsBytestreamHead;
 static short _scrollSpeed;
-static short D_800DC19A;
-static u_short D_800DC19C;
+static short _frameStartVsync;
+static u_short _masterBrightness;
 static u_short _1 __attribute__((unused));
 
 static void _renderVagrantStory(_creditsElement* element)
 {
-    SPRT* sprt;
-    int var_fp;
-    void** s0;
-    int new_var;
-
-    sprt = *(SPRT**)0x1F800000;
+    int brightness;
+    void** p;
+    int index;
+    SPRT* sprt = *(SPRT**)0x1F800000;
 
     switch (element->state) {
     case 1:
-        element->x = 61 << 8;
-        element->y = 80 << 8;
+        element->x = 61 * 256;
+        element->y = 80 * 256;
         element->currentStep = 0;
         element->state = 2;
         /* fallthrough */
 
     case 2:
-        var_fp = (D_800DC19C * ++element->currentStep) / 60;
+        brightness = (_masterBrightness * ++element->currentStep) / 60;
 
         if (element->currentStep == 60) {
             element->state = 3;
@@ -292,7 +284,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case 3:
-        var_fp = D_800DC19C;
+        brightness = _masterBrightness;
 
         if (++element->currentStep == 60) {
             element->state = 4;
@@ -300,7 +292,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case 4:
-        var_fp = D_800DC19C;
+        brightness = _masterBrightness;
         element->y += _scrollSpeed;
 
         if (element->y < -(60 << 8)) {
@@ -316,30 +308,30 @@ static void _renderVagrantStory(_creditsElement* element)
     setUV0(sprt, 0, 96);
     setWH(sprt, 208, 48);
     setClut(sprt, 896, 80);
-    sprt->r0 = sprt->g0 = sprt->b0 = var_fp;
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    s0 = (void**)0x1F800000;
-    setaddr(sprt, getaddr(s0[1] + 12));
-    setaddr(s0[1] + 12, sprt++);
+    p = (void**)0x1F800000;
+    setaddr(sprt, getaddr(p[1] + 12));
+    setaddr(p[1] + 12, sprt++);
 
-    new_var = 0;
-    s0[new_var] = sprt;
+    index = 0;
+    p[index] = sprt;
 
     sprt = _insertTpage(0x2E, 3);
 
     SetSprt(sprt);
     setSemiTrans(sprt, 1);
     setXY0(sprt, element->x >> 8, element->y >> 8);
-    setUV0(sprt, 0, 0x60);
-    setWH(sprt, 0xD0, 0x30);
+    setUV0(sprt, 0, 96);
+    setWH(sprt, 208, 48);
     setClut(sprt, 896, 81);
-    sprt->r0 = sprt->g0 = sprt->b0 = var_fp;
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    setaddr(sprt, getaddr(s0[1] + 12));
-    setaddr(s0[1] + 12, sprt++);
+    setaddr(sprt, getaddr(p[1] + 12));
+    setaddr(p[1] + 12, sprt++);
 
-    s0[new_var] = sprt;
-    s0[new_var] = _insertTpage(0x4E, 3);
+    p[index] = sprt;
+    p[index] = _insertTpage(0x4E, 3);
     return;
 }
 
@@ -437,18 +429,16 @@ static void _initTimDecompress(_timData*, void*);
 
 static void _renderllustration(_creditsElement* element)
 {
-    static short D_800DBB68;
-    static short D_800DBB6A;
-    static u_short D_800DBB6C;
+    static short brightness;
+    static short tpageX;
+    static u_short clutY;
     static u_short _ __attribute__((unused));
 
     SPRT* sprt;
-    short temp_v0;
     void** p;
+    short state = element->state - 1;
 
-    temp_v0 = element->state - 1;
-
-    switch (temp_v0) {
+    switch (state) {
     case 0:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
             _initTimDecompress(
@@ -457,12 +447,12 @@ static void _renderllustration(_creditsElement* element)
 
         element->currentStep = 0;
         element->state = 2;
-        D_800DBB6A = (element->illustId % 5) * 192;
-        D_800DBB6C = (element->illustId % 5) + 480;
+        tpageX = (element->illustId % 5) * 192;
+        clutY = (element->illustId % 5) + 480;
         /* fallthrough */
 
     case 1:
-        D_800DBB68 = (D_800DC19C * element->currentStep) / 80;
+        brightness = (_masterBrightness * element->currentStep) / 80;
 
         if (++element->currentStep == 80) {
             int var_a0 = 3;
@@ -475,7 +465,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 2:
-        D_800DBB68 = 128;
+        brightness = 128;
 
         if (++element->currentStep == _illustrationTimers[element->illustId]) {
             element->currentStep = 0;
@@ -485,7 +475,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 3:
-        D_800DBB68 = (D_800DC19C * (80 - element->currentStep)) / 80;
+        brightness = (_masterBrightness * (80 - element->currentStep)) / 80;
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
@@ -496,7 +486,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case 4:
-        D_800DBB68 = 0x80;
+        brightness = 128;
         break;
     }
 
@@ -505,52 +495,45 @@ static void _renderllustration(_creditsElement* element)
 
     SetSprt(sprt);
     setXY0(sprt, 0, 0);
-    setWH(sprt, 0xA0, 0xE0);
+    setWH(sprt, 160, 224);
     setUV0(sprt, 0, 0);
     setSemiTrans(sprt, 1);
-    setClut(sprt, 0, D_800DBB6C);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DBB68;
+    setClut(sprt, 0, clutY);
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
     AddPrim(p[1] + 0x10, sprt++);
 
     p[0] = sprt;
-    sprt = _insertTpage(getTPage(1, 2, D_800DBB6A, 256), 4);
+    sprt = _insertTpage(getTPage(1, 2, tpageX, 256), 4);
 
     SetSprt(sprt);
-    setXY0(sprt, 0xA0, 0);
-    setWH(sprt, 0xA0, 0xE0);
-    setUV0(sprt, 0x20, 0);
+    setXY0(sprt, 160, 0);
+    setWH(sprt, 160, 224);
+    setUV0(sprt, 32, 0);
     setSemiTrans(sprt, 1);
-    setClut(sprt, 0, D_800DBB6C);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DBB68;
+    setClut(sprt, 0, clutY);
+    sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
     AddPrim(p[1] + 0x10, sprt++);
 
     p[0] = sprt;
-    p[0] = _insertTpage(getTPage(1, 2, D_800DBB6A + 64, 256), 4);
+    p[0] = _insertTpage(getTPage(1, 2, tpageX + 64, 256), 4);
 }
 
 extern u_char _glyphWidths[];
 
 static int _creditsStrWidth(u_char* str)
 {
-    short width;
-    short i;
-    unsigned short charTableOffset;
-    short len;
-    int c;
-    int new_var;
-
-    len = *str++;
-    width = 0;
-    charTableOffset = 0;
-    i = 0;
+    short len = *str++;
+    short width = 0;
+    unsigned short charTableOffset = 0;
+    short i = 0;
 
     for (i = 0; i < len; ++i, ++str) {
+        int _;
+        int c = *str;
 
-        c = *str;
-
-        if (c < 32u) {
+        if ((unsigned)c < ' ') {
             switch (c) {
             case 1:
                 charTableOffset = 0;
@@ -563,7 +546,7 @@ static int _creditsStrWidth(u_char* str)
                 break;
             }
         } else {
-            width += _glyphWidths[(charTableOffset - (new_var = 32)) + c] - 1;
+            width += _glyphWidths[(charTableOffset - (_ = 32)) + c] - 1;
         }
     }
 
@@ -632,7 +615,7 @@ static void _renderText(_creditsElement* element)
             setWH(sprt, glyphWidth, 16);
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
-            sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+            sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
             addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
             ++sprt;
         }
@@ -650,7 +633,7 @@ static void _renderText(_creditsElement* element)
         setUV0(sprt, 0, 208);
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
-        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
         AddPrim(scratch->unk4 + 12, sprt++);
 
         poly = (POLY_FT4*)sprt;
@@ -667,7 +650,7 @@ static void _renderText(_creditsElement* element)
         poly->tpage = getTPage(clut4Bit, semiTransparencyHalf, 960, 256);
         poly->clut = getClut(960, 480);
         poly->x1 = poly->x3 = x;
-        poly->r0 = poly->g0 = poly->b0 = D_800DC19C;
+        poly->r0 = poly->g0 = poly->b0 = _masterBrightness;
         AddPrim(scratch->unk4 + 12, poly++);
 
         sprt = (SPRT*)poly;
@@ -676,7 +659,7 @@ static void _renderText(_creditsElement* element)
         setXY0(sprt, x, y);
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
-        sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+        sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
         AddPrim(scratch->unk4 + 12, sprt++);
     }
 
@@ -685,56 +668,53 @@ static void _renderText(_creditsElement* element)
         _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
-static void _renderCopyright(_creditsElement* arg0)
+static void _renderCopyright(_creditsElement* element)
 {
+    int index;
     void** p = (void**)0x1F800000;
     SPRT* sprt = p[0];
-    int new_var;
 
-    if (arg0->state == 1) {
-        arg0->x = 100 << 8;
-        arg0->y = 224 << 8;
-        arg0->state = 2;
+    if (element->state == 1) {
+        element->x = 100 << 8;
+        element->y = 224 << 8;
+        element->state = 2;
     }
 
-    arg0->y += _scrollSpeed;
+    element->y += _scrollSpeed;
 
-    if (arg0->y < -(12 << 8)) {
-        arg0->state = -1;
+    if (element->y < -(12 << 8)) {
+        element->state = -1;
         return;
     }
 
     SetSprt(sprt);
-    setXY0(sprt, arg0->x >> 8, arg0->y >> 8);
-    setUV0(sprt, 0, 0x30);
-    setWH(sprt, 0x78, 0x10);
+    setXY0(sprt, element->x >> 8, element->y >> 8);
+    setUV0(sprt, 0, 48);
+    setWH(sprt, 120, 16);
     setClut(sprt, 960, 64);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
 
     setaddr(sprt, ((u_long*)p[1])[3]);
     setaddr(p[1] + 12, sprt++);
 
-    new_var = 0;
-    p[new_var] = sprt;
-    p[new_var] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
+    index = 0;
+    p[index] = sprt;
+    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
 }
 
-static void _renderBackground(_creditsElement* arg0 __attribute__((unused)))
+static void _renderBackground(_creditsElement* element __attribute__((unused)))
 {
     TILE* tile;
     POLY_G4* poly;
-    SPRT* sprt;
-    void** data;
+    void** data = (void**)0x1F800000;
+    SPRT* sprt = data[0];
 
-    data = (void**)0x1F800000;
-
-    sprt = data[0];
     SetSprt(sprt);
     setXY0(sprt, 0, 10);
     setUV0(sprt, 0, 10);
     setWH(sprt, 256, 204);
     setClut(sprt, 780, 255);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
@@ -744,7 +724,7 @@ static void _renderBackground(_creditsElement* arg0 __attribute__((unused)))
     setXY0(sprt, 256, 10);
     setWH(sprt, 64, 204);
     setClut(sprt, 780, 255);
-    sprt->r0 = sprt->g0 = sprt->b0 = D_800DC19C;
+    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
@@ -801,35 +781,36 @@ static void _backgroundFadeIn(_creditsElement* element)
     }
 
     if (++element->currentStep == 128) {
-        D_800DC189 = 0;
+        _isFadedOut = 0;
         element->state = -1;
     }
 
-    D_800DC19C = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
+    _masterBrightness = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
 }
 
-static void _backgroundFadeOut(_creditsElement* arg0)
+static void _backgroundFadeOut(_creditsElement* element)
 {
-    if (arg0->state == 1) {
-        arg0->state = 2;
-        arg0->currentStep = 0;
-        D_800DC189 = 1;
+    if (element->state == 1) {
+        element->state = 2;
+        element->currentStep = 0;
+        _isFadedOut = 1;
     }
 
-    if (++arg0->currentStep == 128) {
-        if (arg0->width != 0) {
+    if (++element->currentStep == 128) {
+        if (element->width != 0) {
             _creditsComplete = 1;
         }
-        arg0->state = -1;
+        element->state = -1;
     }
 
-    D_800DC19C = 128 - ((_ease(easeModeLinear, arg0->currentStep, 128) << 7) >> 0xC);
+    _masterBrightness =
+        128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
 }
 
 static void _renderFadeOut(_creditsElement* element)
 {
-    void** s2 = (void**)0x1F800000;
-    TILE* temp_s0 = s2[0];
+    void** p = (void**)0x1F800000;
+    TILE* tile = p[0];
 
     if (element->state == 1) {
         element->currentStep = 0;
@@ -840,17 +821,17 @@ static void _renderFadeOut(_creditsElement* element)
         _creditsComplete = 1;
     }
 
-    SetTile(temp_s0);
-    setSemiTrans(temp_s0, 1);
-    temp_s0->r0 = temp_s0->g0 = temp_s0->b0 =
+    SetTile(tile);
+    setSemiTrans(tile, 1);
+    tile->r0 = tile->g0 = tile->b0 =
         (_ease(easeModeEaseOut, element->currentStep, 128) * 255) >> 0xC;
-    setWH(temp_s0, 320, 240);
-    setXY0(temp_s0, 0, 0);
+    setWH(tile, 320, 240);
+    setXY0(tile, 0, 0);
 
-    AddPrim(s2[1], temp_s0++);
+    AddPrim(p[1], tile++);
 
-    s2[0] = temp_s0;
-    s2[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
+    p[0] = tile;
+    p[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
 static void _streamEndingXa(void);
@@ -883,8 +864,8 @@ void vs_ending_exec(void)
     vs_main_CdQueueSlot* slot;
 
     _initEnvironment();
-    SetGeomOffset(0xA0, 0x70);
-    SetGeomScreen(0x200);
+    SetGeomOffset(160, 112);
+    SetGeomScreen(512);
     _setDrawEnv(vs_main_drawEnv);
     _setDrawEnv(&vs_main_drawEnv[1]);
 
@@ -918,7 +899,7 @@ void vs_ending_exec(void)
         vs_main_freeCdQueueSlot(slot);
     }
 
-    D_800DC19C = 0;
+    _masterBrightness = 0;
     _skipInvoked = 0;
 
     _resetElements();
@@ -930,8 +911,8 @@ void vs_ending_exec(void)
     _scrollSpeed = -128;
     _creditsComplete = 0;
     _textStreamDelay = 0;
-    D_800DC18C = 0;
-    D_800DC189 = 1;
+    _currentCreditsFrame = 0;
+    _isFadedOut = 1;
 
     _streamEndingXa();
     _renderCredits();
@@ -968,7 +949,7 @@ static void _renderCredits(void)
 {
     while (_creditsComplete == 0) {
 
-        D_800DC19A = VSync(1);
+        _frameStartVsync = VSync(1);
 
         _beginFrame();
         _parseCreditsScript();
@@ -982,7 +963,7 @@ static void _renderCredits(void)
 
         _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
 
-        ++D_800DC18C;
+        ++_currentCreditsFrame;
     }
 }
 
@@ -993,8 +974,10 @@ static void* _insertTpage(int tPage, int otOffset)
 
     scratch = (void**)0x1F800000;
     drTpage = scratch[0];
+
     SetDrawTPage(drTpage, 0, 1, tPage & 0xFFFF);
     AddPrim(scratch[1] + (otOffset * 4), drTpage++);
+
     return drTpage;
 }
 
@@ -1024,6 +1007,7 @@ static void _resetElements(void)
 {
     short i;
     _creditsElement* element = _creditsElements;
+
     for (i = 0; i < 32; ++i, ++element) {
         element->state = 0;
     }
@@ -1032,23 +1016,25 @@ static void _resetElements(void)
 static int _renderElements(void)
 {
     short i;
-    short var_s3 = 0;
+    short elementsRendered = 0;
     _creditsElement* element = _creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
         if (element->state < 0) {
             element->state = 0;
         } else if (element->state > 0) {
-            ++var_s3;
+            ++elementsRendered;
             element->renderer(element);
         }
     }
 
-    return var_s3;
+    return elementsRendered;
 }
 
 static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
+    extern void SystemError(char, long) __attribute__((noreturn));
+
     short i;
     _creditsElement* element = &_creditsElements[1];
 
@@ -1078,11 +1064,21 @@ static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
 
 static void _parseCreditsScript(void)
 {
-    enum opcodes { wait = 1 };
-
-    u_char* bytestream;
-    int op;
-    int delay;
+    enum opcodes {
+        waitOp = 1,
+        textOp,
+        enableBgOp,
+        specialOp,
+        copyrightSpecialOp = 0,
+        titleSpecialOp,
+        finSpecialOp,
+        episodeSpecialOp,
+        fadeInOp = 5,
+        fadeOutOp,
+        freezeOp,
+        setTimerOp,
+        endStreamOp = 0xFF,
+    };
 
     if (_textStreamDelay != 0) {
         --_textStreamDelay;
@@ -1090,83 +1086,85 @@ static void _parseCreditsScript(void)
     }
 
     while (1) {
-        bytestream = _creditsBytestreamHead;
+        int op;
+        int delay;
+        u_char* bytestream = _creditsBytestreamHead;
 
         switch (bytestream[0]) {
 
-        // 0x1 Wait: u8 duration
-        case wait:
+        // Wait: u8 duration
+        case waitOp:
             _creditsBytestreamHead = bytestream + 1;
             delay = bytestream[1] * 2;
             _creditsBytestreamHead = bytestream + 2;
             _textStreamDelay = delay;
             return;
 
-        // 0x2 Render text: u8 len
-        case 2:
+        // Render text: u8 len
+        case textOp:
             _creditsBytestreamHead = bytestream + 1;
             _addRenderer(_renderText)->data = _creditsBytestreamHead;
             _creditsBytestreamHead += _creditsBytestreamHead[0] + 1;
             break;
 
-        // 0x3 Enable background illustrations
-        case 3:
+        // Enable background illustrations
+        case enableBgOp:
             _creditsBytestreamHead = bytestream + 1;
             _addRenderer(_renderllustration)->illustId = 0;
             break;
 
-        // 0x4 Render special: u8 secondary op
-        case 4:
+        // Render special: u8 secondary op
+        case specialOp:
             _creditsBytestreamHead = bytestream + 1;
             op = bytestream[1];
             _creditsBytestreamHead = bytestream + 2;
 
             switch (op) {
-            case 0:
+            case copyrightSpecialOp:
                 _addRenderer(_renderCopyright);
                 break;
 
-            case 1:
+            case titleSpecialOp:
                 _addRenderer(_renderVagrantStory);
                 break;
 
-            case 2:
+            case finSpecialOp:
                 _addRenderer(_renderFin);
                 break;
 
-            case 3:
+            case episodeSpecialOp:
                 _addRenderer(_renderPhantomPain);
                 break;
             }
             break;
 
-        // 0x5 Fade in
-        case 5:
+        // Fade in
+        case fadeInOp:
             _creditsBytestreamHead = bytestream + 1;
             _replaceMainRenderer(_backgroundFadeIn);
             break;
 
-        // 0x6 Fade out
-        case 6:
+        // Fade out
+        case fadeOutOp:
             _creditsBytestreamHead = bytestream + 1;
             _replaceMainRenderer(_backgroundFadeOut)->width = 0;
             break;
 
-        // 0x7 Freeze scrolling
-        case 7:
+        // Freeze scrolling
+        case freezeOp:
             _creditsBytestreamHead = bytestream + 1;
             _scrollSpeed = 0;
             break;
 
-        // 0x8 Set illustration timer: u8 illustration id, u16 duration
-        case 8:
+        // Set illustration timer: u8 illustration id, u16 duration
+        case setTimerOp:
             *(_illustrationTimers + bytestream[1]) =
                 (bytestream[2] + (bytestream[3] << 8)) - 160;
             _creditsBytestreamHead = bytestream + 4;
             break;
 
-        // 0xFF End of stream
-        case 255:
+        // End of stream
+        case endStreamOp:
             _creditsComplete = 1;
             return;
 
@@ -1225,7 +1223,7 @@ static int _decompressTim(void)
     while (1) {
         u_char op;
 
-        if (VSync(1) - D_800DC19A > 200) {
+        if (VSync(1) - _frameStartVsync > 200) {
             return 0;
         }
 
@@ -1291,10 +1289,10 @@ __attribute__((unused)) static void _renderDebugString(
     SPRT_8* sprt = *(void**)0x1F800000;
 
     for (c = *string; c != 0; c = *++string, x += 7) {
-        int temp_v0 = c - ' ';
-        u_char c_2 = temp_v0;
+        int cTemp = c - ' ';
+        u_char c_2 = cTemp;
 
-        if (((temp_v0 & 0xFF) < 96u) && (c_2 != 0)) {
+        if (((cTemp & 0xFF) < 96u) && (c_2 != 0)) {
             u_long** ot;
 
             if (c_2 == ('\\' - ' ')) {
@@ -1365,24 +1363,24 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
     vs_main_frameDuration = 0;
 }
 
-static int _drawScreen(u_long* arg0)
+static int _drawScreen(u_long* ot)
 {
-    int _[2];
-    int temp_s1;
+    int _[2] __attribute__((unused));
+    int vSync;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
 
     DrawSync(0);
 
-    temp_s1 = vs_main_gametimeUpdate(0);
+    vSync = vs_main_gametimeUpdate(0);
 
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
-    DrawOTag(arg0);
+    DrawOTag(ot);
 
     ++vs_main_frameDuration;
 
-    return temp_s1;
+    return vSync;
 }
 
 static void _updateTitles(void);
@@ -1396,7 +1394,7 @@ static void _do_updateClearGameStats(void)
         vs_main_scoredata.completionTimeMinutes =
             (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
     } else {
-        int minutes = (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
+        u_int minutes = (vs_main_gametime.t.h * 60) + vs_main_gametime.t.m;
         if (minutes < vs_main_scoredata.completionTimeMinutes) {
             vs_main_scoredata.completionTimeMinutes = minutes;
             vs_main_scoredata.clearCount = vs_main_stateFlags.clearCount;
@@ -1406,7 +1404,7 @@ static void _do_updateClearGameStats(void)
     _updateTitles();
     vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
 
-    for (i = 0x10; i < 0x440; ++i) {
+    for (i = 16; i < 1088; ++i) {
         ((u_char*)&vs_main_stateFlags)[i] = 0;
     }
 
@@ -1571,12 +1569,12 @@ static void* timData;
 static u_int _rank;
 static int _clearCount;
 static u_int _score;
-static int _mapCompletion;
+static u_int _mapCompletion;
 static u_int _onScreenMapCompletion;
-static int _onScreenScore;
+static u_int _onScreenScore;
 static int _submenuState;
 static int _screenTimer;
-static int D_800DC210;
+static int _congratulationsAnimSkip;
 
 static int _initCongratulationsScreen(void);
 static int _renderCongratulationsScreen(void);
@@ -1631,8 +1629,6 @@ static int _initCongratulationsScreen(void)
 
     TIM_IMAGE tim;
     int i;
-    int mapCompletion;
-    int chestsOpened;
 
     if (_submenuState == 0) {
 
@@ -1676,6 +1672,8 @@ static int _initCongratulationsScreen(void)
         ++_submenuState;
 
     } else if (_submenuState == 2) {
+        u_int mapCompletion;
+        u_int chestsOpened;
 
         vs_main_freeHeapR(timData);
 
@@ -1683,7 +1681,7 @@ static int _initCongratulationsScreen(void)
         _onScreenMapCompletion = 0;
         _onScreenScore = 0;
         _screenTimer = 0;
-        D_800DC210 = 0;
+        _congratulationsAnimSkip = 0;
         _clearCount = vs_main_stateFlags.clearCount;
 
         for (i = 0; i < 16; ++i) {
@@ -1760,7 +1758,7 @@ static void _renderRiskbreakerRank(int, int, int);
 
 static int _renderCongratulationsScreen(void)
 {
-    if (D_800DC210 == 0) {
+    if (_congratulationsAnimSkip == 0) {
 
         if (_screenTimer == 208) {
             vs_main_playSfxDefault(126, 119);
@@ -1769,8 +1767,9 @@ static int _renderCongratulationsScreen(void)
 
         _fadeIn(_screenTimer);
         _renderCongratulations(160, 40, _screenTimer);
-        _renderIncrementalScore(160, 80, _screenTimer - 32, D_800DC210);
-        _renderIncrementalMapCompletion(160, 102, _screenTimer - 112, D_800DC210);
+        _renderIncrementalScore(160, 80, _screenTimer - 32, _congratulationsAnimSkip);
+        _renderIncrementalMapCompletion(
+            160, 102, _screenTimer - 112, _congratulationsAnimSkip);
         _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
         _renderRiskbreakerRank(160, 154, _screenTimer - 208);
 
@@ -1779,7 +1778,7 @@ static int _renderCongratulationsScreen(void)
         }
 
         if (vs_main_buttonsPressed.all != 0) {
-            D_800DC210 = 1;
+            _congratulationsAnimSkip = 1;
             _screenTimer = 0;
         }
 
@@ -2238,7 +2237,7 @@ static void _renderIncrementalMapCompletion(
 
 static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 {
-    static CVECTOR D_800DBAA8[] = {
+    static CVECTOR colors[] = {
         { 200, 80, 20 },
         { 200, 80, 20 },
     };
@@ -2252,14 +2251,14 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        D_800DBAA8[0].cd = timer;
-        _renderTextureFadeInTint(x - (_disMap[12].w >> 1), y, 12, D_800DBAA8);
+        colors[0].cd = timer;
+        _renderTextureFadeInTint(x - (_disMap[12].w >> 1), y, 12, colors);
     }
 }
 
 static void _renderRiskbreakerRank(int x, int y, int timer)
 {
-    static CVECTOR D_800DBAB0[] = {
+    static CVECTOR colors[] = {
         { 128, 128, 128 },
         { 128, 128, 128 },
     };
@@ -2279,7 +2278,7 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
 
     if (timer > 0) {
 
-        D_800DBAB0[0].cd = timer;
+        colors[0].cd = timer;
 
         for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
             xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
@@ -2289,7 +2288,7 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
         x -= xInset;
 
         for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
-            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], D_800DBAB0);
+            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], colors);
 
             x += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
         }
@@ -2300,7 +2299,6 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
 
 static void _parseTim(u_int* data, TIM_IMAGE* tim)
 {
-
     ++data;
     tim->mode = *data;
     ++data;

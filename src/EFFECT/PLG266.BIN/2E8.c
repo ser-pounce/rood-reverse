@@ -1,14 +1,16 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800F9AE8);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800F9AE8
+#define VS_PARTICLE_TARGET_FUNCTION func_800FA270
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FA488
+#define VS_PARTICLE_CORNER_STATE D_800FEEA0
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FA270);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FA938
+#include "src/EFFECT/particleRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FA488);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FA938);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FB4F8);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FB4F8
+#include "src/EFFECT/particleDispatch.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FB78C);
 
@@ -20,16 +22,12 @@ INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FC5DC);
 
 INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FCB0C);
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FCD80);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FD51C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FD734);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FDBF8);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FDD70);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FDEFC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FE958);
+#define VS_TRAIL_ORIGIN_FUNCTION func_800FCD80
+#define VS_TRAIL_TARGET_FUNCTION func_800FD51C
+#define VS_TRAIL_CONTROL_FUNCTION func_800FD734
+#define VS_TRAIL_INIT_FUNCTION func_800FDBF8
+#define VS_TRAIL_UPDATE_FUNCTION func_800FDD70
+#define VS_TRAIL_RENDER_FUNCTION func_800FDEFC
+#define VS_TRAIL_DISPATCH_FUNCTION func_800FE958
+#define VS_TRAIL_CORNER_STATE D_800FEEA8
+#include "src/EFFECT/trails5.h"

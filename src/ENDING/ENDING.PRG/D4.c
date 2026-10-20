@@ -10,6 +10,10 @@
 #include <memory.h>
 #include <stdio.h>
 
+enum {
+    maximumBrightness = 128
+};
+
 // Almost a byte-identical copy of rsin except for register differences
 
 static int _sin(int angle)
@@ -80,6 +84,12 @@ static int _ease(short mode, short currentStep, short totalSteps);
 
 static void _renderPhantomPain(_creditsElement* element)
 {
+    enum phaseDurations {
+        fadeInDuration = 90,
+        holdDuration = 120,
+        fadeOutDuration = 90,
+    };
+
     static int wavePhase;
     static int rippleAge;
     static int _[2] __attribute__((unused));
@@ -120,28 +130,28 @@ static void _renderPhantomPain(_creditsElement* element)
         /* fallthrough */
 
     case creditsElementStatePhase1:
-        brightness = element->currentStep * 128 / 90;
+        brightness = element->currentStep * maximumBrightness / fadeInDuration;
         ++rippleAge;
 
-        if (++element->currentStep == 90) {
+        if (++element->currentStep == fadeInDuration) {
             element->currentStep = 0;
             element->state = creditsElementStatePhase2;
         }
         break;
 
     case creditsElementStatePhase2:
-        brightness = 128;
+        brightness = maximumBrightness;
 
-        if (++element->currentStep == 120) {
+        if (++element->currentStep == holdDuration) {
             element->currentStep = 0;
             element->state = creditsElementStatePhase3;
         }
         break;
 
     case creditsElementStatePhase3:
-        brightness = (90 - element->currentStep) * 128 / 90;
+        brightness = (fadeOutDuration - element->currentStep) * maximumBrightness / fadeOutDuration;
 
-        if (++element->currentStep == 90) {
+        if (++element->currentStep == fadeOutDuration) {
             element->state = creditsElementStateFinished;
         }
         break;
@@ -1186,13 +1196,13 @@ static void _parseCreditsScript(void)
 static int _ease(short mode, short currentStep, short totalSteps)
 {
     switch (mode) {
-    case 0:
+    case easeModeLinear:
         return (currentStep * ONE) / totalSteps;
-    case 1:
+    case easeModeEaseOut:
         return rsin((currentStep * (ONE / 4)) / totalSteps);
-    case 2:
+    case easeModeEaseInOut:
         return (rcos(((currentStep * (ONE / 2)) / totalSteps) + (ONE / 2)) + ONE) >> 1;
-    case 3:
+    case easeModeEaseIn:
         return rsin(((currentStep * (ONE / 4)) / totalSteps) - (ONE / 4)) + ONE;
     }
 }

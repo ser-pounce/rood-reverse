@@ -1,5 +1,6 @@
-/* Shared textured particle effect entry point. Include after particleSetup.h and
- * particleRender.h; the overlay supplies the entry points. */
+/* Shared particle effect entry point. Include after particleSetup.h and
+ * particleRender.h, or particleLineRender.h with VS_PARTICLE_UNTEXTURED defined; the
+ * overlay supplies the entry points. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"
@@ -16,7 +17,11 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     switch (arg1) {
     case 1:
+#ifdef VS_PARTICLE_UNTEXTURED
+        state = vs_main_allocHeapR(sizeof *state - sizeof state->unk10);
+#else
         state = vs_main_allocHeapR(sizeof *state);
+#endif
         arg0->unk8 = state;
         state->unk1 = arg2 >> 8;
         state->unk0 = arg2;
@@ -32,8 +37,10 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         }
 
         state->unk4 = vs_main_allocHeapR(count * 32);
+#ifndef VS_PARTICLE_UNTEXTURED
         func_800D6CCC((int*)&state->unk10);
         func_800D6CF0(&state->unk10, effect->unk1, effect->unk0);
+#endif
         break;
 
     case 2:
@@ -86,3 +93,4 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_PARTICLE_RENDER_FUNCTION
 #undef VS_PARTICLE_DISPATCH_FUNCTION
 #undef VS_PARTICLE_CORNER_STATE
+#undef VS_PARTICLE_UNTEXTURED

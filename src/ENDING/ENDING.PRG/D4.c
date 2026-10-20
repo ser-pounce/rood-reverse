@@ -1921,7 +1921,7 @@ static int _initCongratulationsScreen(void)
 static void _fadeIn(int);
 static void _renderScore(int, int, int, int);
 static void _renderIncrementalScore(int, int, int, int);
-static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void _renderMapCompletion(int arg0, int arg1, int arg2, int colors);
 static void _renderIncrementalMapCompletion(int, int, int, int);
 static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
 static void _renderRiskbreakerRank(int, int, int);
@@ -2178,7 +2178,7 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 
     char buf[16];
     int i;
-    int v1;
+    int textW;
 
     CLAMP_ANIMATION_TIMER(timer)
 
@@ -2190,9 +2190,9 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 
     sprintf(buf, "%09d", _score);
 
-    v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
-        + _disMap[disIndexRank0Pts].w;
-    x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
+    textW = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+          + _disMap[disIndexRank0Pts].w;
+    x -= (_disMap[disIndexRank0Comma].w * 2 + textW + 116) >> 1;
 
     _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
 
@@ -2228,9 +2228,9 @@ static void _renderIncrementalScore(
     };
 
     char buf[16];
-    int temp_s2;
+    int maxX;
     int i;
-    int v1;
+    int textW;
 
     CLAMP_ANIMATION_TIMER(timer)
 
@@ -2238,7 +2238,7 @@ static void _renderIncrementalScore(
         return;
     }
 
-    temp_s2 = x + (timer * 8);
+    maxX = x + (timer * 8);
 
     if (_score != 0 && timer >= 32) {
 
@@ -2264,29 +2264,29 @@ static void _renderIncrementalScore(
 
     sprintf(buf, "%09d", _onScreenScore);
 
-    v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
-       + _disMap[disIndexRank0Pts].w;
-    x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
+    textW = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+          + _disMap[disIndexRank0Pts].w;
+    x -= (_disMap[disIndexRank0Comma].w * 2 + textW + 116) >> 1;
 
-    _renderTextureWipe(x, y, disIndexRank0Score, colors, temp_s2);
+    _renderTextureWipe(x, y, disIndexRank0Score, colors, maxX);
 
     x += _disMap[disIndexRank0Score].w;
 
-    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s2);
+    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, maxX);
 
     x += _disMap[disIndexRank0Colon].w + 2;
 
     for (i = 0; i < 9; ++i) {
-        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
+        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, maxX);
         x += 12;
 
         if ((i == 2) || (i == 5)) {
-            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
+            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, maxX);
             x += 3 + _disMap[disIndexRank0Comma].w;
         }
     }
 
-    _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, temp_s2);
+    _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, maxX);
 }
 
 /**

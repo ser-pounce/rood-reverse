@@ -13,10 +13,9 @@
 #include "src/EFFECT/particleDispatch.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FB6AC
+#define VS_PARTICLE_TARGET_FUNCTION func_800FBE34
 #define VS_PARTICLE_CORNER_STATE D_800FCCA4
 #include "src/EFFECT/particleSetup.h"
-
-INCLUDE_ASM("build/src/EFFECT/PLG114.BIN/nonmatchings/208", func_800FBE34);
 
 INCLUDE_ASM("build/src/EFFECT/PLG114.BIN/nonmatchings/208", func_800FC04C);
 

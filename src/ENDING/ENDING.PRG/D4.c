@@ -10,12 +10,12 @@
 #include <memory.h>
 #include <stdio.h>
 
-enum {
-    maximumBrightness = 128
-};
+enum { maximumBrightness = 128 };
 
-// Almost a byte-identical copy of rsin except for register differences
-
+/**
+ * Computes fixed-point sine.
+ * Almost a byte-identical copy of rsin except for register differences
+ */
 static int _sin(int angle)
 {
     u_long value = (u_long)_trig_table;
@@ -82,6 +82,9 @@ enum easeMode {
 
 static int _ease(short mode, short currentStep, short totalSteps);
 
+/**
+ * Renders "The Phantom Pain" with a ripple effect.
+ */
 static void _renderPhantomPain(_creditsElement* element)
 {
     enum phaseDurations {
@@ -149,7 +152,8 @@ static void _renderPhantomPain(_creditsElement* element)
         break;
 
     case creditsElementStatePhase3:
-        brightness = (fadeOutDuration - element->currentStep) * maximumBrightness / fadeOutDuration;
+        brightness = (fadeOutDuration - element->currentStep) * maximumBrightness
+                   / fadeOutDuration;
 
         if (++element->currentStep == fadeOutDuration) {
             element->state = creditsElementStateFinished;
@@ -202,6 +206,9 @@ static void _renderPhantomPain(_creditsElement* element)
 
 static void* _insertTpage(int tPage, int otOffset);
 
+/**
+ * Renders the final "Fin" texture ("終劇" for the JP version).
+ */
 static void _renderFin(_creditsElement* element)
 {
     int step0;
@@ -279,6 +286,9 @@ static short _frameStartVsync;
 static u_short _masterBrightness;
 static u_short _1 __attribute__((unused));
 
+/**
+ * Renders the game title.
+ */
 static void _renderVagrantStory(_creditsElement* element)
 {
     int brightness;
@@ -357,6 +367,9 @@ static void _renderVagrantStory(_creditsElement* element)
 
 #pragma region dead_code
 
+/**
+ * Calculates the distance from the screen center, assuming a 320x224 screen size.
+ */
 static int _distanceFromScreencenter(int x, int y)
 {
     x -= 160;
@@ -378,6 +391,9 @@ static int _distanceFromScreencenter(int x, int y)
 #define FADE_IN(i) FADE(i, base + RADIAL_TERM(i), CLAMP_HI)
 #define FADE_OUT(i) FADE(i, base - RADIAL_TERM(i), CLAMP_LO)
 
+/**
+ * Performs a radial fade in/out of the provided poly.
+ */
 __attribute__((unused)) static void _updateRadialFadePoly(
     POLY_GT4* poly, short progress, short fadeOut)
 {
@@ -451,6 +467,11 @@ static void* _compressedIllustBufs[16];
 static void _loadTim(_timData*);
 static void _initTimDecompress(_timData*, void*);
 
+/**
+ * Renders a background illustration. Illustration IDs greater
+ * than 4 are first decompressed. The illustrations are rendered by
+ * subtractive blending with the background.
+ */
 static void _renderllustration(_creditsElement* element)
 {
     static short brightness;
@@ -545,6 +566,9 @@ static void _renderllustration(_creditsElement* element)
 
 extern u_char _glyphWidths[];
 
+/**
+ * Measures the rendered width of a string.
+ */
 static int _creditsStrWidth(u_char* str)
 {
     short len = *str++;
@@ -576,6 +600,9 @@ static int _creditsStrWidth(u_char* str)
     return width;
 }
 
+/**
+ * Renders a string from the credits script.
+ */
 static void _renderText(_creditsElement* element)
 {
     u_char* str;
@@ -691,6 +718,9 @@ static void _renderText(_creditsElement* element)
         _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
+/**
+ * Renders the copyright line.
+ */
 static void _renderCopyright(_creditsElement* element)
 {
     int index;
@@ -725,6 +755,10 @@ static void _renderCopyright(_creditsElement* element)
     p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
 }
 
+/**
+ * Renders the credits background, including 10px letterboxing bars at the top
+ * and bottom, along with a 20px fade.
+ */
 static void _renderBackground(_creditsElement* element __attribute__((unused)))
 {
     TILE* tile;
@@ -732,6 +766,7 @@ static void _renderBackground(_creditsElement* element __attribute__((unused)))
     void** data = (void**)0x1F800000;
     SPRT* sprt = data[0];
 
+    // Draw background proper
     SetSprt(sprt);
     setXY0(sprt, 0, 10);
     setUV0(sprt, 0, 10);
@@ -751,6 +786,7 @@ static void _renderBackground(_creditsElement* element __attribute__((unused)))
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
+    // Fade top & bottom
     poly =
         (POLY_G4*)_insertTpage(getTPage(clut4Bit, semiTransparencyFull, 832, 0), 0x7FF);
     SetPolyG4(poly);
@@ -773,6 +809,7 @@ static void _renderBackground(_creditsElement* element __attribute__((unused)))
     setSemiTrans(poly, 1);
     AddPrim(data[1] + 8, poly++);
 
+    // Add letterboxing
     tile = (TILE*)poly;
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
@@ -780,6 +817,7 @@ static void _renderBackground(_creditsElement* element __attribute__((unused)))
     setXY0(tile, 0, 0);
     AddPrim(data[1] + 8, tile++);
 
+    // TODO: Top bar added twice, this can probably go
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
     setWH(tile, 320, 10);
@@ -796,7 +834,10 @@ static void _renderBackground(_creditsElement* element __attribute__((unused)))
     data[0] = _insertTpage(getTPage(clut8Bit, semiTransparencySubtract, 0, 0), 2);
 }
 
-static void _backgroundFadeIn(_creditsElement* element)
+/**
+ * Fades in over 128 steps, used for the start of the credits roll.
+ */
+static void _screenFadeIn(_creditsElement* element)
 {
     if (element->state == creditsElementStateStarting) {
         element->currentStep = 0;
@@ -811,7 +852,10 @@ static void _backgroundFadeIn(_creditsElement* element)
     _masterBrightness = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
 }
 
-static void _backgroundFadeOut(_creditsElement* element)
+/**
+ * Fades out over 128 steps, used for the end of the credits roll.
+ */
+static void _screenFadeOut(_creditsElement* element)
 {
     if (element->state == creditsElementStateStarting) {
         element->state = creditsElementStatePhase1;
@@ -830,6 +874,13 @@ static void _backgroundFadeOut(_creditsElement* element)
         128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
 }
 
+/**
+ * Fades out over 128 steps, with easing. Used when the player skips the credits,
+ * unclear why _screenFadeOut couldn't just be used.
+ *
+ * @param element The credits element being processed.
+ * @return The computed result.
+ */
 static void _renderFadeOut(_creditsElement* element)
 {
     void** p = (void**)0x1F800000;
@@ -867,6 +918,9 @@ static void _updateClearGameStats(void);
 static void _checkStreamXaEnd(void);
 static void _congratulationsScreen(void);
 
+/**
+ * Module entrypoint
+ */
 void vs_ending_exec(void)
 {
     extern u_char _credits[];
@@ -951,6 +1005,9 @@ void vs_ending_exec(void)
     _congratulationsScreen();
 }
 
+/**
+ * Initializes the DRAWENV struct.
+ */
 static void _setDrawEnv(DRAWENV* drawenv)
 {
     drawenv->isbg = 1;
@@ -968,6 +1025,9 @@ static int _decompressTim(void);
 static int _drawScreen(u_long*);
 static void _beginFrame(void);
 
+/**
+ * Runs the credits render loop until the credits end or the user skips.
+ */
 static void _renderCredits(void)
 {
     while (_creditsComplete == 0) {
@@ -990,6 +1050,9 @@ static void _renderCredits(void)
     }
 }
 
+/**
+ * Inserts a texture page into the ordering table at the requested offset.
+ */
 static void* _insertTpage(int tPage, int otOffset)
 {
     void** scratch;
@@ -1004,6 +1067,9 @@ static void* _insertTpage(int tPage, int otOffset)
     return drTpage;
 }
 
+/**
+ * Loads a TIM texture into memory.
+ */
 static void _loadTim(_timData* tim)
 {
     RECT rect;
@@ -1026,6 +1092,9 @@ static void _loadTim(_timData* tim)
     LoadImage(&rect, (void*)p->data);
 }
 
+/**
+ * Initializes the credits element buffer.
+ */
 static void _resetElements(void)
 {
     short i;
@@ -1036,6 +1105,10 @@ static void _resetElements(void)
     }
 }
 
+/**
+ * Enumerates the credits element buffer and renders active elements
+ * @return The count of elements rendered.
+ */
 static int _renderElements(void)
 {
     short i;
@@ -1054,6 +1127,12 @@ static int _renderElements(void)
     return elementsRendered;
 }
 
+/**
+ * Registers a new credits renderer and assigns it to the next available element slot.
+ *
+ * @param renderer The callback used to render the credits element.
+ * @return The newly activated credits element.
+ */
 static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
     extern void SystemError(char, long) __attribute__((noreturn));
@@ -1073,6 +1152,12 @@ static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
     SystemError('M', 100);
 }
 
+/**
+ * Replaces the first credits element's renderer if not active. In practice
+ * only used by the fade in and fade out ops.
+ *
+ * @return The active first credits element, or NULL if the slot is still active.
+ */
 static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
 {
     if (_creditsElements[0].state == creditsElementStateInactive) {
@@ -1085,6 +1170,11 @@ static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
     return NULL;
 }
 
+/**
+ * Parses the credits script. Up to 32 elements can be batch processed,
+ * less those currently active. Wait ops serve a dual purpose of allowing
+ * the function to yield to the parent, so the queue can be processed.
+ */
 static void _parseCreditsScript(void)
 {
     enum opcodes {
@@ -1164,13 +1254,13 @@ static void _parseCreditsScript(void)
         // Fade in
         case fadeInOp:
             _creditsBytestreamHead = bytestream + 1;
-            _replaceMainRenderer(_backgroundFadeIn);
+            _replaceMainRenderer(_screenFadeIn);
             break;
 
         // Fade out
         case fadeOutOp:
             _creditsBytestreamHead = bytestream + 1;
-            _replaceMainRenderer(_backgroundFadeOut)->width = 0;
+            _replaceMainRenderer(_screenFadeOut)->width = 0;
             break;
 
         // Freeze scrolling
@@ -1197,6 +1287,9 @@ static void _parseCreditsScript(void)
     }
 }
 
+/**
+ * Applies the selected easing curve.
+ */
 static int _ease(short mode, short currentStep, short totalSteps)
 {
     switch (mode) {
@@ -1211,6 +1304,9 @@ static int _ease(short mode, short currentStep, short totalSteps)
     }
 }
 
+/**
+ * Initializes the TIM decompression work buffer for the active illustration.
+ */
 static void _initTimDecompress(_timData* targetBuf, void* compressedData)
 {
     _compressionState = decompressionStateReady;
@@ -1218,6 +1314,12 @@ static void _initTimDecompress(_timData* targetBuf, void* compressedData)
     _currentDecompressedIllust = targetBuf;
 }
 
+/**
+ * Decompresses the current TIM image data into the target buffer.
+ * @return 0 if there is no work, or if 200 frames have passed
+ * since the render loop started. 1 if the content has just finished
+ * decompression.
+ */
 static int _decompressTim(void)
 {
     enum opcodes { singleByteRle = 0x7D, doubleByteRle, endOfStream, backReferenceFlag };
@@ -1307,6 +1409,9 @@ static int _decompressTim(void)
 
 #pragma region dead_code
 
+/**
+ * Renders a string using the loaded debug font.
+ */
 __attribute__((unused)) static void _renderDebugString(
     short x, short y, int clut, u_char* string)
 {
@@ -1348,6 +1453,9 @@ __attribute__((unused)) static void _renderDebugString(
 
 #pragma endregion
 
+/**
+ * Initializes the video mode and projection parameters for the credits.
+ */
 static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b)
 {
     RECT rect;
@@ -1390,6 +1498,12 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
     vs_main_frameDuration = 0;
 }
 
+/**
+ * Draws the current screen and synchronizes the frame.
+ *
+ * @param ot The ordering table used by the draw pass.
+ * @return Result of VSync(0).
+ */
 static int _drawScreen(u_long* ot)
 {
     int _[2] __attribute__((unused));
@@ -1412,6 +1526,9 @@ static int _drawScreen(u_long* ot)
 
 static void _updateTitles(void);
 
+/**
+ * Refreshes stats relevant for the completion screen.
+ */
 static void _do_updateClearGameStats(void)
 {
     int i;
@@ -1449,6 +1566,9 @@ static void _do_updateClearGameStats(void)
     D_80061068.mpdId = 0;
 }
 
+/**
+ * Initializes the credits environment and allocates OTs.
+ */
 static void _initEnvironment(void)
 {
     _initVideo(320, 240, 512, 0, 0, 0);
@@ -1459,8 +1579,15 @@ static void _initEnvironment(void)
     D_80055C80[1] = vs_main_allocHeap(0x2088);
 }
 
+/**
+ * Just calls _do_updateClearGameStats
+ */
 static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
 
+/**
+ * Sets the scratch OTs and draw state.
+ * @return The computed result.
+ */
 static void _beginFrame(void)
 {
     void* temp_a0;
@@ -1473,17 +1600,26 @@ static void _beginFrame(void)
     vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
 }
 
+/**
+ * Starts streaming the ending music track.
+ */
 static void _streamEndingXa(void)
 {
     vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
 }
 
+/**
+ * Checks whether the ending music stream has finished.
+ */
 static void _checkStreamXaEnd(void) { vs_main_checkStreamXaEnd(); }
 
 static int _countableRooms[] = { 0xFF3FFE00, 0xBEBFDFF7, 0xFFFFFDE8, 0xDFFFFE6F,
     0xFFFFF807, 0xFFFBE87D, 0xF007FFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFDFFFFF,
     0xFFFFFFFF, 0x0EFFFFFF, 0x00000000, 0x00000000, 0x00000000 };
 
+/**
+ * Refreshes the titles earned by the player.
+ */
 static void _updateTitles(void)
 {
     int i;
@@ -1607,6 +1743,9 @@ static int _initCongratulationsScreen(void);
 static int _renderCongratulationsScreen(void);
 static void _renderCongratulations(int arg0, int arg1, int arg2);
 
+/**
+ * Sets up and runs the congratulations screen.
+ */
 static void _congratulationsScreen(void)
 {
     int done;
@@ -1632,6 +1771,10 @@ static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
 static void _determineRank(void);
 static void _updateScore(void);
 
+/**
+ * Initializes the congratulations screen and score data.
+ * @return 1 when complete, 0 otherwise.
+ */
 static int _initCongratulationsScreen(void)
 {
     static const vs_main_CdFile endScrDisFiles[] = {
@@ -1783,6 +1926,10 @@ static void _renderIncrementalMapCompletion(int, int, int, int);
 static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
 static void _renderRiskbreakerRank(int, int, int);
 
+/**
+ * Renders the congratulations screen.
+ * @return 1 when all animations are complete, 0 otherwise.
+ */
 static int _renderCongratulationsScreen(void)
 {
     if (_congratulationsAnimSkip == 0) {
@@ -1827,6 +1974,9 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
+/**
+ * Fades the background in.
+ */
 static void _fadeIn(int timer)
 {
     int i;
@@ -1864,6 +2014,7 @@ static void _fadeIn(int timer)
 
 enum disIndices {
     disIndexRank0Comma = 10,
+    disIndexRank0RiskbreakerRank = 12,
     disIndexRank0Score = 18,
     disIndexRank0Percent,
     disIndexRank0Pts,
@@ -1987,6 +2138,9 @@ static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1M
     { 1, disIndexRank1Berserker }, { 1, disIndexRank1DareDevil },
     { 1, disIndexRank1Gladiator }, { 2, disIndexRank2Normal, disIndexRank2Agent } };
 
+/**
+ * Renders the "Mission Complete!" text.
+ */
 static void _renderCongratulations(int x, int y, int timer)
 {
     static CVECTOR colors[] = {
@@ -2016,6 +2170,9 @@ static void _renderCongratulations(int x, int y, int timer)
     }
 }
 
+/**
+ * Renders the final score display without counting up.
+ */
 static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 {
     static CVECTOR colors[] = {
@@ -2068,6 +2225,9 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
 
 static int _incrementingScore;
 
+/**
+ * Renders the final score, animating up from 0.
+ */
 static void _renderIncrementalScore(
     int x, int y, int timer, int _ __attribute__((unused)))
 {
@@ -2144,6 +2304,9 @@ static void _renderIncrementalScore(
     _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, temp_s2);
 }
 
+/**
+ * Renders the final map completion percentage.
+ */
 static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((unused)))
 {
     static CVECTOR colors[] = {
@@ -2191,6 +2354,9 @@ static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((u
 
 static int _incrementingMapCompletion;
 
+/**
+ * Renders the final map completion percentage, animating up from 0.
+ */
 static void _renderIncrementalMapCompletion(
     int x, int y, int timer, int _ __attribute__((unused)))
 {
@@ -2262,6 +2428,9 @@ static void _renderIncrementalMapCompletion(
     _renderTextureWipe(x, y + 8, disIndexRank0Percent, colors, temp_s4);
 }
 
+/**
+ * Renders the "Riskbreaker Rank" text.
+ */
 static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 {
     static CVECTOR colors[] = {
@@ -2279,10 +2448,14 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 
     if (timer > 0) {
         colors[0].cd = timer;
-        _renderTextureFadeInTint(x - (_disMap[12].w >> 1), y, 12, colors);
+        _renderTextureFadeInTint(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
+            disIndexRank0RiskbreakerRank, colors);
     }
 }
 
+/**
+ * Renders the player's final rank.
+ */
 static void _renderRiskbreakerRank(int x, int y, int timer)
 {
     static CVECTOR colors[] = {
@@ -2324,6 +2497,12 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
 
 #include "src/renderTextures.h"
 
+/**
+ * Parses a raw TIM image.
+ *
+ * @param data Pointer to the raw TIM data block.
+ * @param tim Destination TIM image structure that receives the parsed metadata.
+ */
 static void _parseTim(u_int* data, TIM_IMAGE* tim)
 {
     ++data;
@@ -2343,6 +2522,9 @@ static void _parseTim(u_int* data, TIM_IMAGE* tim)
     tim->paddr = (void*)(data + 3);
 }
 
+/**
+ * Determines the final rank based on the player's data.
+ */
 static void _determineRank(void)
 {
     static short titleThresholds[16] = { 16, 12, 8 };
@@ -2369,7 +2551,9 @@ static void _determineRank(void)
         }
     }
 }
-
+/**
+ * Refreshes the players score.
+ */
 static void _updateScore(void)
 {
     short enemyKillPoints[] = { 20, 20, 40, 80, 100, 60 };

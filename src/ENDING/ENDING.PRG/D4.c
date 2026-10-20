@@ -1974,6 +1974,14 @@ static int _renderCongratulationsScreen(void)
     return 0;
 }
 
+#define CLAMP_ANIMATION_TIMER(timer) \
+    if (timer < 0) {                 \
+        timer = 0;                   \
+    }                                \
+    if (timer > 64) {                \
+        timer = 64;                  \
+    }
+
 /**
  * Fades the background in.
  */
@@ -1983,13 +1991,7 @@ static void _fadeIn(int timer)
     int brightness;
     POLY_FT4* poly;
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     brightness = timer * 2;
 
@@ -2149,13 +2151,7 @@ static void _renderCongratulations(int x, int y, int timer)
         { 128, 96, 64 },
     };
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     if (timer > 0) {
         colors[0].cd = timer;
@@ -2184,13 +2180,7 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
     int i;
     int v1;
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     if (timer > 0) {
 
@@ -2241,13 +2231,7 @@ static void _renderIncrementalScore(
     int i;
     int v1;
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     if (timer <= 0) {
         return;
@@ -2317,13 +2301,7 @@ static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((u
     char buf[2];
     int i;
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     if (timer > 0) {
 
@@ -2369,13 +2347,7 @@ static void _renderIncrementalMapCompletion(
     int temp_s4;
     int i;
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     if (timer <= 0) {
         return;
@@ -2438,13 +2410,7 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
         { 200, 80, 20 },
     };
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     if (timer > 0) {
         colors[0].cd = timer;
@@ -2466,13 +2432,7 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
     int xInset;
     int i;
 
-    if (timer < 0) {
-        timer = 0;
-    }
-
-    if (timer > 64) {
-        timer = 64;
-    }
+    CLAMP_ANIMATION_TIMER(timer)
 
     xInset = 0;
 
@@ -2494,6 +2454,8 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
         }
     }
 }
+
+#undef CLAMP_ANIMATION_TIMER
 
 #include "src/renderTextures.h"
 

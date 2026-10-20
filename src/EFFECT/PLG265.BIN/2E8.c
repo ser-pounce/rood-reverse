@@ -4,7 +4,11 @@
 #define VS_TILED_RING_COLORS D_800FFD98
 #include "src/EFFECT/tiledRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FA9E0);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FA9E0
+#define VS_PARTICLE_CORNER_STATE D_800FFDB8
+#include "src/EFFECT/particleSetup.h"
+#undef VS_PARTICLE_ORIGIN_FUNCTION
+#undef VS_PARTICLE_CORNER_STATE
 
 INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FB168);
 

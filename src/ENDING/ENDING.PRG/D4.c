@@ -47,6 +47,16 @@ static int _sin(int angle)
     return value;
 }
 
+enum creditsElementState {
+    creditsElementStateFinished = -1,
+    creditsElementStateInactive = 0,
+    creditsElementStateStarting,
+    creditsElementStatePhase1,
+    creditsElementStatePhase2,
+    creditsElementStatePhase3,
+    creditsElementStatePhase4,
+};
+
 typedef struct _creditsElement {
     void (*renderer)(struct _creditsElement*);
     u_char* data;
@@ -89,10 +99,10 @@ static void _renderPhantomPain(_creditsElement* element)
     memset(&rot, 0, sizeof rot);
 
     switch (element->state) {
-    case 1:
+    case creditsElementStateStarting:
         wavePhase = 0;
         element->currentStep = 0;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
         rippleAge = 0;
 
         for (i = 0; i < 4; ++i) {
@@ -109,30 +119,30 @@ static void _renderPhantomPain(_creditsElement* element)
         }
         /* fallthrough */
 
-    case 2:
+    case creditsElementStatePhase1:
         brightness = element->currentStep * 128 / 90;
         ++rippleAge;
 
         if (++element->currentStep == 90) {
             element->currentStep = 0;
-            element->state = 3;
+            element->state = creditsElementStatePhase2;
         }
         break;
 
-    case 3:
+    case creditsElementStatePhase2:
         brightness = 128;
 
         if (++element->currentStep == 120) {
             element->currentStep = 0;
-            element->state = 4;
+            element->state = creditsElementStatePhase3;
         }
         break;
 
-    case 4:
+    case creditsElementStatePhase3:
         brightness = (90 - element->currentStep) * 128 / 90;
 
         if (++element->currentStep == 90) {
-            element->state = -1;
+            element->state = creditsElementStateFinished;
         }
         break;
     }
@@ -193,38 +203,38 @@ static void _renderFin(_creditsElement* element)
     SPRT* sprt = *(SPRT**)0x1F800000;
 
     switch (element->state) {
-    case 1:
+    case creditsElementStateStarting:
         element->currentStep = 0;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
         /* fallthrough */
 
-    case 2:
+    case creditsElementStatePhase1:
         step0 = element->currentStep;
         element->currentStep = step0 + 1;
         brightness = (step0 * 128) / 60;
 
         if (element->currentStep == 60) {
             element->currentStep = 0;
-            element->state = 3;
+            element->state = creditsElementStatePhase2;
         }
         break;
 
-    case 3:
+    case creditsElementStatePhase2:
         brightness = 128;
 
         if (++element->currentStep == 240) {
             element->currentStep = 0;
-            element->state = 4;
+            element->state = creditsElementStatePhase3;
         }
         break;
 
-    case 4:
+    case creditsElementStatePhase3:
         step1 = element->currentStep;
         element->currentStep = step1 + 1;
         brightness = ((60 - step1) * 128) / 60;
 
         if (element->currentStep == 60) {
-            element->state = -1;
+            element->state = creditsElementStateFinished;
         }
 
         break;
@@ -267,36 +277,36 @@ static void _renderVagrantStory(_creditsElement* element)
     SPRT* sprt = *(SPRT**)0x1F800000;
 
     switch (element->state) {
-    case 1:
+    case creditsElementStateStarting:
         element->x = 61 * 256;
         element->y = 80 * 256;
         element->currentStep = 0;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
         /* fallthrough */
 
-    case 2:
+    case creditsElementStatePhase1:
         brightness = (_masterBrightness * ++element->currentStep) / 60;
 
         if (element->currentStep == 60) {
-            element->state = 3;
+            element->state = creditsElementStatePhase2;
             element->currentStep = 0;
         }
         break;
 
-    case 3:
+    case creditsElementStatePhase2:
         brightness = _masterBrightness;
 
         if (++element->currentStep == 60) {
-            element->state = 4;
+            element->state = creditsElementStatePhase3;
         }
         break;
 
-    case 4:
+    case creditsElementStatePhase3:
         brightness = _masterBrightness;
         element->y += _scrollSpeed;
 
         if (element->y < -(60 << 8)) {
-            element->state = -1;
+            element->state = creditsElementStateFinished;
             return;
         }
         break;
@@ -436,56 +446,55 @@ static void _renderllustration(_creditsElement* element)
 
     SPRT* sprt;
     void** p;
-    short state = element->state - 1;
 
-    switch (state) {
-    case 0:
+    switch (element->state) {
+    case creditsElementStateStarting:
         if ((element->illustId >= 4) && (element->illustId != 15)) {
             _initTimDecompress(
                 _decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
         tpageX = (element->illustId % 5) * 192;
         clutY = (element->illustId % 5) + 480;
         /* fallthrough */
 
-    case 1:
+    case creditsElementStatePhase1:
         brightness = (_masterBrightness * element->currentStep) / 80;
 
         if (++element->currentStep == 80) {
-            int var_a0 = 3;
+            enum creditsElementState nextState = creditsElementStatePhase2;
             element->currentStep = 0;
             if (element->illustId == 15) {
-                var_a0 = 5;
+                nextState = creditsElementStatePhase4;
             }
-            element->state = var_a0;
+            element->state = nextState;
         }
         break;
 
-    case 2:
+    case creditsElementStatePhase2:
         brightness = 128;
 
         if (++element->currentStep == _illustrationTimers[element->illustId]) {
             element->currentStep = 0;
-            element->state = 4;
+            element->state = creditsElementStatePhase3;
         }
 
         break;
 
-    case 3:
+    case creditsElementStatePhase3:
         brightness = (_masterBrightness * (80 - element->currentStep)) / 80;
 
         if (++element->currentStep == 80) {
             if (++element->illustId >= 5) {
                 _loadTim(_decompressedIllustData);
             }
-            element->state = 1;
+            element->state = creditsElementStateStarting;
         }
         break;
 
-    case 4:
+    case creditsElementStatePhase4:
         brightness = 128;
         break;
     }
@@ -564,17 +573,17 @@ static void _renderText(_creditsElement* element)
     u_char charTableOffset = 0;
     short underline = 0;
 
-    if (element->state == 1) {
+    if (element->state == creditsElementStateStarting) {
         u_short width = element->width = _creditsStrWidth(element->data);
         element->x = ((320 - width) >> 1) << 8;
         element->y = 224 << 8;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
     }
 
     element->y += _scrollSpeed;
 
     if (element->y < -(12 << 8)) {
-        element->state = -1;
+        element->state = creditsElementStateFinished;
         return;
     }
 
@@ -674,16 +683,16 @@ static void _renderCopyright(_creditsElement* element)
     void** p = (void**)0x1F800000;
     SPRT* sprt = p[0];
 
-    if (element->state == 1) {
+    if (element->state == creditsElementStateStarting) {
         element->x = 100 << 8;
         element->y = 224 << 8;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
     }
 
     element->y += _scrollSpeed;
 
     if (element->y < -(12 << 8)) {
-        element->state = -1;
+        element->state = creditsElementStateFinished;
         return;
     }
 
@@ -775,14 +784,14 @@ static void _renderBackground(_creditsElement* element __attribute__((unused)))
 
 static void _backgroundFadeIn(_creditsElement* element)
 {
-    if (element->state == 1) {
+    if (element->state == creditsElementStateStarting) {
         element->currentStep = 0;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
     }
 
     if (++element->currentStep == 128) {
         _isFadedOut = 0;
-        element->state = -1;
+        element->state = creditsElementStateFinished;
     }
 
     _masterBrightness = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
@@ -790,8 +799,8 @@ static void _backgroundFadeIn(_creditsElement* element)
 
 static void _backgroundFadeOut(_creditsElement* element)
 {
-    if (element->state == 1) {
-        element->state = 2;
+    if (element->state == creditsElementStateStarting) {
+        element->state = creditsElementStatePhase1;
         element->currentStep = 0;
         _isFadedOut = 1;
     }
@@ -800,7 +809,7 @@ static void _backgroundFadeOut(_creditsElement* element)
         if (element->width != 0) {
             _creditsComplete = 1;
         }
-        element->state = -1;
+        element->state = creditsElementStateFinished;
     }
 
     _masterBrightness =
@@ -812,9 +821,9 @@ static void _renderFadeOut(_creditsElement* element)
     void** p = (void**)0x1F800000;
     TILE* tile = p[0];
 
-    if (element->state == 1) {
+    if (element->state == creditsElementStateStarting) {
         element->currentStep = 0;
-        element->state = 2;
+        element->state = creditsElementStatePhase1;
     }
 
     if (++element->currentStep == 128) {
@@ -1009,7 +1018,7 @@ static void _resetElements(void)
     _creditsElement* element = _creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
-        element->state = 0;
+        element->state = creditsElementStateInactive;
     }
 }
 
@@ -1020,9 +1029,9 @@ static int _renderElements(void)
     _creditsElement* element = _creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
-        if (element->state < 0) {
-            element->state = 0;
-        } else if (element->state > 0) {
+        if (element->state < creditsElementStateInactive) {
+            element->state = creditsElementStateInactive;
+        } else if (element->state > creditsElementStateInactive) {
             ++elementsRendered;
             element->renderer(element);
         }
@@ -1039,9 +1048,9 @@ static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
     _creditsElement* element = &_creditsElements[1];
 
     for (i = 1; i < 32; ++i, ++element) {
-        if (element->state == 0) {
+        if (element->state == creditsElementStateInactive) {
             element->renderer = renderer;
-            element->state = 1;
+            element->state = creditsElementStateStarting;
             element->currentStep = 0;
             return element;
         }
@@ -1052,9 +1061,9 @@ static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 
 static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
 {
-    if (_creditsElements[0].state == 0) {
+    if (_creditsElements[0].state == creditsElementStateInactive) {
         _creditsElements[0].renderer = renderer;
-        _creditsElements[0].state = 1;
+        _creditsElements[0].state = creditsElementStateStarting;
         _creditsElements[0].currentStep = 0;
         return &_creditsElements[0];
     }

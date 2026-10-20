@@ -280,7 +280,7 @@ static u_char _skipInvoked;
 static u_char _0 __attribute__((unused));
 static int _currentCreditsFrame;
 static int _textStreamDelay;
-static u_char* _creditsBytestreamHead;
+static u_char const* _creditsBytestreamHead;
 static short _scrollSpeed;
 static short _frameStartVsync;
 static u_short _masterBrightness;
@@ -460,12 +460,12 @@ static _timData* _decompressedIllustData = &_illustSydney;
 static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
 
-static void* _currentCompressedIllust;
+static void const* _currentCompressedIllust;
 static void* _currentDecompressedIllust;
 static void* _compressedIllustBufs[16];
 
-static void _loadTim(_timData*);
-static void _initTimDecompress(_timData*, void*);
+static void _loadTim(_timData const*);
+static void _initTimDecompress(_timData*, void const*);
 
 /**
  * Renders a background illustration. Illustration IDs greater
@@ -605,7 +605,7 @@ static int _creditsStrWidth(u_char const* str)
  */
 static void _renderText(_creditsElement* element)
 {
-    u_char const* str;
+    char const* str;
     short i;
     short len;
     short x;
@@ -672,7 +672,7 @@ static void _renderText(_creditsElement* element)
     }
 
     if (underline != 0) {
-        vs_scratch_t* scratch = (vs_scratch_t*)0x1F800000;
+        vs_scratch_t const* scratch = (vs_scratch_t*)0x1F800000;
         POLY_FT4* poly;
 
         x = 160 - ((element->width + 32) >> 1);
@@ -923,18 +923,18 @@ static void _congratulationsScreen(void);
  */
 void vs_ending_exec(void)
 {
-    extern u_char _credits[];
-    extern _timData _creditsFont;
-    extern _timData _illustMerlose;
-    extern _timData _illustDragon;
-    extern _timData _illustSamantha;
-    extern _timData _illustDuane;
-    extern _timData _creditsBg;
-    extern _timData _devCopyright;
-    extern _timData _titleLogo;
-    extern _timData _shugeki;
-    extern _timData _fin;
-    extern _timData _episodeLogo;
+    extern u_char const _credits[];
+    extern _timData const _creditsFont;
+    extern _timData const _illustMerlose;
+    extern _timData const _illustDragon;
+    extern _timData const _illustSamantha;
+    extern _timData const _illustDuane;
+    extern _timData const _creditsBg;
+    extern _timData const _devCopyright;
+    extern _timData const _titleLogo;
+    extern _timData const _shugeki;
+    extern _timData const _fin;
+    extern _timData const _episodeLogo;
 
     vs_main_CdFile file;
     short i;
@@ -1070,10 +1070,10 @@ static void* _insertTpage(int tPage, int otOffset)
 /**
  * Loads a TIM texture into memory.
  */
-static void _loadTim(_timData* tim)
+static void _loadTim(_timData const* tim)
 {
     RECT rect;
-    _timChunk* p = &tim->chunk;
+    _timChunk const* p = &tim->chunk;
 
     if (tim->flags & 8) {
         rect.x = p->rect.x;
@@ -1081,7 +1081,7 @@ static void _loadTim(_timData* tim)
         rect.w = p->rect.w;
         rect.h = p->rect.h;
         LoadImage(&rect, (void*)p->data);
-        p = (_timChunk*)((void*)tim + (p->size + 8));
+        p = (_timChunk const*)((void*)tim + (p->size + 8));
     }
 
     rect.x = p->rect.x;
@@ -1201,7 +1201,7 @@ static void _parseCreditsScript(void)
     while (1) {
         int op;
         int delay;
-        u_char* bytestream = _creditsBytestreamHead;
+        u_char const* bytestream = _creditsBytestreamHead;
 
         switch (bytestream[0]) {
 
@@ -1307,7 +1307,7 @@ static int _ease(short mode, short currentStep, short totalSteps)
 /**
  * Initializes the TIM decompression work buffer for the active illustration.
  */
-static void _initTimDecompress(_timData* targetBuf, void* compressedData)
+static void _initTimDecompress(_timData* targetBuf, void const* compressedData)
 {
     _compressionState = decompressionStateReady;
     _currentCompressedIllust = compressedData;
@@ -1324,8 +1324,8 @@ static int _decompressTim(void)
 {
     enum opcodes { singleByteRle = 0x7D, doubleByteRle, endOfStream, backReferenceFlag };
 
-    static u_char* backReference;
-    static u_char* compressedStream;
+    static u_char const* backReference;
+    static u_char const* compressedStream;
     static u_char* decompressedStream;
     static u_char rleByte0;
     static u_char rleByte1;
@@ -1413,7 +1413,7 @@ static int _decompressTim(void)
  * Renders a string using the loaded debug font.
  */
 __attribute__((unused)) static void _renderDebugString(
-    short x, short y, int clut, u_char* string)
+    short x, short y, int clut, char const* string)
 {
     int c;
     SPRT_8* sprt = *(void**)0x1F800000;

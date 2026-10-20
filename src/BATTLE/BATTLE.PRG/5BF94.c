@@ -167,14 +167,6 @@ typedef struct {
 } TrailPacket;
 
 typedef struct {
-    char unk0[0xC];
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-} func_800CFAAC_t;
-
-typedef struct {
     u_char order[8];
     u_char unk8;
     u_char unk9;
@@ -5233,13 +5225,13 @@ void func_800CFAAC(func_800CFAAC_t* arg0)
     int sx;
     int sy;
 
-    if (*(int*)&arg0->unkC == *(int*)&arg0->unk10) {
+    if (*(int*)&arg0->line.x0 == *(int*)&arg0->line.x1) {
         return;
     }
     sx = -1;
     sy = -1;
-    dx = arg0->unk10 - arg0->unkC;
-    dy = arg0->unk12 - arg0->unkE;
+    dx = arg0->line.x1 - arg0->line.x0;
+    dy = arg0->line.y1 - arg0->line.y0;
     if (dx < 0) {
         dx = -dx;
         sx = 1;
@@ -5249,14 +5241,14 @@ void func_800CFAAC(func_800CFAAC_t* arg0)
         sy = 1;
     }
     if (dy < dx) {
-        arg0->unk10 += sx;
+        arg0->line.x1 += sx;
         if (dx < dy * 2) {
-            arg0->unk12 += sy;
+            arg0->line.y1 += sy;
         }
     } else {
-        arg0->unk12 += sy;
+        arg0->line.y1 += sy;
         if (dy < dx * 2) {
-            arg0->unk10 += sx;
+            arg0->line.x1 += sx;
         }
     }
 }

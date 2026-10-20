@@ -355,6 +355,8 @@ static void _renderVagrantStory(_creditsElement* element)
     return;
 }
 
+#pragma region dead_code
+
 static int _distanceFromScreencenter(int x, int y)
 {
     x -= 160;
@@ -403,6 +405,8 @@ __attribute__((unused)) static void _updateRadialFadePoly(
 #undef FADE
 #undef FADE_IN
 #undef FADE_OUT
+
+#pragma endregion
 
 enum decompressionState {
     decompressionStateIdle,
@@ -1301,6 +1305,8 @@ static int _decompressTim(void)
     }
 }
 
+#pragma region dead_code
+
 __attribute__((unused)) static void _renderDebugString(
     short x, short y, int clut, u_char* string)
 {
@@ -1339,6 +1345,8 @@ __attribute__((unused)) static void _renderDebugString(
     *(void**)0x1F800000 = sprt;
     *(void**)0x1F800000 = _insertTpage(getTPage(0, 0, 960, 0), 0);
 }
+
+#pragma endregion
 
 static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b)
 {

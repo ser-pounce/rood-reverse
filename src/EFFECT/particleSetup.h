@@ -1,4 +1,4 @@
-/* Shared textured particle setup: the origin, target and spline control points of each
+/* Shared particle setup: the origin, target and spline control points of each
  * particle. The overlay supplies the entry points and the corner counter. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
@@ -8,6 +8,8 @@
 #include <inline_c.h>
 #include <rand.h>
 
+#ifndef VS_PARTICLE_SETUP_TYPES
+#define VS_PARTICLE_SETUP_TYPES
 typedef struct {
     u_char unk0;
     u_char unk1;
@@ -17,6 +19,7 @@ typedef struct {
     int unkC;
     func_800D6CF_t unk10;
 } func_800FA098_arg3;
+#endif
 
 extern int VS_PARTICLE_CORNER_STATE;
 
@@ -215,6 +218,7 @@ void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
     }
 }
 
+#ifdef VS_PARTICLE_TARGET_FUNCTION
 void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
@@ -253,7 +257,9 @@ void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
                 + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz));
     }
 }
+#endif
 
+#ifdef VS_PARTICLE_CONTROL_FUNCTION
 void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
@@ -351,3 +357,4 @@ void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1
         vs_battle_vecToSvec(&scratch->unk44, points + 2);
     }
 }
+#endif

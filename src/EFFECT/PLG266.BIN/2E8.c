@@ -21,7 +21,9 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FC5DC
 #include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FCB0C);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FCB0C
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FCD80
 #define VS_TRAIL_TARGET_FUNCTION func_800FD51C

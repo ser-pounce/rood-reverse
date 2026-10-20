@@ -1,5 +1,6 @@
-/* Shared textured particle effect entry point. Include after particleSetup.h and
- * particleRender.h; the overlay supplies the entry points. */
+/* Shared particle effect entry point. Include after particleSetup.h and
+ * particleRender.h, or particleLineRender.h with VS_PARTICLE_UNTEXTURED defined; the
+ * overlay supplies the entry points. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"
@@ -17,9 +18,7 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     switch (arg1) {
     case 1:
 #ifdef VS_PARTICLE_UNTEXTURED
-        /* The untextured variant allocates only the state prefix, without the texture
-         * animation. */
-        state = vs_main_allocHeapR(0x10);
+        state = vs_main_allocHeapR(sizeof *state - sizeof state->unk10);
 #else
         state = vs_main_allocHeapR(sizeof *state);
 #endif
@@ -46,11 +45,7 @@ int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
     case 2:
         effect = &D_800F569C->block5Data->unk4[state->unk1];
-#ifdef VS_PARTICLE_UNTEXTURED
-        scratch->flags = effect->flags & 0x3FFFFFF;
-#else
         scratch->flags = effect->flags;
-#endif
         state->unk2 = func_800CFE1C(
             effect->unkC0, vs_battle_sampleCurve(effect->unk16, state->unkC));
 

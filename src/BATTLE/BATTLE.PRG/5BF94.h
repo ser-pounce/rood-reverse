@@ -231,6 +231,12 @@ typedef struct {
 } func_800D6CF_t;
 
 typedef struct {
+    u_long tag;
+    LINE_F2 line;
+    u_long drawMode;
+} func_800CFAAC_t;
+
+typedef struct {
     u_char unk0;
     u_char unk1;
     u_char unk2;
@@ -657,6 +663,7 @@ void vs_battle_lerp2DVector(short* src, int t, int* vec);
 void vs_battle_lerpSvector(short* src, int t, SVECTOR* vec);
 void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int vs_battle_randUniformInt(int, int);
+void func_800CFAAC(func_800CFAAC_t* arg0);
 int func_800CFE1C(short* arg0, int arg1);
 void func_800D6D24(func_800D6CF_t* arg0);
 

@@ -1,4 +1,4 @@
-/* Shared textured particle setup: the origin, target and spline control points of each
+/* Shared particle setup: the origin, target and spline control points of each
  * particle. The overlay supplies the entry points and the corner counter. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
@@ -8,10 +8,8 @@
 #include <inline_c.h>
 #include <rand.h>
 
-/* Guarded so an overlay with several particle sets can include this again. */
 #ifndef VS_PARTICLE_SETUP_TYPES
 #define VS_PARTICLE_SETUP_TYPES
-
 typedef struct {
     u_char unk0;
     u_char unk1;
@@ -21,7 +19,6 @@ typedef struct {
     int unkC;
     func_800D6CF_t unk10;
 } func_800FA098_arg3;
-
 #endif
 
 extern int VS_PARTICLE_CORNER_STATE;

@@ -337,7 +337,7 @@ static void _renderVagrantStory(_creditsElement* element)
     index = 0;
     p[index] = sprt;
 
-    sprt = _insertTpage(0x2E, 3);
+    sprt = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 3);
 
     SetSprt(sprt);
     setSemiTrans(sprt, 1);
@@ -351,7 +351,7 @@ static void _renderVagrantStory(_creditsElement* element)
     setaddr(p[1] + 12, sprt++);
 
     p[index] = sprt;
-    p[index] = _insertTpage(0x4E, 3);
+    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 896, 0), 3);
     return;
 }
 

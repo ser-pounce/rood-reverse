@@ -63,7 +63,7 @@ enum creditsElementState {
 
 typedef struct _creditsElement {
     void (*renderer)(struct _creditsElement*);
-    u_char* data;
+    u_char const* data;
     short state;
     u_short currentStep;
     u_short illustId;
@@ -569,7 +569,7 @@ extern u_char _glyphWidths[];
 /**
  * Measures the rendered width of a string.
  */
-static int _creditsStrWidth(u_char* str)
+static int _creditsStrWidth(u_char const* str)
 {
     short len = *str++;
     short width = 0;
@@ -605,7 +605,7 @@ static int _creditsStrWidth(u_char* str)
  */
 static void _renderText(_creditsElement* element)
 {
-    u_char* str;
+    u_char const* str;
     short i;
     short len;
     short x;

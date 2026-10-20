@@ -2176,41 +2176,42 @@ static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
         { 100, 180, 220 },
     };
 
-    char buf[10];
+    char buf[16];
     int i;
     int v1;
 
     CLAMP_ANIMATION_TIMER(timer)
 
-    if (timer > 0) {
-
-        colors[0].cd = timer;
-
-        sprintf(buf, "%09d", _score);
-
-        v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
-           + _disMap[disIndexRank0Pts].w;
-        x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
-
-        _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
-
-        x += _disMap[disIndexRank0Score].w;
-
-        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
-
-        x += _disMap[disIndexRank0Colon].w + 2;
-
-        for (i = 0; i < 9; ++i) {
-            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
-            x += 12;
-            if ((i == 2) || (i == 5)) {
-                _renderTextureFadeInTint(x, y + 14, disIndexRank0Comma, colors);
-                x += _disMap[disIndexRank0Comma].w + 3;
-            }
-        }
-
-        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
+    if (timer <= 0) {
+        return;
     }
+
+    colors[0].cd = timer;
+
+    sprintf(buf, "%09d", _score);
+
+    v1 = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
+        + _disMap[disIndexRank0Pts].w;
+    x -= (_disMap[disIndexRank0Comma].w * 2 + v1 + 116) >> 1;
+
+    _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
+
+    x += _disMap[disIndexRank0Score].w;
+
+    _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
+
+    x += _disMap[disIndexRank0Colon].w + 2;
+
+    for (i = 0; i < 9; ++i) {
+        _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+        x += 12;
+        if ((i == 2) || (i == 5)) {
+            _renderTextureFadeInTint(x, y + 14, disIndexRank0Comma, colors);
+            x += _disMap[disIndexRank0Comma].w + 3;
+        }
+    }
+
+    _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
 }
 
 static int _incrementingScore;

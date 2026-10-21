@@ -11,12 +11,15 @@
 #define VS_RING_COLORS D_800FD954
 #include "src/EFFECT/rings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FC340);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FC340
+#define VS_PARTICLE_TARGET_FUNCTION func_800FCAC8
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FCCE0
+#define VS_PARTICLE_CORNER_STATE D_800FD974
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCAC8);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FD190
+#include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCCE0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FD190);
-
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FD6C0);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FD6C0
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"

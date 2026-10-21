@@ -17,7 +17,9 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FC394
 #include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FC8C4);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FC8C4
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_RING_FUNCTION func_800FCB38
 #define VS_RING_COLORS D_800FFB20

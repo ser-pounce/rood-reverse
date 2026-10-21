@@ -9,7 +9,8 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FA920
 #include "src/EFFECT/particleRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FB4E0);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FB4E0
+#include "src/EFFECT/particleDispatch.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG057.BIN/nonmatchings/2D0", func_800FB774);
 

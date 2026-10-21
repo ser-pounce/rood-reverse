@@ -218,7 +218,6 @@ void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
     }
 }
 
-#ifdef VS_PARTICLE_TARGET_FUNCTION
 void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
@@ -257,7 +256,6 @@ void VS_PARTICLE_TARGET_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
                 + vs_battle_randUniformInt(scratch->unk144.vz, -scratch->unk144.vz));
     }
 }
-#endif
 
 #ifdef VS_PARTICLE_CONTROL_FUNCTION
 void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,

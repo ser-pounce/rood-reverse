@@ -12,15 +12,18 @@
 #define VS_PARTICLE_DISPATCH_FUNCTION func_800FB4F8
 #include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FB78C);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FB78C
+#define VS_PARTICLE_TARGET_FUNCTION func_800FBF14
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FC12C
+#define VS_PARTICLE_CORNER_STATE D_800FEEA4
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FBF14);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FC5DC
+#include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FC12C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FC5DC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG266.BIN/nonmatchings/2E8", func_800FCB0C);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FCB0C
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FCD80
 #define VS_TRAIL_TARGET_FUNCTION func_800FD51C

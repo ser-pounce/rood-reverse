@@ -4,15 +4,18 @@
 #define VS_TILED_RING_COLORS D_800FFD98
 #include "src/EFFECT/tiledRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FA9E0);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FA9E0
+#define VS_PARTICLE_TARGET_FUNCTION func_800FB168
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FB380
+#define VS_PARTICLE_CORNER_STATE D_800FFDB8
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FB168);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FB830
+#include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FB380);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FB830);
-
-INCLUDE_ASM("build/src/EFFECT/PLG265.BIN/nonmatchings/2E8", func_800FBD60);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FBD60
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FBFD4
 #define VS_TRAIL_TARGET_FUNCTION func_800FC770

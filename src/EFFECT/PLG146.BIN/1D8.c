@@ -1,7 +1,6 @@
 #include "common.h"
 
 #define VS_TILED_RING_FUNCTION func_800F99D8
-#define VS_TILED_RING_COLORS D_800FF87C
 #include "src/EFFECT/tiledRings.h"
 
 #define VS_MIRROR_SURFACE_FUNCTION func_800FA8D0

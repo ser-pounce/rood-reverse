@@ -1,7 +1,6 @@
 #include "common.h"
 
 #define VS_TILED_RING_FUNCTION func_800F98F8
-#define VS_TILED_RING_COLORS D_800FD460
 #include "src/EFFECT/tiledRings.h"
 
 #define VS_GRID_FUNCTION func_800FA7F0

@@ -21,7 +21,17 @@ typedef struct {
 } func_800FA098_arg3;
 #endif
 
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifdef VS_PARTICLE_CORNER_STATE
 extern int VS_PARTICLE_CORNER_STATE;
+#else
+#define VS_PARTICLE_CORNER_STATE VS_CAT(VS_PARTICLE_ORIGIN_FUNCTION, _state)
+static int VS_PARTICLE_CORNER_STATE = 0;
+#endif
 
 void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
@@ -354,3 +364,5 @@ void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1
         vs_battle_vecToSvec(&scratch->unk44, points + 2);
     }
 }
+
+#undef VS_PARTICLE_CORNER_STATE

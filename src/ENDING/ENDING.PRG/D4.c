@@ -2532,6 +2532,7 @@ static void _determineRank(void)
         }
     }
 }
+
 /**
  * Refreshes the players score.
  */

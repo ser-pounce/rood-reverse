@@ -8,7 +8,9 @@
 #define VS_SURFACE_VERTICES D_800FF89C
 #include "src/EFFECT/mirroredSurfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FB544);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FB544
+#define VS_PARTICLE_CORNER_STATE D_800FFB1C
+#include "src/EFFECT/particleSetup.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FBCCC);
 

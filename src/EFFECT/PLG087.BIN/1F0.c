@@ -32,4 +32,6 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FEFB8
 #include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FF4E8);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FF4E8
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"

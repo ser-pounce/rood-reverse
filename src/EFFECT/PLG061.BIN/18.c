@@ -27,17 +27,4 @@ static CVECTOR VS_RING_COLORS[] = {
 #include "src/EFFECT/rings.h"
 
 #define VS_CLOSED_RING_FUNCTION vs_effect_flameSphere_3
-#define VS_CLOSED_RING_COLORS D_800FCD30
-
-static CVECTOR VS_CLOSED_RING_COLORS[] = {
-    { 255, 255, 255 },
-    { 128, 128, 128 },
-    { 255, 128, 0 },
-    { 0, 128, 255 },
-    { 0, 255, 0 },
-    { 255, 0, 255 },
-    { 0, 128, 0 },
-    { 128, 0, 128 },
-};
-
 #include "src/EFFECT/closedRings.h"

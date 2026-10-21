@@ -19,7 +19,9 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FC960
 #include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FCE90);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FCE90
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_GRID_FUNCTION func_800FD104
 #include "src/EFFECT/grids.h"

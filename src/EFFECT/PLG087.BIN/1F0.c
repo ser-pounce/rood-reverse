@@ -29,6 +29,7 @@
 #define VS_PARTICLE_CORNER_STATE D_800FFA00
 #include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FEFB8);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FEFB8
+#include "src/EFFECT/particleLineRender.h"
 
 INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FF4E8);

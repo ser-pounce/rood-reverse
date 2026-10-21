@@ -11,10 +11,9 @@
 #include "src/EFFECT/trails9.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FBB10
+#define VS_PARTICLE_TARGET_FUNCTION func_800FC298
 #define VS_PARTICLE_CORNER_STATE D_800FDC58
 #include "src/EFFECT/particleSetup.h"
-
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FC298);
 
 INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FC4B0);
 

@@ -10,15 +10,18 @@
 #define VS_TRAIL_CORNER_STATE D_800FDC54
 #include "src/EFFECT/trails9.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FBB10);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FBB10
+#define VS_PARTICLE_TARGET_FUNCTION func_800FC298
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FC4B0
+#define VS_PARTICLE_CORNER_STATE D_800FDC58
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FC298);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FC960
+#include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FC4B0);
-
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FC960);
-
-INCLUDE_ASM("build/src/EFFECT/PLG168.BIN/nonmatchings/1F0", func_800FCE90);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FCE90
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_GRID_FUNCTION func_800FD104
 #include "src/EFFECT/grids.h"

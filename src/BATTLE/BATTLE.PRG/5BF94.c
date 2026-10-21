@@ -6999,7 +6999,7 @@ int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
 
     if (play) {
         u_char* sound = D_800F569C->block11Data;
-        func_800433B4(
+        vs_main_setVibrationBank(
             sound + *(((data[event->unk6] >> 9) & 31) + ((pFileBlock11*)sound)->offsets),
             255, 1);
     }

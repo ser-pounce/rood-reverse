@@ -211,6 +211,12 @@ static void* _insertTpage(int tPage, int otOffset);
  */
 static void _renderFin(_creditsElement* element)
 {
+    enum phaseDurations {
+        fadeInDuration = 60,
+        holdDuration = 240,
+        fadeOutDuration = 60,
+    };
+
     int step0;
     int step1;
     u_char brightness;
@@ -228,18 +234,18 @@ static void _renderFin(_creditsElement* element)
     case creditsElementStatePhase1:
         step0 = element->currentStep;
         element->currentStep = step0 + 1;
-        brightness = (step0 * 128) / 60;
+        brightness = (step0 * maximumBrightness) / fadeInDuration;
 
-        if (element->currentStep == 60) {
+        if (element->currentStep == fadeInDuration) {
             element->currentStep = 0;
             element->state = creditsElementStatePhase2;
         }
         break;
 
     case creditsElementStatePhase2:
-        brightness = 128;
+        brightness = maximumBrightness;
 
-        if (++element->currentStep == 240) {
+        if (++element->currentStep == holdDuration) {
             element->currentStep = 0;
             element->state = creditsElementStatePhase3;
         }
@@ -248,9 +254,9 @@ static void _renderFin(_creditsElement* element)
     case creditsElementStatePhase3:
         step1 = element->currentStep;
         element->currentStep = step1 + 1;
-        brightness = ((60 - step1) * 128) / 60;
+        brightness = ((fadeOutDuration - step1) * maximumBrightness) / fadeOutDuration;
 
-        if (element->currentStep == 60) {
+        if (element->currentStep == fadeOutDuration) {
             element->state = creditsElementStateFinished;
         }
 
@@ -291,6 +297,12 @@ static u_short _1 __attribute__((unused));
  */
 static void _renderVagrantStory(_creditsElement* element)
 {
+    enum phaseDurations {
+        fadeInDuration = 60,
+        holdDuration = 60,
+        scrollDuration = 60,
+    };
+
     int brightness;
     void** p;
     int index;
@@ -305,9 +317,9 @@ static void _renderVagrantStory(_creditsElement* element)
         /* fallthrough */
 
     case creditsElementStatePhase1:
-        brightness = (_masterBrightness * ++element->currentStep) / 60;
+        brightness = (_masterBrightness * ++element->currentStep) / fadeInDuration;
 
-        if (element->currentStep == 60) {
+        if (element->currentStep == fadeInDuration) {
             element->state = creditsElementStatePhase2;
             element->currentStep = 0;
         }
@@ -316,7 +328,7 @@ static void _renderVagrantStory(_creditsElement* element)
     case creditsElementStatePhase2:
         brightness = _masterBrightness;
 
-        if (++element->currentStep == 60) {
+        if (++element->currentStep == holdDuration) {
             element->state = creditsElementStatePhase3;
         }
         break;
@@ -325,7 +337,7 @@ static void _renderVagrantStory(_creditsElement* element)
         brightness = _masterBrightness;
         element->y += _scrollSpeed;
 
-        if (element->y < -(60 << 8)) {
+        if (element->y < -(scrollDuration << 8)) {
             element->state = creditsElementStateFinished;
             return;
         }

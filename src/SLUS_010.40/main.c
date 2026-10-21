@@ -8774,10 +8774,10 @@ void vs_main_vibrationOnEffect(int arg0)
         int new_var4 = 6;
         int new_var2 = 7;
         vs_main_setVibrationBank(
-            &_vibrationOnBank[(&_vibrationOnBank[arg0 * new_var3])[new_var3]
-                              + ((&_vibrationOnBank[arg0 * new_var3])[new_var] << 8)
-                              + ((&_vibrationOnBank[arg0 * new_var3])[new_var4] << 16)
-                              + ((&_vibrationOnBank[arg0 * new_var3])[new_var2] << 24)],
+            &_vibrationOnBank[_vibrationOnBank[arg0 * new_var3 + new_var3]
+                              + (_vibrationOnBank[arg0 * new_var3 + new_var] << 8)
+                              + (_vibrationOnBank[arg0 * new_var3 + new_var4] << 16)
+                              + (_vibrationOnBank[arg0 * new_var3 + new_var2] << 24)],
             0xFF, 0x80);
     }
 }

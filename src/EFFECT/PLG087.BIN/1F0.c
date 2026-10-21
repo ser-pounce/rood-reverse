@@ -24,10 +24,9 @@
 #include "src/EFFECT/trails5.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FE168
+#define VS_PARTICLE_TARGET_FUNCTION func_800FE8F0
 #define VS_PARTICLE_CORNER_STATE D_800FFA00
 #include "src/EFFECT/particleSetup.h"
-
-INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FE8F0);
 
 INCLUDE_ASM("build/src/EFFECT/PLG087.BIN/nonmatchings/1F0", func_800FEB08);
 

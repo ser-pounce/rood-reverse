@@ -10,12 +10,15 @@
 #define VS_TRAIL_CORNER_STATE D_800FD0EC
 #include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG255.BIN/nonmatchings/1D8", func_800FBAF8);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FBAF8
+#define VS_PARTICLE_TARGET_FUNCTION func_800FC280
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FC498
+#define VS_PARTICLE_CORNER_STATE D_800FD0F0
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG255.BIN/nonmatchings/1D8", func_800FC280);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FC948
+#include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG255.BIN/nonmatchings/1D8", func_800FC498);
-
-INCLUDE_ASM("build/src/EFFECT/PLG255.BIN/nonmatchings/1D8", func_800FC948);
-
-INCLUDE_ASM("build/src/EFFECT/PLG255.BIN/nonmatchings/1D8", func_800FCE78);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FCE78
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"

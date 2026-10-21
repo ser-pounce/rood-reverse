@@ -12,10 +12,9 @@
 #include "src/EFFECT/rings.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FC340
+#define VS_PARTICLE_TARGET_FUNCTION func_800FCAC8
 #define VS_PARTICLE_CORNER_STATE D_800FD974
 #include "src/EFFECT/particleSetup.h"
-
-INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCAC8);
 
 INCLUDE_ASM("build/src/EFFECT/PLG065.BIN/nonmatchings/F8", func_800FCCE0);
 

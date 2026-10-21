@@ -2621,10 +2621,10 @@ int func_800BAB14(u_char* arg0)
     } else {
         if (a0 & 8) {
             vs_main_memcpy(D_800F4C48, D_800F4BC0[a0 & 7], 0x80);
-            func_800433B4(D_800F4C48 + 8, 0xFF, 2);
+            vs_main_setVibrationBank(D_800F4C48 + 8, 0xFF, 2);
         } else {
             if (D_800F4BC0[a0] != 0) {
-                func_800433B4(D_800F4BC0[a0] + 8, 0xFF, 2);
+                vs_main_setVibrationBank(D_800F4BC0[a0] + 8, 0xFF, 2);
             }
         }
     }

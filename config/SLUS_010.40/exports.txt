@@ -13,9 +13,7 @@ CloseEvent
 D_80050468
 D_80055C80
 D_8005DFD4
-vs_main_screenWidth
 D_8005DFD8
-vs_main_screenHeight
 D_8005E0C0
 D_8005FF30
 D_8006003A
@@ -44,7 +42,6 @@ FntOpen
 func_80041C68
 func_80042CA0
 func_80042CB0
-func_800438C8
 func_80045000
 func_8004552C
 func_80045BFC
@@ -109,6 +106,8 @@ TestEvent
 vs_battle_mapCompletionFlags
 vs_gametime_tickspeed
 vs_gte_rsqrt
+vs_main_actions
+vs_main_actionsLearned
 vs_main_allocateCdQueueSlot
 vs_main_allocHeap
 vs_main_allocHeapR
@@ -157,16 +156,18 @@ vs_main_resetPadAct
 vs_main_resetSound
 vs_main_saveGameClearData
 vs_main_scoredata
+vs_main_screenHeight
+vs_main_screenWidth
 vs_main_setMonoSound
 vs_main_settings
 vs_main_setVibrateParams
-vs_main_actions
-vs_main_actionsLearned
+vs_main_setVibrationBank
 vs_main_soundData
 vs_main_stateFlags
 vs_main_stickPosBuf
 vs_main_streamXa
 vs_main_titleScreenCount
+vs_main_vibrationOnEffect
 vs_overlay_slots
 vs_sound_setCdVol
 VSync

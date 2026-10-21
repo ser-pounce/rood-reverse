@@ -486,6 +486,11 @@ static void _initTimDecompress(_timData*, void const*);
  */
 static void _renderllustration(_creditsElement* element)
 {
+    enum phaseDurations {
+        fadeInDuration = 80,
+        fadeOutDuration = 80,
+    };
+
     static short brightness;
     static short tpageX;
     static u_short clutY;
@@ -496,7 +501,7 @@ static void _renderllustration(_creditsElement* element)
 
     switch (element->state) {
     case creditsElementStateStarting:
-        if ((element->illustId >= 4) && (element->illustId != 15)) {
+        if ((element->illustId > 3) && (element->illustId != 15)) {
             _initTimDecompress(
                 _decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
         }
@@ -508,9 +513,9 @@ static void _renderllustration(_creditsElement* element)
         /* fallthrough */
 
     case creditsElementStatePhase1:
-        brightness = (_masterBrightness * element->currentStep) / 80;
+        brightness = (_masterBrightness * element->currentStep) / fadeInDuration;
 
-        if (++element->currentStep == 80) {
+        if (++element->currentStep == fadeInDuration) {
             enum creditsElementState nextState = creditsElementStatePhase2;
             element->currentStep = 0;
             if (element->illustId == 15) {
@@ -521,7 +526,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case creditsElementStatePhase2:
-        brightness = 128;
+        brightness = maximumBrightness;
 
         if (++element->currentStep == _illustrationTimers[element->illustId]) {
             element->currentStep = 0;
@@ -531,10 +536,11 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case creditsElementStatePhase3:
-        brightness = (_masterBrightness * (80 - element->currentStep)) / 80;
+        brightness = (_masterBrightness * (fadeOutDuration - element->currentStep))
+                   / fadeOutDuration;
 
-        if (++element->currentStep == 80) {
-            if (++element->illustId >= 5) {
+        if (++element->currentStep == fadeOutDuration) {
+            if (++element->illustId > 4) {
                 _loadTim(_decompressedIllustData);
             }
             element->state = creditsElementStateStarting;
@@ -542,7 +548,7 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case creditsElementStatePhase4:
-        brightness = 128;
+        brightness = maximumBrightness;
         break;
     }
 

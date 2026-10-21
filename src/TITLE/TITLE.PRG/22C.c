@@ -4284,7 +4284,7 @@ static void _menuVibrationSettings(void)
             _playMenuSelectSfx();
             vs_main_settings.vibrationOn = vibrationSetting - 5;
             if (vibrationSetting == menuItemVibrationOn) {
-                func_800438C8(0);
+                vs_main_vibrationOnEffect(0);
             }
             break;
         } else if (vs_main_buttonsState & PADRdown) {

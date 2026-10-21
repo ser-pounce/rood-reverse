@@ -524,7 +524,7 @@ static int _vibrationOptionMenu(int init)
                 vs_mainMenu_setMenuCommand(menuActionNone);
             } else {
                 if (selectedRow == currentState) {
-                    func_800438C8(0);
+                    vs_main_vibrationOnEffect(0);
                 }
                 vs_mainMenu_clearMenuExcept(7);
             }

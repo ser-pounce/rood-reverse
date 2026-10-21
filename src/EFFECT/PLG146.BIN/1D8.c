@@ -8,15 +8,18 @@
 #define VS_SURFACE_VERTICES D_800FF89C
 #include "src/EFFECT/mirroredSurfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FB544);
+#define VS_PARTICLE_ORIGIN_FUNCTION func_800FB544
+#define VS_PARTICLE_TARGET_FUNCTION func_800FBCCC
+#define VS_PARTICLE_CONTROL_FUNCTION func_800FBEE4
+#define VS_PARTICLE_CORNER_STATE D_800FFB1C
+#include "src/EFFECT/particleSetup.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FBCCC);
+#define VS_PARTICLE_RENDER_FUNCTION func_800FC394
+#include "src/EFFECT/particleLineRender.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FBEE4);
-
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FC394);
-
-INCLUDE_ASM("build/src/EFFECT/PLG146.BIN/nonmatchings/1D8", func_800FC8C4);
+#define VS_PARTICLE_DISPATCH_FUNCTION func_800FC8C4
+#define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleDispatch.h"
 
 #define VS_RING_FUNCTION func_800FCB38
 #define VS_RING_COLORS D_800FFB20

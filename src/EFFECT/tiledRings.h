@@ -30,7 +30,14 @@ typedef struct {
     u_char v;
 } vs_tiledRingUV;
 
+#ifndef VS_TILED_RING_COLORS
+#define VS_TILED_RING_COLORS _colors
+static CVECTOR VS_TILED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
+    { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
+    { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };
+#else
 extern CVECTOR VS_TILED_RING_COLORS[];
+#endif
 
 int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

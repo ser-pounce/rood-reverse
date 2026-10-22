@@ -28,11 +28,6 @@ static u_char VS_MESH10_FACES[][6] = { { 0, 4, 6, 0, 2, 4 }, { 4, 5, 6, 2, 8, 4 
 #include "src/EFFECT/meshes10.h"
 
 #define VS_CLOSED_RING_FUNCTION vs_effect_trinityPulse_1
-#define VS_CLOSED_RING_COLORS D_800FB34C
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
-
-static CVECTOR VS_CLOSED_RING_COLORS[] = { { 255, 255, 255 }, { 128, 128, 128 },
-    { 255, 128, 0 }, { 0, 128, 255 }, { 0, 255, 0 }, { 255, 0, 255 }, { 0, 128, 0 },
-    { 128, 0, 128 } };
 
 #include "src/EFFECT/closedRings.h"

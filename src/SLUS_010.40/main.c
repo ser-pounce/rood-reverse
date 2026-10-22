@@ -136,8 +136,8 @@ typedef struct {
 extern imgHeader_t _nowLoading_header;
 extern u_long _nowLoading_data[];
 
-char D_8004A504[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6, 255, 0,
-    0, 0 };
+char _vibrationOnBank[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6,
+    255, 0, 0, 0 };
 char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
 int vs_main_titleScreenCount = 0;
 int D_8004A52C = 0;
@@ -8561,7 +8561,7 @@ static void _padSetActData(int port, int pos, int val)
 
 static char _padGetActData(int port, int pos) { return _portInfo[port].actData[pos]; }
 
-int func_800433B4(char* arg0, u_int arg1, int arg2)
+int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
 {
     int i;
     int ret = 0;
@@ -8766,22 +8766,18 @@ void vs_main_setVibrateParams(void)
     }
 }
 
-void func_800438C8(int arg0)
+void vs_main_vibrationOnEffect(int arg0)
 {
-    int new_var4;
-    int new_var;
-    int new_var3;
-    int new_var2;
-
-    if (arg0 < D_8004A504[0]) {
-        new_var = 5;
-        new_var3 = 4;
-        new_var4 = 6;
-        new_var2 = 7;
-        func_800433B4(&D_8004A504[(&D_8004A504[arg0 * new_var3])[new_var3]
-                                  + ((&D_8004A504[arg0 * new_var3])[new_var] << 8)
-                                  + ((&D_8004A504[arg0 * new_var3])[new_var4] << 16)
-                                  + ((&D_8004A504[arg0 * new_var3])[new_var2] << 24)],
+    if (arg0 < _vibrationOnBank[0]) {
+        int new_var = 5;
+        int new_var3 = 4;
+        int new_var4 = 6;
+        int new_var2 = 7;
+        vs_main_setVibrationBank(
+            &_vibrationOnBank[_vibrationOnBank[arg0 * new_var3 + new_var3]
+                              + (_vibrationOnBank[arg0 * new_var3 + new_var] << 8)
+                              + (_vibrationOnBank[arg0 * new_var3 + new_var4] << 16)
+                              + (_vibrationOnBank[arg0 * new_var3 + new_var2] << 24)],
             0xFF, 0x80);
     }
 }

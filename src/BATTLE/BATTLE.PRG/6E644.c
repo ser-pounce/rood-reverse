@@ -3256,7 +3256,7 @@ void func_800E1388(
     arg0->unk168 = dest;
 }
 
-void func_800E153C(func_800E78F4_t* arg0)
+void func_800E153C(func_800E78F4_t* arg0, int arg1)
 {
     int distance = arg0->unkB4;
 
@@ -3310,7 +3310,25 @@ fallback:
     func_800E2CCC(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E1764);
+void func_800E1764(func_800E78F4_t* arg0, int arg1)
+{
+    vs_battle_movementPosition previous[2];
+    u_int distance;
+    int opposite = (arg1 + ONE / 2) & 0xFFF;
+
+    func_800E1388(arg0, arg0->unk34, arg1, arg0->unkB4);
+    previous[0] = arg0->unk168;
+    func_800E1388(arg0, arg0->unk34, opposite, arg0->unkB4);
+    distance = func_800E4660(arg0->unk168.x * 128 - arg0->unk17C + 64, 0,
+        arg0->unk168.z * 128 - arg0->unk180 + 64);
+
+    if (distance < func_800E4660(previous[0].x * 128 - arg0->unk17C + 64, 0,
+            previous[0].z * 128 - arg0->unk180 + 64)) {
+        arg0->unk168 = previous[0];
+    }
+
+    func_800E153C(arg0, arg1);
+}
 
 u_char func_800E1850(u_char arg0, vs_battle_movementPosition arg1, int arg2)
 {

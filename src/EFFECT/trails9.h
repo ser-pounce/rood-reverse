@@ -1,8 +1,6 @@
 /* Shared nine-sample trail effect. The overlay supplies the seven routine names and
  * the corner counter that VS_TRAIL_ORIGIN_FUNCTION steps through. */
 
-#define TRAIL_SAMPLE_COUNT 9
-
 #include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
@@ -15,12 +13,12 @@ typedef struct {
     u_long tag;
     POLY_GT4 poly;
     int drawMode;
-} vs_trailPrim;
+} vs_trail9Prim;
 
 extern int VS_TRAIL_CORNER_STATE;
 
 static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2, vs_trail9State* arg3)
 {
     int startX;
     int startZ;
@@ -250,7 +248,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2, vs_trail9State* arg3)
 {
     int i;
 
@@ -285,7 +283,7 @@ static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
 {
     SVECTOR offset1;
     SVECTOR offset2;
@@ -394,7 +392,7 @@ static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_ar
 }
 
 static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
 {
     int speed;
     int i;
@@ -422,13 +420,13 @@ static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1*
 
 static void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
     func_800FA098_arg1* arg1 __attribute__((unused)),
-    D_800F53B8_t* arg2 __attribute__((unused)), func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2 __attribute__((unused)), vs_trail9State* arg3)
 {
     int i;
 
     for (i = 0; i < arg3->trailcount; ++i) {
 
-        _trail* trail = &arg3->trails[i];
+        vs_trail9* trail = &arg3->trails[i];
 
         if (trail->trailCollapseCounter == 0) {
             continue;
@@ -463,9 +461,9 @@ static void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unu
 }
 
 void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
+    D_800F53B8_t* arg2, vs_trail9State* arg3)
 {
-    vs_trailPrim quad;
+    vs_trail9Prim quad;
     DVECTOR screen[10];
     int depths[10];
     int angles[8];
@@ -515,9 +513,9 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     texture = &D_800F569C->textures[arg3->unkC.textureInfo->dataIndex];
 
     for (i = 0; i < arg3->trailcount; ++i) {
-        _trail* trail = &arg3->trails[i];
+        vs_trail9* trail = &arg3->trails[i];
         SVECTOR* samples = trail->splineSamples;
-        vs_trailPrim* prim;
+        vs_trail9Prim* prim;
         int dx;
         int dy;
         int sample;
@@ -688,10 +686,10 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA098_arg0* effect;
     int trail;
     int j;
-    func_800FA76C_arg3* newState;
+    vs_trail9State* newState;
 
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
-    func_800FA76C_arg3* state = arg0->unk8;
+    vs_trail9State* state = arg0->unk8;
     D_800F53B8_t* battle = D_800F53BC;
     int alive = 1;
 

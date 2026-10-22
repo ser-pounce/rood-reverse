@@ -2,6 +2,7 @@
 #include "3A1A0.h"
 #include "4A0A8.h"
 #include "5BF94.h"
+#include "38C1C.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/main.h"
@@ -209,9 +210,14 @@ typedef struct {
     char unk28[0x34];
     vs_battle_movementPosition unk5C;
     vs_battle_movementPosition unk60;
-    char unk64[0x54C];
+    char unk64[0x108];
+    u_int unk16C;
+    char unk170[0x440];
     u_int unk5B0_0 : 4;
     u_int unk5B0_4 : 1;
+    char unk5B1[0x8B];
+    u_short unk63C;
+    u_short unk63E;
 } func_800E1238_t;
 
 typedef struct func_800E78F4_t {
@@ -262,7 +268,8 @@ typedef struct func_800E78F4_t {
     u_char unk33;
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[8];
+    char unk3C[6];
+    short unk42;
     u_char unk44;
     char unk45[3];
     vs_battle_movementPosition unk48;
@@ -270,13 +277,16 @@ typedef struct func_800E78F4_t {
     func_800DEB10_t2* unk54;
     func_800E1238_t* unk58;
     vs_battle_actor2* unk5C;
-    char unk60[8];
+    SVECTOR* unk60;
+    vs_battle_movementPosition* unk64;
     int (*unk68)(struct func_800E78F4_t*);
     char unk6C[0x16];
     short unk82;
     char unk84[4];
     u_char unk88;
-    char unk89[3];
+    u_char unk89;
+    u_char unk8A;
+    char unk8B;
     u_short unk8C;
     u_short unk8E;
     char unk90[2];
@@ -285,7 +295,8 @@ typedef struct func_800E78F4_t {
     char unk96[2];
     u_short unk98;
     u_short unk9A;
-    char unk9C[8];
+    int unk9C;
+    char unkA0[4];
     u_int unkA4;
     int unkA8;
     u_int unkAC;
@@ -295,7 +306,7 @@ typedef struct func_800E78F4_t {
     int unkB4;
     short unkB8;
     u_short unkBA;
-    char unkBC[2];
+    short unkBC;
     short unkBE;
     u_short unkC0;
     u_short unkC2;
@@ -320,13 +331,18 @@ typedef struct func_800E78F4_t {
     char unkFC[5];
     u_char unk101;
     u_char unk102;
-    char unk103[5];
+    u_char unk103;
+    char unk104[4];
     vs_battle_movementPosition unk108;
     u_char unk10C;
-    char unk10D[0xB];
+    char unk10D[3];
+    vs_battle_movementPosition unk110;
+    char unk114[4];
     u_char unk118[4];
     vs_battle_movementPosition unk11C;
-    char unk120[8];
+    char unk120[4];
+    u_char unk124;
+    char unk125[3];
     u_short unk128;
     u_char unk12A;
     u_char unk12B;
@@ -360,13 +376,18 @@ typedef struct func_800E78F4_t {
     int unk184;
     short unk188;
     int unk18A : 16;
-    char unk18C[0xE];
+    char unk18C[8];
+    int unk194;
+    char unk198[2];
     u_char unk19A;
     char unk19B[5];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
-    char unk224[4];
+    u_char unk224;
+    u_char unk225;
+    u_char unk226;
+    u_char unk227;
     int unk228;
     func_800DCAA0_t* unk22C;
     func_800DD604_t unk230[6][4];
@@ -595,8 +616,11 @@ int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
 void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
+void func_800E6828(func_800E78F4_t*);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);
+void func_800E72D0(void);
+void func_800E7370(func_800E78F4_t*);
 void func_800E7660(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
@@ -640,6 +664,7 @@ extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
+extern int D_800F590C;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
@@ -4241,7 +4266,138 @@ void func_800E6F9C(void);
 
 void func_800E6158(void) { func_800E6F9C(); }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E6178);
+int func_800E6178(vs_battle_actor* actor, short arg1)
+{
+    func_800E78F4_t* state;
+    func_800E1238_t* model;
+    vs_battle_actor2* stats;
+    int id = actor->id;
+    int packed;
+    u_int radius;
+    SVECTOR result;
+
+    if (actor->unk1C & 0x15) {
+        D_800F590C |= 1 << id;
+    }
+
+    if (!actor->unk40) {
+        int kind = ((func_800E1238_t*)actor->unk44)->unk16C & 7;
+
+        if (kind == 2 || kind == 4) {
+            int i;
+
+            for (i = 0; i < 4; ++i) {
+                if (D_800F58BC->unk28[i] == NULL) {
+                    D_800F58BC->unk28[i] = actor;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!(actor->unk1C & 5)) {
+        return 0;
+    }
+
+    state = vs_main_allocHeap(sizeof *state);
+    D_800F5878[id] = state;
+    func_800E4288(state, sizeof *state);
+    state->unk88 = id;
+    state->unk54 = (func_800DEB10_t2*)actor;
+    model = (func_800E1238_t*)actor->unk44;
+    state->unk58 = model;
+    state->unk5C = actor->unk3C;
+    func_800A190C(state->unk88, 250, &result, 0);
+    state->unk82 = result.vy - model->unk1C.vy;
+    radius = model->unk63C;
+
+    if (!id) {
+        state->unk92 = 40;
+    } else if (radius < 63) {
+        state->unk92 = radius;
+    } else {
+        state->unk92 = 62;
+    }
+
+    if (radius > 128) {
+        state->unk13C = 32;
+        state->unk94 = radius;
+    } else {
+        radius = state->unk92;
+        state->unk13C = 128;
+        state->unk94 = radius;
+    }
+
+    state->unk60 = &model->unk1C;
+    state->unk64 = &model->unk5C;
+    state->unk89 = 0;
+    state->unk8A = 0;
+    state->unk103 = 1;
+    state->unk2A = func_800A152C(id, 2, 3) >= 0;
+    stats = actor->unk3C;
+    state->unk224 = stats->unk30;
+    state->unk225 = stats->unk32;
+    state->unk226 = stats->unk31;
+    state->unk227 = stats->unk33;
+
+    if (state->unk224 & 8) {
+        state->unkB4 = state->unk226 * 128;
+    } else if (state->unk225 & 8) {
+        state->unkB4 = state->unk227 * 128;
+    }
+
+    func_800E6828(state);
+    state->unkB3 = MAX(state->unk226, state->unk227);
+    packed = actor->unk38;
+
+    if (actor->unk34 & 1) {
+        func_800E5A74(&packed, (void*)actor + 0x30);
+    }
+
+    func_800E5A9C(state, (func_800E5A9C_t*)&packed);
+    func_800E7370(state);
+
+    if (state->unkAC < (state->unkB4 - 64) * (state->unkB4 - 64)) {
+        state->unkB4 = vs_gte_rsqrt(state->unkAC) - 64;
+    }
+
+    state->unkBC = -256;
+    state->unkBE = -128;
+    state->unkB8 = model->unk63E;
+    state->unk34 = *state->unk64;
+    state->unk110 = *state->unk64;
+    state->unk194 = -1;
+    state->unk9C = -1;
+    state->unk184 = state->unk60->vy * ONE;
+
+    if (id) {
+        if ((state->unk15E & 0x30) && (state->unk15E & 0xC6)
+            && (D_800F58B8[model->unk5C.z][model->unk5C.x] & 0x10)
+            && !(model->unk8_21 << 21)) {
+            state->unk170 = model->unk5C;
+            func_800DEEFC(state, 12);
+        } else if ((arg1 < 0) || ((arg1 << 26) >= 0)) {
+            if (actor->unk1F) {
+                func_800DEEFC(state, 1);
+                state->unk12D = 1;
+            }
+        }
+    }
+
+    actor->command.fields.unk9 = 0;
+    actor->command.fields.unkB_2 = 0;
+    actor->command.fields.unkB_0 = 0;
+    state->unk124 = actor->command.fields.unk9;
+    state->unk38 = -1;
+    state->unk42 = arg1;
+    func_800E72D0();
+
+    if (state->unk88) {
+        while (func_800DEC88(NULL)) { }
+    }
+
+    return (arg1 >= 0) && ((arg1 << 26) < 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E65DC);
 

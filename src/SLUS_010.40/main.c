@@ -764,6 +764,13 @@ u_short vs_main_artsPointsRequirements[][4] = {
     { 0xD5D4, 0xD7D6, 0xD9D8, 0xDBDA },
 };
 
+u_short vs_main_battleAbilitiesPointsRequirements[150] = { 20, 54, 72, 95, 125, 165, 216,
+    283, 369, 482, 628, 818, 1066, 1387, 1805, 2349, 3055, 3973, 5167, 6719, 8737, 11359,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 256, 0, 0, 0, 256, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 256 };
+
 extern int randArr[97];
 extern vs_main_HeapHeader* _cdReadBuffer;
 extern padAct_t _padAct[2];

@@ -420,14 +420,15 @@ jp_tables = [jp_table_a, jp_table_b, jp_table_c, jp_table_d, jp_table_e, jp_tabl
 # |0xn| is a "virtual" opcode of sorts intended for injecting raw values into an encoded string,
 # for example when junk data like truncated opcodes need to be matched.
 
-def decode(s: bytes, jpTable: bool = False):
+def decode(s: bytes, jpTable: bool = False, read_to_end: bool = False):
     baseTable = jp_table_0 if jpTable else table
     result = ""
     i = 0
     while i < len(s):
+        if s[i] == 0xE7 and not read_to_end:
+            return result
+
         match s[i]:
-            case 0xE7:
-                return result
             case 0xEB:  # 2-byte alignment, ignored
                 i += 1
             case 0xED | 0xEE | 0xEF | 0xF0 | 0xF1 | 0xF2 | 0xF3 | 0xF4 | 0xF5 | 0xF6 | 0xF7:

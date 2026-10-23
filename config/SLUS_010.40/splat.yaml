@@ -240,7 +240,8 @@ segments:
       - [0x39950, rgb555Sized, _nowLoading]
       - [0x3AD04, .data, main]
       - { start: 0x3C1DC, type: vsMainActions, name: vs_main_actions, linker_entry: false }
-      - [0x3F5DC, data]
+      - { start: 0x3F5DC, type: data, linker_entry: false}
+      - [0x3F6CC, data]
       - [0x3FCCC, .data, zndFiles]
       - [0x404CC, data]
       - [0x40788, bss, main]

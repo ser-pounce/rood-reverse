@@ -445,11 +445,37 @@ typedef struct {
     u_char unkB;
 } _mpdRoomDoorSection_t;
 
+typedef struct {
+    u_char phys;
+    u_char wind;
+    u_char fire;
+    u_char earth;
+    u_char water;
+    u_char light;
+    u_char dark;
+    u_char _ __attribute__((unused));
+} material_modifiers_affinities_t;
+
+typedef struct {
+    u_char human;
+    u_char beast;
+    u_char undead;
+    u_char phantom;
+    u_char dragon;
+    u_char evil;
+    material_modifiers_affinities_t attackAffinities;
+    material_modifiers_affinities_t defenseAffinities;
+    u_short maxDp;
+    short strength;
+    short intelligence;
+    short agility;
+} material_modifiers_t;
+
 extern portInfo_t _portInfo[2];
 extern soundData_t vs_main_soundData;
 extern vs_action_t vs_main_actions[256];
 extern int D_8004A52C;
-extern char vs_main_materialModifiers[8][30];
+extern material_modifiers_t vs_main_materialModifiers[8];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];

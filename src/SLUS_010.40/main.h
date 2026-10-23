@@ -484,7 +484,7 @@ extern vs_main_CdFile vs_main_zndFiles[256];
 /**
  * 512 pairs of zone and map IDs.
  */
-extern char vs_main_locationZoneMapIds[];
+extern u_char vs_main_locationZoneMapIds[];
 extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
 extern char D_8004FCCC[];
 extern char D_8004FDD0[];

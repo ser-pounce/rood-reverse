@@ -241,7 +241,6 @@ segments:
       - [0x3AD04, .data, main]
       - { start: 0x3C1DC, type: vsMainActions, name: vs_main_actions, linker_entry: false }
       - { start: 0x3F5DC, type: data, linker_entry: false}
-      - [0x3F8CC, data]
       - [0x3FCCC, .data, zndFiles]
       - [0x404CC, data]
       - [0x40788, bss, main]

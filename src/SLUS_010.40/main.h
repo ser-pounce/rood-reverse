@@ -107,11 +107,11 @@ typedef struct {
 } vs_action_t;
 
 typedef struct {
-    int unk0;
+    u_int unk0;
     u_short unk4;
     u_short unk6;
-    int unk8;
-    int unkC;
+    u_int unk8;
+    u_int unkC;
 } vs_main_statusEffectParams_t;
 
 typedef struct {

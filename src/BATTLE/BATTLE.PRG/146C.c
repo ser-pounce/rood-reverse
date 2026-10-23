@@ -15003,7 +15003,7 @@ static void _loadZnd(int id)
     _zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
     vs_main_cdEnqueuePriority(_zoneContext.zndCdFile, _zoneContext.zndData);
     if (_zoneContext.unk30 != 0) {
-        int temp_s0 = D_8004FCCC[id];
+        int temp_s0 = vs_main_zndMusicMap[id];
         if (vs_main_getCurrentMusicId() != temp_s0) {
             func_8004552C(vs_main_soundData.currentMusicSlot, 0, 0x78);
         }

@@ -486,7 +486,7 @@ extern vs_main_CdFile vs_main_zndFiles[256];
  */
 extern u_char vs_main_locationZoneMapIds[];
 extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
-extern char D_8004FCCC[];
+extern u_char vs_main_zndMusicMap[];
 extern char D_8004FDD0[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];

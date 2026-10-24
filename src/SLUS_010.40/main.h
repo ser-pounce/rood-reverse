@@ -227,8 +227,8 @@ typedef struct {
     char statusTimers[8];
     D_80060068_t2 limbs[6];
     int weaponDrawn;
-    int unk80;
-    int unk84;
+    int unkD4;
+    int unkD8;
 } D_80060068_t3;
 
 typedef struct {
@@ -502,55 +502,13 @@ typedef struct {
     int framesSinceLastRead;
 } vs_main_disk_t;
 
-typedef struct {
-    char unk0[6];
-    short unk6[5];
-    int unk10[6];
-    D_8005DC6C_t unk28;
-} D_8005DC80_t;
-
-typedef struct {
-    char unk4;
-    char locked;
-    struct clutAnimState_t {
-        u_char active;
-        u_char frame;
-        u_char tick;
-        u_char speed;
-        u_char transitionMode;
-        signed char transitionTargetR;
-        signed char transitionTargetG;
-        signed char transitionTargetB;
-    } animState;
-    struct ColorInfo {
-        char r;
-        char g;
-        char b;
-        char a;
-        u_char rindex;
-        u_char gindex;
-        u_char bindex;
-    } colorInfo[256];
-    u_short clutBase[256];
-} _clutSlot;
-
-typedef struct {
-    u_short uploadPending;
-    u_short active;
-    _clutSlot slots[14];
-    u_char bgAnimActive;
-    u_char bgAnimFrame;
-    u_char bgAnimTick;
-    u_char bgAnimSpeed;
-    u_char bgTransitionMode;
-    u_char unk7E95;
-    short bgTransitionTargetR;
-    short bgTransitionTargetG;
-    short bgTransitionTargetB;
-    int bgColors[5][6];
-    D_8005DC6C_t unk7F14[5];
-    D_8005DC80_t unk7F28[17];
-} _clutState_t;
+typedef union {
+    u_int all;
+    struct {
+        char low;
+        char hi;
+    } pad[2];
+} vs_main_buttonsPressed_t;
 
 // .data
 extern int vs_main_titleScreenCount;
@@ -577,57 +535,30 @@ extern D_80050468_t D_80050468;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
 extern void* D_80055C80[2];
-#endif
-
 extern vs_main_disk_t vs_main_disk;
-extern _clutState_t _clutState;
 extern vs_main_stickPos vs_main_stickPosBuf;
-extern int sp;
 extern short D_8005DFD4;
 extern short vs_main_screenWidth;
 extern short D_8005DFD8;
 extern u_short vs_main_screenHeight;
 extern int vs_main_buttonRepeat;
-extern int _main_bss0[4] __attribute__((unused));
 extern char vs_main_padBuffer[2][34];
-extern int _main_bss1 __attribute__((unused));
 extern soundData_t vs_main_soundData;
 extern void* D_8005E0C0[2];
 extern int vs_main_nearClip;
-extern int _main_bss2 __attribute__((unused));
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_buttonsPreviousState;
 extern int D_8005E1C4;
-extern int _main_bss3 __attribute__((unused));
-extern int _main_bss4 __attribute__((unused));
-extern union {
-    u_int all;
-    struct {
-        char low;
-        char hi;
-    } pad[2];
-} vs_main_buttonsPressed;
+extern vs_main_buttonsPressed_t vs_main_buttonsPressed;
 extern int D_8005E1D4;
 extern u_int vs_main_frameDuration;
-extern int _main_bss5[13] __attribute__((unused));
 extern int vs_main_frameBuf;
 extern int vs_main_saveGameClearData;
 extern int vs_main_buttonsState;
-extern int _main_bss6 __attribute__((unused));
-extern int _inGame;
 extern int D_8005E244;
 extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;
-extern u_short _clutBuffer[14][256];
-extern int _main_bss7[8] __attribute__((unused));
-extern int D_8005FE70;
-extern int D_8005FE74;
-extern int D_8005FE78;
-extern int D_8005FE7C;
-extern int D_8005FE80;
-extern int D_8005FE84;
-extern int _main_bss8[6] __attribute__((unused));
 extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_actionsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
@@ -635,13 +566,13 @@ extern vs_main_settings_t vs_main_settings;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
-extern int _main_bss9[21] __attribute__((unused));
 extern vs_main_inventory_t vs_main_inventory;
 extern _mpdRoomDoorSection_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;
 extern vs_main_inventoryIndices_t vs_main_inventoryIndices;
+#endif
 
 int vs_main_gametimeUpdate(int vsync);
 void vs_main_jumpToBattle(void);

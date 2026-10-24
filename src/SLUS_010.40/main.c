@@ -37,6 +37,57 @@ typedef struct {
     int unk10[10];
 } padAct_t;
 
+typedef struct {
+    char unk0[6];
+    short unk6[5];
+    int unk10[6];
+    D_8005DC6C_t unk28;
+} D_8005DC80_t;
+
+typedef struct {
+    char unk4;
+    char locked;
+    struct clutAnimState_t {
+        u_char active;
+        u_char frame;
+        u_char tick;
+        u_char speed;
+        u_char transitionMode;
+        signed char transitionTargetR;
+        signed char transitionTargetG;
+        signed char transitionTargetB;
+    } animState;
+    struct ColorInfo {
+        char r;
+        char g;
+        char b;
+        char a;
+        u_char rindex;
+        u_char gindex;
+        u_char bindex;
+    } colorInfo[256];
+    u_short clutBase[256];
+} _clutSlot;
+
+typedef struct {
+    u_short uploadPending;
+    u_short active;
+    _clutSlot slots[14];
+    u_char bgAnimActive;
+    u_char bgAnimFrame;
+    u_char bgAnimTick;
+    u_char bgAnimSpeed;
+    u_char bgTransitionMode;
+    u_char unk7E95;
+    short bgTransitionTargetR;
+    short bgTransitionTargetG;
+    short bgTransitionTargetB;
+    int bgColors[5][6];
+    D_8005DC6C_t unk7F14[5];
+    D_8005DC80_t unk7F28[17];
+    u_char unk8214[0x54];
+} _clutState_t;
+
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, char[34]);
@@ -722,6 +773,66 @@ void* D_80055C80[2];
 static int _resetEnabled;
 static int _6 __attribute__((unused));
 static u_int _buttonHeldFrameCount[32];
+vs_main_disk_t vs_main_disk;
+static _clutState_t _clutState;
+vs_main_stickPos vs_main_stickPosBuf;
+static int _sp;
+short D_8005DFD4;
+short vs_main_screenWidth;
+short D_8005DFD8;
+u_short vs_main_screenHeight;
+int vs_main_buttonRepeat;
+static int _7[4] __attribute__((unused));
+char vs_main_padBuffer[2][34];
+static int _8 __attribute__((unused));
+soundData_t vs_main_soundData;
+void* D_8005E0C0[2];
+int vs_main_nearClip;
+static int _9 __attribute__((unused));
+DRAWENV vs_main_drawEnv[2];
+DISPENV vs_main_dispEnv[2];
+static int _10[4] __attribute__((unused));
+int vs_main_buttonsPreviousState;
+int D_8005E1C4;
+static int _11[2] __attribute__((unused));
+vs_main_buttonsPressed_t vs_main_buttonsPressed;
+int D_8005E1D4;
+u_int vs_main_frameDuration;
+static int _12[13] __attribute__((unused));
+int vs_main_frameBuf;
+int vs_main_saveGameClearData;
+static int _13[8] __attribute__((unused));
+int vs_main_buttonsState;
+static int _14 __attribute__((unused));
+static int _inGame;
+int D_8005E244;
+int vs_main_projectionDistance;
+int vs_gametime_tickspeed;
+static u_short _clutBuffer[14][256];
+static int _15[8] __attribute__((unused));
+static int D_8005FE70;
+static int D_8005FE74;
+static int D_8005FE78;
+static int D_8005FE7C;
+static int D_8005FE80;
+static int D_8005FE84;
+static int _16[6] __attribute__((unused));
+vs_main_scoredata_t vs_main_scoredata;
+static int _17 __attribute__((unused));
+char vs_main_actionsLearned[32];
+vs_main_mapStatus_t vs_main_mapStatus;
+vs_main_settings_t vs_main_settings;
+vs_main_artsStatus_t vs_main_artsStatus;
+int D_80060064;
+D_80060068_t D_80060068;
+vs_main_inventory_t vs_main_inventory;
+_mpdRoomDoorSection_t D_80061068;
+vs_Gametime_t vs_main_gametime;
+D_80061078_t D_80061078[4];
+vs_main_flags_t vs_main_stateFlags;
+vs_main_inventoryIndices_t vs_main_inventoryIndices;
+static int _18[0x15E] __attribute__((unused));
+
 
 static void _loadBattlePrg(void)
 {
@@ -880,7 +991,7 @@ void vs_main_jumpToBattle(void)
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_main_startState = 1;
-    vs_overlay_jumpToBattle(&sp);
+    vs_overlay_jumpToBattle(&_sp);
 }
 
 void vs_main_showEndingAndReturnToTitle(void)
@@ -1071,14 +1182,14 @@ static void _sysReinit(void)
 
 int vs_main_execTitle(void)
 {
-    vs_overlay_getSp(&sp);
+    vs_overlay_getSp(&_sp);
     _sysReinit();
     _loadTitlePrg();
     vs_main_startState = vs_title_exec();
     vs_main_saveGameClearData = 0;
     _displayLoadingScreen();
     _loadBattlePrg();
-    vs_overlay_getSp(&sp);
+    vs_overlay_getSp(&_sp);
     _inGame = 1;
     vs_battle_exec();
     SetDispMask(0);
@@ -1170,8 +1281,8 @@ void func_80042CB0(void)
     }
 
     temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->unk0.unk80 = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->unk0.unk84 = vs_battle_cameraCurrentSpherical.initialDistance;
+    temp_t5->unk0.unkD4 = vs_battle_cameraCurrentSpherical.delta.pitch;
+    temp_t5->unk0.unkD8 = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);

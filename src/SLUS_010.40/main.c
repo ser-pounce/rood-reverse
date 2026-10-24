@@ -926,7 +926,6 @@ static void _bufferLoadingScreen(void)
     DrawSync(0);
 }
 
-extern int D_8005DBF4[5][6];
 extern int vs_main_saveGameClearData;
 extern int vs_main_buttonsReleased;
 
@@ -1278,8 +1277,8 @@ void func_80042CB0(void)
     }
 
     temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->unk0.unkD4 = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->unk0.unkD8 = vs_battle_cameraCurrentSpherical.initialDistance;
+    temp_t5->unk0.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);

@@ -227,8 +227,8 @@ typedef struct {
     char statusTimers[8];
     D_80060068_t2 limbs[6];
     int weaponDrawn;
-    int unkD4;
-    int unkD8;
+    int cameraPitch;
+    int cameraDistance;
 } D_80060068_t3;
 
 typedef struct {

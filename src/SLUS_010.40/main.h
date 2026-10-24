@@ -472,14 +472,6 @@ typedef struct {
     short agility;
 } material_modifiers_t;
 
-typedef struct {
-    int unk0[2];
-    u_short unk8;
-    u_short unkA;
-    char* unkC;
-    int unk10[10];
-} padAct_t;
-
 enum cdBufferModes_e {
     cdBufferModeNone = 0,
     cdBufferModeBuffered = 1,
@@ -577,30 +569,16 @@ extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];
 
 //.bss
-extern int randArr[97];
-extern int randIndex;
-extern vs_main_HeapHeader* _cdReadBuffer;
-extern padAct_t _padAct[2];
+
+// Avoids breaking .bss order
+#ifndef VS_MAIN_INCLUDE
 extern portInfo_t vs_main_portInfo[2];
-extern vs_main_HeapHeader _heapA;
-extern vs_main_HeapHeader _heapB;
-extern DslLOC _cdReadLoc;
-extern int D_800501D0;
-extern int D_800501D4;
-extern int D_800501D8;
-extern vs_main_CdQueueSlot _cdQueue[32];
-extern struct {
-    short processing;
-    short queued;
-} _cdQueueCount;
 extern D_80050468_t D_80050468;
 extern int vs_main_startState;
-extern int sp2;
-extern u_short _sfxData[0x2C00];
 extern int vs_main_buttonsReleased;
 extern void* D_80055C80[2];
-extern int _resetEnabled;
-extern u_int _buttonHeldFrameCount[32];
+#endif
+
 extern vs_main_disk_t vs_main_disk;
 extern char _dsControlBuf[40];
 extern _clutState_t _clutState;
@@ -623,7 +601,6 @@ extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_buttonsPreviousState;
 extern int D_8005E1C4;
 extern int _main_bss3 __attribute__((unused));
-extern int D_800501CC;
 extern int _main_bss4 __attribute__((unused));
 extern union {
     u_int all;

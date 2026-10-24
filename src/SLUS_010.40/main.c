@@ -1,4 +1,6 @@
+#define VS_MAIN_INCLUDE
 #include "main.h"
+#undef VS_MAIN_INCLUDE
 #include "common.h"
 #include "overlay.h"
 #include "../TITLE/TITLE.PRG/22C.h"
@@ -26,6 +28,14 @@ enum diskState_e {
     diskCommandFailed = 8,
     diskStreamXaEnd = 9,
 };
+
+typedef struct {
+    int unk0[2];
+    u_short unk8;
+    u_short unkA;
+    char* unkC;
+    int unk10[10];
+} padAct_t;
 
 void __main(void);
 static void _unlockPadModeSwitch(void);
@@ -680,6 +690,39 @@ u_short vs_main_battleAbilitiesPointsRequirements[150] = { 20, 54, 72, 95, 125, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 256 };
 
+static int _randArr[97];
+static int _randIndex;
+static vs_main_HeapHeader* _cdReadBuffer;
+static int _0 __attribute__((unused));
+static padAct_t _padAct[2];
+static int _1[2] __attribute__((unused));
+static portInfo_t vs_main_portInfo[2];
+static u_char _2[2] __attribute__((unused));
+static vs_main_HeapHeader _heapA;
+static vs_main_HeapHeader _heapB;
+static DslLOC _cdReadLoc;
+static int D_800501CC;
+static int D_800501D0;
+static int D_800501D4;
+static int D_800501D8;
+static int _3 __attribute__((unused));
+static vs_main_CdQueueSlot _cdQueue[32];
+static struct {
+    short processing;
+    short queued;
+} _cdQueueCount;
+static int _4 __attribute__((unused));
+static D_80050468_t D_80050468;
+static int vs_main_startState;
+static int _sp2;
+static u_short _sfxData[0x2C00];
+static int vs_main_buttonsReleased;
+static int _5 __attribute__((unused));
+static void* D_80055C80[2];
+static int _resetEnabled;
+static int _6 __attribute__((unused));
+static u_int _buttonHeldFrameCount[32];
+
 static void _loadBattlePrg(void)
 {
     vs_main_CdFile cdFile;
@@ -817,7 +860,7 @@ void vs_main_resetGame(void)
     SpuQuit();
     ResetGraph(3);
     VSync(10);
-    vs_overlay_jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&_sp2);
 }
 
 void vs_main_jumpToBattle(void)
@@ -867,7 +910,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     SpuQuit();
     ResetGraph(3);
     vs_main_saveGameClearData = 1;
-    vs_overlay_jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&_sp2);
 }
 
 int vs_main_gametimeUpdate(int vsync)
@@ -927,10 +970,10 @@ static void _initRand(void)
 
     srand(1);
 
-    for (i = 0; i < (int)(sizeof randArr / sizeof randArr[0]); ++i) {
-        randArr[i] = rand();
+    for (i = 0; i < (int)(sizeof _randArr / sizeof _randArr[0]); ++i) {
+        _randArr[i] = rand();
     }
-    randIndex = (sizeof randArr / sizeof randArr[0]) - 1;
+    _randIndex = (sizeof _randArr / sizeof _randArr[0]) - 1;
 }
 
 int vs_main_getRand(int max)
@@ -939,16 +982,16 @@ int vs_main_getRand(int max)
     int var_a0;
     int var_v0;
 
-    var_v0 = randArr[randIndex] * (sizeof randArr / sizeof randArr[0]);
+    var_v0 = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
 
     if (var_v0 < 0) {
         var_v0 += 0x7FFF;
     }
 
-    randIndex = var_v0 >> 0xF;
+    _randIndex = var_v0 >> 0xF;
 
-    temp_s0 = 0x7FFF - randArr[randIndex];
-    randArr[randIndex] = rand();
+    temp_s0 = 0x7FFF - _randArr[_randIndex];
+    _randArr[_randIndex] = rand();
 
     var_a0 = temp_s0 * max;
 
@@ -1047,7 +1090,7 @@ void vs_main_exec(void)
 {
     __main();
     _sysInit();
-    vs_overlay_getSp(&sp2);
+    vs_overlay_getSp(&_sp2);
     vs_main_execTitle();
 }
 

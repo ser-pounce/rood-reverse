@@ -165,7 +165,7 @@ typedef struct {
     u_char unk11;
     u_char unk12;
     u_char unk13;
-    u_short unk14;
+    short unk14;
     u_short unk16;
     u_short unk18;
     u_short unk1A;
@@ -263,7 +263,9 @@ typedef struct {
 
 typedef struct {
     D_800F4538_unk0 unk0;
-    MATRIX bones[42];
+    MATRIX bones[8];
+    D_800F4538_t2 unk16C;
+    u_char unk178[0x434];
     u_char unk5AC_0 : 2;
     u_char unk5AC_2 : 1;
     u_char unk5AC_3 : 1;

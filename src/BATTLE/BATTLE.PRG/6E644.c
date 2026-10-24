@@ -187,32 +187,6 @@ typedef struct {
     u_int unk0_31 : 1;
 } func_800DA1D4_t;
 
-typedef struct {
-    int unk0;
-    int unk4;
-    u_int unk8_0 : 19;
-    u_int unk8_19 : 2;
-    u_int unk8_21 : 1;
-    u_int unk8_22 : 10;
-    char unkC[8];
-    short unk14;
-    char unk16[6];
-    SVECTOR unk1C;
-    char unk24[2];
-    short unk26;
-    char unk28[0x34];
-    vs_battle_movementPosition currentTile;
-    vs_battle_movementPosition lastTouchedTile;
-    char unk64[0x108];
-    u_int unk16C;
-    char unk170[0x440];
-    u_int unk5B0_0 : 4;
-    u_int unk5B0_4 : 1;
-    char unk5B1[0x8B];
-    u_short unk63C;
-    u_short unk63E;
-} func_800E1238_t;
-
 typedef struct func_800E78F4_t {
     char unk0;
     u_char unk1;
@@ -268,7 +242,7 @@ typedef struct func_800E78F4_t {
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
     func_800DEB10_t2* unk54;
-    func_800E1238_t* unk58;
+    D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
     SVECTOR* unk60;
     vs_battle_movementPosition* unk64;
@@ -1126,7 +1100,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     int height;
     func_800DA1D4_t relation;
     func_800DA1D4_t final;
-    func_800E1238_t* object;
+    D_800F4538_unk0* object;
     func_800E78F4_t* other;
     vs_battle_actor* actor;
     int owner;
@@ -1138,9 +1112,9 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     u_int targetDistance;
 
     if (D_800F5878[id] != NULL) {
-        func_800E1238_t* target = (func_800E1238_t*)D_800F4538[id];
+        D_800F4538_t* target = D_800F4538[id];
 
-        if ((target->unk8_19 << 19) && (target->unk1C.vy > arg0->unk4C.vy)) {
+        if ((target->unk0.unkA_3 << 19) && (target->unk0.position.vy > arg0->unk4C.vy)) {
             height = -D_800F5878[id]->unkB8;
         } else {
             height = D_800F5878[id]->unk82;
@@ -1150,13 +1124,13 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     arg0->unk1E4[id] = func_800E4624(
-        &arg0->unk4C, &vs_battle_actors[id]->unk44->position, arg0->unk82, height);
+        &arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position, arg0->unk82, height);
 
     if (D_800F45E0[id]
-        || ((object = (func_800E1238_t*)vs_battle_actors[id]->unk44),
+        || ((object = vs_battle_actors[id]->unk44),
             ((object->currentTile.x == arg0->unk34.x)
                 && (object->currentTile.z == arg0->unk34.z)))
-        || ((object->unk8_19 << 19)
+        || ((object->unkA_3 << 19)
             && ((object->lastTouchedTile.x == arg0->unk34.x)
                 && (object->lastTouchedTile.z == arg0->unk34.z)))) {
         arg0->unk1A4[id].unk0_2 = 1;
@@ -1164,10 +1138,10 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     } else {
         if (++arg0->unk12B & 1) {
             arg0->unk1A4[id].unk0_30 =
-                !_checkExtent(&object->unk1C, &arg0->unk4C, arg0, id);
+                !_checkExtent(&object->position, &arg0->unk4C, arg0, id);
         } else {
             arg0->unk1A4[id].unk0_2 =
-                !_checkHeight(&object->unk1C, &arg0->unk4C, arg0, id);
+                !_checkHeight(&object->position, &arg0->unk4C, arg0, id);
         }
 
         if (arg0->unk1A4[id].unk0_2) {
@@ -1176,8 +1150,8 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     arg0->unk1A4[id].unk0_3 =
-        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->position,
-            arg0->unk58->unk26 + arg0->unk58->unk14, arg0->unk1E4[id])
+        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position,
+            arg0->unk58->unk0.facing + arg0->unk58->unk0.unk14, arg0->unk1E4[id])
         >= arg0->unkA8;
 
     *(u_int*)&relation = *(u_int*)&arg0->unk1A4[id];
@@ -1200,8 +1174,8 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
             relation.unk0_0 || ((arg0->unk1E4[id] < arg0->unkA4) && relation.unk0_30);
     }
 
-    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->currentTile.z]
-                                      [vs_battle_actors[id]->unk44->currentTile.x]
+    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->unk0.currentTile.z]
+                                      [vs_battle_actors[id]->unk44->unk0.currentTile.x]
         & 0x2000) {
         relation.unk0_31 = 1;
     } else {
@@ -1212,13 +1186,13 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     blocked = 0;
     radius = 63;
 
-    x = arg0->unk58->unk1C.vx;
-    z = arg0->unk58->unk1C.vz;
+    x = arg0->unk58->unk0.position.vx;
+    z = arg0->unk58->unk0.position.vz;
 
     owner = arg0->unk88;
     targetDistance = arg0->unk1E4[id];
-    heading = ratan2(vs_battle_actors[id]->unk44->position.vx - x,
-        vs_battle_actors[id]->unk44->position.vz - z);
+    heading = ratan2(vs_battle_actors[id]->unk44->unk0.position.vx - x,
+        vs_battle_actors[id]->unk44->unk0.position.vz - z);
     other = ((func_800E78F4_t**)0x1F80037C)[id];
 
     if (other != NULL) {
@@ -1610,8 +1584,7 @@ int func_800DA738(func_800E78F4_t* arg0)
     if (valid && active && arg0->unk1A4[target].unk0_5) {
         int x;
         int z;
-        vs_battle_movementPosition tile =
-            ((func_800E1238_t*)D_800F4538[target])->currentTile;
+        vs_battle_movementPosition tile = D_800F4538[target]->unk0.currentTile;
         int angle =
             ratan2(point.x * 128 - (x = D_800F4538[target]->unk0.position.vx - 64),
                 point.z * 128 - (z = D_800F4538[target]->unk0.position.vz - 64));
@@ -3136,15 +3109,15 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
         func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[actor->id];
-        func_800E1238_t* model = other->unk58;
+        D_800F4538_t* model = other->unk58;
 
         if (other->unk88 == arg0->unk88 || other->unk88 == 0) {
             continue;
         }
 
-        dx = model->unk1C.vx - x;
-        dy = model->unk1C.vy - y;
-        dz = model->unk1C.vz - z;
+        dx = model->unk0.position.vx - x;
+        dy = model->unk0.position.vy - y;
+        dz = model->unk0.position.vz - z;
 
         if (arg2
             && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
@@ -3234,13 +3207,13 @@ int func_800E0918(func_800E78F4_t* arg0, int arg1, int arg2)
         u_int distance = func_800E45F4(arg0->unk168, arg0->unk34);
 
         if (arg2 && distance < 16) {
-            if (!(arg0->unk58->unk8_21 << 21)) {
+            if (!(arg0->unk58->unk0.unkA_5 << 21)) {
                 callback(arg0, arg1);
                 return 1;
             }
         } else if (D_800F58BC->unk14
                    && func_800E42E0(arg0->unk34) + arg0->unkBE < D_800F58BC->unk14) {
-            if (arg0->unk58->unk8_21 << 21) {
+            if (arg0->unk58->unk0.unkA_5 << 21) {
                 if (func_800D954C(arg0, arg0->unk34) > 0) {
                     func_800E678C(arg0);
                     func_800E4B10(arg0);
@@ -3302,7 +3275,7 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
         arg0->unk180 = s;
     }
 
-    if (!(arg0->unk58->unk8_21 << 21)) {
+    if (!(arg0->unk58->unk0.unkA_5 << 21)) {
         func_800E4B18(arg0);
     } else {
         arg0->unk228 = 0;
@@ -3606,7 +3579,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
     int (*check)(func_800E78F4_t*, int);
 
     ++arg0->unkC2;
-    check = (arg0->unk58->unk8_21 << 21) ? func_800E0678 : D_800D9B6C;
+    check = (arg0->unk58->unk0.unkA_5 << 21) ? func_800E0678 : D_800D9B6C;
 
     if (arg0->unk12D == 1) {
         if (arg0->unkC2 < 31) {
@@ -3758,7 +3731,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
 
 int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
 {
-    func_800E1238_t* model = arg0->unk58;
+    D_800F4538_t* model = arg0->unk58;
     int angle;
 
     if (arg1 == arg0->unk88) {
@@ -3794,7 +3767,7 @@ int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
 
     arg0->unk13A = arg0->unkBA;
 
-    if (((model->unk26 + model->unk14) & 0xFFF) == (arg0->unk18A & 0xFFF)) {
+    if (((model->unk0.facing + model->unk0.unk14) & 0xFFF) == (arg0->unk18A & 0xFFF)) {
         if (!arg0->unk1A4[arg1].unk0_5) {
             if (func_800E4180(arg0, 128, 1, 6)) {
                 return 1;
@@ -3818,10 +3791,10 @@ failed:
 
 void func_800E2CCC(func_800E78F4_t* arg0)
 {
-    func_800E1238_t* model = arg0->unk58;
+    D_800F4538_t* model = arg0->unk58;
     int direction;
 
-    if ((model->unk8_21 << 21) && arg0->unk228++ > 120 && (arg0->unk15E & 6)
+    if ((model->unk0.unkA_5 << 21) && arg0->unk228++ > 120 && (arg0->unk15E & 6)
         && (arg0->unk15E & 0x30) && func_800D954C(arg0, arg0->unk34) > 0) {
         func_800E678C(arg0);
         func_800E4B10(arg0);
@@ -3852,7 +3825,7 @@ void func_800E2CCC(func_800E78F4_t* arg0)
         u_int x = source.x;
         u_int z = source.z;
         u_int z2 = z;
-        u_int angle = model->unk26 + model->unk14;
+        u_int angle = model->unk0.facing + model->unk0.unk14;
         u_int quadrant = (angle & 0xFFF) / (ONE / 4);
         direction = (angle & 0x3FF) > ONE / 8 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
 
@@ -4264,7 +4237,7 @@ void func_800E6158(void) { func_800E6F9C(); }
 int func_800E6178(vs_battle_actor* actor, short arg1)
 {
     func_800E78F4_t* state;
-    func_800E1238_t* model;
+    D_800F4538_t* model;
     vs_battle_actor2* stats;
     int id = actor->id;
     int packed;
@@ -4276,9 +4249,9 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     }
 
     if (!actor->unk40) {
-        int kind = ((func_800E1238_t*)actor->unk44)->unk16C & 7;
 
-        if (kind == 2 || kind == 4) {
+        if (((D_800F4538_t*)actor->unk44)->unk16C.actorId == 2
+            || ((D_800F4538_t*)actor->unk44)->unk16C.actorId == 4) {
             int i;
 
             for (i = 0; i < 4; ++i) {
@@ -4299,11 +4272,11 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     func_800E4288(state, sizeof *state);
     state->unk88 = id;
     state->unk54 = (func_800DEB10_t2*)actor;
-    model = (func_800E1238_t*)actor->unk44;
+    model = (D_800F4538_t*)actor->unk44;
     state->unk58 = model;
     state->unk5C = actor->unk3C;
     func_800A190C(state->unk88, 250, &result, 0);
-    state->unk82 = result.vy - model->unk1C.vy;
+    state->unk82 = result.vy - model->unk0.position.vy;
     radius = model->unk63C;
 
     if (!id) {
@@ -4323,8 +4296,8 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
         state->unk94 = radius;
     }
 
-    state->unk60 = &model->unk1C;
-    state->unk64 = &model->currentTile;
+    state->unk60 = &model->unk0.position;
+    state->unk64 = &model->unk0.currentTile;
     state->unk89 = 0;
     state->unk8A = 0;
     state->unk103 = 1;
@@ -4358,7 +4331,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
 
     state->unkBC = -256;
     state->unkBE = -128;
-    state->unkB8 = model->unk63E;
+    state->unkB8 = model->menuCameraHeightOffset;
     state->unk34 = *state->unk64;
     state->unk110 = *state->unk64;
     state->unk194 = -1;
@@ -4367,9 +4340,9 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
 
     if (id) {
         if ((state->unk15E & 0x30) && (state->unk15E & 0xC6)
-            && (D_800F58B8[model->currentTile.z][model->currentTile.x] & 0x10)
-            && !(model->unk8_21 << 21)) {
-            state->unk170 = model->currentTile;
+            && (D_800F58B8[model->unk0.currentTile.z][model->unk0.currentTile.x] & 0x10)
+            && !(model->unk0.unkA_5 << 21)) {
+            state->unk170 = model->unk0.currentTile;
             func_800DEEFC(state, 12);
         } else if ((arg1 < 0) || ((arg1 << 26) >= 0)) {
             if (actor->unk1F) {
@@ -4450,7 +4423,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E7660);
 
 int func_800E7698(func_800E78F4_t* arg0)
 {
-    func_800E1238_t* model = arg0->unk58;
+    D_800F4538_t* model = arg0->unk58;
     D_800F5920_t* motion = D_800F5920;
     int angle;
 

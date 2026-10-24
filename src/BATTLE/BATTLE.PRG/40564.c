@@ -526,9 +526,9 @@ void func_800A97EC(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
         func_800AA984(arg0, (short)angle, 0);
 
         actor->unk5AC_0 = 0;
-        actor->unk0.currentTileX = arg1->unk0_0;
-        actor->unk0.unk5D = arg1->unk0_8;
-        actor->unk0.currentTileZ = arg1->unk0_16;
+        actor->unk0.currentTile.x = arg1->unk0_0;
+        actor->unk0.currentTile.y = arg1->unk0_8;
+        actor->unk0.currentTile.z = arg1->unk0_16;
     } else {
         if (arg3 == -1) {
             actor->unk5C6 = actor->unk5C0;
@@ -657,9 +657,9 @@ void func_800A9C54(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
         func_800AA290(arg0, arg1, -1, arg2);
     }
 
-    temp_s0->unk0.currentTileX = arg1->unk0_0;
-    temp_s0->unk0.unk5D = arg1->unk0_8;
-    temp_s0->unk0.currentTileZ = arg1->unk0_16;
+    temp_s0->unk0.currentTile.x = arg1->unk0_0;
+    temp_s0->unk0.currentTile.y = arg1->unk0_8;
+    temp_s0->unk0.currentTile.z = arg1->unk0_16;
 }
 
 void func_800A9CDC(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
@@ -853,9 +853,9 @@ void func_800AA108(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
             temp_s0->unk5AC_0 = 1;
         }
 
-        temp_s0->unk0.currentTileX = arg1->unk0_0;
-        temp_s0->unk0.unk5D = arg1->unk0_8;
-        temp_s0->unk0.currentTileZ = arg1->unk0_16;
+        temp_s0->unk0.currentTile.x = arg1->unk0_0;
+        temp_s0->unk0.currentTile.y = arg1->unk0_8;
+        temp_s0->unk0.currentTile.z = arg1->unk0_16;
         temp_s0->unk5AC_2 = 1;
     }
 }
@@ -866,9 +866,9 @@ void func_800AA218(int arg0, func_8006EBF8_t_fields* arg1, int arg2)
 
     if (temp_s0 != NULL) {
         func_800AA290(arg0, arg1, arg2, temp_s0->unk5C2);
-        temp_s0->unk0.currentTileX = arg1->unk0_0;
-        temp_s0->unk0.unk5D = arg1->unk0_8;
-        temp_s0->unk0.currentTileZ = arg1->unk0_16;
+        temp_s0->unk0.currentTile.x = arg1->unk0_0;
+        temp_s0->unk0.currentTile.y = arg1->unk0_8;
+        temp_s0->unk0.currentTile.z = arg1->unk0_16;
     }
 }
 
@@ -949,8 +949,8 @@ void func_800AA490(int arg0, func_8006EBF8_t_fields* arg1, int arg2, int arg3)
         return;
     }
 
-    angle = arg1->unk0_0 - actor->unk0.currentTileX;
-    dz = arg1->unk0_16 - actor->unk0.currentTileZ;
+    angle = arg1->unk0_0 - actor->unk0.currentTile.x;
+    dz = arg1->unk0_16 - actor->unk0.currentTile.z;
 
     if (angle == 0 && dz == 0) {
         angle = arg1->unk0_24 * 16;
@@ -1038,8 +1038,8 @@ void func_800AA698(int arg0, SVECTOR* arg1, int arg2)
         actor->unk0.position.vx += arg1->vx;
         actor->unk0.position.vy += arg1->vy;
         actor->unk0.position.vz += arg1->vz;
-        actor->unk0.currentTileX = actor->unk0.position.vx / 128;
-        actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+        actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
+        actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
         return;
     }
 
@@ -2428,9 +2428,9 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 actor->unk0.position.vz + actor->unk0.unk34.vz, 2);
             if (D_800F49F4 != 0 && D_800F49F4 != ((u_char*)&actor->unk5EC)[1]) {
                 actor->unk6E4 = D_800F49F4;
-                actor->unk0.currentTileX = actor->unk0.position.vx / 128;
-                actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
-                actor->unk0.unk5D = 0;
+                actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
+                actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
+                actor->unk0.currentTile.y = 0;
                 func_8008C49C(D_800F49F4 - 2, arg0);
                 func_8008C49C(D_800F49F4 - 2, -1);
                 D_800F49F4 = 0;
@@ -2473,7 +2473,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         }
         *(short*)&actor->unk6EE = 0;
         actor->unk0.unkC_0 = D_800F49F4;
-        actor->unk0.unk5D = D_800F49F4;
+        actor->unk0.currentTile.y = D_800F49F4;
         actor->unk5AC_28 = D_800F49F8;
         actor->unk0.unk34.vy = y - actor->unk0.position.vy;
         actor->unk0.unkA_0 = 4;
@@ -2519,7 +2519,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 if (profile != 3) {
                     func_800A0204(arg0, 1, 0, 8);
                 }
-                func_800E4C28(actor->unk0.currentTileX, actor->unk0.currentTileZ);
+                func_800E4C28(actor->unk0.currentTile.x, actor->unk0.currentTile.z);
                 func_800E6EB0(actor->unk0.unkF);
             }
             actor->unk1846 = 0;

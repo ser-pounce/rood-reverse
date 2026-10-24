@@ -2,6 +2,7 @@
 #include "3A1A0.h"
 #include "4A0A8.h"
 #include "5BF94.h"
+#include "38C1C.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/main.h"
@@ -11,12 +12,44 @@
 #include <stdlib.h>
 #include <rand.h>
 
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+
 struct func_800D4910_t;
 
 typedef struct {
     int unk0;
     u_short unk4;
 } func_800E5A74_t;
+
+typedef struct {
+    u_int unk0_0 : 2;
+    u_int unk0_2 : 2;
+    u_int unk0_4 : 3;
+    u_int unk0_7 : 1;
+    u_int unk0_8 : 2;
+    u_int unk0_10 : 2;
+    u_int unk0_12 : 1;
+    u_int unk0_13 : 1;
+    u_int unk0_14 : 1;
+    u_int unk0_15 : 1;
+    u_int unk0_16 : 2;
+    u_int unk0_18 : 3;
+    u_int unk0_21 : 2;
+    u_int unk0_23 : 1;
+    u_int unk0_24 : 1;
+    u_int unk0_25 : 1;
+    u_int unk0_26 : 1;
+    u_int unk0_27 : 1;
+    u_int unk0_28 : 2;
+    u_int unk0_30 : 2;
+} func_800E5A9C_t;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4;
+} D_80069C3C_t;
 
 typedef struct {
     char rangeX;
@@ -80,7 +113,21 @@ typedef struct {
     u_short unkC;
     u_short unkE;
     SVECTOR unk10;
-    char unk18[0x24];
+    char unk18[2];
+    u_short unk1A;
+    char unk1C[0x14];
+    u_int unk30_0 : 4;
+    u_int unk30_4 : 5;
+    u_int unk30_9 : 5;
+    u_int unk30_14 : 2;
+    u_int unk30_16 : 6;
+    u_int unk30_22 : 5;
+    u_int unk30_27 : 5;
+    u_int unk34_0 : 12;
+    u_int unk34_12 : 2;
+    u_int unk34_14 : 1;
+    u_int unk34_15 : 17;
+    char unk38[4];
     vs_battle_actor2* unk3C;
 } func_800DEB10_t2;
 
@@ -126,7 +173,10 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 4;
+    u_int unk0_1 : 1;
+    u_int unk0_2 : 1;
+    u_int unk0_3 : 1;
+    u_int unk0_4 : 1;
     u_int unk0_5 : 1;
     u_int unk0_6 : 2;
     u_int unk0_8 : 7;
@@ -134,34 +184,9 @@ typedef struct {
     u_int unk0_20 : 7;
     u_int unk0_27 : 1;
     u_int unk0_28 : 2;
-    u_int unk0_30 : 2;
+    u_int unk0_30 : 1;
+    u_int unk0_31 : 1;
 } func_800DA1D4_t;
-
-typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_int unk8_0 : 21;
-    u_int unk8_21 : 1;
-    u_int unk8_22 : 10;
-    char unkC[8];
-    short unk14;
-    char unk16[6];
-    SVECTOR unk1C;
-    char unk24[2];
-    short unk26;
-    char unk28[0x34];
-    vs_battle_movementPosition unk5C;
-    char unk60[0x550];
-    u_int unk5B0_0 : 4;
-    u_int unk5B0_4 : 1;
-} func_800E1238_t;
 
 typedef struct func_800E78F4_t {
     char unk0;
@@ -191,7 +216,10 @@ typedef struct func_800E78F4_t {
     char unk1D[3];
     u_char unk20;
     u_char unk21;
-    char unk22[4];
+    u_char unk22;
+    u_char unk23;
+    u_char unk24;
+    u_char unk25;
     u_char unk26;
     u_char unk27;
     char unk28;
@@ -199,42 +227,63 @@ typedef struct func_800E78F4_t {
     char unk2A;
     u_char unk2B;
     u_char unk2C;
-    char unk2D[3];
+    u_char unk2D;
+    char unk2E;
+    u_char unk2F;
     u_char unk30;
-    char unk31[3];
+    u_char unk31;
+    u_char unk32;
+    u_char unk33;
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[8];
+    char unk3C[6];
+    short unk42;
     u_char unk44;
     char unk45[3];
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
     func_800DEB10_t2* unk54;
-    func_800E1238_t* unk58;
+    D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
-    char unk60[0x22];
+    SVECTOR* unk60;
+    vs_battle_movementPosition* unk64;
+    int (*unk68)(struct func_800E78F4_t*);
+    char unk6C[0x16];
     short unk82;
     char unk84[4];
     u_char unk88;
-    char unk89[3];
+    u_char unk89;
+    u_char unk8A;
+    char unk8B;
     u_short unk8C;
     u_short unk8E;
     char unk90[2];
     u_short unk92;
-    char unk94[4];
+    u_short unk94;
+    char unk96[2];
     u_short unk98;
     u_short unk9A;
-    char unk9C[0x17];
+    int unk9C;
+    char unkA0[4];
+    u_int unkA4;
+    int unkA8;
+    u_int unkAC;
+    u_short unkB0;
+    u_char unkB2;
     u_char unkB3;
     int unkB4;
     short unkB8;
     u_short unkBA;
-    char unkBC[2];
+    short unkBC;
     short unkBE;
     u_short unkC0;
     u_short unkC2;
     int unkC4;
-    char unkC8[8];
+    u_int unkC8;
+    u_char unkCC;
+    char unkCD;
+    u_char unkCE;
+    char unkCF;
     short unkD0;
     u_short unkD2;
     u_short unkD4;
@@ -247,15 +296,25 @@ typedef struct func_800E78F4_t {
     char unkEA[0x10];
     u_char unkFA;
     u_char unkFB;
-    char unkFC[0xC];
+    char unkFC[5];
+    u_char unk101;
+    u_char unk102;
+    u_char unk103;
+    char unk104[4];
     vs_battle_movementPosition unk108;
     u_char unk10C;
-    char unk10D[0xB];
+    char unk10D[3];
+    vs_battle_movementPosition unk110;
+    char unk114[4];
     u_char unk118[4];
     vs_battle_movementPosition unk11C;
-    char unk120[0xA];
+    char unk120[4];
+    u_char unk124;
+    char unk125[3];
+    u_short unk128;
     u_char unk12A;
-    char unk12B[2];
+    u_char unk12B;
+    char unk12C;
     u_char unk12D;
     u_char unk12E;
     signed char unk12F;
@@ -285,13 +344,18 @@ typedef struct func_800E78F4_t {
     int unk184;
     short unk188;
     int unk18A : 16;
-    char unk18C[0xE];
+    char unk18C[8];
+    int unk194;
+    char unk198[2];
     u_char unk19A;
     char unk19B[5];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
-    char unk224[4];
+    u_char unk224;
+    u_char unk225;
+    u_char unk226;
+    u_char unk227;
     int unk228;
     func_800DCAA0_t* unk22C;
     func_800DD604_t unk230[6][4];
@@ -500,6 +564,8 @@ int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
 int func_800E4320(int, int);
+int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
+int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
 int func_800E45D4(int);
 u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 int func_800E4624(SVECTOR*, SVECTOR*, int, int);
@@ -518,14 +584,26 @@ int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
 void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
+void func_800E6828(func_800E78F4_t*);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);
+void func_800E72D0(void);
+void func_800E7370(func_800E78F4_t*);
+void func_800E7660(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
+int func_800E7F8C(func_800E78F4_t*);
 
 extern u_int D_80069BBC[];
+extern u_char D_80069C18[];
+extern u_int D_80069C1C[];
+extern D_80069C3C_t D_80069C3C[];
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
+extern int (*D_800F1790[])(func_800E78F4_t*);
+extern u_short D_800F17B8[][2];
+extern u_short D_800F17C8[][2];
+extern u_char D_800F17D8[];
 extern short D_800F17DC[][2];
 extern int D_800F5330[];
 extern int D_800F5630;
@@ -543,6 +621,7 @@ extern int D_800F5874;
 extern func_800E78F4_t* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
+extern int D_800F58C0;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
@@ -553,6 +632,7 @@ extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
+extern int D_800F590C;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
@@ -737,271 +817,182 @@ typedef struct {
     u_int unk5AC_16 : 16;
 } actorObject;
 
-typedef union {
-    u_int raw;
-    struct {
-        u_int active : 1;
-        u_int previous : 1;
-        u_int hidden : 1;
-        u_int inView : 1;
-        u_int unk4 : 1;
-        u_int visible : 1;
-        u_int kind : 2;
-        u_int counter : 7;
-        u_int timer : 5;
-        u_int kindTimer : 7;
-        u_int blocked : 1;
-        u_int previousKind : 2;
-        u_int outOfReach : 1;
-        u_int unk31 : 1;
-    } bits;
-} actorRelation;
-
-typedef struct {
-    char unk0[0x22];
-    u_char unk22;
-    char unk23[2];
-    u_char unk25;
-    char unk26[0xE];
-    vs_battle_movementTile tile;
-    char unk38[0x14];
-    SVECTOR position;
-    char unk54[4];
-    actorObject* object;
-    char unk5C[0x26];
-    short height;
-    char unk84[4];
-    u_char actorId;
-    char unk89[9];
-    u_short radius;
-    char unk94[0x10];
-    u_int nearDistance;
-    u_int angleLimit;
-    u_int farDistance;
-    char unkB0[8];
-    short extent;
-    char unkBA[0x71];
-    u_char phase;
-    char unk12C[0x78];
-    actorRelation relations[16];
-    u_int distances[16];
-} actorRelationState;
-
-int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
-int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
-
-#define RELATION_STATES ((actorRelationState**)0x1F80037C)
-
-static inline int checkExtent(
-    SVECTOR* from, SVECTOR* to, actorRelationState* state, int id)
+static inline int _checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
-    actorRelationState* other = RELATION_STATES[id];
-    int extent;
+    func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
+    int extent = other != NULL ? other->unkB8 : 128;
 
-    if (other) {
-        extent = other->extent;
-    } else {
-        extent = 128;
-    }
-    return func_800E44E8(from, to, extent, state->extent);
+    return func_800E44E8(from, to, extent, state->unkB8);
 }
 
-static inline int checkHeight(
-    SVECTOR* from, SVECTOR* to, actorRelationState* state, int id)
+static inline int _checkHeight(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
-    actorRelationState* other = RELATION_STATES[id];
-    int height;
-    int own;
+    func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
+    int height = other != NULL ? ABS(other->unk82) : 64;
 
-    if (other) {
-        height = ABS(other->height);
-    } else {
-        height = 64;
-    }
-    own = state->height;
-    if (own < 0) {
-        own = -own;
-    }
-    return func_800E44E8(from, to, height, own);
+    return func_800E44E8(from, to, height, ABS(state->unk82));
 }
 
-void func_800D87E8(actorRelationState* state, int id)
+void func_800D87E8(func_800E78F4_t* arg0, int id)
 {
     int height;
-    int active;
-    int previous;
-    int visible;
-    actorRelation relation;
-    actorObject* object;
-    actorRelationState* other;
+    func_800DA1D4_t relation;
+    func_800DA1D4_t final;
+    D_800F4538_t* object;
+    func_800E78F4_t* other;
     vs_battle_actor* actor;
     int owner;
     int blocked;
     int heading;
-    int angle;
-    int distance;
     int x;
     int z;
-    u_short radius;
+    u_int radius;
     u_int targetDistance;
-    u_int root;
 
-    {
-        actorRelationState* target = (actorRelationState*)D_800F5878[id];
-        actorObject* targetObject;
+    if (D_800F5878[id] != NULL) {
+        D_800F4538_t* target = D_800F4538[id];
 
-        if (target) {
-            targetObject = (actorObject*)D_800F4538[id];
-            if ((targetObject->flags.raw & 0x180000)
-                && targetObject->position.vy > state->position.vy) {
-                height = -target->extent;
-            } else {
-                height = ((actorRelationState*)D_800F5878[id])->height;
-            }
+        if ((target->unk0.unkA_3 << 19) && (target->unk0.position.vy > arg0->unk4C.vy)) {
+            height = -D_800F5878[id]->unkB8;
         } else {
-            height = -64;
+            height = D_800F5878[id]->unk82;
         }
+    } else {
+        height = -64;
     }
-    state->distances[id] = func_800E4624((SVECTOR*)&state->position,
-        (SVECTOR*)&((actorObject*)vs_battle_actors[id]->unk44)->position, state->height,
-        height);
+
+    arg0->unk1E4[id] = func_800E4624(
+        &arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position, arg0->unk82, height);
 
     if (D_800F45E0[id]
-        || ((object = (actorObject*)vs_battle_actors[id]->unk44),
-            (object->tile.raw & 0xFF00FF) == (state->tile.raw & 0xFF00FF))
-        || ((object->flags.raw & 0x180000)
-            && (object->lastTile.raw & 0xFF00FF) == (state->tile.raw & 0xFF00FF))) {
-        state->relations[id].raw |= 0x40000004;
+        || ((object = vs_battle_actors[id]->unk44),
+            ((object->unk0.currentTile.x == arg0->unk34.x)
+                && (object->unk0.currentTile.z == arg0->unk34.z)))
+        || ((object->unk0.unkA_3 << 19)
+            && ((object->unk0.lastTouchedTile.x == arg0->unk34.x)
+                && (object->unk0.lastTouchedTile.z == arg0->unk34.z)))) {
+        arg0->unk1A4[id].unk0_2 = 1;
+        arg0->unk1A4[id].unk0_30 = 1;
     } else {
-        if (++state->phase & 1) {
-            state->relations[id].bits.outOfReach =
-                !checkExtent(&object->position, &state->position, state, id);
+        if (++arg0->unk12B & 1) {
+            arg0->unk1A4[id].unk0_30 =
+                !_checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
         } else {
-            state->relations[id].bits.hidden =
-                !checkHeight(&object->position, &state->position, state, id);
+            arg0->unk1A4[id].unk0_2 =
+                !_checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
         }
-        if (state->relations[id].bits.hidden) {
-            state->relations[id].bits.outOfReach = 1;
+
+        if (arg0->unk1A4[id].unk0_2) {
+            arg0->unk1A4[id].unk0_30 = 1;
         }
     }
 
-    {
-        actorObject* object = state->object;
-        state->relations[id].bits.inView =
-            func_800E437C(&state->position,
-                &((actorObject*)vs_battle_actors[id]->unk44)->position,
-                object->facing + object->unk14, state->distances[id])
-            >= (int)state->angleLimit;
-    }
+    arg0->unk1A4[id].unk0_3 =
+        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position,
+            arg0->unk58->unk0.facing + arg0->unk58->unk0.unk14, arg0->unk1E4[id])
+        >= arg0->unkA8;
 
-    /* Copied as a raw word, which keeps the local addressable. */
-    *(u_int*)&relation = *(u_int*)&state->relations[id];
-    if (state->actorId == id) {
-        relation.bits.active = 1;
-        relation.bits.visible = 1;
-        relation.bits.previous = 0;
+    __builtin_memcpy(&relation, &arg0->unk1A4[id], sizeof relation);
+
+    if (arg0->unk88 == id) {
+        relation.unk0_0 = 1;
+        relation.unk0_5 = 1;
+        relation.unk0_1 = 0;
     } else {
-        active = 0;
-        if (state->distances[id] <= state->farDistance && relation.bits.inView
-            && id != state->actorId && (state->unk25 || relation.bits.outOfReach)) {
-            active = 1;
+        relation.unk0_0 = (arg0->unk1E4[id] <= arg0->unkAC) && relation.unk0_3
+                       && id != arg0->unk88 && (arg0->unk25 || relation.unk0_30);
+
+        if (relation.unk0_15) {
+            --relation.unk0_15;
+            relation.unk0_0 = 1;
         }
-        relation.bits.active = active;
-        {
-            int timer = relation.bits.timer;
-            if (timer) {
-                relation.bits.timer = timer - 1;
-                relation.bits.active = 1;
-            }
-        }
-        previous = 0;
-        if (!relation.bits.active) {
-            previous = state->relations[id].bits.active;
-        }
-        relation.bits.previous = previous;
-        visible = 0;
-        if (relation.bits.active
-            || (state->distances[id] < state->nearDistance && relation.bits.outOfReach)) {
-            visible = 1;
-        }
-        relation.bits.visible = visible;
+
+        relation.unk0_1 = !relation.unk0_0 && arg0->unk1A4[id].unk0_0;
+        relation.unk0_5 =
+            relation.unk0_0 || ((arg0->unk1E4[id] < arg0->unkA4) && relation.unk0_30);
     }
 
-    {
-        actorObject* object = (actorObject*)vs_battle_actors[id]->unk44;
-        if ((*(u_short(**)[32])0x1F8003C0)[object->tile.p.z][object->tile.p.x] & 0x2000) {
-            relation.bits.unk31 = 1;
-        } else {
-            relation.bits.unk31 = relation.bits.active;
-        }
+    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->unk0.currentTile.z]
+                                      [vs_battle_actors[id]->unk44->unk0.currentTile.x]
+        & 0x2000) {
+        relation.unk0_31 = 1;
+    } else {
+        relation.unk0_31 = relation.unk0_0;
     }
-    *(u_int*)&state->relations[id] = *(u_int*)&relation;
 
+    __builtin_memcpy(&arg0->unk1A4[id], &relation, sizeof relation);
     blocked = 0;
     radius = 63;
-    {
-        actorObject* own = state->object;
-        x = own->position.vx;
-        z = own->position.vz;
+
+    x = arg0->unk58->unk0.position.vx;
+    z = arg0->unk58->unk0.position.vz;
+
+    owner = arg0->unk88;
+    targetDistance = arg0->unk1E4[id];
+    heading = ratan2(vs_battle_actors[id]->unk44->unk0.position.vx - x,
+        vs_battle_actors[id]->unk44->unk0.position.vz - z);
+    other = ((func_800E78F4_t**)0x1F80037C)[id];
+
+    if (other != NULL) {
+        radius = other->unk92;
     }
-    owner = state->actorId;
-    targetDistance = state->distances[id];
-    heading = ratan2(((actorObject*)vs_battle_actors[id]->unk44)->position.vx - x,
-        ((actorObject*)vs_battle_actors[id]->unk44)->position.vz - z);
-    other = RELATION_STATES[id];
-    if (other) {
-        radius = other->radius;
-    }
+
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
         int candidate = actor->id;
+        int angle;
+        int distance;
+
         if (candidate == owner || candidate == id
-            || state->distances[candidate] > targetDistance) {
+            || (arg0->unk1E4[candidate] > targetDistance)) {
             continue;
         }
-        {
-            actorObject* object = (actorObject*)D_800F4538[candidate];
-            angle = ratan2(object->position.vx - x, object->position.vz - z) - heading;
-        }
+
+        angle = ratan2(D_800F4538[candidate]->unk0.position.vx - x,
+                    D_800F4538[candidate]->unk0.position.vz - z)
+              - heading;
+
         if (rcos(angle) < 0) {
             continue;
         }
-        root = vs_gte_rsqrt(state->distances[candidate]);
-        distance = (int)(root * rsin(angle)) >> 12;
-        if (distance < 0) {
-            distance = -distance;
-        }
-        if ((u_int)distance < radius) {
+
+        distance = (vs_gte_rsqrt(arg0->unk1E4[candidate]) * rsin(angle)) >> 12;
+        distance = ABS(distance);
+
+        if (distance < radius) {
             blocked = 1;
             break;
         }
     }
 
-    {
-        actorRelation final;
+    arg0->unk1A4[id].unk0_27 = blocked;
 
-        final.raw = state->relations[id].raw & 0xF7FFFFFF;
-        final.raw |= blocked << 27;
-        state->relations[id] = final;
-        if (state->actorId != id && RELATION_STATES[id]) {
-            if (final.bits.kindTimer) {
-                final.bits.kindTimer--;
-                if (!final.bits.kindTimer) {
-                    final.bits.kind = final.bits.previousKind;
-                }
-            }
-            if (state->unk22 && final.bits.kind == 3) {
-                if (final.bits.active) {
-                    final.bits.counter = 0;
-                } else {
-                    final.bits.counter++;
-                    if (final.bits.counter >= 121) {
-                        final.bits.kind = 1;
-                    }
-                }
-            }
-            state->relations[id] = final;
+    if (arg0->unk88 == id || ((func_800E78F4_t**)0x1F80037C)[id] == NULL) {
+        return;
+    }
+
+    final = arg0->unk1A4[id];
+
+    if (final.unk0_20) {
+        --final.unk0_20;
+
+        if (!final.unk0_20) {
+            final.unk0_6 = final.unk0_28;
         }
     }
+
+    if (arg0->unk22 && final.unk0_6 == 3) {
+        if (final.unk0_0) {
+            final.unk0_8 = 0;
+        } else {
+            ++final.unk0_8;
+
+            if (final.unk0_8 >= 121) {
+                final.unk0_6 = 1;
+            }
+        }
+    }
+
+    arg0->unk1A4[id] = final;
 }
 
 typedef struct actorUpdateActor {
@@ -1185,7 +1176,7 @@ void func_800D8EF4(void)
         }
         if (object->flags.bits.unk31) {
             state->unk1D = 1;
-            func_800D87E8((actorRelationState*)state, 0);
+            func_800D87E8((func_800E78F4_t*)state, 0);
             goto skip;
         }
 
@@ -1205,7 +1196,7 @@ void func_800D8EF4(void)
         if (state->unk19A) {
             state->unk19A--;
             func_800E2CCC((movementRecoveryState*)state);
-            func_800D87E8((actorRelationState*)state, 0);
+            func_800D87E8((func_800E78F4_t*)state, 0);
             state->unk1D = 1;
             if (state->unk46 >= 2) {
                 state->unk46--;
@@ -1267,7 +1258,7 @@ void func_800D8EF4(void)
 
         arg = 0;
         for (i = 0; i < 2; i++) {
-            func_800D87E8((actorRelationState*)state, arg);
+            func_800D87E8((func_800E78F4_t*)state, arg);
             arg = D_800F58D4;
             if (arg == 0) {
                 break;

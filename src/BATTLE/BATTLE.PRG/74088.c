@@ -2,6 +2,7 @@
 #include "3A1A0.h"
 #include "4A0A8.h"
 #include "5BF94.h"
+#include "38C1C.h"
 #include "6E644.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/main.h"
@@ -20,6 +21,35 @@ typedef struct {
     int unk0;
     u_short unk4;
 } func_800E5A74_t;
+
+typedef struct {
+    u_int unk0_0 : 2;
+    u_int unk0_2 : 2;
+    u_int unk0_4 : 3;
+    u_int unk0_7 : 1;
+    u_int unk0_8 : 2;
+    u_int unk0_10 : 2;
+    u_int unk0_12 : 1;
+    u_int unk0_13 : 1;
+    u_int unk0_14 : 1;
+    u_int unk0_15 : 1;
+    u_int unk0_16 : 2;
+    u_int unk0_18 : 3;
+    u_int unk0_21 : 2;
+    u_int unk0_23 : 1;
+    u_int unk0_24 : 1;
+    u_int unk0_25 : 1;
+    u_int unk0_26 : 1;
+    u_int unk0_27 : 1;
+    u_int unk0_28 : 2;
+    u_int unk0_30 : 2;
+} func_800E5A9C_t;
+
+typedef struct {
+    u_short unk0;
+    u_short unk2;
+    u_char unk4;
+} D_80069C3C_t;
 
 typedef struct {
     char rangeX;
@@ -83,7 +113,21 @@ typedef struct {
     u_short unkC;
     u_short unkE;
     SVECTOR unk10;
-    char unk18[0x24];
+    char unk18[2];
+    u_short unk1A;
+    char unk1C[0x14];
+    u_int unk30_0 : 4;
+    u_int unk30_4 : 5;
+    u_int unk30_9 : 5;
+    u_int unk30_14 : 2;
+    u_int unk30_16 : 6;
+    u_int unk30_22 : 5;
+    u_int unk30_27 : 5;
+    u_int unk34_0 : 12;
+    u_int unk34_12 : 2;
+    u_int unk34_14 : 1;
+    u_int unk34_15 : 17;
+    char unk38[4];
     vs_battle_actor2* unk3C;
 } func_800DEB10_t2;
 
@@ -129,7 +173,10 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 4;
+    u_int unk0_1 : 1;
+    u_int unk0_2 : 1;
+    u_int unk0_3 : 1;
+    u_int unk0_4 : 1;
     u_int unk0_5 : 1;
     u_int unk0_6 : 2;
     u_int unk0_8 : 7;
@@ -137,34 +184,9 @@ typedef struct {
     u_int unk0_20 : 7;
     u_int unk0_27 : 1;
     u_int unk0_28 : 2;
-    u_int unk0_30 : 2;
+    u_int unk0_30 : 1;
+    u_int unk0_31 : 1;
 } func_800DA1D4_t;
-
-typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_int unk8_0 : 21;
-    u_int unk8_21 : 1;
-    u_int unk8_22 : 10;
-    char unkC[8];
-    short unk14;
-    char unk16[6];
-    SVECTOR unk1C;
-    char unk24[2];
-    short unk26;
-    char unk28[0x34];
-    vs_battle_movementPosition unk5C;
-    char unk60[0x550];
-    u_int unk5B0_0 : 4;
-    u_int unk5B0_4 : 1;
-} func_800E1238_t;
 
 typedef struct func_800E78F4_t {
     char unk0;
@@ -194,7 +216,10 @@ typedef struct func_800E78F4_t {
     char unk1D[3];
     u_char unk20;
     u_char unk21;
-    char unk22[4];
+    u_char unk22;
+    u_char unk23;
+    u_char unk24;
+    u_char unk25;
     u_char unk26;
     u_char unk27;
     char unk28;
@@ -202,42 +227,63 @@ typedef struct func_800E78F4_t {
     char unk2A;
     u_char unk2B;
     u_char unk2C;
-    char unk2D[3];
+    u_char unk2D;
+    char unk2E;
+    u_char unk2F;
     u_char unk30;
-    char unk31[3];
+    u_char unk31;
+    u_char unk32;
+    u_char unk33;
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[8];
+    char unk3C[6];
+    short unk42;
     u_char unk44;
     char unk45[3];
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
     func_800DEB10_t2* unk54;
-    func_800E1238_t* unk58;
+    D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
-    char unk60[0x22];
+    SVECTOR* unk60;
+    vs_battle_movementPosition* unk64;
+    int (*unk68)(struct func_800E78F4_t*);
+    char unk6C[0x16];
     short unk82;
     char unk84[4];
     u_char unk88;
-    char unk89[3];
+    u_char unk89;
+    u_char unk8A;
+    char unk8B;
     u_short unk8C;
     u_short unk8E;
     char unk90[2];
     u_short unk92;
-    char unk94[4];
+    u_short unk94;
+    char unk96[2];
     u_short unk98;
     u_short unk9A;
-    char unk9C[0x17];
+    int unk9C;
+    char unkA0[4];
+    u_int unkA4;
+    int unkA8;
+    u_int unkAC;
+    u_short unkB0;
+    u_char unkB2;
     u_char unkB3;
     int unkB4;
     short unkB8;
     u_short unkBA;
-    char unkBC[2];
+    short unkBC;
     short unkBE;
     u_short unkC0;
     u_short unkC2;
     int unkC4;
-    char unkC8[8];
+    u_int unkC8;
+    u_char unkCC;
+    char unkCD;
+    u_char unkCE;
+    char unkCF;
     short unkD0;
     u_short unkD2;
     u_short unkD4;
@@ -250,15 +296,25 @@ typedef struct func_800E78F4_t {
     char unkEA[0x10];
     u_char unkFA;
     u_char unkFB;
-    char unkFC[0xC];
+    char unkFC[5];
+    u_char unk101;
+    u_char unk102;
+    u_char unk103;
+    char unk104[4];
     vs_battle_movementPosition unk108;
     u_char unk10C;
-    char unk10D[0xB];
+    char unk10D[3];
+    vs_battle_movementPosition unk110;
+    char unk114[4];
     u_char unk118[4];
     vs_battle_movementPosition unk11C;
-    char unk120[0xA];
+    char unk120[4];
+    u_char unk124;
+    char unk125[3];
+    u_short unk128;
     u_char unk12A;
-    char unk12B[2];
+    u_char unk12B;
+    char unk12C;
     u_char unk12D;
     u_char unk12E;
     signed char unk12F;
@@ -288,13 +344,18 @@ typedef struct func_800E78F4_t {
     int unk184;
     short unk188;
     int unk18A : 16;
-    char unk18C[0xE];
+    char unk18C[8];
+    int unk194;
+    char unk198[2];
     u_char unk19A;
     char unk19B[5];
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];
-    char unk224[4];
+    u_char unk224;
+    u_char unk225;
+    u_char unk226;
+    u_char unk227;
     int unk228;
     func_800DCAA0_t* unk22C;
     func_800DD604_t unk230[6][4];
@@ -450,7 +511,6 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
-int func_800D85D8(func_800E78F4_t*);
 int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_8008D2C0(func_8008D2C0_t*);
@@ -504,6 +564,8 @@ int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
 int func_800E4320(int, int);
+int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
+int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
 int func_800E45D4(int);
 u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 int func_800E4624(SVECTOR*, SVECTOR*, int, int);
@@ -522,14 +584,26 @@ int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
 void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E5EC0(int, int, int);
+void func_800E6828(func_800E78F4_t*);
 void func_800E678C(func_800E78F4_t*);
 void func_800E685C(int, int, int);
+void func_800E72D0(void);
+void func_800E7370(func_800E78F4_t*);
+void func_800E7660(func_800E78F4_t*);
 int func_800E7698(func_800E78F4_t*);
 void func_800E7960(func_800E78F4_t*);
+int func_800E7F8C(func_800E78F4_t*);
 
 extern u_int D_80069BBC[];
+extern u_char D_80069C18[];
+extern u_int D_80069C1C[];
+extern D_80069C3C_t D_80069C3C[];
 extern p_file_t D_800EC4BC;
 extern D_800F16EC_t D_800F16EC[8];
+extern int (*D_800F1790[])(func_800E78F4_t*);
+extern u_short D_800F17B8[][2];
+extern u_short D_800F17C8[][2];
+extern u_char D_800F17D8[];
 extern short D_800F17DC[][2];
 extern int D_800F5330[];
 extern int D_800F5630;
@@ -547,6 +621,7 @@ extern int D_800F5874;
 extern func_800E78F4_t* D_800F5878[];
 extern u_short (*D_800F58B8)[32];
 extern D_800F58BC_t* D_800F58BC;
+extern int D_800F58C0;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern int D_800F58E0;
@@ -557,10 +632,13 @@ extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
 extern func_800DEEA4_t* D_800F5900;
 extern u_char (*D_800F5904)[256];
+extern int D_800F590C;
 extern D_800F5910_t* D_800F5910;
 extern int D_800F5918;
 extern int D_800F591C;
 extern D_800F5920_t* D_800F5920;
+
+int func_800D85D8(func_800E78F4_t*);
 
 typedef struct {
     int unk0;

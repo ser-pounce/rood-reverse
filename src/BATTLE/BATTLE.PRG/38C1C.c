@@ -527,7 +527,7 @@ void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
 
     if (y <= 0) {
         if (actor->unk0.unkF != 0) {
-            func_800AE4FC(&actor->unk0, 12);
+            func_800AE4FC(actor, 12);
         }
 
         i = y >= -64;
@@ -689,9 +689,9 @@ void func_800A25EC(D_800F4538_t* actor)
         }
     }
 
-    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
-    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
-    actor->unk0.unk5D = 0;
+    actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
+    actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
+    actor->unk0.currentTile.y = 0;
 }
 
 void func_800A2790(D_800F4538_t* actor)
@@ -704,8 +704,8 @@ void func_800A2790(D_800F4538_t* actor)
         actor->unk1848.unk10.vy * speed / (ONE * ONE),
         actor->unk1848.unk10.vz * speed / (ONE * ONE));
     addVector(&actor->unk0.position, &delta);
-    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
-    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
+    actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
+    actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
     actor->unk0.unkA_5 = 1;
     func_800AA850(actor->unk0.unkF, actor->unk1848.unk6, 12);
     animation = 1;
@@ -733,8 +733,8 @@ void func_800A291C(D_800F4538_t* arg0)
 {
     addVector(&arg0->unk0.position, &arg0->unk1848.unk10);
 
-    arg0->unk0.currentTileX = arg0->unk0.position.vx / 128;
-    arg0->unk0.currentTileZ = arg0->unk0.position.vz / 128;
+    arg0->unk0.currentTile.x = arg0->unk0.position.vx / 128;
+    arg0->unk0.currentTile.z = arg0->unk0.position.vz / 128;
 
     func_800AA850(arg0->unk0.unkF, arg0->unk1848.unk6, 12);
 }

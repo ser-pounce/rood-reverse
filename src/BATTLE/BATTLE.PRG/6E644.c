@@ -9,6 +9,7 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
+#include <memory.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -1100,7 +1101,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     int height;
     func_800DA1D4_t relation;
     func_800DA1D4_t final;
-    D_800F4538_unk0* object;
+    D_800F4538_t* object;
     func_800E78F4_t* other;
     vs_battle_actor* actor;
     int owner;
@@ -1128,20 +1129,20 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
     if (D_800F45E0[id]
         || ((object = vs_battle_actors[id]->unk44),
-            ((object->currentTile.x == arg0->unk34.x)
-                && (object->currentTile.z == arg0->unk34.z)))
-        || ((object->unkA_3 << 19)
-            && ((object->lastTouchedTile.x == arg0->unk34.x)
-                && (object->lastTouchedTile.z == arg0->unk34.z)))) {
+            ((object->unk0.currentTile.x == arg0->unk34.x)
+                && (object->unk0.currentTile.z == arg0->unk34.z)))
+        || ((object->unk0.unkA_3 << 19)
+            && ((object->unk0.lastTouchedTile.x == arg0->unk34.x)
+                && (object->unk0.lastTouchedTile.z == arg0->unk34.z)))) {
         arg0->unk1A4[id].unk0_2 = 1;
         arg0->unk1A4[id].unk0_30 = 1;
     } else {
         if (++arg0->unk12B & 1) {
             arg0->unk1A4[id].unk0_30 =
-                !_checkExtent(&object->position, &arg0->unk4C, arg0, id);
+                !_checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
         } else {
             arg0->unk1A4[id].unk0_2 =
-                !_checkHeight(&object->position, &arg0->unk4C, arg0, id);
+                !_checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
         }
 
         if (arg0->unk1A4[id].unk0_2) {
@@ -4250,8 +4251,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
 
     if (!actor->unk40) {
 
-        if (((D_800F4538_t*)actor->unk44)->unk16C.actorId == 2
-            || ((D_800F4538_t*)actor->unk44)->unk16C.actorId == 4) {
+        if (actor->unk44->unk16C.actorId == 2 || actor->unk44->unk16C.actorId == 4) {
             int i;
 
             for (i = 0; i < 4; ++i) {
@@ -4272,7 +4272,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     func_800E4288(state, sizeof *state);
     state->unk88 = id;
     state->unk54 = (func_800DEB10_t2*)actor;
-    model = (D_800F4538_t*)actor->unk44;
+    model = actor->unk44;
     state->unk58 = model;
     state->unk5C = actor->unk3C;
     func_800A190C(state->unk88, 250, &result, 0);

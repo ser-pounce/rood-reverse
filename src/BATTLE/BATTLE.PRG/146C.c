@@ -6144,7 +6144,7 @@ vs_battle_actor* func_800765B0(
         temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
         vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         temp_v0->unk0.unk0.unk3C = &temp_v0->unk0.unk50;
-        temp_v0->unk0.unk0.unk44 = &temp_v0->unk9B4;
+        temp_v0->unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk9B4;
         temp_v0->unk0.unk0.unk18 = 0xFE;
         temp_v0->unk0.unk0.unk1C = 0x10;
         temp_v0->unk0.unk0.unk40 = 0;
@@ -6564,7 +6564,7 @@ vs_battle_actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int blade
         i = 0xA;
         temp_v0->unk0.unk0.unk0.unk3C = &temp_v0->unk0.unk0.unk50;
         temp_v0->unk0.unk0.unk0.unk40 = 1;
-        temp_v0->unk0.unk0.unk0.unk44 = &temp_v0->unk0.unk9B4;
+        temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
         temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
         temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
 
@@ -6659,7 +6659,7 @@ vs_battle_actor* func_800775C0(
 
             data->unk0.unk0.unk0.unk3C = &data->unk0.unk0.unk50;
             data->unk0.unk0.unk0.unk40 = 2;
-            data->unk0.unk0.unk0.unk44 = &data->unk0.unk9B4;
+            data->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&data->unk0.unk9B4;
             data->unk0.unk0.unk0.unk48[0] = &data->unk22B4;
             actor = &data->unk0.unk0.unk0;
         } else {
@@ -6667,7 +6667,7 @@ vs_battle_actor* func_800775C0(
 
             data->unk0.unk0.unk0.unk3C = &data->unk0.unk0.unk50;
             data->unk0.unk0.unk0.unk40 = 1;
-            data->unk0.unk0.unk0.unk44 = &data->unk0.unk9B4;
+            data->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&data->unk0.unk9B4;
             data->unk0.unk0.unk0.unk48[0] = &data->unk22B4[0];
             data->unk0.unk0.unk0.unk48[1] = &data->unk22B4[1];
             actor = &data->unk0.unk0.unk0;
@@ -9110,7 +9110,7 @@ int func_8007C928(u_int arg0, int arg1, vs_battle_objectData_flags* arg2)
             *temp_s1 = &temp_v0->unk0.unk0.unk0;
             temp_v0->unk0.unk0.unk0.unk3C = &temp_v0->unk0.unk0.unk50;
             temp_v0->unk0.unk0.unk0.unk40 = 1;
-            temp_v0->unk0.unk0.unk0.unk44 = &temp_v0->unk0.unk9B4;
+            temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
             temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
             temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
             func_80076D50(arg0, arg1, 0, 0, 6);

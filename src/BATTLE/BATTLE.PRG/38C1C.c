@@ -527,7 +527,7 @@ void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
 
     if (y <= 0) {
         if (actor->unk0.unkF != 0) {
-            func_800AE4FC(&actor->unk0, 12);
+            func_800AE4FC(actor, 12);
         }
 
         i = y >= -64;

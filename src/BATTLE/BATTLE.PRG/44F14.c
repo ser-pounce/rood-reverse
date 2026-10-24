@@ -465,7 +465,7 @@ loop:
         break;
 
     case 10:
-        func_800AE4FC(&actor->unk0, script[1]);
+        func_800AE4FC(actor, script[1]);
         break;
 
     case 25:
@@ -650,25 +650,25 @@ void func_800AE47C(D_800F4538_t* arg0)
     func_800AD714(arg0, &arg0->unk704, 2);
 }
 
-void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
+void func_800AE4FC(D_800F4538_t* arg0, int arg1)
 {
     D_800F4538_t* actor;
     int temp;
     int sp[2];
     int type = arg1;
 
-    if (arg0->position.vy >= 0xBB8) {
+    if (arg0->unk0.position.vy >= 0xBB8) {
         return;
     }
 
-    actor = D_800F4538[arg0->unkF];
+    actor = D_800F4538[arg0->unk0.unkF];
 
     if (actor->unk17E4.unk0 == 2) {
         sp[0] = 0x80;
         sp[1] = 0;
     } else {
         if ((*((int*)&actor->unk0.nQuads + 1) & 0x3F9F00) != 0x8000) {
-            func_800A1280(arg0->unkF, 0xFF, &actor->unk6FC, 0);
+            func_800A1280(arg0->unk0.unkF, 0xFF, &actor->unk6FC, 0);
         }
 
         temp = vs_main_computeSfxPan(*(int*)&actor->unk6FC, actor->unk6FC.vz);
@@ -690,18 +690,15 @@ void func_800AE4FC(D_800F4538_unk0* arg0, int arg1)
     }
 
     if (type == 8) {
-        func_8006CD60(arg0->unk68->akaoOffset, sp[0], sp[1]);
+        func_8006CD60(arg0->unk0.unk68->akaoOffset, sp[0], sp[1]);
     } else if (type == 4) {
-        func_800461CC(0x7E, arg0->unk68->akaoOffset, rand() % 4 + 4, sp[0], sp[1]);
+        func_800461CC(0x7E, arg0->unk0.unk68->akaoOffset, rand() % 4 + 4, sp[0], sp[1]);
     } else {
-        func_800461CC(0x180, arg0->unk68->akaoOffset, type, sp[0], sp[1]);
+        func_800461CC(0x180, arg0->unk0.unk68->akaoOffset, type, sp[0], sp[1]);
     }
 }
 
-void func_800AE68C(int arg0, int arg1)
-{
-    func_800AE4FC(&D_800F4538[arg0]->unk0, arg1 + 4);
-}
+void func_800AE68C(int arg0, int arg1) { func_800AE4FC(D_800F4538[arg0], arg1 + 4); }
 
 void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
 {
@@ -791,7 +788,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
             id += 8;
         }
     }
-    func_800AE4FC(&arg1->unk0, id);
+    func_800AE4FC(arg1, id);
 }
 
 void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)

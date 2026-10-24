@@ -107,11 +107,11 @@ typedef struct {
 } vs_action_t;
 
 typedef struct {
-    int unk0;
+    u_int unk0;
     u_short unk4;
     u_short unk6;
-    int unk8;
-    int unkC;
+    u_int unk8;
+    u_int unkC;
 } vs_main_statusEffectParams_t;
 
 typedef struct {
@@ -445,11 +445,37 @@ typedef struct {
     u_char unkB;
 } _mpdRoomDoorSection_t;
 
+typedef struct {
+    u_char phys;
+    u_char wind;
+    u_char fire;
+    u_char earth;
+    u_char water;
+    u_char light;
+    u_char dark;
+    u_char _ __attribute__((unused));
+} material_modifiers_affinities_t;
+
+typedef struct {
+    u_char human;
+    u_char beast;
+    u_char undead;
+    u_char phantom;
+    u_char dragon;
+    u_char evil;
+    material_modifiers_affinities_t attackAffinities;
+    material_modifiers_affinities_t defenseAffinities;
+    u_short maxDp;
+    short strength;
+    short intelligence;
+    short agility;
+} material_modifiers_t;
+
 extern portInfo_t _portInfo[2];
 extern soundData_t vs_main_soundData;
 extern vs_action_t vs_main_actions[256];
 extern int D_8004A52C;
-extern char vs_main_materialModifiers[8][30];
+extern material_modifiers_t vs_main_materialModifiers[8];
 extern int vs_main_frameBuf;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
@@ -458,9 +484,9 @@ extern vs_main_CdFile vs_main_zndFiles[256];
 /**
  * 512 pairs of zone and map IDs.
  */
-extern char vs_main_locationZoneMapIds[];
+extern u_char vs_main_locationZoneMapIds[];
 extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
-extern char D_8004FCCC[];
+extern u_char vs_main_zndMusicMap[];
 extern char D_8004FDD0[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];

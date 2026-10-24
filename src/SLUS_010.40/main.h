@@ -2,6 +2,7 @@
 #include "25AC.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include <sys/types.h>
+#include <libds.h>
 #include <libgte.h>
 #include <libgpu.h>
 
@@ -232,7 +233,7 @@ typedef struct {
 
 typedef struct {
     D_80060068_t3 unk0;
-    int unkDC[9];
+    int unk88[9];
 } D_80060068_t;
 
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
@@ -471,40 +472,159 @@ typedef struct {
     short agility;
 } material_modifiers_t;
 
-extern portInfo_t _portInfo[2];
-extern soundData_t vs_main_soundData;
-extern vs_action_t vs_main_actions[256];
-extern int D_8004A52C;
-extern material_modifiers_t vs_main_materialModifiers[8];
-extern int vs_main_frameBuf;
-extern DRAWENV vs_main_drawEnv[2];
-extern DISPENV vs_main_dispEnv[2];
+typedef struct {
+    int unk0[2];
+    u_short unk8;
+    u_short unkA;
+    char* unkC;
+    int unk10[10];
+} padAct_t;
+
+enum cdBufferModes_e {
+    cdBufferModeNone = 0,
+    cdBufferModeBuffered = 1,
+    cdBufferModeManual = 2,
+};
+
+typedef struct {
+    char state;
+    char unk1;
+    char unk2;
+    char unk3;
+    u_int unk4;
+    u_int sectorCount;
+    int cdSector;
+    int byteCount;
+    void* vram;
+    DslFILTER pcm;
+    DslLOC cdLoc;
+    int commandId;
+    int unk24;
+    int unk28;
+    enum cdBufferModes_e bufferMode;
+    u_int sectorBufIndex;
+    int unk34;
+    u_int unk38;
+    u_int unk3C;
+    u_int ringBufIndex;
+    int framesSinceLastRead;
+} vs_main_disk_t;
+
+typedef struct {
+    char unk0[6];
+    short unk6[5];
+    int unk10[6];
+    D_8005DC6C_t unk28;
+} D_8005DC80_t;
+
+typedef struct {
+    char unk4;
+    char locked;
+    struct clutAnimState_t {
+        u_char active;
+        u_char frame;
+        u_char tick;
+        u_char speed;
+        u_char transitionMode;
+        signed char transitionTargetR;
+        signed char transitionTargetG;
+        signed char transitionTargetB;
+    } animState;
+    struct ColorInfo {
+        char r;
+        char g;
+        char b;
+        char a;
+        u_char rindex;
+        u_char gindex;
+        u_char bindex;
+    } colorInfo[256];
+    u_short clutBase[256];
+} _clutSlot;
+
+typedef struct {
+    u_short uploadPending;
+    u_short active;
+    _clutSlot slots[14];
+    u_char bgAnimActive;
+    u_char bgAnimFrame;
+    u_char bgAnimTick;
+    u_char bgAnimSpeed;
+    u_char bgTransitionMode;
+    u_char unk7E95;
+    short bgTransitionTargetR;
+    short bgTransitionTargetG;
+    short bgTransitionTargetB;
+    int bgColors[5][6];
+    D_8005DC6C_t unk7F14[5];
+    D_8005DC80_t unk7F28[17];
+} _clutState_t;
+
+// .data
 extern int vs_main_titleScreenCount;
-extern vs_main_CdFile vs_main_zndFiles[256];
+extern int D_8004A52C;
+extern vs_action_t vs_main_actions[256];
+extern material_modifiers_t vs_main_materialModifiers[8];
+extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
 /**
  * 512 pairs of zone and map IDs.
  */
 extern u_char vs_main_locationZoneMapIds[];
-extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
+extern vs_main_CdFile vs_main_zndFiles[256];
 extern u_char vs_main_zndMusicMap[];
-extern char D_8004FDD0[];
+extern u_short vs_main_unkStrings[];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];
+
+//.bss
+extern int randArr[97];
+extern int randIndex;
+extern vs_main_HeapHeader* _cdReadBuffer;
+extern padAct_t _padAct[2];
+extern portInfo_t vs_main_portInfo[2];
+extern vs_main_HeapHeader _heapA;
+extern vs_main_HeapHeader _heapB;
+extern DslLOC _cdReadLoc;
+extern int D_800501D0;
+extern int D_800501D4;
+extern int D_800501D8;
+extern vs_main_CdQueueSlot _cdQueue[32];
+extern struct {
+    short processing;
+    short queued;
+} _cdQueueCount;
 extern D_80050468_t D_80050468;
-extern void* D_80055C80[];
+extern int vs_main_startState;
+extern int sp2;
+extern u_short _sfxData[0x2C00];
+extern int vs_main_buttonsReleased;
+extern void* D_80055C80[2];
+extern int _resetEnabled;
+extern u_int _buttonHeldFrameCount[32];
+extern vs_main_disk_t vs_main_disk;
+extern char _dsControlBuf[40];
+extern _clutState_t _clutState;
+extern vs_main_stickPos vs_main_stickPosBuf;
+extern int sp;
 extern short D_8005DFD4;
 extern short vs_main_screenWidth;
 extern short D_8005DFD8;
 extern u_short vs_main_screenHeight;
-extern u_int D_8005E040;
-extern void* D_8005E0C0[];
-extern int vs_main_nearClip;
-extern int vs_main_projectionDistance;
-extern int vs_gametime_tickspeed;
-extern int D_8005E1C4;
-extern int D_8005E1D4;
-extern int D_8005E244;
+extern int vs_main_buttonRepeat;
+extern int _main_bss0[4] __attribute__((unused));
 extern char vs_main_padBuffer[2][34];
+extern int _main_bss1 __attribute__((unused));
+extern soundData_t vs_main_soundData;
+extern void* D_8005E0C0[2];
+extern int vs_main_nearClip;
+extern int _main_bss2 __attribute__((unused));
+extern DRAWENV vs_main_drawEnv[2];
+extern DISPENV vs_main_dispEnv[2];
+extern int vs_main_buttonsPreviousState;
+extern int D_8005E1C4;
+extern int _main_bss3 __attribute__((unused));
+extern int D_800501CC;
+extern int _main_bss4 __attribute__((unused));
 extern union {
     u_int all;
     struct {
@@ -512,28 +632,40 @@ extern union {
         char hi;
     } pad[2];
 } vs_main_buttonsPressed;
-extern int vs_main_buttonsPreviousState;
-extern int vs_main_buttonRepeat;
-extern int vs_main_buttonsReleased;
-extern int vs_main_buttonsState;
-extern int vs_main_saveGameClearData;
-
+extern int D_8005E1D4;
 extern u_int vs_main_frameDuration;
+extern int _main_bss5[13] __attribute__((unused));
+extern int vs_main_frameBuf;
+extern int vs_main_saveGameClearData;
+extern int vs_main_buttonsState;
+extern int _main_bss6 __attribute__((unused));
+extern int _inGame;
+extern int D_8005E244;
+extern int vs_main_projectionDistance;
+extern int vs_gametime_tickspeed;
+extern u_short _clutBuffer[14][256];
+extern int _main_bss7[8] __attribute__((unused));
+extern int D_8005FE70;
+extern int D_8005FE74;
+extern int D_8005FE78;
+extern int D_8005FE7C;
+extern int D_8005FE80;
+extern int D_8005FE84;
+extern int _main_bss8[6] __attribute__((unused));
 extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_actionsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
-extern int vs_main_startState;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
+extern int _main_bss9[21] __attribute__((unused));
 extern vs_main_inventory_t vs_main_inventory;
 extern _mpdRoomDoorSection_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;
 extern vs_main_inventoryIndices_t vs_main_inventoryIndices;
-extern vs_main_stickPos vs_main_stickPosBuf;
 
 int vs_main_gametimeUpdate(int vsync);
 void vs_main_jumpToBattle(void);

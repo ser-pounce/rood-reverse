@@ -264,7 +264,7 @@ typedef struct {
     short unk30[2];
     short unk34[8][6];
     short unk94[5][4];
-    int unkBC;
+    short unkBC[2];
     short unkC0[2];
     u_char rCurve;
     u_char gCurve;
@@ -276,12 +276,23 @@ typedef struct {
     u_char unkCB;
 } func_800FA098_arg0;
 
+typedef union {
+    int packed;
+    struct {
+        u_char rCurve;
+        u_char gCurve;
+        u_char bCurve;
+        u_char age;
+    } fields;
+} func_800D2904_curves;
+
 typedef struct {
     VECTOR unk0;
     VECTOR unk10;
     int unk20;
     u_int flags;
-    int unk28;
+    u_short unk28;
+    u_short unk2A;
     SVECTOR unk2C;
     VECTOR unk34;
     VECTOR unk44;
@@ -305,14 +316,16 @@ typedef struct {
     int unk134[2];
     SVECTOR unk13C;
     SVECTOR unk144;
-    u_char unk14C[0x1C];
+    int unk14C[2];
+    func_800D2904_curves unk154;
+    u_char unk158[0x10];
     int unk168;
     int unk16C;
     int unk170;
     int unk174;
     int unk178;
     int unk17C;
-    int unk180;
+    u_char unk180;
     int unk184;
     int unk188;
 } func_800FA098_arg1;
@@ -365,6 +378,19 @@ typedef struct {
     int unkCC;
     actionEffectRequest* unkD0;
 } D_800F569C_t;
+
+typedef struct {
+    VECTOR position;
+    VECTOR lookAt;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int roll;
+    int nearClip;
+    int projectionDistance;
+    int farClip;
+} D_800F54D8_t;
 
 typedef struct {
     int vx;

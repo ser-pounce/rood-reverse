@@ -9,11 +9,16 @@
 #include <inline_c.h>
 #include <rand.h>
 
+#ifndef VS_PARTICLE_PRIM_TYPE
+#define VS_PARTICLE_PRIM_TYPE
+
 typedef struct {
     u_long tag;
     POLY_GT4 poly;
     u_long drawMode;
 } vs_particlePrim;
+
+#endif
 
 void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)

@@ -580,7 +580,6 @@ extern void* D_80055C80[2];
 #endif
 
 extern vs_main_disk_t vs_main_disk;
-extern char _dsControlBuf[40];
 extern _clutState_t _clutState;
 extern vs_main_stickPos vs_main_stickPosBuf;
 extern int sp;

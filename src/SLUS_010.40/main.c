@@ -696,7 +696,7 @@ static vs_main_HeapHeader* _cdReadBuffer;
 static int _0 __attribute__((unused));
 static padAct_t _padAct[2];
 static int _1[2] __attribute__((unused));
-static portInfo_t vs_main_portInfo[2];
+portInfo_t vs_main_portInfo[2];
 static u_char _2[2] __attribute__((unused));
 static vs_main_HeapHeader _heapA;
 static vs_main_HeapHeader _heapB;
@@ -712,13 +712,13 @@ static struct {
     short queued;
 } _cdQueueCount;
 static int _4 __attribute__((unused));
-static D_80050468_t D_80050468;
-static int vs_main_startState;
+D_80050468_t D_80050468;
+int vs_main_startState;
 static int _sp2;
 static u_short _sfxData[0x2C00];
-static int vs_main_buttonsReleased;
+int vs_main_buttonsReleased;
 static int _5 __attribute__((unused));
-static void* D_80055C80[2];
+void* D_80055C80[2];
 static int _resetEnabled;
 static int _6 __attribute__((unused));
 static u_int _buttonHeldFrameCount[32];
@@ -1902,7 +1902,7 @@ static void func_800443CC(void)
         if (DsSystemStatus() == DslReady) {
             vs_main_disk.unk1 = 0;
             vs_main_disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+            while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
                 ;
             VSync(3);
             vol.val2 = 0x80;
@@ -2018,7 +2018,7 @@ static void func_800443CC(void)
         DsReadyCallback(NULL);
         vs_main_disk.unk1 = 128;
         vs_main_disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+        while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
             ;
         VSync(3);
         break;
@@ -2120,7 +2120,7 @@ static void _diskReset(void)
     vs_main_disk.state = diskIdle;
     vs_main_disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+    while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
         ;
     VSync(3);
 }

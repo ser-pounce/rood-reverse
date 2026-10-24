@@ -741,99 +741,6 @@ u_short vs_main_battleAbilitiesPointsRequirements[150] = { 20, 54, 72, 95, 125, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 256 };
 
-static int _randArr[97];
-static int _randIndex;
-static vs_main_HeapHeader* _cdReadBuffer;
-static int _0 __attribute__((unused));
-static padAct_t _padAct[2];
-static int _1[2] __attribute__((unused));
-portInfo_t vs_main_portInfo[2];
-static u_char _2[2] __attribute__((unused));
-static vs_main_HeapHeader _heapA;
-static vs_main_HeapHeader _heapB;
-static DslLOC _cdReadLoc;
-static int D_800501CC;
-static int D_800501D0;
-static int D_800501D4;
-static int D_800501D8;
-static int _3 __attribute__((unused));
-static vs_main_CdQueueSlot _cdQueue[32];
-static struct {
-    short processing;
-    short queued;
-} _cdQueueCount;
-static int _4 __attribute__((unused));
-D_80050468_t D_80050468;
-int vs_main_startState;
-static int _sp2;
-static u_short _sfxData[0x2C00];
-int vs_main_buttonsReleased;
-static int _5 __attribute__((unused));
-void* D_80055C80[2];
-static int _resetEnabled;
-static int _6 __attribute__((unused));
-static u_int _buttonHeldFrameCount[32];
-vs_main_disk_t vs_main_disk;
-static _clutState_t _clutState;
-vs_main_stickPos vs_main_stickPosBuf;
-static int _sp;
-short D_8005DFD4;
-short vs_main_screenWidth;
-short D_8005DFD8;
-u_short vs_main_screenHeight;
-int vs_main_buttonRepeat;
-static int _7[4] __attribute__((unused));
-char vs_main_padBuffer[2][34];
-static int _8 __attribute__((unused));
-soundData_t vs_main_soundData;
-void* D_8005E0C0[2];
-int vs_main_nearClip;
-static int _9 __attribute__((unused));
-DRAWENV vs_main_drawEnv[2];
-DISPENV vs_main_dispEnv[2];
-static int _10[4] __attribute__((unused));
-int vs_main_buttonsPreviousState;
-int D_8005E1C4;
-static int _11[2] __attribute__((unused));
-vs_main_buttonsPressed_t vs_main_buttonsPressed;
-int D_8005E1D4;
-u_int vs_main_frameDuration;
-static int _12[13] __attribute__((unused));
-int vs_main_frameBuf;
-int vs_main_saveGameClearData;
-static int _13[8] __attribute__((unused));
-int vs_main_buttonsState;
-static int _14 __attribute__((unused));
-static int _inGame;
-int D_8005E244;
-int vs_main_projectionDistance;
-int vs_gametime_tickspeed;
-static u_short _clutBuffer[14][256];
-static int _15[8] __attribute__((unused));
-static int D_8005FE70;
-static int D_8005FE74;
-static int D_8005FE78;
-static int D_8005FE7C;
-static int D_8005FE80;
-static int D_8005FE84;
-static int _16[6] __attribute__((unused));
-vs_main_scoredata_t vs_main_scoredata;
-static int _17 __attribute__((unused));
-char vs_main_actionsLearned[32];
-vs_main_mapStatus_t vs_main_mapStatus;
-vs_main_settings_t vs_main_settings;
-vs_main_artsStatus_t vs_main_artsStatus;
-int D_80060064;
-D_80060068_t D_80060068;
-vs_main_inventory_t vs_main_inventory;
-_mpdRoomDoorSection_t D_80061068;
-vs_Gametime_t vs_main_gametime;
-D_80061078_t D_80061078[4];
-vs_main_flags_t vs_main_stateFlags;
-vs_main_inventoryIndices_t vs_main_inventoryIndices;
-static int _18[0x15E] __attribute__((unused));
-
-
 static void _loadBattlePrg(void)
 {
     vs_main_CdFile cdFile;
@@ -901,6 +808,58 @@ static void _loadEndingPrg(void)
     vs_main_wait();
 }
 
+static int _randArr[97];
+static int _randIndex;
+static vs_main_HeapHeader* _cdReadBuffer;
+static int _0 __attribute__((unused));
+static padAct_t _padAct[2];
+static int _1[2] __attribute__((unused));
+portInfo_t vs_main_portInfo[2];
+static u_char _2[2] __attribute__((unused));
+static vs_main_HeapHeader _heapA;
+static vs_main_HeapHeader _heapB;
+static DslLOC _cdReadLoc;
+static int D_800501CC;
+static int D_800501D0;
+static int D_800501D4;
+static int D_800501D8;
+static int _3 __attribute__((unused));
+static vs_main_CdQueueSlot _cdQueue[32];
+static struct {
+    short processing;
+    short queued;
+} _cdQueueCount;
+static int _4 __attribute__((unused));
+D_80050468_t D_80050468;
+int vs_main_startState;
+static int _sp2;
+static u_short _sfxData[0x2C00];
+int vs_main_buttonsReleased;
+static int _5 __attribute__((unused));
+void* D_80055C80[2];
+static int _resetEnabled;
+static int _6 __attribute__((unused));
+static u_int _buttonHeldFrameCount[32];
+vs_main_disk_t vs_main_disk;
+static _clutState_t _clutState;
+vs_main_stickPos vs_main_stickPosBuf;
+static int _sp;
+short D_8005DFD4;
+short vs_main_screenWidth;
+short D_8005DFD8;
+u_short vs_main_screenHeight;
+int vs_main_buttonRepeat;
+static int _7[4] __attribute__((unused));
+char vs_main_padBuffer[2][34];
+static int _8 __attribute__((unused));
+soundData_t vs_main_soundData;
+void* D_8005E0C0[2];
+int vs_main_nearClip;
+static int _9 __attribute__((unused));
+DRAWENV vs_main_drawEnv[2];
+DISPENV vs_main_dispEnv[2];
+static int _10[4] __attribute__((unused));
+
 static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
     __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
     __attribute__((unused)) int arg5)
@@ -912,6 +871,22 @@ static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
 
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
+
+int vs_main_buttonsPreviousState;
+int D_8005E1C4;
+static int _11[2] __attribute__((unused));
+vs_main_buttonsPressed_t vs_main_buttonsPressed;
+int D_8005E1D4;
+u_int vs_main_frameDuration;
+static int _12[13] __attribute__((unused));
+int vs_main_frameBuf;
+int vs_main_saveGameClearData;
+static int _13[8] __attribute__((unused));
+int vs_main_buttonsState;
+static int _14 __attribute__((unused));
+static int _inGame;
+int D_8005E244;
+int vs_main_projectionDistance;
 
 static void _displayLoadingScreen(void)
 {
@@ -1023,6 +998,28 @@ void vs_main_showEndingAndReturnToTitle(void)
     vs_main_saveGameClearData = 1;
     vs_overlay_jumpToTitle(&_sp2);
 }
+
+int vs_gametime_tickspeed;
+static u_short _clutBuffer[14][256];
+static int _15[8] __attribute__((unused));
+static int D_8005FE70;
+static int D_8005FE74;
+static int D_8005FE78;
+static int D_8005FE7C;
+static int D_8005FE80;
+static int D_8005FE84;
+static int _16[6] __attribute__((unused));
+vs_main_scoredata_t vs_main_scoredata;
+static int _17 __attribute__((unused));
+char vs_main_actionsLearned[32];
+vs_main_mapStatus_t vs_main_mapStatus;
+vs_main_settings_t vs_main_settings;
+vs_main_artsStatus_t vs_main_artsStatus;
+int D_80060064;
+D_80060068_t D_80060068;
+vs_main_inventory_t vs_main_inventory;
+_mpdRoomDoorSection_t D_80061068;
+vs_Gametime_t vs_main_gametime;
 
 int vs_main_gametimeUpdate(int vsync)
 {
@@ -4548,3 +4545,8 @@ void vs_main_bzero(void* dest, int sz)
 }
 
 static void nop12(void) { }
+
+D_80061078_t D_80061078[4];
+vs_main_flags_t vs_main_stateFlags;
+vs_main_inventoryIndices_t vs_main_inventoryIndices;
+static int _18[0x15E] __attribute__((unused));

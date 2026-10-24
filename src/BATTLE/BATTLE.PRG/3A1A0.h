@@ -125,6 +125,13 @@ typedef struct {
 } _wepModelOffsets;
 
 typedef struct {
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
+
+typedef struct {
     u_char nBones;
     u_char nVertexGroups;
     u_short nTriangles;
@@ -158,7 +165,7 @@ typedef struct {
     u_char unk11;
     u_char unk12;
     u_char unk13;
-    u_short unk14;
+    short unk14;
     u_short unk16;
     u_short unk18;
     u_short unk1A;
@@ -182,14 +189,8 @@ typedef struct {
     short unk52;
     CVECTOR unk54;
     D_800F4538_unk58_2 unk58;
-    u_char currentTileX;
-    u_char unk5D;
-    u_char currentTileZ;
-    u_char unk5F;
-    u_char lastTouchedTileX;
-    u_char unk61;
-    u_char lastTouchedTileZ;
-    u_char unk63;
+    vs_battle_movementPosition currentTile;
+    vs_battle_movementPosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F4538_unk0;
@@ -262,7 +263,9 @@ typedef struct {
 
 typedef struct {
     D_800F4538_unk0 unk0;
-    MATRIX bones[42];
+    MATRIX bones[8];
+    D_800F4538_t2 unk16C;
+    u_char unk178[0x434];
     u_char unk5AC_0 : 2;
     u_char unk5AC_2 : 1;
     u_char unk5AC_3 : 1;

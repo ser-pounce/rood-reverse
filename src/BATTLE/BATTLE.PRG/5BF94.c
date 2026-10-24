@@ -2994,7 +2994,7 @@ int func_800CABE0(int arg0)
         var_a0 |= 4;
     }
 
-    if (!(vs_battle_characterState->unk44->weaponDrawn)) {
+    if (!(vs_battle_characterState->unk44->unk0.weaponDrawn)) {
         var_a0 |= 8;
     }
 

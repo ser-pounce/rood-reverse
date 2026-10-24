@@ -718,8 +718,8 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
             }
             continue;
         }
-        if ((actor->unk0.unkA_3 != 2) && (actor->unk0.currentTile.x == arg0)
-            && (actor->unk0.currentTile.z == arg1) && !actor->unk0.unkA_5
+        if ((actor->unk0.unkA_3 != 2) && (actor->unk0.currentTile.x == (u_int)arg0)
+            && (actor->unk0.currentTile.z == (u_int)arg1) && !actor->unk0.unkA_5
             && (actor->unk0.position.vy >= arg2)) {
             return actor;
         }

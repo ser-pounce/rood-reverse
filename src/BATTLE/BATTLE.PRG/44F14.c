@@ -1495,7 +1495,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     func_800B07DC(actor);
 
     if (!actor->unk0.unkA_0 && !actor->unk0.unkA_3 && !actor->unk0.unkA_5) {
-        *(int*)&actor->unk0.lastTouchedTileX = *(int*)&actor->unk0.currentTile;
+        *(int*)&actor->unk0.lastTouchedTile = *(int*)&actor->unk0.currentTile;
         *(func_800ACF54_t*)&actor->unk0.unk4C = *(func_800ACF54_t*)&actor->unk0.position;
 
         if (actor->unk0.unkC_0 == 0) {

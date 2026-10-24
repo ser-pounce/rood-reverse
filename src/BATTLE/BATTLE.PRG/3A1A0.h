@@ -190,10 +190,7 @@ typedef struct {
     CVECTOR unk54;
     D_800F4538_unk58_2 unk58;
     vs_battle_movementPosition currentTile;
-    u_char lastTouchedTileX;
-    u_char unk61;
-    u_char lastTouchedTileZ;
-    u_char unk63;
+    vs_battle_movementPosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F4538_unk0;

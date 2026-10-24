@@ -9,7 +9,7 @@ typedef struct {
     u_char splineSampleCount;
     u_char trailCollapseCounter;
     u_char currentSplineSample;
-    SVECTOR splineSamples[TRAIL_SAMPLE_COUNT];
+    SVECTOR splineSamples[5];
     int splineProgress;
     int speed;
     int unk;
@@ -25,3 +25,26 @@ typedef struct {
     func_800D6CF_t unkC;
     u_char sampledTransparencyCurve[0];
 } func_800FA76C_arg3;
+
+typedef struct {
+    SVECTOR splinePoints[4];
+    u_char stepCount;
+    u_char splineSampleCount;
+    u_char trailCollapseCounter;
+    u_char currentSplineSample;
+    SVECTOR splineSamples[9];
+    int splineProgress;
+    int speed;
+    int unk;
+} vs_trail9;
+
+typedef struct {
+    u_char unk0;
+    u_char unk1;
+    u_char trailcount;
+    u_char unk3;
+    vs_trail9* trails;
+    int curveSampleDistance;
+    func_800D6CF_t unkC;
+    u_char sampledTransparencyCurve[0];
+} vs_trail9State;

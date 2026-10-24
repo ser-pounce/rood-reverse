@@ -188,13 +188,6 @@ typedef struct {
 } func_800DA1D4_t;
 
 typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
-
-typedef struct {
     int unk0;
     int unk4;
     u_int unk8_0 : 19;
@@ -1161,10 +1154,10 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
     if (D_800F45E0[id]
         || ((object = (func_800E1238_t*)vs_battle_actors[id]->unk44),
-            (*(u_int*)&object->unk5C & 0xFF00FF) == (*(u_int*)&arg0->unk34 & 0xFF00FF))
+            ((object->unk5C.x == arg0->unk34.x) && (object->unk5C.z == arg0->unk34.z)))
         || ((object->unk8_19 << 19)
-            && (*(u_int*)&object->unk60 & 0xFF00FF)
-                   == (*(u_int*)&arg0->unk34 & 0xFF00FF))) {
+            && ((object->unk60.x == arg0->unk34.x)
+                && (object->unk60.z == arg0->unk34.z)))) {
         arg0->unk1A4[id].unk0_2 = 1;
         arg0->unk1A4[id].unk0_30 = 1;
     } else {
@@ -1206,8 +1199,8 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
             relation.unk0_0 || ((arg0->unk1E4[id] < arg0->unkA4) && relation.unk0_30);
     }
 
-    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->currentTileZ]
-                                      [vs_battle_actors[id]->unk44->currentTileX]
+    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->currentTile.z]
+                                      [vs_battle_actors[id]->unk44->currentTile.x]
         & 0x2000) {
         relation.unk0_31 = 1;
     } else {

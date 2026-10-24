@@ -767,16 +767,16 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
         return;
     }
     if (*((int*)&arg1->unk5B4 - 2) & 0xF0000000) {
-        id = D_800E91A4[D_800F45E0[func_800A91DC(arg1->unk0.currentTileX,
-                                       arg1->unk0.currentTileZ, 1)]
+        id = D_800E91A4[D_800F45E0[func_800A91DC(arg1->unk0.currentTile.x,
+                                       arg1->unk0.currentTile.z, 1)]
                 ->unk16C.actorId];
     } else {
-        floor = arg1->unk0.unk5D;
+        floor = arg1->unk0.currentTile.y;
         id = 0xD;
         if (arg1->unk6E4 != 0) {
             floor = arg1->unk6E4;
         }
-        room = func_8008B764(arg1->unk0.currentTileX, arg1->unk0.currentTileZ, floor);
+        room = func_8008B764(arg1->unk0.currentTile.x, arg1->unk0.currentTile.z, floor);
         if (room != NULL) {
             id = D_800E9278[room->unk0_0];
         }
@@ -1483,9 +1483,9 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                 }
 
                 if (actor->unk0.unkA_3 != 2) {
-                    actor->unk0.currentTileX = actor->unk0.position.vx / 128;
-                    actor->unk0.currentTileZ = actor->unk0.position.vz / 128;
-                    func_800A92B8(actor->unk0.currentTileX, actor->unk0.currentTileZ);
+                    actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
+                    actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
+                    func_800A92B8(actor->unk0.currentTile.x, actor->unk0.currentTile.z);
                     actor->unk5AC_28 = D_800F49F8;
                 }
             }
@@ -1495,11 +1495,11 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     func_800B07DC(actor);
 
     if (!actor->unk0.unkA_0 && !actor->unk0.unkA_3 && !actor->unk0.unkA_5) {
-        *(int*)&actor->unk0.lastTouchedTileX = *(int*)&actor->unk0.currentTileX;
+        *(int*)&actor->unk0.lastTouchedTileX = *(int*)&actor->unk0.currentTile;
         *(func_800ACF54_t*)&actor->unk0.unk4C = *(func_800ACF54_t*)&actor->unk0.position;
 
         if (actor->unk0.unkC_0 == 0) {
-            actor->unk1868 = *(int*)&actor->unk0.currentTileX;
+            actor->unk1868 = *(int*)&actor->unk0.currentTile;
         }
 
         actor->unk0.unk52 = actor->unk0.facing;

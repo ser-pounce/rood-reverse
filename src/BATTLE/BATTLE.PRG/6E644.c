@@ -202,7 +202,7 @@ typedef struct {
     short unk26;
     char unk28[0x34];
     vs_battle_movementPosition currentTile;
-    vs_battle_movementPosition unk60;
+    vs_battle_movementPosition lastTouchedTile;
     char unk64[0x108];
     u_int unk16C;
     char unk170[0x440];
@@ -1154,10 +1154,11 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
     if (D_800F45E0[id]
         || ((object = (func_800E1238_t*)vs_battle_actors[id]->unk44),
-            ((object->currentTile.x == arg0->unk34.x) && (object->currentTile.z == arg0->unk34.z)))
+            ((object->currentTile.x == arg0->unk34.x)
+                && (object->currentTile.z == arg0->unk34.z)))
         || ((object->unk8_19 << 19)
-            && ((object->unk60.x == arg0->unk34.x)
-                && (object->unk60.z == arg0->unk34.z)))) {
+            && ((object->lastTouchedTile.x == arg0->unk34.x)
+                && (object->lastTouchedTile.z == arg0->unk34.z)))) {
         arg0->unk1A4[id].unk0_2 = 1;
         arg0->unk1A4[id].unk0_30 = 1;
     } else {
@@ -1609,7 +1610,8 @@ int func_800DA738(func_800E78F4_t* arg0)
     if (valid && active && arg0->unk1A4[target].unk0_5) {
         int x;
         int z;
-        vs_battle_movementPosition tile = ((func_800E1238_t*)D_800F4538[target])->currentTile;
+        vs_battle_movementPosition tile =
+            ((func_800E1238_t*)D_800F4538[target])->currentTile;
         int angle =
             ratan2(point.x * 128 - (x = D_800F4538[target]->unk0.position.vx - 64),
                 point.z * 128 - (z = D_800F4538[target]->unk0.position.vz - 64));

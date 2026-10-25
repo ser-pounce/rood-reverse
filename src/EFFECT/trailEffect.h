@@ -638,27 +638,27 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
                 ((u_long*)vs_scratch.unk4)[dx] =
                     (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000)
                     | ((u_long)prim & 0xFFFFFF);
-                *(int*)&prim->poly.r0 = *(int*)&quad.poly.r0;
-                *(int*)&prim->poly.r1 = *(int*)&quad.poly.r1;
-                *(int*)&prim->poly.r2 = *(int*)&quad.poly.r0;
-                *(int*)&prim->poly.r3 = *(int*)&quad.poly.r1;
-                *(int*)&prim->poly.x0 = *(int*)&quad.poly.x0;
-                *(int*)&prim->poly.x1 = *(int*)&quad.poly.x1;
-                *(int*)&prim->poly.x2 = *(int*)&quad.poly.x2;
-                *(int*)&prim->poly.x3 = *(int*)&quad.poly.x3;
-                *(short*)&prim->poly.u0 = *(short*)&quad.poly.u0;
-                *(short*)&prim->poly.u1 = *(short*)&quad.poly.u1;
-                *(short*)&prim->poly.u2 = *(short*)&quad.poly.u2;
-                *(short*)&prim->poly.u3 = *(short*)&quad.poly.u3;
+                __builtin_memcpy(&prim->poly.r0, &quad.poly.r0, 4);
+                __builtin_memcpy(&prim->poly.r1, &quad.poly.r1, 4);
+                __builtin_memcpy(&prim->poly.r2, &quad.poly.r0, 4);
+                __builtin_memcpy(&prim->poly.r3, &quad.poly.r1, 4);
+                __builtin_memcpy(&prim->poly.x0, &quad.poly.x0, 4);
+                __builtin_memcpy(&prim->poly.x1, &quad.poly.x1, 4);
+                __builtin_memcpy(&prim->poly.x2, &quad.poly.x2, 4);
+                __builtin_memcpy(&prim->poly.x3, &quad.poly.x3, 4);
+                __builtin_memcpy(&prim->poly.u0, &quad.poly.u0, 2);
+                __builtin_memcpy(&prim->poly.u1, &quad.poly.u1, 2);
+                __builtin_memcpy(&prim->poly.u2, &quad.poly.u2, 2);
+                __builtin_memcpy(&prim->poly.u3, &quad.poly.u3, 2);
                 prim->poly.tpage = texture->tpage;
                 prim->poly.clut = texture->clut;
             }
 
-            *(int*)&quad.poly.x0 = *(int*)&quad.poly.x1;
-            *(int*)&quad.poly.x2 = *(int*)&quad.poly.x3;
-            *(short*)&quad.poly.u0 = *(short*)&quad.poly.u1;
-            *(short*)&quad.poly.u2 = *(short*)&quad.poly.u3;
-            *(int*)&quad.poly.r0 = *(int*)&quad.poly.r1;
+            __builtin_memcpy(&quad.poly.x0, &quad.poly.x1, 4);
+            __builtin_memcpy(&quad.poly.x2, &quad.poly.x3, 4);
+            __builtin_memcpy(&quad.poly.u0, &quad.poly.u1, 2);
+            __builtin_memcpy(&quad.poly.u2, &quad.poly.u3, 2);
+            __builtin_memcpy(&quad.poly.r0, &quad.poly.r1, 4);
         }
 
         dx = (rcos(angles[j]) * sample) >> 0xC;
@@ -689,18 +689,18 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
         prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
         ((u_long*)vs_scratch.unk4)[dx] =
             (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000) | ((u_long)prim & 0xFFFFFF);
-        *(int*)&prim->poly.r0 = *(int*)&quad.poly.r0;
-        *(int*)&prim->poly.r1 = *(int*)&quad.poly.r1;
-        *(int*)&prim->poly.r2 = *(int*)&quad.poly.r0;
-        *(int*)&prim->poly.r3 = *(int*)&quad.poly.r1;
-        *(int*)&prim->poly.x0 = *(int*)&quad.poly.x0;
-        *(int*)&prim->poly.x1 = *(int*)&quad.poly.x1;
-        *(int*)&prim->poly.x2 = *(int*)&quad.poly.x2;
-        *(int*)&prim->poly.x3 = *(int*)&quad.poly.x3;
-        *(short*)&prim->poly.u0 = *(short*)&quad.poly.u0;
-        *(short*)&prim->poly.u1 = *(short*)&quad.poly.u1;
-        *(short*)&prim->poly.u2 = *(short*)&quad.poly.u2;
-        *(short*)&prim->poly.u3 = *(short*)&quad.poly.u3;
+        __builtin_memcpy(&prim->poly.r0, &quad.poly.r0, 4);
+        __builtin_memcpy(&prim->poly.r1, &quad.poly.r1, 4);
+        __builtin_memcpy(&prim->poly.r2, &quad.poly.r0, 4);
+        __builtin_memcpy(&prim->poly.r3, &quad.poly.r1, 4);
+        __builtin_memcpy(&prim->poly.x0, &quad.poly.x0, 4);
+        __builtin_memcpy(&prim->poly.x1, &quad.poly.x1, 4);
+        __builtin_memcpy(&prim->poly.x2, &quad.poly.x2, 4);
+        __builtin_memcpy(&prim->poly.x3, &quad.poly.x3, 4);
+        __builtin_memcpy(&prim->poly.u0, &quad.poly.u0, 2);
+        __builtin_memcpy(&prim->poly.u1, &quad.poly.u1, 2);
+        __builtin_memcpy(&prim->poly.u2, &quad.poly.u2, 2);
+        __builtin_memcpy(&prim->poly.u3, &quad.poly.u3, 2);
         prim->poly.tpage = texture->tpage;
         prim->poly.clut = texture->clut;
     }

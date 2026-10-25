@@ -126,13 +126,7 @@ typedef struct {
     struct {
         char currentItemCategory;
         char unk1;
-        union {
-            struct {
-                u_char index;
-                u_char page;
-            } cursor;
-            u_short value;
-        } unk2[8];
+        u_short unk2[8];
     } unk3A;
     char unk4C[4];
     char unk50;

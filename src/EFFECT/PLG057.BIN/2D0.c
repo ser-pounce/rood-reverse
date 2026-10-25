@@ -8,7 +8,7 @@
 #define VS_PARTICLE_RENDER_FUNCTION func_800FA920
 #include "src/EFFECT/particleRender.h"
 
-#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_thunderBurst_0
+#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_thunderBurstLv1_0
 #include "src/EFFECT/particleDispatch.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FB774
@@ -17,7 +17,7 @@
 #define VS_TRAIL_INIT_FUNCTION func_800FC600
 #define VS_TRAIL_UPDATE_FUNCTION func_800FC778
 #define VS_TRAIL_RENDER_FUNCTION func_800FC904
-#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_thunderBurst_1
+#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_thunderBurstLv1_1
 #include "src/EFFECT/trails9.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FD894
@@ -26,5 +26,5 @@
 #define VS_TRAIL_INIT_FUNCTION func_800FE70C
 #define VS_TRAIL_UPDATE_FUNCTION func_800FE884
 #define VS_TRAIL_RENDER_FUNCTION func_800FEA10
-#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_thunderBurst_2
+#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_thunderBurstLv1_2
 #include "src/EFFECT/trails5.h"

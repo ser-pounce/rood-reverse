@@ -36,6 +36,7 @@
 #include "src/EFFECT/PLG079.BIN/18.h"
 #include "src/EFFECT/PLG080.BIN/18.h"
 #include "src/EFFECT/PLG081.BIN/0.h"
+#include "src/EFFECT/PLG082.BIN/128.h"
 #include "src/EFFECT/PLG085.BIN/18.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
@@ -554,23 +555,23 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_meteorLv3_3, vs_effect_meteorLv3_4, vs_effect_meteorLv4_0,
     vs_effect_meteorLv4_1, vs_effect_meteorLv4_2, vs_effect_meteorLv4_3,
     vs_effect_meteorLv4_4, NULL, NULL, vs_effect_tornado_0, vs_effect_tornado_1,
-    vs_effect_tornado_2, func_800FB338, func_800FB5CC, func_800FC11C, func_800F9800,
-    func_800F9818, func_800FA368, func_800F9818, func_800FA368, func_800F98F8,
-    func_800FA868, func_800FB720, func_800FDE48, func_800F99F0, func_800FA588,
-    func_800FB4F8, func_800FDC20, func_800FF4E8, func_800FB320, func_800FB418,
-    func_800FCA2C, func_800F98F8, func_800FA490, func_800FB400, func_800FC2BC,
-    func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8, func_800F9800, NULL, func_800FA424,
-    func_800FAF30, func_800FBAC8, func_800FC6EC, func_800F9800, func_800F9800,
-    func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL, func_800FC42C,
-    vs_effect_acidFlow_0, vs_effect_acidFlow_1, func_800F98F8, func_800FBFDC,
-    func_800FC524, func_800FD074, func_800F9818, func_800FA6D0, func_800FB2F4,
-    func_800FBE44, vs_effect_sunder_0, vs_effect_sunder_1, func_800FB320, func_800FB4B8,
-    func_800F9818, func_800FA368, func_800FB2D8, func_800FBEFC, func_800F9800,
-    func_800FA6F8, func_800F9800, func_800F9800, func_800F99D8, func_800FA8D0,
-    func_800FC8C4, func_800FCB38, func_800FF334, func_800F98F8, func_800FB89C,
-    func_800FB4B8, func_800FBA00, func_800F9800, func_800F9818, func_800FA710,
-    func_800FB260, func_800FBDF8, func_800F9800, func_800F9928, func_800FBE88,
-    func_800FC11C, NULL, func_800F9910, func_800FA41C, func_800FCA50,
+    vs_effect_tornado_2, vs_effect_thunderbolt_0, vs_effect_thunderbolt_1,
+    vs_effect_thunderbolt_2, func_800F9800, func_800F9818, func_800FA368, func_800F9818,
+    func_800FA368, func_800F98F8, func_800FA868, func_800FB720, func_800FDE48,
+    func_800F99F0, func_800FA588, func_800FB4F8, func_800FDC20, func_800FF4E8,
+    func_800FB320, func_800FB418, func_800FCA2C, func_800F98F8, func_800FA490,
+    func_800FB400, func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8,
+    func_800F9800, NULL, func_800FA424, func_800FAF30, func_800FBAC8, func_800FC6EC,
+    func_800F9800, func_800F9800, func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL,
+    func_800FC42C, vs_effect_acidFlow_0, vs_effect_acidFlow_1, func_800F98F8,
+    func_800FBFDC, func_800FC524, func_800FD074, func_800F9818, func_800FA6D0,
+    func_800FB2F4, func_800FBE44, vs_effect_sunder_0, vs_effect_sunder_1, func_800FB320,
+    func_800FB4B8, func_800F9818, func_800FA368, func_800FB2D8, func_800FBEFC,
+    func_800F9800, func_800FA6F8, func_800F9800, func_800F9800, func_800F99D8,
+    func_800FA8D0, func_800FC8C4, func_800FCB38, func_800FF334, func_800F98F8,
+    func_800FB89C, func_800FB4B8, func_800FBA00, func_800F9800, func_800F9818,
+    func_800FA710, func_800FB260, func_800FBDF8, func_800F9800, func_800F9928,
+    func_800FBE88, func_800FC11C, NULL, func_800F9910, func_800FA41C, func_800FCA50,
     vs_effect_trinityPulse_0, vs_effect_trinityPulse_1, func_800F9818, func_800FA710,
     func_800FB338, NULL, func_800FB5CC, func_800F9800, func_800F9800, func_800FA398,
     func_800FB00C, func_800FBF7C, func_800F9818, func_800FA710, func_800F9800,
@@ -765,9 +766,9 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_tornado_0(NULL, 2, 0);
     vs_effect_tornado_1(NULL, 2, 0);
     vs_effect_tornado_2(NULL, 2, 0);
-    func_800FB338(NULL, 2, 0);
-    func_800FB5CC(NULL, 2, 0);
-    func_800FC11C(NULL, 2, 0);
+    vs_effect_thunderbolt_0(NULL, 2, 0);
+    vs_effect_thunderbolt_1(NULL, 2, 0);
+    vs_effect_thunderbolt_2(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
     func_800F9818(NULL, 2, 0);
     func_800FA368(NULL, 2, 0);

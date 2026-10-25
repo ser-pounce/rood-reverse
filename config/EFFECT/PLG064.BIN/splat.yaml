@@ -1,0 +1,23 @@
+sha1: 4b673c9cb6270cb1a71ed7d3ef1c0fd118801dfe
+options:
+  basename: EFFECT/PLG064.BIN
+  target_path: data/EFFECT/PLG064.BIN
+  elf_path: build/data/EFFECT/PLG064.BIN.elf
+  asm_path: build/src/EFFECT/PLG064.BIN
+  src_path: src/EFFECT/PLG064.BIN
+  asset_path: build/assets/EFFECT/PLG064.BIN
+  ld_script_path: build/config/EFFECT/PLG064.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG064.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 18]
+    - [0x18, c]
+    - [0x3290, .data, 18]
+  - [0x3550]

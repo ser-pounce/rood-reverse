@@ -52,6 +52,7 @@
 #include "src/EFFECT/PLG135.BIN/E0.h"
 #include "src/EFFECT/PLG136.BIN/18.h"
 #include "src/EFFECT/PLG137.BIN/F8.h"
+#include "src/EFFECT/PLG162.BIN/0.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
@@ -595,25 +596,26 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     func_800FB338, NULL, func_800FB5CC, func_800F9800, func_800F9800, func_800FA398,
     func_800FB00C, func_800FBF7C, func_800F9818, func_800FA710, func_800F9800,
     func_800FA6F8, NULL, func_800F98F8, func_800FA7B0, func_800FCFB4, func_800FD4F4,
-    func_800FE044, NULL, func_800F9800, func_800FA740, func_800FB5F8, func_800FC21C,
-    func_800FB320, func_800FB4D8, NULL, func_800FBA18, func_800FC8D0, func_800FD420,
-    func_800F9800, func_800FA6B8, func_800FB32C, func_800FC29C, NULL, func_800F98E0,
-    func_800FA84C, func_800FD2E4, NULL, func_800FB5D0, func_800FCE90, func_800FD104,
-    func_800FB4C0, NULL, func_800FBA00, func_800FC624, func_800F9818, func_800FA48C,
-    func_800FB348, func_800FBF6C, func_800FCABC, func_800FD654, func_800F9800,
-    func_800F9800, func_800F9818, func_800FA710, func_800FAC78, func_800FB4C0,
-    func_800F9800, func_800FA770, func_800FB62C, func_800FC56C, func_800FAC78,
-    func_800FAC78, func_800F98F8, func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8,
-    func_800F9800, NULL, NULL, vs_effect_246, NULL, NULL, func_800F9800, func_800FA6B8,
-    func_800FB2DC, func_800F9800, func_800F9800, func_800FA6BC, func_800F9800,
-    func_800FB5B0, func_800FCE78, func_800F9800, func_800F9800, vs_effect_plg260, NULL,
-    func_800F9910, func_800FA4A8, func_800FB0CC, func_800FDA1C, func_800F9AE8,
-    func_800FBD60, func_800FDBAC, func_800FFB04, func_800FB4F8, func_800FCB0C,
-    func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0, func_800FCE78, func_800F9818,
-    func_800FA368, func_800FB2D8, vs_effect_plg273, func_800FB338, func_800FB5CC,
-    func_800FC11C, func_800FB320, func_800FB4D0, func_800FBA18, func_800FC568,
-    func_800F9818, func_800FA48C, func_800FB3FC, func_800FBF4C, func_800F9910,
-    func_800FBF94, func_800FC228, func_800FD198, func_800FB320, NULL, func_800FB5B4 };
+    func_800FE044, NULL, vs_effect_spiralScourge_0, vs_effect_spiralScourge_1,
+    vs_effect_spiralScourge_2, vs_effect_spiralScourge_3, func_800FB320, func_800FB4D8,
+    NULL, func_800FBA18, func_800FC8D0, func_800FD420, func_800F9800, func_800FA6B8,
+    func_800FB32C, func_800FC29C, NULL, func_800F98E0, func_800FA84C, func_800FD2E4, NULL,
+    func_800FB5D0, func_800FCE90, func_800FD104, func_800FB4C0, NULL, func_800FBA00,
+    func_800FC624, func_800F9818, func_800FA48C, func_800FB348, func_800FBF6C,
+    func_800FCABC, func_800FD654, func_800F9800, func_800F9800, func_800F9818,
+    func_800FA710, func_800FAC78, func_800FB4C0, func_800F9800, func_800FA770,
+    func_800FB62C, func_800FC56C, func_800FAC78, func_800FAC78, func_800F98F8,
+    func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL,
+    vs_effect_246, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800F9800,
+    func_800F9800, func_800FA6BC, func_800F9800, func_800FB5B0, func_800FCE78,
+    func_800F9800, func_800F9800, vs_effect_plg260, NULL, func_800F9910, func_800FA4A8,
+    func_800FB0CC, func_800FDA1C, func_800F9AE8, func_800FBD60, func_800FDBAC,
+    func_800FFB04, func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL, func_800FB4B8,
+    func_800FB5B0, func_800FCE78, func_800F9818, func_800FA368, func_800FB2D8,
+    vs_effect_plg273, func_800FB338, func_800FB5CC, func_800FC11C, func_800FB320,
+    func_800FB4D0, func_800FBA18, func_800FC568, func_800F9818, func_800FA48C,
+    func_800FB3FC, func_800FBF4C, func_800F9910, func_800FBF94, func_800FC228,
+    func_800FD198, func_800FB320, NULL, func_800FB5B4 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -886,10 +888,10 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FCFB4(NULL, 2, 0);
     func_800FD4F4(NULL, 2, 0);
     func_800FE044(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA740(NULL, 2, 0);
-    func_800FB5F8(NULL, 2, 0);
-    func_800FC21C(NULL, 2, 0);
+    vs_effect_spiralScourge_0(NULL, 2, 0);
+    vs_effect_spiralScourge_1(NULL, 2, 0);
+    vs_effect_spiralScourge_2(NULL, 2, 0);
+    vs_effect_spiralScourge_3(NULL, 2, 0);
     func_800FB320(NULL, 2, 0);
     func_800FB4D8(NULL, 2, 0);
     func_800FBA18(NULL, 2, 0);

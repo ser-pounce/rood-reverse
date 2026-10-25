@@ -10,14 +10,12 @@
 #define VS_TRAIL_UPDATE_FUNCTION func_800FA8E4
 #define VS_TRAIL_RENDER_FUNCTION func_800FAA70
 #define VS_TRAIL_DISPATCH_FUNCTION vs_spiritSurge_renderTrails
-
 #include "src/EFFECT/trails9.h"
 
 /**
  * Concentric text circles over caster
  */
 #define VS_RING_FUNCTION func_800FBA00
-#define VS_RING_COLORS D_800FE3D8
 #include "src/EFFECT/rings.h"
 
 /**

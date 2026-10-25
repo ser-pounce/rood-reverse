@@ -30,6 +30,27 @@ typedef struct {
 } vs_ringPrim;
 #endif
 
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifdef VS_RING_COLORS
+extern CVECTOR VS_RING_COLORS[];
+#else
+#define VS_RING_COLORS VS_CAT(VS_RING_FUNCTION, _state)
+static CVECTOR VS_RING_COLORS[] = {
+    { 255, 255, 255 },
+    { 128, 128, 128 },
+    { 255, 128, 0 },
+    { 0, 128, 255 },
+    { 0, 255, 0 },
+    { 255, 0, 255 },
+    { 0, 128, 0 },
+    { 128, 0, 128 },
+};
+#endif
+
 extern CVECTOR VS_RING_COLORS[];
 
 int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)

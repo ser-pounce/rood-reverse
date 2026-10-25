@@ -55,6 +55,7 @@
 #include "src/EFFECT/PLG162.BIN/0.h"
 #include "src/EFFECT/PLG236.BIN/0.h"
 #include "src/EFFECT/PLG263.BIN/110.h"
+#include "src/EFFECT/PLG300.BIN/110.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
@@ -616,8 +617,9 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0, func_800FCE78, func_800F9818,
     func_800FA368, func_800FB2D8, vs_effect_plg273, func_800FB338, func_800FB5CC,
     func_800FC11C, func_800FB320, func_800FB4D0, func_800FBA18, func_800FC568,
-    func_800F9818, func_800FA48C, func_800FB3FC, func_800FBF4C, func_800F9910,
-    func_800FBF94, func_800FC228, func_800FD198, func_800FB320, NULL, func_800FB5B4 };
+    func_800F9818, func_800FA48C, func_800FB3FC, func_800FBF4C, vs_effect_plg300_0,
+    vs_effect_plg300_1, vs_effect_plg300_2, vs_effect_plg300_3, func_800FB320, NULL,
+    func_800FB5B4 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -977,10 +979,10 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA48C(NULL, 2, 0);
     func_800FB3FC(NULL, 2, 0);
     func_800FBF4C(NULL, 2, 0);
-    func_800F9910(NULL, 2, 0);
-    func_800FBF94(NULL, 2, 0);
-    func_800FC228(NULL, 2, 0);
-    func_800FD198(NULL, 2, 0);
+    vs_effect_plg300_0(NULL, 2, 0);
+    vs_effect_plg300_1(NULL, 2, 0);
+    vs_effect_plg300_2(NULL, 2, 0);
+    vs_effect_plg300_3(NULL, 2, 0);
     func_800FB320(NULL, 2, 0);
     return func_800FB5B4(NULL, 2, 0);
 }

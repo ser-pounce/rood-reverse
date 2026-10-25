@@ -1,7 +1,9 @@
 /* Shared three-row, sixteen-column closed ring effect. The texture spans the whole
  * ring once unless the overlay defines VS_CLOSED_RING_TEXTURE_COLUMNS, in which case
  * it repeats every that many columns, or runs along the rows instead of the columns if
- * VS_CLOSED_RING_TRANSPOSED is defined. The overlay supplies its entry point. */
+ * VS_CLOSED_RING_TRANSPOSED is defined. VS_CLOSED_RING_OT_SLOT overrides the
+ * ordering table slot that the quads are linked into, which is their depth by default.
+ * The overlay supplies its entry point. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -9,6 +11,10 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+
+#ifndef VS_CLOSED_RING_OT_SLOT
+#define VS_CLOSED_RING_OT_SLOT depth
+#endif
 
 #ifdef VS_CLOSED_RING_TEXTURE_COLUMNS
 #define VS_CLOSED_RING_TEXTURE_COLUMN(column)                                            \
@@ -316,9 +322,11 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #endif
                 prim->poly.tpage = texture->tpage;
                 prim->poly.clut = texture->clut;
-                prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
-                ((u_long*)vs_scratch.unk4)[depth] =
-                    (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+                prim->tag =
+                    (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
+                    | 0x0E000000;
+                ((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] =
+                    (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
                     | (((u_long)prim) & 0xFFFFFF);
             }
 
@@ -359,9 +367,10 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #endif
             prim->poly.tpage = texture->tpage;
             prim->poly.clut = texture->clut;
-            prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
-            ((u_long*)vs_scratch.unk4)[depth] =
-                (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+            prim->tag = (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
+                      | 0x0E000000;
+            ((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] =
+                (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
                 | (((u_long)prim) & 0xFFFFFF);
         }
 
@@ -410,5 +419,6 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_CLOSED_RING_FUNCTION
 #undef VS_CLOSED_RING_COLORS
 #undef VS_CLOSED_RING_TRANSPOSED
+#undef VS_CLOSED_RING_OT_SLOT
 #undef VS_CLOSED_RING_TEXTURE_COLUMNS
 #undef VS_CLOSED_RING_TEXTURE_COLUMN

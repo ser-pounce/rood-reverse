@@ -1,21 +1,21 @@
-#include "common.h"
+#include "110.h"
 
-#define VS_MIRROR_SURFACE_FUNCTION func_800F9910
-#define VS_SURFACE_VERTICES D_800FE0CC
+#define VS_MIRROR_SURFACE_FUNCTION vs_effect_plg300_0
+#include "src/EFFECT/sphericalSurfaceVertices.h"
+
 #include "src/EFFECT/mirroredSurfaces.h"
 
-#define VS_PARTICLE_ORIGIN_FUNCTION func_800FA584
-#define VS_PARTICLE_TARGET_FUNCTION func_800FAD0C
-#define VS_PARTICLE_CONTROL_FUNCTION func_800FAF24
-#define VS_PARTICLE_CORNER_STATE D_800FE34C
+#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_plg300_1
 #include "src/EFFECT/particleSetup.h"
-
-#define VS_PARTICLE_RENDER_FUNCTION func_800FB3D4
 #include "src/EFFECT/particleRender.h"
-
-#define VS_PARTICLE_DISPATCH_FUNCTION func_800FBF94
 #include "src/EFFECT/particleDispatch.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG300.BIN/nonmatchings/110", func_800FC228);
+#define VS_CLOSED_RING_FUNCTION vs_effect_plg300_2
+#define VS_CLOSED_RING_TEXTURE_COLUMNS 4
+#include "src/EFFECT/closedRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG300.BIN/nonmatchings/110", func_800FD198);
+// This ring links every quad into the same ordering table slot
+#define VS_CLOSED_RING_FUNCTION vs_effect_plg300_3
+#define VS_CLOSED_RING_OT_SLOT -15
+#define VS_CLOSED_RING_TEXTURE_COLUMNS 4
+#include "src/EFFECT/closedRings.h"

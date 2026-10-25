@@ -125,13 +125,13 @@ Thanks also to the following amazing projects (and their dependencies):
 ![PLG260.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG260.BIN&color=%2332a934)
 ![PLG263.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG263.BIN&color=%2332a934)
 ![PLG265.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG265.BIN)
-![PLG265.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG266.BIN)
+![PLG266.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG266.BIN)
 ![PLG272.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG272.BIN)
 ![PLG273.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG273.BIN&color=%2332a934)
 ![PLG291.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG291.BIN)
 ![PLG297.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG297.BIN)
-![PLG300.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG300.BIN)
-![PLG300.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG301.BIN)
+![PLG300.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG300.BIN&color=%2332a934)
+![PLG301.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG301.BIN)
 
 ### Menus
 ![Total menu progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=menus&color=%2332a934)

@@ -1,5 +1,8 @@
 #include "common.h"
 
+extern short D_80033448;
+extern short D_8003344A;
+
 INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", D_80010864);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", ResetGraph);
@@ -64,7 +67,12 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029694);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029904);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029924);
+u_int func_80029924(short x, short y)
+{
+    x = x < 0 ? 0 : x > D_80033448 - 1 ? D_80033448 - 1 : x;
+    y = y < 0 ? 0 : y > D_8003344A - 1 ? D_8003344A - 1 : y;
+    return 0xE3000000 | ((y & 0x3FF) << 10) | (x & 0x3FF);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_800299BC);
 

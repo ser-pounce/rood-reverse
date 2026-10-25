@@ -16,7 +16,17 @@ typedef struct {
     int drawMode;
 } vs_trailPrim;
 
-extern int VS_TRAIL_CORNER_STATE;
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifdef VS_TRAIL5_CORNER_STATE
+extern int VS_TRAIL5_CORNER_STATE;
+#else
+#define VS_TRAIL5_CORNER_STATE VS_CAT(VS_TRAIL_ORIGIN_FUNCTION, _state)
+static int VS_TRAIL5_CORNER_STATE = 0;
+#endif
 
 void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
@@ -140,8 +150,8 @@ void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
                 break;
 
             case 0x1000:
-                corner = VS_TRAIL_CORNER_STATE + 1;
-                VS_TRAIL_CORNER_STATE = corner & 7;
+                corner = VS_TRAIL5_CORNER_STATE + 1;
+                VS_TRAIL5_CORNER_STATE = corner & 7;
 
                 cornerX = arg1->unkA8.vx;
 
@@ -208,8 +218,8 @@ void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     step = ONE / arg1->unk184;
 
     if ((arg1->flags & 0x1800) != 0x1000) {
-        VS_TRAIL_CORNER_STATE %= arg1->unk188;
-        angle = (VS_TRAIL_CORNER_STATE * step) + ONE / 8;
+        VS_TRAIL5_CORNER_STATE %= arg1->unk188;
+        angle = (VS_TRAIL5_CORNER_STATE * step) + ONE / 8;
         startX = (rcos(angle) * arg1->unkA8.vx) >> 0xC;
         startZ = (rsin(angle) * arg1->unkA8.vz) >> 0xC;
     }
@@ -219,8 +229,8 @@ void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
         int z;
 
         splinePoint = &arg3->trails[i].splinePoints[0];
-        VS_TRAIL_CORNER_STATE = (VS_TRAIL_CORNER_STATE + 1) % arg1->unk188;
-        angle = (VS_TRAIL_CORNER_STATE * step) + ONE / 8;
+        VS_TRAIL5_CORNER_STATE = (VS_TRAIL5_CORNER_STATE + 1) % arg1->unk188;
+        angle = (VS_TRAIL5_CORNER_STATE * step) + ONE / 8;
         x = (rcos(angle) * arg1->unkA8.vx) >> 0xC;
         z = (rsin(angle) * arg1->unkA8.vz) >> 0xC;
 
@@ -813,5 +823,5 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_TRAIL_UPDATE_FUNCTION
 #undef VS_TRAIL_RENDER_FUNCTION
 #undef VS_TRAIL_DISPATCH_FUNCTION
-#undef VS_TRAIL_CORNER_STATE
+#undef VS_TRAIL5_CORNER_STATE
 #undef TRAIL_SAMPLE_COUNT

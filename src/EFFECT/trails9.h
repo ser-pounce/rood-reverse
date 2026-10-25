@@ -20,11 +20,11 @@ typedef struct {
 #define VS_CAT(a, b) VS_CAT_(a, b)
 #endif
 
-#ifdef VS_TRAIL_CORNER_STATE
-extern int VS_TRAIL_CORNER_STATE;
+#ifdef VS_TRAIL9_CORNER_STATE
+extern int VS_TRAIL9_CORNER_STATE;
 #else
-#define VS_TRAIL_CORNER_STATE VS_CAT(VS_TRAIL_ORIGIN_FUNCTION, _state)
-static int VS_TRAIL_CORNER_STATE = 0;
+#define VS_TRAIL9_CORNER_STATE VS_CAT(VS_TRAIL_ORIGIN_FUNCTION, _state)
+static int VS_TRAIL9_CORNER_STATE = 0;
 #endif
 
 static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
@@ -151,8 +151,8 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
                 break;
 
             case 0x1000:
-                corner = VS_TRAIL_CORNER_STATE + 1;
-                VS_TRAIL_CORNER_STATE = corner & 7;
+                corner = VS_TRAIL9_CORNER_STATE + 1;
+                VS_TRAIL9_CORNER_STATE = corner & 7;
 
                 cornerX = arg1->unkA8.vx;
 
@@ -220,8 +220,8 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     angleStep = ONE / arg1->unk184;
 
     if ((arg1->flags & 0x1800) != 0x1000) {
-        VS_TRAIL_CORNER_STATE %= arg1->unk188;
-        cornerAngle = (VS_TRAIL_CORNER_STATE * angleStep) + ONE / 8;
+        VS_TRAIL9_CORNER_STATE %= arg1->unk188;
+        cornerAngle = (VS_TRAIL9_CORNER_STATE * angleStep) + ONE / 8;
         startX = (rcos(cornerAngle) * arg1->unkA8.vx) >> 0xC;
         startZ = (rsin(cornerAngle) * arg1->unkA8.vz) >> 0xC;
     }
@@ -231,8 +231,8 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
         int z;
 
         splinePoint = &arg3->trails[i].splinePoints[0];
-        VS_TRAIL_CORNER_STATE = (VS_TRAIL_CORNER_STATE + 1) % arg1->unk188;
-        cornerAngle = (VS_TRAIL_CORNER_STATE * angleStep) + ONE / 8;
+        VS_TRAIL9_CORNER_STATE = (VS_TRAIL9_CORNER_STATE + 1) % arg1->unk188;
+        cornerAngle = (VS_TRAIL9_CORNER_STATE * angleStep) + ONE / 8;
         x = (rcos(cornerAngle) * arg1->unkA8.vx) >> 0xC;
         z = (rsin(cornerAngle) * arg1->unkA8.vz) >> 0xC;
 
@@ -840,4 +840,4 @@ int VS_TRAIL_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #undef VS_TRAIL_UPDATE_FUNCTION
 #undef VS_TRAIL_RENDER_FUNCTION
 #undef VS_TRAIL_DISPATCH_FUNCTION
-#undef VS_TRAIL_CORNER_STATE
+#undef VS_TRAIL9_CORNER_STATE

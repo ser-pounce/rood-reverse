@@ -1,6 +1,7 @@
 #include "18.h"
-#define VS_GRID_FUNCTION vs_effect_gravity_0
+
+#define VS_EFFECT_NAME vs_effect_gravity
+
 #include "src/EFFECT/grids.h"
 
-#define VS_CLOSED_RING_FUNCTION vs_effect_gravity_1
 #include "src/EFFECT/closedRings.h"

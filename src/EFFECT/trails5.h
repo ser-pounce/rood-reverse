@@ -4,6 +4,11 @@
 
 #define TRAIL_SAMPLE_COUNT 5
 
+#ifndef VS_TRAIL_DISPATCH_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_TRAIL_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

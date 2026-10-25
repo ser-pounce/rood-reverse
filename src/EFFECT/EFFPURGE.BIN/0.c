@@ -455,11 +455,11 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock,
-    vs_effect_lightningBolt, vs_effect_vulcanLance, vs_effect_aquaBlast,
-    vs_spiritSurge_renderTrails, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
-    vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism,
-    vs_effect_banish, vs_effect_explosionLv1_0, vs_effect_explosionLv1_1,
+static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock_0,
+    vs_effect_lightningBolt_0, vs_effect_vulcanLance_0, vs_effect_aquaBlast_0,
+    vs_spiritSurge_0, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
+    vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism_0,
+    vs_effect_banish_0, vs_effect_explosionLv1_0, vs_effect_explosionLv1_1,
     vs_effect_explosionLv2_0, vs_effect_explosionLv2_1, vs_effect_explosionLv3_0,
     vs_effect_explosionLv3_1, vs_effect_explosionLv4_0, vs_effect_explosionLv4_1,
     vs_effect_thunderBurstLv1_0, NULL, vs_effect_thunderBurstLv1_1,
@@ -497,30 +497,30 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_meteorLv4_1, vs_effect_meteorLv4_2, vs_effect_meteorLv4_3,
     vs_effect_meteorLv4_4, NULL, NULL, vs_effect_tornado_0, vs_effect_tornado_1,
     vs_effect_tornado_2, vs_effect_thunderbolt_0, vs_effect_thunderbolt_1,
-    vs_effect_thunderbolt_2, vs_effect_fireStorm, vs_effect_gravity_0,
+    vs_effect_thunderbolt_2, vs_effect_fireStorm_0, vs_effect_gravity_0,
     vs_effect_gravity_1, vs_effect_acidFlow_0, vs_effect_acidFlow_1, vs_effect_judgment_0,
     vs_effect_judgment_1, vs_effect_judgment_2, vs_effect_judgment_3,
     vs_effect_apocalypse_0, vs_effect_apocalypse_1, vs_effect_apocalypse_2,
-    vs_effect_apocalypse_3, vs_effect_apocalypse_4, vs_effect_thunderBreath,
+    vs_effect_apocalypse_3, vs_effect_apocalypse_4, vs_effect_thunderBreath_0,
     vs_effect_numbingNeedle_0, vs_effect_numbingNeedle_1, vs_effect_bloodySin_0,
     vs_effect_bloodySin_1, vs_effect_bloodySin_2, vs_effect_bloodySin_3,
     vs_effect_bloodySin_4, NULL, vs_effect_bloodySin_5, vs_effect_bloodySin_6,
     vs_effect_lastAscension_0, NULL, vs_effect_lastAscension_1, vs_effect_lastAscension_2,
-    vs_effect_lastAscension_3, vs_effect_lastAscension_4, vs_effect_whistleSting,
-    vs_effect_doubleFang, vs_effect_wyrmScorn_0, vs_effect_wyrmScorn_1, NULL,
+    vs_effect_lastAscension_3, vs_effect_lastAscension_4, vs_effect_whistleSting_0,
+    vs_effect_doubleFang_0, vs_effect_wyrmScorn_0, vs_effect_wyrmScorn_1, NULL,
     vs_effect_rendingGale_0, NULL, vs_effect_rendingGale_1, vs_effect_vileScar_0,
     vs_effect_vileScar_1, vs_effect_cherryRonde_0, vs_effect_cherryRonde_1,
     vs_effect_cherryRonde_2, vs_effect_cherryRonde_3, vs_effect_papillonReel_0,
     vs_effect_papillonReel_1, vs_effect_papillonReel_2, vs_effect_papillonReel_3,
-    vs_effect_sunder_0, vs_effect_sunder_1, vs_effect_thunderwave,
+    vs_effect_sunder_0, vs_effect_sunder_1, vs_effect_thunderwave_0,
     vs_effect_swallowSlash_0, vs_effect_adventSign_0, vs_effect_adventSign_1,
     vs_effect_adventSign_2, vs_effect_adventSign_3, vs_effect_mistralEdge_0,
-    vs_effect_mistralEdge_1, vs_effect_glacialGale, vs_effect_killerMantis,
+    vs_effect_mistralEdge_1, vs_effect_glacialGale_0, vs_effect_killerMantis_0,
     vs_effect_blackNebula_0, vs_effect_blackNebula_1, vs_effect_blackNebula_2,
     vs_effect_blackNebula_3, vs_effect_blackNebula_4, vs_effect_bearClaw_0,
     vs_effect_bearClaw_1, vs_effect_accursedUmbra_0, vs_effect_accursedUmbra_1,
     vs_effect_ironRipper_0, vs_effect_emeticBomb_0, vs_effect_emeticBomb_1,
-    vs_effect_emeticBomb_2, vs_effect_emeticBomb_3, vs_effect_sirocco,
+    vs_effect_emeticBomb_2, vs_effect_emeticBomb_3, vs_effect_sirocco_0,
     vs_effect_riskbreak_0, vs_effect_riskbreak_1, vs_effect_riskbreak_2, NULL,
     vs_effect_gravisAether_0, vs_effect_gravisAether_1, vs_effect_gravisAether_2,
     vs_effect_trinityPulse_0, vs_effect_trinityPulse_1, vs_effect_bonecrusher_0,
@@ -530,7 +530,7 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_scytheWind_0, vs_effect_scytheWind_1, NULL, vs_effect_gigaTempest_0,
     vs_effect_gigaTempest_1, vs_effect_gigaTempest_2, vs_effect_gigaTempest_3,
     vs_effect_gigaTempest_4, NULL, vs_effect_spiralScourge_0, vs_effect_spiralScourge_1,
-    vs_effect_spiralScourge_2, vs_effect_spiralScourge_3, vs_effect_heavensScorn,
+    vs_effect_spiralScourge_2, vs_effect_spiralScourge_3, vs_effect_heavensScorn_0,
     vs_effect_deathWail_0, NULL, vs_effect_deathWail_1, vs_effect_deathWail_2,
     vs_effect_deathWail_3, vs_effect_sanctusFlare_0, vs_effect_sanctusFlare_1,
     vs_effect_sanctusFlare_2, vs_effect_sanctusFlare_3, NULL, vs_effect_lotusPalm_0,
@@ -542,20 +542,20 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_plg221_0, vs_effect_plg221_1, vs_effect_plg224_0, vs_effect_plg232_0,
     vs_effect_plg236_0, vs_effect_plg236_1, vs_effect_plg236_2, vs_effect_plg236_3,
     vs_effect_plg240_0, vs_effect_plg241_0, vs_effect_plg242_0, vs_effect_plg242_1,
-    vs_effect_plg242_2, NULL, NULL, vs_effect_plg243_0, vs_effect_plg245, NULL, NULL,
-    vs_effect_246, NULL, NULL, vs_effect_plg247_0, vs_effect_plg247_1, vs_effect_plg247_2,
-    vs_effect_plg248, vs_effect_plg250_0, vs_effect_plg250_1, vs_effect_plg251,
-    vs_effect_plg255_0, vs_effect_plg255_1, vs_effect_plg258, vs_effect_plg259,
-    vs_effect_plg260, NULL, vs_effect_plg263_0, vs_effect_plg263_1, vs_effect_plg263_2,
-    vs_effect_plg263_3, vs_effect_plg265_0, vs_effect_plg265_1, vs_effect_plg265_2,
-    vs_effect_plg265_3, vs_effect_plg266_0, vs_effect_plg266_1, vs_effect_plg266_2, NULL,
-    NULL, vs_effect_plg269_0, vs_effect_plg271_0, vs_effect_plg271_1, vs_effect_plg272_0,
-    vs_effect_plg272_1, vs_effect_plg272_2, vs_effect_plg273, vs_effect_plg280_0,
-    vs_effect_plg280_1, vs_effect_plg280_2, vs_effect_plg290, vs_effect_plg291_0,
-    vs_effect_plg291_1, vs_effect_plg291_2, vs_effect_plg297_0, vs_effect_plg297_1,
-    vs_effect_plg297_2, vs_effect_plg297_3, vs_effect_plg300_0, vs_effect_plg300_1,
-    vs_effect_plg300_2, vs_effect_plg300_3, vs_effect_plg301_0, NULL,
-    vs_effect_plg301_1 };
+    vs_effect_plg242_2, NULL, NULL, vs_effect_plg243_0, vs_effect_plg245_0, NULL, NULL,
+    vs_effect_246_0, NULL, NULL, vs_effect_plg247_0, vs_effect_plg247_1,
+    vs_effect_plg247_2, vs_effect_plg248_0, vs_effect_plg250_0, vs_effect_plg250_1,
+    vs_effect_plg251_0, vs_effect_plg255_0, vs_effect_plg255_1, vs_effect_plg258_0,
+    vs_effect_plg259_0, vs_effect_plg260_0, NULL, vs_effect_plg263_0, vs_effect_plg263_1,
+    vs_effect_plg263_2, vs_effect_plg263_3, vs_effect_plg265_0, vs_effect_plg265_1,
+    vs_effect_plg265_2, vs_effect_plg265_3, vs_effect_plg266_0, vs_effect_plg266_1,
+    vs_effect_plg266_2, NULL, NULL, vs_effect_plg269_0, vs_effect_plg271_0,
+    vs_effect_plg271_1, vs_effect_plg272_0, vs_effect_plg272_1, vs_effect_plg272_2,
+    vs_effect_plg273_0, vs_effect_plg280_0, vs_effect_plg280_1, vs_effect_plg280_2,
+    vs_effect_plg290_0, vs_effect_plg291_0, vs_effect_plg291_1, vs_effect_plg291_2,
+    vs_effect_plg297_0, vs_effect_plg297_1, vs_effect_plg297_2, vs_effect_plg297_3,
+    vs_effect_plg300_0, vs_effect_plg300_1, vs_effect_plg300_2, vs_effect_plg300_3,
+    vs_effect_plg301_0, NULL, vs_effect_plg301_1 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -608,18 +608,18 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2) __attribute__((un
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     vs_effect_analyze(NULL, 2, 0);
-    vs_effect_solidShock(NULL, 2, 0);
-    vs_effect_lightningBolt(NULL, 2, 0);
-    vs_effect_vulcanLance(NULL, 2, 0);
-    vs_effect_aquaBlast(NULL, 2, 0);
-    vs_spiritSurge_renderTrails(NULL, 2, 0);
+    vs_effect_solidShock_0(NULL, 2, 0);
+    vs_effect_lightningBolt_0(NULL, 2, 0);
+    vs_effect_vulcanLance_0(NULL, 2, 0);
+    vs_effect_aquaBlast_0(NULL, 2, 0);
+    vs_spiritSurge_0(NULL, 2, 0);
     vs_spiritSurge_1(NULL, 2, 0);
     vs_spiritSurge_2(NULL, 2, 0);
     vs_spiritSurge_3(NULL, 2, 0);
     vs_effect_darkChant_0(NULL, 2, 0);
     vs_effect_darkChant_1(NULL, 2, 0);
-    vs_effect_exorcism(NULL, 2, 0);
-    vs_effect_banish(NULL, 2, 0);
+    vs_effect_exorcism_0(NULL, 2, 0);
+    vs_effect_banish_0(NULL, 2, 0);
     vs_effect_explosionLv1_0(NULL, 2, 0);
     vs_effect_explosionLv1_1(NULL, 2, 0);
     vs_effect_explosionLv2_0(NULL, 2, 0);
@@ -730,7 +730,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_thunderbolt_0(NULL, 2, 0);
     vs_effect_thunderbolt_1(NULL, 2, 0);
     vs_effect_thunderbolt_2(NULL, 2, 0);
-    vs_effect_fireStorm(NULL, 2, 0);
+    vs_effect_fireStorm_0(NULL, 2, 0);
     vs_effect_gravity_0(NULL, 2, 0);
     vs_effect_gravity_1(NULL, 2, 0);
     vs_effect_acidFlow_0(NULL, 2, 0);
@@ -744,7 +744,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_apocalypse_2(NULL, 2, 0);
     vs_effect_apocalypse_3(NULL, 2, 0);
     vs_effect_apocalypse_4(NULL, 2, 0);
-    vs_effect_thunderBreath(NULL, 2, 0);
+    vs_effect_thunderBreath_0(NULL, 2, 0);
     vs_effect_numbingNeedle_0(NULL, 2, 0);
     vs_effect_numbingNeedle_1(NULL, 2, 0);
     vs_effect_bloodySin_0(NULL, 2, 0);
@@ -759,8 +759,8 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_lastAscension_2(NULL, 2, 0);
     vs_effect_lastAscension_3(NULL, 2, 0);
     vs_effect_lastAscension_4(NULL, 2, 0);
-    vs_effect_whistleSting(NULL, 2, 0);
-    vs_effect_doubleFang(NULL, 2, 0);
+    vs_effect_whistleSting_0(NULL, 2, 0);
+    vs_effect_doubleFang_0(NULL, 2, 0);
     vs_effect_wyrmScorn_0(NULL, 2, 0);
     vs_effect_wyrmScorn_1(NULL, 2, 0);
     vs_effect_rendingGale_0(NULL, 2, 0);
@@ -777,7 +777,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_papillonReel_3(NULL, 2, 0);
     vs_effect_sunder_0(NULL, 2, 0);
     vs_effect_sunder_1(NULL, 2, 0);
-    vs_effect_thunderwave(NULL, 2, 0);
+    vs_effect_thunderwave_0(NULL, 2, 0);
     vs_effect_swallowSlash_0(NULL, 2, 0);
     vs_effect_adventSign_0(NULL, 2, 0);
     vs_effect_adventSign_1(NULL, 2, 0);
@@ -785,8 +785,8 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_adventSign_3(NULL, 2, 0);
     vs_effect_mistralEdge_0(NULL, 2, 0);
     vs_effect_mistralEdge_1(NULL, 2, 0);
-    vs_effect_glacialGale(NULL, 2, 0);
-    vs_effect_killerMantis(NULL, 2, 0);
+    vs_effect_glacialGale_0(NULL, 2, 0);
+    vs_effect_killerMantis_0(NULL, 2, 0);
     vs_effect_blackNebula_0(NULL, 2, 0);
     vs_effect_blackNebula_1(NULL, 2, 0);
     vs_effect_blackNebula_2(NULL, 2, 0);
@@ -801,7 +801,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_emeticBomb_1(NULL, 2, 0);
     vs_effect_emeticBomb_2(NULL, 2, 0);
     vs_effect_emeticBomb_3(NULL, 2, 0);
-    vs_effect_sirocco(NULL, 2, 0);
+    vs_effect_sirocco_0(NULL, 2, 0);
     vs_effect_riskbreak_0(NULL, 2, 0);
     vs_effect_riskbreak_1(NULL, 2, 0);
     vs_effect_riskbreak_2(NULL, 2, 0);
@@ -832,7 +832,7 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_spiralScourge_1(NULL, 2, 0);
     vs_effect_spiralScourge_2(NULL, 2, 0);
     vs_effect_spiralScourge_3(NULL, 2, 0);
-    vs_effect_heavensScorn(NULL, 2, 0);
+    vs_effect_heavensScorn_0(NULL, 2, 0);
     vs_effect_deathWail_0(NULL, 2, 0);
     vs_effect_deathWail_1(NULL, 2, 0);
     vs_effect_deathWail_2(NULL, 2, 0);
@@ -872,20 +872,20 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_plg242_1(NULL, 2, 0);
     vs_effect_plg242_2(NULL, 2, 0);
     vs_effect_plg243_0(NULL, 2, 0);
-    vs_effect_plg245(NULL, 2, 0);
-    vs_effect_246(NULL, 2, 0);
+    vs_effect_plg245_0(NULL, 2, 0);
+    vs_effect_246_0(NULL, 2, 0);
     vs_effect_plg247_0(NULL, 2, 0);
     vs_effect_plg247_1(NULL, 2, 0);
     vs_effect_plg247_2(NULL, 2, 0);
-    vs_effect_plg248(NULL, 2, 0);
+    vs_effect_plg248_0(NULL, 2, 0);
     vs_effect_plg250_0(NULL, 2, 0);
     vs_effect_plg250_1(NULL, 2, 0);
-    vs_effect_plg251(NULL, 2, 0);
+    vs_effect_plg251_0(NULL, 2, 0);
     vs_effect_plg255_0(NULL, 2, 0);
     vs_effect_plg255_1(NULL, 2, 0);
-    vs_effect_plg258(NULL, 2, 0);
-    vs_effect_plg259(NULL, 2, 0);
-    vs_effect_plg260(NULL, 2, 0);
+    vs_effect_plg258_0(NULL, 2, 0);
+    vs_effect_plg259_0(NULL, 2, 0);
+    vs_effect_plg260_0(NULL, 2, 0);
     vs_effect_plg263_0(NULL, 2, 0);
     vs_effect_plg263_1(NULL, 2, 0);
     vs_effect_plg263_2(NULL, 2, 0);
@@ -903,11 +903,11 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_plg272_0(NULL, 2, 0);
     vs_effect_plg272_1(NULL, 2, 0);
     vs_effect_plg272_2(NULL, 2, 0);
-    vs_effect_plg273(NULL, 2, 0);
+    vs_effect_plg273_0(NULL, 2, 0);
     vs_effect_plg280_0(NULL, 2, 0);
     vs_effect_plg280_1(NULL, 2, 0);
     vs_effect_plg280_2(NULL, 2, 0);
-    vs_effect_plg290(NULL, 2, 0);
+    vs_effect_plg290_0(NULL, 2, 0);
     vs_effect_plg291_0(NULL, 2, 0);
     vs_effect_plg291_1(NULL, 2, 0);
     vs_effect_plg291_2(NULL, 2, 0);

@@ -5,6 +5,11 @@
  * ordering table slot that the quads are linked into, which is their depth by default.
  * The overlay supplies its entry point. */
 
+#ifndef VS_CLOSED_RING_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_CLOSED_RING_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

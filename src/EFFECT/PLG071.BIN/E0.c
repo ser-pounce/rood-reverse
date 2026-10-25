@@ -1,10 +1,9 @@
 #include "E0.h"
 
-#define VS_MESH10_FUNCTION vs_effect_avalancheLv3_0
+#define VS_EFFECT_NAME vs_effect_avalancheLv3
+
 #include "src/EFFECT/meshes10.h"
 
-#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_avalancheLv3_1
 #include "src/EFFECT/trails9.h"
 
-#define VS_TILED_RING_FUNCTION vs_effect_avalancheLv3_2
 #include "src/EFFECT/tiledRings.h"

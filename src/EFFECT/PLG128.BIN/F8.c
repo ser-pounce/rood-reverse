@@ -1,4 +1,7 @@
 #include "F8.h"
+
+#define VS_EFFECT_NAME vs_effect_bloodySin
+
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "vs_inline_c.h"
@@ -17,25 +20,16 @@ typedef struct {
     int padCC;
 } func_800FD9A4_t;
 
-#define VS_SURFACE_FUNCTION vs_effect_bloodySin_0
 #define VS_SURFACE_TEXTURE_COLUMNS 4
-#include "src/EFFECT/sphericalSurfaceVertices.h"
-
 #include "src/EFFECT/surfaces.h"
 
-#define VS_CLOSED_RING_FUNCTION vs_effect_bloodySin_1
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
-#define VS_ROTATING_SURFACE_FUNCTION vs_effect_bloodySin_2
 #include "src/EFFECT/rotatingSurfaces.h"
 
-#define VS_GRID_FUNCTION vs_effect_bloodySin_3
 #include "src/EFFECT/grids.h"
-
-#define VS_SURFACE_FUNCTION vs_effect_bloodySin_4
-#include "src/EFFECT/sphericalSurfaceVertices.h"
 
 #include "src/EFFECT/surfaces.h"
 

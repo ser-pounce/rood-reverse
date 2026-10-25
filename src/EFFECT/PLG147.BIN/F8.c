@@ -1,9 +1,9 @@
 #include "F8.h"
 
-#define VS_RING_FUNCTION vs_effect_bearClaw_0
+#define VS_EFFECT_NAME vs_effect_bearClaw
+
 #include "src/EFFECT/rings.h"
 
-#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_bearClaw_1
 #define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleSetup.h"
 

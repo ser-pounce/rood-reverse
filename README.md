@@ -33,7 +33,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![SCREFF2.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=battle.SCREFF2.PRG)
 
 ### Effects
-![Total effects progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects)
+![Total effects progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects&color=%2332a934)
 
 
 ![EFFPURGE.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.EFFPURGE.BIN&color=%2332a934)

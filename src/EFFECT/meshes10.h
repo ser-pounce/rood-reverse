@@ -2,6 +2,11 @@
  * other six are scaled separately before the mesh is rotated into place. The overlay
  * supplies its entry point, and optionally its vertex and face tables. */
 
+#ifndef VS_MESH10_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_MESH10_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

@@ -1,6 +1,7 @@
 #include "F8.h"
 
-#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_plg224_0
+#define VS_EFFECT_NAME vs_effect_plg224
+
 #define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleSetup.h"
 

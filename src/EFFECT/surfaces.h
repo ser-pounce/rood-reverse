@@ -3,6 +3,11 @@
  * VS_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns. The
  * overlay supplies its entry point and vertex table. */
 
+#ifndef VS_SURFACE_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_SURFACE_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
@@ -37,7 +42,7 @@ typedef struct {
 } vs_surfacePrim;
 #endif
 
-extern SVECTOR VS_SURFACE_VERTICES[5][16];
+#include "src/EFFECT/sphericalSurfaceVertices.h"
 
 int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

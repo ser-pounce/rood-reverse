@@ -2,6 +2,11 @@
  * particle. The overlay defines VS_PARTICLE_DISPATCH_FUNCTION before including this; the
  * helpers are named after it unless the overlay defines VS_PARTICLE_<STAGE>_FUNCTION. */
 
+#ifndef VS_PARTICLE_DISPATCH_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_PARTICLE_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "src/SLUS_010.40/32154.h"

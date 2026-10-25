@@ -1,7 +1,7 @@
 #include "0.h"
 
-#define VS_TILED_RING_FUNCTION vs_effect_scytheWind_0
+#define VS_EFFECT_NAME vs_effect_scytheWind
+
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_RING_FUNCTION vs_effect_scytheWind_1
 #include "src/EFFECT/rings.h"

@@ -4,6 +4,11 @@
  * VS_ROTATING_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns.
  * The overlay supplies its entry point. */
 
+#ifndef VS_ROTATING_SURFACE_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_ROTATING_SURFACE_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

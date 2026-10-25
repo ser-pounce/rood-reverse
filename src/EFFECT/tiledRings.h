@@ -1,6 +1,11 @@
 /* Shared three-row, sixteen-column tiled ring effect. The overlay supplies its entry
  * point and color table. */
 
+#ifndef VS_TILED_RING_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_TILED_RING_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

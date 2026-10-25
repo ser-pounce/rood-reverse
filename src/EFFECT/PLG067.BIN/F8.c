@@ -1,15 +1,13 @@
 #include "F8.h"
 
-#define VS_ROTATING_SURFACE_FUNCTION vs_effect_gaeaStrikeLv3_0
+#define VS_EFFECT_NAME vs_effect_gaeaStrikeLv3
+
 #include "src/EFFECT/rotatingSurfaces.h"
 
-#define VS_CLOSED_RING_FUNCTION vs_effect_gaeaStrikeLv3_1
 #include "src/EFFECT/closedRings.h"
 
-#define VS_RING_FUNCTION vs_effect_gaeaStrikeLv3_2
 #include "src/EFFECT/rings.h"
 
-#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_gaeaStrikeLv3_3
 #define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleSetup.h"
 #include "src/EFFECT/particleLineRender.h"

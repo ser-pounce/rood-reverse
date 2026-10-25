@@ -3,6 +3,11 @@
  * VS_MIRROR_SURFACE_REPEAT, in which case it repeats every four columns. The overlay
  * supplies its entry point and vertex table. */
 
+#ifndef VS_MIRROR_SURFACE_FUNCTION
+#include "src/EFFECT/entry.h"
+#define VS_MIRROR_SURFACE_FUNCTION VS_ENTRY_FUNCTION
+#endif
+
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
@@ -35,7 +40,7 @@ typedef struct {
     int drawMode;
 } vs_mirrorSurfacePrim;
 
-extern SVECTOR VS_SURFACE_VERTICES[5][16];
+#include "src/EFFECT/sphericalSurfaceVertices.h"
 
 int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

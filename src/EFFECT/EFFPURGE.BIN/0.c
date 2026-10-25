@@ -3,6 +3,7 @@
 #include "src/EFFECT/PLG045.BIN/110.h"
 #include "src/EFFECT/PLG047.BIN/0.h"
 #include "src/EFFECT/PLG049.BIN/E0.h"
+#include "src/EFFECT/PLG050.BIN/E0.h"
 #include "src/EFFECT/PLG051.BIN/0.h"
 #include "src/EFFECT/PLG053.BIN/18.h"
 #include "src/EFFECT/PLG061.BIN/18.h"
@@ -487,7 +488,7 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
 static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock,
     vs_effect_lightningBolt, vs_effect_vulcanLance, func_800F9800,
     vs_spiritSurge_renderTrails, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
-    func_800F98E0, func_800FC0E4, NULL, vs_effect_exorcism, func_800F9800,
+    vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism, func_800F9800,
     vs_effect_explosion_0, vs_effect_explosion_1, func_800F9818, func_800FA368,
     func_800F9818, func_800FA368, func_800F9818, func_800FA368, func_800FB4E0, NULL,
     func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C,
@@ -610,8 +611,8 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_spiritSurge_1(NULL, 2, 0);
     vs_spiritSurge_2(NULL, 2, 0);
     vs_spiritSurge_3(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FC0E4(NULL, 2, 0);
+    vs_effect_darkChant_0(NULL, 2, 0);
+    vs_effect_darkChant_1(NULL, 2, 0);
     vs_effect_exorcism(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
     vs_effect_explosion_0(NULL, 2, 0);

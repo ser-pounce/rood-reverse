@@ -1,17 +1,15 @@
-#include "common.h"
+#include "18.h"
 
-#define VS_GRID_FUNCTION func_800F9818
+#define VS_GRID_FUNCTION vs_effect_adventSign_0
 #include "src/EFFECT/grids.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800FA368
-#define VS_CLOSED_RING_COLORS D_800FCDB8
+#define VS_CLOSED_RING_FUNCTION vs_effect_adventSign_1
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
-#define VS_RING_FUNCTION func_800FB2D8
-#define VS_RING_COLORS D_800FCDD8
+#define VS_RING_FUNCTION vs_effect_adventSign_2
 #include "src/EFFECT/rings.h"
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
-#define VS_ROTATING_SURFACE_FUNCTION func_800FBEFC
+#define VS_ROTATING_SURFACE_FUNCTION vs_effect_adventSign_3
 #include "src/EFFECT/rotatingSurfaces.h"

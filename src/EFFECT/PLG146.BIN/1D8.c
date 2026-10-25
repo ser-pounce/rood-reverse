@@ -1,36 +1,22 @@
-#include "common.h"
+#include "1D8.h"
 
-#define VS_TILED_RING_FUNCTION func_800F99D8
+#define VS_TILED_RING_FUNCTION vs_effect_blackNebula_0
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_MIRROR_SURFACE_FUNCTION func_800FA8D0
-#define VS_SURFACE_VERTICES D_800FF89C
+#define VS_MIRROR_SURFACE_FUNCTION vs_effect_blackNebula_1
+#include "src/EFFECT/sphericalSurfaceVertices.h"
+
 #include "src/EFFECT/mirroredSurfaces.h"
 
-#define VS_PARTICLE_ORIGIN_FUNCTION func_800FB544
-#define VS_PARTICLE_TARGET_FUNCTION func_800FBCCC
-#define VS_PARTICLE_CONTROL_FUNCTION func_800FBEE4
-#define VS_PARTICLE_CORNER_STATE D_800FFB1C
-#include "src/EFFECT/particleSetup.h"
-
-#define VS_PARTICLE_RENDER_FUNCTION func_800FC394
-#include "src/EFFECT/particleLineRender.h"
-
-#define VS_PARTICLE_DISPATCH_FUNCTION func_800FC8C4
+#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_blackNebula_2
 #define VS_PARTICLE_UNTEXTURED
+#include "src/EFFECT/particleSetup.h"
+#include "src/EFFECT/particleLineRender.h"
 #include "src/EFFECT/particleDispatch.h"
 
-#define VS_RING_FUNCTION func_800FCB38
-#define VS_RING_COLORS D_800FFB20
+#define VS_RING_FUNCTION vs_effect_blackNebula_3
 #define VS_RING_TRANSPOSED
 #include "src/EFFECT/rings.h"
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FD75C
-#define VS_TRAIL_TARGET_FUNCTION func_800FDEF8
-#define VS_TRAIL_CONTROL_FUNCTION func_800FE110
-#define VS_TRAIL_INIT_FUNCTION func_800FE5D4
-#define VS_TRAIL_UPDATE_FUNCTION func_800FE74C
-#define VS_TRAIL_RENDER_FUNCTION func_800FE8D8
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FF334
-#define VS_TRAIL5_CORNER_STATE D_800FFB40
+#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_blackNebula_4
 #include "src/EFFECT/trails5.h"

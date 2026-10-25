@@ -1,0 +1,22 @@
+sha1: 44a2e649370fff38cbc79ead975ba12e34c902f5
+options:
+  basename: EFFECT/PLG144.BIN
+  target_path: data/EFFECT/PLG144.BIN
+  elf_path: build/data/EFFECT/PLG144.BIN.elf
+  asm_path: build/src/EFFECT/PLG144.BIN
+  src_path: src/EFFECT/PLG144.BIN
+  asset_path: build/assets/EFFECT/PLG144.BIN
+  ld_script_path: build/config/EFFECT/PLG144.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG144.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0x0, c]
+    - [0xEF8, .data, 0]
+  - [0xF18]

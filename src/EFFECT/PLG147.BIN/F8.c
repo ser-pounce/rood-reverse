@@ -1,18 +1,11 @@
-#include "common.h"
+#include "F8.h"
 
-#define VS_RING_FUNCTION func_800F98F8
-#define VS_RING_COLORS D_800FBB10
+#define VS_RING_FUNCTION vs_effect_bearClaw_0
 #include "src/EFFECT/rings.h"
 
-#define VS_PARTICLE_ORIGIN_FUNCTION func_800FA51C
-#define VS_PARTICLE_TARGET_FUNCTION func_800FACA4
-#define VS_PARTICLE_CONTROL_FUNCTION func_800FAEBC
-#define VS_PARTICLE_CORNER_STATE D_800FBB30
+#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_bearClaw_1
+#define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleSetup.h"
 
-#define VS_PARTICLE_RENDER_FUNCTION func_800FB36C
 #include "src/EFFECT/particleLineRender.h"
-
-#define VS_PARTICLE_DISPATCH_FUNCTION func_800FB89C
-#define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleDispatch.h"

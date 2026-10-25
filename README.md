@@ -89,6 +89,7 @@ Thanks also to the following amazing projects (and their dependencies):
 ![PLG133.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG133.BIN&color=%2332a934)
 ![PLG134.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG134.BIN&color=%2332a934)
 ![PLG135.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG135.BIN&color=%2332a934)
+![PLG136.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG136.BIN&color=%2332a934)
 ![PLG137.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG137.BIN)
 ![PLG138.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG138.BIN)
 ![PLG139.BIN progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=effects.PLG139.BIN&color=%2332a934)

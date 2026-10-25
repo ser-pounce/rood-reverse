@@ -1,5 +1,6 @@
 /* Shared particle setup: the origin, target and spline control points of each
- * particle. The overlay supplies the entry points and the corner counter. */
+ * particle. The overlay defines VS_PARTICLE_DISPATCH_FUNCTION before including this; the
+ * helpers are named after it unless the overlay defines VS_PARTICLE_<STAGE>_FUNCTION. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
@@ -24,6 +25,16 @@ typedef struct {
 #ifndef VS_CAT
 #define VS_CAT_(a, b) a##b
 #define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifndef VS_PARTICLE_ORIGIN_FUNCTION
+#define VS_PARTICLE_ORIGIN_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _origin)
+#endif
+#ifndef VS_PARTICLE_TARGET_FUNCTION
+#define VS_PARTICLE_TARGET_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _target)
+#endif
+#ifndef VS_PARTICLE_CONTROL_FUNCTION
+#define VS_PARTICLE_CONTROL_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _control)
 #endif
 
 #ifdef VS_PARTICLE_CORNER_STATE

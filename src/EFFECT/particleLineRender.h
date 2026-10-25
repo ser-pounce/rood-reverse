@@ -9,6 +9,15 @@
 #include <inline_c.h>
 #include <rand.h>
 
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifndef VS_PARTICLE_RENDER_FUNCTION
+#define VS_PARTICLE_RENDER_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _render)
+#endif
+
 void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
 {

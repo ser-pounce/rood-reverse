@@ -9,6 +9,15 @@
 #include <inline_c.h>
 #include <rand.h>
 
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifndef VS_PARTICLE_RENDER_FUNCTION
+#define VS_PARTICLE_RENDER_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _render)
+#endif
+
 typedef struct {
     u_long tag;
     POLY_GT4 poly;

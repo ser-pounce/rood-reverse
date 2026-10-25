@@ -228,11 +228,5 @@ int vs_effect_bloodySin_5(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FE3D0
-#define VS_TRAIL_TARGET_FUNCTION func_800FEB6C
-#define VS_TRAIL_CONTROL_FUNCTION func_800FED84
-#define VS_TRAIL_INIT_FUNCTION func_800FF248
-#define VS_TRAIL_UPDATE_FUNCTION func_800FF3C0
-#define VS_TRAIL_RENDER_FUNCTION func_800FF54C
 #define VS_TRAIL_DISPATCH_FUNCTION vs_effect_bloodySin_6
 #include "src/EFFECT/trails5.h"

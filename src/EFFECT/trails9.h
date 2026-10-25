@@ -1,5 +1,6 @@
-/* Shared nine-sample trail effect. The overlay supplies the seven routine names and
- * the corner counter that VS_TRAIL_ORIGIN_FUNCTION steps through. */
+/* Shared nine-sample trail effect. The overlay supplies the entry point
+ * (VS_TRAIL_DISPATCH_FUNCTION); the helper stages are named after it unless the overlay
+ * defines VS_TRAIL_<STAGE>_FUNCTION. */
 
 #include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
@@ -18,6 +19,25 @@ typedef struct {
 #ifndef VS_CAT
 #define VS_CAT_(a, b) a##b
 #define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifndef VS_TRAIL_ORIGIN_FUNCTION
+#define VS_TRAIL_ORIGIN_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _origin)
+#endif
+#ifndef VS_TRAIL_TARGET_FUNCTION
+#define VS_TRAIL_TARGET_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _target)
+#endif
+#ifndef VS_TRAIL_CONTROL_FUNCTION
+#define VS_TRAIL_CONTROL_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _control)
+#endif
+#ifndef VS_TRAIL_INIT_FUNCTION
+#define VS_TRAIL_INIT_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _init)
+#endif
+#ifndef VS_TRAIL_UPDATE_FUNCTION
+#define VS_TRAIL_UPDATE_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _update)
+#endif
+#ifndef VS_TRAIL_RENDER_FUNCTION
+#define VS_TRAIL_RENDER_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _render)
 #endif
 
 #ifdef VS_TRAIL9_CORNER_STATE

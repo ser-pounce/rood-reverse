@@ -1,9 +1,12 @@
 #include "common.h"
 #include "0.h"
 #include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include <libgte.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 
 void func_800F9800(int arg0)
 {
@@ -117,6 +120,7 @@ void func_800F9BC0(short arg0, short arg1)
     D_800EB9B4->unk6 = arg1;
 }
 
+// https://decomp.me/scratch/Cv1aJ
 INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9BD8);
 
 void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }

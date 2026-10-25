@@ -1,0 +1,23 @@
+sha1: 3b2a471f8964ccf9e56c3ea9110d6bbaaf2d8df3
+options:
+  basename: EFFECT/PLG155.BIN
+  target_path: data/EFFECT/PLG155.BIN
+  elf_path: build/data/EFFECT/PLG155.BIN.elf
+  asm_path: build/src/EFFECT/PLG155.BIN
+  src_path: src/EFFECT/PLG155.BIN
+  asset_path: build/assets/EFFECT/PLG155.BIN
+  ld_script_path: build/config/EFFECT/PLG155.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG155.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 18]
+    - [0x18, c]
+    - [0x1A60, .data, 18]
+  - [0x1A80]

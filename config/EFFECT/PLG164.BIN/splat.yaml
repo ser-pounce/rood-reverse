@@ -1,0 +1,23 @@
+sha1: 97af1e332c3d9b7b314be03d3aa90ac7fea92ece
+options:
+  basename: EFFECT/PLG164.BIN
+  target_path: data/EFFECT/PLG164.BIN
+  elf_path: build/data/EFFECT/PLG164.BIN.elf
+  asm_path: build/src/EFFECT/PLG164.BIN
+  src_path: src/EFFECT/PLG164.BIN
+  asset_path: build/assets/EFFECT/PLG164.BIN
+  ld_script_path: build/config/EFFECT/PLG164.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG164.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0x0, .rodata, 110]
+    - [0x110, c]
+    - [0x1DB4, .data, 110]
+  - [0x1DB8]

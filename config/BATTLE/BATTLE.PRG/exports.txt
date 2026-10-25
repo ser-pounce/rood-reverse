@@ -231,6 +231,7 @@ vs_battle_initUi
 func_800CB654
 func_800CB660
 func_800CE64C
+func_800CFAAC
 func_800CFE1C
 func_800D2ADC
 func_800D6CCC

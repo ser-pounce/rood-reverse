@@ -1,25 +1,22 @@
-#include "common.h"
+#include "F8.h"
 
-#define VS_ROTATING_SURFACE_FUNCTION func_800F98F8
+#define VS_ROTATING_SURFACE_FUNCTION vs_effect_gaeaStrike_0
 #include "src/EFFECT/rotatingSurfaces.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800FA7B0
-#define VS_CLOSED_RING_COLORS D_800FD934
+#define VS_CLOSED_RING_FUNCTION vs_effect_gaeaStrike_1
 #include "src/EFFECT/closedRings.h"
 
-#define VS_RING_FUNCTION func_800FB71C
-#define VS_RING_COLORS D_800FD954
+#define VS_RING_FUNCTION vs_effect_gaeaStrike_2
 #include "src/EFFECT/rings.h"
 
 #define VS_PARTICLE_ORIGIN_FUNCTION func_800FC340
 #define VS_PARTICLE_TARGET_FUNCTION func_800FCAC8
 #define VS_PARTICLE_CONTROL_FUNCTION func_800FCCE0
-#define VS_PARTICLE_CORNER_STATE D_800FD974
 #include "src/EFFECT/particleSetup.h"
 
 #define VS_PARTICLE_RENDER_FUNCTION func_800FD190
 #include "src/EFFECT/particleLineRender.h"
 
-#define VS_PARTICLE_DISPATCH_FUNCTION func_800FD6C0
+#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_gaeaStrike_3
 #define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleDispatch.h"

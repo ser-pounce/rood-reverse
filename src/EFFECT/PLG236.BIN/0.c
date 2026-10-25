@@ -1,17 +1,17 @@
-#include "common.h"
+#include "0.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800F9800
-#define VS_CLOSED_RING_COLORS D_800FD190
+#define VS_CLOSED_RING_FUNCTION vs_effect_plg236_0
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
-#define VS_ROTATING_SURFACE_FUNCTION func_800FA770
+#define VS_ROTATING_SURFACE_FUNCTION vs_effect_plg236_1
 #include "src/EFFECT/rotatingSurfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG236.BIN/nonmatchings/0", func_800FB62C);
+#define VS_CLOSED_RING_FUNCTION vs_effect_plg236_2
+#define VS_CLOSED_RING_TRANSPOSED
+#include "src/EFFECT/closedRings.h"
 
-#define VS_RING_FUNCTION func_800FC56C
-#define VS_RING_COLORS D_800FD1D0
+#define VS_RING_FUNCTION vs_effect_plg236_3
 #define VS_RING_TRANSPOSED
 #include "src/EFFECT/rings.h"

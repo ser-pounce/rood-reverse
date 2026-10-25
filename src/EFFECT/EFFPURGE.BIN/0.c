@@ -53,6 +53,7 @@
 #include "src/EFFECT/PLG136.BIN/18.h"
 #include "src/EFFECT/PLG137.BIN/F8.h"
 #include "src/EFFECT/PLG162.BIN/0.h"
+#include "src/EFFECT/PLG236.BIN/0.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
@@ -603,8 +604,8 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     func_800FB5D0, func_800FCE90, func_800FD104, func_800FB4C0, NULL, func_800FBA00,
     func_800FC624, func_800F9818, func_800FA48C, func_800FB348, func_800FBF6C,
     func_800FCABC, func_800FD654, func_800F9800, func_800F9800, func_800F9818,
-    func_800FA710, func_800FAC78, func_800FB4C0, func_800F9800, func_800FA770,
-    func_800FB62C, func_800FC56C, func_800FAC78, func_800FAC78, func_800F98F8,
+    func_800FA710, func_800FAC78, func_800FB4C0, vs_effect_plg236_0, vs_effect_plg236_1,
+    vs_effect_plg236_2, vs_effect_plg236_3, func_800FAC78, func_800FAC78, func_800F98F8,
     func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL,
     vs_effect_246, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800F9800,
     func_800F9800, func_800FA6BC, func_800F9800, func_800FB5B0, func_800FCE78,
@@ -922,10 +923,10 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA710(NULL, 2, 0);
     func_800FAC78(NULL, 2, 0);
     func_800FB4C0(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA770(NULL, 2, 0);
-    func_800FB62C(NULL, 2, 0);
-    func_800FC56C(NULL, 2, 0);
+    vs_effect_plg236_0(NULL, 2, 0);
+    vs_effect_plg236_1(NULL, 2, 0);
+    vs_effect_plg236_2(NULL, 2, 0);
+    vs_effect_plg236_3(NULL, 2, 0);
     func_800FAC78(NULL, 2, 0);
     func_800FAC78(NULL, 2, 0);
     func_800F98F8(NULL, 2, 0);

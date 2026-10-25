@@ -227,7 +227,7 @@ func_800BD444
 func_800BD6C4
 func_800BDC9C
 func_800C930C
-func_800CA9C0
+vs_battle_initUi
 func_800CB654
 func_800CB660
 func_800CE64C

@@ -2932,7 +2932,7 @@ void func_800CA97C(void)
     D_800F4ED8[2] = 0x1000;
 }
 
-void func_800CA9C0(void* arg0)
+void vs_battle_initUi(void* fontData)
 {
     D_800EB9AC = 0;
     _loadedSubMenu = 0;
@@ -2959,9 +2959,9 @@ void func_800CA9C0(void* arg0)
     vs_battle_rMemzero(vs_battle_submenuStates, sizeof vs_battle_submenuStates);
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
-    vs_battle_renderImage(vs_getXY(832, 0), arg0, vs_getWH(64, 224));
-    vs_battle_renderImage(vs_getXY(896, 0), arg0 + 0x7000, vs_getWH(64, 224));
-    vs_battle_renderImage(vs_getXY(960, 66), arg0 + 0xE000, vs_getWH(64, 158));
+    vs_battle_renderImage(vs_getXY(832, 0), fontData, vs_getWH(64, 224));
+    vs_battle_renderImage(vs_getXY(896, 0), fontData + 0x7000, vs_getWH(64, 224));
+    vs_battle_renderImage(vs_getXY(960, 66), fontData + 0xE000, vs_getWH(64, 158));
     DrawSync(0);
     ClearOTag(D_800F51B8, 0x22);
 }

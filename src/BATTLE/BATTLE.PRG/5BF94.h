@@ -566,6 +566,7 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy);
  */
 int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb*);
+void vs_battle_initUi(void*);
 void func_800CAB40(void);
 int func_800CABE0(int);
 

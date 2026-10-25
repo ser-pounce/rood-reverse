@@ -22,7 +22,6 @@ typedef struct {
     size_t unk1C;
 } System_dat_h;
 
-void func_800CA9C0(void*);
 static void func_800FA6B8(void);
 void _initScriptFunctionTable(void);
 static void func_800F9CCC(void);
@@ -301,7 +300,7 @@ static void _loadSystemDat(void)
     LoadImage(&rect, (u_long*)p_hdr + 1);
     DrawSync(0);
 
-    func_800CA9C0((void*)buf + buf->unk1C);
+    vs_battle_initUi((void*)buf + buf->unk1C);
     vs_main_freeHeapR(buf);
 }
 

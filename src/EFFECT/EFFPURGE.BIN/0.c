@@ -44,6 +44,7 @@
 #include "src/EFFECT/PLG087.BIN/1F0.h"
 #include "src/EFFECT/PLG102.BIN/110.h"
 #include "src/EFFECT/PLG114.BIN/208.h"
+#include "src/EFFECT/PLG128.BIN/F8.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
@@ -567,8 +568,9 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_judgment_1, vs_effect_judgment_2, vs_effect_judgment_3,
     vs_effect_apocalypse_0, vs_effect_apocalypse_1, vs_effect_apocalypse_2,
     vs_effect_apocalypse_3, vs_effect_apocalypse_4, vs_effect_thunderBreath,
-    vs_effect_numbingNeedle_0, vs_effect_numbingNeedle_1, func_800F98F8, func_800FA490,
-    func_800FB400, func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8,
+    vs_effect_numbingNeedle_0, vs_effect_numbingNeedle_1, vs_effect_bloodySin_0,
+    vs_effect_bloodySin_1, vs_effect_bloodySin_2, vs_effect_bloodySin_3,
+    vs_effect_bloodySin_4, NULL, vs_effect_bloodySin_5, vs_effect_bloodySin_6,
     func_800F9800, NULL, func_800FA424, func_800FAF30, func_800FBAC8, func_800FC6EC,
     func_800F9800, func_800F9800, func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL,
     func_800FC42C, func_800F9818, func_800FA368, func_800F98F8, func_800FBFDC,
@@ -794,13 +796,13 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_thunderBreath(NULL, 2, 0);
     vs_effect_numbingNeedle_0(NULL, 2, 0);
     vs_effect_numbingNeedle_1(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA490(NULL, 2, 0);
-    func_800FB400(NULL, 2, 0);
-    func_800FC2BC(NULL, 2, 0);
-    func_800FCE0C(NULL, 2, 0);
-    func_800FDEC4(NULL, 2, 0);
-    func_800FFFA8(NULL, 2, 0);
+    vs_effect_bloodySin_0(NULL, 2, 0);
+    vs_effect_bloodySin_1(NULL, 2, 0);
+    vs_effect_bloodySin_2(NULL, 2, 0);
+    vs_effect_bloodySin_3(NULL, 2, 0);
+    vs_effect_bloodySin_4(NULL, 2, 0);
+    vs_effect_bloodySin_5(NULL, 2, 0);
+    vs_effect_bloodySin_6(NULL, 2, 0);
     func_800F9800(NULL, 2, 0);
     func_800FA424(NULL, 2, 0);
     func_800FAF30(NULL, 2, 0);

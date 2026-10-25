@@ -233,19 +233,6 @@ typedef struct {
 } D_800F54B8_t;
 
 typedef struct {
-    VECTOR position;
-    VECTOR lookAt;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int roll;
-    int nearClip;
-    int projectionDistance;
-    int farClip;
-} D_800F54D8_t;
-
-typedef struct {
     int count;
     short offsets[0];
 } pFileBlock11;
@@ -366,7 +353,6 @@ int func_800D12D8(int);
 void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
 void func_800D1930(void);
-void func_800D1B18(D_800F54D8_t*);
 void func_800D1B80(D_800F54D8_t*);
 void func_800D206C(void);
 void func_800D21C0(void);
@@ -511,12 +497,9 @@ extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
 extern D_800F54B8_t D_800F54B8[];
-extern short D_800F54D0;
 extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
 extern char D_800F5518;
-extern D_800F54D8_t D_800F5520[2];
-extern short D_800F55A0;
 extern D_800F54D8_t D_800F55A8;
 extern u_int D_800F55E8;
 extern int D_800F55F0;

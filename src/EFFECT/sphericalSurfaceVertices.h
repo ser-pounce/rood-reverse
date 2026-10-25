@@ -1,5 +1,3 @@
-#pragma once
-
 #define COS22 (ONE * 0.9239)
 #define SIN22 (ONE * 0.3827)
 #define COS45 (ONE * 0.7071)

@@ -605,7 +605,7 @@ typedef struct vs_battle_actor {
     int unk38;
     vs_battle_actor2* unk3C;
     int unk40;
-    D_800F4538_unk0* unk44;
+    D_800F4538_t* unk44;
     vs_battle_actor4* unk48[2];
 } vs_battle_actor;
 

@@ -1111,7 +1111,7 @@ int _parseShp(vs_battle_objectData* object)
                 }
             }
 
-            *(vs_battle_objectData_flags*)&actor->unk0.currentTileX = object->unkC;
+            *(vs_battle_objectData_flags*)&actor->unk0.currentTile = object->unkC;
 
             if (actor->unk5AC_27) {
                 D_800F22B8 = 0xA0;
@@ -1134,7 +1134,7 @@ int _parseShp(vs_battle_objectData* object)
     }
 
     data += 4;
-    *(vs_battle_objectData_flags*)&actor->unk0.currentTileX = object->unkC;
+    *(vs_battle_objectData_flags*)&actor->unk0.currentTile = object->unkC;
     actor->unk0.skip = 1;
     *(int*)&actor->unk0.nBones = *(int*)data;
     *(int*)&actor->unk0.nQuads = *(int*)(data + 4);
@@ -2811,7 +2811,8 @@ void func_8009E634(D_800F4538_t* arg0)
             var_a3 = var_a0;
         }
 
-        func_800E4C28(arg0->unk0.currentTileX + var_a2, arg0->unk0.currentTileZ + var_a3);
+        func_800E4C28(
+            arg0->unk0.currentTile.x + var_a2, arg0->unk0.currentTile.z + var_a3);
     }
 }
 
@@ -2908,7 +2909,7 @@ void func_8009E700(int actorId, int animation)
             }
 
             func_800E4C28(
-                actor->unk0.currentTileX + tileDx, actor->unk0.currentTileZ + tileDz);
+                actor->unk0.currentTile.x + tileDx, actor->unk0.currentTile.z + tileDz);
         }
     }
 
@@ -3411,8 +3412,8 @@ void func_8009F530(int arg0)
             temp_v0_2->unk0.unkA_0 = 3;
             if (temp_v0_2->unk0.unkF != 0) {
                 temp_v0_2->unk181A = 1;
-                temp_v0_2->unk1814 = temp_v0_2->unk0.currentTileX;
-                temp_v0_2->unk1818 = temp_v0_2->unk0.currentTileZ;
+                temp_v0_2->unk1814 = temp_v0_2->unk0.currentTile.x;
+                temp_v0_2->unk1818 = temp_v0_2->unk0.currentTile.z;
             }
             temp_v0_2->unk0.unk11 = 4;
         }
@@ -4318,7 +4319,7 @@ int func_800A1108(int arg0, void* arg1)
         }
     }
 
-    ((int*)arg1)[0] = *(int*)&var_v1->unk0.currentTileX;
+    ((int*)arg1)[0] = *(int*)&var_v1->unk0.currentTile;
     ((int*)arg1)[1] = *(int*)&var_v1->unk0.position.vx;
     ((int*)arg1)[2] = *(int*)&var_v1->unk0.position.vz;
     ((u_short*)arg1)[5] = var_v1->unk0.facing;

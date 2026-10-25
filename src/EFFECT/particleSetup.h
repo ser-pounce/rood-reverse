@@ -1,11 +1,9 @@
 /* Shared particle setup: the origin, target and spline control points of each
- * particle. The overlay defines VS_PARTICLE_DISPATCH_FUNCTION before including this; the
- * helpers are named after it unless the overlay defines VS_PARTICLE_<STAGE>_FUNCTION. */
+ * particle. This names the effect's entry point, VS_PARTICLE_DISPATCH_FUNCTION, and the
+ * helpers are named after it. */
 
-#ifndef VS_PARTICLE_DISPATCH_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_PARTICLE_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
@@ -27,27 +25,12 @@ typedef struct {
 } func_800FA098_arg3;
 #endif
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
-
-#ifndef VS_PARTICLE_ORIGIN_FUNCTION
 #define VS_PARTICLE_ORIGIN_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _origin)
-#endif
-#ifndef VS_PARTICLE_TARGET_FUNCTION
 #define VS_PARTICLE_TARGET_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _target)
-#endif
-#ifndef VS_PARTICLE_CONTROL_FUNCTION
 #define VS_PARTICLE_CONTROL_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _control)
-#endif
 
-#ifdef VS_PARTICLE_CORNER_STATE
-extern int VS_PARTICLE_CORNER_STATE;
-#else
 #define VS_PARTICLE_CORNER_STATE VS_CAT(VS_PARTICLE_ORIGIN_FUNCTION, _state)
 static int VS_PARTICLE_CORNER_STATE = 0;
-#endif
 
 void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)

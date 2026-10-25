@@ -3,12 +3,10 @@
  * it repeats every that many columns, or runs along the rows instead of the columns if
  * VS_CLOSED_RING_TRANSPOSED is defined. VS_CLOSED_RING_OT_SLOT overrides the
  * ordering table slot that the quads are linked into, which is their depth by default.
- * The overlay supplies its entry point. */
+ * The entry point is named by entry.h. */
 
-#ifndef VS_CLOSED_RING_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_CLOSED_RING_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -50,19 +48,10 @@ typedef struct {
 } vs_closedRingPrim;
 #endif
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
-
-#ifndef VS_CLOSED_RING_COLORS
 #define VS_CLOSED_RING_COLORS VS_CAT(VS_CLOSED_RING_FUNCTION, _colors)
 static CVECTOR VS_CLOSED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
     { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
     { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };
-#else
-extern CVECTOR VS_CLOSED_RING_COLORS[];
-#endif
 
 int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

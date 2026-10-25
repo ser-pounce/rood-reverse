@@ -115,7 +115,9 @@ void func_800FDE78(func_800FD9A4_t* arg0, func_800FA098_arg1* scratch)
     arg0->endCamera.lookAt.vz = arg0->unk98.vz << 12;
 }
 
-int vs_effect_bloodySin_5(func_800D4910_t* arg0, u_int arg1, int arg2)
+#include "src/EFFECT/entry.h"
+
+int VS_ENTRY_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800FD9A4_t* state = arg0->unk8;
     D_800F53B8_t* battle = D_800F53BC;
@@ -222,5 +224,4 @@ int vs_effect_bloodySin_5(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_bloodySin_6
 #include "src/EFFECT/trails5.h"

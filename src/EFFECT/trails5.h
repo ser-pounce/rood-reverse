@@ -1,13 +1,10 @@
-/* Shared five-sample spline trail effect. The overlay supplies the entry point
- * (VS_TRAIL_DISPATCH_FUNCTION); the helper stages are named after it unless the overlay
- * defines VS_TRAIL_<STAGE>_FUNCTION. */
+/* Shared five-sample spline trail effect. The entry point is named by entry.h
+ * (VS_TRAIL_DISPATCH_FUNCTION) and the helper stages are named after it. */
 
 #define TRAIL_SAMPLE_COUNT 5
 
-#ifndef VS_TRAIL_DISPATCH_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_TRAIL_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/EFFECT/trails.h"
 #include "src/SLUS_010.40/32154.h"
@@ -22,36 +19,15 @@ typedef struct {
     int drawMode;
 } vs_trailPrim;
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
-
-#ifndef VS_TRAIL_ORIGIN_FUNCTION
 #define VS_TRAIL_ORIGIN_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _origin)
-#endif
-#ifndef VS_TRAIL_TARGET_FUNCTION
 #define VS_TRAIL_TARGET_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _target)
-#endif
-#ifndef VS_TRAIL_CONTROL_FUNCTION
 #define VS_TRAIL_CONTROL_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _control)
-#endif
-#ifndef VS_TRAIL_INIT_FUNCTION
 #define VS_TRAIL_INIT_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _init)
-#endif
-#ifndef VS_TRAIL_UPDATE_FUNCTION
 #define VS_TRAIL_UPDATE_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _update)
-#endif
-#ifndef VS_TRAIL_RENDER_FUNCTION
 #define VS_TRAIL_RENDER_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _render)
-#endif
 
-#ifdef VS_TRAIL5_CORNER_STATE
-extern int VS_TRAIL5_CORNER_STATE;
-#else
 #define VS_TRAIL5_CORNER_STATE VS_CAT(VS_TRAIL_ORIGIN_FUNCTION, _state)
 static int VS_TRAIL5_CORNER_STATE = 0;
-#endif
 
 void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)

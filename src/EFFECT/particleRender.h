@@ -1,6 +1,6 @@
 /* Shared textured particle ribbon renderer. Each particle is a spline through its four
- * control points, drawn as a strip of eight semi-transparent textured quads. The overlay
- * supplies the entry point. */
+ * control points, drawn as a strip of eight semi-transparent textured quads. Include
+ * after particleSetup.h. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"
@@ -9,14 +9,7 @@
 #include <inline_c.h>
 #include <rand.h>
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
-
-#ifndef VS_PARTICLE_RENDER_FUNCTION
 #define VS_PARTICLE_RENDER_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _render)
-#endif
 
 typedef struct {
     u_long tag;

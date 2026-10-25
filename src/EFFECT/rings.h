@@ -1,11 +1,9 @@
-/* Shared three-row, nine-column textured ring effect. The overlay supplies its entry
- * point and color table, and defines VS_RING_TRANSPOSED when its texture runs along the
- * rows instead of the columns. */
+/* Shared three-row, nine-column textured ring effect. The entry point is named by
+ * entry.h. The overlay defines VS_RING_TRANSPOSED when its texture runs along the rows
+ * instead of the columns. */
 
-#ifndef VS_RING_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_RING_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -35,15 +33,7 @@ typedef struct {
 } vs_ringPrim;
 #endif
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
-
-#ifdef VS_RING_COLORS
-extern CVECTOR VS_RING_COLORS[];
-#else
-#define VS_RING_COLORS VS_CAT(VS_RING_FUNCTION, _state)
+#define VS_RING_COLORS VS_CAT(VS_RING_FUNCTION, _colors)
 static CVECTOR VS_RING_COLORS[] = {
     { 255, 255, 255 },
     { 128, 128, 128 },
@@ -54,7 +44,6 @@ static CVECTOR VS_RING_COLORS[] = {
     { 0, 128, 0 },
     { 128, 0, 128 },
 };
-#endif
 
 extern CVECTOR VS_RING_COLORS[];
 

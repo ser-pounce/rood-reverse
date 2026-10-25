@@ -1,10 +1,8 @@
-/* Shared animated nine-by-nine textured grid effect. The overlay supplies its entry
- * point. */
+/* Shared animated nine-by-nine textured grid effect. The entry point is named by
+ * entry.h. */
 
-#ifndef VS_GRID_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_GRID_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"

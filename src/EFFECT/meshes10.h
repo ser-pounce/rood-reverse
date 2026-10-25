@@ -1,11 +1,9 @@
 /* Shared ten-vertex, sixteen-face textured mesh effect. The first four vertices and the
- * other six are scaled separately before the mesh is rotated into place. The overlay
- * supplies its entry point, and optionally its vertex and face tables. */
+ * other six are scaled separately before the mesh is rotated into place. The entry
+ * point is named by entry.h. */
 
-#ifndef VS_MESH10_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_MESH10_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -31,15 +29,6 @@ typedef struct {
     u_char v;
 } vs_mesh10UV;
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
-
-#ifdef VS_MESH10_VERTICES
-extern SVECTOR VS_MESH10_VERTICES[];
-extern u_char VS_MESH10_FACES[][6];
-#else
 #define VS_MESH10_VERTICES VS_CAT(VS_MESH10_FUNCTION, _vertices)
 #define VS_MESH10_FACES VS_CAT(VS_MESH10_FUNCTION, _faces)
 
@@ -61,7 +50,6 @@ static u_char VS_MESH10_FACES[][6] = { { 0, 4, 6, 0, 2, 4 }, { 4, 5, 6, 2, 8, 4 
     { 0, 7, 4, 0, 2, 4 }, { 7, 8, 4, 2, 8, 4 }, { 7, 3, 8, 2, 6, 8 },
     { 4, 8, 1, 4, 8, 10 }, { 1, 8, 5, 0, 2, 4 }, { 8, 9, 5, 2, 8, 4 },
     { 8, 3, 9, 2, 6, 8 }, { 5, 9, 2, 4, 8, 10 } };
-#endif
 
 int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

@@ -1,12 +1,10 @@
 /* Shared nine-row, sixteen-column surface mirrored about its middle row, with a color
  * factor per row. The texture spans the whole surface once unless the overlay defines
- * VS_MIRROR_SURFACE_REPEAT, in which case it repeats every four columns. The overlay
- * supplies its entry point and vertex table. */
+ * VS_MIRROR_SURFACE_REPEAT, in which case it repeats every four columns. The entry
+ * point is named by entry.h. */
 
-#ifndef VS_MIRROR_SURFACE_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_MIRROR_SURFACE_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"

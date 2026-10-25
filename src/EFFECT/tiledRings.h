@@ -1,10 +1,8 @@
-/* Shared three-row, sixteen-column tiled ring effect. The overlay supplies its entry
- * point and color table. */
+/* Shared three-row, sixteen-column tiled ring effect. The entry point is named by
+ * entry.h. */
 
-#ifndef VS_TILED_RING_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_TILED_RING_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -35,14 +33,10 @@ typedef struct {
     u_char v;
 } vs_tiledRingUV;
 
-#ifndef VS_TILED_RING_COLORS
-#define VS_TILED_RING_COLORS _colors
+#define VS_TILED_RING_COLORS VS_CAT(VS_TILED_RING_FUNCTION, _colors)
 static CVECTOR VS_TILED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
     { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
     { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };
-#else
-extern CVECTOR VS_TILED_RING_COLORS[];
-#endif
 
 int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

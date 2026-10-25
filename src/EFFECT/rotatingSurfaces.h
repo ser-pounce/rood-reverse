@@ -2,12 +2,10 @@
  * Each row turns, widens and rises with its own accelerating twist, radius and height
  * steps. The texture spans the whole surface once unless the overlay defines
  * VS_ROTATING_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns.
- * The overlay supplies its entry point. */
+ * The entry point is named by entry.h. */
 
-#ifndef VS_ROTATING_SURFACE_FUNCTION
 #include "src/EFFECT/entry.h"
 #define VS_ROTATING_SURFACE_FUNCTION VS_ENTRY_FUNCTION
-#endif
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"

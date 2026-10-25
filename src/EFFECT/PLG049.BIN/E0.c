@@ -22,7 +22,6 @@
  * Target impact
  */
 #define VS_TILED_RING_FUNCTION func_800FC624
-#define VS_TILED_RING_COLORS D_800FE3F8
 #include "src/EFFECT/tiledRings.h"
 
 /**

@@ -10,7 +10,6 @@ options:
   create_undefined_funcs_auto: false
   create_undefined_syms_auto: false
 
-
 segments:
   - name: PLG047.BIN
     start: 0x0

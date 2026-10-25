@@ -15,11 +15,7 @@
 
 #define POLE { 0, ONE, 0 }
 
-#ifdef VS_MIRROR_SURFACE_FUNCTION
-#define VS_SURFACE_VERTICES VS_CAT(VS_MIRROR_SURFACE_FUNCTION, _vertices)
-#else
 #define VS_SURFACE_VERTICES VS_CAT(VS_SURFACE_FUNCTION, _vertices)
-#endif
 
 // clang-format off
 static SVECTOR VS_SURFACE_VERTICES[][16] = {

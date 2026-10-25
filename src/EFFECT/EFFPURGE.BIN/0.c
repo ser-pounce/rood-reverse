@@ -8,6 +8,9 @@
 #include "src/EFFECT/PLG051.BIN/0.h"
 #include "src/EFFECT/PLG052.BIN/0.h"
 #include "src/EFFECT/PLG053.BIN/18.h"
+#include "src/EFFECT/PLG054.BIN/18.h"
+#include "src/EFFECT/PLG055.BIN/18.h"
+#include "src/EFFECT/PLG056.BIN/18.h"
 #include "src/EFFECT/PLG057.BIN/2D0.h"
 #include "src/EFFECT/PLG058.BIN/2D0.h"
 #include "src/EFFECT/PLG059.BIN/2D0.h"
@@ -496,8 +499,9 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_lightningBolt, vs_effect_vulcanLance, vs_effect_aquaBlast,
     vs_spiritSurge_renderTrails, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
     vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism,
-    vs_effect_banish, vs_effect_explosion_0, vs_effect_explosion_1, func_800F9818,
-    func_800FA368, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
+    vs_effect_banish, vs_effect_explosionLv1_0, vs_effect_explosionLv1_1,
+    vs_effect_explosionLv2_0, vs_effect_explosionLv2_1, vs_effect_explosionLv3_0,
+    vs_effect_explosionLv3_1, vs_effect_explosionLv4_0, vs_effect_explosionLv4_1,
     vs_effect_thunderBurstLv1_0, NULL, vs_effect_thunderBurstLv1_1,
     vs_effect_thunderBurstLv1_2, vs_effect_thunderBurstLv2_0, NULL,
     vs_effect_thunderBurstLv2_1, vs_effect_thunderBurstLv2_2, vs_effect_thunderBurstLv3_0,
@@ -626,14 +630,14 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_darkChant_1(NULL, 2, 0);
     vs_effect_exorcism(NULL, 2, 0);
     vs_effect_banish(NULL, 2, 0);
-    vs_effect_explosion_0(NULL, 2, 0);
-    vs_effect_explosion_1(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
+    vs_effect_explosionLv1_0(NULL, 2, 0);
+    vs_effect_explosionLv1_1(NULL, 2, 0);
+    vs_effect_explosionLv2_0(NULL, 2, 0);
+    vs_effect_explosionLv2_1(NULL, 2, 0);
+    vs_effect_explosionLv3_0(NULL, 2, 0);
+    vs_effect_explosionLv3_1(NULL, 2, 0);
+    vs_effect_explosionLv4_0(NULL, 2, 0);
+    vs_effect_explosionLv4_1(NULL, 2, 0);
     vs_effect_thunderBurstLv1_0(NULL, 2, 0);
     vs_effect_thunderBurstLv1_1(NULL, 2, 0);
     vs_effect_thunderBurstLv1_2(NULL, 2, 0);

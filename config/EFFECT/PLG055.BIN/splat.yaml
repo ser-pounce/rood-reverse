@@ -1,0 +1,23 @@
+sha1: 681eb329b1bbfa6e72774842bbbfc2f7c8ad8353
+options:
+  basename: EFFECT/PLG055.BIN
+  target_path: data/EFFECT/PLG055.BIN
+  elf_path: build/data/EFFECT/PLG055.BIN.elf
+  asm_path: build/src/EFFECT/PLG055.BIN
+  src_path: src/EFFECT/PLG055.BIN
+  asset_path: build/assets/EFFECT/PLG055.BIN
+  ld_script_path: build/config/EFFECT/PLG055.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG055.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 18]
+    - [0x18, c]
+    - [0x1AD4, .data, 18]
+  - [0x1AF4]

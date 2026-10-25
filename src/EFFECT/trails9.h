@@ -15,7 +15,17 @@ typedef struct {
     int drawMode;
 } vs_trail9Prim;
 
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
+
+#ifdef VS_TRAIL_CORNER_STATE
 extern int VS_TRAIL_CORNER_STATE;
+#else
+#define VS_TRAIL_CORNER_STATE VS_CAT(VS_TRAIL_ORIGIN_FUNCTION, _state)
+static int VS_TRAIL_CORNER_STATE = 0;
+#endif
 
 static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2, vs_trail9State* arg3)

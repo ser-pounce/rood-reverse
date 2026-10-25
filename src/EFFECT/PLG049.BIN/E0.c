@@ -10,7 +10,7 @@
 #define VS_TRAIL_UPDATE_FUNCTION func_800FA8E4
 #define VS_TRAIL_RENDER_FUNCTION func_800FAA70
 #define VS_TRAIL_DISPATCH_FUNCTION vs_spiritSurge_renderTrails
-#define VS_TRAIL_CORNER_STATE D_800FE3D4
+
 #include "src/EFFECT/trails9.h"
 
 /**

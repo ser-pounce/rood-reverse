@@ -40,6 +40,7 @@
 #include "src/EFFECT/PLG083.BIN/0.h"
 #include "src/EFFECT/PLG084.BIN/18.h"
 #include "src/EFFECT/PLG085.BIN/18.h"
+#include "src/EFFECT/PLG086.BIN/F8.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
@@ -559,45 +560,45 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_meteorLv4_4, NULL, NULL, vs_effect_tornado_0, vs_effect_tornado_1,
     vs_effect_tornado_2, vs_effect_thunderbolt_0, vs_effect_thunderbolt_1,
     vs_effect_thunderbolt_2, vs_effect_fireStorm, vs_effect_gravity_0,
-    vs_effect_gravity_1, vs_effect_acidFlow_0, vs_effect_acidFlow_1, func_800F98F8,
-    func_800FA868, func_800FB720, func_800FDE48, func_800F99F0, func_800FA588,
-    func_800FB4F8, func_800FDC20, func_800FF4E8, func_800FB320, func_800FB418,
-    func_800FCA2C, func_800F98F8, func_800FA490, func_800FB400, func_800FC2BC,
-    func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8, func_800F9800, NULL, func_800FA424,
-    func_800FAF30, func_800FBAC8, func_800FC6EC, func_800F9800, func_800F9800,
-    func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL, func_800FC42C, func_800F9818,
-    func_800FA368, func_800F98F8, func_800FBFDC, func_800FC524, func_800FD074,
-    func_800F9818, func_800FA6D0, func_800FB2F4, func_800FBE44, vs_effect_sunder_0,
-    vs_effect_sunder_1, func_800FB320, func_800FB4B8, func_800F9818, func_800FA368,
-    func_800FB2D8, func_800FBEFC, func_800F9800, func_800FA6F8, func_800F9800,
-    func_800F9800, func_800F99D8, func_800FA8D0, func_800FC8C4, func_800FCB38,
-    func_800FF334, func_800F98F8, func_800FB89C, func_800FB4B8, func_800FBA00,
-    func_800F9800, func_800F9818, func_800FA710, func_800FB260, func_800FBDF8,
-    func_800F9800, func_800F9928, func_800FBE88, func_800FC11C, NULL, func_800F9910,
-    func_800FA41C, func_800FCA50, vs_effect_trinityPulse_0, vs_effect_trinityPulse_1,
-    func_800F9818, func_800FA710, func_800FB338, NULL, func_800FB5CC, func_800F9800,
-    func_800F9800, func_800FA398, func_800FB00C, func_800FBF7C, func_800F9818,
-    func_800FA710, func_800F9800, func_800FA6F8, NULL, func_800F98F8, func_800FA7B0,
-    func_800FCFB4, func_800FD4F4, func_800FE044, NULL, func_800F9800, func_800FA740,
-    func_800FB5F8, func_800FC21C, func_800FB320, func_800FB4D8, NULL, func_800FBA18,
-    func_800FC8D0, func_800FD420, func_800F9800, func_800FA6B8, func_800FB32C,
-    func_800FC29C, NULL, func_800F98E0, func_800FA84C, func_800FD2E4, NULL, func_800FB5D0,
-    func_800FCE90, func_800FD104, func_800FB4C0, NULL, func_800FBA00, func_800FC624,
-    func_800F9818, func_800FA48C, func_800FB348, func_800FBF6C, func_800FCABC,
-    func_800FD654, func_800F9800, func_800F9800, func_800F9818, func_800FA710,
-    func_800FAC78, func_800FB4C0, func_800F9800, func_800FA770, func_800FB62C,
-    func_800FC56C, func_800FAC78, func_800FAC78, func_800F98F8, func_800FA7F0,
-    func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800, NULL, NULL, vs_effect_246,
-    NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC, func_800F9800, func_800F9800,
-    func_800FA6BC, func_800F9800, func_800FB5B0, func_800FCE78, func_800F9800,
-    func_800F9800, vs_effect_plg260, NULL, func_800F9910, func_800FA4A8, func_800FB0CC,
-    func_800FDA1C, func_800F9AE8, func_800FBD60, func_800FDBAC, func_800FFB04,
-    func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0,
-    func_800FCE78, func_800F9818, func_800FA368, func_800FB2D8, vs_effect_plg273,
-    func_800FB338, func_800FB5CC, func_800FC11C, func_800FB320, func_800FB4D0,
-    func_800FBA18, func_800FC568, func_800F9818, func_800FA48C, func_800FB3FC,
-    func_800FBF4C, func_800F9910, func_800FBF94, func_800FC228, func_800FD198,
-    func_800FB320, NULL, func_800FB5B4 };
+    vs_effect_gravity_1, vs_effect_acidFlow_0, vs_effect_acidFlow_1, vs_effect_judgment_0,
+    vs_effect_judgment_1, vs_effect_judgment_2, vs_effect_judgment_3, func_800F99F0,
+    func_800FA588, func_800FB4F8, func_800FDC20, func_800FF4E8, func_800FB320,
+    func_800FB418, func_800FCA2C, func_800F98F8, func_800FA490, func_800FB400,
+    func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8, func_800F9800, NULL,
+    func_800FA424, func_800FAF30, func_800FBAC8, func_800FC6EC, func_800F9800,
+    func_800F9800, func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL, func_800FC42C,
+    func_800F9818, func_800FA368, func_800F98F8, func_800FBFDC, func_800FC524,
+    func_800FD074, func_800F9818, func_800FA6D0, func_800FB2F4, func_800FBE44,
+    vs_effect_sunder_0, vs_effect_sunder_1, func_800FB320, func_800FB4B8, func_800F9818,
+    func_800FA368, func_800FB2D8, func_800FBEFC, func_800F9800, func_800FA6F8,
+    func_800F9800, func_800F9800, func_800F99D8, func_800FA8D0, func_800FC8C4,
+    func_800FCB38, func_800FF334, func_800F98F8, func_800FB89C, func_800FB4B8,
+    func_800FBA00, func_800F9800, func_800F9818, func_800FA710, func_800FB260,
+    func_800FBDF8, func_800F9800, func_800F9928, func_800FBE88, func_800FC11C, NULL,
+    func_800F9910, func_800FA41C, func_800FCA50, vs_effect_trinityPulse_0,
+    vs_effect_trinityPulse_1, func_800F9818, func_800FA710, func_800FB338, NULL,
+    func_800FB5CC, func_800F9800, func_800F9800, func_800FA398, func_800FB00C,
+    func_800FBF7C, func_800F9818, func_800FA710, func_800F9800, func_800FA6F8, NULL,
+    func_800F98F8, func_800FA7B0, func_800FCFB4, func_800FD4F4, func_800FE044, NULL,
+    func_800F9800, func_800FA740, func_800FB5F8, func_800FC21C, func_800FB320,
+    func_800FB4D8, NULL, func_800FBA18, func_800FC8D0, func_800FD420, func_800F9800,
+    func_800FA6B8, func_800FB32C, func_800FC29C, NULL, func_800F98E0, func_800FA84C,
+    func_800FD2E4, NULL, func_800FB5D0, func_800FCE90, func_800FD104, func_800FB4C0, NULL,
+    func_800FBA00, func_800FC624, func_800F9818, func_800FA48C, func_800FB348,
+    func_800FBF6C, func_800FCABC, func_800FD654, func_800F9800, func_800F9800,
+    func_800F9818, func_800FA710, func_800FAC78, func_800FB4C0, func_800F9800,
+    func_800FA770, func_800FB62C, func_800FC56C, func_800FAC78, func_800FAC78,
+    func_800F98F8, func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8, func_800F9800,
+    NULL, NULL, vs_effect_246, NULL, NULL, func_800F9800, func_800FA6B8, func_800FB2DC,
+    func_800F9800, func_800F9800, func_800FA6BC, func_800F9800, func_800FB5B0,
+    func_800FCE78, func_800F9800, func_800F9800, vs_effect_plg260, NULL, func_800F9910,
+    func_800FA4A8, func_800FB0CC, func_800FDA1C, func_800F9AE8, func_800FBD60,
+    func_800FDBAC, func_800FFB04, func_800FB4F8, func_800FCB0C, func_800FE958, NULL, NULL,
+    func_800FB4B8, func_800FB5B0, func_800FCE78, func_800F9818, func_800FA368,
+    func_800FB2D8, vs_effect_plg273, func_800FB338, func_800FB5CC, func_800FC11C,
+    func_800FB320, func_800FB4D0, func_800FBA18, func_800FC568, func_800F9818,
+    func_800FA48C, func_800FB3FC, func_800FBF4C, func_800F9910, func_800FBF94,
+    func_800FC228, func_800FD198, func_800FB320, NULL, func_800FB5B4 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -777,10 +778,10 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_gravity_1(NULL, 2, 0);
     vs_effect_acidFlow_0(NULL, 2, 0);
     vs_effect_acidFlow_1(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA868(NULL, 2, 0);
-    func_800FB720(NULL, 2, 0);
-    func_800FDE48(NULL, 2, 0);
+    vs_effect_judgment_0(NULL, 2, 0);
+    vs_effect_judgment_1(NULL, 2, 0);
+    vs_effect_judgment_2(NULL, 2, 0);
+    vs_effect_judgment_3(NULL, 2, 0);
     func_800F99F0(NULL, 2, 0);
     func_800FA588(NULL, 2, 0);
     func_800FB4F8(NULL, 2, 0);

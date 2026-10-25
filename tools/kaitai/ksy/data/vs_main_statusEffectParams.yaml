@@ -1,0 +1,23 @@
+meta:
+  id: vs_main_status_effect_params
+  endian: le
+
+seq:
+  - id: vs_main_status_effect_params
+    type: params
+    repeat: expr
+    repeat-expr: 32
+    
+types:
+  params:
+    seq:
+      - id: unk0
+        type: u4
+      - id: unk4
+        type: u2
+      - id: unk6
+        type: u2
+      - id: unk8
+        type: u4
+      - id: unk_c
+        type: u4

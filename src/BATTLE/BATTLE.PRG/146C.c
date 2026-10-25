@@ -15,8 +15,9 @@
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/INITBTL.PRG/18.h"
-#include <abs.h>
 #include "insertTPage.h"
+#include "build/assets/SLUS_010.40/vs_main_unkStrings.h"
+#include <abs.h>
 #include <libetc.h>
 #include <libgpu.h>
 #include <libgte.h>
@@ -2848,13 +2849,13 @@ int func_8006E7F0(void)
         D_800F1A50[3] = 0;
         D_800F1A50[1] = 0;
 
-        if (_portInfo->mode == 7) {
+        if (vs_main_portInfo->mode == 7) {
 
-            temp_a1 = _portInfo->rStickX - ONE / 32;
-            temp_a0 = _portInfo->rStickY - ONE / 32;
+            temp_a1 = vs_main_portInfo->rStickX - ONE / 32;
+            temp_a0 = vs_main_portInfo->rStickY - ONE / 32;
 
-            if (((_portInfo->rStickX - ONE / 64) > ONE / 32u) || (temp_a0 < -ONE / 64)
-                || (temp_a0 > ONE / 64)) {
+            if (((vs_main_portInfo->rStickX - ONE / 64) > ONE / 32u)
+                || (temp_a0 < -ONE / 64) || (temp_a0 > ONE / 64)) {
 
                 if (temp_a1 > ONE / 64) {
                     temp_a1 -= ONE / 64;
@@ -2990,15 +2991,15 @@ void func_8006EC7C(void)
         vs_battle_cameraCurrentSpherical.values.yaw =
             (vs_battle_cameraCurrentSpherical.values.yaw + 32) % ONE;
     }
-    if (_portInfo->mode == 7) {
-        var_a0 = _portInfo->rStickX - 128;
-        temp_a1 = _portInfo->rStickY - 128;
+    if (vs_main_portInfo->mode == 7) {
+        var_a0 = vs_main_portInfo->rStickX - 128;
+        temp_a1 = vs_main_portInfo->rStickY - 128;
 
-        if ((_portInfo->rStickX - 64u) > 128) {
+        if ((vs_main_portInfo->rStickX - 64u) > 128) {
             if (var_a0 <= 0) {
-                var_a0 = _portInfo->rStickX - 64;
+                var_a0 = vs_main_portInfo->rStickX - 64;
             } else {
-                var_a0 = _portInfo->rStickX - 192;
+                var_a0 = vs_main_portInfo->rStickX - 192;
             }
             vs_battle_cameraCurrentSpherical.values.yaw =
                 (vs_battle_cameraCurrentSpherical.values.yaw + (var_a0 / 3)) % ONE;
@@ -6095,9 +6096,10 @@ void func_8007647C(int arg0, int arg1)
     temp_s0->maxHP = 1;
     temp_s0->currentHP = 1;
 
+    // BUG: Performs a fixed size string copy on a variable width string.
     for (i = 0; i < 24; ++i) {
         temp_s1->unk3C->name[i] =
-            D_8004FDD0[i]; // Cube // Ashley Riot? But also reads 4 bytes over...
+            ((char*)&vs_main_unkStrings[VS_vs_main_unkStrings_OFFSET_cube])[i];
     }
 
     switch (arg1 & 0xFF) {
@@ -15003,7 +15005,7 @@ static void _loadZnd(int id)
     _zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
     vs_main_cdEnqueuePriority(_zoneContext.zndCdFile, _zoneContext.zndData);
     if (_zoneContext.unk30 != 0) {
-        int temp_s0 = D_8004FCCC[id];
+        int temp_s0 = vs_main_zndMusicMap[id];
         if (vs_main_getCurrentMusicId() != temp_s0) {
             func_8004552C(vs_main_soundData.currentMusicSlot, 0, 0x78);
         }

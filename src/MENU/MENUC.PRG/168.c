@@ -4968,10 +4968,11 @@ static vs_main_inventoryBlade* _combineBlades(vs_main_inventoryBlade* first,
     result->costType = info->costType & 7;
     result->unk12 = info->unk6;
     result->range = info->range;
-    result->strength = info->strength + vs_main_materialModifiers[result->material][24];
+    result->strength =
+        info->strength + vs_main_materialModifiers[result->material].strength;
     result->intelligence =
-        info->intelligence + vs_main_materialModifiers[result->material][26];
-    result->agility = info->agility + vs_main_materialModifiers[result->material][28];
+        info->intelligence + vs_main_materialModifiers[result->material].intelligence;
+    result->agility = info->agility + vs_main_materialModifiers[result->material].agility;
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) >> 1;
     result->maxPp = (first->maxPp + second->maxPp) >> 1;
     result->currentPp = (first->currentPp + second->currentPp) >> 1;
@@ -5027,10 +5028,11 @@ static vs_main_inventoryArmor* _combineShields(vs_main_inventoryArmor* first,
     result->wepId = info->wepId;
     result->category = info->category;
     result->gemSlots = info->gemSlots;
-    result->strength = info->strength + vs_main_materialModifiers[result->material][24];
+    result->strength =
+        info->strength + vs_main_materialModifiers[result->material].strength;
     result->intelligence =
-        info->intelligence + vs_main_materialModifiers[result->material][26];
-    result->agility = info->agility + vs_main_materialModifiers[result->material][28];
+        info->intelligence + vs_main_materialModifiers[result->material].intelligence;
+    result->agility = info->agility + vs_main_materialModifiers[result->material].agility;
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     result->maxPp = ((first->maxPp + second->maxPp) >> 1);
     result->currentPp = ((first->currentPp + second->currentPp) >> 1);
@@ -5075,10 +5077,11 @@ static vs_main_inventoryArmor* _combineArmor(vs_main_inventoryArmor* first,
     result->id = result->subId + 126;
     info = &_combinationInitData[result->subId];
     result->category = info->category;
-    result->strength = info->strength + vs_main_materialModifiers[result->material][24];
+    result->strength =
+        info->strength + vs_main_materialModifiers[result->material].strength;
     result->intelligence =
-        info->intelligence + vs_main_materialModifiers[result->material][26];
-    result->agility = info->agility + vs_main_materialModifiers[result->material][28];
+        info->intelligence + vs_main_materialModifiers[result->material].intelligence;
+    result->agility = info->agility + vs_main_materialModifiers[result->material].agility;
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     if (first->material == second->material) {
         _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);

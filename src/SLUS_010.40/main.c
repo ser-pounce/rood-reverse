@@ -1,4 +1,6 @@
+#define VS_MAIN_INCLUDE
 #include "main.h"
+#undef VS_MAIN_INCLUDE
 #include "common.h"
 #include "overlay.h"
 #include "../TITLE/TITLE.PRG/22C.h"
@@ -8,13 +10,24 @@
 #include "../ENDING/ENDING.PRG/D4.h"
 #include "build/src/include/lbas.h"
 #include <libapi.h>
-#include <libds.h>
 #include <libetc.h>
 #include <libpad.h>
 #include <libsnd.h>
 #include <libspu.h>
 #include <libgpu.h>
 #include <rand.h>
+
+enum diskState_e {
+    diskIdle = 0,
+    diskSeekReady = 1,
+    diskReadReady = 2,
+    diskReadError = 4,
+    diskReadInit = 5,
+    diskReadXaInit = 6,
+    diskStreamXa = 7,
+    diskCommandFailed = 8,
+    diskStreamXaEnd = 9,
+};
 
 typedef struct {
     int unk0[2];
@@ -72,49 +85,8 @@ typedef struct {
     int bgColors[5][6];
     D_8005DC6C_t unk7F14[5];
     D_8005DC80_t unk7F28[17];
+    u_char unk8214[0x54];
 } _clutState_t;
-
-enum diskState_e {
-    diskIdle = 0,
-    diskSeekReady = 1,
-    diskReadReady = 2,
-    diskReadError = 4,
-    diskReadInit = 5,
-    diskReadXaInit = 6,
-    diskStreamXa = 7,
-    diskCommandFailed = 8,
-    diskStreamXaEnd = 9,
-};
-
-enum cdBufferModes_e {
-    cdBufferModeNone = 0,
-    cdBufferModeBuffered = 1,
-    cdBufferModeManual = 2,
-};
-
-typedef struct {
-    char state;
-    char unk1;
-    char unk2;
-    char unk3;
-    u_int unk4;
-    u_int sectorCount;
-    int cdSector;
-    int byteCount;
-    void* vram;
-    DslFILTER pcm;
-    DslLOC cdLoc;
-    int commandId;
-    int unk24;
-    int unk28;
-    enum cdBufferModes_e bufferMode;
-    u_int sectorBufIndex;
-    int unk34;
-    u_int unk38;
-    u_int unk3C;
-    u_int ringBufIndex;
-    int framesSinceLastRead;
-} vs_main_disk_t;
 
 void __main(void);
 static void _unlockPadModeSwitch(void);
@@ -521,41 +493,253 @@ signed char _animOffset2[][2] = { { 240, 241 }, { 240, 242 }, { 241, 242 }, { 24
 
 #include "build/assets/SLUS_010.40/vs_main_actions.h"
 
-extern int randArr[97];
-extern vs_main_HeapHeader* _cdReadBuffer;
-extern padAct_t _padAct[2];
-extern vs_main_HeapHeader heapA;
-extern vs_main_HeapHeader heapB;
-extern int randIndex;
-extern DslLOC cdReadLoc;
-extern int D_800501CC;
-extern int D_800501D0;
-extern int D_800501D4;
-extern int D_800501D8;
-extern vs_main_CdQueueSlot _cdQueue[32];
-extern struct {
-    short processing;
-    short queued;
-} _cdQueueCount;
-extern u_short _sfxData[];
-extern int sp2;
-extern int _resetEnabled;
-extern u_int _buttonHeldFrameCount[];
-extern vs_main_disk_t vs_main_disk;
-extern char _dsControlBuf[11];
-extern _clutState_t _clutState;
-extern int sp;
-extern int D_8005DBF4[5][6];
-extern int vs_main_saveGameClearData;
-extern int _inGame;
-extern u_short _clutBuffer[14][256];
-extern int D_8005FE70;
-extern int D_8005FE74;
-extern int D_8005FE78;
-extern int D_8005FE7C;
-extern int D_8005FE80;
-extern int D_8005FE84;
-extern int vs_main_buttonsReleased;
+material_modifiers_t vs_main_materialModifiers[] = {
+    { 0 },
+    {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        { 4, 6, -8, -8, 6, 4, 4 },
+        { 4, -6, 8, 8, -6, -4, -4 },
+        3500,
+        1,
+        6,
+        0,
+    },
+    {
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        { 2, -5, -5, 1, 1, 5, 5 },
+        { 2, 5, 5, -1, -1, -5, -5 },
+        2000,
+        0,
+        5,
+        0,
+    },
+    {
+        -1,
+        -1,
+        -2,
+        -1,
+        -1,
+        -5,
+        { 8, 5, 5, -3, -3, 2, 2 },
+        { 8, -5, -5, 3, 3, -2, -2 },
+        5000,
+        2,
+        1,
+        -2,
+    },
+    {
+        1,
+        1,
+        -2,
+        1,
+        1,
+        0,
+        { 10, 0, 4, 4, 0, 1, 1 },
+        { 10, 0, -4, -4, 0, -1, -1 },
+        6500,
+        4,
+        1,
+        -2,
+    },
+    {
+        5,
+        5,
+        1,
+        0,
+        5,
+        5,
+        { 14, -3, -3, 5, 5, 5, 5 },
+        { 14, 3, 3, -5, -5, -5, -5 },
+        7000,
+        6,
+        2,
+        -1,
+    },
+    {
+        0,
+        0,
+        20,
+        15,
+        0,
+        5,
+        { 5, 5, 5, 5, 5, 20, -5 },
+        { 5, -5, -5, -5, -5, -5, 20 },
+        4000,
+        3,
+        1,
+        -1,
+    },
+    {
+        10,
+        10,
+        -2,
+        0,
+        10,
+        10,
+        { 20, 5, 5, 5, 5, -10, 10 },
+        { 20, -5, -5, -5, -5, 20, -20 },
+        8000,
+        8,
+        3,
+        -1,
+    },
+};
+
+vs_main_statusEffectParams_t vs_main_statusEffectParams[] = { { 0x1, 0, 0, 0x1000, 0 },
+    { 0x2, 0, 0, 0, 0 }, { 0x4, 0, 0, 0, 0 }, { 0x8, 0, 0, 0, 0 },
+    { 0x10, 0, 0, 0x800, 0 }, { 0x20, 15, 0, 0x7E0, 0x10000 },
+    { 0x40, 15, 0, 0x7E0, 0x10000 }, { 0x80, 15, 0, 0x7E0, 0x10000 },
+    { 0x100, 15, 0, 0x7E0, 0x10000 }, { 0x200, 15, 0, 0x7E0, 0x10000 },
+    { 0x400, 15, 0, 0x7E0, 0x10000 }, { 0x800, 20, 0, 0x800, 0x8010 },
+    { 0x1000, 0, 0, 0x1000, 0 }, { 0x2000, 15, 0, 0x2000, 0 },
+    { 0x4000, 0, 2, 0x20000, 0 }, { 0x8000, 15, 0, 0x8800, 16 },
+    { 0x10000, 0, 0, 0x7E0, 0x10000 }, { 0x20000, 0, 5, 0, 0x4000 },
+    { 0x40000, 0, 0, 0, 0x40000 }, { 0x80000, 15, 0, 0x1FF80000, 0 },
+    { 0x100000, 20, 0, 0x1FF80000, 0 }, { 0x200000, 25, 0, 0x1FF80000, 0 },
+    { 0x400000, 25, 0, 0x1FF80000, 0 }, { 0x800000, 25, 0, 0x1FF80000, 0 },
+    { 0x1000000, 25, 0, 0x1FF80000, 0 }, { 0x2000000, 25, 0, 0x1FF80000, 0 },
+    { 0x4000000, 25, 0, 0x1FF80000, 0 }, { 0x8000000, 25, 0, 0x1FF80000, 0 },
+    { 0x10000000, 25, 0, 0x1FF80000, 0 }, { 0x20000000, 0, 0, 0, 0 },
+    { 0x40000000, 0, 0, 0, 0 }, { 0x80000000, 0, 0, 0, 0 } };
+
+u_char vs_main_locationZoneMapIds[] = { 100, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0,
+    8, 0, 9, 0, 9, 1, 9, 2, 9, 3, 9, 4, 9, 5, 9, 6, 9, 7, 9, 8, 9, 9, 9, 10, 9, 11, 9, 12,
+    9, 13, 9, 14, 9, 15, 11, 0, 12, 0, 9, 16, 13, 0, 13, 1, 13, 2, 13, 3, 13, 4, 13, 5,
+    13, 6, 13, 7, 13, 8, 13, 9, 13, 10, 13, 11, 13, 12, 13, 13, 13, 14, 13, 15, 13, 16,
+    13, 17, 14, 0, 15, 0, 15, 1, 15, 2, 15, 3, 15, 4, 15, 5, 15, 6, 15, 7, 15, 8, 15, 9,
+    15, 10, 15, 11, 15, 12, 16, 0, 17, 0, 18, 0, 22, 0, 22, 1, 22, 2, 22, 3, 22, 4, 22, 5,
+    22, 6, 22, 7, 22, 8, 22, 9, 23, 0, 23, 1, 23, 2, 23, 3, 23, 4, 23, 5, 24, 0, 24, 1,
+    24, 2, 24, 3, 24, 4, 24, 5, 24, 6, 24, 7, 24, 8, 24, 9, 24, 10, 24, 11, 24, 12, 24,
+    13, 24, 14, 24, 15, 25, 0, 25, 1, 25, 2, 25, 3, 25, 4, 26, 0, 27, 0, 27, 1, 57, 0, 58,
+    0, 28, 0, 28, 1, 28, 2, 28, 3, 28, 4, 28, 5, 28, 6, 28, 7, 28, 8, 28, 9, 28, 10, 28,
+    11, 28, 12, 28, 13, 28, 14, 28, 15, 28, 16, 28, 17, 28, 18, 29, 0, 29, 1, 29, 2, 29,
+    3, 29, 4, 29, 5, 29, 6, 60, 0, 61, 0, 62, 0, 63, 0, 64, 0, 65, 0, 66, 0, 67, 0, 30, 0,
+    30, 1, 30, 2, 30, 3, 30, 4, 30, 5, 31, 0, 31, 1, 32, 0, 32, 1, 32, 2, 32, 3, 32, 4,
+    32, 5, 32, 6, 32, 7, 32, 8, 32, 9, 32, 10, 32, 11, 32, 12, 32, 13, 32, 14, 32, 15, 32,
+    16, 32, 17, 32, 18, 32, 19, 32, 20, 32, 21, 32, 22, 32, 23, 39, 0, 33, 0, 34, 0, 35,
+    0, 36, 0, 37, 0, 38, 0, 68, 0, 40, 0, 40, 1, 40, 2, 40, 3, 40, 4, 40, 5, 40, 6, 40, 7,
+    40, 8, 40, 9, 40, 10, 40, 11, 40, 12, 40, 13, 40, 14, 40, 15, 40, 16, 40, 17, 40, 18,
+    40, 19, 40, 20, 40, 21, 40, 22, 40, 23, 40, 24, 40, 25, 42, 0, 43, 0, 44, 0, 45, 0,
+    46, 0, 47, 0, 10, 0, 19, 0, 20, 0, 21, 0, 1, 1, 2, 1, 3, 1, 4, 1, 5, 1, 48, 0, 48, 1,
+    48, 2, 48, 3, 48, 4, 48, 5, 48, 6, 48, 7, 48, 8, 48, 9, 48, 10, 48, 11, 48, 12, 48,
+    13, 48, 14, 48, 15, 48, 16, 48, 17, 48, 18, 48, 19, 48, 20, 48, 21, 48, 22, 48, 23,
+    48, 24, 48, 25, 48, 26, 49, 0, 49, 1, 49, 2, 49, 3, 49, 4, 49, 5, 49, 6, 49, 7, 49, 8,
+    49, 9, 49, 10, 49, 11, 49, 12, 50, 0, 50, 1, 50, 2, 50, 3, 50, 4, 50, 5, 50, 6, 50, 7,
+    50, 8, 50, 9, 50, 10, 50, 11, 50, 12, 50, 13, 50, 14, 50, 15, 50, 16, 50, 17, 50, 18,
+    50, 19, 50, 20, 50, 21, 50, 22, 50, 23, 51, 0, 51, 1, 51, 2, 51, 3, 51, 4, 51, 5, 51,
+    6, 51, 7, 51, 8, 51, 9, 51, 10, 51, 11, 51, 12, 51, 13, 51, 14, 51, 15, 51, 16, 51,
+    17, 51, 18, 51, 19, 51, 20, 51, 21, 51, 22, 51, 23, 51, 24, 51, 25, 51, 26, 53, 0, 53,
+    1, 53, 2, 53, 3, 53, 4, 53, 5, 53, 6, 53, 7, 53, 8, 53, 9, 53, 10, 53, 11, 53, 12, 53,
+    13, 53, 14, 53, 15, 53, 16, 53, 17, 53, 18, 53, 19, 53, 20, 53, 21, 53, 22, 53, 23,
+    53, 24, 53, 25, 53, 26, 53, 27, 53, 28, 53, 29, 53, 30, 53, 31, 54, 0, 54, 1, 54, 2,
+    54, 3, 54, 4, 41, 0, 41, 1, 41, 2, 52, 0, 52, 1, 52, 2, 52, 3, 52, 4, 52, 5, 52, 6,
+    52, 7, 55, 0, 55, 1, 55, 2, 55, 3, 55, 4, 55, 5, 55, 6, 55, 7, 55, 8, 55, 9, 55, 10,
+    55, 11, 55, 12, 55, 13, 55, 14, 55, 15, 55, 16, 55, 17, 55, 18, 55, 19, 55, 20, 55,
+    21, 55, 22, 56, 0, 56, 1, 56, 2, 56, 3, 56, 4, 56, 5, 56, 6, 56, 7, 56, 8, 56, 9, 56,
+    10, 56, 11, 56, 12, 56, 13, 56, 14, 56, 15, 56, 16, 56, 17, 56, 18, 56, 19, 56, 20,
+    56, 21, 56, 22, 56, 23, 56, 24, 56, 25, 12, 1, 9, 17, 51, 27, 51, 28, 9, 18, 59, 0,
+    69, 0, 70, 0, 0, 160, 0, 161, 0, 162, 0, 163, 0, 164, 0, 165, 0, 166, 0, 167, 0, 168,
+    0, 169, 0, 170, 96, 0, 97, 0, 98, 0, 99, 0, 0, 175, 0, 176, 0, 177, 0, 178, 0, 179, 0,
+    180, 0, 181, 0, 182, 0, 183, 0, 184, 0, 185, 0, 186, 0, 187, 0, 188, 0, 189, 0, 190,
+    0, 191, 0, 192, 0, 193, 0, 194, 0, 195, 0, 196, 0, 197, 0, 198, 0, 199, 0, 200, 0,
+    201, 0, 202, 0, 203, 0, 204, 0, 205, 0, 206, 0, 207, 0, 208, 0, 209, 0, 210, 0, 211,
+    0, 212, 0, 213, 0, 214, 0, 215, 0, 216, 0, 217, 0, 218, 0, 219, 0, 220, 0, 221, 0,
+    222, 0, 223, 0, 224, 0, 225, 0, 226, 0, 227, 0, 228, 0, 229, 0, 230, 0, 231, 0, 232,
+    0, 233, 0, 234, 0, 235, 0, 236, 0, 237, 0, 238, 0, 239, 0, 240, 0, 241, 0, 242, 0,
+    243, 0, 244, 0, 245, 0, 246, 0, 247, 0, 248, 0, 249, 250, 0, 0, 251, 0, 252, 0, 253,
+    0, 254, 0, 255 };
+
+#define ZNDLBA(file)                                    \
+    {                                                     \
+        VS_ZONE##file##_ZND_LBA, VS_ZONE##file##_ZND_SIZE \
+    }
+
+vs_main_CdFile vs_main_zndFiles[] = { ZNDLBA(000), ZNDLBA(001), ZNDLBA(002), ZNDLBA(003),
+    ZNDLBA(004), ZNDLBA(005), ZNDLBA(006), ZNDLBA(007), ZNDLBA(008), ZNDLBA(009),
+    ZNDLBA(010), ZNDLBA(011), ZNDLBA(012), ZNDLBA(013), ZNDLBA(014), ZNDLBA(015),
+    ZNDLBA(016), ZNDLBA(017), ZNDLBA(018), ZNDLBA(019), ZNDLBA(020), ZNDLBA(021),
+    ZNDLBA(022), ZNDLBA(023), ZNDLBA(024), ZNDLBA(025), ZNDLBA(026), ZNDLBA(027),
+    ZNDLBA(028), ZNDLBA(029), ZNDLBA(030), ZNDLBA(031), ZNDLBA(032), ZNDLBA(033),
+    ZNDLBA(034), ZNDLBA(035), ZNDLBA(036), ZNDLBA(037), ZNDLBA(038), ZNDLBA(039),
+    ZNDLBA(040), ZNDLBA(041), ZNDLBA(042), ZNDLBA(043), ZNDLBA(044), ZNDLBA(045),
+    ZNDLBA(046), ZNDLBA(047), ZNDLBA(048), ZNDLBA(049), ZNDLBA(050), ZNDLBA(051),
+    ZNDLBA(052), ZNDLBA(053), ZNDLBA(054), ZNDLBA(055), ZNDLBA(056), ZNDLBA(057),
+    ZNDLBA(058), ZNDLBA(059), ZNDLBA(060), ZNDLBA(061), ZNDLBA(062), ZNDLBA(063),
+    ZNDLBA(064), ZNDLBA(065), ZNDLBA(066), ZNDLBA(067), ZNDLBA(068), ZNDLBA(069),
+    ZNDLBA(070), ZNDLBA(071), ZNDLBA(072), ZNDLBA(073), ZNDLBA(074), ZNDLBA(075),
+    ZNDLBA(076), ZNDLBA(077), ZNDLBA(078), ZNDLBA(079), ZNDLBA(080), ZNDLBA(081),
+    ZNDLBA(082), ZNDLBA(083), ZNDLBA(084), ZNDLBA(085), ZNDLBA(086), ZNDLBA(087),
+    ZNDLBA(088), ZNDLBA(089), ZNDLBA(090), ZNDLBA(091), ZNDLBA(092), ZNDLBA(093),
+    ZNDLBA(094), ZNDLBA(095), ZNDLBA(096), ZNDLBA(097), ZNDLBA(098), ZNDLBA(099),
+    ZNDLBA(100), ZNDLBA(101), ZNDLBA(102), ZNDLBA(103), ZNDLBA(104), ZNDLBA(105),
+    ZNDLBA(106), ZNDLBA(107), ZNDLBA(108), ZNDLBA(109), ZNDLBA(110), ZNDLBA(111),
+    ZNDLBA(112), ZNDLBA(113), ZNDLBA(114), ZNDLBA(115), ZNDLBA(116), ZNDLBA(117),
+    ZNDLBA(118), ZNDLBA(119), ZNDLBA(120), ZNDLBA(121), ZNDLBA(122), ZNDLBA(123),
+    ZNDLBA(124), ZNDLBA(125), ZNDLBA(126), ZNDLBA(127), ZNDLBA(128), ZNDLBA(129),
+    ZNDLBA(130), ZNDLBA(131), ZNDLBA(132), ZNDLBA(133), ZNDLBA(134), ZNDLBA(135),
+    ZNDLBA(136), ZNDLBA(137), ZNDLBA(138), ZNDLBA(139), ZNDLBA(140), ZNDLBA(141),
+    ZNDLBA(142), ZNDLBA(143), ZNDLBA(144), ZNDLBA(145), ZNDLBA(146), ZNDLBA(147),
+    ZNDLBA(148), ZNDLBA(149), ZNDLBA(150), ZNDLBA(151), ZNDLBA(152), ZNDLBA(153),
+    ZNDLBA(154), ZNDLBA(155), ZNDLBA(156), ZNDLBA(157), ZNDLBA(158), ZNDLBA(159),
+    ZNDLBA(160), ZNDLBA(161), ZNDLBA(162), ZNDLBA(163), ZNDLBA(164), ZNDLBA(165),
+    ZNDLBA(166), ZNDLBA(167), ZNDLBA(168), ZNDLBA(169), ZNDLBA(170), ZNDLBA(171),
+    ZNDLBA(172), ZNDLBA(173), ZNDLBA(174), ZNDLBA(175), ZNDLBA(176), ZNDLBA(177),
+    ZNDLBA(178), ZNDLBA(179), ZNDLBA(180), ZNDLBA(181), ZNDLBA(182), ZNDLBA(183),
+    ZNDLBA(184), ZNDLBA(185), ZNDLBA(186), ZNDLBA(187), ZNDLBA(188), ZNDLBA(189),
+    ZNDLBA(190), ZNDLBA(191), ZNDLBA(192), ZNDLBA(193), ZNDLBA(194), ZNDLBA(195),
+    ZNDLBA(196), ZNDLBA(197), ZNDLBA(198), ZNDLBA(199), ZNDLBA(200), ZNDLBA(201),
+    ZNDLBA(202), ZNDLBA(203), ZNDLBA(204), ZNDLBA(205), ZNDLBA(206), ZNDLBA(207),
+    ZNDLBA(208), ZNDLBA(209), ZNDLBA(210), ZNDLBA(211), ZNDLBA(212), ZNDLBA(213),
+    ZNDLBA(214), ZNDLBA(215), ZNDLBA(216), ZNDLBA(217), ZNDLBA(218), ZNDLBA(219),
+    ZNDLBA(220), ZNDLBA(221), ZNDLBA(222), ZNDLBA(223), ZNDLBA(224), ZNDLBA(225),
+    ZNDLBA(226), ZNDLBA(227), ZNDLBA(228), ZNDLBA(229), ZNDLBA(230), ZNDLBA(231),
+    ZNDLBA(232), ZNDLBA(233), ZNDLBA(234), ZNDLBA(235), ZNDLBA(236), ZNDLBA(237),
+    ZNDLBA(238), ZNDLBA(239), ZNDLBA(240), ZNDLBA(241), ZNDLBA(242), ZNDLBA(243),
+    ZNDLBA(244), ZNDLBA(245), ZNDLBA(246), ZNDLBA(247), ZNDLBA(248), ZNDLBA(249),
+    ZNDLBA(250), ZNDLBA(251), ZNDLBA(252), ZNDLBA(253), ZNDLBA(254), ZNDLBA(255) };
+
+u_char vs_main_zndMusicMap[256] = { 0, 16, 0, 0, 0, 0, 0, 0, 0, 54, 0, 57, 57, 119, 65,
+    120, 65, 0, 0, 0, 0, 0, 41, 41, 41, 41, 0, 0, 51, 66, 22, 22, 88, 0, 66, 66, 66, 66,
+    66, 88, 44, 79, 40, 40, 40, 40, 40, 40, 121, 118, 43, 126, 129, 125, 130, 29, 30 };
+
+static u_short vs_main_unkStrings[] = {
+#include "build/assets/SLUS_010.40/vs_main_unkStrings.vsString"
+};
+
+u_short vs_main_artsPointsRequirements[][4] = {
+    { 10, 65, 175, 340 },
+    { 20, 90, 235, 425 },
+    { 25, 110, 260, 485 },
+    { 18, 80, 210, 420 },
+    { 20, 100, 245, 465 },
+    { 15, 90, 215, 410 },
+    { 20, 95, 205, 385 },
+    { 15, 95, 220, 405 },
+    { 20, 95, 230, 430 },
+    { 30, 105, 250, 460 },
+    { 56796, 57310, 47544, 48058 },
+    { 48572, 49086, 49600, 50114 },
+    { 50628, 51142, 51656, 52170 },
+    { 52684, 53198, 53712, 54226 },
+    { 54740, 55254, 55768, 56282 },
+};
+
+u_short vs_main_battleAbilitiesPointsRequirements[150] = { 20, 54, 72, 95, 125, 165, 216,
+    283, 369, 482, 628, 818, 1066, 1387, 1805, 2349, 3055, 3973, 5167, 6719, 8737, 11359,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 256, 0, 0, 0, 256, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 256 };
 
 static void _loadBattlePrg(void)
 {
@@ -624,6 +808,58 @@ static void _loadEndingPrg(void)
     vs_main_wait();
 }
 
+static int _randArr[97];
+static int _randIndex;
+static vs_main_HeapHeader* _cdReadBuffer;
+static int _0 __attribute__((unused));
+static padAct_t _padAct[2];
+static int _1[2] __attribute__((unused));
+portInfo_t vs_main_portInfo[2];
+static u_char _2[2] __attribute__((unused));
+static vs_main_HeapHeader _heapA;
+static vs_main_HeapHeader _heapB;
+static DslLOC _cdReadLoc;
+static int D_800501CC;
+static int D_800501D0;
+static int D_800501D4;
+static int D_800501D8;
+static int _3 __attribute__((unused));
+static vs_main_CdQueueSlot _cdQueue[32];
+static struct {
+    short processing;
+    short queued;
+} _cdQueueCount;
+static int _4 __attribute__((unused));
+D_80050468_t D_80050468;
+int vs_main_startState;
+static int _sp2;
+static u_short _sfxData[0x2C00];
+int vs_main_buttonsReleased;
+static int _5 __attribute__((unused));
+void* D_80055C80[2];
+static int _resetEnabled;
+static int _6 __attribute__((unused));
+static u_int _buttonHeldFrameCount[32];
+vs_main_disk_t vs_main_disk;
+static _clutState_t _clutState;
+vs_main_stickPos vs_main_stickPosBuf;
+static int _sp;
+short D_8005DFD4;
+short vs_main_screenWidth;
+short D_8005DFD8;
+u_short vs_main_screenHeight;
+int vs_main_buttonRepeat;
+static int _7[4] __attribute__((unused));
+char vs_main_padBuffer[2][34];
+static int _8 __attribute__((unused));
+soundData_t vs_main_soundData;
+void* D_8005E0C0[2];
+int vs_main_nearClip;
+static int _9 __attribute__((unused));
+DRAWENV vs_main_drawEnv[2];
+DISPENV vs_main_dispEnv[2];
+static int _10[4] __attribute__((unused));
+
 static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
     __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
     __attribute__((unused)) int arg5)
@@ -635,6 +871,22 @@ static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
 
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
+
+int vs_main_buttonsPreviousState;
+int D_8005E1C4;
+static int _11[2] __attribute__((unused));
+vs_main_buttonsPressed_t vs_main_buttonsPressed;
+int D_8005E1D4;
+u_int vs_main_frameDuration;
+static int _12[13] __attribute__((unused));
+int vs_main_frameBuf;
+int vs_main_saveGameClearData;
+static int _13[8] __attribute__((unused));
+int vs_main_buttonsState;
+static int _14 __attribute__((unused));
+static int _inGame;
+int D_8005E244;
+int vs_main_projectionDistance;
 
 static void _displayLoadingScreen(void)
 {
@@ -674,6 +926,9 @@ static void _bufferLoadingScreen(void)
     DrawSync(0);
 }
 
+extern int vs_main_saveGameClearData;
+extern int vs_main_buttonsReleased;
+
 void vs_main_resetGame(void)
 {
     DrawSync(0);
@@ -690,7 +945,7 @@ void vs_main_resetGame(void)
     SpuQuit();
     ResetGraph(3);
     VSync(10);
-    vs_overlay_jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&_sp2);
 }
 
 void vs_main_jumpToBattle(void)
@@ -710,7 +965,7 @@ void vs_main_jumpToBattle(void)
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_main_startState = 1;
-    vs_overlay_jumpToBattle(&sp);
+    vs_overlay_jumpToBattle(&_sp);
 }
 
 void vs_main_showEndingAndReturnToTitle(void)
@@ -740,8 +995,30 @@ void vs_main_showEndingAndReturnToTitle(void)
     SpuQuit();
     ResetGraph(3);
     vs_main_saveGameClearData = 1;
-    vs_overlay_jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&_sp2);
 }
+
+int vs_gametime_tickspeed;
+static u_short _clutBuffer[14][256];
+static int _15[8] __attribute__((unused));
+static int D_8005FE70;
+static int D_8005FE74;
+static int D_8005FE78;
+static int D_8005FE7C;
+static int D_8005FE80;
+static int D_8005FE84;
+static int _16[6] __attribute__((unused));
+vs_main_scoredata_t vs_main_scoredata;
+static int _17 __attribute__((unused));
+char vs_main_actionsLearned[32];
+vs_main_mapStatus_t vs_main_mapStatus;
+vs_main_settings_t vs_main_settings;
+vs_main_artsStatus_t vs_main_artsStatus;
+int D_80060064;
+D_80060068_t D_80060068;
+vs_main_inventory_t vs_main_inventory;
+_mpdRoomDoorSection_t D_80061068;
+vs_Gametime_t vs_main_gametime;
 
 int vs_main_gametimeUpdate(int vsync)
 {
@@ -800,10 +1077,10 @@ static void _initRand(void)
 
     srand(1);
 
-    for (i = 0; i < (int)(sizeof randArr / sizeof randArr[0]); ++i) {
-        randArr[i] = rand();
+    for (i = 0; i < (int)(sizeof _randArr / sizeof _randArr[0]); ++i) {
+        _randArr[i] = rand();
     }
-    randIndex = (sizeof randArr / sizeof randArr[0]) - 1;
+    _randIndex = (sizeof _randArr / sizeof _randArr[0]) - 1;
 }
 
 int vs_main_getRand(int max)
@@ -812,16 +1089,16 @@ int vs_main_getRand(int max)
     int var_a0;
     int var_v0;
 
-    var_v0 = randArr[randIndex] * (sizeof randArr / sizeof randArr[0]);
+    var_v0 = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
 
     if (var_v0 < 0) {
         var_v0 += 0x7FFF;
     }
 
-    randIndex = var_v0 >> 0xF;
+    _randIndex = var_v0 >> 0xF;
 
-    temp_s0 = 0x7FFF - randArr[randIndex];
-    randArr[randIndex] = rand();
+    temp_s0 = 0x7FFF - _randArr[_randIndex];
+    _randArr[_randIndex] = rand();
 
     var_a0 = temp_s0 * max;
 
@@ -901,14 +1178,14 @@ static void _sysReinit(void)
 
 int vs_main_execTitle(void)
 {
-    vs_overlay_getSp(&sp);
+    vs_overlay_getSp(&_sp);
     _sysReinit();
     _loadTitlePrg();
     vs_main_startState = vs_title_exec();
     vs_main_saveGameClearData = 0;
     _displayLoadingScreen();
     _loadBattlePrg();
-    vs_overlay_getSp(&sp);
+    vs_overlay_getSp(&_sp);
     _inGame = 1;
     vs_battle_exec();
     SetDispMask(0);
@@ -920,7 +1197,7 @@ void vs_main_exec(void)
 {
     __main();
     _sysInit();
-    vs_overlay_getSp(&sp2);
+    vs_overlay_getSp(&_sp2);
     vs_main_execTitle();
 }
 
@@ -1000,8 +1277,8 @@ void func_80042CB0(void)
     }
 
     temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->unk0.unk80 = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->unk0.unk84 = vs_battle_cameraCurrentSpherical.initialDistance;
+    temp_t5->unk0.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);
@@ -1011,8 +1288,8 @@ void func_80042CB0(void)
 
 void vs_main_padDisconnectAll(void)
 {
-    _portInfo[0].connected = 0;
-    _portInfo[1].connected = 0;
+    vs_main_portInfo[0].connected = 0;
+    vs_main_portInfo[1].connected = 0;
 }
 
 static void _unlockPadModeSwitch(void)
@@ -1025,7 +1302,7 @@ static void _unlockPadModeSwitch(void)
 
 static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)))
 {
-    portInfo_t* port = &_portInfo[portID >> 4];
+    portInfo_t* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
@@ -1048,14 +1325,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     int btnStates;
 
     if (padBuf[0] != 0) {
-        port = &_portInfo[portID >> 4];
+        port = &vs_main_portInfo[portID >> 4];
         port->lStickY = 128;
         port->lStickX = 128;
         port->rStickY = 128;
         port->rStickX = 128;
         return 0;
     }
-    port = &_portInfo[portID >> 4];
+    port = &vs_main_portInfo[portID >> 4];
     mode = PadInfoMode(portID, InfoModeCurID, 0);
     port->mode = mode;
     switch (mode) {
@@ -1090,7 +1367,7 @@ void vs_main_padConnect(int portID, char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
-    portInfo_t* port = &_portInfo[portID >> 4];
+    portInfo_t* port = &vs_main_portInfo[portID >> 4];
     int state = PadGetState(portID);
 
     if (state == PadStateFindPad) {
@@ -1109,15 +1386,18 @@ void vs_main_padConnect(int portID, char padBuf[34])
 static void _padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
-        _portInfo[port].actData[pos] = val;
-    } else if (_portInfo[port].exId) {
-        _portInfo[port].actData[0] = val;
+        vs_main_portInfo[port].actData[pos] = val;
+    } else if (vs_main_portInfo[port].exId) {
+        vs_main_portInfo[port].actData[0] = val;
     } else {
-        _portInfo[port].actData[0] = 0x40;
+        vs_main_portInfo[port].actData[0] = 0x40;
     }
 }
 
-static char _padGetActData(int port, int pos) { return _portInfo[port].actData[pos]; }
+static char _padGetActData(int port, int pos)
+{
+    return vs_main_portInfo[port].actData[pos];
+}
 
 int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
 {
@@ -1351,7 +1631,7 @@ int vs_main_processPadState(void)
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(16, vs_main_padBuffer[1]);
 
-    switch (_portInfo[0].mode) {
+    switch (vs_main_portInfo[0].mode) {
     case 4:
         vs_main_stickPosBuf.lStickY = 128;
         vs_main_stickPosBuf.lStickX = 128;
@@ -1359,36 +1639,36 @@ int vs_main_processPadState(void)
         vs_main_stickPosBuf.rStickX = 128;
         break;
     case 7:
-        vs_main_stickPosBuf.rStickX = _portInfo[0].rStickX;
-        vs_main_stickPosBuf.rStickY = _portInfo[0].rStickY;
-        vs_main_stickPosBuf.lStickX = _portInfo[0].lStickX;
-        vs_main_stickPosBuf.lStickY = _portInfo[0].lStickY;
+        vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
+        vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
+        vs_main_stickPosBuf.lStickX = vs_main_portInfo[0].lStickX;
+        vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
 
-        if (_portInfo[0].rStickX < 16) {
+        if (vs_main_portInfo[0].rStickX < 16) {
             vs_main_buttonsState |= PADLleft;
         }
-        if (_portInfo[0].rStickX >= 241) {
+        if (vs_main_portInfo[0].rStickX >= 241) {
             vs_main_buttonsState |= PADLright;
         }
 
-        if (_portInfo[0].rStickY < 16) {
+        if (vs_main_portInfo[0].rStickY < 16) {
             vs_main_buttonsState |= PADLup;
         }
-        if (_portInfo[0].rStickY >= 241) {
+        if (vs_main_portInfo[0].rStickY >= 241) {
             vs_main_buttonsState |= PADLdown;
         }
 
-        if (_portInfo[0].lStickX < 32) {
+        if (vs_main_portInfo[0].lStickX < 32) {
             vs_main_buttonsState |= PADj;
         }
-        if (_portInfo[0].lStickX >= 225) {
+        if (vs_main_portInfo[0].lStickX >= 225) {
             vs_main_buttonsState |= PADj;
         }
 
-        if (_portInfo[0].lStickY < 32) {
+        if (vs_main_portInfo[0].lStickY < 32) {
             vs_main_buttonsState |= PADj;
         }
-        if (_portInfo[0].lStickY >= 225) {
+        if (vs_main_portInfo[0].lStickY >= 225) {
             vs_main_buttonsState |= PADj;
         }
         break;
@@ -1437,7 +1717,7 @@ int vs_main_processPadState(void)
 
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* var_a1 = heapA.prev;
+    vs_main_HeapHeader* var_a1 = _heapA.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
@@ -1467,7 +1747,7 @@ void vs_main_freeHeapR(void* block)
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* var_a1 = heapA.next;
+    vs_main_HeapHeader* var_a1 = _heapA.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
@@ -1502,8 +1782,8 @@ void* vs_main_allocHeapR(u_int size)
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
-    var_a2 = &heapA;
-    var_a1 = heapA.prev;
+    var_a2 = &_heapA;
+    var_a1 = _heapA.prev;
 
     while (1) {
         if (var_a1->blockSz >= blockSz) {
@@ -1518,7 +1798,7 @@ void* vs_main_allocHeapR(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_a2 = var_a1;
-        if (var_a1 == &heapA) {
+        if (var_a1 == &_heapA) {
             return 0;
         }
         var_a1 = var_a1->prev;
@@ -1531,8 +1811,8 @@ void* vs_main_allocHeap(u_int size)
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_v1;
 
-    var_v1 = &heapA;
-    var_a1 = heapA.next;
+    var_v1 = &_heapA;
+    var_a1 = _heapA.next;
     blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
@@ -1552,7 +1832,7 @@ void* vs_main_allocHeap(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_v1 = var_a1;
-        if (var_a1 == &heapA) {
+        if (var_a1 == &_heapA) {
             return 0;
         }
         var_a1 = var_a1->next;
@@ -1561,15 +1841,15 @@ void* vs_main_allocHeap(u_int size)
 
 void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
 {
-    heapA.prev = node;
-    heapA.next = node;
-    heapA.blockSz = 0;
-    node->prev = &heapA;
-    node->next = &heapA;
+    _heapA.prev = node;
+    _heapA.next = node;
+    _heapA.blockSz = 0;
+    node->prev = &_heapA;
+    node->next = &_heapA;
     node->blockSz = value / 16 - 1;
-    heapB.prev = &heapB;
-    heapB.next = &heapB;
-    heapB.blockSz = 0;
+    _heapB.prev = &_heapB;
+    _heapB.next = &_heapB;
+    _heapB.blockSz = 0;
 }
 
 static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused)),
@@ -1729,7 +2009,7 @@ static void func_800443CC(void)
         if (DsSystemStatus() == DslReady) {
             vs_main_disk.unk1 = 0;
             vs_main_disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+            while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
                 ;
             VSync(3);
             vol.val2 = 0x80;
@@ -1785,7 +2065,7 @@ static void func_800443CC(void)
             if (seconds < 420) {
                 DsIntToPos(
                     vs_main_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
-                    &cdReadLoc);
+                    &_cdReadLoc);
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
                 vol.val3 = 0;
@@ -1797,7 +2077,7 @@ static void func_800443CC(void)
                 vs_main_disk.pcm.chan = 0;
                 DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
                 vs_main_disk.commandId =
-                    DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
+                    DsPacket(DslModeRT | DslModeSF, &_cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
                 vs_main_disk.state = diskStreamXa;
             } else {
@@ -1845,7 +2125,7 @@ static void func_800443CC(void)
         DsReadyCallback(NULL);
         vs_main_disk.unk1 = 128;
         vs_main_disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+        while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
             ;
         VSync(3);
         break;
@@ -1947,7 +2227,7 @@ static void _diskReset(void)
     vs_main_disk.state = diskIdle;
     vs_main_disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+    while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
         ;
     VSync(3);
 }
@@ -4264,3 +4544,8 @@ void vs_main_bzero(void* dest, int sz)
 }
 
 static void nop12(void) { }
+
+D_80061078_t D_80061078[4];
+vs_main_flags_t vs_main_stateFlags;
+vs_main_inventoryIndices_t vs_main_inventoryIndices;
+static int _18[0x15E] __attribute__((unused));

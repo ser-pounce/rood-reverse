@@ -1,7 +1,6 @@
 #include "0.h"
 
 #define VS_MIRROR_SURFACE_FUNCTION vs_effect_plg273
-#define VS_SURFACE_VERTICES D_800FA474
 #define VS_MIRROR_SURFACE_REPEAT
 
 #include "src/EFFECT/sphericalSurfaceVertices.h"

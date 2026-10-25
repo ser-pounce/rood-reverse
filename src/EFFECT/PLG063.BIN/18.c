@@ -1,7 +1,6 @@
 #include "18.h"
 
 #define VS_SURFACE_FUNCTION vs_effect_flameSphereLv3_0
-#define VS_SURFACE_VERTICES D_800FCA90
 
 #include "src/EFFECT/sphericalSurfaceVertices.h"
 

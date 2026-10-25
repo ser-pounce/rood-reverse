@@ -1,6 +1,6 @@
 # Rood Reverse
 
-A decompilation project for Vagrant Story for PlayStation 1, with a goal of enabling interoperability with modern hardware and fixing bugs in the original game.
+A reverse engineering of Vagrant Story for PlayStation 1, with a goal of enabling interoperability with modern hardware and fixing bugs in the original game.
 
 This project does not contain any of the original files from the game disk, you must own a copy of the game.
 
@@ -128,23 +128,16 @@ Thanks also to the following amazing projects (and their dependencies):
 ![TITLE.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=title.TITLE.PRG&color=%2332a934)
 ![ENDING.PRG progress](https://decomp.dev/ser-pounce/rood-reverse.svg?mode=shield&category=ending.ENDING.PRG&color=%2332a934)
 
-## Editable content
-The entirety of the game's menu code and data is decompiled, including all files in `MENU` and `SMALL`, with the exceptions of `MENU/MCDATA.BIN`, `MENU/OPMCIMG1.BIN` and `MENU/OPMCIMG2.BIN`.
-
-Much of the menu code has been refactored and is readable, and the menu executables are completely relocatable. It should be possible to rewrite the menu code arbitrarily, the method and data addresses in other modules will be relinked appropriately.
-
-Due to the presence of a large number of empty sectors at the start of each directory on the disk, it should also be possible to rebuild the disk without affecting sector-based data loading in `BATTLE.PRG`, as long as the number of dummy sectors is adjusted accordingly.
-
 ## (Naive) Quickstart
-0. n.b.: You may want to consider limiting the jobs spawned by make to something sensible like `-j8`.
+0. n.b.: You may want to consider parellizing make with something sensible like `-j8`.
 1. Fork the project
 2. Install system dependencies and copy disk image (see "Setup" below)
-3. Run `make -j` to perform an initial split & build
+3. Run `make` to perform an initial split & build
 4. Pick a function to decompile, use `make decompme` to create a scratch on decomp.me
 5. Claim and decompile the scratch
 6. Copy the decompiled code where it belongs 
 7. Optionally use `make permute` if needed
-8. Run `make remake -j`, and finally `make format` if the code compiles successfully
+8. Run `make remake`, and finally `make format` if the code compiles successfully
 9. Open a PR
 
 ## Setup
@@ -164,13 +157,14 @@ The project is mostly self-configuring but requires a minimal amount of setup.
 
 Take a look at `./Dockerfile` for a minimal setup on Ubuntu
 - Dump your original disk to `disks/SLUS-01040.bin`
-- Run `make -j` to finish installation and perform an initial build
+- Run `make` to finish installation and perform an initial build
 
 ## Build targets
-- `make -j` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
+- `make` should be all that is needed most of the time. The first execution will configure the remaining dependencies in the `tools` directory and extract the files from the disk; from then on it will perform a minimal rebuild. 
 - `make decompme TARGET=path/to/nonmatchings/source.s` uploads the target function to a new decomp.me scratch.
 - `make permute TARGET=path/to/nonmatchings/source.s` invokes the permuter for the target assembly file. 
-- `make remake -j` will delete and re-split the targets; this can be necessary if the dependency management has failed to identify everything that needs rebuilding (in which case a bug report is appreciated!), or if the configuration has changed enough to be no longer valid (e.g. orphaned .d files). It's good practice to run this before submitting a pull request to make sure everything still works.
+- `make remake` will delete and re-split the targets; this can be necessary if the dependency management has failed to identify everything that needs rebuilding (in which case a bug report is appreciated!), or if the configuration has changed enough to be no longer valid (e.g. orphaned .d files).
 - `make format` formats the source files and symbol addresses for consistency. Please run this before submitting a PR.
+- `make commit-check` is a convenience that runs `format` followed by `remake`
 - `make clean` simply deletes the `build` and `nonmatchings` directories
 - `make clean-all` will completely reset the project, including dropping any source changes and data files (but not the disk image). Use with caution.

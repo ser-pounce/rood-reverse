@@ -1,0 +1,23 @@
+sha1: dbecbb01143e709166192029f9ea10fa2caf91e5
+options:
+  basename: EFFECT/PLG076.BIN
+  target_path: data/EFFECT/PLG076.BIN
+  elf_path: build/data/EFFECT/PLG076.BIN.elf
+  asm_path: build/src/EFFECT/PLG076.BIN
+  src_path: src/EFFECT/PLG076.BIN
+  asset_path: build/assets/EFFECT/PLG076.BIN
+  ld_script_path: build/config/EFFECT/PLG076.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG076.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, F8]
+    - [0xF8, c]
+    - [0x573C, .data, F8]
+  - [0x5780]

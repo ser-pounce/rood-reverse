@@ -1,8 +1,9 @@
-#define VS_TILED_RING_FUNCTION func_800F98F8
+#include "F8.h"
+
+#define VS_TILED_RING_FUNCTION vs_effect_radialSurgeLv1_0
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_RING_FUNCTION func_800FA7F0
-#define VS_RING_COLORS D_800FEF5C
+#define VS_RING_FUNCTION vs_effect_radialSurgeLv1_1
 #include "src/EFFECT/rings.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION func_800FB414
@@ -11,12 +12,11 @@
 #define VS_TRAIL_INIT_FUNCTION func_800FC28C
 #define VS_TRAIL_UPDATE_FUNCTION func_800FC404
 #define VS_TRAIL_RENDER_FUNCTION func_800FC590
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FCFEC
-#define VS_TRAIL5_CORNER_STATE D_800FEF7C
+#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_radialSurgeLv1_2
 #include "src/EFFECT/trails5.h"
 
-#define VS_ROTATING_SURFACE_FUNCTION func_800FD534
+#define VS_ROTATING_SURFACE_FUNCTION vs_effect_radialSurgeLv1_3
 #include "src/EFFECT/rotatingSurfaces.h"
 
-#define VS_GRID_FUNCTION func_800FE3EC
+#define VS_GRID_FUNCTION vs_effect_radialSurgeLv1_4
 #include "src/EFFECT/grids.h"

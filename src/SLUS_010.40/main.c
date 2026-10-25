@@ -1,4 +1,6 @@
+#define VS_MAIN_INCLUDE
 #include "main.h"
+#undef VS_MAIN_INCLUDE
 #include "common.h"
 #include "overlay.h"
 #include "../TITLE/TITLE.PRG/22C.h"
@@ -8,13 +10,24 @@
 #include "../ENDING/ENDING.PRG/D4.h"
 #include "build/src/include/lbas.h"
 #include <libapi.h>
-#include <libds.h>
 #include <libetc.h>
 #include <libpad.h>
 #include <libsnd.h>
 #include <libspu.h>
 #include <libgpu.h>
 #include <rand.h>
+
+enum diskState_e {
+    diskIdle = 0,
+    diskSeekReady = 1,
+    diskReadReady = 2,
+    diskReadError = 4,
+    diskReadInit = 5,
+    diskReadXaInit = 6,
+    diskStreamXa = 7,
+    diskCommandFailed = 8,
+    diskStreamXaEnd = 9,
+};
 
 typedef struct {
     int unk0[2];
@@ -72,49 +85,8 @@ typedef struct {
     int bgColors[5][6];
     D_8005DC6C_t unk7F14[5];
     D_8005DC80_t unk7F28[17];
+    u_char unk8214[0x54];
 } _clutState_t;
-
-enum diskState_e {
-    diskIdle = 0,
-    diskSeekReady = 1,
-    diskReadReady = 2,
-    diskReadError = 4,
-    diskReadInit = 5,
-    diskReadXaInit = 6,
-    diskStreamXa = 7,
-    diskCommandFailed = 8,
-    diskStreamXaEnd = 9,
-};
-
-enum cdBufferModes_e {
-    cdBufferModeNone = 0,
-    cdBufferModeBuffered = 1,
-    cdBufferModeManual = 2,
-};
-
-typedef struct {
-    char state;
-    char unk1;
-    char unk2;
-    char unk3;
-    u_int unk4;
-    u_int sectorCount;
-    int cdSector;
-    int byteCount;
-    void* vram;
-    DslFILTER pcm;
-    DslLOC cdLoc;
-    int commandId;
-    int unk24;
-    int unk28;
-    enum cdBufferModes_e bufferMode;
-    u_int sectorBufIndex;
-    int unk34;
-    u_int unk38;
-    u_int unk3C;
-    u_int ringBufIndex;
-    int framesSinceLastRead;
-} vs_main_disk_t;
 
 void __main(void);
 static void _unlockPadModeSwitch(void);
@@ -740,8 +712,8 @@ u_char vs_main_zndMusicMap[256] = { 0, 16, 0, 0, 0, 0, 0, 0, 0, 54, 0, 57, 57, 1
     120, 65, 0, 0, 0, 0, 0, 41, 41, 41, 41, 0, 0, 51, 66, 22, 22, 88, 0, 66, 66, 66, 66,
     66, 88, 44, 79, 40, 40, 40, 40, 40, 40, 121, 118, 43, 126, 129, 125, 130, 29, 30 };
 
-static u_short _unkStrings[] = {
-#include "build/assets/SLUS_010.40/unkStrings.vsString"
+static u_short vs_main_unkStrings[] = {
+#include "build/assets/SLUS_010.40/vs_main_unkStrings.vsString"
 };
 
 u_short vs_main_artsPointsRequirements[][4] = {
@@ -768,42 +740,6 @@ u_short vs_main_battleAbilitiesPointsRequirements[150] = { 20, 54, 72, 95, 125, 
     0, 0, 0, 0, 0, 0, 256, 0, 0, 0, 256, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 256 };
-
-extern int randArr[97];
-extern vs_main_HeapHeader* _cdReadBuffer;
-extern padAct_t _padAct[2];
-extern vs_main_HeapHeader heapA;
-extern vs_main_HeapHeader heapB;
-extern int randIndex;
-extern DslLOC cdReadLoc;
-extern int D_800501CC;
-extern int D_800501D0;
-extern int D_800501D4;
-extern int D_800501D8;
-extern vs_main_CdQueueSlot _cdQueue[32];
-extern struct {
-    short processing;
-    short queued;
-} _cdQueueCount;
-extern u_short _sfxData[];
-extern int sp2;
-extern int _resetEnabled;
-extern u_int _buttonHeldFrameCount[];
-extern vs_main_disk_t vs_main_disk;
-extern char _dsControlBuf[11];
-extern _clutState_t _clutState;
-extern int sp;
-extern int D_8005DBF4[5][6];
-extern int vs_main_saveGameClearData;
-extern int _inGame;
-extern u_short _clutBuffer[14][256];
-extern int D_8005FE70;
-extern int D_8005FE74;
-extern int D_8005FE78;
-extern int D_8005FE7C;
-extern int D_8005FE80;
-extern int D_8005FE84;
-extern int vs_main_buttonsReleased;
 
 static void _loadBattlePrg(void)
 {
@@ -872,6 +808,58 @@ static void _loadEndingPrg(void)
     vs_main_wait();
 }
 
+static int _randArr[97];
+static int _randIndex;
+static vs_main_HeapHeader* _cdReadBuffer;
+static int _0 __attribute__((unused));
+static padAct_t _padAct[2];
+static int _1[2] __attribute__((unused));
+portInfo_t vs_main_portInfo[2];
+static u_char _2[2] __attribute__((unused));
+static vs_main_HeapHeader _heapA;
+static vs_main_HeapHeader _heapB;
+static DslLOC _cdReadLoc;
+static int D_800501CC;
+static int D_800501D0;
+static int D_800501D4;
+static int D_800501D8;
+static int _3 __attribute__((unused));
+static vs_main_CdQueueSlot _cdQueue[32];
+static struct {
+    short processing;
+    short queued;
+} _cdQueueCount;
+static int _4 __attribute__((unused));
+D_80050468_t D_80050468;
+int vs_main_startState;
+static int _sp2;
+static u_short _sfxData[0x2C00];
+int vs_main_buttonsReleased;
+static int _5 __attribute__((unused));
+void* D_80055C80[2];
+static int _resetEnabled;
+static int _6 __attribute__((unused));
+static u_int _buttonHeldFrameCount[32];
+vs_main_disk_t vs_main_disk;
+static _clutState_t _clutState;
+vs_main_stickPos vs_main_stickPosBuf;
+static int _sp;
+short D_8005DFD4;
+short vs_main_screenWidth;
+short D_8005DFD8;
+u_short vs_main_screenHeight;
+int vs_main_buttonRepeat;
+static int _7[4] __attribute__((unused));
+char vs_main_padBuffer[2][34];
+static int _8 __attribute__((unused));
+soundData_t vs_main_soundData;
+void* D_8005E0C0[2];
+int vs_main_nearClip;
+static int _9 __attribute__((unused));
+DRAWENV vs_main_drawEnv[2];
+DISPENV vs_main_dispEnv[2];
+static int _10[4] __attribute__((unused));
+
 static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
     __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
     __attribute__((unused)) int arg5)
@@ -883,6 +871,22 @@ static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
 
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
+
+int vs_main_buttonsPreviousState;
+int D_8005E1C4;
+static int _11[2] __attribute__((unused));
+vs_main_buttonsPressed_t vs_main_buttonsPressed;
+int D_8005E1D4;
+u_int vs_main_frameDuration;
+static int _12[13] __attribute__((unused));
+int vs_main_frameBuf;
+int vs_main_saveGameClearData;
+static int _13[8] __attribute__((unused));
+int vs_main_buttonsState;
+static int _14 __attribute__((unused));
+static int _inGame;
+int D_8005E244;
+int vs_main_projectionDistance;
 
 static void _displayLoadingScreen(void)
 {
@@ -922,6 +926,9 @@ static void _bufferLoadingScreen(void)
     DrawSync(0);
 }
 
+extern int vs_main_saveGameClearData;
+extern int vs_main_buttonsReleased;
+
 void vs_main_resetGame(void)
 {
     DrawSync(0);
@@ -938,7 +945,7 @@ void vs_main_resetGame(void)
     SpuQuit();
     ResetGraph(3);
     VSync(10);
-    vs_overlay_jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&_sp2);
 }
 
 void vs_main_jumpToBattle(void)
@@ -958,7 +965,7 @@ void vs_main_jumpToBattle(void)
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_main_startState = 1;
-    vs_overlay_jumpToBattle(&sp);
+    vs_overlay_jumpToBattle(&_sp);
 }
 
 void vs_main_showEndingAndReturnToTitle(void)
@@ -988,8 +995,30 @@ void vs_main_showEndingAndReturnToTitle(void)
     SpuQuit();
     ResetGraph(3);
     vs_main_saveGameClearData = 1;
-    vs_overlay_jumpToTitle(&sp2);
+    vs_overlay_jumpToTitle(&_sp2);
 }
+
+int vs_gametime_tickspeed;
+static u_short _clutBuffer[14][256];
+static int _15[8] __attribute__((unused));
+static int D_8005FE70;
+static int D_8005FE74;
+static int D_8005FE78;
+static int D_8005FE7C;
+static int D_8005FE80;
+static int D_8005FE84;
+static int _16[6] __attribute__((unused));
+vs_main_scoredata_t vs_main_scoredata;
+static int _17 __attribute__((unused));
+char vs_main_actionsLearned[32];
+vs_main_mapStatus_t vs_main_mapStatus;
+vs_main_settings_t vs_main_settings;
+vs_main_artsStatus_t vs_main_artsStatus;
+int D_80060064;
+D_80060068_t D_80060068;
+vs_main_inventory_t vs_main_inventory;
+_mpdRoomDoorSection_t D_80061068;
+vs_Gametime_t vs_main_gametime;
 
 int vs_main_gametimeUpdate(int vsync)
 {
@@ -1048,10 +1077,10 @@ static void _initRand(void)
 
     srand(1);
 
-    for (i = 0; i < (int)(sizeof randArr / sizeof randArr[0]); ++i) {
-        randArr[i] = rand();
+    for (i = 0; i < (int)(sizeof _randArr / sizeof _randArr[0]); ++i) {
+        _randArr[i] = rand();
     }
-    randIndex = (sizeof randArr / sizeof randArr[0]) - 1;
+    _randIndex = (sizeof _randArr / sizeof _randArr[0]) - 1;
 }
 
 int vs_main_getRand(int max)
@@ -1060,16 +1089,16 @@ int vs_main_getRand(int max)
     int var_a0;
     int var_v0;
 
-    var_v0 = randArr[randIndex] * (sizeof randArr / sizeof randArr[0]);
+    var_v0 = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
 
     if (var_v0 < 0) {
         var_v0 += 0x7FFF;
     }
 
-    randIndex = var_v0 >> 0xF;
+    _randIndex = var_v0 >> 0xF;
 
-    temp_s0 = 0x7FFF - randArr[randIndex];
-    randArr[randIndex] = rand();
+    temp_s0 = 0x7FFF - _randArr[_randIndex];
+    _randArr[_randIndex] = rand();
 
     var_a0 = temp_s0 * max;
 
@@ -1149,14 +1178,14 @@ static void _sysReinit(void)
 
 int vs_main_execTitle(void)
 {
-    vs_overlay_getSp(&sp);
+    vs_overlay_getSp(&_sp);
     _sysReinit();
     _loadTitlePrg();
     vs_main_startState = vs_title_exec();
     vs_main_saveGameClearData = 0;
     _displayLoadingScreen();
     _loadBattlePrg();
-    vs_overlay_getSp(&sp);
+    vs_overlay_getSp(&_sp);
     _inGame = 1;
     vs_battle_exec();
     SetDispMask(0);
@@ -1168,7 +1197,7 @@ void vs_main_exec(void)
 {
     __main();
     _sysInit();
-    vs_overlay_getSp(&sp2);
+    vs_overlay_getSp(&_sp2);
     vs_main_execTitle();
 }
 
@@ -1248,8 +1277,8 @@ void func_80042CB0(void)
     }
 
     temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->unk0.unk80 = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->unk0.unk84 = vs_battle_cameraCurrentSpherical.initialDistance;
+    temp_t5->unk0.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         func_80069FC4(var_s1, 0);
@@ -1259,8 +1288,8 @@ void func_80042CB0(void)
 
 void vs_main_padDisconnectAll(void)
 {
-    _portInfo[0].connected = 0;
-    _portInfo[1].connected = 0;
+    vs_main_portInfo[0].connected = 0;
+    vs_main_portInfo[1].connected = 0;
 }
 
 static void _unlockPadModeSwitch(void)
@@ -1273,7 +1302,7 @@ static void _unlockPadModeSwitch(void)
 
 static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)))
 {
-    portInfo_t* port = &_portInfo[portID >> 4];
+    portInfo_t* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
@@ -1296,14 +1325,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     int btnStates;
 
     if (padBuf[0] != 0) {
-        port = &_portInfo[portID >> 4];
+        port = &vs_main_portInfo[portID >> 4];
         port->lStickY = 128;
         port->lStickX = 128;
         port->rStickY = 128;
         port->rStickX = 128;
         return 0;
     }
-    port = &_portInfo[portID >> 4];
+    port = &vs_main_portInfo[portID >> 4];
     mode = PadInfoMode(portID, InfoModeCurID, 0);
     port->mode = mode;
     switch (mode) {
@@ -1338,7 +1367,7 @@ void vs_main_padConnect(int portID, char padBuf[34])
 {
     int dummy[5] __attribute__((unused));
 
-    portInfo_t* port = &_portInfo[portID >> 4];
+    portInfo_t* port = &vs_main_portInfo[portID >> 4];
     int state = PadGetState(portID);
 
     if (state == PadStateFindPad) {
@@ -1357,15 +1386,18 @@ void vs_main_padConnect(int portID, char padBuf[34])
 static void _padSetActData(int port, int pos, int val)
 {
     if (pos != 0) {
-        _portInfo[port].actData[pos] = val;
-    } else if (_portInfo[port].exId) {
-        _portInfo[port].actData[0] = val;
+        vs_main_portInfo[port].actData[pos] = val;
+    } else if (vs_main_portInfo[port].exId) {
+        vs_main_portInfo[port].actData[0] = val;
     } else {
-        _portInfo[port].actData[0] = 0x40;
+        vs_main_portInfo[port].actData[0] = 0x40;
     }
 }
 
-static char _padGetActData(int port, int pos) { return _portInfo[port].actData[pos]; }
+static char _padGetActData(int port, int pos)
+{
+    return vs_main_portInfo[port].actData[pos];
+}
 
 int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
 {
@@ -1599,7 +1631,7 @@ int vs_main_processPadState(void)
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(16, vs_main_padBuffer[1]);
 
-    switch (_portInfo[0].mode) {
+    switch (vs_main_portInfo[0].mode) {
     case 4:
         vs_main_stickPosBuf.lStickY = 128;
         vs_main_stickPosBuf.lStickX = 128;
@@ -1607,36 +1639,36 @@ int vs_main_processPadState(void)
         vs_main_stickPosBuf.rStickX = 128;
         break;
     case 7:
-        vs_main_stickPosBuf.rStickX = _portInfo[0].rStickX;
-        vs_main_stickPosBuf.rStickY = _portInfo[0].rStickY;
-        vs_main_stickPosBuf.lStickX = _portInfo[0].lStickX;
-        vs_main_stickPosBuf.lStickY = _portInfo[0].lStickY;
+        vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
+        vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
+        vs_main_stickPosBuf.lStickX = vs_main_portInfo[0].lStickX;
+        vs_main_stickPosBuf.lStickY = vs_main_portInfo[0].lStickY;
 
-        if (_portInfo[0].rStickX < 16) {
+        if (vs_main_portInfo[0].rStickX < 16) {
             vs_main_buttonsState |= PADLleft;
         }
-        if (_portInfo[0].rStickX >= 241) {
+        if (vs_main_portInfo[0].rStickX >= 241) {
             vs_main_buttonsState |= PADLright;
         }
 
-        if (_portInfo[0].rStickY < 16) {
+        if (vs_main_portInfo[0].rStickY < 16) {
             vs_main_buttonsState |= PADLup;
         }
-        if (_portInfo[0].rStickY >= 241) {
+        if (vs_main_portInfo[0].rStickY >= 241) {
             vs_main_buttonsState |= PADLdown;
         }
 
-        if (_portInfo[0].lStickX < 32) {
+        if (vs_main_portInfo[0].lStickX < 32) {
             vs_main_buttonsState |= PADj;
         }
-        if (_portInfo[0].lStickX >= 225) {
+        if (vs_main_portInfo[0].lStickX >= 225) {
             vs_main_buttonsState |= PADj;
         }
 
-        if (_portInfo[0].lStickY < 32) {
+        if (vs_main_portInfo[0].lStickY < 32) {
             vs_main_buttonsState |= PADj;
         }
-        if (_portInfo[0].lStickY >= 225) {
+        if (vs_main_portInfo[0].lStickY >= 225) {
             vs_main_buttonsState |= PADj;
         }
         break;
@@ -1685,7 +1717,7 @@ int vs_main_processPadState(void)
 
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* var_a1 = heapA.prev;
+    vs_main_HeapHeader* var_a1 = _heapA.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
@@ -1715,7 +1747,7 @@ void vs_main_freeHeapR(void* block)
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* var_a1 = heapA.next;
+    vs_main_HeapHeader* var_a1 = _heapA.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
@@ -1750,8 +1782,8 @@ void* vs_main_allocHeapR(u_int size)
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
-    var_a2 = &heapA;
-    var_a1 = heapA.prev;
+    var_a2 = &_heapA;
+    var_a1 = _heapA.prev;
 
     while (1) {
         if (var_a1->blockSz >= blockSz) {
@@ -1766,7 +1798,7 @@ void* vs_main_allocHeapR(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_a2 = var_a1;
-        if (var_a1 == &heapA) {
+        if (var_a1 == &_heapA) {
             return 0;
         }
         var_a1 = var_a1->prev;
@@ -1779,8 +1811,8 @@ void* vs_main_allocHeap(u_int size)
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_v1;
 
-    var_v1 = &heapA;
-    var_a1 = heapA.next;
+    var_v1 = &_heapA;
+    var_a1 = _heapA.next;
     blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
@@ -1800,7 +1832,7 @@ void* vs_main_allocHeap(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_v1 = var_a1;
-        if (var_a1 == &heapA) {
+        if (var_a1 == &_heapA) {
             return 0;
         }
         var_a1 = var_a1->next;
@@ -1809,15 +1841,15 @@ void* vs_main_allocHeap(u_int size)
 
 void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
 {
-    heapA.prev = node;
-    heapA.next = node;
-    heapA.blockSz = 0;
-    node->prev = &heapA;
-    node->next = &heapA;
+    _heapA.prev = node;
+    _heapA.next = node;
+    _heapA.blockSz = 0;
+    node->prev = &_heapA;
+    node->next = &_heapA;
     node->blockSz = value / 16 - 1;
-    heapB.prev = &heapB;
-    heapB.next = &heapB;
-    heapB.blockSz = 0;
+    _heapB.prev = &_heapB;
+    _heapB.next = &_heapB;
+    _heapB.blockSz = 0;
 }
 
 static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused)),
@@ -1977,7 +2009,7 @@ static void func_800443CC(void)
         if (DsSystemStatus() == DslReady) {
             vs_main_disk.unk1 = 0;
             vs_main_disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+            while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
                 ;
             VSync(3);
             vol.val2 = 0x80;
@@ -2033,7 +2065,7 @@ static void func_800443CC(void)
             if (seconds < 420) {
                 DsIntToPos(
                     vs_main_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
-                    &cdReadLoc);
+                    &_cdReadLoc);
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
                 vol.val3 = 0;
@@ -2045,7 +2077,7 @@ static void func_800443CC(void)
                 vs_main_disk.pcm.chan = 0;
                 DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
                 vs_main_disk.commandId =
-                    DsPacket(DslModeRT | DslModeSF, &cdReadLoc, DslReadS, NULL, -1);
+                    DsPacket(DslModeRT | DslModeSF, &_cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
                 vs_main_disk.state = diskStreamXa;
             } else {
@@ -2093,7 +2125,7 @@ static void func_800443CC(void)
         DsReadyCallback(NULL);
         vs_main_disk.unk1 = 128;
         vs_main_disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+        while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
             ;
         VSync(3);
         break;
@@ -2195,7 +2227,7 @@ static void _diskReset(void)
     vs_main_disk.state = diskIdle;
     vs_main_disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    while (DsControlB(DslSetmode, _dsControlBuf, NULL) == 0)
+    while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
         ;
     VSync(3);
 }
@@ -4512,3 +4544,8 @@ void vs_main_bzero(void* dest, int sz)
 }
 
 static void nop12(void) { }
+
+D_80061078_t D_80061078[4];
+vs_main_flags_t vs_main_stateFlags;
+vs_main_inventoryIndices_t vs_main_inventoryIndices;
+static int _18[0x15E] __attribute__((unused));

@@ -241,6 +241,6 @@ segments:
       - [0x3AD04, .data, main]
       - { start: 0x3C1DC, type: vsMainActions, name: vs_main_actions, linker_entry: false }
       - { start: 0x3F5DC, type: data, linker_entry: false}
-      - { start: 0x405CC, type: vsStringTable, name: unkStrings, linker_entry: false }
-      - [0x40788, bss, main]
+      - { start: 0x405CC, type: vsStringTable, name: vs_main_unkStrings, linker_entry: false }
+      - [0x40788, .bss, main]
   - [0x52800]

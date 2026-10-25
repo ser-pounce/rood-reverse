@@ -1,12 +1,8 @@
-#define VS_PARTICLE_ORIGIN_FUNCTION func_800F98F8
-#define VS_PARTICLE_TARGET_FUNCTION func_800FA080
-#define VS_PARTICLE_CONTROL_FUNCTION func_800FA298
+#include "F8.h"
 
+#define VS_PARTICLE_DISPATCH_FUNCTION vs_effect_plg224_0
+#define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleSetup.h"
 
-#define VS_PARTICLE_RENDER_FUNCTION func_800FA748
 #include "src/EFFECT/particleLineRender.h"
-
-#define VS_PARTICLE_DISPATCH_FUNCTION func_800FAC78
-#define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleDispatch.h"

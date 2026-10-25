@@ -7,12 +7,8 @@ options:
   src_path: src/EFFECT/PLG291.BIN
   asset_path: build/assets/EFFECT/PLG291.BIN
   ld_script_path: build/config/EFFECT/PLG291.BIN/link.ld
-  symbol_addrs_path:
-    - config/SLUS_010.40/symbol_addrs.txt
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/EFFECT/PLG291.BIN/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/EFFECT/PLG291.BIN/undefined_syms_auto.txt
-
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 segments:
   - name: PLG291.BIN
@@ -23,5 +19,5 @@ segments:
     subsegments:
     - [0, .rodata, F8]
     - [0xF8, c]
-    - [0x3CD8, data, F8]
+    - [0x3CD8, .data, F8]
   - [0x3CFC]

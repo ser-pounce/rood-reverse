@@ -1,0 +1,23 @@
+sha1: 97af1e332c3d9b7b314be03d3aa90ac7fea92ece
+options:
+  basename: EFFECT/PLG290.BIN
+  target_path: data/EFFECT/PLG290.BIN
+  elf_path: build/data/EFFECT/PLG290.BIN.elf
+  asm_path: build/src/EFFECT/PLG290.BIN
+  src_path: src/EFFECT/PLG290.BIN
+  asset_path: build/assets/EFFECT/PLG290.BIN
+  ld_script_path: build/config/EFFECT/PLG290.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG290.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0x0, .rodata, 110]
+    - [0x110, c]
+    - [0x1DB4, .data, 110]
+  - [0x1DB8]

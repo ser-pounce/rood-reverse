@@ -1,0 +1,22 @@
+sha1: 82a54d61dbed389caa130cb4ed2d3dbb880ee94f
+options:
+  basename: EFFECT/PLG199.BIN
+  target_path: data/EFFECT/PLG199.BIN
+  elf_path: build/data/EFFECT/PLG199.BIN.elf
+  asm_path: build/src/EFFECT/PLG199.BIN
+  src_path: src/EFFECT/PLG199.BIN
+  asset_path: build/assets/EFFECT/PLG199.BIN
+  ld_script_path: build/config/EFFECT/PLG199.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG199.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, c]
+    - [0xC24, .data, 0]
+  - [0xC44]

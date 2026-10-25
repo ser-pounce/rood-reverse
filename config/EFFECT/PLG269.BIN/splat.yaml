@@ -1,0 +1,23 @@
+sha1: 1f034727ddd716f88c94876b66ece5d394f5d447
+options:
+  basename: EFFECT/PLG269.BIN
+  target_path: data/EFFECT/PLG269.BIN
+  elf_path: build/data/EFFECT/PLG269.BIN.elf
+  asm_path: build/src/EFFECT/PLG269.BIN
+  src_path: src/EFFECT/PLG269.BIN
+  asset_path: build/assets/EFFECT/PLG269.BIN
+  ld_script_path: build/config/EFFECT/PLG269.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG269.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, E0]
+    - [0xE0, c]
+    - [0x2200, .data, E0]
+  - [0x2204]

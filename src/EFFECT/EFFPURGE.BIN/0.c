@@ -82,150 +82,44 @@
 #include "src/EFFECT/PLG168.BIN/1F0.h"
 #include "src/EFFECT/PLG169.BIN/E0.h"
 #include "src/EFFECT/PLG170.BIN/18.h"
+#include "src/EFFECT/PLG198.BIN/0.h"
+#include "src/EFFECT/PLG199.BIN/0.h"
+#include "src/EFFECT/PLG221.BIN/18.h"
+#include "src/EFFECT/PLG224.BIN/F8.h"
+#include "src/EFFECT/PLG232.BIN/E0.h"
 #include "src/EFFECT/PLG236.BIN/0.h"
+#include "src/EFFECT/PLG240.BIN/F8.h"
+#include "src/EFFECT/PLG241.BIN/F8.h"
+#include "src/EFFECT/PLG242.BIN/F8.h"
+#include "src/EFFECT/PLG243.BIN/E0.h"
+#include "src/EFFECT/PLG245.BIN/0.h"
+#include "src/EFFECT/PLG247.BIN/0.h"
+#include "src/EFFECT/PLG248.BIN/0.h"
+#include "src/EFFECT/PLG250.BIN/0.h"
+#include "src/EFFECT/PLG251.BIN/0.h"
+#include "src/EFFECT/PLG255.BIN/1D8.h"
+#include "src/EFFECT/PLG258.BIN/0.h"
+#include "src/EFFECT/PLG259.BIN/0.h"
 #include "src/EFFECT/PLG263.BIN/110.h"
+#include "src/EFFECT/PLG265.BIN/2E8.h"
+#include "src/EFFECT/PLG266.BIN/2E8.h"
+#include "src/EFFECT/PLG269.BIN/E0.h"
+#include "src/EFFECT/PLG271.BIN/1D8.h"
+#include "src/EFFECT/PLG272.BIN/18.h"
+#include "src/EFFECT/PLG280.BIN/128.h"
+#include "src/EFFECT/PLG290.BIN/110.h"
+#include "src/EFFECT/PLG291.BIN/F8.h"
+#include "src/EFFECT/PLG297.BIN/18.h"
 #include "src/EFFECT/PLG300.BIN/110.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
 #include "src/EFFECT/PLG260.BIN/0.h"
 #include "src/EFFECT/PLG273.BIN/0.h"
+#include "src/EFFECT/PLG301.BIN/110.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
-
-/** Effect entrypoints, declarations to temporarily satisfy the compiler  */
-int func_800F9800(func_800D4910_t*, u_int, int);
-int func_800F9818(func_800D4910_t*, u_int, int);
-int func_800F98E0(func_800D4910_t*, u_int, int);
-int func_800F98F8(func_800D4910_t*, u_int, int);
-int func_800F9910(func_800D4910_t*, u_int, int);
-int func_800F9928(func_800D4910_t*, u_int, int);
-int func_800F99D8(func_800D4910_t*, u_int, int);
-int func_800F99F0(func_800D4910_t*, u_int, int);
-int func_800F9AE8(func_800D4910_t*, u_int, int);
-int func_800FA324(func_800D4910_t*, u_int, int);
-int func_800FA368(func_800D4910_t*, u_int, int);
-int func_800FA398(func_800D4910_t*, u_int, int);
-int func_800FA3B0(func_800D4910_t*, u_int, int);
-int func_800FA41C(func_800D4910_t*, u_int, int);
-int func_800FA424(func_800D4910_t*, u_int, int);
-int func_800FA48C(func_800D4910_t*, u_int, int);
-int func_800FA490(func_800D4910_t*, u_int, int);
-int func_800FA4A8(func_800D4910_t*, u_int, int);
-int func_800FA588(func_800D4910_t*, u_int, int);
-int func_800FA6B8(func_800D4910_t*, u_int, int);
-int func_800FA6BC(func_800D4910_t*, u_int, int);
-int func_800FA6D0(func_800D4910_t*, u_int, int);
-int func_800FA6F8(func_800D4910_t*, u_int, int);
-int func_800FA710(func_800D4910_t*, u_int, int);
-int func_800FA740(func_800D4910_t*, u_int, int);
-int func_800FA770(func_800D4910_t*, u_int, int);
-int func_800FA7B0(func_800D4910_t*, u_int, int);
-int func_800FA7F0(func_800D4910_t*, u_int, int);
-int func_800FA84C(func_800D4910_t*, u_int, int);
-int func_800FA868(func_800D4910_t*, u_int, int);
-int func_800FA8D0(func_800D4910_t*, u_int, int);
-int func_800FAC78(func_800D4910_t*, u_int, int);
-int func_800FAF00(func_800D4910_t*, u_int, int);
-int func_800FAF30(func_800D4910_t*, u_int, int);
-int func_800FB00C(func_800D4910_t*, u_int, int);
-int func_800FB0CC(func_800D4910_t*, u_int, int);
-int func_800FB260(func_800D4910_t*, u_int, int);
-int func_800FB294(func_800D4910_t*, u_int, int);
-int func_800FB2D8(func_800D4910_t*, u_int, int);
-int func_800FB2DC(func_800D4910_t*, u_int, int);
-int func_800FB2F4(func_800D4910_t*, u_int, int);
-int func_800FB320(func_800D4910_t*, u_int, int);
-int func_800FB32C(func_800D4910_t*, u_int, int);
-int func_800FB338(func_800D4910_t*, u_int, int);
-int func_800FB348(func_800D4910_t*, u_int, int);
-int func_800FB3FC(func_800D4910_t*, u_int, int);
-int func_800FB400(func_800D4910_t*, u_int, int);
-int func_800FB418(func_800D4910_t*, u_int, int);
-int func_800FB4B8(func_800D4910_t*, u_int, int);
-int func_800FB4C0(func_800D4910_t*, u_int, int);
-int vs_spiritSurge_renderTrails(func_800D4910_t*, u_int, int);
-int func_800FB4D0(func_800D4910_t*, u_int, int);
-int func_800FB4D8(func_800D4910_t*, u_int, int);
-int func_800FB4E0(func_800D4910_t*, u_int, int);
-int func_800FB4F8(func_800D4910_t*, u_int, int);
-int func_800FB5B0(func_800D4910_t*, u_int, int);
-int func_800FB5B4(func_800D4910_t*, u_int, int);
-int func_800FB5CC(func_800D4910_t*, u_int, int);
-int func_800FB5D0(func_800D4910_t*, u_int, int);
-int func_800FB5F8(func_800D4910_t*, u_int, int);
-int func_800FB62C(func_800D4910_t*, u_int, int);
-int func_800FB71C(func_800D4910_t*, u_int, int);
-int func_800FB720(func_800D4910_t*, u_int, int);
-int func_800FB89C(func_800D4910_t*, u_int, int);
-int func_800FBA00(func_800D4910_t*, u_int, int);
-int func_800FBA18(func_800D4910_t*, u_int, int);
-int func_800FBAC8(func_800D4910_t*, u_int, int);
-int func_800FBB24(func_800D4910_t*, u_int, int);
-int func_800FBD60(func_800D4910_t*, u_int, int);
-int func_800FBDE4(func_800D4910_t*, u_int, int);
-int func_800FBDF8(func_800D4910_t*, u_int, int);
-int func_800FBE44(func_800D4910_t*, u_int, int);
-int func_800FBE88(func_800D4910_t*, u_int, int);
-int func_800FBEFC(func_800D4910_t*, u_int, int);
-int func_800FBF4C(func_800D4910_t*, u_int, int);
-int func_800FBF6C(func_800D4910_t*, u_int, int);
-int func_800FBF7C(func_800D4910_t*, u_int, int);
-int func_800FBF94(func_800D4910_t*, u_int, int);
-int func_800FBFCC(func_800D4910_t*, u_int, int);
-int func_800FBFDC(func_800D4910_t*, u_int, int);
-int func_800FC0E4(func_800D4910_t*, u_int, int);
-int func_800FC11C(func_800D4910_t*, u_int, int);
-int func_800FC21C(func_800D4910_t*, u_int, int);
-int func_800FC228(func_800D4910_t*, u_int, int);
-int func_800FC29C(func_800D4910_t*, u_int, int);
-int func_800FC2BC(func_800D4910_t*, u_int, int);
-int func_800FC42C(func_800D4910_t*, u_int, int);
-int func_800FC50C(func_800D4910_t*, u_int, int);
-int func_800FC524(func_800D4910_t*, u_int, int);
-int func_800FC568(func_800D4910_t*, u_int, int);
-int func_800FC56C(func_800D4910_t*, u_int, int);
-int func_800FC624(func_800D4910_t*, u_int, int);
-int func_800FC6EC(func_800D4910_t*, u_int, int);
-int func_800FC8C4(func_800D4910_t*, u_int, int);
-int func_800FC8D0(func_800D4910_t*, u_int, int);
-int func_800FC97C(func_800D4910_t*, u_int, int);
-int func_800FCA2C(func_800D4910_t*, u_int, int);
-int func_800FCA50(func_800D4910_t*, u_int, int);
-int func_800FCABC(func_800D4910_t*, u_int, int);
-int func_800FCB0C(func_800D4910_t*, u_int, int);
-int func_800FCB38(func_800D4910_t*, u_int, int);
-int func_800FCE0C(func_800D4910_t*, u_int, int);
-int func_800FCE78(func_800D4910_t*, u_int, int);
-int func_800FCE90(func_800D4910_t*, u_int, int);
-int func_800FCF18(func_800D4910_t*, u_int, int);
-int func_800FCFB4(func_800D4910_t*, u_int, int);
-int func_800FCFEC(func_800D4910_t*, u_int, int);
-int func_800FD074(func_800D4910_t*, u_int, int);
-int func_800FD104(func_800D4910_t*, u_int, int);
-int func_800FD198(func_800D4910_t*, u_int, int);
-int func_800FD2E4(func_800D4910_t*, u_int, int);
-int func_800FD354(func_800D4910_t*, u_int, int);
-int func_800FD420(func_800D4910_t*, u_int, int);
-int func_800FD4F4(func_800D4910_t*, u_int, int);
-int func_800FD51C(func_800D4910_t*, u_int, int);
-int func_800FD534(func_800D4910_t*, u_int, int);
-int func_800FD654(func_800D4910_t*, u_int, int);
-int func_800FD6C0(func_800D4910_t*, u_int, int);
-int func_800FDA1C(func_800D4910_t*, u_int, int);
-int func_800FDBAC(func_800D4910_t*, u_int, int);
-int func_800FDC20(func_800D4910_t*, u_int, int);
-int func_800FDE48(func_800D4910_t*, u_int, int);
-int func_800FDEC4(func_800D4910_t*, u_int, int);
-int func_800FE044(func_800D4910_t*, u_int, int);
-int func_800FE3EC(func_800D4910_t*, u_int, int);
-int func_800FE958(func_800D4910_t*, u_int, int);
-int func_800FF334(func_800D4910_t*, u_int, int);
-int func_800FF46C(func_800D4910_t*, u_int, int);
-int func_800FF4E8(func_800D4910_t*, u_int, int);
-int func_800FFB04(func_800D4910_t*, u_int, int);
-int func_800FFFA8(func_800D4910_t*, u_int, int);
 
 static u_char D_800FAE4C[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 3,
@@ -644,21 +538,24 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidSho
     vs_effect_vertigo_1, vs_effect_vertigo_2, vs_effect_vermillionAura_0, NULL,
     vs_effect_vermillionAura_1, vs_effect_vermillionAura_2, vs_effect_retribution_0,
     vs_effect_retribution_1, vs_effect_retribution_2, vs_effect_retribution_3,
-    vs_effect_retribution_4, vs_effect_retribution_5, func_800F9800, func_800F9800,
-    func_800F9818, func_800FA710, func_800FAC78, func_800FB4C0, vs_effect_plg236_0,
-    vs_effect_plg236_1, vs_effect_plg236_2, vs_effect_plg236_3, func_800FAC78,
-    func_800FAC78, func_800F98F8, func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8,
-    func_800F9800, NULL, NULL, vs_effect_246, NULL, NULL, func_800F9800, func_800FA6B8,
-    func_800FB2DC, func_800F9800, func_800F9800, func_800FA6BC, func_800F9800,
-    func_800FB5B0, func_800FCE78, func_800F9800, func_800F9800, vs_effect_plg260, NULL,
-    vs_effect_plg263_0, vs_effect_plg263_1, vs_effect_plg263_2, vs_effect_plg263_3,
-    func_800F9AE8, func_800FBD60, func_800FDBAC, func_800FFB04, func_800FB4F8,
-    func_800FCB0C, func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0, func_800FCE78,
-    func_800F9818, func_800FA368, func_800FB2D8, vs_effect_plg273, func_800FB338,
-    func_800FB5CC, func_800FC11C, func_800FB320, func_800FB4D0, func_800FBA18,
-    func_800FC568, func_800F9818, func_800FA48C, func_800FB3FC, func_800FBF4C,
-    vs_effect_plg300_0, vs_effect_plg300_1, vs_effect_plg300_2, vs_effect_plg300_3,
-    func_800FB320, NULL, func_800FB5B4 };
+    vs_effect_retribution_4, vs_effect_retribution_5, vs_effect_hpUp_0, vs_effect_mpUp_0,
+    vs_effect_plg221_0, vs_effect_plg221_1, vs_effect_plg224_0, vs_effect_plg232_0,
+    vs_effect_plg236_0, vs_effect_plg236_1, vs_effect_plg236_2, vs_effect_plg236_3,
+    vs_effect_plg240_0, vs_effect_plg241_0, vs_effect_plg242_0, vs_effect_plg242_1,
+    vs_effect_plg242_2, NULL, NULL, vs_effect_plg243_0, vs_effect_plg245, NULL, NULL,
+    vs_effect_246, NULL, NULL, vs_effect_plg247_0, vs_effect_plg247_1, vs_effect_plg247_2,
+    vs_effect_plg248, vs_effect_plg250_0, vs_effect_plg250_1, vs_effect_plg251,
+    vs_effect_plg255_0, vs_effect_plg255_1, vs_effect_plg258, vs_effect_plg259,
+    vs_effect_plg260, NULL, vs_effect_plg263_0, vs_effect_plg263_1, vs_effect_plg263_2,
+    vs_effect_plg263_3, vs_effect_plg265_0, vs_effect_plg265_1, vs_effect_plg265_2,
+    vs_effect_plg265_3, vs_effect_plg266_0, vs_effect_plg266_1, vs_effect_plg266_2, NULL,
+    NULL, vs_effect_plg269_0, vs_effect_plg271_0, vs_effect_plg271_1, vs_effect_plg272_0,
+    vs_effect_plg272_1, vs_effect_plg272_2, vs_effect_plg273, vs_effect_plg280_0,
+    vs_effect_plg280_1, vs_effect_plg280_2, vs_effect_plg290, vs_effect_plg291_0,
+    vs_effect_plg291_1, vs_effect_plg291_2, vs_effect_plg297_0, vs_effect_plg297_1,
+    vs_effect_plg297_2, vs_effect_plg297_3, vs_effect_plg300_0, vs_effect_plg300_1,
+    vs_effect_plg300_2, vs_effect_plg300_3, vs_effect_plg301_0, NULL,
+    vs_effect_plg301_1 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -959,71 +856,71 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     vs_effect_retribution_3(NULL, 2, 0);
     vs_effect_retribution_4(NULL, 2, 0);
     vs_effect_retribution_5(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA710(NULL, 2, 0);
-    func_800FAC78(NULL, 2, 0);
-    func_800FB4C0(NULL, 2, 0);
+    vs_effect_hpUp_0(NULL, 2, 0);
+    vs_effect_mpUp_0(NULL, 2, 0);
+    vs_effect_plg221_0(NULL, 2, 0);
+    vs_effect_plg221_1(NULL, 2, 0);
+    vs_effect_plg224_0(NULL, 2, 0);
+    vs_effect_plg232_0(NULL, 2, 0);
     vs_effect_plg236_0(NULL, 2, 0);
     vs_effect_plg236_1(NULL, 2, 0);
     vs_effect_plg236_2(NULL, 2, 0);
     vs_effect_plg236_3(NULL, 2, 0);
-    func_800FAC78(NULL, 2, 0);
-    func_800FAC78(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7F0(NULL, 2, 0);
-    func_800FCF18(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
+    vs_effect_plg240_0(NULL, 2, 0);
+    vs_effect_plg241_0(NULL, 2, 0);
+    vs_effect_plg242_0(NULL, 2, 0);
+    vs_effect_plg242_1(NULL, 2, 0);
+    vs_effect_plg242_2(NULL, 2, 0);
+    vs_effect_plg243_0(NULL, 2, 0);
+    vs_effect_plg245(NULL, 2, 0);
     vs_effect_246(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6B8(NULL, 2, 0);
-    func_800FB2DC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6BC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FB5B0(NULL, 2, 0);
-    func_800FCE78(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
+    vs_effect_plg247_0(NULL, 2, 0);
+    vs_effect_plg247_1(NULL, 2, 0);
+    vs_effect_plg247_2(NULL, 2, 0);
+    vs_effect_plg248(NULL, 2, 0);
+    vs_effect_plg250_0(NULL, 2, 0);
+    vs_effect_plg250_1(NULL, 2, 0);
+    vs_effect_plg251(NULL, 2, 0);
+    vs_effect_plg255_0(NULL, 2, 0);
+    vs_effect_plg255_1(NULL, 2, 0);
+    vs_effect_plg258(NULL, 2, 0);
+    vs_effect_plg259(NULL, 2, 0);
     vs_effect_plg260(NULL, 2, 0);
     vs_effect_plg263_0(NULL, 2, 0);
     vs_effect_plg263_1(NULL, 2, 0);
     vs_effect_plg263_2(NULL, 2, 0);
     vs_effect_plg263_3(NULL, 2, 0);
-    func_800F9AE8(NULL, 2, 0);
-    func_800FBD60(NULL, 2, 0);
-    func_800FDBAC(NULL, 2, 0);
-    func_800FFB04(NULL, 2, 0);
-    func_800FB4F8(NULL, 2, 0);
-    func_800FCB0C(NULL, 2, 0);
-    func_800FE958(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800FB5B0(NULL, 2, 0);
-    func_800FCE78(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800FB2D8(NULL, 2, 0);
+    vs_effect_plg265_0(NULL, 2, 0);
+    vs_effect_plg265_1(NULL, 2, 0);
+    vs_effect_plg265_2(NULL, 2, 0);
+    vs_effect_plg265_3(NULL, 2, 0);
+    vs_effect_plg266_0(NULL, 2, 0);
+    vs_effect_plg266_1(NULL, 2, 0);
+    vs_effect_plg266_2(NULL, 2, 0);
+    vs_effect_plg269_0(NULL, 2, 0);
+    vs_effect_plg271_0(NULL, 2, 0);
+    vs_effect_plg271_1(NULL, 2, 0);
+    vs_effect_plg272_0(NULL, 2, 0);
+    vs_effect_plg272_1(NULL, 2, 0);
+    vs_effect_plg272_2(NULL, 2, 0);
     vs_effect_plg273(NULL, 2, 0);
-    func_800FB338(NULL, 2, 0);
-    func_800FB5CC(NULL, 2, 0);
-    func_800FC11C(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    func_800FB4D0(NULL, 2, 0);
-    func_800FBA18(NULL, 2, 0);
-    func_800FC568(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA48C(NULL, 2, 0);
-    func_800FB3FC(NULL, 2, 0);
-    func_800FBF4C(NULL, 2, 0);
+    vs_effect_plg280_0(NULL, 2, 0);
+    vs_effect_plg280_1(NULL, 2, 0);
+    vs_effect_plg280_2(NULL, 2, 0);
+    vs_effect_plg290(NULL, 2, 0);
+    vs_effect_plg291_0(NULL, 2, 0);
+    vs_effect_plg291_1(NULL, 2, 0);
+    vs_effect_plg291_2(NULL, 2, 0);
+    vs_effect_plg297_0(NULL, 2, 0);
+    vs_effect_plg297_1(NULL, 2, 0);
+    vs_effect_plg297_2(NULL, 2, 0);
+    vs_effect_plg297_3(NULL, 2, 0);
     vs_effect_plg300_0(NULL, 2, 0);
     vs_effect_plg300_1(NULL, 2, 0);
     vs_effect_plg300_2(NULL, 2, 0);
     vs_effect_plg300_3(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    return func_800FB5B4(NULL, 2, 0);
+    vs_effect_plg301_0(NULL, 2, 0);
+    return vs_effect_plg301_1(NULL, 2, 0);
 }
 
 static void _configureFb(void);

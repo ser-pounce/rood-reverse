@@ -1,0 +1,22 @@
+sha1: c0dbe52e9e6d268f2b4e4e42bf717347cbe7272c
+options:
+  basename: EFFECT/PLG258.BIN
+  target_path: data/EFFECT/PLG258.BIN
+  elf_path: build/data/EFFECT/PLG258.BIN.elf
+  asm_path: build/src/EFFECT/PLG258.BIN
+  src_path: src/EFFECT/PLG258.BIN
+  asset_path: build/assets/EFFECT/PLG258.BIN
+  ld_script_path: build/config/EFFECT/PLG258.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG258.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, c]
+    - [0xF6C, .data, 0]
+  - [0xF8C]

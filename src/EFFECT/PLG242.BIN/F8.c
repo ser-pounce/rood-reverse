@@ -1,17 +1,10 @@
-#include "common.h"
+#include "F8.h"
 
-#define VS_TILED_RING_FUNCTION func_800F98F8
+#define VS_TILED_RING_FUNCTION vs_effect_plg242_0
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_GRID_FUNCTION func_800FA7F0
+#define VS_GRID_FUNCTION vs_effect_plg242_1
 #include "src/EFFECT/grids.h"
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FB340
-#define VS_TRAIL_TARGET_FUNCTION func_800FBADC
-#define VS_TRAIL_CONTROL_FUNCTION func_800FBCF4
-#define VS_TRAIL_INIT_FUNCTION func_800FC1B8
-#define VS_TRAIL_UPDATE_FUNCTION func_800FC330
-#define VS_TRAIL_RENDER_FUNCTION func_800FC4BC
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FCF18
-#define VS_TRAIL5_CORNER_STATE D_800FD480
+#define VS_TRAIL_DISPATCH_FUNCTION vs_effect_plg242_2
 #include "src/EFFECT/trails5.h"

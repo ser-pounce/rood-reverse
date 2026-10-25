@@ -11,6 +11,7 @@
 #include <inline_c.h>
 #include <libgte.h>
 #include <rand.h>
+#include "src/EFFECT/effectCommon.h"
 
 typedef struct {
     u_long tag;
@@ -49,18 +50,7 @@ static void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     matrix = &arg2->unk1C[arg0->unkC8].world;
 
     // Determines trail origin:
-    switch (arg1->flags & 7) {
-    case 0:
-        break;
-    // Fixed point D_800F5310
-    case 1:
-        vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
-        break;
-    // Caster
-    case 2:
-        applyVector(&arg1->unk98, matrix->t[0], matrix->t[1], matrix->t[2], +=);
-        break;
-    }
+    VS_APPLY_ANCHOR(arg1, matrix)
 
     vs_battle_lerpVector(arg0->unk24,
         vs_battle_sampleCurve(arg0->unk9, arg3->curveSampleDistance), &arg1->unkA8);

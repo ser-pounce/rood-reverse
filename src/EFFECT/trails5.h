@@ -12,12 +12,7 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
-
-typedef struct {
-    int tag;
-    POLY_GT4 poly;
-    int drawMode;
-} vs_trailPrim;
+#include "src/EFFECT/effectCommon.h"
 
 #define VS_TRAIL_ORIGIN_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _origin)
 #define VS_TRAIL_TARGET_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _target)
@@ -49,18 +44,7 @@ void VS_TRAIL_ORIGIN_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
 
     matrix = &arg2->unk1C[arg0->unkC8].world;
 
-    switch (arg1->flags & 7) {
-    case 0:
-        break;
-
-    case 1:
-        vs_battle_addVecToSvec(&arg1->unk98, D_800F5310, &arg1->unk98);
-        break;
-
-    case 2:
-        applyVector(&arg1->unk98, matrix->t[0], matrix->t[1], matrix->t[2], +=);
-        break;
-    }
+    VS_APPLY_ANCHOR(arg1, matrix)
 
     vs_battle_lerpVector(arg0->unk24,
         vs_battle_sampleCurve(arg0->unk9, arg3->curveSampleDistance), &arg1->unkA8);
@@ -467,7 +451,7 @@ void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
 void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2, func_800FA76C_arg3* arg3)
 {
-    vs_trailPrim quad;
+    vs_gt4Prim quad;
     DVECTOR screen[TRAIL_SAMPLE_COUNT + 1];
     int depths[TRAIL_SAMPLE_COUNT + 1];
     int angles[TRAIL_SAMPLE_COUNT - 1];
@@ -519,7 +503,7 @@ void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1
     for (i = 0; i < arg3->trailcount; ++i) {
         _trail* trail = &arg3->trails[i];
         SVECTOR* samples = trail->splineSamples;
-        vs_trailPrim* prim;
+        vs_gt4Prim* prim;
         int dx;
         int dy;
         int sample;

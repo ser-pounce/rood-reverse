@@ -10,33 +10,10 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
-
-typedef struct {
-    u_char lifetime;
-    u_char effect;
-    short pad;
-    int radius;
-    int radiusSpeed;
-    int height;
-    int heightSpeed;
-    int angle;
-    int age;
-    func_800D6CF_t texture;
-} vs_tiledRingState;
-typedef struct {
-    int tag;
-    POLY_GT4 poly;
-    int drawMode;
-} vs_tiledRingPrim;
-typedef struct {
-    u_char u;
-    u_char v;
-} vs_tiledRingUV;
+#include "src/EFFECT/effectCommon.h"
 
 #define VS_TILED_RING_COLORS VS_CAT(VS_TILED_RING_FUNCTION, _colors)
-static CVECTOR VS_TILED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
-    { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
-    { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };
+VS_STANDARD_COLORS(VS_TILED_RING_COLORS);
 
 int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -47,10 +24,10 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int depths[3][16];
     int factors[3];
     CVECTOR colors[3];
-    vs_tiledRingUV uv[2][4];
+    vs_uv uv[2][4];
     MATRIX unusedTransform;
     func_800D2904_t child;
-    vs_tiledRingState* state = arg0->unk8;
+    vs_ringState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
@@ -70,7 +47,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int depth;
     int drawRow;
     int drawColumn;
-    vs_tiledRingPrim* prim;
+    vs_gt4Prim* prim;
     pFileTexture* texture;
     switch (arg1) {
     case 1:
@@ -103,19 +80,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         factors[2] = factorBytes->b;
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
-
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
-                actorMatrix->t[2], +=);
-            break;
-        }
+        VS_APPLY_ANCHOR(scratch, actorMatrix)
 
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
@@ -292,23 +257,7 @@ int VS_TILED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
 
-        if (effect->unk3) {
-            child.unk60 = 0;
-            if (effect->flags & 0x20000) {
-                SetRotMatrix(actorMatrix);
-                SetTransMatrix(actorMatrix);
-                copyVector(&scratch->unk2C, &scratch->unk98);
-                gte_ldv0(&scratch->unk2C);
-                gte_rtv0tr2();
-                gte_stlvnl(&scratch->unk34);
-                setVector(&child.motion.position, scratch->unk34.vx * ONE,
-                    scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
-            } else {
-                setVector(&child.motion.position, scratch->unk98.vx * ONE,
-                    scratch->unk98.vy * ONE, scratch->unk98.vz * ONE);
-            }
-            func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
-        }
+        VS_SPAWN_CHILD(effect, scratch, battle, actorMatrix, child)
         ++state->age;
         if (state->lifetime) {
             --state->lifetime;

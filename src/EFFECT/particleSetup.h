@@ -11,6 +11,7 @@
 #include "vs_inline_c.h"
 #include <inline_c.h>
 #include <rand.h>
+#include "src/EFFECT/effectCommon.h"
 
 #ifndef VS_PARTICLE_SETUP_TYPES
 #define VS_PARTICLE_SETUP_TYPES
@@ -47,18 +48,7 @@ void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
         effect->unk18, vs_battle_sampleCurve(effect->unk8, state->unkC), &scratch->unk98);
     world = &battle->unk1C[effect->unkC8].world;
 
-    switch (scratch->flags & 7) {
-    case 0:
-        break;
-
-    case 1:
-        vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-        break;
-
-    case 2:
-        applyVector(&scratch->unk98, world->t[0], world->t[1], world->t[2], +=);
-        break;
-    }
+    VS_APPLY_ANCHOR(scratch, world)
 
     vs_battle_lerpVector(
         effect->unk24, vs_battle_sampleCurve(effect->unk9, state->unkC), &scratch->unkA8);

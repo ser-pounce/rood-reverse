@@ -32,13 +32,9 @@ typedef struct {
     int factors[9];
     func_800D6CF_t texture;
 } vs_mirrorSurfaceState;
-typedef struct {
-    int tag;
-    POLY_GT4 poly;
-    int drawMode;
-} vs_mirrorSurfacePrim;
 
 #include "src/EFFECT/sphericalSurfaceVertices.h"
+#include "src/EFFECT/effectCommon.h"
 
 int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -118,19 +114,7 @@ int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
-
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
-                actorMatrix->t[2], +=);
-            break;
-        }
+        VS_APPLY_ANCHOR(scratch, actorMatrix)
 
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
@@ -237,7 +221,7 @@ int VS_MIRROR_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         for (row = 0; row < 8; ++row) {
             int depth;
-            vs_mirrorSurfacePrim* prim;
+            vs_gt4Prim* prim;
 
             for (column = 0; column < 15; ++column) {
                 depth = (depths[row][column] + depths[row][column + 1]

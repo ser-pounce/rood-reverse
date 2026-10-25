@@ -18,6 +18,8 @@
 #define VS_CLOSED_RING_TEXTURE_COLUMN(column) (column)
 #endif
 
+#ifndef VS_CLOSED_RING_TYPES
+#define VS_CLOSED_RING_TYPES
 typedef struct {
     u_char lifetime;
     u_char effect;
@@ -35,9 +37,15 @@ typedef struct {
     POLY_GT4 poly;
     int drawMode;
 } vs_closedRingPrim;
+#endif
+
+#ifndef VS_CAT
+#define VS_CAT_(a, b) a##b
+#define VS_CAT(a, b) VS_CAT_(a, b)
+#endif
 
 #ifndef VS_CLOSED_RING_COLORS
-#define VS_CLOSED_RING_COLORS _colors
+#define VS_CLOSED_RING_COLORS VS_CAT(VS_CLOSED_RING_FUNCTION, _colors)
 static CVECTOR VS_CLOSED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
     { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
     { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };

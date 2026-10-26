@@ -1038,7 +1038,6 @@ int func_80013588(void* arg0, int arg1)
     return -1;
 }
 
-// https://decomp.me/scratch/xpW1h
 int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
 {
     FAkaoSequence* header;
@@ -1063,7 +1062,7 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
     return -1;
 }
 
-// https://decomp.me/scratch/nDizh
+// https://decomp.me/scratch/BNQ6Q
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
 
 static void StartSound(void)

@@ -31,3 +31,6 @@ $(BUILD)/src/SLUS_010.40/libsn/SNMAIN.c.o: PREPROCESS.s = $(MAS) $(MASFLAGS)
 
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+
+$(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1FLAGS += -mmips-as

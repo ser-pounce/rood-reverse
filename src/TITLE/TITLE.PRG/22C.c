@@ -31,23 +31,6 @@ static void _playMenuLeaveSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENULE
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
-
-enum testMemcardEvents_e {
-    memcardInternalEventIoEnd,
-    memcardInternalEventError,
-    memcardInternalEventTimeout,
-    memcardInternalEventUnformatted,
-    memcardInternalEventNone,
-};
-
-enum memcardEventHandler_e {
-    memcardEventPending = 0,
-    memcardEventIoEnd = 1,
-    memcardEventTimeout = 2,
-    memcardEventUnformatted = 3
-};
-
 static u_int _keystreamBits(int value)
 {
     static u_int _keystreamState = 0x19660D;
@@ -57,28 +40,7 @@ static u_int _keystreamBits(int value)
     return seed >> (32 - value);
 }
 
-static long _memcardEventDescriptors[8];
-
-static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
-{
-    int i;
-
-    for (i = 0; i < 4; ++i) {
-        if (TestEvent(_memcardEventDescriptors[i + type]) == 1) {
-            return i;
-        }
-    }
-    return i;
-}
-
-static void _resetMemcardEvents(enum memcardEvents_e type)
-{
-    int i;
-
-    for (i = 0; i < 4; ++i) {
-        TestEvent(_memcardEventDescriptors[i + type]);
-    }
-}
+#include "src/MENU/memcardEvents.h"
 
 static void _drawImage(int xy, void* buffer, int wh)
 {
@@ -136,8 +98,6 @@ static u_short* _textTable;
 static char _0[4] __attribute__((unused));
 static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
-static saveFileInfo_t* _saveFileInfo;
-
 #include "src/MENU/memcardSave.h"
 
 static int _readSaveFileInfo(int id)

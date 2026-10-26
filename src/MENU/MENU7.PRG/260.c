@@ -19,54 +19,9 @@
 #include <string.h>
 #include <libetc.h>
 
-enum testMemcardEvents_e {
-    memcardInternalEventIoEnd,
-    memcardInternalEventError,
-    memcardInternalEventTimeout,
-    memcardInternalEventUnformatted,
-    memcardInternalEventNone,
-};
+static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
-
-enum memcardEventHandler_e {
-    memcardEventPending = 0,
-    memcardEventIoEnd = 1,
-    memcardEventTimeout = 2,
-    memcardEventUnformatted = 3
-};
-
-char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
-
-static long _memcardEventDescriptors[8];
-
-/**
- * Returns the first signalled memorycard event of the requested type, or
- * memcardInternalEventNone when none of the four events is signalled.
- */
-static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
-{
-    int i;
-
-    for (i = 0; i < 4; ++i) {
-        if (TestEvent(_memcardEventDescriptors[i + type]) == 1) {
-            return i;
-        }
-    }
-    return i;
-}
-
-/**
- * Tests each event in the selected memorycard event group to clear its signal.
- */
-static void _resetMemcardEvents(int type)
-{
-    int i;
-
-    for (i = 0; i < 4; ++i) {
-        TestEvent(_memcardEventDescriptors[i + type]);
-    }
-}
+#include "src/MENU/memcardEvents.h"
 
 /**
  * Uploads an image to VRAM and waits for the transfer to finish.
@@ -143,8 +98,6 @@ static u_short* _textTable;
 static char _0[4] __attribute__((unused));
 static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
-static saveFileInfo_t* _saveFileInfo;
-
 #include "src/MENU/memcardSave.h"
 
 /**

@@ -1,7 +1,9 @@
 #pragma once
 
 /* Memorycard save helpers shared by the title and menu overlays. The including file
- * defines _saveFileInfo and _memcardFilenameTemplate first. */
+ * defines _memcardFilenameTemplate first. */
+
+static saveFileInfo_t* _saveFileInfo;
 
 /**
  * Finds the save slot with the greatest generation number.

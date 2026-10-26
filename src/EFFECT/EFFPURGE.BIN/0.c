@@ -455,7 +455,7 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock_0,
+static effectExec _effectEntryPoints[] = { vs_effect_analyze_0, vs_effect_solidShock_0,
     vs_effect_lightningBolt_0, vs_effect_vulcanLance_0, vs_effect_aquaBlast_0,
     vs_spiritSurge_0, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
     vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism_0,
@@ -607,7 +607,7 @@ static _loadFileContext _plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, 
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2) __attribute__((unused));
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    vs_effect_analyze(NULL, 2, 0);
+    vs_effect_analyze_0(NULL, 2, 0);
     vs_effect_solidShock_0(NULL, 2, 0);
     vs_effect_lightningBolt_0(NULL, 2, 0);
     vs_effect_vulcanLance_0(NULL, 2, 0);

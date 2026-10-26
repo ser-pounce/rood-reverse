@@ -3947,13 +3947,13 @@ static void _setTitleMenuState(void)
     }
 }
 
+typedef struct {
+    u_long tag;
+    VS_SPRT sprt;
+} menuItemPrim_t;
+
 static void _drawTitleMenuItems(void)
 {
-    typedef struct {
-        u_long tag;
-        VS_SPRT sprt;
-    } menuItemPrim_t;
-
     static menuItemPrim_t primBuf[341];
     static char _[8] __attribute__((unused));
 
@@ -4059,16 +4059,11 @@ static void _drawTitleMenuItems(void)
 
 static void _drawTitleMenu(void)
 {
-    typedef struct {
-        u_long tag;
-        VS_SPRT sprt;
-    } tagsprt_t;
-
-    static tagsprt_t sprtBuf[10];
+    static menuItemPrim_t sprtBuf[10];
     static char _[16] __attribute__((unused));
 
     int i;
-    tagsprt_t* sprt;
+    menuItemPrim_t* sprt;
 
     _setTitleMenuState();
     for (i = 0; i < 2; ++i) {

@@ -21,225 +21,7 @@
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-#include "src/MENU/memcardCommon.h"
-
-/**
- * Builds the permanent save filename in a reusable static buffer.
- *
- * @param port Zero selects memorycard port 1; any other value selects port 2.
- */
-static char* _memcardMakeFilename(int port, int fileNo)
-{
-    static char _filename[32];
-
-    memset(_filename, 0, ' ');
-    strcpy(_filename, _memcardFilenameTemplate);
-    _filename[2] = port == 0 ? '0' : '1';
-    _filename[20] = fileNo + '0';
-    return _filename;
-}
-
-/**
- * Builds the temporary save filename in a reusable static buffer.
- *
- * @param port Zero selects memorycard port 1; any other value selects port 2.
- */
-static char* _memcardMakeTempFilename(int port, int fileNo)
-{
-    static char _filename[32];
-
-    memset(_filename, 0, ' ');
-    strcpy(_filename, _memcardFilenameTemplate);
-    _filename[2] = port == 0 ? '0' : '1';
-    _filename[20] = fileNo + 'A' - 1;
-    return _filename;
-}
-
-static char* _spmcimg;
-static mcdata_t* _mcData;
-static u_short* _textTable;
-static char _0[4] __attribute__((unused));
-static struct DIRENTRY* _memcardFiles[15];
-static struct DIRENTRY* _dirEntBuf;
-#include "src/MENU/memcardSave.h"
-
-/**
- * Reads and verifies the metadata for a one-based save file number.
- *
- * @param id Packs the memorycard port in the high bits and the file number
- * in the low bits.
- * @return Zero if valid metadata was read, or one if all read/validation
- * attempts failed.
- */
-static int _readSaveFileInfo(int id)
-{
-    saveFileInfo_t saveInfo[4];
-    int i;
-    int port = id >> 12;
-
-    id &= 7;
-
-    for (i = 0; i < 3; ++i) {
-        int bytesRead;
-        int file = open(_memcardMakeFilename(port, id), O_RDONLY);
-
-        if (file == -1) {
-            continue;
-        }
-        bytesRead = read(file, saveInfo, sizeof saveInfo);
-        close(file);
-        if (bytesRead != sizeof saveInfo) {
-            continue;
-        }
-        _decode(saveInfo[3].key, &saveInfo[3].unk4.base.slotState,
-            sizeof(saveFileInfo_t) - sizeof(int));
-        if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
-            _rMemcpy(&_saveFileInfo[id - 1], &saveInfo[3], sizeof saveInfo[3]);
-            return 0;
-        }
-    }
-
-    memset(&_saveFileInfo[id - 1], 0, sizeof _saveFileInfo[id - 1]);
-    return 1;
-}
-
-/**
- * Checks whether a recognized memorycard save filename ends in id.
- */
-static int _memcardSaveIdExists(int id)
-{
-    int i;
-
-    for (i = 0; i < 15; ++i) {
-        char* filename = _memcardFiles[i]->name;
-        if ((filename != 0) && (_memcardFileNumberFromFilename(filename) != 0)
-            && (filename[15] == id)) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-#include "src/MENU/memcardCleanup.h"
-
-/**
- * Scans a card, validates save metadata, and marks available save slots.
- *
- * @return Nonzero if cleanup of redundant temporary files fails.
- */
-static int _initSaveFileInfo(int port)
-{
-    long fileNo;
-    int i;
-    int tempFilesDeleted;
-    int slotsAvailable = 15;
-
-    for (i = 14; i >= 0; --i) {
-        _memcardFiles[i] = 0;
-    }
-
-    fileNo = (long)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), _dirEntBuf);
-    _memcardFiles[0] = (void*)fileNo;
-
-    for (i = 1; (i < 15) && fileNo; ++i) {
-        fileNo = (long)nextfile(_dirEntBuf + i);
-        _memcardFiles[i] = (void*)fileNo;
-    }
-
-    memset(_saveFileInfo, 0, sizeof *_saveFileInfo * 5);
-    tempFilesDeleted = _deleteRedundantTempFiles((port - 1) * 16);
-    if (tempFilesDeleted & 0x80) {
-        return 1;
-    }
-    for (i = 0; i < 15; ++i) {
-        struct DIRENTRY* file = _memcardFiles[i];
-
-        if (file == 0) {
-            continue;
-        }
-        fileNo = _memcardFileNumberFromFilename(file->name);
-        if (fileNo != 0) {
-            if (fileNo < 0) {
-                fileNo = -fileNo;
-                if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
-                    continue;
-                }
-                memset(&_saveFileInfo[fileNo - 1], 0, sizeof _saveFileInfo[fileNo - 1]);
-                _saveFileInfo[fileNo - 1].unk4.base.slotState = slotStateTemporary;
-            } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
-                slotsAvailable += (file->size + 0x1FFF) >> 13;
-            }
-        }
-        slotsAvailable -= (file->size + 0x1FFF) >> 13;
-    }
-
-    for (; slotsAvailable >= 3; slotsAvailable -= 3) {
-        for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.base.slotState == slotStateUnavailable) {
-                _saveFileInfo[i].unk4.base.slotState = slotStateAvailable;
-                break;
-            }
-        }
-    }
-
-    return 0;
-}
-
-#include "src/MENU/memcardHandler.h"
-
-/**
- * Decodes and validates the loaded save, optionally applying it to game state.
- *
- * @return One for invalid data, zero when valid (and applied when write is
- * nonzero).
- */
-static int _applyLoadedSaveFile(int write)
-{
-    int blockCount;
-    savedata_t* spmcimg = (savedata_t*)_spmcimg;
-    void* spmcimg2 = spmcimg + 1;
-    savedata_t* s4 = spmcimg + 1;
-    savedata_unk180_2_t* unk180 = &spmcimg[1].unk180.unk180;
-
-    _decode(unk180->key, &unk180->base.slotState,
-        sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->unk180.unk180.base.slotState);
-
-    blockCount = 92;
-    if (write != 0) {
-        blockCount = 32;
-    }
-
-    if ((_verifySaveChecksums(spmcimg + 1, blockCount) != 0)
-        || (unk180->base.unk8 != 0x20000107)) {
-        do {
-            return 1;
-        } while (0);
-    }
-
-    if (write == 0) {
-        return 0;
-    }
-
-    _rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof vs_main_stateFlags);
-    _rMemcpy(
-        vs_main_actionsLearned, spmcimg[1].actionsLearned, sizeof vs_main_actionsLearned);
-    _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
-    _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
-    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
-    _rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
-    _rMemcpy(
-        &vs_main_inventoryIndices, &spmcimg[1].unk16C8, sizeof vs_main_inventoryIndices);
-    _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof D_80061068);
-    _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof vs_main_scoredata);
-    D_80060064 = s4->unk1898;
-    _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof D_80061078);
-    spmcimg2 = &vs_main_artsStatus;
-    _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
-    vs_main_gametime.t = spmcimg[1].unk180.stats.gameTime.t;
-    func_80042CA0();
-    vs_main_setMonoSound(vs_main_settings.monoSound);
-    return 0;
-}
+#include "src/MENU/memcard.h"
 
 /**
  * Builds the save metadata and payload from current game state, then encodes
@@ -375,216 +157,7 @@ static u_short _filePreviousProgressCounter;
 static u_short _fileProgressPosition;
 static int _fileProgressCounter;
 
-/**
- * Reads a permanent or temporary save.
- *
- * A nonzero portFileno selects the card, file and temporary-file mode; call
- * again with zero to poll the read.
- *
- * @return Zero while pending, one when the read completes, or -1 after errors.
- */
-static int _loadSaveData(int portFileno)
-{
-    enum state { init = 0, reading = 1 };
-
-    static char state;
-    static char port;
-    static char file;
-    static char isTempSave;
-    static char errors;
-    static char _[2] __attribute__((unused));
-    static int fd;
-
-    void* temp_s2 = (savedata_t*)_spmcimg + 1;
-
-    if (portFileno != 0) {
-        state = init;
-        errors = 0;
-        _loadSaveDataErrorOffset = 0;
-        port = portFileno >> 0xC;
-        isTempSave = (portFileno >> 8) & 1;
-        file = portFileno & 0xF;
-        _fileProgressPosition = 80;
-        _filePreviousProgressCounter = 0;
-        return 0;
-    }
-
-    switch (state) {
-    case init: {
-        int nBytes;
-        char* filename;
-        int new_var = 320;
-
-        _fileProgressPosition +=
-            ((_fileProgressCounter - _filePreviousProgressCounter)
-                * ((_loadSaveDataErrorOffset * 20) - (_fileProgressPosition - new_var)))
-            / _fileProgressTarget;
-        _loadSaveDataErrorOffset = errors;
-        _fileProgressTarget = 192 - (isTempSave << 7);
-        _filePreviousProgressCounter = _fileProgressCounter;
-
-        memset(temp_s2, 0, sizeof(savedata_t));
-
-        if (file & 8) {
-            filename = _memcardMakeTempFilename(port, file & 7);
-        } else {
-            filename = _memcardMakeFilename(port, file);
-        }
-        fd = open(filename, 0x8000 | 1);
-        if (fd == -1) {
-            ++errors;
-            break;
-        }
-        _resetMemcardEvents(memcardEventsSw);
-        nBytes = sizeof(savedata_t);
-        if (isTempSave != 0) {
-            nBytes = 0x2000;
-        }
-        if (read(fd, temp_s2, nBytes) == -1) {
-            close(fd);
-            ++errors;
-            break;
-        }
-        state = reading;
-    }
-        // fallthrough
-    case reading: {
-        int event = _testMemcardEvents(memcardEventsSw);
-        if (event < memcardInternalEventNone) {
-            close(fd);
-            if (event == memcardInternalEventIoEnd) {
-                return 1;
-            }
-            state = init;
-            ++errors;
-        }
-        break;
-    }
-    }
-    return errors == 3 ? -1 : 0;
-}
-
-/**
- * Saves and verifies a save file.
- *
- * A nonzero portFile selects the card and one-based destination file; call
- * again with zero to progress the write.
- *
- * @return Zero while pending, one on verified success, or -1 on failure.
- */
-static int _saveFile(int portFile)
-{
-    enum state {
-        init = 0,
-        tempFileCreated = 1,
-        readReady = 2,
-        verifyPending = 3,
-        fileVerified = 4
-    };
-
-    static char state;
-    static char file;
-    static char port;
-    static char errors;
-    static char renameErrors;
-    static char _[3] __attribute__((unused));
-    static int fd;
-
-    int temp_v1_2;
-    int i;
-    int temp_s3;
-
-    if (portFile != 0) {
-        errors = 0;
-        renameErrors = 0;
-        _loadSaveDataErrorOffset = 0;
-        port = portFile >> 0xC;
-        file = portFile & 7;
-        _fileProgressPosition = 80;
-        _filePreviousProgressCounter = 0;
-        state = _memcardSaveIdExists(file + 'A' - 1);
-        return 0;
-    }
-    switch (state) {
-    case init:
-        if (rename(_memcardMakeFilename(port, file), _memcardMakeTempFilename(port, file))
-            != 0) {
-            errors = 0;
-            renameErrors = 0;
-            state = tempFileCreated;
-        } else {
-            ++renameErrors;
-            errors = renameErrors >> 4;
-        }
-        break;
-    case tempFileCreated:
-        temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
-                        * (320 - _fileProgressPosition))
-                  / _fileProgressTarget;
-        _filePreviousProgressCounter = _fileProgressCounter;
-        _fileProgressTarget = 384;
-        _fileProgressPosition += temp_v1_2;
-        fd = open(_memcardMakeTempFilename(port, file), 0x8000 | 0x0002);
-        ;
-        if (fd == -1) {
-            ++errors;
-            break;
-        }
-        _resetMemcardEvents(memcardEventsSw);
-        if (write(fd, _spmcimg, sizeof(savedata_t)) == -1) {
-            close(fd);
-            ++errors;
-            break;
-        }
-        state = readReady;
-        // fallthrough
-    case readReady: {
-        temp_s3 = _testMemcardEvents(memcardEventsSw);
-        if (temp_s3 < memcardInternalEventNone) {
-            close(fd);
-            if (temp_s3 == memcardInternalEventIoEnd) {
-                state = verifyPending;
-                i = _fileProgressPosition;
-                temp_s3 = _filePreviousProgressCounter;
-                _loadSaveData((port << 12) | (file + 8));
-                _fileProgressPosition = i;
-                _filePreviousProgressCounter = temp_s3;
-            } else {
-                ++errors;
-                state = tempFileCreated;
-            }
-        }
-        break;
-    }
-    case verifyPending:
-        temp_s3 = _loadSaveData(0);
-        if (temp_s3 == 0) {
-            break;
-        }
-        if (temp_s3 < 0) {
-            return -1;
-        }
-        for (i = 0; i < (int)sizeof(savedata_t); ++i) {
-            if (_spmcimg[i] != _spmcimg[sizeof(savedata_t) + i]) {
-                break;
-            }
-        }
-        if (i < (int)sizeof(savedata_t)) {
-            return -1;
-        }
-        state = fileVerified;
-        break;
-    case fileVerified:
-        if (rename(_memcardMakeTempFilename(port, file), _memcardMakeFilename(port, file))
-            == 0) {
-            ++renameErrors;
-            errors = (renameErrors >> 4);
-            break;
-        }
-        return 1;
-    }
-    return errors == 3 ? -1 : 0;
-}
+#include "src/MENU/memcardLoadSave.h"
 
 /**
  * Loads memorycard support data and installs card event handlers.
@@ -750,13 +323,13 @@ static char _fileMenuScreenFade;
  */
 static void _initFileMenu(void)
 {
-    _memoryCardMessage = 0;
+    _memoryCardMessage = NULL;
     _selectCursorColor = 0;
     _selectCursorXy = 0;
     _fileProgressCounter = 0;
     _fileMenuScreenFade = 0;
-    _fileProgressTarget = 0x180;
-    memset(&_fileMenuElements, 0, sizeof _fileMenuElements);
+    _fileProgressTarget = 384;
+    memset(_fileMenuElements, 0, sizeof _fileMenuElements);
 }
 
 /**
@@ -777,7 +350,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
     *(int*)&element->x = xy;
     *(int*)&element->w = wh;
 
-    if (text != 0) {
+    if (text != NULL) {
         for (i = 0; i < 32;) {
             c = *text++;
             if (c == vs_char_spacing) {
@@ -787,7 +360,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
                 } while (0);
             } else {
                 if (c == vs_char_terminator) {
-                    element->text[i] = 0xFF;
+                    element->text[i] = vs_char_printString;
                     return element;
                 }
                 if (c >= vs_char_nonPrinting) {
@@ -797,7 +370,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
             element->text[i++] = c;
         }
     } else {
-        element->text[0] = 0xFF;
+        element->text[0] = vs_char_printString;
     }
     return element;
 }
@@ -872,363 +445,8 @@ enum _memcardEventMask_e {
     memcardEventMaskAll = 0x70
 };
 
-enum maskedHandler_e {
-    memcardMaskedHandlerError = -1,
-    memcardMaskedHandlerPending = 0,
-    memcardMaskedHandlerComplete = 1
-};
-
-/**
- * Starts or polls a card operation, mapping its result through a stored mask.
- *
- * A nonzero portMask starts polling; zero advances the operation.
- */
-static enum maskedHandler_e maskedHandler(int portMask)
-{
-    static char mask;
-    static char _[5] __attribute__((unused));
-
-    int event;
-
-    if (portMask != 0) {
-        _memcardEventHandler(portMask & 3);
-        mask = (portMask >> 4);
-        return memcardMaskedHandlerPending;
-    }
-    event = _memcardEventHandler(0);
-    if (event != memcardEventPending) {
-        switch (event & mask) {
-        case memcardEventIoEnd:
-            return memcardMaskedHandlerComplete;
-        case memcardEventTimeout:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
-            break;
-        case memcardEventUnformatted:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_noData);
-            break;
-        default:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
-            break;
-        }
-        return memcardMaskedHandlerError;
-    }
-    return memcardMaskedHandlerPending;
-}
-
-#include "src/MENU/fileMenuText.h"
-
-/**
- * Draws a menu element and updates its animation state.
- */
-static void _drawFileMenuElement(fileMenuElements_t* element)
-{
-    u_long clut[130];
-    saveFileInfo_t* saveInfo;
-    int xy;
-    int var_a3;
-    int location;
-    int x;
-    int y;
-    int var1;
-    int var2;
-    int uvClut;
-    int slotState;
-    void* locationClut;
-    int new_var;
-
-    if (element->selected != 0) {
-        element->outertextBlendFactor = 8;
-    } else if (element->outertextBlendFactor != 0) {
-        --element->outertextBlendFactor;
-    }
-    if (element->slotUnavailable != 0) {
-        element->outertextBlendFactor = 0;
-    }
-    if ((element->slotId >= 5) || ((element->y - 72) < 0x51U)) {
-        y = element->innertextBlendFactor;
-        var1 = _intepolateMenuItemBgColour(8 - element->outertextBlendFactor, y);
-        var2 = _intepolateMenuItemBgColour(element->outertextBlendFactor, y);
-        if (y & 7) {
-            element->innertextBlendFactor = y + 1;
-        }
-        y = element->y << 16;
-
-        DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-        _primBuf.prim.tilePoly.tile.tpage =
-            vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
-        _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0 =
-            ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
-        _primBuf.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
-        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
-        _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
-        _primBuf.prim.tilePoly.polyG4.x1y1 = ((element->x + element->w) & 0xFFFF) | y;
-        _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
-        _primBuf.prim.tilePoly.polyG4.x2y2 =
-            (u_short)element->x | ((element->y + element->h) << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
-        _primBuf.prim.tilePoly.polyG4.x3y3 =
-            ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
-        DrawPrim(&_primBuf);
-
-        x = element->x + 6;
-        for (var1 = 0; var1 < 32; ++var1) {
-            var2 = element->text[var1];
-            if (var2 == vs_char_spacing) {
-                x += element->text[++var1];
-            } else if (var2 != 0xFF) {
-                x = _printCharacter(var2, x, element->y, 0);
-            } else {
-                break;
-            }
-        }
-        var2 = element->slotId;
-        if (var2 < 5) {
-            _readImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
-            saveInfo = &_saveFileInfo[var2];
-            location = element->saveLocation - 1;
-            var1 = saveInfo->unk4.base.slotState;
-            if (saveInfo->unk4.base.slotState < 3) {
-                if (saveInfo->unk4.base.slotState == 0) {
-                    location = -2;
-                } else if (saveInfo->unk4.base.slotState == 2) {
-                    location = -4;
-                } else if (_isSaving != 0) {
-                    location = -1;
-                } else {
-                    location = -5;
-                }
-            } else if (location >= 48) {
-                location = -3;
-            }
-            if (location >= 32u) {
-                locationClut = _mcData->locationCluts[1];
-            } else {
-                locationClut = _mcData->locationCluts[0];
-            }
-            _drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
-            if (location < 0) {
-                uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
-                xy = (element->x - 64) | y;
-                _drawSprt(xy, uvClut, vs_getWH(64, 32),
-                    ((8 - element->outertextBlendFactor) << 19) | 0x9C);
-            } else {
-                int v0;
-                uvClut = ((location & 8) * 8) | ((location & 7) << 0xD)
-                       | vs_getUV0Clut(0, 0, 768, 227);
-                xy = (element->x - 64) | y;
-                new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
-                v0 = new_var >> 6;
-                var_a3 = (((8 - element->outertextBlendFactor) << 19) | 0x90);
-                _drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
-            }
-            _drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
-            _drawSaveInfoUI((element->x - 22) | y, vs_uiids_number);
-            _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
-            slotState = saveInfo->unk4.base.slotState;
-            if (slotState == slotStateUnavailable) {
-                _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_inUse),
-                    element->x + 6, element->y + 10, 3);
-            } else if (slotState == slotStateAvailable) {
-                if (_isSaving == 0) {
-                    _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_empty),
-                        element->x + 6, element->y + 10, 3);
-                } else {
-                    _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_new),
-                        element->x + 6, element->y + 10, 0);
-                }
-            } else {
-                y += 4 << 16;
-                _printString(
-                    (char*)&_textTable[_textTable[element->saveLocation
-                                                  + VS_MCMAN_BIN_INDEX_saveLocations]],
-                    element->x + 6, element->y + 4, 0);
-                _drawSaveInfoUI(y | 172, vs_uiids_map);
-                _drawSaveInfoUI(y | 189, vs_uiids_colon);
-                var1 = saveInfo->unk4.stats.mapCompletion;
-
-                if (var1 == 100) {
-                    _drawInteger(y | 192, 100, 100);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 207, vs_uiids_percent);
-                } else {
-                    _drawInteger(y | 192, var1, 10);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 202, vs_uiids_percent);
-                }
-                _drawSaveInfoUI(y | 217, vs_uiids_save);
-                _drawSaveInfoUI(y | 239, vs_uiids_colon);
-                _drawInteger(y | 242, saveInfo->unk4.stats.cumulativeSaveCount, 1000);
-                _drawSaveInfoUI(y | 267, vs_uiids_clear);
-                _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->unk4.stats.clearCount, 10);
-                y += 13 << 16;
-                if (saveInfo->unk4.stats.clearCount != 0) {
-                    _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), vs_getWH(16, 16),
-                        getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
-                }
-                _drawSaveInfoUI(y | 240, vs_uiids_time);
-                var1 = saveInfo->unk4.stats.gameTime.t.h;
-                if (var1 == 100) {
-                    _drawInteger(y | 263, var1, 100);
-                } else {
-                    _drawInteger(y | 268, var1, 10);
-                }
-                _drawSaveInfoUI(y | 279, vs_uiids_colon);
-                _drawInteger(y | 282, saveInfo->unk4.stats.gameTime.t.m, 10);
-                _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->unk4.stats.gameTime.t.s, 10);
-                _drawHPMP(y | 88, statTypeHP, saveInfo->unk4.stats.currentHP,
-                    saveInfo->unk4.stats.maxHP);
-                _drawHPMP(y | 158, statTypeMP, saveInfo->unk4.stats.currentMP,
-                    saveInfo->unk4.stats.maxMP);
-                y -= 17 << 16;
-            }
-            if ((element->selected != 0) && (_fileProgressCounter != 0)) {
-                if (_fileProgressCounter < 0) {
-                    signed char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
-                    _fileProcessingCompleteAnim(-p[17], y);
-                } else {
-                    int new_var3 = 0x140;
-                    _fileProcessingAnim(
-                        _fileProgressPosition
-                            + (((_fileProgressCounter - _filePreviousProgressCounter)
-                                   * ((_loadSaveDataErrorOffset * 0x14)
-                                       - (_fileProgressPosition - new_var3)))
-                                / _fileProgressTarget),
-                        y);
-                }
-            }
-        }
-    }
-}
-
-/**
- * Draws the menu elements, message area, cursor and fade.
- */
-static void _drawFileMenu(int framebuf)
-{
-    int _[2];
-    fileMenuElements_t* element;
-    int j;
-    int i;
-    u_int x;
-    int state;
-    int new_var;
-
-    element = _fileMenuElements;
-    x = 0;
-    if (framebuf != 0) {
-        x = 320;
-    }
-    _drawSprt(vs_getXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(64, 64),
-        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
-    _drawSprt(vs_getXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(256, 64),
-        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
-
-    for (i = 0; i < 10; ++i, ++element) {
-        state = element->state;
-        if (state == fileMenuElementStateAnimateX) {
-            if (element->x < element->targetPosition) {
-                element->x += 32;
-                if (element->x >= element->targetPosition) {
-                    element->x = element->targetPosition;
-                    element->state = fileMenuElementStateStatic;
-                }
-            } else {
-
-                for (j = 1; j < 16; ++j) {
-                    if ((element->targetPosition + _menuElementStops[j]) >= element->x) {
-                        break;
-                    }
-                }
-                element->x = element->targetPosition + _menuElementStops[j - 1];
-                if (element->w < (320 - element->x)) {
-                    element->w = 320 - element->x;
-                }
-                if (element->x == element->targetPosition) {
-                    element->state = fileMenuElementStateStatic;
-                }
-            }
-        }
-        if (state == fileMenuElementStateAnimateY) {
-            if (element->y > element->targetPosition) {
-                for (j = 1; j < 16; ++j) {
-                    if ((element->targetPosition + _menuElementStops[j]) >= element->y) {
-                        break;
-                    }
-                }
-                element->y = (element->targetPosition + _menuElementStops[j - 1]);
-            }
-            if (element->y == element->targetPosition) {
-                element->state = fileMenuElementStateStatic;
-            }
-        }
-        if (state == fileMenuElementStateAnimateNegX) {
-            if (element->x < element->targetPosition) {
-                for (j = 1; j < 16; ++j) {
-                    if (element->x >= -_menuElementStops[j]) {
-                        break;
-                    }
-                }
-                element->x = -_menuElementStops[j - 1];
-                if (element->x == 0) {
-                    element->state = fileMenuElementStateStatic;
-                }
-            } else {
-                element->x = element->x - 32;
-                if (element->targetPosition >= element->x) {
-                    element->x = element->targetPosition;
-                    element->state = fileMenuElementStateStatic;
-                }
-            }
-        }
-        if (state != fileMenuElementStateInactive) {
-            _drawFileMenuElement(element);
-        }
-    }
-
-    for (i = 1; i < 4; ++i) {
-        new_var = 256;
-        _drawSprt(vs_getXY(0, 187 - i), (187 - i) << 8, vs_getWH(256, 1),
-            (x >> 6) | (((4 - i) << 21) | new_var));
-        _drawSprt(vs_getXY(256, 187 - i), (187 - i) << 8, vs_getWH(64, 1),
-            (((int)(x + new_var)) >> 6) | (((4 - i) << 21) | new_var));
-    }
-    _drawSprt(vs_getXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), vs_getWH(33, 7),
-        getTPage(clut4Bit, semiTransparencyHalf, 768, 0)); // "Caution"
-    DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
-    _primBuf.prim.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-    _primBuf.prim.tile.x0y0 = vs_getXY(0, 187);
-    _primBuf.prim.tile.wh = vs_getWH(320, 52);
-    DrawPrim(&_primBuf); // Message dialog background
-    if (_selectCursorXy != 0) {
-        _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), vs_getWH(16, 16),
-            (_cursorFileOpSaturation[_selectCursorColor] << 16)
-                | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
-        _selectCursorColor = (_selectCursorColor + 1) & 0xF;
-        if (vs_main_buttonsPressed.all & PADRup) {
-            vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
-        }
-    } else {
-        _selectCursorColor = 0;
-    }
-    if (_memoryCardMessage != 0) {
-        _printString(_memoryCardMessage, 16, 192, 0);
-    }
-    if (_fileMenuScreenFade != 0) {
-        DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-        _primBuf.prim.tile_tpage.tpage =
-            vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
-        _primBuf.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
-        _primBuf.prim.tile_tpage.wh = vs_getWH(320, 224);
-        _primBuf.prim.tile_tpage.r0g0b0code =
-            vs_getRGB0Raw(primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
-        DrawPrim(&_primBuf);
-    }
-}
+#define MEMCARD_MASKED_HANDLER_PAD 5
+#include "src/MENU/fileMenu.h"
 
 #include "src/MENU/drawFileMenuBg.h"
 
@@ -1240,15 +458,13 @@ static void _drawFileMenu(int framebuf)
  * Returns the prompt's selection after its exit animation, or zero while
  * pending.
  */
-static int _promptOverwrite(int arg0)
+static int _promptOverwrite(int init)
 {
     static int confirmed;
     static char state;
     static char initialized;
 
-    int temp_v0;
-
-    if (arg0 != 0) {
+    if (init != 0) {
         initialized = 1;
         _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_overwritePrompt);
         _promptConfirm(1);
@@ -1257,19 +473,19 @@ static int _promptOverwrite(int arg0)
     }
     switch (state) {
     case 0:
-        temp_v0 = _promptConfirm(0);
-        confirmed = temp_v0;
-        if (temp_v0 != 0) {
+        confirmed = _promptConfirm(0);
+        if (confirmed != 0) {
             state = 1;
         }
-        break;
+        return 0;
     case 1:
         if (_fileMenuElementsActive() != 0) {
             return confirmed;
         }
-        break;
+        return 0;
+    default:
+        return 0;
     }
-    return 0;
 }
 
 /**
@@ -1433,7 +649,7 @@ static int _showSaveFilesMenu(int initPort)
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuElements[val + 5].selected = 1;
                     _selectCursorXy = 0;
-                    maskedHandler(port + memcardEventMaskAll);
+                    _memcardMaskedHandler(port + memcardEventMaskAll);
                     state = slotSelected;
                     break;
                 } else {
@@ -1466,7 +682,7 @@ static int _showSaveFilesMenu(int initPort)
         }
         break;
     case slotSelected:
-        val = maskedHandler(0);
+        val = _memcardMaskedHandler(0);
         if (val != memcardMaskedHandlerPending) {
             if (_memoryCardMessage == (char*)(_textTable + VS_MCMAN_BIN_OFFSET_noData)) {
                 _promptFormat(port);
@@ -1494,7 +710,7 @@ static int _showSaveFilesMenu(int initPort)
         val = _promptOverwrite(0);
         if (val != 0) {
             if (val == 1) {
-                maskedHandler(port + memcardEventMaskAll);
+                _memcardMaskedHandler(port + memcardEventMaskAll);
                 state = initOverwrite;
             } else {
                 state = handleInput;
@@ -1502,7 +718,7 @@ static int _showSaveFilesMenu(int initPort)
         }
         break;
     case initOverwrite:
-        val = maskedHandler(0);
+        val = _memcardMaskedHandler(0);
         if (val != memcardMaskedHandlerPending) {
             if (val > memcardMaskedHandlerError) {
                 _dataNotSaved |= (_findCurrentSaveOnActiveMemcard() == (slot + page + 1));
@@ -1610,141 +826,7 @@ static int _showSaveFilesMenu(int initPort)
     return 0;
 }
 
-/**
- * Runs card selection and then opens the slot menu for that card.
- *
- * A nonzero initPort starts selection; polling returns one when the save flow
- * completes, -1 when cancelled, or zero while active.
- */
-static int _selectSaveMemoryCard(int initPort)
-{
-    enum state {
-        init = 0,
-        waitForUnselectedAnimation = 1,
-        waitForAnimation = 2,
-        handleEvents = 3,
-        animateLeave = 4,
-        leave = 5,
-        initSaveMenu = 6,
-        showSaveMenu = 7
-    };
-
-    static char state;
-    static u_char port;
-
-    int i, j;
-
-    if (initPort != 0) {
-        port = initPort;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_checking);
-        state = init;
-        return 0;
-    }
-
-    switch (state) {
-    case init:
-        _fileMenuElements[port].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[port].targetPosition = 180;
-        _fileMenuElements[port].innertextBlendFactor = 1;
-        _fileMenuElements[3 - port].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[3 - port].targetPosition = 320;
-        state = waitForUnselectedAnimation;
-        break;
-    case waitForUnselectedAnimation:
-        if (_fileMenuElementsActive() == 0) {
-            break;
-        }
-        if (port == 2) {
-            _fileMenuElements[2].state = fileMenuElementStateAnimateY;
-            _fileMenuElements[2].targetPosition = 50;
-        }
-        state = waitForAnimation;
-        break;
-    case waitForAnimation:
-        if (_fileMenuElementsActive() != 0) {
-            _memcardEventHandler(port);
-            state = handleEvents;
-        }
-        break;
-    case handleEvents:
-        i = _memcardEventHandler(0) & 3;
-        if (i == 0) {
-            break;
-        }
-        switch (i) {
-        case memcardEventIoEnd:
-            state = initSaveMenu;
-            break;
-        case memcardEventTimeout:
-            state = animateLeave;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
-            break;
-        case memcardEventUnformatted:
-            memset(_saveFileInfo, 0, sizeof *_saveFileInfo * 5);
-            for (i = 14; i >= 0; --i) {
-                _memcardFiles[i] = 0;
-            }
-            j = slotStateAvailable;
-            for (i = 4; i >= 0; --i) {
-                _saveFileInfo[i].unk4.base.slotState = j;
-            }
-            _showSaveFilesMenu(port);
-            state = showSaveMenu;
-            break;
-        }
-        break;
-    case animateLeave:
-        if (vs_main_buttonsPressed.pad[0].low == 0) {
-            break;
-        }
-        vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-        for (i = 1; i < 3; ++i) {
-            _fileMenuElements[i].state = fileMenuElementStateAnimateX;
-            _fileMenuElements[i].targetPosition = 320;
-        }
-        state = leave;
-        break;
-    case leave:
-        if (_fileMenuElementsActive() != 0) {
-            return -1;
-        }
-        break;
-    case initSaveMenu:
-        if (_initSaveFileInfo(port) != 0) {
-            state = animateLeave;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
-            break;
-        }
-        for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.base.slotState != slotStateUnavailable) {
-                break;
-            }
-        }
-        if (i == 5) {
-            state = animateLeave;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_cardFull);
-            break;
-        }
-        _showSaveFilesMenu(port);
-        state = showSaveMenu;
-        break;
-    case showSaveMenu:
-        i = _showSaveFilesMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i < 0) {
-            for (i = 1; i < 3; ++i) {
-                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
-                _fileMenuElements[i].targetPosition = 320;
-            }
-            state = leave;
-            break;
-        }
-        return 1;
-    }
-    return 0;
-}
+#include "src/MENU/selectSaveMemoryCard.h"
 
 /**
  * Runs the save/container slot chooser and handles unsaved container data.
@@ -2031,7 +1113,7 @@ static int _showLoadFilesMenu(int initPort)
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _fileMenuElements[currentSlot + 5].selected = 1;
                 _selectCursorXy = 0;
-                maskedHandler(port + memcardEventMaskAll);
+                _memcardMaskedHandler(port + memcardEventMaskAll);
                 state = startLoad;
                 break;
             }
@@ -2062,11 +1144,12 @@ static int _showLoadFilesMenu(int initPort)
         _fileMenuElements[currentSlot + 5].selected = 1;
         break;
     case startLoad:
-        currentSlot = maskedHandler(0);
+        currentSlot = _memcardMaskedHandler(0);
         if (currentSlot != memcardMaskedHandlerPending) {
             if (currentSlot >= memcardMaskedHandlerPending) {
                 int new_var;
-                _loadSaveData(((slot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
+                _loadSaveData(
+                    ((slot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
                 state = applyLoad;
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loading);
             } else {
@@ -2136,128 +1219,7 @@ static int _showLoadFilesMenu(int initPort)
     return 0;
 }
 
-/**
- * Runs memorycard selection and opens the load slot menu for that card.
- *
- * A nonzero initPort initializes selection; polling returns a positive result
- * after a load, a negative result on cancel/error, or zero while pending.
- */
-static long _selectLoadMemoryCard(int initPort)
-{
-    enum state {
-        init = 0,
-        waitForUnselectedAnimation = 1,
-        pollEventsInit = 2,
-        pollEvents = 3,
-        leave = 4,
-        returnNotSelected = 5,
-        pollSuccess = 6,
-        selectFile = 7
-    };
-
-    static char state;
-    static u_char port;
-
-    int i;
-
-    if (initPort != 0) {
-        port = initPort;
-        _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_checking);
-        state = init;
-        return 0;
-    }
-    switch (state) {
-    case init:
-        _fileMenuElements[port].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[port].targetPosition = 180;
-        _fileMenuElements[port].innertextBlendFactor = 1;
-        _fileMenuElements[3 - port].state = fileMenuElementStateAnimateX;
-        _fileMenuElements[3 - port].targetPosition = 320;
-        state = waitForUnselectedAnimation;
-        break;
-
-    case waitForUnselectedAnimation:
-        if (_fileMenuElementsActive() == 0) {
-            break;
-        }
-        if (port == 2) {
-            _fileMenuElements[2].state = fileMenuElementStateAnimateY;
-            _fileMenuElements[2].targetPosition = 50;
-        }
-        state = pollEventsInit;
-        break;
-
-    case pollEventsInit:
-        if (_fileMenuElementsActive() == 0) {
-            break;
-        }
-        maskedHandler(port + memcardEventMaskIgnoreNoEvent);
-        state = pollEvents;
-        break;
-
-    case pollEvents:
-        i = maskedHandler(0);
-        if (i != memcardMaskedHandlerPending) {
-            state = i + leave + 1;
-        }
-        break;
-
-    case leave:
-        if ((vs_main_buttonsPressed.pad[0].low) == 0) {
-            break;
-        }
-        vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-        for (i = 1; i < 3; ++i) {
-            _fileMenuElements[i].state = fileMenuElementStateAnimateX;
-            _fileMenuElements[i].targetPosition = 320;
-        }
-        state = returnNotSelected;
-        break;
-
-    case returnNotSelected:
-        if (_fileMenuElementsActive() != 0) {
-            return -1;
-        }
-        break;
-
-    case pollSuccess:
-        if (_initSaveFileInfo(port) != 0) {
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loadfailed);
-            state = leave;
-            break;
-        }
-        for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.base.slotState > slotStateAvailable) {
-                break;
-            }
-        }
-
-        if (i == 5) {
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_noData);
-            state = leave;
-        } else {
-            _showLoadFilesMenu(port);
-            state = 7;
-        }
-        break;
-
-    case selectFile:
-        i = _showLoadFilesMenu(0);
-        if (i == 0) {
-            break;
-        }
-        if (i < 0) {
-            for (i = 1; i < 3; ++i) {
-                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
-                _fileMenuElements[i].targetPosition = 320;
-            }
-            state = returnNotSelected;
-            break;
-        }
-        return 1;
-    }
-    return 0;
-}
+#include "src/MENU/selectLoadMemoryCard.h"
 
 /**
  * Runs the initial slot chooser and asynchronous load flow for game over/data

@@ -119,3 +119,160 @@ void func_800F9BC0(short arg0, short arg1)
     D_800EB9B4->unk4 = arg0;
     D_800EB9B4->unk6 = arg1;
 }
+
+void func_800F9BD8(void)
+{
+    u_long* ot = vs_scratch.unk4;
+    u_long saved = *ot;
+    u_short* table = (u_short*)0x1F800088;
+    int count = 0;
+    u_long* packet;
+    int temp;
+    int value;
+    u_int i;
+    int stride;
+
+    *ot = -1;
+    packet = ot + 0x7FE;
+
+    temp = (u_short)D_800EB9B4->unk4 * 16;
+    value = D_800EB9B4->unk6 + 0x1000;
+
+    for (i = 0; i < 0x1BC; ++i) {
+        table[i] = temp >> 3;
+        temp = temp * value >> 12;
+    }
+
+    do {
+        int x;
+        u_long* word;
+
+        value = 1;
+        x = ((u_char*)packet)[3];
+        word = packet + 1;
+
+        do {
+            temp = (*word++ >> 26) - 8;
+            ++value;
+        } while (temp >= 0x30u && x >= value);
+
+        if (temp < 8u) {
+            stride = ((temp & 1) + ((temp >> 2) & 1)) + 1;
+            count = ((temp >> 1) & 1) + 3;
+        }
+
+        if (count != 0) {
+            u_long* vertex = packet - (-value);
+
+            do {
+                int mac1;
+                int mac2;
+                int distSq;
+                int offset;
+
+                x = *vertex;
+                temp = (x >> 16) - 0x70;
+                x = (short)x - 0xA0;
+
+                gte_ldir1ir2(x, temp);
+
+                --count;
+
+                gte_sqr0_1nop();
+                gte_stmac1mac2(mac1, mac2);
+
+                distSq = mac1 + mac2;
+
+                gte_ldlzc(distSq);
+
+                if (distSq != 0) {
+                    int calc;
+
+                    gte_stlzcr(mac1);
+
+                    calc = mac1 & (~1);
+                    offset = 0x1F - calc;
+                    calc = D_80040C18[(distSq >> (0x18 - calc)) - 0x40];
+                    distSq = (calc << (offset >> 1)) >> 12;
+
+                    if (distSq > 0x1BBu) {
+                        distSq = 0x1BB;
+                    }
+                }
+
+                value = table[distSq];
+                offset = (x * value) >> 13;
+                *vertex =
+                    ((offset + 0xA0) & 0xFFFF) | ((((temp * value) >> 13) + 0x70) << 16);
+                vertex += stride;
+
+            } while (count != 0);
+        }
+
+        packet = (u_long*)((*packet & 0xFFFFFF) | 0x80000000);
+    } while ((*packet & 0xFFFFFF) != 0xFFFFFF);
+
+    *ot = saved;
+}
+
+void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }
+
+static int func_800F9DF8(int arg0, int arg1)
+{
+    int var_s1;
+
+    var_s1 = 8 - ((arg0 + 8) & 0xF);
+    if (var_s1 < 0) {
+        var_s1 = -var_s1;
+    }
+    var_s1 += 0x40;
+    return ((((((rcos(arg0 << 6) * arg1 * 0xB) >> 0xF) * var_s1) >> 6) + 0xA0) & 0xFFFF)
+         | ((((((rsin(arg0 << 6) * arg1) >> 0xC) * var_s1) >> 6) + 0x70) << 0x10);
+}
+
+static int* func_800F9EBC(int arg0, int arg1, int* arg2, void** arg3)
+{
+    int var_s2;
+
+    for (var_s2 = arg1; var_s2 < arg1 + 4; ++var_s2) {
+        arg2[0] = ((u_long)*arg3 & 0xFFFFFF) | 0x06000000;
+        arg2[1] = 0x32FFFFFF;
+        arg2[2] = arg0;
+        arg2[3] = 0xA0A0A0;
+        arg2[4] = func_800F9DF8(var_s2 + 1, 0x80);
+        arg2[5] = 0xA0A0A0;
+        arg2[6] = func_800F9DF8(var_s2, 0x80);
+        *arg3 = (void*)(((u_long)arg2 << 8) >> 8);
+        arg2 += 7;
+    }
+    return arg2;
+}
+
+void func_800F9FB8(void)
+{
+    int* var_s2;
+    int i;
+    void** temp_s4;
+
+    temp_s4 = vs_scratch.unk8;
+    var_s2 = func_800F9EBC(0xE00140, 6, vs_scratch.unk0, temp_s4);
+    var_s2 = func_800F9EBC(0xE00000, 0x16, var_s2, temp_s4);
+    var_s2 = func_800F9EBC(0, 0x26, var_s2, temp_s4);
+    var_s2 = func_800F9EBC(0x140, 0x36, var_s2, temp_s4);
+
+    for (i = 0; i < 0x40; ++i) {
+        var_s2[0] = ((u_long)*temp_s4 & 0xFFFFFF) | 0x09000000;
+        var_s2[1] = 0xE1000220;
+        var_s2[2] = 0x3AA0A0A0;
+        var_s2[3] = func_800F9DF8(i + 1, 0x80);
+        var_s2[4] = 0xA0A0A0;
+        var_s2[5] = func_800F9DF8(i, 0x80);
+        var_s2[6] = 0;
+        var_s2[7] = func_800F9DF8(i + 1, 0x60);
+        var_s2[8] = 0;
+        var_s2[9] = func_800F9DF8(i, 0x60);
+        *temp_s4 = (void*)(((u_long)var_s2 << 8) >> 8);
+        var_s2 += 10;
+    }
+    vs_scratch.unk0 = var_s2;
+}

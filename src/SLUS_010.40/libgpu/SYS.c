@@ -62,7 +62,7 @@ int func_8002A3E8(int, int, int, int);
 void func_8002A698(void);
 void func_800286B8(char* name, RECT* rect);
 void func_80029694(DR_ENV* dr_env, DRAWENV* env);
-u_long func_80029924(short x, short y);
+u_int func_80029924(short x, short y);
 u_long func_800299BC(short x, short y);
 u_long func_80029A54(int x, int y);
 void func_8002B1DC(u_char* p, int c, int n);

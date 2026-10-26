@@ -10,6 +10,7 @@ ClearImage
 ClearOTagR
 close
 CloseEvent
+D_80040C18
 D_80050468
 D_80055C80
 D_8005DFD4

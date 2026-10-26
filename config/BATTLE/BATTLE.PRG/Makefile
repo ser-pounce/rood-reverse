@@ -32,3 +32,7 @@ $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin $(BUILD)/assets/B
 $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml.o: $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
+
+BATTLE_LDLIBS := $(BUILD)/data/GIM/SCREFF2.PRG.elf
+$(BUILD)/data/$(battle.prg): $(BATTLE_LDLIBS)
+$(BUILD)/data/$(battle.prg): private LDLIBS += $(BATTLE_LDLIBS)

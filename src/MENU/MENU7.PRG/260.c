@@ -31,15 +31,15 @@ static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
  */
 static void _packageGameSaveData(int targetFile)
 {
-    static const u_short D_8010286C[] = { 0x7582, 0x6082, 0x6682, 0x7182, 0x6082, 0x6D82,
-        0x7382, 0x4081, 0x7282, 0x7382, 0x6E82, 0x7182, 0x7882, 0x4081, 0x6582, 0x6882,
-        0x6B82, 0x6482, 0x4081, 0x5082, 0x4081, 0x4081, 0x4081, 0x4F82, 0x4F82, 0x4681,
-        0x4F82, 0x4F82, 0x4681, 0x4F82, 0x4F82, 0x4081 };
+#pragma sjis(start)
+    static const u_char _defaultFileTitle[] =
+        "ＶＡＧＲＡＮＴ　ＳＴＯＲＹ　ＦＩＬＥ　１　　　００：００：００　";
+#pragma sjis(end)
 
     long i;
     int j;
     int var_a0;
-    u_short const* s0 = D_8010286C;
+    u_char const* s0 = _defaultFileTitle;
     savedata_t* savedata = (savedata_t*)_spmcimg;
     savedata_t* savedata2 = savedata + 1;
     savedata_t* savedata3 = savedata;
@@ -1148,8 +1148,7 @@ static int _showLoadFilesMenu(int initPort)
         if (currentSlot != memcardMaskedHandlerPending) {
             if (currentSlot >= memcardMaskedHandlerPending) {
                 int new_var;
-                _loadSaveData(
-                    ((slot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
+                _loadSaveData(((slot + page) + 1) | (new_var = ((port - 1) << 16) | 256));
                 state = applyLoad;
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_loading);
             } else {

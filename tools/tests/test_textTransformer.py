@@ -3,10 +3,10 @@ import sys
 import unittest
 from pathlib import Path
 
-from tools.etc.vsStringTransformer import process_vsstring_block
+from tools.etc.textTransformer import process_lines, process_sjis_block, process_vsstring_block
 
 
-class VsStringTransformerTests(unittest.TestCase):
+class TextTransformerTests(unittest.TestCase):
     def test_adjacent_strings(self):
         self.assertEqual(
             process_vsstring_block('char text[] = "Hello " "world";'),
@@ -53,7 +53,7 @@ class VsStringTransformerTests(unittest.TestCase):
             'char after[] = "ASCII";\n'
         )
         result = subprocess.run(
-            [sys.executable, '-m', 'tools.etc.vsStringTransformer'],
+            [sys.executable, '-m', 'tools.etc.textTransformer'],
             input=source,
             text=True,
             capture_output=True,
@@ -66,6 +66,47 @@ class VsStringTransformerTests(unittest.TestCase):
             'char inside[] = {182, 1};\n'
             'char after[] = "ASCII";\n',
         )
+
+    def test_cli_dispatches_each_pragma_to_its_encoding(self):
+        source = (
+            '#pragma sjis(start)\n'
+            'char jp[] = "ＡＢ　１";\n'
+            '#pragma sjis(end)\n'
+            '#pragma vsstring(start)\n'
+            'char vs[] = "A";\n'
+            '#pragma vsstring(end)\n'
+            '#pragma pack(1)\n'
+            'char outside[] = "ＡＢ";\n'
+        )
+        self.assertEqual(
+            ''.join(process_lines(source.splitlines(keepends=True))),
+            'char jp[] = {130, 96, 130, 97, 129, 64, 130, 80};\n'
+            'char vs[] = {10};\n'
+            '#pragma pack(1)\n'
+            'char outside[] = "ＡＢ";\n',
+        )
+
+    def test_mismatched_end_pragma_does_not_close_block(self):
+        source = '#pragma sjis(start)\n"Ａ"\n#pragma vsstring(end)\n"Ｂ"\n'
+        self.assertEqual(
+            ''.join(process_lines(source.splitlines(keepends=True))),
+            '{130, 96}\n#pragma vsstring(end)\n{130, 97}\n',
+        )
+
+
+class SjisTests(unittest.TestCase):
+    def test_full_width_text(self):
+        self.assertEqual(process_sjis_block('"ＶＡＧ　０"'), '{130, 117, 130, 96, 130, 102, 129, 64, 130, 79}')
+
+    def test_adjacent_literals_concatenate(self):
+        self.assertEqual(process_sjis_block('"Ａ" "Ｂ"'), '{130, 96, 130, 97}')
+
+    def test_ascii_character_literal(self):
+        self.assertEqual(process_sjis_block("'A'"), '65')
+
+    def test_unmappable_text_is_an_error(self):
+        with self.assertRaises(UnicodeEncodeError):
+            process_sjis_block('"🐈"')
 
 
 if __name__ == '__main__':

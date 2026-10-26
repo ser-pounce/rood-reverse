@@ -1,6 +1,5 @@
-#define VS_GRID_FUNCTION vs_effect_acidFlow_0
-#include "src/EFFECT/grids.h"
+#define VS_EFFECT_NAME vs_effect_acidFlow
 
-#define VS_TILED_RING_FUNCTION vs_effect_acidFlow_1
+#include "src/EFFECT/grids.h"
 
 #include "src/EFFECT/tiledRings.h"

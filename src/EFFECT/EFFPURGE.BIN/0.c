@@ -2,152 +2,124 @@
 #include "src/EFFECT/PLG044.BIN/0.h"
 #include "src/EFFECT/PLG045.BIN/110.h"
 #include "src/EFFECT/PLG047.BIN/0.h"
+#include "src/EFFECT/PLG048.BIN/0.h"
+#include "src/EFFECT/PLG049.BIN/E0.h"
+#include "src/EFFECT/PLG050.BIN/E0.h"
 #include "src/EFFECT/PLG051.BIN/0.h"
+#include "src/EFFECT/PLG052.BIN/0.h"
 #include "src/EFFECT/PLG053.BIN/18.h"
+#include "src/EFFECT/PLG054.BIN/18.h"
+#include "src/EFFECT/PLG055.BIN/18.h"
+#include "src/EFFECT/PLG056.BIN/18.h"
+#include "src/EFFECT/PLG057.BIN/2D0.h"
+#include "src/EFFECT/PLG058.BIN/2D0.h"
+#include "src/EFFECT/PLG059.BIN/2D0.h"
+#include "src/EFFECT/PLG060.BIN/2D0.h"
 #include "src/EFFECT/PLG061.BIN/18.h"
+#include "src/EFFECT/PLG062.BIN/18.h"
+#include "src/EFFECT/PLG063.BIN/18.h"
+#include "src/EFFECT/PLG064.BIN/18.h"
+#include "src/EFFECT/PLG065.BIN/F8.h"
+#include "src/EFFECT/PLG066.BIN/F8.h"
+#include "src/EFFECT/PLG067.BIN/F8.h"
+#include "src/EFFECT/PLG068.BIN/F8.h"
+#include "src/EFFECT/PLG069.BIN/E0.h"
+#include "src/EFFECT/PLG070.BIN/E0.h"
+#include "src/EFFECT/PLG071.BIN/E0.h"
+#include "src/EFFECT/PLG072.BIN/E0.h"
+#include "src/EFFECT/PLG073.BIN/F8.h"
+#include "src/EFFECT/PLG074.BIN/F8.h"
+#include "src/EFFECT/PLG075.BIN/F8.h"
+#include "src/EFFECT/PLG076.BIN/F8.h"
+#include "src/EFFECT/PLG077.BIN/18.h"
+#include "src/EFFECT/PLG078.BIN/18.h"
+#include "src/EFFECT/PLG079.BIN/18.h"
+#include "src/EFFECT/PLG080.BIN/18.h"
 #include "src/EFFECT/PLG081.BIN/0.h"
+#include "src/EFFECT/PLG082.BIN/128.h"
+#include "src/EFFECT/PLG083.BIN/0.h"
+#include "src/EFFECT/PLG084.BIN/18.h"
 #include "src/EFFECT/PLG085.BIN/18.h"
+#include "src/EFFECT/PLG086.BIN/F8.h"
+#include "src/EFFECT/PLG087.BIN/1F0.h"
+#include "src/EFFECT/PLG102.BIN/110.h"
+#include "src/EFFECT/PLG114.BIN/208.h"
+#include "src/EFFECT/PLG128.BIN/F8.h"
+#include "src/EFFECT/PLG129.BIN/0.h"
+#include "src/EFFECT/PLG131.BIN/0.h"
+#include "src/EFFECT/PLG133.BIN/0.h"
+#include "src/EFFECT/PLG134.BIN/E0.h"
+#include "src/EFFECT/PLG135.BIN/E0.h"
+#include "src/EFFECT/PLG136.BIN/18.h"
+#include "src/EFFECT/PLG137.BIN/F8.h"
+#include "src/EFFECT/PLG138.BIN/18.h"
+#include "src/EFFECT/PLG140.BIN/110.h"
+#include "src/EFFECT/PLG141.BIN/E0.h"
+#include "src/EFFECT/PLG142.BIN/18.h"
+#include "src/EFFECT/PLG143.BIN/0.h"
+#include "src/EFFECT/PLG144.BIN/0.h"
+#include "src/EFFECT/PLG145.BIN/0.h"
+#include "src/EFFECT/PLG146.BIN/1D8.h"
+#include "src/EFFECT/PLG147.BIN/F8.h"
+#include "src/EFFECT/PLG148.BIN/E0.h"
+#include "src/EFFECT/PLG149.BIN/0.h"
+#include "src/EFFECT/PLG150.BIN/18.h"
+#include "src/EFFECT/PLG151.BIN/0.h"
+#include "src/EFFECT/PLG152.BIN/128.h"
+#include "src/EFFECT/PLG153.BIN/110.h"
+#include "src/EFFECT/PLG155.BIN/18.h"
+#include "src/EFFECT/PLG156.BIN/128.h"
+#include "src/EFFECT/PLG157.BIN/0.h"
+#include "src/EFFECT/PLG158.BIN/0.h"
+#include "src/EFFECT/PLG159.BIN/18.h"
+#include "src/EFFECT/PLG160.BIN/0.h"
+#include "src/EFFECT/PLG161.BIN/F8.h"
+#include "src/EFFECT/PLG162.BIN/0.h"
+#include "src/EFFECT/PLG164.BIN/110.h"
+#include "src/EFFECT/PLG165.BIN/F8.h"
+#include "src/EFFECT/PLG166.BIN/0.h"
+#include "src/EFFECT/PLG167.BIN/E0.h"
+#include "src/EFFECT/PLG168.BIN/1F0.h"
+#include "src/EFFECT/PLG169.BIN/E0.h"
+#include "src/EFFECT/PLG170.BIN/18.h"
+#include "src/EFFECT/PLG198.BIN/0.h"
+#include "src/EFFECT/PLG199.BIN/0.h"
+#include "src/EFFECT/PLG221.BIN/18.h"
+#include "src/EFFECT/PLG224.BIN/F8.h"
+#include "src/EFFECT/PLG232.BIN/E0.h"
+#include "src/EFFECT/PLG236.BIN/0.h"
+#include "src/EFFECT/PLG240.BIN/F8.h"
+#include "src/EFFECT/PLG241.BIN/F8.h"
+#include "src/EFFECT/PLG242.BIN/F8.h"
+#include "src/EFFECT/PLG243.BIN/E0.h"
+#include "src/EFFECT/PLG245.BIN/0.h"
+#include "src/EFFECT/PLG247.BIN/0.h"
+#include "src/EFFECT/PLG248.BIN/0.h"
+#include "src/EFFECT/PLG250.BIN/0.h"
+#include "src/EFFECT/PLG251.BIN/0.h"
+#include "src/EFFECT/PLG255.BIN/1D8.h"
+#include "src/EFFECT/PLG258.BIN/0.h"
+#include "src/EFFECT/PLG259.BIN/0.h"
+#include "src/EFFECT/PLG263.BIN/110.h"
+#include "src/EFFECT/PLG265.BIN/2E8.h"
+#include "src/EFFECT/PLG266.BIN/2E8.h"
+#include "src/EFFECT/PLG269.BIN/E0.h"
+#include "src/EFFECT/PLG271.BIN/1D8.h"
+#include "src/EFFECT/PLG272.BIN/18.h"
+#include "src/EFFECT/PLG280.BIN/128.h"
+#include "src/EFFECT/PLG290.BIN/110.h"
+#include "src/EFFECT/PLG291.BIN/F8.h"
+#include "src/EFFECT/PLG297.BIN/18.h"
+#include "src/EFFECT/PLG300.BIN/110.h"
 #include "src/EFFECT/PLG139.BIN/18.h"
 #include "src/EFFECT/PLG154.BIN/0.h"
 #include "src/EFFECT/PLG246.BIN/0.h"
 #include "src/EFFECT/PLG260.BIN/0.h"
 #include "src/EFFECT/PLG273.BIN/0.h"
+#include "src/EFFECT/PLG301.BIN/110.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
-
-/** Effect entrypoints, declarations to temporarily satisfy the compiler  */
-int func_800F9800(func_800D4910_t*, u_int, int);
-int func_800F9818(func_800D4910_t*, u_int, int);
-int func_800F98E0(func_800D4910_t*, u_int, int);
-int func_800F98F8(func_800D4910_t*, u_int, int);
-int func_800F9910(func_800D4910_t*, u_int, int);
-int func_800F9928(func_800D4910_t*, u_int, int);
-int func_800F99D8(func_800D4910_t*, u_int, int);
-int func_800F99F0(func_800D4910_t*, u_int, int);
-int func_800F9AE8(func_800D4910_t*, u_int, int);
-int func_800FA324(func_800D4910_t*, u_int, int);
-int func_800FA368(func_800D4910_t*, u_int, int);
-int func_800FA398(func_800D4910_t*, u_int, int);
-int func_800FA3B0(func_800D4910_t*, u_int, int);
-int func_800FA41C(func_800D4910_t*, u_int, int);
-int func_800FA424(func_800D4910_t*, u_int, int);
-int func_800FA48C(func_800D4910_t*, u_int, int);
-int func_800FA490(func_800D4910_t*, u_int, int);
-int func_800FA4A8(func_800D4910_t*, u_int, int);
-int func_800FA588(func_800D4910_t*, u_int, int);
-int func_800FA6B8(func_800D4910_t*, u_int, int);
-int func_800FA6BC(func_800D4910_t*, u_int, int);
-int func_800FA6D0(func_800D4910_t*, u_int, int);
-int func_800FA6F8(func_800D4910_t*, u_int, int);
-int func_800FA710(func_800D4910_t*, u_int, int);
-int func_800FA740(func_800D4910_t*, u_int, int);
-int func_800FA770(func_800D4910_t*, u_int, int);
-int func_800FA7B0(func_800D4910_t*, u_int, int);
-int func_800FA7F0(func_800D4910_t*, u_int, int);
-int func_800FA84C(func_800D4910_t*, u_int, int);
-int func_800FA868(func_800D4910_t*, u_int, int);
-int func_800FA8D0(func_800D4910_t*, u_int, int);
-int func_800FAC78(func_800D4910_t*, u_int, int);
-int func_800FAF00(func_800D4910_t*, u_int, int);
-int func_800FAF30(func_800D4910_t*, u_int, int);
-int func_800FB00C(func_800D4910_t*, u_int, int);
-int func_800FB0CC(func_800D4910_t*, u_int, int);
-int func_800FB260(func_800D4910_t*, u_int, int);
-int func_800FB294(func_800D4910_t*, u_int, int);
-int func_800FB2D8(func_800D4910_t*, u_int, int);
-int func_800FB2DC(func_800D4910_t*, u_int, int);
-int func_800FB2F4(func_800D4910_t*, u_int, int);
-int func_800FB320(func_800D4910_t*, u_int, int);
-int func_800FB32C(func_800D4910_t*, u_int, int);
-int func_800FB338(func_800D4910_t*, u_int, int);
-int func_800FB348(func_800D4910_t*, u_int, int);
-int func_800FB3FC(func_800D4910_t*, u_int, int);
-int func_800FB400(func_800D4910_t*, u_int, int);
-int func_800FB418(func_800D4910_t*, u_int, int);
-int func_800FB4B8(func_800D4910_t*, u_int, int);
-int func_800FB4C0(func_800D4910_t*, u_int, int);
-int vs_spiritSurge_renderTrails(func_800D4910_t*, u_int, int);
-int func_800FB4D0(func_800D4910_t*, u_int, int);
-int func_800FB4D8(func_800D4910_t*, u_int, int);
-int func_800FB4E0(func_800D4910_t*, u_int, int);
-int func_800FB4F8(func_800D4910_t*, u_int, int);
-int func_800FB5B0(func_800D4910_t*, u_int, int);
-int func_800FB5B4(func_800D4910_t*, u_int, int);
-int func_800FB5CC(func_800D4910_t*, u_int, int);
-int func_800FB5D0(func_800D4910_t*, u_int, int);
-int func_800FB5F8(func_800D4910_t*, u_int, int);
-int func_800FB62C(func_800D4910_t*, u_int, int);
-int func_800FB71C(func_800D4910_t*, u_int, int);
-int func_800FB720(func_800D4910_t*, u_int, int);
-int func_800FB89C(func_800D4910_t*, u_int, int);
-int func_800FBA00(func_800D4910_t*, u_int, int);
-int func_800FBA18(func_800D4910_t*, u_int, int);
-int func_800FBAC8(func_800D4910_t*, u_int, int);
-int func_800FBB24(func_800D4910_t*, u_int, int);
-int func_800FBD60(func_800D4910_t*, u_int, int);
-int func_800FBDE4(func_800D4910_t*, u_int, int);
-int func_800FBDF8(func_800D4910_t*, u_int, int);
-int func_800FBE44(func_800D4910_t*, u_int, int);
-int func_800FBE88(func_800D4910_t*, u_int, int);
-int func_800FBEFC(func_800D4910_t*, u_int, int);
-int func_800FBF4C(func_800D4910_t*, u_int, int);
-int func_800FBF6C(func_800D4910_t*, u_int, int);
-int func_800FBF7C(func_800D4910_t*, u_int, int);
-int func_800FBF94(func_800D4910_t*, u_int, int);
-int func_800FBFCC(func_800D4910_t*, u_int, int);
-int func_800FBFDC(func_800D4910_t*, u_int, int);
-int func_800FC0E4(func_800D4910_t*, u_int, int);
-int func_800FC11C(func_800D4910_t*, u_int, int);
-int func_800FC21C(func_800D4910_t*, u_int, int);
-int func_800FC228(func_800D4910_t*, u_int, int);
-int func_800FC29C(func_800D4910_t*, u_int, int);
-int func_800FC2BC(func_800D4910_t*, u_int, int);
-int func_800FC42C(func_800D4910_t*, u_int, int);
-int func_800FC50C(func_800D4910_t*, u_int, int);
-int func_800FC524(func_800D4910_t*, u_int, int);
-int func_800FC568(func_800D4910_t*, u_int, int);
-int func_800FC56C(func_800D4910_t*, u_int, int);
-int func_800FC624(func_800D4910_t*, u_int, int);
-int func_800FC6EC(func_800D4910_t*, u_int, int);
-int func_800FC8C4(func_800D4910_t*, u_int, int);
-int func_800FC8D0(func_800D4910_t*, u_int, int);
-int func_800FC97C(func_800D4910_t*, u_int, int);
-int func_800FCA2C(func_800D4910_t*, u_int, int);
-int func_800FCA50(func_800D4910_t*, u_int, int);
-int func_800FCABC(func_800D4910_t*, u_int, int);
-int func_800FCB0C(func_800D4910_t*, u_int, int);
-int func_800FCB38(func_800D4910_t*, u_int, int);
-int func_800FCE0C(func_800D4910_t*, u_int, int);
-int func_800FCE78(func_800D4910_t*, u_int, int);
-int func_800FCE90(func_800D4910_t*, u_int, int);
-int func_800FCF18(func_800D4910_t*, u_int, int);
-int func_800FCFB4(func_800D4910_t*, u_int, int);
-int func_800FCFEC(func_800D4910_t*, u_int, int);
-int func_800FD074(func_800D4910_t*, u_int, int);
-int func_800FD104(func_800D4910_t*, u_int, int);
-int func_800FD198(func_800D4910_t*, u_int, int);
-int func_800FD2E4(func_800D4910_t*, u_int, int);
-int func_800FD354(func_800D4910_t*, u_int, int);
-int func_800FD420(func_800D4910_t*, u_int, int);
-int func_800FD4F4(func_800D4910_t*, u_int, int);
-int func_800FD51C(func_800D4910_t*, u_int, int);
-int func_800FD534(func_800D4910_t*, u_int, int);
-int func_800FD654(func_800D4910_t*, u_int, int);
-int func_800FD6C0(func_800D4910_t*, u_int, int);
-int func_800FDA1C(func_800D4910_t*, u_int, int);
-int func_800FDBAC(func_800D4910_t*, u_int, int);
-int func_800FDC20(func_800D4910_t*, u_int, int);
-int func_800FDE48(func_800D4910_t*, u_int, int);
-int func_800FDEC4(func_800D4910_t*, u_int, int);
-int func_800FE044(func_800D4910_t*, u_int, int);
-int func_800FE3EC(func_800D4910_t*, u_int, int);
-int func_800FE958(func_800D4910_t*, u_int, int);
-int func_800FF334(func_800D4910_t*, u_int, int);
-int func_800FF46C(func_800D4910_t*, u_int, int);
-int func_800FF4E8(func_800D4910_t*, u_int, int);
-int func_800FFB04(func_800D4910_t*, u_int, int);
-int func_800FFFA8(func_800D4910_t*, u_int, int);
 
 static u_char D_800FAE4C[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 3,
@@ -483,72 +455,107 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock,
-    vs_effect_lightningBolt, vs_effect_vulcanLance, func_800F9800,
-    vs_spiritSurge_renderTrails, func_800FBA00, func_800FC624, func_800FD51C,
-    func_800F98E0, func_800FC0E4, NULL, vs_effect_exorcism, func_800F9800,
-    vs_effect_explosion_0, vs_effect_explosion_1, func_800F9818, func_800FA368,
-    func_800F9818, func_800FA368, func_800F9818, func_800FA368, func_800FB4E0, NULL,
-    func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354, func_800FF46C,
-    func_800FB4E0, NULL, func_800FD354, func_800FF46C, func_800FB4E0, NULL, func_800FD354,
-    func_800FF46C, vs_effect_flameSphere_0, vs_effect_flameSphere_1,
-    vs_effect_flameSphere_2, vs_effect_flameSphere_3, func_800F9818, func_800FA3B0,
-    func_800FAF00, func_800FBB24, func_800F9818, func_800FA3B0, func_800FAF00,
-    func_800FBB24, func_800F9818, func_800FA3B0, func_800FAF00, func_800FBB24,
-    func_800F98F8, func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98F8,
-    func_800FA7B0, func_800FB71C, func_800FD6C0, func_800F98F8, func_800FA7B0,
-    func_800FB71C, func_800FD6C0, func_800F98F8, func_800FA7B0, func_800FB71C,
-    func_800FD6C0, func_800F98E0, func_800FBFCC, func_800FC50C, func_800F98E0,
-    func_800FBFCC, func_800FC50C, func_800F98E0, func_800FBFCC, func_800FC50C,
-    func_800F98E0, func_800FBFCC, func_800FC50C, func_800F98F8, func_800FA7F0,
-    func_800FCFEC, func_800FD534, func_800FE3EC, func_800F98F8, func_800FA7F0,
-    func_800FCFEC, func_800FD534, func_800FE3EC, func_800F98F8, func_800FA7F0,
-    func_800FCFEC, func_800FD534, func_800FE3EC, func_800F98F8, func_800FA7F0,
-    func_800FCFEC, func_800FD534, func_800FE3EC, func_800F9818, func_800FA324,
-    func_800FB294, func_800FBDE4, func_800FC97C, func_800F9818, func_800FA324,
-    func_800FB294, func_800FBDE4, func_800FC97C, func_800F9818, func_800FA324,
-    func_800FB294, func_800FBDE4, func_800FC97C, func_800F9818, func_800FA324,
-    func_800FB294, func_800FBDE4, func_800FC97C, NULL, NULL, vs_effect_tornado_0,
-    vs_effect_tornado_1, vs_effect_tornado_2, func_800FB338, func_800FB5CC, func_800FC11C,
-    func_800F9800, func_800F9818, func_800FA368, func_800F9818, func_800FA368,
-    func_800F98F8, func_800FA868, func_800FB720, func_800FDE48, func_800F99F0,
-    func_800FA588, func_800FB4F8, func_800FDC20, func_800FF4E8, func_800FB320,
-    func_800FB418, func_800FCA2C, func_800F98F8, func_800FA490, func_800FB400,
-    func_800FC2BC, func_800FCE0C, NULL, func_800FDEC4, func_800FFFA8, func_800F9800, NULL,
-    func_800FA424, func_800FAF30, func_800FBAC8, func_800FC6EC, func_800F9800,
-    func_800F9800, func_800FB4B8, func_800FBA00, NULL, func_800F98E0, NULL, func_800FC42C,
-    vs_effect_acidFlow_0, vs_effect_acidFlow_1, func_800F98F8, func_800FBFDC,
-    func_800FC524, func_800FD074, func_800F9818, func_800FA6D0, func_800FB2F4,
-    func_800FBE44, vs_effect_sunder_0, vs_effect_sunder_1, func_800FB320, func_800FB4B8,
-    func_800F9818, func_800FA368, func_800FB2D8, func_800FBEFC, func_800F9800,
-    func_800FA6F8, func_800F9800, func_800F9800, func_800F99D8, func_800FA8D0,
-    func_800FC8C4, func_800FCB38, func_800FF334, func_800F98F8, func_800FB89C,
-    func_800FB4B8, func_800FBA00, func_800F9800, func_800F9818, func_800FA710,
-    func_800FB260, func_800FBDF8, func_800F9800, func_800F9928, func_800FBE88,
-    func_800FC11C, NULL, func_800F9910, func_800FA41C, func_800FCA50,
-    vs_effect_trinityPulse_0, vs_effect_trinityPulse_1, func_800F9818, func_800FA710,
-    func_800FB338, NULL, func_800FB5CC, func_800F9800, func_800F9800, func_800FA398,
-    func_800FB00C, func_800FBF7C, func_800F9818, func_800FA710, func_800F9800,
-    func_800FA6F8, NULL, func_800F98F8, func_800FA7B0, func_800FCFB4, func_800FD4F4,
-    func_800FE044, NULL, func_800F9800, func_800FA740, func_800FB5F8, func_800FC21C,
-    func_800FB320, func_800FB4D8, NULL, func_800FBA18, func_800FC8D0, func_800FD420,
-    func_800F9800, func_800FA6B8, func_800FB32C, func_800FC29C, NULL, func_800F98E0,
-    func_800FA84C, func_800FD2E4, NULL, func_800FB5D0, func_800FCE90, func_800FD104,
-    func_800FB4C0, NULL, func_800FBA00, func_800FC624, func_800F9818, func_800FA48C,
-    func_800FB348, func_800FBF6C, func_800FCABC, func_800FD654, func_800F9800,
-    func_800F9800, func_800F9818, func_800FA710, func_800FAC78, func_800FB4C0,
-    func_800F9800, func_800FA770, func_800FB62C, func_800FC56C, func_800FAC78,
-    func_800FAC78, func_800F98F8, func_800FA7F0, func_800FCF18, NULL, NULL, func_800FB4B8,
-    func_800F9800, NULL, NULL, vs_effect_246, NULL, NULL, func_800F9800, func_800FA6B8,
-    func_800FB2DC, func_800F9800, func_800F9800, func_800FA6BC, func_800F9800,
-    func_800FB5B0, func_800FCE78, func_800F9800, func_800F9800, vs_effect_plg260, NULL,
-    func_800F9910, func_800FA4A8, func_800FB0CC, func_800FDA1C, func_800F9AE8,
-    func_800FBD60, func_800FDBAC, func_800FFB04, func_800FB4F8, func_800FCB0C,
-    func_800FE958, NULL, NULL, func_800FB4B8, func_800FB5B0, func_800FCE78, func_800F9818,
-    func_800FA368, func_800FB2D8, vs_effect_plg273, func_800FB338, func_800FB5CC,
-    func_800FC11C, func_800FB320, func_800FB4D0, func_800FBA18, func_800FC568,
-    func_800F9818, func_800FA48C, func_800FB3FC, func_800FBF4C, func_800F9910,
-    func_800FBF94, func_800FC228, func_800FD198, func_800FB320, NULL, func_800FB5B4 };
+static effectExec _effectEntryPoints[] = { vs_effect_analyze, vs_effect_solidShock_0,
+    vs_effect_lightningBolt_0, vs_effect_vulcanLance_0, vs_effect_aquaBlast_0,
+    vs_spiritSurge_0, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
+    vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism_0,
+    vs_effect_banish_0, vs_effect_explosionLv1_0, vs_effect_explosionLv1_1,
+    vs_effect_explosionLv2_0, vs_effect_explosionLv2_1, vs_effect_explosionLv3_0,
+    vs_effect_explosionLv3_1, vs_effect_explosionLv4_0, vs_effect_explosionLv4_1,
+    vs_effect_thunderBurstLv1_0, NULL, vs_effect_thunderBurstLv1_1,
+    vs_effect_thunderBurstLv1_2, vs_effect_thunderBurstLv2_0, NULL,
+    vs_effect_thunderBurstLv2_1, vs_effect_thunderBurstLv2_2, vs_effect_thunderBurstLv3_0,
+    NULL, vs_effect_thunderBurstLv3_1, vs_effect_thunderBurstLv3_2,
+    vs_effect_thunderBurstLv4_0, NULL, vs_effect_thunderBurstLv4_1,
+    vs_effect_thunderBurstLv4_2, vs_effect_flameSphereLv1_0, vs_effect_flameSphereLv1_1,
+    vs_effect_flameSphereLv1_2, vs_effect_flameSphereLv1_3, vs_effect_flameSphereLv2_0,
+    vs_effect_flameSphereLv2_1, vs_effect_flameSphereLv2_2, vs_effect_flameSphereLv2_3,
+    vs_effect_flameSphereLv3_0, vs_effect_flameSphereLv3_1, vs_effect_flameSphereLv3_2,
+    vs_effect_flameSphereLv3_3, vs_effect_flameSphereLv4_0, vs_effect_flameSphereLv4_1,
+    vs_effect_flameSphereLv4_2, vs_effect_flameSphereLv4_3, vs_effect_gaeaStrikeLv1_0,
+    vs_effect_gaeaStrikeLv1_1, vs_effect_gaeaStrikeLv1_2, vs_effect_gaeaStrikeLv1_3,
+    vs_effect_gaeaStrikeLv2_0, vs_effect_gaeaStrikeLv2_1, vs_effect_gaeaStrikeLv2_2,
+    vs_effect_gaeaStrikeLv2_3, vs_effect_gaeaStrikeLv3_0, vs_effect_gaeaStrikeLv3_1,
+    vs_effect_gaeaStrikeLv3_2, vs_effect_gaeaStrikeLv3_3, vs_effect_gaeaStrikeLv4_0,
+    vs_effect_gaeaStrikeLv4_1, vs_effect_gaeaStrikeLv4_2, vs_effect_gaeaStrikeLv4_3,
+    vs_effect_avalancheLv1_0, vs_effect_avalancheLv1_1, vs_effect_avalancheLv1_2,
+    vs_effect_avalancheLv2_0, vs_effect_avalancheLv2_1, vs_effect_avalancheLv2_2,
+    vs_effect_avalancheLv3_0, vs_effect_avalancheLv3_1, vs_effect_avalancheLv3_2,
+    vs_effect_avalancheLv4_0, vs_effect_avalancheLv4_1, vs_effect_avalancheLv4_2,
+    vs_effect_radialSurgeLv1_0, vs_effect_radialSurgeLv1_1, vs_effect_radialSurgeLv1_2,
+    vs_effect_radialSurgeLv1_3, vs_effect_radialSurgeLv1_4, vs_effect_radialSurgeLv2_0,
+    vs_effect_radialSurgeLv2_1, vs_effect_radialSurgeLv2_2, vs_effect_radialSurgeLv2_3,
+    vs_effect_radialSurgeLv2_4, vs_effect_radialSurgeLv3_0, vs_effect_radialSurgeLv3_1,
+    vs_effect_radialSurgeLv3_2, vs_effect_radialSurgeLv3_3, vs_effect_radialSurgeLv3_4,
+    vs_effect_radialSurgeLv4_0, vs_effect_radialSurgeLv4_1, vs_effect_radialSurgeLv4_2,
+    vs_effect_radialSurgeLv4_3, vs_effect_radialSurgeLv4_4, vs_effect_meteorLv1_0,
+    vs_effect_meteorLv1_1, vs_effect_meteorLv1_2, vs_effect_meteorLv1_3,
+    vs_effect_meteorLv1_4, vs_effect_meteorLv2_0, vs_effect_meteorLv2_1,
+    vs_effect_meteorLv2_2, vs_effect_meteorLv2_3, vs_effect_meteorLv2_4,
+    vs_effect_meteorLv3_0, vs_effect_meteorLv3_1, vs_effect_meteorLv3_2,
+    vs_effect_meteorLv3_3, vs_effect_meteorLv3_4, vs_effect_meteorLv4_0,
+    vs_effect_meteorLv4_1, vs_effect_meteorLv4_2, vs_effect_meteorLv4_3,
+    vs_effect_meteorLv4_4, NULL, NULL, vs_effect_tornado_0, vs_effect_tornado_1,
+    vs_effect_tornado_2, vs_effect_thunderbolt_0, vs_effect_thunderbolt_1,
+    vs_effect_thunderbolt_2, vs_effect_fireStorm_0, vs_effect_gravity_0,
+    vs_effect_gravity_1, vs_effect_acidFlow_0, vs_effect_acidFlow_1, vs_effect_judgment_0,
+    vs_effect_judgment_1, vs_effect_judgment_2, vs_effect_judgment_3,
+    vs_effect_apocalypse_0, vs_effect_apocalypse_1, vs_effect_apocalypse_2,
+    vs_effect_apocalypse_3, vs_effect_apocalypse_4, vs_effect_thunderBreath_0,
+    vs_effect_numbingNeedle_0, vs_effect_numbingNeedle_1, vs_effect_bloodySin_0,
+    vs_effect_bloodySin_1, vs_effect_bloodySin_2, vs_effect_bloodySin_3,
+    vs_effect_bloodySin_4, NULL, vs_effect_bloodySin_5, vs_effect_bloodySin_6,
+    vs_effect_lastAscension_0, NULL, vs_effect_lastAscension_1, vs_effect_lastAscension_2,
+    vs_effect_lastAscension_3, vs_effect_lastAscension_4, vs_effect_whistleSting_0,
+    vs_effect_doubleFang_0, vs_effect_wyrmScorn_0, vs_effect_wyrmScorn_1, NULL,
+    vs_effect_rendingGale_0, NULL, vs_effect_rendingGale_1, vs_effect_vileScar_0,
+    vs_effect_vileScar_1, vs_effect_cherryRonde_0, vs_effect_cherryRonde_1,
+    vs_effect_cherryRonde_2, vs_effect_cherryRonde_3, vs_effect_papillonReel_0,
+    vs_effect_papillonReel_1, vs_effect_papillonReel_2, vs_effect_papillonReel_3,
+    vs_effect_sunder_0, vs_effect_sunder_1, vs_effect_thunderwave_0,
+    vs_effect_swallowSlash_0, vs_effect_adventSign_0, vs_effect_adventSign_1,
+    vs_effect_adventSign_2, vs_effect_adventSign_3, vs_effect_mistralEdge_0,
+    vs_effect_mistralEdge_1, vs_effect_glacialGale_0, vs_effect_killerMantis_0,
+    vs_effect_blackNebula_0, vs_effect_blackNebula_1, vs_effect_blackNebula_2,
+    vs_effect_blackNebula_3, vs_effect_blackNebula_4, vs_effect_bearClaw_0,
+    vs_effect_bearClaw_1, vs_effect_accursedUmbra_0, vs_effect_accursedUmbra_1,
+    vs_effect_ironRipper_0, vs_effect_emeticBomb_0, vs_effect_emeticBomb_1,
+    vs_effect_emeticBomb_2, vs_effect_emeticBomb_3, vs_effect_sirocco_0,
+    vs_effect_riskbreak_0, vs_effect_riskbreak_1, vs_effect_riskbreak_2, NULL,
+    vs_effect_gravisAether_0, vs_effect_gravisAether_1, vs_effect_gravisAether_2,
+    vs_effect_trinityPulse_0, vs_effect_trinityPulse_1, vs_effect_bonecrusher_0,
+    vs_effect_bonecrusher_1, vs_effect_quickshock_0, NULL, vs_effect_quickshock_1,
+    vs_effect_ignisWheel_0, vs_effect_hexFlux_0, vs_effect_hexFlux_1, vs_effect_hexFlux_2,
+    vs_effect_hexFlux_3, vs_effect_ruination_0, vs_effect_ruination_1,
+    vs_effect_scytheWind_0, vs_effect_scytheWind_1, NULL, vs_effect_gigaTempest_0,
+    vs_effect_gigaTempest_1, vs_effect_gigaTempest_2, vs_effect_gigaTempest_3,
+    vs_effect_gigaTempest_4, NULL, vs_effect_spiralScourge_0, vs_effect_spiralScourge_1,
+    vs_effect_spiralScourge_2, vs_effect_spiralScourge_3, vs_effect_heavensScorn_0,
+    vs_effect_deathWail_0, NULL, vs_effect_deathWail_1, vs_effect_deathWail_2,
+    vs_effect_deathWail_3, vs_effect_sanctusFlare_0, vs_effect_sanctusFlare_1,
+    vs_effect_sanctusFlare_2, vs_effect_sanctusFlare_3, NULL, vs_effect_lotusPalm_0,
+    vs_effect_lotusPalm_1, vs_effect_lotusPalm_2, NULL, vs_effect_vertigo_0,
+    vs_effect_vertigo_1, vs_effect_vertigo_2, vs_effect_vermillionAura_0, NULL,
+    vs_effect_vermillionAura_1, vs_effect_vermillionAura_2, vs_effect_retribution_0,
+    vs_effect_retribution_1, vs_effect_retribution_2, vs_effect_retribution_3,
+    vs_effect_retribution_4, vs_effect_retribution_5, vs_effect_hpUp_0, vs_effect_mpUp_0,
+    vs_effect_plg221_0, vs_effect_plg221_1, vs_effect_plg224_0, vs_effect_plg232_0,
+    vs_effect_plg236_0, vs_effect_plg236_1, vs_effect_plg236_2, vs_effect_plg236_3,
+    vs_effect_plg240_0, vs_effect_plg241_0, vs_effect_plg242_0, vs_effect_plg242_1,
+    vs_effect_plg242_2, NULL, NULL, vs_effect_plg243_0, vs_effect_plg245_0, NULL, NULL,
+    vs_effect_246_0, NULL, NULL, vs_effect_plg247_0, vs_effect_plg247_1,
+    vs_effect_plg247_2, vs_effect_plg248_0, vs_effect_plg250_0, vs_effect_plg250_1,
+    vs_effect_plg251_0, vs_effect_plg255_0, vs_effect_plg255_1, vs_effect_plg258_0,
+    vs_effect_plg259_0, vs_effect_plg260_0, NULL, vs_effect_plg263_0, vs_effect_plg263_1,
+    vs_effect_plg263_2, vs_effect_plg263_3, vs_effect_plg265_0, vs_effect_plg265_1,
+    vs_effect_plg265_2, vs_effect_plg265_3, vs_effect_plg266_0, vs_effect_plg266_1,
+    vs_effect_plg266_2, NULL, NULL, vs_effect_plg269_0, vs_effect_plg271_0,
+    vs_effect_plg271_1, vs_effect_plg272_0, vs_effect_plg272_1, vs_effect_plg272_2,
+    vs_effect_plg273_0, vs_effect_plg280_0, vs_effect_plg280_1, vs_effect_plg280_2,
+    vs_effect_plg290_0, vs_effect_plg291_0, vs_effect_plg291_1, vs_effect_plg291_2,
+    vs_effect_plg297_0, vs_effect_plg297_1, vs_effect_plg297_2, vs_effect_plg297_3,
+    vs_effect_plg300_0, vs_effect_plg300_1, vs_effect_plg300_2, vs_effect_plg300_3,
+    vs_effect_plg301_0, NULL, vs_effect_plg301_1 };
 
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
@@ -601,319 +608,319 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2) __attribute__((un
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     vs_effect_analyze(NULL, 2, 0);
-    vs_effect_solidShock(NULL, 2, 0);
-    vs_effect_lightningBolt(NULL, 2, 0);
-    vs_effect_vulcanLance(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    vs_spiritSurge_renderTrails(NULL, 2, 0);
-    func_800FBA00(NULL, 2, 0);
-    func_800FC624(NULL, 2, 0);
-    func_800FD51C(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FC0E4(NULL, 2, 0);
-    vs_effect_exorcism(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    vs_effect_explosion_0(NULL, 2, 0);
-    vs_effect_explosion_1(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800FB4E0(NULL, 2, 0);
-    func_800FD354(NULL, 2, 0);
-    func_800FF46C(NULL, 2, 0);
-    func_800FB4E0(NULL, 2, 0);
-    func_800FD354(NULL, 2, 0);
-    func_800FF46C(NULL, 2, 0);
-    func_800FB4E0(NULL, 2, 0);
-    func_800FD354(NULL, 2, 0);
-    func_800FF46C(NULL, 2, 0);
-    func_800FB4E0(NULL, 2, 0);
-    func_800FD354(NULL, 2, 0);
-    func_800FF46C(NULL, 2, 0);
-    vs_effect_flameSphere_0(NULL, 2, 0);
-    vs_effect_flameSphere_1(NULL, 2, 0);
-    vs_effect_flameSphere_2(NULL, 2, 0);
-    vs_effect_flameSphere_3(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA3B0(NULL, 2, 0);
-    func_800FAF00(NULL, 2, 0);
-    func_800FBB24(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA3B0(NULL, 2, 0);
-    func_800FAF00(NULL, 2, 0);
-    func_800FBB24(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA3B0(NULL, 2, 0);
-    func_800FAF00(NULL, 2, 0);
-    func_800FBB24(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7B0(NULL, 2, 0);
-    func_800FB71C(NULL, 2, 0);
-    func_800FD6C0(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7B0(NULL, 2, 0);
-    func_800FB71C(NULL, 2, 0);
-    func_800FD6C0(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7B0(NULL, 2, 0);
-    func_800FB71C(NULL, 2, 0);
-    func_800FD6C0(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7B0(NULL, 2, 0);
-    func_800FB71C(NULL, 2, 0);
-    func_800FD6C0(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FBFCC(NULL, 2, 0);
-    func_800FC50C(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FBFCC(NULL, 2, 0);
-    func_800FC50C(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FBFCC(NULL, 2, 0);
-    func_800FC50C(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FBFCC(NULL, 2, 0);
-    func_800FC50C(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7F0(NULL, 2, 0);
-    func_800FCFEC(NULL, 2, 0);
-    func_800FD534(NULL, 2, 0);
-    func_800FE3EC(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7F0(NULL, 2, 0);
-    func_800FCFEC(NULL, 2, 0);
-    func_800FD534(NULL, 2, 0);
-    func_800FE3EC(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7F0(NULL, 2, 0);
-    func_800FCFEC(NULL, 2, 0);
-    func_800FD534(NULL, 2, 0);
-    func_800FE3EC(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7F0(NULL, 2, 0);
-    func_800FCFEC(NULL, 2, 0);
-    func_800FD534(NULL, 2, 0);
-    func_800FE3EC(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA324(NULL, 2, 0);
-    func_800FB294(NULL, 2, 0);
-    func_800FBDE4(NULL, 2, 0);
-    func_800FC97C(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA324(NULL, 2, 0);
-    func_800FB294(NULL, 2, 0);
-    func_800FBDE4(NULL, 2, 0);
-    func_800FC97C(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA324(NULL, 2, 0);
-    func_800FB294(NULL, 2, 0);
-    func_800FBDE4(NULL, 2, 0);
-    func_800FC97C(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA324(NULL, 2, 0);
-    func_800FB294(NULL, 2, 0);
-    func_800FBDE4(NULL, 2, 0);
-    func_800FC97C(NULL, 2, 0);
+    vs_effect_solidShock_0(NULL, 2, 0);
+    vs_effect_lightningBolt_0(NULL, 2, 0);
+    vs_effect_vulcanLance_0(NULL, 2, 0);
+    vs_effect_aquaBlast_0(NULL, 2, 0);
+    vs_spiritSurge_0(NULL, 2, 0);
+    vs_spiritSurge_1(NULL, 2, 0);
+    vs_spiritSurge_2(NULL, 2, 0);
+    vs_spiritSurge_3(NULL, 2, 0);
+    vs_effect_darkChant_0(NULL, 2, 0);
+    vs_effect_darkChant_1(NULL, 2, 0);
+    vs_effect_exorcism_0(NULL, 2, 0);
+    vs_effect_banish_0(NULL, 2, 0);
+    vs_effect_explosionLv1_0(NULL, 2, 0);
+    vs_effect_explosionLv1_1(NULL, 2, 0);
+    vs_effect_explosionLv2_0(NULL, 2, 0);
+    vs_effect_explosionLv2_1(NULL, 2, 0);
+    vs_effect_explosionLv3_0(NULL, 2, 0);
+    vs_effect_explosionLv3_1(NULL, 2, 0);
+    vs_effect_explosionLv4_0(NULL, 2, 0);
+    vs_effect_explosionLv4_1(NULL, 2, 0);
+    vs_effect_thunderBurstLv1_0(NULL, 2, 0);
+    vs_effect_thunderBurstLv1_1(NULL, 2, 0);
+    vs_effect_thunderBurstLv1_2(NULL, 2, 0);
+    vs_effect_thunderBurstLv2_0(NULL, 2, 0);
+    vs_effect_thunderBurstLv2_1(NULL, 2, 0);
+    vs_effect_thunderBurstLv2_2(NULL, 2, 0);
+    vs_effect_thunderBurstLv3_0(NULL, 2, 0);
+    vs_effect_thunderBurstLv3_1(NULL, 2, 0);
+    vs_effect_thunderBurstLv3_2(NULL, 2, 0);
+    vs_effect_thunderBurstLv4_0(NULL, 2, 0);
+    vs_effect_thunderBurstLv4_1(NULL, 2, 0);
+    vs_effect_thunderBurstLv4_2(NULL, 2, 0);
+    vs_effect_flameSphereLv1_0(NULL, 2, 0);
+    vs_effect_flameSphereLv1_1(NULL, 2, 0);
+    vs_effect_flameSphereLv1_2(NULL, 2, 0);
+    vs_effect_flameSphereLv1_3(NULL, 2, 0);
+    vs_effect_flameSphereLv2_0(NULL, 2, 0);
+    vs_effect_flameSphereLv2_1(NULL, 2, 0);
+    vs_effect_flameSphereLv2_2(NULL, 2, 0);
+    vs_effect_flameSphereLv2_3(NULL, 2, 0);
+    vs_effect_flameSphereLv3_0(NULL, 2, 0);
+    vs_effect_flameSphereLv3_1(NULL, 2, 0);
+    vs_effect_flameSphereLv3_2(NULL, 2, 0);
+    vs_effect_flameSphereLv3_3(NULL, 2, 0);
+    vs_effect_flameSphereLv4_0(NULL, 2, 0);
+    vs_effect_flameSphereLv4_1(NULL, 2, 0);
+    vs_effect_flameSphereLv4_2(NULL, 2, 0);
+    vs_effect_flameSphereLv4_3(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv1_0(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv1_1(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv1_2(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv1_3(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv2_0(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv2_1(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv2_2(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv2_3(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv3_0(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv3_1(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv3_2(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv3_3(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv4_0(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv4_1(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv4_2(NULL, 2, 0);
+    vs_effect_gaeaStrikeLv4_3(NULL, 2, 0);
+    vs_effect_avalancheLv1_0(NULL, 2, 0);
+    vs_effect_avalancheLv1_1(NULL, 2, 0);
+    vs_effect_avalancheLv1_2(NULL, 2, 0);
+    vs_effect_avalancheLv2_0(NULL, 2, 0);
+    vs_effect_avalancheLv2_1(NULL, 2, 0);
+    vs_effect_avalancheLv2_2(NULL, 2, 0);
+    vs_effect_avalancheLv3_0(NULL, 2, 0);
+    vs_effect_avalancheLv3_1(NULL, 2, 0);
+    vs_effect_avalancheLv3_2(NULL, 2, 0);
+    vs_effect_avalancheLv4_0(NULL, 2, 0);
+    vs_effect_avalancheLv4_1(NULL, 2, 0);
+    vs_effect_avalancheLv4_2(NULL, 2, 0);
+    vs_effect_radialSurgeLv1_0(NULL, 2, 0);
+    vs_effect_radialSurgeLv1_1(NULL, 2, 0);
+    vs_effect_radialSurgeLv1_2(NULL, 2, 0);
+    vs_effect_radialSurgeLv1_3(NULL, 2, 0);
+    vs_effect_radialSurgeLv1_4(NULL, 2, 0);
+    vs_effect_radialSurgeLv2_0(NULL, 2, 0);
+    vs_effect_radialSurgeLv2_1(NULL, 2, 0);
+    vs_effect_radialSurgeLv2_2(NULL, 2, 0);
+    vs_effect_radialSurgeLv2_3(NULL, 2, 0);
+    vs_effect_radialSurgeLv2_4(NULL, 2, 0);
+    vs_effect_radialSurgeLv3_0(NULL, 2, 0);
+    vs_effect_radialSurgeLv3_1(NULL, 2, 0);
+    vs_effect_radialSurgeLv3_2(NULL, 2, 0);
+    vs_effect_radialSurgeLv3_3(NULL, 2, 0);
+    vs_effect_radialSurgeLv3_4(NULL, 2, 0);
+    vs_effect_radialSurgeLv4_0(NULL, 2, 0);
+    vs_effect_radialSurgeLv4_1(NULL, 2, 0);
+    vs_effect_radialSurgeLv4_2(NULL, 2, 0);
+    vs_effect_radialSurgeLv4_3(NULL, 2, 0);
+    vs_effect_radialSurgeLv4_4(NULL, 2, 0);
+    vs_effect_meteorLv1_0(NULL, 2, 0);
+    vs_effect_meteorLv1_1(NULL, 2, 0);
+    vs_effect_meteorLv1_2(NULL, 2, 0);
+    vs_effect_meteorLv1_3(NULL, 2, 0);
+    vs_effect_meteorLv1_4(NULL, 2, 0);
+    vs_effect_meteorLv2_0(NULL, 2, 0);
+    vs_effect_meteorLv2_1(NULL, 2, 0);
+    vs_effect_meteorLv2_2(NULL, 2, 0);
+    vs_effect_meteorLv2_3(NULL, 2, 0);
+    vs_effect_meteorLv2_4(NULL, 2, 0);
+    vs_effect_meteorLv3_0(NULL, 2, 0);
+    vs_effect_meteorLv3_1(NULL, 2, 0);
+    vs_effect_meteorLv3_2(NULL, 2, 0);
+    vs_effect_meteorLv3_3(NULL, 2, 0);
+    vs_effect_meteorLv3_4(NULL, 2, 0);
+    vs_effect_meteorLv4_0(NULL, 2, 0);
+    vs_effect_meteorLv4_1(NULL, 2, 0);
+    vs_effect_meteorLv4_2(NULL, 2, 0);
+    vs_effect_meteorLv4_3(NULL, 2, 0);
+    vs_effect_meteorLv4_4(NULL, 2, 0);
     vs_effect_tornado_0(NULL, 2, 0);
     vs_effect_tornado_1(NULL, 2, 0);
     vs_effect_tornado_2(NULL, 2, 0);
-    func_800FB338(NULL, 2, 0);
-    func_800FB5CC(NULL, 2, 0);
-    func_800FC11C(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA868(NULL, 2, 0);
-    func_800FB720(NULL, 2, 0);
-    func_800FDE48(NULL, 2, 0);
-    func_800F99F0(NULL, 2, 0);
-    func_800FA588(NULL, 2, 0);
-    func_800FB4F8(NULL, 2, 0);
-    func_800FDC20(NULL, 2, 0);
-    func_800FF4E8(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    func_800FB418(NULL, 2, 0);
-    func_800FCA2C(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA490(NULL, 2, 0);
-    func_800FB400(NULL, 2, 0);
-    func_800FC2BC(NULL, 2, 0);
-    func_800FCE0C(NULL, 2, 0);
-    func_800FDEC4(NULL, 2, 0);
-    func_800FFFA8(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA424(NULL, 2, 0);
-    func_800FAF30(NULL, 2, 0);
-    func_800FBAC8(NULL, 2, 0);
-    func_800FC6EC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800FBA00(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FC42C(NULL, 2, 0);
+    vs_effect_thunderbolt_0(NULL, 2, 0);
+    vs_effect_thunderbolt_1(NULL, 2, 0);
+    vs_effect_thunderbolt_2(NULL, 2, 0);
+    vs_effect_fireStorm_0(NULL, 2, 0);
+    vs_effect_gravity_0(NULL, 2, 0);
+    vs_effect_gravity_1(NULL, 2, 0);
     vs_effect_acidFlow_0(NULL, 2, 0);
     vs_effect_acidFlow_1(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FBFDC(NULL, 2, 0);
-    func_800FC524(NULL, 2, 0);
-    func_800FD074(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA6D0(NULL, 2, 0);
-    func_800FB2F4(NULL, 2, 0);
-    func_800FBE44(NULL, 2, 0);
+    vs_effect_judgment_0(NULL, 2, 0);
+    vs_effect_judgment_1(NULL, 2, 0);
+    vs_effect_judgment_2(NULL, 2, 0);
+    vs_effect_judgment_3(NULL, 2, 0);
+    vs_effect_apocalypse_0(NULL, 2, 0);
+    vs_effect_apocalypse_1(NULL, 2, 0);
+    vs_effect_apocalypse_2(NULL, 2, 0);
+    vs_effect_apocalypse_3(NULL, 2, 0);
+    vs_effect_apocalypse_4(NULL, 2, 0);
+    vs_effect_thunderBreath_0(NULL, 2, 0);
+    vs_effect_numbingNeedle_0(NULL, 2, 0);
+    vs_effect_numbingNeedle_1(NULL, 2, 0);
+    vs_effect_bloodySin_0(NULL, 2, 0);
+    vs_effect_bloodySin_1(NULL, 2, 0);
+    vs_effect_bloodySin_2(NULL, 2, 0);
+    vs_effect_bloodySin_3(NULL, 2, 0);
+    vs_effect_bloodySin_4(NULL, 2, 0);
+    vs_effect_bloodySin_5(NULL, 2, 0);
+    vs_effect_bloodySin_6(NULL, 2, 0);
+    vs_effect_lastAscension_0(NULL, 2, 0);
+    vs_effect_lastAscension_1(NULL, 2, 0);
+    vs_effect_lastAscension_2(NULL, 2, 0);
+    vs_effect_lastAscension_3(NULL, 2, 0);
+    vs_effect_lastAscension_4(NULL, 2, 0);
+    vs_effect_whistleSting_0(NULL, 2, 0);
+    vs_effect_doubleFang_0(NULL, 2, 0);
+    vs_effect_wyrmScorn_0(NULL, 2, 0);
+    vs_effect_wyrmScorn_1(NULL, 2, 0);
+    vs_effect_rendingGale_0(NULL, 2, 0);
+    vs_effect_rendingGale_1(NULL, 2, 0);
+    vs_effect_vileScar_0(NULL, 2, 0);
+    vs_effect_vileScar_1(NULL, 2, 0);
+    vs_effect_cherryRonde_0(NULL, 2, 0);
+    vs_effect_cherryRonde_1(NULL, 2, 0);
+    vs_effect_cherryRonde_2(NULL, 2, 0);
+    vs_effect_cherryRonde_3(NULL, 2, 0);
+    vs_effect_papillonReel_0(NULL, 2, 0);
+    vs_effect_papillonReel_1(NULL, 2, 0);
+    vs_effect_papillonReel_2(NULL, 2, 0);
+    vs_effect_papillonReel_3(NULL, 2, 0);
     vs_effect_sunder_0(NULL, 2, 0);
     vs_effect_sunder_1(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800FB2D8(NULL, 2, 0);
-    func_800FBEFC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6F8(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F99D8(NULL, 2, 0);
-    func_800FA8D0(NULL, 2, 0);
-    func_800FC8C4(NULL, 2, 0);
-    func_800FCB38(NULL, 2, 0);
-    func_800FF334(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FB89C(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800FBA00(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA710(NULL, 2, 0);
-    func_800FB260(NULL, 2, 0);
-    func_800FBDF8(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9928(NULL, 2, 0);
-    func_800FBE88(NULL, 2, 0);
-    func_800FC11C(NULL, 2, 0);
-    func_800F9910(NULL, 2, 0);
-    func_800FA41C(NULL, 2, 0);
-    func_800FCA50(NULL, 2, 0);
+    vs_effect_thunderwave_0(NULL, 2, 0);
+    vs_effect_swallowSlash_0(NULL, 2, 0);
+    vs_effect_adventSign_0(NULL, 2, 0);
+    vs_effect_adventSign_1(NULL, 2, 0);
+    vs_effect_adventSign_2(NULL, 2, 0);
+    vs_effect_adventSign_3(NULL, 2, 0);
+    vs_effect_mistralEdge_0(NULL, 2, 0);
+    vs_effect_mistralEdge_1(NULL, 2, 0);
+    vs_effect_glacialGale_0(NULL, 2, 0);
+    vs_effect_killerMantis_0(NULL, 2, 0);
+    vs_effect_blackNebula_0(NULL, 2, 0);
+    vs_effect_blackNebula_1(NULL, 2, 0);
+    vs_effect_blackNebula_2(NULL, 2, 0);
+    vs_effect_blackNebula_3(NULL, 2, 0);
+    vs_effect_blackNebula_4(NULL, 2, 0);
+    vs_effect_bearClaw_0(NULL, 2, 0);
+    vs_effect_bearClaw_1(NULL, 2, 0);
+    vs_effect_accursedUmbra_0(NULL, 2, 0);
+    vs_effect_accursedUmbra_1(NULL, 2, 0);
+    vs_effect_ironRipper_0(NULL, 2, 0);
+    vs_effect_emeticBomb_0(NULL, 2, 0);
+    vs_effect_emeticBomb_1(NULL, 2, 0);
+    vs_effect_emeticBomb_2(NULL, 2, 0);
+    vs_effect_emeticBomb_3(NULL, 2, 0);
+    vs_effect_sirocco_0(NULL, 2, 0);
+    vs_effect_riskbreak_0(NULL, 2, 0);
+    vs_effect_riskbreak_1(NULL, 2, 0);
+    vs_effect_riskbreak_2(NULL, 2, 0);
+    vs_effect_gravisAether_0(NULL, 2, 0);
+    vs_effect_gravisAether_1(NULL, 2, 0);
+    vs_effect_gravisAether_2(NULL, 2, 0);
     vs_effect_trinityPulse_0(NULL, 2, 0);
     vs_effect_trinityPulse_1(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA710(NULL, 2, 0);
-    func_800FB338(NULL, 2, 0);
-    func_800FB5CC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA398(NULL, 2, 0);
-    func_800FB00C(NULL, 2, 0);
-    func_800FBF7C(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA710(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6F8(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7B0(NULL, 2, 0);
-    func_800FCFB4(NULL, 2, 0);
-    func_800FD4F4(NULL, 2, 0);
-    func_800FE044(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA740(NULL, 2, 0);
-    func_800FB5F8(NULL, 2, 0);
-    func_800FC21C(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    func_800FB4D8(NULL, 2, 0);
-    func_800FBA18(NULL, 2, 0);
-    func_800FC8D0(NULL, 2, 0);
-    func_800FD420(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6B8(NULL, 2, 0);
-    func_800FB32C(NULL, 2, 0);
-    func_800FC29C(NULL, 2, 0);
-    func_800F98E0(NULL, 2, 0);
-    func_800FA84C(NULL, 2, 0);
-    func_800FD2E4(NULL, 2, 0);
-    func_800FB5D0(NULL, 2, 0);
-    func_800FCE90(NULL, 2, 0);
-    func_800FD104(NULL, 2, 0);
-    func_800FB4C0(NULL, 2, 0);
-    func_800FBA00(NULL, 2, 0);
-    func_800FC624(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA48C(NULL, 2, 0);
-    func_800FB348(NULL, 2, 0);
-    func_800FBF6C(NULL, 2, 0);
-    func_800FCABC(NULL, 2, 0);
-    func_800FD654(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA710(NULL, 2, 0);
-    func_800FAC78(NULL, 2, 0);
-    func_800FB4C0(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA770(NULL, 2, 0);
-    func_800FB62C(NULL, 2, 0);
-    func_800FC56C(NULL, 2, 0);
-    func_800FAC78(NULL, 2, 0);
-    func_800FAC78(NULL, 2, 0);
-    func_800F98F8(NULL, 2, 0);
-    func_800FA7F0(NULL, 2, 0);
-    func_800FCF18(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    vs_effect_246(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6B8(NULL, 2, 0);
-    func_800FB2DC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FA6BC(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800FB5B0(NULL, 2, 0);
-    func_800FCE78(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    func_800F9800(NULL, 2, 0);
-    vs_effect_plg260(NULL, 2, 0);
-    func_800F9910(NULL, 2, 0);
-    func_800FA4A8(NULL, 2, 0);
-    func_800FB0CC(NULL, 2, 0);
-    func_800FDA1C(NULL, 2, 0);
-    func_800F9AE8(NULL, 2, 0);
-    func_800FBD60(NULL, 2, 0);
-    func_800FDBAC(NULL, 2, 0);
-    func_800FFB04(NULL, 2, 0);
-    func_800FB4F8(NULL, 2, 0);
-    func_800FCB0C(NULL, 2, 0);
-    func_800FE958(NULL, 2, 0);
-    func_800FB4B8(NULL, 2, 0);
-    func_800FB5B0(NULL, 2, 0);
-    func_800FCE78(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA368(NULL, 2, 0);
-    func_800FB2D8(NULL, 2, 0);
-    vs_effect_plg273(NULL, 2, 0);
-    func_800FB338(NULL, 2, 0);
-    func_800FB5CC(NULL, 2, 0);
-    func_800FC11C(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    func_800FB4D0(NULL, 2, 0);
-    func_800FBA18(NULL, 2, 0);
-    func_800FC568(NULL, 2, 0);
-    func_800F9818(NULL, 2, 0);
-    func_800FA48C(NULL, 2, 0);
-    func_800FB3FC(NULL, 2, 0);
-    func_800FBF4C(NULL, 2, 0);
-    func_800F9910(NULL, 2, 0);
-    func_800FBF94(NULL, 2, 0);
-    func_800FC228(NULL, 2, 0);
-    func_800FD198(NULL, 2, 0);
-    func_800FB320(NULL, 2, 0);
-    return func_800FB5B4(NULL, 2, 0);
+    vs_effect_bonecrusher_0(NULL, 2, 0);
+    vs_effect_bonecrusher_1(NULL, 2, 0);
+    vs_effect_quickshock_0(NULL, 2, 0);
+    vs_effect_quickshock_1(NULL, 2, 0);
+    vs_effect_ignisWheel_0(NULL, 2, 0);
+    vs_effect_hexFlux_0(NULL, 2, 0);
+    vs_effect_hexFlux_1(NULL, 2, 0);
+    vs_effect_hexFlux_2(NULL, 2, 0);
+    vs_effect_hexFlux_3(NULL, 2, 0);
+    vs_effect_ruination_0(NULL, 2, 0);
+    vs_effect_ruination_1(NULL, 2, 0);
+    vs_effect_scytheWind_0(NULL, 2, 0);
+    vs_effect_scytheWind_1(NULL, 2, 0);
+    vs_effect_gigaTempest_0(NULL, 2, 0);
+    vs_effect_gigaTempest_1(NULL, 2, 0);
+    vs_effect_gigaTempest_2(NULL, 2, 0);
+    vs_effect_gigaTempest_3(NULL, 2, 0);
+    vs_effect_gigaTempest_4(NULL, 2, 0);
+    vs_effect_spiralScourge_0(NULL, 2, 0);
+    vs_effect_spiralScourge_1(NULL, 2, 0);
+    vs_effect_spiralScourge_2(NULL, 2, 0);
+    vs_effect_spiralScourge_3(NULL, 2, 0);
+    vs_effect_heavensScorn_0(NULL, 2, 0);
+    vs_effect_deathWail_0(NULL, 2, 0);
+    vs_effect_deathWail_1(NULL, 2, 0);
+    vs_effect_deathWail_2(NULL, 2, 0);
+    vs_effect_deathWail_3(NULL, 2, 0);
+    vs_effect_sanctusFlare_0(NULL, 2, 0);
+    vs_effect_sanctusFlare_1(NULL, 2, 0);
+    vs_effect_sanctusFlare_2(NULL, 2, 0);
+    vs_effect_sanctusFlare_3(NULL, 2, 0);
+    vs_effect_lotusPalm_0(NULL, 2, 0);
+    vs_effect_lotusPalm_1(NULL, 2, 0);
+    vs_effect_lotusPalm_2(NULL, 2, 0);
+    vs_effect_vertigo_0(NULL, 2, 0);
+    vs_effect_vertigo_1(NULL, 2, 0);
+    vs_effect_vertigo_2(NULL, 2, 0);
+    vs_effect_vermillionAura_0(NULL, 2, 0);
+    vs_effect_vermillionAura_1(NULL, 2, 0);
+    vs_effect_vermillionAura_2(NULL, 2, 0);
+    vs_effect_retribution_0(NULL, 2, 0);
+    vs_effect_retribution_1(NULL, 2, 0);
+    vs_effect_retribution_2(NULL, 2, 0);
+    vs_effect_retribution_3(NULL, 2, 0);
+    vs_effect_retribution_4(NULL, 2, 0);
+    vs_effect_retribution_5(NULL, 2, 0);
+    vs_effect_hpUp_0(NULL, 2, 0);
+    vs_effect_mpUp_0(NULL, 2, 0);
+    vs_effect_plg221_0(NULL, 2, 0);
+    vs_effect_plg221_1(NULL, 2, 0);
+    vs_effect_plg224_0(NULL, 2, 0);
+    vs_effect_plg232_0(NULL, 2, 0);
+    vs_effect_plg236_0(NULL, 2, 0);
+    vs_effect_plg236_1(NULL, 2, 0);
+    vs_effect_plg236_2(NULL, 2, 0);
+    vs_effect_plg236_3(NULL, 2, 0);
+    vs_effect_plg240_0(NULL, 2, 0);
+    vs_effect_plg241_0(NULL, 2, 0);
+    vs_effect_plg242_0(NULL, 2, 0);
+    vs_effect_plg242_1(NULL, 2, 0);
+    vs_effect_plg242_2(NULL, 2, 0);
+    vs_effect_plg243_0(NULL, 2, 0);
+    vs_effect_plg245_0(NULL, 2, 0);
+    vs_effect_246_0(NULL, 2, 0);
+    vs_effect_plg247_0(NULL, 2, 0);
+    vs_effect_plg247_1(NULL, 2, 0);
+    vs_effect_plg247_2(NULL, 2, 0);
+    vs_effect_plg248_0(NULL, 2, 0);
+    vs_effect_plg250_0(NULL, 2, 0);
+    vs_effect_plg250_1(NULL, 2, 0);
+    vs_effect_plg251_0(NULL, 2, 0);
+    vs_effect_plg255_0(NULL, 2, 0);
+    vs_effect_plg255_1(NULL, 2, 0);
+    vs_effect_plg258_0(NULL, 2, 0);
+    vs_effect_plg259_0(NULL, 2, 0);
+    vs_effect_plg260_0(NULL, 2, 0);
+    vs_effect_plg263_0(NULL, 2, 0);
+    vs_effect_plg263_1(NULL, 2, 0);
+    vs_effect_plg263_2(NULL, 2, 0);
+    vs_effect_plg263_3(NULL, 2, 0);
+    vs_effect_plg265_0(NULL, 2, 0);
+    vs_effect_plg265_1(NULL, 2, 0);
+    vs_effect_plg265_2(NULL, 2, 0);
+    vs_effect_plg265_3(NULL, 2, 0);
+    vs_effect_plg266_0(NULL, 2, 0);
+    vs_effect_plg266_1(NULL, 2, 0);
+    vs_effect_plg266_2(NULL, 2, 0);
+    vs_effect_plg269_0(NULL, 2, 0);
+    vs_effect_plg271_0(NULL, 2, 0);
+    vs_effect_plg271_1(NULL, 2, 0);
+    vs_effect_plg272_0(NULL, 2, 0);
+    vs_effect_plg272_1(NULL, 2, 0);
+    vs_effect_plg272_2(NULL, 2, 0);
+    vs_effect_plg273_0(NULL, 2, 0);
+    vs_effect_plg280_0(NULL, 2, 0);
+    vs_effect_plg280_1(NULL, 2, 0);
+    vs_effect_plg280_2(NULL, 2, 0);
+    vs_effect_plg290_0(NULL, 2, 0);
+    vs_effect_plg291_0(NULL, 2, 0);
+    vs_effect_plg291_1(NULL, 2, 0);
+    vs_effect_plg291_2(NULL, 2, 0);
+    vs_effect_plg297_0(NULL, 2, 0);
+    vs_effect_plg297_1(NULL, 2, 0);
+    vs_effect_plg297_2(NULL, 2, 0);
+    vs_effect_plg297_3(NULL, 2, 0);
+    vs_effect_plg300_0(NULL, 2, 0);
+    vs_effect_plg300_1(NULL, 2, 0);
+    vs_effect_plg300_2(NULL, 2, 0);
+    vs_effect_plg300_3(NULL, 2, 0);
+    vs_effect_plg301_0(NULL, 2, 0);
+    return vs_effect_plg301_1(NULL, 2, 0);
 }
 
 static void _configureFb(void);

@@ -2,6 +2,7 @@
 #include "25AC.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include <sys/types.h>
+#include <libds.h>
 #include <libgte.h>
 #include <libgpu.h>
 
@@ -42,11 +43,6 @@ typedef struct {
 } vs_main_CdQueueSlot;
 
 enum actions_e { vs_main_actions_daggerArt1 = 184 };
-
-typedef union {
-    u_short u16[2];
-    u_int s32;
-} vs_hitParams_t;
 
 enum actionTypes {
     actionTypeSpell = 1,
@@ -107,11 +103,11 @@ typedef struct {
 } vs_action_t;
 
 typedef struct {
-    int unk0;
+    u_int unk0;
     u_short unk4;
     u_short unk6;
-    int unk8;
-    int unkC;
+    u_int unk8;
+    u_int unkC;
 } vs_main_statusEffectParams_t;
 
 typedef struct {
@@ -226,13 +222,13 @@ typedef struct {
     char statusTimers[8];
     D_80060068_t2 limbs[6];
     int weaponDrawn;
-    int unk80;
-    int unk84;
+    int cameraPitch;
+    int cameraDistance;
 } D_80060068_t3;
 
 typedef struct {
     D_80060068_t3 unk0;
-    int unkDC[9];
+    int unk88[9];
 } D_80060068_t;
 
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
@@ -445,59 +441,123 @@ typedef struct {
     u_char unkB;
 } _mpdRoomDoorSection_t;
 
-extern portInfo_t _portInfo[2];
-extern soundData_t vs_main_soundData;
-extern vs_action_t vs_main_actions[256];
-extern int D_8004A52C;
-extern char vs_main_materialModifiers[8][30];
-extern int vs_main_frameBuf;
-extern DRAWENV vs_main_drawEnv[2];
-extern DISPENV vs_main_dispEnv[2];
-extern int vs_main_titleScreenCount;
-extern vs_main_CdFile vs_main_zndFiles[256];
-/**
- * 512 pairs of zone and map IDs.
- */
-extern char vs_main_locationZoneMapIds[];
-extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
-extern char D_8004FCCC[];
-extern char D_8004FDD0[];
-extern u_short vs_main_artsPointsRequirements[][4];
-extern u_short vs_main_battleAbilitiesPointsRequirements[];
-extern D_80050468_t D_80050468;
-extern void* D_80055C80[];
-extern short D_8005DFD4;
-extern short vs_main_screenWidth;
-extern short D_8005DFD8;
-extern u_short vs_main_screenHeight;
-extern u_int D_8005E040;
-extern void* D_8005E0C0[];
-extern int vs_main_nearClip;
-extern int vs_main_projectionDistance;
-extern int vs_gametime_tickspeed;
-extern int D_8005E1C4;
-extern int D_8005E1D4;
-extern int D_8005E244;
-extern char vs_main_padBuffer[2][34];
-extern union {
+typedef struct {
+    u_char phys;
+    u_char wind;
+    u_char fire;
+    u_char earth;
+    u_char water;
+    u_char light;
+    u_char dark;
+    u_char _ __attribute__((unused));
+} material_modifiers_affinities_t;
+
+typedef struct {
+    u_char human;
+    u_char beast;
+    u_char undead;
+    u_char phantom;
+    u_char dragon;
+    u_char evil;
+    material_modifiers_affinities_t attackAffinities;
+    material_modifiers_affinities_t defenseAffinities;
+    u_short maxDp;
+    short strength;
+    short intelligence;
+    short agility;
+} material_modifiers_t;
+
+enum cdBufferModes_e {
+    cdBufferModeNone = 0,
+    cdBufferModeBuffered = 1,
+    cdBufferModeManual = 2,
+};
+
+typedef struct {
+    char state;
+    char unk1;
+    char unk2;
+    char unk3;
+    u_int unk4;
+    u_int sectorCount;
+    int cdSector;
+    int byteCount;
+    void* vram;
+    DslFILTER pcm;
+    DslLOC cdLoc;
+    int commandId;
+    int unk24;
+    int unk28;
+    enum cdBufferModes_e bufferMode;
+    u_int sectorBufIndex;
+    int unk34;
+    u_int unk38;
+    u_int unk3C;
+    u_int ringBufIndex;
+    int framesSinceLastRead;
+} vs_main_disk_t;
+
+typedef union {
     u_int all;
     struct {
         char low;
         char hi;
     } pad[2];
-} vs_main_buttonsPressed;
-extern int vs_main_buttonsPreviousState;
-extern int vs_main_buttonRepeat;
-extern int vs_main_buttonsReleased;
-extern int vs_main_buttonsState;
-extern int vs_main_saveGameClearData;
+} vs_main_buttonsPressed_t;
 
+// .data
+extern int vs_main_titleScreenCount;
+extern int D_8004A52C;
+extern vs_action_t vs_main_actions[256];
+extern material_modifiers_t vs_main_materialModifiers[8];
+extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
+/**
+ * 512 pairs of zone and map IDs.
+ */
+extern u_char vs_main_locationZoneMapIds[];
+extern vs_main_CdFile vs_main_zndFiles[256];
+extern u_char vs_main_zndMusicMap[];
+extern u_short vs_main_unkStrings[];
+extern u_short vs_main_artsPointsRequirements[][4];
+extern u_short vs_main_battleAbilitiesPointsRequirements[];
+
+//.bss
+
+// Avoids breaking .bss order
+#ifndef VS_MAIN_INCLUDE
+extern portInfo_t vs_main_portInfo[2];
+extern D_80050468_t D_80050468;
+extern int vs_main_startState;
+extern int vs_main_buttonsReleased;
+extern void* D_80055C80[2];
+extern vs_main_disk_t vs_main_disk;
+extern vs_main_stickPos vs_main_stickPosBuf;
+extern short D_8005DFD4;
+extern short vs_main_screenWidth;
+extern short D_8005DFD8;
+extern u_short vs_main_screenHeight;
+extern int vs_main_buttonRepeat;
+extern char vs_main_padBuffer[2][34];
+extern soundData_t vs_main_soundData;
+extern void* D_8005E0C0[2];
+extern int vs_main_nearClip;
+extern DRAWENV vs_main_drawEnv[2];
+extern DISPENV vs_main_dispEnv[2];
+extern int vs_main_buttonsPreviousState;
+extern int D_8005E1C4;
+extern vs_main_buttonsPressed_t vs_main_buttonsPressed;
+extern int D_8005E1D4;
 extern u_int vs_main_frameDuration;
+extern int vs_main_frameBuf;
+extern int vs_main_saveGameClearData;
+extern int vs_main_buttonsState;
+extern int D_8005E244;
+extern int vs_main_projectionDistance;
+extern int vs_gametime_tickspeed;
 extern vs_main_scoredata_t vs_main_scoredata;
 extern char vs_main_actionsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
-extern int vs_main_startState;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int D_80060064;
 extern D_80060068_t D_80060068;
@@ -507,7 +567,7 @@ extern vs_Gametime_t vs_main_gametime;
 extern D_80061078_t D_80061078[4];
 extern vs_main_flags_t vs_main_stateFlags;
 extern vs_main_inventoryIndices_t vs_main_inventoryIndices;
-extern vs_main_stickPos vs_main_stickPosBuf;
+#endif
 
 int vs_main_gametimeUpdate(int vsync);
 void vs_main_jumpToBattle(void);

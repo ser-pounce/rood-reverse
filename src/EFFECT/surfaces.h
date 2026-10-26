@@ -1,7 +1,11 @@
-/* Shared five-row, sixteen-column radial surface effect with per-row color factors.
- * The texture spans the whole surface once unless the overlay defines
- * VS_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns. The
- * overlay supplies its entry point and vertex table. */
+/* Shared five-row, sixteen-column radial surface effect with per-row color factors, or
+ * the nine-row surface mirrored about its middle row if VS_SURFACE_MIRRORED is defined
+ * (see mirroredSurfaces.h). The texture spans the whole surface once unless the overlay
+ * defines VS_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns.
+ * The entry point is named by entry.h. */
+
+#include "src/EFFECT/entry.h"
+#define VS_SURFACE_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -18,35 +22,48 @@
 
 #ifndef VS_SURFACE_TYPES
 #define VS_SURFACE_TYPES
-typedef struct {
-    u_char lifetime;
-    u_char effect;
-    short pad;
-    int radius;
-    int radiusSpeed;
-    int height;
-    int heightSpeed;
-    int age;
-    int factors[5];
-    func_800D6CF_t texture;
-} vs_surfaceState;
-typedef struct {
-    int tag;
-    POLY_GT4 poly;
-    int drawMode;
-} vs_surfacePrim;
+
+/* Declares the surface effect state type `name` with a color factor for each of `rows`.
+ */
+#define VS_SURFACE_STATE_TYPE(name, rows)                                                \
+    typedef struct {                                                                     \
+        u_char lifetime;                                                                 \
+        u_char effect;                                                                   \
+        short pad;                                                                       \
+        int radius;                                                                      \
+        int radiusSpeed;                                                                 \
+        int height;                                                                      \
+        int heightSpeed;                                                                 \
+        int age;                                                                         \
+        int factors[rows];                                                               \
+        func_800D6CF_t texture;                                                          \
+    } name;
+
+VS_SURFACE_STATE_TYPE(vs_surfaceState, 5)
+VS_SURFACE_STATE_TYPE(vs_mirrorSurfaceState, 9)
+
+#undef VS_SURFACE_STATE_TYPE
 #endif
 
-extern SVECTOR VS_SURFACE_VERTICES[5][16];
+#ifdef VS_SURFACE_MIRRORED
+#define VS_SURFACE_ROWS 9
+#define VS_SURFACE_STATE vs_mirrorSurfaceState
+#else
+#define VS_SURFACE_ROWS 5
+#define VS_SURFACE_STATE vs_surfaceState
+#endif
+
+#include "src/EFFECT/sphericalSurfaceVertices.h"
+#include "src/EFFECT/effectCommon.h"
 
 int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
-    SVECTOR vertices[5][16];
-    int screen[5][16];
-    int depths[5][16];
-    CVECTOR colors[5];
+    SVECTOR vertices[VS_SURFACE_ROWS][16];
+    int screen[VS_SURFACE_ROWS][16];
+    int depths[VS_SURFACE_ROWS][16];
+    CVECTOR colors[VS_SURFACE_ROWS];
     u_char u[VS_SURFACE_TEXTURE_COLUMNS + 1];
-    u_char v[5];
+    u_char v[VS_SURFACE_ROWS];
     D_800F53B8_t* battle;
     int alive;
     int heightStep;
@@ -56,8 +73,11 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int radiusValue;
     int heightValue;
     int sample;
+#ifdef VS_SURFACE_MIRRORED
+    int curveIndex;
+#endif
     int initIndex;
-    vs_surfaceState* state;
+    VS_SURFACE_STATE* state;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     MATRIX* actorMatrix;
@@ -80,16 +100,24 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         state->age = 0;
         effect = &D_800F569C->block5Data->unk4[state->effect];
 
+#ifdef VS_SURFACE_MIRRORED
+        curveIndex = effect->transparencyCurve;
+
+        if (curveIndex) {
+            sample = D_800F569C->curveBlock->curveSizes[curveIndex];
+#else
         if (effect->transparencyCurve) {
             sample = D_800F569C->curveBlock->curveSizes[effect->transparencyCurve];
+#endif
 
             if (sample >= 2) {
                 --sample;
             }
 
-            for (initIndex = 0; initIndex < 5; ++initIndex) {
+            for (initIndex = 0; initIndex < VS_SURFACE_ROWS; ++initIndex) {
                 state->factors[initIndex] =
-                    D_800F569C->curves[effect->transparencyCurve][sample * initIndex / 4]
+                    D_800F569C->curves[effect->transparencyCurve]
+                                      [sample * initIndex / (VS_SURFACE_ROWS - 1)]
                     * 2;
 
                 if (state->factors[initIndex] == 256) {
@@ -99,7 +127,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         } else {
             int maxFactor = 255;
 
-            for (initIndex = 4; initIndex >= 0; --initIndex) {
+            for (initIndex = VS_SURFACE_ROWS - 1; initIndex >= 0; --initIndex) {
                 state->factors[initIndex] = maxFactor;
             }
         }
@@ -115,24 +143,16 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
+        VS_APPLY_ANCHOR(scratch, actorMatrix)
 
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
-                actorMatrix->t[2], +=);
-            break;
-        }
-
+#ifndef VS_SURFACE_MIRRORED
         heightStep = 0;
+#endif
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
+#ifndef VS_SURFACE_MIRRORED
         radiusStep = 0;
+#endif
         sample = vs_battle_sampleCurve(effect->unkD, state->age);
         vs_battle_lerpSvector(effect->unk34[2], sample, &scratch->unkF8);
         vs_battle_lerpSvector(effect->unk34[3], sample, &scratch->unk100);
@@ -149,8 +169,40 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         state->radiusSpeed += scratch->unk108.vx;
         state->radius += scratch->unkF8.vx + state->radiusSpeed;
         radiusValue = state->radius + scratch->unkA8.vx;
+#ifdef VS_SURFACE_MIRRORED
+        heightStep = 0;
+        radiusStep = 0;
+#endif
 
-        for (row = 0; row < 5; ++row) {
+        for (row = 0; row < VS_SURFACE_ROWS; ++row) {
+#ifdef VS_SURFACE_MIRRORED
+            if (row < 5) {
+                for (column = 0; column < 16; ++column) {
+                    vertices[row][column].vx =
+                        scratch->unk98.vx
+                        + ((VS_SURFACE_VERTICES[4 - row][column].vx * radiusValue) >> 12);
+                    vertices[row][column].vz =
+                        scratch->unk98.vz
+                        + ((VS_SURFACE_VERTICES[4 - row][column].vz * radiusValue) >> 12);
+                    vertices[row][column].vy =
+                        scratch->unk98.vy
+                        + ((VS_SURFACE_VERTICES[4 - row][column].vy * heightValue) >> 12);
+                }
+            } else {
+                for (column = 0; column < 16; ++column) {
+                    vertices[row][column].vx =
+                        scratch->unk98.vx
+                        + ((VS_SURFACE_VERTICES[row - 4][column].vx * radiusValue) >> 12);
+                    vertices[row][column].vz =
+                        scratch->unk98.vz
+                        + ((VS_SURFACE_VERTICES[row - 4][column].vz * radiusValue) >> 12);
+                    vertices[row][column].vy =
+                        scratch->unk98.vy
+                        + ((-VS_SURFACE_VERTICES[row - 4][column].vy * heightValue)
+                            >> 12);
+                }
+            }
+#else
             for (column = 0; column < 16; ++column) {
                 vertices[row][column].vx =
                     scratch->unk98.vx
@@ -162,6 +214,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                     scratch->unk98.vy
                     + ((VS_SURFACE_VERTICES[row][column].vy * heightValue) >> 12);
             }
+#endif
 
             radiusStep += scratch->unk110.vx;
             radiusValue += radiusStep + scratch->unk100.vx;
@@ -200,7 +253,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             SetTransMatrix(&vs_scratch.viewMatrix);
         }
 
-        for (row = 0; row < 5; ++row) {
+        for (row = 0; row < VS_SURFACE_ROWS; ++row) {
             for (column = 0; column < 16; ++column) {
                 gte_ldv0(&vertices[row][column]);
                 gte_rtps2();
@@ -216,13 +269,13 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             u[sample] = texture->u + texture->w * sample / VS_SURFACE_TEXTURE_COLUMNS;
         }
 
-        for (sample = 0; sample < 5; ++sample) {
-            v[sample] = texture->v + texture->h * sample / 4;
+        for (sample = 0; sample < VS_SURFACE_ROWS; ++sample) {
+            v[sample] = texture->v + texture->h * sample / (VS_SURFACE_ROWS - 1);
         }
 
-        for (row = 0; row < 4; ++row) {
+        for (row = 0; row < VS_SURFACE_ROWS - 1; ++row) {
             int depth;
-            vs_surfacePrim* prim;
+            vs_gt4Prim* prim;
 
             for (column = 0; column < 15; ++column) {
                 depth = (depths[row][column] + depths[row][column + 1]
@@ -309,6 +362,9 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 #undef VS_SURFACE_FUNCTION
+#undef VS_SURFACE_MIRRORED
+#undef VS_SURFACE_ROWS
+#undef VS_SURFACE_STATE
 #undef VS_SURFACE_VERTICES
 #undef VS_SURFACE_TEXTURE_COLUMNS
 #undef VS_SURFACE_TEXTURE_COLUMN

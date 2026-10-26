@@ -7,12 +7,8 @@ options:
   src_path: src/EFFECT/PLG160.BIN
   asset_path: build/assets/EFFECT/PLG160.BIN
   ld_script_path: build/config/EFFECT/PLG160.BIN/link.ld
-  symbol_addrs_path:
-    - config/SLUS_010.40/symbol_addrs.txt
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/EFFECT/PLG160.BIN/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/EFFECT/PLG160.BIN/undefined_syms_auto.txt
-
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 segments:
   - name: PLG160.BIN
@@ -23,5 +19,4 @@ segments:
     subsegments:
     - [0, c]
     - [0x1B1C, .data, 0]
-    - [0x1B3C, data]
   - [0x1B5C]

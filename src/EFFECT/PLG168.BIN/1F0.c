@@ -1,27 +1,13 @@
-#include "common.h"
+#include "1F0.h"
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800F99F0
-#define VS_TRAIL_TARGET_FUNCTION func_800FA18C
-#define VS_TRAIL_CONTROL_FUNCTION func_800FA3A4
-#define VS_TRAIL_INIT_FUNCTION func_800FA87C
-#define VS_TRAIL_UPDATE_FUNCTION func_800FA9F4
-#define VS_TRAIL_RENDER_FUNCTION func_800FAB80
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FB5D0
-#define VS_TRAIL_CORNER_STATE D_800FDC54
+#define VS_EFFECT_NAME vs_effect_vertigo
+
 #include "src/EFFECT/trails9.h"
 
-#define VS_PARTICLE_ORIGIN_FUNCTION func_800FBB10
-#define VS_PARTICLE_TARGET_FUNCTION func_800FC298
-#define VS_PARTICLE_CONTROL_FUNCTION func_800FC4B0
-#define VS_PARTICLE_CORNER_STATE D_800FDC58
+#define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleSetup.h"
 
-#define VS_PARTICLE_RENDER_FUNCTION func_800FC960
 #include "src/EFFECT/particleLineRender.h"
-
-#define VS_PARTICLE_DISPATCH_FUNCTION func_800FCE90
-#define VS_PARTICLE_UNTEXTURED
 #include "src/EFFECT/particleDispatch.h"
 
-#define VS_GRID_FUNCTION func_800FD104
 #include "src/EFFECT/grids.h"

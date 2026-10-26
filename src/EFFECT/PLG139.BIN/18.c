@@ -1,7 +1,7 @@
 #include "18.h"
-#define VS_TILED_RING_FUNCTION vs_effect_sunder_0
+
+#define VS_EFFECT_NAME vs_effect_sunder
 
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_GRID_FUNCTION vs_effect_sunder_1
 #include "src/EFFECT/grids.h"

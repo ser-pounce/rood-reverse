@@ -126,13 +126,7 @@ typedef struct {
     struct {
         char currentItemCategory;
         char unk1;
-        union {
-            struct {
-                u_char index;
-                u_char page;
-            } cursor;
-            u_short value;
-        } unk2[8];
+        u_short unk2[8];
     } unk3A;
     char unk4C[4];
     char unk50;
@@ -276,16 +270,6 @@ typedef struct {
     u_char unkCB;
 } func_800FA098_arg0;
 
-typedef union {
-    int packed;
-    struct {
-        u_char rCurve;
-        u_char gCurve;
-        u_char bCurve;
-        u_char age;
-    } fields;
-} func_800D2904_curves;
-
 typedef struct {
     VECTOR unk0;
     VECTOR unk10;
@@ -317,7 +301,7 @@ typedef struct {
     SVECTOR unk13C;
     SVECTOR unk144;
     int unk14C[2];
-    func_800D2904_curves unk154;
+    u_char unk154[4];
     u_char unk158[0x10];
     int unk168;
     int unk16C;
@@ -378,19 +362,6 @@ typedef struct {
     int unkCC;
     actionEffectRequest* unkD0;
 } D_800F569C_t;
-
-typedef struct {
-    VECTOR position;
-    VECTOR lookAt;
-    int unk20;
-    int unk24;
-    int unk28;
-    int unk2C;
-    int roll;
-    int nearClip;
-    int projectionDistance;
-    int farClip;
-} D_800F54D8_t;
 
 typedef struct {
     int vx;
@@ -592,6 +563,7 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy);
  */
 int vs_battle_getStatusFlags(vs_battle_actor2*);
 int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb*);
+void vs_battle_initUi(void*);
 void func_800CAB40(void);
 int func_800CABE0(int);
 
@@ -730,6 +702,21 @@ extern char vs_battle_submenuStates[16];
 extern char vs_battle_lowerScreenUiState;
 extern D_800F18EC_t D_800F4E98;
 extern int D_800F4EA0;
+typedef struct {
+    VECTOR position;
+    VECTOR lookAt;
+    int unk20;
+    int unk24;
+    int unk28;
+    int unk2C;
+    int roll;
+    int nearClip;
+    int projectionDistance;
+    int farClip;
+} D_800F54D8_t;
+
+void func_800D1B18(D_800F54D8_t*);
+void func_800D1E20(int);
 extern D_800F4EE8_t D_800F4EE8;
 extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
@@ -741,4 +728,7 @@ extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;
 extern SVECTOR D_800F5310[];
 extern D_800F53B8_t* D_800F53BC;
+extern short D_800F54D0;
+extern D_800F54D8_t D_800F5520[2];
+extern short D_800F55A0;
 extern effectExec vs_battle_effectRenderers[];

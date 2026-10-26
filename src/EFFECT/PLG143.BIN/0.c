@@ -1,6 +1,7 @@
-#define VS_TILED_RING_FUNCTION func_800F9800
+#include "0.h"
+
+#define VS_EFFECT_NAME vs_effect_mistralEdge
+
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800FA6F8
-#define VS_CLOSED_RING_COLORS D_800FB684
 #include "src/EFFECT/closedRings.h"

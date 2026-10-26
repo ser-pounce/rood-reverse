@@ -357,9 +357,7 @@ int func_800D12D8(int);
 void func_800D169C(SVECTOR*, SVECTOR*, int, SVECTOR*);
 void func_800D17A8(VECTOR*, VECTOR*, int, VECTOR*);
 void func_800D1930(void);
-void func_800D1B18(D_800F54D8_t*);
 void func_800D1B80(D_800F54D8_t*);
-void func_800D52A4(func_800D2904_t*);
 void func_800D206C(void);
 void func_800D21C0(void);
 void func_800D236C(void);
@@ -421,10 +419,7 @@ extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
-extern union {
-    int s32;
-    u_char u8[4];
-} D_800EB9D0;
+extern int D_800EB9D0;
 extern u_int* _menuBgUnpackedBuf;
 extern int* D_800EB9D8;
 extern char D_800EBA78[];
@@ -503,12 +498,9 @@ extern char D_800F54A8;
 extern char D_800F54A9;
 extern D_800F53B8_t* D_800F54B0;
 extern D_800F54B8_t D_800F54B8[];
-extern short D_800F54D0;
 extern D_800F54D8_t D_800F54D8;
 extern u_char D_800F4E80;
 extern char D_800F5518;
-extern D_800F54D8_t D_800F5520[2];
-extern short D_800F55A0;
 extern D_800F54D8_t D_800F55A8;
 extern u_int D_800F55E8;
 extern int D_800F55F0;
@@ -521,35 +513,6 @@ extern D_800F5620_t D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
 typedef struct {
-    u_char unk0[0x34];
-    u_char unk34;
-    u_char unk35;
-    char unk36[0x42];
-    MATRIX unk78;
-    char unk98[0x26];
-    short unkBE;
-} func_800D0C60_t;
-typedef struct {
-    char unk0[0x10];
-    actionEffectTarget unk10[16];
-} func_800D6048_t;
-typedef union {
-    SVECTOR vec;
-    int words[2];
-} func_800C4794_t;
-typedef struct {
-    u_short flags;
-    u_char pad2[3];
-    u_char curve;
-    u_char pad6[4];
-    u_short mode;
-    u_char padC[2];
-    u_char limit;
-    u_char padF;
-    u_short unk10;
-    u_short shape12;
-} func_800D0548_arg0;
-typedef struct {
     u_int unk60_0 : 8;
     u_int unk60_8 : 4;
     u_int unk60_12 : 20;
@@ -559,13 +522,7 @@ extern u_char D_800EABAA;
 extern char D_800EA984[];
 extern char D_800EA9B6[];
 extern char D_800EAA54[];
-extern int D_800EBCEC[];
-extern int D_800EBD14[];
-extern u_int D_800EBD3C[];
-extern u_short D_800EBD64;
 extern int D_800EC328;
-extern u_char D_800F5238;
-extern D_800F53B8_t3 D_800F5234;
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -3234,175 +3191,7 @@ void func_800C9FE8(void)
 }
 
 // https://decomp.me/scratch/NSW3O
-void func_800CA2DC(void)
-{
-    u_long* prim;
-    vs_battle_actor2* actor;
-    void* ot;
-    int i;
-    int j;
-    int k;
-    int rightX;
-    u_int flags;
-    u_int count;
-    int selected;
-
-    actor = vs_battle_characterState->unk3C;
-    ot = vs_scratch.unk4 - 4;
-    func_800C9FE8();
-
-    if (D_800EB9CC == 1) {
-        if ((u_char)D_800EB9CD < 4) {
-            D_800EBD64 = 0;
-            ++D_800EB9CD;
-        }
-    } else if (D_800EB9CD != 0) {
-        --D_800EB9CD;
-    }
-
-    if (D_800EB9CD != 0) {
-        prim = vs_battle_setSprite(0x140,
-            ((((u_char)D_800EB9CD * 3 - 4) << 16) - D_800EB9B0) | 0xEC, 0xA0049,
-            vs_scratch.unk4 - 0xC);
-        prim[1] = 0xE1000017;
-        k = rsin(D_800EBD64 & 0x7FF);
-        prim[4] = 0x373D0040;
-        prim[2] += k >> 5;
-        D_800EBD64 += vs_gametime_tickspeed * 64;
-    }
-
-    if (D_800EB9AF != 0) {
-        if (D_800EB9B0 == 0x200000) {
-            return;
-        }
-        D_800EB9B0 += 0x80000;
-    } else {
-        k = vs_battle_textBoxes[7].state;
-        if (!(vs_battle_lowerScreenUiState & 2)
-            && ((k == 0) || (k != vs_battle_textBoxes[7].unk22 + 1))) {
-            k = 0xB80008;
-            for (i = 0; i < 5; ++i) {
-                j = i + (D_800EB9CC & 1) * 5;
-                prim = vs_battle_setSpriteDefaultTexPage(
-                    0, k + D_800EBCEC[j], D_800EBD14[j], ot);
-                prim[2] = D_800EBC54[vs_battle_getLimbStatus(
-                              &vs_battle_characterState->unk3C->limbs[i])]
-                        | 0x64000000;
-                prim[4] = D_800EBD3C[j];
-            }
-        }
-        if (D_800EB9B0 != 0) {
-            D_800EB9B0 -= 0x80000;
-        }
-    }
-
-    _renderStatBar(0, actor->currentHP, actor->maxHP);
-    _renderStatBar(1, actor->currentMP, actor->maxMP);
-    if ((k = actor->risk) != 0) {
-        _renderStatBar(2, k, 100);
-    }
-    if (k == 0) {
-        vs_battle_renderTextRaw(
-            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.unk4 - 0xC);
-    }
-
-    if (D_800EB9AE != 0) {
-        return;
-    }
-
-    flags = vs_battle_getStatusFlags(actor);
-    count = 0;
-    selected = 0xFF;
-    for (j = 0; j < 32; ++j) {
-        if ((flags >> j) & 1) {
-            if (j == D_800EB9D0.u8[1]) {
-                selected = count;
-            }
-            ++count;
-        }
-    }
-    for (j = 0; j < 3; ++j) {
-        if (!((flags >> D_800EB9D0.u8[j]) & 1)) {
-            D_800EB9D0.u8[j] = 0xFF;
-        }
-    }
-
-    if (count == 0) {
-        return;
-    }
-
-    j = D_800EB9D0.u8[3];
-    if (j == 12) {
-        D_800EB9D0.u8[0] = D_800EB9D0.u8[1];
-        D_800EB9D0.u8[1] = D_800EB9D0.u8[2];
-        D_800EB9D0.u8[2] = 0xFF;
-        i = (D_800EB9D0.u8[1] + 1) & 0xFF;
-        for (k = 0; k < 32; ++k, ++i) {
-            i %= 32;
-            if (((flags >> i) & 1) && (i != D_800EB9D0.u8[1])) {
-                D_800EB9D0.u8[2] = i;
-                break;
-            }
-        }
-    }
-
-    k = 1; // dead store kept for codegen: count == 1 below is compared against this
-           // register
-    if ((D_800EB9D0.u8[0] == D_800EB9D0.u8[2]) && (D_800EB9D0.u8[1] != 0xFF)) {
-        if ((count == 1) && (j < 3)) {
-            j = 0;
-        }
-        if ((count == 2) && (D_800EB9D0.u8[0] != 0xFF) && ((u_int)(j - 12) < 3)) {
-            j = 12;
-        }
-    }
-
-    k = -8;
-    if (j >= 9) {
-        if (j < 12) {
-            k = 8 - j * 2;
-        } else {
-            k = 24 - j * 2;
-        }
-    }
-
-    if ((++j != D_800EB9D0.u8[3]) && (vs_gametime_tickspeed == 4)) {
-        j = (j + 1) & 0xE;
-    }
-    rightX = k + 16;
-    D_800EB9D0.u8[3] = j & 0xF;
-    func_800C9CB4(D_800EB9D0.u8[2], rightX, 1);
-    ot -= 4;
-    func_800C9CB4(D_800EB9D0.u8[1], k, 1);
-    func_800C9CB4(D_800EB9D0.u8[1], rightX, 0);
-    func_800C9CB4(D_800EB9D0.u8[0], k, 0);
-
-    k = 0x80000 - D_800EB9B0;
-    if (count < 3) {
-        for (i = 0; i < count; ++i) {
-            prim =
-                vs_battle_setSpriteDefaultTexPage(0x80, (0x94 + i * 3) | k, 0x40004, ot);
-            prim[4] = 0x37F40C1A;
-        }
-        return;
-    }
-
-    j = k + 0x30000;
-    if (selected != 0xFF) {
-        prim = vs_battle_setSprite(
-            0x80, ((selected & 7) * 3 + 0x94) | (!(selected & 8) ? k : j), 0x40004, ot);
-        prim[4] = 0x37F40C1A;
-    }
-    i = 25;
-    if (count < 9) {
-        i = count * 3 + 1;
-    } else {
-        prim = vs_battle_setSprite(0x80, j | 0x94, ((count - 8) * 3 + 1) | 0x40000, ot);
-        prim[4] = 0x37F40C00;
-    }
-    prim = vs_battle_setSpriteDefaultTexPage(0x80, k | 0x94, i | 0x40000, ot);
-    prim[4] = 0x37F40C00;
-}
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
 
 void func_800CA97C(void)
 {
@@ -3411,7 +3200,7 @@ void func_800CA97C(void)
     D_800F4ED8[2] = 0x1000;
 }
 
-void func_800CA9C0(void* arg0)
+void vs_battle_initUi(void* fontData)
 {
     D_800EB9AC = 0;
     _loadedSubMenu = 0;
@@ -3427,7 +3216,7 @@ void func_800CA9C0(void* arg0)
     D_800EB9AF = 0;
     D_800EB9CC = 0;
     D_800EB9CD = 0;
-    D_800EB9D0.s32 = 0xFFFFFF;
+    D_800EB9D0 = 0xFFFFFF;
     _menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
     func_800CA97C();
@@ -3438,9 +3227,9 @@ void func_800CA9C0(void* arg0)
     vs_battle_rMemzero(vs_battle_submenuStates, sizeof vs_battle_submenuStates);
     D_800F4EE8 = (D_800F4EE8_t) { { 0 } };
     D_800F51B8 = &D_800F4CD0;
-    vs_battle_renderImage(0x340, arg0, 0xE00040);
-    vs_battle_renderImage(0x380, arg0 + 0x7000, 0xE00040);
-    vs_battle_renderImage(0x4203C0, arg0 + 0xE000, 0x9E0040);
+    vs_battle_renderImage(vs_getXY(832, 0), fontData, vs_getWH(64, 224));
+    vs_battle_renderImage(vs_getXY(896, 0), fontData + 0x7000, vs_getWH(64, 224));
+    vs_battle_renderImage(vs_getXY(960, 66), fontData + 0xE000, vs_getWH(64, 158));
     DrawSync(0);
     ClearOTag(D_800F51B8, 0x22);
 }
@@ -3776,7 +3565,7 @@ void _renderTimer(int* value)
     char sp10[4];
     int i;
 
-    *(int*)sp10 = *value;
+    __builtin_memcpy(sp10, value, sizeof sp10);
     sp10[0] = vs_main_stateFlags.puzzleTimerHundredths;
 
     if (sp10[3] != 0) {
@@ -7430,12 +7219,12 @@ void func_800D2ADC(
     sample = def->unk11;
     vs_battle_lerp2DVector(def->unk94[3], D_800F5330[sample], scratch->unk14C);
     node = first;
-    scratch->unk154.packed = *(int*)&def->rCurve;
-    scratch->unk154.fields.age = node->unk77;
+    __builtin_memcpy(scratch->unk154, &def->rCurve, 4);
+    scratch->unk154[3] = node->unk77;
     for (i = 0; i < count; ++i) {
         *(int*)node->unk5C = scratch->flags;
         value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
-        *(int*)node->unk74 = scratch->unk154.packed;
+        __builtin_memcpy(node->unk74, scratch->unk154, 4);
         node->unk70 = value;
         *(u_short*)&node->endEvent = *(u_short*)&def->unk2;
         node->unk60 = scratch->unk180;

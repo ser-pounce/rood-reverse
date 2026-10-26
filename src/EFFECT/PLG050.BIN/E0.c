@@ -1,15 +1,7 @@
-#include "common.h"
+#include "E0.h"
 
-#define VS_RING_FUNCTION func_800F98E0
-#define VS_RING_COLORS D_800FC624
+#define VS_EFFECT_NAME vs_effect_darkChant
+
 #include "src/EFFECT/rings.h"
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FA504
-#define VS_TRAIL_TARGET_FUNCTION func_800FACA0
-#define VS_TRAIL_CONTROL_FUNCTION func_800FAEB8
-#define VS_TRAIL_INIT_FUNCTION func_800FB390
-#define VS_TRAIL_UPDATE_FUNCTION func_800FB508
-#define VS_TRAIL_RENDER_FUNCTION func_800FB694
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FC0E4
-#define VS_TRAIL_CORNER_STATE D_800FC644
 #include "src/EFFECT/trails9.h"

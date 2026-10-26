@@ -1,5 +1,9 @@
 /* Shared particle setup: the origin, target and spline control points of each
- * particle. The overlay supplies the entry points and the corner counter. */
+ * particle. This names the effect's entry point, VS_PARTICLE_DISPATCH_FUNCTION, and the
+ * helpers are named after it. */
+
+#include "src/EFFECT/entry.h"
+#define VS_PARTICLE_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
@@ -7,6 +11,7 @@
 #include "vs_inline_c.h"
 #include <inline_c.h>
 #include <rand.h>
+#include "src/EFFECT/effectCommon.h"
 
 #ifndef VS_PARTICLE_SETUP_TYPES
 #define VS_PARTICLE_SETUP_TYPES
@@ -21,17 +26,12 @@ typedef struct {
 } func_800FA098_arg3;
 #endif
 
-#ifndef VS_CAT
-#define VS_CAT_(a, b) a##b
-#define VS_CAT(a, b) VS_CAT_(a, b)
-#endif
+#define VS_PARTICLE_ORIGIN_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _origin)
+#define VS_PARTICLE_TARGET_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _target)
+#define VS_PARTICLE_CONTROL_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _control)
 
-#ifdef VS_PARTICLE_CORNER_STATE
-extern int VS_PARTICLE_CORNER_STATE;
-#else
 #define VS_PARTICLE_CORNER_STATE VS_CAT(VS_PARTICLE_ORIGIN_FUNCTION, _state)
 static int VS_PARTICLE_CORNER_STATE = 0;
-#endif
 
 void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
@@ -48,18 +48,7 @@ void VS_PARTICLE_ORIGIN_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
         effect->unk18, vs_battle_sampleCurve(effect->unk8, state->unkC), &scratch->unk98);
     world = &battle->unk1C[effect->unkC8].world;
 
-    switch (scratch->flags & 7) {
-    case 0:
-        break;
-
-    case 1:
-        vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-        break;
-
-    case 2:
-        applyVector(&scratch->unk98, world->t[0], world->t[1], world->t[2], +=);
-        break;
-    }
+    VS_APPLY_ANCHOR(scratch, world)
 
     vs_battle_lerpVector(
         effect->unk24, vs_battle_sampleCurve(effect->unk9, state->unkC), &scratch->unkA8);

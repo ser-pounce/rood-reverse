@@ -1,6 +1,7 @@
-#define VS_TILED_RING_FUNCTION func_800F9800
+#include "0.h"
+
+#define VS_EFFECT_NAME vs_effect_scytheWind
+
 #include "src/EFFECT/tiledRings.h"
 
-#define VS_RING_FUNCTION func_800FA6F8
-#define VS_RING_COLORS D_800FB33C
 #include "src/EFFECT/rings.h"

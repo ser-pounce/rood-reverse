@@ -1,3 +1,6 @@
-#include "common.h"
+#include "0.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG052.BIN/nonmatchings/0", func_800F9800);
+#define VS_EFFECT_NAME vs_effect_banish
+
+#define VS_CLOSED_RING_TEXTURE_COLUMNS 4
+#include "src/EFFECT/closedRings.h"

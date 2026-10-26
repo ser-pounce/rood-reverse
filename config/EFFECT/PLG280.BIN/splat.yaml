@@ -1,0 +1,23 @@
+sha1: e3869f00453ee15910e864a5fd3861de4c3671af
+options:
+  basename: EFFECT/PLG280.BIN
+  target_path: data/EFFECT/PLG280.BIN
+  elf_path: build/data/EFFECT/PLG280.BIN.elf
+  asm_path: build/src/EFFECT/PLG280.BIN
+  src_path: src/EFFECT/PLG280.BIN
+  asset_path: build/assets/EFFECT/PLG280.BIN
+  ld_script_path: build/config/EFFECT/PLG280.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG280.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 128]
+    - [0x128, c]
+    - [0x3888, .data, 128]
+  - [0x38AC]

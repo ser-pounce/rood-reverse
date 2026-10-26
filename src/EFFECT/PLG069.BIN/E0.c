@@ -1,20 +1,9 @@
-#include "common.h"
+#include "E0.h"
 
-#define VS_MESH10_FUNCTION func_800F98E0
-#define VS_MESH10_VERTICES D_800FD424
-#define VS_MESH10_FACES D_800FD474
+#define VS_EFFECT_NAME vs_effect_avalancheLv1
+
 #include "src/EFFECT/meshes10.h"
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FA3EC
-#define VS_TRAIL_TARGET_FUNCTION func_800FAB88
-#define VS_TRAIL_CONTROL_FUNCTION func_800FADA0
-#define VS_TRAIL_INIT_FUNCTION func_800FB278
-#define VS_TRAIL_UPDATE_FUNCTION func_800FB3F0
-#define VS_TRAIL_RENDER_FUNCTION func_800FB57C
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FBFCC
-#define VS_TRAIL_CORNER_STATE D_800FD4D4
 #include "src/EFFECT/trails9.h"
 
-#define VS_TILED_RING_FUNCTION func_800FC50C
-#define VS_TILED_RING_COLORS D_800FD4D8
 #include "src/EFFECT/tiledRings.h"

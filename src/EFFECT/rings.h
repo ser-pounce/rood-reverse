@@ -1,6 +1,9 @@
-/* Shared three-row, nine-column textured ring effect. The overlay supplies its entry
- * point and color table, and defines VS_RING_TRANSPOSED when its texture runs along the
- * rows instead of the columns. */
+/* Shared three-row, nine-column textured ring effect. The entry point is named by
+ * entry.h. The overlay defines VS_RING_TRANSPOSED when its texture runs along the rows
+ * instead of the columns. */
+
+#include "src/EFFECT/entry.h"
+#define VS_RING_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -8,29 +11,10 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+#include "src/EFFECT/effectCommon.h"
 
-#ifndef VS_RING_TYPES
-#define VS_RING_TYPES
-typedef struct {
-    u_char lifetime;
-    u_char effect;
-    short pad;
-    int radius;
-    int radiusSpeed;
-    int height;
-    int heightSpeed;
-    int angle;
-    int age;
-    func_800D6CF_t texture;
-} vs_ringState;
-typedef struct {
-    int tag;
-    POLY_GT4 poly;
-    int drawMode;
-} vs_ringPrim;
-#endif
-
-extern CVECTOR VS_RING_COLORS[];
+#define VS_RING_COLORS VS_CAT(VS_RING_FUNCTION, _colors)
+VS_STANDARD_COLORS(VS_RING_COLORS);
 
 int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -94,19 +78,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
-
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
-                actorMatrix->t[2], +=);
-            break;
-        }
+        VS_APPLY_ANCHOR(scratch, actorMatrix)
 
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
@@ -252,7 +224,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                                 + depths[drawRow + 1][drawColumn]
                                 + depths[drawRow + 1][drawColumn + 1])
                           / 4;
-                vs_ringPrim* prim;
+                vs_gt4Prim* prim;
 
                 if (depth >= 0x800 || depth <= vs_main_nearClip) {
                     continue;
@@ -295,25 +267,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             }
         }
 
-        if (effect->unk3) {
-            child.unk60 = 0;
-
-            if (effect->flags & 0x20000) {
-                SetRotMatrix(actorMatrix);
-                SetTransMatrix(actorMatrix);
-                copyVector(&scratch->unk2C, &scratch->unk98);
-                gte_ldv0(&scratch->unk2C);
-                gte_rtv0tr2();
-                gte_stlvnl(&scratch->unk34);
-                setVector(&child.motion.position, scratch->unk34.vx * ONE,
-                    scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
-            } else {
-                setVector(&child.motion.position, scratch->unk98.vx * ONE,
-                    scratch->unk98.vy * ONE, scratch->unk98.vz * ONE);
-            }
-
-            func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
-        }
+        VS_SPAWN_CHILD(effect, scratch, battle, actorMatrix, child)
 
         ++state->age;
 

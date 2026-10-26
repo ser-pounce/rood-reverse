@@ -1,26 +1,14 @@
-#include "common.h"
+#include "F8.h"
 
-#define VS_ROTATING_SURFACE_FUNCTION func_800F98F8
+#define VS_EFFECT_NAME vs_effect_gigaTempest
+
 #include "src/EFFECT/rotatingSurfaces.h"
 
-#define VS_RING_FUNCTION func_800FA7B0
-#define VS_RING_COLORS D_800FEC68
 #define VS_RING_TRANSPOSED
 #include "src/EFFECT/rings.h"
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FB3D4
-#define VS_TRAIL_TARGET_FUNCTION func_800FBB70
-#define VS_TRAIL_CONTROL_FUNCTION func_800FBD88
-#define VS_TRAIL_INIT_FUNCTION func_800FC260
-#define VS_TRAIL_UPDATE_FUNCTION func_800FC3D8
-#define VS_TRAIL_RENDER_FUNCTION func_800FC564
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FCFB4
-#define VS_TRAIL_CORNER_STATE D_800FEC88
 #include "src/EFFECT/trails9.h"
 
-#define VS_GRID_FUNCTION func_800FD4F4
 #include "src/EFFECT/grids.h"
 
-#define VS_RING_FUNCTION func_800FE044
-#define VS_RING_COLORS D_800FEC8C
 #include "src/EFFECT/rings.h"

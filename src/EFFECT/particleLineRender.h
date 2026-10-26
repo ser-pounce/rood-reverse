@@ -1,6 +1,6 @@
 /* Shared untextured particle line renderer. Each particle is a spline through its four
- * control points, drawn as eight semi-transparent flat lines. The overlay supplies the
- * entry point. */
+ * control points, drawn as eight semi-transparent flat lines. Include after
+ * particleSetup.h. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"
@@ -8,6 +8,8 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+
+#define VS_PARTICLE_RENDER_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _render)
 
 void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)

@@ -1,12 +1,16 @@
 /* Shared ten-vertex, sixteen-face textured mesh effect. The first four vertices and the
- * other six are scaled separately before the mesh is rotated into place. The overlay
- * supplies its entry point, vertex table and face table. */
+ * other six are scaled separately before the mesh is rotated into place. The entry
+ * point is named by entry.h. */
+
+#include "src/EFFECT/entry.h"
+#define VS_MESH10_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
+#include "src/EFFECT/effectCommon.h"
 
 typedef struct {
     u_char lifetime;
@@ -21,13 +25,26 @@ typedef struct {
     POLY_GT3 poly;
     int drawMode;
 } vs_mesh10Prim;
-typedef struct {
-    u_char u;
-    u_char v;
-} vs_mesh10UV;
 
-extern SVECTOR VS_MESH10_VERTICES[];
-extern u_char VS_MESH10_FACES[][6];
+#define VS_MESH10_VERTICES VS_CAT(VS_MESH10_FUNCTION, _vertices)
+#define VS_MESH10_FACES VS_CAT(VS_MESH10_FUNCTION, _faces)
+
+// Unused copy of the standard effect color table
+VS_STANDARD_COLORS(VS_CAT(VS_MESH10_FUNCTION, _colors));
+
+static SVECTOR VS_MESH10_VERTICES[] = { { 0, -ONE, 0, 0 },
+    { ONE * 0.7698, ONE / 3, 0, 0 }, { -ONE * 0.3846, ONE / 3, ONE * 0.6668, 0 },
+    { -ONE * 0.3858, ONE / 3, -ONE * 0.6663, 0 }, { ONE * 0.3848, -ONE / 3, 0, 1 },
+    { ONE * 0.1927, ONE / 3, ONE / 3, 1 }, { -ONE * 0.1922, -ONE / 3, ONE / 3, 1 },
+    { -ONE * 0.1929, -ONE / 3, -ONE * 0.3331, 1 },
+    { ONE * 0.1920, ONE / 3, -ONE * 0.3331, 1 }, { -ONE * 0.3851, ONE / 3, 0, 1 } };
+
+static u_char VS_MESH10_FACES[][6] = { { 0, 4, 6, 0, 2, 4 }, { 4, 5, 6, 2, 8, 4 },
+    { 4, 1, 5, 2, 6, 8 }, { 6, 5, 2, 4, 8, 10 }, { 0, 6, 7, 0, 2, 4 },
+    { 6, 9, 7, 2, 8, 4 }, { 6, 2, 9, 2, 6, 8 }, { 7, 9, 3, 4, 8, 10 },
+    { 0, 7, 4, 0, 2, 4 }, { 7, 8, 4, 2, 8, 4 }, { 7, 3, 8, 2, 6, 8 },
+    { 4, 8, 1, 4, 8, 10 }, { 1, 8, 5, 0, 2, 4 }, { 8, 9, 5, 2, 8, 4 },
+    { 8, 3, 9, 2, 6, 8 }, { 5, 9, 2, 4, 8, 10 } };
 
 int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -35,7 +52,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int screen[10];
     int depths[10];
     CVECTOR colors[2];
-    vs_mesh10UV uv[6];
+    vs_uv uv[6];
     func_800D2904_t child;
     vs_mesh10State* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
@@ -67,19 +84,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
-
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
-                actorMatrix->t[2], +=);
-            break;
-        }
+        VS_APPLY_ANCHOR(scratch, actorMatrix)
 
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
@@ -222,25 +227,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 | ((u_long)prim & 0xFFFFFF);
         }
 
-        if (effect->unk3) {
-            child.unk60 = 0;
-
-            if (effect->flags & 0x20000) {
-                SetRotMatrix(actorMatrix);
-                SetTransMatrix(actorMatrix);
-                copyVector(&scratch->unk2C, &scratch->unk98);
-                gte_ldv0(&scratch->unk2C);
-                gte_rtv0tr2();
-                gte_stlvnl(&scratch->unk34);
-                setVector(&child.motion.position, scratch->unk34.vx * ONE,
-                    scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
-            } else {
-                setVector(&child.motion.position, scratch->unk98.vx * ONE,
-                    scratch->unk98.vy * ONE, scratch->unk98.vz * ONE);
-            }
-
-            func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
-        }
+        VS_SPAWN_CHILD(effect, scratch, battle, actorMatrix, child)
 
         ++state->age;
 

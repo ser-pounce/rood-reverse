@@ -1,11 +1,15 @@
-/* Shared animated nine-by-nine textured grid effect. The overlay supplies its entry
- * point. */
+/* Shared animated nine-by-nine textured grid effect. The entry point is named by
+ * entry.h. */
+
+#include "src/EFFECT/entry.h"
+#define VS_GRID_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
+#include "src/EFFECT/effectCommon.h"
 
 typedef struct {
     u_char lifetime;
@@ -85,18 +89,7 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
-
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, matrix->t[0], matrix->t[1], matrix->t[2], +=);
-            break;
-        }
+        VS_APPLY_ANCHOR(scratch, matrix)
 
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);

@@ -167,7 +167,9 @@ vs_main_stateFlags
 vs_main_stickPosBuf
 vs_main_streamXa
 vs_main_titleScreenCount
+vs_main_unkStrings
 vs_main_vibrationOnEffect
+vs_main_zndMusicMap
 vs_overlay_slots
 vs_sound_setCdVol
 VSync

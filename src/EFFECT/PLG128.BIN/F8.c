@@ -1,10 +1,7 @@
-#define TRAIL_SAMPLE_COUNT 5
+#include "F8.h"
 
-#include "common.h"
-#include "src/SLUS_010.40/32154.h"
-#include "gpu.h"
-#include <rand.h>
-#include "src/EFFECT/trails.h"
+#define VS_EFFECT_NAME vs_effect_bloodySin
+
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "vs_inline_c.h"
@@ -23,44 +20,17 @@ typedef struct {
     int padCC;
 } func_800FD9A4_t;
 
-void func_800D1B18(D_800F54D8_t*);
-void func_800D1E20(int);
-extern short D_800F54D0;
-extern short D_800F55A0;
-extern D_800F54D8_t D_800F5520[2];
-
-void func_800FE3D0(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
-void func_800FEB6C(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
-void func_800FED84(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
-void func_800FF248(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
-void func_800FF3C0(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
-void func_800FF54C(
-    func_800FA098_arg0*, func_800FA098_arg1*, D_800F53B8_t*, func_800FA76C_arg3*);
-
-#define VS_SURFACE_FUNCTION func_800F98F8
-#define VS_SURFACE_VERTICES D_801004F0
 #define VS_SURFACE_TEXTURE_COLUMNS 4
 #include "src/EFFECT/surfaces.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800FA490
-#define VS_CLOSED_RING_COLORS D_80100770
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
-#define VS_ROTATING_SURFACE_FUNCTION func_800FB400
 #include "src/EFFECT/rotatingSurfaces.h"
 
-#define VS_GRID_FUNCTION func_800FC2BC
 #include "src/EFFECT/grids.h"
 
-#define VS_SURFACE_FUNCTION func_800FCE0C
-#define VS_SURFACE_VERTICES D_80100790
 #include "src/EFFECT/surfaces.h"
 
 void func_800FD9A4(func_800FD9A4_t* arg0, VECTOR* arg1)
@@ -145,7 +115,9 @@ void func_800FDE78(func_800FD9A4_t* arg0, func_800FA098_arg1* scratch)
     arg0->endCamera.lookAt.vz = arg0->unk98.vz << 12;
 }
 
-int func_800FDEC4(func_800D4910_t* arg0, u_int arg1, int arg2)
+#include "src/EFFECT/entry.h"
+
+int VS_ENTRY_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800FD9A4_t* state = arg0->unk8;
     D_800F53B8_t* battle = D_800F53BC;
@@ -252,12 +224,4 @@ int func_800FDEC4(func_800D4910_t* arg0, u_int arg1, int arg2)
     return alive;
 }
 
-#define VS_TRAIL_ORIGIN_FUNCTION func_800FE3D0
-#define VS_TRAIL_TARGET_FUNCTION func_800FEB6C
-#define VS_TRAIL_CONTROL_FUNCTION func_800FED84
-#define VS_TRAIL_INIT_FUNCTION func_800FF248
-#define VS_TRAIL_UPDATE_FUNCTION func_800FF3C0
-#define VS_TRAIL_RENDER_FUNCTION func_800FF54C
-#define VS_TRAIL_DISPATCH_FUNCTION func_800FFFA8
-#define VS_TRAIL_CORNER_STATE D_80100A10
 #include "src/EFFECT/trails5.h"

@@ -1,7 +1,14 @@
 /* Shared three-row, sixteen-column closed ring effect. The texture spans the whole
  * ring once unless the overlay defines VS_CLOSED_RING_TEXTURE_COLUMNS, in which case
- * it repeats every that many columns. The overlay supplies its entry point and color
- * table. */
+ * it repeats every that many columns, or runs along the rows instead of the columns if
+ * VS_CLOSED_RING_TRANSPOSED is defined, or is tiled over the quads two rows at a time if
+ * VS_CLOSED_RING_TILED is defined (see tiledRings.h). VS_CLOSED_RING_OT_SLOT overrides
+ * the ordering table slot that the quads are linked into, which is their depth by
+ * default.
+ * The entry point is named by entry.h. */
+
+#include "src/EFFECT/entry.h"
+#define VS_CLOSED_RING_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/32154.h"
@@ -9,6 +16,32 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+#include "src/EFFECT/effectCommon.h"
+
+#ifndef VS_CLOSED_RING_OT_SLOT
+#define VS_CLOSED_RING_OT_SLOT depth
+#endif
+
+/* Writes the texture coordinates of the quad at (row, column) into `prim`. */
+#if defined(VS_CLOSED_RING_TILED)
+#define VS_CLOSED_RING_UV(row, column)                                                   \
+    *(u_short*)&prim->poly.u0 = *(u_short*)&uv[row][0];                                  \
+    *(u_short*)&prim->poly.u1 = *(u_short*)&uv[row][1];                                  \
+    *(u_short*)&prim->poly.u2 = *(u_short*)&uv[row][2];                                  \
+    *(u_short*)&prim->poly.u3 = *(u_short*)&uv[row][3];
+#elif defined(VS_CLOSED_RING_TRANSPOSED)
+#define VS_CLOSED_RING_UV(row, column)                                                   \
+    prim->poly.u0 = prim->poly.u2 = u[row];                                              \
+    prim->poly.u1 = prim->poly.u3 = u[(row) + 1];                                        \
+    prim->poly.v0 = prim->poly.v1 = v[column];                                           \
+    prim->poly.v2 = prim->poly.v3 = v[(column) + 1];
+#else
+#define VS_CLOSED_RING_UV(row, column)                                                   \
+    prim->poly.u0 = prim->poly.u2 = u[VS_CLOSED_RING_TEXTURE_COLUMN(column)];            \
+    prim->poly.u1 = prim->poly.u3 = u[VS_CLOSED_RING_TEXTURE_COLUMN(column) + 1];        \
+    prim->poly.v0 = prim->poly.v1 = v[row];                                              \
+    prim->poly.v2 = prim->poly.v3 = v[(row) + 1];
+#endif
 
 #ifdef VS_CLOSED_RING_TEXTURE_COLUMNS
 #define VS_CLOSED_RING_TEXTURE_COLUMN(column)                                            \
@@ -18,32 +51,8 @@
 #define VS_CLOSED_RING_TEXTURE_COLUMN(column) (column)
 #endif
 
-typedef struct {
-    u_char lifetime;
-    u_char effect;
-    short pad;
-    int radius;
-    int radiusSpeed;
-    int height;
-    int heightSpeed;
-    int angle;
-    int age;
-    func_800D6CF_t texture;
-} vs_closedRingState;
-typedef struct {
-    int tag;
-    POLY_GT4 poly;
-    int drawMode;
-} vs_closedRingPrim;
-
-#ifndef VS_CLOSED_RING_COLORS
-#define VS_CLOSED_RING_COLORS _colors
-static CVECTOR VS_CLOSED_RING_COLORS[] = { { 0xFF, 0xFF, 0xFF }, { 0x80, 0x80, 0x80 },
-    { 0xFF, 0x80, 0x00 }, { 0x00, 0x80, 0xFF }, { 0x00, 0xFF, 0x00 },
-    { 0xFF, 0x00, 0xFF }, { 0x00, 0x80, 0x00 }, { 0x80, 0x00, 0x80 } };
-#else
-extern CVECTOR VS_CLOSED_RING_COLORS[];
-#endif
+#define VS_CLOSED_RING_COLORS VS_CAT(VS_CLOSED_RING_FUNCTION, _colors)
+VS_STANDARD_COLORS(VS_CLOSED_RING_COLORS);
 
 int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -54,11 +63,18 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int depths[3][16];
     int factors[3];
     CVECTOR colors[3];
+#if defined(VS_CLOSED_RING_TILED)
+    vs_uv uv[2][4];
+#elif defined(VS_CLOSED_RING_TRANSPOSED)
+    u_char u[3];
+    u_char v[17];
+#else
     u_char u[VS_CLOSED_RING_TEXTURE_COLUMNS + 1];
     u_char v[3];
+#endif
     MATRIX _;
     func_800D2904_t child;
-    vs_closedRingState* state = arg0->unk8;
+    vs_ringState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
@@ -109,19 +125,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         vs_battle_lerpVector(effect->unk18,
             vs_battle_sampleCurve(effect->unk8, state->age), &scratch->unk98);
 
-        switch (scratch->flags & 7) {
-        case 0:
-            break;
-
-        case 1:
-            vs_battle_addVecToSvec(&scratch->unk98, D_800F5310, &scratch->unk98);
-            break;
-
-        case 2:
-            applyVector(&scratch->unk98, actorMatrix->t[0], actorMatrix->t[1],
-                actorMatrix->t[2], +=);
-            break;
-        }
+        VS_APPLY_ANCHOR(scratch, actorMatrix)
 
         vs_battle_lerpVector(effect->unk24,
             vs_battle_sampleCurve(effect->unk9, state->age), &scratch->unkA8);
@@ -238,6 +242,22 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         func_800D6D24(&state->texture);
         texture = &D_800F569C->textures[state->texture.textureInfo->dataIndex];
 
+#if defined(VS_CLOSED_RING_TILED)
+        uv[0][0].u = uv[0][2].u = uv[1][0].u = uv[1][2].u = texture->u;
+        uv[0][1].u = uv[0][3].u = uv[1][1].u = uv[1][3].u = uv[0][0].u + texture->w;
+        uv[0][0].v = uv[0][1].v = texture->v;
+        uv[0][2].v = uv[0][3].v = uv[1][0].v = uv[1][1].v =
+            uv[0][0].v + ((texture->h * fraction) >> 12);
+        uv[1][2].v = uv[1][3].v = texture->v + texture->h;
+#elif defined(VS_CLOSED_RING_TRANSPOSED)
+        for (column = 0; column < 17; ++column) {
+            v[column] = texture->v + ((texture->h * column) / 16);
+        }
+
+        u[0] = texture->u;
+        u[2] = u[0] + texture->w;
+        u[1] = texture->u + ((texture->w * fraction) >> 12);
+#else
         for (column = 0; column < VS_CLOSED_RING_TEXTURE_COLUMNS + 1; ++column) {
             u[column] =
                 texture->u + ((texture->w * column) / VS_CLOSED_RING_TEXTURE_COLUMNS);
@@ -246,10 +266,11 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
         v[0] = texture->v;
         v[2] = v[0] + texture->h;
         v[1] = texture->v + ((texture->h * fraction) >> 12);
+#endif
 
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             int depth;
-            vs_closedRingPrim* prim;
+            vs_gt4Prim* prim;
 
             for (drawColumn = 0; drawColumn < 15; ++drawColumn) {
                 depth = (depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1]
@@ -266,23 +287,29 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 prim->poly.tag = _get_mode(0, 0, 0);
                 prim->drawMode = _get_mode(0, 1, 0);
                 *(int*)&prim->poly.x0 = screen[drawRow][drawColumn];
+#ifdef VS_CLOSED_RING_TRANSPOSED
+                *(int*)&prim->poly.x2 = screen[drawRow][drawColumn + 1];
+                *(int*)&prim->poly.x1 = screen[drawRow + 1][drawColumn];
+                *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
+                *(int*)&prim->poly.r0 = *(int*)&prim->poly.r2 = *(int*)&colors[drawRow];
+                *(int*)&prim->poly.r1 = *(int*)&prim->poly.r3 =
+                    *(int*)&colors[drawRow + 1];
+#else
                 *(int*)&prim->poly.x1 = screen[drawRow][drawColumn + 1];
                 *(int*)&prim->poly.x2 = screen[drawRow + 1][drawColumn];
                 *(int*)&prim->poly.x3 = screen[drawRow + 1][drawColumn + 1];
                 *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 = *(int*)&colors[drawRow];
                 *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 =
                     *(int*)&colors[drawRow + 1];
-                prim->poly.u0 = prim->poly.u2 =
-                    u[VS_CLOSED_RING_TEXTURE_COLUMN(drawColumn)];
-                prim->poly.u1 = prim->poly.u3 =
-                    u[VS_CLOSED_RING_TEXTURE_COLUMN(drawColumn) + 1];
-                prim->poly.v0 = prim->poly.v1 = v[drawRow];
-                prim->poly.v2 = prim->poly.v3 = v[drawRow + 1];
+#endif
+                VS_CLOSED_RING_UV(drawRow, drawColumn)
                 prim->poly.tpage = texture->tpage;
                 prim->poly.clut = texture->clut;
-                prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
-                ((u_long*)vs_scratch.unk4)[depth] =
-                    (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+                prim->tag =
+                    (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
+                    | 0x0E000000;
+                ((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] =
+                    (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
                     | (((u_long)prim) & 0xFFFFFF);
             }
 
@@ -299,43 +326,30 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             prim->poly.tag = _get_mode(0, 0, 0);
             prim->drawMode = _get_mode(0, 1, 0);
             *(int*)&prim->poly.x0 = screen[drawRow][15];
+#ifdef VS_CLOSED_RING_TRANSPOSED
+            *(int*)&prim->poly.x2 = screen[drawRow][0];
+            *(int*)&prim->poly.x1 = screen[drawRow + 1][15];
+            *(int*)&prim->poly.x3 = screen[drawRow + 1][0];
+            *(int*)&prim->poly.r0 = *(int*)&prim->poly.r2 = *(int*)&colors[drawRow];
+            *(int*)&prim->poly.r1 = *(int*)&prim->poly.r3 = *(int*)&colors[drawRow + 1];
+#else
             *(int*)&prim->poly.x1 = screen[drawRow][0];
             *(int*)&prim->poly.x2 = screen[drawRow + 1][15];
             *(int*)&prim->poly.x3 = screen[drawRow + 1][0];
             *(int*)&prim->poly.r0 = *(int*)&prim->poly.r1 = *(int*)&colors[drawRow];
             *(int*)&prim->poly.r2 = *(int*)&prim->poly.r3 = *(int*)&colors[drawRow + 1];
-            prim->poly.u0 = prim->poly.u2 = u[VS_CLOSED_RING_TEXTURE_COLUMN(drawColumn)];
-            prim->poly.u1 = prim->poly.u3 =
-                u[VS_CLOSED_RING_TEXTURE_COLUMN(drawColumn) + 1];
-            prim->poly.v0 = prim->poly.v1 = v[drawRow];
-            prim->poly.v2 = prim->poly.v3 = v[drawRow + 1];
+#endif
+            VS_CLOSED_RING_UV(drawRow, drawColumn)
             prim->poly.tpage = texture->tpage;
             prim->poly.clut = texture->clut;
-            prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0E000000;
-            ((u_long*)vs_scratch.unk4)[depth] =
-                (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+            prim->tag = (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
+                      | 0x0E000000;
+            ((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] =
+                (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
                 | (((u_long)prim) & 0xFFFFFF);
         }
 
-        if (effect->unk3) {
-            child.unk60 = 0;
-
-            if (effect->flags & 0x20000) {
-                SetRotMatrix(actorMatrix);
-                SetTransMatrix(actorMatrix);
-                copyVector(&scratch->unk2C, &scratch->unk98);
-                gte_ldv0(&scratch->unk2C);
-                gte_rtv0tr2();
-                gte_stlvnl(&scratch->unk34);
-                setVector(&child.motion.position, scratch->unk34.vx * ONE,
-                    scratch->unk34.vy * ONE, scratch->unk34.vz * ONE);
-            } else {
-                setVector(&child.motion.position, scratch->unk98.vx * ONE,
-                    scratch->unk98.vy * ONE, scratch->unk98.vz * ONE);
-            }
-
-            func_800D2ADC(battle, effect->unk3 - 1, 0, 0, &child);
-        }
+        VS_SPAWN_CHILD(effect, scratch, battle, actorMatrix, child)
 
         ++state->age;
 
@@ -361,5 +375,9 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 }
 #undef VS_CLOSED_RING_FUNCTION
 #undef VS_CLOSED_RING_COLORS
+#undef VS_CLOSED_RING_TRANSPOSED
+#undef VS_CLOSED_RING_TILED
+#undef VS_CLOSED_RING_UV
+#undef VS_CLOSED_RING_OT_SLOT
 #undef VS_CLOSED_RING_TEXTURE_COLUMNS
 #undef VS_CLOSED_RING_TEXTURE_COLUMN

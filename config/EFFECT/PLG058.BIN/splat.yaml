@@ -1,0 +1,23 @@
+sha1: 020f9de72f7c0a25198818c4453ae4ee7bfeb051
+options:
+  basename: EFFECT/PLG058.BIN
+  target_path: data/EFFECT/PLG058.BIN
+  elf_path: build/data/EFFECT/PLG058.BIN.elf
+  asm_path: build/src/EFFECT/PLG058.BIN
+  src_path: src/EFFECT/PLG058.BIN
+  asset_path: build/assets/EFFECT/PLG058.BIN
+  ld_script_path: build/config/EFFECT/PLG058.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG058.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, 2D0]
+    - [0x2D0, c]
+    - [0x61B4, .data, 2D0]
+  - [0x61C0]

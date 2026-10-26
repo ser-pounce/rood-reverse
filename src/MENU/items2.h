@@ -919,7 +919,7 @@ loop_1:
         }
 
         D_800F4EE8.unk3A.currentItemCategory = (itemCategory + 1) & 7;
-        (&D_800F4EE8.unk3A)->unk2[itemCategory].value =
+        (&D_800F4EE8.unk3A)->unk2[itemCategory] =
             vs_mainMenu_findItem(itemCategory, i - 1) - 1;
 
         state = init;

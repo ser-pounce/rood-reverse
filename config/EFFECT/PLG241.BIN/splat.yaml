@@ -1,0 +1,23 @@
+sha1: ea8e6794ecc55d25650855cf774e501f1b6ff5bd
+options:
+  basename: EFFECT/PLG241.BIN
+  target_path: data/EFFECT/PLG241.BIN
+  elf_path: build/data/EFFECT/PLG241.BIN.elf
+  asm_path: build/src/EFFECT/PLG241.BIN
+  src_path: src/EFFECT/PLG241.BIN
+  asset_path: build/assets/EFFECT/PLG241.BIN
+  ld_script_path: build/config/EFFECT/PLG241.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG241.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, .rodata, F8]
+    - [0xF8, c]
+    - [0x16EC, .data, F8]
+  - [0x16F0]

@@ -1,19 +1,14 @@
-#include "common.h"
+#include "0.h"
 
-#define VS_SURFACE_FUNCTION func_800F9800
-#define VS_SURFACE_VERTICES D_800FCE38
+#define VS_EFFECT_NAME vs_effect_hexFlux
+
 #define VS_SURFACE_TEXTURE_COLUMNS 4
 #include "src/EFFECT/surfaces.h"
 
-#define VS_MIRROR_SURFACE_FUNCTION func_800FA398
-#define VS_SURFACE_VERTICES D_800FD0B8
 #include "src/EFFECT/mirroredSurfaces.h"
 
-#define VS_CLOSED_RING_FUNCTION func_800FB00C
-#define VS_CLOSED_RING_COLORS D_800FD338
 #define VS_CLOSED_RING_TEXTURE_COLUMNS 4
 #include "src/EFFECT/closedRings.h"
 
 #define VS_ROTATING_SURFACE_TEXTURE_COLUMNS 4
-#define VS_ROTATING_SURFACE_FUNCTION func_800FBF7C
 #include "src/EFFECT/rotatingSurfaces.h"

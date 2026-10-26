@@ -232,7 +232,7 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
         color.g = weapon->unk5C0;
         color.b = weapon->unk5C0;
     } else {
-        *(int*)&color = *(int*)&actor->unk0.unk54;
+        __builtin_memcpy(&color, &actor->unk0.unk54, sizeof color);
     }
 
     if (value) {

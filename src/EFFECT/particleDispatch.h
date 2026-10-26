@@ -1,6 +1,6 @@
 /* Shared particle effect entry point. Include after particleSetup.h and
- * particleRender.h, or particleLineRender.h with VS_PARTICLE_UNTEXTURED defined; the
- * overlay supplies the entry points. */
+ * particleRender.h, or particleLineRender.h with VS_PARTICLE_UNTEXTURED defined. The
+ * entry point is named by particleSetup.h. */
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/SLUS_010.40/main.h"

@@ -1,23 +1,13 @@
-#include "common.h"
+#include "F8.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800F98F8);
+#define VS_EFFECT_NAME vs_effect_radialSurgeLv2
 
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FA7F0);
+#include "src/EFFECT/tiledRings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FB414);
+#include "src/EFFECT/rings.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FBBB0);
+#include "src/EFFECT/trails5.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FBDC8);
+#include "src/EFFECT/rotatingSurfaces.h"
 
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FC28C);
-
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FC404);
-
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FC590);
-
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FCFEC);
-
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FD534);
-
-INCLUDE_ASM("build/src/EFFECT/PLG074.BIN/nonmatchings/F8", func_800FE3EC);
+#include "src/EFFECT/grids.h"

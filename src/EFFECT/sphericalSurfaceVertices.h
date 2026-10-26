@@ -1,5 +1,3 @@
-#pragma once
-
 #define COS22 (ONE * 0.9239)
 #define SIN22 (ONE * 0.3827)
 #define COS45 (ONE * 0.7071)
@@ -16,6 +14,8 @@
 #define POS(m) ((m) - 1)
 
 #define POLE { 0, ONE, 0 }
+
+#define VS_SURFACE_VERTICES VS_CAT(VS_SURFACE_FUNCTION, _vertices)
 
 // clang-format off
 static SVECTOR VS_SURFACE_VERTICES[][16] = {

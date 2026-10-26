@@ -1,9 +1,12 @@
 #include "common.h"
 #include "0.h"
 #include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include <libgte.h>
+#include <inline_c.h>
+#include "vs_inline_c.h"
 
 void func_800F9800(int arg0)
 {

@@ -314,7 +314,7 @@ extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
 extern char D_800F4BA8;
 extern void* _mpdClearedSection;
-extern u_short* D_800F4BB0;
+extern u_short* _scriptStrings;
 extern char D_800F4BB4;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
@@ -713,7 +713,8 @@ int vs_battle_script_showTextBox(u_char* script, short arg1 __attribute__((unuse
     int temp_v0;
 
     if (vs_battle_textBoxStatuses[script[1]] == 0) {
-        vs_battle_setTextBox(script[1], (char*)&D_800F4BB0[D_800F4BB0[script[2]]]);
+        vs_battle_setTextBox(
+            script[1], (char*)&_scriptStrings[_scriptStrings[script[2]]]);
         if (script[3] == 0) {
             vs_battle_textBoxStatuses[script[1]] = 1;
             return 1;
@@ -4658,24 +4659,31 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 }
 
-void func_800BF5F0(u_char* data)
+void _parseEvt(u_char* data)
 {
     short i;
     u_char* table;
-    D_800F4BB0 = (u_short*)(data + *(u_short*)(data + 2));
+
+    _scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
     table = data + *(u_short*)(data + 4);
+
     for (i = 9; i < 16; ++i) {
         D_800EB588[i] = ((u_short*)table)[i - 8] ? table + ((u_short*)table)[i - 8] : 0;
     }
+
     table = data + *(u_short*)(data + 6);
+
     for (i = 0; i < 8; ++i) {
         D_800F4BC0[i] = ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
     }
+
     D_800F4C38[0] = data + 16;
     D_800F4C38[1] = D_800F4C38[2] = D_800F4C38[3] = 0;
     D_800F4C2C = 0;
     D_800F4C68 = 0;
+
     vs_battle_setStateFlag(168, 0);
+
     D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
     D_800F4BB9 = 0;
     D_800F4C4E = 0;
@@ -4686,16 +4694,20 @@ void func_800BF5F0(u_char* data)
     D_800F4BB6 = 0;
     D_800F4C58[0] = 0;
     D_800F4C22 = 0;
+
     for (i = 0; i < 8; ++i) {
         vs_battle_textBoxStatuses[i] = 0;
     }
+
     for (i = 0; i < 4; ++i) {
         ((scriptBytePair*)D_800F4B28)[i].low = ((scriptBytePair*)D_800F4B28)[i].high = 0;
     }
+
     D_800F4B8B = 0;
     D_800F4B30[0].unk3 = D_800F4B30[1].unk3 = D_800F4B30[2].unk3 = 0;
     D_800F4C69 = vs_main_getcurrentMusicSlot();
     D_800F4BBC = 0;
+
     for (i = 16; i < 32; ++i) {
         vs_battle_setStateFlag(i, 0);
     }
@@ -4733,12 +4745,12 @@ int func_800BF850(void)
 
         switch (D_800F4BE0) {
         case 1:
-            func_800BF5F0(D_800F4C30);
+            _parseEvt(D_800F4C30);
             D_800F4C34 = 4;
             break;
 
         case 2:
-            func_800BF5F0(_mpdRoomDoorSection + ((short*)_mpdRoomDoorSection)[_evtFile]);
+            _parseEvt(_mpdRoomDoorSection + ((short*)_mpdRoomDoorSection)[_evtFile]);
             D_800F4C34 = 4;
             break;
 
@@ -4761,7 +4773,7 @@ int func_800BF850(void)
                 D_800F4C54 = 0;
             }
 
-            func_800BF5F0(D_800F4C30);
+            _parseEvt(D_800F4C30);
             D_800F4C34 = 4;
         }
 

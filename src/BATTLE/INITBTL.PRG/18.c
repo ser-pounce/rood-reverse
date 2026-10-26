@@ -22,7 +22,6 @@ typedef struct {
     size_t unk1C;
 } System_dat_h;
 
-void func_800CA9C0(void*);
 static void func_800FA6B8(void);
 void _initScriptFunctionTable(void);
 static void func_800F9CCC(void);
@@ -266,38 +265,42 @@ static void _loadSystemDat(void)
 
     p_hdr = (void*)buf + buf->unk0;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
-    LoadImage(&rect, (u_long*)p_hdr + 2);
+    LoadImage(&rect, (void*)(p_hdr + 1));
     DrawSync(0);
 
     p_hdr = (void*)buf + buf->unk4;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
-    LoadImage(&rect, (u_long*)p_hdr + 2);
+    LoadImage(&rect, (void*)(p_hdr + 1));
     DrawSync(0);
 
     p_hdr = (void*)buf + buf->unk8;
+    // BUG: This setion in SYSTEM.DAT only has w and h, p_hdr->x
+    // in theory should be the w value but it is set to 128,
+    // copying in data far beyond the end of this section which only
+    // has 16 colors.
     vs_main_loadClut((u_short*)p_hdr + 2, 0xF, 0, p_hdr->x);
 
-    p_hdr = (RECT*)((signed char*)buf + buf->unkC);
+    p_hdr = (void*)buf + buf->unkC;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
-    LoadImage(&rect, (u_long*)p_hdr + 2);
+    LoadImage(&rect, (void*)(p_hdr + 1));
     DrawSync(0);
 
     p_hdr = (void*)buf + buf->unk10;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
-    LoadImage(&rect, (u_long*)p_hdr + 2);
+    LoadImage(&rect, (void*)(p_hdr + 1));
     DrawSync(0);
 
     p_hdr = (void*)buf + buf->unk14;
     setRECT(&rect, p_hdr->x, p_hdr->y, p_hdr->w, p_hdr->h);
-    LoadImage(&rect, (u_long*)p_hdr + 2);
+    LoadImage(&rect, (void*)(p_hdr + 1));
     DrawSync(0);
 
     p_hdr = (void*)buf + buf->unk18;
-    setRECT(&rect, 0x300, 0xF0, p_hdr->x, p_hdr->y);
+    setRECT(&rect, 768, 240, p_hdr->x, p_hdr->y);
     LoadImage(&rect, (u_long*)p_hdr + 1);
     DrawSync(0);
 
-    func_800CA9C0((void*)buf + buf->unk1C);
+    vs_battle_initUi((void*)buf + buf->unk1C);
     vs_main_freeHeapR(buf);
 }
 
@@ -354,8 +357,8 @@ static void func_800F9AD8(void)
     }
 
     D_80060068.unk0.unk0 = 0;
-    vs_battle_cameraCurrentSpherical.delta.pitch = s1->unk80;
-    vs_battle_cameraCurrentSpherical.initialDistance = s1->unk84;
+    vs_battle_cameraCurrentSpherical.delta.pitch = s1->cameraPitch;
+    vs_battle_cameraCurrentSpherical.initialDistance = s1->cameraDistance;
 }
 
 static void func_800F9CCC(void)

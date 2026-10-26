@@ -1,0 +1,22 @@
+sha1: 30be2ce6d3f247719916ed2adeb301c432959f38
+options:
+  basename: EFFECT/PLG247.BIN
+  target_path: data/EFFECT/PLG247.BIN
+  elf_path: build/data/EFFECT/PLG247.BIN.elf
+  asm_path: build/src/EFFECT/PLG247.BIN
+  src_path: src/EFFECT/PLG247.BIN
+  asset_path: build/assets/EFFECT/PLG247.BIN
+  ld_script_path: build/config/EFFECT/PLG247.BIN/link.ld
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
+
+segments:
+  - name: PLG247.BIN
+    start: 0x0
+    type: code
+    vram: 0x800F9800
+    align: 4
+    subsegments:
+    - [0, c]
+    - [0x2A4C, .data, 0]
+  - [0x2A8C]

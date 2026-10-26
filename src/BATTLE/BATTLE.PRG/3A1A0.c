@@ -841,7 +841,7 @@ int func_800A3E6C(int actorId)
         break;
     }
 
-    *(int*)&tile = *(int*)&actor->unk0.currentTile;
+    __builtin_memcpy(&tile, &actor->unk0.currentTile, sizeof tile);
     step = D_800F49E8 < 2 ? -1 : 1;
 
     if (D_800F49E8 & 1) {

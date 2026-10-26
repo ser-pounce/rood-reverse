@@ -748,7 +748,7 @@ static void _fadeMenuUpper(void)
     POLY_FT4* poly;
     TILE* tile;
 
-    *(_menuBgChunkWidths_t*)widths = _menuBgChunkWidths;
+    __builtin_memcpy(widths, &_menuBgChunkWidths, sizeof _menuBgChunkWidths);
 
     var_v1 = (_menuBgTransparencies_t*)transparency;
     var_v0 = _menuBgTransparencies;
@@ -799,7 +799,7 @@ static void _fadeMenuLower(void)
     POLY_FT4* poly;
     TILE* tile;
 
-    *(_menuBgChunkWidths_t*)widths = _menuBgChunkWidths;
+    __builtin_memcpy(widths, &_menuBgChunkWidths, sizeof _menuBgChunkWidths);
 
     var_v1 = (_menuBgTransparencies_t*)transparency;
     var_v0 = _menuBgTransparencies;

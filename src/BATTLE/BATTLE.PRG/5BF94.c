@@ -415,10 +415,7 @@ extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
-extern union {
-    int s32;
-    u_char u8[4];
-} D_800EB9D0;
+extern int D_800EB9D0;
 extern u_int* _menuBgUnpackedBuf;
 extern int* D_800EB9D8;
 extern char D_800EBA78[];
@@ -2931,7 +2928,7 @@ void vs_battle_initUi(void* fontData)
     D_800EB9AF = 0;
     D_800EB9CC = 0;
     D_800EB9CD = 0;
-    D_800EB9D0.s32 = 0xFFFFFF;
+    D_800EB9D0 = 0xFFFFFF;
     _menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
     func_800CA97C();
@@ -3280,7 +3277,7 @@ void _renderTimer(int* value)
     char sp10[4];
     int i;
 
-    *(int*)sp10 = *value;
+    __builtin_memcpy(sp10, value, sizeof sp10);
     sp10[0] = vs_main_stateFlags.puzzleTimerHundredths;
 
     if (sp10[3] != 0) {

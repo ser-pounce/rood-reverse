@@ -4162,7 +4162,7 @@ static void _drawPlayTime(void)
     int digits;
     int i;
 
-    *(int*)&time = vs_main_gametime.all;
+    __builtin_memcpy(time, &vs_main_gametime, sizeof time);
     if (time[3] >= 100) {
         *(int*)&time = 0;
         time[3] = 0;

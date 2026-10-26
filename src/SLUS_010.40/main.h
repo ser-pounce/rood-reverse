@@ -44,11 +44,6 @@ typedef struct {
 
 enum actions_e { vs_main_actions_daggerArt1 = 184 };
 
-typedef union {
-    u_short u16[2];
-    u_int s32;
-} vs_hitParams_t;
-
 enum actionTypes {
     actionTypeSpell = 1,
     actionTypeAbility,

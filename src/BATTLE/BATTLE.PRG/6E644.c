@@ -88,13 +88,6 @@ typedef struct {
 } D_800F5638_t;
 
 typedef struct {
-    short unk0;
-    short unk1;
-    short unk2;
-    short unk3;
-} func_8008D2C0_t;
-
-typedef struct {
     signed char dx : 2;
     signed char unk0_2 : 2;
     signed char dz : 2;
@@ -512,7 +505,7 @@ void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
 int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
-int func_8008D2C0(func_8008D2C0_t*);
+int func_8008D2C0(SVECTOR*);
 short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
@@ -3037,8 +3030,8 @@ found:
 
 int func_800DFAF8(int arg0, u_int arg1, int arg2)
 {
-    func_8008D2C0_t sp10[4];
-    func_8008D2C0_t* m;
+    SVECTOR sp10[4];
+    SVECTOR* m;
     int i;
     int j;
 
@@ -3051,8 +3044,8 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
         }
         if ((u_char)arg1 == e->unk0_0 && (u_char)(arg1 >> 16) == e->unk0_5) {
             m = &sp10[j];
-            if (D_800F5910[i * 2 + 1].unk0_0 == m->unk0 >> 7
-                && D_800F5910[i * 2 + 1].unk0_5 == m->unk2 >> 7) {
+            if (D_800F5910[i * 2 + 1].unk0_0 == m->vx >> 7
+                && D_800F5910[i * 2 + 1].unk0_5 == m->vz >> 7) {
                 return i;
             }
         }
@@ -3064,7 +3057,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DFBCC);
 
 int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 {
-    func_8008D2C0_t points[4];
+    SVECTOR points[4];
     int x;
     int y;
     int z;
@@ -3085,9 +3078,9 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     z = arg0->unk4C.vz + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
 
     for (i = func_8008D2C0(points) - 1; i != -1; --i) {
-        dx = points[i].unk0 - x;
-        dy = points[i].unk1 - y;
-        dz = points[i].unk2 - z;
+        dx = points[i].vx - x;
+        dy = points[i].vy - y;
+        dz = points[i].vz - z;
 
         if (arg2
             && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)

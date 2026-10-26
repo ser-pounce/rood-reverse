@@ -19,13 +19,6 @@ typedef struct {
 } func_800AD494_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-} func_8008D2C0_t;
-
-typedef struct {
     u_char unk0;
     u_char overlay;
     u_char x;
@@ -33,7 +26,7 @@ typedef struct {
 } func_800AB358_t;
 
 void func_8007A824(DR_MOVE*);
-int func_8008D2C0(func_8008D2C0_t*);
+int func_8008D2C0(SVECTOR*);
 short func_8008DA24(int, int);
 void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
@@ -71,9 +64,9 @@ static inline void vs_battlePacketEnd(DR_MOVE* p)
 }
 
 // Inlined copy of 3A1A0 func_800A4A24
-static inline func_8008D2C0_t* func_800A4A24(int id)
+static inline SVECTOR* func_800A4A24(int id)
 {
-    func_8008D2C0_t platforms[4];
+    SVECTOR platforms[4];
     int count;
     int i;
 
@@ -81,7 +74,7 @@ static inline func_8008D2C0_t* func_800A4A24(int id)
     count = func_8008D2C0(platforms);
 
     for (i = 0; i < count; ++i) {
-        if (platforms[i].unk6 == id) {
+        if (platforms[i].pad == id) {
             // BUG: returns stack variable
             return &platforms[i];
         }
@@ -330,7 +323,7 @@ inline int func_800A92B8(int arg0, int arg1)
 
 int func_800A9378(int arg0, int arg1, int arg2, int arg3)
 {
-    func_8008D2C0_t sp10[4];
+    SVECTOR sp10[4];
     int count;
     int i;
 
@@ -342,42 +335,42 @@ int func_800A9378(int arg0, int arg1, int arg2, int arg3)
     }
 
     for (i = 0; i < count; ++i) {
-        if ((arg0 >= sp10[i].unk0 + 64) || (arg0 < sp10[i].unk0 - 64)) {
+        if ((arg0 >= sp10[i].vx + 64) || (arg0 < sp10[i].vx - 64)) {
             continue;
         }
 
-        if ((arg2 >= sp10[i].unk4 + 64) || (arg2 < sp10[i].unk4 - 64)) {
+        if ((arg2 >= sp10[i].vz + 64) || (arg2 < sp10[i].vz - 64)) {
             continue;
         }
 
         switch (arg3) {
         case 0:
-            if (sp10[i].unk2 < arg1 - 256) {
+            if (sp10[i].vy < arg1 - 256) {
                 continue;
             }
             break;
 
         case 1:
-            if (sp10[i].unk2 < arg1 - 256) {
-                return sp10[i].unk2 + 96;
+            if (sp10[i].vy < arg1 - 256) {
+                return sp10[i].vy + 96;
             }
             continue;
 
         case 2:
-            if ((sp10[i].unk2 >= arg1) || (sp10[i].unk2 < arg1 - 128)) {
+            if ((sp10[i].vy >= arg1) || (sp10[i].vy < arg1 - 128)) {
                 continue;
             }
             break;
 
         case 3:
-            if ((sp10[i].unk2 >= arg1) || (sp10[i].unk2 < arg1 - D_800F4B00)) {
+            if ((sp10[i].vy >= arg1) || (sp10[i].vy < arg1 - D_800F4B00)) {
                 continue;
             }
-            return sp10[i].unk2 + 96;
+            return sp10[i].vy + 96;
         }
 
-        D_800F49F4 = sp10[i].unk6 + 2;
-        return sp10[i].unk2;
+        D_800F49F4 = sp10[i].pad + 2;
+        return sp10[i].vy;
     }
 
     return 0;
@@ -394,7 +387,7 @@ int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
     actor->unk1800 = direction * (ONE / 4);
 
     if (actor->unk0.unkC_0) {
-        func_8008D2C0_t* platform = func_800A4A24(actor->unk0.unkC_0);
+        SVECTOR* platform = func_800A4A24(actor->unk0.unkC_0);
 
         edge = 65;
 
@@ -406,11 +399,11 @@ int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
 
         if (direction & 1) {
             position += actor->unk0.position.vx;
-            edge += platform->unk0;
+            edge += platform->vx;
             offset->vx = edge - position;
         } else {
             position += actor->unk0.position.vz;
-            edge += platform->unk4;
+            edge += platform->vz;
             offset->vz = edge - position;
         }
     } else {

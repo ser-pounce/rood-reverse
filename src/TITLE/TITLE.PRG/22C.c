@@ -1,5 +1,6 @@
 #include "22C.h"
 #include "titleData.h"
+#include "../SLUS_010.40/saveData.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/sfx.h"
 #include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
@@ -129,58 +130,6 @@ static char* _memcardMakeTempFilename(int port, int fileNo)
     return filename;
 }
 
-enum slotState_e {
-    slotStateUnavailable = 0,
-    slotStateAvailable = 1,
-    slotStateTemporary = 2,
-    slotStateInUse = 3
-};
-
-typedef struct {
-    enum slotState_e slotState;
-    u_int generation;
-    int unk8;
-} saveBase_t;
-
-typedef struct {
-    vs_Gametime_t gameTime;
-    u_short cumulativeSaveCount;
-    u_short currentGameSaveCount;
-    u_short currentHP;
-    u_short maxHP;
-    char saveLocation;
-    char clearCount;
-    char mapCompletion;
-    char unk1B;
-    u_short currentMP;
-    u_short maxMP;
-} stats_t;
-
-typedef struct {
-    saveBase_t base;
-    stats_t stats;
-    u_short unk20[16];
-} saveFileSubInfo_t;
-
-typedef struct {
-    u_int key;
-    saveFileSubInfo_t unk4;
-    char unk44[0x1C];
-    char unk60[0x20];
-} saveFileInfo_t;
-
-typedef struct {
-    u_short locationCluts[2][256];
-    char unk400[7][32];
-    char unk4E0[7][128];
-    char unk860[7][128];
-    char unkBE0[8][128];
-    char unkFE0[32];
-    u_short textTable[0x800];
-    saveFileInfo_t saveFileInfo[5];
-    struct DIRENTRY _dirEntBuf;
-} mcdata_t;
-
 static char* _spmcimg;
 static mcdata_t* _mcData;
 static u_short* _textTable;
@@ -248,38 +197,6 @@ static int _memcardFileNumberFromFilename(char* filename)
 
     return 0;
 }
-
-typedef struct {
-    int key;
-    saveBase_t base;
-} savedata_unk180_2_t;
-
-typedef struct {
-    savedata_unk180_2_t unk180;
-    stats_t stats;
-    char checksums[0x5C];
-} savedata_unk180_t;
-
-typedef struct {
-    saveFileInfo_t fileInfo;
-    char unk80[0x80];
-    char unk100[0x80];
-    savedata_unk180_t unk180;
-    char unk200[0x440];
-    char unk640[0x20];
-    char mapStatus[0x48];
-    vs_main_settings_t unk6A8;
-    D_80060068_t unk6C8;
-    char unk7C8[15][256];
-    char unk16C8[0xB0];
-    _mpdRoomDoorSection_t unk1778;
-    vs_main_scoredata_t unk1784;
-    int unk1898;
-    char unk189C[0x520];
-    vs_main_artsStatus_t artsStatus;
-    vs_menu_containerData containerData;
-    char unk59E0[0x220];
-} savedata_t;
 
 static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 {
@@ -593,16 +510,17 @@ static int _applyLoadedSaveFile(int verifyOnly)
         return 0;
     }
 
-    _rMemcpy(&vs_main_stateFlags, spmcimg[1].unk200, sizeof vs_main_stateFlags);
-    _rMemcpy(vs_main_actionsLearned, spmcimg[1].unk640, sizeof vs_main_actionsLearned);
-    _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
-    _rMemcpy(&vs_main_settings, &spmcimg[1].unk6A8, sizeof vs_main_settings);
-    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
-    _rMemcpy(&vs_main_inventory, spmcimg[1].unk7C8, sizeof vs_main_inventory);
+    _rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof vs_main_stateFlags);
     _rMemcpy(
-        &vs_main_inventoryIndices, spmcimg[1].unk16C8, sizeof vs_main_inventoryIndices);
+        vs_main_actionsLearned, spmcimg[1].actionsLearned, sizeof vs_main_actionsLearned);
+    _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
+    _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
+    _rMemcpy(&D_80060068, &spmcimg[1].unk6C8, sizeof D_80060068);
+    _rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
+    _rMemcpy(
+        &vs_main_inventoryIndices, &spmcimg[1].unk16C8, sizeof vs_main_inventoryIndices);
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof D_80061068);
-    _rMemcpy(&vs_main_scoredata, &spmcimg[1].unk1784, sizeof vs_main_scoredata);
+    _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof vs_main_scoredata);
     D_80060064 = s4->unk1898;
     _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof D_80061078);
     spmcimg2 = &vs_main_artsStatus;
@@ -700,15 +618,16 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = D_80060068.unk0.currentMP;
     s5->stats.maxMP = D_80060068.unk0.maxMP;
-    _rMemcpy(savedata->unk200, &vs_main_stateFlags, sizeof savedata->unk200);
-    _rMemcpy(savedata->unk640, vs_main_actionsLearned, sizeof savedata->unk640);
+    _rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof savedata->stateFlags);
+    _rMemcpy(savedata->actionsLearned, vs_main_actionsLearned,
+        sizeof savedata->actionsLearned);
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
-    _rMemcpy(&savedata->unk6A8, &vs_main_settings, sizeof savedata->unk6A8);
+    _rMemcpy(&savedata->settings, &vs_main_settings, sizeof savedata->settings);
     _rMemcpy(&savedata->unk6C8, &D_80060068, sizeof savedata->unk6C8);
-    _rMemcpy(savedata->unk7C8, &vs_main_inventory, sizeof savedata->unk7C8);
-    _rMemcpy(savedata->unk16C8, &vs_main_inventoryIndices, sizeof savedata->unk16C8);
+    _rMemcpy(&savedata->inventory, &vs_main_inventory, sizeof savedata->inventory);
+    _rMemcpy(&savedata->unk16C8, &vs_main_inventoryIndices, sizeof savedata->unk16C8);
     _rMemcpy(&savedata->unk1778, &D_80061068, sizeof savedata->unk1778);
-    _rMemcpy(&savedata->unk1784, &vs_main_scoredata, sizeof savedata->unk1784);
+    _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof savedata->scoreData);
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
         sizeof savedata->containerData);
     savedata->unk1898 = D_80060064;
@@ -1032,48 +951,6 @@ static void _shutdownMemcard(void)
     vs_main_enableReset(1);
     vs_main_freeHeap(_spmcimg);
 }
-
-enum fileMenuElementState_e {
-    fileMenuElementStateInactive = 0,
-    fileMenuElementStateStatic = 1,
-    fileMenuElementStateAnimateX = 2,
-    fileMenuElementStateAnimateY = 3,
-    fileMenuElementStateAnimateNegX = 4
-};
-
-typedef struct {
-    char state;
-    char slotId;
-    char outertextBlendFactor;
-    char innertextBlendFactor;
-    char selected;
-    char slotUnavailable;
-    char saveLocation;
-    char unk7;
-    short targetPosition;
-    short unkA;
-    short x;
-    short y;
-    short w;
-    short h;
-    char text[32];
-} fileMenuElements_t;
-
-typedef struct {
-    u_long tag;
-    union {
-        VS_SPRT sprt;
-        VS_TILE_TPAGE tile_tpage;
-        VS_TILE tile;
-        VS_POLY_G4_TPAGE polyG4_tpage;
-        VS_POLY_G4 polyG4;
-        struct {
-            VS_TILE_TPAGE tile;
-            VS_POLY_G4 polyG4;
-        } tilePoly;
-        u_long raw[15];
-    } prim;
-} primBuf_t;
 
 static fileMenuElements_t _fileMenuElements[10];
 static char _2[8] __attribute__((unused));

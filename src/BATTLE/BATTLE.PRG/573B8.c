@@ -2,6 +2,7 @@
 #include "146C.h"
 #include "4A0A8.h"
 #include "573B8.h"
+#include "58578.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
 #include <libetc.h>
@@ -20,41 +21,6 @@ extern unsigned char D_800F4B70[17];
 extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
 
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    int unk8;
-    int unkC;
-} D_800EB9B8_t2;
-
-typedef struct {
-    D_800EB9B8_t2 unk0;
-    D_800EB9B8_t2 unk10;
-    int unk20;
-    short unk24;
-    short unk26;
-    short unk28;
-    short unk2A;
-    char unk2C;
-    char unk2D;
-    u_char unk2E;
-    char unk2F;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3C;
-    int unk40;
-    int unk44;
-    menuShapeVertex unk48[297];
-    u_char unk990[0x3B24];
-    short unk44B4[0x302];
-    u_char unk4AB8[0x64];
-} D_800EB9B8_t;
-
-extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800EB9AC;
 
 extern void func_8007D260(int);
@@ -441,9 +407,9 @@ void func_800C05B4(void)
     }
 }
 
-void func_800C05EC(D_800EB9B8_t2* arg0, D_800EB9B8_t2* arg1, u_char arg2, int arg3)
+void func_800C05EC(func_800C1564_t* arg0, func_800C1564_t* arg1, u_char arg2, func_800C5798_t* arg3)
 {
-    D_800EB9B8->unk0 = *arg0;
+    D_800EB9B8->unk0[0] = *arg0;
 
     if (arg0->unk0 != 1) {
         D_800EB9B8->unk24 = 0;
@@ -451,44 +417,44 @@ void func_800C05EC(D_800EB9B8_t2* arg0, D_800EB9B8_t2* arg1, u_char arg2, int ar
     }
 
     if (D_800EB9AC != 0) {
-        D_800EB9B8->unk0.unk0 |= 0x80;
-        D_800EB9B8->unk10.unk0 = arg1->unk0;
+        D_800EB9B8->unk0[0].unk0 |= 0x80;
+        D_800EB9B8->unk0[1].unk0 = arg1->unk0;
         D_800EB9AC = 0;
         return;
     }
 
-    D_800EB9B8->unk38 = 0;
-    D_800EB9B8->unk3C = 0;
+    ((VECTOR*)&D_800EB9B8->unk38)->vx = 0;
+    ((VECTOR*)&D_800EB9B8->unk38)->vy = 0;
     D_800EB9B8->unk2A = 0xF;
 
     if (arg1 != NULL) {
-        D_800EB9B8->unk10 = *arg1;
-        D_800EB9B8->unk10.unk0 |= 0x80;
+        D_800EB9B8->unk0[1] = *arg1;
+        D_800EB9B8->unk0[1].unk0 |= 0x80;
         D_800EB9B8->unk2E = arg2;
         D_800EB9B8->unk44 = arg3;
         return;
     }
 
-    D_800EB9B8->unk10.unk0 = 0;
+    D_800EB9B8->unk0[1].unk0 = 0;
 }
 
 void func_800C06E0(void)
 {
     if (D_800EB9B8 != NULL) {
-        D_800EB9B8->unk0.unk0 = 0;
+        D_800EB9B8->unk0[0].unk0 = 0;
     }
 }
 
-void func_800C0700(D_800EB9B8_t2* arg0)
+void func_800C0700(func_800C1564_t* arg0)
 {
-    D_800EB9B8->unk10 = *arg0;
+    D_800EB9B8->unk0[1] = *arg0;
     D_800EB9B8->unk2A = 0;
 }
 
 void func_800C0738(void)
 {
     if (D_800EB9B8 != NULL) {
-        D_800EB9B8->unk10.unk0 = 0;
+        D_800EB9B8->unk0[1].unk0 = 0;
     }
 }
 

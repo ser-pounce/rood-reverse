@@ -120,8 +120,100 @@ void func_800F9BC0(short arg0, short arg1)
     D_800EB9B4->unk6 = arg1;
 }
 
-// https://decomp.me/scratch/Cv1aJ
-INCLUDE_ASM("build/src/GIM/SCREFF2.PRG/nonmatchings/0", func_800F9BD8);
+void func_800F9BD8(void)
+{
+    u_long* ot = vs_scratch.unk4;
+    u_long saved = *ot;
+    u_short* table = (u_short*)0x1F800088;
+    int count = 0;
+    u_long* packet;
+    int temp;
+    int value;
+    u_int i;
+    int stride;
+
+    *ot = -1;
+    packet = ot + 0x7FE;
+
+    temp = (u_short)D_800EB9B4->unk4 * 16;
+    value = D_800EB9B4->unk6 + 0x1000;
+
+    for (i = 0; i < 0x1BC; ++i) {
+        table[i] = temp >> 3;
+        temp = temp * value >> 12;
+    }
+
+    do {
+        int x;
+        u_long* word;
+
+        value = 1;
+        x = ((u_char*)packet)[3];
+        word = packet + 1;
+
+        do {
+            temp = (*word++ >> 26) - 8;
+            ++value;
+        } while (temp >= 0x30u && x >= value);
+
+        if (temp < 8u) {
+            stride = ((temp & 1) + ((temp >> 2) & 1)) + 1;
+            count = ((temp >> 1) & 1) + 3;
+        }
+
+        if (count != 0) {
+            u_long* vertex = packet - (-value);
+
+            do {
+                int mac1;
+                int mac2;
+                int distSq;
+                int offset;
+
+                x = *vertex;
+                temp = (x >> 16) - 0x70;
+                x = (short)x - 0xA0;
+
+                gte_ldir1ir2(x, temp);
+
+                --count;
+
+                gte_sqr0_1nop();
+                gte_stmac1mac2(mac1, mac2);
+
+                distSq = mac1 + mac2;
+
+                gte_ldlzc(distSq);
+
+                if (distSq != 0) {
+                    int calc;
+
+                    gte_stlzcr(mac1);
+
+                    calc = mac1 & (~1);
+                    offset = 0x1F - calc;
+                    calc = D_80040C18[(distSq >> (0x18 - calc)) - 0x40];
+                    distSq = (calc << (offset >> 1)) >> 12;
+
+                    if (distSq > 0x1BBu) {
+                        distSq = 0x1BB;
+                    }
+                }
+
+                value = table[distSq];
+                offset = (x * value) >> 13;
+                *vertex =
+                    ((offset + 0xA0) & 0xFFFF) | ((((temp * value) >> 13) + 0x70) << 16);
+                vertex += stride;
+
+            } while (count != 0);
+        }
+
+        packet = (u_long*)((*packet & 0xFFFFFF) | 0x80000000);
+    } while ((*packet & 0xFFFFFF) != 0xFFFFFF);
+
+    *ot = saved;
+}
 
 void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }
 

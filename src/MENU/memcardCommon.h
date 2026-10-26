@@ -1,6 +1,6 @@
 #pragma once
 
-/* Memorycard event helpers shared by the title and menu overlays. */
+/* Memorycard event and image helpers shared by the title and menu overlays. */
 
 static long _memcardEventDescriptors[8];
 
@@ -47,4 +47,41 @@ static void _resetMemcardEvents(enum memcardEvents_e type)
     for (i = 0; i < 4; ++i) {
         TestEvent(_memcardEventDescriptors[i + type]);
     }
+}
+
+/**
+ * Uploads an image to VRAM and waits for the transfer to finish.
+ */
+static void _drawImage(int xy, void* buffer, int wh)
+{
+    RECT rect;
+
+    *(int*)&rect.x = xy;
+    *(int*)&rect.w = wh;
+    LoadImage(&rect, buffer);
+    DrawSync(0);
+}
+
+/**
+ * Reads an image from VRAM into a buffer and waits for the transfer.
+ */
+static void _readImage(int xy, void* buffer, int wh)
+{
+    RECT rect;
+
+    *(int*)&rect.x = xy;
+    *(int*)&rect.w = wh;
+    StoreImage(&rect, buffer);
+    DrawSync(0);
+}
+
+/**
+ * Copies count bytes in reverse order.
+ */
+static void _rMemcpy(void* dst, void const* src, int count)
+{
+    do {
+        --count;
+        ((char*)dst)[count] = ((char const*)src)[count];
+    } while (count != 0);
 }

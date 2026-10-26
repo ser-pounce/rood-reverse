@@ -40,35 +40,7 @@ static u_int _keystreamBits(int value)
     return seed >> (32 - value);
 }
 
-#include "src/MENU/memcardEvents.h"
-
-static void _drawImage(int xy, void* buffer, int wh)
-{
-    RECT rect;
-
-    *(int*)&rect.x = xy;
-    *(int*)&rect.w = wh;
-    LoadImage(&rect, buffer);
-    DrawSync(0);
-}
-
-static void _readImage(int xy, void* buffer, int wh)
-{
-    RECT rect;
-
-    *(int*)&rect.x = xy;
-    *(int*)&rect.w = wh;
-    StoreImage(&rect, buffer);
-    DrawSync(0);
-}
-
-static void _rMemcpy(void* dst, void const* src, int count)
-{
-    do {
-        --count;
-        ((char*)dst)[count] = ((char const*)src)[count];
-    } while (count != 0);
-}
+#include "src/MENU/memcardCommon.h"
 
 static char* _memcardMakeFilename(int port, int fileNo)
 {
@@ -146,22 +118,7 @@ static int _memcardSaveIdExists(int id)
     return 0;
 }
 
-static int _deleteRedundantTempFiles(int port)
-{
-    int i;
-    int ret = 0;
-
-    for (i = 0; i < 5; ++i) {
-        if ((_memcardSaveIdExists(i + '1') != 0)
-            && (_memcardSaveIdExists(i + 'A') != 0)) {
-            if (erase(_memcardMakeTempFilename(port, i + 1)) == 0) {
-                return 0x80;
-            }
-            ret |= 1 << i;
-        }
-    }
-    return ret;
-}
+#include "src/MENU/memcardCleanup.h"
 
 static int _initSaveFileInfo(int port)
 {
@@ -696,18 +653,7 @@ static fileMenuElements_t _fileMenuElements[10];
 static char _2[8] __attribute__((unused));
 static primBuf_t _primBuf;
 
-static void _drawSprt(int xy, int uvClut, int wh, int tpage)
-{
-    DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-    _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
-    _primBuf.prim.sprt.r0g0b0code =
-        vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
-    _primBuf.prim.sprt.x0y0 = xy;
-    _primBuf.prim.sprt.u0v0clut = uvClut;
-    _primBuf.prim.sprt.wh = wh;
-    DrawPrim(&_primBuf);
-}
+#include "src/MENU/drawSprt.h"
 
 enum vs_fileMenuUiIds_e {
     vs_uiids_colon = 0,
@@ -743,28 +689,7 @@ static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
 }
 
-static void _drawInteger(int xy, u_int value, u_int placeDivisor)
-{
-    do {
-        _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
-            vs_getWH(6, 10), getTPage(0, 0, 768, 0));
-        value = value % placeDivisor;
-        placeDivisor /= 10;
-        xy += 5;
-    } while (placeDivisor != 0);
-}
-
-static int _countDigits(int val)
-{
-    int i;
-
-    i = 0;
-    do {
-        val /= 10;
-        ++i;
-    } while (val != 0);
-    return i;
-}
+#include "src/MENU/drawInteger.h"
 
 enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 
@@ -847,90 +772,7 @@ static int _selectCursorXy;
 static char* _memoryCardMessage;
 static char _isSaving;
 
-static void _fileProcessingAnim(int x, int y)
-{
-    char* new_var __attribute__((unused));
-    int gradientColor1;
-    int gradientColor2;
-    u_int leftEdge;
-    u_int i;
-
-    leftEdge = x - 48;
-    new_var = &_isSaving;
-
-    if (leftEdge < 64) {
-        leftEdge = 64;
-    }
-
-    gradientColor1 = 0;
-    gradientColor2 = vs_getRGB888(224, 255, 0);
-
-    if (_isSaving != 0) {
-        gradientColor2 = vs_getRGB888(255, 0, 127);
-    }
-
-    for (i = 0; i < 2; ++i) {
-        DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
-        _primBuf.prim.polyG4_tpage.r0g0b0code =
-            vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
-        _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
-        _primBuf.prim.polyG4_tpage.x1y1 = x | y;
-        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
-        _primBuf.prim.polyG4_tpage.tpage =
-            vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-        _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
-        _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
-        _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
-        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + vs_getXY(0, 32));
-        DrawPrim(&_primBuf);
-        leftEdge = x;
-        x += 16;
-        gradientColor1 = gradientColor2;
-        gradientColor2 = 0;
-    }
-}
-
-static void _fileProcessingCompleteAnim(int colour, int y)
-{
-    int yOfst;
-    int colour0;
-    u_int i;
-    int colour1 = 0;
-
-    if (_isSaving != 0) {
-        colour0 = colour + (colour << 15);
-    } else {
-        colour0 = (colour - (colour >> 3)) + (colour << 8);
-    }
-
-    DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-    _primBuf.prim.tile_tpage.tpage =
-        vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-    _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
-    _primBuf.prim.tile_tpage.x0y0 = y | 64;
-    _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
-    DrawPrim(&_primBuf);
-
-    for (i = 0; i < 2; ++i) {
-        DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4, primAddrNull);
-        yOfst = y + vs_getXY(0, -8);
-        _primBuf.prim.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, colour1);
-        _primBuf.prim.polyG4.x0y0 = yOfst | 64;
-        _primBuf.prim.polyG4.r1g1b1 = colour1;
-        _primBuf.prim.polyG4.x1y1 = yOfst | 320;
-        _primBuf.prim.polyG4.r2g2b2 = colour0;
-        _primBuf.prim.polyG4.x2y2 = y | 64;
-        _primBuf.prim.polyG4.r3g3b3 = colour0;
-        _primBuf.prim.polyG4.x3y3 = y | 320;
-        DrawPrim(&_primBuf);
-        y += vs_getXY(0, 40);
-        colour1 = colour0;
-        colour0 = 0;
-    }
-}
+#include "src/MENU/fileProcessingAnim.h"
 
 static u_char _selectCursorColor;
 static char _fileMenuScreenFade;
@@ -984,56 +826,7 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
     return element;
 }
 
-static void _clearFileMenuElement(int id)
-{
-    memset(&_fileMenuElements[id], 0, sizeof _fileMenuElements[id]);
-}
-
-static int _fileMenuElementsActive(void)
-{
-    int i;
-
-    for (i = 0; i < 10 && _fileMenuElements[i].state < fileMenuElementStateAnimateX; ++i)
-        ;
-    return i == 10;
-}
-
-static int _printCharacter(u_int c, int x, int y, int clut)
-{
-    static int glyphWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12,
-        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9,
-        7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8, 9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8,
-        6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5, 6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7,
-        7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8,
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 6, 12, 12, 12, 12,
-        12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12, 12, 6, 6, 3, 3, 3, 4, 6, 12,
-        6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-        12, 12, 12 };
-
-    if ((c >> 8) == 14) {
-        return x + (char)c;
-    }
-    if (c != vs_char_space) {
-        DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-        _primBuf.prim.sprt.tpage =
-            vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
-        _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
-        _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
-        _primBuf.prim.sprt.wh = vs_getWH(12, 12);
-        _primBuf.prim.sprt.u0v0clut =
-            vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
-        DrawPrim(&_primBuf);
-    }
-    return x + glyphWidths[c];
-}
+#include "src/MENU/fileMenuElement.h"
 
 enum _findCurrentSave_e {
     findSaveTimeout = -2,
@@ -1134,86 +927,7 @@ static int _memcardMaskedHandler(int portMask)
     return 0;
 }
 
-static void _printString(char* text, int x, int y, int clut)
-{
-    static char arrowState = 0;
-
-    char tempArrowState;
-    u_int c;
-    int startX = x;
-    int nextX = x;
-
-    while (1) {
-        c = *text++;
-        if (c < vs_char_control) {
-            if (c < vs_char_nonPrinting) {
-                nextX = _printCharacter(c, nextX, y, clut);
-            } else if (c == vs_char_confirm) {
-                tempArrowState = (arrowState + 1) % 12;
-                c = vs_char_arrow - (tempArrowState >> 2);
-                arrowState = tempArrowState;
-                nextX = _printCharacter(c, nextX, y, clut);
-            } else if (c != vs_char_terminator) {
-                if (c == vs_char_newline) {
-                    y += 13;
-                    nextX = startX;
-                }
-            } else {
-                break;
-            }
-        } else {
-            u_int control = *text++;
-            if (c == vs_char_spacing) {
-                if (control >= 0xF0) {
-                    nextX -= 256 - control;
-                } else {
-                    nextX += control;
-                }
-            }
-        }
-    }
-}
-
-static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
-{
-    int component;
-    u_int i;
-    u_int colourOut;
-
-    colourOut = 0;
-    for (i = 0; i < 3; ++i) {
-        component = ((colour1 >> 16) & 0xFF) * (8 - factor);
-        colour1 <<= 8;
-        colourOut =
-            (colourOut << 8) + ((component + (((colour2 >> 16) & 0xFF) * factor)) >> 3);
-        colour2 <<= 8;
-    }
-    return colourOut;
-}
-
-static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
-{
-    static int colors1[] = { vs_getRGB888(0x40, 0x30, 0x66),
-        vs_getRGB888(0x40, 0x38, 0x20) };
-    static int colors2[] = {
-        vs_getRGB888(0x08, 0x08, 0x20),
-        vs_getRGB888(0x10, 0x10, 0x08),
-    };
-
-    u_int color1;
-    u_int color2;
-
-    if (innerFactor < 9) {
-        color1 = _interpolateRGB(
-            vs_getRGB888(0, 65, 107), vs_getRGB888(25, 130, 108), innerFactor);
-        color2 =
-            _interpolateRGB(vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
-    } else {
-        color1 = colors1[((innerFactor >> 3) - 2)];
-        color2 = colors2[((innerFactor >> 3) - 2)];
-    }
-    return _interpolateRGB(color1, color2, outerFactor);
-}
+#include "src/MENU/fileMenuText.h"
 
 static void _drawFileMenuElement(fileMenuElements_t* element)
 {
@@ -1522,13 +1236,7 @@ static void _drawFileMenu(int framebuf)
     }
 }
 
-static void _drawFileMenuBg(void)
-{
-    _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
-        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
-    _drawSprt(vs_getXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(256, 176),
-        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
-}
+#include "src/MENU/drawFileMenuBg.h"
 
 static int _showLoadFilesMenu(int initPort)
 {
@@ -1944,68 +1652,7 @@ static int _loadFileMenu(int initFadeout)
     return 0;
 }
 
-static int _promptConfirm(int arg0)
-{
-    enum state {
-        initYes = 0,
-        initNo = 1,
-        waitForAnimation = 2,
-        handleInput = 3,
-    };
-
-    static char state;
-    static char cancelled;
-    static char _[2] __attribute__((unused));
-
-    fileMenuElements_t* temp_v0;
-    int i;
-
-    if (arg0 != 0) {
-        cancelled = 1;
-        state = initYes;
-        return 0;
-    }
-
-    switch (state) {
-    case initYes:
-    case initNo:
-        temp_v0 = _initFileMenuElement(state + 3,
-            vs_getXY(-126 & 0xFFFF, state * 16 + 18), vs_getWH(126, 12),
-            (char*)&_textTable[_textTable[state + VS_MCMAN_BIN_INDEX_yesIndent]]);
-        temp_v0->state = 4;
-        temp_v0->targetPosition = 0;
-        ++state;
-        break;
-    case waitForAnimation:
-        state += _fileMenuElementsActive();
-        break;
-    case handleInput:
-        _fileMenuElements[cancelled + 3].selected = 1;
-        _fileMenuElements[4 - cancelled].selected = 0;
-        if (vs_main_buttonsPressed.all & (PADRdown | PADRright)) {
-            _selectCursorXy = 0;
-            for (i = 3; i < 5; ++i) {
-                _fileMenuElements[i].state = 4;
-                _fileMenuElements[i].targetPosition = -126;
-            }
-            if (vs_main_buttonsPressed.all & PADRright) {
-                if (cancelled == 0) {
-                    vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-                    return 1;
-                }
-            }
-            vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-            return -1;
-        }
-        if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
-            vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
-            cancelled = 1 - cancelled;
-        }
-        _selectCursorXy = (cancelled * 16 + 10) << 16;
-        break;
-    }
-    return 0;
-}
+#include "src/MENU/promptConfirm.h"
 
 static int _promptOverwrite(int init)
 {

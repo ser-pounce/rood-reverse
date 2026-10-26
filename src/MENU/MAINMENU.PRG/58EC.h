@@ -4,6 +4,12 @@
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 
+typedef struct {
+    u_short name[14];
+    int menuRowFlags;
+    u_short description[48];
+} _itemsText_t;
+
 enum vs_mainMenu_actionsMenuActions { actionMenuDiscard = 4, actionMenuSort = 45 };
 
 /**

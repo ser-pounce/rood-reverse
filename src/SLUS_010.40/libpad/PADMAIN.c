@@ -6,9 +6,12 @@
 int ChangeClearRCnt(int, int);
 int SysDeqIntRP(int, void*);
 
+extern void (*D_8003359C)(int);
 extern void (*D_800335C4)(void);
+extern int D_800335E0;
 extern volatile padIntr* D_800335FC;
 extern volatile padSio* D_80033600;
+extern int (*D_80033624[])(padPort*);
 extern int D_8003FC00[];
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", PadEnableCom);
@@ -44,7 +47,36 @@ void _padStopCom(void)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padInitSioMode);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", func_8002C438);
+void func_8002C438(padPort* port)
+{
+    int ret;
+    int* index;
+    int (*func)(padPort*);
+
+    index = &D_800335E0;
+
+    do {
+        func = D_80033624[*index];
+    } while (0);
+
+    *index += 1;
+    ret = func(port);
+
+    if (ret >= 0) {
+        if ((D_800335E0 != 0) && ((D_800335E0 != 3) || (*port->unk3C != 128))) {
+            setRC2wait(60);
+
+            if (_padClrIntSio0() == 0) {
+                D_8003359C(-3);
+            }
+        }
+        if (D_800335E0 >= 5) {
+            --D_800335E0;
+        }
+    } else {
+        D_8003359C(ret);
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libpad/PADMAIN", _padSioRW);
 

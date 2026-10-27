@@ -545,7 +545,6 @@ void func_80098194(int);
 void func_800983F8(void*);
 void func_80098D6C(void*, void*, D_800F1BB0_t*, int);
 void func_8009E070(int, short*, int);
-u_int func_8009E4B0(int);
 
 void func_800E685C(int, int, int);
 void func_800719FC(int);
@@ -7431,7 +7430,8 @@ void func_800790BC(void)
 
         for (j = 0; j < var_s3->unk4A; ++j) {
             if ((var_s3->unk4C[j].unk40 == 0)
-                && ((func_8009E4B0(var_s3->unk4C[j].unk0.targetActor) + 1) > 1)) {
+                && ((func_8009E4B0(var_s3->unk4C[j].unk0.targetActor) + 1)
+                    > 1u)) {
                 var_s4 = 0;
             }
         }
@@ -7531,7 +7531,8 @@ void func_800793C0(void)
         action = &D_800F19CC->unk854[i % 4];
         for (j = 0; j < action->unk4A; ++j) {
             if ((action->unk4C[j].unk40 == 0)
-                && ((func_8009E4B0(action->unk4C[j].unk0.targetActor) + 1) >= 2)) {
+                && ((u_int)(func_8009E4B0(action->unk4C[j].unk0.targetActor) + 1)
+                    >= 2)) {
                 ready = 0;
             }
         }

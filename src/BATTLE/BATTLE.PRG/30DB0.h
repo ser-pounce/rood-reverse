@@ -77,6 +77,7 @@ void func_8009DF3C(int arg0, int arg1);
 int func_8009E180(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E2E0(int, SVECTOR*, int);
 int func_8009E480(void);
+int func_8009E4B0(int arg0);
 void func_8009E634(D_800F4538_t*);
 void func_8009EA14(int arg0, SVECTOR* arg1);
 void func_8009EC9C(int, SVECTOR*, int, int);

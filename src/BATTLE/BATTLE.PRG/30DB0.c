@@ -5,6 +5,7 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
+#include "4A0A8.h"
 #include "6E644.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
@@ -60,7 +61,6 @@ void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 int func_800A6EE8(short*, int, int, int);
 void func_800AD62C(int, int*, int*, int);
-short func_800BEB00();
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
 

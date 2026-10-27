@@ -49,7 +49,6 @@ void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
 void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
 void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
 void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
-short func_800BEB00(void);
 void func_800E4C28(int, int);
 void func_800E6898(void*);
 

@@ -4327,7 +4327,7 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
     return 0;
 }
 
-int func_800BEB00(void) { return D_800F4C34; }
+short func_800BEB00(void) { return D_800F4C34; }
 
 short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | _evtFile; }
 

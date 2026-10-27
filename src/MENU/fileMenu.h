@@ -2,7 +2,76 @@
 
 /* File menu helpers shared by the title and menu overlays. The including file defines
  * MEMCARD_MASKED_HANDLER_PAD, the size of the alignment filler after the masked handler
- * state, since the data that follows differs between overlays. */
+ * state, since the data that follows differs between overlays, and
+ * FIND_SAVE_ACCESSING_HOOK, overlay specific work done when starting to access a card. */
+
+enum _findCurrentSave_e {
+    findSaveTimeout = -2,
+    findSaveNotFound = -1,
+    findSavePending = 0
+};
+
+/**
+ * Searches both cards asynchronously for the save matching current settings.
+ *
+ * A nonzero init restarts the search; subsequent calls return the current state.
+ */
+static int _findCurrentSave(int init)
+{
+    static char state;
+    static char subState;
+
+    int port;
+    int currentSave;
+    int event;
+    int realPort;
+
+    if (init != 0) {
+        state = 0;
+        subState = 0;
+        return 0;
+    }
+
+    realPort = state >> 1;
+    port = realPort + 1;
+
+    if ((state & 1) == 0) {
+        FIND_SAVE_ACCESSING_HOOK(
+            (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]));
+        _memoryCardMessage =
+            (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
+        _memcardEventHandler(realPort + 1);
+        ++state;
+    } else {
+        event = _memcardEventHandler(0) & 3;
+
+        if (event != memcardEventPending) {
+            if (event == memcardEventIoEnd) {
+                if (_initSaveFileInfo(realPort + 1) == 0) {
+                    currentSave = _findCurrentSaveOnActiveMemcard();
+                    if (currentSave != 0) {
+                        return currentSave + (realPort * 16);
+                    }
+                }
+            } else if (event == memcardEventTimeout) {
+                if (state != 1) {
+                    if (subState != 0) {
+                        return findSaveTimeout;
+                    }
+                } else {
+                    subState = state;
+                }
+            }
+            ++state;
+        }
+    }
+    return state != 4 ? findSavePending : findSaveNotFound;
+}
+
+enum _memcardEventMask_e {
+    memcardEventMaskIgnoreNoEvent = 0x30,
+    memcardEventMaskAll = 0x70
+};
 
 enum _memcardMaskedHandler_e {
     memcardMaskedHandlerError = -1,

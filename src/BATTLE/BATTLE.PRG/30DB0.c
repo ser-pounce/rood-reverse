@@ -58,7 +58,6 @@ void func_8009FD38(D_800F4538_t* arg0);
 int func_800A0104(int, int);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
-int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
 void func_800AD62C(int, int*, int*, int);
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);

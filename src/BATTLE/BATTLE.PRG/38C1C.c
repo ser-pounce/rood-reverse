@@ -29,7 +29,7 @@ extern u_char D_800E90AC[];
 extern u_char D_800E90B4[];
 extern MATRIX D_800F49B8;
 
-int func_800A141C(int arg0, int arg1, int arg2, int arg3)
+int func_800A141C(int arg0, int arg1, int* arg2, int arg3)
 {
     SVECTOR sp0;
     MATRIX* v0;
@@ -46,24 +46,8 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
     v0 = &var_v1->bones[arg1];
     temp_v1 = var_v1->unk0.unk68;
 
-    __asm__ volatile("lw $t4,0(%0);"
-                     "lw $t5,4(%0);"
-                     "ctc2 $t4, $0;"
-                     "ctc2 $t5, $1;"
-                     "lw $t4,8(%0);"
-                     "lw $t5,0xc(%0);"
-                     "lw $t6,0x10(%0);"
-                     "ctc2 $t4, $2;"
-                     "ctc2 $t5, $3;"
-                     "ctc2 $t6, $4;"
-                     "lw $t4,0x14(%0);"
-                     "lw $t5,0x18(%0);"
-                     "ctc2 $t4, $5;"
-                     "lw $t6,0x1c(%0);"
-                     "ctc2 $t5, $6;"
-                     "ctc2 $t6, $7"
-        :
-        : "r"(v0));
+    gte_SetRotMatrix(v0);
+    gte_SetTransMatrix(v0);
 
     if (arg3 == 0) {
         sp0.vx = 0;
@@ -79,16 +63,10 @@ int func_800A141C(int arg0, int arg1, int arg2, int arg3)
     sp0.vz = 0;
     sp0.pad = 0;
 
-    __asm__ volatile("lwc2	$0,0(%0);"
-                     "lwc2	$1,4(%0);"
-                     "nop;"
-                     "nop;"
-                     "rtps;"
-                     "swc2 $14,0x0($a2);"
-                     "addu $v0,$a2,4;"
-                     "swc2 $19,0x0($v0);"
-        :
-        : "r"(&sp0));
+    gte_ldv0(&sp0);
+    gte_rtps2();
+    gte_stsxy(arg2);
+    gte_stsz(arg2 + 1);
 
     return 0;
 }

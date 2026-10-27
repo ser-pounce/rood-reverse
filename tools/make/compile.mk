@@ -1,7 +1,7 @@
 CC1VER    ?= 2.7.2-psx
 CC1       ?= tools/old-gcc/$(CC1VER)/cc1
 MAS       ?= $(VPYTHON) tools/maspsx/maspsx.py
-VSSTRING  ?= $(VPYTHON) -m tools.etc.vsStringTransformer
+TEXTXFORM ?= $(VPYTHON) -m tools.etc.textTransformer
 
 # Sony's PsyQ library objects were assembled by GNU as in reorder mode (the assembler fills
 # j/jr/jal delay slots with the preceding instruction, including the tail of a lui/sw macro),
@@ -15,7 +15,7 @@ MASFLAGS ?= --aspsx-version=2.77 --macro-inc
 
 PREPROCESS.c = $(CPP) $(CPPFLAGS) $<
 PREPROCESS.s = $(MAS) $(MASFLAGS)
-COMPILE.c    = $(PREPROCESS.c) | $(VSSTRING) | $(CC1) $(CC1FLAGS) | $(PREPROCESS.s) | $(COMPILE.s)
+COMPILE.c    = $(PREPROCESS.c) | $(TEXTXFORM) | $(CC1) $(CC1FLAGS) | $(PREPROCESS.s) | $(COMPILE.s)
 
 $(BUILD)/%.c.o: %.c
 	$(ECHO) Compiling $<

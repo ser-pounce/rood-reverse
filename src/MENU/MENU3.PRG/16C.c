@@ -7,6 +7,7 @@
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
 
@@ -19,12 +20,6 @@
 static char _miscActions[64];
 
 #include "src/MENU/items2.h"
-
-typedef struct {
-    u_short name[14];
-    int menuRowFlags;
-    u_short description[48];
-} _itemsText_t;
 
 static char* _itemsText;
 static int _selectedItemRow;

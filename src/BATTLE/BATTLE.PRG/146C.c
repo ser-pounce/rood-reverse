@@ -234,13 +234,6 @@ typedef struct {
 } D_800F1D28_t;
 
 typedef struct {
-    short unk0;
-    short unk1;
-    short unk2;
-    short unk3;
-} func_8008D2C0_t;
-
-typedef struct {
     int unk0;
     int unk4;
     int model;
@@ -519,7 +512,7 @@ int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
-int func_8008D2C0(func_8008D2C0_t*);
+int func_8008D2C0(SVECTOR*);
 int func_8008D418(void);
 _mpdRoomSection9* func_8008D438(int, int, int);
 _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
@@ -3713,7 +3706,7 @@ void func_80070B04(void)
 // https://decomp.me/scratch/CcHt5
 void func_80070CAC(void)
 {
-    func_8008D2C0_t points[4];
+    SVECTOR points[4];
     int count;
     int i;
     _mpdRoomSection9* room;
@@ -3746,9 +3739,9 @@ void func_80070CAC(void)
 
         for (i = 0; i < count; ++i) {
             list->targets[list->count].kind = 5;
-            list->targets[list->count].x = points[i].unk0;
-            list->targets[list->count].y = points[i].unk1;
-            list->targets[list->count].z = points[i].unk2;
+            list->targets[list->count].x = points[i].vx;
+            list->targets[list->count].y = points[i].vy;
+            list->targets[list->count].z = points[i].vz;
             list->targets[list->count].radius = 64;
             ++list->count;
         }
@@ -16949,14 +16942,14 @@ void func_8008CEB0(void)
     }
 }
 
-int func_8008D2C0(func_8008D2C0_t arg0[])
+int func_8008D2C0(SVECTOR arg0[])
 {
     _mpdRoomSection12* var_t0;
     int i;
     int var_t1;
     int temp_t3;
 
-    func_8008D2C0_t* a0 = arg0;
+    SVECTOR* a0 = arg0;
 
     do {
         if (vs_battle_roomData.section12 != NULL) {
@@ -16968,11 +16961,11 @@ int func_8008D2C0(func_8008D2C0_t arg0[])
                 if (!((var_t0->unk0_9))) {
                     do {
                         int v;
-                        a0->unk0 = var_t0->unkA8 / ONE;
+                        a0->vx = var_t0->unkA8 / ONE;
                         v = var_t0->unkAC / ONE;
-                        a0->unk1 = (D_80068BEC[D_800F1D70[i]] - v);
-                        a0->unk2 = (var_t0->unkB0 / ONE);
-                        a0->unk3 = i;
+                        a0->vy = (D_80068BEC[D_800F1D70[i]] - v);
+                        a0->vz = (var_t0->unkB0 / ONE);
+                        a0->pad = i;
                     } while (0);
                     ++a0;
                     ++var_t1;

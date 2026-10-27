@@ -14,13 +14,6 @@ typedef struct {
 } func_800A3054_t;
 
 typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-} func_8008D2C0_t;
-
-typedef struct {
     char unk0[6];
     short unk6;
 } func_800A6660_t;
@@ -32,7 +25,7 @@ typedef struct {
 u_int func_800A9C54(u_char, void*, int);
 void func_800B64A8(int, int, int);
 int func_8008C49C(int, int);
-int func_8008D2C0(func_8008D2C0_t*);
+int func_8008D2C0(SVECTOR*);
 short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);
@@ -59,7 +52,7 @@ void func_800A4A88(D_800F4538_t*, int);
 int func_800A51A0(int, SVECTOR*);
 void func_800A525C(D_800F4538_t*);
 int func_800A5280(int, int, int, SVECTOR*);
-inline func_8008D2C0_t* func_800A4A24(int);
+inline SVECTOR* func_800A4A24(int);
 void func_800A9EB4(int, short, int);
 void func_800AA454(int, func_8006EBF8_t_fields*, int);
 void func_800AA620(int, SVECTOR*, int);
@@ -1120,9 +1113,9 @@ void func_800A48CC(int index, int direction, int distance)
     actor->unk1848.unk8 = distance;
 }
 
-inline func_8008D2C0_t* func_800A4A24(int arg0)
+inline SVECTOR* func_800A4A24(int arg0)
 {
-    func_8008D2C0_t sp10[4];
+    SVECTOR sp10[4];
     int temp_v0;
     int i;
     arg0 -= 2;
@@ -1130,7 +1123,7 @@ inline func_8008D2C0_t* func_800A4A24(int arg0)
     temp_v0 = func_8008D2C0(sp10);
 
     for (i = 0; i < temp_v0; ++i) {
-        if (sp10[i].unk6 == arg0) {
+        if (sp10[i].pad == arg0) {
             // BUG: returns stack variable
             return &sp10[i];
         }
@@ -1140,7 +1133,7 @@ inline func_8008D2C0_t* func_800A4A24(int arg0)
 
 void func_800A4A88(D_800F4538_t* actor, int mode)
 {
-    func_8008D2C0_t* contact;
+    SVECTOR* contact;
     int contactId;
     int current;
     int previous;
@@ -1152,11 +1145,11 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
         }
 
         contact = func_800A4A24(actor->unk0.unkC_0);
-        actor->unk6EE = contact->unk0 - actor->unk17EC.vx;
-        actor->unk6EF = contact->unk4 - actor->unk17EC.vz;
+        actor->unk6EE = contact->vx - actor->unk17EC.vx;
+        actor->unk6EF = contact->vz - actor->unk17EC.vz;
         actor->unk0.position.vx += actor->unk6EE;
         actor->unk0.position.vz += actor->unk6EF;
-        actor->unk0.position.vy += contact->unk2 - actor->unk17EC.vy;
+        actor->unk0.position.vy += contact->vy - actor->unk17EC.vy;
         break;
 
     case 1:
@@ -1210,7 +1203,7 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
         return;
     }
 
-    setVector(&actor->unk17EC, contact->unk0, contact->unk2, contact->unk4);
+    setVector(&actor->unk17EC, contact->vx, contact->vy, contact->vz);
 }
 
 void func_800A4D8C(void)
@@ -1341,31 +1334,31 @@ void func_800A4E68(int actorId)
 
 int func_800A51A0(int arg0, SVECTOR* arg1)
 {
-    func_8008D2C0_t sp10[4];
-    func_8008D2C0_t* p;
+    SVECTOR sp10[4];
+    SVECTOR* p;
     int n;
     int i;
 
     arg0 -= 2;
     n = func_8008D2C0(sp10);
     for (i = 0; i < n; i++) {
-        if (sp10[i].unk6 == arg0) {
+        if (sp10[i].pad == arg0) {
             p = &sp10[i];
             goto found;
         }
     }
     p = NULL;
 found:
-    if (p->unk0 + 0x40 < arg1->vx) {
+    if (p->vx + 0x40 < arg1->vx) {
         return 0;
     }
-    if (arg1->vx < p->unk0 - 0x40) {
+    if (arg1->vx < p->vx - 0x40) {
         return 0;
     }
-    if (p->unk4 + 0x40 < arg1->vz) {
+    if (p->vz + 0x40 < arg1->vz) {
         return 0;
     }
-    return !(arg1->vz < p->unk4 - 0x40);
+    return !(arg1->vz < p->vz - 0x40);
 }
 
 void func_800A525C(D_800F4538_t* arg0)

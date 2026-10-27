@@ -12,56 +12,6 @@
 #include "gpu.h"
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    char unk6;
-    char unk7;
-    SVECTOR unk8;
-    char* unk10;
-} D_800EB9B8_unk990;
-
-typedef struct {
-    func_800C1564_t unk0[2];
-    short unk20;
-    short unk22;
-    short unk24;
-    short unk26;
-    short unk28;
-    short unk2A;
-    char unk2C;
-    char unk2D;
-    char unk2E;
-    char unk2F;
-    char unk30;
-    char unk31;
-    short unk32;
-    int unk34;
-    int unk38;
-    short unk3C;
-    short unk3E;
-    D_800F19CC_t5* unk40[2];
-    menuShapeVertex unk48[297];
-    D_800EB9B8_unk990 unk990[24];
-    char unkB70[0x3800];
-    int unk4370[81];
-    char unk44B4[0x604];
-    u_char unk4AB8[81];
-} D_800EB9B8_t;
-
-typedef struct {
-    u_short unk0[3];
-    u_char unk6;
-    u_char unk7;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    char unkB[0xD];
-} func_800C4650_t;
-
-typedef struct {
     SVECTOR unk0;
     SVECTOR unk8;
     short unk10[4];
@@ -98,7 +48,6 @@ extern int D_800EA670[];
 extern int D_800EA684[];
 extern int D_800EA698[];
 extern u_char D_800EA6AC;
-extern D_800EB9B8_t* D_800EB9B8;
 extern u_char D_800F4CB4;
 
 void func_800C0D78(void)
@@ -454,7 +403,7 @@ void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2)
             var_a0 = 0x18;
         }
         D_800EB9B8->unk2C = var_a0;
-        D_800EB9B8->unk40[0] = arg1;
+        D_800EB9B8->unk40 = (func_800C5798_t*)arg1;
         if (D_800EB9B8->unk2D >= var_a0) {
             var_v0 = 0;
             if (var_a0 == 0) {
@@ -693,7 +642,7 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0)
     if (arg0->unk1 != 0) {
         color = 0x808080;
     }
-    vs_battle_renderTextRawColor(arg0->unk10, textXy, color, nextPrim);
+    vs_battle_renderTextRawColor(arg0->limbName, textXy, color, nextPrim);
 
     prim = vs_scratch.unk0;
     if (gradient != 0) {

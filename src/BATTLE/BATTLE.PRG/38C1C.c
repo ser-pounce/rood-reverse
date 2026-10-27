@@ -18,19 +18,12 @@ typedef struct {
     MATRIX matrix;
 } func_800A1DE8_t;
 
-typedef struct {
-    short unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-} func_8008D2C0_t;
-
 void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
-func_8008D2C0_t* func_800A4A24(int);
+SVECTOR* func_800A4A24(int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 _mpdRoomSection3* func_800A8D64(SVECTOR*, int);
 
@@ -482,10 +475,10 @@ void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
     }
 
     if (target[1] >= 2) {
-        func_8008D2C0_t* anchor = func_800A4A24(target[1]);
-        x = anchor->unk0;
-        y = anchor->unk2;
-        z = anchor->unk4;
+        SVECTOR* anchor = func_800A4A24(target[1]);
+        x = anchor->vx;
+        y = anchor->vy;
+        z = anchor->vz;
     } else {
         x = target[0] * 128 + 64;
         z = target[2] * 128 + 64;

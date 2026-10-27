@@ -240,58 +240,6 @@ typedef struct {
 } pFileBlock11;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    short unkE;
-    int unk10;
-    u_char unk14;
-    u_char unk15;
-    u_char unk16;
-    u_char unk17;
-} func_800C5798_t;
-
-typedef struct {
-    char unk0;
-    char unk1[3];
-    short unk4;
-    u_char unk6;
-    char unk7;
-    int unk8;
-    int unkC;
-    char* limbName;
-} func_800C56C0_t2;
-
-typedef struct {
-    func_800C1564_t unk0[2];
-    short unk20;
-    short unk22;
-    int unk24;
-    short unk28;
-    short unk2A;
-    u_char unk2C;
-    u_char unk2D;
-    u_char unk2E;
-    u_char unk2F;
-    signed char unk30;
-    u_char unk31;
-    char unk32[2];
-    int unk34;
-    SVECTOR unk38;
-    func_800C5798_t* unk40;
-    func_800C5798_t* unk44;
-    char unk48[0x948];
-    func_800C56C0_t2 unk990[24];
-    char unkB70[0x3EE4];
-    char textBuffer[200];
-} func_800C56C0_t;
-
-typedef struct {
     int unk0_0 : 12;
     int unk0_12 : 12;
     u_int unk0_24 : 2;
@@ -414,7 +362,6 @@ extern u_char D_800EB7D4[];
 extern u_short D_800EB98C[16];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
-extern func_800C56C0_t* D_800EB9B8;
 extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
@@ -526,7 +473,7 @@ extern int D_800EC328;
 
 int func_800C4794(SVECTOR* arg0)
 {
-    func_800C56C0_t* state = D_800EB9B8;
+    D_800EB9B8_t* state = D_800EB9B8;
     SVECTOR offset;
     int stickX = ((VECTOR*)&state->unk38)->vx;
     int stickY = ((VECTOR*)&state->unk38)->vy;
@@ -905,10 +852,10 @@ void func_800C56C0(void)
     }
 }
 
-func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
+D_800EB9B8_unk990* func_800C5798(int arg0, int arg1, int arg2)
 {
     int temp_v1;
-    func_800C56C0_t2* item = &D_800EB9B8->unk990[arg0];
+    D_800EB9B8_unk990* item = &D_800EB9B8->unk990[arg0];
     func_800C5798_t* src = &D_800EB9B8->unk40[arg0];
 
     vs_battle_rMemzero(item, sizeof *item);
@@ -944,7 +891,7 @@ char* _getStatusString(uint arg0)
 
 int func_800C58F8(u_char* target)
 {
-    func_800C56C0_t2* item;
+    D_800EB9B8_unk990* item;
     func_800C5798_t* entry;
     int i;
     int value;
@@ -1018,10 +965,10 @@ int func_800C58F8(u_char* target)
             }
             goto nextState;
         case 19:
-            if (++D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] == 0x22) {
-                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0x12;
+            if (++D_800EB9B8->unk990[D_800EB9B8->unk2D].unk3 == 0x22) {
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk3 = 0x12;
             }
-            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 0;
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1 = 0;
             if (vs_main_buttonsPressed.all & 0x40) {
                 vs_battle_playMenuLeaveSfx();
                 func_800C56C0();
@@ -1139,9 +1086,9 @@ int func_800C58F8(u_char* target)
         row1:
             D_800EB9B8->unk2D = D_800F4C70[1][i];
         selected:
-            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[0] = 1;
+            D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1 = 1;
             if (value != D_800EB9B8->unk2D) {
-                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk1[2] = 0;
+                D_800EB9B8->unk990[D_800EB9B8->unk2D].unk3 = 0;
                 vs_battle_playMenuChangeSfx();
                 func_800C51B4(3);
             }

@@ -8,7 +8,7 @@
 extern u_int D_8003FEA0; /* counter value at setRC2wait */
 extern u_int D_8003FEA4; /* wait length */
 
-void setRC2wait(u_int wait)
+void setRC2wait(int wait)
 {
     D_8003FEA4 = wait;
     D_8003FEA0 = RCNT2_COUNT;

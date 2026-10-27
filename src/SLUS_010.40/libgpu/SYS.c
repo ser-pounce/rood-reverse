@@ -11,7 +11,7 @@ extern volatile u_long* D_80033554;
 extern volatile u_long* D_80033558;
 extern int D_80033580;
 extern int D_80033584;
-extern u_char D_8003E2F8[];
+extern u_char D_8003E2F8[0x100];
 
 typedef struct {
     char* ver;
@@ -63,9 +63,9 @@ void func_8002A698(void);
 void func_800286B8(char* name, RECT* rect);
 void func_80029694(DR_ENV* dr_env, DRAWENV* env);
 u_int func_80029924(short x, short y);
-u_long func_800299BC(short x, short y);
+u_int func_800299BC(short x, short y);
 u_long func_80029A54(int x, int y);
-void func_8002B1DC(u_char* p, int c, int n);
+void func_8002B1DC(void* dst, int c, int n);
 inline void func_8002AB84(void);
 int func_8002ABB8(void);
 void _GPU_ResetCallback(void);
@@ -120,7 +120,7 @@ void SetDispMask(int mask)
         D_80033440("SetDispMask(%d)...\n", mask);
     }
     if (mask == 0) {
-        func_8002B1DC((u_char*)&D_80033444.disp, -1, sizeof(DISPENV));
+        func_8002B1DC(&D_80033444.disp, -1, sizeof(DISPENV));
     }
     D_8003343C->ctl(mask ? 0x03000000 : 0x03000001);
 }
@@ -500,8 +500,9 @@ int DrawOTag2(u_long* p)
 
 void _GPU_ResetCallback(void) { DMACallback(2, func_8002A698); }
 
-void func_8002B1DC(u_char* p, int c, int n)
+void func_8002B1DC(void* dst, int c, int n)
 {
+    u_char* p = dst;
     int i = n - 1;
 
     if (n != 0) {

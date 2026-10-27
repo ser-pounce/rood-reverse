@@ -3,7 +3,223 @@
 /* File menu helpers shared by the title and menu overlays. The including file defines
  * MEMCARD_MASKED_HANDLER_PAD, the size of the alignment filler after the masked handler
  * state, since the data that follows differs between overlays, and
- * FIND_SAVE_ACCESSING_HOOK, overlay specific work done when starting to access a card. */
+ * FIND_SAVE_ACCESSING_HOOK, overlay specific work done when starting to access a card.
+ * Also contains the file processing animation, menu elements and background. */
+
+static int _selectCursorXy;
+static char* _memoryCardMessage;
+static char _isSaving;
+
+/**
+ * Draws the save / load progress bar.
+ */
+static void _fileProcessingAnim(int x, int y)
+{
+    char* new_var __attribute__((unused));
+    int gradientColor1;
+    int gradientColor2;
+    u_int leftEdge;
+    u_int i;
+
+    leftEdge = x - 48;
+    new_var = &_isSaving;
+
+    if (leftEdge < 64) {
+        leftEdge = 64;
+    }
+
+    gradientColor1 = 0;
+    gradientColor2 = vs_getRGB888(224, 255, 0);
+
+    if (_isSaving != 0) {
+        gradientColor2 = vs_getRGB888(255, 0, 127);
+    }
+
+    for (i = 0; i < 2; ++i) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
+        _primBuf.prim.polyG4_tpage.r0g0b0code =
+            vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
+        _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
+        _primBuf.prim.polyG4_tpage.x1y1 = x | y;
+        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
+        _primBuf.prim.polyG4_tpage.tpage =
+            vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+        _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
+        _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
+        _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
+        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + vs_getXY(0, 32));
+        DrawPrim(&_primBuf);
+        leftEdge = x;
+        x += 16;
+        gradientColor1 = gradientColor2;
+        gradientColor2 = 0;
+    }
+}
+
+/**
+ * Draws the completion flash for a file operation.
+ */
+static void _fileProcessingCompleteAnim(int colour, int y)
+{
+    int yOfst;
+    int colour0;
+    u_int i;
+    int colour1 = 0;
+
+    if (_isSaving != 0) {
+        colour0 = colour + (colour << 15);
+    } else {
+        colour0 = (colour - (colour >> 3)) + (colour << 8);
+    }
+
+    DrawSync(0);
+    _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
+    _primBuf.prim.tile_tpage.tpage =
+        vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
+    _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
+    _primBuf.prim.tile_tpage.x0y0 = y | 64;
+    _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
+    DrawPrim(&_primBuf);
+
+    for (i = 0; i < 2; ++i) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4, primAddrNull);
+        yOfst = y + vs_getXY(0, -8);
+        _primBuf.prim.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, colour1);
+        _primBuf.prim.polyG4.x0y0 = yOfst | 64;
+        _primBuf.prim.polyG4.r1g1b1 = colour1;
+        _primBuf.prim.polyG4.x1y1 = yOfst | 320;
+        _primBuf.prim.polyG4.r2g2b2 = colour0;
+        _primBuf.prim.polyG4.x2y2 = y | 64;
+        _primBuf.prim.polyG4.r3g3b3 = colour0;
+        _primBuf.prim.polyG4.x3y3 = y | 320;
+        DrawPrim(&_primBuf);
+        y += vs_getXY(0, 40);
+        colour1 = colour0;
+        colour0 = 0;
+    }
+}
+
+static u_char _selectCursorColor;
+static char _fileMenuScreenFade;
+
+/**
+ * Resets menu elements, progress, fade, cursor and message state.
+ */
+static void _initFileMenu(void)
+{
+    _memoryCardMessage = NULL;
+    _selectCursorColor = 0;
+    _selectCursorXy = 0;
+    _fileProgressCounter = 0;
+    _fileMenuScreenFade = 0;
+    _fileProgressTarget = 384;
+    memset(_fileMenuElements, 0, sizeof _fileMenuElements);
+}
+
+/**
+ * Initializes an element and performs some text preprocessing.
+ *
+ * @return The initialized element in the shared file-menu element array.
+ */
+static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
+{
+    fileMenuElements_t* element;
+    int i;
+    u_int c;
+
+    element = &_fileMenuElements[id];
+    memset(element, 0, sizeof *element);
+    element->state = 1;
+    element->slotId = -1;
+    *(int*)&element->x = xy;
+    *(int*)&element->w = wh;
+
+    if (text != NULL) {
+        for (i = 0; i < 32;) {
+            c = *text++;
+            if (c == vs_char_spacing) {
+                element->text[i++] = c;
+                do {
+                    c = *(text++);
+                } while (0);
+            } else {
+                if (c == vs_char_terminator) {
+                    element->text[i] = vs_char_printString;
+                    return element;
+                }
+                if (c >= vs_char_nonPrinting) {
+                    continue;
+                }
+            }
+            element->text[i++] = c;
+        }
+    } else {
+        element->text[0] = vs_char_printString;
+    }
+    return element;
+}
+
+/**
+ * Clears one element in menu element array.
+ */
+static void _clearFileMenuElement(int id)
+{
+    memset(&_fileMenuElements[id], 0, sizeof _fileMenuElements[id]);
+}
+
+/**
+ * Reports whether all file-menu elements have finished their animations.
+ */
+static int _fileMenuElementsActive(void)
+{
+    int i;
+
+    for (i = 0; i < 10 && _fileMenuElements[i].state < fileMenuElementStateAnimateX; ++i)
+        ;
+    return i == 10;
+}
+
+/**
+ * Draws a glyph (or applies a spacing control) and returns the next x position.
+ */
+static int _printCharacter(u_int c, int x, int y, int clut)
+{
+    static int glyphWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 8, 5, 7, 8, 7, 7, 7, 6, 6, 6, 7, 7, 7, 9,
+        7, 7, 7, 7, 6, 7, 7, 6, 8, 7, 8, 8, 9, 8, 8, 4, 7, 5, 7, 7, 6, 8, 7, 7, 7, 6, 8,
+        6, 8, 8, 7, 6, 7, 6, 8, 8, 7, 7, 8, 7, 5, 6, 7, 6, 7, 7, 7, 8, 12, 7, 7, 7, 7, 7,
+        7, 7, 7, 7, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 6, 12, 12, 12, 12,
+        12, 12, 8, 12, 6, 5, 4, 12, 12, 12, 12, 4, 6, 6, 12, 12, 6, 6, 3, 3, 3, 4, 6, 12,
+        6, 6, 6, 12, 5, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+        12, 12, 12 };
+
+    if ((c >> 8) == 14) {
+        return x + (char)c;
+    }
+    if (c != vs_char_space) {
+        DrawSync(0);
+        _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
+        _primBuf.prim.sprt.tpage =
+            vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
+        _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
+        _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
+        _primBuf.prim.sprt.wh = vs_getWH(12, 12);
+        _primBuf.prim.sprt.u0v0clut =
+            vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
+        DrawPrim(&_primBuf);
+    }
+    return x + glyphWidths[c];
+}
 
 enum _findCurrentSave_e {
     findSaveTimeout = -2,
@@ -517,4 +733,15 @@ static void _drawFileMenu(int framebuf)
             vs_getRGB0Raw(primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
         DrawPrim(&_primBuf);
     }
+}
+
+/**
+ * Draws the static background texture for the file menu.
+ */
+static void _drawFileMenuBg(void)
+{
+    _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
+        getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
+    _drawSprt(vs_getXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(256, 176),
+        getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }

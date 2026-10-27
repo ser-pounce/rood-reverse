@@ -3,7 +3,14 @@
 /* Load menu shared by the title and menu overlays. The including file defines
  * LOAD_FILE_MENU_PAD, the size of the alignment filler after the menu state, and
  * FILE_MENU_RESTORE_CURSOR and FILE_MENU_STORE_CURSOR (cursor memory, using
- * selectedFile). */
+ * selectedFile), which default to doing nothing. */
+
+#ifndef FILE_MENU_RESTORE_CURSOR
+#define FILE_MENU_RESTORE_CURSOR()
+#endif
+#ifndef FILE_MENU_STORE_CURSOR
+#define FILE_MENU_STORE_CURSOR()
+#endif
 
 /**
  * Runs the initial slot chooser and asynchronous load flow for game over/data

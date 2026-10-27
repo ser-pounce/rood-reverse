@@ -2,7 +2,18 @@
 
 /* Save menu shared by the title and menu overlays. The including file defines
  * FILE_MENU_RESTORE_CURSOR, FILE_MENU_STORE_CURSOR (cursor memory, using selectedFile)
- * and SAVE_MENU_CLEAR_INFO (clears the info message using clear). */
+ * and SAVE_MENU_CLEAR_INFO (clears the info message using clear). All default to doing
+ * nothing. */
+
+#ifndef FILE_MENU_RESTORE_CURSOR
+#define FILE_MENU_RESTORE_CURSOR()
+#endif
+#ifndef FILE_MENU_STORE_CURSOR
+#define FILE_MENU_STORE_CURSOR()
+#endif
+#ifndef SAVE_MENU_CLEAR_INFO
+#define SAVE_MENU_CLEAR_INFO()
+#endif
 
 /**
  * Runs the save/container slot chooser and handles unsaved container data.

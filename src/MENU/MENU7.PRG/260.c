@@ -1,27 +1,10 @@
 #include "260.h"
-#include "src/SLUS_010.40/saveData.h"
-#include "src/SLUS_010.40/sfx.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
-#include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU7.PRG/container.h"
-#include "build/assets/MENU/MCMAN.BIN.h"
-#include "build/src/include/lbas.h"
-#include "vs_string.h"
-#include "gpu.h"
-#include <memory.h>
-#include <libapi.h>
-#include <sys/file.h>
-#include <string.h>
-#include <libetc.h>
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
-
-#include "src/MENU/memcard.h"
 
 #define PACKAGE_SAVE_PREPARE() func_80042CB0()
 #define KEYSTREAM_BITS(n) vs_battle_keystreamBits(n)
@@ -36,17 +19,11 @@ static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 #define PACKAGE_SAVE_SET_LOCATION() \
     s5->stats.saveLocation = D_800F4E6B; \
     s5->stats.mapCompletion = vs_battle_getMapCompletion()
-#include "src/MENU/packageGameSaveData.h"
-
 #define MEMCARD_INIT_HOOK() func_8007DFF0(0x1D, 3, 6)
 #define MEMCARD_SHUTDOWN_HOOK() func_8007E0A8(0x1D, 3, 6)
-#include "src/MENU/memcardLoadSave.h"
-
-#include "src/MENU/drawUI.h"
-
 #define FIND_SAVE_ACCESSING_HOOK(msg) vs_mainmenu_setInformationMessage(msg)
 #define MEMCARD_MASKED_HANDLER_PAD 5
-#include "src/MENU/fileMenu.h"
+#include "src/MENU/memcard.h"
 
 #define PROMPT_FORMAT_PAD 8
 #include "src/MENU/promptConfirm.h"

@@ -1,20 +1,9 @@
 #include "22C.h"
 #include "titleData.h"
-#include "src/SLUS_010.40/saveData.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/sfx.h"
-#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
-#include "build/src/include/lbas.h"
-#include "build/assets/MENU/MCMAN.BIN.h"
-#include "gpu.h"
-#include "vs_string.h"
-#include <libapi.h>
-#include <libds.h>
-#include <libetc.h>
 #include <libpress.h>
 #include <libspu.h>
-#include <strings.h>
-#include <sys/file.h>
 
 static void _playNewGameSfx(void)
 {
@@ -40,8 +29,6 @@ static u_int _keystreamBits(int value)
     return seed >> (32 - value);
 }
 
-#include "src/MENU/memcard.h"
-
 #define PACKAGE_SAVE_PREPARE() \
     vs_main_gametime.all = 0; \
     vs_main_settings.menuFlags &= 0xFFDF; \
@@ -57,24 +44,13 @@ static u_int _keystreamBits(int value)
     memset(&vs_main_inventoryIndices.misc, 0, sizeof vs_main_inventoryIndices.misc); \
     memset(&savedata2->containerData.misc, 0, \
         sizeof savedata2->containerData.misc / 4) /* Why / 4? */
-#include "src/MENU/packageGameSaveData.h"
-
-#define MEMCARD_INIT_HOOK()
-#define MEMCARD_SHUTDOWN_HOOK()
-#include "src/MENU/memcardLoadSave.h"
-
-#include "src/MENU/drawUI.h"
-
-#define FIND_SAVE_ACCESSING_HOOK(msg)
 #define MEMCARD_MASKED_HANDLER_PAD 1
-#include "src/MENU/fileMenu.h"
+#include "src/MENU/memcard.h"
 
 #include "src/MENU/showLoadFilesMenu.h"
 
 #include "src/MENU/selectLoadMemoryCard.h"
 
-#define FILE_MENU_RESTORE_CURSOR()
-#define FILE_MENU_STORE_CURSOR()
 #define LOAD_FILE_MENU_PAD 5
 #include "src/MENU/loadFileMenu.h"
 
@@ -86,7 +62,6 @@ static u_int _keystreamBits(int value)
 
 #include "src/MENU/selectSaveMemoryCard.h"
 
-#define SAVE_MENU_CLEAR_INFO()
 #include "src/MENU/showSaveMenu.h"
 
 static char _frameBuf;

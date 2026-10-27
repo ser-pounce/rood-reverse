@@ -964,6 +964,7 @@ void func_80077EC4(void);
 int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera*);
 int func_8007BD8C(int);
 void vs_battle_setCameraRoll(int arg0);
+void func_8007A824(void* prim);
 void func_8007ACB0(void);
 void func_8007B0FC(void);
 void func_8007B104(void);

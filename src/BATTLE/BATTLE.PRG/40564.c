@@ -26,7 +26,6 @@ typedef struct {
     u_char y;
 } func_800AB358_t;
 
-void func_8007A824(DR_MOVE*);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);

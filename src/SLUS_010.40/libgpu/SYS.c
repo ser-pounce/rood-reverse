@@ -1,11 +1,22 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
+
+typedef struct {
+    u_char type;
+    u_char unk1;
+    u_char level;
+    u_char reverse;
+    short w;
+    short h;
+} D_80033444_t;
 
 int SetIntrMask(int);
 int func_8002ACFC(int);
 void func_8002B1DC(void*, int, int);
 
-extern short D_80033448;
-extern short D_8003344A;
+extern int (*D_80033440)(char*, ...);
+extern D_80033444_t D_80033444;
 extern u_long* D_8003354C;
 extern u_long* D_80033558;
 extern u_long* D_80033568;
@@ -31,7 +42,24 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetDispMask);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", DrawSync);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_800286B8);
+void func_800286B8(char* name, RECT* rect)
+{
+    switch (D_80033444.level) {
+    case 1:
+        if ((rect->w > D_80033444.w) || (rect->w + rect->x > D_80033444.w)
+            || (rect->y > D_80033444.h) || (rect->y + rect->h > D_80033444.h)
+            || (rect->w <= 0) || (rect->x < 0) || (rect->y < 0) || (rect->h <= 0)) {
+            D_80033440("%s:bad RECT", name);
+            D_80033440("(%d,%d)-(%d,%d)\n", rect->x, rect->y, rect->w, rect->h);
+        }
+        break;
+
+    case 2:
+        D_80033440("%s:", name);
+        D_80033440("(%d,%d)-(%d,%d)\n", rect->x, rect->y, rect->w, rect->h);
+        break;
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", ClearImage);
 
@@ -81,15 +109,15 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029904);
 
 u_int func_80029924(short x, short y)
 {
-    x = x < 0 ? 0 : x > D_80033448 - 1 ? D_80033448 - 1 : x;
-    y = y < 0 ? 0 : y > D_8003344A - 1 ? D_8003344A - 1 : y;
+    x = x < 0 ? 0 : x > D_80033444.w - 1 ? D_80033444.w - 1 : x;
+    y = y < 0 ? 0 : y > D_80033444.h - 1 ? D_80033444.h - 1 : y;
     return 0xE3000000 | ((y & 0x3FF) << 10) | (x & 0x3FF);
 }
 
 u_int func_800299BC(short x, short y)
 {
-    x = x < 0 ? 0 : x > D_80033448 - 1 ? D_80033448 - 1 : x;
-    y = y < 0 ? 0 : y > D_8003344A - 1 ? D_8003344A - 1 : y;
+    x = x < 0 ? 0 : x > D_80033444.w - 1 ? D_80033444.w - 1 : x;
+    y = y < 0 ? 0 : y > D_80033444.h - 1 ? D_80033444.h - 1 : y;
     return 0xE4000000 | ((y & 0x3FF) << 10) | (x & 0x3FF);
 }
 

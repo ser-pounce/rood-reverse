@@ -268,9 +268,10 @@ static int func_800FA188(int arg0, int arg1, int* arg2)
     for (i = 0; i < 16; ++i) {
         D_800F45E0_t* temp_v1 = var_t0[i];
         if ((var_t0[i] != 0)
-            && ((((!var_t0[i]->unk8_0) && (!temp_v1->unk9_0)) && (temp_v1->unk1A == 0))
-                && (temp_v1->unk5C == arg0))
-            && (temp_v1->unk5E == arg1)) {
+            && ((((!var_t0[i]->unk0.skip) && (!temp_v1->unk0.unk9_0))
+                 && (temp_v1->unk0.unk1A == 0))
+                && (temp_v1->unk0.currentTile.x == arg0))
+            && (temp_v1->unk0.currentTile.z == arg1)) {
             if (temp_v1->unk16C.unk0_4 == 2) {
                 ret = 1;
             } else {
@@ -293,9 +294,11 @@ static int func_800FA238(int arg0, int arg1, int arg2)
     for (i = 0; i < 16; ++i) {
         D_800F45E0_t* temp_v1 = var_t0[i];
 
-        if (var_t0[i] && !var_t0[i]->unk8_0 && !temp_v1->unk9_0
-            && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)
-            && (temp_v1->unk1E >= arg2) && (new_var >= temp_v1->unk1E)) {
+        if (var_t0[i] && !var_t0[i]->unk0.skip && !temp_v1->unk0.unk9_0
+            && (temp_v1->unk0.currentTile.x == arg0)
+            && (temp_v1->unk0.currentTile.z == arg1)
+            && (temp_v1->unk0.position.vy >= arg2)
+            && (new_var >= temp_v1->unk0.position.vy)) {
             return 1;
         }
     }

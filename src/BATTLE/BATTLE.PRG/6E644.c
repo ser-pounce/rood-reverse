@@ -1760,7 +1760,8 @@ int func_800DAD9C(func_800E78F4_t* arg0)
                 entry->unkC_0 = actor->id;
                 model = D_800F45E0[actor->id];
 
-                if (model->unk12 && model->unk1A == 0 && func_800DAC80(arg0, entry)) {
+                if (model->unk0.unk12 && model->unk0.unk1A == 0
+                    && func_800DAC80(arg0, entry)) {
                     return 1;
                 }
             }
@@ -1813,7 +1814,7 @@ int func_800DB0BC(func_800E78F4_t* arg0)
                 directions[3] = (first + 4) & 7;
             }
 
-            *(u_int*)arg0->unk118 = *(u_int*)directions;
+            __builtin_memcpy(arg0->unk118, directions, sizeof(directions));
             *(u_int*)&probe = 0;
 
             for (i = 0; i < 4; ++i) {

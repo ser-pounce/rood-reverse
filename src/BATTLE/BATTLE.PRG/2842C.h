@@ -65,6 +65,7 @@ void func_80093914(int arg0);
 void func_80093A14(void);
 void func_80093A70(void);
 void func_80093AB4(void);
+int func_80093B04(SVECTOR* arg0);
 int func_80093B68(int arg0, int arg1, u_int arg2, int arg3);
 int func_80093F24(int arg0);
 int func_80093FEC(int arg0, int arg1, int arg2, int arg3);

@@ -1463,16 +1463,16 @@ void func_80093AB4(void)
     vs_main_bzero(D_800F1BAC, sizeof *D_800F1BAC);
 }
 
-int func_80093B04(u_short* arg0)
+int func_80093B04(SVECTOR* arg0)
 {
     func_800962E4_t* temp_v0;
 
     temp_v0 = func_800962E4();
     temp_v0->unkB = 0;
     temp_v0->unk8 = 3;
-    temp_v0->unk0 = arg0[0];
-    temp_v0->unk2 = arg0[1];
-    temp_v0->unk4 = arg0[2];
+    temp_v0->unk0 = arg0->vx;
+    temp_v0->unk2 = arg0->vy;
+    temp_v0->unk4 = arg0->vz;
     ++D_800F227E;
     return 0;
 }

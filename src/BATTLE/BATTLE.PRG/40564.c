@@ -2211,7 +2211,7 @@ void* func_800AD494(void* arg0, int arg1, u_short** arg2)
     return p;
 }
 
-void func_800AD62C(int arg0, int* arg1, int* arg2)
+void func_800AD62C(int arg0, int* arg1, int* arg2, int arg3 __attribute__((unused)))
 {
     int temp_v0;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];

@@ -1227,10 +1227,10 @@ void func_80042CB0(void)
     D_80061068 = D_800F1AB0;
     func_800A1108(0, &sp10);
 
-    D_80061068.unk4_8 = sp10.unk0.unk0.fields.unk0_0;
-    D_80061068.unk6_10 = sp10.unk0.unk0.fields.unk0_16;
-    D_80061068.unk2.unk0_13 = sp10.unk0.unk0.fields.unk0_8;
-    D_80061068.unk4_13 = sp10.unk0.unk0.fields.unk0_24 >> 6;
+    D_80061068.unk4_8 = sp10.unk0.unk0.fields.x;
+    D_80061068.unk6_10 = sp10.unk0.unk0.fields.z;
+    D_80061068.unk2.unk0_13 = sp10.unk0.unk0.fields.y;
+    D_80061068.unk4_13 = sp10.unk0.unk0.fields.status >> 6;
     D_80061068.unk6_0 = D_800F18E8.unk0_0;
 
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {

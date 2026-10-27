@@ -5,12 +5,13 @@
 #include <libgte.h>
 #include <libgpu.h>
 
+int func_800A8E84(D_800F4538_t* actor, SVECTOR* position);
 int func_800A91DC(int arg0, int arg1, int arg2);
 inline int func_800A92B8(int arg0, int arg1);
-void func_800A97EC(int, func_8006EBF8_t_fields*, int, int);
+void func_800A97EC(int, vs_battle_movementPosition*, int, int);
 void func_800A9988(int, SVECTOR*, int, int);
-void func_800A9C54(int, func_8006EBF8_t_fields*, int);
-void func_800A9CDC(int, func_8006EBF8_t_fields*, int);
+void func_800A9C54(int, vs_battle_movementPosition*, int);
+void func_800A9CDC(int, vs_battle_movementPosition*, int);
 void func_800A9D90(int, SVECTOR*, int);
 void func_800A9E38(int, short, int);
 void func_800A9EB4(int, short, int);

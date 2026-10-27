@@ -23,7 +23,6 @@ int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
 SVECTOR* func_800A4A24(int);
-int func_800A6EE8(SVECTOR*, int, int, int);
 _mpdRoomSection3* func_800A8D64(SVECTOR*, int);
 
 extern u_char D_800E90AC[];

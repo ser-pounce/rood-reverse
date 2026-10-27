@@ -288,11 +288,13 @@ typedef struct func_800E78F4_t {
     char unkEA[0x10];
     u_char unkFA;
     u_char unkFB;
-    char unkFC[5];
+    char unkFC[4];
+    u_char unk100;
     u_char unk101;
     u_char unk102;
     u_char unk103;
-    char unk104[4];
+    u_char unk104;
+    char unk105[3];
     vs_battle_movementPosition unk108;
     u_char unk10C;
     char unk10D[3];
@@ -616,6 +618,7 @@ extern D_800F58BC_t* D_800F58BC;
 extern int D_800F58C0;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
+extern D_800F58C8_t* D_800F58D8;
 extern int D_800F58E0;
 extern vs_battle_actor2* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];
@@ -3718,7 +3721,48 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
     func_800E2CCC(arg0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E23AC);
+static inline void _nextWaypoint(func_800E78F4_t* arg0, D_800F58C8_t2* waypoints)
+{
+    D_800F58C8_t2* waypoint = &waypoints[arg0->unk100];
+    int step;
+    int active;
+
+    if ((arg0->unk34.x != waypoint->x) || (arg0->unk34.z != waypoint->z)) {
+        if (arg0->unk104 != 0) {
+            --arg0->unk104;
+        }
+
+        if (func_800E45D4(1 << arg0->unk102) || (arg0->unk104 != 0)) {
+            return;
+        }
+
+        arg0->unk103 = -arg0->unk103;
+    }
+
+    step = arg0->unk103 + 8;
+
+    do {
+        arg0->unk100 = (arg0->unk100 + step) & 7;
+        waypoint = &waypoints[arg0->unk100];
+        active = waypoint->active;
+    } while (!active);
+
+    arg0->unk104 = 10;
+}
+
+void func_800E23AC(func_800E78F4_t* arg0)
+{
+    D_800F58C8_t2* waypoints = D_800F58D8[arg0->unk101].unk0;
+    D_800F58C8_t2* waypointX;
+    D_800F58C8_t2* waypointZ;
+
+    _nextWaypoint(arg0, waypoints);
+    waypointX = &waypoints[arg0->unk100];
+    arg0->unk168.x = waypointX->x;
+    waypointZ = &waypoints[arg0->unk100];
+    arg0->unk168.z = waypointZ->z;
+    func_800E50A0(arg0, 0, 0);
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800E24EC);
 

@@ -3,6 +3,63 @@
 /* File menu element helpers shared by the title and menu overlays. */
 
 /**
+ * Resets menu elements, progress, fade, cursor and message state.
+ */
+static void _initFileMenu(void)
+{
+    _memoryCardMessage = NULL;
+    _selectCursorColor = 0;
+    _selectCursorXy = 0;
+    _fileProgressCounter = 0;
+    _fileMenuScreenFade = 0;
+    _fileProgressTarget = 384;
+    memset(_fileMenuElements, 0, sizeof _fileMenuElements);
+}
+
+/**
+ * Initializes an element and performs some text preprocessing.
+ *
+ * @return The initialized element in the shared file-menu element array.
+ */
+static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
+{
+    fileMenuElements_t* element;
+    int i;
+    u_int c;
+
+    element = &_fileMenuElements[id];
+    memset(element, 0, sizeof *element);
+    element->state = 1;
+    element->slotId = -1;
+    *(int*)&element->x = xy;
+    *(int*)&element->w = wh;
+
+    if (text != NULL) {
+        for (i = 0; i < 32;) {
+            c = *text++;
+            if (c == vs_char_spacing) {
+                element->text[i++] = c;
+                do {
+                    c = *(text++);
+                } while (0);
+            } else {
+                if (c == vs_char_terminator) {
+                    element->text[i] = vs_char_printString;
+                    return element;
+                }
+                if (c >= vs_char_nonPrinting) {
+                    continue;
+                }
+            }
+            element->text[i++] = c;
+        }
+    } else {
+        element->text[0] = vs_char_printString;
+    }
+    return element;
+}
+
+/**
  * Clears one element in menu element array.
  */
 static void _clearFileMenuElement(int id)

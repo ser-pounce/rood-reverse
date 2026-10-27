@@ -193,15 +193,6 @@ typedef struct {
     short type;
 } func_80092548_t2;
 
-short func_8008DC7C(int, int);
-void func_8008F29C(int, int);
-void func_8008F30C(int, int);
-void func_8008F440(void);
-void func_8008F9A4(int, int);
-void func_8008FAC8(void);
-void func_8008FDC4(void);
-void func_80090434(void);
-void func_80090B28(void);
 void func_8009121C(void);
 void func_800927AC(D_800F1DD8_t*);
 int func_80092B04(func_80092B04_t*, int, D_800F1DD8_t*);

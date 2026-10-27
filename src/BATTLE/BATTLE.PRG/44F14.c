@@ -2,6 +2,8 @@
 #include <rand.h>
 #include <abs.h>
 #include <inline_c.h>
+#include "30DB0.h"
+#include "5BF94.h"
 #include "vs_inline_c.h"
 #include "146C.h"
 #include "38C1C.h"
@@ -25,21 +27,9 @@ typedef struct {
     VECTOR scale;
 } D_800F3C58_t;
 
-void func_8008EB04(int*, int*);
-int func_800A0104(int, int);
-int func_800A3DB4(int, int, int);
-void func_800A41D0(D_800F4538_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
-int func_800A91DC(int, int, int);
-int func_800A92B8(int, int);
-int func_800AAD4C(int, int, int, int);
-int func_800AAE9C(D_800F4538_t*);
 void func_800AB358(int, u_char*);
-void func_800AB4F0(D_800F4538_t*);
-void func_800AB788(D_800F4538_t*, D_800F45E0_t*, int);
 void func_800AB9A4(void*);
-void func_800AC440(D_800F4538_t*, int, int);
-void func_800AC540(int, D_800F4538_t*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE46C(u_char*);
 void func_800AE474(u_char*);
@@ -60,8 +50,6 @@ void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
 void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
 void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
 short func_800BEB00(void);
-int func_800CEF74(int);
-void func_800CF8BC(void);
 void func_800E4C28(int, int);
 void func_800E6898(void*);
 

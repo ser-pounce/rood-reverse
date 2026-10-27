@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
@@ -24,23 +25,16 @@ typedef struct {
 u_int func_800A9C54(u_char, void*, int);
 void func_800B28A8(void*, MATRIX*, int);
 void func_800B64A8(int, int, int);
-int func_8008C49C(int, int);
-int func_8008D2C0(SVECTOR*);
-short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);
 int func_800A3DB4(int, int, int);
-short func_8008DC7C(int, int);
-short func_8008DA24(int, int);
 u_int* func_800A8D64(SVECTOR*, int);
-int func_800B13CC(int, int, int);
 int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 void func_800AA850(int, short, int);
 int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800ACF54(D_800F4538_t*);
-void func_800B0908(D_800F45E0_t*, int);
 int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
 int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
@@ -62,7 +56,6 @@ void func_800E4BD8(int);
 void func_800E4BE0(int);
 void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
-int func_8009E180(D_800F4538_t*, SVECTOR*);
 
 extern u_char D_800E8FD0[];
 extern int D_800E90A8;

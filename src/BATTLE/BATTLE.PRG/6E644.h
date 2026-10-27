@@ -41,6 +41,13 @@ struct func_800D4910_t {
 };
 
 void func_800D2698(int);
+void func_800D7890(int arg0);
+void func_800D78B8(void);
+void func_800D78CC(void);
+int func_800D7BF8(void);
+void func_800D7C5C(void);
+int func_800D7CFC(void);
+int func_800D7EF4(void);
 void func_800D8038(int);
 void func_800D6E44(void*);
 void func_800D7814(void);

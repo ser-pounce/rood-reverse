@@ -3,6 +3,7 @@
 #include <libgte.h>
 
 void func_800B28A8(void*, MATRIX*, char);
+void func_800BBDDC(void);
 short func_800BEB10(void);
 void func_800BEB34(void);
 void func_800BEB9C(int);

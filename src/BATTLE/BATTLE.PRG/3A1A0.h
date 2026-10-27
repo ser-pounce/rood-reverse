@@ -665,7 +665,10 @@ typedef struct {
 } D_1F8003BC_t;
 
 int func_800A1108(int, void*);
+void func_800A2C48(D_800F4538_t* arg0);
 void func_800A36E0(int, int, func_8006EBF8_t*);
+int func_800A3DB4(int x, int z, int minimumHeight);
+void func_800A41D0(D_800F4538_t* actor, int mode);
 int func_800A4494(int, SVECTOR*);
 void func_800A48CC(int, int, int);
 void func_800A4D8C(void);
@@ -674,6 +677,8 @@ void func_800A35A8(void);
 int func_800A3500(int, int);
 D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1);
 void func_800A4828(int, MATRIX*);
+void func_800A525C(D_800F4538_t* arg0);
+void func_800A70DC(D_800F4538_t* actor, int diagonal);
 void func_800A9D24(int, SVECTOR*, int);
 int func_800A3760(int, int, int);
 int func_800A38E0(int);

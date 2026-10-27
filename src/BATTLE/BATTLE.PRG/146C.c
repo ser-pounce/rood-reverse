@@ -543,7 +543,6 @@ void func_8009723C(void*, int);
 void func_80098194(int);
 void func_800983F8(void*);
 void func_80098D6C(void*, void*, D_800F1BB0_t*, int);
-void func_8009E070(int, short*, int);
 
 void func_800E685C(int, int, int);
 void func_800719FC(int);
@@ -4787,15 +4786,15 @@ void func_80073ACC(void)
 
 int func_80073AFC(_mpdRoomSectionA* arg0)
 {
-    short sp10[4];
+    SVECTOR sp10;
     int action;
     int template;
 
     if (arg0->unkE == 0) {
         if (arg0->unk12 == 0) {
             int v = 7;
-            sp10[0] = (arg0->unk0.unk0 << v) + 0x40;
-            sp10[2] = (arg0->unk0.unk2 << v) + 0x40;
+            sp10.vx = (arg0->unk0.unk0 << v) + 0x40;
+            sp10.vz = (arg0->unk0.unk2 << v) + 0x40;
             action = 0;
 
             switch (arg0->unk0.unk8.lock.state) {
@@ -4826,7 +4825,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
                     }
                     vs_battle_displaySceneMessage(template, arg0->keyOrSigil, 1);
                 }
-                func_8009E070(0, sp10, 5);
+                func_8009E070(0, &sp10, 5);
                 func_8008BEBC(arg0);
                 return 0;
             }
@@ -4886,12 +4885,12 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
 
 void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
 {
-    short sp10[4];
+    SVECTOR sp10;
     int var_s1;
     int shift = 7;
 
-    sp10[0] = (arg0->unk0.unk0 << shift) + 0x40;
-    sp10[2] = (arg0->unk0.unk2 << shift) + 0x40;
+    sp10.vx = (arg0->unk0.unk0 << shift) + 0x40;
+    sp10.vz = (arg0->unk0.unk2 << shift) + 0x40;
     var_s1 = 0;
 
     switch (arg0->keyOrSigil) {
@@ -4915,11 +4914,11 @@ void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
         break;
     }
     if (var_s1 != 0) {
-        func_8009E070(0, sp10, 2);
+        func_8009E070(0, &sp10, 2);
         func_8008D5FC(arg0);
         return;
     }
-    func_8009E070(0, sp10, 3);
+    func_8009E070(0, &sp10, 3);
 }
 
 void func_80073F7C(_mpdRoomSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
@@ -4944,7 +4943,7 @@ void func_80073F7C(_mpdRoomSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
 
 void func_80074050(_mpdRoomSectionA* arg0, int arg1)
 {
-    short sp10[4];
+    SVECTOR sp10;
     int i;
     int var_v0;
 
@@ -4960,10 +4959,10 @@ void func_80074050(_mpdRoomSectionA* arg0, int arg1)
     }
 
     var_v0 = arg0->unk0.unk0;
-    sp10[0] = (var_v0 << 7) + 0x40;
+    sp10.vx = (var_v0 << 7) + 0x40;
     var_v0 = arg0->unk0.unk2;
-    sp10[2] = (var_v0 << 7) + 0x40;
-    func_8009E070(0, sp10, 1);
+    sp10.vz = (var_v0 << 7) + 0x40;
+    func_8009E070(0, &sp10, 1);
     D_800F19CC->unk4 = 0;
     D_800F19CC->unk8.actionIndex = 0;
 }
@@ -5017,15 +5016,15 @@ int func_80074294(void) { return D_800F1868 & 3; }
 
 void func_800742A4(void)
 {
-    short sp10[4];
+    SVECTOR sp10;
     int v;
 
     _cameraMode = 4;
     vs_gametime_tickspeed = 2;
     v = 7;
-    sp10[0] = (D_800F1910.unk0->unk0.unk0 << v) + 0x40;
-    sp10[2] = (D_800F1910.unk0->unk0.unk2 << v) + 0x40;
-    func_8009E070(0, sp10, 4);
+    sp10.vx = (D_800F1910.unk0->unk0.unk0 << v) + 0x40;
+    sp10.vz = (D_800F1910.unk0->unk0.unk2 << v) + 0x40;
+    func_8009E070(0, &sp10, 4);
     func_800CB50C();
 }
 

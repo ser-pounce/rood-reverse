@@ -5308,7 +5308,7 @@ void func_80074B14(int arg0, vs_battle_movementPosition* arg1)
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
         func_8008C2C0(arg1->x, arg1->z, arg1->y,
-                      vs_battle_cameraCurrentSpherical.initialDistance == 0x900);
+            vs_battle_cameraCurrentSpherical.initialDistance == 0x900);
         return;
     }
     func_8008C40C();
@@ -5332,7 +5332,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
         cell = func_8008B764(0, 0, cellIndex >> 16);
     } else {
         cell = func_8008B764(coordinates->unk0.fields.x, coordinates->unk0.fields.z,
-                             coordinates->unk0.fields.y);
+            coordinates->unk0.fields.y);
     }
 
     if (vs_battle_screenTransitionStep != 0) {
@@ -5353,13 +5353,12 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
 
             if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
                 func_80073898();
-                __builtin_memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
+                memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
                 actor->unk2C.u8[3] = layer;
 
                 if (cell->unk0_16) {
                     trigger = func_8008D438(coordinates->unk0.fields.x,
-                                            coordinates->unk0.fields.z,
-                                            coordinates->unk0.fields.y);
+                        coordinates->unk0.fields.z, coordinates->unk0.fields.y);
 
                     if (trigger != NULL && trigger->unk6 == 16) {
                         func_8006F4B0(position);
@@ -5371,15 +5370,13 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
             }
 
             if (cell->unk0_16 && !(flags & 0x504000)) {
-                trigger =
-                    func_8008D438(coordinates->unk0.fields.x, coordinates->unk0.fields.z,
-                                  coordinates->unk0.fields.y);
+                trigger = func_8008D438(coordinates->unk0.fields.x,
+                    coordinates->unk0.fields.z, coordinates->unk0.fields.y);
 
                 if (trigger != NULL) {
                     if (trigger->unk6 != 16) {
                         func_80073F7C((_mpdRoomSectionA*)trigger, position, actorIndex);
-                        __builtin_memcpy(
-                            &actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
+                        memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
                         actor->unk2C.u8[3] = layer;
                         return 1;
                     }
@@ -5402,8 +5399,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
                     }
                 } else {
                     doors = func_8008BAC8(coordinates->unk0.fields.x,
-                                          coordinates->unk0.fields.z,
-                                          coordinates->unk0.fields.y);
+                        coordinates->unk0.fields.z, coordinates->unk0.fields.y);
                 }
 
                 if (doors != NULL) {
@@ -5429,7 +5425,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
         }
 
         if (!(flags & 0x104000)) {
-            __builtin_memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
+            memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
         }
 
         actor->unk2C.u8[3] = layer;
@@ -5520,8 +5516,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
                                 s2->unk0.fields.x, s2->unk0.fields.z, s2->unk0.fields.y);
                             if ((temp_v0_2 != NULL) && (temp_v0_2->unk6 != 0x10)) {
                                 func_80073F7C((_mpdRoomSectionA*)temp_v0_2, arg1, arg0);
-                                __builtin_memcpy(
-                                    &temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
+                                memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
                                 temp_s0->unk2C.u8[3] = temp_s3;
                                 return 3;
                             }
@@ -5529,7 +5524,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
                     }
                 }
                 if (!(temp_v0 & 0x504000)) {
-                    __builtin_memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
+                    memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
                 }
                 temp_s0->unk2C.u8[3] = temp_s3;
             }
@@ -5810,10 +5805,10 @@ int func_80075554(void)
                 angle = position.unk0.unk4.pad;
             } else {
                 func_800A1108(actor->command.fields.unkA, &target);
-                angle = ratan2((target.unk0.unk0.fields.x - (u_char)actor->unkC) << 12,
-                               (target.unk0.unk0.fields.z - (u_char)(actor->unkC >> 16))
-                                   << 12)
-                        + 0x800;
+                angle =
+                    ratan2((target.unk0.unk0.fields.x - (u_char)actor->unkC) << 12,
+                        (target.unk0.unk0.fields.z - (u_char)(actor->unkC >> 16)) << 12)
+                    + 0x800;
             }
 
             func_800B6580(i, &actor->unkC, angle);
@@ -8951,8 +8946,8 @@ void func_8007C580(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 
     func_8007C4E0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
-    func_8008B960(sp10.unk0.unk0.fields.x, sp10.unk0.unk0.fields.z,
-                  sp10.unk0.unk0.fields.y);
+    func_8008B960(
+        sp10.unk0.unk0.fields.x, sp10.unk0.unk0.fields.z, sp10.unk0.unk0.fields.y);
 }
 
 int func_8007C5C0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
@@ -8974,8 +8969,8 @@ void func_8007C654(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 
     func_8007C5C0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
-    func_8008B960(sp10.unk0.unk0.fields.x, sp10.unk0.unk0.fields.z,
-                  sp10.unk0.unk0.fields.y);
+    func_8008B960(
+        sp10.unk0.unk0.fields.x, sp10.unk0.unk0.fields.z, sp10.unk0.unk0.fields.y);
 }
 
 int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
@@ -13620,7 +13615,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
             (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)
             + 0x40;
-        __builtin_memcpy(sp860.unk8, arg4, sizeof *arg4);
+        memcpy(sp860.unk8, arg4, sizeof *arg4);
         break;
 
     case 2:
@@ -13634,7 +13629,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
         sp860.unk4.values[2] = vs_main_actions[arg0].aoe_16;
         sp860.unk2 = 0;
         sp860.unk4.values[3] = vs_main_actions[arg0].aoe_24 & 0xF8;
-        __builtin_memcpy(sp860.unk8, arg5, sizeof *arg5);
+        memcpy(sp860.unk8, arg5, sizeof *arg5);
         break;
     }
 

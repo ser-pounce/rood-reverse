@@ -1479,8 +1479,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
 
     if (!actor->unk0.unkA_0 && !actor->unk0.unkA_3 && !actor->unk0.unkA_5) {
         actor->unk0.lastTouchedTile = actor->unk0.currentTile;
-        __builtin_memcpy(&actor->unk0.lastPosition, &actor->unk0.position,
-                         sizeof(SVECTOR));
+        memcpy(&actor->unk0.lastPosition, &actor->unk0.position, sizeof(SVECTOR));
 
         if (actor->unk0.unkC_0 == 0) {
             actor->unk1868 = *(int*)&actor->unk0.currentTile;
@@ -1743,8 +1742,8 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
                 scratch->rotation.vz += other;
             }
 
-            if (func_800A3DB4(scratch->rotation.vx, scratch->rotation.vz,
-                              object->unk0.position.vy)
+            if (func_800A3DB4(
+                    scratch->rotation.vx, scratch->rotation.vz, object->unk0.position.vy)
                 && func_800A6EE8(&object->unk0.position, 0, 0, 1)
                        == object->unk0.position.vy) {
                 object->unk0.currentTile.x = 0xFF;
@@ -1802,8 +1801,8 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
                         vs_main_panSfx(0x7E, 0x31, &object->unk0.position);
                         object->unk0.unk1A = 0;
                         func_800E6898(object);
-                        func_800E4C28(object->unk0.currentTile.x,
-                                      object->unk0.currentTile.z);
+                        func_800E4C28(
+                            object->unk0.currentTile.x, object->unk0.currentTile.z);
                     }
 
                     goto children;
@@ -2062,8 +2061,8 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
         gte_ldv0(&scratch->position);
         gte_rtv0tr2();
         setVector(&scratch->rotation, object->unk10C.vx + object->unk0.unk24,
-                  object->unk10C.vy + object->unk0.facing,
-                  object->unk10C.vz + object->unk0.unk28);
+            object->unk10C.vy + object->unk0.facing,
+            object->unk10C.vz + object->unk0.unk28);
         gte_stlvnl(scratch->matrix.t);
         func_800B17F0(&scratch->rotation, &scratch->matrix);
         setVector(&scratch->rotation, holder->unk0.unk24, holder->unk0.facing,
@@ -2073,7 +2072,7 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
     } else if (attachment < 2) {
         if (object->unk0.unk1A != 0) {
             setVector(&scratch->rotation, object->unk0.unk24, object->unk0.facing,
-                      object->unk0.unk28);
+                object->unk0.unk28);
             gte_stlvnl(scratch->matrix.t);
             RotMatrixYXZ_gte(&scratch->rotation, &scratch->matrix);
             func_800B196C(camera, &scratch->matrix);
@@ -2088,7 +2087,7 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
         copyVector(&scratch->rotation, &object->unk10C);
         gte_stlvnl(scratch->matrix.t);
         applyVector(&scratch->rotation, object->unk0.unk24, object->unk0.facing,
-                    object->unk0.unk28, +=);
+            object->unk0.unk28, +=);
         *(int*)&scratch->rotation &= 0x0FFF0FFF;
         *(int*)&scratch->rotation.vz &= 0xFFF;
         func_800B17F0(&scratch->rotation, &scratch->matrix);
@@ -2102,8 +2101,8 @@ composed:
 
     if (object->unk0.unk2C != 64 || object->unk0.unk2E != 64
         || object->unk0.unk30 != 64) {
-        setVector(&scratch->scale, object->unk0.unk2C, object->unk0.unk2E,
-                  object->unk0.unk30);
+        setVector(
+            &scratch->scale, object->unk0.unk2C, object->unk0.unk2E, object->unk0.unk30);
         applyVector(&scratch->scale, 64, 64, 64, *=);
         func_800B396C(&scratch->matrix, &scratch->scale);
         D_800F3C58.bones[0] = scratch->matrix;
@@ -2114,8 +2113,8 @@ composed:
     object->bones[1] = scratch->matrix;
 
     if (!object->unk0.visible
-        || !func_800B3A68(object, &object->bones[0], -vs_main_nearClip * 4,
-                          object->unk0.unk68)) {
+        || !func_800B3A68(
+            object, &object->bones[0], -vs_main_nearClip * 4, object->unk0.unk68)) {
         return;
     }
 
@@ -2222,7 +2221,7 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
         color.g = weapon->unk5C0;
         color.b = weapon->unk5C0;
     } else {
-        __builtin_memcpy(&color, &actor->unk0.unk54, sizeof color);
+        memcpy(&color, &actor->unk0.unk54, sizeof color);
     }
 
     if (value) {

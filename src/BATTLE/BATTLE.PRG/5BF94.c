@@ -3216,7 +3216,7 @@ void _renderTimer(int* value)
     char sp10[4];
     int i;
 
-    __builtin_memcpy(sp10, value, sizeof sp10);
+    memcpy(sp10, value, sizeof sp10);
     sp10[0] = vs_main_stateFlags.puzzleTimerHundredths;
 
     if (sp10[3] != 0) {

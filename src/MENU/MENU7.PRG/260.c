@@ -150,45 +150,15 @@ static void _packageGameSaveData(int targetFile)
     }
 }
 
-static char _loadSaveDataErrorOffset;
-static char _1[1] __attribute__((unused));
-static u_short _fileProgressTarget;
-static u_short _filePreviousProgressCounter;
-static u_short _fileProgressPosition;
-static int _fileProgressCounter;
-
-#include "src/MENU/memcardLoadSave.h"
-
 #define MEMCARD_INIT_HOOK() func_8007DFF0(0x1D, 3, 6)
 #define MEMCARD_SHUTDOWN_HOOK() func_8007E0A8(0x1D, 3, 6)
-#include "src/MENU/memcardInit.h"
+#include "src/MENU/memcardLoadSave.h"
 
-static fileMenuElements_t _fileMenuElements[10];
-static char _2[8] __attribute__((unused));
-static primBuf_t _primBuf;
-
-#include "src/MENU/drawSprt.h"
-
-#include "src/MENU/drawSaveInfoUI.h"
-
-#include "src/MENU/drawStats.h"
-
-static int _selectCursorXy;
-static char* _memoryCardMessage;
-static char _isSaving;
-
-#include "src/MENU/fileProcessingAnim.h"
-
-static u_char _selectCursorColor;
-static char _fileMenuScreenFade;
-
-#include "src/MENU/fileMenuElement.h"
+#include "src/MENU/drawUI.h"
 
 #define FIND_SAVE_ACCESSING_HOOK(msg) vs_mainmenu_setInformationMessage(msg)
 #define MEMCARD_MASKED_HANDLER_PAD 5
 #include "src/MENU/fileMenu.h"
-
-#include "src/MENU/drawFileMenuBg.h"
 
 #define PROMPT_FORMAT_PAD 8
 #include "src/MENU/promptConfirm.h"

@@ -539,7 +539,6 @@ int func_8008EA90(int arg0);
 int func_8008F234(void);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
-void func_80093B04(void*);
 void func_8009723C(void*, int);
 void func_80098194(int);
 void func_800983F8(void*);

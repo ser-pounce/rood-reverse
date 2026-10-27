@@ -279,8 +279,7 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
     short z;
     int value;
 
-    __builtin_memcpy(&actor->unk0.currentTile, placement,
-                     sizeof(actor->unk0.currentTile));
+    memcpy(&actor->unk0.currentTile, placement, sizeof(actor->unk0.currentTile));
     actor->unk0.position.vx = placement->unk0_0 * 128 + 64;
     z = placement->unk0_16 * 128 + 64;
     actor->unk0.position.vz = z;
@@ -667,8 +666,8 @@ int func_800A3BC4(int arg0, int arg1)
 
 D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1)
 {
-    return func_800A3C34(arg0->unk0.currentTile.x, arg0->unk0.currentTile.z,
-                         arg0->unk0.position.vy, arg1);
+    return func_800A3C34(
+        arg0->unk0.currentTile.x, arg0->unk0.currentTile.z, arg0->unk0.position.vy, arg1);
 }
 
 D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
@@ -798,7 +797,7 @@ int func_800A3E6C(int actorId)
         func_800A0204(actorId, height + 79, 0, 4);
         actor->unk5AC_20 = 1;
         func_800E4C1C((object->unk0.position.vx + object->unk0.unk34.vx) / 128,
-                      (object->unk0.position.vz + object->unk0.unk34.vz) / 128);
+            (object->unk0.position.vz + object->unk0.unk34.vz) / 128);
         break;
 
     case 4:
@@ -828,7 +827,7 @@ int func_800A3E6C(int actorId)
         break;
     }
 
-    __builtin_memcpy(&tile, &actor->unk0.currentTile, sizeof tile);
+    memcpy(&tile, &actor->unk0.currentTile, sizeof tile);
     step = D_800F49E8 < 2 ? -1 : 1;
 
     if (D_800F49E8 & 1) {

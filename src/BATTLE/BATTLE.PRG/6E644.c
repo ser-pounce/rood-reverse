@@ -1147,7 +1147,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
             arg0->unk58->unk0.facing + arg0->unk58->unk0.unk14, arg0->unk1E4[id])
         >= arg0->unkA8;
 
-    __builtin_memcpy(&relation, &arg0->unk1A4[id], sizeof relation);
+    memcpy(&relation, &arg0->unk1A4[id], sizeof relation);
 
     if (arg0->unk88 == id) {
         relation.unk0_0 = 1;
@@ -1175,7 +1175,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
         relation.unk0_31 = relation.unk0_0;
     }
 
-    __builtin_memcpy(&arg0->unk1A4[id], &relation, sizeof relation);
+    memcpy(&arg0->unk1A4[id], &relation, sizeof relation);
     blocked = 0;
     radius = 63;
 
@@ -1814,7 +1814,7 @@ int func_800DB0BC(func_800E78F4_t* arg0)
                 directions[3] = (first + 4) & 7;
             }
 
-            __builtin_memcpy(arg0->unk118, directions, sizeof(directions));
+            memcpy(arg0->unk118, directions, sizeof(directions));
             *(u_int*)&probe = 0;
 
             for (i = 0; i < 4; ++i) {

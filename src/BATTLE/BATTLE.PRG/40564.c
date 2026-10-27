@@ -1989,7 +1989,7 @@ void func_800ACF54(D_800F4538_t* arg0)
 {
 
     arg0->unk0.lastTouchedTile = arg0->unk0.currentTile;
-    __builtin_memcpy(&arg0->unk0.lastPosition, &arg0->unk0.position, sizeof(SVECTOR));
+    memcpy(&arg0->unk0.lastPosition, &arg0->unk0.position, sizeof(SVECTOR));
 
     if (!(arg0->unk0.unkC_0)) {
         arg0->unk1868 = *(int*)&arg0->unk0.currentTile;

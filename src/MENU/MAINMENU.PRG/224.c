@@ -269,7 +269,7 @@ static int func_800FA188(int arg0, int arg1, int* arg2)
         D_800F45E0_t* temp_v1 = var_t0[i];
         if ((var_t0[i] != 0)
             && ((((!var_t0[i]->unk0.skip) && (!temp_v1->unk0.unk9_0))
-                 && (temp_v1->unk0.unk1A == 0))
+                    && (temp_v1->unk0.unk1A == 0))
                 && (temp_v1->unk0.currentTile.x == arg0))
             && (temp_v1->unk0.currentTile.z == arg1)) {
             if (temp_v1->unk16C.unk0_4 == 2) {

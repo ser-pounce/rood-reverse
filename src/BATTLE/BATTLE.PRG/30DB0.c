@@ -362,7 +362,7 @@ exit:
     s1->unk0.unk64.unk0 = 0;
     s1->unk0.skip = 1;
     s1->unk0.visible = 0;
-    __builtin_memcpy(&s1->unk0.currentTile, &arg0->unkC, sizeof(s1->unk0.currentTile));
+    memcpy(&s1->unk0.currentTile, &arg0->unkC, sizeof(s1->unk0.currentTile));
     s1->unk0.currentTile.status = 0;
     s1->unk0.position.vx = (s1->unk0.currentTile.x << 7) + 0x40;
     s1->unk0.position.vz = (s1->unk0.currentTile.z << 7) + 0x40;

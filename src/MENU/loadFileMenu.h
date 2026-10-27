@@ -5,7 +5,6 @@
  * FILE_MENU_RESTORE_CURSOR and FILE_MENU_STORE_CURSOR (cursor memory, using
  * selectedFile). */
 
-
 /**
  * Runs the initial slot chooser and asynchronous load flow for game over/data
  * menus.

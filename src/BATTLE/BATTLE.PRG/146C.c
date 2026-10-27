@@ -8175,7 +8175,7 @@ void vs_battle_exec(void)
     }
 }
 
-void func_8007A824(int* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
+void func_8007A824(void* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
 
 int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
 {

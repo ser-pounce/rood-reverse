@@ -36,7 +36,6 @@ typedef struct {
     int unkC;
 } D_800E8FB4_t;
 
-void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
 void func_80099E7C(void*, int, int, int, int);
 void* func_8009A028(int* arg0, void* arg1, int arg2);
@@ -59,19 +58,8 @@ int func_800A0104(int, int);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
-int func_800A152C(int, int, int);
-void func_800A2C48(D_800F4538_t*);
-void func_800A525C(D_800F4538_t*);
 int func_800A6EE8(short*, int, int, int);
-int func_800A91DC(int, int, int);
-int func_800AAD4C(int, int, int, int);
-void func_800AB2AC(int);
-void func_800AC500(D_800F4538_t*);
 void func_800AD62C(int, int*, int*, int);
-int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
-void func_800AE47C(D_800F4538_t*);
-void func_800AE6C0(D_800F4538_t*, int, int);
-void func_800AE7D8(void*, int, int);
 short func_800BEB00();
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
@@ -1971,8 +1959,6 @@ int func_8009CC20(int arg0, int arg1)
 
     return 0;
 }
-
-void func_800AB098(D_800F4538_t*, int, int);
 
 int func_8009CE9C(u_int arg0)
 {

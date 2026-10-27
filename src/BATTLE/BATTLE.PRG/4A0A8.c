@@ -2,6 +2,7 @@
 #include "146C.h"
 #include "2842C.h"
 #include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
 #include "4A0A8.h"
@@ -232,15 +233,7 @@ typedef struct {
     u_char high;
 } scriptBytePair;
 
-void func_8007DE88(int*);
-void func_8007DEA8(CVECTOR*);
-void func_8007DECC(D_800F1A68_t*);
-short func_8008DC7C(int, int);
-int func_80090C2C(int);
 int func_800A0024(int, void*);
-void func_800A190C(int, int, SVECTOR*, int);
-int func_800A92B8(int, int);
-void func_800AACDC(void);
 int func_800B6B98(
     SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
 int func_800B9C58(u_char*, short);
@@ -270,14 +263,7 @@ VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
-void func_800BFD9C();
-short vs_battle_getShort(u_char*);
-int func_800BFEBC(int, int, int);
-int vs_battle_setTextBox(int, char*);
-void func_800CB79C(void);
 textOffset func_800CCE10(int, int, int, int);
-int vs_battle_dismissTextBox(int);
-void func_800CEF38(int);
 void func_800F9BC0(int, int);
 int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);

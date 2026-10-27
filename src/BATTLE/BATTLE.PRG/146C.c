@@ -369,7 +369,6 @@ typedef struct {
     u_char unk10[0x18];
 } mpdObjectSpawn;
 
-void func_800C64D0(u_long*, int*);
 int _loadMpdRoomSection(int, void* data);
 int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
 int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
@@ -540,36 +539,13 @@ int func_8008EA90(int arg0);
 int func_8008F234(void);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
-void func_80091378(void);
-int* func_8009195C(int);
-void func_80091AC0(int);
-int func_8009291C(int);
-void func_80092A18(void);
-int func_80093764(int);
-void func_80093824(int);
-void func_80093A14(void);
 void func_80093B04(void*);
-void func_80093B68(int arg0, int arg1, u_int arg2, int arg3);
-int vs_battle_renderBattleAbilityTimingResult(int);
-void func_80093FEC(int, int, int, int);
-void func_80093914(int);
-void func_80095B7C(int, int);
-void func_80096768(int, int, int);
-void func_80096FF0(int);
-void func_800971D4(void);
 void func_8009723C(void*, int);
 void func_80098194(int);
 void func_800983F8(void*);
 void func_80098D6C(void*, void*, D_800F1BB0_t*, int);
-void func_80099960(u_short*);
-void func_8009D458(void);
-void func_8009D6F4(void);
-void func_8009D7E8(int, int);
-void func_8009DF3C(int, int);
 void func_8009E070(int, short*, int);
-int func_8009E480(void);
 u_int func_8009E4B0(int);
-void func_8009EA14(int, SVECTOR*);
 
 void func_800E685C(int, int, int);
 void func_800719FC(int);
@@ -17673,8 +17649,6 @@ void func_8008E938(void)
         temp_s0->unk48[1].s16[1] -= temp_s0->unk48[0].s16[1];
     }
 }
-
-int func_80090C2C(int);
 
 int func_8008EA90(int arg0)
 {

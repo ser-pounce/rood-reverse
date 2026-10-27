@@ -18,7 +18,6 @@ typedef struct {
     MATRIX matrix;
 } func_800A1DE8_t;
 
-void func_8009DF3C(int, int);
 int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);

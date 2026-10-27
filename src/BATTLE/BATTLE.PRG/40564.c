@@ -1,4 +1,5 @@
 #include "common.h"
+#include "38C1C.h"
 #include "40564.h"
 #include "146C.h"
 #include "3A1A0.h"
@@ -26,11 +27,7 @@ typedef struct {
 } func_800AB358_t;
 
 void func_8007A824(DR_MOVE*);
-int func_8008D2C0(SVECTOR*);
-short func_8008DA24(int, int);
-void func_800A1720(int, int, void*, int*);
 int func_800A6EE8(SVECTOR*, int, int, int);
-void func_800A70DC(D_800F4538_t*, int);
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "3A1A0.h"
 #include "4A0A8.h"
 #include "5BF94.h"
@@ -492,7 +493,6 @@ typedef struct {
 } func_800DEC88_t;
 
 void func_800D5260(VECTOR*);
-void func_800D5294(int*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
@@ -505,10 +505,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
-int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
-int func_8008D2C0(SVECTOR*);
-short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);

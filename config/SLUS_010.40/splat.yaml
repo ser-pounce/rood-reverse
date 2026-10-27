@@ -144,7 +144,7 @@ segments:
       - [0x18004, c, libc/MEMCMP]
       - [0x18054, c, libgpu/FONT]
       - [0x18AD4, c, libgpu/SYS]
-      - [0x1BA04, c, libgpu/C73]
+      - [0x1BA04, c, libapi/C73]
       - [0x1BA14, c, libgpu/E00]
       - [0x1BB04, c, libgpu/E02]
       - [0x1BB74, c, libgpu/E03]

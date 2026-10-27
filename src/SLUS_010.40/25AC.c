@@ -1038,7 +1038,6 @@ int func_80013588(void* arg0, int arg1)
     return -1;
 }
 
-// https://decomp.me/scratch/xpW1h
 int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
 {
     FAkaoSequence* header;
@@ -1063,7 +1062,7 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
     return -1;
 }
 
-// https://decomp.me/scratch/nDizh
+// https://decomp.me/scratch/BNQ6Q
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
 
 static void StartSound(void)
@@ -2332,7 +2331,56 @@ u_short Sound_MapInstrumentToBaseSampleBank(u_int in_Flags, FSoundChannel* in_Ch
     return in_Channel->InstrumentIndex;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_80015BAC);
+void func_80015BAC(void)
+{
+    FSoundChannel* pChannel;
+    int voice;
+    u_int bit;
+    u_int bitCopy;
+    u_int keyOff;
+    u_int release;
+    int count;
+    u_int activeKeyed;
+    u_int savedKeyed;
+
+    if (g_pSavedMousicConfig == NULL) {
+        return;
+    }
+
+    activeKeyed =
+        g_pActiveMusicConfig->KeyedMask & g_pActiveMusicConfig->AllocatedVoiceMask;
+    savedKeyed =
+        g_pSavedMousicConfig->KeyedMask & g_pSavedMousicConfig->AllocatedVoiceMask;
+
+    voice = ~activeKeyed | savedKeyed;
+    release = ~(g_pSavedMousicConfig->AllocatedVoiceMask & voice);
+    release &= g_pActiveMusicConfig->AllocatedVoiceMask;
+    release &= 0xFFFFFF;
+    keyOff = 0;
+
+    for (voice = 0; release != 0; ++voice) {
+        bit = 1 << voice;
+
+        if (!(release & bit)) {
+            continue;
+        }
+
+        pChannel = g_pSecondaryMusicChannels;
+        count = SOUND_CHANNEL_COUNT;
+        bitCopy = bit;
+        for (; count != 0; --count, ++pChannel) {
+            if (pChannel->VoiceParams.AssignedVoiceNumber == voice) {
+                pChannel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+                keyOff |= bitCopy;
+            }
+        }
+
+        release &= ~(1 << voice);
+    }
+
+    g_Sound_VoiceSchedulerState.KeyOffFlags |=
+        keyOff & ~(g_Sound_VoiceSchedulerState.ActiveChannelMask | D_80039B14);
+}
 
 void func_8001B094(FSoundChannel* arg0, int arg1);
 

@@ -1,7 +1,19 @@
 #include "common.h"
 
+int SetIntrMask(int);
+int func_8002ACFC(int);
+void func_8002B1DC(void*, int, int);
+
 extern short D_80033448;
 extern short D_8003344A;
+extern u_long* D_8003354C;
+extern u_long* D_80033558;
+extern u_long* D_80033568;
+extern int D_8003356C;
+extern volatile int D_80033570;
+extern int D_8003357C;
+extern u_char D_8003E2F8[0x100];
+extern u_char D_8003E400[0x1800];
 
 INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", D_80010864);
 
@@ -74,7 +86,12 @@ u_int func_80029924(short x, short y)
     return 0xE3000000 | ((y & 0x3FF) << 10) | (x & 0x3FF);
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_800299BC);
+u_int func_800299BC(short x, short y)
+{
+    x = x < 0 ? 0 : x > D_80033448 - 1 ? D_80033448 - 1 : x;
+    y = y < 0 ? 0 : y > D_8003344A - 1 ? D_8003344A - 1 : y;
+    return 0xE4000000 | ((y & 0x3FF) << 10) | (x & 0x3FF);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029A54);
 
@@ -106,7 +123,38 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A3E8);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A698);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A8F8);
+int func_8002A8F8(int mode)
+{
+    D_8003357C = SetIntrMask(0);
+    D_8003356C = D_80033570 = 0;
+
+    switch (mode & 7) {
+    case 0:
+    case 5:
+        *D_80033558 = 0x401;
+        *D_80033568 |= 0x800;
+        *D_8003354C = 0;
+        func_8002B1DC(D_8003E2F8, 0, sizeof D_8003E2F8);
+        func_8002B1DC(D_8003E400, 0, sizeof D_8003E400);
+        break;
+
+    case 1:
+    case 3:
+        *D_80033558 = 0x401;
+        *D_80033568 |= 0x800;
+        *D_8003354C = 0x2000000;
+        *D_8003354C = 0x1000000;
+        break;
+    }
+
+    SetIntrMask(D_8003357C);
+
+    if ((mode & 7) == 0) {
+        return func_8002ACFC(mode);
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002AA48);
 

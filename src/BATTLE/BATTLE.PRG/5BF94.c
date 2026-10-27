@@ -238,56 +238,6 @@ typedef struct {
 } pFileBlock11;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    short unkE;
-    int unk10;
-    u_char unk14;
-    u_char unk15;
-    u_char unk16;
-    u_char unk17;
-} func_800C5798_t;
-
-typedef struct {
-    char unk0;
-    char unk1[3];
-    short unk4;
-    u_char unk6;
-    char unk7;
-    int unk8;
-    int unkC;
-    char* limbName;
-} func_800C56C0_t2;
-
-typedef struct {
-    func_800C1564_t unk0[2];
-    short unk20;
-    short unk22;
-    int unk24;
-    short unk28;
-    short unk2A;
-    u_char unk2C;
-    u_char unk2D;
-    u_char unk2E;
-    u_char unk2F;
-    signed char unk30;
-    u_char unk31;
-    char unk32[2];
-    int unk34;
-    SVECTOR unk38;
-    func_800C5798_t* unk40;
-    func_800C5798_t* unk44;
-    char unk48[0x948];
-    func_800C56C0_t2 unk990[24];
-} func_800C56C0_t;
-
-typedef struct {
     int unk0_0 : 12;
     int unk0_12 : 12;
     u_int unk0_24 : 2;
@@ -410,7 +360,6 @@ extern u_char D_800EB7D4[];
 extern u_short D_800EB98C[16];
 extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
-extern func_800C56C0_t* D_800EB9B8;
 extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
@@ -510,7 +459,7 @@ extern func_800D2904_t* D_800F55FC;
 
 int func_800C4794(SVECTOR* arg0)
 {
-    func_800C56C0_t* state = D_800EB9B8;
+    D_800EB9B8_t* state = D_800EB9B8;
     SVECTOR offset;
     int stickX = ((VECTOR*)&state->unk38)->vx;
     int stickY = ((VECTOR*)&state->unk38)->vy;
@@ -889,10 +838,10 @@ void func_800C56C0(void)
     }
 }
 
-func_800C56C0_t2* func_800C5798(int arg0, int arg1, int arg2)
+D_800EB9B8_unk990* func_800C5798(int arg0, int arg1, int arg2)
 {
     int temp_v1;
-    func_800C56C0_t2* item = &D_800EB9B8->unk990[arg0];
+    D_800EB9B8_unk990* item = &D_800EB9B8->unk990[arg0];
     func_800C5798_t* src = &D_800EB9B8->unk40[arg0];
 
     vs_battle_rMemzero(item, sizeof *item);

@@ -2,6 +2,7 @@
 #include "6E644.h"
 #include <sys/types.h>
 #include <libgte.h>
+#include <libgpu.h>
 
 typedef struct {
     short unk0[6];

@@ -1,6 +1,6 @@
 #pragma once
 #include "actor.h"
-#include "func_8006B57C_t.h"
+#include "loot.h"
 #include "menuState.h"
 #include "uiEquipment.h"
 #include "src/SLUS_010.40/main.h"

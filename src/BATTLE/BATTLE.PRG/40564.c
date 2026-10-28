@@ -19,13 +19,6 @@ typedef struct {
     u_short unk8[0];
 } func_800AD494_t;
 
-typedef struct {
-    u_char unk0;
-    u_char overlay;
-    u_char x;
-    u_char y;
-} func_800AB358_t;
-
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
@@ -1438,7 +1431,7 @@ void func_800AB2AC(int arg0)
     }
 }
 
-void func_800AB358(int index, func_800AB358_t* arg)
+void func_800AB358(int index, u_char* script)
 {
     RECT rect;
     DR_MOVE* packet;
@@ -1458,10 +1451,10 @@ void func_800AB358(int index, func_800AB358_t* arg)
         return;
     }
 
-    srcX = arg->x;
-    srcY = arg->y;
+    srcX = script[2];
+    srcY = script[3];
     srcY += actor->unk183E[D_800E8F2C];
-    overlay = &actor->texMapOverlays[arg->overlay];
+    overlay = &actor->texMapOverlays[script[1]];
     dstX = overlay->x;
     width = overlay->w;
     height = overlay->h;

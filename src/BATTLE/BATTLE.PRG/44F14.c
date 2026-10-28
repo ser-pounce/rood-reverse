@@ -27,7 +27,6 @@ typedef struct {
     VECTOR scale;
 } D_800F3C58_t;
 
-void func_800AB358(int, u_char*);
 void func_800AB9A4(void*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE46C(u_char*);

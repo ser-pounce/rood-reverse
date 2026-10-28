@@ -24,6 +24,7 @@ int func_800AAD4C(int, int, int, int);
 int func_800AAE9C(D_800F4538_t* actor);
 void func_800AB098(D_800F4538_t* actor, int index, int frame);
 void func_800AB2AC(int arg0);
+void func_800AB358(int index, u_char* script);
 void func_800AB4F0(D_800F4538_t*);
 void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2);
 void func_800AC37C(int, int);

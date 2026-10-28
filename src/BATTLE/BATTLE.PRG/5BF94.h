@@ -1,5 +1,5 @@
 #pragma once
-#include "6E644.h"
+#include "battleEffect.h"
 #include "battleUi.h"
 #include "loot.h"
 #include "menuState.h"

@@ -308,3 +308,51 @@ extern vs_battle_textBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
 extern vs_battle_stringContext_t vs_battle_stringContext;
 extern vs_battle_menuState_t vs_battle_menuState;
+
+void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
+void vs_battle_memcpy(void* dst, const void* src, int numBytes);
+/**
+ * Same as vs_battle_setSpriteDefaultTexPage, but the next
+ * chained primitive is read from 0x1F800008 and
+ * brightness is set to midpoint (0x80) and transparency is disabled.
+ *
+ * @return Primitive pointer at 0x1F800000
+ */
+u_long* vs_battle_setSpriteDefault(int wh, int xy);
+/**
+ * Same as vs_battle_setSprite, but presets the
+ * texpage command to 0xE100000C i.e. x offset 768
+ *
+ * @return Primitive pointer at 0x1F800000
+ */
+u_long* vs_battle_setSpriteDefaultTexPage(
+    int brightnessTransparency, int xy, int wh, u_long* nextPrim);
+/**
+ * Initializes a texpage command to the OT at 0x1F800000.
+ * Actual 0xE1 command must be set by caller at return[1].
+ *
+ * @param brightnessTransparency Packed value
+ * - Bits 0-7: Brightness
+ * - Bit 8: Transparency
+ * @return Primitive pointer at 0x1F800000
+ */
+u_long* vs_battle_setSprite(int brightnessTransparency, int xy, int wh, u_long* nextPrim);
+/**
+ * Plays SFX ID 7
+ */
+void vs_battle_playInvalidSfx(void);
+/**
+ * Plays SFX ID 6
+ */
+void vs_battle_playMenuLeaveSfx(void);
+/**
+ * Plays SFX ID 5
+ */
+void vs_battle_playMenuSelectSfx(void);
+/**
+ * Plays SFX ID 4
+ */
+void vs_battle_playMenuChangeSfx(void);
+void vs_battle_playSfx10(void);
+
+int vs_battle_mapStickDeadZone(int);

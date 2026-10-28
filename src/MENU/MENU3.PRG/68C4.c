@@ -1,9 +1,10 @@
 #include "common.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
-#include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
+#include "src/BATTLE/BATTLE.PRG/objectData.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 
 int func_80109320(int);

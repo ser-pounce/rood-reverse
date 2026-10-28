@@ -38,3 +38,5 @@ extern vs_battle_lootListNode* _lootListHead;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
 extern int vs_battle_submenuState;
+
+void vs_battle_setStateFlag(short id, char value);

@@ -7,6 +7,7 @@
 #include "40564.h"
 #include "4A0A8.h"
 #include "5BF94.h"
+#include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"

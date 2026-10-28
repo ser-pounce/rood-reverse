@@ -1,6 +1,4 @@
 #include "260.h"
-#include "src/BATTLE/BATTLE.PRG/30DB0.h"
-#include "src/BATTLE/BATTLE.PRG/4A0A8.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/BATTLE/BATTLE.PRG/menuState.h"
 #include "src/MENU/items0.h"

@@ -203,3 +203,18 @@ extern vs_battle_actor* vs_battle_characterState;
  * - Bit 2: action locked
  */
 int vs_battle_getActionFlags(int actorId, int actionId);
+
+int func_8009AA84(int);
+int func_8009CC20(int, int);
+int func_8009CFB0(int);
+void func_8009D468(int);
+void func_8009D934(int, int, int);
+void func_8009E634(D_800F4538_t*);
+void func_8009F940(int, int, D_800F4538_unk58_2*, D_800F4538_unk58_2*);
+int func_800A0204(int, int, int, int);
+int func_800A0768(int, D_800F4538_unk58_2*);
+int func_800A07FC(int, D_800F4538_unk58_2*);
+void func_800A087C(int actorId, int);
+u_int func_800A0BE0(int actorId);
+int func_800A1108(int, void*);
+int func_800A13EC(int, int, int*, int);

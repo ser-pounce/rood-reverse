@@ -1,18 +1,18 @@
 #include "common.h"
+#include "6E644.h"
 #include "146C.h"
-#include "entity.h"
+#include "38C1C.h"
 #include "4A0A8.h"
 #include "5BF94.h"
-#include "38C1C.h"
-#include "6E644.h"
-#include "src/SLUS_010.40/32154.h"
+#include "battleEffect.h"
+#include "battleUnk.h"
+#include "entity.h"
 #include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
 #include <rand.h>
-#include "battleEffect.h"
-#include "battleUnk.h"
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) < (b) ? (b) : (a))

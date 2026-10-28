@@ -1,7 +1,7 @@
 #pragma once
+#include "573B8.h"
 #include <stddef.h>
 #include <libgte.h>
-#include "573B8.h"
 
 typedef struct {
     char unk0;

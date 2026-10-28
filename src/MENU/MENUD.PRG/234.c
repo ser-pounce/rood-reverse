@@ -1,19 +1,18 @@
 #include "common.h"
-#include "../../SLUS_010.40/main.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
-#include "../MAINMENU.PRG/58EC.h"
-#include "../../BATTLE/BATTLE.PRG/uiEquipment.h"
-#include "../../BATTLE/BATTLE.PRG/573B8.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/ITEMHELP.BIN.h"
 #include "build/assets/MENU/MENUD.PRG/menuText.h"
-#include "vs_string.h"
 #include "gpu.h"
+#include "scratch.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <memory.h>
-#include <libetc.h>
 #include <limits.h>
-#include "scratch.h"
 
 enum copyContainerFlags { copyContainerFlagsCopy = 0x10 };
 static int _copyContainerItem(int, vs_menu_containerData*, int, vs_menu_containerData*);

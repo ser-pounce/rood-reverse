@@ -1,10 +1,10 @@
 #pragma once
-#include <sys/types.h>
-#include <libgte.h>
 #include "6E644.h"
 #include "battleUi.h"
 #include "func_8006B57C_t.h"
 #include "menuState.h"
+#include <sys/types.h>
+#include <libgte.h>
 
 int func_800C4794(SVECTOR*);
 int func_800C58F8(u_char*);

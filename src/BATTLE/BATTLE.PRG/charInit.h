@@ -1,7 +1,7 @@
 #pragma once
+#include "uiEquipment.h"
 #include <sys/types.h>
 #include <libgte.h>
-#include "uiEquipment.h"
 
 typedef struct {
     u_short id;

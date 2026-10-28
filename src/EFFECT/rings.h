@@ -2,7 +2,7 @@
  * entry.h. The overlay defines VS_RING_TRANSPOSED when its texture runs along the rows
  * instead of the columns. */
 
-#include "src/EFFECT/entry.h"
+#include "entry.h"
 #include "scratch.h"
 #define VS_RING_FUNCTION VS_ENTRY_FUNCTION
 
@@ -12,7 +12,7 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
-#include "src/EFFECT/effectCommon.h"
+#include "effectCommon.h"
 
 #define VS_RING_COLORS VS_CAT(VS_RING_FUNCTION, _colors)
 VS_STANDARD_COLORS(VS_RING_COLORS);

@@ -1,8 +1,8 @@
 #pragma once
-#include <sys/types.h>
-#include <libgte.h>
 #include "entity.h"
 #include "uiEquipment.h"
+#include <sys/types.h>
+#include <libgte.h>
 
 typedef struct {
     char unk0[0x5E8];

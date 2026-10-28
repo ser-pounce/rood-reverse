@@ -1,8 +1,8 @@
 #pragma once
+#include "scratch.h"
 #include <sys/types.h>
 #include <libgte.h>
 #include <libgpu.h>
-#include "scratch.h"
 
 typedef struct {
     int yaw;

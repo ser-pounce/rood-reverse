@@ -1,15 +1,15 @@
 #include "common.h"
+#include "573B8.h"
 #include "146C.h"
 #include "30DB0.h"
 #include "4A0A8.h"
-#include "573B8.h"
 #include "58578.h"
+#include "battleUi.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
-#include <libetc.h>
-#include "battleUi.h"
 #include "gpu.h"
 #include "scratch.h"
+#include <libetc.h>
 
 typedef struct {
     u_char curve;

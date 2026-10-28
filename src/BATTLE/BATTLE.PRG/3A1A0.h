@@ -1,8 +1,8 @@
 #pragma once
-#include <sys/types.h>
-#include <libgte.h>
 #include "entity.h"
 #include "func_8006EBF8_t.h"
+#include <sys/types.h>
+#include <libgte.h>
 
 typedef struct {
     char unk0_0;

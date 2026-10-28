@@ -2,24 +2,24 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
-#include "src/BATTLE/BATTLE.PRG/mpd.h"
-#include "src/BATTLE/BATTLE.PRG/menuState.h"
 #include "src/BATTLE/BATTLE.PRG/2EA3C.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/BATTLE/BATTLE.PRG/menuState.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
-#include "build/assets/MENU/MENU5.PRG/mapNames.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/MENU5.PRG/connectingMaps.h"
 #include "build/assets/MENU/MENU5.PRG/doors.h"
+#include "build/assets/MENU/MENU5.PRG/mapNames.h"
 #include "build/assets/MENU/MENU5.PRG/paling.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "insertTPage.h"
+#include "scratch.h"
 #include <libetc.h>
 #include <abs.h>
-#include "scratch.h"
 
 static int _loadArmFile(void);
 static int _menuManager(void);

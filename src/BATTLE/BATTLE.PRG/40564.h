@@ -1,7 +1,7 @@
 #pragma once
-#include "mpd.h"
 #include "entity.h"
 #include "func_8006EBF8_t.h"
+#include "mpd.h"
 #include <stddef.h>
 #include <libgte.h>
 #include <libgpu.h>

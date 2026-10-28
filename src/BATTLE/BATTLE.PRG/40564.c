@@ -1,15 +1,15 @@
 #include "common.h"
-#include "38C1C.h"
 #include "40564.h"
 #include "146C.h"
+#include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
-#include "entity.h"
 #include "44F14.h"
+#include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
-#include <abs.h>
 #include "scratch.h"
-#include "30DB0.h"
+#include <abs.h>
 
 typedef struct {
     u_char unk0;

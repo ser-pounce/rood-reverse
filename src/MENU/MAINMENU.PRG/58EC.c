@@ -1,14 +1,14 @@
 #include "58EC.h"
-#include "C48.h"
 #include "2D10.h"
+#include "C48.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "gpu.h"
+#include "scratch.h"
 #include "vs_string.h"
 #include <libetc.h>
-#include "scratch.h"
-#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 typedef struct textHeader_t {
     char text[14];

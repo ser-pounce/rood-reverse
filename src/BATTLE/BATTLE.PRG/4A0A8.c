@@ -1,23 +1,23 @@
 #include "common.h"
+#include "4A0A8.h"
 #include "146C.h"
 #include "2842C.h"
 #include "30DB0.h"
 #include "38C1C.h"
-#include "entity.h"
 #include "40564.h"
-#include "4A0A8.h"
 #include "573B8.h"
 #include "5BF94.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/sfx.h"
-#include "../../SLUS_010.40/32154.h"
-#include "../../GIM/SCREFF2.PRG/0.h"
+#include "battleUnk.h"
+#include "camera.h"
+#include "entity.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/sfx.h"
+#include "src/GIM/SCREFF2.PRG/0.h"
 #include <stdio.h>
 #include <memory.h>
 #include <stddef.h>
 #include <abs.h>
-#include "camera.h"
-#include "battleUnk.h"
 
 typedef struct {
     u_char mode;

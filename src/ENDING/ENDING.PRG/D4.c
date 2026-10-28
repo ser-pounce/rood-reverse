@@ -3,8 +3,8 @@
 #include "src/SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
-#include "texture_t.h"
 #include "scratch.h"
+#include "texture_t.h"
 #include <abs.h>
 #include <libetc.h>
 #include <memory.h>

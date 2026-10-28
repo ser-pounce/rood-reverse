@@ -1,16 +1,16 @@
 #include "21A0.h"
 #include "src/SLUS_010.40/main.h"
-#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/MENU8.PRG/rename.h"
-#include "vs_string.h"
 #include "gpu.h"
-#include <libetc.h>
 #include "scratch.h"
+#include "vs_string.h"
+#include <libetc.h>
 
 static u_char weaponId;
 static char _1 __attribute__((unused));

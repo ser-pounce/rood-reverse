@@ -1,8 +1,8 @@
 #pragma once
+#include "mpd.h"
+#include "src/SLUS_010.40/main.h"
 #include <sys/types.h>
 #include <libgte.h>
-#include "../../SLUS_010.40/main.h"
-#include "mpd.h"
 
 typedef struct {
     u_char unk0[0x464];

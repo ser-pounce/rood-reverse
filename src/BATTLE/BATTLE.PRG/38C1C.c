@@ -1,13 +1,13 @@
 #include "common.h"
 #include "30DB0.h"
 #include "3A1A0.h"
-#include "entity.h"
 #include "40564.h"
 #include "44F14.h"
+#include "entity.h"
+#include "src/SLUS_010.40/31724.h"
+#include "vs_inline_c.h"
 #include <libgpu.h>
 #include <inline_c.h>
-#include "vs_inline_c.h"
-#include "src/SLUS_010.40/31724.h"
 #include <abs.h>
 
 typedef struct {

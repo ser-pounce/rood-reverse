@@ -2,4 +2,4 @@
  * factor per row: a radial surface with VS_SURFACE_MIRRORED. See surfaces.h. */
 
 #define VS_SURFACE_MIRRORED
-#include "src/EFFECT/surfaces.h"
+#include "surfaces.h"

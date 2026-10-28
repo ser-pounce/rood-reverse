@@ -1,9 +1,9 @@
 #pragma once
-#include "../../SLUS_010.40/main.h"
 #include "2842C.h"
-#include "hitEntity.h"
 #include "actor.h"
 #include "charInit.h"
+#include "hitEntity.h"
+#include "src/SLUS_010.40/main.h"
 
 typedef struct {
     SVECTOR unk0;

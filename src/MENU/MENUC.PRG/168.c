@@ -1,19 +1,19 @@
 #include "168.h"
 #include "9258.h"
-#include "src/BATTLE/BATTLE.PRG/mpd.h"
-#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
+#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/MENU12.BIN.h"
 #include "build/src/include/lbas.h"
-#include "vs_string.h"
 #include "gpu.h"
+#include "scratch.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <memory.h>
-#include "scratch.h"
 
 /**
  * Animates and renders the small "OK" confirmation prompt.

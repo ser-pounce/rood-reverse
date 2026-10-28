@@ -1,18 +1,18 @@
 #include "common.h"
+#include "58578.h"
 #include "146C.h"
 #include "30DB0.h"
 #include "40564.h"
-#include "58578.h"
 #include "573B8.h"
 #include "5BF94.h"
-#include "../../SLUS_010.40/main.h"
+#include "camera.h"
+#include "src/SLUS_010.40/main.h"
+#include "gpu.h"
+#include "scratch.h"
+#include "vs_inline_c.h"
 #include <memory.h>
 #include <stddef.h>
 #include <inline_c.h>
-#include "vs_inline_c.h"
-#include "gpu.h"
-#include "camera.h"
-#include "scratch.h"
 
 typedef struct {
     SVECTOR unk0;

@@ -2,4 +2,4 @@
  * coordinates are tiled over the quads. See closedRings.h. */
 
 #define VS_CLOSED_RING_TILED
-#include "src/EFFECT/closedRings.h"
+#include "closedRings.h"

@@ -559,7 +559,7 @@ extern VECTOR D_800F1A30;
 extern int D_800F1A40;
 extern u_int D_800F1A44;
 extern int D_800F1A50[];
-extern D_800F1A68_t D_800F1A68;
+extern VECTOR D_800F1A68;
 extern CVECTOR D_800F1A78;
 extern char D_800F1A9C[];
 extern D_800F1ABC_t* D_800F1ABC;
@@ -9321,9 +9321,9 @@ void func_8007D360(void)
     D_800F1A9C[0] = 0x80;
     D_800F1A9C[1] = 0x80;
     D_800F1A9C[2] = 0x80;
-    D_800F1A68.unk0 = 0;
-    D_800F1A68.unk4 = 0;
-    D_800F1A68.unk8 = 0;
+    D_800F1A68.vx = 0;
+    D_800F1A68.vy = 0;
+    D_800F1A68.vz = 0;
     D_800F1A44 = 0;
     D_800F1A40 = 0;
 }
@@ -9374,8 +9374,8 @@ void func_8007D734(void* arg0)
     memset(&clip, 0, sizeof(clip));
 
     if (D_800F1B98 == 2) {
-        translation.vx = D_800F1A68.unk0 + 160;
-        translation.vy = D_800F1A68.unk4 + 112;
+        translation.vx = D_800F1A68.vx + 160;
+        translation.vy = D_800F1A68.vy + 112;
         RotMatrix_gte(&D_800F1A28, &transform);
         TransMatrix(&transform, &translation);
         ScaleMatrix(&transform, &D_800F1A30);
@@ -9435,8 +9435,8 @@ void func_8007D734(void* arg0)
                 index = (vs_main_frameBuf * 5) + i;
                 sprite = (SPRT*)(index * sizeof(SPRT) + (u_long)D_800F1ABC
                                  + sizeof(D_800F1ABC->poly));
-                sprite->x0 = D_800F1A68.unk0 + i * 64;
-                sprite->y0 = D_800F1A68.unk4;
+                sprite->x0 = D_800F1A68.vx + i * 64;
+                sprite->y0 = D_800F1A68.vy;
                 AddPrim(arg0 + (D_800F1A44 * 4), &D_800F1ABC->sprite[index]);
                 tpage = D_800F1A40 ? GetTPage(2, D_800F1B9C,
                                          i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0)
@@ -9482,15 +9482,15 @@ void func_8007DD50(int arg0)
 
 void func_8007DDAC(int arg0) { D_800F1A2C = arg0; }
 
-void func_8007DDB8(D_800F1A68_t* arg0)
+void func_8007DDB8(VECTOR* arg0)
 {
-    D_800F1A30.vx = arg0->unk0;
-    D_800F1A30.vy = arg0->unk4;
+    D_800F1A30.vx = arg0->vx;
+    D_800F1A30.vy = arg0->vy;
 }
 
 void func_8007DDD4(CVECTOR* arg0) { D_800F1A78 = *arg0; }
 
-void func_8007DDF8(D_800F1A68_t* arg0) { D_800F1A68 = *arg0; }
+void func_8007DDF8(VECTOR* arg0) { D_800F1A68 = *arg0; }
 
 void func_8007DE2C(int arg0) { D_800F1B9C = arg0; }
 
@@ -9509,16 +9509,16 @@ int func_8007DE68(void) { return D_800F1B98; }
 
 short func_8007DE78(void) { return D_800F1A2C; }
 
-void func_8007DE88(int* arg0)
+void func_8007DE88(VECTOR* arg0)
 {
-    arg0[0] = D_800F1A30.vx;
-    arg0[1] = D_800F1A30.vx;
-    arg0[2] = 0;
+    arg0->vx = D_800F1A30.vx;
+    arg0->vy = D_800F1A30.vx;
+    arg0->vz = 0;
 }
 
 void func_8007DEA8(CVECTOR* arg0) { *arg0 = D_800F1A78; }
 
-void func_8007DECC(D_800F1A68_t* arg0) { *arg0 = D_800F1A68; }
+void func_8007DECC(VECTOR* arg0) { *arg0 = D_800F1A68; }
 
 int func_8007DF00(void) { return D_800F1B9C; }
 

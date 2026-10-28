@@ -1017,7 +1017,7 @@ static void _renderStartCountdown(int arg0, int arg1, int arg2);
 int _renderTimeAttackStart(void)
 {
     static int countdownOffsets[] = { 121, 93, 67, 43, 25, 12, 3, 0 };
-    static D_800F1A68_t D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
+    static VECTOR D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
         { 0x107A, 0x107A, 0x1000 } };
     static CVECTOR colors[] = { { 220, 80, 64 }, { 64, 128, 220 }, { 128, 128, 128 } };
 
@@ -1063,7 +1063,7 @@ int _renderTimeAttackStart(void)
         func_8007DDAC(0);
         func_8007DDB8(&D_801096F0[0]);
         func_8007DDD4(&colors[1]);
-        func_8007DDF8((D_800F1A68_t*)(D_801096F0 + 2));
+        func_8007DDF8((D_801096F0 + 2));
         func_8007DE2C(0);
         func_8007DE44(0U);
         func_8007DE5C(0);

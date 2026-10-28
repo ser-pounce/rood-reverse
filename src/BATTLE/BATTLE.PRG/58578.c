@@ -80,7 +80,7 @@ void func_800C0D78(void)
 
         *shape = D_800EB9B8->unk0[i];
         func_800C02A8();
-        gte_ldv0(shape->unk8);
+        gte_ldv0(&shape->unk8);
         gte_rtps2();
         gte_stszotz(&D_800EB9B8->unk20);
         switch (shape->unk0) {
@@ -91,7 +91,7 @@ void func_800C0D78(void)
             shape->unk4.values[1] <<= 1;
             m = func_800C085C(shape->unk4.values, shape->unk2);
             for (j = 0; j < 3; ++j) {
-                shape->unk8[j] += m->m[j][1] >> 1;
+                shape->unk8.xyz[j] += m->m[j][1] >> 1;
             }
             type = 1;
             break;
@@ -102,7 +102,7 @@ void func_800C0D78(void)
             shape->unk4.values[3] += 0x80;
             m = func_800C085C(shape->unk4.values, shape->unk2);
             for (j = 0; j < 3; ++j) {
-                shape->unk8[j] += m->m[j][1];
+                shape->unk8.xyz[j] += m->m[j][1];
             }
             type = 2;
             break;
@@ -131,7 +131,7 @@ void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     char* new_var;
 
     for (i = 0; i < 3; ++i) {
-        arg1->unk10[i] = arg0->unk8[i];
+        arg1->unk10[i] = arg0->unk8.xyz[i];
         arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4.values[i]);
     }
 
@@ -323,9 +323,9 @@ int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
     void* base;
     int offset;
 
-    work.origin[0] = shape->unk8[0];
-    work.origin[1] = shape->unk8[1];
-    work.origin[2] = shape->unk8[2];
+    work.origin[0] = shape->unk8.xyz[0];
+    work.origin[1] = shape->unk8.xyz[1];
+    work.origin[2] = shape->unk8.xyz[2];
     work.local[0] = shape->unk4.values[3] << 4;
     work.local[1] = -shape->unk2;
     work.local[2] = 0;

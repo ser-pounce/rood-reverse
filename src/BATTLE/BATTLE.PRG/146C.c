@@ -102,22 +102,8 @@ typedef struct {
     char unk298F;
     SVECTOR unk2990;
     SVECTOR unk2998;
-    char unk29A0;
-    char unk29A1;
-    short unk29A2;
-    char unk29A4;
-    char unk29A5;
-    char unk29A6;
-    char unk29A7;
-    SVECTOR unk29A8;
-    char unk29B0;
-    char unk29B1;
-    short unk29B2;
-    char unk29B4;
-    char unk29B5;
-    char unk29B6;
-    char unk29B7;
-    SVECTOR unk29B8;
+    func_800C1564_t unk29A0;
+    func_800C1564_t unk29B0;
     D_800F19CC_t5 unk29C0[23];
     int unk2BE8;
     int unk2BEC;
@@ -548,8 +534,6 @@ void func_800E685C(int, int, int);
 void func_800719FC(int);
 void func_80071F68(int);
 void func_80072734(int);
-void func_800C05EC(void*, void*, int, void*);
-void func_800C0700(void*);
 void func_800DEEA4(D_800F19CC_t2*);
 
 extern u_char D_8004EF20;
@@ -3561,7 +3545,7 @@ void func_8007053C(void)
     }
 
     action = D_800F19CC->unk8.actionIndex;
-    D_800F19CC->unk29B8 = D_800F19CC->unk2990;
+    D_800F19CC->unk29B0.unk8.vec = D_800F19CC->unk2990;
     func_800C0700(&D_800F19CC->unk29B0);
     kept = 0;
 
@@ -4043,11 +4027,11 @@ void func_800719FC(int arg0 __attribute__((unused)))
 
     func_800A1AF8(D_800F19CC->unk8.unk4.unk0.targetActor, 0, &origin, 0);
     spec = &vs_main_actions[action];
-    D_800F19CC->unk29B0 = spec->shape;
-    D_800F19CC->unk29B1 = 1;
-    D_800F19CC->unk29B4 = spec->rangeX;
-    D_800F19CC->unk29B5 = spec->rangeY;
-    D_800F19CC->unk29B6 = spec->rangeZ;
+    D_800F19CC->unk29B0.unk0 = spec->shape;
+    D_800F19CC->unk29B0.unk1 = 1;
+    D_800F19CC->unk29B0.unk4.values[0] = spec->rangeX;
+    D_800F19CC->unk29B0.unk4.values[1] = spec->rangeY;
+    D_800F19CC->unk29B0.unk4.values[2] = spec->rangeZ;
     if (D_800F19CC->unk8.unk4.unk0.targetActor) {
         short dx;
         short dz;
@@ -4057,16 +4041,17 @@ void func_800719FC(int arg0 __attribute__((unused)))
             *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk10;
         dx = D_800F19CC->unk8.unk844.vx - origin.vx;
         dz = D_800F19CC->unk8.unk844.vz - origin.vz;
-        D_800F19CC->unk29B2 = ratan2(dx, dz);
+        D_800F19CC->unk29B0.unk2 = ratan2(dx, dz);
         dy = D_800F19CC->unk8.unk844.vy - origin.vy;
-        D_800F19CC->unk29B7 = ratan2(dy, vs_gte_rsqrt(dx * dx + dz * dz)) / 16 + 64;
-        D_800F19CC->unk29B8 =
+        D_800F19CC->unk29B0.unk4.values[3] =
+            ratan2(dy, vs_gte_rsqrt(dx * dx + dz * dz)) / 16 + 64;
+        D_800F19CC->unk29B0.unk8.vec =
             *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk10;
     } else {
-        D_800F19CC->unk29B7 = 64;
-        D_800F19CC->unk29B2 = 0;
+        D_800F19CC->unk29B0.unk4.values[3] = 64;
+        D_800F19CC->unk29B0.unk2 = 0;
     }
-    D_800F19CC->unk29B8 = origin;
+    D_800F19CC->unk29B0.unk8.vec = origin;
     if (D_800F19CC->unk2984) {
         func_800C0700(&D_800F19CC->unk29B0);
     }
@@ -4134,26 +4119,27 @@ void func_80071F68(int arg0)
     int j;
 
     D_800F19CC->unk2988 = arg0;
-    D_800F19CC->unk29A0 = vs_main_actions[action].shape;
+    D_800F19CC->unk29A0.unk0 = vs_main_actions[action].shape;
     spec = &vs_main_actions[action];
-    D_800F19CC->unk29A1 = 1;
+    D_800F19CC->unk29A0.unk1 = 1;
     func_800A1108(D_800F19CC->unk8.unk4.unk0.targetActor, &state);
-    D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+    D_800F19CC->unk29A0.unk2 = state.unk0.unk4.pad;
     attacker = vs_battle_actors[D_800F19CC->unk8.unk4.unk0.targetActor]->unk3C;
 
     if (spec->rangeX == 0xFF) {
-        D_800F19CC->unk29A4 = attacker->currentRange;
-        D_800F19CC->unk29A5 = attacker->unk39;
-        D_800F19CC->unk29A6 = attacker->unk3A;
-        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle * 8;
+        D_800F19CC->unk29A0.unk4.values[0] = attacker->currentRange;
+        D_800F19CC->unk29A0.unk4.values[1] = attacker->unk39;
+        D_800F19CC->unk29A0.unk4.values[2] = attacker->unk3A;
+        D_800F19CC->unk29A0.unk4.values[3] = attacker->currentAttackShapeAngle * 8;
     } else {
-        D_800F19CC->unk29A4 = spec->rangeX;
-        D_800F19CC->unk29A5 = spec->rangeY;
-        D_800F19CC->unk29A6 = spec->rangeZ;
-        D_800F19CC->unk29A7 = spec->angle * 8;
+        D_800F19CC->unk29A0.unk4.values[0] = spec->rangeX;
+        D_800F19CC->unk29A0.unk4.values[1] = spec->rangeY;
+        D_800F19CC->unk29A0.unk4.values[2] = spec->rangeZ;
+        D_800F19CC->unk29A0.unk4.values[3] = spec->angle * 8;
     }
 
-    func_800A190C(D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A8, 0);
+    func_800A190C(
+        D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A0.unk8.vec, 0);
 
     if (D_800F19CC->unk2984) {
         func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
@@ -4286,30 +4272,30 @@ void func_80072734(int arg0)
     int i;
 
     D_800F19CC->unk2988 = arg0;
-    D_800F19CC->unk29A0 = vs_main_actions[action].shape;
+    D_800F19CC->unk29A0.unk0 = vs_main_actions[action].shape;
     spec = &vs_main_actions[action];
-    D_800F19CC->unk29A1 = 2;
+    D_800F19CC->unk29A0.unk1 = 2;
     func_800A1108(D_800F19CC->unk8.unk4.unk0.targetActor, &state);
-    D_800F19CC->unk29A2 = state.unk0.unk4.pad;
+    D_800F19CC->unk29A0.unk2 = state.unk0.unk4.pad;
     count = 0;
 
     // BUG: the angle bits of the range word can never equal 0xFF
     if ((*(u_int*)&spec->rangeX >> 27) == 0xFF) {
-        D_800F19CC->unk29A4 = attacker->currentRange;
-        D_800F19CC->unk29A5 = attacker->unk39;
-        D_800F19CC->unk29A6 = attacker->unk3A;
-        D_800F19CC->unk29A7 = attacker->currentAttackShapeAngle * 8;
+        D_800F19CC->unk29A0.unk4.values[0] = attacker->currentRange;
+        D_800F19CC->unk29A0.unk4.values[1] = attacker->unk39;
+        D_800F19CC->unk29A0.unk4.values[2] = attacker->unk3A;
+        D_800F19CC->unk29A0.unk4.values[3] = attacker->currentAttackShapeAngle * 8;
     } else {
-        D_800F19CC->unk29A4 = spec->rangeX;
-        D_800F19CC->unk29A5 = spec->rangeY;
-        D_800F19CC->unk29A6 = spec->rangeZ;
-        D_800F19CC->unk29A7 = spec->angle * 8;
-        D_800F19CC->unk29B2 = 0;
-        D_800F19CC->unk29B0 = spec->aoe_24 & 7;
-        D_800F19CC->unk29B4 = spec->aoe_0;
-        D_800F19CC->unk29B5 = spec->aoe_8;
-        D_800F19CC->unk29B6 = spec->aoe_16;
-        D_800F19CC->unk29B7 = spec->aoe_24 & 0xF8;
+        D_800F19CC->unk29A0.unk4.values[0] = spec->rangeX;
+        D_800F19CC->unk29A0.unk4.values[1] = spec->rangeY;
+        D_800F19CC->unk29A0.unk4.values[2] = spec->rangeZ;
+        D_800F19CC->unk29A0.unk4.values[3] = spec->angle * 8;
+        D_800F19CC->unk29B0.unk2 = 0;
+        D_800F19CC->unk29B0.unk0 = spec->aoe_24 & 7;
+        D_800F19CC->unk29B0.unk4.values[0] = spec->aoe_0;
+        D_800F19CC->unk29B0.unk4.values[1] = spec->aoe_8;
+        D_800F19CC->unk29B0.unk4.values[2] = spec->aoe_16;
+        D_800F19CC->unk29B0.unk4.values[3] = spec->aoe_24 & 0xF8;
 
         for (i = 0; i < 10; ++i) {
             u_int status = func_800A0BE0(i);
@@ -4345,7 +4331,8 @@ void func_80072734(int arg0)
     }
 
     D_800F19CC->unk2C00 = count;
-    func_800A190C(D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A8, 0);
+    func_800A190C(
+        D_800F19CC->unk8.unk4.unk0.targetActor, 250, &D_800F19CC->unk29A0.unk8.vec, 0);
 
     if (D_800F19CC->unk8.unk4.unk0.targetActor) {
         D_800F19CC->unk2998 =
@@ -4353,8 +4340,8 @@ void func_80072734(int arg0)
         D_800F19CC->unk2998.pad = 0;
     }
     if (D_800F19CC->unk2984) {
-        func_800C05EC(
-            &D_800F19CC->unk29A0, &D_800F19CC->unk29B0, count, D_800F19CC->unk29C0);
+        func_800C05EC(&D_800F19CC->unk29A0, &D_800F19CC->unk29B0, count,
+            (func_800C5798_t*)D_800F19CC->unk29C0);
     }
 
     _cameraMode = 2;
@@ -4377,26 +4364,26 @@ void func_80072BA8(int action)
     func_800C0738();
 
     if (action == 0) {
-        D_800F19CC->unk29A0 = 1;
-        D_800F19CC->unk29A1 = 3;
+        D_800F19CC->unk29A0.unk0 = 1;
+        D_800F19CC->unk29A0.unk1 = 3;
         func_800A1108(0, &state);
-        D_800F19CC->unk29A2 = state.unk0.unk4.pad;
-        D_800F19CC->unk29A4 = 4;
-        D_800F19CC->unk29A5 = 4;
-        D_800F19CC->unk29A6 = 4;
-        D_800F19CC->unk29A7 = 0;
-        func_800A190C(0, 250, &D_800F19CC->unk29A8, 0);
+        D_800F19CC->unk29A0.unk2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29A0.unk4.values[0] = 4;
+        D_800F19CC->unk29A0.unk4.values[1] = 4;
+        D_800F19CC->unk29A0.unk4.values[2] = 4;
+        D_800F19CC->unk29A0.unk4.values[3] = 0;
+        func_800A190C(0, 250, &D_800F19CC->unk29A0.unk8.vec, 0);
         func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
 
-        D_800F19CC->unk29B0 = 2;
-        D_800F19CC->unk29B1 = 3;
+        D_800F19CC->unk29B0.unk0 = 2;
+        D_800F19CC->unk29B0.unk1 = 3;
         func_800A1108(1, &state);
-        D_800F19CC->unk29B2 = state.unk0.unk4.pad;
-        D_800F19CC->unk29B4 = 4;
-        D_800F19CC->unk29B5 = 4;
-        D_800F19CC->unk29B6 = 4;
-        D_800F19CC->unk29B7 = 0;
-        func_800A190C(1, 250, &D_800F19CC->unk29B8, 0);
+        D_800F19CC->unk29B0.unk2 = state.unk0.unk4.pad;
+        D_800F19CC->unk29B0.unk4.values[0] = 4;
+        D_800F19CC->unk29B0.unk4.values[1] = 4;
+        D_800F19CC->unk29B0.unk4.values[2] = 4;
+        D_800F19CC->unk29B0.unk4.values[3] = 0;
+        func_800A190C(1, 250, &D_800F19CC->unk29B0.unk8.vec, 0);
         func_800C0700(&D_800F19CC->unk29B0);
 
         for (limb = 0, count = 0; limb < 6; ++limb) {
@@ -4869,9 +4856,9 @@ void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActo
         vs_battle_actors[targetActor]->unk3C->unk36;
     D_800F19CC->unk4 = 1;
     D_800F19CC->unk0 = 0;
-    D_800F19CC->unk29A8.vx = arg1->unk0.unk4.vx;
-    D_800F19CC->unk29A8.vy = arg1->unk0.unk4.vy;
-    D_800F19CC->unk29A8.vz = arg1->unk0.unk4.vz;
+    D_800F19CC->unk29A0.unk8.vec.vx = arg1->unk0.unk4.vx;
+    D_800F19CC->unk29A0.unk8.vec.vy = arg1->unk0.unk4.vy;
+    D_800F19CC->unk29A0.unk8.vec.vz = arg1->unk0.unk4.vz;
     func_80085B10(arg0->unk0.unk6 + 6, &D_800F19CC->unk854[0], &D_800F19CC->unk8, 1);
     request.effectId = arg0->unk0.unk6 + 6;
     request.source.type = 5;
@@ -5276,7 +5263,7 @@ int func_80074A20(int arg0)
             func_80095B7C(arg0, 0);
             vs_battle_actors[arg0]->command.fields.unk8 = 0x20;
             if (vs_battle_actors[arg0]->unk26 == 0) {
-                func_8009F314(arg0, &D_800F19CC->unk29A8, 1);
+                func_8009F314(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
                 func_800A09D8(arg0, 1);
                 if ((vs_battle_actors[arg0]->unk27 != 0x80) || (arg0 == 0)) {
                     ret = 1;
@@ -13613,7 +13600,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
             (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)
             + 0x40;
-        memcpy(sp860.unk8, arg4, sizeof *arg4);
+        memcpy(&sp860.unk8, arg4, sizeof *arg4);
         break;
 
     case 2:
@@ -13627,7 +13614,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
         sp860.unk4.values[2] = vs_main_actions[arg0].aoe_16;
         sp860.unk2 = 0;
         sp860.unk4.values[3] = vs_main_actions[arg0].aoe_24 & 0xF8;
-        memcpy(sp860.unk8, arg5, sizeof *arg5);
+        memcpy(&sp860.unk8, arg5, sizeof *arg5);
         break;
     }
 

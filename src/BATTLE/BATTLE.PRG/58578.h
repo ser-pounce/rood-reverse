@@ -4,41 +4,6 @@
 #include "573B8.h"
 
 typedef struct {
-    u_int unk0 : 8;
-    u_int unk1 : 8;
-    u_int unk2 : 8;
-    u_int unk3 : 8;
-} func_800C1564_flags;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    short unk2;
-    union {
-        func_800C1564_flags flags;
-        u_char values[4];
-    } unk4;
-    short unk8[4];
-} func_800C1564_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    short unkE;
-    int unk10;
-    u_char unk14;
-    u_char unk15;
-    u_char unk16;
-    u_char unk17;
-} func_800C5798_t;
-
-typedef struct {
     char unk0;
     char unk1;
     char unk2;

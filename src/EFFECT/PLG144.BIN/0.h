@@ -1,4 +1,4 @@
 #pragma once
-#include "src/BATTLE/BATTLE.PRG/6E644.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 
 int vs_effect_glacialGale_0(func_800D4910_t*, u_int, int);

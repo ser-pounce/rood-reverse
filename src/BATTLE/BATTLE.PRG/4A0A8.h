@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <libgte.h>
 
-void func_800B28A8(void*, MATRIX*, char);
 void func_800BBDDC(void);
 short func_800BEB00(void);
 short func_800BEB10(void);
@@ -10,7 +9,6 @@ void func_800BEB34(void);
 void func_800BEB9C(int);
 void func_800BEBEC(void);
 char vs_battle_getStateFlag(short);
-void vs_battle_setStateFlag(short id, char value);
 int func_800BEC30(void);
 short func_800BEC58(short, int, int, short);
 int vs_battle_invalidOpcode(u_char*, short);

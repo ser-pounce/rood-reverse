@@ -3,6 +3,7 @@
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "scratch.h"
 #include "vs_inline_c.h"

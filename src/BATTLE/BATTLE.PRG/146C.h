@@ -1,9 +1,12 @@
 #pragma once
-#include "2842C.h"
 #include "actor.h"
 #include "charInit.h"
 #include "hitEntity.h"
+#include "objectData.h"
 #include "src/SLUS_010.40/main.h"
+#include <sys/types.h>
+#include <libgte.h>
+#include <libgpu.h>
 
 typedef struct {
     SVECTOR unk0;

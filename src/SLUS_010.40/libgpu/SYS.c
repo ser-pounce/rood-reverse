@@ -15,7 +15,6 @@ int SetIntrMask(int);
 int func_8002ACFC(int);
 void func_8002B1DC(void*, int, int);
 
-extern int (*D_80033440)(char*, ...);
 extern D_80033444_t D_80033444;
 extern u_long* D_8003354C;
 extern u_long* D_80033558;
@@ -49,14 +48,14 @@ void func_800286B8(char* name, RECT* rect)
         if ((rect->w > D_80033444.w) || (rect->w + rect->x > D_80033444.w)
             || (rect->y > D_80033444.h) || (rect->y + rect->h > D_80033444.h)
             || (rect->w <= 0) || (rect->x < 0) || (rect->y < 0) || (rect->h <= 0)) {
-            D_80033440("%s:bad RECT", name);
-            D_80033440("(%d,%d)-(%d,%d)\n", rect->x, rect->y, rect->w, rect->h);
+            GPU_printf("%s:bad RECT", name);
+            GPU_printf("(%d,%d)-(%d,%d)\n", rect->x, rect->y, rect->w, rect->h);
         }
         break;
 
     case 2:
-        D_80033440("%s:", name);
-        D_80033440("(%d,%d)-(%d,%d)\n", rect->x, rect->y, rect->w, rect->h);
+        GPU_printf("%s:", name);
+        GPU_printf("(%d,%d)-(%d,%d)\n", rect->x, rect->y, rect->w, rect->h);
         break;
     }
 }

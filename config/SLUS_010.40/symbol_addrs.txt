@@ -576,6 +576,7 @@ __heapsize = 0x80030FB8;
 _interruptReg = 0x80032834;
 _rootCounter0 = 0x80032838;
 _interruptMasks = 0x8003283C;
+GPU_printf = 0x80033440;
 __ra_temp = 0x80033678;
 g_ActiveMusicChannels = 0x80033690;
 g_PushedMusicConfig = 0x80035890;

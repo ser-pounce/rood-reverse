@@ -48,7 +48,6 @@ typedef struct {
 } GpuEnv;
 
 extern GpuEnv D_80033444;
-extern int (*D_80033440)(); /* GPU_printf */
 extern u_long D_800334F0[]; /* terminating primitive */
 extern u_long D_80033504; /* tag linking to it */
 extern volatile u_long* D_8003355C; /* DMA6 MADR */
@@ -79,7 +78,7 @@ int SetGraphDebug(int level)
     u_char old = D_80033444.level;
 
     if ((D_80033444.level = level)) {
-        D_80033440("SetGraphDebug:level:%d,type:%d reverse:%d\n", D_80033444.level,
+        GPU_printf("SetGraphDebug:level:%d,type:%d reverse:%d\n", D_80033444.level,
             D_80033444.version, D_80033444.reverse);
     }
     return old;
@@ -90,7 +89,7 @@ int SetGraphQueue(int mode)
     u_char old = D_80033444.unk1;
 
     if (D_80033444.level >= 2) {
-        D_80033440("SetGrapQue(%d)...\n", mode);
+        GPU_printf("SetGrapQue(%d)...\n", mode);
     }
     if (mode != D_80033444.unk1) {
         D_8003343C->reset(1);
@@ -107,7 +106,7 @@ u_long DrawSyncCallback(void (*func)(void))
     void (*old)(void);
 
     if (D_80033444.level >= 2) {
-        D_80033440("DrawSyncCallback(%08x)...\n", func);
+        GPU_printf("DrawSyncCallback(%08x)...\n", func);
     }
     old = D_80033444.drawSyncCB;
     D_80033444.drawSyncCB = func;
@@ -117,7 +116,7 @@ u_long DrawSyncCallback(void (*func)(void))
 void SetDispMask(int mask)
 {
     if (D_80033444.level >= 2) {
-        D_80033440("SetDispMask(%d)...\n", mask);
+        GPU_printf("SetDispMask(%d)...\n", mask);
     }
     if (mask == 0) {
         func_8002B1DC(&D_80033444.disp, -1, sizeof(DISPENV));
@@ -128,7 +127,7 @@ void SetDispMask(int mask)
 int DrawSync(int mode)
 {
     if (D_80033444.level >= 2) {
-        D_80033440("DrawSync(%d)...\n", mode);
+        GPU_printf("DrawSync(%d)...\n", mode);
     }
     return D_8003343C->sync(mode);
 }
@@ -183,7 +182,7 @@ u_long* ClearOTag(u_long* ot, int n)
     u_long* term;
 
     if (D_80033444.level >= 2) {
-        D_80033440("ClearOTag(%08x,%d)...\n", ot, n);
+        GPU_printf("ClearOTag(%08x,%d)...\n", ot, n);
     }
     while (--n) {
         setlen(ot, 0);
@@ -201,7 +200,7 @@ u_long* ClearOTagR(u_long* ot, int n)
     u_long* term;
 
     if (D_80033444.level >= 2) {
-        D_80033440("ClearOTagR(%08x,%d)...\n", ot, n);
+        GPU_printf("ClearOTagR(%08x,%d)...\n", ot, n);
     }
     D_8003343C->otc(ot, n);
     term = &D_80033504;
@@ -221,7 +220,7 @@ void DrawPrim(void* p)
 void DrawOTag(u_long* p)
 {
     if (D_80033444.level >= 2) {
-        D_80033440("DrawOTag(%08x)...\n", p);
+        GPU_printf("DrawOTag(%08x)...\n", p);
     }
     D_8003343C->addque2(D_8003343C->cwc, p, 0, 0);
 }
@@ -229,7 +228,7 @@ void DrawOTag(u_long* p)
 DRAWENV* PutDrawEnv(DRAWENV* env)
 {
     if (D_80033444.level >= 2) {
-        D_80033440("PutDrawEnv(%08x)...\n", env);
+        GPU_printf("PutDrawEnv(%08x)...\n", env);
     }
     func_80029694(&env->dr_env, env);
     env->dr_env.tag |= 0xFFFFFF;
@@ -241,7 +240,7 @@ DRAWENV* PutDrawEnv(DRAWENV* env)
 void DrawOTagEnv(u_long* p, DRAWENV* env)
 {
     if (D_80033444.level >= 2) {
-        D_80033440("DrawOTagEnv(%08x,&08x)...\n", p, env);
+        GPU_printf("DrawOTagEnv(%08x,&08x)...\n", p, env);
     }
     func_80029694(&env->dr_env, env);
     setaddr(&env->dr_env, p);
@@ -485,7 +484,7 @@ int MoveImage2(RECT* rect, int x, int y)
 int DrawOTag2(u_long* p)
 {
     if (D_80033444.level >= 2) {
-        D_80033440("DrawOTag(%08x)...\n", p);
+        GPU_printf("DrawOTag(%08x)...\n", p);
     }
     func_8002AB84();
     while ((*D_80033558 & 0x01000000) || !(*D_8003354C & 0x04000000)) {

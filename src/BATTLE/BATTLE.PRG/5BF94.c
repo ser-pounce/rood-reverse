@@ -1,4 +1,5 @@
 #include "common.h"
+#include "44F14.h"
 #include "5BF94.h"
 #include "146C.h"
 #include "2842C.h"
@@ -18,6 +19,7 @@
 #include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
+#include "6E644.h"
 #include "vs_string.h"
 #include "gpu.h"
 #include "vs_inline_c.h"
@@ -264,11 +266,7 @@ typedef struct {
 } func_800D5A98_t2;
 
 void func_80046578(int);
-int _getCollisionMapDimensions(int);
 void func_800C02A8(void);
-void* func_800C282C(void);
-void func_800C28AC(SVECTOR*, int);
-void func_800C2B0C(SVECTOR*, int);
 void func_800C2E24(SVECTOR*, MATRIX*, int);
 void func_800C4650(func_800C5798_t*, int);
 void _renderDigit(int, int, int, u_long*);
@@ -341,16 +339,8 @@ int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
 void func_800D6E24(func_800D2904_t*, void*);
-void func_800D7890(int);
-void func_800D78B8(void);
-void func_800D78CC(void);
-int func_800D7BF8(void);
-void func_800D7C5C(void);
-int func_800D7CFC(void);
-int func_800D7EF4(void);
 void func_800D8060(void*);
 void vs_effpurge_exec(void);
-void func_800AE68C(int, int);
 
 extern int D_8005046C;
 extern u_char* D_800EB588[];
@@ -3512,7 +3502,7 @@ void _renderTimer(int* value)
     char sp10[4];
     int i;
 
-    __builtin_memcpy(sp10, value, sizeof sp10);
+    memcpy(sp10, value, sizeof sp10);
     sp10[0] = vs_main_stateFlags.puzzleTimerHundredths;
 
     if (sp10[3] != 0) {

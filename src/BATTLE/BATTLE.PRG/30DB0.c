@@ -5,6 +5,7 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
+#include "4A0A8.h"
 #include "6E644.h"
 #include "../SLUS_010.40/main.h"
 #include "../SLUS_010.40/31724.h"
@@ -36,7 +37,6 @@ typedef struct {
     int unkC;
 } D_800E8FB4_t;
 
-void func_8008C49C(int, int);
 int func_8009998C(vs_battle_objectData*);
 void func_80099E7C(void*, int, int, int, int);
 void* func_8009A028(int* arg0, void* arg1, int arg2);
@@ -58,21 +58,6 @@ void func_8009FD38(D_800F4538_t* arg0);
 int func_800A0104(int, int);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
-int func_800A141C(int arg0, int arg1, int* arg2, int arg3);
-int func_800A152C(int, int, int);
-void func_800A2C48(D_800F4538_t*);
-void func_800A525C(D_800F4538_t*);
-int func_800A6EE8(short*, int, int, int);
-int func_800A91DC(int, int, int);
-int func_800AAD4C(int, int, int, int);
-void func_800AB2AC(int);
-void func_800AC500(D_800F4538_t*);
-void func_800AD62C(int, int*, int*, int);
-int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
-void func_800AE47C(D_800F4538_t*);
-void func_800AE6C0(D_800F4538_t*, int, int);
-void func_800AE7D8(void*, int, int);
-short func_800BEB00();
 void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
 
@@ -334,15 +319,15 @@ exit:
     } else {
         temp_v1_2 = D_800E8FB4[D_800E919C[arg0->actorId]];
         *(int*)&s1->unk0 = temp_v1_2->unk0;
-        s1->unk4 = temp_v1_2->unk4;
+        *(int*)&s1->unk0.nQuads = temp_v1_2->unk4;
         temp_s0 = temp_v1_2->unk8;
-        s1->unk68 = func_8009A028(NULL, temp_v1_2 + 1, temp_v1_2->unkC);
+        s1->unk0.unk68 = func_8009A028(NULL, temp_v1_2 + 1, temp_v1_2->unkC);
 
-        if (s1->unk68 == NULL) {
+        if (s1->unk0.unk68 == NULL) {
             return -2;
         }
 
-        temp_v1_2 = s1->unk68->polyOffset;
+        temp_v1_2 = s1->unk0.unk68->polyOffset;
         j = arg0->actorId;
 
         if (j >= 6) {
@@ -354,32 +339,33 @@ exit:
 
     var_s0 = s1->unk12C;
 
-    s1->unkF = arg0->index;
+    s1->unk0.unkF = arg0->index;
     s1->unk16C.actorId = arg0->actorId;
 
     vs_main_memcpy(var_s0, (s1->unk16C.actorId * 32) + D_800F4448, sizeof s1->unk12C);
-    vs_main_loadClut(var_s0, 0xD, s1->unkF * 0x10, 0x10);
+    vs_main_loadClut(var_s0, 0xD, s1->unk0.unkF * 0x10, 0x10);
 
     s1->unk16C.unk3 = 0xFF;
-    s1->unk12 = 0xFF;
+    s1->unk0.unk12 = 0xFF;
 
     if (s1->unk16C.actorId == 1) {
         s1->unk16C.unk1 = arg0->unk11;
     }
 
-    s1->unk54 = 0x808080;
-    s1->unk2C = 0x40;
-    s1->unk2E = 0x40;
-    s1->unk30 = 0x40;
-    s1->unk1A = 0;
-    s1->unk64.unk0 = 0;
-    s1->unk8_0 = 1;
-    s1->unk8_1 = 0;
-    *(int*)&s1->unk5C = *(int*)&arg0->unkC;
-    s1->unk5F = 0;
-    s1->unk1C = (s1->unk5C << 7) + 0x40;
-    s1->unk20 = (s1->unk5E << 7) + 0x40;
-    s1->unk1E = func_800A6EE8(&s1->unk1C, 0, 0, 1) - (arg0->variant << 7);
+    *(int*)&s1->unk0.unk54 = 0x808080;
+    s1->unk0.unk2C = 0x40;
+    s1->unk0.unk2E = 0x40;
+    s1->unk0.unk30 = 0x40;
+    s1->unk0.unk1A = 0;
+    s1->unk0.unk64.unk0 = 0;
+    s1->unk0.skip = 1;
+    s1->unk0.visible = 0;
+    memcpy(&s1->unk0.currentTile, &arg0->unkC, sizeof(s1->unk0.currentTile));
+    s1->unk0.currentTile.status = 0;
+    s1->unk0.position.vx = (s1->unk0.currentTile.x << 7) + 0x40;
+    s1->unk0.position.vz = (s1->unk0.currentTile.z << 7) + 0x40;
+    s1->unk0.position.vy =
+        func_800A6EE8(&s1->unk0.position, 0, 0, 1) - (arg0->variant << 7);
     func_800A0104(arg0->index, arg0->material);
     func_800E6898(s1);
     s1->unk16C.unk0_4 = 0;
@@ -388,14 +374,15 @@ exit:
 
         for (j = 0; j < arg0->index; ++j) {
             temp_a0 = D_800F45E0[j];
-            if ((temp_a0 != NULL) && (*(int*)&temp_a0->unk5C == *(int*)&s1->unk5C)
-                && (temp_a0->unk1E == (s1->unk1E + 0x80))
+            if ((temp_a0 != NULL)
+                && (*(int*)&temp_a0->unk0.currentTile == *(int*)&s1->unk0.currentTile)
+                && (temp_a0->unk0.position.vy == (s1->unk0.position.vy + 0x80))
                 && (temp_a0->unk16C.actorId > 4)) {
                 if (temp_a0->unk16C.actorId != s1->unk16C.actorId) {
                     s1->unk16C.unk0_4 = 1;
                 } else {
                     s1->unk16C.unk0_4 = 2;
-                    s1->unk1E = s1->unk1E - 0x80;
+                    s1->unk0.position.vy = s1->unk0.position.vy - 0x80;
                     func_800E6898(s1);
                 }
                 break;
@@ -422,7 +409,7 @@ int func_80099D6C(int arg0)
         return -1;
     }
 
-    if (temp_s0->unk0 == 0) {
+    if (temp_s0->unk0.nBones == 0) {
         return -1;
     }
 
@@ -443,7 +430,7 @@ int func_80099D6C(int arg0)
 
 exit:
     if (!found) {
-        vs_main_freeHeap(temp_s0->unk68);
+        vs_main_freeHeap(temp_s0->unk0.unk68);
     }
 
     func_800E68A0(temp_s0);
@@ -1972,8 +1959,6 @@ int func_8009CC20(int arg0, int arg1)
     return 0;
 }
 
-void func_800AB098(D_800F4538_t*, int, int);
-
 int func_8009CE9C(u_int arg0)
 {
     int i;
@@ -2549,7 +2534,7 @@ void func_8009E070(int arg0, SVECTOR* arg1, int arg2)
         break;
     case 6:
         var_s1 = 0x1C;
-        if (temp_s0->unk5AC_3 << 3) {
+        if (temp_s0->unk5AC_3) {
             var_s1 = 1;
         }
 
@@ -2825,9 +2810,9 @@ void func_8009E700(int actorId, int animation)
     if (actor == NULL) {
         D_800F45E0_t* object = D_800F45E0[actorId];
 
-        if (object != NULL && (object->unk1A == 0xF9 || object->unk1A == 0xFF)
+        if (object != NULL && (object->unk0.unk1A == 0xF9 || object->unk0.unk1A == 0xFF)
             && object->unk16C.unk4 == 0) {
-            object->unk1A = 0;
+            object->unk0.unk1A = 0;
         }
 
         return;
@@ -2954,7 +2939,7 @@ void func_8009EA14(int arg0, SVECTOR* arg1)
 
         var_s0 = 0x5B;
 
-        if (!(temp_s1->unk5AC_3 << 3)) {
+        if (!(temp_s1->unk5AC_3)) {
             if (arg0 == 0) {
 
                 var_v1 = 0;
@@ -3358,7 +3343,7 @@ void func_8009F314(int actorId, void* context, int animate)
         D_800F45E0_t* object = D_800F45E0[actorId];
 
         if (object != NULL) {
-            object->unk1A = 0xF7;
+            object->unk0.unk1A = 0xF7;
             object->unk16C.unk4 = 0;
             func_800AE7D8(object, 50, 0);
         }
@@ -3374,13 +3359,13 @@ void func_8009F530(int arg0)
     D_800F45E0_t* temp_s0 = D_800F45E0[arg0];
 
     temp_s0->unk16C.unk0_3 = 1;
-    temp_s4 = func_800A91DC(temp_s0->unk5C, temp_s0->unk5E, 0);
+    temp_s4 = func_800A91DC(temp_s0->unk0.currentTile.x, temp_s0->unk0.currentTile.z, 0);
     temp_v0 = func_8009F794(temp_s0);
 
     if (temp_v0 != -1) {
         D_800F45E0_t* temp_s1 = D_800F45E0[temp_v0];
-        temp_s1->unk36 = 0;
-        temp_s1->unk1A = 0xFC;
+        temp_s1->unk0.unk34.vy = 0;
+        temp_s1->unk0.unk1A = 0xFC;
         func_800E68A0(temp_s1);
 
         if (temp_s1->unk16C.unk0_4 == 2) {
@@ -3389,13 +3374,14 @@ void func_8009F530(int arg0)
 
         for (i = 0; i < 16; ++i) {
             temp_s0 = D_800F45E0[i];
-            if ((temp_s0 != NULL) && (temp_s0 != temp_s1) && !(temp_s0->unk8_0)) {
+            if ((temp_s0 != NULL) && (temp_s0 != temp_s1) && !(temp_s0->unk0.skip)) {
                 temp_s0->unk16C.unk3 = 0xFF;
-                if ((temp_s0->unk1A == 0) && !(temp_s0->unk16C.unk0_3)
-                    && (temp_s0->unk12 == 0xFF) && (temp_s0->unk5C == temp_s1->unk5C)
-                    && (temp_s0->unk5D == temp_s1->unk5D)
-                    && (temp_s0->unk5E == temp_s1->unk5E)
-                    && (temp_s0->unk1E <= temp_s1->unk1E)) {
+                if ((temp_s0->unk0.unk1A == 0) && !(temp_s0->unk16C.unk0_3)
+                    && (temp_s0->unk0.unk12 == 0xFF)
+                    && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)
+                    && (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y)
+                    && (temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
+                    && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
                     temp_s0->unk16C.unk3 = temp_v0;
                 }
             }
@@ -3440,15 +3426,15 @@ int func_8009F794(D_800F45E0_t* arg0)
 
     var_a3 = -0x7530;
     var_t0 = -1;
-    t1 = *(int*)&arg0->unk5C;
+    t1 = *(int*)&arg0->unk0.currentTile;
 
     for (i = 0; i < 16; ++i) {
         temp_v1 = D_800F45E0[i];
-        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && (temp_v1->unk1A == 0)
-            && !(temp_v1->unk16C.unk0_3) && (temp_v1->unk12 == 0xFF)
-            && (t1 == *(int*)&temp_v1->unk5C)) {
-            temp_v1_2 = temp_v1->unk1E;
-            if ((arg0->unk1E >= temp_v1_2) && (var_a3 < temp_v1_2)) {
+        if ((temp_v1 != NULL) && !(temp_v1->unk0.skip) && (temp_v1->unk0.unk1A == 0)
+            && !(temp_v1->unk16C.unk0_3) && (temp_v1->unk0.unk12 == 0xFF)
+            && (t1 == *(int*)&temp_v1->unk0.currentTile)) {
+            temp_v1_2 = temp_v1->unk0.position.vy;
+            if ((arg0->unk0.position.vy >= temp_v1_2) && (var_a3 < temp_v1_2)) {
                 var_a3 = temp_v1_2;
                 var_t0 = i;
             }
@@ -3671,7 +3657,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         if (temp_t0 == NULL) {
             return -1;
         }
-        var_s0 = &temp_t0->unk64;
+        var_s0 = &temp_t0->unk0.unk64;
     }
 
     if (var_s0->unk0 == 0) {
@@ -3680,7 +3666,7 @@ int func_8009FD5C(int arg0, int arg1, int arg2)
         if (temp_a3 != NULL) {
             vs_main_loadClut(temp_a3->unk1424, temp_a3->unk0.unkF + 0x16, 0, 0xA0);
         } else {
-            vs_main_loadClut(temp_t0->unk12C, 0x1F, temp_t0->unkF * 16, 16);
+            vs_main_loadClut(temp_t0->unk12C, 0x1F, temp_t0->unk0.unkF * 16, 16);
         }
     }
 
@@ -3775,7 +3761,7 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
 
     temp_s0 = D_800F45E0[arg0];
 
-    if (temp_s0->unk12 != 0xFF) {
+    if (temp_s0->unk0.unk12 != 0xFF) {
         return -1;
     }
 
@@ -3783,19 +3769,20 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
         return -1;
     }
 
-    if (temp_s0->unk1A != 0) {
+    if (temp_s0->unk0.unk1A != 0) {
         return -1;
     }
 
-    *(int*)&arg1->unk0 = *(int*)&temp_s0->unk5C;
+    *(int*)&arg1->unk0 = *(int*)&temp_s0->unk0.currentTile;
     arg1->unk3 = temp_s0->unk16C.unk2;
-    var_v0_2 = func_800A6EE8(&temp_s0->unk1C, 0, 0, 0) - temp_s0->unk1E;
+    var_v0_2 =
+        func_800A6EE8(&temp_s0->unk0.position, 0, 0, 0) - temp_s0->unk0.position.vy;
     if (var_v0_2 < 0) {
         var_v0_2 += 0x7F;
     }
     arg1->unk1 = var_v0_2 >> 7;
-    arg1->unk4 = *(int*)&temp_s0->unk1C;
-    arg1->unk8 = *(int*)&temp_s0->unk20;
+    arg1->unk4 = *(int*)&temp_s0->unk0.position.vx;
+    arg1->unk8 = *(int*)&temp_s0->unk0.position.vz;
     return 0;
 }
 
@@ -3812,10 +3799,10 @@ int func_800A0104(int index, int material)
     ((D_1F80035C_t*)0x1F80035C)->rotation.vx = D_800E9030[material] * (ONE / 4);
     ((D_1F80035C_t*)0x1F80035C)->rotation.vy = D_800E9030[material + 1] * (ONE / 4);
     ((D_1F80035C_t*)0x1F80035C)->rotation.vz = D_800E9030[material + 2] * (ONE / 4);
-    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, &obj->unk6C[4]);
-    obj->unk18 = 0;
-    *(int*)&obj->unk24 = 0;
-    *(int*)&obj->unk28 = 0;
+    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, &obj->bones[4]);
+    obj->unk0.unk18 = 0;
+    *(int*)&obj->unk0.unk24 = 0;
+    *(int*)&obj->unk0.unk28 = 0;
     return 0;
 }
 
@@ -4083,8 +4070,8 @@ void func_800A087C(int actorId, int arg1)
     if (temp_t0 == NULL) {
         D_800F45E0_t* temp_a0 = D_800F45E0[actorId];
         if (temp_a0 != NULL) {
-            temp_a0->unk8_0 = (arg1 & 1) ^ 1;
-            temp_a0->unk8_1 = arg1 >> 1;
+            temp_a0->unk0.skip = (arg1 & 1) ^ 1;
+            temp_a0->unk0.visible = arg1 >> 1;
         }
     } else {
         vs_battle_wepModels_t* model;
@@ -4134,7 +4121,7 @@ int func_800A0A74(int arg0)
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
     if (temp_a0 != NULL) {
         int var_v1 = temp_a0->unk5AC_9;
-        if ((temp_a0->unk5AC_11 << 11)) {
+        if ((temp_a0->unk5AC_11)) {
             var_v1 |= 2;
         }
         return var_v1;
@@ -4194,17 +4181,16 @@ void func_800A0BA0(int arg0, int* arg1, int* arg2)
 u_int func_800A0BE0(int actorId)
 {
     D_800F4538_t* temp_a1 = D_800F4538[actorId];
-    int a2;
 
     D_800F49E0 = 0;
 
     if (temp_a1 == NULL) {
         D_800F45E0_t* temp_v1 = D_800F45E0[actorId];
         if (temp_v1 != NULL) {
-            if (!(temp_v1->unk8_0)) {
+            if (!(temp_v1->unk0.skip)) {
                 D_800F49E0 = 1;
             }
-            if (temp_v1->unk8_1) {
+            if (temp_v1->unk0.visible) {
                 D_800F49E0 |= 2;
             }
         }
@@ -4241,7 +4227,7 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unkC54.unk548_17) {
             D_800F49E0 |= 0x100;
         }
-        if (temp_a1->unk5AC_4 << 4) {
+        if (temp_a1->unk5AC_4) {
             D_800F49E0 |= 0x200;
         }
         if (temp_a1->unk0.unk12 != 0xFF) {
@@ -4255,8 +4241,7 @@ u_int func_800A0BE0(int actorId)
             && ((vs_battle_wepModels + 1)[temp_a1->unk0.unkF * 2]->unk8_4)) {
             D_800F49E0 |= 0x1000;
         }
-        a2 = 0x1000000;
-        if (*((int*)&temp_a1->unk5B4 - 2) & a2) {
+        if (temp_a1->unk5AC_24) {
             D_800F49E0 |= 0x2000;
         }
         if (temp_a1->unk0.unkA_0) {
@@ -4265,7 +4250,7 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unk0.unkC_0) {
             D_800F49E0 |= (temp_a1->unk0.unkC_0) << 0x10;
         }
-        if (temp_a1->unk5AC_3 << 3) {
+        if (temp_a1->unk5AC_3) {
             D_800F49E0 |= 0x80000;
         }
         if ((temp_a1->animationId - 0x47) < 0xEU) {
@@ -4277,10 +4262,10 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unk0.unkA_5) {
             D_800F49E0 |= 0x200000;
         }
-        if (*((int*)&temp_a1->unk5B4 - 2) & 0xF0000000) {
+        if (temp_a1->unk5AC_28) {
             D_800F49E0 |= 0x400000;
         }
-        if (*((int*)&temp_a1->unk5B4 - 2) & 0x10000) {
+        if (temp_a1->unk5AC_16) {
             D_800F49E0 |= 0x08000000;
         }
         if ((temp_a1->unk0.unk9_0) && (temp_a1->unk0.unk9_0 < 6)) {
@@ -4292,7 +4277,7 @@ u_int func_800A0BE0(int actorId)
         if (temp_a1->unk0.unkB_4) {
             D_800F49E0 |= 0x04000000;
         }
-        if (temp_a1->unk5AC_9 << 9) {
+        if (temp_a1->unk5AC_9) {
             D_800F49E0 |= 0x08000000;
         }
         if ((temp_a1->unk0.unkB_0) >= 3U) {
@@ -4368,9 +4353,9 @@ int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
             if (temp_v1 == NULL) {
                 return -1;
             }
-            arg2->vx = temp_v1->unk1C;
-            arg2->vz = temp_v1->unk20;
-            arg2->vy = temp_v1->unk1E - 0xC0;
+            arg2->vx = temp_v1->unk0.position.vx;
+            arg2->vz = temp_v1->unk0.position.vz;
+            arg2->vy = temp_v1->unk0.position.vy - 0xC0;
         } else {
             if (temp_a1->unk0.unkB_0) {
                 return -1;

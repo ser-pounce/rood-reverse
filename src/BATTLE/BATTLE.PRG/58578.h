@@ -85,5 +85,8 @@ int vs_battle_mapStickDeadZone(int);
 int func_800C1564(func_800C1564_t* arg0, u_short* arg1);
 void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2);
 void func_800C16DC();
+void* func_800C282C(void);
+void func_800C28AC(SVECTOR* position, int arg1);
+void func_800C2B0C(SVECTOR* position, u_int row);
 int func_800C4734(void);
 void func_800C0D78(void);

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "3A1A0.h"
 #include "4A0A8.h"
 #include "5BF94.h"
@@ -87,13 +88,6 @@ typedef struct {
     u_short slots[8];
     u_short isClut[8];
 } D_800F5638_t;
-
-typedef struct {
-    short unk0;
-    short unk1;
-    short unk2;
-    short unk3;
-} func_8008D2C0_t;
 
 typedef struct {
     signed char dx : 2;
@@ -296,11 +290,13 @@ typedef struct func_800E78F4_t {
     char unkEA[0x10];
     u_char unkFA;
     u_char unkFB;
-    char unkFC[5];
+    char unkFC[4];
+    u_char unk100;
     u_char unk101;
     u_char unk102;
     u_char unk103;
-    char unk104[4];
+    u_char unk104;
+    char unk105[3];
     vs_battle_movementPosition unk108;
     u_char unk10C;
     char unk10D[3];
@@ -498,7 +494,6 @@ typedef struct {
 } func_800DEC88_t;
 
 void func_800D5260(VECTOR*);
-void func_800D5294(int*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
@@ -511,10 +506,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
-int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
-int func_8008D2C0(func_8008D2C0_t*);
-short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
@@ -624,6 +616,7 @@ extern D_800F58BC_t* D_800F58BC;
 extern int D_800F58C0;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
+extern D_800F58C8_t* D_800F58D8;
 extern int D_800F58E0;
 extern vs_battle_actor2* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];

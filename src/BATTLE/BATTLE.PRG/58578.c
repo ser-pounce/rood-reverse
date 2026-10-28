@@ -1,6 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "30DB0.h"
+#include "40564.h"
 #include "58578.h"
 #include "573B8.h"
 #include "5BF94.h"
@@ -35,10 +36,7 @@ int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
 void func_800C1DC4(D_800EB9B8_unk990* arg0);
 void func_800C20B4(void);
 void func_800C253C(int type);
-int _getCollisionMapDimensions(int arg0);
 int func_800FA188(int x, int z, int* offset);
-int func_800A91DC(int, int, int);
-int func_8008DDA8(int x, int z);
 
 extern short D_800EA234[];
 extern short D_800EA2C4[];

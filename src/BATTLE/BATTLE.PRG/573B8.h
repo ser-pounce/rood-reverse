@@ -10,7 +10,9 @@ typedef struct {
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);
 short func_800BFBB8(u_char**, short);
+void func_800BFD9C(void);
 int func_800BFE50(u_short);
+int func_800BFEBC(short mode, short frame, short duration);
 void func_800C00E8(int, void*);
 
 /**
@@ -71,4 +73,5 @@ void vs_battle_playMenuChangeSfx(void);
 void vs_battle_playSfx10(void);
 
 extern int (**D_800F4C28)(u_char*, short);
+short vs_battle_getShort(u_char* arg0);
 extern short _evtFile;

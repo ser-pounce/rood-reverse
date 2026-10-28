@@ -22,13 +22,12 @@ extern SPRT_8 D_8003A2A0[0x400];
 extern u_short D_8003E2A0; /* font tpage */
 extern u_short D_8003E2A2; /* font clut */
 extern int D_800329E8; /* stream printed by the GPU debug printf */
-extern int (*D_80033440)(); /* GPU debug printf */
 
 void SetDumpFnt(int id)
 {
     if (id >= 0 && id <= D_800329E4) {
         D_800329E8 = id;
-        D_80033440 = FntPrint;
+        GPU_printf = FntPrint;
     }
 }
 

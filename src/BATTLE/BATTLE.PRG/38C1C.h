@@ -2,6 +2,7 @@
 #include "3A1A0.h"
 #include <libgte.h>
 
+int func_800A141C(int actorId, int bone, int* screenXyz, int mode);
 int func_800A152C(int actorId, int, int);
 int func_800A1648(int, int, int);
 void func_800A1720(int, int, MATRIX*, void*);

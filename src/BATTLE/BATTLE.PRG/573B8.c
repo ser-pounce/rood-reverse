@@ -1,11 +1,13 @@
 #include "common.h"
 #include "146C.h"
+#include "30DB0.h"
 #include "4A0A8.h"
 #include "573B8.h"
 #include "58578.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
 #include <libetc.h>
+#include "5BF94.h"
 #include "gpu.h"
 
 typedef struct {
@@ -23,12 +25,8 @@ extern vs_main_CdFile D_800F4BF0;
 
 extern u_char D_800EB9AC;
 
-extern void func_8007D260(int);
-void func_800A0204(int, int, int, int);
-extern void func_800BBDDC(void);
 int func_800BFE34(u_char*);
 void func_800C0150(void);
-void vs_battle_rMemzero(void*, int);
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {

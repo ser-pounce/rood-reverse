@@ -1,4 +1,5 @@
 #include "common.h"
+#include "146C.h"
 #include "3A1A0.h"
 #include "4A0A8.h"
 #include "5BF94.h"
@@ -87,13 +88,6 @@ typedef struct {
     u_short slots[8];
     u_short isClut[8];
 } D_800F5638_t;
-
-typedef struct {
-    short unk0;
-    short unk1;
-    short unk2;
-    short unk3;
-} func_8008D2C0_t;
 
 typedef struct {
     signed char dx : 2;
@@ -296,11 +290,13 @@ typedef struct func_800E78F4_t {
     char unkEA[0x10];
     u_char unkFA;
     u_char unkFB;
-    char unkFC[5];
+    char unkFC[4];
+    u_char unk100;
     u_char unk101;
     u_char unk102;
     u_char unk103;
-    char unk104[4];
+    u_char unk104;
+    char unk105[3];
     vs_battle_movementPosition unk108;
     u_char unk10C;
     char unk10D[3];
@@ -498,7 +494,6 @@ typedef struct {
 } func_800DEC88_t;
 
 void func_800D5260(VECTOR*);
-void func_800D5294(int*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
@@ -511,10 +506,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
-int func_8008631C(int, int, int, int, void*);
 int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
-int func_8008D2C0(func_8008D2C0_t*);
-short func_8008DC7C(int, int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
@@ -624,6 +616,7 @@ extern D_800F58BC_t* D_800F58BC;
 extern int D_800F58C0;
 extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
+extern D_800F58C8_t* D_800F58D8;
 extern int D_800F58E0;
 extern vs_battle_actor2* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];
@@ -713,8 +706,8 @@ found:
 
 int func_800DFAF8(int arg0, u_int arg1, int arg2)
 {
-    func_8008D2C0_t sp10[4];
-    func_8008D2C0_t* m;
+    SVECTOR sp10[4];
+    SVECTOR* m;
     int i;
     int j;
 
@@ -727,8 +720,8 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
         }
         if ((u_char)arg1 == e->unk0_0 && (u_char)(arg1 >> 16) == e->unk0_5) {
             m = &sp10[j];
-            if (D_800F5910[i * 2 + 1].unk0_0 == m->unk0 >> 7
-                && D_800F5910[i * 2 + 1].unk0_5 == m->unk2 >> 7) {
+            if (D_800F5910[i * 2 + 1].unk0_0 == m->vx >> 7
+                && D_800F5910[i * 2 + 1].unk0_5 == m->vz >> 7) {
                 return i;
             }
         }
@@ -1014,7 +1007,7 @@ typedef struct {
 
 int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 {
-    func_8008D2C0_t points[4];
+    SVECTOR points[4];
     int x;
     int y;
     int z;
@@ -1035,9 +1028,9 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     z = arg0->unk4C.vz + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
 
     for (i = func_8008D2C0(points) - 1; i != -1; --i) {
-        dx = points[i].unk0 - x;
-        dy = points[i].unk1 - y;
-        dz = points[i].unk2 - z;
+        dx = points[i].vx - x;
+        dy = points[i].vy - y;
+        dz = points[i].vz - z;
 
         if (arg2
             && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
@@ -1945,46 +1938,47 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
     func_800E2CCC(arg0);
 }
 
-typedef struct {
-    char pad0[0x34];
-    vs_battle_movementTile tile;
-    char pad38[0xC8];
-    unsigned char index, row, rate, direction, timer;
-    char pad105[0x63];
-    vs_battle_movementTile dest;
-} patrolWaypointState;
-extern unsigned short (*D_800F58D8)[8];
-static inline unsigned int patrolWaypoint(unsigned short* row, int index)
+static inline void _nextWaypoint(func_800E78F4_t* arg0, D_800F58C8_t2* waypoints)
 {
-    unsigned short* ptr = row;
-    ptr += index;
-    return *ptr;
-}
-void func_800E23AC(patrolWaypointState* state)
-{
-    unsigned short* row;
-    unsigned int entry;
+    D_800F58C8_t2* waypoint = &waypoints[arg0->unk100];
     int step;
-    row = D_800F58D8[state->row];
-    entry = patrolWaypoint(row, state->index);
-    if (state->tile.p.x != (entry & 31) || state->tile.p.z != ((entry >> 5) & 31)) {
-        if (state->timer) {
-            state->timer--;
+    int active;
+
+    if ((arg0->unk34.x != waypoint->x) || (arg0->unk34.z != waypoint->z)) {
+        if (arg0->unk104 != 0) {
+            --arg0->unk104;
         }
-        if (func_800E45D4(1 << state->rate) || state->timer) {
-            goto move;
+
+        if (func_800E45D4(1 << arg0->unk102) || (arg0->unk104 != 0)) {
+            return;
         }
-        state->direction = -state->direction;
+
+        arg0->unk103 = -arg0->unk103;
     }
-    step = state->direction + 8;
+
+    step = arg0->unk103 + 8;
+
     do {
-        state->index = (state->index + step) & 7;
-    } while (!(patrolWaypoint(row, state->index) >> 15));
-    state->timer = 10;
-move:
-    state->dest.p.x = patrolWaypoint(row, state->index) & 31;
-    state->dest.p.z = (patrolWaypoint(row, state->index) >> 5) & 31;
-    func_800E50A0((func_800E78F4_t*)state, 0, 0);
+        arg0->unk100 = (arg0->unk100 + step) & 7;
+        waypoint = &waypoints[arg0->unk100];
+        active = waypoint->active;
+    } while (!active);
+
+    arg0->unk104 = 10;
+}
+
+void func_800E23AC(func_800E78F4_t* arg0)
+{
+    D_800F58C8_t2* waypoints = D_800F58D8[arg0->unk101].unk0;
+    D_800F58C8_t2* waypointX;
+    D_800F58C8_t2* waypointZ;
+
+    _nextWaypoint(arg0, waypoints);
+    waypointX = &waypoints[arg0->unk100];
+    arg0->unk168.x = waypointX->x;
+    waypointZ = &waypoints[arg0->unk100];
+    arg0->unk168.z = waypointZ->z;
+    func_800E50A0(arg0, 0, 0);
 }
 
 typedef union {

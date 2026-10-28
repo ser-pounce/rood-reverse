@@ -2,6 +2,7 @@
 #include "146C.h"
 #include "2842C.h"
 #include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
 #include "4A0A8.h"
@@ -232,15 +233,7 @@ typedef struct {
     u_char high;
 } scriptBytePair;
 
-void func_8007DE88(int*);
-void func_8007DEA8(CVECTOR*);
-void func_8007DECC(D_800F1A68_t*);
-short func_8008DC7C(int, int);
-int func_80090C2C(int);
 int func_800A0024(int, void*);
-void func_800A190C(int, int, SVECTOR*, int);
-int func_800A92B8(int, int);
-void func_800AACDC(void);
 int func_800B6B98(
     SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
 int func_800B9C58(u_char*, short);
@@ -270,14 +263,7 @@ VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
-void func_800BFD9C();
-short vs_battle_getShort(u_char*);
-int func_800BFEBC(int, int, int);
-int vs_battle_setTextBox(int, char*);
-void func_800CB79C(void);
 textOffset func_800CCE10(int, int, int, int);
-int vs_battle_dismissTextBox(int);
-void func_800CEF38(int);
 void func_800F9BC0(int, int);
 int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);
@@ -1103,9 +1089,9 @@ int func_800B784C(u_char* arg0, short arg1)
     sp10[2] = arg0[5];
     sp10[3] = arg0[6];
     if (D_800F4C2C == 2) {
-        func_800A97EC(temp_v0, (func_8006EBF8_t_fields*)sp10, 0, 0);
+        func_800A97EC(temp_v0, (vs_battle_movementPosition*)sp10, 0, 0);
     } else {
-        func_800A97EC(temp_v0, (func_8006EBF8_t_fields*)sp10,
+        func_800A97EC(temp_v0, (vs_battle_movementPosition*)sp10,
             arg0[7] != 0xFF ? arg0[7] : -1, arg0[8] != 0xFF ? arg0[8] : -1);
     }
     func_8009DC8C(temp_v0);
@@ -1154,10 +1140,10 @@ int func_800B7A98(u_char* arg0, short arg1)
     sp10[2] = arg0[5];
     sp10[3] = 0xFF;
     if (D_800F4C2C == 2) {
-        func_800A9C54(temp_s0, (func_8006EBF8_t_fields*)sp10, 0);
+        func_800A9C54(temp_s0, (vs_battle_movementPosition*)sp10, 0);
     } else {
         func_800A9C54(
-            temp_s0, (func_8006EBF8_t_fields*)sp10, arg0[6] != 0xFF ? arg0[6] : -1);
+            temp_s0, (vs_battle_movementPosition*)sp10, arg0[6] != 0xFF ? arg0[6] : -1);
     }
     func_8009DC8C(temp_s0);
     D_800F4B70[temp_s0] = 1;
@@ -1284,12 +1270,12 @@ int func_800B7EF0(u_char* arg0, short arg1)
 
 int func_800B7F84(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t_fields sp10;
+    vs_battle_movementPosition sp10;
     int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
 
-    sp10.unk0_0 = arg0[3];
-    sp10.unk0_8 = arg0[4];
-    sp10.unk0_16 = arg0[5];
+    sp10.x = arg0[3];
+    sp10.y = arg0[4];
+    sp10.z = arg0[5];
 
     func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
     D_800F4B70[temp_s0] = 1;
@@ -4258,7 +4244,7 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
     return 0;
 }
 
-int func_800BEB00(void) { return D_800F4C34; }
+short func_800BEB00(void) { return D_800F4C34; }
 
 short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | _evtFile; }
 
@@ -4394,8 +4380,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 1:
                 func_800A1108(0, &position);
 
-                if (position.unk0.unk0.fields.unk0_0 == p[1]
-                    && position.unk0.unk0.fields.unk0_16 == p[2]) {
+                if (position.unk0.unk0.fields.x == p[1]
+                    && position.unk0.unk0.fields.z == p[2]) {
                     result = 1;
                 }
 
@@ -4405,10 +4391,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 2:
                 func_800A1108(0, &position);
 
-                if (position.unk0.unk0.fields.unk0_0 >= p[1]
-                    && position.unk0.unk0.fields.unk0_0 < p[1] + p[3]
-                    && position.unk0.unk0.fields.unk0_16 >= p[2]
-                    && position.unk0.unk0.fields.unk0_16 < p[2] + p[4]) {
+                if (position.unk0.unk0.fields.x >= p[1]
+                    && position.unk0.unk0.fields.x < p[1] + p[3]
+                    && position.unk0.unk0.fields.z >= p[2]
+                    && position.unk0.unk0.fields.z < p[2] + p[4]) {
                     result = 1;
                 }
 
@@ -4562,11 +4548,11 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 11:
                 if ((short)func_800A0024(p[1], &position) >= 0
-                    && position.unk0.unk0.fields.unk0_0 == p[2]
-                    && position.unk0.unk0.fields.unk0_16 == p[3]
+                    && position.unk0.unk0.fields.x == p[2]
+                    && position.unk0.unk0.fields.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
                     && (p[5] == 0
-                        || (position.unk0.unk0.fields.unk0_24 >> 2) + 1 == p[5])) {
+                        || (position.unk0.unk0.fields.status >> 2) + 1 == p[5])) {
                     result = 1;
                 }
 
@@ -4597,8 +4583,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 func_800A1108(actorId, &position);
 
-                if (position.unk0.unk0.fields.unk0_0 == p[3]
-                    && position.unk0.unk0.fields.unk0_16 == p[4]) {
+                if (position.unk0.unk0.fields.x == p[3]
+                    && position.unk0.unk0.fields.z == p[4]) {
                     result = 1;
                 }
 
@@ -4615,10 +4601,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 func_800A1108(actorId, &position);
 
-                if (position.unk0.unk0.fields.unk0_0 >= p[3]
-                    && position.unk0.unk0.fields.unk0_0 < p[3] + p[5]
-                    && position.unk0.unk0.fields.unk0_16 >= p[4]
-                    && position.unk0.unk0.fields.unk0_16 < p[4] + p[6]) {
+                if (position.unk0.unk0.fields.x >= p[3]
+                    && position.unk0.unk0.fields.x < p[3] + p[5]
+                    && position.unk0.unk0.fields.z >= p[4]
+                    && position.unk0.unk0.fields.z < p[4] + p[6]) {
                     result = 1;
                 }
 

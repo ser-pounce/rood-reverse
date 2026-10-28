@@ -2,15 +2,15 @@
 #include <libgte.h>
 
 typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 8;
-    u_int unk0_16 : 8;
-    u_int unk0_24 : 8;
-} func_8006EBF8_t_fields;
+    u_int x : 8;
+    u_int y : 8;
+    u_int z : 8;
+    u_int status : 8;
+} vs_battle_movementPosition;
 
 typedef struct {
     union {
-        func_8006EBF8_t_fields fields;
+        vs_battle_movementPosition fields;
         int value;
     } unk0;
     SVECTOR unk4;

@@ -1,7 +1,9 @@
 #include "common.h"
+#include "146C.h"
 #include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
+#include "40564.h"
 #include "44F14.h"
 #include "6E644.h"
 #include "../../SLUS_010.40/main.h"
@@ -22,26 +24,17 @@ typedef struct {
     int words[2];
 } func_800A6798_t;
 
-u_int func_800A9C54(u_char, void*, int);
+void func_800B28A8(void*, MATRIX*, int);
 void func_800B64A8(int, int, int);
-int func_8008C49C(int, int);
-int func_8008D2C0(SVECTOR*);
-short func_8008DD0C(int arg0, int arg1);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);
 int func_800A3DB4(int, int, int);
-short func_8008DC7C(int, int);
-short func_8008DA24(int, int);
 u_int* func_800A8D64(SVECTOR*, int);
-int func_800B13CC(int, int, int);
 int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
 void func_800AA850(int, short, int);
-int func_800A8E84(D_800F45E0_t*, SVECTOR*);
 void func_800ACF54(D_800F4538_t*);
-void func_800B0908(D_800F45E0_t*, int);
-int func_800A6EE8(SVECTOR*, int, int, int);
 void func_800A70DC(D_800F4538_t*, int);
 int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 void func_800A2FBC(D_800F4538_t*);
@@ -54,7 +47,7 @@ void func_800A525C(D_800F4538_t*);
 int func_800A5280(int, int, int, SVECTOR*);
 inline SVECTOR* func_800A4A24(int);
 void func_800A9EB4(int, short, int);
-void func_800AA454(int, func_8006EBF8_t_fields*, int);
+void func_800AA454(int, vs_battle_movementPosition*, int);
 void func_800AA620(int, SVECTOR*, int);
 void func_800AC690(int, D_800F4538_t*);
 void* func_800AD494(void*, int, u_short**);
@@ -62,7 +55,6 @@ void func_800E4BD8(int);
 void func_800E4BE0(int);
 void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
-int func_8009E180(D_800F4538_t*, SVECTOR*);
 
 extern u_char D_800E8FD0[];
 extern int D_800E90A8;
@@ -119,7 +111,7 @@ void func_800A29A0(D_800F4538_t* arg0)
 
         if (busy == 0) {
             arg0->unk0.unk9_0 = 9;
-            func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC, 0);
+            func_800A9C54(arg0->unk0.unkF, (vs_battle_movementPosition*)&arg0->unk5EC, 0);
             arg0->unk0.facing = arg0->unk5EC.pad;
             func_800A0204(arg0->unk0.unkF, 0x15, 0, 8);
             func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
@@ -159,7 +151,7 @@ void func_800A29A0(D_800F4538_t* arg0)
 
 void func_800A2C48(D_800F4538_t* arg0)
 {
-    func_800A9C54(arg0->unk0.unkF, &arg0->unk5DC[4], 0);
+    func_800A9C54(arg0->unk0.unkF, (vs_battle_movementPosition*)&arg0->unk5EC, 0);
     arg0->unk6E0 = 0;
     arg0->unk0.unkB_0 = 4;
     func_800A29A0(arg0);
@@ -173,7 +165,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
     switch (arg0->unk0.unkB_4) {
     case 1:
         func_800A0204(arg0->unk0.unkF, 9, 0, 8);
-        func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC, -1);
+        func_800A9C54(arg0->unk0.unkF, (vs_battle_movementPosition*)&arg0->unk5EC, -1);
         func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
@@ -295,7 +287,7 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
     short z;
     int value;
 
-    *(int*)&actor->unk0.currentTile = *(int*)placement;
+    memcpy(&actor->unk0.currentTile, placement, sizeof(actor->unk0.currentTile));
     actor->unk0.position.vx = placement->unk0_0 * 128 + 64;
     z = placement->unk0_16 * 128 + 64;
     actor->unk0.position.vz = z;
@@ -425,9 +417,9 @@ int func_800A3500(int arg0, int arg1)
 
     for (i = 0; i < 16; ++i) {
         actor = D_800F45E0[i];
-        if (actor != NULL && actor->unk1C == arg0 && actor->unk20 == arg1
-            && actor->unk1E - 0x80 < h) {
-            h = actor->unk1E - 0x80;
+        if (actor != NULL && actor->unk0.position.vx == arg0
+            && actor->unk0.position.vz == arg1 && actor->unk0.position.vy - 0x80 < h) {
+            h = actor->unk0.position.vy - 0x80;
         }
     }
     return h;
@@ -456,9 +448,9 @@ void func_800A35A8(void)
 
             for (j = 0; j < 16; ++j) {
                 obj = D_800F45E0[j];
-                if (obj != NULL && obj->unk1C == x && obj->unk20 == z
-                    && obj->unk1E - 0x80 < h) {
-                    h = obj->unk1E - 0x80;
+                if (obj != NULL && obj->unk0.position.vx == x
+                    && obj->unk0.position.vz == z && obj->unk0.position.vy - 0x80 < h) {
+                    h = obj->unk0.position.vy - 0x80;
                 }
             }
 
@@ -475,7 +467,7 @@ void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
         if (temp_a0->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {
             arg2->unk0.unk0.value = *(int*)&temp_a0->unk0.currentTile;
         }
-        arg2->unk0.unk0.fields.unk0_24 = temp_a0->unk0.facing / 16;
+        arg2->unk0.unk0.fields.status = temp_a0->unk0.facing / 16;
     }
 }
 
@@ -597,7 +589,7 @@ int func_800A38E0(int actorId)
         object = D_800F45E0[objectId];
         z = z * 128 + 64;
 
-        if (object->unk1A != 0) {
+        if (object->unk0.unk1A != 0) {
             return -1;
         }
 
@@ -631,7 +623,7 @@ int func_800A38E0(int actorId)
         return -1;
     }
 
-    if (object->unk1A != 0) {
+    if (object->unk0.unk1A != 0) {
         return -1;
     }
 
@@ -640,16 +632,16 @@ int func_800A38E0(int actorId)
     farX = farX * 128 + 64;
     farZ = farZ * 128 + 64;
 
-    if (object->unk1E < actor->unk0.position.vy - 128) {
+    if (object->unk0.position.vy < actor->unk0.position.vy - 128) {
         return -1;
     }
 
-    if (actor->unk0.position.vy + 64 < object->unk1E) {
+    if (actor->unk0.position.vy + 64 < object->unk0.position.vy) {
         return -1;
     }
 
     if (object->unk16C.actorId < 4) {
-        if (!func_800A3DB4(farX, farZ, object->unk1E)) {
+        if (!func_800A3DB4(farX, farZ, object->unk0.position.vy)) {
             return -1;
         }
     } else {
@@ -682,7 +674,8 @@ int func_800A3BC4(int arg0, int arg1)
 
 D_800F4538_t* func_800A3C00(D_800F45E0_t* arg0, u_int arg1)
 {
-    return func_800A3C34(arg0->unk5C, arg0->unk5E, arg0->unk1E, arg1);
+    return func_800A3C34(
+        arg0->unk0.currentTile.x, arg0->unk0.currentTile.z, arg0->unk0.position.vy, arg1);
 }
 
 D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
@@ -711,9 +704,10 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
             }
             continue;
         }
-        if ((i == 0) && (*((int*)&actor->unk5B4 - 2) & 0xF0000000)) {
+        if ((i == 0) && actor->unk5AC_28) {
             D_800F45E0_t* temp_v1 = D_800F45E0[actor->unk5AC_28];
-            if ((arg0 == temp_v1->unk5C) && (arg1 == temp_v1->unk5E)) {
+            if ((arg0 == temp_v1->unk0.currentTile.x)
+                && (arg1 == temp_v1->unk0.currentTile.z)) {
                 return actor;
             }
             continue;
@@ -750,7 +744,7 @@ int func_800A3DB4(int x, int z, int minimumHeight)
 int func_800A3E6C(int actorId)
 {
     SVECTOR position;
-    func_8006EBF8_t_fields tile;
+    vs_battle_movementPosition tile;
     D_800F4538_t* actor = D_800F4538[actorId];
     D_800F45E0_t* object;
     int objectId;
@@ -770,13 +764,13 @@ int func_800A3E6C(int actorId)
     }
 
     object = D_800F45E0[objectId];
-    object->unk3A = D_800F49E8;
+    object->unk0.unk34.pad = D_800F49E8;
     D_800E90A8 = objectId;
-    height = actor->unk0.position.vy - object->unk1E;
+    height = actor->unk0.position.vy - object->unk0.position.vy;
     height /= 64;
     ++height;
-    object->unk34 = 0;
-    object->unk38 = 0;
+    object->unk0.unk34.vx = 0;
+    object->unk0.unk34.vz = 0;
 
     switch (object->unk16C.actorId) {
     case 0:
@@ -787,31 +781,31 @@ int func_800A3E6C(int actorId)
         step = D_800F49E8 < 2 ? -128 : 128;
 
         if (D_800F49E8 & 1) {
-            object->unk34 = step;
+            object->unk0.unk34.vx = step;
         } else {
-            object->unk38 = step;
+            object->unk0.unk34.vz = step;
         }
 
         goto move;
 
     case 3:
-        object->unk34 = 0;
-        object->unk38 = 0;
+        object->unk0.unk34.vx = 0;
+        object->unk0.unk34.vz = 0;
         step = D_800F49E8 < 2 ? -32 : 32;
 
         if (D_800F49E8 & 1) {
-            object->unk34 = step;
+            object->unk0.unk34.vx = step;
         } else {
-            object->unk38 = step;
+            object->unk0.unk34.vz = step;
         }
 
     move:
-        object->unk36 = 0;
+        object->unk0.unk34.vy = 0;
         func_800AE6C0(actor, 44, 45);
         func_800A0204(actorId, height + 79, 0, 4);
         actor->unk5AC_20 = 1;
-        func_800E4C1C(
-            (object->unk1C + object->unk34) / 128, (object->unk20 + object->unk38) / 128);
+        func_800E4C1C((object->unk0.position.vx + object->unk0.unk34.vx) / 128,
+            (object->unk0.position.vz + object->unk0.unk34.vz) / 128);
         break;
 
     case 4:
@@ -841,13 +835,13 @@ int func_800A3E6C(int actorId)
         break;
     }
 
-    __builtin_memcpy(&tile, &actor->unk0.currentTile, sizeof tile);
+    memcpy(&tile, &actor->unk0.currentTile, sizeof tile);
     step = D_800F49E8 < 2 ? -1 : 1;
 
     if (D_800F49E8 & 1) {
-        tile.unk0_0 += step;
+        tile.x += step;
     } else {
-        tile.unk0_16 += step;
+        tile.z += step;
     }
 
     func_800AA454(actorId, &tile, 4);
@@ -868,15 +862,15 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         switch (object->unk16C.actorId) {
         case 0:
         case 1:
-            object->unk1A = 0xF9;
+            object->unk0.unk1A = 0xF9;
             break;
 
         case 2:
-            object->unk1A = 0xFF;
+            object->unk0.unk1A = 0xFF;
             break;
 
         case 3:
-            object->unk1A = 0xFE;
+            object->unk0.unk1A = 0xFE;
             break;
         }
 
@@ -898,27 +892,27 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         }
 
         step = D_800F49E8;
-        object->unk5C = x;
-        object->unk5E = z;
-        object->unk1C = x * 128 + 64;
-        object->unk20 = z * 128 + 64;
-        object->unk26 = (object->unk26 + step * (ONE / 4)) & 0xFFF;
-        func_800A190C(object->unk12, 0xF0, &points[0], 1);
-        func_800A190C(object->unk12, 0xF1, &points[1], 1);
-        object->unk1E = (points[0].vy + points[1].vy) / 2 + 60;
-        object->unk1A = 0xFC;
-        object->unk36 = 24;
-        object->unk12 = 0xFF;
+        object->unk0.currentTile.x = x;
+        object->unk0.currentTile.z = z;
+        object->unk0.position.vx = x * 128 + 64;
+        object->unk0.position.vz = z * 128 + 64;
+        object->unk0.facing = (object->unk0.facing + step * (ONE / 4)) & 0xFFF;
+        func_800A190C(object->unk0.unk12, 0xF0, &points[0], 1);
+        func_800A190C(object->unk0.unk12, 0xF1, &points[1], 1);
+        object->unk0.position.vy = (points[0].vy + points[1].vy) / 2 + 60;
+        object->unk0.unk1A = 0xFC;
+        object->unk0.unk34.vy = 24;
+        object->unk0.unk12 = 0xFF;
         actor->unk5AC_3 = 0;
         return;
     }
 
-    if (object == NULL || object->unk9_0) {
+    if (object == NULL || object->unk0.unk9_0) {
         func_800A0204(actor->unk0.unkF, 1, 0, 8);
         return;
     }
 
-    func_800E4C28(object->unk5C, object->unk5E);
+    func_800E4C28(object->unk0.currentTile.x, object->unk0.currentTile.z);
     func_800E68A0(object);
 
     if (object->unk16C.unk0_4 == 2) {
@@ -928,20 +922,20 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     step = D_800F49E8 < 2 ? 128 : -128;
 
     if (D_800F49E8 & 1) {
-        object->unk34 += step;
+        object->unk0.unk34.vx += step;
     } else {
-        object->unk38 += step;
+        object->unk0.unk34.vz += step;
     }
 
-    facing = (object->unk26 + (4 - D_800F49E8) * (ONE / 4)) & 0xFFF;
+    facing = (object->unk0.facing + (4 - D_800F49E8) * (ONE / 4)) & 0xFFF;
     direction = facing + ONE / 8;
     direction &= 0xFFF;
-    object->unk26 = facing;
+    object->unk0.facing = facing;
     direction /= ONE / 4;
-    object->unk26 = direction * (ONE / 4);
-    object->unk5C = -1;
-    object->unk1A = 8;
-    object->unk12 = actor->unk0.unkF;
+    object->unk0.facing = direction * (ONE / 4);
+    object->unk0.currentTile.x = -1;
+    object->unk0.unk1A = 8;
+    object->unk0.unk12 = actor->unk0.unkF;
     actor->unk0.unk13 = D_800E90A8;
     actor->unk5AC_3 = 1;
 }
@@ -1052,8 +1046,8 @@ int func_800A47C4(void)
 
     for (i = 0; i < 16; ++i) {
         D_800F45E0_t* temp_v1 = D_800F45E0[i];
-        if ((D_800F45E0[i] != NULL) && !D_800F45E0[i]->unk8_0 && !temp_v1->unk9_0
-            && temp_v1->unk1A) {
+        if ((D_800F45E0[i] != NULL) && !D_800F45E0[i]->unk0.skip && !temp_v1->unk0.unk9_0
+            && temp_v1->unk0.unk1A) {
             return 1;
         }
     }
@@ -1211,7 +1205,7 @@ void func_800A4D8C(void)
     int i;
 
     for (i = 0; i < 16; ++i) {
-        if ((D_800F45E0[i] != NULL) && (D_800F45E0[i]->unk0 != 0)) {
+        if ((D_800F45E0[i] != NULL) && (D_800F45E0[i]->unk0.nBones != 0)) {
             func_800B0908(D_800F45E0[i], vs_gametime_tickspeed / 2);
         }
     }
@@ -1796,7 +1790,7 @@ move:
             if (actor->unk5AC_28) {
                 object = D_800F45E0[actor->unk5AC_28];
 
-                if (object->unk1A == 0xFD) {
+                if (object->unk0.unk1A == 0xFD) {
                     for (i = object->unk16C.unk4; i < 15; i++) {
                         motion.vy += (signed char)D_800E91AC[i];
                         actor->unk6EC += (signed char)D_800E91AC[i];
@@ -3064,10 +3058,10 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
     int diff;
     int q;
     D_1F8003BC_t* sb = (D_1F8003BC_t*)0x1F8003BC;
-    D_800F45E0_t* actor = sb->unk18;
+    D_800F4538_t* actor = sb->unk18;
     int limit = sb->unk1C[arg1 & 7];
 
-    if (actor->unk5AC_9 << 9) {
+    if (actor->unk5AC_9 || actor->unk5AC_10) {
         return 0;
     }
 
@@ -3108,7 +3102,7 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
         }
     }
 
-    if (h - actor->unk1E < -0x17F) {
+    if (h - actor->unk0.position.vy < -0x17F) {
         return 0xFF;
     }
 

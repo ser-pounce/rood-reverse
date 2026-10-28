@@ -80,7 +80,9 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,libspu/S_INI libspu/S_SRMD libspu/S_
 # the value it just stored (andi a0,0xff) but reloads the field for its printf, and the
 # SetGraphQueue/DrawSyncCallback/MoveImage/MoveImage2 bodies only match with both. Every other
 # matched SYS function is byte-identical either way (func_8002A30C's copy loop is spelled to be).
-$(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1FLAGS += -fno-rerun-cse-after-loop -fno-force-mem
+# GetDrawEnv/GetDispEnv/PutDrawEnv/DrawOTagEnv call the libc memcpy, so SYS also keeps -fno-builtin
+# now that it is no longer in the global CC1FLAGS.
+$(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1FLAGS += -fno-rerun-cse-after-loop -fno-force-mem -fno-builtin
 
 $(BUILD)/config/SLUS_010.40/link.d: \
 	config/BATTLE/BATTLE.PRG/symbol_addrs.txt

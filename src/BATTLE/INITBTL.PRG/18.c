@@ -1,5 +1,7 @@
 #include "common.h"
+#include "12AC.h"
 #include "18.h"
+#include "FB0.h"
 #include "build/src/include/lbas.h"
 #include "../../SLUS_010.40/main.h"
 #include "../BATTLE.PRG/146C.h"
@@ -23,9 +25,7 @@ typedef struct {
 } System_dat_h;
 
 static void func_800FA6B8(void);
-void _initScriptFunctionTable(void);
 static void func_800F9CCC(void);
-void func_800FA7B0(void);
 
 #pragma vsstring(start)
 
@@ -307,8 +307,6 @@ static void _loadSystemDat(void)
 static void func_800F9AB0(void) { }
 
 static int func_800F9AB8(void) { return vs_battle_getEmptyObjectDataSlot(); }
-
-void func_800CB660(int);
 
 static void func_800F9AD8(void)
 {

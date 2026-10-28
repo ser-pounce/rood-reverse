@@ -2,6 +2,8 @@
 #include <rand.h>
 #include <abs.h>
 #include <inline_c.h>
+#include "30DB0.h"
+#include "5BF94.h"
 #include "vs_inline_c.h"
 #include "146C.h"
 #include "38C1C.h"
@@ -25,21 +27,8 @@ typedef struct {
     VECTOR scale;
 } D_800F3C58_t;
 
-void func_8008EB04(int*, int*);
-int func_800A0104(int, int);
-int func_800A3DB4(int, int, int);
-void func_800A41D0(D_800F4538_t*, int);
-int func_800A6EE8(SVECTOR*, int, int, int);
-int func_800A91DC(int, int, int);
-int func_800A92B8(int, int);
-int func_800AAD4C(int, int, int, int);
-int func_800AAE9C(D_800F4538_t*);
 void func_800AB358(int, u_char*);
-void func_800AB4F0(D_800F4538_t*);
-void func_800AB788(D_800F4538_t*, D_800F45E0_t*, int);
 void func_800AB9A4(void*);
-void func_800AC440(D_800F4538_t*, int, int);
-void func_800AC540(int, D_800F4538_t*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE46C(u_char*);
 void func_800AE474(u_char*);
@@ -56,12 +45,9 @@ void func_800B1A68(D_800F45E0_t*, MATRIX*);
 void func_800B396C(MATRIX*, VECTOR*);
 int func_800B3A68(void*, MATRIX*, int, void*);
 void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
-void func_800B4594(D_800F2458_t*, D_800F45E0_t*, int*, void*);
+void func_800B4594(D_800F2458_t*, D_800F45E0_t*, CVECTOR*, void*);
 void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
-void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, int*, void*);
-short func_800BEB00(void);
-int func_800CEF74(int);
-void func_800CF8BC(void);
+void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, CVECTOR*, void*);
 void func_800E4C28(int, int);
 void func_800E6898(void*);
 
@@ -763,7 +749,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
     if (arg0 == 1) {
         return;
     }
-    if (*((int*)&arg1->unk5B4 - 2) & 0xF0000000) {
+    if (arg1->unk5AC_28) {
         id = D_800E91A4[D_800F45E0[func_800A91DC(arg1->unk0.currentTile.x,
                                        arg1->unk0.currentTile.z, 1)]
                 ->unk16C.actorId];
@@ -1072,25 +1058,25 @@ void func_800AEF94(MATRIX* camera)
         int position;
         int height;
 
-        if (object == NULL || object->unk0 == 0) {
+        if (object == NULL || object->unk0.nBones == 0) {
             continue;
         }
 
-        if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk1A == 247) {
+        if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk0.unk1A == 247) {
             func_800B0908(object, vs_gametime_tickspeed / 2);
         }
 
-        position = *(int*)&object->unk1C;
-        scratch->offset.vz = object->unk20;
-        height = object->unk68->armatures[1].unk0;
+        position = *(int*)&object->unk0.position.vx;
+        scratch->offset.vz = object->unk0.position.vz;
+        height = object->unk0.unk68->armatures[1].unk0;
         *(int*)&scratch->offset = position;
         scratch->offset.vy += height / 2;
 
-        if (object->unk64.unk0 != 0) {
+        if (object->unk0.unk64.unk0 != 0) {
             func_800AB788(NULL, object, 0);
         }
 
-        if (object->unk9_0) {
+        if (object->unk0.unk9_0) {
             func_800AB9A4(object);
         }
 
@@ -1492,14 +1478,14 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     func_800B07DC(actor);
 
     if (!actor->unk0.unkA_0 && !actor->unk0.unkA_3 && !actor->unk0.unkA_5) {
-        *(int*)&actor->unk0.lastTouchedTile = *(int*)&actor->unk0.currentTile;
-        *(func_800ACF54_t*)&actor->unk0.unk4C = *(func_800ACF54_t*)&actor->unk0.position;
+        actor->unk0.lastTouchedTile = actor->unk0.currentTile;
+        memcpy(&actor->unk0.lastPosition, &actor->unk0.position, sizeof(SVECTOR));
 
         if (actor->unk0.unkC_0 == 0) {
             actor->unk1868 = *(int*)&actor->unk0.currentTile;
         }
 
-        actor->unk0.unk52 = actor->unk0.facing;
+        actor->unk0.lastPosition.pad = actor->unk0.facing;
     }
 
     if (actor->unk17FC != -2) {
@@ -1682,68 +1668,69 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
     int step;
     int mode;
     int other;
-    if (object->unk11) {
-        --object->unk11;
+    if (object->unk0.unk11) {
+        --object->unk0.unk11;
         return;
     }
 
-    if (object->unk18) {
-        step = object->unk3C / object->unk18;
-        object->unk3C -= step;
-        object->unk24 = (object->unk24 + step) & 0xFFF;
-        step = object->unk3E / object->unk18;
-        object->unk3E -= step;
-        object->unk26 = (object->unk26 + step) & 0xFFF;
-        step = object->unk40 / object->unk18;
-        object->unk40 -= step;
-        object->unk28 = (object->unk28 + step) & 0xFFF;
-        --object->unk18;
+    if (object->unk0.unk18) {
+        step = object->unk0.unk3C / object->unk0.unk18;
+        object->unk0.unk3C -= step;
+        object->unk0.unk24 = (object->unk0.unk24 + step) & 0xFFF;
+        step = object->unk0.unk3E / object->unk0.unk18;
+        object->unk0.unk3E -= step;
+        object->unk0.facing = (object->unk0.facing + step) & 0xFFF;
+        step = object->unk0.unk40 / object->unk0.unk18;
+        object->unk0.unk40 -= step;
+        object->unk0.unk28 = (object->unk0.unk28 + step) & 0xFFF;
+        --object->unk0.unk18;
     }
 
-    mode = object->unk1A;
+    mode = object->unk0.unk1A;
     if (mode == 0) {
         return;
     }
 
     if (mode == 255) {
-        if (object->unk34 == 0 && object->unk38 == 0) {
+        if (object->unk0.unk34.vx == 0 && object->unk0.unk34.vz == 0) {
             object->unk16C.unk4 = 0;
             goto fall;
         }
 
         object->unk16C.unk4 = 1;
-        step = object->unk34 / 2;
-        object->unk34 -= step;
-        object->unk1C += step;
-        if (object->unk34 < 0) {
-            if (object->unk34 >= -1) {
-                object->unk1C += object->unk34;
-                object->unk34 = 0;
+        step = object->unk0.unk34.vx / 2;
+        object->unk0.unk34.vx -= step;
+        object->unk0.position.vx += step;
+        if (object->unk0.unk34.vx < 0) {
+            if (object->unk0.unk34.vx >= -1) {
+                object->unk0.position.vx += object->unk0.unk34.vx;
+                object->unk0.unk34.vx = 0;
             }
-        } else if (object->unk34 < 2) {
-            object->unk1C += object->unk34;
-            object->unk34 = 0;
+        } else if (object->unk0.unk34.vx < 2) {
+            object->unk0.position.vx += object->unk0.unk34.vx;
+            object->unk0.unk34.vx = 0;
         }
 
-        step = object->unk38 / 2;
-        object->unk38 -= step;
-        object->unk20 += step;
-        if (object->unk38 < 0) {
-            if (object->unk38 >= -1) {
-                object->unk20 += object->unk38;
-                object->unk38 = 0;
+        step = object->unk0.unk34.vz / 2;
+        object->unk0.unk34.vz -= step;
+        object->unk0.position.vz += step;
+        if (object->unk0.unk34.vz < 0) {
+            if (object->unk0.unk34.vz >= -1) {
+                object->unk0.position.vz += object->unk0.unk34.vz;
+                object->unk0.unk34.vz = 0;
             }
-        } else if (object->unk38 < 2) {
-            object->unk20 += object->unk38;
-            object->unk38 = 0;
+        } else if (object->unk0.unk34.vz < 2) {
+            object->unk0.position.vz += object->unk0.unk34.vz;
+            object->unk0.unk34.vz = 0;
         }
 
         return;
     } else if (mode == 254) {
-        if ((object->unk1C & 0x7F) == 64 && (object->unk20 & 0x7F) == 64) {
-            scratch->rotation.vx = object->unk1C;
-            scratch->rotation.vz = object->unk20;
-            step = object->unk3A;
+        if ((object->unk0.position.vx & 0x7F) == 64
+            && (object->unk0.position.vz & 0x7F) == 64) {
+            scratch->rotation.vx = object->unk0.position.vx;
+            scratch->rotation.vz = object->unk0.position.vz;
+            step = object->unk0.unk34.pad;
             other = 128;
             if (step < 2) {
                 other = -128;
@@ -1755,23 +1742,25 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
                 scratch->rotation.vz += other;
             }
 
-            if (func_800A3DB4(scratch->rotation.vx, scratch->rotation.vz, object->unk1E)
-                && func_800A6EE8((SVECTOR*)&object->unk1C, 0, 0, 1) == object->unk1E) {
-                object->unk5C = 0xFF;
-                object->unk5E = 0xFF;
+            if (func_800A3DB4(
+                    scratch->rotation.vx, scratch->rotation.vz, object->unk0.position.vy)
+                && func_800A6EE8(&object->unk0.position, 0, 0, 1)
+                       == object->unk0.position.vy) {
+                object->unk0.currentTile.x = 0xFF;
+                object->unk0.currentTile.z = 0xFF;
             } else {
                 goto fall;
             }
         }
 
-        object->unk1C += object->unk34;
-        object->unk20 += object->unk38;
+        object->unk0.position.vx += object->unk0.unk34.vx;
+        object->unk0.position.vz += object->unk0.unk34.vz;
         return;
     } else if (mode == 253) {
         if (!func_800B101C(object)) {
             func_800E6898(object);
             func_800E6898(object);
-            func_800E4C28(object->unk5C, object->unk5E);
+            func_800E4C28(object->unk0.currentTile.x, object->unk0.currentTile.z);
         }
 
         return;
@@ -1779,39 +1768,41 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         u_short y;
 
     fall:
-        object->unk5C = object->unk1C / 128;
-        object->unk5E = object->unk20 / 128;
-        step = func_800A6EE8((SVECTOR*)&object->unk1C, 0, 0, 2);
-        if (object->unk1E < step) {
-            object->unk36 += 3;
-            object->unk1E += object->unk36;
-            if (object->unk1E < step) {
-                object->unk1A = 0xFC;
+        object->unk0.currentTile.x = object->unk0.position.vx / 128;
+        object->unk0.currentTile.z = object->unk0.position.vz / 128;
+        step = func_800A6EE8(&object->unk0.position, 0, 0, 2);
+        if (object->unk0.position.vy < step) {
+            object->unk0.unk34.vy += 3;
+            object->unk0.position.vy += object->unk0.unk34.vy;
+            if (object->unk0.position.vy < step) {
+                object->unk0.unk1A = 0xFC;
                 goto children;
             }
         }
 
-        y = object->unk1E;
-        object->unk1E = step;
-        object->unk36 += step - y;
+        y = object->unk0.position.vy;
+        object->unk0.position.vy = step;
+        object->unk0.unk34.vy += step - y;
         other = object->unk16C.actorId;
         if (other >= 5) {
             object->unk16C.unk0_4 = 0;
-            other = func_800A91DC(object->unk5C, object->unk5E, 1);
+            other =
+                func_800A91DC(object->unk0.currentTile.x, object->unk0.currentTile.z, 1);
             if (other) {
                 other = D_800F45E0[other]->unk16C.actorId;
                 if (other >= 5) {
                     if (other == object->unk16C.actorId) {
-                        object->unk1A = 0xFD;
+                        object->unk0.unk1A = 0xFD;
                         object->unk16C.unk4 = 0;
                         object->unk16C.unk0_4 = 2;
-                        vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
+                        vs_main_panSfx(0x7E, 0x30, &object->unk0.position);
                     } else {
                         object->unk16C.unk0_4 = 1;
-                        vs_main_panSfx(0x7E, 0x31, (SVECTOR*)&object->unk1C);
-                        object->unk1A = 0;
+                        vs_main_panSfx(0x7E, 0x31, &object->unk0.position);
+                        object->unk0.unk1A = 0;
                         func_800E6898(object);
-                        func_800E4C28(object->unk5C, object->unk5E);
+                        func_800E4C28(
+                            object->unk0.currentTile.x, object->unk0.currentTile.z);
                     }
 
                     goto children;
@@ -1819,37 +1810,38 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
             }
         }
 
-        object->unk5C = object->unk1C / 128;
-        object->unk5E = object->unk20 / 128;
+        object->unk0.currentTile.x = object->unk0.position.vx / 128;
+        object->unk0.currentTile.z = object->unk0.position.vz / 128;
         func_800E6898(object);
-        func_800E4C28(object->unk5C, object->unk5E);
+        func_800E4C28(object->unk0.currentTile.x, object->unk0.currentTile.z);
         if (object->unk16C.actorId == 1) {
             if (--object->unk16C.unk1 == 0) {
-                object->unk1A = 0xF8;
+                object->unk0.unk1A = 0xF8;
                 object->unk16C.unk4 = 0;
                 return;
             }
         }
 
-        step = object->unk1A;
+        step = object->unk0.unk1A;
         if (step == 254) {
-            vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
-            object->unk1A = 0xFB;
+            vs_main_panSfx(0x7E, 0x30, &object->unk0.position);
+            object->unk0.unk1A = 0xFB;
             object->unk16C.unk4 = 0;
         } else if (step == 255 || step == 249) {
-            object->unk1A = 0;
+            object->unk0.unk1A = 0;
         } else {
-            vs_main_panSfx(0x7E, 0x30, (SVECTOR*)&object->unk1C);
-            object->unk1A = 0xFA;
+            vs_main_panSfx(0x7E, 0x30, &object->unk0.position);
+            object->unk0.unk1A = 0xFA;
             object->unk16C.unk4 = 0;
         }
     children:
         for (step = 0; step < 16; ++step) {
             D_800F45E0_t* child = D_800F45E0[step];
 
-            if (child != NULL && !child->unk8_0 && child->unk16C.unk3 == object->unkF) {
-                child->unk1E += object->unk36;
-                if (object->unk1A == 0) {
+            if (child != NULL && !child->unk0.skip
+                && child->unk16C.unk3 == object->unk0.unkF) {
+                child->unk0.position.vy += object->unk0.unk34.vy;
+                if (object->unk0.unk1A == 0) {
                     child->unk16C.unk3 = 0xFF;
                 }
             }
@@ -1876,16 +1868,16 @@ void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
         return;
     }
 
-    step = object->unk34 / object->unk1A;
-    object->unk34 -= step;
-    object->unk1C += step;
-    step = object->unk36 / object->unk1A;
-    object->unk36 -= step;
-    object->unk1E += step;
-    step = object->unk38 / object->unk1A;
-    object->unk38 -= step;
-    object->unk20 += step;
-    if (--object->unk1A == 0 && object->unk12 == 255) {
+    step = object->unk0.unk34.vx / object->unk0.unk1A;
+    object->unk0.unk34.vx -= step;
+    object->unk0.position.vx += step;
+    step = object->unk0.unk34.vy / object->unk0.unk1A;
+    object->unk0.unk34.vy -= step;
+    object->unk0.position.vy += step;
+    step = object->unk0.unk34.vz / object->unk0.unk1A;
+    object->unk0.unk34.vz -= step;
+    object->unk0.position.vz += step;
+    if (--object->unk0.unk1A == 0 && object->unk0.unk12 == 255) {
         goto fall;
     }
 }
@@ -1900,20 +1892,20 @@ int func_800B101C(D_800F45E0_t* object)
         frame = 1;
     }
 
-    value = object->unk1A;
+    value = object->unk0.unk1A;
 
     if (value == 253) {
-        object->unk1E += D_800E91AC[frame];
-        object->unk24 += D_800E91BC[frame];
-        object->unk26 += D_800E91CC[frame];
-        object->unk28 += D_800E91DC[frame];
+        object->unk0.position.vy += D_800E91AC[frame];
+        object->unk0.unk24 += D_800E91BC[frame];
+        object->unk0.facing += D_800E91CC[frame];
+        object->unk0.unk28 += D_800E91DC[frame];
 
         if (frame == 14) {
             goto complete;
         }
     } else if (value == 251) {
-        value = object->unk3A;
-        object->unk20 += D_800E91F0[frame];
+        value = object->unk0.unk34.pad;
+        object->unk0.position.vz += D_800E91F0[frame];
         delta = D_800E91FC[frame];
 
         if (value == 0 || value == 3) {
@@ -1921,17 +1913,17 @@ int func_800B101C(D_800F45E0_t* object)
         }
 
         if (value & 1) {
-            object->unk28 += delta;
+            object->unk0.unk28 += delta;
         } else {
-            object->unk24 += delta;
+            object->unk0.unk24 += delta;
         }
 
         if (frame == 9) {
             goto complete;
         }
     } else if (value == 250) {
-        object->unk1E += D_800E91EC[frame];
-        object->unk36 = D_800E91EC[frame];
+        object->unk0.position.vy += D_800E91EC[frame];
+        object->unk0.unk34.vy = D_800E91EC[frame];
 
         if (frame == 3) {
             goto complete;
@@ -1939,9 +1931,9 @@ int func_800B101C(D_800F45E0_t* object)
     } else if (value == 249) {
         int orientation;
 
-        object->unk1E += D_800E9208[frame];
+        object->unk0.position.vy += D_800E9208[frame];
         value = D_800E9218[frame];
-        orientation = object->unk3A;
+        orientation = object->unk0.unk34.pad;
         delta = D_800E9228[frame];
 
         if (orientation >= 2) {
@@ -1953,36 +1945,36 @@ int func_800B101C(D_800F45E0_t* object)
         }
 
         if (orientation & 1) {
-            object->unk1C += value;
-            object->unk28 += delta;
+            object->unk0.position.vx += value;
+            object->unk0.unk28 += delta;
         } else {
-            object->unk20 += value;
-            object->unk24 += delta;
+            object->unk0.position.vz += value;
+            object->unk0.unk24 += delta;
         }
 
         if (frame == 14) {
-            func_800A0104(object->unkF, object->unk16C.unk2);
+            func_800A0104(object->unk0.unkF, object->unk16C.unk2);
             goto complete;
         }
     } else if (value == 248) {
         if (frame >= 9) {
-            object->unk1E += 3;
+            object->unk0.position.vy += 3;
 
             if (frame == 9) {
                 vs_main_memcpy(object->unk14C, object->unk12C, sizeof object->unk14C);
-                object->unk9_0 = 0xC;
+                object->unk0.unk9_0 = 0xC;
             }
 
             if (frame == 40) {
-                func_80099D6C(object->unkF);
+                func_80099D6C(object->unk0.unkF);
                 goto complete;
             }
         }
     } else if (value == 247) {
-        object->unk1E += D_800E9238[frame];
-        object->unk2C = D_800E9248[frame];
-        object->unk2E = D_800E9258[frame];
-        object->unk30 = D_800E9268[frame];
+        object->unk0.position.vy += D_800E9238[frame];
+        object->unk0.unk2C = D_800E9248[frame];
+        object->unk0.unk2E = D_800E9258[frame];
+        object->unk0.unk30 = D_800E9268[frame];
 
         if (frame == 14) {
             goto complete;
@@ -1993,7 +1985,7 @@ int func_800B101C(D_800F45E0_t* object)
     return 1;
 
 complete:
-    object->unk1A = 0;
+    object->unk0.unk1A = 0;
     return 0;
 }
 
@@ -2006,10 +1998,11 @@ int func_800B13CC(int arg0, int arg1, int arg2)
 
         D_800F45E0_t* temp_v1 = D_800F45E0[i];
 
-        if ((temp_v1 != NULL) && !(temp_v1->unk8_0) && !(temp_v1->unk16C.unk0_3)
-            && (temp_v1->unk5C == arg0) && (temp_v1->unk5E == arg1)) {
+        if ((temp_v1 != NULL) && !(temp_v1->unk0.skip) && !(temp_v1->unk16C.unk0_3)
+            && (temp_v1->unk0.currentTile.x == arg0)
+            && (temp_v1->unk0.currentTile.z == arg1)) {
 
-            int temp_v1_2 = temp_v1->unk1E;
+            int temp_v1_2 = temp_v1->unk0.position.vy;
 
             if ((arg2 < temp_v1_2) && (temp_v1_2 < var_a3)) {
                 var_a3 = temp_v1_2;

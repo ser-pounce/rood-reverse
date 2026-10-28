@@ -1,0 +1,310 @@
+#pragma once
+#include <sys/types.h>
+#include <libgte.h>
+#include "../../SLUS_010.40/main.h"
+#include "actor.h"
+#include "func_8006B57C_t.h"
+#include "menuState.h"
+#include "uiEquipment.h"
+
+typedef struct {
+    int x : 12;
+    int y : 12;
+    u_int alignment : 2;
+    u_int flags : 4;
+} textOffset;
+
+enum vs_battle_warlockSpellIds_e {
+    vs_battle_spell_solidShock = 0x61,
+    vs_battle_spell_lightningBolt,
+    vs_battle_spell_fireball,
+    vs_battle_spell_vulcanLance,
+    vs_battle_spell_aquaBlast,
+    vs_battle_spell_spiritSurge,
+    vs_battle_spell_darkChant,
+    vs_battle_spell_exorcism,
+    vs_battle_spell_banish,
+    vs_battle_spell_explosion,
+    vs_battle_spell_thunderburst = 0x6E,
+    vs_battle_spell_flameSphere = 0x72,
+    vs_battle_spell_gaeaStrike = 0x76,
+    vs_battle_spell_avalanche = 0x7A,
+    vs_battle_spell_radialSurge = 0x7E,
+    vs_battle_spell_meteor = 0x82,
+    vs_battle_spell_drainHeart = 0x5E,
+    vs_battle_spell_drainMind = 0x5F
+};
+
+enum vs_battle_menuItemScrollable {
+    menuItem_scrollNone,
+    menuItem_scrollUp,
+    menuItem_scrollDown
+};
+
+enum vs_battle_menuItemState {
+    menuItemStateInactive,
+    menuItemStateIdle,
+    menuItemStateSlideX,
+    menuItemStateSlideY,
+    menuItemStateSlideXY,
+    menuItemStateDismiss = 5
+};
+
+typedef struct {
+    u_char state;
+    u_char w;
+    u_char backgroundWidth;
+    u_char animationStep;
+    u_char gradientState;
+    u_char isScrollable;
+    u_char selected;
+    u_char unselectable;
+    u_char buttonId;
+    u_char rowIcon;
+    u_char fontColor;
+    u_char invertGradient;
+    u_char material;
+    u_char outsetIcon;
+    u_short itemPage;
+    u_short count;
+    u_short max;
+    short x;
+    short y;
+    short targetPosition0;
+    short targetPosition1;
+    char text[32];
+    char* subText;
+} vs_battle_menuItem_t;
+
+enum vs_battle_menuStates {
+    menuStateMainMenu,
+    menuStateNoneClosing = 0x1F,
+    menuStateNoneClosed = 0x3F,
+    menuStateOpenedFromMainMenu = 0x40
+};
+
+typedef struct {
+    char currentMenu;
+    char returnState;
+    char executeAbilityType;
+    char loading;
+    vs_main_CdQueueSlot* cdQueue;
+} vs_battle_menuState_t;
+
+typedef struct {
+    u_int unk0_0 : 4;
+    u_int unk0_4 : 2;
+    u_int unk0_6 : 2;
+    u_int unk0_8 : 4;
+    u_int unk0_12 : 4;
+    u_int arrowAnimFrame : 8;
+    u_int unk0_24 : 6;
+    u_int done : 1;
+    u_int unk0_31 : 1;
+} vs_battle_textBox_fields;
+
+typedef struct {
+    vs_battle_textBox_fields unk0;
+    short unk4;
+    short unk6;
+    char* string;
+    u_short speed;
+    u_short prevChunksPrinted;
+    short xIndent;
+    short yIndent;
+    short x;
+    short y;
+    short centerX;
+    short centerY;
+    short state;
+    u_char brightness;
+    u_char unk1F;
+    char charsPerLine;
+    char lineCount;
+    char unk22;
+    char unk23;
+    short unk24;
+    short unk26;
+    short unk28;
+    short unk2A;
+    short unk2C;
+    short unk2E;
+} vs_battle_textBox;
+
+typedef struct {
+    char cursorMemories[52];
+    char unk34[6];
+    struct {
+        char currentItemCategory;
+        char unk1;
+        u_short unk2[8];
+    } unk3A;
+    char unk4C[4];
+    char unk50;
+    char unk51[51];
+    char selectedEquipment;
+    char unk85[25];
+    u_short unk9E;
+    char unkA0[0x12];
+    char unkB2[0x40];
+} D_800F4EE8_t;
+
+typedef struct {
+    short unk0;
+    short unk2;
+    union {
+        struct {
+            u_int unk0_0 : 9;
+            u_int unk0_9 : 5;
+            u_int unk0_14 : 5;
+            u_int unk0_19 : 13;
+        } fields;
+        u_short u16[2];
+        int s32;
+    } executeAbility;
+} D_800F18EC_t;
+
+typedef struct {
+    int integers[10];
+    char* strings[10];
+} vs_battle_stringContext_t;
+
+int vs_battle_setTextBox(int, char*);
+char* vs_battle_printf(char*, char*);
+/**
+ * Renders ASCII text and chains it to the provided OT.
+ */
+void vs_battle_renderTextRawColor(char const* text, int xy, int color, u_long* nextPrim);
+/**
+ * Same as vs_battle_renderTextRawColor, except color is predefined as gray midpoint
+ * (0x808080).
+ */
+void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim);
+/**
+ * Renders a glyph from the font table at the specified location.
+ * @return Glyph width
+ */
+int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ot);
+void vs_battle_setFontStyle(int arg0);
+int vs_battle_loadMenuPrg(int arg0);
+
+enum vs_battle_informationTextBoxHeader {
+    informationTextBoxHeaderNone,
+    informationTextBoxHeaderCaution,
+    informationTextBoxHeaderInformation,
+    informationTextBoxHeaderCheck
+};
+
+/**
+ * Initializes textbox ID 7
+ */
+void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader flags);
+/**
+ * Lerps between two predefined colors, used for menu item backgrounds.
+ *
+ * @param gradient Lerp weight from 0-8
+ * @param colorIndex Valid indices are 0-8, 16, and 24
+ */
+int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness);
+/**
+ * Gets menu row element.
+ */
+vs_battle_menuItem_t* vs_battle_getMenuItem(int row);
+/**
+ * Initializes a menu row element.
+ *
+ * @return The populated row.
+ */
+vs_battle_menuItem_t* vs_battle_setMenuItem(
+    int row, int x, int y, int w, int backgroundWidth, char* text);
+void vs_battle_renderMenuItem(vs_battle_menuItem_t*);
+int func_800C930C(int);
+/**
+ * Renders a digit or symbol from the battle digits.
+ *
+ * @param font 0 = small, 1 = large, 2 = symbols
+ * @param before Can be NULL, in which case the pointer at (scratchpad + 4)[1] is used.
+ * @return The position immediately to the left of the rendered value.
+ */
+int vs_battle_renderValue(int font, int xy, int value, u_long* before);
+/**
+ * Renders HP / MP / Risk bars
+ */
+void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy);
+/**
+ * Retrieves the status effects currently applied.
+ *
+ * @return Packed bits.
+ */
+int vs_battle_getStatusFlags(vs_battle_actor2*);
+int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb*);
+/**
+ * Determines whether the selected spell class is available
+ *
+ * @param spellClass Class from 0-3
+ * @return Bool
+ */
+int vs_battle_isSpellClassUnlocked(int spellClass);
+int vs_battle_chainAbilitiesUnlocked(int);
+void func_800CB654(int);
+void vs_battle_rMemzero(void* arg0, int arg1);
+void vs_battle_rMemcpy(void* dest, void const* src, int size);
+/**
+ * Converts the lowest decimal digit to BCD.
+ *
+ * @return Packed value
+ * - Bits 0-3: Lowest decimal digit from 0-9
+ * - Bits 4+: value / 10
+ */
+int vs_battle_toBCD(int value);
+int vs_battle_drawCursor(int animStep, int position);
+u_int vs_battle_keystreamBits(int value);
+void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh);
+void vs_battle_insertTpage(int arg0, u_long* arg1);
+vs_battle_textBox* vs_battle_getTextBox(int arg0);
+void vs_battle_initTextBox(
+    int id, int flags, int x, int y, int w, int h, int centerX, int centerY);
+int vs_battle_dismissTextBox(int);
+void vs_battle_insertTpage(int, u_long*);
+void vs_battle_renderImage(int xy, void* buffer, int wh);
+int vs_battle_getTextLineLength(char* str);
+extern u_short vs_battle_menuStrings[];
+extern char* vs_battle_limbNames[];
+extern char vs_battle_characterWidths[];
+extern u_short vs_battle_statusStrings[];
+extern char D_800EB9AE;
+extern char D_800EB9AF;
+extern int D_800EB9B0;
+extern vs_battle_lootListNode* D_800EB9C4;
+extern vs_battle_loot* D_800EB9C8;
+extern vs_battle_menuItem_t* vs_battle_menuItems;
+extern char vs_battle_rowAnimationSteps[];
+extern int D_800EBBEC[];
+extern char D_800EBBFC[];
+extern char D_800EBC00[];
+extern u_short vs_battle_statusIconTexOffsets[];
+extern u_int D_800EBC54[];
+extern char vs_battle_animationIndices[];
+extern char vs_battle_warlockSpellIds[];
+extern char vs_battle_shamanSpellIds[];
+extern char vs_battle_sorcererSpellIds[];
+extern char vs_battle_enchanterSpellIds[];
+extern char vs_battle_cursorBrightnessAnimation[];
+extern char vs_battle_chainAbilityOffsets[];
+extern char vs_battle_defenseAbilityOffsets[];
+extern char vs_battle_shortcutInvoked;
+extern char D_800F4E6B;
+extern int* vs_battle_rowTypeBuf;
+extern char vs_battle_unlockedBreakArt;
+extern char* vs_battle_stringBuf;
+extern char vs_battle_submenuStates[16];
+extern char vs_battle_lowerScreenUiState;
+extern D_800F18EC_t D_800F4E98;
+extern int D_800F4EA0;
+extern D_800F4EE8_t D_800F4EE8;
+extern char vs_battle_unlockedBattleAbility;
+extern char D_800F4FDB;
+extern vs_battle_textBox vs_battle_textBoxes[];
+extern u_char vs_battle_miscItemInvoked;
+extern vs_battle_stringContext_t vs_battle_stringContext;
+extern vs_battle_menuState_t vs_battle_menuState;

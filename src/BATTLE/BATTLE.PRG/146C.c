@@ -28,6 +28,7 @@
 #include "zone.h"
 #include "scratch.h"
 #include "mainInterface.h"
+#include "battleUnk.h"
 
 #define CAMERA_INPUT_LOCKED()                                                           \
     ((D_800F196C == 3) || ((D_800F196C == 2) && ((_cameraMode == 4) || (_cameraMode == 11))))

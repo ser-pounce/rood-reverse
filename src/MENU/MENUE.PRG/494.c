@@ -5,7 +5,7 @@
 #include "../MAINMENU.PRG/2D10.h"
 #include "../MAINMENU.PRG/58EC.h"
 #include "../../BATTLE/BATTLE.PRG/menuState.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
+#include "../../BATTLE/BATTLE.PRG/battleUi.h"
 #include "gpu.h"
 #include "lbaMacros.h"
 #include "build/src/include/lbas.h"

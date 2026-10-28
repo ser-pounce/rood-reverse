@@ -6,7 +6,7 @@
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #define VS_PARTICLE_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"

@@ -11,6 +11,8 @@
 #include "build/src/include/lbas.h"
 #include <abs.h>
 #include <rand.h>
+#include "battleEffect.h"
+#include "battleUnk.h"
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) < (b) ? (b) : (a))

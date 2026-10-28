@@ -9,7 +9,7 @@
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "src/MENU/MENU0.PRG/15AC.h"
 #include "src/MENU/MENU1.PRG/30.h"

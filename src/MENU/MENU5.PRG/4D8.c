@@ -6,7 +6,7 @@
 #include "src/BATTLE/BATTLE.PRG/menuState.h"
 #include "src/BATTLE/BATTLE.PRG/2EA3C.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"

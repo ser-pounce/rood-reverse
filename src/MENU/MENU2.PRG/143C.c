@@ -4,7 +4,7 @@
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "build/assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "build/assets/MENU/MENU2.PRG/battleAbilitiesMenu.h"
 #include <memory.h>

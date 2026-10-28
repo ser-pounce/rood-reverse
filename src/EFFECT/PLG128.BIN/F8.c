@@ -3,7 +3,7 @@
 #define VS_EFFECT_NAME vs_effect_bloodySin
 
 #include "src/BATTLE/BATTLE.PRG/camera.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 

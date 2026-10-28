@@ -15,6 +15,7 @@
 #include <libgte.h>
 #include <libetc.h>
 #include <memory.h>
+#include "battleUnk.h"
 
 typedef struct {
     u_char unk0[0x30];

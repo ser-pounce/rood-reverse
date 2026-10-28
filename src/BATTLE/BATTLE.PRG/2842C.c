@@ -2,7 +2,7 @@
 #include "30DB0.h"
 #include "38C1C.h"
 #include "573B8.h"
-#include "5BF94.h"
+#include "battleUi.h"
 #include "gpu.h"
 #include "src/SLUS_010.40/main.h"
 #include <abs.h>

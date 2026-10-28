@@ -28,6 +28,21 @@
 #include <abs.h>
 #include "camera.h"
 #include "scratch.h"
+#include "battleEffect.h"
+#include "battleUnk.h"
+
+typedef struct {
+    short unk0;
+    short unk2;
+} func_800CFE1C_t;
+
+enum vs_battle_limbStatus {
+    limbStatusCritical,
+    limbStatusDamaged,
+    limbStatusWounded,
+    limbStatusGood,
+    limbStatusExcellent
+};
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -258,6 +273,7 @@ void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
+int func_800CABE0(int);
 void func_800CCA90(int);
 void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 void func_800CD158(int);

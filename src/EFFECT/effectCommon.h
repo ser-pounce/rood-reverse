@@ -3,7 +3,7 @@
 #ifndef VS_EFFECT_COMMON_H
 #define VS_EFFECT_COMMON_H
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "gpu.h"
 #include <inline_c.h>
 

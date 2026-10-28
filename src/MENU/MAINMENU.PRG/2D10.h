@@ -1,6 +1,6 @@
 #pragma once
 #include "src/SLUS_010.40/main.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 
 /**
  * Initializes the specified weapon details row.

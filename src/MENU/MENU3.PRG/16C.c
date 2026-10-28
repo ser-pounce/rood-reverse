@@ -5,7 +5,7 @@
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU3.PRG/menuText.h"

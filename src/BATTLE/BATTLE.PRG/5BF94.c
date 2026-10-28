@@ -330,7 +330,6 @@ int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
 void func_800D6E24(func_800D2904_t*, void*);
-void func_800D8060(void*);
 void vs_effpurge_exec(void);
 
 extern int D_8005046C;

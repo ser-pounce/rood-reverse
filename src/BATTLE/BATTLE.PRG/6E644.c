@@ -95,6 +95,7 @@ typedef struct {
     signed char unk0_6 : 2;
 } D_800F16EC_t;
 
+// TODO: Partial view of vs_battle_actor with different fields, maybe merge.
 typedef struct {
     char unk0[8];
     u_char unk8;
@@ -122,7 +123,7 @@ typedef struct {
     u_int unk34_15 : 17;
     char unk38[4];
     vs_battle_actor2* unk3C;
-} _hitEntity_t2;
+} vs_battle_actorView_t;
 
 typedef struct {
     u_int unk0 : 1;
@@ -235,7 +236,7 @@ typedef struct func_800E78F4_t {
     char unk45[3];
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
-    _hitEntity_t2* unk54;
+    vs_battle_actorView_t* unk54;
     D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
     SVECTOR* unk60;
@@ -1850,7 +1851,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E644", func_800DBD80);
 
 void func_800DBF00(func_800E78F4_t* arg0)
 {
-    _hitEntity_t2* data = arg0->unk54;
+    vs_battle_actorView_t* data = arg0->unk54;
     func_800E78F4_t* node;
 
     arg0->unk12F = 0;
@@ -1927,7 +1928,7 @@ void func_800DC0D0(void)
     state = D_800F58BC->unk1C;
 
     do {
-        _hitEntity_t2* data = state->unk54;
+        vs_battle_actorView_t* data = state->unk54;
 
         if (state->unk1A4[0].unk0_6 != 2) {
             if (state->unk12F == 0) {
@@ -2826,7 +2827,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
     int i;
     int j;
     func_800E78F4_t* entry;
-    _hitEntity_t2* temp_t1;
+    vs_battle_actorView_t* temp_t1;
 
     if (arg0 == NULL) {
         return;
@@ -3372,7 +3373,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     u_char* tile =
         &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
     int old = *tile;
-    _hitEntity_t2* actor = arg0->unk54;
+    vs_battle_actorView_t* actor = arg0->unk54;
     int result;
 
     *tile = func_800E1850(old, arg0->unk34, arg0->unk4C.vy);
@@ -4095,7 +4096,7 @@ void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
 void func_800E5A9C(func_800E78F4_t* arg0, func_800E5A9C_t* arg1)
 {
     static const u_char D_80069C08[] = { 9, 7, 0, 0 };
-    _hitEntity_t2* actor = arg0->unk54;
+    vs_battle_actorView_t* actor = arg0->unk54;
     u_int range = D_80069C1C[arg1->unk0_18];
     u_int step;
     int mode;
@@ -4265,7 +4266,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     D_800F5878[id] = state;
     func_800E4288(state, sizeof *state);
     state->unk88 = id;
-    state->unk54 = (_hitEntity_t2*)actor;
+    state->unk54 = (vs_battle_actorView_t*)actor;
     model = actor->unk44;
     state->unk58 = model;
     state->unk5C = actor->unk3C;
@@ -4703,7 +4704,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
 
         if (func_800E7698(arg0) != 0) {
             if (temp_s0->unkA != 0) {
-                _hitEntity_t2* temp_a1 = arg0->unk54;
+                vs_battle_actorView_t* temp_a1 = arg0->unk54;
 
                 if (temp_a1->unk3C->limbs[4].hp >= 2) {
                     temp_a1->unkC = 4;

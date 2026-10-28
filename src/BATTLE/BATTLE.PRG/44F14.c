@@ -14,6 +14,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "../../SLUS_010.40/31724.h"
 #include "../../SLUS_010.40/32154.h"
+#include "scratch.h"
 
 typedef struct {
     u_char unk0[8];

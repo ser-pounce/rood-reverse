@@ -1,6 +1,6 @@
 #include "common.h"
 #include "../MAINMENU.PRG/224.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/actor.h"
 #include "../../BATTLE/BATTLE.PRG/2842C.h"
 #include "../../BATTLE/BATTLE.PRG/30DB0.h"
 #include "../../BATTLE/BATTLE.PRG/44F14.h"

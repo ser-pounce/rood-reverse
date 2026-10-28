@@ -3,6 +3,7 @@
  * helpers are named after it. */
 
 #include "src/EFFECT/entry.h"
+#include "src/BATTLE/BATTLE.PRG/camera.h"
 #define VS_PARTICLE_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"

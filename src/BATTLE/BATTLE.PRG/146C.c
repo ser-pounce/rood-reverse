@@ -24,6 +24,10 @@
 #include <limits.h>
 #include <memory.h>
 #include <rand.h>
+#include "camera.h"
+#include "zone.h"
+#include "scratch.h"
+#include "mainInterface.h"
 
 #define CAMERA_INPUT_LOCKED()                                                           \
     ((D_800F196C == 3) || ((D_800F196C == 2) && ((_cameraMode == 4) || (_cameraMode == 11))))
@@ -422,6 +426,8 @@ void func_8008B4BC(int arg0);
 void _vsBattleNop2(int arg0);
 int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
+void func_8008B1FC(void*);
+void func_8008B590(MATRIX*, int);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
 D_800F1D08_t* func_8008BAC8(int, int, int);
@@ -429,6 +435,7 @@ _mpdRoomSectionA* func_8008BC04(int, int, int);
 void func_8008BD74(_mpdRoomSectionA*);
 int func_8008BEBC(_mpdRoomSectionA* arg0);
 int func_8008BF48(_mpdRoomSectionA*);
+void func_8008C0C0(void);
 void func_8008C070(int arg0, _mpdRoomSectionA* arg1);
 int func_8008C1C8(_mpdRoomSectionA* arg0);
 int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
@@ -436,6 +443,7 @@ int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
+void func_8008CEB0(void);
 int func_8008D2C0(SVECTOR*);
 int func_8008D418(void);
 _mpdRoomSection9* func_8008D438(int, int, int);
@@ -448,6 +456,7 @@ void func_8008D710(void);
 int _getDoorId(int);
 void func_800D82A8(int);
 short func_8008DC7C(int arg0, int arg1);
+void func_8008DF14(void);
 void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
 _mpdRoomSection13* func_8008E370(int* arg0);

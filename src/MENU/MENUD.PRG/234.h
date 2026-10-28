@@ -1,5 +1,5 @@
 #pragma once
-#include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/uiEquipment.h"
 
 int vs_menuD_exec(u_char*);
 void vs_menuD_initUiWeapon(

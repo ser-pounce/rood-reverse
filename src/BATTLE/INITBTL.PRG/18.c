@@ -12,6 +12,11 @@
 #include "../BATTLE.PRG/5BF94.h"
 #include "../BATTLE.PRG/6E644.h"
 #include <memory.h>
+#include "src/BATTLE/BATTLE.PRG/camera.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
+#include "src/BATTLE/BATTLE.PRG/zone.h"
+#include "scratch.h"
+#include "src/BATTLE/BATTLE.PRG/mainInterface.h"
 
 typedef struct {
     size_t unk0;

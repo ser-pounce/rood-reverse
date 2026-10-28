@@ -26,6 +26,8 @@
 #include <libetc.h>
 #include <rand.h>
 #include <abs.h>
+#include "camera.h"
+#include "scratch.h"
 
 typedef struct {
     u_int unk0_0 : 8;

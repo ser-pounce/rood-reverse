@@ -7,6 +7,8 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
+#include "scratch.h"
+#include "30DB0.h"
 
 typedef struct {
     u_char unk0;

@@ -4,7 +4,7 @@
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../MAINMENU.PRG/58EC.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/menuState.h"
 #include "../../BATTLE/BATTLE.PRG/5BF94.h"
 #include "gpu.h"
 #include "lbaMacros.h"
@@ -14,6 +14,7 @@
 #include <libetc.h>
 #include <stdio.h>
 #include <libgpu.h>
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 typedef struct {
     int unk0;

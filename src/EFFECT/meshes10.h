@@ -3,6 +3,7 @@
  * point is named by entry.h. */
 
 #include "src/EFFECT/entry.h"
+#include "scratch.h"
 #define VS_MESH10_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"

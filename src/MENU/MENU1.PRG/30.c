@@ -2,7 +2,7 @@
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "build/assets/MENU/MENU1.PRG/strings.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"

@@ -3489,8 +3489,7 @@ void func_8007053C(void)
 
     for (i = 0; i < D_800F19CC->unk2C00; ++i) {
         if (D_800E81C4[vs_main_actions[action].unk2_4]) {
-            if (func_800C1564(
-                    (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
+            if (func_800C1564(&D_800F19CC->unk29B0, &D_800F19CC->unk29C0[i].unk0)) {
                 vs_main_memcpy(&D_800F19CC->unk29C0[kept], &D_800F19CC->unk29C0[i],
                     sizeof(D_800F19CC_t5));
                 func_8008631C(action, D_800F19CC->unk8.unk4.unk0.targetActor,
@@ -3499,8 +3498,7 @@ void func_8007053C(void)
                 func_8006F630(&D_800F19CC->unk29C0[kept], &result, &result.unk4C[0]);
                 ++kept;
             }
-        } else if (func_800C1564(
-                       (void*)&D_800F19CC->unk29B0, (void*)&D_800F19CC->unk29C0[i])) {
+        } else if (func_800C1564(&D_800F19CC->unk29B0, &D_800F19CC->unk29C0[i].unk0)) {
             D_800F19CC->unk29C0[kept].unk8 = 16;
             D_800F19CC->unk29C0[kept].unkA = -1;
             D_800F19CC->unk29C0[kept].unk9 = D_800F19CC->unk29C0[i].unk9;
@@ -4011,8 +4009,8 @@ void func_800719FC(int arg0 __attribute__((unused)))
 
                     if (part >= 0) {
                         func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
-                        if (func_800C1564((void*)&D_800F19CC->unk29B0,
-                                (void*)&D_800F19CC->unk29C0[count])) {
+                        if (func_800C1564(&D_800F19CC->unk29B0,
+                                          &D_800F19CC->unk29C0[count].unk0)) {
                             D_800F19CC->unk29C0[count].unk8 = func_800A1648(i, part, 0);
                             D_800F19CC->unk29C0[count].unkA = limb;
                             D_800F19CC->unk29C0[count].unk9 = i;
@@ -4026,8 +4024,8 @@ void func_800719FC(int arg0 __attribute__((unused)))
                 }
             } else {
                 func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
-                if (func_800C1564((void*)&D_800F19CC->unk29B0,
-                        (void*)&D_800F19CC->unk29C0[count])) {
+                if (func_800C1564(&D_800F19CC->unk29B0,
+                                  &D_800F19CC->unk29C0[count].unk0)) {
                     D_800F19CC->unk29C0[count].unk8 = 16;
                     D_800F19CC->unk29C0[count].unkA = -1;
                     D_800F19CC->unk29C0[count].unk9 = i;
@@ -4101,8 +4099,8 @@ void func_80071F68(int arg0)
                     if (part >= 0) {
                         func_800A1B9C(i, j, &D_800F19CC->unk29C0[count].unk0, 0);
 
-                        if (func_800C1564((void*)&D_800F19CC->unk29A0,
-                                (void*)&D_800F19CC->unk29C0[count])) {
+                        if (func_800C1564(&D_800F19CC->unk29A0,
+                                          &D_800F19CC->unk29C0[count].unk0)) {
                             D_800F19CC->unk29C0[count].unk8 = func_800A1648(i, part, 0);
                             D_800F19CC->unk29C0[count].unkA = j;
                             D_800F19CC->unk29C0[count].unk9 = i;
@@ -4117,8 +4115,8 @@ void func_80071F68(int arg0)
             } else {
                 func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
 
-                if (func_800C1564((void*)&D_800F19CC->unk29A0,
-                        (void*)&D_800F19CC->unk29C0[count])) {
+                if (func_800C1564(&D_800F19CC->unk29A0,
+                                  &D_800F19CC->unk29C0[count].unk0)) {
                     D_800F19CC->unk29C0[count].unk8 = 16;
                     D_800F19CC->unk29C0[count].unkA = -1;
                     D_800F19CC->unk29C0[count].unk9 = i;
@@ -4142,8 +4140,8 @@ void func_80071F68(int arg0)
                 >> 17;
 
             if (room[j].unk10 < 64
-                && func_800C1564(
-                    (void*)&D_800F19CC->unk29A0, (void*)&D_800F19CC->unk29C0[count])) {
+                && func_800C1564(&D_800F19CC->unk29A0,
+                                 &D_800F19CC->unk29C0[count].unk0)) {
                 D_800F19CC_t5* target = &D_800F19CC->unk29C0[count];
 
                 target->unk8 = 16;
@@ -13565,7 +13563,7 @@ int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
 
         for (i = 0; i < 6; ++i) {
             if ((func_800A1B9C(targetActor, i, &sp870, 2) >= 0)
-                && (func_800C1564(&sp860, (u_short*)&sp870) != 0)) {
+                && (func_800C1564(&sp860, &sp870) != 0)) {
                 sp10.unk4C[var_s2].unk40 = 0;
                 sp10.unk4C[var_s2].unk0.targetActor = targetActor;
                 sp10.unk4C[var_s2].unk0.targetLimb = i;

@@ -24,8 +24,7 @@ typedef struct {
 } func_800C1564_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
+    SVECTOR unk0;
     u_char unk8;
     u_char unk9;
     signed char unkA;

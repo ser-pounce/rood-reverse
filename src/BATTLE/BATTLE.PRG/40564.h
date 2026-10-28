@@ -1,10 +1,12 @@
 #pragma once
+#include "146C.h"
 #include "3A1A0.h"
 #include "func_8006EBF8_t.h"
 #include <stddef.h>
 #include <libgte.h>
 #include <libgpu.h>
 
+_mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1);
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position);
 int func_800A91DC(int arg0, int arg1, int arg2);
 inline int func_800A92B8(int arg0, int arg1);

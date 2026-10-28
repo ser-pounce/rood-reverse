@@ -646,6 +646,7 @@ void vs_battle_lerpVector(short* src, int t, VECTOR* vec);
 int vs_battle_randUniformInt(int, int);
 void func_800CFAAC(func_800CFAAC_t* arg0);
 int func_800CFE1C(short* arg0, int arg1);
+void func_800D5260(VECTOR* arg0);
 void func_800D5294(int* arg0);
 void func_800D6D24(func_800D6CF_t* arg0);
 

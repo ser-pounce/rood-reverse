@@ -46,7 +46,8 @@ typedef struct {
 extern D_800EB9B8_t* D_800EB9B8;
 
 int vs_battle_mapStickDeadZone(int);
-int func_800C1564(func_800C1564_t* arg0, u_short* arg1);
+int func_800C1564(func_800C1564_t* arg0, SVECTOR* arg1);
+void func_800C4650(func_800C5798_t* arg0, int arg1);
 void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2);
 void func_800C16DC();
 void* func_800C282C(void);

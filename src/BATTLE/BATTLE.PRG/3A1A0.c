@@ -28,7 +28,6 @@ void func_800B64A8(int, int, int);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);
 int func_800A3DB4(int, int, int);
-u_int* func_800A8D64(SVECTOR*, int);
 int func_800A91DC(int, int, int);
 int func_800A92B8(int, int);
 int func_800A9378(int, int, int, int);
@@ -60,7 +59,7 @@ extern int D_800E90A8;
 extern u_char D_800E90CC[];
 extern u_char D_800E90D0[];
 extern int D_800F49E8;
-extern u_int* D_800F49F0;
+extern _mpdRoomSection3* D_800F49F0;
 extern int D_800F49F4;
 extern u_char D_800F49F8;
 extern u_char D_800F49F9;
@@ -726,7 +725,7 @@ int func_800A3DB4(int x, int z, int minimumHeight)
         return 0;
     }
 
-    if ((*D_800F49F0 >> 20) & 1) {
+    if (D_800F49F0->unk0_20 & 1) {
         return 0;
     }
 
@@ -1636,7 +1635,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
 int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 {
     SVECTOR sp;
-    u_int* ent;
+    _mpdRoomSection3* ent;
     int h;
     int r;
     int los;
@@ -1674,13 +1673,13 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
                 h = r;
             }
 
-            if (((*ent >> 17) & 1) && (h >= 0)) {
+            if (ent->unk0_17 && (h >= 0)) {
 
                 h = 3000;
 
                 if (arg3 == 3) {
 
-                    los = D_800E9278[*ent & 0x1F];
+                    los = D_800E9278[ent->unk0_0];
 
                     if (los == 0x14) {
                         h = 0;
@@ -1744,23 +1743,23 @@ void func_800A70DC(D_800F4538_t* actor, int diagonal)
     }
 
     i = actor->unk63C;
-    samples->centerAttribute = (*func_800A8D64(&actor->unk0.position, 0) >> 5) & 1;
+    samples->centerAttribute = func_800A8D64(&actor->unk0.position, 0)->unk0_5;
     samples->unk1C[0] = func_800A6EE8(&actor->unk0.position, 0, -i, 0);
-    samples->attributes[0] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[0] = D_800F49F0->unk0_5;
     samples->unk1C[6] = func_800A6EE8(&actor->unk0.position, i, 0, 0);
-    samples->attributes[6] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[6] = D_800F49F0->unk0_5;
     samples->unk1C[2] = func_800A6EE8(&actor->unk0.position, -i, 0, 0);
-    samples->attributes[2] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[2] = D_800F49F0->unk0_5;
     samples->unk1C[7] = func_800A6EE8(&actor->unk0.position, diagonal, -diagonal, 0);
-    samples->attributes[7] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[7] = D_800F49F0->unk0_5;
     samples->unk1C[1] = func_800A6EE8(&actor->unk0.position, -diagonal, -diagonal, 0);
-    samples->attributes[1] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[1] = D_800F49F0->unk0_5;
     samples->unk1C[3] = func_800A6EE8(&actor->unk0.position, -diagonal, diagonal, 0);
-    samples->attributes[3] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[3] = D_800F49F0->unk0_5;
     samples->unk1C[5] = func_800A6EE8(&actor->unk0.position, diagonal, diagonal, 0);
-    samples->attributes[5] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[5] = D_800F49F0->unk0_5;
     samples->unk1C[4] = func_800A6EE8(&actor->unk0.position, 0, i, 0);
-    samples->attributes[4] = (*D_800F49F0 >> 5) & 1;
+    samples->attributes[4] = D_800F49F0->unk0_5;
 
     if (actor->unk0.unkA_0 == 3 && actor->unk0.unk34.vy > 0) {
         j = actor->unk0.position.vy - 32;
@@ -1905,7 +1904,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
 
 int func_800A8B34(SVECTOR* arg0, int arg1)
 {
-    u_int* ent;
+    _mpdRoomSection3* ent;
     int h;
     int elev2;
     int gx;
@@ -1953,7 +1952,7 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
         h = r;
     }
 
-    if ((*ent >> 17) & 1) {
+    if (ent->unk0_17) {
         if (h >= 0) {
             h = 0xBB8;
         }

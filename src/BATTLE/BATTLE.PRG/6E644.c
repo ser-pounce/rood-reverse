@@ -453,7 +453,6 @@ typedef struct {
     func_800DCAA0_t unk1D8C[16];
 } func_800DEC88_t;
 
-void func_800D5260(VECTOR*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
@@ -465,7 +464,6 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
-int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);

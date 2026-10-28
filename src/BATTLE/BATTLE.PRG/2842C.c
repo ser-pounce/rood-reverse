@@ -2,9 +2,11 @@
 #include "30DB0.h"
 #include "38C1C.h"
 #include "573B8.h"
-#include "5BF94.h"
-#include "gpu.h"
+#include "battleUi.h"
+#include "mpd.h"
 #include "src/SLUS_010.40/main.h"
+#include "gpu.h"
+#include "scratch.h"
 #include <abs.h>
 #include <memory.h>
 #include <rand.h>

@@ -1,13 +1,13 @@
 #include "common.h"
-#include "146C.h"
 #include "30DB0.h"
 #include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
+#include "entity.h"
+#include "src/SLUS_010.40/31724.h"
+#include "vs_inline_c.h"
 #include <libgpu.h>
 #include <inline_c.h>
-#include "vs_inline_c.h"
-#include "src/SLUS_010.40/31724.h"
 #include <abs.h>
 
 typedef struct {
@@ -23,7 +23,6 @@ int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
 SVECTOR* func_800A4A24(int);
-_mpdRoomSection3* func_800A8D64(SVECTOR*, int);
 
 extern u_char D_800E90AC[];
 extern u_char D_800E90B4[];

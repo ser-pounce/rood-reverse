@@ -2,16 +2,17 @@
  * particle. This names the effect's entry point, VS_PARTICLE_DISPATCH_FUNCTION, and the
  * helpers are named after it. */
 
-#include "src/EFFECT/entry.h"
+#include "entry.h"
+#include "src/BATTLE/BATTLE.PRG/camera.h"
 #define VS_PARTICLE_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 #include <rand.h>
-#include "src/EFFECT/effectCommon.h"
+#include "effectCommon.h"
 
 #ifndef VS_PARTICLE_SETUP_TYPES
 #define VS_PARTICLE_SETUP_TYPES

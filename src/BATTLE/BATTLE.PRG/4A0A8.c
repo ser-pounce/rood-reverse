@@ -1,17 +1,19 @@
 #include "common.h"
+#include "4A0A8.h"
 #include "146C.h"
 #include "2842C.h"
 #include "30DB0.h"
 #include "38C1C.h"
-#include "3A1A0.h"
 #include "40564.h"
-#include "4A0A8.h"
 #include "573B8.h"
 #include "5BF94.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/sfx.h"
-#include "../../SLUS_010.40/32154.h"
-#include "../../GIM/SCREFF2.PRG/0.h"
+#include "battleUnk.h"
+#include "camera.h"
+#include "entity.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/sfx.h"
+#include "src/GIM/SCREFF2.PRG/0.h"
 #include <stdio.h>
 #include <memory.h>
 #include <stddef.h>
@@ -183,13 +185,6 @@ typedef struct {
 } func_800BB68C_t;
 
 typedef struct {
-    int x : 12;
-    int y : 12;
-    u_int alignment : 2;
-    u_int flags : 4;
-} textOffset;
-
-typedef struct {
     textOffset offset;
     short x;
     short y;
@@ -233,7 +228,6 @@ typedef struct {
     u_char high;
 } scriptBytePair;
 
-int func_800A0024(int, void*);
 int func_800B6B98(
     SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
 int func_800B9C58(u_char*, short);
@@ -263,7 +257,6 @@ VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
-textOffset func_800CCE10(int, int, int, int);
 void func_800F9BC0(int, int);
 int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);
@@ -3010,7 +3003,7 @@ void func_800BBAFC(void)
 }
 
 extern CVECTOR D_800E9C08;
-extern D_800F1A68_t D_800E9C0C;
+extern VECTOR D_800E9C0C;
 
 void func_800BBBE8(void)
 {
@@ -3691,7 +3684,7 @@ int func_800BD610(void)
 
 int func_800BD6C4(u_char* script, short arg1)
 {
-    D_800F1A68_t values;
+    VECTOR values;
     CVECTOR color;
     short mode;
     short effectValue;
@@ -3707,16 +3700,16 @@ int func_800BD6C4(u_char* script, short arg1)
     case 228:
         D_800F4BA4->unk1FC.unk1E = script[4];
         if (D_800F4BA4->unk1FC.unk1E == 0) {
-            values.unk0 = (script[1] << 7);
-            values.unk4 = (script[2] << 7);
+            values.vx = (script[1] << 7);
+            values.vy = (script[2] << 7);
             func_8007DDB8(&values);
         } else {
             D_800F4BA4->unk1FC.unk1C = 0;
-            func_8007DE88(&values.unk0);
+            func_8007DE88(&values);
             D_800F4BA4->unk1FC.unk12 =
-                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.unk0);
+                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.vx);
             D_800F4BA4->unk1FC.unk14 =
-                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.unk4);
+                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.vy);
             D_800F4BA4->unk1FC.unk1 = script[3];
         }
         return 0;
@@ -3741,16 +3734,16 @@ int func_800BD6C4(u_char* script, short arg1)
     case 230:
         D_800F4BA4->unk23C.unk1E = script[4];
         if (D_800F4BA4->unk23C.unk1E == 0) {
-            values.unk0 = (signed char)script[1];
-            values.unk4 = (signed char)script[2];
+            values.vx = (signed char)script[1];
+            values.vy = (signed char)script[2];
             func_8007DDF8(&values);
         } else {
             D_800F4BA4->unk23C.unk1C = 0;
             func_8007DECC(&values);
             D_800F4BA4->unk23C.unk12 =
-                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.unk0);
+                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.vx);
             D_800F4BA4->unk23C.unk14 =
-                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.unk4);
+                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.vy);
             D_800F4BA4->unk23C.unk1 = script[3];
         }
         return 0;
@@ -3784,9 +3777,9 @@ int func_800BD6C4(u_char* script, short arg1)
         mode = vs_battle_getShort(script + 1);
         if (!mode) {
             func_8007DE2C(0);
-            values.unk0 = values.unk4 = 0;
+            values.vx = values.vy = 0;
             func_8007DDF8(&values);
-            values.unk0 = values.unk4 = ONE;
+            values.vx = values.vy = ONE;
             func_8007DDB8(&values);
             color.r = color.g = color.b = 128;
             func_8007DDD4(&color);
@@ -3796,10 +3789,10 @@ int func_800BD6C4(u_char* script, short arg1)
         } else {
             func_8007DD50(1);
             func_8007DE2C(0);
-            values.unk0 = 0;
-            values.unk4 = 2;
+            values.vx = 0;
+            values.vy = 2;
             func_8007DDF8(&values);
-            values.unk0 = values.unk4 = ONE;
+            values.vx = values.vy = ONE;
             func_8007DDB8(&values);
             color.r = color.g = color.b = 144;
             func_8007DE5C(1);
@@ -3812,12 +3805,12 @@ int func_800BD6C4(u_char* script, short arg1)
 
 void func_800BDAB4(void)
 {
-    D_800F1A68_t sp10;
+    VECTOR sp10;
     CVECTOR sp20;
 
     if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
-        sp10.unk0 = D_800F4BA4->unk1FC.unk2;
-        sp10.unk4 = D_800F4BA4->unk1FC.unk4;
+        sp10.vx = D_800F4BA4->unk1FC.unk2;
+        sp10.vy = D_800F4BA4->unk1FC.unk4;
         func_8007DDB8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
@@ -3827,8 +3820,8 @@ void func_800BDAB4(void)
         func_8007DDD4(&sp20);
     }
     if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {
-        sp10.unk0 = D_800F4BA4->unk23C.unk2;
-        sp10.unk4 = D_800F4BA4->unk23C.unk4;
+        sp10.vx = D_800F4BA4->unk23C.unk2;
+        sp10.vy = D_800F4BA4->unk23C.unk4;
         func_8007DDF8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
@@ -4547,7 +4540,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 11:
-                if ((short)func_800A0024(p[1], &position) >= 0
+                if ((short)func_800A0024(p[1], &position.unk0) >= 0
                     && position.unk0.unk0.fields.x == p[2]
                     && position.unk0.unk0.fields.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])

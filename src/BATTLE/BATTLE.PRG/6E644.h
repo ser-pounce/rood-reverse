@@ -1,5 +1,6 @@
 #pragma once
-#include "146C.h"
+#include "actor.h"
+#include "hitEntity.h"
 
 typedef struct {
     u_short lba;
@@ -40,6 +41,11 @@ struct func_800D4910_t {
     void* unk8;
 };
 
+typedef struct {
+    int meta;
+    u_char data[0];
+} p_file_t;
+
 void func_800D2698(int);
 void func_800D7890(int arg0);
 void func_800D78B8(void);
@@ -49,6 +55,8 @@ void func_800D7C5C(void);
 int func_800D7CFC(void);
 int func_800D7EF4(void);
 void func_800D8038(int);
+void func_800D8060(p_file_t* arg0);
+void func_800DEEA4(D_800F19CC_t2* arg0);
 void func_800D6E44(void*);
 void func_800D7814(void);
 void func_800D78F0(void);

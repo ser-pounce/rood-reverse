@@ -1,16 +1,17 @@
 #include "common.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/sfx.h"
-#include "../MAINMENU.PRG/C48.h"
-#include "../MAINMENU.PRG/2D10.h"
-#include "../MAINMENU.PRG/58EC.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
-#include "../../BATTLE/BATTLE.PRG/5BF94.h"
-#include "gpu.h"
-#include "lbaMacros.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/sfx.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
+#include "src/BATTLE/BATTLE.PRG/menuState.h"
+#include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/src/include/lbas.h"
-#include "vs_string.h"
+#include "gpu.h"
 #include "insertTPage.h"
+#include "lbaMacros.h"
+#include "vs_string.h"
 #include <libetc.h>
 #include <stdio.h>
 #include <libgpu.h>
@@ -230,7 +231,7 @@ static int _initMenuState(void)
     return 1;
 }
 
-#include "../unused_vertices.h"
+#include "src/MENU/unused_vertices.h"
 
 static vs_main_CdFile const _helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
     mkHfoPair(HELP03), mkHfoPair(HELP04), mkHfoPair(HELP05), mkHfoPair(HELP06),

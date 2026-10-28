@@ -4,10 +4,11 @@
  * defines VS_SURFACE_TEXTURE_COLUMNS, in which case it repeats every that many columns.
  * The entry point is named by entry.h. */
 
-#include "src/EFFECT/entry.h"
+#include "entry.h"
+#include "scratch.h"
 #define VS_SURFACE_FUNCTION VS_ENTRY_FUNCTION
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
@@ -53,8 +54,8 @@ VS_SURFACE_STATE_TYPE(vs_mirrorSurfaceState, 9)
 #define VS_SURFACE_STATE vs_surfaceState
 #endif
 
-#include "src/EFFECT/sphericalSurfaceVertices.h"
-#include "src/EFFECT/effectCommon.h"
+#include "sphericalSurfaceVertices.h"
+#include "effectCommon.h"
 
 int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

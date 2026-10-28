@@ -1,19 +1,21 @@
 #include "common.h"
-#include <rand.h>
-#include <abs.h>
-#include <inline_c.h>
-#include "30DB0.h"
-#include "5BF94.h"
-#include "vs_inline_c.h"
+#include "44F14.h"
 #include "146C.h"
+#include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
-#include "44F14.h"
 #include "4A0A8.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/31724.h"
-#include "../../SLUS_010.40/32154.h"
+#include "5BF94.h"
+#include "entity.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
+#include "scratch.h"
+#include "vs_inline_c.h"
+#include <rand.h>
+#include <abs.h>
+#include <inline_c.h>
 
 typedef struct {
     u_char unk0[8];
@@ -27,7 +29,6 @@ typedef struct {
     VECTOR scale;
 } D_800F3C58_t;
 
-void func_800AB358(int, u_char*);
 void func_800AB9A4(void*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE46C(u_char*);

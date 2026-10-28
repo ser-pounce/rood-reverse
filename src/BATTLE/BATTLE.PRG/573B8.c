@@ -1,14 +1,15 @@
 #include "common.h"
+#include "573B8.h"
 #include "146C.h"
 #include "30DB0.h"
 #include "4A0A8.h"
-#include "573B8.h"
 #include "58578.h"
+#include "battleUi.h"
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
-#include <libetc.h>
-#include "5BF94.h"
 #include "gpu.h"
+#include "scratch.h"
+#include <libetc.h>
 
 typedef struct {
     u_char curve;
@@ -406,7 +407,7 @@ void func_800C05B4(void)
 }
 
 void func_800C05EC(
-    func_800C1564_t* arg0, func_800C1564_t* arg1, u_char arg2, func_800C5798_t* arg3)
+    func_800C1564_t* arg0, func_800C1564_t* arg1, int arg2, D_800F19CC_t5* arg3)
 {
     D_800EB9B8->unk0[0] = *arg0;
 

@@ -1,6 +1,5 @@
 #include "592C.h"
 #include "src/SLUS_010.40/main.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "build/src/include/lbas.h"
 

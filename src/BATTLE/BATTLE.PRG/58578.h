@@ -1,42 +1,7 @@
 #pragma once
+#include "573B8.h"
 #include <stddef.h>
 #include <libgte.h>
-#include "573B8.h"
-
-typedef struct {
-    u_int unk0 : 8;
-    u_int unk1 : 8;
-    u_int unk2 : 8;
-    u_int unk3 : 8;
-} func_800C1564_flags;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    short unk2;
-    union {
-        func_800C1564_flags flags;
-        u_char values[4];
-    } unk4;
-    short unk8[4];
-} func_800C1564_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
-    short unkE;
-    int unk10;
-    u_char unk14;
-    u_char unk15;
-    u_char unk16;
-    u_char unk17;
-} func_800C5798_t;
 
 typedef struct {
     char unk0;
@@ -68,8 +33,8 @@ typedef struct {
     short unk32;
     int unk34;
     SVECTOR unk38;
-    func_800C5798_t* unk40;
-    func_800C5798_t* unk44;
+    D_800F19CC_t5* unk40;
+    D_800F19CC_t5* unk44;
     menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
@@ -82,7 +47,8 @@ typedef struct {
 extern D_800EB9B8_t* D_800EB9B8;
 
 int vs_battle_mapStickDeadZone(int);
-int func_800C1564(func_800C1564_t* arg0, u_short* arg1);
+int func_800C1564(func_800C1564_t* arg0, SVECTOR* arg1);
+void func_800C4650(D_800F19CC_t5* arg0, int arg1);
 void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2);
 void func_800C16DC();
 void* func_800C282C(void);

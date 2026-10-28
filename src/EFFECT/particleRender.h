@@ -2,12 +2,13 @@
  * control points, drawn as a strip of eight semi-transparent textured quads. Include
  * after particleSetup.h. */
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/SLUS_010.40/main.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+#include "scratch.h"
 
 #define VS_PARTICLE_RENDER_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _render)
 

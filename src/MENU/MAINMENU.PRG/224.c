@@ -1,11 +1,10 @@
 #include "224.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
-#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/4A0A8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/entity.h"
 
 void func_800F9A24(int arg0)
 {

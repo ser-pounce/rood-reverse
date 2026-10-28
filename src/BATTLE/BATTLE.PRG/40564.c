@@ -1,12 +1,14 @@
 #include "common.h"
-#include "38C1C.h"
 #include "40564.h"
 #include "146C.h"
+#include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
-#include "6E644.h"
+#include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
+#include "scratch.h"
 #include <abs.h>
 
 typedef struct {
@@ -19,13 +21,6 @@ typedef struct {
     u_char* unk4;
     u_short unk8[0];
 } func_800AD494_t;
-
-typedef struct {
-    u_char unk0;
-    u_char overlay;
-    u_char x;
-    u_char y;
-} func_800AB358_t;
 
 typedef struct {
     u_int unk0 : 24;
@@ -42,6 +37,7 @@ void func_8006F450(SVECTOR*);
 void func_800A7524(void*, void*);
 void func_800ACF54(D_800F4538_t*);
 void func_800AE828(int, D_800F4538_t*, int);
+void func_800E4C28(int, int);
 void func_800E6764(int);
 void func_800E6EB0(int);
 
@@ -59,7 +55,7 @@ extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
-extern u_int* D_800F49F0;
+extern _mpdRoomSection3* D_800F49F0;
 extern int D_800F49F4;
 extern u_char D_800F49F8;
 extern u_char D_800F49F9;
@@ -1457,7 +1453,7 @@ void func_800AB2AC(int arg0)
     }
 }
 
-void func_800AB358(int index, func_800AB358_t* arg)
+void func_800AB358(int index, u_char* script)
 {
     RECT rect;
     DR_MOVE* packet;
@@ -1477,10 +1473,10 @@ void func_800AB358(int index, func_800AB358_t* arg)
         return;
     }
 
-    srcX = arg->x;
-    srcY = arg->y;
+    srcX = script[2];
+    srcY = script[3];
     srcY += actor->unk183E[D_800E8F2C];
-    overlay = &actor->texMapOverlays[arg->overlay];
+    overlay = &actor->texMapOverlays[script[1]];
     dstX = overlay->x;
     width = overlay->w;
     height = overlay->h;
@@ -2415,7 +2411,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         }
         position = &actor->unk0.position;
         y = func_800A6EE8(position, actor->unk0.unk34.vx, actor->unk0.unk34.vz, 1);
-        if (y == 3000 && D_800E9278[*D_800F49F0 & 0x1F] == 20) {
+        if (y == 3000 && D_800E9278[D_800F49F0->unk0_0] == 20) {
             if (actor->unk0.position.vy <= 0
                 && actor->unk0.position.vy + actor->unk0.unk34.vy >= 0) {
                 func_8006F450(position);

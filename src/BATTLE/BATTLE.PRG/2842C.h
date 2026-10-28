@@ -96,3 +96,5 @@ void func_800941FC(void);
 int vs_battle_renderBattleAbilityTimingResult(int arg0);
 
 extern vs_battle_objectData vs_battle_objectDataSlots[16];
+
+extern char vs_battle_loadObjectDataState;

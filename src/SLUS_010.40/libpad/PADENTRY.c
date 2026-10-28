@@ -1,4 +1,5 @@
-#include "common.h"
+#include "PADMAIN.h"
+#include "pad.h"
 #include <libpad.h>
 
 /* libpad per-port control block (same layout as PADCMD.c) */
@@ -63,9 +64,6 @@ extern PadPort* (*D_800335B0)(int port);
 extern int D_800335E8;
 extern PadPort* D_800335D0;
 
-int _padChkVsync(void);
-void _padStartCom(void);
-void _padStopCom(void);
 int _padSetActAlign(PadPort* p, u_char* data);
 int _padSetMainMode(PadPort* p, u_char offs, u_char lock);
 void _padSetAct(PadPort* p, u_char* data, int len);

@@ -1,15 +1,18 @@
 #include "common.h"
+#include "44F14.h"
+#include "146C.h"
+#include "30DB0.h"
+#include "38C1C.h"
+#include "3A1A0.h"
+#include "4A0A8.h"
+#include "entity.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "scratch.h"
+#include "vs_inline_c.h"
 #include <rand.h>
 #include <abs.h>
 #include <inline_c.h>
-#include "vs_inline_c.h"
-#include "146C.h"
-#include "38C1C.h"
-#include "3A1A0.h"
-#include "44F14.h"
-#include "4A0A8.h"
-#include "../../SLUS_010.40/main.h"
-#include "../../SLUS_010.40/31724.h"
 
 typedef struct {
     u_char unk0[8];

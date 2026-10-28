@@ -1,7 +1,7 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 
 /**
  * Finds the weapon from the specified blade, grip, or gem.

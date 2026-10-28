@@ -1,5 +1,5 @@
 #pragma once
-#include "3A1A0.h"
+#include "entity.h"
 #include <libgte.h>
 
 typedef struct {
@@ -97,6 +97,7 @@ int func_8009FC60(int, int, SVECTOR*, int);
 int func_8009FE74(int arg0, int arg1);
 void func_8009FF08(int, int, int, int);
 int func_8009FFA8(int arg0, int arg1);
+int func_800A0024(int arg0, func_8006EBF8_t3* arg1);
 int func_800A0104(int index, int material);
 int func_800A01C8(int, int, int, int);
 int func_800A0204(int, int, int, int);
@@ -110,6 +111,7 @@ int func_800A0A74(int);
 void func_800A0ABC(int);
 void func_800A0AFC(int, int, int);
 u_int func_800A0BE0(int actorId);
+int func_800A1108(int, void*);
 int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3);
 int func_800A1280(int, int, SVECTOR*, int);
 int func_800A13EC(int, int, int*, int);

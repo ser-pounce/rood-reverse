@@ -1,33 +1,49 @@
 #include "common.h"
-#include "44F14.h"
 #include "5BF94.h"
 #include "146C.h"
 #include "2842C.h"
 #include "30DB0.h"
 #include "38C1C.h"
-#include "3A1A0.h"
 #include "40564.h"
+#include "44F14.h"
 #include "573B8.h"
 #include "58578.h"
+#include "6E644.h"
+#include "battleEffect.h"
+#include "battleUnk.h"
+#include "camera.h"
 #include "src/SLUS_010.40/main.h"
-#include "src/SLUS_010.40/overlay.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/SLUS_010.40/overlay.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/GIM/SCREFF2.PRG/0.h"
-#include "build/src/include/lbas.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
-#include "6E644.h"
-#include "vs_string.h"
+#include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "scratch.h"
 #include "vs_inline_c.h"
+#include "vs_string.h"
 #include <memory.h>
 #include <libetc.h>
 #include <rand.h>
 #include <abs.h>
 #include <inline_c.h>
+
+typedef struct {
+    short unk0;
+    short unk2;
+} func_800CFE1C_t;
+
+enum vs_battle_limbStatus {
+    limbStatusCritical,
+    limbStatusDamaged,
+    limbStatusWounded,
+    limbStatusGood,
+    limbStatusExcellent
+};
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -106,13 +122,6 @@ typedef struct {
     u_short unk22_3 : 13;
     char unk24[0xAC];
 } func_800D6508_t;
-
-typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-} D_800F5620_t;
 
 typedef struct {
     u_int actor : 8;
@@ -242,13 +251,6 @@ typedef struct {
 } pFileBlock11;
 
 typedef struct {
-    int unk0_0 : 12;
-    int unk0_12 : 12;
-    u_int unk0_24 : 2;
-    u_int unk0_26 : 4;
-} func_800CCE10_t;
-
-typedef struct {
     u_char actors[6];
     u_char final;
     u_char frame;
@@ -268,11 +270,11 @@ typedef struct {
 void func_80046578(int);
 void func_800C02A8(void);
 void func_800C2E24(SVECTOR*, MATRIX*, int);
-void func_800C4650(func_800C5798_t*, int);
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
+int func_800CABE0(int);
 void func_800CCA90(int);
 void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 void func_800CD158(int);
@@ -339,7 +341,6 @@ int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
 void func_800D6E24(func_800D2904_t*, void*);
-void func_800D8060(void*);
 void vs_effpurge_exec(void);
 
 extern int D_8005046C;
@@ -384,7 +385,7 @@ extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(gim_t*, int, u_long*);
-extern func_800CCE10_t D_800EC284[][2];
+extern textOffset D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -446,7 +447,7 @@ extern int D_800F55F8;
 extern int D_800F5600;
 extern int D_800F5610;
 extern int D_800F5618;
-extern D_800F5620_t D_800F5620;
+extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
 typedef struct {
@@ -480,9 +481,9 @@ int func_800C4794(SVECTOR* arg0)
     result = 0;
 
     if (state->unk2A != 0) {
-        setVector(
-            arg0, state->unk0[0].unk8[0], state->unk0[0].unk8[1], state->unk0[0].unk8[2]);
-        func_800C2B0C((SVECTOR*)state->unk0[0].unk8, state->unk2A - 1);
+        setVector(arg0, state->unk0[0].unk8.vec.vx, state->unk0[0].unk8.vec.vy,
+            state->unk0[0].unk8.vec.vz);
+        func_800C2B0C(&state->unk0[0].unk8.vec, state->unk2A - 1);
         return 0;
     }
 
@@ -588,7 +589,7 @@ int func_800C4794(SVECTOR* arg0)
         D_800EB9B8->unk38.pad = 0;
 
         for (stickX = 0; stickX < D_800EB9B8->unk2E; ++stickX) {
-            func_800C5798_t* trigger = &D_800EB9B8->unk44[stickX];
+            D_800F19CC_t5* trigger = &D_800EB9B8->unk44[stickX];
 
             if ((trigger->unk9 >> 4) == 0) {
                 func_8009FE74(trigger->unk9, trigger->unkA);
@@ -620,15 +621,15 @@ int func_800C4794(SVECTOR* arg0)
             break;
         }
 
-        setVector(arg0, D_800EB9B8->unk0[0].unk8[0],
-            D_800EB9B8->unk0[0].unk8[1] + D_800EB9B8->unk38.vy,
-            D_800EB9B8->unk0[0].unk8[2]);
+        setVector(arg0, D_800EB9B8->unk0[0].unk8.vec.vx,
+            D_800EB9B8->unk0[0].unk8.vec.vy + D_800EB9B8->unk38.vy,
+            D_800EB9B8->unk0[0].unk8.vec.vz);
 
         if (arg0->vy < -1) {
             break;
         }
 
-        D_800EB9B8->unk38.vy = -D_800EB9B8->unk0[0].unk8[1] - 2;
+        D_800EB9B8->unk38.vy = -D_800EB9B8->unk0[0].unk8.vec.vy - 2;
     }
 
     func_800C2E24(arg0, m, scale);
@@ -654,8 +655,8 @@ int func_800C4794(SVECTOR* arg0)
             arg0->vz = (value >> 16) * 8 - 1;
         }
 
-        stickX = arg0->vx - D_800EB9B8->unk0[0].unk8[0];
-        stickY = arg0->vz - D_800EB9B8->unk0[0].unk8[2];
+        stickX = arg0->vx - D_800EB9B8->unk0[0].unk8.vec.vx;
+        stickY = arg0->vz - D_800EB9B8->unk0[0].unk8.vec.vz;
         value = (m->m[0][0] * m->m[2][2] - m->m[0][2] * m->m[2][0] + ONE - 1) / ONE;
 
         if ((scale != 0) && (value != 0)) {
@@ -667,9 +668,9 @@ int func_800C4794(SVECTOR* arg0)
 
         stickX = (D_800EB9B8->unk38.vx * scale + ONE / 2) >> 12;
         stickY = (D_800EB9B8->unk38.vz * scale + ONE / 2) >> 12;
-        arg0->vx = D_800EB9B8->unk0[0].unk8[0]
+        arg0->vx = D_800EB9B8->unk0[0].unk8.vec.vx
                  + ((stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12);
-        arg0->vz = D_800EB9B8->unk0[0].unk8[2]
+        arg0->vz = D_800EB9B8->unk0[0].unk8.vec.vz
                  + ((stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12);
     }
 
@@ -679,8 +680,8 @@ int func_800C4794(SVECTOR* arg0)
         D_800EB9B8->unk0[1].unk1 = 0;
         stickX = ((VECTOR*)arg0)->vx;
         stickY = ((VECTOR*)arg0)->vy;
-        ((VECTOR*)D_800EB9B8->unk0[1].unk8)->vx = stickX;
-        ((VECTOR*)D_800EB9B8->unk0[1].unk8)->vy = stickY;
+        ((VECTOR*)&D_800EB9B8->unk0[1].unk8)->vx = stickX;
+        ((VECTOR*)&D_800EB9B8->unk0[1].unk8)->vy = stickY;
     }
 
     if (result) {
@@ -713,7 +714,7 @@ void func_800C518C(int arg0, void* arg1)
 
 void func_800C51B4(int mode)
 {
-    func_800C5798_t* entries = D_800EB9B8->unk40;
+    D_800F19CC_t5* entries = D_800EB9B8->unk40;
     int i;
     int group;
     if (D_800EB9B8->unk31) {
@@ -846,13 +847,13 @@ D_800EB9B8_unk990* func_800C5798(int arg0, int arg1, int arg2)
 {
     int temp_v1;
     D_800EB9B8_unk990* item = &D_800EB9B8->unk990[arg0];
-    func_800C5798_t* src = &D_800EB9B8->unk40[arg0];
+    D_800F19CC_t5* src = &D_800EB9B8->unk40[arg0];
 
     vs_battle_rMemzero(item, sizeof *item);
     item->unk0 = arg1;
     item->unk6 = arg2 * 11 + 32;
-    temp_v1 = src->unk4;
-    item->unk8 = src->unk0;
+    temp_v1 = *(int*)&src->unk0.vz;
+    item->unk8 = *(int*)&src->unk0;
     item->unkC = temp_v1;
 
     if (arg1 == 2) {
@@ -882,7 +883,7 @@ char* _getStatusString(uint arg0)
 int func_800C58F8(u_char* target)
 {
     D_800EB9B8_unk990* item;
-    func_800C5798_t* entry;
+    D_800F19CC_t5* entry;
     int i;
     int value;
     int prev;
@@ -1097,7 +1098,7 @@ int func_800C58F8(u_char* target)
             for (value = 1; value < 6; ++value) {
                 vs_battle_stringContext.strings[value] = D_800EAA54;
             }
-            value = entry->unkB;
+            value = entry->effect;
             if ((type == 16) && !(i >> 4) && (vs_battle_actors[i]->unk1C & 0x10)) {
                 value = 5;
                 vs_battle_stringContext
@@ -1127,7 +1128,7 @@ int func_800C58F8(u_char* target)
                                 [VS_statusStrings_INDEX_mpTemplate - (value & 1)]];
                     vs_battle_stringContext.strings[5] =
                         (char*)&vs_battle_statusStrings[vs_battle_statusStrings
-                                [entry->unk17 + VS_statusStrings_INDEX_human]];
+                                [entry->enemyClass + VS_statusStrings_INDEX_human]];
                 }
                 vs_battle_stringContext.strings[3] =
                     (char*)&vs_battle_statusStrings[vs_battle_statusStrings
@@ -4199,24 +4200,23 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
 
 vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-func_800CCE10_t func_800CCE10(int arg0, int arg1, int arg2, int arg3)
+textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
-    func_800CCE10_t ret;
-    func_800CCE10_t* p =
-        &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
-    int offsetX = p->unk0_0;
-    int offsetY = p->unk0_12;
-    int unk24 = p->unk0_24;
+    textOffset ret;
+    textOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    int offsetX = p->x;
+    int offsetY = p->y;
+    int alignment = p->alignment;
 
     if ((arg1 >> 2) & 1) {
         offsetX = -offsetX;
-        unk24 ^= 2;
+        alignment ^= 2;
     }
 
-    ret.unk0_0 = offsetX - ((arg2 * 12 + 10) >> 1);
-    ret.unk0_12 = offsetY - ((arg3 * 13 + 4) >> 1);
-    ret.unk0_24 = unk24;
-    ret.unk0_26 = p->unk0_26;
+    ret.x = offsetX - ((arg2 * 12 + 10) >> 1);
+    ret.y = offsetY - ((arg3 * 13 + 4) >> 1);
+    ret.alignment = alignment;
+    ret.flags = p->flags;
     return ret;
 }
 
@@ -7492,7 +7492,7 @@ int func_800D51D8(D_800F53B8_t* arg0)
     return 1;
 }
 
-void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
+void func_800D5260(VECTOR* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
@@ -7500,9 +7500,9 @@ void func_800D52A4(func_800D2904_t* node)
 {
     VECTOR direction;
     int drag = D_800F5618;
-    int gravityX = D_800F5620.unk0;
-    int gravityY = D_800F5620.unk4;
-    int gravityZ = D_800F5620.unk8;
+    int gravityX = D_800F5620.vx;
+    int gravityY = D_800F5620.vy;
+    int gravityZ = D_800F5620.vz;
 
     for (; node != NULL; node = node->next) {
         func_800D52A4_t* motion = &node->motion;

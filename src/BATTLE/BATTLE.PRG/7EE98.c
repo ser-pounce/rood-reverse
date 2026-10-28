@@ -1,12 +1,14 @@
 #include "common.h"
+#include "6E644.h"
 #include "146C.h"
-#include "3A1A0.h"
+#include "38C1C.h"
 #include "4A0A8.h"
 #include "5BF94.h"
-#include "38C1C.h"
-#include "6E644.h"
-#include "src/SLUS_010.40/32154.h"
+#include "battleEffect.h"
+#include "battleUnk.h"
+#include "entity.h"
 #include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
@@ -96,6 +98,7 @@ typedef struct {
     signed char unk0_6 : 2;
 } D_800F16EC_t;
 
+// TODO: Partial view of vs_battle_actor with different fields, maybe merge.
 typedef struct {
     char unk0[8];
     u_char unk8;
@@ -123,7 +126,7 @@ typedef struct {
     u_int unk34_15 : 17;
     char unk38[4];
     vs_battle_actor2* unk3C;
-} func_800DEB10_t2;
+} vs_battle_actorView_t;
 
 typedef struct {
     u_int unk0 : 1;
@@ -236,7 +239,7 @@ typedef struct func_800E78F4_t {
     char unk45[3];
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
-    func_800DEB10_t2* unk54;
+    vs_battle_actorView_t* unk54;
     D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
     SVECTOR* unk60;
@@ -417,40 +420,6 @@ typedef struct {
 } func_800DC888_t;
 
 typedef struct {
-    u_char unk0;
-    char unk1;
-    u_char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    char unk8[0xC];
-    u_int unk14;
-    u_int unk18;
-    u_int unk1C_0 : 2;
-    u_int unk1C_2 : 2;
-    u_int unk1C_4 : 14;
-    u_int unk1C_18 : 2;
-    u_int unk1C_20 : 2;
-    u_int unk1C_22 : 2;
-    u_int unk1C_24 : 8;
-    char unk20[0x18];
-    short unk38;
-    char unk3A[2];
-    short unk3C;
-    char unk3E[2];
-    int unk40;
-} func_800DEB10_t;
-
-typedef struct {
-    u_short unk0;
-    char unk2[2];
-    func_800DEB10_t unk4;
-    char unk48[2];
-    u_short unk4A;
-    func_800DEB10_t unk4C[0];
-} func_800DEEA4_t;
-
-typedef struct {
     short tableCount;
     u_short dataOffset;
     int tableOffsets[0];
@@ -460,11 +429,6 @@ typedef struct {
     int unk0;
     u_char data[0];
 } pFileBlock2;
-
-typedef struct {
-    int meta;
-    u_char data[0];
-} p_file_t;
 
 typedef struct {
     u_short x : 5;
@@ -486,27 +450,24 @@ typedef struct {
 } D_1F8003D0_t;
 
 typedef struct {
-    func_800DEEA4_t unk0;
-    char unk4C[0x980];
+    D_800F19CC_t2 unk0;
+    char unk84C[0x180];
     func_800DCAA0_t unk9CC[3][16];
     u_char unkD8C[16][256];
     func_800DCAA0_t unk1D8C[16];
 } func_800DEC88_t;
 
-void func_800D5260(VECTOR*);
 void func_800D7890(int arg0);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
 void _parsePfileBlock13(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
-void func_800D8060(p_file_t* arg0);
 void func_800D820C(int, int);
 void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);
-int func_800863A4(int, int, int, int, SVECTOR*, SVECTOR*, void*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
@@ -539,7 +500,7 @@ int func_800DC48C(int, int);
 void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
 void func_800DC574(func_800E78F4_t*, int);
 void func_800DC784(func_800E78F4_t*, int);
-void func_800DC810(func_800DEEA4_t*);
+void func_800DC810(D_800F19CC_t2*);
 void func_800DC888(func_800DC888_t*);
 void func_800DE3E4(func_800E78F4_t*);
 void func_800DEEFC(func_800E78F4_t*, int);
@@ -623,7 +584,7 @@ extern func_800DCAA0_t (*D_800F58EC)[16];
 extern int D_800F58F0;
 extern int D_800F58F4;
 extern func_800DCAA0_t* D_800F58F8;
-extern func_800DEEA4_t* D_800F5900;
+extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern int D_800F590C;
 extern D_800F5910_t* D_800F5910;
@@ -936,7 +897,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
 
         if (func_800E7698(arg0) != 0) {
             if (temp_s0->unkA != 0) {
-                func_800DEB10_t2* temp_a1 = arg0->unk54;
+                vs_battle_actorView_t* temp_a1 = arg0->unk54;
 
                 if (temp_a1->unk3C->limbs[4].hp >= 2) {
                     temp_a1->unkC = 4;

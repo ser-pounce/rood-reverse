@@ -1,12 +1,14 @@
 #include "84.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/MENU0.PRG/magic.h"
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
 #include "gpu.h"
+#include "scratch.h"
 #include <libetc.h>
 
 static signed char _MPCostTextBuffer[16];

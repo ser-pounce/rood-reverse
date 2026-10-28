@@ -7,16 +7,17 @@
  * default.
  * The entry point is named by entry.h. */
 
-#include "src/EFFECT/entry.h"
+#include "entry.h"
+#include "scratch.h"
 #define VS_CLOSED_RING_FUNCTION VS_ENTRY_FUNCTION
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/SLUS_010.40/32154.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
-#include "src/EFFECT/effectCommon.h"
+#include "effectCommon.h"
 
 #ifndef VS_CLOSED_RING_OT_SLOT
 #define VS_CLOSED_RING_OT_SLOT depth

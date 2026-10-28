@@ -1,8 +1,9 @@
 #include "260.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/MENU7.PRG/container.h"
+#include "scratch.h"
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 

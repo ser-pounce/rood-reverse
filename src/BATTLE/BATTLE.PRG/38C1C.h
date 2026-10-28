@@ -1,5 +1,5 @@
 #pragma once
-#include "3A1A0.h"
+#include "entity.h"
 #include <libgte.h>
 
 int func_800A141C(int actorId, int bone, int* screenXyz, int mode);

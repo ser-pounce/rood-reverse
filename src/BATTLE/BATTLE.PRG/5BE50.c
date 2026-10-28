@@ -4,23 +4,13 @@
 #include "58578.h"
 #include "573B8.h"
 #include "5BF94.h"
-#include "../../SLUS_010.40/main.h"
+#include "src/SLUS_010.40/main.h"
 #include <memory.h>
 #include <stddef.h>
 #include <inline_c.h>
 #include "vs_inline_c.h"
 
-typedef struct {
-    u_short unk0[3];
-    u_char unk6;
-    u_char unk7;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    char unkB[0xD];
-} func_800C4650_t;
-
-void func_800C4650(func_800C4650_t* arg0, int arg1)
+void func_800C4650(D_800F19CC_t5* arg0, int arg1)
 {
     int i;
     int type;
@@ -28,7 +18,7 @@ void func_800C4650(func_800C4650_t* arg0, int arg1)
     for (i = 0; i < arg1; i++, arg0++) {
         type = arg0->unk9;
         if ((type >> 4) == 0) {
-            if (func_800C1564(&D_800EB9B8->unk0[1], arg0->unk0)) {
+            if (func_800C1564(&D_800EB9B8->unk0[1], &arg0->unk0)) {
                 func_8009FD5C(type, 0, arg0->unkA);
             } else {
                 func_8009FE74(type, arg0->unkA);

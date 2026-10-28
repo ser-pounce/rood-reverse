@@ -1,16 +1,18 @@
 #include "common.h"
+#include "58578.h"
 #include "146C.h"
 #include "30DB0.h"
 #include "40564.h"
-#include "58578.h"
 #include "573B8.h"
 #include "5BF94.h"
-#include "../../SLUS_010.40/main.h"
+#include "camera.h"
+#include "src/SLUS_010.40/main.h"
+#include "gpu.h"
+#include "scratch.h"
+#include "vs_inline_c.h"
 #include <memory.h>
 #include <stddef.h>
 #include <inline_c.h>
-#include "vs_inline_c.h"
-#include "gpu.h"
 
 typedef struct {
     SVECTOR unk0;
@@ -70,7 +72,7 @@ void func_800C0D78(void)
 
         *shape = D_800EB9B8->unk0[i];
         func_800C02A8();
-        gte_ldv0(shape->unk8);
+        gte_ldv0(&shape->unk8);
         gte_rtps2();
         gte_stszotz(&D_800EB9B8->unk20);
         switch (shape->unk0) {
@@ -81,7 +83,7 @@ void func_800C0D78(void)
             shape->unk4.values[1] <<= 1;
             m = func_800C085C(shape->unk4.values, shape->unk2);
             for (j = 0; j < 3; ++j) {
-                shape->unk8[j] += m->m[j][1] >> 1;
+                shape->unk8.xyz[j] += m->m[j][1] >> 1;
             }
             type = 1;
             break;
@@ -92,7 +94,7 @@ void func_800C0D78(void)
             shape->unk4.values[3] += 0x80;
             m = func_800C085C(shape->unk4.values, shape->unk2);
             for (j = 0; j < 3; ++j) {
-                shape->unk8[j] += m->m[j][1];
+                shape->unk8.xyz[j] += m->m[j][1];
             }
             type = 2;
             break;
@@ -121,7 +123,7 @@ void func_800C0FA8(func_800C1564_t* arg0, func_800C0FA8_t2* arg1, MATRIX* arg2)
     char* new_var;
 
     for (i = 0; i < 3; ++i) {
-        arg1->unk10[i] = arg0->unk8[i];
+        arg1->unk10[i] = arg0->unk8.xyz[i];
         arg1->unk18[i] = 0x8000 / *(new_var = &arg0->unk4.values[i]);
     }
 
@@ -313,9 +315,9 @@ int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
     void* base;
     int offset;
 
-    work.origin[0] = shape->unk8[0];
-    work.origin[1] = shape->unk8[1];
-    work.origin[2] = shape->unk8[2];
+    work.origin[0] = shape->unk8.xyz[0];
+    work.origin[1] = shape->unk8.xyz[1];
+    work.origin[2] = shape->unk8.xyz[2];
     work.local[0] = shape->unk4.values[3] << 4;
     work.local[1] = -shape->unk2;
     work.local[2] = 0;
@@ -355,34 +357,34 @@ int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
     return 1;
 }
 
-int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
+int func_800C1564(func_800C1564_t* arg0, SVECTOR* arg1)
 {
     func_800C1564_flags saved_unk4 = arg0->unk4.flags;
     int ret = 0;
 
     switch (arg0->unk0) {
     case 1:
-        ret = func_800C1034(arg0, arg1);
+        ret = func_800C1034(arg0, (u_short*)arg1);
         break;
     case 2:
         arg0->unk4.flags.unk1 <<= 1;
-        ret = func_800C110C(arg0, arg1, 1);
+        ret = func_800C110C(arg0, (u_short*)arg1, 1);
         break;
     case 3:
-        ret = func_800C110C(arg0, arg1, 0);
+        ret = func_800C110C(arg0, (u_short*)arg1, 0);
         break;
     case 4:
-        ret = func_800C123C(arg0, arg1, 0);
+        ret = func_800C123C(arg0, (u_short*)arg1, 0);
         break;
     case 5:
         arg0->unk4.flags.unk3 = saved_unk4.unk3 + 0x80;
-        ret = func_800C123C(arg0, arg1, 1);
+        ret = func_800C123C(arg0, (u_short*)arg1, 1);
         break;
     case 6:
-        ret = func_800C1384(arg0, arg1, 1);
+        ret = func_800C1384(arg0, (u_short*)arg1, 1);
         break;
     case 7:
-        ret = func_800C1384(arg0, arg1, 0);
+        ret = func_800C1384(arg0, (u_short*)arg1, 0);
         break;
     }
 
@@ -401,7 +403,7 @@ void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2)
             var_a0 = 0x18;
         }
         D_800EB9B8->unk2C = var_a0;
-        D_800EB9B8->unk40 = (func_800C5798_t*)arg1;
+        D_800EB9B8->unk40 = arg1;
         if (D_800EB9B8->unk2D >= var_a0) {
             var_v0 = 0;
             if (var_a0 == 0) {

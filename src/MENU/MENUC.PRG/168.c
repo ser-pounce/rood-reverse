@@ -3,7 +3,7 @@
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"

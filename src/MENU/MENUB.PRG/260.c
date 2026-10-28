@@ -3,7 +3,7 @@
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include "src/BATTLE/BATTLE.PRG/4A0A8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 #include "build/assets/MENU/MENUB.PRG/menuText.h"
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"

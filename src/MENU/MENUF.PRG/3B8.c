@@ -4,7 +4,7 @@
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "src/BATTLE/BATTLE.PRG/menuState.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "texture_t.h"

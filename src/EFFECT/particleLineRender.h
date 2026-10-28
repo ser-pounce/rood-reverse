@@ -2,7 +2,7 @@
  * control points, drawn as eight semi-transparent flat lines. Include after
  * particleSetup.h. */
 
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/SLUS_010.40/main.h"
 #include "vs_inline_c.h"
 #include "gpu.h"

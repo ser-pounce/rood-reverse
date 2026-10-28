@@ -5,7 +5,6 @@
 #include "src/BATTLE/BATTLE.PRG/40564.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/4A0A8.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 
 void func_800F9A24(int arg0)
 {

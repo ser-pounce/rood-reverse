@@ -3,7 +3,6 @@
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 
 int vs_menu9_loadZud(int zudId)

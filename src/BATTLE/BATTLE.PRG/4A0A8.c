@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <abs.h>
 #include "camera.h"
+#include "battleUnk.h"
 
 typedef struct {
     u_char mode;

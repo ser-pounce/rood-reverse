@@ -7,7 +7,7 @@
 #include "src/SLUS_010.40/main.h"
 #include "build/src/include/lbas.h"
 #include <libetc.h>
-#include "5BF94.h"
+#include "battleUi.h"
 #include "gpu.h"
 #include "scratch.h"
 

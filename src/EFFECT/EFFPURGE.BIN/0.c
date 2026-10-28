@@ -117,7 +117,7 @@
 #include "src/EFFECT/PLG260.BIN/0.h"
 #include "src/EFFECT/PLG273.BIN/0.h"
 #include "src/EFFECT/PLG301.BIN/110.h"
-#include "src/BATTLE/BATTLE.PRG/5BF94.h"
+#include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/BATTLE/BATTLE.PRG/6E644.h"
 #include "build/src/include/lbas.h"
 

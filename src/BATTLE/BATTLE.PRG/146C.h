@@ -4,7 +4,6 @@
 #include "hitEntity.h"
 #include "actor.h"
 #include "charInit.h"
-#include "battleUnk.h"
 
 typedef struct {
     SVECTOR unk0;

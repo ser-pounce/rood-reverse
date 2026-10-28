@@ -46,7 +46,6 @@ typedef struct {
     u_char data[0];
 } p_file_t;
 
-void func_800D2698(int);
 void func_800D7890(int arg0);
 void func_800D78B8(void);
 void func_800D78CC(void);

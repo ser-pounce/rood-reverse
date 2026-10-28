@@ -106,13 +106,6 @@ typedef struct {
 } func_800D6508_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-} D_800F5620_t;
-
-typedef struct {
     u_int actor : 8;
     u_int bone : 8;
     u_int color : 4;
@@ -259,7 +252,6 @@ typedef struct {
 void func_80046578(int);
 void func_800C02A8(void);
 void func_800C2E24(SVECTOR*, MATRIX*, int);
-void func_800C4650(func_800C5798_t*, int);
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
@@ -436,7 +428,7 @@ extern int D_800F55F8;
 extern int D_800F5600;
 extern int D_800F5610;
 extern int D_800F5618;
-extern D_800F5620_t D_800F5620;
+extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
 int func_800C4794(SVECTOR* arg0)
@@ -829,8 +821,8 @@ D_800EB9B8_unk990* func_800C5798(int arg0, int arg1, int arg2)
     vs_battle_rMemzero(item, sizeof *item);
     item->unk0 = arg1;
     item->unk6 = arg2 * 11 + 32;
-    temp_v1 = src->unk4;
-    item->unk8 = src->unk0;
+    temp_v1 = *(int*)&src->unk0.vz;
+    item->unk8 = *(int*)&src->unk0;
     item->unkC = temp_v1;
 
     if (arg1 == 2) {
@@ -6615,7 +6607,10 @@ int func_800D51D8(D_800F53B8_t* arg0)
     return 1;
 }
 
-void func_800D5260(D_800F5620_t* arg0) { D_800F5620 = *arg0; }
+void func_800D5260(VECTOR* arg0)
+{
+    D_800F5620 = *arg0;
+}
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 
@@ -6623,9 +6618,9 @@ void func_800D52A4(func_800D2904_t* node)
 {
     VECTOR direction;
     int drag = D_800F5618;
-    int gravityX = D_800F5620.unk0;
-    int gravityY = D_800F5620.unk4;
-    int gravityZ = D_800F5620.unk8;
+    int gravityX = D_800F5620.vx;
+    int gravityY = D_800F5620.vy;
+    int gravityZ = D_800F5620.vz;
 
     for (; node != NULL; node = node->next) {
         func_800D52A4_t* motion = &node->motion;

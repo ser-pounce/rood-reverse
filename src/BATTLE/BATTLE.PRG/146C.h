@@ -138,7 +138,7 @@ typedef struct {
     u_int unk0_16 : 1;
     u_int unk0_17 : 1;
     u_int unk0_18 : 2;
-    u_int unk0_19 : 12;
+    u_int unk0_20 : 12;
 } _mpdRoomSection3;
 
 typedef struct {
@@ -1121,6 +1121,8 @@ int func_8007E180(int arg0);
 int func_8007E1C0(int arg0);
 int vs_battle_itemIdIsInInventory(int);
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4);
+int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
+                  SVECTOR* arg5, D_800F19CC_t2* arg6);
 void func_80086FA8(int, vs_battle_actor2*);
 void vs_battle_setDoorEntered(void);
 int func_80089104(void);

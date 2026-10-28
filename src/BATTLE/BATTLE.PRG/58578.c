@@ -13,16 +13,6 @@
 #include "gpu.h"
 
 typedef struct {
-    u_short unk0[3];
-    u_char unk6;
-    u_char unk7;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    char unkB[0xD];
-} func_800C4650_t;
-
-typedef struct {
     SVECTOR unk0;
     SVECTOR unk8;
     short unk10[4];
@@ -365,34 +355,34 @@ int func_800C1384(func_800C1564_t* shape, u_short* position, int angled)
     return 1;
 }
 
-int func_800C1564(func_800C1564_t* arg0, u_short* arg1)
+int func_800C1564(func_800C1564_t* arg0, SVECTOR* arg1)
 {
     func_800C1564_flags saved_unk4 = arg0->unk4.flags;
     int ret = 0;
 
     switch (arg0->unk0) {
     case 1:
-        ret = func_800C1034(arg0, arg1);
+        ret = func_800C1034(arg0, (u_short*)arg1);
         break;
     case 2:
         arg0->unk4.flags.unk1 <<= 1;
-        ret = func_800C110C(arg0, arg1, 1);
+        ret = func_800C110C(arg0, (u_short*)arg1, 1);
         break;
     case 3:
-        ret = func_800C110C(arg0, arg1, 0);
+        ret = func_800C110C(arg0, (u_short*)arg1, 0);
         break;
     case 4:
-        ret = func_800C123C(arg0, arg1, 0);
+        ret = func_800C123C(arg0, (u_short*)arg1, 0);
         break;
     case 5:
         arg0->unk4.flags.unk3 = saved_unk4.unk3 + 0x80;
-        ret = func_800C123C(arg0, arg1, 1);
+        ret = func_800C123C(arg0, (u_short*)arg1, 1);
         break;
     case 6:
-        ret = func_800C1384(arg0, arg1, 1);
+        ret = func_800C1384(arg0, (u_short*)arg1, 1);
         break;
     case 7:
-        ret = func_800C1384(arg0, arg1, 0);
+        ret = func_800C1384(arg0, (u_short*)arg1, 0);
         break;
     }
 
@@ -1076,7 +1066,7 @@ void func_800C2B0C(SVECTOR* position, u_int row)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2E24);
 
-void func_800C4650(func_800C4650_t* arg0, int arg1)
+void func_800C4650(func_800C5798_t* arg0, int arg1)
 {
     int i;
     int type;
@@ -1084,7 +1074,7 @@ void func_800C4650(func_800C4650_t* arg0, int arg1)
     for (i = 0; i < arg1; i++, arg0++) {
         type = arg0->unk9;
         if ((type >> 4) == 0) {
-            if (func_800C1564(&D_800EB9B8->unk0[1], arg0->unk0)) {
+            if (func_800C1564(&D_800EB9B8->unk0[1], &arg0->unk0)) {
                 func_8009FD5C(type, 0, arg0->unkA);
             } else {
                 func_8009FE74(type, arg0->unkA);

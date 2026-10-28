@@ -1,6 +1,6 @@
-#include "pad.h"
 #include "PADMAIN.h"
 #include "WAITRC2.h"
+#include "pad.h"
 #include <libapi.h>
 
 int ChangeClearRCnt(int, int);

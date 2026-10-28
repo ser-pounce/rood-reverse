@@ -1,5 +1,5 @@
-#include "pad.h"
 #include "PADMAIN.h"
+#include "pad.h"
 
 extern padPort* (*D_800335B0)(int);
 extern padPort* D_800335D0;

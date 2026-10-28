@@ -1,7 +1,7 @@
 #pragma once
+#include "src/SLUS_010.40/main.h"
 #include <sys/types.h>
 #include <libgte.h>
-#include "../../SLUS_010.40/main.h"
 
 typedef struct {
     /* 0x00 */ short class[2][8];

@@ -1,7 +1,7 @@
 #include "common.h"
-#include "../../SLUS_010.40/main.h"
-#include "../BATTLE.PRG/4A0A8.h"
-#include "../BATTLE.PRG/573B8.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/BATTLE/BATTLE.PRG/4A0A8.h"
+#include "src/BATTLE/BATTLE.PRG/573B8.h"
 
 static int (*D_800FAF7C[])(u_char*, short) = { vs_battle_invalidOpcode,
     vs_battle_invalidOpcode, vs_battle_invalidOpcode, vs_battle_invalidOpcode,

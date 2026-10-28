@@ -1,13 +1,13 @@
 #include "common.h"
+#include "3A1A0.h"
 #include "146C.h"
 #include "30DB0.h"
 #include "38C1C.h"
-#include "3A1A0.h"
-#include "entity.h"
 #include "40564.h"
 #include "44F14.h"
 #include "6E644.h"
-#include "../../SLUS_010.40/main.h"
+#include "entity.h"
+#include "src/SLUS_010.40/main.h"
 
 typedef struct {
     short unk0;

@@ -1,22 +1,22 @@
 #include "common.h"
-#include "146C.h"
 #include "30DB0.h"
+#include "146C.h"
 #include "38C1C.h"
 #include "3A1A0.h"
-#include "entity.h"
 #include "40564.h"
 #include "44F14.h"
 #include "4A0A8.h"
 #include "6E644.h"
-#include "../SLUS_010.40/main.h"
-#include "../SLUS_010.40/31724.h"
-#include "../SLUS_010.40/32154.h"
+#include "battleUnk.h"
+#include "entity.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/32154.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include <libgte.h>
 #include <libetc.h>
 #include <memory.h>
-#include "battleUnk.h"
 
 typedef struct {
     u_char unk0[0x30];

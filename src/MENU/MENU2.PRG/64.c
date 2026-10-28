@@ -2,13 +2,13 @@
 #include "src/SLUS_010.40/sfx.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
-#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
+#include "src/MENU/MAINMENU.PRG/C48.h"
 #include "build/assets/MENU/MENU2.PRG/battleAbilities.h"
+#include "scratch.h"
 #include "vs_string.h"
 #include <libetc.h>
-#include "scratch.h"
 
 /**
  * Prints the HP cost of an Ability using action data.

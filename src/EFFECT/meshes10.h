@@ -2,7 +2,7 @@
  * other six are scaled separately before the mesh is rotated into place. The entry
  * point is named by entry.h. */
 
-#include "src/EFFECT/entry.h"
+#include "entry.h"
 #include "scratch.h"
 #define VS_MESH10_FUNCTION VS_ENTRY_FUNCTION
 
@@ -11,7 +11,7 @@
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>
-#include "src/EFFECT/effectCommon.h"
+#include "effectCommon.h"
 
 typedef struct {
     u_char lifetime;

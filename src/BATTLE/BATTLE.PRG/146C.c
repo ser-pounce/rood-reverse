@@ -5,7 +5,6 @@
 #include "30DB0.h"
 #include "38C1C.h"
 #include "3A1A0.h"
-#include "entity.h"
 #include "40564.h"
 #include "44F14.h"
 #include "4A0A8.h"
@@ -13,11 +12,17 @@
 #include "58578.h"
 #include "5BF94.h"
 #include "6E644.h"
+#include "battleUnk.h"
+#include "camera.h"
+#include "entity.h"
+#include "mainInterface.h"
+#include "zone.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/INITBTL.PRG/18.h"
-#include "insertTPage.h"
 #include "build/assets/SLUS_010.40/vs_main_unkStrings.h"
+#include "insertTPage.h"
+#include "scratch.h"
 #include <abs.h>
 #include <libetc.h>
 #include <libgpu.h>
@@ -25,11 +30,6 @@
 #include <limits.h>
 #include <memory.h>
 #include <rand.h>
-#include "camera.h"
-#include "zone.h"
-#include "scratch.h"
-#include "mainInterface.h"
-#include "battleUnk.h"
 
 #define CAMERA_INPUT_LOCKED()                                                           \
     ((D_800F196C == 3) || ((D_800F196C == 2) && ((_cameraMode == 4) || (_cameraMode == 11))))

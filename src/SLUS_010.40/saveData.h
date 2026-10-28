@@ -1,7 +1,7 @@
 #pragma once
 
 #include "main.h"
-#include "../BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "gpu.h"
 #include <sys/file.h>
 

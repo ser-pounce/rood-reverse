@@ -3,11 +3,11 @@
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
+#include "scratch.h"
+#include "vs_inline_c.h"
 #include <libgte.h>
 #include <inline_c.h>
-#include "vs_inline_c.h"
-#include "scratch.h"
-#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 void func_800F9800(int arg0)
 {

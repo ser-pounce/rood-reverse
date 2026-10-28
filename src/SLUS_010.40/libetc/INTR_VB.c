@@ -1,5 +1,5 @@
 #include "common.h"
-#include "src/SLUS_010.40/libetc/INTR.h"
+#include "INTR.h"
 #include <libetc.h>
 
 void func_8001FFEC(void);

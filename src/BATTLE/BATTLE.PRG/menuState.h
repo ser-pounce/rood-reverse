@@ -1,8 +1,8 @@
 #pragma once
+#include "src/SLUS_010.40/main.h"
 #include <sys/types.h>
 #include <libgte.h>
 #include <libgpu.h>
-#include "../../SLUS_010.40/main.h"
 
 typedef struct {
     u_short currentManual;

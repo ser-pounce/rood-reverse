@@ -1,7 +1,7 @@
 #pragma once
+#include "func_8006EBF8_t.h"
 #include <sys/types.h>
 #include <libgte.h>
-#include "func_8006EBF8_t.h"
 
 typedef struct {
     u_char actorId : 3;

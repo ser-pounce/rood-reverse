@@ -1,11 +1,11 @@
 #pragma once
-#include <sys/types.h>
-#include <libgte.h>
-#include "../../SLUS_010.40/main.h"
 #include "actor.h"
 #include "func_8006B57C_t.h"
 #include "menuState.h"
 #include "uiEquipment.h"
+#include "src/SLUS_010.40/main.h"
+#include <sys/types.h>
+#include <libgte.h>
 
 typedef struct {
     int x : 12;

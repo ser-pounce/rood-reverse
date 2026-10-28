@@ -2,9 +2,10 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
-#include "src/BATTLE/BATTLE.PRG/mpd.h"
-#include "src/BATTLE/BATTLE.PRG/menuState.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
+#include "src/BATTLE/BATTLE.PRG/menuState.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "texture_t.h"
@@ -13,7 +14,6 @@
 #include <rand.h>
 #include <string.h>
 #include <abs.h>
-#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 typedef struct {
     short stat;
@@ -42,7 +42,7 @@ int vs_menuF_exec(u_char* state)
     return 0;
 }
 
-#include "../unused_vertices.h"
+#include "src/MENU/unused_vertices.h"
 
 enum _disFileIndices { rankDis, timeDis, attackDis, iqDis, escDis };
 

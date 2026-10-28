@@ -97,6 +97,7 @@ int func_8009FC60(int, int, SVECTOR*, int);
 int func_8009FE74(int arg0, int arg1);
 void func_8009FF08(int, int, int, int);
 int func_8009FFA8(int arg0, int arg1);
+int func_800A0024(int arg0, func_8006EBF8_t3* arg1);
 int func_800A0104(int index, int material);
 int func_800A01C8(int, int, int, int);
 int func_800A0204(int, int, int, int);

@@ -2,6 +2,7 @@
  * entry.h. */
 
 #include "src/EFFECT/entry.h"
+#include "scratch.h"
 #define VS_GRID_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"

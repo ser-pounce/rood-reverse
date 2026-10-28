@@ -2,7 +2,8 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
+#include "src/BATTLE/BATTLE.PRG/menuState.h"
 #include "src/BATTLE/BATTLE.PRG/2EA3C.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
@@ -18,6 +19,7 @@
 #include "insertTPage.h"
 #include <libetc.h>
 #include <abs.h>
+#include "scratch.h"
 
 static int _loadArmFile(void);
 static int _menuManager(void);

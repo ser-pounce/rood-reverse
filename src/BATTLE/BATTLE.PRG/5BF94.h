@@ -1,6 +1,8 @@
 #pragma once
 #include "../../SLUS_010.40/main.h"
-#include "146C.h"
+#include "actor.h"
+#include "menuState.h"
+#include "uiEquipment.h"
 #include "6E644.h"
 
 typedef struct {

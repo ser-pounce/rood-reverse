@@ -1,4 +1,6 @@
 #pragma once
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 /* Memorycard save/load support and the file menu code shared by the title and menu
  * overlays. The including file defines _memcardFilenameTemplate first, and the

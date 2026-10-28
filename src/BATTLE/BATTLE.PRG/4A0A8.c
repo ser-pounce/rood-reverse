@@ -16,6 +16,7 @@
 #include <memory.h>
 #include <stddef.h>
 #include <abs.h>
+#include "camera.h"
 
 typedef struct {
     u_char mode;

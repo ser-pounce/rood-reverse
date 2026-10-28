@@ -3,7 +3,8 @@
 #include "58EC.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/MENU/MENUD.PRG/234.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/actor.h"
+#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
@@ -32,6 +33,8 @@
 #include "vs_string.h"
 #include <libetc.h>
 #include <limits.h>
+#include "scratch.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 vs_main_inventoryGem* vs_mainMenu_gems;
 vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;

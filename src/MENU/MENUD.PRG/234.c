@@ -3,7 +3,7 @@
 #include "../MAINMENU.PRG/C48.h"
 #include "../MAINMENU.PRG/2D10.h"
 #include "../MAINMENU.PRG/58EC.h"
-#include "../../BATTLE/BATTLE.PRG/146C.h"
+#include "../../BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "../../BATTLE/BATTLE.PRG/573B8.h"
 #include "build/assets/MENU/ITEMHELP.BIN.h"
 #include "build/assets/MENU/MENUD.PRG/menuText.h"
@@ -13,6 +13,7 @@
 #include <memory.h>
 #include <libetc.h>
 #include <limits.h>
+#include "scratch.h"
 
 enum copyContainerFlags { copyContainerFlagsCopy = 0x10 };
 static int _copyContainerItem(int, vs_menu_containerData*, int, vs_menu_containerData*);

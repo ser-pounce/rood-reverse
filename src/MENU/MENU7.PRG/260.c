@@ -3,6 +3,7 @@
 #include "src/MENU/MAINMENU.PRG/C48.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "build/assets/MENU/MENU7.PRG/container.h"
+#include "scratch.h"
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 

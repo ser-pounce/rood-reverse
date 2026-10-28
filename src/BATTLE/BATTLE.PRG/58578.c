@@ -11,6 +11,8 @@
 #include <inline_c.h>
 #include "vs_inline_c.h"
 #include "gpu.h"
+#include "camera.h"
+#include "scratch.h"
 
 typedef struct {
     SVECTOR unk0;

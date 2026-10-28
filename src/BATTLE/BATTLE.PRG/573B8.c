@@ -9,6 +9,7 @@
 #include <libetc.h>
 #include "5BF94.h"
 #include "gpu.h"
+#include "scratch.h"
 
 typedef struct {
     u_char curve;

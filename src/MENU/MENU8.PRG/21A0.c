@@ -1,6 +1,6 @@
 #include "21A0.h"
 #include "src/SLUS_010.40/main.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
@@ -10,6 +10,7 @@
 #include "vs_string.h"
 #include "gpu.h"
 #include <libetc.h>
+#include "scratch.h"
 
 static u_char weaponId;
 static char _1 __attribute__((unused));

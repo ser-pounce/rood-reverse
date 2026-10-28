@@ -10,6 +10,8 @@
 #include <rand.h>
 #include <stdio.h>
 #include <string.h>
+#include "mpd.h"
+#include "scratch.h"
 
 typedef struct {
     int* unk0;

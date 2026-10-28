@@ -7,6 +7,8 @@
 #include "gpu.h"
 #include "vs_string.h"
 #include <libetc.h>
+#include "scratch.h"
+#include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 
 typedef struct textHeader_t {
     char text[14];

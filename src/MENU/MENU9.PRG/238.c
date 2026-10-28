@@ -4,7 +4,8 @@
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/sfx.h"
-#include "src/BATTLE/BATTLE.PRG/146C.h"
+#include "src/BATTLE/BATTLE.PRG/menuState.h"
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/2EA3C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
@@ -33,6 +34,7 @@
 #include <strings.h>
 #include <libgpu.h>
 #include <abs.h>
+#include "scratch.h"
 
 /**
  * Hides or shows the menu action at the very top of the menu.

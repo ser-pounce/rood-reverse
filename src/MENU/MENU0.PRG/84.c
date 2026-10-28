@@ -8,6 +8,8 @@
 #include "build/assets/MENU/MENU0.PRG/teleportation.h"
 #include "gpu.h"
 #include <libetc.h>
+#include "src/BATTLE/BATTLE.PRG/mpd.h"
+#include "scratch.h"
 
 static signed char _MPCostTextBuffer[16];
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <stddef.h>
+#include <sys/types.h>
 #include <libgte.h>
 
 typedef struct {

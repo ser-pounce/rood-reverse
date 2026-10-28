@@ -8,6 +8,7 @@
 #include "build/assets/MENU/MENU2.PRG/battleAbilities.h"
 #include "vs_string.h"
 #include <libetc.h>
+#include "scratch.h"
 
 /**
  * Prints the HP cost of an Ability using action data.

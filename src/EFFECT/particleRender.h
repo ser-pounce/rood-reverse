@@ -8,6 +8,7 @@
 #include "gpu.h"
 #include <inline_c.h>
 #include <rand.h>
+#include "scratch.h"
 
 #define VS_PARTICLE_RENDER_FUNCTION VS_CAT(VS_PARTICLE_DISPATCH_FUNCTION, _render)
 

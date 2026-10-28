@@ -1,5 +1,6 @@
 #pragma once
-#include "146C.h"
+#include "actor.h"
+#include "hitEntity.h"
 
 typedef struct {
     u_short lba;

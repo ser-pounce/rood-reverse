@@ -3,6 +3,8 @@
  * (VS_TRAIL_DISPATCH_FUNCTION) and the helper stages are named after it. */
 
 #include "src/EFFECT/entry.h"
+#include "src/BATTLE/BATTLE.PRG/camera.h"
+#include "scratch.h"
 #define VS_TRAIL_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"

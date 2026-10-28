@@ -1,4 +1,5 @@
 #pragma once
+#include "2842C.h"
 #include "entity.h"
 #include <libgte.h>
 
@@ -62,29 +63,36 @@ void func_80099960(void* arg0);
 int func_80099D6C(int);
 int func_8009AA84(int);
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);
+int func_8009CC20(int, int);
+int func_8009CE9C(u_int arg0);
+int func_8009CFA0(void);
+int func_8009CFB0(int);
 int func_8009D208(int);
 void func_8009D458(void);
+void func_8009D468(int);
 void func_8009D6F4(void);
 void func_8009D7E8(int, int);
+void func_8009D854(int);
 void func_8009D88C(int);
 void func_8009D934(int, int, int);
 void func_8009DBDC(int, int);
 void func_8009DC38(int);
 void func_8009DC8C(int);
 void func_8009DD00(int, SVECTOR*, int);
-void func_8009DDF4(int arg0, SVECTOR* arg1);
 void func_8009DF3C(int arg0, int arg1);
 void func_8009E070(int arg0, SVECTOR* arg1, int arg2);
 int func_8009E180(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E2E0(int, SVECTOR*, int);
 int func_8009E480(void);
 int func_8009E4B0(int arg0);
+void func_8009E5C4(int);
 void func_8009E634(D_800F4538_t*);
 void func_8009EA14(int arg0, SVECTOR* arg1);
 void func_8009EC9C(int, SVECTOR*, int, int);
 void func_8009EE9C(int, SVECTOR*, int);
 void func_8009EFEC(int, SVECTOR*, int);
 void func_8009F298(int, SVECTOR*, int);
+void func_8009F314(int, void*, int);
 void func_8009F530(int);
 int func_8009F858(int);
 void func_8009F898(int arg0, int arg1, int arg2);
@@ -94,6 +102,7 @@ void func_8009F990(int, D_800F4538_unk64*);
 void func_8009FB64(VECTOR*);
 int func_8009FBD8(int, int);
 int func_8009FC60(int, int, SVECTOR*, int);
+int func_8009FD5C(int, int, int);
 int func_8009FE74(int arg0, int arg1);
 void func_8009FF08(int, int, int, int);
 int func_8009FFA8(int arg0, int arg1);
@@ -107,6 +116,7 @@ int func_800A07FC(int, D_800F4538_unk58_2*);
 void func_800A0870(int);
 void func_800A087C(int actorId, int);
 void func_800A09D8(int, int);
+void func_800A0A1C(int, int);
 int func_800A0A74(int);
 void func_800A0ABC(int);
 void func_800A0AFC(int, int, int);
@@ -116,3 +126,6 @@ int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3);
 int func_800A1280(int, int, SVECTOR*, int);
 int func_800A13EC(int, int, int*, int);
 void func_8009E614(int arg0);
+int vs_battle_getEmptyObjectDataSlot(void);
+int vs_battle_populateDataSlot(vs_battle_objectData*);
+int vs_battle_processObjectDataQueue(void);

@@ -52,6 +52,7 @@ void func_800CA2DC(void);
 int func_800CACD0(int menuState, int arg1);
 void func_800CB83C(void);
 int func_800CF060(void);
+void func_800D2698(int);
 void func_800D5260(VECTOR* arg0);
 void func_800D5294(int* arg0);
 extern effectExec vs_battle_effectRenderers[];

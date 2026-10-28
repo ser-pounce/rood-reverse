@@ -22,6 +22,7 @@ typedef struct {
 } D_800F1BAC_t;
 
 void func_80069C6C(int);
+void func_8006CD60(u_int*, int, int);
 void func_8006CDB8(int);
 void func_8006CA20(int, SVECTOR*);
 void func_8006CB04(int, SVECTOR*);

@@ -1,7 +1,6 @@
 #pragma once
 #include "entity.h"
 
-void func_8006CD60(u_int*, int, int);
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode);
 void func_800AE47C(D_800F4538_t*);
 void func_800AE4FC(D_800F4538_t*, int);

@@ -28,16 +28,15 @@ typedef struct {
     u_char unk8;
     u_char unk9;
     signed char unkA;
-    u_char unkB;
-    u_char unkC;
-    u_char unkD;
+    char effect;
+    short unkC;
     short unkE;
     int unk10;
-    u_char unk14;
-    u_char unk15;
-    u_char unk16;
-    u_char unk17;
-} func_800C5798_t;
+    char unk14;
+    char unk15;
+    char unk16;
+    char enemyClass;
+} D_800F19CC_t5;
 
 typedef struct {
     short xyz[3];
@@ -87,7 +86,7 @@ MATRIX* func_800C085C(u_char* scale, int angle);
 void func_800C05B4(void);
 void func_800C06E0(void);
 void func_800C05EC(
-    func_800C1564_t* arg0, func_800C1564_t* arg1, int arg2, func_800C5798_t* arg3);
+    func_800C1564_t* arg0, func_800C1564_t* arg1, int arg2, D_800F19CC_t5* arg3);
 void func_800C0700(func_800C1564_t* arg0);
 void func_800C0738(void);
 

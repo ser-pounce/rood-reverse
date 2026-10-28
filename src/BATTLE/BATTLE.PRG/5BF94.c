@@ -558,7 +558,7 @@ int func_800C4794(SVECTOR* arg0)
         D_800EB9B8->unk38.pad = 0;
 
         for (stickX = 0; stickX < D_800EB9B8->unk2E; ++stickX) {
-            func_800C5798_t* trigger = &D_800EB9B8->unk44[stickX];
+            D_800F19CC_t5* trigger = &D_800EB9B8->unk44[stickX];
 
             if ((trigger->unk9 >> 4) == 0) {
                 func_8009FE74(trigger->unk9, trigger->unkA);
@@ -683,7 +683,7 @@ void func_800C518C(int arg0, void* arg1)
 
 void func_800C51B4(int mode)
 {
-    func_800C5798_t* entries = D_800EB9B8->unk40;
+    D_800F19CC_t5* entries = D_800EB9B8->unk40;
     int i;
     int group;
     if (D_800EB9B8->unk31) {
@@ -816,7 +816,7 @@ D_800EB9B8_unk990* func_800C5798(int arg0, int arg1, int arg2)
 {
     int temp_v1;
     D_800EB9B8_unk990* item = &D_800EB9B8->unk990[arg0];
-    func_800C5798_t* src = &D_800EB9B8->unk40[arg0];
+    D_800F19CC_t5* src = &D_800EB9B8->unk40[arg0];
 
     vs_battle_rMemzero(item, sizeof *item);
     item->unk0 = arg1;
@@ -3900,8 +3900,7 @@ vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id
 textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
     textOffset ret;
-    textOffset* p =
-        &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    textOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
     int offsetX = p->x;
     int offsetY = p->y;
     int alignment = p->alignment;
@@ -6607,10 +6606,7 @@ int func_800D51D8(D_800F53B8_t* arg0)
     return 1;
 }
 
-void func_800D5260(VECTOR* arg0)
-{
-    D_800F5620 = *arg0;
-}
+void func_800D5260(VECTOR* arg0) { D_800F5620 = *arg0; }
 
 void func_800D5294(int* arg0) { D_800F5618 = *arg0; }
 

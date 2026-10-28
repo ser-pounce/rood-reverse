@@ -2,6 +2,7 @@
 #include "../../SLUS_010.40/main.h"
 #include "2842C.h"
 #include "3A1A0.h"
+#include "573B8.h"
 #include "scratch.h"
 
 typedef struct {
@@ -957,21 +958,6 @@ typedef struct {
     int mpdIdentifer;
 } vs_battle_charInitData;
 
-typedef struct {
-    SVECTOR unk0;
-    u_char unk8;
-    u_char unk9;
-    signed char unkA;
-    char effect;
-    short unkC;
-    short unkE;
-    int unk10;
-    char unk14;
-    char unk15;
-    char unk16;
-    char enemyClass;
-} D_800F19CC_t5;
-
 void func_80069C6C(int);
 void func_8006CDB8(int);
 void func_8006CA20(int, SVECTOR*);
@@ -1122,7 +1108,7 @@ int func_8007E1C0(int arg0);
 int vs_battle_itemIdIsInInventory(int);
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4);
 int func_800863A4(int arg0, int arg1, int targetActor, int arg3, SVECTOR* arg4,
-                  SVECTOR* arg5, D_800F19CC_t2* arg6);
+    SVECTOR* arg5, D_800F19CC_t2* arg6);
 void func_80086FA8(int, vs_battle_actor2*);
 void vs_battle_setDoorEntered(void);
 int func_80089104(void);

@@ -461,11 +461,6 @@ typedef struct {
 } pFileBlock2;
 
 typedef struct {
-    int meta;
-    u_char data[0];
-} p_file_t;
-
-typedef struct {
     u_short x : 5;
     u_short z : 5;
     u_short unk0_10 : 5;
@@ -499,7 +494,6 @@ void _parsePfileBlock12(void*);
 void _parsePfileBlock13(void*);
 void func_800D8038(int);
 void vs_battle_setPlgLoadState(int);
-void func_800D8060(p_file_t* arg0);
 void func_800D820C(int, int);
 void func_800D821C(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);

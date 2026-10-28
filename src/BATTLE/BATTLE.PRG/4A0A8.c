@@ -233,7 +233,6 @@ typedef struct {
     u_char high;
 } scriptBytePair;
 
-int func_800A0024(int, void*);
 int func_800B6B98(
     SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
 int func_800B9C58(u_char*, short);
@@ -4630,7 +4629,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 11:
-                if ((short)func_800A0024(p[1], &position) >= 0
+                if ((short)func_800A0024(p[1], &position.unk0) >= 0
                     && position.unk0.unk0.fields.x == p[2]
                     && position.unk0.unk0.fields.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])

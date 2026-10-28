@@ -17,15 +17,6 @@
 #include <memory.h>
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    u_char unk3;
-    int unk4;
-    int unk8;
-} func_800A0024_t;
-
-typedef struct {
     u_char unk0[0x30];
     int* unk30;
 } func_8004644C_t;
@@ -3749,7 +3740,7 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-int func_800A0024(int arg0, func_800A0024_t* arg1)
+int func_800A0024(int arg0, func_8006EBF8_t3* arg1)
 {
     D_800F45E0_t* temp_s0;
     int var_v0_2;
@@ -3773,16 +3764,16 @@ int func_800A0024(int arg0, func_800A0024_t* arg1)
         return -1;
     }
 
-    *(int*)&arg1->unk0 = *(int*)&temp_s0->unk0.currentTile;
-    arg1->unk3 = temp_s0->unk16C.unk2;
+    arg1->unk0.value = *(int*)&temp_s0->unk0.currentTile;
+    arg1->unk0.fields.status = temp_s0->unk16C.unk2;
     var_v0_2 =
         func_800A6EE8(&temp_s0->unk0.position, 0, 0, 0) - temp_s0->unk0.position.vy;
     if (var_v0_2 < 0) {
         var_v0_2 += 0x7F;
     }
-    arg1->unk1 = var_v0_2 >> 7;
-    arg1->unk4 = *(int*)&temp_s0->unk0.position.vx;
-    arg1->unk8 = *(int*)&temp_s0->unk0.position.vz;
+    arg1->unk0.fields.y = var_v0_2 >> 7;
+    *(int*)&arg1->unk4.vx = *(int*)&temp_s0->unk0.position.vx;
+    *(int*)&arg1->unk4.vz = *(int*)&temp_s0->unk0.position.vz;
     return 0;
 }
 

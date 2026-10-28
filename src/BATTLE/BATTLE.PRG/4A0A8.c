@@ -3085,7 +3085,7 @@ void func_800BBAFC(void)
 }
 
 extern CVECTOR D_800E9C08;
-extern D_800F1A68_t D_800E9C0C;
+extern VECTOR D_800E9C0C;
 
 void func_800BBBE8(void)
 {
@@ -3766,7 +3766,7 @@ int func_800BD610(void)
 
 int func_800BD6C4(u_char* script, short arg1)
 {
-    D_800F1A68_t values;
+    VECTOR values;
     CVECTOR color;
     short mode;
     short effectValue;
@@ -3782,16 +3782,16 @@ int func_800BD6C4(u_char* script, short arg1)
     case 228:
         D_800F4BA4->unk1FC.unk1E = script[4];
         if (D_800F4BA4->unk1FC.unk1E == 0) {
-            values.unk0 = (script[1] << 7);
-            values.unk4 = (script[2] << 7);
+            values.vx = (script[1] << 7);
+            values.vy = (script[2] << 7);
             func_8007DDB8(&values);
         } else {
             D_800F4BA4->unk1FC.unk1C = 0;
-            func_8007DE88(&values.unk0);
+            func_8007DE88(&values);
             D_800F4BA4->unk1FC.unk12 =
-                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.unk0);
+                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.vx);
             D_800F4BA4->unk1FC.unk14 =
-                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.unk4);
+                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.vy);
             D_800F4BA4->unk1FC.unk1 = script[3];
         }
         return 0;
@@ -3816,16 +3816,16 @@ int func_800BD6C4(u_char* script, short arg1)
     case 230:
         D_800F4BA4->unk23C.unk1E = script[4];
         if (D_800F4BA4->unk23C.unk1E == 0) {
-            values.unk0 = (signed char)script[1];
-            values.unk4 = (signed char)script[2];
+            values.vx = (signed char)script[1];
+            values.vy = (signed char)script[2];
             func_8007DDF8(&values);
         } else {
             D_800F4BA4->unk23C.unk1C = 0;
             func_8007DECC(&values);
             D_800F4BA4->unk23C.unk12 =
-                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.unk0);
+                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.vx);
             D_800F4BA4->unk23C.unk14 =
-                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.unk4);
+                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.vy);
             D_800F4BA4->unk23C.unk1 = script[3];
         }
         return 0;
@@ -3859,9 +3859,9 @@ int func_800BD6C4(u_char* script, short arg1)
         mode = vs_battle_getShort(script + 1);
         if (!mode) {
             func_8007DE2C(0);
-            values.unk0 = values.unk4 = 0;
+            values.vx = values.vy = 0;
             func_8007DDF8(&values);
-            values.unk0 = values.unk4 = ONE;
+            values.vx = values.vy = ONE;
             func_8007DDB8(&values);
             color.r = color.g = color.b = 128;
             func_8007DDD4(&color);
@@ -3871,10 +3871,10 @@ int func_800BD6C4(u_char* script, short arg1)
         } else {
             func_8007DD50(1);
             func_8007DE2C(0);
-            values.unk0 = 0;
-            values.unk4 = 2;
+            values.vx = 0;
+            values.vy = 2;
             func_8007DDF8(&values);
-            values.unk0 = values.unk4 = ONE;
+            values.vx = values.vy = ONE;
             func_8007DDB8(&values);
             color.r = color.g = color.b = 144;
             func_8007DE5C(1);
@@ -3887,12 +3887,12 @@ int func_800BD6C4(u_char* script, short arg1)
 
 void func_800BDAB4(void)
 {
-    D_800F1A68_t sp10;
+    VECTOR sp10;
     CVECTOR sp20;
 
     if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
-        sp10.unk0 = D_800F4BA4->unk1FC.unk2;
-        sp10.unk4 = D_800F4BA4->unk1FC.unk4;
+        sp10.vx = D_800F4BA4->unk1FC.unk2;
+        sp10.vy = D_800F4BA4->unk1FC.unk4;
         func_8007DDB8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
@@ -3902,8 +3902,8 @@ void func_800BDAB4(void)
         func_8007DDD4(&sp20);
     }
     if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {
-        sp10.unk0 = D_800F4BA4->unk23C.unk2;
-        sp10.unk4 = D_800F4BA4->unk23C.unk4;
+        sp10.vx = D_800F4BA4->unk23C.unk2;
+        sp10.vy = D_800F4BA4->unk23C.unk4;
         func_8007DDF8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {

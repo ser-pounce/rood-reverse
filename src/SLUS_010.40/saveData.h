@@ -1,7 +1,7 @@
 #pragma once
 
+#include "inventory.h"
 #include "main.h"
-#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
 #include "gpu.h"
 #include <sys/file.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "25AC.h"
-#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "inventory.h"
 #include <sys/types.h>
 #include <libds.h>
 #include <libgte.h>

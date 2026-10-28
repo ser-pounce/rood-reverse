@@ -1,7 +1,7 @@
 #pragma once
 #include "6E644.h"
 #include "battleUi.h"
-#include "func_8006B57C_t.h"
+#include "loot.h"
 #include "menuState.h"
 #include <sys/types.h>
 #include <libgte.h>

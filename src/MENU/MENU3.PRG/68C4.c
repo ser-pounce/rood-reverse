@@ -1,4 +1,5 @@
 #include "common.h"
+#include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"

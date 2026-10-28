@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "entity.h"
 #include "mainInterface.h"
+#include "mpd.h"
 #include "zone.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"

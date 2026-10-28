@@ -1,7 +1,7 @@
 #pragma once
 #include <sys/types.h>
 #include <libgte.h>
-#include "3A1A0.h"
+#include "entity.h"
 #include "uiEquipment.h"
 
 typedef struct {

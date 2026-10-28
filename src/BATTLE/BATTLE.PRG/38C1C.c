@@ -1,6 +1,7 @@
 #include "common.h"
 #include "30DB0.h"
 #include "3A1A0.h"
+#include "entity.h"
 #include "40564.h"
 #include "44F14.h"
 #include <libgpu.h>

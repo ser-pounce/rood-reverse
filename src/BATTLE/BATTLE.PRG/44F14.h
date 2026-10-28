@@ -1,5 +1,5 @@
 #pragma once
-#include "3A1A0.h"
+#include "entity.h"
 
 void func_8006CD60(u_int*, int, int);
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode);

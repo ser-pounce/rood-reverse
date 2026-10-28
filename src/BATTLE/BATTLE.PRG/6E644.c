@@ -1,6 +1,6 @@
 #include "common.h"
 #include "146C.h"
-#include "3A1A0.h"
+#include "entity.h"
 #include "4A0A8.h"
 #include "5BF94.h"
 #include "38C1C.h"

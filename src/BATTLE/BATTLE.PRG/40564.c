@@ -3,6 +3,7 @@
 #include "40564.h"
 #include "146C.h"
 #include "3A1A0.h"
+#include "entity.h"
 #include "44F14.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"

@@ -2,7 +2,7 @@
 #include "src/MENU/MAINMENU.PRG/224.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
-#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
+#include "src/BATTLE/BATTLE.PRG/entity.h"
 
 int _loadObject(int arg0)
 {

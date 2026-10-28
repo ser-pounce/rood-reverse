@@ -1,6 +1,6 @@
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
-#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
+#include "src/BATTLE/BATTLE.PRG/entity.h"
 #include <libgte.h>
 
 extern char D_800E8F29;

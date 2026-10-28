@@ -1,7 +1,7 @@
 #pragma once
 #include <sys/types.h>
 #include <libgte.h>
-#include "3A1A0.h"
+#include "entity.h"
 
 typedef struct {
     u_short unk0_0 : 10;

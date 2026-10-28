@@ -3,7 +3,6 @@
 #include "src/SLUS_010.40/31724.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
-#include "src/BATTLE/BATTLE.PRG/3A1A0.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/224.h"

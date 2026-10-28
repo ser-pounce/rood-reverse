@@ -1,6 +1,6 @@
 #pragma once
 #include "mpd.h"
-#include "3A1A0.h"
+#include "entity.h"
 #include "func_8006EBF8_t.h"
 #include <stddef.h>
 #include <libgte.h>
@@ -14,6 +14,7 @@ void func_800A97EC(int, vs_battle_movementPosition*, int, int);
 void func_800A9988(int, SVECTOR*, int, int);
 void func_800A9C54(int, vs_battle_movementPosition*, int);
 void func_800A9CDC(int, vs_battle_movementPosition*, int);
+void func_800A9D24(int, SVECTOR*, int);
 void func_800A9D90(int, SVECTOR*, int);
 void func_800A9E38(int, short, int);
 void func_800A9EB4(int, short, int);

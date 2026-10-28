@@ -9,7 +9,7 @@
 #include "../BATTLE/BATTLE.PRG/mainInterface.h"
 #include "../BATTLE/BATTLE.PRG/mpd.h"
 #include "../BATTLE/BATTLE.PRG/30DB0.h"
-#include "../BATTLE/BATTLE.PRG/3A1A0.h"
+#include "../BATTLE/BATTLE.PRG/entity.h"
 #include "../ENDING/ENDING.PRG/D4.h"
 #include "build/src/include/lbas.h"
 #include <libapi.h>

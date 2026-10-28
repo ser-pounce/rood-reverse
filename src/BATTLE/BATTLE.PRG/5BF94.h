@@ -3,6 +3,13 @@
 #include "146C.h"
 #include "6E644.h"
 
+typedef struct {
+    int x : 12;
+    int y : 12;
+    u_int alignment : 2;
+    u_int flags : 4;
+} textOffset;
+
 enum vs_battle_warlockSpellIds_e {
     vs_battle_spell_solidShock = 0x61,
     vs_battle_spell_lightningBolt,
@@ -589,6 +596,7 @@ void func_800CB560(void);
 void func_800CB654(int);
 void func_800CB79C(void);
 void func_800CB7DC(void);
+textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3);
 void vs_battle_rMemzero(void* arg0, int arg1);
 void vs_battle_rMemcpy(void* dest, void const* src, int size);
 

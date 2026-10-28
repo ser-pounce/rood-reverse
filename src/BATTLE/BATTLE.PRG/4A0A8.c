@@ -183,13 +183,6 @@ typedef struct {
 } func_800BB68C_t;
 
 typedef struct {
-    int x : 12;
-    int y : 12;
-    u_int alignment : 2;
-    u_int flags : 4;
-} textOffset;
-
-typedef struct {
     textOffset offset;
     short x;
     short y;
@@ -262,7 +255,6 @@ VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
-textOffset func_800CCE10(int, int, int, int);
 void func_800F9BC0(int, int);
 int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);

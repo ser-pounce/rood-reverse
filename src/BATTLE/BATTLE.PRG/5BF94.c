@@ -240,13 +240,6 @@ typedef struct {
 } pFileBlock11;
 
 typedef struct {
-    int unk0_0 : 12;
-    int unk0_12 : 12;
-    u_int unk0_24 : 2;
-    u_int unk0_26 : 4;
-} func_800CCE10_t;
-
-typedef struct {
     u_char actors[6];
     u_char final;
     u_char frame;
@@ -382,7 +375,7 @@ extern u_int _keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(gim_t*, int, u_long*);
-extern func_800CCE10_t D_800EC284[][2];
+extern textOffset D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -3913,24 +3906,24 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
 
 vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-func_800CCE10_t func_800CCE10(int arg0, int arg1, int arg2, int arg3)
+textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
-    func_800CCE10_t ret;
-    func_800CCE10_t* p =
+    textOffset ret;
+    textOffset* p =
         &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
-    int offsetX = p->unk0_0;
-    int offsetY = p->unk0_12;
-    int unk24 = p->unk0_24;
+    int offsetX = p->x;
+    int offsetY = p->y;
+    int alignment = p->alignment;
 
     if ((arg1 >> 2) & 1) {
         offsetX = -offsetX;
-        unk24 ^= 2;
+        alignment ^= 2;
     }
 
-    ret.unk0_0 = offsetX - ((arg2 * 12 + 10) >> 1);
-    ret.unk0_12 = offsetY - ((arg3 * 13 + 4) >> 1);
-    ret.unk0_24 = unk24;
-    ret.unk0_26 = p->unk0_26;
+    ret.x = offsetX - ((arg2 * 12 + 10) >> 1);
+    ret.y = offsetY - ((arg3 * 13 + 4) >> 1);
+    ret.alignment = alignment;
+    ret.flags = p->flags;
     return ret;
 }
 

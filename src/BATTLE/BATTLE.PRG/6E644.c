@@ -2015,8 +2015,8 @@ void func_800DC888(func_800DC888_t* arg0)
             row = &arg0[entry->unk0.targetActor];
             func_800DC30C(&row->unk4, &row->unk6, entry->unk0.hp, entry->hpEffect);
             func_800DC30C(&row->unk8, &row->unkA, entry->unk0.mp, entry->mpEffect);
-            func_800DC30C(&row->unk10, &row->unk12, entry->weaponDp,
-                          entry->weaponDpEffect);
+            func_800DC30C(
+                &row->unk10, &row->unk12, entry->weaponDp, entry->weaponDpEffect);
             func_800DC30C(&row->unk14, &row->unk16, entry->armorDp, entry->armorDpEffect);
             row->unkC |= entry->removeStatuses;
             row->unkC &= ~entry->inflictStatuses;

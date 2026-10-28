@@ -406,7 +406,7 @@ void func_800C05B4(void)
 }
 
 void func_800C05EC(
-    func_800C1564_t* arg0, func_800C1564_t* arg1, int arg2, func_800C5798_t* arg3)
+    func_800C1564_t* arg0, func_800C1564_t* arg1, int arg2, D_800F19CC_t5* arg3)
 {
     D_800EB9B8->unk0[0] = *arg0;
 

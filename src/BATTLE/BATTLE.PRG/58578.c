@@ -401,7 +401,7 @@ void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2)
             var_a0 = 0x18;
         }
         D_800EB9B8->unk2C = var_a0;
-        D_800EB9B8->unk40 = (func_800C5798_t*)arg1;
+        D_800EB9B8->unk40 = arg1;
         if (D_800EB9B8->unk2D >= var_a0) {
             var_v0 = 0;
             if (var_a0 == 0) {
@@ -1066,7 +1066,7 @@ void func_800C2B0C(SVECTOR* position, u_int row)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/58578", func_800C2E24);
 
-void func_800C4650(func_800C5798_t* arg0, int arg1)
+void func_800C4650(D_800F19CC_t5* arg0, int arg1)
 {
     int i;
     int type;

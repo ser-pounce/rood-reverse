@@ -33,8 +33,8 @@ typedef struct {
     short unk32;
     int unk34;
     SVECTOR unk38;
-    func_800C5798_t* unk40;
-    func_800C5798_t* unk44;
+    D_800F19CC_t5* unk40;
+    D_800F19CC_t5* unk44;
     menuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
@@ -47,7 +47,7 @@ extern D_800EB9B8_t* D_800EB9B8;
 
 int vs_battle_mapStickDeadZone(int);
 int func_800C1564(func_800C1564_t* arg0, SVECTOR* arg1);
-void func_800C4650(func_800C5798_t* arg0, int arg1);
+void func_800C4650(D_800F19CC_t5* arg0, int arg1);
 void func_800C1664(int arg0, D_800F19CC_t5* arg1, int arg2);
 void func_800C16DC();
 void* func_800C282C(void);

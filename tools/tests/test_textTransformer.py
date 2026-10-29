@@ -93,6 +93,13 @@ class TextTransformerTests(unittest.TestCase):
             '{130, 96}\n#pragma vsstring(end)\n{130, 97}\n',
         )
 
+    def test_unclosed_encoding_block_is_processed_at_eof(self):
+        source = '#pragma vsstring(start)\nchar text[] = "A";\n'
+        self.assertEqual(
+            ''.join(process_lines(source.splitlines(keepends=True))),
+            'char text[] = {10};\n',
+        )
+
 
 class SjisTests(unittest.TestCase):
     def test_full_width_text(self):

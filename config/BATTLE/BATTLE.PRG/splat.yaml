@@ -43,6 +43,8 @@ segments:
       - [0x3A1A0, c]
       - [0x40564, c]
       - [0x44F14, c]
+      - [0x48C7C, hasm]
+      - [0x49268, c]
       - [0x49EB8, c]
       - [0x4B16C, hasm]
       - [0x4DEA8, c]

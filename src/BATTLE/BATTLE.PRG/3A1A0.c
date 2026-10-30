@@ -6,6 +6,7 @@
 #include "40564.h"
 #include "44F14.h"
 #include "6E644.h"
+#include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 
@@ -24,7 +25,6 @@ typedef struct {
     int words[2];
 } func_800A6798_t;
 
-void func_800B28A8(void*, MATRIX*, int);
 void func_800B64A8(int, int, int);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);

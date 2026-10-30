@@ -5,7 +5,7 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
-#include "4A0A8.h"
+#include "4DEA8.h"
 #include "5BF94.h"
 #include "battleUnk.h"
 #include "entity.h"
@@ -24,11 +24,6 @@ typedef struct {
     int last;
     u_char** data;
 } D_1F8003EC_t;
-
-typedef struct {
-    MATRIX bones[63];
-    VECTOR scale;
-} D_800F3C58_t;
 
 void func_800AB9A4(void*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
@@ -75,7 +70,6 @@ extern u_char D_800E92DC[];
 extern int D_800E9308;
 extern u_short D_800E9A28[][4];
 extern int D_800F1868;
-extern D_800F3C58_t D_800F3C58;
 extern MATRIX D_800F3C78;
 extern MATRIX D_800F4910;
 extern MATRIX D_800F49B8;
@@ -2231,22 +2225,4 @@ void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
     } else {
         func_800B3CF0(&D_800F2458, weapon, &color, scratch->model);
     }
-}
-
-void func_800B26B8(D_800F4538_t* actor, MATRIX* parent, int bone, int saved)
-{
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
-
-    scratch->matrix = *(actor->unk1890 + saved - 1);
-    func_800B196C(parent, &scratch->matrix);
-    gte_SetRotMatrix(parent);
-    gte_SetTransMatrix(parent);
-    --saved;
-    setVector(&scratch->position, actor->unk1890[saved].t[0], actor->unk1890[saved].t[1],
-        actor->unk1890[saved].t[2]);
-    gte_ldv0(&scratch->position);
-    gte_rtv0tr2();
-    gte_stlvnl(scratch->matrix.t);
-    D_800F3C58.bones[bone] = scratch->matrix;
-    actor->bones[bone] = scratch->matrix;
 }

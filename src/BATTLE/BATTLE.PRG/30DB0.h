@@ -4,7 +4,9 @@
 #include <libgte.h>
 
 typedef struct {
-    u_char unk0[0x1FD0];
+    u_char unk0[0x1800];
+    MATRIX bones[42];
+    VECTOR boneScale[41];
     int unk1FD0[3];
     int unk1FDC;
     u_short unk1FE0;

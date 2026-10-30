@@ -1,4 +1,5 @@
 #pragma once
+#include "entity.h"
 #include <sys/types.h>
 #include <libgte.h>
 
@@ -35,4 +36,4 @@ extern int D_800F4594;
 extern char D_800F49DC;
 void func_8009C378(func_8009C378_t*, func_8009C378_t*);
 
-void func_800B28A8(void*, MATRIX*, char);
+void func_800B28A8(D_800F4538_t*, MATRIX*, int);

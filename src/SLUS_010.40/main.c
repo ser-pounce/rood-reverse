@@ -98,7 +98,7 @@ static void _initCdQueue(void);
 static void _diskReset(void);
 static void _processCdQueue(void);
 static void _loadMenuSound(void);
-static void _asmNop(void);
+void _asmNop(void);
 
 typedef struct {
     char wLo;
@@ -4493,59 +4493,6 @@ void vs_main_clutInit(void)
         _clutState.unk7F28[i].unk10[0] = 0x400000;
     }
 }
-
-static void _asmNop(void) { __asm__(".nop;"); }
-
-void vs_main_nop9(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
-
-void vs_main_nop10(int arg0 __attribute__((unused)), int arg1 __attribute__((unused))) { }
-
-static void nop11(void) { }
-
-void vs_main_memcpy(void* dest, void* src, u_int sz)
-{
-    __asm__("srl $t0, %2, 4;"
-            "beqz $t0, 1f;"
-            "and $t5, %2, 12;"
-            "0:"
-            "lw $t1, 0(%1);"
-            "lw $t2, 4(%1);"
-            "lw $t3, 8(%1);"
-            "lw $t4, 12(%1);"
-            "addu $t0, -1;"
-            "sw $t1, 0(%0);"
-            "sw $t2, 4(%0);"
-            "sw $t3, 8(%0);"
-            "sw $t4, 12(%0);"
-            "addu %1, 16;"
-            "bnez $t0, 0b;"
-            "addu %0, 16;"
-            "beqz $t5, 2f;"
-            "1:"
-            "lw $t1, 0(%1);"
-            "addu $t5, -4;"
-            "sw $t1, 0(%0);"
-            "addu %1, 4;"
-            "bnez $t5, 1b;"
-            "addu %0, 4;"
-            "2:" ::"r"(dest),
-        "r"(src), "r"(sz));
-}
-
-void vs_main_bzero(void* dest, int sz)
-{
-    __asm__("and $t0, %1, 0xFFFC;"
-            "beqz $t0, 1f;"
-            "0:"
-            "sw $0, 0(%0);"
-            "addu $t0, -4;"
-            "bnez $t0, 0b;"
-            "addu %0, 4;"
-            "1:" ::"r"(dest),
-        "r"(sz));
-}
-
-static void nop12(void) { }
 
 D_80061078_t D_80061078[4];
 vs_main_flags_t vs_main_stateFlags;

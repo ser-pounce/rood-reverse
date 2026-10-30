@@ -24,7 +24,7 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/libgte/%.s.o, \
 	MTX_005 MTX_004 MTX_06 MTX_05 SMP_04 SMP_02 CMB_02 MTX_07 CMB_00 \
 ): ASFLAGS += -no-pad-sections
 
-$(BUILD)/src/SLUS_010.40/overlay.s.o: ASFLAGS += -no-pad-sections
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.s.o,overlay 3988C): ASFLAGS += -no-pad-sections
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,2MBYTE.OBJ libcd/SYS 25AC main): CC1VER := 2.8.1-psx
 

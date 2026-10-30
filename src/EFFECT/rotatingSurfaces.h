@@ -6,6 +6,7 @@
 
 #include "entry.h"
 #include "scratch.h"
+#include "src/SLUS_010.40/main.h"
 #define VS_ROTATING_SURFACE_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"

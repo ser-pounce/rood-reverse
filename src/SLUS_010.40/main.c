@@ -3,7 +3,6 @@
 #undef VS_MAIN_INCLUDE
 #include "common.h"
 #include "overlay.h"
-#include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #include "src/BATTLE/BATTLE.PRG/entity.h"

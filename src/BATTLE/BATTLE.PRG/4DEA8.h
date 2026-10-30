@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <libgte.h>
 
-void func_800B28A8(void*, MATRIX*, char);
 void func_800BBDDC(void);
 short func_800BEB00(void);
 short func_800BEB10(void);
@@ -10,7 +9,6 @@ void func_800BEB34(void);
 void func_800BEB9C(int);
 void func_800BEBEC(void);
 char vs_battle_getStateFlag(short);
-void vs_battle_setStateFlag(short id, char value);
 int func_800BEC30(void);
 short func_800BEC58(short, int, int, short);
 int vs_battle_invalidOpcode(u_char*, short);
@@ -159,20 +157,7 @@ int func_800BB604(u_char*, short);
 int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
     void* scriptSection, u_short scriptSectionLen, void* doorSection,
     u_short doorSectionLen, int startState);
-void func_800B64A8(int, int, int);
 int func_800BF850(void);
-void func_800B63AC(int, int*, int, int);
-void func_800B6404(int, int*, int, int);
-void func_800B6438(int, int*, int, int);
-void func_800B64CC(int, int, int, int);
-void func_800B6500(int, SVECTOR*);
-void func_800B6530(int, SVECTOR*, int);
-void func_800B653C(int, SVECTOR*, int, int);
-void func_800B6580(int, int*, int);
-void func_800B65E8(int, int*, int);
-void func_800B65F4(int, int*, int);
-void func_800B6634(int, int);
-void func_800B668C(int arg0, short arg1, int arg2);
 
 extern short D_800F4BE2;
 extern char vs_battle_textBoxStatuses[];

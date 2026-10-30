@@ -5,6 +5,7 @@
 #include "entry.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #include "scratch.h"
+#include "src/SLUS_010.40/main.h"
 #define VS_TRAIL_DISPATCH_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"

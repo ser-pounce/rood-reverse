@@ -1,4 +1,5 @@
 #pragma once
+#include "objectData.h"
 #include <stddef.h>
 #include <libgte.h>
 #include <libgpu.h>
@@ -14,26 +15,6 @@ typedef struct {
     int unk8;
     vs_battle_backgroundTile tiles[0];
 } vs_battle_backgroundLayout;
-
-typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 8;
-    u_int unk0_16 : 8;
-    u_int unk0_24 : 8;
-} vs_battle_objectData_flags;
-
-typedef struct {
-    u_char dataType;
-    signed char index;
-    short modelId;
-    void* unk4;
-    u_long dataAddr;
-    vs_battle_objectData_flags unkC;
-    u_char actorId;
-    char unk11;
-    u_char material;
-    u_char variant;
-} vs_battle_objectData;
 
 short vs_battle_clamp(short arg0, int arg1, int arg2);
 void func_80090C2C(int arg0);
@@ -78,23 +59,8 @@ void func_800971D4(void);
 void func_8009722C(void);
 void func_80098160(int);
 void func_80098194(int);
-int vs_battle_getEmptyObjectDataSlot(void);
 void func_80098B38(int, int);
-int vs_battle_populateDataSlot(vs_battle_objectData*);
-int vs_battle_processObjectDataQueue(void);
-int func_8009CC20(int, int);
-int func_8009CE9C(u_int arg0);
-int func_8009CFA0(void);
-int func_8009CFB0(int);
-void func_8009D468(int);
-void func_8009D854(int);
-void func_8009E5C4(int);
-void func_8009F314(int, void*, int);
-int func_8009FD5C(int, int, int);
-void func_800A0A1C(int, int);
 void func_800941FC(void);
 int vs_battle_renderBattleAbilityTimingResult(int arg0);
 
 extern vs_battle_objectData vs_battle_objectDataSlots[16];
-
-extern char vs_battle_loadObjectDataState;

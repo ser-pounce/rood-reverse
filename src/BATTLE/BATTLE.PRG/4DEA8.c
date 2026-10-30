@@ -1,10 +1,11 @@
 #include "common.h"
-#include "4A0A8.h"
+#include "4DEA8.h"
 #include "146C.h"
 #include "2842C.h"
 #include "30DB0.h"
 #include "38C1C.h"
 #include "40564.h"
+#include "44F14.h"
 #include "573B8.h"
 #include "5BF94.h"
 #include "battleUnk.h"
@@ -14,10 +15,13 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/sfx.h"
 #include "src/GIM/SCREFF2.PRG/0.h"
+#include "scratch.h"
+#include "vs_inline_c.h"
 #include <stdio.h>
 #include <memory.h>
 #include <stddef.h>
 #include <abs.h>
+#include <inline_c.h>
 
 typedef struct {
     u_char mode;
@@ -317,256 +321,6 @@ extern char _textBoxSelectionPending;
 extern int D_800F4C64;
 extern char D_800F4C69;
 extern char D_800F4C6A;
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800B63AC;"
-        "la         $v0, D_800F4538;"
-        "sll        $v1, $a0, 2;"
-        "addu       $v0, $v1;"
-        "lw         $v0, 0x0($v0);"
-        "nop;"
-        "lb         $v1, 0xA($v0);"
-        "lb         $t1, 0x5B0($v0);"
-        "and        $t0, $v1, 0x40;"
-        "bnez       $t0, .L800B6424;"
-        "and        $t0, $v1, 0x20;"
-        "bnez       $t0, .L800B6454;"
-        "and        $t1, 0xFC;"
-        "or         $t1, 0x1;"
-        "sb         $t1, 0x5B0($v0);"
-        ".L800B63E8:"
-        "addu       $sp, -0x4;"
-        "sw         $ra, 0x0($sp);"
-        "jal        func_800A208C;"
-        "addu       $a0, $v0, $zero;"
-        "lw         $ra, 0x0($sp);"
-        "addu       $sp, 0x4;"
-        "jr         $ra;"
-        "endlabel func_800B63AC;"
-        ".set pop");
-
-__asm__(".set push;"
-        ".set reorder;"
-        "glabel func_800B6404;"
-        "la         $v0, D_800F4538;"
-        "sll        $v1, $a0, 2;"
-        "addu       $v0, $v1;"
-        "lw         $v0, 0x0($v0);"
-        "lb         $v1, 0xA($v0);"
-        ".L800B6424:"
-        "and        $v1, 0x9F;"
-        "or         $v1, 0x40;"
-        "sb         $v1, 0xA($v0);"
-        ".set nomove;"
-        "j          .L800B63E8;"
-        "endlabel func_800B6404;"
-        ".set pop");
-
-void func_800B6438(int arg0, int* arg1, int arg2, int arg3)
-{
-    __asm__("la         $v0, D_800F4538;"
-            "sll        $v1, $a0, 2;"
-            "addu       $v0, $v1;"
-            "lw         $v0, 0x0($v0);"
-            "nop;"
-            "lb         $v1, 0xA($v0);"
-            ".L800B6454:"
-            "addu       $sp, -0x14;"
-            "sw         $v0, 0x0($sp);"
-            "sw         $a1, 0x4($sp);"
-            "sw         $a2, 0x8($sp);"
-            "sw         $a3, 0xC($sp);"
-            "sw         $ra, 0x10($sp);"
-            "or         $v1, 0x60;"
-            "sb         $v1, 0xA($v0);"
-            "or         $a1, $zero, 0x1F;"
-            "addu       $a2, $zero, $zero;"
-            "jal        func_800A0204;"
-            "or         $a3, $zero, 0x8;"
-            "lw         $a0, 0x0($sp);"
-            "lw         $a1, 0x4($sp);"
-            "lw         $a2, 0x8($sp);"
-            "jal        func_800A208C;"
-            "lw         $a3, 0xC($sp);"
-            "lw         $ra, 0x10($sp);"
-            "addu       $sp, 0x14;");
-}
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800B64A8;"
-        "addu       $sp, -0x4;"
-        "sw         $ra, 0x0($sp);"
-        "jal        func_800B64CC;"
-        "addu       $a3, $a1, $zero;"
-        "or         $v1, $zero, 0x0;"
-        "sb         $v1, 0x1848($v0);"
-        "lw         $ra, 0x0($sp);"
-        "addu       $sp, 0x4;"
-        "j          $ra;"
-        "endlabel func_800B64A8;"
-        ".set pop");
-
-void func_800B64CC(int arg0, int arg1, int arg2, int arg3)
-{
-    __asm__("la         $v0, D_800F4538;"
-            "sll        $v1, %0, 2;"
-            "addu       $v0, $v1;"
-            "lw         $v0, 0x0($v0);"
-            "or         $v1, $zero, 0x1;"
-            "sll        $t0, %3, 16;"
-            "or         $t0, %1;"
-            "sw         $t0, 0x184C($v0);"
-            "sw         %2, 0x1850($v0);"
-            ".L800B64F4:"
-            "sw         $v1, 0x1848($v0);"
-        :
-        : "r"(arg0), "r"(arg1), "r"(arg2), "r"(arg3));
-}
-
-__asm__("glabel func_800B6500;"
-        "la         $v0, D_800F4538;"
-        "sll        $v1, $a0, 2;"
-        "addu       $v0, $v1;"
-        "lw         $v0, 0x0($v0);"
-        "lw         $t2, 0x0($a1);"
-        "lw         $t3, 0x4($a1);"
-        "sw         $t2, 0x1858($v0);"
-        "sw         $t3, 0x185C($v0);"
-        "lb         $t1, 0xA($v0);"
-        "j          .L800B64F4;"
-        "or         $v1, $zero, 0x2;"
-        "endlabel func_800B6500;");
-
-__asm__("glabel func_800B6530;"
-        "ori     $t4, $zero, 0x4;"
-        "j       .L800B6540;"
-        "addu    $a3, $a2, $zero;"
-        "endlabel func_800B6530;");
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800B653C;"
-        "ori        $t4, $zero, 0x3;"
-        ".L800B6540:"
-        "la         $v0, D_800F4538;"
-        "sll        $v1, $a0, 2;"
-        "addu       $v0, $v1;"
-        "lw         $v0, 0x0($v0);"
-        "lw         $t2, 0x0($a1);"
-        "lw         $t3, 0x4($a1);"
-        "sw         $a2, 0x1850($v0);"
-        "lb         $t1, 0xA($v0);"
-        "sh         $a3, 0x184E($v0);"
-        "sw         $t2, 0x1858($v0);"
-        "sw         $t3, 0x185C($v0);"
-        "or         $t1, 0x20;"
-        "sb         $t1, 0xA($v0);"
-        "sw         $t4, 0x1848($v0);"
-        "j          $ra;"
-        "endlabel func_800B653C;"
-        ".set pop;");
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800B6580;"
-        "la         $v0, D_800F4538;"
-        "sll        $v1, $a0, 2;"
-        "addu       $v0, $v1;"
-        "lw         $v0, 0x0($v0);"
-        "lw         $t2, 0x0($a1);"
-        "lb         $t1, 0xB($v0);"
-        "sll        $t0, $a2, 16;"
-        "and        $t1, 0xF;"
-        "bnez       $t1, .L800B65E4;"
-        "or         $t1, 0x1;"
-        "lbu        $a0, 0x17FD($v0);"
-        "sh         $zero, 0x1A($v0);"
-        "sw         $t2, 0x5EC($v0);"
-        "sw         $t0, 0x5F0($v0);"
-        "sb         $t1, 0xB($v0);"
-        "slt        $t3, $a0, 0x2;"
-        "bnez       $t3, .L800B65E4;"
-        ".nop;"
-        "addu       $sp, -0x4;"
-        "sw         $ra, 0x0($sp);"
-        "jal        func_800B6580;"
-        ".nop;"
-        "lw         $ra, 0x0($sp);"
-        "addu       $sp, 0x4;"
-        ".L800B65E4:"
-        "jr         $ra;"
-        "endlabel func_800B6580;"
-        ".set pop;");
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800B65E8;"
-        "ori     $t1,$zero,0x10;"
-        "j       .L800B65F8;"
-        ".nop;"
-        "endlabel func_800B65E8;"
-        ".set pop;");
-
-__asm__(".set push;"
-        ".set noreorder;"
-        "glabel func_800B65F4;"
-        "ori        $t1, $zero, 0x40;"
-        ".L800B65F8:"
-        "la         $v0, D_800F4538;"
-        "sll        $v1, $a0, 2;"
-        "addu       $v0, $v0, $v1;"
-        "lw         $v0, 0x0($v0);"
-        "lw         $t2, 0x0($a1);"
-        "lw         $t3, 0x4($a1);"
-        "lb         $t4, 0xB($v0);"
-        "sw         $t2, 0x5EC($v0);"
-        "sw         $t3, 0x5F0($v0);"
-        "sh         $a2, 0x5F2($v0);"
-        "and        $t4, 0x8F;"
-        "or         $t1, $t4, $t1;"
-        "sb         $t1, 0xB($v0);"
-        "j          $ra;"
-        "endlabel func_800B65F4;"
-        ".set pop;");
-
-void func_800B6634(int arg0, int arg1)
-{
-    __asm__("la         $v0, D_800F4538;"
-            "sll        $v1, $a0, 2;"
-            "addu       $v0, $v1;"
-            "lw         $v0, 0x0($v0);"
-            "addu       $sp, -0xC;"
-            "lhu        $t0, 0x63C($v0);"
-            "sw         $ra, 0x0($sp);"
-            "or         $a2, $zero, 0x80;"
-            "sltu       $t0, 0x80;"
-            "beqz       $t0, .L800B6668;"
-            "sw         $a0, 0x4($sp);"
-            "or         $a2, $zero, 0x20;"
-            ".L800B6668:"
-            "jal        func_800A9EB4;"
-            "sw         $a1, 0x8($sp);"
-            ".L800B6670:"
-            "lw         $a0, 0x4($sp);"
-            "jal        func_800A249C;"
-            "lw         $a1, 0x8($sp);"
-            "lw         $ra, 0x0($sp);"
-            "addu       $sp, 0xC;");
-}
-
-__asm__(".set push;"
-        ".set reorder;"
-        "glabel func_800B668C;"
-        "addu       $sp, -0xC;"
-        "sw         $ra, 0x0($sp);"
-        "sw         $a0, 0x4($sp);"
-        "sw         $a1, 0x8($sp);"
-        "jal        func_800AA8D0;"
-        "j          .L800B6670;"
-        "endlabel func_800B668C;"
-        ".set pop;");
 
 int vs_battle_invalidOpcode(u_char* arg0, short arg1)
 {
@@ -2149,7 +1903,7 @@ int func_800B9D74(u_char* arg0, short arg1)
 }
 
 // https://decomp.me/scratch/cNU0W
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4A0A8", func_800B9DB4);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/4DEA8", func_800B9DB4);
 
 int func_800B9F28(u_char* arg0, short arg1)
 {

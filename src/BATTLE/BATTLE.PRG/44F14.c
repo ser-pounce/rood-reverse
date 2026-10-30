@@ -5,8 +5,9 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
-#include "4A0A8.h"
+#include "4DEA8.h"
 #include "5BF94.h"
+#include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
@@ -23,11 +24,6 @@ typedef struct {
     int last;
     u_char** data;
 } D_1F8003EC_t;
-
-typedef struct {
-    MATRIX bones[63];
-    VECTOR scale;
-} D_800F3C58_t;
 
 void func_800AB9A4(void*);
 int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
@@ -74,7 +70,6 @@ extern u_char D_800E92DC[];
 extern int D_800E9308;
 extern u_short D_800E9A28[][4];
 extern int D_800F1868;
-extern D_800F3C58_t D_800F3C58;
 extern MATRIX D_800F3C78;
 extern MATRIX D_800F4910;
 extern MATRIX D_800F49B8;

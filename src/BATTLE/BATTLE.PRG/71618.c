@@ -2,7 +2,7 @@
 #include "6E644.h"
 #include "146C.h"
 #include "38C1C.h"
-#include "4A0A8.h"
+#include "4DEA8.h"
 #include "5BF94.h"
 #include "battleEffect.h"
 #include "battleUnk.h"

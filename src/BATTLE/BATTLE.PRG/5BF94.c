@@ -27,6 +27,7 @@
 #include "vs_string.h"
 #include <memory.h>
 #include <libetc.h>
+#include <libgte.h>
 #include <rand.h>
 #include <abs.h>
 
@@ -355,7 +356,7 @@ extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
-extern int D_800EB9D0;
+extern u_char D_800EB9D0[];
 extern u_int* _menuBgUnpackedBuf;
 extern int* D_800EB9D8;
 extern char D_800EBA78[];
@@ -375,6 +376,10 @@ extern u_char D_800EBCC8[];
 extern int D_800EBCD0[];
 extern u_short D_800EBCE0[];
 extern u_char D_800EBCE8;
+extern int D_800EBCEC[];
+extern int D_800EBD14[];
+extern int D_800EBD3C[];
+extern u_short D_800EBD64;
 extern u_char _spellClassCounts[];
 extern u_char* _spellIds[];
 extern char D_800EBD68[];
@@ -2842,8 +2847,191 @@ void func_800C9FE8(void)
     D_800EBC78 = 0;
 }
 
-// https://decomp.me/scratch/NSW3O
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/5BF94", func_800CA2DC);
+void func_800CA2DC(void)
+{
+    int i;
+    int j;
+    int k;
+    int risk;
+    int selected;
+    u_int count;
+    u_int flags;
+    u_char icon;
+    u_long* prim;
+    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    void* nextPrim = vs_scratch.unk4 - 4;
+
+    func_800C9FE8();
+
+    if (D_800EB9CC == 1) {
+        if (D_800EB9CD < 4) {
+            D_800EBD64 = 0;
+            ++D_800EB9CD;
+        }
+    } else if (D_800EB9CD != 0) {
+        --D_800EB9CD;
+    }
+
+    if (D_800EB9CD != 0) {
+        prim = vs_battle_setSprite(0x140,
+            ((((D_800EB9CD * 3) - 4) << 16) - D_800EB9B0) | 0xEC, 0xA0049,
+            vs_scratch.unk4 - 0xC);
+        prim[1] = 0xE1000017;
+        prim[2] += rsin(D_800EBD64 & 0x7FF) >> 5;
+        prim[4] = 0x373D0040;
+        D_800EBD64 += vs_gametime_tickspeed * 64;
+    }
+
+    if (D_800EB9AF != 0) {
+        if (D_800EB9B0 == 2097152) {
+            return;
+        }
+
+        D_800EB9B0 += 524288;
+    } else {
+        k = vs_battle_textBoxes[7].state;
+        if (!(vs_battle_lowerScreenUiState & 2)
+            && ((k == 0) || (k != (vs_battle_textBoxes[7].unk22 + 1)))) {
+            k = 0xB80008;
+
+            for (i = 0; i < 5; ++i) {
+                j = i + (D_800EB9CC & 1) * 5;
+                prim = vs_battle_setSpriteDefaultTexPage(
+                    0, k + D_800EBCEC[j], D_800EBD14[j], nextPrim);
+                prim[2] = D_800EBC54[vs_battle_getLimbStatus(
+                              &vs_battle_characterState->unk3C->limbs[i])]
+                        | 0x64000000;
+                prim[4] = D_800EBD3C[j];
+            }
+        }
+        if (D_800EB9B0 != 0) {
+            D_800EB9B0 -= 524288;
+        }
+    }
+
+    _renderStatBar(0, actor->currentHP, actor->maxHP);
+    _renderStatBar(1, actor->currentMP, actor->maxMP);
+
+    risk = actor->risk;
+    k = risk;
+
+    if (k != 0) {
+        _renderStatBar(2, k, 100);
+    }
+
+    if (risk == 0) {
+        vs_battle_renderTextRaw(
+            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.unk4 - 0xC);
+    }
+
+    if (D_800EB9AE != 0) {
+        return;
+    }
+
+    flags = vs_battle_getStatusFlags(actor);
+    count = 0;
+    selected = 0xFF;
+
+    for (j = 0; j < 32; ++j) {
+        if ((flags >> j) & 1) {
+            if (j == D_800EB9D0[1]) {
+                selected = count;
+            }
+
+            ++count;
+        }
+    }
+
+    for (j = 0; j < 3; ++j) {
+        if (!((flags >> D_800EB9D0[j]) & 1)) {
+            D_800EB9D0[j] = 0xFF;
+        }
+    }
+
+    if (count == 0) {
+        return;
+    }
+
+    j = D_800EB9D0[3];
+
+    if (j == 12) {
+        icon = D_800EB9D0[1];
+        D_800EB9D0[1] = D_800EB9D0[2];
+        D_800EB9D0[2] = 0xFF;
+        D_800EB9D0[0] = icon;
+        i = (D_800EB9D0[1] + 1) & 0xFF;
+
+        for (k = 0; k < 32; ++k, ++i) {
+            i %= 32;
+
+            if (((flags >> i) & 1) && (i != D_800EB9D0[1])) {
+                D_800EB9D0[2] = i;
+                break;
+            }
+        }
+    }
+
+    k = 1;
+
+    if ((D_800EB9D0[0] == D_800EB9D0[2]) && (D_800EB9D0[1] != 0xFF)) {
+        if ((count == k) && (j < 3)) {
+            j = 0;
+        }
+        if ((count == 2) && (D_800EB9D0[0] != 0xFF) && ((u_int)(j - 12) < 3)) {
+            j = 12;
+        }
+    }
+
+    k = -8;
+
+    if (j >= 9) {
+        k = (j < 12) ? 8 - j * 2 : 24 - j * 2;
+    }
+
+    ++j;
+
+    if ((j != D_800EB9D0[3]) && (vs_gametime_tickspeed == 4)) {
+        j = (j + 1) & 0xE;
+    }
+
+    D_800EB9D0[3] = j & 0xF;
+    func_800C9CB4(D_800EB9D0[2], k + 16, 1);
+    func_800C9CB4(D_800EB9D0[1], k, 1);
+    func_800C9CB4(D_800EB9D0[1], k + 16, 0);
+    func_800C9CB4(D_800EB9D0[0], k, 0);
+
+    k = 0x80000 - D_800EB9B0;
+    nextPrim -= 4;
+
+    if (count < 3) {
+        for (i = 0; i < count; ++i) {
+            prim = vs_battle_setSpriteDefaultTexPage(
+                0x80, (0x94 + i * 3) | k, 0x40004, nextPrim);
+            prim[4] = 0x37F40C1A;
+        }
+        return;
+    }
+
+    j = k + 196608;
+
+    if (selected != 0xFF) {
+        prim = vs_battle_setSprite(0x80,
+            ((selected & 7) * 3 + 0x94) | (!(selected & 8) ? k : j), 0x40004, nextPrim);
+        prim[4] = 0x37F40C1A;
+    }
+
+    i = 25;
+
+    if (count < 9) {
+        i = count * 3 + 1;
+    } else {
+        vs_battle_setSprite(
+            0x80, j | 0x94, ((count - 8) * 3 + 1) | 0x40000, nextPrim)[4] = 0x37F40C00;
+    }
+
+    vs_battle_setSpriteDefaultTexPage(0x80, k | 0x94, i | 0x40000, nextPrim)[4] =
+        0x37F40C00;
+}
 
 void func_800CA97C(void)
 {
@@ -2868,7 +3056,7 @@ void vs_battle_initUi(void* fontData)
     D_800EB9AF = 0;
     D_800EB9CC = 0;
     D_800EB9CD = 0;
-    D_800EB9D0 = 0xFFFFFF;
+    *(int*)D_800EB9D0 = 0xFFFFFF;
     _menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
     func_800CA97C();

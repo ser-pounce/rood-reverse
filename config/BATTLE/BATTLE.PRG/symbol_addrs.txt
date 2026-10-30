@@ -1226,6 +1226,7 @@ _loadedSubMenu = 0x800EB9AD;
 D_800EB9AE = 0x800EB9AE;
 D_800EB9B0 = 0x800EB9B0;
 vs_battle_menuItems = 0x800EB9C0;
+D_800EB9D0 = 0x800EB9D0; // size:0x4
 _menuBgUnpackedBuf = 0x800EB9D4;
 vs_battle_menuStrings = 0x800EB9DC;
 vs_battle_rowAnimationSteps = 0x800EBBC8;

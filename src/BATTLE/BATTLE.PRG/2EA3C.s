@@ -2,6 +2,7 @@
 .include "src/include/gte_reg_macros.inc"
 
 .set noat
+.set noreorder
 
 .section .text, "ax"
 
@@ -35,17 +36,15 @@ glabel func_8009723C
     lw         $a0, 0x1C($s1)
     subu       $at, $t0
     lw         $v1, %lo(0x1F800010)($a3)
-    addiu     $s3, $s1, 0x20
     bgez       $at, 3f
+     addiu     $s3, $s1, 0x20
     and        $at, $v0, 0x1100
-.set noreorder
     bnez       $at, 2f
      srl       $at, $v0, 15
-.set reorder
     and        $at, 0x1
     and        $at, $s6
-    lui       $t0, %hi(0xFFFF6000)
     bnez       $at, 2f
+     lui       $t0, %hi(0xFFFF6000)
     or         $t0, (0xFFFF6000 & 0xFFFF)
     xor        $gp, $v0, 0x800
     and        $gp, 0x800
@@ -56,12 +55,10 @@ glabel func_8009723C
     or         $gp, $t0
     and        $at, $v1, 0xFF
     srl        $v1, 16
-    xor       $v0, 0xFF
     bnez       $v1, 1f
+     xor       $v0, 0xFF
     and        $v0, $at
-.set noreorder
     bnez       $v0, 2f
-.set reorder
   1:
      lw        $t0, 0x0($s3)
     lw         $t1, 0x4($s3)
@@ -80,13 +77,11 @@ glabel func_8009723C
     ctc2       $t6, $6
     ctc2       $t7, $7
     addu       $a0, $s0
-.set noreorder
     jal        func_80097388
-.set reorder
   2:
      addiu     $s2, -0x1
-    addiu     $s1, 0x40
     bnez       $s2, 0b
+     addiu     $s1, 0x40
   3:
     sw         $a1, %lo(0x1F800000)($a3)
     lw         $fp, %lo(0x1F8003D4)($a3)
@@ -99,10 +94,8 @@ glabel func_8009723C
     lw         $s4, %lo(0x1F8003F0)($a3)
     lw         $s5, %lo(0x1F8003F4)($a3)
     lw         $s6, %lo(0x1F8003F8)($a3)
-.set noreorder
     jr         $ra
      lw        $s7, %lo(0x1F8003FC)($a3)
-.set reorder
 endlabel func_8009723C
 
 nonmatching func_80097388, 0x5F4
@@ -116,40 +109,38 @@ glabel func_80097388
     lw         $v0, 0x0($a0)
     sll        $at, 16
     or         $v0, $at
-    addiu     $a0, 0x8
     jal        func_8009797C
+     addiu     $a0, 0x8
     and        $at, $v0, 0xFFFF
-    addu      $a3, $a0, $zero
     beqz       $at, 5f
+     addu      $a3, $a0, $zero
   0:
     lw         $s7, 0xC($a0)
-    addiu     $a3, 0x20
     jal        func_80097A10
-    li        $t0, 0x1000000
+     addiu     $a3, 0x20
     bgez       $at, 1f
+     li        $t0, 0x1000000
     and        $t0, $s7
-    negu      $at, $at
     beqz       $t0, 4f
+     negu      $at, $at
   1:
     addu       $fp, $at, $zero
     mfc2       $t0, $12
     mfc2       $t1, $13
     mfc2       $t2, $14
-.set noreorder
     jal        func_80098014
      addu      $t3, $t2, $zero
     beqz       $at, 4f
      and       $at, $s6, 0x1
     beqz       $at, 2f
-.set reorder
      sltiu     $at, $fp, 0x200
-    srl       $t4, $gp, 13
     bnez       $at, 2f
+     srl       $t4, $gp, 13
     and        $t4, 0x3
     srl        $at, $t9, 9
     subu       $at, $t4, $at
-    lui       $fp, %hi(0x1F800390)
     blez       $at, 2f
+     lui       $fp, %hi(0x1F800390)
     or         $fp, (0x1F800390 & 0xFFFF)
     sw         $s0, 0x0($fp)
     sw         $s1, 0x4($fp)
@@ -212,25 +203,23 @@ glabel func_80097388
     srl        $t5, 24
     sll        $t5, 8
     or         $t4, $t5
-    sh        $t4, 0x6($s2)
     jal        func_80097AEC
+     sh        $t4, 0x6($s2)
     addiu      $fp, 0x4C
     lw         $s0, 0x0($fp)
     lw         $s1, 0x4($fp)
     lw         $s2, 0x8($fp)
     lw         $s3, 0xC($fp)
     lw         $s4, 0x10($fp)
-.set noreorder
     b          4f
      lw        $s5, 0x14($fp)
-.set reorder
   2:
     sw         $t0, 0x8($a1)
-    li        $v1, 0x9000000
     jal        func_800980F8
+     li        $v1, 0x9000000
     sw         $t1, 0x14($a1)
-    sw        $t2, 0x20($a1)
     beqz       $at, 4f
+     sw        $t2, 0x20($a1)
     lw         $t0, 0x10($a0)
     lw         $t1, 0x14($a0)
     lw         $t2, 0x18($a0)
@@ -245,8 +234,8 @@ glabel func_80097388
     sll        $t5, 8
   alabel D_80097590
     sltiu      $at, $t9, 0x200
-    or        $t4, $t5
     bnez       $at, 3f
+     or        $t4, $t5
     li         $t9, 0xFFFF0000
     srl        $t8, $t2, 1
     and        $t8, 0x7F7F
@@ -268,19 +257,17 @@ glabel func_80097388
   4:
     addiu      $v0, -0x1
     and        $at, $v0, 0xFFFF
-    addiu     $a0, 0x20
     bnez       $at, 0b
+     addiu     $a0, 0x20
   5:
     srl        $v0, 16
-.set noreorder
     beqz       $v0, 13f
-.set reorder
   6:
      lw        $s7, 0xC($a0)
-    addiu     $a3, 0x28
     jal        func_80097A10
-    li        $t0, 0x1000000
+     addiu     $a3, 0x28
     bltz       $at, 7f
+     li        $t0, 0x1000000
     or         $s7, $t0
   7:
     addu       $fp, $at, $zero
@@ -318,32 +305,30 @@ glabel func_80097388
     rtps
     mfc2       $t3, $14
     jal        func_80098014
-    li        $t4, 0x1000000
+     nop
     beqz       $at, 12f
+     li        $t4, 0x1000000
     and        $t4, $s7
     bnez       $t4, 8f
+     nop
     ldsxy3     $t3, $t2, $t1
     nop
     nop
     nclip
     mfc2       $fp, $24
     nop
-.set noreorder
     bltz       $fp, 12f
-.set reorder
   8:
      and       $at, $s6, 0x1
-.set noreorder
     beqz       $at, 9f
-.set reorder
      sltiu     $at, $fp, 0x200
-    srl       $t4, $gp, 13
     bnez       $at, 9f
+     srl       $t4, $gp, 13
     and        $t4, 0x3
     srl        $at, $t9, 9
     subu       $at, $t4, $at
-    lui       $fp, %hi(0x1F800390)
     blez       $at, 9f
+     lui       $fp, %hi(0x1F800390)
     or         $fp, (0x1F800390 & 0xFFFF)
     sw         $s0, 0x0($fp)
     sw         $s1, 0x4($fp)
@@ -427,30 +412,29 @@ glabel func_80097388
     srl        $t5, 24
     sll        $t5, 8
     or         $t4, $t5
-    sh        $t4, 0x6($s2)
     jal        func_80097CF0
+     sh        $t4, 0x6($s2)
     addiu      $fp, 0x64
     lw         $s0, 0x0($fp)
     lw         $s1, 0x4($fp)
     lw         $s2, 0x8($fp)
     lw         $s3, 0xC($fp)
     lw         $s4, 0x10($fp)
-.set noreorder
     b          12f
      lw        $s5, 0x14($fp)
-.set reorder
   9:
     mfc2       $v1, $19
     sw         $t0, 0x8($a1)
     slt        $at, $v1, $t9
     bnez       $at, 10f
+     nop
     or         $t9, $zero, $v1
   10:
-    li        $v1, 0xC000000
     jal        func_800980F8
+     li        $v1, 0xC000000
     sw         $t1, 0x14($a1)
-    sw        $t2, 0x20($a1)
     beqz       $at, 12f
+     sw        $t2, 0x20($a1)
     sw         $t3, 0x2C($a1)
     lw         $t0, 0x10($a0)
     lw         $t1, 0x14($a0)
@@ -472,8 +456,8 @@ glabel func_80097388
     sll        $t5, 8
   alabel D_800978F8
     sltiu      $at, $t9, 0x200
-    or        $t4, $t5
     bnez       $at, 11f
+     or        $t4, $t5
     li         $t9, 0xFFFF0000
     srl        $t8, $t2, 1
     and        $t8, 0x7F7F
@@ -497,8 +481,8 @@ glabel func_80097388
     addiu      $a1, 0x34
   12:
     addiu      $v0, -0x1
-    addiu     $a0, 0x28
     bnez       $v0, 6b
+     addiu     $a0, 0x28
   13:
     lui        $a3, %hi(0x1F8003D0)
     lw         $ra, %lo(0x1F8003C4)($a3)
@@ -506,6 +490,7 @@ glabel func_80097388
     lw         $s1, %lo(0x1F8003CC)($a3)
     lw         $s2, %lo(0x1F8003D0)($a3)
     jr         $ra
+     nop
 endlabel func_80097388
 
 nonmatching func_8009797C, 0x94
@@ -546,8 +531,8 @@ glabel func_8009797C
     or         $s4, $at, $t7
     sra        $s5, 24
     sllv       $s5, $s5, $gp
-    addu      $s5, $s1
     jr         $ra
+     addu      $s5, $s1
 endlabel func_8009797C
 
 nonmatching func_80097A10, 0xDC
@@ -593,18 +578,18 @@ glabel func_80097A10
     mfc2       $t8, $18
     mfc2       $t7, $19
     slt        $at, $t8, $t9
-    sra       $s5, 24
     bnez       $at, 0f
+     sra       $s5, 24
     or         $t9, $zero, $t8
   0:
     slt        $at, $t7, $t9
-    sllv      $s5, $s5, $gp
     bnez       $at, 1f
+     sllv      $s5, $s5, $gp
     or         $t9, $zero, $t7
   1:
     mfc2       $at, $24
-    addu      $s5, $s1
     jr         $ra
+     addu      $s5, $s1
 endlabel func_80097A10
 
 nonmatching func_80097AEC, 0x204
@@ -626,35 +611,33 @@ glabel func_80097AEC
     lw         $t1, 0x34($fp)
     lw         $t2, 0x38($fp)
     addu       $s0, $t0, $zero
-    addu      $s1, $t1, $zero
     bnez       $t9, 2f
+     addu      $s1, $t1, $zero
     addu       $s2, $t2, $zero
     lw         $t0, 0xC($s0)
     lw         $t1, 0xC($s1)
     lw         $t2, 0xC($s2)
-.set noreorder
     jal        func_80098014
      addu      $t3, $t2, $zero
     beqz       $at, 3f
      lh        $t9, 0x10($s0)
-.set reorder
     lh         $t4, 0x10($s1)
     lh         $t5, 0x10($s2)
     sw         $t0, 0x8($a1)
     slt        $at, $t4, $t9
-    sw        $t1, 0x14($a1)
     bnez       $at, 0f
+     sw        $t1, 0x14($a1)
     or         $t9, $zero, $t4
   0:
     slt        $at, $t5, $t9
-    sw        $t2, 0x20($a1)
     bnez       $at, 1f
+     sw        $t2, 0x20($a1)
     or         $t9, $zero, $t5
   1:
-    li        $v1, 0x9000000
     jal        func_800980F8
-    lui       $v1, %hi(0x1F8003B8)
+     li        $v1, 0x9000000
     beqz       $at, 3f
+     lui       $v1, %hi(0x1F8003B8)
     lhu        $t0, 0x6($s0)
     lw         $t3, %lo(0x1F8003C0)($v1)
     lhu        $t1, 0x6($s1)
@@ -677,25 +660,25 @@ glabel func_80097AEC
     sw         $t0, 0x4($a1)
     sw         $t1, 0x10($a1)
     sw         $t2, 0x1C($a1)
-    addiu     $a1, 0x28
     b          3f
+     addiu     $a1, 0x28
   2:
     addiu      $fp, -0x4C
     addiu      $t4, $fp, 0x10
     addiu      $t5, $fp, 0x24
     addiu      $t6, $fp, 0x38
-    addu      $s2, $t4, $zero
     jal        func_80097F70
+     addu      $s2, $t4, $zero
     lwc2       $0, 0x0($t4)
     lwc2       $1, 0x4($t4)
     addu       $s0, $t2, $zero
-    addu      $s2, $t5, $zero
     jal        func_80097F70
+     addu      $s2, $t5, $zero
     lwc2       $2, 0x0($t5)
     lwc2       $3, 0x4($t5)
     addu       $s1, $t0, $zero
-    addu      $s2, $t6, $zero
     jal        func_80097F70
+     addu      $s2, $t6, $zero
     lwc2       $4, 0x0($t6)
     lwc2       $5, 0x4($t6)
     addiu      $t9, -0x1
@@ -709,27 +692,27 @@ glabel func_80097AEC
     swc2       $17, 0x10($t4)
     swc2       $18, 0x10($t5)
     swc2       $19, 0x10($t6)
-    sw        $t6, 0xC($fp)
     jal        func_80097AEC
+     sw        $t6, 0xC($fp)
     sw         $t5, 0x4($fp)
-    sw        $t1, 0xC($fp)
     jal        func_80097AEC
+     sw        $t1, 0xC($fp)
     sw         $t2, 0x8($fp)
-    sw        $t6, 0xC($fp)
     jal        func_80097AEC
+     sw        $t6, 0xC($fp)
     sw         $t4, 0x4($fp)
-    sw        $t5, 0x8($fp)
     jal        func_80097AEC
+     sw        $t5, 0x8($fp)
     sw         $zero, 0x0($fp)
     sw         $t2, 0x4($fp)
-    sw        $t0, 0x8($fp)
     jal        func_80097AEC
+     sw        $t0, 0x8($fp)
     sw         $t5, 0x8($fp)
-    sw        $t1, 0xC($fp)
     jal        func_80097AEC
+     sw        $t1, 0xC($fp)
     sw         $t4, 0x4($fp)
-    sw        $t0, 0x8($fp)
     jal        func_80097AEC
+     sw        $t0, 0x8($fp)
     addiu      $fp, 0x4C
   3:
     lw         $ra, 0x0($fp)
@@ -742,8 +725,8 @@ glabel func_80097AEC
     lw         $t6, 0x1C($fp)
     lw         $t7, 0x20($fp)
     lw         $t9, 0x28($fp)
-    addiu     $fp, 0x2C
     jr         $ra
+     addiu     $fp, 0x2C
 endlabel func_80097AEC
 
 nonmatching func_80097CF0, 0x280
@@ -767,42 +750,40 @@ glabel func_80097CF0
     lw         $t2, 0x38($fp)
     lw         $t3, 0x3C($fp)
     addu       $s0, $t0, $zero
-    addu      $s1, $t1, $zero
     bnez       $t9, 3f
+     addu      $s1, $t1, $zero
     addu       $s2, $t2, $zero
     addu       $s3, $t3, $zero
     lw         $t0, 0xC($s0)
     lw         $t1, 0xC($s1)
     lw         $t2, 0xC($s2)
-.set noreorder
     jal        func_80098014
      lw        $t3, 0xC($s3)
     beqz       $at, 4f
      lh        $t9, 0x10($s0)
-.set reorder
     lh         $t4, 0x10($s1)
     lh         $t5, 0x10($s2)
     lh         $t6, 0x10($s3)
     sw         $t0, 0x8($a1)
     slt        $at, $t4, $t9
-    sw        $t1, 0x14($a1)
     bnez       $at, 0f
+     sw        $t1, 0x14($a1)
     or         $t9, $zero, $t4
   0:
     slt        $at, $t5, $t9
-    sw        $t2, 0x20($a1)
     bnez       $at, 1f
+     sw        $t2, 0x20($a1)
     or         $t9, $zero, $t5
   1:
     slt        $at, $t6, $t9
-    sw        $t3, 0x2C($a1)
     bnez       $at, 2f
+     sw        $t3, 0x2C($a1)
     or         $t9, $zero, $t6
   2:
-    li        $v1, 0xC000000
     jal        func_800980F8
-    lui       $v1, %hi(0x1F8003B8)
+     li        $v1, 0xC000000
     beqz       $at, 4f
+     lui       $v1, %hi(0x1F8003B8)
     lw         $t4, %lo(0x1F8003C0)($v1)
     lw         $t5, %lo(0x1F8003BC)($v1)
     lhu        $t0, 0x6($s0)
@@ -827,8 +808,8 @@ glabel func_80097CF0
     sw         $t1, 0x10($a1)
     sw         $t2, 0x1C($a1)
     sw         $t3, 0x28($a1)
-    addiu     $a1, 0x34
     b          4f
+     addiu     $a1, 0x34
   3:
     addiu      $fp, -0x78
     addiu      $t4, $fp, 0x14
@@ -836,25 +817,25 @@ glabel func_80097CF0
     addiu      $t6, $fp, 0x3C
     addiu      $t7, $fp, 0x50
     addiu      $t8, $fp, 0x64
-    addu      $s2, $t4, $zero
     jal        func_80097F70
+     addu      $s2, $t4, $zero
     lwc2       $0, 0x0($t4)
     lwc2       $1, 0x4($t4)
     addu       $s0, $t2, $zero
-    addu      $s2, $t8, $zero
     jal        func_80097F70
+     addu      $s2, $t8, $zero
     lwc2       $2, 0x0($t8)
     lwc2       $3, 0x4($t8)
     addu       $s0, $t3, $zero
-    addu      $s2, $t5, $zero
     jal        func_80097F70
+     addu      $s2, $t5, $zero
     lwc2       $4, 0x0($t5)
     lwc2       $5, 0x4($t5)
     addiu      $t9, -0x1
     addu       $s1, $t2, $zero
     rtpt
-    addu      $s2, $t6, $zero
     jal        func_80097F70
+     addu      $s2, $t6, $zero
     lwc2       $0, 0x0($t6)
     lwc2       $1, 0x4($t6)
     swc2       $12, 0xC($t4)
@@ -864,8 +845,8 @@ glabel func_80097CF0
     swc2       $18, 0x10($t8)
     swc2       $19, 0x10($t5)
     addu       $s0, $t0, $zero
-    addu      $s2, $t7, $zero
     jal        func_80097F70
+     addu      $s2, $t7, $zero
     lwc2       $2, 0x0($t7)
     lwc2       $3, 0x4($t7)
     sw         $t9, 0x0($fp)
@@ -877,29 +858,29 @@ glabel func_80097CF0
     swc2       $13, 0xC($t7)
     swc2       $17, 0x10($t6)
     swc2       $18, 0x10($t7)
-    sw        $t8, 0x10($fp)
     jal        func_80097CF0
+     sw        $t8, 0x10($fp)
     sw         $t1, 0x4($fp)
-    sw        $t5, 0xC($fp)
     jal        func_80097CF0
+     sw        $t5, 0xC($fp)
     sw         $t3, 0x4($fp)
-    sw        $t6, 0x8($fp)
     jal        func_80097CF0
+     sw        $t6, 0x8($fp)
     sw         $t2, 0x4($fp)
-    sw        $t7, 0xC($fp)
     jal        func_80097CF0
+     sw        $t7, 0xC($fp)
     sw         $zero, 0x0($fp)
-    sw        $t3, 0xC($fp)
     jal        func_80097AEC
+     sw        $t3, 0xC($fp)
     sw         $t0, 0x8($fp)
-    sw        $t7, 0xC($fp)
     jal        func_80097AEC
+     sw        $t7, 0xC($fp)
     sw         $t4, 0x4($fp)
-    sw        $t1, 0xC($fp)
     jal        func_80097AEC
+     sw        $t1, 0xC($fp)
     sw         $t3, 0x4($fp)
-    sw        $t5, 0x8($fp)
     jal        func_80097AEC
+     sw        $t5, 0x8($fp)
     addiu      $fp, 0x78
   4:
     lw         $ra, 0x0($fp)
@@ -913,8 +894,8 @@ glabel func_80097CF0
     lw         $t7, 0x20($fp)
     lw         $t8, 0x24($fp)
     lw         $t9, 0x28($fp)
-    addiu     $fp, 0x2C
     jr         $ra
+     addiu     $fp, 0x2C
 endlabel func_80097CF0
 
 nonmatching func_80097F70, 0xA4
@@ -959,8 +940,8 @@ glabel func_80097F70
     sb         $s5, 0x6($s2)
     addu       $s4, $at
     sra        $s4, 1
-    sb        $s4, 0x7($s2)
     jr         $ra
+     sb        $s4, 0x7($s2)
 endlabel func_80097F70
 
 nonmatching func_80098014, 0xE4
@@ -971,32 +952,26 @@ glabel func_80098014
     sra        $t6, $t2, 16
     sra        $t7, $t3, 16
     slt        $at, $t4, 0xE0
-.set noreorder
     bnez       $at, 0f
      slt       $at, $t5, 0xE0
     bnez       $at, 0f
      slt       $at, $t6, 0xE0
     bnez       $at, 0f
      slt       $at, $t7, 0xE0
-.set reorder
     bnez       $at, 0f
-.set noreorder
+     nop
     b          4f
-.set reorder
   0:
      slt       $at, $t4, 0x0
-.set noreorder
     beqz       $at, 1f
      slt       $at, $t5, 0x0
     beqz       $at, 1f
      slt       $at, $t6, 0x0
     beqz       $at, 1f
      slt       $at, $t7, 0x0
-.set reorder
     beqz       $at, 1f
-.set noreorder
+     nop
     b          4f
-.set reorder
   1:
      sll       $t4, $t0, 16
     sll        $t5, $t1, 16
@@ -1007,36 +982,33 @@ glabel func_80098014
     sra        $t6, 16
     sra        $t7, 16
     slt        $at, $t4, 0x0
-.set noreorder
     beqz       $at, 2f
      slt       $at, $t5, 0x0
     beqz       $at, 2f
      slt       $at, $t6, 0x0
     beqz       $at, 2f
      slt       $at, $t7, 0x0
-.set reorder
     beqz       $at, 2f
-.set noreorder
+     nop
     b          4f
-.set reorder
   2:
      slt       $at, $t4, 0x140
-.set noreorder
     bnez       $at, 3f
      slt       $at, $t5, 0x140
     bnez       $at, 3f
      slt       $at, $t6, 0x140
     bnez       $at, 3f
      slt       $at, $t7, 0x140
-.set reorder
     bnez       $at, 3f
+     nop
     b          4f
+     nop
   3:
-    or        $at, $zero, 0x1
     jr         $ra
+     or        $at, $zero, 0x1
   4:
-    or        $at, $zero, $zero
     jr         $ra
+     or        $at, $zero, $zero
 endlabel func_80098014
 
 nonmatching func_800980F8, 0x68
@@ -1044,18 +1016,14 @@ nonmatching func_800980F8, 0x68
 glabel func_800980F8
     srl        $t9, 2
     slt        $at, $t9, 0x8
-.set noreorder
     bnez       $at, 0f
      sra       $at, $gp, 16
-.set reorder
     addu       $t9, $at
     slt        $at, $t9, 0x7FF
-.set noreorder
     beqz       $at, 0f
-.set reorder
      slt       $at, $t9, 0x8
-    sll       $t6, $t9, 2
     bnez       $at, 0f
+     sll       $t6, $t9, 2
     lui        $t4, (0xFFFFFF >> 16)
     addu       $t6, $a2
     lw         $t7, 0x0($t6)
@@ -1068,11 +1036,11 @@ glabel func_800980F8
     and        $t7, $t5
     or         $t7, $at
     sw         $t7, 0x0($t6)
-    or        $at, $zero, 0x1
     jr         $ra
+     or        $at, $zero, 0x1
   0:
-    or        $at, $zero, $zero
     jr         $ra
+     or        $at, $zero, $zero
 endlabel func_800980F8
 
 nonmatching func_80098160, 0x1C
@@ -1081,10 +1049,9 @@ glabel func_80098160
     la         $v0, func_800980F8
     nop
     sh         $a0, 0x4($v0)
-.set noreorder
     sh         $a0, 0x1C($v0)
-.set reorder
     jr         $ra
+     nop
 endlabel func_80098160
 
 nonmatching func_8009817C, 0x18
@@ -1092,10 +1059,9 @@ nonmatching func_8009817C, 0x18
 glabel func_8009817C
     la         $v0, func_800980F8
     nop
-.set noreorder
     sh         $a0, 0x14($v0)
-.set reorder
     jr         $ra
+     nop
 endlabel func_8009817C
 
 nonmatching func_80098194, 0x24
@@ -1105,10 +1071,9 @@ glabel func_80098194
     la         $v1, D_800978F8
     nop
     sh         $a0, 0x0($v0)
-.set noreorder
     sh         $a0, 0x0($v1)
-.set reorder
     jr         $ra
+     nop
 endlabel func_80098194
 
 nonmatching func_800981B8, 0x54
@@ -1131,10 +1096,9 @@ glabel func_800981B8
     sh         $a2, 0xA8($v0)
     sh         $a2, 0xB0($v0)
     sh         $a2, 0xB8($v0)
-.set noreorder
     sh         $a2, 0xC0($v0)
-.set reorder
     jr         $ra
+     nop
 endlabel func_800981B8
 
 nonmatching func_8009820C, 0x1EC
@@ -1157,13 +1121,14 @@ glabel func_8009820C
     swc2       $26, 0x4($t1)
     swc2       $27, 0x8($t1)
     addiu      $a0, 0xC
-    addiu     $t1, 0x10
     bgtz       $t0, 0b
+     addiu     $t1, 0x10
     or         $t1, $a3, (0x1F800100 & 0xFFFF)
     or         $t0, $zero, 0x40
     lw         $a3, 0x0($a1)
   1:
     lw         $t2, 0x0($a0)
+    nop
     srl        $t4, $t2, 8
     srl        $t5, $t2, 16
     and        $t3, $t2, 0xFF
@@ -1177,12 +1142,12 @@ glabel func_8009820C
     addu       $t5, $t1
     lw         $t6, 0x8($t3)
     lw         $t7, 0x8($t4)
-.set noreorder
     bgtz       $t6, 2f
      lw        $t8, 0x8($t5)
-.set reorder
     bgtz       $t7, 2f
+     nop
     blez       $t8, 7f
+     nop
   2:
     lw         $t6, 0x0($t3)
     lw         $t7, 0x0($t4)
@@ -1197,50 +1162,41 @@ glabel func_8009820C
     addiu      $v0, 0x78
     addiu      $v1, 0x78
     slt        $at, $t6, 0x0
-.set noreorder
     beqz       $at, 3f
      slt       $at, $t7, 0x0
     beqz       $at, 3f
      slt       $at, $t8, 0x0
-.set reorder
     beqz       $at, 3f
-.set noreorder
+     nop
     b          7f
-.set reorder
   3:
      slt       $at, $t6, 0x140
-.set noreorder
     bnez       $at, 4f
      slt       $at, $t7, 0x140
     bnez       $at, 4f
      slt       $at, $t8, 0x140
-.set reorder
     bnez       $at, 4f
+     nop
     b          7f
+     nop
   4:
     slt        $at, $t9, 0x0
-.set noreorder
     beqz       $at, 5f
      slt       $at, $v0, 0x0
     beqz       $at, 5f
      slt       $at, $v1, 0x0
-.set reorder
     beqz       $at, 5f
-.set noreorder
+     nop
     b          7f
-.set reorder
   5:
      slt       $at, $t9, 0xE0
-.set noreorder
     bnez       $at, 6f
      slt       $at, $v0, 0xE0
     bnez       $at, 6f
      slt       $at, $v1, 0xE0
-.set reorder
     bnez       $at, 6f
-.set noreorder
+     nop
     b          7f
-.set reorder
   6:
      and       $t6, 0xFFFF
     and        $t7, 0xFFFF
@@ -1273,12 +1229,12 @@ glabel func_8009820C
     addiu      $a2, 0x1C
   7:
     addiu      $t0, -0x1
-    addiu     $a0, 0x4
     bgtz       $t0, 1b
+     addiu     $a0, 0x4
     sw         $a3, 0x0($a1)
     li         $a3, 0x1F800000
-    sw        $a2, %lo(0x1F800000)($a3)
     jr         $ra
+     sw        $a2, %lo(0x1F800000)($a3)
 endlabel func_8009820C
 
 nonmatching func_800983F8, 0x1B4
@@ -1295,11 +1251,11 @@ glabel func_800983F8
     lw         $s0, %lo(0x1F80005C)($at)
     lw         $s1, %lo(0x1F800064)($at)
     addu       $s2, $at, $zero
-    addu      $a0, $s0, $zero
     jal        func_80098AB8
+     addu      $a0, $s0, $zero
     mult       $v0, $s1
-    addu      $a0, $s0, $zero
     jal        func_80098AB4
+     addu      $a0, $s0, $zero
     addu       $a0, $v1, $zero
     mflo       $s3
     sw         $zero, 0x3D0($at)
@@ -1314,24 +1270,23 @@ glabel func_800983F8
     sra        $s4, 12
   0:
     lw         $t0, 0x0($s0)
+    nop
     and        $at, $t0, 0x100
-.set noreorder
     bnez       $at, 2f
      and       $at, $t0, 0x400
-.set reorder
     bnez       $at, 1f
+     nop
     addiu      $a0, $s0, 0x4
     addiu      $a1, $s0, 0x10
-    addiu     $a2, $s0, 0x20
     jal        func_800985AC
+     addiu     $a2, $s0, 0x20
     b          2f
+     nop
   1:
     addiu      $a0, $s2, %lo(D_1F8003D0)
     addiu      $a1, $s2, %lo(D_1F8003D0)
-.set noreorder
     jal        func_800985AC
      addiu     $a2, $s2, %lo(D_1F8003AC)
-.set reorder
     nop
     lw         $t0, %lo(0x1F8003AC)($s2)
     lw         $t1, %lo(0x1F8003B0)($s2)
@@ -1386,18 +1341,16 @@ glabel func_800983F8
     ctc2       $t7, $7
   2:
     addiu      $s1, -0x1
-    addiu     $s0, 0x40
     bnez       $s1, 0b
+     addiu     $s0, 0x40
     lui        $at, %hi(0x1F8003EC)
     lw         $ra, %lo(0x1F8003E0)($at)
     lw         $s0, %lo(0x1F8003E4)($at)
     lw         $s1, %lo(0x1F8003E8)($at)
     lw         $s3, %lo(0x1F800398)($at)
     lw         $s4, %lo(0x1F80039C)($at)
-.set noreorder
     jr         $ra
      lw        $s2, %lo(0x1F8003EC)($at)
-.set reorder
 endlabel func_800983F8
 
 nonmatching func_800985AC, 0x9C
@@ -1417,11 +1370,11 @@ glabel func_800985AC
     and        $t0, 0xFFFF
     sll        $t1, 16
     or         $v0, $t0, $t1
-    addu      $a1, $s2, $zero
     jal        func_8009874C
+     addu      $a1, $s2, $zero
     li         $a0, 0x1F800014
-    addu      $a1, $s2, $zero
     jal        func_800989B8
+     addu      $a1, $s2, $zero
     lw         $t0, 0x0($s0)
     lw         $t1, 0x4($s0)
     lw         $t2, 0x8($s0)
@@ -1438,10 +1391,8 @@ glabel func_800985AC
     swc2       $25, 0x0($t1)
     swc2       $26, 0x4($t1)
     swc2       $27, 0x8($t1)
-.set noreorder
     jr         $ra
      lw        $s2, %lo(0x1F8003FC)($a3)
-.set reorder
 endlabel func_800985AC
 
 nonmatching func_80098648, 0x104
@@ -1483,17 +1434,15 @@ glabel func_80098648
     and        $t0, 0xFFFF
     sll        $t1, 16
     or         $v0, $t0, $t1
-    addu      $a1, $s2, $zero
     jal        func_8009874C
+     addu      $a1, $s2, $zero
     lui        $a3, %hi(D_1F8003B0)
     addiu      $a0, $a3, %lo(D_1F8003B0)
-.set noreorder
     jal        func_800989B8
      addiu     $a1, $a3, %lo(D_1F8003D0)
-.set reorder
     la         $a0, D_1F8003D0
-    addu      $a1, $s2, $zero
     jal        func_800989B8
+     addu      $a1, $s2, $zero
     lw         $t0, 0x0($s0)
     lw         $t1, 0x4($s0)
     lw         $t2, 0x8($s0)
@@ -1510,10 +1459,8 @@ glabel func_80098648
     swc2       $25, 0x0($t1)
     swc2       $26, 0x4($t1)
     swc2       $27, 0x8($t1)
-.set noreorder
     jr         $ra
      lw        $s2, %lo(0x1F8003FC)($a3)
-.set reorder
 endlabel func_80098648
 
 nonmatching func_8009874C, 0x170
@@ -1528,24 +1475,24 @@ glabel func_8009874C
     addu       $t1, $t7
     la         $t9, D_80098760
     sll        $t8, 2
-    and       $t8, 0x7FC
     jr         $t1
+     and       $t8, 0x7FC
     sll        $t4, $t0, 1
     sll        $t5, $t1, 1
     srl        $t8, $v0, 14
     srl        $t1, $t8, 6
     and        $t1, 0xE0
     addu       $t1, $t7
-    and       $t8, 0x7FC
     jr         $t1
+     and       $t8, 0x7FC
     sll        $t2, $t0, 1
     sll        $t3, $t1, 1
     sll        $t8, $v0, 2
     srl        $t1, $t8, 6
     and        $t1, 0xE0
     addu       $t1, $t7
-    and       $t8, 0x7FC
     jr         $t1
+     and       $t8, 0x7FC
     ldir0123   $t4, $t2, $t3, $t1
     mult       $t1, $t2
     addu       $v0, $zero, $a1
@@ -1598,8 +1545,8 @@ glabel func_8009874C
     sra        $t5, 2
     sll        $t5, 16
     or         $t4, $t5
-    sw        $t4, 0xC($v0)
     jr         $ra
+     sw        $t4, 0xC($v0)
 endlabel func_8009874C
 
 nonmatching func_800988BC, 0xFC
@@ -1609,16 +1556,16 @@ glabel func_800988BC
     lw         $t0, 0x0($t1)
     addiu      $t9, 0x20
     srl        $t1, $t0, 16
-    and       $t0, 0xFFFF
     jr         $t9
+     and       $t0, 0xFFFF
     nop
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
     addiu      $t9, 0x20
     and        $t1, $t0, 0xFFFF
-    srl       $t0, 16
     jr         $t9
+     srl       $t0, 16
     nop
     nop
     addu       $t1, $a2, $t8
@@ -1626,16 +1573,16 @@ glabel func_800988BC
     addiu      $t9, 0x20
     and        $t1, $t0, 0xFFFF
     negu       $t1, $t1
-    srl       $t0, 16
     jr         $t9
+     srl       $t0, 16
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
     addiu      $t9, 0x20
     srl        $t1, $t0, 16
     negu       $t1, $t1
-    and       $t0, 0xFFFF
     jr         $t9
+     and       $t0, 0xFFFF
     nop
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
@@ -1643,31 +1590,31 @@ glabel func_800988BC
     srl        $t1, $t0, 16
     negu       $t1, $t1
     and        $t0, 0xFFFF
-    negu      $t0, $t0
     jr         $t9
+     negu      $t0, $t0
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
     addiu      $t9, 0x20
     and        $t1, $t0, 0xFFFF
     negu       $t1, $t1
     srl        $t0, 16
-    negu      $t0, $t0
     jr         $t9
+     negu      $t0, $t0
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
     addiu      $t9, 0x20
     and        $t1, $t0, 0xFFFF
     srl        $t0, 16
-    negu      $t0, $t0
     jr         $t9
+     negu      $t0, $t0
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
     addiu      $t9, 0x20
     srl        $t1, $t0, 16
     and        $t0, 0xFFFF
-    negu      $t0, $t0
     jr         $t9
+     negu      $t0, $t0
 endlabel func_800988BC
 
 nonmatching func_800989B8, 0xFC
@@ -1731,8 +1678,8 @@ glabel func_800989B8
     sw         $t4, 0x4($a1)
     and        $t5, 0xFFFF
     or         $t5, $t2
-    sw        $t5, 0xC($a1)
     jr         $ra
+     sw        $t5, 0xC($a1)
 endlabel func_800989B8
 
 nonmatching func_80098AB4, 0x4
@@ -1746,18 +1693,18 @@ nonmatching func_80098AB8, 0x64
 glabel func_80098AB8
     la         $v0, _trig_table
     and        $t0, $a0, 0x400
-    and       $t1, $a0, 0x3FF
     beqz       $t0, 1f
-    addiu     $t2, $zero, 0x800
+     and       $t1, $a0, 0x3FF
     bnez       $t1, 0f
-    addiu     $v0, $zero, 0x1000
+     addiu     $t2, $zero, 0x800
     j          3f
+     addiu     $v0, $zero, 0x1000
   0:
     subu       $a0, $t2, $a0
   1:
     and        $t1, $a0, 0x200
-    and       $t2, $a0, 0x1FF
     beqz       $t1, 2f
+     and       $t2, $a0, 0x1FF
     addiu      $t0, $zero, 0x200
     subu       $t2, $t0, $t2
     addiu      $v0, 0x2
@@ -1768,9 +1715,11 @@ glabel func_80098AB8
   3:
     and        $t0, $a0, 0x800
     beqz       $t0, 4f
+     nop
     negu       $v0, $v0
   4:
     jr         $ra
+     nop
 endlabel func_80098AB8
 
 nonmatching func_80098B1C, 0x1C
@@ -1778,8 +1727,10 @@ nonmatching func_80098B1C, 0x1C
 glabel func_80098B1C
     la         $t0, vs_battle_roomData
     lw         $t1, 0x98($t0)
+    nop
     addiu      $t1, 0x14
     jr         $t1
+     nop
 endlabel func_80098B1C
 
 nonmatching func_80098B38, 0x104
@@ -1797,50 +1748,49 @@ glabel func_80098B38
     addu       $s4, $a2, $zero
     lb         $t0, 0x0($s0)
     lui        $s5, (0x808080 >> 16)
-    or        $s5, (0x808080 & 0xFFFF)
     beqz       $t0, 3f
+     or        $s5, (0x808080 & 0xFFFF)
     lw         $s1, 0x74($s0)
     sra        $s3, $a0, 16
-    sll       $s2, $a0, 16
     beqz       $s1, 3f
+     sll       $s2, $a0, 16
     lw         $s5, 0x0($s1)
     lw         $s0, 0x4($s1)
-    sra       $s2, 16
     beq        $zero, $a1, 0f
+     sra       $s2, 16
     lw         $t1, 0x8($s1)
     sll        $t0, $s0, 5
     addu       $s1, $t0
     addu       $s0, $t1, $zero
   0:
-    addiu     $s1, 0xC
     beqz       $s0, 3f
+     addiu     $s1, 0xC
   1:
     lw         $t0, 0x0($s1)
     lw         $t1, 0x4($s1)
     sll        $t2, $t0, 16
     sra        $t2, 16
     subu       $at, $s2, $t2
-    sll       $t4, $t1, 16
     bltz       $at, 2f
+     sll       $t4, $t1, 16
     sra        $t4, 16
     subu       $at, $s2, $t4
-    sra       $t3, $t0, 16
     bgtz       $at, 2f
+     sra       $t3, $t0, 16
     subu       $at, $s3, $t3
-    sra       $t5, $t1, 16
     bltz       $at, 2f
+     sra       $t5, $t1, 16
     subu       $at, $s3, $t5
     bgtz       $at, 2f
+     nop
     addu       $a2, $s1, $zero
-    addu      $a1, $s4, $zero
     jal        func_80098C3C
-.set noreorder
+     addu      $a1, $s4, $zero
     bnez       $v0, 4f
-.set reorder
   2:
      addiu     $s0, -0x1
-    addiu     $s1, 0x20
     bnez       $s0, 1b
+     addiu     $s1, 0x20
   3:
     sw         $s5, 0x0($s4)
     or         $v0, $zero, $zero
@@ -1854,6 +1804,7 @@ glabel func_80098B38
     lw         $s4, %lo(0x1F800214)($at)
     lw         $s5, %lo(0x1F800218)($at)
     jr         $ra
+     nop
 endlabel func_80098B38
 
 nonmatching func_80098C3C, 0x130
@@ -1867,22 +1818,29 @@ glabel func_80098C3C
     nop
     nclip
     mfc2       $t0, $24
+    nop
     blez       $t0, 3f
+     nop
     ldsxy3     $a0, $t5, $t6
     nop
     nop
     nclip
     mfc2       $t1, $24
+    nop
     bltz       $t1, 3f
+     nop
     ldsxy3     $a0, $t6, $t4
     nop
     nop
     nclip
     mfc2       $t2, $24
+    nop
     bltz       $t2, 3f
+     nop
     subu       $t3, $t0, $t1
     subu       $t3, $t2
     bltz       $t3, 3f
+     nop
     lw         $t4, 0x14($a2)
     lw         $t6, 0x18($a2)
     lw         $t5, 0x1C($a2)
@@ -1907,34 +1865,32 @@ glabel func_80098C3C
     divu       $zero, $at, $t0
     nop
     mflo       $at
-.set noreorder
     nop
-.set reorder
     bgez       $at, 1f
+     nop
     or         $at, $zero, $zero
   1:
     sltiu      $t9, $at, 0x100
     bnez       $t9, 2f
+     nop
     or         $at, $zero, 0xFF
   2:
     sb         $at, 0x0($a1)
     addiu      $a1, 0x1
-.set noreorder
     bnez       $v0, 0b
-.set reorder
      addiu     $v0, -0x1
-    or        $v0, $zero, 0x1
     jr         $ra
+     or        $v0, $zero, 0x1
   3:
-    or        $v0, $zero, $zero
     jr         $ra
+     or        $v0, $zero, $zero
 endlabel func_80098C3C
 
 nonmatching func_80098D6C, 0xE4
 
 glabel func_80098D6C
-    addu      $v0, $ra, $zero
     beq        $a0, $a1, 1f
+     addu      $v0, $ra, $zero
     addu       $v1, $a3, $zero
     lb         $t0, 0x0($a2)
     lb         $t1, 0x1($a2)
@@ -1948,47 +1904,52 @@ glabel func_80098D6C
     sll        $t2, 2
   0:
     lw         $t3, 0x0($a0)
+    nop
     srl        $t3, 24
     addiu      $at, $t3, -0x9
-.set noreorder
     beqz       $at, 2f
      addiu     $at, $t3, -0xC
-.set reorder
     beqz       $at, 3f
+     nop
   1:
     addu       $ra, $v0, $zero
     jr         $ra
+     nop
   2:
-    addiu     $t3, $a0, 0x4
     jal        func_80098E50
+     addiu     $t3, $a0, 0x4
     sw         $t6, 0x4($a0)
-    addiu     $t3, $a0, 0x10
     jal        func_80098E50
+     addiu     $t3, $a0, 0x10
     sw         $t6, 0x10($a0)
-    addiu     $t3, $a0, 0x1C
     jal        func_80098E50
+     addiu     $t3, $a0, 0x1C
     sw         $t6, 0x1C($a0)
     addiu      $a0, 0x28
     addu       $a0, $v1
     bne        $a0, $a1, 0b
+     nop
     b          1b
+     nop
   3:
-    addiu     $t3, $a0, 0x4
     jal        func_80098E50
+     addiu     $t3, $a0, 0x4
     sw         $t6, 0x4($a0)
-    addiu     $t3, $a0, 0x10
     jal        func_80098E50
+     addiu     $t3, $a0, 0x10
     sw         $t6, 0x10($a0)
-    addiu     $t3, $a0, 0x1C
     jal        func_80098E50
+     addiu     $t3, $a0, 0x1C
     sw         $t6, 0x1C($a0)
-    addiu     $t3, $a0, 0x28
     jal        func_80098E50
+     addiu     $t3, $a0, 0x28
     sw         $t6, 0x28($a0)
     addiu      $a0, 0x34
     addu       $a0, $v1
     bne        $a0, $a1, 0b
+     nop
     b          1b
+     nop
 endlabel func_80098D6C
 
 nonmatching func_80098E50, 0xFC
@@ -1996,12 +1957,13 @@ nonmatching func_80098E50, 0xFC
 glabel func_80098E50
     nop
     lw         $t6, 0x0($t3)
+    nop
     srl        $t4, $t6, 8
     srl        $t5, $t6, 16
     and        $t3, $t6, 0xFF
     and        $t4, 0xFF
-    and       $t5, 0xFF
     beqz       $t8, 0f
+     and       $t5, 0xFF
     sll        $at, $t3, 2
     addu       $t3, $at
     sll        $at, $t4, 3
@@ -2011,15 +1973,14 @@ glabel func_80098E50
     addu       $t3, $t5
     ctc2       $t3, $21
     ctc2       $t3, $22
-.set noreorder
     ctc2       $t3, $23
     mtc2       $t6, $6
     mtc2       $t8, $8
-.set reorder
     nop
     nop
     dpcs
     mfc2       $t6, $22
+    nop
     srl        $t4, $t6, 8
     srl        $t5, $t6, 16
     and        $t3, $t6, 0xFF
@@ -2029,28 +1990,32 @@ glabel func_80098E50
     addu       $t3, $t0
     addu       $t4, $t1
     addu       $t5, $t2
-.set noreorder
     srl        $t6, 24
-.set reorder
     bgez       $t3, 1f
+     nop
     or         $t3, $zero, $zero
   1:
     slt        $at, $t3, $t7
     bnez       $at, 2f
+     nop
     addiu      $t3, $t7, -0x1
   2:
     bgez       $t4, 3f
+     nop
     or         $t4, $zero, $zero
   3:
     slt        $at, $t4, $t7
     bnez       $at, 4f
+     nop
     addiu      $t4, $t7, -0x1
   4:
     bgez       $t5, 5f
+     nop
     or         $t5, $zero, $zero
   5:
     slt        $at, $t5, $t7
     bnez       $at, 6f
+     nop
     addiu      $t5, $t7, -0x1
   6:
     sll        $t4, 8
@@ -2058,8 +2023,8 @@ glabel func_80098E50
     sll        $t6, 24
     or         $t6, $t3
     or         $t6, $t4
-    or        $t6, $t5
     jr         $ra
+     or        $t6, $t5
 endlabel func_80098E50
 
 nonmatching vs_battle_initSceneAndGetRoomNames, 0x40
@@ -2070,8 +2035,8 @@ glabel vs_battle_initSceneAndGetRoomNames
     or         $v1, $zero, $v0
   0:
     addiu      $v0, -0x1
-    addiu     $a1, 0xC
     bne        $zero, $v0, 0b
+     addiu     $a1, 0xC
     addiu      $a2, $a0, 0x4
     or         $v0, $zero, $v1
   1:
@@ -2079,10 +2044,10 @@ glabel vs_battle_initSceneAndGetRoomNames
     addiu      $v0, -0x1
     sw         $a1, 0x4($a2)
     addu       $a1, $at
-    addiu     $a2, 0xC
     bne        $zero, $v0, 1b
-    addu      $v0, $a1, $zero
+     addiu     $a2, 0xC
     jr         $ra
+     addu      $v0, $a1, $zero
 endlabel vs_battle_initSceneAndGetRoomNames
 
 nonmatching func_80098F8C, 0x548
@@ -2119,12 +2084,12 @@ glabel func_80098F8C
   0:
     lw         $at, 0x0($a0)
     lw         $a2, 0x4($a0)
-    addiu     $v0, -0x1
     beqz       $at, 18f
+     addiu     $v0, -0x1
     lw         $t0, 0x0($a2)
     addiu      $a2, 0x4
-    lui       $a3, %hi(0x1F800100)
     beqz       $t0, 18f
+     lui       $a3, %hi(0x1F800100)
     or         $a3, (0x1F800100 & 0xFFFF)
     li         $t4, 0xFFFEFFFE
   1:
@@ -2140,18 +2105,18 @@ glabel func_80098F8C
     swc2       $12, 0x0($a3)
     swc2       $13, 0x4($a3)
     swc2       $14, 0x8($a3)
-    addiu     $a3, 0xC
     bgtz       $t0, 1b
+     addiu     $a3, 0xC
     sll        $t0, 3
     addu       $a2, $t0
     li         $a3, 0x1F800100
     lw         $t0, 0x0($a2)
     addiu      $a2, 0x4
-    li        $t1, 0x4000000
     beqz       $t0, 3f
+     li        $t1, 0x4000000
     sll        $at, $t0, 2
-    addu      $a2, $at
     bnez       $a1, 3f
+     addu      $a2, $at
     lui        $t2, %hi(0x223F7F00)
     subu       $a2, $at
     or         $t2, (0x223F7F00 & 0xFFFF)
@@ -2181,16 +2146,16 @@ glabel func_80098F8C
     or         $v1, $at
     addiu      $t8, 0x14
     addiu      $t0, -0x1
-    addiu     $a2, 0x4
     bnez       $t0, 2b
+     addiu     $a2, 0x4
   3:
     lw         $t0, 0x0($a2)
     addiu      $a2, 0x4
-    li        $t1, 0x5000000
     beqz       $t0, 5f
+     li        $t1, 0x5000000
     sll        $at, $t0, 2
-    addu      $a2, $at
     bnez       $a1, 5f
+     addu      $a2, $at
     lui        $t2, %hi(0x2A3F7F00)
     subu       $a2, $at
     or         $t2, (0x2A3F7F00 & 0xFFFF)
@@ -2225,13 +2190,13 @@ glabel func_80098F8C
     or         $v1, $at
     addiu      $t8, 0x18
     addiu      $t0, -0x1
-    addiu     $a2, 0x4
     bnez       $t0, 4b
+     addiu     $a2, 0x4
   5:
     lw         $t0, 0x0($a2)
     addiu      $a2, 0x4
-    li        $t1, 0x3000000
     beqz       $t0, 7f
+     li        $t1, 0x3000000
     li         $t2, 0x42FF7F00
   6:
     lw         $at, 0x0($a2)
@@ -2254,16 +2219,14 @@ glabel func_80098F8C
     or         $v1, $at
     addiu      $t8, 0x10
     addiu      $t0, -0x1
-    addiu     $a2, 0x4
     bnez       $t0, 6b
+     addiu     $a2, 0x4
   7:
-.set noreorder
     bnez       $a1, 18f
      lw        $t0, 0x0($a2)
-.set reorder
     addiu      $a2, 0x4
-    li        $t1, 0x3000000
     beqz       $t0, 9f
+     li        $t1, 0x3000000
     li         $t2, 0x422F5F00
   8:
     lw         $at, 0x0($a2)
@@ -2286,46 +2249,50 @@ glabel func_80098F8C
     or         $v1, $at
     addiu      $t8, 0x10
     addiu      $t0, -0x1
-    addiu     $a2, 0x4
     bnez       $t0, 8b
+     addiu     $a2, 0x4
   9:
     lw         $t0, 0x0($a2)
     addiu      $a2, 0x4
-    li        $t1, 0x3000000
     beqz       $t0, 18f
+     li        $t1, 0x3000000
   10:
     lw         $at, 0x0($a2)
+    nop
     sll        $t3, $at, 2
     and        $t3, 0x3FC
     srl        $t2, $at, 16
     srl        $t5, $at, 24
     and        $t5, 0xFF
     beqz       $t5, 11f
+     nop
     addiu      $t5, 0x33F
     addu       $t5, $s5
     lb         $at, 0x0($t5)
     nop
-.set noreorder
     beqz       $at, 16f
-.set reorder
   11:
      and       $t4, $t2, 0x10
     bnez       $t4, 13f
+     nop
     and        $t4, $t2, 0x4
     bnez       $t4, 12f
+     nop
     and        $t4, $t2, 0x1F
     beqz       $t4, 14f
+     nop
     b          17f
+     nop
   12:
     lui        $t2, %hi(0x60FF7F00)
-    or        $t2, (0x60FF7F00 & 0xFFFF)
     b          15f
+     or        $t2, (0x60FF7F00 & 0xFFFF)
   13:
     and        $at, $t9, 0x20
-    lui       $t2, %hi(0x607F00FF)
     beqz       $at, 17f
-    or        $t2, (0x607F00FF & 0xFFFF)
+     lui       $t2, %hi(0x607F00FF)
     b          15f
+     or        $t2, (0x607F00FF & 0xFFFF)
   14:
     li         $t2, 0x607F7F7F
   15:
@@ -2362,8 +2329,8 @@ glabel func_80098F8C
     li         $t4, 0x10003
     sw         $at, 0x8($t8)
     sw         $t4, 0xC($t8)
-    addiu     $t8, 0x10
     b          17f
+     addiu     $t8, 0x10
   16:
     addu       $t3, $a3
     lw         $t3, 0x0($t3)
@@ -2388,12 +2355,12 @@ glabel func_80098F8C
     addiu      $t8, 0x10
   17:
     addiu      $t0, -0x1
-    addiu     $a2, 0x4
     bnez       $t0, 10b
+     addiu     $a2, 0x4
   18:
     addiu      $a1, 0x1
-    addiu     $a0, 0xC
     bne        $zero, $v0, 0b
+     addiu     $a0, 0xC
     li         $t1, 0x2000000
     li         $t2, 0xE100020C
     and        $at, $v1, $t6
@@ -2426,10 +2393,9 @@ glabel func_80098F8C
     sw         $v1, 0x14($t9)
     lw         $s4, %lo(0x1F8003EC)($a3)
     lw         $s5, %lo(0x1F8003E8)($a3)
-.set noreorder
     sw         $t8, %lo(0x1F800000)($a3)
-.set reorder
     jr         $ra
+     nop
 endlabel func_80098F8C
 
 nonmatching vs_battle_getGeomOffset, 0x20
@@ -2440,10 +2406,9 @@ glabel vs_battle_getGeomOffset
     srl        $t0, 16
     srl        $t1, 16
     sw         $t0, 0x0($a0)
-.set noreorder
     sw         $t1, 0x4($a0)
-.set reorder
     jr         $ra
+     nop
 endlabel vs_battle_getGeomOffset
 
 nonmatching vs_battle_setGeomOffset, 0x20
@@ -2456,6 +2421,7 @@ glabel vs_battle_setGeomOffset
     ctc2       $t0, $24
     ctc2       $t1, $25
     jr         $ra
+     nop
 endlabel vs_battle_setGeomOffset
 
 nonmatching func_80099514, 0x9C
@@ -2468,12 +2434,12 @@ glabel func_80099514
     lh         $v0, 0x6($a3)
     mult       $t0, $t1
     addiu      $t0, $a3, 0x8
-    sll       $v0, 1
     beqz       $a2, 1f
+     sll       $v0, 1
   0:
     addiu      $a2, -0x1
-    addu      $t0, $v0
     bnez       $a2, 0b
+     addu      $t0, $v0
   1:
     addiu      $t1, $a3, 0x8
     sll        $at, $v0, 1
@@ -2484,6 +2450,7 @@ glabel func_80099514
     sll        $at, 1
     addu       $t0, $at
     lh         $t0, 0x0($t0)
+    nop
     and        $at, $t0, 0x7FF
     sll        $at, 4
     addu       $t1, $at
@@ -2498,6 +2465,6 @@ glabel func_80099514
     addu       $v0, $t1, $t0
     and        $v0, 0x7F
     and        $t1, 0x80
-    or        $v0, $t1
     jr         $ra
+     or        $v0, $t1
 endlabel func_80099514

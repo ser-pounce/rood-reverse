@@ -1,7 +1,46 @@
 #pragma once
-#include "6E644.h"
 #include <sys/types.h>
 #include <libgte.h>
+#include <libgpu.h>
+
+typedef struct {
+    u_short lba;
+    u_short size;
+} _loadFileContext;
+
+typedef struct {
+    u_short type;
+    u_short unk2;
+    union {
+        struct {
+            u_int actor : 8;
+            u_int unk1 : 8;
+            u_int part : 8;
+            u_int unk3 : 8;
+        } actor;
+        SVECTOR position;
+    } value;
+} actionEffectTarget;
+
+typedef struct {
+    u_short effectId;
+    u_char count;
+    u_char otherCount;
+    actionEffectTarget source;
+    actionEffectTarget targets[16];
+    u_char others[16];
+    SVECTOR position;
+} actionEffectRequest;
+
+typedef struct func_800D4910_t func_800D4910_t;
+
+typedef int (*effectExec)(func_800D4910_t*, u_int, int);
+
+struct func_800D4910_t {
+    struct func_800D4910_t* next;
+    effectExec renderer;
+    void* unk8;
+};
 
 typedef struct {
     short unk0[6];
@@ -365,3 +404,13 @@ extern D_800F53B8_t* D_800F53BC;
 extern short D_800F54D0;
 extern D_800F54D8_t D_800F5520[2];
 extern short D_800F55A0;
+
+void func_800D8038(int);
+void vs_battle_configurePlg(int, int, int);
+void vs_battle_setEffectExec(effectExec arg0, int arg1);
+void func_800D7FFC(int arg0);
+void vs_battle_setPlgLoadState(int);
+void vs_battle_configureEffectFbLoad(
+    int lba, int size, int suffix, int isClut, int index);
+extern actionEffectRequest D_800F5230;
+extern _loadFileContext vs_battle_pFileLoadContext;

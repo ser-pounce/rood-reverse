@@ -372,7 +372,7 @@ typedef struct {
     u_short unk644;
     u_short unk646;
     u_int unk648_0 : 16;
-    u_int unk648_16 : 1;
+    int unk648_16 : 1;
     u_int unk648_17 : 15;
     u_short shadowRadius;
     u_short shadowRadiusExpandRate;

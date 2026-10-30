@@ -1,5 +1,5 @@
 #include "src/SLUS_010.40/main.h"
-#include "src/BATTLE/BATTLE.PRG/func_8006B57C_t.h"
+#include "src/SLUS_010.40/inventory.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 

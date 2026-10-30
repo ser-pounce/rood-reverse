@@ -1,4 +1,5 @@
 #pragma once
+#include "loot.h"
 #include "src/SLUS_010.40/main.h"
 #include <sys/types.h>
 #include <libgte.h>

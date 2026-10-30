@@ -1,4 +1,4 @@
-#include "src/BATTLE/BATTLE.PRG/6E644.h"
+#include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/EFFECT/PLG005.BIN/18.h"
 #include "src/EFFECT/PLG044.BIN/0.h"

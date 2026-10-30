@@ -3,6 +3,7 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
+#include "actor.h"
 #include "entity.h"
 #include "src/SLUS_010.40/31724.h"
 #include "vs_inline_c.h"

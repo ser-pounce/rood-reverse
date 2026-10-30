@@ -37,7 +37,7 @@ segments:
       - [0xFC4, .rodata, libgpu/FONT]
       - [0x1064, .rodata, libgpu/SYS]
       - [0x1284, .rodata, libpad/PADENTRY]
-      - [0x12A4, c, overlay]
+      - [0x12A4, hasm, overlay]
       - [0x22DC, hasm, libgte/MTX_003]
       - [0x243C, hasm, libgte/MSC00]
       - [0x24CC, hasm, libgte/PATCHGTE]

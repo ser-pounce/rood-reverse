@@ -1,6 +1,7 @@
 #include "common.h"
 #include "30DB0.h"
 #include "44F14.h"
+#include "48C7C.h"
 #include "4B16C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -19,8 +20,6 @@ typedef struct {
 extern char D_800E8FC0;
 
 void func_8008C458(int, int, void*, void*);
-void func_800B17F0(SVECTOR*, MATRIX*);
-void func_800B196C(MATRIX*, MATRIX*);
 
 inline void func_800B26B8(D_800F4538_t* actor, MATRIX* parent, int bone, int saved)
 {

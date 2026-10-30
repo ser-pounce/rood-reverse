@@ -4,6 +4,7 @@
 #include "30DB0.h"
 #include "40564.h"
 #include "573B8.h"
+#include "57B1C.h"
 #include "5BF94.h"
 #include "camera.h"
 #include "src/SLUS_010.40/main.h"

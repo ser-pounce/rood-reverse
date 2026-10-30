@@ -3,10 +3,6 @@
 
 .set noreorder
 
-.section .text, "ax"
-
-nonmatching func_800B396C, 0xFC
-
 glabel func_800B396C
     lw         $t0, 0x0($a0)
     lw         $t1, 0x4($a0)
@@ -63,8 +59,6 @@ glabel func_800B396C
     jr         $ra
      sh        $t6, 0x10($v0)
 endlabel func_800B396C
-
-nonmatching func_800B3A68, 0x288
 
 glabel func_800B3A68
     or         $t0, $a3, $zero
@@ -231,8 +225,6 @@ glabel func_800B3A68
     jr         $ra
      lw        $gp, %lo(0x1F800378)($a3)
 endlabel func_800B3A68
-
-nonmatching func_800B3CF0, 0x8A4
 
 glabel func_800B3CF0
     lui        $t0, %hi(0x1F800390)
@@ -799,8 +791,6 @@ glabel func_800B3CF0
      lw        $fp, %lo(0x1F800380)($t0)
 endlabel func_800B3CF0
 
-nonmatching func_800B4594, 0x580
-
 glabel func_800B4594
     lui        $t0, %hi(0x1F800390)
     sw         $s0, %lo(0x1F800358)($t0)
@@ -1159,8 +1149,6 @@ glabel func_800B4594
     jr         $ra
      lw        $fp, %lo(0x1F800380)($t0)
 endlabel func_800B4594
-
-nonmatching func_800B4B14, 0x658
 
 glabel func_800B4B14
     lui        $t0, %hi(0x1F800348)
@@ -1582,8 +1570,6 @@ glabel func_800B4B14
     jr         $ra
      lw        $fp, %lo(0x1F800348)($t0)
 endlabel func_800B4B14
-
-nonmatching func_800B516C, 0xAC4
 
 glabel func_800B516C
     lui        $t0, %hi(0x1F800390)
@@ -2310,8 +2296,6 @@ glabel func_800B516C
      lw        $fp, %lo(0x1F800380)($t0)
 endlabel func_800B516C
 
-nonmatching func_800B5C30, 0x77C
-
 glabel func_800B5C30
     lui        $t0, %hi(0x1F800390)
     sw         $s0, %lo(0x1F800358)($t0)
@@ -2822,8 +2806,6 @@ glabel func_800B5C30
      lw        $fp, %lo(0x1F800380)($t0)
 endlabel func_800B5C30
 
-nonmatching func_800B63AC, 0x58
-
 glabel func_800B63AC
     la         $v0, D_800F4538
     sll        $v1, $a0, 2
@@ -2849,8 +2831,6 @@ glabel func_800B63AC
     jr         $ra
 endlabel func_800B63AC
 
-nonmatching func_800B6404, 0x34
-
 glabel func_800B6404
     la         $v0, D_800F4538
     sll        $v1, $a0, 2
@@ -2866,8 +2846,6 @@ glabel func_800B6404
     j          .L800B63E8
      nop
 endlabel func_800B6404
-
-nonmatching func_800B6438, 0x70
 
 glabel func_800B6438
     la         $v0, D_800F4538
@@ -2900,8 +2878,6 @@ glabel func_800B6438
      nop
 endlabel func_800B6438
 
-nonmatching func_800B64A8, 0x24
-
 glabel func_800B64A8
     addiu      $sp, -0x4
     sw         $ra, 0x0($sp)
@@ -2913,8 +2889,6 @@ glabel func_800B64A8
     addiu      $sp, 0x4
     jr         $ra
 endlabel func_800B64A8
-
-nonmatching func_800B64CC, 0x34
 
 glabel func_800B64CC
     la         $v0, D_800F4538
@@ -2932,8 +2906,6 @@ glabel func_800B64CC
      nop
 endlabel func_800B64CC
 
-nonmatching func_800B6500, 0x30
-
 glabel func_800B6500
     la         $v0, D_800F4538
     sll        $v1, $a0, 2
@@ -2948,15 +2920,11 @@ glabel func_800B6500
      or        $v1, $zero, 0x2
 endlabel func_800B6500
 
-nonmatching func_800B6530, 0xC
-
 glabel func_800B6530
     or         $t4, $zero, 0x4
     j          .L800B6540
      addu      $a3, $a2, $zero
 endlabel func_800B6530
-
-nonmatching func_800B653C, 0x44
 
 glabel func_800B653C
     or         $t4, $zero, 0x3
@@ -2977,8 +2945,6 @@ glabel func_800B653C
     sw         $t4, 0x1848($v0)
     jr         $ra
 endlabel func_800B653C
-
-nonmatching func_800B6580, 0x68
 
 glabel func_800B6580
     la         $v0, D_800F4538
@@ -3009,15 +2975,11 @@ glabel func_800B6580
     jr         $ra
 endlabel func_800B6580
 
-nonmatching func_800B65E8, 0xC
-
 glabel func_800B65E8
     or         $t1, $zero, 0x10
     j          .L800B65F8
      nop
 endlabel func_800B65E8
-
-nonmatching func_800B65F4, 0x40
 
 glabel func_800B65F4
     or         $t1, $zero, 0x40
@@ -3037,8 +2999,6 @@ glabel func_800B65F4
     sb         $t1, 0xB($v0)
     jr         $ra
 endlabel func_800B65F4
-
-nonmatching func_800B6634, 0x58
 
 glabel func_800B6634
     la         $v0, D_800F4538
@@ -3065,8 +3025,6 @@ glabel func_800B6634
     jr         $ra
      nop
 endlabel func_800B6634
-
-nonmatching func_800B668C, 0x1C
 
 glabel func_800B668C
     addiu      $sp, -0xC

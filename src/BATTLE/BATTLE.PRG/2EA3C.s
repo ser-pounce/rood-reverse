@@ -4,10 +4,6 @@
 .set noat
 .set noreorder
 
-.section .text, "ax"
-
-nonmatching func_8009723C, 0x14C
-
 glabel func_8009723C
     lui        $a3, %hi(0x1F8003FC)
     sw         $fp, %lo(0x1F8003D4)($a3)
@@ -97,8 +93,6 @@ glabel func_8009723C
     jr         $ra
      lw        $s7, %lo(0x1F8003FC)($a3)
 endlabel func_8009723C
-
-nonmatching func_80097388, 0x5F4
 
 glabel func_80097388
     sw         $ra, 0x3C4($a3)
@@ -493,8 +487,6 @@ glabel func_80097388
      nop
 endlabel func_80097388
 
-nonmatching func_8009797C, 0x94
-
 glabel func_8009797C
     lw         $s0, 0x0($a0)
     lw         $s4, 0x4($a0)
@@ -534,8 +526,6 @@ glabel func_8009797C
     jr         $ra
      addu      $s5, $s1
 endlabel func_8009797C
-
-nonmatching func_80097A10, 0xDC
 
 glabel func_80097A10
     mtv3       $s0, $s1, $s2, $s3, $s4, $s5
@@ -591,8 +581,6 @@ glabel func_80097A10
     jr         $ra
      addu      $s5, $s1
 endlabel func_80097A10
-
-nonmatching func_80097AEC, 0x204
 
 glabel func_80097AEC
     addiu      $fp, -0x2C
@@ -728,8 +716,6 @@ glabel func_80097AEC
     jr         $ra
      addiu     $fp, 0x2C
 endlabel func_80097AEC
-
-nonmatching func_80097CF0, 0x280
 
 glabel func_80097CF0
     addiu      $fp, -0x2C
@@ -898,8 +884,6 @@ glabel func_80097CF0
      addiu     $fp, 0x2C
 endlabel func_80097CF0
 
-nonmatching func_80097F70, 0xA4
-
 glabel func_80097F70
     lbu        $s3, 0x8($s0)
     lbu        $s4, 0x8($s1)
@@ -943,8 +927,6 @@ glabel func_80097F70
     jr         $ra
      sb        $s4, 0x7($s2)
 endlabel func_80097F70
-
-nonmatching func_80098014, 0xE4
 
 glabel func_80098014
     sra        $t4, $t0, 16
@@ -1011,8 +993,6 @@ glabel func_80098014
      or        $at, $zero, $zero
 endlabel func_80098014
 
-nonmatching func_800980F8, 0x68
-
 glabel func_800980F8
     srl        $t9, 2
     slt        $at, $t9, 0x8
@@ -1043,8 +1023,6 @@ glabel func_800980F8
      or        $at, $zero, $zero
 endlabel func_800980F8
 
-nonmatching func_80098160, 0x1C
-
 glabel func_80098160
     la         $v0, func_800980F8
     nop
@@ -1054,8 +1032,6 @@ glabel func_80098160
      nop
 endlabel func_80098160
 
-nonmatching func_8009817C, 0x18
-
 glabel func_8009817C
     la         $v0, func_800980F8
     nop
@@ -1063,8 +1039,6 @@ glabel func_8009817C
     jr         $ra
      nop
 endlabel func_8009817C
-
-nonmatching func_80098194, 0x24
 
 glabel func_80098194
     la         $v0, D_80097590
@@ -1075,8 +1049,6 @@ glabel func_80098194
     jr         $ra
      nop
 endlabel func_80098194
-
-nonmatching func_800981B8, 0x54
 
 glabel func_800981B8
     la         $v0, func_80098014
@@ -1100,8 +1072,6 @@ glabel func_800981B8
     jr         $ra
      nop
 endlabel func_800981B8
-
-nonmatching func_8009820C, 0x1EC
 
 glabel func_8009820C
     lui        $a3, %hi(0x1F800100)
@@ -1237,8 +1207,6 @@ glabel func_8009820C
      sw        $a2, %lo(0x1F800000)($a3)
 endlabel func_8009820C
 
-nonmatching func_800983F8, 0x1B4
-
 glabel func_800983F8
     lui        $at, %hi(0x1F800030)
     sw         $ra, %lo(0x1F8003E0)($at)
@@ -1353,8 +1321,6 @@ glabel func_800983F8
      lw        $s2, %lo(0x1F8003EC)($at)
 endlabel func_800983F8
 
-nonmatching func_800985AC, 0x9C
-
 glabel func_800985AC
     lui        $a3, %hi(0x1F8003FC)
     sw         $ra, %lo(0x1F8003F0)($a3)
@@ -1394,8 +1360,6 @@ glabel func_800985AC
     jr         $ra
      lw        $s2, %lo(0x1F8003FC)($a3)
 endlabel func_800985AC
-
-nonmatching func_80098648, 0x104
 
 glabel func_80098648
     lui        $a3, %hi(0x1F8003C0)
@@ -1462,8 +1426,6 @@ glabel func_80098648
     jr         $ra
      lw        $s2, %lo(0x1F8003FC)($a3)
 endlabel func_80098648
-
-nonmatching func_8009874C, 0x170
 
 glabel func_8009874C
     la         $a2, _trig_table
@@ -1549,8 +1511,6 @@ glabel func_8009874C
      sw        $t4, 0xC($v0)
 endlabel func_8009874C
 
-nonmatching func_800988BC, 0xFC
-
 glabel func_800988BC
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
@@ -1617,8 +1577,6 @@ glabel func_800988BC
      negu      $t0, $t0
 endlabel func_800988BC
 
-nonmatching func_800989B8, 0xFC
-
 glabel func_800989B8
     lw         $t0, 0x0($a0)
     lw         $t1, 0x4($a0)
@@ -1682,13 +1640,9 @@ glabel func_800989B8
      sw        $t5, 0xC($a1)
 endlabel func_800989B8
 
-nonmatching func_80098AB4, 0x4
-
 glabel func_80098AB4
     addiu      $a0, 0x400
 endlabel func_80098AB4
-
-nonmatching func_80098AB8, 0x64
 
 glabel func_80098AB8
     la         $v0, _trig_table
@@ -1696,16 +1650,16 @@ glabel func_80098AB8
     beqz       $t0, 1f
      and       $t1, $a0, 0x3FF
     bnez       $t1, 0f
-     addiu     $t2, $zero, 0x800
+     li        $t2, 0x800
     j          3f
-     addiu     $v0, $zero, 0x1000
+     li        $v0, 0x1000
   0:
     subu       $a0, $t2, $a0
   1:
     and        $t1, $a0, 0x200
     beqz       $t1, 2f
      and       $t2, $a0, 0x1FF
-    addiu      $t0, $zero, 0x200
+    li         $t0, 0x200
     subu       $t2, $t0, $t2
     addiu      $v0, 0x2
   2:
@@ -1722,8 +1676,6 @@ glabel func_80098AB8
      nop
 endlabel func_80098AB8
 
-nonmatching func_80098B1C, 0x1C
-
 glabel func_80098B1C
     la         $t0, vs_battle_roomData
     lw         $t1, 0x98($t0)
@@ -1732,8 +1684,6 @@ glabel func_80098B1C
     jr         $t1
      nop
 endlabel func_80098B1C
-
-nonmatching func_80098B38, 0x104
 
 glabel func_80098B38
     lui        $at, %hi(0x1F800218)
@@ -1806,8 +1756,6 @@ glabel func_80098B38
     jr         $ra
      nop
 endlabel func_80098B38
-
-nonmatching func_80098C3C, 0x130
 
 glabel func_80098C3C
     lw         $t4, 0x8($a2)
@@ -1886,8 +1834,6 @@ glabel func_80098C3C
      or        $v0, $zero, $zero
 endlabel func_80098C3C
 
-nonmatching func_80098D6C, 0xE4
-
 glabel func_80098D6C
     beq        $a0, $a1, 1f
      addu      $v0, $ra, $zero
@@ -1951,8 +1897,6 @@ glabel func_80098D6C
     b          1b
      nop
 endlabel func_80098D6C
-
-nonmatching func_80098E50, 0xFC
 
 glabel func_80098E50
     nop
@@ -2027,8 +1971,6 @@ glabel func_80098E50
      or        $t6, $t5
 endlabel func_80098E50
 
-nonmatching vs_battle_initSceneAndGetRoomNames, 0x40
-
 glabel vs_battle_initSceneAndGetRoomNames
     lw         $v0, 0x0($a0)
     addiu      $a1, $a0, 0x4
@@ -2050,8 +1992,6 @@ glabel vs_battle_initSceneAndGetRoomNames
      addu      $v0, $a1, $zero
 endlabel vs_battle_initSceneAndGetRoomNames
 
-nonmatching func_80098F8C, 0x548
-
 glabel func_80098F8C
     lw         $v0, 0x0($a0)
     lui        $a3, %hi(0x1F8003E8)
@@ -2072,9 +2012,9 @@ glabel func_80098F8C
     lw         $v1, 0x14($t9)
     la         $t9, D_800F1CDC
     la         $s5, vs_main_stateFlags
-    or         $s0, $zero, 0xFFFF
+    li         $s0, 0xFFFF
     or         $s1, $zero, $zero
-    or         $s2, $zero, 0xFFFF
+    li         $s2, 0xFFFF
     or         $s3, $zero, $zero
     or         $at, $zero, 0x100
     ctc2       $zero, $5
@@ -2398,8 +2338,6 @@ glabel func_80098F8C
      nop
 endlabel func_80098F8C
 
-nonmatching vs_battle_getGeomOffset, 0x20
-
 glabel vs_battle_getGeomOffset
     cfc2       $t0, $24
     cfc2       $t1, $25
@@ -2411,8 +2349,6 @@ glabel vs_battle_getGeomOffset
      nop
 endlabel vs_battle_getGeomOffset
 
-nonmatching vs_battle_setGeomOffset, 0x20
-
 glabel vs_battle_setGeomOffset
     lw         $t0, 0x0($a0)
     lw         $t1, 0x4($a0)
@@ -2423,8 +2359,6 @@ glabel vs_battle_setGeomOffset
     jr         $ra
      nop
 endlabel vs_battle_setGeomOffset
-
-nonmatching func_80099514, 0x9C
 
 glabel func_80099514
     la         $a3, vs_battle_roomData

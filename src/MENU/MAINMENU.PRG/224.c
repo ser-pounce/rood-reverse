@@ -2,6 +2,7 @@
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"
+#include "src/BATTLE/BATTLE.PRG/49268.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "src/BATTLE/BATTLE.PRG/entity.h"

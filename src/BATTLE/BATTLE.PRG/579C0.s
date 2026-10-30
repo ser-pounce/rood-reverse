@@ -2,10 +2,6 @@
 
 .set noreorder
 
-.section .text, "ax"
-
-nonmatching vs_battle_copyAligned, 0x20
-
 glabel vs_battle_copyAligned
     and        $t0, $a2, 0x7
     beqz       $t0, vs_battle_memcpy
@@ -16,8 +12,6 @@ glabel vs_battle_copyAligned
     j          vs_battle_copyAligned
      add       $a2, -0x2
 endlabel vs_battle_copyAligned
-
-nonmatching vs_battle_memcpy, 0x34
 
 glabel vs_battle_memcpy
     addu       $a2, $a1, $a2
@@ -36,8 +30,6 @@ glabel vs_battle_memcpy
     jr         $ra
 endlabel vs_battle_memcpy
 
-nonmatching vs_battle_setSpriteDefault, 0x10
-
 glabel vs_battle_setSpriteDefault
     lui        $v1, %hi(0x1F800008)
     addu       $a2, $a0, $zero
@@ -45,15 +37,11 @@ glabel vs_battle_setSpriteDefault
     lw         $a3, %lo(0x1F800008)($v1)
 endlabel vs_battle_setSpriteDefault
 
-nonmatching vs_battle_setSpriteDefaultTexPage, 0xC
-
 glabel vs_battle_setSpriteDefaultTexPage
     lui        $t1, %hi(0xE100000C)
     j          .L800C0234
      or        $t1, (0xE100000C & 0xFFFF)
 endlabel vs_battle_setSpriteDefaultTexPage
-
-nonmatching vs_battle_setSprite, 0x78
 
 glabel vs_battle_setSprite
     addu       $t1, $zero, $zero
@@ -89,8 +77,6 @@ glabel vs_battle_setSprite
      sw        $t4, %lo(0x1F800000)($v1)
 endlabel vs_battle_setSprite
 
-nonmatching func_800C02A8, 0x30
-
 glabel func_800C02A8
     addiu      $sp, -0x8
     sw         $ra, 0x0($sp)
@@ -106,35 +92,25 @@ glabel func_800C02A8
      addiu     $sp, 0x8
 endlabel func_800C02A8
 
-nonmatching vs_battle_playSfx10, 0x8
-
 glabel vs_battle_playSfx10
     j          .L800C02FC
      li        $a1, 0xA
 endlabel vs_battle_playSfx10
-
-nonmatching vs_battle_playInvalidSfx, 0x8
 
 glabel vs_battle_playInvalidSfx
     j          .L800C02FC
      li        $a1, 0x7
 endlabel vs_battle_playInvalidSfx
 
-nonmatching vs_battle_playMenuLeaveSfx, 0x8
-
 glabel vs_battle_playMenuLeaveSfx
     j          .L800C02FC
      li        $a1, 0x6
 endlabel vs_battle_playMenuLeaveSfx
 
-nonmatching vs_battle_playMenuSelectSfx, 0x8
-
 glabel vs_battle_playMenuSelectSfx
     j          .L800C02FC
      li        $a1, 0x5
 endlabel vs_battle_playMenuSelectSfx
-
-nonmatching vs_battle_playMenuChangeSfx, 0x24
 
 glabel vs_battle_playMenuChangeSfx
     li         $a1, 0x4

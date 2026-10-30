@@ -47,6 +47,8 @@ segments:
       - [0x4B16C, hasm]
       - [0x4DEA8, c]
       - [0x573B8, c]
+      - [0x579C0, hasm]
+      - [0x57B1C, c]
       - [0x58578, c]
       - [0x5BF94, c]
       - [0x6E644, c]

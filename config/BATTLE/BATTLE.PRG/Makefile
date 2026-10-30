@@ -10,8 +10,8 @@ $(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
 $(buildDir)/%.c.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.c.o: ASFLAGS += -no-pad-sections
 
-$(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14): CC1VER := 2.7.2-cdk
-$(patsubst %,$(buildDir)/%.c.o,146C 4A0A8 5BF94):  CC1FLAGS += -Wno-return-type -Wno-uninitialized
+$(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14 49EB8): CC1VER := 2.7.2-cdk
+$(patsubst %,$(buildDir)/%.c.o,146C 4DEA8 5BF94):  CC1FLAGS += -Wno-return-type -Wno-uninitialized
 $(patsubst %,$(buildDir)/%.c.o,3A1A0 40564 573B8): CC1FLAGS += -Wno-return-type
 $(buildDir)/30DB0.c.o: CC1FLAGS += -Wno-return-type -Wno-sign-compare -Wno-uninitialized
 $(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 44F14 6E644): CC1FLAGS += -Wno-uninitialized

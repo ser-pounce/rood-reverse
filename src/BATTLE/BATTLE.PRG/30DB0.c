@@ -6,7 +6,7 @@
 #include "3A1A0.h"
 #include "40564.h"
 #include "44F14.h"
-#include "4A0A8.h"
+#include "4DEA8.h"
 #include "6E644.h"
 #include "battleUnk.h"
 #include "entity.h"

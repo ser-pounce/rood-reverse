@@ -22,36 +22,36 @@ glabel ApplyMatrixLV
     negu    $t0, $t0
     sra     $t3, $t0, 15
     negu    $t3, $t3
-    andi    $t0, 0x7FFF
+    and     $t0, 0x7FFF
     b       1f
     negu    $t0, $t0
 0:
     sra     $t3, $t0, 15
-    andi    $t0, 0x7FFF
+    and     $t0, 0x7FFF
 1:
     bgez    $t1, 0f
     .nop
     negu    $t1, $t1
     sra     $t4, $t1, 15
     negu    $t4, $t4
-    andi    $t1, 0x7FFF
+    and     $t1, 0x7FFF
     b       1f
     negu    $t1, $t1
 0:
     sra     $t4, $t1, 15
-    andi    $t1, 0x7FFF
+    and     $t1, 0x7FFF
 1:
     bgez    $t2, 0f
     .nop
     negu    $t2, $t2
     sra     $t5, $t2, 15
     negu    $t5, $t5
-    andi    $t2, 0x7FFF
+    and     $t2, 0x7FFF
     b       1f
     negu    $t2, $t2
 0:
     sra     $t5, $t2, 15
-    andi    $t2, 0x7FFF
+    and     $t2, 0x7FFF
 1:
     mtc2    $t3, $9
     mtc2    $t4, $10

@@ -24,7 +24,7 @@ glabel InitGeom
     .nop
     mfc0       $v0, $12
     li         $v1, 0x40000000
-    or         $v0, $v0, $v1
+    or         $v0, $v1
     mtc0       $v0, $12
     .nop
     ctc2w      0x155, $29

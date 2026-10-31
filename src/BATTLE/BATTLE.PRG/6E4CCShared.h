@@ -263,7 +263,8 @@ typedef struct func_800E78F4_t {
     int unk194;
     char unk198[2];
     u_char unk19A;
-    char unk19B[5];
+    u_char unk19B;
+    vs_battle_movementPosition unk19C;
     struct func_800E78F4_t* unk1A0;
     func_800DA1D4_t unk1A4[16];
     u_int unk1E4[16];

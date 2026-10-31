@@ -117,6 +117,7 @@ void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(D_800F19CC_t2*);
 void func_800DC888(func_800DC888_t*);
 void func_800DE3E4(func_800E78F4_t*);
+int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2);
 int func_800DFBCC(func_800E78F4_t*, int, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
@@ -140,6 +141,7 @@ void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4BB8(func_800E78F4_t*);
+void func_800E4BD8(int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
@@ -175,7 +177,44 @@ extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800DF8A4);
+void func_800DF8A4(func_800E78F4_t* arg0)
+{
+    vs_battle_movementPosition pos;
+    int i;
+
+    if (arg0->unk34.y < 2) {
+        vs_battle_movementPosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+        arg0->unk19C = none;
+        func_800E4BD8(arg0->unk19B);
+        arg0->unk19B = 0;
+        return;
+    }
+
+    i = func_800DFAF8(arg0, arg0->unk19C, 0);
+
+    if (i >= 0) {
+        pos.x = D_800F5910[i * 2].unk0_0;
+        pos.z = D_800F5910[i * 2].unk0_5;
+        pos.y = 0;
+
+        if (func_800D954C(arg0, pos) > 0) {
+            vs_battle_movementPosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+            arg0->unk19C = none;
+            arg0->unk19B = 0;
+            func_800E4BD8((i >> 1) + 2);
+            arg0->unk170 = pos;
+            func_800DEEFC(arg0, 0xE);
+            return;
+        }
+    }
+
+    func_800E2CCC(arg0);
+
+    // HACK: Bogus return to force match.
+    return (void)&pos;
+}
 
 void func_800DF9A8(func_800DFA54_t* arg0, func_800DFA54_t* arg1)
 {
@@ -216,7 +255,8 @@ found:
     arg3->unk2 = D_800F5910[i * 2].unk0_5;
 }
 
-int func_800DFAF8(int arg0, u_int arg1, int arg2)
+int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
+    vs_battle_movementPosition arg1, int arg2)
 {
     SVECTOR sp10[4];
     SVECTOR* m;
@@ -230,7 +270,7 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
         if (arg2 == 0) {
             ++e;
         }
-        if ((u_char)arg1 == e->unk0_0 && (u_char)(arg1 >> 16) == e->unk0_5) {
+        if (arg1.x == e->unk0_0 && arg1.z == e->unk0_5) {
             m = &sp10[j];
             if (D_800F5910[i * 2 + 1].unk0_0 == m->vx >> 7
                 && D_800F5910[i * 2 + 1].unk0_5 == m->vz >> 7) {

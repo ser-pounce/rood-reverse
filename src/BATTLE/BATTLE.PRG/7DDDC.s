@@ -19,32 +19,21 @@ glabel func_800E65DC
     sll        $a2, $v0, 2
     addu       $v1, $a0, $a2
     lw         $a1, 0x0($v1)
-    addiu      $v0, -0x1
+    addu       $v0, -0x1
     addu       $v1, $a3, $a2
     bgez       $v0, 0b
      sw        $a1, (0x1F80037C & 0xFFFF)($v1)
-    lui        $v0, %hi(D_800F58BC)
-    lw         $v0, %lo(D_800F58BC)($v0)
-    lui        $t0, %hi(D_800F58D0)
-    lw         $t0, %lo(D_800F58D0)($t0)
-    lui        $t1, %hi(D_800F58B8)
-    lw         $t1, %lo(D_800F58B8)($t1)
-    lui        $t2, %hi(D_800F58CC)
-    lw         $t2, %lo(D_800F58CC)($t2)
-    lui        $t3, %hi(D_800F58C0)
-    lw         $t3, %lo(D_800F58C0)($t3)
-    lui        $t4, %hi(D_800F58C4)
-    lw         $t4, %lo(D_800F58C4)($t4)
-    lui        $t5, %hi(D_800F16E0)
-    lw         $t5, %lo(D_800F16E0)($t5)
-    lui        $t6, %hi(D_800F16E4)
-    lw         $t6, %lo(D_800F16E4)($t6)
-    lui        $t7, %hi(D_800F16E8)
-    lw         $t7, %lo(D_800F16E8)($t7)
-    lui        $t8, %hi(D_800F16EC)
-    lw         $t8, %lo(D_800F16EC)($t8)
-    lui        $t9, %hi(D_800F16F0)
-    lw         $t9, %lo(D_800F16F0)($t9)
+    lw         $v0, D_800F58BC
+    lw         $t0, D_800F58D0
+    lw         $t1, D_800F58B8
+    lw         $t2, D_800F58CC
+    lw         $t3, D_800F58C0
+    lw         $t4, D_800F58C4
+    lw         $t5, D_800F16E0
+    lw         $t6, D_800F16E4
+    lw         $t7, D_800F16E8
+    lw         $t8, D_800F16EC
+    lw         $t9, D_800F16F0
     lw         $v0, 0x4($v0)
     sw         $t0, (0x1F8003BC & 0xFFFF)($a3)
     sw         $t1, (0x1F8003C0 & 0xFFFF)($a3)
@@ -218,8 +207,7 @@ glabel func_800E68A0
   .L800E68A4:
     la         $t2, D_800F58D0
     lw         $a3, 0x5C($a0)
-    lui        $a2, %hi(D_800F58B8)
-    lw         $a2, %lo(D_800F58B8)($a2)
+    lw         $a2, D_800F58B8
     and        $t0, $a3, 0xFF
     sll        $t1, $a3, 8
     beqz       $a2, .L800E6918
@@ -236,8 +224,7 @@ glabel func_800E68A0
 endlabel func_800E68A0
 
 glabel func_800E68EC
-    lui        $a2, %hi(D_800F58B8)
-    lw         $a2, %lo(D_800F58B8)($a2)
+    lw         $a2, D_800F58B8
     sll        $a0, 1
     beqz       $a2, .L800E6918
      sll       $a1, 6
@@ -250,7 +237,7 @@ glabel func_800E68EC
   .L800E6918:
     jr         $ra
      addu      $a1, $a2, $zero
-    addiu      $sp, -0x18
+    addu       $sp, -0x18
     sw         $ra, 0x10($sp)
     jal        func_8008B764
      addu      $a2, $zero, $zero
@@ -264,11 +251,11 @@ glabel func_800E68EC
     addu       $v0, $zero, $zero
   0:
     jr         $ra
-     addiu     $sp, 0x18
+     addu      $sp, 0x18
 endlabel func_800E68EC
 
 glabel func_800E6958
-    addiu      $sp, -0x8
+    addu       $sp, -0x8
     sw         $ra, 0x4($sp)
     jal        func_800E6974
      sw        $s0, 0x0($sp)
@@ -278,7 +265,7 @@ glabel func_800E6958
 endlabel func_800E6958
 
 glabel func_800E6974
-    addiu      $sp, -0x8
+    addu       $sp, -0x8
     sw         $ra, 0x4($sp)
     sll        $t1, $a1, 8
     sll        $t2, $s0, 16
@@ -344,11 +331,11 @@ glabel func_800E6974
     srl        $s0, $t0, 16
   .L800E6A64:
     jr         $ra
-     addiu     $sp, 0x8
+     addu      $sp, 0x8
 endlabel func_800E6974
 
 glabel func_800E6A6C
-    addiu      $sp, -0x38
+    addu       $sp, -0x38
     sw         $ra, 0x30($sp)
     sw         $s0, 0x10($sp)
     sw         $s7, 0x2C($sp)
@@ -396,7 +383,7 @@ glabel func_800E6A6C
     lw         $s2, 0x18($sp)
     lw         $s1, 0x14($sp)
     jr         $ra
-     addiu     $sp, 0x38
+     addu      $sp, 0x38
 endlabel func_800E6A6C
 
 glabel func_800E6B24
@@ -412,7 +399,7 @@ glabel func_800E6B24
 endlabel func_800E6B24
 
 glabel func_800E6B4C
-    addiu      $sp, -0x30
+    addu       $sp, -0x30
     sw         $s0, 0x10($sp)
     sw         $ra, 0x18($sp)
     li         $a1, 0x7
@@ -433,7 +420,7 @@ glabel func_800E6B4C
     j          vs_main_freeHeapR
      li        $a1, 0x7
 alabel func_800E6BA0
-    addiu      $sp, -0x40
+    addu       $sp, -0x40
     sw         $ra, 0x20($sp)
     jal        func_8008D2C0
      addu      $a0, $sp, $zero
@@ -467,16 +454,16 @@ alabel func_800E6BA0
     and        $t0, $t2
     bnez       $t0, 4f
      addu      $v0, $zero, $zero
-    addiu      $a3, 0x8
+    addu       $a3, 0x8
     bgez       $zero, 0b
-     addiu     $t4, -0x1
+     addu      $t4, -0x1
   4:
     lw         $ra, 0x20($sp)
-    addiu      $sp, 0x40
+    addu       $sp, 0x40
     jr         $ra
      nop
 alabel func_800E6C34
-    addiu      $sp, -0x40
+    addu       $sp, -0x40
     sw         $s0, 0x18($sp)
     sw         $s1, 0x1C($sp)
     sw         $s2, 0x20($sp)
@@ -599,7 +586,7 @@ alabel func_800E6C34
     bnez       $t6, 13f
      add       $v0, 0x1
   12:
-    addiu      $t1, 0x4
+    addu       $t1, 0x4
     slt        $v1, $t1, 0x40
     bnez       $v1, 6b
      addu      $v0, $zero, $zero
@@ -642,12 +629,12 @@ alabel func_800E6C34
     lw         $s5, 0x2C($sp)
     lw         $s6, 0x30($sp)
     lw         $s7, 0x34($sp)
-    addiu      $sp, 0x40
+    addu       $sp, 0x40
 alabel func_800E6EAC
     jr         $ra
 alabel func_800E6EB0
      lui       $t0, (0x800F0000 >> 16)
-    addiu      $t0, 0x1928
+    addu       $t0, 0x1928
     sll        $a0, 2
     addu       $t0, $a0
     lw         $t0, 0x0($t0)
@@ -674,10 +661,9 @@ alabel func_800E6EB0
     bgez       $zero, func_800E4BD8
 alabel func_800E6F1C
      lui       $t0, (0x800F5878 >> 16)
-    addiu      $sp, -0x20
+    addu       $sp, -0x20
     sw         $s0, 0x10($sp)
-    lui        $s0, %hi(vs_battle_actors)
-    lw         $s0, %lo(vs_battle_actors)($s0)
+    lw         $s0, vs_battle_actors
     sw         $ra, 0x18($sp)
   16:
     lw         $v0, 0x4($s0)
@@ -696,8 +682,7 @@ alabel func_800E6F1C
     sw         $zero, %lo(D_800F58B8)($at)
     lui        $at, %hi(D_800F58C0)
     sw         $zero, %lo(D_800F58C0)($at)
-    lui        $a0, %hi(D_800F58BC)
-    lw         $a0, %lo(D_800F58BC)($a0)
+    lw         $a0, D_800F58BC
     jal        vs_main_freeHeap
      li        $a1, 0x7
     lw         $s0, 0x10($sp)
@@ -705,9 +690,9 @@ alabel func_800E6F1C
     lui        $at, %hi(D_800F58BC)
     sw         $zero, %lo(D_800F58BC)($at)
     jr         $ra
-     addiu     $sp, 0x20
+     addu      $sp, 0x20
 alabel func_800E6F9C
-    addiu      $sp, -0x30
+    addu       $sp, -0x30
     sw         $s0, 0x10($sp)
     sw         $s1, 0x14($sp)
     sw         $s2, 0x1C($sp)
@@ -718,19 +703,19 @@ alabel func_800E6F9C
      sw        $s4, 0x24($sp)
     lui        $at, %hi(D_800F58C0)
     sw         $v0, %lo(D_800F58C0)($at)
-    addiu      $v0, 0x400
+    addu       $v0, 0x400
     lui        $at, %hi(D_800F58D8)
     sw         $v0, %lo(D_800F58D8)($at)
-    addiu      $v0, 0x40
+    addu       $v0, 0x40
     lui        $at, %hi(D_800F58C8)
     sw         $v0, %lo(D_800F58C8)($at)
-    addiu      $v0, 0x10
+    addu       $v0, 0x10
     lui        $at, %hi(D_800F5908)
     sw         $v0, %lo(D_800F5908)($at)
-    addiu      $v0, 0x4
+    addu       $v0, 0x4
     lui        $at, %hi(D_800F5910)
     sw         $v0, %lo(D_800F5910)($at)
-    addiu      $v0, 0x44
+    addu       $v0, 0x44
     lui        $at, %hi(D_800F58CC)
     sw         $v0, %lo(D_800F58CC)($at)
     addu       $a2, $zero, $zero
@@ -743,11 +728,11 @@ alabel func_800E6F9C
     addu       $a0, $v0, $zero
     jal        func_800E4288
      li        $a1, 0x1038
-    addiu      $v0, $s0, 0x38
+    addu       $v0, $s0, 0x38
     lui        $at, %hi(D_800F58B8)
     sw         $v0, %lo(D_800F58B8)($at)
     addu       $s3, $v0, $zero
-    addiu      $v0, $s0, 0x838
+    addu       $v0, $s0, 0x838
     lui        $at, %hi(D_800F58D0)
     sw         $v0, %lo(D_800F58D0)($at)
     addu       $s4, $v0, $zero
@@ -829,13 +814,11 @@ alabel func_800E6F9C
     add        $s1, 0x1
     slt        $v1, $s1, 0x400
     bnez       $v1, 17b
-     addiu     $s3, 0x2
+     addu      $s3, 0x2
     jal        func_800E6B4C
      nop
-    lui        $a1, %hi(D_800F58C0)
-    lw         $a1, %lo(D_800F58C0)($a1)
-    lui        $v1, %hi(D_800F5908)
-    lw         $v1, %lo(D_800F5908)($v1)
+    lw         $a1, D_800F58C0
+    lw         $v1, D_800F5908
     bnez       $a1, 20f
      li        $v0, 0x96
     sh         $v0, 0x8($s0)
@@ -857,7 +840,7 @@ alabel func_800E6F9C
     bgez       $zero, func_800DC638
      or        $ra, (0x800DB888 & 0xFFFF)
 alabel func_800E71DC
-    addiu      $sp, -0x30
+    addu       $sp, -0x30
     sw         $s3, 0x20($sp)
     sw         $s5, 0x28($sp)
     sw         $s4, 0x24($sp)
@@ -867,9 +850,9 @@ alabel func_800E71DC
     sw         $s2, 0x1C($sp)
     sll        $s0, $a0, 7
     sll        $s1, $a1, 7
-    addiu      $a0, $s0, 0x40
+    addu       $a0, $s0, 0x40
     jal        func_8008DC7C
-     addiu     $a1, $s1, 0x40
+     addu      $a1, $s1, 0x40
     addu       $s5, $v0, $zero
     addu       $s2, $zero, $zero
     addu       $s4, $zero, $zero
@@ -897,7 +880,7 @@ alabel func_800E71DC
     sra        $v1, 17
     slt        $v1, $t0
     beqz       $v1, 25f
-     addiu     $s2, 0x1
+     addu      $s2, 0x1
     addu       $s5, $v0, $zero
   25:
     slt        $v0, $s2, 0x10
@@ -917,7 +900,7 @@ alabel func_800E71DC
     and        $t3, $v0, $t2
     beq        $t3, $t2, 28f
   27:
-     addiu     $v1, 0x1
+     addu      $v1, 0x1
     slt        $t2, $v1, 0xA
     bnez       $t2, 26b
      nop
@@ -926,11 +909,10 @@ alabel func_800E71DC
     bgez       $zero, func_800DB888
      addu      $v0, $s5, $zero
 alabel func_800E72D0
-    addiu      $sp, -0x30
+    addu       $sp, -0x30
     sw         $s0, 0x10($sp)
     sw         $ra, 0x18($sp)
-    lui        $s0, %hi(vs_battle_actors)
-    lw         $s0, %lo(vs_battle_actors)($s0)
+    lw         $s0, vs_battle_actors
     li         $t1, 0x800F5878
   29:
     lw         $t2, 0x4($s0)
@@ -969,12 +951,11 @@ alabel func_800E72D0
     bgez       $zero, func_800DB89C
 alabel func_800E7370
      lui       $a3, (0x800F5878 >> 16)
-    addiu      $sp, -0xC
+    addu       $sp, -0xC
     sw         $s0, 0x0($sp)
     sw         $s1, 0x4($sp)
     addu       $s0, $a0, $zero
-    lui        $s1, %hi(vs_battle_actors)
-    lw         $s1, %lo(vs_battle_actors)($s1)
+    lw         $s1, vs_battle_actors
     sw         $ra, 0x8($sp)
     beqz       $s1, 33f
      or        $a3, (0x800F5878 & 0xFFFF)
@@ -1026,16 +1007,15 @@ alabel D_800E7430
     lw         $s0, 0x0($sp)
     lw         $s1, 0x4($sp)
     jr         $ra
-     addiu     $sp, 0xC
+     addu      $sp, 0xC
 alabel func_800E7454
-    addiu      $sp, -0x30
+    addu       $sp, -0x30
     sw         $s5, 0x28($sp)
     sw         $s0, 0x10($sp)
     sw         $s2, 0x1C($sp)
     sw         $s1, 0x14($sp)
     sw         $ra, 0x18($sp)
-    lui        $a1, %hi(D_800F58B8)
-    lw         $a1, %lo(D_800F58B8)($a1)
+    lw         $a1, D_800F58B8
     addu       $a0, $s0, $zero
     beqz       $a1, func_800DB890
      lbu       $a3, 0x1C($s0)
@@ -1050,8 +1030,7 @@ alabel func_800E7454
     lui        $at, %hi(D_800F590C)
     sw         $a1, %lo(D_800F590C)($at)
   34:
-    lui        $t0, %hi(vs_battle_actors)
-    lw         $t0, %lo(vs_battle_actors)($t0)
+    lw         $t0, vs_battle_actors
     lui        $t6, (0x800F5878 >> 16)
     beqz       $t0, 37f
   35:
@@ -1071,8 +1050,7 @@ alabel func_800E7454
     lui        $t6, (0x800F5878 >> 16)
     bnez       $t0, 35b
   37:
-     lui       $s5, %hi(D_800F58BC)
-    lw         $s5, %lo(D_800F58BC)($s5)
+     lw         $s5, D_800F58BC
     li         $v0, 0xC
   38:
     addu       $t4, $s5, $v0
@@ -1138,16 +1116,14 @@ alabel func_800E7454
     j          vs_main_freeHeap
      sw        $zero, 0x0($a3)
 alabel func_800E75EC
-    lui        $a3, %hi(D_800F58BC)
-    lw         $a3, %lo(D_800F58BC)($a3)
+    lw         $a3, D_800F58BC
     nop
     beqz       $a3, 42b
      addu      $v0, $zero, $zero
     bgez       $zero, 42b
      lw        $v0, 0x14($a3)
 alabel func_800E7608
-    lui        $a3, %hi(vs_battle_actors)
-    lw         $a3, %lo(vs_battle_actors)($a3)
+    lw         $a3, vs_battle_actors
     lui        $a1, (0x800F5878 >> 16)
   44:
     lw         $v0, 0x4($a3)
@@ -1171,7 +1147,7 @@ alabel func_800E7608
     j          func_800D82CC
      lw        $a0, 0x0($a0)
 alabel func_800E7660
-    addiu      $sp, -0x30
+    addu       $sp, -0x30
     sw         $ra, 0x18($sp)
     sw         $s0, 0x10($sp)
     li         $a0, 0x20

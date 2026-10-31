@@ -18,8 +18,8 @@ glabel _remove_ChgclrPAD
     add     $v1, $v0, 0x62C
 0:
     sw      $zero, 0x0($v1)
-    addu    $v1, $v1, 0x4
-    addu    $t2, $t2, -0x1
+    addu    $v1, 0x4
+    addu    $t2, -0x1
     bnez    $t2, 0b
     .nop
     jal     FlushCache

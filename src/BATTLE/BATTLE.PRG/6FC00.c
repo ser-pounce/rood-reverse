@@ -164,6 +164,7 @@ extern effectExec D_800F56A8[];
 extern actionEffectRequest* D_800F5798;
 extern D_800F569C_t D_800F57A0;
 extern int D_800F5874;
+extern int D_800F58C4;
 extern D_800F58C8_t* D_800F58D8;
 extern int D_800F58E0;
 extern vs_battle_actor2* D_800F58E8;
@@ -407,4 +408,4 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6FC00", func_800D8EF4);
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6FC00", func_800D9538);
+void func_800D9538(void) { D_800F58C4 = *(int*)0x1F8003F8; }

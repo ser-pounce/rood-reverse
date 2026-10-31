@@ -66,6 +66,8 @@ segments:
       - [0x73700, c]
       - [0x7399C, hasm]
       - [0x74088, c]
+      - [0x766FC, hasm]
+      - [0x770A4, c]
       - [0x7B3C8, hasm]
       - [0x7CD68, c]
       - [0x7DDDC, hasm]

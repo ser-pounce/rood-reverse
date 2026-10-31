@@ -176,7 +176,75 @@ extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6FC00", func_800D8400);
+u_int func_800DB93C(
+    func_800E78F4_t*, vs_battle_movementPosition, int, vs_battle_movementPosition);
+
+u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
+{
+    union {
+        vs_battle_movementPosition fields;
+        u_int value;
+    } pos;
+    vs_battle_movementPosition source;
+    u_int directions;
+    int count;
+    int i;
+    int result;
+
+    if (arg0->unk7 != 0) {
+        return 0;
+    }
+
+    source = arg0->unk34;
+    pos.fields.status = 1;
+
+    if (arg1 == arg2) {
+        directions = arg3;
+        count = 1;
+    } else {
+        u_int quadrant = (u_int)(arg3 & 0xFFF) >> 10;
+
+        arg3 = (arg3 & 0x3FF) >= 0x201U ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
+        directions = (arg3 == arg1 ? arg2 << 16 : arg1 << 16) | arg3;
+        count = 2;
+    }
+
+    for (i = 0; i < count; ++i) {
+        arg3 = (directions >> (i * 16)) & 0xFFFF;
+        pos.fields.x = source.x + ((D_800F16EC_t*)0x1F8003EC)[arg3].dx;
+        pos.fields.z = source.z + ((D_800F16EC_t*)0x1F8003EC)[arg3].dz;
+
+        result = func_800D96C8(arg0, source, pos.fields, arg3);
+
+        if (result > 0) {
+            result = func_800D954C(arg0, pos.fields);
+            if (result >= 0) {
+                if (result != 0) {
+                    pos.fields.y = 0;
+                    return pos.value;
+                }
+                return 0;
+            }
+        } else if (result >= 0) {
+            pos.value = func_800DB93C(arg0, pos.fields, arg3, source);
+            if (pos.fields.status == 1) {
+                pos.fields.y = 0;
+                return pos.value;
+            }
+            if (pos.fields.status == 0) {
+                continue;
+            }
+        }
+        goto fail;
+    }
+
+    return 0;
+
+fail:
+    pos.fields.status = 2;
+    pos.fields.y = 0;
+    return pos.value;
+}
 
 int func_800D85D8(func_800E78F4_t* arg0)
 {

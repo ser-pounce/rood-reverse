@@ -37,7 +37,7 @@ segments:
       - [0xFC4, .rodata, libgpu/FONT]
       - [0x1064, .rodata, libgpu/SYS]
       - [0x1284, .rodata, libpad/PADENTRY]
-      - [0x12A4, c, overlay]
+      - [0x12A4, hasm, overlay]
       - [0x22DC, hasm, libgte/MTX_003]
       - [0x243C, hasm, libgte/MSC00]
       - [0x24CC, hasm, libgte/PATCHGTE]
@@ -242,6 +242,7 @@ segments:
     subsegments:
       - [0x32568, .rodata, main]
       - [0x3264C, c, main]
+      - [0x3988C, hasm]
       - [0x39938, .data, 2MBYTE.OBJ]
       - [0x39950, rgb555Sized, _nowLoading]
       - [0x3AD04, .data, main]

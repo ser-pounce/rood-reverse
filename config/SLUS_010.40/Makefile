@@ -14,7 +14,7 @@ $(BUILD)/src/SLUS_010.40/main.c.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.c.o: MASFLAGS += --expand-div
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o, \
-	libsn/SNMAIN 2MBYTE.OBJ overlay 25AC 31B7C main libcd/SYS libcd/SYS_2 \
+	libsn/SNMAIN 2MBYTE.OBJ 25AC 31B7C main libcd/SYS libcd/SYS_2 \
 	$(addprefix libgte/, REG13 REG11) \
 ): ASFLAGS += -no-pad-sections
 
@@ -26,11 +26,13 @@ $(patsubst %,$(BUILD)/src/SLUS_010.40/%.s.o, \
 	) \
 ): ASFLAGS += -no-pad-sections
 
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.s.o,overlay 3988C): ASFLAGS += -no-pad-sections
+
 # libcd SYS is one PsyQ object, split at the CdReset/CdFlush boundary: CdReset only matches under
 # 2.8.1-psx (its CD_initvol() result is copied to v1 before the test), while everything from CdFlush on
 # only matches under 2.7.2-psx like the other libcd units (per-access lui for globals, ra/sp restore
 # before jr). SYS_2 takes the default 2.7.2-psx.
-$(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,2MBYTE.OBJ libcd/SYS overlay 25AC main 31B7C): CC1VER := 2.8.1-psx
+$(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,2MBYTE.OBJ libcd/SYS 25AC main 31B7C): CC1VER := 2.8.1-psx
 
 # libc MEMMOVE was built with the CDK 2.7.2 compiler: its backward copy loop keeps the n-- index
 # (2.7.2-psx strength-reduces it into a pointer walk). Every other libc unit is byte-identical

@@ -2,14 +2,13 @@
 #include "44F14.h"
 #include "146C.h"
 #include "30DB0.h"
-#include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
+#include "48C7C.h"
+#include "49268.h"
 #include "4DEA8.h"
 #include "5BF94.h"
 #include "battleUnk.h"
-#include "entity.h"
-#include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
 #include "scratch.h"
@@ -35,16 +34,6 @@ void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800AFDE8(int, SVECTOR*, int);
 void func_800B0908(D_800F45E0_t*, int);
 int func_800B101C(D_800F45E0_t*);
-void func_800B147C(D_800F4538_unkC54*, D_800F4538_unkC54*, int, int, int);
-void func_800B17F0(SVECTOR*, MATRIX*);
-void func_800B196C(MATRIX*, MATRIX*);
-void func_800B1A68(D_800F45E0_t*, MATRIX*);
-void func_800B396C(MATRIX*, VECTOR*);
-int func_800B3A68(void*, MATRIX*, int, void*);
-void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
-void func_800B4594(D_800F2458_t*, D_800F45E0_t*, CVECTOR*, void*);
-void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
-void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, CVECTOR*, void*);
 void func_800E4C28(int, int);
 void func_800E6898(void*);
 
@@ -70,7 +59,6 @@ extern u_char D_800E92DC[];
 extern int D_800E9308;
 extern u_short D_800E9A28[][4];
 extern int D_800F1868;
-extern MATRIX D_800F3C78;
 extern MATRIX D_800F4910;
 extern MATRIX D_800F49B8;
 extern u_char D_800F49F8;

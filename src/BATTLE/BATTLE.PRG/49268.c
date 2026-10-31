@@ -1,27 +1,13 @@
 #include "common.h"
-#include "44F14.h"
-#include "146C.h"
-#include "30DB0.h"
+#include "49268.h"
 #include "38C1C.h"
-#include "3A1A0.h"
+#include "44F14.h"
+#include "48C7C.h"
+#include "4B16C.h"
 #include "4DEA8.h"
-#include "entity.h"
 #include "src/SLUS_010.40/main.h"
-#include "src/SLUS_010.40/31724.h"
-#include "scratch.h"
 #include "vs_inline_c.h"
-#include <rand.h>
-#include <abs.h>
 #include <inline_c.h>
-
-void func_800B17F0(SVECTOR*, MATRIX*);
-void func_800B196C(MATRIX*, MATRIX*);
-void func_800B396C(MATRIX*, VECTOR*);
-int func_800B3A68(void*, MATRIX*, int, void*);
-void func_800B3CF0(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
-void func_800B4594(D_800F2458_t*, D_800F45E0_t*, CVECTOR*, void*);
-void func_800B516C(D_800F2458_t*, vs_battle_wepModels_t*, CVECTOR*, void*);
-void func_800B5C30(D_800F2458_t*, D_800F45E0_t*, CVECTOR*, void*);
 
 extern MATRIX D_800F3C78;
 

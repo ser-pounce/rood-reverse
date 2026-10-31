@@ -123,22 +123,22 @@ glabel func_800DC574
     sltu    $v0, $v0, $a0
     beqz    $v0, .L800DC620
     lw      $v0, 0x430($s0)
-    lui     $ra, %hi(L800DB890)
-    addiu   $ra, $ra, %lo(L800DB890)
+    lui     $ra, %hi(func_800DB890)
+    addiu   $ra, $ra, %lo(func_800DB890)
     addiu   $a1, $zero, 0x1
     sll     $v1, $s5, 2
     addu    $v1, $s0, $v1
     sw      $t0, 0x430($s0)
     sw      $v0, 0x430($v1)
     addi    $a2, $s1, -0x1 /* handwritten instruction */
-    bgez    $zero, L800E6958
+    bgez    $zero, func_800E6958
     addiu   $a0, $s0, 0x430
 .L800DC620:
     addi    $s5, $s5, 0x1 /* handwritten instruction */
     slt     $v0, $s5, $s1
     bnez    $v0, .L800DC59C
     nop
-    bgez    $zero, L800DB890
+    bgez    $zero, func_800DB890
     nop
 endlabel func_800DC574
 
@@ -318,6 +318,6 @@ glabel func_800DC810
     lui     $s5, (0x800DD344 >> 16)
     bgtz    $s2, .L800DC838
     ori     $s5, $s5, (0x800DD344 & 0xFFFF)
-    bgez    $zero, L800DB890
+    bgez    $zero, func_800DB890
     nop
 endlabel func_800DC810

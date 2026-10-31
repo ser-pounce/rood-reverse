@@ -71,7 +71,7 @@ glabel func_800DC3CC
     lw      $a2, 0x470($a0)
     addu    $a1, $zero, $zero
     addiu   $a0, $a0, 0x430
-    bnez    $a2, L800E6958
+    bnez    $a2, func_800E6958
     addi    $a2, $a2, -0x1 /* handwritten instruction */
     jr      $ra
     nop

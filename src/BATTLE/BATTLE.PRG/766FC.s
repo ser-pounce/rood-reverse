@@ -667,7 +667,7 @@ alabel func_800DF458
 .L800DF89C:
     jr      $ra
     sb      $t9, 0x9($a1)
-alabel L800DF8A4
+alabel func_800DF8A4
     addiu   $sp, $sp, -0x20
     sw      $s0, 0x10($sp)
     addu    $s0, $a0, $zero

@@ -213,7 +213,7 @@ glabel func_800DB5DC
     jal     func_800DB4AC
     addiu   $a1, $zero, 0x2
     addu    $ra, $t9, $zero
-    bgez    $zero, L800E5030
+    bgez    $zero, func_800E5030
     addu    $a1, $t8, $zero
 endlabel func_800DB5DC
 
@@ -416,16 +416,16 @@ glabel func_800DB820
     lw      $s0, 0x10($sp)
     jr      $ra
     addiu   $sp, $sp, 0x20
-alabel L800DB888
+alabel func_800DB888
     lw      $s3, 0x20($sp)
     lw      $s4, 0x24($sp)
-alabel L800DB890
+alabel func_800DB890
     lw      $s5, 0x28($sp)
 alabel L800DB894
     lw      $s1, 0x14($sp)
 .L800DB898:
     lw      $s2, 0x1C($sp)
-alabel L800DB89C
+alabel func_800DB89C
     lw      $ra, 0x18($sp)
     lw      $s0, 0x10($sp)
     jr      $ra
@@ -562,11 +562,11 @@ glabel func_800DB93C
     addu    $sp, $a1, $zero
     jal     func_800DB61C
     addiu   $a1, $zero, 0x1
-    bnez    $v0, L800DB89C
+    bnez    $v0, func_800DB89C
     addiu   $v0, $zero, 0x1
     jal     func_800DB5B0
     addu    $a0, $s0, $zero
-    bgez    $zero, L800DB89C
+    bgez    $zero, func_800DB89C
     addiu   $v0, $zero, 0x1
     lbu     $v0, 0xE($a0)
     lbu     $v1, 0x131($a0)
@@ -653,13 +653,13 @@ glabel func_800DBB2C
     sw      $s0, 0x10($sp)
     jal     func_800DA1D4
     addu    $s0, $a0, $zero
-    bnez    $v0, L800DB89C
+    bnez    $v0, func_800DB89C
     addu    $a0, $s0, $zero
     addiu   $a1, $sp, 0x28
     jal     func_800DBB2C
     addiu   $a2, $zero, 0x2
     addu    $v1, $v0, $zero
-    bltz    $v1, L800DB89C
+    bltz    $v1, func_800DB89C
     addu    $v0, $zero, $zero
     sll     $v1, $v1, 2
     addu    $v0, $a0, $v1
@@ -676,7 +676,7 @@ glabel func_800DBB2C
     bgez    $zero, func_800DB5B8
     addiu   $a2, $zero, 0x5
 alabel D_800DBC04
-    bgez    $zero, L800DB89C
+    bgez    $zero, func_800DB89C
     addiu   $v0, $zero, 0x1
 alabel D_800DBC0C
     addiu   $sp, $sp, -0x30
@@ -688,17 +688,17 @@ alabel D_800DBC0C
     addu    $a1, $zero, $zero
     jal     func_800DA1D4
     addu    $a0, $s0, $zero
-    bnez    $v0, L800DB89C
+    bnez    $v0, func_800DB89C
     addu    $a1, $zero, $zero
 .L800DBC38:
     addiu   $a2, $zero, 0x100
     addiu   $a3, $zero, 0x0
     jal     func_800DB370
     addu    $a0, $s0, $zero
-    bnez    $v0, L800DB89C
+    bnez    $v0, func_800DB89C
     addu    $a0, $s0, $zero
-    lui     $ra, %hi(L800DB89C)
-    addiu   $ra, $ra, %lo(L800DB89C)
+    lui     $ra, %hi(func_800DB89C)
+    addiu   $ra, $ra, %lo(func_800DB89C)
     bgez    $zero, func_800DB74C
     addu    $a1, $zero, $zero
 endlabel func_800DBB2C

@@ -96,6 +96,8 @@ void func_800DB5DC(func_800E78F4_t*, vs_battle_movementPosition, int);
 void func_800DB5FC(func_800E78F4_t*);
 int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
+void func_800DB7B4(func_800E78F4_t*);
+void func_800DB820(func_800E78F4_t*);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
@@ -151,6 +153,7 @@ void func_800E685C(int, int, int);
 
 extern u_int D_80069BBC[];
 extern p_file_t D_800EC4BC;
+extern int D_800F16F4;
 extern int D_800F5330[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
@@ -686,7 +689,62 @@ int func_800DAD9C(func_800E78F4_t* arg0)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/71618", func_800DAED0);
+void func_800DAED0(void)
+{
+    vs_battle_actor* actor;
+
+    for (actor = vs_battle_actors[0]->next; actor != NULL; actor = actor->next) {
+        func_800E78F4_t* state = ((func_800E78F4_t**)0x1F80037C)[actor->id];
+        int distance;
+        int tile;
+
+        if (state->unk14[0] != 0 && state->unk1D[0] == 0) {
+            continue;
+        }
+
+        distance = func_800E45B4();
+
+        if (D_800F16F4 < distance) {
+            func_800DEEFC(state, 0x11);
+            continue;
+        }
+
+        *(int*)0x1F8003FC = distance;
+
+        if (state->unk14[0] != 0 && state->unk1D[0] != 0) {
+            func_800E78F4_t* player = D_800F5878[0];
+            int offset;
+
+            if (player != NULL) {
+                if (D_800F4538[0]->unk0.unkA_3 != 0
+                    && D_800F4538[0]->unk0.position.vy > state->unk4C.vy) {
+                    offset = -player->unkB8;
+                } else {
+                    offset = D_800F5878[0]->unk82;
+                }
+            } else {
+                offset = -0x40;
+            }
+
+            state->unk1E4[0] = func_800E4624(&state->unk4C,
+                &vs_battle_actors[0]->unk44->unk0.position, state->unk82, offset);
+            func_800DAD9C(state);
+        } else {
+            ((VECTOR*)state)->vx = 0;
+            ((VECTOR*)state)->vy = 0;
+            ((VECTOR*)state)->vz = 0;
+            *(short*)&state->unkA[2] = 0;
+            state->unk15C = 0x10;
+            *(int*)&state->unk48 = -1;
+            tile = (*(u_short(**)[32])0x1F8003C0)[state->unk34.z][state->unk34.x] & 15;
+            state->unk154[0] = tile;
+            state->unk132[0] = tile;
+            *(int*)0x1F8003D0 = 0;
+            func_800DB820(state);
+            func_800DB7B4(state);
+        }
+    }
+}
 
 int func_800DB0BC(func_800E78F4_t* arg0)
 {

@@ -13,7 +13,7 @@
 #include "57B1C.h"
 #include "58578.h"
 #include "5BF94.h"
-#include "6E644.h"
+#include "6E4CC.h"
 #include "battleUnk.h"
 #include "camera.h"
 #include "entity.h"

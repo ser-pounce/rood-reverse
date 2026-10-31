@@ -46,7 +46,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_800434A4(0, 2);
         func_800C0150();
         func_8007C46C(0, 0xFF, 0);
-        func_8007C424();
+        vs_battle_disableDispMask();
         vs_battle_setStateFlag(0xA8, 1);
         D_800F4C2C = 2;
     }
@@ -190,7 +190,7 @@ void func_800C0150(void)
     short i;
 
     for (i = 0; i < 17; ++i) {
-        if (func_8007CF64(i) != NULL) {
+        if (vs_battle_getActor(i) != NULL) {
             func_800A0204(i, 1, 0, 0);
         }
     }

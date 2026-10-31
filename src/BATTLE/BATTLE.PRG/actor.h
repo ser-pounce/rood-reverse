@@ -189,7 +189,7 @@ typedef struct {
 } vs_battle_actor_dat;
 
 void vs_battle_nop0(vs_battle_actor2*);
-vs_battle_actor* func_8007CF64(int actorId);
+vs_battle_actor* vs_battle_getActor(int actorId);
 void func_80086FA8(int, vs_battle_actor2*);
 extern vs_battle_actor* vs_battle_actors[];
 extern vs_battle_actor* vs_battle_characterState;

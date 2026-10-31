@@ -721,7 +721,7 @@ int func_800B7490(u_char* arg0, short arg1)
 
     if (actor & 0x1000) {
         actor &= 0x1F;
-        if (func_8007CF64(actor) == NULL) {
+        if (vs_battle_getActor(actor) == NULL) {
             vs_battle_setStateFlag(flag, 0xFF);
             return 0;
         }
@@ -1218,7 +1218,10 @@ int func_800B860C(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800B86E8(u_char* arg0, short arg1) { return func_8007CCAC() > 0; }
+int func_800B86E8(u_char* arg0, short arg1)
+{
+    return vs_battle_getEmptyObjectDataSlot2() > 0;
+}
 
 int func_800B8708(u_char* arg0, short arg1)
 {
@@ -1814,13 +1817,13 @@ int func_800B9A94(u_char* arg0)
 
 int func_800B9AC4(u_char* arg0, short arg1)
 {
-    func_8007C460(arg0[1] * 0x10);
+    vs_battle_setScreenTransitionWipeAngle(arg0[1] * 0x10);
     return 0;
 }
 
 int func_800B9AE8(u_char* arg0, short arg1)
 {
-    func_8007C444(arg0[1], arg0[2], arg0[3] * 0x10);
+    vs_battle_setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
     return 0;
 }
 
@@ -1828,10 +1831,10 @@ int func_800B9B18(u_char* arg0, short arg1)
 {
     switch (arg0[1] & 3) {
     case 0:
-        func_8007C424();
+        vs_battle_disableDispMask();
         break;
     case 1:
-        func_8007C404();
+        vs_battle_enableDispMask();
         break;
     }
 
@@ -2439,7 +2442,7 @@ void func_800BAF6C(short arg0)
     short actorId;
 
     for (actorId = 1; actorId < 17; ++actorId) {
-        if (func_8007CF64(actorId) != NULL) {
+        if (vs_battle_getActor(actorId) != NULL) {
             if (arg0 != 0) {
                 func_800A087C(actorId, func_800A0BE0(actorId) | 1);
             } else {
@@ -2695,7 +2698,7 @@ void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
         }
 
         for (i = 0; i < 17; ++i) {
-            temp_v0 = func_8007CF64(i);
+            temp_v0 = vs_battle_getActor(i);
             if (temp_v0 != NULL) {
                 if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
                     arg1->unk2[var_s3++] = i;
@@ -4257,7 +4260,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 left = vs_battle_getShort(p + 1);
 
                 if (left & 0x1000) {
-                    if (func_8007CF64(left & 0x1F) != NULL) {
+                    if (vs_battle_getActor(left & 0x1F) != NULL) {
                         result = 1;
                     }
                 } else if (func_8007CF18(left) != 1) {

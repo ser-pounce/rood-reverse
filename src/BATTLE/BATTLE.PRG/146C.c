@@ -413,8 +413,8 @@ int func_800882F4(void);
 int func_80088554(void);
 void func_80088CA0(void);
 void func_80089114(void);
-void func_80089CE4(void);
-void func_80089D04(void);
+void _enableDispMask(void);
+void _disableDispMask(void);
 void func_8008A6FC(void);
 int func_8008ABF0(int arg0);
 void func_8008B320(void);
@@ -8770,7 +8770,10 @@ void func_8007C050(void)
     }
 }
 
-int func_8007C088(int arg0) { return vs_battle_actors[arg0]->weaponDrawn & 1; }
+__attribute__((unused)) int _isWeaponDrawn(int actor)
+{
+    return vs_battle_actors[actor]->weaponDrawn & 1;
+}
 
 void func_8007C0AC(int arg0, int arg1)
 {
@@ -8885,18 +8888,21 @@ int func_8007C398(void)
     }
 }
 
-void func_8007C404(void) { func_80089CE4(); }
+void vs_battle_enableDispMask(void) { _enableDispMask(); }
 
-void func_8007C424(void) { func_80089D04(); }
+void vs_battle_disableDispMask(void) { _disableDispMask(); }
 
-void func_8007C444(int arg0, int arg1, int arg2)
+void vs_battle_setScreenTransition(int arg0, int arg1, int arg2)
 {
     vs_battle_screenTransitionEffect = arg0;
     vs_battle_screenTransitionSpeed = arg1;
     vs_battle_screenTransitionWipeAngle = arg2;
 }
 
-void func_8007C460(int arg0) { vs_battle_screenTransitionWipeAngle = arg0; }
+void vs_battle_setScreenTransitionWipeAngle(int arg0)
+{
+    vs_battle_screenTransitionWipeAngle = arg0;
+}
 
 void func_8007C46C(int effect, int speed, int angle)
 {
@@ -9154,7 +9160,7 @@ void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
 
 void func_8007CC8C(void) { func_8009CFA0(); }
 
-int func_8007CCAC(void) { return vs_battle_getEmptyObjectDataSlot(); }
+int vs_battle_getEmptyObjectDataSlot2(void) { return vs_battle_getEmptyObjectDataSlot(); }
 
 void vs_battle_setNearClip(int arg0)
 {
@@ -9254,7 +9260,7 @@ int func_8007CF18(int arg0)
     return 1;
 }
 
-vs_battle_actor* func_8007CF64(int actorId) { return vs_battle_actors[actorId]; }
+vs_battle_actor* vs_battle_getActor(int actorId) { return vs_battle_actors[actorId]; }
 
 int func_8007CF80(int arg0)
 {
@@ -9399,7 +9405,6 @@ void func_8007D3F8(void)
     func_8007D360();
 }
 
-// https://decomp.me/scratch/JK0nT
 void func_8007D41C(void)
 {
     int i;
@@ -15389,9 +15394,9 @@ void _loadMpdEnemySection(void* data, u_int dataLen)
     _zoneContext.mpdEnemyCount = 0;
 }
 
-void func_80089CE4(void) { SetDispMask(1); }
+void _enableDispMask(void) { SetDispMask(1); }
 
-void func_80089D04(void) { SetDispMask(0); }
+void _disableDispMask(void) { SetDispMask(0); }
 
 void _loadMpd(int id)
 {
@@ -15613,7 +15618,7 @@ void func_80089DC0(int arg0)
                 func_80045000(D_800F18AC, 0x7F, 0);
             }
             vs_battle_screenTransitionStep = 4;
-            func_80089CE4();
+            _enableDispMask();
         }
     }
     vs_main_padDisconnectAll();
@@ -16198,7 +16203,10 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-_mpdRoomSection3* func_8008B6EC(void) { return vs_battle_roomData.section3; }
+__attribute__((unused)) _mpdRoomSection3* _getRoomDataSection3(void)
+{
+    return vs_battle_roomData.section3;
+}
 
 int func_8008B6FC(void) { return vs_battle_roomData.section6; }
 

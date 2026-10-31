@@ -2023,8 +2023,68 @@ void func_8006CA20(int arg0, SVECTOR* arg1)
     }
 }
 
-// https://decomp.me/scratch/gKwdw
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/146C", func_8006CB04);
+void func_8006CB04(int arg0, SVECTOR* arg1)
+{
+    int applied = 0;
+
+    if (arg0 < 0x10) {
+        int i;
+        int var_s1 = 6;
+        D_800F19CC_t2* temp_s2 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
+
+        for (i = 0; i < temp_s2->unk4A; i++) {
+            if ((temp_s2->unk4C[i].unk0.targetActor == arg0)
+                && (temp_s2->unk4C[i].unk40 == 0)) {
+                switch (temp_s2->unk4C[i].unk0.unk3) {
+                case 0:
+                case 1:
+                    var_s1 = 0;
+                    break;
+                case 5:
+                    var_s1 = 5;
+                    break;
+                case 3:
+                case 4:
+                    if ((D_800E8194[vs_main_actions[temp_s2->actionIndex].unk2_4] == 0)
+                        && (var_s1 == 6)) {
+                        var_s1 = 4;
+                    }
+                    break;
+                }
+                _applyBattleAbilityEffect(&temp_s2->unk4C[i]);
+                applied = 1;
+            }
+        }
+
+        switch (var_s1) {
+        case 0:
+            func_8009EA14(arg0, &D_800F19CC->unk29A0.unk8.vec);
+            return;
+        case 5:
+            if (arg0 == 0) {
+                func_8009E070(0, NULL, 6);
+                return;
+            }
+            break;
+        case 4:
+            func_8009DDF4(arg0, &D_800F19CC->unk29A0.unk8.vec);
+            return;
+        }
+
+    } else {
+        switch (arg0 & 0x1F0) {
+        case 0:
+        case 0x20:
+            break;
+        case 0x80:
+            func_80093B04(arg1);
+            break;
+        }
+    }
+
+    // HACK: Needed to stop applied from being optimized out
+    __asm__("" ::"r"(applied));
+}
 
 void func_8006CD60(u_int* arg0, int arg1, int arg2)
 {

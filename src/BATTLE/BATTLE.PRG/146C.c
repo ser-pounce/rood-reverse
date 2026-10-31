@@ -497,6 +497,7 @@ extern u_char D_8004F000;
 extern u_char D_8004FE88[];
 extern MATRIX D_8005E218;
 extern char D_8005FFAF;
+extern vs_battle_charInitData* D_800F188C;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];

@@ -22,26 +22,45 @@ typedef struct {
     u_short unk8[0];
 } func_800AD494_t;
 
+typedef struct {
+    u_int unk0 : 24;
+    u_int timer : 8;
+} func_800AC690_timer_t;
+
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA290(int, vs_battle_movementPosition*, int, int);
 void func_800AA490(int, vs_battle_movementPosition*, int, int);
 void func_800AB098(D_800F4538_t*, int, int);
+void func_8006F450(SVECTOR*);
+void func_800A7524(void*, void*);
+void func_800ACF54(D_800F4538_t*);
+void func_800AE828(int, D_800F4538_t*, int);
+void func_800E4C28(int, int);
+void func_800E6764(int);
+void func_800E6EB0(int);
 
 extern u_char D_800E8F2C;
 extern short D_800E8F30[];
 extern u_char D_800E8F90[];
 extern func_800AAE9C_t D_800E909C[][28];
 extern func_800AAE9C_t D_800E916C[][8];
+extern u_char D_800E9278[];
+extern u_char D_800E92E8[];
+extern u_char D_800E92F0[];
+extern u_char D_800E92F8[];
+extern u_char D_800E9300[];
 extern u_char D_800F2450[];
 extern void* D_800F4768;
 extern char D_800F49DC;
 extern u_char D_800F49E4;
+extern _mpdRoomSection3* D_800F49F0;
 extern int D_800F49F4;
 extern u_char D_800F49F8;
 extern u_char D_800F49F9;
 extern short D_800F4B00;
+extern u_char D_800F4B19;
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {
@@ -1701,7 +1720,239 @@ void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AB9A4);
+void func_800AB9A4(D_800F4538_t* arg0)
+{
+    SVECTOR boneA;
+    SVECTOR boneB;
+    u_short* header;
+    int count;
+    u_short* reference;
+    u_short* weaponReference;
+    int mode;
+    int clutOffset;
+    D_800F45E0_t* object;
+    int state;
+    int distance;
+    int angle;
+    int i;
+    int changed;
+    int speed;
+    int skip;
+    int capped;
+    signed char target;
+    int value;
+    u_short* colors;
+    u_int flags;
+    vs_battle_wepModels_t* weapon;
+
+    if (arg0->unk0.unk9_0 < 6) {
+        if (arg0->unk0.unkA_0) {
+            distance = rsin(0x200);
+            distance *= arg0->unk63C;
+            distance /= ONE;
+            func_800A70DC(arg0, distance);
+            func_800A7524(arg0, &arg0->unk0.unk34);
+            arg0->unk0.unk34.vx /= 2;
+            arg0->unk0.unk34.vz /= 2;
+            func_800AC690(arg0->unk0.unkF, arg0);
+            if (arg0->unk0.unkA_0 >= 4) {
+                if (arg0->unk0.unkF != 0) {
+                    func_800AD494(arg0, 0xAB, &header);
+                    if (header != NULL) {
+                        arg0->unk5AC_24 = 0;
+                        func_800A0204(arg0->unk0.unkF, 0x47, 0, 8);
+                        arg0->unk5AC_24 = 1;
+                    }
+                }
+            }
+        }
+    }
+    flags = *(u_int*)((char*)arg0 + 8);
+    speed = vs_gametime_tickspeed / 2;
+    skip = 0;
+    if (flags & 0x80) {
+        skip = 1;
+        if (arg0->unk5AC_27) {
+            count = 160;
+        } else {
+            skip = 0;
+            count = 16;
+        }
+        colors = arg0->unk1424 + 0xA0 + skip;
+        reference = arg0->unk1424 + skip;
+    } else {
+        object = (D_800F45E0_t*)arg0;
+        count = 16;
+        colors = object->unk14C;
+        reference = object->unk12C;
+        if (arg0->unk0.unk9_0 == 2) {
+            speed *= 2;
+        }
+    }
+    state = arg0->unk0.unk9_0;
+    switch (state) {
+    case 2:
+        mode = 0;
+    start_fade:
+        changed = 0;
+    fade:
+        changed |= func_800AC168(colors, count - skip, speed, mode, reference);
+        if (arg0->unk0.unk8_7) {
+            for (i = 0; i < 2; ++i) {
+                weapon = vs_battle_wepModels[arg0->unk0.unkF * 2 + i];
+                if (weapon != NULL) {
+                    weaponReference = weapon->unk440;
+                    changed |= func_800AC168(weapon->unk500, weapon->nClutColors, speed,
+                        mode, weaponReference);
+                }
+            }
+        }
+        if (arg0->unk0.unk9_0 == 3 && changed == 0) {
+            *(int*)&arg0->unk0.unk54 = 0x404040;
+            func_800AC168(colors, count - skip, speed, 2, reference);
+            if (arg0->unk0.unk8_7) {
+                for (i = 0; i < 2; ++i) {
+                    weapon = vs_battle_wepModels[arg0->unk0.unkF * 2 + i];
+                    if (weapon != NULL) {
+                        weaponReference = weapon->unk440;
+                        func_800AC168(weapon->unk500, weapon->nClutColors, speed, 2,
+                            weaponReference);
+                    }
+                }
+            }
+        }
+    load_cluts:
+        if (arg0->unk0.unk8_7) {
+            vs_main_loadClut(arg0->unk1424 + 0xA0, arg0->unk0.unkF + 4, 0, count);
+            for (i = 0, clutOffset = 160; i < 2; ++i, clutOffset += 48) {
+                weapon = vs_battle_wepModels[arg0->unk0.unkF * 2 + i];
+                if (weapon != NULL) {
+                    weapon->unk9_0 = arg0->unk0.unk9_0;
+                    vs_main_loadClut(weapon->unk500, arg0->unk0.unkF + 4, clutOffset,
+                        weapon->nClutColors);
+                }
+            }
+        } else {
+            vs_main_loadClut(object->unk14C, 31, object->unk0.unkF * 16, 16);
+        }
+        if (changed == 0) {
+            ++arg0->unk0.unk9_0;
+            if (arg0->unk0.unk8_7) {
+                for (i = 0; i < 2; ++i) {
+                    weapon = vs_battle_wepModels[arg0->unk0.unkF * 2 + i];
+                    if (weapon != NULL) {
+                        weapon->unk9_0 = arg0->unk0.unk9_0;
+                    }
+                }
+            }
+        }
+    case 1:
+    case 15:
+    default:
+        return;
+    case 3:
+        changed = 0;
+        mode = 1;
+        goto fade;
+    case 4:
+        if (arg0->unk5AC_3) {
+            object = D_800F45E0[arg0->unk0.unk13];
+            func_800A190C(object->unk0.unk12, 0xF0, &boneA, 1);
+            func_800A190C(object->unk0.unk12, 0xF1, &boneB, 1);
+            object->unk0.position.vx = arg0->unk0.position.vx;
+            object->unk0.position.vz = arg0->unk0.position.vz;
+            object->unk0.position.vy = (boneA.vy + boneB.vy) / 2 + 60;
+            angle = (u_short)arg0->unk0.facing;
+            object->unk0.unk1A = 0xFC;
+            *(int*)((char*)object + 0x34) = 0;
+            object->unk0.unk12 = 0xFF;
+            object->unk0.facing = (object->unk0.facing + angle) & 0xFFF;
+            arg0->unk5AC_3 = 0;
+            D_800F4B19 = arg0->unk0.unk13;
+        }
+        value = arg0->unk0.unk54.r - speed * 4;
+        changed = 0;
+        if (value < 0) {
+            value = 0;
+        }
+        if (value != 0) {
+            changed = 1;
+        }
+        arg0->unk0.unk54.r = value;
+        arg0->unk0.unk54.g = value;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        arg0->unk0.unk54.b = value;
+        if (i > 64) {
+            i = 64;
+        }
+        if (i != 64) {
+            changed = 1;
+        }
+        arg0->unk6F2 = i;
+        goto load_cluts;
+    case 6:
+        mode = 3;
+        value = arg0->unk0.unk54.cd;
+        value += 1;
+        capped = value & 0xFF;
+        changed = capped < 15u;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        capped = i < 65;
+        arg0->unk0.unk54.cd = value;
+        if (capped == 0) {
+            i = 64;
+        }
+        arg0->unk6F2 = i;
+        goto fade;
+    case 7:
+        changed = 0;
+        mode = 1;
+        i = (signed char)arg0->unk6F2;
+        i += speed * 2;
+        capped = i < 65;
+        if (capped == 0) {
+            i = 64;
+        }
+        arg0->unk6F2 = i;
+        goto fade;
+    case 9:
+        changed = 0;
+        mode = 2;
+        arg0->unk0.unk54.r = 0xFF;
+        arg0->unk0.unk54.g = 0xFF;
+        arg0->unk0.unk54.b = 0xFF;
+        goto fade;
+    case 10:
+        changed = 0;
+        target = arg0->unk6F1;
+        i = (signed char)arg0->unk6F2;
+        i -= speed * 2;
+        mode = 4;
+        if (i < target) {
+            i = target;
+        }
+        if (i != target) {
+            changed = 1;
+        }
+        arg0->unk6F2 = i;
+        changed |=
+            func_800AC0D4(&arg0->unk0.unk54.r, (u_char*)&arg0->unk0.unk58, -speed * 8);
+        goto fade;
+    case 11:
+        arg0->unk0.unk9_0 = 0;
+        return;
+    case 12:
+        changed = 0;
+        mode = 5;
+        goto fade;
+    case 14:
+        arg0->unk6F2 = 64;
+        mode = 6;
+        goto start_fade;
+    }
+}
 
 int func_800AC0D4(u_char* arg0, u_char* arg1, int arg2)
 {
@@ -1978,7 +2229,270 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/40564", func_800AC690);
+static inline int func_800AC690_getProfile(D_800F4538_t* actor)
+{
+    u_int flags = *(u_int*)((char*)actor + 8);
+
+    if (flags & 0xF00) {
+        return 3;
+    }
+    if (flags & 0x400000) {
+        return 4;
+    }
+    if (flags & 0x200000) {
+        return 5;
+    }
+    if (actor->unk5AC_3) {
+        return 6;
+    }
+    return actor->unk5B0_0 & 3;
+}
+
+void func_800AC690(int arg0, D_800F4538_t* actor)
+{
+    D_800F45E0_t* platform;
+    SVECTOR* position;
+    int profile;
+    int state;
+    int limit;
+    int floor;
+    int y;
+    int ground;
+    int top;
+    int vy;
+    int nextX;
+    int nextZ;
+    int hit;
+    short speed;
+    u_short velocity;
+    signed char timer;
+    u_int flags;
+
+    profile = func_800AC690_getProfile(actor);
+    flags = *(u_int*)((char*)actor + 8);
+    state = (flags >> 16) & 7;
+
+    switch (state) {
+    case 2:
+        if ((signed char)actor->unk0.unk11 > 0) {
+            timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
+            actor->unk0.unk11 = timer;
+            if (timer < 2) {
+                func_800A0204(arg0, D_800E92E8[profile], 0, 8);
+                actor->unk0.unk11 = 0;
+            }
+        } else {
+            if (actor->unk181A == 0) {
+                actor->unk0.unk34.vy = -30;
+            }
+            actor->unk5B7 = 0;
+            actor->unk0.unkA_0 = 3;
+            if (actor->unk0.unkC_0) {
+                func_8008C49C(actor->unk0.unkC_0 - 2, -1);
+                actor->unk0.unkC_0 = 0;
+            }
+        }
+        break;
+    case 3:
+        if ((signed char)actor->unk0.unk11 > 0) {
+            timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
+            actor->unk0.unk11 = timer;
+            if (timer > 0) {
+                break;
+            }
+            func_800A0204(actor->unk0.unkF, 0x2F, 0, 8);
+            actor->unk0.unk11 = 0;
+        }
+        if (actor->unk0.unkA_6) {
+            y = vs_gametime_tickspeed / 2;
+            ((func_800AC690_timer_t*)&actor->unk5B4)->timer += y;
+            limit = 7;
+            y = ((func_800AC690_timer_t*)&actor->unk5B4)->timer >> 1;
+            ((func_800AC690_timer_t*)&actor->unk5B4)->timer -= y * 2;
+        } else {
+            limit = 9;
+            y = (vs_gametime_tickspeed / 2) * state;
+        }
+        velocity = actor->unk0.unk34.vy + y;
+        actor->unk0.unk34.vy = velocity;
+        if ((short)velocity < 0) {
+            y = 1;
+            floor = func_8008DD0C(actor->unk0.position.vx, actor->unk0.position.vz);
+            floor <<= 17;
+            floor >>= 17;
+            if (arg0 != 0) {
+                y = 3;
+                D_800F4B00 = actor->menuCameraHeightOffset + 0x40;
+            }
+            ground = func_800A9378(actor->unk0.position.vx, actor->unk0.position.vy,
+                actor->unk0.position.vz, y);
+            if (ground != 0 && floor < ground) {
+                floor = ground;
+            }
+            top = actor->unk0.position.vy + actor->unk0.unk34.vy - 0xC0;
+            if (top < floor) {
+                actor->unk0.unk34.vy = -actor->unk0.unk34.vy;
+                if (arg0 != 0) {
+                    actor->unk0.unk34.vx = 0;
+                    actor->unk0.unk34.vz = 0;
+                    actor->unk181A = 0;
+                    func_800E4C28(
+                        ((u_char*)&actor->unk5EC)[0], ((u_char*)&actor->unk5EC)[2]);
+                }
+            }
+        }
+        y = actor->unk0.unk34.vy;
+        if (y <= limit) {
+            if (y >= -limit) {
+                func_800A0204(arg0, D_800E92F0[profile], 0, 16);
+            }
+        } else {
+            func_800A0204(arg0, D_800E92F8[profile], 0, 8);
+        }
+        switch (actor->unk181A) {
+        case 0:
+            if (actor->unk0.unk34.vy < 0) {
+                goto fall;
+            }
+            break;
+        case 1:
+        slide:
+            speed = actor->unk0.unk34.vx;
+            if (speed != 0) {
+                nextX = actor->unk0.position.vx + speed;
+                if (speed > 0) {
+                    hit = actor->unk1814 < nextX;
+                } else {
+                    hit = nextX < actor->unk1814;
+                }
+                if (hit) {
+                    actor->unk0.unk34.vx = 0;
+                }
+            }
+            speed = actor->unk0.unk34.vz;
+            if (speed != 0) {
+                nextZ = actor->unk0.position.vz + speed;
+                if (speed > 0) {
+                    hit = actor->unk1818 < nextZ;
+                } else {
+                    hit = nextZ < actor->unk1818;
+                }
+                if (hit) {
+                    actor->unk0.unk34.vz = 0;
+                }
+            }
+            break;
+        case 2:
+            vy = actor->unk0.unk34.vy;
+            --actor->unk1816;
+            if (vy < 0) {
+                goto fall;
+            }
+            y = func_800A9378(actor->unk0.position.vx + actor->unk0.unk34.vx,
+                actor->unk0.position.vy + vy,
+                actor->unk0.position.vz + actor->unk0.unk34.vz, 2);
+            if (D_800F49F4 != 0 && D_800F49F4 != ((u_char*)&actor->unk5EC)[1]) {
+                actor->unk6E4 = D_800F49F4;
+                actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
+                actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
+                actor->unk0.currentTile.y = 0;
+                func_8008C49C(D_800F49F4 - 2, arg0);
+                func_8008C49C(D_800F49F4 - 2, -1);
+                D_800F49F4 = 0;
+                func_800E6764(arg0);
+                goto land;
+            }
+            if (actor->unk1816 > 0) {
+                goto fall;
+            }
+            goto slide;
+        default:
+            break;
+        }
+        position = &actor->unk0.position;
+        y = func_800A6EE8(position, actor->unk0.unk34.vx, actor->unk0.unk34.vz, 1);
+        if (y == 3000 && D_800E9278[D_800F49F0->unk0_0] == 20) {
+            if (actor->unk0.position.vy <= 0
+                && actor->unk0.position.vy + actor->unk0.unk34.vy >= 0) {
+                func_8006F450(position);
+            }
+        }
+        top = actor->unk0.position.vy + actor->unk0.unk34.vy;
+        if (top < y) {
+            goto fall;
+        }
+        if (D_800F49F4 != 0) {
+            if (y - top < -0x80) {
+                actor->unk0.unk34.vx = 0;
+                actor->unk0.unk34.vz = 0;
+                goto fall;
+            }
+        }
+    land:
+        if (D_800F49F8 != 0) {
+            platform = D_800F45E0[D_800F49F8];
+            if (platform->unk0.unk1A != 0) {
+                actor->unk0.position.vy = platform->unk0.position.vy - 0x80;
+                break;
+            }
+        }
+        *(short*)&actor->unk6EE = 0;
+        actor->unk0.unkC_0 = D_800F49F4;
+        actor->unk0.currentTile.y = D_800F49F4;
+        actor->unk5AC_28 = D_800F49F8;
+        actor->unk0.unk34.vy = y - actor->unk0.position.vy;
+        actor->unk0.unkA_0 = 4;
+        func_800AA698(arg0, &actor->unk0.unk34, 0);
+        floor = actor->unk0.position.vy - actor->unk0.lastPosition.vy;
+        floor /= 64;
+        actor->unk0.unk11 = 0;
+        if (y < 3000) {
+            if (actor->unk0.unkF != 0 || !actor->unk0.unk9_0 || actor->unk0.unk9_0 >= 6) {
+                if (floor >= 4) {
+                    func_800AE828(arg0, actor, 0x42);
+                    if (floor >= 6 && arg0 == 0) {
+                        actor->unk0.unk11 = 8;
+                    }
+                } else {
+                    func_800AE828(arg0, actor, 0x41);
+                }
+            }
+        }
+        actor->unk181A = 0;
+        actor->unk5AC_26 = 0;
+        func_800A0204(arg0, D_800E9300[profile], 0, 8);
+        break;
+    fall:
+        func_800AA698(arg0, &actor->unk0.unk34, 0);
+        break;
+    case 4:
+        if (flags & 0x200000) {
+            actor->unk0.unkA_5 = 0;
+            actor->unk0.unkA_6 = 0;
+        }
+        func_800ACF54(actor);
+        actor->unk0.unk11 -= vs_gametime_tickspeed / 2;
+        if ((signed char)actor->unk0.unk11 < 0) {
+            actor->unk0.unk11 = 0;
+        }
+        if ((signed char)actor->unk0.unk11 == 0) {
+            actor->unk6EC = 0;
+            if (actor->unk0.unkF != 0) {
+                if (!actor->unk0.unkA_6 && actor->unk5CC != 0) {
+                    break;
+                }
+                if (profile != 3) {
+                    func_800A0204(arg0, 1, 0, 8);
+                }
+                func_800E4C28(actor->unk0.currentTile.x, actor->unk0.currentTile.z);
+                func_800E6EB0(actor->unk0.unkF);
+            }
+            actor->unk1846 = 0;
+            actor->unk0.unkA_0 = 0;
+        }
+        break;
+    }
+}
 
 void func_800ACF54(D_800F4538_t* arg0)
 {

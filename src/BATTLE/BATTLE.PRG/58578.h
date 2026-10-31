@@ -39,7 +39,8 @@ typedef struct {
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
     int unk4370[81];
-    short unk44B4[0x302];
+    short unk44B4[0x2D0];
+    char textBuffer[0x64];
     u_char unk4AB8[0x64];
 } D_800EB9B8_t;
 

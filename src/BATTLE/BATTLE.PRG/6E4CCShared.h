@@ -333,6 +333,7 @@ typedef struct {
 } D_800F58C8_t;
 
 void func_800D8260(func_800E78F4_t*, int, int);
+int func_800D85D8(func_800E78F4_t*);
 int func_800D826C(func_800E78F4_t*);
 void func_800D82CC(func_800E78F4_t*);
 void func_800D836C(func_800E78F4_t*);

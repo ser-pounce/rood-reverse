@@ -7,7 +7,7 @@
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
-#include "src/BATTLE/BATTLE.PRG/6E644.h"
+#include "src/BATTLE/BATTLE.PRG/6E4CC.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #include "src/BATTLE/BATTLE.PRG/mainInterface.h"
 #include "src/BATTLE/BATTLE.PRG/menuState.h"

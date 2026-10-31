@@ -9,13 +9,13 @@ $(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
 
 $(buildDir)/%.c.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.c.o: ASFLAGS += -no-pad-sections
-$(patsubst %,$(buildDir)/%.s.o,2EA3C 48C7C 4B16C 579C0 7B3C8 7DDDC): ASFLAGS += -no-pad-sections
+$(patsubst %,$(buildDir)/%.s.o,2EA3C 48C7C 4B16C 579C0 6FA0C 7B3C8 7DDDC): ASFLAGS += -no-pad-sections
 
 $(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14 49268 49EB8): CC1VER := 2.7.2-cdk
 $(patsubst %,$(buildDir)/%.c.o,146C 4DEA8 5BF94):  CC1FLAGS += -Wno-return-type -Wno-uninitialized
 $(patsubst %,$(buildDir)/%.c.o,3A1A0 40564 573B8 57B1C): CC1FLAGS += -Wno-return-type
 $(buildDir)/30DB0.c.o: CC1FLAGS += -Wno-return-type -Wno-sign-compare -Wno-uninitialized
-$(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 44F14 49268 6E644 7CD68 7EE98): CC1FLAGS += -Wno-uninitialized
+$(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 44F14 49268 6E4CC 6FC00 7CD68 7EE98): CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/$(battle.prg)/link.d: \
 	config/SLUS_010.40/symbol_addrs.txt \

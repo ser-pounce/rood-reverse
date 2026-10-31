@@ -7,7 +7,7 @@
 #include "40564.h"
 #include "44F14.h"
 #include "4DEA8.h"
-#include "6E644.h"
+#include "6E4CC.h"
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"

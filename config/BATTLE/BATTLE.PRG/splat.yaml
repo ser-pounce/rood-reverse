@@ -81,8 +81,6 @@ segments:
       - [0x766FC, hasm]
       - [0x771A8, c]
       - [0x7B3C8, hasm]
-      - [0x7C4E8, c]
-      - [0x7C4F4, hasm]
       - [0x7CD68, c]
       - [0x7DDDC, hasm]
       - [0x7EE98, c]

@@ -615,10 +615,9 @@ extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
 extern short D_8005FFB0;
 
-// invoked when using Grimoires, Casting Spells or using Break Arts (but not Battle
-// Abilities or Items) invoked just before the action takes effect
 void func_80069C6C(int arg0)
 {
+    int hasTarget;
     _hitEntity_t* new_var2;
 
     if (arg0 != 0) {
@@ -631,9 +630,9 @@ void func_80069C6C(int arg0)
         return;
     }
 
-    // TODO: Remove dead code
-    switch (new_var2->unk0.targetActor != 0) {
-    case 0:
+    // TODO: remove duplicate check
+    hasTarget = new_var2->unk0.targetActor != 0;
+    if (!hasTarget) {
         return;
     }
 

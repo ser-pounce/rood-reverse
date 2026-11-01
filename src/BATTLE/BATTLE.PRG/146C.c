@@ -312,7 +312,7 @@ void func_8006C39C(void);
 void func_8006C40C(void);
 int func_8006C5AC(int);
 void func_80069DEC(int, int);
-int _removeActorAtIndex(u_int, int);
+int _removeActorById(u_int, int);
 void _applyAccessoryStats(vs_battle_uiAccessory*, _accessoryIntermediate*);
 void _applyArmorStats(vs_battle_uiArmor* arg0, _armorIntermediate* arg1);
 void vs_battle_copyUiEquipmentStats(
@@ -807,25 +807,25 @@ int _removeActor(vs_battle_actor* actor)
     return 0;
 }
 
-int _removeActorAtIndex(u_int index, int arg1)
+int _removeActorById(u_int actorId, int arg1)
 {
     int i;
 
-    if (index < 16) {
+    if (actorId < 16) {
 
-        vs_battle_actor* actor = vs_battle_actors[index];
+        vs_battle_actor* actor = vs_battle_actors[actorId];
 
         if (actor != NULL) {
 
-            func_80069FC4(index, arg1);
+            func_80069FC4(actorId, arg1);
 
             if (actor->unk1C == 0x10) {
-                func_8009F530(index);
-                func_80099D6C(index);
+                func_8009F530(actorId);
+                func_80099D6C(actorId);
             } else {
-                func_8009CFB0(index);
+                func_8009CFB0(actorId);
                 if (actor->unk40 == 2) {
-                    func_8009CFB0(index + 4);
+                    func_8009CFB0(actorId + 4);
                 }
             }
 
@@ -840,7 +840,7 @@ int _removeActorAtIndex(u_int index, int arg1)
 
             vs_main_freeHeap(actor);
 
-            vs_battle_actors[index] = NULL;
+            vs_battle_actors[actorId] = NULL;
         }
 
         return 1;
@@ -7463,7 +7463,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
                 func_80073898();
                 ret = 1;
             } else if (vs_battle_actors[arg1]->unk26 == 0) {
-                _removeActorAtIndex(arg1, 1);
+                _removeActorById(arg1, 1);
             }
         } else {
             func_8009E5C4(arg1);
@@ -9376,7 +9376,7 @@ void vs_battle_setActionUnlocked(u_int arg0)
     }
 }
 
-void func_8007D340(int arg0) { _removeActorAtIndex(arg0, 0); }
+void func_8007D340(int arg0) { _removeActorById(arg0, 0); }
 
 void func_8007D360(void)
 {
@@ -15628,7 +15628,7 @@ void func_8008A364(void)
     int i;
 
     for (i = 2; i < 16; ++i) {
-        _removeActorAtIndex(i, 0);
+        _removeActorById(i, 0);
     }
 }
 

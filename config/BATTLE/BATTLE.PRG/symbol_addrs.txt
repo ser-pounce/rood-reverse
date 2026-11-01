@@ -1,7 +1,7 @@
 vs_scratch = 0x1F800000; // absolute:True size:0x64
 _insertActor = 0x8006A11C; // allow_duplicated:True
 _removeActor = 0x8006A1C4;
-_removeActorAtIndex = 0x8006A228;
+_removeActorById = 0x8006A228;
 vs_battle_applyWeaponStats = 0x8006A334;
 vs_battle_applyShieldStats = 0x8006A65C;
 _applyAccessoryStats = 0x8006A8EC;

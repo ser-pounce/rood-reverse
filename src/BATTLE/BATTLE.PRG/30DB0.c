@@ -2745,11 +2745,11 @@ int func_8009E4B0(int arg0)
     return 0;
 }
 
-void func_8009E5C4(int arg0)
+void func_8009E5C4(int actorId)
 {
-    if ((D_800F4538[arg0]->animationId != 0x63)
-        && (D_800F4538[arg0]->animationId != 0xC7)) {
-        func_8009E700(arg0, 1);
+    if ((D_800F4538[actorId]->animationId != 0x63)
+        && (D_800F4538[actorId]->animationId != 0xC7)) {
+        func_8009E700(actorId, 1);
     }
 }
 

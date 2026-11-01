@@ -6526,7 +6526,7 @@ vs_battle_actor* func_800775C0(
         bladeId = (u_char)init->weapon.blade.wepId;
         shieldId = (u_char)init->shield.base.wepId;
 
-        if (D_8004FE88[init->unk2]) {
+        if (vs_main_actorExtraShp[init->unk2]) {
             func_800775C0_t* data = vs_main_allocHeap(sizeof *data);
 
             data->unk0.unk0.unk0.unk3C = &data->unk0.unk0.unk50;
@@ -6616,7 +6616,7 @@ vs_battle_actor* func_800775C0(
         vs_battle_populateDataSlot(&object);
 
         if (init->unk2 != 127) {
-            if (D_8004FE88[init->unk2]) {
+            if (vs_main_actorExtraShp[init->unk2]) {
                 object.dataType = 1;
                 object.index = id + 4;
                 object.modelId = D_800F188C[zudIndex].unk2 + 1;
@@ -15124,7 +15124,7 @@ void func_80089114(void)
             if (slot == 0) {
                 for (j = 2; j < 10; ++j) {
                     if ((vs_battle_actors[j] == NULL) && (slots[j] == 0)) {
-                        if (D_8004FE88[template->unk0[2]] != 0) {
+                        if (vs_main_actorExtraShp[template->unk0[2]] != 0) {
                             if ((vs_battle_actors[j + 4] != NULL)
                                 || (slots[j + 4] != 0)) {
                                 continue;
@@ -15148,7 +15148,7 @@ void func_80089114(void)
                     _zoneContext.unk14 = 0;
                     return;
                 }
-            } else if (D_8004FE88[template->unk0[2]] != 0) {
+            } else if (vs_main_actorExtraShp[template->unk0[2]] != 0) {
                 if ((vs_battle_actors[slot + 4] == NULL) && (slots[slot + 4] == 0)) {
                     slots[slot + 4] = 1;
                 } else {

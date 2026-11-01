@@ -43,7 +43,7 @@ class MonBin(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.zudid = self._io.read_s2le()
+            self.zudindex = self._io.read_s2le()
             self.classid = self._io.read_s2le()
             self.killflagsoffset = self._io.read_s2le()
             self.killflagscount = self._io.read_s2le()

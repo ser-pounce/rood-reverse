@@ -836,21 +836,21 @@ void func_800C253C(int type)
 {
     short* basis = (short*)0x1F800398;
     int index = 0;
-    int shape = D_800EB9B8->unk2A;
+    int shape = D_800EB9B8->unk24.pad;
     menuShapeVertex* vertices = D_800EB9B8->unk48;
     int count;
     int command;
     u_short* commands;
 
     if (shape != 0) {
-        D_800EB9B8->unk2A = shape - 1;
+        D_800EB9B8->unk24.pad = shape - 1;
     }
     if (type < 3u) {
         if (type == 0) {
-            D_800EB9B8->unk24 += (shape + 1) * 3;
-            D_800EB9B8->unk28 += (shape + 1) * 11;
+            D_800EB9B8->unk24.vx += (shape + 1) * 3;
+            D_800EB9B8->unk24.vz += (shape + 1) * 11;
         }
-        D_800EB9B8->unk26 += (shape * 2 + 1) * 7;
+        D_800EB9B8->unk24.vy += (shape * 2 + 1) * 7;
         shape += type * 16;
     } else {
         shape = type + 0x2D;
@@ -1097,7 +1097,7 @@ int vs_battle_mapStickDeadZone(int arg0)
 
 int func_800C4734(void)
 {
-    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk2A != 0)) {
+    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk24.pad != 0)) {
         return 0;
     }
     if ((D_800EB9B8->unk38.pad == 0) || (vs_main_buttonsState & 0x80)) {

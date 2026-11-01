@@ -331,7 +331,7 @@
         "ENDING.PRG/D4"
     ],
     "exclusions": {
-        "names": ["SLUS_010.40/32154", "BATTLE.PRG/2EA3C"],
+        "names": [],
         "suffixes": [".data.s.o", ".rodata.s.o", ".bss.s.o"]
     }
 }

@@ -20,10 +20,7 @@ typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
-    short unk24;
-    short unk26;
-    short unk28;
-    short unk2A;
+    SVECTOR unk24;
     char unk2C;
     char unk2D;
     char unk2E;

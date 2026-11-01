@@ -236,8 +236,6 @@ static vs_battle_charInitData D_800FAB18 = {
 
 extern int D_800F1874;
 extern int D_800F18F4;
-extern int D_800F190C;
-extern int D_800F1968;
 extern int D_800F196C;
 extern void* D_800F19CC;
 

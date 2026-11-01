@@ -6,7 +6,6 @@
 #include "scratch.h"
 
 extern u_char D_80040A14[];
-extern u_char D_800EB9AC;
 
 void func_800C031C(void)
 {

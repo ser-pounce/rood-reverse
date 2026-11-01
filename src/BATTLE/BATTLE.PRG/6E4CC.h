@@ -19,7 +19,6 @@ int func_800D7CFC(void);
 int func_800D7EF4(void);
 void func_800D8060(p_file_t* arg0);
 void func_800DEEA4(D_800F19CC_t2* arg0);
-void func_800D6E44(func_800D2904_t*);
 void func_800D7814(void);
 void func_800D78F0(void);
 void func_800DC638(void);
@@ -45,6 +44,10 @@ void func_800E511C(void);
 void func_800E5308(void);
 int vs_battle_getMainMenuLba(void);
 int vs_battle_loadEffPurge(void);
+void func_800E685C(int, int, int);
+void func_800E6898(void*);
+void func_800E68A0(D_800F45E0_t*);
+void func_800E4BD8(int);
 
 extern actionEffectRequest D_800F53C0;
 extern int D_800F5684;

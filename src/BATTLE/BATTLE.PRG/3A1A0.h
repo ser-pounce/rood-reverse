@@ -58,3 +58,9 @@ int func_800A38E0(int);
 int func_800A3E6C(int);
 int func_800A47C4(void);
 void func_800A4E68(int);
+
+extern u_char D_800E9278[];
+extern int D_800F49F4;
+extern u_char D_800F49F8;
+extern u_char D_800F49F9;
+extern char D_800F4B18;

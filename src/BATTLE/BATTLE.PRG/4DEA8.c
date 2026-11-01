@@ -2,6 +2,7 @@
 #include "4DEA8.h"
 #include "146C.h"
 #include "2842C.h"
+#include "2EA3C.h"
 #include "30DB0.h"
 #include "38C1C.h"
 #include "40564.h"
@@ -234,7 +235,6 @@ typedef struct {
 
 int func_800B6B98(
     SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
-int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, func_800BB68C_t*);
 u_short func_800BB788(func_800BB68C_t* arg0);
 int func_800BB7C4(int arg0, SVECTOR* arg1);
@@ -261,7 +261,6 @@ VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
-void func_800F9BC0(int, int);
 int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
@@ -283,14 +282,8 @@ extern u_char D_800E9C1C[];
 extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
-extern u_char D_800E9C30[];
-extern u_char* D_800EB588[];
-extern D_800EB9BC_t* D_800EB9BC;
-extern int D_800F19C8;
 extern u_short D_800F4B20;
-extern u_short D_800F4B28[];
 extern D_800F4B30_t D_800F4B30[];
-extern char D_800F4B70[];
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
@@ -302,7 +295,6 @@ extern char D_800F4BB4;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
 extern u_char D_800F4BB9;
-extern vs_main_CdQueueSlot* D_800F4BBC;
 extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
@@ -321,6 +313,10 @@ extern char _textBoxSelectionPending;
 extern int D_800F4C64;
 extern char D_800F4C69;
 extern char D_800F4C6A;
+
+extern char D_800F4B70[];
+extern u_short D_800F4B28[];
+extern D_800EB9BC_t* D_800EB9BC;
 
 int vs_battle_invalidOpcode(u_char* arg0, short arg1)
 {

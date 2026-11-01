@@ -11,15 +11,14 @@ typedef struct {
     signed char power;
 } D_800F4B28_t;
 
-extern u_char D_800E9C30[];
 extern int (*_opcodeFunctionTable[])(u_char*, short);
-extern D_800F4B28_t D_800F4B28[];
-extern unsigned char D_800F4B70[17];
-extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
 void func_800C0150(void);
+
+extern unsigned char D_800F4B70[17];
+extern D_800F4B28_t D_800F4B28[];
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {

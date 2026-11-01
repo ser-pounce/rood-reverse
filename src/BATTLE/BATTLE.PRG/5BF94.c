@@ -5,10 +5,13 @@
 #include "38C1C.h"
 #include "40564.h"
 #include "44F14.h"
+#include "4DEA8.h"
 #include "573B8.h"
+#include "579C0.h"
 #include "57B1C.h"
 #include "58578.h"
 #include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "battleEffect.h"
 #include "battleUnk.h"
 #include "camera.h"
@@ -22,7 +25,9 @@
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
 #include "build/src/include/lbas.h"
+#include "gimLbas.h"
 #include "gpu.h"
+#include "menuLbas.h"
 #include "scratch.h"
 #include "vs_string.h"
 #include <memory.h>
@@ -267,8 +272,6 @@ typedef struct {
 } func_800D5A98_t2;
 
 void func_80046578(int);
-void func_800C02A8(void);
-void func_800C2E24(SVECTOR*, MATRIX*, int);
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
@@ -310,7 +313,6 @@ void func_800D21C0(void);
 void func_800D236C(void);
 void func_800D2560(void);
 void func_800D268C(void);
-void func_800D2698(int);
 void func_800D278C(void);
 void func_800D2904(D_800F53B8_t*);
 void func_800D46DC(int, D_800F53B8_t*);
@@ -339,20 +341,14 @@ void func_800D67C4(D_800F53B8_t*, u_char);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
-void func_800D6E24(func_800D2904_t*, void*);
 void vs_effpurge_exec(void);
 
 extern int D_8005046C;
-extern u_char* D_800EB588[];
-extern u_int _gimLbas[];
-extern int _menuLbas[];
 extern u_char D_800EB708[];
 extern u_char D_800EB7B4[];
 extern u_char D_800EB7D4[];
 extern u_short D_800EB98C[16];
-extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
-extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
@@ -410,16 +406,13 @@ extern u_char D_800F4CA0[8];
 extern u_char D_800F4CA8[8];
 extern u_char D_800F4CB2;
 extern u_char D_800F4CB3;
-extern u_char D_800F4CB4;
 extern char D_800F4CB8;
 extern char _fontTable;
 extern int _fontBrightness;
 extern int D_800F4CC0;
 extern u_long D_800F4CD0;
-extern char vs_battle_shortcutInvoked;
 extern char D_800F4E68;
 extern char D_800F4E69;
-extern char vs_battle_lowerScreenUiState;
 extern _textBoxSelector_t textBoxSelector;
 extern int D_800F4ED4;
 extern short D_800F4ED8[8];
@@ -432,7 +425,6 @@ extern int D_800F5228;
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
-extern int D_800F5330[];
 extern int D_800F53B4;
 extern D_800F53B8_t* D_800F53B8;
 extern char D_800F54A8;
@@ -452,6 +444,8 @@ extern int D_800F5610;
 extern int D_800F5618;
 extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
+
+extern gim_t* D_800EB9BC;
 
 int func_800C4794(SVECTOR* arg0)
 {

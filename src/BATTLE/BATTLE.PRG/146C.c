@@ -14,6 +14,7 @@
 #include "58578.h"
 #include "5BF94.h"
 #include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "battleUnk.h"
 #include "camera.h"
 #include "entity.h"
@@ -94,29 +95,10 @@ typedef struct {
 } D_800F1910_t;
 
 typedef struct {
-    signed char unk0;
-    signed char unk1;
-    signed char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-} D_800F1BB0_t;
-
-typedef struct {
     int unk0;
     int unk4;
     int unk8;
 } func_8006EBF8_t2;
-
-typedef struct {
-    SVECTOR position;
-    short unk8;
-    short unkA;
-    char unkC;
-    char unkD;
-    char unkE;
-    char unkF;
-} D_800F1DD4_t;
 
 typedef struct {
     short unk0;
@@ -327,29 +309,21 @@ void _computeSphericalOffset(VECTOR*, VECTOR*, _sphericalValues*);
 void _setCameraPositionFromAngles(_sphericalValues* arg0);
 void _setCameraLookAtFromAngles(_sphericalValues* arg0);
 void func_8007B10C(int, int, int, short, short);
-void func_8007B1B8(int, int, short, short, short);
-void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5);
 void func_8007B410(void);
 void func_8007B63C(void);
 void func_8007B470(void);
 void func_8007B508(void);
 void func_8007B764(void);
 void func_8007B7DC(void);
-void func_8007BCCC(void);
-int func_8007BD8C(int arg0);
 void func_8007BF6C(int);
 void func_8007BFF8(int);
-void func_8007C0AC(int, int);
 int func_8007C4E0(_mpdRoomDoorSection_t*, int, int);
 int func_8007C5C0(_mpdRoomDoorSection_t*, int, int);
 int func_8007C694(int, int, int, int, int);
-void vs_battle_initialiseCameraFromSpherical(
-    VECTOR* arg0, VECTOR* arg1, int arg2, int arg3);
 int _getLocationId(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
 void _calculateWeaponClassAffinity(vs_battle_actor2*);
-int vs_battle_itemIdIsInInventory(int);
 short _getDefenseGemBuff(vs_action_t*, vs_battle_actor2*, int);
 int _doesAttackHit(
     vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
@@ -372,7 +346,6 @@ void func_80085008(_hitEntity_t*);
 void func_80085390(
     vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
-int func_8008631C(int, int, int, int, void*);
 void func_80086754(int, vs_battle_actor2*);
 void _applyBattleAbilityEffect(_hitEntity_t*);
 void func_80087EF4(vs_battle_actor2*);
@@ -382,12 +355,10 @@ void func_80088CA0(void);
 void func_80089114(void);
 void _enableDispMask(void);
 void _disableDispMask(void);
-void func_8008A6FC(void);
 int func_8008ABF0(int arg0);
 void func_8008B320(void);
 void func_8008B390(int arg0, int* arg1);
 int func_8008B4C8(char arg0);
-void func_8008C40C(void);
 static void _loadZnd(int id);
 void _loadMpd(int arg0);
 void _loadZndTims(void*);
@@ -396,7 +367,6 @@ int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void _vsBattleNop2(int arg0);
-int _getCollisionMapDimensions(int arg0);
 _zoneContextBounds* _getMapBounds(int arg0);
 void func_8008B1FC(void*);
 void func_8008B590(MATRIX*, int);
@@ -411,23 +381,17 @@ void func_8008C0C0(void);
 void func_8008C070(int arg0, _mpdRoomSectionA* arg1);
 int func_8008C1C8(_mpdRoomSectionA* arg0);
 int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
-int func_8008C49C(int, int);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
 void func_8008CEB0(void);
-int func_8008D2C0(SVECTOR*);
 int func_8008D418(void);
 _mpdRoomSection9* func_8008D438(int, int, int);
 _mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
-void func_8008D5A0(int);
-void func_8008D594(int arg0);
 void func_8008D5FC(_mpdRoomSectionA* arg0);
 void func_8008D658(_mpdRoomSectionA*);
 void func_8008D710(void);
 int _getDoorId(int);
-void func_800D82A8(int);
-short func_8008DC7C(int arg0, int arg1);
 void func_8008DF14(void);
 void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
@@ -442,15 +406,9 @@ void func_8008E6DC(int);
 void func_8008E8F8(void);
 void func_8008E938(void);
 int func_8008EA90(int arg0);
-int func_8008F234(void);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
-void func_8009723C(void*, int);
-void func_80098194(int);
-void func_800983F8(void*);
-void func_80098D6C(void*, void*, D_800F1BB0_t*, int);
 
-void func_800E685C(int, int, int);
 void func_800719FC(int);
 void func_80071F68(int);
 void func_80072734(int);
@@ -462,7 +420,6 @@ extern u_char D_8004EFB2;
 extern u_char D_8004EFE2;
 extern u_char D_8004F000;
 extern u_char D_8004FE88[];
-extern MATRIX D_8005E218;
 extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
@@ -494,7 +451,6 @@ extern int D_800F1858;
 extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
-extern int D_800F1868;
 extern void* D_800F1870;
 extern int _firstPersonViewEnabled;
 extern vs_battle_charInitData* D_800F188C;
@@ -508,14 +464,10 @@ extern u_int _cameraMode;
 extern char D_800F18F8;
 extern int D_800F18FC;
 extern int D_800F1908;
-extern int D_800F190C;
 extern D_800F1910_t D_800F1910;
 extern vs_battle_actor* D_800F192C;
-extern int D_800F1968;
-extern u_int D_800F196C;
 extern int D_800F19A0;
 extern u_char D_800F19A8[];
-extern int D_800F19C8;
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
 extern int D_800F19EC;
@@ -538,17 +490,11 @@ extern D_800F1ABC_t* D_800F1ABC;
 extern int D_800F1B98;
 extern int D_800F1B9C;
 extern int D_800F1BA0;
-extern u_short D_800F1BA4;
 extern D_800F1BB0_t D_800F1BB0;
-extern short D_800F1BB6;
 extern void* D_800F1BB8;
 extern char D_800F1BBC;
-extern short vs_battle_doorEntered;
-extern _mpdRoomSection vs_battle_roomData;
 extern u_short D_800F1CCA;
 extern void* D_800F1CC0;
-extern char D_800F1CD6;
-extern u_short D_800F1CDC;
 extern D_800F1D08_t D_800F1D08;
 extern D_800F1D28_t D_800F1D28[8];
 extern short D_800F1D6A;
@@ -559,28 +505,20 @@ extern short D_800F1D68;
 extern u_char D_800F1D6E;
 extern char D_800F1D6F;
 extern u_char D_800F1D70[];
-extern short D_800F1D98[];
 extern vs_main_CdQueueSlot* D_800F1DAC;
 extern vs_main_CdQueueSlot* D_800F1DB0;
-extern short D_800F1DB4;
-extern short D_800F1DB6;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
-extern short D_800F1DBC;
 extern short D_800F1DBE;
-extern short D_800F1DC0;
-extern short D_800F1DC2;
-extern short D_800F1DC4;
 extern char D_800F1DC6;
 extern char D_800F1DC8;
 extern u_char D_800F1DC9;
-extern char D_800F1DCA;
-extern char D_800F1DCB;
 extern vs_battle_backgroundLayout* D_800F1DCC;
 extern u_long* D_800F1DD0;
-extern D_800F1DD4_t* D_800F1DD4;
 extern short D_800F5160;
 extern short D_8005FFB0;
+
+extern u_int D_800F196C;
 
 void func_80069C6C(int arg0)
 {

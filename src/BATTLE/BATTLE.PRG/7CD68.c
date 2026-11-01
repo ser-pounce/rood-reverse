@@ -55,7 +55,6 @@ typedef struct {
 } func_800E5698_t;
 
 void func_800E5EC0(int, int, int);
-void func_800E6828(func_800E78F4_t*);
 void func_800E72D0(void);
 void func_800E7370(func_800E78F4_t*);
 void func_800E7660(func_800E78F4_t*);

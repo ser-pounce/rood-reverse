@@ -57,9 +57,6 @@ int func_80096768(int arg0, int arg1, int arg2);
 void func_80096FF0(int arg0);
 void func_800971D4(void);
 void func_8009722C(void);
-void func_80098160(int);
-void func_80098194(int);
-void func_80098B38(int, int);
 void func_800941FC(void);
 int vs_battle_renderBattleAbilityTimingResult(int arg0);
 

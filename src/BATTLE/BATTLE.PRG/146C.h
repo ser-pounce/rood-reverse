@@ -9,6 +9,16 @@
 #include <libgpu.h>
 
 typedef struct {
+    SVECTOR position;
+    short unk8;
+    short unkA;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+} D_800F1DD4_t;
+
+typedef struct {
     SVECTOR unk0;
     union {
         char u8[2];
@@ -162,3 +172,19 @@ extern VECTOR D_800F1CE0[2];
 extern void* D_800F4930;
 extern DR_STP D_800F1970[];
 extern DR_STP D_800F1988[];
+extern MATRIX D_8005E218;
+extern int D_800F1868;
+extern int D_800F19C8;
+extern u_short D_800F1CDC;
+extern short D_800F1D98[];
+extern short D_800F1DB4;
+extern short D_800F1DB6;
+extern short D_800F1DBC;
+extern short D_800F1DC0;
+extern short D_800F1DC2;
+extern short D_800F1DC4;
+extern char D_800F1DCA;
+extern char D_800F1DCB;
+extern D_800F1DD4_t* D_800F1DD4;
+extern int D_800F190C;
+extern int D_800F1968;

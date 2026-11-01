@@ -4,6 +4,7 @@
 #include "30DB0.h"
 #include "40564.h"
 #include "573B8.h"
+#include "579C0.h"
 #include "57B1C.h"
 #include "5BF94.h"
 #include "camera.h"
@@ -31,8 +32,6 @@ typedef struct {
     } box;
 } labelBoxPrim_t;
 
-void func_800C02A8(void);
-void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
@@ -49,7 +48,6 @@ extern int D_800EA670[];
 extern int D_800EA684[];
 extern int D_800EA698[];
 extern u_char D_800EA6AC;
-extern u_char D_800F4CB4;
 
 void func_800C0D78(void)
 {

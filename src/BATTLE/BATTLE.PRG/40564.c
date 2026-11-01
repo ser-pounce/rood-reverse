@@ -5,6 +5,7 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
+#include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
@@ -27,21 +28,14 @@ void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA290(int, vs_battle_movementPosition*, int, int);
 void func_800AA490(int, vs_battle_movementPosition*, int, int);
-void func_800AB098(D_800F4538_t*, int, int);
 
-extern u_char D_800E8F2C;
-extern short D_800E8F30[];
-extern u_char D_800E8F90[];
-extern func_800AAE9C_t D_800E909C[][28];
 extern func_800AAE9C_t D_800E916C[][8];
-extern u_char D_800F2450[];
-extern void* D_800F4768;
-extern char D_800F49DC;
-extern u_char D_800F49E4;
-extern int D_800F49F4;
-extern u_char D_800F49F8;
-extern u_char D_800F49F9;
 extern short D_800F4B00;
+
+extern u_char D_800F2450[];
+extern func_800AAE9C_t D_800E909C[][28];
+extern short D_800E8F30[];
+extern u_char D_800E8F2C;
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {

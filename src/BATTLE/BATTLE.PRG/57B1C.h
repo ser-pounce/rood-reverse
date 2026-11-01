@@ -51,3 +51,6 @@ void func_800C05EC(
     func_800C1564_t* arg0, func_800C1564_t* arg1, int arg2, D_800F19CC_t5* arg3);
 void func_800C0700(func_800C1564_t* arg0);
 void func_800C0738(void);
+void func_800C0B50(func_800C1564_t* shape, int color);
+
+extern u_char D_800EB9AC;

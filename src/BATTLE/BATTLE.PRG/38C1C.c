@@ -1,4 +1,5 @@
 #include "common.h"
+#include "38C1C.h"
 #include "30DB0.h"
 #include "3A1A0.h"
 #include "40564.h"
@@ -19,15 +20,14 @@ typedef struct {
     MATRIX matrix;
 } func_800A1DE8_t;
 
-int func_800A152C(int, int, int);
 int func_800A17BC(int, int, void*, int*);
 int func_800A1C10(int arg0, int arg1, SVECTOR* arg2, int arg3);
 MATRIX* func_800A1DE8(int, int, MATRIX*);
-SVECTOR* func_800A4A24(int);
 
 extern u_char D_800E90AC[];
 extern u_char D_800E90B4[];
-extern MATRIX D_800F49B8;
+
+SVECTOR* func_800A4A24(int);
 
 int func_800A141C(int arg0, int arg1, int* arg2, int arg3)
 {
@@ -163,7 +163,7 @@ int func_800A1648(int arg0, int arg1, int arg2)
     return v;
 }
 
-int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
+int func_800A1720(int arg0, int arg1, MATRIX* arg2, int* arg3)
 {
     int var_v0 = arg1;
 
@@ -178,7 +178,7 @@ int func_800A1720(int arg0, int arg1, int* arg2, int* arg3)
     }
 
     if (arg1 == 0xFD) {
-        arg2[6] = D_800F4538[arg0]->unk0.position.vy;
+        arg2->t[1] = D_800F4538[arg0]->unk0.position.vy;
     }
 
     return 0;

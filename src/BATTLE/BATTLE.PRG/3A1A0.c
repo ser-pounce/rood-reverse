@@ -29,8 +29,8 @@ void func_800B64A8(int, int, int);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);
 int func_800A3DB4(int, int, int);
-int func_800A91DC(int, int, int);
-int func_800A92B8(int, int);
+int func_800A91DC(u_int, u_int, int);
+int func_800A92B8(u_int, u_int);
 int func_800A9378(int, int, int, int);
 void func_800AA850(int, short, int);
 void func_800ACF54(D_800F4538_t*);
@@ -698,8 +698,8 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
         }
         if ((i == 0) && actor->unk5AC_28) {
             D_800F45E0_t* temp_v1 = D_800F45E0[actor->unk5AC_28];
-            if ((arg0 == temp_v1->unk0.currentTile.x)
-                && (arg1 == temp_v1->unk0.currentTile.z)) {
+            if (((u_int)arg0 == temp_v1->unk0.currentTile.x)
+                && ((u_int)arg1 == temp_v1->unk0.currentTile.z)) {
                 return actor;
             }
             continue;

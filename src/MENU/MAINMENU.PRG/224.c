@@ -259,7 +259,7 @@ int func_800F9EB8(MATRIX* arg0)
     return 0;
 }
 
-static int func_800FA188(int arg0, int arg1, int* arg2)
+static int func_800FA188(u_int arg0, u_int arg1, int* arg2)
 {
     int i;
     int var_t2 = 0;
@@ -285,8 +285,8 @@ static int func_800FA188(int arg0, int arg1, int* arg2)
     return ret;
 }
 
-static int func_800FA238(int arg0, int arg1, int arg2) __attribute__((unused));
-static int func_800FA238(int arg0, int arg1, int arg2)
+static int func_800FA238(u_int arg0, u_int arg1, int arg2) __attribute__((unused));
+static int func_800FA238(u_int arg0, u_int arg1, int arg2)
 {
     int i;
     D_800F45E0_t** var_t0 = D_800F45E0;

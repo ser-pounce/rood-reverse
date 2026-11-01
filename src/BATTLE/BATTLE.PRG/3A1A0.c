@@ -451,9 +451,9 @@ void func_800A35A8(void)
     }
 }
 
-void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
+void func_800A36E0(int actorId, int arg1, func_8006EBF8_t* arg2)
 {
-    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[actorId];
     if (temp_a0 != NULL) {
         arg2->unk0.unk0.value = temp_a0->unk1868;
         if (temp_a0->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {

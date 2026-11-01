@@ -31,7 +31,7 @@ int func_800E5154(void);
 void func_800E5998(void);
 void func_800E6158(void);
 int func_800E6178(vs_battle_actor*, short);
-short func_800E6694(int);
+short func_800E6694(int actorId);
 void func_800E6700(int);
 void func_800E68EC(int, int);
 void func_800E6B24(int);

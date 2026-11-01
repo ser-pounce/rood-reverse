@@ -721,13 +721,13 @@ void* func_80069EF0(int arg0)
     return var_a3;
 }
 
-void func_80069FC4(int arg0, int arg1)
+void func_80069FC4(int actorId, int arg1)
 {
     func_8006EBF8_t sp10;
     int i;
     func_80069EF0_t* temp_v0;
     vs_battle_actor2* temp_s1;
-    vs_battle_actor* temp_s0 = vs_battle_actors[arg0];
+    vs_battle_actor* temp_s0 = vs_battle_actors[actorId];
 
     if ((temp_s0 == NULL) || (temp_s0->unk27 == 0x80)) {
         return;
@@ -750,17 +750,17 @@ void func_80069FC4(int arg0, int arg1)
 
     temp_v0->unk20 = temp_s1->statuses;
 
-    if (func_800A0BE0(arg0) & 0x01000000) {
+    if (func_800A0BE0(actorId) & 0x01000000) {
         temp_v0->unk1 = arg1;
         temp_v0->currentHP = 1;
     } else {
         temp_v0->unk1 = arg1;
     }
 
-    temp_v0->unk2 = func_800E6694(arg0);
+    temp_v0->unk2 = func_800E6694(actorId);
 
-    func_800A1108(arg0, &sp10);
-    func_800A36E0(arg0, temp_s1->unk30, &sp10);
+    func_800A1108(actorId, &sp10);
+    func_800A36E0(actorId, temp_s1->unk30, &sp10);
 
     temp_v0->unk24 = sp10.unk0.unk0.value;
 }

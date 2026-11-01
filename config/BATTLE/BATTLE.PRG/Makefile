@@ -32,6 +32,6 @@ $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml.o: $(BUILD)/asse
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-BATTLE_LDLIBS := $(BUILD)/data/GIM/SCREFF2.PRG.elf
+BATTLE_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,GIM/SCREFF2.PRG EFFECT/EFFPURGE.BIN)
 $(BUILD)/data/$(battle.prg): $(BATTLE_LDLIBS)
 $(BUILD)/data/$(battle.prg): private LDLIBS += $(BATTLE_LDLIBS)

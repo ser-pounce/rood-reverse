@@ -49,6 +49,5 @@ void func_800E6898(void*);
 void func_800E68A0(D_800F45E0_t*);
 void func_800E4BD8(int);
 
-extern actionEffectRequest D_800F53C0;
 extern int D_800F5684;
 extern void* vs_battle_pfileBuf;

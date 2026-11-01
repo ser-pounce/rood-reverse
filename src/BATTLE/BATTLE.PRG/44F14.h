@@ -1,12 +1,7 @@
 #pragma once
 #include "entity.h"
 
-typedef struct {
-    MATRIX bones[63];
-    VECTOR scale;
-} D_800F3C58_t;
-
-extern D_800F3C58_t D_800F3C58;
+extern u_char D_800E9278[];
 
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode);
 void func_800AE47C(D_800F4538_t*);

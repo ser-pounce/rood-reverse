@@ -45,6 +45,7 @@ extern u_char D_800E8F90[];
 extern char D_800E8FC0;
 extern void* D_800F4768;
 extern char D_800F49E4;
+extern void* D_800F4930;
 void func_80099960(void* arg0);
 int func_80099D6C(int);
 int func_8009CE9C(u_int arg0);

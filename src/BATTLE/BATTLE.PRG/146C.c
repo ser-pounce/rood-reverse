@@ -413,14 +413,6 @@ void func_800719FC(int);
 void func_80071F68(int);
 void func_80072734(int);
 
-extern u_char D_8004EF20;
-extern u_char D_8004EF80;
-extern u_char D_8004EFA0;
-extern u_char D_8004EFB2;
-extern u_char D_8004EFE2;
-extern u_char D_8004F000;
-extern u_char D_8004FE88[];
-extern char D_8005FFAF;
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
 extern char D_800E8184[];
@@ -516,7 +508,6 @@ extern u_char D_800F1DC9;
 extern vs_battle_backgroundLayout* D_800F1DCC;
 extern u_long* D_800F1DD0;
 extern short D_800F5160;
-extern short D_8005FFB0;
 
 extern u_int D_800F196C;
 
@@ -3722,7 +3713,7 @@ void func_80070F28(int arg0)
     D_800F19CC->unk2C07 = 0;
 
     if (D_800F19CC->unk8.actionIndex >= 55) {
-        D_8005FFAF = 0;
+        vs_main_scoredata.weaponKillStreak = 0;
 
         do {
         } while (0);
@@ -7281,7 +7272,7 @@ void func_80078AB4(void)
                     }
 
                     if (D_800F19CC->battleAbilityInputSuccessful == 0) {
-                        D_8005FFB0 = 0;
+                        vs_main_scoredata.chainStreak = 0;
                     }
 
                 } else {
@@ -8562,36 +8553,36 @@ void func_8007BBD8(int arg0, int arg1, int arg2)
 {
     D_80050468.unk0 = arg0;
     D_80050468.unk2 = arg1;
-    D_80050468.hours = 0;
-    D_80050468.minutes = 0;
-    D_80050468.seconds = 0;
-    D_80050468.frames = 0;
+    D_80050468.time.t.h = 0;
+    D_80050468.time.t.m = 0;
+    D_80050468.time.t.s = 0;
+    D_80050468.time.t.f = 0;
 
     if (arg0 != 1) {
-        D_80050468.frames = arg2 % 256;
-        D_80050468.seconds = (arg2 / 256) % 256;
-        D_80050468.minutes = (arg2 / 65536) % 256;
-        D_80050468.hours = (arg2 / 16777216) % 256;
+        D_80050468.time.t.f = arg2 % 256;
+        D_80050468.time.t.s = (arg2 / 256) % 256;
+        D_80050468.time.t.m = (arg2 / 65536) % 256;
+        D_80050468.time.t.h = (arg2 / 16777216) % 256;
     }
 
-    vs_battle_setStateFlag(0xA0, D_80050468.frames);
-    vs_battle_setStateFlag(0xA1, D_80050468.seconds);
-    vs_battle_setStateFlag(0xA2, D_80050468.minutes);
-    vs_battle_setStateFlag(0xA3, D_80050468.hours);
+    vs_battle_setStateFlag(0xA0, D_80050468.time.t.f);
+    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
+    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
+    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
     func_800CB550();
 }
 
 void func_8007BCCC(void)
 {
     D_80050468.unk0 = 0;
-    D_80050468.hours = 0;
-    D_80050468.minutes = 0;
-    D_80050468.seconds = 0;
-    D_80050468.frames = 0;
+    D_80050468.time.t.h = 0;
+    D_80050468.time.t.m = 0;
+    D_80050468.time.t.s = 0;
+    D_80050468.time.t.f = 0;
     vs_battle_setStateFlag(0xA0, 0);
-    vs_battle_setStateFlag(0xA1, D_80050468.seconds);
-    vs_battle_setStateFlag(0xA2, D_80050468.minutes);
-    vs_battle_setStateFlag(0xA3, D_80050468.hours);
+    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
+    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
+    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
     func_800CB560();
 }
 
@@ -13930,29 +13921,29 @@ void func_80086FA8(int arg0, vs_battle_actor2* arg1)
     arg1->statuses |= arg0;
 
     if (arg0 & 0x7E0) {
-        arg1->statusTimers[0] = D_8004EF20;
+        arg1->statusTimers[0] = vs_main_statusEffectParams[5].unk4;
     }
 
     if (arg0 & 0x810) {
-        arg1->statusTimers[1] = D_8004EF80;
+        arg1->statusTimers[1] = vs_main_statusEffectParams[11].unk4;
     }
 
     if (arg0 & 0x1FF80000) {
-        arg1->statusTimers[2] = D_8004F000;
+        arg1->statusTimers[2] = vs_main_statusEffectParams[19].unk4;
     }
 
     if (arg0 & 0x2000) {
-        arg1->statusTimers[3] = D_8004EFA0;
+        arg1->statusTimers[3] = vs_main_statusEffectParams[13].unk4;
     }
 
     if (arg0 & 0x8000) {
-        arg1->statusTimers[4] = D_8004EFA0;
+        arg1->statusTimers[4] = vs_main_statusEffectParams[13].unk4;
     }
 
     if (arg0 & 0x4000) {
-        arg1->statusTimers[5] = D_8004EFB2;
+        arg1->statusTimers[5] = vs_main_statusEffectParams[14].unk6;
     } else if (arg0 & 0x20000) {
-        arg1->statusTimers[5] = D_8004EFE2;
+        arg1->statusTimers[5] = vs_main_statusEffectParams[17].unk6;
     }
 
     if (arg0 & 0x20) {
@@ -14500,7 +14491,7 @@ void func_80087EF4(vs_battle_actor2* actor)
 
         if (actor->statuses & 0x4000) {
 
-            actor->statusTimers[5] = D_8004EFB2;
+            actor->statusTimers[5] = vs_main_statusEffectParams[14].unk6;
             hp = (actor->currentHP / 20) + vs_main_getRand(6);
 
             if (hp <= 0) {
@@ -14517,7 +14508,7 @@ void func_80087EF4(vs_battle_actor2* actor)
 
         } else if (actor->statuses & 0x20000) {
 
-            actor->statusTimers[5] = D_8004EFE2;
+            actor->statusTimers[5] = vs_main_statusEffectParams[17].unk6;
             hp = 2;
             hp = (actor->maxHP / 20) - hp + vs_main_getRandSmoothed(5);
             actor->currentHP += hp;
@@ -14599,51 +14590,52 @@ int func_800882F4(void)
     }
 
     if (D_80050468.unk0 == 1) {
-        if (D_80050468.hours <= 0) {
-            D_80050468.frames += vs_gametime_tickspeed;
-            if (D_80050468.frames > 59) {
-                D_80050468.frames = 0;
-                if (++D_80050468.seconds > 59) {
-                    D_80050468.seconds = 0;
-                    if (++D_80050468.minutes > 59) {
-                        D_80050468.minutes = 0;
-                        if (++D_80050468.hours > 0) {
-                            D_80050468.hours = D_80050468.unk0;
+        if (D_80050468.time.t.h <= 0) {
+            D_80050468.time.t.f += vs_gametime_tickspeed;
+            if (D_80050468.time.t.f > 59) {
+                D_80050468.time.t.f = 0;
+                if (++D_80050468.time.t.s > 59) {
+                    D_80050468.time.t.s = 0;
+                    if (++D_80050468.time.t.m > 59) {
+                        D_80050468.time.t.m = 0;
+                        if (++D_80050468.time.t.h > 0) {
+                            D_80050468.time.t.h = D_80050468.unk0;
                         }
                     }
                 }
             }
         }
-    } else if (D_80050468.frames | D_80050468.seconds | D_80050468.minutes
-               | D_80050468.hours) {
-        if (D_80050468.frames == 0) {
-            D_80050468.frames = 60;
-            if (--D_80050468.seconds < 0) {
-                D_80050468.seconds = 59;
-                if (--D_80050468.minutes < 0) {
-                    D_80050468.minutes = 59;
-                    if (--D_80050468.hours < 0) {
-                        D_80050468.hours = 0;
+    } else if (D_80050468.time.t.f | D_80050468.time.t.s | D_80050468.time.t.m
+               | D_80050468.time.t.h) {
+        if (D_80050468.time.t.f == 0) {
+            D_80050468.time.t.f = 60;
+            if (--D_80050468.time.t.s < 0) {
+                D_80050468.time.t.s = 59;
+                if (--D_80050468.time.t.m < 0) {
+                    D_80050468.time.t.m = 59;
+                    if (--D_80050468.time.t.h < 0) {
+                        D_80050468.time.t.h = 0;
                     }
                 }
             }
         }
 
-        D_80050468.frames -= vs_gametime_tickspeed;
+        D_80050468.time.t.f -= vs_gametime_tickspeed;
     }
 
-    if (D_80050468.frames != 0) {
+    if (D_80050468.time.t.f != 0) {
         vs_battle_setStateFlag(
-            0xA0, ((((D_80050468.frames << 0xE) + rand()) * 5u) >> 0xE) / 3);
+            0xA0, ((((D_80050468.time.t.f << 0xE) + rand()) * 5u) >> 0xE) / 3);
     } else {
-        vs_battle_setStateFlag(0xA0, D_80050468.frames);
+        vs_battle_setStateFlag(0xA0, D_80050468.time.t.f);
     }
 
-    vs_battle_setStateFlag(0xA1, D_80050468.seconds);
-    vs_battle_setStateFlag(0xA2, D_80050468.minutes);
-    vs_battle_setStateFlag(0xA3, D_80050468.hours);
+    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
+    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
+    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
 
-    if ((var_s2 == 0) && (D_80050468.frames == 0) && (func_800BEC58(16, 0, 0, 0) == 1)) {
+    if ((var_s2 == 0) && (D_80050468.time.t.f == 0)
+        && (func_800BEC58(16, 0, 0, 0) == 1)) {
         var_s1 = 1;
     }
 

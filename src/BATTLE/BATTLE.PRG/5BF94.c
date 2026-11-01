@@ -343,7 +343,6 @@ void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
 void vs_effpurge_exec(void);
 
-extern int D_8005046C;
 extern u_char D_800EB708[];
 extern u_char D_800EB7B4[];
 extern u_char D_800EB7D4[];
@@ -3394,7 +3393,7 @@ void func_800CB560(void) { vs_battle_lowerScreenUiState = 0; }
 
 char const D_80069998[] = "00:00:00";
 
-void _renderTimer(int* value)
+void _renderTimer(vs_Gametime_t* value)
 {
     char sp10[4];
     int i;
@@ -3599,7 +3598,7 @@ void func_800CB83C(void)
     ClearOTag(D_800F51B8, 34);
 
     if (vs_battle_lowerScreenUiState == 1) {
-        _renderTimer(&D_8005046C);
+        _renderTimer(&D_80050468.time);
     }
 
     func_800CB708();

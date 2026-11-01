@@ -1973,7 +1973,7 @@ complete:
     return 0;
 }
 
-int func_800B13CC(int arg0, int arg1, int arg2)
+int func_800B13CC(u_int arg0, u_int arg1, int arg2)
 {
     int i;
     int var_a3 = 0xBB8;

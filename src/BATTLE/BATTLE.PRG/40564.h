@@ -8,8 +8,8 @@
 
 _mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1);
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position);
-int func_800A91DC(int arg0, int arg1, int arg2);
-inline int func_800A92B8(int arg0, int arg1);
+int func_800A91DC(u_int arg0, u_int arg1, int arg2);
+inline int func_800A92B8(u_int arg0, u_int arg1);
 void func_800A97EC(int, vs_battle_movementPosition*, int, int);
 void func_800A9988(int, SVECTOR*, int, int);
 void func_800A9C54(int, vs_battle_movementPosition*, int);

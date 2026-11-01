@@ -246,7 +246,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
     return 1;
 }
 
-int func_800A91DC(int arg0, int arg1, int arg2)
+int func_800A91DC(u_int arg0, u_int arg1, int arg2)
 {
     int _[2] __attribute__((unused));
     int i;
@@ -275,7 +275,7 @@ int func_800A91DC(int arg0, int arg1, int arg2)
     return var_t3;
 }
 
-inline int func_800A92B8(int arg0, int arg1)
+inline int func_800A92B8(u_int arg0, u_int arg1)
 {
     int var_t0;
     int i;

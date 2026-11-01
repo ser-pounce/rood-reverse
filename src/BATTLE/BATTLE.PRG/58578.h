@@ -44,7 +44,6 @@ typedef struct {
 } D_800EB9B8_t;
 
 extern D_800EB9B8_t* D_800EB9B8;
-extern u_char D_800F4CB4;
 
 int func_800C1564(func_800C1564_t* arg0, SVECTOR* arg1);
 void func_800C4650(D_800F19CC_t5* arg0, int arg1);

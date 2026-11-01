@@ -1,11 +1,11 @@
 #include "common.h"
 #include "57B1C.h"
 #include "58578.h"
+#include "5BF94.h"
 #include "battleUi.h"
 #include "gpu.h"
 #include "scratch.h"
-
-extern u_char D_80040A14[];
+#include "src/SLUS_010.40/31724.h"
 
 void func_800C031C(void)
 {

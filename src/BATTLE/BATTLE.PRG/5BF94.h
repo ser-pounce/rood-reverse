@@ -57,3 +57,6 @@ void func_800D5260(VECTOR* arg0);
 void func_800D5294(int* arg0);
 extern effectExec vs_battle_effectRenderers[];
 extern int D_800F5330[];
+extern u_char D_800EB9AC;
+extern u_char D_800F4CB4;
+extern actionEffectRequest D_800F53C0;

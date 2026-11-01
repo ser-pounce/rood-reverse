@@ -3,6 +3,7 @@
 #include "30DB0.h"
 #include "44F14.h"
 #include "48C7C.h"
+#include "49268.h"
 #include "4B16C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"

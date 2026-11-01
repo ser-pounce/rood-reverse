@@ -4287,12 +4287,12 @@ u_int func_800A0BE0(int actorId)
     return D_800F49E0;
 }
 
-int func_800A1108(int arg0, void* arg1)
+int func_800A1108(int actorId, void* arg1)
 {
-    D_800F4538_t* var_v1 = D_800F4538[arg0];
+    D_800F4538_t* var_v1 = D_800F4538[actorId];
 
     if (var_v1 == NULL) {
-        var_v1 = (D_800F4538_t*)D_800F45E0[arg0];
+        var_v1 = (D_800F4538_t*)D_800F45E0[actorId];
         if (var_v1 == NULL) {
             return -1;
         }

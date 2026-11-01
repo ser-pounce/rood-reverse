@@ -1,11 +1,14 @@
 #include "common.h"
+#include "579C0.h"
 #include "57B1C.h"
 #include "58578.h"
 #include "5BF94.h"
 #include "battleUi.h"
 #include "gpu.h"
 #include "scratch.h"
+#include "vs_inline_c.h"
 #include "src/SLUS_010.40/31724.h"
+#include <inline_c.h>
 
 void func_800C031C(void)
 {
@@ -94,8 +97,8 @@ void func_800C05EC(
     D_800EB9B8->unk0[0] = *arg0;
 
     if (arg0->unk0 != 1) {
-        D_800EB9B8->unk24 = 0;
-        D_800EB9B8->unk28 = 0;
+        D_800EB9B8->unk24.vx = 0;
+        D_800EB9B8->unk24.vz = 0;
     }
 
     if (D_800EB9AC != 0) {
@@ -107,7 +110,7 @@ void func_800C05EC(
 
     ((VECTOR*)&D_800EB9B8->unk38)->vx = 0;
     ((VECTOR*)&D_800EB9B8->unk38)->vy = 0;
-    D_800EB9B8->unk2A = 0xF;
+    D_800EB9B8->unk24.pad = 0xF;
 
     if (arg1 != NULL) {
         D_800EB9B8->unk0[1] = *arg1;
@@ -130,7 +133,7 @@ void func_800C06E0(void)
 void func_800C0700(func_800C1564_t* arg0)
 {
     D_800EB9B8->unk0[1] = *arg0;
-    D_800EB9B8->unk2A = 0;
+    D_800EB9B8->unk24.pad = 0;
 }
 
 void func_800C0738(void)
@@ -280,4 +283,84 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
     vs_scratch.unk0 = primitive + 5;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/57B1C", func_800C0B50);
+// Registers needed for a match; plain locals when NON_MATCHING is defined
+#ifdef NON_MATCHING
+#define VS_REG_VAR(type, name, reg) type name
+#else
+#define VS_REG_VAR(type, name, reg) register type name __asm__(reg)
+#endif
+
+void func_800C0B50(func_800C1564_t* arg0, int arg1)
+{
+    menuShapeVertex* vertex;
+    MATRIX* matrix;
+    int* scratch;
+    VECTOR scale;
+    int count;
+    VS_REG_VAR(int, divisor, "$20");
+    int offset;
+    VS_REG_VAR(int, x, "$18");
+    int y;
+    VS_REG_VAR(int, z, "$21");
+
+    vertex = D_800EB9B8->unk48;
+    matrix = func_800C085C(&arg0->unk4.values[0], arg0->unk2);
+
+    RotMatrixYXZ_gte(&D_800EB9B8->unk24, (MATRIX*)0x1F800398);
+
+    scratch = (int*)0x1F800398;
+    x = rcos(D_800EB9B8->unk24.pad << 6);
+    scale.vz = scale.vy = scale.vx = x;
+
+    ScaleMatrix((MATRIX*)0x1F800398, &scale);
+    func_80041C68(matrix, (MATRIX*)0x1F800398);
+    func_800C02A8();
+
+    y = scratch[1];
+    z = scratch[2];
+    count = scratch[3];
+    divisor = scratch[4];
+
+    gte_ldlm2(scratch[0], y, z, count, divisor);
+
+    x = arg0->unk8.xyz[0];
+    y = arg0->unk8.xyz[1];
+    z = arg0->unk8.xyz[2];
+
+    gte_ldbkdir2(x, y, z);
+
+    arg1 |= 0x44000000;
+    count = (u_short)D_800EB9B8->unk32;
+    divisor = arg0->unk4.values[0] > arg0->unk4.values[2] ? arg0->unk4.values[0]
+                                                          : arg0->unk4.values[2];
+    offset = D_800EB9B8->unk20 * 2;
+
+    while (1) {
+        gte_ldv0(vertex);
+
+        if (count == 0) {
+            break;
+        }
+
+        --count;
+
+        gte_mvmva_b2(1, 1, 0, 1, 0);
+        gte_ldv0ir2(x, y, z);
+
+        y = vertex->flags;
+        ++vertex;
+
+        gte_rtps_b2();
+        gte_stsxy(scratch);
+        gte_stszotz(scratch + 1);
+
+        if (y != 0) {
+            func_800C0990((SVECTOR*)scratch, (SVECTOR*)(scratch + 2), arg1 - (y << 25),
+                0x20 - (((short*)scratch)[2] + ((short*)scratch)[6] - offset) / divisor);
+        }
+
+        for (y = 0; y < 3; ++y) {
+            ((short*)scratch)[4 + y] = ((u_short*)scratch)[y];
+        }
+    }
+}

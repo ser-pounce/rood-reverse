@@ -464,10 +464,10 @@ int func_800C4794(SVECTOR* arg0)
     arg0->pad = 0;
     result = 0;
 
-    if (state->unk2A != 0) {
+    if (state->unk24.pad != 0) {
         setVector(arg0, state->unk0[0].unk8.vec.vx, state->unk0[0].unk8.vec.vy,
             state->unk0[0].unk8.vec.vz);
-        func_800C2B0C(&state->unk0[0].unk8.vec, state->unk2A - 1);
+        func_800C2B0C(&state->unk0[0].unk8.vec, state->unk24.pad - 1);
         return 0;
     }
 

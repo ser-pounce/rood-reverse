@@ -6,9 +6,9 @@ glabel vs_battle_copyAligned
     and        $t0, $a2, 0x7
     beqz       $t0, vs_battle_memcpy
      lh        $t0, 0x0($a1)
-    addiu      $a1, 0x2
+    addu       $a1, 0x2
     sh         $t0, 0x0($a0)
-    addiu      $a0, 0x2
+    addu       $a0, 0x2
     j          vs_battle_copyAligned
      add       $a2, -0x2
 endlabel vs_battle_copyAligned
@@ -20,13 +20,13 @@ glabel vs_battle_memcpy
     lh         $t1, 0x2($a1)
     lh         $t2, 0x4($a1)
     lh         $t3, 0x6($a1)
-    addiu      $a1, 0x8
+    addu       $a1, 0x8
     sh         $t0, 0x0($a0)
     sh         $t1, 0x2($a0)
     sh         $t2, 0x4($a0)
     sh         $t3, 0x6($a0)
     bne        $a1, $a2, 0b
-     addiu     $a0, 0x8
+     addu      $a0, 0x8
     jr         $ra
 endlabel vs_battle_memcpy
 
@@ -60,12 +60,12 @@ glabel vs_battle_setSprite
     or         $t2, $t3
     srl        $t3, $a0, 7
     and        $t3, 0x2
-    addiu      $t3, 0x64
+    addu       $t3, 0x64
     sll        $t3, 24
     or         $t2, $t3
     sll        $t3, $v0, 8
     srl        $t3, 8
-    addiu      $t4, $v0, 0x18
+    addu       $t4, $v0, 0x18
     sw         $t0, 0x0($v0)
     sw         $t1, 0x4($v0)
     sw         $t2, 0x8($v0)
@@ -78,7 +78,7 @@ glabel vs_battle_setSprite
 endlabel vs_battle_setSprite
 
 glabel func_800C02A8
-    addiu      $sp, -0x8
+    addu       $sp, -0x8
     sw         $ra, 0x0($sp)
     lui        $a0, %hi(vs_scratch + 0x14)
     jal        SetRotMatrix
@@ -89,7 +89,7 @@ glabel func_800C02A8
     lw         $ra, 0x0($sp)
     nop
     jr         $ra
-     addiu     $sp, 0x8
+     addu      $sp, 0x8
 endlabel func_800C02A8
 
 glabel vs_battle_playSfx10
@@ -115,12 +115,12 @@ endlabel vs_battle_playMenuSelectSfx
 glabel vs_battle_playMenuChangeSfx
     li         $a1, 0x4
   .L800C02FC:
-    addiu      $sp, -0x8
+    addu       $sp, -0x8
     sw         $ra, 0x0($sp)
     jal        vs_main_playSfxDefault
      li        $a0, 0x7E
     lw         $ra, 0x0($sp)
     nop
     jr         $ra
-     addiu     $sp, 0x8
+     addu      $sp, 0x8
 endlabel vs_battle_playMenuChangeSfx

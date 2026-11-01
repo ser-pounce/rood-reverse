@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -8,7 +8,6 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
-#include <stdlib.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -87,7 +86,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int D_800D9B6C(func_800E78F4_t*, int);
+int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -175,43 +174,6 @@ extern func_800DCAA0_t* D_800F58F8;
 extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
-
-typedef struct {
-    int unk0;
-    u_int unk4;
-} func_800E78F4_t2;
-
-typedef struct {
-    char unk0[0x88];
-    u_char unk88;
-} func_800DCAA0_t1;
-
-typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    vs_battle_actorView_t* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-
-struct actionStatSnapshot;
-struct directionalCacheState;
-struct movementCheckState;
-typedef struct movementRecoveryState movementRecoveryState;
-typedef struct radialMotionState radialMotionState;
-typedef struct trackingMotionState trackingMotionState;
 
 void func_800D7814(void)
 {

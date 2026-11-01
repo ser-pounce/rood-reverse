@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "38C1C.h"
 #include "src/SLUS_010.40/32154.h"

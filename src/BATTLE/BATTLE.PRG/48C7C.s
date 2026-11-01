@@ -179,7 +179,7 @@ endlabel func_800B147C
 glabel func_800B16F4
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     jr         $t9
      and       $t0, 0xFFFF
@@ -187,7 +187,7 @@ glabel func_800B16F4
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     jr         $t9
      srl       $t0, 16
@@ -195,7 +195,7 @@ glabel func_800B16F4
     nop
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     negu       $t1, $t1
     jr         $t9
@@ -203,7 +203,7 @@ glabel func_800B16F4
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     negu       $t1, $t1
     jr         $t9
@@ -211,7 +211,7 @@ glabel func_800B16F4
     nop
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     negu       $t1, $t1
     and        $t0, 0xFFFF
@@ -219,7 +219,7 @@ glabel func_800B16F4
      negu      $t0, $t0
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     negu       $t1, $t1
     srl        $t0, 16
@@ -227,7 +227,7 @@ glabel func_800B16F4
      negu      $t0, $t0
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     srl        $t0, 16
     jr         $t9
@@ -235,7 +235,7 @@ glabel func_800B16F4
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     and        $t0, 0xFFFF
     jr         $t9
@@ -247,7 +247,7 @@ glabel func_800B17F0
     lw         $t8, 0x4($a0)
     la         $a2, _trig_table
     la         $t7, func_800B16F4
-    addiu      $a3, $a2, 0x800
+    addu       $a3, $a2, 0x800
   alabel D_800B180C
     srl        $t1, $t8, 4
     and        $t1, 0xE0

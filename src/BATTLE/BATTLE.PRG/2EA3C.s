@@ -18,7 +18,7 @@ glabel func_8009723C
     sw         $s4, %lo(0x1F8003F0)($a3)
     lw         $s2, 0x0($s1)
     sw         $s5, %lo(0x1F8003F4)($a3)
-    addiu      $s1, 0x4
+    addu       $s1, 0x4
     sw         $s6, %lo(0x1F8003F8)($a3)
     sw         $s7, %lo(0x1F8003FC)($a3)
     addu       $s6, $a1, $zero
@@ -33,7 +33,7 @@ glabel func_8009723C
     subu       $at, $t0
     lw         $v1, %lo(0x1F800010)($a3)
     bgez       $at, 3f
-     addiu     $s3, $s1, 0x20
+     addu      $s3, $s1, 0x20
     and        $at, $v0, 0x1100
     bnez       $at, 2f
      srl       $at, $v0, 15
@@ -75,9 +75,9 @@ glabel func_8009723C
     addu       $a0, $s0
     jal        func_80097388
   2:
-     addiu     $s2, -0x1
+     addu      $s2, -0x1
     bnez       $s2, 0b
-     addiu     $s1, 0x40
+     addu      $s1, 0x40
   3:
     sw         $a1, %lo(0x1F800000)($a3)
     lw         $fp, %lo(0x1F8003D4)($a3)
@@ -104,14 +104,14 @@ glabel func_80097388
     sll        $at, 16
     or         $v0, $at
     jal        func_8009797C
-     addiu     $a0, 0x8
+     addu      $a0, 0x8
     and        $at, $v0, 0xFFFF
     beqz       $at, 5f
      addu      $a3, $a0, $zero
   0:
     lw         $s7, 0xC($a0)
     jal        func_80097A10
-     addiu     $a3, 0x20
+     addu      $a3, 0x20
     bgez       $at, 1f
      li        $t0, 0x1000000
     and        $t0, $s7
@@ -127,7 +127,7 @@ glabel func_80097388
     beqz       $at, 4f
      and       $at, $s6, 0x1
     beqz       $at, 2f
-     sltiu     $at, $fp, 0x200
+     sltu      $at, $fp, 0x200
     bnez       $at, 2f
      srl       $t4, $gp, 13
     and        $t4, 0x3
@@ -142,10 +142,10 @@ glabel func_80097388
     sw         $s3, 0xC($fp)
     sw         $s4, 0x10($fp)
     sw         $s5, 0x14($fp)
-    addiu      $fp, -0x4C
-    addiu      $s0, $fp, 0x10
-    addiu      $s1, $fp, 0x24
-    addiu      $s2, $fp, 0x38
+    addu       $fp, -0x4C
+    addu       $s0, $fp, 0x10
+    addu       $s1, $fp, 0x24
+    addu       $s2, $fp, 0x38
     sw         $at, 0x0($fp)
     sw         $s0, 0x4($fp)
     sw         $s1, 0x8($fp)
@@ -199,7 +199,7 @@ glabel func_80097388
     or         $t4, $t5
     jal        func_80097AEC
      sh        $t4, 0x6($s2)
-    addiu      $fp, 0x4C
+    addu       $fp, 0x4C
     lw         $s0, 0x0($fp)
     lw         $s1, 0x4($fp)
     lw         $s2, 0x8($fp)
@@ -227,7 +227,7 @@ glabel func_80097388
     sw         $t1, 0x1C($a1)
     sll        $t5, 8
   alabel D_80097590
-    sltiu      $at, $t9, 0x200
+    sltu       $at, $t9, 0x200
     bnez       $at, 3f
      or        $t4, $t5
     li         $t9, 0xFFFF0000
@@ -238,7 +238,7 @@ glabel func_80097388
     srl        $t8, $t3, 1
     and        $t8, 0x7F7F
     srl        $t3, 16
-    addiu      $t3, -0x1
+    addu       $t3, -0x1
     sll        $t3, 16
     or         $t3, $t8
     srl        $t4, 1
@@ -247,19 +247,19 @@ glabel func_80097388
     sw         $t2, 0xC($a1)
     sw         $t3, 0x18($a1)
     sw         $t4, 0x24($a1)
-    addiu      $a1, 0x28
+    addu       $a1, 0x28
   4:
-    addiu      $v0, -0x1
+    addu       $v0, -0x1
     and        $at, $v0, 0xFFFF
     bnez       $at, 0b
-     addiu     $a0, 0x20
+     addu      $a0, 0x20
   5:
     srl        $v0, 16
     beqz       $v0, 13f
   6:
      lw        $s7, 0xC($a0)
     jal        func_80097A10
-     addiu     $a3, 0x28
+     addu      $a3, 0x28
     bltz       $at, 7f
      li        $t0, 0x1000000
     or         $s7, $t0
@@ -315,7 +315,7 @@ glabel func_80097388
   8:
      and       $at, $s6, 0x1
     beqz       $at, 9f
-     sltiu     $at, $fp, 0x200
+     sltu      $at, $fp, 0x200
     bnez       $at, 9f
      srl       $t4, $gp, 13
     and        $t4, 0x3
@@ -330,11 +330,11 @@ glabel func_80097388
     sw         $s3, 0xC($fp)
     sw         $s4, 0x10($fp)
     sw         $s5, 0x14($fp)
-    addiu      $fp, -0x64
-    addiu      $s0, $fp, 0x14
-    addiu      $s1, $fp, 0x28
-    addiu      $s2, $fp, 0x3C
-    addiu      $s3, $fp, 0x50
+    addu       $fp, -0x64
+    addu       $s0, $fp, 0x14
+    addu       $s1, $fp, 0x28
+    addu       $s2, $fp, 0x3C
+    addu       $s3, $fp, 0x50
     sw         $at, 0x0($fp)
     sw         $s0, 0x4($fp)
     sw         $s1, 0x8($fp)
@@ -408,7 +408,7 @@ glabel func_80097388
     or         $t4, $t5
     jal        func_80097CF0
      sh        $t4, 0x6($s2)
-    addiu      $fp, 0x64
+    addu       $fp, 0x64
     lw         $s0, 0x0($fp)
     lw         $s1, 0x4($fp)
     lw         $s2, 0x8($fp)
@@ -449,7 +449,7 @@ glabel func_80097388
     sw         $t1, 0x1C($a1)
     sll        $t5, 8
   alabel D_800978F8
-    sltiu      $at, $t9, 0x200
+    sltu       $at, $t9, 0x200
     bnez       $at, 11f
      or        $t4, $t5
     li         $t9, 0xFFFF0000
@@ -460,7 +460,7 @@ glabel func_80097388
     srl        $t8, $t3, 1
     and        $t8, 0x7F7F
     srl        $t3, 16
-    addiu      $t3, -0x1
+    addu       $t3, -0x1
     sll        $t3, 16
     or         $t3, $t8
     srl        $t4, 1
@@ -472,11 +472,11 @@ glabel func_80097388
     sw         $t3, 0x18($a1)
     sw         $t4, 0x24($a1)
     sw         $t7, 0x30($a1)
-    addiu      $a1, 0x34
+    addu       $a1, 0x34
   12:
-    addiu      $v0, -0x1
+    addu       $v0, -0x1
     bnez       $v0, 6b
-     addiu     $a0, 0x28
+     addu      $a0, 0x28
   13:
     lui        $a3, %hi(0x1F8003D0)
     lw         $ra, %lo(0x1F8003C4)($a3)
@@ -583,7 +583,7 @@ glabel func_80097A10
 endlabel func_80097A10
 
 glabel func_80097AEC
-    addiu      $fp, -0x2C
+    addu       $fp, -0x2C
     sw         $ra, 0x0($fp)
     sw         $t0, 0x4($fp)
     sw         $t1, 0x8($fp)
@@ -649,12 +649,12 @@ glabel func_80097AEC
     sw         $t1, 0x10($a1)
     sw         $t2, 0x1C($a1)
     b          3f
-     addiu     $a1, 0x28
+     addu      $a1, 0x28
   2:
-    addiu      $fp, -0x4C
-    addiu      $t4, $fp, 0x10
-    addiu      $t5, $fp, 0x24
-    addiu      $t6, $fp, 0x38
+    addu       $fp, -0x4C
+    addu       $t4, $fp, 0x10
+    addu       $t5, $fp, 0x24
+    addu       $t6, $fp, 0x38
     jal        func_80097F70
      addu      $s2, $t4, $zero
     lwc2       $0, 0x0($t4)
@@ -669,7 +669,7 @@ glabel func_80097AEC
      addu      $s2, $t6, $zero
     lwc2       $4, 0x0($t6)
     lwc2       $5, 0x4($t6)
-    addiu      $t9, -0x1
+    addu       $t9, -0x1
     sw         $t9, 0x0($fp)
     rtpt
     sw         $t0, 0x4($fp)
@@ -701,7 +701,7 @@ glabel func_80097AEC
     sw         $t4, 0x4($fp)
     jal        func_80097AEC
      sw        $t0, 0x8($fp)
-    addiu      $fp, 0x4C
+    addu       $fp, 0x4C
   3:
     lw         $ra, 0x0($fp)
     lw         $t0, 0x4($fp)
@@ -714,11 +714,11 @@ glabel func_80097AEC
     lw         $t7, 0x20($fp)
     lw         $t9, 0x28($fp)
     jr         $ra
-     addiu     $fp, 0x2C
+     addu      $fp, 0x2C
 endlabel func_80097AEC
 
 glabel func_80097CF0
-    addiu      $fp, -0x2C
+    addu       $fp, -0x2C
     sw         $ra, 0x0($fp)
     sw         $t0, 0x4($fp)
     sw         $t1, 0x8($fp)
@@ -795,14 +795,14 @@ glabel func_80097CF0
     sw         $t2, 0x1C($a1)
     sw         $t3, 0x28($a1)
     b          4f
-     addiu     $a1, 0x34
+     addu      $a1, 0x34
   3:
-    addiu      $fp, -0x78
-    addiu      $t4, $fp, 0x14
-    addiu      $t5, $fp, 0x28
-    addiu      $t6, $fp, 0x3C
-    addiu      $t7, $fp, 0x50
-    addiu      $t8, $fp, 0x64
+    addu       $fp, -0x78
+    addu       $t4, $fp, 0x14
+    addu       $t5, $fp, 0x28
+    addu       $t6, $fp, 0x3C
+    addu       $t7, $fp, 0x50
+    addu       $t8, $fp, 0x64
     jal        func_80097F70
      addu      $s2, $t4, $zero
     lwc2       $0, 0x0($t4)
@@ -817,7 +817,7 @@ glabel func_80097CF0
      addu      $s2, $t5, $zero
     lwc2       $4, 0x0($t5)
     lwc2       $5, 0x4($t5)
-    addiu      $t9, -0x1
+    addu       $t9, -0x1
     addu       $s1, $t2, $zero
     rtpt
     jal        func_80097F70
@@ -867,7 +867,7 @@ glabel func_80097CF0
     sw         $t3, 0x4($fp)
     jal        func_80097AEC
      sw        $t5, 0x8($fp)
-    addiu      $fp, 0x78
+    addu       $fp, 0x78
   4:
     lw         $ra, 0x0($fp)
     lw         $t0, 0x4($fp)
@@ -881,7 +881,7 @@ glabel func_80097CF0
     lw         $t8, 0x24($fp)
     lw         $t9, 0x28($fp)
     jr         $ra
-     addiu     $fp, 0x2C
+     addu      $fp, 0x2C
 endlabel func_80097CF0
 
 glabel func_80097F70
@@ -1078,21 +1078,21 @@ glabel func_8009820C
     or         $t1, $a3, (0x1F800100 & 0xFFFF)
     lw         $a1, %lo(0x1F800004)($a3)
     lw         $a2, %lo(0x1F800000)($a3)
-    addiu      $a1, 0x1FFC
+    addu       $a1, 0x1FFC
     or         $t0, $zero, 0x22
   0:
     lwc2       $0, 0x0($a0)
     lwc2       $1, 0x4($a0)
     lw         $t9, 0x8($a0)
-    addiu      $t0, -0x1
+    addu       $t0, -0x1
     rtv0tr
     sw         $t9, 0xC($t1)
     swc2       $25, 0x0($t1)
     swc2       $26, 0x4($t1)
     swc2       $27, 0x8($t1)
-    addiu      $a0, 0xC
+    addu       $a0, 0xC
     bgtz       $t0, 0b
-     addiu     $t1, 0x10
+     addu      $t1, 0x10
     or         $t1, $a3, (0x1F800100 & 0xFFFF)
     or         $t0, $zero, 0x40
     lw         $a3, 0x0($a1)
@@ -1125,12 +1125,12 @@ glabel func_8009820C
     lw         $t9, 0x4($t3)
     lw         $v0, 0x4($t4)
     lw         $v1, 0x4($t5)
-    addiu      $t6, 0xA0
-    addiu      $t7, 0xA0
-    addiu      $t8, 0xA0
-    addiu      $t9, 0x78
-    addiu      $v0, 0x78
-    addiu      $v1, 0x78
+    addu       $t6, 0xA0
+    addu       $t7, 0xA0
+    addu       $t8, 0xA0
+    addu       $t9, 0x78
+    addu       $v0, 0x78
+    addu       $v1, 0x78
     slt        $at, $t6, 0x0
     beqz       $at, 3f
      slt       $at, $t7, 0x0
@@ -1196,11 +1196,11 @@ glabel func_8009820C
     and        $t4, $a2, $v0
     and        $t3, $a3, $v1
     or         $a3, $t3, $t4
-    addiu      $a2, 0x1C
+    addu       $a2, 0x1C
   7:
-    addiu      $t0, -0x1
+    addu       $t0, -0x1
     bgtz       $t0, 1b
-     addiu     $a0, 0x4
+     addu      $a0, 0x4
     sw         $a3, 0x0($a1)
     li         $a3, 0x1F800000
     jr         $ra
@@ -1232,7 +1232,7 @@ glabel func_800983F8
     sw         $zero, 0x3D8($at)
     sw         $zero, 0x3DC($at)
     lw         $s1, 0x0($a0)
-    addiu      $s0, $a0, 0x4
+    addu       $s0, $a0, 0x4
     mflo       $s4
     sra        $s3, 12
     sra        $s4, 12
@@ -1244,10 +1244,10 @@ glabel func_800983F8
      and       $at, $t0, 0x400
     bnez       $at, 1f
      nop
-    addiu      $a0, $s0, 0x4
-    addiu      $a1, $s0, 0x10
+    addu       $a0, $s0, 0x4
+    addu       $a1, $s0, 0x10
     jal        func_800985AC
-     addiu     $a2, $s0, 0x20
+     addu      $a2, $s0, 0x20
     b          2f
      nop
   1:
@@ -1308,9 +1308,9 @@ glabel func_800983F8
     ctc2       $t6, $6
     ctc2       $t7, $7
   2:
-    addiu      $s1, -0x1
+    addu       $s1, -0x1
     bnez       $s1, 0b
-     addiu     $s0, 0x40
+     addu      $s0, 0x40
     lui        $at, %hi(0x1F8003EC)
     lw         $ra, %lo(0x1F8003E0)($at)
     lw         $s0, %lo(0x1F8003E4)($at)
@@ -1348,7 +1348,7 @@ glabel func_800985AC
     sll        $t1, 16
     or         $t0, $t1
     mtv0       $t0, $t2
-    addiu      $t1, $s2, 0x14
+    addu       $t1, $s2, 0x14
     rtv0tr
     lui        $a3, %hi(0x1F8003FC)
     lw         $ra, %lo(0x1F8003F0)($a3)
@@ -1414,7 +1414,7 @@ glabel func_80098648
     sll        $t1, 16
     or         $t0, $t1
     mtv0       $t0, $t2
-    addiu      $t1, $s2, 0x14
+    addu       $t1, $s2, 0x14
     rtv0tr
     lui        $a3, %hi(0x1F8003FC)
     lw         $ra, %lo(0x1F8003F0)($a3)
@@ -1430,7 +1430,7 @@ endlabel func_80098648
 glabel func_8009874C
     la         $a2, _trig_table
     la         $t7, func_800988BC
-    addiu      $a3, $a2, 0x800
+    addu       $a3, $a2, 0x800
   alabel D_80098760
     srl        $t1, $t8, 4
     and        $t1, 0xE0
@@ -1514,7 +1514,7 @@ endlabel func_8009874C
 glabel func_800988BC
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     jr         $t9
      and       $t0, 0xFFFF
@@ -1522,7 +1522,7 @@ glabel func_800988BC
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     jr         $t9
      srl       $t0, 16
@@ -1530,7 +1530,7 @@ glabel func_800988BC
     nop
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     negu       $t1, $t1
     jr         $t9
@@ -1538,7 +1538,7 @@ glabel func_800988BC
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     negu       $t1, $t1
     jr         $t9
@@ -1546,7 +1546,7 @@ glabel func_800988BC
     nop
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     negu       $t1, $t1
     and        $t0, 0xFFFF
@@ -1554,7 +1554,7 @@ glabel func_800988BC
      negu      $t0, $t0
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     negu       $t1, $t1
     srl        $t0, 16
@@ -1562,7 +1562,7 @@ glabel func_800988BC
      negu      $t0, $t0
     addu       $t1, $a2, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     and        $t1, $t0, 0xFFFF
     srl        $t0, 16
     jr         $t9
@@ -1570,7 +1570,7 @@ glabel func_800988BC
     nop
     subu       $t1, $a3, $t8
     lw         $t0, 0x0($t1)
-    addiu      $t9, 0x20
+    addu       $t9, 0x20
     srl        $t1, $t0, 16
     and        $t0, 0xFFFF
     jr         $t9
@@ -1641,7 +1641,7 @@ glabel func_800989B8
 endlabel func_800989B8
 
 glabel func_80098AB4
-    addiu      $a0, 0x400
+    addu       $a0, 0x400
 endlabel func_80098AB4
 
 glabel func_80098AB8
@@ -1661,7 +1661,7 @@ glabel func_80098AB8
      and       $t2, $a0, 0x1FF
     li         $t0, 0x200
     subu       $t2, $t0, $t2
-    addiu      $v0, 0x2
+    addu       $v0, 0x2
   2:
     sll        $t2, 2
     addu       $v0, $t2
@@ -1680,7 +1680,7 @@ glabel func_80098B1C
     la         $t0, vs_battle_roomData
     lw         $t1, 0x98($t0)
     nop
-    addiu      $t1, 0x14
+    addu       $t1, 0x14
     jr         $t1
      nop
 endlabel func_80098B1C
@@ -1714,7 +1714,7 @@ glabel func_80098B38
     addu       $s0, $t1, $zero
   0:
     beqz       $s0, 3f
-     addiu     $s1, 0xC
+     addu      $s1, 0xC
   1:
     lw         $t0, 0x0($s1)
     lw         $t1, 0x4($s1)
@@ -1738,9 +1738,9 @@ glabel func_80098B38
      addu      $a1, $s4, $zero
     bnez       $v0, 4f
   2:
-     addiu     $s0, -0x1
+     addu      $s0, -0x1
     bnez       $s0, 1b
-     addiu     $s1, 0x20
+     addu      $s1, 0x20
   3:
     sw         $s5, 0x0($s4)
     or         $v0, $zero, $zero
@@ -1818,15 +1818,15 @@ glabel func_80098C3C
      nop
     or         $at, $zero, $zero
   1:
-    sltiu      $t9, $at, 0x100
+    sltu       $t9, $at, 0x100
     bnez       $t9, 2f
      nop
     or         $at, $zero, 0xFF
   2:
     sb         $at, 0x0($a1)
-    addiu      $a1, 0x1
+    addu       $a1, 0x1
     bnez       $v0, 0b
-     addiu     $v0, -0x1
+     addu      $v0, -0x1
     jr         $ra
      or        $v0, $zero, 0x1
   3:
@@ -1852,9 +1852,9 @@ glabel func_80098D6C
     lw         $t3, 0x0($a0)
     nop
     srl        $t3, 24
-    addiu      $at, $t3, -0x9
+    addu       $at, $t3, -0x9
     beqz       $at, 2f
-     addiu     $at, $t3, -0xC
+     addu      $at, $t3, -0xC
     beqz       $at, 3f
      nop
   1:
@@ -1863,15 +1863,15 @@ glabel func_80098D6C
      nop
   2:
     jal        func_80098E50
-     addiu     $t3, $a0, 0x4
+     addu      $t3, $a0, 0x4
     sw         $t6, 0x4($a0)
     jal        func_80098E50
-     addiu     $t3, $a0, 0x10
+     addu      $t3, $a0, 0x10
     sw         $t6, 0x10($a0)
     jal        func_80098E50
-     addiu     $t3, $a0, 0x1C
+     addu      $t3, $a0, 0x1C
     sw         $t6, 0x1C($a0)
-    addiu      $a0, 0x28
+    addu       $a0, 0x28
     addu       $a0, $v1
     bne        $a0, $a1, 0b
      nop
@@ -1879,18 +1879,18 @@ glabel func_80098D6C
      nop
   3:
     jal        func_80098E50
-     addiu     $t3, $a0, 0x4
+     addu      $t3, $a0, 0x4
     sw         $t6, 0x4($a0)
     jal        func_80098E50
-     addiu     $t3, $a0, 0x10
+     addu      $t3, $a0, 0x10
     sw         $t6, 0x10($a0)
     jal        func_80098E50
-     addiu     $t3, $a0, 0x1C
+     addu      $t3, $a0, 0x1C
     sw         $t6, 0x1C($a0)
     jal        func_80098E50
-     addiu     $t3, $a0, 0x28
+     addu      $t3, $a0, 0x28
     sw         $t6, 0x28($a0)
-    addiu      $a0, 0x34
+    addu       $a0, 0x34
     addu       $a0, $v1
     bne        $a0, $a1, 0b
      nop
@@ -1942,7 +1942,7 @@ glabel func_80098E50
     slt        $at, $t3, $t7
     bnez       $at, 2f
      nop
-    addiu      $t3, $t7, -0x1
+    addu       $t3, $t7, -0x1
   2:
     bgez       $t4, 3f
      nop
@@ -1951,7 +1951,7 @@ glabel func_80098E50
     slt        $at, $t4, $t7
     bnez       $at, 4f
      nop
-    addiu      $t4, $t7, -0x1
+    addu       $t4, $t7, -0x1
   4:
     bgez       $t5, 5f
      nop
@@ -1960,7 +1960,7 @@ glabel func_80098E50
     slt        $at, $t5, $t7
     bnez       $at, 6f
      nop
-    addiu      $t5, $t7, -0x1
+    addu       $t5, $t7, -0x1
   6:
     sll        $t4, 8
     sll        $t5, 16
@@ -1973,21 +1973,21 @@ endlabel func_80098E50
 
 glabel vs_battle_initSceneAndGetRoomNames
     lw         $v0, 0x0($a0)
-    addiu      $a1, $a0, 0x4
+    addu       $a1, $a0, 0x4
     or         $v1, $zero, $v0
   0:
-    addiu      $v0, -0x1
+    addu       $v0, -0x1
     bne        $zero, $v0, 0b
-     addiu     $a1, 0xC
-    addiu      $a2, $a0, 0x4
+     addu      $a1, 0xC
+    addu       $a2, $a0, 0x4
     or         $v0, $zero, $v1
   1:
     lw         $at, 0x4($a2)
-    addiu      $v0, -0x1
+    addu       $v0, -0x1
     sw         $a1, 0x4($a2)
     addu       $a1, $at
     bne        $zero, $v0, 1b
-     addiu     $a2, 0xC
+     addu      $a2, 0xC
     jr         $ra
      addu      $v0, $a1, $zero
 endlabel vs_battle_initSceneAndGetRoomNames
@@ -2001,7 +2001,7 @@ glabel func_80098F8C
     sw         $s3, %lo(0x1F8003FC)($a3)
     sw         $s4, %lo(0x1F8003EC)($a3)
     sw         $s5, %lo(0x1F8003E8)($a3)
-    addiu      $a0, 0x4
+    addu       $a0, 0x4
     li         $a3, 0x1F800000
     li         $t6, 0xFFFFFF
     li         $t7, 0xFF000000
@@ -2025,9 +2025,9 @@ glabel func_80098F8C
     lw         $at, 0x0($a0)
     lw         $a2, 0x4($a0)
     beqz       $at, 18f
-     addiu     $v0, -0x1
+     addu      $v0, -0x1
     lw         $t0, 0x0($a2)
-    addiu      $a2, 0x4
+    addu       $a2, 0x4
     beqz       $t0, 18f
      lui       $a3, %hi(0x1F800100)
     or         $a3, (0x1F800100 & 0xFFFF)
@@ -2039,19 +2039,19 @@ glabel func_80098F8C
     lwc2       $3, 0xC($a2)
     lwc2       $4, 0x10($a2)
     lwc2       $5, 0x14($a2)
-    addiu      $t0, -0x3
-    addiu      $a2, 0x18
+    addu       $t0, -0x3
+    addu       $a2, 0x18
     rtpt
     swc2       $12, 0x0($a3)
     swc2       $13, 0x4($a3)
     swc2       $14, 0x8($a3)
     bgtz       $t0, 1b
-     addiu     $a3, 0xC
+     addu      $a3, 0xC
     sll        $t0, 3
     addu       $a2, $t0
     li         $a3, 0x1F800100
     lw         $t0, 0x0($a2)
-    addiu      $a2, 0x4
+    addu       $a2, 0x4
     beqz       $t0, 3f
      li        $t1, 0x4000000
     sll        $at, $t0, 2
@@ -2084,13 +2084,13 @@ glabel func_80098F8C
     and        $at, $t8, $t6
     and        $v1, $t7
     or         $v1, $at
-    addiu      $t8, 0x14
-    addiu      $t0, -0x1
+    addu       $t8, 0x14
+    addu       $t0, -0x1
     bnez       $t0, 2b
-     addiu     $a2, 0x4
+     addu      $a2, 0x4
   3:
     lw         $t0, 0x0($a2)
-    addiu      $a2, 0x4
+    addu       $a2, 0x4
     beqz       $t0, 5f
      li        $t1, 0x5000000
     sll        $at, $t0, 2
@@ -2128,13 +2128,13 @@ glabel func_80098F8C
     and        $at, $t8, $t6
     and        $v1, $t7
     or         $v1, $at
-    addiu      $t8, 0x18
-    addiu      $t0, -0x1
+    addu       $t8, 0x18
+    addu       $t0, -0x1
     bnez       $t0, 4b
-     addiu     $a2, 0x4
+     addu      $a2, 0x4
   5:
     lw         $t0, 0x0($a2)
-    addiu      $a2, 0x4
+    addu       $a2, 0x4
     beqz       $t0, 7f
      li        $t1, 0x3000000
     li         $t2, 0x42FF7F00
@@ -2157,14 +2157,14 @@ glabel func_80098F8C
     and        $at, $t8, $t6
     and        $v1, $t7
     or         $v1, $at
-    addiu      $t8, 0x10
-    addiu      $t0, -0x1
+    addu       $t8, 0x10
+    addu       $t0, -0x1
     bnez       $t0, 6b
-     addiu     $a2, 0x4
+     addu      $a2, 0x4
   7:
     bnez       $a1, 18f
      lw        $t0, 0x0($a2)
-    addiu      $a2, 0x4
+    addu       $a2, 0x4
     beqz       $t0, 9f
      li        $t1, 0x3000000
     li         $t2, 0x422F5F00
@@ -2187,13 +2187,13 @@ glabel func_80098F8C
     and        $at, $t8, $t6
     and        $v1, $t7
     or         $v1, $at
-    addiu      $t8, 0x10
-    addiu      $t0, -0x1
+    addu       $t8, 0x10
+    addu       $t0, -0x1
     bnez       $t0, 8b
-     addiu     $a2, 0x4
+     addu      $a2, 0x4
   9:
     lw         $t0, 0x0($a2)
-    addiu      $a2, 0x4
+    addu       $a2, 0x4
     beqz       $t0, 18f
      li        $t1, 0x3000000
   10:
@@ -2206,7 +2206,7 @@ glabel func_80098F8C
     and        $t5, 0xFF
     beqz       $t5, 11f
      nop
-    addiu      $t5, 0x33F
+    addu       $t5, 0x33F
     addu       $t5, $s5
     lb         $at, 0x0($t5)
     nop
@@ -2246,14 +2246,14 @@ glabel func_80098F8C
     and        $s4, $t7
     or         $s4, $at
     sra        $at, $t3, 16
-    addiu      $at, -0x1
+    addu       $at, -0x1
     sll        $at, 16
     and        $t4, $t3, 0xFFFF
     or         $at, $t4
     li         $t4, 0x30001
     sw         $at, 0x8($t8)
     sw         $t4, 0xC($t8)
-    addiu      $t8, 0x10
+    addu       $t8, 0x10
     sw         $t2, 0x4($t8)
     and        $at, $s4, $t6
     or         $at, $t1
@@ -2261,7 +2261,7 @@ glabel func_80098F8C
     and        $at, $t8, $t6
     and        $s4, $t7
     or         $s4, $at
-    addiu      $at, $t3, -0x1
+    addu       $at, $t3, -0x1
     and        $at, 0xFFFF
     sra        $t4, $t3, 16
     sll        $t4, 16
@@ -2270,7 +2270,7 @@ glabel func_80098F8C
     sw         $at, 0x8($t8)
     sw         $t4, 0xC($t8)
     b          17f
-     addiu     $t8, 0x10
+     addu      $t8, 0x10
   16:
     addu       $t3, $a3
     lw         $t3, 0x0($t3)
@@ -2283,24 +2283,24 @@ glabel func_80098F8C
     and        $s4, $t7
     or         $s4, $at
     sra        $at, $t3, 16
-    addiu      $at, -0x4
+    addu       $at, -0x4
     sll        $at, 16
     and        $t4, $t3, 0xFFFF
-    addiu      $t4, -0x3
+    addu       $t4, -0x3
     and        $t4, 0xFFFF
     or         $at, $t4
     li         $t4, 0x37F898D8
     sw         $at, 0x8($t8)
     sw         $t4, 0xC($t8)
-    addiu      $t8, 0x10
+    addu       $t8, 0x10
   17:
-    addiu      $t0, -0x1
+    addu       $t0, -0x1
     bnez       $t0, 10b
-     addiu     $a2, 0x4
+     addu      $a2, 0x4
   18:
-    addiu      $a1, 0x1
+    addu       $a1, 0x1
     bne        $zero, $v0, 0b
-     addiu     $a0, 0xC
+     addu      $a0, 0xC
     li         $t1, 0x2000000
     li         $t2, 0xE100020C
     and        $at, $v1, $t6
@@ -2311,7 +2311,7 @@ glabel func_80098F8C
     or         $v1, $at
     sw         $t2, 0x4($t8)
     sw         $zero, 0x8($t8)
-    addiu      $t8, 0x10
+    addu       $t8, 0x10
     li         $t1, 0x2000000
     li         $t2, 0xE100020C
     and        $at, $s4, $t6
@@ -2322,7 +2322,7 @@ glabel func_80098F8C
     or         $s4, $at
     sw         $t2, 0x4($t8)
     sw         $zero, 0x8($t8)
-    addiu      $t8, 0x10
+    addu       $t8, 0x10
     li         $a3, 0x1F800000
     lw         $t9, %lo(0x1F800004)($a3)
     lw         $s0, %lo(0x1F8003F0)($a3)
@@ -2367,15 +2367,15 @@ glabel func_80099514
     lh         $t0, 0x0($a3)
     lh         $v0, 0x6($a3)
     mult       $t0, $t1
-    addiu      $t0, $a3, 0x8
+    addu       $t0, $a3, 0x8
     beqz       $a2, 1f
      sll       $v0, 1
   0:
-    addiu      $a2, -0x1
+    addu       $a2, -0x1
     bnez       $a2, 0b
      addu      $t0, $v0
   1:
-    addiu      $t1, $a3, 0x8
+    addu       $t1, $a3, 0x8
     sll        $at, $v0, 1
     addu       $t1, $at
     mflo       $v0

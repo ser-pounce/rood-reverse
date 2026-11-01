@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -8,7 +8,6 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
-#include <stdlib.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -87,7 +86,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int D_800D9B6C(func_800E78F4_t*, int);
+int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -118,6 +117,8 @@ void func_800DC784(func_800E78F4_t*, int);
 void func_800DC810(D_800F19CC_t2*);
 void func_800DC888(func_800DC888_t*);
 void func_800DE3E4(func_800E78F4_t*);
+int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2);
+void func_800E1238(func_800E78F4_t*, int);
 int func_800DFBCC(func_800E78F4_t*, int, int);
 int func_800E0678(func_800E78F4_t*, int);
 int func_800E0918(func_800E78F4_t*, int, int);
@@ -141,6 +142,7 @@ void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4BB8(func_800E78F4_t*);
+void func_800E4BD8(int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
@@ -176,39 +178,44 @@ extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 
-void func_800E1238(func_800E78F4_t*, int);
+void func_800DF8A4(func_800E78F4_t* arg0)
+{
+    vs_battle_movementPosition pos;
+    int i;
 
-typedef struct {
-    int unk0;
-    u_int unk4;
-} func_800E78F4_t2;
+    if (arg0->unk34.y < 2) {
+        vs_battle_movementPosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
 
-typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    vs_battle_actorView_t* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-void func_800D8260(func_800DEEA4_t2* arg0, int arg1, int arg2);
+        arg0->unk19C = none;
+        func_800E4BD8(arg0->unk19B);
+        arg0->unk19B = 0;
+        return;
+    }
 
-typedef union {
-    unsigned int raw;
-    vs_battle_movementPosition p;
-} vs_battle_movementTile;
-unsigned int func_800E4660(int, int, int);
+    i = func_800DFAF8(arg0, arg0->unk19C, 0);
+
+    if (i >= 0) {
+        pos.x = D_800F5910[i * 2].unk0_0;
+        pos.z = D_800F5910[i * 2].unk0_5;
+        pos.y = 0;
+
+        if (func_800D954C(arg0, pos) > 0) {
+            vs_battle_movementPosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+            arg0->unk19C = none;
+            arg0->unk19B = 0;
+            func_800E4BD8((i >> 1) + 2);
+            arg0->unk170 = pos;
+            func_800DEEFC(arg0, 0xE);
+            return;
+        }
+    }
+
+    func_800E2CCC(arg0);
+
+    // HACK: Bogus return to force match.
+    return (void)&pos;
+}
 
 void func_800DF9A8(func_800DFA54_t* arg0, func_800DFA54_t* arg1)
 {
@@ -249,7 +256,8 @@ found:
     arg3->unk2 = D_800F5910[i * 2].unk0_5;
 }
 
-int func_800DFAF8(int arg0, u_int arg1, int arg2)
+int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
+    vs_battle_movementPosition arg1, int arg2)
 {
     SVECTOR sp10[4];
     SVECTOR* m;
@@ -263,7 +271,7 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
         if (arg2 == 0) {
             ++e;
         }
-        if ((u_char)arg1 == e->unk0_0 && (u_char)(arg1 >> 16) == e->unk0_5) {
+        if (arg1.x == e->unk0_0 && arg1.z == e->unk0_5) {
             m = &sp10[j];
             if (D_800F5910[i * 2 + 1].unk0_0 == m->vx >> 7
                 && D_800F5910[i * 2 + 1].unk0_5 == m->vz >> 7) {
@@ -273,6 +281,24 @@ int func_800DFAF8(int arg0, u_int arg1, int arg2)
     }
     return -1;
 }
+
+typedef struct {
+    char pad0[8];
+    unsigned int flags;
+} movementCheckObject;
+
+typedef union {
+    unsigned int raw;
+    struct {
+        unsigned char x, y, z, w;
+    } p;
+    vs_battle_movementPosition pos;
+} directionalCachePoint;
+
+typedef union {
+    unsigned int raw;
+    vs_battle_movementPosition p;
+} vs_battle_movementTile;
 
 typedef struct routeEdgeState {
     char unk0[5];
@@ -381,7 +407,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             if (route & 0x8000) {
                 continue;
             }
-            result = func_800DFAF8((int)state, position.raw, 1);
+            result = func_800DFAF8((func_800E78F4_t*)state, position.p, 1);
             if (result >= 0 && func_8008E320(i = result >> 1) >= 0) {
                 candidate.p.y = i + 2;
                 if (!((((routeEdgeGlobals*)D_800F58BC)->closedGates >> candidate.p.y)
@@ -522,34 +548,6 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
     return 6;
 }
 
-typedef struct {
-    short x, y, z, pad;
-} obstructionVector;
-typedef struct {
-    char pad[0x1C];
-    obstructionVector position;
-} obstructionModel;
-typedef struct {
-    char pad0[0x4C];
-    obstructionVector position;
-    char pad54[4];
-    obstructionModel* model;
-    char pad5C[0x2C];
-    unsigned char id;
-    char pad89[9];
-    unsigned short radius;
-    char pad94[0x1F];
-    unsigned char step;
-    char padB4[4];
-    short height;
-} obstructionState;
-typedef struct {
-    unsigned char p0, p1, tested, p3, result[8];
-} obstructionCache;
-#define OBSTRUCTION_CACHE ((obstructionCache*)0x1F8003D0)
-#define OBSTRUCTION_DIRECTIONS ((D_800F16EC_t*)0x1F8003EC)
-#define OBSTRUCTION_STATES ((obstructionState**)0x1F80037C)
-
 int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 {
     SVECTOR points[4];
@@ -635,17 +633,6 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     return 0;
 }
 
-#undef OBSTRUCTION_CACHE
-#undef OBSTRUCTION_DIRECTIONS
-#undef OBSTRUCTION_STATES
-
-typedef union {
-    unsigned int raw;
-    struct {
-        unsigned char x, y, z, w;
-    } p;
-    vs_battle_movementPosition pos;
-} directionalCachePoint;
 int func_800E0678(func_800E78F4_t* arg0, int arg1)
 {
     if ((((D_1F8003D0_t*)0x1F8003D0)->unk0 >> arg1) & 1) {
@@ -698,10 +685,6 @@ int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
     return min;
 }
 
-typedef struct {
-    char pad0[8];
-    unsigned int flags;
-} movementCheckObject;
 int func_800E0918(func_800E78F4_t* arg0, int arg1, int arg2)
 {
     void (*callback)(func_800E78F4_t*, int) = arg2 ? func_800E4B2C : func_800E4B70;
@@ -987,8 +970,6 @@ void func_800E0A68(movementStepState* state, int action)
         return;
     }
 }
-#undef MOVEMENT_STEP_TILES
-#undef MOVEMENT_STEP_RESULT
 
 void func_800E1238(func_800E78F4_t* arg0, int arg1)
 {
@@ -1078,7 +1059,6 @@ void func_800E1388(
     arg0->unk168 = dest;
 }
 
-unsigned int func_800E4660(int, int, int);
 void func_800E153C(func_800E78F4_t* arg0, int arg1)
 {
     int distance = arg0->unkB4;
@@ -1132,6 +1112,7 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 fallback:
     func_800E2CCC(arg0);
 }
+
 void func_800E1764(func_800E78F4_t* arg0, int arg1)
 {
     vs_battle_movementPosition previous[2];
@@ -1196,6 +1177,7 @@ void func_800E1908(func_800E78F4_t* arg0)
         }
     }
 }
+
 void func_800E19FC(func_800E78F4_t* arg0)
 {
     int current;
@@ -1337,7 +1319,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
     int (*check)(func_800E78F4_t*, int);
 
     ++arg0->unkC2;
-    check = (arg0->unk58->unk0.unkA_5 << 21) ? func_800E0678 : D_800D9B6C;
+    check = (arg0->unk58->unk0.unkA_5 << 21) ? func_800E0678 : func_800D9B6C;
 
     if (arg0->unk12D == 1) {
         if (arg0->unkC2 < 31) {
@@ -2127,4 +2109,4 @@ done:
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/771A8", func_800E3600);
+INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E3600);

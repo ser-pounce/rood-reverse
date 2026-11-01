@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -8,7 +8,6 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
-#include <stdlib.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -87,7 +86,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int D_800D9B6C(func_800E78F4_t*, int);
+int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -97,6 +96,8 @@ void func_800DB5DC(func_800E78F4_t*, vs_battle_movementPosition, int);
 void func_800DB5FC(func_800E78F4_t*);
 int func_800DB61C(func_800E78F4_t*, int);
 int func_800DB74C(func_800E78F4_t*, int);
+void func_800DB7B4(func_800E78F4_t*);
+void func_800DB820(func_800E78F4_t*);
 int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
@@ -152,6 +153,7 @@ void func_800E685C(int, int, int);
 
 extern u_int D_80069BBC[];
 extern p_file_t D_800EC4BC;
+extern int D_800F16F4;
 extern int D_800F5330[];
 extern int D_800F5630;
 extern D_800F5638_t D_800F5638;
@@ -175,33 +177,6 @@ extern func_800DCAA0_t* D_800F58F8;
 extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
-
-typedef struct {
-    int unk0;
-    u_int unk4;
-} func_800E78F4_t2;
-
-typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    vs_battle_actorView_t* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-typedef struct movementRecoveryState movementRecoveryState;
-void func_800D8260(func_800E78F4_t* arg0, int arg1, int arg2);
 
 int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 {
@@ -645,15 +620,6 @@ int func_800DAAD8(func_800E78F4_t* arg0)
     return 0;
 }
 
-typedef struct {
-    char prefix[0x13];
-    u_char kind;
-    char gap[0x12B];
-    u_char cooldown;
-    char gap2[0xEC];
-    func_800DCAA0_t* action;
-} actionSetupContext;
-
 int func_800DAC80(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 {
     if (!func_800DBD80(arg0, arg1)) {
@@ -686,61 +652,6 @@ int func_800DAC80(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
     return 0;
 }
 
-typedef struct {
-    unsigned int pad0, flags4, distance, flagsC;
-} actionDispatchEntry;
-typedef struct actionDispatchModel {
-    char pad0[8];
-    unsigned int flags;
-    char padC[6];
-    unsigned char id;
-    char pad13[7];
-    short status;
-    short position[3];
-} actionDispatchModel;
-typedef struct actionDispatchActor {
-    struct actionDispatchActor* next;
-    int id;
-    char pad8[0x3C];
-    actionDispatchModel* model;
-} actionDispatchActor;
-typedef struct actionDispatchState {
-    unsigned int flags0, flags4, flags8;
-    unsigned short flagsC, padE;
-    char pad10[4];
-    unsigned char f14;
-    char pad15[8];
-    unsigned char f1D;
-    char pad1E[0x16];
-    unsigned char tileX, pad35, tileZ;
-    char pad37[0x11];
-    int target48;
-    short position[3];
-    char pad52[0x30];
-    short height;
-    char pad84[0x34];
-    short depth;
-    char padBA[0x78];
-    signed char terrain132;
-    char pad133[0xD];
-    actionDispatchEntry fallback;
-    char pad150[4];
-    signed char terrain154;
-    char pad155[7];
-    unsigned char target;
-    char pad15D[0x87];
-    unsigned int distance;
-    char pad1E8[0x248];
-    actionDispatchEntry* entries[16];
-    int count;
-} actionDispatchState;
-typedef struct {
-    char pad[0x28];
-    actionDispatchActor* registered[4];
-} actionDispatchRegistry;
-extern int D_800F16F4;
-void func_800DB820(actionDispatchState*);
-void func_800DB7B4(actionDispatchState*);
 int func_800DAD9C(func_800E78F4_t* arg0)
 {
     int i;
@@ -777,57 +688,60 @@ int func_800DAD9C(func_800E78F4_t* arg0)
 
     return 0;
 }
+
 void func_800DAED0(void)
 {
-    actionDispatchActor* actor;
-    actionDispatchState* state;
-    int value, height, coordinate;
-    for (actor = ((actionDispatchActor*)vs_battle_actors[0])->next; actor;
-        actor = actor->next) {
-        state = ((actionDispatchState**)0x1F80037C)[actor->id];
-        if (!state->f14 || state->f1D) {
-            value = func_800E45B4();
-            if (D_800F16F4 < value) {
-                func_800DEEFC((void*)state, 17);
-            } else {
-                *(int*)0x1F8003FC = value;
-                if (state->f14 && state->f1D) {
-                    if (D_800F5878[0]) {
-                        if ((((actionDispatchModel*)D_800F4538[0])->flags & 0x180000)
-                            && (coordinate =
-                                    ((actionDispatchModel*)D_800F4538[0])->position[1],
-                                state->position[1] < coordinate)) {
-                            height = -((actionDispatchState*)D_800F5878[0])->depth;
-                        } else {
-                            height = ((actionDispatchState*)D_800F5878[0])->height;
-                        }
-                    } else {
-                        height = -64;
-                    }
-                    state->distance = func_800E4624((SVECTOR*)state->position,
-                        (SVECTOR*)((actionDispatchActor*)vs_battle_actors[0])
-                            ->model->position,
-                        state->height, height);
-                    func_800DAD9C((void*)state);
+    vs_battle_actor* actor;
+
+    for (actor = vs_battle_actors[0]->next; actor != NULL; actor = actor->next) {
+        func_800E78F4_t* state = ((func_800E78F4_t**)0x1F80037C)[actor->id];
+        int distance;
+        int tile;
+
+        if (state->unk14[0] != 0 && state->unk1D[0] == 0) {
+            continue;
+        }
+
+        distance = func_800E45B4();
+
+        if (D_800F16F4 < distance) {
+            func_800DEEFC(state, 0x11);
+            continue;
+        }
+
+        *(int*)0x1F8003FC = distance;
+
+        if (state->unk14[0] != 0 && state->unk1D[0] != 0) {
+            func_800E78F4_t* player = D_800F5878[0];
+            int offset;
+
+            if (player != NULL) {
+                if (D_800F4538[0]->unk0.unkA_3 != 0
+                    && D_800F4538[0]->unk0.position.vy > state->unk4C.vy) {
+                    offset = -player->unkB8;
                 } else {
-                    coordinate = state->tileX;
-                    state->target = 16;
-                    state->target48 = -1;
-                    /* Clear the packed header halfword through its raw address. */
-                    *(unsigned short*)((char*)state + 12) = 0;
-                    state->flags0 = 0;
-                    state->flags4 = 0;
-                    state->flags8 = 0;
-                    value =
-                        (*(unsigned short (**)[32])0x1F8003C0)[state->tileZ][coordinate]
-                        & 15;
-                    state->terrain154 = value;
-                    state->terrain132 = value;
-                    *(int*)0x1F8003D0 = 0;
-                    func_800DB820(state);
-                    func_800DB7B4(state);
+                    offset = D_800F5878[0]->unk82;
                 }
+            } else {
+                offset = -0x40;
             }
+
+            state->unk1E4[0] = func_800E4624(&state->unk4C,
+                &vs_battle_actors[0]->unk44->unk0.position, state->unk82, offset);
+            func_800DAD9C(state);
+        } else {
+            ((VECTOR*)state)->vx = 0;
+            ((VECTOR*)state)->vy = 0;
+            ((VECTOR*)state)->vz = 0;
+            *(short*)&state->unkA[2] = 0;
+            state->unk15C = 0x10;
+            *(int*)&state->unk48 = -1;
+            tile = (*(u_short(**)[32])0x1F8003C0)[state->unk34.z][state->unk34.x] & 15;
+            state->unk154[0] = tile;
+            state->unk132[0] = tile;
+            *(int*)0x1F8003D0 = 0;
+            func_800DB820(state);
+            func_800DB7B4(state);
         }
     }
 }

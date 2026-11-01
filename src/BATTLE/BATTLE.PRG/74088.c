@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -8,7 +8,6 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
-#include <stdlib.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -87,7 +86,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int D_800D9B6C(func_800E78F4_t*, int);
+int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -175,69 +174,6 @@ extern func_800DCAA0_t* D_800F58F8;
 extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
-
-int func_800D85D8(func_800E78F4_t*);
-
-typedef struct {
-    int unk0;
-    u_int unk4;
-} func_800E78F4_t2;
-
-typedef struct {
-    char unk0[0x88];
-    u_char unk88;
-} func_800DCAA0_t1;
-
-typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    vs_battle_actorView_t* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-
-int func_800E42D4(int, int);
-unsigned int func_800E4660(int, int, int);
-
-typedef struct {
-    unsigned char actor;
-    char pad1;
-    unsigned char value2;
-    char pad3;
-    short hp, mp;
-    char pad8[12];
-    unsigned int addStatus, removeStatus, modes;
-    char pad20[24];
-    short value10;
-    char pad3A[2];
-    short value14;
-    char pad3E[2];
-    int skip;
-} actionStatDelta;
-typedef struct {
-    unsigned short action;
-    char pad2[2];
-    actionStatDelta first;
-    char pad48[2];
-    unsigned short count;
-    actionStatDelta entries[1];
-} actionStatApplication;
-typedef struct {
-    unsigned int flags;
-    char pad4[48];
-} actionCostView;
 
 void func_800DC888(func_800DC888_t* arg0)
 {
@@ -327,11 +263,6 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/74088", D_80069B68);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/74088", D_80069BBC);
 
-typedef struct actionScoreActor {
-    struct actionScoreActor* next;
-    int id;
-} actionScoreActor;
-
 static inline int _getStatusScore(func_800DC888_t* stats)
 {
     static const signed char statusScores[] = { -51, -39, -39, -39, -26, -51, 50, -13, 12,
@@ -357,6 +288,7 @@ static inline int _getStatusScore(func_800DC888_t* stats)
 
     return score;
 }
+
 static inline int _getHpRatio(func_800DC888_t* stats, int id)
 {
     if (stats[id].unk6 == 0) {
@@ -365,6 +297,7 @@ static inline int _getHpRatio(func_800DC888_t* stats, int id)
 
     return stats[id].unk4 * 128 / stats[id].unk6;
 }
+
 static inline int _getMpRatio(func_800DC888_t* stats, int id)
 {
     if (stats[id].unkA == 0) {
@@ -373,6 +306,7 @@ static inline int _getMpRatio(func_800DC888_t* stats, int id)
 
     return stats[id].unk8 * 128 / stats[id].unkA;
 }
+
 static inline int _getExtraRatio(func_800DC888_t* stats, int id)
 {
     int ratio = 0;
@@ -387,6 +321,7 @@ static inline int _getExtraRatio(func_800DC888_t* stats, int id)
 
     return ratio;
 }
+
 void func_800DCC94(
     func_800E78F4_t* arg0, func_800DCAA0_t* arg1, int arg2, vs_action_t* arg3)
 {
@@ -443,43 +378,6 @@ void func_800DCC94(
     arg1->unk0 = arg1->unk0 * 128 + arg1->unkC_19;
 }
 
-typedef union {
-    unsigned int raw;
-    struct {
-        unsigned int unk0 : 6, classification : 2, unk8 : 7, timer : 5, counter : 7,
-            unk27 : 1, previous : 2, unk30 : 2;
-    } p;
-    struct {
-        unsigned char flags, pad[3];
-    } b;
-} actionReactionTarget;
-typedef struct {
-    char pad0[0x13];
-    unsigned char flag13;
-    char pad14[12];
-    unsigned char flag20, flag21;
-    char pad22[5];
-    unsigned char flag27;
-    char pad28[4];
-    unsigned char flag2C;
-    char pad2D[3];
-    unsigned char flag30;
-    char pad31[0x57];
-    unsigned char id;
-    char pad89[0xA4];
-    unsigned char mode;
-    char pad12E[0x76];
-    actionReactionTarget targets[16];
-} actionReactionState;
-typedef struct {
-    char pad0[20];
-    unsigned int effect1, effect2;
-    char pad1C[24];
-} actionReactionAction;
-typedef struct {
-    char pad0[10];
-    unsigned char flag;
-} actionReactionMotion;
 void func_800DD000(func_800E78F4_t* arg0, D_800F19CC_t2* arg1)
 {
     int id;
@@ -628,18 +526,6 @@ void func_800DD344(func_800E78F4_t* arg0)
     }
 }
 
-/* Local view of the vs_main_actions flag word at 0xC */
-typedef struct {
-    char unk0[0xC];
-    u_int unkC_0 : 23;
-    u_int flag23 : 1;
-    u_int unkC_24 : 4;
-    u_int flag28 : 1;
-    u_int flag29 : 1;
-    u_int unkC_30 : 2;
-    char unk10[0x24];
-} actionChoiceInfo;
-
 void func_800DD604(func_800E78F4_t* arg0)
 {
     u_int best = 0;
@@ -679,24 +565,6 @@ void func_800DD604(func_800E78F4_t* arg0)
     }
 }
 
-typedef struct {
-    char pad0[0x4C];
-    short x, y, z;
-} nearestWaypointState;
-typedef struct {
-    unsigned char x, y, z, flags;
-} nearestWaypointDestination;
-static inline unsigned int nearestWaypointValue(unsigned short* row, int index)
-{
-    unsigned short* p = row;
-    p += index;
-    return *p;
-}
-static inline unsigned short* nearestWaypointAddress(unsigned short* row, int index)
-{
-    row += index;
-    return row;
-}
 void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
 {
     int i;
@@ -730,12 +598,6 @@ void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
     }
 
     *(u_short(**)[32])0x1F8003BC = map;
-}
-
-static inline vs_battle_uiEquipment_limb* actorLimb(vs_battle_actor2* stats, int limb)
-{
-    return ((vs_battle_actor2*)(limb * sizeof(vs_battle_uiEquipment_limb) + (int)stats))
-        ->limbs;
 }
 
 void func_800DD918(func_800E78F4_t* arg0, int arg1)
@@ -886,17 +748,6 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
         }
     }
 }
-
-typedef struct {
-    int mask;
-    u_short unk4;
-    u_short interval;
-    int unk8;
-    int unkC;
-} statusEffectTick;
-typedef struct {
-    statusEffectTick entries[1];
-} statusEffectTable;
 
 void func_800DE030(int arg0)
 {
@@ -1161,9 +1012,6 @@ void func_800DE3E4(func_800E78F4_t* arg0)
         arg0->unk470 = 0;
     }
 }
-
-#undef MIN
-#undef MAX
 
 void func_800DEB10(D_800F19CC_t2* arg0)
 {

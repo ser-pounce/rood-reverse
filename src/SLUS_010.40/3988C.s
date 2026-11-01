@@ -35,22 +35,22 @@ glabel vs_main_memcpy
     lw         $t2, 0x4($a1)
     lw         $t3, 0x8($a1)
     lw         $t4, 0xC($a1)
-    addiu      $t0, -0x1
+    addu       $t0, -0x1
     sw         $t1, 0x0($a0)
     sw         $t2, 0x4($a0)
     sw         $t3, 0x8($a0)
     sw         $t4, 0xC($a0)
-    addiu      $a1, 0x10
+    addu       $a1, 0x10
     bnez       $t0, 0b
-     addiu     $a0, 0x10
+     addu      $a0, 0x10
     beqz       $t5, 2f
   1:
      lw        $t1, 0x0($a1)
-    addiu      $t5, -0x4
+    addu       $t5, -0x4
     sw         $t1, 0x0($a0)
-    addiu      $a1, 0x4
+    addu       $a1, 0x4
     bnez       $t5, 1b
-     addiu     $a0, 0x4
+     addu      $a0, 0x4
   2:
     jr         $ra
      nop
@@ -61,9 +61,9 @@ glabel vs_main_bzero
     beqz       $t0, 1f
   0:
      sw        $zero, 0x0($a0)
-    addiu      $t0, -0x4
+    addu       $t0, -0x4
     bnez       $t0, 0b
-     addiu     $a0, 0x4
+     addu      $a0, 0x4
   1:
     jr         $ra
      nop

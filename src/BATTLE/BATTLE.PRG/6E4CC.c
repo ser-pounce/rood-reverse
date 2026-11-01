@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -8,7 +8,6 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
-#include <stdlib.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -87,7 +86,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int D_800D9B6C(func_800E78F4_t*, int);
+int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -176,28 +175,57 @@ extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 
-typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    vs_battle_actorView_t* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-
-void func_800D8260(func_800E78F4_t* arg0, int arg1, int arg2)
+void func_800D6CCC(int* arg0)
 {
-    arg0->unk138 = arg1;
-    arg0->unk12A = arg2;
+    arg0[0] = 0;
+    arg0[1] = 0;
+    arg0[2] = 0;
+    arg0[3] = 0;
+    arg0[4] = 0;
+    arg0[5] = 0;
+    arg0[6] = 0;
+    arg0[7] = 0;
 }
+
+void func_800D6CF0(func_800D6CF_t* arg0, int textureIndex, int arg2)
+{
+    arg0->textureIndex = textureIndex;
+    arg0->unk18 = (u_char*)D_800F569C->block2Data + D_800F569C->block2Data[arg2 + 2];
+    arg0->unkE = 0;
+    arg0->unk6 = 0;
+}
+
+void func_800D6D24(func_800D6CF_t* arg0)
+{
+    if (arg0->unk6 != 0) {
+        arg0->unk6 -= 2;
+        if (arg0->unk6 != 0) {
+            return;
+        }
+    }
+
+    while (1) {
+        int w = *(int*)(arg0->unk18 + arg0->unkE);
+
+        switch (w & 0xF0000000) {
+        case 0:
+            arg0->textureInfo =
+                D_800F569C->textureInfoTable[arg0->textureIndex] + (w & 0xFFFF);
+            *(short*)&arg0->unk6 = (w >> 16) & 0x3FFF;
+            arg0->unkE += 4;
+            return;
+        case 0x10000000:
+            arg0->unk8 = (w << 18) >> 18;
+            arg0->unkA = (w << 4) >> 18;
+            arg0->unkE += 4;
+            break;
+        case 0x20000000:
+            arg0->unkE = 0;
+            break;
+        case 0x30000000:
+            return;
+        }
+    }
+}
+
+void func_800D6E24(func_800D2904_t* node, void* arg1) { func_800D6E44(node); }

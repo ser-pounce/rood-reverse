@@ -1,6 +1,6 @@
 #include "common.h"
-#include "6E644.h"
-#include "6E644Shared.h"
+#include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -8,7 +8,6 @@
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
 #include <abs.h>
-#include <stdlib.h>
 #include <rand.h>
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -87,7 +86,7 @@ void func_800D821C(func_800E78F4_t*);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int D_800D9B6C(func_800E78F4_t*, int);
+int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DB370(func_800E78F4_t*, int, int, int);
@@ -176,33 +175,6 @@ extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 
-typedef struct {
-    int unk0;
-    u_int unk4;
-} func_800E78F4_t2;
-
-typedef struct {
-    char unk0[0x16];
-    signed char unk16;
-    char unk17[0x21];
-    int unk38;
-    char unk3C[0x18];
-    vs_battle_actorView_t* unk54;
-    char unk58[0x42];
-    short unk9A;
-    char unk9C[0x5F];
-    u_char unkFB;
-    char unkFC[0x2E];
-    u_char unk12A;
-    char unk12B[0xD];
-    u_short unk138;
-    char unk13A[0x2F6];
-    func_800DCAA0_t* unk430[16];
-    int unk470;
-} func_800DEEA4_t2;
-struct actorTimerState;
-void func_800DBF00(func_800E78F4_t*);
-
 void func_800DBF00(func_800E78F4_t* arg0)
 {
     vs_battle_actorView_t* data = arg0->unk54;
@@ -233,25 +205,6 @@ void func_800DBF00(func_800E78F4_t* arg0)
     }
 }
 
-typedef struct {
-    char pad[8];
-    unsigned int low : 26, mode : 2, high : 4;
-} actorPhaseFlags;
-typedef struct actorTimerState {
-    char pad0[0x54];
-    actorPhaseFlags* actor;
-    char pad58[0x30];
-    unsigned char id;
-    char pad89[5];
-    unsigned short timer8E;
-    char pad90[8];
-    unsigned short timer98, timer9A;
-    char pad9C[0x93];
-    signed char phase, direction;
-    char pad131[0x6F];
-    struct actorTimerState* next;
-    unsigned char targetFlags;
-} actorTimerState;
 void func_800DBFE4(func_800E78F4_t* arg0)
 {
     if (arg0->unk8E != 0 && ++arg0->unk8E != 0) {
@@ -288,6 +241,7 @@ void func_800DBFE4(func_800E78F4_t* arg0)
         --arg0->unk98;
     }
 }
+
 void func_800DC0D0(void)
 {
     func_800E78F4_t* state;

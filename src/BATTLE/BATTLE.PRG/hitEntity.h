@@ -17,7 +17,10 @@ typedef struct {
 } limbEffects_t;
 
 typedef struct {
-    func_8008631C_t2 unk0;
+    union {
+        func_8008631C_t2 hit;
+        SVECTOR position;
+    } unk0;
     short risk;
     short strength;
     short intelligence;

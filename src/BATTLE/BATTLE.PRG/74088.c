@@ -183,7 +183,7 @@ void func_800DC888(func_800DC888_t* arg0)
     if (D_800F5900->unk4.unk40 == 0) {
         vs_action_t* action = &vs_main_actions[D_800F5900->actionIndex];
 
-        row = &arg0[D_800F5900->unk4.unk0.targetActor];
+        row = &arg0[D_800F5900->unk4.unk0.hit.targetActor];
 
         switch (action->type) {
         case actionTypeSpell:
@@ -204,9 +204,9 @@ void func_800DC888(func_800DC888_t* arg0)
         _hitEntity_t* entry = i < 0 ? &D_800F5900->unk4 : &D_800F5900->unk4C[i];
 
         if (entry->unk40 == 0) {
-            row = &arg0[entry->unk0.targetActor];
-            func_800DC30C(&row->unk4, &row->unk6, entry->unk0.hp, entry->hpEffect);
-            func_800DC30C(&row->unk8, &row->unkA, entry->unk0.mp, entry->mpEffect);
+            row = &arg0[entry->unk0.hit.targetActor];
+            func_800DC30C(&row->unk4, &row->unk6, entry->unk0.hit.hp, entry->hpEffect);
+            func_800DC30C(&row->unk8, &row->unkA, entry->unk0.hit.mp, entry->mpEffect);
             func_800DC30C(
                 &row->unk10, &row->unk12, entry->weaponDp, entry->weaponDpEffect);
             func_800DC30C(&row->unk14, &row->unk16, entry->armorDp, entry->armorDpEffect);
@@ -250,8 +250,8 @@ void func_800DCBD8(func_800DCAA0_t* arg0)
 
     for (i = 0; i < D_800F5900->unk4A; ++i) {
         _hitEntity_t* entry = &D_800F5900->unk4C[i];
-        if ((entry->unk40 == 0) && (id == D_800F5900->unk4C[i].unk0.targetActor)) {
-            threshold = D_800F5900->unk4C[i].unk0.hitThreshold;
+        if ((entry->unk40 == 0) && (id == D_800F5900->unk4C[i].unk0.hit.targetActor)) {
+            threshold = D_800F5900->unk4C[i].unk0.hit.hitThreshold;
             break;
         }
     }
@@ -406,14 +406,14 @@ void func_800DD000(func_800E78F4_t* arg0, D_800F19CC_t2* arg1)
         return;
     }
 
-    source = arg1->unk4.unk0.targetActor;
+    source = arg1->unk4.unk0.hit.targetActor;
     action = arg1->actionIndex;
     other = D_800F5878[source];
 
     for (i = 0; i < arg1->unk4A; ++i) {
         _hitEntity_t* entry = &arg1->unk4C[i];
 
-        if (entry->unk40 || entry->unk0.targetActor != id || source == id) {
+        if (entry->unk40 || entry->unk0.hit.targetActor != id || source == id) {
             continue;
         }
 
@@ -436,7 +436,7 @@ void func_800DD000(func_800E78F4_t* arg0, D_800F19CC_t2* arg1)
         }
 
         if (D_800F5920 != NULL && source == 0 && entry->hpEffect != 2
-            && entry->unk0.hp > 0) {
+            && entry->unk0.hit.hp > 0) {
             D_800F5920->unkA = 0;
         }
 
@@ -1028,7 +1028,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
         return;
     }
 
-    entry = D_800F5878[arg0->unk4.unk0.targetActor];
+    entry = D_800F5878[arg0->unk4.unk0.hit.targetActor];
     temp_t1 = entry->unk54;
 
     if (entry == NULL) {
@@ -1050,7 +1050,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
                 _hitEntity_t* elem = &arg0->unk4C[j];
 
                 if (elem->unk40 == 0) {
-                    D_800F45E0_t* actor = D_800F45E0[elem->unk0.targetActor];
+                    D_800F45E0_t* actor = D_800F45E0[elem->unk0.hit.targetActor];
 
                     if ((actor == NULL) || ((0x14 >> actor->unk16C.actorId) & 1)) {
                         func_800E4CE8(entry);
@@ -1090,7 +1090,7 @@ int func_800DEC88(void* arg0)
             func_800DD604(state);
 
             if (action != NULL && action->unk4.unk40 == 0
-                && action->unk4.unk0.targetActor == state->unk88) {
+                && action->unk4.unk0.hit.targetActor == state->unk88) {
                 state->unk9A = 0;
             }
         }
@@ -1129,7 +1129,7 @@ void func_800DEEA4(D_800F19CC_t2* arg0)
 {
     if (arg0 != NULL) {
         if (arg0->unk4.unk40 == 0) {
-            func_800E78F4_t* entry = D_800F5878[arg0->unk4.unk0.targetActor];
+            func_800E78F4_t* entry = D_800F5878[arg0->unk4.unk0.hit.targetActor];
 
             if (entry != NULL) {
                 entry->unk9A = 0;

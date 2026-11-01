@@ -523,7 +523,7 @@ extern u_short vs_main_battleAbilitiesPointsRequirements[];
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
 extern portInfo_t vs_main_portInfo[2];
-extern u_char D_8004FE88[256];
+extern u_char vs_main_actorExtraShp[256];
 extern D_80050468_t D_80050468;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;

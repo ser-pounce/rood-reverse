@@ -169,13 +169,13 @@ static int _paletteFlag;
 
 void vs_menu9_loadZudFile(int id)
 {
-    static int zudId;
+    static int zudIndex;
 
     vs_main_CdFile cdFile;
     int i;
 
     cdFile.lba = _zudLbas[id];
-    zudId = id;
+    zudIndex = id;
     cdFile.size = _zudSizes[id];
     _zudCdSlot = vs_main_allocateCdQueueSlot(&cdFile);
     _zudData = vs_main_allocHeapR(cdFile.size);

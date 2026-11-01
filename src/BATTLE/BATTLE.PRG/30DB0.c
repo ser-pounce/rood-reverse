@@ -3372,11 +3372,14 @@ void func_8009F530(int actorId)
                 temp_s0->unk16C.unk3 = 0xFF;
                 if ((temp_s0->unk0.unk1A == 0) && !(temp_s0->unk16C.unk0_3)
                     && (temp_s0->unk0.unk12 == 0xFF)
-                    && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)
-                    && (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y)
-                    && (temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
-                    && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
-                    temp_s0->unk16C.unk3 = temp_v0;
+                    && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)) {
+
+                    if (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y) {
+                        if ((temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
+                            && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
+                            temp_s0->unk16C.unk3 = temp_v0;
+                        }
+                    }
                 }
             }
         }

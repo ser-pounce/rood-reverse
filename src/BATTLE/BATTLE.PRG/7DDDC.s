@@ -1050,7 +1050,8 @@ alabel func_800E7454
     lui        $t6, (0x800F5878 >> 16)
     bnez       $t0, 35b
   37:
-     lw         $s5, D_800F58BC
+     lui        $s5, %hi(D_800F58BC)
+    lw         $s5, %lo(D_800F58BC)($s5)
     li         $v0, 0xC
   38:
     addu       $t4, $s5, $v0

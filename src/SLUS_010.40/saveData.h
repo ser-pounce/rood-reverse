@@ -70,8 +70,8 @@ typedef struct {
     vs_main_inventoryIndices_t unk16C8;
     _mpdRoomDoorSection_t unk1778;
     vs_main_scoredata_t scoreData;
-    int unk1898;
-    char unk189C[0x520];
+    int zoneEnemyCacheIndex;
+    vs_main_zoneEnemyCache_t zoneEnemyCache[4];
     vs_main_artsStatus_t artsStatus;
     vs_menu_containerData containerData;
     char unk59E0[0x220];

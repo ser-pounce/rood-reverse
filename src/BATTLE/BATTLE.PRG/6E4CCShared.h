@@ -166,6 +166,19 @@ typedef struct {
     u_int unk0_31 : 1;
 } func_800DA1D4_t;
 
+typedef struct {
+    u_int unk0 : 1;
+    u_int direction : 3;
+    u_int clockwise : 1;
+    u_int count : 7;
+    u_int visited : 4;
+    u_int stop : 1;
+    u_int changed : 1;
+    u_int cell : 4;
+    u_int boundX : 5;
+    u_int boundZ : 5;
+} func_800E78F4_path_t;
+
 typedef struct func_800E78F4_t {
     char unk0;
     u_char unk1;
@@ -214,10 +227,12 @@ typedef struct func_800E78F4_t {
     u_char unk33;
     vs_battle_movementPosition unk34;
     int unk38;
-    char unk3C[6];
+    u_int unk3C;
+    u_short unk40;
     short unk42;
     u_char unk44;
-    char unk45[3];
+    u_char unk45;
+    u_short unk46;
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
     vs_battle_actorView_t* unk54;
@@ -226,7 +241,11 @@ typedef struct func_800E78F4_t {
     SVECTOR* unk60;
     vs_battle_movementPosition* unk64;
     int (*unk68)(struct func_800E78F4_t*);
-    char unk6C[0x16];
+    char unk6C[4];
+    u_char unk70[8];
+    u_char unk78[8];
+    u_char unk80;
+    u_char unk81;
     short unk82;
     char unk84[4];
     u_char unk88;
@@ -235,7 +254,7 @@ typedef struct func_800E78F4_t {
     char unk8B;
     u_short unk8C;
     u_short unk8E;
-    char unk90[2];
+    u_short unk90;
     u_short unk92;
     u_short unk94;
     char unk96[2];
@@ -285,10 +304,11 @@ typedef struct func_800E78F4_t {
     u_char unk10C;
     char unk10D[3];
     vs_battle_movementPosition unk110;
-    char unk114[4];
+    u_short unk114;
+    char unk116[2];
     u_char unk118[4];
     vs_battle_movementPosition unk11C;
-    char unk120[4];
+    u_int unk120;
     u_char unk124;
     char unk125[3];
     u_short unk128;
@@ -308,7 +328,8 @@ typedef struct func_800E78F4_t {
     char unk13E;
     u_char unk13F;
     func_800DCAA0_t unk140;
-    char unk154[4];
+    char unk154[2];
+    u_short unk156;
     short unk158;
     short unk15A;
     u_char unk15C;
@@ -324,7 +345,8 @@ typedef struct func_800E78F4_t {
     int unk184;
     short unk188;
     int unk18A : 16;
-    char unk18C[8];
+    int unk18C;
+    func_800E78F4_path_t unk190;
     int unk194;
     char unk198[2];
     u_char unk19A;
@@ -412,6 +434,7 @@ int func_800E7F8C(func_800E78F4_t*);
 void func_800D6E24(func_800D2904_t*, void*);
 void func_800D820C(int, int);
 void func_800D821C(func_800E78F4_t*);
+void func_800D8280(func_800E78F4_t*);
 void func_800D82A8(int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
@@ -434,6 +457,8 @@ u_int func_800DB93C(
 int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DBF00(func_800E78F4_t*);
+void func_800DBFE4(func_800E78F4_t*);
 void func_800DC19C(func_800E78F4_t*);
 void func_800DC210(func_800E78F4_t*, int);
 int func_800DC284(int, int, int, int);
@@ -462,6 +487,7 @@ int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
 int func_800E4320(int, int);
+void func_800E4358(func_800E78F4_t*);
 int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
 int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
 int func_800E45D4(int);
@@ -469,6 +495,8 @@ u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 int func_800E4624(SVECTOR*, SVECTOR*, int, int);
 int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
+void func_800E48A8(func_800E78F4_t*, int, int);
+void func_800E48F8(func_800E78F4_t*);
 void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);

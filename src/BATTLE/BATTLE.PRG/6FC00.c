@@ -10,7 +10,20 @@
 #include <abs.h>
 #include <rand.h>
 
+extern int D_800F16F4;
 extern int D_800F58C4;
+extern int D_800F58D4;
+
+static inline int _historyRepeats(func_800E78F4_t* state)
+{
+    return *(int*)&state->unk70[0] == *(int*)&state->unk70[4]
+        && *(int*)&state->unk78[0] == *(int*)&state->unk78[4];
+}
+
+static inline int _historyStalled(func_800E78F4_t* state)
+{
+    return state->unk81 == 255 ? _historyRepeats(state) : 0;
+}
 
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 {
@@ -307,6 +320,231 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     arg0->unk1A4[id] = final;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6FC00", func_800D8EF4);
+void func_800D8EF4(void)
+{
+    vs_battle_actor* actor;
+
+    D_800F58E0 = 0;
+    D_800F58BC->unk24 = 0;
+
+    if (D_800F58BC->unk18 < 65534) {
+        ++D_800F58BC->unk18;
+    }
+
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        int flags = actor->command.fields.unk8;
+        func_800E78F4_t* state;
+        D_800F4538_t* object;
+        vs_battle_actor* other;
+        vs_battle_actor2* stats;
+        int id;
+        int i;
+        int arg;
+        int alert;
+        int current;
+        int max;
+        u_int x;
+        u_int z;
+        u_int hp;
+
+        actor->command.fields.unkB_0 = 0;
+        id = actor->id;
+        state = ((func_800E78F4_t**)0x1F80037C)[id];
+        state->unk1D[0] = 0;
+        object = state->unk58;
+        state->unk90 = actor->unk3C->unk954;
+
+        if (flags & 0x20) {
+            func_800D82CC(state);
+            func_800D821C(state);
+            func_800DBF00(state);
+            state->unk14[0] = 1;
+            continue;
+        }
+
+        func_800D8280(state);
+        func_800E4358(state);
+
+        if (flags & 0x80) {
+            state->unk14[0] = 1;
+            continue;
+        }
+
+        func_800DBFE4(state);
+
+        if ((flags & 0x40) || (state->unk18C != 0)
+            || (object->unk0.unkA_0 | object->unk0.unkA_3 | object->unk5AC_15)
+            || (id == 0)) {
+        skip:
+            state->unk14[0] = 1;
+            continue;
+        }
+
+        if (object->unk0.unkB_7) {
+            state->unk1D[0] = 1;
+            func_800D87E8(state, 0);
+            goto skip;
+        }
+
+        arg = func_800E45B4();
+
+        if (D_800F16F4 < arg) {
+            func_800E48F8(state);
+            state->unk14[0] = 1;
+            continue;
+        }
+
+        *(int*)0x1F8003FC = arg;
+
+        if (state->unk18 != 0) {
+            if ((state->unk12A != 0) && (state->unk138 == 6)) {
+            idle:
+                func_800E48F8(state);
+                state->unk14[0] = 1;
+                continue;
+            }
+
+            state->unk18 = 0;
+        }
+
+        if (state->unk19A != 0) {
+            --state->unk19A;
+            func_800E2CCC(state);
+            func_800D87E8(state, 0);
+            state->unk1D[0] = 1;
+
+            if (state->unk46 >= 2) {
+                --state->unk46;
+            }
+
+            goto idle;
+        }
+
+        state->unk14[0] = 0;
+
+        if ((*(u_int*)state->unk64 & 0xFF00FF) == (*(u_int*)&state->unk34 & 0xFF00FF)) {
+            if ((state->unk46 != 0) && (--state->unk46 == 0)) {
+                state->unk38 = *(u_int*)state->unk64;
+                state->unkFB = 16;
+                state->unk1C = 1;
+                state->unk45 = 40;
+            }
+
+            if ((state->unk45 != 0) && (--state->unk45 == 0)) {
+                if (++state->unkFA >= 5) {
+                    state->unkFA = 1;
+                }
+
+                state->unk45 = 40;
+            }
+
+            state->unk8 = 1;
+        } else {
+            state->unk46 = 2700;
+            state->unk8 = 0;
+
+            if (state->unk1C != 0) {
+                func_800E4CE8(state);
+                state->unk1C = 0;
+            }
+        }
+
+        if ((state->unk124 != 8) && (((vs_battle_actorView_t*)actor)->unk9 != 8)
+            && (state->unk124 != ((vs_battle_actorView_t*)actor)->unk9)) {
+            func_800E48A8(state, 1, 64);
+        }
+
+        state->unk124 = ((vs_battle_actorView_t*)actor)->unk9;
+        state->unk34 = state->unk58->unk0.currentTile;
+        x = ((u_int*)state->unk60)[0];
+        z = ((u_int*)state->unk60)[1];
+        ((u_int*)&state->unk4C)[0] = x;
+        ((u_int*)&state->unk4C)[1] = z;
+        state->unk120 = (((z & 0xFFFF) >> 6) << 16) | ((x & 0xFFFF) >> 6);
+
+        if ((0x12600 >> state->unk124) & 1) {
+            if (_historyStalled(state)) {
+                state->unk81 = 0;
+                state->unk19A = 30;
+                goto idle;
+            }
+
+            state->unk70[state->unk80] = ((u_int*)&state->unk4C)[0];
+            state->unk78[state->unk80] = ((u_int*)&state->unk4C)[1];
+            state->unk81 |= 1 << state->unk80;
+            state->unk80 = (state->unk80 + 1) & 7;
+        } else {
+            state->unk81 = 0;
+        }
+
+        if (state->unk190.count > 0) {
+            --state->unk190.count;
+        }
+
+        arg = 0;
+
+        for (i = 0; i < 2; ++i) {
+            func_800D87E8(state, arg);
+            arg = D_800F58D4;
+
+            if (arg == 0) {
+                break;
+            }
+        }
+
+        func_800E4F14(state);
+
+        if (func_800D85D8(state)) {
+            goto idle;
+        }
+
+        alert = 0;
+        stats = state->unk54->unk3C;
+        hp = *(u_int*)&stats->currentHP;
+        current = hp & 0xFFFF;
+        max = hp >> 16;
+
+        if (state->unk2F != 0) {
+            if (state->unk2F == 1) {
+                alert = current * 4 < max;
+            } else if (state->unk2F == 2) {
+                if (current * 2 < max) {
+                    alert = 1;
+                }
+            } else if (state->unk114 != 0) {
+                alert = 1;
+            } else {
+                for (other = vs_battle_actors[0]; other != NULL; other = other->next) {
+                    if (state->unk1A4[other->id].unk0_5
+                        && (state->unk1A4[other->id].unk0_6 == 3)) {
+                        alert = 1;
+                        break;
+                    }
+                }
+            }
+
+            if (state->unk131 == 2) {
+                alert = 1;
+            }
+        }
+
+        state->unkE = alert;
+
+        if (state->unk156 != 0) {
+            --state->unk156;
+        }
+
+        if ((state->unk1C == 0) && (state->unk38 >= 0)) {
+            int targetId = ((u_char*)&state->unk38)[3];
+
+            if ((state->unk40 == 0) || (--state->unk40 == 0)
+                || (D_800F4538[targetId] == NULL)
+                || ((*(u_int*)&D_800F4538[targetId]->unk0.currentTile & 0xFF00FF)
+                    != (state->unk3C & 0xFF00FF))) {
+                func_800E4CE8(state);
+            }
+        }
+    }
+}
 
 void func_800D9538(void) { D_800F58C4 = *(int*)0x1F8003F8; }

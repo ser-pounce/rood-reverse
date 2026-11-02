@@ -20,7 +20,6 @@ D_8005FF30
 D_8006003A
 D_80060068
 D_80060F68
-D_80061068
 DisableEvent
 DMACallback
 DpqColor
@@ -163,6 +162,7 @@ vs_main_settings
 vs_main_setVibrateParams
 vs_main_setVibrationBank
 vs_main_soundData
+vs_main_spawnPoint
 vs_main_stateFlags
 vs_main_stickPosBuf
 vs_main_streamXa

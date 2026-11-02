@@ -10,6 +10,13 @@
 #include <abs.h>
 #include <rand.h>
 
+typedef union {
+    unsigned int raw;
+    vs_battle_movementPosition p;
+} vs_battle_movementTile;
+
+extern u_char D_800F175C[];
+
 int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2);
 
 void func_800DF8A4(func_800E78F4_t* arg0)
@@ -116,7 +123,211 @@ int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800DFBCC);
+int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
+{
+    u_short routes[2];
+    int distances[2];
+    vs_battle_movementTile position;
+    int count;
+    int i;
+    int x;
+    u_short route;
+
+    position.raw = *(u_int*)&arg0->unk34;
+    *(u_int*)routes = (*(u_int**)0x1F8003F4)[area * 16 + index];
+
+    if (!(*(u_int*)routes & 0x1BE0)) {
+        return 6;
+    }
+
+    arg0->unk154[0] = area;
+    count = 1;
+
+    if (*(u_int*)routes & 0x1BE00000) {
+        count = 2;
+    }
+
+    for (i = 0; i < count; ++i) {
+        vs_battle_movementPosition candidate;
+        int result;
+
+        route = (i == 0) ? routes[0] : routes[1];
+
+        if ((((route >> 5) & 0x1F) != position.p.x) || ((route & 0x1F) != position.p.z)) {
+            continue;
+        }
+
+        candidate = position.p;
+
+        if (route & 0x400) {
+            int slot;
+
+            if (route & 0x8000) {
+                continue;
+            }
+
+            result = func_800DFAF8(arg0, position.p, 1);
+
+            if ((result >= 0) && (func_8008E320(slot = result >> 1) >= 0)) {
+                candidate.y = slot + 2;
+
+                if (!((D_800F58BC->unkE >> candidate.y) & 1)) {
+                    arg0->unk19B = candidate.y;
+
+                    if (arg0->unk88) {
+                        func_800E4BE0(candidate.y);
+                    }
+
+                    func_800DF9A8(
+                        (func_800DFA54_t*)&candidate, (func_800DFA54_t*)&arg0->unk19C);
+                    arg0->unk170 = candidate;
+                    return 14;
+                }
+            }
+
+            candidate.x = (route >> 5) & 0x1F;
+            candidate.z = route & 0x1F;
+        } else if (route & 0x6000) {
+            int amount;
+            u_char* step;
+
+            arg0->unk154[0] =
+                (*(u_short(**)[32])0x1F8003C0)[candidate.z][candidate.x] % 16;
+            arg0->unk5 = 0;
+            amount = ((route >> 13) & 3) + 1;
+            step = &D_800F175C[(route >> 11) & 3];
+            candidate.x += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dx;
+            candidate.z += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dz;
+            result = func_800D954C(arg0, candidate);
+
+            if (result < 0) {
+            center:
+                if ((arg0->unk15C != 16)
+                    && ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]) {
+                    arg0->unk17C =
+                        ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]->unk60->vx;
+                    arg0->unk180 =
+                        ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]->unk60->vz;
+                } else {
+                    arg0->unk17C = candidate.x * 128 + 64;
+                    arg0->unk180 = candidate.z * 128 + 64;
+                }
+
+                arg0->unk18A =
+                    ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180)
+                    & 0xFFF;
+                arg0->unk13A = arg0->unk13C;
+                return 4;
+            }
+
+            if (result <= 0) {
+                continue;
+            }
+
+        stop:
+            candidate.y = 0;
+            arg0->unk170 = candidate;
+            return 14;
+        } else {
+            u_char* table = D_800F175C;
+            u_char* direction = &table[(route >> 11) & 3];
+
+            candidate.x += ((D_800F16EC_t*)0x1F8003EC)[*direction].dx;
+            candidate.z += ((D_800F16EC_t*)0x1F8003EC)[*direction].dz;
+
+            if (func_800D954C(arg0, candidate) > 0) {
+                if (((*(u_short(**)[32])0x1F8003BC)[candidate.z][candidate.x] & 0x1C00)
+                    || (((*(u_char**)0x1F8003C4)[position.p.z * *(u_char*)0x1F8003DC
+                                                 + position.p.x]
+                            >> *direction)
+                        & 1)) {
+                    goto stop;
+                }
+
+                arg0->unk188 = *direction;
+                return 5;
+            }
+        }
+
+        goto center;
+    }
+
+    if ((*(u_int*)routes & 0x8400) == 0x8400) {
+        if (count == 1) {
+        areaOnly:
+            arg0->unk154[0] =
+                (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            return 6;
+        }
+
+        if ((*(u_int*)routes & 0x84000000) == 0x84000000) {
+            goto areaOnly;
+        }
+
+        goto second;
+    }
+
+    if ((*(u_int*)routes & 0x84000000) == 0x84000000) {
+        goto first;
+    }
+
+    for (i = 0; i < count; ++i) {
+        route = (i == 0) ? routes[0] : routes[1];
+
+        if (!((*(u_short(**)[32])0x1F8003BC)[route & 0x1F][(route >> 5) & 0x1F]
+                & 0x1C00)) {
+            continue;
+        }
+
+        route = (i != 0) ? routes[0] : routes[1];
+
+        if (((*(u_short(**)[32])0x1F8003BC)[route & 0x1F][(route >> 5) & 0x1F] & 0x1C00)
+            || (count == 1)) {
+            arg0->unk154[0] =
+                (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            return 6;
+        }
+
+        *(u_int*)&arg0->unk168 = ((route & 0x1F) << 16) | ((route >> 5) & 0x1F);
+        return 6;
+    }
+
+    x = position.p.x;
+
+    if (count == 1) {
+        if (((*(u_int*)& arg0->unk168 =
+                     ((routes[0] & 0x1F) << 16) | ((*(u_int*)routes >> 5) & 0x1F))
+                & 0xFF00FF)
+            != (*(u_int*)&arg0->unk34 & 0xFF00FF)) {
+            return 6;
+        }
+    } else {
+        int z = position.p.z;
+
+        distances[0] =
+            (x - ((*(u_int*)routes >> 5) & 0x1F)) * (x - ((*(u_int*)routes >> 5) & 0x1F))
+            + (z - (routes[0] & 0x1F)) * (z - (routes[0] & 0x1F));
+        x -= (*(u_int*)routes >> 21) & 0x1F;
+        z -= (*(u_int*)routes >> 16) & 0x1F;
+        distances[1] = x * x + z * z;
+
+        if (distances[0] < distances[1]) {
+        first:
+            *(u_int*)&arg0->unk168 =
+                ((routes[0] & 0x1F) << 16) | ((*(u_int*)routes >> 5) & 0x1F);
+        } else {
+        second:
+            *(u_int*)&arg0->unk168 =
+                (*(u_int*)routes & 0x1F0000) | ((*(u_int*)routes >> 21) & 0x1F);
+        }
+
+        if ((*(u_int*)&arg0->unk168 & 0xFF00FF) != (*(u_int*)&arg0->unk34 & 0xFF00FF)) {
+            return 6;
+        }
+    }
+
+    goto center;
+}
 
 int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 {

@@ -378,7 +378,9 @@ typedef struct {
     u_char unk8;
     char unk9;
     u_char unkA;
-    char unkB[9];
+    char unkB[3];
+    u_char unkE;
+    char unkF[5];
     int unk14;
     u_short unk18;
     char unk1A[2];
@@ -502,6 +504,7 @@ void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4BB8(func_800E78F4_t*);
+void func_800E4BE0(int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);

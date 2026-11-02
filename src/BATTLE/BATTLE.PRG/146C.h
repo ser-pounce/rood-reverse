@@ -143,6 +143,7 @@ short func_8008DC7C(int arg0, int arg1);
 short func_8008DD0C(int arg0, int arg1);
 int func_8008DDA8(int arg0, int arg1);
 void func_8008E224(int, int);
+int func_8008E320(int arg0);
 int func_8008E470(void);
 void func_8008E88C(void);
 void func_8008EAE4(int, int);

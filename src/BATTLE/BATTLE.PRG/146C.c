@@ -17358,7 +17358,7 @@ void* func_8008E2D4(int arg0)
     return NULL;
 }
 
-u_int func_8008E320(int arg0)
+int func_8008E320(int arg0)
 {
     _mpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
     if (vs_battle_roomData.section12 != NULL) {

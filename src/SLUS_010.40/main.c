@@ -1291,7 +1291,7 @@ void func_80042CB0(void)
     temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
-        func_80069FC4(var_s1, 0);
+        vs_battle_saveEnemyState(var_s1, 0);
     }
     vs_battle_setDoorEntered();
 }

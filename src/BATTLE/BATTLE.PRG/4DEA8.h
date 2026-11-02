@@ -1,4 +1,5 @@
 #pragma once
+#include "src/SLUS_010.40/main.h"
 #include <stddef.h>
 #include <libgte.h>
 
@@ -168,3 +169,6 @@ extern void* D_800F4C30;
 extern void* D_800F4C48;
 extern short D_800F4C58[];
 extern char D_800F4C68;
+extern u_char D_800E9C30[];
+extern u_char* D_800EB588[];
+extern vs_main_CdQueueSlot* D_800F4BBC;

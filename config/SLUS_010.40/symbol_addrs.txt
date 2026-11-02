@@ -765,6 +765,7 @@ vs_main_zndMusicMap = 0x8004FCCC;
 vs_main_unkStrings = 0x8004FDCC;
 vs_main_artsPointsRequirements = 0x8004FDE4;
 vs_main_battleAbilitiesPointsRequirements = 0x8004FE5C;
+vs_main_actorExtraShp = 0x8004FE88; // size:0x100
 _randArr = 0x8004FF88;
 _randIndex = 0x8005010C;
 _cdReadBuffer = 0x80050110;

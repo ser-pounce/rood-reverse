@@ -14,7 +14,7 @@ NAME_FIELD_SIZE = 28
 # (ksy_id, needs_decode)
 RECORD_FIELDS = (
     ("name", True),
-    ("zudid", False),
+    ("zudindex", False),
     ("classid", False),
     ("killflagsoffset", False),
     ("killflagscount", False),
@@ -68,7 +68,7 @@ def encode_name(name: str) -> bytes:
 
 def build_monster_block(rec: dict) -> bytes:
     return MONSTER_STRUCT.pack(
-        rec["zudid"],
+        rec["zudindex"],
         rec["classid"],
         rec["killflagsoffset"],
         rec["killflagscount"],

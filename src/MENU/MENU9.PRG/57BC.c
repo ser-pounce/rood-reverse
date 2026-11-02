@@ -6,13 +6,13 @@
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 
-int vs_menu9_loadZud(int zudId)
+int vs_menu9_loadZud(int zudIndex)
 {
     int state = vs_battle_loadObjectDataState;
 
     switch (state) {
     case 0:
-        vs_menu9_loadZudFile(zudId);
+        vs_menu9_loadZudFile(zudIndex);
 
         ++vs_battle_loadObjectDataState;
         break;

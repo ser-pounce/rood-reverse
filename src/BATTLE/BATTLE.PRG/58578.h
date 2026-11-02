@@ -20,10 +20,7 @@ typedef struct {
     func_800C1564_t unk0[2];
     short unk20;
     short unk22;
-    short unk24;
-    short unk26;
-    short unk28;
-    short unk2A;
+    SVECTOR unk24;
     char unk2C;
     char unk2D;
     char unk2E;
@@ -54,3 +51,4 @@ void func_800C28AC(SVECTOR* position, int arg1);
 void func_800C2B0C(SVECTOR* position, u_int row);
 int func_800C4734(void);
 void func_800C0D78(void);
+void func_800C2E24(SVECTOR*, MATRIX*, int);

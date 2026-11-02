@@ -5,6 +5,7 @@
 #include "38C1C.h"
 #include "40564.h"
 #include "44F14.h"
+#include "4B16C.h"
 #include "6E4CC.h"
 #include "battleUnk.h"
 #include "entity.h"
@@ -25,16 +26,8 @@ typedef struct {
     int words[2];
 } func_800A6798_t;
 
-void func_800B64A8(int, int, int);
 D_800F4538_t* func_800A3C34(int, int, int, int);
 int func_800A3BC4(int, int);
-int func_800A3DB4(int, int, int);
-int func_800A91DC(int, int, int);
-int func_800A92B8(int, int);
-int func_800A9378(int, int, int, int);
-void func_800AA850(int, short, int);
-void func_800ACF54(D_800F4538_t*);
-void func_800A70DC(D_800F4538_t*, int);
 int func_800A76BC(D_800F4538_t*, SVECTOR*, int*, int);
 void func_800A2FBC(D_800F4538_t*);
 inline int func_800A3310(int, SVECTOR*);
@@ -42,17 +35,8 @@ void func_800A3394(int, SVECTOR*);
 int func_800A46A4(D_800F4538_t*);
 void func_800A4A88(D_800F4538_t*, int);
 int func_800A51A0(int, SVECTOR*);
-void func_800A525C(D_800F4538_t*);
 int func_800A5280(int, int, int, SVECTOR*);
-inline SVECTOR* func_800A4A24(int);
-void func_800A9EB4(int, short, int);
-void func_800AA454(int, vs_battle_movementPosition*, int);
-void func_800AA620(int, SVECTOR*, int);
-void func_800AC690(int, D_800F4538_t*);
-void* func_800AD494(void*, int, u_short**);
-void func_800E4BD8(int);
 void func_800E4BE0(int);
-void func_800E68A0(D_800F45E0_t*);
 int func_800E75EC(void);
 
 extern u_char D_800E8FD0[];
@@ -61,12 +45,9 @@ extern u_char D_800E90CC[];
 extern u_char D_800E90D0[];
 extern int D_800F49E8;
 extern _mpdRoomSection3* D_800F49F0;
-extern int D_800F49F4;
-extern u_char D_800F49F8;
-extern u_char D_800F49F9;
 extern SVECTOR D_800F4B08;
-extern char D_800F4B18;
-extern u_char D_800E9278[];
+
+inline SVECTOR* func_800A4A24(int);
 
 static inline int vs_battleRelativeSampleHeight(
     D_1F8003BC_t* samples, int sector, int offset, int y)
@@ -451,9 +432,9 @@ void func_800A35A8(void)
     }
 }
 
-void func_800A36E0(int arg0, int arg1, func_8006EBF8_t* arg2)
+void func_800A36E0(int actorId, int arg1, func_8006EBF8_t* arg2)
 {
-    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[actorId];
     if (temp_a0 != NULL) {
         arg2->unk0.unk0.value = temp_a0->unk1868;
         if (temp_a0->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {
@@ -698,8 +679,8 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
         }
         if ((i == 0) && actor->unk5AC_28) {
             D_800F45E0_t* temp_v1 = D_800F45E0[actor->unk5AC_28];
-            if ((arg0 == temp_v1->unk0.currentTile.x)
-                && (arg1 == temp_v1->unk0.currentTile.z)) {
+            if (((u_int)arg0 == temp_v1->unk0.currentTile.x)
+                && ((u_int)arg1 == temp_v1->unk0.currentTile.z)) {
                 return actor;
             }
             continue;

@@ -2,12 +2,14 @@
 #include "44F14.h"
 #include "146C.h"
 #include "30DB0.h"
+#include "38C1C.h"
 #include "3A1A0.h"
 #include "40564.h"
 #include "48C7C.h"
 #include "49268.h"
 #include "4DEA8.h"
 #include "5BF94.h"
+#include "6E4CC.h"
 #include "battleUnk.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -24,20 +26,13 @@ typedef struct {
     u_char** data;
 } D_1F8003EC_t;
 
-void func_800AB9A4(void*);
-int func_800AD714(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800AE46C(u_char*);
 void func_800AE474(u_char*);
-void func_800AE6C0(D_800F4538_t*, int, int);
 void func_800AE828(int, D_800F4538_t*, int);
 void func_800AF844(SVECTOR*, SVECTOR*, int);
 void func_800AFDE8(int, SVECTOR*, int);
-void func_800B0908(D_800F45E0_t*, int);
 int func_800B101C(D_800F45E0_t*);
-void func_800E4C28(int, int);
-void func_800E6898(void*);
 
-extern MATRIX D_8005E218;
 extern u_char D_800E91A4[];
 extern signed char D_800E91AC[];
 extern signed char D_800E91BC[];
@@ -53,16 +48,11 @@ extern signed char D_800E9238[];
 extern signed char D_800E9248[];
 extern signed char D_800E9258[];
 extern signed char D_800E9268[];
-extern u_char D_800E9278[];
 extern u_char D_800E9298[];
 extern u_char D_800E92DC[];
 extern int D_800E9308;
 extern u_short D_800E9A28[][4];
-extern int D_800F1868;
 extern MATRIX D_800F4910;
-extern MATRIX D_800F49B8;
-extern u_char D_800F49F8;
-extern char D_800F4B18;
 extern u_char D_800F4B19;
 
 int func_800AD714(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
@@ -1973,7 +1963,7 @@ complete:
     return 0;
 }
 
-int func_800B13CC(int arg0, int arg1, int arg2)
+int func_800B13CC(u_int arg0, u_int arg1, int arg2)
 {
     int i;
     int var_a3 = 0xBB8;

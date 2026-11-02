@@ -236,8 +236,6 @@ static vs_battle_charInitData D_800FAB18 = {
 
 extern int D_800F1874;
 extern int D_800F18F4;
-extern int D_800F190C;
-extern int D_800F1968;
 extern int D_800F196C;
 extern void* D_800F19CC;
 
@@ -566,10 +564,10 @@ void func_800FA35C(int startState __attribute__((unused)))
     vs_main_projectionDistance = 0x200;
     vs_main_nearClip = 0x40;
     D_80050468.unk0 = 0;
-    D_80050468.hours = 0;
-    D_80050468.minutes = 0;
-    D_80050468.seconds = 0;
-    D_80050468.frames = 0;
+    D_80050468.time.t.h = 0;
+    D_80050468.time.t.m = 0;
+    D_80050468.time.t.s = 0;
+    D_80050468.time.t.f = 0;
     _zoneContext.unk68 = D_80061068.unk6_0;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();

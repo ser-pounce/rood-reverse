@@ -43,17 +43,13 @@ int _loadSeq(vs_battle_objectData*);
 int _loadEtm(vs_battle_objectData*);
 void _loadMaterialPalette(int index, int material);
 void func_8009CAEC(D_800F4538_t* arg0, int arg1);
-int func_8009E180(D_800F4538_t*, SVECTOR* arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
 int func_8009F794(D_800F45E0_t* arg0);
 void func_8009F9F4(int, D_800F4538_unk64*);
 void func_8009FD38(D_800F4538_t* arg0);
-int func_800A0104(int, int);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
-void func_800E6898(void*);
-void func_800E68A0(D_800F45E0_t*);
 
 extern u_short _shpLbaOffsets[];
 extern u_char _shpFileSectorSizes[];
@@ -72,18 +68,13 @@ extern u_char D_800E8EFC[][4];
 extern u_char _loadShpState;
 extern u_char D_800E8F29;
 extern u_char D_800E8F2B;
-extern u_char D_800E8F2C;
 extern u_char _loadEtmState;
-extern short D_800E8F30[];
-extern u_char D_800E8F90[];
 extern u_char D_800E8FA8[];
 extern void* D_800E8FB4[];
-extern char D_800E8FC0;
 extern int D_800E8FC4;
 extern u_char _weaponMaterialPaletteMap[];
 extern u_char D_800E9030[];
 extern u_char D_800E9090[];
-extern u_char D_800E909C[];
 extern u_char D_800E919C[];
 extern void* _wepFileData;
 extern int _wepFileLoaded;
@@ -108,7 +99,6 @@ extern vs_main_CdFile D_800F22D8;
 extern vs_main_CdQueueSlot* D_800F22E0;
 extern u_char* D_800F22E4;
 extern u_char D_800F244F[];
-extern u_char D_800F2450[];
 extern VECTOR D_800F4438;
 extern char D_800F4448[];
 extern void* D_800F4528[];
@@ -116,12 +106,15 @@ extern int D_800F457C;
 extern int D_800F4580;
 extern int D_800F45D8;
 extern short D_800F4628[4][16];
-extern void* D_800F4768;
 extern char* D_800F4810[4][16];
 extern short D_800F4938[4][16];
 extern int D_800F49D8;
 extern u_int D_800F49E0;
-extern char D_800F49E4;
+
+extern u_char D_800F2450[];
+extern u_char D_800E909C[];
+extern short D_800E8F30[];
+extern u_char D_800E8F2C;
 
 int vs_battle_getEmptyObjectDataSlot(void)
 {
@@ -386,18 +379,18 @@ exit:
     return 0;
 }
 
-int func_80099D6C(int arg0)
+int func_80099D6C(int actorId)
 {
     vs_battle_objectData sp10;
     D_800F45E0_t* temp_s0;
     int i;
     int found;
 
-    if (arg0 >= 16) {
+    if (actorId >= 16) {
         return -1;
     }
 
-    temp_s0 = D_800F45E0[arg0];
+    temp_s0 = D_800F45E0[actorId];
 
     if (temp_s0 == NULL) {
         return -1;
@@ -407,7 +400,7 @@ int func_80099D6C(int arg0)
         return -1;
     }
 
-    sp10.index = arg0;
+    sp10.index = actorId;
     sp10.actorId = temp_s0->unk16C.actorId;
 
     for (i = 0; i < 16; ++i) {
@@ -428,7 +421,7 @@ exit:
     }
 
     func_800E68A0(temp_s0);
-    D_800F45E0[arg0] = NULL;
+    D_800F45E0[actorId] = NULL;
     return 0;
 }
 
@@ -1873,7 +1866,7 @@ tail:
     arg0->unk183E[arg1] = 0xFF;
 }
 
-int func_8009CC20(int arg0, int arg1)
+int func_8009CC20(int actorId, int arg1)
 {
     vs_battle_objectData objectData;
     D_800F4538_t* actor;
@@ -1881,11 +1874,11 @@ int func_8009CC20(int arg0, int arg1)
 
     switch (arg1) {
     case 0:
-        if (arg0 >= 17) {
+        if (actorId >= 17) {
             return -1;
         }
 
-        actor = D_800F4538[arg0];
+        actor = D_800F4538[actorId];
 
         if (actor == NULL) {
             return -1;
@@ -1893,11 +1886,11 @@ int func_8009CC20(int arg0, int arg1)
         if (actor->unk5D8 == NULL) {
             return 0;
         }
-        if (arg0 != 0) {
-            objectData.index = arg0;
+        if (actorId != 0) {
+            objectData.index = actorId;
             objectData.modelId = actor->unk5B1;
 
-            if (arg0 == 1 && actor->unk6E6 == 0) {
+            if (actorId == 1 && actor->unk6E6 == 0) {
                 vs_main_freeHeap(actor->unk5D8);
             } else if (!func_8009BD90(&objectData)) {
                 vs_main_freeHeap(actor->unk5D8);
@@ -1911,31 +1904,31 @@ int func_8009CC20(int arg0, int arg1)
 
     case 1:
     case 2:
-        --arg0;
+        --actorId;
 
         for (i = 0; i < 17; ++i) {
             actor = D_800F4538[i];
 
             if (actor != NULL) {
-                actor->unk5DC[arg0] = NULL;
+                actor->unk5DC[actorId] = NULL;
             }
         }
 
-        i = func_8009D208(arg0 + 1);
+        i = func_8009D208(actorId + 1);
 
         if (i < 0) {
             return i;
         }
-        if (D_800F4528[arg0] != NULL) {
-            vs_main_freeHeap(D_800F4528[arg0]);
+        if (D_800F4528[actorId] != NULL) {
+            vs_main_freeHeap(D_800F4528[actorId]);
         }
 
-        D_800F4528[arg0] = NULL;
+        D_800F4528[actorId] = NULL;
         break;
 
     case 4:
     case 5:
-        actor = D_800F4538[arg0];
+        actor = D_800F4538[actorId];
 
         if (actor == NULL) {
             return -1;
@@ -1979,17 +1972,17 @@ int func_8009CE9C(u_int arg0)
 
 int func_8009CFA0(void) { return D_800E8F2C + 1; }
 
-int func_8009CFB0(int arg0)
+int func_8009CFB0(int actorId)
 {
     vs_battle_objectData sp10;
     D_800F4538_t* temp_s1;
     int i;
 
-    if (arg0 >= 0x11) {
+    if (actorId >= 0x11) {
         return -1;
     }
 
-    temp_s1 = D_800F4538[arg0];
+    temp_s1 = D_800F4538[actorId];
 
     if (temp_s1 == NULL) {
         return -1;
@@ -1998,7 +1991,7 @@ int func_8009CFB0(int arg0)
     if (temp_s1->unk6E6 != 0x7F) {
         vs_battle_objectData* a2;
         int var_v0;
-        sp10.index = arg0;
+        sp10.index = actorId;
         sp10.modelId = temp_s1->unk6E6;
         a2 = &sp10;
 
@@ -2023,7 +2016,7 @@ int func_8009CFB0(int arg0)
 
         if (temp_s1->unk5D4 != 0) {
             for (i = 0; i < 17; ++i) {
-                if ((i != arg0) && ((D_800F4538[i] != NULL))
+                if ((i != actorId) && ((D_800F4538[i] != NULL))
                     && (D_800F4538[i]->unk5D4 == temp_s1->unk5D4)) {
                     goto exit2;
                 }
@@ -2034,11 +2027,11 @@ int func_8009CFB0(int arg0)
         }
     exit2:
 
-        func_8009CC20(arg0, 0);
+        func_8009CC20(actorId, 0);
 
-        if (arg0 < 10) {
-            func_8009AA84(arg0 * 2);
-            func_8009AA84(arg0 * 2 | 1);
+        if (actorId < 10) {
+            func_8009AA84(actorId * 2);
+            func_8009AA84(actorId * 2 | 1);
         }
 
         if (temp_s1->unk5B0_5) {
@@ -2051,7 +2044,7 @@ int func_8009CFB0(int arg0)
             }
         }
     }
-    D_800F4538[arg0] = NULL;
+    D_800F4538[actorId] = NULL;
     return 0;
 }
 
@@ -2745,11 +2738,11 @@ int func_8009E4B0(int arg0)
     return 0;
 }
 
-void func_8009E5C4(int arg0)
+void func_8009E5C4(int actorId)
 {
-    if ((D_800F4538[arg0]->animationId != 0x63)
-        && (D_800F4538[arg0]->animationId != 0xC7)) {
-        func_8009E700(arg0, 1);
+    if ((D_800F4538[actorId]->animationId != 0x63)
+        && (D_800F4538[actorId]->animationId != 0xC7)) {
+        func_8009E700(actorId, 1);
     }
 }
 
@@ -3344,13 +3337,13 @@ void func_8009F314(int actorId, void* context, int animate)
     }
 }
 
-void func_8009F530(int arg0)
+void func_8009F530(int actorId)
 {
     D_800F4538_t* temp_v0_2;
     int temp_s4;
     int temp_v0;
     int i;
-    D_800F45E0_t* temp_s0 = D_800F45E0[arg0];
+    D_800F45E0_t* temp_s0 = D_800F45E0[actorId];
 
     temp_s0->unk16C.unk0_3 = 1;
     temp_s4 = func_800A91DC(temp_s0->unk0.currentTile.x, temp_s0->unk0.currentTile.z, 0);
@@ -3372,11 +3365,14 @@ void func_8009F530(int arg0)
                 temp_s0->unk16C.unk3 = 0xFF;
                 if ((temp_s0->unk0.unk1A == 0) && !(temp_s0->unk16C.unk0_3)
                     && (temp_s0->unk0.unk12 == 0xFF)
-                    && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)
-                    && (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y)
-                    && (temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
-                    && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
-                    temp_s0->unk16C.unk3 = temp_v0;
+                    && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)) {
+
+                    if (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y) {
+                        if ((temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
+                            && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
+                            temp_s0->unk16C.unk3 = temp_v0;
+                        }
+                    }
                 }
             }
         }
@@ -4287,12 +4283,12 @@ u_int func_800A0BE0(int actorId)
     return D_800F49E0;
 }
 
-int func_800A1108(int arg0, void* arg1)
+int func_800A1108(int actorId, void* arg1)
 {
-    D_800F4538_t* var_v1 = D_800F4538[arg0];
+    D_800F4538_t* var_v1 = D_800F4538[actorId];
 
     if (var_v1 == NULL) {
-        var_v1 = (D_800F4538_t*)D_800F45E0[arg0];
+        var_v1 = (D_800F4538_t*)D_800F45E0[actorId];
         if (var_v1 == NULL) {
             return -1;
         }

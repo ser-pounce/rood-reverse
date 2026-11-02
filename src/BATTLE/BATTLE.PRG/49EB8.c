@@ -1,7 +1,9 @@
 #include "common.h"
+#include "146C.h"
 #include "30DB0.h"
 #include "44F14.h"
 #include "48C7C.h"
+#include "49268.h"
 #include "4B16C.h"
 #include "4DEA8.h"
 #include "battleUnk.h"
@@ -16,8 +18,6 @@
 typedef struct {
     int words[2];
 } func_800B28A8_t;
-
-extern char D_800E8FC0;
 
 void func_8008C458(int, int, void*, void*);
 

@@ -363,7 +363,7 @@ typedef struct {
 } _gazetteRow;
 
 typedef struct {
-    short zudId;
+    short zudIndex;
     short classId;
     short killFlagsOffset;
     short killFlagsCount;
@@ -1012,7 +1012,7 @@ int _menuInput(void)
                 vs_menu9_loadZud(
                     _monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                 + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                        .zudId);
+                        .zudIndex);
 
                 ++_menuState;
                 _nextState = 2;
@@ -1070,7 +1070,7 @@ int _menuInput(void)
     case 19:
         if (vs_menu9_loadZud(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                          + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                    .zudId)
+                    .zudIndex)
             == 0) {
 
             int temp_v1_4 = D_800F4538[1]->menuCameraDistance;
@@ -1349,7 +1349,7 @@ int _menuInput(void)
         }
 
         vs_menu9_freeZud();
-        vs_menu9_loadZud(_monBinData[_selectedEnemy].zudId);
+        vs_menu9_loadZud(_monBinData[_selectedEnemy].zudIndex);
 
         ++_menuState;
         break;
@@ -1361,7 +1361,7 @@ int _menuInput(void)
 
         if (vs_menu9_loadZud(_monBinData[vs_battle_menu9CursorMemory.encyclopaediaPage
                                          + vs_battle_menu9CursorMemory.encyclopaediaRow]
-                    .zudId)
+                    .zudIndex)
             == 0) {
 
             int temp_v1_10 = D_800F4538[1]->menuCameraDistance;

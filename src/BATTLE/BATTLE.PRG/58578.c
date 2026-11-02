@@ -4,6 +4,7 @@
 #include "30DB0.h"
 #include "40564.h"
 #include "573B8.h"
+#include "579C0.h"
 #include "57B1C.h"
 #include "5BF94.h"
 #include "camera.h"
@@ -31,8 +32,6 @@ typedef struct {
     } box;
 } labelBoxPrim_t;
 
-void func_800C02A8(void);
-void func_800C0B50(func_800C1564_t* shape, int color);
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
 int func_800C1384(func_800C1564_t* arg0, u_short* arg1, int arg2);
@@ -49,7 +48,6 @@ extern int D_800EA670[];
 extern int D_800EA684[];
 extern int D_800EA698[];
 extern u_char D_800EA6AC;
-extern u_char D_800F4CB4;
 
 void func_800C0D78(void)
 {
@@ -838,21 +836,21 @@ void func_800C253C(int type)
 {
     short* basis = (short*)0x1F800398;
     int index = 0;
-    int shape = D_800EB9B8->unk2A;
+    int shape = D_800EB9B8->unk24.pad;
     menuShapeVertex* vertices = D_800EB9B8->unk48;
     int count;
     int command;
     u_short* commands;
 
     if (shape != 0) {
-        D_800EB9B8->unk2A = shape - 1;
+        D_800EB9B8->unk24.pad = shape - 1;
     }
     if (type < 3u) {
         if (type == 0) {
-            D_800EB9B8->unk24 += (shape + 1) * 3;
-            D_800EB9B8->unk28 += (shape + 1) * 11;
+            D_800EB9B8->unk24.vx += (shape + 1) * 3;
+            D_800EB9B8->unk24.vz += (shape + 1) * 11;
         }
-        D_800EB9B8->unk26 += (shape * 2 + 1) * 7;
+        D_800EB9B8->unk24.vy += (shape * 2 + 1) * 7;
         shape += type * 16;
     } else {
         shape = type + 0x2D;
@@ -1099,7 +1097,7 @@ int vs_battle_mapStickDeadZone(int arg0)
 
 int func_800C4734(void)
 {
-    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk2A != 0)) {
+    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk24.pad != 0)) {
         return 0;
     }
     if ((D_800EB9B8->unk38.pad == 0) || (vs_main_buttonsState & 0x80)) {

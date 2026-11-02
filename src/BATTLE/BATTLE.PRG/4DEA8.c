@@ -2,6 +2,7 @@
 #include "4DEA8.h"
 #include "146C.h"
 #include "2842C.h"
+#include "2EA3C.h"
 #include "30DB0.h"
 #include "38C1C.h"
 #include "40564.h"
@@ -234,7 +235,6 @@ typedef struct {
 
 int func_800B6B98(
     SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
-int func_800B9C58(u_char*, short);
 void func_800BB68C(u_short, func_800BB68C_t*);
 u_short func_800BB788(func_800BB68C_t* arg0);
 int func_800BB7C4(int arg0, SVECTOR* arg1);
@@ -261,7 +261,6 @@ VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void _vecToRotMatrix(VECTOR*, MATRIX*);
 int _atan2FixedPoint(int arg0, int arg1);
 static int _fixedPointMult(int a, int b);
-void func_800F9BC0(int, int);
 int vs_main_getcurrentMusicSlot(void);
 static int _vectorMagnitude(VECTOR*);
 static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
@@ -283,14 +282,8 @@ extern u_char D_800E9C1C[];
 extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
-extern u_char D_800E9C30[];
-extern u_char* D_800EB588[];
-extern D_800EB9BC_t* D_800EB9BC;
-extern int D_800F19C8;
 extern u_short D_800F4B20;
-extern u_short D_800F4B28[];
 extern D_800F4B30_t D_800F4B30[];
-extern char D_800F4B70[];
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
@@ -302,7 +295,6 @@ extern char D_800F4BB4;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
 extern u_char D_800F4BB9;
-extern vs_main_CdQueueSlot* D_800F4BBC;
 extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
@@ -321,6 +313,10 @@ extern char _textBoxSelectionPending;
 extern int D_800F4C64;
 extern char D_800F4C69;
 extern char D_800F4C6A;
+
+extern char D_800F4B70[];
+extern u_short D_800F4B28[];
+extern D_800EB9BC_t* D_800EB9BC;
 
 int vs_battle_invalidOpcode(u_char* arg0, short arg1)
 {
@@ -721,7 +717,7 @@ int func_800B7490(u_char* arg0, short arg1)
 
     if (actor & 0x1000) {
         actor &= 0x1F;
-        if (func_8007CF64(actor) == NULL) {
+        if (vs_battle_getActor(actor) == NULL) {
             vs_battle_setStateFlag(flag, 0xFF);
             return 0;
         }
@@ -1218,7 +1214,10 @@ int func_800B860C(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800B86E8(u_char* arg0, short arg1) { return func_8007CCAC() > 0; }
+int func_800B86E8(u_char* arg0, short arg1)
+{
+    return vs_battle_getEmptyObjectDataSlot2() > 0;
+}
 
 int func_800B8708(u_char* arg0, short arg1)
 {
@@ -1814,13 +1813,13 @@ int func_800B9A94(u_char* arg0)
 
 int func_800B9AC4(u_char* arg0, short arg1)
 {
-    func_8007C460(arg0[1] * 0x10);
+    vs_battle_setScreenTransitionWipeAngle(arg0[1] * 0x10);
     return 0;
 }
 
 int func_800B9AE8(u_char* arg0, short arg1)
 {
-    func_8007C444(arg0[1], arg0[2], arg0[3] * 0x10);
+    vs_battle_setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
     return 0;
 }
 
@@ -1828,10 +1827,10 @@ int func_800B9B18(u_char* arg0, short arg1)
 {
     switch (arg0[1] & 3) {
     case 0:
-        func_8007C424();
+        vs_battle_disableDispMask();
         break;
     case 1:
-        func_8007C404();
+        vs_battle_enableDispMask();
         break;
     }
 
@@ -2439,7 +2438,7 @@ void func_800BAF6C(short arg0)
     short actorId;
 
     for (actorId = 1; actorId < 17; ++actorId) {
-        if (func_8007CF64(actorId) != NULL) {
+        if (vs_battle_getActor(actorId) != NULL) {
             if (arg0 != 0) {
                 func_800A087C(actorId, func_800A0BE0(actorId) | 1);
             } else {
@@ -2695,7 +2694,7 @@ void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
         }
 
         for (i = 0; i < 17; ++i) {
-            temp_v0 = func_8007CF64(i);
+            temp_v0 = vs_battle_getActor(i);
             if (temp_v0 != NULL) {
                 if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
                     arg1->unk2[var_s3++] = i;
@@ -4257,7 +4256,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 left = vs_battle_getShort(p + 1);
 
                 if (left & 0x1000) {
-                    if (func_8007CF64(left & 0x1F) != NULL) {
+                    if (vs_battle_getActor(left & 0x1F) != NULL) {
                         result = 1;
                     }
                 } else if (func_8007CF18(left) != 1) {

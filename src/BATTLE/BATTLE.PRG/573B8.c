@@ -11,15 +11,14 @@ typedef struct {
     signed char power;
 } D_800F4B28_t;
 
-extern u_char D_800E9C30[];
 extern int (*_opcodeFunctionTable[])(u_char*, short);
-extern D_800F4B28_t D_800F4B28[];
-extern unsigned char D_800F4B70[17];
-extern vs_main_CdQueueSlot* D_800F4BBC;
 extern vs_main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
 void func_800C0150(void);
+
+extern unsigned char D_800F4B70[17];
+extern D_800F4B28_t D_800F4B28[];
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {
@@ -46,7 +45,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_800434A4(0, 2);
         func_800C0150();
         func_8007C46C(0, 0xFF, 0);
-        func_8007C424();
+        vs_battle_disableDispMask();
         vs_battle_setStateFlag(0xA8, 1);
         D_800F4C2C = 2;
     }
@@ -190,7 +189,7 @@ void func_800C0150(void)
     short i;
 
     for (i = 0; i < 17; ++i) {
-        if (func_8007CF64(i) != NULL) {
+        if (vs_battle_getActor(i) != NULL) {
             func_800A0204(i, 1, 0, 0);
         }
     }

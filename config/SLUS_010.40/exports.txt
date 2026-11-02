@@ -109,6 +109,7 @@ vs_gametime_tickspeed
 vs_gte_rsqrt
 vs_main_actions
 vs_main_actionsLearned
+vs_main_actorExtraShp
 vs_main_allocateCdQueueSlot
 vs_main_allocHeap
 vs_main_allocHeapR

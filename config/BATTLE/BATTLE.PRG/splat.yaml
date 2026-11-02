@@ -11,7 +11,6 @@ options:
     - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
     - config/SLUS_010.40/symbol_addrs.txt
     - config/MENU/MAINMENU.PRG/symbol_addrs.txt
-    - config/EFFECT/EFFPURGE.BIN/symbol_addrs.txt
   undefined_funcs_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_funcs_auto.txt
   undefined_syms_auto_path: build/config/BATTLE/BATTLE.PRG/undefined_syms_auto.txt
   subalign: 4
@@ -55,7 +54,6 @@ segments:
       - [0x573B8, c]
       - [0x579C0, hasm]
       - [0x57B1C, c]
-      - [0x58350, hasm]
       - [0x58578, c]
       - [0x5A624, hasm]
       - [0x5BE50, c]

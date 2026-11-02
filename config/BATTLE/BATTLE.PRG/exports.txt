@@ -65,6 +65,7 @@ D_800F54D0
 D_800F5520
 D_800F55A0
 D_800F569C
+D_800F56C8
 func_800760CC
 func_80076F24
 func_800774FC
@@ -239,10 +240,13 @@ func_800CFAAC
 func_800CFE1C
 func_800D1B18
 func_800D1E20
+func_800D2698
 func_800D2ADC
 func_800D6CCC
 func_800D6CF0
 func_800D6D24
+func_800D7FFC
+func_800D8038
 func_800E6EAC
 vs_battle_actors
 vs_battle_addTile
@@ -262,6 +266,7 @@ vs_battle_characterState
 vs_battle_characterWidths
 vs_battle_commonWepBuffs
 vs_battle_configureEffectFbLoad
+vs_battle_configurePlg
 vs_battle_copyAligned
 vs_battle_copyInventoryArmorStats
 vs_battle_copyInventoryBladeStats
@@ -324,6 +329,7 @@ vs_battle_miscItemInvoked
 vs_battle_nop0
 vs_battle_objectDataSlots
 vs_battle_parseTim
+vs_battle_pFileLoadContext
 vs_battle_playInvalidSfx
 vs_battle_playMenuChangeSfx
 vs_battle_playMenuLeaveSfx
@@ -384,6 +390,7 @@ vs_battle_script_setFlagImm
 vs_battle_script_setFlagImmContext
 vs_battle_script_setStringContextInt
 vs_battle_script_specialOp
+vs_battle_setEffectExec
 vs_battle_setFontStyle
 vs_battle_setGeomOffset
 vs_battle_setMenuItem

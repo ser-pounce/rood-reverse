@@ -10,174 +10,7 @@
 #include <abs.h>
 #include <rand.h>
 
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
-#define MAX(a, b) ((a) < (b) ? (b) : (a))
-
-struct func_800D4910_t;
-
-typedef struct {
-    u_short unk0_0 : 5;
-    u_short unk0_5 : 5;
-    u_short unk0_10 : 6;
-} D_800F5910_t;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-} func_800DFA54_t;
-
-typedef struct {
-    int unk0;
-    _loadFileContext loadContexts[8];
-    u_short slots[8];
-    u_short isClut[8];
-} D_800F5638_t;
-
-typedef struct {
-    u_int unk0_0 : 4;
-    u_int unk0_4 : 28;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    u_int unkC;
-    short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
-} func_800DC888_t;
-
-typedef struct {
-    short tableCount;
-    u_short dataOffset;
-    int tableOffsets[0];
-} pFileBlock1;
-
-typedef struct {
-    int unk0;
-    u_char data[0];
-} pFileBlock2;
-
-typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-    char unk3;
-    u_char unk4[8];
-} D_1F8003D0_t;
-
-typedef struct {
-    D_800F19CC_t2 unk0;
-    char unk84C[0x180];
-    func_800DCAA0_t unk9CC[3][16];
-    u_char unkD8C[16][256];
-    func_800DCAA0_t unk1D8C[16];
-} func_800DEC88_t;
-
-void func_800D7890(int arg0);
-void _parsePfileBlock1(pFileBlock1* arg0);
-void _parsePfileBlock12(void*);
-void _parsePfileBlock13(void*);
-void func_800D8038(int);
-void vs_battle_setPlgLoadState(int);
-void func_800D820C(int, int);
-void func_800D821C(func_800E78F4_t*);
-int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
-int func_800D96C8(
-    func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
-int func_800D9B6C(func_800E78F4_t*, int);
-void func_800D9DD8(func_800E78F4_t*);
-int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
-int func_800DB370(func_800E78F4_t*, int, int, int);
-void func_800DB5B0(func_800E78F4_t*);
-void func_800DB5B8(func_800E78F4_t*, vs_battle_movementPosition, int);
-void func_800DB5DC(func_800E78F4_t*, vs_battle_movementPosition, int);
-void func_800DB5FC(func_800E78F4_t*);
-int func_800DB61C(func_800E78F4_t*, int);
-int func_800DB74C(func_800E78F4_t*, int);
-int func_800DB8AC(func_800E78F4_t*, func_800DCAA0_t*);
-int func_800DBB2C(func_800E78F4_t*, void*, int);
-int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
-int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
-void func_800DC19C(func_800E78F4_t*);
-void func_800DC210(func_800E78F4_t*, int);
-int func_800DC284(int, int, int, int);
-void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
-void func_800DC30C(short*, short*, int, int);
-void func_800DC344(func_800E78F4_t*, func_800DCAA0_t*);
-void func_800DC3CC(func_800E78F4_t*);
-void func_800DC3E8(vs_battle_actor2*, vs_battle_actor2*);
-void func_800DC424(func_800DC888_t*);
-int func_800DC484(int, int);
-int func_800DC48C(int, int);
-void func_800DC4F0(func_800DCAA0_t*, vs_action_t*);
-void func_800DC574(func_800E78F4_t*, int);
-void func_800DC784(func_800E78F4_t*, int);
-void func_800DC810(D_800F19CC_t2*);
-void func_800DC888(func_800DC888_t*);
-void func_800DE3E4(func_800E78F4_t*);
-int func_800DFBCC(func_800E78F4_t*, int, int);
-int func_800E0678(func_800E78F4_t*, int);
-int func_800E0918(func_800E78F4_t*, int, int);
-void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
-int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
-void func_800E3600(func_800E78F4_t*, int, int);
-int func_800E4180(func_800E78F4_t*, int, int, int);
-int func_800E42D4(int, int);
-int func_800E42E0(vs_battle_movementPosition);
-int func_800E42EC(int, int);
-int func_800E4320(int, int);
-int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
-int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
-int func_800E45D4(int);
-u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
-int func_800E4624(SVECTOR*, SVECTOR*, int, int);
-int func_800E4690(vs_battle_movementPosition, int);
-int func_800E4764(func_800E78F4_t*, int*, int*);
-void func_800E4B10(func_800E78F4_t*);
-void func_800E4B18(func_800E78F4_t*);
-void func_800E4B2C(func_800E78F4_t*, int);
-void func_800E4B70(func_800E78F4_t*, int);
-void func_800E4BB8(func_800E78F4_t*);
-void func_800E4C8C(func_800E78F4_t*);
-void func_800E4CE8(func_800E78F4_t* arg0);
-int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
-int func_800E4DF8(func_800E78F4_t*, int, int);
-void func_800E4F14(func_800E78F4_t*);
-void func_800E50A0(func_800E78F4_t*, int, int);
-void func_800E678C(func_800E78F4_t*);
-void func_800E685C(int, int, int);
-
-extern u_int D_80069BBC[];
-extern p_file_t D_800EC4BC;
-extern int D_800F5330[];
-extern int D_800F5630;
-extern D_800F5638_t D_800F5638;
-extern u_int D_800F5680;
-extern vs_main_CdQueueSlot* D_800F568C;
-extern u_int _plgLoadState;
-extern _loadFileContext _plgLoadContext;
-extern u_long* D_800F56A0;
-extern int _plgEntryPointCount;
-extern effectExec D_800F56A8[];
-extern actionEffectRequest* D_800F5798;
-extern D_800F569C_t D_800F57A0;
-extern int D_800F5874;
 extern int D_800F58C4;
-extern D_800F58C8_t* D_800F58D8;
-extern int D_800F58E0;
-extern vs_battle_actor2* D_800F58E8;
-extern func_800DCAA0_t (*D_800F58EC)[16];
-extern int D_800F58F0;
-extern int D_800F58F4;
-extern func_800DCAA0_t* D_800F58F8;
-extern D_800F19CC_t2* D_800F5900;
-extern u_char (*D_800F5904)[256];
-extern D_800F5910_t* D_800F5910;
-
-u_int func_800DB93C(
-    func_800E78F4_t*, vs_battle_movementPosition, int, vs_battle_movementPosition);
 
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 {
@@ -474,167 +307,31 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     arg0->unk1A4[id] = final;
 }
 
-typedef union {
-    unsigned int raw;
-    vs_battle_movementPosition p;
-} vs_battle_movementTile;
-
-typedef struct {
-    char unk0[8];
-    union {
-        u_int raw;
-        struct {
-            u_int unk0 : 16;
-            u_int unk16 : 3;
-            u_int unk19 : 2;
-            u_int unk21 : 10;
-            u_int unk31 : 1;
-        } bits;
-    } flags;
-    char unkC[8];
-    short unk14;
-    char unk16[6];
-    SVECTOR position;
-    short unk24;
-    short facing;
-    char unk28[0x34];
-    vs_battle_movementTile tile;
-    vs_battle_movementTile lastTile;
-    char unk64[0x548];
-    u_int unk5AC_0 : 15;
-    u_int unk5AC_15 : 1;
-    u_int unk5AC_16 : 16;
-} actorObject;
-
-typedef struct actorUpdateActor {
-    struct actorUpdateActor* next;
-    int id;
-    u_char flags;
-    u_char unk9;
-    char unkA;
-    u_int unkB_0 : 2;
-    u_int unkB_2 : 6;
-    char unkC[0x30];
-    vs_battle_actor2* stats;
-} actorUpdateActor;
-
-typedef struct {
-    u_int position;
-    u_int unk4;
-} actorUpdatePoint;
-
-typedef struct {
-    u_int current : 16;
-    u_int max : 16;
-} actorUpdateHp;
-
-typedef struct {
-    char unk0[0x18];
-    actorUpdateHp hp;
-    int current;
-    int max;
-} actorUpdateStats;
-
-typedef struct {
-    char unk0[8];
-    u_char unk8;
-    char unk9[5];
-    u_char unkE;
-    char unkF[5];
-    u_char unk14;
-    char unk15[3];
-    u_char unk18;
-    char unk19[3];
-    u_char unk1C;
-    u_char unk1D;
-    char unk1E[0x11];
-    u_char unk2F;
-    char unk30[4];
-    u_int unk34;
-    union {
-        int value;
-        u_char b[4];
-    } unk38;
-    u_int unk3C;
-    u_short unk40;
-    char unk42[3];
-    u_char unk45;
-    u_short unk46;
-    char unk48[4];
-    int unk4C;
-    int unk50;
-    vs_battle_actor* actor;
-    actorObject* object;
-    actorUpdatePoint* unk5C;
-    actorUpdatePoint* unk60;
-    actorUpdatePoint* unk64;
-    char unk68[8];
-    union {
-        u_char b[8];
-        int w[2];
-    } historyX;
-    union {
-        u_char b[8];
-        int w[2];
-    } historyZ;
-    u_char historyIndex;
-    u_char historyMask;
-    char unk82[0xE];
-    u_short unk90;
-    char unk92[0x68];
-    u_char unkFA;
-    u_char unkFB;
-    char unkFC[0x18];
-    u_short unk114;
-    char unk116[0xA];
-    u_int unk120;
-    u_char unk124;
-    char unk125[5];
-    u_char unk12A;
-    char unk12B[6];
-    u_char unk131;
-    char unk132[6];
-    u_short unk138;
-    char unk13A[0x1C];
-    u_short unk156;
-    char unk158[0x34];
-    int unk18C;
-    u_int unk190_0 : 5;
-    u_int unk190_5 : 7;
-    u_int unk190_12 : 20;
-    char unk194[6];
-    u_char unk19A;
-    char unk19B[9];
-    u_int targets[16];
-} actorUpdateState;
-
-static inline int historyRepeats(actorUpdateState* state)
+static inline int _historyRepeats(func_800E78F4_t* state)
 {
-    return state->historyX.w[0] == state->historyX.w[1]
-        && state->historyZ.w[0] == state->historyZ.w[1];
+    return *(int*)&state->unk70[0] == *(int*)&state->unk70[4]
+        && *(int*)&state->unk78[0] == *(int*)&state->unk78[4];
 }
 
-static inline int historyStalled(actorUpdateState* state)
+static inline int _historyStalled(func_800E78F4_t* state)
 {
-    return state->historyMask == 0xFF ? historyRepeats(state) : 0;
+    return state->unk81 == 0xFF ? _historyRepeats(state) : 0;
 }
 
 extern int D_800F58D4;
 extern int D_800F16F4;
-struct actorEvaluationState;
-struct actorTimerState;
 void func_800DBF00(func_800E78F4_t*);
-void func_800DBFE4(struct actorTimerState*);
-void func_800D8280(actorUpdateState*);
-void func_800E4358(actorUpdateState*);
-void func_800E48F8(actorUpdateState*);
-void func_800E48A8(actorUpdateState*, int, int);
+void func_800DBFE4(func_800E78F4_t*);
+void func_800D8280(func_800E78F4_t*);
+void func_800E4358(func_800E78F4_t*);
+void func_800E48F8(func_800E78F4_t*);
+void func_800E48A8(func_800E78F4_t*, int, int);
 
 void func_800D8EF4(void)
 {
-    actorUpdateActor* actor;
-    actorUpdateState* state;
-    actorObject* object;
+    vs_battle_actor* actor;
+    func_800E78F4_t* state;
+    D_800F4538_t* object;
     int flags;
     int id;
     int targetId;
@@ -642,10 +339,9 @@ void func_800D8EF4(void)
     int arg;
     int alert;
     vs_battle_actor* other;
-    u_int target;
-    actorUpdateStats* stats;
+    vs_battle_actor2* stats;
     u_int x;
-    actorUpdateHp hp;
+    u_int hp;
     int current;
     int max;
     u_int z;
@@ -656,22 +352,21 @@ void func_800D8EF4(void)
         D_800F58BC->unk18++;
     }
 
-    for (actor = (actorUpdateActor*)vs_battle_actors[0]; actor != NULL;
-        actor = actor->next) {
-        flags = actor->flags;
-        actor->unkB_0 = 0;
+    for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
+        flags = actor->command.fields.unk8;
+        actor->command.fields.unkB_0 = 0;
         id = actor->id;
-        state = ((actorUpdateState**)0x1F80037C)[id];
-        state->unk1D = 0;
-        object = state->object;
-        state->unk90 = actor->stats->unk954;
+        state = ((func_800E78F4_t**)0x1F80037C)[id];
+        state->unk1D[0] = 0;
+        object = state->unk58;
+        state->unk90 = actor->unk3C->unk954;
 
         if (flags & 0x20) {
-            func_800D82CC((func_800E78F4_t*)state);
-            func_800D821C((func_800E78F4_t*)state);
-            func_800DBF00((func_800E78F4_t*)state);
+            func_800D82CC(state);
+            func_800D821C(state);
+            func_800DBF00(state);
         skip:
-            state->unk14 = 1;
+            state->unk14[0] = 1;
             continue;
         }
         func_800D8280(state);
@@ -679,15 +374,15 @@ void func_800D8EF4(void)
         if (flags & 0x80) {
             goto skip;
         }
-        func_800DBFE4((struct actorTimerState*)state);
+        func_800DBFE4(state);
         if ((flags & 0x40) || state->unk18C
-            || (object->flags.bits.unk16 | object->flags.bits.unk19 | object->unk5AC_15)
+            || (object->unk0.unkA_0 | object->unk0.unkA_3 | object->unk5AC_15)
             || id == 0) {
             goto skip;
         }
-        if (object->flags.bits.unk31) {
-            state->unk1D = 1;
-            func_800D87E8((func_800E78F4_t*)state, 0);
+        if (object->unk0.unkB_7) {
+            state->unk1D[0] = 1;
+            func_800D87E8(state, 0);
             goto skip;
         }
 
@@ -706,19 +401,19 @@ void func_800D8EF4(void)
         }
         if (state->unk19A) {
             state->unk19A--;
-            func_800E2CCC((func_800E78F4_t*)state);
-            func_800D87E8((func_800E78F4_t*)state, 0);
-            state->unk1D = 1;
+            func_800E2CCC(state);
+            func_800D87E8(state, 0);
+            state->unk1D[0] = 1;
             if (state->unk46 >= 2) {
                 state->unk46--;
             }
             goto idle;
         }
 
-        state->unk14 = 0;
-        if ((state->unk64->position & 0xFF00FF) == (state->unk34 & 0xFF00FF)) {
+        state->unk14[0] = 0;
+        if ((*(u_int*)state->unk64 & 0xFF00FF) == (*(u_int*)&state->unk34 & 0xFF00FF)) {
             if (state->unk46 && --state->unk46 == 0) {
-                state->unk38.value = state->unk64->position;
+                state->unk38 = *(u_int*)state->unk64;
                 state->unkFB = 16;
                 state->unk1C = 1;
                 state->unk45 = 40;
@@ -734,58 +429,59 @@ void func_800D8EF4(void)
             state->unk46 = 0xA8C;
             state->unk8 = 0;
             if (state->unk1C) {
-                func_800E4CE8((func_800E78F4_t*)state);
+                func_800E4CE8(state);
                 state->unk1C = 0;
             }
         }
 
-        if (state->unk124 != 8 && actor->unk9 != 8 && state->unk124 != actor->unk9) {
+        if (state->unk124 != 8 && ((vs_battle_actorView_t*)actor)->unk9 != 8
+            && state->unk124 != ((vs_battle_actorView_t*)actor)->unk9) {
             func_800E48A8(state, 1, 64);
         }
-        state->unk124 = actor->unk9;
-        state->unk34 = state->object->tile.raw;
-        x = state->unk60->position;
-        z = state->unk60->unk4;
-        state->unk4C = x;
-        state->unk50 = z;
+        state->unk124 = ((vs_battle_actorView_t*)actor)->unk9;
+        state->unk34 = state->unk58->unk0.currentTile;
+        x = ((u_int*)state->unk60)[0];
+        z = ((u_int*)state->unk60)[1];
+        ((u_int*)&state->unk4C)[0] = x;
+        ((u_int*)&state->unk4C)[1] = z;
         state->unk120 = (((z & 0xFFFF) >> 6) << 16) | ((x & 0xFFFF) >> 6);
         if ((0x12600 >> state->unk124) & 1) {
-            if (historyStalled(state)) {
-                state->historyMask = 0;
+            if (_historyStalled(state)) {
+                state->unk81 = 0;
                 state->unk19A = 30;
                 goto idle;
             }
-            state->historyX.b[state->historyIndex] = state->unk4C;
-            state->historyZ.b[state->historyIndex] = state->unk50;
-            state->historyMask |= 1 << state->historyIndex;
-            state->historyIndex = (state->historyIndex + 1) & 7;
+            state->unk70[state->unk80] = ((u_int*)&state->unk4C)[0];
+            state->unk78[state->unk80] = ((u_int*)&state->unk4C)[1];
+            state->unk81 |= 1 << state->unk80;
+            state->unk80 = (state->unk80 + 1) & 7;
         } else {
-            state->historyMask = 0;
+            state->unk81 = 0;
         }
 
-        if (state->unk190_5 > 0) {
-            state->unk190_5--;
+        if (state->unk190.count > 0) {
+            state->unk190.count--;
         }
 
         arg = 0;
         for (i = 0; i < 2; i++) {
-            func_800D87E8((func_800E78F4_t*)state, arg);
+            func_800D87E8(state, arg);
             arg = D_800F58D4;
             if (arg == 0) {
                 break;
             }
         }
 
-        func_800E4F14((func_800E78F4_t*)state);
-        if (func_800D85D8((func_800E78F4_t*)state)) {
+        func_800E4F14(state);
+        if (func_800D85D8(state)) {
             goto idle;
         }
 
         alert = 0;
-        stats = (actorUpdateStats*)state->actor->unk3C;
-        hp = stats->hp;
-        current = hp.current;
-        max = hp.max;
+        stats = state->unk54->unk3C;
+        hp = *(u_int*)&stats->currentHP;
+        current = hp & 0xFFFF;
+        max = hp >> 16;
         if (state->unk2F != 0) {
             if (state->unk2F == 1) {
                 alert = current * 4 < max;
@@ -797,8 +493,8 @@ void func_800D8EF4(void)
                 alert = 1;
             } else {
                 for (other = vs_battle_actors[0]; other != NULL; other = other->next) {
-                    target = state->targets[other->id];
-                    if (((target >> 5) & 1) && ((target >> 6) & 3) == 3) {
+                    if (state->unk1A4[other->id].unk0_5
+                        && state->unk1A4[other->id].unk0_6 == 3) {
                         alert = 1;
                         break;
                     }
@@ -812,12 +508,12 @@ void func_800D8EF4(void)
         if (state->unk156) {
             state->unk156--;
         }
-        if (state->unk1C == 0 && state->unk38.value >= 0) {
-            targetId = state->unk38.b[3];
+        if (state->unk1C == 0 && state->unk38 >= 0) {
+            targetId = ((u_char*)&state->unk38)[3];
             if (state->unk40 == 0 || --state->unk40 == 0 || D_800F4538[targetId] == NULL
-                || (((actorObject*)D_800F4538[targetId])->tile.raw & 0xFF00FF)
+                || (*(u_int*)&D_800F4538[targetId]->unk0.currentTile & 0xFF00FF)
                        != (state->unk3C & 0xFF00FF)) {
-                func_800E4CE8((func_800E78F4_t*)state);
+                func_800E4CE8(state);
             }
         }
     }

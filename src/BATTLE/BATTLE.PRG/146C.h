@@ -9,6 +9,16 @@
 #include <libgpu.h>
 
 typedef struct {
+    SVECTOR position;
+    short unk8;
+    short unkA;
+    char unkC;
+    char unkD;
+    char unkE;
+    char unkF;
+} D_800F1DD4_t;
+
+typedef struct {
     SVECTOR unk0;
     union {
         char u8[2];
@@ -78,10 +88,10 @@ void func_8007C28C(int);
 void func_8007C31C(void);
 void func_8007C348(int, int);
 int func_8007C398(void);
-void func_8007C404(void);
-void func_8007C424(void);
-void func_8007C444(int, int, int);
-void func_8007C460(int);
+void vs_battle_enableDispMask(void);
+void vs_battle_disableDispMask(void);
+void vs_battle_setScreenTransition(int, int, int);
+void vs_battle_setScreenTransitionWipeAngle(int);
 void func_8007C46C(int, int, int);
 void func_8007C4AC(int, int, int);
 void func_8007C580(_mpdRoomDoorSection_t*, int, int);
@@ -96,7 +106,7 @@ void func_8007CBDC(int, int, int);
 void vs_battle_loadEtm(int, int, int);
 void func_8007CC4C(int);
 void func_8007CC6C(int);
-int func_8007CCAC(void);
+int vs_battle_getEmptyObjectDataSlot2(void);
 int func_8007CF18(int);
 int func_8007CFCC(int);
 void func_8007CFF8(int, SVECTOR*);
@@ -159,6 +169,20 @@ extern _mpdRoomDoorSection_t D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
 extern VECTOR D_800F1CE0[2];
-extern void* D_800F4930;
 extern DR_STP D_800F1970[];
 extern DR_STP D_800F1988[];
+extern int D_800F1868;
+extern int D_800F19C8;
+extern u_short D_800F1CDC;
+extern short D_800F1D98[];
+extern short D_800F1DB4;
+extern short D_800F1DB6;
+extern short D_800F1DBC;
+extern short D_800F1DC0;
+extern short D_800F1DC2;
+extern short D_800F1DC4;
+extern char D_800F1DCA;
+extern char D_800F1DCB;
+extern D_800F1DD4_t* D_800F1DD4;
+extern int D_800F190C;
+extern int D_800F1968;

@@ -54,8 +54,8 @@ extern volatile u_long* D_8003355C; /* DMA6 MADR */
 extern volatile u_long* D_80033560; /* DMA6 BCR */
 extern volatile u_long* D_80033564; /* DMA6 CHCR */
 extern volatile u_long* D_80033568; /* DMA DPCR */
-extern volatile int D_8003356C; /* command queue write index */
-extern volatile int D_80033570; /* command queue read index */
+extern volatile int _qin; /* command queue write index */
+extern volatile int _qout; /* command queue read index */
 
 int func_8002A3E8(int, int, int, int);
 void func_8002A698(void);
@@ -385,7 +385,7 @@ int func_8002AA48(int mode)
 
     if (mode == 0) {
         func_8002AB84();
-        while (D_8003356C != D_80033570) {
+        while (_qin != _qout) {
             func_8002A698();
             if (func_8002ABB8()) {
                 return -1;
@@ -398,7 +398,7 @@ int func_8002AA48(int mode)
         }
         return 0;
     }
-    n = (D_8003356C - D_80033570) & 0x3F;
+    n = (_qin - _qout) & 0x3F;
     if (n) {
         func_8002A698();
     }

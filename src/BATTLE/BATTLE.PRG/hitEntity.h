@@ -17,7 +17,10 @@ typedef struct {
 } limbEffects_t;
 
 typedef struct {
-    func_8008631C_t2 unk0;
+    union {
+        func_8008631C_t2 hit;
+        SVECTOR position;
+    } unk0;
     short risk;
     short strength;
     short intelligence;
@@ -49,7 +52,7 @@ typedef struct {
     short weaponPp;
     short armorDp;
     short shieldPp;
-    int unk40;
+    int kind;
 } _hitEntity_t;
 
 typedef struct {
@@ -58,7 +61,7 @@ typedef struct {
     char unk3;
     _hitEntity_t unk4;
     u_short unk48;
-    u_short unk4A;
-    _hitEntity_t unk4C[30];
+    u_short targetCount;
+    _hitEntity_t targets[30];
     SVECTOR unk844;
 } D_800F19CC_t2;

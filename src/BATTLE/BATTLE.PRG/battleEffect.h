@@ -262,7 +262,12 @@ typedef struct func_800D2904_t {
     struct func_800D2904_t* next;
     func_800D52A4_t motion;
     func_800D6CF_t unk3C;
-    char unk5C[4];
+    u_int unk5C_0 : 16;
+    int unk5C_16 : 1;
+    int unk5C_17 : 1;
+    int unk5C_18 : 1;
+    int unk5C_19 : 1;
+    u_int unk5C_20 : 12;
     u_char unk60;
     char unk61;
     short unk62[3];

@@ -411,10 +411,7 @@ typedef struct {
     char unk0;
     char unk1;
     u_short unk2;
-    signed char frames;
-    signed char seconds;
-    signed char minutes;
-    signed char hours;
+    vs_Gametime_t time;
 } D_80050468_t;
 
 typedef struct {
@@ -526,6 +523,7 @@ extern u_short vs_main_battleAbilitiesPointsRequirements[];
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
 extern portInfo_t vs_main_portInfo[2];
+extern u_char vs_main_actorExtraShp[256];
 extern D_80050468_t D_80050468;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
@@ -551,6 +549,7 @@ extern u_int vs_main_frameDuration;
 extern int vs_main_frameBuf;
 extern int vs_main_saveGameClearData;
 extern int vs_main_buttonsState;
+extern MATRIX D_8005E218;
 extern int D_8005E244;
 extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;

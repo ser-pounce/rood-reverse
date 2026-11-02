@@ -115,13 +115,6 @@ typedef struct {
 } _wepModelOffsets;
 
 typedef struct {
-    u_char x;
-    volatile u_char y; // stops gcc from merging the x/y/z compares into one word compare
-    u_char z;
-    u_char status;
-} vs_battle_tilePosition;
-
-typedef struct {
     u_char nBones;
     u_char nVertexGroups;
     u_short nTriangles;
@@ -239,8 +232,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     D_800F4538_unk58_2 unk58;
-    vs_battle_tilePosition currentTile;
-    vs_battle_tilePosition lastTouchedTile;
+    vs_battle_movementPosition currentTile;
+    vs_battle_movementPosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F45E0_unk0;

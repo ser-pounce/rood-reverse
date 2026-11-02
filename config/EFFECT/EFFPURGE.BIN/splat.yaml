@@ -7,11 +7,8 @@ options:
   src_path: src/EFFECT/EFFPURGE.BIN
   asset_path: build/assets/EFFECT/EFFPURGE.BIN
   ld_script_path: build/config/EFFECT/EFFPURGE.BIN/link.ld
-  symbol_addrs_path:
-    - config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-  undefined_funcs_auto_path: build/config/EFFECT/EFFPURGE.BIN/undefined_funcs_auto.txt
-  undefined_syms_auto_path: build/config/EFFECT/EFFPURGE.BIN/undefined_syms_auto.txt
-
+  create_undefined_funcs_auto: false
+  create_undefined_syms_auto: false
 
 segments:
   - name: EFFPURGE.BIN

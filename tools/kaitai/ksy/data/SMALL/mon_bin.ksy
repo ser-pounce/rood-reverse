@@ -19,7 +19,7 @@ types:
       - id: index
         type: s4
     seq:
-      - id: zudid
+      - id: zudindex
         type: s2
       - id: classid
         type: s2

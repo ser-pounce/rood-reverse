@@ -5,6 +5,7 @@
 #include "38C1C.h"
 #include "3A1A0.h"
 #include "44F14.h"
+#include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
@@ -32,35 +33,20 @@ void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA290(int, vs_battle_movementPosition*, int, int);
 void func_800AA490(int, vs_battle_movementPosition*, int, int);
-void func_800AB098(D_800F4538_t*, int, int);
-void func_8006F450(SVECTOR*);
-void func_800A7524(void*, void*);
-void func_800ACF54(D_800F4538_t*);
-void func_800AE828(int, D_800F4538_t*, int);
-void func_800E4C28(int, int);
-void func_800E6764(int);
-void func_800E6EB0(int);
 
-extern u_char D_800E8F2C;
-extern short D_800E8F30[];
-extern u_char D_800E8F90[];
-extern func_800AAE9C_t D_800E909C[][28];
 extern func_800AAE9C_t D_800E916C[][8];
-extern u_char D_800E9278[];
+extern short D_800F4B00;
 extern u_char D_800E92E8[];
 extern u_char D_800E92F0[];
 extern u_char D_800E92F8[];
 extern u_char D_800E9300[];
-extern u_char D_800F2450[];
-extern void* D_800F4768;
-extern char D_800F49DC;
-extern u_char D_800F49E4;
 extern _mpdRoomSection3* D_800F49F0;
-extern int D_800F49F4;
-extern u_char D_800F49F8;
-extern u_char D_800F49F9;
-extern short D_800F4B00;
 extern u_char D_800F4B19;
+
+extern u_char D_800F2450[];
+extern func_800AAE9C_t D_800E909C[][28];
+extern short D_800E8F30[];
+extern u_char D_800E8F2C;
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {
@@ -265,7 +251,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
     return 1;
 }
 
-int func_800A91DC(int arg0, int arg1, int arg2)
+int func_800A91DC(u_int arg0, u_int arg1, int arg2)
 {
     int _[2] __attribute__((unused));
     int i;
@@ -294,7 +280,7 @@ int func_800A91DC(int arg0, int arg1, int arg2)
     return var_t3;
 }
 
-inline int func_800A92B8(int arg0, int arg1)
+inline int func_800A92B8(u_int arg0, u_int arg1)
 {
     int var_t0;
     int i;
@@ -1720,8 +1706,9 @@ void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
     }
 }
 
-void func_800AB9A4(D_800F4538_t* arg0)
+void func_800AB9A4(void* arg)
 {
+    D_800F4538_t* arg0 = arg;
     SVECTOR boneA;
     SVECTOR boneB;
     u_short* header;

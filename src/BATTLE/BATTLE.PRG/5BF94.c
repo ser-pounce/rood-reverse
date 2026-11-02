@@ -5,10 +5,13 @@
 #include "38C1C.h"
 #include "40564.h"
 #include "44F14.h"
+#include "4DEA8.h"
 #include "573B8.h"
+#include "579C0.h"
 #include "57B1C.h"
 #include "58578.h"
 #include "6E4CC.h"
+#include "6E4CCShared.h"
 #include "battleEffect.h"
 #include "battleUnk.h"
 #include "camera.h"
@@ -22,7 +25,9 @@
 #include "build/assets/BATTLE/BATTLE.PRG/menuStrings.h"
 #include "build/assets/BATTLE/BATTLE.PRG/statusStrings.h"
 #include "build/src/include/lbas.h"
+#include "gimLbas.h"
 #include "gpu.h"
+#include "menuLbas.h"
 #include "scratch.h"
 #include "vs_inline_c.h"
 #include "vs_string.h"
@@ -269,8 +274,6 @@ typedef struct {
 } func_800D5A98_t2;
 
 void func_80046578(int);
-void func_800C02A8(void);
-void func_800C2E24(SVECTOR*, MATRIX*, int);
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
@@ -281,6 +284,13 @@ void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
 void func_800CD158(int);
 void func_800CD3E4(int);
 int _breakArtsUnlocked(void);
+typedef struct {
+    u_int unk60_0 : 8;
+    u_int unk60_8 : 4;
+    u_int unk60_12 : 20;
+} func_800D2904_flags;
+
+int func_800C1D84(void);
 extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
@@ -312,7 +322,6 @@ void func_800D21C0(void);
 void func_800D236C(void);
 void func_800D2560(void);
 void func_800D268C(void);
-void func_800D2698(int);
 void func_800D278C(void);
 void func_800D2904(D_800F53B8_t*);
 void func_800D46DC(int, D_800F53B8_t*);
@@ -341,20 +350,18 @@ void func_800D67C4(D_800F53B8_t*, u_char);
 int func_800D6A18(D_800F53B8_t*, func_800D5780_t*);
 void func_800D1EF0(int, int, int, int, int, int, int);
 void func_800D6AEC(D_800F53B8_t*, int);
-void func_800D6E24(func_800D2904_t*, void*);
 void vs_effpurge_exec(void);
 
-extern int D_8005046C;
-extern u_char* D_800EB588[];
-extern u_int _gimLbas[];
-extern int _menuLbas[];
 extern u_char D_800EB708[];
+extern char D_800EA984[];
+extern char D_800EA9B6[];
+extern char D_800EAA54[];
+extern u_char D_800EABAA;
+extern int D_800EC328;
 extern u_char D_800EB7B4[];
 extern u_char D_800EB7D4[];
 extern u_short D_800EB98C[16];
-extern char D_800EB9AC;
 extern signed char _loadedSubMenu;
-extern gim_t* D_800EB9BC;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
@@ -412,16 +419,13 @@ extern u_char D_800F4CA0[8];
 extern u_char D_800F4CA8[8];
 extern u_char D_800F4CB2;
 extern u_char D_800F4CB3;
-extern u_char D_800F4CB4;
 extern char D_800F4CB8;
 extern char _fontTable;
 extern int _fontBrightness;
 extern int D_800F4CC0;
 extern u_long D_800F4CD0;
-extern char vs_battle_shortcutInvoked;
 extern char D_800F4E68;
 extern char D_800F4E69;
-extern char vs_battle_lowerScreenUiState;
 extern _textBoxSelector_t textBoxSelector;
 extern int D_800F4ED4;
 extern short D_800F4ED8[8];
@@ -434,7 +438,6 @@ extern int D_800F5228;
 extern char D_800F5318;
 extern u_int D_800F531C;
 extern int D_800F5320[];
-extern int D_800F5330[];
 extern int D_800F53B4;
 extern D_800F53B8_t* D_800F53B8;
 extern char D_800F54A8;
@@ -455,17 +458,7 @@ extern int D_800F5618;
 extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
-typedef struct {
-    u_int unk60_0 : 8;
-    u_int unk60_8 : 4;
-    u_int unk60_12 : 20;
-} func_800D2904_flags;
-int func_800C1D84(void);
-extern u_char D_800EABAA;
-extern char D_800EA984[];
-extern char D_800EA9B6[];
-extern char D_800EAA54[];
-extern int D_800EC328;
+extern gim_t* D_800EB9BC;
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -485,10 +478,10 @@ int func_800C4794(SVECTOR* arg0)
     arg0->pad = 0;
     result = 0;
 
-    if (state->unk2A != 0) {
+    if (state->unk24.pad != 0) {
         setVector(arg0, state->unk0[0].unk8.vec.vx, state->unk0[0].unk8.vec.vy,
             state->unk0[0].unk8.vec.vz);
-        func_800C2B0C(&state->unk0[0].unk8.vec, state->unk2A - 1);
+        func_800C2B0C(&state->unk0[0].unk8.vec, state->unk24.pad - 1);
         return 0;
     }
 
@@ -3686,7 +3679,7 @@ void func_800CB560(void) { vs_battle_lowerScreenUiState = 0; }
 
 char const D_80069998[] = "00:00:00";
 
-void _renderTimer(int* value)
+void _renderTimer(vs_Gametime_t* value)
 {
     char sp10[4];
     int i;
@@ -3891,7 +3884,7 @@ void func_800CB83C(void)
     ClearOTag(D_800F51B8, 34);
 
     if (vs_battle_lowerScreenUiState == 1) {
-        _renderTimer(&D_8005046C);
+        _renderTimer(&D_80050468.time);
     }
 
     func_800CB708();
@@ -7347,7 +7340,7 @@ void func_800D2ADC(
     __builtin_memcpy(scratch->unk154, &def->rCurve, 4);
     scratch->unk154[3] = node->unk77;
     for (i = 0; i < count; ++i) {
-        *(int*)node->unk5C = scratch->flags;
+        *(int*)((char*)node + 0x5C) = scratch->flags; // whole unk5C_* bitfield word
         value = vs_battle_randUniformInt(scratch->unk14C[0], scratch->unk14C[1]);
         __builtin_memcpy(node->unk74, scratch->unk154, 4);
         node->unk70 = value;

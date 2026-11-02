@@ -11,7 +11,7 @@ $(buildDir)/%.c.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.c.o: ASFLAGS += -no-pad-sections
 $(patsubst %,$(buildDir)/%.s.o,2EA3C 48C7C 4B16C 579C0 6FA0C 70D4C 72B70 7399C 766FC 7B3C8 7DDDC): ASFLAGS += -no-pad-sections
 # Our own hasm splits (not in upstream).
-$(patsubst %,$(buildDir)/%.s.o,58350 5A624 6E644): ASFLAGS += -no-pad-sections
+$(patsubst %,$(buildDir)/%.s.o,5A624 6E644): ASFLAGS += -no-pad-sections
 
 $(patsubst %,$(buildDir)/%.c.o,30DB0 38C1C 3A1A0 40564 44F14 49268 49EB8): CC1VER := 2.7.2-cdk
 $(patsubst %,$(buildDir)/%.c.o,146C 4DEA8 5BF94):  CC1FLAGS += -Wno-return-type -Wno-uninitialized
@@ -34,6 +34,6 @@ $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml.o: $(BUILD)/asse
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-BATTLE_LDLIBS := $(BUILD)/data/GIM/SCREFF2.PRG.elf
+BATTLE_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,GIM/SCREFF2.PRG EFFECT/EFFPURGE.BIN)
 $(BUILD)/data/$(battle.prg): $(BATTLE_LDLIBS)
 $(BUILD)/data/$(battle.prg): private LDLIBS += $(BATTLE_LDLIBS)

@@ -40,7 +40,7 @@ int vs_battle_mapStickDeadZone(int arg0)
 
 int func_800C4734(void)
 {
-    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk2A != 0)) {
+    if ((D_800EB9B8 == NULL) || (D_800EB9B8->unk24.pad != 0)) {
         return 0;
     }
     if ((D_800EB9B8->unk38.pad == 0) || (vs_main_buttonsState & 0x80)) {

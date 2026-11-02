@@ -608,8 +608,8 @@ static int _applyLoadedSaveFile(int verifyOnly)
         &vs_main_inventoryIndices, &spmcimg[1].unk16C8, sizeof vs_main_inventoryIndices);
     _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof D_80061068);
     _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof vs_main_scoredata);
-    D_80060064 = s4->unk1898;
-    _rMemcpy(D_80061078, spmcimg[1].unk189C, sizeof D_80061078);
+    vs_main_zoneEnemyCacheIndex = s4->unk1898;
+    _rMemcpy(vs_main_zoneEnemyCache, spmcimg[1].unk189C, sizeof vs_main_zoneEnemyCache);
     spmcimg2 = &vs_main_artsStatus;
     _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
     vs_main_gametime.t = spmcimg[1].unk180.stats.gameTime.t;
@@ -716,8 +716,8 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof savedata->scoreData);
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
         sizeof savedata->containerData);
-    savedata->unk1898 = D_80060064;
-    _rMemcpy(savedata->unk189C, D_80061078, sizeof savedata->unk189C);
+    savedata->unk1898 = vs_main_zoneEnemyCacheIndex;
+    _rMemcpy(savedata->unk189C, vs_main_zoneEnemyCache, sizeof savedata->unk189C);
     _rMemcpy(&savedata->artsStatus, &vs_main_artsStatus, sizeof savedata->artsStatus);
 
     for (i = 0; i < 92; ++i) {

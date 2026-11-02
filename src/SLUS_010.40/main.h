@@ -425,7 +425,7 @@ typedef struct {
     u_short mapId;
     u_int nextSlot;
     vs_main_savedEnemyState_t state[8];
-} D_80061078_t;
+} vs_main_zoneEnemyCache_t;
 
 typedef struct {
     char unk0;
@@ -578,12 +578,12 @@ extern char vs_main_actionsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern vs_main_artsStatus_t vs_main_artsStatus;
-extern int D_80060064;
+extern int vs_main_zoneEnemyCacheIndex;
 extern D_80060068_t D_80060068;
 extern vs_main_inventory_t vs_main_inventory;
 extern _mpdRoomDoorSection_t D_80061068;
 extern vs_Gametime_t vs_main_gametime;
-extern D_80061078_t D_80061078[4];
+extern vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
 extern vs_main_flags_t vs_main_stateFlags;
 extern vs_main_inventoryIndices_t vs_main_inventoryIndices;
 #endif

@@ -526,8 +526,8 @@ void func_80069D78(void)
 
 void func_80069DBC(void)
 {
-    D_80060064 = 0;
-    vs_main_bzero(D_80061078, sizeof D_80061078);
+    vs_main_zoneEnemyCacheIndex = 0;
+    vs_main_bzero(vs_main_zoneEnemyCache, sizeof vs_main_zoneEnemyCache);
 }
 
 void func_80069DEC(int mapId, int zndId)
@@ -535,8 +535,10 @@ void func_80069DEC(int mapId, int zndId)
     int i;
 
     for (i = 0; i < 4; ++i) {
-        if ((D_80061078[i].mapId == mapId) && (D_80061078[i].zndId == zndId)) {
-            vs_main_bzero(D_80061078[i].state, sizeof D_80061078[i].state);
+        if ((vs_main_zoneEnemyCache[i].mapId == mapId)
+            && (vs_main_zoneEnemyCache[i].zndId == zndId)) {
+            vs_main_bzero(
+                vs_main_zoneEnemyCache[i].state, sizeof vs_main_zoneEnemyCache[i].state);
         }
     }
 }
@@ -547,8 +549,9 @@ vs_main_savedEnemyState_t* func_80069E80(int arg0)
     void* var_a3 = NULL;
 
     for (i = 0; i < 8; ++i) {
-        if (D_80061078[D_80060064].state[i].index == (arg0 + 1)) {
-            var_a3 = &D_80061078[D_80060064].state[i];
+        if (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].state[i].index
+            == (arg0 + 1)) {
+            var_a3 = &vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].state[i];
         }
     }
     return var_a3;
@@ -562,19 +565,20 @@ vs_main_savedEnemyState_t* func_80069EF0(int arg0)
     var_a3 = NULL;
 
     for (i = 0; i < 8; ++i) {
-        if (D_80061078[D_80060064].state[i].index == (arg0 + 1)) {
-            var_a3 = &D_80061078[D_80060064].state[i];
+        if (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].state[i].index
+            == (arg0 + 1)) {
+            var_a3 = &vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].state[i];
             break;
         }
     }
 
     if (var_a3 == NULL) {
-        i = D_80061078[D_80060064].nextSlot;
-        var_a3 = &D_80061078[D_80060064].state[i];
-        ++D_80061078[D_80060064].nextSlot;
+        i = vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].nextSlot;
+        var_a3 = &vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].state[i];
+        ++vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].nextSlot;
 
-        if (D_80061078[D_80060064].nextSlot >= 8) {
-            D_80061078[D_80060064].nextSlot = 0;
+        if (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].nextSlot >= 8) {
+            vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].nextSlot = 0;
         }
     }
 
@@ -6561,8 +6565,10 @@ vs_battle_actor* func_800775C0(
         object.dataAddr = zud->model + (u_long)zud;
         object.modelId = _zoneContext.zndEnemies[zudIndex].unk0[2];
 
-        if ((D_80061078[D_80060064].zndId == _zoneContext.zndId)
-            && (D_80061078[D_80060064].mapId == _zoneContext.mapId)
+        if ((vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId
+                == _zoneContext.zndId)
+            && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
+                == _zoneContext.mapId)
             && ((saved = func_80069E80(spawn->index)) != NULL)) {
             object.unkC.unk0_0 = saved->x;
             object.unkC.unk0_16 = saved->z;
@@ -6679,8 +6685,10 @@ vs_battle_actor* func_800775C0(
 
         actor->unk38 = init->unk2C;
 
-        if ((D_80061078[D_80060064].zndId == _zoneContext.zndId)
-            && (D_80061078[D_80060064].mapId == _zoneContext.mapId)
+        if ((vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId
+                == _zoneContext.zndId)
+            && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
+                == _zoneContext.mapId)
             && ((saved = func_80069E80(spawn->index)) != NULL)) {
             actor->unk3C->currentHP = saved->currentHP;
             actor->unk3C->maxHP = saved->maxHP;
@@ -15252,10 +15260,11 @@ void func_80089A00(void)
     var_s4 = 0;
 
     for (j = 0; j < 4; ++j) {
-        if ((D_80061078[j].lru != 0) && (D_80061078[j].zndId == _zoneContext.zndId)
-            && (D_80061078[j].mapId == _zoneContext.mapId)) {
+        if ((vs_main_zoneEnemyCache[j].lru != 0)
+            && (vs_main_zoneEnemyCache[j].zndId == _zoneContext.zndId)
+            && (vs_main_zoneEnemyCache[j].mapId == _zoneContext.mapId)) {
             var_s4 = 1;
-            D_80060064 = j;
+            vs_main_zoneEnemyCacheIndex = j;
             for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
                 temp_s2 = &_zoneContext.mpdEnemies[i];
                 temp_v0 = func_80069E80(i);
@@ -15270,23 +15279,24 @@ void func_80089A00(void)
     if (var_s4 == 0) {
         i = 0;
         for (j = 0; j < 4; ++j) {
-            if (D_80061078[j].lru < D_80061078[i].lru) {
+            if (vs_main_zoneEnemyCache[j].lru < vs_main_zoneEnemyCache[i].lru) {
                 i = j;
             }
         }
-        D_80060064 = i;
-        vs_main_bzero(&D_80061078[i], sizeof D_80061078[i]);
+        vs_main_zoneEnemyCacheIndex = i;
+        vs_main_bzero(&vs_main_zoneEnemyCache[i], sizeof vs_main_zoneEnemyCache[i]);
     }
 
     for (i = 0; i < 4; ++i) {
-        if (D_80061078[D_80060064].lru < D_80061078[i].lru) {
-            --D_80061078[i].lru;
+        if (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].lru
+            < vs_main_zoneEnemyCache[i].lru) {
+            --vs_main_zoneEnemyCache[i].lru;
         }
     }
 
-    D_80061078[D_80060064].lru = 4;
-    D_80061078[D_80060064].zndId = _zoneContext.zndId;
-    D_80061078[D_80060064].mapId = _zoneContext.mapId;
+    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].lru = 4;
+    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId = _zoneContext.zndId;
+    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId = _zoneContext.mapId;
 }
 
 void _loadMpdEnemySection(void* data, u_int dataLen)

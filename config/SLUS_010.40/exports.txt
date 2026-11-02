@@ -18,11 +18,9 @@ D_8005DFD8
 D_8005E0C0
 D_8005FF30
 D_8006003A
-D_80060064
 D_80060068
 D_80060F68
 D_80061068
-D_80061078
 DisableEvent
 DMACallback
 DpqColor
@@ -172,6 +170,8 @@ vs_main_titleScreenCount
 vs_main_unkStrings
 vs_main_vibrationOnEffect
 vs_main_zndMusicMap
+vs_main_zoneEnemyCache
+vs_main_zoneEnemyCacheIndex
 vs_overlay_slots
 vs_sound_setCdVol
 VSync

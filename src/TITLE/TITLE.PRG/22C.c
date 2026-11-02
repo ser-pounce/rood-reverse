@@ -1703,8 +1703,8 @@ static void _initGameData(void)
     vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
     vs_main_bzero(&vs_main_gametime, sizeof vs_main_gametime);
     vs_main_bzero(&vs_main_scoredata, sizeof vs_main_scoredata);
-    D_80060064 = 0;
-    vs_main_bzero(D_80061078, sizeof D_80061078);
+    vs_main_zoneEnemyCacheIndex = 0;
+    vs_main_bzero(vs_main_zoneEnemyCache, sizeof vs_main_zoneEnemyCache);
     vs_main_bzero(&vs_main_artsStatus, sizeof vs_main_artsStatus);
 
     for (i = 0; i < 8; ++i) {

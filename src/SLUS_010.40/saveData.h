@@ -41,7 +41,7 @@ typedef struct {
     u_char blockCount;
     u_short title[32]; // Shift-JIS
     char reserved44[0xC];
-    char reserved50[0x10]; // PocketStation header, unused
+    char pocketStationHeader[0x10];
     char iconPalette[0x20];
 } saveTitleFrame_t;
 
@@ -59,7 +59,7 @@ typedef struct {
 typedef struct {
     saveTitleFrame_t titleFrame;
     char iconFrame0[0x80];
-    char iconFrame1[0x80]; // unused
+    char pocketStationIcon[0x80];
     saveInfoFrame_t info;
     char stateFlags[0x440];
     char actionsLearned[32];
@@ -121,12 +121,9 @@ typedef struct {
 
 typedef struct {
     u_short locationCluts[2][256];
-    char unk400[7][32];
-    char unk4E0[7][128];
-    char unk860[7][128];
-    char unkBE0[8][128];
-    char unkFE0[32];
-    u_short textTable[0x800];
-    saveInfoFrame_t saveSlotInfo[5];
-    struct DIRENTRY _dirEntBuf;
+    char iconPalettes[7][32];
+    char iconBitmaps[7][128];
+    char pocketStationIcons[7][128];
+    // MCDATA.BIN is 0xBE0 bytes and MCMAN.BIN is read in at the next sector boundary
+    char _[0x420] __attribute__((unused));
 } mcdata_t;

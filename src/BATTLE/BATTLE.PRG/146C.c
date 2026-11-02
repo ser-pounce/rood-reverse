@@ -224,7 +224,7 @@ void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
 int func_8006C5AC(int);
-void func_80069DEC(int, int);
+static void _forgetZoneEnemies(int, int);
 int _removeActorById(u_int, int);
 void _applyAccessoryStats(vs_battle_uiAccessory*, _accessoryIntermediate*);
 void _applyArmorStats(vs_battle_uiArmor* arg0, _armorIntermediate* arg1);
@@ -524,13 +524,13 @@ void func_80069D78(void)
         ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (_firstPersonViewEnabled << 0x10));
 }
 
-void func_80069DBC(void)
+static void _clearZoneEnemyCache(void)
 {
     vs_main_zoneEnemyCacheIndex = 0;
     vs_main_bzero(vs_main_zoneEnemyCache, sizeof vs_main_zoneEnemyCache);
 }
 
-void func_80069DEC(int mapId, int zndId)
+static void _forgetZoneEnemies(int mapId, int zndId)
 {
     int i;
 
@@ -543,7 +543,7 @@ void func_80069DEC(int mapId, int zndId)
     }
 }
 
-vs_main_savedEnemyState_t* func_80069E80(int arg0)
+static vs_main_savedEnemyState_t* _findSavedEnemy(int arg0)
 {
     int i;
     void* var_a3 = NULL;
@@ -557,7 +557,7 @@ vs_main_savedEnemyState_t* func_80069E80(int arg0)
     return var_a3;
 }
 
-vs_main_savedEnemyState_t* func_80069EF0(int arg0)
+static vs_main_savedEnemyState_t* _getSavedEnemySlot(int arg0)
 {
     int i;
     void* var_a3;
@@ -585,7 +585,7 @@ vs_main_savedEnemyState_t* func_80069EF0(int arg0)
     return var_a3;
 }
 
-void func_80069FC4(int actorId, int arg1)
+void vs_battle_saveEnemyState(int actorId, int arg1)
 {
     func_8006EBF8_t sp10;
     int i;
@@ -598,7 +598,7 @@ void func_80069FC4(int actorId, int arg1)
     }
 
     temp_s1 = temp_s0->unk3C;
-    temp_v0 = func_80069EF0(temp_s0->unk27);
+    temp_v0 = _getSavedEnemySlot(temp_s0->unk27);
     temp_v0->index = temp_s0->unk27 + 1;
     temp_v0->currentHP = temp_s1->currentHP;
     temp_v0->maxHP = temp_s1->maxHP;
@@ -681,7 +681,7 @@ int _removeActorById(u_int actorId, int arg1)
 
         if (actor != NULL) {
 
-            func_80069FC4(actorId, arg1);
+            vs_battle_saveEnemyState(actorId, arg1);
 
             if (actor->unk1C == 0x10) {
                 func_8009F530(actorId);
@@ -6569,7 +6569,7 @@ vs_battle_actor* func_800775C0(
                 == _zoneContext.zndId)
             && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
                 == _zoneContext.mapId)
-            && ((saved = func_80069E80(spawn->index)) != NULL)) {
+            && ((saved = _findSavedEnemy(spawn->index)) != NULL)) {
             object.unkC.unk0_0 = saved->x;
             object.unkC.unk0_16 = saved->z;
             object.unkC.unk0_8 = saved->direction;
@@ -6689,7 +6689,7 @@ vs_battle_actor* func_800775C0(
                 == _zoneContext.zndId)
             && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
                 == _zoneContext.mapId)
-            && ((saved = func_80069E80(spawn->index)) != NULL)) {
+            && ((saved = _findSavedEnemy(spawn->index)) != NULL)) {
             actor->unk3C->currentHP = saved->currentHP;
             actor->unk3C->maxHP = saved->maxHP;
             actor->unk3C->currentMP = saved->currentMP;
@@ -8524,7 +8524,7 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
     func_8007B4C4();
 }
 
-void func_8007BBB8(int arg0, int arg1) { func_80069DEC(arg0, arg1); }
+void vs_battle_forgetZoneEnemies(int arg0, int arg1) { _forgetZoneEnemies(arg0, arg1); }
 
 void func_8007BBD8(int arg0, int arg1, int arg2)
 {
@@ -14830,7 +14830,7 @@ void func_80088CAC(void)
     if (D_80050468.unk2 == 2) {
         func_8007BCCC();
     }
-    func_80069DBC();
+    _clearZoneEnemyCache();
 }
 
 void _loadMpdLbas(void* arg0, int size)
@@ -15187,7 +15187,7 @@ void func_80089114(void)
 
     for (i = 0; i < 32; ++i) {
         enemy = &_zoneContext.mpdEnemies[i];
-        saved = func_80069E80(i);
+        saved = _findSavedEnemy(i);
 
         if (saved != NULL) {
             saved->hidden = enemy->hidden;
@@ -15249,7 +15249,7 @@ void func_80089888(void)
     func_800E6158();
 }
 
-void func_80089A00(void)
+static void _selectZoneEnemyCache(void)
 {
     int j;
     int i;
@@ -15267,7 +15267,7 @@ void func_80089A00(void)
             vs_main_zoneEnemyCacheIndex = j;
             for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
                 temp_s2 = &_zoneContext.mpdEnemies[i];
-                temp_v0 = func_80069E80(i);
+                temp_v0 = _findSavedEnemy(i);
                 if (temp_v0 != NULL) {
                     temp_s2->hidden = temp_v0->hidden;
                 }
@@ -15445,7 +15445,7 @@ void func_80089DC0(int arg0)
 
     D_800F18C8.unk14 = 0;
 
-    func_80089A00();
+    _selectZoneEnemyCache();
     func_80089888();
     func_80089114();
     func_800A35A8();

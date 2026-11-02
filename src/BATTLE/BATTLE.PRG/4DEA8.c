@@ -1509,9 +1509,9 @@ int vs_battle_script_setFlagIfItemInInventory(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800B91C4(u_char* arg0, short arg1)
+int vs_battle_script_resetZoneEnemies(u_char* arg0, short arg1)
 {
-    func_8007BBB8(arg0[2], arg0[1]);
+    vs_battle_forgetZoneEnemies(arg0[2], arg0[1]);
     return 0;
 }
 

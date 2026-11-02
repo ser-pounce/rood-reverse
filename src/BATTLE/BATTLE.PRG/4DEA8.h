@@ -69,7 +69,7 @@ int vs_battle_script_jumpFwd3(u_char*, short);
 int vs_battle_script_setFlagImm(u_char*, short);
 int vs_battle_script_setFlag(u_char*, short);
 int vs_battle_script_setFlagIfItemInInventory(u_char*, short);
-int func_800B91C4(u_char*, short);
+int vs_battle_script_resetZoneEnemies(u_char*, short);
 int func_800B9230(u_char*, short);
 int vs_battle_script_setFlagIfButton(u_char*, short);
 int func_800B92A0(u_char*, short);

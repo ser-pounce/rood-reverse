@@ -62,7 +62,7 @@ void func_8007B9A0(void);
 void func_8007B9CC(void);
 int func_8007B9FC(void);
 void func_8007BA98(int, int, int, int);
-void func_8007BBB8(int, int);
+void vs_battle_forgetZoneEnemies(int, int);
 void func_8007BBD8(int, int, int);
 void func_8007C4D4(void);
 int func_8007C8F8(int);

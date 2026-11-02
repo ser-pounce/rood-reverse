@@ -400,11 +400,31 @@ typedef struct {
 } vs_main_inventory_t;
 
 typedef struct {
-    char unk0;
+    u_char index;
+    u_char hidden;
+    short actorState;
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    short strength;
+    short intelligence;
+    short agility;
+    short limbHP[6];
+    short _ __attribute__((unused));
+    int statuses;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+} vs_main_savedEnemyState_t;
+
+typedef struct {
+    char lru;
     char zndId;
     u_short mapId;
-    u_int unk4;
-    char unk8[8][0x28];
+    u_int nextSlot;
+    vs_main_savedEnemyState_t state[8];
 } D_80061078_t;
 
 typedef struct {

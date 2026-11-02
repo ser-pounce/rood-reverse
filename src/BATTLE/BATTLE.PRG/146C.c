@@ -74,22 +74,6 @@ typedef struct {
 } D_800F19CC_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short currentHP;
-    short maxHP;
-    short currentMP;
-    short maxMP;
-    short totalStrength;
-    short totalIntelligence;
-    short totalAgility;
-    short limbHp[6];
-    int unk20;
-    int unk24;
-} func_80069EF0_t;
-
-typedef struct {
     _mpdRoomSectionA* unk0;
     func_8006EBF8_t unk4;
 } D_800F1910_t;
@@ -213,26 +197,6 @@ typedef struct {
     int unk1C;
     int unk20;
 } func_800A1108_t;
-
-typedef struct {
-    u_char unk0;
-    u_char hidden;
-    short unk2;
-    short currentHP;
-    short maxHP;
-    short currentMP;
-    short maxMP;
-    short strength;
-    short intelligence;
-    short agility;
-    short limbHP[6];
-    short unk1E;
-    int statuses;
-    u_char x;
-    u_char direction;
-    u_char z;
-    u_char height;
-} savedEnemyState;
 
 typedef struct {
     u_char type;
@@ -572,25 +536,25 @@ void func_80069DEC(int mapId, int zndId)
 
     for (i = 0; i < 4; ++i) {
         if ((D_80061078[i].mapId == mapId) && (D_80061078[i].zndId == zndId)) {
-            vs_main_bzero(D_80061078[i].unk8, sizeof D_80061078[i].unk8);
+            vs_main_bzero(D_80061078[i].state, sizeof D_80061078[i].state);
         }
     }
 }
 
-void* func_80069E80(int arg0)
+vs_main_savedEnemyState_t* func_80069E80(int arg0)
 {
     int i;
     void* var_a3 = NULL;
 
     for (i = 0; i < 8; ++i) {
-        if (D_80061078[D_80060064].unk8[i][0] == (arg0 + 1)) {
-            var_a3 = &D_80061078[D_80060064].unk8[i];
+        if (D_80061078[D_80060064].state[i].index == (arg0 + 1)) {
+            var_a3 = &D_80061078[D_80060064].state[i];
         }
     }
     return var_a3;
 }
 
-void* func_80069EF0(int arg0)
+vs_main_savedEnemyState_t* func_80069EF0(int arg0)
 {
     int i;
     void* var_a3;
@@ -598,19 +562,19 @@ void* func_80069EF0(int arg0)
     var_a3 = NULL;
 
     for (i = 0; i < 8; ++i) {
-        if (D_80061078[D_80060064].unk8[i][0] == (arg0 + 1)) {
-            var_a3 = &D_80061078[D_80060064].unk8[i];
+        if (D_80061078[D_80060064].state[i].index == (arg0 + 1)) {
+            var_a3 = &D_80061078[D_80060064].state[i];
             break;
         }
     }
 
     if (var_a3 == NULL) {
-        i = D_80061078[D_80060064].unk4;
-        var_a3 = &D_80061078[D_80060064].unk8[i];
-        ++D_80061078[D_80060064].unk4;
+        i = D_80061078[D_80060064].nextSlot;
+        var_a3 = &D_80061078[D_80060064].state[i];
+        ++D_80061078[D_80060064].nextSlot;
 
-        if (D_80061078[D_80060064].unk4 >= 8) {
-            D_80061078[D_80060064].unk4 = 0;
+        if (D_80061078[D_80060064].nextSlot >= 8) {
+            D_80061078[D_80060064].nextSlot = 0;
         }
     }
 
@@ -621,7 +585,7 @@ void func_80069FC4(int actorId, int arg1)
 {
     func_8006EBF8_t sp10;
     int i;
-    func_80069EF0_t* temp_v0;
+    vs_main_savedEnemyState_t* temp_v0;
     vs_battle_actor2* temp_s1;
     vs_battle_actor* temp_s0 = vs_battle_actors[actorId];
 
@@ -631,34 +595,34 @@ void func_80069FC4(int actorId, int arg1)
 
     temp_s1 = temp_s0->unk3C;
     temp_v0 = func_80069EF0(temp_s0->unk27);
-    temp_v0->unk0 = temp_s0->unk27 + 1;
+    temp_v0->index = temp_s0->unk27 + 1;
     temp_v0->currentHP = temp_s1->currentHP;
     temp_v0->maxHP = temp_s1->maxHP;
     temp_v0->currentMP = temp_s1->currentMP;
     temp_v0->maxMP = temp_s1->maxMP;
-    temp_v0->totalStrength = temp_s1->totalStrength;
-    temp_v0->totalIntelligence = temp_s1->totalIntelligence;
-    temp_v0->totalAgility = temp_s1->totalAgility;
+    temp_v0->strength = temp_s1->totalStrength;
+    temp_v0->intelligence = temp_s1->totalIntelligence;
+    temp_v0->agility = temp_s1->totalAgility;
 
     for (i = 0; i < 6; ++i) {
-        temp_v0->limbHp[i] = temp_s1->limbs[i].hp;
+        temp_v0->limbHP[i] = temp_s1->limbs[i].hp;
     }
 
-    temp_v0->unk20 = temp_s1->statuses;
+    temp_v0->statuses = temp_s1->statuses;
 
     if (func_800A0BE0(actorId) & 0x01000000) {
-        temp_v0->unk1 = arg1;
+        temp_v0->hidden = arg1;
         temp_v0->currentHP = 1;
     } else {
-        temp_v0->unk1 = arg1;
+        temp_v0->hidden = arg1;
     }
 
-    temp_v0->unk2 = func_800E6694(actorId);
+    temp_v0->actorState = func_800E6694(actorId);
 
     func_800A1108(actorId, &sp10);
     func_800A36E0(actorId, temp_s1->unk30, &sp10);
 
-    temp_v0->unk24 = sp10.unk0.unk0.value;
+    *(int*)&temp_v0->x = sp10.unk0.unk0.value;
 }
 
 int _insertActor(vs_battle_actor* actor)
@@ -6517,7 +6481,7 @@ vs_battle_actor* func_800775C0(
     vs_main_CdFile file;
     vs_battle_actor* actor;
     zudHeader* zud;
-    savedEnemyState* saved;
+    vs_main_savedEnemyState_t* saved;
     int zudIndex;
     int bladeId;
     int shieldId;
@@ -6732,7 +6696,7 @@ vs_battle_actor* func_800775C0(
             }
 
             func_80086FA8(saved->statuses, actor->unk3C);
-            i = func_800E6178(actor, saved->unk2);
+            i = func_800E6178(actor, saved->actorState);
         } else {
             i = func_800E6178(actor, -1);
         }
@@ -14994,7 +14958,7 @@ void func_80089114(void)
     int slots[16];
     vs_battle_objectData_flags data;
     _mpdEnemy* enemy;
-    savedEnemyState* saved;
+    vs_main_savedEnemyState_t* saved;
     _zndEnemy* template;
     int i;
     int visible;
@@ -15283,12 +15247,12 @@ void func_80089A00(void)
     int i;
     int var_s4;
     _mpdEnemy* temp_s2;
-    u_char* temp_v0;
+    vs_main_savedEnemyState_t* temp_v0;
 
     var_s4 = 0;
 
     for (j = 0; j < 4; ++j) {
-        if ((D_80061078[j].unk0 != 0) && (D_80061078[j].zndId == _zoneContext.zndId)
+        if ((D_80061078[j].lru != 0) && (D_80061078[j].zndId == _zoneContext.zndId)
             && (D_80061078[j].mapId == _zoneContext.mapId)) {
             var_s4 = 1;
             D_80060064 = j;
@@ -15296,7 +15260,7 @@ void func_80089A00(void)
                 temp_s2 = &_zoneContext.mpdEnemies[i];
                 temp_v0 = func_80069E80(i);
                 if (temp_v0 != NULL) {
-                    temp_s2->hidden = temp_v0[1];
+                    temp_s2->hidden = temp_v0->hidden;
                 }
             }
             break;
@@ -15306,7 +15270,7 @@ void func_80089A00(void)
     if (var_s4 == 0) {
         i = 0;
         for (j = 0; j < 4; ++j) {
-            if (D_80061078[j].unk0 < D_80061078[i].unk0) {
+            if (D_80061078[j].lru < D_80061078[i].lru) {
                 i = j;
             }
         }
@@ -15315,12 +15279,12 @@ void func_80089A00(void)
     }
 
     for (i = 0; i < 4; ++i) {
-        if (D_80061078[D_80060064].unk0 < D_80061078[i].unk0) {
-            --D_80061078[i].unk0;
+        if (D_80061078[D_80060064].lru < D_80061078[i].lru) {
+            --D_80061078[i].lru;
         }
     }
 
-    D_80061078[D_80060064].unk0 = 4;
+    D_80061078[D_80060064].lru = 4;
     D_80061078[D_80060064].zndId = _zoneContext.zndId;
     D_80061078[D_80060064].mapId = _zoneContext.mapId;
 }

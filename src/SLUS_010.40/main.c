@@ -1024,7 +1024,7 @@ char vs_main_actionsLearned[32];
 vs_main_mapStatus_t vs_main_mapStatus;
 vs_main_settings_t vs_main_settings;
 vs_main_artsStatus_t vs_main_artsStatus;
-int D_80060064;
+int vs_main_zoneEnemyCacheIndex;
 D_80060068_t D_80060068;
 vs_main_inventory_t vs_main_inventory;
 _mpdRoomDoorSection_t D_80061068;
@@ -4502,7 +4502,7 @@ void vs_main_clutInit(void)
     }
 }
 
-D_80061078_t D_80061078[4];
+vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
 vs_main_flags_t vs_main_stateFlags;
 vs_main_inventoryIndices_t vs_main_inventoryIndices;
 static int _18[0x15E] __attribute__((unused));

@@ -606,7 +606,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
     _rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
     _rMemcpy(&vs_main_inventoryIndices, &spmcimg[1].inventoryIndices,
         sizeof vs_main_inventoryIndices);
-    _rMemcpy(&D_80061068, &spmcimg[1].unk1778, sizeof D_80061068);
+    _rMemcpy(&vs_main_spawnPoint, &spmcimg[1].spawnPoint, sizeof vs_main_spawnPoint);
     _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof vs_main_scoredata);
     vs_main_zoneEnemyCacheIndex = s4->zoneEnemyCacheIndex;
     _rMemcpy(
@@ -715,7 +715,7 @@ static void _packageGameSaveData(int targetFile)
     _rMemcpy(&savedata->inventory, &vs_main_inventory, sizeof savedata->inventory);
     _rMemcpy(&savedata->inventoryIndices, &vs_main_inventoryIndices,
         sizeof savedata->inventoryIndices);
-    _rMemcpy(&savedata->unk1778, &D_80061068, sizeof savedata->unk1778);
+    _rMemcpy(&savedata->spawnPoint, &vs_main_spawnPoint, sizeof savedata->spawnPoint);
     _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof savedata->scoreData);
     _rMemcpy(&savedata->containerData, &savedata2->containerData,
         sizeof savedata->containerData);

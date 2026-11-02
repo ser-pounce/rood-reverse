@@ -2658,7 +2658,7 @@ int func_8006E7F0(void)
     if (((vs_battle_screenTransitionStep - 1) < 2U)
         || (vs_battle_screenTransitionStep == 4)) {
         if (D_800F1AB0.unk6_15) {
-            func_800B64A8(0, D_800F1AB0.unk4_13 << 10, temp_s0->unk31 * ONE / 2);
+            func_800B64A8(0, D_800F1AB0.facing << 10, temp_s0->unk31 * ONE / 2);
         } else {
             func_800B64A8(0, 0, 0);
         }
@@ -5319,11 +5319,11 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
         if ((u_int)(flags + 1) >= 2) {
             destination.zndId = flags / 65536;
             destination.mpdId = flags % 65536;
-            destination.unk4_8 = destination.unk2.unk0_0 = coordinates->unk0.fields.x;
-            destination.unk6_10 = destination.unk2.unk0_5 = coordinates->unk0.fields.z;
+            destination.x = destination.unk2.unk0_0 = coordinates->unk0.fields.x;
+            destination.z = destination.unk2.unk0_5 = coordinates->unk0.fields.z;
             destination.unk2.unk0_10 = coordinates->unk0.fields.y;
             destination.unk2.unk0_13 = 7;
-            destination.unk4_13 = coordinates->unk0.fields.status >> 6;
+            destination.facing = coordinates->unk0.fields.status >> 6;
             destination.unk4_15 = 0;
             destination.unk6_15 = 0;
 
@@ -8885,8 +8885,8 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
     zndId = vs_main_locationZoneMapIds[arg0 * 2];
     mpdId = vs_main_locationZoneMapIds[arg0 * 2 + 1];
 
-    D_800F1AB0.unk4_8 = arg1;
-    D_800F1AB0.unk6_10 = arg2;
+    D_800F1AB0.x = arg1;
+    D_800F1AB0.z = arg2;
     D_800F1AB0.unk2.unk0_13 = 0;
 
     func_800A1108(0, &sp10);
@@ -8900,7 +8900,7 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    D_800F1AB0.unk4_13 = var_a0 >> 10;
+    D_800F1AB0.facing = var_a0 >> 10;
     D_800F1AB0.unk6_15 = 0;
 
     if (zndId != D_800F1AB0.zndId) {
@@ -15208,14 +15208,14 @@ void func_80089888(void)
     func_80089888_t sp28;
 
     func_8009D458();
-    sp28.unk0_0 = D_800F1AB0.unk4_8;
-    sp28.unk0_16 = D_800F1AB0.unk6_10;
+    sp28.unk0_0 = D_800F1AB0.x;
+    sp28.unk0_16 = D_800F1AB0.z;
     sp28.unk0_8 = D_800F1AB0.unk2.unk0_13;
-    sp28.unk0_24 = D_800F1AB0.unk4_13 * 64;
+    sp28.unk0_24 = D_800F1AB0.facing * 64;
     func_800A30A0(0, &sp28, -0x800, 2);
 
     if (D_800F1AB0.unk4_15) {
-        switch (D_800F1AB0.unk4_13) {
+        switch (D_800F1AB0.facing) {
         case 0:
             sp10.vx = 0x40;
             sp10.vz = 0;

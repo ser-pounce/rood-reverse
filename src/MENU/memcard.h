@@ -570,7 +570,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
  * @return One for invalid data, zero when valid (and applied when write is
  * nonzero).
  */
-static int _applyLoadedSaveFile(int verifyOnly)
+static int _applyLoadedSaveFile(int apply)
 {
     int blockCount;
     savedata_t* spmcimg = (savedata_t*)_spmcimg;
@@ -582,7 +582,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->info.identity.base.slotState);
 
     blockCount = 92;
-    if (verifyOnly != 0) {
+    if (apply != 0) {
         blockCount = 32;
     }
 
@@ -593,7 +593,7 @@ static int _applyLoadedSaveFile(int verifyOnly)
         } while (0);
     }
 
-    if (verifyOnly == 0) {
+    if (apply == 0) {
         return 0;
     }
 
@@ -661,10 +661,10 @@ static void _packageGameSaveData(int targetFile)
         savedata->titleFrame.title[30] += ((vs_main_gametime.t.s % 10) << 8);
     }
     savedata3->titleFrame.title[31] = 0;
-    _rMemcpy(savedata3->titleFrame.iconPalette, _mcData->unk400[targetFile],
+    _rMemcpy(savedata3->titleFrame.iconPalette, _mcData->iconPalettes[targetFile],
         sizeof savedata->titleFrame.iconPalette);
-    _rMemcpy(
-        savedata3->iconFrame0, _mcData->unk4E0[targetFile], sizeof savedata->iconFrame0);
+    _rMemcpy(savedata3->iconFrame0, _mcData->iconBitmaps[targetFile],
+        sizeof savedata->iconFrame0);
 
     if (vs_main_settings.slotState == 0) {
         vs_main_settings.slotState = KEYSTREAM_BITS(0x20);
@@ -989,9 +989,10 @@ static int _initMemcard(int init)
         MEMCARD_INIT_HOOK();
         _spmcimg = vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
         _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
-        _textTable = _mcData->textTable;
-        _saveSlotInfo = _mcData->saveSlotInfo;
-        _dirEntBuf = &_mcData->_dirEntBuf;
+        // Laid out in order after mcdata_t: MCMAN text table, slot info, DIRENTRY
+        _textTable = (u_short*)(_mcData + 1);
+        _saveSlotInfo = (saveInfoFrame_t*)(_textTable + 0x800);
+        _dirEntBuf = (struct DIRENTRY*)(_saveSlotInfo + 5);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
         _initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);

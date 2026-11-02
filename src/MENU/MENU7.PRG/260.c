@@ -733,7 +733,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
             vs_mainMenu_setBackgroundRenderPriority(2046, 128);
             _initFileMenu();
             if ((*(u_int*)&vs_main_settings) & 0x10) {
-                vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
+                vs_battle_rMemzero(&((savedata_t*)_spmcimg + 1)->containerData,
+                    sizeof((savedata_t*)_spmcimg + 1)->containerData);
                 *state = 7;
             } else {
                 _findCurrentSave(1);
@@ -773,7 +774,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
                 *state = 14;
             } else {
                 (*(u_int*)&vs_main_settings) |= 0x10;
-                vs_battle_rMemzero(_spmcimg + 0x79E0, 0x3C00);
+                vs_battle_rMemzero(&((savedata_t*)_spmcimg + 1)->containerData,
+                    sizeof((savedata_t*)_spmcimg + 1)->containerData);
                 *state = 7;
             }
         }
@@ -795,7 +797,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
             sizeof vs_menu_inventoryStorage->unk0);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &vs_main_inventoryIndices,
             sizeof vs_menu_inventoryStorage->unkF00);
-        vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0, (_spmcimg + 0x79E0),
+        vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0,
+            &((savedata_t*)_spmcimg + 1)->containerData,
             sizeof vs_menu_inventoryStorage->unkFB0);
         _shutdownMemcard();
         *state = 8;
@@ -827,7 +830,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         }
         break;
     case 10:
-        _copyContainer((vs_menu_containerData*)(_spmcimg + 0x79E0),
+        _copyContainer(&((savedata_t*)_spmcimg + 1)->containerData,
             &vs_menu_inventoryStorage->unkC430.data,
             &vs_menu_inventoryStorage->unkC430.indices);
         _showSaveMenu(2);

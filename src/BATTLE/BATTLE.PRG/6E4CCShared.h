@@ -361,7 +361,8 @@ typedef struct func_800E78F4_t {
     int unk18C;
     func_800E78F4_path_t unk190;
     int unk194;
-    char unk198[2];
+    char unk198;
+    u_char unk199;
     u_char unk19A;
     u_char unk19B;
     vs_battle_movementPosition unk19C;
@@ -454,6 +455,7 @@ void func_800D82A8(int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+int func_800D98E8(func_800E78F4_t*, int);
 int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
@@ -497,6 +499,7 @@ int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
 int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
 void func_800E3600(func_800E78F4_t*, int, int);
+int func_800E3D5C(func_800E78F4_t*, int (*)(func_800E78F4_t*, int));
 int func_800E4180(func_800E78F4_t*, int, int, int);
 int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);

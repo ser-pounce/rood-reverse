@@ -1617,6 +1617,185 @@ void func_800E2CCC(func_800E78F4_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E2F5C);
+int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), int mask)
+{
+    func_800E78F4_path_t path = state->unk190;
+
+    state->unk5 = 0;
+    state->unk1 = state->unk199;
+
+    if (path.count != 0) {
+        int heading = path.direction;
+        u_int direction = (path.clockwise ? heading - 2 : heading + 2) & 7;
+        int hit = func_800D98E8(state, direction);
+        int blocker = hit - 1;
+        int boundX;
+        int boundZ;
+        int cell;
+
+        if (hit != 0 && !(((func_800E78F4_t**)0x1F80037C)[blocker]->unk15E & 0x30)
+            && !((func_800E78F4_t**)0x1F80037C)[blocker]->unk19A) {
+            ((func_800E78F4_t**)0x1F80037C)[blocker]->unk19A = func_800E45D4(4) + 4;
+        }
+
+        if (!state->unk4 && !path.changed && !test(state, path.direction)) {
+            vs_battle_movementPosition ahead;
+
+            ahead.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dx;
+            ahead.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dz;
+            ahead.y = 0;
+
+            if (!func_800D96C8(state, state->unk34, ahead, path.direction)
+                || (func_800D954C(state, ahead) <= 0)) {
+                path.changed = 1;
+                path.clockwise = !path.clockwise;
+                path.visited = 0;
+                path.direction += 4;
+            }
+        }
+
+        boundX = path.boundX * 128;
+        boundZ = path.boundZ * 128;
+
+        if (!state->unk4) {
+            int x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+            int z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+
+            if ((((*(u_short(**)[32])0x1F8003C0)[z][x] >> mask) & 1)
+                || (x > D_800F58BC->unk0) || (z > D_800F58BC->unk1)
+                || (x < D_800F58BC->unk2) || (z < D_800F58BC->unk3)) {
+                state->unkE8 = 0;
+                state->unkE7 = 0;
+                state->unkE4 = 0;
+                goto stop;
+            }
+        }
+
+        if (!state->unk4) {
+            if (boundZ > 0) {
+                int center = state->unk168.z * 128 + 64;
+
+                if ((center < boundZ && state->unk4C.vz < boundZ)
+                    || (boundZ < center && boundZ < state->unk4C.vz)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+
+            if (boundX > 0) {
+                int center = state->unk168.x * 128 + 64;
+
+                if ((center < boundX && state->unk4C.vx < boundX)
+                    || (boundX < center && boundX < state->unk4C.vx)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+        } else {
+            if (boundZ > 0) {
+                int center = state->unk168.z * 128 + 64;
+
+                if ((boundZ < center && state->unk4C.vz < boundZ)
+                    || (center < boundZ && boundZ < state->unk4C.vz)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+
+            if (boundX > 0) {
+                int center = state->unk168.x * 128 + 64;
+
+                if ((boundX < center && state->unk4C.vx < boundX)
+                    || (center < boundX && boundX < state->unk4C.vx)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+        }
+
+        cell = func_800E3D5C(state, test);
+
+        if (cell != path.cell) {
+            int turn = -1;
+            int i;
+            vs_battle_movementPosition point;
+
+            path.cell = cell;
+
+            if (path.clockwise) {
+                turn = 1;
+            }
+
+            if (test(state, (path.direction - turn * 2 - turn) & 7)
+                && test(state, (path.direction - turn * 2) & 7)) {
+                if (!(state->unk15E & 0x30) && !state->unk19A) {
+                    state->unk19A = func_800E45D4(4) + 4;
+                }
+
+                path.stop = 1;
+                state->unk190 = path;
+                return -1;
+            }
+
+            path.visited |= 1 << (path.direction >> 1);
+
+            if (path.visited == 15) {
+                path.stop = 1;
+                state->unk190 = path;
+                return -1;
+            }
+
+            direction = (path.direction - turn * 2) & 7;
+            i = 0;
+
+            while (1) {
+                if (test(state, direction)) {
+                    if (path.direction != direction) {
+                        path.changed = 1;
+                    }
+
+                    path.direction = direction;
+                    state->unk190 = path;
+                    return 5;
+                }
+
+                point.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+                point.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+                point.y = 0;
+
+                if (func_800D96C8(state, state->unk34, point, direction)
+                    && (func_800D954C(state, point) > 0)) {
+                    *(u_int*)&state->unk170 = *(u_int*)&point;
+
+                    if (path.direction != direction) {
+                        path.changed = 1;
+                    }
+
+                    path.direction = direction;
+                    break;
+                }
+
+                direction = (direction + turn * 2) & 7;
+
+                if (++i >= 4) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+
+            state->unk190 = path;
+            return 14;
+        }
+
+        state->unk190 = path;
+        return 5;
+
+    stop:
+        path.stop = 1;
+    }
+
+    state->unk190 = path;
+    return -1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E3600);

@@ -1,6 +1,8 @@
 #include "common.h"
 #include <libgte.h>
 #include <libgpu.h>
+#include <libetc.h>
+#include <stdio.h>
 
 typedef struct {
     u_char type;
@@ -16,12 +18,15 @@ int func_8002ACFC(int);
 void func_8002B1DC(void*, int, int);
 
 extern D_80033444_t D_80033444;
-extern u_long* D_8003354C;
-extern u_long* D_80033558;
-extern u_long* D_80033568;
-extern int D_8003356C;
-extern volatile int D_80033570;
+extern u_int* D_8003354C;
+extern u_int* D_80033550;
+extern u_int* D_80033558;
+extern u_int* D_80033568;
+extern volatile int _qin;
+extern volatile int _qout;
 extern int D_8003357C;
+extern int D_80033580;
+extern int D_80033584;
 extern u_char D_8003E2F8[0x100];
 extern u_char D_8003E400[0x1800];
 
@@ -153,7 +158,7 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A698);
 int func_8002A8F8(int mode)
 {
     D_8003357C = SetIntrMask(0);
-    D_8003356C = D_80033570 = 0;
+    _qin = _qout = 0;
 
     switch (mode & 7) {
     case 0:
@@ -187,7 +192,26 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002AA48);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002AB84);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002ABB8);
+int func_8002ABB8(void)
+{
+    if ((VSync(-1) > D_80033580) || (D_80033584++ > 0xF0000)) {
+        volatile u_int* status = D_8003354C;
+
+        *status;
+        printf("GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x\n",
+            (_qin - _qout) & 0x3F, *status, *D_80033558, *D_80033550);
+        D_8003357C = SetIntrMask(0);
+        _qin = _qout = 0;
+        *D_80033558 = 0x401;
+        *D_80033568 |= 0x800;
+        *D_8003354C = 0x2000000;
+        *D_8003354C = 0x1000000;
+        SetIntrMask(D_8003357C);
+        return -1;
+    }
+
+    return 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002ACFC);
 

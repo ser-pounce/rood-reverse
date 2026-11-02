@@ -18,6 +18,7 @@ typedef union {
 extern u_char D_800F175C[];
 
 int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2);
+void func_800E1238(func_800E78F4_t*, int);
 
 void func_800DF8A4(func_800E78F4_t* arg0)
 {
@@ -496,7 +497,257 @@ int func_800E0918(func_800E78F4_t* arg0, int arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E0A68);
+void func_800E0A68(func_800E78F4_t* state, int action)
+{
+    int step;
+    int mode;
+    int angle;
+    int x;
+    int z;
+
+    if (func_800E0918(state, action, 1)) {
+        return;
+    }
+
+    if (!state->unk58->unk0.unkA_5) {
+        func_800E4B18(state);
+        return;
+    }
+
+    state->unk7 = 1;
+
+    if (!func_800E4764(state, &step, &mode)) {
+        func_800E2CCC(state);
+        return;
+    }
+
+    x = state->unk168.x * 128 + 64;
+    z = state->unk168.z * 128 + 64;
+    angle = ratan2(state->unk4C.vx - x, state->unk4C.vz - z);
+    angle &= 0xFFF;
+
+    if (state->unk0 && (func_800E45F4(state->unk34, state->unk168) < 2)
+        && ((*(u_short(**)[32])0x1F8003C0)[state->unk168.z][state->unk168.x] & 0x40)) {
+        int centerZ;
+        int centerAngle;
+        int selectedHeight;
+        int heading;
+        int offsetX;
+        int offsetZ;
+        int actorY = D_800F4538[state->unkE5]->unk0.position.vy;
+        int rise = func_800E42E0(state->unk34);
+
+        if (actorY >= rise) {
+            selectedHeight = rise + state->unkBE;
+        } else if (D_800F58BC->unk14 && (D_800F58BC->unk14 >= actorY)) {
+            selectedHeight = D_800F58BC->unk14;
+        } else {
+            selectedHeight = (short)actorY;
+        }
+
+        rise = selectedHeight - state->unk4C.vy;
+
+        if (ABS(rise) < step) {
+            angle = state->unk34.x * 128 + 64;
+            centerZ = state->unk34.z * 128 + 64;
+            centerAngle = ratan2(state->unk4C.vx - angle, state->unk4C.vz - centerZ);
+            state->unk184 = selectedHeight * ONE;
+            heading = (-centerAngle + ONE * 3 / 4) & 0xFFF;
+            offsetX = state->unk4C.vx - angle;
+
+            if (ABS(offsetX) < step) {
+                state->unk17C = angle * ONE;
+            } else {
+                state->unk17C = (state->unk4C.vx * ONE) + step * rcos(heading);
+            }
+
+            offsetZ = state->unk4C.vz - centerZ;
+            state->unk180 = ABS(offsetZ) < step
+                              ? centerZ * ONE
+                              : (state->unk4C.vz * ONE) + step * rsin(heading);
+            func_800DEEFC(state, 8);
+            return;
+        }
+
+        state->unk184 = rise;
+        state->unk180 = 0;
+        state->unk17C = 0;
+
+        if ((state->unk184 > 0) && func_800E02B4(state, 0, 0)) {
+            state->unk184 = 0;
+        }
+
+        func_800DEEFC(state, mode);
+        return;
+    }
+
+    if ((state->unk34.x == state->unk168.x) && (state->unk34.z == state->unk168.z)) {
+        int floorY;
+        int tileX;
+        int deltaX;
+        int tileZ;
+        int deltaZ;
+        D_800F4538_t* actor;
+
+        if (!state->unk0 || func_800E02B4(state, 0, 0)) {
+            func_800E2CCC(state);
+            return;
+        }
+
+        floorY = state->unkBE;
+        actor = D_800F4538[state->unkE5];
+
+        if (!((*(u_short(**)[32])0x1F8003C0)[state->unk168.z][state->unk168.x] & 0x20)) {
+            floorY += func_800E42E0(state->unk168);
+        }
+
+        tileX = state->unk168.x * 128;
+        deltaX = state->unk4C.vx - 64;
+        state->unk17C = tileX - deltaX;
+        tileZ = state->unk168.z * 128;
+        deltaZ = state->unk4C.vz - 64;
+        state->unk180 = tileZ - deltaZ;
+        state->unk184 = floorY - state->unk4C.vy;
+
+        if ((state->unk168.x == actor->unk0.currentTile.x)
+            && (state->unk168.z == actor->unk0.currentTile.z)) {
+            state->unk184 = actor->unk0.position.vy - (actor->menuCameraHeightOffset >> 1)
+                          - state->unk4C.vy;
+        }
+
+        if ((state->unk184 > 0) && (floorY < state->unk4C.vy + step)) {
+            state->unk184 = 0;
+        }
+
+        if (ABS(state->unk17C) < step) {
+            state->unk17C = 0;
+        }
+
+        if (ABS(state->unk180) < step) {
+            state->unk180 = 0;
+        }
+
+        func_800DEEFC(state, mode);
+        return;
+    }
+
+    func_800E3600(state, angle, 2);
+
+    switch (*(int*)0x1F8003C8) {
+    case 5:
+        angle = state->unk188 * (ONE / 8);
+
+        if (func_800E0850(state, angle) + state->unkBE < state->unk4C.vy) {
+        fall:
+            state->unk184 = -ONE;
+            state->unk180 = 0;
+            state->unk17C = 0;
+        } else {
+            angle = -angle;
+            angle += ONE * 3 / 4;
+            angle &= 0xFFF;
+            state->unk184 = 0;
+            state->unk17C = rcos(angle);
+            state->unk180 = rsin(angle);
+        }
+
+        func_800DEEFC(state, mode);
+        return;
+
+    case 7: {
+        int ground;
+        int height;
+        int dy;
+        int px;
+        int py;
+        int pz;
+        int top;
+        unsigned int distance;
+        unsigned int denom;
+        unsigned int square;
+        int value;
+        int diff;
+        int offset;
+
+        height = func_800E42E0(state->unk168) + state->unkBE;
+        px = *(u_int*)&state->unk4C & 0xFFFF;
+        py = (int)*(u_int*)&state->unk4C >> 16;
+        pz = state->unk4C.vz;
+        ground = func_800E6A6C(px, pz, x, z) + state->unkBC;
+
+        if (D_800F58BC->unk14) {
+            ground = ground < D_800F58BC->unk14 ? D_800F58BC->unk14 : ground;
+        }
+
+        top = func_800E0850(state, angle) + state->unkBE;
+        ground = top > ground ? ground : top;
+        distance = vs_gte_rsqrt(func_800E4660(x - px, 0, z - pz));
+        value = height + ground;
+        denom = vs_gte_rsqrt(((value * ONE) / value) * ONE) + ONE;
+
+        if (denom != 0) {
+            value = (distance * ONE) / denom;
+            square = value * value;
+            diff = py - ground;
+            offset = ABS(diff);
+
+            if (py + step < ground) {
+                if (step < height - py) {
+                    state->unk184 = height - py;
+                } else {
+                    state->unk184 = 0;
+                }
+
+                state->unk17C = x - px;
+                state->unk180 = z - pz;
+                func_800DEEFC(state, mode);
+                state->unk228 = 0;
+                return;
+            }
+        }
+
+        if ((denom == 0) || ((unsigned int)step >= distance)) {
+            func_800E1238(state, angle);
+            return;
+        }
+
+        height =
+            (unsigned int)(offset * (step - value) * (step - value)) / square + ground;
+        angle = -angle;
+        angle += ONE * 3 / 4;
+        angle &= 0xFFF;
+        x = (px * ONE) + step * rcos(angle);
+        z = (pz * ONE) + step * rsin(angle);
+
+        if (height < ground) {
+            height = ground;
+        } else if (top < height) {
+            if (ground < py) {
+                goto fall;
+            }
+
+            height = top;
+        }
+
+        dy = height - py;
+        state->unk228 = 0;
+
+        if (step < ABS(dy)) {
+            state->unk17C = (x >> 12) - px;
+            state->unk180 = (z >> 12) - pz;
+            state->unk184 = dy;
+            func_800DEEFC(state, mode);
+        } else {
+            state->unk17C = x;
+            state->unk184 = height * ONE;
+            state->unk180 = z;
+            func_800DEEFC(state, 8);
+        }
+
+        return;
+    }
+    }
+}
 
 void func_800E1238(func_800E78F4_t* arg0, int arg1)
 {

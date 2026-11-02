@@ -286,7 +286,9 @@ typedef struct func_800E78F4_t {
     u_short unkD4;
     u_short unkD6;
     u_char unkD8;
-    char unkD9[0xE];
+    char unkD9[0xC];
+    u_char unkE5;
+    char unkE6;
     u_char unkE7;
     u_char unkE8;
     u_char unkE9;
@@ -513,6 +515,7 @@ void func_800E4F14(func_800E78F4_t*);
 void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E6828(func_800E78F4_t*);
+int func_800E6A6C(int, int, int, int);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
 void _parsePfileBlock13(void*);

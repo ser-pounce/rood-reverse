@@ -55,8 +55,8 @@ static int _showLoadFilesMenu(int initPort)
                 i + 5, ((72 + i * 40) << 16) | 64, vs_getWH(256, 32), 0);
             element->slotId = i;
             element->slotUnavailable =
-                _saveFileInfo[i].unk4.base.slotState < slotStateInUse;
-            element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
+                _saveSlotInfo[i].identity.base.slotState < slotStateInUse;
+            element->saveLocation = _saveSlotInfo[i].stats.saveLocation;
         }
         state = handleInput;
         _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_selectFile);
@@ -78,7 +78,7 @@ static int _showLoadFilesMenu(int initPort)
         currentSlot = slot + page;
 
         if (vs_main_buttonsPressed.all & PADRright) {
-            if (_saveFileInfo[currentSlot].unk4.base.slotState >= slotStateInUse) {
+            if (_saveSlotInfo[currentSlot].identity.base.slotState >= slotStateInUse) {
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                 _fileMenuElements[currentSlot + 5].selected = 1;
                 _selectCursorXy = 0;

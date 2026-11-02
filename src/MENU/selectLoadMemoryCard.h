@@ -93,7 +93,7 @@ static long _selectLoadMemoryCard(int initPort)
             break;
         }
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.base.slotState > slotStateAvailable) {
+            if (_saveSlotInfo[i].identity.base.slotState > slotStateAvailable) {
                 break;
             }
         }

@@ -12,10 +12,13 @@ enum slotState_e {
     slotStateInUse = 3
 };
 
+/** Save format revision, a BCD date: 2000-01-07. */
+#define SAVE_FORMAT_VERSION 0x20000107
+
 typedef struct {
     enum slotState_e slotState;
     u_int generation;
-    int unk8;
+    int version;
 } saveBase_t;
 
 typedef struct {
@@ -33,48 +36,45 @@ typedef struct {
 } stats_t;
 
 typedef struct {
-    saveBase_t base;
-    stats_t stats;
-    u_short unk20[16];
-} saveFileSubInfo_t;
-
-typedef struct {
-    u_int key;
-    saveFileSubInfo_t unk4;
-    char unk44[0x1C];
-    char unk60[0x20];
-} saveFileInfo_t;
+    char magic[2]; // "SC"
+    u_char iconFlag; // 0x11..0x13: icon frame count
+    u_char blockCount;
+    u_short title[32]; // Shift-JIS
+    char reserved44[0xC];
+    char reserved50[0x10]; // PocketStation header, unused
+    char iconPalette[0x20];
+} saveTitleFrame_t;
 
 typedef struct {
     int key;
     saveBase_t base;
-} savedata_unk180_2_t;
+} saveIdentity_t;
 
 typedef struct {
-    savedata_unk180_2_t unk180;
+    saveIdentity_t identity;
     stats_t stats;
     char checksums[0x5C];
-} savedata_unk180_t;
+} saveInfoFrame_t;
 
 typedef struct {
-    saveFileInfo_t fileInfo;
-    char unk80[0x80];
-    char unk100[0x80];
-    savedata_unk180_t unk180;
+    saveTitleFrame_t titleFrame;
+    char iconFrame0[0x80];
+    char iconFrame1[0x80]; // unused
+    saveInfoFrame_t info;
     char stateFlags[0x440];
     char actionsLearned[32];
     char mapStatus[0x48];
     vs_main_settings_t settings;
-    D_80060068_t unk6C8;
+    D_80060068_t character;
     vs_main_inventory_t inventory;
-    vs_main_inventoryIndices_t unk16C8;
+    vs_main_inventoryIndices_t inventoryIndices;
     _mpdRoomDoorSection_t unk1778;
     vs_main_scoredata_t scoreData;
     int zoneEnemyCacheIndex;
     vs_main_zoneEnemyCache_t zoneEnemyCache[4];
     vs_main_artsStatus_t artsStatus;
     vs_menu_containerData containerData;
-    char unk59E0[0x220];
+    char pad[0x220];
 } savedata_t;
 
 enum fileMenuElementState_e {
@@ -127,6 +127,6 @@ typedef struct {
     char unkBE0[8][128];
     char unkFE0[32];
     u_short textTable[0x800];
-    saveFileInfo_t saveFileInfo[5];
+    saveInfoFrame_t saveSlotInfo[5];
     struct DIRENTRY _dirEntBuf;
 } mcdata_t;

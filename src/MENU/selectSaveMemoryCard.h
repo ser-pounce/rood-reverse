@@ -72,13 +72,13 @@ static int _selectSaveMemoryCard(int initPort)
             _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
-            memset(_saveFileInfo, 0, sizeof *_saveFileInfo * 5);
+            memset(_saveSlotInfo, 0, sizeof *_saveSlotInfo * 5);
             for (i = 14; i >= 0; --i) {
                 _memcardFiles[i] = NULL;
             }
             j = slotStateAvailable;
             for (i = 4; i >= 0; --i) {
-                _saveFileInfo[i].unk4.base.slotState = j;
+                _saveSlotInfo[i].identity.base.slotState = j;
             }
             _showSaveFilesMenu(port);
             state = showSaveMenu;
@@ -108,7 +108,7 @@ static int _selectSaveMemoryCard(int initPort)
             break;
         }
         for (i = 0; i < 5; ++i) {
-            if (_saveFileInfo[i].unk4.base.slotState != slotStateUnavailable) {
+            if (_saveSlotInfo[i].identity.base.slotState != slotStateUnavailable) {
                 break;
             }
         }

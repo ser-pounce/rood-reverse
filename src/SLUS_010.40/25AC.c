@@ -139,7 +139,7 @@ extern D_800378C0_t D_800378C0;
 extern int D_800378E4;
 extern char _spuMemInfo;
 extern volatile int _isSpuTransfer;
-extern FSoundChannel D_80035910[10];
+extern FSoundChannel D_80035910[12];
 extern int D_80039AFC;
 extern int D_80039B14;
 extern int D_80039B64;
@@ -173,6 +173,7 @@ extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
 extern FSoundChannel g_ActiveMusicChannels[0x20];
 extern FSoundChannelConfig* g_pSavedMousicConfig;
 extern FSoundChannel* g_pSecondaryMusicChannels;
+extern FSoundChannel* D_800377FC;
 extern FSoundFadeTimer g_Sound_MasterFadeTimer;
 extern FSoundCutsceneStreamState g_Sound_Cutscene_StreamState;
 extern u_int g_Sound_ProgramCounter;
@@ -1063,7 +1064,124 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
 }
 
 // https://decomp.me/scratch/BNQ6Q
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/25AC", func_8001369C);
+// Keep the published music base in a3 for matching; use a plain local in ports.
+#ifdef NON_MATCHING
+#define VS_REG_VAR(type, name, reg) type name
+#else
+#define VS_REG_VAR(type, name, reg) register type name __asm__(reg)
+#endif
+
+void func_8001369C(void)
+{
+    int count;
+    int voiceIndex;
+    int assignedVoiceNumber;
+    FSoundChannel* channel;
+    FSoundChannel* sfxChannel;
+    FSoundChannel** musicSlot;
+    VS_REG_VAR(FSoundChannel*, musicBase, "$7");
+
+    g_pActiveMusicConfig = &D_800366F0;
+    g_pSavedMousicConfig = NULL;
+    musicSlot = &D_800377FC;
+    musicBase = g_ActiveMusicChannels;
+    *musicSlot = musicBase;
+    g_pSecondaryMusicChannels = NULL;
+    g_Sound_GlobalFlags.ControlLatches = 0;
+    g_Sound_LfoPhase = 0;
+    D_80037788.Param1 = 0;
+    D_80036770.unk4 = 0;
+    D_80036770.unk0 = 0;
+    D_800377E0[2] = 0;
+    D_800377E0[1] = 0;
+    D_800377E0[0] = 0;
+    g_Sound_GlobalFlags.MixBehavior = 1;
+    g_Sound_VoiceSchedulerState.ActiveChannelMask = 0;
+    D_800366F0.ActiveChannelMask = 0;
+    D_800366F0.KeyedMask = 0;
+    D_800366F0.MusicId = 0;
+    g_Sound_VoiceSchedulerState.unk_Flags_0x10 = 0;
+    D_800366F0.unk1C = 0;
+    g_PushedMusicConfig.MusicId = 0;
+    g_PushedMusicConfig.ActiveChannelMask = 0;
+    D_800366F0.A_Volume = 0x7F0000;
+    g_CdVolume = 0x7FFF0000;
+    D_800366F0.unk68 = 0;
+    D_80036780 = 0;
+    g_Sound_MasterPitchScaleQ16_16 = 0;
+    D_80036782 = 0;
+    g_Sound_TempoMultiplier = 0;
+    g_Sound_CdVolumeFadeLength = 0;
+    g_Sound_VoiceSchedulerState.NoiseVoiceFlags = 0;
+    D_800366F0.NoiseChannelFlags = 0;
+    g_Sound_VoiceSchedulerState.ReverbVoiceFlags = 0;
+    D_800366F0.ReverbChannelFlags = 0;
+    g_Sound_VoiceSchedulerState.FmVoiceFlags = 0;
+    D_800366F0.FmChannelFlags = 0;
+    D_800366F0.TimerLower = 0;
+    D_800366F0.TimerUpperCurrent = 0;
+    D_800366F0.TimerUpper = 0;
+    D_800366F0.TimerTopCurrent = 0;
+    *SPU_MAIN_VOL_L = 0x3FFF;
+    *SPU_MAIN_VOL_R = 0x3FFF;
+    *CD_VOL_L = 0x7FFF;
+    *CD_VOL_R = 0x7FFF;
+    count = *SPU_CONTROL;
+    g_Music_LoopCounter = 0;
+    D_800378E4 = 0;
+    D_80039B64 = 0;
+    g_Sound_Cutscene_StreamState.VolFadeStepsRemaining = 0;
+    g_Sound_Cutscene_StreamState.Volume = 0x7F00;
+    g_Sound_VoiceModeFlags.Fm = 0;
+    g_Sound_VoiceModeFlags.Noise = 0;
+    g_Sound_VoiceModeFlags.Reverb = 0;
+    assignedVoiceNumber = count;
+    *SPU_CONTROL = (assignedVoiceNumber & 0xFFFA) | 1;
+
+    count = 0;
+    channel = musicBase;
+    while ((u_int)(count & 0xFFFF) < SOUND_CHANNEL_COUNT) {
+        count++;
+        channel->UpdateFlags = 0;
+        channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
+        channel->Type = SOUND_CHANNEL_TYPE_MUSIC;
+        channel->unk58 = 0;
+        channel++;
+    }
+
+    voiceIndex = 12;
+    sfxChannel = &D_80035910[0];
+    while ((u_int)(voiceIndex & 0xFFFF) < VOICE_COUNT) {
+        assignedVoiceNumber = voiceIndex & 0xFFFF;
+        voiceIndex++;
+        sfxChannel->UpdateFlags = 0;
+        sfxChannel->VoiceParams.AssignedVoiceNumber = assignedVoiceNumber;
+        sfxChannel->Type = SOUND_CHANNEL_TYPE_SOUND;
+        sfxChannel->unk58 = 0;
+        sfxChannel->unkDC = 0x7F00;
+        sfxChannel->unk8C = 0;
+        sfxChannel->unk86 = 0;
+        sfxChannel->unk40 = 0;
+        sfxChannel->KeyOnVolumeSlideLength = 0;
+        sfxChannel++;
+    }
+
+    g_pActiveMusicConfig->PendingKeyOffMask = 0;
+    g_pActiveMusicConfig->ActiveNoteMask = 0;
+    g_pActiveMusicConfig->PendingKeyOnMask = 0;
+    g_Sound_VoiceSchedulerState.TempoAccumumulator = 1;
+    g_Sound_VoiceSchedulerState.unk14 = 0x66A80000;
+    g_Sound_VoiceSchedulerState.KeyOffFlags = 0;
+    g_Sound_VoiceSchedulerState.KeyedFlags = 0;
+    g_Sound_VoiceSchedulerState.KeyOnFlags = 0;
+    g_pActiveMusicConfig->RevDepth = 0x3FFF000;
+    g_pActiveMusicConfig->unk5C = 0;
+    g_pActiveMusicConfig->ReverbDepthSlideLength = 0;
+    g_Sound_GlobalFlags.UpdateFlags |= SOUND_UPDATE_REVERB;
+    Sound_SetReverbMode(SPU_REV_MODE_STUDIO_C);
+    SpuSetReverb(SPU_ON);
+}
+#undef VS_REG_VAR
 
 static void StartSound(void)
 {

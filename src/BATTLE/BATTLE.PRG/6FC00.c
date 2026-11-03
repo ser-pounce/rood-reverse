@@ -469,8 +469,8 @@ void func_800D8EF4(void)
                 goto idle;
             }
 
-            state->unk70[state->unk80] = ((u_int*)&state->unk4C)[0];
-            state->unk78[state->unk80] = ((u_int*)&state->unk4C)[1];
+            state->unk70[state->unk80] = state->unk4C.vx;
+            state->unk78[state->unk80] = state->unk4C.vz;
             state->unk81 |= 1 << state->unk80;
             state->unk80 = (state->unk80 + 1) & 7;
         } else {

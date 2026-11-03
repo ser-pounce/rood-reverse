@@ -424,7 +424,7 @@ void func_800D8EF4(void)
 
         if ((state->unk64->x == state->unk34.x) && (state->unk64->z == state->unk34.z)) {
             if ((state->unk46 != 0) && (--state->unk46 == 0)) {
-                state->unk38 = *(u_int*)state->unk64;
+                state->unk38 = *state->unk64;
                 state->unkFB = 16;
                 state->unk1C = 1;
                 state->unk45 = 40;
@@ -534,8 +534,8 @@ void func_800D8EF4(void)
             --state->unk156;
         }
 
-        if ((state->unk1C == 0) && (state->unk38 >= 0)) {
-            int targetId = ((u_char*)&state->unk38)[3];
+        if ((state->unk1C == 0) && (*(int*)&state->unk38 >= 0)) {
+            int targetId = state->unk38.status;
 
             if ((state->unk40 == 0) || (--state->unk40 == 0)
                 || (D_800F4538[targetId] == NULL)

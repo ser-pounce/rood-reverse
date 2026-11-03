@@ -226,7 +226,7 @@ typedef struct func_800E78F4_t {
     u_char unk32;
     u_char unk33;
     vs_battle_movementPosition unk34;
-    int unk38;
+    vs_battle_movementPosition unk38;
     u_int unk3C;
     u_short unk40;
     short unk42;

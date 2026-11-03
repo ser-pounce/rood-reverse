@@ -427,8 +427,8 @@ int func_800E0678(func_800E78F4_t* arg0, int arg1)
 
         if (x <= D_800F58BC->unk0 && x >= D_800F58BC->unk2 && z <= D_800F58BC->unk1
             && z >= D_800F58BC->unk3 && !((*(u_short(**)[32])0x1F8003C0)[z][x] & 0x40)
-            && (((vs_battle_movementPosition*)&arg0->unk38)->x != x
-                || ((vs_battle_movementPosition*)&arg0->unk38)->z != z)) {
+            && (arg0->unk38.x != x
+                || arg0->unk38.z != z)) {
             if (D_800F58BC->unk14
                 && func_800E42EC(x, z) + arg0->unkBE < D_800F58BC->unk14) {
                 return 0;

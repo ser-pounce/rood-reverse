@@ -586,7 +586,7 @@ int func_800DB0BC(func_800E78F4_t* arg0)
         return 0;
     }
 
-    if ((*(u_int*)&arg0->unk34 & 0xFF00FF) == (arg0->unk38 & 0xFF00FF)) {
+    if ((arg0->unk34.x == arg0->unk38.x) && (arg0->unk34.z == arg0->unk38.z)) {
         arg0->unk2 = 1;
 
         if (!arg0->unkFA) {

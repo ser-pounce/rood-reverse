@@ -1024,10 +1024,10 @@ char vs_main_actionsLearned[32];
 vs_main_mapStatus_t vs_main_mapStatus;
 vs_main_settings_t vs_main_settings;
 vs_main_artsStatus_t vs_main_artsStatus;
-int D_80060064;
+int vs_main_zoneEnemyCacheIndex;
 D_80060068_t D_80060068;
 vs_main_inventory_t vs_main_inventory;
-_mpdRoomDoorSection_t D_80061068;
+_mpdRoomDoorSection_t vs_main_spawnPoint;
 vs_Gametime_t vs_main_gametime;
 
 int vs_main_gametimeUpdate(int vsync)
@@ -1234,14 +1234,14 @@ void func_80042CB0(void)
     int v1;
     int v1_2;
 
-    D_80061068 = D_800F1AB0;
+    vs_main_spawnPoint = D_800F1AB0;
     func_800A1108(0, &sp10);
 
-    D_80061068.unk4_8 = sp10.unk0.unk0.fields.x;
-    D_80061068.unk6_10 = sp10.unk0.unk0.fields.z;
-    D_80061068.unk2.unk0_13 = sp10.unk0.unk0.fields.y;
-    D_80061068.unk4_13 = sp10.unk0.unk0.fields.status >> 6;
-    D_80061068.unk6_0 = D_800F18E8.unk0_0;
+    vs_main_spawnPoint.x = sp10.unk0.unk0.fields.x;
+    vs_main_spawnPoint.z = sp10.unk0.unk0.fields.z;
+    vs_main_spawnPoint.unk2.unk0_13 = sp10.unk0.unk0.fields.y;
+    vs_main_spawnPoint.facing = sp10.unk0.unk0.fields.status >> 6;
+    vs_main_spawnPoint.unk6_0 = D_800F18E8.unk0_0;
 
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {
         for (actionsLearned = 0, i = 0; i < 8; ++i) {
@@ -1291,7 +1291,7 @@ void func_80042CB0(void)
     temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
-        func_80069FC4(var_s1, 0);
+        vs_battle_saveEnemyState(var_s1, 0);
     }
     vs_battle_setDoorEntered();
 }
@@ -4502,7 +4502,7 @@ void vs_main_clutInit(void)
     }
 }
 
-D_80061078_t D_80061078[4];
+vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
 vs_main_flags_t vs_main_stateFlags;
 vs_main_inventoryIndices_t vs_main_inventoryIndices;
 static int _18[0x15E] __attribute__((unused));

@@ -400,7 +400,7 @@ void func_800DD604(func_800E78F4_t* arg0)
     }
 }
 
-void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
+void func_800DD7CC(func_800E78F4_t* arg0, vs_battle_movementPosition* arg1)
 {
     int i;
     u_int nearest = -1;
@@ -426,9 +426,9 @@ void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
         distance = func_800E4660(dx, arg0->unk4C.vy - func_800E42D4(x, z), dz);
 
         if (distance < nearest) {
-            arg1->unk0 = D_800F58C8->unk0[i].x;
+            arg1->x = D_800F58C8->unk0[i].x;
             nearest = distance;
-            arg1->unk2 = D_800F58C8->unk0[i].z;
+            arg1->z = D_800F58C8->unk0[i].z;
         }
     }
 
@@ -838,7 +838,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
     self = (vs_battle_actor*)arg0->unk54;
 
     if (vs_battle_getStateFlag(0xA6) == 4 && self->command.fields.unk9 == 24
-        && self->unkC == 4) {
+        && self->commandArgs.s32[0] == 4) {
         vs_battle_setStateFlag(0xA6, 5);
     }
 
@@ -853,7 +853,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
     int i;
     int j;
     func_800E78F4_t* entry;
-    vs_battle_actorView_t* temp_t1;
+    vs_battle_actor* temp_t1;
 
     if (arg0 == NULL) {
         return;
@@ -870,7 +870,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
         return;
     }
 
-    if (temp_t1->unk9 != 24) {
+    if (temp_t1->command.fields.unk9 != 24) {
         return;
     }
 
@@ -878,8 +878,9 @@ void func_800DEB10(D_800F19CC_t2* arg0)
         func_800DCAA0_t** list = entry->unk430;
         func_800DCAA0_t* temp_a2 = list[i];
 
-        if ((arg0->actionIndex == temp_a2->unk4_5) && (temp_t1->unkC == temp_a2->unk4_0)
-            && (temp_t1->unkE == temp_a2->unk4_3)) {
+        if ((arg0->actionIndex == temp_a2->unk4_5)
+            && (temp_t1->commandArgs.u16[0] == temp_a2->unk4_0)
+            && (temp_t1->commandArgs.u16[1] == temp_a2->unk4_3)) {
             entry->unkFB = temp_a2->unkC_0;
             for (j = 0; j < arg0->targetCount; ++j) {
                 _hitEntity_t* elem = &arg0->targets[j];

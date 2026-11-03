@@ -125,21 +125,20 @@ typedef struct vs_battle_actor {
     /* 0x08 */ union {
         u_int value;
         struct {
-            u_int unk8 : 8;
-            u_int unk9 : 8;
-            u_int unkA : 8;
+            u_char unk8;
+            u_char unk9;
+            u_char unkA;
             u_int unkB_0 : 2;
             u_int unkB_2 : 2;
             u_int unkB_4 : 4;
         } fields;
     } command;
-    /* 0x0C */ int unkC;
-    union {
-        u_char u8[4];
-        u_short u16[2];
-        int s32;
-    /* 0x10 */ } unk10;
-    int unk14;
+    /* 0x0C */ union {
+        int s32[3];
+        short s16[6];
+        u_short u16[6];
+        u_char u8[12];
+    } commandArgs;
     u_short unk18;
     u_short subType;
     u_short unk1C;
@@ -161,8 +160,14 @@ typedef struct vs_battle_actor {
     u_short unk30_0 : 4;
     u_short unk30_4 : 5;
     u_int unk30_9 : 5;
-    u_int unk30_14 : 18;
-    int unk34;
+    u_int unk30_14 : 2;
+    u_int unk30_16 : 6;
+    u_int unk30_22 : 5;
+    u_int unk30_27 : 5;
+    u_int unk34_0 : 12;
+    u_int unk34_12 : 2;
+    u_int unk34_14 : 1;
+    u_int unk34_15 : 17;
     int unk38;
     vs_battle_actor2* unk3C;
     int unk40;

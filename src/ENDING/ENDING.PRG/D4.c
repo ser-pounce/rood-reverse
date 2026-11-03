@@ -1580,8 +1580,8 @@ static void _do_updateClearGameStats(void)
         ++vs_main_stateFlags.clearCount;
     }
 
-    D_80061068.zndId = 1;
-    D_80061068.mpdId = 0;
+    vs_main_spawnPoint.zndId = 1;
+    vs_main_spawnPoint.mpdId = 0;
 }
 
 /**

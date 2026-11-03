@@ -1703,8 +1703,8 @@ static void _initGameData(void)
     vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
     vs_main_bzero(&vs_main_gametime, sizeof vs_main_gametime);
     vs_main_bzero(&vs_main_scoredata, sizeof vs_main_scoredata);
-    D_80060064 = 0;
-    vs_main_bzero(D_80061078, sizeof D_80061078);
+    vs_main_zoneEnemyCacheIndex = 0;
+    vs_main_bzero(vs_main_zoneEnemyCache, sizeof vs_main_zoneEnemyCache);
     vs_main_bzero(&vs_main_artsStatus, sizeof vs_main_artsStatus);
 
     for (i = 0; i < 8; ++i) {
@@ -1719,14 +1719,14 @@ static void _initGameData(void)
         vs_main_bzero((char*)&D_80060068 + i * sizeof D_80060068, 0x50);
     }
 
-    vs_main_bzero(&D_80061068, sizeof D_80061068);
+    vs_main_bzero(&vs_main_spawnPoint, sizeof vs_main_spawnPoint);
     vs_main_memcpy(&vs_main_inventory, D_80074C24, sizeof vs_main_inventory);
 
     vs_gametime_tickspeed = 2;
-    D_80061068.unk4_8 = 4;
-    D_80061068.unk6_10 = 2;
-    D_80061068.unk2.unk0_13 = 0;
-    D_80061068.unk4_13 = 2;
+    vs_main_spawnPoint.x = 4;
+    vs_main_spawnPoint.z = 2;
+    vs_main_spawnPoint.unk2.unk0_13 = 0;
+    vs_main_spawnPoint.facing = 2;
 }
 
 static void _setTitleExitFlags(int cause)
@@ -1735,22 +1735,22 @@ static void _setTitleExitFlags(int cause)
     case 0: // New Game
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 0;
-        D_80061068.zndId = 1;
-        D_80061068.mpdId = 0;
+        vs_main_spawnPoint.zndId = 1;
+        vs_main_spawnPoint.mpdId = 0;
         return;
     case 3: // Timeout cutscene1
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 1;
         vs_main_stateFlags.unkE = 1;
-        D_80061068.zndId = 20;
-        D_80061068.mpdId = 0;
+        vs_main_spawnPoint.zndId = 20;
+        vs_main_spawnPoint.mpdId = 0;
         return;
     case 4: // Timeout cutscene2
         vs_main_stateFlags.unkC = 0;
         vs_main_stateFlags.unkD = 1;
         vs_main_stateFlags.unkE = 1;
-        D_80061068.zndId = 2;
-        D_80061068.mpdId = 1;
+        vs_main_spawnPoint.zndId = 2;
+        vs_main_spawnPoint.mpdId = 1;
         return;
     case 1: // Continue
         vs_main_stateFlags.unkC = 0;

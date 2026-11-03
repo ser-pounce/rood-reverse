@@ -13,12 +13,6 @@ typedef struct {
 } D_800F5910_t;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-} func_800DFA54_t;
-
-typedef struct {
     int unk0;
     _loadFileContext loadContexts[8];
     u_short slots[8];
@@ -70,36 +64,6 @@ typedef struct {
     signed char dz : 2;
     signed char unk0_6 : 2;
 } D_800F16EC_t;
-
-// TODO: Partial view of vs_battle_actor with different fields, maybe merge.
-typedef struct {
-    char unk0[8];
-    u_char unk8;
-    u_char unk9;
-    char unkA;
-    u_int unkB_0 : 2;
-    u_int unkB_2 : 2;
-    u_int unkB_4 : 4;
-    u_short unkC;
-    u_short unkE;
-    SVECTOR unk10;
-    char unk18[2];
-    u_short unk1A;
-    char unk1C[0x14];
-    u_int unk30_0 : 4;
-    u_int unk30_4 : 5;
-    u_int unk30_9 : 5;
-    u_int unk30_14 : 2;
-    u_int unk30_16 : 6;
-    u_int unk30_22 : 5;
-    u_int unk30_27 : 5;
-    u_int unk34_0 : 12;
-    u_int unk34_12 : 2;
-    u_int unk34_14 : 1;
-    u_int unk34_15 : 17;
-    char unk38[4];
-    vs_battle_actor2* unk3C;
-} vs_battle_actorView_t;
 
 typedef struct {
     u_int unk0 : 1;
@@ -226,8 +190,8 @@ typedef struct func_800E78F4_t {
     u_char unk32;
     u_char unk33;
     vs_battle_movementPosition unk34;
-    int unk38;
-    u_int unk3C;
+    vs_battle_movementPosition unk38;
+    vs_battle_movementPosition unk3C;
     u_short unk40;
     short unk42;
     u_char unk44;
@@ -235,7 +199,7 @@ typedef struct func_800E78F4_t {
     u_short unk46;
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
-    vs_battle_actorView_t* unk54;
+    vs_battle_actor* unk54;
     D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
     SVECTOR* unk60;
@@ -450,10 +414,12 @@ int func_800E7F8C(func_800E78F4_t*);
 void func_800D6E24(func_800D2904_t*, void*);
 void func_800D820C(int, int);
 void func_800D821C(func_800E78F4_t*);
+void func_800D8280(func_800E78F4_t*);
 void func_800D82A8(int);
 int func_800D954C(func_800E78F4_t*, vs_battle_movementPosition);
 int func_800D96C8(
     func_800E78F4_t*, vs_battle_movementPosition, vs_battle_movementPosition, int);
+int func_800D98E8(func_800E78F4_t*, int);
 int func_800D9B6C(func_800E78F4_t*, int);
 void func_800D9DD8(func_800E78F4_t*);
 int func_800D9E18(func_800E78F4_t*, func_800DCAA0_t*);
@@ -472,6 +438,8 @@ u_int func_800DB93C(
 int func_800DBB2C(func_800E78F4_t*, void*, int);
 int func_800DBC60(func_800E78F4_t*, func_800DCAA0_t*);
 int func_800DBD80(func_800E78F4_t*, func_800DCAA0_t*);
+void func_800DBF00(func_800E78F4_t*);
+void func_800DBFE4(func_800E78F4_t*);
 void func_800DC19C(func_800E78F4_t*);
 void func_800DC210(func_800E78F4_t*, int);
 int func_800DC284(int, int, int, int);
@@ -495,11 +463,13 @@ int func_800E0918(func_800E78F4_t*, int, int);
 void func_800E1388(func_800E78F4_t*, vs_battle_movementPosition, int, u_int);
 int func_800E1BB8(func_800E78F4_t*, vs_battle_movementPosition, u_int, int);
 void func_800E3600(func_800E78F4_t*, int, int);
+int func_800E3D5C(func_800E78F4_t*, int (*)(func_800E78F4_t*, int));
 int func_800E4180(func_800E78F4_t*, int, int, int);
 int func_800E42D4(int, int);
 int func_800E42E0(vs_battle_movementPosition);
 int func_800E42EC(int, int);
 int func_800E4320(int, int);
+void func_800E4358(func_800E78F4_t*);
 int func_800E437C(SVECTOR*, SVECTOR*, int, u_int);
 int func_800E44E8(SVECTOR*, SVECTOR*, int, int);
 int func_800E45D4(int);
@@ -507,19 +477,25 @@ u_int func_800E45F4(vs_battle_movementPosition, vs_battle_movementPosition);
 int func_800E4624(SVECTOR*, SVECTOR*, int, int);
 int func_800E4690(vs_battle_movementPosition, int);
 int func_800E4764(func_800E78F4_t*, int*, int*);
+void func_800E48A8(func_800E78F4_t*, int, int);
+void func_800E48F8(func_800E78F4_t*);
+void func_800E4904(func_800E78F4_t*);
 void func_800E4B10(func_800E78F4_t*);
 void func_800E4B18(func_800E78F4_t*);
 void func_800E4B2C(func_800E78F4_t*, int);
 void func_800E4B70(func_800E78F4_t*, int);
 void func_800E4BB8(func_800E78F4_t*);
+void func_800E4BE0(int);
 void func_800E4C8C(func_800E78F4_t*);
 void func_800E4CE8(func_800E78F4_t* arg0);
 int func_800E4CF4(func_800E78F4_t*, func_800DCAA0_t*, int);
 int func_800E4DF8(func_800E78F4_t*, int, int);
 void func_800E4F14(func_800E78F4_t*);
+int func_800E4FB0(func_800E78F4_t*, int, int);
 void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E6828(func_800E78F4_t*);
+int func_800E6A6C(int, int, int, int);
 void _parsePfileBlock1(pFileBlock1* arg0);
 void _parsePfileBlock12(void*);
 void _parsePfileBlock13(void*);

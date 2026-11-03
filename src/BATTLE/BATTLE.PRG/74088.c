@@ -878,7 +878,8 @@ void func_800DEB10(D_800F19CC_t2* arg0)
         func_800DCAA0_t** list = entry->unk430;
         func_800DCAA0_t* temp_a2 = list[i];
 
-        if ((arg0->actionIndex == temp_a2->unk4_5) && (temp_t1->commandArgs.u16[0] == temp_a2->unk4_0)
+        if ((arg0->actionIndex == temp_a2->unk4_5)
+            && (temp_t1->commandArgs.u16[0] == temp_a2->unk4_0)
             && (temp_t1->commandArgs.u16[1] == temp_a2->unk4_3)) {
             entry->unkFB = temp_a2->unkC_0;
             for (j = 0; j < arg0->targetCount; ++j) {

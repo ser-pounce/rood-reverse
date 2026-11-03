@@ -296,10 +296,9 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
     x = position.p.x;
 
     if (count == 1) {
-        if (((*(u_int*)& arg0->unk168 =
-                     ((routes[0] & 0x1F) << 16) | ((*(u_int*)routes >> 5) & 0x1F))
-                & 0xFF00FF)
-            != (*(u_int*)&arg0->unk34 & 0xFF00FF)) {
+        *(u_int*)&arg0->unk168 =
+            ((routes[0] & 0x1F) << 16) | ((*(u_int*)routes >> 5) & 0x1F);
+        if ((arg0->unk168.x != arg0->unk34.x) || (arg0->unk168.z != arg0->unk34.z)) {
             return 6;
         }
     } else {
@@ -322,7 +321,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
                 (*(u_int*)routes & 0x1F0000) | ((*(u_int*)routes >> 21) & 0x1F);
         }
 
-        if ((*(u_int*)&arg0->unk168 & 0xFF00FF) != (*(u_int*)&arg0->unk34 & 0xFF00FF)) {
+        if ((arg0->unk168.x != arg0->unk34.x) || (arg0->unk168.z != arg0->unk34.z)) {
             return 6;
         }
     }

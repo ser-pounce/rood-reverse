@@ -949,9 +949,9 @@ void func_800E1908(func_800E78F4_t* arg0)
         actor->command.fields.unk9 = 9;
 
         if (result == 5) {
-            ((u_short*)&actor->unkC)[0] = arg0->unk188 << 9;
+            actor->commandArgs.u16[0] = arg0->unk188 << 9;
         } else {
-            ((u_short*)&actor->unkC)[0] = arg0->unk188;
+            actor->commandArgs.u16[0] = arg0->unk188;
         }
     }
 }

@@ -133,13 +133,12 @@ typedef struct vs_battle_actor {
             u_int unkB_4 : 4;
         } fields;
     } command;
-    /* 0x0C */ int unkC;
-    union {
-        u_char u8[4];
-        u_short u16[2];
-        int s32;
-    /* 0x10 */ } unk10;
-    int unk14;
+    /* 0x0C */ union {
+        int s32[3];
+        short s16[6];
+        u_short u16[6];
+        u_char u8[12];
+    } commandArgs;
     u_short unk18;
     u_short subType;
     u_short unk1C;

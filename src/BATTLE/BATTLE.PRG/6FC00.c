@@ -336,7 +336,6 @@ void func_800D8EF4(void)
         func_800E78F4_t* state;
         D_800F4538_t* object;
         vs_battle_actor* other;
-        vs_battle_actor2* stats;
         int id;
         int i;
         int arg;
@@ -345,7 +344,6 @@ void func_800D8EF4(void)
         int max;
         u_int x;
         u_int z;
-        u_int hp;
 
         actor->command.fields.unkB_0 = 0;
         id = actor->id;
@@ -499,10 +497,8 @@ void func_800D8EF4(void)
         }
 
         alert = 0;
-        stats = state->unk54->unk3C;
-        hp = *(u_int*)&stats->currentHP;
-        current = hp & 0xFFFF;
-        max = hp >> 16;
+        current = *(u_int*)&state->unk54->unk3C->currentHP & 0xFFFF;
+        max = *(u_int*)&state->unk54->unk3C->currentHP >> 16;
 
         if (state->unk2F != 0) {
             if (state->unk2F == 1) {

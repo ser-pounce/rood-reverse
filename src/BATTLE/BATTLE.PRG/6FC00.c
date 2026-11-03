@@ -422,7 +422,7 @@ void func_800D8EF4(void)
 
         state->unk14[0] = 0;
 
-        if ((*(u_int*)state->unk64 & 0xFF00FF) == (*(u_int*)&state->unk34 & 0xFF00FF)) {
+        if ((state->unk64->x == state->unk34.x) && (state->unk64->z == state->unk34.z)) {
             if ((state->unk46 != 0) && (--state->unk46 == 0)) {
                 state->unk38 = *(u_int*)state->unk64;
                 state->unkFB = 16;

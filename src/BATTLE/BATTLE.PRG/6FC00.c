@@ -373,15 +373,17 @@ void func_800D8EF4(void)
         if ((flags & 0x40) || (state->unk18C != 0)
             || (object->unk0.unkA_0 | object->unk0.unkA_3 | object->unk5AC_15)
             || (id == 0)) {
-        skip:
             state->unk14[0] = 1;
             continue;
         }
 
         if (object->unk0.unkB_7) {
             state->unk1D[0] = 1;
+            do {
+            } while (0);
             func_800D87E8(state, 0);
-            goto skip;
+            state->unk14[0] = 1;
+            continue;
         }
 
         arg = func_800E45B4();

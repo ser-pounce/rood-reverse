@@ -71,36 +71,6 @@ typedef struct {
     signed char unk0_6 : 2;
 } D_800F16EC_t;
 
-// TODO: Partial view of vs_battle_actor with different fields, maybe merge.
-typedef struct {
-    char unk0[8];
-    u_char unk8;
-    u_char unk9;
-    char unkA;
-    u_int unkB_0 : 2;
-    u_int unkB_2 : 2;
-    u_int unkB_4 : 4;
-    u_short unkC;
-    u_short unkE;
-    SVECTOR unk10;
-    char unk18[2];
-    u_short unk1A;
-    char unk1C[0x14];
-    u_int unk30_0 : 4;
-    u_int unk30_4 : 5;
-    u_int unk30_9 : 5;
-    u_int unk30_14 : 2;
-    u_int unk30_16 : 6;
-    u_int unk30_22 : 5;
-    u_int unk30_27 : 5;
-    u_int unk34_0 : 12;
-    u_int unk34_12 : 2;
-    u_int unk34_14 : 1;
-    u_int unk34_15 : 17;
-    char unk38[4];
-    vs_battle_actor2* unk3C;
-} vs_battle_actorView_t;
-
 typedef struct {
     u_int unk0 : 1;
     u_int unk1 : 1;
@@ -235,7 +205,7 @@ typedef struct func_800E78F4_t {
     u_short unk46;
     vs_battle_movementPosition unk48;
     SVECTOR unk4C;
-    vs_battle_actorView_t* unk54;
+    vs_battle_actor* unk54;
     D_800F4538_t* unk58;
     vs_battle_actor2* unk5C;
     SVECTOR* unk60;

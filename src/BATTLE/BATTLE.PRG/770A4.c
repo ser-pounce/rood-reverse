@@ -936,7 +936,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     u_char* tile =
         &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
     int old = *tile;
-    vs_battle_actorView_t* actor = arg0->unk54;
+    vs_battle_actor* actor = arg0->unk54;
     int result;
 
     *tile = func_800E1850(old, arg0->unk34, arg0->unk4C.vy);
@@ -946,12 +946,12 @@ void func_800E1908(func_800E78F4_t* arg0)
     result = *(int*)0x1F8003C8;
 
     if ((0xA0 >> result) & 1) {
-        actor->unk9 = 9;
+        actor->command.fields.unk9 = 9;
 
         if (result == 5) {
-            actor->unkC = arg0->unk188 << 9;
+            ((u_short*)&actor->unkC)[0] = arg0->unk188 << 9;
         } else {
-            actor->unkC = arg0->unk188;
+            ((u_short*)&actor->unkC)[0] = arg0->unk188;
         }
     }
 }
@@ -1424,7 +1424,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
                 func_800E50A0(
                     s, 1, ratan2(s->unk17C - s->unk4C.vx, s->unk180 - s->unk4C.vz));
 
-                if (s->unk54->unk9 >= 9) {
+                if (s->unk54->command.fields.unk9 >= 9) {
                     s->unkE8 = 1;
                 }
                 break;

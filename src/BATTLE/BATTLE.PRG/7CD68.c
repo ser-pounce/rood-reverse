@@ -202,7 +202,7 @@ void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
 void func_800E5A9C(func_800E78F4_t* arg0, func_800E5A9C_t* arg1)
 {
     static const u_char D_80069C08[] = { 9, 7, 0, 0 };
-    vs_battle_actorView_t* actor = arg0->unk54;
+    vs_battle_actor* actor = arg0->unk54;
     u_int range = D_80069C1C[arg1->unk0_18];
     u_int step;
     int mode;
@@ -267,7 +267,7 @@ void func_800E5A9C(func_800E78F4_t* arg0, func_800E5A9C_t* arg1)
     arg0->unkCC = actor->unk30_22;
     arg0->unkCE = actor->unk30_27;
 
-    if (actor->unk1A == 172 || actor->unk1A == 173) {
+    if (actor->subType == 172 || actor->subType == 173) {
         arg0->unk68 = func_800E7F8C;
         arg0->unk19 = 1;
         func_800E7660(arg0);
@@ -372,7 +372,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     D_800F5878[id] = state;
     func_800E4288(state, sizeof *state);
     state->unk88 = id;
-    state->unk54 = (vs_battle_actorView_t*)actor;
+    state->unk54 = actor;
     model = actor->unk44;
     state->unk58 = model;
     state->unk5C = actor->unk3C;
@@ -419,7 +419,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     state->unkB3 = MAX(state->unk226, state->unk227);
     packed = actor->unk38;
 
-    if (actor->unk34 & 1) {
+    if (actor->unk34_0 & 1) {
         func_800E5A74(&packed, (void*)actor + 0x30);
     }
 

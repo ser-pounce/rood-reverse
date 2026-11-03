@@ -301,17 +301,17 @@ int func_800E7F8C(func_800E78F4_t* arg0)
 
         if (func_800E7698(arg0) != 0) {
             if (temp_s0->unkA != 0) {
-                vs_battle_actorView_t* temp_a1 = arg0->unk54;
+                vs_battle_actor* temp_a1 = arg0->unk54;
 
                 if (temp_a1->unk3C->limbs[4].hp >= 2) {
-                    temp_a1->unkC = 4;
-                    temp_a1->unkE = 0;
-                    setVector(&temp_a1->unk10, D_800F4538[0]->unk0.position.vx,
+                    ((u_short*)&temp_a1->unkC)[0] = 4;
+                    ((u_short*)&temp_a1->unkC)[1] = 0;
+                    setVector((SVECTOR*)&temp_a1->unk10, D_800F4538[0]->unk0.position.vx,
                         D_800F4538[0]->unk0.position.vy
                             - (D_800F4538[0]->menuCameraHeightOffset >> 1),
                         D_800F4538[0]->unk0.position.vz);
-                    temp_a1->unk9 = 24;
-                    temp_a1->unk8 = 0x80;
+                    temp_a1->command.fields.unk9 = 24;
+                    temp_a1->command.fields.unk8 = 0x80;
                 }
 
                 temp_s0->unk12 = arg0->unk4C.vy;

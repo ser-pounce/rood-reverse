@@ -161,8 +161,14 @@ typedef struct vs_battle_actor {
     u_short unk30_0 : 4;
     u_short unk30_4 : 5;
     u_int unk30_9 : 5;
-    u_int unk30_14 : 18;
-    int unk34;
+    u_int unk30_14 : 2;
+    u_int unk30_16 : 6;
+    u_int unk30_22 : 5;
+    u_int unk30_27 : 5;
+    u_int unk34_0 : 12;
+    u_int unk34_12 : 2;
+    u_int unk34_14 : 1;
+    u_int unk34_15 : 17;
     int unk38;
     vs_battle_actor2* unk3C;
     int unk40;

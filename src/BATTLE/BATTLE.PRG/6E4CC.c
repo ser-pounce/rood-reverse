@@ -65,6 +65,7 @@ void func_800D6D24(func_800D6CF_t* arg0)
 
 void func_800D6E24(func_800D2904_t* node, void* arg1) { func_800D6E44(node); }
 
+// https://decomp.me/scratch/i17Lw
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E4CC", func_800D6E44);
 
 void func_800D7814(void)

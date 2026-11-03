@@ -400,7 +400,7 @@ void func_800DD604(func_800E78F4_t* arg0)
     }
 }
 
-void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
+void func_800DD7CC(func_800E78F4_t* arg0, vs_battle_movementPosition* arg1)
 {
     int i;
     u_int nearest = -1;
@@ -426,9 +426,9 @@ void func_800DD7CC(func_800E78F4_t* arg0, func_800DFA54_t* arg1)
         distance = func_800E4660(dx, arg0->unk4C.vy - func_800E42D4(x, z), dz);
 
         if (distance < nearest) {
-            arg1->unk0 = D_800F58C8->unk0[i].x;
+            arg1->x = D_800F58C8->unk0[i].x;
             nearest = distance;
-            arg1->unk2 = D_800F58C8->unk0[i].z;
+            arg1->z = D_800F58C8->unk0[i].z;
         }
     }
 

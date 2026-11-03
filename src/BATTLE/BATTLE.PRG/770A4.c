@@ -59,28 +59,27 @@ void func_800DF8A4(func_800E78F4_t* arg0)
     return (void)&pos;
 }
 
-void func_800DF9A8(func_800DFA54_t* arg0, func_800DFA54_t* arg1)
+void func_800DF9A8(vs_battle_movementPosition* arg0, vs_battle_movementPosition* arg1)
 {
     int i;
 
     for (i = 0; i < 8; i++) {
-        if (D_800F5910[i * 2].unk0_0 == arg0->unk0
-            && D_800F5910[i * 2].unk0_5 == arg0->unk2) {
+        if (D_800F5910[i * 2].unk0_0 == arg0->x && D_800F5910[i * 2].unk0_5 == arg0->z) {
             if (i & 1) {
                 i--;
             } else {
                 i++;
             }
-            arg1->unk0 = D_800F5910[i * 2 + 1].unk0_0;
-            arg1->unk2 = D_800F5910[i * 2 + 1].unk0_5;
-            arg1->unk1 = i >> 1;
+            arg1->x = D_800F5910[i * 2 + 1].unk0_0;
+            arg1->z = D_800F5910[i * 2 + 1].unk0_5;
+            arg1->y = i >> 1;
             return;
         }
     }
-    *(int*)arg1 = *(int*)arg0;
+    *arg1 = *arg0;
 }
 
-void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
+void func_800DFA54(int arg0, int arg1, int arg2, vs_battle_movementPosition* arg3)
 {
     int i;
 
@@ -94,8 +93,8 @@ void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
     }
     i = arg0 * 2;
 found:
-    arg3->unk0 = D_800F5910[i * 2].unk0_0;
-    arg3->unk2 = D_800F5910[i * 2].unk0_5;
+    arg3->x = D_800F5910[i * 2].unk0_0;
+    arg3->z = D_800F5910[i * 2].unk0_5;
 }
 
 int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
@@ -179,8 +178,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
                         func_800E4BE0(candidate.y);
                     }
 
-                    func_800DF9A8(
-                        (func_800DFA54_t*)&candidate, (func_800DFA54_t*)&arg0->unk19C);
+                    func_800DF9A8(&candidate, &arg0->unk19C);
                     arg0->unk170 = candidate;
                     return 14;
                 }

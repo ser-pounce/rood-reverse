@@ -13,12 +13,6 @@ typedef struct {
 } D_800F5910_t;
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_char unk2;
-} func_800DFA54_t;
-
-typedef struct {
     int unk0;
     _loadFileContext loadContexts[8];
     u_short slots[8];

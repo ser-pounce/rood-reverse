@@ -539,8 +539,8 @@ void func_800D8EF4(void)
 
             if ((state->unk40 == 0) || (--state->unk40 == 0)
                 || (D_800F4538[targetId] == NULL)
-                || ((*(u_int*)&D_800F4538[targetId]->unk0.currentTile & 0xFF00FF)
-                    != (state->unk3C & 0xFF00FF))) {
+                || (D_800F4538[targetId]->unk0.currentTile.x != state->unk3C.x)
+                || (D_800F4538[targetId]->unk0.currentTile.z != state->unk3C.z)) {
                 func_800E4CE8(state);
             }
         }

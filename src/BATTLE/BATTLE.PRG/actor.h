@@ -125,9 +125,9 @@ typedef struct vs_battle_actor {
     /* 0x08 */ union {
         u_int value;
         struct {
-            u_int unk8 : 8;
-            u_int unk9 : 8;
-            u_int unkA : 8;
+            u_char unk8;
+            u_char unk9;
+            u_char unkA;
             u_int unkB_0 : 2;
             u_int unkB_2 : 2;
             u_int unkB_4 : 4;

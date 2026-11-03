@@ -449,12 +449,12 @@ void func_800D8EF4(void)
             }
         }
 
-        if ((state->unk124 != 8) && (((vs_battle_actorView_t*)actor)->unk9 != 8)
-            && (state->unk124 != ((vs_battle_actorView_t*)actor)->unk9)) {
+        if ((state->unk124 != 8) && (actor->command.fields.unk9 != 8)
+            && (state->unk124 != actor->command.fields.unk9)) {
             func_800E48A8(state, 1, 64);
         }
 
-        state->unk124 = ((vs_battle_actorView_t*)actor)->unk9;
+        state->unk124 = actor->command.fields.unk9;
         state->unk34 = state->unk58->unk0.currentTile;
         x = ((u_int*)state->unk60)[0];
         z = ((u_int*)state->unk60)[1];

@@ -1335,8 +1335,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
 
                 switch (mode) {
                 case 0:
-                    if ((unsigned int)((s->unkDC - 96) * (s->unkDC - 96))
-                        < s->unk1E4[target]) {
+                    if ((s->unkDC - 96) * (s->unkDC - 96) < s->unk1E4[target]) {
                         s->unkE9 = 0;
                     } else {
                         s->unkE9 = 1;
@@ -1346,10 +1345,9 @@ int func_800E24EC(func_800E78F4_t* s, int option)
                 case 1:
                     value = s->unkDC;
 
-                    if ((unsigned int)(value * value) < s->unk1E4[target]) {
+                    if (value * value < s->unk1E4[target]) {
                         s->unkE9 = 0;
-                    } else if ((unsigned int)((value - 128) * (value - 128))
-                               >= s->unk1E4[target]) {
+                    } else if ((value - 128) * (value - 128) >= s->unk1E4[target]) {
                         s->unkE9 = 2;
                     } else {
                         s->unkE9 = mode;
@@ -1357,8 +1355,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
                     break;
 
                 case 2:
-                    if ((unsigned int)((s->unkDC - 32) * (s->unkDC - 32))
-                        < s->unk1E4[target]) {
+                    if ((s->unkDC - 32) * (s->unkDC - 32) < s->unk1E4[target]) {
                         s->unkE9 = 1;
                     } else {
                         s->unkE9 = mode;

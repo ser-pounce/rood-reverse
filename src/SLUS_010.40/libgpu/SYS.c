@@ -11,6 +11,8 @@ extern volatile u_long* D_80033554;
 extern volatile u_long* D_80033558;
 extern int D_80033580;
 extern int D_80033584;
+extern u_long D_8003E2B0[];
+extern u_long D_8003E2D8[];
 extern u_char D_8003E2F8[0x100];
 
 typedef struct {

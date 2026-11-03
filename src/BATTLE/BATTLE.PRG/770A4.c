@@ -1287,7 +1287,8 @@ void func_800E23AC(func_800E78F4_t* arg0)
 
 int func_800E24EC(func_800E78F4_t* s, int option)
 {
-    int result = 1, target = s->unkE5;
+    int result = 1;
+    int target = s->unkE5;
 
     if (target == s->unk88) {
         func_800DEEFC(s, 0);

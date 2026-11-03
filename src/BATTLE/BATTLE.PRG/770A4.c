@@ -10,7 +10,24 @@
 #include <abs.h>
 #include <rand.h>
 
+typedef union {
+    unsigned int raw;
+    vs_battle_movementPosition p;
+} vs_battle_movementTile;
+
+typedef struct {
+    u_short z : 5;
+    u_short x : 5;
+    u_short unk0_10 : 1;
+    u_short direction : 2;
+    u_short distance : 2;
+    u_short unk0_15 : 1;
+} vs_battle_route;
+
+extern u_char D_800F175C[];
+
 int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2);
+void func_800E1238(func_800E78F4_t*, int);
 
 void func_800DF8A4(func_800E78F4_t* arg0)
 {
@@ -51,28 +68,27 @@ void func_800DF8A4(func_800E78F4_t* arg0)
     return (void)&pos;
 }
 
-void func_800DF9A8(func_800DFA54_t* arg0, func_800DFA54_t* arg1)
+void func_800DF9A8(vs_battle_movementPosition* arg0, vs_battle_movementPosition* arg1)
 {
     int i;
 
     for (i = 0; i < 8; i++) {
-        if (D_800F5910[i * 2].unk0_0 == arg0->unk0
-            && D_800F5910[i * 2].unk0_5 == arg0->unk2) {
+        if (D_800F5910[i * 2].unk0_0 == arg0->x && D_800F5910[i * 2].unk0_5 == arg0->z) {
             if (i & 1) {
                 i--;
             } else {
                 i++;
             }
-            arg1->unk0 = D_800F5910[i * 2 + 1].unk0_0;
-            arg1->unk2 = D_800F5910[i * 2 + 1].unk0_5;
-            arg1->unk1 = i >> 1;
+            arg1->x = D_800F5910[i * 2 + 1].unk0_0;
+            arg1->z = D_800F5910[i * 2 + 1].unk0_5;
+            arg1->y = i >> 1;
             return;
         }
     }
-    *(int*)arg1 = *(int*)arg0;
+    *arg1 = *arg0;
 }
 
-void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
+void func_800DFA54(int arg0, int arg1, int arg2, vs_battle_movementPosition* arg3)
 {
     int i;
 
@@ -86,8 +102,8 @@ void func_800DFA54(int arg0, int arg1, int arg2, func_800DFA54_t* arg3)
     }
     i = arg0 * 2;
 found:
-    arg3->unk0 = D_800F5910[i * 2].unk0_0;
-    arg3->unk2 = D_800F5910[i * 2].unk0_5;
+    arg3->x = D_800F5910[i * 2].unk0_0;
+    arg3->z = D_800F5910[i * 2].unk0_5;
 }
 
 int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
@@ -116,7 +132,212 @@ int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800DFBCC);
+int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
+{
+    typedef union {
+        vs_battle_route r[2];
+        u_int raw;
+    } vs_battle_routePair;
+
+    vs_battle_route routes[2];
+    int distances[2];
+    vs_battle_movementTile position;
+    int count;
+    int i;
+    int x;
+    vs_battle_route route;
+    vs_battle_routePair* pair;
+
+    position.raw = *(u_int*)&arg0->unk34;
+    pair = (vs_battle_routePair*)routes;
+    pair->raw = (*(u_int**)0x1F8003F4)[area * 16 + index];
+
+    if ((pair->r[0].x == 0) && (pair->r[0].direction == 0)) {
+        return 6;
+    }
+
+    arg0->unk154[0] = area;
+    count = 1;
+
+    if ((pair->r[1].x != 0) || (pair->r[1].direction != 0)) {
+        count = 2;
+    }
+
+    for (i = 0; i < count; ++i) {
+        vs_battle_movementPosition candidate;
+        int result;
+
+        route = (i == 0) ? routes[0] : routes[1];
+
+        if ((route.x != position.p.x) || (route.z != position.p.z)) {
+            continue;
+        }
+
+        candidate = position.p;
+
+        if (route.unk0_10) {
+            int slot;
+
+            if (route.unk0_15) {
+                continue;
+            }
+
+            result = func_800DFAF8(arg0, position.p, 1);
+
+            if ((result >= 0) && (func_8008E320(slot = result >> 1) >= 0)) {
+                candidate.y = slot + 2;
+
+                if (!((D_800F58BC->unkE >> candidate.y) & 1)) {
+                    arg0->unk19B = candidate.y;
+
+                    if (arg0->unk88) {
+                        func_800E4BE0(candidate.y);
+                    }
+
+                    func_800DF9A8(&candidate, &arg0->unk19C);
+                    arg0->unk170 = candidate;
+                    return 14;
+                }
+            }
+
+            candidate.x = route.x;
+            candidate.z = route.z;
+        } else if (route.distance) {
+            int amount;
+            u_char* step;
+
+            arg0->unk154[0] =
+                (*(u_short(**)[32])0x1F8003C0)[candidate.z][candidate.x] % 16;
+            arg0->unk5 = 0;
+            amount = route.distance + 1;
+            step = &D_800F175C[route.direction];
+            candidate.x += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dx;
+            candidate.z += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dz;
+            result = func_800D954C(arg0, candidate);
+
+            if (result < 0) {
+            center:
+                if ((arg0->unk15C != 16)
+                    && ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]) {
+                    arg0->unk17C =
+                        ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]->unk60->vx;
+                    arg0->unk180 =
+                        ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]->unk60->vz;
+                } else {
+                    arg0->unk17C = candidate.x * 128 + 64;
+                    arg0->unk180 = candidate.z * 128 + 64;
+                }
+
+                arg0->unk18A =
+                    ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180)
+                    & 0xFFF;
+                arg0->unk13A = arg0->unk13C;
+                return 4;
+            }
+
+            if (result <= 0) {
+                continue;
+            }
+
+        stop:
+            candidate.y = 0;
+            arg0->unk170 = candidate;
+            return 14;
+        } else {
+            u_char* table = D_800F175C;
+            u_char* direction = &table[route.direction];
+
+            candidate.x += ((D_800F16EC_t*)0x1F8003EC)[*direction].dx;
+            candidate.z += ((D_800F16EC_t*)0x1F8003EC)[*direction].dz;
+
+            if (func_800D954C(arg0, candidate) > 0) {
+                if (((*(u_short(**)[32])0x1F8003BC)[candidate.z][candidate.x] & 0x1C00)
+                    || (((*(u_char**)0x1F8003C4)[position.p.z * *(u_char*)0x1F8003DC
+                                                 + position.p.x]
+                            >> *direction)
+                        & 1)) {
+                    goto stop;
+                }
+
+                arg0->unk188 = *direction;
+                return 5;
+            }
+        }
+
+        goto center;
+    }
+
+    pair = (vs_battle_routePair*)routes;
+
+    if (pair->r[0].unk0_10 && pair->r[0].unk0_15) {
+        if (count == 1) {
+        areaOnly:
+            arg0->unk154[0] =
+                (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            return 6;
+        }
+
+        if (pair->r[1].unk0_10 && pair->r[1].unk0_15) {
+            goto areaOnly;
+        }
+
+        goto second;
+    }
+
+    if (pair->r[1].unk0_10 && pair->r[1].unk0_15) {
+        goto first;
+    }
+
+    for (i = 0; i < count; ++i) {
+        route = (i == 0) ? routes[0] : routes[1];
+
+        if (!((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00)) {
+            continue;
+        }
+
+        route = (i != 0) ? routes[0] : routes[1];
+
+        if (((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00) || (count == 1)) {
+            arg0->unk154[0] =
+                (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            return 6;
+        }
+
+        *(u_int*)&arg0->unk168 = (route.z << 16) | route.x;
+        return 6;
+    }
+
+    x = position.p.x;
+
+    if (count == 1) {
+        *(u_int*)&arg0->unk168 = (routes[0].z << 16) | routes[0].x;
+        if ((arg0->unk168.x != arg0->unk34.x) || (arg0->unk168.z != arg0->unk34.z)) {
+            return 6;
+        }
+    } else {
+        int z = position.p.z;
+
+        distances[0] =
+            (x - routes[0].x) * (x - routes[0].x) + (z - routes[0].z) * (z - routes[0].z);
+        x -= routes[1].x;
+        z -= routes[1].z;
+        distances[1] = x * x + z * z;
+
+        if (distances[0] < distances[1]) {
+        first:
+            *(u_int*)&arg0->unk168 = (routes[0].z << 16) | routes[0].x;
+        } else {
+        second:
+            *(u_int*)&arg0->unk168 = (routes[1].z << 16) | routes[1].x;
+        }
+
+        if ((arg0->unk168.x != arg0->unk34.x) || (arg0->unk168.z != arg0->unk34.z)) {
+            return 6;
+        }
+    }
+
+    goto center;
+}
 
 int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 {
@@ -215,8 +436,7 @@ int func_800E0678(func_800E78F4_t* arg0, int arg1)
 
         if (x <= D_800F58BC->unk0 && x >= D_800F58BC->unk2 && z <= D_800F58BC->unk1
             && z >= D_800F58BC->unk3 && !((*(u_short(**)[32])0x1F8003C0)[z][x] & 0x40)
-            && (((vs_battle_movementPosition*)&arg0->unk38)->x != x
-                || ((vs_battle_movementPosition*)&arg0->unk38)->z != z)) {
+            && (arg0->unk38.x != x || arg0->unk38.z != z)) {
             if (D_800F58BC->unk14
                 && func_800E42EC(x, z) + arg0->unkBE < D_800F58BC->unk14) {
                 return 0;
@@ -285,7 +505,257 @@ int func_800E0918(func_800E78F4_t* arg0, int arg1, int arg2)
     return 0;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E0A68);
+void func_800E0A68(func_800E78F4_t* state, int action)
+{
+    int step;
+    int mode;
+    int angle;
+    int x;
+    int z;
+
+    if (func_800E0918(state, action, 1)) {
+        return;
+    }
+
+    if (!state->unk58->unk0.unkA_5) {
+        func_800E4B18(state);
+        return;
+    }
+
+    state->unk7 = 1;
+
+    if (!func_800E4764(state, &step, &mode)) {
+        func_800E2CCC(state);
+        return;
+    }
+
+    x = state->unk168.x * 128 + 64;
+    z = state->unk168.z * 128 + 64;
+    angle = ratan2(state->unk4C.vx - x, state->unk4C.vz - z);
+    angle &= 0xFFF;
+
+    if (state->unk0 && (func_800E45F4(state->unk34, state->unk168) < 2)
+        && ((*(u_short(**)[32])0x1F8003C0)[state->unk168.z][state->unk168.x] & 0x40)) {
+        int centerZ;
+        int centerAngle;
+        int selectedHeight;
+        int heading;
+        int offsetX;
+        int offsetZ;
+        int actorY = D_800F4538[state->unkE5]->unk0.position.vy;
+        int rise = func_800E42E0(state->unk34);
+
+        if (actorY >= rise) {
+            selectedHeight = rise + state->unkBE;
+        } else if (D_800F58BC->unk14 && (D_800F58BC->unk14 >= actorY)) {
+            selectedHeight = D_800F58BC->unk14;
+        } else {
+            selectedHeight = (short)actorY;
+        }
+
+        rise = selectedHeight - state->unk4C.vy;
+
+        if (ABS(rise) < step) {
+            angle = state->unk34.x * 128 + 64;
+            centerZ = state->unk34.z * 128 + 64;
+            centerAngle = ratan2(state->unk4C.vx - angle, state->unk4C.vz - centerZ);
+            state->unk184 = selectedHeight * ONE;
+            heading = (-centerAngle + ONE * 3 / 4) & 0xFFF;
+            offsetX = state->unk4C.vx - angle;
+
+            if (ABS(offsetX) < step) {
+                state->unk17C = angle * ONE;
+            } else {
+                state->unk17C = (state->unk4C.vx * ONE) + step * rcos(heading);
+            }
+
+            offsetZ = state->unk4C.vz - centerZ;
+            state->unk180 = ABS(offsetZ) < step
+                              ? centerZ * ONE
+                              : (state->unk4C.vz * ONE) + step * rsin(heading);
+            func_800DEEFC(state, 8);
+            return;
+        }
+
+        state->unk184 = rise;
+        state->unk180 = 0;
+        state->unk17C = 0;
+
+        if ((state->unk184 > 0) && func_800E02B4(state, 0, 0)) {
+            state->unk184 = 0;
+        }
+
+        func_800DEEFC(state, mode);
+        return;
+    }
+
+    if ((state->unk34.x == state->unk168.x) && (state->unk34.z == state->unk168.z)) {
+        int floorY;
+        int tileX;
+        int deltaX;
+        int tileZ;
+        int deltaZ;
+        D_800F4538_t* actor;
+
+        if (!state->unk0 || func_800E02B4(state, 0, 0)) {
+            func_800E2CCC(state);
+            return;
+        }
+
+        floorY = state->unkBE;
+        actor = D_800F4538[state->unkE5];
+
+        if (!((*(u_short(**)[32])0x1F8003C0)[state->unk168.z][state->unk168.x] & 0x20)) {
+            floorY += func_800E42E0(state->unk168);
+        }
+
+        tileX = state->unk168.x * 128;
+        deltaX = state->unk4C.vx - 64;
+        state->unk17C = tileX - deltaX;
+        tileZ = state->unk168.z * 128;
+        deltaZ = state->unk4C.vz - 64;
+        state->unk180 = tileZ - deltaZ;
+        state->unk184 = floorY - state->unk4C.vy;
+
+        if ((state->unk168.x == actor->unk0.currentTile.x)
+            && (state->unk168.z == actor->unk0.currentTile.z)) {
+            state->unk184 = actor->unk0.position.vy - (actor->menuCameraHeightOffset >> 1)
+                          - state->unk4C.vy;
+        }
+
+        if ((state->unk184 > 0) && (floorY < state->unk4C.vy + step)) {
+            state->unk184 = 0;
+        }
+
+        if (ABS(state->unk17C) < step) {
+            state->unk17C = 0;
+        }
+
+        if (ABS(state->unk180) < step) {
+            state->unk180 = 0;
+        }
+
+        func_800DEEFC(state, mode);
+        return;
+    }
+
+    func_800E3600(state, angle, 2);
+
+    switch (*(int*)0x1F8003C8) {
+    case 5:
+        angle = state->unk188 * (ONE / 8);
+
+        if (func_800E0850(state, angle) + state->unkBE < state->unk4C.vy) {
+        fall:
+            state->unk184 = -ONE;
+            state->unk180 = 0;
+            state->unk17C = 0;
+        } else {
+            angle = -angle;
+            angle += ONE * 3 / 4;
+            angle &= 0xFFF;
+            state->unk184 = 0;
+            state->unk17C = rcos(angle);
+            state->unk180 = rsin(angle);
+        }
+
+        func_800DEEFC(state, mode);
+        return;
+
+    case 7: {
+        int ground;
+        int height;
+        int dy;
+        int px;
+        int py;
+        int pz;
+        int top;
+        unsigned int distance;
+        unsigned int denom;
+        unsigned int square;
+        int value;
+        int diff;
+        int offset;
+
+        height = func_800E42E0(state->unk168) + state->unkBE;
+        px = *(u_int*)&state->unk4C & 0xFFFF;
+        py = (int)*(u_int*)&state->unk4C >> 16;
+        pz = state->unk4C.vz;
+        ground = func_800E6A6C(px, pz, x, z) + state->unkBC;
+
+        if (D_800F58BC->unk14) {
+            ground = ground < D_800F58BC->unk14 ? D_800F58BC->unk14 : ground;
+        }
+
+        top = func_800E0850(state, angle) + state->unkBE;
+        ground = top > ground ? ground : top;
+        distance = vs_gte_rsqrt(func_800E4660(x - px, 0, z - pz));
+        value = height + ground;
+        denom = vs_gte_rsqrt(((value * ONE) / value) * ONE) + ONE;
+
+        if (denom != 0) {
+            value = (distance * ONE) / denom;
+            square = value * value;
+            diff = py - ground;
+            offset = ABS(diff);
+
+            if (py + step < ground) {
+                if (step < height - py) {
+                    state->unk184 = height - py;
+                } else {
+                    state->unk184 = 0;
+                }
+
+                state->unk17C = x - px;
+                state->unk180 = z - pz;
+                func_800DEEFC(state, mode);
+                state->unk228 = 0;
+                return;
+            }
+        }
+
+        if ((denom == 0) || ((unsigned int)step >= distance)) {
+            func_800E1238(state, angle);
+            return;
+        }
+
+        height =
+            (unsigned int)(offset * (step - value) * (step - value)) / square + ground;
+        angle = -angle;
+        angle += ONE * 3 / 4;
+        angle &= 0xFFF;
+        x = (px * ONE) + step * rcos(angle);
+        z = (pz * ONE) + step * rsin(angle);
+
+        if (height < ground) {
+            height = ground;
+        } else if (top < height) {
+            if (ground < py) {
+                goto fall;
+            }
+
+            height = top;
+        }
+
+        dy = height - py;
+        state->unk228 = 0;
+
+        if (step < ABS(dy)) {
+            state->unk17C = (x >> 12) - px;
+            state->unk180 = (z >> 12) - pz;
+            state->unk184 = dy;
+            func_800DEEFC(state, mode);
+        } else {
+            state->unk17C = x;
+            state->unk184 = height * ONE;
+            state->unk180 = z;
+            func_800DEEFC(state, 8);
+        }
+
+        return;
+    }
+    }
+}
 
 void func_800E1238(func_800E78F4_t* arg0, int arg1)
 {
@@ -379,7 +849,7 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 {
     int distance = arg0->unkB4;
 
-    if ((*(u_int*)&arg0->unk34 & 0xFF00FF) != (*(u_int*)&arg0->unk168 & 0xFF00FF)) {
+    if ((arg0->unk34.x != arg0->unk168.x) || (arg0->unk34.z != arg0->unk168.z)) {
         int angle = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
             arg0->unk4C.vz - arg0->unk168.z * 128 - 64);
 
@@ -474,7 +944,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     u_char* tile =
         &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
     int old = *tile;
-    vs_battle_actorView_t* actor = arg0->unk54;
+    vs_battle_actor* actor = arg0->unk54;
     int result;
 
     *tile = func_800E1850(old, arg0->unk34, arg0->unk4C.vy);
@@ -484,12 +954,12 @@ void func_800E1908(func_800E78F4_t* arg0)
     result = *(int*)0x1F8003C8;
 
     if ((0xA0 >> result) & 1) {
-        actor->unk9 = 9;
+        actor->command.fields.unk9 = 9;
 
         if (result == 5) {
-            actor->unkC = arg0->unk188 << 9;
+            actor->commandArgs.u16[0] = arg0->unk188 << 9;
         } else {
-            actor->unkC = arg0->unk188;
+            actor->commandArgs.u16[0] = arg0->unk188;
         }
     }
 }
@@ -765,7 +1235,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
                 --arg0->unkD2;
             }
 
-            if ((*(u_int*)&arg0->unk168 & 0xFF00FF) == (*(u_int*)&arg0->unk34 & 0xFF00FF)
+            if (((arg0->unk168.x == arg0->unk34.x) && (arg0->unk168.z == arg0->unk34.z))
                 || !arg0->unkD2) {
                 arg0->unkC0 = 0;
             }
@@ -824,7 +1294,209 @@ void func_800E23AC(func_800E78F4_t* arg0)
     func_800E50A0(arg0, 0, 0);
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E24EC);
+int func_800E24EC(func_800E78F4_t* s, int option)
+{
+    int result = 1;
+    int target = s->unkE5;
+
+    if (target == s->unk88) {
+        func_800DEEFC(s, 0);
+    } else {
+        D_800F4538_t* model = D_800F4538[target];
+
+        if (s->unk58->unk0.unkA_5) {
+            option = 1;
+        }
+
+        if ((!model->unk0.unkA_0 && !model->unk0.unkA_3
+                    ? (((model->unk0.position.vx >> 6) != s->unkF4)
+                          || ((model->unk0.position.vz >> 6) != s->unkF6))
+                    : ((s->unk168.x != (s->unkF4 >> 1))
+                          || (s->unk168.z != (s->unkF6 >> 1))))
+            || (s->unkDC != s->unkE0) || (target != s->unkEB) || (option != s->unkEA)
+            || (s->unkF8++ > 180)) {
+            s->unkF8 = 0;
+            s->unkE8 = 0;
+            s->unkE7 = 0;
+        }
+
+        s->unkEA = option;
+        s->unkEB = target;
+        s->unkE0 = s->unkDC;
+
+        if (s->unk1A4[target].unk0_0) {
+            s->unkE4 = 0;
+
+            if (!s->unk1A4[target].unk0_2) {
+                s->unkE9 = 0;
+            } else {
+                int mode = s->unkE9;
+                int value;
+
+                switch (mode) {
+                case 0:
+                    if ((s->unkDC - 96) * (s->unkDC - 96) < s->unk1E4[target]) {
+                        s->unkE9 = 0;
+                    } else {
+                        s->unkE9 = 1;
+                    }
+                    break;
+
+                case 1:
+                    value = s->unkDC;
+
+                    if (value * value < s->unk1E4[target]) {
+                        s->unkE9 = 0;
+                    } else if ((value - 128) * (value - 128) >= s->unk1E4[target]) {
+                        s->unkE9 = 2;
+                    } else {
+                        s->unkE9 = mode;
+                    }
+                    break;
+
+                case 2:
+                    if ((s->unkDC - 32) * (s->unkDC - 32) < s->unk1E4[target]) {
+                        s->unkE9 = 1;
+                    } else {
+                        s->unkE9 = mode;
+                    }
+                    break;
+                }
+            }
+
+            if (((s->unkE9 != 2) && s->unkE8) || ((s->unkE9 != 0) && s->unkE7)) {
+                goto recover;
+            }
+
+            if ((option == 0) && (s->unkE9 == 2)) {
+                s->unkE9 = 1;
+            }
+
+            switch (s->unkE9) {
+            case 0:
+                if (option == 1) {
+                    s->unk0 = 1;
+                }
+
+                s->unkA[2] = 1;
+                s->unk1 = func_800E4FB0(s, target, s->unkDC);
+
+                if (s->unk15E & 8) {
+                    vs_battle_movementPosition oldPosition = s->unk168;
+                    int angle = ratan2(s->unk4C.vx - (s->unk168.x * 128) - 64,
+                                    s->unk4C.vz - (s->unk168.z * 128) - 64)
+                              & 0xFFF;
+                    int distance = func_800E4660(s->unk4C.vx - (s->unk168.x * 128) - 64,
+                        0, s->unk4C.vz - (s->unk168.z * 128) - 64);
+                    int radius;
+
+                    s->unk48 = oldPosition;
+                    distance = vs_gte_rsqrt(distance);
+                    radius = s->unkDC - 96;
+                    func_800E1388(s, s->unk34, angle, distance - ABS(radius));
+
+                    if ((s->unk168.x == s->unk34.x) && (s->unk168.z == s->unk34.z)) {
+                        s->unkD = 1;
+                        s->unk168 = oldPosition;
+                    }
+                }
+
+                s->unk15C = s->unkE5;
+                func_800E50A0(s, 0, 0);
+                break;
+
+            case 1:
+            recover:
+                s->unk15C = target;
+                func_800E2CCC(s);
+                break;
+
+            case 2:
+                s->unk3 = 1;
+                *(unsigned char*)0x1F8003D0 = 0;
+                s->unk4 = 1;
+                s->unk17C = model->unk0.position.vx;
+                s->unk180 = model->unk0.position.vz;
+
+                if (s->unk33) {
+                    s->unk1 = 1;
+                    s->unk9 = 1;
+                    s->unk158 = s->unk17C;
+                    s->unk15A = s->unk180;
+                } else {
+                    s->unk15C = target;
+                }
+
+                func_800E50A0(
+                    s, 1, ratan2(s->unk17C - s->unk4C.vx, s->unk180 - s->unk4C.vz));
+
+                if (s->unk54->command.fields.unk9 >= 9) {
+                    s->unkE8 = 1;
+                }
+                break;
+            }
+        } else {
+            if (!s->unkE4 && s->unk1A4[target].unk0_1) {
+                if (s->unk24) {
+                    s->unkE4 = 1;
+                    s->unkE6 = 255;
+                    s->unkEC.x = s->unkF4 >> 1;
+                    s->unkEC.z = s->unkF6 >> 1;
+                } else {
+                    if (s->unk1A4[target].unk0_5) {
+                        result = 0;
+                    } else {
+                        func_800D8260(s, 7, 40);
+
+                        if (!func_800E4180(s, 128, 1, 1)) {
+                            result = 0;
+                        }
+                    }
+
+                    func_800E4904(s);
+                    return result;
+                }
+            }
+
+            if (s->unkE8) {
+                goto recover;
+            }
+
+            if (s->unkE4) {
+                s->unk168 = s->unkEC;
+
+                if (s->unkE6 != 0) {
+                    --s->unkE6;
+                }
+
+                if ((s->unk168.x == s->unk34.x) && (s->unk168.z == s->unk34.z)) {
+                    if (s->unk1A4[target].unk0_5) {
+                        result = 0;
+                    } else {
+                        func_800D8260(s, 7, 40);
+
+                        if (!func_800E4180(s, 128, 1, 1)) {
+                        cancel:
+                            s->unkE4 = 0;
+                            result = 0;
+                        }
+                    }
+                } else if (s->unkE6 != 0) {
+                    s->unk1 = 1;
+                    s->unkA[2] = 1;
+                    func_800E50A0(s, 0, 0);
+                } else {
+                    goto cancel;
+                }
+            } else if (!func_800E4180(s, 0, 3, 1)) {
+                result = 0;
+            }
+        }
+    }
+
+    func_800E4904(s);
+    return result;
+}
 
 int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
 {
@@ -851,7 +1523,7 @@ int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
 
     angle = ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180);
 
-    if ((*(u_int*)&arg0->unk168 & 0xFF00FF) != (*(u_int*)&arg0->unk108 & 0xFF00FF)
+    if (((arg0->unk168.x != arg0->unk108.x) || (arg0->unk168.z != arg0->unk108.z))
         && arg0->unk1A4[arg1].unk0_5 && !arg0->unk10C) {
         arg0->unk10C = 1;
         arg0->unk18A = angle;
@@ -951,6 +1623,185 @@ void func_800E2CCC(func_800E78F4_t* arg0)
     }
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E2F5C);
+int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), int mask)
+{
+    func_800E78F4_path_t path = state->unk190;
+
+    state->unk5 = 0;
+    state->unk1 = state->unk199;
+
+    if (path.count != 0) {
+        int heading = path.direction;
+        u_int direction = (path.clockwise ? heading - 2 : heading + 2) & 7;
+        int hit = func_800D98E8(state, direction);
+        int blocker = hit - 1;
+        int boundX;
+        int boundZ;
+        int cell;
+
+        if (hit != 0 && !(((func_800E78F4_t**)0x1F80037C)[blocker]->unk15E & 0x30)
+            && !((func_800E78F4_t**)0x1F80037C)[blocker]->unk19A) {
+            ((func_800E78F4_t**)0x1F80037C)[blocker]->unk19A = func_800E45D4(4) + 4;
+        }
+
+        if (!state->unk4 && !path.changed && !test(state, path.direction)) {
+            vs_battle_movementPosition ahead;
+
+            ahead.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dx;
+            ahead.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dz;
+            ahead.y = 0;
+
+            if (!func_800D96C8(state, state->unk34, ahead, path.direction)
+                || (func_800D954C(state, ahead) <= 0)) {
+                path.changed = 1;
+                path.clockwise = !path.clockwise;
+                path.visited = 0;
+                path.direction += 4;
+            }
+        }
+
+        boundX = path.boundX * 128;
+        boundZ = path.boundZ * 128;
+
+        if (!state->unk4) {
+            int x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+            int z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+
+            if ((((*(u_short(**)[32])0x1F8003C0)[z][x] >> mask) & 1)
+                || (x > D_800F58BC->unk0) || (z > D_800F58BC->unk1)
+                || (x < D_800F58BC->unk2) || (z < D_800F58BC->unk3)) {
+                state->unkE8 = 0;
+                state->unkE7 = 0;
+                state->unkE4 = 0;
+                goto stop;
+            }
+        }
+
+        if (!state->unk4) {
+            if (boundZ > 0) {
+                int center = state->unk168.z * 128 + 64;
+
+                if ((center < boundZ && state->unk4C.vz < boundZ)
+                    || (boundZ < center && boundZ < state->unk4C.vz)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+
+            if (boundX > 0) {
+                int center = state->unk168.x * 128 + 64;
+
+                if ((center < boundX && state->unk4C.vx < boundX)
+                    || (boundX < center && boundX < state->unk4C.vx)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+        } else {
+            if (boundZ > 0) {
+                int center = state->unk168.z * 128 + 64;
+
+                if ((boundZ < center && state->unk4C.vz < boundZ)
+                    || (center < boundZ && boundZ < state->unk4C.vz)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+
+            if (boundX > 0) {
+                int center = state->unk168.x * 128 + 64;
+
+                if ((boundX < center && state->unk4C.vx < boundX)
+                    || (center < boundX && boundX < state->unk4C.vx)) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+        }
+
+        cell = func_800E3D5C(state, test);
+
+        if (cell != path.cell) {
+            int turn = -1;
+            int i;
+            vs_battle_movementPosition point;
+
+            path.cell = cell;
+
+            if (path.clockwise) {
+                turn = 1;
+            }
+
+            if (test(state, (path.direction - turn * 2 - turn) & 7)
+                && test(state, (path.direction - turn * 2) & 7)) {
+                if (!(state->unk15E & 0x30) && !state->unk19A) {
+                    state->unk19A = func_800E45D4(4) + 4;
+                }
+
+                path.stop = 1;
+                state->unk190 = path;
+                return -1;
+            }
+
+            path.visited |= 1 << (path.direction >> 1);
+
+            if (path.visited == 15) {
+                path.stop = 1;
+                state->unk190 = path;
+                return -1;
+            }
+
+            direction = (path.direction - turn * 2) & 7;
+            i = 0;
+
+            while (1) {
+                if (test(state, direction)) {
+                    if (path.direction != direction) {
+                        path.changed = 1;
+                    }
+
+                    path.direction = direction;
+                    state->unk190 = path;
+                    return 5;
+                }
+
+                point.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
+                point.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+                point.y = 0;
+
+                if (func_800D96C8(state, state->unk34, point, direction)
+                    && (func_800D954C(state, point) > 0)) {
+                    memcpy(&state->unk170, &point, sizeof point);
+
+                    if (path.direction != direction) {
+                        path.changed = 1;
+                    }
+
+                    path.direction = direction;
+                    break;
+                }
+
+                direction = (direction + turn * 2) & 7;
+
+                if (++i >= 4) {
+                    state->unk190 = path;
+                    return -1;
+                }
+            }
+
+            state->unk190 = path;
+            return 14;
+        }
+
+        state->unk190 = path;
+        return 5;
+
+    stop:
+        path.stop = 1;
+    }
+
+    state->unk190 = path;
+    return -1;
+}
 
 INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E3600);

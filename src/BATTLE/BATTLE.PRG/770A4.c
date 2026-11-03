@@ -849,7 +849,7 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 {
     int distance = arg0->unkB4;
 
-    if ((*(u_int*)&arg0->unk34 & 0xFF00FF) != (*(u_int*)&arg0->unk168 & 0xFF00FF)) {
+    if ((arg0->unk34.x != arg0->unk168.x) || (arg0->unk34.z != arg0->unk168.z)) {
         int angle = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
             arg0->unk4C.vz - arg0->unk168.z * 128 - 64);
 
@@ -1235,7 +1235,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, u_int
                 --arg0->unkD2;
             }
 
-            if ((*(u_int*)&arg0->unk168 & 0xFF00FF) == (*(u_int*)&arg0->unk34 & 0xFF00FF)
+            if (((arg0->unk168.x == arg0->unk34.x) && (arg0->unk168.z == arg0->unk34.z))
                 || !arg0->unkD2) {
                 arg0->unkC0 = 0;
             }
@@ -1526,7 +1526,7 @@ int func_800E2B2C(func_800E78F4_t* arg0, int arg1)
 
     angle = ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180);
 
-    if ((*(u_int*)&arg0->unk168 & 0xFF00FF) != (*(u_int*)&arg0->unk108 & 0xFF00FF)
+    if (((arg0->unk168.x != arg0->unk108.x) || (arg0->unk168.z != arg0->unk108.z))
         && arg0->unk1A4[arg1].unk0_5 && !arg0->unk10C) {
         arg0->unk10C = 1;
         arg0->unk18A = angle;

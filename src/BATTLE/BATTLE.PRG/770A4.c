@@ -15,6 +15,15 @@ typedef union {
     vs_battle_movementPosition p;
 } vs_battle_movementTile;
 
+typedef struct {
+    u_short z : 5;
+    u_short x : 5;
+    u_short unk0_10 : 1;
+    u_short direction : 2;
+    u_short distance : 2;
+    u_short unk0_15 : 1;
+} vs_battle_route;
+
 extern u_char D_800F175C[];
 
 int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2);
@@ -125,25 +134,32 @@ int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
 
 int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 {
-    u_short routes[2];
+    typedef union {
+        vs_battle_route r[2];
+        u_int raw;
+    } vs_battle_routePair;
+
+    vs_battle_route routes[2];
     int distances[2];
     vs_battle_movementTile position;
     int count;
     int i;
     int x;
-    u_short route;
+    vs_battle_route route;
+    vs_battle_routePair* pair;
 
     position.raw = *(u_int*)&arg0->unk34;
-    *(u_int*)routes = (*(u_int**)0x1F8003F4)[area * 16 + index];
+    pair = (vs_battle_routePair*)routes;
+    pair->raw = (*(u_int**)0x1F8003F4)[area * 16 + index];
 
-    if (!(*(u_int*)routes & 0x1BE0)) {
+    if ((pair->r[0].x == 0) && (pair->r[0].direction == 0)) {
         return 6;
     }
 
     arg0->unk154[0] = area;
     count = 1;
 
-    if (*(u_int*)routes & 0x1BE00000) {
+    if ((pair->r[1].x != 0) || (pair->r[1].direction != 0)) {
         count = 2;
     }
 
@@ -153,16 +169,16 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 
         route = (i == 0) ? routes[0] : routes[1];
 
-        if ((((route >> 5) & 0x1F) != position.p.x) || ((route & 0x1F) != position.p.z)) {
+        if ((route.x != position.p.x) || (route.z != position.p.z)) {
             continue;
         }
 
         candidate = position.p;
 
-        if (route & 0x400) {
+        if (route.unk0_10) {
             int slot;
 
-            if (route & 0x8000) {
+            if (route.unk0_15) {
                 continue;
             }
 
@@ -184,17 +200,17 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
                 }
             }
 
-            candidate.x = (route >> 5) & 0x1F;
-            candidate.z = route & 0x1F;
-        } else if (route & 0x6000) {
+            candidate.x = route.x;
+            candidate.z = route.z;
+        } else if (route.distance) {
             int amount;
             u_char* step;
 
             arg0->unk154[0] =
                 (*(u_short(**)[32])0x1F8003C0)[candidate.z][candidate.x] % 16;
             arg0->unk5 = 0;
-            amount = ((route >> 13) & 3) + 1;
-            step = &D_800F175C[(route >> 11) & 3];
+            amount = route.distance + 1;
+            step = &D_800F175C[route.direction];
             candidate.x += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dx;
             candidate.z += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dz;
             result = func_800D954C(arg0, candidate);
@@ -229,7 +245,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             return 14;
         } else {
             u_char* table = D_800F175C;
-            u_char* direction = &table[(route >> 11) & 3];
+            u_char* direction = &table[route.direction];
 
             candidate.x += ((D_800F16EC_t*)0x1F8003EC)[*direction].dx;
             candidate.z += ((D_800F16EC_t*)0x1F8003EC)[*direction].dz;
@@ -251,7 +267,9 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
         goto center;
     }
 
-    if ((*(u_int*)routes & 0x8400) == 0x8400) {
+    pair = (vs_battle_routePair*)routes;
+
+    if (pair->r[0].unk0_10 && pair->r[0].unk0_15) {
         if (count == 1) {
         areaOnly:
             arg0->unk154[0] =
@@ -259,43 +277,40 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             return 6;
         }
 
-        if ((*(u_int*)routes & 0x84000000) == 0x84000000) {
+        if (pair->r[1].unk0_10 && pair->r[1].unk0_15) {
             goto areaOnly;
         }
 
         goto second;
     }
 
-    if ((*(u_int*)routes & 0x84000000) == 0x84000000) {
+    if (pair->r[1].unk0_10 && pair->r[1].unk0_15) {
         goto first;
     }
 
     for (i = 0; i < count; ++i) {
         route = (i == 0) ? routes[0] : routes[1];
 
-        if (!((*(u_short(**)[32])0x1F8003BC)[route & 0x1F][(route >> 5) & 0x1F]
-                & 0x1C00)) {
+        if (!((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00)) {
             continue;
         }
 
         route = (i != 0) ? routes[0] : routes[1];
 
-        if (((*(u_short(**)[32])0x1F8003BC)[route & 0x1F][(route >> 5) & 0x1F] & 0x1C00)
-            || (count == 1)) {
+        if (((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00) || (count == 1)) {
             arg0->unk154[0] =
                 (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
             return 6;
         }
 
-        *(u_int*)&arg0->unk168 = ((route & 0x1F) << 16) | ((route >> 5) & 0x1F);
+        *(u_int*)&arg0->unk168 = (route.z << 16) | route.x;
         return 6;
     }
 
     x = position.p.x;
 
     if (count == 1) {
-        *(u_int*)&arg0->unk168 =
-            ((routes[0] & 0x1F) << 16) | ((*(u_int*)routes >> 5) & 0x1F);
+        *(u_int*)&arg0->unk168 = (routes[0].z << 16) | routes[0].x;
         if ((arg0->unk168.x != arg0->unk34.x) || (arg0->unk168.z != arg0->unk34.z)) {
             return 6;
         }
@@ -303,20 +318,17 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
         int z = position.p.z;
 
         distances[0] =
-            (x - ((*(u_int*)routes >> 5) & 0x1F)) * (x - ((*(u_int*)routes >> 5) & 0x1F))
-            + (z - (routes[0] & 0x1F)) * (z - (routes[0] & 0x1F));
-        x -= (*(u_int*)routes >> 21) & 0x1F;
-        z -= (*(u_int*)routes >> 16) & 0x1F;
+            (x - routes[0].x) * (x - routes[0].x) + (z - routes[0].z) * (z - routes[0].z);
+        x -= routes[1].x;
+        z -= routes[1].z;
         distances[1] = x * x + z * z;
 
         if (distances[0] < distances[1]) {
         first:
-            *(u_int*)&arg0->unk168 =
-                ((routes[0] & 0x1F) << 16) | ((*(u_int*)routes >> 5) & 0x1F);
+            *(u_int*)&arg0->unk168 = (routes[0].z << 16) | routes[0].x;
         } else {
         second:
-            *(u_int*)&arg0->unk168 =
-                (*(u_int*)routes & 0x1F0000) | ((*(u_int*)routes >> 21) & 0x1F);
+            *(u_int*)&arg0->unk168 = (routes[1].z << 16) | routes[1].x;
         }
 
         if ((arg0->unk168.x != arg0->unk34.x) || (arg0->unk168.z != arg0->unk34.z)) {

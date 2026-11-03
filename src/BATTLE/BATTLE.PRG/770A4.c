@@ -1764,7 +1764,7 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
 
                 if (func_800D96C8(state, state->unk34, point, direction)
                     && (func_800D954C(state, point) > 0)) {
-                    *(u_int*)&state->unk170 = *(u_int*)&point;
+                    __builtin_memcpy(&state->unk170, &point, sizeof point);
 
                     if (path.direction != direction) {
                         path.changed = 1;

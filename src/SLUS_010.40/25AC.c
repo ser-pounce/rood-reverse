@@ -418,7 +418,7 @@ int Sound_GetAllSfxUnkFlags(void)
 
     do {
         if (mask & var_v1) {
-            var_a0 |= var_a1->unk28;
+            var_a0 |= var_a1->unk_Flags;
         }
         var_v1 *= 2;
         ++var_a1;
@@ -437,8 +437,8 @@ int func_80012358(int arg0)
     }
     for (var_a1 = SfxSoundChannels - 10, var_v1 = 0x1000; var_v1 & 0xFFFFFF;
         var_v1 *= 2, ++var_a1) {
-        if ((a2 & var_v1) && (arg0 == var_a1->unk28)) {
-            return var_a1->unk3C;
+        if ((a2 & var_v1) && (arg0 == var_a1->unk_Flags)) {
+            return var_a1->AkaoProgramIndex;
         }
     }
 
@@ -972,7 +972,7 @@ u_int func_800133E0(u_int* arg0)
     FSoundChannel* var_a1 = D_80035910;
 
     for (i = 0; i < 12; ++i) {
-        *arg0++ = (var_a1++)->unk3C;
+        *arg0++ = (var_a1++)->AkaoProgramIndex;
     }
     return g_Sound_SfxState.ActiveVoiceMask;
 }
@@ -1146,7 +1146,7 @@ void Sound_Setup(void)
         channel->UpdateFlags = 0;
         channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
         channel->Type = SOUND_CHANNEL_TYPE_MUSIC;
-        channel->unk58 = 0;
+        channel->Priority = 0;
         ++channel;
     }
 
@@ -1158,11 +1158,11 @@ void Sound_Setup(void)
         sfxChannel->UpdateFlags = 0;
         sfxChannel->VoiceParams.AssignedVoiceNumber = assignedVoiceNumber;
         sfxChannel->Type = SOUND_CHANNEL_TYPE_SOUND;
-        sfxChannel->unk58 = 0;
-        sfxChannel->unkDC = 0x7F00;
-        sfxChannel->unk8C = 0;
-        sfxChannel->unk86 = 0;
-        sfxChannel->unk40 = 0;
+        sfxChannel->Priority = 0;
+        sfxChannel->VolumeMod = 0x7F00;
+        sfxChannel->VolumeModStepsRemaining = 0;
+        sfxChannel->PitchModStepsRemaining = 0;
+        sfxChannel->PitchMod = 0;
         sfxChannel->KeyOnVolumeSlideLength = 0;
         ++sfxChannel;
     }
@@ -1614,7 +1614,7 @@ void Sound_UpdateSlidesAndDelays(
 
         in_pChannel->VibratoBase = var_lo;
 
-        if ((in_pChannel->VibratoDelayCurrent == 0) && (in_pChannel->unkA4 != 1)) {
+        if ((in_pChannel->VibratoDelayCurrent == 0) && (in_pChannel->VibratoRateCurrent != 1)) {
             Wave = in_pChannel->VibratoWave;
             if (Wave[0] == 0 && Wave[1] == 0) {
                 Wave += Wave[2];
@@ -1636,7 +1636,7 @@ void Sound_UpdateSlidesAndDelays(
         in_pChannel->TremeloDepthSlideLength--;
         in_pChannel->TremeloDepth += (u_short)in_pChannel->TremeloDepthSlideStep;
         if (((u_short)in_pChannel->TremeloDelayCurrent == 0)
-            && ((u_short)in_pChannel->unkB6 != 1)) {
+            && ((u_short)in_pChannel->TremeloRateCurrent != 1)) {
             int FinalVolume;
             int TremeloDepthHi8;
             int VolumeBalanceHigh8;
@@ -1700,8 +1700,8 @@ void Sound_UpdateModulation(
     u_int UpdateFlags = in_pChannel->UpdateFlags;
 
     if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (in_pChannel->VibratoDelayCurrent == 0)
-        && (--in_pChannel->unkA4 == 0)) {
-        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+        && (--in_pChannel->VibratoRateCurrent == 0)) {
+        in_pChannel->VibratoRateCurrent = in_pChannel->VibratoRatePhase;
         Wave = in_pChannel->VibratoWave;
         if (Wave[0] == 0 && Wave[1] == 0) {
             in_pChannel->VibratoWave = Wave + Wave[2];
@@ -1718,8 +1718,8 @@ void Sound_UpdateModulation(
     }
 
     if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && (in_pChannel->TremeloDelayCurrent == 0)
-        && !(--in_pChannel->unkB6 & 0xFFFF)) {
-        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+        && !(--in_pChannel->TremeloRateCurrent & 0xFFFF)) {
+        in_pChannel->TremeloRateCurrent = in_pChannel->TremeloRatePhase;
         Wave = in_pChannel->TremeloWave;
         if (Wave[0] == 0 && Wave[1] == 0) {
             in_pChannel->TremeloWave = Wave + Wave[2];
@@ -1811,8 +1811,8 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
     int Sample;
     u_int UpdateFlags = in_pChannel->UpdateFlags;
 
-    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (--in_pChannel->unkA4 == 0)) {
-        in_pChannel->unkA4 = in_pChannel->VibratoRatePhase;
+    if ((UpdateFlags & SOUND_UPDATE_VIBRATO) && (--in_pChannel->VibratoRateCurrent == 0)) {
+        in_pChannel->VibratoRateCurrent = in_pChannel->VibratoRatePhase;
         Wave = in_pChannel->VibratoWave;
         if (Wave[0] == 0 && Wave[1] == 0) {
             in_pChannel->VibratoWave = Wave + Wave[2];
@@ -1828,8 +1828,8 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
         }
     }
 
-    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && !(--in_pChannel->unkB6 & 0xFFFF)) {
-        in_pChannel->unkB6 = in_pChannel->TremeloRatePhase;
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && !(--in_pChannel->TremeloRateCurrent & 0xFFFF)) {
+        in_pChannel->TremeloRateCurrent = in_pChannel->TremeloRatePhase;
         Wave = in_pChannel->TremeloWave;
         if (Wave[0] == 0 && Wave[1] == 0) {
             in_pChannel->TremeloWave = Wave + Wave[2];
@@ -1867,9 +1867,9 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
 
     if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
         Volume += in_pChannel->TremeloVolume;
-        if (!(in_pChannel->unk28 & 0x2000000)) {
-            Volume = (Volume * (in_pChannel->unkDC >> 8)) >> 7;
-            temp = ((in_pChannel->ChannelPan + in_pChannel->unk6C) >> 8)
+        if (!(in_pChannel->unk_Flags & 0x2000000)) {
+            Volume = (Volume * (in_pChannel->VolumeMod >> 8)) >> 7;
+            temp = ((in_pChannel->ChannelPan + in_pChannel->PanMod) >> 8)
                  + in_pChannel->AutoPanVolume + 0x80;
             temp &= 0xFF;
         } else {
@@ -1889,8 +1889,8 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
     if (UpdateFlags & SOUND_UPDATE_SIDE_CHAIN_PITCH) {
         Sample = (in_pChannel - 1)->VoiceParams.SampleRate + in_pChannel->VibratoPitch
                + (in_pChannel->PitchSlide >> 16);
-        if (!(in_pChannel->unk28 & 0x2000000)) {
-            temp = in_pChannel->unk40 & 0xFF00;
+        if (!(in_pChannel->unk_Flags & 0x2000000)) {
+            temp = in_pChannel->PitchMod & 0xFF00;
             if (temp != 0) {
                 temp >>= 8;
                 if (temp < 0x80) {
@@ -1906,8 +1906,8 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
     } else if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_SAMPLE_RATE) {
         Sample = in_pChannel->PitchBase + in_pChannel->VibratoPitch
                + (in_pChannel->PitchSlide >> 16);
-        if (!(in_pChannel->unk28 & 0x2000000)) {
-            temp = in_pChannel->unk40 & 0xFF00;
+        if (!(in_pChannel->unk_Flags & 0x2000000)) {
+            temp = in_pChannel->PitchMod & 0xFF00;
             if (temp != 0) {
                 temp >>= 8;
                 if (temp < 0x80) {
@@ -2515,7 +2515,7 @@ void Sound_ResetChannel(FSoundChannel* arg0, char* arg1)
     arg0->PitchSlide = 0;
     arg0->PitchBendSlideTranspose = 0;
     arg0->PitchSlideStepsCurrent = 0;
-    arg0->LengthFixed = 0;
+    arg0->FixedNoteLength = 0;
     arg0->LengthStored = 0;
     arg0->ChannelVolumeSlideLength = 0;
     arg0->FinePitchDelta = 0;
@@ -2523,7 +2523,7 @@ void Sound_ResetChannel(FSoundChannel* arg0, char* arg1)
     arg0->LoopStackTop = 0;
     arg0->UpdateFlags = 0;
     arg0->AutoPanVolume = 0;
-    arg0->SfxMask = 0;
+    arg0->Articulation = 0;
     arg0->OpcodeStepCounter = 0xFFFF;
     arg0->VoiceParams.VolumeScale = 0;
     arg0->AutoPanDepth = 0;
@@ -2612,28 +2612,28 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
             int updateFlags;
 
             pChannel->ProgramCounter = (char*)pChannelOffsets + *pChannelOffsets;
-            pChannel->Length1 = 4;
-            pChannel->Length2 = 2;
+            pChannel->NoteLength = 4;
+            pChannel->KeyLength = 2;
             pChannel->VolumeBalance = 0x7F00;
             pChannel->Volume = 0x3FFF0000;
-            pChannel->unkDC = 0x4000;
+            pChannel->VolumeMod = 0x4000;
             pChannel->FineTune = 0;
             pChannel->Transpose = 0;
             pChannel->PortamentoSteps = 0;
             pChannel->PitchSlide = 0;
             pChannel->PitchBendSlideTranspose = 0;
             pChannel->PitchSlideStepsCurrent = 0;
-            pChannel->LengthFixed = 0;
+            pChannel->FixedNoteLength = 0;
             pChannel->LengthStored = 0;
             pChannel->ChannelPan = 0x8000;
             pChannel->ChannelPanSlideLength = 0;
             pChannel->PortamentoSteps = 0;
-            pChannel->unk8C = 0;
+            pChannel->VolumeModStepsRemaining = 0;
             pChannel->ChannelVolumeSlideLength = 0;
             pChannel->FinePitchDelta = 0;
             pChannel->RandomPitchDepth = 0;
             pChannel->KeyOnVolumeSlideLength = 0;
-            pChannel->SfxMask = 0;
+            pChannel->Articulation = 0;
             pChannel->AutoPanVolume = 0;
             pChannel->LoopStackTop = 0;
             updateFlags = !(g_pActiveMusicContext->AllocatedVoiceMask & mask) << 6;
@@ -2649,8 +2649,8 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
             ++pChannelOffsets;
             Sound_SetInstrumentToChannel(pChannel, 0);
         } else {
-            pChannel->Length1 = 3;
-            pChannel->Length2 = 1;
+            pChannel->NoteLength = 3;
+            pChannel->KeyLength = 1;
             pChannel->ProgramCounter = (char*)&g_Sound_ProgramCounter;
             pChannel->VoiceParams.VoiceParamFlags |= 0x4400;
             pChannel->VoiceParams.AdsrUpper =
@@ -2695,8 +2695,8 @@ void Sound_KillMusicContext(
         && ((arg2 == 0) || (arg2 == in_Config->MusicId))) {
         in_Config->PendingKeyOffMask = -1;
         for (Count = SOUND_CHANNEL_COUNT; Count != 0; Count--) {
-            pChannel->Length1 = 3;
-            pChannel->Length2 = 1;
+            pChannel->NoteLength = 3;
+            pChannel->KeyLength = 1;
             pChannel->ProgramCounter = (char*)&g_Sound_ProgramCounter;
             pChannel++;
         };
@@ -2727,7 +2727,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
 
     if (in_StopFlags & 0x0FFFFFFF) {
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
-            if ((activeVoices & voiceBit) && (pChannel->unk28 & in_StopFlags)) {
+            if ((activeVoices & voiceBit) && (pChannel->unk_Flags & in_StopFlags)) {
                 if (pChannel->UpdateFlags & 0x100000) {
                     pChannel->UpdateFlags |= 0x200000;
                 } else {
@@ -2741,17 +2741,17 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
         pChannel += in_SfxId;
         voiceBit <<= in_SfxId;
         if (activeVoices & voiceBit) {
-            Sound_EvictSfxVoice(pChannel->unk3C, 0);
+            Sound_EvictSfxVoice(pChannel->AkaoProgramIndex, 0);
         }
         voiceBit <<= 1;
         pChannel++;
         if (activeVoices & voiceBit) {
-            Sound_EvictSfxVoice(pChannel->unk3C, 0);
+            Sound_EvictSfxVoice(pChannel->AkaoProgramIndex, 0);
         }
         return;
     } else if (in_StopFlags & 0x40000000) {
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
-            if (pChannel->unk28 != 0) {
+            if (pChannel->unk_Flags != 0) {
                 activeVoices &= ~voiceBit;
             }
         }
@@ -2759,14 +2759,14 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
         voiceBit = 0x1000;
         maxPriority = 0;
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
-            if ((activeVoices & voiceBit) && (maxPriority < pChannel->unk58)) {
-                maxPriority = pChannel->unk58;
+            if ((activeVoices & voiceBit) && (maxPriority < pChannel->Priority)) {
+                maxPriority = pChannel->Priority;
             }
         }
         pChannel = D_80035910;
         voiceBit = 0x1000;
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
-            if ((activeVoices & voiceBit) && (maxPriority == pChannel->unk58)) {
+            if ((activeVoices & voiceBit) && (maxPriority == pChannel->Priority)) {
                 if (pChannel->UpdateFlags & 0x100000) {
                     pChannel->UpdateFlags |= 0x200000;
                 } else {
@@ -2782,7 +2782,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
                 continue;
             }
             if (in_SfxId == -1) {
-                if (pChannel->unk3C < 0) {
+                if (pChannel->AkaoProgramIndex < 0) {
                     if (pChannel->UpdateFlags & 0x100000) {
                         pChannel->UpdateFlags |= 0x200000;
                     } else {
@@ -2792,7 +2792,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
                     }
                 }
             } else if (in_SfxId == -2) {
-                if (pChannel->unk28 == 0) {
+                if (pChannel->unk_Flags == 0) {
                     if (pChannel->UpdateFlags & 0x100000) {
                         pChannel->UpdateFlags |= 0x200000;
                     } else {
@@ -2801,7 +2801,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
                         pChannel->UpdateFlags = 0;
                     }
                 }
-            } else if (pChannel->unk3C == in_SfxId) {
+            } else if (pChannel->AkaoProgramIndex == in_SfxId) {
                 if (pChannel->UpdateFlags & 0x100000) {
                     pChannel->UpdateFlags |= 0x200000;
                 } else {
@@ -2823,24 +2823,24 @@ void func_8001653C(FSoundChannel* in_Channel, FSoundCommandParams* in_CommandPar
     int volume;
     int voiceMask;
 
-    in_Channel->unk3C = in_CommandParams->Param1;
-    in_Channel->unk28 = in_CommandParams->Param2;
+    in_Channel->AkaoProgramIndex = in_CommandParams->Param1;
+    in_Channel->unk_Flags = in_CommandParams->Param2;
     pan = (u_char)in_CommandParams->Param3 << 8;
-    in_Channel->unk6E = 0;
+    in_Channel->PanModStepsRemaining = 0;
     in_Channel->ChannelPan = 0x8000;
     in_Channel->ChannelPanSlideLength = 0;
-    in_Channel->unk6C = pan;
+    in_Channel->PanMod = pan;
     volume = ((u_short)in_CommandParams->Param4 & 0x7F) << 8;
-    in_Channel->unk8C = 0;
-    in_Channel->unkDC = volume;
+    in_Channel->VolumeModStepsRemaining = 0;
+    in_Channel->VolumeMod = volume;
     voiceMask = 1 << in_CommandParams->ExtParam1;
-    in_Channel->Length1 = 2;
+    in_Channel->NoteLength = 2;
     in_Channel->unk38 = voiceMask;
-    in_Channel->Length2 = 1;
+    in_Channel->KeyLength = 1;
     in_Channel->Type = 1;
-    in_Channel->unk58 = -2;
-    in_Channel->unk40 = 0;
-    in_Channel->unk86 = 0;
+    in_Channel->Priority = -2;
+    in_Channel->PitchMod = 0;
+    in_Channel->PitchModStepsRemaining = 0;
     Sound_ResetChannel(in_Channel, in_ProgramCounter);
     g_Sound_VoiceOwnerContexts[in_Channel->VoiceParams.AssignedVoiceNumber] = NULL;
     SetVoiceAdsrReleaseRateAndMode(in_Channel->VoiceParams.AssignedVoiceNumber, 5, 3);
@@ -2859,7 +2859,7 @@ void func_8001653C(FSoundChannel* in_Channel, FSoundCommandParams* in_CommandPar
         in_Channel = D_80035910;
         for (i = 12; i != 0; i--, in_Channel++, in_VoiceBit <<= 1) {
             if ((g_Sound_SfxState.ActiveVoiceMask & in_VoiceBit)
-                && !(in_Channel->unk28 & 0x02000000)) {
+                && !(in_Channel->unk_Flags & 0x02000000)) {
                 g_Sound_SfxState.ActiveVoiceMask &= ~in_VoiceBit;
                 g_Sound_SfxState.SuspendedVoiceMask |= in_VoiceBit;
             }
@@ -3064,14 +3064,14 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
             pChannel->LoopStartPc[1] += delta;
             pChannel->LoopStartPc[2] += delta;
             pChannel->LoopStartPc[3] += delta;
-            pChannel->Length1 += 2;
-            pChannel->Length2 += 2;
+            pChannel->NoteLength += 2;
+            pChannel->KeyLength += 2;
             pChannel->VoiceParams.VoiceParamFlags |= 0x1FF93;
             Sound_MapInstrumentToAltSampleBank(
                 g_pActiveMusicContext->StatusFlags, pChannel);
         } else {
-            pChannel->Length1 = 4;
-            pChannel->Length2 = 2;
+            pChannel->NoteLength = 4;
+            pChannel->KeyLength = 2;
             pChannel->ProgramCounter = (char*)&g_Sound_ProgramCounter;
         }
 
@@ -3442,17 +3442,17 @@ void Sound_Cmd_A0_SetSfxVolumeMod(FSoundCommandParams* arg0)
 
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-            if ((mask & var_a3) && (var_a1->unk28 & arg0->Param2)) {
-                var_a1->unkDC = (arg0->Param3 & 0x7F) << 8;
-                var_a1->unk8C = 0;
+            if ((mask & var_a3) && (var_a1->unk_Flags & arg0->Param2)) {
+                var_a1->VolumeMod = (arg0->Param3 & 0x7F) << 8;
+                var_a1->VolumeModStepsRemaining = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 3;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-            if ((mask & var_a3) && (var_a1->unk3C == arg0->Param1)) {
-                var_a1->unkDC = (arg0->Param3 & 0x7F) << 8;
-                var_a1->unk8C = 0;
+            if ((mask & var_a3) && (var_a1->AkaoProgramIndex == arg0->Param1)) {
+                var_a1->VolumeMod = (arg0->Param3 & 0x7F) << 8;
+                var_a1->VolumeModStepsRemaining = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 3;
             }
         }
@@ -3468,18 +3468,18 @@ void Sound_Cmd_A1_FadeSfxVolumeMod(FSoundCommandParams* arg0)
 
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-            if ((mask & var_t0) && (var_a2->unk28 & arg0->Param2)) {
+            if ((mask & var_t0) && (var_a2->unk_Flags & arg0->Param2)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkDE = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->unkDC) / v;
-                var_a2->unk8C = v;
+                var_a2->VolumeModStep = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->VolumeMod) / v;
+                var_a2->VolumeModStepsRemaining = v;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-            if ((mask & var_t0) && (var_a2->unk3C == arg0->Param1)) {
+            if ((mask & var_t0) && (var_a2->AkaoProgramIndex == arg0->Param1)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkDE = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->unkDC) / v;
-                var_a2->unk8C = v;
+                var_a2->VolumeModStep = (short)(((arg0->Param4 & 0x7F) << 8) - var_a2->VolumeMod) / v;
+                var_a2->VolumeModStepsRemaining = v;
             }
         }
     }
@@ -3493,9 +3493,9 @@ void Sound_Cmd_A8_SetAllSfxVolumeMod(FSoundCommandParams* arg0)
     FSoundChannel* var_a1;
 
     for (i = 0, var_a1 = D_80035910; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-        if ((mask & var_a3) && !(var_a1->unk28 & 0x02000000)) {
-            var_a1->unkDC = (arg0->Param1 & 0x7F) << 8;
-            var_a1->unk8C = 0;
+        if ((mask & var_a3) && !(var_a1->unk_Flags & 0x02000000)) {
+            var_a1->VolumeMod = (arg0->Param1 & 0x7F) << 8;
+            var_a1->VolumeModStepsRemaining = 0;
             var_a1->VoiceParams.VoiceParamFlags |= 3;
         }
     }
@@ -3510,14 +3510,14 @@ void Sound_Cmd_A9_FadeAllSfxVolumeMod(FSoundCommandParams* arg0)
     FSoundChannel* var_a2;
 
     for (i = 0, var_a2 = D_80035910; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-        if ((mask & var_t0) && !(var_a2->unk28 & 0x02000000)) {
+        if ((mask & var_t0) && !(var_a2->unk_Flags & 0x02000000)) {
             var_a1 = 1;
             if (arg0->Param1 != 0) {
                 var_a1 = arg0->Param1;
             }
-            var_a2->unkDE =
-                ((short)(((arg0->Param2 & 0x7F) << 8) - var_a2->unkDC) / var_a1);
-            var_a2->unk8C = var_a1;
+            var_a2->VolumeModStep =
+                ((short)(((arg0->Param2 & 0x7F) << 8) - var_a2->VolumeMod) / var_a1);
+            var_a2->VolumeModStepsRemaining = var_a1;
         }
     }
 }
@@ -3531,17 +3531,17 @@ void Sound_Cmd_A2_SetSfxPanMod(FSoundCommandParams* arg0)
 
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-            if ((mask & var_a3) && (var_a1->unk28 & arg0->Param2)) {
-                var_a1->unk6C = ((char)arg0->Param3) << 8;
-                var_a1->unk6E = 0;
+            if ((mask & var_a3) && (var_a1->unk_Flags & arg0->Param2)) {
+                var_a1->PanMod = ((char)arg0->Param3) << 8;
+                var_a1->PanModStepsRemaining = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 3;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-            if ((mask & var_a3) && (var_a1->unk3C == arg0->Param1)) {
-                var_a1->unk6C = ((char)arg0->Param3) << 8;
-                var_a1->unk6E = 0;
+            if ((mask & var_a3) && (var_a1->AkaoProgramIndex == arg0->Param1)) {
+                var_a1->PanMod = ((char)arg0->Param3) << 8;
+                var_a1->PanModStepsRemaining = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 3;
             }
         }
@@ -3557,18 +3557,18 @@ void Sound_Cmd_A3_FadeSfxPanMod(FSoundCommandParams* arg0)
 
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-            if ((mask & var_t0) && (var_a2->unk28 & arg0->Param2)) {
+            if ((mask & var_t0) && (var_a2->unk_Flags & arg0->Param2)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkDA = (short)((((char)arg0->Param4) << 8) - var_a2->unk6C) / v;
-                var_a2->unk6E = v;
+                var_a2->PanModStep = (short)((((char)arg0->Param4) << 8) - var_a2->PanMod) / v;
+                var_a2->PanModStepsRemaining = v;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-            if ((mask & var_t0) && (var_a2->unk3C == arg0->Param1)) {
+            if ((mask & var_t0) && (var_a2->AkaoProgramIndex == arg0->Param1)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unkDA = (short)((((char)arg0->Param4) << 8) - var_a2->unk6C) / v;
-                var_a2->unk6E = v;
+                var_a2->PanModStep = (short)((((char)arg0->Param4) << 8) - var_a2->PanMod) / v;
+                var_a2->PanModStepsRemaining = v;
             }
         }
     }
@@ -3582,9 +3582,9 @@ void Sound_Cmd_AA_SetAllSfxPanMod(FSoundCommandParams* arg0)
     FSoundChannel* var_a1;
 
     for (i = 0, var_a1 = D_80035910; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-        if ((mask & var_a3) && !(var_a1->unk28 & 0x02000000)) {
-            var_a1->unk6C = ((char)arg0->Param1) << 8;
-            var_a1->unk6E = 0;
+        if ((mask & var_a3) && !(var_a1->unk_Flags & 0x02000000)) {
+            var_a1->PanMod = ((char)arg0->Param1) << 8;
+            var_a1->PanModStepsRemaining = 0;
             var_a1->VoiceParams.VoiceParamFlags |= 3;
         }
     }
@@ -3599,13 +3599,13 @@ void Sound_Cmd_AB_FadeAllSfxPanMod(FSoundCommandParams* arg0)
     FSoundChannel* var_a2;
 
     for (i = 0, var_a2 = D_80035910; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-        if ((mask & var_t0) && !(var_a2->unk28 & 0x02000000)) {
+        if ((mask & var_t0) && !(var_a2->unk_Flags & 0x02000000)) {
             var_a1 = 1;
             if (arg0->Param1 != 0) {
                 var_a1 = arg0->Param1;
             }
-            var_a2->unkDA = (short)((((char)arg0->Param2) << 8) - var_a2->unk6C) / var_a1;
-            var_a2->unk6E = var_a1;
+            var_a2->PanModStep = (short)((((char)arg0->Param2) << 8) - var_a2->PanMod) / var_a1;
+            var_a2->PanModStepsRemaining = var_a1;
         }
     }
 }
@@ -3619,17 +3619,17 @@ void Sound_Cmd_A4_SetSfxPitchMod(FSoundCommandParams* arg0)
 
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-            if ((mask & var_a3) && (var_a1->unk28 & arg0->Param2)) {
-                var_a1->unk40 = ((char)arg0->Param3) << 8;
-                var_a1->unk86 = 0;
+            if ((mask & var_a3) && (var_a1->unk_Flags & arg0->Param2)) {
+                var_a1->PitchMod = ((char)arg0->Param3) << 8;
+                var_a1->PitchModStepsRemaining = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 16;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a1, var_a3 *= 2) {
-            if ((mask & var_a3) && (var_a1->unk3C == arg0->Param1)) {
-                var_a1->unk40 = ((char)arg0->Param3) << 8;
-                var_a1->unk86 = 0;
+            if ((mask & var_a3) && (var_a1->AkaoProgramIndex == arg0->Param1)) {
+                var_a1->PitchMod = ((char)arg0->Param3) << 8;
+                var_a1->PitchModStepsRemaining = 0;
                 var_a1->VoiceParams.VoiceParamFlags |= 16;
             }
         }
@@ -3645,20 +3645,20 @@ void Sound_Cmd_A5_FadeSfxPitchMod(FSoundCommandParams* arg0)
 
     if (arg0->Param2 != 0) {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-            if ((mask & var_t0) && (var_a2->unk28 & arg0->Param2)) {
+            if ((mask & var_t0) && (var_a2->unk_Flags & arg0->Param2)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unk44 =
-                    (short)((short)((((char)arg0->Param4) << 8) - var_a2->unk40) / v);
-                var_a2->unk86 = v;
+                var_a2->PitchModStep =
+                    (short)((short)((((char)arg0->Param4) << 8) - var_a2->PitchMod) / v);
+                var_a2->PitchModStepsRemaining = v;
             }
         }
     } else {
         for (i = 0; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-            if ((mask & var_t0) && (var_a2->unk3C == arg0->Param1)) {
+            if ((mask & var_t0) && (var_a2->AkaoProgramIndex == arg0->Param1)) {
                 short v = arg0->Param3 != 0 ? arg0->Param3 : 1;
-                var_a2->unk44 =
-                    (short)((short)((((char)arg0->Param4) << 8) - var_a2->unk40) / v);
-                var_a2->unk86 = v;
+                var_a2->PitchModStep =
+                    (short)((short)((((char)arg0->Param4) << 8) - var_a2->PitchMod) / v);
+                var_a2->PitchModStepsRemaining = v;
             }
         }
     }
@@ -3669,9 +3669,9 @@ void Sound_Cmd_AC_SetAllSfxPitchMod(FSoundCommandParams* arg0)
     int i;
     FSoundChannel* var_a1 = D_80035910;
     for (i = 12; i != 0; --i, ++var_a1) {
-        if (!(var_a1->unk28 & 0x02000000)) {
-            var_a1->unk40 = (char)arg0->Param1 << 8;
-            var_a1->unk86 = 0;
+        if (!(var_a1->unk_Flags & 0x02000000)) {
+            var_a1->PitchMod = (char)arg0->Param1 << 8;
+            var_a1->PitchModStepsRemaining = 0;
             var_a1->VoiceParams.VoiceParamFlags |= 0x10;
         }
     }
@@ -3686,14 +3686,14 @@ void Sound_Cmd_AD_FadeAllSfxPitchMod(FSoundCommandParams* arg0)
     FSoundChannel* var_a2;
 
     for (i = 0, var_a2 = D_80035910; i < 12; ++i, ++var_a2, var_t0 *= 2) {
-        if ((mask & var_t0) && !(var_a2->unk28 & 0x02000000)) {
+        if ((mask & var_t0) && !(var_a2->unk_Flags & 0x02000000)) {
             var_a1 = 1;
             if (arg0->Param1 != 0) {
                 var_a1 = arg0->Param1;
             }
-            var_a2->unk44 =
-                (short)((short)((((char)arg0->Param2) << 8) - var_a2->unk40) / var_a1);
-            var_a2->unk86 = var_a1;
+            var_a2->PitchModStep =
+                (short)((short)((((char)arg0->Param2) << 8) - var_a2->PitchMod) / var_a1);
+            var_a2->PitchModStepsRemaining = var_a1;
         }
     }
 }
@@ -3802,7 +3802,7 @@ void Sound_Cmd_F1_StopSfx(void)
     var_s1 = 0x1000;
     for (i = 0; i < 12; ++i, ++var_s2, var_s1 *= 2) {
         if ((g_Sound_SfxState.ActiveVoiceMask & var_s1)
-            && !(var_s2->unk28 & 0x02000000)) {
+            && !(var_s2->unk_Flags & 0x02000000)) {
             g_Sound_SfxState.KeyOffFlags |= var_s1;
             Sound_ClearVoiceFromSfxState(var_s2, var_s1);
             var_s2->UpdateFlags = 0;
@@ -3921,7 +3921,7 @@ void Sound_Cmd_9D_SuspendSfx(FSoundCommandParams* in_Params __attribute__((unuse
         var_s0 = 0x1000;
 
         for (i = 0; i < 12; ++i, ++var_a0, var_s0 *= 2) {
-            if ((var_s1 & var_s0) && (var_a0->unk28 & 0x02000000)) {
+            if ((var_s1 & var_s0) && (var_a0->unk_Flags & 0x02000000)) {
                 var_s1 &= ~var_s0;
             }
         }
@@ -4314,31 +4314,31 @@ void func_8001924C(void)
                 continue;
             }
 
-            if (var_a1_2->unk8C != 0) {
-                --var_a1_2->unk8C;
-                temp_s1 = var_a1_2->unkDC + var_a1_2->unkDE;
-                if ((temp_s1 & 0xFF00) != (var_a1_2->unkDC & 0xFF00)) {
+            if (var_a1_2->VolumeModStepsRemaining != 0) {
+                --var_a1_2->VolumeModStepsRemaining;
+                temp_s1 = var_a1_2->VolumeMod + var_a1_2->VolumeModStep;
+                if ((temp_s1 & 0xFF00) != (var_a1_2->VolumeMod & 0xFF00)) {
                     var_a1_2->VoiceParams.VoiceParamFlags |= 3;
                 }
-                var_a1_2->unkDC = temp_s1;
+                var_a1_2->VolumeMod = temp_s1;
             }
 
-            if (var_a1_2->unk6E != 0) {
-                --var_a1_2->unk6E;
-                temp_s1 = var_a1_2->unk6C + var_a1_2->unkDA;
-                if ((temp_s1 & 0xFF00) != (var_a1_2->unk6C & 0xFF00)) {
+            if (var_a1_2->PanModStepsRemaining != 0) {
+                --var_a1_2->PanModStepsRemaining;
+                temp_s1 = var_a1_2->PanMod + var_a1_2->PanModStep;
+                if ((temp_s1 & 0xFF00) != (var_a1_2->PanMod & 0xFF00)) {
                     var_a1_2->VoiceParams.VoiceParamFlags |= 3;
                 }
-                var_a1_2->unk6C = temp_s1;
+                var_a1_2->PanMod = temp_s1;
             }
 
-            if (var_a1_2->unk86 != 0) {
-                --var_a1_2->unk86;
-                temp_s1 = var_a1_2->unk40 + var_a1_2->unk44;
-                if ((temp_s1 & 0xFF00) != (var_a1_2->unk40 & 0xFF00)) {
+            if (var_a1_2->PitchModStepsRemaining != 0) {
+                --var_a1_2->PitchModStepsRemaining;
+                temp_s1 = var_a1_2->PitchMod + var_a1_2->PitchModStep;
+                if ((temp_s1 & 0xFF00) != (var_a1_2->PitchMod & 0xFF00)) {
                     var_a1_2->VoiceParams.VoiceParamFlags |= 0x10;
                 }
-                var_a1_2->unk40 = temp_s1;
+                var_a1_2->PitchMod = temp_s1;
             }
             var_a3 ^= var_a2;
         }
@@ -4410,11 +4410,11 @@ int Music_UpdateChannels(FSoundChannel* arg0, int arg1)
 
             do {
                 if (var_s3 & var_s1) {
-                    --var_s2->Length1;
-                    --var_s2->Length2;
-                    if (var_s2->Length1 == 0) {
+                    --var_s2->NoteLength;
+                    --var_s2->KeyLength;
+                    if (var_s2->NoteLength == 0) {
                         Sound_ProcessAkaoVM(var_s2, var_s1);
-                    } else if (var_s2->Length2 == 0) {
+                    } else if (var_s2->KeyLength == 0) {
                         g_pActiveMusicContext->PendingKeyOffMask |= var_s1;
                     }
                     Sound_UpdateSlidesAndDelays(var_s2, var_s1, 0);
@@ -4562,7 +4562,7 @@ long Sound_MainLoop(void)
 
             var_s2_2 = g_ActiveMusicChannels;
             for (i = 32; i != 0; --i) {
-                var_s2_2->Length1 = 1;
+                var_s2_2->NoteLength = 1;
                 ++var_s2_2;
             }
 
@@ -4602,13 +4602,13 @@ long Sound_MainLoop(void)
             var_s2_2 = D_80035910;
             do {
                 if (i & var_s1) {
-                    if (!(D_80039B64 & 2) || (var_s2_2->unk28 & 0x02000000)) {
-                        ++var_s2_2->unk58;
-                        --var_s2_2->Length1;
-                        --var_s2_2->Length2;
-                        if (var_s2_2->Length1 == 0) {
+                    if (!(D_80039B64 & 2) || (var_s2_2->unk_Flags & 0x02000000)) {
+                        ++var_s2_2->Priority;
+                        --var_s2_2->NoteLength;
+                        --var_s2_2->KeyLength;
+                        if (var_s2_2->NoteLength == 0) {
                             Sound_ProcessAkaoVM(var_s2_2, var_s1);
-                        } else if (var_s2_2->Length2 == 0) {
+                        } else if (var_s2_2->KeyLength == 0) {
                             g_Sound_SfxState.KeyOffFlags |= var_s1;
                             g_Sound_SfxState.KeyedFlags &= ~var_s1;
                         }
@@ -4648,7 +4648,7 @@ char Sound_PeekNextOpcode(FSoundChannel* channel)
     for (;;) {
         if (*pc < 0x9A) {
             if (*pc >= 0x8F) {
-                channel->SfxMask &= ~5;
+                channel->Articulation &= ~5;
             }
             return *pc;
         }
@@ -4742,7 +4742,7 @@ char Sound_PeekNextOpcode(FSoundChannel* channel)
         case 0xCD:
         case 0xD1:
         case 0xDB:
-            channel->SfxMask &= ~5;
+            channel->Articulation &= ~5;
             pc++;
             break;
         case 0xCA:
@@ -4751,7 +4751,7 @@ char Sound_PeekNextOpcode(FSoundChannel* channel)
                 break;
             }
         default:
-            channel->SfxMask &= ~5;
+            channel->Articulation &= ~5;
             return 0xA0;
         }
     }
@@ -4995,7 +4995,7 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
             } else {
                 if (temp_v1 < 0xE) {
                     var_s0 = temp_v1 * 0xB;
-                    arg0->Length1 = temp_a1[0];
+                    arg0->NoteLength = temp_a1[0];
                     arg0->ProgramCounter = temp_a1 + 1;
                 } else {
                     if (var_s0 == 0xFF) {
@@ -5017,27 +5017,27 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
         }
     } else {
         temp_a2_2 = Sound_PeekNextOpcode(arg0);
-        if (arg0->LengthFixed != 0) {
-            arg0->Length1 = arg0->Length2 = arg0->LengthFixed;
+        if (arg0->FixedNoteLength != 0) {
+            arg0->NoteLength = arg0->KeyLength = arg0->FixedNoteLength;
         }
-        if (arg0->Length1 != 0) {
-            if ((temp_a2_2 >= 0x8F) || ((temp_a2_2 < 0x84) && !(arg0->SfxMask & 5))) {
-                arg0->Length2 -= 2;
+        if (arg0->NoteLength != 0) {
+            if ((temp_a2_2 >= 0x8F) || ((temp_a2_2 < 0x84) && !(arg0->Articulation & 5))) {
+                arg0->KeyLength -= 2;
             }
         } else {
             int tmp = D_8002F620[var_s0 % 11];
-            arg0->Length1 = tmp;
+            arg0->NoteLength = tmp;
             var_v1 = tmp;
-            if (((temp_a2_2 - 0x84) >= 0xB) && !(arg0->SfxMask & 5)) {
+            if (((temp_a2_2 - 0x84) >= 0xB) && !(arg0->Articulation & 5)) {
                 var_v1 -= 2;
             }
-            arg0->Length2 = var_v1;
+            arg0->KeyLength = var_v1;
         }
         if ((arg0->Type == 0) && (arg0->UpdateFlags & 0x40)) {
-            arg0->Length2 = arg0->Length1;
+            arg0->KeyLength = arg0->NoteLength;
         }
 
-        arg0->LengthStored = arg0->Length1;
+        arg0->LengthStored = arg0->NoteLength;
         arg0->VoiceParams.VoiceParamFlags |= 0x4000;
 
         if (var_s0 >= 0x8F) {
@@ -5050,7 +5050,7 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
             arg0->PortamentoSteps = 0;
             arg0->VibratoPitch = 0;
             arg0->TremeloVolume = 0;
-            arg0->SfxMask &= 0xFFFD;
+            arg0->Articulation &= 0xFFFD;
             return;
         }
         if (var_s0 < 0x84) {
@@ -5061,7 +5061,7 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
             if (temp_a1_2 & 8) {
                 temp_a2_2 = Sound_PlayKeymapNote(arg0, arg1, temp_s0);
             } else {
-                if (!(arg0->SfxMask & 2)) {
+                if (!(arg0->Articulation & 2)) {
                     if (arg0->Type == 0) {
                         if (D_80039AFC & 0x10) {
                             temp_s0 += *((signed char*)g_pActiveMusicContext->unk44
@@ -5078,8 +5078,8 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
 
                         if (arg0->KeyOnVolumeSlideLength != 0) {
                             arg0->ChannelVolumeSlideLength = arg0->KeyOnVolumeSlideLength;
-                            arg0->Volume = arg0->unk5C;
-                            arg0->VolumeSlideStep = arg0->unk60;
+                            arg0->Volume = arg0->KeyOnVolume;
+                            arg0->VolumeSlideStep = arg0->KeyOnVolumeSlideStep;
                         }
                     } else {
                         g_Sound_SfxState.KeyOnFlags |= arg1;
@@ -5128,23 +5128,23 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
                                             ? (temp_v1_6 * ((temp_a2_2 * 0xF) >> 8))
                                             : (temp_v1_6 * temp_a2_2))
                                  >> 7;
-                if (!(arg0->SfxMask & 2)) {
+                if (!(arg0->Articulation & 2)) {
                     arg0->VibratoWave = g_Sound_LfoTable[arg0->VibratoType];
                     arg0->VibratoDelayCurrent = arg0->VibratoDelay;
-                    arg0->unkA4 = 1;
+                    arg0->VibratoRateCurrent = 1;
                 }
             }
-            if ((temp_s0 & 2) && !(arg0->SfxMask & 2)) {
+            if ((temp_s0 & 2) && !(arg0->Articulation & 2)) {
                 arg0->TremeloWave = g_Sound_LfoTable[arg0->TremeloType];
                 arg0->TremeloDelayCurrent = arg0->TremeloDelay;
-                arg0->unkB6 = 1;
+                arg0->TremeloRateCurrent = 1;
             }
             arg0->VibratoPitch = 0;
             arg0->TremeloVolume = 0;
             arg0->PitchSlide = 0;
         }
 
-        arg0->SfxMask = (arg0->SfxMask & 0xFFFD) | ((arg0->SfxMask & 1) * 2);
+        arg0->Articulation = (arg0->Articulation & 0xFFFD) | ((arg0->Articulation & 1) * 2);
         if (arg0->PitchBendSlideTranspose != 0) {
             arg0->Key += arg0->PitchBendSlideTranspose;
             temp_a2_2 = Sound_CalculatePitch(&g_InstrumentInfo[arg0->InstrumentIndex],
@@ -5188,8 +5188,8 @@ void Sound_ClearVoiceFromSfxState(FSoundChannel* arg0, int arg1)
     g_Sound_SfxState.FmVoiceFlags &= temp_a1;
     g_Sound_SfxState.KeyOnFlags &= temp_a1;
     g_Sound_SfxState.KeyedFlags &= temp_a1;
-    arg0->unk28 = 0;
-    arg0->unk3C = 0;
+    arg0->unk_Flags = 0;
+    arg0->AkaoProgramIndex = 0;
 }
 
 #define SOUND_DEFAULT_PORTAMENTO_STEPS (0x100) // 256 steps
@@ -5404,7 +5404,7 @@ void SoundVM_FE19_KeyOnVolumeSlide(
     int Prev;
     int Delta;
 
-    in_pChannel->unk5C = ((signed char)*in_pChannel->ProgramCounter++) << 0x17;
+    in_pChannel->KeyOnVolume = ((signed char)*in_pChannel->ProgramCounter++) << 0x17;
     pPc1 = *in_pChannel->ProgramCounter++;
     in_pChannel->KeyOnVolumeSlideLength = (short)pPc1;
 
@@ -5413,9 +5413,9 @@ void SoundVM_FE19_KeyOnVolumeSlide(
     }
 
     Dest = ((signed char)*in_pChannel->ProgramCounter++) << 0x17;
-    Prev = in_pChannel->unk5C;
+    Prev = in_pChannel->KeyOnVolume;
     Delta = Dest - Prev;
-    in_pChannel->unk60 = Delta / in_pChannel->KeyOnVolumeSlideLength;
+    in_pChannel->KeyOnVolumeSlideStep = Delta / in_pChannel->KeyOnVolumeSlideLength;
 }
 
 void SoundVM_FE1A_SetChannelTenuto(
@@ -5448,8 +5448,8 @@ void SoundVM_unused1(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 void SoundVM_unused1(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
-    in_pChannel->unkDC = *in_pChannel->ProgramCounter++ << 8;
-    in_pChannel->unk8C = 0;
+    in_pChannel->VolumeMod = *in_pChannel->ProgramCounter++ << 8;
+    in_pChannel->VolumeModStepsRemaining = 0;
     if (in_pChannel->UpdateFlags & 0x100) {
         in_pChannel->VoiceParams.VoiceParamFlags |= 3;
     }
@@ -5463,14 +5463,14 @@ void SoundVM_unused2(
     short v;
     int pc;
 
-    if ((in_pChannel->unk8C = *in_pChannel->ProgramCounter++) == 0) {
-        in_pChannel->unk8C = 0x100;
+    if ((in_pChannel->VolumeModStepsRemaining = *in_pChannel->ProgramCounter++) == 0) {
+        in_pChannel->VolumeModStepsRemaining = 0x100;
     }
 
     pc = *(in_pChannel->ProgramCounter++) << 8;
-    v = in_pChannel->unkDC & 0xFF00;
-    in_pChannel->unkDE = ((pc - v) / in_pChannel->unk8C);
-    in_pChannel->unkDC = v;
+    v = in_pChannel->VolumeMod & 0xFF00;
+    in_pChannel->VolumeModStep = ((pc - v) / in_pChannel->VolumeModStepsRemaining);
+    in_pChannel->VolumeMod = v;
 }
 
 void SoundVM_AA_ChannelPan(
@@ -5623,7 +5623,7 @@ void SoundVM_DA_EnablePortamento(
 
     in_pChannel->TransposeStored = 0;
     in_pChannel->KeyStored = 0;
-    in_pChannel->SfxMask = 1;
+    in_pChannel->Articulation = 1;
 }
 
 void SoundVM_DB_DisablePortamento(
@@ -5713,7 +5713,7 @@ void SoundVM_B4_Vibrato(
     in_pChannel->VibratoBase = VibratoBase >> 7;
     in_pChannel->VibratoWave = g_Sound_LfoTable[in_pChannel->VibratoType];
     in_pChannel->VibratoDelayCurrent = in_pChannel->VibratoDelay;
-    in_pChannel->unkA4 = 1;
+    in_pChannel->VibratoRateCurrent = 1;
 }
 
 void SoundVM_B5_VibratoDepth(
@@ -5804,7 +5804,7 @@ void SoundVM_B8_Tremelo(
     in_pChannel->TremeloType = *in_pChannel->ProgramCounter++;
     in_pChannel->TremeloWave = g_Sound_LfoTable[in_pChannel->TremeloType];
     in_pChannel->TremeloDelayCurrent = in_pChannel->TremeloDelay;
-    in_pChannel->unkB6 = 1;
+    in_pChannel->TremeloRateCurrent = 1;
 }
 
 void SoundVM_B9_TremeloDepth(
@@ -5964,7 +5964,7 @@ void SoundVM_C3_DisableReverbVoices(
 void SoundVM_CC_EnableLegato(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
-    in_pChannel->SfxMask = SOUND_SFX_LEGATO;
+    in_pChannel->Articulation = SOUND_SFX_LEGATO;
 }
 
 void SoundVM_CD_DEBUG(FSoundChannel* in_pChannel __attribute__((unused)),
@@ -5976,7 +5976,7 @@ void SoundVM_D0_EnableSustainedNote(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     if (in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC) {
-        in_pChannel->SfxMask = SOUND_SFX_FULL_LENGTH;
+        in_pChannel->Articulation = SOUND_SFX_FULL_LENGTH;
     }
 }
 
@@ -6217,9 +6217,9 @@ void SoundVM_A2_OverwriteNextNoteLength(
     u_short Length;
 
     Length = *in_pChannel->ProgramCounter++;
-    in_pChannel->LengthFixed = 0;
-    in_pChannel->Length2 = Length;
-    in_pChannel->Length1 = Length;
+    in_pChannel->FixedNoteLength = 0;
+    in_pChannel->KeyLength = Length;
+    in_pChannel->NoteLength = Length;
     in_pChannel->LengthStored = Length;
 }
 
@@ -6239,7 +6239,7 @@ void SoundVM_DC_FixNoteLength(
             NoteLength = 255;
         }
     }
-    in_pChannel->LengthFixed = NoteLength;
+    in_pChannel->FixedNoteLength = NoteLength;
 }
 
 void SoundVM_FE04_ClearKeymapTable(
@@ -6345,7 +6345,7 @@ void SoundVM_CB_DisableVoiceModes(FSoundChannel* in_pChannel, u_int in_VoiceFlag
     SoundVM_C5_DisableNoiseVoices(in_pChannel, in_VoiceFlags);
     SoundVM_C7_DisableFmVoices(in_pChannel, in_VoiceFlags);
     SoundVM_C3_DisableReverbVoices(in_pChannel, in_VoiceFlags);
-    in_pChannel->SfxMask &= ~(SOUND_SFX_LEGATO | SOUND_SFX_FULL_LENGTH);
+    in_pChannel->Articulation &= ~(SOUND_SFX_LEGATO | SOUND_SFX_FULL_LENGTH);
 }
 
 void SoundVM_D4_EnablePlaybackRateSidechain(

@@ -94,7 +94,7 @@ void Sound_EvictSfxVoice(int, int);
 void func_8001653C(FSoundChannel*, FSoundCommandParams*, int, char*);
 void Sound_PlaySfxProgram(FSoundCommandParams*, char*, char*, int);
 int func_80016DA8(int);
-u_int func_80018C30(u_int);
+u_int Sound_ExecuteSoundVm2Function(u_int);
 long func_80019A58(void);
 static void Sound_Stop(void);
 static void WriteSpu(char* data, u_int len);
@@ -296,16 +296,16 @@ int func_80011F90(void)
 u_int func_80011FB4(void* arg0)
 {
     D_800378C0.unk0 = arg0;
-    return func_80018C30(0x10);
+    return Sound_ExecuteSoundVm2Function(0x10);
 }
 
 void func_80011FDC(u_int arg0)
 {
     D_800378C0.unk0 = (void*)arg0;
-    func_80018C30(0x11);
+    Sound_ExecuteSoundVm2Function(0x11);
 }
 
-void func_80012004(void) { func_80018C30(0x40); }
+void func_80012004(void) { Sound_ExecuteSoundVm2Function(0x40); }
 
 int func_80012024(void)
 {
@@ -320,7 +320,7 @@ u_int func_80012034(void* arg0, int arg1)
     u_int temp_v0;
 
     D_800378C0.unk0 = arg0;
-    temp_v0 = func_80018C30(0x19);
+    temp_v0 = Sound_ExecuteSoundVm2Function(0x19);
     func_8001286C(temp_v0, arg1);
     return temp_v0;
 }
@@ -330,20 +330,20 @@ u_int func_80012080(void* arg0, u_int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
     D_800378C0.unk8 = arg2 & 0x7F;
-    return func_80018C30(0x1A);
+    return Sound_ExecuteSoundVm2Function(0x1A);
 }
 
 void func_800120B8(void* arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
-    func_80018C30(0x12);
+    Sound_ExecuteSoundVm2Function(0x12);
 }
 
 u_int func_800120E8(void* arg0)
 {
     D_800378C0.unk0 = arg0;
-    return func_80018C30(0x14);
+    return Sound_ExecuteSoundVm2Function(0x14);
 }
 
 void* func_80012110(void* arg0, int arg1)
@@ -351,13 +351,13 @@ void* func_80012110(void* arg0, int arg1)
     u_long v0;
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
-    func_80018C30(0x16);
+    Sound_ExecuteSoundVm2Function(0x16);
     v0 = D_800378C0.unk4 << 0x10;
     v0 += (u_long)D_800378C0.unk0;
     return (void*)v0;
 }
 
-void func_8001215C(void) { func_80018C30(0x17); }
+void func_8001215C(void) { Sound_ExecuteSoundVm2Function(0x17); }
 
 int func_8001217C(u_long arg0, int arg1, int arg2, int arg3)
 {
@@ -367,7 +367,7 @@ int func_8001217C(u_long arg0, int arg1, int arg2, int arg3)
         D_800378C0.unk4 = arg1 & 0xFFFFFF;
         D_800378C0.unk8 = arg2 & 0xFF;
         D_800378C0.unkC = arg3 & 0x7F;
-        func_80018C30(0x20);
+        Sound_ExecuteSoundVm2Function(0x20);
     }
     return temp_s0;
 }
@@ -382,7 +382,7 @@ int func_800121F0(void* arg0, int arg1, int arg2, int arg3)
         D_800378C0.unk4 = (int)(arg1 & 0xFFFFFF);
         D_800378C0.unk8 = (int)(arg2 & 0xFF);
         D_800378C0.unkC = (int)(arg3 & 0x7F);
-        func_80018C30(0x24);
+        Sound_ExecuteSoundVm2Function(0x24);
         var_v0 = arg0;
     }
     return (u_long)var_v0;
@@ -392,13 +392,13 @@ void func_80012288(u_long arg0, int arg1)
 {
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
-    func_80018C30(0x21);
+    Sound_ExecuteSoundVm2Function(0x21);
 }
 
 void func_800122C4(u_long arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0x3FF);
-    func_80018C30(0x30);
+    Sound_ExecuteSoundVm2Function(0x30);
 }
 
 int func_800122F0(void)
@@ -460,38 +460,38 @@ int func_800123C8(vs_main_sfxContext* arg0)
 void vs_sound_setMonoSound(int arg0)
 {
     if (arg0 == 1) {
-        func_80018C30(0x81);
+        Sound_ExecuteSoundVm2Function(0x81);
     } else {
-        func_80018C30(0x80);
+        Sound_ExecuteSoundVm2Function(0x80);
     }
 }
 
 void func_80012440(void* arg0)
 {
     D_800378C0.unk0 = arg0;
-    func_80018C30(0x90);
+    Sound_ExecuteSoundVm2Function(0x90);
 }
 
 void func_80012468(void* arg0)
 {
     D_800378C0.unk0 = arg0;
-    func_80018C30(0x92);
+    Sound_ExecuteSoundVm2Function(0x92);
 }
 
 void func_80012490(u_int arg0)
 {
     switch (arg0) {
     case 1:
-        func_80018C30(0x9B);
+        Sound_ExecuteSoundVm2Function(0x9B);
         break;
     case 2:
-        func_80018C30(0x9D);
+        Sound_ExecuteSoundVm2Function(0x9D);
         break;
     case 3:
-        func_80018C30(0x9F);
+        Sound_ExecuteSoundVm2Function(0x9F);
         break;
     default:
-        func_80018C30(0x99);
+        Sound_ExecuteSoundVm2Function(0x99);
         break;
     }
 }
@@ -500,16 +500,16 @@ void func_800124FC(u_int arg0)
 {
     switch (arg0) {
     case 1:
-        func_80018C30(0x9A);
+        Sound_ExecuteSoundVm2Function(0x9A);
         break;
     case 2:
-        func_80018C30(0x9C);
+        Sound_ExecuteSoundVm2Function(0x9C);
         break;
     case 3:
-        func_80018C30(0x9E);
+        Sound_ExecuteSoundVm2Function(0x9E);
         break;
     default:
-        func_80018C30(0x98);
+        Sound_ExecuteSoundVm2Function(0x98);
         break;
     }
 }
@@ -527,14 +527,14 @@ int func_80012568(int arg0)
 void func_800125A8(u_long arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0x7F);
-    func_80018C30(0xA8);
+    Sound_ExecuteSoundVm2Function(0xA8);
 }
 
 void func_800125D4(void* arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0x7F;
-    func_80018C30(0xA9);
+    Sound_ExecuteSoundVm2Function(0xA9);
 }
 
 void func_80012608(void* arg0, int arg1, int arg2)
@@ -542,7 +542,7 @@ void func_80012608(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
     D_800378C0.unk8 = arg2 & 0x7F;
-    func_80018C30(0xA0);
+    Sound_ExecuteSoundVm2Function(0xA0);
 }
 
 void func_8001264C(int arg0, int arg1, int arg2, int arg3)
@@ -551,20 +551,20 @@ void func_8001264C(int arg0, int arg1, int arg2, int arg3)
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
     D_800378C0.unk8 = arg2;
     D_800378C0.unkC = arg3 & 0x7F;
-    func_80018C30(0xA1);
+    Sound_ExecuteSoundVm2Function(0xA1);
 }
 
 void func_80012694(int arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0xFF);
-    func_80018C30(0xAA);
+    Sound_ExecuteSoundVm2Function(0xAA);
 }
 
 void func_800126C0(void* arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
-    func_80018C30(0xAB);
+    Sound_ExecuteSoundVm2Function(0xAB);
 }
 
 void func_800126F4(void* arg0, int arg1, int arg2)
@@ -572,7 +572,7 @@ void func_800126F4(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
     D_800378C0.unk8 = arg2 & 0xFF;
-    func_80018C30(0xA2);
+    Sound_ExecuteSoundVm2Function(0xA2);
 }
 
 void func_80012738(int arg0, int arg1, int arg2, int arg3)
@@ -581,20 +581,20 @@ void func_80012738(int arg0, int arg1, int arg2, int arg3)
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
     D_800378C0.unk8 = arg2;
     D_800378C0.unkC = arg3 & 0xFF;
-    func_80018C30(0xA3);
+    Sound_ExecuteSoundVm2Function(0xA3);
 }
 
 void func_80012780(int arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0xFF);
-    func_80018C30(0xAC);
+    Sound_ExecuteSoundVm2Function(0xAC);
 }
 
 void func_800127AC(void* arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
-    func_80018C30(0xAD);
+    Sound_ExecuteSoundVm2Function(0xAD);
 }
 
 void func_800127E0(void* arg0, int arg1, int arg2)
@@ -602,7 +602,7 @@ void func_800127E0(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
     D_800378C0.unk8 = arg2 & 0xFF;
-    func_80018C30(0xA4);
+    Sound_ExecuteSoundVm2Function(0xA4);
 }
 
 void func_80012824(int arg0, int arg1, int arg2, int arg3)
@@ -611,14 +611,14 @@ void func_80012824(int arg0, int arg1, int arg2, int arg3)
     D_800378C0.unk4 = arg1 & 0xFFFFFF;
     D_800378C0.unk8 = arg2;
     D_800378C0.unkC = arg3 & 0xFF;
-    func_80018C30(0xA5);
+    Sound_ExecuteSoundVm2Function(0xA5);
 }
 
 void func_8001286C(u_long arg0, int arg1)
 {
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = arg1 & 0x7F;
-    func_80018C30(0xC0);
+    Sound_ExecuteSoundVm2Function(0xC0);
 }
 
 void func_800128A0(u_long arg0, int arg1, int arg2)
@@ -626,7 +626,7 @@ void func_800128A0(u_long arg0, int arg1, int arg2)
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = arg1;
     D_800378C0.unk8 = arg2 & 0x7F;
-    func_80018C30(0xC1);
+    Sound_ExecuteSoundVm2Function(0xC1);
 }
 
 void func_800128D8(void* arg0, int arg1, int arg2, int arg3)
@@ -635,20 +635,20 @@ void func_800128D8(void* arg0, int arg1, int arg2, int arg3)
     D_800378C0.unk4 = arg1;
     D_800378C0.unk8 = arg2 & 0x7F;
     D_800378C0.unkC = arg3 & 0x7F;
-    func_80018C30(0xC2);
+    Sound_ExecuteSoundVm2Function(0xC2);
 }
 
 void func_80012918(int arg0)
 {
     D_800378C0.unk0 = (void*)arg0;
-    func_80018C30(0xC8);
+    Sound_ExecuteSoundVm2Function(0xC8);
 }
 
 void func_80012940(int arg0, int arg1)
 {
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = arg1;
-    func_80018C30(0xC9);
+    Sound_ExecuteSoundVm2Function(0xC9);
 }
 
 void func_80012970(void* arg0, int arg1, int arg2)
@@ -656,20 +656,20 @@ void func_80012970(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1;
     D_800378C0.unk8 = arg2;
-    func_80018C30(0xCA);
+    Sound_ExecuteSoundVm2Function(0xCA);
 }
 
 void func_800129A4(int arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0xFF);
-    func_80018C30(0xD0);
+    Sound_ExecuteSoundVm2Function(0xD0);
 }
 
 void func_800129D0(int arg0, int arg1)
 {
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
-    func_80018C30(0xD1);
+    Sound_ExecuteSoundVm2Function(0xD1);
 }
 
 void func_80012A04(void* arg0, int arg1, int arg2)
@@ -677,20 +677,20 @@ void func_80012A04(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
     D_800378C0.unk8 = arg2 & 0xFF;
-    func_80018C30(0xD2);
+    Sound_ExecuteSoundVm2Function(0xD2);
 }
 
 void func_80012A40(int arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0xFF);
-    func_80018C30(0xD4);
+    Sound_ExecuteSoundVm2Function(0xD4);
 }
 
 int func_80012A6C(int arg0, int arg1)
 {
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
-    return func_80018C30(0xD5);
+    return Sound_ExecuteSoundVm2Function(0xD5);
 }
 
 void func_80012AA0(void* arg0, int arg1, int arg2)
@@ -698,20 +698,20 @@ void func_80012AA0(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
     D_800378C0.unk8 = arg2 & 0xFF;
-    func_80018C30(0xD6);
+    Sound_ExecuteSoundVm2Function(0xD6);
 }
 
 void func_80012ADC(int arg0)
 {
     D_800378C0.unk0 = (void*)(arg0 & 0xFF);
-    func_80018C30(0xD8);
+    Sound_ExecuteSoundVm2Function(0xD8);
 }
 
 void func_80012B08(void* arg0, int arg1)
 {
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
-    func_80018C30(0xD9);
+    Sound_ExecuteSoundVm2Function(0xD9);
 }
 
 void func_80012B3C(void* arg0, int arg1, int arg2)
@@ -719,12 +719,12 @@ void func_80012B3C(void* arg0, int arg1, int arg2)
     D_800378C0.unk0 = arg0;
     D_800378C0.unk4 = arg1 & 0xFF;
     D_800378C0.unk8 = arg2 & 0xFF;
-    func_80018C30(0xDA);
+    Sound_ExecuteSoundVm2Function(0xDA);
 }
 
-void func_80012B78(void) { func_80018C30(240); }
+void func_80012B78(void) { Sound_ExecuteSoundVm2Function(240); }
 
-void func_80012B98(void) { func_80018C30(241); }
+void func_80012B98(void) { Sound_ExecuteSoundVm2Function(241); }
 
 void func_80012BB8(void* arg0, int arg1)
 {
@@ -941,29 +941,29 @@ void func_800132C4(void* arg0, int arg1, int arg2)
         D_800378C0.unk0 = arg0;
         D_800378C0.unk4 = (arg1 & 0xFF) << 8;
         D_800378C0.unk8 = arg2;
-        func_80018C30(0xE0);
+        Sound_ExecuteSoundVm2Function(0xE0);
     }
 }
 
-void func_80013328(void) { func_80018C30(0xE2); }
+void func_80013328(void) { Sound_ExecuteSoundVm2Function(0xE2); }
 
 void func_80013348(int arg0)
 {
     D_800378C0.unk0 = (void*)((arg0 & 0x7F) << 8);
-    func_80018C30(0xE4);
+    Sound_ExecuteSoundVm2Function(0xE4);
 }
 
 void func_80013378(int arg0, int arg1)
 {
     D_800378C0.unk0 = (void*)arg0;
     D_800378C0.unk4 = (arg1 & 0x7F) << 8;
-    func_80018C30(0xE5);
+    Sound_ExecuteSoundVm2Function(0xE5);
 }
 
 void func_800133B0(int arg0)
 {
     D_800378C0.unk0 = (void*)((arg0 & 0xFF) << 8);
-    func_80018C30(0xE6);
+    Sound_ExecuteSoundVm2Function(0xE6);
 }
 
 u_int func_800133E0(u_int* arg0)
@@ -3162,7 +3162,7 @@ void Sound_Cmd_40_PushMusicState(void)
     }
 }
 
-void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
+void Sound_Cmd_19_SetMusicLevelImmediate(FSoundCommandParams* arg0)
 {
     if ((g_pActiveMusicConfig->ActiveChannelMask != 0)
         && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
@@ -3180,7 +3180,7 @@ void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
     g_Sound_GlobalFlags.MixBehavior &= ~0x100;
 }
 
-void Sound_Cmd_1A_Unk(FSoundCommandParams* arg0)
+void Sound_Cmd_1A_StartMasterAndMusicVolumeFade(FSoundCommandParams* arg0)
 {
     if ((g_PushedMusicConfig.MusicId != 0)
         && (g_PushedMusicConfig.MusicId == arg0->Param3)) {
@@ -3213,7 +3213,7 @@ void Sound_Cmd_1A_Unk(FSoundCommandParams* arg0)
     func_80015BAC();
 }
 
-void Sound_Cmd_12_unk(FSoundCommandParams* in_Params)
+void Sound_Cmd_12_PlayFieldMusicLooped(FSoundCommandParams* in_Params)
 {
     int LoopCounter;
 
@@ -3225,7 +3225,7 @@ void Sound_Cmd_12_unk(FSoundCommandParams* in_Params)
     g_Music_LoopCounter = LoopCounter;
 }
 
-void Sound_Cmd_34_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_34_PlaySfxDirect(FSoundCommandParams* arg0)
 {
     char* temp_a1;
     char* temp_a2;
@@ -3240,7 +3240,7 @@ void Sound_Cmd_34_unk(FSoundCommandParams* arg0)
     Sound_PlaySfxProgram(arg0, temp_a1, temp_a2, 0);
 }
 
-void Sound_Cmd_30_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_30_PlaySfxProtected(FSoundCommandParams* arg0)
 {
     char* sp10;
     char* sp14;
@@ -3253,7 +3253,7 @@ void Sound_Cmd_30_unk(FSoundCommandParams* arg0)
     Sound_PlaySfxProgram(arg0, sp10, sp14, 0);
 }
 
-void Sound_Cmd_20_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_20_PlaySfx(FSoundCommandParams* arg0)
 {
     char* akaoOffset;
     char* akaoData;
@@ -3263,7 +3263,7 @@ void Sound_Cmd_20_unk(FSoundCommandParams* arg0)
     Sound_PlaySfxProgram(arg0, akaoOffset, akaoData, 0);
 }
 
-void func_8001733C(FSoundCommandParams* in_Params)
+void Sound_Cmd_24_PlaySfxFromPointer(FSoundCommandParams* in_Params)
 {
     func_8001733C_t* header;
     int* offsets;
@@ -3296,12 +3296,12 @@ void func_8001733C(FSoundCommandParams* in_Params)
     }
 }
 
-void Sound_Cmd_21_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_21_EvictSfxVoice(FSoundCommandParams* arg0)
 {
     Sound_EvictSfxVoice(arg0->Param1, arg0->Param2);
 }
 
-void Sound_Cmd_C0_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_C0_SetMasterVolumeByMusicId(FSoundCommandParams* arg0)
 {
     FSoundChannel* var_a1;
     FSoundChannelConfig* var_a0;
@@ -3325,7 +3325,7 @@ void Sound_Cmd_C0_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_C1_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_C1_FadeMasterVolumeByMusicId(FSoundCommandParams* arg0)
 {
     FSoundChannel* var_a1;
     FSoundChannelConfig* var_a0;
@@ -3362,7 +3362,7 @@ void Sound_Cmd_C1_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_C2_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_C2_FadeMasterVolumeFromByMusicId(FSoundCommandParams* arg0)
 {
     FSoundChannel* var_a1;
     FSoundChannelConfig* var_a0;
@@ -3394,14 +3394,14 @@ void Sound_Cmd_C2_unk(FSoundCommandParams* arg0)
     Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
 }
 
-void Sound_Cmd_C8_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_C8_SetCdVolume(FSoundCommandParams* arg0)
 {
     g_Sound_CdVolumeFadeLength = 0;
     g_CdVolume = (u_short)arg0->Param1 << 0x10;
     Sound_UpdateCdVolume();
 }
 
-void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_C9_FadeCdVolume(FSoundCommandParams* arg0)
 {
     int temp_v0;
     int var_a1;
@@ -3415,7 +3415,7 @@ void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
     g_Sound_CdVolumeFadeStep = (((u_short)arg0->Param2 << 0x10) - g_CdVolume) / var_a1;
 }
 
-void Sound_Cmd_CA_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_CA_FadeCdVolumeFrom(FSoundCommandParams* arg0)
 {
     unsigned int new_var;
     int var_a1 = 1;
@@ -3428,7 +3428,7 @@ void Sound_Cmd_CA_unk(FSoundCommandParams* arg0)
     g_Sound_CdVolumeFadeStep = (int)(new_var - g_CdVolume) / var_a1;
 }
 
-void Sound_Cmd_A0_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A0_SetSfxVolumeMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a1 = D_80035910;
@@ -3454,7 +3454,7 @@ void Sound_Cmd_A0_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A1_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A1_FadeSfxVolumeMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a2 = D_80035910;
@@ -3480,7 +3480,7 @@ void Sound_Cmd_A1_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A8_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A8_SetAllSfxVolumeMod(FSoundCommandParams* arg0)
 {
     int var_a3 = 0x1000;
     int mask = g_Sound_VoiceSchedulerState.ActiveChannelMask;
@@ -3496,7 +3496,7 @@ void Sound_Cmd_A8_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A9_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A9_FadeAllSfxVolumeMod(FSoundCommandParams* arg0)
 {
     short var_a1;
     int var_t0 = 0x1000;
@@ -3517,7 +3517,7 @@ void Sound_Cmd_A9_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A2_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A2_SetSfxPanMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a1 = D_80035910;
@@ -3543,7 +3543,7 @@ void Sound_Cmd_A2_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A3_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A3_FadeSfxPanMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a2 = D_80035910;
@@ -3569,7 +3569,7 @@ void Sound_Cmd_A3_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_AA_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_AA_SetAllSfxPanMod(FSoundCommandParams* arg0)
 {
     int var_a3 = 0x1000;
     int mask = g_Sound_VoiceSchedulerState.ActiveChannelMask;
@@ -3585,7 +3585,7 @@ void Sound_Cmd_AA_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_AB_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_AB_FadeAllSfxPanMod(FSoundCommandParams* arg0)
 {
     short var_a1;
     int var_t0 = 0x1000;
@@ -3605,7 +3605,7 @@ void Sound_Cmd_AB_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A4_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A4_SetSfxPitchMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a1 = D_80035910;
@@ -3631,7 +3631,7 @@ void Sound_Cmd_A4_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_A5_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_A5_FadeSfxPitchMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a2 = D_80035910;
@@ -3659,7 +3659,7 @@ void Sound_Cmd_A5_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_AC_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_AC_SetAllSfxPitchMod(FSoundCommandParams* arg0)
 {
     int i;
     FSoundChannel* var_a1 = D_80035910;
@@ -3672,7 +3672,7 @@ void Sound_Cmd_AC_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_AD_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_AD_FadeAllSfxPitchMod(FSoundCommandParams* arg0)
 {
     short var_a1;
     int var_t0 = 0x1000;
@@ -3693,13 +3693,13 @@ void Sound_Cmd_AD_unk(FSoundCommandParams* arg0)
     }
 }
 
-void func_8001833C(signed char* arg0)
+void Sound_Cmd_D0_SetTempoScale(signed char* arg0)
 {
     g_Sound_TempoMultiplier = *arg0 << 0x10;
     D_80036782 = 0;
 }
 
-void func_80018358(FSoundCommandParams* arg0)
+void Sound_Cmd_D1_FadeTempoScale(FSoundCommandParams* arg0)
 {
     int temp_v0 = arg0->Param1;
     int var_a1 = 1;
@@ -3710,7 +3710,7 @@ void func_80018358(FSoundCommandParams* arg0)
     D_80036782 = var_a1;
 }
 
-void func_800183C0(FSoundCommandParams* arg0)
+void Sound_Cmd_D2_FadeTempoScaleFrom(FSoundCommandParams* arg0)
 {
     int var_a1;
 
@@ -3724,13 +3724,13 @@ void func_800183C0(FSoundCommandParams* arg0)
     D_80036782 = var_a1;
 }
 
-void func_80018434(signed char* arg0)
+void Sound_Cmd_D4_SetMasterPitchScale(signed char* arg0)
 {
     g_Sound_MasterPitchScaleQ16_16 = *arg0 << 0x10;
     D_80036780 = 0;
 }
 
-void func_80018450(FSoundCommandParams* arg0)
+void Sound_Cmd_D5_FadeMasterPitchScale(FSoundCommandParams* arg0)
 {
     int temp_v0;
     int var_a1;
@@ -3746,7 +3746,7 @@ void func_80018450(FSoundCommandParams* arg0)
     D_80036780 = (short)var_a1;
 }
 
-void func_800184B8(FSoundCommandParams* arg0)
+void Sound_Cmd_D6_FadeMasterPitchScaleFrom(FSoundCommandParams* arg0)
 {
     int var_a1;
 
@@ -3760,7 +3760,7 @@ void func_800184B8(FSoundCommandParams* arg0)
     D_80036780 = var_a1;
 }
 
-void func_8001852C(void)
+void Sound_Cmd_F0_StopMusic(void)
 {
     Sound_KillMusicConfig(g_pActiveMusicConfig, g_ActiveMusicChannels, 0);
 
@@ -3785,7 +3785,7 @@ void Sound_Cmd_11_StopMusicById(FSoundCommandParams* in_Params)
 
 void Sound_ClearVoiceFromSchedulerState(FSoundChannel* arg0, int arg1);
 
-void func_80018608(void)
+void Sound_Cmd_F1_StopSfx(void)
 {
     FSoundChannel* var_s2;
     int var_s1;
@@ -3804,7 +3804,7 @@ void func_80018608(void)
     g_Sound_GlobalFlags.UpdateFlags |= 0x110;
 }
 
-void Sound_Cmd_80_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_80_SetModeStereo(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     D_80039AFC = 1;
     Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicConfig, g_ActiveMusicChannels);
@@ -3815,7 +3815,7 @@ void Sound_Cmd_80_unk(FSoundCommandParams* in_Params __attribute__((unused)))
     Sound_MarkScheduledSfxChannelsVolumeDirty();
 }
 
-void Sound_Cmd_81_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_81_SetModeMono(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     D_80039AFC = 2;
     Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicConfig, g_ActiveMusicChannels);
@@ -3826,7 +3826,7 @@ void Sound_Cmd_81_unk(FSoundCommandParams* in_Params __attribute__((unused)))
     Sound_MarkScheduledSfxChannelsVolumeDirty();
 }
 
-void Sound_Cmd_90_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_90_SetMutedMusicChannelMask(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* c;
@@ -3838,12 +3838,12 @@ void Sound_Cmd_90_unk(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_92_unk(FSoundCommandParams* arg0)
+void Sound_Cmd_92_SetMusicJumpThreshold(FSoundCommandParams* arg0)
 {
     g_pActiveMusicConfig->JumpThresholdValue = arg0->Param1;
 }
 
-void Sound_Cmd_9B_unk(FSoundCommandParams* arg0 __attribute__((unused)))
+void Sound_Cmd_9B_SuspendMusic(FSoundCommandParams* arg0 __attribute__((unused)))
 {
     int temp_v1;
     int var_s0;
@@ -3876,7 +3876,7 @@ void Sound_Cmd_9B_unk(FSoundCommandParams* arg0 __attribute__((unused)))
     D_80039B64 |= 1;
 }
 
-void Sound_Cmd_9A_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9A_RestoreMusic(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     if (g_pActiveMusicConfig->unk1C != 0) {
         FSoundChannel* c = g_ActiveMusicChannels;
@@ -3900,7 +3900,7 @@ void Sound_Cmd_9A_unk(FSoundCommandParams* in_Params __attribute__((unused)))
     D_80039B64 &= ~1;
 }
 
-void Sound_Cmd_9D_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9D_SuspendSfx(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     FSoundChannel* var_a0;
     int var_s0;
@@ -3939,7 +3939,7 @@ void Sound_Cmd_9D_unk(FSoundCommandParams* in_Params __attribute__((unused)))
     D_80039B64 |= 2;
 }
 
-void Sound_Cmd_9C_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9C_RestoreSfx(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     if (D_800378A0 != 0) {
         u_int temp_a2;
@@ -3964,7 +3964,7 @@ void Sound_Cmd_9C_unk(FSoundCommandParams* in_Params __attribute__((unused)))
     D_80039B64 &= ~2;
 }
 
-void Sound_Cmd_9F_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9F_SuspendCutsceneAudio(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
         SetVoiceSampleRate(g_Sound_Cutscene_StreamState.VoiceIndex, 0);
@@ -3972,7 +3972,7 @@ void Sound_Cmd_9F_unk(FSoundCommandParams* in_Params __attribute__((unused)))
     }
 }
 
-void Sound_Cmd_9E_unk(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9E_RestoreCutsceneAudio(FSoundCommandParams* in_Params __attribute__((unused)))
 {
     if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
         SetVoiceSampleRate(g_Sound_Cutscene_StreamState.VoiceIndex,
@@ -3996,7 +3996,7 @@ void Sound_SetReverbMode(int in_ReverbMode)
     }
 }
 
-u_int func_80018C30(u_int in_Command)
+u_int Sound_ExecuteSoundVm2Function(u_int in_Command)
 {
     AkaoSeqHeader* pSequence;
     FSoundCommandParams* pParams;
@@ -6706,7 +6706,7 @@ void func_8001D644(int* arg0)
         ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
 }
 
-void func_8001D698(void) { Sound_Cutscene_StopStream(); }
+void Sound_Cmd_E2_StopCutsceneStream(void) { Sound_Cutscene_StopStream(); }
 
 void Sound_Cmd_E4_SetCutsceneVolume(FSoundCommandParams* in_Params)
 {

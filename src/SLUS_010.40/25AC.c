@@ -240,7 +240,7 @@ int func_80011E40(void)
     if (D_80037788.Param1 != 0) {
         var_v1 |= 0x10;
     }
-    if (g_Sound_SfxState.ActiveChannelMask != 0) {
+    if (g_Sound_SfxState.ActiveVoiceMask != 0) {
         var_v1 |= 0x100;
     }
     if (D_80039B14 != 0) {
@@ -405,7 +405,7 @@ int Sound_GetAllSfxUnkFlags(void)
     FSoundChannel* var_a1;
     int var_a0;
     int var_v1;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
 
     var_a0 = mask == 0;
     if (var_a0) {
@@ -432,7 +432,7 @@ int func_80012358(int arg0)
     FSoundChannel* var_a1;
     int var_v1;
     int a2;
-    if ((arg0 == 0) || ((a2 = g_Sound_SfxState.ActiveChannelMask) == 0)) {
+    if ((arg0 == 0) || ((a2 = g_Sound_SfxState.ActiveVoiceMask) == 0)) {
         return 0;
     }
     for (var_a1 = SfxSoundChannels - 10, var_v1 = 0x1000; var_v1 & 0xFFFFFF;
@@ -974,7 +974,7 @@ u_int func_800133E0(u_int* arg0)
     for (i = 0; i < 12; ++i) {
         *arg0++ = (var_a1++)->unk3C;
     }
-    return g_Sound_SfxState.ActiveChannelMask;
+    return g_Sound_SfxState.ActiveVoiceMask;
 }
 
 void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
@@ -1097,11 +1097,11 @@ void Sound_Setup(void)
     D_800377E0[1] = 0;
     D_800377E0[0] = 0;
     g_Sound_GlobalFlags.MixBehavior = 1;
-    g_Sound_SfxState.ActiveChannelMask = 0;
+    g_Sound_SfxState.ActiveVoiceMask = 0;
     g_PrimaryMusicContext.ActiveChannelMask = 0;
     g_PrimaryMusicContext.KeyedMask = 0;
     g_PrimaryMusicContext.MusicId = 0;
-    g_Sound_SfxState.unk_Flags_0x10 = 0;
+    g_Sound_SfxState.SuspendedVoiceMask = 0;
     g_PrimaryMusicContext.unk1C = 0;
     g_SuspendedMusicContext.MusicId = 0;
     g_SuspendedMusicContext.ActiveChannelMask = 0;
@@ -1170,8 +1170,8 @@ void Sound_Setup(void)
     g_pActiveMusicContext->PendingKeyOffMask = 0;
     g_pActiveMusicContext->ActiveNoteMask = 0;
     g_pActiveMusicContext->PendingKeyOnMask = 0;
-    g_Sound_SfxState.TempoAccumumulator = 1;
-    g_Sound_SfxState.unk14 = 0x66A80000;
+    g_Sound_SfxState.TempoAccumulator = 1;
+    g_Sound_SfxState.TempoBase = 0x66A80000;
     g_Sound_SfxState.KeyOffFlags = 0;
     g_Sound_SfxState.KeyedFlags = 0;
     g_Sound_SfxState.KeyOnFlags = 0;
@@ -2155,8 +2155,8 @@ void Sound_RestoreChannelVolumeFromMasterFade(
 void func_80015220(void)
 {
     u_int KeyOnFlags = 0;
-    u_int ReservedVoices =
-        g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10 | D_80039B14;
+    u_int ReservedVoices = g_Sound_SfxState.ActiveVoiceMask
+                         | g_Sound_SfxState.SuspendedVoiceMask | D_80039B14;
     u_int Voices;
     u_int Flags;
     u_int SavedChannels;
@@ -2242,7 +2242,7 @@ void func_80015220(void)
         }
     }
 
-    Flags = g_Sound_SfxState.ActiveChannelMask & g_Sound_SfxState.KeyedFlags;
+    Flags = g_Sound_SfxState.ActiveVoiceMask & g_Sound_SfxState.KeyedFlags;
     if (Flags != 0) {
         KeyOnFlags |= g_Sound_SfxState.KeyOnFlags;
         for (Voices = 0x1000, pChannel = D_80035910; Flags != 0;
@@ -2266,7 +2266,7 @@ void func_80015220(void)
         g_Sound_GlobalFlags.UpdateFlags &= ~0x80;
     }
     if (Flags & 0x10) {
-        if (g_Sound_SfxState.ActiveChannelMask != 0) {
+        if (g_Sound_SfxState.ActiveVoiceMask != 0) {
             SpuSetNoiseClock(g_Sound_SfxState.NoiseClock);
         } else {
             SpuSetNoiseClock(g_pActiveMusicContext->NoiseClock);
@@ -2321,7 +2321,7 @@ void Sound_ProcessKeyOffRequests(void)
     int ActiveOffMask;
     int SavedOffMask;
 
-    Filter = ~(g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10
+    Filter = ~(g_Sound_SfxState.ActiveVoiceMask | g_Sound_SfxState.SuspendedVoiceMask
                | g_Sound_Cutscene_StreamState.VoicesInUseFlags);
     VoiceMask = 0;
     SavedOffMask = 0;
@@ -2375,7 +2375,7 @@ void Sound_BuildVoiceModeMask(int* out_VoiceMask, int in_SavedChannelMask,
     int VoiceMask = 0;
     int SavedKeyedMask;
     int ActiveKeyedMask;
-    int Filter = ~(g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10
+    int Filter = ~(g_Sound_SfxState.ActiveVoiceMask | g_Sound_SfxState.SuspendedVoiceMask
                    | D_80039B14);
     int ActiveMask;
     int SavedMask = 0;
@@ -2499,7 +2499,7 @@ void Sound_ReconcileSavedMusicVoices(void)
     }
 
     g_Sound_SfxState.KeyOffFlags |=
-        keyOff & ~(g_Sound_SfxState.ActiveChannelMask | D_80039B14);
+        keyOff & ~(g_Sound_SfxState.ActiveVoiceMask | D_80039B14);
 }
 
 void Sound_SetInstrumentToChannel(FSoundChannel* arg0, int arg1);
@@ -2575,7 +2575,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     }
 
     g_Sound_SfxState.KeyOffFlags |=
-        ~mask & 0xFFFFFF & ~(g_Sound_SfxState.ActiveChannelMask | D_80039B14);
+        ~mask & 0xFFFFFF & ~(g_Sound_SfxState.ActiveVoiceMask | D_80039B14);
     pConfig = g_pActiveMusicContext;
     pConfig->PendingKeyOffMask = 0;
 
@@ -2722,7 +2722,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
     int maxPriority;
     u_int voiceBit = 0x1000;
     u_int activeVoices =
-        g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10;
+        g_Sound_SfxState.ActiveVoiceMask | g_Sound_SfxState.SuspendedVoiceMask;
     FSoundChannel* pChannel = D_80035910;
 
     if (in_StopFlags & 0x0FFFFFFF) {
@@ -2845,7 +2845,7 @@ void func_8001653C(FSoundChannel* in_Channel, FSoundCommandParams* in_CommandPar
     g_Sound_VoiceOwnerContexts[in_Channel->VoiceParams.AssignedVoiceNumber] = NULL;
     SetVoiceAdsrReleaseRateAndMode(in_Channel->VoiceParams.AssignedVoiceNumber, 5, 3);
 
-    g_Sound_SfxState.ActiveChannelMask |= in_VoiceBit;
+    g_Sound_SfxState.ActiveVoiceMask |= in_VoiceBit;
     g_Sound_SfxState.KeyOffFlags |= in_VoiceBit;
     in_VoiceBit = ~in_VoiceBit;
     g_Sound_SfxState.KeyOnFlags &= in_VoiceBit;
@@ -2858,10 +2858,10 @@ void func_8001653C(FSoundChannel* in_Channel, FSoundCommandParams* in_CommandPar
         in_VoiceBit = 0x1000;
         in_Channel = D_80035910;
         for (i = 12; i != 0; i--, in_Channel++, in_VoiceBit <<= 1) {
-            if ((g_Sound_SfxState.ActiveChannelMask & in_VoiceBit)
+            if ((g_Sound_SfxState.ActiveVoiceMask & in_VoiceBit)
                 && !(in_Channel->unk28 & 0x02000000)) {
-                g_Sound_SfxState.ActiveChannelMask &= ~in_VoiceBit;
-                g_Sound_SfxState.unk_Flags_0x10 |= in_VoiceBit;
+                g_Sound_SfxState.ActiveVoiceMask &= ~in_VoiceBit;
+                g_Sound_SfxState.SuspendedVoiceMask |= in_VoiceBit;
             }
         }
     }
@@ -2906,8 +2906,8 @@ void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_Progra
         channel = SfxSoundChannels;
         voiceBit = 0x400000;
 
-        activeVoices = g_Sound_SfxState.ActiveChannelMask
-                     | g_Sound_SfxState.unk_Flags_0x10
+        activeVoices = g_Sound_SfxState.ActiveVoiceMask
+                     | g_Sound_SfxState.SuspendedVoiceMask
                      | g_Sound_Cutscene_StreamState.VoicesInUseFlags;
 
         for (slotsRemaining = 0xC; slotsRemaining != 0;
@@ -2924,7 +2924,7 @@ void Sound_PlaySfxProgram(FSoundCommandParams* in_CommandParams, char* in_Progra
         Sound_EvictSfxVoice(0, 0x40000000);
 
         if (activeVoices
-            == (g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10
+            == (g_Sound_SfxState.ActiveVoiceMask | g_Sound_SfxState.SuspendedVoiceMask
                 | g_Sound_Cutscene_StreamState.VoicesInUseFlags)) {
             return;
         }
@@ -3004,11 +3004,11 @@ void Sound_MarkScheduledSfxChannelsVolumeDirty(void)
     u_int ActiveChannelMask;
     FSoundChannel* pChannel = SfxSoundChannels - 10;
 
-    if (g_Sound_SfxState.ActiveChannelMask == 0) {
+    if (g_Sound_SfxState.ActiveVoiceMask == 0) {
         return;
     }
 
-    ActiveChannelMask = g_Sound_SfxState.ActiveChannelMask;
+    ActiveChannelMask = g_Sound_SfxState.ActiveVoiceMask;
 
     Mask = (1 << 12); // SFX Channels start at channel 12
     while (ActiveChannelMask != 0) {
@@ -3089,7 +3089,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     pConfig->PendingKeyOffMask = 0;
     g_SuspendedMusicContext.MusicId = 0;
     g_Sound_SfxState.KeyOffFlags |=
-        ~mask & 0xFFFFFF & ~(g_Sound_SfxState.ActiveChannelMask | D_80039B14);
+        ~mask & 0xFFFFFF & ~(g_Sound_SfxState.ActiveVoiceMask | D_80039B14);
     g_Sound_GlobalFlags.UpdateFlags |= 0x100;
 
     if (in_SwapWithSavedState != 0) {
@@ -3437,7 +3437,7 @@ void Sound_Cmd_A0_SetSfxVolumeMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a1 = D_80035910;
-    u_int mask = g_Sound_SfxState.ActiveChannelMask;
+    u_int mask = g_Sound_SfxState.ActiveVoiceMask;
     int var_a3 = 0x1000;
 
     if (arg0->Param2 != 0) {
@@ -3463,7 +3463,7 @@ void Sound_Cmd_A1_FadeSfxVolumeMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a2 = D_80035910;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     int var_t0 = 0x1000;
 
     if (arg0->Param2 != 0) {
@@ -3488,7 +3488,7 @@ void Sound_Cmd_A1_FadeSfxVolumeMod(FSoundCommandParams* arg0)
 void Sound_Cmd_A8_SetAllSfxVolumeMod(FSoundCommandParams* arg0)
 {
     int var_a3 = 0x1000;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     u_int i;
     FSoundChannel* var_a1;
 
@@ -3505,7 +3505,7 @@ void Sound_Cmd_A9_FadeAllSfxVolumeMod(FSoundCommandParams* arg0)
 {
     short var_a1;
     int var_t0 = 0x1000;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     u_int i;
     FSoundChannel* var_a2;
 
@@ -3526,7 +3526,7 @@ void Sound_Cmd_A2_SetSfxPanMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a1 = D_80035910;
-    u_int mask = g_Sound_SfxState.ActiveChannelMask;
+    u_int mask = g_Sound_SfxState.ActiveVoiceMask;
     int var_a3 = 0x1000;
 
     if (arg0->Param2 != 0) {
@@ -3552,7 +3552,7 @@ void Sound_Cmd_A3_FadeSfxPanMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a2 = D_80035910;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     int var_t0 = 0x1000;
 
     if (arg0->Param2 != 0) {
@@ -3577,7 +3577,7 @@ void Sound_Cmd_A3_FadeSfxPanMod(FSoundCommandParams* arg0)
 void Sound_Cmd_AA_SetAllSfxPanMod(FSoundCommandParams* arg0)
 {
     int var_a3 = 0x1000;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     u_int i;
     FSoundChannel* var_a1;
 
@@ -3594,7 +3594,7 @@ void Sound_Cmd_AB_FadeAllSfxPanMod(FSoundCommandParams* arg0)
 {
     short var_a1;
     int var_t0 = 0x1000;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     u_int i;
     FSoundChannel* var_a2;
 
@@ -3614,7 +3614,7 @@ void Sound_Cmd_A4_SetSfxPitchMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a1 = D_80035910;
-    u_int mask = g_Sound_SfxState.ActiveChannelMask;
+    u_int mask = g_Sound_SfxState.ActiveVoiceMask;
     int var_a3 = 0x1000;
 
     if (arg0->Param2 != 0) {
@@ -3640,7 +3640,7 @@ void Sound_Cmd_A5_FadeSfxPitchMod(FSoundCommandParams* arg0)
 {
     u_int i;
     FSoundChannel* var_a2 = D_80035910;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     int var_t0 = 0x1000;
 
     if (arg0->Param2 != 0) {
@@ -3681,7 +3681,7 @@ void Sound_Cmd_AD_FadeAllSfxPitchMod(FSoundCommandParams* arg0)
 {
     short var_a1;
     int var_t0 = 0x1000;
-    int mask = g_Sound_SfxState.ActiveChannelMask;
+    int mask = g_Sound_SfxState.ActiveVoiceMask;
     u_int i;
     FSoundChannel* var_a2;
 
@@ -3801,7 +3801,7 @@ void Sound_Cmd_F1_StopSfx(void)
     var_s2 = D_80035910;
     var_s1 = 0x1000;
     for (i = 0; i < 12; ++i, ++var_s2, var_s1 *= 2) {
-        if ((g_Sound_SfxState.ActiveChannelMask & var_s1)
+        if ((g_Sound_SfxState.ActiveVoiceMask & var_s1)
             && !(var_s2->unk28 & 0x02000000)) {
             g_Sound_SfxState.KeyOffFlags |= var_s1;
             Sound_ClearVoiceFromSfxState(var_s2, var_s1);
@@ -3858,7 +3858,7 @@ void Sound_Cmd_9B_SuspendMusic(FSoundCommandParams* arg0 __attribute__((unused))
     int var_s2;
 
     if (g_pActiveMusicContext->ActiveChannelMask != 0) {
-        int v0 = ~(g_Sound_SfxState.ActiveChannelMask | D_80039B14);
+        int v0 = ~(g_Sound_SfxState.ActiveVoiceMask | D_80039B14);
         var_s2 = 1;
         var_s1 = v0 & 0xFFFFFF;
 
@@ -3915,8 +3915,8 @@ void Sound_Cmd_9D_SuspendSfx(FSoundCommandParams* in_Params __attribute__((unuse
     int var_s1;
     u_int i;
 
-    if (g_Sound_SfxState.ActiveChannelMask != 0) {
-        var_s1 = g_Sound_SfxState.ActiveChannelMask;
+    if (g_Sound_SfxState.ActiveVoiceMask != 0) {
+        var_s1 = g_Sound_SfxState.ActiveVoiceMask;
         var_a0 = D_80035910;
         var_s0 = 0x1000;
 
@@ -3928,8 +3928,8 @@ void Sound_Cmd_9D_SuspendSfx(FSoundCommandParams* in_Params __attribute__((unuse
 
         var_s0 = 0x1000;
         var_s2 = 0xC;
-        g_Sound_SfxState.unk_Flags_0x10 = var_s1;
-        g_Sound_SfxState.ActiveChannelMask &= ~var_s1;
+        g_Sound_SfxState.SuspendedVoiceMask = var_s1;
+        g_Sound_SfxState.ActiveVoiceMask &= ~var_s1;
 
         while (var_s1 != 0) {
             if (var_s1 & var_s0) {
@@ -3963,9 +3963,9 @@ void Sound_Cmd_9C_RestoreSfx(FSoundCommandParams* in_Params __attribute__((unuse
             ++c;
         } while (var_a2 != 0);
 
-        temp_a2 = g_Sound_SfxState.unk_Flags_0x10;
-        g_Sound_SfxState.unk_Flags_0x10 = 0;
-        g_Sound_SfxState.ActiveChannelMask |= temp_a2;
+        temp_a2 = g_Sound_SfxState.SuspendedVoiceMask;
+        g_Sound_SfxState.SuspendedVoiceMask = 0;
+        g_Sound_SfxState.ActiveVoiceMask |= temp_a2;
         g_Sound_GlobalFlags.UpdateFlags |= 0x100;
     }
     D_80039B64 &= ~2;
@@ -4304,8 +4304,8 @@ void func_8001924C(void)
             g_pSuspendedMusicContext->A_Volume = temp_s1;
         }
     }
-    if (g_Sound_SfxState.ActiveChannelMask != 0) {
-        var_a3 = g_Sound_SfxState.ActiveChannelMask;
+    if (g_Sound_SfxState.ActiveVoiceMask != 0) {
+        var_a3 = g_Sound_SfxState.ActiveVoiceMask;
         var_a1_2 = D_80035910;
         do {
         } while (0);
@@ -4592,11 +4592,12 @@ long Sound_MainLoop(void)
             }
         }
     }
-    if (g_Sound_SfxState.ActiveChannelMask != 0) {
-        i = g_Sound_SfxState.ActiveChannelMask;
-        g_Sound_SfxState.TempoAccumumulator += (g_Sound_SfxState.unk14 >> 0x10) & 0xFFFF;
-        if ((g_Sound_SfxState.TempoAccumumulator & 0xFFFF0000) || (D_80039B64 & 4)) {
-            g_Sound_SfxState.TempoAccumumulator &= 0xFFFF;
+    if (g_Sound_SfxState.ActiveVoiceMask != 0) {
+        i = g_Sound_SfxState.ActiveVoiceMask;
+        g_Sound_SfxState.TempoAccumulator +=
+            (g_Sound_SfxState.TempoBase >> 0x10) & 0xFFFF;
+        if ((g_Sound_SfxState.TempoAccumulator & 0xFFFF0000) || (D_80039B64 & 4)) {
+            g_Sound_SfxState.TempoAccumulator &= 0xFFFF;
             var_s1 = 0x1000;
             var_s2_2 = D_80035910;
             do {
@@ -5180,8 +5181,8 @@ void Sound_SetInstrumentToChannel(FSoundChannel* arg0, int arg1)
 void Sound_ClearVoiceFromSfxState(FSoundChannel* arg0, int arg1)
 {
     int temp_a1 = ~arg1;
-    g_Sound_SfxState.ActiveChannelMask &= temp_a1;
-    g_Sound_SfxState.unk_Flags_0x10 &= temp_a1;
+    g_Sound_SfxState.ActiveVoiceMask &= temp_a1;
+    g_Sound_SfxState.SuspendedVoiceMask &= temp_a1;
     g_Sound_SfxState.NoiseVoiceFlags &= temp_a1;
     g_Sound_SfxState.ReverbVoiceFlags &= temp_a1;
     g_Sound_SfxState.FmVoiceFlags &= temp_a1;
@@ -6472,7 +6473,7 @@ int Sound_Cutscene_FindFreeVoicePair(void)
     do {
         Bit = 0x00C00000;
         VoiceIndex = 12;
-        BusyMask = g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10;
+        BusyMask = g_Sound_SfxState.ActiveVoiceMask | g_Sound_SfxState.SuspendedVoiceMask;
 
         while (VoiceIndex != 0 && (BusyMask & Bit)) {
             VoiceIndex -= 2;
@@ -6486,7 +6487,7 @@ int Sound_Cutscene_FindFreeVoicePair(void)
         // No free pair: evict the lowest priority SFX voice and retry
         Sound_EvictSfxVoice(0, 0x40000000);
     } while (BusyMask
-             != (g_Sound_SfxState.ActiveChannelMask | g_Sound_SfxState.unk_Flags_0x10));
+             != (g_Sound_SfxState.ActiveVoiceMask | g_Sound_SfxState.SuspendedVoiceMask));
 
     return -1;
 }
@@ -6713,7 +6714,7 @@ void func_8001D644(int* arg0)
 {
     Sound_Cutscene_StopStream();
     Sound_Cutscene_StartStream((u_int*)arg0[0], arg0[1], arg0[2]);
-    g_Sound_SfxState.ActiveChannelMask &= ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
+    g_Sound_SfxState.ActiveVoiceMask &= ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
 }
 
 void Sound_Cmd_E2_StopCutsceneStream(void) { Sound_Cutscene_StopStream(); }

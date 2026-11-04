@@ -257,21 +257,21 @@ typedef struct {
 } FSoundInstrumentInfo; /* size 0x10 */
 
 typedef struct {
-    u_int ActiveChannelMask;
-    u_int KeyOnFlags;
-    u_int KeyedFlags;
-    u_int KeyOffFlags;
-    u_int unk_Flags_0x10;
-    u_int unk14;
-    u_int TempoAccumumulator;
-    u_int NoiseVoiceFlags;
-    u_int ReverbVoiceFlags;
-    u_int FmVoiceFlags;
-    u_short NoiseClock;
-    char field11_0x2a;
-    char field12_0x2b;
-    u_int field13_0x2c;
-} FSoundSfxState;
+    /* 0x00 */ u_int ActiveVoiceMask;
+    /* 0x04 */ u_int KeyOnFlags;
+    /* 0x08 */ u_int KeyedFlags;
+    /* 0x0C */ u_int KeyOffFlags;
+    /* 0x10 */ u_int SuspendedVoiceMask;
+    /* 0x14 */ u_int TempoBase;
+    /* 0x18 */ u_int TempoAccumulator;
+    /* 0x1C */ u_int NoiseVoiceFlags;
+    /* 0x20 */ u_int ReverbVoiceFlags;
+    /* 0x24 */ u_int FmVoiceFlags;
+    /* 0x28 */ u_short NoiseClock;
+    /* 0x2A */ char field11_0x2a;
+    /* 0x2B */ char field12_0x2b;
+    /* 0x2C */ u_int TempoMultiplier;
+} FSoundSfxState; /* size 0x30 */
 
 typedef struct {
     /* 0x00 */ int field0_0x0;

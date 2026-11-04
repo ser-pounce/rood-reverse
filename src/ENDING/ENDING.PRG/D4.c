@@ -1621,10 +1621,7 @@ static void _beginFrame(void)
 /**
  * Starts streaming the ending music track.
  */
-static void _streamEndingXa(void)
-{
-    vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
-}
+static void _streamEndingXa(void) { vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); }
 
 /**
  * Checks whether the ending music stream has finished.
@@ -2267,7 +2264,7 @@ static void _renderIncrementalScore(
 
         if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
             _incrementingScore = 0;
-            func_80045D64(126, 114);
+            vs_main_evictSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }
@@ -2384,7 +2381,7 @@ static void _renderIncrementalMapCompletion(
         if ((_onScreenMapCompletion == _mapCompletion)
             && (_incrementingMapCompletion != 0)) {
             _incrementingMapCompletion = 0;
-            func_80045D64(126, 114);
+            vs_main_evictSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }

@@ -194,8 +194,8 @@ func_800BA218
 func_800BA264
 func_800BA288
 func_800BA2B4
-func_800BA3E4
-func_800BA404
+vs_battle_script_stopAllSfx
+vs_battle_script_evictSfx
 func_800BA8BC
 func_800BA90C
 func_800BA94C
@@ -203,7 +203,7 @@ func_800BAA04
 func_800BAA34
 func_800BAA58
 func_800BAACC
-func_800BAAF0
+vs_battle_script_setMusicJumpThreshold
 func_800BABCC
 func_800BAC38
 func_800BAC5C

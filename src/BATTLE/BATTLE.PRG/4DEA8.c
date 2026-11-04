@@ -2079,7 +2079,7 @@ int func_800BA2B4(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800BA2E0(u_char* arg0)
+int vs_battle_script_playSfx(u_char* arg0)
 {
     if (arg0[1] == 2 && D_800F4C08 == 0) {
         return 0;
@@ -2097,19 +2097,19 @@ int func_800BA35C(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800BA39C(u_char* arg0, short arg1)
+int vs_battle_script_fadeSfxVolume(u_char* arg0, short arg1)
 {
     vs_main_fadeSfxVolume(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return 0;
 }
 
-int func_800BA3E4(u_char* arg0, short arg1)
+int vs_battle_script_stopAllSfx(u_char* arg0, short arg1)
 {
     vs_main_stopAllSfx();
     return 0;
 }
 
-int func_800BA404(u_char* arg0, short arg1)
+int vs_battle_script_evictSfx(u_char* arg0, short arg1)
 {
     vs_main_evictSfx(D_800E9B34[arg0[1]], arg0[2]);
     return 0;
@@ -2146,7 +2146,7 @@ int vs_battle_script_loadSoundFile(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800BA52C(u_char* arg0)
+int vs_battle_script_crossfadeMusic(u_char* arg0)
 {
     vs_main_fadeMusicVolume(D_800F4C69, 0, arg0[4]);
     vs_main_playMusicSlotFadeIn(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
@@ -2165,31 +2165,31 @@ int vs_battle_script_freeMusic(u_char* arg0, short arg1)
     return (D_800F4C2C == 2) * 4;
 }
 
-int func_800BA5E8(u_char* arg0, short arg1)
+int vs_battle_script_playMusic(u_char* arg0, short arg1)
 {
     vs_main_playMusicSlot(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
     return 0;
 }
 
-int func_800BA61C(u_char* arg0, short arg1)
+int vs_battle_script_fadeMusicVolume(u_char* arg0, short arg1)
 {
     vs_main_fadeMusicVolume(D_800F4C69, arg0[1], arg0[2]);
     return 0;
 }
 
-int func_800BA650(u_char* arg0, short arg1)
+int vs_battle_script_fadeMusicTempo(u_char* arg0, short arg1)
 {
     vs_main_fadeMusicTempo(D_800F4C69, (signed char)arg0[1], arg0[2]);
     return 0;
 }
 
-int func_800BA684(u_char* arg0, short arg1)
+int vs_battle_script_fadeMusicPitch(u_char* arg0, short arg1)
 {
     vs_main_fadeMusicPitch(D_800F4C69, (signed char)arg0[1], arg0[2]);
     return 0;
 }
 
-int func_800BA6B8(u_char* arg0, short arg1)
+int vs_battle_script_stopMusic(u_char* arg0, short arg1)
 {
     vs_main_stopMusicSlot(D_800F4C69);
     return 0;
@@ -2207,7 +2207,7 @@ int func_800BA6E0(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800BA72C(u_char* arg0, short arg1)
+int vs_battle_script_pushMusicState(u_char* arg0, short arg1)
 {
     vs_main_pushMusicState();
     return 0;
@@ -2235,13 +2235,13 @@ int func_800BA7BC(u_char* arg0, short arg1)
     return temp_s1 < vs_battle_getShort(arg0 + 1);
 }
 
-int func_800BA800(u_char* arg0, short arg1)
+int vs_battle_script_fadeSfxPitch(u_char* arg0, short arg1)
 {
     vs_main_fadeSfxPitch(D_800E9B34[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
     return 0;
 }
 
-int func_800BA848(u_char* arg0, short arg1)
+int vs_battle_script_fadeSfxPan(u_char* arg0, short arg1)
 {
     vs_main_fadeSfxPan(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return 0;
@@ -2312,7 +2312,7 @@ int func_800BAACC(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800BAAF0(u_char* arg0, short arg1)
+int vs_battle_script_setMusicJumpThreshold(u_char* arg0, short arg1)
 {
     vs_main_setMusicJumpThreshold(arg0[1]);
     return 0;

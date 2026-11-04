@@ -40,7 +40,6 @@ FntOpen
 func_80041C68
 func_80042CA0
 func_80042CB0
-vs_main_playMusicSlot
 GetClut
 GetTPage
 LoadImage
@@ -148,6 +147,7 @@ vs_main_materialModifiers
 vs_main_memcpy
 vs_main_nearClip
 vs_main_padDisconnectAll
+vs_main_playMusicSlot
 vs_main_playSfxDefault
 vs_main_processPadState
 vs_main_projectionDistance

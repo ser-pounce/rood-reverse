@@ -257,7 +257,7 @@ int func_80011EBC(u_int arg0)
     if ((var_v1->MusicId == arg0)
         || ((var_v1 = g_pSuspendedMusicContext, (var_v1 != NULL))
             && (var_v1->MusicId == arg0))) {
-        var_a1 = (var_v1->A_Volume >> 0x10);
+        var_a1 = (var_v1->MasterVolume >> 0x10);
     }
     return var_a1;
 }
@@ -271,7 +271,7 @@ int func_80011F24(int arg0)
 {
     int var_a1 = 0;
     if (arg0 & 1) {
-        var_a1 = g_pActiveMusicContext->unk68;
+        var_a1 = g_pActiveMusicContext->MasterVolumeStepsRemaining;
     }
     if (arg0 & 2) {
         if (var_a1 < g_Sound_TempoScaleStepsRemaining) {
@@ -1102,12 +1102,12 @@ void Sound_Setup(void)
     g_PrimaryMusicContext.KeyedMask = 0;
     g_PrimaryMusicContext.MusicId = 0;
     g_Sound_SfxState.SuspendedVoiceMask = 0;
-    g_PrimaryMusicContext.unk1C = 0;
+    g_PrimaryMusicContext.SuspendedChannelMask = 0;
     g_SuspendedMusicContext.MusicId = 0;
     g_SuspendedMusicContext.ActiveChannelMask = 0;
-    g_PrimaryMusicContext.A_Volume = 0x7F0000;
+    g_PrimaryMusicContext.MasterVolume = 0x7F0000;
     g_CdVolume = 0x7FFF0000;
-    g_PrimaryMusicContext.unk68 = 0;
+    g_PrimaryMusicContext.MasterVolumeStepsRemaining = 0;
     g_Sound_MasterPitchScaleStepsRemaining = 0;
     g_Sound_MasterPitchScaleQ16_16 = 0;
     g_Sound_TempoScaleStepsRemaining = 0;
@@ -1176,7 +1176,7 @@ void Sound_Setup(void)
     g_Sound_SfxState.KeyedFlags = 0;
     g_Sound_SfxState.KeyOnFlags = 0;
     g_pActiveMusicContext->RevDepth = 0x3FFF000;
-    g_pActiveMusicContext->unk5C = 0;
+    g_pActiveMusicContext->ReverbDepthSlideStep = 0;
     g_pActiveMusicContext->ReverbDepthSlideLength = 0;
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_UPDATE_REVERB;
     Sound_SetReverbMode(SPU_REV_MODE_STUDIO_C);
@@ -1758,7 +1758,7 @@ void Sound_UpdateModulation(
     if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
         Volume += in_pChannel->TremeloVolume;
         Volume =
-            (Volume * (int)(((u_int)g_pActiveMusicContext->A_Volume >> 16) & 0x7F)) >> 7;
+            (Volume * (int)(((u_int)g_pActiveMusicContext->MasterVolume >> 16) & 0x7F)) >> 7;
         temp = ((in_pChannel->ChannelPan >> 8) + in_pChannel->AutoPanVolume) & 0xFF;
         if (D_80039AFC & 2) {
             in_pChannel->VoiceParams.Volume.right = (Volume * D_8002F89C) >> 15;
@@ -2136,19 +2136,19 @@ void Sound_ApplyMasterFadeToChannelVolume(
 {
     int Volume;
 
-    Volume = in_Context->A_Volume;
-    g_Sound_MasterFadeTimer.SavedValue = in_Context->A_Volume;
+    Volume = in_Context->MasterVolume;
+    g_Sound_MasterFadeTimer.SavedValue = in_Context->MasterVolume;
     Volume >>= 16;
     Volume *= g_Sound_MasterFadeTimer.Value >> 8;
     Volume /= 127;
     Volume <<= 8;
-    in_Context->A_Volume = Volume;
+    in_Context->MasterVolume = Volume;
 }
 
 void Sound_RestoreChannelVolumeFromMasterFade(
     FSoundMusicContext* in_Config, FSoundChannel* arg1 __attribute__((unused)))
 {
-    in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
+    in_Config->MasterVolume = g_Sound_MasterFadeTimer.SavedValue;
 }
 
 // https://decomp.me/scratch/0wUZ7
@@ -2564,7 +2564,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     u_short* pChannelOffsets = (u_short*)in_Sequence;
     u_int channelMask;
 
-    g_pActiveMusicContext->unk38 = (int)in_Sequence;
+    g_pActiveMusicContext->SequenceBase = (int)in_Sequence;
     channelMask = in_Sequence->ChannelEnableMask;
 
     if (g_pSuspendedMusicContext != NULL) {
@@ -2581,9 +2581,9 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
 
     if (D_80039B64 & 1) {
         pConfig->ActiveChannelMask = 0;
-        pConfig->unk1C |= channelMask;
+        pConfig->SuspendedChannelMask |= channelMask;
     } else {
-        pConfig->unk1C = 0;
+        pConfig->SuspendedChannelMask = 0;
         pConfig->ActiveChannelMask |= channelMask;
     }
 
@@ -2665,11 +2665,11 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     }
 
     g_pActiveMusicContext->Tempo = 0xFFFF0000;
-    g_pActiveMusicContext->unk28 = 1;
+    g_pActiveMusicContext->TempoUpdate = 1;
     g_pActiveMusicContext->TempoSlideLength = 0;
     g_pActiveMusicContext->RevDepth = 0;
     g_pActiveMusicContext->ReverbDepthSlideLength = 0;
-    g_pActiveMusicContext->unk5C = 0;
+    g_pActiveMusicContext->ReverbDepthSlideStep = 0;
     g_pActiveMusicContext->TimerLowerCurrent = 0;
     g_pActiveMusicContext->TimerLower = 0;
     g_pActiveMusicContext->TimerUpperCurrent = 0;
@@ -2677,7 +2677,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     g_pActiveMusicContext->NoiseChannelFlags = 0;
     g_pActiveMusicContext->ReverbChannelFlags = 0;
     g_pActiveMusicContext->FmChannelFlags = 0;
-    g_pActiveMusicContext->JumpThresholdValue = 0;
+    g_pActiveMusicContext->JumpThreshold = 0;
     g_pActiveMusicContext->ActiveNoteMask = 0;
     g_pActiveMusicContext->PendingKeyOnMask = 0;
     g_Sound_GlobalFlags.UpdateFlags |= 0x100;
@@ -3044,8 +3044,8 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     g_pActiveMusicContext->StatusFlags |=
         in_Sequence->unk14 == D_80036770.unk4 ? 0x40 : 0x20;
 
-    delta = (int)in_Sequence - g_PrimaryMusicContext.unk38;
-    g_pActiveMusicContext->unk38 = (int)in_Sequence;
+    delta = (int)in_Sequence - g_PrimaryMusicContext.SequenceBase;
+    g_pActiveMusicContext->SequenceBase = (int)in_Sequence;
     g_pActiveMusicContext->PendingKeyOnMask = 0;
     g_Sound_GlobalFlags.UpdateFlags |= 0x90;
     g_pActiveMusicContext->SequencePatchTable =
@@ -3093,7 +3093,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     g_Sound_GlobalFlags.UpdateFlags |= 0x100;
 
     if (in_SwapWithSavedState != 0) {
-        delta = pConfig->RevDepth + pConfig->unk5C * pConfig->ReverbDepthSlideLength;
+        delta = pConfig->RevDepth + pConfig->ReverbDepthSlideStep * pConfig->ReverbDepthSlideLength;
         channelBit = 48;
         delta &= ~0xFFF;
 
@@ -3109,7 +3109,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
         delta -= g_pActiveMusicContext->RevDepth;
 
         if (delta != 0) {
-            g_pActiveMusicContext->unk5C = delta / (int)channelBit;
+            g_pActiveMusicContext->ReverbDepthSlideStep = delta / (int)channelBit;
             g_pActiveMusicContext->ReverbDepthSlideLength = channelBit;
         } else {
             g_pActiveMusicContext->ReverbDepthSlideLength = 0;
@@ -3117,7 +3117,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     }
 
     if (D_80039B64 & 1) {
-        g_pActiveMusicContext->unk1C = g_pActiveMusicContext->ActiveChannelMask;
+        g_pActiveMusicContext->SuspendedChannelMask = g_pActiveMusicContext->ActiveChannelMask;
         g_pActiveMusicContext->ActiveChannelMask = 0;
     }
 }
@@ -3177,8 +3177,8 @@ void Sound_Cmd_19_SetMusicLevelImmediate(FSoundCommandParams* arg0)
             0x2200);
     }
     Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
-    g_pActiveMusicContext->A_Volume = (arg0->ExtParam1 & 0x7F) << 0x10;
-    g_pActiveMusicContext->unk68 = 0;
+    g_pActiveMusicContext->MasterVolume = (arg0->ExtParam1 & 0x7F) << 0x10;
+    g_pActiveMusicContext->MasterVolumeStepsRemaining = 0;
     g_pActiveMusicContext->MusicId = arg0->Param3;
     Sound_ReconcileSavedMusicVoices();
     g_Sound_GlobalFlags.MixBehavior &= ~0x100;
@@ -3212,9 +3212,9 @@ void Sound_Cmd_1A_StartMasterAndMusicVolumeFade(FSoundCommandParams* arg0)
         g_Sound_MasterFadeTimer.TicksRemaining = temp_a1;
         g_Sound_MasterFadeTimer.Step = (int)0xFF810000 / temp_a1;
     }
-    g_pActiveMusicContext->A_Volume = 0;
-    g_pActiveMusicContext->unk68 = arg0->ExtParam1;
-    g_pActiveMusicContext->unk64 = ((arg0->ExtParam2 & 0x7F) << 0x10) / arg0->ExtParam1;
+    g_pActiveMusicContext->MasterVolume = 0;
+    g_pActiveMusicContext->MasterVolumeStepsRemaining = arg0->ExtParam1;
+    g_pActiveMusicContext->MasterVolumeStep = ((arg0->ExtParam2 & 0x7F) << 0x10) / arg0->ExtParam1;
     Sound_ReconcileSavedMusicVoices();
 }
 
@@ -3316,15 +3316,15 @@ void Sound_Cmd_C0_SetMasterVolumeByMusicId(FSoundCommandParams* arg0)
     if ((temp_v1 == 0) || (temp_v1 == g_pActiveMusicContext->MusicId)) {
         var_a0 = g_pActiveMusicContext;
         var_a1 = g_ActiveMusicChannels;
-        var_a0->A_Volume = (arg0->Param2 & 0x7F) << 0x10;
-        var_a0->unk68 = 0;
+        var_a0->MasterVolume = (arg0->Param2 & 0x7F) << 0x10;
+        var_a0->MasterVolumeStepsRemaining = 0;
         Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
     } else {
         var_a0 = g_pSuspendedMusicContext;
         if ((var_a0 != NULL) && (temp_v1 != 0) && (temp_v1 == var_a0->MusicId)) {
             var_a1 = g_pSecondaryMusicChannels;
-            var_a0->A_Volume = (arg0->Param2 & 0x7F) << 0x10;
-            var_a0->unk68 = 0;
+            var_a0->MasterVolume = (arg0->Param2 & 0x7F) << 0x10;
+            var_a0->MasterVolumeStepsRemaining = 0;
             Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
         }
     }
@@ -3348,20 +3348,20 @@ void Sound_Cmd_C1_FadeMasterVolumeByMusicId(FSoundCommandParams* arg0)
 
     if ((temp_a1 == 0) || (temp_a1 == g_pActiveMusicContext->MusicId)) {
         var_a0 = g_pActiveMusicContext;
-        var_v1 = (int)(var_v1 - var_a0->A_Volume);
+        var_v1 = (int)(var_v1 - var_a0->MasterVolume);
         var_v1 = var_v1 / var_a2;
         var_a1 = g_ActiveMusicChannels;
-        var_a0->unk68 = var_a2;
-        var_a0->unk64 = var_v1;
+        var_a0->MasterVolumeStepsRemaining = var_a2;
+        var_a0->MasterVolumeStep = var_v1;
         Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
     } else {
         var_a0 = g_pSuspendedMusicContext;
         if ((var_a0 != NULL) && (temp_a1 != 0) && (temp_a1 == var_a0->MusicId)) {
-            var_v1 = (int)(var_v1 - var_a0->A_Volume);
+            var_v1 = (int)(var_v1 - var_a0->MasterVolume);
             var_v1 = var_v1 / var_a2;
             var_a1 = g_pSecondaryMusicChannels;
-            var_a0->unk68 = var_a2;
-            var_a0->unk64 = var_v1;
+            var_a0->MasterVolumeStepsRemaining = var_a2;
+            var_a0->MasterVolumeStep = var_v1;
             Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
         }
     }
@@ -3393,9 +3393,9 @@ void Sound_Cmd_C2_FadeMasterVolumeFromByMusicId(FSoundCommandParams* arg0)
         var_a1 = g_pSecondaryMusicChannels;
     }
     temp_v1_2 = (arg0->Param3 & 0x7F) << 0x10;
-    var_a0->A_Volume = temp_v1_2;
-    var_a0->unk64 = (int)(((arg0->Param4 & 0x7F) << 0x10) - temp_v1_2) / var_a2;
-    var_a0->unk68 = var_a2;
+    var_a0->MasterVolume = temp_v1_2;
+    var_a0->MasterVolumeStep = (int)(((arg0->Param4 & 0x7F) << 0x10) - temp_v1_2) / var_a2;
+    var_a0->MasterVolumeStepsRemaining = var_a2;
     Sound_MarkActiveChannelsVolumeDirty(var_a0, var_a1);
 }
 
@@ -3847,7 +3847,7 @@ void Sound_Cmd_90_SetMutedMusicChannelMask(FSoundCommandParams* arg0)
 
 void Sound_Cmd_92_SetMusicJumpThreshold(FSoundCommandParams* arg0)
 {
-    g_pActiveMusicContext->JumpThresholdValue = arg0->Param1;
+    g_pActiveMusicContext->JumpThreshold = arg0->Param1;
 }
 
 void Sound_Cmd_9B_SuspendMusic(FSoundCommandParams* arg0 __attribute__((unused)))
@@ -3878,16 +3878,16 @@ void Sound_Cmd_9B_SuspendMusic(FSoundCommandParams* arg0 __attribute__((unused))
         }
         temp_v1 = g_pActiveMusicContext->ActiveChannelMask;
         g_pActiveMusicContext->ActiveChannelMask = 0;
-        g_pActiveMusicContext->unk1C = temp_v1;
+        g_pActiveMusicContext->SuspendedChannelMask = temp_v1;
     }
     D_80039B64 |= 1;
 }
 
 void Sound_Cmd_9A_RestoreMusic(FSoundCommandParams* in_Params __attribute__((unused)))
 {
-    if (g_pActiveMusicContext->unk1C != 0) {
+    if (g_pActiveMusicContext->SuspendedChannelMask != 0) {
         FSoundChannel* c = g_ActiveMusicChannels;
-        int var_a2 = g_pActiveMusicContext->unk1C;
+        int var_a2 = g_pActiveMusicContext->SuspendedChannelMask;
         int var_a1 = 1;
         u_int temp_v1;
         do {
@@ -3899,8 +3899,8 @@ void Sound_Cmd_9A_RestoreMusic(FSoundCommandParams* in_Params __attribute__((unu
             ++c;
         } while (var_a2 != 0);
 
-        temp_v1 = g_pActiveMusicContext->unk1C;
-        g_pActiveMusicContext->unk1C = 0;
+        temp_v1 = g_pActiveMusicContext->SuspendedChannelMask;
+        g_pActiveMusicContext->SuspendedChannelMask = 0;
         g_pActiveMusicContext->ActiveChannelMask = temp_v1;
         g_Sound_GlobalFlags.UpdateFlags |= 0x100;
     }
@@ -4282,26 +4282,26 @@ void func_8001924C(void)
         g_Sound_MasterPitchScaleQ16_16 = temp_s1;
     }
     if ((g_pActiveMusicContext->ActiveChannelMask != 0)
-        && (g_pActiveMusicContext->unk68 != 0)) {
-        --g_pActiveMusicContext->unk68;
-        temp_s1 = g_pActiveMusicContext->A_Volume + g_pActiveMusicContext->unk64;
-        if ((temp_s1 & 0x7F0000) != (g_pActiveMusicContext->A_Volume & 0x7F0000)) {
+        && (g_pActiveMusicContext->MasterVolumeStepsRemaining != 0)) {
+        --g_pActiveMusicContext->MasterVolumeStepsRemaining;
+        temp_s1 = g_pActiveMusicContext->MasterVolume + g_pActiveMusicContext->MasterVolumeStep;
+        if ((temp_s1 & 0x7F0000) != (g_pActiveMusicContext->MasterVolume & 0x7F0000)) {
             Sound_MarkActiveChannelsVolumeDirty(
                 g_pActiveMusicContext, g_ActiveMusicChannels);
         }
-        g_pActiveMusicContext->A_Volume = temp_s1;
+        g_pActiveMusicContext->MasterVolume = temp_s1;
     }
     if ((g_pSuspendedMusicContext != NULL)
         && (g_pSuspendedMusicContext->ActiveChannelMask != 0)) {
-        if (g_pSuspendedMusicContext->unk68 != 0) {
-            --g_pSuspendedMusicContext->unk68;
+        if (g_pSuspendedMusicContext->MasterVolumeStepsRemaining != 0) {
+            --g_pSuspendedMusicContext->MasterVolumeStepsRemaining;
             temp_s1 =
-                g_pSuspendedMusicContext->A_Volume + g_pSuspendedMusicContext->unk64;
-            if ((temp_s1 & 0x7F0000) != (g_pSuspendedMusicContext->A_Volume & 0x7F0000)) {
+                g_pSuspendedMusicContext->MasterVolume + g_pSuspendedMusicContext->MasterVolumeStep;
+            if ((temp_s1 & 0x7F0000) != (g_pSuspendedMusicContext->MasterVolume & 0x7F0000)) {
                 Sound_MarkActiveChannelsVolumeDirty(
                     g_pSuspendedMusicContext, g_pSecondaryMusicChannels);
             }
-            g_pSuspendedMusicContext->A_Volume = temp_s1;
+            g_pSuspendedMusicContext->MasterVolume = temp_s1;
         }
     }
     if (g_Sound_SfxState.ActiveVoiceMask != 0) {
@@ -4398,10 +4398,10 @@ int Music_UpdateChannels(FSoundChannel* arg0, int arg1)
         }
     }
 
-    g_pActiveMusicContext->unk28 += var_a0;
+    g_pActiveMusicContext->TempoUpdate += var_a0;
 
-    if ((g_pActiveMusicContext->unk28 & 0xFFFF0000) || (D_80039B64 & 4)) {
-        g_pActiveMusicContext->unk28 = g_pActiveMusicContext->unk28 & 0xFFFF;
+    if ((g_pActiveMusicContext->TempoUpdate & 0xFFFF0000) || (D_80039B64 & 4)) {
+        g_pActiveMusicContext->TempoUpdate = g_pActiveMusicContext->TempoUpdate & 0xFFFF;
 
         do {
             var_s2 = arg0;
@@ -4431,7 +4431,7 @@ int Music_UpdateChannels(FSoundChannel* arg0, int arg1)
 
             if (g_pActiveMusicContext->ReverbDepthSlideLength != 0) {
                 --g_pActiveMusicContext->ReverbDepthSlideLength;
-                g_pActiveMusicContext->RevDepth += g_pActiveMusicContext->unk5C;
+                g_pActiveMusicContext->RevDepth += g_pActiveMusicContext->ReverbDepthSlideStep;
                 g_Sound_GlobalFlags.UpdateFlags |= (arg1 == 0) ? 0x80 : 0;
             }
 
@@ -4543,7 +4543,7 @@ long Sound_MainLoop(void)
         if (g_pSuspendedMusicContext->ActiveChannelMask == 0) {
             g_pSuspendedMusicContext = NULL;
         } else if ((g_pActiveMusicContext->ActiveChannelMask
-                       | g_pActiveMusicContext->unk1C)
+                       | g_pActiveMusicContext->SuspendedChannelMask)
                    == 0) {
             memcpy32(g_pSuspendedMusicContext, g_pActiveMusicContext, 0x80);
             memcpy32(g_pSecondaryMusicChannels, g_ActiveMusicChannels, 0x2200);
@@ -4709,7 +4709,7 @@ char Sound_PeekNextOpcode(FSoundChannel* channel)
                 break;
             case 0x07:
                 pc++;
-                if (*pc++ <= config->JumpThresholdValue) {
+                if (*pc++ <= config->JumpThreshold) {
                     jumpOffset = pc[0];
                     jumpOffset += pc[1] << 8;
                     pc += (short)jumpOffset;
@@ -5291,7 +5291,7 @@ void SoundVM_FE03_SetMasterReverbSlide(
     Prev = g_pActiveMusicContext->RevDepth & ~0xFFF;
     g_pActiveMusicContext->RevDepth = Prev;
     Delta = Dest - Prev;
-    g_pActiveMusicContext->unk5C = Delta / g_pActiveMusicContext->ReverbDepthSlideLength;
+    g_pActiveMusicContext->ReverbDepthSlideStep = Delta / g_pActiveMusicContext->ReverbDepthSlideLength;
 }
 
 void SoundVM_FE06_JumpRelativeOffset(
@@ -5309,7 +5309,7 @@ void SoundVM_FE07_JumpRelativeWithThreshold(
 
     Threshold = *in_pChannel->ProgramCounter++;
 
-    if (g_pActiveMusicContext->JumpThresholdValue >= Threshold) {
+    if (g_pActiveMusicContext->JumpThreshold >= Threshold) {
         // Read signed 16-bit LE offset at current pc, jump relative to pc
         Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
         in_pChannel->ProgramCounter += Offset;

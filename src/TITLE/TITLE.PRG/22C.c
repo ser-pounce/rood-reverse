@@ -1382,7 +1382,7 @@ static void _menuSoundSettings(void)
             soundSetting = (soundSetting + 1) & 1;
             vs_main_settings.monoSound = soundSetting;
             vs_main_setMonoSound(soundSetting);
-            vs_sound_setCdVol(0x7F);
+            Sound_SetCdMixVolume(0x7F);
             break;
         } else if (vs_main_buttonsState & PADRdown) {
             _playMenuLeaveSfx();
@@ -1473,7 +1473,7 @@ static void _initEnvironment(void)
     vs_main_settings.monoSound = monoSound != 0;
     vs_main_settings.vibrationOn = vibrationOn != 0;
     vs_main_setMonoSound(vs_main_settings.monoSound);
-    vs_sound_setCdVol(0x7F);
+    Sound_SetCdMixVolume(0x7F);
     memset(&vs_main_inventoryIndices, 0, sizeof vs_main_inventoryIndices);
     vs_main_stateFlags.difficulty = 1;
     vs_main_stateFlags.puzzleMode = 1;

@@ -173,6 +173,6 @@ vs_main_zndMusicMap
 vs_main_zoneEnemyCache
 vs_main_zoneEnemyCacheIndex
 vs_overlay_slots
-vs_sound_setCdVol
+Sound_SetCdMixVolume
 VSync
 write

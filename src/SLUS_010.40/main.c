@@ -2028,7 +2028,7 @@ static void func_800443CC(void)
             vol.val1 = 0;
             DsMix(&vol);
             Sound_SetCdVolume(vs_main_disk.request.cdVolume);
-            vs_sound_setCdVol(0x7F);
+            Sound_SetCdMixVolume(0x7F);
             vs_main_disk.pcm.file = 1;
             vs_main_disk.pcm.chan = 0;
             DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
@@ -2165,7 +2165,7 @@ static void func_800443CC(void)
             } else if (vs_main_disk.bufferMode == cdBufferModeManual) {
                 ++vs_main_disk.sectorBufIndex;
                 if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
-                    && (vs_sound_spuTransferring() == 0)) {
+                    && (IsSpuTransferring() == 0)) {
                     vs_main_disk.state = diskIdle;
                     vs_main_freeHeapR(_cdReadBuffer);
                     _cdReadBuffer = NULL;
@@ -3244,7 +3244,7 @@ int vs_main_processSoundQueue(void)
 
     if (vs_main_soundData.soundQueueSlot != NULL) {
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
-            temp_v0 = vs_sound_spuTransferring();
+            temp_v0 = IsSpuTransferring();
             if (temp_v0 == 0) {
                 vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
                 vs_main_soundData.soundQueueSlot = NULL;
@@ -3290,7 +3290,7 @@ void vs_main_loadAndWaitSoundSlot(int id)
     }
 }
 
-void vs_main_setMonoSound(int set) { vs_sound_setMonoSound(set); }
+void vs_main_setMonoSound(int set) { Sound_SetSpeakerMode(set); }
 
 static void func_800468DC(void) { Sound_SetCdVolume(0x7FFF); }
 
@@ -3299,7 +3299,7 @@ static void _loadMenuSound(void)
     void* buf;
 
     InitSound();
-    vs_sound_setCdVol(0x7F);
+    Sound_SetCdMixVolume(0x7F);
     buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
     func_80012BB8(buf, 1);

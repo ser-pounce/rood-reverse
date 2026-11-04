@@ -1073,8 +1073,8 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
 
 void func_8001369C(void)
 {
-    int count;
-    int voiceIndex;
+    u_int count;
+    u_int voiceIndex;
     int assignedVoiceNumber;
     FSoundChannel* channel;
     FSoundChannel* sfxChannel;
@@ -1138,22 +1138,22 @@ void func_8001369C(void)
     assignedVoiceNumber = count;
     *SPU_CONTROL = (assignedVoiceNumber & 0xFFFA) | 1;
 
-    count = 0;
     channel = musicBase;
-    while ((u_int)(count & 0xFFFF) < SOUND_CHANNEL_COUNT) {
-        count++;
+
+    for (count = 0; (count & 0xFFFF) < SOUND_CHANNEL_COUNT;) {
+        ++count;
         channel->UpdateFlags = 0;
         channel->VoiceParams.AssignedVoiceNumber = VOICE_COUNT;
         channel->Type = SOUND_CHANNEL_TYPE_MUSIC;
         channel->unk58 = 0;
-        channel++;
+        ++channel;
     }
 
-    voiceIndex = 12;
     sfxChannel = &D_80035910[0];
-    while ((u_int)(voiceIndex & 0xFFFF) < VOICE_COUNT) {
+
+    for (voiceIndex = 12; (voiceIndex & 0xFFFF) < VOICE_COUNT;) {
         assignedVoiceNumber = voiceIndex & 0xFFFF;
-        voiceIndex++;
+        ++voiceIndex;
         sfxChannel->UpdateFlags = 0;
         sfxChannel->VoiceParams.AssignedVoiceNumber = assignedVoiceNumber;
         sfxChannel->Type = SOUND_CHANNEL_TYPE_SOUND;
@@ -1163,7 +1163,7 @@ void func_8001369C(void)
         sfxChannel->unk86 = 0;
         sfxChannel->unk40 = 0;
         sfxChannel->KeyOnVolumeSlideLength = 0;
-        sfxChannel++;
+        ++sfxChannel;
     }
 
     g_pActiveMusicConfig->PendingKeyOffMask = 0;

@@ -9,15 +9,15 @@ seq:
     size: 512
     repeat: expr
     repeat-expr: 2
-  - id: unk400
+  - id: icon_palettes
     size: 32
     repeat: expr
     repeat-expr: 7
-  - id: unk4e0
+  - id: icon_bitmaps
     size: 128
     repeat: expr
     repeat-expr: 7
-  - id: unk860
+  - id: pocketstation_icons
     size: 128
     repeat: expr
     repeat-expr: 7

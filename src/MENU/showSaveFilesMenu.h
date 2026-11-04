@@ -68,8 +68,8 @@ static int _showSaveFilesMenu(int initPort)
                 i + 5, vs_getXY(64, i * 40 + 72), vs_getWH(256, 32), 0);
             element->slotId = i;
             element->slotUnavailable =
-                _saveFileInfo[i].unk4.base.slotState == slotStateUnavailable;
-            element->saveLocation = _saveFileInfo[i].unk4.stats.saveLocation;
+                _saveSlotInfo[i].identity.base.slotState == slotStateUnavailable;
+            element->saveLocation = _saveSlotInfo[i].stats.saveLocation;
         }
         state = handleInput;
         /* fallthrough */
@@ -86,7 +86,7 @@ static int _showSaveFilesMenu(int initPort)
             }
             val = slot + page;
             if (vs_main_buttonsPressed.all & PADRright) {
-                if (_saveFileInfo[val].unk4.base.slotState != slotStateUnavailable) {
+                if (_saveSlotInfo[val].identity.base.slotState != slotStateUnavailable) {
                     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
                     _fileMenuElements[val + 5].selected = 1;
                     _selectCursorXy = 0;
@@ -130,7 +130,7 @@ static int _showSaveFilesMenu(int initPort)
                 state = format;
             } else if (val > memcardMaskedHandlerError) {
                 val = slot + page;
-                if (_saveFileInfo[val].unk4.base.slotState == slotStateAvailable) {
+                if (_saveSlotInfo[val].identity.base.slotState == slotStateAvailable) {
                     if (_createSaveFile(port, val + 1) != 0) {
                         state = leaveWithTimer;
                         _memoryCardMessage =
@@ -195,8 +195,8 @@ static int _showSaveFilesMenu(int initPort)
                     *(int*)&vs_main_settings =
                         (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
                 }
-                memset(&_saveFileInfo[saveId], 0, sizeof _saveFileInfo[saveId]);
-                _saveFileInfo[saveId].unk4.base.slotState = slotStateTemporary;
+                memset(&_saveSlotInfo[saveId], 0, sizeof _saveSlotInfo[saveId]);
+                _saveSlotInfo[saveId].identity.base.slotState = slotStateTemporary;
                 _fileMenuElements[saveId + 5].saveLocation = 0;
                 _rMemcpy((savedata_t*)_spmcimg + 1, (savedata_t*)_spmcimg + 2,
                     sizeof(savedata_t));
@@ -206,14 +206,14 @@ static int _showSaveFilesMenu(int initPort)
             } else {
                 _dataNotSaved = 0;
                 _fileProgressCounter = -16;
-                _rMemcpy(&_saveFileInfo[saveId],
-                    _spmcimg + sizeof _saveFileInfo[saveId] * 3,
-                    sizeof _saveFileInfo[saveId]);
-                _decode(_saveFileInfo[saveId].key,
-                    &_saveFileInfo[saveId].unk4.base.slotState,
-                    sizeof _saveFileInfo[saveId] - sizeof(int));
+                _rMemcpy(&_saveSlotInfo[saveId],
+                    _spmcimg + sizeof _saveSlotInfo[saveId] * 3,
+                    sizeof _saveSlotInfo[saveId]);
+                _decode(_saveSlotInfo[saveId].identity.key,
+                    &_saveSlotInfo[saveId].identity.base.slotState,
+                    sizeof _saveSlotInfo[saveId] - sizeof(int));
                 _fileMenuElements[saveId + 5].saveLocation =
-                    _saveFileInfo[saveId].unk4.stats.saveLocation;
+                    _saveSlotInfo[saveId].stats.saveLocation;
                 vs_main_playSfxDefault(0x7E, VS_SFX_FILEOPCOMPLETE);
                 saveSuccessful = 1;
                 _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_saved);

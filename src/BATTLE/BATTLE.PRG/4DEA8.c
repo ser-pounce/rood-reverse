@@ -1509,9 +1509,9 @@ int vs_battle_script_setFlagIfItemInInventory(u_char* arg0, short arg1)
     return 0;
 }
 
-int func_800B91C4(u_char* arg0, short arg1)
+int vs_battle_script_resetZoneEnemies(u_char* arg0, short arg1)
 {
-    func_8007BBB8(arg0[2], arg0[1]);
+    vs_battle_forgetZoneEnemies(arg0[2], arg0[1]);
     return 0;
 }
 
@@ -1770,10 +1770,10 @@ int func_800B98C0(u_char* arg0, short arg1)
 
         sp10.zndId = arg0[1];
         sp10.mpdId = arg0[2];
-        sp10.unk4_8 = arg0[3];
-        sp10.unk6_10 = arg0[5];
+        sp10.x = arg0[3];
+        sp10.z = arg0[5];
         sp10.unk2.unk0_13 = arg0[4];
-        sp10.unk4_13 = arg0[6];
+        sp10.facing = arg0[6];
         sp10.unk4_15 = arg0[7];
         sp10.unk6_15 = arg0[7] >> 1;
 

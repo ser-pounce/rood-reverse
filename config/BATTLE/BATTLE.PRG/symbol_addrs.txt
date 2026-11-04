@@ -1,4 +1,5 @@
 vs_scratch = 0x1F800000; // absolute:True size:0x64
+vs_battle_saveEnemyState = 0x80069FC4;
 _insertActor = 0x8006A11C; // allow_duplicated:True
 _removeActor = 0x8006A1C4;
 _removeActorById = 0x8006A228;
@@ -557,7 +558,7 @@ vs_battle_script_jumpFwd4 = 0x800B8D1C;
 vs_battle_script_setFlagImm = 0x800B8D50;
 vs_battle_script_setFlag = 0x800B8EDC;
 vs_battle_script_setFlagIfItemInInventory = 0x800B9170;
-func_800B91C4 = 0x800B91C4;
+vs_battle_script_resetZoneEnemies = 0x800B91C4;
 func_800B9230 = 0x800B9230;
 vs_battle_script_setFlagIfButton = 0x800B9254;
 func_800B92A0 = 0x800B92A0;

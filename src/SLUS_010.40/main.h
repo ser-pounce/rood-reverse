@@ -400,12 +400,32 @@ typedef struct {
 } vs_main_inventory_t;
 
 typedef struct {
-    char unk0;
+    u_char index;
+    u_char hidden;
+    short actorState;
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    short strength;
+    short intelligence;
+    short agility;
+    short limbHP[6];
+    short _ __attribute__((unused));
+    int statuses;
+    u_char x;
+    u_char direction;
+    u_char z;
+    u_char height;
+} vs_main_savedEnemyState_t;
+
+typedef struct {
+    char lru;
     char zndId;
     u_short mapId;
-    u_int unk4;
-    char unk8[8][0x28];
-} D_80061078_t;
+    u_int nextSlot;
+    vs_main_savedEnemyState_t state[8];
+} vs_main_zoneEnemyCache_t;
 
 typedef struct {
     char unk0;
@@ -426,11 +446,11 @@ typedef struct {
     u_char mpdId;
     _mpdRoomDoorSection2 unk2;
     u_short unk4_0 : 8;
-    u_short unk4_8 : 5;
-    u_short unk4_13 : 2;
+    u_short x : 5;
+    u_short facing : 2;
     u_short unk4_15 : 1;
     u_short unk6_0 : 10;
-    u_short unk6_10 : 5;
+    u_short z : 5;
     u_short unk6_15 : 1;
     u_char unk8;
     u_char unk9;
@@ -558,12 +578,12 @@ extern char vs_main_actionsLearned[32];
 extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern vs_main_artsStatus_t vs_main_artsStatus;
-extern int D_80060064;
+extern int vs_main_zoneEnemyCacheIndex;
 extern D_80060068_t D_80060068;
 extern vs_main_inventory_t vs_main_inventory;
-extern _mpdRoomDoorSection_t D_80061068;
+extern _mpdRoomDoorSection_t vs_main_spawnPoint;
 extern vs_Gametime_t vs_main_gametime;
-extern D_80061078_t D_80061078[4];
+extern vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
 extern vs_main_flags_t vs_main_stateFlags;
 extern vs_main_inventoryIndices_t vs_main_inventoryIndices;
 #endif

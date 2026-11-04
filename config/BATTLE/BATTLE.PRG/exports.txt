@@ -158,7 +158,6 @@ func_800B8764
 func_800B8788
 func_800B884C
 func_800B8C54
-func_800B91C4
 func_800B9230
 func_800B92A0
 func_800B92D0
@@ -352,6 +351,7 @@ vs_battle_roomData
 vs_battle_rowAnimationSteps
 vs_battle_rowTypeBuf
 vs_battle_sampleCurve
+vs_battle_saveEnemyState
 vs_battle_sceneBuffer
 vs_battle_screenTransitionAlpha
 vs_battle_screenTransitionDrMode
@@ -382,6 +382,7 @@ vs_battle_script_loadSoundFile
 vs_battle_script_loadSoundFile2
 vs_battle_script_playMenuSelectSfx
 vs_battle_script_processSoundQueue
+vs_battle_script_resetZoneEnemies
 vs_battle_script_setCurrentSfx
 vs_battle_script_setFlag
 vs_battle_script_setFlagIfButton

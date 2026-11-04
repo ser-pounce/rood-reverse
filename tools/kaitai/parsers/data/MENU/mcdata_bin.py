@@ -24,17 +24,17 @@ class McdataBin(KaitaiStruct):
             _io__raw_cluts = KaitaiStream(BytesIO(self._raw_cluts[i]))
             self.cluts.append(img.Img.Clut(_io__raw_cluts))
 
-        self.unk400 = []
+        self.icon_palettes = []
         for i in range(7):
-            self.unk400.append(self._io.read_bytes(32))
+            self.icon_palettes.append(self._io.read_bytes(32))
 
-        self.unk4e0 = []
+        self.icon_bitmaps = []
         for i in range(7):
-            self.unk4e0.append(self._io.read_bytes(128))
+            self.icon_bitmaps.append(self._io.read_bytes(128))
 
-        self.unk860 = []
+        self.pocketstation_icons = []
         for i in range(7):
-            self.unk860.append(self._io.read_bytes(128))
+            self.pocketstation_icons.append(self._io.read_bytes(128))
 
 
 
@@ -44,13 +44,13 @@ class McdataBin(KaitaiStruct):
             pass
             self.cluts[i]._fetch_instances()
 
-        for i in range(len(self.unk400)):
+        for i in range(len(self.icon_palettes)):
             pass
 
-        for i in range(len(self.unk4e0)):
+        for i in range(len(self.icon_bitmaps)):
             pass
 
-        for i in range(len(self.unk860)):
+        for i in range(len(self.pocketstation_icons)):
             pass
 
 

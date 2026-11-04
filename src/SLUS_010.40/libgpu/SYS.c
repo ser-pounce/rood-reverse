@@ -14,6 +14,8 @@ typedef struct {
 } D_80033444_t;
 
 int SetIntrMask(int);
+void func_8002A34C(u_long*);
+int func_8002A394(int);
 int func_8002ACFC(int);
 void func_8002B1DC(void*, int, int);
 
@@ -27,6 +29,8 @@ extern volatile int _qout;
 extern int D_8003357C;
 extern int D_80033580;
 extern int D_80033584;
+extern u_long D_8003E2B0[];
+extern u_long D_8003E2D8[];
 extern u_char D_8003E2F8[0x100];
 extern u_char D_8003E400[0x1800];
 
@@ -133,7 +137,42 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029AF0);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029B08);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029BE8);
+int func_80029BE8(RECT* rect, u_int color)
+{
+    setWH(rect,
+        rect->w < 0                  ? 0
+        : rect->w > D_80033444.w - 1 ? D_80033444.w - 1
+                                     : rect->w,
+        rect->h < 0                  ? 0
+        : rect->h > D_80033444.h - 1 ? D_80033444.h - 1
+                                     : rect->h);
+
+    if (rect->x & 0x3F || rect->w & 0x3F) {
+        D_8003E2B0[0] = ((u_long)D_8003E2D8 & 0xFFFFFF) | 0x08000000;
+        D_8003E2B0[1] = 0xE3000000;
+        D_8003E2B0[2] = 0xE4FFFFFF;
+        D_8003E2B0[3] = 0xE5000000;
+        D_8003E2B0[4] = 0xE6000000;
+        D_8003E2B0[5] = 0xE1000000 | (*D_8003354C & 0x7FF) | ((color >> 31) << 10);
+        D_8003E2B0[6] = 0x60000000 | (color & 0xFFFFFF);
+        D_8003E2B0[7] = *(u_long*)&rect->x;
+        D_8003E2B0[8] = *(u_long*)&rect->w;
+        D_8003E2D8[0] = 0x03FFFFFF;
+        D_8003E2D8[1] = func_8002A394(3) | 0xE3000000;
+        D_8003E2D8[2] = func_8002A394(4) | 0xE4000000;
+        D_8003E2D8[3] = func_8002A394(5) | 0xE5000000;
+    } else {
+        D_8003E2B0[0] = 0x05FFFFFF;
+        D_8003E2B0[1] = 0xE6000000;
+        D_8003E2B0[2] = 0xE1000000 | (*D_8003354C & 0x7FF) | ((color >> 31) << 10);
+        D_8003E2B0[3] = 0x02000000 | (color & 0xFFFFFF);
+        D_8003E2B0[4] = *(u_long*)&rect->x;
+        D_8003E2B0[5] = *(u_long*)&rect->w;
+    }
+
+    func_8002A34C(D_8003E2B0);
+    return 0;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029E18);
 

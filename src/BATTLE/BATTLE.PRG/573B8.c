@@ -41,7 +41,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
             func_80044DF4(0);
         }
 
-        func_80045DC0();
+        vs_main_stopAllSfx();
         func_800434A4(0, 2);
         func_800C0150();
         func_8007C46C(0, 0xFF, 0);

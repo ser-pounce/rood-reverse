@@ -3374,9 +3374,9 @@ void func_80070278(void)
             func_8009F8DC(temp_s0->unk4.unk0.hit.targetActor) * 2;
     }
 
-    func_80045D64(0x7E, 0x34);
-    func_80045D64(0x7E, 0x35);
-    func_80045D64(0x7E, 0x36);
+    vs_main_evictSfx(0x7E, 0x34);
+    vs_main_evictSfx(0x7E, 0x35);
+    vs_main_evictSfx(0x7E, 0x36);
     func_800CB50C();
 
     D_800F19CC->unk2C03 = 0;
@@ -4648,7 +4648,7 @@ void func_800738E4(void)
         }
     } else if ((D_800F18AC != 0)
                && (vs_main_soundData.unk4 == vs_main_soundData.unk14[D_800F18AC - 1])) {
-        func_8004552C(D_800F18AC, 0x7F, 0x3C);
+        vs_main_fadeMusicVolume(D_800F18AC, 0x7F, 0x3C);
     }
     func_8006F5CC();
 }
@@ -14880,7 +14880,7 @@ static void _loadZnd(int id)
     if (_zoneContext.unk30 != 0) {
         int temp_s0 = vs_main_zndMusicMap[id];
         if (vs_main_getCurrentMusicId() != temp_s0) {
-            func_8004552C(vs_main_soundData.currentMusicSlot, 0, 0x78);
+            vs_main_fadeMusicVolume(vs_main_soundData.currentMusicSlot, 0, 0x78);
         }
     }
 }

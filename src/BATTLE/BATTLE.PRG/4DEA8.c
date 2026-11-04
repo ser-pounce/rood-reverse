@@ -2099,19 +2099,19 @@ int func_800BA35C(u_char* arg0, short arg1)
 
 int func_800BA39C(u_char* arg0, short arg1)
 {
-    func_80045BFC(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_fadeSfxVolume(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return 0;
 }
 
 int func_800BA3E4(u_char* arg0, short arg1)
 {
-    func_80045DC0();
+    vs_main_stopAllSfx();
     return 0;
 }
 
 int func_800BA404(u_char* arg0, short arg1)
 {
-    func_80045D64(D_800E9B34[arg0[1]], arg0[2]);
+    vs_main_evictSfx(D_800E9B34[arg0[1]], arg0[2]);
     return 0;
 }
 
@@ -2148,7 +2148,7 @@ int vs_battle_script_loadSoundFile(u_char* arg0, short arg1)
 
 int func_800BA52C(u_char* arg0)
 {
-    func_8004552C(D_800F4C69, 0, arg0[4]);
+    vs_main_fadeMusicVolume(D_800F4C69, 0, arg0[4]);
     func_80044F60(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
     return 0;
 }
@@ -2173,19 +2173,19 @@ int func_800BA5E8(u_char* arg0, short arg1)
 
 int func_800BA61C(u_char* arg0, short arg1)
 {
-    func_8004552C(D_800F4C69, arg0[1], arg0[2]);
+    vs_main_fadeMusicVolume(D_800F4C69, arg0[1], arg0[2]);
     return 0;
 }
 
 int func_800BA650(u_char* arg0, short arg1)
 {
-    func_80045574(D_800F4C69, (signed char)arg0[1], arg0[2]);
+    vs_main_fadeMusicTempo(D_800F4C69, (signed char)arg0[1], arg0[2]);
     return 0;
 }
 
 int func_800BA684(u_char* arg0, short arg1)
 {
-    func_800455AC(D_800F4C69, (signed char)arg0[1], arg0[2]);
+    vs_main_fadeMusicPitch(D_800F4C69, (signed char)arg0[1], arg0[2]);
     return 0;
 }
 
@@ -2209,7 +2209,7 @@ int func_800BA6E0(u_char* arg0, short arg1)
 
 int func_800BA72C(u_char* arg0, short arg1)
 {
-    func_80044DB4();
+    vs_main_pushMusicState();
     return 0;
 }
 
@@ -2237,13 +2237,13 @@ int func_800BA7BC(u_char* arg0, short arg1)
 
 int func_800BA800(u_char* arg0, short arg1)
 {
-    func_80045C74(D_800E9B34[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
+    vs_main_fadeSfxPitch(D_800E9B34[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
     return 0;
 }
 
 int func_800BA848(u_char* arg0, short arg1)
 {
-    func_80045CEC(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_fadeSfxPan(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return 0;
 }
 
@@ -2314,7 +2314,7 @@ int func_800BAACC(u_char* arg0, short arg1)
 
 int func_800BAAF0(u_char* arg0, short arg1)
 {
-    func_80044DD4(arg0[1]);
+    vs_main_setMusicJumpThreshold(arg0[1]);
     return 0;
 }
 

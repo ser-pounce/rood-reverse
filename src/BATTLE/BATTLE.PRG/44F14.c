@@ -311,11 +311,11 @@ loop:
         break;
 
     case 6:
-        func_80045D64(0x7E, script[1]);
+        vs_main_evictSfx(0x7E, script[1]);
         break;
 
     case 9:
-        func_80045D64(0xFF000, script[1]);
+        vs_main_evictSfx(0xFF000, script[1]);
         break;
 
     case 11:

@@ -294,7 +294,7 @@ void func_80090C2C(int arg0)
 
         if (D_800F1DBC != -1) {
             if ((D_800F1DBC >= 0) && (D_800F1DBC != sound)) {
-                func_80045D64(0x200, D_800F1DBC);
+                vs_main_evictSfx(0x200, D_800F1DBC);
             }
             if (sound >= 0) {
                 vs_main_playSfxDefault(0x200, sound);
@@ -303,7 +303,7 @@ void func_80090C2C(int arg0)
             D_800F1DBC = sound;
         }
     } else if (D_800F1DBC >= 0) {
-        func_80045D64(0x200, D_800F1DBC);
+        vs_main_evictSfx(0x200, D_800F1DBC);
         D_800F1DBC = -2;
     }
 }
@@ -398,9 +398,9 @@ void func_8009121C(void)
     if (D_800F1DBC >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
             vs_main_playSfxDefault(0x200, D_800F1DBC);
-            func_80045BFC(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
         } else {
-            func_80045D64(0x200, D_800F1DBC);
+            vs_main_evictSfx(0x200, D_800F1DBC);
         }
     }
     scale = vs_battle_clamp((D_800F1DC4 * 4) + (D_800F1DC4 * 2), 12, 90);
@@ -443,9 +443,9 @@ int func_800913BC(int arg0)
     if (arg0 >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
             vs_main_playSfxDefault(0x200, (short)arg0);
-            func_80045BFC(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
         } else {
-            func_80045D64(0x200, (short)arg0);
+            vs_main_evictSfx(0x200, (short)arg0);
         }
     }
     return temp_s3;
@@ -522,9 +522,9 @@ void func_800918E8(int arg0)
 {
     if (D_800F1DBC >= 0) {
         if (arg0 != 0) {
-            func_80045BFC(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4] >> 2, 8);
+            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4] >> 2, 8);
         } else {
-            func_80045BFC(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
         }
     }
 }

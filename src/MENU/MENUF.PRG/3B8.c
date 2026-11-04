@@ -799,17 +799,17 @@ int _renderCongratulationsScreen(void)
                     _screenState = 1;
                     _stateTimer = 0;
 
-                    func_80045BFC(0x7E, 0x74, 0x40, 0x30);
-                    func_80045BFC(0x7E, 0x75, 0x40, 0x30);
-                    func_80045C74(0x7E, 0x74, -0x10, 0x30);
-                    func_80045C74(0x7E, 0x75, -0x10, 0x30);
+                    vs_main_fadeSfxVolume(0x7E, 0x74, 0x40, 0x30);
+                    vs_main_fadeSfxVolume(0x7E, 0x75, 0x40, 0x30);
+                    vs_main_fadeSfxPitch(0x7E, 0x74, -0x10, 0x30);
+                    vs_main_fadeSfxPitch(0x7E, 0x75, -0x10, 0x30);
                 }
 
                 _renderPressButtonPrompt(214, 187, 48, _screenTimer);
             }
         } else if (vs_main_buttonsPressed.all & PADRright) {
 
-            func_80045D64(0x7E, 0);
+            vs_main_evictSfx(0x7E, 0);
 
             _screenTimer = 272;
             _incrementingScore = 0;
@@ -836,8 +836,8 @@ int _renderCongratulationsScreen(void)
 
         if ((temp_v1 == 8) && (_elementAnimationState == temp_v1)) {
 
-            func_80045D64(0x7E, 0x74);
-            func_80045D64(0x7E, 0x75);
+            vs_main_evictSfx(0x7E, 0x74);
+            vs_main_evictSfx(0x7E, 0x75);
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
 
@@ -919,7 +919,7 @@ int _renderTimeAttackEnd(void)
         }
 
         if (_screenTimer == 0x60) {
-            func_80045D64(0x7E, 0x72);
+            vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
@@ -955,7 +955,7 @@ int _renderTimeAttackEnd(void)
 
         if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer >= 192)) {
 
-            func_80045D64(0x7E, 0);
+            vs_main_evictSfx(0x7E, 0);
 
             _screenTimer = 0;
             ++_screenState;
@@ -1443,7 +1443,7 @@ void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((un
 
             _incrementingScore = 0;
 
-            func_80045D64(0x7E, 0x72);
+            vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
     }
@@ -1562,7 +1562,7 @@ void _renderIncrementalMapCompletion(
             && (_incrementingMapCompletion != 0)) {
             _incrementingMapCompletion = 0;
 
-            func_80045D64(0x7E, 0x72);
+            vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
     }
@@ -2458,13 +2458,13 @@ int _renderCubePuzzleStart(void)
     if (vs_main_buttonsPressed.all & PADRright) {
         if (_screenTimer >= 78) {
 
-            func_80045D64(126, 0);
+            vs_main_evictSfx(126, 0);
             func_8007E0A8(29, 2, 5);
 
             return 1;
         }
 
-        func_80045D64(126, 0);
+        vs_main_evictSfx(126, 0);
 
         _screenTimer = 78;
     }
@@ -2516,7 +2516,7 @@ int _renderCubePuzzleEnd(void)
         }
 
         if (_screenTimer == 64) {
-            func_80045D64(0x7E, 0x72);
+            vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
@@ -2544,7 +2544,7 @@ int _renderCubePuzzleEnd(void)
         if (vs_main_buttonsPressed.all & PADRright) {
             if (_screenTimer >= 138) {
 
-                func_80045D64(0x7E, 0);
+                vs_main_evictSfx(0x7E, 0);
                 func_8007E0A8(0x1D, 2, 5);
 
                 vs_main_scoredata.miscScore += _puzzleModeRankPoints[rank];
@@ -2554,7 +2554,7 @@ int _renderCubePuzzleEnd(void)
                 return 1;
             }
 
-            func_80045D64(0x7E, 0);
+            vs_main_evictSfx(0x7E, 0);
 
             _screenTimer = 138;
         }
@@ -2595,7 +2595,7 @@ int _renderCubePuzzleQuit(void)
     if (vs_main_buttonsPressed.all & PADRright) {
         if (_screenTimer > 62) {
 
-            func_80045D64(0x7E, 0);
+            vs_main_evictSfx(0x7E, 0);
             func_8007E0A8(0x1D, 1, 5);
             _nop1();
 
@@ -2604,7 +2604,7 @@ int _renderCubePuzzleQuit(void)
 
         _screenTimer = 63;
 
-        func_80045D64(0x7E, 0);
+        vs_main_evictSfx(0x7E, 0);
     }
 
     return 0;

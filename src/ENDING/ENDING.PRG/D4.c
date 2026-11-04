@@ -2264,7 +2264,7 @@ static void _renderIncrementalScore(
 
         if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
             _incrementingScore = 0;
-            func_80045D64(126, 114);
+            vs_main_evictSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }
@@ -2381,7 +2381,7 @@ static void _renderIncrementalMapCompletion(
         if ((_onScreenMapCompletion == _mapCompletion)
             && (_incrementingMapCompletion != 0)) {
             _incrementingMapCompletion = 0;
-            func_80045D64(126, 114);
+            vs_main_evictSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }

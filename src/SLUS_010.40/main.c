@@ -2333,9 +2333,9 @@ static void _processCdQueue(void)
 
 int func_80044D94(void) { return func_80011F90(); }
 
-void func_80044DB4(void) { Sound_PushMusicState(); }
+void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void func_80044DD4(int arg0) { Sound_SetMusicJumpThreshold((void*)arg0); }
+void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold((void*)arg0); }
 
 int func_80044DF4(int id)
 {
@@ -2587,7 +2587,7 @@ int func_800454B8(int arg0)
 
 int func_8004550C(int arg0) { return func_800454B8(arg0); }
 
-int func_8004552C(int id, int arg1, int arg2)
+int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
         Sound_FadeMasterVolumeByMusicId(vs_main_soundData.unk4, arg2, arg1);
@@ -2596,7 +2596,7 @@ int func_8004552C(int id, int arg1, int arg2)
     return 0;
 }
 
-int func_80045574(int id, int arg1, int arg2)
+int vs_main_fadeMusicTempo(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
         Sound_FadeTempoScale(arg2, arg1);
@@ -2605,7 +2605,7 @@ int func_80045574(int id, int arg1, int arg2)
     return 0;
 }
 
-int func_800455AC(int id, int arg1, int arg2)
+int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
         Sound_FadeMasterPitchScale(arg2, arg1);
@@ -2817,7 +2817,7 @@ static int func_80045B28(int arg0, int arg1)
     return temp_v1;
 }
 
-void func_80045BFC(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 {
     int temp_v0;
 
@@ -2836,7 +2836,7 @@ void func_80045BFC(int arg0, int arg1, int arg2, char arg3)
     }
 }
 
-void func_80045C74(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
     int temp_v0;
 
@@ -2854,7 +2854,7 @@ void func_80045C74(int arg0, int arg1, int arg2, char arg3)
     }
 }
 
-void func_80045CEC(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
         arg0 = func_80045B28(arg0, arg1);
@@ -2870,7 +2870,7 @@ void func_80045CEC(int arg0, int arg1, int arg2, char arg3)
     }
 }
 
-void func_80045D64(int arg0, int arg1)
+void vs_main_evictSfx(int arg0, int arg1)
 {
     if (arg1 != 0) {
         arg0 = func_80045B28(arg0, arg1);
@@ -2885,7 +2885,7 @@ void func_80045D64(int arg0, int arg1)
     }
 }
 
-void func_80045DC0(void) { Sound_StopSfx(); }
+void vs_main_stopAllSfx(void) { Sound_StopSfx(); }
 
 int vs_main_loadSfxSlot(int id, u_int slot)
 {
@@ -3152,7 +3152,7 @@ void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
     }
 }
 
-static void func_800464DC(void) { Sound_StopCutsceneStream(); }
+static void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
 static int func_800464FC(int arg0, int arg1, int arg2)
 {

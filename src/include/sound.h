@@ -271,7 +271,7 @@ typedef struct {
     char field11_0x2a;
     char field12_0x2b;
     u_int field13_0x2c;
-} FSoundVoiceSchedulerState;
+} FSoundSfxState;
 
 typedef struct {
     /* 0x00 */ int field0_0x0;
@@ -489,7 +489,7 @@ typedef struct {
     int unk94;
     int unk98;
     int unk9C;
-} FSoundChannelConfig;
+} FSoundMusicContext;
 
 typedef struct {
     u_int Param1;

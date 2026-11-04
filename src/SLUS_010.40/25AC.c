@@ -74,11 +74,11 @@ typedef struct {
 
 // Streaming state for Sound_StreamAkaoBankChunk (instrument bank uploaded in chunks)
 typedef struct {
-    int* pInstrumentDst; // next g_InstrumentInfo word to fill
-    int SpuAddr; // next SPU transfer address; 0 = start a new stream
-    u_int SpuBytesRemaining;
+    int* pInstrumentInfoCursor; // next g_InstrumentInfo word to fill
+    int SpuTransferStartAddr; // next SPU transfer address; 0 = start a new stream
+    u_int SampleBytesRemaining;
     u_int InstrumentBytesRemaining;
-} D_80039BC8_t;
+} FSoundAkaoLoadState;
 
 #define AKAO_MAGIC ('A' | ('K' << 8) | ('A' << 16) | ('O' << 24))
 
@@ -161,31 +161,31 @@ extern int D_8003789C;
 extern int D_80039B00;
 extern u_int D_8002F63C[];
 extern int D_80039BCC;
-extern D_80039BC8_t g_Sound_AkaoLoadState;
+extern FSoundAkaoLoadState g_Sound_AkaoLoadState;
 extern int D_80037850[16];
 extern u_char D_8002F5A0[];
 extern u_char D_8002F600[];
 
-extern FSoundChannelConfig* g_pActiveMusicContext;
-extern FSoundVoiceSchedulerState g_Sound_SfxState;
+extern FSoundMusicContext* g_pActiveMusicContext;
+extern FSoundSfxState g_Sound_SfxState;
 extern FSoundGlobalFlags g_Sound_GlobalFlags;
 extern FSpuVoiceInfo g_SpuVoiceInfo[VOICE_COUNT];
 extern FSoundChannel g_ActiveMusicChannels[0x20];
-extern FSoundChannelConfig* g_pSuspendedMusicContext;
+extern FSoundMusicContext* g_pSuspendedMusicContext;
 extern FSoundChannel* g_pSecondaryMusicChannels;
 extern FSoundChannel* g_Sound_pMusicSoudChannels;
 extern FSoundFadeTimer g_Sound_MasterFadeTimer;
 extern FSoundCutsceneStreamState g_Sound_Cutscene_StreamState;
 extern u_int g_Sound_ProgramCounter;
-extern FSoundChannelConfig* g_Sound_VoiceOwnerContexts[VOICE_COUNT];
+extern FSoundMusicContext* g_Sound_VoiceOwnerContexts[VOICE_COUNT];
 extern FSoundChannel SfxSoundChannels[12];
 #define SPU_PAN_TABLE_SIZE (0x100)
 #define PAN_CENTER_INDEX (SPU_PAN_TABLE_SIZE / 2)
 extern short g_Sound_StereoPanGainTableQ15[SPU_PAN_TABLE_SIZE];
 extern short D_8002F89C;
-extern FSoundChannelConfig g_SuspendedMusicContext;
+extern FSoundMusicContext g_SuspendedMusicContext;
 extern u_int g_Music_LoopCounter;
-extern FSoundChannelConfig g_PrimaryMusicContext;
+extern FSoundMusicContext g_PrimaryMusicContext;
 extern FSoundChannel g_PushedMusicChannels[];
 extern FSoundInstrumentInfo g_InstrumentInfo[256];
 extern short* g_Sound_LfoTable[];
@@ -251,7 +251,7 @@ int func_80011E40(void)
 
 int func_80011EBC(u_int arg0)
 {
-    FSoundChannelConfig* var_v1 = g_pActiveMusicContext;
+    FSoundMusicContext* var_v1 = g_pActiveMusicContext;
     int var_a1 = 0;
 
     if ((var_v1->MusicId == arg0)
@@ -836,7 +836,7 @@ int Sound_StreamAkaoBankChunk(int* in_Data, u_int in_Size, int in_Slot, int in_W
     u_int spuChunk;
 
     if (g_Sound_GlobalFlags.ControlLatches & 1) {
-        if (g_Sound_AkaoLoadState.SpuAddr == 0) {
+        if (g_Sound_AkaoLoadState.SpuTransferStartAddr == 0) {
             if (Sound_IsNotAkaoFile(in_Data) == 0) {
                 if (in_Data[4] == 0x35100) {
                     func_80012C14(in_Data, &instrumentIndex, &spuAddr);
@@ -850,16 +850,16 @@ int Sound_StreamAkaoBankChunk(int* in_Data, u_int in_Size, int in_Slot, int in_W
                 in_Data += 0x10;
                 in_Size -= 0x40;
                 D_80037850[4] = spuAddr;
-                g_Sound_AkaoLoadState.SpuAddr = spuAddr;
+                g_Sound_AkaoLoadState.SpuTransferStartAddr = spuAddr;
                 D_80037850[6] = instrumentIndex;
-                g_Sound_AkaoLoadState.SpuBytesRemaining = D_80037850[5];
-                g_Sound_AkaoLoadState.pInstrumentDst =
+                g_Sound_AkaoLoadState.SampleBytesRemaining = D_80037850[5];
+                g_Sound_AkaoLoadState.pInstrumentInfoCursor =
                     (int*)&g_InstrumentInfo[instrumentIndex];
                 g_Sound_AkaoLoadState.InstrumentBytesRemaining =
                     D_80037850[7] * sizeof(FSoundInstrumentInfo);
             } else {
                 in_Size = 0;
-                g_Sound_AkaoLoadState.SpuBytesRemaining = 0;
+                g_Sound_AkaoLoadState.SampleBytesRemaining = 0;
                 g_Sound_AkaoLoadState.InstrumentBytesRemaining = 0;
             }
         }
@@ -870,35 +870,35 @@ int Sound_StreamAkaoBankChunk(int* in_Data, u_int in_Size, int in_Slot, int in_W
             }
             // The original reuses the spuAddr stack slot for the chunk size.
             spuAddr = chunk;
-            memcpy32(in_Data, g_Sound_AkaoLoadState.pInstrumentDst, spuAddr);
+            memcpy32(in_Data, g_Sound_AkaoLoadState.pInstrumentInfoCursor, spuAddr);
             in_Data += (u_int)spuAddr / 4;
             in_Size -= spuAddr;
-            g_Sound_AkaoLoadState.pInstrumentDst += (u_int)spuAddr / 4;
+            g_Sound_AkaoLoadState.pInstrumentInfoCursor += (u_int)spuAddr / 4;
             g_Sound_AkaoLoadState.InstrumentBytesRemaining -= spuAddr;
             if (g_Sound_AkaoLoadState.InstrumentBytesRemaining == 0) {
                 Sound_CopyAndRelocateInstruments(&g_InstrumentInfo[D_80037850[6]],
                     &g_InstrumentInfo[D_80037850[6]], D_80037850[4], D_80037850[7]);
             }
         }
-        if ((in_Size != 0) && (g_Sound_AkaoLoadState.SpuBytesRemaining != 0)) {
-            spuChunk = g_Sound_AkaoLoadState.SpuBytesRemaining;
+        if ((in_Size != 0) && (g_Sound_AkaoLoadState.SampleBytesRemaining != 0)) {
+            spuChunk = g_Sound_AkaoLoadState.SampleBytesRemaining;
             if (spuChunk >= in_Size) {
                 spuChunk = in_Size;
             }
             in_Size = spuChunk;
-            SpuSetTransferStartAddr(g_Sound_AkaoLoadState.SpuAddr);
+            SpuSetTransferStartAddr(g_Sound_AkaoLoadState.SpuTransferStartAddr);
             WriteSpu((char*)in_Data, in_Size);
-            g_Sound_AkaoLoadState.SpuAddr += in_Size;
-            g_Sound_AkaoLoadState.SpuBytesRemaining -= in_Size;
+            g_Sound_AkaoLoadState.SpuTransferStartAddr += in_Size;
+            g_Sound_AkaoLoadState.SampleBytesRemaining -= in_Size;
             if (in_Wait != 0) {
                 WaitForSpuTransfer();
             }
         }
-        if (g_Sound_AkaoLoadState.SpuBytesRemaining == 0) {
+        if (g_Sound_AkaoLoadState.SampleBytesRemaining == 0) {
             g_Sound_GlobalFlags.ControlLatches &= ~1;
         }
     }
-    return g_Sound_AkaoLoadState.SpuBytesRemaining;
+    return g_Sound_AkaoLoadState.SampleBytesRemaining;
 }
 
 int func_80013188(void* arg0, int arg1)
@@ -2132,7 +2132,7 @@ void Sound_UpdateVoiceEnvelopeStates(u_int in_ReservedVoices)
 }
 
 void Sound_ApplyMasterFadeToChannelVolume(
-    FSoundChannelConfig* in_Context, FSoundChannel* arg1 __attribute__((unused)))
+    FSoundMusicContext* in_Context, FSoundChannel* arg1 __attribute__((unused)))
 {
     int Volume;
 
@@ -2146,7 +2146,7 @@ void Sound_ApplyMasterFadeToChannelVolume(
 }
 
 void Sound_RestoreChannelVolumeFromMasterFade(
-    FSoundChannelConfig* in_Config, FSoundChannel* arg1 __attribute__((unused)))
+    FSoundMusicContext* in_Config, FSoundChannel* arg1 __attribute__((unused)))
 {
     in_Config->A_Volume = g_Sound_MasterFadeTimer.SavedValue;
 }
@@ -2558,7 +2558,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     u_int mask;
     u_int i;
     FSoundChannel* pChannel;
-    FSoundChannelConfig* pConfig;
+    FSoundMusicContext* pConfig;
     void* pRegion;
     FAkaoSequence* pSequence = in_Sequence;
     u_short* pChannelOffsets = (u_short*)in_Sequence;
@@ -2684,10 +2684,10 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
 }
 
 void Sound_KillMusicContext(
-    FSoundChannelConfig* in_Config, FSoundChannel* in_pChannel, u_int arg2)
+    FSoundMusicContext* in_Config, FSoundChannel* in_pChannel, u_int arg2)
 {
     FSoundChannel* pChannel;
-    FSoundChannelConfig** ppThisChannelConfig;
+    FSoundMusicContext** ppThisChannelConfig;
     u_int Count;
 
     pChannel = in_pChannel;
@@ -2974,7 +2974,7 @@ void Sound_GetProgramCounters(
 }
 
 void Sound_MarkActiveChannelsVolumeDirty(
-    FSoundChannelConfig* in_pChannelConfig, FSoundChannel* in_pChannel)
+    FSoundMusicContext* in_pChannelConfig, FSoundChannel* in_pChannel)
 {
     u_int ActiveChannelMask;
     u_int Flags;
@@ -3028,7 +3028,7 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     u_int channelBit;
     int count;
     FSoundChannel* pChannel;
-    FSoundChannelConfig* pConfig;
+    FSoundMusicContext* pConfig;
 
     if (in_SwapWithSavedState == 0) {
         memcpy32(&g_SuspendedMusicContext, &g_PrimaryMusicContext, 0x80);
@@ -3158,7 +3158,7 @@ void Sound_Cmd_40_PushMusicState(void)
         FSoundChannel* c;
         memcpy32(&g_PrimaryMusicContext, &g_SuspendedMusicContext, 0x80);
         memcpy32(
-            g_ActiveMusicChannels, (FSoundChannelConfig*)g_PushedMusicChannels, 0x2200);
+            g_ActiveMusicChannels, (FSoundMusicContext*)g_PushedMusicChannels, 0x2200);
         for (i = 0, c = g_PushedMusicChannels; i < 32; ++i, ++c) {
             Sound_MapInstrumentToBaseSampleBank(g_SuspendedMusicContext.StatusFlags, c);
         }
@@ -3173,7 +3173,7 @@ void Sound_Cmd_19_SetMusicLevelImmediate(FSoundCommandParams* arg0)
         g_pSuspendedMusicContext = &g_SuspendedMusicContext;
         g_pSecondaryMusicChannels = g_PushedMusicChannels;
         memcpy32(&g_PrimaryMusicContext, &g_SuspendedMusicContext, 0x80);
-        memcpy32(g_ActiveMusicChannels, (FSoundChannelConfig*)g_pSecondaryMusicChannels,
+        memcpy32(g_ActiveMusicChannels, (FSoundMusicContext*)g_pSecondaryMusicChannels,
             0x2200);
     }
     Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
@@ -3199,7 +3199,7 @@ void Sound_Cmd_1A_StartMasterAndMusicVolumeFade(FSoundCommandParams* arg0)
             g_pSecondaryMusicChannels = g_PushedMusicChannels;
             memcpy32(&g_PrimaryMusicContext, &g_SuspendedMusicContext, 0x80);
             memcpy32(g_ActiveMusicChannels,
-                (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
+                (FSoundMusicContext*)g_pSecondaryMusicChannels, 0x2200);
         }
         Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
         g_pActiveMusicContext->MusicId = arg0->Param3;
@@ -3309,7 +3309,7 @@ void Sound_Cmd_21_EvictSfxVoice(FSoundCommandParams* arg0)
 void Sound_Cmd_C0_SetMasterVolumeByMusicId(FSoundCommandParams* arg0)
 {
     FSoundChannel* var_a1;
-    FSoundChannelConfig* var_a0;
+    FSoundMusicContext* var_a0;
     int temp_v1;
 
     temp_v1 = arg0->Param1;
@@ -3333,7 +3333,7 @@ void Sound_Cmd_C0_SetMasterVolumeByMusicId(FSoundCommandParams* arg0)
 void Sound_Cmd_C1_FadeMasterVolumeByMusicId(FSoundCommandParams* arg0)
 {
     FSoundChannel* var_a1;
-    FSoundChannelConfig* var_a0;
+    FSoundMusicContext* var_a0;
     int temp_a1;
     int var_v1;
 
@@ -3370,7 +3370,7 @@ void Sound_Cmd_C1_FadeMasterVolumeByMusicId(FSoundCommandParams* arg0)
 void Sound_Cmd_C2_FadeMasterVolumeFromByMusicId(FSoundCommandParams* arg0)
 {
     FSoundChannel* var_a1;
-    FSoundChannelConfig* var_a0;
+    FSoundMusicContext* var_a0;
     int temp_v0;
     int temp_v1;
     int var_a2;
@@ -4471,7 +4471,7 @@ int Music_UpdateChannels(FSoundChannel* arg0, int arg1)
     return g_pActiveMusicContext->ActiveChannelMask;
 }
 
-void func_800199C4(FSoundChannelConfig* arg0, FSoundChannel* arg1)
+void func_800199C4(FSoundMusicContext* arg0, FSoundChannel* arg1)
 {
     int temp_s0;
 
@@ -4497,8 +4497,8 @@ void func_800199C4(FSoundChannelConfig* arg0, FSoundChannel* arg1)
 long Sound_MainLoop(void)
 {
     FSoundChannel* var_s2_2;
-    FSoundChannelConfig* temp_v0;
-    FSoundChannelConfig* var_a0;
+    FSoundMusicContext* temp_v0;
+    FSoundMusicContext* var_a0;
     int var_s5;
     int var_s1;
     int i;
@@ -4640,7 +4640,7 @@ char Sound_PeekNextOpcode(FSoundChannel* channel)
 {
     u_char* pc = channel->ProgramCounter;
     u_int loopTop = channel->LoopStackTop;
-    FSoundChannelConfig* config = g_pActiveMusicContext;
+    FSoundMusicContext* config = g_pActiveMusicContext;
     int length;
     int jumpOffset;
 

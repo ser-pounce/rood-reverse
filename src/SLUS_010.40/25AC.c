@@ -85,10 +85,10 @@ typedef struct {
 typedef void (*FSoundCommandHandler)(FSoundCommandParams*);
 
 static int Sound_IsNotAkaoFile(int*);
-int func_80013588(void*, int);
-int func_800135D8(void*, int, int, int);
-void func_8001369C(void);
-static void StartSound(void);
+int Sound_TryLoadInstrumentBank(void*, int);
+int Sound_LoadInstrumentBank(void*, int, int, int);
+void Sound_Setup(void);
+static void Sound_Start(void);
 static void SetVoiceKeyOff(u_int);
 void Sound_EvictSfxVoice(int, int);
 void func_8001653C(FSoundChannel*, FSoundCommandParams*, int, char*);
@@ -96,9 +96,9 @@ void Sound_PlaySfxProgram(FSoundCommandParams*, char*, char*, int);
 int func_80016DA8(int);
 u_int func_80018C30(u_int);
 long func_80019A58(void);
-static void StopSound(void);
-static void _writeSpu(char* data, u_int len);
-static void _waitTransferAvailable(void);
+static void Sound_Stop(void);
+static void WriteSpu(char* data, u_int len);
+static void WaitForSpuTransfer(void);
 void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
     FSoundInstrumentInfo* in_B, int in_AddrOffset, int in_Count);
 void Sound_ClearVoiceFromSchedulerState(FSoundChannel* arg0, int arg1);
@@ -108,15 +108,15 @@ void Sound_Cutscene_BeginPlayback(int, int, void (*)(void));
 void Sound_Cutscene_LoadNextBuffer(int, int, int, void (*)(void));
 void Sound_Cutscene_OnBufferAComplete(void);
 void Sound_Cutscene_OnBufferBComplete(void);
-void IRQCallbackProc(void);
+void Sound_Cutscene_StopStream(void);
 void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
 void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
 void func_80015BAC(void);
 void func_80015970(int* out_VoiceMask, int in_SavedChannelMask, int in_ActiveChannelMask,
     int in_ExtraVoiceMask);
-void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
-void Sound_memswp32(void* in_A, void* in_B, u_int in_Size);
-void UpdateCdVolume(void);
+void memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
+void memswap32(void* in_A, void* in_B, u_int in_Size);
+void Sound_UpdateCdVolume(void);
 int func_8001A1F4(int, int);
 int func_8001A22C(int, u_int);
 void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
@@ -204,13 +204,13 @@ extern int D_80037894;
 
 int InitSound(void)
 {
-    StartSound();
+    Sound_Start();
     return 0;
 }
 
 int TeardownSound(void)
 {
-    StopSound();
+    Sound_Stop();
     return 0;
 }
 
@@ -728,7 +728,7 @@ void func_80012B98(void) { func_80018C30(241); }
 
 void func_80012BB8(void* arg0, int arg1)
 {
-    while (func_80013588(arg0, arg1) == 1)
+    while (Sound_TryLoadInstrumentBank(arg0, arg1) == 1)
         ;
 }
 
@@ -847,7 +847,7 @@ int func_80012F10(int* in_Data, u_int in_Size, int in_Slot, int in_Wait)
                     spuAddr = in_Data[4];
                     instrumentIndex = in_Data[6];
                 }
-                Sound_memcpy32(in_Data, D_80037850, 0x40);
+                memcpy32(in_Data, D_80037850, 0x40);
                 in_Data += 0x10;
                 in_Size -= 0x40;
                 D_80037850[4] = spuAddr;
@@ -870,7 +870,7 @@ int func_80012F10(int* in_Data, u_int in_Size, int in_Slot, int in_Wait)
             }
             // The original reuses the spuAddr stack slot for the chunk size.
             spuAddr = chunk;
-            Sound_memcpy32(in_Data, D_80039BC8.pInstrumentDst, spuAddr);
+            memcpy32(in_Data, D_80039BC8.pInstrumentDst, spuAddr);
             in_Data += (u_int)spuAddr / 4;
             in_Size -= spuAddr;
             D_80039BC8.pInstrumentDst += (u_int)spuAddr / 4;
@@ -887,11 +887,11 @@ int func_80012F10(int* in_Data, u_int in_Size, int in_Slot, int in_Wait)
             }
             in_Size = spuChunk;
             SpuSetTransferStartAddr(D_80039BC8.SpuAddr);
-            _writeSpu((char*)in_Data, in_Size);
+            WriteSpu((char*)in_Data, in_Size);
             D_80039BC8.SpuAddr += in_Size;
             D_80039BC8.SpuBytesRemaining -= in_Size;
             if (in_Wait != 0) {
-                _waitTransferAvailable();
+                WaitForSpuTransfer();
             }
         }
         if (D_80039BC8.SpuBytesRemaining == 0) {
@@ -906,7 +906,7 @@ int func_80013188(void* arg0, int arg1)
     int sp10;
     int sp14;
     int temp_s0 = func_80012C14(arg0, &sp10, &sp14);
-    func_800135D8(arg0, arg1, sp10, sp14);
+    Sound_LoadInstrumentBank(arg0, arg1, sp10, sp14);
     return temp_s0;
 }
 
@@ -916,7 +916,7 @@ int func_800131DC(void* arg0, int arg1, int arg2)
     int sp14;
 
     func_80012D9C((int*)arg0, &sp10, &sp14, arg1);
-    func_800135D8(arg0, arg2, sp10, sp14);
+    Sound_LoadInstrumentBank(arg0, arg2, sp10, sp14);
     return 0;
 }
 
@@ -996,32 +996,32 @@ static int Sound_IsNotAkaoFile(int* data)
     return data[0] - ('A' | ('K' << 8) | ('A' << 16) | ('O' << 24));
 }
 
-static void _spuWriteComplete(void)
+static void ClearSpuTransferCallback(void)
 {
     SpuSetTransferCallback(NULL);
     _isSpuTransfer = 0;
 }
 
-void spuSetTransferCallback(void)
+void SetSpuTransferCallback(void)
 {
     _isSpuTransfer = 1;
-    SpuSetTransferCallback(_spuWriteComplete);
+    SpuSetTransferCallback(ClearSpuTransferCallback);
 }
 
-static void _writeSpu(char* data, u_int len)
+static void WriteSpu(char* data, u_int len)
 {
     _isSpuTransfer = 1;
-    SpuSetTransferCallback(_spuWriteComplete);
+    SpuSetTransferCallback(ClearSpuTransferCallback);
     SpuWrite(data, len);
 }
 
-static void _readSpu(char* data, u_int len)
+static void ReadSpu(char* data, u_int len)
 {
-    spuSetTransferCallback();
+    SetSpuTransferCallback();
     SpuRead(data, len);
 }
 
-static void _waitTransferAvailable(void)
+static void WaitForSpuTransfer(void)
 {
     if (_isSpuTransfer == 1) {
         do {
@@ -1030,32 +1030,33 @@ static void _waitTransferAvailable(void)
     }
 }
 
-int func_80013588(void* arg0, int arg1)
+int Sound_TryLoadInstrumentBank(void* arg0, int arg1)
 {
     if (Sound_IsNotAkaoFile(arg0) == 0) {
-        func_800135D8(arg0, arg1, ((int*)arg0)[6], ((int*)arg0)[4]);
+        Sound_LoadInstrumentBank(arg0, arg1, ((int*)arg0)[6], ((int*)arg0)[4]);
         return 0;
     }
     return -1;
 }
 
-int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
+int Sound_LoadInstrumentBank(
+    void* in_Data, int in_Wait, int in_FirstInstrument, int in_SpuAddr)
 {
     FAkaoSequence* header;
     FSoundInstrumentInfo* instruments;
 
-    _waitTransferAvailable();
+    WaitForSpuTransfer();
     if (Sound_IsNotAkaoFile(in_Data) == 0) {
         header = in_Data;
         SpuSetTransferStartAddr(in_SpuAddr);
         in_Data = header->Payload;
         instruments = in_Data;
         in_Data = instruments + header->unk1C;
-        _writeSpu(in_Data, header->unk14);
+        WriteSpu(in_Data, header->unk14);
         Sound_CopyAndRelocateInstruments(instruments,
             &g_InstrumentInfo[in_FirstInstrument], in_SpuAddr, header->unk1C);
         if (in_Wait != 0) {
-            _waitTransferAvailable();
+            WaitForSpuTransfer();
         }
         return 0;
     }
@@ -1071,7 +1072,7 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
 #define VS_REG_VAR(type, name, reg) register type name __asm__(reg)
 #endif
 
-void func_8001369C(void)
+void Sound_Setup(void)
 {
     u_int count;
     u_int voiceIndex;
@@ -1183,7 +1184,7 @@ void func_8001369C(void)
 }
 #undef VS_REG_VAR
 
-static void StartSound(void)
+static void Sound_Start(void)
 {
     int event;
 
@@ -1191,9 +1192,9 @@ static void StartSound(void)
     SpuInitMalloc(4, &_spuMemInfo);
     SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
     SpuSetTransferStartAddr(0x1010);
-    _writeSpu(_soundFlush, 64);
-    _waitTransferAvailable();
-    func_8001369C();
+    WriteSpu(_soundFlush, 64);
+    WaitForSpuTransfer();
+    Sound_Setup();
     SpuSetIRQ(SPU_OFF);
     SpuSetIRQCallback(NULL);
     while (SetRCnt(RCntCNT2, 0x44E8, RCntMdINTR) == 0)
@@ -1208,11 +1209,11 @@ static void StartSound(void)
         ;
 }
 
-static void StopSound(void)
+static void Sound_Stop(void)
 {
     if (_isSpuTransfer == 1) {
-        _writeSpu(_soundFlush, 64);
-        _waitTransferAvailable();
+        WriteSpu(_soundFlush, 64);
+        WaitForSpuTransfer();
     }
     while (StopRCnt(RCntCNT2) == 0)
         ;
@@ -3030,11 +3031,11 @@ void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedStat
     FSoundChannelConfig* pConfig;
 
     if (in_SwapWithSavedState == 0) {
-        Sound_memcpy32(&g_PushedMusicConfig, &D_800366F0, 0x80);
-        Sound_memcpy32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
+        memcpy32(&g_PushedMusicConfig, &D_800366F0, 0x80);
+        memcpy32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
     } else {
-        Sound_memswp32(&g_PushedMusicConfig, &D_800366F0, 0x80);
-        Sound_memswp32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
+        memswap32(&g_PushedMusicConfig, &D_800366F0, 0x80);
+        memswap32(D_800378E8, g_ActiveMusicChannels, sizeof g_ActiveMusicChannels);
     }
 
     g_pActiveMusicConfig->StatusFlags &= ~0x60;
@@ -3153,8 +3154,8 @@ void Sound_Cmd_40_PushMusicState(void)
 
     if (g_pActiveMusicConfig->ActiveChannelMask != 0) {
         FSoundChannel* c;
-        Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
-        Sound_memcpy32(g_ActiveMusicChannels, (FSoundChannelConfig*)D_800378E8, 0x2200);
+        memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+        memcpy32(g_ActiveMusicChannels, (FSoundChannelConfig*)D_800378E8, 0x2200);
         for (i = 0, c = D_800378E8; i < 32; ++i, ++c) {
             Sound_MapInstrumentToBaseSampleBank(g_PushedMusicConfig.StatusFlags, c);
         }
@@ -3167,9 +3168,9 @@ void Sound_Cmd_19_Unk(FSoundCommandParams* arg0)
         && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
         g_pSavedMousicConfig = &g_PushedMusicConfig;
         g_pSecondaryMusicChannels = D_800378E8;
-        Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
-        Sound_memcpy32(g_ActiveMusicChannels,
-            (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
+        memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+        memcpy32(g_ActiveMusicChannels, (FSoundChannelConfig*)g_pSecondaryMusicChannels,
+            0x2200);
     }
     Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
     g_pActiveMusicConfig->A_Volume = (arg0->ExtParam1 & 0x7F) << 0x10;
@@ -3191,8 +3192,8 @@ void Sound_Cmd_1A_Unk(FSoundCommandParams* arg0)
             && ((g_pSavedMousicConfig == NULL) || (g_pSavedMousicConfig->MusicId == 0))) {
             g_pSavedMousicConfig = &g_PushedMusicConfig;
             g_pSecondaryMusicChannels = D_800378E8;
-            Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
-            Sound_memcpy32(g_ActiveMusicChannels,
+            memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+            memcpy32(g_ActiveMusicChannels,
                 (FSoundChannelConfig*)g_pSecondaryMusicChannels, 0x2200);
         }
         Sound_LoadAkaoSequence((FAkaoSequence*)arg0->Param1);
@@ -3397,7 +3398,7 @@ void Sound_Cmd_C8_unk(FSoundCommandParams* arg0)
 {
     g_Sound_CdVolumeFadeLength = 0;
     g_CdVolume = (u_short)arg0->Param1 << 0x10;
-    UpdateCdVolume();
+    Sound_UpdateCdVolume();
 }
 
 void Sound_Cmd_C9_unk(FSoundCommandParams* arg0)
@@ -3771,7 +3772,7 @@ void func_8001852C(void)
     *(int*)&D_80037788.Param1 = 0;
 }
 
-void Sound_Cmd_11_StopAllMusic(FSoundCommandParams* in_Params)
+void Sound_Cmd_11_StopMusicById(FSoundCommandParams* in_Params)
 {
     Sound_KillMusicConfig(g_pActiveMusicConfig, g_ActiveMusicChannels, in_Params->Param1);
     if (g_pSavedMousicConfig != NULL) {
@@ -4077,9 +4078,8 @@ u_int func_80018C30(u_int in_Command)
             D_800378C0.unk4 = pSequence->id;
             Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
             g_pActiveMusicConfig->MusicId = pSequence->id;
-            Sound_memcpy32(
-                g_ActiveMusicChannels, D_800378E8, sizeof g_ActiveMusicChannels);
-            Sound_memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
+            memcpy32(g_ActiveMusicChannels, D_800378E8, sizeof g_ActiveMusicChannels);
+            memcpy32(&D_800366F0, &g_PushedMusicConfig, 0x80);
             pSequence = D_800378C0.unk0;
             D_800378C0.unk0 = (void*)(u_int)pSequence->id;
             Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
@@ -4153,14 +4153,14 @@ u_int func_80018C30(u_int in_Command)
     return result;
 }
 
-void UpdateCdVolume(void)
+void Sound_UpdateCdVolume(void)
 {
     int v = D_800378E2;
     *CD_VOL_L = v;
     *CD_VOL_R = v;
 }
 
-void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size)
+void memcpy32(void* in_Src, void* in_Dst, u_int in_Size)
 {
     int w0, w1, w2, w3;
 
@@ -4188,7 +4188,7 @@ void Sound_memcpy32(void* in_Src, void* in_Dst, u_int in_Size)
     }
 }
 
-void Sound_memswp32(void* in_A, void* in_B, u_int in_Size)
+void memswap32(void* in_A, void* in_B, u_int in_Size)
 {
     int a0, a1, b0, b1;
 
@@ -4231,7 +4231,7 @@ void func_8001924C(void)
     if (g_Sound_CdVolumeFadeLength != 0) {
         --g_Sound_CdVolumeFadeLength;
         g_CdVolume += g_Sound_CdVolumeFadeStep;
-        UpdateCdVolume();
+        Sound_UpdateCdVolume();
     }
     if ((g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0)
         && (g_Sound_Cutscene_StreamState.VolFadeStepsRemaining != 0)) {
@@ -4530,8 +4530,8 @@ long func_80019A58(void)
             g_pSavedMousicConfig = NULL;
         } else if ((g_pActiveMusicConfig->ActiveChannelMask | g_pActiveMusicConfig->unk1C)
                    == 0) {
-            Sound_memcpy32(g_pSavedMousicConfig, g_pActiveMusicConfig, 0x80);
-            Sound_memcpy32(g_pSecondaryMusicChannels, g_ActiveMusicChannels, 0x2200);
+            memcpy32(g_pSavedMousicConfig, g_pActiveMusicConfig, 0x80);
+            memcpy32(g_pSecondaryMusicChannels, g_ActiveMusicChannels, 0x2200);
             temp_v0 = g_pSavedMousicConfig;
             g_pSavedMousicConfig = NULL;
             temp_v0->MusicId = 0;
@@ -5382,7 +5382,7 @@ void SoundVM_A9_ChannelVolumeSlide(
     in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
-void SoundVM_FE19_unk(
+void SoundVM_FE19_KeyOnVolumeSlide(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     u_short pPc1;
@@ -5404,13 +5404,13 @@ void SoundVM_FE19_unk(
     in_pChannel->unk60 = Delta / in_pChannel->KeyOnVolumeSlideLength;
 }
 
-void SoundVM_FE1A_unk(
+void SoundVM_FE1A_SetChannelTenuto(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_01;
 }
 
-void SoundVM_FE1B_unk(
+void SoundVM_FE1B_UnsetChannelTenuto(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_UNKNOWN_01;
@@ -6433,7 +6433,7 @@ void SoundVM_XX_Unimplemented(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     SoundVM_A0_FinishChannel(in_pChannel, in_VoiceFlags);
 }
 
-void IRQCallbackProc(void)
+void Sound_Cutscene_StopStream(void)
 {
     int temp_a2;
 
@@ -6611,7 +6611,7 @@ void Sound_Cutscene_BeginPlayback(
             g_Sound_Cutscene_StreamState.pCurrentChunk += in_SomeIndex;
             SpuSetIRQCallback(in_Callback);
         } else {
-            SpuSetIRQCallback(IRQCallbackProc);
+            SpuSetIRQCallback(Sound_Cutscene_StopStream);
             var_s2 = 0x1030;
             g_Sound_Cutscene_StreamState.TotalPages = 0;
         }
@@ -6645,7 +6645,7 @@ void Sound_Cutscene_LoadNextBuffer(
     if ((g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0)
         && (g_Sound_Cutscene_StreamState.TotalPages != 0)) {
         SpuSetTransferStartAddr(in_RepeatAddressL);
-        spuSetTransferCallback();
+        SetSpuTransferCallback();
         SpuWrite((u_char*)g_Sound_Cutscene_StreamState.pCurrentChunk, in_Param3);
         SpuSetIRQ(0);
         if (g_Sound_Cutscene_StreamState.TotalPages > 0x800) {
@@ -6659,7 +6659,7 @@ void Sound_Cutscene_LoadNextBuffer(
             g_Sound_Cutscene_StreamState.TotalPages =
                 g_Sound_Cutscene_StreamState.field7_0x1c;
         } else {
-            SpuSetIRQCallback(IRQCallbackProc);
+            SpuSetIRQCallback(Sound_Cutscene_StopStream);
             in_RepeatAddressR = 0x1030;
             in_RepeatAddressL = 0x1030;
             g_Sound_Cutscene_StreamState.TotalPages = 0;
@@ -6700,13 +6700,13 @@ void Sound_Cutscene_StartStream(u_int*, int, int);
 
 void func_8001D644(int* arg0)
 {
-    IRQCallbackProc();
+    Sound_Cutscene_StopStream();
     Sound_Cutscene_StartStream((u_int*)arg0[0], arg0[1], arg0[2]);
     g_Sound_VoiceSchedulerState.ActiveChannelMask &=
         ~g_Sound_Cutscene_StreamState.VoicesInUseFlags;
 }
 
-void func_8001D698(void) { IRQCallbackProc(); }
+void func_8001D698(void) { Sound_Cutscene_StopStream(); }
 
 void Sound_Cmd_E4_SetCutsceneVolume(FSoundCommandParams* in_Params)
 {

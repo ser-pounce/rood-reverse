@@ -177,7 +177,7 @@ int _initCongratulationsScreen(void)
         int mapCompletion;
         u_int chestsOpened;
 
-        func_80045000(2, 0x7F, 0);
+        vs_main_playMusicSlot(2, 0x7F, 0);
         vs_main_freeHeapR(timData);
 
         _onScreenMapCompletion = 0;
@@ -307,7 +307,7 @@ int _initTimeAttackEnd(void)
         }
     } else if (vs_main_clearMusicLoadQueue() == 0) {
 
-        func_80045000(2, 0x7F, 0);
+        vs_main_playMusicSlot(2, 0x7F, 0);
 
         _timeTrialTime = (vs_main_stateFlags.timeAttackMins << 0x10)
                        | (vs_main_stateFlags.timeAttackSecs << 8)

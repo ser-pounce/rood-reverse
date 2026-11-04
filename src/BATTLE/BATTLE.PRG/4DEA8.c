@@ -2149,7 +2149,7 @@ int vs_battle_script_loadSoundFile(u_char* arg0, short arg1)
 int func_800BA52C(u_char* arg0)
 {
     vs_main_fadeMusicVolume(D_800F4C69, 0, arg0[4]);
-    func_80044F60(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
+    vs_main_playMusicSlotFadeIn(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
     return 0;
 }
 
@@ -2167,7 +2167,7 @@ int vs_battle_script_freeMusic(u_char* arg0, short arg1)
 
 int func_800BA5E8(u_char* arg0, short arg1)
 {
-    func_80045000(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
+    vs_main_playMusicSlot(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
     return 0;
 }
 
@@ -2191,7 +2191,7 @@ int func_800BA684(u_char* arg0, short arg1)
 
 int func_800BA6B8(u_char* arg0, short arg1)
 {
-    func_80044DF4(D_800F4C69);
+    vs_main_stopMusicSlot(D_800F4C69);
     return 0;
 }
 
@@ -2202,7 +2202,7 @@ int func_800BA6E0(u_char* arg0, short arg1)
         if (func_800454B8(temp_s0) != 0) {
             return 1;
         }
-        func_80044DF4(temp_s0);
+        vs_main_stopMusicSlot(temp_s0);
     }
     return 0;
 }

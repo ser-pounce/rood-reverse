@@ -1951,7 +1951,7 @@ void func_8006CB04(int arg0, SVECTOR* arg1)
 
 void func_8006CD60(u_int* arg0, int arg1, int arg2)
 {
-    func_800461CC(0x7E, arg0, vs_main_getRand(3) + 8, arg1, arg2);
+    vs_main_playBankSfx(0x7E, arg0, vs_main_getRand(3) + 8, arg1, arg2);
 }
 
 void func_8006CDB8(int arg0) { func_8009D854(arg0); }
@@ -4644,7 +4644,7 @@ void func_800738E4(void)
     func_8007BD8C(0);
     if (vs_main_soundData.unk4 == 0xFFFF) {
         if (D_800F18AC != 0) {
-            func_80045000(D_800F18AC, 0x7F, 0);
+            vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
         }
     } else if ((D_800F18AC != 0)
                && (vs_main_soundData.unk4 == vs_main_soundData.unk14[D_800F18AC - 1])) {
@@ -15532,7 +15532,7 @@ void func_80089DC0(int arg0)
             func_8006F5CC();
             func_800CB654(0);
             if (D_800F18AC != 0) {
-                func_80045000(D_800F18AC, 0x7F, 0);
+                vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
             }
             vs_battle_screenTransitionStep = 4;
             _enableDispMask();

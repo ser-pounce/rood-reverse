@@ -40,7 +40,7 @@ FntOpen
 func_80041C68
 func_80042CA0
 func_80042CB0
-func_80045000
+vs_main_playMusicSlot
 GetClut
 GetTPage
 LoadImage

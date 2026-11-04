@@ -38,7 +38,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
         vs_battle_textBoxStatuses[0] = 0;
 
         if (D_800F4C20 != 0) {
-            func_80044DF4(0);
+            vs_main_stopMusicSlot(0);
         }
 
         vs_main_stopAllSfx();

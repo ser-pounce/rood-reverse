@@ -652,9 +652,10 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
     if (type == 8) {
         func_8006CD60(arg0->unk0.unk68->akaoOffset, sp[0], sp[1]);
     } else if (type == 4) {
-        func_800461CC(0x7E, arg0->unk0.unk68->akaoOffset, rand() % 4 + 4, sp[0], sp[1]);
+        vs_main_playBankSfx(
+            0x7E, arg0->unk0.unk68->akaoOffset, rand() % 4 + 4, sp[0], sp[1]);
     } else {
-        func_800461CC(0x180, arg0->unk0.unk68->akaoOffset, type, sp[0], sp[1]);
+        vs_main_playBankSfx(0x180, arg0->unk0.unk68->akaoOffset, type, sp[0], sp[1]);
     }
 }
 

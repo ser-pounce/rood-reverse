@@ -1621,10 +1621,7 @@ static void _beginFrame(void)
 /**
  * Starts streaming the ending music track.
  */
-static void _streamEndingXa(void)
-{
-    vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); // Partial playback?
-}
+static void _streamEndingXa(void) { vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); }
 
 /**
  * Checks whether the ending music stream has finished.

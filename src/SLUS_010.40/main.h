@@ -498,7 +498,10 @@ typedef struct {
     u_int unk4;
     u_int sectorCount;
     int cdSector;
-    int byteCount;
+    union {
+        int byteCount; // data reads
+        int cdVolume; // XA streams: target CD volume
+    } request;
     void* vram;
     DslFILTER pcm;
     DslLOC cdLoc;
@@ -671,7 +674,7 @@ void vs_main_setClutState(int arg0);
 void vs_main_clutInit(void);
 int vs_main_diskLoadFile(int sector, int bytes, void* vram);
 void vs_main_resetPadAct(void);
-int vs_main_streamXa(int sector, int byteCount);
+int vs_main_streamXa(int sector, int cdVolume);
 int vs_main_checkStreamXaEnd(void);
 int func_8004552C(int id, int arg1, int arg2);
 int vs_main_getCurrentMusicId(void);

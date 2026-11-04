@@ -1063,7 +1063,8 @@ int func_800135D8(void* in_Data, int in_Wait, int in_FirstInstrument, int in_Spu
     return -1;
 }
 
-// Keep the published music base in a3 for matching; use a plain local for nonmatching builds.
+// Keep the published music base in a3 for matching; use a plain local for nonmatching
+// builds.
 #ifdef NON_MATCHING
 #define VS_REG_VAR(type, name, reg) type name
 #else

@@ -5911,8 +5911,7 @@ void SoundVM_BE_DisableAutoPan(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-void SoundVM_C4_EnableNoiseVoices(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C4_EnableNoiseVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
         g_pActiveMusicContext->NoiseChannelFlags |= in_VoiceFlags;
@@ -5922,8 +5921,7 @@ void SoundVM_C4_EnableNoiseVoices(
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 
-void SoundVM_C5_DisableNoiseVoices(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C5_DisableNoiseVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
         g_pActiveMusicContext->NoiseChannelFlags &= ~in_VoiceFlags;
@@ -5934,8 +5932,7 @@ void SoundVM_C5_DisableNoiseVoices(
     in_pChannel->NoiseTimer = 0;
 }
 
-void SoundVM_C6_EnableFmVoices(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C6_EnableFmVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
         g_pActiveMusicContext->FmChannelFlags |= in_VoiceFlags;
@@ -5945,8 +5942,7 @@ void SoundVM_C6_EnableFmVoices(
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
 }
 
-void SoundVM_C7_DisableFmVoices(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C7_DisableFmVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
         g_pActiveMusicContext->FmChannelFlags &= ~in_VoiceFlags;
@@ -5957,8 +5953,7 @@ void SoundVM_C7_DisableFmVoices(
     in_pChannel->FmTimer = 0;
 }
 
-void SoundVM_C2_EnableReverbVoices(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C2_EnableReverbVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
         g_pActiveMusicContext->ReverbChannelFlags |= in_VoiceFlags;
@@ -5968,8 +5963,7 @@ void SoundVM_C2_EnableReverbVoices(
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
 }
 
-void SoundVM_C3_DisableReverbVoices(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C3_DisableReverbVoices(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
         g_pActiveMusicContext->ReverbChannelFlags &= ~in_VoiceFlags;
@@ -6126,8 +6120,8 @@ void SoundVM_FE10_unk(
         *in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_FE11_unk(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE11_unk(FSoundChannel* in_pChannel __attribute__((unused)),
+    u_int in_VoiceFlags __attribute__((unused)))
 {
     g_pActiveMusicContext->SomeIndexRelatedToSpuVoiceInfo = 0;
 }

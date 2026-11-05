@@ -40,11 +40,19 @@ typedef struct {
 } padAct_t;
 
 typedef struct {
-    char unk0[6];
-    short unk6[5];
-    int unk10[6];
+    char active;
+    char frame;
+    char tick;
+    char speed;
+    char mode;
+    char unk5;
+    short pulseTarget[3];
+    short grayAmount;
+    short grayStep;
+    int color[3];
+    int colorStep[3];
     CVECTOR baseColor;
-} D_8005DC80_t;
+} _colorSlot_t;
 
 typedef struct {
     char unk4;
@@ -86,7 +94,7 @@ typedef struct {
     short bgTransitionTargetB;
     int bgColors[5][6];
     CVECTOR bgBaseColors[5];
-    D_8005DC80_t colorSlots[17];
+    _colorSlot_t colorSlots[17];
     u_char unk8214[0x54];
 } _clutState_t;
 
@@ -3759,7 +3767,7 @@ void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
     CVECTOR sp10;
-    D_8005DC80_t* temp_t0;
+    _colorSlot_t* temp_t0;
     int temp_a1;
     int temp_t1;
     int temp_t2;
@@ -3771,7 +3779,7 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     }
 
     temp_t0 = &_clutState.colorSlots[slot];
-    temp_a3 = _clutState.colorSlots[slot].unk10;
+    temp_a3 = _clutState.colorSlots[slot].color;
     temp_a1 = _shift_left(color->r);
     temp_t1 = _shift_left(color->g);
     temp_t2 = _shift_left(color->b);
@@ -3786,14 +3794,14 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
         temp_a3[2] = temp_t2;
     }
     if (frames != 0) {
-        temp_t0->unk0[0] = 1;
-        temp_t0->unk0[1] = 0;
-        temp_t0->unk0[2] = 0;
-        temp_t0->unk0[3] = frames;
+        temp_t0->active = 1;
+        temp_t0->frame = 0;
+        temp_t0->tick = 0;
+        temp_t0->speed = frames;
         return;
     }
 
-    temp_t0->unk0[0] = 0;
+    temp_t0->active = 0;
     sp10.r = (temp_a3[0] / 65536) - 64;
     sp10.g = (temp_a3[1] / 65536) - 64;
     sp10.b = (temp_a3[2] / 65536) - 64;
@@ -3802,7 +3810,7 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     if (slot != 0) {
         func_800A0768(slot - 1, &sp10);
     } else {
-        func_8008B430(&sp10, temp_t0->unk6[3] >> 2);
+        func_8008B430(&sp10, temp_t0->grayAmount >> 2);
     }
 }
 
@@ -3823,8 +3831,8 @@ static void _transformColorSlot(int mode, int frames, int slot, int r, int g, in
     int var_t0;
     int var_v0;
     int var_v1;
-    D_8005DC80_t* t1 = &_clutState.colorSlots[slot];
-    int* t2 = t1->unk10;
+    _colorSlot_t* t1 = &_clutState.colorSlots[slot];
+    int* t2 = t1->color;
 
     var_t4 = 0;
     switch (mode) {
@@ -3899,7 +3907,7 @@ static void _transformColorSlot(int mode, int frames, int slot, int r, int g, in
         var_a2 = t1->baseColor.b << 0x10;
         break;
     case 11:
-        t1->unk0[4] = 0;
+        t1->mode = 0;
         return;
     default:
         var_a1 = t2[0] + (r << 0x10);
@@ -3933,27 +3941,27 @@ static void _transformColorSlot(int mode, int frames, int slot, int r, int g, in
         t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (frames * 2));
         t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (frames * 2));
         t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (frames * 2));
-        t1->unk6[4] = ((var_t4 - t1->unk6[3]) / (frames * 2));
+        t1->grayStep = ((var_t4 - t1->grayAmount) / (frames * 2));
     } else {
         t2[0] = var_a1;
         t2[1] = var_t0;
         t2[2] = var_a2;
-        t1->unk6[3] = var_t4;
+        t1->grayAmount = var_t4;
     }
     var_v0 = 1;
     if (frames != 0) {
-        t1->unk0[0] = 1;
-        t1->unk0[1] = 0;
-        t1->unk0[2] = 0;
-        t1->unk0[3] = frames;
-        t1->unk0[4] = mode;
+        t1->active = 1;
+        t1->frame = 0;
+        t1->tick = 0;
+        t1->speed = frames;
+        t1->mode = mode;
         if (mode == 9) {
-            t1->unk6[0] = r;
-            t1->unk6[1] = g;
-            t1->unk6[2] = b;
+            t1->pulseTarget[0] = r;
+            t1->pulseTarget[1] = g;
+            t1->pulseTarget[2] = b;
         }
     } else {
-        t1->unk0[0] = 0;
+        t1->active = 0;
         var_v0 = t2[0] >> 0x10;
         if (t2[0] < 0) {
             var_v1 = t2[0] + 0xFFFF;
@@ -3976,7 +3984,7 @@ static void _transformColorSlot(int mode, int frames, int slot, int r, int g, in
         if (slot != 0) {
             func_800A0768(slot - 1, &sp10);
         } else {
-            func_8008B430(&sp10, ((u_short)t1->unk6[3] << 0x10) >> 0x12);
+            func_8008B430(&sp10, ((u_short)t1->grayAmount << 0x10) >> 0x12);
         }
     }
 }
@@ -4052,11 +4060,11 @@ void vs_main_updateColorSlots(void)
     CVECTOR sp18;
     int i;
     int var_v0;
-    D_8005DC80_t* p = _clutState.colorSlots;
+    _colorSlot_t* p = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
-        int* a2 = p[i].unk10;
-        if (p[i].unk0[0] != 0) {
+        int* a2 = p[i].color;
+        if (p[i].active != 0) {
             a2[0] += a2[3];
             a2[1] += a2[4];
             a2[2] += a2[5];
@@ -4081,24 +4089,24 @@ void vs_main_updateColorSlots(void)
             if (i != 0) {
                 func_800A0768(i - 1, &sp18);
             } else {
-                p[0].unk6[3] += p[0].unk6[4];
-                func_8008B430(&sp18, p[0].unk6[3] >> 2);
+                p[0].grayAmount += p[0].grayStep;
+                func_8008B430(&sp18, p[0].grayAmount >> 2);
             }
-            ++p[i].unk0[1];
-            if (p[i].unk0[1] >= (p[i].unk0[3] * 2)) {
-                if (p[i].unk0[4] == 9) {
-                    vs_main_transformColorSlot(4, p[i].unk0[3], i, p[i].unk6[0] / 2,
-                        p[i].unk6[1] / 2, p[i].unk6[2] / 2);
-                    p[i].unk0[4] = 10;
-                } else if (p[i].unk0[4] == 10) {
-                    _transformColorSlot(
-                        9, p[i].unk0[3], i, p[i].unk6[0], p[i].unk6[1], p[i].unk6[2]);
-                    p[i].unk0[4] = 9;
-                } else if (p[i].unk0[4] == 14) {
-                    _transformColorSlot(15, p[i].unk0[3], i, 0, 0, 0);
-                    p[i].unk0[4] = 15;
+            ++p[i].frame;
+            if (p[i].frame >= (p[i].speed * 2)) {
+                if (p[i].mode == 9) {
+                    vs_main_transformColorSlot(4, p[i].speed, i, p[i].pulseTarget[0] / 2,
+                        p[i].pulseTarget[1] / 2, p[i].pulseTarget[2] / 2);
+                    p[i].mode = 10;
+                } else if (p[i].mode == 10) {
+                    _transformColorSlot(9, p[i].speed, i, p[i].pulseTarget[0],
+                        p[i].pulseTarget[1], p[i].pulseTarget[2]);
+                    p[i].mode = 9;
+                } else if (p[i].mode == 14) {
+                    _transformColorSlot(15, p[i].speed, i, 0, 0, 0);
+                    p[i].mode = 15;
                 } else {
-                    p[i].unk0[0] = 0;
+                    p[i].active = 0;
                 }
             }
         }
@@ -4414,13 +4422,13 @@ void vs_main_clutInit(void)
     _clutState.bgTransitionMode = 0;
 
     for (i = 0; i < 17; ++i) {
-        _clutState.colorSlots[i].unk0[0] = 0;
-        _clutState.colorSlots[i].unk0[4] = 0;
-        _clutState.colorSlots[i].unk6[3] = 0;
+        _clutState.colorSlots[i].active = 0;
+        _clutState.colorSlots[i].mode = 0;
+        _clutState.colorSlots[i].grayAmount = 0;
         *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
-        _clutState.colorSlots[i].unk10[2] = 0x400000;
-        _clutState.colorSlots[i].unk10[1] = 0x400000;
-        _clutState.colorSlots[i].unk10[0] = 0x400000;
+        _clutState.colorSlots[i].color[2] = 0x400000;
+        _clutState.colorSlots[i].color[1] = 0x400000;
+        _clutState.colorSlots[i].color[0] = 0x400000;
     }
 }
 

@@ -745,10 +745,10 @@ static UNUSED u_char _2[2];
 static vs_main_HeapHeader _heapA;
 static vs_main_HeapHeader _heapB;
 static DslLOC _cdReadLoc;
-static int D_800501CC;
-static int D_800501D0;
-static int D_800501D4;
-static int D_800501D8;
+static int _cdaTrack;
+static int _cdaMinute;
+static int _cdaSecond;
+static int _cdaPeak;
 static UNUSED int _3;
 static vs_main_CdQueueSlot _cdQueue[32];
 static struct {
@@ -1876,10 +1876,10 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
         break;
     case DslDataReady:
         if (!(result[4] & 0x80)) {
-            D_800501CC = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
-            D_800501D0 = result[3];
-            D_800501D4 = result[4];
-            D_800501D8 = (result[6] << 8) | result[7];
+            _cdaTrack = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
+            _cdaMinute = result[3];
+            _cdaSecond = result[4];
+            _cdaPeak = (result[6] << 8) | result[7];
         }
         break;
     case DslDiskError:

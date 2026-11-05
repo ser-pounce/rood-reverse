@@ -2329,7 +2329,7 @@ static void _processCdQueue(void)
     func_800443CC();
 }
 
-int func_80044D94(void) { return Sound_GetMusicPosition(); }
+int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
@@ -2364,7 +2364,7 @@ int vs_main_stopMusicSlot(int id)
     return 1;
 }
 
-int func_80044EC8(int id)
+int vs_main_queueMusicSlot(int id)
 {
     u_int temp_v0;
 
@@ -2372,7 +2372,7 @@ int func_80044EC8(int id)
         if (vs_main_soundData.musicData[id - 1] != 0) {
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = func_800120E8(vs_main_soundData.currentMusicData);
+            temp_v0 = Sound_QueueMusic(vs_main_soundData.currentMusicData);
             if (temp_v0 != 0) {
                 vs_main_soundData.unk14[id - 1] = temp_v0;
                 vs_main_soundData.unk4 = temp_v0;
@@ -2573,7 +2573,7 @@ int vs_main_freeMusic(int slotId)
 
 static int nop5(void) { return 0; }
 
-int func_800454B8(int arg0)
+int vs_main_getMusicSlotVolume(int arg0)
 {
     if (arg0 != 0) {
         if (vs_main_soundData.unk14[arg0 - 1] != 0xFFFF) {
@@ -2583,7 +2583,7 @@ int func_800454B8(int arg0)
     return 0;
 }
 
-int func_8004550C(int arg0) { return func_800454B8(arg0); }
+int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(arg0); }
 
 int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {
@@ -2625,7 +2625,7 @@ void vs_main_stopMusic(void)
     }
 }
 
-static void func_80045630(int arg0)
+static UNUSED void func_80045630(int arg0)
 {
     Sound_PlaySfx(arg0 & 0xFFFF, D_8005FE70, 0x80, 0x7F);
 
@@ -3001,7 +3001,7 @@ int vs_main_freeSfx(u_int id)
     return 0;
 }
 
-int func_80046168(u_int arg0)
+int vs_main_setSfxSlot3Data(u_int arg0)
 {
     if (vs_main_soundData.unk14[16] == 0) {
         vs_main_soundData.unk14[16] = arg0;
@@ -3010,7 +3010,7 @@ int func_80046168(u_int arg0)
     return 0;
 }
 
-int func_80046194(void)
+int vs_main_clearSfxSlot3(void)
 {
     Sound_EvictSfx(-2, 0);
     Sound_EvictSfx(0, 0xF00000);
@@ -3182,7 +3182,7 @@ static int _freeCutsceneStream(int arg0)
     return 0;
 }
 
-int func_80046608(u_int arg0)
+int vs_main_setCutsceneStreamSlot3(u_int arg0)
 {
     if (vs_main_soundData.unk14[22] == 0) {
         vs_main_soundData.unk14[22] = arg0;
@@ -3191,7 +3191,7 @@ int func_80046608(u_int arg0)
     return 0;
 }
 
-int func_80046634(void)
+int vs_main_clearCutsceneStreamSlot3(void)
 {
 
     if (vs_main_soundData.unk14[22] != 0) {

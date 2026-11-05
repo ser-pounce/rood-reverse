@@ -4813,12 +4813,12 @@ int func_800CE9B0(void)
         if (D_800F5224 <= D_800F5228) {
 
             if (D_800F569C->block12Data != 0) {
-                func_80046194();
+                vs_main_clearSfxSlot3();
                 D_800F569C->block12Data = NULL;
             }
 
             if (D_800F569C->block13Data != NULL) {
-                func_80046634();
+                vs_main_clearCutsceneStreamSlot3();
                 D_800F569C->block13Data = NULL;
                 D_800F569C->unkCC = 0;
             }

@@ -321,7 +321,7 @@ static void Sound_StartFieldMusicLooped(void* arg0, int arg1)
     Sound_ExecuteSoundVm2Function(0x12);
 }
 
-u_int func_800120E8(void* arg0)
+u_int Sound_QueueMusic(void* arg0)
 {
     g_Sound_Vm2Params.unk0 = arg0;
     return Sound_ExecuteSoundVm2Function(0x14);
@@ -5212,7 +5212,7 @@ void SoundVM_A0_FinishChannel(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04 | SOUND_GLOBAL_UPDATE_08;
 }
 
-void SoundVM_FE1F_unk(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
+void SoundVM_FE1F_FinishIfMusicQueued(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     if (g_pActiveMusicContext->StatusFlags & 0x10000) {
         SoundVM_A0_FinishChannel(in_pChannel, in_VoiceFlags);

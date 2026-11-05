@@ -13,8 +13,8 @@ CloseEvent
 D_80040C18
 vs_main_battleTimer
 vs_main_ot
-D_8005DFD4
-D_8005DFD8
+vs_main_screenX
+vs_main_screenY
 D_8005E0C0
 D_8005FF30
 D_8006003A

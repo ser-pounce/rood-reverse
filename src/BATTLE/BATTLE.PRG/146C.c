@@ -5871,8 +5871,8 @@ void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, arg0, temp_s3);
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
-    D_8005DFD4 = 0;
-    D_8005DFD8 = 0;
+    vs_main_screenX = 0;
+    vs_main_screenY = 0;
     vs_main_screenWidth = arg0;
     vs_main_screenHeight = temp_s3;
     vs_main_drawEnv[1].dtd = 1;

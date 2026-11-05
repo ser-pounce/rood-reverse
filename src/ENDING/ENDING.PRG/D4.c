@@ -1494,8 +1494,8 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
 
-    D_8005DFD4 = 0;
-    D_8005DFD8 = 0;
+    vs_main_screenX = 0;
+    vs_main_screenY = 0;
     vs_main_screenWidth = w;
     vs_main_screenHeight = fbHeight;
     vs_main_drawEnv[1].dtd = 0;

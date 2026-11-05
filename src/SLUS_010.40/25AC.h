@@ -19,7 +19,7 @@ void Sound_StopMusicById(u_int);
 void Sound_PushMusicState(void);
 int func_80012024(void);
 u_int Sound_StartMasterAndMusicVolumeFade(void*, u_int, int);
-u_int func_800120E8(void*);
+u_int Sound_QueueMusic(void*);
 int Sound_PlaySfx(u_long, int, int, int);
 int Sound_PlaySfxFromPointer(void*, int, int, int);
 void Sound_EvictSfx(u_long, int);

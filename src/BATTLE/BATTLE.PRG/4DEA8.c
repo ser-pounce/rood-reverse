@@ -2198,8 +2198,8 @@ int vs_battle_script_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
 int func_800BA6E0(u_char* arg0, short arg1)
 {
     int temp_s0 = arg0[1];
-    if (func_8004550C(temp_s0) != 0) {
-        if (func_800454B8(temp_s0) != 0) {
+    if (vs_main_getMusicSlotVolume2(temp_s0) != 0) {
+        if (vs_main_getMusicSlotVolume(temp_s0) != 0) {
             return 1;
         }
         vs_main_stopMusicSlot(temp_s0);
@@ -2231,7 +2231,7 @@ int vs_battle_script_processSoundQueue(UNUSED u_char* arg0, UNUSED short arg1)
 
 int func_800BA7BC(u_char* arg0, short arg1)
 {
-    int temp_s1 = func_80044D94() >> 0x10;
+    int temp_s1 = vs_main_getMusicPosition() >> 0x10;
     return temp_s1 < vs_battle_getShort(arg0 + 1);
 }
 
@@ -2249,7 +2249,7 @@ int vs_battle_script_fadeSfxPan(u_char* arg0, UNUSED short arg1)
 
 int func_800BA890(u_char* arg0, short arg1)
 {
-    func_80044EC8(D_800F4C69 = arg0[1]);
+    vs_main_queueMusicSlot(D_800F4C69 = arg0[1]);
     return 0;
 }
 

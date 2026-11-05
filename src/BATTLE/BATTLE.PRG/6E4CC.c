@@ -162,13 +162,13 @@ void _parsePfileBlock11(u_char* arg0) { D_800F569C->block11Data = arg0; }
 void _parsePfileBlock12(void* arg0)
 {
     D_800F569C->block12Data = arg0;
-    func_80046168((u_int)arg0);
+    vs_main_setSfxSlot3Data((u_int)arg0);
 }
 
 void _parsePfileBlock13(void* arg0)
 {
     D_800F569C->block13Data = arg0;
-    D_800F569C->unkCC = func_80046608((u_int)arg0);
+    D_800F569C->unkCC = vs_main_setCutsceneStreamSlot3((u_int)arg0);
 }
 
 static int _loadfile(int lba, int size, void* buf)

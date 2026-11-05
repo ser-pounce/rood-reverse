@@ -258,7 +258,7 @@ static int _displayGameOverScreen(int init)
     } else {
         if (vs_main_buttonsPressed.all & (PADstart | PADRright)) {
             vs_battle_playMenuSelectSfx();
-            func_8004552C(1, 0, 60);
+            vs_main_fadeMusicVolume(1, 0, 60);
             color1 = -128;
             return 0;
         }

@@ -968,8 +968,8 @@ void vs_main_jumpToBattle(void)
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     ResetGraph(3);
-    func_80012B78();
-    func_80012B98();
+    Sound_StopMusic();
+    Sound_StopSfx();
     func_80012024();
     func_80012EBC();
     _displayLoadingScreen();
@@ -989,8 +989,8 @@ void vs_main_showEndingAndReturnToTitle(void)
     vs_main_padConnect(0, vs_main_padBuffer[0]);
     vs_main_padConnect(0x10, vs_main_padBuffer[1]);
     ResetGraph(3);
-    func_80012B78();
-    func_80012B98();
+    Sound_StopMusic();
+    Sound_StopSfx();
     func_80042CB0();
     _loadEndingPrg();
     vs_ending_exec();
@@ -1985,7 +1985,7 @@ static int _diskInitRead(int sector, u_int bytes, void* vram)
 {
     if (vs_main_disk.state == diskIdle) {
         vs_main_disk.cdSector = sector;
-        vs_main_disk.byteCount = bytes;
+        vs_main_disk.request.byteCount = bytes;
         vs_main_disk.vram = vram;
         vs_main_disk.ringBufIndex = 0;
         vs_main_disk.unk3C = 0;
@@ -2027,8 +2027,8 @@ static void func_800443CC(void)
             vol.val3 = 0;
             vol.val1 = 0;
             DsMix(&vol);
-            func_80012918(vs_main_disk.byteCount);
-            vs_sound_setCdVol(0x7F);
+            Sound_SetCdVolume(vs_main_disk.request.cdVolume);
+            Sound_SetCdMixVolume(0x7F);
             vs_main_disk.pcm.file = 1;
             vs_main_disk.pcm.chan = 0;
             DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
@@ -2049,7 +2049,7 @@ static void func_800443CC(void)
         if (status == DslReady) {
             vs_main_disk.unk4 = 0;
             vs_main_disk.sectorBufIndex = 0;
-            if (vs_main_disk.byteCount != 0) {
+            if (vs_main_disk.request.byteCount != 0) {
                 vs_main_disk.state = diskReadReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
                     &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
@@ -2081,8 +2081,8 @@ static void func_800443CC(void)
                 vol.val3 = 0;
                 vol.val1 = 0;
                 DsMix(&vol);
-                func_80012918(0);
-                func_80012940(0x3C, vs_main_disk.byteCount);
+                Sound_SetCdVolume(0);
+                Sound_FadeCdVolume(0x3C, vs_main_disk.request.cdVolume);
                 vs_main_disk.pcm.file = 1;
                 vs_main_disk.pcm.chan = 0;
                 DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
@@ -2109,7 +2109,7 @@ static void func_800443CC(void)
             vs_main_disk.sectorBufIndex = 0;
             ++vs_main_disk.unk3;
 
-            if (vs_main_disk.byteCount != 0) {
+            if (vs_main_disk.request.byteCount != 0) {
                 vs_main_disk.state = diskReadReady;
                 vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
                     &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
@@ -2127,7 +2127,7 @@ static void func_800443CC(void)
         break;
     }
     case diskStreamXaEnd:
-        func_80012918(0);
+        Sound_SetCdVolume(0);
         vs_main_disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
         if (vs_main_disk.commandId > 0) {
             vs_main_disk.state = diskIdle;
@@ -2165,7 +2165,7 @@ static void func_800443CC(void)
             } else if (vs_main_disk.bufferMode == cdBufferModeManual) {
                 ++vs_main_disk.sectorBufIndex;
                 if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
-                    && (vs_sound_spuTransferring() == 0)) {
+                    && (IsSpuTransferring() == 0)) {
                     vs_main_disk.state = diskIdle;
                     vs_main_freeHeapR(_cdReadBuffer);
                     _cdReadBuffer = NULL;
@@ -2199,11 +2199,11 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram)
     return result;
 }
 
-int vs_main_streamXa(int sector, int byteCount)
+int vs_main_streamXa(int sector, int cdVolume)
 {
     if (vs_main_disk.state == diskIdle) {
         vs_main_disk.cdSector = sector;
-        vs_main_disk.byteCount = byteCount;
+        vs_main_disk.request.cdVolume = cdVolume;
         vs_main_disk.ringBufIndex = 0;
         vs_main_disk.unk3C = 0;
         vs_main_disk.sectorBufIndex = 0;
@@ -2333,18 +2333,18 @@ static void _processCdQueue(void)
 
 int func_80044D94(void) { return func_80011F90(); }
 
-void func_80044DB4(void) { func_80012004(); }
+void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void func_80044DD4(int arg0) { func_80012468((void*)arg0); }
+void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold((void*)arg0); }
 
-int func_80044DF4(int id)
+int vs_main_stopMusicSlot(int id)
 {
     u_int new_var;
     int var_a1;
 
     if (id != 0) {
         if (vs_main_soundData.unk14[id - 1] != 0xFFFF) {
-            func_80011FDC(vs_main_soundData.unk14[id - 1]);
+            Sound_StopMusicById(vs_main_soundData.unk14[id - 1]);
             vs_main_soundData.unk14[id - 1] = 0xFFFF;
         }
         if (vs_main_soundData.currentMusicSlot == id) {
@@ -2354,7 +2354,7 @@ int func_80044DF4(int id)
         }
         return 1;
     }
-    func_80012B78();
+    Sound_StopMusic();
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk4 = 0xFFFF;
@@ -2386,7 +2386,7 @@ int func_80044EC8(int id)
     return 0;
 }
 
-int func_80044F60(int id, int arg1, u_int arg2)
+int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
 {
     u_int temp_v0;
 
@@ -2394,7 +2394,8 @@ int func_80044F60(int id, int arg1, u_int arg2)
         if (vs_main_soundData.musicData[id - 1] != 0) {
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = func_80012080(vs_main_soundData.currentMusicData, arg2, arg1);
+            temp_v0 = Sound_StartMasterAndMusicVolumeFade(
+                vs_main_soundData.currentMusicData, arg2, arg1);
             if (temp_v0 != 0) {
                 vs_main_soundData.unk14[id - 1] = temp_v0;
                 vs_main_soundData.unk4 = temp_v0;
@@ -2406,7 +2407,7 @@ int func_80044F60(int id, int arg1, u_int arg2)
     return 0;
 }
 
-int func_80045000(int id, int arg1, int arg2)
+int vs_main_playMusicSlot(int id, int arg1, int arg2)
 {
     u_int temp_v0;
 
@@ -2414,12 +2415,12 @@ int func_80045000(int id, int arg1, int arg2)
         if (vs_main_soundData.musicData[id - 1] != 0) {
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            func_800128A0(0, arg2, arg1);
-            temp_v0 = func_80011FB4(vs_main_soundData.currentMusicData);
+            Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
+            temp_v0 = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
             if (temp_v0 != 0) {
                 vs_main_soundData.unk14[id - 1] = temp_v0;
                 vs_main_soundData.unk4 = temp_v0;
-                func_800128A0(0, arg2, arg1);
+                Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             }
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
@@ -2560,7 +2561,7 @@ static int _loadMusicIntoFreeSlotAndClearQueue(int id)
 
 int vs_main_freeMusic(int slotId)
 {
-    func_80044DF4(slotId);
+    vs_main_stopMusicSlot(slotId);
 
     if (vs_main_soundData.musicData[slotId - 1] == 0) {
         return 0;
@@ -2586,28 +2587,28 @@ int func_800454B8(int arg0)
 
 int func_8004550C(int arg0) { return func_800454B8(arg0); }
 
-int func_8004552C(int id, int arg1, int arg2)
+int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
-        func_800128A0(vs_main_soundData.unk4, arg2, arg1);
+        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.unk4, arg2, arg1);
         return 1;
     }
     return 0;
 }
 
-int func_80045574(int id, int arg1, int arg2)
+int vs_main_fadeMusicTempo(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
-        func_800129D0(arg2, arg1);
+        Sound_FadeTempoScale(arg2, arg1);
         return 1;
     }
     return 0;
 }
 
-int func_800455AC(int id, int arg1, int arg2)
+int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
-        func_80012A6C(arg2, arg1);
+        Sound_FadeMasterPitchScale(arg2, arg1);
         return 1;
     }
     return 0;
@@ -2621,39 +2622,39 @@ void vs_main_stopMusic(void)
 {
     int id = vs_main_soundData.currentMusicSlot;
     if (id != 0) {
-        func_80044DF4(id);
+        vs_main_stopMusicSlot(id);
         vs_main_freeMusic(id);
     }
 }
 
 static void func_80045630(int arg0)
 {
-    func_8001217C(arg0 & 0xFFFF, D_8005FE70, 0x80, 0x7F);
+    Sound_PlaySfx(arg0 & 0xFFFF, D_8005FE70, 0x80, 0x7F);
 
     if (!((D_8005FE70 *= 2) & 1)) {
         D_8005FE70 = 1;
     }
 }
 
-static void func_80045684(int id, int arg1, int arg2, int arg3)
+static void _playSfxById(int id, int arg1, int arg2, int arg3)
 {
     if (arg1 == 0x200) {
         if (id != func_80012358(0x200)) {
-            func_8001217C(id, 0x200, arg2, arg3);
+            Sound_PlaySfx(id, 0x200, arg2, arg3);
         }
     } else {
-        func_8001217C(id, arg1, arg2, arg3);
+        Sound_PlaySfx(id, arg1, arg2, arg3);
     }
 }
 
-static void func_800456EC(void* data, int arg1, int arg2, int arg3)
+static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
 {
     if (arg1 == 0x200) {
         if (data != (void*)func_80012358(0x200)) {
-            func_800121F0(data, 0x200, arg2, arg3);
+            Sound_PlaySfxFromPointer(data, 0x200, arg2, arg3);
         }
     } else {
-        func_800121F0(data, arg1, arg2, arg3);
+        Sound_PlaySfxFromPointer(data, arg1, arg2, arg3);
     }
 }
 
@@ -2665,22 +2666,22 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
     case 0x7E:
     case 0xFE:
         if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
-            func_80045684(id & 0xFFFF, D_8005FE74, arg2, arg3);
+            _playSfxById(id & 0xFFFF, D_8005FE74, arg2, arg3);
             D_8005FE74 *= 2;
             if (!(D_8005FE74 & 0x7E)) {
                 D_8005FE74 = 2;
             }
         } else {
-            func_80045684(id & 0xFFFF, 0, arg2, arg3);
+            _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
         break;
 
     case 0x100:
     case 0x200:
         if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
-            func_80045684(id & 0xFFFF, D_8005FE7C, arg2, arg3);
+            _playSfxById(id & 0xFFFF, D_8005FE7C, arg2, arg3);
         } else {
-            func_80045684(id & 0xFFFF, 0, arg2, arg3);
+            _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
         break;
 
@@ -2688,13 +2689,13 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
         var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
         var_s0_2 += *((int*)var_s0_2 + id + 1);
         if (func_800123C8(var_s0_2) != 0) {
-            func_800456EC(var_s0_2, D_8005FE80, arg2, arg3);
+            _playSfxFromPointer(var_s0_2, D_8005FE80, arg2, arg3);
             D_8005FE80 *= 2;
             if (!(D_8005FE80 & arg0)) {
                 D_8005FE80 = 0x1000;
             }
         } else {
-            func_800456EC(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
         }
         break;
 
@@ -2702,13 +2703,13 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
         var_s0_2 = vs_main_soundData.sfxData[2];
         var_s0_2 += *((int*)var_s0_2 + id + 1);
         if (func_800123C8(var_s0_2) != 0) {
-            func_800456EC(var_s0_2, D_8005FE84, arg2, arg3);
+            _playSfxFromPointer(var_s0_2, D_8005FE84, arg2, arg3);
             D_8005FE84 *= 2;
             if (!(D_8005FE84 & arg0)) {
                 D_8005FE84 = 0x100000;
             }
         } else {
-            func_800456EC(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
         }
         break;
 
@@ -2791,7 +2792,7 @@ void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
     _do_panSfx(arg0, arg1, coords, z);
 }
 
-static int func_80045B28(int arg0, int arg1)
+static int _resolveSfxData(int arg0, int arg1)
 {
     int temp_v1;
 
@@ -2816,75 +2817,75 @@ static int func_80045B28(int arg0, int arg1)
     return temp_v1;
 }
 
-void func_80045BFC(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 {
     int temp_v0;
 
     if (arg1 != 0) {
-        temp_v0 = func_80045B28(arg0, arg1);
+        temp_v0 = _resolveSfxData(arg0, arg1);
 
         if (temp_v0 != 0) {
-            func_8001264C(temp_v0, 0, arg3, arg2);
+            Sound_FadeSfxVolumeMod(temp_v0, 0, arg3, arg2);
         } else {
             do {
-                func_8001264C(arg1, 0, arg3, arg2);
+                Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
             } while (0);
         }
     } else {
-        func_8001264C(0, arg0, arg3, arg2);
+        Sound_FadeSfxVolumeMod(0, arg0, arg3, arg2);
     }
 }
 
-void func_80045C74(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
     int temp_v0;
 
     if (arg1 != 0) {
-        temp_v0 = func_80045B28(arg0, arg1);
+        temp_v0 = _resolveSfxData(arg0, arg1);
         if (temp_v0 != 0) {
-            func_80012824(temp_v0, 0, arg3, arg2);
+            Sound_FadeSfxPitchMod(temp_v0, 0, arg3, arg2);
         } else {
             do {
-                func_80012824(arg1, 0, arg3, arg2);
+                Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
             } while (0);
         }
     } else {
-        func_80012824(0, arg0, arg3, arg2);
+        Sound_FadeSfxPitchMod(0, arg0, arg3, arg2);
     }
 }
 
-void func_80045CEC(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
-        arg0 = func_80045B28(arg0, arg1);
+        arg0 = _resolveSfxData(arg0, arg1);
         if (arg0 != 0) {
-            func_80012738(arg0, 0, arg3, arg2);
+            Sound_FadeSfxPanMod(arg0, 0, arg3, arg2);
         } else {
             do {
-                func_80012738(arg1, 0, arg3, arg2);
+                Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
             } while (0);
         }
     } else {
-        func_80012738(0, arg0, arg3, arg2);
+        Sound_FadeSfxPanMod(0, arg0, arg3, arg2);
     }
 }
 
-void func_80045D64(int arg0, int arg1)
+void vs_main_evictSfx(int arg0, int arg1)
 {
     if (arg1 != 0) {
-        arg0 = func_80045B28(arg0, arg1);
+        arg0 = _resolveSfxData(arg0, arg1);
 
         if (arg0 != 0) {
-            func_80012288(arg0, 0);
+            Sound_EvictSfx(arg0, 0);
         } else {
-            func_80012288(arg1, 0);
+            Sound_EvictSfx(arg1, 0);
         }
     } else {
-        func_80012288(0, arg0);
+        Sound_EvictSfx(0, arg0);
     }
 }
 
-void func_80045DC0(void) { func_80012B98(); }
+void vs_main_stopAllSfx(void) { Sound_StopSfx(); }
 
 int vs_main_loadSfxSlot(int id, u_int slot)
 {
@@ -2991,8 +2992,8 @@ int vs_main_freeSfx(u_int id)
             if (vs_main_soundData.currentSfxId == id) {
                 vs_main_soundData.currentSfxId = 0;
             }
-            func_80012288(-2, 0);
-            func_80012288(0, 0xFF000);
+            Sound_EvictSfx(-2, 0);
+            Sound_EvictSfx(0, 0xFF000);
             vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
             vs_main_soundData.sfxIds[id - 1] = 0;
             vs_main_soundData.sfxData[id - 1] = 0;
@@ -3013,13 +3014,13 @@ int func_80046168(u_int arg0)
 
 int func_80046194(void)
 {
-    func_80012288(-2, 0);
-    func_80012288(0, 0xF00000);
+    Sound_EvictSfx(-2, 0);
+    Sound_EvictSfx(0, 0xF00000);
     vs_main_soundData.sfxData[2] = NULL;
     return 1;
 }
 
-void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
+void vs_main_playBankSfx(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
 {
     int var_s0;
     void* temp_s1;
@@ -3052,16 +3053,16 @@ void func_800461CC(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
         } else {
             vs_main_nop10(0x95, 0);
         }
-        func_800456EC(temp_s1, var_s0, arg3, arg4);
+        _playSfxFromPointer(temp_s1, var_s0, arg3, arg4);
     }
 }
 
-void func_800462E8(int arg0, int* arg1, u_int arg2)
+void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
 {
-    func_800461CC(arg0, arg1, arg2, 0x80, 0x7F);
+    vs_main_playBankSfx(arg0, arg1, arg2, 0x80, 0x7F);
 }
 
-static void func_80046310(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
+static void _do_panBankSfx(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
 {
     int temp_t0;
     int var_v0;
@@ -3109,11 +3110,11 @@ static void func_80046310(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
     temp_t0 = 0x7F - (var_v1 >> 3);
 
     if (temp_t0 > 0) {
-        func_800461CC(arg0, arg1, arg2, arg3, temp_t0);
+        vs_main_playBankSfx(arg0, arg1, arg2, arg3, temp_t0);
     }
 }
 
-static void func_800463BC(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
+static void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
 {
     int z;
     long sxy;
@@ -3123,10 +3124,10 @@ static void func_800463BC(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
     SetRotMatrix(&vs_scratch.viewMatrix);
     SetTransMatrix(&vs_scratch.viewMatrix);
     z = RotTransPers(vec, &sxy, &value, &flag);
-    func_80046310(arg0, arg1, arg2, sxy, z);
+    _do_panBankSfx(arg0, arg1, arg2, sxy, z);
 }
 
-void func_8004644C(int arg0, int* arg1, int arg2)
+void vs_main_evictBankSfx(int arg0, int* arg1, int arg2)
 {
     int var_a1;
     char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];
@@ -3137,27 +3138,27 @@ void func_8004644C(int arg0, int* arg1, int arg2)
         var_a0 = 0;
         var_a1 = arg0;
     }
-    func_80012288((int)var_a0, var_a1);
+    Sound_EvictSfx((int)var_a0, var_a1);
 }
 
-void func_80046494(int arg0, int* arg1, int arg2, int arg3, int arg4)
+void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4)
 {
     int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
 
     if (arg2 == 0) {
-        func_8001264C(0, arg0, arg4 & 0xFF, arg3);
+        Sound_FadeSfxVolumeMod(0, arg0, arg4 & 0xFF, arg3);
     } else {
-        func_8001264C(a0, 0, arg4 & 0xFF, arg3);
+        Sound_FadeSfxVolumeMod(a0, 0, arg4 & 0xFF, arg3);
     }
 }
 
-static void func_800464DC(void) { func_80013328(); }
+static void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
-static int func_800464FC(int arg0, int arg1, int arg2)
+static int _startCutsceneStream(int arg0, int arg1, int arg2)
 {
     if ((arg0 - 1u) < 3) {
         if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            func_80013378(0, arg2);
+            Sound_FadeOutCutscene(0, arg2);
             func_800132C4(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
             return 1;
         }
@@ -3165,13 +3166,16 @@ static int func_800464FC(int arg0, int arg1, int arg2)
     return 0;
 }
 
-static void func_80046578(int arg0) { func_800464FC(arg0, 0x80, 0x7F); }
+void vs_main_startCutsceneStreamDefault(int arg0)
+{
+    _startCutsceneStream(arg0, 0x80, 0x7F);
+}
 
-static int func_8004659C(int arg0)
+static int _freeCutsceneStream(int arg0)
 {
     if ((arg0 - 1u) < 3) {
         if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            func_80013328();
+            Sound_StopCutsceneStream();
             vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
             vs_main_soundData.unk64[arg0 - 1] = 0;
             return 1;
@@ -3193,7 +3197,7 @@ int func_80046634(void)
 {
 
     if (vs_main_soundData.unk14[22] != 0) {
-        func_80013328();
+        Sound_StopCutsceneStream();
         vs_main_soundData.unk14[22] = 0;
         return 1;
     }
@@ -3243,7 +3247,7 @@ int vs_main_processSoundQueue(void)
 
     if (vs_main_soundData.soundQueueSlot != NULL) {
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
-            temp_v0 = vs_sound_spuTransferring();
+            temp_v0 = IsSpuTransferring();
             if (temp_v0 == 0) {
                 vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
                 vs_main_soundData.soundQueueSlot = NULL;
@@ -3289,16 +3293,16 @@ void vs_main_loadAndWaitSoundSlot(int id)
     }
 }
 
-void vs_main_setMonoSound(int set) { vs_sound_setMonoSound(set); }
+void vs_main_setMonoSound(int set) { Sound_SetSpeakerMode(set); }
 
-static void func_800468DC(void) { func_80012918(0x7FFF); }
+static void func_800468DC(void) { Sound_SetCdVolume(0x7FFF); }
 
 static void _loadMenuSound(void)
 {
     void* buf;
 
     InitSound();
-    vs_sound_setCdVol(0x7F);
+    Sound_SetCdMixVolume(0x7F);
     buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
     func_80012BB8(buf, 1);

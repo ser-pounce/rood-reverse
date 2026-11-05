@@ -2009,7 +2009,7 @@ int func_8009CFB0(int actorId)
         }
     exit:
         if (var_v0 == 0) {
-            func_8004644C(0x180, temp_s1->unk0.unk68->akaoOffset, 0);
+            vs_main_evictBankSfx(0x180, temp_s1->unk0.unk68->akaoOffset, 0);
             vs_main_freeHeap(temp_s1->unk0.unk68);
             vs_main_freeHeap(temp_s1->unk5D0);
         }

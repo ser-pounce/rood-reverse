@@ -273,7 +273,6 @@ typedef struct {
     short index;
 } func_800D5A98_t2;
 
-void func_80046578(int);
 void _renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
@@ -7835,7 +7834,7 @@ int func_800D5904(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
     if (((command >> 18) & 3) == 2) {
         if (D_800F569C->unkCC != 0) {
-            func_80046578(D_800F569C->unkCC);
+            vs_main_startCutsceneStreamDefault(D_800F569C->unkCC);
         }
     } else {
         int bank = ((command >> 18) & 3) == 0 ? 0x7E : 0xF00000;

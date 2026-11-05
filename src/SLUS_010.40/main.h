@@ -206,7 +206,7 @@ typedef struct {
 } D_80060068_t2;
 
 typedef struct {
-    int unk0;
+    int restorePending;
     short currentHP;
     short maxHP;
     short currentMP;
@@ -600,10 +600,10 @@ int vs_main_getRandSmoothed(int);
 int vs_main_execTitle(void);
 void vs_main_exec(void);
 void vs_main_enableReset(int);
-void func_80042CA0(void);
-void func_80042CB0(void);
+void vs_main_setCharacterRestorePending(void);
+void vs_main_captureSaveState(void);
 int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2);
-int func_800434A4(u_int arg0, int arg1);
+int vs_main_stopVibration(u_int arg0, int arg1);
 void vs_main_padDisconnectAll(void);
 int vs_main_updatePadState(int, char[34]);
 void vs_main_padConnect(int, char[34]);
@@ -658,19 +658,19 @@ int vs_main_clearCutsceneStreamSlot3(void);
 void vs_main_loadClutTransition(
     /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
 void vs_main_transformClutSlot(int, int, int, short, int, int);
-void func_800472D0(int arg0, D_8005DC6C_t* arg1);
+void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1);
 void vs_main_loadSoundFile(int);
-void func_800478E0(int, int, int, int, int);
+void vs_main_transformBgColors(int, int, int, int, int);
 void func_80047FC0(int, int, int, int, int, int);
-void func_80047FFC(void);
-void func_800483FC(void);
+void vs_main_updateBgColors(void);
+void vs_main_updateClutSlots(void);
 void func_800481C0(void);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
 void vs_main_nop10(int, int);
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count);
-void func_80048EC4(void);
+void vs_main_loadBgColors(void);
 void vs_main_commitClut(void);
 void vs_main_setClutState(int arg0);
 void vs_main_clutInit(void);

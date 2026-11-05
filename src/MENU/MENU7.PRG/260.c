@@ -8,7 +8,7 @@
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-#define PACKAGE_SAVE_PREPARE() func_80042CB0()
+#define PACKAGE_SAVE_PREPARE() vs_main_captureSaveState()
 #define KEYSTREAM_BITS(n) vs_battle_keystreamBits(n)
 #define PACKAGE_SAVE_CLEAR_CONTAINER() \
     if (!(D_800F4EA0 & 0x400)) { \

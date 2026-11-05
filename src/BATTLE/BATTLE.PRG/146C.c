@@ -8033,9 +8033,9 @@ void vs_battle_exec(void)
 
                     for (i = 0; i < vs_gametime_tickspeed / 2; ++i) {
                         vs_main_setVibrateParams();
-                        func_80047FFC();
+                        vs_main_updateBgColors();
                         func_800481C0();
-                        func_800483FC();
+                        vs_main_updateClutSlots();
                     }
 
                     _drawScreenTransition(ot);
@@ -8282,7 +8282,7 @@ void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short a
 
 void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
 {
-    func_800478E0(arg0, arg1, arg2, arg3, arg4);
+    vs_main_transformBgColors(arg0, arg1, arg2, arg3, arg4);
 }
 
 UNUSED void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3);
@@ -8300,7 +8300,7 @@ void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
 }
 
-void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { func_800472D0(arg0, arg1); }
+void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { vs_main_fadeBgColors(arg0, arg1); }
 
 void func_8007B410(void)
 {
@@ -15260,7 +15260,7 @@ void func_80089DC0(int arg0)
         v0[2] = 0;
     }
 
-    func_80048EC4();
+    vs_main_loadBgColors();
 
     if (((_mpdHeader*)mpdHeader)->lootSectionLen != 0) {
         v0 = ((_mpdHeader*)mpdHeader)->lootSectionOffset;

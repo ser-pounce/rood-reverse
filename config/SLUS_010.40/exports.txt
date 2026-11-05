@@ -38,8 +38,8 @@ firstfile
 FntLoad
 FntOpen
 func_80041C68
-func_80042CA0
-func_80042CB0
+vs_main_setCharacterRestorePending
+vs_main_captureSaveState
 GetClut
 GetTPage
 LoadImage

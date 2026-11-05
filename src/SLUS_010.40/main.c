@@ -990,7 +990,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
-    func_80042CB0();
+    vs_main_captureSaveState();
     _loadEndingPrg();
     vs_ending_exec();
     DrawSync(0);
@@ -1182,7 +1182,7 @@ static void _sysReinit(void)
     vs_main_gametime.t.m = 0;
     vs_main_gametime.t.s = 0;
     vs_main_gametime.t.f = 0;
-    D_80060068.unk0.unk0 = 0;
+    D_80060068.unk0.restorePending = 0;
 }
 
 int vs_main_execTitle(void)
@@ -1214,9 +1214,9 @@ void vs_main_wait(void) { vs_overlay_wait(); }
 
 void vs_main_enableReset(int enable) { _resetEnabled = enable; }
 
-void func_80042CA0(void) { D_80060068.unk0.unk0 = 1; }
+void vs_main_setCharacterRestorePending(void) { D_80060068.unk0.restorePending = 1; }
 
-void func_80042CB0(void)
+void vs_main_captureSaveState(void)
 {
     func_8006EBF8_t sp10;
     int j;
@@ -1440,7 +1440,7 @@ int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
     return 0;
 }
 
-static int func_80043470(int arg0)
+static int _clearVibrationSlot(int arg0)
 {
     int i = arg0 - 1;
     _padAct[i].unk10[7] = 0;
@@ -1451,11 +1451,11 @@ static int func_80043470(int arg0)
     return arg0;
 }
 
-int func_800434A4(u_int arg0, int arg1)
+int vs_main_stopVibration(u_int arg0, int arg1)
 {
     int i;
     if (arg0 - 1 < 2) {
-        return func_80043470(arg0);
+        return _clearVibrationSlot(arg0);
     }
     if (arg0 != 0) {
         return 0;
@@ -1463,30 +1463,30 @@ int func_800434A4(u_int arg0, int arg1)
     if (arg1 != 0) {
         for (i = 0; i < 2; ++i) {
             if (_padAct[i].unkA == arg1) {
-                func_80043470(i + 1);
+                _clearVibrationSlot(i + 1);
             }
         }
     } else {
         for (i = 0; i < 2;) {
-            func_80043470(++i);
+            _clearVibrationSlot(++i);
         }
     }
     return 1;
 }
 
-static int func_80043554(int arg0)
+static int _pauseVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
     _padAct[v0].unk8 = 0;
     return arg0;
 }
 
-static int func_8004357C(int arg0)
+static UNUSED int _pauseVibration(int arg0)
 {
     int i;
 
     if ((arg0 - 1u) < 2) {
-        return func_80043554(arg0);
+        return _pauseVibrationSlot(arg0);
     }
 
     if (arg0 != 0) {
@@ -1494,25 +1494,25 @@ static int func_8004357C(int arg0)
     }
 
     for (i = 0; i < 2;) {
-        func_80043554(++i);
+        _pauseVibrationSlot(++i);
     }
 
     return 1;
 }
 
-static int func_800435DC(int arg0)
+static int _resumeVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
     _padAct[v0].unk8 = 1;
     return arg0;
 }
 
-static int func_80043608(int arg0)
+static UNUSED int _resumeVibration(int arg0)
 {
     int i;
 
     if ((arg0 - 1u) < 2) {
-        return func_800435DC(arg0);
+        return _resumeVibrationSlot(arg0);
     }
 
     if (arg0 != 0) {
@@ -1520,7 +1520,7 @@ static int func_80043608(int arg0)
     }
 
     for (i = 0; i < 2;) {
-        func_800435DC(++i);
+        _resumeVibrationSlot(++i);
     }
 
     return 1;
@@ -2003,7 +2003,7 @@ static int _diskInitRead(int sector, u_int bytes, void* vram)
     return 0;
 }
 
-static void func_800443CC(void)
+static void _diskUpdate(void)
 {
     DslATV vol;
     int i;
@@ -2326,7 +2326,7 @@ static void _processCdQueue(void)
             }
         }
     }
-    func_800443CC();
+    _diskUpdate();
 }
 
 int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
@@ -3293,7 +3293,7 @@ void vs_main_loadAndWaitSoundSlot(int id)
 
 void vs_main_setMonoSound(int set) { Sound_SetSpeakerMode(set); }
 
-static void func_800468DC(void) { Sound_SetCdVolume(0x7FFF); }
+static UNUSED void _setCdVolumeMax(void) { Sound_SetCdVolume(0x7FFF); }
 
 static void _loadMenuSound(void)
 {
@@ -3623,7 +3623,7 @@ void vs_main_transformClutSlot(
 
 static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
-void func_800472D0(int arg0, D_8005DC6C_t* arg1)
+void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1)
 {
     int sp10[5];
     int i;
@@ -3670,14 +3670,14 @@ void func_80047464(int arg0, D_8005DC6C_t* arg1)
     int i;
 
     if (_clutState.active != 0) {
-        func_800472D0(arg0, arg1);
+        vs_main_fadeBgColors(arg0, arg1);
         for (i = 0; i < 5; ++i) {
             _clutState.unk7F14[i] = arg1[i];
         }
     }
 }
 
-void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
+void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
     int sp10[5];
     int temp_v0;
@@ -3833,10 +3833,10 @@ void func_800474DC(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-void func_800478E0(int arg0, int arg1, int arg2, int arg3, int arg4)
+void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
     if (_clutState.active != 0) {
-        func_800474DC(arg0, arg1, arg2, arg3, arg4);
+        _transformBgColors(arg0, arg1, arg2, arg3, arg4);
     }
 }
 
@@ -4072,7 +4072,7 @@ void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     }
 }
 
-void func_80047FFC(void)
+void vs_main_updateBgColors(void)
 {
     int sp18[5];
     int i;
@@ -4115,13 +4115,14 @@ void func_80047FFC(void)
     _clutState.bgAnimFrame += 1;
     if (_clutState.bgAnimFrame >= (_clutState.bgAnimSpeed * 2)) {
         if (_clutState.bgTransitionMode == 9) {
-            func_800474DC(4, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR / 2,
-                _clutState.bgTransitionTargetG / 2, _clutState.bgTransitionTargetB / 2);
+            _transformBgColors(4, _clutState.bgAnimSpeed,
+                _clutState.bgTransitionTargetR / 2, _clutState.bgTransitionTargetG / 2,
+                _clutState.bgTransitionTargetB / 2);
             _clutState.bgTransitionMode = 10;
             return;
         }
         if (_clutState.bgTransitionMode == 10) {
-            func_800474DC(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
+            _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
                 _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
             _clutState.bgTransitionMode = 9;
             return;
@@ -4188,7 +4189,7 @@ void func_800481C0(void)
     }
 }
 
-void func_800483FC(void)
+void vs_main_updateClutSlots(void)
 {
     int i;
     int j;
@@ -4311,7 +4312,10 @@ void func_800483FC(void)
     }
 }
 
-static void func_80048A3C(int arg0) { _clutState.slots[arg0].animState.active = 0; }
+static UNUSED void _stopClutSlotAnim(int arg0)
+{
+    _clutState.slots[arg0].animState.active = 0;
+}
 
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count)
 {
@@ -4447,7 +4451,7 @@ void func_80048E68(u_short* srcClut, int slot, u_short rOffset, u_short gOffset,
     func_80048B8C(8, srcClut, slot, rOffset, gOffset, bOffset, arg5);
 }
 
-void func_80048EC4(void)
+void vs_main_loadBgColors(void)
 {
     int i;
     int (*bgColors)[6] = _clutState.bgColors;

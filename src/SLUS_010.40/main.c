@@ -114,7 +114,7 @@ char _vibrationOnBank[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 
     255, 0, 0, 0 };
 char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
 int vs_main_titleScreenCount = 0;
-int D_8004A52C = 0;
+int vs_main_debugPause = 0;
 
 #define WAVE_FILES(X) \
     X(0000), X(0001), X(0002), X(0003), X(0004), X(0005), X(0006), X(0007), \

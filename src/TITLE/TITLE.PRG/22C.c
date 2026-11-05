@@ -1717,7 +1717,9 @@ static void _initGameData(void)
     }
 
     for (i = 0; i < 1; ++i) {
-        vs_main_bzero((char*)&D_80060068 + i * sizeof D_80060068, 0x50);
+        vs_main_bzero(
+            (char*)&vs_main_characterSnapshot + i * sizeof vs_main_characterSnapshot,
+            0x50);
     }
 
     vs_main_bzero(&vs_main_spawnPoint, sizeof vs_main_spawnPoint);

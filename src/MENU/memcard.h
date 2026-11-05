@@ -603,7 +603,8 @@ static int _applyLoadedSaveFile(int apply)
         vs_main_actionsLearned, spmcimg[1].actionsLearned, sizeof vs_main_actionsLearned);
     _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
     _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
-    _rMemcpy(&D_80060068, &spmcimg[1].character, sizeof D_80060068);
+    _rMemcpy(&vs_main_characterSnapshot, &spmcimg[1].character,
+        sizeof vs_main_characterSnapshot);
     _rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
     _rMemcpy(&vs_main_inventoryIndices, &spmcimg[1].inventoryIndices,
         sizeof vs_main_inventoryIndices);
@@ -699,20 +700,21 @@ static void _packageGameSaveData(int targetFile)
 
     s5->identity.base.version = SAVE_FORMAT_VERSION;
     s5->stats.gameTime.t = vs_main_gametime.t;
-    s5->stats.currentHP = D_80060068.unk0.currentHP;
-    s5->stats.maxHP = D_80060068.unk0.maxHP;
+    s5->stats.currentHP = vs_main_characterSnapshot.stats.currentHP;
+    s5->stats.maxHP = vs_main_characterSnapshot.stats.maxHP;
     s5->stats.cumulativeSaveCount = vs_main_settings.cumulativeSaveCount;
     s5->stats.currentGameSaveCount = vs_main_settings.currentGameSaveCount;
     PACKAGE_SAVE_SET_LOCATION();
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
-    s5->stats.currentMP = D_80060068.unk0.currentMP;
-    s5->stats.maxMP = D_80060068.unk0.maxMP;
+    s5->stats.currentMP = vs_main_characterSnapshot.stats.currentMP;
+    s5->stats.maxMP = vs_main_characterSnapshot.stats.maxMP;
     _rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof savedata->stateFlags);
     _rMemcpy(savedata->actionsLearned, vs_main_actionsLearned,
         sizeof savedata->actionsLearned);
     _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
     _rMemcpy(&savedata->settings, &vs_main_settings, sizeof savedata->settings);
-    _rMemcpy(&savedata->character, &D_80060068, sizeof savedata->character);
+    _rMemcpy(
+        &savedata->character, &vs_main_characterSnapshot, sizeof savedata->character);
     _rMemcpy(&savedata->inventory, &vs_main_inventory, sizeof savedata->inventory);
     _rMemcpy(&savedata->inventoryIndices, &vs_main_inventoryIndices,
         sizeof savedata->inventoryIndices);

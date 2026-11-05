@@ -316,7 +316,7 @@ static void func_800F9AD8(void)
     int j;
     int i;
     vs_battle_actor2* temp_s0 = vs_battle_characterState->unk3C;
-    D_80060068_t3* s1 = &D_80060068.unk0;
+    vs_main_characterSnapshotStats_t* s1 = &vs_main_characterSnapshot.stats;
 
     temp_s0->currentHP = s1->currentHP;
     temp_s0->maxHP = s1->maxHP;
@@ -357,7 +357,7 @@ static void func_800F9AD8(void)
         func_800CB660(1);
     }
 
-    D_80060068.unk0.restorePending = 0;
+    vs_main_characterSnapshot.stats.restorePending = 0;
     vs_battle_cameraCurrentSpherical.delta.pitch = s1->cameraPitch;
     vs_battle_cameraCurrentSpherical.initialDistance = s1->cameraDistance;
 }
@@ -457,7 +457,7 @@ static void func_800F9CCC(void)
 
     vs_battle_nop0(vs_battle_characterState->unk3C);
 
-    if (D_80060068.unk0.restorePending != 0) {
+    if (vs_main_characterSnapshot.stats.restorePending != 0) {
         func_800F9AD8();
     }
 

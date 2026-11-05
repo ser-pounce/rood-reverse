@@ -66,7 +66,7 @@ typedef struct {
     char actionsLearned[32];
     char mapStatus[0x48];
     vs_main_settings_t settings;
-    D_80060068_t character;
+    vs_main_characterSnapshot_t character;
     vs_main_inventory_t inventory;
     vs_main_inventoryIndices_t inventoryIndices;
     _mpdRoomDoorSection_t spawnPoint;

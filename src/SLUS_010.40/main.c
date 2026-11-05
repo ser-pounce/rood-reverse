@@ -940,7 +940,7 @@ vs_main_mapStatus_t vs_main_mapStatus;
 vs_main_settings_t vs_main_settings;
 vs_main_artsStatus_t vs_main_artsStatus;
 int vs_main_zoneEnemyCacheIndex;
-D_80060068_t D_80060068;
+vs_main_characterSnapshot_t vs_main_characterSnapshot;
 vs_main_inventory_t vs_main_inventory;
 _mpdRoomDoorSection_t vs_main_spawnPoint;
 vs_Gametime_t vs_main_gametime;
@@ -1098,7 +1098,7 @@ static void _sysReinit(void)
     vs_main_gametime.t.m = 0;
     vs_main_gametime.t.s = 0;
     vs_main_gametime.t.f = 0;
-    D_80060068.unk0.restorePending = 0;
+    vs_main_characterSnapshot.stats.restorePending = 0;
 }
 
 int vs_main_execTitle(void)
@@ -1130,7 +1130,10 @@ void vs_main_wait(void) { vs_overlay_wait(); }
 
 void vs_main_enableReset(int enable) { _resetEnabled = enable; }
 
-void vs_main_setCharacterRestorePending(void) { D_80060068.unk0.restorePending = 1; }
+void vs_main_setCharacterRestorePending(void)
+{
+    vs_main_characterSnapshot.stats.restorePending = 1;
+}
 
 void vs_main_captureSaveState(void)
 {
@@ -1143,7 +1146,7 @@ void vs_main_captureSaveState(void)
     int var_t4;
     signed char actionsLearned;
     vs_battle_actor2* temp_t0;
-    D_80060068_t* temp_t5;
+    vs_main_characterSnapshot_t* temp_t5;
     int v0;
     int v0_2;
     int v1;
@@ -1166,44 +1169,44 @@ void vs_main_captureSaveState(void)
         vs_main_actionsLearned[var_s1] = actionsLearned;
     }
     temp_t0 = vs_battle_characterState->unk3C;
-    temp_t5 = &D_80060068;
-    temp_t5->unk0.currentHP = temp_t0->currentHP;
-    temp_t5->unk0.maxHP = temp_t0->maxHP;
-    temp_t5->unk0.currentMP = temp_t0->currentMP;
-    temp_t5->unk0.maxMP = temp_t0->maxMP;
-    temp_t5->unk0.strength = temp_t0->strength;
-    temp_t5->unk0.totalStrength = temp_t0->totalStrength;
-    temp_t5->unk0.intelligence = temp_t0->intelligence;
-    temp_t5->unk0.totalIntelligence = temp_t0->totalIntelligence;
-    temp_t5->unk0.agility = temp_t0->agility;
-    temp_t5->unk0.totalAgility = temp_t0->totalAgility;
-    temp_t5->unk0.risk = temp_t0->risk;
-    temp_t5->unk0.flags = temp_t0->unk954;
-    temp_t5->unk0.statuses = temp_t0->statuses;
+    temp_t5 = &vs_main_characterSnapshot;
+    temp_t5->stats.currentHP = temp_t0->currentHP;
+    temp_t5->stats.maxHP = temp_t0->maxHP;
+    temp_t5->stats.currentMP = temp_t0->currentMP;
+    temp_t5->stats.maxMP = temp_t0->maxMP;
+    temp_t5->stats.strength = temp_t0->strength;
+    temp_t5->stats.totalStrength = temp_t0->totalStrength;
+    temp_t5->stats.intelligence = temp_t0->intelligence;
+    temp_t5->stats.totalIntelligence = temp_t0->totalIntelligence;
+    temp_t5->stats.agility = temp_t0->agility;
+    temp_t5->stats.totalAgility = temp_t0->totalAgility;
+    temp_t5->stats.risk = temp_t0->risk;
+    temp_t5->stats.flags = temp_t0->unk954;
+    temp_t5->stats.statuses = temp_t0->statuses;
 
     for (i = 0; i < 8; ++i) {
-        temp_t5->unk0.statusTimers[i] = temp_t0->statusTimers[i];
+        temp_t5->stats.statusTimers[i] = temp_t0->statusTimers[i];
     }
 
     var_t4 = 0;
     var_t3 = 0;
 
     for (i = 0; i < 6; ++i) {
-        temp_t5->unk0.limbs[i].hp = temp_t0->limbs[i].hp;
-        temp_t5->unk0.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
+        temp_t5->stats.limbs[i].hp = temp_t0->limbs[i].hp;
+        temp_t5->stats.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->unk0.limbs[i].types[j] = temp_t0->limbs[i].types[j];
+            temp_t5->stats.limbs[i].types[j] = temp_t0->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->unk0.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
+            temp_t5->stats.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
         }
     }
 
-    temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->unk0.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
+    temp_t5->stats.weaponDrawn = vs_battle_characterState->weaponDrawn;
+    temp_t5->stats.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    temp_t5->stats.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         vs_battle_saveEnemyState(var_s1, 0);

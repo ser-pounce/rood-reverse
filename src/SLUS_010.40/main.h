@@ -178,11 +178,11 @@ typedef struct {
 typedef struct {
     int titles;
     u_short enemyKills[6];
-    int unk10;
+    UNUSED int _0;
     u_short weaponAttacks[10];
     vs_trialScore_t bossTimeTrialScores[8][3];
     u_short maxChain;
-    u_short unk8A;
+    UNUSED u_short _1;
     u_int clearCount;
     u_int completionTimeMinutes;
     u_int mapCompletion;
@@ -203,7 +203,7 @@ typedef struct {
     u_short maxHp;
     u_short types[4];
     u_short affinities[8];
-} D_80060068_t2;
+} vs_main_characterSnapshotLimb_t;
 
 typedef struct {
     int restorePending;
@@ -221,16 +221,16 @@ typedef struct {
     u_short flags;
     int statuses;
     char statusTimers[8];
-    D_80060068_t2 limbs[6];
+    vs_main_characterSnapshotLimb_t limbs[6];
     int weaponDrawn;
     int cameraPitch;
     int cameraDistance;
-} D_80060068_t3;
+} vs_main_characterSnapshotStats_t;
 
 typedef struct {
-    D_80060068_t3 unk0;
-    int unk88[9];
-} D_80060068_t;
+    vs_main_characterSnapshotStats_t stats;
+    UNUSED int _[9];
+} vs_main_characterSnapshot_t;
 
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
@@ -583,7 +583,7 @@ extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int vs_main_zoneEnemyCacheIndex;
-extern D_80060068_t D_80060068;
+extern vs_main_characterSnapshot_t vs_main_characterSnapshot;
 extern vs_main_inventory_t vs_main_inventory;
 extern _mpdRoomDoorSection_t vs_main_spawnPoint;
 extern vs_Gametime_t vs_main_gametime;

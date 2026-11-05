@@ -18,7 +18,7 @@ D_8005DFD8
 D_8005E0C0
 D_8005FF30
 D_8006003A
-D_80060068
+vs_main_characterSnapshot
 D_80060F68
 DisableEvent
 DMACallback

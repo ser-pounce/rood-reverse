@@ -5893,13 +5893,13 @@ int func_8007629C(u_long* otag)
     u_int temp_a0;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
-    
+
     vs_main_getRand(0);
     SetGeomOffset(160, 112);
     DrawSync(0);
-    
+
     ret = vs_main_gametimeUpdate(vs_gametime_tickspeed);
-    
+
     if (vs_main_debugPause != 0) {
         while (1) {
             vs_main_gametimeUpdate(2);
@@ -5907,21 +5907,21 @@ int func_8007629C(u_long* otag)
             vs_main_buttonsState = (u_short)vs_main_updatePadState(0, *vs_main_padBuffer);
             vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1])
                                  << 16;
-            
+
             vs_main_padConnect(0, vs_main_padBuffer[0]);
             vs_main_padConnect(16, vs_main_padBuffer[1]);
-            
+
             vs_main_buttonsPressed.all =
                 ~vs_main_buttonsPreviousState & vs_main_buttonsState;
             temp_a0 = vs_main_buttonsPressed.all >> 16;
             vs_main_buttonsReleased =
                 vs_main_buttonsPreviousState & ~vs_main_buttonsState;
             vs_main_buttonsPreviousState = vs_main_buttonsState;
-            
+
             if (temp_a0 & PADstart) {
                 vs_main_debugPause ^= 1;
             }
-            
+
             if ((temp_a0 & PADselect) || (vs_main_debugPause == 0)) {
                 break;
             }
@@ -5933,7 +5933,7 @@ int func_8007629C(u_long* otag)
     vs_main_commitClut();
     DrawOTag(otag);
     FntFlush(-1);
-    
+
     return ret;
 }
 

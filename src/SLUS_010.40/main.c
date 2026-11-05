@@ -416,22 +416,108 @@ material_modifiers_t vs_main_materialModifiers[] = {
     },
 };
 
-vs_main_statusEffectParams_t vs_main_statusEffectParams[] = { { 0x1, 0, 0, 0x1000, 0 },
-    { 0x2, 0, 0, 0, 0 }, { 0x4, 0, 0, 0, 0 }, { 0x8, 0, 0, 0, 0 },
-    { 0x10, 0, 0, 0x800, 0 }, { 0x20, 15, 0, 0x7E0, 0x10000 },
-    { 0x40, 15, 0, 0x7E0, 0x10000 }, { 0x80, 15, 0, 0x7E0, 0x10000 },
-    { 0x100, 15, 0, 0x7E0, 0x10000 }, { 0x200, 15, 0, 0x7E0, 0x10000 },
-    { 0x400, 15, 0, 0x7E0, 0x10000 }, { 0x800, 20, 0, 0x800, 0x8010 },
-    { 0x1000, 0, 0, 0x1000, 0 }, { 0x2000, 15, 0, 0x2000, 0 },
-    { 0x4000, 0, 2, 0x20000, 0 }, { 0x8000, 15, 0, 0x8800, 16 },
-    { 0x10000, 0, 0, 0x7E0, 0x10000 }, { 0x20000, 0, 5, 0, 0x4000 },
-    { 0x40000, 0, 0, 0, 0x40000 }, { 0x80000, 15, 0, 0x1FF80000, 0 },
-    { 0x100000, 20, 0, 0x1FF80000, 0 }, { 0x200000, 25, 0, 0x1FF80000, 0 },
-    { 0x400000, 25, 0, 0x1FF80000, 0 }, { 0x800000, 25, 0, 0x1FF80000, 0 },
-    { 0x1000000, 25, 0, 0x1FF80000, 0 }, { 0x2000000, 25, 0, 0x1FF80000, 0 },
-    { 0x4000000, 25, 0, 0x1FF80000, 0 }, { 0x8000000, 25, 0, 0x1FF80000, 0 },
-    { 0x10000000, 25, 0, 0x1FF80000, 0 }, { 0x20000000, 0, 0, 0, 0 },
-    { 0x40000000, 0, 0, 0, 0 }, { 0x80000000, 0, 0, 0, 0 } };
+#define STAT_MODS                                                                        \
+    (vsBattleStatusStrDown | vsBattleStatusStrUp | vsBattleStatusIntDown                 \
+        | vsBattleStatusIntUp | vsBattleStatusAgiDown | vsBattleStatusAgiUp)
+#define EQUIP_MODS                                                                       \
+    (vsBattleStatusEquDown | vsBattleStatusEquUp | vsBattleStatusAirAtkUp                \
+        | vsBattleStatusFireAtkUp | vsBattleStatusEarthAtkUp | vsBattleStatusWaterAtkUp  \
+        | vsBattleStatusAirDefUp | vsBattleStatusFireDefUp | vsBattleStatusEarthDefUp    \
+        | vsBattleStatusWaterDefUp)
+
+vs_main_statusEffectParams_t vs_main_statusEffectParams[] = {
+    { .status = vsBattleStatusHeadDown, .replacesMask = vsBattleStatusSilent },
+    { .status = vsBattleStatusRightArmDown },
+    { .status = vsBattleStatusLeftArmDown },
+    { .status = vsBattleStatusBodyDown },
+    { .status = vsBattleStatusLegsDown, .replacesMask = vsBattleStatusQuicken },
+    {
+        .status = vsBattleStatusStrDown,
+        .duration = 15,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusStrUp,
+        .duration = 15,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusIntDown,
+        .duration = 15,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusIntUp,
+        .duration = 15,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusAgiDown,
+        .duration = 15,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusAgiUp,
+        .duration = 15,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusQuicken,
+        .duration = 20,
+        .replacesMask = vsBattleStatusQuicken,
+        .blockedByMask = vsBattleStatusLegsDown | vsBattleStatusNumbness,
+    },
+    { .status = vsBattleStatusSilent, .replacesMask = vsBattleStatusSilent },
+    {
+        .status = vsBattleStatusParalysis,
+        .duration = 15,
+        .replacesMask = vsBattleStatusParalysis,
+    },
+    {
+        .status = vsBattleStatusPoison,
+        .tickInterval = 2,
+        .replacesMask = vsBattleStatusRegen,
+    },
+    {
+        .status = vsBattleStatusNumbness,
+        .duration = 15,
+        .replacesMask = vsBattleStatusQuicken | vsBattleStatusNumbness,
+        .blockedByMask = vsBattleStatusLegsDown,
+    },
+    {
+        .status = vsBattleStatusCurse,
+        .replacesMask = STAT_MODS,
+        .blockedByMask = vsBattleStatusCurse,
+    },
+    {
+        .status = vsBattleStatusRegen,
+        .tickInterval = 5,
+        .blockedByMask = vsBattleStatusPoison,
+    },
+    { .status = vsBattleStatusWard, .blockedByMask = vsBattleStatusWard },
+    { .status = vsBattleStatusEquDown, .duration = 15, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusEquUp, .duration = 20, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusAirAtkUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusFireAtkUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusEarthAtkUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusWaterAtkUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusAirDefUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusFireDefUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusEarthDefUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = vsBattleStatusWaterDefUp, .duration = 25, .replacesMask = EQUIP_MODS },
+    { .status = 1 << 29 },
+    { .status = 1 << 30 },
+    { .status = 1 << 31 },
+};
+
+#undef STAT_MODS
+#undef EQUIP_MODS
 
 u_char vs_main_locationZoneMapIds[] = { 100, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0,
     8, 0, 9, 0, 9, 1, 9, 2, 9, 3, 9, 4, 9, 5, 9, 6, 9, 7, 9, 8, 9, 9, 9, 10, 9, 11, 9, 12,

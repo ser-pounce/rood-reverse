@@ -27,8 +27,8 @@ typedef struct {
     short agility;
     short maxHp;
     short maxMp;
-    int removeStatuses;
     int inflictStatuses;
+    int removeStatuses;
     u_int hpEffect : 2;
     u_int mpEffect : 2;
     u_int riskEffect : 2;

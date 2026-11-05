@@ -45,8 +45,8 @@ void func_800DC888(func_800DC888_t* arg0)
             func_800DC30C(
                 &row->unk10, &row->unk12, entry->weaponDp, entry->weaponDpEffect);
             func_800DC30C(&row->unk14, &row->unk16, entry->armorDp, entry->armorDpEffect);
-            row->unkC |= entry->removeStatuses;
-            row->unkC &= ~entry->inflictStatuses;
+            row->unkC |= entry->inflictStatuses;
+            row->unkC &= ~entry->removeStatuses;
         }
     }
 }
@@ -640,7 +640,8 @@ void func_800DE030(int arg0)
         if (statuses & 0x4000) {
             int scale = stats->maxHP * 5;
 
-            stats->currentHP -= ticks / vs_main_statusEffectParams[14].unk6 * scale / 100;
+            stats->currentHP -=
+                ticks / vs_main_statusEffectParams[14].tickInterval * scale / 100;
 
             if (stats->currentHP < 0) {
                 stats->currentHP = 0;
@@ -650,7 +651,8 @@ void func_800DE030(int arg0)
         if (statuses & 0x20000) {
             int scale = stats->maxHP * 5;
 
-            stats->currentHP += ticks / vs_main_statusEffectParams[17].unk6 * scale / 100;
+            stats->currentHP +=
+                ticks / vs_main_statusEffectParams[17].tickInterval * scale / 100;
 
             if (stats->currentHP < 0) {
                 stats->currentHP = 0;

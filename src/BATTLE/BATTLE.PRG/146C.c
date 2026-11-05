@@ -300,8 +300,8 @@ void _adjustDpPp(vs_action_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void func_800803A4(vs_action_t*, vs_battle_actor2*, vs_battle_actor2*, int);
 void _triggerArmorAffinityChange(vs_action_t*, vs_battle_uiEquipment*, int, int, int);
 void _triggerClassChange(vs_action_t* arg0, vs_battle_uiEquipment*, int, int, int);
-int _setApplicableStatuses(int, _hitEntity_t*);
-int _setInflictedStatuses(int, _hitEntity_t*);
+int _applyStatus(int, _hitEntity_t*);
+int _clearStatus(int, _hitEntity_t*);
 static short _getPhysicalAttackDamage(
     vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
 short _calculateStatChange(vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
@@ -3068,7 +3068,7 @@ void func_8006F630(D_800F19CC_t5* arg0, D_800F19CC_t2* arg1, _hitEntity_t* arg2)
     }
 
     arg0->unkE = arg2->unk0.hit.hitThreshold;
-    arg0->unk10 = arg2->removeStatuses & 0x1FFFFFE0;
+    arg0->unk10 = arg2->inflictStatuses & 0x1FFFFFE0;
     arg0->unk14 = vs_main_actions[arg1->actionIndex].unk2_4;
     arg0->unk15 = arg1->unk3;
     arg0->unk16 = arg1->unk2;
@@ -10150,7 +10150,8 @@ int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
     vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[debuff];
     vs_battle_actor2* temp_a1 = vs_battle_actors[*arg1]->unk3C;
 
-    if ((!(params->unk0 & temp_a1->unk944)) && (!(params->unkC & temp_a1->statuses))) {
+    if ((!(params->status & temp_a1->unk944))
+        && (!(params->blockedByMask & temp_a1->statuses))) {
         return 0;
     }
     return 1;
@@ -11156,10 +11157,10 @@ void func_80080F78(vs_action_t* action, vs_battle_actor2* arg1, int arg2, int ar
     }
 }
 
-int _setApplicableStatuses(int arg0, _hitEntity_t* entity)
+int _applyStatus(int arg0, _hitEntity_t* entity)
 {
-    int inflict = 0;
-    int remove = 0;
+    int cleared = 0;
+    int added = 0;
     vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
     vs_battle_actor2* temp_a2 = vs_battle_actors[entity->unk0.hit.targetActor]->unk3C;
 
@@ -11167,26 +11168,26 @@ int _setApplicableStatuses(int arg0, _hitEntity_t* entity)
 
         int temp_t0 = temp_a2->statuses;
 
-        if (!(temp_t0 & params->unkC)) {
-            remove = params->unk0 & ~temp_a2->unk944 & (~temp_t0 | params->unk8);
-            entity->removeStatuses |= remove;
-            inflict = params->unk8 & temp_a2->statuses;
-            entity->inflictStatuses |= inflict;
+        if (!(temp_t0 & params->blockedByMask)) {
+            added = params->status & ~temp_a2->unk944 & (~temp_t0 | params->replacesMask);
+            entity->inflictStatuses |= added;
+            cleared = params->replacesMask & temp_a2->statuses;
+            entity->removeStatuses |= cleared;
         }
     }
 
-    return remove | inflict;
+    return added | cleared;
 }
 
-int _setInflictedStatuses(int arg0, _hitEntity_t* entity)
+int _clearStatus(int arg0, _hitEntity_t* entity)
 {
     int ret = 0;
     vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
 
     if (vs_battle_actors[entity->unk0.hit.targetActor]->unk3C->unk957 != 128) {
-        ret = params->unk0
+        ret = params->status
             & vs_battle_actors[entity->unk0.hit.targetActor]->unk3C->statuses;
-        entity->inflictStatuses |= ret;
+        entity->removeStatuses |= ret;
     }
 
     return ret;
@@ -12216,7 +12217,7 @@ int func_80083990(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
 int func_80083998(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(5, arg2) != 0) {
+    if (_applyStatus(5, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12224,7 +12225,7 @@ int func_80083998(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_800839E8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(7, arg2) != 0) {
+    if (_applyStatus(7, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12232,7 +12233,7 @@ int func_800839E8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083A38(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(9, arg2) != 0) {
+    if (_applyStatus(9, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12240,7 +12241,7 @@ int func_80083A38(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083A88(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(19, arg2) != 0) {
+    if (_applyStatus(19, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12248,7 +12249,7 @@ int func_80083A88(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083AD8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(4, arg2) != 0) {
+    if (_applyStatus(4, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12256,7 +12257,7 @@ int func_80083AD8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083B28(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(6, arg2) != 0) {
+    if (_applyStatus(6, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12264,7 +12265,7 @@ int func_80083B28(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083B78(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(8, arg2) != 0) {
+    if (_applyStatus(8, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12272,7 +12273,7 @@ int func_80083B78(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083BC8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(10, arg2) != 0) {
+    if (_applyStatus(10, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12280,7 +12281,7 @@ int func_80083BC8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083C18(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(20, arg2) != 0) {
+    if (_applyStatus(20, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12288,7 +12289,7 @@ int func_80083C18(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083C68(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(11, arg2) != 0) {
+    if (_applyStatus(11, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12296,7 +12297,7 @@ int func_80083C68(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083CB8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(12, arg2) != 0) {
+    if (_applyStatus(12, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12304,13 +12305,13 @@ int func_80083CB8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083D08(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
     UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x12, arg2);
+    _applyStatus(0x12, arg2);
 }
 
 int func_80083D2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(17, arg2) != 0) {
+    if (_applyStatus(17, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12318,7 +12319,7 @@ int func_80083D2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083D7C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, int arg4)
 {
-    _setApplicableStatuses(0x1D, arg2);
+    _applyStatus(0x1D, arg2);
     if (arg4 != 0) {
         vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->isAnalyzed = 1;
     }
@@ -12327,7 +12328,7 @@ int func_80083D7C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083DEC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(13, arg2) != 0) {
+    if (_applyStatus(13, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12335,7 +12336,7 @@ int func_80083DEC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083E3C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(14, arg2) != 0) {
+    if (_applyStatus(14, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12343,7 +12344,7 @@ int func_80083E3C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083E8C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(15, arg2) != 0) {
+    if (_applyStatus(15, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12351,7 +12352,7 @@ int func_80083E8C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083EDC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setApplicableStatuses(16, arg2) != 0) {
+    if (_applyStatus(16, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
@@ -12359,55 +12360,55 @@ int func_80083EDC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_80083F2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x15, arg2);
+    _applyStatus(0x15, arg2);
 }
 
 int func_80083F50(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x16, arg2);
+    _applyStatus(0x16, arg2);
 }
 
 int func_80083F74(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x17, arg2);
+    _applyStatus(0x17, arg2);
 }
 
 int func_80083F98(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x18, arg2);
+    _applyStatus(0x18, arg2);
 }
 
 int func_80083FBC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x19, arg2);
+    _applyStatus(0x19, arg2);
 }
 
 int func_80083FE0(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x1A, arg2);
+    _applyStatus(0x1A, arg2);
 }
 
 int func_80084004(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x1B, arg2);
+    _applyStatus(0x1B, arg2);
 }
 
 int func_80084028(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setApplicableStatuses(0x1C, arg2);
+    _applyStatus(0x1C, arg2);
 }
 
 int func_8008404C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setInflictedStatuses(0xD, arg2) != 0) {
+    if (_clearStatus(0xD, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12415,7 +12416,7 @@ int func_8008404C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_8008409C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setInflictedStatuses(0xE, arg2) != 0) {
+    if (_clearStatus(0xE, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12423,7 +12424,7 @@ int func_8008409C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_800840EC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setInflictedStatuses(0x10, arg2) != 0) {
+    if (_clearStatus(0x10, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12431,7 +12432,7 @@ int func_800840EC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_8008413C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_setInflictedStatuses(0xF, arg2) != 0) {
+    if (_clearStatus(0xF, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
@@ -12439,7 +12440,7 @@ int func_8008413C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 int func_8008418C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    arg2->inflictStatuses |=
+    arg2->removeStatuses |=
         (vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->statuses & 0x1FFE1FE0);
 }
 
@@ -12447,7 +12448,7 @@ int func_800841C8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
     UNUSED int arg3, UNUSED int arg4)
 {
     int temp_v1 = vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->statuses & 0xE000;
-    arg2->inflictStatuses |= temp_v1;
+    arg2->removeStatuses |= temp_v1;
 
     if (temp_v1 != 0) {
         arg2->unk1C_16 = 2;
@@ -12463,7 +12464,7 @@ int func_80084228(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* ar
 int func_80084248(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _setInflictedStatuses(0x1E, arg2);
+    _clearStatus(0x1E, arg2);
     arg2->unk0.hit.hp = vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->currentHP;
     arg2->hpEffect = 1;
 }
@@ -12700,7 +12701,7 @@ int func_80084B70(
         func_80080000(arg0, arg2, temp_v0);
 
         if (temp_s2->unk957 != 0x80) {
-            arg2->inflictStatuses |= temp_s2->statuses & 0x8000;
+            arg2->removeStatuses |= temp_s2->statuses & 0x8000;
         }
 
         if (arg4 != 0) {
@@ -12847,7 +12848,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_v1 = 1;
             }
             if (var_v1 == 0) {
-                _setApplicableStatuses(4, arg0);
+                _applyStatus(4, arg0);
             }
         }
     } else {
@@ -12860,7 +12861,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_v1 = 1;
             }
             if (var_v1 != 0) {
-                _setInflictedStatuses(4, arg0);
+                _clearStatus(4, arg0);
             }
         }
     }
@@ -12878,16 +12879,16 @@ void func_80085008(_hitEntity_t* arg0)
                 var_a2 = temp_s3->limbs[i].hp;
                 break;
             }
-            if (!(temp_s3->statuses & vs_main_statusEffectParams[D_800E8200[i]].unk0)) {
+            if (!(temp_s3->statuses & vs_main_statusEffectParams[D_800E8200[i]].status)) {
                 var_v1 = var_a2 << 0x10;
                 var_v1 = 0x10000 < var_v1;
                 if (!var_v1) {
-                    _setApplicableStatuses(D_800E8200[i], arg0);
+                    _applyStatus(D_800E8200[i], arg0);
                 }
             } else {
                 var_v1 = (var_a2 << 0x10) > 0x10000;
                 if (var_v1) {
-                    _setInflictedStatuses(D_800E8200[i], arg0);
+                    _clearStatus(D_800E8200[i], arg0);
                 }
             }
         }
@@ -12912,7 +12913,7 @@ void func_80085390(
         }
         if (arg2->kind == 0) {
             if (vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->unk957 != 0x80) {
-                arg2->inflictStatuses |=
+                arg2->removeStatuses |=
                     vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->statuses
                     & 0x61000;
             }
@@ -12949,7 +12950,7 @@ void func_80085718(_hitEntity_t* arg0)
 {
     vs_main_bzero(arg0, sizeof *arg0);
     arg0->unk0.hit.unk3 = 6;
-    *(&arg0->inflictStatuses + 1) = 0;
+    *(&arg0->removeStatuses + 1) = 0;
 }
 
 /**
@@ -13083,7 +13084,7 @@ void func_80085A34(_hitEntity_t* arg0)
 
         if (arg0->unk0.hit.unk3 == 6) {
             // The 2-bit effect fields from hpEffect on, read as one word
-            var_a1 = *(u_int*)(&arg0->inflictStatuses + 1);
+            var_a1 = *(u_int*)(&arg0->removeStatuses + 1);
             if (var_a1 != 0) {
                 for (i = 0; i < 9; var_a1 /= 4, ++i) {
                     switch (var_a1 & 3) {
@@ -13098,7 +13099,7 @@ void func_80085A34(_hitEntity_t* arg0)
                         return;
                     }
                 }
-            } else if ((arg0->removeStatuses | arg0->inflictStatuses) == 0) {
+            } else if ((arg0->inflictStatuses | arg0->removeStatuses) == 0) {
                 arg0->unk0.hit.unk3 = 4;
                 arg0->unk0.hit.hitThreshold = 0;
             }
@@ -13753,29 +13754,29 @@ void func_80086FA8(int arg0, vs_battle_actor2* arg1)
     arg1->statuses |= arg0;
 
     if (arg0 & 0x7E0) {
-        arg1->statusTimers[0] = vs_main_statusEffectParams[5].unk4;
+        arg1->statusTimers[0] = vs_main_statusEffectParams[5].duration;
     }
 
     if (arg0 & (vsBattleStatusQuicken | vsBattleStatusLegsDown)) {
-        arg1->statusTimers[1] = vs_main_statusEffectParams[11].unk4;
+        arg1->statusTimers[1] = vs_main_statusEffectParams[11].duration;
     }
 
     if (arg0 & 0x1FF80000) {
-        arg1->statusTimers[2] = vs_main_statusEffectParams[19].unk4;
+        arg1->statusTimers[2] = vs_main_statusEffectParams[19].duration;
     }
 
     if (arg0 & 0x2000) {
-        arg1->statusTimers[3] = vs_main_statusEffectParams[13].unk4;
+        arg1->statusTimers[3] = vs_main_statusEffectParams[13].duration;
     }
 
     if (arg0 & 0x8000) {
-        arg1->statusTimers[4] = vs_main_statusEffectParams[13].unk4;
+        arg1->statusTimers[4] = vs_main_statusEffectParams[13].duration;
     }
 
     if (arg0 & 0x4000) {
-        arg1->statusTimers[5] = vs_main_statusEffectParams[14].unk6;
+        arg1->statusTimers[5] = vs_main_statusEffectParams[14].tickInterval;
     } else if (arg0 & 0x20000) {
-        arg1->statusTimers[5] = vs_main_statusEffectParams[17].unk6;
+        arg1->statusTimers[5] = vs_main_statusEffectParams[17].tickInterval;
     }
 
     if (arg0 & 0x20) {
@@ -14237,11 +14238,11 @@ void _applyBattleAbilityEffect(_hitEntity_t* arg0)
 
     flag = 1;
 
-    if (arg0->inflictStatuses != 0) {
+    if (arg0->removeStatuses != 0) {
 
         for (i = 0; i < 32; ++i) {
 
-            int status = arg0->inflictStatuses & flag;
+            int status = arg0->removeStatuses & flag;
 
             if ((status != 0) && (actor->statuses & flag)) {
 
@@ -14255,7 +14256,7 @@ void _applyBattleAbilityEffect(_hitEntity_t* arg0)
                     func_80093FEC(0, 0, status, 1);
                 }
 
-                func_80086754(arg0->inflictStatuses & flag, actor);
+                func_80086754(arg0->removeStatuses & flag, actor);
             }
 
             flag <<= 1;
@@ -14264,11 +14265,11 @@ void _applyBattleAbilityEffect(_hitEntity_t* arg0)
 
     flag = 1;
 
-    if (arg0->removeStatuses != 0) {
+    if (arg0->inflictStatuses != 0) {
 
         for (i = 0; i < 32; ++i) {
 
-            int status = arg0->removeStatuses & flag;
+            int status = arg0->inflictStatuses & flag;
 
             if ((status != 0) && !(actor->statuses & flag)) {
 
@@ -14282,7 +14283,7 @@ void _applyBattleAbilityEffect(_hitEntity_t* arg0)
                     func_80093FEC(0, 0, status, 0);
                 }
 
-                func_80086FA8(arg0->removeStatuses & flag, actor);
+                func_80086FA8(arg0->inflictStatuses & flag, actor);
             }
 
             flag <<= 1;
@@ -14324,7 +14325,7 @@ void func_80087EF4(vs_battle_actor2* actor)
 
         if (actor->statuses & 0x4000) {
 
-            actor->statusTimers[5] = vs_main_statusEffectParams[14].unk6;
+            actor->statusTimers[5] = vs_main_statusEffectParams[14].tickInterval;
             hp = (actor->currentHP / 20) + vs_main_getRand(6);
 
             if (hp <= 0) {
@@ -14341,7 +14342,7 @@ void func_80087EF4(vs_battle_actor2* actor)
 
         } else if (actor->statuses & 0x20000) {
 
-            actor->statusTimers[5] = vs_main_statusEffectParams[17].unk6;
+            actor->statusTimers[5] = vs_main_statusEffectParams[17].tickInterval;
             hp = 2;
             hp = (actor->maxHP / 20) - hp + vs_main_getRandSmoothed(5);
             actor->currentHP += hp;

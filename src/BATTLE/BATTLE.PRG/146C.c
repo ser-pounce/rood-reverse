@@ -7538,7 +7538,7 @@ void vs_battle_exec(void)
                     vs_scratch.unk8 = ot + 2;
                     vs_scratch.unk4 = ot + 18;
                     ClearOTagR(ot, 2082);
-                    vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
+                    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
                     AddPrim(ot, &D_800F1970[vs_main_frameBuf]);
 
                     if (((vs_main_startState == 3) || (vs_main_startState == 4))
@@ -15224,8 +15224,8 @@ void func_80089DC0(int arg0)
     vs_main_freeCdQueueSlot(_zoneContext.mpdCdFile);
     _zoneContext.mpdCdFile = NULL;
 
-    D_8005E0C0[0] = vs_main_allocHeap(0x20000);
-    D_8005E0C0[1] = vs_main_allocHeap(0x20000);
+    vs_main_prims[0] = vs_main_allocHeap(0x20000);
+    vs_main_prims[1] = vs_main_allocHeap(0x20000);
 
     vs_main_clutInit();
 
@@ -15327,9 +15327,9 @@ void func_80089DC0(int arg0)
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
     func_8007D15C(1);
-    D_8005E1D4 = 0;
-    D_8005E244 = 0;
-    D_8005E1C4 = 0;
+    vs_main_unused1 = 0;
+    vs_main_unused2 = 0;
+    vs_main_unused0 = 0;
     vs_main_buttonRepeat = 0;
     vs_main_buttonsReleased = 0;
     vs_main_buttonsPressed.all = 0;
@@ -15448,8 +15448,8 @@ void func_8008A3A0(void)
     func_80095B7C(0, 0);
     func_8009D6F4();
     func_8008A6FC();
-    vs_main_freeHeap(D_8005E0C0[1]);
-    vs_main_freeHeap(D_8005E0C0[0]);
+    vs_main_freeHeap(vs_main_prims[1]);
+    vs_main_freeHeap(vs_main_prims[0]);
 }
 
 void func_8008A4DC(int arg0)

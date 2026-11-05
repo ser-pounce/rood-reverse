@@ -1937,7 +1937,7 @@ int Sound_StealQuietestVoice(int in_bForceFullScan)
     if (in_bForceFullScan) {
         i = 0;
     } else {
-        i = g_pActiveMusicContext->SomeIndexRelatedToSpuVoiceInfo;
+        i = g_pActiveMusicContext->VoiceAllocStart;
     }
 
     EnvX = 0x7FFF;
@@ -1967,7 +1967,7 @@ int Sound_FindFreeVoice(int arg0)
     if (arg0 != 0) {
         arg0 = 0;
     } else {
-        arg0 = g_pActiveMusicContext->SomeIndexRelatedToSpuVoiceInfo;
+        arg0 = g_pActiveMusicContext->VoiceAllocStart;
     }
 
     var_v1 = &g_SpuVoiceInfo[arg0];
@@ -2599,7 +2599,7 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     pRegion = (char*)&pSequence->KeymapRegionOffset + pSequence->KeymapRegionOffset;
     g_pActiveMusicContext->KeymapTable =
         pSequence->KeymapRegionOffset != 0 ? pRegion : NULL;
-    g_pActiveMusicContext->SomeIndexRelatedToSpuVoiceInfo = 0;
+    g_pActiveMusicContext->VoiceAllocStart = 0;
     g_pActiveMusicContext->unk2C = pSequence->unk38;
     g_pActiveMusicContext->unk30 = pSequence->unk3C;
 
@@ -2729,7 +2729,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
     if (in_StopFlags & 0x0FFFFFFF) {
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
             if ((activeVoices & voiceBit) && (pChannel->unk_Flags & in_StopFlags)) {
-                if (pChannel->UpdateFlags & 0x100000) {
+                if (pChannel->UpdateFlags & SOUND_UPDATE_DEFER_STOP) {
                     pChannel->UpdateFlags |= 0x200000;
                 } else {
                     g_Sound_SfxState.KeyOffFlags |= voiceBit;
@@ -2768,7 +2768,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
         voiceBit = 0x1000;
         for (i = 0; i < 12; i++, pChannel++, voiceBit <<= 1) {
             if ((activeVoices & voiceBit) && (maxPriority == pChannel->Priority)) {
-                if (pChannel->UpdateFlags & 0x100000) {
+                if (pChannel->UpdateFlags & SOUND_UPDATE_DEFER_STOP) {
                     pChannel->UpdateFlags |= 0x200000;
                 } else {
                     g_Sound_SfxState.KeyOffFlags |= voiceBit;
@@ -2784,7 +2784,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
             }
             if (in_SfxId == -1) {
                 if (pChannel->AkaoProgramIndex < 0) {
-                    if (pChannel->UpdateFlags & 0x100000) {
+                    if (pChannel->UpdateFlags & SOUND_UPDATE_DEFER_STOP) {
                         pChannel->UpdateFlags |= 0x200000;
                     } else {
                         g_Sound_SfxState.KeyOffFlags |= voiceBit;
@@ -2794,7 +2794,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
                 }
             } else if (in_SfxId == -2) {
                 if (pChannel->unk_Flags == 0) {
-                    if (pChannel->UpdateFlags & 0x100000) {
+                    if (pChannel->UpdateFlags & SOUND_UPDATE_DEFER_STOP) {
                         pChannel->UpdateFlags |= 0x200000;
                     } else {
                         g_Sound_SfxState.KeyOffFlags |= voiceBit;
@@ -2803,7 +2803,7 @@ void Sound_EvictSfxVoice(int in_SfxId, int in_StopFlags)
                     }
                 }
             } else if (pChannel->AkaoProgramIndex == in_SfxId) {
-                if (pChannel->UpdateFlags & 0x100000) {
+                if (pChannel->UpdateFlags & SOUND_UPDATE_DEFER_STOP) {
                     pChannel->UpdateFlags |= 0x200000;
                 } else {
                     g_Sound_SfxState.KeyOffFlags |= voiceBit;
@@ -6111,17 +6111,16 @@ void SoundVM_BF_ReleaseMode(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_RMODE;
 }
 
-void SoundVM_FE10_unk(
+void SoundVM_FE10_SetVoiceAllocStart(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
-    g_pActiveMusicContext->SomeIndexRelatedToSpuVoiceInfo =
-        *in_pChannel->ProgramCounter++;
+    g_pActiveMusicContext->VoiceAllocStart = *in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_FE11_unk(FSoundChannel* in_pChannel __attribute__((unused)),
+void SoundVM_FE11_ResetVoiceAllocStart(FSoundChannel* in_pChannel __attribute__((unused)),
     u_int in_VoiceFlags __attribute__((unused)))
 {
-    g_pActiveMusicContext->SomeIndexRelatedToSpuVoiceInfo = 0;
+    g_pActiveMusicContext->VoiceAllocStart = 0;
 }
 
 void SoundVM_C8_LoopPoint(
@@ -6416,10 +6415,10 @@ void SoundVM_FE0B_PlaySfxProgram(
     in_pChannel->ProgramCounter += 4;
 }
 
-void SoundVM_E0_unk(
+void SoundVM_E0_DeferSfxStop(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
-    in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_20;
+    in_pChannel->UpdateFlags |= SOUND_UPDATE_DEFER_STOP;
 }
 
 void SoundVM_FE1C_SetKeymap(

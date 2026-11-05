@@ -1567,8 +1567,8 @@ void Sound_UpdateSlidesAndDelays(
         in_pChannel->VibratoDelayCurrent--;
     }
 
-    if (in_pChannel->TremeloDelayCurrent != 0) {
-        in_pChannel->TremeloDelayCurrent--;
+    if (in_pChannel->TremoloDelayCurrent != 0) {
+        in_pChannel->TremoloDelayCurrent--;
     }
 
     if (in_pChannel->NoiseTimer != 0) {
@@ -1631,18 +1631,18 @@ void Sound_UpdateSlidesAndDelays(
         }
     }
 
-    if (in_pChannel->TremeloDepthSlideLength != 0) {
+    if (in_pChannel->TremoloDepthSlideLength != 0) {
 
-        in_pChannel->TremeloDepthSlideLength--;
-        in_pChannel->TremeloDepth += (u_short)in_pChannel->TremeloDepthSlideStep;
-        if (((u_short)in_pChannel->TremeloDelayCurrent == 0)
-            && ((u_short)in_pChannel->TremeloRateCurrent != 1)) {
+        in_pChannel->TremoloDepthSlideLength--;
+        in_pChannel->TremoloDepth += (u_short)in_pChannel->TremoloDepthSlideStep;
+        if (((u_short)in_pChannel->TremoloDelayCurrent == 0)
+            && ((u_short)in_pChannel->TremoloRateCurrent != 1)) {
             int FinalVolume;
-            int TremeloDepthHi8;
+            int TremoloDepthHi8;
             int VolumeBalanceHigh8;
             int VolumeHigh16;
 
-            Wave = in_pChannel->TremeloWave;
+            Wave = in_pChannel->TremoloWave;
             if (Wave[0] == 0 && Wave[1] == 0) {
                 Wave += Wave[2];
             }
@@ -1650,11 +1650,11 @@ void Sound_UpdateSlidesAndDelays(
             VolumeBalanceHigh8 = (u_short)in_pChannel->VolumeBalance >> 8;
             VolumeHigh16 = in_pChannel->Volume >> 16;
             FinalVolume = (VolumeHigh16 * VolumeBalanceHigh8) >> 7;
-            TremeloDepthHi8 = in_pChannel->TremeloDepth >> 8;
-            temp = ((FinalVolume * TremeloDepthHi8) << 9) >> 16;
+            TremoloDepthHi8 = in_pChannel->TremoloDepth >> 8;
+            temp = ((FinalVolume * TremoloDepthHi8) << 9) >> 16;
             temp = (temp * *Wave) >> 15;
-            if (temp != in_pChannel->TremeloVolume) {
-                in_pChannel->TremeloVolume = temp;
+            if (temp != in_pChannel->TremoloVolume) {
+                in_pChannel->TremoloVolume = temp;
                 in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
             }
         }
@@ -1717,18 +1717,18 @@ void Sound_UpdateModulation(
         }
     }
 
-    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && (in_pChannel->TremeloDelayCurrent == 0)
-        && !(--in_pChannel->TremeloRateCurrent & 0xFFFF)) {
-        in_pChannel->TremeloRateCurrent = in_pChannel->TremeloRatePhase;
-        Wave = in_pChannel->TremeloWave;
+    if ((UpdateFlags & SOUND_UPDATE_TREMOLO) && (in_pChannel->TremoloDelayCurrent == 0)
+        && !(--in_pChannel->TremoloRateCurrent & 0xFFFF)) {
+        in_pChannel->TremoloRateCurrent = in_pChannel->TremoloRatePhase;
+        Wave = in_pChannel->TremoloWave;
         if (Wave[0] == 0 && Wave[1] == 0) {
-            in_pChannel->TremeloWave = Wave + Wave[2];
+            in_pChannel->TremoloWave = Wave + Wave[2];
         }
-        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
-        Sample = *in_pChannel->TremeloWave++;
+        temp = ((Volume * (in_pChannel->TremoloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremoloWave++;
         temp = (temp * Sample) >> 15;
-        if (temp != in_pChannel->TremeloVolume) {
-            in_pChannel->TremeloVolume = temp;
+        if (temp != in_pChannel->TremoloVolume) {
+            in_pChannel->TremoloVolume = temp;
             in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
     }
@@ -1756,7 +1756,7 @@ void Sound_UpdateModulation(
     }
 
     if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
-        Volume += in_pChannel->TremeloVolume;
+        Volume += in_pChannel->TremoloVolume;
         Volume =
             (Volume * (int)(((u_int)g_pActiveMusicContext->MasterVolume >> 16) & 0x7F))
             >> 7;
@@ -1831,17 +1831,17 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
     }
 
     if ((UpdateFlags & SOUND_UPDATE_TREMOLO)
-        && !(--in_pChannel->TremeloRateCurrent & 0xFFFF)) {
-        in_pChannel->TremeloRateCurrent = in_pChannel->TremeloRatePhase;
-        Wave = in_pChannel->TremeloWave;
+        && !(--in_pChannel->TremoloRateCurrent & 0xFFFF)) {
+        in_pChannel->TremoloRateCurrent = in_pChannel->TremoloRatePhase;
+        Wave = in_pChannel->TremoloWave;
         if (Wave[0] == 0 && Wave[1] == 0) {
-            in_pChannel->TremeloWave = Wave + Wave[2];
+            in_pChannel->TremoloWave = Wave + Wave[2];
         }
-        temp = ((Volume * (in_pChannel->TremeloDepth >> 8)) << 9) >> 16;
-        Sample = *in_pChannel->TremeloWave++;
+        temp = ((Volume * (in_pChannel->TremoloDepth >> 8)) << 9) >> 16;
+        Sample = *in_pChannel->TremoloWave++;
         temp = (temp * Sample) >> 15;
-        if (temp != in_pChannel->TremeloVolume) {
-            in_pChannel->TremeloVolume = temp;
+        if (temp != in_pChannel->TremoloVolume) {
+            in_pChannel->TremoloVolume = temp;
             in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
         }
     }
@@ -1869,7 +1869,7 @@ void func_800147CC(FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((
     }
 
     if (in_pChannel->VoiceParams.VoiceParamFlags & VOICE_PARAM_VOLUME) {
-        Volume += in_pChannel->TremeloVolume;
+        Volume += in_pChannel->TremoloVolume;
         if (!(in_pChannel->unk_Flags & 0x2000000)) {
             Volume = (Volume * (in_pChannel->VolumeMod >> 8)) >> 7;
             temp = ((in_pChannel->ChannelPan + in_pChannel->PanMod) >> 8)
@@ -2528,10 +2528,10 @@ void Sound_ResetChannel(FSoundChannel* arg0, char* arg1)
     arg0->OpcodeStepCounter = 0xFFFF;
     arg0->VoiceParams.VolumeScale = 0;
     arg0->AutoPanDepth = 0;
-    arg0->TremeloDepth = 0;
+    arg0->TremoloDepth = 0;
     arg0->VibratoDepth = 0;
     arg0->AutoPanDepthSlideLength = 0;
-    arg0->TremeloDepthSlideLength = 0;
+    arg0->TremoloDepthSlideLength = 0;
     arg0->VibratoDepthSlideLength = 0;
     arg0->FmTimer = 0;
     arg0->NoiseTimer = 0;
@@ -2639,11 +2639,11 @@ void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
             pChannel->LoopStackTop = 0;
             updateFlags = !(g_pActiveMusicContext->AllocatedVoiceMask & mask) << 6;
             pChannel->AutoPanDepth = 0;
-            pChannel->TremeloDepth = 0;
+            pChannel->TremoloDepth = 0;
             pChannel->VibratoDepth = 0;
             pChannel->AutoPanDepthSlideLength = 0;
             pChannel->UpdateFlags = updateFlags;
-            pChannel->TremeloDepthSlideLength = 0;
+            pChannel->TremoloDepthSlideLength = 0;
             pChannel->VibratoDepthSlideLength = 0;
             pChannel->FmTimer = 0;
             pChannel->NoiseTimer = 0;
@@ -5063,7 +5063,7 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
             }
             arg0->PortamentoSteps = 0;
             arg0->VibratoPitch = 0;
-            arg0->TremeloVolume = 0;
+            arg0->TremoloVolume = 0;
             arg0->Articulation &= 0xFFFD;
             return;
         }
@@ -5149,12 +5149,12 @@ void Sound_ProcessAkaoVM(FSoundChannel* arg0, int arg1)
                 }
             }
             if ((temp_s0 & 2) && !(arg0->Articulation & 2)) {
-                arg0->TremeloWave = g_Sound_LfoTable[arg0->TremeloType];
-                arg0->TremeloDelayCurrent = arg0->TremeloDelay;
-                arg0->TremeloRateCurrent = 1;
+                arg0->TremoloWave = g_Sound_LfoTable[arg0->TremoloType];
+                arg0->TremoloDelayCurrent = arg0->TremoloDelay;
+                arg0->TremoloRateCurrent = 1;
             }
             arg0->VibratoPitch = 0;
-            arg0->TremeloVolume = 0;
+            arg0->TremoloVolume = 0;
             arg0->PitchSlide = 0;
         }
 
@@ -5793,7 +5793,7 @@ void SoundVM_B6_DisableVibrato(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
-void SoundVM_B8_Tremelo(
+void SoundVM_B8_Tremolo(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     int Delay;
@@ -5802,34 +5802,34 @@ void SoundVM_B8_Tremelo(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_TREMOLO;
     Delay = *in_pChannel->ProgramCounter++;
     if (in_pChannel->Type != 0) {
-        in_pChannel->TremeloDelay = 0;
+        in_pChannel->TremoloDelay = 0;
         if (Delay != 0) {
-            in_pChannel->TremeloDepth = (Delay & 0x7F) << 8;
+            in_pChannel->TremoloDepth = (Delay & 0x7F) << 8;
         }
     } else {
-        in_pChannel->TremeloDelay = Delay;
+        in_pChannel->TremoloDelay = Delay;
     }
 
     Rate = *in_pChannel->ProgramCounter++;
-    in_pChannel->TremeloRatePhase = Rate;
+    in_pChannel->TremoloRatePhase = Rate;
 
     if (Rate == 0) {
-        in_pChannel->TremeloRatePhase = 0x100;
+        in_pChannel->TremoloRatePhase = 0x100;
     }
 
-    in_pChannel->TremeloType = *in_pChannel->ProgramCounter++;
-    in_pChannel->TremeloWave = g_Sound_LfoTable[in_pChannel->TremeloType];
-    in_pChannel->TremeloDelayCurrent = in_pChannel->TremeloDelay;
-    in_pChannel->TremeloRateCurrent = 1;
+    in_pChannel->TremoloType = *in_pChannel->ProgramCounter++;
+    in_pChannel->TremoloWave = g_Sound_LfoTable[in_pChannel->TremoloType];
+    in_pChannel->TremoloDelayCurrent = in_pChannel->TremoloDelay;
+    in_pChannel->TremoloRateCurrent = 1;
 }
 
-void SoundVM_B9_TremeloDepth(
+void SoundVM_B9_TremoloDepth(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
-    in_pChannel->TremeloDepth = (*in_pChannel->ProgramCounter++ & 0x7F) << 8;
+    in_pChannel->TremoloDepth = (*in_pChannel->ProgramCounter++ & 0x7F) << 8;
 }
 
-void SoundVM_DE_TremeloDepthSlide(
+void SoundVM_DE_TremoloDepthSlide(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     int Length;
@@ -5842,16 +5842,16 @@ void SoundVM_DE_TremeloDepthSlide(
         Length = 0x100;
     }
     Dest = (*in_pChannel->ProgramCounter++ & 0x7f) << 8;
-    Prev = in_pChannel->TremeloDepth;
+    Prev = in_pChannel->TremoloDepth;
     Delta = Dest - Prev;
-    in_pChannel->TremeloDepthSlideStep = Delta / Length;
-    in_pChannel->TremeloDepthSlideLength = Length;
+    in_pChannel->TremoloDepthSlideStep = Delta / Length;
+    in_pChannel->TremoloDepthSlideLength = Length;
 }
 
-void SoundVM_BA_DisableTremelo(
+void SoundVM_BA_DisableTremolo(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
-    in_pChannel->TremeloVolume = 0;
+    in_pChannel->TremoloVolume = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_TREMOLO;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }

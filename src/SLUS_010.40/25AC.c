@@ -231,7 +231,7 @@ static int func_80011E40(void)
     return var_v1;
 }
 
-int func_80011EBC(u_int arg0)
+int Sound_GetMusicVolumeById(u_int arg0)
 {
     FSoundMusicContext* var_v1 = g_pActiveMusicContext;
     int var_a1 = 0;
@@ -244,7 +244,7 @@ int func_80011EBC(u_int arg0)
     return var_a1;
 }
 
-int func_80011F08(void)
+int Sound_GetLoadedMusicBankIds(void)
 {
     return (u_short)D_80036770.unk0 | ((u_short)D_80036770.unk4 << 0x10);
 }
@@ -266,7 +266,7 @@ static int func_80011F24(int arg0)
     return var_a1;
 }
 
-int func_80011F90(void)
+int Sound_GetMusicPosition(void)
 {
     int upper = g_pActiveMusicContext->TimerUpperCurrent;
     int top = g_pActiveMusicContext->TimerTopCurrent;
@@ -409,7 +409,7 @@ static int Sound_GetAllSfxUnkFlags(void)
     return var_a0 & 0xFFFFFF;
 }
 
-int func_80012358(int arg0)
+int Sound_GetPlayingSfxByGroup(int arg0)
 {
     FSoundChannel* var_a1;
     int var_v1;
@@ -707,7 +707,7 @@ void Sound_StopMusic(void) { Sound_ExecuteSoundVm2Function(240); }
 
 void Sound_StopSfx(void) { Sound_ExecuteSoundVm2Function(241); }
 
-void func_80012BB8(void* arg0, int arg1)
+void Sound_LoadAkaoBankBlocking(void* arg0, int arg1)
 {
     while (Sound_TryLoadInstrumentBank(arg0, arg1) == 1)
         ;
@@ -795,7 +795,7 @@ static int func_80012E50(int arg0)
     return D_80039AFC & 0x10000;
 }
 
-int func_80012EBC(void)
+int Sound_ResetMusicBankIds(void)
 {
     g_Sound_GlobalFlags.MixBehavior &= ~0x10000;
     D_80036770.unk4 = 0;
@@ -884,7 +884,7 @@ static int Sound_StreamAkaoBankChunk(
     return g_Sound_AkaoLoadState.SampleBytesRemaining;
 }
 
-int func_80013188(void* arg0, int arg1)
+int Sound_LoadMusicBank(void* arg0, int arg1)
 {
     int sp10;
     int sp14;
@@ -893,7 +893,7 @@ int func_80013188(void* arg0, int arg1)
     return temp_s0;
 }
 
-int func_800131DC(void* arg0, int arg1, int arg2)
+int Sound_LoadSfxBank(void* arg0, int arg1, int arg2)
 {
     int sp10;
     int sp14;
@@ -918,7 +918,7 @@ int Sound_SetCdMixVolume(u_int arg0)
     return 0;
 }
 
-void func_800132C4(void* arg0, int arg1, int arg2)
+void Sound_StartCutsceneStream(void* arg0, int arg1, int arg2)
 {
     if (Sound_IsNotAkaoFile(arg0) == 0) {
         g_Sound_Vm2Params.unk0 = arg0;

@@ -42,7 +42,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
         }
 
         vs_main_stopAllSfx();
-        func_800434A4(0, 2);
+        vs_main_stopVibration(0, 2);
         func_800C0150();
         func_8007C46C(0, 0xFF, 0);
         vs_battle_disableDispMask();

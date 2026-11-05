@@ -4823,7 +4823,7 @@ int func_800CE9B0(void)
                 D_800F569C->unkCC = 0;
             }
 
-            func_800434A4(0, 1);
+            vs_main_stopVibration(0, 1);
             func_800D7C5C();
             func_800D278C();
             func_800CF514(D_800F5318);
@@ -5013,7 +5013,7 @@ void func_800CF1A8(void)
 {
     D_800F53B8_t* var_s0 = D_800F53B8;
 
-    func_800434A4(0U, 1);
+    vs_main_stopVibration(0U, 1);
 
     while (var_s0 != NULL) {
         D_800F53B8_t* temp_s1 = var_s0->next;

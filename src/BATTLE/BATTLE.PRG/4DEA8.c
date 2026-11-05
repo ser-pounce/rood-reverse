@@ -2322,7 +2322,7 @@ int func_800BAB14(u_char* arg0)
 {
     short a0 = arg0[1];
     if (a0 == 0xFF) {
-        func_800434A4(0, 2);
+        vs_main_stopVibration(0, 2);
     } else {
         if (a0 & 8) {
             vs_main_memcpy(D_800F4C48, D_800F4BC0[a0 & 7], 0x80);

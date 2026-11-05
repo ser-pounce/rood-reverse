@@ -615,7 +615,7 @@ static int _applyLoadedSaveFile(int apply)
     spmcimg2 = &vs_main_artsStatus;
     _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
     vs_main_gametime.t = spmcimg[1].info.stats.gameTime.t;
-    func_80042CA0();
+    vs_main_setCharacterRestorePending();
     vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;
 }

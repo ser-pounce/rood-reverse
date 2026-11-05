@@ -9,7 +9,7 @@ typedef struct {
 } D_800F18E8_t;
 
 void vs_battle_saveEnemyState(int, int);
-void func_8008B430(D_800F4538_unk58_2*, int);
+void func_8008B430(CVECTOR*, int);
 int* func_8008EB24(void);
 void func_8008EB30(int*);
 void vs_battle_exec(void);

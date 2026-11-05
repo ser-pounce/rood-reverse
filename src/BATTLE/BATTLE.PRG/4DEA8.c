@@ -1072,13 +1072,13 @@ int func_800B810C(u_char* arg0)
 
 int func_800B81A0(u_char* arg0, short arg1)
 {
-    D_800F4538_unk58_2 sp10;
+    CVECTOR sp10;
 
-    sp10.unk0 = arg0[3];
-    sp10.unk1 = arg0[4];
-    sp10.unk2 = arg0[5];
+    sp10.r = arg0[3];
+    sp10.g = arg0[4];
+    sp10.b = arg0[5];
 
-    if (sp10.unk0 | sp10.unk1 | sp10.unk2) {
+    if (sp10.r | sp10.g | sp10.b) {
         func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
     } else {
         func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0);
@@ -1237,17 +1237,17 @@ int func_800B8764(u_char* arg0, short arg1)
 
 int func_800B8788(u_char* arg0, short arg1)
 {
-    D_800F4538_unk58_2 sp10[6];
+    CVECTOR sp10[6];
 
-    sp10[0].unk0 = arg0[7];
-    sp10[0].unk1 = arg0[8];
-    sp10[0].unk2 = arg0[9];
+    sp10[0].r = arg0[7];
+    sp10[0].g = arg0[8];
+    sp10[0].b = arg0[9];
 
-    if (sp10[0].unk0 | sp10[0].unk1 | sp10[0].unk2) {
-        sp10[2].unk0 = arg0[3];
-        sp10[2].unk1 = arg0[4];
-        sp10[2].unk2 = arg0[5];
-        sp10[2].unk3 = arg0[6];
+    if (sp10[0].r | sp10[0].g | sp10[0].b) {
+        sp10[2].r = arg0[3];
+        sp10[2].g = arg0[4];
+        sp10[2].b = arg0[5];
+        sp10[2].cd = arg0[6];
         func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
     } else {
         func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0, 0, 0);

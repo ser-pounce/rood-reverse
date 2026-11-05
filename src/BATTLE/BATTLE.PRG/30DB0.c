@@ -3473,7 +3473,7 @@ int func_8009F8DC(int arg0)
     return temp_v0;
 }
 
-void func_8009F940(int arg0, int arg1, D_800F4538_unk58_2* arg2, D_800F4538_unk58_2* arg3)
+void func_8009F940(int arg0, int arg1, CVECTOR* arg2, CVECTOR* arg3)
 {
     D_800F4538_t* temp_t0 = D_800F4538[arg0];
 
@@ -3997,33 +3997,33 @@ void func_800A06B8(D_800F4538_t* arg0, int arg1)
     a2->unk5 = arg1;
 }
 
-int func_800A071C(int arg0, D_800F4538_unk58_2* arg1)
+int func_800A071C(int arg0, CVECTOR* arg1)
 {
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 != NULL) {
-        arg1->unk0 = temp_a0->unk6F2;
-        arg1->unk1 = temp_a0->unk6F1;
-        arg1->unk2 = temp_a0->unk6F0;
+        arg1->r = temp_a0->unk6F2;
+        arg1->g = temp_a0->unk6F1;
+        arg1->b = temp_a0->unk6F0;
         return 0;
     }
     return -1;
 }
 
-int func_800A0768(int arg0, D_800F4538_unk58_2* arg1)
+int func_800A0768(int arg0, CVECTOR* arg1)
 {
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 != NULL) {
-        temp_a0->unk6F2 = arg1->unk0;
-        temp_a0->unk6F1 = arg1->unk1;
-        temp_a0->unk6F0 = arg1->unk2;
+        temp_a0->unk6F2 = arg1->r;
+        temp_a0->unk6F1 = arg1->g;
+        temp_a0->unk6F0 = arg1->b;
         return 0;
     }
     return -1;
 }
 
-int func_800A07B4(int arg0, D_800F4538_unk58_2* arg1)
+int func_800A07B4(int arg0, CVECTOR* arg1)
 {
     if (D_800F4538[arg0] == NULL) {
         return -1;
@@ -4033,7 +4033,7 @@ int func_800A07B4(int arg0, D_800F4538_unk58_2* arg1)
     return 0;
 }
 
-int func_800A07FC(int arg0, D_800F4538_unk58_2* arg1)
+int func_800A07FC(int arg0, CVECTOR* arg1)
 {
     D_800F4538_t* temp_a2 = D_800F4538[arg0];
 

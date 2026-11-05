@@ -372,13 +372,6 @@ typedef struct {
 } vs_main_artsStatus_t;
 
 typedef struct {
-    char r;
-    char g;
-    char b;
-    char unk3;
-} D_8005DC6C_t;
-
-typedef struct {
     int lStickX;
     int lStickY;
     int rStickX;
@@ -658,13 +651,13 @@ int vs_main_clearCutsceneStreamSlot3(void);
 void vs_main_loadClutTransition(
     /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
 void vs_main_transformClutSlot(int, int, int, short, int, int);
-void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1);
+void vs_main_fadeBgColors(int arg0, CVECTOR* arg1);
 void vs_main_loadSoundFile(int);
 void vs_main_transformBgColors(int, int, int, int, int);
-void func_80047FC0(int, int, int, int, int, int);
+void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b);
 void vs_main_updateBgColors(void);
 void vs_main_updateClutSlots(void);
-void func_800481C0(void);
+void vs_main_updateColorSlots(void);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);

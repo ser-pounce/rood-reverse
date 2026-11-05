@@ -75,7 +75,7 @@
 #define SOUND_UPDATE_UNKNOWN_12 (1 << 12)
 #define SOUND_UPDATE_UNKNOWN_16 (1 << 16)
 #define SOUND_UPDATE_UNKNOWN_17 (1 << 17)
-#define SOUND_UPDATE_UNKNOWN_20 (1 << 20)
+#define SOUND_UPDATE_DEFER_STOP (1 << 20)
 #define SOUND_UPDATE_UNKNOWN_24 (1 << 24)
 #define SOUND_UPDATE_UNKNOWN_27 (1 << 27)
 #define SOUND_UPDATE_UNKNOWN_28 (1 << 28)
@@ -462,7 +462,7 @@ typedef struct {
     FAkaoSequence* SequencePatchTable;
     u_short* KeymapTable;
     FSoundKeymapEntry8* unk44;
-    int SomeIndexRelatedToSpuVoiceInfo;
+    int VoiceAllocStart;
     u_int NoiseChannelFlags;
     u_int ReverbChannelFlags;
     u_int FmChannelFlags;

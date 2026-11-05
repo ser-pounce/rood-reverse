@@ -8044,7 +8044,7 @@ void vs_battle_exec(void)
                     for (i = 0; i < vs_gametime_tickspeed / 2; ++i) {
                         vs_main_setVibrateParams();
                         vs_main_updateBgColors();
-                        func_800481C0();
+                        vs_main_updateColorSlots();
                         vs_main_updateClutSlots();
                     }
 
@@ -8278,7 +8278,7 @@ void func_8007B1B8(int arg0, int arg1, short arg2, short arg3, short arg4)
     vs_main_transformClutSlot(arg0, arg1, 0, arg2, arg3, arg4);
     vs_main_transformClutSlot(arg0, arg1, 1, arg2, arg3, arg4);
     vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
-    func_80047FC0(arg0, arg1, 0, arg2, arg3, arg4);
+    vs_main_transformColorSlot(arg0, arg1, 0, arg2, arg3, arg4);
     vs_main_transformClutSlot(arg0, arg1, 0xD, arg2, arg3, arg4);
 }
 
@@ -8286,7 +8286,7 @@ void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short a
 {
     if (arg2 < 9) {
         vs_main_transformClutSlot(arg0, arg1, arg2 + 4, arg3, arg4, arg5);
-        func_80047FC0(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
+        vs_main_transformColorSlot(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
     }
 }
 
@@ -8310,7 +8310,7 @@ void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
 }
 
-void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { vs_main_fadeBgColors(arg0, arg1); }
+void func_8007B3F0(int arg0, CVECTOR* arg1) { vs_main_fadeBgColors(arg0, arg1); }
 
 void func_8007B410(void)
 {
@@ -15926,17 +15926,17 @@ void func_8008B390(int arg0, int* arg1)
     }
 }
 
-void func_8008B430(D_800F4538_unk58_2* arg0, int arg1)
+void func_8008B430(CVECTOR* arg0, int arg1)
 {
-    if ((arg0->unk0 == 0) && (arg0->unk1 == 0) && (arg0->unk2 == 0) && (arg1 == 0)) {
+    if ((arg0->r == 0) && (arg0->g == 0) && (arg0->b == 0) && (arg1 == 0)) {
         D_800F1BB6 = 0;
         return;
     }
     D_800F1BB0.unk6 = 1;
     D_800F1BB0.unk4 = arg1;
-    D_800F1BB0.unk0 = arg0->unk0;
-    D_800F1BB0.unk1 = arg0->unk1;
-    D_800F1BB0.unk2 = arg0->unk2;
+    D_800F1BB0.unk0 = arg0->r;
+    D_800F1BB0.unk1 = arg0->g;
+    D_800F1BB0.unk2 = arg0->b;
 }
 
 void func_8008B4B0(void) { D_800F1BB6 = 0; }

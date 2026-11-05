@@ -316,14 +316,14 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                                 actor->unk0.currentTile.y, &actor->unk0.unk58,
                                 &scratch->offset);
                         } else {
-                            actor->unk0.unk58.unk0 = 0x80;
-                            actor->unk0.unk58.unk1 = 0x80;
-                            actor->unk0.unk58.unk2 = 0x80;
+                            actor->unk0.unk58.r = 0x80;
+                            actor->unk0.unk58.g = 0x80;
+                            actor->unk0.unk58.b = 0x80;
                         }
                     }
 
                     if (visual->unk0.unk9_0 < 4) {
-                        temp = actor->unk0.unk58.unk0;
+                        temp = actor->unk0.unk58.r;
                         ((u_char*)&visual->unk1864)[0] = temp;
                         temp += (signed char)visual->unk6F2 * 4;
 
@@ -336,7 +336,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                         }
 
                         visual->unk0.unk54.r = temp;
-                        temp = actor->unk0.unk58.unk1;
+                        temp = actor->unk0.unk58.g;
                         ((u_char*)&visual->unk1864)[1] = temp;
                         temp += (signed char)visual->unk6F1 * 4;
 
@@ -349,7 +349,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                         }
 
                         visual->unk0.unk54.g = temp;
-                        temp = actor->unk0.unk58.unk2;
+                        temp = actor->unk0.unk58.b;
                         ((u_char*)&visual->unk1864)[2] = temp;
                         temp += (signed char)visual->unk6F0 * 4;
 

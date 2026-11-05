@@ -43,7 +43,7 @@ typedef struct {
     char unk0[6];
     short unk6[5];
     int unk10[6];
-    D_8005DC6C_t unk28;
+    CVECTOR baseColor;
 } D_8005DC80_t;
 
 typedef struct {
@@ -85,8 +85,8 @@ typedef struct {
     short bgTransitionTargetG;
     short bgTransitionTargetB;
     int bgColors[5][6];
-    D_8005DC6C_t unk7F14[5];
-    D_8005DC80_t unk7F28[17];
+    CVECTOR bgBaseColors[5];
+    D_8005DC80_t colorSlots[17];
     u_char unk8214[0x54];
 } _clutState_t;
 
@@ -2544,9 +2544,9 @@ void vs_main_stopMusic(void)
     }
 }
 
-static UNUSED void func_80045630(int arg0)
+static UNUSED void _playSfxPool0Default(int id)
 {
-    Sound_PlaySfx(arg0 & 0xFFFF, _nextVoicePool0, 0x80, 0x7F);
+    Sound_PlaySfx(id & 0xFFFF, _nextVoicePool0, 0x80, 0x7F);
 
     if (!((_nextVoicePool0 *= 2) & 1)) {
         _nextVoicePool0 = 1;
@@ -3325,8 +3325,6 @@ void vs_main_loadClutTransition(
 }
 
 static UNUSED void _loadClutTransitionWithBase(
-    int duration, int slot, u_short* sourceClut, int clutOffset);
-static void _loadClutTransitionWithBase(
     int duration, int slot, u_short* sourceClut, int clutOffset)
 {
     int i;
@@ -3340,8 +3338,7 @@ static void _loadClutTransitionWithBase(
     }
 }
 
-static UNUSED void _saveClutBase(int slot);
-static void _saveClutBase(int slot)
+static UNUSED void _saveClutBase(int slot)
 {
     int i;
 
@@ -3542,7 +3539,7 @@ void vs_main_transformClutSlot(
 
 static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
-void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1)
+void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
 {
     int sp10[5];
     int i;
@@ -3584,14 +3581,14 @@ void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1)
     }
 }
 
-void func_80047464(int arg0, D_8005DC6C_t* arg1)
+static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
 {
     int i;
 
     if (_clutState.active != 0) {
         vs_main_fadeBgColors(arg0, arg1);
         for (i = 0; i < 5; ++i) {
-            _clutState.unk7F14[i] = arg1[i];
+            _clutState.bgBaseColors[i] = arg1[i];
         }
     }
 }
@@ -3626,19 +3623,19 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             break;
         case 4:
         case 9:
-            var_t1 = (_clutState.unk7F14[i].r + arg2) << 0x10;
-            var_t0 = (_clutState.unk7F14[i].g + arg3) << 0x10;
-            var_a1 = (_clutState.unk7F14[i].b + arg4) << 0x10;
+            var_t1 = (_clutState.bgBaseColors[i].r + arg2) << 0x10;
+            var_t0 = (_clutState.bgBaseColors[i].g + arg3) << 0x10;
+            var_a1 = (_clutState.bgBaseColors[i].b + arg4) << 0x10;
             break;
         case 5:
-            var_t1 = (_clutState.unk7F14[i].r << 0xF) + (arg2 << 0x10);
-            var_t0 = (_clutState.unk7F14[i].g << 0xF) + (arg3 << 0x10);
-            var_a1 = (_clutState.unk7F14[i].b << 0xF) + (arg4 << 0x10);
+            var_t1 = (_clutState.bgBaseColors[i].r << 0xF) + (arg2 << 0x10);
+            var_t0 = (_clutState.bgBaseColors[i].g << 0xF) + (arg3 << 0x10);
+            var_a1 = (_clutState.bgBaseColors[i].b << 0xF) + (arg4 << 0x10);
             break;
         case 6: {
-            int v1 = _clutState.unk7F14[i].g;
-            int a0 = _clutState.unk7F14[i].b;
-            int v0 = _clutState.unk7F14[i].r;
+            int v1 = _clutState.bgBaseColors[i].g;
+            int a0 = _clutState.bgBaseColors[i].b;
+            int v0 = _clutState.bgBaseColors[i].r;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -3650,9 +3647,9 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 6 + (arg4 << 0x10);
         } break;
         case 7: {
-            int v1 = _clutState.unk7F14[i].g;
-            int a0 = _clutState.unk7F14[i].b;
-            int v0 = _clutState.unk7F14[i].r;
+            int v1 = _clutState.bgBaseColors[i].g;
+            int a0 = _clutState.bgBaseColors[i].b;
+            int v0 = _clutState.bgBaseColors[i].r;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -3664,9 +3661,9 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 12 + (arg4 << 0x10);
         } break;
         case 8:
-            var_t1 = _clutState.unk7F14[i].r << 0x10;
-            var_t0 = _clutState.unk7F14[i].g << 0x10;
-            var_a1 = _clutState.unk7F14[i].b << 0x10;
+            var_t1 = _clutState.bgBaseColors[i].r << 0x10;
+            var_t0 = _clutState.bgBaseColors[i].g << 0x10;
+            var_a1 = _clutState.bgBaseColors[i].b << 0x10;
             break;
         case 11:
             _clutState.bgTransitionMode = 0;
@@ -3759,9 +3756,9 @@ void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
+static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
-    D_800F4538_unk58_2 sp10;
+    CVECTOR sp10;
     D_8005DC80_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -3773,141 +3770,141 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
         return;
     }
 
-    temp_t0 = &_clutState.unk7F28[arg1];
-    temp_a3 = _clutState.unk7F28[arg1].unk10;
-    temp_a1 = _shift_left(arg2->r);
-    temp_t1 = _shift_left(arg2->g);
-    temp_t2 = _shift_left(arg2->b);
+    temp_t0 = &_clutState.colorSlots[slot];
+    temp_a3 = _clutState.colorSlots[slot].unk10;
+    temp_a1 = _shift_left(color->r);
+    temp_t1 = _shift_left(color->g);
+    temp_t2 = _shift_left(color->b);
 
-    if (arg0 != 0) {
-        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (arg0 * 2));
-        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (arg0 * 2));
-        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (arg0 * 2));
+    if (frames != 0) {
+        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (frames * 2));
+        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (frames * 2));
+        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (frames * 2));
     } else {
         temp_a3[0] = temp_a1;
         temp_a3[1] = temp_t1;
         temp_a3[2] = temp_t2;
     }
-    if (arg0 != 0) {
+    if (frames != 0) {
         temp_t0->unk0[0] = 1;
         temp_t0->unk0[1] = 0;
         temp_t0->unk0[2] = 0;
-        temp_t0->unk0[3] = arg0;
+        temp_t0->unk0[3] = frames;
         return;
     }
 
     temp_t0->unk0[0] = 0;
-    sp10.unk0 = (temp_a3[0] / 65536) - 64;
-    sp10.unk1 = (temp_a3[1] / 65536) - 64;
-    sp10.unk2 = (temp_a3[2] / 65536) - 64;
-    sp10.unk3 = 0;
+    sp10.r = (temp_a3[0] / 65536) - 64;
+    sp10.g = (temp_a3[1] / 65536) - 64;
+    sp10.b = (temp_a3[2] / 65536) - 64;
+    sp10.cd = 0;
 
-    if (arg1 != 0) {
-        func_800A0768(arg1 - 1, &sp10);
+    if (slot != 0) {
+        func_800A0768(slot - 1, &sp10);
     } else {
         func_8008B430(&sp10, temp_t0->unk6[3] >> 2);
     }
 }
 
-static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
+static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
 {
     if (_clutState.active != 0) {
-        func_80047910(arg0, arg1, arg2);
-        _clutState.unk7F28[arg1].unk28 = *arg2;
+        _fadeColorSlot(frames, slot, color);
+        _clutState.colorSlots[slot].baseColor = *color;
     }
 }
 
-void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
 {
-    D_800F4538_unk58_2 sp10;
+    CVECTOR sp10;
     short var_t4;
     int var_a1;
     int var_a2;
     int var_t0;
     int var_v0;
     int var_v1;
-    D_8005DC80_t* t1 = &_clutState.unk7F28[arg2];
+    D_8005DC80_t* t1 = &_clutState.colorSlots[slot];
     int* t2 = t1->unk10;
 
     var_t4 = 0;
-    switch (arg0) {
+    switch (mode) {
     case 1:
-        var_a1 = (t2[0] / 2) + (arg3 << 16);
-        var_t0 = (t2[1] / 2) + (arg4 << 16);
-        var_a2 = (t2[2] / 2) + (arg5 << 16);
+        var_a1 = (t2[0] / 2) + (r << 16);
+        var_t0 = (t2[1] / 2) + (g << 16);
+        var_a2 = (t2[2] / 2) + (b << 16);
         break;
     case 2:
         var_t4 = 0x4000;
-        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg3 << 0x10);
-        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg4 << 0x10);
-        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg5 << 0x10);
+        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (r << 0x10);
+        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (g << 0x10);
+        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (b << 0x10);
         break;
     case 3:
         var_t4 = 0x4000;
         var_v1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 12;
-        var_a1 = var_v1 + (arg3 << 0x10);
-        var_t0 = var_v1 + (arg4 << 0x10);
-        var_a2 = var_v1 + (arg5 << 0x10);
+        var_a1 = var_v1 + (r << 0x10);
+        var_t0 = var_v1 + (g << 0x10);
+        var_a2 = var_v1 + (b << 0x10);
         break;
     case 4:
     case 9:
-        var_a1 = (t1->unk28.r + arg3) << 0x10;
-        var_t0 = (t1->unk28.g + arg4) << 0x10;
-        var_a2 = (t1->unk28.b + arg5) << 0x10;
+        var_a1 = (t1->baseColor.r + r) << 0x10;
+        var_t0 = (t1->baseColor.g + g) << 0x10;
+        var_a2 = (t1->baseColor.b + b) << 0x10;
         break;
     case 5:
         var_t4 = 0x4000;
-        var_a1 = (t1->unk28.r << 0xF) + (arg3 << 0x10);
-        var_t0 = (t1->unk28.g << 0xF) + (arg4 << 0x10);
-        var_a2 = (t1->unk28.b << 0xF) + (arg5 << 0x10);
+        var_a1 = (t1->baseColor.r << 0xF) + (r << 0x10);
+        var_t0 = (t1->baseColor.g << 0xF) + (g << 0x10);
+        var_a2 = (t1->baseColor.b << 0xF) + (b << 0x10);
         break;
     case 6:
         var_t4 = 0x4000;
         {
-            int v1 = t1->unk28.g;
-            int a0 = t1->unk28.b;
-            int v0 = t1->unk28.r;
+            int v1 = t1->baseColor.g;
+            int a0 = t1->baseColor.b;
+            int v0 = t1->baseColor.r;
             var_a2 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
             v1 <<= 0x11;
             v0 += v1 + var_a2;
             v0 += a0;
-            var_a1 = v0 / 6 + (arg3 << 0x10);
-            var_t0 = v0 / 6 + (arg4 << 0x10);
-            var_a2 = v0 / 6 + (arg5 << 0x10);
+            var_a1 = v0 / 6 + (r << 0x10);
+            var_t0 = v0 / 6 + (g << 0x10);
+            var_a2 = v0 / 6 + (b << 0x10);
         }
         break;
     case 7:
         var_t4 = 0x4000;
         {
-            int v1 = t1->unk28.g;
-            int a0 = t1->unk28.b;
-            int v0 = t1->unk28.r;
+            int v1 = t1->baseColor.g;
+            int a0 = t1->baseColor.b;
+            int v0 = t1->baseColor.r;
             var_a2 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
             v1 <<= 0x11;
             v0 += v1 + var_a2;
             v0 += a0;
-            var_a1 = v0 / 12 + (arg3 << 0x10);
-            var_t0 = v0 / 12 + (arg4 << 0x10);
-            var_a2 = v0 / 12 + (arg5 << 0x10);
+            var_a1 = v0 / 12 + (r << 0x10);
+            var_t0 = v0 / 12 + (g << 0x10);
+            var_a2 = v0 / 12 + (b << 0x10);
         }
         break;
     case 8:
     case 15:
-        var_a1 = t1->unk28.r << 0x10;
-        var_t0 = t1->unk28.g << 0x10;
-        var_a2 = t1->unk28.b << 0x10;
+        var_a1 = t1->baseColor.r << 0x10;
+        var_t0 = t1->baseColor.g << 0x10;
+        var_a2 = t1->baseColor.b << 0x10;
         break;
     case 11:
         t1->unk0[4] = 0;
         return;
     default:
-        var_a1 = t2[0] + (arg3 << 0x10);
-        var_t0 = t2[1] + (arg4 << 0x10);
-        var_a2 = t2[2] + (arg5 << 0x10);
+        var_a1 = t2[0] + (r << 0x10);
+        var_t0 = t2[1] + (g << 0x10);
+        var_a2 = t2[2] + (b << 0x10);
         break;
     }
     var_a1 = var_a1 & 0xFFFF0000;
@@ -3932,11 +3929,11 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     if (var_a2 < 0) {
         var_a2 = 0;
     }
-    if (arg1 != 0) {
-        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (arg1 * 2));
-        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (arg1 * 2));
-        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (arg1 * 2));
-        t1->unk6[4] = ((var_t4 - t1->unk6[3]) / (arg1 * 2));
+    if (frames != 0) {
+        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (frames * 2));
+        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (frames * 2));
+        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (frames * 2));
+        t1->unk6[4] = ((var_t4 - t1->unk6[3]) / (frames * 2));
     } else {
         t2[0] = var_a1;
         t2[1] = var_t0;
@@ -3944,16 +3941,16 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
         t1->unk6[3] = var_t4;
     }
     var_v0 = 1;
-    if (arg1 != 0) {
+    if (frames != 0) {
         t1->unk0[0] = 1;
         t1->unk0[1] = 0;
         t1->unk0[2] = 0;
-        t1->unk0[3] = arg1;
-        t1->unk0[4] = arg0;
-        if (arg0 == 9) {
-            t1->unk6[0] = arg3;
-            t1->unk6[1] = arg4;
-            t1->unk6[2] = arg5;
+        t1->unk0[3] = frames;
+        t1->unk0[4] = mode;
+        if (mode == 9) {
+            t1->unk6[0] = r;
+            t1->unk6[1] = g;
+            t1->unk6[2] = b;
         }
     } else {
         t1->unk0[0] = 0;
@@ -3962,32 +3959,32 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
             var_v1 = t2[0] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.unk0 = var_v0 - 0x40;
+        sp10.r = var_v0 - 0x40;
         var_v0 = t2[1] >> 0x10;
         if (t2[1] < 0) {
             var_v1 = t2[1] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.unk1 = var_v0 - 0x40;
+        sp10.g = var_v0 - 0x40;
         var_v0 = t2[2] >> 0x10;
         if (t2[2] < 0) {
             var_v1 = t2[2] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.unk2 = var_v0 - 0x40;
-        sp10.unk3 = 0;
-        if (arg2 != 0) {
-            func_800A0768(arg2 - 1, &sp10);
+        sp10.b = var_v0 - 0x40;
+        sp10.cd = 0;
+        if (slot != 0) {
+            func_800A0768(slot - 1, &sp10);
         } else {
             func_8008B430(&sp10, ((u_short)t1->unk6[3] << 0x10) >> 0x12);
         }
     }
 }
 
-void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
 {
     if (_clutState.active != 0) {
-        func_80047B30(arg0, arg1, arg2, arg3, arg4, arg5);
+        _transformColorSlot(mode, frames, slot, r, g, b);
     }
 }
 
@@ -4050,12 +4047,12 @@ void vs_main_updateBgColors(void)
     }
 }
 
-void func_800481C0(void)
+void vs_main_updateColorSlots(void)
 {
-    D_800F4538_unk58_2 sp18;
+    CVECTOR sp18;
     int i;
     int var_v0;
-    D_8005DC80_t* p = _clutState.unk7F28;
+    D_8005DC80_t* p = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
         int* a2 = p[i].unk10;
@@ -4068,18 +4065,18 @@ void func_800481C0(void)
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18.unk0 = (var_v0 >> 16) - 0x40;
+            sp18.r = (var_v0 >> 16) - 0x40;
             var_v0 = a2[1];
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18.unk1 = (var_v0 >> 16) - 0x40;
+            sp18.g = (var_v0 >> 16) - 0x40;
             var_v0 = a2[2];
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18.unk2 = (var_v0 >> 16) - 0x40;
-            sp18.unk3 = 0;
+            sp18.b = (var_v0 >> 16) - 0x40;
+            sp18.cd = 0;
 
             if (i != 0) {
                 func_800A0768(i - 1, &sp18);
@@ -4090,15 +4087,15 @@ void func_800481C0(void)
             ++p[i].unk0[1];
             if (p[i].unk0[1] >= (p[i].unk0[3] * 2)) {
                 if (p[i].unk0[4] == 9) {
-                    func_80047FC0(4, p[i].unk0[3], i, p[i].unk6[0] / 2, p[i].unk6[1] / 2,
-                        p[i].unk6[2] / 2);
+                    vs_main_transformColorSlot(4, p[i].unk0[3], i, p[i].unk6[0] / 2,
+                        p[i].unk6[1] / 2, p[i].unk6[2] / 2);
                     p[i].unk0[4] = 10;
                 } else if (p[i].unk0[4] == 10) {
-                    func_80047B30(
+                    _transformColorSlot(
                         9, p[i].unk0[3], i, p[i].unk6[0], p[i].unk6[1], p[i].unk6[2]);
                     p[i].unk0[4] = 9;
                 } else if (p[i].unk0[4] == 14) {
-                    func_80047B30(15, p[i].unk0[3], i, 0, 0, 0);
+                    _transformColorSlot(15, p[i].unk0[3], i, 0, 0, 0);
                     p[i].unk0[4] = 15;
                 } else {
                     p[i].unk0[0] = 0;
@@ -4265,8 +4262,8 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
     }
 }
 
-void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gOffset,
-    short bOffset, int arg6)
+static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
+    short gOffset, short bOffset, int applyNow)
 {
     int i;
     int new_var;
@@ -4346,7 +4343,7 @@ void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gO
             b = 1;
         }
 
-        if (arg6 != 0) {
+        if (applyNow != 0) {
             _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (stp << 15);
 
             if (_clutState.slots[slot].animState.active == 0) {
@@ -4364,10 +4361,10 @@ void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gO
     _clutState.uploadPending = 1;
 }
 
-void func_80048E68(u_short* srcClut, int slot, u_short rOffset, u_short gOffset,
-    u_short bOffset, int arg5)
+static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
+    u_short gOffset, u_short bOffset, int applyNow)
 {
-    func_80048B8C(8, srcClut, slot, rOffset, gOffset, bOffset, arg5);
+    _loadClutBase(8, srcClut, slot, rOffset, gOffset, bOffset, applyNow);
 }
 
 void vs_main_loadBgColors(void)
@@ -4377,9 +4374,9 @@ void vs_main_loadBgColors(void)
     int* var_v1 = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
-        _clutState.unk7F14[i].r = var_v1[i];
-        _clutState.unk7F14[i].g = (var_v1[i] & 0xFF00) / 256;
-        _clutState.unk7F14[i].b = (var_v1[i] & 0xFF0000) / 65536;
+        _clutState.bgBaseColors[i].r = var_v1[i];
+        _clutState.bgBaseColors[i].g = (var_v1[i] & 0xFF00) / 256;
+        _clutState.bgBaseColors[i].b = (var_v1[i] & 0xFF0000) / 65536;
 
         bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
         bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;
@@ -4417,13 +4414,13 @@ void vs_main_clutInit(void)
     _clutState.bgTransitionMode = 0;
 
     for (i = 0; i < 17; ++i) {
-        _clutState.unk7F28[i].unk0[0] = 0;
-        _clutState.unk7F28[i].unk0[4] = 0;
-        _clutState.unk7F28[i].unk6[3] = 0;
-        *((int*)&_clutState.unk7F28[i].unk28) = 0x404040;
-        _clutState.unk7F28[i].unk10[2] = 0x400000;
-        _clutState.unk7F28[i].unk10[1] = 0x400000;
-        _clutState.unk7F28[i].unk10[0] = 0x400000;
+        _clutState.colorSlots[i].unk0[0] = 0;
+        _clutState.colorSlots[i].unk0[4] = 0;
+        _clutState.colorSlots[i].unk6[3] = 0;
+        *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
+        _clutState.colorSlots[i].unk10[2] = 0x400000;
+        _clutState.colorSlots[i].unk10[1] = 0x400000;
+        _clutState.colorSlots[i].unk10[0] = 0x400000;
     }
 }
 

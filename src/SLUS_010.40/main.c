@@ -649,6 +649,9 @@ static UNUSED u_char _artsActionIds[][4] = {
     { 216, 217, 218, 219 },
 };
 
+// Points needed for each battle ability. Each step is increased by about 1.3 of the
+// previous one, the first value is an anomaly and was probably changed after the curve
+// was defined, 40 would fit.
 u_short vs_main_battleAbilitiesPointsRequirements[] = { 20, 54, 72, 95, 125, 165, 216,
     283, 369, 482, 628, 818, 1066, 1387, 1805, 2349, 3055, 3973, 5167, 6719, 8737,
     11359 };

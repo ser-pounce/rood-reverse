@@ -528,7 +528,7 @@ typedef union {
 
 // .data
 extern int vs_main_titleScreenCount;
-extern int D_8004A52C;
+extern int vs_main_debugPause;
 extern vs_action_t vs_main_actions[256];
 extern material_modifiers_t vs_main_materialModifiers[8];
 extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];

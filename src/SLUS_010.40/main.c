@@ -779,7 +779,7 @@ static UNUSED int _7[4];
 char vs_main_padBuffer[2][34];
 static UNUSED int _8;
 soundData_t vs_main_soundData;
-void* D_8005E0C0[2];
+void* vs_main_prims[2];
 int vs_main_nearClip;
 static UNUSED int _9;
 DRAWENV vs_main_drawEnv[2];
@@ -798,10 +798,10 @@ static void _initScreen(
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
 
 int vs_main_buttonsPreviousState;
-int D_8005E1C4;
+int vs_main_unused0;
 static UNUSED int _11[2];
 vs_main_buttonsPressed_t vs_main_buttonsPressed;
-int D_8005E1D4;
+int vs_main_unused1;
 u_int vs_main_frameDuration;
 static UNUSED int _12[13];
 int vs_main_frameBuf;
@@ -810,7 +810,7 @@ MATRIX D_8005E218;
 int vs_main_buttonsState;
 static UNUSED int _14;
 static int _inGame;
-int D_8005E244;
+int vs_main_unused2;
 int vs_main_projectionDistance;
 
 static void _displayLoadingScreen(void)

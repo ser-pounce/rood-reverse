@@ -1590,8 +1590,8 @@ static void _initEnvironment(void)
 {
     _initVideo(320, 240, 512, 0, 0, 0);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
-    D_8005E0C0[0] = vs_main_allocHeap(0x20000);
-    D_8005E0C0[1] = vs_main_allocHeap(0x20000);
+    vs_main_prims[0] = vs_main_allocHeap(0x20000);
+    vs_main_prims[1] = vs_main_allocHeap(0x20000);
     vs_main_ot[0] = vs_main_allocHeap(0x2088);
     vs_main_ot[1] = vs_main_allocHeap(0x2088);
 }
@@ -1614,7 +1614,7 @@ static void _beginFrame(void)
     vs_scratch.unk8 = temp_a0 + 8;
     vs_scratch.unk4 = temp_a0 + 0x48;
     ClearOTagR((u_long*)temp_a0, 0x822);
-    vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
+    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
 }
 
 /**

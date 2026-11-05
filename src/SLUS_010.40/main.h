@@ -104,11 +104,11 @@ typedef struct {
 } vs_action_t;
 
 typedef struct {
-    u_int unk0;
-    u_short unk4;
-    u_short unk6;
-    u_int unk8;
-    u_int unkC;
+    u_int status;
+    u_short duration;
+    u_short tickInterval;
+    u_int replacesMask;
+    u_int blockedByMask;
 } vs_main_statusEffectParams_t;
 
 typedef struct {

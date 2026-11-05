@@ -970,7 +970,7 @@ void vs_main_jumpToBattle(void)
     Sound_StopMusic();
     Sound_StopSfx();
     func_80012024();
-    func_80012EBC();
+    Sound_ResetMusicBankIds();
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_main_startState = 1;
@@ -2329,7 +2329,7 @@ static void _processCdQueue(void)
     func_800443CC();
 }
 
-int func_80044D94(void) { return func_80011F90(); }
+int func_80044D94(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
@@ -2577,7 +2577,7 @@ int func_800454B8(int arg0)
 {
     if (arg0 != 0) {
         if (vs_main_soundData.unk14[arg0 - 1] != 0xFFFF) {
-            return func_80011EBC(vs_main_soundData.unk14[arg0 - 1]);
+            return Sound_GetMusicVolumeById(vs_main_soundData.unk14[arg0 - 1]);
         }
     }
     return 0;
@@ -2637,7 +2637,7 @@ static void func_80045630(int arg0)
 static void _playSfxById(int id, int arg1, int arg2, int arg3)
 {
     if (arg1 == 0x200) {
-        if (id != func_80012358(0x200)) {
+        if (id != Sound_GetPlayingSfxByGroup(0x200)) {
             Sound_PlaySfx(id, 0x200, arg2, arg3);
         }
     } else {
@@ -2648,7 +2648,7 @@ static void _playSfxById(int id, int arg1, int arg2, int arg3)
 static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
 {
     if (arg1 == 0x200) {
-        if (data != (void*)func_80012358(0x200)) {
+        if (data != (void*)Sound_GetPlayingSfxByGroup(0x200)) {
             Sound_PlaySfxFromPointer(data, 0x200, arg2, arg3);
         }
     } else {
@@ -3157,7 +3157,7 @@ static int _startCutsceneStream(int arg0, int arg1, int arg2)
     if ((arg0 - 1u) < 3) {
         if (vs_main_soundData.unk64[arg0 - 1] != 0) {
             Sound_FadeOutCutscene(0, arg2);
-            func_800132C4(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
+            Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
             return 1;
         }
     }
@@ -3209,7 +3209,7 @@ static void _loadSoundFile(int file)
     int temp_v1;
     int var_a0;
 
-    temp_v1 = func_80011F08();
+    temp_v1 = Sound_GetLoadedMusicBankIds();
     var_a0 = temp_v1 >> 0x10;
     new_var = temp_v1;
 
@@ -3266,7 +3266,7 @@ int vs_main_processSoundQueue(void)
         }
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
-            func_80013188(vs_main_soundData.soundData, 0);
+            Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
             return 1;
         }
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
@@ -3303,15 +3303,15 @@ static void _loadMenuSound(void)
     Sound_SetCdMixVolume(0x7F);
     buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
-    func_80012BB8(buf, 1);
+    Sound_LoadAkaoBankBlocking(buf, 1);
     vs_main_freeHeapR(buf);
     buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
-    func_80012BB8(buf, 1);
+    Sound_LoadAkaoBankBlocking(buf, 1);
     vs_main_freeHeapR(buf);
     buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
-    func_800131DC(buf, 0, 1);
+    Sound_LoadSfxBank(buf, 0, 1);
     vs_main_freeHeapR(buf);
     vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
     Sound_BindAkaoSfxBlob(_sfxData);

@@ -7533,7 +7533,7 @@ void vs_battle_exec(void)
                         break;
                     }
 
-                    ot = D_80055C80[vs_main_frameBuf];
+                    ot = vs_main_ot[vs_main_frameBuf];
                     D_800F1870 = ot;
                     vs_scratch.unk8 = ot + 2;
                     vs_scratch.unk4 = ot + 18;
@@ -15425,7 +15425,7 @@ void func_8008A3A0(void)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        vs_scratch.unk4 = D_80055C80[vs_main_frameBuf] + 0x10;
+        vs_scratch.unk4 = vs_main_ot[vs_main_frameBuf] + 0x10;
         ClearOTagR(vs_scratch.unk4, 0x800);
         func_8007DF40();
         _drawScreenTransition(vs_scratch.unk4);

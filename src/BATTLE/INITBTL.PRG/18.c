@@ -520,8 +520,8 @@ void func_800FA35C(UNUSED int startState)
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
     D_8005E0C0[1] = 0;
     D_8005E0C0[0] = NULL;
-    D_80055C80[0] = vs_main_allocHeap(0x2088);
-    D_80055C80[1] = vs_main_allocHeap(0x2088);
+    vs_main_ot[0] = vs_main_allocHeap(0x2088);
+    vs_main_ot[1] = vs_main_allocHeap(0x2088);
     SetDrawStp(&D_800F1970[0], 0);
     SetDrawStp(&D_800F1970[1], 0);
     SetDrawStp(&D_800F1988[0], 1);

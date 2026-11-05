@@ -12,7 +12,7 @@ close
 CloseEvent
 D_80040C18
 vs_main_battleTimer
-D_80055C80
+vs_main_ot
 D_8005DFD4
 D_8005DFD8
 D_8005E0C0

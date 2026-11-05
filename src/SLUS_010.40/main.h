@@ -429,11 +429,11 @@ typedef struct {
 } vs_main_zoneEnemyCache_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    u_short unk2;
+    char mode;
+    char savedMode;
+    u_short lifetime;
     vs_Gametime_t time;
-} D_80050468_t;
+} vs_main_battleTimer_t;
 
 typedef struct {
     u_short unk0_0 : 5;
@@ -548,7 +548,7 @@ extern u_short vs_main_battleAbilitiesPointsRequirements[];
 #ifndef VS_MAIN_INCLUDE
 extern portInfo_t vs_main_portInfo[2];
 extern u_char vs_main_actorExtraShp[256];
-extern D_80050468_t D_80050468;
+extern vs_main_battleTimer_t vs_main_battleTimer;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
 extern void* D_80055C80[2];

@@ -11,7 +11,7 @@ ClearOTagR
 close
 CloseEvent
 D_80040C18
-D_80050468
+vs_main_battleTimer
 D_80055C80
 D_8005DFD4
 D_8005DFD8

@@ -3597,7 +3597,7 @@ void func_800CB83C(void)
     ClearOTag(D_800F51B8, 34);
 
     if (vs_battle_lowerScreenUiState == 1) {
-        _renderTimer(&D_80050468.time);
+        _renderTimer(&vs_main_battleTimer.time);
     }
 
     func_800CB708();

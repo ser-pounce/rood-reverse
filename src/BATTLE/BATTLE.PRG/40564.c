@@ -242,7 +242,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
 
 int func_800A91DC(u_int arg0, u_int arg1, int arg2)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     int i;
 
     int var_t2 = ONE;
@@ -1583,7 +1583,7 @@ void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
     int count;
     int value;
     int i;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     if (actor == NULL) {
         count = 16;
@@ -2200,7 +2200,7 @@ void* func_800AD494(void* arg0, int arg1, u_short** arg2)
     return p;
 }
 
-void func_800AD62C(int arg0, int* arg1, int* arg2, int arg3 __attribute__((unused)))
+void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
 {
     int temp_v0;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];

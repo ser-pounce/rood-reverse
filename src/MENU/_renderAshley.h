@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
@@ -32,9 +33,9 @@ static void _renderAshley(int mode)
 
     static int projectionDistance;
 #ifdef _ITEMMENU
-    static int _[3] __attribute__((unused));
+    static UNUSED int _[3];
 #else
-    static int _ __attribute__((unused));
+    static UNUSED int _;
 #endif
     static MATRIX viewMatrixBackup;
     static vs_camera_t cameraBackup;

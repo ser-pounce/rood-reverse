@@ -1,3 +1,4 @@
+#include "common.h"
 #include "260.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/BATTLE/BATTLE.PRG/menuState.h"
@@ -245,7 +246,7 @@ static int _disassembleItem(int itemIndex)
     static char lootCount;
     static u_char targetItemIndex;
     static char disassembleItemCategory;
-    static char _ __attribute__((unused));
+    static UNUSED char _;
 
     int i;
     vs_battle_menuItem_t* menuItem;
@@ -1376,7 +1377,7 @@ static int _discardItems(int init)
 
     static char state;
     static char D_8010A692;
-    static char _ __attribute__((unused));
+    static UNUSED char _;
     static char* itemName;
 
     vs_battle_menuItem_t* menuItem;
@@ -1946,8 +1947,8 @@ int _processLootMenu(int initialize)
  */
 int vs_menuB_exec(u_char* state)
 {
-    static char _0 __attribute__((unused));
-    static char _ __attribute__((unused));
+    static UNUSED char _0;
+    static UNUSED char _;
 
     int i;
     void* buf;

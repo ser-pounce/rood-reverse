@@ -37,3 +37,14 @@
 #define __attribute__(x)
 #define __asm__(...)
 #endif // PERMUTER
+
+// The legacy cc1 does not understand __attribute__, so the build defines LEGACY_GCC and
+// the macros expand to nothing. Place them after the storage class, or first in the
+// declaration.
+#if defined(LEGACY_GCC)
+#define UNUSED
+#define NORETURN
+#else
+#define UNUSED __attribute__((unused))
+#define NORETURN __attribute__((noreturn))
+#endif // LEGACY_GCC

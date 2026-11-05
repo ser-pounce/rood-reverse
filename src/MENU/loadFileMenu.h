@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 
 /* Load menu shared by the title and menu overlays. The including file defines
  * LOAD_FILE_MENU_PAD, the size of the alignment filler after the menu state, and
@@ -36,7 +37,7 @@ static int _loadFileMenu(int initFadeout)
     static char state;
     static u_char selectedFile;
     static char fadeout;
-    static char _[LOAD_FILE_MENU_PAD] __attribute__((unused));
+    static UNUSED char _[LOAD_FILE_MENU_PAD];
 
     fileMenuElements_t* element;
     int i;

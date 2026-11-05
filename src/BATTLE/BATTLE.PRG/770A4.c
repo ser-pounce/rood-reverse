@@ -106,8 +106,7 @@ found:
     arg3->z = D_800F5910[i * 2].unk0_5;
 }
 
-int func_800DFAF8(func_800E78F4_t* arg0 __attribute__((unused)),
-    vs_battle_movementPosition arg1, int arg2)
+int func_800DFAF8(UNUSED func_800E78F4_t* arg0, vs_battle_movementPosition arg1, int arg2)
 {
     SVECTOR sp10[4];
     SVECTOR* m;

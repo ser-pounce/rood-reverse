@@ -87,13 +87,8 @@ typedef void (*FSoundCommandHandler)(FSoundCommandParams*);
 static int Sound_IsNotAkaoFile(int*);
 static int Sound_TryLoadInstrumentBank(void*, int);
 static int Sound_LoadInstrumentBank(void*, int, int, int);
-static void Sound_Setup(void);
 static void Sound_Start(void);
 static void SetVoiceKeyOff(u_int);
-static void Sound_EvictSfxVoice(int, int);
-static void func_8001653C(FSoundChannel*, FSoundCommandParams*, int, char*);
-static void Sound_PlaySfxProgram(FSoundCommandParams*, char*, char*, int);
-static int func_80016DA8(int);
 static u_int Sound_ExecuteSoundVm2Function(u_int);
 static long Sound_MainLoop(void);
 static void Sound_Stop(void);
@@ -103,27 +98,15 @@ static void Sound_CopyAndRelocateInstruments(FSoundInstrumentInfo* in_A,
     FSoundInstrumentInfo* in_B, int in_AddrOffset, int in_Count);
 static void Sound_ClearVoiceFromSfxState(FSoundChannel* arg0, int arg1);
 static void Sound_Cutscene_OnInitialTransferComplete(void);
-static void Sound_Cutscene_InitVoice(int, int, int, int);
-static void Sound_Cutscene_BeginPlayback(int, int, void (*)(void));
-static void Sound_Cutscene_LoadNextBuffer(int, int, int, void (*)(void));
 static void Sound_Cutscene_OnBufferAComplete(void);
 static void Sound_Cutscene_OnBufferBComplete(void);
-static void Sound_Cutscene_StopStream(void);
-static void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence);
-static void Sound_SetMusicSequence(FAkaoSequence* in_Sequence, int in_SwapWithSavedState);
-static void Sound_ReconcileSavedMusicVoices(void);
 static void Sound_BuildVoiceModeMask(int* out_VoiceMask, int in_SavedChannelMask,
     int in_ActiveChannelMask, int in_ExtraVoiceMask);
 static void memcpy32(void* in_Src, void* in_Dst, u_int in_Size);
 static void memswap32(void* in_A, void* in_B, u_int in_Size);
 static void Sound_UpdateCdVolume(void);
-static int func_8001A1F4(int, int);
-static int func_8001A22C(int, u_int);
-static void Sound_CopyInstrumentInfoToChannel(FSoundChannel*, FSoundInstrumentInfo*, int);
 static void Sound_ProcessAkaoVM(FSoundChannel*, int);
 static void Sound_SetReverbMode(int in_ReverbMode);
-
-static void func_80015220();
 
 extern int g_Sound_EventDescriptor;
 extern char _soundFlush[64];
@@ -1467,8 +1450,8 @@ static void SetVoiceParams(
     *p = in_VoiceParams->LoopAddress >> 3;
 }
 
-static void SetVoiceParamsByFlags(u_int in_VoiceIndex, FSoundVoiceParams* in_VoiceParams,
-    int arg2 __attribute__((unused)))
+static void SetVoiceParamsByFlags(
+    u_int in_VoiceIndex, FSoundVoiceParams* in_VoiceParams, UNUSED int arg2)
 {
     int flags;
 
@@ -1692,8 +1675,7 @@ static void Sound_UpdateSlidesAndDelays(
     }
 }
 
-static void Sound_UpdateModulation(
-    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+static void Sound_UpdateModulation(FSoundChannel* in_pChannel, UNUSED int in_VoiceFlags)
 {
     short* Wave;
     int temp;
@@ -1806,8 +1788,7 @@ static void Sound_UpdateModulation(
     }
 }
 
-static void func_800147CC(
-    FSoundChannel* in_pChannel, int in_VoiceFlags __attribute__((unused)))
+static void func_800147CC(FSoundChannel* in_pChannel, UNUSED int in_VoiceFlags)
 {
     short* Wave;
     int temp;
@@ -1992,8 +1973,6 @@ static int Sound_FindFreeVoice(int arg0)
     return arg0;
 }
 
-static void Sound_UpdateModulation(FSoundChannel*, int);
-
 static void Sound_AssignAndUpdateMusicVoice(
     FSoundChannel* in_pChannel, u_int in_Flags1, u_int in_Flags2, u_int* out_KeyOnFlags)
 {
@@ -2137,7 +2116,7 @@ static void Sound_UpdateVoiceEnvelopeStates(u_int in_ReservedVoices)
 }
 
 static void Sound_ApplyMasterFadeToChannelVolume(
-    FSoundMusicContext* in_Context, FSoundChannel* arg1 __attribute__((unused)))
+    FSoundMusicContext* in_Context, UNUSED FSoundChannel* arg1)
 {
     int Volume;
 
@@ -2151,7 +2130,7 @@ static void Sound_ApplyMasterFadeToChannelVolume(
 }
 
 static void Sound_RestoreChannelVolumeFromMasterFade(
-    FSoundMusicContext* in_Config, FSoundChannel* arg1 __attribute__((unused)))
+    FSoundMusicContext* in_Config, UNUSED FSoundChannel* arg1)
 {
     in_Config->MasterVolume = g_Sound_MasterFadeTimer.SavedValue;
 }
@@ -2428,9 +2407,6 @@ static void Sound_BuildVoiceModeMask(int* out_VoiceMask, int in_SavedChannelMask
 
 // how far to shift SPU sample addresses when remapping
 #define SOUND_BANK_SPU_ADDR_OFFSET 0x20000u
-
-extern int D_80094FAC[];
-extern int D_80094FFC;
 
 static u_short Sound_MapInstrumentToAltSampleBank(
     u_int in_Flags, FSoundChannel* in_pChannel)
@@ -3805,8 +3781,6 @@ void Sound_Cmd_11_StopMusicById(FSoundCommandParams* in_Params)
     }
 }
 
-static void Sound_ClearVoiceFromSfxState(FSoundChannel* arg0, int arg1);
-
 void Sound_Cmd_F1_StopSfx(void)
 {
     FSoundChannel* var_s2;
@@ -3826,7 +3800,7 @@ void Sound_Cmd_F1_StopSfx(void)
     g_Sound_GlobalFlags.UpdateFlags |= 0x110;
 }
 
-void Sound_Cmd_80_SetModeStereo(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_80_SetModeStereo(UNUSED FSoundCommandParams* in_Params)
 {
     D_80039AFC = 1;
     Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicContext, g_ActiveMusicChannels);
@@ -3837,7 +3811,7 @@ void Sound_Cmd_80_SetModeStereo(FSoundCommandParams* in_Params __attribute__((un
     Sound_MarkScheduledSfxChannelsVolumeDirty();
 }
 
-void Sound_Cmd_81_SetModeMono(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_81_SetModeMono(UNUSED FSoundCommandParams* in_Params)
 {
     D_80039AFC = 2;
     Sound_MarkActiveChannelsVolumeDirty(g_pActiveMusicContext, g_ActiveMusicChannels);
@@ -3865,7 +3839,7 @@ void Sound_Cmd_92_SetMusicJumpThreshold(FSoundCommandParams* arg0)
     g_pActiveMusicContext->JumpThreshold = arg0->Param1;
 }
 
-void Sound_Cmd_9B_SuspendMusic(FSoundCommandParams* arg0 __attribute__((unused)))
+void Sound_Cmd_9B_SuspendMusic(UNUSED FSoundCommandParams* arg0)
 {
     int temp_v1;
     int var_s0;
@@ -3898,7 +3872,7 @@ void Sound_Cmd_9B_SuspendMusic(FSoundCommandParams* arg0 __attribute__((unused))
     D_80039B64 |= 1;
 }
 
-void Sound_Cmd_9A_RestoreMusic(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9A_RestoreMusic(UNUSED FSoundCommandParams* in_Params)
 {
     if (g_pActiveMusicContext->SuspendedChannelMask != 0) {
         FSoundChannel* c = g_ActiveMusicChannels;
@@ -3922,7 +3896,7 @@ void Sound_Cmd_9A_RestoreMusic(FSoundCommandParams* in_Params __attribute__((unu
     D_80039B64 &= ~1;
 }
 
-void Sound_Cmd_9D_SuspendSfx(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9D_SuspendSfx(UNUSED FSoundCommandParams* in_Params)
 {
     FSoundChannel* var_a0;
     int var_s0;
@@ -3961,7 +3935,7 @@ void Sound_Cmd_9D_SuspendSfx(FSoundCommandParams* in_Params __attribute__((unuse
     D_80039B64 |= 2;
 }
 
-void Sound_Cmd_9C_RestoreSfx(FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9C_RestoreSfx(UNUSED FSoundCommandParams* in_Params)
 {
     if (D_800378A0 != 0) {
         u_int temp_a2;
@@ -3986,8 +3960,7 @@ void Sound_Cmd_9C_RestoreSfx(FSoundCommandParams* in_Params __attribute__((unuse
     D_80039B64 &= ~2;
 }
 
-void Sound_Cmd_9F_SuspendCutsceneAudio(
-    FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9F_SuspendCutsceneAudio(UNUSED FSoundCommandParams* in_Params)
 {
     if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
         SetVoiceSampleRate(g_Sound_Cutscene_StreamState.VoiceIndex, 0);
@@ -3995,8 +3968,7 @@ void Sound_Cmd_9F_SuspendCutsceneAudio(
     }
 }
 
-void Sound_Cmd_9E_RestoreCutsceneAudio(
-    FSoundCommandParams* in_Params __attribute__((unused)))
+void Sound_Cmd_9E_RestoreCutsceneAudio(UNUSED FSoundCommandParams* in_Params)
 {
     if (g_Sound_Cutscene_StreamState.VoicesInUseFlags != 0) {
         SetVoiceSampleRate(g_Sound_Cutscene_StreamState.VoiceIndex,
@@ -4006,7 +3978,7 @@ void Sound_Cmd_9E_RestoreCutsceneAudio(
     }
 }
 
-void Sound_Cmd_11_Nop(FSoundCommandParams* in_Params __attribute__((unused))) { }
+void Sound_Cmd_11_Nop(UNUSED FSoundCommandParams* in_Params) { }
 
 static void Sound_SetReverbMode(int in_ReverbMode)
 {
@@ -5247,8 +5219,7 @@ void SoundVM_FE1F_unk(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
     }
 }
 
-void SoundVM_FE00_SetTempo(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE00_SetTempo(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->Tempo = in_pChannel->ProgramCounter[0] << 0x10;
     g_pActiveMusicContext->Tempo |= in_pChannel->ProgramCounter[1] << 0x18;
@@ -5256,8 +5227,7 @@ void SoundVM_FE00_SetTempo(
     g_pActiveMusicContext->TempoSlideLength = 0;
 }
 
-void SoundVM_FE01_SetTempoSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE01_SetTempoSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     char* pc;
     int Dest;
@@ -5279,7 +5249,7 @@ void SoundVM_FE01_SetTempoSlide(
 }
 
 void SoundVM_FE02_SetMasterReverbDepth(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     char* pc;
     u_int Depth;
@@ -5294,7 +5264,7 @@ void SoundVM_FE02_SetMasterReverbDepth(
 }
 
 void SoundVM_FE03_SetMasterReverbSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Prev;
     int Dest;
@@ -5317,14 +5287,14 @@ void SoundVM_FE03_SetMasterReverbSlide(
 }
 
 void SoundVM_FE06_JumpRelativeOffset(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     short Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
     in_pChannel->ProgramCounter += Offset;
 }
 
 void SoundVM_FE07_JumpRelativeWithThreshold(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     short Threshold;
     short Offset;
@@ -5343,28 +5313,27 @@ void SoundVM_FE07_JumpRelativeWithThreshold(
 }
 
 void SoundVM_FE0E_CallRelativeOffset(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     short Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
     in_pChannel->ReturnProgramCounter = in_pChannel->ProgramCounter + sizeof(short);
     in_pChannel->ProgramCounter += Offset;
 }
 
-void SoundVM_FE0F_Return(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE0F_Return(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->ProgramCounter = in_pChannel->ReturnProgramCounter;
 }
 
 void SoundVM_A3_ChannelMasterVolume(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->VolumeBalance = *in_pChannel->ProgramCounter++ << 8;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
 void SoundVM_FE12_VolumeBalanceSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short VolumeBalance;
     u_short Length;
@@ -5385,8 +5354,7 @@ void SoundVM_FE12_VolumeBalanceSlide(
     in_pChannel->VolumeBalanceSlideStep = Delta / in_pChannel->VolumeBalanceSlideLength;
 }
 
-void SoundVM_A8_ChannelVolume(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A8_ChannelVolume(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Volume = (signed char)*in_pChannel->ProgramCounter++ << 0x17;
     in_pChannel->ChannelVolumeSlideLength = 0;
@@ -5394,8 +5362,7 @@ void SoundVM_A8_ChannelVolume(
     in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
-void SoundVM_A9_ChannelVolumeSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A9_ChannelVolumeSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Prev;
     int Dest;
@@ -5418,8 +5385,7 @@ void SoundVM_A9_ChannelVolumeSlide(
     in_pChannel->KeyOnVolumeSlideLength = 0;
 }
 
-void SoundVM_FE19_KeyOnVolumeSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE19_KeyOnVolumeSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short pPc1;
     int Dest;
@@ -5440,35 +5406,28 @@ void SoundVM_FE19_KeyOnVolumeSlide(
     in_pChannel->KeyOnVolumeSlideStep = Delta / in_pChannel->KeyOnVolumeSlideLength;
 }
 
-void SoundVM_FE1A_SetChannelTenuto(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE1A_SetChannelTenuto(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_01;
 }
 
 void SoundVM_FE1B_UnsetChannelTenuto(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_UNKNOWN_01;
 }
 
-void SoundVM_FE0C_unk(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE0C_unk(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->unk34 = *in_pChannel->ProgramCounter++;
 }
 
-static void SoundVM_nop(FSoundChannel* in_pChannels, u_int in_VoiceFlags)
-    __attribute__((unused));
-static void SoundVM_nop(FSoundChannel* in_pChannels __attribute__((unused)),
-    u_int in_VoiceFlags __attribute__((unused)))
+static UNUSED void SoundVM_nop(
+    UNUSED FSoundChannel* in_pChannels, UNUSED u_int in_VoiceFlags)
 {
 }
 
-static void SoundVM_unused1(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
-    __attribute__((unused));
-static void SoundVM_unused1(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+static UNUSED void SoundVM_unused1(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->VolumeMod = *in_pChannel->ProgramCounter++ << 8;
     in_pChannel->VolumeModStepsRemaining = 0;
@@ -5477,10 +5436,7 @@ static void SoundVM_unused1(
     }
 }
 
-static void SoundVM_unused2(FSoundChannel* in_pChannel, u_int in_VoiceFlags)
-    __attribute__((unused));
-static void SoundVM_unused2(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+static UNUSED void SoundVM_unused2(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     short v;
     int pc;
@@ -5495,8 +5451,7 @@ static void SoundVM_unused2(
     in_pChannel->VolumeMod = v;
 }
 
-void SoundVM_AA_ChannelPan(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_AA_ChannelPan(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     // Convert signed pan (-64..+63) to unsigned 0..255, center at 0x40 and store as Q8.8
     // pan value
@@ -5505,8 +5460,7 @@ void SoundVM_AA_ChannelPan(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-void SoundVM_AB_ChannelPanSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_AB_ChannelPanSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Prev;
     u_short Length;
@@ -5527,26 +5481,22 @@ void SoundVM_AB_ChannelPanSlide(
     in_pChannel->ChannelPan = Prev;
 }
 
-void SoundVM_A5_SetOctave(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A5_SetOctave(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Octave = *in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_A6_IncreaseOctave(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A6_IncreaseOctave(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Octave = (in_pChannel->Octave + 1) & 0xF;
 }
 
-void SoundVM_A7_DecreaseOctave(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A7_DecreaseOctave(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Octave = (in_pChannel->Octave - 1) & 0xF;
 }
 
-void SoundVM_A1_LoadInstrument(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A1_LoadInstrument(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int pc = *in_pChannel->ProgramCounter++;
 
@@ -5560,8 +5510,7 @@ void SoundVM_A1_LoadInstrument(
     in_pChannel->UpdateFlags &= 0xE6FFEFF7;
 }
 
-void SoundVM_FE0A_ClearInstrument(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE0A_ClearInstrument(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Index;
 
@@ -5574,8 +5523,7 @@ void SoundVM_FE0A_ClearInstrument(
             | SOUND_UPDATE_UNKNOWN_27 | SOUND_UPDATE_UNKNOWN_28);
 }
 
-void SoundVM_FE14_ChangePatch(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE14_ChangePatch(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short* pPatchTable;
     u_char PatchIndex;
@@ -5597,8 +5545,7 @@ void SoundVM_FE14_ChangePatch(
     }
 }
 
-void SoundVM_B3_ResetAdsr(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B3_ResetAdsr(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     FSoundInstrumentInfo* InstrumentInfo =
         &g_InstrumentInfo[in_pChannel->InstrumentIndex];
@@ -5610,19 +5557,18 @@ void SoundVM_B3_ResetAdsr(
 }
 
 void SoundVM_C0_ChannelTranspose_Absolute(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Transpose = (signed char)*in_pChannel->ProgramCounter++;
 }
 
 void SoundVM_C1_ChannelTranspose_Relative(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Transpose += (signed char)*in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_A4_PitchBendSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_A4_PitchBendSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Length = *in_pChannel->ProgramCounter++;
     in_pChannel->PitchBendSlideLength = Length;
@@ -5633,8 +5579,7 @@ void SoundVM_A4_PitchBendSlide(
     in_pChannel->PitchBendSlideTranspose = (signed char)*in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_DA_EnablePortamento(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_DA_EnablePortamento(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Steps = *in_pChannel->ProgramCounter++;
     in_pChannel->PortamentoSteps = Steps;
@@ -5648,14 +5593,13 @@ void SoundVM_DA_EnablePortamento(
     in_pChannel->Articulation = 1;
 }
 
-void SoundVM_DB_DisablePortamento(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_DB_DisablePortamento(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->PortamentoSteps = 0;
 }
 
 void SoundVM_D8_ChannelFineTune_Absolute(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_int ScaledFineTune;
     int FinePitchDelta;
@@ -5674,7 +5618,7 @@ void SoundVM_D8_ChannelFineTune_Absolute(
 }
 
 void SoundVM_D9_ChannelFineTune_Relative(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_int ScaledFineTune;
     int FinePitchDelta;
@@ -5693,8 +5637,7 @@ void SoundVM_D9_ChannelFineTune_Relative(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
-void SoundVM_B4_Vibrato(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B4_Vibrato(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short PitchBase;
     int DepthHigh;
@@ -5738,8 +5681,7 @@ void SoundVM_B4_Vibrato(
     in_pChannel->VibratoRateCurrent = 1;
 }
 
-void SoundVM_B5_VibratoDepth(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B5_VibratoDepth(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int PitchBase; // Base pitch around which the vibrato will oscillate
     u_int DepthAmount; // This is just the magnitude part of the vibrato depth parameter,
@@ -5771,8 +5713,7 @@ void SoundVM_B5_VibratoDepth(
     in_pChannel->VibratoBase = VibratoProduct >> 7;
 }
 
-void SoundVM_DD_VibratoDepthSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_DD_VibratoDepthSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Length;
     u_short Prev;
@@ -5791,16 +5732,14 @@ void SoundVM_DD_VibratoDepthSlide(
     in_pChannel->VibratoDepthSlideLength = Length;
 }
 
-void SoundVM_B6_DisableVibrato(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B6_DisableVibrato(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->VibratoPitch = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_VIBRATO;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_SAMPLE_RATE;
 }
 
-void SoundVM_B8_Tremolo(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B8_Tremolo(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Delay;
     int Rate;
@@ -5829,14 +5768,12 @@ void SoundVM_B8_Tremolo(
     in_pChannel->TremoloRateCurrent = 1;
 }
 
-void SoundVM_B9_TremoloDepth(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B9_TremoloDepth(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->TremoloDepth = (*in_pChannel->ProgramCounter++ & 0x7F) << 8;
 }
 
-void SoundVM_DE_TremoloDepthSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_DE_TremoloDepthSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Length;
     int Prev;
@@ -5854,16 +5791,14 @@ void SoundVM_DE_TremoloDepthSlide(
     in_pChannel->TremoloDepthSlideLength = Length;
 }
 
-void SoundVM_BA_DisableTremolo(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_BA_DisableTremolo(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->TremoloVolume = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_TREMOLO;
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_VOLUME;
 }
 
-void SoundVM_BC_AutoPan(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_BC_AutoPan(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Rate;
 
@@ -5880,14 +5815,12 @@ void SoundVM_BC_AutoPan(
     in_pChannel->AutoPanRateCurrent = 1;
 }
 
-void SoundVM_BD_AutoPanDepth(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_BD_AutoPanDepth(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->AutoPanDepth = *in_pChannel->ProgramCounter++ << 7;
 }
 
-void SoundVM_DF_AutoPanDepthSlide(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_DF_AutoPanDepthSlide(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Length;
     u_short Prev;
@@ -5907,8 +5840,7 @@ void SoundVM_DF_AutoPanDepthSlide(
     in_pChannel->AutoPanDepthSlideLength = Length;
 }
 
-void SoundVM_BE_DisableAutoPan(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_BE_DisableAutoPan(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->AutoPanVolume = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_PAN_LFO;
@@ -5977,32 +5909,25 @@ void SoundVM_C3_DisableReverbVoices(FSoundChannel* in_pChannel, u_int in_VoiceFl
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_08;
 }
 
-void SoundVM_CC_EnableLegato(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_CC_EnableLegato(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->Articulation = SOUND_SFX_LEGATO;
 }
 
-void SoundVM_CD_DEBUG(FSoundChannel* in_pChannel __attribute__((unused)),
-    u_int in_VoiceFlags __attribute__((unused)))
-{
-}
+void SoundVM_CD_DEBUG(UNUSED FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags) { }
 
 void SoundVM_D0_EnableSustainedNote(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     if (in_pChannel->Type != SOUND_CHANNEL_TYPE_MUSIC) {
         in_pChannel->Articulation = SOUND_SFX_FULL_LENGTH;
     }
 }
 
-void SoundVM_D1_DEBUG(FSoundChannel* in_pChannel __attribute__((unused)),
-    u_int in_VoiceFlags __attribute__((unused)))
-{
-}
+void SoundVM_D1_DEBUG(UNUSED FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags) { }
 
 void SoundVM_AC_NoiseClockFrequency(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int Frequency = *in_pChannel->ProgramCounter++;
     if (in_pChannel->Type == SOUND_CHANNEL_TYPE_MUSIC) {
@@ -6021,8 +5946,7 @@ void SoundVM_AC_NoiseClockFrequency(
     g_Sound_GlobalFlags.UpdateFlags |= SOUND_GLOBAL_UPDATE_04;
 }
 
-void SoundVM_AD_AttackRate(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_AD_AttackRate(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short AttackRate = *in_pChannel->ProgramCounter++;
     in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_ATTACK_RATE_MASK;
@@ -6032,8 +5956,7 @@ void SoundVM_AD_AttackRate(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_24;
 }
 
-void SoundVM_AE_DecayRate(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_AE_DecayRate(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short DecayRate = *in_pChannel->ProgramCounter++;
     in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_DECAY_RATE_MASK;
@@ -6041,8 +5964,7 @@ void SoundVM_AE_DecayRate(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_DR;
 }
 
-void SoundVM_AF_SustainLevel(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_AF_SustainLevel(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short SustainLevel = *in_pChannel->ProgramCounter++;
     in_pChannel->VoiceParams.AdsrLower &= ~SOUND_ADSR_SUS_LEVEL_MASK;
@@ -6050,8 +5972,7 @@ void SoundVM_AF_SustainLevel(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_SL;
 }
 
-void SoundVM_B1_SustainRate(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B1_SustainRate(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short SustainRate = *in_pChannel->ProgramCounter++;
     in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_SUS_RATE_MASK;
@@ -6061,8 +5982,7 @@ void SoundVM_B1_SustainRate(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_27;
 }
 
-void SoundVM_B2_ReleaseRate(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B2_ReleaseRate(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short ReleaseRate = *in_pChannel->ProgramCounter++;
     in_pChannel->VoiceParams.AdsrUpper &= ~SOUND_ADSR_RELEASE_RATE_MASK;
@@ -6072,8 +5992,7 @@ void SoundVM_B2_ReleaseRate(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_28;
 }
 
-void SoundVM_B7_AttackMode(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_B7_AttackMode(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Mode = *in_pChannel->ProgramCounter++;
 
@@ -6085,8 +6004,7 @@ void SoundVM_B7_AttackMode(
     in_pChannel->VoiceParams.VoiceParamFlags |= VOICE_PARAM_ADSR_AMODE;
 }
 
-void SoundVM_BB_SustainMode(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_BB_SustainMode(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short mode = *(in_pChannel->ProgramCounter++);
     in_pChannel->VoiceParams.AdsrUpper &= ~((1 << 14) | (1 << 15));
@@ -6105,8 +6023,7 @@ void SoundVM_BB_SustainMode(
     in_pChannel->VoiceParams.VoiceParamFlags |= 0x200;
 }
 
-void SoundVM_BF_ReleaseMode(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_BF_ReleaseMode(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Value = *in_pChannel->ProgramCounter++;
 
@@ -6118,19 +6035,18 @@ void SoundVM_BF_ReleaseMode(
 }
 
 void SoundVM_FE10_SetVoiceAllocStart(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->VoiceAllocStart = *in_pChannel->ProgramCounter++;
 }
 
-void SoundVM_FE11_ResetVoiceAllocStart(FSoundChannel* in_pChannel __attribute__((unused)),
-    u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE11_ResetVoiceAllocStart(
+    UNUSED FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->VoiceAllocStart = 0;
 }
 
-void SoundVM_C8_LoopPoint(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C8_LoopPoint(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->LoopStackTop = (in_pChannel->LoopStackTop + 1) & 3;
     in_pChannel->LoopStartPc[in_pChannel->LoopStackTop] = in_pChannel->ProgramCounter;
@@ -6139,8 +6055,7 @@ void SoundVM_C8_LoopPoint(
         in_pChannel->OpcodeStepCounter;
 }
 
-void SoundVM_C9_LoopN(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_C9_LoopN(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short NewCount;
     u_short TopIndex;
@@ -6167,7 +6082,7 @@ void SoundVM_C9_LoopN(
 }
 
 void SoundVM_FE08_JumpOnNthLoopPass(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short N;
     short JumpOffset;
@@ -6195,7 +6110,7 @@ void SoundVM_FE08_JumpOnNthLoopPass(
 }
 
 void SoundVM_FE09_JumpAndPopStackOnNthLoopPass(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short N;
     short JumpOffset;
@@ -6217,8 +6132,7 @@ void SoundVM_FE09_JumpAndPopStackOnNthLoopPass(
         (in_pChannel->LoopStackTop - 1) & SOUND_LOOP_STACK_MAX_INDEX;
 }
 
-void SoundVM_CA_LoopInf(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_CA_LoopInf(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->LoopIterationCount[in_pChannel->LoopStackTop] += 1;
     in_pChannel->ProgramCounter = in_pChannel->LoopStartPc[in_pChannel->LoopStackTop];
@@ -6227,7 +6141,7 @@ void SoundVM_CA_LoopInf(
 }
 
 void SoundVM_A2_OverwriteNextNoteLength(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Length;
 
@@ -6240,8 +6154,7 @@ void SoundVM_A2_OverwriteNextNoteLength(
 
 // Set the duration for all the upcoming notes (same as A2 except it doesn't apply only to
 // the next note)
-void SoundVM_DC_FixNoteLength(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_DC_FixNoteLength(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int NoteLength;
 
@@ -6257,8 +6170,7 @@ void SoundVM_DC_FixNoteLength(
     in_pChannel->FixedNoteLength = NoteLength;
 }
 
-void SoundVM_FE04_ClearKeymapTable(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE04_ClearKeymapTable(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     if (g_pActiveMusicContext->KeymapTable != NULL) {
         in_pChannel->UpdateFlags &=
@@ -6268,15 +6180,13 @@ void SoundVM_FE04_ClearKeymapTable(
     }
 }
 
-void SoundVM_FE05_MuteVoice(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE05_MuteVoice(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->VoiceParams.VolumeScale = 0;
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_DRUM_MODE;
 }
 
-void SoundVM_FE15_unk(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE15_unk(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->TimerLower = *in_pChannel->ProgramCounter++;
     g_pActiveMusicContext->TimerUpper = *in_pChannel->ProgramCounter++;
@@ -6284,8 +6194,7 @@ void SoundVM_FE15_unk(
     g_pActiveMusicContext->TimerUpperCurrent = 0;
 }
 
-void SoundVM_FE16_unk(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE16_unk(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->TimerTopCurrent = *in_pChannel->ProgramCounter++;
     g_pActiveMusicContext->TimerTopCurrent |= *in_pChannel->ProgramCounter++ << 8;
@@ -6314,8 +6223,7 @@ void SoundVM_CE_EnableNoiseAndDelayToggle(FSoundChannel* in_pChannel, u_int in_V
     SoundVM_C4_EnableNoiseVoices(in_pChannel, in_VoiceFlags);
 }
 
-void SoundVM_CF_ToggleNoiseOnDelay(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_CF_ToggleNoiseOnDelay(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Delay = *in_pChannel->ProgramCounter++;
     if (Delay != 0) {
@@ -6341,8 +6249,7 @@ void SoundVM_D2_EnableFmAndDelayToggle(FSoundChannel* in_pChannel, u_int in_Voic
     SoundVM_C6_EnableFmVoices(in_pChannel, in_VoiceFlags);
 }
 
-void SoundVM_D3_ToggleFmDelay(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_D3_ToggleFmDelay(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     u_short Delay = *in_pChannel->ProgramCounter++;
     if (Delay != 0) {
@@ -6364,31 +6271,30 @@ void SoundVM_CB_DisableVoiceModes(FSoundChannel* in_pChannel, u_int in_VoiceFlag
 }
 
 void SoundVM_D4_EnablePlaybackRateSidechain(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_PITCH;
 }
 
 void SoundVM_D5_DisablePlaybackRateSidechain(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_PITCH;
 }
 
 void SoundVM_D6_EnablePitchVolumeSidechain(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags |= SOUND_UPDATE_SIDE_CHAIN_VOL;
 }
 
 void SoundVM_D7_DisablePitchVolumeSidechain(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_VOL;
 }
 
-void SoundVM_FE0B_PlaySfxProgram(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE0B_PlaySfxProgram(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int temp_v0;
     char* pc;
@@ -6421,39 +6327,35 @@ void SoundVM_FE0B_PlaySfxProgram(
     in_pChannel->ProgramCounter += 4;
 }
 
-void SoundVM_E0_DeferSfxStop(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_E0_DeferSfxStop(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->UpdateFlags |= SOUND_UPDATE_DEFER_STOP;
 }
 
-void SoundVM_FE1C_SetKeymap(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+void SoundVM_FE1C_SetKeymap(FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     int temp_v0 = *in_pChannel->ProgramCounter++;
     g_pActiveMusicContext->unk44 = (FSoundKeymapEntry8*)&D_8002F66C[temp_v0];
 }
 
-void SoundVM_FE1D_MarkVoicesKeyed(
-    FSoundChannel* in_pChannel __attribute__((unused)), u_int in_VoiceFlags)
+void SoundVM_FE1D_MarkVoicesKeyed(UNUSED FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->KeyedMask |= in_VoiceFlags;
 }
 
-void SoundVM_FE1E_ClearVoicesKeyed(
-    FSoundChannel* in_pChannel __attribute__((unused)), u_int in_VoiceFlags)
+void SoundVM_FE1E_ClearVoicesKeyed(UNUSED FSoundChannel* in_pChannel, u_int in_VoiceFlags)
 {
     g_pActiveMusicContext->KeyedMask &= ~in_VoiceFlags;
 }
 
 void SoundVM_E1_SetRandomPitchDepth(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->RandomPitchDepth = *in_pChannel->ProgramCounter++;
 }
 
 void SoundVM_E2_ResetRandomPitchDepth(
-    FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
+    FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
     in_pChannel->RandomPitchDepth = 0;
 }
@@ -6724,8 +6626,6 @@ static void Sound_Cutscene_OnStereoBufferBComplete(void)
     Sound_Cutscene_LoadNextBuffer(
         0x2100, 0x2900, 0x1000, Sound_Cutscene_OnStereoBufferAComplete);
 }
-
-static void Sound_Cutscene_StartStream(u_int*, int, int);
 
 void Sound_Cmd_E0_RestartCutsceneStream(int* arg0)
 {

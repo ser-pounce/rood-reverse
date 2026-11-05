@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 
 /* Save menu shared by the title and menu overlays. The including file defines
  * FILE_MENU_RESTORE_CURSOR, FILE_MENU_STORE_CURSOR (cursor memory, using selectedFile)
@@ -40,7 +41,7 @@ static int _showSaveMenu(int initState)
 
     static char state;
     static u_char selectedFile;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     u_short clear = vs_char_terminator | (vs_char_terminator << 8);
     fileMenuElements_t* element;

@@ -1624,7 +1624,7 @@ inline void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
 
 int _loadSeq(vs_battle_objectData* object)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     D_800F4538_t* actor;
     D_800F4538_t* source;
     func_8009C378_t* seq;
@@ -2419,7 +2419,7 @@ void func_8009DD00(int arg0, SVECTOR* arg1, int arg2)
 
 void func_8009DDF4(int arg0, SVECTOR* arg1)
 {
-    int _[3] __attribute__((unused));
+    UNUSED int _[3];
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
     if (temp_s0->unk0.weaponDrawn
@@ -3109,7 +3109,7 @@ void func_8009EC9C(int arg0, SVECTOR* arg1, int arg2, int arg3)
 
 void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
 {
-    int _[3] __attribute__((unused));
+    UNUSED int _[3];
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
     if (temp_s0->unk0.weaponDrawn
@@ -3567,7 +3567,7 @@ void func_8009FB64(VECTOR* arg0)
 
 int func_8009FBD8(int arg0, int arg1)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 == NULL) {
@@ -3585,7 +3585,7 @@ int func_8009FBD8(int arg0, int arg1)
 
 int func_8009FC20(int arg0, int* arg1)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
     if (temp_a0 == NULL) {
@@ -3599,7 +3599,7 @@ int func_8009FC20(int arg0, int* arg1)
 
 int func_8009FC60(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
     if (temp_s0 == NULL) {
@@ -3635,7 +3635,7 @@ void func_8009FD38(D_800F4538_t* arg0)
 
 int func_8009FD5C(int arg0, int arg1, int arg2)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     D_800F45E0_t* temp_t0;
     D_800F4538_unk64* var_s0;
     D_800F4538_t* temp_a3 = D_800F4538[arg0];
@@ -3722,7 +3722,7 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
 
 int func_8009FFA8(int arg0, int arg1)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
     int temp_v1 = temp_a0->unk0.unk12;

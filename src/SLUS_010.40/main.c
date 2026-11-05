@@ -821,11 +821,11 @@ static void _loadEndingPrg(void)
 static int _randArr[97];
 static int _randIndex;
 static vs_main_HeapHeader* _cdReadBuffer;
-static int _0 __attribute__((unused));
+static UNUSED int _0;
 static padAct_t _padAct[2];
-static int _1[2] __attribute__((unused));
+static UNUSED int _1[2];
 portInfo_t vs_main_portInfo[2];
-static u_char _2[2] __attribute__((unused));
+static UNUSED u_char _2[2];
 static vs_main_HeapHeader _heapA;
 static vs_main_HeapHeader _heapB;
 static DslLOC _cdReadLoc;
@@ -833,22 +833,22 @@ static int D_800501CC;
 static int D_800501D0;
 static int D_800501D4;
 static int D_800501D8;
-static int _3 __attribute__((unused));
+static UNUSED int _3;
 static vs_main_CdQueueSlot _cdQueue[32];
 static struct {
     short processing;
     short queued;
 } _cdQueueCount;
-static int _4 __attribute__((unused));
+static UNUSED int _4;
 D_80050468_t D_80050468;
 int vs_main_startState;
 static int _sp2;
 static u_short _sfxData[0x2C00];
 int vs_main_buttonsReleased;
-static int _5 __attribute__((unused));
+static UNUSED int _5;
 void* D_80055C80[2];
 static int _resetEnabled;
-static int _6 __attribute__((unused));
+static UNUSED int _6;
 static u_int _buttonHeldFrameCount[32];
 vs_main_disk_t vs_main_disk;
 static _clutState_t _clutState;
@@ -859,20 +859,19 @@ short vs_main_screenWidth;
 short D_8005DFD8;
 u_short vs_main_screenHeight;
 int vs_main_buttonRepeat;
-static int _7[4] __attribute__((unused));
+static UNUSED int _7[4];
 char vs_main_padBuffer[2][34];
-static int _8 __attribute__((unused));
+static UNUSED int _8;
 soundData_t vs_main_soundData;
 void* D_8005E0C0[2];
 int vs_main_nearClip;
-static int _9 __attribute__((unused));
+static UNUSED int _9;
 DRAWENV vs_main_drawEnv[2];
 DISPENV vs_main_dispEnv[2];
-static int _10[4] __attribute__((unused));
+static UNUSED int _10[4];
 
-static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
-    __attribute__((unused)) int arg3, __attribute__((unused)) int arg4,
-    __attribute__((unused)) int arg5)
+static void _initScreen(
+    int w, int h, UNUSED int arg2, UNUSED int arg3, UNUSED int arg4, UNUSED int arg5)
 {
     SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
@@ -884,16 +883,16 @@ static void _initScreen(int w, int h, int arg2 __attribute__((unused)),
 
 int vs_main_buttonsPreviousState;
 int D_8005E1C4;
-static int _11[2] __attribute__((unused));
+static UNUSED int _11[2];
 vs_main_buttonsPressed_t vs_main_buttonsPressed;
 int D_8005E1D4;
 u_int vs_main_frameDuration;
-static int _12[13] __attribute__((unused));
+static UNUSED int _12[13];
 int vs_main_frameBuf;
 int vs_main_saveGameClearData;
 MATRIX D_8005E218;
 int vs_main_buttonsState;
-static int _14 __attribute__((unused));
+static UNUSED int _14;
 static int _inGame;
 int D_8005E244;
 int vs_main_projectionDistance;
@@ -1010,16 +1009,16 @@ void vs_main_showEndingAndReturnToTitle(void)
 
 int vs_gametime_tickspeed;
 static u_short _clutBuffer[14][256];
-static int _15[8] __attribute__((unused));
+static UNUSED int _15[8];
 static int D_8005FE70;
 static int D_8005FE74;
 static int D_8005FE78;
 static int D_8005FE7C;
 static int D_8005FE80;
 static int D_8005FE84;
-static int _16[6] __attribute__((unused));
+static UNUSED int _16[6];
 vs_main_scoredata_t vs_main_scoredata;
-static int _17 __attribute__((unused));
+static UNUSED int _17;
 char vs_main_actionsLearned[32];
 vs_main_mapStatus_t vs_main_mapStatus;
 vs_main_settings_t vs_main_settings;
@@ -1154,8 +1153,8 @@ static void _sysInit(void)
 static void _sysReinit(void)
 {
     int i;
-    RECT rect0 __attribute__((unused));
-    RECT rect1 __attribute__((unused)) = { .x = 819, .y = 819, .w = 819, .h = 0 };
+    UNUSED RECT rect0;
+    UNUSED RECT rect1 = { .x = 819, .y = 819, .w = 819, .h = 0 };
     RECT rect2 = { .x = 0, .y = 0, .w = 1024, .h = 512 };
 
     ResetCallback();
@@ -1310,7 +1309,7 @@ static void _unlockPadModeSwitch(void)
     }
 }
 
-static void _padResetDefaults(int portID, char padBuf[34] __attribute__((unused)))
+static void _padResetDefaults(int portID, UNUSED char padBuf[34])
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
@@ -1375,7 +1374,7 @@ int vs_main_updatePadState(int portID, char padBuf[34])
 
 void vs_main_padConnect(int portID, char padBuf[34])
 {
-    int dummy[5] __attribute__((unused));
+    UNUSED int dummy[5];
 
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
     int state = PadGetState(portID);
@@ -1632,7 +1631,7 @@ void vs_main_vibrationOnEffect(int arg0)
 
 int vs_main_processPadState(void)
 {
-    int dummy[2] __attribute__((unused));
+    UNUSED int dummy[2];
     int i;
     u_int btnState;
 
@@ -1862,8 +1861,7 @@ void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
     _heapB.blockSz = 0;
 }
 
-static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused)),
-    u_long* arg2 __attribute__((unused)))
+static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
 {
 
     if ((intr == DslDiskError) || (intr == DslNoIntr)
@@ -1914,7 +1912,7 @@ static void _diskReadCallback(u_char intr, u_char result[] __attribute__((unused
     }
 }
 
-static void _diskReadCommandCallback(u_char intr, u_char result[] __attribute__((unused)))
+static void _diskReadCommandCallback(u_char intr, UNUSED u_char result[])
 {
     switch (intr) {
     case DslComplete:
@@ -1931,7 +1929,7 @@ static void _diskReadCommandCallback(u_char intr, u_char result[] __attribute__(
     vs_main_disk.state = diskReadError;
 }
 
-static void _diskSeekCommandCallback(u_char intr, u_char result[] __attribute__((unused)))
+static void _diskSeekCommandCallback(u_char intr, UNUSED u_char result[])
 {
     switch (intr) {
     case DslNoIntr:
@@ -3407,8 +3405,8 @@ void vs_main_loadClutTransition(
     }
 }
 
-static void _loadClutTransitionWithBase(
-    int duration, int slot, u_short* sourceClut, int clutOffset) __attribute__((unused));
+static UNUSED void _loadClutTransitionWithBase(
+    int duration, int slot, u_short* sourceClut, int clutOffset);
 static void _loadClutTransitionWithBase(
     int duration, int slot, u_short* sourceClut, int clutOffset)
 {
@@ -3423,7 +3421,7 @@ static void _loadClutTransitionWithBase(
     }
 }
 
-static void _saveClutBase(int slot) __attribute__((unused));
+static UNUSED void _saveClutBase(int slot);
 static void _saveClutBase(int slot)
 {
     int i;
@@ -4509,4 +4507,4 @@ void vs_main_clutInit(void)
 vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
 vs_main_flags_t vs_main_stateFlags;
 vs_main_inventoryIndices_t vs_main_inventoryIndices;
-static int _18[0x15E] __attribute__((unused));
+static UNUSED int _18[0x15E];

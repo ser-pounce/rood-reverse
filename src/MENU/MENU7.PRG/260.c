@@ -1,3 +1,4 @@
+#include "common.h"
 #include "260.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
@@ -140,7 +141,7 @@ static int _initGameOver(int arg0)
     static vs_main_CdQueueSlot* queueSlot;
     static u_int* gameOverBin;
     static int state;
-    static char _[8] __attribute__((unused));
+    static UNUSED char _[8];
 
     vs_main_CdFile cdFile;
 
@@ -474,7 +475,7 @@ static int _promptYesNo(int initParams)
     static int selectedOption;
     static char state;
     static char cancelWithMenuButton;
-    static char _[34] __attribute__((unused));
+    static UNUSED char _[34];
 
     vs_battle_menuItem_t* menuItem;
     u_int buttons;

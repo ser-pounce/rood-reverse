@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common.h"
 #include "inventory.h"
 #include "main.h"
 #include "gpu.h"
@@ -125,5 +126,5 @@ typedef struct {
     char iconBitmaps[7][128];
     char pocketStationIcons[7][128];
     // MCDATA.BIN is 0xBE0 bytes and MCMAN.BIN is read in at the next sector boundary
-    char _[0x420] __attribute__((unused));
+    UNUSED char _[0x420];
 } mcdata_t;

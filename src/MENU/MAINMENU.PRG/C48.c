@@ -1,3 +1,4 @@
+#include "common.h"
 #include "C48.h"
 #include "2D10.h"
 #include "58EC.h"
@@ -71,14 +72,14 @@ void vs_mainMenu_initInventory(void)
     }
 }
 
-static void _nop(void) __attribute__((unused));
+static UNUSED void _nop(void);
 static void _nop(void) { }
 
 /**
  * Processes the object queue in the hope of finding a free slot.
  * Unused.
  */
-static int _getNextEmptyObjectDataSlot(void) __attribute__((unused));
+static UNUSED int _getNextEmptyObjectDataSlot(void);
 static int _getNextEmptyObjectDataSlot(void)
 {
     vs_battle_processObjectDataQueue();
@@ -486,13 +487,13 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
     static char misc[] = "MISC\00000|0xF8|";
 #pragma vsstring(end)
 
-    static int _0 __attribute__((unused)); // Garbage, patched in MAINMENU_PRG.py
+    static UNUSED int _0; // Garbage, patched in MAINMENU_PRG.py
     static char actions[64];
     static int selectedRow;
     static char state;
     static char noItems;
     static char noForceCursorMemory;
-    static char _1 __attribute__((unused));
+    static UNUSED char _1;
 
     int j;
     int i;

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "592C.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
@@ -297,5 +298,5 @@ void vs_menu9_freeZudFile(void)
     _zudBuffer = NULL;
 }
 
-static void _nop(void) __attribute__((unused));
+static UNUSED void _nop(void);
 static void _nop(void) { }

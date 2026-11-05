@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/5BF94.h"
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"
 #include "src/EFFECT/PLG005.BIN/18.h"
@@ -604,7 +605,7 @@ static _loadFileContext _plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, 
  * Invokes all effect entry points.
  * Probably a dev artifact, calling this in-game will presumably crash.
  */
-int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2) __attribute__((unused));
+UNUSED int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2);
 int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     vs_effect_analyze_0(NULL, 2, 0);

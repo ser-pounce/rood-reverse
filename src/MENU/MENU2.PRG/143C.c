@@ -1,3 +1,4 @@
+#include "common.h"
 #include "143C.h"
 #include "64.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
@@ -27,7 +28,7 @@ static u_short _battleAbilityMenuStrings[] = {
 static int _breakArtUnlocked(int init)
 {
     static char messageTimeout;
-    static char _[15] __attribute__((unused));
+    static UNUSED char _[15];
 
     if (init != 0) {
         int actionId;

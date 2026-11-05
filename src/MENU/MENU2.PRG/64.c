@@ -1,3 +1,4 @@
+#include "common.h"
 #include "64.h"
 #include "src/SLUS_010.40/sfx.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
@@ -495,7 +496,7 @@ static int _chainAbilityMenu(int initialize)
     enum state { init, abilityMenu };
 
     static int state = 0;
-    static char _[4] __attribute__((unused)) = { 0 };
+    static UNUSED char _[4] = { 0 };
 
     u_short* menuStrings[28];
     int i;
@@ -556,7 +557,7 @@ static int _defenseAbilityMenu(int arg0)
     enum state { init, abilityMenu };
 
     static int state = 0;
-    static char _[4] __attribute__((unused)) = { 0 };
+    static UNUSED char _[4] = { 0 };
 
     u_short* menuStrings[28];
     int i;
@@ -669,7 +670,7 @@ int vs_menu2_exec(u_char* state)
 
     static char menuAnimating;
     static u_char pointsAnimStep;
-    static char _[14] __attribute__((unused));
+    static UNUSED char _[14];
 
     char* menuStrings[4];
     int rowTypes[2];

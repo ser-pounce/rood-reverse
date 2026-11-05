@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/inventory.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
@@ -224,7 +225,7 @@ static int _itemNavigation(int initialize)
     static char state;
     static char noItems;
     static char _ignoreCursorMemory;
-    static char _ __attribute__((unused));
+    static UNUSED char _;
     static int selectedRow;
 
 #ifdef _ITEMMENU

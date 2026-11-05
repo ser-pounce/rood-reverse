@@ -236,7 +236,7 @@ void func_800D7C5C(void)
 
 int func_800D7CFC(void)
 {
-    int _[16] __attribute__((unused));
+    UNUSED int _[16];
     RECT sp50;
     u_int temp_s1;
     int var_s0;
@@ -333,7 +333,7 @@ int func_800D7EF4(void)
     return ret;
 }
 
-static void func_800D7FB4(int arg0, int arg1) __attribute__((unused));
+static UNUSED void func_800D7FB4(int arg0, int arg1);
 static void func_800D7FB4(int lba, int size)
 {
     vs_battle_pFileLoadContext.lba = lba;

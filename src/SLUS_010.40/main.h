@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "25AC.h"
 #include "inventory.h"
 #include <sys/types.h>
@@ -411,7 +412,7 @@ typedef struct {
     short intelligence;
     short agility;
     short limbHP[6];
-    short _ __attribute__((unused));
+    UNUSED short _;
     int statuses;
     u_char x;
     u_char direction;
@@ -466,7 +467,7 @@ typedef struct {
     u_char water;
     u_char light;
     u_char dark;
-    u_char _ __attribute__((unused));
+    UNUSED u_char _;
 } material_modifiers_affinities_t;
 
 typedef struct {

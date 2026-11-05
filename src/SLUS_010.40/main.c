@@ -806,7 +806,7 @@ u_int vs_main_frameDuration;
 static UNUSED int _12[13];
 int vs_main_frameBuf;
 int vs_main_saveGameClearData;
-MATRIX D_8005E218;
+MATRIX vs_main_cameraBasis;
 int vs_main_buttonsState;
 static UNUSED int _14;
 static int _inGame;

@@ -955,6 +955,7 @@ vs_main_unused1 = 0x8005E1D4;
 vs_main_frameDuration = 0x8005E1D8;
 vs_main_frameBuf = 0x8005E210;
 vs_main_saveGameClearData = 0x8005E214;
+vs_main_cameraBasis = 0x8005E218;
 vs_main_buttonsState = 0x8005E238;
 _inGame = 0x8005E240;
 vs_main_unused2 = 0x8005E244;

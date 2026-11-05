@@ -573,7 +573,7 @@ extern u_int vs_main_frameDuration;
 extern int vs_main_frameBuf;
 extern int vs_main_saveGameClearData;
 extern int vs_main_buttonsState;
-extern MATRIX D_8005E218;
+extern MATRIX vs_main_cameraBasis;
 extern int vs_main_unused2;
 extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;

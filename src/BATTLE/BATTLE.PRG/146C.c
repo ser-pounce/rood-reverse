@@ -10110,7 +10110,8 @@ int _doesAttackHit(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* targ
 
     if (threshold != 255) {
         if (target->kind == 0) {
-            if (vs_battle_actors[target->unk0.hit.targetActor]->unk3C->statuses & 4) {
+            if (vs_battle_actors[target->unk0.hit.targetActor]->unk3C->statuses
+                & vsBattleStatusLeftArmDown) {
                 threshold *= 2;
             }
         }
@@ -11400,7 +11401,7 @@ static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
         value += 1 + vs_main_getRand(5);
     }
 
-    if ((applyStatuses != 0) && (sourceActor->statuses & 2)) {
+    if ((applyStatuses != 0) && (sourceActor->statuses & vsBattleStatusRightArmDown)) {
         value /= 2;
     }
 
@@ -12836,7 +12837,7 @@ void func_80085008(_hitEntity_t* arg0)
         var_a1 = temp_s3->limbs[temp_s3->unk35].hp;
         break;
     }
-    if (!(temp_s3->statuses & 0x10)) {
+    if (!(temp_s3->statuses & vsBattleStatusLegsDown)) {
         if ((temp_s3->unk34 | temp_s3->unk35) != 0) {
             var_v1 = 0;
             if (temp_s3->unk34 != 0) {
@@ -13457,8 +13458,8 @@ void func_80086754(int arg0, vs_battle_actor2* arg1)
         }
     }
 
-    if (arg0 & 0x810) {
-        if (!(arg1->statuses & 0x810)) {
+    if (arg0 & (vsBattleStatusQuicken | vsBattleStatusLegsDown)) {
+        if (!(arg1->statuses & (vsBattleStatusQuicken | vsBattleStatusLegsDown))) {
             arg1->statusTimers[1] = 0;
         }
     }
@@ -13505,8 +13506,8 @@ void func_80086754(int arg0, vs_battle_actor2* arg1)
         arg1->agility = arg1->totalAgility;
     }
 
-    if (arg0 & 0x8010) {
-        if (arg0 & 0x10) {
+    if (arg0 & (vsBattleStatusNumbness | vsBattleStatusLegsDown)) {
+        if (arg0 & vsBattleStatusLegsDown) {
 
             if ((arg1->unk34 != 0) && (arg1->limbs[arg1->unk34].maxHp != 0)
                 && (arg1->limbs[arg1->unk34].hp < 2)) {
@@ -13519,7 +13520,7 @@ void func_80086754(int arg0, vs_battle_actor2* arg1)
             }
         }
 
-        if (!(arg1->statuses & 0x10)) {
+        if (!(arg1->statuses & vsBattleStatusLegsDown)) {
             arg1->unk31 = arg1->unk2E;
             arg1->unk33 = arg1->unk2F;
         }
@@ -13527,7 +13528,8 @@ void func_80086754(int arg0, vs_battle_actor2* arg1)
         func_800E685C(arg1->unk957, arg1->unk31, arg1->unk33);
     }
 
-    if ((arg0 & 0x800) && !(arg1->statuses & 0x8010)) {
+    if ((arg0 & 0x800)
+        && !(arg1->statuses & (vsBattleStatusNumbness | vsBattleStatusLegsDown))) {
 
         arg1->unk31 = arg1->unk2E;
         arg1->unk33 = arg1->unk2F;
@@ -13754,7 +13756,7 @@ void func_80086FA8(int arg0, vs_battle_actor2* arg1)
         arg1->statusTimers[0] = vs_main_statusEffectParams[5].unk4;
     }
 
-    if (arg0 & 0x810) {
+    if (arg0 & (vsBattleStatusQuicken | vsBattleStatusLegsDown)) {
         arg1->statusTimers[1] = vs_main_statusEffectParams[11].unk4;
     }
 
@@ -13805,9 +13807,10 @@ void func_80086FA8(int arg0, vs_battle_actor2* arg1)
         arg1->agility = arg1->totalAgility - (arg1->totalAgility / 10);
     }
 
-    if (arg0 & 0x8810) {
+    if (arg0
+        & (vsBattleStatusQuicken | vsBattleStatusNumbness | vsBattleStatusLegsDown)) {
 
-        if (arg1->statuses & 0x8010) {
+        if (arg1->statuses & (vsBattleStatusNumbness | vsBattleStatusLegsDown)) {
             arg1->unk31 = (arg1->unk2E >> 1);
             arg1->unk33 = arg1->unk2F >> 1;
         } else if (arg1->statuses & 0x800) {
@@ -14300,7 +14303,7 @@ void func_80087EF4(vs_battle_actor2* actor)
     }
 
     if ((actor->statusTimers[1] != 0) && (--actor->statusTimers[1] == 0)) {
-        statuses |= actor->statuses & 0x810;
+        statuses |= actor->statuses & (vsBattleStatusQuicken | vsBattleStatusLegsDown);
     }
 
     if ((actor->statusTimers[2] != 0) && (--actor->statusTimers[2] == 0)) {
@@ -14367,7 +14370,7 @@ void func_80087EF4(vs_battle_actor2* actor)
         }
     }
 
-    if (actor->statuses & 0x10) {
+    if (actor->statuses & vsBattleStatusLegsDown) {
 
         var_a0_2 = 0;
 
@@ -14380,12 +14383,14 @@ void func_80087EF4(vs_battle_actor2* actor)
         }
 
         if (var_a0_2 != 0) {
-            statuses |= 0x10;
+            statuses |= vsBattleStatusLegsDown;
         }
     }
 
     if (actor->unk957 == 0) {
-        if (actor->statuses & 0xF) {
+        if (actor->statuses
+            & (vsBattleStatusHeadDown | vsBattleStatusRightArmDown
+                | vsBattleStatusLeftArmDown | vsBattleStatusBodyDown)) {
 
             for (i = 0; i < 4; ++i) {
                 if (actor->statuses & D_800E8204[i]) {
@@ -14560,7 +14565,8 @@ int func_80088554(void)
 
                         } else {
 
-                            if (!(temp_s0->statuses & 8) || (D_800E8490 % 120 == 0)) {
+                            if (!(temp_s0->statuses & vsBattleStatusBodyDown)
+                                || (D_800E8490 % 120 == 0)) {
 
                                 if (temp_s0->risk != 0) {
                                     --temp_s0->risk;

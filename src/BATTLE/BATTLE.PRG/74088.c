@@ -614,7 +614,7 @@ void func_800DE030(int arg0)
         }
 
         if (stats->limbs[stats->unk34].hp >= 2 || stats->limbs[stats->unk35].hp >= 2) {
-            statuses &= ~0x10;
+            statuses &= ~vsBattleStatusLegsDown;
         }
 
         amount = arg0 / 240;

@@ -3108,11 +3108,11 @@ int func_800CABE0(int arg0)
         ret |= 0x40;
     }
 
-    if (actor->statuses & (vsBattleStatusRegen | vsBattleStatusStrDown)) {
+    if (actor->statuses & (vsBattleStatusSilent | vsBattleStatusHeadDown)) {
         ret |= 0x80;
     }
 
-    if (actor->statuses & vsBattleStatusWard) {
+    if (actor->statuses & vsBattleStatusParalysis) {
         ret |= 0x100;
     }
 

@@ -551,7 +551,7 @@ extern u_char vs_main_actorExtraShp[256];
 extern vs_main_battleTimer_t vs_main_battleTimer;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
-extern void* D_80055C80[2];
+extern void* vs_main_ot[2];
 extern vs_main_disk_t vs_main_disk;
 extern vs_main_stickPos vs_main_stickPosBuf;
 extern short D_8005DFD4;

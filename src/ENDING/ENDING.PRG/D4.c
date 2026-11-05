@@ -1592,8 +1592,8 @@ static void _initEnvironment(void)
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
     D_8005E0C0[0] = vs_main_allocHeap(0x20000);
     D_8005E0C0[1] = vs_main_allocHeap(0x20000);
-    D_80055C80[0] = vs_main_allocHeap(0x2088);
-    D_80055C80[1] = vs_main_allocHeap(0x2088);
+    vs_main_ot[0] = vs_main_allocHeap(0x2088);
+    vs_main_ot[1] = vs_main_allocHeap(0x2088);
 }
 
 /**
@@ -1610,7 +1610,7 @@ static void _beginFrame(void)
     void* temp_a0;
 
     vs_main_processPadState();
-    temp_a0 = D_80055C80[vs_main_frameBuf];
+    temp_a0 = vs_main_ot[vs_main_frameBuf];
     vs_scratch.unk8 = temp_a0 + 8;
     vs_scratch.unk4 = temp_a0 + 0x48;
     ClearOTagR((u_long*)temp_a0, 0x822);

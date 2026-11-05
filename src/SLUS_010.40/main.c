@@ -762,7 +762,7 @@ static int _sp2;
 static u_short _sfxData[0x2C00];
 int vs_main_buttonsReleased;
 static UNUSED int _5;
-void* D_80055C80[2];
+void* vs_main_ot[2];
 static int _resetEnabled;
 static UNUSED int _6;
 static u_int _buttonHeldFrameCount[32];

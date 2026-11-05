@@ -2098,7 +2098,6 @@ int func_8001503C(FSoundChannel* channels, int mask, int voiceNumber)
     return 0;
 }
 
-// https://decomp.me/scratch/VmgoV
 void Sound_UpdateVoiceEnvelopeStates(u_int in_ReservedVoices)
 {
     u_int i;
@@ -2154,7 +2153,6 @@ void Sound_RestoreChannelVolumeFromMasterFade(
     in_Config->MasterVolume = g_Sound_MasterFadeTimer.SavedValue;
 }
 
-// https://decomp.me/scratch/0wUZ7
 void func_80015220(void)
 {
     u_int KeyOnFlags = 0;
@@ -6384,7 +6382,7 @@ void SoundVM_D7_DisablePitchVolumeSidechain(
     in_pChannel->UpdateFlags &= ~SOUND_UPDATE_SIDE_CHAIN_VOL;
 }
 
-void SoundVM_FE0B_unk(
+void SoundVM_FE0B_PlaySfxProgram(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     int temp_v0;
@@ -6424,7 +6422,7 @@ void SoundVM_E0_unk(
     in_pChannel->UpdateFlags |= SOUND_UPDATE_UNKNOWN_20;
 }
 
-void SoundVM_FE1C_unk(
+void SoundVM_FE1C_SetKeymap(
     FSoundChannel* in_pChannel, u_int in_VoiceFlags __attribute__((unused)))
 {
     int temp_v0 = *in_pChannel->ProgramCounter++;
@@ -6504,7 +6502,7 @@ int Sound_Cutscene_FindFreeVoicePair(void)
     return -1;
 }
 
-void func_8001CE60(void)
+void Sound_Cutscene_OnFirstHalfTransferred(void)
 {
     u_char* temp_s0 = g_Sound_Cutscene_StreamState.pCurrentChunk + 0x800;
     SpuSetTransferStartAddr(0x2100);
@@ -6512,7 +6510,7 @@ void func_8001CE60(void)
     SpuWrite(temp_s0, 0x800);
 }
 
-void func_8001D3D4(void);
+void Sound_Cutscene_OnInitialTransferCompleteStereo(void);
 
 void Sound_Cutscene_StartStream(u_int* arg0, int arg1, int arg2)
 {
@@ -6552,14 +6550,14 @@ void Sound_Cutscene_StartStream(u_int* arg0, int arg1, int arg2)
                 (g_Sound_Cutscene_StreamState.field2_0x8 & 2)
                     ? g_Sound_Cutscene_StreamState.TotalPages - (s3[5] >> 1)
                     : 0;
-            SpuSetTransferCallback(func_8001D3D4);
+            SpuSetTransferCallback(Sound_Cutscene_OnInitialTransferCompleteStereo);
             transferSize = 0x2000;
         } else {
             g_Sound_Cutscene_StreamState.field7_0x1c =
                 (g_Sound_Cutscene_StreamState.field2_0x8 & 2)
                     ? g_Sound_Cutscene_StreamState.TotalPages - s3[5]
                     : 0;
-            SpuSetTransferCallback(func_8001CE60);
+            SpuSetTransferCallback(Sound_Cutscene_OnFirstHalfTransferred);
             transferSize = 0x800;
         }
         SpuWrite((u_char*)g_Sound_Cutscene_StreamState.pCurrentChunk, transferSize);
@@ -6653,14 +6651,14 @@ void Sound_Cutscene_OnInitialTransferComplete(void)
     Sound_Cutscene_BeginPlayback(0x1000, 0x2100, Sound_Cutscene_OnBufferAComplete);
 }
 
-void func_8001D5E4(void);
+void Sound_Cutscene_OnStereoBufferAComplete(void);
 
-void func_8001D3D4(void)
+void Sound_Cutscene_OnInitialTransferCompleteStereo(void)
 {
     Sound_Cutscene_InitVoice(g_Sound_Cutscene_StreamState.VoiceIndex, 1, 0x1100, 0x2100);
     Sound_Cutscene_InitVoice(
         g_Sound_Cutscene_StreamState.VoiceIndex + 1, 2, 0x1900, 0x2900);
-    Sound_Cutscene_BeginPlayback(0x2000, 0x2100, func_8001D5E4);
+    Sound_Cutscene_BeginPlayback(0x2000, 0x2100, Sound_Cutscene_OnStereoBufferAComplete);
 }
 
 void Sound_Cutscene_LoadNextBuffer(
@@ -6708,21 +6706,23 @@ void Sound_Cutscene_OnBufferBComplete(void)
         0x2100, 0x2100, 0x800, Sound_Cutscene_OnBufferAComplete);
 }
 
-void func_8001D614();
+void Sound_Cutscene_OnStereoBufferBComplete(void);
 
-void func_8001D5E4(void)
+void Sound_Cutscene_OnStereoBufferAComplete(void)
 {
-    Sound_Cutscene_LoadNextBuffer(0x1100, 0x1900, 0x1000, func_8001D614);
+    Sound_Cutscene_LoadNextBuffer(
+        0x1100, 0x1900, 0x1000, Sound_Cutscene_OnStereoBufferBComplete);
 }
 
-void func_8001D614(void)
+void Sound_Cutscene_OnStereoBufferBComplete(void)
 {
-    Sound_Cutscene_LoadNextBuffer(0x2100, 0x2900, 0x1000, func_8001D5E4);
+    Sound_Cutscene_LoadNextBuffer(
+        0x2100, 0x2900, 0x1000, Sound_Cutscene_OnStereoBufferAComplete);
 }
 
 void Sound_Cutscene_StartStream(u_int*, int, int);
 
-void func_8001D644(int* arg0)
+void Sound_Cmd_E0_RestartCutsceneStream(int* arg0)
 {
     Sound_Cutscene_StopStream();
     Sound_Cutscene_StartStream((u_int*)arg0[0], arg0[1], arg0[2]);
@@ -6755,7 +6755,7 @@ void Sound_Cmd_E5_FadeOutCutscene(FSoundCommandParams* in_Params)
     g_Sound_Cutscene_StreamState.VolFadeStepsRemaining = var_a1;
 }
 
-void func_8001D7A8(int* arg0)
+void Sound_Cmd_E6_SetCutscenePan(int* arg0)
 {
     g_Sound_Cutscene_StreamState.field19_0x4c.s32 = *arg0;
 

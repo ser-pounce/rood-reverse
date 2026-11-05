@@ -563,11 +563,11 @@ void func_800FA35C(UNUSED int startState)
     vs_gametime_tickspeed = 2;
     vs_main_projectionDistance = 0x200;
     vs_main_nearClip = 0x40;
-    D_80050468.unk0 = 0;
-    D_80050468.time.t.h = 0;
-    D_80050468.time.t.m = 0;
-    D_80050468.time.t.s = 0;
-    D_80050468.time.t.f = 0;
+    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.time.t.h = 0;
+    vs_main_battleTimer.time.t.m = 0;
+    vs_main_battleTimer.time.t.s = 0;
+    vs_main_battleTimer.time.t.f = 0;
     _zoneContext.unk68 = vs_main_spawnPoint.unk6_0;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();

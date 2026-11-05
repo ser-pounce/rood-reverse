@@ -4625,7 +4625,7 @@ void func_800738E4(void)
     func_800DC638();
 
     if ((func_800BEC58(0xA, 0, 0, 0) == 1)
-        || ((D_80050468.unk0 != 0) && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
+        || ((vs_main_battleTimer.mode != 0) && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
         func_80073870();
         return;
     }
@@ -8538,51 +8538,51 @@ void vs_battle_forgetZoneEnemies(int arg0, int arg1) { _forgetZoneEnemies(arg0, 
 
 void func_8007BBD8(int arg0, int arg1, int arg2)
 {
-    D_80050468.unk0 = arg0;
-    D_80050468.unk2 = arg1;
-    D_80050468.time.t.h = 0;
-    D_80050468.time.t.m = 0;
-    D_80050468.time.t.s = 0;
-    D_80050468.time.t.f = 0;
+    vs_main_battleTimer.mode = arg0;
+    vs_main_battleTimer.lifetime = arg1;
+    vs_main_battleTimer.time.t.h = 0;
+    vs_main_battleTimer.time.t.m = 0;
+    vs_main_battleTimer.time.t.s = 0;
+    vs_main_battleTimer.time.t.f = 0;
 
     if (arg0 != 1) {
-        D_80050468.time.t.f = arg2 % 256;
-        D_80050468.time.t.s = (arg2 / 256) % 256;
-        D_80050468.time.t.m = (arg2 / 65536) % 256;
-        D_80050468.time.t.h = (arg2 / 16777216) % 256;
+        vs_main_battleTimer.time.t.f = arg2 % 256;
+        vs_main_battleTimer.time.t.s = (arg2 / 256) % 256;
+        vs_main_battleTimer.time.t.m = (arg2 / 65536) % 256;
+        vs_main_battleTimer.time.t.h = (arg2 / 16777216) % 256;
     }
 
-    vs_battle_setStateFlag(0xA0, D_80050468.time.t.f);
-    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
-    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
-    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
+    vs_battle_setStateFlag(0xA0, vs_main_battleTimer.time.t.f);
+    vs_battle_setStateFlag(0xA1, vs_main_battleTimer.time.t.s);
+    vs_battle_setStateFlag(0xA2, vs_main_battleTimer.time.t.m);
+    vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
     func_800CB550();
 }
 
 void func_8007BCCC(void)
 {
-    D_80050468.unk0 = 0;
-    D_80050468.time.t.h = 0;
-    D_80050468.time.t.m = 0;
-    D_80050468.time.t.s = 0;
-    D_80050468.time.t.f = 0;
+    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.time.t.h = 0;
+    vs_main_battleTimer.time.t.m = 0;
+    vs_main_battleTimer.time.t.s = 0;
+    vs_main_battleTimer.time.t.f = 0;
     vs_battle_setStateFlag(0xA0, 0);
-    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
-    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
-    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
+    vs_battle_setStateFlag(0xA1, vs_main_battleTimer.time.t.s);
+    vs_battle_setStateFlag(0xA2, vs_main_battleTimer.time.t.m);
+    vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
     func_800CB560();
 }
 
 void func_8007BD3C(int arg0)
 {
     if (arg0 != 0) {
-        int temp_v1 = D_80050468.unk0;
-        D_80050468.unk0 = 0;
-        D_80050468.unk1 = temp_v1;
+        int temp_v1 = vs_main_battleTimer.mode;
+        vs_main_battleTimer.mode = 0;
+        vs_main_battleTimer.savedMode = temp_v1;
         func_800CB560();
         return;
     }
-    D_80050468.unk0 = D_80050468.unk1;
+    vs_main_battleTimer.mode = vs_main_battleTimer.savedMode;
     func_800CB550();
 }
 
@@ -14431,56 +14431,56 @@ int func_800882F4(void)
     int var_s1 = 0;
     int var_s2 = 0;
 
-    if (D_80050468.unk0 == var_s1) {
+    if (vs_main_battleTimer.mode == var_s1) {
         return var_s1;
     }
 
-    if (D_80050468.unk0 == 1) {
-        if (D_80050468.time.t.h <= 0) {
-            D_80050468.time.t.f += vs_gametime_tickspeed;
-            if (D_80050468.time.t.f > 59) {
-                D_80050468.time.t.f = 0;
-                if (++D_80050468.time.t.s > 59) {
-                    D_80050468.time.t.s = 0;
-                    if (++D_80050468.time.t.m > 59) {
-                        D_80050468.time.t.m = 0;
-                        if (++D_80050468.time.t.h > 0) {
-                            D_80050468.time.t.h = D_80050468.unk0;
+    if (vs_main_battleTimer.mode == 1) {
+        if (vs_main_battleTimer.time.t.h <= 0) {
+            vs_main_battleTimer.time.t.f += vs_gametime_tickspeed;
+            if (vs_main_battleTimer.time.t.f > 59) {
+                vs_main_battleTimer.time.t.f = 0;
+                if (++vs_main_battleTimer.time.t.s > 59) {
+                    vs_main_battleTimer.time.t.s = 0;
+                    if (++vs_main_battleTimer.time.t.m > 59) {
+                        vs_main_battleTimer.time.t.m = 0;
+                        if (++vs_main_battleTimer.time.t.h > 0) {
+                            vs_main_battleTimer.time.t.h = vs_main_battleTimer.mode;
                         }
                     }
                 }
             }
         }
-    } else if (D_80050468.time.t.f | D_80050468.time.t.s | D_80050468.time.t.m
-               | D_80050468.time.t.h) {
-        if (D_80050468.time.t.f == 0) {
-            D_80050468.time.t.f = 60;
-            if (--D_80050468.time.t.s < 0) {
-                D_80050468.time.t.s = 59;
-                if (--D_80050468.time.t.m < 0) {
-                    D_80050468.time.t.m = 59;
-                    if (--D_80050468.time.t.h < 0) {
-                        D_80050468.time.t.h = 0;
+    } else if (vs_main_battleTimer.time.t.f | vs_main_battleTimer.time.t.s
+               | vs_main_battleTimer.time.t.m | vs_main_battleTimer.time.t.h) {
+        if (vs_main_battleTimer.time.t.f == 0) {
+            vs_main_battleTimer.time.t.f = 60;
+            if (--vs_main_battleTimer.time.t.s < 0) {
+                vs_main_battleTimer.time.t.s = 59;
+                if (--vs_main_battleTimer.time.t.m < 0) {
+                    vs_main_battleTimer.time.t.m = 59;
+                    if (--vs_main_battleTimer.time.t.h < 0) {
+                        vs_main_battleTimer.time.t.h = 0;
                     }
                 }
             }
         }
 
-        D_80050468.time.t.f -= vs_gametime_tickspeed;
+        vs_main_battleTimer.time.t.f -= vs_gametime_tickspeed;
     }
 
-    if (D_80050468.time.t.f != 0) {
+    if (vs_main_battleTimer.time.t.f != 0) {
         vs_battle_setStateFlag(
-            0xA0, ((((D_80050468.time.t.f << 0xE) + rand()) * 5u) >> 0xE) / 3);
+            0xA0, ((((vs_main_battleTimer.time.t.f << 0xE) + rand()) * 5u) >> 0xE) / 3);
     } else {
-        vs_battle_setStateFlag(0xA0, D_80050468.time.t.f);
+        vs_battle_setStateFlag(0xA0, vs_main_battleTimer.time.t.f);
     }
 
-    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
-    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
-    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
+    vs_battle_setStateFlag(0xA1, vs_main_battleTimer.time.t.s);
+    vs_battle_setStateFlag(0xA2, vs_main_battleTimer.time.t.m);
+    vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
 
-    if ((var_s2 == 0) && (D_80050468.time.t.f == 0)
+    if ((var_s2 == 0) && (vs_main_battleTimer.time.t.f == 0)
         && (func_800BEC58(16, 0, 0, 0) == 1)) {
         var_s1 = 1;
     }
@@ -14697,7 +14697,7 @@ void func_80088CA0(void) { D_800E8498 = 0; }
 
 void func_80088CAC(void)
 {
-    if (D_80050468.unk2 == 2) {
+    if (vs_main_battleTimer.lifetime == 2) {
         func_8007BCCC();
     }
     _clearZoneEnemyCache();
@@ -14773,7 +14773,7 @@ void _finishLoadZnd(int id)
 
     _zoneContext.zndCdFile = NULL;
 
-    if (D_80050468.unk2 == 1) {
+    if (vs_main_battleTimer.lifetime == 1) {
         func_8007BCCC();
     }
 
@@ -15244,7 +15244,7 @@ void func_80089DC0(int arg0)
         func_80088CAC();
     }
 
-    if (D_80050468.unk2 == 0) {
+    if (vs_main_battleTimer.lifetime == 0) {
         func_8007BCCC();
     }
 

@@ -756,7 +756,7 @@ static struct {
     short queued;
 } _cdQueueCount;
 static UNUSED int _4;
-D_80050468_t D_80050468;
+vs_main_battleTimer_t vs_main_battleTimer;
 int vs_main_startState;
 static int _sp2;
 static u_short _sfxData[0x2C00];

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "16C.h"
 #include "68C4.h"
 #include "src/SLUS_010.40/31724.h"
@@ -340,7 +341,7 @@ static int _equipAccessoryMenu(int initialize)
     static int selectedAccessory;
     static char state;
     static char equippedAccessory;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
 
     int i;
     int index;
@@ -681,7 +682,7 @@ static int _equipShieldMenu(int initialize)
     static char state;
     static char wepId;
     static char material;
-    static char _ __attribute__((unused));
+    static UNUSED char _;
 
     int i;
     int index;
@@ -1052,7 +1053,7 @@ static int _equipMenu(int initialize)
 
     static int selectedRow;
     static char state;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     char* rowStrings[16];
     int rowTypes[8];

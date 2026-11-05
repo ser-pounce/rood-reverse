@@ -1099,7 +1099,7 @@ void vs_battle_applyAccessory(
     vs_main_freeHeapR(tempAccessory);
 }
 
-void vs_battle_nop0(vs_battle_actor2* actor __attribute__((unused))) { }
+void vs_battle_nop0(UNUSED vs_battle_actor2* actor) { }
 
 void func_8006B214(void)
 {
@@ -1551,7 +1551,7 @@ void _updateEnemyKills(vs_battle_actor* enemy)
     }
 }
 
-void _updateWeaponKillStreak(int arg0 __attribute__((unused)))
+void _updateWeaponKillStreak(UNUSED int arg0)
 {
     vs_battle_actor2* actor = vs_battle_characterState->unk3C;
 
@@ -2233,7 +2233,7 @@ int _add_min(int base, int a, int b)
 
 void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     int bound;
     int entityRadius;
     int maxBound;
@@ -2603,7 +2603,7 @@ void func_8006E640(int arg0)
 {
     func_8006EBF8_t sp10;
     SVECTOR targetPos;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     func_800A1108(arg0, &sp10);
     targetPos.vx = sp10.unk0.unk4.vx;
@@ -2931,7 +2931,7 @@ int _stepCameraTransition(void)
     int targetY;
     int nextY;
     int currentY;
-    int _[4] __attribute__((unused));
+    UNUSED int _[4];
 
     currentY = vs_scratch.camera.position.vy & ~0xFFF;
     targetY = vs_battle_cameraTransition->targetPosition.vy & ~0xFFF;
@@ -3902,9 +3902,9 @@ void func_8007138C(void)
     _cameraMode = 5;
 }
 
-void func_800719DC(int arg0 __attribute__((unused))) { func_80070F28(0); }
+void func_800719DC(UNUSED int arg0) { func_80070F28(0); }
 
-void func_800719FC(int arg0 __attribute__((unused)))
+void func_800719FC(UNUSED int arg0)
 {
     SVECTOR origin;
     D_800F19CC_t2 result;
@@ -4246,7 +4246,7 @@ void func_80072B9C(void) { _cameraMode = 0; }
 
 void func_80072BA8(int action)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     func_8006EBF8_t state;
     int limb;
     int part;
@@ -4499,7 +4499,7 @@ void func_80073554(void)
     func_8006C40C();
 }
 
-void func_8007357C(int arg0 __attribute__((unused)), int arg1 __attribute__((unused)))
+void func_8007357C(UNUSED int arg0, UNUSED int arg1)
 {
     D_800F196C = 5;
     _cameraMode = 1;
@@ -5369,7 +5369,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
     u_int temp_v0;
     vs_battle_actor* temp_s0;
     func_8006EBF8_t3* s2 = arg1;
-    int _[4] __attribute__((unused));
+    UNUSED int _[4];
 
     temp_v0 = func_800A0BE0(arg0);
     temp_a2 = temp_v0 & 0x70000;
@@ -6344,7 +6344,7 @@ int func_80077078(vs_battle_actor* arg0, int index, int wepId,
     return vs_battle_populateDataSlot(&sp10);
 }
 
-void func_800770FC(vs_battle_actor* arg0 __attribute__((unused)), int arg1)
+void func_800770FC(UNUSED vs_battle_actor* arg0, int arg1)
 {
     vs_battle_objectData sp10;
 
@@ -6398,7 +6398,7 @@ vs_battle_actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int blade
 {
     int i;
     vs_battle_actor_dat* temp_v0;
-    int _[6] __attribute__((unused));
+    UNUSED int _[6];
 
     if (vs_battle_actors[arg0] != NULL) {
         return NULL;
@@ -8181,7 +8181,7 @@ void func_8007ACB0(void)
     VECTOR up = D_800689E8;
     SVECTOR negativePosition;
     MATRIX roll;
-    int _[8] __attribute__((unused));
+    UNUSED int _[8];
     vs_scratch_t* scratch = &vs_scratch;
 
     setVector(&delta, (scratch->camera.position.vx - scratch->camera.lookAt.vx) / ONE,
@@ -8231,7 +8231,7 @@ void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat)
     VECTOR sp20;
     VECTOR sp30;
     VECTOR sp40 = D_800689F8;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     sp10.vx = to->vx - from->vx;
     sp10.vy = to->vy - from->vy;
@@ -8285,7 +8285,7 @@ void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
     func_800478E0(arg0, arg1, arg2, arg3, arg4);
 }
 
-void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3) __attribute__((unused));
+UNUSED void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3);
 void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, 0, arg1, arg3);
@@ -8294,7 +8294,7 @@ void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
     vs_main_loadClutTransition(arg0, 2, arg1 + 0x200);
 }
 
-void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3) __attribute__((unused));
+UNUSED void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3);
 void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
@@ -8670,10 +8670,7 @@ void func_8007C050(void)
     }
 }
 
-__attribute__((unused)) int _isWeaponDrawn(int actor)
-{
-    return vs_battle_actors[actor]->weaponDrawn & 1;
-}
+UNUSED int _isWeaponDrawn(int actor) { return vs_battle_actors[actor]->weaponDrawn & 1; }
 
 void func_8007C0AC(int arg0, int arg1)
 {
@@ -8959,7 +8956,7 @@ int func_8007C8F8(int arg0)
 
 int func_8007C928(u_int arg0, int arg1, vs_battle_objectData_flags* arg2)
 {
-    int _[6] __attribute__((unused));
+    UNUSED int _[6];
     vs_battle_actor_dat* temp_v0;
     vs_battle_actor** temp_s1;
     int s0;
@@ -9880,23 +9877,19 @@ short _getDefenseGemBuff(vs_action_t* action, vs_battle_actor2* actor, int hitNu
     return gemBuff;
 }
 
-int _invalidHitFunction(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int _invalidHitFunction(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-int func_8007E97C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_8007E97C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return D_800F1A04 != 0 ? 100 : 255;
 }
 
 int _getHitGemModifier(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target,
-    int hitNumber, int arg4 __attribute__((unused)))
+    int hitNumber, UNUSED int arg4)
 {
     int gemModifier = 100;
     if ((source != NULL) && (source->kind == 0)) {
@@ -10065,9 +10058,8 @@ int _getAgilityDifference2(vs_action_t* action, _hitEntity_t* source,
     return agiDiff;
 }
 
-int _getRiskModifier(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* source,
-    _hitEntity_t* arg2 __attribute__((unused)), int hitNumber __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int _getRiskModifier(UNUSED vs_action_t* arg0, _hitEntity_t* source,
+    UNUSED _hitEntity_t* arg2, UNUSED int hitNumber, UNUSED int arg4)
 {
     int rate =
         ((vs_battle_actors[source->unk0.hit.targetActor]->unk3C->risk + 150) * 100) / 256;
@@ -10077,9 +10069,8 @@ int _getRiskModifier(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* so
     return rate;
 }
 
-int _getChainEvasionModifier(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* target,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _getChainEvasionModifier(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* target, UNUSED int arg3, UNUSED int arg4)
 {
     int rate;
 
@@ -10166,72 +10157,41 @@ int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
 
 int _getEnemyClass(u_char* arg0) { return vs_battle_actors[*arg0]->unk3C->enemyClass; }
 
-int _hitPrerequisiteNever0(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 0;
-}
+int _hitPrerequisiteNever0(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteAlways0(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 1;
-}
+int _hitPrerequisiteAlways0(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
 
-int _hitPrerequisiteAlways1(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 1;
-}
+int _hitPrerequisiteAlways1(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
 
-int _hitPrerequisiteAlways2(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 1;
-}
+int _hitPrerequisiteAlways2(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
 
-int _hitPrerequisiteUndead(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteUndead(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _getEnemyClass(arg1) == enemyClassUndead;
 }
 
-int _hitPrerequisiteNotUndead(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteNotUndead(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _getEnemyClass(arg1) != enemyClassUndead;
 }
 
-int _hitPrerequisiteNever1(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 0;
-}
+int _hitPrerequisiteNever1(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteNever2(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 0;
-}
+int _hitPrerequisiteNever2(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteNever3(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1 __attribute__((unused)))
-{
-    return 0;
-}
+int _hitPrerequisiteNever3(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteCanApplyStrDown(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyStrDown(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(5, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntDown(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyIntDown(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(7, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglDown(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAglDown(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(9, arg1) == 0;
 }
@@ -10270,23 +10230,22 @@ int _hitPrerequisiteCanApplyEquipDown(vs_action_t* arg0, u_char* arg1)
     return i = 0;
 }
 
-int _hitPrerequisiteCanApplyHalfMove(
-    vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyHalfMove(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(4, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyStrUp(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyStrUp(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(6, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntUp(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyIntUp(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(8, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglUp(vs_action_t* arg0 __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAglUp(UNUSED vs_action_t* arg0, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(10, arg1) == 0;
 }
@@ -10325,56 +10284,47 @@ int _hitPrerequisiteCanApplyEquipUp(vs_action_t* arg0, u_char* arg1)
     return i = 0;
 }
 
-int _hitPrerequisiteCanApplyQuicken(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyQuicken(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(11, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplySilence(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplySilence(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(12, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyMagicWard(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyMagicWard(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(18, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyRegen(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyRegen(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(17, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyParalysis(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyParalysis(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(13, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyPoison(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyPoison(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(14, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyNumbness(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyNumbness(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(15, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyCurse(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyCurse(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(16, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAirAttackUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAirAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(21, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -10383,8 +10333,7 @@ int _hitPrerequisiteCanApplyAirAttackUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyFireAttackUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyFireAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(22, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -10393,8 +10342,7 @@ int _hitPrerequisiteCanApplyFireAttackUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyEarthAttackUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyEarthAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(23, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -10403,8 +10351,7 @@ int _hitPrerequisiteCanApplyEarthAttackUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyWaterAttackUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyWaterAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(24, arg1) == 0)
         && (vs_battle_actors[*arg1]->unk3C->weapon.blade.id != 0)) {
@@ -10413,8 +10360,7 @@ int _hitPrerequisiteCanApplyWaterAttackUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyAirDefenseUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyAirDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if (_hitPrerequisiteCanApplyEffect(25, arg1) == 0) {
         int i;
@@ -10438,8 +10384,7 @@ int _hitPrerequisiteCanApplyAirDefenseUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyFireDefenseUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyFireDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if (_hitPrerequisiteCanApplyEffect(26, arg1) == 0) {
         int i;
@@ -10462,8 +10407,7 @@ int _hitPrerequisiteCanApplyFireDefenseUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyEarthDefenseUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyEarthDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if (_hitPrerequisiteCanApplyEffect(27, arg1) == 0) {
         int i;
@@ -10486,8 +10430,7 @@ int _hitPrerequisiteCanApplyEarthDefenseUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyWaterDefenseUp(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyWaterDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
     if (_hitPrerequisiteCanApplyEffect(28, arg1) == 0) {
         int i;
@@ -10511,14 +10454,12 @@ int _hitPrerequisiteCanApplyWaterDefenseUp(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyBanish(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyBanish(UNUSED vs_action_t* action, u_char* arg1)
 {
     return _hitPrerequisiteCanApplyEffect(29, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyExorcise(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyExorcise(UNUSED vs_action_t* action, u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
         && (_getEnemyClass(arg1) == enemyClassUndead)) {
@@ -10527,8 +10468,7 @@ int _hitPrerequisiteCanApplyExorcise(
     return 0;
 }
 
-int _hitPrerequisiteCanApplyDrain(
-    vs_action_t* action __attribute__((unused)), u_char* arg1)
+int _hitPrerequisiteCanApplyDrain(UNUSED vs_action_t* action, u_char* arg1)
 {
     if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
         && (_getEnemyClass(arg1) != enemyClassUndead)) {
@@ -10537,11 +10477,11 @@ int _hitPrerequisiteCanApplyDrain(
     return 0;
 }
 
-int _hitPrerequisiteUnused0(vs_action_t* action __attribute__((unused)), u_char* arg1) { }
+int _hitPrerequisiteUnused0(UNUSED vs_action_t* action, u_char* arg1) { }
 
-int _hitPrerequisiteUnused1(vs_action_t* action __attribute__((unused)), u_char* arg1) { }
+int _hitPrerequisiteUnused1(UNUSED vs_action_t* action, u_char* arg1) { }
 
-int _hitPrerequisiteUnused2(vs_action_t* action __attribute__((unused)), u_char* arg1) { }
+int _hitPrerequisiteUnused2(UNUSED vs_action_t* action, u_char* arg1) { }
 
 int _canPerformAttack(vs_action_t* action, u_char* arg1, int hitNumber)
 {
@@ -11031,8 +10971,8 @@ void _triggerWeaponAffinityChange(vs_action_t* action, vs_battle_uiEquipment* eq
     }
 }
 
-void _triggerClassChange(vs_action_t* action __attribute__((unused)),
-    vs_battle_uiEquipment* equipment, int class, int arg3, int actorId)
+void _triggerClassChange(UNUSED vs_action_t* action, vs_battle_uiEquipment* equipment,
+    int class, int arg3, int actorId)
 {
     int opposingClass0;
     int opposingClass1;
@@ -11251,17 +11191,13 @@ int _setInflictedStatuses(int arg0, _hitEntity_t* entity)
     return ret;
 }
 
-void _statCalculatorNop(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+void _statCalculatorNop(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-short _getLastValue(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+short _getLastValue(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return _lastValue;
 }
@@ -11661,9 +11597,8 @@ short _getMagicAttackDamage(vs_action_t* action, _hitEntity_t* source,
     return value;
 }
 
-short _previousHitFactor0(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+short _previousHitFactor0(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return (((D_800F19CC->unk8.targets[0].unk0.hit.hp
                  + D_800F19CC->unk8.targets[0].unk0.hit.mp)
@@ -11672,18 +11607,16 @@ short _previousHitFactor0(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((u
          + (D_800F19CC->unk0 - 1);
 }
 
-short _hpLostFactor(vs_action_t* arg0, _hitEntity_t* arg1,
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _hpLostFactor(vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* arg2,
+    int arg3, UNUSED int arg4)
 {
     vs_battle_actor2* actor = vs_battle_actors[arg1->unk0.hit.targetActor]->unk3C;
     int v = (actor->maxHP - actor->currentHP) * arg0->hitParams[arg3].statFactor;
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short _previousHitFactor1(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _previousHitFactor1(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     return (((D_800F19CC->unk8.targets[0].unk0.hit.hp
                  + D_800F19CC->unk8.targets[0].unk0.hit.mp)
@@ -11692,27 +11625,23 @@ short _previousHitFactor1(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((u
          + (D_800F19CC->unk0 - 1);
 }
 
-short _factorCurrentHp(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorCurrentHp(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     int v = vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->currentHP
           * arg0->hitParams[arg3].statFactor;
     return (v / 100) + (D_800F19CC->unk0 - 1);
 }
 
-short _getWeaponPp(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+short _getWeaponPp(UNUSED vs_action_t* arg0, _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg1->unk0.hit.targetActor]->unk3C->weapon.currentPp
          + ((u_short)D_800F19CC->unk0 - 1);
 }
 
-short _factorMagicDamageReceived(vs_action_t* action,
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorMagicDamageReceived(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (((vs_main_actions[D_800F19CC->unk8.actionIndex].type)) == actionTypeSpell) {
@@ -11727,10 +11656,8 @@ short _factorMagicDamageReceived(vs_action_t* action,
     return var_a2;
 }
 
-short _factorPhysicalDamageReceived0(vs_action_t* action,
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorPhysicalDamageReceived0(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (((vs_main_actions[D_800F19CC->unk8.actionIndex].type)) != actionTypeSpell) {
@@ -11755,9 +11682,8 @@ short _mpLostFactor(
 
 static int _getRoomTrapLevel(void);
 
-short _damageFromTrapPanel(vs_action_t* action,
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* hit, int nHit,
-    int withRandMod)
+short _damageFromTrapPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* hit, int nHit, int withRandMod)
 {
     _hitIntermediate sp10;
     short damage;
@@ -12017,9 +11943,8 @@ short _hpHealed(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target,
     return value;
 }
 
-short _hpHealedFromHealPanel(vs_action_t* action,
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* hit, int nHit,
-    int withRandMod)
+short _hpHealedFromHealPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* hit, int nHit, int withRandMod)
 {
     _hitIntermediate sp10;
     short hpHealed;
@@ -12134,8 +12059,8 @@ short _hpHealedFromHealPanel(vs_action_t* action,
     return hpHealed;
 }
 
-short _itemRecovery(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3, int arg4)
+short _itemRecovery(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0;
     short temp_s0 = arg0->hitParams[arg3].statFactor * 5;
@@ -12155,25 +12080,22 @@ short _itemRecovery(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)
     return temp_s0;
 }
 
-short _getRecoverableHp(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+short _getRecoverableHp(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->maxHP
          - vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->currentHP;
 }
 
-short _getRecoverableMp(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+short _getRecoverableMp(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->maxMP
          - vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->currentMP;
 }
 
-short _previousHitFactor2(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _previousHitFactor2(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     return (((D_800F19CC->unk8.targets[0].unk0.hit.hp
                  + D_800F19CC->unk8.targets[0].unk0.hit.mp)
@@ -12182,10 +12104,8 @@ short _previousHitFactor2(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((u
          + (D_800F19CC->unk0 - 1);
 }
 
-short _factorMagicDamageReceivedOfType(vs_action_t* action,
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorMagicDamageReceivedOfType(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (vs_main_actions[D_800F19CC->unk8.actionIndex].type == actionTypeSpell) {
@@ -12201,10 +12121,8 @@ short _factorMagicDamageReceivedOfType(vs_action_t* action,
     return var_a2;
 }
 
-short _factorPhysicalDamageReceived1(vs_action_t* action,
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorPhysicalDamageReceived1(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (((vs_main_actions[D_800F19CC->unk8.actionIndex].type)) != actionTypeSpell) {
@@ -12219,9 +12137,8 @@ short _factorPhysicalDamageReceived1(vs_action_t* action,
     return var_a2;
 }
 
-short _factorSpellCost(vs_action_t* action, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorSpellCost(vs_action_t* action, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_v0;
 
@@ -12236,9 +12153,8 @@ short _factorSpellCost(vs_action_t* action, _hitEntity_t* arg1 __attribute__((un
     return var_v0;
 }
 
-short _factorDamageReceived(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3,
-    int arg4 __attribute__((unused)))
+short _factorDamageReceived(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if ((D_800F19CC->unk8.unk4.hpEffect == 1) || (D_800F19CC->unk8.unk4.hpEffect == 3)) {
@@ -12249,16 +12165,14 @@ short _factorDamageReceived(vs_action_t* arg0, _hitEntity_t* arg1 __attribute__(
     return var_a2;
 }
 
-short _getEquippedShieldDp(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+short _getEquippedShieldDp(UNUSED vs_action_t* arg0, _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg1->unk0.hit.targetActor]->unk3C->shield.currentPp;
 }
 
-short _factorLastValue(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+short _factorLastValue(UNUSED vs_action_t* arg0, _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return (_lastValue * arg0->hitParams[arg3].statFactor) / 10;
 }
@@ -12269,9 +12183,8 @@ short _getPhysicalAttackDamageWithStatusModifiers(
     return _getPhysicalAttackDamage(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
-short _getRisk(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+short _getRisk(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->risk;
 }
@@ -12293,133 +12206,116 @@ short _calculateStatChange(
     return amount;
 }
 
-int func_80083990(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80083990(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
 // TODO: Change return type, these only match with int and undefined return
-int func_80083998(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083998(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(5, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_800839E8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_800839E8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(7, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083A38(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083A38(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(9, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083A88(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083A88(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(19, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083AD8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083AD8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(4, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083B28(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083B28(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(6, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083B78(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083B78(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(8, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083BC8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083BC8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(10, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083C18(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083C18(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(20, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083C68(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083C68(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(11, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083CB8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083CB8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(12, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083D08(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80083D08(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x12, arg2);
 }
 
-int func_80083D2C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083D2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(17, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083D7C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4)
+int func_80083D7C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, int arg4)
 {
     _setApplicableStatuses(0x1D, arg2);
     if (arg4 != 0) {
@@ -12427,145 +12323,127 @@ int func_80083D7C(vs_action_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80083DEC(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083DEC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(13, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083E3C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083E3C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(14, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083E8C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083E8C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(15, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083EDC(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083EDC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setApplicableStatuses(16, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083F2C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083F2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x15, arg2);
 }
 
-int func_80083F50(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083F50(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x16, arg2);
 }
 
-int func_80083F74(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083F74(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x17, arg2);
 }
 
-int func_80083F98(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083F98(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x18, arg2);
 }
 
-int func_80083FBC(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083FBC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x19, arg2);
 }
 
-int func_80083FE0(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80083FE0(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x1A, arg2);
 }
 
-int func_80084004(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80084004(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x1B, arg2);
 }
 
-int func_80084028(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80084028(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setApplicableStatuses(0x1C, arg2);
 }
 
-int func_8008404C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_8008404C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setInflictedStatuses(0xD, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_8008409C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_8008409C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setInflictedStatuses(0xE, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_800840EC(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_800840EC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setInflictedStatuses(0x10, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_8008413C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_8008413C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (_setInflictedStatuses(0xF, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_8008418C(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_8008418C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     arg2->inflictStatuses |=
         (vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->statuses & 0x1FFE1FE0);
 }
 
-int func_800841C8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_800841C8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     int temp_v1 = vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->statuses & 0xE000;
     arg2->inflictStatuses |= temp_v1;
@@ -12575,61 +12453,52 @@ int func_800841C8(vs_action_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80084228(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
-    _hitEntity_t* arg2, int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80084228(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     arg1->unk1C_26 = 2;
 }
 
-int func_80084248(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80084248(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     _setInflictedStatuses(0x1E, arg2);
     arg2->unk0.hit.hp = vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->currentHP;
     arg2->hpEffect = 1;
 }
 
-int func_800842AC(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_800842AC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     arg2->armorDp = arg2->unk0.hit.hp * 2;
     arg2->limbs[arg2->unk0.hit.targetLimb].effects.value1 = arg2->unk0.hit.hp * 2;
     arg2->armorDpEffect = 1;
 }
 
-int func_800842F0(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_800842F0(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     arg1->unk1C_26 = 2;
 }
 
-int func_80084310(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4)
+int func_80084310(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, int arg4)
 {
     if (arg4 != 0) {
         vs_battle_setStateFlag(0x40, 1);
     }
 }
 
-int func_80084340(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4)
+int func_80084340(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, int arg4)
 {
     if (arg4 != 0) {
         vs_battle_setStateFlag(0x20, 1);
     }
 }
 
-int func_80084370(vs_action_t* arg0 __attribute__((unused)), _hitEntity_t* arg1,
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80084370(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     arg1->unk1C_26 = 2;
 }
@@ -12745,72 +12614,64 @@ int func_80084870(
     }
 }
 
-int _increaseStrengthRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _increaseStrengthRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->strength += amount;
     arg2->strengthEffect = 2;
 }
 
-int _increaseIntelligenceRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _increaseIntelligenceRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->intelligence += amount;
     arg2->intelligenceEffect = 2;
 }
 
-int _increaseAgilityRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _increaseAgilityRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->agility += amount;
     arg2->agilityEffect = 2;
 }
 
-int _increaseMaxHpRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _increaseMaxHpRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->maxHp += amount;
     arg2->maxHpEffect = 2;
 }
 
-int _increaseMaxMpRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _increaseMaxMpRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->maxMp += amount;
     arg2->maxMpEffect = 2;
 }
 
-int _decreaseStrengthRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _decreaseStrengthRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->strength += amount;
     arg2->strengthEffect = 1;
 }
 
-int _decreaseIntelligenceRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _decreaseIntelligenceRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->intelligence += amount;
     arg2->intelligenceEffect = 1;
 }
 
-int _decreaseAglityRand(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int _decreaseAglityRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->agility += amount;
@@ -12863,9 +12724,8 @@ int func_80084CAC(
     arg2->mpEffect = 1;
 }
 
-int func_80084D44(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80084D44(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     if (vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C->weapon.blade.id != 0) {
         u_short amount =
@@ -12875,9 +12735,8 @@ int func_80084D44(vs_action_t* arg0 __attribute__((unused)),
     }
 }
 
-int func_80084DA8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)), _hitEntity_t* arg2,
-    int arg3 __attribute__((unused)), int arg4 __attribute__((unused)))
+int func_80084DA8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     vs_battle_actor2* actor = vs_battle_actors[arg2->unk0.hit.targetActor]->unk3C;
 
@@ -12937,24 +12796,18 @@ int func_80084F94(
     }
 }
 
-int func_80084FF0(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80084FF0(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-int func_80084FF8(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80084FF8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-int func_80085000(vs_action_t* arg0 __attribute__((unused)),
-    _hitEntity_t* arg1 __attribute__((unused)),
-    _hitEntity_t* arg2 __attribute__((unused)), int arg3 __attribute__((unused)),
-    int arg4 __attribute__((unused)))
+int func_80085000(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
+    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
@@ -14842,7 +14695,7 @@ void _loadMpdLbas(void* arg0, int size)
     vs_main_memcpy(_zoneContext.mpdLbas, arg0, size);
 }
 
-void _loadZndEnemies(long* data, int arg1 __attribute__((unused)))
+void _loadZndEnemies(long* data, UNUSED int arg1)
 {
     _zoneContext.zndEnemyCount = *data;
 
@@ -14962,7 +14815,7 @@ int func_80089104(void) { return D_800F18A8; }
 
 void func_80089114(void)
 {
-    int _[4] __attribute__((unused));
+    UNUSED int _[4];
     int slots[16];
     vs_battle_objectData_flags data;
     _mpdEnemy* enemy;
@@ -16092,7 +15945,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void _vsBattleNop2(int arg0 __attribute__((unused))) { }
+void _vsBattleNop2(UNUSED int arg0) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {
@@ -16120,14 +15973,14 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-__attribute__((unused)) _mpdRoomSection3* _getRoomDataSection3(void)
+UNUSED _mpdRoomSection3* _getRoomDataSection3(void)
 {
     return vs_battle_roomData.section3;
 }
 
 int func_8008B6FC(void) { return vs_battle_roomData.section6; }
 
-int _getCollisionMapDimensions(int arg0 __attribute__((unused)))
+int _getCollisionMapDimensions(UNUSED int arg0)
 {
     if (vs_battle_roomData.collisionMapSection != NULL) {
         return (vs_battle_roomData.collisionMapSection->height << 0x14)
@@ -16136,7 +15989,7 @@ int _getCollisionMapDimensions(int arg0 __attribute__((unused)))
     return 0;
 }
 
-_zoneContextBounds* _getMapBounds(int arg0 __attribute__((unused)))
+_zoneContextBounds* _getMapBounds(UNUSED int arg0)
 {
     if (vs_battle_roomData.section18 != NULL) {
         return vs_battle_roomData.section18;
@@ -16766,7 +16619,7 @@ void func_8008CEB0(void)
     object = vs_battle_roomData.section12;
     count = vs_battle_roomData.header.section12Len / sizeof(_mpdRoomSection12);
     for (i = 0; i < count; ++i, ++object) {
-        int _[8] __attribute__((unused));
+        UNUSED int _[8];
         SVECTOR vertices[4];
         long projection;
         long flags;
@@ -18002,7 +17855,7 @@ void func_8008FAC8(void)
 
 void func_8008FDC4(void)
 {
-    SVECTOR unused[6] __attribute__((unused));
+    UNUSED SVECTOR unused[6];
     long projection;
     long flags;
     TILE* prim;
@@ -18136,7 +17989,7 @@ void func_8008FDC4(void)
 
 void func_80090434(void)
 {
-    SVECTOR unused[4] __attribute__((unused));
+    UNUSED SVECTOR unused[4];
     VECTOR origin;
     VECTOR velocity;
     long flags;

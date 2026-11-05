@@ -1,3 +1,4 @@
+#include "common.h"
 #include "58EC.h"
 #include "2D10.h"
 #include "C48.h"
@@ -30,17 +31,17 @@ short D_80102498[4];
 
 char _menuActionsPageOffset;
 char vs_mainMenu_currentStatusViewItem;
-char bss_7[2] __attribute__((unused));
+UNUSED char bss_7[2];
 u_short* vs_mainMenu_menu12Text;
 short vs_mainMenu_strIntAgi[8];
 u_char vs_mainMenu_selectedStatusViewElement;
 char vs_mainMenu_itemStatPage;
-char bss_3[6] __attribute__((unused));
+UNUSED char bss_3[6];
 short vs_mainMenu_equipmentStats[64];
 u_short* vs_mainMenu_itemHelp;
 char vs_mainMenu_enabledStatPages;
 char vs_mainMenu_equipmentSubtype;
-char bss_4[18] __attribute__((unused)); // Garbage, patched in MAINMENU_PRG.py
+UNUSED char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
 textHeader_t _textHeaders[2];
 char vs_mainMenu_containerEmptyBackup;
 

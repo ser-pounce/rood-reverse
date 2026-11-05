@@ -189,7 +189,7 @@ int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
     D_800F4538_t* actor;
     D_800F4538_t* obj;
     vs_battle_wepModels_t* model;
-    int _[22] __attribute__((unused));
+    UNUSED int _[22];
 
     *(MATRIX*)arg2 = *func_800A1DE8(arg0, arg1, &D_800F49B8);
 
@@ -432,7 +432,7 @@ void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
     int frames;
     int fall;
     int velocity;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     if (actor->unk0.unkA_0) {
         return;

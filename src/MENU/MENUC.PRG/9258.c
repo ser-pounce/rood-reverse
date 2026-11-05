@@ -1,3 +1,4 @@
+#include "common.h"
 #include "9258.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
@@ -7,7 +8,7 @@
 
 int _loadObject(int arg0)
 {
-    int _[6] __attribute__((unused));
+    UNUSED int _[6];
     D_800F4538_t* new_var = D_800F4538[0];
 
     if (arg0 == 1) {

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "21A0.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
@@ -13,12 +14,12 @@
 #include <libetc.h>
 
 static u_char weaponId;
-static char _1 __attribute__((unused));
+static UNUSED char _1;
 static char _showRenameInterface;
 static u_char _animStep;
-static char _2[2] __attribute__((unused));
+static UNUSED char _2[2];
 static char* _charTable;
-static char _3[8] __attribute__((unused));
+static UNUSED char _3[8];
 static char _stringBuf[20];
 
 // Purpose unclear.
@@ -365,11 +366,11 @@ static int _highlightCharSelection(int cursorState, int column, int row)
 static int _confirmationScreen(int init)
 {
     static char cursorState = 0;
-    static int _0[] __attribute__((unused)) = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
+    static UNUSED int _0[] = { 0x01002AFA, 0x00E79CF1 }; // Junk string?
 
     static char state;
     static char selectedRow;
-    static char _1[14] __attribute__((unused));
+    static UNUSED char _1[14];
 
     int i;
 
@@ -479,7 +480,7 @@ static int _renameMenuInput(int initialize)
     static char _charTableColumn;
     static char _charTableRow;
     static u_char currentPos;
-    static char D_80105F2D __attribute__((unused));
+    static UNUSED char D_80105F2D;
     int selectedRow;
     int var_a1;
     int var_s1;

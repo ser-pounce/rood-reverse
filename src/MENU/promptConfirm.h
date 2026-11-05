@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 
 /* Confirmation prompt shared by the title and menu overlays. */
 
@@ -19,7 +20,7 @@ static int _promptConfirm(int arg0)
 
     static char state;
     static char cancelled;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
 
     fileMenuElements_t* temp_v0;
     int i;
@@ -119,7 +120,7 @@ static int _promptFormat(int initPort)
 
     static char state;
     static char port;
-    static char _[PROMPT_FORMAT_PAD] __attribute__((unused));
+    static UNUSED char _[PROMPT_FORMAT_PAD];
 
     int val;
 

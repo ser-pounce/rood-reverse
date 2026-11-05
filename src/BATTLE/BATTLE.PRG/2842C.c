@@ -1,3 +1,4 @@
+#include "common.h"
 #include "2842C.h"
 #include "146C.h"
 #include "30DB0.h"
@@ -932,7 +933,7 @@ void func_80092548(void)
 
 void func_800927AC(D_800F1DD8_t* arg0)
 {
-    int _[32] __attribute__((unused));
+    UNUSED int _[32];
     int i;
     signed char* script;
     func_80092F74_t* elem = vs_main_allocHeap(sizeof *elem * arg0->unk1);
@@ -1135,13 +1136,12 @@ void func_80092EDC(func_80092F74_t* arg0)
     }
 }
 
-int func_80092F6C(func_80092F74_t* arg0 __attribute__((unused)),
-    func_80092F74_t2* arg1 __attribute__((unused)))
+int func_80092F6C(UNUSED func_80092F74_t* arg0, UNUSED func_80092F74_t2* arg1)
 {
     return 0;
 }
 
-int func_80092F74(func_80092F74_t* arg0, func_80092F74_t2* arg1 __attribute__((unused)))
+int func_80092F74(func_80092F74_t* arg0, UNUSED func_80092F74_t2* arg1)
 {
     if (arg0->unk8 >= 0) {
         *arg0->unk0 = 0x100;
@@ -1272,13 +1272,13 @@ int func_800935B8(func_80092F74_t* arg0, func_80092F74_t2* arg1)
     return 0;
 }
 
-int func_800935F8(func_80092F74_t* arg0 __attribute__((unused)), func_80092F74_t2* arg1)
+int func_800935F8(UNUSED func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
     func_8009291C(arg1->unk4[0].s32);
     return 0;
 }
 
-int func_8009361C(func_80092F74_t* unk0 __attribute__((unused)), func_80092F74_t2* arg1)
+int func_8009361C(UNUSED func_80092F74_t* unk0, func_80092F74_t2* arg1)
 {
     func_800919D8(arg1->unk4[0].s32);
     return 0;
@@ -1295,8 +1295,7 @@ int func_80093640(func_80092F74_t* arg0, func_80092F74_t2* arg1)
     return 0;
 }
 
-int func_800936F0(func_80092F74_t* arg0 __attribute__((unused)),
-    func_80092F74_t2* arg1 __attribute__((unused)))
+int func_800936F0(UNUSED func_80092F74_t* arg0, UNUSED func_80092F74_t2* arg1)
 {
     return 0;
 }
@@ -1628,7 +1627,7 @@ int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
 
 int vs_battle_renderBattleAbilityTimingResult(int arg0)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     D_800F1BAC_t* p = *D_800F1BAC;
     int i;
 
@@ -2386,7 +2385,7 @@ void func_80095C18(int actor, int kind)
 {
     SVECTOR position;
     SVECTOR other;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     long side;
     int xy;
     u_long* prim;
@@ -2679,7 +2678,7 @@ void func_8009651C(SVECTOR* position, int direction)
 
 int func_80096768(int arg0, int arg1, int arg2)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     int i;
     int count;
     D_800F1BAC_t* p;

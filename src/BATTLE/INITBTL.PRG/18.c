@@ -503,7 +503,7 @@ static void _initTransitionState(void)
     vs_battle_screenTransitionAlpha = 255;
 }
 
-void func_800FA35C(int startState __attribute__((unused)))
+void func_800FA35C(UNUSED int startState)
 {
     int _0[2];
     RECT rect;

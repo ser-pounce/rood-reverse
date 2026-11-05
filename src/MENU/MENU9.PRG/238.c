@@ -241,7 +241,7 @@ int _getSelectedRow(void)
 /**
  * Unused, possibly copied from another menu.
  */
-void _setMenuRow10(char* text) __attribute__((unused));
+UNUSED void _setMenuRow10(char* text);
 void _setMenuRow10(char* text)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
@@ -254,13 +254,13 @@ void _setMenuRow10(char* text)
 /**
  * Unused, possibly copied from another menu.
  */
-void _clearMenuExceptRow8(void) __attribute__((unused));
+UNUSED void _clearMenuExceptRow8(void);
 void _clearMenuExceptRow8(void) { vs_mainMenu_clearMenuExcept(8); }
 
 /**
  * Unused, possibly copied from another menu.
  */
-void _menuReady(void) __attribute__((unused));
+UNUSED void _menuReady(void);
 void _menuReady(void) { vs_mainmenu_ready(); }
 
 int _calculateProgress(void);
@@ -372,7 +372,7 @@ typedef struct {
     u_char unlocked;
     u_char prev;
     u_char next;
-    u_char _ __attribute__((unused));
+    UNUSED u_char _;
     char name[28];
 } _monBinData_t;
 
@@ -380,7 +380,7 @@ static void _determineCharacterRank(void);
 void _setTitleFlags(void);
 void _calculateScore(void);
 
-static int _0 __attribute__((unused));
+static UNUSED int _0;
 static _gazetteRow _gazetteRows[32];
 static SVECTOR _cameraAngles;
 static int _enemyNavigationState;
@@ -408,7 +408,7 @@ static u_short _mapCompletion;
 static vs_main_CdQueueSlot* _monBinCdQueueSlot;
 static _monBinData_t* _monBinData;
 static u_short* _enemyDescriptions;
-static int _1[2] __attribute__((unused));
+static UNUSED int _1[2];
 static VECTOR _cameraPositionBackup;
 static VECTOR _cameraAnglesBackup;
 
@@ -514,8 +514,8 @@ static u_short _miscInfo[] = {
 
 // Probably imported accidentally
 #pragma vsstring(start)
-static char _yesString[] __attribute__((unused)) = "YES\0";
-static char _noString[] __attribute__((unused)) = "NO\0";
+static UNUSED char _yesString[] = "YES\0";
+static UNUSED char _noString[] = "NO\0";
 #pragma vsstring(end)
 
 /**
@@ -555,7 +555,7 @@ int _menuInput(void)
         topMenu,
     };
 
-    int _[8] __attribute__((unused));
+    UNUSED int _[8];
     vs_battle_textBox* textBox;
     _gazetteRow* var_s0;
     int lStickX;
@@ -2508,9 +2508,8 @@ void _renderBossRushRecords(int selected)
 {
     static char cursorAnimStep = 0;
 
-    char* difficulty[] __attribute__((unused)) = { "EASY", "NORMAL" };
-    int difficultyColors[]
-        __attribute__((unused)) = { vs_getRGB(0, 128, 128), vs_getRGB(128, 128, 0) };
+    UNUSED char* difficulty[] = { "EASY", "NORMAL" };
+    UNUSED int difficultyColors[] = { vs_getRGB(0, 128, 128), vs_getRGB(128, 128, 0) };
 
     char sp28[16];
     int sp38;

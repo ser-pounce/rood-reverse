@@ -9,7 +9,7 @@ TEXTXFORM ?= $(VPYTHON) -m tools.etc.textTransformer
 # libsn/SNMAIN is SN Systems hand-written asm and keeps the ASPSX (maspsx) path.
 PSQ_PATCH ?= $(SED) -E -e '1i .include "macro.inc"' -e 's/^\tmove\t([^,]+),(.+)$$/\taddu\t\1,\2,$$0/'
 
-CPPFLAGS ?= -nostdinc -I include/psx -I src/include -I ./ -D "__attribute__(x)=" -D_LANGUAGE_C
+CPPFLAGS ?= -nostdinc -I include/psx -I src/include -I ./ -D LEGACY_GCC -D_LANGUAGE_C
 CC1FLAGS ?= -G0 -O2 -Wall -quiet -funsigned-char -Wno-unused
 MASFLAGS ?= --aspsx-version=2.77 --macro-inc
 

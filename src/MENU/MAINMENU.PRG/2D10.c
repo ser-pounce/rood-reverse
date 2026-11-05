@@ -1,3 +1,4 @@
+#include "common.h"
 #include "2D10.h"
 #include "58EC.h"
 #include "C48.h"
@@ -617,7 +618,7 @@ static char* _weaponStatusView(int row)
  * @param row
  * @return Pointer to description.
  */
-static char* _bladeStatusView(int arg0 __attribute__((unused)))
+static char* _bladeStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -635,7 +636,7 @@ static char* _bladeStatusView(int arg0 __attribute__((unused)))
  * @param row
  * @return Pointer to description.
  */
-static char* _gripStatusView(int arg0 __attribute__((unused)))
+static char* _gripStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -700,7 +701,7 @@ static char* _shieldStatusView(int arg0)
  * @param row
  * @return Pointer to description.
  */
-static char* _armorStatusView(int arg0 __attribute__((unused)))
+static char* _armorStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -719,7 +720,7 @@ static char* _armorStatusView(int arg0 __attribute__((unused)))
  * @param row
  * @return Pointer to description.
  */
-static char* _gemStatusView(int arg0 __attribute__((unused)))
+static char* _gemStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -1118,7 +1119,7 @@ void vs_mainMenu_initItem(int itemCategory, int index)
 
 int vs_mainMenu_loadItemText(int load)
 {
-    static int bss_2 __attribute__((unused)); // Garbage, patched in MAINMENU_PRG.py
+    static UNUSED int bss_2; // Garbage, patched in MAINMENU_PRG.py
     static vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
     static char _itemNamesLoading;
 

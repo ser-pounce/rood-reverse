@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -70,7 +71,7 @@ typedef struct _creditsElement {
     u_short width;
     int x;
     int y;
-    int _[6] __attribute__((unused));
+    UNUSED int _[6];
 } _creditsElement;
 
 enum easeMode {
@@ -95,7 +96,7 @@ static void _renderPhantomPain(_creditsElement* element)
 
     static int wavePhase;
     static int rippleAge;
-    static int _[2] __attribute__((unused));
+    static UNUSED int _[2];
     static u_char rippleDist[4][16];
 
     SVECTOR rot;
@@ -283,14 +284,14 @@ static _creditsElement _creditsElements[32];
 static u_char _creditsComplete;
 static u_char _isFadedOut;
 static u_char _skipInvoked;
-static u_char _0 __attribute__((unused));
+static UNUSED u_char _0;
 static int _currentCreditsFrame;
 static int _textStreamDelay;
 static u_char const* _creditsBytestreamHead;
 static short _scrollSpeed;
 static short _frameStartVsync;
 static u_short _masterBrightness;
-static u_short _1 __attribute__((unused));
+static UNUSED u_short _1;
 
 /**
  * Renders the game title.
@@ -406,8 +407,7 @@ static int _distanceFromScreencenter(int x, int y)
 /**
  * Performs a radial fade in/out of the provided poly.
  */
-__attribute__((unused)) static void _updateRadialFadePoly(
-    POLY_GT4* poly, short progress, short fadeOut)
+static UNUSED void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
 {
     short base;
     short level;
@@ -494,7 +494,7 @@ static void _renderllustration(_creditsElement* element)
     static short brightness;
     static short tpageX;
     static u_short clutY;
-    static u_short _ __attribute__((unused));
+    static UNUSED u_short _;
 
     SPRT* sprt;
     void** p;
@@ -777,7 +777,7 @@ static void _renderCopyright(_creditsElement* element)
  * Renders the credits background, including 10px letterboxing bars at the top
  * and bottom, along with a 20px fade.
  */
-static void _renderBackground(_creditsElement* element __attribute__((unused)))
+static void _renderBackground(UNUSED _creditsElement* element)
 {
     TILE* tile;
     POLY_G4* poly;
@@ -1153,7 +1153,7 @@ static int _renderElements(void)
  */
 static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
 {
-    extern void SystemError(char, long) __attribute__((noreturn));
+    extern NORETURN void SystemError(char, long);
 
     short i;
     _creditsElement* element = &_creditsElements[1];
@@ -1349,7 +1349,7 @@ static int _decompressTim(void)
     static u_char rleByte1;
     static u_short byteCount;
     static u_short backReferencePos;
-    static u_char _[6] __attribute__((unused));
+    static UNUSED u_char _[6];
 
     short i;
 
@@ -1430,8 +1430,7 @@ static int _decompressTim(void)
 /**
  * Renders a string using the loaded debug font.
  */
-__attribute__((unused)) static void _renderDebugString(
-    short x, short y, int clut, char const* string)
+static UNUSED void _renderDebugString(short x, short y, int clut, char const* string)
 {
     int c;
     SPRT_8* sprt = *(void**)0x1F800000;
@@ -1524,7 +1523,7 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
  */
 static int _drawScreen(u_long* ot)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     int vSync;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
@@ -2184,7 +2183,7 @@ static void _renderCongratulations(int x, int y, int timer)
 /**
  * Renders the final score display without counting up.
  */
-static void _renderScore(int x, int y, int timer, int _ __attribute__((unused)))
+static void _renderScore(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2234,8 +2233,7 @@ static int _incrementingScore;
 /**
  * Renders the final score, animating up from 0.
  */
-static void _renderIncrementalScore(
-    int x, int y, int timer, int _ __attribute__((unused)))
+static void _renderIncrementalScore(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2307,7 +2305,7 @@ static void _renderIncrementalScore(
 /**
  * Renders the final map completion percentage.
  */
-static void _renderMapCompletion(int x, int y, int timer, int _ __attribute__((unused)))
+static void _renderMapCompletion(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2351,8 +2349,7 @@ static int _incrementingMapCompletion;
 /**
  * Renders the final map completion percentage, animating up from 0.
  */
-static void _renderIncrementalMapCompletion(
-    int x, int y, int timer, int _ __attribute__((unused)))
+static void _renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },

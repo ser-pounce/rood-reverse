@@ -964,7 +964,7 @@ vs_main_artsStatus_t vs_main_artsStatus;
 int vs_main_zoneEnemyCacheIndex;
 vs_main_characterSnapshot_t vs_main_characterSnapshot;
 vs_main_inventory_t vs_main_inventory;
-_mpdRoomDoorSection_t vs_main_spawnPoint;
+vs_main_warp_t vs_main_spawnPoint;
 vs_Gametime_t vs_main_gametime;
 
 int vs_main_gametimeUpdate(int mode)
@@ -1164,7 +1164,7 @@ void vs_main_captureSaveState(void)
     vs_battle_actor2* actor;
     vs_main_characterSnapshot_t* snapshot;
 
-    vs_main_spawnPoint = D_800F1AB0;
+    vs_main_spawnPoint = vs_battle_spawnPoint;
 
     func_800A1108(0, &position);
 
@@ -1172,7 +1172,8 @@ void vs_main_captureSaveState(void)
     vs_main_spawnPoint.z = position.unk0.unk0.z;
     vs_main_spawnPoint.targetTile.arrivalSurface = position.unk0.unk0.surface;
     vs_main_spawnPoint.facing = position.unk0.unk0.status >> 6;
-    vs_main_spawnPoint.unk6_0 = D_800F18E8.unk0_0;
+    // On a saved spawn point this field holds the scene id, not an unlock flag.
+    vs_main_spawnPoint.unlockFlag = D_800F18E8.unk0_0;
 
     for (actionByte = 0; actionByte < 256 / CHAR_BIT; ++actionByte) {
         for (actionsLearned = 0, i = 0; i < CHAR_BIT; ++i) {

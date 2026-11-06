@@ -140,7 +140,7 @@ typedef struct {
 
 typedef struct {
     int count;
-    _mpdRoomDoorSection_t* values[0];
+    vs_main_warp_t* values[0];
 } D_800F1D08_t;
 
 typedef struct {
@@ -269,8 +269,8 @@ void func_8007B764(void);
 void func_8007B7DC(void);
 void func_8007BF6C(int);
 void func_8007BFF8(int);
-int func_8007C4E0(_mpdRoomDoorSection_t*, int, int);
-int func_8007C5C0(_mpdRoomDoorSection_t*, int, int);
+int func_8007C4E0(vs_main_warp_t*, int, int);
+int func_8007C5C0(vs_main_warp_t*, int, int);
 int func_8007C694(int, int, int, int, int);
 int _getLocationId(int, int);
 void func_8007D360(void);
@@ -2646,8 +2646,8 @@ int func_8006E7F0(void)
 
     if (((vs_battle_screenTransitionStep - 1) < 2U)
         || (vs_battle_screenTransitionStep == 4)) {
-        if (D_800F1AB0.unk6_15) {
-            func_800B64A8(0, D_800F1AB0.facing << 10, temp_s0->unk31 * ONE / 2);
+        if (vs_battle_spawnPoint.faceCamera) {
+            func_800B64A8(0, vs_battle_spawnPoint.facing << 10, temp_s0->unk31 * ONE / 2);
         } else {
             func_800B64A8(0, 0, 0);
         }
@@ -5275,9 +5275,10 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
 
                 if (doors != NULL) {
                     for (i = 0; i < doors->count; ++i) {
-                        _mpdRoomDoorSection_t* door = doors->values[i];
+                        vs_main_warp_t* door = doors->values[i];
 
-                        if (vs_battle_getStateFlag(door->unk6_0) < door->unk4_0) {
+                        if (vs_battle_getStateFlag(door->unlockFlag)
+                            < door->unlockValue) {
                             continue;
                         }
 
@@ -5303,7 +5304,7 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
     }
 
     if (result == 0 && cell->unk0_17 && position->unk4.vy >= 17) {
-        _mpdRoomDoorSection_t destination;
+        vs_main_warp_t destination;
 
         flags = func_8008D418();
 
@@ -5315,8 +5316,8 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
             destination.targetTile.surface = coordinates->unk0.surface;
             destination.targetTile.arrivalSurface = 7;
             destination.facing = coordinates->unk0.status >> 6;
-            destination.unk4_15 = 0;
-            destination.unk6_15 = 0;
+            destination.walkForward = 0;
+            destination.faceCamera = 0;
 
             if (destination.zndId == _zoneContext.zndId) {
                 func_8007C4E0(&destination, 0, 8);
@@ -5341,10 +5342,10 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
 
         actor->unk3C->currentHP -= 20;
         vs_battle_setDoorEntered();
-        func_8007C4E0(&D_800F1AB0, 0, 8);
+        func_8007C4E0(&vs_battle_spawnPoint, 0, 8);
         func_80093B68(actor->unk3C->unk957, 0, 0x80000014, 0);
         func_800A0ABC(actorIndex);
-        func_8008B8F8((void*)&D_800F1AB0);
+        func_8008B8F8((void*)&vs_battle_spawnPoint);
         return 1;
     }
 
@@ -7512,10 +7513,10 @@ void vs_battle_exec(void)
     func_800FA35C(vs_main_startState);
 
     while (1) {
-        _finishLoadZnd(D_800F1AB0.zndId);
+        _finishLoadZnd(vs_battle_spawnPoint.zndId);
 
         do {
-            func_80089DC0(D_800F1AB0.mpdId);
+            func_80089DC0(vs_battle_spawnPoint.mpdId);
             D_800F1858 = 0;
 
             do {
@@ -8825,13 +8826,13 @@ void func_8007C4AC(int effect, int arg1, int arg2)
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }
 
-int func_8007C4E0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
+int func_8007C4E0(vs_main_warp_t* arg0, int effect, int speed)
 {
-    D_800F1AB0 = *arg0;
+    vs_battle_spawnPoint = *arg0;
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    D_800F1AB0.zndId = _zoneContext.zndId;
+    vs_battle_spawnPoint.zndId = _zoneContext.zndId;
     _loadMpd(arg0->mpdId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
@@ -8840,7 +8841,7 @@ int func_8007C4E0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
     return 1;
 }
 
-void func_8007C580(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
+void func_8007C580(vs_main_warp_t* arg0, int arg1, int arg2)
 {
     vs_battle_actorPosition sp10;
 
@@ -8849,9 +8850,9 @@ void func_8007C580(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }
 
-int func_8007C5C0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
+int func_8007C5C0(vs_main_warp_t* arg0, int effect, int speed)
 {
-    D_800F1AB0 = *arg0;
+    vs_battle_spawnPoint = *arg0;
     vs_battle_screenTransitionStep = 2;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
@@ -8862,7 +8863,7 @@ int func_8007C5C0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
     return 1;
 }
 
-void func_8007C654(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
+void func_8007C654(vs_main_warp_t* arg0, int arg1, int arg2)
 {
     vs_battle_actorPosition sp10;
 
@@ -8882,9 +8883,9 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
     zndId = vs_main_locationZoneMapIds[arg0 * 2];
     mpdId = vs_main_locationZoneMapIds[arg0 * 2 + 1];
 
-    D_800F1AB0.x = arg1;
-    D_800F1AB0.z = arg2;
-    D_800F1AB0.targetTile.arrivalSurface = 0;
+    vs_battle_spawnPoint.x = arg1;
+    vs_battle_spawnPoint.z = arg2;
+    vs_battle_spawnPoint.targetTile.arrivalSurface = 0;
 
     func_800A1108(0, &sp10);
 
@@ -8897,19 +8898,19 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    D_800F1AB0.facing = var_a0 >> 10;
-    D_800F1AB0.unk6_15 = 0;
+    vs_battle_spawnPoint.facing = var_a0 >> 10;
+    vs_battle_spawnPoint.faceCamera = 0;
 
-    if (zndId != D_800F1AB0.zndId) {
+    if (zndId != vs_battle_spawnPoint.zndId) {
         vs_battle_screenTransitionStep = 2;
         _loadZnd(zndId);
-    } else if (mpdId != D_800F1AB0.mpdId) {
+    } else if (mpdId != vs_battle_spawnPoint.mpdId) {
         vs_battle_screenTransitionStep = 1;
         _loadMpd(mpdId);
     }
 
-    D_800F1AB0.zndId = zndId;
-    D_800F1AB0.mpdId = mpdId;
+    vs_battle_spawnPoint.zndId = zndId;
+    vs_battle_spawnPoint.mpdId = mpdId;
     func_8006C250();
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -15068,14 +15069,14 @@ void func_80089888(void)
     func_80089888_t sp28;
 
     func_8009D458();
-    sp28.unk0_0 = D_800F1AB0.x;
-    sp28.unk0_16 = D_800F1AB0.z;
-    sp28.unk0_8 = D_800F1AB0.targetTile.arrivalSurface;
-    sp28.unk0_24 = D_800F1AB0.facing * 64;
+    sp28.unk0_0 = vs_battle_spawnPoint.x;
+    sp28.unk0_16 = vs_battle_spawnPoint.z;
+    sp28.unk0_8 = vs_battle_spawnPoint.targetTile.arrivalSurface;
+    sp28.unk0_24 = vs_battle_spawnPoint.facing * 64;
     func_800A30A0(0, &sp28, -0x800, 2);
 
-    if (D_800F1AB0.unk4_15) {
-        switch (D_800F1AB0.facing) {
+    if (vs_battle_spawnPoint.walkForward) {
+        switch (vs_battle_spawnPoint.facing) {
         case 0:
             sp10.vx = 0x40;
             sp10.vz = 0;
@@ -15224,8 +15225,8 @@ void func_80089DC0(int arg0)
 
     _loadMpdRoomSection(0, (void*)(v0 + (int)mpdHeader));
 
-    _zoneContext.zndId = D_800F1AB0.zndId;
-    _zoneContext.mapId = D_800F1AB0.mpdId;
+    _zoneContext.zndId = vs_battle_spawnPoint.zndId;
+    _zoneContext.mapId = vs_battle_spawnPoint.mpdId;
 
     var_a0 = vs_battle_getCurrentSceneId();
 
@@ -16068,7 +16069,7 @@ void func_8008B960(int arg0, int arg1, int arg2)
 {
     int temp_t4;
     int j;
-    _mpdRoomDoorSection_t* var_s0;
+    vs_main_warp_t* var_s0;
     int i;
 
     if (vs_battle_roomData.doorSection != 0) {
@@ -16100,7 +16101,7 @@ void func_8008B960(int arg0, int arg1, int arg2)
 
     if (var_s0 != NULL) {
         vs_main_memcpy(&D_800F1CC8, var_s0, sizeof D_800F1CC8);
-        temp_t4 = _getDoorId(var_s0->unk8);
+        temp_t4 = _getDoorId(var_s0->doorId);
         vs_battle_doorEntered = temp_t4;
     } else {
         vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
@@ -16110,10 +16111,10 @@ void func_8008B960(int arg0, int arg1, int arg2)
 
 D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
 {
-    _mpdRoomDoorSection_t* var_s0;
+    vs_main_warp_t* var_s0;
     int temp_s1;
     int i;
-    _mpdRoomDoorSection_t* new_var;
+    vs_main_warp_t* new_var;
 
     if (vs_battle_roomData.doorSection != NULL) {
         var_s0 = vs_battle_roomData.doorSection;

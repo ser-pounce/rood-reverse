@@ -69,7 +69,7 @@ typedef struct {
     vs_main_characterSnapshot_t character;
     vs_main_inventory_t inventory;
     vs_main_inventoryIndices_t inventoryIndices;
-    _mpdRoomDoorSection_t spawnPoint;
+    vs_main_warp_t spawnPoint;
     vs_main_scoredata_t scoreData;
     int zoneEnemyCacheIndex;
     vs_main_zoneEnemyCache_t zoneEnemyCache[4];

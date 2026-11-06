@@ -1765,7 +1765,7 @@ int func_800B988C(u_char* arg0, short arg1)
 
 int func_800B98C0(u_char* arg0, short arg1)
 {
-    _mpdRoomDoorSection_t sp10;
+    vs_main_warp_t sp10;
 
     if (D_800F4BE2 == 0) {
 
@@ -1775,8 +1775,8 @@ int func_800B98C0(u_char* arg0, short arg1)
         sp10.z = arg0[5];
         sp10.targetTile.arrivalSurface = arg0[4];
         sp10.facing = arg0[6];
-        sp10.unk4_15 = arg0[7];
-        sp10.unk6_15 = arg0[7] >> 1;
+        sp10.walkForward = arg0[7];
+        sp10.faceCamera = arg0[7] >> 1;
 
         if (arg0[1] == 0) {
             func_8007C580(&sp10, arg0[8], arg0[9]);

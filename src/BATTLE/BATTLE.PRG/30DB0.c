@@ -3367,7 +3367,8 @@ void func_8009F530(int actorId)
                     && (temp_s0->unk0.unk12 == 0xFF)
                     && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)) {
 
-                    if (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y) {
+                    if (temp_s0->unk0.currentTile.surface
+                        == temp_s1->unk0.currentTile.surface) {
                         if ((temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
                             && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
                             temp_s0->unk16C.unk3 = temp_v0;
@@ -3770,7 +3771,7 @@ int func_800A0024(int arg0, vs_battle_actorLocation* arg1)
     if (var_v0_2 < 0) {
         var_v0_2 += 0x7F;
     }
-    arg1->unk0.y = var_v0_2 >> 7;
+    arg1->unk0.surface = var_v0_2 >> 7;
     memcpy(&arg1->unk4.vx, &temp_s0->unk0.position.vx, 4);
     memcpy(&arg1->unk4.vz, &temp_s0->unk0.position.vz, 4);
     return 0;

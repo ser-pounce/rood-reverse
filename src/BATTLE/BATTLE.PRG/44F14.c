@@ -729,7 +729,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
                                        arg1->unk0.currentTile.z, 1)]
                 ->unk16C.actorId];
     } else {
-        floor = arg1->unk0.currentTile.y;
+        floor = arg1->unk0.currentTile.surface;
         id = 0xD;
         if (arg1->unk6E4 != 0) {
             floor = arg1->unk6E4;

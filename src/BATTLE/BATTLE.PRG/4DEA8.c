@@ -731,7 +731,7 @@ int func_800B7490(u_char* arg0, short arg1)
     }
     func_800A1108(actor, &position);
     vs_battle_setStateFlag(flag, position.unk0.unk0.x);
-    vs_battle_setStateFlag(flag + 1, position.unk0.unk0.y);
+    vs_battle_setStateFlag(flag + 1, position.unk0.unk0.surface);
     vs_battle_setStateFlag(flag + 2, position.unk0.unk0.z);
     return 0;
 }
@@ -1018,7 +1018,7 @@ int func_800B7F84(u_char* arg0, short arg1)
     int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.x = arg0[3];
-    sp10.y = arg0[4];
+    sp10.surface = arg0[4];
     sp10.z = arg0[5];
 
     func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
@@ -1773,7 +1773,7 @@ int func_800B98C0(u_char* arg0, short arg1)
         sp10.mpdId = arg0[2];
         sp10.x = arg0[3];
         sp10.z = arg0[5];
-        sp10.unk2.unk0_13 = arg0[4];
+        sp10.targetTile.arrivalSurface = arg0[4];
         sp10.facing = arg0[6];
         sp10.unk4_15 = arg0[7];
         sp10.unk6_15 = arg0[7] >> 1;

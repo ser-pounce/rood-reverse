@@ -299,7 +299,7 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
         tileType = placement->unk0_8;
 
         if (tileType == 7) {
-            actor->unk0.currentTile.y = 0;
+            actor->unk0.currentTile.surface = 0;
             actor->unk0.position.vy = height;
             actor->unk0.unk34.vy = 0;
             actor->unk0.unkA_0 = 3;
@@ -411,7 +411,7 @@ void func_800A35A8(void)
     for (i = 2; i < 17; ++i) {
         actor = D_800F4538[i];
 
-        if (actor != NULL && !actor->unk0.unkA_5 && actor->unk0.currentTile.y < 2
+        if (actor != NULL && !actor->unk0.unkA_5 && actor->unk0.currentTile.surface < 2
             && !actor->unk0.unkA_0) {
             x = actor->unk0.position.vx;
             z = actor->unk0.position.vz;
@@ -1165,7 +1165,7 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
             actor->unk17EC.pad = 0;
         }
 
-        actor->unk0.currentTile.y = actor->unk0.unkC_0;
+        actor->unk0.currentTile.surface = actor->unk0.unkC_0;
         actor->unk0.unkC_4 = actor->unk0.unkC_0;
         return;
     }

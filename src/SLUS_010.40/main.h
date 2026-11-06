@@ -427,16 +427,16 @@ typedef struct {
 } vs_main_battleTimer_t;
 
 typedef struct {
-    u_short unk0_0 : 5;
-    u_short unk0_5 : 5;
-    u_short unk0_10 : 3;
-    u_short unk0_13 : 3;
-} _mpdRoomDoorSection2;
+    u_short x : 5;
+    u_short z : 5;
+    u_short surface : 3;
+    u_short arrivalSurface : 3;
+} vs_main_targetTile_t;
 
 typedef struct {
     u_char zndId;
     u_char mpdId;
-    _mpdRoomDoorSection2 unk2;
+    vs_main_targetTile_t targetTile;
     u_short unk4_0 : 8;
     u_short x : 5;
     u_short facing : 2;

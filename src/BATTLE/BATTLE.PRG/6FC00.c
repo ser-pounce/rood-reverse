@@ -66,7 +66,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
             result = func_800D954C(arg0, pos.fields);
             if (result >= 0) {
                 if (result != 0) {
-                    pos.fields.y = 0;
+                    pos.fields.surface = 0;
                     return pos.value;
                 }
                 return 0;
@@ -74,7 +74,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
         } else if (result >= 0) {
             pos.value = func_800DB93C(arg0, pos.fields, arg3, source);
             if (pos.fields.status == 1) {
-                pos.fields.y = 0;
+                pos.fields.surface = 0;
                 return pos.value;
             }
             if (pos.fields.status == 0) {
@@ -88,7 +88,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 
 fail:
     pos.fields.status = 2;
-    pos.fields.y = 0;
+    pos.fields.surface = 0;
     return pos.value;
 }
 

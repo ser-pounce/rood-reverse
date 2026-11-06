@@ -219,7 +219,7 @@ typedef struct {
     short agility;
     short totalAgility;
     short risk;
-    u_short flags;
+    u_short actionDelay;
     int statuses;
     char statusTimers[8];
     vs_main_characterSnapshotLimb_t limbs[6];

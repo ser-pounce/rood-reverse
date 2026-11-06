@@ -90,7 +90,7 @@ typedef struct {
     /* 0x944 */ int unk944;
     /* 0x948 */ int statuses;
     /* 0x94C */ u_char statusTimers[8];
-    /* 0x954 */ u_short unk954;
+    /* 0x954 */ u_short actionDelay;
     /* 0x956 */ u_char unk956_0 : 1;
     /* 0x956 */ u_char isAnalyzed : 1;
     /* 0x956 */ u_char unk956_2 : 6;

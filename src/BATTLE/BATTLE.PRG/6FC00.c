@@ -350,7 +350,7 @@ void func_800D8EF4(void)
         state = ((func_800E78F4_t**)0x1F80037C)[id];
         state->unk1D[0] = 0;
         object = state->unk58;
-        state->unk90 = actor->unk3C->unk954;
+        state->unk90 = actor->unk3C->actionDelay;
 
         if (flags & 0x20) {
             func_800D82CC(state);

@@ -6190,7 +6190,7 @@ void func_80076784(
         actor->statusTimers[i] = 0;
     }
 
-    actor->unk954 = 0;
+    actor->actionDelay = 0;
 }
 
 void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
@@ -6241,7 +6241,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     temp_s0->maxMP = 100;
     temp_s0->currentMP = 100;
     temp_s0->risk = 0;
-    temp_s0->unk954 = 0;
+    temp_s0->actionDelay = 0;
 
     if (arg1 == 41) {
         temp_s0->unk30 = 16;
@@ -7566,7 +7566,7 @@ void vs_battle_exec(void)
                                 break;
                             }
 
-                            if ((vs_battle_characterState->unk3C->unk954 == 0)
+                            if ((vs_battle_characterState->unk3C->actionDelay == 0)
                                 && !(status & 0x4000) && (D_800F1858 == 0)
                                 && (vs_main_buttonsPreviousState & PADL2)) {
                                 func_8007352C();
@@ -7574,7 +7574,7 @@ void vs_battle_exec(void)
                             }
 
                             if (D_800F1858 != 0) {
-                                if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                if ((vs_battle_characterState->unk3C->actionDelay == 0)
                                     && !(status & 0x4000) && func_800CACD0(0, 0)) {
                                     func_8007357C(0, 0);
                                     D_800F1858 = 0;
@@ -7582,7 +7582,7 @@ void vs_battle_exec(void)
                                 }
                             } else if ((vs_main_buttonsPressed.all & PADRup)
                                        && !(vs_main_buttonsPreviousState & PADL2)) {
-                                if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                if ((vs_battle_characterState->unk3C->actionDelay == 0)
                                     && !(status & 0x4000)) {
                                     if (func_800CACD0(0, 0)) {
                                         func_8007357C(0, 0);
@@ -7640,7 +7640,8 @@ void vs_battle_exec(void)
 
                                 if (vs_main_buttonsPressed.all & PADRright) {
                                     if (vs_battle_characterState->weaponDrawn & 1) {
-                                        if ((vs_battle_characterState->unk3C->unk954 == 0)
+                                        if ((vs_battle_characterState->unk3C->actionDelay
+                                                == 0)
                                             && !(vs_battle_characterState->unk3C->statuses
                                                  & 0x2000)) {
                                             vs_main_playSfxDefault(0x7E, 9);
@@ -8740,7 +8741,7 @@ void func_8007C28C(int arg0)
 
         if (temp_a1 != NULL) {
             temp_a1->risk = 0;
-            temp_a1->unk954 = 0;
+            temp_a1->actionDelay = 0;
             temp_a1->currentHP = temp_a1->maxHP;
             temp_a1->currentMP = temp_a1->maxMP;
             for (i = 0; i < 6; ++i) {
@@ -13063,10 +13064,10 @@ void func_800859B4(u_int arg0, vs_battle_actor2* arg1, int arg2)
 
     if ((arg2 != 0) && ((arg0 - 0x16) >= 0x20)) {
         if (new_var->flags_0 == 0xFF) {
-            arg1->unk954 += (arg1->weapon.unk10B + arg1->unk956_2) << 8;
+            arg1->actionDelay += (arg1->weapon.unk10B + arg1->unk956_2) << 8;
         } else {
             int new_var2 = new_var->flags_0 + arg1->unk956_2;
-            arg1->unk954 += new_var2 << 8;
+            arg1->actionDelay += new_var2 << 8;
         }
     }
 }
@@ -13868,7 +13869,7 @@ void func_80086FA8(int arg0, vs_battle_actor2* arg1)
     }
 
     if (arg0 & 0x20000000) {
-        *(int*)&arg1->unk954 |= 0x20000;
+        *(int*)&arg1->actionDelay |= 0x20000;
     }
 
     temp_a0 = arg0 & 0x01E00000;
@@ -14513,10 +14514,10 @@ int func_80088554(void)
 
                 if (temp_s0 != NULL) {
 
-                    if (temp_s0->unk954 > 35) {
-                        temp_s0->unk954 -= 35;
-                    } else if (temp_s0->unk954 != 0) {
-                        temp_s0->unk954 = 0;
+                    if (temp_s0->actionDelay > 35) {
+                        temp_s0->actionDelay -= 35;
+                    } else if (temp_s0->actionDelay != 0) {
+                        temp_s0->actionDelay = 0;
                     }
 
                     if ((D_800E8490 % 30 == 0) && (temp_s0->currentHP != 0)) {
@@ -15490,7 +15491,7 @@ int vs_battle_getActionFlags(int actorId, int actionId)
 {
     vs_action_t* action = &vs_main_actions[actionId];
     vs_battle_actor2* actor = vs_battle_actors[actorId]->unk3C;
-    int ret = actor->unk954 != 0;
+    int ret = actor->actionDelay != 0;
 
     if (!(_getActionCost(actionId, actor, 0) & 0xFF000000)) {
         ret |= 2;

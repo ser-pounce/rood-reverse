@@ -799,7 +799,9 @@ static void _initScreen(
     int w, int h, UNUSED int arg2, UNUSED int arg3, UNUSED int arg4, UNUSED int arg5)
 {
     SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
+
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
+
     PutDispEnv(vs_main_dispEnv);
 }
 
@@ -827,17 +829,23 @@ static void _displayLoadingScreen(void)
     RECT rect;
 
     _initScreen(320, 240, vs_main_projectionDistance, 0, 0, 0);
+
     setRECT(&rect, 0, 0, 1024, 512);
+
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
     VSync(2);
+
     setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
         (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
         IMG_H(_nowLoading_header));
+
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
+
     setRECT(&rect, ((320 - IMG_W(_nowLoading_header)) / 2) + 320,
         (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
         IMG_H(_nowLoading_header));
+
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
     DrawSync(0);
     SetDispMask(1);
@@ -856,6 +864,7 @@ static void _bufferLoadingScreen(void)
             (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
             IMG_H(_nowLoading_header));
     }
+
     LoadImage(&rect, _nowLoading_data);
     DrawSync(0);
 }
@@ -865,8 +874,10 @@ void vs_main_resetGame(void)
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
+
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
+
     DsFlush();
     _padSetActData(0, 0, 0);
     _padSetActData(0, 1, 0);
@@ -895,13 +906,16 @@ void vs_main_jumpToBattle(void)
     Sound_ResetMusicBankIds();
     _displayLoadingScreen();
     _loadBattlePrg();
+
     vs_main_startState = 1;
+
     vs_overlay_jumpToBattle(&_sp);
 }
 
 void vs_main_showEndingAndReturnToTitle(void)
 {
     _inGame = 0;
+
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
@@ -925,7 +939,9 @@ void vs_main_showEndingAndReturnToTitle(void)
     TeardownSound();
     SpuQuit();
     ResetGraph(3);
+
     vs_main_saveGameClearData = 1;
+
     vs_overlay_jumpToTitle(&_sp2);
 }
 
@@ -1056,6 +1072,7 @@ static void _sysInit(void)
     SsUtReverbOff();
     DsInit();
     _initRand();
+
     _resetEnabled = 1;
     vs_main_saveGameClearData = 0;
 }
@@ -1082,12 +1099,15 @@ static void _sysReinit(void)
     _diskReset();
     _loadMenuSound();
     vs_main_resetPadAct();
+
     _inGame = 0;
+
     _unlockPadModeSwitch();
 
-    for (i = 31; i >= 0; --i) {
+    for (i = 0; i < 32; ++i) {
         _buttonHeldFrameCount[i] = 0;
     }
+
     vs_main_gametime.t.h = 0;
     vs_main_gametime.t.m = 0;
     vs_main_gametime.t.s = 0;
@@ -1100,15 +1120,20 @@ int vs_main_execTitle(void)
     vs_overlay_getSp(&_sp);
     _sysReinit();
     _loadTitlePrg();
+
     vs_main_startState = vs_title_exec();
     vs_main_saveGameClearData = 0;
+
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_overlay_getSp(&_sp);
+
     _inGame = 1;
+
     vs_battle_exec();
     SetDispMask(0);
     vs_main_stopMusic();
+
     return 0;
 }
 
@@ -1170,7 +1195,7 @@ void vs_main_captureSaveState(void)
     snapshot->stats.agility = actor->agility;
     snapshot->stats.totalAgility = actor->totalAgility;
     snapshot->stats.risk = actor->risk;
-    snapshot->stats.flags = actor->unk954;
+    snapshot->stats.actionDelay = actor->actionDelay;
     snapshot->stats.statuses = actor->statuses;
 
     for (i = 0; i < 8; ++i) {

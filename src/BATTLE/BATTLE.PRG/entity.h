@@ -431,7 +431,7 @@ typedef struct {
     u_char unk1862;
     u_char unk1863;
     D_800F4538_unk1864 unk1864;
-    int unk1868;
+    vs_battle_movementPosition unk1868;
     void* unk187C;
     u_short unk1880[4][2];
     MATRIX unk1890[2];

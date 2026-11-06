@@ -1457,7 +1457,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
         memcpy(&actor->unk0.lastPosition, &actor->unk0.position, sizeof(SVECTOR));
 
         if (actor->unk0.unkC_0 == 0) {
-            actor->unk1868 = *(int*)&actor->unk0.currentTile;
+            actor->unk1868 = actor->unk0.currentTile;
         }
 
         actor->unk0.lastPosition.pad = actor->unk0.facing;

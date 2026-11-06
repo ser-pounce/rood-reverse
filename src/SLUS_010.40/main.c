@@ -1160,10 +1160,10 @@ void vs_main_captureSaveState(void)
     vs_main_spawnPoint = D_800F1AB0;
     func_800A1108(0, &sp10);
 
-    vs_main_spawnPoint.x = sp10.unk0.unk0.fields.x;
-    vs_main_spawnPoint.z = sp10.unk0.unk0.fields.z;
-    vs_main_spawnPoint.unk2.unk0_13 = sp10.unk0.unk0.fields.y;
-    vs_main_spawnPoint.facing = sp10.unk0.unk0.fields.status >> 6;
+    vs_main_spawnPoint.x = sp10.unk0.unk0.x;
+    vs_main_spawnPoint.z = sp10.unk0.unk0.z;
+    vs_main_spawnPoint.unk2.unk0_13 = sp10.unk0.unk0.y;
+    vs_main_spawnPoint.facing = sp10.unk0.unk0.status >> 6;
     vs_main_spawnPoint.unk6_0 = D_800F18E8.unk0_0;
 
     for (var_s1 = 0; var_s1 < 32; ++var_s1) {

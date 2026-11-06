@@ -2,6 +2,7 @@
 #include "common.h"
 #include "25AC.h"
 #include "inventory.h"
+#include "movementPosition.h"
 #include <sys/types.h>
 #include <libds.h>
 #include <libgte.h>
@@ -407,10 +408,7 @@ typedef struct {
     short limbHP[6];
     UNUSED short _;
     int statuses;
-    u_char x;
-    u_char direction;
-    u_char z;
-    u_char height;
+    vs_battle_movementPosition tile;
 } vs_main_savedEnemyState_t;
 
 typedef struct {

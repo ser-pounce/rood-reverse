@@ -187,18 +187,6 @@ typedef struct {
 } _mpdHeader;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkC;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
-} func_800A1108_t;
-
-typedef struct {
     u_char type;
     u_char unk1;
     u_char unk2;
@@ -626,7 +614,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     func_800A1108(actorId, &sp10);
     func_800A36E0(actorId, temp_s1->unk30, &sp10);
 
-    *(int*)&temp_v0->x = sp10.unk0.unk0.value;
+    temp_v0->tile = sp10.unk0.unk0;
 }
 
 int _insertActor(vs_battle_actor* actor)
@@ -2609,7 +2597,7 @@ void func_8006E640(int arg0)
     targetPos.vx = sp10.unk0.unk4.vx;
     targetPos.vz = sp10.unk0.unk4.vz;
     targetPos.vy = sp10.unk0.unk4.vy - 0x5A;
-    func_80074B14(arg0, &sp10.unk0.unk0.fields);
+    func_80074B14(arg0, &sp10.unk0.unk0);
     switch (_cameraMode) {
     case 1:
     case 3:
@@ -2644,14 +2632,15 @@ void func_8006E640(int arg0)
 
 int func_8006E7F0(void)
 {
-    func_800A1108_t unksp10;
+    func_8006EBF8_t position;
+    int unused[5];
     int temp_a0;
     int temp_a1;
     int temp_s1;
     vs_battle_actor2* temp_s0;
 
-    func_800A1108(0, &unksp10);
-    func_80074B14(0, (vs_battle_movementPosition*)&unksp10);
+    func_800A1108(0, &position);
+    func_80074B14(0, &position.unk0.unk0);
     temp_s0 = vs_battle_characterState->unk3C;
     temp_s1 = func_800A0BE0(0);
 
@@ -3002,8 +2991,8 @@ void func_8006F4B0(func_8006EBF8_t3* arg0)
     request.otherCount = 0;
     request.source.value.actor.actor = 0;
     request.targets[0].type = 5;
-    request.targets[0].value.position.vx = arg0->unk0.fields.x * 128 + 64;
-    request.targets[0].value.position.vz = arg0->unk0.fields.z * 128 + 64;
+    request.targets[0].value.position.vx = arg0->unk0.x * 128 + 64;
+    request.targets[0].value.position.vz = arg0->unk0.z * 128 + 64;
     request.targets[0].value.position.vy = arg0->unk4.vy;
     if (!(D_800F1868 & 2)) {
         func_800CF3F8(&request, 0);
@@ -5022,7 +5011,7 @@ void _checkFirstPersonViewExit(void)
     D_800F19C8 = 0;
 
     func_800A1108(0, &sp10);
-    func_80074B14(0, &sp10.unk0.unk0.fields);
+    func_80074B14(0, &sp10.unk0.unk0);
     vs_battle_syncCameraAnglesFromPosition(&vs_battle_cameraTransition->toSpherical);
 
     if ((vs_battle_cameraTransition->toSpherical.values.yaw
@@ -5068,9 +5057,9 @@ int func_80074798(func_8006EBF8_t* arg0, u_char* arg1)
     if (var_v1 < 0) {
         var_v1 += 0x3FF;
     }
-    arg1[0] = arg0->unk0.unk0.fields.x;
-    arg1[2] = arg0->unk0.unk0.fields.z;
-    arg1[1] = arg0->unk0.unk0.fields.y;
+    arg1[0] = arg0->unk0.unk0.x;
+    arg1[2] = arg0->unk0.unk0.z;
+    arg1[1] = arg0->unk0.unk0.y;
 
     var_v1 = var_v1 >> 0xA;
     switch (var_v1) {
@@ -5211,8 +5200,8 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
     if (cellIndex != 0) {
         cell = func_8008B764(0, 0, cellIndex >> 16);
     } else {
-        cell = func_8008B764(coordinates->unk0.fields.x, coordinates->unk0.fields.z,
-            coordinates->unk0.fields.y);
+        cell =
+            func_8008B764(coordinates->unk0.x, coordinates->unk0.z, coordinates->unk0.y);
     }
 
     if (vs_battle_screenTransitionStep != 0) {
@@ -5226,19 +5215,20 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
     actorOffset = actorIndex * sizeof(*vs_battle_actors);
     actor = *(vs_battle_actor**)((char*)vs_battle_actors + actorOffset);
 
-    if ((coordinates->unk0.value & 0xFFFFFF) != (actor->unk2C.s32 & 0xFFFFFF)
-        || layer != actor->unk2C.u8[3] || (flags & 0x70000)) {
+    if (coordinates->unk0.x != actor->unk2C.x || coordinates->unk0.y != actor->unk2C.y
+        || coordinates->unk0.z != actor->unk2C.z || layer != actor->unk2C.status
+        || (flags & 0x70000)) {
         if (D_800F196C != 3) {
             _mpdRoomSection9* trigger;
 
             if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
                 func_80073898();
-                memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
-                actor->unk2C.u8[3] = layer;
+                actor->unk2C = coordinates->unk0;
+                actor->unk2C.status = layer;
 
                 if (cell->unk0_16) {
-                    trigger = func_8008D438(coordinates->unk0.fields.x,
-                        coordinates->unk0.fields.z, coordinates->unk0.fields.y);
+                    trigger = func_8008D438(
+                        coordinates->unk0.x, coordinates->unk0.z, coordinates->unk0.y);
 
                     if (trigger != NULL && trigger->unk6 == 16) {
                         func_8006F4B0(position);
@@ -5250,14 +5240,14 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
             }
 
             if (cell->unk0_16 && !(flags & 0x504000)) {
-                trigger = func_8008D438(coordinates->unk0.fields.x,
-                    coordinates->unk0.fields.z, coordinates->unk0.fields.y);
+                trigger = func_8008D438(
+                    coordinates->unk0.x, coordinates->unk0.z, coordinates->unk0.y);
 
                 if (trigger != NULL) {
                     if (trigger->unk6 != 16) {
                         func_80073F7C((_mpdRoomSectionA*)trigger, position, actorIndex);
-                        memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
-                        actor->unk2C.u8[3] = layer;
+                        actor->unk2C = coordinates->unk0;
+                        actor->unk2C.status = layer;
                         return 1;
                     }
 
@@ -5278,8 +5268,8 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
                         doors = func_8008BAC8(0, 0, cellIndex >> 16);
                     }
                 } else {
-                    doors = func_8008BAC8(coordinates->unk0.fields.x,
-                        coordinates->unk0.fields.z, coordinates->unk0.fields.y);
+                    doors = func_8008BAC8(
+                        coordinates->unk0.x, coordinates->unk0.z, coordinates->unk0.y);
                 }
 
                 if (doors != NULL) {
@@ -5305,10 +5295,10 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
         }
 
         if (!(flags & 0x104000)) {
-            memcpy(&actor->unk2C, &coordinates->unk0, sizeof actor->unk2C);
+            actor->unk2C = coordinates->unk0;
         }
 
-        actor->unk2C.u8[3] = layer;
+        actor->unk2C.status = layer;
     }
 
     if (result == 0 && cell->unk0_17 && position->unk4.vy >= 17) {
@@ -5319,11 +5309,11 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
         if ((u_int)(flags + 1) >= 2) {
             destination.zndId = flags / 65536;
             destination.mpdId = flags % 65536;
-            destination.x = destination.unk2.unk0_0 = coordinates->unk0.fields.x;
-            destination.z = destination.unk2.unk0_5 = coordinates->unk0.fields.z;
-            destination.unk2.unk0_10 = coordinates->unk0.fields.y;
+            destination.x = destination.unk2.unk0_0 = coordinates->unk0.x;
+            destination.z = destination.unk2.unk0_5 = coordinates->unk0.z;
+            destination.unk2.unk0_10 = coordinates->unk0.y;
             destination.unk2.unk0_13 = 7;
-            destination.facing = coordinates->unk0.fields.status >> 6;
+            destination.facing = coordinates->unk0.status >> 6;
             destination.unk4_15 = 0;
             destination.unk6_15 = 0;
 
@@ -5379,25 +5369,24 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
     if (temp_a2 != 0) {
         temp_s4 = func_8008B764(0, 0, temp_a2 >> 0x10);
     } else {
-        temp_s4 =
-            func_8008B764(arg1->unk0.fields.x, arg1->unk0.fields.z, arg1->unk0.fields.y);
+        temp_s4 = func_8008B764(arg1->unk0.x, arg1->unk0.z, arg1->unk0.y);
     }
 
     if (vs_battle_screenTransitionStep == 0) {
         if (!(temp_v0 & 0x01000000)) {
             temp_s0 = vs_battle_actors[arg0];
 
-            if (((s2->unk0.value & 0xFFFFFF) != (temp_s0->unk2C.s32 & 0xFFFFFF))
-                || (temp_s3 != temp_s0->unk2C.u8[3]) || (temp_v0 & 0x70000)) {
+            if (s2->unk0.x != temp_s0->unk2C.x || s2->unk0.y != temp_s0->unk2C.y
+                || s2->unk0.z != temp_s0->unk2C.z || temp_s3 != temp_s0->unk2C.status
+                || (temp_v0 & 0x70000)) {
                 if (D_800F196C != 3) {
                     if (temp_s4->unk0_16) {
                         if (!(temp_v0 & 0x16704000)) {
-                            temp_v0_2 = func_8008D438(
-                                s2->unk0.fields.x, s2->unk0.fields.z, s2->unk0.fields.y);
+                            temp_v0_2 = func_8008D438(s2->unk0.x, s2->unk0.z, s2->unk0.y);
                             if ((temp_v0_2 != NULL) && (temp_v0_2->unk6 != 0x10)) {
                                 func_80073F7C((_mpdRoomSectionA*)temp_v0_2, arg1, arg0);
                                 memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
-                                temp_s0->unk2C.u8[3] = temp_s3;
+                                temp_s0->unk2C.status = temp_s3;
                                 return 3;
                             }
                         }
@@ -5406,7 +5395,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
                 if (!(temp_v0 & 0x504000)) {
                     memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
                 }
-                temp_s0->unk2C.u8[3] = temp_s3;
+                temp_s0->unk2C.status = temp_s3;
             }
             if ((temp_s4->unk0_17)) {
                 if (arg1->unk4.vy >= 0x11) {
@@ -5692,10 +5681,9 @@ int func_80075554(void)
                 angle = position.unk0.unk4.pad;
             } else {
                 func_800A1108(actor->command.fields.unkA, &target);
-                angle =
-                    ratan2((target.unk0.unk0.fields.x - actor->commandArgs.u8[0]) << 12,
-                        (target.unk0.unk0.fields.z - actor->commandArgs.u8[2]) << 12)
-                    + 0x800;
+                angle = ratan2((target.unk0.unk0.x - actor->commandArgs.u8[0]) << 12,
+                            (target.unk0.unk0.z - actor->commandArgs.u8[2]) << 12)
+                      + 0x800;
             }
 
             func_800B6580(i, actor->commandArgs.s32, angle);
@@ -5796,9 +5784,9 @@ int func_80075554(void)
             break;
         case 21:
             if (actor->command.fields.unkA >= 16) {
-                offset.vx = actor->commandArgs.u8[0] / ONE - position.unk0.unk0.fields.x;
-                offset.vy = actor->commandArgs.u8[1] / ONE - position.unk0.unk0.fields.y;
-                offset.vz = actor->commandArgs.u8[2] / ONE - position.unk0.unk0.fields.z;
+                offset.vx = actor->commandArgs.u8[0] / ONE - position.unk0.unk0.x;
+                offset.vy = actor->commandArgs.u8[1] / ONE - position.unk0.unk0.y;
+                offset.vz = actor->commandArgs.u8[2] / ONE - position.unk0.unk0.z;
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
                 func_800A1108(actor->command.fields.unkA, &target);
@@ -6239,10 +6227,10 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     }
 
     temp_s1->unk24 = arg4 & 0x1C;
-    temp_s1->unk2C.u8[3] = 0;
-    temp_s1->unk2C.u8[2] = 0;
-    temp_s1->unk2C.u8[1] = 0;
-    temp_s1->unk2C.u8[0] = 0;
+    temp_s1->unk2C.status = 0;
+    temp_s1->unk2C.z = 0;
+    temp_s1->unk2C.y = 0;
+    temp_s1->unk2C.x = 0;
     temp_s1->unk1E = 0;
     temp_s1->command.fields.unk8 = 0;
     temp_s0->maxHP = 100;
@@ -6326,10 +6314,10 @@ void func_80076F24(
 
     temp_s0->unk24 = arg4 & 0x1C;
     temp_s0->command.fields.unk8 = 0;
-    temp_s0->unk2C.u8[3] = 0;
-    temp_s0->unk2C.u8[2] = 0;
-    temp_s0->unk2C.u8[1] = 0;
-    temp_s0->unk2C.u8[0] = 0;
+    temp_s0->unk2C.status = 0;
+    temp_s0->unk2C.z = 0;
+    temp_s0->unk2C.y = 0;
+    temp_s0->unk2C.x = 0;
     func_80076784(id, temp_s4, arg1, arg5);
 }
 
@@ -6580,10 +6568,10 @@ vs_battle_actor* func_800775C0(
             && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
                 == _zoneContext.mapId)
             && ((saved = _findSavedEnemy(spawn->index)) != NULL)) {
-            object.unkC.unk0_0 = saved->x;
-            object.unkC.unk0_16 = saved->z;
-            object.unkC.unk0_8 = saved->direction;
-            height = saved->height;
+            object.unkC.unk0_0 = saved->tile.x;
+            object.unkC.unk0_16 = saved->tile.z;
+            object.unkC.unk0_8 = saved->tile.y;
+            height = saved->tile.status;
             object.unkC.unk0_8 &= 1;
         } else {
             object.unkC.unk0_0 = spawn->x;
@@ -8854,8 +8842,7 @@ void func_8007C580(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 
     func_8007C4E0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
-    func_8008B960(
-        sp10.unk0.unk0.fields.x, sp10.unk0.unk0.fields.z, sp10.unk0.unk0.fields.y);
+    func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.y);
 }
 
 int func_8007C5C0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
@@ -8877,8 +8864,7 @@ void func_8007C654(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 
     func_8007C5C0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
-    func_8008B960(
-        sp10.unk0.unk0.fields.x, sp10.unk0.unk0.fields.z, sp10.unk0.unk0.fields.y);
+    func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.y);
 }
 
 int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
@@ -15381,7 +15367,7 @@ void func_80089DC0(int arg0)
 
     _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
     func_800A1108(0, &sp40);
-    func_80074B14(0, &sp40.unk0.unk0.fields);
+    func_80074B14(0, &sp40.unk0.unk0);
     func_8007D360();
     vs_main_commitClut();
     func_800760CC(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
@@ -15475,7 +15461,7 @@ int func_8008A4FC(void)
 
     temp_v0_2 = func_800A0BE0(0);
     temp_a2 = temp_v0_2 & 0x70000;
-    s0 = &sp10.unk0.unk0.fields;
+    s0 = &sp10.unk0.unk0;
 
     if (temp_a2 != 0) {
         var_a0 = 0;

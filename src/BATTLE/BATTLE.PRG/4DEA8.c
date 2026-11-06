@@ -123,7 +123,9 @@ typedef struct {
     short unk1C6;
     short unk1C8;
     short unk1CA;
-    int unk1CC[7];
+    int unk1CC;
+    func_8006EBF8_t unk1D0;
+    int unk1E0[2];
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
@@ -708,10 +710,9 @@ int func_800B7428(u_char* arg0, short arg1)
     return 0;
 }
 
-// https://decomp.me/scratch/hkP4X
 int func_800B7490(u_char* arg0, short arg1)
 {
-    u_char position[12];
+    func_8006EBF8_t position;
     u_short actor = vs_battle_getShort(arg0 + 1);
     u_short flag = vs_battle_getShort(arg0 + 3);
 
@@ -728,10 +729,10 @@ int func_800B7490(u_char* arg0, short arg1)
             return 0;
         }
     }
-    func_800A1108(actor, position);
-    vs_battle_setStateFlag(flag, position[0]);
-    vs_battle_setStateFlag(flag + 1, position[1]);
-    vs_battle_setStateFlag(flag + 2, position[2]);
+    func_800A1108(actor, &position);
+    vs_battle_setStateFlag(flag, position.unk0.unk0.x);
+    vs_battle_setStateFlag(flag + 1, position.unk0.unk0.y);
+    vs_battle_setStateFlag(flag + 2, position.unk0.unk0.z);
     return 0;
 }
 
@@ -1006,7 +1007,7 @@ int func_800B7EF0(u_char* arg0, short arg1)
     if (arg0[5] != 0xFF) {
         var_a2 = arg0[5];
     }
-    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0.fields, var_a2);
+    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0, var_a2);
     D_800F4B70[temp_s0_2] = 1;
     return 0;
 }
@@ -3130,10 +3131,10 @@ int func_800BC2E8(u_char* script, short unused)
         int id = func_800BFE50(vs_battle_getShort(script + 1));
         cameraScratch* s = (cameraScratch*)0x1F800088;
         s->value = id;
-        func_800A1108(id, &D_800F4BA4->unk1CC[1]);
+        func_800A1108(id, &D_800F4BA4->unk1D0);
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
-        s->rotation2.vy = *(short*)((char*)D_800F4BA4 + 0x1DA);
+        s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
         RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
         _setVectorImm((VECTOR*)0x1F800098, script + 4);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
@@ -4181,8 +4182,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 1:
                 func_800A1108(0, &position);
 
-                if (position.unk0.unk0.fields.x == p[1]
-                    && position.unk0.unk0.fields.z == p[2]) {
+                if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
                     result = 1;
                 }
 
@@ -4192,10 +4192,9 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 2:
                 func_800A1108(0, &position);
 
-                if (position.unk0.unk0.fields.x >= p[1]
-                    && position.unk0.unk0.fields.x < p[1] + p[3]
-                    && position.unk0.unk0.fields.z >= p[2]
-                    && position.unk0.unk0.fields.z < p[2] + p[4]) {
+                if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
+                    && position.unk0.unk0.z >= p[2]
+                    && position.unk0.unk0.z < p[2] + p[4]) {
                     result = 1;
                 }
 
@@ -4349,11 +4348,9 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 11:
                 if ((short)func_800A0024(p[1], &position.unk0) >= 0
-                    && position.unk0.unk0.fields.x == p[2]
-                    && position.unk0.unk0.fields.z == p[3]
+                    && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0
-                        || (position.unk0.unk0.fields.status >> 2) + 1 == p[5])) {
+                    && (p[5] == 0 || (position.unk0.unk0.status >> 2) + 1 == p[5])) {
                     result = 1;
                 }
 
@@ -4384,8 +4381,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 func_800A1108(actorId, &position);
 
-                if (position.unk0.unk0.fields.x == p[3]
-                    && position.unk0.unk0.fields.z == p[4]) {
+                if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
                     result = 1;
                 }
 
@@ -4402,10 +4398,9 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 func_800A1108(actorId, &position);
 
-                if (position.unk0.unk0.fields.x >= p[3]
-                    && position.unk0.unk0.fields.x < p[3] + p[5]
-                    && position.unk0.unk0.fields.z >= p[4]
-                    && position.unk0.unk0.fields.z < p[4] + p[6]) {
+                if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
+                    && position.unk0.unk0.z >= p[4]
+                    && position.unk0.unk0.z < p[4] + p[6]) {
                     result = 1;
                 }
 

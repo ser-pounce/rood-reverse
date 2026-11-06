@@ -1,19 +1,10 @@
 #pragma once
+#include "movementPosition.h"
 #include <sys/types.h>
 #include <libgte.h>
 
 typedef struct {
-    u_int x : 8;
-    u_int y : 8;
-    u_int z : 8;
-    u_int status : 8;
-} vs_battle_movementPosition;
-
-typedef struct {
-    union {
-        vs_battle_movementPosition fields;
-        int value;
-    } unk0;
+    vs_battle_movementPosition unk0;
     SVECTOR unk4;
 } func_8006EBF8_t3;
 

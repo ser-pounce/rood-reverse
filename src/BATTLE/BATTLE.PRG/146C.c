@@ -75,7 +75,7 @@ typedef struct {
 
 typedef struct {
     _mpdRoomSectionA* unk0;
-    func_8006EBF8_t unk4;
+    vs_battle_actorPosition unk4;
 } D_800F1910_t;
 
 typedef struct {
@@ -243,9 +243,9 @@ void func_80072BA8(int);
 void func_80072EC4(int, int);
 void _endBattleCameraTransition(void);
 void func_80073718(void);
-void func_80073D30(_mpdRoomSectionA*, func_8006EBF8_t*, int);
+void func_80073D30(_mpdRoomSectionA*, vs_battle_actorPosition*, int);
 void func_80073E30(_mpdRoomSectionA*, int);
-int func_80074798(func_8006EBF8_t*, u_char*);
+int func_80074798(vs_battle_actorPosition*, u_char*);
 void func_80074B14(int arg0, vs_battle_movementPosition* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
@@ -575,7 +575,7 @@ static vs_main_savedEnemyState_t* _getSavedEnemySlot(int arg0)
 
 void vs_battle_saveEnemyState(int actorId, int arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int i;
     vs_main_savedEnemyState_t* temp_v0;
     vs_battle_actor2* temp_s1;
@@ -1690,7 +1690,7 @@ void func_8006C4C4(int effectId, _hitEntity_t* arg1, int targetLimb)
 
 int func_8006C5AC(int arg0)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     SVECTOR sp20;
     D_800F19CC_t2* temp_s3;
     int i;
@@ -2589,7 +2589,7 @@ void func_8006E158(void)
 
 void func_8006E640(int arg0)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     SVECTOR targetPos;
     UNUSED int _[2];
 
@@ -2632,7 +2632,7 @@ void func_8006E640(int arg0)
 
 int func_8006E7F0(void)
 {
-    func_8006EBF8_t position;
+    vs_battle_actorPosition position;
     int unused[5];
     int temp_a0;
     int temp_a1;
@@ -2762,7 +2762,7 @@ int func_8006E7F0(void)
 int func_8006EBF8(void)
 {
     int v;
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     VECTOR position;
 
     if (D_800F1968 == 0) {
@@ -2780,7 +2780,7 @@ int func_8006EBF8(void)
 
 void func_8006EC7C(void)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int temp_a1;
     int var_a0;
 
@@ -2981,7 +2981,7 @@ void func_8006F450(u_short* arg0)
     func_800CF3F8(&request, 0);
 }
 
-void func_8006F4B0(func_8006EBF8_t3* arg0)
+void func_8006F4B0(vs_battle_actorLocation* arg0)
 {
     actionEffectRequest request;
 
@@ -3218,7 +3218,7 @@ void func_8006FD0C(void) { _cameraMode = 9; }
 void func_8006FD1C(void)
 {
     _hitEntity_t saved;
-    func_8006EBF8_t position;
+    vs_battle_actorPosition position;
     D_800F19CC_t2* action;
     int i;
     int found;
@@ -3450,7 +3450,7 @@ void func_8007053C(void)
 
 void func_8007087C(D_800F19CC_t2* arg0)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     func_800A1108(arg0->unk4.unk0.hit.targetActor, &sp10);
     arg0->unk844.vx = sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + ONE / 2);
@@ -3712,7 +3712,7 @@ void func_8007138C(void)
 {
     vs_battle_objectData object;
     actionEffectRequest request;
-    func_8006EBF8_t actorPosition;
+    vs_battle_actorPosition actorPosition;
     SVECTOR soundPosition;
     D_800F19CC_t2* action;
     int mode;
@@ -3990,7 +3990,7 @@ void func_800719FC(UNUSED int arg0)
 
 void func_80071F68(int arg0)
 {
-    func_8006EBF8_t state;
+    vs_battle_actorPosition state;
     D_800F19CC_t2 result;
     int i;
     int action = D_800F19CC->unk8.actionIndex;
@@ -4146,7 +4146,7 @@ void func_80071F68(int arg0)
 
 void func_80072734(int arg0)
 {
-    func_8006EBF8_t state;
+    vs_battle_actorPosition state;
     vs_battle_actor2* attacker =
         vs_battle_actors[D_800F19CC->unk8.unk4.unk0.hit.targetActor]->unk3C;
     vs_action_t* spec;
@@ -4236,7 +4236,7 @@ void func_80072B9C(void) { _cameraMode = 0; }
 void func_80072BA8(int action)
 {
     UNUSED int _[2];
-    func_8006EBF8_t state;
+    vs_battle_actorPosition state;
     int limb;
     int part;
     int count;
@@ -4364,7 +4364,7 @@ void func_80072EC4(int arg0, int arg1)
 void _initBattleCameraTransition(void)
 {
     VECTOR sp10;
-    func_8006EBF8_t sp20;
+    vs_battle_actorPosition sp20;
     int i;
 
     if (vs_battle_cameraTransition == NULL) {
@@ -4505,7 +4505,7 @@ void func_800735CC(D_800F18EC_t* arg0)
 
 void func_800735F8(D_800F18EC_t* arg0)
 {
-    func_8006EBF8_t sp18;
+    vs_battle_actorPosition sp18;
 
     func_8008B4C8(1);
     func_800CB660(vs_battle_characterState->weaponDrawn & 1);
@@ -4728,7 +4728,7 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
     return 1;
 }
 
-void func_80073D30(_mpdRoomSectionA* arg0, func_8006EBF8_t* arg1, int targetActor)
+void func_80073D30(_mpdRoomSectionA* arg0, vs_battle_actorPosition* arg1, int targetActor)
 {
     actionEffectRequest request;
 
@@ -4792,7 +4792,7 @@ void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
     func_8009E070(0, &sp10, 3);
 }
 
-void func_80073F7C(_mpdRoomSectionA* arg0, func_8006EBF8_t3* arg1, int arg2)
+void func_80073F7C(_mpdRoomSectionA* arg0, vs_battle_actorLocation* arg1, int arg2)
 {
     int i;
 
@@ -4914,7 +4914,7 @@ int func_80074374(void)
     short sp18[6];
     int temp_s0;
 
-    func_800A1108(0, (func_8006EBF8_t*)sp18);
+    func_800A1108(0, (vs_battle_actorPosition*)sp18);
     sp10.vx = sp18[2];
     sp10.vz = sp18[4];
     sp10.vy = sp18[3] - 0x5A;
@@ -5000,7 +5000,7 @@ void func_80074580(void)
 
 void _checkFirstPersonViewExit(void)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     if (!(vs_main_buttonsPressed.all & (PADRdown | PADj | PADstart))) {
         return;
@@ -5051,7 +5051,7 @@ void func_80074744(void)
     }
 }
 
-int func_80074798(func_8006EBF8_t* arg0, u_char* arg1)
+int func_80074798(vs_battle_actorPosition* arg0, u_char* arg1)
 {
     int var_v1 = (arg0->unk0.unk4.pad + 0x200) & 0xFFF;
     if (var_v1 < 0) {
@@ -5081,7 +5081,7 @@ int func_80074798(func_8006EBF8_t* arg0, u_char* arg1)
 
 int func_80074860(int arg0)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     u_char sp20[4];
 
     func_800A1108(arg0, &sp10);
@@ -5092,7 +5092,7 @@ int func_80074860(int arg0)
 
 _mpdRoomSectionA* func_800748B8(int arg0)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     u_char sp20[4];
     _mpdRoomSectionA* temp_s1;
     u_char* s0 = sp20;
@@ -5111,7 +5111,7 @@ _mpdRoomSectionA* func_800748B8(int arg0)
 
 _mpdRoomSection13* func_80074950(int arg0)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     u_char sp20[4];
     _mpdRoomSection13* temp_v0;
     int temp_s2;
@@ -5183,9 +5183,9 @@ void func_80074B14(int arg0, vs_battle_movementPosition* arg1)
     func_8008C40C();
 }
 
-int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
+int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
 {
-    func_8006EBF8_t3* coordinates = position;
+    vs_battle_actorLocation* coordinates = position;
     int flags = func_800A0BE0(actorIndex);
     u_int cellIndex;
     int actorOffset;
@@ -5350,7 +5350,7 @@ int func_80074BAC(int actorIndex, func_8006EBF8_t3* position)
     return 0;
 }
 
-int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
+int func_800751B8(int arg0, vs_battle_actorLocation* arg1)
 {
     _mpdRoomSection9* temp_v0_2;
     _mpdRoomSection3* temp_s4;
@@ -5358,7 +5358,7 @@ int func_800751B8(int arg0, func_8006EBF8_t3* arg1)
     u_int temp_a2;
     u_int temp_v0;
     vs_battle_actor* temp_s0;
-    func_8006EBF8_t3* s2 = arg1;
+    vs_battle_actorLocation* s2 = arg1;
     UNUSED int _[4];
 
     temp_v0 = func_800A0BE0(arg0);
@@ -5470,8 +5470,8 @@ int func_80075554(void)
 
     for (i = 0; i < 16; ++i) {
         SVECTOR offset;
-        func_8006EBF8_t position;
-        func_8006EBF8_t target;
+        vs_battle_actorPosition position;
+        vs_battle_actorPosition target;
         int state;
         vs_battle_actor* actor = vs_battle_actors[i];
         int angle;
@@ -6722,7 +6722,7 @@ vs_battle_actor* func_800775C0(
 int _isLookAtAtDestination(void)
 {
     func_80077DF0_t sp10;
-    func_8006EBF8_t sp30;
+    vs_battle_actorPosition sp30;
 
     func_800A1108(0, &sp30);
     sp10.position.vx = sp30.unk0.unk4.vx * ONE;
@@ -7495,7 +7495,7 @@ void func_80089098(void);
 
 void vs_battle_exec(void)
 {
-    func_8006EBF8_t position;
+    vs_battle_actorPosition position;
     int skipCameraUpdate;
     u_long* ot;
     u_int status;
@@ -8838,7 +8838,7 @@ int func_8007C4E0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
 
 void func_8007C580(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     func_8007C4E0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
@@ -8860,7 +8860,7 @@ int func_8007C5C0(_mpdRoomDoorSection_t* arg0, int effect, int speed)
 
 void func_8007C654(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     func_8007C5C0(arg0, arg1, arg2);
     func_800A1108(0, &sp10);
@@ -8869,7 +8869,7 @@ void func_8007C654(_mpdRoomDoorSection_t* arg0, int arg1, int arg2)
 
 int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int temp_v1_2;
     int var_a0;
     int zndId;
@@ -9088,7 +9088,7 @@ void vs_battle_setFarClip(int farClip, int arg1)
 void vs_battle_initialiseCameraFromSpherical(
     VECTOR* outputPos, VECTOR* outputLookAt, int facing, int mode)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int temp_v0;
     int var_v0;
 
@@ -15060,7 +15060,7 @@ void func_80089114(void)
 void func_80089888(void)
 {
     SVECTOR sp10;
-    func_8006EBF8_t sp18;
+    vs_battle_actorPosition sp18;
     func_80089888_t sp28;
 
     func_8009D458();
@@ -15193,7 +15193,7 @@ void func_80089DC0(int arg0)
 {
     VECTOR sp20;
     VECTOR lookAt;
-    func_8006EBF8_t sp40;
+    vs_battle_actorPosition sp40;
     int temp_s4;
     int var_a0;
     char* mpdHeader;
@@ -15449,7 +15449,7 @@ void func_8008A4DC(int arg0)
 
 int func_8008A4FC(void)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     u_int temp_a2;
     u_int temp_v0_2;
     u_int var_a2;

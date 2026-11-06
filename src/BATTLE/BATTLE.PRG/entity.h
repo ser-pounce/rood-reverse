@@ -1,5 +1,5 @@
 #pragma once
-#include "func_8006EBF8_t.h"
+#include "actorPosition.h"
 #include <sys/types.h>
 #include <libgte.h>
 

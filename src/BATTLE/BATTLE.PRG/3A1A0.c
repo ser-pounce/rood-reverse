@@ -432,7 +432,7 @@ void func_800A35A8(void)
     }
 }
 
-void func_800A36E0(int actorId, int arg1, func_8006EBF8_t* arg2)
+void func_800A36E0(int actorId, int arg1, vs_battle_actorPosition* arg2)
 {
     D_800F4538_t* temp_a0 = D_800F4538[actorId];
     if (temp_a0 != NULL) {

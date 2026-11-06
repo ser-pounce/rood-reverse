@@ -3739,7 +3739,7 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-int func_800A0024(int arg0, func_8006EBF8_t3* arg1)
+int func_800A0024(int arg0, vs_battle_actorLocation* arg1)
 {
     D_800F45E0_t* temp_s0;
     int var_v0_2;
@@ -4283,7 +4283,7 @@ u_int func_800A0BE0(int actorId)
     return D_800F49E0;
 }
 
-int func_800A1108(int actorId, func_8006EBF8_t* arg1)
+int func_800A1108(int actorId, vs_battle_actorPosition* arg1)
 {
     D_800F4538_t* var_v1 = D_800F4538[actorId];
 

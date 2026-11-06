@@ -124,7 +124,7 @@ typedef struct {
     short unk1C8;
     short unk1CA;
     int unk1CC;
-    func_8006EBF8_t unk1D0;
+    vs_battle_actorPosition unk1D0;
     int unk1E0[2];
     u_short unk1E8;
     u_short unk1EA;
@@ -712,7 +712,7 @@ int func_800B7428(u_char* arg0, short arg1)
 
 int func_800B7490(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t position;
+    vs_battle_actorPosition position;
     u_short actor = vs_battle_getShort(arg0 + 1);
     u_short flag = vs_battle_getShort(arg0 + 3);
 
@@ -845,7 +845,7 @@ int func_800B784C(u_char* arg0, short arg1)
 
 int func_800B792C(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     u_short temp_s4 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
@@ -896,7 +896,7 @@ int func_800B7A98(u_char* arg0, short arg1)
 
 int func_800B7B58(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     short temp_s3;
     short temp_s4;
     int temp_s1;
@@ -959,7 +959,7 @@ int func_800B7D10(u_char* arg0, short arg1)
 
 int func_800B7DC4(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
     int var_a1;
@@ -995,7 +995,7 @@ int func_800B7DC4(u_char* arg0, short arg1)
 
 int func_800B7EF0(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int temp_s0;
     int temp_s0_2;
     int var_a2;
@@ -2357,8 +2357,8 @@ int func_800BAC38(u_char* arg0, short arg1)
 
 int func_800BAC5C(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
-    func_8006EBF8_t sp20;
+    vs_battle_actorPosition sp10;
+    vs_battle_actorPosition sp20;
     short temp_s3;
     short temp_v0;
     short temp_v0_2;
@@ -2414,8 +2414,8 @@ int func_800BAE74(u_char* arg0, short arg1)
 
 int func_800BAEA0(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
-    func_8006EBF8_t sp20;
+    vs_battle_actorPosition sp10;
+    vs_battle_actorPosition sp20;
     short temp_s0;
     int temp_s0_2;
     short temp_s1;
@@ -2903,7 +2903,7 @@ void func_800BBE10(u_short arg0)
 
 void func_800BBE94(void)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     if (D_800F4BA4->unk1E8 == 0x2000) {
         D_800F4BA4->unk1EC.vz = 0;
@@ -4099,7 +4099,7 @@ int func_800BEC30(void)
 short func_800BEC58(short type, int arg1, int arg2, short mode)
 {
     char buf[64];
-    func_8006EBF8_t position;
+    vs_battle_actorPosition position;
     short i;
     short otherActorId;
     short flagId;

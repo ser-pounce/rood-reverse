@@ -6,9 +6,9 @@
 typedef struct {
     vs_battle_movementPosition unk0;
     SVECTOR unk4;
-} func_8006EBF8_t3;
+} vs_battle_actorLocation;
 
 typedef struct {
-    func_8006EBF8_t3 unk0;
+    vs_battle_actorLocation unk0;
     int unkC;
-} func_8006EBF8_t;
+} vs_battle_actorPosition;

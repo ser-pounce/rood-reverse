@@ -17,6 +17,7 @@
 #include <libsnd.h>
 #include <libspu.h>
 #include <libgpu.h>
+#include <limits.h>
 #include <rand.h>
 
 enum diskState_e {
@@ -1142,80 +1143,74 @@ void vs_main_setCharacterRestorePending(void)
 
 void vs_main_captureSaveState(void)
 {
-    func_8006EBF8_t sp10;
-    int j;
+    vs_battle_actorPosition position;
     int i;
-    int var_s1;
-    int var_t3;
-    int new_var;
-    int var_t4;
-    signed char actionsLearned;
-    vs_battle_actor2* temp_t0;
-    vs_main_characterSnapshot_t* temp_t5;
-    int v0;
-    int v0_2;
-    int v1;
-    int v1_2;
+    int j;
+    int actionByte;
+    u_char actionsLearned;
+    vs_battle_actor2* actor;
+    vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = D_800F1AB0;
-    func_800A1108(0, &sp10);
 
-    vs_main_spawnPoint.x = sp10.unk0.unk0.x;
-    vs_main_spawnPoint.z = sp10.unk0.unk0.z;
-    vs_main_spawnPoint.unk2.unk0_13 = sp10.unk0.unk0.y;
-    vs_main_spawnPoint.facing = sp10.unk0.unk0.status >> 6;
+    func_800A1108(0, &position);
+
+    vs_main_spawnPoint.x = position.unk0.unk0.x;
+    vs_main_spawnPoint.z = position.unk0.unk0.z;
+    vs_main_spawnPoint.unk2.unk0_13 = position.unk0.unk0.y;
+    vs_main_spawnPoint.facing = position.unk0.unk0.status >> 6;
     vs_main_spawnPoint.unk6_0 = D_800F18E8.unk0_0;
 
-    for (var_s1 = 0; var_s1 < 32; ++var_s1) {
-        for (actionsLearned = 0, i = 0; i < 8; ++i) {
-            actionsLearned =
-                (*(int*)&actionsLearned * 2) | vs_main_actions[var_s1 * 8 + i].unlocked;
+    for (actionByte = 0; actionByte < 256 / CHAR_BIT; ++actionByte) {
+        for (actionsLearned = 0, i = 0; i < CHAR_BIT; ++i) {
+            actionsLearned = (actionsLearned << 1)
+                           | vs_main_actions[actionByte * CHAR_BIT + i].unlocked;
         }
-        vs_main_actionsLearned[var_s1] = actionsLearned;
+        vs_main_actionsLearned[actionByte] = actionsLearned;
     }
-    temp_t0 = vs_battle_characterState->unk3C;
-    temp_t5 = &vs_main_characterSnapshot;
-    temp_t5->stats.currentHP = temp_t0->currentHP;
-    temp_t5->stats.maxHP = temp_t0->maxHP;
-    temp_t5->stats.currentMP = temp_t0->currentMP;
-    temp_t5->stats.maxMP = temp_t0->maxMP;
-    temp_t5->stats.strength = temp_t0->strength;
-    temp_t5->stats.totalStrength = temp_t0->totalStrength;
-    temp_t5->stats.intelligence = temp_t0->intelligence;
-    temp_t5->stats.totalIntelligence = temp_t0->totalIntelligence;
-    temp_t5->stats.agility = temp_t0->agility;
-    temp_t5->stats.totalAgility = temp_t0->totalAgility;
-    temp_t5->stats.risk = temp_t0->risk;
-    temp_t5->stats.flags = temp_t0->unk954;
-    temp_t5->stats.statuses = temp_t0->statuses;
+
+    actor = vs_battle_characterState->unk3C;
+    snapshot = &vs_main_characterSnapshot;
+    snapshot->stats.currentHP = actor->currentHP;
+    snapshot->stats.maxHP = actor->maxHP;
+    snapshot->stats.currentMP = actor->currentMP;
+    snapshot->stats.maxMP = actor->maxMP;
+    snapshot->stats.strength = actor->strength;
+    snapshot->stats.totalStrength = actor->totalStrength;
+    snapshot->stats.intelligence = actor->intelligence;
+    snapshot->stats.totalIntelligence = actor->totalIntelligence;
+    snapshot->stats.agility = actor->agility;
+    snapshot->stats.totalAgility = actor->totalAgility;
+    snapshot->stats.risk = actor->risk;
+    snapshot->stats.flags = actor->unk954;
+    snapshot->stats.statuses = actor->statuses;
 
     for (i = 0; i < 8; ++i) {
-        temp_t5->stats.statusTimers[i] = temp_t0->statusTimers[i];
+        snapshot->stats.statusTimers[i] = actor->statusTimers[i];
     }
 
-    var_t4 = 0;
-    var_t3 = 0;
-
     for (i = 0; i < 6; ++i) {
-        temp_t5->stats.limbs[i].hp = temp_t0->limbs[i].hp;
-        temp_t5->stats.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
+
+        snapshot->stats.limbs[i].hp = actor->limbs[i].hp;
+        snapshot->stats.limbs[i].maxHp = actor->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->stats.limbs[i].types[j] = temp_t0->limbs[i].types[j];
+            snapshot->stats.limbs[i].types[j] = actor->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->stats.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
+            snapshot->stats.limbs[i].affinities[j] = actor->limbs[i].affinities[j];
         }
     }
 
-    temp_t5->stats.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->stats.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->stats.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
+    snapshot->stats.weaponDrawn = vs_battle_characterState->weaponDrawn;
+    snapshot->stats.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    snapshot->stats.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
-    for (var_s1 = 0; var_s1 < 16; ++var_s1) {
-        vs_battle_saveEnemyState(var_s1, 0);
+    for (actionByte = 0; actionByte < 16; ++actionByte) {
+        vs_battle_saveEnemyState(actionByte, 0);
     }
+
     vs_battle_setDoorEntered();
 }
 
@@ -3546,7 +3541,7 @@ static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
 void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
 {
-    int sp10[5];
+    int position[5];
     int i;
 
     if (_clutState.active != 0) {
@@ -3579,10 +3574,10 @@ void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
         _clutState.bgAnimActive = 0;
 
         for (i = 0; i < 5; ++i) {
-            sp10[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
-                    + (((temp_t6[i][2] / 65536)) << 0x10);
+            position[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
+                        + (((temp_t6[i][2] / 65536)) << 0x10);
         }
-        func_8008EB30(sp10);
+        func_8008EB30(position);
     }
 }
 
@@ -3600,7 +3595,7 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
 
 void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    int sp10[5];
+    int position[5];
     int temp_v0;
     int var_a1;
     int var_t0;
@@ -3748,9 +3743,9 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             if (temp_v0 < 0) {
                 temp_v0 += 0xFFFF;
             }
-            sp10[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
+            position[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
         }
-        func_8008EB30(sp10);
+        func_8008EB30(position);
     }
 }
 
@@ -3763,7 +3758,7 @@ void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
-    CVECTOR sp10;
+    CVECTOR position;
     _colorSlot_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -3799,15 +3794,15 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     }
 
     temp_t0->active = 0;
-    sp10.r = (temp_a3[0] / 65536) - 64;
-    sp10.g = (temp_a3[1] / 65536) - 64;
-    sp10.b = (temp_a3[2] / 65536) - 64;
-    sp10.cd = 0;
+    position.r = (temp_a3[0] / 65536) - 64;
+    position.g = (temp_a3[1] / 65536) - 64;
+    position.b = (temp_a3[2] / 65536) - 64;
+    position.cd = 0;
 
     if (slot != 0) {
-        func_800A0768(slot - 1, &sp10);
+        func_800A0768(slot - 1, &position);
     } else {
-        func_8008B430(&sp10, temp_t0->grayAmount >> 2);
+        func_8008B430(&position, temp_t0->grayAmount >> 2);
     }
 }
 
@@ -3821,7 +3816,7 @@ static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
 
 static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
 {
-    CVECTOR sp10;
+    CVECTOR position;
     short var_t4;
     int var_a1;
     int var_a2;
@@ -3964,24 +3959,24 @@ static void _transformColorSlot(int mode, int frames, int slot, int r, int g, in
             var_v1 = t2[0] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.r = var_v0 - 0x40;
+        position.r = var_v0 - 0x40;
         var_v0 = t2[1] >> 0x10;
         if (t2[1] < 0) {
             var_v1 = t2[1] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.g = var_v0 - 0x40;
+        position.g = var_v0 - 0x40;
         var_v0 = t2[2] >> 0x10;
         if (t2[2] < 0) {
             var_v1 = t2[2] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.b = var_v0 - 0x40;
-        sp10.cd = 0;
+        position.b = var_v0 - 0x40;
+        position.cd = 0;
         if (slot != 0) {
-            func_800A0768(slot - 1, &sp10);
+            func_800A0768(slot - 1, &position);
         } else {
-            func_8008B430(&sp10, ((u_short)t1->grayAmount << 0x10) >> 0x12);
+            func_8008B430(&position, ((u_short)t1->grayAmount << 0x10) >> 0x12);
         }
     }
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 #include "entity.h"
-#include "func_8006EBF8_t.h"
+#include "actorPosition.h"
 #include "mpd.h"
 #include <stddef.h>
 #include <libgte.h>

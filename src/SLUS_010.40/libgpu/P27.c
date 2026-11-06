@@ -1,3 +1,5 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P27", SetLineF2);
+void SetLineF2(LINE_F2* p) { setLineF2(p); }

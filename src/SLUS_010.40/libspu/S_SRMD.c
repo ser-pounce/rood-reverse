@@ -1,3 +1,9 @@
-#include "common.h"
+#include "spu.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_SRMD", SpuSetReverbModeDepth);
+void SpuSetReverbModeDepth(short depth_left, short depth_right)
+{
+    _spu_RXX->rvolL = depth_left;
+    _spu_RXX->rvolR = depth_right;
+    _spu_rev_attr.depth.left = depth_left;
+    _spu_rev_attr.depth.right = depth_right;
+}

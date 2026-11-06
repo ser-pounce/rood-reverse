@@ -4,6 +4,10 @@
 .lcomm ra, 4
 
 .text
+# hasm: trapping arithmetic
+# hasm: cross-function control flow
+# hasm: custom register abi
+# hasm: saved registers outside frame
 glabel _remove_ChgclrPAD
     sw      $ra, ra
     jal     EnterCriticalSection

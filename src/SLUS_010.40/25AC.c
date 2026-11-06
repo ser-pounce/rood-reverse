@@ -148,6 +148,8 @@ extern FSoundAkaoLoadState g_Sound_AkaoLoadState;
 extern int D_80037850[16];
 extern u_char D_8002F5A0[];
 extern u_char D_8002F600[];
+extern FSoundCommandParams D_80037790;
+extern FSoundCommandHandler D_800301E0[];
 
 extern FSoundMusicContext* g_pActiveMusicContext;
 extern FSoundSfxState g_Sound_SfxState;

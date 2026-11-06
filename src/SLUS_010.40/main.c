@@ -826,7 +826,7 @@ static void _displayLoadingScreen(void)
 {
     RECT rect;
 
-    _initScreen(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
+    _initScreen(320, 240, vs_main_projectionDistance, 0, 0, 0);
     setRECT(&rect, 0, 0, 1024, 512);
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
@@ -951,35 +951,36 @@ vs_main_inventory_t vs_main_inventory;
 _mpdRoomDoorSection_t vs_main_spawnPoint;
 vs_Gametime_t vs_main_gametime;
 
-int vs_main_gametimeUpdate(int vsync)
+int vs_main_gametimeUpdate(int mode)
 {
-    int vs = VSync(vsync);
-    if (vsync != 1) {
+    int vsync = VSync(mode);
+
+    if (mode != 1) {
         _asmNop();
     }
 
     _processCdQueue();
 
     if (vs_main_gametime.t.h >= 100) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.f += vs_gametime_tickspeed;
 
     if (vs_main_gametime.t.f < 60) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.f = 0;
 
     if (++vs_main_gametime.t.s < 60) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.s = 0;
 
     if (++vs_main_gametime.t.m < 60) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.m = 0;
@@ -987,7 +988,8 @@ int vs_main_gametimeUpdate(int vsync)
     if (++vs_main_gametime.t.h >= 100) {
         vs_main_gametime.t.h = 100;
     }
-    return vs;
+
+    return vsync;
 }
 
 static void _gpuSyncVoidCallback(void) { }
@@ -1011,41 +1013,27 @@ static void _initRand(void)
     for (i = 0; i < (int)(sizeof _randArr / sizeof _randArr[0]); ++i) {
         _randArr[i] = rand();
     }
+
     _randIndex = (sizeof _randArr / sizeof _randArr[0]) - 1;
 }
 
 int vs_main_getRand(int max)
 {
-    int temp_s0;
-    int var_a0;
-    int var_v0;
-
-    var_v0 = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
-
-    if (var_v0 < 0) {
-        var_v0 += 0x7FFF;
-    }
-
-    _randIndex = var_v0 >> 0xF;
-
-    temp_s0 = 0x7FFF - _randArr[_randIndex];
+    int value;
+    int slot = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
+    _randIndex = slot / -SHRT_MIN;
+    value = SHRT_MAX - _randArr[_randIndex];
     _randArr[_randIndex] = rand();
 
-    var_a0 = temp_s0 * max;
-
-    if (var_a0 < 0) {
-        var_a0 += 0x7FFF;
-    }
-
-    return var_a0 >> 0xF;
+    return value * max / -SHRT_MIN;
 }
 
-int vs_main_getRandSmoothed(int arg0)
+int vs_main_getRandSmoothed(int max)
 {
-    return (vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
-               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
-               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
-               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0))
+    return (vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max)
+               + vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max)
+               + vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max)
+               + vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max))
          / 12;
 }
 

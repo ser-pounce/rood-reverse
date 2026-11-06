@@ -859,9 +859,6 @@ static void _bufferLoadingScreen(void)
     DrawSync(0);
 }
 
-extern int vs_main_saveGameClearData;
-extern int vs_main_buttonsReleased;
-
 void vs_main_resetGame(void)
 {
     DrawSync(0);

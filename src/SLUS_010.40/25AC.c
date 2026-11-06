@@ -110,7 +110,6 @@ static void Sound_SetReverbMode(int in_ReverbMode);
 
 extern int g_Sound_EventDescriptor;
 extern char _soundFlush[64];
-extern short D_800358FE;
 extern CdlATV g_Sound_CdlATV;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
@@ -288,9 +287,9 @@ void Sound_StopMusicById(u_int arg0)
 
 void Sound_PushMusicState(void) { Sound_ExecuteSoundVm2Function(0x40); }
 
-int func_80012024(void)
+int Sound_ClearSuspendedMusic(void)
 {
-    D_800358FE = 0;
+    g_SuspendedMusicContext.MusicId = 0;
     return 0;
 }
 

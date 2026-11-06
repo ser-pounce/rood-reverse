@@ -890,7 +890,7 @@ void vs_main_jumpToBattle(void)
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
-    func_80012024();
+    Sound_ClearSuspendedMusic();
     Sound_ResetMusicBankIds();
     _displayLoadingScreen();
     _loadBattlePrg();

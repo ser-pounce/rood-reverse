@@ -55,7 +55,7 @@ class OpmcimgBin(KaitaiStruct):
 
 
     class Character(KaitaiStruct):
-        """Ashley's battle state (D_80060068_t)."""
+        """Ashley's battle state (vs_main_characterSnapshot_t)."""
         def __init__(self, _io, _parent=None, _root=None):
             super(OpmcimgBin.Character, self).__init__(_io)
             self._parent = _parent
@@ -63,7 +63,7 @@ class OpmcimgBin(KaitaiStruct):
             self._read()
 
         def _read(self):
-            self.unk0 = self._io.read_u4le()
+            self.restore_pending = self._io.read_s4le()
             self.current_hp = self._io.read_s2le()
             self.max_hp = self._io.read_s2le()
             self.current_mp = self._io.read_s2le()
@@ -85,9 +85,9 @@ class OpmcimgBin(KaitaiStruct):
             self.weapon_drawn = self._io.read_s4le()
             self.camera_pitch = self._io.read_s4le()
             self.camera_distance = self._io.read_s4le()
-            self.unk88 = []
+            self.reserved_dc = []
             for i in range(9):
-                self.unk88.append(self._io.read_s4le())
+                self.reserved_dc.append(self._io.read_s4le())
 
 
 
@@ -97,7 +97,7 @@ class OpmcimgBin(KaitaiStruct):
                 pass
                 self.limbs[i]._fetch_instances()
 
-            for i in range(len(self.unk88)):
+            for i in range(len(self.reserved_dc)):
                 pass
 
 
@@ -286,7 +286,7 @@ class OpmcimgBin(KaitaiStruct):
             for i in range(6):
                 self.enemy_kills.append(self._io.read_u2le())
 
-            self.unk10 = self._io.read_s4le()
+            self.reserved10 = self._io.read_s4le()
             self.weapon_attacks = []
             for i in range(10):
                 self.weapon_attacks.append(self._io.read_u2le())
@@ -296,7 +296,7 @@ class OpmcimgBin(KaitaiStruct):
                 self.boss_time_trial_scores.append(OpmcimgBin.TrialScore(self._io, self, self._root))
 
             self.max_chain = self._io.read_u2le()
-            self.unk8a = self._io.read_u2le()
+            self.pad8a = self._io.read_u2le()
             self.clear_count = self._io.read_u4le()
             self.completion_time_minutes = self._io.read_u4le()
             self.map_completion = self._io.read_u4le()

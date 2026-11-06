@@ -183,10 +183,10 @@ types:
         type: u4
 
   character:
-    doc: Ashley's battle state (D_80060068_t)
+    doc: Ashley's battle state (vs_main_characterSnapshot_t)
     seq:
-      - id: unk0
-        type: u4
+      - id: restore_pending
+        type: s4
       - id: current_hp
         type: s2
       - id: max_hp
@@ -225,7 +225,7 @@ types:
         type: s4
       - id: camera_distance
         type: s4
-      - id: unk88
+      - id: reserved_dc
         type: s4
         repeat: expr
         repeat-expr: 9
@@ -304,7 +304,7 @@ types:
         type: u2
         repeat: expr
         repeat-expr: 6
-      - id: unk10
+      - id: reserved10
         type: s4
       - id: weapon_attacks
         type: u2
@@ -316,7 +316,7 @@ types:
         repeat-expr: 8 * 3
       - id: max_chain
         type: u2
-      - id: unk8a
+      - id: pad8a
         type: u2
       - id: clear_count
         type: u4

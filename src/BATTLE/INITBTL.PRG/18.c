@@ -316,7 +316,7 @@ static void func_800F9AD8(void)
     int j;
     int i;
     vs_battle_actor2* temp_s0 = vs_battle_characterState->unk3C;
-    D_80060068_t3* s1 = &D_80060068.unk0;
+    vs_main_characterSnapshotStats_t* s1 = &vs_main_characterSnapshot.stats;
 
     temp_s0->currentHP = s1->currentHP;
     temp_s0->maxHP = s1->maxHP;
@@ -357,7 +357,7 @@ static void func_800F9AD8(void)
         func_800CB660(1);
     }
 
-    D_80060068.unk0.restorePending = 0;
+    vs_main_characterSnapshot.stats.restorePending = 0;
     vs_battle_cameraCurrentSpherical.delta.pitch = s1->cameraPitch;
     vs_battle_cameraCurrentSpherical.initialDistance = s1->cameraDistance;
 }
@@ -457,7 +457,7 @@ static void func_800F9CCC(void)
 
     vs_battle_nop0(vs_battle_characterState->unk3C);
 
-    if (D_80060068.unk0.restorePending != 0) {
+    if (vs_main_characterSnapshot.stats.restorePending != 0) {
         func_800F9AD8();
     }
 
@@ -518,10 +518,10 @@ void func_800FA35C(UNUSED int startState)
     DrawSync(0);
     vs_main_resetSound();
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
-    D_8005E0C0[1] = 0;
-    D_8005E0C0[0] = NULL;
-    D_80055C80[0] = vs_main_allocHeap(0x2088);
-    D_80055C80[1] = vs_main_allocHeap(0x2088);
+    vs_main_prims[1] = 0;
+    vs_main_prims[0] = NULL;
+    vs_main_ot[0] = vs_main_allocHeap(0x2088);
+    vs_main_ot[1] = vs_main_allocHeap(0x2088);
     SetDrawStp(&D_800F1970[0], 0);
     SetDrawStp(&D_800F1970[1], 0);
     SetDrawStp(&D_800F1988[0], 1);
@@ -563,11 +563,11 @@ void func_800FA35C(UNUSED int startState)
     vs_gametime_tickspeed = 2;
     vs_main_projectionDistance = 0x200;
     vs_main_nearClip = 0x40;
-    D_80050468.unk0 = 0;
-    D_80050468.time.t.h = 0;
-    D_80050468.time.t.m = 0;
-    D_80050468.time.t.s = 0;
-    D_80050468.time.t.f = 0;
+    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.time.t.h = 0;
+    vs_main_battleTimer.time.t.m = 0;
+    vs_main_battleTimer.time.t.s = 0;
+    vs_main_battleTimer.time.t.f = 0;
     _zoneContext.unk68 = vs_main_spawnPoint.unk6_0;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();

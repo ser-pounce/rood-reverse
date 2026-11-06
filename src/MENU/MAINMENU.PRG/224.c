@@ -101,7 +101,7 @@ typedef struct {
 
 void func_800F9CB0(void)
 {
-    D_800F4538_unk58_2 sp10;
+    CVECTOR sp10;
     int new_var;
     D_800F4538_unk58_3 sp18;
     D_800F4538_t* temp_s0;
@@ -123,9 +123,9 @@ void func_800F9CB0(void)
     temp_s0->unk5B0_4 = 0;
     temp_s0->unk0.skip = 0;
     temp_s0->unk0.unk9_7 = 0;
-    sp10.unk0 = -1;
-    sp10.unk1 = -1;
-    sp10.unk2 = -1;
+    sp10.r = -1;
+    sp10.g = -1;
+    sp10.b = -1;
 
     sp18.unk0_0 = 2;
     sp18.unk0_8 = 254;
@@ -133,14 +133,14 @@ void func_800F9CB0(void)
     sp18.unk0_24 = 16;
 
     if (D_800F4538[16] == NULL) {
-        func_8009F940(1, 1, (D_800F4538_unk58_2*)&sp18, &sp10);
+        func_8009F940(1, 1, (CVECTOR*)&sp18, &sp10);
     } else {
         D_800F4538[16]->unk0.skip = 0;
     }
 
-    sp10.unk0 = 0;
-    sp10.unk1 = 0;
-    sp10.unk2 = 0;
+    sp10.r = 0;
+    sp10.g = 0;
+    sp10.b = 0;
 
     func_800A0768(1, &sp10);
     func_800A07FC(1, 0);

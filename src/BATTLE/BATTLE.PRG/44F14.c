@@ -832,9 +832,9 @@ void func_800AECA0(MATRIX* source)
     int i;
 
     for (i = 0; i < 3; ++i) {
-        scratch->matrix.m[0][i] = D_8005E218.m[i][0];
-        scratch->matrix.m[1][i] = D_8005E218.m[i][1];
-        scratch->matrix.m[2][i] = D_8005E218.m[i][2];
+        scratch->matrix.m[0][i] = vs_main_cameraBasis.m[i][0];
+        scratch->matrix.m[1][i] = vs_main_cameraBasis.m[i][1];
+        scratch->matrix.m[2][i] = vs_main_cameraBasis.m[i][2];
     }
 
     roll.m[1][1] = roll.m[0][0] = rcos(-view->camera.angles.vz);

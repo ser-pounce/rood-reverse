@@ -1494,8 +1494,8 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
 
-    D_8005DFD4 = 0;
-    D_8005DFD8 = 0;
+    vs_main_screenX = 0;
+    vs_main_screenY = 0;
     vs_main_screenWidth = w;
     vs_main_screenHeight = fbHeight;
     vs_main_drawEnv[1].dtd = 0;
@@ -1590,10 +1590,10 @@ static void _initEnvironment(void)
 {
     _initVideo(320, 240, 512, 0, 0, 0);
     vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
-    D_8005E0C0[0] = vs_main_allocHeap(0x20000);
-    D_8005E0C0[1] = vs_main_allocHeap(0x20000);
-    D_80055C80[0] = vs_main_allocHeap(0x2088);
-    D_80055C80[1] = vs_main_allocHeap(0x2088);
+    vs_main_prims[0] = vs_main_allocHeap(0x20000);
+    vs_main_prims[1] = vs_main_allocHeap(0x20000);
+    vs_main_ot[0] = vs_main_allocHeap(0x2088);
+    vs_main_ot[1] = vs_main_allocHeap(0x2088);
 }
 
 /**
@@ -1610,11 +1610,11 @@ static void _beginFrame(void)
     void* temp_a0;
 
     vs_main_processPadState();
-    temp_a0 = D_80055C80[vs_main_frameBuf];
+    temp_a0 = vs_main_ot[vs_main_frameBuf];
     vs_scratch.unk8 = temp_a0 + 8;
     vs_scratch.unk4 = temp_a0 + 0x48;
     ClearOTagR((u_long*)temp_a0, 0x822);
-    vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
+    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
 }
 
 /**

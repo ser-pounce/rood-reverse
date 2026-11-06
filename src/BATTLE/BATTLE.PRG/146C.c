@@ -4625,7 +4625,7 @@ void func_800738E4(void)
     func_800DC638();
 
     if ((func_800BEC58(0xA, 0, 0, 0) == 1)
-        || ((D_80050468.unk0 != 0) && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
+        || ((vs_main_battleTimer.mode != 0) && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
         func_80073870();
         return;
     }
@@ -5871,8 +5871,8 @@ void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     SetDefDispEnv(&vs_main_dispEnv[1], 0, 0, arg0, temp_s3);
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
     setRECT(&vs_main_dispEnv[1].screen, 0, 8, 256, 224);
-    D_8005DFD4 = 0;
-    D_8005DFD8 = 0;
+    vs_main_screenX = 0;
+    vs_main_screenY = 0;
     vs_main_screenWidth = arg0;
     vs_main_screenHeight = temp_s3;
     vs_main_drawEnv[1].dtd = 1;
@@ -5893,37 +5893,47 @@ int func_8007629C(u_long* otag)
     u_int temp_a0;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;
+
     vs_main_getRand(0);
     SetGeomOffset(160, 112);
     DrawSync(0);
+
     ret = vs_main_gametimeUpdate(vs_gametime_tickspeed);
-    if (D_8004A52C != 0) {
+
+    if (vs_main_debugPause != 0) {
         while (1) {
             vs_main_gametimeUpdate(2);
+
             vs_main_buttonsState = (u_short)vs_main_updatePadState(0, *vs_main_padBuffer);
             vs_main_buttonsState |= vs_main_updatePadState(16, vs_main_padBuffer[1])
                                  << 16;
+
             vs_main_padConnect(0, vs_main_padBuffer[0]);
             vs_main_padConnect(16, vs_main_padBuffer[1]);
+
             vs_main_buttonsPressed.all =
                 ~vs_main_buttonsPreviousState & vs_main_buttonsState;
             temp_a0 = vs_main_buttonsPressed.all >> 16;
             vs_main_buttonsReleased =
                 vs_main_buttonsPreviousState & ~vs_main_buttonsState;
             vs_main_buttonsPreviousState = vs_main_buttonsState;
-            if (temp_a0 & 0x800) {
-                D_8004A52C ^= 1;
+
+            if (temp_a0 & PADstart) {
+                vs_main_debugPause ^= 1;
             }
-            if ((temp_a0 & 0x100) || (D_8004A52C == 0)) {
+
+            if ((temp_a0 & PADselect) || (vs_main_debugPause == 0)) {
                 break;
             }
         }
     }
+
     PutDispEnv(&vs_main_dispEnv[vs_main_frameBuf]);
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
     vs_main_commitClut();
     DrawOTag(otag);
     FntFlush(-1);
+
     return ret;
 }
 
@@ -7523,12 +7533,12 @@ void vs_battle_exec(void)
                         break;
                     }
 
-                    ot = D_80055C80[vs_main_frameBuf];
+                    ot = vs_main_ot[vs_main_frameBuf];
                     D_800F1870 = ot;
                     vs_scratch.unk8 = ot + 2;
                     vs_scratch.unk4 = ot + 18;
                     ClearOTagR(ot, 2082);
-                    vs_scratch.unk0 = D_8005E0C0[vs_main_frameBuf];
+                    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
                     AddPrim(ot, &D_800F1970[vs_main_frameBuf]);
 
                     if (((vs_main_startState == 3) || (vs_main_startState == 4))
@@ -8034,7 +8044,7 @@ void vs_battle_exec(void)
                     for (i = 0; i < vs_gametime_tickspeed / 2; ++i) {
                         vs_main_setVibrateParams();
                         vs_main_updateBgColors();
-                        func_800481C0();
+                        vs_main_updateColorSlots();
                         vs_main_updateClutSlots();
                     }
 
@@ -8197,15 +8207,15 @@ void func_8007ACB0(void)
     VectorNormal(&right, &right);
     OuterProduct0(&right, &forward, &up);
     VectorNormal(&up, &up);
-    D_8005E218.m[0][0] = scratch->viewMatrix.m[0][0] = -right.vx;
-    D_8005E218.m[0][1] = scratch->viewMatrix.m[0][1] = right.vy;
-    D_8005E218.m[0][2] = scratch->viewMatrix.m[0][2] = right.vz;
-    D_8005E218.m[1][0] = scratch->viewMatrix.m[1][0] = -up.vx;
-    D_8005E218.m[1][1] = scratch->viewMatrix.m[1][1] = up.vy;
-    D_8005E218.m[1][2] = scratch->viewMatrix.m[1][2] = up.vz;
-    D_8005E218.m[2][0] = scratch->viewMatrix.m[2][0] = -forward.vx;
-    D_8005E218.m[2][1] = scratch->viewMatrix.m[2][1] = forward.vy;
-    D_8005E218.m[2][2] = scratch->viewMatrix.m[2][2] = forward.vz;
+    vs_main_cameraBasis.m[0][0] = scratch->viewMatrix.m[0][0] = -right.vx;
+    vs_main_cameraBasis.m[0][1] = scratch->viewMatrix.m[0][1] = right.vy;
+    vs_main_cameraBasis.m[0][2] = scratch->viewMatrix.m[0][2] = right.vz;
+    vs_main_cameraBasis.m[1][0] = scratch->viewMatrix.m[1][0] = -up.vx;
+    vs_main_cameraBasis.m[1][1] = scratch->viewMatrix.m[1][1] = up.vy;
+    vs_main_cameraBasis.m[1][2] = scratch->viewMatrix.m[1][2] = up.vz;
+    vs_main_cameraBasis.m[2][0] = scratch->viewMatrix.m[2][0] = -forward.vx;
+    vs_main_cameraBasis.m[2][1] = scratch->viewMatrix.m[2][1] = forward.vy;
+    vs_main_cameraBasis.m[2][2] = scratch->viewMatrix.m[2][2] = forward.vz;
     roll.m[1][1] = roll.m[0][0] = rcos(scratch->camera.angles.vz);
     roll.m[1][0] = rsin(scratch->camera.angles.vz);
     roll.m[0][1] = -roll.m[1][0];
@@ -8268,7 +8278,7 @@ void func_8007B1B8(int arg0, int arg1, short arg2, short arg3, short arg4)
     vs_main_transformClutSlot(arg0, arg1, 0, arg2, arg3, arg4);
     vs_main_transformClutSlot(arg0, arg1, 1, arg2, arg3, arg4);
     vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
-    func_80047FC0(arg0, arg1, 0, arg2, arg3, arg4);
+    vs_main_transformColorSlot(arg0, arg1, 0, arg2, arg3, arg4);
     vs_main_transformClutSlot(arg0, arg1, 0xD, arg2, arg3, arg4);
 }
 
@@ -8276,7 +8286,7 @@ void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short a
 {
     if (arg2 < 9) {
         vs_main_transformClutSlot(arg0, arg1, arg2 + 4, arg3, arg4, arg5);
-        func_80047FC0(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
+        vs_main_transformColorSlot(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
     }
 }
 
@@ -8300,7 +8310,7 @@ void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
 }
 
-void func_8007B3F0(int arg0, D_8005DC6C_t* arg1) { vs_main_fadeBgColors(arg0, arg1); }
+void func_8007B3F0(int arg0, CVECTOR* arg1) { vs_main_fadeBgColors(arg0, arg1); }
 
 void func_8007B410(void)
 {
@@ -8528,51 +8538,51 @@ void vs_battle_forgetZoneEnemies(int arg0, int arg1) { _forgetZoneEnemies(arg0, 
 
 void func_8007BBD8(int arg0, int arg1, int arg2)
 {
-    D_80050468.unk0 = arg0;
-    D_80050468.unk2 = arg1;
-    D_80050468.time.t.h = 0;
-    D_80050468.time.t.m = 0;
-    D_80050468.time.t.s = 0;
-    D_80050468.time.t.f = 0;
+    vs_main_battleTimer.mode = arg0;
+    vs_main_battleTimer.lifetime = arg1;
+    vs_main_battleTimer.time.t.h = 0;
+    vs_main_battleTimer.time.t.m = 0;
+    vs_main_battleTimer.time.t.s = 0;
+    vs_main_battleTimer.time.t.f = 0;
 
     if (arg0 != 1) {
-        D_80050468.time.t.f = arg2 % 256;
-        D_80050468.time.t.s = (arg2 / 256) % 256;
-        D_80050468.time.t.m = (arg2 / 65536) % 256;
-        D_80050468.time.t.h = (arg2 / 16777216) % 256;
+        vs_main_battleTimer.time.t.f = arg2 % 256;
+        vs_main_battleTimer.time.t.s = (arg2 / 256) % 256;
+        vs_main_battleTimer.time.t.m = (arg2 / 65536) % 256;
+        vs_main_battleTimer.time.t.h = (arg2 / 16777216) % 256;
     }
 
-    vs_battle_setStateFlag(0xA0, D_80050468.time.t.f);
-    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
-    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
-    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
+    vs_battle_setStateFlag(0xA0, vs_main_battleTimer.time.t.f);
+    vs_battle_setStateFlag(0xA1, vs_main_battleTimer.time.t.s);
+    vs_battle_setStateFlag(0xA2, vs_main_battleTimer.time.t.m);
+    vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
     func_800CB550();
 }
 
 void func_8007BCCC(void)
 {
-    D_80050468.unk0 = 0;
-    D_80050468.time.t.h = 0;
-    D_80050468.time.t.m = 0;
-    D_80050468.time.t.s = 0;
-    D_80050468.time.t.f = 0;
+    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.time.t.h = 0;
+    vs_main_battleTimer.time.t.m = 0;
+    vs_main_battleTimer.time.t.s = 0;
+    vs_main_battleTimer.time.t.f = 0;
     vs_battle_setStateFlag(0xA0, 0);
-    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
-    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
-    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
+    vs_battle_setStateFlag(0xA1, vs_main_battleTimer.time.t.s);
+    vs_battle_setStateFlag(0xA2, vs_main_battleTimer.time.t.m);
+    vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
     func_800CB560();
 }
 
 void func_8007BD3C(int arg0)
 {
     if (arg0 != 0) {
-        int temp_v1 = D_80050468.unk0;
-        D_80050468.unk0 = 0;
-        D_80050468.unk1 = temp_v1;
+        int temp_v1 = vs_main_battleTimer.mode;
+        vs_main_battleTimer.mode = 0;
+        vs_main_battleTimer.savedMode = temp_v1;
         func_800CB560();
         return;
     }
-    D_80050468.unk0 = D_80050468.unk1;
+    vs_main_battleTimer.mode = vs_main_battleTimer.savedMode;
     func_800CB550();
 }
 
@@ -14421,56 +14431,56 @@ int func_800882F4(void)
     int var_s1 = 0;
     int var_s2 = 0;
 
-    if (D_80050468.unk0 == var_s1) {
+    if (vs_main_battleTimer.mode == var_s1) {
         return var_s1;
     }
 
-    if (D_80050468.unk0 == 1) {
-        if (D_80050468.time.t.h <= 0) {
-            D_80050468.time.t.f += vs_gametime_tickspeed;
-            if (D_80050468.time.t.f > 59) {
-                D_80050468.time.t.f = 0;
-                if (++D_80050468.time.t.s > 59) {
-                    D_80050468.time.t.s = 0;
-                    if (++D_80050468.time.t.m > 59) {
-                        D_80050468.time.t.m = 0;
-                        if (++D_80050468.time.t.h > 0) {
-                            D_80050468.time.t.h = D_80050468.unk0;
+    if (vs_main_battleTimer.mode == 1) {
+        if (vs_main_battleTimer.time.t.h <= 0) {
+            vs_main_battleTimer.time.t.f += vs_gametime_tickspeed;
+            if (vs_main_battleTimer.time.t.f > 59) {
+                vs_main_battleTimer.time.t.f = 0;
+                if (++vs_main_battleTimer.time.t.s > 59) {
+                    vs_main_battleTimer.time.t.s = 0;
+                    if (++vs_main_battleTimer.time.t.m > 59) {
+                        vs_main_battleTimer.time.t.m = 0;
+                        if (++vs_main_battleTimer.time.t.h > 0) {
+                            vs_main_battleTimer.time.t.h = vs_main_battleTimer.mode;
                         }
                     }
                 }
             }
         }
-    } else if (D_80050468.time.t.f | D_80050468.time.t.s | D_80050468.time.t.m
-               | D_80050468.time.t.h) {
-        if (D_80050468.time.t.f == 0) {
-            D_80050468.time.t.f = 60;
-            if (--D_80050468.time.t.s < 0) {
-                D_80050468.time.t.s = 59;
-                if (--D_80050468.time.t.m < 0) {
-                    D_80050468.time.t.m = 59;
-                    if (--D_80050468.time.t.h < 0) {
-                        D_80050468.time.t.h = 0;
+    } else if (vs_main_battleTimer.time.t.f | vs_main_battleTimer.time.t.s
+               | vs_main_battleTimer.time.t.m | vs_main_battleTimer.time.t.h) {
+        if (vs_main_battleTimer.time.t.f == 0) {
+            vs_main_battleTimer.time.t.f = 60;
+            if (--vs_main_battleTimer.time.t.s < 0) {
+                vs_main_battleTimer.time.t.s = 59;
+                if (--vs_main_battleTimer.time.t.m < 0) {
+                    vs_main_battleTimer.time.t.m = 59;
+                    if (--vs_main_battleTimer.time.t.h < 0) {
+                        vs_main_battleTimer.time.t.h = 0;
                     }
                 }
             }
         }
 
-        D_80050468.time.t.f -= vs_gametime_tickspeed;
+        vs_main_battleTimer.time.t.f -= vs_gametime_tickspeed;
     }
 
-    if (D_80050468.time.t.f != 0) {
+    if (vs_main_battleTimer.time.t.f != 0) {
         vs_battle_setStateFlag(
-            0xA0, ((((D_80050468.time.t.f << 0xE) + rand()) * 5u) >> 0xE) / 3);
+            0xA0, ((((vs_main_battleTimer.time.t.f << 0xE) + rand()) * 5u) >> 0xE) / 3);
     } else {
-        vs_battle_setStateFlag(0xA0, D_80050468.time.t.f);
+        vs_battle_setStateFlag(0xA0, vs_main_battleTimer.time.t.f);
     }
 
-    vs_battle_setStateFlag(0xA1, D_80050468.time.t.s);
-    vs_battle_setStateFlag(0xA2, D_80050468.time.t.m);
-    vs_battle_setStateFlag(0xA3, D_80050468.time.t.h);
+    vs_battle_setStateFlag(0xA1, vs_main_battleTimer.time.t.s);
+    vs_battle_setStateFlag(0xA2, vs_main_battleTimer.time.t.m);
+    vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
 
-    if ((var_s2 == 0) && (D_80050468.time.t.f == 0)
+    if ((var_s2 == 0) && (vs_main_battleTimer.time.t.f == 0)
         && (func_800BEC58(16, 0, 0, 0) == 1)) {
         var_s1 = 1;
     }
@@ -14687,7 +14697,7 @@ void func_80088CA0(void) { D_800E8498 = 0; }
 
 void func_80088CAC(void)
 {
-    if (D_80050468.unk2 == 2) {
+    if (vs_main_battleTimer.lifetime == 2) {
         func_8007BCCC();
     }
     _clearZoneEnemyCache();
@@ -14763,7 +14773,7 @@ void _finishLoadZnd(int id)
 
     _zoneContext.zndCdFile = NULL;
 
-    if (D_80050468.unk2 == 1) {
+    if (vs_main_battleTimer.lifetime == 1) {
         func_8007BCCC();
     }
 
@@ -15214,8 +15224,8 @@ void func_80089DC0(int arg0)
     vs_main_freeCdQueueSlot(_zoneContext.mpdCdFile);
     _zoneContext.mpdCdFile = NULL;
 
-    D_8005E0C0[0] = vs_main_allocHeap(0x20000);
-    D_8005E0C0[1] = vs_main_allocHeap(0x20000);
+    vs_main_prims[0] = vs_main_allocHeap(0x20000);
+    vs_main_prims[1] = vs_main_allocHeap(0x20000);
 
     vs_main_clutInit();
 
@@ -15234,7 +15244,7 @@ void func_80089DC0(int arg0)
         func_80088CAC();
     }
 
-    if (D_80050468.unk2 == 0) {
+    if (vs_main_battleTimer.lifetime == 0) {
         func_8007BCCC();
     }
 
@@ -15317,9 +15327,9 @@ void func_80089DC0(int arg0)
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
     func_8007D15C(1);
-    D_8005E1D4 = 0;
-    D_8005E244 = 0;
-    D_8005E1C4 = 0;
+    vs_main_unused1 = 0;
+    vs_main_unused2 = 0;
+    vs_main_unused0 = 0;
     vs_main_buttonRepeat = 0;
     vs_main_buttonsReleased = 0;
     vs_main_buttonsPressed.all = 0;
@@ -15415,7 +15425,7 @@ void func_8008A3A0(void)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        vs_scratch.unk4 = D_80055C80[vs_main_frameBuf] + 0x10;
+        vs_scratch.unk4 = vs_main_ot[vs_main_frameBuf] + 0x10;
         ClearOTagR(vs_scratch.unk4, 0x800);
         func_8007DF40();
         _drawScreenTransition(vs_scratch.unk4);
@@ -15438,8 +15448,8 @@ void func_8008A3A0(void)
     func_80095B7C(0, 0);
     func_8009D6F4();
     func_8008A6FC();
-    vs_main_freeHeap(D_8005E0C0[1]);
-    vs_main_freeHeap(D_8005E0C0[0]);
+    vs_main_freeHeap(vs_main_prims[1]);
+    vs_main_freeHeap(vs_main_prims[0]);
 }
 
 void func_8008A4DC(int arg0)
@@ -15916,17 +15926,17 @@ void func_8008B390(int arg0, int* arg1)
     }
 }
 
-void func_8008B430(D_800F4538_unk58_2* arg0, int arg1)
+void func_8008B430(CVECTOR* arg0, int arg1)
 {
-    if ((arg0->unk0 == 0) && (arg0->unk1 == 0) && (arg0->unk2 == 0) && (arg1 == 0)) {
+    if ((arg0->r == 0) && (arg0->g == 0) && (arg0->b == 0) && (arg1 == 0)) {
         D_800F1BB6 = 0;
         return;
     }
     D_800F1BB0.unk6 = 1;
     D_800F1BB0.unk4 = arg1;
-    D_800F1BB0.unk0 = arg0->unk0;
-    D_800F1BB0.unk1 = arg0->unk1;
-    D_800F1BB0.unk2 = arg0->unk2;
+    D_800F1BB0.unk0 = arg0->r;
+    D_800F1BB0.unk1 = arg0->g;
+    D_800F1BB0.unk2 = arg0->b;
 }
 
 void func_8008B4B0(void) { D_800F1BB6 = 0; }

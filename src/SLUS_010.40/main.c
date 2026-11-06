@@ -40,11 +40,19 @@ typedef struct {
 } padAct_t;
 
 typedef struct {
-    char unk0[6];
-    short unk6[5];
-    int unk10[6];
-    D_8005DC6C_t unk28;
-} D_8005DC80_t;
+    char active;
+    char frame;
+    char tick;
+    char speed;
+    char mode;
+    char unk5;
+    short pulseTarget[3];
+    short grayAmount;
+    short grayStep;
+    int color[3];
+    int colorStep[3];
+    CVECTOR baseColor;
+} _colorSlot_t;
 
 typedef struct {
     char unk4;
@@ -85,8 +93,8 @@ typedef struct {
     short bgTransitionTargetG;
     short bgTransitionTargetB;
     int bgColors[5][6];
-    D_8005DC6C_t unk7F14[5];
-    D_8005DC80_t unk7F28[17];
+    CVECTOR bgBaseColors[5];
+    _colorSlot_t colorSlots[17];
     u_char unk8214[0x54];
 } _clutState_t;
 
@@ -114,7 +122,7 @@ char _vibrationOnBank[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 
     255, 0, 0, 0 };
 char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
 int vs_main_titleScreenCount = 0;
-int D_8004A52C = 0;
+int vs_main_debugPause = 0;
 
 #define WAVE_FILES(X) \
     X(0000), X(0001), X(0002), X(0003), X(0004), X(0005), X(0006), X(0007), \
@@ -745,10 +753,10 @@ static UNUSED u_char _2[2];
 static vs_main_HeapHeader _heapA;
 static vs_main_HeapHeader _heapB;
 static DslLOC _cdReadLoc;
-static int D_800501CC;
-static int D_800501D0;
-static int D_800501D4;
-static int D_800501D8;
+static int _cdaTrack;
+static int _cdaMinute;
+static int _cdaSecond;
+static int _cdaPeak;
 static UNUSED int _3;
 static vs_main_CdQueueSlot _cdQueue[32];
 static struct {
@@ -756,13 +764,13 @@ static struct {
     short queued;
 } _cdQueueCount;
 static UNUSED int _4;
-D_80050468_t D_80050468;
+vs_main_battleTimer_t vs_main_battleTimer;
 int vs_main_startState;
 static int _sp2;
 static u_short _sfxData[0x2C00];
 int vs_main_buttonsReleased;
 static UNUSED int _5;
-void* D_80055C80[2];
+void* vs_main_ot[2];
 static int _resetEnabled;
 static UNUSED int _6;
 static u_int _buttonHeldFrameCount[32];
@@ -770,16 +778,16 @@ vs_main_disk_t vs_main_disk;
 static _clutState_t _clutState;
 vs_main_stickPos vs_main_stickPosBuf;
 static int _sp;
-short D_8005DFD4;
+short vs_main_screenX;
 short vs_main_screenWidth;
-short D_8005DFD8;
+short vs_main_screenY;
 u_short vs_main_screenHeight;
 int vs_main_buttonRepeat;
 static UNUSED int _7[4];
 char vs_main_padBuffer[2][34];
 static UNUSED int _8;
 soundData_t vs_main_soundData;
-void* D_8005E0C0[2];
+void* vs_main_prims[2];
 int vs_main_nearClip;
 static UNUSED int _9;
 DRAWENV vs_main_drawEnv[2];
@@ -798,19 +806,19 @@ static void _initScreen(
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
 
 int vs_main_buttonsPreviousState;
-int D_8005E1C4;
+int vs_main_unused0;
 static UNUSED int _11[2];
 vs_main_buttonsPressed_t vs_main_buttonsPressed;
-int D_8005E1D4;
+int vs_main_unused1;
 u_int vs_main_frameDuration;
 static UNUSED int _12[13];
 int vs_main_frameBuf;
 int vs_main_saveGameClearData;
-MATRIX D_8005E218;
+MATRIX vs_main_cameraBasis;
 int vs_main_buttonsState;
 static UNUSED int _14;
 static int _inGame;
-int D_8005E244;
+int vs_main_unused2;
 int vs_main_projectionDistance;
 
 static void _displayLoadingScreen(void)
@@ -926,12 +934,12 @@ void vs_main_showEndingAndReturnToTitle(void)
 int vs_gametime_tickspeed;
 static u_short _clutBuffer[14][256];
 static UNUSED int _15[8];
-static int D_8005FE70;
-static int D_8005FE74;
-static int D_8005FE78;
-static int D_8005FE7C;
-static int D_8005FE80;
-static int D_8005FE84;
+static int _nextVoicePool0;
+static int _nextVoicePool1;
+static int _nextVoicePool2;
+static int _nextVoicePool3;
+static int _nextVoicePool4;
+static int _nextVoicePool5;
 static UNUSED int _16[6];
 vs_main_scoredata_t vs_main_scoredata;
 static UNUSED int _17;
@@ -940,7 +948,7 @@ vs_main_mapStatus_t vs_main_mapStatus;
 vs_main_settings_t vs_main_settings;
 vs_main_artsStatus_t vs_main_artsStatus;
 int vs_main_zoneEnemyCacheIndex;
-D_80060068_t D_80060068;
+vs_main_characterSnapshot_t vs_main_characterSnapshot;
 vs_main_inventory_t vs_main_inventory;
 _mpdRoomDoorSection_t vs_main_spawnPoint;
 vs_Gametime_t vs_main_gametime;
@@ -1098,7 +1106,7 @@ static void _sysReinit(void)
     vs_main_gametime.t.m = 0;
     vs_main_gametime.t.s = 0;
     vs_main_gametime.t.f = 0;
-    D_80060068.unk0.restorePending = 0;
+    vs_main_characterSnapshot.stats.restorePending = 0;
 }
 
 int vs_main_execTitle(void)
@@ -1130,7 +1138,10 @@ void vs_main_wait(void) { vs_overlay_wait(); }
 
 void vs_main_enableReset(int enable) { _resetEnabled = enable; }
 
-void vs_main_setCharacterRestorePending(void) { D_80060068.unk0.restorePending = 1; }
+void vs_main_setCharacterRestorePending(void)
+{
+    vs_main_characterSnapshot.stats.restorePending = 1;
+}
 
 void vs_main_captureSaveState(void)
 {
@@ -1143,7 +1154,7 @@ void vs_main_captureSaveState(void)
     int var_t4;
     signed char actionsLearned;
     vs_battle_actor2* temp_t0;
-    D_80060068_t* temp_t5;
+    vs_main_characterSnapshot_t* temp_t5;
     int v0;
     int v0_2;
     int v1;
@@ -1166,44 +1177,44 @@ void vs_main_captureSaveState(void)
         vs_main_actionsLearned[var_s1] = actionsLearned;
     }
     temp_t0 = vs_battle_characterState->unk3C;
-    temp_t5 = &D_80060068;
-    temp_t5->unk0.currentHP = temp_t0->currentHP;
-    temp_t5->unk0.maxHP = temp_t0->maxHP;
-    temp_t5->unk0.currentMP = temp_t0->currentMP;
-    temp_t5->unk0.maxMP = temp_t0->maxMP;
-    temp_t5->unk0.strength = temp_t0->strength;
-    temp_t5->unk0.totalStrength = temp_t0->totalStrength;
-    temp_t5->unk0.intelligence = temp_t0->intelligence;
-    temp_t5->unk0.totalIntelligence = temp_t0->totalIntelligence;
-    temp_t5->unk0.agility = temp_t0->agility;
-    temp_t5->unk0.totalAgility = temp_t0->totalAgility;
-    temp_t5->unk0.risk = temp_t0->risk;
-    temp_t5->unk0.flags = temp_t0->unk954;
-    temp_t5->unk0.statuses = temp_t0->statuses;
+    temp_t5 = &vs_main_characterSnapshot;
+    temp_t5->stats.currentHP = temp_t0->currentHP;
+    temp_t5->stats.maxHP = temp_t0->maxHP;
+    temp_t5->stats.currentMP = temp_t0->currentMP;
+    temp_t5->stats.maxMP = temp_t0->maxMP;
+    temp_t5->stats.strength = temp_t0->strength;
+    temp_t5->stats.totalStrength = temp_t0->totalStrength;
+    temp_t5->stats.intelligence = temp_t0->intelligence;
+    temp_t5->stats.totalIntelligence = temp_t0->totalIntelligence;
+    temp_t5->stats.agility = temp_t0->agility;
+    temp_t5->stats.totalAgility = temp_t0->totalAgility;
+    temp_t5->stats.risk = temp_t0->risk;
+    temp_t5->stats.flags = temp_t0->unk954;
+    temp_t5->stats.statuses = temp_t0->statuses;
 
     for (i = 0; i < 8; ++i) {
-        temp_t5->unk0.statusTimers[i] = temp_t0->statusTimers[i];
+        temp_t5->stats.statusTimers[i] = temp_t0->statusTimers[i];
     }
 
     var_t4 = 0;
     var_t3 = 0;
 
     for (i = 0; i < 6; ++i) {
-        temp_t5->unk0.limbs[i].hp = temp_t0->limbs[i].hp;
-        temp_t5->unk0.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
+        temp_t5->stats.limbs[i].hp = temp_t0->limbs[i].hp;
+        temp_t5->stats.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->unk0.limbs[i].types[j] = temp_t0->limbs[i].types[j];
+            temp_t5->stats.limbs[i].types[j] = temp_t0->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->unk0.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
+            temp_t5->stats.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
         }
     }
 
-    temp_t5->unk0.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->unk0.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->unk0.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
+    temp_t5->stats.weaponDrawn = vs_battle_characterState->weaponDrawn;
+    temp_t5->stats.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    temp_t5->stats.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
     for (var_s1 = 0; var_s1 < 16; ++var_s1) {
         vs_battle_saveEnemyState(var_s1, 0);
@@ -1873,10 +1884,10 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
         break;
     case DslDataReady:
         if (!(result[4] & 0x80)) {
-            D_800501CC = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
-            D_800501D0 = result[3];
-            D_800501D4 = result[4];
-            D_800501D8 = (result[6] << 8) | result[7];
+            _cdaTrack = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
+            _cdaMinute = result[3];
+            _cdaSecond = result[4];
+            _cdaPeak = (result[6] << 8) | result[7];
         }
         break;
     case DslDiskError:
@@ -2541,12 +2552,12 @@ void vs_main_stopMusic(void)
     }
 }
 
-static UNUSED void func_80045630(int arg0)
+static UNUSED void _playSfxPool0Default(int id)
 {
-    Sound_PlaySfx(arg0 & 0xFFFF, D_8005FE70, 0x80, 0x7F);
+    Sound_PlaySfx(id & 0xFFFF, _nextVoicePool0, 0x80, 0x7F);
 
-    if (!((D_8005FE70 *= 2) & 1)) {
-        D_8005FE70 = 1;
+    if (!((_nextVoicePool0 *= 2) & 1)) {
+        _nextVoicePool0 = 1;
     }
 }
 
@@ -2580,10 +2591,10 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
     case 0x7E:
     case 0xFE:
         if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
-            _playSfxById(id & 0xFFFF, D_8005FE74, arg2, arg3);
-            D_8005FE74 *= 2;
-            if (!(D_8005FE74 & 0x7E)) {
-                D_8005FE74 = 2;
+            _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
+            _nextVoicePool1 *= 2;
+            if (!(_nextVoicePool1 & 0x7E)) {
+                _nextVoicePool1 = 2;
             }
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
@@ -2593,7 +2604,7 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
     case 0x100:
     case 0x200:
         if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
-            _playSfxById(id & 0xFFFF, D_8005FE7C, arg2, arg3);
+            _playSfxById(id & 0xFFFF, _nextVoicePool3, arg2, arg3);
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
@@ -2603,10 +2614,10 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
         var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
         var_s0_2 += *((int*)var_s0_2 + id + 1);
         if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, D_8005FE80, arg2, arg3);
-            D_8005FE80 *= 2;
-            if (!(D_8005FE80 & arg0)) {
-                D_8005FE80 = 0x1000;
+            _playSfxFromPointer(var_s0_2, _nextVoicePool4, arg2, arg3);
+            _nextVoicePool4 *= 2;
+            if (!(_nextVoicePool4 & arg0)) {
+                _nextVoicePool4 = 0x1000;
             }
         } else {
             _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
@@ -2617,10 +2628,10 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
         var_s0_2 = vs_main_soundData.sfxData[2];
         var_s0_2 += *((int*)var_s0_2 + id + 1);
         if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, D_8005FE84, arg2, arg3);
-            D_8005FE84 *= 2;
-            if (!(D_8005FE84 & arg0)) {
-                D_8005FE84 = 0x100000;
+            _playSfxFromPointer(var_s0_2, _nextVoicePool5, arg2, arg3);
+            _nextVoicePool5 *= 2;
+            if (!(_nextVoicePool5 & arg0)) {
+                _nextVoicePool5 = 0x100000;
             }
         } else {
             _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
@@ -2946,22 +2957,22 @@ void vs_main_playBankSfx(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
         var_s0 = 0;
 
         if (arg0 == 0x180) {
-            var_s0 = D_8005FE78;
-            D_8005FE78 *= 2;
-            if (!(D_8005FE78 & 0x180)) {
-                D_8005FE78 = 0x80;
+            var_s0 = _nextVoicePool2;
+            _nextVoicePool2 *= 2;
+            if (!(_nextVoicePool2 & 0x180)) {
+                _nextVoicePool2 = 0x80;
             }
         } else if (arg0 == 0x200) {
-            var_s0 = D_8005FE7C;
-            D_8005FE7C *= 2;
-            if (!(D_8005FE7C & 0x200)) {
-                D_8005FE7C = arg0;
+            var_s0 = _nextVoicePool3;
+            _nextVoicePool3 *= 2;
+            if (!(_nextVoicePool3 & 0x200)) {
+                _nextVoicePool3 = arg0;
             }
         } else if (arg0 == 0xF00000) {
-            var_s0 = D_8005FE84;
-            D_8005FE84 *= 2;
-            if (!(D_8005FE84 & arg0)) {
-                D_8005FE84 = 0x100000;
+            var_s0 = _nextVoicePool5;
+            _nextVoicePool5 *= 2;
+            if (!(_nextVoicePool5 & arg0)) {
+                _nextVoicePool5 = 0x100000;
             }
         } else if (arg0 == 0x7E) {
         } else {
@@ -3231,12 +3242,12 @@ static void _loadMenuSound(void)
     vs_main_freeHeapR(buf);
     vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
     Sound_BindAkaoSfxBlob(_sfxData);
-    D_8005FE70 = 1;
-    D_8005FE74 = 2;
-    D_8005FE78 = 0x80;
-    D_8005FE7C = 0x200;
-    D_8005FE80 = 0x1000;
-    D_8005FE84 = 0x100000;
+    _nextVoicePool0 = 1;
+    _nextVoicePool1 = 2;
+    _nextVoicePool2 = 0x80;
+    _nextVoicePool3 = 0x200;
+    _nextVoicePool4 = 0x1000;
+    _nextVoicePool5 = 0x100000;
 }
 
 void vs_main_resetSound(void)
@@ -3270,12 +3281,12 @@ void vs_main_resetSound(void)
     vs_main_soundData.soundFileId = 0;
     vs_main_soundData.soundData = NULL;
     vs_main_soundData.soundQueueSlot = NULL;
-    D_8005FE70 = 1;
-    D_8005FE74 = 2;
-    D_8005FE78 = 0x80;
-    D_8005FE7C = 0x200;
-    D_8005FE80 = 0x1000;
-    D_8005FE84 = 0x100000;
+    _nextVoicePool0 = 1;
+    _nextVoicePool1 = 2;
+    _nextVoicePool2 = 0x80;
+    _nextVoicePool3 = 0x200;
+    _nextVoicePool4 = 0x1000;
+    _nextVoicePool5 = 0x100000;
 }
 
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
@@ -3322,8 +3333,6 @@ void vs_main_loadClutTransition(
 }
 
 static UNUSED void _loadClutTransitionWithBase(
-    int duration, int slot, u_short* sourceClut, int clutOffset);
-static void _loadClutTransitionWithBase(
     int duration, int slot, u_short* sourceClut, int clutOffset)
 {
     int i;
@@ -3337,8 +3346,7 @@ static void _loadClutTransitionWithBase(
     }
 }
 
-static UNUSED void _saveClutBase(int slot);
-static void _saveClutBase(int slot)
+static UNUSED void _saveClutBase(int slot)
 {
     int i;
 
@@ -3539,7 +3547,7 @@ void vs_main_transformClutSlot(
 
 static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
-void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1)
+void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
 {
     int sp10[5];
     int i;
@@ -3581,14 +3589,14 @@ void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1)
     }
 }
 
-void func_80047464(int arg0, D_8005DC6C_t* arg1)
+static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
 {
     int i;
 
     if (_clutState.active != 0) {
         vs_main_fadeBgColors(arg0, arg1);
         for (i = 0; i < 5; ++i) {
-            _clutState.unk7F14[i] = arg1[i];
+            _clutState.bgBaseColors[i] = arg1[i];
         }
     }
 }
@@ -3623,19 +3631,19 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             break;
         case 4:
         case 9:
-            var_t1 = (_clutState.unk7F14[i].r + arg2) << 0x10;
-            var_t0 = (_clutState.unk7F14[i].g + arg3) << 0x10;
-            var_a1 = (_clutState.unk7F14[i].b + arg4) << 0x10;
+            var_t1 = (_clutState.bgBaseColors[i].r + arg2) << 0x10;
+            var_t0 = (_clutState.bgBaseColors[i].g + arg3) << 0x10;
+            var_a1 = (_clutState.bgBaseColors[i].b + arg4) << 0x10;
             break;
         case 5:
-            var_t1 = (_clutState.unk7F14[i].r << 0xF) + (arg2 << 0x10);
-            var_t0 = (_clutState.unk7F14[i].g << 0xF) + (arg3 << 0x10);
-            var_a1 = (_clutState.unk7F14[i].b << 0xF) + (arg4 << 0x10);
+            var_t1 = (_clutState.bgBaseColors[i].r << 0xF) + (arg2 << 0x10);
+            var_t0 = (_clutState.bgBaseColors[i].g << 0xF) + (arg3 << 0x10);
+            var_a1 = (_clutState.bgBaseColors[i].b << 0xF) + (arg4 << 0x10);
             break;
         case 6: {
-            int v1 = _clutState.unk7F14[i].g;
-            int a0 = _clutState.unk7F14[i].b;
-            int v0 = _clutState.unk7F14[i].r;
+            int v1 = _clutState.bgBaseColors[i].g;
+            int a0 = _clutState.bgBaseColors[i].b;
+            int v0 = _clutState.bgBaseColors[i].r;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -3647,9 +3655,9 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 6 + (arg4 << 0x10);
         } break;
         case 7: {
-            int v1 = _clutState.unk7F14[i].g;
-            int a0 = _clutState.unk7F14[i].b;
-            int v0 = _clutState.unk7F14[i].r;
+            int v1 = _clutState.bgBaseColors[i].g;
+            int a0 = _clutState.bgBaseColors[i].b;
+            int v0 = _clutState.bgBaseColors[i].r;
             var_a1 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
@@ -3661,9 +3669,9 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             var_a1 = v0 / 12 + (arg4 << 0x10);
         } break;
         case 8:
-            var_t1 = _clutState.unk7F14[i].r << 0x10;
-            var_t0 = _clutState.unk7F14[i].g << 0x10;
-            var_a1 = _clutState.unk7F14[i].b << 0x10;
+            var_t1 = _clutState.bgBaseColors[i].r << 0x10;
+            var_t0 = _clutState.bgBaseColors[i].g << 0x10;
+            var_a1 = _clutState.bgBaseColors[i].b << 0x10;
             break;
         case 11:
             _clutState.bgTransitionMode = 0;
@@ -3756,10 +3764,10 @@ void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
+static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
-    D_800F4538_unk58_2 sp10;
-    D_8005DC80_t* temp_t0;
+    CVECTOR sp10;
+    _colorSlot_t* temp_t0;
     int temp_a1;
     int temp_t1;
     int temp_t2;
@@ -3770,141 +3778,141 @@ void func_80047910(int arg0, int arg1, D_8005DC6C_t* arg2)
         return;
     }
 
-    temp_t0 = &_clutState.unk7F28[arg1];
-    temp_a3 = _clutState.unk7F28[arg1].unk10;
-    temp_a1 = _shift_left(arg2->r);
-    temp_t1 = _shift_left(arg2->g);
-    temp_t2 = _shift_left(arg2->b);
+    temp_t0 = &_clutState.colorSlots[slot];
+    temp_a3 = _clutState.colorSlots[slot].color;
+    temp_a1 = _shift_left(color->r);
+    temp_t1 = _shift_left(color->g);
+    temp_t2 = _shift_left(color->b);
 
-    if (arg0 != 0) {
-        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (arg0 * 2));
-        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (arg0 * 2));
-        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (arg0 * 2));
+    if (frames != 0) {
+        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (frames * 2));
+        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (frames * 2));
+        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (frames * 2));
     } else {
         temp_a3[0] = temp_a1;
         temp_a3[1] = temp_t1;
         temp_a3[2] = temp_t2;
     }
-    if (arg0 != 0) {
-        temp_t0->unk0[0] = 1;
-        temp_t0->unk0[1] = 0;
-        temp_t0->unk0[2] = 0;
-        temp_t0->unk0[3] = arg0;
+    if (frames != 0) {
+        temp_t0->active = 1;
+        temp_t0->frame = 0;
+        temp_t0->tick = 0;
+        temp_t0->speed = frames;
         return;
     }
 
-    temp_t0->unk0[0] = 0;
-    sp10.unk0 = (temp_a3[0] / 65536) - 64;
-    sp10.unk1 = (temp_a3[1] / 65536) - 64;
-    sp10.unk2 = (temp_a3[2] / 65536) - 64;
-    sp10.unk3 = 0;
+    temp_t0->active = 0;
+    sp10.r = (temp_a3[0] / 65536) - 64;
+    sp10.g = (temp_a3[1] / 65536) - 64;
+    sp10.b = (temp_a3[2] / 65536) - 64;
+    sp10.cd = 0;
 
-    if (arg1 != 0) {
-        func_800A0768(arg1 - 1, &sp10);
+    if (slot != 0) {
+        func_800A0768(slot - 1, &sp10);
     } else {
-        func_8008B430(&sp10, temp_t0->unk6[3] >> 2);
+        func_8008B430(&sp10, temp_t0->grayAmount >> 2);
     }
 }
 
-static void func_80047AB4(int arg0, int arg1, D_8005DC6C_t* arg2)
+static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
 {
     if (_clutState.active != 0) {
-        func_80047910(arg0, arg1, arg2);
-        _clutState.unk7F28[arg1].unk28 = *arg2;
+        _fadeColorSlot(frames, slot, color);
+        _clutState.colorSlots[slot].baseColor = *color;
     }
 }
 
-void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
 {
-    D_800F4538_unk58_2 sp10;
+    CVECTOR sp10;
     short var_t4;
     int var_a1;
     int var_a2;
     int var_t0;
     int var_v0;
     int var_v1;
-    D_8005DC80_t* t1 = &_clutState.unk7F28[arg2];
-    int* t2 = t1->unk10;
+    _colorSlot_t* t1 = &_clutState.colorSlots[slot];
+    int* t2 = t1->color;
 
     var_t4 = 0;
-    switch (arg0) {
+    switch (mode) {
     case 1:
-        var_a1 = (t2[0] / 2) + (arg3 << 16);
-        var_t0 = (t2[1] / 2) + (arg4 << 16);
-        var_a2 = (t2[2] / 2) + (arg5 << 16);
+        var_a1 = (t2[0] / 2) + (r << 16);
+        var_t0 = (t2[1] / 2) + (g << 16);
+        var_a2 = (t2[2] / 2) + (b << 16);
         break;
     case 2:
         var_t4 = 0x4000;
-        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg3 << 0x10);
-        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg4 << 0x10);
-        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (arg5 << 0x10);
+        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (r << 0x10);
+        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (g << 0x10);
+        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (b << 0x10);
         break;
     case 3:
         var_t4 = 0x4000;
         var_v1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 12;
-        var_a1 = var_v1 + (arg3 << 0x10);
-        var_t0 = var_v1 + (arg4 << 0x10);
-        var_a2 = var_v1 + (arg5 << 0x10);
+        var_a1 = var_v1 + (r << 0x10);
+        var_t0 = var_v1 + (g << 0x10);
+        var_a2 = var_v1 + (b << 0x10);
         break;
     case 4:
     case 9:
-        var_a1 = (t1->unk28.r + arg3) << 0x10;
-        var_t0 = (t1->unk28.g + arg4) << 0x10;
-        var_a2 = (t1->unk28.b + arg5) << 0x10;
+        var_a1 = (t1->baseColor.r + r) << 0x10;
+        var_t0 = (t1->baseColor.g + g) << 0x10;
+        var_a2 = (t1->baseColor.b + b) << 0x10;
         break;
     case 5:
         var_t4 = 0x4000;
-        var_a1 = (t1->unk28.r << 0xF) + (arg3 << 0x10);
-        var_t0 = (t1->unk28.g << 0xF) + (arg4 << 0x10);
-        var_a2 = (t1->unk28.b << 0xF) + (arg5 << 0x10);
+        var_a1 = (t1->baseColor.r << 0xF) + (r << 0x10);
+        var_t0 = (t1->baseColor.g << 0xF) + (g << 0x10);
+        var_a2 = (t1->baseColor.b << 0xF) + (b << 0x10);
         break;
     case 6:
         var_t4 = 0x4000;
         {
-            int v1 = t1->unk28.g;
-            int a0 = t1->unk28.b;
-            int v0 = t1->unk28.r;
+            int v1 = t1->baseColor.g;
+            int a0 = t1->baseColor.b;
+            int v0 = t1->baseColor.r;
             var_a2 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
             v1 <<= 0x11;
             v0 += v1 + var_a2;
             v0 += a0;
-            var_a1 = v0 / 6 + (arg3 << 0x10);
-            var_t0 = v0 / 6 + (arg4 << 0x10);
-            var_a2 = v0 / 6 + (arg5 << 0x10);
+            var_a1 = v0 / 6 + (r << 0x10);
+            var_t0 = v0 / 6 + (g << 0x10);
+            var_a2 = v0 / 6 + (b << 0x10);
         }
         break;
     case 7:
         var_t4 = 0x4000;
         {
-            int v1 = t1->unk28.g;
-            int a0 = t1->unk28.b;
-            int v0 = t1->unk28.r;
+            int v1 = t1->baseColor.g;
+            int a0 = t1->baseColor.b;
+            int v0 = t1->baseColor.r;
             var_a2 = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
             v1 <<= 0x11;
             v0 += v1 + var_a2;
             v0 += a0;
-            var_a1 = v0 / 12 + (arg3 << 0x10);
-            var_t0 = v0 / 12 + (arg4 << 0x10);
-            var_a2 = v0 / 12 + (arg5 << 0x10);
+            var_a1 = v0 / 12 + (r << 0x10);
+            var_t0 = v0 / 12 + (g << 0x10);
+            var_a2 = v0 / 12 + (b << 0x10);
         }
         break;
     case 8:
     case 15:
-        var_a1 = t1->unk28.r << 0x10;
-        var_t0 = t1->unk28.g << 0x10;
-        var_a2 = t1->unk28.b << 0x10;
+        var_a1 = t1->baseColor.r << 0x10;
+        var_t0 = t1->baseColor.g << 0x10;
+        var_a2 = t1->baseColor.b << 0x10;
         break;
     case 11:
-        t1->unk0[4] = 0;
+        t1->mode = 0;
         return;
     default:
-        var_a1 = t2[0] + (arg3 << 0x10);
-        var_t0 = t2[1] + (arg4 << 0x10);
-        var_a2 = t2[2] + (arg5 << 0x10);
+        var_a1 = t2[0] + (r << 0x10);
+        var_t0 = t2[1] + (g << 0x10);
+        var_a2 = t2[2] + (b << 0x10);
         break;
     }
     var_a1 = var_a1 & 0xFFFF0000;
@@ -3929,62 +3937,62 @@ void func_80047B30(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
     if (var_a2 < 0) {
         var_a2 = 0;
     }
-    if (arg1 != 0) {
-        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (arg1 * 2));
-        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (arg1 * 2));
-        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (arg1 * 2));
-        t1->unk6[4] = ((var_t4 - t1->unk6[3]) / (arg1 * 2));
+    if (frames != 0) {
+        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (frames * 2));
+        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (frames * 2));
+        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (frames * 2));
+        t1->grayStep = ((var_t4 - t1->grayAmount) / (frames * 2));
     } else {
         t2[0] = var_a1;
         t2[1] = var_t0;
         t2[2] = var_a2;
-        t1->unk6[3] = var_t4;
+        t1->grayAmount = var_t4;
     }
     var_v0 = 1;
-    if (arg1 != 0) {
-        t1->unk0[0] = 1;
-        t1->unk0[1] = 0;
-        t1->unk0[2] = 0;
-        t1->unk0[3] = arg1;
-        t1->unk0[4] = arg0;
-        if (arg0 == 9) {
-            t1->unk6[0] = arg3;
-            t1->unk6[1] = arg4;
-            t1->unk6[2] = arg5;
+    if (frames != 0) {
+        t1->active = 1;
+        t1->frame = 0;
+        t1->tick = 0;
+        t1->speed = frames;
+        t1->mode = mode;
+        if (mode == 9) {
+            t1->pulseTarget[0] = r;
+            t1->pulseTarget[1] = g;
+            t1->pulseTarget[2] = b;
         }
     } else {
-        t1->unk0[0] = 0;
+        t1->active = 0;
         var_v0 = t2[0] >> 0x10;
         if (t2[0] < 0) {
             var_v1 = t2[0] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.unk0 = var_v0 - 0x40;
+        sp10.r = var_v0 - 0x40;
         var_v0 = t2[1] >> 0x10;
         if (t2[1] < 0) {
             var_v1 = t2[1] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.unk1 = var_v0 - 0x40;
+        sp10.g = var_v0 - 0x40;
         var_v0 = t2[2] >> 0x10;
         if (t2[2] < 0) {
             var_v1 = t2[2] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.unk2 = var_v0 - 0x40;
-        sp10.unk3 = 0;
-        if (arg2 != 0) {
-            func_800A0768(arg2 - 1, &sp10);
+        sp10.b = var_v0 - 0x40;
+        sp10.cd = 0;
+        if (slot != 0) {
+            func_800A0768(slot - 1, &sp10);
         } else {
-            func_8008B430(&sp10, ((u_short)t1->unk6[3] << 0x10) >> 0x12);
+            func_8008B430(&sp10, ((u_short)t1->grayAmount << 0x10) >> 0x12);
         }
     }
 }
 
-void func_80047FC0(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
 {
     if (_clutState.active != 0) {
-        func_80047B30(arg0, arg1, arg2, arg3, arg4, arg5);
+        _transformColorSlot(mode, frames, slot, r, g, b);
     }
 }
 
@@ -4047,16 +4055,16 @@ void vs_main_updateBgColors(void)
     }
 }
 
-void func_800481C0(void)
+void vs_main_updateColorSlots(void)
 {
-    D_800F4538_unk58_2 sp18;
+    CVECTOR sp18;
     int i;
     int var_v0;
-    D_8005DC80_t* p = _clutState.unk7F28;
+    _colorSlot_t* p = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
-        int* a2 = p[i].unk10;
-        if (p[i].unk0[0] != 0) {
+        int* a2 = p[i].color;
+        if (p[i].active != 0) {
             a2[0] += a2[3];
             a2[1] += a2[4];
             a2[2] += a2[5];
@@ -4065,40 +4073,40 @@ void func_800481C0(void)
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18.unk0 = (var_v0 >> 16) - 0x40;
+            sp18.r = (var_v0 >> 16) - 0x40;
             var_v0 = a2[1];
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18.unk1 = (var_v0 >> 16) - 0x40;
+            sp18.g = (var_v0 >> 16) - 0x40;
             var_v0 = a2[2];
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
-            sp18.unk2 = (var_v0 >> 16) - 0x40;
-            sp18.unk3 = 0;
+            sp18.b = (var_v0 >> 16) - 0x40;
+            sp18.cd = 0;
 
             if (i != 0) {
                 func_800A0768(i - 1, &sp18);
             } else {
-                p[0].unk6[3] += p[0].unk6[4];
-                func_8008B430(&sp18, p[0].unk6[3] >> 2);
+                p[0].grayAmount += p[0].grayStep;
+                func_8008B430(&sp18, p[0].grayAmount >> 2);
             }
-            ++p[i].unk0[1];
-            if (p[i].unk0[1] >= (p[i].unk0[3] * 2)) {
-                if (p[i].unk0[4] == 9) {
-                    func_80047FC0(4, p[i].unk0[3], i, p[i].unk6[0] / 2, p[i].unk6[1] / 2,
-                        p[i].unk6[2] / 2);
-                    p[i].unk0[4] = 10;
-                } else if (p[i].unk0[4] == 10) {
-                    func_80047B30(
-                        9, p[i].unk0[3], i, p[i].unk6[0], p[i].unk6[1], p[i].unk6[2]);
-                    p[i].unk0[4] = 9;
-                } else if (p[i].unk0[4] == 14) {
-                    func_80047B30(15, p[i].unk0[3], i, 0, 0, 0);
-                    p[i].unk0[4] = 15;
+            ++p[i].frame;
+            if (p[i].frame >= (p[i].speed * 2)) {
+                if (p[i].mode == 9) {
+                    vs_main_transformColorSlot(4, p[i].speed, i, p[i].pulseTarget[0] / 2,
+                        p[i].pulseTarget[1] / 2, p[i].pulseTarget[2] / 2);
+                    p[i].mode = 10;
+                } else if (p[i].mode == 10) {
+                    _transformColorSlot(9, p[i].speed, i, p[i].pulseTarget[0],
+                        p[i].pulseTarget[1], p[i].pulseTarget[2]);
+                    p[i].mode = 9;
+                } else if (p[i].mode == 14) {
+                    _transformColorSlot(15, p[i].speed, i, 0, 0, 0);
+                    p[i].mode = 15;
                 } else {
-                    p[i].unk0[0] = 0;
+                    p[i].active = 0;
                 }
             }
         }
@@ -4262,8 +4270,8 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
     }
 }
 
-void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gOffset,
-    short bOffset, int arg6)
+static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
+    short gOffset, short bOffset, int applyNow)
 {
     int i;
     int new_var;
@@ -4343,7 +4351,7 @@ void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gO
             b = 1;
         }
 
-        if (arg6 != 0) {
+        if (applyNow != 0) {
             _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (stp << 15);
 
             if (_clutState.slots[slot].animState.active == 0) {
@@ -4361,10 +4369,10 @@ void func_80048B8C(int mode, u_short* srcClut, int slot, short rOffset, short gO
     _clutState.uploadPending = 1;
 }
 
-void func_80048E68(u_short* srcClut, int slot, u_short rOffset, u_short gOffset,
-    u_short bOffset, int arg5)
+static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
+    u_short gOffset, u_short bOffset, int applyNow)
 {
-    func_80048B8C(8, srcClut, slot, rOffset, gOffset, bOffset, arg5);
+    _loadClutBase(8, srcClut, slot, rOffset, gOffset, bOffset, applyNow);
 }
 
 void vs_main_loadBgColors(void)
@@ -4374,9 +4382,9 @@ void vs_main_loadBgColors(void)
     int* var_v1 = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
-        _clutState.unk7F14[i].r = var_v1[i];
-        _clutState.unk7F14[i].g = (var_v1[i] & 0xFF00) / 256;
-        _clutState.unk7F14[i].b = (var_v1[i] & 0xFF0000) / 65536;
+        _clutState.bgBaseColors[i].r = var_v1[i];
+        _clutState.bgBaseColors[i].g = (var_v1[i] & 0xFF00) / 256;
+        _clutState.bgBaseColors[i].b = (var_v1[i] & 0xFF0000) / 65536;
 
         bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
         bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;
@@ -4414,13 +4422,13 @@ void vs_main_clutInit(void)
     _clutState.bgTransitionMode = 0;
 
     for (i = 0; i < 17; ++i) {
-        _clutState.unk7F28[i].unk0[0] = 0;
-        _clutState.unk7F28[i].unk0[4] = 0;
-        _clutState.unk7F28[i].unk6[3] = 0;
-        *((int*)&_clutState.unk7F28[i].unk28) = 0x404040;
-        _clutState.unk7F28[i].unk10[2] = 0x400000;
-        _clutState.unk7F28[i].unk10[1] = 0x400000;
-        _clutState.unk7F28[i].unk10[0] = 0x400000;
+        _clutState.colorSlots[i].active = 0;
+        _clutState.colorSlots[i].mode = 0;
+        _clutState.colorSlots[i].grayAmount = 0;
+        *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
+        _clutState.colorSlots[i].color[2] = 0x400000;
+        _clutState.colorSlots[i].color[1] = 0x400000;
+        _clutState.colorSlots[i].color[0] = 0x400000;
     }
 }
 

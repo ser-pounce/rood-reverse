@@ -178,11 +178,11 @@ typedef struct {
 typedef struct {
     int titles;
     u_short enemyKills[6];
-    int unk10;
+    UNUSED int _0;
     u_short weaponAttacks[10];
     vs_trialScore_t bossTimeTrialScores[8][3];
     u_short maxChain;
-    u_short unk8A;
+    UNUSED u_short _1;
     u_int clearCount;
     u_int completionTimeMinutes;
     u_int mapCompletion;
@@ -203,7 +203,7 @@ typedef struct {
     u_short maxHp;
     u_short types[4];
     u_short affinities[8];
-} D_80060068_t2;
+} vs_main_characterSnapshotLimb_t;
 
 typedef struct {
     int restorePending;
@@ -221,16 +221,16 @@ typedef struct {
     u_short flags;
     int statuses;
     char statusTimers[8];
-    D_80060068_t2 limbs[6];
+    vs_main_characterSnapshotLimb_t limbs[6];
     int weaponDrawn;
     int cameraPitch;
     int cameraDistance;
-} D_80060068_t3;
+} vs_main_characterSnapshotStats_t;
 
 typedef struct {
-    D_80060068_t3 unk0;
-    int unk88[9];
-} D_80060068_t;
+    vs_main_characterSnapshotStats_t stats;
+    UNUSED int _[9];
+} vs_main_characterSnapshot_t;
 
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
@@ -372,13 +372,6 @@ typedef struct {
 } vs_main_artsStatus_t;
 
 typedef struct {
-    char r;
-    char g;
-    char b;
-    char unk3;
-} D_8005DC6C_t;
-
-typedef struct {
     int lStickX;
     int lStickY;
     int rStickX;
@@ -429,11 +422,11 @@ typedef struct {
 } vs_main_zoneEnemyCache_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    u_short unk2;
+    char mode;
+    char savedMode;
+    u_short lifetime;
     vs_Gametime_t time;
-} D_80050468_t;
+} vs_main_battleTimer_t;
 
 typedef struct {
     u_short unk0_0 : 5;
@@ -528,7 +521,7 @@ typedef union {
 
 // .data
 extern int vs_main_titleScreenCount;
-extern int D_8004A52C;
+extern int vs_main_debugPause;
 extern vs_action_t vs_main_actions[256];
 extern material_modifiers_t vs_main_materialModifiers[8];
 extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
@@ -548,33 +541,33 @@ extern u_short vs_main_battleAbilitiesPointsRequirements[];
 #ifndef VS_MAIN_INCLUDE
 extern portInfo_t vs_main_portInfo[2];
 extern u_char vs_main_actorExtraShp[256];
-extern D_80050468_t D_80050468;
+extern vs_main_battleTimer_t vs_main_battleTimer;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
-extern void* D_80055C80[2];
+extern void* vs_main_ot[2];
 extern vs_main_disk_t vs_main_disk;
 extern vs_main_stickPos vs_main_stickPosBuf;
-extern short D_8005DFD4;
+extern short vs_main_screenX;
 extern short vs_main_screenWidth;
-extern short D_8005DFD8;
+extern short vs_main_screenY;
 extern u_short vs_main_screenHeight;
 extern int vs_main_buttonRepeat;
 extern char vs_main_padBuffer[2][34];
 extern soundData_t vs_main_soundData;
-extern void* D_8005E0C0[2];
+extern void* vs_main_prims[2];
 extern int vs_main_nearClip;
 extern DRAWENV vs_main_drawEnv[2];
 extern DISPENV vs_main_dispEnv[2];
 extern int vs_main_buttonsPreviousState;
-extern int D_8005E1C4;
+extern int vs_main_unused0;
 extern vs_main_buttonsPressed_t vs_main_buttonsPressed;
-extern int D_8005E1D4;
+extern int vs_main_unused1;
 extern u_int vs_main_frameDuration;
 extern int vs_main_frameBuf;
 extern int vs_main_saveGameClearData;
 extern int vs_main_buttonsState;
-extern MATRIX D_8005E218;
-extern int D_8005E244;
+extern MATRIX vs_main_cameraBasis;
+extern int vs_main_unused2;
 extern int vs_main_projectionDistance;
 extern int vs_gametime_tickspeed;
 extern vs_main_scoredata_t vs_main_scoredata;
@@ -583,7 +576,7 @@ extern vs_main_mapStatus_t vs_main_mapStatus;
 extern vs_main_settings_t vs_main_settings;
 extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int vs_main_zoneEnemyCacheIndex;
-extern D_80060068_t D_80060068;
+extern vs_main_characterSnapshot_t vs_main_characterSnapshot;
 extern vs_main_inventory_t vs_main_inventory;
 extern _mpdRoomDoorSection_t vs_main_spawnPoint;
 extern vs_Gametime_t vs_main_gametime;
@@ -658,13 +651,13 @@ int vs_main_clearCutsceneStreamSlot3(void);
 void vs_main_loadClutTransition(
     /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
 void vs_main_transformClutSlot(int, int, int, short, int, int);
-void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1);
+void vs_main_fadeBgColors(int arg0, CVECTOR* arg1);
 void vs_main_loadSoundFile(int);
 void vs_main_transformBgColors(int, int, int, int, int);
-void func_80047FC0(int, int, int, int, int, int);
+void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b);
 void vs_main_updateBgColors(void);
 void vs_main_updateClutSlots(void);
-void func_800481C0(void);
+void vs_main_updateColorSlots(void);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);

@@ -4,7 +4,7 @@
 #include <fs.h>
 
 static void (*D_80039E70)(void*, signed char*, struct DIRENTRY*);
-static int _ __attribute__((unused));
+static UNUSED int _;
 static signed char D_80039E78[40];
 
 extern struct DIRENTRY* firstfile2(char*, struct DIRENTRY*);

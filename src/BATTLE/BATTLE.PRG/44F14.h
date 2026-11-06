@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "entity.h"
 
 extern u_char D_800E9278[];
@@ -15,6 +16,6 @@ void func_800AF6E8(D_800F4538_t*);
 void func_800AFA28(D_800F4538_t*, D_800F4538_unkC54*, int);
 void func_800B002C(D_800F4538_t*, int);
 void func_800B07DC(D_800F4538_t*);
-void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)));
+void func_800B0908(D_800F45E0_t* object, UNUSED int arg1);
 int func_800B13CC(u_int arg0, u_int arg1, int arg2);
 void func_800AEF94(MATRIX*);

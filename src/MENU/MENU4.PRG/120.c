@@ -1,3 +1,4 @@
+#include "common.h"
 #include "120.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
@@ -226,8 +227,8 @@ static void _drawGemInfo(vs_battle_uiEquipment* gem)
 /**
  * Prints the blade description.
  */
-static void _initBladeDescription(vs_battle_uiEquipment* blade, char* menuText[],
-    int rowTypes[] __attribute__((unused)))
+static void _initBladeDescription(
+    vs_battle_uiEquipment* blade, char* menuText[], UNUSED int rowTypes[])
 {
     char* str;
 
@@ -253,7 +254,7 @@ static void _initBladeDescription(vs_battle_uiEquipment* blade, char* menuText[]
  * Prints the grip description.
  */
 static void _initGripInfo(
-    vs_battle_uiEquipment* grip, char* menuText[], int rowTypes[] __attribute__((unused)))
+    vs_battle_uiEquipment* grip, char* menuText[], UNUSED int rowTypes[])
 {
     char* str;
 
@@ -274,7 +275,7 @@ static void _initGripInfo(
  * Prints the gem description.
  */
 static void _initGemInfo(
-    vs_battle_uiEquipment* gem, char* menuText[], int rowTypes[] __attribute__((unused)))
+    vs_battle_uiEquipment* gem, char* menuText[], UNUSED int rowTypes[])
 {
     vs_battle_memcpy(vs_battle_stringBuf,
         &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[gem->id - 261
@@ -868,8 +869,7 @@ void _drawStatusIndicator(int colorIndex, int xy, int subdued)
 /**
  * Draws the lines extending from the model to the limb name.
  */
-static void _drawLimbLeaderLine(
-    int limb, int xy, int arg2 __attribute__((unused)), int opaque)
+static void _drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
 {
     int temp_t2;
     int temp_v0;
@@ -965,7 +965,7 @@ static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
     static char activeStatusModifiers[32];
     static u_char selectedStatusModifier;
     static u_char statusModifierCount;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
     static vs_battle_actor2* statusModifersCurrentTarget;
 
     int yPos;
@@ -1148,7 +1148,7 @@ static int _renderLimbUi(int init)
 {
     static char state = 0;
     static u_char tempSelectedActor = 0;
-    static char _[8] __attribute__((unused));
+    static UNUSED char _[8];
     static int limbAnimSteps[6];
 
     int lineXy[2];
@@ -1886,7 +1886,7 @@ static int _equipmentScreen(int element)
 
     static char _equipmentScreenState;
     static u_char _timer;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
 
     char* rowStrings[18];
     int rowTypes[9];
@@ -2261,7 +2261,7 @@ static void _renderSelectedLimbStats(void)
 }
 
 static char _selectedStatRow;
-static char _[24] __attribute__((unused));
+static UNUSED char _[24];
 
 /**
  * Module entrypoint.
@@ -2293,7 +2293,7 @@ int vs_menu4_exec(u_char* state)
     static int screenEnabled = 0;
     static int D_80108134 = 0;
     static int D_80108188;
-    static char _[12] __attribute__((unused));
+    static UNUSED char _[12];
     static MATRIX D_80108198;
     static vs_camera_t D_801081B8;
     static u_char _animationIndex;

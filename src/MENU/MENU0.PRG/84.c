@@ -1,3 +1,4 @@
+#include "common.h"
 #include "84.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
@@ -152,7 +153,7 @@ int _getTeleportCost(int targetSavePointId)
 
 static char _availableWarlockSpells[18];
 static u_char D_8010694A;
-static char _0[5] __attribute__((unused));
+static UNUSED char _0[5];
 
 /**
  * Displays and manages Warlock magic menu.
@@ -799,4 +800,4 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
-static const int _ __attribute__((unused)) = 0;
+static UNUSED const int _ = 0;

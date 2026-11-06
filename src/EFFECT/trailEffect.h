@@ -2,6 +2,7 @@
  * TRAIL_MAX_COUNT trails. The entry point is named by entry.h
  * (VS_TRAIL_DISPATCH_FUNCTION) and the helper stages are named after it. */
 
+#include "common.h"
 #include "entry.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #include "scratch.h"
@@ -320,7 +321,7 @@ static void VS_TRAIL_TARGET_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
 }
 
 static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), VS_TRAIL_STATE* arg3)
+    UNUSED D_800F53B8_t* arg2, VS_TRAIL_STATE* arg3)
 {
     SVECTOR control0;
     SVECTOR control1;
@@ -420,7 +421,7 @@ static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_ar
 }
 
 static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
-    D_800F53B8_t* arg2 __attribute__((unused)), VS_TRAIL_STATE* arg3)
+    UNUSED D_800F53B8_t* arg2, VS_TRAIL_STATE* arg3)
 {
     int speed;
     int i;
@@ -448,9 +449,8 @@ static void VS_TRAIL_INIT_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1*
     }
 }
 
-static void VS_TRAIL_UPDATE_FUNCTION(func_800FA098_arg0* arg0 __attribute__((unused)),
-    func_800FA098_arg1* arg1 __attribute__((unused)),
-    D_800F53B8_t* arg2 __attribute__((unused)), VS_TRAIL_STATE* arg3)
+static void VS_TRAIL_UPDATE_FUNCTION(UNUSED func_800FA098_arg0* arg0,
+    UNUSED func_800FA098_arg1* arg1, UNUSED D_800F53B8_t* arg2, VS_TRAIL_STATE* arg3)
 {
     int i;
 
@@ -499,7 +499,7 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     int depths[TRAIL_SAMPLE_COUNT + 1];
     int angles[TRAIL_SAMPLE_COUNT - 1];
     CVECTOR color;
-    int _[TRAIL_SAMPLE_COUNT + 1] __attribute__((unused));
+    UNUSED int _[TRAIL_SAMPLE_COUNT + 1];
     DVECTOR* points;
     int i;
     int j;

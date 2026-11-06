@@ -1,3 +1,4 @@
+#include "common.h"
 #include "224.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
@@ -285,7 +286,7 @@ static int func_800FA188(u_int arg0, u_int arg1, int* arg2)
     return ret;
 }
 
-static int func_800FA238(u_int arg0, u_int arg1, int arg2) __attribute__((unused));
+static UNUSED int func_800FA238(u_int arg0, u_int arg1, int arg2);
 static int func_800FA238(u_int arg0, u_int arg1, int arg2)
 {
     int i;

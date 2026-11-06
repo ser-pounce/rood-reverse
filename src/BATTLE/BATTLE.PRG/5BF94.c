@@ -2269,7 +2269,7 @@ void func_800C8778(void)
     int count;
     int width;
     int height;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     if (gim == NULL) {
         return;
@@ -3394,11 +3394,11 @@ int func_800CABE0(int arg0)
         ret |= 0x40;
     }
 
-    if (actor->statuses & (vsBattleStatusRegen | vsBattleStatusStrDown)) {
+    if (actor->statuses & (vsBattleStatusSilent | vsBattleStatusHeadDown)) {
         ret |= 0x80;
     }
 
-    if (actor->statuses & vsBattleStatusWard) {
+    if (actor->statuses & vsBattleStatusParalysis) {
         ret |= 0x100;
     }
 
@@ -4878,7 +4878,7 @@ int func_800CE174(func_800D4910_t* node, u_int mode, int config)
     return result;
 }
 
-int func_800CE644(int arg0 __attribute__((unused))) { }
+int func_800CE644(UNUSED int arg0) { }
 
 void func_800CE64C(void)
 {
@@ -5005,7 +5005,7 @@ void func_800CE8F4(D_800F53B8_t* arg0)
 
 int func_800CE9B0(void)
 {
-    int _[10] __attribute__((unused));
+    UNUSED int _[10];
     vs_main_CdFile sp38;
     D_800F53B8_t* temp_s1;
     D_800F53B8_t* var_s0;
@@ -5099,17 +5099,17 @@ int func_800CE9B0(void)
         if (D_800F5224 <= D_800F5228) {
 
             if (D_800F569C->block12Data != 0) {
-                func_80046194();
+                vs_main_clearSfxSlot3();
                 D_800F569C->block12Data = NULL;
             }
 
             if (D_800F569C->block13Data != NULL) {
-                func_80046634();
+                vs_main_clearCutsceneStreamSlot3();
                 D_800F569C->block13Data = NULL;
                 D_800F569C->unkCC = 0;
             }
 
-            func_800434A4(0, 1);
+            vs_main_stopVibration(0, 1);
             func_800D7C5C();
             func_800D278C();
             func_800CF514(D_800F5318);
@@ -5299,7 +5299,7 @@ void func_800CF1A8(void)
 {
     D_800F53B8_t* var_s0 = D_800F53B8;
 
-    func_800434A4(0U, 1);
+    vs_main_stopVibration(0U, 1);
 
     while (var_s0 != NULL) {
         D_800F53B8_t* temp_s1 = var_s0->next;
@@ -5315,7 +5315,7 @@ void func_800CF1A8(void)
 char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
 {
     D_800F53B8_t2 spawn;
-    int _[4] __attribute__((unused));
+    UNUSED int _[4];
     char token = func_800CF49C();
     int i;
 
@@ -5367,7 +5367,7 @@ char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
 
 int func_800CF3F8(actionEffectRequest* arg0, int arg1)
 {
-    int _[4] __attribute__((unused));
+    UNUSED int _[4];
     func_800D7890(0);
     func_800D1B18(&D_800F55A8);
     func_800D1B18(&D_800F54D8);
@@ -5660,7 +5660,7 @@ int vs_battle_randUniformInt(int arg0, int arg1)
     return arg0;
 }
 
-int _absMax3(int arg0, int arg1, int arg2) __attribute__((unused));
+UNUSED int _absMax3(int arg0, int arg1, int arg2);
 int _absMax3(int arg0, int arg1, int arg2)
 {
     int var_v0;
@@ -5681,7 +5681,7 @@ int _absMax3(int arg0, int arg1, int arg2)
     return arg0;
 }
 
-int _absMax2(int arg0, int arg1) __attribute__((unused));
+UNUSED int _absMax2(int arg0, int arg1);
 int _absMax2(int arg0, int arg1)
 {
     int abs0 = arg0 >= 0 ? arg0 : -arg0;
@@ -5744,7 +5744,7 @@ int func_800CFE1C(short* arg0, int arg1)
     return (((arg0[1] - new_var) * arg1) >> 7) + new_var;
 }
 
-void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out) __attribute__((unused));
+UNUSED void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out);
 void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
 {
     int v = svec->vy;
@@ -6774,7 +6774,7 @@ void func_800D2A38(func_800FA098_arg1* arg0, func_800D2904_t* arg1)
 void func_800D2ADC(
     D_800F53B8_t* arg0, int event, int arg2, int arg3, func_800D2904_t* parent)
 {
-    int _[4] __attribute__((unused));
+    UNUSED int _[4];
     int frame;
     int count;
     int i;
@@ -7382,7 +7382,7 @@ int func_800D4778(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D47C0(D_800F53B8_t* arg0 __attribute__((unused))) { return 2; }
+int func_800D47C0(UNUSED D_800F53B8_t* arg0) { return 2; }
 
 int func_800D47C8(D_800F53B8_t* arg0)
 {
@@ -7537,7 +7537,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4D44(D_800F53B8_t* arg0 __attribute__((unused)))
+int func_800D4D44(UNUSED D_800F53B8_t* arg0)
 {
     func_800D78F0();
     return 1;
@@ -7551,13 +7551,13 @@ int func_800D4D64(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D4D98(D_800F53B8_t* arg0 __attribute__((unused)))
+int func_800D4D98(UNUSED D_800F53B8_t* arg0)
 {
     D_800F522C = 0;
     return 1;
 }
 
-int func_800D4DA8(D_800F53B8_t* arg0 __attribute__((unused))) { return 1; }
+int func_800D4DA8(UNUSED D_800F53B8_t* arg0) { return 1; }
 
 int func_800D4DB0(D_800F53B8_t* arg0)
 {
@@ -7645,10 +7645,7 @@ int func_800D5088(D_800F53B8_t* arg0)
     return 1;
 }
 
-int func_800D5150(D_800F53B8_t* arg0 __attribute__((unused)))
-{
-    return func_800CE644(0x1E);
-}
+int func_800D5150(UNUSED D_800F53B8_t* arg0) { return func_800CE644(0x1E); }
 
 u_char func_800D5170(D_800F53B8_t* arg0) { return arg0->unkC[arg0->unkA++]; }
 

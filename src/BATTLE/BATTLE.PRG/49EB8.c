@@ -41,7 +41,7 @@ inline void func_800B26B8(D_800F4538_t* actor, MATRIX* parent, int bone, int sav
 
 void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     func_800B28A8_t header;
     D_1F80035C_t* scratch = (void*)0x1F80035C;
     int i;

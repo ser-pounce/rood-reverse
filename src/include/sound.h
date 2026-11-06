@@ -75,7 +75,7 @@
 #define SOUND_UPDATE_UNKNOWN_12 (1 << 12)
 #define SOUND_UPDATE_UNKNOWN_16 (1 << 16)
 #define SOUND_UPDATE_UNKNOWN_17 (1 << 17)
-#define SOUND_UPDATE_UNKNOWN_20 (1 << 20)
+#define SOUND_UPDATE_DEFER_STOP (1 << 20)
 #define SOUND_UPDATE_UNKNOWN_24 (1 << 24)
 #define SOUND_UPDATE_UNKNOWN_27 (1 << 27)
 #define SOUND_UPDATE_UNKNOWN_28 (1 << 28)
@@ -324,7 +324,7 @@ typedef struct {
     char* ReturnProgramCounter;
     char* Keymap;
     short* VibratoWave;
-    short* TremeloWave;
+    short* TremoloWave;
     short* AutoPanWave;
     int unk_Flags;
     int PitchBase;
@@ -373,14 +373,14 @@ typedef struct {
     u_short VibratoDepth;
     u_short VibratoDepthSlideLength;
     u_short VibratoDepthSlideStep;
-    short TremeloDelay;
-    u_short TremeloDelayCurrent;
-    u_short TremeloRatePhase;
-    short TremeloRateCurrent;
-    u_short TremeloType;
-    u_short TremeloDepth;
-    u_short TremeloDepthSlideLength;
-    short TremeloDepthSlideStep;
+    short TremoloDelay;
+    u_short TremoloDelayCurrent;
+    u_short TremoloRatePhase;
+    short TremoloRateCurrent;
+    u_short TremoloType;
+    u_short TremoloDepth;
+    u_short TremoloDepthSlideLength;
+    short TremoloDepthSlideStep;
     u_short AutoPanRatePhase;
     u_short AutoPanRateCurrent;
     u_short AutoPanType;
@@ -404,7 +404,7 @@ typedef struct {
     short PitchBendSlideTranspose;
     short TransposeStored;
     short VibratoPitch;
-    short TremeloVolume;
+    short TremoloVolume;
     short AutoPanVolume;
     FSoundVoiceParams VoiceParams;
 } FSoundChannel;
@@ -462,7 +462,7 @@ typedef struct {
     FAkaoSequence* SequencePatchTable;
     u_short* KeymapTable;
     FSoundKeymapEntry8* unk44;
-    int SomeIndexRelatedToSpuVoiceInfo;
+    int VoiceAllocStart;
     u_int NoiseChannelFlags;
     u_int ReverbChannelFlags;
     u_int FmChannelFlags;

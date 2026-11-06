@@ -1,3 +1,4 @@
+#include "common.h"
 #include "168.h"
 #include "9258.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
@@ -47,7 +48,7 @@ static void _setMenuTitle(int id, int textTableOffset)
 
 static u_char _currentWorkshop;
 static u_char _combiningItem;
-static char _[2] __attribute__((unused));
+static UNUSED char _[2];
 static u_int _slotSelectionHistory[5];
 
 /**
@@ -230,7 +231,7 @@ static int _confirmCombine(int arg0)
     static char state;
     static char selectedOption;
     static char cancelCombinePos;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     int i;
     u_short* text;
@@ -807,7 +808,7 @@ static int _assembleBladeMenu(int params)
     static char state;
     static char bladeToAssemble;
     static char gripToAssemble;
-    static char _[1] __attribute__((unused));
+    static UNUSED char _[1];
 
     int bladeCount;
     int i;
@@ -928,7 +929,7 @@ static int _assembleGripMenu(int params)
     static char state;
     static char bladeToAssemble;
     static char gripToAssemble;
-    static char _ __attribute__((unused));
+    static UNUSED char _;
 
     int gripCount;
     int i;
@@ -1176,7 +1177,7 @@ static int _assembleMenu(int arg0)
     static char selectedOption;
     static char bladeToAssemble;
     static char gripToAssemble;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
     static char gemInfo[4];
 
     char* menuText[2];
@@ -1598,7 +1599,7 @@ static int _assembleMenu(int arg0)
 /**
  * Adds one gem selector row to the item detail display.
  */
-static void _addGemSelector(int arg0 __attribute__((unused)), int arg1)
+static void _addGemSelector(UNUSED int arg0, int arg1)
 {
     vs_battle_menuItem_t* temp_v0 =
         vs_battle_setMenuItem(arg1 + 10, 320, (arg1 * 16) + 18, 320 - 169, 0,
@@ -1676,7 +1677,7 @@ static int _attachGemsMenu(int arg0)
     static u_char D_8010BC22;
     static char gemSlots;
     static char isShield;
-    static char _0[3] __attribute__((unused));
+    static UNUSED char _0[3];
     static char D_8010BC28[4];
     static char targetGems[4];
     static u_char* attachedGems;
@@ -2019,7 +2020,7 @@ static int _attachGemsTopMenu(int arg0)
 {
     static char state;
     static char noForceCursorMemory;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
 
     char* text[4];
     int rowTypes[4];
@@ -2287,9 +2288,9 @@ static int _disassembleMenu(int arg0)
 static int _disassembleTopMenu(int arg0)
 {
     static char state;
-    static char _0 __attribute__((unused));
+    static UNUSED char _0;
     static char forceNoCursorMemory;
-    static char _1[2] __attribute__((unused));
+    static UNUSED char _1[2];
 
     char* text[4];
     int rowTypes[2];
@@ -2378,7 +2379,7 @@ static int _renameWeaponMenu(int arg0)
     static int selectedRow;
     static char state;
     static char D_8010BC49;
-    static char _[2] __attribute__((unused));
+    static UNUSED char _[2];
 
     char* menuText[16];
     int rowTypes[8];
@@ -2512,7 +2513,7 @@ static int _repairMenu(int arg0)
 {
     static int returnedFromPrompt;
     static char state;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     int ppCost;
     int i;
@@ -2664,7 +2665,7 @@ static int _loadSyd(int id)
 
     static vs_main_CdQueueSlot* _sydCdQueueSlot;
     static char _sydFileLoading;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     vs_main_CdFile cdFile;
 
@@ -2726,7 +2727,7 @@ static vs_main_inventoryBlade* _combineBlades(
 
 static vs_main_inventoryBlade _bladeBuf;
 static char _combiningBladeIds[2];
-static char _1[2] __attribute__((unused));
+static UNUSED char _1[2];
 
 /**
  * Rebuilds the combination preview and displays the chosen component's
@@ -2945,7 +2946,7 @@ static int _combineBladeMenu(int arg0)
     static char state;
     static char D_8010BC63;
     static char D_8010BC64;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     char* menuText[2];
     int rowType;
@@ -3568,7 +3569,7 @@ static int _combineShieldMenu(int arg0)
     static char state;
     static char D_8010BC6F;
     static char D_8010BC70;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     char* menuText[2];
     int rowType;
@@ -3938,7 +3939,7 @@ static vs_main_inventoryArmor* _combineArmor(
 
 static vs_main_inventoryArmor _armorBuf;
 static char _combiningArmorIds[2];
-static char _2[2] __attribute__((unused));
+static UNUSED char _2[2];
 
 /**
  * Rebuilds the armor combination preview and displays the selected item's

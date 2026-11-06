@@ -357,7 +357,7 @@ static void func_800F9AD8(void)
         func_800CB660(1);
     }
 
-    D_80060068.unk0.unk0 = 0;
+    D_80060068.unk0.restorePending = 0;
     vs_battle_cameraCurrentSpherical.delta.pitch = s1->cameraPitch;
     vs_battle_cameraCurrentSpherical.initialDistance = s1->cameraDistance;
 }
@@ -457,7 +457,7 @@ static void func_800F9CCC(void)
 
     vs_battle_nop0(vs_battle_characterState->unk3C);
 
-    if (D_80060068.unk0.unk0 != 0) {
+    if (D_80060068.unk0.restorePending != 0) {
         func_800F9AD8();
     }
 
@@ -503,7 +503,7 @@ static void _initTransitionState(void)
     vs_battle_screenTransitionAlpha = 255;
 }
 
-void func_800FA35C(int startState __attribute__((unused)))
+void func_800FA35C(UNUSED int startState)
 {
     int _0[2];
     RECT rect;

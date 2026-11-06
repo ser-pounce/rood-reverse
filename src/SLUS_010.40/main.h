@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "25AC.h"
 #include "inventory.h"
 #include <sys/types.h>
@@ -103,11 +104,11 @@ typedef struct {
 } vs_action_t;
 
 typedef struct {
-    u_int unk0;
-    u_short unk4;
-    u_short unk6;
-    u_int unk8;
-    u_int unkC;
+    u_int status;
+    u_short duration;
+    u_short tickInterval;
+    u_int replacesMask;
+    u_int blockedByMask;
 } vs_main_statusEffectParams_t;
 
 typedef struct {
@@ -205,7 +206,7 @@ typedef struct {
 } D_80060068_t2;
 
 typedef struct {
-    int unk0;
+    int restorePending;
     short currentHP;
     short maxHP;
     short currentMP;
@@ -411,7 +412,7 @@ typedef struct {
     short intelligence;
     short agility;
     short limbHP[6];
-    short _ __attribute__((unused));
+    UNUSED short _;
     int statuses;
     u_char x;
     u_char direction;
@@ -466,7 +467,7 @@ typedef struct {
     u_char water;
     u_char light;
     u_char dark;
-    u_char _ __attribute__((unused));
+    UNUSED u_char _;
 } material_modifiers_affinities_t;
 
 typedef struct {
@@ -599,10 +600,10 @@ int vs_main_getRandSmoothed(int);
 int vs_main_execTitle(void);
 void vs_main_exec(void);
 void vs_main_enableReset(int);
-void func_80042CA0(void);
-void func_80042CB0(void);
+void vs_main_setCharacterRestorePending(void);
+void vs_main_captureSaveState(void);
 int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2);
-int func_800434A4(u_int arg0, int arg1);
+int vs_main_stopVibration(u_int arg0, int arg1);
 void vs_main_padDisconnectAll(void);
 int vs_main_updatePadState(int, char[34]);
 void vs_main_padConnect(int, char[34]);
@@ -627,49 +628,49 @@ void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);
 void vs_main_resetSound(void);
 void vs_main_pushMusicState(void);
-int func_80044D94(void);
+int vs_main_getMusicPosition(void);
 void vs_main_setMusicJumpThreshold(int);
 int vs_main_stopMusicSlot(int);
-int func_80044EC8(int);
+int vs_main_queueMusicSlot(int);
 int vs_main_playMusicSlotFadeIn(int, int, u_int);
 int vs_main_playMusicSlot(int id, int arg1, int arg2);
-int func_800454B8(int);
+int vs_main_getMusicSlotVolume(int);
 int vs_main_fadeMusicTempo(int, int, int);
 int vs_main_fadeMusicPitch(int, int, int);
-int func_8004550C(int);
+int vs_main_getMusicSlotVolume2(int);
 void vs_main_stopAllSfx(void);
 void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec);
 int vs_main_computeSfxPan(int coords, int z);
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPan(int, int, int, char);
-int func_80046168(u_int);
-int func_80046194(void);
+int vs_main_setSfxSlot3Data(u_int);
+int vs_main_clearSfxSlot3(void);
 void vs_main_playBankSfx(int, u_int[], u_int, int, int);
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2);
 void vs_main_evictBankSfx(int arg0, int* arg1, int arg2);
 void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4);
 void vs_main_startCutsceneStreamDefault(int arg0);
 void vs_main_setMonoSound(int);
-int func_80046608(u_int arg0);
-int func_80046634(void);
+int vs_main_setCutsceneStreamSlot3(u_int arg0);
+int vs_main_clearCutsceneStreamSlot3(void);
 // Parameters left undeclared due to misuse in unused func_8007B378
 void vs_main_loadClutTransition(
     /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
 void vs_main_transformClutSlot(int, int, int, short, int, int);
-void func_800472D0(int arg0, D_8005DC6C_t* arg1);
+void vs_main_fadeBgColors(int arg0, D_8005DC6C_t* arg1);
 void vs_main_loadSoundFile(int);
-void func_800478E0(int, int, int, int, int);
+void vs_main_transformBgColors(int, int, int, int, int);
 void func_80047FC0(int, int, int, int, int, int);
-void func_80047FFC(void);
-void func_800483FC(void);
+void vs_main_updateBgColors(void);
+void vs_main_updateClutSlots(void);
 void func_800481C0(void);
 void vs_main_bzero(void*, int);
 void vs_main_memcpy(void* dest, void* src, u_int sz);
 void vs_main_nop9(int, int);
 void vs_main_nop10(int, int);
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count);
-void func_80048EC4(void);
+void vs_main_loadBgColors(void);
 void vs_main_commitClut(void);
 void vs_main_setClutState(int arg0);
 void vs_main_clutInit(void);

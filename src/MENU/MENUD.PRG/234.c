@@ -1704,7 +1704,7 @@ int _discardMenu(int arg0)
     static u_char discardStep;
     static char discardCount;
     static char maxAmount;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     char* discardOneText[4];
     int discardOneRowTypes[2];
@@ -2333,7 +2333,7 @@ int func_801072B0(int arg0)
 {
     static int D_80109A58;
     static char D_80109A5C;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     char* sp10[4];
     int sp20[2];
@@ -2396,7 +2396,7 @@ int func_80107490(int arg0)
     static char D_80109A68;
     static char D_80109A69;
     static char D_80109A6A;
-    static char _ __attribute__((unused));
+    static UNUSED char _;
     static int D_80109A6C;
 
     u_short* sp10[8];
@@ -3039,10 +3039,10 @@ int func_801089BC(int arg0)
     static char D_80109A2C = 0;
     static char D_80109A2D = 0;
     static char D_80109A2E = 1;
-    static char _0 __attribute__((unused)) = 1;
+    static UNUSED char _0 = 1;
 
     static char D_80109A70;
-    static char _1[3] __attribute__((unused));
+    static UNUSED char _1[3];
 
     int i;
     int var_s1;

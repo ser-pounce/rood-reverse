@@ -104,13 +104,13 @@ void _parsePfileBlock11(u_char* arg0) { D_800F569C->block11Data = arg0; }
 void _parsePfileBlock12(void* arg0)
 {
     D_800F569C->block12Data = arg0;
-    func_80046168((u_int)arg0);
+    vs_main_setSfxSlot3Data((u_int)arg0);
 }
 
 void _parsePfileBlock13(void* arg0)
 {
     D_800F569C->block13Data = arg0;
-    D_800F569C->unkCC = func_80046608((u_int)arg0);
+    D_800F569C->unkCC = vs_main_setCutsceneStreamSlot3((u_int)arg0);
 }
 
 static int _loadfile(int lba, int size, void* buf)
@@ -178,7 +178,7 @@ void func_800D7C5C(void)
 
 int func_800D7CFC(void)
 {
-    int _[16] __attribute__((unused));
+    UNUSED int _[16];
     RECT sp50;
     u_int temp_s1;
     int var_s0;
@@ -275,7 +275,7 @@ int func_800D7EF4(void)
     return ret;
 }
 
-static void func_800D7FB4(int arg0, int arg1) __attribute__((unused));
+static UNUSED void func_800D7FB4(int arg0, int arg1);
 static void func_800D7FB4(int lba, int size)
 {
     vs_battle_pFileLoadContext.lba = lba;

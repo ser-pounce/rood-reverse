@@ -1357,7 +1357,7 @@ void _renderCongratulations(int x, int y, int timer)
     }
 }
 
-void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
+void _renderScore(int x, int y, int timer, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1409,7 +1409,7 @@ void _renderScore(int x, int y, int timer, int arg3 __attribute__((unused)))
     }
 }
 
-void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((unused)))
+void _renderIncrementalScore(int x, int y, int timer, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1486,7 +1486,7 @@ void _renderIncrementalScore(int x, int y, int timer, int arg3 __attribute__((un
     _renderTextureWipe(x, y + 8, 0x14, colors, temp_s2);
 }
 
-void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unused)))
+void _renderMapCompletion(int x, int y, int timer, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1527,8 +1527,7 @@ void _renderMapCompletion(int x, int y, int timer, int arg3 __attribute__((unuse
     }
 }
 
-void _renderIncrementalMapCompletion(
-    int arg0, int arg1, int arg2, int arg3 __attribute__((unused)))
+void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 

@@ -582,9 +582,9 @@ check:
     return 0;
 }
 
-void func_800AE46C(u_char* script __attribute__((unused))) { }
+void func_800AE46C(UNUSED u_char* script) { }
 
-void func_800AE474(u_char* script __attribute__((unused))) { }
+void func_800AE474(UNUSED u_char* script) { }
 
 void func_800AE47C(D_800F4538_t* arg0)
 {
@@ -859,7 +859,7 @@ void func_800AECA0(MATRIX* source)
 
 inline void func_800AEEC4(D_800F4538_t* actor)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     int step;
     int delta;
 
@@ -899,7 +899,7 @@ void func_800AEF94(MATRIX* camera)
     vs_scratch_t* view;
     int i;
     int j;
-    int _[10] __attribute__((unused));
+    UNUSED int _[10];
 
     func_800AECA0(camera);
 
@@ -1637,7 +1637,7 @@ void func_800B07DC(D_800F4538_t* actor)
     scratch->offset.vy += actor->unk0.position.vy;
 }
 
-void func_800B0908(D_800F45E0_t* object, int arg1 __attribute__((unused)))
+void func_800B0908(D_800F45E0_t* object, UNUSED int arg1)
 {
     D_1F80035C_t* scratch = (void*)0x1F80035C;
     int step;

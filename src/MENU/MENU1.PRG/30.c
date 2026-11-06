@@ -1,3 +1,4 @@
+#include "common.h"
 #include "30.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
@@ -476,4 +477,4 @@ int vs_menu1_exec(u_char* state)
     return 0;
 }
 
-static char _ __attribute__((unused));
+static UNUSED char _;

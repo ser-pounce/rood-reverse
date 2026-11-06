@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 
@@ -151,7 +152,7 @@ static char* _memcardMakeTempFilename(int port, int fileNo)
 static char* _spmcimg;
 static mcdata_t* _mcData;
 static u_short* _textTable;
-static char _0[4] __attribute__((unused));
+static UNUSED char _0[4];
 static struct DIRENTRY* _memcardFiles[15];
 static struct DIRENTRY* _dirEntBuf;
 /* Memorycard save helpers shared by the title and menu overlays. The including file
@@ -614,7 +615,7 @@ static int _applyLoadedSaveFile(int apply)
     spmcimg2 = &vs_main_artsStatus;
     _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
     vs_main_gametime.t = spmcimg[1].info.stats.gameTime.t;
-    func_80042CA0();
+    vs_main_setCharacterRestorePending();
     vs_main_setMonoSound(vs_main_settings.monoSound);
     return 0;
 }
@@ -745,7 +746,7 @@ static void _packageGameSaveData(int targetFile)
 }
 
 static char _loadSaveDataErrorOffset;
-static char _1[1] __attribute__((unused));
+static UNUSED char _1[1];
 static u_short _fileProgressTarget;
 static u_short _filePreviousProgressCounter;
 static u_short _fileProgressPosition;
@@ -768,7 +769,7 @@ static int _loadSaveData(int portFileno)
     static char file;
     static char isTempSave;
     static char errors;
-    static short _ __attribute__((unused));
+    static UNUSED short _;
     static int fd;
 
     void* temp_s2 = (savedata_t*)_spmcimg + 1;
@@ -863,7 +864,7 @@ static int _saveFile(int portFile)
     static char port;
     static char errors;
     static char renameErrors;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
     static int fd;
 
     int temp_v1_2;
@@ -978,7 +979,7 @@ static int _initMemcard(int init)
 
     static u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
     static char _initMemcardState;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
     static vs_main_CdQueueSlot* _initMemcardCdQueueSlot;
 
     vs_main_CdFile cdFile;
@@ -1071,7 +1072,7 @@ static void _shutdownMemcard(void)
 }
 
 static fileMenuElements_t _fileMenuElements[10];
-static char _2[8] __attribute__((unused));
+static UNUSED char _2[8];
 static primBuf_t _primBuf;
 
 /**
@@ -1244,7 +1245,7 @@ static char _isSaving;
  */
 static void _fileProcessingAnim(int x, int y)
 {
-    char* new_var __attribute__((unused));
+    UNUSED char* new_var;
     int gradientColor1;
     int gradientColor2;
     u_int leftEdge;
@@ -1532,7 +1533,7 @@ enum _memcardMaskedHandler_e {
 static enum _memcardMaskedHandler_e _memcardMaskedHandler(int portMask)
 {
     static char mask;
-    static char _[MEMCARD_MASKED_HANDLER_PAD] __attribute__((unused));
+    static UNUSED char _[MEMCARD_MASKED_HANDLER_PAD];
 
     int event;
 

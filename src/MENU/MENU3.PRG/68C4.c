@@ -12,7 +12,7 @@ void _populateDataSlot(int wepId, int material);
 
 int _loadObjectData(int category, int wepId, int material)
 {
-    int _[6] __attribute__((unused));
+    UNUSED int _[6];
     int i;
     D_800F4538_t* temp_s1 = D_800F4538[1];
 

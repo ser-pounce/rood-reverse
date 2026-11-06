@@ -1,3 +1,4 @@
+#include "common.h"
 #include "260.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
@@ -7,7 +8,7 @@
 
 static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-#define PACKAGE_SAVE_PREPARE() func_80042CB0()
+#define PACKAGE_SAVE_PREPARE() vs_main_captureSaveState()
 #define KEYSTREAM_BITS(n) vs_battle_keystreamBits(n)
 #define PACKAGE_SAVE_CLEAR_CONTAINER() \
     if (!(D_800F4EA0 & 0x400)) { \
@@ -140,7 +141,7 @@ static int _initGameOver(int arg0)
     static vs_main_CdQueueSlot* queueSlot;
     static u_int* gameOverBin;
     static int state;
-    static char _[8] __attribute__((unused));
+    static UNUSED char _[8];
 
     vs_main_CdFile cdFile;
 
@@ -474,7 +475,7 @@ static int _promptYesNo(int initParams)
     static int selectedOption;
     static char state;
     static char cancelWithMenuButton;
-    static char _[34] __attribute__((unused));
+    static UNUSED char _[34];
 
     vs_battle_menuItem_t* menuItem;
     u_int buttons;

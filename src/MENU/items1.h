@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
@@ -1208,7 +1209,7 @@ static int _discardMenu(int params)
     static u_char discardStep;
     static char discardCount;
     static char maxAmount;
-    static char _[3] __attribute__((unused));
+    static UNUSED char _[3];
 
     char* menuText[4];
     int rowTypes[2];

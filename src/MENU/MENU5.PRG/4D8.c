@@ -1,3 +1,4 @@
+#include "common.h"
 #include "4D8.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
@@ -200,7 +201,7 @@ void _setMenuItemMapName(char* mapName, char fontColor)
 /**
  * Clears all rows except the title, unused.
  */
-static void _clearMenu(void) __attribute__((unused));
+static UNUSED void _clearMenu(void);
 static void _clearMenu(void) { vs_mainMenu_clearMenuExcept(5); }
 
 static void _menuReady(void) { vs_mainmenu_ready(); }
@@ -247,7 +248,7 @@ int vs_menu5_exec(u_char* state)
     static int armFileLoaded;
     static int D_80108D38;
     static u_long* menuBgBackup;
-    static int _ __attribute__((unused));
+    static UNUSED int _;
     static RECT menuBgBackRects[2];
 
     switch (*state) {
@@ -407,8 +408,8 @@ static int const _ashleyIconBrightness[] = { 0x00404040, 0x00505050, 0x00606060,
     0x00808080, 0x00808080, 0x00707070, 0x00606060, 0x00505050, 0x00404040 };
 
 // Junk? Same values are used elsewhere for gradient lerping.
-static int const D_80102C40[] __attribute__((unused)) = { 0x006B4100, 0x006C8219,
-    0x00663040, 0x00203840, 0x00330500, 0x00262801, 0x00200808, 0x00081010 };
+static UNUSED int const D_80102C40[] = { 0x006B4100, 0x006C8219, 0x00663040, 0x00203840,
+    0x00330500, 0x00262801, 0x00200808, 0x00081010 };
 
 u_short _mapNames[] = {
 #include "build/assets/MENU/MENU5.PRG/mapNames.vsString"
@@ -431,7 +432,7 @@ static int _hideUi;
 static vs_battle_roomName* _roomNamesTable;
 static short _menuCommandsState;
 static short _uiAnimationState;
-static short _1[2] __attribute__((unused));
+static UNUSED short _1[2];
 static SVECTOR _cameraAngles;
 static SVECTOR _cameraPos;
 static SVECTOR _centerPoint;
@@ -440,7 +441,7 @@ static void* _armFileBuff;
 static int _sceneRowIdMap[32];
 static int _quitState;
 static int _mapLabelY;
-static int _2[2] __attribute__((unused));
+static UNUSED int _2[2];
 
 /**
  *
@@ -1047,7 +1048,7 @@ static int _mapSelectionMenu(int initialize)
 /**
  * Unused, purpose unclear.
  */
-static void func_8010467C(int* data) __attribute__((unused));
+static UNUSED void func_8010467C(int* data);
 static void func_8010467C(int* data)
 {
     int count;

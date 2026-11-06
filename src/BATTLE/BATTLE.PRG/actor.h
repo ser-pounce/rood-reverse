@@ -15,59 +15,41 @@ typedef struct {
     char unk3;
 } vs_battle_actor_unk8C0;
 
-/*
-Flags for statuses
-0x00000020 str down
-0x00000040 str up
-0x00000080 int down
-0x00000100 int up
-0x00000200 agi down
-0x00000400 agi up
-0x00000800 quicken
-0x00001000 silent
-0x00002000 paralysis
-0x00004000 poison
-0x00008000 numbness
-0x00010000 curse
-0x00020000 Regenaration
-0x00040000 magic ward
-0x00080000 equip down
-0x00100000 equip up
-0x00200000 air atk up
-0x00400000 fire atk up
-0x00800000 earth atk up
-0x01000000 water atk up
-0x02000000 air def up
-0x04000000 fire def up
-0x08000000 earth def up
-0x10000000 water def up
-*/
-
+// Bits 0-4 are set while the matching limb is down (HP below 2), see D_800E8200 and
+// D_800E8204. The effects are: head, cannot cast like Silent; right arm, damage dealt
+// halved; left arm, hit threshold doubled; body, risk recovers more slowly; legs,
+// movement speed halved.
+// Bits 5-28 are the status effects and match the order of vs_main_statusEffectParams.
 enum vs_battle_statuses {
-    vsBattleStatusStrDown = 1 << 0,
-    vsBattleStatusStrUp = 1 << 1,
-    vsBattleStatusIntDown = 1 << 2,
-    vsBattleStatusIntUp = 1 << 3,
-    vsBattleStatusAgiDown = 1 << 4,
-    vsBattleStatusAgiUp = 1 << 5,
-    vsBattleStatusQuicken = 1 << 6,
-    vsBattleStatusSilent = 1 << 7,
-    vsBattleStatusParalysis = 1 << 8,
-    vsBattleStatusPoison = 1 << 9,
-    vsBattleStatusNumbness = 1 << 10,
-    vsBattleStatusCurse = 1 << 11,
-    vsBattleStatusRegen = 1 << 12,
-    vsBattleStatusWard = 1 << 13,
-    vsBattleStatusEquDown = 1 << 14,
-    vsBattleStatusEquUp = 1 << 15,
-    vsBattleStatusAirAtkUp = 1 << 16,
-    vsBattleStatusFireAtkUp = 1 << 17,
-    vsBattleStatusEarthAtkUp = 1 << 18,
-    vsBattleStatusWaterAtkUp = 1 << 19,
-    vsBattleStatusAirDefUp = 1 << 20,
-    vsBattleStatusFireDefUp = 1 << 21,
-    vsBattleStatusEarthDefUp = 1 << 22,
-    vsBattleStatusWaterDefUp = 1 << 23
+    vsBattleStatusHeadDown = 1 << 0,
+    vsBattleStatusRightArmDown = 1 << 1,
+    vsBattleStatusLeftArmDown = 1 << 2,
+    vsBattleStatusBodyDown = 1 << 3,
+    vsBattleStatusLegsDown = 1 << 4,
+    vsBattleStatusStrDown = 1 << 5,
+    vsBattleStatusStrUp = 1 << 6,
+    vsBattleStatusIntDown = 1 << 7,
+    vsBattleStatusIntUp = 1 << 8,
+    vsBattleStatusAgiDown = 1 << 9,
+    vsBattleStatusAgiUp = 1 << 10,
+    vsBattleStatusQuicken = 1 << 11,
+    vsBattleStatusSilent = 1 << 12,
+    vsBattleStatusParalysis = 1 << 13,
+    vsBattleStatusPoison = 1 << 14,
+    vsBattleStatusNumbness = 1 << 15,
+    vsBattleStatusCurse = 1 << 16,
+    vsBattleStatusRegen = 1 << 17,
+    vsBattleStatusWard = 1 << 18,
+    vsBattleStatusEquDown = 1 << 19,
+    vsBattleStatusEquUp = 1 << 20,
+    vsBattleStatusAirAtkUp = 1 << 21,
+    vsBattleStatusFireAtkUp = 1 << 22,
+    vsBattleStatusEarthAtkUp = 1 << 23,
+    vsBattleStatusWaterAtkUp = 1 << 24,
+    vsBattleStatusAirDefUp = 1 << 25,
+    vsBattleStatusFireDefUp = 1 << 26,
+    vsBattleStatusEarthDefUp = 1 << 27,
+    vsBattleStatusWaterDefUp = 1 << 28
 };
 
 typedef struct {

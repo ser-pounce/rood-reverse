@@ -91,7 +91,7 @@ extern volatile unsigned short* D_80033668;
 int func_8002EC88(void)
 {
     volatile int i;
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
 
     D_80033668[5] = 0;
     i = 10;

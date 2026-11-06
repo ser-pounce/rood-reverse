@@ -1,3 +1,4 @@
+#include "common.h"
 #include "22C.h"
 #include "titleData.h"
 #include "src/SLUS_010.40/main.h"
@@ -65,7 +66,7 @@ static u_int _keystreamBits(int value)
 #include "src/MENU/showSaveMenu.h"
 
 static char _frameBuf;
-static char _3 __attribute__((unused));
+static UNUSED char _3;
 
 static void _initSaveScreen(void)
 {
@@ -231,7 +232,7 @@ static int _saveScreenConfirmation(int init)
 
     static char state;
     static u_char confirm;
-    static char _[5] __attribute__((unused));
+    static UNUSED char _[5];
 
     fileMenuElements_t* elem;
     int i;
@@ -313,7 +314,7 @@ static void _gameSaveScreen(void)
     static RECT rect;
     static char state;
     static char fadeTimer;
-    static char _[6] __attribute__((unused));
+    static UNUSED char _[6];
 
     int val;
 
@@ -414,12 +415,12 @@ static u_short* _getNextMovieFrame(MovieData_t* arg0);
 static u_int _introMovieDisplayedAt;
 static int _introMoviePlaying;
 static int _dslMode;
-static char _4[4] __attribute__((unused));
+static UNUSED char _4[4];
 static DslLOC _introMovieLoc;
-static char _5[28] __attribute__((unused));
+static UNUSED char _5[28];
 static MovieData_t _movieData;
 static u_long* _movieRingBuf;
-static char _6[4] __attribute__((unused));
+static UNUSED char _6[4];
 static DECDCTTAB _vlcTable;
 static void* _encodedDataBuf0;
 static void* _encodedDataBuf1;
@@ -535,7 +536,7 @@ static u_short* _getNextMovieFrame(MovieData_t* movie)
     return addr;
 }
 
-static void _waitForFrame(MovieData_t* movie, int arg1 __attribute__((unused)))
+static void _waitForFrame(MovieData_t* movie, UNUSED int arg1)
 {
     volatile int sp0[2];
     int* new_var;
@@ -1074,7 +1075,7 @@ typedef struct {
 static void _drawTitleMenuItems(void)
 {
     static menuItemPrim_t primBuf[341];
-    static char _[8] __attribute__((unused));
+    static UNUSED char _[8];
 
     int textUv;
     int j;
@@ -1179,7 +1180,7 @@ static void _drawTitleMenuItems(void)
 static void _drawTitleMenu(void)
 {
     static menuItemPrim_t sprtBuf[10];
-    static char _[16] __attribute__((unused));
+    static UNUSED char _[16];
 
     int i;
     menuItemPrim_t* sprt;
@@ -1488,7 +1489,7 @@ int vs_title_exec(void)
     } fileBuf;
     static int buttonsLastPressed;
     static int introMovieLastPlayed;
-    static char _[8] __attribute__((unused));
+    static UNUSED char _[8];
 
     RECT rect;
     int i;
@@ -1674,7 +1675,7 @@ static void _initScreen(int w, int h, int distance, int r, int g, int b)
 
 static int _renderScreen(u_long* ot)
 {
-    int _[2] __attribute__((unused));
+    UNUSED int _[2];
     int vsync;
 
     vs_main_frameBuf = vs_main_frameBuf == 0;

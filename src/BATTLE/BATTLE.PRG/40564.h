@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "entity.h"
 #include "func_8006EBF8_t.h"
 #include "mpd.h"
@@ -42,4 +43,4 @@ void func_800AC690(int, D_800F4538_t*);
 void func_800ACF54(D_800F4538_t*);
 void func_800AD008(D_800F4538_t*, D_800F4538_unkC54*);
 void* func_800AD494(void*, int, u_short**);
-void func_800AD62C(int actorId, int* pan, int* volume, int arg3 __attribute__((unused)));
+void func_800AD62C(int actorId, int* pan, int* volume, UNUSED int arg3);

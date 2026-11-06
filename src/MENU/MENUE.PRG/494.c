@@ -62,7 +62,7 @@ static void _fadeMenuUpper(void);
 static void _fadeMenuLower(void);
 static void _drawControlsBg(int x, int y, int w, int h);
 
-static void func_80102C94(int arg0) __attribute__((unused));
+static UNUSED void func_80102C94(int arg0);
 void func_80102C94(int arg0)
 {
     if (arg0 != 0) {
@@ -117,7 +117,7 @@ static int _getSelectedRow(void)
     return row;
 }
 
-static void func_80102E48(char* text) __attribute__((unused));
+static UNUSED void func_80102E48(char* text);
 void func_80102E48(char* text)
 {
     vs_battle_menuItem_t* menuItem;
@@ -129,7 +129,7 @@ void func_80102E48(char* text)
     menuItem->fontColor = 1;
 }
 
-static void func_80102E9C(void) __attribute__((unused));
+static UNUSED void func_80102E9C(void);
 void func_80102E9C(void) { vs_mainMenu_clearMenuExcept(8); }
 
 static void _menuReady(void) { vs_mainmenu_ready(); }
@@ -138,7 +138,7 @@ static u_short _menuText[] = {
 #include "build/assets/MENU/MENUE.PRG/menuText.vsString"
 };
 
-static u_short _0 __attribute__((unused)) = 0x0380;
+static UNUSED u_short _0 = 0x0380;
 
 int vs_menuE_exec(u_char* state)
 {
@@ -147,7 +147,7 @@ int vs_menuE_exec(u_char* state)
     static int menuResult = 0;
     static char isInit = 0;
     static char D_8010522D = 0;
-    static short _2 __attribute__((unused)) = 0x54;
+    static UNUSED short _2 = 0x54;
 
     switch (*state) {
     case init:

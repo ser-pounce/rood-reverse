@@ -708,6 +708,7 @@ g_Sound_VoiceOwnerContexts = 0x80039B68;
 g_Sound_AkaoLoadState = 0x80039BC8;
 g_Sound_VoiceModeFlags = 0x80039BD8; // size:0xC
 StCdIntrFlag = 0x80039C14;
+D_80039CF0 = 0x80039CF0; // size:0xCC
 _trig_table = 0x80040210;
 rcos = 0x80040F24;
 rsin = 0x80040F28;

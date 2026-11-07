@@ -757,8 +757,8 @@ static padAct_t _padAct[2];
 static UNUSED int _1[2];
 portInfo_t vs_main_portInfo[2];
 static UNUSED u_char _2[2];
-static vs_main_HeapHeader _heapA;
-static vs_main_HeapHeader _heapB;
+static vs_main_HeapHeader _heap;
+static UNUSED vs_main_HeapHeader _unusedHeap;
 static DslLOC _cdReadLoc;
 static int _cdaTrack;
 static int _cdaMinute;
@@ -1484,10 +1484,8 @@ static inline int _abs2(int arg) { return arg < 0 ? arg += 0xFF : arg; }
 void vs_main_setVibrateParams(void)
 {
     int temp_a0;
-    int var_a2_2;
     int i;
     int j;
-    int var_v0;
     char* temp_t1;
     int new_var;
 
@@ -1665,7 +1663,7 @@ int vs_main_processPadState(void)
 
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heapA.prev;
+    vs_main_HeapHeader* var_a1 = _heap.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
@@ -1695,7 +1693,7 @@ void vs_main_freeHeapR(void* block)
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heapA.next;
+    vs_main_HeapHeader* var_a1 = _heap.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
@@ -1730,8 +1728,8 @@ void* vs_main_allocHeapR(u_int size)
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
-    var_a2 = &_heapA;
-    var_a1 = _heapA.prev;
+    var_a2 = &_heap;
+    var_a1 = _heap.prev;
 
     while (1) {
         if (var_a1->blockSz >= blockSz) {
@@ -1746,7 +1744,7 @@ void* vs_main_allocHeapR(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_a2 = var_a1;
-        if (var_a1 == &_heapA) {
+        if (var_a1 == &_heap) {
             return 0;
         }
         var_a1 = var_a1->prev;
@@ -1759,8 +1757,8 @@ void* vs_main_allocHeap(u_int size)
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_v1;
 
-    var_v1 = &_heapA;
-    var_a1 = _heapA.next;
+    var_v1 = &_heap;
+    var_a1 = _heap.next;
     blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
@@ -1780,7 +1778,7 @@ void* vs_main_allocHeap(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_v1 = var_a1;
-        if (var_a1 == &_heapA) {
+        if (var_a1 == &_heap) {
             return 0;
         }
         var_a1 = var_a1->next;
@@ -1791,15 +1789,15 @@ void vs_main_initHeap(void* heap, u_int size)
 {
     vs_main_HeapHeader* node = heap;
 
-    _heapA.prev = node;
-    _heapA.next = node;
-    _heapA.blockSz = 0;
-    node->prev = &_heapA;
-    node->next = &_heapA;
+    _heap.prev = node;
+    _heap.next = node;
+    _heap.blockSz = 0;
+    node->prev = &_heap;
+    node->next = &_heap;
     node->blockSz = size / 16 - 1;
-    _heapB.prev = &_heapB;
-    _heapB.next = &_heapB;
-    _heapB.blockSz = 0;
+    _unusedHeap.prev = &_unusedHeap;
+    _unusedHeap.next = &_unusedHeap;
+    _unusedHeap.blockSz = 0;
 }
 
 static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
@@ -3785,7 +3783,6 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     int temp_a1;
     int temp_t1;
     int temp_t2;
-    int v0;
     int* temp_a3;
 
     if (_clutState.active == 0) {

@@ -132,13 +132,6 @@ typedef struct {
     vs_main_CdQueueSlot* soundQueueSlot;
 } soundData_t;
 
-typedef struct vs_main_HeapHeader {
-    struct vs_main_HeapHeader* prev;
-    struct vs_main_HeapHeader* next;
-    u_int blockSz;
-    int unkC;
-} vs_main_HeapHeader;
-
 typedef struct {
     u_char unk0_0 : 4;
     u_char containerEmpty : 1;
@@ -671,7 +664,7 @@ int vs_main_fadeMusicVolume(int id, int arg1, int arg2);
 int vs_main_getCurrentMusicId(void);
 void vs_main_evictSfx(int arg0, int arg1);
 void vs_main_wait(void);
-void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
+void vs_main_initHeap(void* heap, u_int size);
 void vs_main_resetGame(void);
 int vs_main_processSoundQueue(void);
 int vs_main_setCurrentSfx(int id);

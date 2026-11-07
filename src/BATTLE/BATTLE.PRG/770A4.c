@@ -953,7 +953,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     result = *(int*)0x1F8003C8;
 
     if ((0xA0 >> result) & 1) {
-        actor->command.fields.unk9 = 9;
+        actor->unk9 = 9;
 
         if (result == 5) {
             actor->commandArgs.u16[0] = arg0->unk188 << 9;
@@ -1429,7 +1429,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
                 func_800E50A0(
                     s, 1, ratan2(s->unk17C - s->unk4C.vx, s->unk180 - s->unk4C.vz));
 
-                if (s->unk54->command.fields.unk9 >= 9) {
+                if (s->unk54->unk9 >= 9) {
                     s->unkE8 = 1;
                 }
                 break;

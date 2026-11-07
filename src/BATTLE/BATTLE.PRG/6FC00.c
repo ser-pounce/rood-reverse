@@ -332,7 +332,7 @@ void func_800D8EF4(void)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        int flags = actor->command.fields.unk8;
+        int flags = actor->unk8;
         func_800E78F4_t* state;
         D_800F4538_t* object;
         vs_battle_actor* other;
@@ -345,7 +345,7 @@ void func_800D8EF4(void)
         u_int x;
         u_int z;
 
-        actor->command.fields.unkB_0 = 0;
+        actor->unkB_0 = 0;
         id = actor->id;
         state = ((func_800E78F4_t**)0x1F80037C)[id];
         state->unk1D[0] = 0;
@@ -449,12 +449,12 @@ void func_800D8EF4(void)
             }
         }
 
-        if ((state->unk124 != 8) && (actor->command.fields.unk9 != 8)
-            && (state->unk124 != actor->command.fields.unk9)) {
+        if ((state->unk124 != 8) && (actor->unk9 != 8)
+            && (state->unk124 != actor->unk9)) {
             func_800E48A8(state, 1, 64);
         }
 
-        state->unk124 = actor->command.fields.unk9;
+        state->unk124 = actor->unk9;
         state->unk34 = state->unk58->unk0.currentTile;
         x = ((u_int*)state->unk60)[0];
         z = ((u_int*)state->unk60)[1];

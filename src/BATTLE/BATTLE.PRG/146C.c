@@ -492,9 +492,9 @@ void func_80069D14(void)
 
         vs_battle_actor* actor = vs_battle_actors[i];
 
-        if ((actor != NULL) && (actor->command.fields.unk8 == 0x80)
-            && (vs_battle_actors[i]->command.fields.unk9 == 0x18)) {
-            actor->command.fields.unk8 = 8;
+        if ((actor != NULL) && (actor->unk8 == 0x80)
+            && (vs_battle_actors[i]->unk9 == 0x18)) {
+            actor->unk8 = 8;
         }
     }
 }
@@ -4549,19 +4549,19 @@ void func_80073718(void)
     for (i = 0; i < 16; ++i) {
         if (vs_battle_actors[i] != NULL) {
             func_8009FC60(i, -2, NULL, -1);
-            switch (vs_battle_actors[i]->command.fields.unk8) {
+            switch (vs_battle_actors[i]->unk8) {
             case 0x10:
                 break;
             case 0x20:
                 break;
             case 0x40:
-                vs_battle_actors[i]->command.fields.unk8 = 0x10;
+                vs_battle_actors[i]->unk8 = 0x10;
                 break;
             default:
-                if (vs_battle_actors[i]->command.fields.unk8 == 0x80) {
+                if (vs_battle_actors[i]->unk8 == 0x80) {
                     func_800E6700(i);
                 }
-                vs_battle_actors[i]->command.fields.unk8 = 0;
+                vs_battle_actors[i]->unk8 = 0;
                 break;
             }
         }
@@ -4598,9 +4598,8 @@ void func_800738E4(void)
     _firstPersonViewEnabled = 0;
 
     for (i = 0; i < 16; ++i) {
-        if ((vs_battle_actors[i] != NULL)
-            && (vs_battle_actors[i]->command.fields.unk8 == 0x10)) {
-            vs_battle_actors[i]->command.fields.unk8 = 0x40;
+        if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk8 == 0x10)) {
+            vs_battle_actors[i]->unk8 = 0x40;
         }
     }
 
@@ -5136,10 +5135,10 @@ int func_80074A20(int arg0)
     ret = 0;
 
     if (vs_battle_actors[arg0] != NULL) {
-        vs_battle_actors[arg0]->command.fields.unk8 = 0;
+        vs_battle_actors[arg0]->unk8 = 0;
         if (vs_battle_actors[arg0]->unk3C->currentHP == 0) {
             func_80095B7C(arg0, 0);
-            vs_battle_actors[arg0]->command.fields.unk8 = 0x20;
+            vs_battle_actors[arg0]->unk8 = 0x20;
             if (vs_battle_actors[arg0]->unk26 == 0) {
                 func_8009F314(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
                 func_800A09D8(arg0, 1);
@@ -5482,10 +5481,10 @@ int func_80075554(void)
             continue;
         }
 
-        if (actor->command.fields.unk8 == 0x40) {
-            state = actor->command.fields.unk8;
+        if (actor->unk8 == 0x40) {
+            state = actor->unk8;
 
-            switch (actor->command.fields.unk9) {
+            switch (actor->unk9) {
             case 9:
             case 10:
             case 11:
@@ -5525,7 +5524,7 @@ int func_80075554(void)
                 break;
             }
 
-            actor->command.fields.unk8 = state;
+            actor->unk8 = state;
 
             if (D_800F196C == 3) {
                 func_800A4E68(i);
@@ -5534,17 +5533,17 @@ int func_80075554(void)
             continue;
         }
 
-        if (actor->command.fields.unk8 != 0x80) {
+        if (actor->unk8 != 0x80) {
             continue;
         }
 
         func_800A1108(i, &position);
 
-        if (actor->command.value & 0x3000000) {
-            func_800AE4FC(actor->unk44, actor->command.fields.unkB_0);
+        if (actor->unkB_0) {
+            func_800AE4FC(actor->unk44, actor->unkB_0);
         }
 
-        switch (actor->command.fields.unkB_2) {
+        switch (actor->unkB_2) {
         case 1:
             func_8006D028(i, 0);
             break;
@@ -5553,14 +5552,14 @@ int func_80075554(void)
             break;
         }
 
-        actor->command.fields.unkB_2 = 0;
+        actor->unkB_2 = 0;
 
-        switch (actor->command.fields.unk9) {
+        switch (actor->unk9) {
         case 1:
             state = 0;
             break;
         case 2:
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 func_8009E614(i);
             } else {
                 func_8009E5C4(i);
@@ -5583,11 +5582,11 @@ int func_80075554(void)
         case 15:
             func_8009FC60(i, -2, NULL, -1);
 
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 func_800B64CC(i, actor->commandArgs.s16[0],
                     actor->commandArgs.s16[1] << 12, actor->commandArgs.s16[0]);
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5608,8 +5607,8 @@ int func_80075554(void)
                 state = actor->unk3C->unk31 << 12;
             }
 
-            if (actor->command.fields.unkA < 16) {
-                func_800A1108(actor->command.fields.unkA, &target);
+            if (actor->unkA < 16) {
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5646,7 +5645,7 @@ int func_80075554(void)
                         target.unk0.unk4.vz - position.unk0.unk4.vz)
                   + 0x800;
 
-            switch (actor->command.fields.unk9) {
+            switch (actor->unk9) {
             case 11:
             case 12:
                 func_800B63AC(
@@ -5675,10 +5674,10 @@ int func_80075554(void)
         case 23:
             func_8009FC60(i, -2, NULL, -1);
 
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 angle = position.unk0.unk4.pad;
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2((target.unk0.unk0.x - actor->commandArgs.u8[0]) << 12,
                             (target.unk0.unk0.z - actor->commandArgs.u8[2]) << 12)
                       + 0x800;
@@ -5698,10 +5697,10 @@ int func_80075554(void)
 
             VectorNormalSS((SVECTOR*)actor->commandArgs.s16, &offset);
 
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5721,10 +5720,10 @@ int func_80075554(void)
 
             VectorNormalSS((SVECTOR*)actor->commandArgs.s16, &offset);
 
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5738,10 +5737,10 @@ int func_80075554(void)
             offset.vy = actor->commandArgs.s32[2] / ONE - position.unk0.unk4.vy;
             offset.vz = actor->commandArgs.s32[1] / ONE - position.unk0.unk4.vz;
 
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5765,13 +5764,13 @@ int func_80075554(void)
             state = 0;
             break;
         case 22:
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 offset.vx = actor->commandArgs.s16[0] / ONE - position.unk0.unk4.vx;
                 offset.vy = actor->commandArgs.s16[1] / ONE - position.unk0.unk4.vy;
                 offset.vz = actor->commandArgs.s16[2] / ONE - position.unk0.unk4.vz;
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5781,13 +5780,13 @@ int func_80075554(void)
             state = 0x40;
             break;
         case 21:
-            if (actor->command.fields.unkA >= 16) {
+            if (actor->unkA >= 16) {
                 offset.vx = actor->commandArgs.u8[0] / ONE - position.unk0.unk0.x;
                 offset.vy = actor->commandArgs.u8[1] / ONE - position.unk0.unk0.surface;
                 offset.vz = actor->commandArgs.u8[2] / ONE - position.unk0.unk0.z;
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->command.fields.unkA, &target);
+                func_800A1108(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5828,7 +5827,7 @@ int func_80075554(void)
             break;
         }
 
-        actor->command.fields.unk8 = state;
+        actor->unk8 = state;
 
         if (D_800F196C != 3) {
             int result = func_800751B8(i, &position.unk0);
@@ -6230,7 +6229,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     temp_s1->unk2C.surface = 0;
     temp_s1->unk2C.x = 0;
     temp_s1->unk1E = 0;
-    temp_s1->command.fields.unk8 = 0;
+    temp_s1->unk8 = 0;
     temp_s0->maxHP = 100;
     temp_s0->currentHP = 100;
     temp_s0->maxMP = 100;
@@ -6311,7 +6310,7 @@ void func_80076F24(
     }
 
     temp_s0->unk24 = arg4 & 0x1C;
-    temp_s0->command.fields.unk8 = 0;
+    temp_s0->unk8 = 0;
     temp_s0->unk2C.status = 0;
     temp_s0->unk2C.z = 0;
     temp_s0->unk2C.surface = 0;
@@ -9196,14 +9195,14 @@ int func_8007D08C(int arg0, int arg1)
 {
     if (arg1 != 0) {
         if (vs_battle_actors[arg0] != NULL) {
-            if (vs_battle_actors[arg0]->command.fields.unk8 == 0x20) {
-                vs_battle_actors[arg0]->command.fields.unk8 = 0;
+            if (vs_battle_actors[arg0]->unk8 == 0x20) {
+                vs_battle_actors[arg0]->unk8 = 0;
                 vs_battle_actors[arg0]->unk1C &= 0x7FFF;
             }
         }
     } else {
         if (vs_battle_actors[arg0] != NULL) {
-            vs_battle_actors[arg0]->command.fields.unk8 = 0x20;
+            vs_battle_actors[arg0]->unk8 = 0x20;
             vs_battle_actors[arg0]->unk1C |= 0x8000;
             func_80095B7C(arg0, 0);
             func_80095B7C(arg0, 0x40);
@@ -9248,8 +9247,8 @@ void func_8007D1A8(int arg0, int arg1)
 void func_8007D260(int arg0)
 {
     vs_battle_actor* temp_a1 = vs_battle_actors[arg0];
-    if ((temp_a1 != NULL) && (temp_a1->command.fields.unk8 != 0x20)) {
-        temp_a1->command.fields.unk8 = 0;
+    if ((temp_a1 != NULL) && (temp_a1->unk8 != 0x20)) {
+        temp_a1->unk8 = 0;
     }
     func_8009DC38(arg0);
 }

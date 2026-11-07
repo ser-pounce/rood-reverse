@@ -104,17 +104,12 @@ typedef struct {
 typedef struct vs_battle_actor {
     /* 0x00 */ struct vs_battle_actor* next;
     /* 0x04 */ int id;
-    /* 0x08 */ union {
-        u_int value;
-        struct {
-            u_char unk8;
-            u_char unk9;
-            u_char unkA;
-            u_int unkB_0 : 2;
-            u_int unkB_2 : 2;
-            u_int unkB_4 : 4;
-        } fields;
-    } command;
+    /* 0x08 */ u_char unk8;
+    /* 0x09 */ u_char unk9;
+    /* 0x0A */ u_char unkA;
+    /* 0x0B */ u_char unkB_0 : 2;
+    /* 0x0B */ u_char unkB_2 : 2;
+    /* 0x0B */ u_char unkB_4 : 4;
     /* 0x0C */ union {
         int s32[3];
         short s16[6];

@@ -484,15 +484,15 @@ void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 
         func_800AA490(arg0, arg1, -1, actor->unk5C6);
 
-        actor->unk5EC.vx = (arg1->x * 128) + 64;
-        actor->unk5EC.vz = (arg1->z * 128) + 64;
-        actor->unk5EC.vy = func_800A6EE8(&actor->unk5EC, 0, 0, 1);
+        actor->unk5EC.vec.vx = (arg1->x * 128) + 64;
+        actor->unk5EC.vec.vz = (arg1->z * 128) + 64;
+        actor->unk5EC.vec.vy = func_800A6EE8(&actor->unk5EC.vec, 0, 0, 1);
         angle = 0x8000;
 
         if (arg1->status == 0xFF) {
-            actor->unk5EC.pad = angle;
+            actor->unk5EC.vec.pad = angle;
         } else {
-            actor->unk5EC.pad = arg1->status * 16;
+            actor->unk5EC.vec.pad = arg1->status * 16;
         }
 
         actor->unk5AC_0 = 1;
@@ -562,8 +562,8 @@ void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
         actor->unk5C6 = arg3;
     }
 
-    actor->unk5EC.vx = target->vx;
-    actor->unk5EC.vz = target->vz;
+    actor->unk5EC.vec.vx = target->vx;
+    actor->unk5EC.vec.vz = target->vz;
     angle = (u_short)target->vy;
 
     if (angle == 0x8000) {
@@ -577,12 +577,12 @@ void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
             angle = dz;
         }
 
-        actor->unk5EC.vy = angle;
+        actor->unk5EC.vec.vy = angle;
     } else {
-        actor->unk5EC.vy = angle;
+        actor->unk5EC.vec.vy = angle;
     }
 
-    actor->unk5EC.pad = target->pad;
+    actor->unk5EC.vec.pad = target->pad;
     actor->unk5AC_0 = 1;
     actor->unk5AC_2 = 0;
 }
@@ -1941,9 +1941,9 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
             }
 
             if (!(arg1->unk5AC_2)) {
-                func_800A9D90(arg0, &arg1->unk5EC, arg1->unk5C4);
+                func_800A9D90(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
             } else {
-                func_800AA620(arg0, &arg1->unk5EC, arg1->unk5C4);
+                func_800AA620(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
             }
 
             arg1->unk5AC_0 = 2;
@@ -1956,7 +1956,7 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
 
             func_800A0204(arg0, 1, 0, 8);
 
-            facing = arg1->unk5EC.pad;
+            facing = arg1->unk5EC.vec.pad;
 
             if (facing != 32768) {
                 facing = facing & 0xFFF;

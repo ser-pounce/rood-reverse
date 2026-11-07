@@ -569,7 +569,7 @@ void func_800DAED0(void)
             ((VECTOR*)state)->vz = 0;
             *(short*)&state->unkA[2] = 0;
             state->unk15C = 0x10;
-            *(int*)&state->unk48 = -1;
+            VS_TILE_CLEAR(state->unk48);
             tile = (*(u_short(**)[32])0x1F8003C0)[state->unk34.z][state->unk34.x] & 15;
             state->unk154[0] = tile;
             state->unk132[0] = tile;

@@ -869,7 +869,7 @@ static void _displayLoadingScreen(void)
     SetDispMask(1);
 }
 
-static void _bufferLoadingScreen(void)
+static UNUSED void _bufferLoadingScreen(void)
 {
     RECT rect;
 
@@ -1030,13 +1030,13 @@ static void _gpuSyncVoidCallback(void) { }
 
 static void _vSyncVoidCallback(void) { }
 
-static void _nop0(void) { }
+static UNUSED void _nop0(void) { }
 
-static void _nop1(void) { }
+static UNUSED void _nop1(void) { }
 
-static void _mainNop2(void) { }
+static UNUSED void _nop2(void) { }
 
-static void _nop3(void) { }
+static UNUSED void _nop3(void) { }
 
 static void _initRand(void)
 {
@@ -1354,7 +1354,7 @@ static void _padSetActData(int port, int pos, int val)
     }
 }
 
-static char _padGetActData(int port, int pos)
+static UNUSED char _padGetActData(int port, int pos)
 {
     return vs_main_portInfo[port].actData[pos];
 }
@@ -1923,7 +1923,7 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
 
 static int _diskGetState(void) { return vs_main_disk.state; }
 
-static void _diskClearError(void)
+static UNUSED void _diskClearError(void)
 {
     if (vs_main_disk.state == diskReadError) {
         vs_main_disk.state = diskIdle;
@@ -2249,7 +2249,7 @@ void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
     ++_cdQueueCount.queued;
 }
 
-static void _nop4(void) { }
+static UNUSED void _nop4(void) { }
 
 static void _processCdQueue(void)
 {
@@ -2378,7 +2378,7 @@ int vs_main_playMusicSlot(int id, int arg1, int arg2)
     return 0;
 }
 
-static int vs_main_getcurrentMusicSlot(void)
+static UNUSED int vs_main_getcurrentMusicSlot(void)
 {
     return vs_main_soundData.currentMusicSlot;
 }
@@ -2495,7 +2495,7 @@ int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
     return ret;
 }
 
-static int _loadMusicIntoFreeSlotAndClearQueue(int id)
+static UNUSED int _loadMusicIntoFreeSlotAndClearQueue(int id)
 {
     int ret;
 
@@ -2522,7 +2522,7 @@ int vs_main_freeMusic(int slotId)
     return 1;
 }
 
-static int nop5(void) { return 0; }
+static UNUSED int nop5(void) { return 0; }
 
 int vs_main_getMusicSlotVolume(int arg0)
 {
@@ -2563,9 +2563,9 @@ int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
     return 0;
 }
 
-static int nop6(void) { return 0; }
+static UNUSED int nop6(void) { return 0; }
 
-static int nop7(void) { return 0; }
+static UNUSED int nop7(void) { return 0; }
 
 void vs_main_stopMusic(void)
 {
@@ -2912,7 +2912,7 @@ static int _freeSfxSlots(void)
     return ret;
 }
 
-static int _loadAndFreeSfx(int id)
+static UNUSED int _loadAndFreeSfx(int id)
 {
     int slot;
 
@@ -3063,7 +3063,7 @@ static void _do_panBankSfx(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
     }
 }
 
-static void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
+static UNUSED void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
 {
     int z;
     long sxy;
@@ -3101,7 +3101,7 @@ void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4
     }
 }
 
-static void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
+static UNUSED void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
 static int _startCutsceneStream(int arg0, int arg1, int arg2)
 {
@@ -3120,7 +3120,7 @@ void vs_main_startCutsceneStreamDefault(int arg0)
     _startCutsceneStream(arg0, 0x80, 0x7F);
 }
 
-static int _freeCutsceneStream(int arg0)
+static UNUSED int _freeCutsceneStream(int arg0)
 {
     if ((arg0 - 1u) < 3) {
         if (vs_main_soundData.unk64[arg0 - 1] != 0) {

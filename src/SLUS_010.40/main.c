@@ -884,6 +884,14 @@ static UNUSED void _bufferLoadingScreen(void)
     DrawSync(0);
 }
 
+static inline void _stopVibrationAndReconnectPads(void)
+{
+    _padSetActData(0, 0, 0);
+    _padSetActData(0, 1, 0);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+}
+
 void vs_main_resetGame(void)
 {
     DrawSync(0);
@@ -894,10 +902,7 @@ void vs_main_resetGame(void)
         ;
 
     DsFlush();
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _stopVibrationAndReconnectPads();
     TeardownSound();
     SpuQuit();
     ResetGraph(3);
@@ -910,10 +915,7 @@ void vs_main_jumpToBattle(void)
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _stopVibrationAndReconnectPads();
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
@@ -934,10 +936,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _stopVibrationAndReconnectPads();
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
@@ -947,10 +946,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _stopVibrationAndReconnectPads();
     TeardownSound();
     SpuQuit();
     ResetGraph(3);

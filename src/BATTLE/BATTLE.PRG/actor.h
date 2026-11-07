@@ -6,7 +6,7 @@
 
 typedef struct {
     char unk0[0x5E8];
-} vs_battle_actor4;
+} vs_battle_actorSubModel;
 
 typedef struct {
     u_short id;
@@ -98,7 +98,7 @@ typedef struct {
     vs_battle_uiMisc miscItem;
     vs_battle_uiMisc unk95C;
     vs_battle_uiMiscRand unk960;
-} vs_battle_actor2;
+} vs_battle_actorStats;
 
 typedef struct vs_battle_actor {
     struct vs_battle_actor* next;
@@ -142,16 +142,16 @@ typedef struct vs_battle_actor {
     u_int unk34_14 : 1;
     u_int unk34_15 : 17;
     int unk38;
-    vs_battle_actor2* unk3C;
+    vs_battle_actorStats* stats;
     int unk40;
     D_800F4538_t* unk44;
-    vs_battle_actor4* unk48[2];
+    vs_battle_actorSubModel* unk48[2];
 } vs_battle_actor;
 
 typedef struct {
     struct {
         vs_battle_actor unk0;
-        vs_battle_actor2 unk50;
+        vs_battle_actorStats unk50;
     } unk0;
     D_800F4538_unk0 unk9B4;
     MATRIX unk6C[8];
@@ -163,12 +163,12 @@ typedef struct {
 typedef struct {
     vs_battle_actor_dat2 unk0;
     char unkB2C[0x1788];
-    vs_battle_actor4 unk22B4[2];
+    vs_battle_actorSubModel unk22B4[2];
 } vs_battle_actor_dat;
 
-void vs_battle_nop0(vs_battle_actor2*);
+void vs_battle_nop0(vs_battle_actorStats*);
 vs_battle_actor* vs_battle_getActor(int actorId);
-void func_80086FA8(int, vs_battle_actor2*);
+void func_80086FA8(int, vs_battle_actorStats*);
 extern vs_battle_actor* vs_battle_actors[];
 extern vs_battle_actor* vs_battle_characterState;
 

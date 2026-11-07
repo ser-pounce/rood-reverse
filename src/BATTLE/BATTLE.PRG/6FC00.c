@@ -350,7 +350,7 @@ void func_800D8EF4(void)
         state = ((func_800E78F4_t**)0x1F80037C)[id];
         state->unk1D[0] = 0;
         object = state->unk58;
-        state->unk90 = actor->unk3C->actionDelay;
+        state->unk90 = actor->stats->actionDelay;
 
         if (flags & 0x20) {
             func_800D82CC(state);
@@ -499,8 +499,8 @@ void func_800D8EF4(void)
         }
 
         alert = 0;
-        current = *(u_int*)&state->unk54->unk3C->currentHP & 0xFFFF;
-        max = *(u_int*)&state->unk54->unk3C->currentHP >> 16;
+        current = *(u_int*)&state->unk54->stats->currentHP & 0xFFFF;
+        max = *(u_int*)&state->unk54->stats->currentHP >> 16;
 
         if (state->unk2F != 0) {
             if (state->unk2F == 1) {

@@ -2691,7 +2691,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
     }
 }
 
-int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
+int vs_battle_getStatusFlags(vs_battle_actorStats* arg0)
 {
     int i;
     int temp_v1 = (u_int)arg0->statuses >> 5;
@@ -2850,7 +2850,7 @@ void func_800CA2DC(void)
     u_int flags;
     u_char icon;
     u_long* prim;
-    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* actor = vs_battle_characterState->stats;
     void* nextPrim = vs_scratch.unk4 - 4;
 
     func_800C9FE8();
@@ -2891,7 +2891,7 @@ void func_800CA2DC(void)
                 prim = vs_battle_setSpriteDefaultTexPage(
                     0, k + D_800EBCEC[j], D_800EBD14[j], nextPrim);
                 prim[2] = D_800EBC54[vs_battle_getLimbStatus(
-                              &vs_battle_characterState->unk3C->limbs[i])]
+                              &vs_battle_characterState->stats->limbs[i])]
                         | 0x64000000;
                 prim[4] = D_800EBD3C[j];
             }
@@ -3086,7 +3086,7 @@ void func_800CAB40(void)
 int func_800CABE0(int arg0)
 {
     int ret;
-    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* actor = vs_battle_characterState->stats;
     int temp_v0 = func_800A0BE0(0);
     int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
 

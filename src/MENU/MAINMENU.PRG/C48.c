@@ -46,7 +46,7 @@ vs_main_inventoryWeapon* vs_mainMenu_weapons;
 void vs_mainMenu_initInventory(void)
 {
     int i;
-    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* actor = vs_battle_characterState->stats;
 
     if (actor->weapon.index != 0) {
         vs_battle_copyUiWeaponStats(
@@ -440,7 +440,7 @@ void vs_mainMenu_exec(int arg0)
 
                 if (selectedMenu == 5) {
                     menuItem = vs_battle_setMenuItem(
-                        4, 320, 18, 140, 8, vs_battle_characterState->unk3C->name);
+                        4, 320, 18, 140, 8, vs_battle_characterState->stats->name);
                     menuItem->state = 2;
                     menuItem->targetPosition0 = 0xB4;
                     menuItem->selected = state;
@@ -993,7 +993,7 @@ void vs_mainMenu_setStrIntAgi(
 
 void vs_mainMenu_populateBaseStats(int actorId)
 {
-    vs_battle_actor2* temp_t0 = vs_battle_actors[actorId & 0xF]->unk3C;
+    vs_battle_actorStats* temp_t0 = vs_battle_actors[actorId & 0xF]->stats;
     D_80102488[3] = actorId & 0xF;
     D_80102498[0] = temp_t0->accessory.currentStr;
     D_80102498[1] = temp_t0->accessory.currentInt;
@@ -1040,10 +1040,10 @@ void vs_mainMenu_renderEquipStats(int animate)
     int i;
     u_long* temp_s4;
     int position;
-    vs_battle_actor2* actor;
+    vs_battle_actorStats* actor;
 
     position = vs_getXY(248, 126);
-    actor = vs_battle_actors[D_80102488[3]]->unk3C;
+    actor = vs_battle_actors[D_80102488[3]]->stats;
     temp_s4 = vs_scratch.unk4 - 0x18;
 
     if (animate != 0) {

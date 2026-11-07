@@ -1161,7 +1161,7 @@ void vs_main_captureSaveState(void)
     int j;
     int actionByte;
     u_char actionsLearned;
-    vs_battle_actor2* actor;
+    vs_battle_actorStats* actor;
     vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
@@ -1183,7 +1183,7 @@ void vs_main_captureSaveState(void)
         vs_main_actionsLearned[actionByte] = actionsLearned;
     }
 
-    actor = vs_battle_characterState->unk3C;
+    actor = vs_battle_characterState->stats;
     snapshot = &vs_main_characterSnapshot;
     snapshot->stats.currentHP = actor->currentHP;
     snapshot->stats.maxHP = actor->maxHP;

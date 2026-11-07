@@ -236,7 +236,7 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy);
  *
  * @return Packed bits.
  */
-int vs_battle_getStatusFlags(vs_battle_actor2*);
+int vs_battle_getStatusFlags(vs_battle_actorStats*);
 int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb*);
 /**
  * Determines whether the selected spell class is available

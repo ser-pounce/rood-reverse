@@ -313,7 +313,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                             temp = actor->unk0.position.vz;
                             temp <<= 16;
                             func_8008C458(temp | actor->unk0.position.vx,
-                                actor->unk0.currentTile.y, &actor->unk0.unk58,
+                                actor->unk0.currentTile.surface, &actor->unk0.unk58,
                                 &scratch->offset);
                         } else {
                             actor->unk0.unk58.r = 0x80;
@@ -376,8 +376,9 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                 if (actor->unk0.unk9_0 < 4) {
                     temp = scratch->offset.vz;
                     temp <<= 16;
-                    func_8008C458(temp | scratch->offset.vx, actor->unk0.currentTile.y,
-                        &scratch->unk0[0x30], &actor->unk0.position);
+                    func_8008C458(temp | scratch->offset.vx,
+                        actor->unk0.currentTile.surface, &scratch->unk0[0x30],
+                        &actor->unk0.position);
                     {
                         int color;
 

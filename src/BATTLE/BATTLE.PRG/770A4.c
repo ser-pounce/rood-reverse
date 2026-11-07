@@ -34,7 +34,7 @@ void func_800DF8A4(func_800E78F4_t* arg0)
     vs_battle_movementPosition pos;
     int i;
 
-    if (arg0->unk34.y < 2) {
+    if (arg0->unk34.surface < 2) {
         vs_battle_movementPosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
 
         arg0->unk19C = none;
@@ -48,7 +48,7 @@ void func_800DF8A4(func_800E78F4_t* arg0)
     if (i >= 0) {
         pos.x = D_800F5910[i * 2].unk0_0;
         pos.z = D_800F5910[i * 2].unk0_5;
-        pos.y = 0;
+        pos.surface = 0;
 
         if (func_800D954C(arg0, pos) > 0) {
             vs_battle_movementPosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -81,7 +81,7 @@ void func_800DF9A8(vs_battle_movementPosition* arg0, vs_battle_movementPosition*
             }
             arg1->x = D_800F5910[i * 2 + 1].unk0_0;
             arg1->z = D_800F5910[i * 2 + 1].unk0_5;
-            arg1->y = i >> 1;
+            arg1->surface = i >> 1;
             return;
         }
     }
@@ -184,13 +184,13 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             result = func_800DFAF8(arg0, position.p, 1);
 
             if ((result >= 0) && (func_8008E320(slot = result >> 1) >= 0)) {
-                candidate.y = slot + 2;
+                candidate.surface = slot + 2;
 
-                if (!((D_800F58BC->unkE >> candidate.y) & 1)) {
-                    arg0->unk19B = candidate.y;
+                if (!((D_800F58BC->unkE >> candidate.surface) & 1)) {
+                    arg0->unk19B = candidate.surface;
 
                     if (arg0->unk88) {
-                        func_800E4BE0(candidate.y);
+                        func_800E4BE0(candidate.surface);
                     }
 
                     func_800DF9A8(&candidate, &arg0->unk19C);
@@ -239,7 +239,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             }
 
         stop:
-            candidate.y = 0;
+            candidate.surface = 0;
             arg0->unk170 = candidate;
             return 14;
         } else {
@@ -1036,24 +1036,24 @@ int func_800E1BB8(
     for (i = 0; i < 4; ++i) {
         if (!(arg0->unk15E & 8)) {
             if (*(int*)0x1F8003F4) {
-                candidate.y =
+                candidate.surface =
                     ((*(u_char**)0x1F8003C4)[arg0->unk11C.z * *(u_char*)0x1F8003DC
                                              + arg0->unk11C.x]
                         >> i * 2)
                     & 1;
             } else {
-                candidate.y = func_800E4690(arg0->unk11C, i * 2);
+                candidate.surface = func_800E4690(arg0->unk11C, i * 2);
             }
 
             candidate.x = arg0->unk11C.x + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dx;
             candidate.z = arg0->unk11C.z + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dz;
 
-            if (candidate.y) {
+            if (candidate.surface) {
                 if (!func_800D96C8(arg0, arg0->unk11C, candidate, i * 2)) {
                     continue;
                 }
 
-                candidate.y = 0;
+                candidate.surface = 0;
             }
 
             if (!arg0->unk2
@@ -1648,7 +1648,7 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
 
             ahead.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dx;
             ahead.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dz;
-            ahead.y = 0;
+            ahead.surface = 0;
 
             if (!func_800D96C8(state, state->unk34, ahead, path.direction)
                 || (func_800D954C(state, ahead) <= 0)) {
@@ -1766,7 +1766,7 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
 
                 point.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
                 point.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
-                point.y = 0;
+                point.surface = 0;
 
                 if (func_800D96C8(state, state->unk34, point, direction)
                     && (func_800D954C(state, point) > 0)) {

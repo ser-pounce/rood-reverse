@@ -16,6 +16,7 @@ Sound_GetMusicPosition = 0x80011F90;
 Sound_StartFieldMusic = 0x80011FB4;
 Sound_StopMusicById = 0x80011FDC;
 Sound_PushMusicState = 0x80012004;
+Sound_ClearSuspendedMusic = 0x80012024;
 Sound_SetMusicLevelImmediate = 0x80012034;
 Sound_StartMasterAndMusicVolumeFade = 0x80012080;
 Sound_StartFieldMusicLooped = 0x800120B8;

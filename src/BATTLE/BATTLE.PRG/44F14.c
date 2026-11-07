@@ -729,7 +729,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
                                        arg1->unk0.currentTile.z, 1)]
                 ->unk16C.actorId];
     } else {
-        floor = arg1->unk0.currentTile.y;
+        floor = arg1->unk0.currentTile.surface;
         id = 0xD;
         if (arg1->unk6E4 != 0) {
             floor = arg1->unk6E4;
@@ -1457,7 +1457,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
         memcpy(&actor->unk0.lastPosition, &actor->unk0.position, sizeof(SVECTOR));
 
         if (actor->unk0.unkC_0 == 0) {
-            actor->unk1868 = *(int*)&actor->unk0.currentTile;
+            actor->unk1868 = actor->unk0.currentTile;
         }
 
         actor->unk0.lastPosition.pad = actor->unk0.facing;

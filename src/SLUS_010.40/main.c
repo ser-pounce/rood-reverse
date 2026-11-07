@@ -17,6 +17,7 @@
 #include <libsnd.h>
 #include <libspu.h>
 #include <libgpu.h>
+#include <limits.h>
 #include <rand.h>
 
 enum diskState_e {
@@ -798,7 +799,9 @@ static void _initScreen(
     int w, int h, UNUSED int arg2, UNUSED int arg3, UNUSED int arg4, UNUSED int arg5)
 {
     SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
+
     setRECT(&vs_main_dispEnv[0].screen, 0, 8, 256, 224);
+
     PutDispEnv(vs_main_dispEnv);
 }
 
@@ -825,18 +828,24 @@ static void _displayLoadingScreen(void)
 {
     RECT rect;
 
-    _initScreen(0x140, 0xF0, vs_main_projectionDistance, 0, 0, 0);
+    _initScreen(320, 240, vs_main_projectionDistance, 0, 0, 0);
+
     setRECT(&rect, 0, 0, 1024, 512);
+
     ClearImage2(&rect, 0, 0, 0);
     DrawSync(0);
     VSync(2);
+
     setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
         (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
         IMG_H(_nowLoading_header));
+
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
+
     setRECT(&rect, ((320 - IMG_W(_nowLoading_header)) / 2) + 320,
         (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
         IMG_H(_nowLoading_header));
+
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
     DrawSync(0);
     SetDispMask(1);
@@ -855,20 +864,20 @@ static void _bufferLoadingScreen(void)
             (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
             IMG_H(_nowLoading_header));
     }
+
     LoadImage(&rect, _nowLoading_data);
     DrawSync(0);
 }
-
-extern int vs_main_saveGameClearData;
-extern int vs_main_buttonsReleased;
 
 void vs_main_resetGame(void)
 {
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
+
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
+
     DsFlush();
     _padSetActData(0, 0, 0);
     _padSetActData(0, 1, 0);
@@ -893,17 +902,20 @@ void vs_main_jumpToBattle(void)
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
-    func_80012024();
+    Sound_ClearSuspendedMusic();
     Sound_ResetMusicBankIds();
     _displayLoadingScreen();
     _loadBattlePrg();
+
     vs_main_startState = 1;
+
     vs_overlay_jumpToBattle(&_sp);
 }
 
 void vs_main_showEndingAndReturnToTitle(void)
 {
     _inGame = 0;
+
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
@@ -927,7 +939,9 @@ void vs_main_showEndingAndReturnToTitle(void)
     TeardownSound();
     SpuQuit();
     ResetGraph(3);
+
     vs_main_saveGameClearData = 1;
+
     vs_overlay_jumpToTitle(&_sp2);
 }
 
@@ -950,38 +964,39 @@ vs_main_artsStatus_t vs_main_artsStatus;
 int vs_main_zoneEnemyCacheIndex;
 vs_main_characterSnapshot_t vs_main_characterSnapshot;
 vs_main_inventory_t vs_main_inventory;
-_mpdRoomDoorSection_t vs_main_spawnPoint;
+vs_main_warp_t vs_main_spawnPoint;
 vs_Gametime_t vs_main_gametime;
 
-int vs_main_gametimeUpdate(int vsync)
+int vs_main_gametimeUpdate(int mode)
 {
-    int vs = VSync(vsync);
-    if (vsync != 1) {
+    int vsync = VSync(mode);
+
+    if (mode != 1) {
         _asmNop();
     }
 
     _processCdQueue();
 
     if (vs_main_gametime.t.h >= 100) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.f += vs_gametime_tickspeed;
 
     if (vs_main_gametime.t.f < 60) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.f = 0;
 
     if (++vs_main_gametime.t.s < 60) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.s = 0;
 
     if (++vs_main_gametime.t.m < 60) {
-        return vs;
+        return vsync;
     }
 
     vs_main_gametime.t.m = 0;
@@ -989,7 +1004,8 @@ int vs_main_gametimeUpdate(int vsync)
     if (++vs_main_gametime.t.h >= 100) {
         vs_main_gametime.t.h = 100;
     }
-    return vs;
+
+    return vsync;
 }
 
 static void _gpuSyncVoidCallback(void) { }
@@ -1013,41 +1029,27 @@ static void _initRand(void)
     for (i = 0; i < (int)(sizeof _randArr / sizeof _randArr[0]); ++i) {
         _randArr[i] = rand();
     }
+
     _randIndex = (sizeof _randArr / sizeof _randArr[0]) - 1;
 }
 
 int vs_main_getRand(int max)
 {
-    int temp_s0;
-    int var_a0;
-    int var_v0;
-
-    var_v0 = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
-
-    if (var_v0 < 0) {
-        var_v0 += 0x7FFF;
-    }
-
-    _randIndex = var_v0 >> 0xF;
-
-    temp_s0 = 0x7FFF - _randArr[_randIndex];
+    int value;
+    int slot = _randArr[_randIndex] * (sizeof _randArr / sizeof _randArr[0]);
+    _randIndex = slot / -SHRT_MIN;
+    value = SHRT_MAX - _randArr[_randIndex];
     _randArr[_randIndex] = rand();
 
-    var_a0 = temp_s0 * max;
-
-    if (var_a0 < 0) {
-        var_a0 += 0x7FFF;
-    }
-
-    return var_a0 >> 0xF;
+    return value * max / -SHRT_MIN;
 }
 
-int vs_main_getRandSmoothed(int arg0)
+int vs_main_getRandSmoothed(int max)
 {
-    return (vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
-               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
-               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0)
-               + vs_main_getRand(arg0) + vs_main_getRand(arg0) + vs_main_getRand(arg0))
+    return (vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max)
+               + vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max)
+               + vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max)
+               + vs_main_getRand(max) + vs_main_getRand(max) + vs_main_getRand(max))
          / 12;
 }
 
@@ -1070,6 +1072,7 @@ static void _sysInit(void)
     SsUtReverbOff();
     DsInit();
     _initRand();
+
     _resetEnabled = 1;
     vs_main_saveGameClearData = 0;
 }
@@ -1096,12 +1099,15 @@ static void _sysReinit(void)
     _diskReset();
     _loadMenuSound();
     vs_main_resetPadAct();
+
     _inGame = 0;
+
     _unlockPadModeSwitch();
 
-    for (i = 31; i >= 0; --i) {
+    for (i = 0; i < 32; ++i) {
         _buttonHeldFrameCount[i] = 0;
     }
+
     vs_main_gametime.t.h = 0;
     vs_main_gametime.t.m = 0;
     vs_main_gametime.t.s = 0;
@@ -1114,15 +1120,20 @@ int vs_main_execTitle(void)
     vs_overlay_getSp(&_sp);
     _sysReinit();
     _loadTitlePrg();
+
     vs_main_startState = vs_title_exec();
     vs_main_saveGameClearData = 0;
+
     _displayLoadingScreen();
     _loadBattlePrg();
     vs_overlay_getSp(&_sp);
+
     _inGame = 1;
+
     vs_battle_exec();
     SetDispMask(0);
     vs_main_stopMusic();
+
     return 0;
 }
 
@@ -1145,80 +1156,75 @@ void vs_main_setCharacterRestorePending(void)
 
 void vs_main_captureSaveState(void)
 {
-    func_8006EBF8_t sp10;
-    int j;
+    vs_battle_actorPosition position;
     int i;
-    int var_s1;
-    int var_t3;
-    int new_var;
-    int var_t4;
-    signed char actionsLearned;
-    vs_battle_actor2* temp_t0;
-    vs_main_characterSnapshot_t* temp_t5;
-    int v0;
-    int v0_2;
-    int v1;
-    int v1_2;
+    int j;
+    int actionByte;
+    u_char actionsLearned;
+    vs_battle_actor2* actor;
+    vs_main_characterSnapshot_t* snapshot;
 
-    vs_main_spawnPoint = D_800F1AB0;
-    func_800A1108(0, &sp10);
+    vs_main_spawnPoint = vs_battle_spawnPoint;
 
-    vs_main_spawnPoint.x = sp10.unk0.unk0.fields.x;
-    vs_main_spawnPoint.z = sp10.unk0.unk0.fields.z;
-    vs_main_spawnPoint.unk2.unk0_13 = sp10.unk0.unk0.fields.y;
-    vs_main_spawnPoint.facing = sp10.unk0.unk0.fields.status >> 6;
-    vs_main_spawnPoint.unk6_0 = D_800F18E8.unk0_0;
+    func_800A1108(0, &position);
 
-    for (var_s1 = 0; var_s1 < 32; ++var_s1) {
-        for (actionsLearned = 0, i = 0; i < 8; ++i) {
-            actionsLearned =
-                (*(int*)&actionsLearned * 2) | vs_main_actions[var_s1 * 8 + i].unlocked;
+    vs_main_spawnPoint.x = position.unk0.unk0.x;
+    vs_main_spawnPoint.z = position.unk0.unk0.z;
+    vs_main_spawnPoint.targetTile.arrivalSurface = position.unk0.unk0.surface;
+    vs_main_spawnPoint.facing = position.unk0.unk0.status >> 6;
+    // On a saved spawn point this field holds the scene id, not an unlock flag.
+    vs_main_spawnPoint.unlockFlag = D_800F18E8.unk0_0;
+
+    for (actionByte = 0; actionByte < 256 / CHAR_BIT; ++actionByte) {
+        for (actionsLearned = 0, i = 0; i < CHAR_BIT; ++i) {
+            actionsLearned = (actionsLearned << 1)
+                           | vs_main_actions[actionByte * CHAR_BIT + i].unlocked;
         }
-        vs_main_actionsLearned[var_s1] = actionsLearned;
+        vs_main_actionsLearned[actionByte] = actionsLearned;
     }
-    temp_t0 = vs_battle_characterState->unk3C;
-    temp_t5 = &vs_main_characterSnapshot;
-    temp_t5->stats.currentHP = temp_t0->currentHP;
-    temp_t5->stats.maxHP = temp_t0->maxHP;
-    temp_t5->stats.currentMP = temp_t0->currentMP;
-    temp_t5->stats.maxMP = temp_t0->maxMP;
-    temp_t5->stats.strength = temp_t0->strength;
-    temp_t5->stats.totalStrength = temp_t0->totalStrength;
-    temp_t5->stats.intelligence = temp_t0->intelligence;
-    temp_t5->stats.totalIntelligence = temp_t0->totalIntelligence;
-    temp_t5->stats.agility = temp_t0->agility;
-    temp_t5->stats.totalAgility = temp_t0->totalAgility;
-    temp_t5->stats.risk = temp_t0->risk;
-    temp_t5->stats.flags = temp_t0->unk954;
-    temp_t5->stats.statuses = temp_t0->statuses;
+
+    actor = vs_battle_characterState->unk3C;
+    snapshot = &vs_main_characterSnapshot;
+    snapshot->stats.currentHP = actor->currentHP;
+    snapshot->stats.maxHP = actor->maxHP;
+    snapshot->stats.currentMP = actor->currentMP;
+    snapshot->stats.maxMP = actor->maxMP;
+    snapshot->stats.strength = actor->strength;
+    snapshot->stats.totalStrength = actor->totalStrength;
+    snapshot->stats.intelligence = actor->intelligence;
+    snapshot->stats.totalIntelligence = actor->totalIntelligence;
+    snapshot->stats.agility = actor->agility;
+    snapshot->stats.totalAgility = actor->totalAgility;
+    snapshot->stats.risk = actor->risk;
+    snapshot->stats.actionDelay = actor->actionDelay;
+    snapshot->stats.statuses = actor->statuses;
 
     for (i = 0; i < 8; ++i) {
-        temp_t5->stats.statusTimers[i] = temp_t0->statusTimers[i];
+        snapshot->stats.statusTimers[i] = actor->statusTimers[i];
     }
 
-    var_t4 = 0;
-    var_t3 = 0;
-
     for (i = 0; i < 6; ++i) {
-        temp_t5->stats.limbs[i].hp = temp_t0->limbs[i].hp;
-        temp_t5->stats.limbs[i].maxHp = temp_t0->limbs[i].maxHp;
+
+        snapshot->stats.limbs[i].hp = actor->limbs[i].hp;
+        snapshot->stats.limbs[i].maxHp = actor->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_t5->stats.limbs[i].types[j] = temp_t0->limbs[i].types[j];
+            snapshot->stats.limbs[i].types[j] = actor->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_t5->stats.limbs[i].affinities[j] = temp_t0->limbs[i].affinities[j];
+            snapshot->stats.limbs[i].affinities[j] = actor->limbs[i].affinities[j];
         }
     }
 
-    temp_t5->stats.weaponDrawn = vs_battle_characterState->weaponDrawn;
-    temp_t5->stats.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
-    temp_t5->stats.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
+    snapshot->stats.weaponDrawn = vs_battle_characterState->weaponDrawn;
+    snapshot->stats.cameraPitch = vs_battle_cameraCurrentSpherical.delta.pitch;
+    snapshot->stats.cameraDistance = vs_battle_cameraCurrentSpherical.initialDistance;
 
-    for (var_s1 = 0; var_s1 < 16; ++var_s1) {
-        vs_battle_saveEnemyState(var_s1, 0);
+    for (actionByte = 0; actionByte < 16; ++actionByte) {
+        vs_battle_saveEnemyState(actionByte, 0);
     }
+
     vs_battle_setDoorEntered();
 }
 
@@ -3549,7 +3555,7 @@ static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
 void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
 {
-    int sp10[5];
+    int position[5];
     int i;
 
     if (_clutState.active != 0) {
@@ -3582,10 +3588,10 @@ void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
         _clutState.bgAnimActive = 0;
 
         for (i = 0; i < 5; ++i) {
-            sp10[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
-                    + (((temp_t6[i][2] / 65536)) << 0x10);
+            position[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
+                        + (((temp_t6[i][2] / 65536)) << 0x10);
         }
-        func_8008EB30(sp10);
+        func_8008EB30(position);
     }
 }
 
@@ -3603,7 +3609,7 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
 
 void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 {
-    int sp10[5];
+    int position[5];
     int temp_v0;
     int var_a1;
     int var_t0;
@@ -3751,9 +3757,9 @@ void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
             if (temp_v0 < 0) {
                 temp_v0 += 0xFFFF;
             }
-            sp10[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
+            position[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
         }
-        func_8008EB30(sp10);
+        func_8008EB30(position);
     }
 }
 
@@ -3766,7 +3772,7 @@ void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
 
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
-    CVECTOR sp10;
+    CVECTOR position;
     _colorSlot_t* temp_t0;
     int temp_a1;
     int temp_t1;
@@ -3802,15 +3808,15 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     }
 
     temp_t0->active = 0;
-    sp10.r = (temp_a3[0] / 65536) - 64;
-    sp10.g = (temp_a3[1] / 65536) - 64;
-    sp10.b = (temp_a3[2] / 65536) - 64;
-    sp10.cd = 0;
+    position.r = (temp_a3[0] / 65536) - 64;
+    position.g = (temp_a3[1] / 65536) - 64;
+    position.b = (temp_a3[2] / 65536) - 64;
+    position.cd = 0;
 
     if (slot != 0) {
-        func_800A0768(slot - 1, &sp10);
+        func_800A0768(slot - 1, &position);
     } else {
-        func_8008B430(&sp10, temp_t0->grayAmount >> 2);
+        func_8008B430(&position, temp_t0->grayAmount >> 2);
     }
 }
 
@@ -3824,7 +3830,7 @@ static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
 
 static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
 {
-    CVECTOR sp10;
+    CVECTOR position;
     short var_t4;
     int var_a1;
     int var_a2;
@@ -3967,24 +3973,24 @@ static void _transformColorSlot(int mode, int frames, int slot, int r, int g, in
             var_v1 = t2[0] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.r = var_v0 - 0x40;
+        position.r = var_v0 - 0x40;
         var_v0 = t2[1] >> 0x10;
         if (t2[1] < 0) {
             var_v1 = t2[1] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.g = var_v0 - 0x40;
+        position.g = var_v0 - 0x40;
         var_v0 = t2[2] >> 0x10;
         if (t2[2] < 0) {
             var_v1 = t2[2] + 0xFFFF;
             var_v0 = var_v1 >> 0x10;
         }
-        sp10.b = var_v0 - 0x40;
-        sp10.cd = 0;
+        position.b = var_v0 - 0x40;
+        position.cd = 0;
         if (slot != 0) {
-            func_800A0768(slot - 1, &sp10);
+            func_800A0768(slot - 1, &position);
         } else {
-            func_8008B430(&sp10, ((u_short)t1->grayAmount << 0x10) >> 0x12);
+            func_8008B430(&position, ((u_short)t1->grayAmount << 0x10) >> 0x12);
         }
     }
 }

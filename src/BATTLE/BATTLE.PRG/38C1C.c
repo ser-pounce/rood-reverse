@@ -660,7 +660,7 @@ void func_800A25EC(D_800F4538_t* actor)
 
     actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
     actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
-    actor->unk0.currentTile.y = 0;
+    actor->unk0.currentTile.surface = 0;
 }
 
 void func_800A2790(D_800F4538_t* actor)

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "25AC.h"
 #include "inventory.h"
+#include "movementPosition.h"
 #include <sys/types.h>
 #include <libds.h>
 #include <libgte.h>
@@ -218,7 +219,7 @@ typedef struct {
     short agility;
     short totalAgility;
     short risk;
-    u_short flags;
+    u_short actionDelay;
     int statuses;
     char statusTimers[8];
     vs_main_characterSnapshotLimb_t limbs[6];
@@ -407,10 +408,7 @@ typedef struct {
     short limbHP[6];
     UNUSED short _;
     int statuses;
-    u_char x;
-    u_char direction;
-    u_char z;
-    u_char height;
+    vs_battle_movementPosition tile;
 } vs_main_savedEnemyState_t;
 
 typedef struct {
@@ -429,28 +427,26 @@ typedef struct {
 } vs_main_battleTimer_t;
 
 typedef struct {
-    u_short unk0_0 : 5;
-    u_short unk0_5 : 5;
-    u_short unk0_10 : 3;
-    u_short unk0_13 : 3;
-} _mpdRoomDoorSection2;
+    u_short x : 5;
+    u_short z : 5;
+    u_short surface : 3;
+    u_short arrivalSurface : 3;
+} vs_main_targetTile_t;
 
 typedef struct {
     u_char zndId;
     u_char mpdId;
-    _mpdRoomDoorSection2 unk2;
-    u_short unk4_0 : 8;
+    vs_main_targetTile_t targetTile;
+    u_short unlockValue : 8;
     u_short x : 5;
     u_short facing : 2;
-    u_short unk4_15 : 1;
-    u_short unk6_0 : 10;
+    u_short walkForward : 1;
+    u_short unlockFlag : 10;
     u_short z : 5;
-    u_short unk6_15 : 1;
-    u_char unk8;
-    u_char unk9;
-    u_char unkA;
-    u_char unkB;
-} _mpdRoomDoorSection_t;
+    u_short faceCamera : 1;
+    u_char doorId;
+    UNUSED u_char _[3];
+} vs_main_warp_t;
 
 typedef struct {
     u_char phys;
@@ -578,7 +574,7 @@ extern vs_main_artsStatus_t vs_main_artsStatus;
 extern int vs_main_zoneEnemyCacheIndex;
 extern vs_main_characterSnapshot_t vs_main_characterSnapshot;
 extern vs_main_inventory_t vs_main_inventory;
-extern _mpdRoomDoorSection_t vs_main_spawnPoint;
+extern vs_main_warp_t vs_main_spawnPoint;
 extern vs_Gametime_t vs_main_gametime;
 extern vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
 extern vs_main_flags_t vs_main_stateFlags;

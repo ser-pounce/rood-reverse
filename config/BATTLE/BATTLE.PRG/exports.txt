@@ -25,7 +25,6 @@ D_800F196C
 D_800F1970
 D_800F1988
 D_800F19CC
-D_800F1AB0
 D_800F1BA4
 D_800F1BA8
 D_800F1BAC
@@ -391,6 +390,7 @@ vs_battle_script_setFlagImm
 vs_battle_script_setFlagImmContext
 vs_battle_script_setStringContextInt
 vs_battle_script_specialOp
+vs_battle_spawnPoint
 vs_battle_setEffectExec
 vs_battle_setFontStyle
 vs_battle_setGeomOffset

@@ -17,7 +17,7 @@ int Sound_GetMusicPosition(void);
 u_int Sound_StartFieldMusic(void*);
 void Sound_StopMusicById(u_int);
 void Sound_PushMusicState(void);
-int func_80012024(void);
+int Sound_ClearSuspendedMusic(void);
 u_int Sound_StartMasterAndMusicVolumeFade(void*, u_int, int);
 u_int Sound_QueueMusic(void*);
 int Sound_PlaySfx(u_long, int, int, int);

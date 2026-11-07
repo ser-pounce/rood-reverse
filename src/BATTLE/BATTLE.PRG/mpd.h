@@ -194,7 +194,7 @@ typedef struct {
     int* geometrySection;
     _mpdRoomCollisionMapSection* collisionMapSection;
     _mpdRoomSection3* section3;
-    _mpdRoomDoorSection_t* doorSection;
+    vs_main_warp_t* doorSection;
     int lightingSection;
     int section6;
     int section7;
@@ -244,6 +244,6 @@ int vs_battle_inWorkshop(void);
 int vs_battle_getMapCompletion(void);
 int func_8008E7BC(int, int, u_int);
 extern int vs_battle_mapCompletionFlags[];
-extern _mpdRoomDoorSection_t D_800F1AB0;
+extern vs_main_warp_t vs_battle_spawnPoint;
 extern short vs_battle_doorEntered;
 extern void* vs_battle_sceneBuffer;

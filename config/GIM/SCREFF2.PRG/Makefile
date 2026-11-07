@@ -8,3 +8,4 @@ $(BUILD)/data/GIM/SCREFF2.PRG $(BUILD)/data/GIM/SCREFF2.PRG.elf: private LDSCRIP
 
 $(BUILD)/src/GIM/SCREFF2.PRG/0.c.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/GIM/SCREFF2.PRG/0.c.o: CC1VER := 2.8.1-psx
+$(BUILD)/src/GIM/SCREFF2.PRG/0.c.o: CC1FLAGS += -Wno-uninitialized

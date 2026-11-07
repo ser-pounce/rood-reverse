@@ -1083,6 +1083,7 @@ void func_800A48CC(int index, int direction, int distance)
 inline SVECTOR* func_800A4A24(int arg0)
 {
     SVECTOR sp10[4];
+    SVECTOR* result;
     int temp_v0;
     int i;
     arg0 -= 2;
@@ -1092,7 +1093,8 @@ inline SVECTOR* func_800A4A24(int arg0)
     for (i = 0; i < temp_v0; ++i) {
         if (sp10[i].pad == arg0) {
             // BUG: returns stack variable
-            return &sp10[i];
+            result = &sp10[i];
+            return result;
         }
     }
     return NULL;

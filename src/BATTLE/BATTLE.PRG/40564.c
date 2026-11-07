@@ -50,6 +50,7 @@ static inline void vs_battlePacketEnd(DR_MOVE* p)
 static inline SVECTOR* func_800A4A24(int id)
 {
     SVECTOR platforms[4];
+    SVECTOR* result;
     int count;
     int i;
 
@@ -59,7 +60,8 @@ static inline SVECTOR* func_800A4A24(int id)
     for (i = 0; i < count; ++i) {
         if (platforms[i].pad == id) {
             // BUG: returns stack variable
-            return &platforms[i];
+            result = &platforms[i];
+            return result;
         }
     }
 

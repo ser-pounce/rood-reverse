@@ -804,17 +804,17 @@ static int _equipShieldMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_battle_actorStats* actor;
+                vs_battle_actorStats* stats;
                 vs_main_inventoryShield* shield =
                     &vs_main_inventory.shields[_equippedItem - 1];
                 shield->isEquipped = 1;
 
-                actor = vs_battle_characterState->stats;
+                stats = vs_battle_characterState->stats;
                 wepId = shield->base.wepId;
                 material = shield->base.material;
 
-                if (actor->weapon.blade.id
-                    && vs_mainMenu_weaponHands[actor->weapon.blade.category - 1]) {
+                if (stats->weapon.blade.id
+                    && vs_mainMenu_weaponHands[stats->weapon.blade.category - 1]) {
                     vs_mainMenu_unequipWeapon();
                 }
 

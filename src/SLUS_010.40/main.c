@@ -1161,7 +1161,7 @@ void vs_main_captureSaveState(void)
     int j;
     int actionByte;
     u_char actionsLearned;
-    vs_battle_actorStats* actor;
+    vs_battle_actorStats* stats;
     vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
@@ -1183,37 +1183,37 @@ void vs_main_captureSaveState(void)
         vs_main_actionsLearned[actionByte] = actionsLearned;
     }
 
-    actor = vs_battle_characterState->stats;
+    stats = vs_battle_characterState->stats;
     snapshot = &vs_main_characterSnapshot;
-    snapshot->stats.currentHP = actor->currentHP;
-    snapshot->stats.maxHP = actor->maxHP;
-    snapshot->stats.currentMP = actor->currentMP;
-    snapshot->stats.maxMP = actor->maxMP;
-    snapshot->stats.strength = actor->strength;
-    snapshot->stats.totalStrength = actor->totalStrength;
-    snapshot->stats.intelligence = actor->intelligence;
-    snapshot->stats.totalIntelligence = actor->totalIntelligence;
-    snapshot->stats.agility = actor->agility;
-    snapshot->stats.totalAgility = actor->totalAgility;
-    snapshot->stats.risk = actor->risk;
-    snapshot->stats.actionDelay = actor->actionDelay;
-    snapshot->stats.statuses = actor->statuses;
+    snapshot->stats.currentHP = stats->currentHP;
+    snapshot->stats.maxHP = stats->maxHP;
+    snapshot->stats.currentMP = stats->currentMP;
+    snapshot->stats.maxMP = stats->maxMP;
+    snapshot->stats.strength = stats->strength;
+    snapshot->stats.totalStrength = stats->totalStrength;
+    snapshot->stats.intelligence = stats->intelligence;
+    snapshot->stats.totalIntelligence = stats->totalIntelligence;
+    snapshot->stats.agility = stats->agility;
+    snapshot->stats.totalAgility = stats->totalAgility;
+    snapshot->stats.risk = stats->risk;
+    snapshot->stats.actionDelay = stats->actionDelay;
+    snapshot->stats.statuses = stats->statuses;
 
     for (i = 0; i < 8; ++i) {
-        snapshot->stats.statusTimers[i] = actor->statusTimers[i];
+        snapshot->stats.statusTimers[i] = stats->statusTimers[i];
     }
 
     for (i = 0; i < 6; ++i) {
 
-        snapshot->stats.limbs[i].hp = actor->limbs[i].hp;
-        snapshot->stats.limbs[i].maxHp = actor->limbs[i].maxHp;
+        snapshot->stats.limbs[i].hp = stats->limbs[i].hp;
+        snapshot->stats.limbs[i].maxHp = stats->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            snapshot->stats.limbs[i].types[j] = actor->limbs[i].types[j];
+            snapshot->stats.limbs[i].types[j] = stats->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            snapshot->stats.limbs[i].affinities[j] = actor->limbs[i].affinities[j];
+            snapshot->stats.limbs[i].affinities[j] = stats->limbs[i].affinities[j];
         }
     }
 

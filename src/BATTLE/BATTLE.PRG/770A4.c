@@ -10,11 +10,6 @@
 #include <abs.h>
 #include <rand.h>
 
-typedef union {
-    unsigned int raw;
-    vs_battle_tilePosition p;
-} vs_battle_movementTile;
-
 typedef struct {
     u_short z : 5;
     u_short x : 5;
@@ -140,14 +135,14 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 
     vs_battle_route routes[2];
     int distances[2];
-    vs_battle_movementTile position;
+    vs_battle_tilePosition position;
     int count;
     int i;
     int x;
     vs_battle_route route;
     vs_battle_routePair* pair;
 
-    position.raw = *(u_int*)&arg0->unk34;
+    position = arg0->unk34;
     pair = (vs_battle_routePair*)routes;
     pair->raw = (*(u_int**)0x1F8003F4)[area * 16 + index];
 
@@ -168,11 +163,11 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 
         route = (i == 0) ? routes[0] : routes[1];
 
-        if ((route.x != position.p.x) || (route.z != position.p.z)) {
+        if ((route.x != position.x) || (route.z != position.z)) {
             continue;
         }
 
-        candidate = position.p;
+        candidate = position;
 
         if (route.unk0_10) {
             int slot;
@@ -181,7 +176,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
                 continue;
             }
 
-            result = func_800DFAF8(arg0, position.p, 1);
+            result = func_800DFAF8(arg0, position, 1);
 
             if ((result >= 0) && (func_8008E320(slot = result >> 1) >= 0)) {
                 candidate.surface = slot + 2;
@@ -251,8 +246,8 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 
             if (func_800D954C(arg0, candidate) > 0) {
                 if (((*(u_short(**)[32])0x1F8003BC)[candidate.z][candidate.x] & 0x1C00)
-                    || (((*(u_char**)0x1F8003C4)[position.p.z * *(u_char*)0x1F8003DC
-                                                 + position.p.x]
+                    || (((*(u_char**)0x1F8003C4)[position.z * *(u_char*)0x1F8003DC
+                                                 + position.x]
                             >> *direction)
                         & 1)) {
                     goto stop;
@@ -271,8 +266,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
     if (pair->r[0].unk0_10 && pair->r[0].unk0_15) {
         if (count == 1) {
         areaOnly:
-            arg0->unk154[0] =
-                (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            arg0->unk154[0] = (*(u_short(**)[32])0x1F8003C0)[position.z][position.x] % 16;
             return 6;
         }
 
@@ -297,8 +291,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
         route = (i != 0) ? routes[0] : routes[1];
 
         if (((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00) || (count == 1)) {
-            arg0->unk154[0] =
-                (*(u_short(**)[32])0x1F8003C0)[position.p.z][position.p.x] % 16;
+            arg0->unk154[0] = (*(u_short(**)[32])0x1F8003C0)[position.z][position.x] % 16;
             return 6;
         }
 
@@ -306,7 +299,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
         return 6;
     }
 
-    x = position.p.x;
+    x = position.x;
 
     if (count == 1) {
         *(u_int*)&arg0->unk168 = (routes[0].z << 16) | routes[0].x;
@@ -314,7 +307,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             return 6;
         }
     } else {
-        int z = position.p.z;
+        int z = position.z;
 
         distances[0] =
             (x - routes[0].x) * (x - routes[0].x) + (z - routes[0].z) * (z - routes[0].z);
@@ -860,8 +853,10 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 
         if ((arg0->unk15E & 6)
             && (arg0->unkD || func_800E45F4(arg0->unk168, arg0->unk34) < 16)) {
-            if ((int)(*(u_int*)&arg0->unk48 << 8) >= 0) {
-                arg0->unk168 = arg0->unk48;
+            vs_battle_tilePosition tile = arg0->unk48;
+
+            if ((int)((tile.x | tile.surface << 8 | tile.z << 16) << 8) >= 0) {
+                arg0->unk168 = tile;
             }
 
             func_800E4B2C(arg0, angle);

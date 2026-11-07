@@ -362,7 +362,7 @@ exit:
         for (j = 0; j < arg0->index; ++j) {
             temp_a0 = D_800F45E0[j];
             if ((temp_a0 != NULL)
-                && (*(int*)&temp_a0->unk0.currentTile == *(int*)&s1->unk0.currentTile)
+                && VS_TILE_EQ(temp_a0->unk0.currentTile, s1->unk0.currentTile)
                 && (temp_a0->unk0.position.vy == (s1->unk0.position.vy + 0x80))
                 && (temp_a0->unk16C.actorId > 4)) {
                 if (temp_a0->unk16C.actorId != s1->unk16C.actorId) {
@@ -3408,30 +3408,30 @@ void func_8009F530(int actorId)
 
 int func_8009F794(D_800F45E0_t* arg0)
 {
-    D_800F45E0_t* temp_v1;
-    int temp_v1_2;
-    int var_a3;
+    D_800F45E0_t* other;
+    int otherHeight;
+    int bestHeight;
     int i;
-    int var_t0;
-    int t1;
+    int bestIndex;
+    vs_battle_tileKey tile;
 
-    var_a3 = -0x7530;
-    var_t0 = -1;
-    t1 = *(int*)&arg0->unk0.currentTile;
+    bestHeight = -0x7530;
+    bestIndex = -1;
+    tile = VS_TILE_KEY(arg0->unk0.currentTile);
 
     for (i = 0; i < 16; ++i) {
-        temp_v1 = D_800F45E0[i];
-        if ((temp_v1 != NULL) && !(temp_v1->unk0.skip) && (temp_v1->unk0.unk1A == 0)
-            && !(temp_v1->unk16C.unk0_3) && (temp_v1->unk0.unk12 == 0xFF)
-            && (t1 == *(int*)&temp_v1->unk0.currentTile)) {
-            temp_v1_2 = temp_v1->unk0.position.vy;
-            if ((arg0->unk0.position.vy >= temp_v1_2) && (var_a3 < temp_v1_2)) {
-                var_a3 = temp_v1_2;
-                var_t0 = i;
+        other = D_800F45E0[i];
+        if ((other != NULL) && !(other->unk0.skip) && (other->unk0.unk1A == 0)
+            && !(other->unk16C.unk0_3) && (other->unk0.unk12 == 0xFF)
+            && VS_TILE_KEY_EQ(tile, other->unk0.currentTile)) {
+            otherHeight = other->unk0.position.vy;
+            if ((arg0->unk0.position.vy >= otherHeight) && (bestHeight < otherHeight)) {
+                bestHeight = otherHeight;
+                bestIndex = i;
             }
         }
     }
-    return var_t0;
+    return bestIndex;
 }
 
 int func_8009F858(int arg0)

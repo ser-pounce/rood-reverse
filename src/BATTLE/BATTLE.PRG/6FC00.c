@@ -532,7 +532,7 @@ void func_800D8EF4(void)
             --state->unk156;
         }
 
-        if ((state->unk1C == 0) && (*(int*)&state->unk38 >= 0)) {
+        if ((state->unk1C == 0) && VS_TILE_IS_SET(state->unk38)) {
             int targetId = state->unk38.status;
 
             if ((state->unk40 == 0) || (--state->unk40 == 0)

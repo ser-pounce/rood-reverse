@@ -418,7 +418,8 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
     return &scratch->matrix;
 }
 
-void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
+void func_800A208C(
+    D_800F4538_t* actor, vs_battle_tilePosition* target, int speed, short facing)
 {
     int x;
     int y;
@@ -450,18 +451,18 @@ void func_800A208C(D_800F4538_t* actor, u_char* target, int speed, short facing)
         actor->unk5AC_26 = 1;
     }
 
-    if (target[1] >= 2) {
-        SVECTOR* anchor = func_800A4A24(target[1]);
+    if (target->surface >= 2) {
+        SVECTOR* anchor = func_800A4A24(target->surface);
         x = anchor->vx;
         y = anchor->vy;
         z = anchor->vz;
     } else {
-        x = target[0] * 128 + 64;
-        z = target[2] * 128 + 64;
+        x = target->x * 128 + 64;
+        z = target->z * 128 + 64;
         y = func_800A3500(x, z);
     }
 
-    *(int*)&actor->unk5EC = *(int*)target;
+    actor->unk5EC.tile = *target;
     actor->unk1814 = x;
     actor->unk1818 = z;
     x -= actor->unk0.position.vx;

@@ -347,7 +347,10 @@ typedef struct {
     void* unk5D4;
     void* unk5D8;
     void* unk5DC[4];
-    SVECTOR unk5EC;
+    union {
+        SVECTOR vec;
+        vs_battle_tilePosition tile;
+    } unk5EC;
     texMapOverlay_t texMapOverlays[8];
     D_800F4538_unk614 unk614[2];
     D_800F4538_unk61C unk61C[4];

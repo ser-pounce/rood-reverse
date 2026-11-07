@@ -3177,6 +3177,15 @@ static void _loadSoundFile(int file)
 
 void vs_main_loadSoundFile(int id) { _loadSoundFile(_soundFileMap[id]); }
 
+static inline void _releaseSoundQueue(void)
+{
+    vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
+    vs_main_soundData.soundQueueSlot = NULL;
+    vs_main_freeHeapR(vs_main_soundData.soundData);
+    vs_main_soundData.soundData = NULL;
+    vs_main_soundData.soundFileId = 0;
+}
+
 int vs_main_processSoundQueue(void)
 {
     int temp_v0;
@@ -3185,19 +3194,11 @@ int vs_main_processSoundQueue(void)
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
             temp_v0 = IsSpuTransferring();
             if (temp_v0 == 0) {
-                vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
-                vs_main_soundData.soundQueueSlot = NULL;
-                vs_main_freeHeapR(vs_main_soundData.soundData);
-                vs_main_soundData.soundData = NULL;
-                vs_main_soundData.soundFileId = 0;
+                _releaseSoundQueue();
                 return 0;
             }
             if (temp_v0 == -1) {
-                vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
-                vs_main_soundData.soundQueueSlot = NULL;
-                vs_main_freeHeapR(vs_main_soundData.soundData);
-                vs_main_soundData.soundData = NULL;
-                vs_main_soundData.soundFileId = 0;
+                _releaseSoundQueue();
                 return -1;
             }
             return 1;
@@ -3208,11 +3209,7 @@ int vs_main_processSoundQueue(void)
             return 1;
         }
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
-            vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
-            vs_main_soundData.soundQueueSlot = NULL;
-            vs_main_freeHeapR(vs_main_soundData.soundData);
-            vs_main_soundData.soundData = NULL;
-            vs_main_soundData.soundFileId = 0;
+            _releaseSoundQueue();
             return -1;
         }
         return 1;

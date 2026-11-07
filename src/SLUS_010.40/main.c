@@ -1412,8 +1412,8 @@ int vs_main_stopVibration(u_int arg0, int arg1)
             }
         }
     } else {
-        for (i = 0; i < 2;) {
-            _clearVibrationSlot(++i);
+        for (i = 0; i < 2; ++i) {
+            _clearVibrationSlot(i + 1);
         }
     }
     return 1;

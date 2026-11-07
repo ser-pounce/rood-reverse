@@ -3180,40 +3180,49 @@ void vs_main_loadSoundFile(int id) { _loadSoundFile(_soundFileMap[id]); }
 static inline void _releaseSoundQueue(void)
 {
     vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
+
     vs_main_soundData.soundQueueSlot = NULL;
+
     vs_main_freeHeapR(vs_main_soundData.soundData);
+
     vs_main_soundData.soundData = NULL;
     vs_main_soundData.soundFileId = 0;
 }
 
 int vs_main_processSoundQueue(void)
 {
-    int temp_v0;
-
     if (vs_main_soundData.soundQueueSlot != NULL) {
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
-            temp_v0 = IsSpuTransferring();
-            if (temp_v0 == 0) {
+
+            int isTransferring = IsSpuTransferring();
+
+            if (isTransferring == 0) {
                 _releaseSoundQueue();
                 return 0;
             }
-            if (temp_v0 == -1) {
+
+            if (isTransferring == -1) {
                 _releaseSoundQueue();
                 return -1;
             }
+
             return 1;
         }
+
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
             Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
             return 1;
         }
+
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
             _releaseSoundQueue();
             return -1;
         }
+
         return 1;
     }
+
     return 0;
 }
 

@@ -99,6 +99,12 @@ typedef struct {
     u_char unk8214[0x54];
 } _clutState_t;
 
+typedef struct vs_main_HeapHeader {
+    struct vs_main_HeapHeader* prev;
+    struct vs_main_HeapHeader* next;
+    u_int blockSz;
+} __attribute__((aligned(16))) vs_main_HeapHeader;
+
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, char[34]);
@@ -745,7 +751,7 @@ static void _loadEndingPrg(void)
 
 static int _randArr[97];
 static int _randIndex;
-static vs_main_HeapHeader* _cdReadBuffer;
+static void* _cdReadBuffer;
 static UNUSED int _0;
 static padAct_t _padAct[2];
 static UNUSED int _1[2];
@@ -1094,7 +1100,7 @@ static void _sysReinit(void)
     InitGeom();
     DrawSyncCallback(_gpuSyncVoidCallback);
     VSyncCallback(_vSyncVoidCallback);
-    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    vs_main_initHeap((void*)0x8010C000, 0xF2000);
     _initCdQueue();
     _diskReset();
     _loadMenuSound();
@@ -1781,14 +1787,16 @@ void* vs_main_allocHeap(u_int size)
     }
 }
 
-void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
+void vs_main_initHeap(void* heap, u_int size)
 {
+    vs_main_HeapHeader* node = heap;
+
     _heapA.prev = node;
     _heapA.next = node;
     _heapA.blockSz = 0;
     node->prev = &_heapA;
     node->next = &_heapA;
-    node->blockSz = value / 16 - 1;
+    node->blockSz = size / 16 - 1;
     _heapB.prev = &_heapB;
     _heapB.next = &_heapB;
     _heapB.blockSz = 0;
@@ -1814,7 +1822,7 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
     if (vs_main_disk.bufferMode == cdBufferModeNone) {
         DsGetSector(vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
     } else {
-        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 128, 512);
+        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 2048, 512);
         if (++vs_main_disk.unk3C >= 16) {
             vs_main_disk.unk3C = 0;
         }
@@ -2080,7 +2088,7 @@ static void _diskUpdate(void)
             if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
                 vs_main_memcpy(
                     ((char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
-                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 128), 2048);
+                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 2048), 2048);
 
                 ++vs_main_disk.ringBufIndex;
                 if (vs_main_disk.ringBufIndex >= 16) {

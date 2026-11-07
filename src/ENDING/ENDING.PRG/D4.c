@@ -1589,7 +1589,7 @@ static void _do_updateClearGameStats(void)
 static void _initEnvironment(void)
 {
     _initVideo(320, 240, 512, 0, 0, 0);
-    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    vs_main_initHeap((void*)0x8010C000, 0xF2000);
     vs_main_prims[0] = vs_main_allocHeap(0x20000);
     vs_main_prims[1] = vs_main_allocHeap(0x20000);
     vs_main_ot[0] = vs_main_allocHeap(0x2088);

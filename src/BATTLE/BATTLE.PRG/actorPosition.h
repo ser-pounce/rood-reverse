@@ -1,10 +1,10 @@
 #pragma once
-#include "movementPosition.h"
+#include "tilePosition.h"
 #include <sys/types.h>
 #include <libgte.h>
 
 typedef struct {
-    vs_battle_movementPosition unk0;
+    vs_battle_tilePosition unk0;
     SVECTOR unk4;
 } vs_battle_actorLocation;
 

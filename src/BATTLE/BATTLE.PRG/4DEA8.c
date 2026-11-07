@@ -833,9 +833,9 @@ int func_800B784C(u_char* arg0, short arg1)
     sp10[2] = arg0[5];
     sp10[3] = arg0[6];
     if (D_800F4C2C == 2) {
-        func_800A97EC(temp_v0, (vs_battle_movementPosition*)sp10, 0, 0);
+        func_800A97EC(temp_v0, (vs_battle_tilePosition*)sp10, 0, 0);
     } else {
-        func_800A97EC(temp_v0, (vs_battle_movementPosition*)sp10,
+        func_800A97EC(temp_v0, (vs_battle_tilePosition*)sp10,
             arg0[7] != 0xFF ? arg0[7] : -1, arg0[8] != 0xFF ? arg0[8] : -1);
     }
     func_8009DC8C(temp_v0);
@@ -884,10 +884,10 @@ int func_800B7A98(u_char* arg0, short arg1)
     sp10[2] = arg0[5];
     sp10[3] = 0xFF;
     if (D_800F4C2C == 2) {
-        func_800A9C54(temp_s0, (vs_battle_movementPosition*)sp10, 0);
+        func_800A9C54(temp_s0, (vs_battle_tilePosition*)sp10, 0);
     } else {
         func_800A9C54(
-            temp_s0, (vs_battle_movementPosition*)sp10, arg0[6] != 0xFF ? arg0[6] : -1);
+            temp_s0, (vs_battle_tilePosition*)sp10, arg0[6] != 0xFF ? arg0[6] : -1);
     }
     func_8009DC8C(temp_s0);
     D_800F4B70[temp_s0] = 1;
@@ -1014,7 +1014,7 @@ int func_800B7EF0(u_char* arg0, short arg1)
 
 int func_800B7F84(u_char* arg0, short arg1)
 {
-    vs_battle_movementPosition sp10;
+    vs_battle_tilePosition sp10;
     int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.x = arg0[3];

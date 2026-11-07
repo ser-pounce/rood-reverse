@@ -240,7 +240,7 @@ void func_80073718(void);
 void func_80073D30(_mpdRoomSectionA*, vs_battle_actorPosition*, int);
 void func_80073E30(_mpdRoomSectionA*, int);
 int func_80074798(vs_battle_actorPosition*, u_char*);
-void func_80074B14(int arg0, vs_battle_movementPosition* arg1);
+void func_80074B14(int arg0, vs_battle_tilePosition* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
@@ -5150,7 +5150,7 @@ int func_80074A20(int arg0)
     return ret;
 }
 
-void func_80074B14(int arg0, vs_battle_movementPosition* arg1)
+void func_80074B14(int arg0, vs_battle_tilePosition* arg1)
 {
     u_int temp_v0;
     int var_a2;
@@ -15466,7 +15466,7 @@ int func_8008A4FC(void)
     u_int var_a2;
     int var_a0;
     int var_a1;
-    vs_battle_movementPosition* s0;
+    vs_battle_tilePosition* s0;
 
     func_800A1108(0, &sp10);
 

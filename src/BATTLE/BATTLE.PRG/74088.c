@@ -400,7 +400,7 @@ void func_800DD604(func_800E78F4_t* arg0)
     }
 }
 
-void func_800DD7CC(func_800E78F4_t* arg0, vs_battle_movementPosition* arg1)
+void func_800DD7CC(func_800E78F4_t* arg0, vs_battle_tilePosition* arg1)
 {
     int i;
     u_int nearest = -1;

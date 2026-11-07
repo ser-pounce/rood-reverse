@@ -163,8 +163,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     CVECTOR unk58;
-    vs_battle_movementPosition currentTile;
-    vs_battle_movementPosition lastTouchedTile;
+    vs_battle_tilePosition currentTile;
+    vs_battle_tilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F4538_unk0;
@@ -225,8 +225,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     CVECTOR unk58;
-    vs_battle_movementPosition currentTile;
-    vs_battle_movementPosition lastTouchedTile;
+    vs_battle_tilePosition currentTile;
+    vs_battle_tilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F45E0_unk0;
@@ -431,7 +431,7 @@ typedef struct {
     u_char unk1862;
     u_char unk1863;
     D_800F4538_unk1864 unk1864;
-    vs_battle_movementPosition unk1868;
+    vs_battle_tilePosition unk1868;
     void* unk187C;
     u_short unk1880[4][2];
     MATRIX unk1890[2];

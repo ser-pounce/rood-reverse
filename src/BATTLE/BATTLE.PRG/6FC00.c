@@ -28,10 +28,10 @@ static inline int _historyStalled(func_800E78F4_t* state)
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 {
     union {
-        vs_battle_movementPosition fields;
+        vs_battle_tilePosition fields;
         u_int value;
     } pos;
-    vs_battle_movementPosition source;
+    vs_battle_tilePosition source;
     u_int directions;
     int count;
     int i;

@@ -453,10 +453,10 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
         }
     }
 
-    actor->command.fields.unk9 = 0;
-    actor->command.fields.unkB_2 = 0;
-    actor->command.fields.unkB_0 = 0;
-    state->unk124 = actor->command.fields.unk9;
+    actor->unk9 = 0;
+    actor->unkB_2 = 0;
+    actor->unkB_0 = 0;
+    state->unk124 = actor->unk9;
     state->unk38 = (vs_battle_movementPosition) { -1, -1, -1, -1 };
     state->unk42 = arg1;
     func_800E72D0();

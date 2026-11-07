@@ -311,8 +311,8 @@ int func_800E7F8C(func_800E78F4_t* arg0)
                         D_800F4538[0]->unk0.position.vy
                         - (D_800F4538[0]->menuCameraHeightOffset >> 1);
                     temp_a1->commandArgs.s16[4] = D_800F4538[0]->unk0.position.vz;
-                    temp_a1->command.fields.unk9 = 24;
-                    temp_a1->command.fields.unk8 = 0x80;
+                    temp_a1->unk9 = 24;
+                    temp_a1->unk8 = 0x80;
                 }
 
                 temp_s0->unk12 = arg0->unk4C.vy;

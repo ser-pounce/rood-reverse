@@ -2297,7 +2297,7 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold((void*)arg0); }
+void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold(arg0); }
 
 int vs_main_stopMusicSlot(int id)
 {

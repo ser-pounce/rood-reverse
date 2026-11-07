@@ -26,7 +26,7 @@ void Sound_EvictSfx(u_long, int);
 int Sound_GetPlayingSfxByGroup(int);
 int func_800123C8(vs_main_sfxContext*);
 void Sound_SetSpeakerMode(int);
-void Sound_SetMusicJumpThreshold(void*);
+void Sound_SetMusicJumpThreshold(int);
 void Sound_FadeSfxVolumeMod(int, int, int, int);
 void Sound_FadeSfxPanMod(int, int, int, int);
 void Sound_FadeSfxPitchMod(int, int, int, int);

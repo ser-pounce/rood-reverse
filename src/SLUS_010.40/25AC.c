@@ -56,7 +56,10 @@ typedef struct {
 } func_800172D4_t;
 
 typedef struct {
-    void* unk0;
+    union {
+        void* ptr;
+        u_int value;
+    } unk0;
     int unk4;
     int unk8;
     int unkC;
@@ -275,13 +278,13 @@ int Sound_GetMusicPosition(void)
 
 u_int Sound_StartFieldMusic(void* arg0)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.ptr = arg0;
     return Sound_ExecuteSoundVm2Function(0x10);
 }
 
 void Sound_StopMusicById(u_int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     Sound_ExecuteSoundVm2Function(0x11);
 }
 
@@ -295,11 +298,11 @@ int Sound_ClearSuspendedMusic(void)
 
 static void Sound_SetMasterVolumeByMusicId(u_long, int);
 
-static u_int Sound_SetMusicLevelImmediate(void* arg0, int arg1)
+static u_int Sound_SetMusicLevelImmediate(int arg0, int arg1)
 {
     u_int temp_v0;
 
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     temp_v0 = Sound_ExecuteSoundVm2Function(0x19);
     Sound_SetMasterVolumeByMusicId(temp_v0, arg1);
     return temp_v0;
@@ -307,7 +310,7 @@ static u_int Sound_SetMusicLevelImmediate(void* arg0, int arg1)
 
 u_int Sound_StartMasterAndMusicVolumeFade(void* arg0, u_int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.ptr = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     g_Sound_Vm2Params.unk8 = arg2 & 0x7F;
     return Sound_ExecuteSoundVm2Function(0x1A);
@@ -315,25 +318,25 @@ u_int Sound_StartMasterAndMusicVolumeFade(void* arg0, u_int arg1, int arg2)
 
 static void Sound_StartFieldMusicLooped(void* arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.ptr = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     Sound_ExecuteSoundVm2Function(0x12);
 }
 
 u_int Sound_QueueMusic(void* arg0)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.ptr = arg0;
     return Sound_ExecuteSoundVm2Function(0x14);
 }
 
-static void* func_80012110(void* arg0, int arg1)
+static void* func_80012110(int arg0, int arg1)
 {
     u_long v0;
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     Sound_ExecuteSoundVm2Function(0x16);
     v0 = g_Sound_Vm2Params.unk4 << 0x10;
-    v0 += (u_long)g_Sound_Vm2Params.unk0;
+    v0 += g_Sound_Vm2Params.unk0.value;
     return (void*)v0;
 }
 
@@ -343,7 +346,7 @@ int Sound_PlaySfx(u_long arg0, int arg1, int arg2, int arg3)
 {
     int temp_s0 = g_Sound_Sfx_ProgramOffsets[arg0 & 0x3FF];
     if (temp_s0 != -1) {
-        g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0x3FF);
+        g_Sound_Vm2Params.unk0.value = (arg0 & 0x3FF);
         g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
         g_Sound_Vm2Params.unk8 = arg2 & 0xFF;
         g_Sound_Vm2Params.unkC = arg3 & 0x7F;
@@ -358,7 +361,7 @@ int Sound_PlaySfxFromPointer(void* arg0, int arg1, int arg2, int arg3)
 
     var_v0 = (void*)-1;
     if (Sound_IsNotAkaoFile(arg0) == 0) {
-        g_Sound_Vm2Params.unk0 = arg0;
+        g_Sound_Vm2Params.unk0.ptr = arg0;
         g_Sound_Vm2Params.unk4 = (int)(arg1 & 0xFFFFFF);
         g_Sound_Vm2Params.unk8 = (int)(arg2 & 0xFF);
         g_Sound_Vm2Params.unkC = (int)(arg3 & 0x7F);
@@ -370,14 +373,14 @@ int Sound_PlaySfxFromPointer(void* arg0, int arg1, int arg2, int arg3)
 
 void Sound_EvictSfx(u_long arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     Sound_ExecuteSoundVm2Function(0x21);
 }
 
 static void Sound_PlaySfxProtected(u_long arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0x3FF);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0x3FF);
     Sound_ExecuteSoundVm2Function(0x30);
 }
 
@@ -446,15 +449,15 @@ void Sound_SetSpeakerMode(int arg0)
     }
 }
 
-static void Sound_SetMutedMusicChannelMask(void* arg0)
+static void Sound_SetMutedMusicChannelMask(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     Sound_ExecuteSoundVm2Function(0x90);
 }
 
-void Sound_SetMusicJumpThreshold(void* arg0)
+void Sound_SetMusicJumpThreshold(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     Sound_ExecuteSoundVm2Function(0x92);
 }
 
@@ -506,20 +509,20 @@ static int func_80012568(int arg0)
 
 static void Sound_SetAllSfxVolumeMod(u_long arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0x7F);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0x7F);
     Sound_ExecuteSoundVm2Function(0xA8);
 }
 
-static void Sound_FadeAllSfxVolumeMod(void* arg0, int arg1)
+static void Sound_FadeAllSfxVolumeMod(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0x7F;
     Sound_ExecuteSoundVm2Function(0xA9);
 }
 
-static void Sound_SetSfxVolumeMod(void* arg0, int arg1, int arg2)
+static void Sound_SetSfxVolumeMod(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     g_Sound_Vm2Params.unk8 = arg2 & 0x7F;
     Sound_ExecuteSoundVm2Function(0xA0);
@@ -527,7 +530,7 @@ static void Sound_SetSfxVolumeMod(void* arg0, int arg1, int arg2)
 
 void Sound_FadeSfxVolumeMod(int arg0, int arg1, int arg2, int arg3)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     g_Sound_Vm2Params.unk8 = arg2;
     g_Sound_Vm2Params.unkC = arg3 & 0x7F;
@@ -536,20 +539,20 @@ void Sound_FadeSfxVolumeMod(int arg0, int arg1, int arg2, int arg3)
 
 static void Sound_SetAllSfxPanMod(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0xFF);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0xFF);
     Sound_ExecuteSoundVm2Function(0xAA);
 }
 
-static void Sound_FadeAllSfxPanMod(void* arg0, int arg1)
+static void Sound_FadeAllSfxPanMod(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xAB);
 }
 
-static void Sound_SetSfxPanMod(void* arg0, int arg1, int arg2)
+static void Sound_SetSfxPanMod(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     g_Sound_Vm2Params.unk8 = arg2 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xA2);
@@ -557,7 +560,7 @@ static void Sound_SetSfxPanMod(void* arg0, int arg1, int arg2)
 
 void Sound_FadeSfxPanMod(int arg0, int arg1, int arg2, int arg3)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     g_Sound_Vm2Params.unk8 = arg2;
     g_Sound_Vm2Params.unkC = arg3 & 0xFF;
@@ -566,20 +569,20 @@ void Sound_FadeSfxPanMod(int arg0, int arg1, int arg2, int arg3)
 
 static void Sound_SetAllSfxPitchMod(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0xFF);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0xFF);
     Sound_ExecuteSoundVm2Function(0xAC);
 }
 
-static void Sound_FadeAllSfxPitchMod(void* arg0, int arg1)
+static void Sound_FadeAllSfxPitchMod(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xAD);
 }
 
-static void Sound_SetSfxPitchMod(void* arg0, int arg1, int arg2)
+static void Sound_SetSfxPitchMod(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     g_Sound_Vm2Params.unk8 = arg2 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xA4);
@@ -587,7 +590,7 @@ static void Sound_SetSfxPitchMod(void* arg0, int arg1, int arg2)
 
 void Sound_FadeSfxPitchMod(int arg0, int arg1, int arg2, int arg3)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFFFFFF;
     g_Sound_Vm2Params.unk8 = arg2;
     g_Sound_Vm2Params.unkC = arg3 & 0xFF;
@@ -596,22 +599,22 @@ void Sound_FadeSfxPitchMod(int arg0, int arg1, int arg2, int arg3)
 
 static void Sound_SetMasterVolumeByMusicId(u_long arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0x7F;
     Sound_ExecuteSoundVm2Function(0xC0);
 }
 
 void Sound_FadeMasterVolumeByMusicId(u_long arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     g_Sound_Vm2Params.unk8 = arg2 & 0x7F;
     Sound_ExecuteSoundVm2Function(0xC1);
 }
 
-static void Sound_FadeMasterVolumeFromByMusicId(void* arg0, int arg1, int arg2, int arg3)
+static void Sound_FadeMasterVolumeFromByMusicId(int arg0, int arg1, int arg2, int arg3)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     g_Sound_Vm2Params.unk8 = arg2 & 0x7F;
     g_Sound_Vm2Params.unkC = arg3 & 0x7F;
@@ -620,20 +623,20 @@ static void Sound_FadeMasterVolumeFromByMusicId(void* arg0, int arg1, int arg2, 
 
 void Sound_SetCdVolume(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     Sound_ExecuteSoundVm2Function(0xC8);
 }
 
 void Sound_FadeCdVolume(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     Sound_ExecuteSoundVm2Function(0xC9);
 }
 
-static void Sound_FadeCdVolumeFrom(void* arg0, int arg1, int arg2)
+static void Sound_FadeCdVolumeFrom(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1;
     g_Sound_Vm2Params.unk8 = arg2;
     Sound_ExecuteSoundVm2Function(0xCA);
@@ -641,20 +644,20 @@ static void Sound_FadeCdVolumeFrom(void* arg0, int arg1, int arg2)
 
 static void Sound_SetTempoScale(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0xFF);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0xFF);
     Sound_ExecuteSoundVm2Function(0xD0);
 }
 
 void Sound_FadeTempoScale(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xD1);
 }
 
-static void Sound_FadeTempoScaleFrom(void* arg0, int arg1, int arg2)
+static void Sound_FadeTempoScaleFrom(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     g_Sound_Vm2Params.unk8 = arg2 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xD2);
@@ -662,20 +665,20 @@ static void Sound_FadeTempoScaleFrom(void* arg0, int arg1, int arg2)
 
 static void Sound_SetMasterPitchScale(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0xFF);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0xFF);
     Sound_ExecuteSoundVm2Function(0xD4);
 }
 
 int Sound_FadeMasterPitchScale(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     return Sound_ExecuteSoundVm2Function(0xD5);
 }
 
-static void Sound_FadeMasterPitchScaleFrom(void* arg0, int arg1, int arg2)
+static void Sound_FadeMasterPitchScaleFrom(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     g_Sound_Vm2Params.unk8 = arg2 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xD6);
@@ -683,20 +686,20 @@ static void Sound_FadeMasterPitchScaleFrom(void* arg0, int arg1, int arg2)
 
 static void func_80012ADC(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)(arg0 & 0xFF);
+    g_Sound_Vm2Params.unk0.value = (arg0 & 0xFF);
     Sound_ExecuteSoundVm2Function(0xD8);
 }
 
-static void func_80012B08(void* arg0, int arg1)
+static void func_80012B08(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xD9);
 }
 
-static void func_80012B3C(void* arg0, int arg1, int arg2)
+static void func_80012B3C(int arg0, int arg1, int arg2)
 {
-    g_Sound_Vm2Params.unk0 = arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = arg1 & 0xFF;
     g_Sound_Vm2Params.unk8 = arg2 & 0xFF;
     Sound_ExecuteSoundVm2Function(0xDA);
@@ -920,7 +923,7 @@ int Sound_SetCdMixVolume(u_int arg0)
 void Sound_StartCutsceneStream(void* arg0, int arg1, int arg2)
 {
     if (Sound_IsNotAkaoFile(arg0) == 0) {
-        g_Sound_Vm2Params.unk0 = arg0;
+        g_Sound_Vm2Params.unk0.ptr = arg0;
         g_Sound_Vm2Params.unk4 = (arg1 & 0xFF) << 8;
         g_Sound_Vm2Params.unk8 = arg2;
         Sound_ExecuteSoundVm2Function(0xE0);
@@ -931,20 +934,20 @@ void Sound_StopCutsceneStream(void) { Sound_ExecuteSoundVm2Function(0xE2); }
 
 static void Sound_SetCutsceneVolume(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)((arg0 & 0x7F) << 8);
+    g_Sound_Vm2Params.unk0.value = ((arg0 & 0x7F) << 8);
     Sound_ExecuteSoundVm2Function(0xE4);
 }
 
 void Sound_FadeOutCutscene(int arg0, int arg1)
 {
-    g_Sound_Vm2Params.unk0 = (void*)arg0;
+    g_Sound_Vm2Params.unk0.value = arg0;
     g_Sound_Vm2Params.unk4 = (arg1 & 0x7F) << 8;
     Sound_ExecuteSoundVm2Function(0xE5);
 }
 
 static void func_800133B0(int arg0)
 {
-    g_Sound_Vm2Params.unk0 = (void*)((arg0 & 0xFF) << 8);
+    g_Sound_Vm2Params.unk0.value = ((arg0 & 0xFF) << 8);
     Sound_ExecuteSoundVm2Function(0xE6);
 }
 
@@ -4008,7 +4011,7 @@ static u_int Sound_ExecuteSoundVm2Function(u_int in_Command)
     case 0x12:
     case 0x19:
     case 0x1A:
-        pSequence = g_Sound_Vm2Params.unk0;
+        pSequence = g_Sound_Vm2Params.unk0.ptr;
 
         if (pSequence->magic == AKAO_MAGIC) {
             g_Sound_GlobalFlags.ControlLatches &= ~0x7700;
@@ -4054,19 +4057,19 @@ static u_int Sound_ExecuteSoundVm2Function(u_int in_Command)
         break;
 
     case 0x14:
-        if (Sound_IsNotAkaoFile(g_Sound_Vm2Params.unk0) != 0) {
+        if (Sound_IsNotAkaoFile(g_Sound_Vm2Params.unk0.ptr) != 0) {
             result = -1;
             break;
         }
 
-        pData = g_Sound_Vm2Params.unk0;
+        pData = g_Sound_Vm2Params.unk0.ptr;
         g_pActiveMusicContext->StatusFlags |= 0x10000;
         D_80037788.Param1 = (u_int)pData;
-        result = ((AkaoSeqHeader*)g_Sound_Vm2Params.unk0)->id;
+        result = ((AkaoSeqHeader*)g_Sound_Vm2Params.unk0.ptr)->id;
         break;
 
     case 0x16:
-        if (*(int*)g_Sound_Vm2Params.unk0 == AKAO_MAGIC
+        if (*(int*)g_Sound_Vm2Params.unk0.ptr == AKAO_MAGIC
             && *(int*)g_Sound_Vm2Params.unk4 == AKAO_MAGIC) {
             pSequence = (AkaoSeqHeader*)g_Sound_Vm2Params.unk4;
             g_Sound_GlobalFlags.ControlLatches &= ~0x7700;
@@ -4077,8 +4080,8 @@ static u_int Sound_ExecuteSoundVm2Function(u_int in_Command)
             memcpy32(g_ActiveMusicChannels, g_PushedMusicChannels,
                 sizeof g_ActiveMusicChannels);
             memcpy32(&g_PrimaryMusicContext, &g_SuspendedMusicContext, 0x80);
-            pSequence = g_Sound_Vm2Params.unk0;
-            g_Sound_Vm2Params.unk0 = (void*)(u_int)pSequence->id;
+            pSequence = g_Sound_Vm2Params.unk0.ptr;
+            g_Sound_Vm2Params.unk0.value = pSequence->id;
             Sound_LoadAkaoSequence((FAkaoSequence*)pSequence);
             g_pSuspendedMusicContext = &g_SuspendedMusicContext;
             g_pSecondaryMusicChannels = g_PushedMusicChannels;
@@ -4103,20 +4106,20 @@ static u_int Sound_ExecuteSoundVm2Function(u_int in_Command)
         break;
 
     case 0xD8:
-        pParams->Param1 = (u_int)g_Sound_Vm2Params.unk0;
+        pParams->Param1 = g_Sound_Vm2Params.unk0.value;
         g_Sound_CommandHandlers[0xD0](pParams);
         in_Command = 0xD4;
         break;
 
     case 0xD9:
-        pParams->Param1 = (u_int)g_Sound_Vm2Params.unk0;
+        pParams->Param1 = g_Sound_Vm2Params.unk0.value;
         pParams->Param2 = g_Sound_Vm2Params.unk4;
         g_Sound_CommandHandlers[0xD1](pParams);
         in_Command = 0xD5;
         break;
 
     case 0xDA:
-        pParams->Param1 = (u_int)g_Sound_Vm2Params.unk0;
+        pParams->Param1 = g_Sound_Vm2Params.unk0.value;
         pParams->Param2 = g_Sound_Vm2Params.unk4;
         pParams->Param3 = g_Sound_Vm2Params.unk8;
         g_Sound_CommandHandlers[0xD2](pParams);
@@ -4136,7 +4139,7 @@ static u_int Sound_ExecuteSoundVm2Function(u_int in_Command)
         break;
 
     default:
-        pParams->Param1 = (u_int)g_Sound_Vm2Params.unk0;
+        pParams->Param1 = g_Sound_Vm2Params.unk0.value;
         pParams->Param2 = g_Sound_Vm2Params.unk4;
         pParams->Param3 = g_Sound_Vm2Params.unk8;
         pParams->Param4 = g_Sound_Vm2Params.unkC;

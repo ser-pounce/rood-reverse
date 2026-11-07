@@ -41,7 +41,7 @@ static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
             sizeof weapon->classAffinityBaseline);
 
         vs_mainMenu_equipmentStats[63] =
-            weapon == &vs_battle_characterState->unk3C->weapon;
+            weapon == &vs_battle_characterState->stats->weapon;
 
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[i + 32] = weapon->grip.types[i];
@@ -82,7 +82,7 @@ static void _drawShieldInfo(vs_battle_uiShield* shield)
             sizeof shield->classAffinityBaseline);
 
         vs_mainMenu_equipmentStats[63] =
-            shield == &vs_battle_characterState->unk3C->shield;
+            shield == &vs_battle_characterState->stats->shield;
 
         for (i = 0; i < 4; ++i) {
             vs_mainMenu_equipmentStats[i + 32] = shield->types[i];
@@ -121,7 +121,7 @@ static void _drawArmorInfo(vs_battle_uiArmor* armor)
 
         for (i = 0; i < 5; ++i) {
             vs_mainMenu_equipmentStats[63] |=
-                armor == &vs_battle_characterState->unk3C->limbs[i].armor;
+                armor == &vs_battle_characterState->stats->limbs[i].armor;
         }
 
         for (i = 0; i < 4; ++i) {
@@ -607,7 +607,7 @@ static int _switchCurrentActor(int init)
         _selectedActor = init & 0xF;
 
         vs_battle_setMenuItem(
-            4, 180, 18, 140, 8, vs_battle_actors[_selectedActor - 1]->unk3C->name)
+            4, 180, 18, 140, 8, vs_battle_actors[_selectedActor - 1]->stats->name)
             ->selected = 1;
 
         return 0;
@@ -744,7 +744,7 @@ static void _renderBasicStats(void)
 {
     int i;
     int y;
-    vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
+    vs_battle_actorStats* actor = vs_battle_actors[_selectedActor - 1]->stats;
     u_long* insertBefore = vs_scratch.unk4 - 0xC;
 
     switch (_renderBasicStatsState) {
@@ -760,14 +760,14 @@ static void _renderBasicStats(void)
             }
         } else {
             --_basicStatsAnimState;
-            actor = vs_battle_actors[_previousActor - 1]->unk3C;
+            actor = vs_battle_actors[_previousActor - 1]->stats;
         }
         break;
 
     case 2:
         if (_basicStatsAnimState != 0) {
             --_basicStatsAnimState;
-            actor = vs_battle_actors[_previousActor - 1]->unk3C;
+            actor = vs_battle_actors[_previousActor - 1]->stats;
         } else if (_basicStatsAnimDelay == 0) {
             _renderBasicStatsState = 3;
         } else {
@@ -911,7 +911,7 @@ static void _drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
  * Displays the actor's current status effects, sliding in from the left
  * depending on the animation step.
  */
-static void _renderStatusIcons(vs_battle_actor2* actor, int animationStep)
+static void _renderStatusIcons(vs_battle_actorStats* actor, int animationStep)
 {
     int i;
 
@@ -940,7 +940,7 @@ static void _renderStatusIcons(vs_battle_actor2* actor, int animationStep)
             }
 
             // Nasty match hack
-            actor = (vs_battle_actor2*)vs_battle_setSpriteDefaultTexPage(
+            actor = (vs_battle_actorStats*)vs_battle_setSpriteDefaultTexPage(
                 128, (x & 0xFFFF) | y, vs_getWH(16, 16), vs_scratch.unk4 - 8);
 
             // 0x0F0F906A = Flags for toggling the icon palette
@@ -959,14 +959,14 @@ static u_char _selectedElement;
  * Updates the description box and ensures status navigation is
  * bounded correctly.
  */
-static int _navigateStatusModifiers(vs_battle_actor2* actor, int arg1)
+static int _navigateStatusModifiers(vs_battle_actorStats* actor, int arg1)
 {
     static char animationState = 0;
     static char activeStatusModifiers[32];
     static u_char selectedStatusModifier;
     static u_char statusModifierCount;
     static UNUSED char _[2];
-    static vs_battle_actor2* statusModifersCurrentTarget;
+    static vs_battle_actorStats* statusModifersCurrentTarget;
 
     int yPos;
     int xPos;
@@ -1117,7 +1117,7 @@ static int _getLimbCount(int actor)
     int i;
 
     for (i = 0; i < 6; ++i) {
-        if (vs_battle_actors[actor]->unk3C->limbs[i].nameIndex == 0) {
+        if (vs_battle_actors[actor]->stats->limbs[i].nameIndex == 0) {
             break;
         }
     }
@@ -1133,7 +1133,7 @@ static int _getLimbCount(int actor)
 static int _getEquipmentListRowCount(void)
 {
     return _getLimbCount(_selectedActor - 1) + 2
-         + (vs_battle_actors[_selectedActor - 1]->unk3C->accessory.accessory.id != 0);
+         + (vs_battle_actors[_selectedActor - 1]->stats->accessory.accessory.id != 0);
 }
 
 enum _renderLimbUiState { _renderLimbUiNone, _renderLimbUiInit };
@@ -1152,7 +1152,7 @@ static int _renderLimbUi(int init)
     static int limbAnimSteps[6];
 
     int lineXy[2];
-    vs_battle_actor2* actor;
+    vs_battle_actorStats* actor;
     vs_battle_uiEquipment_limb* limb;
     int limbCount;
     int sp20;
@@ -1162,7 +1162,7 @@ static int _renderLimbUi(int init)
     int i;
     int step;
 
-    actor = vs_battle_actors[tempSelectedActor]->unk3C;
+    actor = vs_battle_actors[tempSelectedActor]->stats;
     limbCount = _getLimbCount(tempSelectedActor);
 
     if (init != 0) {
@@ -1505,7 +1505,7 @@ static int _equipmentDetailScreen(int row)
     vs_battle_menuItem_t* menuItem;
     unsigned char state;
 
-    vs_battle_actor2* actor = vs_battle_actors[_selectedActor - 1]->unk3C;
+    vs_battle_actorStats* actor = vs_battle_actors[_selectedActor - 1]->stats;
 
     if (row != 0) {
         _selectedEquipmentRow = row - 1;
@@ -1901,7 +1901,7 @@ static int _equipmentScreen(int element)
     vs_battle_menuItem_t* menuItem;
     int new_var;
 
-    vs_battle_actor2* temp_s6 = vs_battle_actors[_selectedActor - 1]->unk3C;
+    vs_battle_actorStats* temp_s6 = vs_battle_actors[_selectedActor - 1]->stats;
     vs_battle_uiEquipment_limb* limbs = temp_s6->limbs;
 
     limbCount = _getLimbCount(_selectedActor - 1);
@@ -2229,7 +2229,7 @@ static void _drawScreen(void)
 static void _renderSelectedLimbCondition(void)
 {
     vs_battle_uiEquipment_limb* limb =
-        &vs_battle_actors[_selectedActor - 1]->unk3C->limbs[_selectedElement];
+        &vs_battle_actors[_selectedActor - 1]->stats->limbs[_selectedElement];
     vs_battle_stringContext.strings[0] =
         (char*)&vs_battle_statusStrings[vs_battle_statusStrings[limb->nameIndex]];
     vs_battle_stringContext.strings[1] =
@@ -2248,7 +2248,7 @@ static void _renderSelectedLimbStats(void)
 {
     int i;
     vs_battle_uiEquipment_limb* limb =
-        &vs_battle_actors[_selectedActor - 1]->unk3C->limbs[_selectedElement];
+        &vs_battle_actors[_selectedActor - 1]->stats->limbs[_selectedElement];
 
     for (i = 0; i < 16; ++i) {
         vs_mainMenu_equipmentStats[i + 16] = limb->affinities[i & 7];
@@ -2382,7 +2382,7 @@ int vs_menu4_exec(u_char* state)
         var_s5 = 0;
 
         if ((_selectedActor == 1)
-            || vs_battle_actors[_selectedActor - 1]->unk3C->isAnalyzed) {
+            || vs_battle_actors[_selectedActor - 1]->stats->isAnalyzed) {
             var_s5 = 1;
         }
 
@@ -2514,7 +2514,7 @@ int vs_menu4_exec(u_char* state)
 
                     if (userInput == 13) {
                         if (_navigateStatusModifiers(
-                                vs_battle_actors[_selectedActor - 1]->unk3C, 1)
+                                vs_battle_actors[_selectedActor - 1]->stats, 1)
                             == 0) {
                             vs_battle_playMenuChangeSfx();
                             *state = 6;
@@ -2595,14 +2595,14 @@ int vs_menu4_exec(u_char* state)
         var_s5 = 0;
 
         if ((_selectedActor == 1)
-            || vs_battle_actors[_selectedActor - 1]->unk3C->isAnalyzed) {
+            || vs_battle_actors[_selectedActor - 1]->stats->isAnalyzed) {
             var_s5 = 1;
         }
 
         if (animWait != 0) {
             if (_switchCurrentActor(0)) {
 
-                _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->unk3C, 0);
+                _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->stats, 0);
 
                 animWait = 0;
 
@@ -2654,7 +2654,7 @@ int vs_menu4_exec(u_char* state)
 
                 animWait = 1;
 
-                if (vs_battle_getStatusFlags(vs_battle_actors[userInput]->unk3C) == 0) {
+                if (vs_battle_getStatusFlags(vs_battle_actors[userInput]->stats) == 0) {
                     *state = 5;
                 }
             }

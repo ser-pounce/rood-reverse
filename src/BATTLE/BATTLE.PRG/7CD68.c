@@ -340,7 +340,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
 {
     func_800E78F4_t* state;
     D_800F4538_t* model;
-    vs_battle_actor2* stats;
+    vs_battle_actorStats* stats;
     int id = actor->id;
     int packed;
     u_int radius;
@@ -375,7 +375,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     state->unk54 = actor;
     model = actor->unk44;
     state->unk58 = model;
-    state->unk5C = actor->unk3C;
+    state->unk5C = actor->stats;
     func_800A190C(state->unk88, 250, &result, 0);
     state->unk82 = result.vy - model->unk0.position.vy;
     radius = model->unk63C;
@@ -403,7 +403,7 @@ int func_800E6178(vs_battle_actor* actor, short arg1)
     state->unk8A = 0;
     state->unk103 = 1;
     state->unk2A = func_800A152C(id, 2, 3) >= 0;
-    stats = actor->unk3C;
+    stats = actor->stats;
     state->unk224 = stats->unk30;
     state->unk225 = stats->unk32;
     state->unk226 = stats->unk31;

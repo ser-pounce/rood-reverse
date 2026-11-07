@@ -804,12 +804,12 @@ static int _equipShieldMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_battle_actor2* actor;
+                vs_battle_actorStats* actor;
                 vs_main_inventoryShield* shield =
                     &vs_main_inventory.shields[_equippedItem - 1];
                 shield->isEquipped = 1;
 
-                actor = vs_battle_characterState->unk3C;
+                actor = vs_battle_characterState->stats;
                 wepId = shield->base.wepId;
                 material = shield->base.material;
 

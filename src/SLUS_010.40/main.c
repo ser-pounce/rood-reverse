@@ -115,7 +115,7 @@ typedef struct vs_main_HeapHeader {
 
 void __main(void);
 static void _unlockPadModeSwitch(void);
-static void _padResetDefaults(int, char[34]);
+static void _padResetDefaults(int, void*);
 static void _padSetActData(int arg0, int arg1, int arg2);
 static void _initCdQueue(void);
 static void _diskReset(void);
@@ -826,6 +826,11 @@ static void _initScreen(
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
 
+#define LOADING_RECT(rect, x)                                                          \
+    setRECT(rect, (320 - IMG_W(_nowLoading_header)) / 2 + (x),                         \
+        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),              \
+        IMG_H(_nowLoading_header))
+
 int vs_main_buttonsPreviousState;
 int vs_main_unused0;
 static UNUSED int _11[2];
@@ -854,15 +859,11 @@ static void _displayLoadingScreen(void)
     DrawSync(0);
     VSync(2);
 
-    setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
-        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-        IMG_H(_nowLoading_header));
+    LOADING_RECT(&rect, 0);
 
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
 
-    setRECT(&rect, ((320 - IMG_W(_nowLoading_header)) / 2) + 320,
-        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-        IMG_H(_nowLoading_header));
+    LOADING_RECT(&rect, 320);
 
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
     DrawSync(0);
@@ -874,13 +875,9 @@ static UNUSED void _bufferLoadingScreen(void)
     RECT rect;
 
     if (vs_main_frameBuf != 0) {
-        setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
-            (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-            IMG_H(_nowLoading_header));
+        LOADING_RECT(&rect, 0);
     } else {
-        setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2 + 320,
-            (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-            IMG_H(_nowLoading_header));
+        LOADING_RECT(&rect, 320);
     }
 
     LoadImage(&rect, _nowLoading_data);
@@ -1255,12 +1252,13 @@ void vs_main_padDisconnectAll(void)
 static void _unlockPadModeSwitch(void)
 {
     vs_main_padDisconnectAll();
+
     if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
         PadSetMainMode(0, 1, 2);
     }
 }
 
-static void _padResetDefaults(int portID, UNUSED char padBuf[34])
+static void _padResetDefaults(int portID, UNUSED void* _)
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
@@ -1274,6 +1272,7 @@ static void _padResetDefaults(int portID, UNUSED char padBuf[34])
         port->actData[0] = 0x40;
         port->actData[1] = 0;
     }
+
     PadSetAct(portID, port->actData, sizeof port->actData);
     PadSetActAlign(portID, _actParams);
 }

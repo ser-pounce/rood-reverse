@@ -884,6 +884,13 @@ static UNUSED void _bufferLoadingScreen(void)
     DrawSync(0);
 }
 
+static inline void _blankScreen(void)
+{
+    DrawSync(0);
+    DrawSync(0);
+    SetDispMask(0);
+}
+
 static inline void _stopVibrationAndReconnectPads(void)
 {
     _padSetActData(0, 0, 0);
@@ -894,9 +901,7 @@ static inline void _stopVibrationAndReconnectPads(void)
 
 void vs_main_resetGame(void)
 {
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
+    _blankScreen();
 
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
@@ -912,9 +917,7 @@ void vs_main_resetGame(void)
 
 void vs_main_jumpToBattle(void)
 {
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
+    _blankScreen();
     _stopVibrationAndReconnectPads();
     ResetGraph(3);
     Sound_StopMusic();
@@ -933,9 +936,7 @@ void vs_main_showEndingAndReturnToTitle(void)
 {
     _inGame = 0;
 
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
+    _blankScreen();
     _stopVibrationAndReconnectPads();
     ResetGraph(3);
     Sound_StopMusic();
@@ -943,9 +944,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     vs_main_captureSaveState();
     _loadEndingPrg();
     vs_ending_exec();
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
+    _blankScreen();
     _stopVibrationAndReconnectPads();
     TeardownSound();
     SpuQuit();

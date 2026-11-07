@@ -130,6 +130,11 @@ typedef struct {
     char hHi;
 } imgHeader_t;
 
+typedef struct {
+    int processing : 16;
+    int queued : 16;
+} cdQueueCount_t;
+
 extern imgHeader_t _nowLoading_header;
 extern u_long _nowLoading_data[];
 
@@ -778,10 +783,7 @@ static int _cdaSecond;
 static int _cdaPeak;
 static UNUSED int _3;
 static vs_main_CdQueueSlot _cdQueue[32];
-static struct {
-    short processing;
-    short queued;
-} _cdQueueCount;
+static cdQueueCount_t _cdQueueCount;
 static UNUSED int _4;
 vs_main_battleTimer_t vs_main_battleTimer;
 int vs_main_startState;
@@ -2197,7 +2199,8 @@ static void _initCdQueue(void)
     for (i = 31; i >= 0; --i) {
         _cdQueue[i].state = vs_main_CdQueueStateFree;
     }
-    *(int*)&_cdQueueCount = 0;
+
+    _cdQueueCount = (cdQueueCount_t) { 0, 0 };
 }
 
 vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
@@ -2211,15 +2214,18 @@ vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
             return &_cdQueue[i];
         }
     }
+
     vs_main_nop9(162, 0);
 }
 
 void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot* slot)
 {
     u_short state = slot->state - 2;
+
     if (state < vs_main_CdQueueStateLoaded - 2) {
         vs_main_nop9(163, 0);
     }
+
     slot->state = vs_main_CdQueueStateFree;
 }
 
@@ -2241,6 +2247,7 @@ void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
             ++queue->priority;
         }
     }
+
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unkC = 0;
@@ -2254,21 +2261,27 @@ static void _processCdQueue(void)
 {
     ++vs_main_disk.framesSinceLastRead;
 
-    if (*(int*)&_cdQueueCount != 0) {
+    if (_cdQueueCount.processing || _cdQueueCount.queued) {
+
         vs_main_CdQueueSlot* slot = _cdQueue;
         int i = _diskGetState();
         if (i == diskIdle) {
+
             for (i = 0; i < 32; ++i, ++slot) {
                 if (slot->state == vs_main_CdQueueStateEnqueued) {
                     if (slot->priority == 0) {
+
                         slot->state = vs_main_CdQueueStateReading;
+
                         _diskInitRead(slot->cdFile.lba, slot->cdFile.size, slot->vram);
+
                         vs_main_disk.framesSinceLastRead = 0;
                         --_cdQueueCount.queued;
                         ++_cdQueueCount.processing;
                     } else {
                         --slot->priority;
                     }
+
                 } else if (slot->state == vs_main_CdQueueStateReading) {
                     slot->state = vs_main_CdQueueStateLoaded;
                     --_cdQueueCount.processing;
@@ -2276,6 +2289,7 @@ static void _processCdQueue(void)
             }
         }
     }
+
     _diskUpdate();
 }
 

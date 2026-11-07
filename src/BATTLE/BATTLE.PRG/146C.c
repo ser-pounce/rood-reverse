@@ -79,12 +79,6 @@ typedef struct {
 } D_800F1910_t;
 
 typedef struct {
-    int unk0;
-    int unk4;
-    int unk8;
-} func_8006EBF8_t2;
-
-typedef struct {
     short unk0;
     short unk2;
     short unk4;

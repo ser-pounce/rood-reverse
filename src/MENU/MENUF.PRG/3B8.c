@@ -2879,86 +2879,86 @@ void _addHealBonus(void)
 
 void _nop2(void) { }
 
-int _getTotalStrength(void) { return vs_battle_characterState->unk3C->totalStrength; }
+int _getTotalStrength(void) { return vs_battle_characterState->stats->totalStrength; }
 
 int _getTotalIntelligence(void)
 {
-    return vs_battle_characterState->unk3C->totalIntelligence;
+    return vs_battle_characterState->stats->totalIntelligence;
 }
 
-int _getTotalAgility(void) { return vs_battle_characterState->unk3C->totalAgility; }
+int _getTotalAgility(void) { return vs_battle_characterState->stats->totalAgility; }
 
 void _raiseMaxStrength(int amount)
 {
-    vs_battle_characterState->unk3C->totalStrength += amount;
+    vs_battle_characterState->stats->totalStrength += amount;
 
-    if (vs_battle_characterState->unk3C->totalStrength > 999) {
-        vs_battle_characterState->unk3C->totalStrength = 999;
+    if (vs_battle_characterState->stats->totalStrength > 999) {
+        vs_battle_characterState->stats->totalStrength = 999;
     }
 
-    vs_battle_characterState->unk3C->strength += amount;
+    vs_battle_characterState->stats->strength += amount;
 
-    if (vs_battle_characterState->unk3C->strength > 999) {
-        vs_battle_characterState->unk3C->strength = 999;
+    if (vs_battle_characterState->stats->strength > 999) {
+        vs_battle_characterState->stats->strength = 999;
     }
 }
 
 void _raiseMaxIntelligence(int amount)
 {
-    vs_battle_characterState->unk3C->totalIntelligence += amount;
+    vs_battle_characterState->stats->totalIntelligence += amount;
 
-    if (vs_battle_characterState->unk3C->totalIntelligence > 999) {
-        vs_battle_characterState->unk3C->totalIntelligence = 999;
+    if (vs_battle_characterState->stats->totalIntelligence > 999) {
+        vs_battle_characterState->stats->totalIntelligence = 999;
     }
 
-    vs_battle_characterState->unk3C->intelligence += amount;
+    vs_battle_characterState->stats->intelligence += amount;
 
-    if (vs_battle_characterState->unk3C->intelligence > 999) {
-        vs_battle_characterState->unk3C->intelligence = 999;
+    if (vs_battle_characterState->stats->intelligence > 999) {
+        vs_battle_characterState->stats->intelligence = 999;
     }
 }
 
 void _raiseMaxAgility(int amount)
 {
-    vs_battle_characterState->unk3C->totalAgility += amount;
+    vs_battle_characterState->stats->totalAgility += amount;
 
-    if (vs_battle_characterState->unk3C->totalAgility > 999) {
-        vs_battle_characterState->unk3C->totalAgility = 999;
+    if (vs_battle_characterState->stats->totalAgility > 999) {
+        vs_battle_characterState->stats->totalAgility = 999;
     }
 
-    vs_battle_characterState->unk3C->agility += amount;
+    vs_battle_characterState->stats->agility += amount;
 
-    if (vs_battle_characterState->unk3C->agility > 999) {
-        vs_battle_characterState->unk3C->agility = 999;
+    if (vs_battle_characterState->stats->agility > 999) {
+        vs_battle_characterState->stats->agility = 999;
     }
 }
 
 void _raiseMaxHP(int amount)
 {
-    vs_battle_characterState->unk3C->maxHP += amount;
+    vs_battle_characterState->stats->maxHP += amount;
 
-    if (vs_battle_characterState->unk3C->maxHP > 999) {
-        vs_battle_characterState->unk3C->maxHP = 999;
+    if (vs_battle_characterState->stats->maxHP > 999) {
+        vs_battle_characterState->stats->maxHP = 999;
     }
 
-    vs_battle_characterState->unk3C->currentHP += amount;
+    vs_battle_characterState->stats->currentHP += amount;
 
-    if (vs_battle_characterState->unk3C->currentHP > 999) {
-        vs_battle_characterState->unk3C->currentHP = 999;
+    if (vs_battle_characterState->stats->currentHP > 999) {
+        vs_battle_characterState->stats->currentHP = 999;
     }
 }
 
 void _raiseMaxMP(int amount)
 {
-    vs_battle_characterState->unk3C->maxMP += amount;
+    vs_battle_characterState->stats->maxMP += amount;
 
-    if (vs_battle_characterState->unk3C->maxMP > 999) {
-        vs_battle_characterState->unk3C->maxMP = 999;
+    if (vs_battle_characterState->stats->maxMP > 999) {
+        vs_battle_characterState->stats->maxMP = 999;
     }
 
-    vs_battle_characterState->unk3C->currentMP += amount;
+    vs_battle_characterState->stats->currentMP += amount;
 
-    if (vs_battle_characterState->unk3C->currentMP > 999) {
-        vs_battle_characterState->unk3C->currentMP = 999;
+    if (vs_battle_characterState->stats->currentMP > 999) {
+        vs_battle_characterState->stats->currentMP = 999;
     }
 }

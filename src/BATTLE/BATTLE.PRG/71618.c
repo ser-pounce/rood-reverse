@@ -311,7 +311,7 @@ int func_800DA6A4(func_800E78F4_t* arg0)
 
 int func_800DA738(func_800E78F4_t* arg0)
 {
-    vs_battle_movementPosition point;
+    vs_battle_tilePosition point;
     int active = 0;
     int old;
     int candidate = func_800DBB2C(arg0, &point, 3);
@@ -329,7 +329,7 @@ int func_800DA738(func_800E78F4_t* arg0)
     if (valid && active && arg0->unk1A4[target].unk0_5) {
         int x;
         int z;
-        vs_battle_movementPosition tile = D_800F4538[target]->unk0.currentTile;
+        vs_battle_tilePosition tile = D_800F4538[target]->unk0.currentTile;
         int angle =
             ratan2(point.x * 128 - (x = D_800F4538[target]->unk0.position.vx - 64),
                 point.z * 128 - (z = D_800F4538[target]->unk0.position.vz - 64));
@@ -569,7 +569,7 @@ void func_800DAED0(void)
             ((VECTOR*)state)->vz = 0;
             *(short*)&state->unkA[2] = 0;
             state->unk15C = 0x10;
-            *(int*)&state->unk48 = -1;
+            VS_TILE_CLEAR(state->unk48);
             tile = (*(u_short(**)[32])0x1F8003C0)[state->unk34.z][state->unk34.x] & 15;
             state->unk154[0] = tile;
             state->unk132[0] = tile;
@@ -591,7 +591,7 @@ int func_800DB0BC(func_800E78F4_t* arg0)
 
         if (!arg0->unkFA) {
             u_char directions[4];
-            vs_battle_movementPosition probe;
+            vs_battle_tilePosition probe;
             u_int angle = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
                 arg0->unk4C.vz - arg0->unk168.z * 128 - 64);
             u_int quadrant;

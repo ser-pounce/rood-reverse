@@ -368,7 +368,7 @@ void vs_mainMenu_setStatsFromWeapon(int weaponIndex)
         int i;
 
         if (vs_mainMenu_weapons[weaponIndex - 1].isEquipped != 0) {
-            weapon = &vs_battle_characterState->unk3C->weapon;
+            weapon = &vs_battle_characterState->stats->weapon;
         } else if (vs_mainMenu_weapons == vs_main_inventory.weapons) {
             vs_battle_applyWeapon(weapon, &vs_mainMenu_weapons[weaponIndex - 1]);
         } else {
@@ -452,7 +452,7 @@ void vs_mainMenu_setStatsFromShield(int shieldIndex)
     if (shieldIndex != 0) {
 
         if (vs_mainMenu_shields[shieldIndex - 1].isEquipped != 0) {
-            shield = &vs_battle_characterState->unk3C->shield;
+            shield = &vs_battle_characterState->stats->shield;
         } else if (vs_mainMenu_shields == vs_main_inventory.shields) {
             vs_battle_applyShield(shield, &vs_mainMenu_shields[shieldIndex - 1]);
         } else {
@@ -496,7 +496,7 @@ void vs_mainMenu_setStatsFromArmor(int armorIndex)
         u_int limb = vs_mainMenu_armor[armorIndex - 1].limb - 1;
 
         if (limb < 5) {
-            armor = &vs_battle_characterState->unk3C->limbs[limb].armor;
+            armor = &vs_battle_characterState->stats->limbs[limb].armor;
         } else {
             vs_battle_applyArmor(armor, &vs_mainMenu_armor[armorIndex - 1]);
         }

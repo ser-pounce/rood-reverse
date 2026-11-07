@@ -367,7 +367,7 @@ void func_800DD604(func_800E78F4_t* arg0)
     int row;
     int col;
     func_800DCAA0_t* choice = &arg0->unk140;
-    vs_battle_actor2* stats = arg0->unk5C;
+    vs_battle_actorStats* stats = arg0->unk5C;
 
     for (row = 0; row < 6; ++row) {
         for (col = 0; col < 4; ++col) {
@@ -400,7 +400,7 @@ void func_800DD604(func_800E78F4_t* arg0)
     }
 }
 
-void func_800DD7CC(func_800E78F4_t* arg0, vs_battle_movementPosition* arg1)
+void func_800DD7CC(func_800E78F4_t* arg0, vs_battle_tilePosition* arg1)
 {
     int i;
     u_int nearest = -1;
@@ -511,7 +511,7 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
                     for (limb = 0; limb < 6; ++limb) {
                         int chance;
 
-                        if ((actor->unk3C->limbs + limb)->maxHp == 0) {
+                        if ((actor->stats->limbs + limb)->maxHp == 0) {
                             continue;
                         }
 
@@ -532,7 +532,7 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
                     part = rand();
                     part = (part & 3) + ((part >> 2) & 1) + ((part >> 3) & 1);
 
-                    if ((actor->unk3C->limbs + part)->maxHp == 0 && last >= 0) {
+                    if ((actor->stats->limbs + part)->maxHp == 0 && last >= 0) {
                         part = last;
                     }
 
@@ -592,7 +592,7 @@ void func_800DE030(int arg0)
     D_800F58BC->unk18 += arg0;
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        vs_battle_actor2* stats = actor->unk3C;
+        vs_battle_actorStats* stats = actor->stats;
         int statuses = stats->statuses;
         func_800E78F4_t* state;
         int i;
@@ -694,7 +694,7 @@ static inline int _snapshotActorStats(void)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        func_800DC3E8(actor->unk3C, &D_800F58E8[actor->id]);
+        func_800DC3E8(actor->stats, &D_800F58E8[actor->id]);
     }
 
     return 1;
@@ -705,7 +705,7 @@ static inline void _restoreActorStats(void)
     vs_battle_actor* actor;
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        func_800DC3E8(&D_800F58E8[actor->id], actor->unk3C);
+        func_800DC3E8(&D_800F58E8[actor->id], actor->stats);
     }
 
     vs_main_freeHeapR(D_800F58E8);
@@ -724,7 +724,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
     int delay;
     int minDelay;
     vs_battle_actor* actor;
-    vs_battle_actor2* stats = arg0->unk5C;
+    vs_battle_actorStats* stats = arg0->unk5C;
     vs_battle_actor* self;
 
     D_800F58F0 = 0;
@@ -839,7 +839,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
 
     self = (vs_battle_actor*)arg0->unk54;
 
-    if (vs_battle_getStateFlag(0xA6) == 4 && self->command.fields.unk9 == 24
+    if (vs_battle_getStateFlag(0xA6) == 4 && self->unk9 == 24
         && self->commandArgs.s32[0] == 4) {
         vs_battle_setStateFlag(0xA6, 5);
     }
@@ -872,7 +872,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
         return;
     }
 
-    if (temp_t1->command.fields.unk9 != 24) {
+    if (temp_t1->unk9 != 24) {
         return;
     }
 
@@ -924,7 +924,7 @@ int func_800DEC88(void* arg0)
             state->unkE8 = 0;
             state->unkE7 = 0;
             state->unk19A = 0;
-            func_800E685C(state->unk88, actor->unk3C->unk31, actor->unk3C->unk33);
+            func_800E685C(state->unk88, actor->stats->unk31, actor->stats->unk33);
             func_800DD604(state);
 
             if (action != NULL && action->unk4.kind == 0
@@ -936,7 +936,7 @@ int func_800DEC88(void* arg0)
         func_800DC810(action);
 
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            D_800F5878[actor->id]->unk1B = actor->unk3C->currentHP == 0;
+            D_800F5878[actor->id]->unk1B = actor->stats->currentHP == 0;
         }
 
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
@@ -945,7 +945,7 @@ int func_800DEC88(void* arg0)
             func_800DE3E4(state);
 
             if (state->unk13) {
-                if (actor->command.fields.unk8 & 0x20) {
+                if (actor->unk8 & 0x20) {
                     func_800D821C(state);
                 } else {
                     func_800D820C(state->unk88, 128);

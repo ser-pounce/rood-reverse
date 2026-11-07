@@ -28,10 +28,10 @@ static inline int _historyStalled(func_800E78F4_t* state)
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 {
     union {
-        vs_battle_movementPosition fields;
+        vs_battle_tilePosition fields;
         u_int value;
     } pos;
-    vs_battle_movementPosition source;
+    vs_battle_tilePosition source;
     u_int directions;
     int count;
     int i;
@@ -332,7 +332,7 @@ void func_800D8EF4(void)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        int flags = actor->command.fields.unk8;
+        int flags = actor->unk8;
         func_800E78F4_t* state;
         D_800F4538_t* object;
         vs_battle_actor* other;
@@ -345,12 +345,12 @@ void func_800D8EF4(void)
         u_int x;
         u_int z;
 
-        actor->command.fields.unkB_0 = 0;
+        actor->unkB_0 = 0;
         id = actor->id;
         state = ((func_800E78F4_t**)0x1F80037C)[id];
         state->unk1D[0] = 0;
         object = state->unk58;
-        state->unk90 = actor->unk3C->actionDelay;
+        state->unk90 = actor->stats->actionDelay;
 
         if (flags & 0x20) {
             func_800D82CC(state);
@@ -449,12 +449,12 @@ void func_800D8EF4(void)
             }
         }
 
-        if ((state->unk124 != 8) && (actor->command.fields.unk9 != 8)
-            && (state->unk124 != actor->command.fields.unk9)) {
+        if ((state->unk124 != 8) && (actor->unk9 != 8)
+            && (state->unk124 != actor->unk9)) {
             func_800E48A8(state, 1, 64);
         }
 
-        state->unk124 = actor->command.fields.unk9;
+        state->unk124 = actor->unk9;
         state->unk34 = state->unk58->unk0.currentTile;
         x = ((u_int*)state->unk60)[0];
         z = ((u_int*)state->unk60)[1];
@@ -499,8 +499,8 @@ void func_800D8EF4(void)
         }
 
         alert = 0;
-        current = *(u_int*)&state->unk54->unk3C->currentHP & 0xFFFF;
-        max = *(u_int*)&state->unk54->unk3C->currentHP >> 16;
+        current = *(u_int*)&state->unk54->stats->currentHP & 0xFFFF;
+        max = *(u_int*)&state->unk54->stats->currentHP >> 16;
 
         if (state->unk2F != 0) {
             if (state->unk2F == 1) {
@@ -532,7 +532,7 @@ void func_800D8EF4(void)
             --state->unk156;
         }
 
-        if ((state->unk1C == 0) && (*(int*)&state->unk38 >= 0)) {
+        if ((state->unk1C == 0) && VS_TILE_IS_SET(state->unk38)) {
             int targetId = state->unk38.status;
 
             if ((state->unk40 == 0) || (--state->unk40 == 0)

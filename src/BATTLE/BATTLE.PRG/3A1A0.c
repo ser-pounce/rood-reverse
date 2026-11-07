@@ -84,8 +84,8 @@ void func_800A29A0(D_800F4538_t* arg0)
 
         if (busy == 0) {
             arg0->unk0.unk9_0 = 9;
-            func_800A9C54(arg0->unk0.unkF, (vs_battle_movementPosition*)&arg0->unk5EC, 0);
-            arg0->unk0.facing = arg0->unk5EC.pad;
+            func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
+            arg0->unk0.facing = arg0->unk5EC.vec.pad;
             func_800A0204(arg0->unk0.unkF, 0x15, 0, 8);
             func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
             arg0->unk0.unkB_0 = 3;
@@ -124,7 +124,7 @@ void func_800A29A0(D_800F4538_t* arg0)
 
 void func_800A2C48(D_800F4538_t* arg0)
 {
-    func_800A9C54(arg0->unk0.unkF, (vs_battle_movementPosition*)&arg0->unk5EC, 0);
+    func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
     arg0->unk6E0 = 0;
     arg0->unk0.unkB_0 = 4;
     func_800A29A0(arg0);
@@ -138,8 +138,8 @@ void func_800A2CD4(D_800F4538_t* arg0)
     switch (arg0->unk0.unkB_4) {
     case 1:
         func_800A0204(arg0->unk0.unkF, 9, 0, 8);
-        func_800A9C54(arg0->unk0.unkF, (vs_battle_movementPosition*)&arg0->unk5EC, -1);
-        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.pad, 8);
+        func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, -1);
+        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
 
@@ -183,8 +183,8 @@ void func_800A2CD4(D_800F4538_t* arg0)
     case 4:
         func_800A0204(arg0->unk0.unkF, 7, 0, 8);
         func_800A01C8(arg0->unk0.unkF, 37, 8, 0);
-        func_800AA620(arg0->unk0.unkF, &arg0->unk5EC, -1);
-        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.pad, 8);
+        func_800AA620(arg0->unk0.unkF, &arg0->unk5EC.vec, -1);
+        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
         arg0->unk0.unkA_5 = 1;
@@ -671,7 +671,7 @@ D_800F4538_t* func_800A3C34(int arg0, int arg1, int arg2, int arg3)
         if ((arg3 == 1)
             && (((actor->unk0.unkB_4 != 0) && (actor->unk0.unkB_4 < 3))
                 || actor->unk0.unkA_0 || actor->unk0.unkB_0)) {
-            SVECTOR* pos = &actor->unk5EC;
+            SVECTOR* pos = &actor->unk5EC.vec;
             if (((pos->vx & 0xFF) == arg0) && (arg1 == (pos->vy & 0xFF))) {
                 return actor;
             }
@@ -717,7 +717,7 @@ int func_800A3DB4(int x, int z, int minimumHeight)
 int func_800A3E6C(int actorId)
 {
     SVECTOR position;
-    vs_battle_movementPosition tile;
+    vs_battle_tilePosition tile;
     D_800F4538_t* actor = D_800F4538[actorId];
     D_800F45E0_t* object;
     int objectId;
@@ -1083,6 +1083,7 @@ void func_800A48CC(int index, int direction, int distance)
 inline SVECTOR* func_800A4A24(int arg0)
 {
     SVECTOR sp10[4];
+    SVECTOR* result;
     int temp_v0;
     int i;
     arg0 -= 2;
@@ -1092,7 +1093,8 @@ inline SVECTOR* func_800A4A24(int arg0)
     for (i = 0; i < temp_v0; ++i) {
         if (sp10[i].pad == arg0) {
             // BUG: returns stack variable
-            return &sp10[i];
+            result = &sp10[i];
+            return result;
         }
     }
     return NULL;

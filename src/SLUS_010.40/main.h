@@ -2,7 +2,7 @@
 #include "common.h"
 #include "25AC.h"
 #include "inventory.h"
-#include "movementPosition.h"
+#include "tilePosition.h"
 #include <sys/types.h>
 #include <libds.h>
 #include <libgte.h>
@@ -131,13 +131,6 @@ typedef struct {
     void* soundData;
     vs_main_CdQueueSlot* soundQueueSlot;
 } soundData_t;
-
-typedef struct vs_main_HeapHeader {
-    struct vs_main_HeapHeader* prev;
-    struct vs_main_HeapHeader* next;
-    u_int blockSz;
-    int unkC;
-} vs_main_HeapHeader;
 
 typedef struct {
     u_char unk0_0 : 4;
@@ -408,7 +401,7 @@ typedef struct {
     short limbHP[6];
     UNUSED short _;
     int statuses;
-    vs_battle_movementPosition tile;
+    vs_battle_tilePosition tile;
 } vs_main_savedEnemyState_t;
 
 typedef struct {
@@ -671,7 +664,7 @@ int vs_main_fadeMusicVolume(int id, int arg1, int arg2);
 int vs_main_getCurrentMusicId(void);
 void vs_main_evictSfx(int arg0, int arg1);
 void vs_main_wait(void);
-void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
+void vs_main_initHeap(void* heap, u_int size);
 void vs_main_resetGame(void);
 int vs_main_processSoundQueue(void);
 int vs_main_setCurrentSfx(int id);

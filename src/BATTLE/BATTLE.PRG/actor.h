@@ -6,7 +6,7 @@
 
 typedef struct {
     char unk0[0x5E8];
-} vs_battle_actor4;
+} vs_battle_actorSubModel;
 
 typedef struct {
     u_short id;
@@ -53,69 +53,63 @@ enum vs_battle_statuses {
 };
 
 typedef struct {
-    /* 0x000 */ char name[24];
-    /* 0x018 */ short currentHP;
-    /* 0x01A */ short maxHP;
-    /* 0x01C */ short currentMP;
-    /* 0x01E */ short maxMP;
-    /* 0x020 */ u_short risk;
-    /* 0x022 */ u_short strength;
-    /* 0x024 */ u_short totalStrength;
-    /* 0x026 */ u_short intelligence;
-    /* 0x028 */ u_short totalIntelligence;
-    /* 0x02A */ u_short agility;
-    /* 0x02C */ u_short totalAgility;
-    /* 0x02E */ char unk2E;
-    /* 0x02F */ char unk2F;
-    /* 0x030 */ char unk30;
-    /* 0x031 */ char unk31;
-    /* 0x032 */ char unk32;
-    /* 0x033 */ char unk33;
-    /* 0x034 */ u_int unk34 : 8;
-    /* 0x035 */ u_int unk35 : 8;
-    /* 0x036 */ u_int unk36 : 8;
-    /* 0x037 */ u_int enemyClass : 3;
-    /* 0x037 */ u_int reach : 5;
-    /* 0x038 */ u_int currentRange : 8;
-    /* 0x039 */ u_int unk39 : 8;
-    /* 0x03A */ u_int unk3A : 8;
-    /* 0x03B */ u_int unk3B_0 : 3;
-    /* 0x03B */ u_int currentAttackShapeAngle : 5;
-    /* 0x03C */ vs_battle_uiWeapon weapon;
-    /* 0x1D4 */ vs_battle_uiShield shield;
-    /* 0x338 */ vs_battle_uiAccessory accessory;
-    /* 0x398 */ vs_battle_uiEquipment_limb limbs[6];
-    /* 0x8C0 */ vs_battle_actor_unk8C0 armor[6][4];
-    /* 0x920 */ char dpSplash[6][6];
-    /* 0x944 */ int unk944;
-    /* 0x948 */ int statuses;
-    /* 0x94C */ u_char statusTimers[8];
-    /* 0x954 */ u_short actionDelay;
-    /* 0x956 */ u_char unk956_0 : 1;
-    /* 0x956 */ u_char isAnalyzed : 1;
-    /* 0x956 */ u_char unk956_2 : 6;
-    /* 0x957 */ u_char unk957;
-    /* 0x958 */ vs_battle_uiMisc miscItem;
-    /* 0x95C */ vs_battle_uiMisc unk95C;
-    /* 0x960 */ vs_battle_uiMiscRand unk960;
-    /* 0x964 */
-} vs_battle_actor2;
+    char name[24];
+    short currentHP;
+    short maxHP;
+    short currentMP;
+    short maxMP;
+    u_short risk;
+    u_short strength;
+    u_short totalStrength;
+    u_short intelligence;
+    u_short totalIntelligence;
+    u_short agility;
+    u_short totalAgility;
+    char unk2E;
+    char unk2F;
+    char unk30;
+    char unk31;
+    char unk32;
+    char unk33;
+    u_int unk34 : 8;
+    u_int unk35 : 8;
+    u_int unk36 : 8;
+    u_int enemyClass : 3;
+    u_int reach : 5;
+    u_int currentRange : 8;
+    u_int unk39 : 8;
+    u_int unk3A : 8;
+    u_int unk3B_0 : 3;
+    u_int currentAttackShapeAngle : 5;
+    vs_battle_uiWeapon weapon;
+    vs_battle_uiShield shield;
+    vs_battle_uiAccessory accessory;
+    vs_battle_uiEquipment_limb limbs[6];
+    vs_battle_actor_unk8C0 armor[6][4];
+    char dpSplash[6][6];
+    int unk944;
+    int statuses;
+    u_char statusTimers[8];
+    u_short actionDelay;
+    u_char unk956_0 : 1;
+    u_char isAnalyzed : 1;
+    u_char unk956_2 : 6;
+    u_char unk957;
+    vs_battle_uiMisc miscItem;
+    vs_battle_uiMisc unk95C;
+    vs_battle_uiMiscRand unk960;
+} vs_battle_actorStats;
 
 typedef struct vs_battle_actor {
-    /* 0x00 */ struct vs_battle_actor* next;
-    /* 0x04 */ int id;
-    /* 0x08 */ union {
-        u_int value;
-        struct {
-            u_char unk8;
-            u_char unk9;
-            u_char unkA;
-            u_int unkB_0 : 2;
-            u_int unkB_2 : 2;
-            u_int unkB_4 : 4;
-        } fields;
-    } command;
-    /* 0x0C */ union {
+    struct vs_battle_actor* next;
+    int id;
+    u_char unk8;
+    u_char unk9;
+    u_char unkA;
+    u_char unkB_0 : 2;
+    u_char unkB_2 : 2;
+    u_char unkB_4 : 4;
+    union {
         int s32[3];
         short s16[6];
         u_short u16[6];
@@ -135,7 +129,7 @@ typedef struct vs_battle_actor {
     u_char unk29;
     u_char unk2A;
     u_char unk2B;
-    vs_battle_movementPosition unk2C;
+    vs_battle_tilePosition currentTile;
     u_short unk30_0 : 4;
     u_short unk30_4 : 5;
     u_int unk30_9 : 5;
@@ -148,16 +142,16 @@ typedef struct vs_battle_actor {
     u_int unk34_14 : 1;
     u_int unk34_15 : 17;
     int unk38;
-    vs_battle_actor2* unk3C;
+    vs_battle_actorStats* stats;
     int unk40;
     D_800F4538_t* unk44;
-    vs_battle_actor4* unk48[2];
+    vs_battle_actorSubModel* unk48[2];
 } vs_battle_actor;
 
 typedef struct {
     struct {
         vs_battle_actor unk0;
-        vs_battle_actor2 unk50;
+        vs_battle_actorStats unk50;
     } unk0;
     D_800F4538_unk0 unk9B4;
     MATRIX unk6C[8];
@@ -169,12 +163,12 @@ typedef struct {
 typedef struct {
     vs_battle_actor_dat2 unk0;
     char unkB2C[0x1788];
-    vs_battle_actor4 unk22B4[2];
+    vs_battle_actorSubModel unk22B4[2];
 } vs_battle_actor_dat;
 
-void vs_battle_nop0(vs_battle_actor2*);
+void vs_battle_nop0(vs_battle_actorStats*);
 vs_battle_actor* vs_battle_getActor(int actorId);
-void func_80086FA8(int, vs_battle_actor2*);
+void func_80086FA8(int, vs_battle_actorStats*);
 extern vs_battle_actor* vs_battle_actors[];
 extern vs_battle_actor* vs_battle_characterState;
 

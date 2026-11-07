@@ -33,12 +33,20 @@ enum diskState_e {
 };
 
 typedef struct {
-    int unk0[2];
-    u_short unk8;
-    u_short unkA;
-    char* unkC;
-    int unk10[10];
-} padAct_t;
+    int active;
+    int value;
+    int step;
+    int target;
+    int scriptPos;
+    int framesLeft;
+} padMotor_t;
+
+typedef struct {
+    u_short active;
+    u_short id;
+    char* script;
+    padMotor_t motors[2];
+} padVibration_t;
 
 typedef struct {
     char active;
@@ -99,6 +107,12 @@ typedef struct {
     u_char unk8214[0x54];
 } _clutState_t;
 
+typedef struct vs_main_HeapHeader {
+    struct vs_main_HeapHeader* prev;
+    struct vs_main_HeapHeader* next;
+    u_int blockSz;
+} __attribute__((aligned(16))) vs_main_HeapHeader;
+
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, char[34]);
@@ -119,6 +133,8 @@ typedef struct {
 extern imgHeader_t _nowLoading_header;
 extern u_long _nowLoading_data[];
 
+// _vibrationOnBank starts with an effect count, followed by a table of four-byte
+// little-endian offsets, one per effect, that locate each effect's script.
 char _vibrationOnBank[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6,
     255, 0, 0, 0 };
 char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
@@ -745,14 +761,16 @@ static void _loadEndingPrg(void)
 
 static int _randArr[97];
 static int _randIndex;
-static vs_main_HeapHeader* _cdReadBuffer;
+static void* _cdReadBuffer;
 static UNUSED int _0;
-static padAct_t _padAct[2];
-static UNUSED int _1[2];
+static struct {
+    int strength[2];
+    padVibration_t port[2];
+} _padAct;
 portInfo_t vs_main_portInfo[2];
 static UNUSED u_char _2[2];
-static vs_main_HeapHeader _heapA;
-static vs_main_HeapHeader _heapB;
+static vs_main_HeapHeader _heap;
+static UNUSED vs_main_HeapHeader _unusedHeap;
 static DslLOC _cdReadLoc;
 static int _cdaTrack;
 static int _cdaMinute;
@@ -1094,7 +1112,7 @@ static void _sysReinit(void)
     InitGeom();
     DrawSyncCallback(_gpuSyncVoidCallback);
     VSyncCallback(_vSyncVoidCallback);
-    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    vs_main_initHeap((void*)0x8010C000, 0xF2000);
     _initCdQueue();
     _diskReset();
     _loadMenuSound();
@@ -1161,7 +1179,7 @@ void vs_main_captureSaveState(void)
     int j;
     int actionByte;
     u_char actionsLearned;
-    vs_battle_actor2* actor;
+    vs_battle_actorStats* stats;
     vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
@@ -1183,37 +1201,37 @@ void vs_main_captureSaveState(void)
         vs_main_actionsLearned[actionByte] = actionsLearned;
     }
 
-    actor = vs_battle_characterState->unk3C;
+    stats = vs_battle_characterState->stats;
     snapshot = &vs_main_characterSnapshot;
-    snapshot->stats.currentHP = actor->currentHP;
-    snapshot->stats.maxHP = actor->maxHP;
-    snapshot->stats.currentMP = actor->currentMP;
-    snapshot->stats.maxMP = actor->maxMP;
-    snapshot->stats.strength = actor->strength;
-    snapshot->stats.totalStrength = actor->totalStrength;
-    snapshot->stats.intelligence = actor->intelligence;
-    snapshot->stats.totalIntelligence = actor->totalIntelligence;
-    snapshot->stats.agility = actor->agility;
-    snapshot->stats.totalAgility = actor->totalAgility;
-    snapshot->stats.risk = actor->risk;
-    snapshot->stats.actionDelay = actor->actionDelay;
-    snapshot->stats.statuses = actor->statuses;
+    snapshot->stats.currentHP = stats->currentHP;
+    snapshot->stats.maxHP = stats->maxHP;
+    snapshot->stats.currentMP = stats->currentMP;
+    snapshot->stats.maxMP = stats->maxMP;
+    snapshot->stats.strength = stats->strength;
+    snapshot->stats.totalStrength = stats->totalStrength;
+    snapshot->stats.intelligence = stats->intelligence;
+    snapshot->stats.totalIntelligence = stats->totalIntelligence;
+    snapshot->stats.agility = stats->agility;
+    snapshot->stats.totalAgility = stats->totalAgility;
+    snapshot->stats.risk = stats->risk;
+    snapshot->stats.actionDelay = stats->actionDelay;
+    snapshot->stats.statuses = stats->statuses;
 
     for (i = 0; i < 8; ++i) {
-        snapshot->stats.statusTimers[i] = actor->statusTimers[i];
+        snapshot->stats.statusTimers[i] = stats->statusTimers[i];
     }
 
     for (i = 0; i < 6; ++i) {
 
-        snapshot->stats.limbs[i].hp = actor->limbs[i].hp;
-        snapshot->stats.limbs[i].maxHp = actor->limbs[i].maxHp;
+        snapshot->stats.limbs[i].hp = stats->limbs[i].hp;
+        snapshot->stats.limbs[i].maxHp = stats->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            snapshot->stats.limbs[i].types[j] = actor->limbs[i].types[j];
+            snapshot->stats.limbs[i].types[j] = stats->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            snapshot->stats.limbs[i].affinities[j] = actor->limbs[i].affinities[j];
+            snapshot->stats.limbs[i].affinities[j] = stats->limbs[i].affinities[j];
         }
     }
 
@@ -1348,7 +1366,7 @@ int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
 
     if (arg1 == 0xFF) {
         for (i = 0; i < 2; ++i) {
-            if (_padAct[i].unk8 == 0) {
+            if (_padAct.port[i].active == 0) {
                 ret = i + 1;
                 break;
             }
@@ -1359,15 +1377,15 @@ int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
 
     if (ret != 0) {
         i = ret - 1;
-        _padAct[i].unkC = arg0;
-        _padAct[i].unk10[4] = 1;
-        _padAct[i].unk10[10] = *arg0;
-        _padAct[i].unk10[11] = 0;
-        _padAct[i].unk10[5] = 0;
-        _padAct[i].unk10[7] = 0;
-        _padAct[i].unk10[1] = 0;
-        _padAct[i].unk8 = 1;
-        _padAct[i].unkA = arg2;
+        _padAct.port[i].script = arg0;
+        _padAct.port[i].motors[0].scriptPos = 1;
+        _padAct.port[i].motors[1].scriptPos = *arg0;
+        _padAct.port[i].motors[1].framesLeft = 0;
+        _padAct.port[i].motors[0].framesLeft = 0;
+        _padAct.port[i].motors[1].value = 0;
+        _padAct.port[i].motors[0].value = 0;
+        _padAct.port[i].active = 1;
+        _padAct.port[i].id = arg2;
         return ret;
     }
     return 0;
@@ -1376,10 +1394,10 @@ int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
 static int _clearVibrationSlot(int arg0)
 {
     int i = arg0 - 1;
-    _padAct[i].unk10[7] = 0;
-    _padAct[i].unk10[1] = 0;
-    _padAct[i].unkC = 0;
-    _padAct[i].unk8 = 0;
+    _padAct.port[i].motors[1].value = 0;
+    _padAct.port[i].motors[0].value = 0;
+    _padAct.port[i].script = 0;
+    _padAct.port[i].active = 0;
 
     return arg0;
 }
@@ -1395,7 +1413,7 @@ int vs_main_stopVibration(u_int arg0, int arg1)
     }
     if (arg1 != 0) {
         for (i = 0; i < 2; ++i) {
-            if (_padAct[i].unkA == arg1) {
+            if (_padAct.port[i].id == arg1) {
                 _clearVibrationSlot(i + 1);
             }
         }
@@ -1410,7 +1428,7 @@ int vs_main_stopVibration(u_int arg0, int arg1)
 static int _pauseVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
-    _padAct[v0].unk8 = 0;
+    _padAct.port[v0].active = 0;
     return arg0;
 }
 
@@ -1436,7 +1454,7 @@ static UNUSED int _pauseVibration(int arg0)
 static int _resumeVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
-    _padAct[v0].unk8 = 1;
+    _padAct.port[v0].active = 1;
     return arg0;
 }
 
@@ -1466,98 +1484,96 @@ void vs_main_resetPadAct(void)
     vs_main_padDisconnectAll();
 
     for (i = 0; i < 2; ++i) {
-        _padAct[i].unkC = NULL;
-        _padAct[i].unk10[7] = 0;
-        _padAct[i].unk10[1] = 0;
-        _padAct[i].unk8 = 0;
+        _padAct.port[i].script = NULL;
+        _padAct.port[i].motors[1].value = 0;
+        _padAct.port[i].motors[0].value = 0;
+        _padAct.port[i].active = 0;
     }
 }
 
-static inline int _abs2(int arg) { return arg < 0 ? arg += 0xFF : arg; }
-
 void vs_main_setVibrateParams(void)
 {
-    int temp_a0;
-    int var_a2_2;
+    int pos;
     int i;
     int j;
-    int var_v0;
-    char* temp_t1;
-    int new_var;
+    char* script;
 
-    _padAct[0].unk0[1] = 0;
-    _padAct[0].unk0[0] = 0;
+    _padAct.strength[1] = 0;
+    _padAct.strength[0] = 0;
 
     for (j = 0; j < 2; ++j) {
-        if (_padAct[j].unk8 == 0) {
+
+        if (_padAct.port[j].active == 0) {
             continue;
         }
 
-        temp_t1 = _padAct[j].unkC;
+        script = _padAct.port[j].script;
 
-        if (temp_t1 != 0) {
+        if (script != 0) {
             for (i = 0; i < 2; ++i) {
-                int (*a1)[6] = (int (*)[6])_padAct[j].unk10;
-                if (a1[i][5] == 0) {
-                    temp_a0 = a1[i][4];
-                    a1[i][5] = temp_t1[temp_a0++];
-                    a1[i][1] = a1[i][3] = temp_t1[temp_a0++] << 8;
-                    if (a1[i][5] == 0) {
-                        a1[i][1] = 0;
-                        a1[i][0] = 0;
+
+                padMotor_t* motors = _padAct.port[j].motors;
+
+                if (motors[i].framesLeft == 0) {
+
+                    pos = motors[i].scriptPos;
+                    motors[i].framesLeft = script[pos++];
+                    motors[i].value = motors[i].target = script[pos++] << 8;
+
+                    if (motors[i].framesLeft == 0) {
+                        motors[i].value = 0;
+                        motors[i].active = 0;
                     } else {
-                        new_var = i != 0;
-                        a1[i][3] = temp_t1[temp_a0 + 1] << 8;
-                        if (new_var) {
-                            a1[i][2] = ((a1[i][3] - a1[i][1]) / a1[i][5]);
-                        } else {
-                            a1[i][2] = 0;
-                        }
-                        a1[i][0] = 1;
-                        a1[i][4] += 2;
+                        motors[i].target = script[pos + 1] << 8;
+                        motors[i].step = i != 0 ? (motors[i].target - motors[i].value)
+                                                      / motors[i].framesLeft
+                                                : 0;
+                        motors[i].active = 1;
+                        motors[i].scriptPos += 2;
                     }
                 }
-                if (a1[i][5] != 0) {
-                    a1[i][1] += a1[i][2];
-                    a1[i][5] -= 1;
+
+                if (motors[i].framesLeft != 0) {
+                    motors[i].value += motors[i].step;
+                    motors[i].framesLeft -= 1;
                 } else {
-                    a1[i][1] = a1[i][3];
+                    motors[i].value = motors[i].target;
                 }
 
-                _padAct[0].unk0[i] += a1[i][1];
-                if (_padAct[0].unk0[i] > 0xFF00) {
-                    _padAct[0].unk0[i] = 0xFF00;
-                } else if (_padAct[0].unk0[i] < 0) {
-                    _padAct[0].unk0[i] = 0;
+                _padAct.strength[i] += motors[i].value;
+
+                if (_padAct.strength[i] > 0xFF00) {
+                    _padAct.strength[i] = 0xFF00;
+                } else if (_padAct.strength[i] < 0) {
+                    _padAct.strength[i] = 0;
                 }
             }
-            _padAct[j].unk8 = _padAct[j].unk10[0] | _padAct[j].unk10[6];
-            if (_padAct[j].unk8 == 0) {
-                _padAct[j].unkC = 0;
+
+            _padAct.port[j].active =
+                _padAct.port[j].motors[0].active | _padAct.port[j].motors[1].active;
+
+            if (_padAct.port[j].active == 0) {
+                _padAct.port[j].script = 0;
             }
-            continue;
+        } else {
+            _padAct.port[j].active = 0;
         }
-        _padAct[j].unk8 = 0;
     }
 
     if (vs_main_settings.vibrationOn != 0) {
-        _padSetActData(0, 0, _abs2(_padAct[0].unk0[0]) >> 8);
-        _padSetActData(0, 1, _abs2(_padAct[0].unk0[1]) >> 8);
+        _padSetActData(0, 0, _padAct.strength[0] / 256);
+        _padSetActData(0, 1, _padAct.strength[1] / 256);
     }
 }
 
 void vs_main_vibrationOnEffect(int arg0)
 {
     if (arg0 < _vibrationOnBank[0]) {
-        int new_var = 5;
-        int new_var3 = 4;
-        int new_var4 = 6;
-        int new_var2 = 7;
         vs_main_setVibrationBank(
-            &_vibrationOnBank[_vibrationOnBank[arg0 * new_var3 + new_var3]
-                              + (_vibrationOnBank[arg0 * new_var3 + new_var] << 8)
-                              + (_vibrationOnBank[arg0 * new_var3 + new_var4] << 16)
-                              + (_vibrationOnBank[arg0 * new_var3 + new_var2] << 24)],
+            &_vibrationOnBank[_vibrationOnBank[arg0 * 4 + 4]
+                              + (_vibrationOnBank[arg0 * 4 + 5] << 8)
+                              + (_vibrationOnBank[arg0 * 4 + 6] << 16)
+                              + (_vibrationOnBank[arg0 * 4 + 7] << 24)],
             0xFF, 0x80);
     }
 }
@@ -1659,7 +1675,7 @@ int vs_main_processPadState(void)
 
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heapA.prev;
+    vs_main_HeapHeader* var_a1 = _heap.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
@@ -1689,7 +1705,7 @@ void vs_main_freeHeapR(void* block)
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heapA.next;
+    vs_main_HeapHeader* var_a1 = _heap.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
     for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
@@ -1724,8 +1740,8 @@ void* vs_main_allocHeapR(u_int size)
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
-    var_a2 = &_heapA;
-    var_a1 = _heapA.prev;
+    var_a2 = &_heap;
+    var_a1 = _heap.prev;
 
     while (1) {
         if (var_a1->blockSz >= blockSz) {
@@ -1740,7 +1756,7 @@ void* vs_main_allocHeapR(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_a2 = var_a1;
-        if (var_a1 == &_heapA) {
+        if (var_a1 == &_heap) {
             return 0;
         }
         var_a1 = var_a1->prev;
@@ -1753,8 +1769,8 @@ void* vs_main_allocHeap(u_int size)
     vs_main_HeapHeader* var_a1;
     vs_main_HeapHeader* var_v1;
 
-    var_v1 = &_heapA;
-    var_a1 = _heapA.next;
+    var_v1 = &_heap;
+    var_a1 = _heap.next;
     blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
@@ -1774,24 +1790,26 @@ void* vs_main_allocHeap(u_int size)
             return (u_long*)(var_a1 + 1);
         }
         var_v1 = var_a1;
-        if (var_a1 == &_heapA) {
+        if (var_a1 == &_heap) {
             return 0;
         }
         var_a1 = var_a1->next;
     }
 }
 
-void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
+void vs_main_initHeap(void* heap, u_int size)
 {
-    _heapA.prev = node;
-    _heapA.next = node;
-    _heapA.blockSz = 0;
-    node->prev = &_heapA;
-    node->next = &_heapA;
-    node->blockSz = value / 16 - 1;
-    _heapB.prev = &_heapB;
-    _heapB.next = &_heapB;
-    _heapB.blockSz = 0;
+    vs_main_HeapHeader* node = heap;
+
+    _heap.prev = node;
+    _heap.next = node;
+    _heap.blockSz = 0;
+    node->prev = &_heap;
+    node->next = &_heap;
+    node->blockSz = size / 16 - 1;
+    _unusedHeap.prev = &_unusedHeap;
+    _unusedHeap.next = &_unusedHeap;
+    _unusedHeap.blockSz = 0;
 }
 
 static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
@@ -1814,7 +1832,7 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
     if (vs_main_disk.bufferMode == cdBufferModeNone) {
         DsGetSector(vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
     } else {
-        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 128, 512);
+        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 2048, 512);
         if (++vs_main_disk.unk3C >= 16) {
             vs_main_disk.unk3C = 0;
         }
@@ -2080,7 +2098,7 @@ static void _diskUpdate(void)
             if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
                 vs_main_memcpy(
                     ((char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
-                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 128), 2048);
+                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 2048), 2048);
 
                 ++vs_main_disk.ringBufIndex;
                 if (vs_main_disk.ringBufIndex >= 16) {
@@ -3777,7 +3795,6 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     int temp_a1;
     int temp_t1;
     int temp_t2;
-    int v0;
     int* temp_a3;
 
     if (_clutState.active == 0) {

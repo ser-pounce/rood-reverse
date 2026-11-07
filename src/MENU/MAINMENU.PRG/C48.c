@@ -46,29 +46,29 @@ vs_main_inventoryWeapon* vs_mainMenu_weapons;
 void vs_mainMenu_initInventory(void)
 {
     int i;
-    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* stats = vs_battle_characterState->stats;
 
-    if (actor->weapon.index != 0) {
+    if (stats->weapon.index != 0) {
         vs_battle_copyUiWeaponStats(
-            &vs_main_inventory.weapons[actor->weapon.index - 1], &actor->weapon);
+            &vs_main_inventory.weapons[stats->weapon.index - 1], &stats->weapon);
     }
 
-    if (actor->shield.index != 0) {
+    if (stats->shield.index != 0) {
         vs_battle_copyUiShieldStats(
-            &vs_main_inventory.shields[actor->shield.index - 1], &actor->shield);
+            &vs_main_inventory.shields[stats->shield.index - 1], &stats->shield);
     }
 
     for (i = 0; i < 6; ++i) {
-        if (actor->limbs[i].armor.index != 0) {
+        if (stats->limbs[i].armor.index != 0) {
             vs_battle_copyUiArmorStats(
-                &vs_main_inventory.armor[actor->limbs[i].armor.index - 1],
-                &actor->limbs[i].armor);
+                &vs_main_inventory.armor[stats->limbs[i].armor.index - 1],
+                &stats->limbs[i].armor);
         }
     }
 
-    if (actor->accessory.index != 0) {
+    if (stats->accessory.index != 0) {
         vs_battle_copyUiAccessoryStats(
-            &vs_main_inventory.armor[actor->accessory.index - 1], &actor->accessory);
+            &vs_main_inventory.armor[stats->accessory.index - 1], &stats->accessory);
     }
 }
 
@@ -440,7 +440,7 @@ void vs_mainMenu_exec(int arg0)
 
                 if (selectedMenu == 5) {
                     menuItem = vs_battle_setMenuItem(
-                        4, 320, 18, 140, 8, vs_battle_characterState->unk3C->name);
+                        4, 320, 18, 140, 8, vs_battle_characterState->stats->name);
                     menuItem->state = 2;
                     menuItem->targetPosition0 = 0xB4;
                     menuItem->selected = state;
@@ -993,18 +993,18 @@ void vs_mainMenu_setStrIntAgi(
 
 void vs_mainMenu_populateBaseStats(int actorId)
 {
-    vs_battle_actor2* temp_t0 = vs_battle_actors[actorId & 0xF]->unk3C;
+    vs_battle_actorStats* stats = vs_battle_actors[actorId & 0xF]->stats;
     D_80102488[3] = actorId & 0xF;
-    D_80102498[0] = temp_t0->accessory.currentStr;
-    D_80102498[1] = temp_t0->accessory.currentInt;
-    D_80102498[2] = temp_t0->accessory.currentAgility;
-    D_80102488[0] = temp_t0->strength;
-    D_80102488[1] = temp_t0->intelligence;
-    D_80102488[2] = temp_t0->agility;
-    D_80102488[4] = temp_t0->totalStrength;
-    D_80102488[5] = temp_t0->totalIntelligence;
+    D_80102498[0] = stats->accessory.currentStr;
+    D_80102498[1] = stats->accessory.currentInt;
+    D_80102498[2] = stats->accessory.currentAgility;
+    D_80102488[0] = stats->strength;
+    D_80102488[1] = stats->intelligence;
+    D_80102488[2] = stats->agility;
+    D_80102488[4] = stats->totalStrength;
+    D_80102488[5] = stats->totalIntelligence;
     vs_mainMenu_equipmentSubtype = 0;
-    D_80102488[6] = temp_t0->totalAgility;
+    D_80102488[6] = stats->totalAgility;
 
     if (actorId < 16) {
         int i;
@@ -1013,8 +1013,8 @@ void vs_mainMenu_populateBaseStats(int actorId)
             D_80102488[i] -= D_80102488[4 + i];
         }
 
-        vs_mainMenu_setStrIntAgi(temp_t0->totalStrength, temp_t0->totalIntelligence,
-            temp_t0->totalAgility, temp_t0->isAnalyzed | (actorId == 0));
+        vs_mainMenu_setStrIntAgi(stats->totalStrength, stats->totalIntelligence,
+            stats->totalAgility, stats->isAnalyzed | (actorId == 0));
         vs_battle_rMemzero(&D_80102490, 8);
     }
 }
@@ -1040,10 +1040,10 @@ void vs_mainMenu_renderEquipStats(int animate)
     int i;
     u_long* temp_s4;
     int position;
-    vs_battle_actor2* actor;
+    vs_battle_actorStats* stats;
 
     position = vs_getXY(248, 126);
-    actor = vs_battle_actors[D_80102488[3]]->unk3C;
+    stats = vs_battle_actors[D_80102488[3]]->stats;
     temp_s4 = vs_scratch.unk4 - 0x18;
 
     if (animate != 0) {
@@ -1078,7 +1078,7 @@ void vs_mainMenu_renderEquipStats(int animate)
                 stat = _rangeRiskData[i];
                 vs_mainMenu_renderIntColorDefault(stat, position + 28, temp_s4);
                 if (i == 0) {
-                    stat += actor->currentRange - actor->weapon.range.range;
+                    stat += stats->currentRange - stats->weapon.range.range;
                 }
                 vs_mainMenu_renderIntColorDefault(stat, position + 60, temp_s4);
             } else {

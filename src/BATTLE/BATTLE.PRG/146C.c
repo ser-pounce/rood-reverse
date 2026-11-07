@@ -5207,17 +5207,17 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
     actorOffset = actorIndex * sizeof(*vs_battle_actors);
     actor = *(vs_battle_actor**)((char*)vs_battle_actors + actorOffset);
 
-    if (coordinates->unk0.x != actor->unk2C.x
-        || coordinates->unk0.surface != actor->unk2C.surface
-        || coordinates->unk0.z != actor->unk2C.z || layer != actor->unk2C.status
-        || (flags & 0x70000)) {
+    if (coordinates->unk0.x != actor->currentTile.x
+        || coordinates->unk0.surface != actor->currentTile.surface
+        || coordinates->unk0.z != actor->currentTile.z
+        || layer != actor->currentTile.status || (flags & 0x70000)) {
         if (D_800F196C != 3) {
             _mpdRoomSection9* trigger;
 
             if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
                 func_80073898();
-                actor->unk2C = coordinates->unk0;
-                actor->unk2C.status = layer;
+                actor->currentTile = coordinates->unk0;
+                actor->currentTile.status = layer;
 
                 if (cell->unk0_16) {
                     trigger = func_8008D438(coordinates->unk0.x, coordinates->unk0.z,
@@ -5239,8 +5239,8 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
                 if (trigger != NULL) {
                     if (trigger->unk6 != 16) {
                         func_80073F7C((_mpdRoomSectionA*)trigger, position, actorIndex);
-                        actor->unk2C = coordinates->unk0;
-                        actor->unk2C.status = layer;
+                        actor->currentTile = coordinates->unk0;
+                        actor->currentTile.status = layer;
                         return 1;
                     }
 
@@ -5289,10 +5289,10 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
         }
 
         if (!(flags & 0x104000)) {
-            actor->unk2C = coordinates->unk0;
+            actor->currentTile = coordinates->unk0;
         }
 
-        actor->unk2C.status = layer;
+        actor->currentTile.status = layer;
     }
 
     if (result == 0 && cell->unk0_17 && position->unk4.vy >= 17) {
@@ -5370,10 +5370,10 @@ int func_800751B8(int arg0, vs_battle_actorLocation* arg1)
         if (!(temp_v0 & 0x01000000)) {
             temp_s0 = vs_battle_actors[arg0];
 
-            if (s2->unk0.x != temp_s0->unk2C.x
-                || s2->unk0.surface != temp_s0->unk2C.surface
-                || s2->unk0.z != temp_s0->unk2C.z || temp_s3 != temp_s0->unk2C.status
-                || (temp_v0 & 0x70000)) {
+            if (s2->unk0.x != temp_s0->currentTile.x
+                || s2->unk0.surface != temp_s0->currentTile.surface
+                || s2->unk0.z != temp_s0->currentTile.z
+                || temp_s3 != temp_s0->currentTile.status || (temp_v0 & 0x70000)) {
                 if (D_800F196C != 3) {
                     if (temp_s4->unk0_16) {
                         if (!(temp_v0 & 0x16704000)) {
@@ -5381,17 +5381,18 @@ int func_800751B8(int arg0, vs_battle_actorLocation* arg1)
                                 func_8008D438(s2->unk0.x, s2->unk0.z, s2->unk0.surface);
                             if ((temp_v0_2 != NULL) && (temp_v0_2->unk6 != 0x10)) {
                                 func_80073F7C((_mpdRoomSectionA*)temp_v0_2, arg1, arg0);
-                                memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
-                                temp_s0->unk2C.status = temp_s3;
+                                memcpy(&temp_s0->currentTile, &s2->unk0,
+                                    sizeof temp_s0->currentTile);
+                                temp_s0->currentTile.status = temp_s3;
                                 return 3;
                             }
                         }
                     }
                 }
                 if (!(temp_v0 & 0x504000)) {
-                    memcpy(&temp_s0->unk2C, &s2->unk0, sizeof temp_s0->unk2C);
+                    memcpy(&temp_s0->currentTile, &s2->unk0, sizeof temp_s0->currentTile);
                 }
-                temp_s0->unk2C.status = temp_s3;
+                temp_s0->currentTile.status = temp_s3;
             }
             if ((temp_s4->unk0_17)) {
                 if (arg1->unk4.vy >= 0x11) {
@@ -6223,10 +6224,10 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     }
 
     temp_s1->unk24 = arg4 & 0x1C;
-    temp_s1->unk2C.status = 0;
-    temp_s1->unk2C.z = 0;
-    temp_s1->unk2C.surface = 0;
-    temp_s1->unk2C.x = 0;
+    temp_s1->currentTile.status = 0;
+    temp_s1->currentTile.z = 0;
+    temp_s1->currentTile.surface = 0;
+    temp_s1->currentTile.x = 0;
     temp_s1->unk1E = 0;
     temp_s1->unk8 = 0;
     stats->maxHP = 100;
@@ -6310,10 +6311,10 @@ void func_80076F24(
 
     temp_s0->unk24 = arg4 & 0x1C;
     temp_s0->unk8 = 0;
-    temp_s0->unk2C.status = 0;
-    temp_s0->unk2C.z = 0;
-    temp_s0->unk2C.surface = 0;
-    temp_s0->unk2C.x = 0;
+    temp_s0->currentTile.status = 0;
+    temp_s0->currentTile.z = 0;
+    temp_s0->currentTile.surface = 0;
+    temp_s0->currentTile.x = 0;
     func_80076784(id, stats, arg1, arg5);
 }
 
@@ -6674,7 +6675,7 @@ vs_battle_actor* func_800775C0(
         actor->stats->unk960.dropRate = spawn->item3Count;
 
         do {
-            *(actorSpawnSettings*)(&actor->unk2C + 1) = spawn->settings;
+            *(actorSpawnSettings*)(&actor->currentTile + 1) = spawn->settings;
         } while (0);
 
         actor->unk38 = init->unk2C;

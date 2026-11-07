@@ -315,38 +315,38 @@ static void func_800F9AD8(void)
 {
     int j;
     int i;
-    vs_battle_actorStats* temp_s0 = vs_battle_characterState->stats;
+    vs_battle_actorStats* stats = vs_battle_characterState->stats;
     vs_main_characterSnapshotStats_t* s1 = &vs_main_characterSnapshot.stats;
 
-    temp_s0->currentHP = s1->currentHP;
-    temp_s0->maxHP = s1->maxHP;
-    temp_s0->currentMP = s1->currentMP;
-    temp_s0->maxMP = s1->maxMP;
-    temp_s0->strength = s1->strength;
-    temp_s0->totalStrength = s1->totalStrength;
-    temp_s0->intelligence = s1->intelligence;
-    temp_s0->totalIntelligence = s1->totalIntelligence;
-    temp_s0->agility = s1->agility;
-    temp_s0->totalAgility = s1->totalAgility;
-    temp_s0->risk = s1->risk;
-    temp_s0->actionDelay = s1->actionDelay;
+    stats->currentHP = s1->currentHP;
+    stats->maxHP = s1->maxHP;
+    stats->currentMP = s1->currentMP;
+    stats->maxMP = s1->maxMP;
+    stats->strength = s1->strength;
+    stats->totalStrength = s1->totalStrength;
+    stats->intelligence = s1->intelligence;
+    stats->totalIntelligence = s1->totalIntelligence;
+    stats->agility = s1->agility;
+    stats->totalAgility = s1->totalAgility;
+    stats->risk = s1->risk;
+    stats->actionDelay = s1->actionDelay;
 
-    func_80086FA8(s1->statuses, temp_s0);
+    func_80086FA8(s1->statuses, stats);
 
     for (i = 0; i < 8; ++i) {
-        temp_s0->statusTimers[i] = s1->statusTimers[i];
+        stats->statusTimers[i] = s1->statusTimers[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        temp_s0->limbs[i].hp = s1->limbs[i].hp;
-        temp_s0->limbs[i].maxHp = s1->limbs[i].maxHp;
+        stats->limbs[i].hp = s1->limbs[i].hp;
+        stats->limbs[i].maxHp = s1->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_s0->limbs[i].types[j] = s1->limbs[i].types[j];
+            stats->limbs[i].types[j] = s1->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_s0->limbs[i].affinities[j] = s1->limbs[i].affinities[j];
+            stats->limbs[i].affinities[j] = s1->limbs[i].affinities[j];
         }
     }
 

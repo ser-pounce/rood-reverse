@@ -1917,27 +1917,40 @@ static UNUSED void _diskClearError(void)
     }
 }
 
+static inline void _diskResetReadState(void)
+{
+    vs_main_disk.ringBufIndex = 0;
+    vs_main_disk.unk3C = 0;
+    vs_main_disk.sectorBufIndex = 0;
+    vs_main_disk.unk34 = 0;
+    vs_main_disk.unk4 = 0;
+    vs_main_disk.unk3 = 0;
+    vs_main_disk.unk38 = 0;
+}
+
 static int _diskInitRead(int sector, u_int bytes, void* vram)
 {
     if (vs_main_disk.state == diskIdle) {
+
         vs_main_disk.cdSector = sector;
         vs_main_disk.request.byteCount = bytes;
         vs_main_disk.vram = vram;
-        vs_main_disk.ringBufIndex = 0;
-        vs_main_disk.unk3C = 0;
-        vs_main_disk.sectorBufIndex = 0;
-        vs_main_disk.unk34 = 0;
-        vs_main_disk.unk4 = 0;
-        vs_main_disk.unk3 = 0;
-        vs_main_disk.unk38 = 0;
+
+        _diskResetReadState();
+
         vs_main_disk.sectorCount = bytes / 2048;
+
         if (bytes % 2048) {
             ++vs_main_disk.sectorCount;
         }
+
         DsIntToPos(sector, &vs_main_disk.cdLoc);
+
         vs_main_disk.state = diskReadInit;
+
         return 1;
     }
+
     return 0;
 }
 
@@ -2138,18 +2151,17 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 int vs_main_streamXa(int sector, int cdVolume)
 {
     if (vs_main_disk.state == diskIdle) {
+
         vs_main_disk.cdSector = sector;
         vs_main_disk.request.cdVolume = cdVolume;
-        vs_main_disk.ringBufIndex = 0;
-        vs_main_disk.unk3C = 0;
-        vs_main_disk.sectorBufIndex = 0;
-        vs_main_disk.unk34 = 0;
-        vs_main_disk.unk4 = 0;
-        vs_main_disk.unk3 = 0;
-        vs_main_disk.unk38 = 0;
+
+        _diskResetReadState();
+
         vs_main_disk.state = diskReadXaInit;
+
         return 1;
     }
+
     return 0;
 }
 

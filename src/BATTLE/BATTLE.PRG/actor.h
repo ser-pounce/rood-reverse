@@ -129,7 +129,7 @@ typedef struct vs_battle_actor {
     u_char unk29;
     u_char unk2A;
     u_char unk2B;
-    vs_battle_movementPosition unk2C;
+    vs_battle_tilePosition unk2C;
     u_short unk30_0 : 4;
     u_short unk30_4 : 5;
     u_int unk30_9 : 5;

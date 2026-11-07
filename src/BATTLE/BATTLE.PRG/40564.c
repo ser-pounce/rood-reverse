@@ -26,8 +26,8 @@ typedef struct {
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
-void func_800AA290(int, vs_battle_movementPosition*, int, int);
-void func_800AA490(int, vs_battle_movementPosition*, int, int);
+void func_800AA290(int, vs_battle_tilePosition*, int, int);
+void func_800AA490(int, vs_battle_tilePosition*, int, int);
 
 extern func_800AAE9C_t D_800E916C[][8];
 extern short D_800F4B00;
@@ -448,7 +448,7 @@ int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
     return 1;
 }
 
-void func_800A97EC(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg3)
+void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 {
     int angle;
 
@@ -587,7 +587,7 @@ void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
     actor->unk5AC_2 = 0;
 }
 
-void func_800A9C54(int arg0, vs_battle_movementPosition* arg1, int arg2)
+void func_800A9C54(int arg0, vs_battle_tilePosition* arg1, int arg2)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -602,7 +602,7 @@ void func_800A9C54(int arg0, vs_battle_movementPosition* arg1, int arg2)
     temp_s0->unk0.currentTile.z = arg1->z;
 }
 
-void func_800A9CDC(int arg0, vs_battle_movementPosition* arg1, int arg2)
+void func_800A9CDC(int arg0, vs_battle_tilePosition* arg1, int arg2)
 {
     D_800F4538_t* new_var = D_800F4538[arg0];
 
@@ -768,7 +768,7 @@ void func_800A9FD0(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C0 = temp_s0;
 }
 
-void func_800AA108(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg3)
+void func_800AA108(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -800,7 +800,7 @@ void func_800AA108(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg
     }
 }
 
-void func_800AA218(int arg0, vs_battle_movementPosition* arg1, int arg2)
+void func_800AA218(int arg0, vs_battle_tilePosition* arg1, int arg2)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -812,7 +812,7 @@ void func_800AA218(int arg0, vs_battle_movementPosition* arg1, int arg2)
     }
 }
 
-void func_800AA290(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg3)
+void func_800AA290(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 {
     SVECTOR target;
     int dist;
@@ -874,12 +874,12 @@ void func_800AA290(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg
     actor->unk0.unk1A = arg2;
 }
 
-void func_800AA454(int arg0, vs_battle_movementPosition* arg1, int arg2)
+void func_800AA454(int arg0, vs_battle_tilePosition* arg1, int arg2)
 {
     func_800AA490(arg0, arg1, arg2, D_800F4538[arg0]->unk5C0);
 }
 
-void func_800AA490(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg3)
+void func_800AA490(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 {
     int angle;
     int dz;

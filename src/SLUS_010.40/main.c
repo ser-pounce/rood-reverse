@@ -1667,127 +1667,120 @@ int vs_main_processPadState(void)
     return 1;
 }
 
+static inline void _insertFreeBlock(
+    vs_main_HeapHeader* freeNode, vs_main_HeapHeader* target)
+{
+    if ((target + target->blockSz) == freeNode->next) {
+        target->blockSz += freeNode->next->blockSz;
+        target->next = freeNode->next->next;
+        target->next->prev = target;
+    } else {
+        target->next = freeNode->next;
+        target->next->prev = target;
+    }
+
+    if ((freeNode + freeNode->blockSz) == target) {
+        freeNode->blockSz += target->blockSz;
+        freeNode->next = target->next;
+        freeNode->next->prev = freeNode;
+        return;
+    }
+
+    freeNode->next = target;
+    target->prev = freeNode;
+}
+
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heap.prev;
+    vs_main_HeapHeader* freeNode = _heap.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
-    for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
-        if (var_a1 >= var_a1->next && ((var_a1 < target) || (target < var_a1->next))) {
+    for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->prev) {
+        if (freeNode >= freeNode->next
+            && ((freeNode < target) || (target < freeNode->next))) {
             break;
         }
     }
 
-    if ((target + target->blockSz) == var_a1->next) {
-        target->blockSz += var_a1->next->blockSz;
-        target->next = var_a1->next->next;
-        target->next->prev = target;
-    } else {
-        target->next = var_a1->next;
-        target->next->prev = target;
-    }
-
-    if ((var_a1 + var_a1->blockSz) == target) {
-        var_a1->blockSz += target->blockSz;
-        var_a1->next = target->next;
-        var_a1->next->prev = var_a1;
-        return;
-    }
-    var_a1->next = target;
-    target->prev = var_a1;
+    _insertFreeBlock(freeNode, target);
 }
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heap.next;
+    vs_main_HeapHeader* freeNode = _heap.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
-    for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
-        if (var_a1 >= var_a1->next && ((var_a1 < target) || (target < var_a1->next))) {
+    for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->next) {
+        if (freeNode >= freeNode->next
+            && ((freeNode < target) || (target < freeNode->next))) {
             break;
         }
     }
 
-    if ((target + target->blockSz) == var_a1->next) {
-        target->blockSz += var_a1->next->blockSz;
-        target->next = var_a1->next->next;
-        target->next->prev = target;
-    } else {
-        target->next = var_a1->next;
-        target->next->prev = target;
-    }
-
-    if ((var_a1 + var_a1->blockSz) == target) {
-        var_a1->blockSz += target->blockSz;
-        var_a1->next = target->next;
-        var_a1->next->prev = var_a1;
-        return;
-    }
-    var_a1->next = target;
-    target->prev = var_a1;
+    _insertFreeBlock(freeNode, target);
 }
 
 void* vs_main_allocHeapR(u_int size)
 {
-    vs_main_HeapHeader* var_a1;
-    vs_main_HeapHeader* var_a2;
+    vs_main_HeapHeader* freeNode;
+    vs_main_HeapHeader* lastNode;
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
-    var_a2 = &_heap;
-    var_a1 = _heap.prev;
+    lastNode = &_heap;
+    freeNode = _heap.prev;
 
     while (1) {
-        if (var_a1->blockSz >= blockSz) {
-            if (var_a1->blockSz == blockSz) {
-                var_a2->prev = var_a1->prev;
-                var_a1->prev->next = var_a1->next;
+        if (freeNode->blockSz >= blockSz) {
+            if (freeNode->blockSz == blockSz) {
+                lastNode->prev = freeNode->prev;
+                freeNode->prev->next = freeNode->next;
             } else {
-                var_a1->blockSz = var_a1->blockSz - blockSz;
-                var_a1 += var_a1->blockSz;
-                var_a1->blockSz = blockSz;
+                freeNode->blockSz = freeNode->blockSz - blockSz;
+                freeNode += freeNode->blockSz;
+                freeNode->blockSz = blockSz;
             }
-            return (u_long*)(var_a1 + 1);
+            return (u_long*)(freeNode + 1);
         }
-        var_a2 = var_a1;
-        if (var_a1 == &_heap) {
+        lastNode = freeNode;
+        if (freeNode == &_heap) {
             return 0;
         }
-        var_a1 = var_a1->prev;
+        freeNode = freeNode->prev;
     }
 }
 
 void* vs_main_allocHeap(u_int size)
 {
     u_int blockSz;
-    vs_main_HeapHeader* var_a1;
-    vs_main_HeapHeader* var_v1;
+    vs_main_HeapHeader* freeNode;
+    vs_main_HeapHeader* lastNode;
 
-    var_v1 = &_heap;
-    var_a1 = _heap.next;
+    lastNode = &_heap;
+    freeNode = _heap.next;
     blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
-        if (var_a1->blockSz >= blockSz) {
-            if (var_a1->blockSz == blockSz) {
-                var_v1->next = var_a1->next;
-                var_a1->next->prev = var_a1->prev;
+        if (freeNode->blockSz >= blockSz) {
+            if (freeNode->blockSz == blockSz) {
+                lastNode->next = freeNode->next;
+                freeNode->next->prev = freeNode->prev;
             } else {
-                vs_main_HeapHeader* temp_v1 = var_a1 + blockSz;
-                temp_v1->blockSz = var_a1->blockSz - blockSz;
-                temp_v1->prev = var_a1->prev;
-                temp_v1->next = var_a1->next;
+                vs_main_HeapHeader* temp_v1 = freeNode + blockSz;
+                temp_v1->blockSz = freeNode->blockSz - blockSz;
+                temp_v1->prev = freeNode->prev;
+                temp_v1->next = freeNode->next;
                 temp_v1->prev->next = temp_v1;
                 temp_v1->next->prev = temp_v1;
-                var_a1->blockSz = blockSz;
+                freeNode->blockSz = blockSz;
             }
-            return (u_long*)(var_a1 + 1);
+            return (u_long*)(freeNode + 1);
         }
-        var_v1 = var_a1;
-        if (var_a1 == &_heap) {
+        lastNode = freeNode;
+        if (freeNode == &_heap) {
             return 0;
         }
-        var_a1 = var_a1->next;
+        freeNode = freeNode->next;
     }
 }
 

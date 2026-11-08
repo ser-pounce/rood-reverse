@@ -1468,21 +1468,21 @@ static int _clearVibrationSlot(int slot)
     return slot;
 }
 
-int vs_main_stopVibration(u_int arg0, int arg1)
+int vs_main_stopVibration(u_int slot, int id)
 {
     int i;
 
-    if (arg0 - 1 < 2) {
-        return _clearVibrationSlot(arg0);
+    if (slot - 1 < 2) {
+        return _clearVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 
-    if (arg1 != 0) {
+    if (id != 0) {
         for (i = 0; i < 2; ++i) {
-            if (_padAct.port[i].id == arg1) {
+            if (_padAct.port[i].id == id) {
                 _clearVibrationSlot(i + 1);
             }
         }

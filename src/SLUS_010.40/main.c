@@ -3327,28 +3327,29 @@ static UNUSED void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
     _do_panBankSfx(arg0, arg1, arg2, sxy, z);
 }
 
-void vs_main_evictBankSfx(int arg0, int* arg1, int arg2)
+void vs_main_evictBankSfx(int group, int* bank, int index)
 {
-    int var_a1;
-    char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];
+    int mask;
+    void* sfx = (void*)bank + (bank + index)[1];
 
-    if (arg2 != 0) {
-        var_a1 = 0;
+    if (index != 0) {
+        mask = 0;
     } else {
-        var_a0 = 0;
-        var_a1 = arg0;
+        sfx = NULL;
+        mask = group;
     }
-    Sound_EvictSfx((int)var_a0, var_a1);
+
+    Sound_EvictSfx((u_long)sfx, mask);
 }
 
-void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4)
+void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration)
 {
-    int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
+    void* sfx = (void*)bank + (bank + index)[1];
 
-    if (arg2 == 0) {
-        Sound_FadeSfxVolumeMod(0, arg0, arg4 & 0xFF, arg3);
+    if (index == 0) {
+        Sound_FadeSfxVolumeMod(0, group, duration & 0xFF, volume);
     } else {
-        Sound_FadeSfxVolumeMod(a0, 0, arg4 & 0xFF, arg3);
+        Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration & 0xFF, volume);
     }
 }
 

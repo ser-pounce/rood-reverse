@@ -478,7 +478,7 @@ void func_800A97EC(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg
 
         actor->unk5AC_0 = 0;
         actor->unk0.currentTile.x = arg1->x;
-        actor->unk0.currentTile.y = arg1->y;
+        actor->unk0.currentTile.surface = arg1->surface;
         actor->unk0.currentTile.z = arg1->z;
     } else {
         if (arg3 == -1) {
@@ -609,7 +609,7 @@ void func_800A9C54(int arg0, vs_battle_movementPosition* arg1, int arg2)
     }
 
     temp_s0->unk0.currentTile.x = arg1->x;
-    temp_s0->unk0.currentTile.y = arg1->y;
+    temp_s0->unk0.currentTile.surface = arg1->surface;
     temp_s0->unk0.currentTile.z = arg1->z;
 }
 
@@ -805,7 +805,7 @@ void func_800AA108(int arg0, vs_battle_movementPosition* arg1, int arg2, int arg
         }
 
         temp_s0->unk0.currentTile.x = arg1->x;
-        temp_s0->unk0.currentTile.y = arg1->y;
+        temp_s0->unk0.currentTile.surface = arg1->surface;
         temp_s0->unk0.currentTile.z = arg1->z;
         temp_s0->unk5AC_2 = 1;
     }
@@ -818,7 +818,7 @@ void func_800AA218(int arg0, vs_battle_movementPosition* arg1, int arg2)
     if (temp_s0 != NULL) {
         func_800AA290(arg0, arg1, arg2, temp_s0->unk5C2);
         temp_s0->unk0.currentTile.x = arg1->x;
-        temp_s0->unk0.currentTile.y = arg1->y;
+        temp_s0->unk0.currentTile.surface = arg1->surface;
         temp_s0->unk0.currentTile.z = arg1->z;
     }
 }
@@ -2382,7 +2382,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                 actor->unk6E4 = D_800F49F4;
                 actor->unk0.currentTile.x = actor->unk0.position.vx / 128;
                 actor->unk0.currentTile.z = actor->unk0.position.vz / 128;
-                actor->unk0.currentTile.y = 0;
+                actor->unk0.currentTile.surface = 0;
                 func_8008C49C(D_800F49F4 - 2, arg0);
                 func_8008C49C(D_800F49F4 - 2, -1);
                 D_800F49F4 = 0;
@@ -2425,7 +2425,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         }
         *(short*)&actor->unk6EE = 0;
         actor->unk0.unkC_0 = D_800F49F4;
-        actor->unk0.currentTile.y = D_800F49F4;
+        actor->unk0.currentTile.surface = D_800F49F4;
         actor->unk5AC_28 = D_800F49F8;
         actor->unk0.unk34.vy = y - actor->unk0.position.vy;
         actor->unk0.unkA_0 = 4;
@@ -2488,7 +2488,7 @@ void func_800ACF54(D_800F4538_t* arg0)
     memcpy(&arg0->unk0.lastPosition, &arg0->unk0.position, sizeof(SVECTOR));
 
     if (!(arg0->unk0.unkC_0)) {
-        arg0->unk1868 = *(int*)&arg0->unk0.currentTile;
+        arg0->unk1868 = arg0->unk0.currentTile;
     }
 
     arg0->unk0.lastPosition.pad = arg0->unk0.facing;

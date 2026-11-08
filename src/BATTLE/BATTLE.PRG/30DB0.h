@@ -1,6 +1,6 @@
 #pragma once
 #include "entity.h"
-#include "func_8006EBF8_t.h"
+#include "actorPosition.h"
 #include <libgte.h>
 
 typedef struct {
@@ -86,7 +86,7 @@ int func_8009FD5C(int, int, int);
 int func_8009FE74(int arg0, int arg1);
 void func_8009FF08(int, int, int, int);
 int func_8009FFA8(int arg0, int arg1);
-int func_800A0024(int arg0, func_8006EBF8_t3* arg1);
+int func_800A0024(int arg0, vs_battle_actorLocation* arg1);
 int func_800A0104(int index, int material);
 int func_800A01C8(int, int, int, int);
 int func_800A0618(int, int, int, int);

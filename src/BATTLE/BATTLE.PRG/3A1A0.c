@@ -307,7 +307,7 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
         tileType = placement->unk0_8;
 
         if (tileType == 7) {
-            actor->unk0.currentTile.y = 0;
+            actor->unk0.currentTile.surface = 0;
             actor->unk0.position.vy = height;
             actor->unk0.unk34.vy = 0;
             actor->unk0.unkA_0 = 3;
@@ -419,7 +419,7 @@ void func_800A35A8(void)
     for (i = 2; i < 17; ++i) {
         actor = D_800F4538[i];
 
-        if (actor != NULL && !actor->unk0.unkA_5 && actor->unk0.currentTile.y < 2
+        if (actor != NULL && !actor->unk0.unkA_5 && actor->unk0.currentTile.surface < 2
             && !actor->unk0.unkA_0) {
             x = actor->unk0.position.vx;
             z = actor->unk0.position.vz;
@@ -440,15 +440,15 @@ void func_800A35A8(void)
     }
 }
 
-void func_800A36E0(int actorId, int arg1, func_8006EBF8_t* arg2)
+void func_800A36E0(int actorId, int arg1, vs_battle_actorPosition* arg2)
 {
     D_800F4538_t* temp_a0 = D_800F4538[actorId];
     if (temp_a0 != NULL) {
-        arg2->unk0.unk0.value = temp_a0->unk1868;
+        arg2->unk0.unk0 = temp_a0->unk1868;
         if (temp_a0->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {
-            arg2->unk0.unk0.value = *(int*)&temp_a0->unk0.currentTile;
+            arg2->unk0.unk0 = temp_a0->unk0.currentTile;
         }
-        arg2->unk0.unk0.fields.status = temp_a0->unk0.facing / 16;
+        arg2->unk0.unk0.status = temp_a0->unk0.facing / 16;
     }
 }
 
@@ -1173,7 +1173,7 @@ void func_800A4A88(D_800F4538_t* actor, int mode)
             actor->unk17EC.pad = 0;
         }
 
-        actor->unk0.currentTile.y = actor->unk0.unkC_0;
+        actor->unk0.currentTile.surface = actor->unk0.unkC_0;
         actor->unk0.unkC_4 = actor->unk0.unkC_0;
         return;
     }
@@ -1789,10 +1789,10 @@ move:
             if (actor->unk0.lastTouchedTile.x != actor->unk0.currentTile.x
                 || actor->unk0.lastTouchedTile.z != actor->unk0.currentTile.z
 
-                || actor->unk0.lastTouchedTile.y != actor->unk0.unkC_0) {
+                || actor->unk0.lastTouchedTile.surface != actor->unk0.unkC_0) {
                 actor->unk0.lastTouchedTile.x = D_800F4B08.vx / 128;
                 actor->unk0.lastTouchedTile.z = D_800F4B08.vz / 128;
-                actor->unk0.lastTouchedTile.y = actor->unk0.unkC_0;
+                actor->unk0.lastTouchedTile.surface = actor->unk0.unkC_0;
             }
         } else if (actor->unk0.unkA_3 == 2) {
         fallStep:
@@ -2510,7 +2510,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
         actor->unk5AC_12 = 0;
         if (!actor->unk0.unkC_0) {
             probeTiles[0] =
-                func_800A8D64(&actor->unk0.position, actor->unk0.currentTile.y);
+                func_800A8D64(&actor->unk0.position, actor->unk0.currentTile.surface);
             if (probeTiles[0] == NULL) {
                 actor->unk5AC_10 = 1;
             }
@@ -2540,7 +2540,8 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     func_800A7524(actor, motion);
     actor->unk5AC_10 = 0;
     if (!actor->unk0.unkC_0) {
-        probeTiles[0] = func_800A8D64(&actor->unk0.position, actor->unk0.currentTile.y);
+        probeTiles[0] =
+            func_800A8D64(&actor->unk0.position, actor->unk0.currentTile.surface);
         if (probeTiles[0] == NULL) {
             actor->unk5AC_10 = 1;
         } else {

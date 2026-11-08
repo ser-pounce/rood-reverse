@@ -3367,7 +3367,8 @@ void func_8009F530(int actorId)
                     && (temp_s0->unk0.unk12 == 0xFF)
                     && (temp_s0->unk0.currentTile.x == temp_s1->unk0.currentTile.x)) {
 
-                    if (temp_s0->unk0.currentTile.y == temp_s1->unk0.currentTile.y) {
+                    if (temp_s0->unk0.currentTile.surface
+                        == temp_s1->unk0.currentTile.surface) {
                         if ((temp_s0->unk0.currentTile.z == temp_s1->unk0.currentTile.z)
                             && (temp_s0->unk0.position.vy <= temp_s1->unk0.position.vy)) {
                             temp_s0->unk16C.unk3 = temp_v0;
@@ -3739,7 +3740,7 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-int func_800A0024(int arg0, func_8006EBF8_t3* arg1)
+int func_800A0024(int arg0, vs_battle_actorLocation* arg1)
 {
     D_800F45E0_t* temp_s0;
     int var_v0_2;
@@ -3763,16 +3764,16 @@ int func_800A0024(int arg0, func_8006EBF8_t3* arg1)
         return -1;
     }
 
-    arg1->unk0.value = *(int*)&temp_s0->unk0.currentTile;
-    arg1->unk0.fields.status = temp_s0->unk16C.unk2;
+    arg1->unk0 = temp_s0->unk0.currentTile;
+    arg1->unk0.status = temp_s0->unk16C.unk2;
     var_v0_2 =
         func_800A6EE8(&temp_s0->unk0.position, 0, 0, 0) - temp_s0->unk0.position.vy;
     if (var_v0_2 < 0) {
         var_v0_2 += 0x7F;
     }
-    arg1->unk0.fields.y = var_v0_2 >> 7;
-    *(int*)&arg1->unk4.vx = *(int*)&temp_s0->unk0.position.vx;
-    *(int*)&arg1->unk4.vz = *(int*)&temp_s0->unk0.position.vz;
+    arg1->unk0.surface = var_v0_2 >> 7;
+    memcpy(&arg1->unk4.vx, &temp_s0->unk0.position.vx, 4);
+    memcpy(&arg1->unk4.vz, &temp_s0->unk0.position.vz, 4);
     return 0;
 }
 
@@ -4283,7 +4284,7 @@ u_int func_800A0BE0(int actorId)
     return D_800F49E0;
 }
 
-int func_800A1108(int actorId, void* arg1)
+int func_800A1108(int actorId, vs_battle_actorPosition* arg1)
 {
     D_800F4538_t* var_v1 = D_800F4538[actorId];
 
@@ -4294,10 +4295,10 @@ int func_800A1108(int actorId, void* arg1)
         }
     }
 
-    ((int*)arg1)[0] = *(int*)&var_v1->unk0.currentTile;
-    ((int*)arg1)[1] = *(int*)&var_v1->unk0.position.vx;
-    ((int*)arg1)[2] = *(int*)&var_v1->unk0.position.vz;
-    ((u_short*)arg1)[5] = var_v1->unk0.facing;
+    arg1->unk0.unk0 = var_v1->unk0.currentTile;
+    memcpy(&arg1->unk0.unk4.vx, &var_v1->unk0.position.vx, 4);
+    memcpy(&arg1->unk0.unk4.vz, &var_v1->unk0.position.vz, 4);
+    arg1->unk0.unk4.pad = var_v1->unk0.facing;
     return 0;
 }
 

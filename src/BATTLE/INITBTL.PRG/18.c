@@ -329,7 +329,7 @@ static void func_800F9AD8(void)
     temp_s0->agility = s1->agility;
     temp_s0->totalAgility = s1->totalAgility;
     temp_s0->risk = s1->risk;
-    temp_s0->unk954 = s1->flags;
+    temp_s0->actionDelay = s1->actionDelay;
 
     func_80086FA8(s1->statuses, temp_s0);
 
@@ -551,7 +551,7 @@ void func_800FA35C(UNUSED int startState)
     _zoneContext.musicId = 0;
     _zoneContext.unk30 = 1;
     _zoneContext.unk14 = 0;
-    D_800F1AB0 = vs_main_spawnPoint;
+    vs_battle_spawnPoint = vs_main_spawnPoint;
     vs_battle_screenTransitionEffect = 0;
     vs_battle_screenTransitionStep = 4;
     vs_battle_screenTransitionSpeed = 8;
@@ -568,7 +568,8 @@ void func_800FA35C(UNUSED int startState)
     vs_main_battleTimer.time.t.m = 0;
     vs_main_battleTimer.time.t.s = 0;
     vs_main_battleTimer.time.t.f = 0;
-    _zoneContext.unk68 = vs_main_spawnPoint.unk6_0;
+    // Saved spawn points reuse unlockFlag to hold the scene id.
+    _zoneContext.unk68 = vs_main_spawnPoint.unlockFlag;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();
     vs_scratch.camera.farClip = 0x1000;

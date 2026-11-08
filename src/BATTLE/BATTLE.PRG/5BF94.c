@@ -6044,7 +6044,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 
 void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int sp20[2];
 
     if (arg1->actor < 0x10U) {

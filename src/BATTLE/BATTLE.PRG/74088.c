@@ -745,7 +745,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
     }
 
     if (_snapshotActorStats()) {
-        minDelay = MAX(arg0->unk13F, arg0->unk5C->unk954 / 35);
+        minDelay = MAX(arg0->unk13F, arg0->unk5C->actionDelay / 35);
         D_800F58BC->unk18 = 0;
 
         for (pass = 0; pass < 3; ++pass) {

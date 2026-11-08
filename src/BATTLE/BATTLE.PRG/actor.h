@@ -90,7 +90,7 @@ typedef struct {
     /* 0x944 */ int unk944;
     /* 0x948 */ int statuses;
     /* 0x94C */ u_char statusTimers[8];
-    /* 0x954 */ u_short unk954;
+    /* 0x954 */ u_short actionDelay;
     /* 0x956 */ u_char unk956_0 : 1;
     /* 0x956 */ u_char isAnalyzed : 1;
     /* 0x956 */ u_char unk956_2 : 6;
@@ -135,10 +135,7 @@ typedef struct vs_battle_actor {
     u_char unk29;
     u_char unk2A;
     u_char unk2B;
-    union {
-        u_char u8[4];
-        int s32;
-    } unk2C;
+    vs_battle_movementPosition unk2C;
     u_short unk30_0 : 4;
     u_short unk30_4 : 5;
     u_int unk30_9 : 5;
@@ -203,5 +200,5 @@ int func_800A0768(int, CVECTOR*);
 int func_800A07FC(int, CVECTOR*);
 void func_800A087C(int actorId, int);
 u_int func_800A0BE0(int actorId);
-int func_800A1108(int, void*);
+int func_800A1108(int, vs_battle_actorPosition*);
 int func_800A13EC(int, int, int*, int);

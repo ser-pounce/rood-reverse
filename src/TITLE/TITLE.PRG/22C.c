@@ -1728,7 +1728,7 @@ static void _initGameData(void)
     vs_gametime_tickspeed = 2;
     vs_main_spawnPoint.x = 4;
     vs_main_spawnPoint.z = 2;
-    vs_main_spawnPoint.unk2.unk0_13 = 0;
+    vs_main_spawnPoint.targetTile.arrivalSurface = 0;
     vs_main_spawnPoint.facing = 2;
 }
 

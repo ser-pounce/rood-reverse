@@ -123,7 +123,9 @@ typedef struct {
     short unk1C6;
     short unk1C8;
     short unk1CA;
-    int unk1CC[7];
+    int unk1CC;
+    vs_battle_actorPosition unk1D0;
+    int unk1E0[2];
     u_short unk1E8;
     u_short unk1EA;
     VECTOR unk1EC;
@@ -708,10 +710,9 @@ int func_800B7428(u_char* arg0, short arg1)
     return 0;
 }
 
-// https://decomp.me/scratch/hkP4X
 int func_800B7490(u_char* arg0, short arg1)
 {
-    u_char position[12];
+    vs_battle_actorPosition position;
     u_short actor = vs_battle_getShort(arg0 + 1);
     u_short flag = vs_battle_getShort(arg0 + 3);
 
@@ -728,10 +729,10 @@ int func_800B7490(u_char* arg0, short arg1)
             return 0;
         }
     }
-    func_800A1108(actor, position);
-    vs_battle_setStateFlag(flag, position[0]);
-    vs_battle_setStateFlag(flag + 1, position[1]);
-    vs_battle_setStateFlag(flag + 2, position[2]);
+    func_800A1108(actor, &position);
+    vs_battle_setStateFlag(flag, position.unk0.unk0.x);
+    vs_battle_setStateFlag(flag + 1, position.unk0.unk0.surface);
+    vs_battle_setStateFlag(flag + 2, position.unk0.unk0.z);
     return 0;
 }
 
@@ -844,7 +845,7 @@ int func_800B784C(u_char* arg0, short arg1)
 
 int func_800B792C(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     u_short temp_s4 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
@@ -895,7 +896,7 @@ int func_800B7A98(u_char* arg0, short arg1)
 
 int func_800B7B58(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     short temp_s3;
     short temp_s4;
     int temp_s1;
@@ -958,7 +959,7 @@ int func_800B7D10(u_char* arg0, short arg1)
 
 int func_800B7DC4(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
     int var_a1;
@@ -994,7 +995,7 @@ int func_800B7DC4(u_char* arg0, short arg1)
 
 int func_800B7EF0(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
     int temp_s0;
     int temp_s0_2;
     int var_a2;
@@ -1006,7 +1007,7 @@ int func_800B7EF0(u_char* arg0, short arg1)
     if (arg0[5] != 0xFF) {
         var_a2 = arg0[5];
     }
-    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0.fields, var_a2);
+    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0, var_a2);
     D_800F4B70[temp_s0_2] = 1;
     return 0;
 }
@@ -1017,7 +1018,7 @@ int func_800B7F84(u_char* arg0, short arg1)
     int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.x = arg0[3];
-    sp10.y = arg0[4];
+    sp10.surface = arg0[4];
     sp10.z = arg0[5];
 
     func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
@@ -1764,7 +1765,7 @@ int func_800B988C(u_char* arg0, short arg1)
 
 int func_800B98C0(u_char* arg0, short arg1)
 {
-    _mpdRoomDoorSection_t sp10;
+    vs_main_warp_t sp10;
 
     if (D_800F4BE2 == 0) {
 
@@ -1772,10 +1773,10 @@ int func_800B98C0(u_char* arg0, short arg1)
         sp10.mpdId = arg0[2];
         sp10.x = arg0[3];
         sp10.z = arg0[5];
-        sp10.unk2.unk0_13 = arg0[4];
+        sp10.targetTile.arrivalSurface = arg0[4];
         sp10.facing = arg0[6];
-        sp10.unk4_15 = arg0[7];
-        sp10.unk6_15 = arg0[7] >> 1;
+        sp10.walkForward = arg0[7];
+        sp10.faceCamera = arg0[7] >> 1;
 
         if (arg0[1] == 0) {
             func_8007C580(&sp10, arg0[8], arg0[9]);
@@ -2356,8 +2357,8 @@ int func_800BAC38(u_char* arg0, short arg1)
 
 int func_800BAC5C(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
-    func_8006EBF8_t sp20;
+    vs_battle_actorPosition sp10;
+    vs_battle_actorPosition sp20;
     short temp_s3;
     short temp_v0;
     short temp_v0_2;
@@ -2413,8 +2414,8 @@ int func_800BAE74(u_char* arg0, short arg1)
 
 int func_800BAEA0(u_char* arg0, short arg1)
 {
-    func_8006EBF8_t sp10;
-    func_8006EBF8_t sp20;
+    vs_battle_actorPosition sp10;
+    vs_battle_actorPosition sp20;
     short temp_s0;
     int temp_s0_2;
     short temp_s1;
@@ -2902,7 +2903,7 @@ void func_800BBE10(u_short arg0)
 
 void func_800BBE94(void)
 {
-    func_8006EBF8_t sp10;
+    vs_battle_actorPosition sp10;
 
     if (D_800F4BA4->unk1E8 == 0x2000) {
         D_800F4BA4->unk1EC.vz = 0;
@@ -3130,10 +3131,10 @@ int func_800BC2E8(u_char* script, short unused)
         int id = func_800BFE50(vs_battle_getShort(script + 1));
         cameraScratch* s = (cameraScratch*)0x1F800088;
         s->value = id;
-        func_800A1108(id, &D_800F4BA4->unk1CC[1]);
+        func_800A1108(id, &D_800F4BA4->unk1D0);
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
-        s->rotation2.vy = *(short*)((char*)D_800F4BA4 + 0x1DA);
+        s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
         RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
         _setVectorImm((VECTOR*)0x1F800098, script + 4);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
@@ -4098,7 +4099,7 @@ int func_800BEC30(void)
 short func_800BEC58(short type, int arg1, int arg2, short mode)
 {
     char buf[64];
-    func_8006EBF8_t position;
+    vs_battle_actorPosition position;
     short i;
     short otherActorId;
     short flagId;
@@ -4181,8 +4182,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 1:
                 func_800A1108(0, &position);
 
-                if (position.unk0.unk0.fields.x == p[1]
-                    && position.unk0.unk0.fields.z == p[2]) {
+                if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
                     result = 1;
                 }
 
@@ -4192,10 +4192,9 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 2:
                 func_800A1108(0, &position);
 
-                if (position.unk0.unk0.fields.x >= p[1]
-                    && position.unk0.unk0.fields.x < p[1] + p[3]
-                    && position.unk0.unk0.fields.z >= p[2]
-                    && position.unk0.unk0.fields.z < p[2] + p[4]) {
+                if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
+                    && position.unk0.unk0.z >= p[2]
+                    && position.unk0.unk0.z < p[2] + p[4]) {
                     result = 1;
                 }
 
@@ -4349,11 +4348,9 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 11:
                 if ((short)func_800A0024(p[1], &position.unk0) >= 0
-                    && position.unk0.unk0.fields.x == p[2]
-                    && position.unk0.unk0.fields.z == p[3]
+                    && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0
-                        || (position.unk0.unk0.fields.status >> 2) + 1 == p[5])) {
+                    && (p[5] == 0 || (position.unk0.unk0.status >> 2) + 1 == p[5])) {
                     result = 1;
                 }
 
@@ -4384,8 +4381,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 func_800A1108(actorId, &position);
 
-                if (position.unk0.unk0.fields.x == p[3]
-                    && position.unk0.unk0.fields.z == p[4]) {
+                if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
                     result = 1;
                 }
 
@@ -4402,10 +4398,9 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 func_800A1108(actorId, &position);
 
-                if (position.unk0.unk0.fields.x >= p[3]
-                    && position.unk0.unk0.fields.x < p[3] + p[5]
-                    && position.unk0.unk0.fields.z >= p[4]
-                    && position.unk0.unk0.fields.z < p[4] + p[6]) {
+                if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
+                    && position.unk0.unk0.z >= p[4]
+                    && position.unk0.unk0.z < p[4] + p[6]) {
                     result = 1;
                 }
 

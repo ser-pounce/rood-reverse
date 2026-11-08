@@ -2502,44 +2502,55 @@ int vs_main_queueMusicSlot(int id)
 
 int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
 {
-    u_int handle;
-
     if (id != 0) {
+
         if (vs_main_soundData.musicData[id - 1] != 0) {
+            u_int handle;
+        
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+
             handle = Sound_StartMasterAndMusicVolumeFade(
                 vs_main_soundData.currentMusicData, arg2, arg1);
+        
             if (handle != 0) {
                 vs_main_soundData.musicHandleBySlot[id - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
+        
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
+
         return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
 int vs_main_playMusicSlot(int id, int arg1, int arg2)
 {
-    u_int handle;
-
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
+            u_int handle;
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+
             Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
+            
             if (handle != 0) {
                 vs_main_soundData.musicHandleBySlot[id - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
                 Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             }
+            
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
+
         return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
@@ -2565,12 +2576,11 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
 
         if (targetSlot < 5) {
             if (vs_main_soundData.musicIds[slot] != id) {
-                do {
-                    if (vs_main_soundData.musicData[slot] != 0) {
-                        vs_main_nop10(142, 0);
-                        vs_main_freeMusic(targetSlot);
-                    }
-                } while (0);
+
+                if (vs_main_soundData.musicData[slot] != 0) {
+                    vs_main_nop10(142, 0);
+                    vs_main_freeMusic(targetSlot);
+                }
 
                 cdFile.lba = _musicLBAs[id];
                 cdFile.size = _musicFileSizes[id];
@@ -2587,15 +2597,20 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
                 }
+                
                 vs_main_soundData.musicData[slot] = vs_main_allocHeapR(cdFile.size);
                 vs_main_cdEnqueue(vs_main_soundData.musicQueueSlot[slot],
                     vs_main_soundData.musicData[slot]);
-                vs_main_soundData.musicIds[slot] = id;
+                
+                    vs_main_soundData.musicIds[slot] = id;
             }
+
             return targetSlot;
         }
     }
+
     vs_main_nop9(0x8E, 0);
+    
     return 0;
 }
 

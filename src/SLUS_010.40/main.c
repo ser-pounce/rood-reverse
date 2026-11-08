@@ -2965,17 +2965,17 @@ static void _do_panSfx(int group, int id, int screenXY, int depth)
     }
 }
 
-void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
+void vs_main_panSfx(int group, int id, SVECTOR* position)
 {
-    int z;
-    long coords;
-    long value;
+    int depth;
+    long screenXY;
+    long interpolation;
     long flag;
 
     SetRotMatrix(&vs_scratch.viewMatrix);
     SetTransMatrix(&vs_scratch.viewMatrix);
-    z = RotTransPers(vec, &coords, &value, &flag);
-    _do_panSfx(arg0, arg1, coords, z);
+    depth = RotTransPers(position, &screenXY, &interpolation, &flag);
+    _do_panSfx(group, id, screenXY, depth);
 }
 
 static void* _resolveSfxData(int arg0, int arg1)

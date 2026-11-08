@@ -24,6 +24,8 @@ enum diskState_e {
     diskIdle = 0,
     diskSeekReady = 1,
     diskReadReady = 2,
+    // Never assigned; only checked by vs_main_diskLoadFile's wait loop
+    diskUnused3 = 3,
     diskReadError = 4,
     diskReadInit = 5,
     diskReadXaInit = 6,
@@ -2129,24 +2131,14 @@ static void _diskUpdate(void)
 int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 {
     int result = _diskInitRead(sector, bytes, vram);
-    if (result != 0) {
-        int seekReady = diskSeekReady;
-        int readReady = diskReadReady;
 
-        while (1) {
-            if (_diskGetState() == seekReady) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == readReady) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == 3) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == diskReadInit) {
-                vs_main_gametimeUpdate(0);
-            } else {
-                break;
-            }
+    if (result != 0) {
+        while (_diskGetState() == diskSeekReady || _diskGetState() == diskReadReady
+            || _diskGetState() == diskUnused3 || _diskGetState() == diskReadInit) {
+            vs_main_gametimeUpdate(0);
         }
     }
+    
     return result;
 }
 
@@ -2173,6 +2165,7 @@ int vs_main_checkStreamXaEnd(void)
         vs_main_disk.state = diskStreamXaEnd;
         return 1;
     }
+    
     return 0;
 }
 
@@ -2181,15 +2174,18 @@ static void _diskReset(void)
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
     DsFlush();
+
     vs_main_disk.unk1 = 128;
     vs_main_disk.cdLoc.minute = 128;
     vs_main_disk.unk2 = 0;
     vs_main_disk.state = diskIdle;
     vs_main_disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
+    
     while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
         ;
-    VSync(3);
+    
+        VSync(3);
 }
 
 static void _initCdQueue(void)

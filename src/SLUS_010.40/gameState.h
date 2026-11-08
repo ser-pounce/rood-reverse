@@ -4,7 +4,8 @@
 #include <sys/types.h>
 
 typedef struct {
-    u_char unk0_0 : 4;
+    u_char unk0_0 : 3;
+    u_int puzzleModeOff : 1;
     u_char containerEmpty : 1;
     u_char abilityTimingDisplay : 1;
     u_char weaponStatChange : 1;

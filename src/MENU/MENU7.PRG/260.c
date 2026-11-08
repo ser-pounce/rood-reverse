@@ -743,7 +743,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
             D_800EB9B0 = 0x200000;
             vs_mainMenu_setBackgroundRenderPriority(2046, 128);
             _initFileMenu();
-            if ((*(u_int*)&vs_main_settings) & 0x10) {
+            if (vs_main_settings.containerEmpty) {
                 vs_battle_rMemzero(&((savedata_t*)_spmcimg + 1)->containerData,
                     sizeof((savedata_t*)_spmcimg + 1)->containerData);
                 *state = 7;
@@ -784,7 +784,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
             if (option < 0) {
                 *state = 14;
             } else {
-                (*(u_int*)&vs_main_settings) |= 0x10;
+                vs_main_settings.containerEmpty = 1;
                 vs_battle_rMemzero(&((savedata_t*)_spmcimg + 1)->containerData,
                     sizeof((savedata_t*)_spmcimg + 1)->containerData);
                 *state = 7;

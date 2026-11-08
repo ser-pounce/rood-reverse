@@ -42,7 +42,7 @@ static u_int _keystreamBits(int value)
 #define PACKAGE_SAVE_PREPARE() \
     vs_main_gametime.all = 0; \
     vs_main_settings.menuFlags &= 0xFFDF; \
-    vs_main_stateFlags.puzzleMode = ~(*(u_int*)&vs_main_settings >> 3) & 1
+    vs_main_stateFlags.puzzleMode = 1 - vs_main_settings.puzzleModeOff
 #define KEYSTREAM_BITS(n) _keystreamBits(n)
 #define PACKAGE_SAVE_CLEAR_CONTAINER() \
     memset(&savedata2->containerData, 0, sizeof savedata2->containerData)

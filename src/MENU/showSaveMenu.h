@@ -71,7 +71,7 @@ static int _showSaveMenu(int initState)
 
     switch (state) {
     case init:
-        if (*(int*)&vs_main_settings & 0x10) {
+        if (vs_main_settings.containerEmpty) {
             memset(&((savedata_t*)_spmcimg + 1)->containerData, 0,
                 sizeof((savedata_t*)_spmcimg + 1)->containerData);
             state = initSlot1;
@@ -200,7 +200,7 @@ static int _showSaveMenu(int initState)
         if (val != 0) {
             if (state == discardChanges) {
                 if (val > 0) {
-                    *(int*)&vs_main_settings = *(int*)&vs_main_settings | 0x10;
+                    vs_main_settings.containerEmpty = 1;
                 }
                 val = -val;
             }

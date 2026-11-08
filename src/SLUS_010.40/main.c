@@ -2906,52 +2906,52 @@ void vs_main_playSfx(int group, int id, int pan, int volume)
 
 void vs_main_playSfxDefault(int group, int id) { vs_main_playSfx(group, id, 0x80, 0x7F); }
 
-int vs_main_computeSfxPan(int coords, int z)
+int vs_main_computeSfxPan(int pan, int depth)
 {
-    int v0;
-    int new_var2;
-    int v1;
+    int tmp;
+    int volume;
+    int limit;
 
-    v0 = coords;
+    tmp = pan;
 
-    if (coords < 0) {
-        v0 += 0xFFFF;
+    if (pan < 0) {
+        tmp += 0xFFFF;
     }
 
-    v0 = (v0 >> 16) << 16;
-    coords = (short)(coords - v0) - 160;
-    coords = (coords * 3) / 10;
+    tmp = (tmp >> 16) << 16;
+    pan = (short)(pan - tmp) - 160;
+    pan = (pan * 3) / 10;
 
-    if (coords < -96) {
-        coords = -96;
+    if (pan < -96) {
+        pan = -96;
     }
 
-    if (coords > 96) {
-        coords = 96;
+    if (pan > 96) {
+        pan = 96;
     }
 
-    coords += 128;
-    v1 = z - 768;
+    pan += 128;
+    limit = depth - 768;
 
-    if (v1 < 0) {
-        v1 = 0;
+    if (limit < 0) {
+        limit = 0;
     }
 
-    if (v1 > 4095) {
-        v1 = 4095;
+    if (limit > 4095) {
+        limit = 4095;
     }
 
-    v0 = v1;
+    tmp = limit;
 
-    if (v1 < 0) {
-        v0 = v1 + 31;
+    if (limit < 0) {
+        tmp = limit + 31;
     }
 
-    v0 >>= 5;
-    v1 = 127;
+    tmp >>= 5;
+    limit = 127;
 
-    new_var2 = v1 - v0;
-    return (coords << 16) + new_var2;
+    volume = limit - tmp;
+    return (pan << 16) + volume;
 }
 
 static void _do_panSfx(int arg0, int arg1, int coords, int z)

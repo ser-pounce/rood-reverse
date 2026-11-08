@@ -589,7 +589,7 @@ int vs_main_getMusicSlotVolume2(int slot);
 void vs_main_stopAllSfx(void);
 void vs_main_panSfx(int group, int id, SVECTOR* position);
 int vs_main_computeSfxPan(int screenXY, int depth);
-void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3);
+void vs_main_fadeSfxVolume(int group, int id, int volume, char duration);
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPan(int, int, int, char);
 int vs_main_setSfxSlot3Data(void*);

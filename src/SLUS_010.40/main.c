@@ -3011,18 +3011,18 @@ static void* _resolveSfxData(int group, int id)
     return sfx;
 }
 
-void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
-            Sound_FadeSfxVolumeMod((u_long)sfx, 0, arg3, arg2);
+            Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration, volume);
         } else {
-            Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
+            Sound_FadeSfxVolumeMod(id, 0, duration, volume);
         }
     } else {
-        Sound_FadeSfxVolumeMod(0, arg0, arg3, arg2);
+        Sound_FadeSfxVolumeMod(0, group, duration, volume);
     }
 }
 

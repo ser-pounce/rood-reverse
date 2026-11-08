@@ -1,5 +1,4 @@
 #pragma once
-#include "src/SLUS_010.40/main.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 
 typedef struct {

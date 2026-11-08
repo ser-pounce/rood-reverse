@@ -9,7 +9,8 @@
 #include "6E4CC.h"
 #include "battleUnk.h"
 #include "entity.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "tilePosition.h"
 
 typedef struct {
     short unk0;

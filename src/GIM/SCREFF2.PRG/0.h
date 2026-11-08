@@ -1,5 +1,6 @@
 #pragma once
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/cd.h"
+#include <sys/types.h>
 
 typedef struct {
     u_char unk0;

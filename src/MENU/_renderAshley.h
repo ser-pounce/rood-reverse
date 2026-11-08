@@ -1,4 +1,5 @@
 #include "common.h"
+#include "src/SLUS_010.40/graphics.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"

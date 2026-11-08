@@ -10,11 +10,16 @@
 #include "6E4CC.h"
 #include "battleUnk.h"
 #include "entity.h"
-#include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/cd.h"
+#include "src/SLUS_010.40/clut.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/sound.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "tilePosition.h"
 #include <libgte.h>
 #include <libetc.h>
 #include <memory.h>

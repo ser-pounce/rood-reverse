@@ -8,8 +8,8 @@
 #include "4DEA8.h"
 #include "battleUnk.h"
 #include "entity.h"
-#include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/graphics.h"
 #include "scratch.h"
 #include "vs_inline_c.h"
 #include <abs.h>

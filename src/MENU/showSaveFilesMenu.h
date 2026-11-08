@@ -1,4 +1,8 @@
 #pragma once
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 
 /* Save slot menu shared by the title and menu overlays. The including file defines
  * PLAY_INVALID_SFX. */

@@ -1,4 +1,8 @@
 #include "88.h"
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"

@@ -1,4 +1,8 @@
 #include "common.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/inventory.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 #include "src/BATTLE/BATTLE.PRG/573B8.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"

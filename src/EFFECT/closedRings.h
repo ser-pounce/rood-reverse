@@ -8,8 +8,9 @@
  * The entry point is named by entry.h. */
 
 #include "entry.h"
+#include "src/SLUS_010.40/graphics.h"
+#include "src/SLUS_010.40/memory.h"
 #include "scratch.h"
-#include "src/SLUS_010.40/main.h"
 #define VS_CLOSED_RING_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"

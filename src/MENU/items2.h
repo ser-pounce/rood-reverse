@@ -1,6 +1,10 @@
 #include "common.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/actions.h"
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
 #include "src/SLUS_010.40/inventory.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/pad.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"
 

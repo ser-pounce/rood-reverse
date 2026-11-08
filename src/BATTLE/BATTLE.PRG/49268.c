@@ -5,7 +5,7 @@
 #include "48C7C.h"
 #include "4B16C.h"
 #include "4DEA8.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/graphics.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 

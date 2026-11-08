@@ -6,7 +6,10 @@
 #include "573B8.h"
 #include "battleUi.h"
 #include "mpd.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/sound.h"
 #include "gpu.h"
 #include "scratch.h"
 #include <abs.h>

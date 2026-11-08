@@ -3928,16 +3928,16 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
     UPLOAD_BG_COLORS(bg, position, i);
 }
 
-static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
+static UNUSED void _fadeBgColorsStore(int frames, CVECTOR* target)
 {
     int i;
 
     if (_clutState.active != 0) {
 
-        vs_main_fadeBgColors(arg0, arg1);
+        vs_main_fadeBgColors(frames, target);
 
         for (i = 0; i < 5; ++i) {
-            _clutState.bgBaseColors[i] = arg1[i];
+            _clutState.bgBaseColors[i] = target[i];
         }
     }
 }

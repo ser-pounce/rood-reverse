@@ -606,7 +606,7 @@ int vs_main_clearCutsceneStreamSlot3(void);
 void vs_main_loadClutTransition(
     /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
 void vs_main_transformClutSlot(int, int, int, short, int, int);
-void vs_main_fadeBgColors(int arg0, CVECTOR* arg1);
+void vs_main_fadeBgColors(int frames, CVECTOR* target);
 void vs_main_loadSoundFile(int);
 void vs_main_transformBgColors(int, int, int, int, int);
 void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b);

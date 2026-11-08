@@ -3399,20 +3399,20 @@ void vs_main_startCutsceneStreamDefault(int slot)
     _startCutsceneStream(slot, 0x80, 0x7F);
 }
 
-static UNUSED int _freeCutsceneStream(int arg0)
+static UNUSED int _freeCutsceneStream(int slot)
 {
-    if ((arg0 - 1u) >= 3) {
+    if ((slot - 1u) >= 3) {
         return 0;
     }
 
-    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+    if (vs_main_soundData.unk64[slot - 1] == 0) {
         return 0;
     }
 
     Sound_StopCutsceneStream();
-    vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
+    vs_main_freeHeapR(vs_main_soundData.unk64[slot - 1]);
 
-    vs_main_soundData.unk64[arg0 - 1] = 0;
+    vs_main_soundData.unk64[slot - 1] = 0;
 
     return 1;
 }

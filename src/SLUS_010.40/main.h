@@ -20,8 +20,6 @@ void vs_main_jumpToBattle(void);
 void vs_main_showEndingAndReturnToTitle(void);
 int vs_main_getRand(int max);
 int vs_main_getRandSmoothed(int max);
-int vs_main_execTitle(void);
-void vs_main_exec(void);
 void vs_main_enableReset(int enable);
 void vs_main_nop9(int code, int unused);
 void vs_main_nop10(int code, int unused);

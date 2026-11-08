@@ -2998,9 +2998,7 @@ void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
         if (sfx != NULL) {
             Sound_FadeSfxVolumeMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
         }
     } else {
         Sound_FadeSfxVolumeMod(0, arg0, arg3, arg2);
@@ -3016,9 +3014,7 @@ void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
         if (sfx != NULL) {
             Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
         }
     } else {
         Sound_FadeSfxPitchMod(0, arg0, arg3, arg2);
@@ -3032,9 +3028,7 @@ void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
         if (sfx != NULL) {
             Sound_FadeSfxPanMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
         }
     } else {
         Sound_FadeSfxPanMod(0, arg0, arg3, arg2);

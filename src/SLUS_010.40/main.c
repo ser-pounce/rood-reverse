@@ -1818,6 +1818,7 @@ void* vs_main_allocHeapR(u_int size)
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
+
             if (freeNode->blockSz == blockSz) {
                 lastNode->prev = freeNode->prev;
                 freeNode->prev->next = freeNode->next;
@@ -1826,12 +1827,16 @@ void* vs_main_allocHeapR(u_int size)
                 freeNode += freeNode->blockSz;
                 freeNode->blockSz = blockSz;
             }
-            return (u_long*)(freeNode + 1);
+
+            return freeNode + 1;
         }
+
         lastNode = freeNode;
+
         if (freeNode == &_heap) {
             return 0;
         }
+
         freeNode = freeNode->prev;
     }
 }

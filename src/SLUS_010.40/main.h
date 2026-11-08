@@ -114,11 +114,11 @@ typedef struct {
 
 typedef struct {
     int currentMusicSlot;
-    u_int unk4;
+    u_int currentMusicHandle;
     u_int unk8;
     void* currentMusicData;
     char musicIds[4];
-    u_int unk14[4];
+    u_int musicHandleBySlot[4];
     void* musicData[4];
     vs_main_CdQueueSlot* musicQueueSlot[4];
     u_int currentSfxId;

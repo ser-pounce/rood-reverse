@@ -4623,12 +4623,12 @@ void func_800738E4(void)
     vs_battle_setFarClip(0x1000, 1);
     vs_battle_setCameraRoll(0);
     func_8007BD8C(0);
-    if (vs_main_soundData.unk4 == 0xFFFF) {
+    if (vs_main_soundData.currentMusicHandle == 0xFFFF) {
         if (D_800F18AC != 0) {
             vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
         }
     } else if ((D_800F18AC != 0)
-               && (vs_main_soundData.unk4 == vs_main_soundData.unk14[D_800F18AC - 1])) {
+               && (vs_main_soundData.currentMusicHandle == vs_main_soundData.musicHandleBySlot[D_800F18AC - 1])) {
         vs_main_fadeMusicVolume(D_800F18AC, 0x7F, 0x3C);
     }
     func_8006F5CC();

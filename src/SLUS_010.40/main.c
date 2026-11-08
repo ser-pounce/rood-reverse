@@ -2446,17 +2446,17 @@ int vs_main_stopMusicSlot(int id)
     int i;
 
     if (id != 0) {
-        if (vs_main_soundData.unk14[id - 1] != 0xFFFF) {
+        if (vs_main_soundData.musicHandleBySlot[id - 1] != 0xFFFF) {
 
-            Sound_StopMusicById(vs_main_soundData.unk14[id - 1]);
+            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[id - 1]);
 
-            vs_main_soundData.unk14[id - 1] = 0xFFFF;
+            vs_main_soundData.musicHandleBySlot[id - 1] = 0xFFFF;
         }
 
         if (vs_main_soundData.currentMusicSlot == id) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
-            vs_main_soundData.unk4 = 0xFFFF;
+            vs_main_soundData.currentMusicHandle = 0xFFFF;
         }
 
         return 1;
@@ -2466,10 +2466,10 @@ int vs_main_stopMusicSlot(int id)
 
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
-    vs_main_soundData.unk4 = 0xFFFF;
+    vs_main_soundData.currentMusicHandle = 0xFFFF;
 
     for (i = 0; i < 4; ++i) {
-        vs_main_soundData.unk14[i] = 0xFFFF;
+        vs_main_soundData.musicHandleBySlot[i] = 0xFFFF;
     }
 
     return 1;
@@ -2477,24 +2477,24 @@ int vs_main_stopMusicSlot(int id)
 
 int vs_main_queueMusicSlot(int id)
 {
-    u_int temp_v0;
+    u_int handle;
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
 
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = Sound_QueueMusic(vs_main_soundData.currentMusicData);
+            handle = Sound_QueueMusic(vs_main_soundData.currentMusicData);
 
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
             }
 
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
 
-        return vs_main_soundData.unk4;
+        return vs_main_soundData.currentMusicHandle;
     }
 
     return 0;
@@ -2502,43 +2502,43 @@ int vs_main_queueMusicSlot(int id)
 
 int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
 {
-    u_int temp_v0;
+    u_int handle;
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = Sound_StartMasterAndMusicVolumeFade(
+            handle = Sound_StartMasterAndMusicVolumeFade(
                 vs_main_soundData.currentMusicData, arg2, arg1);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
             }
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+        return vs_main_soundData.currentMusicHandle;
     }
     return 0;
 }
 
 int vs_main_playMusicSlot(int id, int arg1, int arg2)
 {
-    u_int temp_v0;
+    u_int handle;
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
             Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
-            temp_v0 = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
                 Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             }
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+        return vs_main_soundData.currentMusicHandle;
     }
     return 0;
 }
@@ -2692,8 +2692,8 @@ static UNUSED int nop5(void) { return 0; }
 int vs_main_getMusicSlotVolume(int arg0)
 {
     if (arg0 != 0) {
-        if (vs_main_soundData.unk14[arg0 - 1] != 0xFFFF) {
-            return Sound_GetMusicVolumeById(vs_main_soundData.unk14[arg0 - 1]);
+        if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
+            return Sound_GetMusicVolumeById(vs_main_soundData.musicHandleBySlot[arg0 - 1]);
         }
     }
     return 0;
@@ -2704,7 +2704,7 @@ int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(ar
 int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.unk4, arg2, arg1);
+        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
         return 1;
     }
     return 0;
@@ -3119,8 +3119,8 @@ int vs_main_freeSfx(u_int id)
 
 int vs_main_setSfxSlot3Data(u_int arg0)
 {
-    if (vs_main_soundData.unk14[16] == 0) {
-        vs_main_soundData.unk14[16] = arg0;
+    if (vs_main_soundData.sfxData[2] == 0) {
+        vs_main_soundData.sfxData[2] = (void*)arg0;
         return 1;
     }
     return 0;
@@ -3300,8 +3300,8 @@ static UNUSED int _freeCutsceneStream(int arg0)
 
 int vs_main_setCutsceneStreamSlot3(u_int arg0)
 {
-    if (vs_main_soundData.unk14[22] == 0) {
-        vs_main_soundData.unk14[22] = arg0;
+    if (vs_main_soundData.unk64[2] == 0) {
+        vs_main_soundData.unk64[2] = (void*)arg0;
         return 3;
     }
     return 0;
@@ -3310,9 +3310,9 @@ int vs_main_setCutsceneStreamSlot3(u_int arg0)
 int vs_main_clearCutsceneStreamSlot3(void)
 {
 
-    if (vs_main_soundData.unk14[22] != 0) {
+    if (vs_main_soundData.unk64[2] != 0) {
         Sound_StopCutsceneStream();
-        vs_main_soundData.unk14[22] = 0;
+        vs_main_soundData.unk64[2] = 0;
         return 1;
     }
     return 0;
@@ -3452,12 +3452,12 @@ void vs_main_resetSound(void)
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk8 = 0xFFFF;
-    vs_main_soundData.unk4 = 0xFFFF;
+    vs_main_soundData.currentMusicHandle = 0xFFFF;
     vs_main_soundData.currentSfxId = 0;
 
     for (i = 0; i < 4; ++i) {
         vs_main_soundData.musicIds[i] = 0;
-        vs_main_soundData.unk14[i] = 0xFFFF;
+        vs_main_soundData.musicHandleBySlot[i] = 0xFFFF;
         vs_main_soundData.musicData[i] = NULL;
         vs_main_soundData.musicQueueSlot[i] = NULL;
     }

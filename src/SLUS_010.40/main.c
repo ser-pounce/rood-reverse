@@ -2824,17 +2824,17 @@ static void _playSfxFromPointer(void* data, int voice, int pan, int volume)
     }
 }
 
-void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
+void vs_main_playSfx(int group, int id, int pan, int volume)
 {
     void* sfx;
     int* bank;
 
-    switch (arg0) {
+    switch (group) {
     case 0x7E:
     case 0xFE:
         if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
 
-            _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
+            _playSfxById(id & 0xFFFF, _nextVoicePool1, pan, volume);
 
             _nextVoicePool1 *= 2;
 
@@ -2843,7 +2843,7 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
             }
 
         } else {
-            _playSfxById(id & 0xFFFF, 0, arg2, arg3);
+            _playSfxById(id & 0xFFFF, 0, pan, volume);
         }
 
         break;
@@ -2851,9 +2851,9 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
     case 0x100:
     case 0x200:
         if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
-            _playSfxById(id & 0xFFFF, _nextVoicePool3, arg2, arg3);
+            _playSfxById(id & 0xFFFF, _nextVoicePool3, pan, volume);
         } else {
-            _playSfxById(id & 0xFFFF, 0, arg2, arg3);
+            _playSfxById(id & 0xFFFF, 0, pan, volume);
         }
 
         break;
@@ -2864,16 +2864,16 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 
         if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
 
-            _playSfxFromPointer(sfx, _nextVoicePool4, arg2, arg3);
+            _playSfxFromPointer(sfx, _nextVoicePool4, pan, volume);
 
             _nextVoicePool4 *= 2;
 
-            if (!(_nextVoicePool4 & arg0)) {
+            if (!(_nextVoicePool4 & group)) {
                 _nextVoicePool4 = 0x1000;
             }
 
         } else {
-            _playSfxFromPointer(sfx, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, pan, volume);
         }
 
         break;
@@ -2884,16 +2884,16 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 
         if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
 
-            _playSfxFromPointer(sfx, _nextVoicePool5, arg2, arg3);
+            _playSfxFromPointer(sfx, _nextVoicePool5, pan, volume);
 
             _nextVoicePool5 *= 2;
 
-            if (!(_nextVoicePool5 & arg0)) {
+            if (!(_nextVoicePool5 & group)) {
                 _nextVoicePool5 = 0x100000;
             }
 
         } else {
-            _playSfxFromPointer(sfx, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, pan, volume);
         }
 
         break;

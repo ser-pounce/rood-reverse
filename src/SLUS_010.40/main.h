@@ -556,7 +556,7 @@ void vs_main_padDisconnectAll(void);
 int vs_main_updatePadState(int, char[34]);
 void vs_main_padConnect(int, char[34]);
 void vs_main_setVibrateParams(void);
-void vs_main_vibrationOnEffect(int);
+void vs_main_vibrationOnEffect(int effect);
 int vs_main_processPadState(void);
 void vs_main_freeHeapR(void*);
 void vs_main_freeHeap(void*);

@@ -1638,14 +1638,14 @@ void vs_main_setVibrateParams(void)
     }
 }
 
-void vs_main_vibrationOnEffect(int arg0)
+void vs_main_vibrationOnEffect(int effect)
 {
-    if (arg0 < _vibrationOnBank[0]) {
+    if (effect < _vibrationOnBank[0]) {
         vs_main_setVibrationBank(
-            &_vibrationOnBank[_vibrationOnBank[arg0 * 4 + 4]
-                              + (_vibrationOnBank[arg0 * 4 + 5] << 8)
-                              + (_vibrationOnBank[arg0 * 4 + 6] << 16)
-                              + (_vibrationOnBank[arg0 * 4 + 7] << 24)],
+            &_vibrationOnBank[_vibrationOnBank[effect * 4 + 4]
+                              + (_vibrationOnBank[effect * 4 + 5] << 8)
+                              + (_vibrationOnBank[effect * 4 + 6] << 16)
+                              + (_vibrationOnBank[effect * 4 + 7] << 24)],
             0xFF, 0x80);
     }
 }

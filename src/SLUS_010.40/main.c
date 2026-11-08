@@ -1457,15 +1457,15 @@ int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id)
     return 0;
 }
 
-static int _clearVibrationSlot(int arg0)
+static int _clearVibrationSlot(int slot)
 {
-    int i = arg0 - 1;
+    int i = slot - 1;
     _padAct.port[i].motors[1].value = 0;
     _padAct.port[i].motors[0].value = 0;
     _padAct.port[i].script = 0;
     _padAct.port[i].active = 0;
 
-    return arg0;
+    return slot;
 }
 
 int vs_main_stopVibration(u_int arg0, int arg1)

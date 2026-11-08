@@ -2769,10 +2769,10 @@ int vs_main_fadeMusicTempo(int slot, int tempo, int duration)
     return 0;
 }
 
-int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
+int vs_main_fadeMusicPitch(int slot, int pitch, int duration)
 {
-    if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterPitchScale(arg2, arg1);
+    if (vs_main_soundData.currentMusicSlot == slot) {
+        Sound_FadeMasterPitchScale(duration, pitch);
         return 1;
     }
 

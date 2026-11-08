@@ -89,6 +89,19 @@ typedef struct {
     padMotor_t motors[2];
 } padVibration_t;
 
+// A colour with 16.16 fixed point channels
+typedef struct {
+    int r;
+    int g;
+    int b;
+} _fixedColor_t;
+
+// A fixed point colour and the step added to it every update while it fades
+typedef struct {
+    _fixedColor_t current;
+    _fixedColor_t step;
+} _fade_t;
+
 typedef struct {
     char active;
     char frame;
@@ -99,8 +112,7 @@ typedef struct {
     short pulseTarget[3];
     short grayAmount;
     short grayStep;
-    int color[3];
-    int colorStep[3];
+    _fade_t fade;
     CVECTOR baseColor;
 } _colorSlot_t;
 
@@ -142,7 +154,7 @@ typedef struct {
     short bgTransitionTargetR;
     short bgTransitionTargetG;
     short bgTransitionTargetB;
-    int bgColors[5][6];
+    _fade_t bgColors[5];
     CVECTOR bgBaseColors[5];
     _colorSlot_t colorSlots[17];
     u_char unk8214[0x54];
@@ -3860,8 +3872,8 @@ static inline int _bgStep(int target, int current, int frames)
 // (using `i` as the loop counter) and uploads them
 #define UPLOAD_BG_COLORS(bg, position, i)                                              \
     for ((i) = 0; (i) < 5; ++(i)) {                                                    \
-        (position)[i] = (((bg)[i][0] / 65536) + (((bg)[i][1] / 65536) << 8))         \
-                      + ((((bg)[i][2] / 65536)) << 0x10);                              \
+        (position)[i] = (((bg)[i].current.r / 65536) + (((bg)[i].current.g / 65536) << 8))         \
+                      + ((((bg)[i].current.b / 65536)) << 0x10);                              \
     }                                                                                  \
     func_8008EB30(position)
 
@@ -3869,7 +3881,7 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
 {
     int position[5];
     int i;
-    int (*bg)[6];
+    _fade_t* bg;
 
     if (_clutState.active == 0) {
         return;
@@ -3884,13 +3896,13 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
         int b = _shift_left(target[i].b);
 
         if (frames != 0) {
-            bg[i][3] = _bgStep(r, bg[i][0], frames);
-            bg[i][4] = _bgStep(g, bg[i][1], frames);
-            bg[i][5] = _bgStep(b, bg[i][2], frames);
+            bg[i].step.r = _bgStep(r, bg[i].current.r, frames);
+            bg[i].step.g = _bgStep(g, bg[i].current.g, frames);
+            bg[i].step.b = _bgStep(b, bg[i].current.b, frames);
         } else {
-            bg[i][0] = r;
-            bg[i][1] = g;
-            bg[i][2] = b;
+            bg[i].current.r = r;
+            bg[i].current.g = g;
+            bg[i].current.b = b;
         }
     }
 
@@ -3957,25 +3969,25 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
     int g;
     int r;
     int i;
-    int (*bg)[6] = _clutState.bgColors;
+    _fade_t* bg = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
         switch (mode) {
 
         // 1: half of the current colours, plus offset
         case 1:
-            OFFSET_BG_RGB(bg[i][0] / 2, bg[i][1] / 2, bg[i][2] / 2);
+            OFFSET_BG_RGB(bg[i].current.r / 2, bg[i].current.g / 2, bg[i].current.b / 2);
             break;
 
         // 2, 3: current colours as a grey level (weighted average), plus offset
         case 2:
-            OFFSET_BG_RGB(_luminance(bg[i][0], bg[i][1], bg[i][2]) / 6,
-                _luminance(bg[i][0], bg[i][1], bg[i][2]) / 6,
-                _luminance(bg[i][0], bg[i][1], bg[i][2]) / 6);
+            OFFSET_BG_RGB(_luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6);
             break;
 
         case 3:
-            lum = _luminance(bg[i][0], bg[i][1], bg[i][2]) / 12;
+            lum = _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 12;
             OFFSET_BG_RGB(lum, lum, lum);
             break;
 
@@ -4021,7 +4033,7 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
         // 0: the current colours plus offset
         case 0:
         default:
-            OFFSET_BG_RGB(bg[i][0], bg[i][1], bg[i][2]);
+            OFFSET_BG_RGB(bg[i].current.r, bg[i].current.g, bg[i].current.b);
             break;
         }
 
@@ -4039,13 +4051,13 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
 
         // Either fade towards the result over `frames`, or set it right away
         if (frames != 0) {
-            bg[i][3] = _bgStep(r, bg[i][0], frames);
-            bg[i][4] = _bgStep(g, bg[i][1], frames);
-            bg[i][5] = _bgStep(b, bg[i][2], frames);
+            bg[i].step.r = _bgStep(r, bg[i].current.r, frames);
+            bg[i].step.g = _bgStep(g, bg[i].current.g, frames);
+            bg[i].step.b = _bgStep(b, bg[i].current.b, frames);
         } else {
-            bg[i][0] = r;
-            bg[i][1] = g;
-            bg[i][2] = b;
+            bg[i].current.r = r;
+            bg[i].current.g = g;
+            bg[i].current.b = b;
         }
     }
 
@@ -4073,6 +4085,14 @@ void vs_main_transformBgColors(
     }
 }
 
+// Converts a 16.16 colour slot colour (`fade` is a _fade_t*) to the signed byte offsets
+// the lighting code takes, stored in the CVECTOR `position`
+#define SLOT_POSITION(position, fade)                  \
+    (position).r = ((fade)->current.r / 65536) - 0x40;         \
+    (position).g = ((fade)->current.g / 65536) - 0x40;         \
+    (position).b = ((fade)->current.b / 65536) - 0x40;         \
+    (position).cd = 0
+
 static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
 {
     slot->active = 1;
@@ -4084,46 +4104,43 @@ static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
     CVECTOR position;
-    _colorSlot_t* temp_t0;
-    int temp_a1;
-    int temp_t1;
-    int temp_t2;
-    int* temp_a3;
+    _colorSlot_t* cs;
+    int r;
+    int g;
+    int b;
+    _fade_t* fade;
 
     if (_clutState.active == 0) {
         return;
     }
 
-    temp_t0 = &_clutState.colorSlots[slot];
-    temp_a3 = _clutState.colorSlots[slot].color;
-    temp_a1 = _shift_left(color->r);
-    temp_t1 = _shift_left(color->g);
-    temp_t2 = _shift_left(color->b);
+    cs = &_clutState.colorSlots[slot];
+    fade = &_clutState.colorSlots[slot].fade;
+    r = _shift_left(color->r);
+    g = _shift_left(color->g);
+    b = _shift_left(color->b);
 
     if (frames != 0) {
-        temp_a3[3] = _bgStep(temp_a1, temp_a3[0], frames);
-        temp_a3[4] = _bgStep(temp_t1, temp_a3[1], frames);
-        temp_a3[5] = _bgStep(temp_t2, temp_a3[2], frames);
+        fade->step.r = _bgStep(r, fade->current.r, frames);
+        fade->step.g = _bgStep(g, fade->current.g, frames);
+        fade->step.b = _bgStep(b, fade->current.b, frames);
     } else {
-        temp_a3[0] = temp_a1;
-        temp_a3[1] = temp_t1;
-        temp_a3[2] = temp_t2;
+        fade->current.r = r;
+        fade->current.g = g;
+        fade->current.b = b;
     }
     if (frames != 0) {
-        _startColorSlotAnim(temp_t0, frames);
+        _startColorSlotAnim(cs, frames);
         return;
     }
 
-    temp_t0->active = 0;
-    position.r = (temp_a3[0] / 65536) - 64;
-    position.g = (temp_a3[1] / 65536) - 64;
-    position.b = (temp_a3[2] / 65536) - 64;
-    position.cd = 0;
+    cs->active = 0;
+    SLOT_POSITION(position, fade);
 
     if (slot != 0) {
         func_800A0768(slot - 1, &position);
     } else {
-        func_8008B430(&position, temp_t0->grayAmount >> 2);
+        func_8008B430(&position, cs->grayAmount >> 2);
     }
 }
 
@@ -4145,7 +4162,7 @@ static void _transformColorSlot(
     int b;
     int g;
     _colorSlot_t* cs = &_clutState.colorSlots[slot];
-    int* color = cs->color;
+    _fade_t* fade = &cs->fade;
 
     // gray is the target grey amount: modes that average the channels fade it in
     gray = 0;
@@ -4154,20 +4171,20 @@ static void _transformColorSlot(
 
     // 1: half of the current colour, plus offset
     case 1:
-        OFFSET_BG_RGB(color[0] / 2, color[1] / 2, color[2] / 2);
+        OFFSET_BG_RGB(fade->current.r / 2, fade->current.g / 2, fade->current.b / 2);
         break;
 
     // 2, 3: current colour as a grey level, plus offset
     case 2:
         gray = 0x4000;
-        OFFSET_BG_RGB(_luminance(color[0], color[1], color[2]) / 6,
-            _luminance(color[0], color[1], color[2]) / 6,
-            _luminance(color[0], color[1], color[2]) / 6);
+        OFFSET_BG_RGB(_luminance(fade->current.r, fade->current.g, fade->current.b) / 6,
+            _luminance(fade->current.r, fade->current.g, fade->current.b) / 6,
+            _luminance(fade->current.r, fade->current.g, fade->current.b) / 6);
         break;
 
     case 3:
         gray = 0x4000;
-        lum = _luminance(color[0], color[1], color[2]) / 12;
+        lum = _luminance(fade->current.r, fade->current.g, fade->current.b) / 12;
         OFFSET_BG_RGB(lum, lum, lum);
         break;
 
@@ -4220,7 +4237,7 @@ static void _transformColorSlot(
 
     // anything else: the current colour plus offset
     default:
-        OFFSET_BG_RGB(color[0], color[1], color[2]);
+        OFFSET_BG_RGB(fade->current.r, fade->current.g, fade->current.b);
         break;
     }
 
@@ -4237,14 +4254,14 @@ static void _transformColorSlot(
     CLAMP_FIXED_LOW(b);
 
     if (frames != 0) {
-        color[3] = _bgStep(r, color[0], frames);
-        color[4] = _bgStep(g, color[1], frames);
-        color[5] = _bgStep(b, color[2], frames);
+        fade->step.r = _bgStep(r, fade->current.r, frames);
+        fade->step.g = _bgStep(g, fade->current.g, frames);
+        fade->step.b = _bgStep(b, fade->current.b, frames);
         cs->grayStep = ((gray - cs->grayAmount) / (frames * 2));
     } else {
-        color[0] = r;
-        color[1] = g;
-        color[2] = b;
+        fade->current.r = r;
+        fade->current.g = g;
+        fade->current.b = b;
         cs->grayAmount = gray;
     }
 
@@ -4261,10 +4278,7 @@ static void _transformColorSlot(
         }
     } else {
         cs->active = 0;
-        position.r = (color[0] / 65536) - 0x40;
-        position.g = (color[1] / 65536) - 0x40;
-        position.b = (color[2] / 65536) - 0x40;
-        position.cd = 0;
+        SLOT_POSITION(position, fade);
 
         if (slot != 0) {
             func_800A0768(slot - 1, &position);
@@ -4291,27 +4305,29 @@ void vs_main_updateBgColors(void)
 {
     int position[5];
     int i;
-    int (*t1)[6];
+    _fade_t* bg;
 
     if (_clutState.bgAnimActive == 0) {
         return;
     }
 
-    t1 = _clutState.bgColors;
+    bg = _clutState.bgColors;
 
+    // Advance each colour by its step
     for (i = 0; i < 5; ++i) {
-        t1[i][0] += t1[i][3];
-        t1[i][1] += t1[i][4];
-        t1[i][2] += t1[i][5];
+        bg[i].current.r += bg[i].step.r;
+        bg[i].current.g += bg[i].step.g;
+        bg[i].current.b += bg[i].step.b;
     }
 
-    UPLOAD_BG_COLORS(t1, position, i);
+    UPLOAD_BG_COLORS(bg, position, i);
     ++_clutState.bgAnimFrame;
 
     if (_clutState.bgAnimFrame < (_clutState.bgAnimSpeed * 2)) {
         return;
     }
 
+    // Modes 9 and 10 pulse: fade to half the target colour, then back to the full target
     if (_clutState.bgTransitionMode == 9) {
 
         _transformBgColors(4, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR / 2,
@@ -4339,78 +4355,66 @@ void vs_main_updateBgColors(void)
 
 void vs_main_updateColorSlots(void)
 {
-    CVECTOR sp18;
+    CVECTOR position;
     int i;
-    int var_v0;
-    _colorSlot_t* p = _clutState.colorSlots;
+    _colorSlot_t* slots = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
 
-        int* a2 = p[i].color;
-        
-        if (p[i].active != 0) {
+        _colorSlot_t* slot = &slots[i];
+        _fade_t* fade = &slot->fade;
 
-            a2[0] += a2[3];
-            a2[1] += a2[4];
-            a2[2] += a2[5];
+        if (slot->active != 0) {
 
-            var_v0 = a2[0];
+            // Advance the colour by its step
+            fade->current.r += fade->step.r;
+            fade->current.g += fade->step.g;
+            fade->current.b += fade->step.b;
 
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            
-            sp18.r = (var_v0 >> 16) - 0x40;
-            var_v0 = a2[1];
-
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-
-            sp18.g = (var_v0 >> 16) - 0x40;
-            var_v0 = a2[2];
-
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-
-            sp18.b = (var_v0 >> 16) - 0x40;
-            sp18.cd = 0;
+            SLOT_POSITION(position, fade);
 
             if (i != 0) {
-                func_800A0768(i - 1, &sp18);
+                func_800A0768(i - 1, &position);
             } else {
-                p[0].grayAmount += p[0].grayStep;
-                func_8008B430(&sp18, p[0].grayAmount >> 2);
+                slots[0].grayAmount += slots[0].grayStep;
+                func_8008B430(&position, slots[0].grayAmount >> 2);
             }
 
-            ++p[i].frame;
+            ++slot->frame;
 
-            if (p[i].frame >= (p[i].speed * 2)) {
-                if (p[i].mode == 9) {
+            if (slot->frame >= (slot->speed * 2)) {
 
-                    vs_main_transformColorSlot(4, p[i].speed, i, p[i].pulseTarget[0] / 2,
-                        p[i].pulseTarget[1] / 2, p[i].pulseTarget[2] / 2);
+                // Modes 9 and 10 pulse (half the target, then the full target); 14 fades
+                // to 15
+                if (slot->mode == 9) {
 
-                    p[i].mode = 10;
+                    vs_main_transformColorSlot(4, slot->speed, i,
+                        slot->pulseTarget[0] / 2, slot->pulseTarget[1] / 2,
+                        slot->pulseTarget[2] / 2);
 
-                } else if (p[i].mode == 10) {
+                    slot->mode = 10;
 
-                    _transformColorSlot(9, p[i].speed, i, p[i].pulseTarget[0],
-                        p[i].pulseTarget[1], p[i].pulseTarget[2]);
+                } else if (slot->mode == 10) {
 
-                    p[i].mode = 9;
-                    
-                } else if (p[i].mode == 14) {
-                    _transformColorSlot(15, p[i].speed, i, 0, 0, 0);
-                    p[i].mode = 15;
+                    _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
+                        slot->pulseTarget[1], slot->pulseTarget[2]);
+
+                    slot->mode = 9;
+
+                } else if (slot->mode == 14) {
+
+                    _transformColorSlot(15, slot->speed, i, 0, 0, 0);
+                    slot->mode = 15;
+
                 } else {
-                    p[i].active = 0;
+                    slot->active = 0;
                 }
             }
         }
     }
 }
+
+#undef SLOT_POSITION
 
 void vs_main_updateClutSlots(void)
 {
@@ -4677,7 +4681,7 @@ static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffs
 void vs_main_loadBgColors(void)
 {
     int i;
-    int (*bgColors)[6] = _clutState.bgColors;
+    _fade_t* bgColors = _clutState.bgColors;
     int* var_v1 = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
@@ -4685,9 +4689,9 @@ void vs_main_loadBgColors(void)
         _clutState.bgBaseColors[i].g = (var_v1[i] & 0xFF00) / 256;
         _clutState.bgBaseColors[i].b = (var_v1[i] & 0xFF0000) / 65536;
 
-        bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
-        bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;
-        bgColors[i][2] = var_v1[i] & 0xFF0000;
+        bgColors[i].current.r = (var_v1[i] & 0xFF) << 16;
+        bgColors[i].current.g = (var_v1[i] & 0xFF00) << 8;
+        bgColors[i].current.b = var_v1[i] & 0xFF0000;
     }
 }
 
@@ -4725,9 +4729,9 @@ void vs_main_clutInit(void)
         _clutState.colorSlots[i].mode = 0;
         _clutState.colorSlots[i].grayAmount = 0;
         *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
-        _clutState.colorSlots[i].color[2] = 0x400000;
-        _clutState.colorSlots[i].color[1] = 0x400000;
-        _clutState.colorSlots[i].color[0] = 0x400000;
+        _clutState.colorSlots[i].fade.current.b = 0x400000;
+        _clutState.colorSlots[i].fade.current.g = 0x400000;
+        _clutState.colorSlots[i].fade.current.r = 0x400000;
     }
 }
 

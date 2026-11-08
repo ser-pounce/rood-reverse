@@ -3337,17 +3337,17 @@ static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int dept
     }
 }
 
-static UNUSED void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
+static UNUSED void _panBankSfx(int group, u_int* bank, int index, SVECTOR* position)
 {
-    int z;
-    long sxy;
-    long value;
+    int depth;
+    long screenXY;
+    long interpolation;
     long flag;
 
     SetRotMatrix(&vs_scratch.viewMatrix);
     SetTransMatrix(&vs_scratch.viewMatrix);
-    z = RotTransPers(vec, &sxy, &value, &flag);
-    _do_panBankSfx(arg0, arg1, arg2, sxy, z);
+    depth = RotTransPers(position, &screenXY, &interpolation, &flag);
+    _do_panBankSfx(group, bank, index, screenXY, depth);
 }
 
 void vs_main_evictBankSfx(int group, int* bank, int index)

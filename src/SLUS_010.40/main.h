@@ -598,7 +598,7 @@ void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volu
 void vs_main_playBankSfxDefault(int group, int* bank, u_int index);
 void vs_main_evictBankSfx(int group, int* bank, int index);
 void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration);
-void vs_main_startCutsceneStreamDefault(int arg0);
+void vs_main_startCutsceneStreamDefault(int slot);
 void vs_main_setMonoSound(int);
 int vs_main_setCutsceneStreamSlot3(void*);
 int vs_main_clearCutsceneStreamSlot3(void);

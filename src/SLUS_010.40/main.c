@@ -2522,25 +2522,25 @@ int vs_main_queueMusicSlot(int id)
     return 0;
 }
 
-int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
+int vs_main_playMusicSlotFadeIn(int slot, int volume, u_int duration)
 {
-    if (id != 0) {
+    if (slot != 0) {
 
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
             u_int handle;
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
 
             handle = Sound_StartMasterAndMusicVolumeFade(
-                vs_main_soundData.currentMusicData, arg2, arg1);
+                vs_main_soundData.currentMusicData, duration, volume);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;

@@ -580,7 +580,7 @@ int vs_main_getMusicPosition(void);
 void vs_main_setMusicJumpThreshold(int threshold);
 int vs_main_stopMusicSlot(int);
 int vs_main_queueMusicSlot(int);
-int vs_main_playMusicSlotFadeIn(int, int, u_int);
+int vs_main_playMusicSlotFadeIn(int slot, int volume, u_int duration);
 int vs_main_playMusicSlot(int id, int arg1, int arg2);
 int vs_main_getMusicSlotVolume(int);
 int vs_main_fadeMusicTempo(int, int, int);

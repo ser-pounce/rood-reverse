@@ -3674,17 +3674,19 @@ static inline int _colorLuminance(short color)
     return _weightedLuminance(_maskG(color), _maskB(color), _maskR(color));
 }
 
+static inline int _luminance(int r, int g, int b) { return r * 2 + g * 3 + b; }
+
 static inline int _colorInfoLuminance(struct ColorInfo* color)
 {
-    return color->r * 2 + color->g * 3 + color->b;
+    return _luminance(color->r, color->g, color->b);
 }
 
-// Clamp a channel to 0..31; both tests look at the low 16 bits only
-#define CLAMP_HIGH(c)      \
+// Clamp a 5-bit channel to 0..31; both tests look at the low 16 bits only
+#define CLAMP_CLUT_HIGH(c) \
     if ((short)(c) > 31) { \
         (c) = 31;          \
     }
-#define CLAMP_LOW(c)        \
+#define CLAMP_CLUT_LOW(c)   \
     if (((c) << 16) <= 0) { \
         (c) = 0;            \
     }
@@ -3776,12 +3778,12 @@ static void _transformClutSlot(
                 break;
             }
 
-            CLAMP_HIGH(r);
-            CLAMP_HIGH(g);
-            CLAMP_HIGH(b);
-            CLAMP_LOW(r);
-            CLAMP_LOW(g);
-            CLAMP_LOW(b);
+            CLAMP_CLUT_HIGH(r);
+            CLAMP_CLUT_HIGH(g);
+            CLAMP_CLUT_HIGH(b);
+            CLAMP_CLUT_LOW(r);
+            CLAMP_CLUT_LOW(g);
+            CLAMP_CLUT_LOW(b);
 
             if (((b | (r | g)) << 16) == 0) {
                 b = 1;
@@ -3823,8 +3825,8 @@ static void _transformClutSlot(
     }
 }
 
-#undef CLAMP_LOW
-#undef CLAMP_HIGH
+#undef CLAMP_CLUT_LOW
+#undef CLAMP_CLUT_HIGH
 #undef OFFSET_RGB3
 #undef OFFSET_RGB
 
@@ -3917,13 +3919,28 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
 }
 
 // Clamp a 16.16 fixed point channel to 0..255
-#define CLAMP_BG_HIGH(c)    \
-    if ((c) > 0xFF0000) {   \
-        (c) = 0xFF0000;     \
+#define CLAMP_BG_HIGH(c)  \
+    if ((c) > 0xFF0000) { \
+        (c) = 0xFF0000;   \
     }
 #define CLAMP_BG_LOW(c) \
     if ((c) < 0) {      \
         (c) = 0;        \
+    }
+
+// sum = (2 * r + 3 * g + b) << 16 for a base colour. `scratch` is written (with g << 16)
+// and not read again; the compiled code depends on that assignment.
+#define BASE_COLOR_SUM(sum, scratch, color)                                            \
+    {                                                                                  \
+        int g_ = (color).g;                                                            \
+        int b_ = (color).b;                                                            \
+        (sum) = (color).r;                                                             \
+        (scratch) = g_ << 0x10;                                                        \
+        b_ <<= 0x10;                                                                   \
+        (sum) <<= 0x11;                                                                \
+        g_ <<= 0x11;                                                                   \
+        (sum) += g_ + (scratch);                                                       \
+        (sum) += b_;                                                                   \
     }
 
 // r/g/b are the locals below: each channel (16.16 fixed point) gets its offset added
@@ -3940,71 +3957,75 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
     int g;
     int r;
     int i;
-    int (*p)[6] = _clutState.bgColors;
+    int (*bg)[6] = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
         switch (mode) {
+
+        // 1: half of the current colours, plus offset
         case 1:
-            OFFSET_BG_RGB((p[i][0] / 2), p[i][1] / 2, (p[i][2] / 2));
+            OFFSET_BG_RGB(bg[i][0] / 2, bg[i][1] / 2, bg[i][2] / 2);
             break;
+
+        // 2, 3: current colours as a grey level (weighted average), plus offset
         case 2:
-            OFFSET_BG_RGB(((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6,
-                ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6,
-                ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6);
+            OFFSET_BG_RGB(_luminance(bg[i][0], bg[i][1], bg[i][2]) / 6,
+                _luminance(bg[i][0], bg[i][1], bg[i][2]) / 6,
+                _luminance(bg[i][0], bg[i][1], bg[i][2]) / 6);
             break;
+
         case 3:
-            lum = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 12;
+            lum = _luminance(bg[i][0], bg[i][1], bg[i][2]) / 12;
             OFFSET_BG_RGB(lum, lum, lum);
             break;
+
+        // 4, 9: base colours plus offset
         case 4:
         case 9:
             r = (_clutState.bgBaseColors[i].r + rOffset) << 0x10;
             g = (_clutState.bgBaseColors[i].g + gOffset) << 0x10;
             b = (_clutState.bgBaseColors[i].b + bOffset) << 0x10;
             break;
+
+        // 5: half of the base colours, plus offset
         case 5:
-            OFFSET_BG_RGB((_clutState.bgBaseColors[i].r << 0xF),
-                (_clutState.bgBaseColors[i].g << 0xF),
-                (_clutState.bgBaseColors[i].b << 0xF));
+            OFFSET_BG_RGB(_clutState.bgBaseColors[i].r << 0xF,
+                _clutState.bgBaseColors[i].g << 0xF, _clutState.bgBaseColors[i].b << 0xF);
             break;
+
+        // 6, 7: base colours as a grey level, plus offset
         case 6: {
-            int v1 = _clutState.bgBaseColors[i].g;
-            int a0 = _clutState.bgBaseColors[i].b;
-            int v0 = _clutState.bgBaseColors[i].r;
-            b = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + b;
-            v0 += a0;
-            OFFSET_BG_RGB(v0 / 6, v0 / 6, v0 / 6);
+            int sum;
+            BASE_COLOR_SUM(sum, b, _clutState.bgBaseColors[i]);
+            OFFSET_BG_RGB(sum / 6, sum / 6, sum / 6);
         } break;
+
         case 7: {
-            int v1 = _clutState.bgBaseColors[i].g;
-            int a0 = _clutState.bgBaseColors[i].b;
-            int v0 = _clutState.bgBaseColors[i].r;
-            b = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + b;
-            v0 += a0;
-            OFFSET_BG_RGB(v0 / 12, v0 / 12, v0 / 12);
+            int sum;
+            BASE_COLOR_SUM(sum, b, _clutState.bgBaseColors[i]);
+            OFFSET_BG_RGB(sum / 12, sum / 12, sum / 12);
         } break;
+
+        // 8: the base colours
         case 8:
             r = _clutState.bgBaseColors[i].r << 0x10;
             g = _clutState.bgBaseColors[i].g << 0x10;
             b = _clutState.bgBaseColors[i].b << 0x10;
             break;
+
+        // 11: cancel the transition
         case 11:
             _clutState.bgTransitionMode = 0;
             return;
+
+        // 0: the current colours plus offset
         case 0:
         default:
-            OFFSET_BG_RGB(p[i][0], p[i][1], p[i][2]);
+            OFFSET_BG_RGB(bg[i][0], bg[i][1], bg[i][2]);
             break;
         }
 
+        // Keep the integer part of each channel and clamp it to 0..255
         r &= 0xFFFF0000;
         g &= 0xFFFF0000;
         b &= 0xFFFF0000;
@@ -4015,20 +4036,24 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
         CLAMP_BG_LOW(r);
         CLAMP_BG_LOW(g);
         CLAMP_BG_LOW(b);
+
+        // Either fade towards the result over `frames`, or set it right away
         if (frames != 0) {
-            p[i][3] = _bgStep(r, p[i][0], frames);
-            p[i][4] = _bgStep(g, p[i][1], frames);
-            p[i][5] = _bgStep(b, p[i][2], frames);
+            bg[i][3] = _bgStep(r, bg[i][0], frames);
+            bg[i][4] = _bgStep(g, bg[i][1], frames);
+            bg[i][5] = _bgStep(b, bg[i][2], frames);
         } else {
-            p[i][0] = r;
-            p[i][1] = g;
-            p[i][2] = b;
+            bg[i][0] = r;
+            bg[i][1] = g;
+            bg[i][2] = b;
         }
     }
 
     if (frames != 0) {
+
         _startBgAnim(frames);
         _clutState.bgTransitionMode = mode;
+
         if (mode == 9) {
             _clutState.bgTransitionTargetR = rOffset;
             _clutState.bgTransitionTargetG = gOffset;
@@ -4036,13 +4061,14 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
         }
     } else {
         _clutState.bgAnimActive = 0;
-        UPLOAD_BG_COLORS(p, position, i);
+        UPLOAD_BG_COLORS(bg, position, i);
     }
 }
 
 #undef OFFSET_BG_RGB
 #undef CLAMP_BG_LOW
 #undef CLAMP_BG_HIGH
+#undef BASE_COLOR_SUM
 
 void vs_main_transformBgColors(
     int mode, int frames, int rOffset, int gOffset, int bOffset)

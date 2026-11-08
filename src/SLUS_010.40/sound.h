@@ -58,8 +58,9 @@ int vs_main_setSfxSlot3Data(void* bank);
 int vs_main_clearSfxSlot3(void);
 void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume);
 void vs_main_playBankSfxDefault(int group, int* bank, u_int index);
-void vs_main_evictBankSfx(int group, int* bank, int index);
-void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration);
+void vs_main_evictBankSfx(int group, int const* bank, int index);
+void vs_main_fadeBankSfxVolume(
+    int group, int const* bank, int index, int volume, int duration);
 void vs_main_startCutsceneStreamDefault(int slot);
 void vs_main_setMonoSound(int set);
 int vs_main_setCutsceneStreamSlot3(void* stream);

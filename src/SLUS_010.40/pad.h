@@ -41,11 +41,11 @@ extern vs_main_buttonsPressed_t vs_main_buttonsPressed;
 extern int vs_main_buttonsState;
 #endif
 
-int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id);
+int vs_main_setVibrationBank(char const* script, u_int requestedSlot, int id);
 int vs_main_stopVibration(u_int slot, int id);
 void vs_main_padDisconnectAll(void);
-int vs_main_updatePadState(int portID, char padBuf[34]);
-void vs_main_padConnect(int portID, char padBuf[34]);
+int vs_main_updatePadState(int portID, char const padBuf[34]);
+void vs_main_padConnect(int portID, char const padBuf[34]);
 void vs_main_setVibrateParams(void);
 void vs_main_vibrationOnEffect(int effect);
 int vs_main_processPadState(void);

@@ -100,7 +100,7 @@ typedef struct {
 typedef struct {
     u_short active;
     u_short id;
-    char* script;
+    char const* script;
     padMotor_t motors[2];
 } padVibration_t;
 
@@ -183,7 +183,7 @@ typedef struct vs_main_HeapHeader {
 
 void __main(void);
 static void _unlockPadModeSwitch(void);
-static void _padResetDefaults(int, void*);
+static void _padResetDefaults(int, void const*);
 static void _padSetActData(int port, int pos, int val);
 static void _initCdQueue(void);
 static void _diskReset(void);
@@ -1241,7 +1241,7 @@ void vs_main_captureSaveState(void)
     vs_battle_actorPosition position;
     int i;
     int actionByte;
-    vs_battle_actorStats* stats;
+    vs_battle_actorStats const* stats;
     vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
@@ -1327,7 +1327,7 @@ static void _unlockPadModeSwitch(void)
     }
 }
 
-static void _padResetDefaults(int portID, UNUSED void* _)
+static void _padResetDefaults(int portID, UNUSED void const* _)
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
 
@@ -1348,7 +1348,7 @@ static void _padResetDefaults(int portID, UNUSED void* _)
     PadSetActAlign(portID, _actParams);
 }
 
-int vs_main_updatePadState(int portID, char padBuf[34])
+int vs_main_updatePadState(int portID, char const padBuf[34])
 {
     portInfo_t* port;
     char mode;
@@ -1399,7 +1399,7 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     return btnStates;
 }
 
-void vs_main_padConnect(int portID, char padBuf[34])
+void vs_main_padConnect(int portID, char const padBuf[34])
 {
     UNUSED int dummy[5];
 
@@ -1441,7 +1441,7 @@ static UNUSED char _padGetActData(int port, int pos)
     return vs_main_portInfo[port].actData[pos];
 }
 
-int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id)
+int vs_main_setVibrationBank(char const* script, u_int requestedSlot, int id)
 {
     int i;
     int slot = 0;
@@ -1590,7 +1590,7 @@ void vs_main_setVibrateParams(void)
 
     for (j = 0; j < 2; ++j) {
 
-        char* script;
+        char const* script;
 
         if (_padAct.port[j].active == 0) {
             continue;
@@ -2995,10 +2995,10 @@ void vs_main_panSfx(int group, int id, SVECTOR* position)
 
 // Returns the address of effect `id` inside its bank for the bank groups, or NULL when
 // the group plays effects by id
-static void* _resolveSfxData(int group, int id)
+static void const* _resolveSfxData(int group, int id)
 {
-    void* sfx;
-    int* bank;
+    void const* sfx;
+    int const* bank;
 
     switch (group) {
     case 0x1:
@@ -3029,7 +3029,7 @@ static void* _resolveSfxData(int group, int id)
 void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration, volume);
@@ -3044,7 +3044,7 @@ void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
 void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_FadeSfxPitchMod((u_long)sfx, 0, duration, pitch);
@@ -3060,7 +3060,7 @@ void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
 void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_FadeSfxPanMod((u_long)sfx, 0, duration, pan);
@@ -3076,7 +3076,7 @@ void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
 void vs_main_evictSfx(int group, int id)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_EvictSfx((u_long)sfx, 0);
@@ -3359,10 +3359,10 @@ static UNUSED void _panBankSfx(int group, u_int* bank, int index, SVECTOR* posit
     _do_panBankSfx(group, bank, index, screenXY, depth);
 }
 
-void vs_main_evictBankSfx(int group, int* bank, int index)
+void vs_main_evictBankSfx(int group, int const* bank, int index)
 {
     int mask;
-    void* sfx = (void*)bank + (bank + index)[1];
+    void const* sfx = (void*)bank + (bank + index)[1];
 
     if (index != 0) {
         mask = 0;
@@ -3374,9 +3374,10 @@ void vs_main_evictBankSfx(int group, int* bank, int index)
     Sound_EvictSfx((u_long)sfx, mask);
 }
 
-void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration)
+void vs_main_fadeBankSfxVolume(
+    int group, int const* bank, int index, int volume, int duration)
 {
-    void* sfx = (void*)bank + (bank + index)[1];
+    void const* sfx = (void*)bank + (bank + index)[1];
 
     if (index == 0) {
         Sound_FadeSfxVolumeMod(0, group, duration & 0xFF, volume);
@@ -3631,7 +3632,7 @@ static inline int _colorB(short color) { return _maskB(color) >> 10; }
 // Packs 5:5:5 channels and the semi-transparency bit to a PlayStation 16-bit colour
 #define PACK_COLOR(r, g, b, stp) ((r) + ((g) << 5) + ((b) << 10) + ((stp) << 15))
 
-static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
+static void _loadClutTransition(int duration, int slot, u_short const* sourceClut)
 {
     int i;
 
@@ -3666,7 +3667,7 @@ static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 }
 
 void vs_main_loadClutTransition(
-    int duration, int slot, u_short* sourceClut, int clutOffset)
+    int duration, int slot, u_short const* sourceClut, int clutOffset)
 {
     if (_clutState.active != 0) {
         _loadClutTransition(duration, slot, sourceClut + (clutOffset * 16));
@@ -3675,7 +3676,7 @@ void vs_main_loadClutTransition(
 }
 
 static UNUSED void _loadClutTransitionWithBase(
-    int duration, int slot, u_short* sourceClut, int clutOffset)
+    int duration, int slot, u_short const* sourceClut, int clutOffset)
 {
     if (_clutState.active != 0) {
         int i;
@@ -3711,7 +3712,7 @@ static inline int _colorLuminance(short color)
 
 static inline int _luminance(int r, int g, int b) { return r * 2 + g * 3 + b; }
 
-static inline int _colorInfoLuminance(struct ColorInfo* color)
+static inline int _colorInfoLuminance(struct ColorInfo const* color)
 {
     return _luminance(color->r, color->g, color->b);
 }
@@ -3898,7 +3899,7 @@ static inline int _bgStep(int target, int current, int frames)
     }                                                                                  \
     func_8008EB30(position)
 
-void vs_main_fadeBgColors(int frames, CVECTOR* target)
+void vs_main_fadeBgColors(int frames, CVECTOR const* target)
 {
     int position[5];
     int i;
@@ -3937,7 +3938,7 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
     UPLOAD_BG_COLORS(bg, position, i);
 }
 
-static UNUSED void _fadeBgColorsStore(int frames, CVECTOR* target)
+static UNUSED void _fadeBgColorsStore(int frames, CVECTOR const* target)
 {
     if (_clutState.active != 0) {
 
@@ -4125,7 +4126,7 @@ static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
     slot->speed = speed;
 }
 
-static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
+static void _fadeColorSlot(int frames, int slot, CVECTOR const* color)
 {
     CVECTOR position;
     _colorSlot_t* cs;
@@ -4168,7 +4169,7 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     }
 }
 
-static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
+static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR const* color)
 {
     if (_clutState.active != 0) {
         _fadeColorSlot(frames, slot, color);
@@ -4641,7 +4642,7 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
     _clutState.uploadPending = 1;
 }
 
-static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
+static void _loadClutBase(int mode, u_short const* srcClut, int slot, short rOffset,
     short gOffset, short bOffset, int applyNow)
 {
     int i;
@@ -4737,7 +4738,7 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
 #undef CLAMP_CLUT_LOW
 #undef CLAMP_CLUT_HIGH
 
-static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
+static UNUSED void _loadClutBaseOffset(u_short const* srcClut, int slot, u_short rOffset,
     u_short gOffset, u_short bOffset, int applyNow)
 {
     _loadClutBase(8, srcClut, slot, rOffset, gOffset, bOffset, applyNow);
@@ -4747,7 +4748,7 @@ void vs_main_loadBgColors(void)
 {
     int i;
     _fade_t* bg = _clutState.bgColors;
-    int* position = func_8008EB24();
+    int const* position = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
         _clutState.bgBaseColors[i].r = position[i];

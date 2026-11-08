@@ -89,6 +89,19 @@ typedef struct {
     padMotor_t motors[2];
 } padVibration_t;
 
+// A colour with 16.16 fixed point channels
+typedef struct {
+    int r;
+    int g;
+    int b;
+} _fixedColor_t;
+
+// A fixed point colour and the step added to it every update while it fades
+typedef struct {
+    _fixedColor_t current;
+    _fixedColor_t step;
+} _fade_t;
+
 typedef struct {
     char active;
     char frame;
@@ -99,8 +112,7 @@ typedef struct {
     short pulseTarget[3];
     short grayAmount;
     short grayStep;
-    int color[3];
-    int colorStep[3];
+    _fade_t fade;
     CVECTOR baseColor;
 } _colorSlot_t;
 
@@ -142,7 +154,7 @@ typedef struct {
     short bgTransitionTargetR;
     short bgTransitionTargetG;
     short bgTransitionTargetB;
-    int bgColors[5][6];
+    _fade_t bgColors[5];
     CVECTOR bgBaseColors[5];
     _colorSlot_t colorSlots[17];
     u_char unk8214[0x54];
@@ -858,8 +870,8 @@ DRAWENV vs_main_drawEnv[2];
 DISPENV vs_main_dispEnv[2];
 static UNUSED int _10[4];
 
-static void _initScreen(
-    int w, int h, UNUSED int arg2, UNUSED int arg3, UNUSED int arg4, UNUSED int arg5)
+static void _initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int unused3,
+    UNUSED int unused4, UNUSED int unused5)
 {
     SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
 
@@ -1411,66 +1423,66 @@ static UNUSED char _padGetActData(int port, int pos)
     return vs_main_portInfo[port].actData[pos];
 }
 
-int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
+int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id)
 {
     int i;
-    int ret = 0;
+    int slot = 0;
 
-    if (arg1 == 0xFF) {
+    if (requestedSlot == 0xFF) {
         for (i = 0; i < 2; ++i) {
             if (_padAct.port[i].active == 0) {
-                ret = i + 1;
+                slot = i + 1;
                 break;
             }
         }
-    } else if ((arg1 - 1) < 2) {
-        ret = arg1;
+    } else if ((requestedSlot - 1) < 2) {
+        slot = requestedSlot;
     }
 
-    if (ret != 0) {
-        i = ret - 1;
-        _padAct.port[i].script = arg0;
+    if (slot != 0) {
+        i = slot - 1;
+        _padAct.port[i].script = script;
         _padAct.port[i].motors[0].scriptPos = 1;
-        _padAct.port[i].motors[1].scriptPos = *arg0;
+        _padAct.port[i].motors[1].scriptPos = *script;
         _padAct.port[i].motors[1].framesLeft = 0;
         _padAct.port[i].motors[0].framesLeft = 0;
         _padAct.port[i].motors[1].value = 0;
         _padAct.port[i].motors[0].value = 0;
         _padAct.port[i].active = 1;
-        _padAct.port[i].id = arg2;
+        _padAct.port[i].id = id;
 
-        return ret;
+        return slot;
     }
 
     return 0;
 }
 
-static int _clearVibrationSlot(int arg0)
+static int _clearVibrationSlot(int slot)
 {
-    int i = arg0 - 1;
+    int i = slot - 1;
     _padAct.port[i].motors[1].value = 0;
     _padAct.port[i].motors[0].value = 0;
     _padAct.port[i].script = 0;
     _padAct.port[i].active = 0;
 
-    return arg0;
+    return slot;
 }
 
-int vs_main_stopVibration(u_int arg0, int arg1)
+int vs_main_stopVibration(u_int slot, int id)
 {
     int i;
 
-    if (arg0 - 1 < 2) {
-        return _clearVibrationSlot(arg0);
+    if (slot - 1 < 2) {
+        return _clearVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 
-    if (arg1 != 0) {
+    if (id != 0) {
         for (i = 0; i < 2; ++i) {
-            if (_padAct.port[i].id == arg1) {
+            if (_padAct.port[i].id == id) {
                 _clearVibrationSlot(i + 1);
             }
         }
@@ -1483,23 +1495,23 @@ int vs_main_stopVibration(u_int arg0, int arg1)
     return 1;
 }
 
-static int _pauseVibrationSlot(int arg0)
+static int _pauseVibrationSlot(int slot)
 {
-    int v0 = arg0 - 1;
-    _padAct.port[v0].active = 0;
+    int i = slot - 1;
+    _padAct.port[i].active = 0;
 
-    return arg0;
+    return slot;
 }
 
-static UNUSED int _pauseVibration(int arg0)
+static UNUSED int _pauseVibration(int slot)
 {
     int i;
 
-    if ((arg0 - 1u) < 2) {
-        return _pauseVibrationSlot(arg0);
+    if ((slot - 1u) < 2) {
+        return _pauseVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 
@@ -1510,23 +1522,23 @@ static UNUSED int _pauseVibration(int arg0)
     return 1;
 }
 
-static int _resumeVibrationSlot(int arg0)
+static int _resumeVibrationSlot(int slot)
 {
-    int v0 = arg0 - 1;
-    _padAct.port[v0].active = 1;
+    int i = slot - 1;
+    _padAct.port[i].active = 1;
 
-    return arg0;
+    return slot;
 }
 
-static UNUSED int _resumeVibration(int arg0)
+static UNUSED int _resumeVibration(int slot)
 {
     int i;
 
-    if ((arg0 - 1u) < 2) {
-        return _resumeVibrationSlot(arg0);
+    if ((slot - 1u) < 2) {
+        return _resumeVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 
@@ -3589,14 +3601,24 @@ void vs_main_resetSound(void)
     _resetVoicePools();
 }
 
+static inline int _maskR(short color) { return color & 0x1F; }
+static inline int _maskG(short color) { return color & 0x3E0; }
+static inline int _maskB(short color) { return color & 0x7C00; }
+static inline int _colorR(short color) { return _maskR(color); }
+static inline int _colorG(short color) { return _maskG(color) >> 5; }
+static inline int _colorB(short color) { return _maskB(color) >> 10; }
+
+// Packs 5:5:5 channels and the semi-transparency bit to a PlayStation 16-bit colour
+#define PACK_COLOR(r, g, b, stp) ((r) + ((g) << 5) + ((b) << 10) + ((stp) << 15))
+
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 {
     int i;
 
     for (i = 0; i < 256; ++i) {
-        u_short r = sourceClut[i] & 0x1F;
-        u_short g = (sourceClut[i] & 0x3E0) >> 5;
-        u_short b = (sourceClut[i] & 0x7C00) >> 10;
+        u_short r = _colorR(sourceClut[i]);
+        u_short g = _colorG(sourceClut[i]);
+        u_short b = _colorB(sourceClut[i]);
 
         struct ColorInfo* colors = _clutState.slots[slot].colorInfo;
 
@@ -3608,7 +3630,7 @@ static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
             colors[i].r = r;
             colors[i].g = g;
             colors[i].b = b;
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
+            _clutBuffer[slot][i] = PACK_COLOR(r, g, b, colors[i].a);
         }
     }
 
@@ -3662,6 +3684,35 @@ static inline int _weightedLuminance(short g, short b, short r)
     return r * 2 + (g >> 5) * 3 + (b >> 10);
 }
 
+static inline int _colorLuminance(short color)
+{
+    return _weightedLuminance(_maskG(color), _maskB(color), _maskR(color));
+}
+
+static inline int _luminance(int r, int g, int b) { return r * 2 + g * 3 + b; }
+
+static inline int _colorInfoLuminance(struct ColorInfo* color)
+{
+    return _luminance(color->r, color->g, color->b);
+}
+
+// Clamp a 5-bit channel to 0..31; both tests look at the low 16 bits only
+#define CLAMP_CLUT_HIGH(c) \
+    if ((short)(c) > 31) { \
+        (c) = 31;          \
+    }
+#define CLAMP_CLUT_LOW(c)   \
+    if (((c) << 16) <= 0) { \
+        (c) = 0;            \
+    }
+
+// r/g/b are the locals of the loop below: each channel gets its own offset added
+#define OFFSET_RGB3(rv, gv, bv)                                                        \
+    r = rOffset + (rv);                                                                \
+    g = gOffsetU + (gv);                                                               \
+    b = bOffsetU + (bv)
+#define OFFSET_RGB(value) OFFSET_RGB3(value, value, value)
+
 static void _transformClutSlot(
     int mode, int duration, int slot, int rOffset, short gOffset, short bOffset)
 {
@@ -3683,96 +3734,58 @@ static void _transformClutSlot(
                 int rTmp = colors[i].r;
                 int gTmp = colors[i].g;
                 int bTmp = colors[i].b;
-                r = rOffset + rTmp / 2;
-                g = gOffsetU + gTmp / 2;
-                b = bOffsetU + bTmp / 2;
+                OFFSET_RGB3(rTmp / 2, gTmp / 2, bTmp / 2);
                 break;
             }
+
             case 2:
-                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
-                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
-                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
+                OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 6);
                 break;
+
             case 3:
-                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
-                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
-                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
+                OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 12);
                 break;
+
             case 4:
             case 9:
-                r = rOffset + (baseEntry & 0x1F);
-                g = gOffsetU + ((baseEntry & 0x3E0) >> 5);
-                b = bOffsetU + ((baseEntry & 0x7C00) >> 10);
+                OFFSET_RGB3(_colorR(baseEntry), _colorG(baseEntry), _colorB(baseEntry));
                 break;
-            case 5: {
-                int tmp = 0x1F;
-                r = rOffset + ((baseEntry & tmp) / 2);
-                g = gOffsetU + ((baseEntry & 0x3E0) >> 5) / 2;
-                b = bOffsetU + ((baseEntry & 0x7C00) >> 10) / 2;
+
+            case 5:
+                OFFSET_RGB3(_colorR(baseEntry) / 2, _colorG(baseEntry) / 2,
+                    _colorB(baseEntry) / 2);
                 break;
-            }
+
             case 6:
-                r = rOffset
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 6;
-                g = gOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 6;
-                b = bOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 6;
+                OFFSET_RGB(_colorLuminance(baseEntry) / 6);
                 break;
+
             case 7:
-                r = rOffset
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 12;
-                g = gOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 12;
-                b = bOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 12;
+                OFFSET_RGB(_colorLuminance(baseEntry) / 12);
                 break;
+
             case 8:
             case 15:
-                r = baseEntry & 0x1F;
-                g = (baseEntry & 0x3E0) >> 5;
-                b = (baseEntry & 0x7C00) >> 10;
+                r = _colorR(baseEntry);
+                g = _colorG(baseEntry);
+                b = _colorB(baseEntry);
                 break;
+
             case 11:
                 _clutState.slots[slot].animState.transitionMode = 0;
                 return;
-            case 12: {
-                int tmp = 0x1F;
-                r = rOffset - (colors[i].r - tmp);
-                g = gOffsetU - (colors[i].g - tmp);
-                b = bOffsetU - (colors[i].b - tmp);
+
+            case 12:
+                r = rOffset + 0x1F - colors[i].r;
+                g = gOffsetU + 0x1F - colors[i].g;
+                b = bOffsetU + 0x1F - colors[i].b;
                 break;
-            }
-            case 13: {
-                int tmp = (baseEntry & 0x1F) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                r = rOffset + (tmp >> 2);
-                tmp = ((baseEntry & 0x3E0) >> 5) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                g = gOffsetU + (tmp >> 2);
-                tmp = ((baseEntry & 0x7C00) >> 10) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                b = bOffsetU + (tmp >> 2);
+
+            case 13:
+                OFFSET_RGB3(_colorR(baseEntry) * 3 / 4, _colorG(baseEntry) * 3 / 4,
+                    _colorB(baseEntry) * 3 / 4);
                 break;
-            }
+
             default:
                 r = colors[i].r + rOffset;
                 g = colors[i].g + gOffsetU;
@@ -3780,27 +3793,17 @@ static void _transformClutSlot(
                 break;
             }
 
-            if ((short)r > 31) {
-                r = 31;
-            }
-            if ((short)g > 31) {
-                g = 31;
-            }
-            if ((short)b > 31) {
-                b = 31;
-            }
-            if ((r << 16) <= 0) {
-                r = 0;
-            }
-            if ((g << 16) <= 0) {
-                g = 0;
-            }
-            if ((b << 16) <= 0) {
-                b = 0;
-            }
+            CLAMP_CLUT_HIGH(r);
+            CLAMP_CLUT_HIGH(g);
+            CLAMP_CLUT_HIGH(b);
+            CLAMP_CLUT_LOW(r);
+            CLAMP_CLUT_LOW(g);
+            CLAMP_CLUT_LOW(b);
+
             if (((b | (r | g)) << 16) == 0) {
                 b = 1;
             }
+
             if (duration != 0) {
                 colors[i].rindex = ((r - colors[i].r) + 31);
                 colors[i].gindex = ((g - colors[i].g) + 31);
@@ -3809,7 +3812,7 @@ static void _transformClutSlot(
                 colors[i].b = b;
                 colors[i].r = r;
                 colors[i].g = g;
-                _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
+                _clutBuffer[slot][i] = PACK_COLOR(r, g, b, colors[i].a);
             }
         } else {
             colors[i].bindex = 31;
@@ -3817,6 +3820,7 @@ static void _transformClutSlot(
             colors[i].rindex = 31;
         }
     }
+
     if (duration != 0) {
         struct clutAnimState_t* p = &_clutState.slots[slot].animState;
         p->active = 1;
@@ -3824,6 +3828,7 @@ static void _transformClutSlot(
         p->tick = 0;
         p->speed = duration;
         p->transitionMode = mode;
+
         if (mode == 9) {
             p->transitionTargetR = rOffset;
             p->transitionTargetG = gOffsetU;
@@ -3834,6 +3839,9 @@ static void _transformClutSlot(
         _clutState.uploadPending = 1;
     }
 }
+
+#undef OFFSET_RGB3
+#undef OFFSET_RGB
 
 void vs_main_transformClutSlot(
     int mode, int duration, int slot, short rOffset, int gOffset, int bOffset)
@@ -3847,46 +3855,66 @@ void vs_main_transformClutSlot(
 
 static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
-void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
+static inline void _startBgAnim(int speed)
+{
+    _clutState.bgAnimActive = 1;
+    _clutState.bgAnimFrame = 0;
+    _clutState.bgAnimTick = 0;
+    _clutState.bgAnimSpeed = speed;
+}
+
+// Per-update step from a 16.16 colour towards a target over frames * 2 updates
+static inline int _bgStep(int target, int current, int frames)
+{
+    return (int)(target - (current & 0xFFFF0000)) / (frames * 2);
+}
+
+// Packs the background colours (16.16 fixed point) to 8-bit r/g/b words in `position`
+// (using `i` as the loop counter) and uploads them
+#define UPLOAD_BG_COLORS(bg, position, i)                                              \
+    for ((i) = 0; (i) < 5; ++(i)) {                                                    \
+        (position)[i] = (((bg)[i].current.r / 65536) + (((bg)[i].current.g / 65536) << 8))         \
+                      + ((((bg)[i].current.b / 65536)) << 0x10);                              \
+    }                                                                                  \
+    func_8008EB30(position)
+
+void vs_main_fadeBgColors(int frames, CVECTOR* target)
 {
     int position[5];
     int i;
+    _fade_t* bg;
 
-    if (_clutState.active != 0) {
-        int (*temp_t6)[6] = _clutState.bgColors;
-        for (i = 0; i < 5; ++i) {
-            int r;
-            int g;
-            int b;
-            r = _shift_left(arg1[i].r);
-            g = _shift_left(arg1[i].g);
-            b = _shift_left(arg1[i].b);
-
-            if (arg0 != 0) {
-                temp_t6[i][3] = ((int)(r - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][4] = ((int)(g - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][5] = ((int)(b - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
-            } else {
-                temp_t6[i][0] = r;
-                temp_t6[i][1] = g;
-                temp_t6[i][2] = b;
-            }
-        }
-        if (arg0 != 0) {
-            _clutState.bgAnimActive = 1;
-            _clutState.bgAnimFrame = 0;
-            _clutState.bgAnimTick = 0;
-            _clutState.bgAnimSpeed = arg0;
-            return;
-        }
-        _clutState.bgAnimActive = 0;
-
-        for (i = 0; i < 5; ++i) {
-            position[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
-                        + (((temp_t6[i][2] / 65536)) << 0x10);
-        }
-        func_8008EB30(position);
+    if (_clutState.active == 0) {
+        return;
     }
+
+    bg = _clutState.bgColors;
+
+    for (i = 0; i < 5; ++i) {
+
+        int r = _shift_left(target[i].r);
+        int g = _shift_left(target[i].g);
+        int b = _shift_left(target[i].b);
+
+        if (frames != 0) {
+            bg[i].step.r = _bgStep(r, bg[i].current.r, frames);
+            bg[i].step.g = _bgStep(g, bg[i].current.g, frames);
+            bg[i].step.b = _bgStep(b, bg[i].current.b, frames);
+        } else {
+            bg[i].current.r = r;
+            bg[i].current.g = g;
+            bg[i].current.b = b;
+        }
+    }
+
+    if (frames != 0) {
+        _startBgAnim(frames);
+        return;
+    }
+
+    _clutState.bgAnimActive = 0;
+
+    UPLOAD_BG_COLORS(bg, position, i);
 }
 
 static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
@@ -3894,222 +3922,227 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
     int i;
 
     if (_clutState.active != 0) {
+
         vs_main_fadeBgColors(arg0, arg1);
+
         for (i = 0; i < 5; ++i) {
             _clutState.bgBaseColors[i] = arg1[i];
         }
     }
 }
 
-void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
+// Clamp a 16.16 fixed point channel to 0..max
+#define CLAMP_FIXED_HIGH(c, max) \
+    if ((c) > (max)) {           \
+        (c) = (max);             \
+    }
+#define CLAMP_FIXED_LOW(c) \
+    if ((c) < 0) {         \
+        (c) = 0;           \
+    }
+
+// sum = (2 * r + 3 * g + b) << 16 for a base colour. `scratch` is written (with g << 16)
+// and not read again; the compiled code depends on that assignment.
+#define BASE_COLOR_SUM(sum, scratch, color)                                            \
+    {                                                                                  \
+        int g_ = (color).g;                                                            \
+        int b_ = (color).b;                                                            \
+        (sum) = (color).r;                                                             \
+        (scratch) = g_ << 0x10;                                                        \
+        b_ <<= 0x10;                                                                   \
+        (sum) <<= 0x11;                                                                \
+        g_ <<= 0x11;                                                                   \
+        (sum) += g_ + (scratch);                                                       \
+        (sum) += b_;                                                                   \
+    }
+
+// r/g/b are the locals below: each channel (16.16 fixed point) gets its offset added
+#define OFFSET_BG_RGB(rv, gv, bv)           \
+    r = (rv) + (rOffset << 0x10);           \
+    g = (gv) + (gOffset << 0x10);           \
+    b = (bv) + (bOffset << 0x10)
+
+void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     int position[5];
-    int temp_v0;
-    int var_a1;
-    int var_t0;
-    int var_t1;
+    int lum;
+    int b;
+    int g;
+    int r;
     int i;
-    int (*p)[6] = _clutState.bgColors;
+    _fade_t* bg = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
-        switch (arg0) {
+        switch (mode) {
+
+        // 1: half of the current colours, plus offset
         case 1:
-            var_t1 = (p[i][0] / 2) + (arg2 << 0x10);
-            var_t0 = p[i][1] / 2 + (arg3 << 0x10);
-            var_a1 = (p[i][2] / 2) + (arg4 << 0x10);
+            OFFSET_BG_RGB(bg[i].current.r / 2, bg[i].current.g / 2, bg[i].current.b / 2);
             break;
+
+        // 2, 3: current colours as a grey level (weighted average), plus offset
         case 2:
-            var_t1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg2 << 0x10);
-            var_t0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg3 << 0x10);
-            var_a1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg4 << 0x10);
+            OFFSET_BG_RGB(
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6);
             break;
+
         case 3:
-            temp_v0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 12;
-            var_t1 = temp_v0 + (arg2 << 0x10);
-            var_t0 = temp_v0 + (arg3 << 0x10);
-            var_a1 = temp_v0 + (arg4 << 0x10);
+            lum = _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 12;
+            OFFSET_BG_RGB(lum, lum, lum);
             break;
+
+        // 4, 9: base colours plus offset
         case 4:
         case 9:
-            var_t1 = (_clutState.bgBaseColors[i].r + arg2) << 0x10;
-            var_t0 = (_clutState.bgBaseColors[i].g + arg3) << 0x10;
-            var_a1 = (_clutState.bgBaseColors[i].b + arg4) << 0x10;
+            r = (_clutState.bgBaseColors[i].r + rOffset) << 0x10;
+            g = (_clutState.bgBaseColors[i].g + gOffset) << 0x10;
+            b = (_clutState.bgBaseColors[i].b + bOffset) << 0x10;
             break;
+
+        // 5: half of the base colours, plus offset
         case 5:
-            var_t1 = (_clutState.bgBaseColors[i].r << 0xF) + (arg2 << 0x10);
-            var_t0 = (_clutState.bgBaseColors[i].g << 0xF) + (arg3 << 0x10);
-            var_a1 = (_clutState.bgBaseColors[i].b << 0xF) + (arg4 << 0x10);
+            OFFSET_BG_RGB(_clutState.bgBaseColors[i].r << 0xF,
+                _clutState.bgBaseColors[i].g << 0xF, _clutState.bgBaseColors[i].b << 0xF);
             break;
+
+        // 6, 7: base colours as a grey level, plus offset
         case 6: {
-            int v1 = _clutState.bgBaseColors[i].g;
-            int a0 = _clutState.bgBaseColors[i].b;
-            int v0 = _clutState.bgBaseColors[i].r;
-            var_a1 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a1;
-            v0 += a0;
-            var_t1 = v0 / 6 + (arg2 << 0x10);
-            var_t0 = v0 / 6 + (arg3 << 0x10);
-            var_a1 = v0 / 6 + (arg4 << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, _clutState.bgBaseColors[i]);
+            OFFSET_BG_RGB(sum / 6, sum / 6, sum / 6);
         } break;
+
         case 7: {
-            int v1 = _clutState.bgBaseColors[i].g;
-            int a0 = _clutState.bgBaseColors[i].b;
-            int v0 = _clutState.bgBaseColors[i].r;
-            var_a1 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a1;
-            v0 += a0;
-            var_t1 = v0 / 12 + (arg2 << 0x10);
-            var_t0 = v0 / 12 + (arg3 << 0x10);
-            var_a1 = v0 / 12 + (arg4 << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, _clutState.bgBaseColors[i]);
+            OFFSET_BG_RGB(sum / 12, sum / 12, sum / 12);
         } break;
+
+        // 8: the base colours
         case 8:
-            var_t1 = _clutState.bgBaseColors[i].r << 0x10;
-            var_t0 = _clutState.bgBaseColors[i].g << 0x10;
-            var_a1 = _clutState.bgBaseColors[i].b << 0x10;
+            r = _clutState.bgBaseColors[i].r << 0x10;
+            g = _clutState.bgBaseColors[i].g << 0x10;
+            b = _clutState.bgBaseColors[i].b << 0x10;
             break;
+
+        // 11: cancel the transition
         case 11:
             _clutState.bgTransitionMode = 0;
             return;
+
+        // 0: the current colours plus offset
         case 0:
         default:
-            var_t1 = p[i][0] + (arg2 << 0x10);
-            var_t0 = p[i][1] + (arg3 << 0x10);
-            var_a1 = p[i][2] + (arg4 << 0x10);
+            OFFSET_BG_RGB(bg[i].current.r, bg[i].current.g, bg[i].current.b);
             break;
         }
 
-        var_t1 &= 0xFFFF0000;
-        var_t0 &= 0xFFFF0000;
-        var_a1 &= 0xFFFF0000;
+        // Keep the integer part of each channel and clamp it to 0..255
+        r &= 0xFFFF0000;
+        g &= 0xFFFF0000;
+        b &= 0xFFFF0000;
 
-        if (var_t1 > 0xFF0000) {
-            var_t1 = 0xFF0000;
-        }
-        if (var_t0 > 0xFF0000) {
-            var_t0 = 0xFF0000;
-        }
-        if (var_a1 > 0xFF0000) {
-            var_a1 = 0xFF0000;
-        }
-        if (var_t1 < 0) {
-            var_t1 = 0;
-        }
-        if (var_t0 < 0) {
-            var_t0 = 0;
-        }
-        if (var_a1 < 0) {
-            var_a1 = 0;
-        }
-        if (arg1 != 0) {
-            p[i][3] = (int)(var_t1 - (p[i][0] & 0xFFFF0000)) / (arg1 * 2);
-            p[i][4] = (int)(var_t0 - (p[i][1] & 0xFFFF0000)) / (arg1 * 2);
-            p[i][5] = (int)(var_a1 - (p[i][2] & 0xFFFF0000)) / (arg1 * 2);
+        CLAMP_FIXED_HIGH(r, 0xFF0000);
+        CLAMP_FIXED_HIGH(g, 0xFF0000);
+        CLAMP_FIXED_HIGH(b, 0xFF0000);
+        CLAMP_FIXED_LOW(r);
+        CLAMP_FIXED_LOW(g);
+        CLAMP_FIXED_LOW(b);
+
+        // Either fade towards the result over `frames`, or set it right away
+        if (frames != 0) {
+            bg[i].step.r = _bgStep(r, bg[i].current.r, frames);
+            bg[i].step.g = _bgStep(g, bg[i].current.g, frames);
+            bg[i].step.b = _bgStep(b, bg[i].current.b, frames);
         } else {
-            p[i][0] = var_t1;
-            p[i][1] = var_t0;
-            p[i][2] = var_a1;
+            bg[i].current.r = r;
+            bg[i].current.g = g;
+            bg[i].current.b = b;
         }
     }
 
-    if (arg1 != 0) {
-        _clutState.bgAnimActive = 1;
-        _clutState.bgAnimFrame = 0;
-        _clutState.bgAnimTick = 0;
-        _clutState.bgAnimSpeed = arg1;
-        _clutState.bgTransitionMode = arg0;
-        if (arg0 == 9) {
-            _clutState.bgTransitionTargetR = arg2;
-            _clutState.bgTransitionTargetG = arg3;
-            _clutState.bgTransitionTargetB = arg4;
+    if (frames != 0) {
+
+        _startBgAnim(frames);
+        _clutState.bgTransitionMode = mode;
+
+        if (mode == 9) {
+            _clutState.bgTransitionTargetR = rOffset;
+            _clutState.bgTransitionTargetG = gOffset;
+            _clutState.bgTransitionTargetB = bOffset;
         }
     } else {
         _clutState.bgAnimActive = 0;
-        for (i = 0; i < 5; ++i) {
-            int temp_a1, var_v0, new_var;
-            temp_v0 = p[i][0];
-
-            if (temp_v0 < 0) {
-                temp_v0 += 0xFFFF;
-            }
-
-            temp_a1 = (temp_v0 >> 0x10);
-            var_v0 = p[i][1];
-
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-
-            new_var = temp_a1 + ((var_v0 >> 0x10) << 8);
-            temp_v0 = p[i][2];
-
-            if (temp_v0 < 0) {
-                temp_v0 += 0xFFFF;
-            }
-            position[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
-        }
-        func_8008EB30(position);
+        UPLOAD_BG_COLORS(bg, position, i);
     }
 }
 
-void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
+void vs_main_transformBgColors(
+    int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
-        _transformBgColors(arg0, arg1, arg2, arg3, arg4);
+        _transformBgColors(mode, frames, rOffset, gOffset, bOffset);
     }
+}
+
+// Converts a 16.16 colour slot colour (`fade` is a _fade_t*) to the signed byte offsets
+// the lighting code takes, stored in the CVECTOR `position`
+#define SLOT_POSITION(position, fade)                  \
+    (position).r = ((fade)->current.r / 65536) - 0x40;         \
+    (position).g = ((fade)->current.g / 65536) - 0x40;         \
+    (position).b = ((fade)->current.b / 65536) - 0x40;         \
+    (position).cd = 0
+
+static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
+{
+    slot->active = 1;
+    slot->frame = 0;
+    slot->tick = 0;
+    slot->speed = speed;
 }
 
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
     CVECTOR position;
-    _colorSlot_t* temp_t0;
-    int temp_a1;
-    int temp_t1;
-    int temp_t2;
-    int* temp_a3;
+    _colorSlot_t* cs;
+    int r;
+    int g;
+    int b;
+    _fade_t* fade;
 
     if (_clutState.active == 0) {
         return;
     }
 
-    temp_t0 = &_clutState.colorSlots[slot];
-    temp_a3 = _clutState.colorSlots[slot].color;
-    temp_a1 = _shift_left(color->r);
-    temp_t1 = _shift_left(color->g);
-    temp_t2 = _shift_left(color->b);
+    cs = &_clutState.colorSlots[slot];
+    fade = &_clutState.colorSlots[slot].fade;
+    r = _shift_left(color->r);
+    g = _shift_left(color->g);
+    b = _shift_left(color->b);
 
     if (frames != 0) {
-        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (frames * 2));
-        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (frames * 2));
-        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (frames * 2));
+        fade->step.r = _bgStep(r, fade->current.r, frames);
+        fade->step.g = _bgStep(g, fade->current.g, frames);
+        fade->step.b = _bgStep(b, fade->current.b, frames);
     } else {
-        temp_a3[0] = temp_a1;
-        temp_a3[1] = temp_t1;
-        temp_a3[2] = temp_t2;
+        fade->current.r = r;
+        fade->current.g = g;
+        fade->current.b = b;
     }
     if (frames != 0) {
-        temp_t0->active = 1;
-        temp_t0->frame = 0;
-        temp_t0->tick = 0;
-        temp_t0->speed = frames;
+        _startColorSlotAnim(cs, frames);
         return;
     }
 
-    temp_t0->active = 0;
-    position.r = (temp_a3[0] / 65536) - 64;
-    position.g = (temp_a3[1] / 65536) - 64;
-    position.b = (temp_a3[2] / 65536) - 64;
-    position.cd = 0;
+    cs->active = 0;
+    SLOT_POSITION(position, fade);
 
     if (slot != 0) {
         func_800A0768(slot - 1, &position);
     } else {
-        func_8008B430(&position, temp_t0->grayAmount >> 2);
+        func_8008B430(&position, cs->grayAmount >> 2);
     }
 }
 
@@ -4121,302 +4154,275 @@ static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
     }
 }
 
-static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
+static void _transformColorSlot(
+    int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
     CVECTOR position;
-    short var_t4;
-    int var_a1;
-    int var_a2;
-    int var_t0;
-    int var_v0;
-    int var_v1;
-    _colorSlot_t* t1 = &_clutState.colorSlots[slot];
-    int* t2 = t1->color;
+    short gray;
+    int lum;
+    int r;
+    int b;
+    int g;
+    _colorSlot_t* cs = &_clutState.colorSlots[slot];
+    _fade_t* fade = &cs->fade;
 
-    var_t4 = 0;
+    // gray is the target grey amount: modes that average the channels fade it in
+    gray = 0;
+
     switch (mode) {
+
+    // 1: half of the current colour, plus offset
     case 1:
-        var_a1 = (t2[0] / 2) + (r << 16);
-        var_t0 = (t2[1] / 2) + (g << 16);
-        var_a2 = (t2[2] / 2) + (b << 16);
+        OFFSET_BG_RGB(fade->current.r / 2, fade->current.g / 2, fade->current.b / 2);
         break;
+
+    // 2, 3: current colour as a grey level, plus offset
     case 2:
-        var_t4 = 0x4000;
-        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (r << 0x10);
-        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (g << 0x10);
-        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (b << 0x10);
+        gray = 0x4000;
+        OFFSET_BG_RGB(_luminance(fade->current.r, fade->current.g, fade->current.b) / 6,
+            _luminance(fade->current.r, fade->current.g, fade->current.b) / 6,
+            _luminance(fade->current.r, fade->current.g, fade->current.b) / 6);
         break;
+
     case 3:
-        var_t4 = 0x4000;
-        var_v1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 12;
-        var_a1 = var_v1 + (r << 0x10);
-        var_t0 = var_v1 + (g << 0x10);
-        var_a2 = var_v1 + (b << 0x10);
+        gray = 0x4000;
+        lum = _luminance(fade->current.r, fade->current.g, fade->current.b) / 12;
+        OFFSET_BG_RGB(lum, lum, lum);
         break;
+
+    // 4, 9: base colour plus offset
     case 4:
     case 9:
-        var_a1 = (t1->baseColor.r + r) << 0x10;
-        var_t0 = (t1->baseColor.g + g) << 0x10;
-        var_a2 = (t1->baseColor.b + b) << 0x10;
+        r = (cs->baseColor.r + rOffset) << 0x10;
+        g = (cs->baseColor.g + gOffset) << 0x10;
+        b = (cs->baseColor.b + bOffset) << 0x10;
         break;
+
+    // 5: half of the base colour, plus offset
     case 5:
-        var_t4 = 0x4000;
-        var_a1 = (t1->baseColor.r << 0xF) + (r << 0x10);
-        var_t0 = (t1->baseColor.g << 0xF) + (g << 0x10);
-        var_a2 = (t1->baseColor.b << 0xF) + (b << 0x10);
+        gray = 0x4000;
+        OFFSET_BG_RGB(
+            cs->baseColor.r << 0xF, cs->baseColor.g << 0xF, cs->baseColor.b << 0xF);
         break;
+
+    // 6, 7: base colour as a grey level, plus offset
     case 6:
-        var_t4 = 0x4000;
+        gray = 0x4000;
         {
-            int v1 = t1->baseColor.g;
-            int a0 = t1->baseColor.b;
-            int v0 = t1->baseColor.r;
-            var_a2 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a2;
-            v0 += a0;
-            var_a1 = v0 / 6 + (r << 0x10);
-            var_t0 = v0 / 6 + (g << 0x10);
-            var_a2 = v0 / 6 + (b << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, cs->baseColor);
+            OFFSET_BG_RGB(sum / 6, sum / 6, sum / 6);
         }
         break;
+
     case 7:
-        var_t4 = 0x4000;
+        gray = 0x4000;
         {
-            int v1 = t1->baseColor.g;
-            int a0 = t1->baseColor.b;
-            int v0 = t1->baseColor.r;
-            var_a2 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a2;
-            v0 += a0;
-            var_a1 = v0 / 12 + (r << 0x10);
-            var_t0 = v0 / 12 + (g << 0x10);
-            var_a2 = v0 / 12 + (b << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, cs->baseColor);
+            OFFSET_BG_RGB(sum / 12, sum / 12, sum / 12);
         }
         break;
+
+    // 8, 15: the base colour
     case 8:
     case 15:
-        var_a1 = t1->baseColor.r << 0x10;
-        var_t0 = t1->baseColor.g << 0x10;
-        var_a2 = t1->baseColor.b << 0x10;
+        r = cs->baseColor.r << 0x10;
+        g = cs->baseColor.g << 0x10;
+        b = cs->baseColor.b << 0x10;
         break;
-    case 11:
-        t1->mode = 0;
-        return;
-    default:
-        var_a1 = t2[0] + (r << 0x10);
-        var_t0 = t2[1] + (g << 0x10);
-        var_a2 = t2[2] + (b << 0x10);
-        break;
-    }
-    var_a1 = var_a1 & 0xFFFF0000;
-    var_t0 = var_t0 & 0xFFFF0000;
-    var_a2 = var_a2 & 0xFFFF0000;
 
-    if (var_a1 > 0x800000) {
-        var_a1 = 0x800000;
+    // 11: cancel the transition
+    case 11:
+        cs->mode = 0;
+        return;
+
+    // anything else: the current colour plus offset
+    default:
+        OFFSET_BG_RGB(fade->current.r, fade->current.g, fade->current.b);
+        break;
     }
-    if (var_t0 > 0x800000) {
-        var_t0 = 0x800000;
-    }
-    if (var_a2 > 0x800000) {
-        var_a2 = 0x800000;
-    }
-    if (var_a1 < 0) {
-        var_a1 = 0;
-    }
-    if (var_t0 < 0) {
-        var_t0 = 0;
-    }
-    if (var_a2 < 0) {
-        var_a2 = 0;
-    }
+
+    // Keep the integer part of each channel and clamp it to 0..128
+    r &= 0xFFFF0000;
+    g &= 0xFFFF0000;
+    b &= 0xFFFF0000;
+
+    CLAMP_FIXED_HIGH(r, 0x800000);
+    CLAMP_FIXED_HIGH(g, 0x800000);
+    CLAMP_FIXED_HIGH(b, 0x800000);
+    CLAMP_FIXED_LOW(r);
+    CLAMP_FIXED_LOW(g);
+    CLAMP_FIXED_LOW(b);
+
     if (frames != 0) {
-        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (frames * 2));
-        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (frames * 2));
-        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (frames * 2));
-        t1->grayStep = ((var_t4 - t1->grayAmount) / (frames * 2));
+        fade->step.r = _bgStep(r, fade->current.r, frames);
+        fade->step.g = _bgStep(g, fade->current.g, frames);
+        fade->step.b = _bgStep(b, fade->current.b, frames);
+        cs->grayStep = ((gray - cs->grayAmount) / (frames * 2));
     } else {
-        t2[0] = var_a1;
-        t2[1] = var_t0;
-        t2[2] = var_a2;
-        t1->grayAmount = var_t4;
+        fade->current.r = r;
+        fade->current.g = g;
+        fade->current.b = b;
+        cs->grayAmount = gray;
     }
-    var_v0 = 1;
+
     if (frames != 0) {
-        t1->active = 1;
-        t1->frame = 0;
-        t1->tick = 0;
-        t1->speed = frames;
-        t1->mode = mode;
+
+        _startColorSlotAnim(cs, frames);
+
+        cs->mode = mode;
+
         if (mode == 9) {
-            t1->pulseTarget[0] = r;
-            t1->pulseTarget[1] = g;
-            t1->pulseTarget[2] = b;
+            cs->pulseTarget[0] = rOffset;
+            cs->pulseTarget[1] = gOffset;
+            cs->pulseTarget[2] = bOffset;
         }
     } else {
-        t1->active = 0;
-        var_v0 = t2[0] >> 0x10;
-        if (t2[0] < 0) {
-            var_v1 = t2[0] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.r = var_v0 - 0x40;
-        var_v0 = t2[1] >> 0x10;
-        if (t2[1] < 0) {
-            var_v1 = t2[1] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.g = var_v0 - 0x40;
-        var_v0 = t2[2] >> 0x10;
-        if (t2[2] < 0) {
-            var_v1 = t2[2] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.b = var_v0 - 0x40;
-        position.cd = 0;
+        cs->active = 0;
+        SLOT_POSITION(position, fade);
+
         if (slot != 0) {
             func_800A0768(slot - 1, &position);
         } else {
-            func_8008B430(&position, ((u_short)t1->grayAmount << 0x10) >> 0x12);
+            func_8008B430(&position, cs->grayAmount >> 2);
         }
     }
 }
 
-void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
+void vs_main_transformColorSlot(
+    int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
-        _transformColorSlot(mode, frames, slot, r, g, b);
+        _transformColorSlot(mode, frames, slot, rOffset, gOffset, bOffset);
     }
 }
 
+#undef OFFSET_BG_RGB
+#undef CLAMP_FIXED_LOW
+#undef CLAMP_FIXED_HIGH
+#undef BASE_COLOR_SUM
+
 void vs_main_updateBgColors(void)
 {
-    int sp18[5];
+    int position[5];
     int i;
-    int var_v0;
-    int new_var;
-    int new_var2;
-    int var_v1;
-    int (*t1)[6];
+    _fade_t* bg;
 
     if (_clutState.bgAnimActive == 0) {
         return;
     }
 
-    t1 = _clutState.bgColors;
+    bg = _clutState.bgColors;
 
+    // Advance each colour by its step
     for (i = 0; i < 5; ++i) {
-        t1[i][0] += t1[i][3];
-        t1[i][1] += t1[i][4];
-        t1[i][2] += t1[i][5];
+        bg[i].current.r += bg[i].step.r;
+        bg[i].current.g += bg[i].step.g;
+        bg[i].current.b += bg[i].step.b;
     }
 
-    for (i = 0; i < 5; ++i) {
-        var_v1 = t1[i][0];
-        if (var_v1 < 0) {
-            var_v1 += 0xFFFF;
-        }
-        var_v0 = t1[i][1];
-        new_var2 = var_v1 >> 16;
-        if (var_v0 < 0) {
-            var_v0 += 0xFFFF;
-        }
-        var_v1 = t1[i][2];
-        new_var = new_var2 + ((var_v0 >> 16) << 8);
-        if (var_v1 < 0) {
-            var_v1 += 0xFFFF;
-        }
-        sp18[i] = new_var + ((var_v1 >> 16) << 16);
+    UPLOAD_BG_COLORS(bg, position, i);
+    ++_clutState.bgAnimFrame;
+
+    if (_clutState.bgAnimFrame < (_clutState.bgAnimSpeed * 2)) {
+        return;
     }
-    func_8008EB30(sp18);
-    _clutState.bgAnimFrame += 1;
-    if (_clutState.bgAnimFrame >= (_clutState.bgAnimSpeed * 2)) {
-        if (_clutState.bgTransitionMode == 9) {
-            _transformBgColors(4, _clutState.bgAnimSpeed,
-                _clutState.bgTransitionTargetR / 2, _clutState.bgTransitionTargetG / 2,
-                _clutState.bgTransitionTargetB / 2);
-            _clutState.bgTransitionMode = 10;
-            return;
-        }
-        if (_clutState.bgTransitionMode == 10) {
-            _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
-                _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
-            _clutState.bgTransitionMode = 9;
-            return;
-        }
-        _clutState.bgAnimActive = 0;
+
+    // Modes 9 and 10 pulse: fade to half the target colour, then back to the full target
+    if (_clutState.bgTransitionMode == 9) {
+
+        _transformBgColors(4, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR / 2,
+            _clutState.bgTransitionTargetG / 2, _clutState.bgTransitionTargetB / 2);
+
+        _clutState.bgTransitionMode = 10;
+
+        return;
     }
+
+    if (_clutState.bgTransitionMode == 10) {
+
+        _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
+            _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
+
+        _clutState.bgTransitionMode = 9;
+
+        return;
+    }
+
+    _clutState.bgAnimActive = 0;
 }
+
+#undef UPLOAD_BG_COLORS
 
 void vs_main_updateColorSlots(void)
 {
-    CVECTOR sp18;
+    CVECTOR position;
     int i;
-    int var_v0;
-    _colorSlot_t* p = _clutState.colorSlots;
+    _colorSlot_t* slots = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
-        int* a2 = p[i].color;
-        if (p[i].active != 0) {
-            a2[0] += a2[3];
-            a2[1] += a2[4];
-            a2[2] += a2[5];
 
-            var_v0 = a2[0];
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            sp18.r = (var_v0 >> 16) - 0x40;
-            var_v0 = a2[1];
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            sp18.g = (var_v0 >> 16) - 0x40;
-            var_v0 = a2[2];
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            sp18.b = (var_v0 >> 16) - 0x40;
-            sp18.cd = 0;
+        _colorSlot_t* slot = &slots[i];
+        _fade_t* fade = &slot->fade;
+
+        if (slot->active != 0) {
+
+            // Advance the colour by its step
+            fade->current.r += fade->step.r;
+            fade->current.g += fade->step.g;
+            fade->current.b += fade->step.b;
+
+            SLOT_POSITION(position, fade);
 
             if (i != 0) {
-                func_800A0768(i - 1, &sp18);
+                func_800A0768(i - 1, &position);
             } else {
-                p[0].grayAmount += p[0].grayStep;
-                func_8008B430(&sp18, p[0].grayAmount >> 2);
+                slots[0].grayAmount += slots[0].grayStep;
+                func_8008B430(&position, slots[0].grayAmount >> 2);
             }
-            ++p[i].frame;
-            if (p[i].frame >= (p[i].speed * 2)) {
-                if (p[i].mode == 9) {
-                    vs_main_transformColorSlot(4, p[i].speed, i, p[i].pulseTarget[0] / 2,
-                        p[i].pulseTarget[1] / 2, p[i].pulseTarget[2] / 2);
-                    p[i].mode = 10;
-                } else if (p[i].mode == 10) {
-                    _transformColorSlot(9, p[i].speed, i, p[i].pulseTarget[0],
-                        p[i].pulseTarget[1], p[i].pulseTarget[2]);
-                    p[i].mode = 9;
-                } else if (p[i].mode == 14) {
-                    _transformColorSlot(15, p[i].speed, i, 0, 0, 0);
-                    p[i].mode = 15;
+
+            ++slot->frame;
+
+            if (slot->frame >= (slot->speed * 2)) {
+
+                // Modes 9 and 10 pulse (half the target, then the full target); 14 fades
+                // to 15
+                if (slot->mode == 9) {
+
+                    vs_main_transformColorSlot(4, slot->speed, i,
+                        slot->pulseTarget[0] / 2, slot->pulseTarget[1] / 2,
+                        slot->pulseTarget[2] / 2);
+
+                    slot->mode = 10;
+
+                } else if (slot->mode == 10) {
+
+                    _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
+                        slot->pulseTarget[1], slot->pulseTarget[2]);
+
+                    slot->mode = 9;
+
+                } else if (slot->mode == 14) {
+
+                    _transformColorSlot(15, slot->speed, i, 0, 0, 0);
+                    slot->mode = 15;
+
                 } else {
-                    p[i].active = 0;
+                    slot->active = 0;
                 }
             }
         }
     }
 }
 
+#undef SLOT_POSITION
+
 void vs_main_updateClutSlots(void)
 {
     int i;
     int j;
-    u_int var_t5;
+    u_int frameStride;
     u_short g;
     u_short r;
     u_short b;
@@ -4424,108 +4430,143 @@ void vs_main_updateClutSlots(void)
     int c;
 
     for (i = 0; i < 14; ++i) {
+
         if (_clutState.slots[i].animState.active == 0) {
             continue;
         }
+
         if (++_clutState.slots[i].animState.tick
             >= (_clutState.slots[i].animState.speed / 8)) {
 
             _clutState.slots[i].animState.tick = 0;
 
             if (_clutState.slots[i].animState.speed >= 8) {
-                var_t5 = 1;
+
+                frameStride = 1;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset16[index[j].rindex][c];
                     g = index[j].g + _animOffset16[index[j].gindex][c];
                     b = index[j].b + _animOffset16[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].g = g;
                     index[j].b = b;
                     index[j].r = r;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else if (_clutState.slots[i].animState.speed >= 4) {
-                var_t5 = 2;
+
+                frameStride = 2;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset8[index[j].rindex][c];
                     g = index[j].g + _animOffset8[index[j].gindex][c];
                     b = index[j].b + _animOffset8[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else if (_clutState.slots[i].animState.speed >= 2) {
-                var_t5 = 4;
+
+                frameStride = 4;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset4[index[j].rindex][c];
                     g = index[j].g + _animOffset4[index[j].gindex][c];
                     b = index[j].b + _animOffset4[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else {
-                var_t5 = 8;
+
+                frameStride = 8;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset2[index[j].rindex][c];
                     g = index[j].g + _animOffset2[index[j].gindex][c];
                     b = index[j].b + _animOffset2[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             }
-            if (++_clutState.slots[i].animState.frame >= (16 / var_t5)) {
+            if (++_clutState.slots[i].animState.frame >= (16 / frameStride)) {
                 if (_clutState.slots[i].animState.transitionMode == 9) {
+
                     _transformClutSlot(4, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR / 2,
                         _clutState.slots[i].animState.transitionTargetG / 2,
                         _clutState.slots[i].animState.transitionTargetB / 2);
+
                     _clutState.slots[i].animState.transitionMode = 10;
+
                 } else if (_clutState.slots[i].animState.transitionMode == 10) {
+
                     _transformClutSlot(9, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR,
                         _clutState.slots[i].animState.transitionTargetG,
                         _clutState.slots[i].animState.transitionTargetB);
+
                     _clutState.slots[i].animState.transitionMode = 9;
+
                 } else if (_clutState.slots[i].animState.transitionMode == 14) {
+
                     _transformClutSlot(
                         15, _clutState.slots[i].animState.speed, i, 0, 0, 0);
+
                     _clutState.slots[i].animState.transitionMode = 15;
+
                 } else {
                     _clutState.slots[i].animState.active = 0;
                 }
@@ -4550,21 +4591,27 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
     if (slot >= 14) {
         setRECT(&rect, colorOffset + 768, slot + 224, count, 1);
         LoadImage(&rect, (u_long*)img);
+
         return;
     }
 
     if (_clutState.slots[slot].locked == 0) {
+
         _clutState.slots[slot].animState.active = 0;
+
         for (i = 0; i < count; ++i) {
+
             px = img[i];
             dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
             _clutBuffer[slot][colorOffset + i] = px;
             _clutState.slots[slot].clutBase[colorOffset + i] = px;
-            dst->r = (px & 0x1F);
-            dst->g = ((px & 0x3E0) >> 5);
-            dst->b = ((px & 0x7C00) >> 10);
+
+            dst->r = _colorR(px);
+            dst->g = _colorG(px);
+            dst->b = _colorB(px);
             dst->a = ((px & 0x8000) >> 15);
         }
+
         _clutState.uploadPending = 1;
     }
 }
@@ -4573,9 +4620,9 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
     short gOffset, short bOffset, int applyNow)
 {
     int i;
-    int new_var;
-    int new_var2;
-    int new_var3;
+    int red;
+    int green;
+    int blue;
     short r;
     short g;
     short b;
@@ -4583,33 +4630,38 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
     u_short stp;
 
     for (i = 0; i < 256; ++i) {
+
         value = srcClut[i];
+
         if (value != 0) {
             switch (mode) {
+            // 5: half of the colour, plus offset
             case 5:
-                r = rOffset + (value & 0x1F) / 2;
-                g = gOffset + ((value & 0x3E0) >> 5) / 2;
-                b = bOffset + ((value & 0x7C00) >> 10) / 2;
+                r = rOffset + _colorR(value) / 2;
+                g = gOffset + _colorG(value) / 2;
+                b = bOffset + _colorB(value) / 2;
                 break;
 
+            // 6, 7: the colour as a grey level, plus offset
             case 6:
-                new_var = value & 0x1F;
-                new_var2 = (value & 0x3E0) >> 5;
-                new_var3 = (value & 0x7C00) >> 10;
-                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                red = _colorR(value);
+                green = _colorG(value);
+                blue = _colorB(value);
+                r = rOffset + _luminance(red, green, blue) / 6;
+                g = gOffset + _luminance(red, green, blue) / 6;
+                b = bOffset + _luminance(red, green, blue) / 6;
                 break;
 
             case 7:
-                new_var = value & 0x1F;
-                new_var2 = (value & 0x3E0) >> 5;
-                new_var3 = (value & 0x7C00) >> 10;
-                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                red = _colorR(value);
+                green = _colorG(value);
+                blue = _colorB(value);
+                r = rOffset + _luminance(red, green, blue) / 12;
+                g = gOffset + _luminance(red, green, blue) / 12;
+                b = bOffset + _luminance(red, green, blue) / 12;
                 break;
 
+            // 0 (and 8, the offset-only load): the colour plus offset
             case 0:
             default:
                 r = rOffset + (value & 0x1F);
@@ -4619,39 +4671,28 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
             }
 
         } else {
+            // A zero entry stays zero (fully transparent)
             r = value & 0x1F;
             g = (value & 0x3E0) >> 5;
             b = (value & 0x7C00) >> 10;
         }
 
-        stp = value;
-        stp >>= 15;
+        stp = (u_short)value >> 15;
 
-        if (r >= 32) {
-            r = 31;
-        }
-        if (g >= 32) {
-            g = 31;
-        }
-        if (b >= 32) {
-            b = 31;
-        }
-        if ((r << 16) < 1) {
-            r = 0;
-        }
-        if ((g << 16) <= 0) {
-            g = 0;
-        }
-        if ((b << 16) <= 0) {
-            b = 0;
-        }
+        CLAMP_CLUT_HIGH(r);
+        CLAMP_CLUT_HIGH(g);
+        CLAMP_CLUT_HIGH(b);
+        CLAMP_CLUT_LOW(r);
+        CLAMP_CLUT_LOW(g);
+        CLAMP_CLUT_LOW(b);
 
+        // A non-black source colour never turns fully black
         if ((((r | g | b) << 16) == 0) && (value & 0x7FFF)) {
             b = 1;
         }
 
         if (applyNow != 0) {
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (stp << 15);
+            _clutBuffer[slot][i] = PACK_COLOR(r, g, b, stp);
 
             if (_clutState.slots[slot].animState.active == 0) {
                 struct ColorInfo* colors = &_clutState.slots[slot].colorInfo[i];
@@ -4662,11 +4703,14 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
             }
         }
 
-        _clutState.slots[slot].clutBase[i] = r + (g << 5) + (b << 10) + (stp << 15);
+        _clutState.slots[slot].clutBase[i] = PACK_COLOR(r, g, b, stp);
     }
 
     _clutState.uploadPending = 1;
 }
+
+#undef CLAMP_CLUT_LOW
+#undef CLAMP_CLUT_HIGH
 
 static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
     u_short gOffset, u_short bOffset, int applyNow)
@@ -4677,17 +4721,17 @@ static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffs
 void vs_main_loadBgColors(void)
 {
     int i;
-    int (*bgColors)[6] = _clutState.bgColors;
-    int* var_v1 = func_8008EB24();
+    _fade_t* bg = _clutState.bgColors;
+    int* position = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
-        _clutState.bgBaseColors[i].r = var_v1[i];
-        _clutState.bgBaseColors[i].g = (var_v1[i] & 0xFF00) / 256;
-        _clutState.bgBaseColors[i].b = (var_v1[i] & 0xFF0000) / 65536;
+        _clutState.bgBaseColors[i].r = position[i];
+        _clutState.bgBaseColors[i].g = (position[i] & 0xFF00) / 256;
+        _clutState.bgBaseColors[i].b = (position[i] & 0xFF0000) / 65536;
 
-        bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
-        bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;
-        bgColors[i][2] = var_v1[i] & 0xFF0000;
+        bg[i].current.r = (position[i] & 0xFF) << 16;
+        bg[i].current.g = (position[i] & 0xFF00) << 8;
+        bg[i].current.b = position[i] & 0xFF0000;
     }
 }
 
@@ -4696,13 +4740,22 @@ void vs_main_commitClut(void)
     RECT rect;
 
     if (_clutState.uploadPending != 0) {
+
         setRECT(&rect, 768, 224, 256, 14);
         LoadImage(&rect, (u_long*)_clutBuffer[0]);
+
         _clutState.uploadPending = 0;
     }
 }
 
 void vs_main_setClutState(int active) { _clutState.active = active; }
+
+#ifdef NON_MATCHING
+#define VS_SET_CVECTOR(color, r, g, b) ((color) = (CVECTOR) { (r), (g), (b), 0 })
+#else
+#define VS_SET_CVECTOR(color, r, g, b) \
+    (*(int*)&(color) = (r) | ((g) << 8) | ((b) << 16))
+#endif
 
 void vs_main_clutInit(void)
 {
@@ -4724,10 +4777,10 @@ void vs_main_clutInit(void)
         _clutState.colorSlots[i].active = 0;
         _clutState.colorSlots[i].mode = 0;
         _clutState.colorSlots[i].grayAmount = 0;
-        *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
-        _clutState.colorSlots[i].color[2] = 0x400000;
-        _clutState.colorSlots[i].color[1] = 0x400000;
-        _clutState.colorSlots[i].color[0] = 0x400000;
+        VS_SET_CVECTOR(_clutState.colorSlots[i].baseColor, 0x40, 0x40, 0x40);
+        _clutState.colorSlots[i].fade.current.b = 0x400000;
+        _clutState.colorSlots[i].fade.current.g = 0x400000;
+        _clutState.colorSlots[i].fade.current.r = 0x400000;
     }
 }
 

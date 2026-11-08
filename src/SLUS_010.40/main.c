@@ -20,10 +20,15 @@
 #include <limits.h>
 #include <rand.h>
 
+// SECTOR_SIZE (libds) is in 32-bit words
+#define SECTOR_BYTES (SECTOR_SIZE * 4)
+
 enum diskState_e {
     diskIdle = 0,
     diskSeekReady = 1,
     diskReadReady = 2,
+    // Never assigned; only checked by vs_main_diskLoadFile's wait loop
+    diskUnused3 = 3,
     diskReadError = 4,
     diskReadInit = 5,
     diskReadXaInit = 6,
@@ -31,6 +36,42 @@ enum diskState_e {
     diskCommandFailed = 8,
     diskStreamXaEnd = 9,
 };
+
+enum cdBufferModes_e {
+    cdBufferModeNone = 0,
+    cdBufferModeBuffered = 1,
+    cdBufferModeManual = 2,
+};
+
+typedef struct {
+    u_char state;
+    UNUSED u_char mode;
+    UNUSED u_char _0;
+    u_char errorCount;
+    u_int sectorsFetched;
+    u_int sectorsRequested;
+    int cdSector;
+    union {
+        int byteCount; // data reads
+        int cdVolume; // XA streams: target CD volume
+    } request;
+    void* vram;
+    DslFILTER pcm;
+    union {
+        DslLOC loc; // seek/read position
+        u_char mode; // DslSetmode parameter (aliases loc.minute)
+    } cd;
+    int commandId;
+    UNUSED int _1;
+    UNUSED int _2;
+    enum cdBufferModes_e bufferMode;
+    u_int sectorBufIndex;
+    int sectorsPending;
+    u_int sectorsReceived;
+    u_int ringWriteIndex;
+    u_int ringBufIndex;
+    int framesSinceLastRead;
+} _disk_t;
 
 typedef struct {
     int active;
@@ -704,6 +745,7 @@ static void _loadBattlePrg(void)
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
+
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
@@ -715,6 +757,7 @@ static void _loadBattlePrg(void)
 
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
+
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[1]);
 
@@ -795,7 +838,7 @@ void* vs_main_ot[2];
 static int _resetEnabled;
 static UNUSED int _6;
 static u_int _buttonHeldFrameCount[32];
-vs_main_disk_t vs_main_disk;
+static _disk_t _disk;
 static _clutState_t _clutState;
 vs_main_stickPos vs_main_stickPosBuf;
 static int _sp;
@@ -1258,12 +1301,14 @@ static void _unlockPadModeSwitch(void)
 static void _padResetDefaults(int portID, UNUSED void* _)
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
+
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
         port->actData[0] = 0;
         port->actData[1] = 0;
         port->lock = 2;
+
         PadSetMainMode(portID, PadInfoMode(portID, InfoModeCurExOffs, 0), port->lock);
     } else {
         port->actData[0] = 0x40;
@@ -1286,11 +1331,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
         port->lStickX = 128;
         port->rStickY = 128;
         port->rStickX = 128;
+
         return 0;
     }
+
     port = &vs_main_portInfo[portID >> 4];
     mode = PadInfoMode(portID, InfoModeCurID, 0);
     port->mode = mode;
+
     switch (mode) {
     case 1:
     case 2:
@@ -1298,12 +1346,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     case 6:
         btnStates = 0;
         break;
+
     default:
         btnStates = ~((padBuf[2] << 8) | padBuf[3]);
         break;
     }
 
     port->mode = PadInfoMode(portID, InfoModeCurID, 0);
+
     if ((port->mode == 5) || (port->mode == 7)) {
         port->rStickX = padBuf[6];
         port->rStickY = padBuf[7];
@@ -1316,6 +1366,7 @@ int vs_main_updatePadState(int portID, char padBuf[34])
         port->rStickX = 128;
     }
     port->states = btnStates;
+
     return btnStates;
 }
 
@@ -1329,11 +1380,16 @@ void vs_main_padConnect(int portID, char padBuf[34])
     if (state == PadStateFindPad) {
         port->connected = 0;
     }
+
     if (port->connected == 0) {
+
         PadSetAct(portID, port->actData, sizeof port->actData);
+
         if ((state == PadStateFindCTP1)
             || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
+
             _padResetDefaults(portID, padBuf);
+
             port->connected = 1;
         }
     }
@@ -1382,8 +1438,10 @@ int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
         _padAct.port[i].motors[0].value = 0;
         _padAct.port[i].active = 1;
         _padAct.port[i].id = arg2;
+
         return ret;
     }
+
     return 0;
 }
 
@@ -1401,12 +1459,15 @@ static int _clearVibrationSlot(int arg0)
 int vs_main_stopVibration(u_int arg0, int arg1)
 {
     int i;
+
     if (arg0 - 1 < 2) {
         return _clearVibrationSlot(arg0);
     }
+
     if (arg0 != 0) {
         return 0;
     }
+
     if (arg1 != 0) {
         for (i = 0; i < 2; ++i) {
             if (_padAct.port[i].id == arg1) {
@@ -1418,6 +1479,7 @@ int vs_main_stopVibration(u_int arg0, int arg1)
             _clearVibrationSlot(i + 1);
         }
     }
+
     return 1;
 }
 
@@ -1425,6 +1487,7 @@ static int _pauseVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
     _padAct.port[v0].active = 0;
+
     return arg0;
 }
 
@@ -1451,6 +1514,7 @@ static int _resumeVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
     _padAct.port[v0].active = 1;
+
     return arg0;
 }
 
@@ -1576,7 +1640,7 @@ void vs_main_vibrationOnEffect(int arg0)
 
 int vs_main_processPadState(void)
 {
-    UNUSED int dummy[2];
+    UNUSED int _[2];
     int i;
     u_int btnState;
 
@@ -1592,6 +1656,7 @@ int vs_main_processPadState(void)
         vs_main_stickPosBuf.rStickY = 128;
         vs_main_stickPosBuf.rStickX = 128;
         break;
+
     case 7:
         vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
         vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
@@ -1601,6 +1666,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].rStickX < 16) {
             vs_main_buttonsState |= PADLleft;
         }
+
         if (vs_main_portInfo[0].rStickX >= 241) {
             vs_main_buttonsState |= PADLright;
         }
@@ -1608,6 +1674,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].rStickY < 16) {
             vs_main_buttonsState |= PADLup;
         }
+
         if (vs_main_portInfo[0].rStickY >= 241) {
             vs_main_buttonsState |= PADLdown;
         }
@@ -1615,6 +1682,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].lStickX < 32) {
             vs_main_buttonsState |= PADj;
         }
+
         if (vs_main_portInfo[0].lStickX >= 225) {
             vs_main_buttonsState |= PADj;
         }
@@ -1622,10 +1690,13 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].lStickY < 32) {
             vs_main_buttonsState |= PADj;
         }
+
         if (vs_main_portInfo[0].lStickY >= 225) {
             vs_main_buttonsState |= PADj;
         }
+
         break;
+
     default:
         vs_main_stickPosBuf.lStickY = 128;
         vs_main_stickPosBuf.lStickX = 128;
@@ -1639,6 +1710,7 @@ int vs_main_processPadState(void)
     vs_main_buttonsPreviousState = vs_main_buttonsState;
 
     btnState = vs_main_buttonsState;
+
     for (i = 0; i < 32; ++i, btnState >>= 1) {
         if (btnState & 1) {
             _buttonHeldFrameCount[i] += vs_gametime_tickspeed;
@@ -1803,12 +1875,12 @@ void vs_main_initHeap(void* heap, u_int size)
 
 static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
 {
-
-    if ((intr == DslDiskError) || (intr == DslNoIntr)
-        || (vs_main_disk.state == diskReadError)) {
+    if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);
         DsEndReadySystem();
-        vs_main_disk.state = diskReadError;
+
+        _disk.state = diskReadError;
+
         return;
     }
 
@@ -1816,38 +1888,44 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
         return;
     }
 
-    vs_main_disk.state = diskReadReady;
+    _disk.state = diskReadReady;
 
-    if (vs_main_disk.bufferMode == cdBufferModeNone) {
-        DsGetSector(vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
+    if (_disk.bufferMode == cdBufferModeNone) {
+        DsGetSector(_disk.vram + _disk.sectorBufIndex * SECTOR_BYTES, SECTOR_SIZE);
     } else {
-        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 2048, 512);
-        if (++vs_main_disk.unk3C >= 16) {
-            vs_main_disk.unk3C = 0;
+        DsGetSector(_cdReadBuffer + _disk.ringWriteIndex * SECTOR_BYTES, SECTOR_SIZE);
+
+        if (++_disk.ringWriteIndex >= 16) {
+            _disk.ringWriteIndex = 0;
         }
     }
 
-    switch (vs_main_disk.bufferMode) {
+    switch (_disk.bufferMode) {
     case cdBufferModeNone:
-        if (++vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
-            vs_main_disk.state = diskIdle;
+        if (++_disk.sectorBufIndex >= _disk.sectorsRequested) {
+            _disk.state = diskIdle;
         }
         break;
+
     case cdBufferModeBuffered:
-        ++vs_main_disk.unk38;
-        ++vs_main_disk.unk34;
+        ++_disk.sectorsReceived;
+        ++_disk.sectorsPending;
         break;
+
     case cdBufferModeManual:
-        ++vs_main_disk.unk38;
-        if (++vs_main_disk.ringBufIndex >= 16) {
-            vs_main_disk.ringBufIndex = 0;
+        ++_disk.sectorsReceived;
+
+        if (++_disk.ringBufIndex >= 16) {
+            _disk.ringBufIndex = 0;
         }
+
         break;
+
     default:
         break;
     }
 
-    if (++vs_main_disk.unk4 >= vs_main_disk.sectorCount) {
+    if (++_disk.sectorsFetched >= _disk.sectorsRequested) {
         DsEndReadySystem();
     }
 }
@@ -1858,15 +1936,19 @@ static void _diskReadCommandCallback(u_char intr, UNUSED u_char result[])
     case DslComplete:
         DsStartReadySystem(_diskReadCallback, -1);
         return;
+
     case DslDiskError:
         break;
+
     default:
         break;
+
     case DslNoResult:
     case DslNoIntr:
         return;
     }
-    vs_main_disk.state = diskReadError;
+
+    _disk.state = diskReadError;
 }
 
 static void _diskSeekCommandCallback(u_char intr, UNUSED u_char result[])
@@ -1874,16 +1956,20 @@ static void _diskSeekCommandCallback(u_char intr, UNUSED u_char result[])
     switch (intr) {
     case DslNoIntr:
         break;
+
     case DslComplete:
-        vs_main_disk.state = diskIdle;
+        _disk.state = diskIdle;
         break;
+
     case DslDiskError:
-        vs_main_disk.state = diskReadError;
+        _disk.state = diskReadError;
         break;
+
     case DslNoResult:
         break;
+
     default:
-        vs_main_disk.state = diskReadError;
+        _disk.state = diskReadError;
         break;
     }
 }
@@ -1893,62 +1979,66 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
     switch (intr) {
     case DslComplete:
         DsReadyCallback(NULL);
-        vs_main_disk.state = diskIdle;
+        _disk.state = diskIdle;
         break;
+
     case DslDataReady:
         if (!(result[4] & 0x80)) {
-            _cdaTrack = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
+            _cdaTrack = ((result[1] >> 4) * 10) + (result[1] & 0xF);
             _cdaMinute = result[3];
             _cdaSecond = result[4];
             _cdaPeak = (result[6] << 8) | result[7];
         }
+
         break;
+
     case DslDiskError:
         DsReadyCallback(NULL);
-        vs_main_disk.state = diskCommandFailed;
+        _disk.state = diskCommandFailed;
+
         break;
     }
 }
 
-static int _diskGetState(void) { return vs_main_disk.state; }
+static int _diskGetState(void) { return _disk.state; }
 
 static UNUSED void _diskClearError(void)
 {
-    if (vs_main_disk.state == diskReadError) {
-        vs_main_disk.state = diskIdle;
+    if (_disk.state == diskReadError) {
+        _disk.state = diskIdle;
     }
 }
 
 static inline void _diskResetReadState(void)
 {
-    vs_main_disk.ringBufIndex = 0;
-    vs_main_disk.unk3C = 0;
-    vs_main_disk.sectorBufIndex = 0;
-    vs_main_disk.unk34 = 0;
-    vs_main_disk.unk4 = 0;
-    vs_main_disk.unk3 = 0;
-    vs_main_disk.unk38 = 0;
+    _disk.ringBufIndex = 0;
+    _disk.ringWriteIndex = 0;
+    _disk.sectorBufIndex = 0;
+    _disk.sectorsPending = 0;
+    _disk.sectorsFetched = 0;
+    _disk.errorCount = 0;
+    _disk.sectorsReceived = 0;
 }
 
 static int _diskInitRead(int sector, u_int bytes, void* vram)
 {
-    if (vs_main_disk.state == diskIdle) {
+    if (_disk.state == diskIdle) {
 
-        vs_main_disk.cdSector = sector;
-        vs_main_disk.request.byteCount = bytes;
-        vs_main_disk.vram = vram;
+        _disk.cdSector = sector;
+        _disk.request.byteCount = bytes;
+        _disk.vram = vram;
 
         _diskResetReadState();
 
-        vs_main_disk.sectorCount = bytes / 2048;
+        _disk.sectorsRequested = bytes / SECTOR_BYTES;
 
-        if (bytes % 2048) {
-            ++vs_main_disk.sectorCount;
+        if (bytes % SECTOR_BYTES) {
+            ++_disk.sectorsRequested;
         }
 
-        DsIntToPos(sector, &vs_main_disk.cdLoc);
+        DsIntToPos(sector, &_disk.cd.loc);
 
-        vs_main_disk.state = diskReadInit;
+        _disk.state = diskReadInit;
 
         return 1;
     }
@@ -1962,163 +2052,219 @@ static void _diskUpdate(void)
     int i;
     u_int seconds;
 
-    switch (vs_main_disk.state) {
+    switch (_disk.state) {
     case diskIdle:
     default:
         break;
+
     case diskReadXaInit:
         if (DsSystemStatus() == DslReady) {
-            vs_main_disk.unk1 = 0;
-            vs_main_disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
+
+            _disk.mode = 0;
+            _disk.cd.mode = 0;
+
+            while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
                 ;
+
             VSync(3);
+
             vol.val2 = 0x80;
             vol.val0 = 0x80;
             vol.val3 = 0;
             vol.val1 = 0;
+
             DsMix(&vol);
-            Sound_SetCdVolume(vs_main_disk.request.cdVolume);
+            Sound_SetCdVolume(_disk.request.cdVolume);
             Sound_SetCdMixVolume(0x7F);
-            vs_main_disk.pcm.file = 1;
-            vs_main_disk.pcm.chan = 0;
-            DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
-            DsIntToPos(vs_main_disk.cdSector, &vs_main_disk.cdLoc);
-            vs_main_disk.commandId =
-                DsPacket(DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
+
+            _disk.pcm.file = 1;
+            _disk.pcm.chan = 0;
+
+            DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
+            DsIntToPos(_disk.cdSector, &_disk.cd.loc);
+
+            _disk.commandId =
+                DsPacket(DslModeRT | DslModeSF, &_disk.cd.loc, DslReadS, NULL, -1);
             DsReadyCallback(_diskPcmReadReady);
-            vs_main_disk.state = diskStreamXa;
+
+            _disk.state = diskStreamXa;
         }
-        if (vs_main_disk.commandId == 0) {
+
+        if (_disk.commandId == 0) {
             DsReadyCallback(0);
-            vs_main_disk.state = diskCommandFailed;
-            ++vs_main_disk.unk3;
+            _disk.state = diskCommandFailed;
+
+            ++_disk.errorCount;
         }
         break;
+
     case diskReadInit: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
-            vs_main_disk.unk4 = 0;
-            vs_main_disk.sectorBufIndex = 0;
-            if (vs_main_disk.request.byteCount != 0) {
-                vs_main_disk.state = diskReadReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
+
+            _disk.sectorsFetched = 0;
+            _disk.sectorBufIndex = 0;
+
+            if (_disk.request.byteCount != 0) {
+                _disk.state = diskReadReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslReadN, _diskReadCommandCallback, -1);
             } else {
-                vs_main_disk.state = diskSeekReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
+                _disk.state = diskSeekReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslSeekL, _diskSeekCommandCallback, -1);
             }
 
-            if (vs_main_disk.commandId == 0) {
-                vs_main_disk.state = diskReadError;
-                ++vs_main_disk.unk3;
+            if (_disk.commandId == 0) {
+                _disk.state = diskReadError;
+                ++_disk.errorCount;
             }
         }
         break;
     }
+
     case diskCommandFailed: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
-            vs_main_disk.unk4 = 0;
-            ++vs_main_disk.unk3;
+
+            _disk.sectorsFetched = 0;
+            ++_disk.errorCount;
             seconds = vs_main_frameDuration / 60;
+
             if (seconds < 420) {
-                DsIntToPos(
-                    vs_main_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
+                DsIntToPos(_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
                     &_cdReadLoc);
+
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
                 vol.val3 = 0;
                 vol.val1 = 0;
+
                 DsMix(&vol);
                 Sound_SetCdVolume(0);
-                Sound_FadeCdVolume(0x3C, vs_main_disk.request.cdVolume);
-                vs_main_disk.pcm.file = 1;
-                vs_main_disk.pcm.chan = 0;
-                DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
-                vs_main_disk.commandId =
+                Sound_FadeCdVolume(0x3C, _disk.request.cdVolume);
+
+                _disk.pcm.file = 1;
+                _disk.pcm.chan = 0;
+
+                DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
+                _disk.commandId =
                     DsPacket(DslModeRT | DslModeSF, &_cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
-                vs_main_disk.state = diskStreamXa;
+
+                _disk.state = diskStreamXa;
+
             } else {
-                vs_main_disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
-                vs_main_disk.state = diskIdle;
+                _disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
+                _disk.state = diskIdle;
+
                 DsReadyCallback(0);
             }
         }
-        if (vs_main_disk.commandId == 0) {
-            vs_main_disk.state = diskCommandFailed;
-            ++vs_main_disk.unk3;
+
+        if (_disk.commandId == 0) {
+            _disk.state = diskCommandFailed;
+            ++_disk.errorCount;
         }
+
         break;
     }
+
     case diskReadError: {
-        int status = DsSystemStatus();
-        if (status == DslReady) {
-            vs_main_disk.unk4 = 0;
-            vs_main_disk.sectorBufIndex = 0;
-            ++vs_main_disk.unk3;
 
-            if (vs_main_disk.request.byteCount != 0) {
-                vs_main_disk.state = diskReadReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
+        int status = DsSystemStatus();
+
+        if (status == DslReady) {
+
+            _disk.sectorsFetched = 0;
+            _disk.sectorBufIndex = 0;
+            ++_disk.errorCount;
+
+            if (_disk.request.byteCount != 0) {
+                _disk.state = diskReadReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslReadN, _diskReadCommandCallback, -1);
             } else {
-                vs_main_disk.state = diskSeekReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
+                _disk.state = diskSeekReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslSeekL, _diskSeekCommandCallback, -1);
             }
 
-            if (vs_main_disk.commandId == 0) {
-                vs_main_disk.state = diskReadError;
-                ++vs_main_disk.unk3;
+            if (_disk.commandId == 0) {
+                _disk.state = diskReadError;
+                ++_disk.errorCount;
             }
         }
         break;
     }
+
     case diskStreamXaEnd:
         Sound_SetCdVolume(0);
-        vs_main_disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
-        if (vs_main_disk.commandId > 0) {
-            vs_main_disk.state = diskIdle;
+
+        _disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
+
+        if (_disk.commandId > 0) {
+            _disk.state = diskIdle;
         }
+
         DsReadyCallback(NULL);
-        vs_main_disk.unk1 = 128;
-        vs_main_disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
+
+        _disk.mode = 128;
+        _disk.cd.mode = 128;
+
+        while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
             ;
+
         VSync(3);
+
         break;
     }
 
-    if (vs_main_disk.bufferMode != cdBufferModeNone) {
+    if (_disk.bufferMode != cdBufferModeNone) {
+
         for (i = 0; i < 16; ++i) {
-            if (vs_main_disk.sectorBufIndex >= vs_main_disk.unk38) {
+
+            if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
                 return;
             }
-            if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
-                vs_main_memcpy(
-                    ((char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
-                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 2048), 2048);
 
-                ++vs_main_disk.ringBufIndex;
-                if (vs_main_disk.ringBufIndex >= 16) {
-                    vs_main_disk.ringBufIndex = 0;
+            if (_disk.bufferMode == cdBufferModeBuffered) {
+
+                vs_main_memcpy(
+                    ((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
+                    _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
+
+                ++_disk.ringBufIndex;
+
+                if (_disk.ringBufIndex >= 16) {
+                    _disk.ringBufIndex = 0;
                 }
-                --vs_main_disk.unk34;
-                ++vs_main_disk.sectorBufIndex;
-                if (vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
-                    vs_main_disk.state = diskIdle;
+
+                --_disk.sectorsPending;
+                ++_disk.sectorBufIndex;
+
+                if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
+                    _disk.state = diskIdle;
+
                     vs_main_freeHeapR(_cdReadBuffer);
+
                     _cdReadBuffer = NULL;
                 }
-            } else if (vs_main_disk.bufferMode == cdBufferModeManual) {
-                ++vs_main_disk.sectorBufIndex;
-                if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
+            } else if (_disk.bufferMode == cdBufferModeManual) {
+
+                ++_disk.sectorBufIndex;
+
+                if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
                     && (IsSpuTransferring() == 0)) {
-                    vs_main_disk.state = diskIdle;
+
+                    _disk.state = diskIdle;
+
                     vs_main_freeHeapR(_cdReadBuffer);
+
                     _cdReadBuffer = NULL;
                 }
             }
@@ -2129,37 +2275,27 @@ static void _diskUpdate(void)
 int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 {
     int result = _diskInitRead(sector, bytes, vram);
-    if (result != 0) {
-        int seekReady = diskSeekReady;
-        int readReady = diskReadReady;
 
-        while (1) {
-            if (_diskGetState() == seekReady) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == readReady) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == 3) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == diskReadInit) {
-                vs_main_gametimeUpdate(0);
-            } else {
-                break;
-            }
+    if (result != 0) {
+        while (_diskGetState() == diskSeekReady || _diskGetState() == diskReadReady
+               || _diskGetState() == diskUnused3 || _diskGetState() == diskReadInit) {
+            vs_main_gametimeUpdate(0);
         }
     }
+
     return result;
 }
 
 int vs_main_streamXa(int sector, int cdVolume)
 {
-    if (vs_main_disk.state == diskIdle) {
+    if (_disk.state == diskIdle) {
 
-        vs_main_disk.cdSector = sector;
-        vs_main_disk.request.cdVolume = cdVolume;
+        _disk.cdSector = sector;
+        _disk.request.cdVolume = cdVolume;
 
         _diskResetReadState();
 
-        vs_main_disk.state = diskReadXaInit;
+        _disk.state = diskReadXaInit;
 
         return 1;
     }
@@ -2169,10 +2305,11 @@ int vs_main_streamXa(int sector, int cdVolume)
 
 int vs_main_checkStreamXaEnd(void)
 {
-    if (vs_main_disk.state == diskStreamXa) {
-        vs_main_disk.state = diskStreamXaEnd;
+    if (_disk.state == diskStreamXa) {
+        _disk.state = diskStreamXaEnd;
         return 1;
     }
+
     return 0;
 }
 
@@ -2181,14 +2318,17 @@ static void _diskReset(void)
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
     DsFlush();
-    vs_main_disk.unk1 = 128;
-    vs_main_disk.cdLoc.minute = 128;
-    vs_main_disk.unk2 = 0;
-    vs_main_disk.state = diskIdle;
-    vs_main_disk.bufferMode = cdBufferModeNone;
+
+    _disk.mode = 128;
+    _disk.cd.mode = 128;
+    _disk._0 = 0;
+    _disk.state = diskIdle;
+    _disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
+
+    while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
         ;
+
     VSync(3);
 }
 
@@ -2259,12 +2399,14 @@ static UNUSED void _nop4(void) { }
 
 static void _processCdQueue(void)
 {
-    ++vs_main_disk.framesSinceLastRead;
+    ++_disk.framesSinceLastRead;
 
     if (_cdQueueCount.processing || _cdQueueCount.queued) {
 
         vs_main_CdQueueSlot* slot = _cdQueue;
+
         int i = _diskGetState();
+
         if (i == diskIdle) {
 
             for (i = 0; i < 32; ++i, ++slot) {
@@ -2275,7 +2417,7 @@ static void _processCdQueue(void)
 
                         _diskInitRead(slot->cdFile.lba, slot->cdFile.size, slot->vram);
 
-                        vs_main_disk.framesSinceLastRead = 0;
+                        _disk.framesSinceLastRead = 0;
                         --_cdQueueCount.queued;
                         ++_cdQueueCount.processing;
                     } else {
@@ -2297,97 +2439,118 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold((void*)arg0); }
+void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold(arg0); }
 
 int vs_main_stopMusicSlot(int id)
 {
-    u_int new_var;
-    int var_a1;
+    int i;
 
     if (id != 0) {
-        if (vs_main_soundData.unk14[id - 1] != 0xFFFF) {
-            Sound_StopMusicById(vs_main_soundData.unk14[id - 1]);
-            vs_main_soundData.unk14[id - 1] = 0xFFFF;
+        if (vs_main_soundData.musicHandleBySlot[id - 1] != 0xFFFF) {
+
+            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[id - 1]);
+
+            vs_main_soundData.musicHandleBySlot[id - 1] = 0xFFFF;
         }
+
         if (vs_main_soundData.currentMusicSlot == id) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
-            vs_main_soundData.unk4 = 0xFFFF;
+            vs_main_soundData.currentMusicHandle = 0xFFFF;
         }
+
         return 1;
     }
+
     Sound_StopMusic();
+
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
-    vs_main_soundData.unk4 = 0xFFFF;
+    vs_main_soundData.currentMusicHandle = 0xFFFF;
 
-    new_var = 0xFFFF;
-    for (var_a1 = 3; var_a1 >= 0; --var_a1) {
-        vs_main_soundData.unk14[var_a1] = new_var;
+    for (i = 0; i < 4; ++i) {
+        vs_main_soundData.musicHandleBySlot[i] = 0xFFFF;
     }
+
     return 1;
 }
 
 int vs_main_queueMusicSlot(int id)
 {
-    u_int temp_v0;
+    u_int handle;
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = Sound_QueueMusic(vs_main_soundData.currentMusicData);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            handle = Sound_QueueMusic(vs_main_soundData.currentMusicData);
+
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+
+        return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
 int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
 {
-    u_int temp_v0;
-
     if (id != 0) {
+
         if (vs_main_soundData.musicData[id - 1] != 0) {
+            u_int handle;
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = Sound_StartMasterAndMusicVolumeFade(
+
+            handle = Sound_StartMasterAndMusicVolumeFade(
                 vs_main_soundData.currentMusicData, arg2, arg1);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+
+        return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
 int vs_main_playMusicSlot(int id, int arg1, int arg2)
 {
-    u_int temp_v0;
-
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
+            u_int handle;
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+
             Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
-            temp_v0 = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
+
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
                 Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+
+        return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
@@ -2413,12 +2576,11 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
 
         if (targetSlot < 5) {
             if (vs_main_soundData.musicIds[slot] != id) {
-                do {
-                    if (vs_main_soundData.musicData[slot] != 0) {
-                        vs_main_nop10(142, 0);
-                        vs_main_freeMusic(targetSlot);
-                    }
-                } while (0);
+
+                if (vs_main_soundData.musicData[slot] != 0) {
+                    vs_main_nop10(142, 0);
+                    vs_main_freeMusic(targetSlot);
+                }
 
                 cdFile.lba = _musicLBAs[id];
                 cdFile.size = _musicFileSizes[id];
@@ -2435,15 +2597,20 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
                 }
+
                 vs_main_soundData.musicData[slot] = vs_main_allocHeapR(cdFile.size);
                 vs_main_cdEnqueue(vs_main_soundData.musicQueueSlot[slot],
                     vs_main_soundData.musicData[slot]);
+
                 vs_main_soundData.musicIds[slot] = id;
             }
+
             return targetSlot;
         }
     }
+
     vs_main_nop9(0x8E, 0);
+
     return 0;
 }
 
@@ -2456,6 +2623,7 @@ static int _loadMusicIntoFreeSlot(int id)
             return vs_main_loadMusicSlot(id, i + 1);
         }
     }
+
     return 0;
 }
 
@@ -2463,61 +2631,67 @@ int vs_main_clearMusicLoadSlot(u_int slot)
 {
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
+
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateLoaded) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = NULL;
+
                 return 0;
             }
+
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+
                 return -1;
             }
+
             return 1;
         }
     }
+
     return 0;
 }
 
 int vs_main_clearMusicLoadQueue(void)
 {
     int i;
-    int ret;
+    int ret = 0;
 
-    ret = 0;
-    i = 0;
-    do {
-        ret |= vs_main_clearMusicLoadSlot(++i);
-    } while (i < 4);
+    for (i = 0; i < 4; ++i) {
+        ret |= vs_main_clearMusicLoadSlot(i + 1);
+    }
 
     return ret;
 }
 
 int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
 {
-    int ret;
+    int ret = vs_main_loadMusicSlot(id, targetSlot);
 
-    ret = vs_main_loadMusicSlot(id, targetSlot);
     if (ret != 0) {
         while (vs_main_clearMusicLoadSlot(targetSlot) != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return ret;
 }
 
 static UNUSED int _loadMusicIntoFreeSlotAndClearQueue(int id)
 {
-    int ret;
+    int ret = _loadMusicIntoFreeSlot(id);
 
-    ret = _loadMusicIntoFreeSlot(id);
     if (ret != 0) {
         while (vs_main_clearMusicLoadQueue() != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return ret;
 }
 
@@ -2530,8 +2704,10 @@ int vs_main_freeMusic(int slotId)
     }
 
     vs_main_freeHeapR(vs_main_soundData.musicData[slotId - 1]);
+
     vs_main_soundData.musicData[slotId - 1] = 0;
     vs_main_soundData.musicIds[slotId - 1] = 0;
+
     return 1;
 }
 
@@ -2540,10 +2716,12 @@ static UNUSED int nop5(void) { return 0; }
 int vs_main_getMusicSlotVolume(int arg0)
 {
     if (arg0 != 0) {
-        if (vs_main_soundData.unk14[arg0 - 1] != 0xFFFF) {
-            return Sound_GetMusicVolumeById(vs_main_soundData.unk14[arg0 - 1]);
+        if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
+            return Sound_GetMusicVolumeById(
+                vs_main_soundData.musicHandleBySlot[arg0 - 1]);
         }
     }
+
     return 0;
 }
 
@@ -2552,9 +2730,10 @@ int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(ar
 int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.unk4, arg2, arg1);
+        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2564,6 +2743,7 @@ int vs_main_fadeMusicTempo(int id, int arg1, int arg2)
         Sound_FadeTempoScale(arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2573,6 +2753,7 @@ int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
         Sound_FadeMasterPitchScale(arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2583,6 +2764,7 @@ static UNUSED int nop7(void) { return 0; }
 void vs_main_stopMusic(void)
 {
     int id = vs_main_soundData.currentMusicSlot;
+
     if (id != 0) {
         vs_main_stopMusicSlot(id);
         vs_main_freeMusic(id);
@@ -2620,59 +2802,78 @@ static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
     }
 }
 
-void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
+void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 {
-    void* var_s0_2;
+    void* sfx;
+    int* bank;
 
     switch (arg0) {
     case 0x7E:
     case 0xFE:
-        if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+        if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
+
             _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
+
             _nextVoicePool1 *= 2;
+
             if (!(_nextVoicePool1 & 0x7E)) {
                 _nextVoicePool1 = 2;
             }
+
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
+
         break;
 
     case 0x100:
     case 0x200:
-        if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+        if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
             _playSfxById(id & 0xFFFF, _nextVoicePool3, arg2, arg3);
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
+
         break;
 
     case 0xFF000:
-        var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        var_s0_2 += *((int*)var_s0_2 + id + 1);
-        if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, _nextVoicePool4, arg2, arg3);
+        sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
+        sfx += bank[id + 1];
+
+        if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
+
+            _playSfxFromPointer(sfx, _nextVoicePool4, arg2, arg3);
+
             _nextVoicePool4 *= 2;
+
             if (!(_nextVoicePool4 & arg0)) {
                 _nextVoicePool4 = 0x1000;
             }
+
         } else {
-            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, arg2, arg3);
         }
+
         break;
 
     case 0xF00000:
-        var_s0_2 = vs_main_soundData.sfxData[2];
-        var_s0_2 += *((int*)var_s0_2 + id + 1);
-        if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, _nextVoicePool5, arg2, arg3);
+        sfx = bank = vs_main_soundData.sfxData[2];
+        sfx += bank[id + 1];
+
+        if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
+
+            _playSfxFromPointer(sfx, _nextVoicePool5, arg2, arg3);
+
             _nextVoicePool5 *= 2;
+
             if (!(_nextVoicePool5 & arg0)) {
                 _nextVoicePool5 = 0x100000;
             }
+
         } else {
-            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, arg2, arg3);
         }
+
         break;
 
     default:
@@ -2734,8 +2935,10 @@ int vs_main_computeSfxPan(int coords, int z)
 static void _do_panSfx(int arg0, int arg1, int coords, int z)
 {
     coords = vs_main_computeSfxPan(coords, z);
+
     z = coords & 0xFFFF;
     coords = coords >> 0x10;
+
     if (z > 0) {
         vs_main_playSfx(arg0, arg1, coords, z);
     }
@@ -2754,9 +2957,10 @@ void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
     _do_panSfx(arg0, arg1, coords, z);
 }
 
-static int _resolveSfxData(int arg0, int arg1)
+static void* _resolveSfxData(int arg0, int arg1)
 {
-    int temp_v1;
+    void* sfx;
+    int* bank;
 
     switch (arg0) {
     case 0x1:
@@ -2764,34 +2968,35 @@ static int _resolveSfxData(int arg0, int arg1)
     case 0xFE:
     case 0x100:
     case 0x200:
-        temp_v1 = 0;
+        sfx = NULL;
         break;
+
     case 0xFF000:
     case 0xF00000:
-        temp_v1 = (int)vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        temp_v1 = (int)temp_v1 + (arg1 + (int*)temp_v1)[1];
+        sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
+        sfx += bank[arg1 + 1];
+
         break;
+
     default:
         vs_main_nop10(0x95, 0);
-        temp_v1 = 0;
+        sfx = NULL;
+
         break;
     }
-    return temp_v1;
+
+    return sfx;
 }
 
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 {
-    int temp_v0;
-
     if (arg1 != 0) {
-        temp_v0 = _resolveSfxData(arg0, arg1);
+        void* sfx = _resolveSfxData(arg0, arg1);
 
-        if (temp_v0 != 0) {
-            Sound_FadeSfxVolumeMod(temp_v0, 0, arg3, arg2);
+        if (sfx != NULL) {
+            Sound_FadeSfxVolumeMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
         }
     } else {
         Sound_FadeSfxVolumeMod(0, arg0, arg3, arg2);
@@ -2800,17 +3005,15 @@ void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
-    int temp_v0;
-
     if (arg1 != 0) {
-        temp_v0 = _resolveSfxData(arg0, arg1);
-        if (temp_v0 != 0) {
-            Sound_FadeSfxPitchMod(temp_v0, 0, arg3, arg2);
+        void* sfx = _resolveSfxData(arg0, arg1);
+
+        if (sfx != NULL) {
+            Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
         }
+
     } else {
         Sound_FadeSfxPitchMod(0, arg0, arg3, arg2);
     }
@@ -2819,14 +3022,14 @@ void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
-        arg0 = _resolveSfxData(arg0, arg1);
-        if (arg0 != 0) {
-            Sound_FadeSfxPanMod(arg0, 0, arg3, arg2);
+        void* sfx = _resolveSfxData(arg0, arg1);
+
+        if (sfx != NULL) {
+            Sound_FadeSfxPanMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
         }
+
     } else {
         Sound_FadeSfxPanMod(0, arg0, arg3, arg2);
     }
@@ -2835,13 +3038,14 @@ void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 void vs_main_evictSfx(int arg0, int arg1)
 {
     if (arg1 != 0) {
-        arg0 = _resolveSfxData(arg0, arg1);
+        void* sfx = _resolveSfxData(arg0, arg1);
 
-        if (arg0 != 0) {
-            Sound_EvictSfx(arg0, 0);
+        if (sfx != NULL) {
+            Sound_EvictSfx((u_long)sfx, 0);
         } else {
             Sound_EvictSfx(arg1, 0);
         }
+
     } else {
         Sound_EvictSfx(0, arg0);
     }
@@ -2855,6 +3059,7 @@ int vs_main_loadSfxSlot(int id, u_int slot)
 
     if (slot - 1 < 3) {
         if (vs_main_soundData.sfxData[slot - 1] == NULL) {
+
             u_int index = slot - 1;
             cdFile.lba = _seLBAs[id];
             cdFile.size = _seFileSizes[id];
@@ -2872,12 +3077,14 @@ int vs_main_loadSfxSlot(int id, u_int slot)
 
             vs_main_soundData.sfxIds[index] = id;
             vs_main_soundData.sfxData[index] = vs_main_allocHeapR(cdFile.size);
+
             vs_main_cdEnqueue(
                 vs_main_soundData.sfxQueueSlot[index], vs_main_soundData.sfxData[index]);
 
             return slot;
         }
     }
+
     return 0;
 }
 
@@ -2890,6 +3097,7 @@ static int _loadSfx(int id)
             return vs_main_loadSfxSlot(id, i + 1);
         }
     }
+
     return 0;
 }
 
@@ -2897,21 +3105,29 @@ int vs_main_freeSfxQueueSlot(u_int slot)
 {
     if ((slot - 1) < 3) {
         if (vs_main_soundData.sfxQueueSlot[slot - 1] != NULL) {
+
             if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateLoaded) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = NULL;
+
                 return 0;
             }
+
             if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+
                 return -1;
             }
+
             return 1;
         }
     }
+
     return 0;
 }
 
@@ -2919,9 +3135,11 @@ static int _freeSfxSlots(void)
 {
     int i;
     int ret = 0;
+
     for (i = 0; i < 3; ++i) {
         ret |= vs_main_freeSfxQueueSlot(i + 1);
     }
+
     return ret;
 }
 
@@ -2930,11 +3148,13 @@ static UNUSED int _loadAndFreeSfx(int id)
     int slot;
 
     slot = _loadSfx(id);
+
     if (slot != 0) {
         while (_freeSfxSlots() != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return slot;
 }
 
@@ -2942,8 +3162,10 @@ int vs_main_setCurrentSfx(int id)
 {
     if ((id - 1u < 3) && vs_main_soundData.sfxData[id - 1] != NULL) {
         vs_main_soundData.currentSfxId = id;
+
         return 1;
     }
+
     return 0;
 }
 
@@ -2951,26 +3173,31 @@ int vs_main_freeSfx(u_int id)
 {
     if ((id - 1) < 3) {
         if (vs_main_soundData.sfxData[id - 1] != NULL) {
+
             if (vs_main_soundData.currentSfxId == id) {
                 vs_main_soundData.currentSfxId = 0;
             }
+
             Sound_EvictSfx(-2, 0);
             Sound_EvictSfx(0, 0xFF000);
             vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
+
             vs_main_soundData.sfxIds[id - 1] = 0;
             vs_main_soundData.sfxData[id - 1] = 0;
+
             return 1;
         }
     }
     return 0;
 }
 
-int vs_main_setSfxSlot3Data(u_int arg0)
+int vs_main_setSfxSlot3Data(void* arg0)
 {
-    if (vs_main_soundData.unk14[16] == 0) {
-        vs_main_soundData.unk14[16] = arg0;
+    if (vs_main_soundData.sfxData[2] == 0) {
+        vs_main_soundData.sfxData[2] = arg0;
         return 1;
     }
+
     return 0;
 }
 
@@ -2978,45 +3205,56 @@ int vs_main_clearSfxSlot3(void)
 {
     Sound_EvictSfx(-2, 0);
     Sound_EvictSfx(0, 0xF00000);
+
     vs_main_soundData.sfxData[2] = NULL;
+
     return 1;
 }
 
-void vs_main_playBankSfx(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
+void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume)
 {
-    int var_s0;
-    void* temp_s1;
+    int voice;
+    void* sfx = bank;
 
-    temp_s1 = arg1;
-
-    if (arg2 < arg1[0]) {
-        temp_s1 = (char*)arg1 + (arg1 + arg2)[1];
-        var_s0 = 0;
-
-        if (arg0 == 0x180) {
-            var_s0 = _nextVoicePool2;
-            _nextVoicePool2 *= 2;
-            if (!(_nextVoicePool2 & 0x180)) {
-                _nextVoicePool2 = 0x80;
-            }
-        } else if (arg0 == 0x200) {
-            var_s0 = _nextVoicePool3;
-            _nextVoicePool3 *= 2;
-            if (!(_nextVoicePool3 & 0x200)) {
-                _nextVoicePool3 = arg0;
-            }
-        } else if (arg0 == 0xF00000) {
-            var_s0 = _nextVoicePool5;
-            _nextVoicePool5 *= 2;
-            if (!(_nextVoicePool5 & arg0)) {
-                _nextVoicePool5 = 0x100000;
-            }
-        } else if (arg0 == 0x7E) {
-        } else {
-            vs_main_nop10(0x95, 0);
-        }
-        _playSfxFromPointer(temp_s1, var_s0, arg3, arg4);
+    if (index >= bank[0]) {
+        return;
     }
+
+    sfx += bank[index + 1];
+    voice = 0;
+
+    if (group == 0x180) {
+
+        voice = _nextVoicePool2;
+        _nextVoicePool2 *= 2;
+
+        if (!(_nextVoicePool2 & 0x180)) {
+            _nextVoicePool2 = 0x80;
+        }
+
+    } else if (group == 0x200) {
+
+        voice = _nextVoicePool3;
+        _nextVoicePool3 *= 2;
+
+        if (!(_nextVoicePool3 & 0x200)) {
+            _nextVoicePool3 = group;
+        }
+
+    } else if (group == 0xF00000) {
+
+        voice = _nextVoicePool5;
+        _nextVoicePool5 *= 2;
+
+        if (!(_nextVoicePool5 & group)) {
+            _nextVoicePool5 = 0x100000;
+        }
+
+    } else if (group != 0x7E) {
+        vs_main_nop10(0x95, 0);
+    }
+
+    _playSfxFromPointer(sfx, voice, pan, volume);
 }
 
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
@@ -3024,55 +3262,55 @@ void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
     vs_main_playBankSfx(arg0, arg1, arg2, 0x80, 0x7F);
 }
 
-static void _do_panBankSfx(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
+static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)
 {
-    int temp_t0;
-    int var_v0;
-    int var_v1;
+    int volume;
+    int tmp;
+    int sxy;
 
-    var_v1 = arg3;
-    var_v0 = arg3;
-    arg3 = var_v0 >> 0x10;
+    sxy = pan;
+    tmp = pan;
+    pan = tmp >> 0x10;
 
-    if (var_v1 < 0) {
-        var_v0 = var_v1 + 0xFFFF;
+    if (sxy < 0) {
+        tmp = sxy + 0xFFFF;
     }
 
-    arg3 = var_v0 >> 0x10;
-    var_v0 = arg3 << 0x10;
-    arg3 = var_v1 - var_v0;
+    pan = tmp >> 0x10;
+    tmp = pan << 0x10;
+    pan = sxy - tmp;
 
-    if (arg3 < 0) {
-        arg3 = 0;
+    if (pan < 0) {
+        pan = 0;
     }
 
-    if (arg3 >= 0x141) {
-        arg3 = 0x140;
+    if (pan > 0x140) {
+        pan = 0x140;
     }
 
-    var_v0 = arg3 + ((u_int)arg3 >> 0x1F);
-    var_v0 >>= 1;
-    arg3 = var_v0 + 0x30;
-    temp_t0 = arg4;
+    tmp = pan + ((u_int)pan >> 0x1F);
+    tmp >>= 1;
+    pan = tmp + 0x30;
+    volume = depth;
 
-    if (temp_t0 < 0) {
-        temp_t0 = 0;
+    if (volume < 0) {
+        volume = 0;
     }
 
-    if (temp_t0 >= 0x401) {
-        temp_t0 = 0x400;
+    if (volume > 0x400) {
+        volume = 0x400;
     }
 
-    var_v1 = temp_t0;
+    sxy = volume;
 
-    if (temp_t0 < 0) {
-        var_v1 += 7;
+    if (volume < 0) {
+        sxy += 7;
     }
 
-    temp_t0 = 0x7F - (var_v1 >> 3);
+    volume = 0x7F - (sxy >> 3);
 
-    if (temp_t0 > 0) {
-        vs_main_playBankSfx(arg0, arg1, arg2, arg3, temp_t0);
+    if (volume > 0) {
+        vs_main_playBankSfx(group, bank, index, pan, volume);
     }
 }
 
@@ -3089,28 +3327,29 @@ static UNUSED void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
     _do_panBankSfx(arg0, arg1, arg2, sxy, z);
 }
 
-void vs_main_evictBankSfx(int arg0, int* arg1, int arg2)
+void vs_main_evictBankSfx(int group, int* bank, int index)
 {
-    int var_a1;
-    char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];
+    int mask;
+    void* sfx = (void*)bank + (bank + index)[1];
 
-    if (arg2 != 0) {
-        var_a1 = 0;
+    if (index != 0) {
+        mask = 0;
     } else {
-        var_a0 = 0;
-        var_a1 = arg0;
+        sfx = NULL;
+        mask = group;
     }
-    Sound_EvictSfx((int)var_a0, var_a1);
+
+    Sound_EvictSfx((u_long)sfx, mask);
 }
 
-void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4)
+void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration)
 {
-    int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
+    void* sfx = (void*)bank + (bank + index)[1];
 
-    if (arg2 == 0) {
-        Sound_FadeSfxVolumeMod(0, arg0, arg4 & 0xFF, arg3);
+    if (index == 0) {
+        Sound_FadeSfxVolumeMod(0, group, duration & 0xFF, volume);
     } else {
-        Sound_FadeSfxVolumeMod(a0, 0, arg4 & 0xFF, arg3);
+        Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration & 0xFF, volume);
     }
 }
 
@@ -3118,14 +3357,18 @@ static UNUSED void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
 static int _startCutsceneStream(int arg0, int arg1, int arg2)
 {
-    if ((arg0 - 1u) < 3) {
-        if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            Sound_FadeOutCutscene(0, arg2);
-            Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
-            return 1;
-        }
+    if ((arg0 - 1u) >= 3) {
+        return 0;
     }
-    return 0;
+
+    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+        return 0;
+    }
+
+    Sound_FadeOutCutscene(0, arg2);
+    Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
+
+    return 1;
 }
 
 void vs_main_startCutsceneStreamDefault(int arg0)
@@ -3135,69 +3378,72 @@ void vs_main_startCutsceneStreamDefault(int arg0)
 
 static UNUSED int _freeCutsceneStream(int arg0)
 {
-    if ((arg0 - 1u) < 3) {
-        if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            Sound_StopCutsceneStream();
-            vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
-            vs_main_soundData.unk64[arg0 - 1] = 0;
-            return 1;
-        }
+    if ((arg0 - 1u) >= 3) {
+        return 0;
     }
-    return 0;
+
+    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+        return 0;
+    }
+
+    Sound_StopCutsceneStream();
+    vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
+
+    vs_main_soundData.unk64[arg0 - 1] = 0;
+
+    return 1;
 }
 
-int vs_main_setCutsceneStreamSlot3(u_int arg0)
+int vs_main_setCutsceneStreamSlot3(void* arg0)
 {
-    if (vs_main_soundData.unk14[22] == 0) {
-        vs_main_soundData.unk14[22] = arg0;
+    if (vs_main_soundData.unk64[2] == 0) {
+        vs_main_soundData.unk64[2] = arg0;
         return 3;
     }
+
     return 0;
 }
 
 int vs_main_clearCutsceneStreamSlot3(void)
 {
 
-    if (vs_main_soundData.unk14[22] != 0) {
+    if (vs_main_soundData.unk64[2] != 0) {
+
         Sound_StopCutsceneStream();
-        vs_main_soundData.unk14[22] = 0;
+        vs_main_soundData.unk64[2] = 0;
+
         return 1;
     }
+
     return 0;
 }
 
 static void _loadSoundFile(int file)
 {
     vs_main_CdFile cdFile;
-    int new_var;
-    int temp_v1;
-    int var_a0;
+    int loadedBanks = Sound_GetLoadedMusicBankIds();
 
-    temp_v1 = Sound_GetLoadedMusicBankIds();
-    var_a0 = temp_v1 >> 0x10;
-    new_var = temp_v1;
-
-    if (temp_v1 < 0) {
-        var_a0 = (temp_v1 + 0xFFFF) >> 0x10;
-    }
-    if (((new_var - (var_a0 << 0x10)) == file) || (var_a0 == file)) {
+    if (loadedBanks % 0x10000 == file || loadedBanks / 0x10000 == file) {
         return;
     }
+
     cdFile.lba = _soundLBAs[file];
     cdFile.size = _soundFileSizes[file];
 
-    if (vs_main_soundData.soundQueueSlot) {
-        if ((long)vs_main_soundData.soundQueueSlot != -1) {
-            vs_main_nop9(0x93 & 0xFFu, 0);
-        }
+    if (vs_main_soundData.soundQueueSlot != NULL
+        && vs_main_soundData.soundQueueSlot != (vs_main_CdQueueSlot*)-1) {
+        vs_main_nop9(0x93, 0);
     }
+
     vs_main_soundData.soundQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-    if (vs_main_soundData.soundData != 0) {
+
+    if (vs_main_soundData.soundData != NULL) {
         vs_main_nop9(0x94, 0);
     }
-    new_var = 1;
+
     vs_main_soundData.soundData = vs_main_allocHeapR(cdFile.size);
     vs_main_soundData.soundFileId = file;
+
     vs_main_cdEnqueue(vs_main_soundData.soundQueueSlot, vs_main_soundData.soundData);
 }
 
@@ -3224,11 +3470,13 @@ int vs_main_processSoundQueue(void)
 
             if (isTransferring == 0) {
                 _releaseSoundQueue();
+
                 return 0;
             }
 
             if (isTransferring == -1) {
                 _releaseSoundQueue();
+
                 return -1;
             }
 
@@ -3236,13 +3484,16 @@ int vs_main_processSoundQueue(void)
         }
 
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
+
             vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
             Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
+
             return 1;
         }
 
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
             _releaseSoundQueue();
+
             return -1;
         }
 
@@ -3265,32 +3516,42 @@ void vs_main_setMonoSound(int set) { Sound_SetSpeakerMode(set); }
 
 static UNUSED void _setCdVolumeMax(void) { Sound_SetCdVolume(0x7FFF); }
 
-static void _loadMenuSound(void)
+static inline void _resetVoicePools(void)
 {
-    void* buf;
-
-    InitSound();
-    Sound_SetCdMixVolume(0x7F);
-    buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
-    Sound_LoadAkaoBankBlocking(buf, 1);
-    vs_main_freeHeapR(buf);
-    buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
-    Sound_LoadAkaoBankBlocking(buf, 1);
-    vs_main_freeHeapR(buf);
-    buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
-    Sound_LoadSfxBank(buf, 0, 1);
-    vs_main_freeHeapR(buf);
-    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
-    Sound_BindAkaoSfxBlob(_sfxData);
     _nextVoicePool0 = 1;
     _nextVoicePool1 = 2;
     _nextVoicePool2 = 0x80;
     _nextVoicePool3 = 0x200;
     _nextVoicePool4 = 0x1000;
     _nextVoicePool5 = 0x100000;
+}
+
+static void _loadMenuSound(void)
+{
+    void* buf;
+
+    InitSound();
+    Sound_SetCdMixVolume(0x7F);
+
+    buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
+    Sound_LoadAkaoBankBlocking(buf, 1);
+    vs_main_freeHeapR(buf);
+
+    buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
+    Sound_LoadAkaoBankBlocking(buf, 1);
+    vs_main_freeHeapR(buf);
+
+    buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
+    Sound_LoadSfxBank(buf, 0, 1);
+    vs_main_freeHeapR(buf);
+
+    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
+    Sound_BindAkaoSfxBlob(_sfxData);
+
+    _resetVoicePools();
 }
 
 void vs_main_resetSound(void)
@@ -3300,12 +3561,12 @@ void vs_main_resetSound(void)
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk8 = 0xFFFF;
-    vs_main_soundData.unk4 = 0xFFFF;
+    vs_main_soundData.currentMusicHandle = 0xFFFF;
     vs_main_soundData.currentSfxId = 0;
 
     for (i = 0; i < 4; ++i) {
         vs_main_soundData.musicIds[i] = 0;
-        vs_main_soundData.unk14[i] = 0xFFFF;
+        vs_main_soundData.musicHandleBySlot[i] = 0xFFFF;
         vs_main_soundData.musicData[i] = NULL;
         vs_main_soundData.musicQueueSlot[i] = NULL;
     }
@@ -3324,12 +3585,8 @@ void vs_main_resetSound(void)
     vs_main_soundData.soundFileId = 0;
     vs_main_soundData.soundData = NULL;
     vs_main_soundData.soundQueueSlot = NULL;
-    _nextVoicePool0 = 1;
-    _nextVoicePool1 = 2;
-    _nextVoicePool2 = 0x80;
-    _nextVoicePool3 = 0x200;
-    _nextVoicePool4 = 0x1000;
-    _nextVoicePool5 = 0x100000;
+
+    _resetVoicePools();
 }
 
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)

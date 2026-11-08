@@ -2813,14 +2813,14 @@ static void _playSfxById(int id, int voice, int pan, int volume)
     }
 }
 
-static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
+static void _playSfxFromPointer(void* data, int voice, int pan, int volume)
 {
-    if (arg1 == 0x200) {
+    if (voice == 0x200) {
         if (data != (void*)Sound_GetPlayingSfxByGroup(0x200)) {
-            Sound_PlaySfxFromPointer(data, 0x200, arg2, arg3);
+            Sound_PlaySfxFromPointer(data, 0x200, pan, volume);
         }
     } else {
-        Sound_PlaySfxFromPointer(data, arg1, arg2, arg3);
+        Sound_PlaySfxFromPointer(data, voice, pan, volume);
     }
 }
 

@@ -3589,14 +3589,21 @@ void vs_main_resetSound(void)
     _resetVoicePools();
 }
 
+static inline int _maskR(short color) { return color & 0x1F; }
+static inline int _maskG(short color) { return color & 0x3E0; }
+static inline int _maskB(short color) { return color & 0x7C00; }
+static inline int _colorR(short color) { return _maskR(color); }
+static inline int _colorG(short color) { return _maskG(color) >> 5; }
+static inline int _colorB(short color) { return _maskB(color) >> 10; }
+
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 {
     int i;
 
     for (i = 0; i < 256; ++i) {
-        u_short r = sourceClut[i] & 0x1F;
-        u_short g = (sourceClut[i] & 0x3E0) >> 5;
-        u_short b = (sourceClut[i] & 0x7C00) >> 10;
+        u_short r = _colorR(sourceClut[i]);
+        u_short g = _colorG(sourceClut[i]);
+        u_short b = _colorB(sourceClut[i]);
 
         struct ColorInfo* colors = _clutState.slots[slot].colorInfo;
 
@@ -3688,91 +3695,85 @@ static void _transformClutSlot(
                 b = bOffsetU + bTmp / 2;
                 break;
             }
+            
             case 2:
                 r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
                 g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
                 b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
                 break;
+
             case 3:
                 r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
                 g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
                 b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
                 break;
+
             case 4:
             case 9:
-                r = rOffset + (baseEntry & 0x1F);
-                g = gOffsetU + ((baseEntry & 0x3E0) >> 5);
-                b = bOffsetU + ((baseEntry & 0x7C00) >> 10);
+                r = rOffset + _colorR(baseEntry);
+                g = gOffsetU + _colorG(baseEntry);
+                b = bOffsetU + _colorB(baseEntry);
                 break;
-            case 5: {
-                int tmp = 0x1F;
-                r = rOffset + ((baseEntry & tmp) / 2);
-                g = gOffsetU + ((baseEntry & 0x3E0) >> 5) / 2;
-                b = bOffsetU + ((baseEntry & 0x7C00) >> 10) / 2;
+
+            case 5:
+                r = rOffset + _colorR(baseEntry) / 2;
+                g = gOffsetU + _colorG(baseEntry) / 2;
+                b = bOffsetU + _colorB(baseEntry) / 2;
                 break;
-            }
+
             case 6:
                 r = rOffset
                   + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
                         / 6;
                 g = gOffsetU
                   + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
                         / 6;
                 b = bOffsetU
                   + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
                         / 6;
                 break;
+
             case 7:
                 r = rOffset
                   + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
                         / 12;
                 g = gOffsetU
                   + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
                         / 12;
                 b = bOffsetU
                   + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
+                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
                         / 12;
                 break;
+
             case 8:
             case 15:
-                r = baseEntry & 0x1F;
-                g = (baseEntry & 0x3E0) >> 5;
-                b = (baseEntry & 0x7C00) >> 10;
+                r = _colorR(baseEntry);
+                g = _colorG(baseEntry);
+                b = _colorB(baseEntry);
                 break;
+
             case 11:
                 _clutState.slots[slot].animState.transitionMode = 0;
                 return;
-            case 12: {
-                int tmp = 0x1F;
-                r = rOffset - (colors[i].r - tmp);
-                g = gOffsetU - (colors[i].g - tmp);
-                b = bOffsetU - (colors[i].b - tmp);
+
+            case 12:
+                r = rOffset + 0x1F - colors[i].r;
+                g = gOffsetU + 0x1F - colors[i].g;
+                b = bOffsetU + 0x1F - colors[i].b;
                 break;
-            }
-            case 13: {
-                int tmp = (baseEntry & 0x1F) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                r = rOffset + (tmp >> 2);
-                tmp = ((baseEntry & 0x3E0) >> 5) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                g = gOffsetU + (tmp >> 2);
-                tmp = ((baseEntry & 0x7C00) >> 10) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                b = bOffsetU + (tmp >> 2);
+
+            case 13:
+                r = rOffset + _colorR(baseEntry) * 3 / 4;
+                g = gOffsetU + _colorG(baseEntry) * 3 / 4;
+                b = bOffsetU + _colorB(baseEntry) * 3 / 4;
                 break;
-            }
+
             default:
                 r = colors[i].r + rOffset;
                 g = colors[i].g + gOffsetU;
@@ -3783,24 +3784,31 @@ static void _transformClutSlot(
             if ((short)r > 31) {
                 r = 31;
             }
+
             if ((short)g > 31) {
                 g = 31;
             }
+
             if ((short)b > 31) {
                 b = 31;
             }
+
             if ((r << 16) <= 0) {
                 r = 0;
             }
+
             if ((g << 16) <= 0) {
                 g = 0;
             }
+
             if ((b << 16) <= 0) {
                 b = 0;
             }
+
             if (((b | (r | g)) << 16) == 0) {
                 b = 1;
             }
+
             if (duration != 0) {
                 colors[i].rindex = ((r - colors[i].r) + 31);
                 colors[i].gindex = ((g - colors[i].g) + 31);
@@ -3817,6 +3825,7 @@ static void _transformClutSlot(
             colors[i].rindex = 31;
         }
     }
+
     if (duration != 0) {
         struct clutAnimState_t* p = &_clutState.slots[slot].animState;
         p->active = 1;
@@ -3824,6 +3833,7 @@ static void _transformClutSlot(
         p->tick = 0;
         p->speed = duration;
         p->transitionMode = mode;
+        
         if (mode == 9) {
             p->transitionTargetR = rOffset;
             p->transitionTargetG = gOffsetU;
@@ -4560,9 +4570,9 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
             dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
             _clutBuffer[slot][colorOffset + i] = px;
             _clutState.slots[slot].clutBase[colorOffset + i] = px;
-            dst->r = (px & 0x1F);
-            dst->g = ((px & 0x3E0) >> 5);
-            dst->b = ((px & 0x7C00) >> 10);
+            dst->r = _colorR(px);
+            dst->g = _colorG(px);
+            dst->b = _colorB(px);
             dst->a = ((px & 0x8000) >> 15);
         }
         _clutState.uploadPending = 1;
@@ -4587,24 +4597,24 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
         if (value != 0) {
             switch (mode) {
             case 5:
-                r = rOffset + (value & 0x1F) / 2;
-                g = gOffset + ((value & 0x3E0) >> 5) / 2;
-                b = bOffset + ((value & 0x7C00) >> 10) / 2;
+                r = rOffset + _colorR(value) / 2;
+                g = gOffset + _colorG(value) / 2;
+                b = bOffset + _colorB(value) / 2;
                 break;
 
             case 6:
-                new_var = value & 0x1F;
-                new_var2 = (value & 0x3E0) >> 5;
-                new_var3 = (value & 0x7C00) >> 10;
+                new_var = _colorR(value);
+                new_var2 = _colorG(value);
+                new_var3 = _colorB(value);
                 r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
                 g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
                 b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
                 break;
 
             case 7:
-                new_var = value & 0x1F;
-                new_var2 = (value & 0x3E0) >> 5;
-                new_var3 = (value & 0x7C00) >> 10;
+                new_var = _colorR(value);
+                new_var2 = _colorG(value);
+                new_var3 = _colorB(value);
                 r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
                 g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
                 b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;

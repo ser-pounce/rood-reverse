@@ -3357,14 +3357,18 @@ static UNUSED void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
 static int _startCutsceneStream(int arg0, int arg1, int arg2)
 {
-    if ((arg0 - 1u) < 3) {
-        if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            Sound_FadeOutCutscene(0, arg2);
-            Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
-            return 1;
-        }
+    if ((arg0 - 1u) >= 3) {
+        return 0;
     }
-    return 0;
+
+    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+        return 0;
+    }
+
+    Sound_FadeOutCutscene(0, arg2);
+    Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
+
+    return 1;
 }
 
 void vs_main_startCutsceneStreamDefault(int arg0)
@@ -3374,15 +3378,20 @@ void vs_main_startCutsceneStreamDefault(int arg0)
 
 static UNUSED int _freeCutsceneStream(int arg0)
 {
-    if ((arg0 - 1u) < 3) {
-        if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            Sound_StopCutsceneStream();
-            vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
-            vs_main_soundData.unk64[arg0 - 1] = 0;
-            return 1;
-        }
+    if ((arg0 - 1u) >= 3) {
+        return 0;
     }
-    return 0;
+
+    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+        return 0;
+    }
+
+    Sound_StopCutsceneStream();
+    vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
+
+    vs_main_soundData.unk64[arg0 - 1] = 0;
+
+    return 1;
 }
 
 int vs_main_setCutsceneStreamSlot3(void* arg0)
@@ -3391,6 +3400,7 @@ int vs_main_setCutsceneStreamSlot3(void* arg0)
         vs_main_soundData.unk64[2] = arg0;
         return 3;
     }
+
     return 0;
 }
 
@@ -3398,10 +3408,13 @@ int vs_main_clearCutsceneStreamSlot3(void)
 {
 
     if (vs_main_soundData.unk64[2] != 0) {
+
         Sound_StopCutsceneStream();
         vs_main_soundData.unk64[2] = 0;
+
         return 1;
     }
+
     return 0;
 }
 

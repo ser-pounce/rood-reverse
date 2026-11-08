@@ -715,8 +715,8 @@ u_char vs_main_zndMusicMap[256] = { 0, 16, 0, 0, 0, 0, 0, 0, 0, 54, 0, 57, 57, 1
     120, 65, 0, 0, 0, 0, 0, 41, 41, 41, 41, 0, 0, 51, 66, 22, 22, 88, 0, 66, 66, 66, 66,
     66, 88, 44, 79, 40, 40, 40, 40, 40, 40, 121, 118, 43, 126, 129, 125, 130, 29, 30 };
 
-u_short vs_main_unkStrings[] = {
-#include "build/assets/SLUS_010.40/vs_main_unkStrings.vsString"
+u_short vs_main_actorNames[] = {
+#include "build/assets/SLUS_010.40/vs_main_actorNames.vsString"
 };
 
 u_short vs_main_artsPointsRequirements[][4] = {

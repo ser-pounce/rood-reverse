@@ -3,7 +3,7 @@
 
 extern int vs_main_titleScreenCount;
 extern int vs_main_debugPause;
-extern u_short vs_main_unkStrings[];
+extern u_short vs_main_actorNames[];
 
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE

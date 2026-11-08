@@ -3864,7 +3864,7 @@ void vs_main_transformClutSlot(
     }
 }
 
-static inline int _shift_left(int arg0) { return arg0 << 0x10; }
+static inline int _shift_left(int channel) { return channel << 0x10; }
 
 static inline void _startBgAnim(int speed)
 {

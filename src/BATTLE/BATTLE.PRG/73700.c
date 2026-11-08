@@ -16,10 +16,10 @@ void func_800DBF00(func_800E78F4_t* arg0)
     func_800E78F4_t* node;
 
     arg0->unk12F = 0;
-    data->command.fields.unkB_2 = 2;
+    data->unkB_2 = 2;
 
     if (arg0 == D_800F58BC->unk20) {
-        data->command.fields.unkB_2 = 2;
+        data->unkB_2 = 2;
         D_800F58BC->unk20 = D_800F58BC->unk20->unk1A0 != NULL ? D_800F58BC->unk20->unk1A0
                                                               : D_800F58BC->unk1C;
     }
@@ -94,11 +94,11 @@ void func_800DC0D0(void)
         if (state->unk1A4[0].unk0_6 != 2) {
             if (state->unk12F == 0) {
                 state->unk130 = 1;
-                data->command.fields.unkB_2 = 1;
+                data->unkB_2 = 1;
                 changed = 1;
             } else if (state->unk12F == 16) {
                 state->unk130 = -1;
-                data->command.fields.unkB_2 = 2;
+                data->unkB_2 = 2;
                 changed = 1;
             }
 

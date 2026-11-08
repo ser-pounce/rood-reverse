@@ -1087,7 +1087,7 @@ int func_800C58F8(u_char* target)
                 vs_battle_stringContext.strings[0] = (char*)&vs_battle_statusStrings
                     [vs_battle_statusStrings[(i >> 5) + VS_statusStrings_INDEX_blocker]];
             } else if (type == 16) {
-                vs_battle_stringContext.strings[0] = vs_battle_actors[i]->unk3C->name;
+                vs_battle_stringContext.strings[0] = vs_battle_actors[i]->stats->name;
             } else {
                 vs_battle_stringContext.strings[0] =
                     (char*)&vs_battle_statusStrings[vs_battle_statusStrings[type]];
@@ -2977,10 +2977,10 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
     }
 }
 
-int vs_battle_getStatusFlags(vs_battle_actor2* arg0)
+int vs_battle_getStatusFlags(vs_battle_actorStats* stats)
 {
     int i;
-    int temp_v1 = (u_int)arg0->statuses >> 5;
+    int temp_v1 = (u_int)stats->statuses >> 5;
     int var_a2 = temp_v1 & 0xFFFF;
     temp_v1 >>= 16;
 
@@ -3136,7 +3136,7 @@ void func_800CA2DC(void)
     u_int flags;
     u_char icon;
     u_long* prim;
-    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* stats = vs_battle_characterState->stats;
     void* nextPrim = vs_scratch.unk4 - 4;
 
     func_800C9FE8();
@@ -3177,7 +3177,7 @@ void func_800CA2DC(void)
                 prim = vs_battle_setSpriteDefaultTexPage(
                     0, k + D_800EBCEC[j], D_800EBD14[j], nextPrim);
                 prim[2] = D_800EBC54[vs_battle_getLimbStatus(
-                              &vs_battle_characterState->unk3C->limbs[i])]
+                              &vs_battle_characterState->stats->limbs[i])]
                         | 0x64000000;
                 prim[4] = D_800EBD3C[j];
             }
@@ -3187,10 +3187,10 @@ void func_800CA2DC(void)
         }
     }
 
-    _renderStatBar(0, actor->currentHP, actor->maxHP);
-    _renderStatBar(1, actor->currentMP, actor->maxMP);
+    _renderStatBar(0, stats->currentHP, stats->maxHP);
+    _renderStatBar(1, stats->currentMP, stats->maxMP);
 
-    risk = actor->risk;
+    risk = stats->risk;
     k = risk;
 
     if (k != 0) {
@@ -3206,7 +3206,7 @@ void func_800CA2DC(void)
         return;
     }
 
-    flags = vs_battle_getStatusFlags(actor);
+    flags = vs_battle_getStatusFlags(stats);
     count = 0;
     selected = 0xFF;
 
@@ -3372,7 +3372,7 @@ void func_800CAB40(void)
 int func_800CABE0(int arg0)
 {
     int ret;
-    vs_battle_actor2* actor = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* stats = vs_battle_characterState->stats;
     int temp_v0 = func_800A0BE0(0);
     int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
 
@@ -3386,19 +3386,19 @@ int func_800CABE0(int arg0)
 
     ret = var_a0;
 
-    if (actor->currentMP == 0) {
+    if (stats->currentMP == 0) {
         ret |= 0x20;
     }
 
-    if (actor->currentHP == 0) {
+    if (stats->currentHP == 0) {
         ret |= 0x40;
     }
 
-    if (actor->statuses & (vsBattleStatusSilent | vsBattleStatusHeadDown)) {
+    if (stats->statuses & (vsBattleStatusSilent | vsBattleStatusHeadDown)) {
         ret |= 0x80;
     }
 
-    if (actor->statuses & vsBattleStatusParalysis) {
+    if (stats->statuses & vsBattleStatusParalysis) {
         ret |= 0x100;
     }
 

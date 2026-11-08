@@ -315,38 +315,38 @@ static void func_800F9AD8(void)
 {
     int j;
     int i;
-    vs_battle_actor2* temp_s0 = vs_battle_characterState->unk3C;
+    vs_battle_actorStats* stats = vs_battle_characterState->stats;
     vs_main_characterSnapshotStats_t* s1 = &vs_main_characterSnapshot.stats;
 
-    temp_s0->currentHP = s1->currentHP;
-    temp_s0->maxHP = s1->maxHP;
-    temp_s0->currentMP = s1->currentMP;
-    temp_s0->maxMP = s1->maxMP;
-    temp_s0->strength = s1->strength;
-    temp_s0->totalStrength = s1->totalStrength;
-    temp_s0->intelligence = s1->intelligence;
-    temp_s0->totalIntelligence = s1->totalIntelligence;
-    temp_s0->agility = s1->agility;
-    temp_s0->totalAgility = s1->totalAgility;
-    temp_s0->risk = s1->risk;
-    temp_s0->actionDelay = s1->actionDelay;
+    stats->currentHP = s1->currentHP;
+    stats->maxHP = s1->maxHP;
+    stats->currentMP = s1->currentMP;
+    stats->maxMP = s1->maxMP;
+    stats->strength = s1->strength;
+    stats->totalStrength = s1->totalStrength;
+    stats->intelligence = s1->intelligence;
+    stats->totalIntelligence = s1->totalIntelligence;
+    stats->agility = s1->agility;
+    stats->totalAgility = s1->totalAgility;
+    stats->risk = s1->risk;
+    stats->actionDelay = s1->actionDelay;
 
-    func_80086FA8(s1->statuses, temp_s0);
+    func_80086FA8(s1->statuses, stats);
 
     for (i = 0; i < 8; ++i) {
-        temp_s0->statusTimers[i] = s1->statusTimers[i];
+        stats->statusTimers[i] = s1->statusTimers[i];
     }
 
     for (i = 0; i < 6; ++i) {
-        temp_s0->limbs[i].hp = s1->limbs[i].hp;
-        temp_s0->limbs[i].maxHp = s1->limbs[i].maxHp;
+        stats->limbs[i].hp = s1->limbs[i].hp;
+        stats->limbs[i].maxHp = s1->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            temp_s0->limbs[i].types[j] = s1->limbs[i].types[j];
+            stats->limbs[i].types[j] = s1->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            temp_s0->limbs[i].affinities[j] = s1->limbs[i].affinities[j];
+            stats->limbs[i].affinities[j] = s1->limbs[i].affinities[j];
         }
     }
 
@@ -409,53 +409,53 @@ static void func_800F9CCC(void)
 
     func_80076F24(0, &D_800FAB18, 0x10, 0, 0x80, 0);
     if (bladeIndex != 0) {
-        vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon,
+        vs_battle_applyWeapon(&vs_battle_characterState->stats->weapon,
             &vs_main_inventory.weapons[bladeIndex - 1]);
     } else {
-        vs_battle_applyWeapon(&vs_battle_characterState->unk3C->weapon, NULL);
+        vs_battle_applyWeapon(&vs_battle_characterState->stats->weapon, NULL);
     }
 
-    vs_battle_characterState->unk3C->currentRange =
-        vs_battle_characterState->unk3C->weapon.range.range
-        + vs_battle_characterState->unk3C->reach;
-    vs_battle_characterState->unk3C->unk39 =
-        vs_battle_characterState->unk3C->weapon.range.unk1
-        + vs_battle_characterState->unk3C->reach;
-    vs_battle_characterState->unk3C->unk3A =
-        vs_battle_characterState->unk3C->weapon.range.unk2
-        + vs_battle_characterState->unk3C->reach;
-    vs_battle_characterState->unk3C->currentAttackShapeAngle =
-        vs_battle_characterState->unk3C->weapon.range.attackShapeAngle;
-    vs_battle_characterState->unk3C->unk3B_0 = 1;
+    vs_battle_characterState->stats->currentRange =
+        vs_battle_characterState->stats->weapon.range.range
+        + vs_battle_characterState->stats->reach;
+    vs_battle_characterState->stats->unk39 =
+        vs_battle_characterState->stats->weapon.range.unk1
+        + vs_battle_characterState->stats->reach;
+    vs_battle_characterState->stats->unk3A =
+        vs_battle_characterState->stats->weapon.range.unk2
+        + vs_battle_characterState->stats->reach;
+    vs_battle_characterState->stats->currentAttackShapeAngle =
+        vs_battle_characterState->stats->weapon.range.attackShapeAngle;
+    vs_battle_characterState->stats->unk3B_0 = 1;
 
     if (shieldIndex != 0) {
-        vs_battle_applyShield(&vs_battle_characterState->unk3C->shield,
+        vs_battle_applyShield(&vs_battle_characterState->stats->shield,
             &vs_main_inventory.shields[shieldIndex - 1]);
     } else {
-        vs_battle_applyShield(&vs_battle_characterState->unk3C->shield, NULL);
+        vs_battle_applyShield(&vs_battle_characterState->stats->shield, NULL);
     }
 
     for (i = 0; i < 6; ++i) {
-        vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor, NULL);
+        vs_battle_applyArmor(&vs_battle_characterState->stats->limbs[i].armor, NULL);
 
         for (j = 0; j < 16; ++j) {
             if (vs_main_inventory.armor[j].limb == i + 1) {
-                vs_battle_applyArmor(&vs_battle_characterState->unk3C->limbs[i].armor,
+                vs_battle_applyArmor(&vs_battle_characterState->stats->limbs[i].armor,
                     &vs_main_inventory.armor[j]);
             }
         }
     }
 
-    vs_battle_applyAccessory(&vs_battle_characterState->unk3C->accessory, NULL);
+    vs_battle_applyAccessory(&vs_battle_characterState->stats->accessory, NULL);
 
     for (i = 0; i < 16; ++i) {
         if (vs_main_inventory.armor[i].limb == 7) {
             vs_battle_applyAccessory(
-                &vs_battle_characterState->unk3C->accessory, &vs_main_inventory.armor[i]);
+                &vs_battle_characterState->stats->accessory, &vs_main_inventory.armor[i]);
         }
     }
 
-    vs_battle_nop0(vs_battle_characterState->unk3C);
+    vs_battle_nop0(vs_battle_characterState->stats);
 
     if (vs_main_characterSnapshot.stats.restorePending != 0) {
         func_800F9AD8();
@@ -517,7 +517,7 @@ void func_800FA35C(UNUSED int startState)
     DrawSync(0);
     DrawSync(0);
     vs_main_resetSound();
-    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    vs_main_initHeap((void*)0x8010C000, 0xF2000);
     vs_main_prims[1] = 0;
     vs_main_prims[0] = NULL;
     vs_main_ot[0] = vs_main_allocHeap(0x2088);

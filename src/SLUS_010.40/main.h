@@ -2,7 +2,7 @@
 #include "common.h"
 #include "25AC.h"
 #include "inventory.h"
-#include "movementPosition.h"
+#include "tilePosition.h"
 #include <sys/types.h>
 #include <libds.h>
 #include <libgte.h>
@@ -114,16 +114,16 @@ typedef struct {
 
 typedef struct {
     int currentMusicSlot;
-    u_int unk4;
+    u_int currentMusicHandle;
     u_int unk8;
     void* currentMusicData;
     char musicIds[4];
-    u_int unk14[4];
+    u_int musicHandleBySlot[4];
     void* musicData[4];
     vs_main_CdQueueSlot* musicQueueSlot[4];
     u_int currentSfxId;
     char sfxIds[4];
-    void* sfxData[3];
+    int* sfxData[3]; // bank: [0] = entry count, [1..] = byte offsets to each effect
     vs_main_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
     int* unk70[3];
@@ -131,13 +131,6 @@ typedef struct {
     void* soundData;
     vs_main_CdQueueSlot* soundQueueSlot;
 } soundData_t;
-
-typedef struct vs_main_HeapHeader {
-    struct vs_main_HeapHeader* prev;
-    struct vs_main_HeapHeader* next;
-    u_int blockSz;
-    int unkC;
-} vs_main_HeapHeader;
 
 typedef struct {
     u_char unk0_0 : 4;
@@ -408,7 +401,7 @@ typedef struct {
     short limbHP[6];
     UNUSED short _;
     int statuses;
-    vs_battle_movementPosition tile;
+    vs_battle_tilePosition tile;
 } vs_main_savedEnemyState_t;
 
 typedef struct {
@@ -474,39 +467,6 @@ typedef struct {
     short agility;
 } material_modifiers_t;
 
-enum cdBufferModes_e {
-    cdBufferModeNone = 0,
-    cdBufferModeBuffered = 1,
-    cdBufferModeManual = 2,
-};
-
-typedef struct {
-    char state;
-    char unk1;
-    char unk2;
-    char unk3;
-    u_int unk4;
-    u_int sectorCount;
-    int cdSector;
-    union {
-        int byteCount; // data reads
-        int cdVolume; // XA streams: target CD volume
-    } request;
-    void* vram;
-    DslFILTER pcm;
-    DslLOC cdLoc;
-    int commandId;
-    int unk24;
-    int unk28;
-    enum cdBufferModes_e bufferMode;
-    u_int sectorBufIndex;
-    int unk34;
-    u_int unk38;
-    u_int unk3C;
-    u_int ringBufIndex;
-    int framesSinceLastRead;
-} vs_main_disk_t;
-
 typedef union {
     u_int all;
     struct {
@@ -541,7 +501,6 @@ extern vs_main_battleTimer_t vs_main_battleTimer;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
 extern void* vs_main_ot[2];
-extern vs_main_disk_t vs_main_disk;
 extern vs_main_stickPos vs_main_stickPosBuf;
 extern short vs_main_screenX;
 extern short vs_main_screenWidth;
@@ -591,8 +550,8 @@ void vs_main_exec(void);
 void vs_main_enableReset(int);
 void vs_main_setCharacterRestorePending(void);
 void vs_main_captureSaveState(void);
-int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2);
-int vs_main_stopVibration(u_int arg0, int arg1);
+int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id);
+int vs_main_stopVibration(u_int slot, int id);
 void vs_main_padDisconnectAll(void);
 int vs_main_updatePadState(int, char[34]);
 void vs_main_padConnect(int, char[34]);
@@ -611,7 +570,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot);
 int vs_main_clearMusicLoadQueue(void);
 int vs_main_loadAndWaitMusicSlot(int id, int targetSlot);
 void vs_main_loadAndWaitSoundSlot(int id);
-void vs_main_playSfx(int arg0, long id, int arg2, int arg3);
+void vs_main_playSfx(int arg0, int id, int arg2, int arg3);
 void vs_main_playSfxDefault(int, int);
 void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);
@@ -633,15 +592,15 @@ int vs_main_computeSfxPan(int coords, int z);
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPan(int, int, int, char);
-int vs_main_setSfxSlot3Data(u_int);
+int vs_main_setSfxSlot3Data(void*);
 int vs_main_clearSfxSlot3(void);
-void vs_main_playBankSfx(int, u_int[], u_int, int, int);
+void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume);
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2);
-void vs_main_evictBankSfx(int arg0, int* arg1, int arg2);
-void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4);
+void vs_main_evictBankSfx(int group, int* bank, int index);
+void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration);
 void vs_main_startCutsceneStreamDefault(int arg0);
 void vs_main_setMonoSound(int);
-int vs_main_setCutsceneStreamSlot3(u_int arg0);
+int vs_main_setCutsceneStreamSlot3(void*);
 int vs_main_clearCutsceneStreamSlot3(void);
 // Parameters left undeclared due to misuse in unused func_8007B378
 void vs_main_loadClutTransition(
@@ -671,7 +630,7 @@ int vs_main_fadeMusicVolume(int id, int arg1, int arg2);
 int vs_main_getCurrentMusicId(void);
 void vs_main_evictSfx(int arg0, int arg1);
 void vs_main_wait(void);
-void vs_main_initHeap(vs_main_HeapHeader* node, u_int value);
+void vs_main_initHeap(void* heap, u_int size);
 void vs_main_resetGame(void);
 int vs_main_processSoundQueue(void);
 int vs_main_setCurrentSfx(int id);

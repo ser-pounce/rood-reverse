@@ -20,10 +20,15 @@
 #include <limits.h>
 #include <rand.h>
 
+// SECTOR_SIZE (libds) is in 32-bit words
+#define SECTOR_BYTES (SECTOR_SIZE * 4)
+
 enum diskState_e {
     diskIdle = 0,
     diskSeekReady = 1,
     diskReadReady = 2,
+    // Never assigned; only checked by vs_main_diskLoadFile's wait loop
+    diskUnused3 = 3,
     diskReadError = 4,
     diskReadInit = 5,
     diskReadXaInit = 6,
@@ -32,13 +37,70 @@ enum diskState_e {
     diskStreamXaEnd = 9,
 };
 
+enum cdBufferModes_e {
+    cdBufferModeNone = 0,
+    cdBufferModeBuffered = 1,
+    cdBufferModeManual = 2,
+};
+
 typedef struct {
-    int unk0[2];
-    u_short unk8;
-    u_short unkA;
-    char* unkC;
-    int unk10[10];
-} padAct_t;
+    u_char state;
+    UNUSED u_char mode;
+    UNUSED u_char _0;
+    u_char errorCount;
+    u_int sectorsFetched;
+    u_int sectorsRequested;
+    int cdSector;
+    union {
+        int byteCount; // data reads
+        int cdVolume; // XA streams: target CD volume
+    } request;
+    void* vram;
+    DslFILTER pcm;
+    union {
+        DslLOC loc; // seek/read position
+        u_char mode; // DslSetmode parameter (aliases loc.minute)
+    } cd;
+    int commandId;
+    UNUSED int _1;
+    UNUSED int _2;
+    enum cdBufferModes_e bufferMode;
+    u_int sectorBufIndex;
+    int sectorsPending;
+    u_int sectorsReceived;
+    u_int ringWriteIndex;
+    u_int ringBufIndex;
+    int framesSinceLastRead;
+} _disk_t;
+
+typedef struct {
+    int active;
+    int value;
+    int step;
+    int target;
+    int scriptPos;
+    int framesLeft;
+} padMotor_t;
+
+typedef struct {
+    u_short active;
+    u_short id;
+    char* script;
+    padMotor_t motors[2];
+} padVibration_t;
+
+// A colour with 16.16 fixed point channels
+typedef struct {
+    int r;
+    int g;
+    int b;
+} _fixedColor_t;
+
+// A fixed point colour and the step added to it every update while it fades
+typedef struct {
+    _fixedColor_t current;
+    _fixedColor_t step;
+} _fade_t;
 
 typedef struct {
     char active;
@@ -50,8 +112,7 @@ typedef struct {
     short pulseTarget[3];
     short grayAmount;
     short grayStep;
-    int color[3];
-    int colorStep[3];
+    _fade_t fade;
     CVECTOR baseColor;
 } _colorSlot_t;
 
@@ -93,15 +154,21 @@ typedef struct {
     short bgTransitionTargetR;
     short bgTransitionTargetG;
     short bgTransitionTargetB;
-    int bgColors[5][6];
+    _fade_t bgColors[5];
     CVECTOR bgBaseColors[5];
     _colorSlot_t colorSlots[17];
     u_char unk8214[0x54];
 } _clutState_t;
 
+typedef struct vs_main_HeapHeader {
+    struct vs_main_HeapHeader* prev;
+    struct vs_main_HeapHeader* next;
+    u_int blockSz;
+} __attribute__((aligned(16))) vs_main_HeapHeader;
+
 void __main(void);
 static void _unlockPadModeSwitch(void);
-static void _padResetDefaults(int, char[34]);
+static void _padResetDefaults(int, void*);
 static void _padSetActData(int arg0, int arg1, int arg2);
 static void _initCdQueue(void);
 static void _diskReset(void);
@@ -116,9 +183,16 @@ typedef struct {
     char hHi;
 } imgHeader_t;
 
+typedef struct {
+    int processing : 16;
+    int queued : 16;
+} cdQueueCount_t;
+
 extern imgHeader_t _nowLoading_header;
 extern u_long _nowLoading_data[];
 
+// _vibrationOnBank starts with an effect count, followed by a table of four-byte
+// little-endian offsets, one per effect, that locate each effect's script.
 char _vibrationOnBank[] = { 1, 0, 0, 0, 8, 0, 0, 0, 7, 6, 0, 4, 1, 0, 0, 1, 17, 8, 2, 6,
     255, 0, 0, 0 };
 char _actParams[] = { 0, 1, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0 };
@@ -683,6 +757,7 @@ static void _loadBattlePrg(void)
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
+
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
@@ -694,6 +769,7 @@ static void _loadBattlePrg(void)
 
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
+
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[1]);
 
@@ -745,14 +821,16 @@ static void _loadEndingPrg(void)
 
 static int _randArr[97];
 static int _randIndex;
-static vs_main_HeapHeader* _cdReadBuffer;
+static void* _cdReadBuffer;
 static UNUSED int _0;
-static padAct_t _padAct[2];
-static UNUSED int _1[2];
+static struct {
+    int strength[2];
+    padVibration_t port[2];
+} _padAct;
 portInfo_t vs_main_portInfo[2];
 static UNUSED u_char _2[2];
-static vs_main_HeapHeader _heapA;
-static vs_main_HeapHeader _heapB;
+static vs_main_HeapHeader _heap;
+static UNUSED vs_main_HeapHeader _unusedHeap;
 static DslLOC _cdReadLoc;
 static int _cdaTrack;
 static int _cdaMinute;
@@ -760,10 +838,7 @@ static int _cdaSecond;
 static int _cdaPeak;
 static UNUSED int _3;
 static vs_main_CdQueueSlot _cdQueue[32];
-static struct {
-    short processing;
-    short queued;
-} _cdQueueCount;
+static cdQueueCount_t _cdQueueCount;
 static UNUSED int _4;
 vs_main_battleTimer_t vs_main_battleTimer;
 int vs_main_startState;
@@ -775,7 +850,7 @@ void* vs_main_ot[2];
 static int _resetEnabled;
 static UNUSED int _6;
 static u_int _buttonHeldFrameCount[32];
-vs_main_disk_t vs_main_disk;
+static _disk_t _disk;
 static _clutState_t _clutState;
 vs_main_stickPos vs_main_stickPosBuf;
 static int _sp;
@@ -795,8 +870,8 @@ DRAWENV vs_main_drawEnv[2];
 DISPENV vs_main_dispEnv[2];
 static UNUSED int _10[4];
 
-static void _initScreen(
-    int w, int h, UNUSED int arg2, UNUSED int arg3, UNUSED int arg4, UNUSED int arg5)
+static void _initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int unused3,
+    UNUSED int unused4, UNUSED int unused5)
 {
     SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
 
@@ -807,6 +882,11 @@ static void _initScreen(
 
 #define IMG_W(header) (header.wLo + (header.wHi << 8))
 #define IMG_H(header) (header.hLo + (header.hHi << 8))
+
+#define LOADING_RECT(rect, x)                                                          \
+    setRECT(rect, (320 - IMG_W(_nowLoading_header)) / 2 + (x),                         \
+        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),              \
+        IMG_H(_nowLoading_header))
 
 int vs_main_buttonsPreviousState;
 int vs_main_unused0;
@@ -836,53 +916,55 @@ static void _displayLoadingScreen(void)
     DrawSync(0);
     VSync(2);
 
-    setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
-        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-        IMG_H(_nowLoading_header));
+    LOADING_RECT(&rect, 0);
 
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
 
-    setRECT(&rect, ((320 - IMG_W(_nowLoading_header)) / 2) + 320,
-        (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-        IMG_H(_nowLoading_header));
+    LOADING_RECT(&rect, 320);
 
     LoadImage(&rect, (u_long*)&_nowLoading_header + 1);
     DrawSync(0);
     SetDispMask(1);
 }
 
-static void _bufferLoadingScreen(void)
+static UNUSED void _bufferLoadingScreen(void)
 {
     RECT rect;
 
     if (vs_main_frameBuf != 0) {
-        setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2,
-            (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-            IMG_H(_nowLoading_header));
+        LOADING_RECT(&rect, 0);
     } else {
-        setRECT(&rect, (320 - IMG_W(_nowLoading_header)) / 2 + 320,
-            (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),
-            IMG_H(_nowLoading_header));
+        LOADING_RECT(&rect, 320);
     }
 
     LoadImage(&rect, _nowLoading_data);
     DrawSync(0);
 }
 
-void vs_main_resetGame(void)
+static inline void _blankScreen(void)
 {
     DrawSync(0);
     DrawSync(0);
     SetDispMask(0);
+}
+
+static inline void _stopVibrationAndReconnectPads(void)
+{
+    _padSetActData(0, 0, 0);
+    _padSetActData(0, 1, 0);
+    vs_main_padConnect(0, vs_main_padBuffer[0]);
+    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+}
+
+void vs_main_resetGame(void)
+{
+    _blankScreen();
 
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
 
     DsFlush();
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _stopVibrationAndReconnectPads();
     TeardownSound();
     SpuQuit();
     ResetGraph(3);
@@ -892,13 +974,8 @@ void vs_main_resetGame(void)
 
 void vs_main_jumpToBattle(void)
 {
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _blankScreen();
+    _stopVibrationAndReconnectPads();
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
@@ -916,26 +993,16 @@ void vs_main_showEndingAndReturnToTitle(void)
 {
     _inGame = 0;
 
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _blankScreen();
+    _stopVibrationAndReconnectPads();
     ResetGraph(3);
     Sound_StopMusic();
     Sound_StopSfx();
     vs_main_captureSaveState();
     _loadEndingPrg();
     vs_ending_exec();
-    DrawSync(0);
-    DrawSync(0);
-    SetDispMask(0);
-    _padSetActData(0, 0, 0);
-    _padSetActData(0, 1, 0);
-    vs_main_padConnect(0, vs_main_padBuffer[0]);
-    vs_main_padConnect(0x10, vs_main_padBuffer[1]);
+    _blankScreen();
+    _stopVibrationAndReconnectPads();
     TeardownSound();
     SpuQuit();
     ResetGraph(3);
@@ -1012,13 +1079,13 @@ static void _gpuSyncVoidCallback(void) { }
 
 static void _vSyncVoidCallback(void) { }
 
-static void _nop0(void) { }
+static UNUSED void _nop0(void) { }
 
-static void _nop1(void) { }
+static UNUSED void _nop1(void) { }
 
-static void _mainNop2(void) { }
+static UNUSED void _nop2(void) { }
 
-static void _nop3(void) { }
+static UNUSED void _nop3(void) { }
 
 static void _initRand(void)
 {
@@ -1094,7 +1161,7 @@ static void _sysReinit(void)
     InitGeom();
     DrawSyncCallback(_gpuSyncVoidCallback);
     VSyncCallback(_vSyncVoidCallback);
-    vs_main_initHeap((vs_main_HeapHeader*)0x8010C000, 0xF2000);
+    vs_main_initHeap((void*)0x8010C000, 0xF2000);
     _initCdQueue();
     _diskReset();
     _loadMenuSound();
@@ -1161,7 +1228,7 @@ void vs_main_captureSaveState(void)
     int j;
     int actionByte;
     u_char actionsLearned;
-    vs_battle_actor2* actor;
+    vs_battle_actorStats* stats;
     vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
@@ -1183,37 +1250,37 @@ void vs_main_captureSaveState(void)
         vs_main_actionsLearned[actionByte] = actionsLearned;
     }
 
-    actor = vs_battle_characterState->unk3C;
+    stats = vs_battle_characterState->stats;
     snapshot = &vs_main_characterSnapshot;
-    snapshot->stats.currentHP = actor->currentHP;
-    snapshot->stats.maxHP = actor->maxHP;
-    snapshot->stats.currentMP = actor->currentMP;
-    snapshot->stats.maxMP = actor->maxMP;
-    snapshot->stats.strength = actor->strength;
-    snapshot->stats.totalStrength = actor->totalStrength;
-    snapshot->stats.intelligence = actor->intelligence;
-    snapshot->stats.totalIntelligence = actor->totalIntelligence;
-    snapshot->stats.agility = actor->agility;
-    snapshot->stats.totalAgility = actor->totalAgility;
-    snapshot->stats.risk = actor->risk;
-    snapshot->stats.actionDelay = actor->actionDelay;
-    snapshot->stats.statuses = actor->statuses;
+    snapshot->stats.currentHP = stats->currentHP;
+    snapshot->stats.maxHP = stats->maxHP;
+    snapshot->stats.currentMP = stats->currentMP;
+    snapshot->stats.maxMP = stats->maxMP;
+    snapshot->stats.strength = stats->strength;
+    snapshot->stats.totalStrength = stats->totalStrength;
+    snapshot->stats.intelligence = stats->intelligence;
+    snapshot->stats.totalIntelligence = stats->totalIntelligence;
+    snapshot->stats.agility = stats->agility;
+    snapshot->stats.totalAgility = stats->totalAgility;
+    snapshot->stats.risk = stats->risk;
+    snapshot->stats.actionDelay = stats->actionDelay;
+    snapshot->stats.statuses = stats->statuses;
 
     for (i = 0; i < 8; ++i) {
-        snapshot->stats.statusTimers[i] = actor->statusTimers[i];
+        snapshot->stats.statusTimers[i] = stats->statusTimers[i];
     }
 
     for (i = 0; i < 6; ++i) {
 
-        snapshot->stats.limbs[i].hp = actor->limbs[i].hp;
-        snapshot->stats.limbs[i].maxHp = actor->limbs[i].maxHp;
+        snapshot->stats.limbs[i].hp = stats->limbs[i].hp;
+        snapshot->stats.limbs[i].maxHp = stats->limbs[i].maxHp;
 
         for (j = 0; j < 4; ++j) {
-            snapshot->stats.limbs[i].types[j] = actor->limbs[i].types[j];
+            snapshot->stats.limbs[i].types[j] = stats->limbs[i].types[j];
         }
 
         for (j = 0; j < 8; ++j) {
-            snapshot->stats.limbs[i].affinities[j] = actor->limbs[i].affinities[j];
+            snapshot->stats.limbs[i].affinities[j] = stats->limbs[i].affinities[j];
         }
     }
 
@@ -1237,25 +1304,29 @@ void vs_main_padDisconnectAll(void)
 static void _unlockPadModeSwitch(void)
 {
     vs_main_padDisconnectAll();
+
     if (PadInfoMode(0, InfoModeCurExID, 0) != 0) {
         PadSetMainMode(0, 1, 2);
     }
 }
 
-static void _padResetDefaults(int portID, UNUSED char padBuf[34])
+static void _padResetDefaults(int portID, UNUSED void* _)
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
+
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
         port->actData[0] = 0;
         port->actData[1] = 0;
         port->lock = 2;
+
         PadSetMainMode(portID, PadInfoMode(portID, InfoModeCurExOffs, 0), port->lock);
     } else {
         port->actData[0] = 0x40;
         port->actData[1] = 0;
     }
+
     PadSetAct(portID, port->actData, sizeof port->actData);
     PadSetActAlign(portID, _actParams);
 }
@@ -1272,11 +1343,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
         port->lStickX = 128;
         port->rStickY = 128;
         port->rStickX = 128;
+
         return 0;
     }
+
     port = &vs_main_portInfo[portID >> 4];
     mode = PadInfoMode(portID, InfoModeCurID, 0);
     port->mode = mode;
+
     switch (mode) {
     case 1:
     case 2:
@@ -1284,12 +1358,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     case 6:
         btnStates = 0;
         break;
+
     default:
         btnStates = ~((padBuf[2] << 8) | padBuf[3]);
         break;
     }
 
     port->mode = PadInfoMode(portID, InfoModeCurID, 0);
+
     if ((port->mode == 5) || (port->mode == 7)) {
         port->rStickX = padBuf[6];
         port->rStickY = padBuf[7];
@@ -1302,6 +1378,7 @@ int vs_main_updatePadState(int portID, char padBuf[34])
         port->rStickX = 128;
     }
     port->states = btnStates;
+
     return btnStates;
 }
 
@@ -1315,11 +1392,16 @@ void vs_main_padConnect(int portID, char padBuf[34])
     if (state == PadStateFindPad) {
         port->connected = 0;
     }
+
     if (port->connected == 0) {
+
         PadSetAct(portID, port->actData, sizeof port->actData);
+
         if ((state == PadStateFindCTP1)
             || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
+
             _padResetDefaults(portID, padBuf);
+
             port->connected = 1;
         }
     }
@@ -1336,93 +1418,100 @@ static void _padSetActData(int port, int pos, int val)
     }
 }
 
-static char _padGetActData(int port, int pos)
+static UNUSED char _padGetActData(int port, int pos)
 {
     return vs_main_portInfo[port].actData[pos];
 }
 
-int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
+int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id)
 {
     int i;
-    int ret = 0;
+    int slot = 0;
 
-    if (arg1 == 0xFF) {
+    if (requestedSlot == 0xFF) {
         for (i = 0; i < 2; ++i) {
-            if (_padAct[i].unk8 == 0) {
-                ret = i + 1;
+            if (_padAct.port[i].active == 0) {
+                slot = i + 1;
                 break;
             }
         }
-    } else if ((arg1 - 1) < 2) {
-        ret = arg1;
+    } else if ((requestedSlot - 1) < 2) {
+        slot = requestedSlot;
     }
 
-    if (ret != 0) {
-        i = ret - 1;
-        _padAct[i].unkC = arg0;
-        _padAct[i].unk10[4] = 1;
-        _padAct[i].unk10[10] = *arg0;
-        _padAct[i].unk10[11] = 0;
-        _padAct[i].unk10[5] = 0;
-        _padAct[i].unk10[7] = 0;
-        _padAct[i].unk10[1] = 0;
-        _padAct[i].unk8 = 1;
-        _padAct[i].unkA = arg2;
-        return ret;
+    if (slot != 0) {
+        i = slot - 1;
+        _padAct.port[i].script = script;
+        _padAct.port[i].motors[0].scriptPos = 1;
+        _padAct.port[i].motors[1].scriptPos = *script;
+        _padAct.port[i].motors[1].framesLeft = 0;
+        _padAct.port[i].motors[0].framesLeft = 0;
+        _padAct.port[i].motors[1].value = 0;
+        _padAct.port[i].motors[0].value = 0;
+        _padAct.port[i].active = 1;
+        _padAct.port[i].id = id;
+
+        return slot;
     }
+
     return 0;
 }
 
-static int _clearVibrationSlot(int arg0)
+static int _clearVibrationSlot(int slot)
 {
-    int i = arg0 - 1;
-    _padAct[i].unk10[7] = 0;
-    _padAct[i].unk10[1] = 0;
-    _padAct[i].unkC = 0;
-    _padAct[i].unk8 = 0;
+    int i = slot - 1;
+    _padAct.port[i].motors[1].value = 0;
+    _padAct.port[i].motors[0].value = 0;
+    _padAct.port[i].script = 0;
+    _padAct.port[i].active = 0;
 
-    return arg0;
+    return slot;
 }
 
-int vs_main_stopVibration(u_int arg0, int arg1)
+int vs_main_stopVibration(u_int slot, int id)
 {
     int i;
-    if (arg0 - 1 < 2) {
-        return _clearVibrationSlot(arg0);
+
+    if (slot - 1 < 2) {
+        return _clearVibrationSlot(slot);
     }
-    if (arg0 != 0) {
+
+    if (slot != 0) {
         return 0;
     }
-    if (arg1 != 0) {
+
+    if (id != 0) {
         for (i = 0; i < 2; ++i) {
-            if (_padAct[i].unkA == arg1) {
+            if (_padAct.port[i].id == id) {
                 _clearVibrationSlot(i + 1);
             }
         }
     } else {
-        for (i = 0; i < 2;) {
-            _clearVibrationSlot(++i);
+        for (i = 0; i < 2; ++i) {
+            _clearVibrationSlot(i + 1);
         }
     }
+
     return 1;
 }
 
-static int _pauseVibrationSlot(int arg0)
+static int _pauseVibrationSlot(int slot)
 {
-    int v0 = arg0 - 1;
-    _padAct[v0].unk8 = 0;
-    return arg0;
+    int i = slot - 1;
+    _padAct.port[i].active = 0;
+
+    return slot;
 }
 
-static UNUSED int _pauseVibration(int arg0)
+static UNUSED int _pauseVibration(int slot)
 {
     int i;
 
-    if ((arg0 - 1u) < 2) {
-        return _pauseVibrationSlot(arg0);
+    if ((slot - 1u) < 2) {
+        return _pauseVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 
@@ -1433,22 +1522,23 @@ static UNUSED int _pauseVibration(int arg0)
     return 1;
 }
 
-static int _resumeVibrationSlot(int arg0)
+static int _resumeVibrationSlot(int slot)
 {
-    int v0 = arg0 - 1;
-    _padAct[v0].unk8 = 1;
-    return arg0;
+    int i = slot - 1;
+    _padAct.port[i].active = 1;
+
+    return slot;
 }
 
-static UNUSED int _resumeVibration(int arg0)
+static UNUSED int _resumeVibration(int slot)
 {
     int i;
 
-    if ((arg0 - 1u) < 2) {
-        return _resumeVibrationSlot(arg0);
+    if ((slot - 1u) < 2) {
+        return _resumeVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 
@@ -1466,105 +1556,103 @@ void vs_main_resetPadAct(void)
     vs_main_padDisconnectAll();
 
     for (i = 0; i < 2; ++i) {
-        _padAct[i].unkC = NULL;
-        _padAct[i].unk10[7] = 0;
-        _padAct[i].unk10[1] = 0;
-        _padAct[i].unk8 = 0;
+        _padAct.port[i].script = NULL;
+        _padAct.port[i].motors[1].value = 0;
+        _padAct.port[i].motors[0].value = 0;
+        _padAct.port[i].active = 0;
     }
 }
 
-static inline int _abs2(int arg) { return arg < 0 ? arg += 0xFF : arg; }
-
 void vs_main_setVibrateParams(void)
 {
-    int temp_a0;
-    int var_a2_2;
+    int pos;
     int i;
     int j;
-    int var_v0;
-    char* temp_t1;
-    int new_var;
+    char* script;
 
-    _padAct[0].unk0[1] = 0;
-    _padAct[0].unk0[0] = 0;
+    _padAct.strength[1] = 0;
+    _padAct.strength[0] = 0;
 
     for (j = 0; j < 2; ++j) {
-        if (_padAct[j].unk8 == 0) {
+
+        if (_padAct.port[j].active == 0) {
             continue;
         }
 
-        temp_t1 = _padAct[j].unkC;
+        script = _padAct.port[j].script;
 
-        if (temp_t1 != 0) {
+        if (script != 0) {
             for (i = 0; i < 2; ++i) {
-                int (*a1)[6] = (int (*)[6])_padAct[j].unk10;
-                if (a1[i][5] == 0) {
-                    temp_a0 = a1[i][4];
-                    a1[i][5] = temp_t1[temp_a0++];
-                    a1[i][1] = a1[i][3] = temp_t1[temp_a0++] << 8;
-                    if (a1[i][5] == 0) {
-                        a1[i][1] = 0;
-                        a1[i][0] = 0;
+
+                padMotor_t* motors = _padAct.port[j].motors;
+
+                if (motors[i].framesLeft == 0) {
+
+                    pos = motors[i].scriptPos;
+                    motors[i].framesLeft = script[pos++];
+                    motors[i].value = motors[i].target = script[pos++] << 8;
+
+                    if (motors[i].framesLeft == 0) {
+                        motors[i].value = 0;
+                        motors[i].active = 0;
                     } else {
-                        new_var = i != 0;
-                        a1[i][3] = temp_t1[temp_a0 + 1] << 8;
-                        if (new_var) {
-                            a1[i][2] = ((a1[i][3] - a1[i][1]) / a1[i][5]);
-                        } else {
-                            a1[i][2] = 0;
-                        }
-                        a1[i][0] = 1;
-                        a1[i][4] += 2;
+                        motors[i].target = script[pos + 1] << 8;
+                        motors[i].step = i != 0 ? (motors[i].target - motors[i].value)
+                                                      / motors[i].framesLeft
+                                                : 0;
+                        motors[i].active = 1;
+                        motors[i].scriptPos += 2;
                     }
                 }
-                if (a1[i][5] != 0) {
-                    a1[i][1] += a1[i][2];
-                    a1[i][5] -= 1;
+
+                if (motors[i].framesLeft != 0) {
+                    motors[i].value += motors[i].step;
+                    motors[i].framesLeft -= 1;
                 } else {
-                    a1[i][1] = a1[i][3];
+                    motors[i].value = motors[i].target;
                 }
 
-                _padAct[0].unk0[i] += a1[i][1];
-                if (_padAct[0].unk0[i] > 0xFF00) {
-                    _padAct[0].unk0[i] = 0xFF00;
-                } else if (_padAct[0].unk0[i] < 0) {
-                    _padAct[0].unk0[i] = 0;
+                _padAct.strength[i] += motors[i].value;
+
+                if (_padAct.strength[i] > 0xFF00) {
+                    _padAct.strength[i] = 0xFF00;
+                } else if (_padAct.strength[i] < 0) {
+                    _padAct.strength[i] = 0;
                 }
             }
-            _padAct[j].unk8 = _padAct[j].unk10[0] | _padAct[j].unk10[6];
-            if (_padAct[j].unk8 == 0) {
-                _padAct[j].unkC = 0;
+
+            _padAct.port[j].active =
+                _padAct.port[j].motors[0].active | _padAct.port[j].motors[1].active;
+
+            if (_padAct.port[j].active == 0) {
+                _padAct.port[j].script = 0;
             }
-            continue;
+        } else {
+            _padAct.port[j].active = 0;
         }
-        _padAct[j].unk8 = 0;
     }
 
     if (vs_main_settings.vibrationOn != 0) {
-        _padSetActData(0, 0, _abs2(_padAct[0].unk0[0]) >> 8);
-        _padSetActData(0, 1, _abs2(_padAct[0].unk0[1]) >> 8);
+        _padSetActData(0, 0, _padAct.strength[0] / 256);
+        _padSetActData(0, 1, _padAct.strength[1] / 256);
     }
 }
 
 void vs_main_vibrationOnEffect(int arg0)
 {
     if (arg0 < _vibrationOnBank[0]) {
-        int new_var = 5;
-        int new_var3 = 4;
-        int new_var4 = 6;
-        int new_var2 = 7;
         vs_main_setVibrationBank(
-            &_vibrationOnBank[_vibrationOnBank[arg0 * new_var3 + new_var3]
-                              + (_vibrationOnBank[arg0 * new_var3 + new_var] << 8)
-                              + (_vibrationOnBank[arg0 * new_var3 + new_var4] << 16)
-                              + (_vibrationOnBank[arg0 * new_var3 + new_var2] << 24)],
+            &_vibrationOnBank[_vibrationOnBank[arg0 * 4 + 4]
+                              + (_vibrationOnBank[arg0 * 4 + 5] << 8)
+                              + (_vibrationOnBank[arg0 * 4 + 6] << 16)
+                              + (_vibrationOnBank[arg0 * 4 + 7] << 24)],
             0xFF, 0x80);
     }
 }
 
 int vs_main_processPadState(void)
 {
-    UNUSED int dummy[2];
+    UNUSED int _[2];
     int i;
     u_int btnState;
 
@@ -1580,6 +1668,7 @@ int vs_main_processPadState(void)
         vs_main_stickPosBuf.rStickY = 128;
         vs_main_stickPosBuf.rStickX = 128;
         break;
+
     case 7:
         vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
         vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
@@ -1589,6 +1678,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].rStickX < 16) {
             vs_main_buttonsState |= PADLleft;
         }
+
         if (vs_main_portInfo[0].rStickX >= 241) {
             vs_main_buttonsState |= PADLright;
         }
@@ -1596,6 +1686,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].rStickY < 16) {
             vs_main_buttonsState |= PADLup;
         }
+
         if (vs_main_portInfo[0].rStickY >= 241) {
             vs_main_buttonsState |= PADLdown;
         }
@@ -1603,6 +1694,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].lStickX < 32) {
             vs_main_buttonsState |= PADj;
         }
+
         if (vs_main_portInfo[0].lStickX >= 225) {
             vs_main_buttonsState |= PADj;
         }
@@ -1610,10 +1702,13 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].lStickY < 32) {
             vs_main_buttonsState |= PADj;
         }
+
         if (vs_main_portInfo[0].lStickY >= 225) {
             vs_main_buttonsState |= PADj;
         }
+
         break;
+
     default:
         vs_main_stickPosBuf.lStickY = 128;
         vs_main_stickPosBuf.lStickX = 128;
@@ -1627,6 +1722,7 @@ int vs_main_processPadState(void)
     vs_main_buttonsPreviousState = vs_main_buttonsState;
 
     btnState = vs_main_buttonsState;
+
     for (i = 0; i < 32; ++i, btnState >>= 1) {
         if (btnState & 1) {
             _buttonHeldFrameCount[i] += vs_gametime_tickspeed;
@@ -1657,151 +1753,146 @@ int vs_main_processPadState(void)
     return 1;
 }
 
+static inline void _insertFreeBlock(
+    vs_main_HeapHeader* freeNode, vs_main_HeapHeader* target)
+{
+    if ((target + target->blockSz) == freeNode->next) {
+        target->blockSz += freeNode->next->blockSz;
+        target->next = freeNode->next->next;
+        target->next->prev = target;
+    } else {
+        target->next = freeNode->next;
+        target->next->prev = target;
+    }
+
+    if ((freeNode + freeNode->blockSz) == target) {
+        freeNode->blockSz += target->blockSz;
+        freeNode->next = target->next;
+        freeNode->next->prev = freeNode;
+        return;
+    }
+
+    freeNode->next = target;
+    target->prev = freeNode;
+}
+
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heapA.prev;
+    vs_main_HeapHeader* freeNode = _heap.prev;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
-    for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->prev) {
-        if (var_a1 >= var_a1->next && ((var_a1 < target) || (target < var_a1->next))) {
+    for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->prev) {
+        if (freeNode >= freeNode->next
+            && ((freeNode < target) || (target < freeNode->next))) {
             break;
         }
     }
 
-    if ((target + target->blockSz) == var_a1->next) {
-        target->blockSz += var_a1->next->blockSz;
-        target->next = var_a1->next->next;
-        target->next->prev = target;
-    } else {
-        target->next = var_a1->next;
-        target->next->prev = target;
-    }
-
-    if ((var_a1 + var_a1->blockSz) == target) {
-        var_a1->blockSz += target->blockSz;
-        var_a1->next = target->next;
-        var_a1->next->prev = var_a1;
-        return;
-    }
-    var_a1->next = target;
-    target->prev = var_a1;
+    _insertFreeBlock(freeNode, target);
 }
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* var_a1 = _heapA.next;
+    vs_main_HeapHeader* freeNode = _heap.next;
     vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
 
-    for (; var_a1 >= target || target >= var_a1->next; var_a1 = var_a1->next) {
-        if (var_a1 >= var_a1->next && ((var_a1 < target) || (target < var_a1->next))) {
+    for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->next) {
+        if (freeNode >= freeNode->next
+            && ((freeNode < target) || (target < freeNode->next))) {
             break;
         }
     }
 
-    if ((target + target->blockSz) == var_a1->next) {
-        target->blockSz += var_a1->next->blockSz;
-        target->next = var_a1->next->next;
-        target->next->prev = target;
-    } else {
-        target->next = var_a1->next;
-        target->next->prev = target;
-    }
-
-    if ((var_a1 + var_a1->blockSz) == target) {
-        var_a1->blockSz += target->blockSz;
-        var_a1->next = target->next;
-        var_a1->next->prev = var_a1;
-        return;
-    }
-    var_a1->next = target;
-    target->prev = var_a1;
+    _insertFreeBlock(freeNode, target);
 }
 
 void* vs_main_allocHeapR(u_int size)
 {
-    vs_main_HeapHeader* var_a1;
-    vs_main_HeapHeader* var_a2;
+    vs_main_HeapHeader* freeNode;
+    vs_main_HeapHeader* lastNode;
     u_int blockSz;
 
     blockSz = ((size + 15) >> 4) + 1;
-    var_a2 = &_heapA;
-    var_a1 = _heapA.prev;
+    lastNode = &_heap;
+    freeNode = _heap.prev;
 
     while (1) {
-        if (var_a1->blockSz >= blockSz) {
-            if (var_a1->blockSz == blockSz) {
-                var_a2->prev = var_a1->prev;
-                var_a1->prev->next = var_a1->next;
+        if (freeNode->blockSz >= blockSz) {
+            if (freeNode->blockSz == blockSz) {
+                lastNode->prev = freeNode->prev;
+                freeNode->prev->next = freeNode->next;
             } else {
-                var_a1->blockSz = var_a1->blockSz - blockSz;
-                var_a1 += var_a1->blockSz;
-                var_a1->blockSz = blockSz;
+                freeNode->blockSz = freeNode->blockSz - blockSz;
+                freeNode += freeNode->blockSz;
+                freeNode->blockSz = blockSz;
             }
-            return (u_long*)(var_a1 + 1);
+            return (u_long*)(freeNode + 1);
         }
-        var_a2 = var_a1;
-        if (var_a1 == &_heapA) {
+        lastNode = freeNode;
+        if (freeNode == &_heap) {
             return 0;
         }
-        var_a1 = var_a1->prev;
+        freeNode = freeNode->prev;
     }
 }
 
 void* vs_main_allocHeap(u_int size)
 {
     u_int blockSz;
-    vs_main_HeapHeader* var_a1;
-    vs_main_HeapHeader* var_v1;
+    vs_main_HeapHeader* freeNode;
+    vs_main_HeapHeader* lastNode;
 
-    var_v1 = &_heapA;
-    var_a1 = _heapA.next;
+    lastNode = &_heap;
+    freeNode = _heap.next;
     blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
-        if (var_a1->blockSz >= blockSz) {
-            if (var_a1->blockSz == blockSz) {
-                var_v1->next = var_a1->next;
-                var_a1->next->prev = var_a1->prev;
+        if (freeNode->blockSz >= blockSz) {
+            if (freeNode->blockSz == blockSz) {
+                lastNode->next = freeNode->next;
+                freeNode->next->prev = freeNode->prev;
             } else {
-                vs_main_HeapHeader* temp_v1 = var_a1 + blockSz;
-                temp_v1->blockSz = var_a1->blockSz - blockSz;
-                temp_v1->prev = var_a1->prev;
-                temp_v1->next = var_a1->next;
+                vs_main_HeapHeader* temp_v1 = freeNode + blockSz;
+                temp_v1->blockSz = freeNode->blockSz - blockSz;
+                temp_v1->prev = freeNode->prev;
+                temp_v1->next = freeNode->next;
                 temp_v1->prev->next = temp_v1;
                 temp_v1->next->prev = temp_v1;
-                var_a1->blockSz = blockSz;
+                freeNode->blockSz = blockSz;
             }
-            return (u_long*)(var_a1 + 1);
+            return (u_long*)(freeNode + 1);
         }
-        var_v1 = var_a1;
-        if (var_a1 == &_heapA) {
+        lastNode = freeNode;
+        if (freeNode == &_heap) {
             return 0;
         }
-        var_a1 = var_a1->next;
+        freeNode = freeNode->next;
     }
 }
 
-void vs_main_initHeap(vs_main_HeapHeader* node, u_int value)
+void vs_main_initHeap(void* heap, u_int size)
 {
-    _heapA.prev = node;
-    _heapA.next = node;
-    _heapA.blockSz = 0;
-    node->prev = &_heapA;
-    node->next = &_heapA;
-    node->blockSz = value / 16 - 1;
-    _heapB.prev = &_heapB;
-    _heapB.next = &_heapB;
-    _heapB.blockSz = 0;
+    vs_main_HeapHeader* node = heap;
+
+    _heap.prev = node;
+    _heap.next = node;
+    _heap.blockSz = 0;
+    node->prev = &_heap;
+    node->next = &_heap;
+    node->blockSz = size / 16 - 1;
+    _unusedHeap.prev = &_unusedHeap;
+    _unusedHeap.next = &_unusedHeap;
+    _unusedHeap.blockSz = 0;
 }
 
 static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
 {
-
-    if ((intr == DslDiskError) || (intr == DslNoIntr)
-        || (vs_main_disk.state == diskReadError)) {
+    if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);
         DsEndReadySystem();
-        vs_main_disk.state = diskReadError;
+
+        _disk.state = diskReadError;
+
         return;
     }
 
@@ -1809,38 +1900,44 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
         return;
     }
 
-    vs_main_disk.state = diskReadReady;
+    _disk.state = diskReadReady;
 
-    if (vs_main_disk.bufferMode == cdBufferModeNone) {
-        DsGetSector(vs_main_disk.vram + vs_main_disk.sectorBufIndex * 2048, 512);
+    if (_disk.bufferMode == cdBufferModeNone) {
+        DsGetSector(_disk.vram + _disk.sectorBufIndex * SECTOR_BYTES, SECTOR_SIZE);
     } else {
-        DsGetSector(_cdReadBuffer + vs_main_disk.unk3C * 128, 512);
-        if (++vs_main_disk.unk3C >= 16) {
-            vs_main_disk.unk3C = 0;
+        DsGetSector(_cdReadBuffer + _disk.ringWriteIndex * SECTOR_BYTES, SECTOR_SIZE);
+
+        if (++_disk.ringWriteIndex >= 16) {
+            _disk.ringWriteIndex = 0;
         }
     }
 
-    switch (vs_main_disk.bufferMode) {
+    switch (_disk.bufferMode) {
     case cdBufferModeNone:
-        if (++vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
-            vs_main_disk.state = diskIdle;
+        if (++_disk.sectorBufIndex >= _disk.sectorsRequested) {
+            _disk.state = diskIdle;
         }
         break;
+
     case cdBufferModeBuffered:
-        ++vs_main_disk.unk38;
-        ++vs_main_disk.unk34;
+        ++_disk.sectorsReceived;
+        ++_disk.sectorsPending;
         break;
+
     case cdBufferModeManual:
-        ++vs_main_disk.unk38;
-        if (++vs_main_disk.ringBufIndex >= 16) {
-            vs_main_disk.ringBufIndex = 0;
+        ++_disk.sectorsReceived;
+
+        if (++_disk.ringBufIndex >= 16) {
+            _disk.ringBufIndex = 0;
         }
+
         break;
+
     default:
         break;
     }
 
-    if (++vs_main_disk.unk4 >= vs_main_disk.sectorCount) {
+    if (++_disk.sectorsFetched >= _disk.sectorsRequested) {
         DsEndReadySystem();
     }
 }
@@ -1851,15 +1948,19 @@ static void _diskReadCommandCallback(u_char intr, UNUSED u_char result[])
     case DslComplete:
         DsStartReadySystem(_diskReadCallback, -1);
         return;
+
     case DslDiskError:
         break;
+
     default:
         break;
+
     case DslNoResult:
     case DslNoIntr:
         return;
     }
-    vs_main_disk.state = diskReadError;
+
+    _disk.state = diskReadError;
 }
 
 static void _diskSeekCommandCallback(u_char intr, UNUSED u_char result[])
@@ -1867,16 +1968,20 @@ static void _diskSeekCommandCallback(u_char intr, UNUSED u_char result[])
     switch (intr) {
     case DslNoIntr:
         break;
+
     case DslComplete:
-        vs_main_disk.state = diskIdle;
+        _disk.state = diskIdle;
         break;
+
     case DslDiskError:
-        vs_main_disk.state = diskReadError;
+        _disk.state = diskReadError;
         break;
+
     case DslNoResult:
         break;
+
     default:
-        vs_main_disk.state = diskReadError;
+        _disk.state = diskReadError;
         break;
     }
 }
@@ -1886,53 +1991,70 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
     switch (intr) {
     case DslComplete:
         DsReadyCallback(NULL);
-        vs_main_disk.state = diskIdle;
+        _disk.state = diskIdle;
         break;
+
     case DslDataReady:
         if (!(result[4] & 0x80)) {
-            _cdaTrack = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
+            _cdaTrack = ((result[1] >> 4) * 10) + (result[1] & 0xF);
             _cdaMinute = result[3];
             _cdaSecond = result[4];
             _cdaPeak = (result[6] << 8) | result[7];
         }
+
         break;
+
     case DslDiskError:
         DsReadyCallback(NULL);
-        vs_main_disk.state = diskCommandFailed;
+        _disk.state = diskCommandFailed;
+
         break;
     }
 }
 
-static int _diskGetState(void) { return vs_main_disk.state; }
+static int _diskGetState(void) { return _disk.state; }
 
-static void _diskClearError(void)
+static UNUSED void _diskClearError(void)
 {
-    if (vs_main_disk.state == diskReadError) {
-        vs_main_disk.state = diskIdle;
+    if (_disk.state == diskReadError) {
+        _disk.state = diskIdle;
     }
+}
+
+static inline void _diskResetReadState(void)
+{
+    _disk.ringBufIndex = 0;
+    _disk.ringWriteIndex = 0;
+    _disk.sectorBufIndex = 0;
+    _disk.sectorsPending = 0;
+    _disk.sectorsFetched = 0;
+    _disk.errorCount = 0;
+    _disk.sectorsReceived = 0;
 }
 
 static int _diskInitRead(int sector, u_int bytes, void* vram)
 {
-    if (vs_main_disk.state == diskIdle) {
-        vs_main_disk.cdSector = sector;
-        vs_main_disk.request.byteCount = bytes;
-        vs_main_disk.vram = vram;
-        vs_main_disk.ringBufIndex = 0;
-        vs_main_disk.unk3C = 0;
-        vs_main_disk.sectorBufIndex = 0;
-        vs_main_disk.unk34 = 0;
-        vs_main_disk.unk4 = 0;
-        vs_main_disk.unk3 = 0;
-        vs_main_disk.unk38 = 0;
-        vs_main_disk.sectorCount = bytes / 2048;
-        if (bytes % 2048) {
-            ++vs_main_disk.sectorCount;
+    if (_disk.state == diskIdle) {
+
+        _disk.cdSector = sector;
+        _disk.request.byteCount = bytes;
+        _disk.vram = vram;
+
+        _diskResetReadState();
+
+        _disk.sectorsRequested = bytes / SECTOR_BYTES;
+
+        if (bytes % SECTOR_BYTES) {
+            ++_disk.sectorsRequested;
         }
-        DsIntToPos(sector, &vs_main_disk.cdLoc);
-        vs_main_disk.state = diskReadInit;
+
+        DsIntToPos(sector, &_disk.cd.loc);
+
+        _disk.state = diskReadInit;
+
         return 1;
     }
+
     return 0;
 }
 
@@ -1942,163 +2064,219 @@ static void _diskUpdate(void)
     int i;
     u_int seconds;
 
-    switch (vs_main_disk.state) {
+    switch (_disk.state) {
     case diskIdle:
     default:
         break;
+
     case diskReadXaInit:
         if (DsSystemStatus() == DslReady) {
-            vs_main_disk.unk1 = 0;
-            vs_main_disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
+
+            _disk.mode = 0;
+            _disk.cd.mode = 0;
+
+            while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
                 ;
+
             VSync(3);
+
             vol.val2 = 0x80;
             vol.val0 = 0x80;
             vol.val3 = 0;
             vol.val1 = 0;
+
             DsMix(&vol);
-            Sound_SetCdVolume(vs_main_disk.request.cdVolume);
+            Sound_SetCdVolume(_disk.request.cdVolume);
             Sound_SetCdMixVolume(0x7F);
-            vs_main_disk.pcm.file = 1;
-            vs_main_disk.pcm.chan = 0;
-            DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
-            DsIntToPos(vs_main_disk.cdSector, &vs_main_disk.cdLoc);
-            vs_main_disk.commandId =
-                DsPacket(DslModeRT | DslModeSF, &vs_main_disk.cdLoc, DslReadS, NULL, -1);
+
+            _disk.pcm.file = 1;
+            _disk.pcm.chan = 0;
+
+            DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
+            DsIntToPos(_disk.cdSector, &_disk.cd.loc);
+
+            _disk.commandId =
+                DsPacket(DslModeRT | DslModeSF, &_disk.cd.loc, DslReadS, NULL, -1);
             DsReadyCallback(_diskPcmReadReady);
-            vs_main_disk.state = diskStreamXa;
+
+            _disk.state = diskStreamXa;
         }
-        if (vs_main_disk.commandId == 0) {
+
+        if (_disk.commandId == 0) {
             DsReadyCallback(0);
-            vs_main_disk.state = diskCommandFailed;
-            ++vs_main_disk.unk3;
+            _disk.state = diskCommandFailed;
+
+            ++_disk.errorCount;
         }
         break;
+
     case diskReadInit: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
-            vs_main_disk.unk4 = 0;
-            vs_main_disk.sectorBufIndex = 0;
-            if (vs_main_disk.request.byteCount != 0) {
-                vs_main_disk.state = diskReadReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
+
+            _disk.sectorsFetched = 0;
+            _disk.sectorBufIndex = 0;
+
+            if (_disk.request.byteCount != 0) {
+                _disk.state = diskReadReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslReadN, _diskReadCommandCallback, -1);
             } else {
-                vs_main_disk.state = diskSeekReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
+                _disk.state = diskSeekReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslSeekL, _diskSeekCommandCallback, -1);
             }
 
-            if (vs_main_disk.commandId == 0) {
-                vs_main_disk.state = diskReadError;
-                ++vs_main_disk.unk3;
+            if (_disk.commandId == 0) {
+                _disk.state = diskReadError;
+                ++_disk.errorCount;
             }
         }
         break;
     }
+
     case diskCommandFailed: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
-            vs_main_disk.unk4 = 0;
-            ++vs_main_disk.unk3;
+
+            _disk.sectorsFetched = 0;
+            ++_disk.errorCount;
             seconds = vs_main_frameDuration / 60;
+
             if (seconds < 420) {
-                DsIntToPos(
-                    vs_main_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
+                DsIntToPos(_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
                     &_cdReadLoc);
+
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
                 vol.val3 = 0;
                 vol.val1 = 0;
+
                 DsMix(&vol);
                 Sound_SetCdVolume(0);
-                Sound_FadeCdVolume(0x3C, vs_main_disk.request.cdVolume);
-                vs_main_disk.pcm.file = 1;
-                vs_main_disk.pcm.chan = 0;
-                DsControl(DslSetfilter, (char*)&vs_main_disk.pcm, NULL);
-                vs_main_disk.commandId =
+                Sound_FadeCdVolume(0x3C, _disk.request.cdVolume);
+
+                _disk.pcm.file = 1;
+                _disk.pcm.chan = 0;
+
+                DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
+                _disk.commandId =
                     DsPacket(DslModeRT | DslModeSF, &_cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
-                vs_main_disk.state = diskStreamXa;
+
+                _disk.state = diskStreamXa;
+
             } else {
-                vs_main_disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
-                vs_main_disk.state = diskIdle;
+                _disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
+                _disk.state = diskIdle;
+
                 DsReadyCallback(0);
             }
         }
-        if (vs_main_disk.commandId == 0) {
-            vs_main_disk.state = diskCommandFailed;
-            ++vs_main_disk.unk3;
+
+        if (_disk.commandId == 0) {
+            _disk.state = diskCommandFailed;
+            ++_disk.errorCount;
         }
+
         break;
     }
+
     case diskReadError: {
-        int status = DsSystemStatus();
-        if (status == DslReady) {
-            vs_main_disk.unk4 = 0;
-            vs_main_disk.sectorBufIndex = 0;
-            ++vs_main_disk.unk3;
 
-            if (vs_main_disk.request.byteCount != 0) {
-                vs_main_disk.state = diskReadReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
+        int status = DsSystemStatus();
+
+        if (status == DslReady) {
+
+            _disk.sectorsFetched = 0;
+            _disk.sectorBufIndex = 0;
+            ++_disk.errorCount;
+
+            if (_disk.request.byteCount != 0) {
+                _disk.state = diskReadReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslReadN, _diskReadCommandCallback, -1);
             } else {
-                vs_main_disk.state = diskSeekReady;
-                vs_main_disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &vs_main_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
+                _disk.state = diskSeekReady;
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslSeekL, _diskSeekCommandCallback, -1);
             }
 
-            if (vs_main_disk.commandId == 0) {
-                vs_main_disk.state = diskReadError;
-                ++vs_main_disk.unk3;
+            if (_disk.commandId == 0) {
+                _disk.state = diskReadError;
+                ++_disk.errorCount;
             }
         }
         break;
     }
+
     case diskStreamXaEnd:
         Sound_SetCdVolume(0);
-        vs_main_disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
-        if (vs_main_disk.commandId > 0) {
-            vs_main_disk.state = diskIdle;
+
+        _disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
+
+        if (_disk.commandId > 0) {
+            _disk.state = diskIdle;
         }
+
         DsReadyCallback(NULL);
-        vs_main_disk.unk1 = 128;
-        vs_main_disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
+
+        _disk.mode = 128;
+        _disk.cd.mode = 128;
+
+        while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
             ;
+
         VSync(3);
+
         break;
     }
 
-    if (vs_main_disk.bufferMode != cdBufferModeNone) {
+    if (_disk.bufferMode != cdBufferModeNone) {
+
         for (i = 0; i < 16; ++i) {
-            if (vs_main_disk.sectorBufIndex >= vs_main_disk.unk38) {
+
+            if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
                 return;
             }
-            if (vs_main_disk.bufferMode == cdBufferModeBuffered) {
-                vs_main_memcpy(
-                    ((char*)vs_main_disk.vram + (vs_main_disk.sectorBufIndex * 2048)),
-                    _cdReadBuffer + (vs_main_disk.ringBufIndex * 128), 2048);
 
-                ++vs_main_disk.ringBufIndex;
-                if (vs_main_disk.ringBufIndex >= 16) {
-                    vs_main_disk.ringBufIndex = 0;
+            if (_disk.bufferMode == cdBufferModeBuffered) {
+
+                vs_main_memcpy(
+                    ((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
+                    _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
+
+                ++_disk.ringBufIndex;
+
+                if (_disk.ringBufIndex >= 16) {
+                    _disk.ringBufIndex = 0;
                 }
-                --vs_main_disk.unk34;
-                ++vs_main_disk.sectorBufIndex;
-                if (vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount) {
-                    vs_main_disk.state = diskIdle;
+
+                --_disk.sectorsPending;
+                ++_disk.sectorBufIndex;
+
+                if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
+                    _disk.state = diskIdle;
+
                     vs_main_freeHeapR(_cdReadBuffer);
+
                     _cdReadBuffer = NULL;
                 }
-            } else if (vs_main_disk.bufferMode == cdBufferModeManual) {
-                ++vs_main_disk.sectorBufIndex;
-                if ((vs_main_disk.sectorBufIndex >= vs_main_disk.sectorCount)
+            } else if (_disk.bufferMode == cdBufferModeManual) {
+
+                ++_disk.sectorBufIndex;
+
+                if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
                     && (IsSpuTransferring() == 0)) {
-                    vs_main_disk.state = diskIdle;
+
+                    _disk.state = diskIdle;
+
                     vs_main_freeHeapR(_cdReadBuffer);
+
                     _cdReadBuffer = NULL;
                 }
             }
@@ -2109,51 +2287,41 @@ static void _diskUpdate(void)
 int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 {
     int result = _diskInitRead(sector, bytes, vram);
-    if (result != 0) {
-        int seekReady = diskSeekReady;
-        int readReady = diskReadReady;
 
-        while (1) {
-            if (_diskGetState() == seekReady) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == readReady) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == 3) {
-                vs_main_gametimeUpdate(0);
-            } else if (_diskGetState() == diskReadInit) {
-                vs_main_gametimeUpdate(0);
-            } else {
-                break;
-            }
+    if (result != 0) {
+        while (_diskGetState() == diskSeekReady || _diskGetState() == diskReadReady
+               || _diskGetState() == diskUnused3 || _diskGetState() == diskReadInit) {
+            vs_main_gametimeUpdate(0);
         }
     }
+
     return result;
 }
 
 int vs_main_streamXa(int sector, int cdVolume)
 {
-    if (vs_main_disk.state == diskIdle) {
-        vs_main_disk.cdSector = sector;
-        vs_main_disk.request.cdVolume = cdVolume;
-        vs_main_disk.ringBufIndex = 0;
-        vs_main_disk.unk3C = 0;
-        vs_main_disk.sectorBufIndex = 0;
-        vs_main_disk.unk34 = 0;
-        vs_main_disk.unk4 = 0;
-        vs_main_disk.unk3 = 0;
-        vs_main_disk.unk38 = 0;
-        vs_main_disk.state = diskReadXaInit;
+    if (_disk.state == diskIdle) {
+
+        _disk.cdSector = sector;
+        _disk.request.cdVolume = cdVolume;
+
+        _diskResetReadState();
+
+        _disk.state = diskReadXaInit;
+
         return 1;
     }
+
     return 0;
 }
 
 int vs_main_checkStreamXaEnd(void)
 {
-    if (vs_main_disk.state == diskStreamXa) {
-        vs_main_disk.state = diskStreamXaEnd;
+    if (_disk.state == diskStreamXa) {
+        _disk.state = diskStreamXaEnd;
         return 1;
     }
+
     return 0;
 }
 
@@ -2162,14 +2330,17 @@ static void _diskReset(void)
     while (DsControlB(DslPause, NULL, NULL) == 0)
         ;
     DsFlush();
-    vs_main_disk.unk1 = 128;
-    vs_main_disk.cdLoc.minute = 128;
-    vs_main_disk.unk2 = 0;
-    vs_main_disk.state = diskIdle;
-    vs_main_disk.bufferMode = cdBufferModeNone;
+
+    _disk.mode = 128;
+    _disk.cd.mode = 128;
+    _disk._0 = 0;
+    _disk.state = diskIdle;
+    _disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    while (DsControlB(DslSetmode, (u_char*)&vs_main_disk.cdLoc, NULL) == 0)
+
+    while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
         ;
+
     VSync(3);
 }
 
@@ -2180,7 +2351,8 @@ static void _initCdQueue(void)
     for (i = 31; i >= 0; --i) {
         _cdQueue[i].state = vs_main_CdQueueStateFree;
     }
-    *(int*)&_cdQueueCount = 0;
+
+    _cdQueueCount = (cdQueueCount_t) { 0, 0 };
 }
 
 vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
@@ -2194,15 +2366,18 @@ vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
             return &_cdQueue[i];
         }
     }
+
     vs_main_nop9(162, 0);
 }
 
 void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot* slot)
 {
     u_short state = slot->state - 2;
+
     if (state < vs_main_CdQueueStateLoaded - 2) {
         vs_main_nop9(163, 0);
     }
+
     slot->state = vs_main_CdQueueStateFree;
 }
 
@@ -2224,6 +2399,7 @@ void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
             ++queue->priority;
         }
     }
+
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unkC = 0;
@@ -2231,27 +2407,35 @@ void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
     ++_cdQueueCount.queued;
 }
 
-static void _nop4(void) { }
+static UNUSED void _nop4(void) { }
 
 static void _processCdQueue(void)
 {
-    ++vs_main_disk.framesSinceLastRead;
+    ++_disk.framesSinceLastRead;
 
-    if (*(int*)&_cdQueueCount != 0) {
+    if (_cdQueueCount.processing || _cdQueueCount.queued) {
+
         vs_main_CdQueueSlot* slot = _cdQueue;
+
         int i = _diskGetState();
+
         if (i == diskIdle) {
+
             for (i = 0; i < 32; ++i, ++slot) {
                 if (slot->state == vs_main_CdQueueStateEnqueued) {
                     if (slot->priority == 0) {
+
                         slot->state = vs_main_CdQueueStateReading;
+
                         _diskInitRead(slot->cdFile.lba, slot->cdFile.size, slot->vram);
-                        vs_main_disk.framesSinceLastRead = 0;
+
+                        _disk.framesSinceLastRead = 0;
                         --_cdQueueCount.queued;
                         ++_cdQueueCount.processing;
                     } else {
                         --slot->priority;
                     }
+
                 } else if (slot->state == vs_main_CdQueueStateReading) {
                     slot->state = vs_main_CdQueueStateLoaded;
                     --_cdQueueCount.processing;
@@ -2259,6 +2443,7 @@ static void _processCdQueue(void)
             }
         }
     }
+
     _diskUpdate();
 }
 
@@ -2266,101 +2451,122 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold((void*)arg0); }
+void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold(arg0); }
 
 int vs_main_stopMusicSlot(int id)
 {
-    u_int new_var;
-    int var_a1;
+    int i;
 
     if (id != 0) {
-        if (vs_main_soundData.unk14[id - 1] != 0xFFFF) {
-            Sound_StopMusicById(vs_main_soundData.unk14[id - 1]);
-            vs_main_soundData.unk14[id - 1] = 0xFFFF;
+        if (vs_main_soundData.musicHandleBySlot[id - 1] != 0xFFFF) {
+
+            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[id - 1]);
+
+            vs_main_soundData.musicHandleBySlot[id - 1] = 0xFFFF;
         }
+
         if (vs_main_soundData.currentMusicSlot == id) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
-            vs_main_soundData.unk4 = 0xFFFF;
+            vs_main_soundData.currentMusicHandle = 0xFFFF;
         }
+
         return 1;
     }
+
     Sound_StopMusic();
+
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
-    vs_main_soundData.unk4 = 0xFFFF;
+    vs_main_soundData.currentMusicHandle = 0xFFFF;
 
-    new_var = 0xFFFF;
-    for (var_a1 = 3; var_a1 >= 0; --var_a1) {
-        vs_main_soundData.unk14[var_a1] = new_var;
+    for (i = 0; i < 4; ++i) {
+        vs_main_soundData.musicHandleBySlot[i] = 0xFFFF;
     }
+
     return 1;
 }
 
 int vs_main_queueMusicSlot(int id)
 {
-    u_int temp_v0;
+    u_int handle;
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = Sound_QueueMusic(vs_main_soundData.currentMusicData);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            handle = Sound_QueueMusic(vs_main_soundData.currentMusicData);
+
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+
+        return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
 int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
 {
-    u_int temp_v0;
-
     if (id != 0) {
+
         if (vs_main_soundData.musicData[id - 1] != 0) {
+            u_int handle;
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
-            temp_v0 = Sound_StartMasterAndMusicVolumeFade(
+
+            handle = Sound_StartMasterAndMusicVolumeFade(
                 vs_main_soundData.currentMusicData, arg2, arg1);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+
+        return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
 int vs_main_playMusicSlot(int id, int arg1, int arg2)
 {
-    u_int temp_v0;
-
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
+            u_int handle;
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+
             Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
-            temp_v0 = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
-            if (temp_v0 != 0) {
-                vs_main_soundData.unk14[id - 1] = temp_v0;
-                vs_main_soundData.unk4 = temp_v0;
+            handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
+
+            if (handle != 0) {
+                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.currentMusicHandle = handle;
                 Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
-        return vs_main_soundData.unk4;
+
+        return vs_main_soundData.currentMusicHandle;
     }
+
     return 0;
 }
 
-static int vs_main_getcurrentMusicSlot(void)
+static UNUSED int vs_main_getcurrentMusicSlot(void)
 {
     return vs_main_soundData.currentMusicSlot;
 }
@@ -2382,12 +2588,11 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
 
         if (targetSlot < 5) {
             if (vs_main_soundData.musicIds[slot] != id) {
-                do {
-                    if (vs_main_soundData.musicData[slot] != 0) {
-                        vs_main_nop10(142, 0);
-                        vs_main_freeMusic(targetSlot);
-                    }
-                } while (0);
+
+                if (vs_main_soundData.musicData[slot] != 0) {
+                    vs_main_nop10(142, 0);
+                    vs_main_freeMusic(targetSlot);
+                }
 
                 cdFile.lba = _musicLBAs[id];
                 cdFile.size = _musicFileSizes[id];
@@ -2404,15 +2609,20 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
                 }
+
                 vs_main_soundData.musicData[slot] = vs_main_allocHeapR(cdFile.size);
                 vs_main_cdEnqueue(vs_main_soundData.musicQueueSlot[slot],
                     vs_main_soundData.musicData[slot]);
+
                 vs_main_soundData.musicIds[slot] = id;
             }
+
             return targetSlot;
         }
     }
+
     vs_main_nop9(0x8E, 0);
+
     return 0;
 }
 
@@ -2425,6 +2635,7 @@ static int _loadMusicIntoFreeSlot(int id)
             return vs_main_loadMusicSlot(id, i + 1);
         }
     }
+
     return 0;
 }
 
@@ -2432,61 +2643,67 @@ int vs_main_clearMusicLoadSlot(u_int slot)
 {
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
+
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateLoaded) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = NULL;
+
                 return 0;
             }
+
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+
                 return -1;
             }
+
             return 1;
         }
     }
+
     return 0;
 }
 
 int vs_main_clearMusicLoadQueue(void)
 {
     int i;
-    int ret;
+    int ret = 0;
 
-    ret = 0;
-    i = 0;
-    do {
-        ret |= vs_main_clearMusicLoadSlot(++i);
-    } while (i < 4);
+    for (i = 0; i < 4; ++i) {
+        ret |= vs_main_clearMusicLoadSlot(i + 1);
+    }
 
     return ret;
 }
 
 int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
 {
-    int ret;
+    int ret = vs_main_loadMusicSlot(id, targetSlot);
 
-    ret = vs_main_loadMusicSlot(id, targetSlot);
     if (ret != 0) {
         while (vs_main_clearMusicLoadSlot(targetSlot) != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return ret;
 }
 
-static int _loadMusicIntoFreeSlotAndClearQueue(int id)
+static UNUSED int _loadMusicIntoFreeSlotAndClearQueue(int id)
 {
-    int ret;
+    int ret = _loadMusicIntoFreeSlot(id);
 
-    ret = _loadMusicIntoFreeSlot(id);
     if (ret != 0) {
         while (vs_main_clearMusicLoadQueue() != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return ret;
 }
 
@@ -2499,20 +2716,24 @@ int vs_main_freeMusic(int slotId)
     }
 
     vs_main_freeHeapR(vs_main_soundData.musicData[slotId - 1]);
+
     vs_main_soundData.musicData[slotId - 1] = 0;
     vs_main_soundData.musicIds[slotId - 1] = 0;
+
     return 1;
 }
 
-static int nop5(void) { return 0; }
+static UNUSED int nop5(void) { return 0; }
 
 int vs_main_getMusicSlotVolume(int arg0)
 {
     if (arg0 != 0) {
-        if (vs_main_soundData.unk14[arg0 - 1] != 0xFFFF) {
-            return Sound_GetMusicVolumeById(vs_main_soundData.unk14[arg0 - 1]);
+        if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
+            return Sound_GetMusicVolumeById(
+                vs_main_soundData.musicHandleBySlot[arg0 - 1]);
         }
     }
+
     return 0;
 }
 
@@ -2521,9 +2742,10 @@ int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(ar
 int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {
     if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.unk4, arg2, arg1);
+        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2533,6 +2755,7 @@ int vs_main_fadeMusicTempo(int id, int arg1, int arg2)
         Sound_FadeTempoScale(arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2542,16 +2765,18 @@ int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
         Sound_FadeMasterPitchScale(arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
-static int nop6(void) { return 0; }
+static UNUSED int nop6(void) { return 0; }
 
-static int nop7(void) { return 0; }
+static UNUSED int nop7(void) { return 0; }
 
 void vs_main_stopMusic(void)
 {
     int id = vs_main_soundData.currentMusicSlot;
+
     if (id != 0) {
         vs_main_stopMusicSlot(id);
         vs_main_freeMusic(id);
@@ -2589,59 +2814,78 @@ static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
     }
 }
 
-void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
+void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 {
-    void* var_s0_2;
+    void* sfx;
+    int* bank;
 
     switch (arg0) {
     case 0x7E:
     case 0xFE:
-        if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+        if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
+
             _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
+
             _nextVoicePool1 *= 2;
+
             if (!(_nextVoicePool1 & 0x7E)) {
                 _nextVoicePool1 = 2;
             }
+
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
+
         break;
 
     case 0x100:
     case 0x200:
-        if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+        if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
             _playSfxById(id & 0xFFFF, _nextVoicePool3, arg2, arg3);
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
+
         break;
 
     case 0xFF000:
-        var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        var_s0_2 += *((int*)var_s0_2 + id + 1);
-        if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, _nextVoicePool4, arg2, arg3);
+        sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
+        sfx += bank[id + 1];
+
+        if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
+
+            _playSfxFromPointer(sfx, _nextVoicePool4, arg2, arg3);
+
             _nextVoicePool4 *= 2;
+
             if (!(_nextVoicePool4 & arg0)) {
                 _nextVoicePool4 = 0x1000;
             }
+
         } else {
-            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, arg2, arg3);
         }
+
         break;
 
     case 0xF00000:
-        var_s0_2 = vs_main_soundData.sfxData[2];
-        var_s0_2 += *((int*)var_s0_2 + id + 1);
-        if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, _nextVoicePool5, arg2, arg3);
+        sfx = bank = vs_main_soundData.sfxData[2];
+        sfx += bank[id + 1];
+
+        if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
+
+            _playSfxFromPointer(sfx, _nextVoicePool5, arg2, arg3);
+
             _nextVoicePool5 *= 2;
+
             if (!(_nextVoicePool5 & arg0)) {
                 _nextVoicePool5 = 0x100000;
             }
+
         } else {
-            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, arg2, arg3);
         }
+
         break;
 
     default:
@@ -2703,8 +2947,10 @@ int vs_main_computeSfxPan(int coords, int z)
 static void _do_panSfx(int arg0, int arg1, int coords, int z)
 {
     coords = vs_main_computeSfxPan(coords, z);
+
     z = coords & 0xFFFF;
     coords = coords >> 0x10;
+
     if (z > 0) {
         vs_main_playSfx(arg0, arg1, coords, z);
     }
@@ -2723,9 +2969,10 @@ void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
     _do_panSfx(arg0, arg1, coords, z);
 }
 
-static int _resolveSfxData(int arg0, int arg1)
+static void* _resolveSfxData(int arg0, int arg1)
 {
-    int temp_v1;
+    void* sfx;
+    int* bank;
 
     switch (arg0) {
     case 0x1:
@@ -2733,34 +2980,35 @@ static int _resolveSfxData(int arg0, int arg1)
     case 0xFE:
     case 0x100:
     case 0x200:
-        temp_v1 = 0;
+        sfx = NULL;
         break;
+
     case 0xFF000:
     case 0xF00000:
-        temp_v1 = (int)vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        temp_v1 = (int)temp_v1 + (arg1 + (int*)temp_v1)[1];
+        sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
+        sfx += bank[arg1 + 1];
+
         break;
+
     default:
         vs_main_nop10(0x95, 0);
-        temp_v1 = 0;
+        sfx = NULL;
+
         break;
     }
-    return temp_v1;
+
+    return sfx;
 }
 
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 {
-    int temp_v0;
-
     if (arg1 != 0) {
-        temp_v0 = _resolveSfxData(arg0, arg1);
+        void* sfx = _resolveSfxData(arg0, arg1);
 
-        if (temp_v0 != 0) {
-            Sound_FadeSfxVolumeMod(temp_v0, 0, arg3, arg2);
+        if (sfx != NULL) {
+            Sound_FadeSfxVolumeMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
         }
     } else {
         Sound_FadeSfxVolumeMod(0, arg0, arg3, arg2);
@@ -2769,17 +3017,15 @@ void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
-    int temp_v0;
-
     if (arg1 != 0) {
-        temp_v0 = _resolveSfxData(arg0, arg1);
-        if (temp_v0 != 0) {
-            Sound_FadeSfxPitchMod(temp_v0, 0, arg3, arg2);
+        void* sfx = _resolveSfxData(arg0, arg1);
+
+        if (sfx != NULL) {
+            Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
         }
+
     } else {
         Sound_FadeSfxPitchMod(0, arg0, arg3, arg2);
     }
@@ -2788,14 +3034,14 @@ void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
-        arg0 = _resolveSfxData(arg0, arg1);
-        if (arg0 != 0) {
-            Sound_FadeSfxPanMod(arg0, 0, arg3, arg2);
+        void* sfx = _resolveSfxData(arg0, arg1);
+
+        if (sfx != NULL) {
+            Sound_FadeSfxPanMod((u_long)sfx, 0, arg3, arg2);
         } else {
-            do {
-                Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
-            } while (0);
+            Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
         }
+
     } else {
         Sound_FadeSfxPanMod(0, arg0, arg3, arg2);
     }
@@ -2804,13 +3050,14 @@ void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 void vs_main_evictSfx(int arg0, int arg1)
 {
     if (arg1 != 0) {
-        arg0 = _resolveSfxData(arg0, arg1);
+        void* sfx = _resolveSfxData(arg0, arg1);
 
-        if (arg0 != 0) {
-            Sound_EvictSfx(arg0, 0);
+        if (sfx != NULL) {
+            Sound_EvictSfx((u_long)sfx, 0);
         } else {
             Sound_EvictSfx(arg1, 0);
         }
+
     } else {
         Sound_EvictSfx(0, arg0);
     }
@@ -2824,6 +3071,7 @@ int vs_main_loadSfxSlot(int id, u_int slot)
 
     if (slot - 1 < 3) {
         if (vs_main_soundData.sfxData[slot - 1] == NULL) {
+
             u_int index = slot - 1;
             cdFile.lba = _seLBAs[id];
             cdFile.size = _seFileSizes[id];
@@ -2841,12 +3089,14 @@ int vs_main_loadSfxSlot(int id, u_int slot)
 
             vs_main_soundData.sfxIds[index] = id;
             vs_main_soundData.sfxData[index] = vs_main_allocHeapR(cdFile.size);
+
             vs_main_cdEnqueue(
                 vs_main_soundData.sfxQueueSlot[index], vs_main_soundData.sfxData[index]);
 
             return slot;
         }
     }
+
     return 0;
 }
 
@@ -2859,6 +3109,7 @@ static int _loadSfx(int id)
             return vs_main_loadSfxSlot(id, i + 1);
         }
     }
+
     return 0;
 }
 
@@ -2866,21 +3117,29 @@ int vs_main_freeSfxQueueSlot(u_int slot)
 {
     if ((slot - 1) < 3) {
         if (vs_main_soundData.sfxQueueSlot[slot - 1] != NULL) {
+
             if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateLoaded) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = NULL;
+
                 return 0;
             }
+
             if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+
                 return -1;
             }
+
             return 1;
         }
     }
+
     return 0;
 }
 
@@ -2888,22 +3147,26 @@ static int _freeSfxSlots(void)
 {
     int i;
     int ret = 0;
+
     for (i = 0; i < 3; ++i) {
         ret |= vs_main_freeSfxQueueSlot(i + 1);
     }
+
     return ret;
 }
 
-static int _loadAndFreeSfx(int id)
+static UNUSED int _loadAndFreeSfx(int id)
 {
     int slot;
 
     slot = _loadSfx(id);
+
     if (slot != 0) {
         while (_freeSfxSlots() != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return slot;
 }
 
@@ -2911,8 +3174,10 @@ int vs_main_setCurrentSfx(int id)
 {
     if ((id - 1u < 3) && vs_main_soundData.sfxData[id - 1] != NULL) {
         vs_main_soundData.currentSfxId = id;
+
         return 1;
     }
+
     return 0;
 }
 
@@ -2920,26 +3185,31 @@ int vs_main_freeSfx(u_int id)
 {
     if ((id - 1) < 3) {
         if (vs_main_soundData.sfxData[id - 1] != NULL) {
+
             if (vs_main_soundData.currentSfxId == id) {
                 vs_main_soundData.currentSfxId = 0;
             }
+
             Sound_EvictSfx(-2, 0);
             Sound_EvictSfx(0, 0xFF000);
             vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
+
             vs_main_soundData.sfxIds[id - 1] = 0;
             vs_main_soundData.sfxData[id - 1] = 0;
+
             return 1;
         }
     }
     return 0;
 }
 
-int vs_main_setSfxSlot3Data(u_int arg0)
+int vs_main_setSfxSlot3Data(void* arg0)
 {
-    if (vs_main_soundData.unk14[16] == 0) {
-        vs_main_soundData.unk14[16] = arg0;
+    if (vs_main_soundData.sfxData[2] == 0) {
+        vs_main_soundData.sfxData[2] = arg0;
         return 1;
     }
+
     return 0;
 }
 
@@ -2947,45 +3217,56 @@ int vs_main_clearSfxSlot3(void)
 {
     Sound_EvictSfx(-2, 0);
     Sound_EvictSfx(0, 0xF00000);
+
     vs_main_soundData.sfxData[2] = NULL;
+
     return 1;
 }
 
-void vs_main_playBankSfx(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
+void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume)
 {
-    int var_s0;
-    void* temp_s1;
+    int voice;
+    void* sfx = bank;
 
-    temp_s1 = arg1;
-
-    if (arg2 < arg1[0]) {
-        temp_s1 = (char*)arg1 + (arg1 + arg2)[1];
-        var_s0 = 0;
-
-        if (arg0 == 0x180) {
-            var_s0 = _nextVoicePool2;
-            _nextVoicePool2 *= 2;
-            if (!(_nextVoicePool2 & 0x180)) {
-                _nextVoicePool2 = 0x80;
-            }
-        } else if (arg0 == 0x200) {
-            var_s0 = _nextVoicePool3;
-            _nextVoicePool3 *= 2;
-            if (!(_nextVoicePool3 & 0x200)) {
-                _nextVoicePool3 = arg0;
-            }
-        } else if (arg0 == 0xF00000) {
-            var_s0 = _nextVoicePool5;
-            _nextVoicePool5 *= 2;
-            if (!(_nextVoicePool5 & arg0)) {
-                _nextVoicePool5 = 0x100000;
-            }
-        } else if (arg0 == 0x7E) {
-        } else {
-            vs_main_nop10(0x95, 0);
-        }
-        _playSfxFromPointer(temp_s1, var_s0, arg3, arg4);
+    if (index >= bank[0]) {
+        return;
     }
+
+    sfx += bank[index + 1];
+    voice = 0;
+
+    if (group == 0x180) {
+
+        voice = _nextVoicePool2;
+        _nextVoicePool2 *= 2;
+
+        if (!(_nextVoicePool2 & 0x180)) {
+            _nextVoicePool2 = 0x80;
+        }
+
+    } else if (group == 0x200) {
+
+        voice = _nextVoicePool3;
+        _nextVoicePool3 *= 2;
+
+        if (!(_nextVoicePool3 & 0x200)) {
+            _nextVoicePool3 = group;
+        }
+
+    } else if (group == 0xF00000) {
+
+        voice = _nextVoicePool5;
+        _nextVoicePool5 *= 2;
+
+        if (!(_nextVoicePool5 & group)) {
+            _nextVoicePool5 = 0x100000;
+        }
+
+    } else if (group != 0x7E) {
+        vs_main_nop10(0x95, 0);
+    }
+
+    _playSfxFromPointer(sfx, voice, pan, volume);
 }
 
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
@@ -2993,59 +3274,59 @@ void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
     vs_main_playBankSfx(arg0, arg1, arg2, 0x80, 0x7F);
 }
 
-static void _do_panBankSfx(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
+static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)
 {
-    int temp_t0;
-    int var_v0;
-    int var_v1;
+    int volume;
+    int tmp;
+    int sxy;
 
-    var_v1 = arg3;
-    var_v0 = arg3;
-    arg3 = var_v0 >> 0x10;
+    sxy = pan;
+    tmp = pan;
+    pan = tmp >> 0x10;
 
-    if (var_v1 < 0) {
-        var_v0 = var_v1 + 0xFFFF;
+    if (sxy < 0) {
+        tmp = sxy + 0xFFFF;
     }
 
-    arg3 = var_v0 >> 0x10;
-    var_v0 = arg3 << 0x10;
-    arg3 = var_v1 - var_v0;
+    pan = tmp >> 0x10;
+    tmp = pan << 0x10;
+    pan = sxy - tmp;
 
-    if (arg3 < 0) {
-        arg3 = 0;
+    if (pan < 0) {
+        pan = 0;
     }
 
-    if (arg3 >= 0x141) {
-        arg3 = 0x140;
+    if (pan > 0x140) {
+        pan = 0x140;
     }
 
-    var_v0 = arg3 + ((u_int)arg3 >> 0x1F);
-    var_v0 >>= 1;
-    arg3 = var_v0 + 0x30;
-    temp_t0 = arg4;
+    tmp = pan + ((u_int)pan >> 0x1F);
+    tmp >>= 1;
+    pan = tmp + 0x30;
+    volume = depth;
 
-    if (temp_t0 < 0) {
-        temp_t0 = 0;
+    if (volume < 0) {
+        volume = 0;
     }
 
-    if (temp_t0 >= 0x401) {
-        temp_t0 = 0x400;
+    if (volume > 0x400) {
+        volume = 0x400;
     }
 
-    var_v1 = temp_t0;
+    sxy = volume;
 
-    if (temp_t0 < 0) {
-        var_v1 += 7;
+    if (volume < 0) {
+        sxy += 7;
     }
 
-    temp_t0 = 0x7F - (var_v1 >> 3);
+    volume = 0x7F - (sxy >> 3);
 
-    if (temp_t0 > 0) {
-        vs_main_playBankSfx(arg0, arg1, arg2, arg3, temp_t0);
+    if (volume > 0) {
+        vs_main_playBankSfx(group, bank, index, pan, volume);
     }
 }
 
-static void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
+static UNUSED void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
 {
     int z;
     long sxy;
@@ -3058,43 +3339,48 @@ static void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
     _do_panBankSfx(arg0, arg1, arg2, sxy, z);
 }
 
-void vs_main_evictBankSfx(int arg0, int* arg1, int arg2)
+void vs_main_evictBankSfx(int group, int* bank, int index)
 {
-    int var_a1;
-    char* var_a0 = (char*)arg1 + (arg1 + arg2)[1];
+    int mask;
+    void* sfx = (void*)bank + (bank + index)[1];
 
-    if (arg2 != 0) {
-        var_a1 = 0;
+    if (index != 0) {
+        mask = 0;
     } else {
-        var_a0 = 0;
-        var_a1 = arg0;
+        sfx = NULL;
+        mask = group;
     }
-    Sound_EvictSfx((int)var_a0, var_a1);
+
+    Sound_EvictSfx((u_long)sfx, mask);
 }
 
-void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4)
+void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration)
 {
-    int a0 = (int)((char*)arg1 + (arg2 + arg1)[1]);
+    void* sfx = (void*)bank + (bank + index)[1];
 
-    if (arg2 == 0) {
-        Sound_FadeSfxVolumeMod(0, arg0, arg4 & 0xFF, arg3);
+    if (index == 0) {
+        Sound_FadeSfxVolumeMod(0, group, duration & 0xFF, volume);
     } else {
-        Sound_FadeSfxVolumeMod(a0, 0, arg4 & 0xFF, arg3);
+        Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration & 0xFF, volume);
     }
 }
 
-static void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
+static UNUSED void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
 static int _startCutsceneStream(int arg0, int arg1, int arg2)
 {
-    if ((arg0 - 1u) < 3) {
-        if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            Sound_FadeOutCutscene(0, arg2);
-            Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
-            return 1;
-        }
+    if ((arg0 - 1u) >= 3) {
+        return 0;
     }
-    return 0;
+
+    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+        return 0;
+    }
+
+    Sound_FadeOutCutscene(0, arg2);
+    Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
+
+    return 1;
 }
 
 void vs_main_startCutsceneStreamDefault(int arg0)
@@ -3102,116 +3388,130 @@ void vs_main_startCutsceneStreamDefault(int arg0)
     _startCutsceneStream(arg0, 0x80, 0x7F);
 }
 
-static int _freeCutsceneStream(int arg0)
+static UNUSED int _freeCutsceneStream(int arg0)
 {
-    if ((arg0 - 1u) < 3) {
-        if (vs_main_soundData.unk64[arg0 - 1] != 0) {
-            Sound_StopCutsceneStream();
-            vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
-            vs_main_soundData.unk64[arg0 - 1] = 0;
-            return 1;
-        }
+    if ((arg0 - 1u) >= 3) {
+        return 0;
     }
-    return 0;
+
+    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+        return 0;
+    }
+
+    Sound_StopCutsceneStream();
+    vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
+
+    vs_main_soundData.unk64[arg0 - 1] = 0;
+
+    return 1;
 }
 
-int vs_main_setCutsceneStreamSlot3(u_int arg0)
+int vs_main_setCutsceneStreamSlot3(void* arg0)
 {
-    if (vs_main_soundData.unk14[22] == 0) {
-        vs_main_soundData.unk14[22] = arg0;
+    if (vs_main_soundData.unk64[2] == 0) {
+        vs_main_soundData.unk64[2] = arg0;
         return 3;
     }
+
     return 0;
 }
 
 int vs_main_clearCutsceneStreamSlot3(void)
 {
 
-    if (vs_main_soundData.unk14[22] != 0) {
+    if (vs_main_soundData.unk64[2] != 0) {
+
         Sound_StopCutsceneStream();
-        vs_main_soundData.unk14[22] = 0;
+        vs_main_soundData.unk64[2] = 0;
+
         return 1;
     }
+
     return 0;
 }
 
 static void _loadSoundFile(int file)
 {
     vs_main_CdFile cdFile;
-    int new_var;
-    int temp_v1;
-    int var_a0;
+    int loadedBanks = Sound_GetLoadedMusicBankIds();
 
-    temp_v1 = Sound_GetLoadedMusicBankIds();
-    var_a0 = temp_v1 >> 0x10;
-    new_var = temp_v1;
-
-    if (temp_v1 < 0) {
-        var_a0 = (temp_v1 + 0xFFFF) >> 0x10;
-    }
-    if (((new_var - (var_a0 << 0x10)) == file) || (var_a0 == file)) {
+    if (loadedBanks % 0x10000 == file || loadedBanks / 0x10000 == file) {
         return;
     }
+
     cdFile.lba = _soundLBAs[file];
     cdFile.size = _soundFileSizes[file];
 
-    if (vs_main_soundData.soundQueueSlot) {
-        if ((long)vs_main_soundData.soundQueueSlot != -1) {
-            vs_main_nop9(0x93 & 0xFFu, 0);
-        }
+    if (vs_main_soundData.soundQueueSlot != NULL
+        && vs_main_soundData.soundQueueSlot != (vs_main_CdQueueSlot*)-1) {
+        vs_main_nop9(0x93, 0);
     }
+
     vs_main_soundData.soundQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-    if (vs_main_soundData.soundData != 0) {
+
+    if (vs_main_soundData.soundData != NULL) {
         vs_main_nop9(0x94, 0);
     }
-    new_var = 1;
+
     vs_main_soundData.soundData = vs_main_allocHeapR(cdFile.size);
     vs_main_soundData.soundFileId = file;
+
     vs_main_cdEnqueue(vs_main_soundData.soundQueueSlot, vs_main_soundData.soundData);
 }
 
 void vs_main_loadSoundFile(int id) { _loadSoundFile(_soundFileMap[id]); }
 
+static inline void _releaseSoundQueue(void)
+{
+    vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
+
+    vs_main_soundData.soundQueueSlot = NULL;
+
+    vs_main_freeHeapR(vs_main_soundData.soundData);
+
+    vs_main_soundData.soundData = NULL;
+    vs_main_soundData.soundFileId = 0;
+}
+
 int vs_main_processSoundQueue(void)
 {
-    int temp_v0;
-
     if (vs_main_soundData.soundQueueSlot != NULL) {
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
-            temp_v0 = IsSpuTransferring();
-            if (temp_v0 == 0) {
-                vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
-                vs_main_soundData.soundQueueSlot = NULL;
-                vs_main_freeHeapR(vs_main_soundData.soundData);
-                vs_main_soundData.soundData = NULL;
-                vs_main_soundData.soundFileId = 0;
+
+            int isTransferring = IsSpuTransferring();
+
+            if (isTransferring == 0) {
+                _releaseSoundQueue();
+
                 return 0;
             }
-            if (temp_v0 == -1) {
-                vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
-                vs_main_soundData.soundQueueSlot = NULL;
-                vs_main_freeHeapR(vs_main_soundData.soundData);
-                vs_main_soundData.soundData = NULL;
-                vs_main_soundData.soundFileId = 0;
+
+            if (isTransferring == -1) {
+                _releaseSoundQueue();
+
                 return -1;
             }
+
             return 1;
         }
+
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
+
             vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
             Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
+
             return 1;
         }
+
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
-            vs_main_freeCdQueueSlot(vs_main_soundData.soundQueueSlot);
-            vs_main_soundData.soundQueueSlot = NULL;
-            vs_main_freeHeapR(vs_main_soundData.soundData);
-            vs_main_soundData.soundData = NULL;
-            vs_main_soundData.soundFileId = 0;
+            _releaseSoundQueue();
+
             return -1;
         }
+
         return 1;
     }
+
     return 0;
 }
 
@@ -3228,32 +3528,42 @@ void vs_main_setMonoSound(int set) { Sound_SetSpeakerMode(set); }
 
 static UNUSED void _setCdVolumeMax(void) { Sound_SetCdVolume(0x7FFF); }
 
-static void _loadMenuSound(void)
+static inline void _resetVoicePools(void)
 {
-    void* buf;
-
-    InitSound();
-    Sound_SetCdMixVolume(0x7F);
-    buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
-    Sound_LoadAkaoBankBlocking(buf, 1);
-    vs_main_freeHeapR(buf);
-    buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
-    Sound_LoadAkaoBankBlocking(buf, 1);
-    vs_main_freeHeapR(buf);
-    buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
-    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
-    Sound_LoadSfxBank(buf, 0, 1);
-    vs_main_freeHeapR(buf);
-    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
-    Sound_BindAkaoSfxBlob(_sfxData);
     _nextVoicePool0 = 1;
     _nextVoicePool1 = 2;
     _nextVoicePool2 = 0x80;
     _nextVoicePool3 = 0x200;
     _nextVoicePool4 = 0x1000;
     _nextVoicePool5 = 0x100000;
+}
+
+static void _loadMenuSound(void)
+{
+    void* buf;
+
+    InitSound();
+    Sound_SetCdMixVolume(0x7F);
+
+    buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
+    Sound_LoadAkaoBankBlocking(buf, 1);
+    vs_main_freeHeapR(buf);
+
+    buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
+    Sound_LoadAkaoBankBlocking(buf, 1);
+    vs_main_freeHeapR(buf);
+
+    buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
+    vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
+    Sound_LoadSfxBank(buf, 0, 1);
+    vs_main_freeHeapR(buf);
+
+    vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
+    Sound_BindAkaoSfxBlob(_sfxData);
+
+    _resetVoicePools();
 }
 
 void vs_main_resetSound(void)
@@ -3263,12 +3573,12 @@ void vs_main_resetSound(void)
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk8 = 0xFFFF;
-    vs_main_soundData.unk4 = 0xFFFF;
+    vs_main_soundData.currentMusicHandle = 0xFFFF;
     vs_main_soundData.currentSfxId = 0;
 
     for (i = 0; i < 4; ++i) {
         vs_main_soundData.musicIds[i] = 0;
-        vs_main_soundData.unk14[i] = 0xFFFF;
+        vs_main_soundData.musicHandleBySlot[i] = 0xFFFF;
         vs_main_soundData.musicData[i] = NULL;
         vs_main_soundData.musicQueueSlot[i] = NULL;
     }
@@ -3287,22 +3597,28 @@ void vs_main_resetSound(void)
     vs_main_soundData.soundFileId = 0;
     vs_main_soundData.soundData = NULL;
     vs_main_soundData.soundQueueSlot = NULL;
-    _nextVoicePool0 = 1;
-    _nextVoicePool1 = 2;
-    _nextVoicePool2 = 0x80;
-    _nextVoicePool3 = 0x200;
-    _nextVoicePool4 = 0x1000;
-    _nextVoicePool5 = 0x100000;
+
+    _resetVoicePools();
 }
+
+static inline int _maskR(short color) { return color & 0x1F; }
+static inline int _maskG(short color) { return color & 0x3E0; }
+static inline int _maskB(short color) { return color & 0x7C00; }
+static inline int _colorR(short color) { return _maskR(color); }
+static inline int _colorG(short color) { return _maskG(color) >> 5; }
+static inline int _colorB(short color) { return _maskB(color) >> 10; }
+
+// Packs 5:5:5 channels and the semi-transparency bit to a PlayStation 16-bit colour
+#define PACK_COLOR(r, g, b, stp) ((r) + ((g) << 5) + ((b) << 10) + ((stp) << 15))
 
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 {
     int i;
 
     for (i = 0; i < 256; ++i) {
-        u_short r = sourceClut[i] & 0x1F;
-        u_short g = (sourceClut[i] & 0x3E0) >> 5;
-        u_short b = (sourceClut[i] & 0x7C00) >> 10;
+        u_short r = _colorR(sourceClut[i]);
+        u_short g = _colorG(sourceClut[i]);
+        u_short b = _colorB(sourceClut[i]);
 
         struct ColorInfo* colors = _clutState.slots[slot].colorInfo;
 
@@ -3314,7 +3630,7 @@ static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
             colors[i].r = r;
             colors[i].g = g;
             colors[i].b = b;
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
+            _clutBuffer[slot][i] = PACK_COLOR(r, g, b, colors[i].a);
         }
     }
 
@@ -3368,6 +3684,35 @@ static inline int _weightedLuminance(short g, short b, short r)
     return r * 2 + (g >> 5) * 3 + (b >> 10);
 }
 
+static inline int _colorLuminance(short color)
+{
+    return _weightedLuminance(_maskG(color), _maskB(color), _maskR(color));
+}
+
+static inline int _luminance(int r, int g, int b) { return r * 2 + g * 3 + b; }
+
+static inline int _colorInfoLuminance(struct ColorInfo* color)
+{
+    return _luminance(color->r, color->g, color->b);
+}
+
+// Clamp a 5-bit channel to 0..31; both tests look at the low 16 bits only
+#define CLAMP_CLUT_HIGH(c) \
+    if ((short)(c) > 31) { \
+        (c) = 31;          \
+    }
+#define CLAMP_CLUT_LOW(c)   \
+    if (((c) << 16) <= 0) { \
+        (c) = 0;            \
+    }
+
+// r/g/b are the locals of the loop below: each channel gets its own offset added
+#define OFFSET_RGB3(rv, gv, bv)                                                        \
+    r = rOffset + (rv);                                                                \
+    g = gOffsetU + (gv);                                                               \
+    b = bOffsetU + (bv)
+#define OFFSET_RGB(value) OFFSET_RGB3(value, value, value)
+
 static void _transformClutSlot(
     int mode, int duration, int slot, int rOffset, short gOffset, short bOffset)
 {
@@ -3389,96 +3734,58 @@ static void _transformClutSlot(
                 int rTmp = colors[i].r;
                 int gTmp = colors[i].g;
                 int bTmp = colors[i].b;
-                r = rOffset + rTmp / 2;
-                g = gOffsetU + gTmp / 2;
-                b = bOffsetU + bTmp / 2;
+                OFFSET_RGB3(rTmp / 2, gTmp / 2, bTmp / 2);
                 break;
             }
+
             case 2:
-                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
-                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
-                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
+                OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 6);
                 break;
+
             case 3:
-                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
-                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
-                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
+                OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 12);
                 break;
+
             case 4:
             case 9:
-                r = rOffset + (baseEntry & 0x1F);
-                g = gOffsetU + ((baseEntry & 0x3E0) >> 5);
-                b = bOffsetU + ((baseEntry & 0x7C00) >> 10);
+                OFFSET_RGB3(_colorR(baseEntry), _colorG(baseEntry), _colorB(baseEntry));
                 break;
-            case 5: {
-                int tmp = 0x1F;
-                r = rOffset + ((baseEntry & tmp) / 2);
-                g = gOffsetU + ((baseEntry & 0x3E0) >> 5) / 2;
-                b = bOffsetU + ((baseEntry & 0x7C00) >> 10) / 2;
+
+            case 5:
+                OFFSET_RGB3(_colorR(baseEntry) / 2, _colorG(baseEntry) / 2,
+                    _colorB(baseEntry) / 2);
                 break;
-            }
+
             case 6:
-                r = rOffset
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 6;
-                g = gOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 6;
-                b = bOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 6;
+                OFFSET_RGB(_colorLuminance(baseEntry) / 6);
                 break;
+
             case 7:
-                r = rOffset
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 12;
-                g = gOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 12;
-                b = bOffsetU
-                  + _weightedLuminance(
-                        baseEntry & 0x3E0, baseEntry & 0x7C00, baseEntry & 0x1F)
-                        / 12;
+                OFFSET_RGB(_colorLuminance(baseEntry) / 12);
                 break;
+
             case 8:
             case 15:
-                r = baseEntry & 0x1F;
-                g = (baseEntry & 0x3E0) >> 5;
-                b = (baseEntry & 0x7C00) >> 10;
+                r = _colorR(baseEntry);
+                g = _colorG(baseEntry);
+                b = _colorB(baseEntry);
                 break;
+
             case 11:
                 _clutState.slots[slot].animState.transitionMode = 0;
                 return;
-            case 12: {
-                int tmp = 0x1F;
-                r = rOffset - (colors[i].r - tmp);
-                g = gOffsetU - (colors[i].g - tmp);
-                b = bOffsetU - (colors[i].b - tmp);
+
+            case 12:
+                r = rOffset + 0x1F - colors[i].r;
+                g = gOffsetU + 0x1F - colors[i].g;
+                b = bOffsetU + 0x1F - colors[i].b;
                 break;
-            }
-            case 13: {
-                int tmp = (baseEntry & 0x1F) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                r = rOffset + (tmp >> 2);
-                tmp = ((baseEntry & 0x3E0) >> 5) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                g = gOffsetU + (tmp >> 2);
-                tmp = ((baseEntry & 0x7C00) >> 10) * 3;
-                if (tmp < 0) {
-                    tmp += 3;
-                }
-                b = bOffsetU + (tmp >> 2);
+
+            case 13:
+                OFFSET_RGB3(_colorR(baseEntry) * 3 / 4, _colorG(baseEntry) * 3 / 4,
+                    _colorB(baseEntry) * 3 / 4);
                 break;
-            }
+
             default:
                 r = colors[i].r + rOffset;
                 g = colors[i].g + gOffsetU;
@@ -3486,27 +3793,17 @@ static void _transformClutSlot(
                 break;
             }
 
-            if ((short)r > 31) {
-                r = 31;
-            }
-            if ((short)g > 31) {
-                g = 31;
-            }
-            if ((short)b > 31) {
-                b = 31;
-            }
-            if ((r << 16) <= 0) {
-                r = 0;
-            }
-            if ((g << 16) <= 0) {
-                g = 0;
-            }
-            if ((b << 16) <= 0) {
-                b = 0;
-            }
+            CLAMP_CLUT_HIGH(r);
+            CLAMP_CLUT_HIGH(g);
+            CLAMP_CLUT_HIGH(b);
+            CLAMP_CLUT_LOW(r);
+            CLAMP_CLUT_LOW(g);
+            CLAMP_CLUT_LOW(b);
+
             if (((b | (r | g)) << 16) == 0) {
                 b = 1;
             }
+
             if (duration != 0) {
                 colors[i].rindex = ((r - colors[i].r) + 31);
                 colors[i].gindex = ((g - colors[i].g) + 31);
@@ -3515,7 +3812,7 @@ static void _transformClutSlot(
                 colors[i].b = b;
                 colors[i].r = r;
                 colors[i].g = g;
-                _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
+                _clutBuffer[slot][i] = PACK_COLOR(r, g, b, colors[i].a);
             }
         } else {
             colors[i].bindex = 31;
@@ -3523,6 +3820,7 @@ static void _transformClutSlot(
             colors[i].rindex = 31;
         }
     }
+
     if (duration != 0) {
         struct clutAnimState_t* p = &_clutState.slots[slot].animState;
         p->active = 1;
@@ -3530,6 +3828,7 @@ static void _transformClutSlot(
         p->tick = 0;
         p->speed = duration;
         p->transitionMode = mode;
+
         if (mode == 9) {
             p->transitionTargetR = rOffset;
             p->transitionTargetG = gOffsetU;
@@ -3540,6 +3839,9 @@ static void _transformClutSlot(
         _clutState.uploadPending = 1;
     }
 }
+
+#undef OFFSET_RGB3
+#undef OFFSET_RGB
 
 void vs_main_transformClutSlot(
     int mode, int duration, int slot, short rOffset, int gOffset, int bOffset)
@@ -3553,46 +3855,66 @@ void vs_main_transformClutSlot(
 
 static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
-void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
+static inline void _startBgAnim(int speed)
+{
+    _clutState.bgAnimActive = 1;
+    _clutState.bgAnimFrame = 0;
+    _clutState.bgAnimTick = 0;
+    _clutState.bgAnimSpeed = speed;
+}
+
+// Per-update step from a 16.16 colour towards a target over frames * 2 updates
+static inline int _bgStep(int target, int current, int frames)
+{
+    return (int)(target - (current & 0xFFFF0000)) / (frames * 2);
+}
+
+// Packs the background colours (16.16 fixed point) to 8-bit r/g/b words in `position`
+// (using `i` as the loop counter) and uploads them
+#define UPLOAD_BG_COLORS(bg, position, i)                                              \
+    for ((i) = 0; (i) < 5; ++(i)) {                                                    \
+        (position)[i] = (((bg)[i].current.r / 65536) + (((bg)[i].current.g / 65536) << 8))         \
+                      + ((((bg)[i].current.b / 65536)) << 0x10);                              \
+    }                                                                                  \
+    func_8008EB30(position)
+
+void vs_main_fadeBgColors(int frames, CVECTOR* target)
 {
     int position[5];
     int i;
+    _fade_t* bg;
 
-    if (_clutState.active != 0) {
-        int (*temp_t6)[6] = _clutState.bgColors;
-        for (i = 0; i < 5; ++i) {
-            int r;
-            int g;
-            int b;
-            r = _shift_left(arg1[i].r);
-            g = _shift_left(arg1[i].g);
-            b = _shift_left(arg1[i].b);
-
-            if (arg0 != 0) {
-                temp_t6[i][3] = ((int)(r - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][4] = ((int)(g - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][5] = ((int)(b - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
-            } else {
-                temp_t6[i][0] = r;
-                temp_t6[i][1] = g;
-                temp_t6[i][2] = b;
-            }
-        }
-        if (arg0 != 0) {
-            _clutState.bgAnimActive = 1;
-            _clutState.bgAnimFrame = 0;
-            _clutState.bgAnimTick = 0;
-            _clutState.bgAnimSpeed = arg0;
-            return;
-        }
-        _clutState.bgAnimActive = 0;
-
-        for (i = 0; i < 5; ++i) {
-            position[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
-                        + (((temp_t6[i][2] / 65536)) << 0x10);
-        }
-        func_8008EB30(position);
+    if (_clutState.active == 0) {
+        return;
     }
+
+    bg = _clutState.bgColors;
+
+    for (i = 0; i < 5; ++i) {
+
+        int r = _shift_left(target[i].r);
+        int g = _shift_left(target[i].g);
+        int b = _shift_left(target[i].b);
+
+        if (frames != 0) {
+            bg[i].step.r = _bgStep(r, bg[i].current.r, frames);
+            bg[i].step.g = _bgStep(g, bg[i].current.g, frames);
+            bg[i].step.b = _bgStep(b, bg[i].current.b, frames);
+        } else {
+            bg[i].current.r = r;
+            bg[i].current.g = g;
+            bg[i].current.b = b;
+        }
+    }
+
+    if (frames != 0) {
+        _startBgAnim(frames);
+        return;
+    }
+
+    _clutState.bgAnimActive = 0;
+
+    UPLOAD_BG_COLORS(bg, position, i);
 }
 
 static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
@@ -3600,223 +3922,227 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
     int i;
 
     if (_clutState.active != 0) {
+
         vs_main_fadeBgColors(arg0, arg1);
+
         for (i = 0; i < 5; ++i) {
             _clutState.bgBaseColors[i] = arg1[i];
         }
     }
 }
 
-void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
+// Clamp a 16.16 fixed point channel to 0..max
+#define CLAMP_FIXED_HIGH(c, max) \
+    if ((c) > (max)) {           \
+        (c) = (max);             \
+    }
+#define CLAMP_FIXED_LOW(c) \
+    if ((c) < 0) {         \
+        (c) = 0;           \
+    }
+
+// sum = (2 * r + 3 * g + b) << 16 for a base colour. `scratch` is written (with g << 16)
+// and not read again; the compiled code depends on that assignment.
+#define BASE_COLOR_SUM(sum, scratch, color)                                            \
+    {                                                                                  \
+        int g_ = (color).g;                                                            \
+        int b_ = (color).b;                                                            \
+        (sum) = (color).r;                                                             \
+        (scratch) = g_ << 0x10;                                                        \
+        b_ <<= 0x10;                                                                   \
+        (sum) <<= 0x11;                                                                \
+        g_ <<= 0x11;                                                                   \
+        (sum) += g_ + (scratch);                                                       \
+        (sum) += b_;                                                                   \
+    }
+
+// r/g/b are the locals below: each channel (16.16 fixed point) gets its offset added
+#define OFFSET_BG_RGB(rv, gv, bv)           \
+    r = (rv) + (rOffset << 0x10);           \
+    g = (gv) + (gOffset << 0x10);           \
+    b = (bv) + (bOffset << 0x10)
+
+void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     int position[5];
-    int temp_v0;
-    int var_a1;
-    int var_t0;
-    int var_t1;
+    int lum;
+    int b;
+    int g;
+    int r;
     int i;
-    int (*p)[6] = _clutState.bgColors;
+    _fade_t* bg = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
-        switch (arg0) {
+        switch (mode) {
+
+        // 1: half of the current colours, plus offset
         case 1:
-            var_t1 = (p[i][0] / 2) + (arg2 << 0x10);
-            var_t0 = p[i][1] / 2 + (arg3 << 0x10);
-            var_a1 = (p[i][2] / 2) + (arg4 << 0x10);
+            OFFSET_BG_RGB(bg[i].current.r / 2, bg[i].current.g / 2, bg[i].current.b / 2);
             break;
+
+        // 2, 3: current colours as a grey level (weighted average), plus offset
         case 2:
-            var_t1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg2 << 0x10);
-            var_t0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg3 << 0x10);
-            var_a1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg4 << 0x10);
+            OFFSET_BG_RGB(
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6);
             break;
+
         case 3:
-            temp_v0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 12;
-            var_t1 = temp_v0 + (arg2 << 0x10);
-            var_t0 = temp_v0 + (arg3 << 0x10);
-            var_a1 = temp_v0 + (arg4 << 0x10);
+            lum = _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 12;
+            OFFSET_BG_RGB(lum, lum, lum);
             break;
+
+        // 4, 9: base colours plus offset
         case 4:
         case 9:
-            var_t1 = (_clutState.bgBaseColors[i].r + arg2) << 0x10;
-            var_t0 = (_clutState.bgBaseColors[i].g + arg3) << 0x10;
-            var_a1 = (_clutState.bgBaseColors[i].b + arg4) << 0x10;
+            r = (_clutState.bgBaseColors[i].r + rOffset) << 0x10;
+            g = (_clutState.bgBaseColors[i].g + gOffset) << 0x10;
+            b = (_clutState.bgBaseColors[i].b + bOffset) << 0x10;
             break;
+
+        // 5: half of the base colours, plus offset
         case 5:
-            var_t1 = (_clutState.bgBaseColors[i].r << 0xF) + (arg2 << 0x10);
-            var_t0 = (_clutState.bgBaseColors[i].g << 0xF) + (arg3 << 0x10);
-            var_a1 = (_clutState.bgBaseColors[i].b << 0xF) + (arg4 << 0x10);
+            OFFSET_BG_RGB(_clutState.bgBaseColors[i].r << 0xF,
+                _clutState.bgBaseColors[i].g << 0xF, _clutState.bgBaseColors[i].b << 0xF);
             break;
+
+        // 6, 7: base colours as a grey level, plus offset
         case 6: {
-            int v1 = _clutState.bgBaseColors[i].g;
-            int a0 = _clutState.bgBaseColors[i].b;
-            int v0 = _clutState.bgBaseColors[i].r;
-            var_a1 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a1;
-            v0 += a0;
-            var_t1 = v0 / 6 + (arg2 << 0x10);
-            var_t0 = v0 / 6 + (arg3 << 0x10);
-            var_a1 = v0 / 6 + (arg4 << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, _clutState.bgBaseColors[i]);
+            OFFSET_BG_RGB(sum / 6, sum / 6, sum / 6);
         } break;
+
         case 7: {
-            int v1 = _clutState.bgBaseColors[i].g;
-            int a0 = _clutState.bgBaseColors[i].b;
-            int v0 = _clutState.bgBaseColors[i].r;
-            var_a1 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a1;
-            v0 += a0;
-            var_t1 = v0 / 12 + (arg2 << 0x10);
-            var_t0 = v0 / 12 + (arg3 << 0x10);
-            var_a1 = v0 / 12 + (arg4 << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, _clutState.bgBaseColors[i]);
+            OFFSET_BG_RGB(sum / 12, sum / 12, sum / 12);
         } break;
+
+        // 8: the base colours
         case 8:
-            var_t1 = _clutState.bgBaseColors[i].r << 0x10;
-            var_t0 = _clutState.bgBaseColors[i].g << 0x10;
-            var_a1 = _clutState.bgBaseColors[i].b << 0x10;
+            r = _clutState.bgBaseColors[i].r << 0x10;
+            g = _clutState.bgBaseColors[i].g << 0x10;
+            b = _clutState.bgBaseColors[i].b << 0x10;
             break;
+
+        // 11: cancel the transition
         case 11:
             _clutState.bgTransitionMode = 0;
             return;
+
+        // 0: the current colours plus offset
         case 0:
         default:
-            var_t1 = p[i][0] + (arg2 << 0x10);
-            var_t0 = p[i][1] + (arg3 << 0x10);
-            var_a1 = p[i][2] + (arg4 << 0x10);
+            OFFSET_BG_RGB(bg[i].current.r, bg[i].current.g, bg[i].current.b);
             break;
         }
 
-        var_t1 &= 0xFFFF0000;
-        var_t0 &= 0xFFFF0000;
-        var_a1 &= 0xFFFF0000;
+        // Keep the integer part of each channel and clamp it to 0..255
+        r &= 0xFFFF0000;
+        g &= 0xFFFF0000;
+        b &= 0xFFFF0000;
 
-        if (var_t1 > 0xFF0000) {
-            var_t1 = 0xFF0000;
-        }
-        if (var_t0 > 0xFF0000) {
-            var_t0 = 0xFF0000;
-        }
-        if (var_a1 > 0xFF0000) {
-            var_a1 = 0xFF0000;
-        }
-        if (var_t1 < 0) {
-            var_t1 = 0;
-        }
-        if (var_t0 < 0) {
-            var_t0 = 0;
-        }
-        if (var_a1 < 0) {
-            var_a1 = 0;
-        }
-        if (arg1 != 0) {
-            p[i][3] = (int)(var_t1 - (p[i][0] & 0xFFFF0000)) / (arg1 * 2);
-            p[i][4] = (int)(var_t0 - (p[i][1] & 0xFFFF0000)) / (arg1 * 2);
-            p[i][5] = (int)(var_a1 - (p[i][2] & 0xFFFF0000)) / (arg1 * 2);
+        CLAMP_FIXED_HIGH(r, 0xFF0000);
+        CLAMP_FIXED_HIGH(g, 0xFF0000);
+        CLAMP_FIXED_HIGH(b, 0xFF0000);
+        CLAMP_FIXED_LOW(r);
+        CLAMP_FIXED_LOW(g);
+        CLAMP_FIXED_LOW(b);
+
+        // Either fade towards the result over `frames`, or set it right away
+        if (frames != 0) {
+            bg[i].step.r = _bgStep(r, bg[i].current.r, frames);
+            bg[i].step.g = _bgStep(g, bg[i].current.g, frames);
+            bg[i].step.b = _bgStep(b, bg[i].current.b, frames);
         } else {
-            p[i][0] = var_t1;
-            p[i][1] = var_t0;
-            p[i][2] = var_a1;
+            bg[i].current.r = r;
+            bg[i].current.g = g;
+            bg[i].current.b = b;
         }
     }
 
-    if (arg1 != 0) {
-        _clutState.bgAnimActive = 1;
-        _clutState.bgAnimFrame = 0;
-        _clutState.bgAnimTick = 0;
-        _clutState.bgAnimSpeed = arg1;
-        _clutState.bgTransitionMode = arg0;
-        if (arg0 == 9) {
-            _clutState.bgTransitionTargetR = arg2;
-            _clutState.bgTransitionTargetG = arg3;
-            _clutState.bgTransitionTargetB = arg4;
+    if (frames != 0) {
+
+        _startBgAnim(frames);
+        _clutState.bgTransitionMode = mode;
+
+        if (mode == 9) {
+            _clutState.bgTransitionTargetR = rOffset;
+            _clutState.bgTransitionTargetG = gOffset;
+            _clutState.bgTransitionTargetB = bOffset;
         }
     } else {
         _clutState.bgAnimActive = 0;
-        for (i = 0; i < 5; ++i) {
-            int temp_a1, var_v0, new_var;
-            temp_v0 = p[i][0];
-
-            if (temp_v0 < 0) {
-                temp_v0 += 0xFFFF;
-            }
-
-            temp_a1 = (temp_v0 >> 0x10);
-            var_v0 = p[i][1];
-
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-
-            new_var = temp_a1 + ((var_v0 >> 0x10) << 8);
-            temp_v0 = p[i][2];
-
-            if (temp_v0 < 0) {
-                temp_v0 += 0xFFFF;
-            }
-            position[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
-        }
-        func_8008EB30(position);
+        UPLOAD_BG_COLORS(bg, position, i);
     }
 }
 
-void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
+void vs_main_transformBgColors(
+    int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
-        _transformBgColors(arg0, arg1, arg2, arg3, arg4);
+        _transformBgColors(mode, frames, rOffset, gOffset, bOffset);
     }
+}
+
+// Converts a 16.16 colour slot colour (`fade` is a _fade_t*) to the signed byte offsets
+// the lighting code takes, stored in the CVECTOR `position`
+#define SLOT_POSITION(position, fade)                  \
+    (position).r = ((fade)->current.r / 65536) - 0x40;         \
+    (position).g = ((fade)->current.g / 65536) - 0x40;         \
+    (position).b = ((fade)->current.b / 65536) - 0x40;         \
+    (position).cd = 0
+
+static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
+{
+    slot->active = 1;
+    slot->frame = 0;
+    slot->tick = 0;
+    slot->speed = speed;
 }
 
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
 {
     CVECTOR position;
-    _colorSlot_t* temp_t0;
-    int temp_a1;
-    int temp_t1;
-    int temp_t2;
-    int v0;
-    int* temp_a3;
+    _colorSlot_t* cs;
+    int r;
+    int g;
+    int b;
+    _fade_t* fade;
 
     if (_clutState.active == 0) {
         return;
     }
 
-    temp_t0 = &_clutState.colorSlots[slot];
-    temp_a3 = _clutState.colorSlots[slot].color;
-    temp_a1 = _shift_left(color->r);
-    temp_t1 = _shift_left(color->g);
-    temp_t2 = _shift_left(color->b);
+    cs = &_clutState.colorSlots[slot];
+    fade = &_clutState.colorSlots[slot].fade;
+    r = _shift_left(color->r);
+    g = _shift_left(color->g);
+    b = _shift_left(color->b);
 
     if (frames != 0) {
-        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (frames * 2));
-        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (frames * 2));
-        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (frames * 2));
+        fade->step.r = _bgStep(r, fade->current.r, frames);
+        fade->step.g = _bgStep(g, fade->current.g, frames);
+        fade->step.b = _bgStep(b, fade->current.b, frames);
     } else {
-        temp_a3[0] = temp_a1;
-        temp_a3[1] = temp_t1;
-        temp_a3[2] = temp_t2;
+        fade->current.r = r;
+        fade->current.g = g;
+        fade->current.b = b;
     }
     if (frames != 0) {
-        temp_t0->active = 1;
-        temp_t0->frame = 0;
-        temp_t0->tick = 0;
-        temp_t0->speed = frames;
+        _startColorSlotAnim(cs, frames);
         return;
     }
 
-    temp_t0->active = 0;
-    position.r = (temp_a3[0] / 65536) - 64;
-    position.g = (temp_a3[1] / 65536) - 64;
-    position.b = (temp_a3[2] / 65536) - 64;
-    position.cd = 0;
+    cs->active = 0;
+    SLOT_POSITION(position, fade);
 
     if (slot != 0) {
         func_800A0768(slot - 1, &position);
     } else {
-        func_8008B430(&position, temp_t0->grayAmount >> 2);
+        func_8008B430(&position, cs->grayAmount >> 2);
     }
 }
 
@@ -3828,302 +4154,275 @@ static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
     }
 }
 
-static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
+static void _transformColorSlot(
+    int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
     CVECTOR position;
-    short var_t4;
-    int var_a1;
-    int var_a2;
-    int var_t0;
-    int var_v0;
-    int var_v1;
-    _colorSlot_t* t1 = &_clutState.colorSlots[slot];
-    int* t2 = t1->color;
+    short gray;
+    int lum;
+    int r;
+    int b;
+    int g;
+    _colorSlot_t* cs = &_clutState.colorSlots[slot];
+    _fade_t* fade = &cs->fade;
 
-    var_t4 = 0;
+    // gray is the target grey amount: modes that average the channels fade it in
+    gray = 0;
+
     switch (mode) {
+
+    // 1: half of the current colour, plus offset
     case 1:
-        var_a1 = (t2[0] / 2) + (r << 16);
-        var_t0 = (t2[1] / 2) + (g << 16);
-        var_a2 = (t2[2] / 2) + (b << 16);
+        OFFSET_BG_RGB(fade->current.r / 2, fade->current.g / 2, fade->current.b / 2);
         break;
+
+    // 2, 3: current colour as a grey level, plus offset
     case 2:
-        var_t4 = 0x4000;
-        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (r << 0x10);
-        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (g << 0x10);
-        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (b << 0x10);
+        gray = 0x4000;
+        OFFSET_BG_RGB(_luminance(fade->current.r, fade->current.g, fade->current.b) / 6,
+            _luminance(fade->current.r, fade->current.g, fade->current.b) / 6,
+            _luminance(fade->current.r, fade->current.g, fade->current.b) / 6);
         break;
+
     case 3:
-        var_t4 = 0x4000;
-        var_v1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 12;
-        var_a1 = var_v1 + (r << 0x10);
-        var_t0 = var_v1 + (g << 0x10);
-        var_a2 = var_v1 + (b << 0x10);
+        gray = 0x4000;
+        lum = _luminance(fade->current.r, fade->current.g, fade->current.b) / 12;
+        OFFSET_BG_RGB(lum, lum, lum);
         break;
+
+    // 4, 9: base colour plus offset
     case 4:
     case 9:
-        var_a1 = (t1->baseColor.r + r) << 0x10;
-        var_t0 = (t1->baseColor.g + g) << 0x10;
-        var_a2 = (t1->baseColor.b + b) << 0x10;
+        r = (cs->baseColor.r + rOffset) << 0x10;
+        g = (cs->baseColor.g + gOffset) << 0x10;
+        b = (cs->baseColor.b + bOffset) << 0x10;
         break;
+
+    // 5: half of the base colour, plus offset
     case 5:
-        var_t4 = 0x4000;
-        var_a1 = (t1->baseColor.r << 0xF) + (r << 0x10);
-        var_t0 = (t1->baseColor.g << 0xF) + (g << 0x10);
-        var_a2 = (t1->baseColor.b << 0xF) + (b << 0x10);
+        gray = 0x4000;
+        OFFSET_BG_RGB(
+            cs->baseColor.r << 0xF, cs->baseColor.g << 0xF, cs->baseColor.b << 0xF);
         break;
+
+    // 6, 7: base colour as a grey level, plus offset
     case 6:
-        var_t4 = 0x4000;
+        gray = 0x4000;
         {
-            int v1 = t1->baseColor.g;
-            int a0 = t1->baseColor.b;
-            int v0 = t1->baseColor.r;
-            var_a2 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a2;
-            v0 += a0;
-            var_a1 = v0 / 6 + (r << 0x10);
-            var_t0 = v0 / 6 + (g << 0x10);
-            var_a2 = v0 / 6 + (b << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, cs->baseColor);
+            OFFSET_BG_RGB(sum / 6, sum / 6, sum / 6);
         }
         break;
+
     case 7:
-        var_t4 = 0x4000;
+        gray = 0x4000;
         {
-            int v1 = t1->baseColor.g;
-            int a0 = t1->baseColor.b;
-            int v0 = t1->baseColor.r;
-            var_a2 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a2;
-            v0 += a0;
-            var_a1 = v0 / 12 + (r << 0x10);
-            var_t0 = v0 / 12 + (g << 0x10);
-            var_a2 = v0 / 12 + (b << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, cs->baseColor);
+            OFFSET_BG_RGB(sum / 12, sum / 12, sum / 12);
         }
         break;
+
+    // 8, 15: the base colour
     case 8:
     case 15:
-        var_a1 = t1->baseColor.r << 0x10;
-        var_t0 = t1->baseColor.g << 0x10;
-        var_a2 = t1->baseColor.b << 0x10;
+        r = cs->baseColor.r << 0x10;
+        g = cs->baseColor.g << 0x10;
+        b = cs->baseColor.b << 0x10;
         break;
-    case 11:
-        t1->mode = 0;
-        return;
-    default:
-        var_a1 = t2[0] + (r << 0x10);
-        var_t0 = t2[1] + (g << 0x10);
-        var_a2 = t2[2] + (b << 0x10);
-        break;
-    }
-    var_a1 = var_a1 & 0xFFFF0000;
-    var_t0 = var_t0 & 0xFFFF0000;
-    var_a2 = var_a2 & 0xFFFF0000;
 
-    if (var_a1 > 0x800000) {
-        var_a1 = 0x800000;
+    // 11: cancel the transition
+    case 11:
+        cs->mode = 0;
+        return;
+
+    // anything else: the current colour plus offset
+    default:
+        OFFSET_BG_RGB(fade->current.r, fade->current.g, fade->current.b);
+        break;
     }
-    if (var_t0 > 0x800000) {
-        var_t0 = 0x800000;
-    }
-    if (var_a2 > 0x800000) {
-        var_a2 = 0x800000;
-    }
-    if (var_a1 < 0) {
-        var_a1 = 0;
-    }
-    if (var_t0 < 0) {
-        var_t0 = 0;
-    }
-    if (var_a2 < 0) {
-        var_a2 = 0;
-    }
+
+    // Keep the integer part of each channel and clamp it to 0..128
+    r &= 0xFFFF0000;
+    g &= 0xFFFF0000;
+    b &= 0xFFFF0000;
+
+    CLAMP_FIXED_HIGH(r, 0x800000);
+    CLAMP_FIXED_HIGH(g, 0x800000);
+    CLAMP_FIXED_HIGH(b, 0x800000);
+    CLAMP_FIXED_LOW(r);
+    CLAMP_FIXED_LOW(g);
+    CLAMP_FIXED_LOW(b);
+
     if (frames != 0) {
-        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (frames * 2));
-        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (frames * 2));
-        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (frames * 2));
-        t1->grayStep = ((var_t4 - t1->grayAmount) / (frames * 2));
+        fade->step.r = _bgStep(r, fade->current.r, frames);
+        fade->step.g = _bgStep(g, fade->current.g, frames);
+        fade->step.b = _bgStep(b, fade->current.b, frames);
+        cs->grayStep = ((gray - cs->grayAmount) / (frames * 2));
     } else {
-        t2[0] = var_a1;
-        t2[1] = var_t0;
-        t2[2] = var_a2;
-        t1->grayAmount = var_t4;
+        fade->current.r = r;
+        fade->current.g = g;
+        fade->current.b = b;
+        cs->grayAmount = gray;
     }
-    var_v0 = 1;
+
     if (frames != 0) {
-        t1->active = 1;
-        t1->frame = 0;
-        t1->tick = 0;
-        t1->speed = frames;
-        t1->mode = mode;
+
+        _startColorSlotAnim(cs, frames);
+
+        cs->mode = mode;
+
         if (mode == 9) {
-            t1->pulseTarget[0] = r;
-            t1->pulseTarget[1] = g;
-            t1->pulseTarget[2] = b;
+            cs->pulseTarget[0] = rOffset;
+            cs->pulseTarget[1] = gOffset;
+            cs->pulseTarget[2] = bOffset;
         }
     } else {
-        t1->active = 0;
-        var_v0 = t2[0] >> 0x10;
-        if (t2[0] < 0) {
-            var_v1 = t2[0] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.r = var_v0 - 0x40;
-        var_v0 = t2[1] >> 0x10;
-        if (t2[1] < 0) {
-            var_v1 = t2[1] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.g = var_v0 - 0x40;
-        var_v0 = t2[2] >> 0x10;
-        if (t2[2] < 0) {
-            var_v1 = t2[2] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.b = var_v0 - 0x40;
-        position.cd = 0;
+        cs->active = 0;
+        SLOT_POSITION(position, fade);
+
         if (slot != 0) {
             func_800A0768(slot - 1, &position);
         } else {
-            func_8008B430(&position, ((u_short)t1->grayAmount << 0x10) >> 0x12);
+            func_8008B430(&position, cs->grayAmount >> 2);
         }
     }
 }
 
-void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
+void vs_main_transformColorSlot(
+    int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
-        _transformColorSlot(mode, frames, slot, r, g, b);
+        _transformColorSlot(mode, frames, slot, rOffset, gOffset, bOffset);
     }
 }
 
+#undef OFFSET_BG_RGB
+#undef CLAMP_FIXED_LOW
+#undef CLAMP_FIXED_HIGH
+#undef BASE_COLOR_SUM
+
 void vs_main_updateBgColors(void)
 {
-    int sp18[5];
+    int position[5];
     int i;
-    int var_v0;
-    int new_var;
-    int new_var2;
-    int var_v1;
-    int (*t1)[6];
+    _fade_t* bg;
 
     if (_clutState.bgAnimActive == 0) {
         return;
     }
 
-    t1 = _clutState.bgColors;
+    bg = _clutState.bgColors;
 
+    // Advance each colour by its step
     for (i = 0; i < 5; ++i) {
-        t1[i][0] += t1[i][3];
-        t1[i][1] += t1[i][4];
-        t1[i][2] += t1[i][5];
+        bg[i].current.r += bg[i].step.r;
+        bg[i].current.g += bg[i].step.g;
+        bg[i].current.b += bg[i].step.b;
     }
 
-    for (i = 0; i < 5; ++i) {
-        var_v1 = t1[i][0];
-        if (var_v1 < 0) {
-            var_v1 += 0xFFFF;
-        }
-        var_v0 = t1[i][1];
-        new_var2 = var_v1 >> 16;
-        if (var_v0 < 0) {
-            var_v0 += 0xFFFF;
-        }
-        var_v1 = t1[i][2];
-        new_var = new_var2 + ((var_v0 >> 16) << 8);
-        if (var_v1 < 0) {
-            var_v1 += 0xFFFF;
-        }
-        sp18[i] = new_var + ((var_v1 >> 16) << 16);
+    UPLOAD_BG_COLORS(bg, position, i);
+    ++_clutState.bgAnimFrame;
+
+    if (_clutState.bgAnimFrame < (_clutState.bgAnimSpeed * 2)) {
+        return;
     }
-    func_8008EB30(sp18);
-    _clutState.bgAnimFrame += 1;
-    if (_clutState.bgAnimFrame >= (_clutState.bgAnimSpeed * 2)) {
-        if (_clutState.bgTransitionMode == 9) {
-            _transformBgColors(4, _clutState.bgAnimSpeed,
-                _clutState.bgTransitionTargetR / 2, _clutState.bgTransitionTargetG / 2,
-                _clutState.bgTransitionTargetB / 2);
-            _clutState.bgTransitionMode = 10;
-            return;
-        }
-        if (_clutState.bgTransitionMode == 10) {
-            _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
-                _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
-            _clutState.bgTransitionMode = 9;
-            return;
-        }
-        _clutState.bgAnimActive = 0;
+
+    // Modes 9 and 10 pulse: fade to half the target colour, then back to the full target
+    if (_clutState.bgTransitionMode == 9) {
+
+        _transformBgColors(4, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR / 2,
+            _clutState.bgTransitionTargetG / 2, _clutState.bgTransitionTargetB / 2);
+
+        _clutState.bgTransitionMode = 10;
+
+        return;
     }
+
+    if (_clutState.bgTransitionMode == 10) {
+
+        _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
+            _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
+
+        _clutState.bgTransitionMode = 9;
+
+        return;
+    }
+
+    _clutState.bgAnimActive = 0;
 }
+
+#undef UPLOAD_BG_COLORS
 
 void vs_main_updateColorSlots(void)
 {
-    CVECTOR sp18;
+    CVECTOR position;
     int i;
-    int var_v0;
-    _colorSlot_t* p = _clutState.colorSlots;
+    _colorSlot_t* slots = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
-        int* a2 = p[i].color;
-        if (p[i].active != 0) {
-            a2[0] += a2[3];
-            a2[1] += a2[4];
-            a2[2] += a2[5];
 
-            var_v0 = a2[0];
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            sp18.r = (var_v0 >> 16) - 0x40;
-            var_v0 = a2[1];
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            sp18.g = (var_v0 >> 16) - 0x40;
-            var_v0 = a2[2];
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-            sp18.b = (var_v0 >> 16) - 0x40;
-            sp18.cd = 0;
+        _colorSlot_t* slot = &slots[i];
+        _fade_t* fade = &slot->fade;
+
+        if (slot->active != 0) {
+
+            // Advance the colour by its step
+            fade->current.r += fade->step.r;
+            fade->current.g += fade->step.g;
+            fade->current.b += fade->step.b;
+
+            SLOT_POSITION(position, fade);
 
             if (i != 0) {
-                func_800A0768(i - 1, &sp18);
+                func_800A0768(i - 1, &position);
             } else {
-                p[0].grayAmount += p[0].grayStep;
-                func_8008B430(&sp18, p[0].grayAmount >> 2);
+                slots[0].grayAmount += slots[0].grayStep;
+                func_8008B430(&position, slots[0].grayAmount >> 2);
             }
-            ++p[i].frame;
-            if (p[i].frame >= (p[i].speed * 2)) {
-                if (p[i].mode == 9) {
-                    vs_main_transformColorSlot(4, p[i].speed, i, p[i].pulseTarget[0] / 2,
-                        p[i].pulseTarget[1] / 2, p[i].pulseTarget[2] / 2);
-                    p[i].mode = 10;
-                } else if (p[i].mode == 10) {
-                    _transformColorSlot(9, p[i].speed, i, p[i].pulseTarget[0],
-                        p[i].pulseTarget[1], p[i].pulseTarget[2]);
-                    p[i].mode = 9;
-                } else if (p[i].mode == 14) {
-                    _transformColorSlot(15, p[i].speed, i, 0, 0, 0);
-                    p[i].mode = 15;
+
+            ++slot->frame;
+
+            if (slot->frame >= (slot->speed * 2)) {
+
+                // Modes 9 and 10 pulse (half the target, then the full target); 14 fades
+                // to 15
+                if (slot->mode == 9) {
+
+                    vs_main_transformColorSlot(4, slot->speed, i,
+                        slot->pulseTarget[0] / 2, slot->pulseTarget[1] / 2,
+                        slot->pulseTarget[2] / 2);
+
+                    slot->mode = 10;
+
+                } else if (slot->mode == 10) {
+
+                    _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
+                        slot->pulseTarget[1], slot->pulseTarget[2]);
+
+                    slot->mode = 9;
+
+                } else if (slot->mode == 14) {
+
+                    _transformColorSlot(15, slot->speed, i, 0, 0, 0);
+                    slot->mode = 15;
+
                 } else {
-                    p[i].active = 0;
+                    slot->active = 0;
                 }
             }
         }
     }
 }
 
+#undef SLOT_POSITION
+
 void vs_main_updateClutSlots(void)
 {
     int i;
     int j;
-    u_int var_t5;
+    u_int frameStride;
     u_short g;
     u_short r;
     u_short b;
@@ -4131,108 +4430,143 @@ void vs_main_updateClutSlots(void)
     int c;
 
     for (i = 0; i < 14; ++i) {
+
         if (_clutState.slots[i].animState.active == 0) {
             continue;
         }
+
         if (++_clutState.slots[i].animState.tick
             >= (_clutState.slots[i].animState.speed / 8)) {
 
             _clutState.slots[i].animState.tick = 0;
 
             if (_clutState.slots[i].animState.speed >= 8) {
-                var_t5 = 1;
+
+                frameStride = 1;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset16[index[j].rindex][c];
                     g = index[j].g + _animOffset16[index[j].gindex][c];
                     b = index[j].b + _animOffset16[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].g = g;
                     index[j].b = b;
                     index[j].r = r;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else if (_clutState.slots[i].animState.speed >= 4) {
-                var_t5 = 2;
+
+                frameStride = 2;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset8[index[j].rindex][c];
                     g = index[j].g + _animOffset8[index[j].gindex][c];
                     b = index[j].b + _animOffset8[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else if (_clutState.slots[i].animState.speed >= 2) {
-                var_t5 = 4;
+
+                frameStride = 4;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset4[index[j].rindex][c];
                     g = index[j].g + _animOffset4[index[j].gindex][c];
                     b = index[j].b + _animOffset4[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else {
-                var_t5 = 8;
+
+                frameStride = 8;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset2[index[j].rindex][c];
                     g = index[j].g + _animOffset2[index[j].gindex][c];
                     b = index[j].b + _animOffset2[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             }
-            if (++_clutState.slots[i].animState.frame >= (16 / var_t5)) {
+            if (++_clutState.slots[i].animState.frame >= (16 / frameStride)) {
                 if (_clutState.slots[i].animState.transitionMode == 9) {
+
                     _transformClutSlot(4, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR / 2,
                         _clutState.slots[i].animState.transitionTargetG / 2,
                         _clutState.slots[i].animState.transitionTargetB / 2);
+
                     _clutState.slots[i].animState.transitionMode = 10;
+
                 } else if (_clutState.slots[i].animState.transitionMode == 10) {
+
                     _transformClutSlot(9, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR,
                         _clutState.slots[i].animState.transitionTargetG,
                         _clutState.slots[i].animState.transitionTargetB);
+
                     _clutState.slots[i].animState.transitionMode = 9;
+
                 } else if (_clutState.slots[i].animState.transitionMode == 14) {
+
                     _transformClutSlot(
                         15, _clutState.slots[i].animState.speed, i, 0, 0, 0);
+
                     _clutState.slots[i].animState.transitionMode = 15;
+
                 } else {
                     _clutState.slots[i].animState.active = 0;
                 }
@@ -4257,21 +4591,27 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
     if (slot >= 14) {
         setRECT(&rect, colorOffset + 768, slot + 224, count, 1);
         LoadImage(&rect, (u_long*)img);
+
         return;
     }
 
     if (_clutState.slots[slot].locked == 0) {
+
         _clutState.slots[slot].animState.active = 0;
+
         for (i = 0; i < count; ++i) {
+
             px = img[i];
             dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
             _clutBuffer[slot][colorOffset + i] = px;
             _clutState.slots[slot].clutBase[colorOffset + i] = px;
-            dst->r = (px & 0x1F);
-            dst->g = ((px & 0x3E0) >> 5);
-            dst->b = ((px & 0x7C00) >> 10);
+
+            dst->r = _colorR(px);
+            dst->g = _colorG(px);
+            dst->b = _colorB(px);
             dst->a = ((px & 0x8000) >> 15);
         }
+
         _clutState.uploadPending = 1;
     }
 }
@@ -4280,9 +4620,9 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
     short gOffset, short bOffset, int applyNow)
 {
     int i;
-    int new_var;
-    int new_var2;
-    int new_var3;
+    int red;
+    int green;
+    int blue;
     short r;
     short g;
     short b;
@@ -4290,33 +4630,38 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
     u_short stp;
 
     for (i = 0; i < 256; ++i) {
+
         value = srcClut[i];
+
         if (value != 0) {
             switch (mode) {
+            // 5: half of the colour, plus offset
             case 5:
-                r = rOffset + (value & 0x1F) / 2;
-                g = gOffset + ((value & 0x3E0) >> 5) / 2;
-                b = bOffset + ((value & 0x7C00) >> 10) / 2;
+                r = rOffset + _colorR(value) / 2;
+                g = gOffset + _colorG(value) / 2;
+                b = bOffset + _colorB(value) / 2;
                 break;
 
+            // 6, 7: the colour as a grey level, plus offset
             case 6:
-                new_var = value & 0x1F;
-                new_var2 = (value & 0x3E0) >> 5;
-                new_var3 = (value & 0x7C00) >> 10;
-                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                red = _colorR(value);
+                green = _colorG(value);
+                blue = _colorB(value);
+                r = rOffset + _luminance(red, green, blue) / 6;
+                g = gOffset + _luminance(red, green, blue) / 6;
+                b = bOffset + _luminance(red, green, blue) / 6;
                 break;
 
             case 7:
-                new_var = value & 0x1F;
-                new_var2 = (value & 0x3E0) >> 5;
-                new_var3 = (value & 0x7C00) >> 10;
-                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                red = _colorR(value);
+                green = _colorG(value);
+                blue = _colorB(value);
+                r = rOffset + _luminance(red, green, blue) / 12;
+                g = gOffset + _luminance(red, green, blue) / 12;
+                b = bOffset + _luminance(red, green, blue) / 12;
                 break;
 
+            // 0 (and 8, the offset-only load): the colour plus offset
             case 0:
             default:
                 r = rOffset + (value & 0x1F);
@@ -4326,39 +4671,28 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
             }
 
         } else {
+            // A zero entry stays zero (fully transparent)
             r = value & 0x1F;
             g = (value & 0x3E0) >> 5;
             b = (value & 0x7C00) >> 10;
         }
 
-        stp = value;
-        stp >>= 15;
+        stp = (u_short)value >> 15;
 
-        if (r >= 32) {
-            r = 31;
-        }
-        if (g >= 32) {
-            g = 31;
-        }
-        if (b >= 32) {
-            b = 31;
-        }
-        if ((r << 16) < 1) {
-            r = 0;
-        }
-        if ((g << 16) <= 0) {
-            g = 0;
-        }
-        if ((b << 16) <= 0) {
-            b = 0;
-        }
+        CLAMP_CLUT_HIGH(r);
+        CLAMP_CLUT_HIGH(g);
+        CLAMP_CLUT_HIGH(b);
+        CLAMP_CLUT_LOW(r);
+        CLAMP_CLUT_LOW(g);
+        CLAMP_CLUT_LOW(b);
 
+        // A non-black source colour never turns fully black
         if ((((r | g | b) << 16) == 0) && (value & 0x7FFF)) {
             b = 1;
         }
 
         if (applyNow != 0) {
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (stp << 15);
+            _clutBuffer[slot][i] = PACK_COLOR(r, g, b, stp);
 
             if (_clutState.slots[slot].animState.active == 0) {
                 struct ColorInfo* colors = &_clutState.slots[slot].colorInfo[i];
@@ -4369,11 +4703,14 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
             }
         }
 
-        _clutState.slots[slot].clutBase[i] = r + (g << 5) + (b << 10) + (stp << 15);
+        _clutState.slots[slot].clutBase[i] = PACK_COLOR(r, g, b, stp);
     }
 
     _clutState.uploadPending = 1;
 }
+
+#undef CLAMP_CLUT_LOW
+#undef CLAMP_CLUT_HIGH
 
 static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
     u_short gOffset, u_short bOffset, int applyNow)
@@ -4384,17 +4721,17 @@ static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffs
 void vs_main_loadBgColors(void)
 {
     int i;
-    int (*bgColors)[6] = _clutState.bgColors;
-    int* var_v1 = func_8008EB24();
+    _fade_t* bg = _clutState.bgColors;
+    int* position = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
-        _clutState.bgBaseColors[i].r = var_v1[i];
-        _clutState.bgBaseColors[i].g = (var_v1[i] & 0xFF00) / 256;
-        _clutState.bgBaseColors[i].b = (var_v1[i] & 0xFF0000) / 65536;
+        _clutState.bgBaseColors[i].r = position[i];
+        _clutState.bgBaseColors[i].g = (position[i] & 0xFF00) / 256;
+        _clutState.bgBaseColors[i].b = (position[i] & 0xFF0000) / 65536;
 
-        bgColors[i][0] = (var_v1[i] & 0xFF) << 16;
-        bgColors[i][1] = (var_v1[i] & 0xFF00) << 8;
-        bgColors[i][2] = var_v1[i] & 0xFF0000;
+        bg[i].current.r = (position[i] & 0xFF) << 16;
+        bg[i].current.g = (position[i] & 0xFF00) << 8;
+        bg[i].current.b = position[i] & 0xFF0000;
     }
 }
 
@@ -4403,13 +4740,22 @@ void vs_main_commitClut(void)
     RECT rect;
 
     if (_clutState.uploadPending != 0) {
+
         setRECT(&rect, 768, 224, 256, 14);
         LoadImage(&rect, (u_long*)_clutBuffer[0]);
+
         _clutState.uploadPending = 0;
     }
 }
 
 void vs_main_setClutState(int active) { _clutState.active = active; }
+
+#ifdef NON_MATCHING
+#define VS_SET_CVECTOR(color, r, g, b) ((color) = (CVECTOR) { (r), (g), (b), 0 })
+#else
+#define VS_SET_CVECTOR(color, r, g, b) \
+    (*(int*)&(color) = (r) | ((g) << 8) | ((b) << 16))
+#endif
 
 void vs_main_clutInit(void)
 {
@@ -4431,10 +4777,10 @@ void vs_main_clutInit(void)
         _clutState.colorSlots[i].active = 0;
         _clutState.colorSlots[i].mode = 0;
         _clutState.colorSlots[i].grayAmount = 0;
-        *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
-        _clutState.colorSlots[i].color[2] = 0x400000;
-        _clutState.colorSlots[i].color[1] = 0x400000;
-        _clutState.colorSlots[i].color[0] = 0x400000;
+        VS_SET_CVECTOR(_clutState.colorSlots[i].baseColor, 0x40, 0x40, 0x40);
+        _clutState.colorSlots[i].fade.current.b = 0x400000;
+        _clutState.colorSlots[i].fade.current.g = 0x400000;
+        _clutState.colorSlots[i].fade.current.r = 0x400000;
     }
 }
 

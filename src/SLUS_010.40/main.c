@@ -1495,12 +1495,12 @@ int vs_main_stopVibration(u_int slot, int id)
     return 1;
 }
 
-static int _pauseVibrationSlot(int arg0)
+static int _pauseVibrationSlot(int slot)
 {
-    int v0 = arg0 - 1;
-    _padAct.port[v0].active = 0;
+    int i = slot - 1;
+    _padAct.port[i].active = 0;
 
-    return arg0;
+    return slot;
 }
 
 static UNUSED int _pauseVibration(int arg0)

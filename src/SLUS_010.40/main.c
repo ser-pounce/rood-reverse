@@ -745,6 +745,7 @@ static void _loadBattlePrg(void)
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
+
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
@@ -756,6 +757,7 @@ static void _loadBattlePrg(void)
 
     cdFile.lba = VS_INITBTL_PRG_LBA;
     cdFile.size = VS_INITBTL_PRG_SIZE;
+
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[1]);
 
@@ -1299,12 +1301,14 @@ static void _unlockPadModeSwitch(void)
 static void _padResetDefaults(int portID, UNUSED void* _)
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
+
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
     if (port->exId) {
         port->actData[0] = 0;
         port->actData[1] = 0;
         port->lock = 2;
+
         PadSetMainMode(portID, PadInfoMode(portID, InfoModeCurExOffs, 0), port->lock);
     } else {
         port->actData[0] = 0x40;
@@ -1327,11 +1331,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
         port->lStickX = 128;
         port->rStickY = 128;
         port->rStickX = 128;
+
         return 0;
     }
+
     port = &vs_main_portInfo[portID >> 4];
     mode = PadInfoMode(portID, InfoModeCurID, 0);
     port->mode = mode;
+
     switch (mode) {
     case 1:
     case 2:
@@ -1339,12 +1346,14 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     case 6:
         btnStates = 0;
         break;
+
     default:
         btnStates = ~((padBuf[2] << 8) | padBuf[3]);
         break;
     }
 
     port->mode = PadInfoMode(portID, InfoModeCurID, 0);
+
     if ((port->mode == 5) || (port->mode == 7)) {
         port->rStickX = padBuf[6];
         port->rStickY = padBuf[7];
@@ -1357,6 +1366,7 @@ int vs_main_updatePadState(int portID, char padBuf[34])
         port->rStickX = 128;
     }
     port->states = btnStates;
+
     return btnStates;
 }
 
@@ -1370,11 +1380,16 @@ void vs_main_padConnect(int portID, char padBuf[34])
     if (state == PadStateFindPad) {
         port->connected = 0;
     }
+
     if (port->connected == 0) {
+
         PadSetAct(portID, port->actData, sizeof port->actData);
+
         if ((state == PadStateFindCTP1)
             || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
+
             _padResetDefaults(portID, padBuf);
+
             port->connected = 1;
         }
     }
@@ -1423,8 +1438,10 @@ int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
         _padAct.port[i].motors[0].value = 0;
         _padAct.port[i].active = 1;
         _padAct.port[i].id = arg2;
+
         return ret;
     }
+
     return 0;
 }
 
@@ -1442,12 +1459,15 @@ static int _clearVibrationSlot(int arg0)
 int vs_main_stopVibration(u_int arg0, int arg1)
 {
     int i;
+
     if (arg0 - 1 < 2) {
         return _clearVibrationSlot(arg0);
     }
+
     if (arg0 != 0) {
         return 0;
     }
+
     if (arg1 != 0) {
         for (i = 0; i < 2; ++i) {
             if (_padAct.port[i].id == arg1) {
@@ -1459,6 +1479,7 @@ int vs_main_stopVibration(u_int arg0, int arg1)
             _clearVibrationSlot(i + 1);
         }
     }
+
     return 1;
 }
 
@@ -1466,6 +1487,7 @@ static int _pauseVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
     _padAct.port[v0].active = 0;
+
     return arg0;
 }
 
@@ -1492,6 +1514,7 @@ static int _resumeVibrationSlot(int arg0)
 {
     int v0 = arg0 - 1;
     _padAct.port[v0].active = 1;
+
     return arg0;
 }
 
@@ -1617,7 +1640,7 @@ void vs_main_vibrationOnEffect(int arg0)
 
 int vs_main_processPadState(void)
 {
-    UNUSED int dummy[2];
+    UNUSED int _[2];
     int i;
     u_int btnState;
 
@@ -1633,6 +1656,7 @@ int vs_main_processPadState(void)
         vs_main_stickPosBuf.rStickY = 128;
         vs_main_stickPosBuf.rStickX = 128;
         break;
+
     case 7:
         vs_main_stickPosBuf.rStickX = vs_main_portInfo[0].rStickX;
         vs_main_stickPosBuf.rStickY = vs_main_portInfo[0].rStickY;
@@ -1642,6 +1666,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].rStickX < 16) {
             vs_main_buttonsState |= PADLleft;
         }
+
         if (vs_main_portInfo[0].rStickX >= 241) {
             vs_main_buttonsState |= PADLright;
         }
@@ -1649,6 +1674,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].rStickY < 16) {
             vs_main_buttonsState |= PADLup;
         }
+
         if (vs_main_portInfo[0].rStickY >= 241) {
             vs_main_buttonsState |= PADLdown;
         }
@@ -1656,6 +1682,7 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].lStickX < 32) {
             vs_main_buttonsState |= PADj;
         }
+
         if (vs_main_portInfo[0].lStickX >= 225) {
             vs_main_buttonsState |= PADj;
         }
@@ -1663,10 +1690,13 @@ int vs_main_processPadState(void)
         if (vs_main_portInfo[0].lStickY < 32) {
             vs_main_buttonsState |= PADj;
         }
+
         if (vs_main_portInfo[0].lStickY >= 225) {
             vs_main_buttonsState |= PADj;
         }
+
         break;
+
     default:
         vs_main_stickPosBuf.lStickY = 128;
         vs_main_stickPosBuf.lStickX = 128;
@@ -1680,6 +1710,7 @@ int vs_main_processPadState(void)
     vs_main_buttonsPreviousState = vs_main_buttonsState;
 
     btnState = vs_main_buttonsState;
+
     for (i = 0; i < 32; ++i, btnState >>= 1) {
         if (btnState & 1) {
             _buttonHeldFrameCount[i] += vs_gametime_tickspeed;
@@ -1844,11 +1875,12 @@ void vs_main_initHeap(void* heap, u_int size)
 
 static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
 {
-
     if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);
         DsEndReadySystem();
+
         _disk.state = diskReadError;
+
         return;
     }
 
@@ -1862,6 +1894,7 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
         DsGetSector(_disk.vram + _disk.sectorBufIndex * SECTOR_BYTES, SECTOR_SIZE);
     } else {
         DsGetSector(_cdReadBuffer + _disk.ringWriteIndex * SECTOR_BYTES, SECTOR_SIZE);
+
         if (++_disk.ringWriteIndex >= 16) {
             _disk.ringWriteIndex = 0;
         }
@@ -1873,16 +1906,21 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
             _disk.state = diskIdle;
         }
         break;
+
     case cdBufferModeBuffered:
         ++_disk.sectorsReceived;
         ++_disk.sectorsPending;
         break;
+
     case cdBufferModeManual:
         ++_disk.sectorsReceived;
+
         if (++_disk.ringBufIndex >= 16) {
             _disk.ringBufIndex = 0;
         }
+
         break;
+
     default:
         break;
     }
@@ -1898,14 +1936,18 @@ static void _diskReadCommandCallback(u_char intr, UNUSED u_char result[])
     case DslComplete:
         DsStartReadySystem(_diskReadCallback, -1);
         return;
+
     case DslDiskError:
         break;
+
     default:
         break;
+
     case DslNoResult:
     case DslNoIntr:
         return;
     }
+
     _disk.state = diskReadError;
 }
 
@@ -1914,14 +1956,18 @@ static void _diskSeekCommandCallback(u_char intr, UNUSED u_char result[])
     switch (intr) {
     case DslNoIntr:
         break;
+
     case DslComplete:
         _disk.state = diskIdle;
         break;
+
     case DslDiskError:
         _disk.state = diskReadError;
         break;
+
     case DslNoResult:
         break;
+
     default:
         _disk.state = diskReadError;
         break;
@@ -1935,17 +1981,21 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
         DsReadyCallback(NULL);
         _disk.state = diskIdle;
         break;
+
     case DslDataReady:
         if (!(result[4] & 0x80)) {
-            _cdaTrack = ((result[1] >> 4) * 0xA) + (result[1] & 0xF);
+            _cdaTrack = ((result[1] >> 4) * 10) + (result[1] & 0xF);
             _cdaMinute = result[3];
             _cdaSecond = result[4];
             _cdaPeak = (result[6] << 8) | result[7];
         }
+
         break;
+
     case DslDiskError:
         DsReadyCallback(NULL);
         _disk.state = diskCommandFailed;
+
         break;
     }
 }
@@ -2006,40 +2056,57 @@ static void _diskUpdate(void)
     case diskIdle:
     default:
         break;
+
     case diskReadXaInit:
         if (DsSystemStatus() == DslReady) {
+
             _disk.mode = 0;
             _disk.cd.mode = 0;
+
             while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
                 ;
+
             VSync(3);
+
             vol.val2 = 0x80;
             vol.val0 = 0x80;
             vol.val3 = 0;
             vol.val1 = 0;
+
             DsMix(&vol);
             Sound_SetCdVolume(_disk.request.cdVolume);
             Sound_SetCdMixVolume(0x7F);
+
             _disk.pcm.file = 1;
             _disk.pcm.chan = 0;
+
             DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
             DsIntToPos(_disk.cdSector, &_disk.cd.loc);
+
             _disk.commandId =
                 DsPacket(DslModeRT | DslModeSF, &_disk.cd.loc, DslReadS, NULL, -1);
             DsReadyCallback(_diskPcmReadReady);
+
             _disk.state = diskStreamXa;
         }
+
         if (_disk.commandId == 0) {
             DsReadyCallback(0);
             _disk.state = diskCommandFailed;
+
             ++_disk.errorCount;
         }
         break;
+
     case diskReadInit: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
+
             _disk.sectorsFetched = 0;
             _disk.sectorBufIndex = 0;
+
             if (_disk.request.byteCount != 0) {
                 _disk.state = diskReadReady;
                 _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
@@ -2057,44 +2124,62 @@ static void _diskUpdate(void)
         }
         break;
     }
+
     case diskCommandFailed: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
+
             _disk.sectorsFetched = 0;
             ++_disk.errorCount;
             seconds = vs_main_frameDuration / 60;
+
             if (seconds < 420) {
                 DsIntToPos(_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
                     &_cdReadLoc);
+
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
                 vol.val3 = 0;
                 vol.val1 = 0;
+
                 DsMix(&vol);
                 Sound_SetCdVolume(0);
                 Sound_FadeCdVolume(0x3C, _disk.request.cdVolume);
+
                 _disk.pcm.file = 1;
                 _disk.pcm.chan = 0;
+
                 DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
                 _disk.commandId =
                     DsPacket(DslModeRT | DslModeSF, &_cdReadLoc, DslReadS, NULL, -1);
                 DsReadyCallback(_diskPcmReadReady);
+
                 _disk.state = diskStreamXa;
+
             } else {
                 _disk.commandId = DsCommand(DslModeSF | DslModeDA, NULL, NULL, -1);
                 _disk.state = diskIdle;
+
                 DsReadyCallback(0);
             }
         }
+
         if (_disk.commandId == 0) {
             _disk.state = diskCommandFailed;
             ++_disk.errorCount;
         }
+
         break;
     }
+
     case diskReadError: {
+
         int status = DsSystemStatus();
+
         if (status == DslReady) {
+
             _disk.sectorsFetched = 0;
             _disk.sectorBufIndex = 0;
             ++_disk.errorCount;
@@ -2116,18 +2201,26 @@ static void _diskUpdate(void)
         }
         break;
     }
+
     case diskStreamXaEnd:
         Sound_SetCdVolume(0);
+
         _disk.commandId = DsCommand(DslPause, NULL, NULL, -1);
+
         if (_disk.commandId > 0) {
             _disk.state = diskIdle;
         }
+
         DsReadyCallback(NULL);
+
         _disk.mode = 128;
         _disk.cd.mode = 128;
+
         while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
             ;
+
         VSync(3);
+
         break;
     }
 
@@ -2311,7 +2404,9 @@ static void _processCdQueue(void)
     if (_cdQueueCount.processing || _cdQueueCount.queued) {
 
         vs_main_CdQueueSlot* slot = _cdQueue;
+
         int i = _diskGetState();
+
         if (i == diskIdle) {
 
             for (i = 0; i < 32; ++i, ++slot) {
@@ -2348,30 +2443,35 @@ void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold(arg0)
 
 int vs_main_stopMusicSlot(int id)
 {
-    u_int new_var;
-    int var_a1;
+    int i;
 
     if (id != 0) {
         if (vs_main_soundData.unk14[id - 1] != 0xFFFF) {
+
             Sound_StopMusicById(vs_main_soundData.unk14[id - 1]);
+
             vs_main_soundData.unk14[id - 1] = 0xFFFF;
         }
+
         if (vs_main_soundData.currentMusicSlot == id) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
             vs_main_soundData.unk4 = 0xFFFF;
         }
+
         return 1;
     }
+
     Sound_StopMusic();
+
     vs_main_soundData.currentMusicSlot = 0;
     vs_main_soundData.currentMusicData = NULL;
     vs_main_soundData.unk4 = 0xFFFF;
 
-    new_var = 0xFFFF;
-    for (var_a1 = 3; var_a1 >= 0; --var_a1) {
-        vs_main_soundData.unk14[var_a1] = new_var;
+    for (i = 0; i < 4; ++i) {
+        vs_main_soundData.unk14[i] = 0xFFFF;
     }
+
     return 1;
 }
 
@@ -2381,17 +2481,22 @@ int vs_main_queueMusicSlot(int id)
 
     if (id != 0) {
         if (vs_main_soundData.musicData[id - 1] != 0) {
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
             temp_v0 = Sound_QueueMusic(vs_main_soundData.currentMusicData);
+
             if (temp_v0 != 0) {
                 vs_main_soundData.unk14[id - 1] = temp_v0;
                 vs_main_soundData.unk4 = temp_v0;
             }
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
+
         return vs_main_soundData.unk4;
     }
+
     return 0;
 }
 

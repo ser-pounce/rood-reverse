@@ -3720,7 +3720,7 @@ static void _transformClutSlot(
                 OFFSET_RGB3(rTmp / 2, gTmp / 2, bTmp / 2);
                 break;
             }
-            
+
             case 2:
                 OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 6);
                 break;
@@ -3735,8 +3735,8 @@ static void _transformClutSlot(
                 break;
 
             case 5:
-                OFFSET_RGB3(
-                    _colorR(baseEntry) / 2, _colorG(baseEntry) / 2, _colorB(baseEntry) / 2);
+                OFFSET_RGB3(_colorR(baseEntry) / 2, _colorG(baseEntry) / 2,
+                    _colorB(baseEntry) / 2);
                 break;
 
             case 6:
@@ -3811,7 +3811,7 @@ static void _transformClutSlot(
         p->tick = 0;
         p->speed = duration;
         p->transitionMode = mode;
-        
+
         if (mode == 9) {
             p->transitionTargetR = rOffset;
             p->transitionTargetG = gOffsetU;
@@ -3840,46 +3840,66 @@ void vs_main_transformClutSlot(
 
 static inline int _shift_left(int arg0) { return arg0 << 0x10; }
 
-void vs_main_fadeBgColors(int arg0, CVECTOR* arg1)
+static inline void _startBgAnim(int speed)
+{
+    _clutState.bgAnimActive = 1;
+    _clutState.bgAnimFrame = 0;
+    _clutState.bgAnimTick = 0;
+    _clutState.bgAnimSpeed = speed;
+}
+
+// Per-update step from a 16.16 colour towards a target over frames * 2 updates
+static inline int _bgStep(int target, int current, int frames)
+{
+    return (int)(target - (current & 0xFFFF0000)) / (frames * 2);
+}
+
+// Packs the background colours (16.16 fixed point) to 8-bit r/g/b words in `position`
+// (using `i` as the loop counter) and uploads them
+#define UPLOAD_BG_COLORS(bg, position, i)                                              \
+    for ((i) = 0; (i) < 5; ++(i)) {                                                    \
+        (position)[i] = (((bg)[i][0] / 65536) + (((bg)[i][1] / 65536) << 8))         \
+                      + ((((bg)[i][2] / 65536)) << 0x10);                              \
+    }                                                                                  \
+    func_8008EB30(position)
+
+void vs_main_fadeBgColors(int frames, CVECTOR* target)
 {
     int position[5];
     int i;
+    int (*bg)[6];
 
-    if (_clutState.active != 0) {
-        int (*temp_t6)[6] = _clutState.bgColors;
-        for (i = 0; i < 5; ++i) {
-            int r;
-            int g;
-            int b;
-            r = _shift_left(arg1[i].r);
-            g = _shift_left(arg1[i].g);
-            b = _shift_left(arg1[i].b);
-
-            if (arg0 != 0) {
-                temp_t6[i][3] = ((int)(r - (temp_t6[i][0] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][4] = ((int)(g - (temp_t6[i][1] & 0xFFFF0000)) / (arg0 * 2));
-                temp_t6[i][5] = ((int)(b - (temp_t6[i][2] & 0xFFFF0000)) / (arg0 * 2));
-            } else {
-                temp_t6[i][0] = r;
-                temp_t6[i][1] = g;
-                temp_t6[i][2] = b;
-            }
-        }
-        if (arg0 != 0) {
-            _clutState.bgAnimActive = 1;
-            _clutState.bgAnimFrame = 0;
-            _clutState.bgAnimTick = 0;
-            _clutState.bgAnimSpeed = arg0;
-            return;
-        }
-        _clutState.bgAnimActive = 0;
-
-        for (i = 0; i < 5; ++i) {
-            position[i] = ((temp_t6[i][0] / 65536) + ((temp_t6[i][1] / 65536) << 8))
-                        + (((temp_t6[i][2] / 65536)) << 0x10);
-        }
-        func_8008EB30(position);
+    if (_clutState.active == 0) {
+        return;
     }
+
+    bg = _clutState.bgColors;
+
+    for (i = 0; i < 5; ++i) {
+
+        int r = _shift_left(target[i].r);
+        int g = _shift_left(target[i].g);
+        int b = _shift_left(target[i].b);
+
+        if (frames != 0) {
+            bg[i][3] = _bgStep(r, bg[i][0], frames);
+            bg[i][4] = _bgStep(g, bg[i][1], frames);
+            bg[i][5] = _bgStep(b, bg[i][2], frames);
+        } else {
+            bg[i][0] = r;
+            bg[i][1] = g;
+            bg[i][2] = b;
+        }
+    }
+
+    if (frames != 0) {
+        _startBgAnim(frames);
+        return;
+    }
+
+    _clutState.bgAnimActive = 0;
+
+    UPLOAD_BG_COLORS(bg, position, i);
 }
 
 static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
@@ -3887,173 +3907,148 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
     int i;
 
     if (_clutState.active != 0) {
+
         vs_main_fadeBgColors(arg0, arg1);
+
         for (i = 0; i < 5; ++i) {
             _clutState.bgBaseColors[i] = arg1[i];
         }
     }
 }
 
-void _transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
+// Clamp a 16.16 fixed point channel to 0..255
+#define CLAMP_BG_HIGH(c)    \
+    if ((c) > 0xFF0000) {   \
+        (c) = 0xFF0000;     \
+    }
+#define CLAMP_BG_LOW(c) \
+    if ((c) < 0) {      \
+        (c) = 0;        \
+    }
+
+// r/g/b are the locals below: each channel (16.16 fixed point) gets its offset added
+#define OFFSET_BG_RGB(rv, gv, bv)           \
+    r = (rv) + (rOffset << 0x10);           \
+    g = (gv) + (gOffset << 0x10);           \
+    b = (bv) + (bOffset << 0x10)
+
+void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     int position[5];
-    int temp_v0;
-    int var_a1;
-    int var_t0;
-    int var_t1;
+    int lum;
+    int b;
+    int g;
+    int r;
     int i;
     int (*p)[6] = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
-        switch (arg0) {
+        switch (mode) {
         case 1:
-            var_t1 = (p[i][0] / 2) + (arg2 << 0x10);
-            var_t0 = p[i][1] / 2 + (arg3 << 0x10);
-            var_a1 = (p[i][2] / 2) + (arg4 << 0x10);
+            OFFSET_BG_RGB((p[i][0] / 2), p[i][1] / 2, (p[i][2] / 2));
             break;
         case 2:
-            var_t1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg2 << 0x10);
-            var_t0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg3 << 0x10);
-            var_a1 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6 + (arg4 << 0x10);
+            OFFSET_BG_RGB(((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6,
+                ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6,
+                ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 6);
             break;
         case 3:
-            temp_v0 = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 12;
-            var_t1 = temp_v0 + (arg2 << 0x10);
-            var_t0 = temp_v0 + (arg3 << 0x10);
-            var_a1 = temp_v0 + (arg4 << 0x10);
+            lum = ((p[i][0] * 2) + (p[i][1] * 3) + p[i][2]) / 12;
+            OFFSET_BG_RGB(lum, lum, lum);
             break;
         case 4:
         case 9:
-            var_t1 = (_clutState.bgBaseColors[i].r + arg2) << 0x10;
-            var_t0 = (_clutState.bgBaseColors[i].g + arg3) << 0x10;
-            var_a1 = (_clutState.bgBaseColors[i].b + arg4) << 0x10;
+            r = (_clutState.bgBaseColors[i].r + rOffset) << 0x10;
+            g = (_clutState.bgBaseColors[i].g + gOffset) << 0x10;
+            b = (_clutState.bgBaseColors[i].b + bOffset) << 0x10;
             break;
         case 5:
-            var_t1 = (_clutState.bgBaseColors[i].r << 0xF) + (arg2 << 0x10);
-            var_t0 = (_clutState.bgBaseColors[i].g << 0xF) + (arg3 << 0x10);
-            var_a1 = (_clutState.bgBaseColors[i].b << 0xF) + (arg4 << 0x10);
+            OFFSET_BG_RGB((_clutState.bgBaseColors[i].r << 0xF),
+                (_clutState.bgBaseColors[i].g << 0xF),
+                (_clutState.bgBaseColors[i].b << 0xF));
             break;
         case 6: {
             int v1 = _clutState.bgBaseColors[i].g;
             int a0 = _clutState.bgBaseColors[i].b;
             int v0 = _clutState.bgBaseColors[i].r;
-            var_a1 = v1 << 0x10;
+            b = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
             v1 <<= 0x11;
-            v0 += v1 + var_a1;
+            v0 += v1 + b;
             v0 += a0;
-            var_t1 = v0 / 6 + (arg2 << 0x10);
-            var_t0 = v0 / 6 + (arg3 << 0x10);
-            var_a1 = v0 / 6 + (arg4 << 0x10);
+            OFFSET_BG_RGB(v0 / 6, v0 / 6, v0 / 6);
         } break;
         case 7: {
             int v1 = _clutState.bgBaseColors[i].g;
             int a0 = _clutState.bgBaseColors[i].b;
             int v0 = _clutState.bgBaseColors[i].r;
-            var_a1 = v1 << 0x10;
+            b = v1 << 0x10;
             a0 <<= 0x10;
             v0 <<= 0x11;
             v1 <<= 0x11;
-            v0 += v1 + var_a1;
+            v0 += v1 + b;
             v0 += a0;
-            var_t1 = v0 / 12 + (arg2 << 0x10);
-            var_t0 = v0 / 12 + (arg3 << 0x10);
-            var_a1 = v0 / 12 + (arg4 << 0x10);
+            OFFSET_BG_RGB(v0 / 12, v0 / 12, v0 / 12);
         } break;
         case 8:
-            var_t1 = _clutState.bgBaseColors[i].r << 0x10;
-            var_t0 = _clutState.bgBaseColors[i].g << 0x10;
-            var_a1 = _clutState.bgBaseColors[i].b << 0x10;
+            r = _clutState.bgBaseColors[i].r << 0x10;
+            g = _clutState.bgBaseColors[i].g << 0x10;
+            b = _clutState.bgBaseColors[i].b << 0x10;
             break;
         case 11:
             _clutState.bgTransitionMode = 0;
             return;
         case 0:
         default:
-            var_t1 = p[i][0] + (arg2 << 0x10);
-            var_t0 = p[i][1] + (arg3 << 0x10);
-            var_a1 = p[i][2] + (arg4 << 0x10);
+            OFFSET_BG_RGB(p[i][0], p[i][1], p[i][2]);
             break;
         }
 
-        var_t1 &= 0xFFFF0000;
-        var_t0 &= 0xFFFF0000;
-        var_a1 &= 0xFFFF0000;
+        r &= 0xFFFF0000;
+        g &= 0xFFFF0000;
+        b &= 0xFFFF0000;
 
-        if (var_t1 > 0xFF0000) {
-            var_t1 = 0xFF0000;
-        }
-        if (var_t0 > 0xFF0000) {
-            var_t0 = 0xFF0000;
-        }
-        if (var_a1 > 0xFF0000) {
-            var_a1 = 0xFF0000;
-        }
-        if (var_t1 < 0) {
-            var_t1 = 0;
-        }
-        if (var_t0 < 0) {
-            var_t0 = 0;
-        }
-        if (var_a1 < 0) {
-            var_a1 = 0;
-        }
-        if (arg1 != 0) {
-            p[i][3] = (int)(var_t1 - (p[i][0] & 0xFFFF0000)) / (arg1 * 2);
-            p[i][4] = (int)(var_t0 - (p[i][1] & 0xFFFF0000)) / (arg1 * 2);
-            p[i][5] = (int)(var_a1 - (p[i][2] & 0xFFFF0000)) / (arg1 * 2);
+        CLAMP_BG_HIGH(r);
+        CLAMP_BG_HIGH(g);
+        CLAMP_BG_HIGH(b);
+        CLAMP_BG_LOW(r);
+        CLAMP_BG_LOW(g);
+        CLAMP_BG_LOW(b);
+        if (frames != 0) {
+            p[i][3] = _bgStep(r, p[i][0], frames);
+            p[i][4] = _bgStep(g, p[i][1], frames);
+            p[i][5] = _bgStep(b, p[i][2], frames);
         } else {
-            p[i][0] = var_t1;
-            p[i][1] = var_t0;
-            p[i][2] = var_a1;
+            p[i][0] = r;
+            p[i][1] = g;
+            p[i][2] = b;
         }
     }
 
-    if (arg1 != 0) {
-        _clutState.bgAnimActive = 1;
-        _clutState.bgAnimFrame = 0;
-        _clutState.bgAnimTick = 0;
-        _clutState.bgAnimSpeed = arg1;
-        _clutState.bgTransitionMode = arg0;
-        if (arg0 == 9) {
-            _clutState.bgTransitionTargetR = arg2;
-            _clutState.bgTransitionTargetG = arg3;
-            _clutState.bgTransitionTargetB = arg4;
+    if (frames != 0) {
+        _startBgAnim(frames);
+        _clutState.bgTransitionMode = mode;
+        if (mode == 9) {
+            _clutState.bgTransitionTargetR = rOffset;
+            _clutState.bgTransitionTargetG = gOffset;
+            _clutState.bgTransitionTargetB = bOffset;
         }
     } else {
         _clutState.bgAnimActive = 0;
-        for (i = 0; i < 5; ++i) {
-            int temp_a1, var_v0, new_var;
-            temp_v0 = p[i][0];
-
-            if (temp_v0 < 0) {
-                temp_v0 += 0xFFFF;
-            }
-
-            temp_a1 = (temp_v0 >> 0x10);
-            var_v0 = p[i][1];
-
-            if (var_v0 < 0) {
-                var_v0 += 0xFFFF;
-            }
-
-            new_var = temp_a1 + ((var_v0 >> 0x10) << 8);
-            temp_v0 = p[i][2];
-
-            if (temp_v0 < 0) {
-                temp_v0 += 0xFFFF;
-            }
-            position[i] = new_var + ((temp_v0 >> 0x10) << 0x10);
-        }
-        func_8008EB30(position);
+        UPLOAD_BG_COLORS(p, position, i);
     }
 }
 
-void vs_main_transformBgColors(int arg0, int arg1, int arg2, int arg3, int arg4)
+#undef OFFSET_BG_RGB
+#undef CLAMP_BG_LOW
+#undef CLAMP_BG_HIGH
+
+void vs_main_transformBgColors(
+    int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
-        _transformBgColors(arg0, arg1, arg2, arg3, arg4);
+        _transformBgColors(mode, frames, rOffset, gOffset, bOffset);
     }
 }
 
@@ -4077,9 +4072,9 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     temp_t2 = _shift_left(color->b);
 
     if (frames != 0) {
-        temp_a3[3] = ((int)(temp_a1 - (temp_a3[0] & 0xFFFF0000)) / (frames * 2));
-        temp_a3[4] = ((int)(temp_t1 - (temp_a3[1] & 0xFFFF0000)) / (frames * 2));
-        temp_a3[5] = ((int)(temp_t2 - (temp_a3[2] & 0xFFFF0000)) / (frames * 2));
+        temp_a3[3] = _bgStep(temp_a1, temp_a3[0], frames);
+        temp_a3[4] = _bgStep(temp_t1, temp_a3[1], frames);
+        temp_a3[5] = _bgStep(temp_t2, temp_a3[2], frames);
     } else {
         temp_a3[0] = temp_a1;
         temp_a3[1] = temp_t1;
@@ -4290,12 +4285,8 @@ void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, in
 
 void vs_main_updateBgColors(void)
 {
-    int sp18[5];
+    int position[5];
     int i;
-    int var_v0;
-    int new_var;
-    int new_var2;
-    int var_v1;
     int (*t1)[6];
 
     if (_clutState.bgAnimActive == 0) {
@@ -4310,24 +4301,7 @@ void vs_main_updateBgColors(void)
         t1[i][2] += t1[i][5];
     }
 
-    for (i = 0; i < 5; ++i) {
-        var_v1 = t1[i][0];
-        if (var_v1 < 0) {
-            var_v1 += 0xFFFF;
-        }
-        var_v0 = t1[i][1];
-        new_var2 = var_v1 >> 16;
-        if (var_v0 < 0) {
-            var_v0 += 0xFFFF;
-        }
-        var_v1 = t1[i][2];
-        new_var = new_var2 + ((var_v0 >> 16) << 8);
-        if (var_v1 < 0) {
-            var_v1 += 0xFFFF;
-        }
-        sp18[i] = new_var + ((var_v1 >> 16) << 16);
-    }
-    func_8008EB30(sp18);
+    UPLOAD_BG_COLORS(t1, position, i);
     _clutState.bgAnimFrame += 1;
     if (_clutState.bgAnimFrame >= (_clutState.bgAnimSpeed * 2)) {
         if (_clutState.bgTransitionMode == 9) {
@@ -4346,6 +4320,8 @@ void vs_main_updateBgColors(void)
         _clutState.bgAnimActive = 0;
     }
 }
+
+#undef UPLOAD_BG_COLORS
 
 void vs_main_updateColorSlots(void)
 {

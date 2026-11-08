@@ -5,6 +5,7 @@
 #include "hitEntity.h"
 #include "objectData.h"
 #include "src/SLUS_010.40/zoneState.h"
+#include "src/SLUS_010.40/memory.h"
 #include <sys/types.h>
 #include <libgte.h>
 #include <libgpu.h>

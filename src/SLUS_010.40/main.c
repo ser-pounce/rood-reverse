@@ -2476,7 +2476,10 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int threshold) { Sound_SetMusicJumpThreshold(threshold); }
+void vs_main_setMusicJumpThreshold(int threshold)
+{
+    Sound_SetMusicJumpThreshold(threshold);
+}
 
 int vs_main_stopMusicSlot(int slot)
 {
@@ -2767,7 +2770,8 @@ int vs_main_getMusicSlotVolume2(int slot) { return vs_main_getMusicSlotVolume(sl
 int vs_main_fadeMusicVolume(int slot, int volume, int duration)
 {
     if (vs_main_soundData.currentMusicSlot == slot) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, duration, volume);
+        Sound_FadeMasterVolumeByMusicId(
+            vs_main_soundData.currentMusicHandle, duration, volume);
         return 1;
     }
 
@@ -2993,8 +2997,8 @@ void vs_main_panSfx(int group, int id, SVECTOR* position)
     _do_panSfx(group, id, screenXY, depth);
 }
 
-// Returns the address of effect `id` inside its bank for the bank groups, or NULL when the
-// group plays effects by id
+// Returns the address of effect `id` inside its bank for the bank groups, or NULL when
+// the group plays effects by id
 static void* _resolveSfxData(int group, int id)
 {
     void* sfx;

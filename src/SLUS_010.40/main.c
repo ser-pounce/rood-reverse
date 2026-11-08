@@ -2693,7 +2693,8 @@ int vs_main_getMusicSlotVolume(int arg0)
 {
     if (arg0 != 0) {
         if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
-            return Sound_GetMusicVolumeById(vs_main_soundData.musicHandleBySlot[arg0 - 1]);
+            return Sound_GetMusicVolumeById(
+                vs_main_soundData.musicHandleBySlot[arg0 - 1]);
         }
     }
     return 0;
@@ -3117,10 +3118,10 @@ int vs_main_freeSfx(u_int id)
     return 0;
 }
 
-int vs_main_setSfxSlot3Data(u_int arg0)
+int vs_main_setSfxSlot3Data(void* arg0)
 {
     if (vs_main_soundData.sfxData[2] == 0) {
-        vs_main_soundData.sfxData[2] = (void*)arg0;
+        vs_main_soundData.sfxData[2] = arg0;
         return 1;
     }
     return 0;
@@ -3298,10 +3299,10 @@ static UNUSED int _freeCutsceneStream(int arg0)
     return 0;
 }
 
-int vs_main_setCutsceneStreamSlot3(u_int arg0)
+int vs_main_setCutsceneStreamSlot3(void* arg0)
 {
     if (vs_main_soundData.unk64[2] == 0) {
-        vs_main_soundData.unk64[2] = (void*)arg0;
+        vs_main_soundData.unk64[2] = arg0;
         return 3;
     }
     return 0;

@@ -592,7 +592,7 @@ int vs_main_computeSfxPan(int coords, int z);
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPan(int, int, int, char);
-int vs_main_setSfxSlot3Data(u_int);
+int vs_main_setSfxSlot3Data(void*);
 int vs_main_clearSfxSlot3(void);
 void vs_main_playBankSfx(int, u_int[], u_int, int, int);
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2);
@@ -600,7 +600,7 @@ void vs_main_evictBankSfx(int arg0, int* arg1, int arg2);
 void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4);
 void vs_main_startCutsceneStreamDefault(int arg0);
 void vs_main_setMonoSound(int);
-int vs_main_setCutsceneStreamSlot3(u_int arg0);
+int vs_main_setCutsceneStreamSlot3(void*);
 int vs_main_clearCutsceneStreamSlot3(void);
 // Parameters left undeclared due to misuse in unused func_8007B378
 void vs_main_loadClutTransition(

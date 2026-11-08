@@ -4628,7 +4628,8 @@ void func_800738E4(void)
             vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
         }
     } else if ((D_800F18AC != 0)
-               && (vs_main_soundData.currentMusicHandle == vs_main_soundData.musicHandleBySlot[D_800F18AC - 1])) {
+               && (vs_main_soundData.currentMusicHandle
+                   == vs_main_soundData.musicHandleBySlot[D_800F18AC - 1])) {
         vs_main_fadeMusicVolume(D_800F18AC, 0x7F, 0x3C);
     }
     func_8006F5CC();

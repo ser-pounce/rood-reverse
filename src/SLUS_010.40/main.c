@@ -3214,10 +3214,10 @@ int vs_main_freeSfx(u_int id)
     return 0;
 }
 
-int vs_main_setSfxSlot3Data(void* arg0)
+int vs_main_setSfxSlot3Data(void* bank)
 {
     if (vs_main_soundData.sfxData[2] == 0) {
-        vs_main_soundData.sfxData[2] = arg0;
+        vs_main_soundData.sfxData[2] = bank;
         return 1;
     }
 

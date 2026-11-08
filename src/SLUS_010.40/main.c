@@ -1423,35 +1423,35 @@ static UNUSED char _padGetActData(int port, int pos)
     return vs_main_portInfo[port].actData[pos];
 }
 
-int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2)
+int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id)
 {
     int i;
-    int ret = 0;
+    int slot = 0;
 
-    if (arg1 == 0xFF) {
+    if (requestedSlot == 0xFF) {
         for (i = 0; i < 2; ++i) {
             if (_padAct.port[i].active == 0) {
-                ret = i + 1;
+                slot = i + 1;
                 break;
             }
         }
-    } else if ((arg1 - 1) < 2) {
-        ret = arg1;
+    } else if ((requestedSlot - 1) < 2) {
+        slot = requestedSlot;
     }
 
-    if (ret != 0) {
-        i = ret - 1;
-        _padAct.port[i].script = arg0;
+    if (slot != 0) {
+        i = slot - 1;
+        _padAct.port[i].script = script;
         _padAct.port[i].motors[0].scriptPos = 1;
-        _padAct.port[i].motors[1].scriptPos = *arg0;
+        _padAct.port[i].motors[1].scriptPos = *script;
         _padAct.port[i].motors[1].framesLeft = 0;
         _padAct.port[i].motors[0].framesLeft = 0;
         _padAct.port[i].motors[1].value = 0;
         _padAct.port[i].motors[0].value = 0;
         _padAct.port[i].active = 1;
-        _padAct.port[i].id = arg2;
+        _padAct.port[i].id = id;
 
-        return ret;
+        return slot;
     }
 
     return 0;

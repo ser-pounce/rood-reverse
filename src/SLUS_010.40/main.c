@@ -67,7 +67,7 @@ typedef struct {
     u_int sectorsRequested;
     int cdSector;
     union {
-        int byteCount; // data reads
+        u_int byteCount; // data reads
         int cdVolume; // XA streams: target CD volume
     } request;
     void* vram;
@@ -857,7 +857,7 @@ vs_main_battleTimer_t vs_main_battleTimer;
 int vs_main_startState;
 static int _sp2;
 static u_short _sfxData[0x2C00];
-int vs_main_buttonsReleased;
+u_int vs_main_buttonsReleased;
 static UNUSED int _5;
 void* vs_main_ot[2];
 static int _resetEnabled;
@@ -871,7 +871,7 @@ short vs_main_screenX;
 short vs_main_screenWidth;
 short vs_main_screenY;
 u_short vs_main_screenHeight;
-int vs_main_buttonRepeat;
+u_int vs_main_buttonRepeat;
 static UNUSED int _7[4];
 char vs_main_padBuffer[2][34];
 static UNUSED int _8;
@@ -901,7 +901,7 @@ static void _initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int 
         (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),              \
         IMG_H(_nowLoading_header))
 
-int vs_main_buttonsPreviousState;
+u_int vs_main_buttonsPreviousState;
 int vs_main_unused0;
 static UNUSED int _11[2];
 vs_main_buttonsPressed_t vs_main_buttonsPressed;
@@ -911,7 +911,7 @@ static UNUSED int _12[13];
 int vs_main_frameBuf;
 int vs_main_saveGameClearData;
 MATRIX vs_main_cameraBasis;
-int vs_main_buttonsState;
+u_int vs_main_buttonsState;
 static UNUSED int _14;
 static int _inGame;
 int vs_main_unused2;
@@ -1346,7 +1346,7 @@ static void _padResetDefaults(int portID, UNUSED void const* _)
     PadSetActAlign(portID, _actParams);
 }
 
-int vs_main_updatePadState(int portID, char const padBuf[34])
+u_int vs_main_updatePadState(int portID, char const padBuf[34])
 {
     portInfo_t* port;
     char mode;
@@ -2308,7 +2308,7 @@ static void _diskUpdate(void)
     }
 }
 
-int vs_main_diskLoadFile(int sector, int bytes, void* vram)
+int vs_main_diskLoadFile(int sector, u_int bytes, void* vram)
 {
     int result = _diskInitRead(sector, bytes, vram);
 
@@ -3984,7 +3984,8 @@ static UNUSED void _fadeBgColorsStore(int frames, CVECTOR const* target)
     g = (gv) + (gOffset << 0x10);           \
     b = (bv) + (bOffset << 0x10)
 
-static void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
+static void _transformBgColors(
+    int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     int i;
     _fade_t* bg = _clutState.bgColors;

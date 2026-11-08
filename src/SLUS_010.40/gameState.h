@@ -64,10 +64,10 @@ typedef struct {
 } vs_main_scoredata_t;
 
 typedef struct {
-    u_short hp;
-    u_short maxHp;
-    u_short types[4];
-    u_short affinities[8];
+    short hp;
+    short maxHp;
+    short types[4];
+    short affinities[8];
 } vs_main_characterSnapshotLimb_t;
 
 typedef struct {
@@ -76,13 +76,13 @@ typedef struct {
     short maxHP;
     short currentMP;
     short maxMP;
-    short strength;
-    short totalStrength;
-    short intelligence;
-    short totalIntelligence;
-    short agility;
-    short totalAgility;
-    short risk;
+    u_short strength;
+    u_short totalStrength;
+    u_short intelligence;
+    u_short totalIntelligence;
+    u_short agility;
+    u_short totalAgility;
+    u_short risk;
     u_short actionDelay;
     int statuses;
     char statusTimers[8];

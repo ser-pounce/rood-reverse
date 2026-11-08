@@ -2735,19 +2735,19 @@ int vs_main_freeMusic(int slotId)
 
 static UNUSED int nop5(void) { return 0; }
 
-int vs_main_getMusicSlotVolume(int arg0)
+int vs_main_getMusicSlotVolume(int slot)
 {
-    if (arg0 != 0) {
-        if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicHandleBySlot[slot - 1] != 0xFFFF) {
             return Sound_GetMusicVolumeById(
-                vs_main_soundData.musicHandleBySlot[arg0 - 1]);
+                vs_main_soundData.musicHandleBySlot[slot - 1]);
         }
     }
 
     return 0;
 }
 
-int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(arg0); }
+int vs_main_getMusicSlotVolume2(int slot) { return vs_main_getMusicSlotVolume(slot); }
 
 int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
 {

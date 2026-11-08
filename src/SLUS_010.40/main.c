@@ -715,7 +715,7 @@ u_char vs_main_zndMusicMap[256] = { 0, 16, 0, 0, 0, 0, 0, 0, 0, 54, 0, 57, 57, 1
     120, 65, 0, 0, 0, 0, 0, 41, 41, 41, 41, 0, 0, 51, 66, 22, 22, 88, 0, 66, 66, 66, 66,
     66, 88, 44, 79, 40, 40, 40, 40, 40, 40, 121, 118, 43, 126, 129, 125, 130, 29, 30 };
 
-static u_short vs_main_unkStrings[] = {
+u_short vs_main_unkStrings[] = {
 #include "build/assets/SLUS_010.40/vs_main_unkStrings.vsString"
 };
 
@@ -2028,6 +2028,9 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
         DsReadyCallback(NULL);
         _disk.state = diskCommandFailed;
 
+        break;
+
+    default:
         break;
     }
 }
@@ -3360,7 +3363,7 @@ static UNUSED void _panBankSfx(int group, u_int* bank, int index, SVECTOR* posit
 void vs_main_evictBankSfx(int group, int const* bank, int index)
 {
     int mask;
-    void const* sfx = (void*)bank + (bank + index)[1];
+    void const* sfx = (u_char const*)bank + (bank + index)[1];
 
     if (index != 0) {
         mask = 0;
@@ -3375,7 +3378,7 @@ void vs_main_evictBankSfx(int group, int const* bank, int index)
 void vs_main_fadeBankSfxVolume(
     int group, int const* bank, int index, int volume, int duration)
 {
-    void const* sfx = (void*)bank + (bank + index)[1];
+    void const* sfx = (u_char const*)bank + (bank + index)[1];
 
     if (index == 0) {
         Sound_FadeSfxVolumeMod(0, group, duration & 0xFF, volume);
@@ -3981,7 +3984,7 @@ static UNUSED void _fadeBgColorsStore(int frames, CVECTOR const* target)
     g = (gv) + (gOffset << 0x10);           \
     b = (bv) + (bOffset << 0x10)
 
-void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
+static void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     int i;
     _fade_t* bg = _clutState.bgColors;

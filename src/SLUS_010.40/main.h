@@ -571,7 +571,7 @@ int vs_main_clearMusicLoadQueue(void);
 int vs_main_loadAndWaitMusicSlot(int id, int targetSlot);
 void vs_main_loadAndWaitSoundSlot(int id);
 void vs_main_playSfx(int group, int id, int pan, int volume);
-void vs_main_playSfxDefault(int, int);
+void vs_main_playSfxDefault(int group, int id);
 void vs_main_stopMusic(void);
 int vs_main_freeMusic(int arg0);
 void vs_main_resetSound(void);

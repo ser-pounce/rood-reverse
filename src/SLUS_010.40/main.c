@@ -2904,7 +2904,7 @@ void vs_main_playSfx(int group, int id, int pan, int volume)
     }
 }
 
-void vs_main_playSfxDefault(int arg0, int id) { vs_main_playSfx(arg0, id, 0x80, 0x7F); }
+void vs_main_playSfxDefault(int group, int id) { vs_main_playSfx(group, id, 0x80, 0x7F); }
 
 int vs_main_computeSfxPan(int coords, int z)
 {

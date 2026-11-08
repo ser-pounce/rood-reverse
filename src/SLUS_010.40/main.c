@@ -3394,9 +3394,9 @@ static int _startCutsceneStream(int slot, int pan, int volume)
     return 1;
 }
 
-void vs_main_startCutsceneStreamDefault(int arg0)
+void vs_main_startCutsceneStreamDefault(int slot)
 {
-    _startCutsceneStream(arg0, 0x80, 0x7F);
+    _startCutsceneStream(slot, 0x80, 0x7F);
 }
 
 static UNUSED int _freeCutsceneStream(int arg0)

@@ -2954,15 +2954,14 @@ int vs_main_computeSfxPan(int pan, int depth)
     return (pan << 16) + volume;
 }
 
-static void _do_panSfx(int arg0, int arg1, int coords, int z)
+static void _do_panSfx(int group, int id, int screenXY, int depth)
 {
-    coords = vs_main_computeSfxPan(coords, z);
+    int panAndVolume = vs_main_computeSfxPan(screenXY, depth);
+    int pan = panAndVolume >> 16;
+    int volume = panAndVolume & 0xFFFF;
 
-    z = coords & 0xFFFF;
-    coords = coords >> 0x10;
-
-    if (z > 0) {
-        vs_main_playSfx(arg0, arg1, coords, z);
+    if (volume > 0) {
+        vs_main_playSfx(group, id, pan, volume);
     }
 }
 

@@ -4740,13 +4740,22 @@ void vs_main_commitClut(void)
     RECT rect;
 
     if (_clutState.uploadPending != 0) {
+
         setRECT(&rect, 768, 224, 256, 14);
         LoadImage(&rect, (u_long*)_clutBuffer[0]);
+
         _clutState.uploadPending = 0;
     }
 }
 
 void vs_main_setClutState(int active) { _clutState.active = active; }
+
+#ifdef NON_MATCHING
+#define VS_SET_CVECTOR(color, r, g, b) ((color) = (CVECTOR) { (r), (g), (b), 0 })
+#else
+#define VS_SET_CVECTOR(color, r, g, b) \
+    (*(int*)&(color) = (r) | ((g) << 8) | ((b) << 16))
+#endif
 
 void vs_main_clutInit(void)
 {
@@ -4768,7 +4777,7 @@ void vs_main_clutInit(void)
         _clutState.colorSlots[i].active = 0;
         _clutState.colorSlots[i].mode = 0;
         _clutState.colorSlots[i].grayAmount = 0;
-        *((int*)&_clutState.colorSlots[i].baseColor) = 0x404040;
+        VS_SET_CVECTOR(_clutState.colorSlots[i].baseColor, 0x40, 0x40, 0x40);
         _clutState.colorSlots[i].fade.current.b = 0x400000;
         _clutState.colorSlots[i].fade.current.g = 0x400000;
         _clutState.colorSlots[i].fade.current.r = 0x400000;

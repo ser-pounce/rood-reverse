@@ -1638,14 +1638,14 @@ void vs_main_setVibrateParams(void)
     }
 }
 
-void vs_main_vibrationOnEffect(int arg0)
+void vs_main_vibrationOnEffect(int effect)
 {
-    if (arg0 < _vibrationOnBank[0]) {
+    if (effect < _vibrationOnBank[0]) {
         vs_main_setVibrationBank(
-            &_vibrationOnBank[_vibrationOnBank[arg0 * 4 + 4]
-                              + (_vibrationOnBank[arg0 * 4 + 5] << 8)
-                              + (_vibrationOnBank[arg0 * 4 + 6] << 16)
-                              + (_vibrationOnBank[arg0 * 4 + 7] << 24)],
+            &_vibrationOnBank[_vibrationOnBank[effect * 4 + 4]
+                              + (_vibrationOnBank[effect * 4 + 5] << 8)
+                              + (_vibrationOnBank[effect * 4 + 6] << 16)
+                              + (_vibrationOnBank[effect * 4 + 7] << 24)],
             0xFF, 0x80);
     }
 }
@@ -1818,6 +1818,7 @@ void* vs_main_allocHeapR(u_int size)
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
+
             if (freeNode->blockSz == blockSz) {
                 lastNode->prev = freeNode->prev;
                 freeNode->prev->next = freeNode->next;
@@ -1826,12 +1827,16 @@ void* vs_main_allocHeapR(u_int size)
                 freeNode += freeNode->blockSz;
                 freeNode->blockSz = blockSz;
             }
-            return (u_long*)(freeNode + 1);
+
+            return freeNode + 1;
         }
+
         lastNode = freeNode;
+
         if (freeNode == &_heap) {
             return 0;
         }
+
         freeNode = freeNode->prev;
     }
 }
@@ -1848,24 +1853,29 @@ void* vs_main_allocHeap(u_int size)
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
+
             if (freeNode->blockSz == blockSz) {
                 lastNode->next = freeNode->next;
                 freeNode->next->prev = freeNode->prev;
             } else {
-                vs_main_HeapHeader* temp_v1 = freeNode + blockSz;
-                temp_v1->blockSz = freeNode->blockSz - blockSz;
-                temp_v1->prev = freeNode->prev;
-                temp_v1->next = freeNode->next;
-                temp_v1->prev->next = temp_v1;
-                temp_v1->next->prev = temp_v1;
+                vs_main_HeapHeader* remainder = freeNode + blockSz;
+                remainder->blockSz = freeNode->blockSz - blockSz;
+                remainder->prev = freeNode->prev;
+                remainder->next = freeNode->next;
+                remainder->prev->next = remainder;
+                remainder->next->prev = remainder;
                 freeNode->blockSz = blockSz;
             }
-            return (u_long*)(freeNode + 1);
+
+            return freeNode + 1;
         }
+
         lastNode = freeNode;
+
         if (freeNode == &_heap) {
             return 0;
         }
+
         freeNode = freeNode->next;
     }
 }
@@ -1885,7 +1895,7 @@ void vs_main_initHeap(void* heap, u_int size)
     _unusedHeap.blockSz = 0;
 }
 
-static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
+static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* _)
 {
     if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);
@@ -2451,7 +2461,10 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold(arg0); }
+void vs_main_setMusicJumpThreshold(int threshold)
+{
+    Sound_SetMusicJumpThreshold(threshold);
+}
 
 int vs_main_stopMusicSlot(int id)
 {
@@ -2512,25 +2525,25 @@ int vs_main_queueMusicSlot(int id)
     return 0;
 }
 
-int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
+int vs_main_playMusicSlotFadeIn(int slot, int volume, u_int duration)
 {
-    if (id != 0) {
+    if (slot != 0) {
 
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
             u_int handle;
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
 
             handle = Sound_StartMasterAndMusicVolumeFade(
-                vs_main_soundData.currentMusicData, arg2, arg1);
+                vs_main_soundData.currentMusicData, duration, volume);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -2539,25 +2552,25 @@ int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
     return 0;
 }
 
-int vs_main_playMusicSlot(int id, int arg1, int arg2)
+int vs_main_playMusicSlot(int slot, int volume, int duration)
 {
-    if (id != 0) {
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
             u_int handle;
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
 
-            Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
+            Sound_FadeMasterVolumeByMusicId(0, duration, volume);
             handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
-                Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
+                Sound_FadeMasterVolumeByMusicId(0, duration, volume);
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -2725,24 +2738,25 @@ int vs_main_freeMusic(int slotId)
 
 static UNUSED int nop5(void) { return 0; }
 
-int vs_main_getMusicSlotVolume(int arg0)
+int vs_main_getMusicSlotVolume(int slot)
 {
-    if (arg0 != 0) {
-        if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicHandleBySlot[slot - 1] != 0xFFFF) {
             return Sound_GetMusicVolumeById(
-                vs_main_soundData.musicHandleBySlot[arg0 - 1]);
+                vs_main_soundData.musicHandleBySlot[slot - 1]);
         }
     }
 
     return 0;
 }
 
-int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(arg0); }
+int vs_main_getMusicSlotVolume2(int slot) { return vs_main_getMusicSlotVolume(slot); }
 
-int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
+int vs_main_fadeMusicVolume(int slot, int volume, int duration)
 {
-    if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
+    if (vs_main_soundData.currentMusicSlot == slot) {
+        Sound_FadeMasterVolumeByMusicId(
+            vs_main_soundData.currentMusicHandle, duration, volume);
         return 1;
     }
 

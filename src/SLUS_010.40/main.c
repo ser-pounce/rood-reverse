@@ -3674,6 +3674,18 @@ static inline int _colorLuminance(short color)
     return _weightedLuminance(_maskG(color), _maskB(color), _maskR(color));
 }
 
+static inline int _colorInfoLuminance(struct ColorInfo* color)
+{
+    return color->r * 2 + color->g * 3 + color->b;
+}
+
+// r/g/b are the locals of the loop below: each channel gets its own offset added
+#define OFFSET_RGB3(rv, gv, bv)                                                        \
+    r = rOffset + (rv);                                                                \
+    g = gOffsetU + (gv);                                                               \
+    b = bOffsetU + (bv)
+#define OFFSET_RGB(value) OFFSET_RGB3(value, value, value)
+
 static void _transformClutSlot(
     int mode, int duration, int slot, int rOffset, short gOffset, short bOffset)
 {
@@ -3695,47 +3707,34 @@ static void _transformClutSlot(
                 int rTmp = colors[i].r;
                 int gTmp = colors[i].g;
                 int bTmp = colors[i].b;
-                r = rOffset + rTmp / 2;
-                g = gOffsetU + gTmp / 2;
-                b = bOffsetU + bTmp / 2;
+                OFFSET_RGB3(rTmp / 2, gTmp / 2, bTmp / 2);
                 break;
             }
             
             case 2:
-                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
-                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
-                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 6;
+                OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 6);
                 break;
 
             case 3:
-                r = rOffset + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
-                g = gOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
-                b = bOffsetU + ((colors[i].r * 2) + (colors[i].g * 3) + colors[i].b) / 12;
+                OFFSET_RGB(_colorInfoLuminance(&colors[i]) / 12);
                 break;
 
             case 4:
             case 9:
-                r = rOffset + _colorR(baseEntry);
-                g = gOffsetU + _colorG(baseEntry);
-                b = bOffsetU + _colorB(baseEntry);
+                OFFSET_RGB3(_colorR(baseEntry), _colorG(baseEntry), _colorB(baseEntry));
                 break;
 
             case 5:
-                r = rOffset + _colorR(baseEntry) / 2;
-                g = gOffsetU + _colorG(baseEntry) / 2;
-                b = bOffsetU + _colorB(baseEntry) / 2;
+                OFFSET_RGB3(
+                    _colorR(baseEntry) / 2, _colorG(baseEntry) / 2, _colorB(baseEntry) / 2);
                 break;
 
             case 6:
-                r = rOffset + _colorLuminance(baseEntry) / 6;
-                g = gOffsetU + _colorLuminance(baseEntry) / 6;
-                b = bOffsetU + _colorLuminance(baseEntry) / 6;
+                OFFSET_RGB(_colorLuminance(baseEntry) / 6);
                 break;
 
             case 7:
-                r = rOffset + _colorLuminance(baseEntry) / 12;
-                g = gOffsetU + _colorLuminance(baseEntry) / 12;
-                b = bOffsetU + _colorLuminance(baseEntry) / 12;
+                OFFSET_RGB(_colorLuminance(baseEntry) / 12);
                 break;
 
             case 8:
@@ -3756,9 +3755,8 @@ static void _transformClutSlot(
                 break;
 
             case 13:
-                r = rOffset + _colorR(baseEntry) * 3 / 4;
-                g = gOffsetU + _colorG(baseEntry) * 3 / 4;
-                b = bOffsetU + _colorB(baseEntry) * 3 / 4;
+                OFFSET_RGB3(_colorR(baseEntry) * 3 / 4, _colorG(baseEntry) * 3 / 4,
+                    _colorB(baseEntry) * 3 / 4);
                 break;
 
             default:
@@ -3831,6 +3829,9 @@ static void _transformClutSlot(
         _clutState.uploadPending = 1;
     }
 }
+
+#undef OFFSET_RGB3
+#undef OFFSET_RGB
 
 void vs_main_transformClutSlot(
     int mode, int duration, int slot, short rOffset, int gOffset, int bOffset)

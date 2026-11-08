@@ -2990,13 +2990,13 @@ static void* _resolveSfxData(int arg0, int arg1)
 
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 {
-    void* temp_v0;
+    void* sfx;
 
     if (arg1 != 0) {
-        temp_v0 = _resolveSfxData(arg0, arg1);
+        sfx = _resolveSfxData(arg0, arg1);
 
-        if (temp_v0 != 0) {
-            Sound_FadeSfxVolumeMod((u_long)temp_v0, 0, arg3, arg2);
+        if (sfx != NULL) {
+            Sound_FadeSfxVolumeMod((u_long)sfx, 0, arg3, arg2);
         } else {
             do {
                 Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
@@ -3009,12 +3009,12 @@ void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
-    void* temp_v0;
+    void* sfx;
 
     if (arg1 != 0) {
-        temp_v0 = _resolveSfxData(arg0, arg1);
-        if (temp_v0 != 0) {
-            Sound_FadeSfxPitchMod((u_long)temp_v0, 0, arg3, arg2);
+        sfx = _resolveSfxData(arg0, arg1);
+        if (sfx != NULL) {
+            Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
         } else {
             do {
                 Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);

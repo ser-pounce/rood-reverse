@@ -169,7 +169,7 @@ typedef struct vs_main_HeapHeader {
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, void*);
-static void _padSetActData(int arg0, int arg1, int arg2);
+static void _padSetActData(int port, int pos, int val);
 static void _initCdQueue(void);
 static void _diskReset(void);
 static void _processCdQueue(void);
@@ -4587,9 +4587,9 @@ void vs_main_updateClutSlots(void)
     }
 }
 
-static UNUSED void _stopClutSlotAnim(int arg0)
+static UNUSED void _stopClutSlotAnim(int slot)
 {
-    _clutState.slots[arg0].animState.active = 0;
+    _clutState.slots[slot].animState.active = 0;
 }
 
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count)

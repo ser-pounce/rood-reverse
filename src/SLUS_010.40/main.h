@@ -467,38 +467,6 @@ typedef struct {
     short agility;
 } material_modifiers_t;
 
-enum cdBufferModes_e {
-    cdBufferModeNone = 0,
-    cdBufferModeBuffered = 1,
-    cdBufferModeManual = 2,
-};
-
-typedef struct {
-    char state;
-    char unk1;
-    char unk2;
-    char unk3;
-    u_int unk4;
-    u_int sectorCount;
-    int cdSector;
-    union {
-        int byteCount; // data reads
-        int cdVolume; // XA streams: target CD volume
-    } request;
-    void* vram;
-    DslFILTER pcm;
-    DslLOC cdLoc;
-    int commandId;
-    int unk24;
-    int unk28;
-    enum cdBufferModes_e bufferMode;
-    u_int sectorBufIndex;
-    int unk34;
-    u_int unk38;
-    u_int unk3C;
-    u_int ringBufIndex;
-    int framesSinceLastRead;
-} vs_main_disk_t;
 
 typedef union {
     u_int all;
@@ -534,7 +502,6 @@ extern vs_main_battleTimer_t vs_main_battleTimer;
 extern int vs_main_startState;
 extern int vs_main_buttonsReleased;
 extern void* vs_main_ot[2];
-extern vs_main_disk_t vs_main_disk;
 extern vs_main_stickPos vs_main_stickPosBuf;
 extern short vs_main_screenX;
 extern short vs_main_screenWidth;

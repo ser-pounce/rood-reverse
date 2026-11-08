@@ -591,7 +591,7 @@ void vs_main_panSfx(int group, int id, SVECTOR* position);
 int vs_main_computeSfxPan(int screenXY, int depth);
 void vs_main_fadeSfxVolume(int group, int id, int volume, char duration);
 void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration);
-void vs_main_fadeSfxPan(int, int, int, char);
+void vs_main_fadeSfxPan(int group, int id, int pan, char duration);
 int vs_main_setSfxSlot3Data(void*);
 int vs_main_clearSfxSlot3(void);
 void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume);

@@ -1852,15 +1852,15 @@ void* vs_main_allocHeap(u_int size)
                 lastNode->next = freeNode->next;
                 freeNode->next->prev = freeNode->prev;
             } else {
-                vs_main_HeapHeader* temp_v1 = freeNode + blockSz;
-                temp_v1->blockSz = freeNode->blockSz - blockSz;
-                temp_v1->prev = freeNode->prev;
-                temp_v1->next = freeNode->next;
-                temp_v1->prev->next = temp_v1;
-                temp_v1->next->prev = temp_v1;
+                vs_main_HeapHeader* remainder = freeNode + blockSz;
+                remainder->blockSz = freeNode->blockSz - blockSz;
+                remainder->prev = freeNode->prev;
+                remainder->next = freeNode->next;
+                remainder->prev->next = remainder;
+                remainder->next->prev = remainder;
                 freeNode->blockSz = blockSz;
             }
-            return (u_long*)(freeNode + 1);
+            return freeNode + 1;
         }
         lastNode = freeNode;
         if (freeNode == &_heap) {

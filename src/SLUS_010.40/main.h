@@ -123,7 +123,7 @@ typedef struct {
     vs_main_CdQueueSlot* musicQueueSlot[4];
     u_int currentSfxId;
     char sfxIds[4];
-    void* sfxData[3];
+    int* sfxData[3]; // bank: [0] = entry count, [1..] = byte offsets to each effect
     vs_main_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
     int* unk70[3];

@@ -2506,18 +2506,18 @@ int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
 
         if (vs_main_soundData.musicData[id - 1] != 0) {
             u_int handle;
-        
+
             vs_main_soundData.currentMusicSlot = id;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
 
             handle = Sound_StartMasterAndMusicVolumeFade(
                 vs_main_soundData.currentMusicData, arg2, arg1);
-        
+
             if (handle != 0) {
                 vs_main_soundData.musicHandleBySlot[id - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
-        
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
 
@@ -2538,13 +2538,13 @@ int vs_main_playMusicSlot(int id, int arg1, int arg2)
 
             Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
-            
+
             if (handle != 0) {
                 vs_main_soundData.musicHandleBySlot[id - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
                 Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
             }
-            
+
             vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
         }
 
@@ -2597,12 +2597,12 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop9(0x8E, 0);
                 }
-                
+
                 vs_main_soundData.musicData[slot] = vs_main_allocHeapR(cdFile.size);
                 vs_main_cdEnqueue(vs_main_soundData.musicQueueSlot[slot],
                     vs_main_soundData.musicData[slot]);
-                
-                    vs_main_soundData.musicIds[slot] = id;
+
+                vs_main_soundData.musicIds[slot] = id;
             }
 
             return targetSlot;
@@ -2610,7 +2610,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
     }
 
     vs_main_nop9(0x8E, 0);
-    
+
     return 0;
 }
 
@@ -2640,7 +2640,7 @@ int vs_main_clearMusicLoadSlot(u_int slot)
 
                 return 0;
             }
-            
+
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
 
@@ -2649,7 +2649,7 @@ int vs_main_clearMusicLoadSlot(u_int slot)
 
                 return -1;
             }
-            
+
             return 1;
         }
     }
@@ -2661,7 +2661,7 @@ int vs_main_clearMusicLoadQueue(void)
 {
     int i;
     int ret = 0;
-    
+
     for (i = 0; i < 4; ++i) {
         ret |= vs_main_clearMusicLoadSlot(i + 1);
     }
@@ -2671,27 +2671,27 @@ int vs_main_clearMusicLoadQueue(void)
 
 int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
 {
-    int ret;
+    int ret = vs_main_loadMusicSlot(id, targetSlot);
 
-    ret = vs_main_loadMusicSlot(id, targetSlot);
     if (ret != 0) {
         while (vs_main_clearMusicLoadSlot(targetSlot) != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return ret;
 }
 
 static UNUSED int _loadMusicIntoFreeSlotAndClearQueue(int id)
 {
-    int ret;
+    int ret = _loadMusicIntoFreeSlot(id);
 
-    ret = _loadMusicIntoFreeSlot(id);
     if (ret != 0) {
         while (vs_main_clearMusicLoadQueue() != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
+
     return ret;
 }
 
@@ -2704,8 +2704,10 @@ int vs_main_freeMusic(int slotId)
     }
 
     vs_main_freeHeapR(vs_main_soundData.musicData[slotId - 1]);
+
     vs_main_soundData.musicData[slotId - 1] = 0;
     vs_main_soundData.musicIds[slotId - 1] = 0;
+
     return 1;
 }
 
@@ -2719,6 +2721,7 @@ int vs_main_getMusicSlotVolume(int arg0)
                 vs_main_soundData.musicHandleBySlot[arg0 - 1]);
         }
     }
+
     return 0;
 }
 
@@ -2730,6 +2733,7 @@ int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
         Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2739,6 +2743,7 @@ int vs_main_fadeMusicTempo(int id, int arg1, int arg2)
         Sound_FadeTempoScale(arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2748,6 +2753,7 @@ int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
         Sound_FadeMasterPitchScale(arg2, arg1);
         return 1;
     }
+
     return 0;
 }
 
@@ -2758,6 +2764,7 @@ static UNUSED int nop7(void) { return 0; }
 void vs_main_stopMusic(void)
 {
     int id = vs_main_soundData.currentMusicSlot;
+
     if (id != 0) {
         vs_main_stopMusicSlot(id);
         vs_main_freeMusic(id);
@@ -2797,20 +2804,26 @@ static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
 
 void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
 {
-    void* var_s0_2;
+    void* sfx;
+    int* bank;
 
     switch (arg0) {
     case 0x7E:
     case 0xFE:
         if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+
             _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
+
             _nextVoicePool1 *= 2;
+
             if (!(_nextVoicePool1 & 0x7E)) {
                 _nextVoicePool1 = 2;
             }
+
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
+
         break;
 
     case 0x100:
@@ -2823,31 +2836,43 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
         break;
 
     case 0xFF000:
-        var_s0_2 = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        var_s0_2 += *((int*)var_s0_2 + id + 1);
-        if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, _nextVoicePool4, arg2, arg3);
+        sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
+        sfx += bank[id + 1];
+
+        if (func_800123C8(sfx) != 0) {
+
+            _playSfxFromPointer(sfx, _nextVoicePool4, arg2, arg3);
+
             _nextVoicePool4 *= 2;
+
             if (!(_nextVoicePool4 & arg0)) {
                 _nextVoicePool4 = 0x1000;
             }
+
         } else {
-            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, arg2, arg3);
         }
+
         break;
 
     case 0xF00000:
-        var_s0_2 = vs_main_soundData.sfxData[2];
-        var_s0_2 += *((int*)var_s0_2 + id + 1);
-        if (func_800123C8(var_s0_2) != 0) {
-            _playSfxFromPointer(var_s0_2, _nextVoicePool5, arg2, arg3);
+        sfx = bank = vs_main_soundData.sfxData[2];
+        sfx += bank[id + 1];
+
+        if (func_800123C8(sfx) != 0) {
+
+            _playSfxFromPointer(sfx, _nextVoicePool5, arg2, arg3);
+
             _nextVoicePool5 *= 2;
+
             if (!(_nextVoicePool5 & arg0)) {
                 _nextVoicePool5 = 0x100000;
             }
+
         } else {
-            _playSfxFromPointer(var_s0_2, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, arg2, arg3);
         }
+
         break;
 
     default:

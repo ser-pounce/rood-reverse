@@ -1503,15 +1503,15 @@ static int _pauseVibrationSlot(int slot)
     return slot;
 }
 
-static UNUSED int _pauseVibration(int arg0)
+static UNUSED int _pauseVibration(int slot)
 {
     int i;
 
-    if ((arg0 - 1u) < 2) {
-        return _pauseVibrationSlot(arg0);
+    if ((slot - 1u) < 2) {
+        return _pauseVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 

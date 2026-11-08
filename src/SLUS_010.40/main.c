@@ -1828,13 +1828,9 @@ void vs_main_freeHeap(void* block)
 
 void* vs_main_allocHeapR(u_int size)
 {
-    vs_main_HeapHeader* freeNode;
-    vs_main_HeapHeader* lastNode;
-    u_int blockSz;
-
-    blockSz = ((size + 15) >> 4) + 1;
-    lastNode = &_heap;
-    freeNode = _heap.prev;
+    u_int blockSz = ((size + 15) >> 4) + 1;
+    vs_main_HeapHeader* lastNode = &_heap;
+    vs_main_HeapHeader* freeNode = _heap.prev;
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
@@ -1863,13 +1859,9 @@ void* vs_main_allocHeapR(u_int size)
 
 void* vs_main_allocHeap(u_int size)
 {
-    u_int blockSz;
-    vs_main_HeapHeader* freeNode;
-    vs_main_HeapHeader* lastNode;
-
-    lastNode = &_heap;
-    freeNode = _heap.next;
-    blockSz = ((size + 0xF) >> 4) + 1;
+    vs_main_HeapHeader* lastNode = &_heap;
+    vs_main_HeapHeader* freeNode = _heap.next;
+    u_int blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
@@ -2933,11 +2925,9 @@ void vs_main_playSfxDefault(int group, int id) { vs_main_playSfx(group, id, 0x80
 
 int vs_main_computeSfxPan(int pan, int depth)
 {
-    int tmp;
+    int tmp = pan;
     int volume;
     int limit;
-
-    tmp = pan;
 
     if (pan < 0) {
         tmp += 0xFFFF;
@@ -3192,9 +3182,7 @@ static int _freeSfxSlots(void)
 
 static UNUSED int _loadAndFreeSfx(int id)
 {
-    int slot;
-
-    slot = _loadSfx(id);
+    int slot = _loadSfx(id);
 
     if (slot != 0) {
         while (_freeSfxSlots() != 0) {
@@ -3312,11 +3300,8 @@ void vs_main_playBankSfxDefault(int group, int* bank, u_int index)
 static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)
 {
     int volume;
-    int tmp;
-    int sxy;
-
-    sxy = pan;
-    tmp = pan;
+    int sxy = pan;
+    int tmp = pan;
     pan = tmp >> 0x10;
 
     if (sxy < 0) {

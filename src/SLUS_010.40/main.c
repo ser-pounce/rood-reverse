@@ -20,6 +20,9 @@
 #include <limits.h>
 #include <rand.h>
 
+// SECTOR_SIZE (libds) is in 32-bit words
+#define SECTOR_BYTES (SECTOR_SIZE * 4)
+
 enum diskState_e {
     diskIdle = 0,
     diskSeekReady = 1,
@@ -41,12 +44,12 @@ enum cdBufferModes_e {
 };
 
 typedef struct {
-    char state;
-    char unk1;
-    char unk2;
-    char unk3;
-    u_int unk4;
-    u_int sectorCount;
+    u_char state;
+    UNUSED u_char mode;
+    UNUSED u_char _0;
+    u_char errorCount;
+    u_int sectorsFetched;
+    u_int sectorsRequested;
     int cdSector;
     union {
         int byteCount; // data reads
@@ -54,10 +57,13 @@ typedef struct {
     } request;
     void* vram;
     DslFILTER pcm;
-    DslLOC cdLoc;
+    union {
+        DslLOC loc; // seek/read position
+        u_char mode; // DslSetmode parameter (aliases loc.minute)
+    } cd;
     int commandId;
-    int unk24;
-    int unk28;
+    UNUSED int _1;
+    UNUSED int _2;
     enum cdBufferModes_e bufferMode;
     u_int sectorBufIndex;
     int sectorsPending;
@@ -1839,8 +1845,7 @@ void vs_main_initHeap(void* heap, u_int size)
 static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
 {
 
-    if ((intr == DslDiskError) || (intr == DslNoIntr)
-        || (_disk.state == diskReadError)) {
+    if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);
         DsEndReadySystem();
         _disk.state = diskReadError;
@@ -1854,9 +1859,9 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
     _disk.state = diskReadReady;
 
     if (_disk.bufferMode == cdBufferModeNone) {
-        DsGetSector(_disk.vram + _disk.sectorBufIndex * 2048, 512);
+        DsGetSector(_disk.vram + _disk.sectorBufIndex * SECTOR_BYTES, SECTOR_SIZE);
     } else {
-        DsGetSector(_cdReadBuffer + _disk.ringWriteIndex * 2048, 512);
+        DsGetSector(_cdReadBuffer + _disk.ringWriteIndex * SECTOR_BYTES, SECTOR_SIZE);
         if (++_disk.ringWriteIndex >= 16) {
             _disk.ringWriteIndex = 0;
         }
@@ -1864,7 +1869,7 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
 
     switch (_disk.bufferMode) {
     case cdBufferModeNone:
-        if (++_disk.sectorBufIndex >= _disk.sectorCount) {
+        if (++_disk.sectorBufIndex >= _disk.sectorsRequested) {
             _disk.state = diskIdle;
         }
         break;
@@ -1882,7 +1887,7 @@ static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long
         break;
     }
 
-    if (++_disk.unk4 >= _disk.sectorCount) {
+    if (++_disk.sectorsFetched >= _disk.sectorsRequested) {
         DsEndReadySystem();
     }
 }
@@ -1960,8 +1965,8 @@ static inline void _diskResetReadState(void)
     _disk.ringWriteIndex = 0;
     _disk.sectorBufIndex = 0;
     _disk.sectorsPending = 0;
-    _disk.unk4 = 0;
-    _disk.unk3 = 0;
+    _disk.sectorsFetched = 0;
+    _disk.errorCount = 0;
     _disk.sectorsReceived = 0;
 }
 
@@ -1975,13 +1980,13 @@ static int _diskInitRead(int sector, u_int bytes, void* vram)
 
         _diskResetReadState();
 
-        _disk.sectorCount = bytes / 2048;
+        _disk.sectorsRequested = bytes / SECTOR_BYTES;
 
-        if (bytes % 2048) {
-            ++_disk.sectorCount;
+        if (bytes % SECTOR_BYTES) {
+            ++_disk.sectorsRequested;
         }
 
-        DsIntToPos(sector, &_disk.cdLoc);
+        DsIntToPos(sector, &_disk.cd.loc);
 
         _disk.state = diskReadInit;
 
@@ -2003,9 +2008,9 @@ static void _diskUpdate(void)
         break;
     case diskReadXaInit:
         if (DsSystemStatus() == DslReady) {
-            _disk.unk1 = 0;
-            _disk.cdLoc.minute = 0;
-            while (DsControlB(DslSetmode, (u_char*)&_disk.cdLoc, NULL) == 0)
+            _disk.mode = 0;
+            _disk.cd.mode = 0;
+            while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
                 ;
             VSync(3);
             vol.val2 = 0x80;
@@ -2018,36 +2023,36 @@ static void _diskUpdate(void)
             _disk.pcm.file = 1;
             _disk.pcm.chan = 0;
             DsControl(DslSetfilter, (char*)&_disk.pcm, NULL);
-            DsIntToPos(_disk.cdSector, &_disk.cdLoc);
+            DsIntToPos(_disk.cdSector, &_disk.cd.loc);
             _disk.commandId =
-                DsPacket(DslModeRT | DslModeSF, &_disk.cdLoc, DslReadS, NULL, -1);
+                DsPacket(DslModeRT | DslModeSF, &_disk.cd.loc, DslReadS, NULL, -1);
             DsReadyCallback(_diskPcmReadReady);
             _disk.state = diskStreamXa;
         }
         if (_disk.commandId == 0) {
             DsReadyCallback(0);
             _disk.state = diskCommandFailed;
-            ++_disk.unk3;
+            ++_disk.errorCount;
         }
         break;
     case diskReadInit: {
         int status = DsSystemStatus();
         if (status == DslReady) {
-            _disk.unk4 = 0;
+            _disk.sectorsFetched = 0;
             _disk.sectorBufIndex = 0;
             if (_disk.request.byteCount != 0) {
                 _disk.state = diskReadReady;
-                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslReadN, _diskReadCommandCallback, -1);
             } else {
                 _disk.state = diskSeekReady;
-                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslSeekL, _diskSeekCommandCallback, -1);
             }
 
             if (_disk.commandId == 0) {
                 _disk.state = diskReadError;
-                ++_disk.unk3;
+                ++_disk.errorCount;
             }
         }
         break;
@@ -2055,12 +2060,11 @@ static void _diskUpdate(void)
     case diskCommandFailed: {
         int status = DsSystemStatus();
         if (status == DslReady) {
-            _disk.unk4 = 0;
-            ++_disk.unk3;
+            _disk.sectorsFetched = 0;
+            ++_disk.errorCount;
             seconds = vs_main_frameDuration / 60;
             if (seconds < 420) {
-                DsIntToPos(
-                    _disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
+                DsIntToPos(_disk.cdSector + (seconds * 75) + (vs_main_frameDuration % 60),
                     &_cdReadLoc);
                 vol.val2 = 0x80;
                 vol.val0 = 0x80;
@@ -2084,30 +2088,30 @@ static void _diskUpdate(void)
         }
         if (_disk.commandId == 0) {
             _disk.state = diskCommandFailed;
-            ++_disk.unk3;
+            ++_disk.errorCount;
         }
         break;
     }
     case diskReadError: {
         int status = DsSystemStatus();
         if (status == DslReady) {
-            _disk.unk4 = 0;
+            _disk.sectorsFetched = 0;
             _disk.sectorBufIndex = 0;
-            ++_disk.unk3;
+            ++_disk.errorCount;
 
             if (_disk.request.byteCount != 0) {
                 _disk.state = diskReadReady;
-                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &_disk.cdLoc, DslReadN, _diskReadCommandCallback, -1);
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslReadN, _diskReadCommandCallback, -1);
             } else {
                 _disk.state = diskSeekReady;
-                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1,
-                    &_disk.cdLoc, DslSeekL, _diskSeekCommandCallback, -1);
+                _disk.commandId = DsPacket(DslModeSpeed | DslModeSize1, &_disk.cd.loc,
+                    DslSeekL, _diskSeekCommandCallback, -1);
             }
 
             if (_disk.commandId == 0) {
                 _disk.state = diskReadError;
-                ++_disk.unk3;
+                ++_disk.errorCount;
             }
         }
         break;
@@ -2119,9 +2123,9 @@ static void _diskUpdate(void)
             _disk.state = diskIdle;
         }
         DsReadyCallback(NULL);
-        _disk.unk1 = 128;
-        _disk.cdLoc.minute = 128;
-        while (DsControlB(DslSetmode, (u_char*)&_disk.cdLoc, NULL) == 0)
+        _disk.mode = 128;
+        _disk.cd.mode = 128;
+        while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
             ;
         VSync(3);
         break;
@@ -2130,44 +2134,44 @@ static void _diskUpdate(void)
     if (_disk.bufferMode != cdBufferModeNone) {
 
         for (i = 0; i < 16; ++i) {
-        
+
             if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
                 return;
             }
-        
+
             if (_disk.bufferMode == cdBufferModeBuffered) {
-        
+
                 vs_main_memcpy(
-                    ((char*)_disk.vram + (_disk.sectorBufIndex * 2048)),
-                    _cdReadBuffer + (_disk.ringBufIndex * 2048), 2048);
+                    ((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
+                    _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
 
                 ++_disk.ringBufIndex;
-        
+
                 if (_disk.ringBufIndex >= 16) {
                     _disk.ringBufIndex = 0;
                 }
-        
+
                 --_disk.sectorsPending;
                 ++_disk.sectorBufIndex;
-        
-                if (_disk.sectorBufIndex >= _disk.sectorCount) {
+
+                if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
                     _disk.state = diskIdle;
-                    
+
                     vs_main_freeHeapR(_cdReadBuffer);
-                    
+
                     _cdReadBuffer = NULL;
                 }
             } else if (_disk.bufferMode == cdBufferModeManual) {
-        
+
                 ++_disk.sectorBufIndex;
-        
-                if ((_disk.sectorBufIndex >= _disk.sectorCount)
+
+                if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
                     && (IsSpuTransferring() == 0)) {
-        
+
                     _disk.state = diskIdle;
-        
+
                     vs_main_freeHeapR(_cdReadBuffer);
-    
+
                     _cdReadBuffer = NULL;
                 }
             }
@@ -2181,7 +2185,7 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram)
 
     if (result != 0) {
         while (_diskGetState() == diskSeekReady || _diskGetState() == diskReadReady
-            || _diskGetState() == diskUnused3 || _diskGetState() == diskReadInit) {
+               || _diskGetState() == diskUnused3 || _diskGetState() == diskReadInit) {
             vs_main_gametimeUpdate(0);
         }
     }
@@ -2212,7 +2216,7 @@ int vs_main_checkStreamXaEnd(void)
         _disk.state = diskStreamXaEnd;
         return 1;
     }
-    
+
     return 0;
 }
 
@@ -2222,17 +2226,17 @@ static void _diskReset(void)
         ;
     DsFlush();
 
-    _disk.unk1 = 128;
-    _disk.cdLoc.minute = 128;
-    _disk.unk2 = 0;
+    _disk.mode = 128;
+    _disk.cd.mode = 128;
+    _disk._0 = 0;
     _disk.state = diskIdle;
     _disk.bufferMode = cdBufferModeNone;
     _cdReadBuffer = NULL;
-    
-    while (DsControlB(DslSetmode, (u_char*)&_disk.cdLoc, NULL) == 0)
+
+    while (DsControlB(DslSetmode, &_disk.cd.mode, NULL) == 0)
         ;
-    
-        VSync(3);
+
+    VSync(3);
 }
 
 static void _initCdQueue(void)

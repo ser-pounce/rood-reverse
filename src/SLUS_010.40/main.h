@@ -467,7 +467,6 @@ typedef struct {
     short agility;
 } material_modifiers_t;
 
-
 typedef union {
     u_int all;
     struct {

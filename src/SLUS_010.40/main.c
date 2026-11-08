@@ -1530,15 +1530,15 @@ static int _resumeVibrationSlot(int slot)
     return slot;
 }
 
-static UNUSED int _resumeVibration(int arg0)
+static UNUSED int _resumeVibration(int slot)
 {
     int i;
 
-    if ((arg0 - 1u) < 2) {
-        return _resumeVibrationSlot(arg0);
+    if ((slot - 1u) < 2) {
+        return _resumeVibrationSlot(slot);
     }
 
-    if (arg0 != 0) {
+    if (slot != 0) {
         return 0;
     }
 

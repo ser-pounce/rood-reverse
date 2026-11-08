@@ -3280,9 +3280,9 @@ void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volu
     _playSfxFromPointer(sfx, voice, pan, volume);
 }
 
-void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
+void vs_main_playBankSfxDefault(int group, int* bank, u_int index)
 {
-    vs_main_playBankSfx(arg0, arg1, arg2, 0x80, 0x7F);
+    vs_main_playBankSfx(group, bank, index, 0x80, 0x7F);
 }
 
 static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)

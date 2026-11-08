@@ -3470,11 +3470,13 @@ int vs_main_processSoundQueue(void)
 
             if (isTransferring == 0) {
                 _releaseSoundQueue();
+
                 return 0;
             }
 
             if (isTransferring == -1) {
                 _releaseSoundQueue();
+
                 return -1;
             }
 
@@ -3482,13 +3484,16 @@ int vs_main_processSoundQueue(void)
         }
 
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
+
             vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
             Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
+
             return 1;
         }
 
         if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
             _releaseSoundQueue();
+
             return -1;
         }
 
@@ -3517,20 +3522,25 @@ static void _loadMenuSound(void)
 
     InitSound();
     Sound_SetCdMixVolume(0x7F);
+
     buf = vs_main_allocHeapR(VS_WAVE0000_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0000_DAT_LBA, VS_WAVE0000_DAT_SIZE, buf);
     Sound_LoadAkaoBankBlocking(buf, 1);
     vs_main_freeHeapR(buf);
+
     buf = vs_main_allocHeapR(VS_WAVE0005_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0005_DAT_LBA, VS_WAVE0005_DAT_SIZE, buf);
     Sound_LoadAkaoBankBlocking(buf, 1);
     vs_main_freeHeapR(buf);
+
     buf = vs_main_allocHeapR(VS_WAVE0200_DAT_SIZE);
     vs_main_diskLoadFile(VS_WAVE0200_DAT_LBA, VS_WAVE0200_DAT_SIZE, buf);
     Sound_LoadSfxBank(buf, 0, 1);
     vs_main_freeHeapR(buf);
+
     vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
     Sound_BindAkaoSfxBlob(_sfxData);
+
     _nextVoicePool0 = 1;
     _nextVoicePool1 = 2;
     _nextVoicePool2 = 0x80;
@@ -3570,6 +3580,7 @@ void vs_main_resetSound(void)
     vs_main_soundData.soundFileId = 0;
     vs_main_soundData.soundData = NULL;
     vs_main_soundData.soundQueueSlot = NULL;
+
     _nextVoicePool0 = 1;
     _nextVoicePool1 = 2;
     _nextVoicePool2 = 0x80;

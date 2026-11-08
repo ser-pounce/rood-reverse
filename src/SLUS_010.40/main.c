@@ -2623,6 +2623,7 @@ static int _loadMusicIntoFreeSlot(int id)
             return vs_main_loadMusicSlot(id, i + 1);
         }
     }
+
     return 0;
 }
 
@@ -2630,34 +2631,40 @@ int vs_main_clearMusicLoadSlot(u_int slot)
 {
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
+
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateLoaded) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = NULL;
+
                 return 0;
             }
+            
             if (vs_main_soundData.musicQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+
                 return -1;
             }
+            
             return 1;
         }
     }
+
     return 0;
 }
 
 int vs_main_clearMusicLoadQueue(void)
 {
     int i;
-    int ret;
-
-    ret = 0;
-    i = 0;
-    do {
-        ret |= vs_main_clearMusicLoadSlot(++i);
-    } while (i < 4);
+    int ret = 0;
+    
+    for (i = 0; i < 4; ++i) {
+        ret |= vs_main_clearMusicLoadSlot(i + 1);
+    }
 
     return ret;
 }

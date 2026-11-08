@@ -2461,7 +2461,10 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int threshold) { Sound_SetMusicJumpThreshold(threshold); }
+void vs_main_setMusicJumpThreshold(int threshold)
+{
+    Sound_SetMusicJumpThreshold(threshold);
+}
 
 int vs_main_stopMusicSlot(int id)
 {
@@ -2752,7 +2755,8 @@ int vs_main_getMusicSlotVolume2(int slot) { return vs_main_getMusicSlotVolume(sl
 int vs_main_fadeMusicVolume(int slot, int volume, int duration)
 {
     if (vs_main_soundData.currentMusicSlot == slot) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, duration, volume);
+        Sound_FadeMasterVolumeByMusicId(
+            vs_main_soundData.currentMusicHandle, duration, volume);
         return 1;
     }
 

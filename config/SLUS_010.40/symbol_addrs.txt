@@ -27,6 +27,7 @@ Sound_EvictSfx = 0x80012288;
 Sound_PlaySfxProtected = 0x800122C4;
 Sound_GetAllSfxUnkFlags = 0x800122F0;
 Sound_GetPlayingSfxByGroup = 0x80012358;
+Sound_SfxHasVoiceFlag = 0x800123C8;
 Sound_SetSpeakerMode = 0x8001240C;
 Sound_SetMutedMusicChannelMask = 0x80012440;
 Sound_SetMusicJumpThreshold = 0x80012468;

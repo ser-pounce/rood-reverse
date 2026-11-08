@@ -55,6 +55,14 @@ typedef struct {
     int unk10;
 } func_800172D4_t;
 
+// Header of a sound effect in RAM; only the flags byte is read
+typedef struct {
+    int unk0;
+    int unk4;
+    char unk8;
+    char unk9;
+} _sfxHeader_t;
+
 typedef struct {
     union {
         void* ptr;
@@ -429,12 +437,12 @@ int Sound_GetPlayingSfxByGroup(int arg0)
     return 0;
 }
 
-int func_800123C8(vs_main_sfxContext* arg0)
+int Sound_SfxHasVoiceFlag(u_long arg0)
 {
     int ret = 0;
-    if ((long)arg0 >= 0x80000000) {
-        ret = arg0->unk9 >> 7;
-    } else if (g_Sound_Sfx_MetadataTableA[(long)arg0] & 0x8000) {
+    if (arg0 >= 0x80000000) {
+        ret = ((_sfxHeader_t*)arg0)->unk9 >> 7;
+    } else if (g_Sound_Sfx_MetadataTableA[arg0] & 0x8000) {
         ret = 1;
     }
     return ret;

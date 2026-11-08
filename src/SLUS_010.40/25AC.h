@@ -1,13 +1,6 @@
 #pragma once
 #include <sys/types.h>
 
-typedef struct {
-    int unk0;
-    int unk4;
-    char unk8;
-    char unk9;
-} vs_main_sfxContext;
-
 int TeardownSound(void);
 int InitSound(void);
 int Sound_BindAkaoSfxBlob(void* arg0);
@@ -24,7 +17,7 @@ int Sound_PlaySfx(u_long, int, int, int);
 int Sound_PlaySfxFromPointer(void*, int, int, int);
 void Sound_EvictSfx(u_long, int);
 int Sound_GetPlayingSfxByGroup(int);
-int func_800123C8(vs_main_sfxContext*);
+int Sound_SfxHasVoiceFlag(u_long);
 void Sound_SetSpeakerMode(int);
 void Sound_SetMusicJumpThreshold(int);
 void Sound_FadeSfxVolumeMod(int, int, int, int);

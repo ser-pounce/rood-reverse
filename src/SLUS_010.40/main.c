@@ -2802,7 +2802,7 @@ static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
     }
 }
 
-void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
+void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 {
     void* sfx;
     int* bank;
@@ -2810,7 +2810,7 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
     switch (arg0) {
     case 0x7E:
     case 0xFE:
-        if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+        if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
 
             _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
 
@@ -2828,18 +2828,19 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
 
     case 0x100:
     case 0x200:
-        if (func_800123C8((void*)(id & 0xFFFF)) != 0) {
+        if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
             _playSfxById(id & 0xFFFF, _nextVoicePool3, arg2, arg3);
         } else {
             _playSfxById(id & 0xFFFF, 0, arg2, arg3);
         }
+
         break;
 
     case 0xFF000:
         sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
         sfx += bank[id + 1];
 
-        if (func_800123C8(sfx) != 0) {
+        if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
 
             _playSfxFromPointer(sfx, _nextVoicePool4, arg2, arg3);
 
@@ -2859,7 +2860,7 @@ void vs_main_playSfx(int arg0, long id, int arg2, int arg3)
         sfx = bank = vs_main_soundData.sfxData[2];
         sfx += bank[id + 1];
 
-        if (func_800123C8(sfx) != 0) {
+        if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
 
             _playSfxFromPointer(sfx, _nextVoicePool5, arg2, arg3);
 

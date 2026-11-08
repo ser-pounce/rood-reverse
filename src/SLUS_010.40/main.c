@@ -3516,6 +3516,16 @@ void vs_main_setMonoSound(int set) { Sound_SetSpeakerMode(set); }
 
 static UNUSED void _setCdVolumeMax(void) { Sound_SetCdVolume(0x7FFF); }
 
+static inline void _resetVoicePools(void)
+{
+    _nextVoicePool0 = 1;
+    _nextVoicePool1 = 2;
+    _nextVoicePool2 = 0x80;
+    _nextVoicePool3 = 0x200;
+    _nextVoicePool4 = 0x1000;
+    _nextVoicePool5 = 0x100000;
+}
+
 static void _loadMenuSound(void)
 {
     void* buf;
@@ -3541,12 +3551,7 @@ static void _loadMenuSound(void)
     vs_main_diskLoadFile(VS_EFFECT00_DAT_LBA, VS_EFFECT00_DAT_SIZE, _sfxData);
     Sound_BindAkaoSfxBlob(_sfxData);
 
-    _nextVoicePool0 = 1;
-    _nextVoicePool1 = 2;
-    _nextVoicePool2 = 0x80;
-    _nextVoicePool3 = 0x200;
-    _nextVoicePool4 = 0x1000;
-    _nextVoicePool5 = 0x100000;
+    _resetVoicePools();
 }
 
 void vs_main_resetSound(void)
@@ -3581,12 +3586,7 @@ void vs_main_resetSound(void)
     vs_main_soundData.soundData = NULL;
     vs_main_soundData.soundQueueSlot = NULL;
 
-    _nextVoicePool0 = 1;
-    _nextVoicePool1 = 2;
-    _nextVoicePool2 = 0x80;
-    _nextVoicePool3 = 0x200;
-    _nextVoicePool4 = 0x1000;
-    _nextVoicePool5 = 0x100000;
+    _resetVoicePools();
 }
 
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)

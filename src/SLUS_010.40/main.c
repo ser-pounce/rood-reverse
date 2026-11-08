@@ -2802,14 +2802,14 @@ static UNUSED void _playSfxPool0Default(int id)
     }
 }
 
-static void _playSfxById(int id, int arg1, int arg2, int arg3)
+static void _playSfxById(int id, int voice, int pan, int volume)
 {
-    if (arg1 == 0x200) {
+    if (voice == 0x200) {
         if (id != Sound_GetPlayingSfxByGroup(0x200)) {
-            Sound_PlaySfx(id, 0x200, arg2, arg3);
+            Sound_PlaySfx(id, 0x200, pan, volume);
         }
     } else {
-        Sound_PlaySfx(id, arg1, arg2, arg3);
+        Sound_PlaySfx(id, voice, pan, volume);
     }
 }
 

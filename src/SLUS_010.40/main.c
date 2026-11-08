@@ -1895,7 +1895,7 @@ void vs_main_initHeap(void* heap, u_int size)
     _unusedHeap.blockSz = 0;
 }
 
-static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
+static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* _)
 {
     if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);

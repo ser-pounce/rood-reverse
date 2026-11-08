@@ -3981,7 +3981,8 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
 
         // 2, 3: current colours as a grey level (weighted average), plus offset
         case 2:
-            OFFSET_BG_RGB(_luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
+            OFFSET_BG_RGB(
+                _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
                 _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6,
                 _luminance(bg[i].current.r, bg[i].current.g, bg[i].current.b) / 6);
             break;
@@ -4420,7 +4421,7 @@ void vs_main_updateClutSlots(void)
 {
     int i;
     int j;
-    u_int var_t5;
+    u_int frameStride;
     u_short g;
     u_short r;
     u_short b;
@@ -4428,108 +4429,143 @@ void vs_main_updateClutSlots(void)
     int c;
 
     for (i = 0; i < 14; ++i) {
+
         if (_clutState.slots[i].animState.active == 0) {
             continue;
         }
+
         if (++_clutState.slots[i].animState.tick
             >= (_clutState.slots[i].animState.speed / 8)) {
 
             _clutState.slots[i].animState.tick = 0;
 
             if (_clutState.slots[i].animState.speed >= 8) {
-                var_t5 = 1;
+
+                frameStride = 1;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset16[index[j].rindex][c];
                     g = index[j].g + _animOffset16[index[j].gindex][c];
                     b = index[j].b + _animOffset16[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].g = g;
                     index[j].b = b;
                     index[j].r = r;
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else if (_clutState.slots[i].animState.speed >= 4) {
-                var_t5 = 2;
+
+                frameStride = 2;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset8[index[j].rindex][c];
                     g = index[j].g + _animOffset8[index[j].gindex][c];
                     b = index[j].b + _animOffset8[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else if (_clutState.slots[i].animState.speed >= 2) {
-                var_t5 = 4;
+
+                frameStride = 4;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset4[index[j].rindex][c];
                     g = index[j].g + _animOffset4[index[j].gindex][c];
                     b = index[j].b + _animOffset4[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             } else {
-                var_t5 = 8;
+
+                frameStride = 8;
                 c = _clutState.slots[i].animState.frame;
                 index = _clutState.slots[i].colorInfo;
+
                 for (j = 0; j < 256; ++j) {
+
                     if ((index[j].r + index[j].g + index[j].b) == 0) {
                         continue;
                     }
+
                     r = index[j].r + _animOffset2[index[j].rindex][c];
                     g = index[j].g + _animOffset2[index[j].gindex][c];
                     b = index[j].b + _animOffset2[index[j].bindex][c];
+
                     if (((b | (r | g)) << 16) == 0) {
                         b = 1;
                     }
+
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
                     _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
                 }
             }
-            if (++_clutState.slots[i].animState.frame >= (16 / var_t5)) {
+            if (++_clutState.slots[i].animState.frame >= (16 / frameStride)) {
                 if (_clutState.slots[i].animState.transitionMode == 9) {
+
                     _transformClutSlot(4, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR / 2,
                         _clutState.slots[i].animState.transitionTargetG / 2,
                         _clutState.slots[i].animState.transitionTargetB / 2);
+
                     _clutState.slots[i].animState.transitionMode = 10;
+
                 } else if (_clutState.slots[i].animState.transitionMode == 10) {
+
                     _transformClutSlot(9, _clutState.slots[i].animState.speed, i,
                         _clutState.slots[i].animState.transitionTargetR,
                         _clutState.slots[i].animState.transitionTargetG,
                         _clutState.slots[i].animState.transitionTargetB);
+
                     _clutState.slots[i].animState.transitionMode = 9;
+
                 } else if (_clutState.slots[i].animState.transitionMode == 14) {
+
                     _transformClutSlot(
                         15, _clutState.slots[i].animState.speed, i, 0, 0, 0);
+
                     _clutState.slots[i].animState.transitionMode = 15;
+
                 } else {
                     _clutState.slots[i].animState.active = 0;
                 }
@@ -4554,21 +4590,27 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
     if (slot >= 14) {
         setRECT(&rect, colorOffset + 768, slot + 224, count, 1);
         LoadImage(&rect, (u_long*)img);
+
         return;
     }
 
     if (_clutState.slots[slot].locked == 0) {
+
         _clutState.slots[slot].animState.active = 0;
+
         for (i = 0; i < count; ++i) {
+
             px = img[i];
             dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
             _clutBuffer[slot][colorOffset + i] = px;
             _clutState.slots[slot].clutBase[colorOffset + i] = px;
+
             dst->r = _colorR(px);
             dst->g = _colorG(px);
             dst->b = _colorB(px);
             dst->a = ((px & 0x8000) >> 15);
         }
+        
         _clutState.uploadPending = 1;
     }
 }

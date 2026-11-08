@@ -4,7 +4,7 @@
 #include "common.h"
 #include "25AC.h"
 #include "hw.h"
-#include "sound.h"
+#include "src/include/sound.h"
 #include <kernel.h>
 #include <libspu.h>
 #include <libapi.h>

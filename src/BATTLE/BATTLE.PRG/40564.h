@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "actorPosition.h"
 #include "mpd.h"
+#include "tilePosition.h"
 #include <stddef.h>
 #include <libgte.h>
 #include <libgpu.h>

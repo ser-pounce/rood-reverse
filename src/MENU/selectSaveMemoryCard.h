@@ -1,4 +1,6 @@
 #pragma once
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 
 /* Save memory card selection shared by the title and menu overlays. */
 

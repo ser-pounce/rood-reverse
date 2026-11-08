@@ -13,6 +13,10 @@
 #include "battleUnk.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/graphics.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/sound.h"
 #include "scratch.h"
 #include "vs_inline_c.h"
 #include <rand.h>

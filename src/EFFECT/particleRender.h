@@ -2,8 +2,8 @@
  * control points, drawn as a strip of eight semi-transparent textured quads. Include
  * after particleSetup.h. */
 
+#include "src/SLUS_010.40/graphics.h"
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"
-#include "src/SLUS_010.40/main.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>

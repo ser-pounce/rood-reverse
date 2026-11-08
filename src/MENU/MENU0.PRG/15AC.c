@@ -1,6 +1,7 @@
 #include "15AC.h"
 #include "84.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"
 #include "src/MENU/MAINMENU.PRG/58EC.h"
 #include "src/MENU/MAINMENU.PRG/C48.h"

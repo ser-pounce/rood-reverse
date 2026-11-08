@@ -1,6 +1,7 @@
 #include "common.h"
 #include "592C.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/cd.h"
+#include "src/SLUS_010.40/memory.h"
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
 #include "build/src/include/lbas.h"
 

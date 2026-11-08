@@ -5,8 +5,12 @@
 #include "4DEA8.h"
 #include "battleUnk.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/actions.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/modifiers.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
+#include "tilePosition.h"
 #include <abs.h>
 #include <rand.h>
 

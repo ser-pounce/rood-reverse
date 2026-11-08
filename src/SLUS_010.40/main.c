@@ -1,8 +1,22 @@
 #define VS_MAIN_INCLUDE
 #include "main.h"
+#include "gameFlags.h"
+#include "gameState.h"
+#include "graphics.h"
+#include "pad.h"
+#include "sound.h"
+#include "zoneState.h"
 #undef VS_MAIN_INCLUDE
 #include "common.h"
+#include "25AC.h"
+#include "actions.h"
+#include "cd.h"
+#include "clut.h"
+#include "inventory.h"
+#include "memory.h"
+#include "modifiers.h"
 #include "overlay.h"
+#include "zones.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #include "src/BATTLE/BATTLE.PRG/entity.h"
@@ -11,6 +25,7 @@
 #include "src/TITLE/TITLE.PRG/22C.h"
 #include "src/ENDING/ENDING.PRG/D4.h"
 #include "build/src/include/lbas.h"
+#include <libds.h>
 #include <libapi.h>
 #include <libetc.h>
 #include <libpad.h>
@@ -169,7 +184,7 @@ typedef struct vs_main_HeapHeader {
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, void*);
-static void _padSetActData(int arg0, int arg1, int arg2);
+static void _padSetActData(int port, int pos, int val);
 static void _initCdQueue(void);
 static void _diskReset(void);
 static void _processCdQueue(void);
@@ -2466,19 +2481,19 @@ void vs_main_setMusicJumpThreshold(int threshold)
     Sound_SetMusicJumpThreshold(threshold);
 }
 
-int vs_main_stopMusicSlot(int id)
+int vs_main_stopMusicSlot(int slot)
 {
     int i;
 
-    if (id != 0) {
-        if (vs_main_soundData.musicHandleBySlot[id - 1] != 0xFFFF) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicHandleBySlot[slot - 1] != 0xFFFF) {
 
-            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[id - 1]);
+            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[slot - 1]);
 
-            vs_main_soundData.musicHandleBySlot[id - 1] = 0xFFFF;
+            vs_main_soundData.musicHandleBySlot[slot - 1] = 0xFFFF;
         }
 
-        if (vs_main_soundData.currentMusicSlot == id) {
+        if (vs_main_soundData.currentMusicSlot == slot) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
             vs_main_soundData.currentMusicHandle = 0xFFFF;
@@ -2500,23 +2515,23 @@ int vs_main_stopMusicSlot(int id)
     return 1;
 }
 
-int vs_main_queueMusicSlot(int id)
+int vs_main_queueMusicSlot(int slot)
 {
     u_int handle;
 
-    if (id != 0) {
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
             handle = Sound_QueueMusic(vs_main_soundData.currentMusicData);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -3185,10 +3200,10 @@ static UNUSED int _loadAndFreeSfx(int id)
     return slot;
 }
 
-int vs_main_setCurrentSfx(int id)
+int vs_main_setCurrentSfx(int slot)
 {
-    if ((id - 1u < 3) && vs_main_soundData.sfxData[id - 1] != NULL) {
-        vs_main_soundData.currentSfxId = id;
+    if ((slot - 1u < 3) && vs_main_soundData.sfxData[slot - 1] != NULL) {
+        vs_main_soundData.currentSfxId = slot;
 
         return 1;
     }
@@ -3196,21 +3211,21 @@ int vs_main_setCurrentSfx(int id)
     return 0;
 }
 
-int vs_main_freeSfx(u_int id)
+int vs_main_freeSfx(u_int slot)
 {
-    if ((id - 1) < 3) {
-        if (vs_main_soundData.sfxData[id - 1] != NULL) {
+    if ((slot - 1) < 3) {
+        if (vs_main_soundData.sfxData[slot - 1] != NULL) {
 
-            if (vs_main_soundData.currentSfxId == id) {
+            if (vs_main_soundData.currentSfxId == slot) {
                 vs_main_soundData.currentSfxId = 0;
             }
 
             Sound_EvictSfx(-2, 0);
             Sound_EvictSfx(0, 0xFF000);
-            vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
+            vs_main_freeHeapR(vs_main_soundData.sfxData[slot - 1]);
 
-            vs_main_soundData.sfxIds[id - 1] = 0;
-            vs_main_soundData.sfxData[id - 1] = 0;
+            vs_main_soundData.sfxIds[slot - 1] = 0;
+            vs_main_soundData.sfxData[slot - 1] = 0;
 
             return 1;
         }
@@ -3421,10 +3436,10 @@ static UNUSED int _freeCutsceneStream(int slot)
     return 1;
 }
 
-int vs_main_setCutsceneStreamSlot3(void* arg0)
+int vs_main_setCutsceneStreamSlot3(void* stream)
 {
     if (vs_main_soundData.unk64[2] == 0) {
-        vs_main_soundData.unk64[2] = arg0;
+        vs_main_soundData.unk64[2] = stream;
         return 3;
     }
 
@@ -3868,7 +3883,7 @@ void vs_main_transformClutSlot(
     }
 }
 
-static inline int _shift_left(int arg0) { return arg0 << 0x10; }
+static inline int _shift_left(int channel) { return channel << 0x10; }
 
 static inline void _startBgAnim(int speed)
 {
@@ -3932,16 +3947,16 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
     UPLOAD_BG_COLORS(bg, position, i);
 }
 
-static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
+static UNUSED void _fadeBgColorsStore(int frames, CVECTOR* target)
 {
     int i;
 
     if (_clutState.active != 0) {
 
-        vs_main_fadeBgColors(arg0, arg1);
+        vs_main_fadeBgColors(frames, target);
 
         for (i = 0; i < 5; ++i) {
-            _clutState.bgBaseColors[i] = arg1[i];
+            _clutState.bgBaseColors[i] = target[i];
         }
     }
 }
@@ -4591,9 +4606,9 @@ void vs_main_updateClutSlots(void)
     }
 }
 
-static UNUSED void _stopClutSlotAnim(int arg0)
+static UNUSED void _stopClutSlotAnim(int slot)
 {
-    _clutState.slots[arg0].animState.active = 0;
+    _clutState.slots[slot].animState.active = 0;
 }
 
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count)

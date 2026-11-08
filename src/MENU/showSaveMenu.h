@@ -1,5 +1,8 @@
 #pragma once
 #include "common.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 
 /* Save menu shared by the title and menu overlays. The including file defines
  * FILE_MENU_RESTORE_CURSOR, FILE_MENU_STORE_CURSOR (cursor memory, using selectedFile)

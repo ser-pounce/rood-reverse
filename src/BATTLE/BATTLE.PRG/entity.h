@@ -1,5 +1,6 @@
 #pragma once
 #include "actorPosition.h"
+#include "tilePosition.h"
 #include <sys/types.h>
 #include <libgte.h>
 

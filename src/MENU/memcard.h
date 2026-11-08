@@ -1,5 +1,13 @@
 #pragma once
 #include "common.h"
+#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/cd.h"
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
+#include "src/SLUS_010.40/zoneState.h"
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 

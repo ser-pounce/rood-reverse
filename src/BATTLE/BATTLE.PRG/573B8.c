@@ -3,6 +3,9 @@
 #include "146C.h"
 #include "4DEA8.h"
 #include "battleUi.h"
+#include "src/SLUS_010.40/cd.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 #include "build/src/include/lbas.h"
 #include <libetc.h>
 

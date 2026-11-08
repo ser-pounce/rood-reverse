@@ -2,11 +2,12 @@
  * entry.h. */
 
 #include "entry.h"
+#include "src/SLUS_010.40/graphics.h"
+#include "src/SLUS_010.40/memory.h"
 #include "scratch.h"
 #define VS_GRID_FUNCTION VS_ENTRY_FUNCTION
 
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"
-#include "src/SLUS_010.40/main.h"
 #include "vs_inline_c.h"
 #include "gpu.h"
 #include <inline_c.h>

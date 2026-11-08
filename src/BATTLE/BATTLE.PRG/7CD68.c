@@ -4,6 +4,9 @@
 #include "146C.h"
 #include "38C1C.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/actions.h"
+#include "src/SLUS_010.40/memory.h"
+#include "tilePosition.h"
 #include <abs.h>
 
 #define MAX(a, b) ((a) < (b) ? (b) : (a))

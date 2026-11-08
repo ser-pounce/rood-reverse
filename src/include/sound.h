@@ -331,7 +331,7 @@ typedef struct {
     int PitchSlide;
     u_int UpdateFlags;
     int unk38;
-    int AkaoProgramIndex;
+    int SfxKey; // effect id, or the address of an effect played from a bank
     int PitchMod;
     u_int PitchModStep;
     int Volume;

@@ -2935,8 +2935,10 @@ int vs_main_computeSfxPan(int coords, int z)
 static void _do_panSfx(int arg0, int arg1, int coords, int z)
 {
     coords = vs_main_computeSfxPan(coords, z);
+
     z = coords & 0xFFFF;
     coords = coords >> 0x10;
+
     if (z > 0) {
         vs_main_playSfx(arg0, arg1, coords, z);
     }
@@ -2955,9 +2957,10 @@ void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
     _do_panSfx(arg0, arg1, coords, z);
 }
 
-static int _resolveSfxData(int arg0, int arg1)
+static void* _resolveSfxData(int arg0, int arg1)
 {
-    int temp_v1;
+    void* sfx;
+    int* bank;
 
     switch (arg0) {
     case 0x1:
@@ -2965,30 +2968,35 @@ static int _resolveSfxData(int arg0, int arg1)
     case 0xFE:
     case 0x100:
     case 0x200:
-        temp_v1 = 0;
+        sfx = NULL;
         break;
+
     case 0xFF000:
     case 0xF00000:
-        temp_v1 = (int)vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        temp_v1 = (int)temp_v1 + (arg1 + (int*)temp_v1)[1];
+        sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
+        sfx += bank[arg1 + 1];
+
         break;
+
     default:
         vs_main_nop10(0x95, 0);
-        temp_v1 = 0;
+        sfx = NULL;
+
         break;
     }
-    return temp_v1;
+
+    return sfx;
 }
 
 void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 {
-    int temp_v0;
+    void* temp_v0;
 
     if (arg1 != 0) {
         temp_v0 = _resolveSfxData(arg0, arg1);
 
         if (temp_v0 != 0) {
-            Sound_FadeSfxVolumeMod(temp_v0, 0, arg3, arg2);
+            Sound_FadeSfxVolumeMod((u_long)temp_v0, 0, arg3, arg2);
         } else {
             do {
                 Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
@@ -3001,12 +3009,12 @@ void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
 
 void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
-    int temp_v0;
+    void* temp_v0;
 
     if (arg1 != 0) {
         temp_v0 = _resolveSfxData(arg0, arg1);
         if (temp_v0 != 0) {
-            Sound_FadeSfxPitchMod(temp_v0, 0, arg3, arg2);
+            Sound_FadeSfxPitchMod((u_long)temp_v0, 0, arg3, arg2);
         } else {
             do {
                 Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
@@ -3020,9 +3028,9 @@ void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
-        arg0 = _resolveSfxData(arg0, arg1);
-        if (arg0 != 0) {
-            Sound_FadeSfxPanMod(arg0, 0, arg3, arg2);
+        void* sfx = _resolveSfxData(arg0, arg1);
+        if (sfx != NULL) {
+            Sound_FadeSfxPanMod((u_long)sfx, 0, arg3, arg2);
         } else {
             do {
                 Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
@@ -3036,10 +3044,10 @@ void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 void vs_main_evictSfx(int arg0, int arg1)
 {
     if (arg1 != 0) {
-        arg0 = _resolveSfxData(arg0, arg1);
+        void* sfx = _resolveSfxData(arg0, arg1);
 
-        if (arg0 != 0) {
-            Sound_EvictSfx(arg0, 0);
+        if (sfx != NULL) {
+            Sound_EvictSfx((u_long)sfx, 0);
         } else {
             Sound_EvictSfx(arg1, 0);
         }

@@ -2978,8 +2978,8 @@ void vs_main_panSfx(int group, int id, SVECTOR* position)
     _do_panSfx(group, id, screenXY, depth);
 }
 
-// Returns the address of effect `id` inside its bank for the bank groups, or NULL when the
-// group plays effects by id
+// Returns the address of effect `id` inside its bank for the bank groups, or NULL when
+// the group plays effects by id
 static void* _resolveSfxData(int group, int id)
 {
     void* sfx;

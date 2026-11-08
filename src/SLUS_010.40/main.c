@@ -3608,6 +3608,9 @@ static inline int _colorR(short color) { return _maskR(color); }
 static inline int _colorG(short color) { return _maskG(color) >> 5; }
 static inline int _colorB(short color) { return _maskB(color) >> 10; }
 
+// Packs 5:5:5 channels and the semi-transparency bit to a PlayStation 16-bit colour
+#define PACK_COLOR(r, g, b, stp) ((r) + ((g) << 5) + ((b) << 10) + ((stp) << 15))
+
 static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 {
     int i;
@@ -3627,7 +3630,7 @@ static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
             colors[i].r = r;
             colors[i].g = g;
             colors[i].b = b;
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
+            _clutBuffer[slot][i] = PACK_COLOR(r, g, b, colors[i].a);
         }
     }
 
@@ -3809,7 +3812,7 @@ static void _transformClutSlot(
                 colors[i].b = b;
                 colors[i].r = r;
                 colors[i].g = g;
-                _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (colors[i].a << 15);
+                _clutBuffer[slot][i] = PACK_COLOR(r, g, b, colors[i].a);
             }
         } else {
             colors[i].bindex = 31;
@@ -3837,8 +3840,6 @@ static void _transformClutSlot(
     }
 }
 
-#undef CLAMP_CLUT_LOW
-#undef CLAMP_CLUT_HIGH
 #undef OFFSET_RGB3
 #undef OFFSET_RGB
 
@@ -4462,7 +4463,7 @@ void vs_main_updateClutSlots(void)
                     index[j].g = g;
                     index[j].b = b;
                     index[j].r = r;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else if (_clutState.slots[i].animState.speed >= 4) {
 
@@ -4487,7 +4488,7 @@ void vs_main_updateClutSlots(void)
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else if (_clutState.slots[i].animState.speed >= 2) {
 
@@ -4512,7 +4513,7 @@ void vs_main_updateClutSlots(void)
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             } else {
 
@@ -4537,7 +4538,7 @@ void vs_main_updateClutSlots(void)
                     index[j].r = r;
                     index[j].g = g;
                     index[j].b = b;
-                    _clutBuffer[i][j] = r + (g << 5) + (b << 10) + (index[j].a << 15);
+                    _clutBuffer[i][j] = PACK_COLOR(r, g, b, index[j].a);
                 }
             }
             if (++_clutState.slots[i].animState.frame >= (16 / frameStride)) {
@@ -4610,7 +4611,7 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
             dst->b = _colorB(px);
             dst->a = ((px & 0x8000) >> 15);
         }
-        
+
         _clutState.uploadPending = 1;
     }
 }
@@ -4619,9 +4620,9 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
     short gOffset, short bOffset, int applyNow)
 {
     int i;
-    int new_var;
-    int new_var2;
-    int new_var3;
+    int red;
+    int green;
+    int blue;
     short r;
     short g;
     short b;
@@ -4629,33 +4630,38 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
     u_short stp;
 
     for (i = 0; i < 256; ++i) {
+
         value = srcClut[i];
+
         if (value != 0) {
             switch (mode) {
+            // 5: half of the colour, plus offset
             case 5:
                 r = rOffset + _colorR(value) / 2;
                 g = gOffset + _colorG(value) / 2;
                 b = bOffset + _colorB(value) / 2;
                 break;
 
+            // 6, 7: the colour as a grey level, plus offset
             case 6:
-                new_var = _colorR(value);
-                new_var2 = _colorG(value);
-                new_var3 = _colorB(value);
-                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
-                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 6;
+                red = _colorR(value);
+                green = _colorG(value);
+                blue = _colorB(value);
+                r = rOffset + _luminance(red, green, blue) / 6;
+                g = gOffset + _luminance(red, green, blue) / 6;
+                b = bOffset + _luminance(red, green, blue) / 6;
                 break;
 
             case 7:
-                new_var = _colorR(value);
-                new_var2 = _colorG(value);
-                new_var3 = _colorB(value);
-                r = rOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                g = gOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
-                b = bOffset + ((new_var * 2) + (new_var2 * 3) + new_var3) / 12;
+                red = _colorR(value);
+                green = _colorG(value);
+                blue = _colorB(value);
+                r = rOffset + _luminance(red, green, blue) / 12;
+                g = gOffset + _luminance(red, green, blue) / 12;
+                b = bOffset + _luminance(red, green, blue) / 12;
                 break;
 
+            // 0 (and 8, the offset-only load): the colour plus offset
             case 0:
             default:
                 r = rOffset + (value & 0x1F);
@@ -4665,39 +4671,28 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
             }
 
         } else {
+            // A zero entry stays zero (fully transparent)
             r = value & 0x1F;
             g = (value & 0x3E0) >> 5;
             b = (value & 0x7C00) >> 10;
         }
 
-        stp = value;
-        stp >>= 15;
+        stp = (u_short)value >> 15;
 
-        if (r >= 32) {
-            r = 31;
-        }
-        if (g >= 32) {
-            g = 31;
-        }
-        if (b >= 32) {
-            b = 31;
-        }
-        if ((r << 16) < 1) {
-            r = 0;
-        }
-        if ((g << 16) <= 0) {
-            g = 0;
-        }
-        if ((b << 16) <= 0) {
-            b = 0;
-        }
+        CLAMP_CLUT_HIGH(r);
+        CLAMP_CLUT_HIGH(g);
+        CLAMP_CLUT_HIGH(b);
+        CLAMP_CLUT_LOW(r);
+        CLAMP_CLUT_LOW(g);
+        CLAMP_CLUT_LOW(b);
 
+        // A non-black source colour never turns fully black
         if ((((r | g | b) << 16) == 0) && (value & 0x7FFF)) {
             b = 1;
         }
 
         if (applyNow != 0) {
-            _clutBuffer[slot][i] = r + (g << 5) + (b << 10) + (stp << 15);
+            _clutBuffer[slot][i] = PACK_COLOR(r, g, b, stp);
 
             if (_clutState.slots[slot].animState.active == 0) {
                 struct ColorInfo* colors = &_clutState.slots[slot].colorInfo[i];
@@ -4708,11 +4703,14 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
             }
         }
 
-        _clutState.slots[slot].clutBase[i] = r + (g << 5) + (b << 10) + (stp << 15);
+        _clutState.slots[slot].clutBase[i] = PACK_COLOR(r, g, b, stp);
     }
 
     _clutState.uploadPending = 1;
 }
+
+#undef CLAMP_CLUT_LOW
+#undef CLAMP_CLUT_HIGH
 
 static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
     u_short gOffset, u_short bOffset, int applyNow)

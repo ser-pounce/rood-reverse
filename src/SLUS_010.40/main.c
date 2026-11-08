@@ -3918,14 +3918,14 @@ static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
     }
 }
 
-// Clamp a 16.16 fixed point channel to 0..255
-#define CLAMP_BG_HIGH(c)  \
-    if ((c) > 0xFF0000) { \
-        (c) = 0xFF0000;   \
+// Clamp a 16.16 fixed point channel to 0..max
+#define CLAMP_FIXED_HIGH(c, max) \
+    if ((c) > (max)) {           \
+        (c) = (max);             \
     }
-#define CLAMP_BG_LOW(c) \
-    if ((c) < 0) {      \
-        (c) = 0;        \
+#define CLAMP_FIXED_LOW(c) \
+    if ((c) < 0) {         \
+        (c) = 0;           \
     }
 
 // sum = (2 * r + 3 * g + b) << 16 for a base colour. `scratch` is written (with g << 16)
@@ -4030,12 +4030,12 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
         g &= 0xFFFF0000;
         b &= 0xFFFF0000;
 
-        CLAMP_BG_HIGH(r);
-        CLAMP_BG_HIGH(g);
-        CLAMP_BG_HIGH(b);
-        CLAMP_BG_LOW(r);
-        CLAMP_BG_LOW(g);
-        CLAMP_BG_LOW(b);
+        CLAMP_FIXED_HIGH(r, 0xFF0000);
+        CLAMP_FIXED_HIGH(g, 0xFF0000);
+        CLAMP_FIXED_HIGH(b, 0xFF0000);
+        CLAMP_FIXED_LOW(r);
+        CLAMP_FIXED_LOW(g);
+        CLAMP_FIXED_LOW(b);
 
         // Either fade towards the result over `frames`, or set it right away
         if (frames != 0) {
@@ -4065,17 +4065,20 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
     }
 }
 
-#undef OFFSET_BG_RGB
-#undef CLAMP_BG_LOW
-#undef CLAMP_BG_HIGH
-#undef BASE_COLOR_SUM
-
 void vs_main_transformBgColors(
     int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
         _transformBgColors(mode, frames, rOffset, gOffset, bOffset);
     }
+}
+
+static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
+{
+    slot->active = 1;
+    slot->frame = 0;
+    slot->tick = 0;
+    slot->speed = speed;
 }
 
 static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
@@ -4107,10 +4110,7 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
         temp_a3[2] = temp_t2;
     }
     if (frames != 0) {
-        temp_t0->active = 1;
-        temp_t0->frame = 0;
-        temp_t0->tick = 0;
-        temp_t0->speed = frames;
+        _startColorSlotAnim(temp_t0, frames);
         return;
     }
 
@@ -4135,179 +4135,157 @@ static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
     }
 }
 
-static void _transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
+static void _transformColorSlot(
+    int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
     CVECTOR position;
-    short var_t4;
-    int var_a1;
-    int var_a2;
-    int var_t0;
-    int var_v0;
-    int var_v1;
-    _colorSlot_t* t1 = &_clutState.colorSlots[slot];
-    int* t2 = t1->color;
+    short gray;
+    int lum;
+    int r;
+    int b;
+    int g;
+    _colorSlot_t* cs = &_clutState.colorSlots[slot];
+    int* color = cs->color;
 
-    var_t4 = 0;
+    // gray is the target grey amount: modes that average the channels fade it in
+    gray = 0;
+
     switch (mode) {
+
+    // 1: half of the current colour, plus offset
     case 1:
-        var_a1 = (t2[0] / 2) + (r << 16);
-        var_t0 = (t2[1] / 2) + (g << 16);
-        var_a2 = (t2[2] / 2) + (b << 16);
+        OFFSET_BG_RGB(color[0] / 2, color[1] / 2, color[2] / 2);
         break;
+
+    // 2, 3: current colour as a grey level, plus offset
     case 2:
-        var_t4 = 0x4000;
-        var_a1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (r << 0x10);
-        var_t0 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (g << 0x10);
-        var_a2 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 6 + (b << 0x10);
+        gray = 0x4000;
+        OFFSET_BG_RGB(_luminance(color[0], color[1], color[2]) / 6,
+            _luminance(color[0], color[1], color[2]) / 6,
+            _luminance(color[0], color[1], color[2]) / 6);
         break;
+
     case 3:
-        var_t4 = 0x4000;
-        var_v1 = ((t2[0] * 2) + (t2[1] * 3) + t2[2]) / 12;
-        var_a1 = var_v1 + (r << 0x10);
-        var_t0 = var_v1 + (g << 0x10);
-        var_a2 = var_v1 + (b << 0x10);
+        gray = 0x4000;
+        lum = _luminance(color[0], color[1], color[2]) / 12;
+        OFFSET_BG_RGB(lum, lum, lum);
         break;
+
+    // 4, 9: base colour plus offset
     case 4:
     case 9:
-        var_a1 = (t1->baseColor.r + r) << 0x10;
-        var_t0 = (t1->baseColor.g + g) << 0x10;
-        var_a2 = (t1->baseColor.b + b) << 0x10;
+        r = (cs->baseColor.r + rOffset) << 0x10;
+        g = (cs->baseColor.g + gOffset) << 0x10;
+        b = (cs->baseColor.b + bOffset) << 0x10;
         break;
+
+    // 5: half of the base colour, plus offset
     case 5:
-        var_t4 = 0x4000;
-        var_a1 = (t1->baseColor.r << 0xF) + (r << 0x10);
-        var_t0 = (t1->baseColor.g << 0xF) + (g << 0x10);
-        var_a2 = (t1->baseColor.b << 0xF) + (b << 0x10);
+        gray = 0x4000;
+        OFFSET_BG_RGB(
+            cs->baseColor.r << 0xF, cs->baseColor.g << 0xF, cs->baseColor.b << 0xF);
         break;
+
+    // 6, 7: base colour as a grey level, plus offset
     case 6:
-        var_t4 = 0x4000;
+        gray = 0x4000;
         {
-            int v1 = t1->baseColor.g;
-            int a0 = t1->baseColor.b;
-            int v0 = t1->baseColor.r;
-            var_a2 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a2;
-            v0 += a0;
-            var_a1 = v0 / 6 + (r << 0x10);
-            var_t0 = v0 / 6 + (g << 0x10);
-            var_a2 = v0 / 6 + (b << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, cs->baseColor);
+            OFFSET_BG_RGB(sum / 6, sum / 6, sum / 6);
         }
         break;
+
     case 7:
-        var_t4 = 0x4000;
+        gray = 0x4000;
         {
-            int v1 = t1->baseColor.g;
-            int a0 = t1->baseColor.b;
-            int v0 = t1->baseColor.r;
-            var_a2 = v1 << 0x10;
-            a0 <<= 0x10;
-            v0 <<= 0x11;
-            v1 <<= 0x11;
-            v0 += v1 + var_a2;
-            v0 += a0;
-            var_a1 = v0 / 12 + (r << 0x10);
-            var_t0 = v0 / 12 + (g << 0x10);
-            var_a2 = v0 / 12 + (b << 0x10);
+            int sum;
+            BASE_COLOR_SUM(sum, b, cs->baseColor);
+            OFFSET_BG_RGB(sum / 12, sum / 12, sum / 12);
         }
         break;
+
+    // 8, 15: the base colour
     case 8:
     case 15:
-        var_a1 = t1->baseColor.r << 0x10;
-        var_t0 = t1->baseColor.g << 0x10;
-        var_a2 = t1->baseColor.b << 0x10;
+        r = cs->baseColor.r << 0x10;
+        g = cs->baseColor.g << 0x10;
+        b = cs->baseColor.b << 0x10;
         break;
-    case 11:
-        t1->mode = 0;
-        return;
-    default:
-        var_a1 = t2[0] + (r << 0x10);
-        var_t0 = t2[1] + (g << 0x10);
-        var_a2 = t2[2] + (b << 0x10);
-        break;
-    }
-    var_a1 = var_a1 & 0xFFFF0000;
-    var_t0 = var_t0 & 0xFFFF0000;
-    var_a2 = var_a2 & 0xFFFF0000;
 
-    if (var_a1 > 0x800000) {
-        var_a1 = 0x800000;
+    // 11: cancel the transition
+    case 11:
+        cs->mode = 0;
+        return;
+
+    // anything else: the current colour plus offset
+    default:
+        OFFSET_BG_RGB(color[0], color[1], color[2]);
+        break;
     }
-    if (var_t0 > 0x800000) {
-        var_t0 = 0x800000;
-    }
-    if (var_a2 > 0x800000) {
-        var_a2 = 0x800000;
-    }
-    if (var_a1 < 0) {
-        var_a1 = 0;
-    }
-    if (var_t0 < 0) {
-        var_t0 = 0;
-    }
-    if (var_a2 < 0) {
-        var_a2 = 0;
-    }
+
+    // Keep the integer part of each channel and clamp it to 0..128
+    r &= 0xFFFF0000;
+    g &= 0xFFFF0000;
+    b &= 0xFFFF0000;
+
+    CLAMP_FIXED_HIGH(r, 0x800000);
+    CLAMP_FIXED_HIGH(g, 0x800000);
+    CLAMP_FIXED_HIGH(b, 0x800000);
+    CLAMP_FIXED_LOW(r);
+    CLAMP_FIXED_LOW(g);
+    CLAMP_FIXED_LOW(b);
+
     if (frames != 0) {
-        t2[3] = ((int)(var_a1 - (t2[0] & 0xFFFF0000)) / (frames * 2));
-        t2[4] = ((int)(var_t0 - (t2[1] & 0xFFFF0000)) / (frames * 2));
-        t2[5] = ((int)(var_a2 - (t2[2] & 0xFFFF0000)) / (frames * 2));
-        t1->grayStep = ((var_t4 - t1->grayAmount) / (frames * 2));
+        color[3] = _bgStep(r, color[0], frames);
+        color[4] = _bgStep(g, color[1], frames);
+        color[5] = _bgStep(b, color[2], frames);
+        cs->grayStep = ((gray - cs->grayAmount) / (frames * 2));
     } else {
-        t2[0] = var_a1;
-        t2[1] = var_t0;
-        t2[2] = var_a2;
-        t1->grayAmount = var_t4;
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
+        cs->grayAmount = gray;
     }
-    var_v0 = 1;
+
     if (frames != 0) {
-        t1->active = 1;
-        t1->frame = 0;
-        t1->tick = 0;
-        t1->speed = frames;
-        t1->mode = mode;
+
+        _startColorSlotAnim(cs, frames);
+
+        cs->mode = mode;
+
         if (mode == 9) {
-            t1->pulseTarget[0] = r;
-            t1->pulseTarget[1] = g;
-            t1->pulseTarget[2] = b;
+            cs->pulseTarget[0] = rOffset;
+            cs->pulseTarget[1] = gOffset;
+            cs->pulseTarget[2] = bOffset;
         }
     } else {
-        t1->active = 0;
-        var_v0 = t2[0] >> 0x10;
-        if (t2[0] < 0) {
-            var_v1 = t2[0] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.r = var_v0 - 0x40;
-        var_v0 = t2[1] >> 0x10;
-        if (t2[1] < 0) {
-            var_v1 = t2[1] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.g = var_v0 - 0x40;
-        var_v0 = t2[2] >> 0x10;
-        if (t2[2] < 0) {
-            var_v1 = t2[2] + 0xFFFF;
-            var_v0 = var_v1 >> 0x10;
-        }
-        position.b = var_v0 - 0x40;
+        cs->active = 0;
+        position.r = (color[0] / 65536) - 0x40;
+        position.g = (color[1] / 65536) - 0x40;
+        position.b = (color[2] / 65536) - 0x40;
         position.cd = 0;
+
         if (slot != 0) {
             func_800A0768(slot - 1, &position);
         } else {
-            func_8008B430(&position, ((u_short)t1->grayAmount << 0x10) >> 0x12);
+            func_8008B430(&position, cs->grayAmount >> 2);
         }
     }
 }
 
-void vs_main_transformColorSlot(int mode, int frames, int slot, int r, int g, int b)
+void vs_main_transformColorSlot(
+    int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
     if (_clutState.active != 0) {
-        _transformColorSlot(mode, frames, slot, r, g, b);
+        _transformColorSlot(mode, frames, slot, rOffset, gOffset, bOffset);
     }
 }
+
+#undef OFFSET_BG_RGB
+#undef CLAMP_FIXED_LOW
+#undef CLAMP_FIXED_HIGH
+#undef BASE_COLOR_SUM
 
 void vs_main_updateBgColors(void)
 {

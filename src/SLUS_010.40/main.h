@@ -577,7 +577,7 @@ int vs_main_freeMusic(int arg0);
 void vs_main_resetSound(void);
 void vs_main_pushMusicState(void);
 int vs_main_getMusicPosition(void);
-void vs_main_setMusicJumpThreshold(int);
+void vs_main_setMusicJumpThreshold(int threshold);
 int vs_main_stopMusicSlot(int);
 int vs_main_queueMusicSlot(int);
 int vs_main_playMusicSlotFadeIn(int, int, u_int);

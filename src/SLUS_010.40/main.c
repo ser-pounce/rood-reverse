@@ -870,8 +870,8 @@ DRAWENV vs_main_drawEnv[2];
 DISPENV vs_main_dispEnv[2];
 static UNUSED int _10[4];
 
-static void _initScreen(
-    int w, int h, UNUSED int arg2, UNUSED int arg3, UNUSED int arg4, UNUSED int arg5)
+static void _initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int unused3,
+    UNUSED int unused4, UNUSED int unused5)
 {
     SetDefDispEnv(vs_main_dispEnv, 0, 0, w, h - 16);
 

@@ -4721,17 +4721,17 @@ static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffs
 void vs_main_loadBgColors(void)
 {
     int i;
-    _fade_t* bgColors = _clutState.bgColors;
-    int* var_v1 = func_8008EB24();
+    _fade_t* bg = _clutState.bgColors;
+    int* position = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
-        _clutState.bgBaseColors[i].r = var_v1[i];
-        _clutState.bgBaseColors[i].g = (var_v1[i] & 0xFF00) / 256;
-        _clutState.bgBaseColors[i].b = (var_v1[i] & 0xFF0000) / 65536;
+        _clutState.bgBaseColors[i].r = position[i];
+        _clutState.bgBaseColors[i].g = (position[i] & 0xFF00) / 256;
+        _clutState.bgBaseColors[i].b = (position[i] & 0xFF0000) / 65536;
 
-        bgColors[i].current.r = (var_v1[i] & 0xFF) << 16;
-        bgColors[i].current.g = (var_v1[i] & 0xFF00) << 8;
-        bgColors[i].current.b = var_v1[i] & 0xFF0000;
+        bg[i].current.r = (position[i] & 0xFF) << 16;
+        bg[i].current.g = (position[i] & 0xFF00) << 8;
+        bg[i].current.b = position[i] & 0xFF0000;
     }
 }
 

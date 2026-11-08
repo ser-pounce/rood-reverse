@@ -600,7 +600,7 @@ void vs_main_evictBankSfx(int group, int* bank, int index);
 void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration);
 void vs_main_startCutsceneStreamDefault(int slot);
 void vs_main_setMonoSound(int);
-int vs_main_setCutsceneStreamSlot3(void*);
+int vs_main_setCutsceneStreamSlot3(void* stream);
 int vs_main_clearCutsceneStreamSlot3(void);
 // Parameters left undeclared due to misuse in unused func_8007B378
 void vs_main_loadClutTransition(

@@ -3417,10 +3417,10 @@ static UNUSED int _freeCutsceneStream(int slot)
     return 1;
 }
 
-int vs_main_setCutsceneStreamSlot3(void* arg0)
+int vs_main_setCutsceneStreamSlot3(void* stream)
 {
     if (vs_main_soundData.unk64[2] == 0) {
-        vs_main_soundData.unk64[2] = arg0;
+        vs_main_soundData.unk64[2] = stream;
         return 3;
     }
 

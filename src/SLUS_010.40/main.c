@@ -1408,17 +1408,18 @@ void vs_main_padConnect(int portID, char padBuf[34])
         port->connected = 0;
     }
 
-    if (port->connected == 0) {
+    if (port->connected != 0) {
+        return;
+    }
 
-        PadSetAct(portID, port->actData, sizeof port->actData);
+    PadSetAct(portID, port->actData, sizeof port->actData);
 
-        if ((state == PadStateFindCTP1)
-            || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
+    if ((state == PadStateFindCTP1)
+        || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
 
-            _padResetDefaults(portID, padBuf);
+        _padResetDefaults(portID, padBuf);
 
-            port->connected = 1;
-        }
+        port->connected = 1;
     }
 }
 
@@ -2261,49 +2262,50 @@ static void _diskUpdate(void)
         break;
     }
 
-    if (_disk.bufferMode != cdBufferModeNone) {
+    if (_disk.bufferMode == cdBufferModeNone) {
+        return;
+    }
 
-        for (i = 0; i < 16; ++i) {
+    for (i = 0; i < 16; ++i) {
 
-            if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
-                return;
+        if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
+            return;
+        }
+
+        if (_disk.bufferMode == cdBufferModeBuffered) {
+
+            vs_main_memcpy(
+                ((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
+                _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
+
+            ++_disk.ringBufIndex;
+
+            if (_disk.ringBufIndex >= 16) {
+                _disk.ringBufIndex = 0;
             }
 
-            if (_disk.bufferMode == cdBufferModeBuffered) {
+            --_disk.sectorsPending;
+            ++_disk.sectorBufIndex;
 
-                vs_main_memcpy(
-                    ((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
-                    _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
+            if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
+                _disk.state = diskIdle;
 
-                ++_disk.ringBufIndex;
+                vs_main_freeHeapR(_cdReadBuffer);
 
-                if (_disk.ringBufIndex >= 16) {
-                    _disk.ringBufIndex = 0;
-                }
+                _cdReadBuffer = NULL;
+            }
+        } else if (_disk.bufferMode == cdBufferModeManual) {
 
-                --_disk.sectorsPending;
-                ++_disk.sectorBufIndex;
+            ++_disk.sectorBufIndex;
 
-                if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
-                    _disk.state = diskIdle;
+            if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
+                && (IsSpuTransferring() == 0)) {
 
-                    vs_main_freeHeapR(_cdReadBuffer);
+                _disk.state = diskIdle;
 
-                    _cdReadBuffer = NULL;
-                }
-            } else if (_disk.bufferMode == cdBufferModeManual) {
+                vs_main_freeHeapR(_cdReadBuffer);
 
-                ++_disk.sectorBufIndex;
-
-                if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
-                    && (IsSpuTransferring() == 0)) {
-
-                    _disk.state = diskIdle;
-
-                    vs_main_freeHeapR(_cdReadBuffer);
-
-                    _cdReadBuffer = NULL;
-                }
+                _cdReadBuffer = NULL;
             }
         }
     }
@@ -4396,52 +4398,52 @@ void vs_main_updateColorSlots(void)
         _colorSlot_t* slot = &slots[i];
         _fade_t* fade = &slot->fade;
 
-        if (slot->active != 0) {
+        if (slot->active == 0) {
+            continue;
+        }
 
-            // Advance the colour by its step
-            fade->current.r += fade->step.r;
-            fade->current.g += fade->step.g;
-            fade->current.b += fade->step.b;
+        // Advance the colour by its step
+        fade->current.r += fade->step.r;
+        fade->current.g += fade->step.g;
+        fade->current.b += fade->step.b;
 
-            SLOT_POSITION(position, fade);
+        SLOT_POSITION(position, fade);
 
-            if (i != 0) {
-                func_800A0768(i - 1, &position);
-            } else {
-                slots[0].grayAmount += slots[0].grayStep;
-                func_8008B430(&position, slots[0].grayAmount >> 2);
-            }
+        if (i != 0) {
+            func_800A0768(i - 1, &position);
+        } else {
+            slots[0].grayAmount += slots[0].grayStep;
+            func_8008B430(&position, slots[0].grayAmount >> 2);
+        }
 
-            ++slot->frame;
+        ++slot->frame;
 
-            if (slot->frame >= (slot->speed * 2)) {
+        if (slot->frame < (slot->speed * 2)) {
+            continue;
+        }
 
-                // Modes 9 and 10 pulse (half the target, then the full target); 14 fades
-                // to 15
-                if (slot->mode == 9) {
+        // Modes 9 and 10 pulse (half the target, then the full target); 14 fades to 15
+        if (slot->mode == 9) {
 
-                    vs_main_transformColorSlot(4, slot->speed, i,
-                        slot->pulseTarget[0] / 2, slot->pulseTarget[1] / 2,
-                        slot->pulseTarget[2] / 2);
+            vs_main_transformColorSlot(4, slot->speed, i, slot->pulseTarget[0] / 2,
+                slot->pulseTarget[1] / 2, slot->pulseTarget[2] / 2);
 
-                    slot->mode = 10;
+            slot->mode = 10;
 
-                } else if (slot->mode == 10) {
+        } else if (slot->mode == 10) {
 
-                    _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
-                        slot->pulseTarget[1], slot->pulseTarget[2]);
+            _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
+                slot->pulseTarget[1], slot->pulseTarget[2]);
 
-                    slot->mode = 9;
+            slot->mode = 9;
 
-                } else if (slot->mode == 14) {
+        } else if (slot->mode == 14) {
 
-                    _transformColorSlot(15, slot->speed, i, 0, 0, 0);
-                    slot->mode = 15;
+            _transformColorSlot(15, slot->speed, i, 0, 0, 0);
+            slot->mode = 15;
 
-                } else {
-                    slot->active = 0;
-                }
-            }
+        } else {
+            slot->active = 0;
         }
     }
 }
@@ -4625,25 +4627,26 @@ void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int c
         return;
     }
 
-    if (_clutState.slots[slot].locked == 0) {
-
-        _clutState.slots[slot].animState.active = 0;
-
-        for (i = 0; i < count; ++i) {
-
-            px = img[i];
-            dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
-            _clutBuffer[slot][colorOffset + i] = px;
-            _clutState.slots[slot].clutBase[colorOffset + i] = px;
-
-            dst->r = _colorR(px);
-            dst->g = _colorG(px);
-            dst->b = _colorB(px);
-            dst->a = ((px & 0x8000) >> 15);
-        }
-
-        _clutState.uploadPending = 1;
+    if (_clutState.slots[slot].locked != 0) {
+        return;
     }
+
+    _clutState.slots[slot].animState.active = 0;
+
+    for (i = 0; i < count; ++i) {
+
+        px = img[i];
+        dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
+        _clutBuffer[slot][colorOffset + i] = px;
+        _clutState.slots[slot].clutBase[colorOffset + i] = px;
+
+        dst->r = _colorR(px);
+        dst->g = _colorG(px);
+        dst->b = _colorB(px);
+        dst->a = ((px & 0x8000) >> 15);
+    }
+
+    _clutState.uploadPending = 1;
 }
 
 static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,

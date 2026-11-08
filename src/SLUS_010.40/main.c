@@ -3026,19 +3026,19 @@ void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
     }
 }
 
-void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
-            Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
+            Sound_FadeSfxPitchMod((u_long)sfx, 0, duration, pitch);
         } else {
-            Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
+            Sound_FadeSfxPitchMod(id, 0, duration, pitch);
         }
 
     } else {
-        Sound_FadeSfxPitchMod(0, arg0, arg3, arg2);
+        Sound_FadeSfxPitchMod(0, group, duration, pitch);
     }
 }
 

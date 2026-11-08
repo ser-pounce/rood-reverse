@@ -2463,19 +2463,19 @@ void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
 void vs_main_setMusicJumpThreshold(int threshold) { Sound_SetMusicJumpThreshold(threshold); }
 
-int vs_main_stopMusicSlot(int id)
+int vs_main_stopMusicSlot(int slot)
 {
     int i;
 
-    if (id != 0) {
-        if (vs_main_soundData.musicHandleBySlot[id - 1] != 0xFFFF) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicHandleBySlot[slot - 1] != 0xFFFF) {
 
-            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[id - 1]);
+            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[slot - 1]);
 
-            vs_main_soundData.musicHandleBySlot[id - 1] = 0xFFFF;
+            vs_main_soundData.musicHandleBySlot[slot - 1] = 0xFFFF;
         }
 
-        if (vs_main_soundData.currentMusicSlot == id) {
+        if (vs_main_soundData.currentMusicSlot == slot) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
             vs_main_soundData.currentMusicHandle = 0xFFFF;
@@ -2497,23 +2497,23 @@ int vs_main_stopMusicSlot(int id)
     return 1;
 }
 
-int vs_main_queueMusicSlot(int id)
+int vs_main_queueMusicSlot(int slot)
 {
     u_int handle;
 
-    if (id != 0) {
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
             handle = Sound_QueueMusic(vs_main_soundData.currentMusicData);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -3181,10 +3181,10 @@ static UNUSED int _loadAndFreeSfx(int id)
     return slot;
 }
 
-int vs_main_setCurrentSfx(int id)
+int vs_main_setCurrentSfx(int slot)
 {
-    if ((id - 1u < 3) && vs_main_soundData.sfxData[id - 1] != NULL) {
-        vs_main_soundData.currentSfxId = id;
+    if ((slot - 1u < 3) && vs_main_soundData.sfxData[slot - 1] != NULL) {
+        vs_main_soundData.currentSfxId = slot;
 
         return 1;
     }
@@ -3192,21 +3192,21 @@ int vs_main_setCurrentSfx(int id)
     return 0;
 }
 
-int vs_main_freeSfx(u_int id)
+int vs_main_freeSfx(u_int slot)
 {
-    if ((id - 1) < 3) {
-        if (vs_main_soundData.sfxData[id - 1] != NULL) {
+    if ((slot - 1) < 3) {
+        if (vs_main_soundData.sfxData[slot - 1] != NULL) {
 
-            if (vs_main_soundData.currentSfxId == id) {
+            if (vs_main_soundData.currentSfxId == slot) {
                 vs_main_soundData.currentSfxId = 0;
             }
 
             Sound_EvictSfx(-2, 0);
             Sound_EvictSfx(0, 0xFF000);
-            vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
+            vs_main_freeHeapR(vs_main_soundData.sfxData[slot - 1]);
 
-            vs_main_soundData.sfxIds[id - 1] = 0;
-            vs_main_soundData.sfxData[id - 1] = 0;
+            vs_main_soundData.sfxIds[slot - 1] = 0;
+            vs_main_soundData.sfxData[slot - 1] = 0;
 
             return 1;
         }

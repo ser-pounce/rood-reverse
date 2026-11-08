@@ -2978,12 +2978,14 @@ void vs_main_panSfx(int group, int id, SVECTOR* position)
     _do_panSfx(group, id, screenXY, depth);
 }
 
-static void* _resolveSfxData(int arg0, int arg1)
+// Returns the address of effect `id` inside its bank for the bank groups, or NULL when the
+// group plays effects by id
+static void* _resolveSfxData(int group, int id)
 {
     void* sfx;
     int* bank;
 
-    switch (arg0) {
+    switch (group) {
     case 0x1:
     case 0x7E:
     case 0xFE:
@@ -2995,7 +2997,7 @@ static void* _resolveSfxData(int arg0, int arg1)
     case 0xFF000:
     case 0xF00000:
         sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        sfx += bank[arg1 + 1];
+        sfx += bank[id + 1];
 
         break;
 

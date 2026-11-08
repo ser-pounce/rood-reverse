@@ -3679,6 +3679,16 @@ static inline int _colorInfoLuminance(struct ColorInfo* color)
     return color->r * 2 + color->g * 3 + color->b;
 }
 
+// Clamp a channel to 0..31; both tests look at the low 16 bits only
+#define CLAMP_HIGH(c)      \
+    if ((short)(c) > 31) { \
+        (c) = 31;          \
+    }
+#define CLAMP_LOW(c)        \
+    if (((c) << 16) <= 0) { \
+        (c) = 0;            \
+    }
+
 // r/g/b are the locals of the loop below: each channel gets its own offset added
 #define OFFSET_RGB3(rv, gv, bv)                                                        \
     r = rOffset + (rv);                                                                \
@@ -3766,29 +3776,12 @@ static void _transformClutSlot(
                 break;
             }
 
-            if ((short)r > 31) {
-                r = 31;
-            }
-
-            if ((short)g > 31) {
-                g = 31;
-            }
-
-            if ((short)b > 31) {
-                b = 31;
-            }
-
-            if ((r << 16) <= 0) {
-                r = 0;
-            }
-
-            if ((g << 16) <= 0) {
-                g = 0;
-            }
-
-            if ((b << 16) <= 0) {
-                b = 0;
-            }
+            CLAMP_HIGH(r);
+            CLAMP_HIGH(g);
+            CLAMP_HIGH(b);
+            CLAMP_LOW(r);
+            CLAMP_LOW(g);
+            CLAMP_LOW(b);
 
             if (((b | (r | g)) << 16) == 0) {
                 b = 1;
@@ -3830,6 +3823,8 @@ static void _transformClutSlot(
     }
 }
 
+#undef CLAMP_LOW
+#undef CLAMP_HIGH
 #undef OFFSET_RGB3
 #undef OFFSET_RGB
 

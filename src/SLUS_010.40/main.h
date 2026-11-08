@@ -628,7 +628,7 @@ int vs_main_streamXa(int sector, int cdVolume);
 int vs_main_checkStreamXaEnd(void);
 int vs_main_fadeMusicVolume(int slot, int volume, int duration);
 int vs_main_getCurrentMusicId(void);
-void vs_main_evictSfx(int arg0, int arg1);
+void vs_main_evictSfx(int group, int id);
 void vs_main_wait(void);
 void vs_main_initHeap(void* heap, u_int size);
 void vs_main_resetGame(void);

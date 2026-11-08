@@ -3058,19 +3058,19 @@ void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
     }
 }
 
-void vs_main_evictSfx(int arg0, int arg1)
+void vs_main_evictSfx(int group, int id)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_EvictSfx((u_long)sfx, 0);
         } else {
-            Sound_EvictSfx(arg1, 0);
+            Sound_EvictSfx(id, 0);
         }
 
     } else {
-        Sound_EvictSfx(0, arg0);
+        Sound_EvictSfx(0, group);
     }
 }
 

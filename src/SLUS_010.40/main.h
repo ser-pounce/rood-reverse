@@ -626,7 +626,7 @@ int vs_main_diskLoadFile(int sector, int bytes, void* vram);
 void vs_main_resetPadAct(void);
 int vs_main_streamXa(int sector, int cdVolume);
 int vs_main_checkStreamXaEnd(void);
-int vs_main_fadeMusicVolume(int id, int arg1, int arg2);
+int vs_main_fadeMusicVolume(int slot, int volume, int duration);
 int vs_main_getCurrentMusicId(void);
 void vs_main_evictSfx(int arg0, int arg1);
 void vs_main_wait(void);

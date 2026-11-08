@@ -2749,10 +2749,10 @@ int vs_main_getMusicSlotVolume(int slot)
 
 int vs_main_getMusicSlotVolume2(int slot) { return vs_main_getMusicSlotVolume(slot); }
 
-int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
+int vs_main_fadeMusicVolume(int slot, int volume, int duration)
 {
-    if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
+    if (vs_main_soundData.currentMusicSlot == slot) {
+        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, duration, volume);
         return 1;
     }
 

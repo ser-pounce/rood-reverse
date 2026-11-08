@@ -4306,23 +4306,33 @@ void vs_main_updateBgColors(void)
     }
 
     UPLOAD_BG_COLORS(t1, position, i);
-    _clutState.bgAnimFrame += 1;
-    if (_clutState.bgAnimFrame >= (_clutState.bgAnimSpeed * 2)) {
-        if (_clutState.bgTransitionMode == 9) {
-            _transformBgColors(4, _clutState.bgAnimSpeed,
-                _clutState.bgTransitionTargetR / 2, _clutState.bgTransitionTargetG / 2,
-                _clutState.bgTransitionTargetB / 2);
-            _clutState.bgTransitionMode = 10;
-            return;
-        }
-        if (_clutState.bgTransitionMode == 10) {
-            _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
-                _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
-            _clutState.bgTransitionMode = 9;
-            return;
-        }
-        _clutState.bgAnimActive = 0;
+    ++_clutState.bgAnimFrame;
+
+    if (_clutState.bgAnimFrame < (_clutState.bgAnimSpeed * 2)) {
+        return;
     }
+
+    if (_clutState.bgTransitionMode == 9) {
+
+        _transformBgColors(4, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR / 2,
+            _clutState.bgTransitionTargetG / 2, _clutState.bgTransitionTargetB / 2);
+
+        _clutState.bgTransitionMode = 10;
+
+        return;
+    }
+
+    if (_clutState.bgTransitionMode == 10) {
+
+        _transformBgColors(9, _clutState.bgAnimSpeed, _clutState.bgTransitionTargetR,
+            _clutState.bgTransitionTargetG, _clutState.bgTransitionTargetB);
+
+        _clutState.bgTransitionMode = 9;
+
+        return;
+    }
+
+    _clutState.bgAnimActive = 0;
 }
 
 #undef UPLOAD_BG_COLORS
@@ -4335,26 +4345,35 @@ void vs_main_updateColorSlots(void)
     _colorSlot_t* p = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
+
         int* a2 = p[i].color;
+        
         if (p[i].active != 0) {
+
             a2[0] += a2[3];
             a2[1] += a2[4];
             a2[2] += a2[5];
 
             var_v0 = a2[0];
+
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
+            
             sp18.r = (var_v0 >> 16) - 0x40;
             var_v0 = a2[1];
+
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
+
             sp18.g = (var_v0 >> 16) - 0x40;
             var_v0 = a2[2];
+
             if (var_v0 < 0) {
                 var_v0 += 0xFFFF;
             }
+
             sp18.b = (var_v0 >> 16) - 0x40;
             sp18.cd = 0;
 
@@ -4364,16 +4383,24 @@ void vs_main_updateColorSlots(void)
                 p[0].grayAmount += p[0].grayStep;
                 func_8008B430(&sp18, p[0].grayAmount >> 2);
             }
+
             ++p[i].frame;
+
             if (p[i].frame >= (p[i].speed * 2)) {
                 if (p[i].mode == 9) {
+
                     vs_main_transformColorSlot(4, p[i].speed, i, p[i].pulseTarget[0] / 2,
                         p[i].pulseTarget[1] / 2, p[i].pulseTarget[2] / 2);
+
                     p[i].mode = 10;
+
                 } else if (p[i].mode == 10) {
+
                     _transformColorSlot(9, p[i].speed, i, p[i].pulseTarget[0],
                         p[i].pulseTarget[1], p[i].pulseTarget[2]);
+
                     p[i].mode = 9;
+                    
                 } else if (p[i].mode == 14) {
                     _transformColorSlot(15, p[i].speed, i, 0, 0, 0);
                     p[i].mode = 15;

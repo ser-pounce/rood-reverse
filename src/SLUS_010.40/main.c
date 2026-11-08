@@ -3262,55 +3262,55 @@ void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
     vs_main_playBankSfx(arg0, arg1, arg2, 0x80, 0x7F);
 }
 
-static void _do_panBankSfx(int arg0, u_int arg1[], int arg2, int arg3, int arg4)
+static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)
 {
-    int temp_t0;
-    int var_v0;
-    int var_v1;
+    int volume;
+    int tmp;
+    int sxy;
 
-    var_v1 = arg3;
-    var_v0 = arg3;
-    arg3 = var_v0 >> 0x10;
+    sxy = pan;
+    tmp = pan;
+    pan = tmp >> 0x10;
 
-    if (var_v1 < 0) {
-        var_v0 = var_v1 + 0xFFFF;
+    if (sxy < 0) {
+        tmp = sxy + 0xFFFF;
     }
 
-    arg3 = var_v0 >> 0x10;
-    var_v0 = arg3 << 0x10;
-    arg3 = var_v1 - var_v0;
+    pan = tmp >> 0x10;
+    tmp = pan << 0x10;
+    pan = sxy - tmp;
 
-    if (arg3 < 0) {
-        arg3 = 0;
+    if (pan < 0) {
+        pan = 0;
     }
 
-    if (arg3 >= 0x141) {
-        arg3 = 0x140;
+    if (pan > 0x140) {
+        pan = 0x140;
     }
 
-    var_v0 = arg3 + ((u_int)arg3 >> 0x1F);
-    var_v0 >>= 1;
-    arg3 = var_v0 + 0x30;
-    temp_t0 = arg4;
+    tmp = pan + ((u_int)pan >> 0x1F);
+    tmp >>= 1;
+    pan = tmp + 0x30;
+    volume = depth;
 
-    if (temp_t0 < 0) {
-        temp_t0 = 0;
+    if (volume < 0) {
+        volume = 0;
     }
 
-    if (temp_t0 >= 0x401) {
-        temp_t0 = 0x400;
+    if (volume > 0x400) {
+        volume = 0x400;
     }
 
-    var_v1 = temp_t0;
+    sxy = volume;
 
-    if (temp_t0 < 0) {
-        var_v1 += 7;
+    if (volume < 0) {
+        sxy += 7;
     }
 
-    temp_t0 = 0x7F - (var_v1 >> 3);
+    volume = 0x7F - (sxy >> 3);
 
-    if (temp_t0 > 0) {
-        vs_main_playBankSfx(arg0, arg1, arg2, arg3, temp_t0);
+    if (volume > 0) {
+        vs_main_playBankSfx(group, bank, index, pan, volume);
     }
 }
 

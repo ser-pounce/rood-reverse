@@ -123,7 +123,6 @@ typedef struct {
     char tick;
     char speed;
     char mode;
-    char unk5;
     short pulseTarget[3];
     short grayAmount;
     short grayStep;
@@ -132,7 +131,7 @@ typedef struct {
 } _colorSlot_t;
 
 typedef struct {
-    char unk4;
+    UNUSED char _;
     char locked;
     struct clutAnimState_t {
         u_char active;
@@ -165,14 +164,13 @@ typedef struct {
     u_char bgAnimTick;
     u_char bgAnimSpeed;
     u_char bgTransitionMode;
-    u_char unk7E95;
     short bgTransitionTargetR;
     short bgTransitionTargetG;
     short bgTransitionTargetB;
     _fade_t bgColors[5];
     CVECTOR bgBaseColors[5];
     _colorSlot_t colorSlots[17];
-    u_char unk8214[0x54];
+    UNUSED u_char _[0x54];
 } _clutState_t;
 
 typedef struct vs_main_HeapHeader {
@@ -2408,7 +2406,7 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
 {
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
-    slot->unkC = 0;
+    slot->unused = 0;
     slot->priority = _cdQueueCount.queued++;
 }
 
@@ -2425,7 +2423,7 @@ void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
 
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
-    slot->unkC = 0;
+    slot->unused = 0;
     slot->priority = 0;
     ++_cdQueueCount.queued;
 }
@@ -3612,7 +3610,7 @@ void vs_main_resetSound(void)
 
     for (i = 0; i < 3; ++i) {
         vs_main_soundData.unk64[i] = NULL;
-        vs_main_soundData.unk70[i] = NULL;
+        vs_main_soundData.unused[i] = NULL;
     }
 
     vs_main_soundData.soundFileId = 0;

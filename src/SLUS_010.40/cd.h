@@ -19,7 +19,7 @@ typedef struct {
     short state;
     short priority;
     vs_main_CdFile cdFile;
-    int unkC;
+    UNUSED int unused;
     void* vram;
 } vs_main_CdQueueSlot;
 

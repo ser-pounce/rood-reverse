@@ -3421,35 +3421,29 @@ int vs_main_clearCutsceneStreamSlot3(void)
 static void _loadSoundFile(int file)
 {
     vs_main_CdFile cdFile;
-    int new_var;
-    int temp_v1;
-    int var_a0;
+    int loadedBanks = Sound_GetLoadedMusicBankIds();
 
-    temp_v1 = Sound_GetLoadedMusicBankIds();
-    var_a0 = temp_v1 >> 0x10;
-    new_var = temp_v1;
-
-    if (temp_v1 < 0) {
-        var_a0 = (temp_v1 + 0xFFFF) >> 0x10;
-    }
-    if (((new_var - (var_a0 << 0x10)) == file) || (var_a0 == file)) {
+    if (loadedBanks % 0x10000 == file || loadedBanks / 0x10000 == file) {
         return;
     }
+
     cdFile.lba = _soundLBAs[file];
     cdFile.size = _soundFileSizes[file];
 
-    if (vs_main_soundData.soundQueueSlot) {
-        if ((long)vs_main_soundData.soundQueueSlot != -1) {
-            vs_main_nop9(0x93 & 0xFFu, 0);
-        }
+    if (vs_main_soundData.soundQueueSlot != NULL
+        && vs_main_soundData.soundQueueSlot != (vs_main_CdQueueSlot*)-1) {
+        vs_main_nop9(0x93, 0);
     }
+
     vs_main_soundData.soundQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-    if (vs_main_soundData.soundData != 0) {
+
+    if (vs_main_soundData.soundData != NULL) {
         vs_main_nop9(0x94, 0);
     }
-    new_var = 1;
+
     vs_main_soundData.soundData = vs_main_allocHeapR(cdFile.size);
     vs_main_soundData.soundFileId = file;
+
     vs_main_cdEnqueue(vs_main_soundData.soundQueueSlot, vs_main_soundData.soundData);
 }
 

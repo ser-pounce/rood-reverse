@@ -594,7 +594,7 @@ void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3);
 void vs_main_fadeSfxPan(int, int, int, char);
 int vs_main_setSfxSlot3Data(void*);
 int vs_main_clearSfxSlot3(void);
-void vs_main_playBankSfx(int, u_int[], u_int, int, int);
+void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume);
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2);
 void vs_main_evictBankSfx(int arg0, int* arg1, int arg2);
 void vs_main_fadeBankSfxVolume(int arg0, int* arg1, int arg2, int arg3, int arg4);

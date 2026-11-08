@@ -3007,7 +3007,7 @@ void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
         void* sfx = _resolveSfxData(arg0, arg1);
-        
+
         if (sfx != NULL) {
             Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
         } else {
@@ -3023,7 +3023,7 @@ void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
 {
     if (arg1 != 0) {
         void* sfx = _resolveSfxData(arg0, arg1);
-        
+
         if (sfx != NULL) {
             Sound_FadeSfxPanMod((u_long)sfx, 0, arg3, arg2);
         } else {
@@ -3059,7 +3059,7 @@ int vs_main_loadSfxSlot(int id, u_int slot)
 
     if (slot - 1 < 3) {
         if (vs_main_soundData.sfxData[slot - 1] == NULL) {
-            
+
             u_int index = slot - 1;
             cdFile.lba = _seLBAs[id];
             cdFile.size = _seFileSizes[id];
@@ -3114,16 +3114,16 @@ int vs_main_freeSfxQueueSlot(u_int slot)
 
                 return 0;
             }
-            
+
             if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
                 == vs_main_CdQueueStateError) {
-                    
+
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
 
                 return -1;
             }
-            
+
             return 1;
         }
     }
@@ -3139,7 +3139,7 @@ static int _freeSfxSlots(void)
     for (i = 0; i < 3; ++i) {
         ret |= vs_main_freeSfxQueueSlot(i + 1);
     }
-    
+
     return ret;
 }
 
@@ -3154,7 +3154,7 @@ static UNUSED int _loadAndFreeSfx(int id)
             vs_main_gametimeUpdate(0);
         }
     }
-    
+
     return slot;
 }
 
@@ -3207,56 +3207,54 @@ int vs_main_clearSfxSlot3(void)
     Sound_EvictSfx(0, 0xF00000);
 
     vs_main_soundData.sfxData[2] = NULL;
-    
+
     return 1;
 }
 
-void vs_main_playBankSfx(int arg0, u_int arg1[], u_int arg2, int arg3, int arg4)
+void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume)
 {
-    int var_s0;
-    void* temp_s1;
+    int voice;
+    void* sfx = bank;
 
-    temp_s1 = arg1;
+    if (index >= bank[0]) {
+        return;
+    }
 
-    if (arg2 < arg1[0]) {
-        
-        temp_s1 = (char*)arg1 + (arg1 + arg2)[1];
-        var_s0 = 0;
+    sfx += bank[index + 1];
+    voice = 0;
 
-        if (arg0 == 0x180) {
+    if (group == 0x180) {
 
-            var_s0 = _nextVoicePool2;
-            _nextVoicePool2 *= 2;
+        voice = _nextVoicePool2;
+        _nextVoicePool2 *= 2;
 
-            if (!(_nextVoicePool2 & 0x180)) {
-                _nextVoicePool2 = 0x80;
-            }
-
-        } else if (arg0 == 0x200) {
-
-            var_s0 = _nextVoicePool3;
-            _nextVoicePool3 *= 2;
-
-            if (!(_nextVoicePool3 & 0x200)) {
-                _nextVoicePool3 = arg0;
-            }
-
-        } else if (arg0 == 0xF00000) {
-
-            var_s0 = _nextVoicePool5;
-            _nextVoicePool5 *= 2;
-
-            if (!(_nextVoicePool5 & arg0)) {
-                _nextVoicePool5 = 0x100000;
-            }
-
-        } else if (arg0 == 0x7E) {
-        } else {
-            vs_main_nop10(0x95, 0);
+        if (!(_nextVoicePool2 & 0x180)) {
+            _nextVoicePool2 = 0x80;
         }
 
-        _playSfxFromPointer(temp_s1, var_s0, arg3, arg4);
+    } else if (group == 0x200) {
+
+        voice = _nextVoicePool3;
+        _nextVoicePool3 *= 2;
+
+        if (!(_nextVoicePool3 & 0x200)) {
+            _nextVoicePool3 = group;
+        }
+
+    } else if (group == 0xF00000) {
+
+        voice = _nextVoicePool5;
+        _nextVoicePool5 *= 2;
+
+        if (!(_nextVoicePool5 & group)) {
+            _nextVoicePool5 = 0x100000;
+        }
+
+    } else if (group != 0x7E) {
+        vs_main_nop10(0x95, 0);
     }
+
+    _playSfxFromPointer(sfx, voice, pan, volume);
 }
 
 void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)

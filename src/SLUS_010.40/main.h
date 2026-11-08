@@ -550,7 +550,7 @@ void vs_main_exec(void);
 void vs_main_enableReset(int);
 void vs_main_setCharacterRestorePending(void);
 void vs_main_captureSaveState(void);
-int vs_main_setVibrationBank(char* arg0, u_int arg1, int arg2);
+int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id);
 int vs_main_stopVibration(u_int arg0, int arg1);
 void vs_main_padDisconnectAll(void);
 int vs_main_updatePadState(int, char[34]);

@@ -3669,6 +3669,11 @@ static inline int _weightedLuminance(short g, short b, short r)
     return r * 2 + (g >> 5) * 3 + (b >> 10);
 }
 
+static inline int _colorLuminance(short color)
+{
+    return _weightedLuminance(_maskG(color), _maskB(color), _maskR(color));
+}
+
 static void _transformClutSlot(
     int mode, int duration, int slot, int rOffset, short gOffset, short bOffset)
 {
@@ -3722,33 +3727,15 @@ static void _transformClutSlot(
                 break;
 
             case 6:
-                r = rOffset
-                  + _weightedLuminance(
-                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
-                        / 6;
-                g = gOffsetU
-                  + _weightedLuminance(
-                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
-                        / 6;
-                b = bOffsetU
-                  + _weightedLuminance(
-                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
-                        / 6;
+                r = rOffset + _colorLuminance(baseEntry) / 6;
+                g = gOffsetU + _colorLuminance(baseEntry) / 6;
+                b = bOffsetU + _colorLuminance(baseEntry) / 6;
                 break;
 
             case 7:
-                r = rOffset
-                  + _weightedLuminance(
-                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
-                        / 12;
-                g = gOffsetU
-                  + _weightedLuminance(
-                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
-                        / 12;
-                b = bOffsetU
-                  + _weightedLuminance(
-                        _maskG(baseEntry), _maskB(baseEntry), _maskR(baseEntry))
-                        / 12;
+                r = rOffset + _colorLuminance(baseEntry) / 12;
+                g = gOffsetU + _colorLuminance(baseEntry) / 12;
+                b = bOffsetU + _colorLuminance(baseEntry) / 12;
                 break;
 
             case 8:

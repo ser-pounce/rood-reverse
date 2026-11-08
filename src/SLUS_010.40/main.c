@@ -3378,18 +3378,18 @@ void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int 
 
 static UNUSED void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
-static int _startCutsceneStream(int arg0, int arg1, int arg2)
+static int _startCutsceneStream(int slot, int pan, int volume)
 {
-    if ((arg0 - 1u) >= 3) {
+    if ((slot - 1u) >= 3) {
         return 0;
     }
 
-    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+    if (vs_main_soundData.unk64[slot - 1] == 0) {
         return 0;
     }
 
-    Sound_FadeOutCutscene(0, arg2);
-    Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
+    Sound_FadeOutCutscene(0, volume);
+    Sound_StartCutsceneStream(vs_main_soundData.unk64[slot - 1], pan, 1);
 
     return 1;
 }

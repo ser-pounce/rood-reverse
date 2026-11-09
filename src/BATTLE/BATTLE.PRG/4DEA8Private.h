@@ -2,6 +2,13 @@
 #include "common.h"
 #include "4DEA8.h"
 
+enum vs_battle_ScriptResult {
+    vs_battle_scriptNext = 0, // advance to the next opcode and keep running
+    vs_battle_scriptRepeat = 1, // not finished: stop and run this opcode again next frame
+    vs_battle_scriptEnd = 3, // terminate this script
+    vs_battle_scriptYield = 4, // advance past this opcode, resume next frame
+};
+
 void func_800BBDDC(void);
 VS_HIDDEN(func_800BBDDC);
 

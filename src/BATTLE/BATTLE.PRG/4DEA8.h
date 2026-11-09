@@ -3,15 +3,15 @@
 #include <stddef.h>
 #include <libgte.h>
 
-int vs_battle_invalidOpcode(u_char*, short);
+int vs_battle_script_invalidOpcode(u_char*, short);
 int vs_battle_script_0A_waitEvtLoad(u_char*, short);
 int vs_battle_script_0C(u_char*, short);
 int vs_battle_script_0D(u_char*, short);
 int vs_battle_script_0E(u_char*, short);
 int vs_battle_script_0F(u_char*, short);
-int func_800B66E4(u_char*, short);
+int vs_battle_script_nop(u_char*, short);
 int vs_battle_script_12_dismissTextBox(u_char*, short);
-int func_800B66EC(u_char*, short);
+int vs_battle_script_yield(u_char*, short);
 int vs_battle_script_16_loadGim(u_char*, short);
 int vs_battle_script_17(u_char*, short);
 int vs_battle_script_18(u_char*, short);

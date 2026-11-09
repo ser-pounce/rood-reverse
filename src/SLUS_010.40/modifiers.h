@@ -11,23 +11,23 @@ typedef struct {
 } vs_main_statusEffectParams_t;
 
 typedef struct {
-    u_char phys;
-    u_char wind;
-    u_char fire;
-    u_char earth;
-    u_char water;
-    u_char light;
-    u_char dark;
-    UNUSED u_char _;
+    signed char phys;
+    signed char wind;
+    signed char fire;
+    signed char earth;
+    signed char water;
+    signed char light;
+    signed char dark;
+    UNUSED signed char _;
 } material_modifiers_affinities_t;
 
 typedef struct {
-    u_char human;
-    u_char beast;
-    u_char undead;
-    u_char phantom;
-    u_char dragon;
-    u_char evil;
+    signed char human;
+    signed char beast;
+    signed char undead;
+    signed char phantom;
+    signed char dragon;
+    signed char evil;
     material_modifiers_affinities_t attackAffinities;
     material_modifiers_affinities_t defenseAffinities;
     u_short maxDp;

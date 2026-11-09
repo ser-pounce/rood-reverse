@@ -180,8 +180,8 @@ static int _showSaveFilesMenu(int initPort)
         _rMemcpy(
             (savedata_t*)_spmcimg + 2, (savedata_t*)_spmcimg + 1, sizeof(savedata_t));
         if (_containerDataEmpty != 0) {
-            _backupMainSetting = (*(u_int*)&vs_main_settings >> 4) & 1;
-            *(int*)&vs_main_settings |= 0x10;
+            _backupMainSetting = vs_main_settings.containerEmpty;
+            vs_main_settings.containerEmpty = 1;
         }
         _packageGameSaveData(val);
         _saveFile((val + 1) | ((port - 1) << 0x10));
@@ -195,9 +195,7 @@ static int _showSaveFilesMenu(int initPort)
             saveId = slot + page;
             if (val < 0) {
                 if (_containerDataEmpty != 0) {
-                    char v = _backupMainSetting & 1;
-                    *(int*)&vs_main_settings =
-                        (*(int*)&vs_main_settings & ~0x10) | (v * 0x10);
+                    vs_main_settings.containerEmpty = _backupMainSetting;
                 }
                 memset(&_saveSlotInfo[saveId], 0, sizeof _saveSlotInfo[saveId]);
                 _saveSlotInfo[saveId].identity.base.slotState = slotStateTemporary;

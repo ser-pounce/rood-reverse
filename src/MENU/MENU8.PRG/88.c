@@ -105,7 +105,7 @@ static int _abilityTimingOptionMenu(int init)
                     [_menuStrings[i * 2 + VS_menu_INDEX_abilityTimingOnDesc]];
                 rowTypes[i] = 0;
             }
-            i = 1 - ((*(u_int*)&vs_main_settings >> 5) & 1);
+            i = 1 - vs_main_settings.abilityTimingDisplay;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x247, menuStrings, rowTypes);
             state = 1;
@@ -396,7 +396,7 @@ static int _puzzleModeOptionMenu(int init)
                                                       + VS_menu_INDEX_puzzleModeOnDesc]];
                 rowTypes[i] = 0;
             }
-            i = ((*(u_int*)&vs_main_settings) >> 3) & 1;
+            i = vs_main_settings.puzzleModeOff;
             rowTypes[i] |= 4;
             vs_mainmenu_setMenuRows(2, 0x24C, menuStrings, rowTypes);
             state = 1;
@@ -576,8 +576,6 @@ int vs_menu8_exec(u_char* state)
     int rowTypes[9];
     int selectedRow;
     int i;
-    int var_v1;
-    u_int temp_v1_2;
 
     switch (*state) {
     case waitReady:
@@ -696,9 +694,7 @@ int vs_menu8_exec(u_char* state)
             break;
         }
         if (i > 0) {
-            var_v1 = *(int*)&vs_main_settings & ~0x20;
-            var_v1 |= ((2 - i) & 1) << 5;
-            *(int*)&vs_main_settings = var_v1;
+            vs_main_settings.abilityTimingDisplay = 2 - i;
         }
         *state = init;
         break;
@@ -712,9 +708,7 @@ int vs_menu8_exec(u_char* state)
             break;
         }
         if (i > 0) {
-            var_v1 = *(int*)&vs_main_settings & ~0x40;
-            var_v1 |= (((2 - i) & 1) << 6);
-            *(int*)&vs_main_settings = var_v1;
+            vs_main_settings.weaponStatChange = 2 - i;
         }
         *state = init;
         break;
@@ -728,9 +722,7 @@ int vs_menu8_exec(u_char* state)
             break;
         }
         if (i > 0) {
-            var_v1 = *(int*)&vs_main_settings & ~0x80;
-            var_v1 |= (((2 - i) & 1) << 7);
-            *(int*)&vs_main_settings = var_v1;
+            vs_main_settings.armorStatChange = 2 - i;
         }
         *state = init;
         break;
@@ -773,9 +765,8 @@ int vs_menu8_exec(u_char* state)
             break;
         }
         if (i > 0) {
-            temp_v1_2 = (*(int*)&vs_main_settings & ~8) | (((i - 1) & 1) * 8);
-            *(int*)&vs_main_settings = temp_v1_2;
-            vs_main_stateFlags.puzzleMode = ~(temp_v1_2 >> 3) & 1;
+            vs_main_settings.puzzleModeOff = i - 1;
+            vs_main_stateFlags.puzzleMode = 1 - vs_main_settings.puzzleModeOff;
         }
         *state = init;
         break;

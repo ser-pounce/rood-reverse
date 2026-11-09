@@ -67,7 +67,7 @@ typedef struct {
     u_int sectorsRequested;
     int cdSector;
     union {
-        int byteCount; // data reads
+        u_int byteCount; // data reads
         int cdVolume; // XA streams: target CD volume
     } request;
     void* vram;
@@ -100,7 +100,7 @@ typedef struct {
 typedef struct {
     u_short active;
     u_short id;
-    char* script;
+    char const* script;
     padMotor_t motors[2];
 } padVibration_t;
 
@@ -123,7 +123,6 @@ typedef struct {
     char tick;
     char speed;
     char mode;
-    char unk5;
     short pulseTarget[3];
     short grayAmount;
     short grayStep;
@@ -132,7 +131,7 @@ typedef struct {
 } _colorSlot_t;
 
 typedef struct {
-    char unk4;
+    UNUSED char _;
     char locked;
     struct clutAnimState_t {
         u_char active;
@@ -165,14 +164,13 @@ typedef struct {
     u_char bgAnimTick;
     u_char bgAnimSpeed;
     u_char bgTransitionMode;
-    u_char unk7E95;
     short bgTransitionTargetR;
     short bgTransitionTargetG;
     short bgTransitionTargetB;
     _fade_t bgColors[5];
     CVECTOR bgBaseColors[5];
     _colorSlot_t colorSlots[17];
-    u_char unk8214[0x54];
+    UNUSED u_char _[0x54];
 } _clutState_t;
 
 typedef struct vs_main_HeapHeader {
@@ -183,7 +181,7 @@ typedef struct vs_main_HeapHeader {
 
 void __main(void);
 static void _unlockPadModeSwitch(void);
-static void _padResetDefaults(int, void*);
+static void _padResetDefaults(int, void const*);
 static void _padSetActData(int port, int pos, int val);
 static void _initCdQueue(void);
 static void _diskReset(void);
@@ -717,8 +715,8 @@ u_char vs_main_zndMusicMap[256] = { 0, 16, 0, 0, 0, 0, 0, 0, 0, 54, 0, 57, 57, 1
     120, 65, 0, 0, 0, 0, 0, 41, 41, 41, 41, 0, 0, 51, 66, 22, 22, 88, 0, 66, 66, 66, 66,
     66, 88, 44, 79, 40, 40, 40, 40, 40, 40, 121, 118, 43, 126, 129, 125, 130, 29, 30 };
 
-static u_short vs_main_unkStrings[] = {
-#include "build/assets/SLUS_010.40/vs_main_unkStrings.vsString"
+u_short vs_main_actorNames[] = {
+#include "build/assets/SLUS_010.40/vs_main_actorNames.vsString"
 };
 
 u_short vs_main_artsPointsRequirements[][4] = {
@@ -859,7 +857,7 @@ vs_main_battleTimer_t vs_main_battleTimer;
 int vs_main_startState;
 static int _sp2;
 static u_short _sfxData[0x2C00];
-int vs_main_buttonsReleased;
+u_int vs_main_buttonsReleased;
 static UNUSED int _5;
 void* vs_main_ot[2];
 static int _resetEnabled;
@@ -873,7 +871,7 @@ short vs_main_screenX;
 short vs_main_screenWidth;
 short vs_main_screenY;
 u_short vs_main_screenHeight;
-int vs_main_buttonRepeat;
+u_int vs_main_buttonRepeat;
 static UNUSED int _7[4];
 char vs_main_padBuffer[2][34];
 static UNUSED int _8;
@@ -903,7 +901,7 @@ static void _initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int 
         (224 - IMG_H(_nowLoading_header)) / 2, IMG_W(_nowLoading_header),              \
         IMG_H(_nowLoading_header))
 
-int vs_main_buttonsPreviousState;
+u_int vs_main_buttonsPreviousState;
 int vs_main_unused0;
 static UNUSED int _11[2];
 vs_main_buttonsPressed_t vs_main_buttonsPressed;
@@ -913,7 +911,7 @@ static UNUSED int _12[13];
 int vs_main_frameBuf;
 int vs_main_saveGameClearData;
 MATRIX vs_main_cameraBasis;
-int vs_main_buttonsState;
+u_int vs_main_buttonsState;
 static UNUSED int _14;
 static int _inGame;
 int vs_main_unused2;
@@ -1240,10 +1238,8 @@ void vs_main_captureSaveState(void)
 {
     vs_battle_actorPosition position;
     int i;
-    int j;
     int actionByte;
-    u_char actionsLearned;
-    vs_battle_actorStats* stats;
+    vs_battle_actorStats const* stats;
     vs_main_characterSnapshot_t* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
@@ -1258,7 +1254,9 @@ void vs_main_captureSaveState(void)
     vs_main_spawnPoint.unlockFlag = D_800F18E8.unk0_0;
 
     for (actionByte = 0; actionByte < 256 / CHAR_BIT; ++actionByte) {
-        for (actionsLearned = 0, i = 0; i < CHAR_BIT; ++i) {
+        u_char actionsLearned = 0;
+
+        for (i = 0; i < CHAR_BIT; ++i) {
             actionsLearned = (actionsLearned << 1)
                            | vs_main_actions[actionByte * CHAR_BIT + i].unlocked;
         }
@@ -1286,6 +1284,8 @@ void vs_main_captureSaveState(void)
     }
 
     for (i = 0; i < 6; ++i) {
+
+        int j;
 
         snapshot->stats.limbs[i].hp = stats->limbs[i].hp;
         snapshot->stats.limbs[i].maxHp = stats->limbs[i].maxHp;
@@ -1325,7 +1325,7 @@ static void _unlockPadModeSwitch(void)
     }
 }
 
-static void _padResetDefaults(int portID, UNUSED void* _)
+static void _padResetDefaults(int portID, UNUSED void const* _)
 {
     portInfo_t* port = &vs_main_portInfo[portID >> 4];
 
@@ -1346,7 +1346,7 @@ static void _padResetDefaults(int portID, UNUSED void* _)
     PadSetActAlign(portID, _actParams);
 }
 
-int vs_main_updatePadState(int portID, char padBuf[34])
+u_int vs_main_updatePadState(int portID, char const padBuf[34])
 {
     portInfo_t* port;
     char mode;
@@ -1397,7 +1397,7 @@ int vs_main_updatePadState(int portID, char padBuf[34])
     return btnStates;
 }
 
-void vs_main_padConnect(int portID, char padBuf[34])
+void vs_main_padConnect(int portID, char const padBuf[34])
 {
     UNUSED int dummy[5];
 
@@ -1408,17 +1408,18 @@ void vs_main_padConnect(int portID, char padBuf[34])
         port->connected = 0;
     }
 
-    if (port->connected == 0) {
+    if (port->connected != 0) {
+        return;
+    }
 
-        PadSetAct(portID, port->actData, sizeof port->actData);
+    PadSetAct(portID, port->actData, sizeof port->actData);
 
-        if ((state == PadStateFindCTP1)
-            || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
+    if ((state == PadStateFindCTP1)
+        || ((state == PadStateStable) && (PadSetActAlign(portID, _actParams) != 0))) {
 
-            _padResetDefaults(portID, padBuf);
+        _padResetDefaults(portID, padBuf);
 
-            port->connected = 1;
-        }
+        port->connected = 1;
     }
 }
 
@@ -1438,7 +1439,7 @@ static UNUSED char _padGetActData(int port, int pos)
     return vs_main_portInfo[port].actData[pos];
 }
 
-int vs_main_setVibrationBank(char* script, u_int requestedSlot, int id)
+int vs_main_setVibrationBank(char const* script, u_int requestedSlot, int id)
 {
     int i;
     int slot = 0;
@@ -1580,15 +1581,14 @@ void vs_main_resetPadAct(void)
 
 void vs_main_setVibrateParams(void)
 {
-    int pos;
-    int i;
     int j;
-    char* script;
 
     _padAct.strength[1] = 0;
     _padAct.strength[0] = 0;
 
     for (j = 0; j < 2; ++j) {
+
+        char const* script;
 
         if (_padAct.port[j].active == 0) {
             continue;
@@ -1597,13 +1597,16 @@ void vs_main_setVibrateParams(void)
         script = _padAct.port[j].script;
 
         if (script != 0) {
+            int i;
+
             for (i = 0; i < 2; ++i) {
 
                 padMotor_t* motors = _padAct.port[j].motors;
 
                 if (motors[i].framesLeft == 0) {
 
-                    pos = motors[i].scriptPos;
+                    int pos = motors[i].scriptPos;
+
                     motors[i].framesLeft = script[pos++];
                     motors[i].value = motors[i].target = script[pos++] << 8;
 
@@ -1823,13 +1826,9 @@ void vs_main_freeHeap(void* block)
 
 void* vs_main_allocHeapR(u_int size)
 {
-    vs_main_HeapHeader* freeNode;
-    vs_main_HeapHeader* lastNode;
-    u_int blockSz;
-
-    blockSz = ((size + 15) >> 4) + 1;
-    lastNode = &_heap;
-    freeNode = _heap.prev;
+    u_int blockSz = ((size + 15) >> 4) + 1;
+    vs_main_HeapHeader* lastNode = &_heap;
+    vs_main_HeapHeader* freeNode = _heap.prev;
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
@@ -1858,13 +1857,9 @@ void* vs_main_allocHeapR(u_int size)
 
 void* vs_main_allocHeap(u_int size)
 {
-    u_int blockSz;
-    vs_main_HeapHeader* freeNode;
-    vs_main_HeapHeader* lastNode;
-
-    lastNode = &_heap;
-    freeNode = _heap.next;
-    blockSz = ((size + 0xF) >> 4) + 1;
+    vs_main_HeapHeader* lastNode = &_heap;
+    vs_main_HeapHeader* freeNode = _heap.next;
+    u_int blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
@@ -2034,6 +2029,9 @@ static void _diskPcmReadReady(u_char intr, u_char result[])
         _disk.state = diskCommandFailed;
 
         break;
+
+    default:
+        break;
     }
 }
 
@@ -2087,7 +2085,6 @@ static void _diskUpdate(void)
 {
     DslATV vol;
     int i;
-    u_int seconds;
 
     switch (_disk.state) {
     case diskIdle:
@@ -2167,6 +2164,8 @@ static void _diskUpdate(void)
         int status = DsSystemStatus();
 
         if (status == DslReady) {
+
+            u_int seconds;
 
             _disk.sectorsFetched = 0;
             ++_disk.errorCount;
@@ -2261,55 +2260,55 @@ static void _diskUpdate(void)
         break;
     }
 
-    if (_disk.bufferMode != cdBufferModeNone) {
+    if (_disk.bufferMode == cdBufferModeNone) {
+        return;
+    }
 
-        for (i = 0; i < 16; ++i) {
+    for (i = 0; i < 16; ++i) {
 
-            if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
-                return;
+        if (_disk.sectorBufIndex >= _disk.sectorsReceived) {
+            return;
+        }
+
+        if (_disk.bufferMode == cdBufferModeBuffered) {
+
+            vs_main_memcpy(((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
+                _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
+
+            ++_disk.ringBufIndex;
+
+            if (_disk.ringBufIndex >= 16) {
+                _disk.ringBufIndex = 0;
             }
 
-            if (_disk.bufferMode == cdBufferModeBuffered) {
+            --_disk.sectorsPending;
+            ++_disk.sectorBufIndex;
 
-                vs_main_memcpy(
-                    ((char*)_disk.vram + (_disk.sectorBufIndex * SECTOR_BYTES)),
-                    _cdReadBuffer + (_disk.ringBufIndex * SECTOR_BYTES), SECTOR_BYTES);
+            if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
+                _disk.state = diskIdle;
 
-                ++_disk.ringBufIndex;
+                vs_main_freeHeapR(_cdReadBuffer);
 
-                if (_disk.ringBufIndex >= 16) {
-                    _disk.ringBufIndex = 0;
-                }
+                _cdReadBuffer = NULL;
+            }
+        } else if (_disk.bufferMode == cdBufferModeManual) {
 
-                --_disk.sectorsPending;
-                ++_disk.sectorBufIndex;
+            ++_disk.sectorBufIndex;
 
-                if (_disk.sectorBufIndex >= _disk.sectorsRequested) {
-                    _disk.state = diskIdle;
+            if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
+                && (IsSpuTransferring() == 0)) {
 
-                    vs_main_freeHeapR(_cdReadBuffer);
+                _disk.state = diskIdle;
 
-                    _cdReadBuffer = NULL;
-                }
-            } else if (_disk.bufferMode == cdBufferModeManual) {
+                vs_main_freeHeapR(_cdReadBuffer);
 
-                ++_disk.sectorBufIndex;
-
-                if ((_disk.sectorBufIndex >= _disk.sectorsRequested)
-                    && (IsSpuTransferring() == 0)) {
-
-                    _disk.state = diskIdle;
-
-                    vs_main_freeHeapR(_cdReadBuffer);
-
-                    _cdReadBuffer = NULL;
-                }
+                _cdReadBuffer = NULL;
             }
         }
     }
 }
 
-int vs_main_diskLoadFile(int sector, int bytes, void* vram)
+int vs_main_diskLoadFile(int sector, u_int bytes, void* vram)
 {
     int result = _diskInitRead(sector, bytes, vram);
 
@@ -2410,7 +2409,7 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
 {
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
-    slot->unkC = 0;
+    slot->unused = 0;
     slot->priority = _cdQueueCount.queued++;
 }
 
@@ -2427,7 +2426,7 @@ void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
 
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
-    slot->unkC = 0;
+    slot->unused = 0;
     slot->priority = 0;
     ++_cdQueueCount.queued;
 }
@@ -2517,10 +2516,10 @@ int vs_main_stopMusicSlot(int slot)
 
 int vs_main_queueMusicSlot(int slot)
 {
-    u_int handle;
-
     if (slot != 0) {
         if (vs_main_soundData.musicData[slot - 1] != 0) {
+
+            u_int handle;
 
             vs_main_soundData.currentMusicSlot = slot;
             vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
@@ -2609,13 +2608,13 @@ int vs_main_getCurrentMusicId(void)
 
 int vs_main_loadMusicSlot(int id, int targetSlot)
 {
-    vs_main_CdFile cdFile;
-
     if (id > 0 && targetSlot > 0) {
         int slot = targetSlot - 1;
 
         if (targetSlot < 5) {
             if (vs_main_soundData.musicIds[slot] != id) {
+
+                vs_main_CdFile cdFile;
 
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop10(142, 0);
@@ -2927,11 +2926,9 @@ void vs_main_playSfxDefault(int group, int id) { vs_main_playSfx(group, id, 0x80
 
 int vs_main_computeSfxPan(int pan, int depth)
 {
-    int tmp;
+    int tmp = pan;
     int volume;
     int limit;
-
-    tmp = pan;
 
     if (pan < 0) {
         tmp += 0xFFFF;
@@ -2999,10 +2996,10 @@ void vs_main_panSfx(int group, int id, SVECTOR* position)
 
 // Returns the address of effect `id` inside its bank for the bank groups, or NULL when
 // the group plays effects by id
-static void* _resolveSfxData(int group, int id)
+static void const* _resolveSfxData(int group, int id)
 {
-    void* sfx;
-    int* bank;
+    void const* sfx;
+    int const* bank;
 
     switch (group) {
     case 0x1:
@@ -3033,7 +3030,7 @@ static void* _resolveSfxData(int group, int id)
 void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration, volume);
@@ -3048,7 +3045,7 @@ void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
 void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_FadeSfxPitchMod((u_long)sfx, 0, duration, pitch);
@@ -3064,7 +3061,7 @@ void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
 void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_FadeSfxPanMod((u_long)sfx, 0, duration, pan);
@@ -3080,7 +3077,7 @@ void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
 void vs_main_evictSfx(int group, int id)
 {
     if (id != 0) {
-        void* sfx = _resolveSfxData(group, id);
+        void const* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_EvictSfx((u_long)sfx, 0);
@@ -3097,11 +3094,10 @@ void vs_main_stopAllSfx(void) { Sound_StopSfx(); }
 
 int vs_main_loadSfxSlot(int id, u_int slot)
 {
-    vs_main_CdFile cdFile;
-
     if (slot - 1 < 3) {
         if (vs_main_soundData.sfxData[slot - 1] == NULL) {
 
+            vs_main_CdFile cdFile;
             u_int index = slot - 1;
             cdFile.lba = _seLBAs[id];
             cdFile.size = _seFileSizes[id];
@@ -3187,9 +3183,7 @@ static int _freeSfxSlots(void)
 
 static UNUSED int _loadAndFreeSfx(int id)
 {
-    int slot;
-
-    slot = _loadSfx(id);
+    int slot = _loadSfx(id);
 
     if (slot != 0) {
         while (_freeSfxSlots() != 0) {
@@ -3307,11 +3301,8 @@ void vs_main_playBankSfxDefault(int group, int* bank, u_int index)
 static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)
 {
     int volume;
-    int tmp;
-    int sxy;
-
-    sxy = pan;
-    tmp = pan;
+    int sxy = pan;
+    int tmp = pan;
     pan = tmp >> 0x10;
 
     if (sxy < 0) {
@@ -3369,10 +3360,10 @@ static UNUSED void _panBankSfx(int group, u_int* bank, int index, SVECTOR* posit
     _do_panBankSfx(group, bank, index, screenXY, depth);
 }
 
-void vs_main_evictBankSfx(int group, int* bank, int index)
+void vs_main_evictBankSfx(int group, int const* bank, int index)
 {
     int mask;
-    void* sfx = (void*)bank + (bank + index)[1];
+    void const* sfx = (u_char const*)bank + (bank + index)[1];
 
     if (index != 0) {
         mask = 0;
@@ -3384,9 +3375,10 @@ void vs_main_evictBankSfx(int group, int* bank, int index)
     Sound_EvictSfx((u_long)sfx, mask);
 }
 
-void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration)
+void vs_main_fadeBankSfxVolume(
+    int group, int const* bank, int index, int volume, int duration)
 {
-    void* sfx = (void*)bank + (bank + index)[1];
+    void const* sfx = (u_char const*)bank + (bank + index)[1];
 
     if (index == 0) {
         Sound_FadeSfxVolumeMod(0, group, duration & 0xFF, volume);
@@ -3621,7 +3613,7 @@ void vs_main_resetSound(void)
 
     for (i = 0; i < 3; ++i) {
         vs_main_soundData.unk64[i] = NULL;
-        vs_main_soundData.unk70[i] = NULL;
+        vs_main_soundData.unused[i] = NULL;
     }
 
     vs_main_soundData.soundFileId = 0;
@@ -3641,7 +3633,7 @@ static inline int _colorB(short color) { return _maskB(color) >> 10; }
 // Packs 5:5:5 channels and the semi-transparency bit to a PlayStation 16-bit colour
 #define PACK_COLOR(r, g, b, stp) ((r) + ((g) << 5) + ((b) << 10) + ((stp) << 15))
 
-static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
+static void _loadClutTransition(int duration, int slot, u_short const* sourceClut)
 {
     int i;
 
@@ -3676,7 +3668,7 @@ static void _loadClutTransition(int duration, int slot, u_short* sourceClut)
 }
 
 void vs_main_loadClutTransition(
-    int duration, int slot, u_short* sourceClut, int clutOffset)
+    int duration, int slot, u_short const* sourceClut, int clutOffset)
 {
     if (_clutState.active != 0) {
         _loadClutTransition(duration, slot, sourceClut + (clutOffset * 16));
@@ -3685,11 +3677,11 @@ void vs_main_loadClutTransition(
 }
 
 static UNUSED void _loadClutTransitionWithBase(
-    int duration, int slot, u_short* sourceClut, int clutOffset)
+    int duration, int slot, u_short const* sourceClut, int clutOffset)
 {
-    int i;
-
     if (_clutState.active != 0) {
+        int i;
+
         vs_main_loadClutTransition(duration, slot, sourceClut, clutOffset);
 
         for (i = 0; i < 256; ++i) {
@@ -3700,9 +3692,9 @@ static UNUSED void _loadClutTransitionWithBase(
 
 static UNUSED void _saveClutBase(int slot)
 {
-    int i;
-
     if (_clutState.active != 0) {
+        int i;
+
         for (i = 0; i < 256; ++i) {
             _clutState.slots[slot].clutBase[i] = _clutBuffer[slot][i];
         }
@@ -3721,7 +3713,7 @@ static inline int _colorLuminance(short color)
 
 static inline int _luminance(int r, int g, int b) { return r * 2 + g * 3 + b; }
 
-static inline int _colorInfoLuminance(struct ColorInfo* color)
+static inline int _colorInfoLuminance(struct ColorInfo const* color)
 {
     return _luminance(color->r, color->g, color->b);
 }
@@ -3908,7 +3900,7 @@ static inline int _bgStep(int target, int current, int frames)
     }                                                                                  \
     func_8008EB30(position)
 
-void vs_main_fadeBgColors(int frames, CVECTOR* target)
+void vs_main_fadeBgColors(int frames, CVECTOR const* target)
 {
     int position[5];
     int i;
@@ -3947,11 +3939,11 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
     UPLOAD_BG_COLORS(bg, position, i);
 }
 
-static UNUSED void _fadeBgColorsStore(int frames, CVECTOR* target)
+static UNUSED void _fadeBgColorsStore(int frames, CVECTOR const* target)
 {
-    int i;
-
     if (_clutState.active != 0) {
+
+        int i;
 
         vs_main_fadeBgColors(frames, target);
 
@@ -3992,17 +3984,18 @@ static UNUSED void _fadeBgColorsStore(int frames, CVECTOR* target)
     g = (gv) + (gOffset << 0x10);           \
     b = (bv) + (bOffset << 0x10)
 
-void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
+static void _transformBgColors(
+    int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
-    int position[5];
-    int lum;
-    int b;
-    int g;
-    int r;
     int i;
     _fade_t* bg = _clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
+        int lum;
+        int b;
+        int g;
+        int r;
+
         switch (mode) {
 
         // 1: half of the current colours, plus offset
@@ -4104,6 +4097,8 @@ void _transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOff
             _clutState.bgTransitionTargetB = bOffset;
         }
     } else {
+        int position[5];
+
         _clutState.bgAnimActive = 0;
         UPLOAD_BG_COLORS(bg, position, i);
     }
@@ -4133,7 +4128,7 @@ static inline void _startColorSlotAnim(_colorSlot_t* slot, int speed)
     slot->speed = speed;
 }
 
-static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
+static void _fadeColorSlot(int frames, int slot, CVECTOR const* color)
 {
     CVECTOR position;
     _colorSlot_t* cs;
@@ -4176,7 +4171,7 @@ static void _fadeColorSlot(int frames, int slot, CVECTOR* color)
     }
 }
 
-static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
+static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR const* color)
 {
     if (_clutState.active != 0) {
         _fadeColorSlot(frames, slot, color);
@@ -4187,7 +4182,6 @@ static UNUSED void _fadeColorSlotStore(int frames, int slot, CVECTOR* color)
 static void _transformColorSlot(
     int mode, int frames, int slot, int rOffset, int gOffset, int bOffset)
 {
-    CVECTOR position;
     short gray;
     int lum;
     int r;
@@ -4309,6 +4303,8 @@ static void _transformColorSlot(
             cs->pulseTarget[2] = bOffset;
         }
     } else {
+        CVECTOR position;
+
         cs->active = 0;
         SLOT_POSITION(position, fade);
 
@@ -4387,61 +4383,61 @@ void vs_main_updateBgColors(void)
 
 void vs_main_updateColorSlots(void)
 {
-    CVECTOR position;
     int i;
-    _colorSlot_t* slots = _clutState.colorSlots;
 
     for (i = 0; i < 17; ++i) {
 
+        CVECTOR position;
+        _colorSlot_t* slots = _clutState.colorSlots;
         _colorSlot_t* slot = &slots[i];
         _fade_t* fade = &slot->fade;
 
-        if (slot->active != 0) {
+        if (slot->active == 0) {
+            continue;
+        }
 
-            // Advance the colour by its step
-            fade->current.r += fade->step.r;
-            fade->current.g += fade->step.g;
-            fade->current.b += fade->step.b;
+        // Advance the colour by its step
+        fade->current.r += fade->step.r;
+        fade->current.g += fade->step.g;
+        fade->current.b += fade->step.b;
 
-            SLOT_POSITION(position, fade);
+        SLOT_POSITION(position, fade);
 
-            if (i != 0) {
-                func_800A0768(i - 1, &position);
-            } else {
-                slots[0].grayAmount += slots[0].grayStep;
-                func_8008B430(&position, slots[0].grayAmount >> 2);
-            }
+        if (i != 0) {
+            func_800A0768(i - 1, &position);
+        } else {
+            slots[0].grayAmount += slots[0].grayStep;
+            func_8008B430(&position, slots[0].grayAmount >> 2);
+        }
 
-            ++slot->frame;
+        ++slot->frame;
 
-            if (slot->frame >= (slot->speed * 2)) {
+        if (slot->frame < (slot->speed * 2)) {
+            continue;
+        }
 
-                // Modes 9 and 10 pulse (half the target, then the full target); 14 fades
-                // to 15
-                if (slot->mode == 9) {
+        // Modes 9 and 10 pulse (half the target, then the full target); 14 fades to 15
+        if (slot->mode == 9) {
 
-                    vs_main_transformColorSlot(4, slot->speed, i,
-                        slot->pulseTarget[0] / 2, slot->pulseTarget[1] / 2,
-                        slot->pulseTarget[2] / 2);
+            vs_main_transformColorSlot(4, slot->speed, i, slot->pulseTarget[0] / 2,
+                slot->pulseTarget[1] / 2, slot->pulseTarget[2] / 2);
 
-                    slot->mode = 10;
+            slot->mode = 10;
 
-                } else if (slot->mode == 10) {
+        } else if (slot->mode == 10) {
 
-                    _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
-                        slot->pulseTarget[1], slot->pulseTarget[2]);
+            _transformColorSlot(9, slot->speed, i, slot->pulseTarget[0],
+                slot->pulseTarget[1], slot->pulseTarget[2]);
 
-                    slot->mode = 9;
+            slot->mode = 9;
 
-                } else if (slot->mode == 14) {
+        } else if (slot->mode == 14) {
 
-                    _transformColorSlot(15, slot->speed, i, 0, 0, 0);
-                    slot->mode = 15;
+            _transformColorSlot(15, slot->speed, i, 0, 0, 0);
+            slot->mode = 15;
 
-                } else {
-                    slot->active = 0;
-                }
-            }
+        } else {
+            slot->active = 0;
         }
     }
 }
@@ -4451,13 +4447,6 @@ void vs_main_updateColorSlots(void)
 void vs_main_updateClutSlots(void)
 {
     int i;
-    int j;
-    u_int frameStride;
-    u_short g;
-    u_short r;
-    u_short b;
-    struct ColorInfo* index;
-    int c;
 
     for (i = 0; i < 14; ++i) {
 
@@ -4467,6 +4456,14 @@ void vs_main_updateClutSlots(void)
 
         if (++_clutState.slots[i].animState.tick
             >= (_clutState.slots[i].animState.speed / 8)) {
+
+            int j;
+            u_int frameStride;
+            u_short g;
+            u_short r;
+            u_short b;
+            struct ColorInfo* index;
+            int c;
 
             _clutState.slots[i].animState.tick = 0;
 
@@ -4613,57 +4610,58 @@ static UNUSED void _stopClutSlotAnim(int slot)
 
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count)
 {
-    RECT rect;
-    u_short px;
     u_int i;
-    struct ColorInfo* dst;
 
     if (slot >= 14) {
+        RECT rect;
+
         setRECT(&rect, colorOffset + 768, slot + 224, count, 1);
         LoadImage(&rect, (u_long*)img);
 
         return;
     }
 
-    if (_clutState.slots[slot].locked == 0) {
-
-        _clutState.slots[slot].animState.active = 0;
-
-        for (i = 0; i < count; ++i) {
-
-            px = img[i];
-            dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
-            _clutBuffer[slot][colorOffset + i] = px;
-            _clutState.slots[slot].clutBase[colorOffset + i] = px;
-
-            dst->r = _colorR(px);
-            dst->g = _colorG(px);
-            dst->b = _colorB(px);
-            dst->a = ((px & 0x8000) >> 15);
-        }
-
-        _clutState.uploadPending = 1;
+    if (_clutState.slots[slot].locked != 0) {
+        return;
     }
+
+    _clutState.slots[slot].animState.active = 0;
+
+    for (i = 0; i < count; ++i) {
+
+        u_short px = img[i];
+        struct ColorInfo* dst = &_clutState.slots[slot].colorInfo[colorOffset + i];
+
+        _clutBuffer[slot][colorOffset + i] = px;
+        _clutState.slots[slot].clutBase[colorOffset + i] = px;
+
+        dst->r = _colorR(px);
+        dst->g = _colorG(px);
+        dst->b = _colorB(px);
+        dst->a = ((px & 0x8000) >> 15);
+    }
+
+    _clutState.uploadPending = 1;
 }
 
-static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
+static void _loadClutBase(int mode, u_short const* srcClut, int slot, short rOffset,
     short gOffset, short bOffset, int applyNow)
 {
     int i;
-    int red;
-    int green;
-    int blue;
-    short r;
-    short g;
-    short b;
-    short value;
-    u_short stp;
 
     for (i = 0; i < 256; ++i) {
 
-        value = srcClut[i];
+        short r;
+        short g;
+        short b;
+        u_short stp;
+        short value = srcClut[i];
 
         if (value != 0) {
+            int red;
+            int green;
+            int blue;
+
             switch (mode) {
             // 5: half of the colour, plus offset
             case 5:
@@ -4742,7 +4740,7 @@ static void _loadClutBase(int mode, u_short* srcClut, int slot, short rOffset,
 #undef CLAMP_CLUT_LOW
 #undef CLAMP_CLUT_HIGH
 
-static UNUSED void _loadClutBaseOffset(u_short* srcClut, int slot, u_short rOffset,
+static UNUSED void _loadClutBaseOffset(u_short const* srcClut, int slot, u_short rOffset,
     u_short gOffset, u_short bOffset, int applyNow)
 {
     _loadClutBase(8, srcClut, slot, rOffset, gOffset, bOffset, applyNow);
@@ -4752,7 +4750,7 @@ void vs_main_loadBgColors(void)
 {
     int i;
     _fade_t* bg = _clutState.bgColors;
-    int* position = func_8008EB24();
+    int const* position = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
         _clutState.bgBaseColors[i].r = position[i];
@@ -4767,9 +4765,9 @@ void vs_main_loadBgColors(void)
 
 void vs_main_commitClut(void)
 {
-    RECT rect;
-
     if (_clutState.uploadPending != 0) {
+
+        RECT rect;
 
         setRECT(&rect, 768, 224, 256, 14);
         LoadImage(&rect, (u_long*)_clutBuffer[0]);

@@ -4,12 +4,12 @@
 
 // Parameters left undeclared due to misuse in unused func_8007B378
 void vs_main_loadClutTransition(
-    /*int duration, int slot, u_short* sourceClut, int clutOffset*/);
+    /*int duration, int slot, u_short const* sourceClut, int clutOffset*/);
 
 void vs_main_transformClutSlot(
     int mode, int duration, int slot, short rOffset, int gOffset, int bOffset);
 
-void vs_main_fadeBgColors(int frames, CVECTOR* target);
+void vs_main_fadeBgColors(int frames, CVECTOR const* target);
 
 void vs_main_transformBgColors(
     int mode, int frames, int rOffset, int gOffset, int bOffset);

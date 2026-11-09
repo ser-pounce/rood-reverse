@@ -38,7 +38,7 @@
 #include "src/SLUS_010.40/zoneState.h"
 #include "src/SLUS_010.40/zones.h"
 #include "src/BATTLE/INITBTL.PRG/18.h"
-#include "build/assets/SLUS_010.40/vs_main_unkStrings.h"
+#include "build/assets/SLUS_010.40/vs_main_actorNames.h"
 #include "insertTPage.h"
 #include "scratch.h"
 #include "tilePosition.h"
@@ -5953,7 +5953,7 @@ void func_8007647C(int arg0, int arg1)
     // BUG: Performs a fixed size string copy on a variable width string.
     for (i = 0; i < 24; ++i) {
         temp_s1->stats->name[i] =
-            ((char*)&vs_main_unkStrings[VS_vs_main_unkStrings_OFFSET_cube])[i];
+            ((char*)&vs_main_actorNames[VS_vs_main_actorNames_OFFSET_cube])[i];
     }
 
     switch (arg1 & 0xFF) {

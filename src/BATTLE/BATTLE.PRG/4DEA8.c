@@ -282,8 +282,10 @@ static void toNormalIntegerVector(VECTOR*, VECTOR*);
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
 extern char D_800E9B58[];
-extern char D_800E9BE0[];
-extern char D_800E9BE8[];
+extern char skipResetPaletteOp[];
+VS_HIDDEN(skipResetPaletteOp);
+extern char skipTailMarkerOp[];
+VS_HIDDEN(skipTailMarkerOp);
 extern u_char D_800E9BEC[];
 extern u_char D_800E9BF0[];
 extern short D_800E9BF4[];
@@ -375,49 +377,61 @@ int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
     return (skipRequested != 0) ? vs_battle_scriptYield : vs_battle_scriptNext;
 }
 
-void func_800B6778(u_char* arg0)
+void endScriptSkip(u_char* script)
 {
     short i;
+    short endOpcode;
 
     for (i = 0; i < 3; ++i) {
-        D_800E9BE0[1] = (i << 4) | 8;
-        vs_battle_script_70(D_800E9BE0, 0);
+        skipResetPaletteOp[1] = (i << 4) | 8;
+        vs_battle_script_70(skipResetPaletteOp, 0);
     }
 
     func_800AACDC();
 
-    i = 0xF;
-    while (*arg0 != i) {
-        if (memcmp(arg0, D_800E9BE8, 4) == 0) {
+    endOpcode = 0xF;
+
+    while (*script != endOpcode) {
+        if (memcmp(script, skipTailMarkerOp, 4) == 0) {
             vs_battle_setStateFlag(0xA8, 0);
             return;
         }
-        arg0 = &arg0[D_800E9C30[*arg0]];
+        script = &script[D_800E9C30[*script]];
     }
 
     func_80093A70();
     vs_battle_setStateFlag(0xA8, 0);
 }
 
-int vs_battle_script_0E(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] offset from this opcode to jump to if the section was not skipped
+ * @return vs_battle_scriptYield if the section was skipped, otherwise the address to
+ * jump to.
+ */
+int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
 {
-    char temp_v1 = scriptSkipMode;
+    char prevMode = scriptSkipMode;
     scriptSkipMode = vs_battle_scriptSkipOff;
-    if (temp_v1 == vs_battle_scriptSkipping) {
-        func_800B6778(arg0);
+
+    if (prevMode == vs_battle_scriptSkipping) {
+        endScriptSkip(script);
         return vs_battle_scriptYield;
     }
-    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
+
+    return (int)&script[vs_battle_getShort(script + 1)];
 }
 
-int vs_battle_script_0F(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 {
-    char temp_v1 = scriptSkipMode;
+    char prevMode = scriptSkipMode;
     scriptSkipMode = vs_battle_scriptSkipOff;
-    if (temp_v1 == vs_battle_scriptSkipping) {
-        func_800B6778(arg0);
+
+    if (prevMode == vs_battle_scriptSkipping) {
+        endScriptSkip(arg0);
         return vs_battle_scriptYield;
     }
+
     return vs_battle_scriptNext;
 }
 

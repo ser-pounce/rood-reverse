@@ -2,6 +2,14 @@
 #include "common.h"
 #include "4DEA8.h"
 
+// Value of scriptSkipMode
+enum vs_battle_ScriptSkipMode {
+    vs_battle_scriptSkipOff = 0,
+    vs_battle_scriptSkippable = 1, // set by opcode 0x0D; START (or skipRequested) skips
+    vs_battle_scriptSkipping = 2, // dispatching through the skip table
+};
+
+// Return values of script opcode handlers, as interpreted by func_800BFBB8
 enum vs_battle_ScriptResult {
     vs_battle_scriptNext = 0, // advance to the next opcode and keep running
     vs_battle_scriptRepeat = 1, // not finished: stop and run this opcode again next frame
@@ -47,17 +55,17 @@ VS_HIDDEN(func_800BF850);
 extern char vs_battle_textBoxStatuses[];
 VS_HIDDEN(vs_battle_textBoxStatuses);
 
-extern char D_800F4C20;
-VS_HIDDEN(D_800F4C20);
+extern char stopMusicOnSkip;
+VS_HIDDEN(stopMusicOnSkip);
 
-extern char D_800F4C2C;
-VS_HIDDEN(D_800F4C2C);
+extern char scriptSkipMode;
+VS_HIDDEN(scriptSkipMode);
 
 extern short D_800F4C58[];
 VS_HIDDEN(D_800F4C58);
 
-extern char D_800F4C68;
-VS_HIDDEN(D_800F4C68);
+extern char skipRequested;
+VS_HIDDEN(skipRequested);
 
 extern u_char D_800E9C30[];
 VS_HIDDEN(D_800E9C30);

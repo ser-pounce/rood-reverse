@@ -2,4 +2,4 @@
 #include <stddef.h>
 #include <libgte.h>
 
-extern int (**D_800F4C28)(u_char*, short);
+extern int (**vs_battle_skipOpcodeTable)(u_char*, short);

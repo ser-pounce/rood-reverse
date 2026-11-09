@@ -40,7 +40,7 @@ void func_800DC888(func_800DC888_t* arg0)
     }
 
     for (i = -1; i < D_800F5900->targetCount; ++i) {
-        _hitEntity_t* entry = i < 0 ? &D_800F5900->unk4 : &D_800F5900->targets[i];
+        hitEntity_t* entry = i < 0 ? &D_800F5900->unk4 : &D_800F5900->targets[i];
 
         if (entry->kind == 0) {
             row = &arg0[entry->unk0.hit.targetActor];
@@ -88,7 +88,7 @@ void func_800DCBD8(func_800DCAA0_t* arg0)
     int id = arg0->unkC_0;
 
     for (i = 0; i < D_800F5900->targetCount; ++i) {
-        _hitEntity_t* entry = &D_800F5900->targets[i];
+        hitEntity_t* entry = &D_800F5900->targets[i];
         if ((entry->kind == 0) && (id == D_800F5900->targets[i].unk0.hit.targetActor)) {
             threshold = D_800F5900->targets[i].unk0.hit.hitThreshold;
             break;
@@ -102,7 +102,7 @@ INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/74088", D_80069B68);
 
 INCLUDE_RODATA("build/src/BATTLE/BATTLE.PRG/nonmatchings/74088", D_80069BBC);
 
-static inline int _getStatusScore(func_800DC888_t* stats)
+static inline int getStatusScore(func_800DC888_t* stats)
 {
     static const signed char statusScores[] = { -51, -39, -39, -39, -26, -51, 50, -13, 12,
         -13, 12, 25, -51, -26, -45, -26, -39, 76, 19, -13, 12, 12, 12, 12, 12, 12, 12, 12,
@@ -128,7 +128,7 @@ static inline int _getStatusScore(func_800DC888_t* stats)
     return score;
 }
 
-static inline int _getHpRatio(func_800DC888_t* stats, int id)
+static inline int getHpRatio(func_800DC888_t* stats, int id)
 {
     if (stats[id].unk6 == 0) {
         return 0;
@@ -137,7 +137,7 @@ static inline int _getHpRatio(func_800DC888_t* stats, int id)
     return stats[id].unk4 * 128 / stats[id].unk6;
 }
 
-static inline int _getMpRatio(func_800DC888_t* stats, int id)
+static inline int getMpRatio(func_800DC888_t* stats, int id)
 {
     if (stats[id].unkA == 0) {
         return 0;
@@ -146,7 +146,7 @@ static inline int _getMpRatio(func_800DC888_t* stats, int id)
     return stats[id].unk8 * 128 / stats[id].unkA;
 }
 
-static inline int _getExtraRatio(func_800DC888_t* stats, int id)
+static inline int getExtraRatio(func_800DC888_t* stats, int id)
 {
     int ratio = 0;
 
@@ -200,8 +200,8 @@ void func_800DCC94(
             continue;
         }
 
-        value = func_800DC284(_getStatusScore(&stats[id]), _getHpRatio(stats, id),
-            _getMpRatio(stats, id), _getExtraRatio(stats, id));
+        value = func_800DC284(getStatusScore(&stats[id]), getHpRatio(stats, id),
+            getMpRatio(stats, id), getExtraRatio(stats, id));
 
         if (kind != 2) {
             value = -value;
@@ -250,7 +250,7 @@ void func_800DD000(func_800E78F4_t* arg0, D_800F19CC_t2* arg1)
     other = D_800F5878[source];
 
     for (i = 0; i < arg1->targetCount; ++i) {
-        _hitEntity_t* entry = &arg1->targets[i];
+        hitEntity_t* entry = &arg1->targets[i];
 
         if (entry->kind || entry->unk0.hit.targetActor != id || source == id) {
             continue;
@@ -687,7 +687,7 @@ void func_800DE030(int arg0)
     }
 }
 
-static inline int _snapshotActorStats(void)
+static inline int snapshotActorStats(void)
 {
     vs_battle_actor* actor;
 
@@ -704,7 +704,7 @@ static inline int _snapshotActorStats(void)
     return 1;
 }
 
-static inline void _restoreActorStats(void)
+static inline void restoreActorStats(void)
 {
     vs_battle_actor* actor;
 
@@ -748,7 +748,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
         return;
     }
 
-    if (_snapshotActorStats()) {
+    if (snapshotActorStats()) {
         minDelay = MAX(arg0->unk13F, arg0->unk5C->actionDelay / 35);
         D_800F58BC->unk18 = 0;
 
@@ -805,7 +805,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
         }
 
     restore:
-        _restoreActorStats();
+        restoreActorStats();
         D_800F58BC->unk18 = 0;
     } else {
         func_800DD918(arg0, 0);
@@ -889,7 +889,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
             && (temp_t1->commandArgs.u16[1] == temp_a2->unk4_3)) {
             entry->unkFB = temp_a2->unkC_0;
             for (j = 0; j < arg0->targetCount; ++j) {
-                _hitEntity_t* elem = &arg0->targets[j];
+                hitEntity_t* elem = &arg0->targets[j];
 
                 if (elem->kind == 0) {
                     D_800F45E0_t* actor = D_800F45E0[elem->unk0.hit.targetActor];

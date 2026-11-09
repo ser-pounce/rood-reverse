@@ -9,5 +9,5 @@ int func_800BFEBC(short mode, short frame, short duration);
 void func_800C00E8(int, void*);
 
 short vs_battle_getShort(u_char* arg0);
-extern short _evtFile;
+extern short evtFile;
 extern int (**D_800F4C28)(u_char*, short);

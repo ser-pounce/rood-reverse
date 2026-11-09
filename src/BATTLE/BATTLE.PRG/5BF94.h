@@ -23,7 +23,7 @@ void func_800CB114(void);
 void func_800CB158(vs_battle_lootListNode*);
 void func_800CB18C(vs_battle_loot*);
 void func_800CB1C0(int);
-void _setArtAndAbilityToUnlock(int art, int battleAbility);
+void setArtAndAbilityToUnlock(int art, int battleAbility);
 void vs_battle_displaySceneMessage(int, int, int);
 int func_800CB45C(void);
 void func_800CB50C(void);

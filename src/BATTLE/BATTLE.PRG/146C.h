@@ -154,7 +154,7 @@ void func_8008EB04(int* arg0, int* arg1);
 int func_8008EFCC(int);
 int func_8008F0FC(void);
 int func_8008F234(void);
-int _getCollisionMapDimensions(UNUSED int arg0);
+int getCollisionMapDimensions(UNUSED int arg0);
 void func_8008F29C(int arg0, int arg1);
 void func_8008F30C(int arg0, int arg1);
 void func_8008F440(void);

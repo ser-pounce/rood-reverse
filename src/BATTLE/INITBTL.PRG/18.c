@@ -266,7 +266,7 @@ static void func_800F9818(void)
     }
 }
 
-static void _loadSystemDat(void)
+static void loadSystemDat(void)
 {
     RECT rect;
     RECT* p_hdr;
@@ -478,7 +478,7 @@ static void func_800F9CCC(void)
     }
 }
 
-static void _initTransitionState(void)
+static void initTransitionState(void)
 {
     RECT sp18;
     memset(&sp18, 0, sizeof sp18);
@@ -536,37 +536,37 @@ void func_800FA35C(UNUSED int startState)
     SetDrawStp(&D_800F1988[0], 1);
     SetDrawStp(&D_800F1988[1], 1);
     vs_main_clutInit();
-    _initTransitionState();
+    initTransitionState();
     func_8007D3F8();
-    _initScriptFunctionTable();
+    initScriptFunctionTable();
     func_800CE64C();
     func_800FA6B8();
     func_800FA7B0();
     func_8007DF48();
-    _loadSystemDat();
+    loadSystemDat();
     func_800E6EAC();
     vs_main_resetPadAct();
     func_800F9818();
-    _zoneContext.unk68 = 0;
-    _zoneContext.unk38 = 0;
-    _zoneContext.mapId = 0;
-    _zoneContext.zndId = 0;
-    _zoneContext.unk18 = 0;
-    _zoneContext.mpdCdFile = NULL;
-    _zoneContext.zndCdFile = NULL;
-    _zoneContext.mpdData = NULL;
-    _zoneContext.zndData = NULL;
-    _zoneContext.musicSlot = 0;
-    _zoneContext.musicId = 0;
-    _zoneContext.unk30 = 1;
-    _zoneContext.unk14 = 0;
+    zoneContext.unk68 = 0;
+    zoneContext.unk38 = 0;
+    zoneContext.mapId = 0;
+    zoneContext.zndId = 0;
+    zoneContext.unk18 = 0;
+    zoneContext.mpdCdFile = NULL;
+    zoneContext.zndCdFile = NULL;
+    zoneContext.mpdData = NULL;
+    zoneContext.zndData = NULL;
+    zoneContext.musicSlot = 0;
+    zoneContext.musicId = 0;
+    zoneContext.unk30 = 1;
+    zoneContext.unk14 = 0;
     vs_battle_spawnPoint = vs_main_spawnPoint;
     vs_battle_screenTransitionEffect = 0;
     vs_battle_screenTransitionStep = 4;
     vs_battle_screenTransitionSpeed = 8;
     vs_battle_screenTransitionWipeAngle = 0xC00;
     D_800F1968 = 0;
-    _lootListHead = NULL;
+    lootListHead = NULL;
     D_800F1874 = 0;
     D_800F196C = 0;
     vs_gametime_tickspeed = 2;
@@ -578,7 +578,7 @@ void func_800FA35C(UNUSED int startState)
     vs_main_battleTimer.time.t.s = 0;
     vs_main_battleTimer.time.t.f = 0;
     // Saved spawn points reuse unlockFlag to hold the scene id.
-    _zoneContext.unk68 = vs_main_spawnPoint.unlockFlag;
+    zoneContext.unk68 = vs_main_spawnPoint.unlockFlag;
     vs_battle_cameraTransition = NULL;
     func_80077EC4();
     vs_scratch.camera.farClip = 0x1000;

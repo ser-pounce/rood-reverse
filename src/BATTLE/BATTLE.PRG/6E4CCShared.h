@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    _loadFileContext loadContexts[8];
+    loadFileContext_t loadContexts[8];
     u_short slots[8];
     u_short isClut[8];
 } D_800F5638_t;
@@ -498,9 +498,9 @@ void func_800E50A0(func_800E78F4_t*, int, int);
 void func_800E678C(func_800E78F4_t*);
 void func_800E6828(func_800E78F4_t*);
 int func_800E6A6C(int, int, int, int);
-void _parsePfileBlock1(pFileBlock1* arg0);
-void _parsePfileBlock12(void*);
-void _parsePfileBlock13(void*);
+void parsePfileBlock1(pFileBlock1* arg0);
+void parsePfileBlock12(void*);
+void parsePfileBlock13(void*);
 void func_800D6E44(func_800D2904_t*);
 
 extern u_int D_80069BBC[];
@@ -531,6 +531,6 @@ extern D_800F19CC_t2* D_800F5900;
 extern u_char (*D_800F5904)[256];
 extern D_800F5910_t* D_800F5910;
 extern D_800F5920_t* D_800F5920;
-extern u_int _plgLoadState;
-extern _loadFileContext _plgLoadContext;
-extern int _plgEntryPointCount;
+extern u_int plgLoadState;
+extern loadFileContext_t plgLoadContext;
+extern int plgEntryPointCount;

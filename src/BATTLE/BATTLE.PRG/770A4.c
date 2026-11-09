@@ -1082,7 +1082,7 @@ int func_800E1BB8(
     return arg2 < arg0->unk15D;
 }
 
-static inline int _randomHeading(int direction)
+static inline int randomHeading(int direction)
 {
     int offset = func_800E45D4(512);
     int angle = direction * 512;
@@ -1148,7 +1148,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_tilePosition arg1, u_int arg
                     int direction = (heading + i * 2) & 7;
 
                     if (check(arg0, direction)) {
-                        arg0->unkD0 = _randomHeading(direction);
+                        arg0->unkD0 = randomHeading(direction);
                         break;
                     }
                 }
@@ -1246,7 +1246,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_tilePosition arg1, u_int arg
     func_800E2CCC(arg0);
 }
 
-static inline void _nextWaypoint(func_800E78F4_t* arg0, D_800F58C8_t2* waypoints)
+static inline void nextWaypoint(func_800E78F4_t* arg0, D_800F58C8_t2* waypoints)
 {
     D_800F58C8_t2* waypoint = &waypoints[arg0->unk100];
     int step;
@@ -1281,7 +1281,7 @@ void func_800E23AC(func_800E78F4_t* arg0)
     D_800F58C8_t2* waypointX;
     D_800F58C8_t2* waypointZ;
 
-    _nextWaypoint(arg0, waypoints);
+    nextWaypoint(arg0, waypoints);
     waypointX = &waypoints[arg0->unk100];
     arg0->unk168.x = waypointX->x;
     waypointZ = &waypoints[arg0->unk100];

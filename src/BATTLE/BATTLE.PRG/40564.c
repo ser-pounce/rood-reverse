@@ -71,11 +71,11 @@ static inline SVECTOR* func_800A4A24(int id)
     return NULL;
 }
 
-_mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
+mpdRoomSection3_t* func_800A8D64(SVECTOR* arg0, int arg1)
 {
     int temp_s1 = arg0->vx / 128;
     int temp_s0 = arg0->vz / 128;
-    _mpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
+    mpdRoomSection3_t* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
 
     if (temp_v0 == NULL) {
         return NULL;
@@ -1902,7 +1902,7 @@ void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2)
 {
     int sp10;
     int i;
-    _armature_t* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
+    armature_t* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
 
     for (i = 0; i < 2; ++i) {
         if (arg2 == 0) {

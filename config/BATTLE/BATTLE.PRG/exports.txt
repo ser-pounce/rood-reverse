@@ -1,7 +1,7 @@
-_loadEtmState
-_loadShpState
-_lootListHead
-_zoneContext
+loadEtmState
+loadShpState
+lootListHead
+zoneContext
 D_800E8F29
 D_800E8F2B
 D_800E8F2C

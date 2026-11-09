@@ -34,7 +34,7 @@ void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
 void func_8008A6FC(void);
 void vs_battle_parseTim(u_long*, TIM_IMAGE*);
-extern vs_battle_lootListNode* _lootListHead;
+extern vs_battle_lootListNode* lootListHead;
 extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
 extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
 extern int vs_battle_submenuState;

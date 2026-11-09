@@ -912,7 +912,7 @@ void func_800C253C(int type)
 
 void* func_800C282C(void)
 {
-    _sphericalCamera camera;
+    sphericalCamera_t camera;
     int temp_a0;
     int temp_s2;
     int yaw;
@@ -991,7 +991,7 @@ void func_800C2B0C(SVECTOR* position, u_int row)
         return;
     }
     memset(&D_800EB9B8->unk4AB8[row * 9], 0, 9);
-    column = _getCollisionMapDimensions(0);
+    column = getCollisionMapDimensions(0);
     width = (column & 0xFFFF) >> 4;
     height = column >> 20;
 
@@ -1005,7 +1005,7 @@ void func_800C2B0C(SVECTOR* position, u_int row)
         int value = 0x10000;
 
         if ((x < width) & (z < height)) {
-            _mpdRoomSection3* room = func_8008B764(x, z, 0);
+            mpdRoomSection3_t* room = func_8008B764(x, z, 0);
 
             if (room->unk0_6) {
                 value = 0xF0800000;

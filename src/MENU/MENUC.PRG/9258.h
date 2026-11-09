@@ -1,3 +1,3 @@
 #pragma once
 
-int _loadObject(int);
+int loadObject(int);

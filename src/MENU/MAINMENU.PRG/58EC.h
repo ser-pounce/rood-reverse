@@ -5,7 +5,7 @@ typedef struct {
     u_short name[14];
     int menuRowFlags;
     u_short description[48];
-} _itemsText_t;
+} itemsText_t;
 
 enum vs_mainMenu_actionsMenuActions { actionMenuDiscard = 4, actionMenuSort = 45 };
 
@@ -290,7 +290,7 @@ extern char vs_mainMenu_itemsListRow;
  */
 extern char vs_mainMenu_freezeTabArrows;
 
-extern char _rangeRiskData[8];
+extern char rangeRiskData[8];
 extern short D_80102488[4];
 
 /**
@@ -299,7 +299,7 @@ extern short D_80102488[4];
 extern char D_80102490[8];
 
 extern short D_80102498[4];
-extern char _menuActionsPageOffset;
+extern char menuActionsPageOffset;
 
 /**
  * Holds the ID of the item in the current status view.
@@ -382,7 +382,7 @@ extern char vs_mainMenu_enabledStatPages;
 extern char vs_mainMenu_equipmentSubtype;
 
 extern char bss_4[18];
-extern struct textHeader_t _textHeaders[];
+extern struct textHeader_t textHeaders[];
 
 /**
  * Purpose unclear, seems to be related to an unused game setting.

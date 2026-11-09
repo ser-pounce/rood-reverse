@@ -12,7 +12,7 @@
  *
  * @return The new page to display.
  */
-static int _itemPaging(int items, int page)
+static int itemPaging(int items, int page)
 {
     if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
 
@@ -43,7 +43,7 @@ static int _itemPaging(int items, int page)
 /**
  * Draws the item categories, optionally highlighting the selection.
  */
-static void _renderItemCategory(int animationStep, int highlightSelected)
+static void renderItemCategory(int animationStep, int highlightSelected)
 {
     int i;
     int selectedCategory = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
@@ -84,7 +84,7 @@ static void _renderItemCategory(int animationStep, int highlightSelected)
  * Hoists the item category and selected item to the top of the menu
  * during the start of the menu transition animation.
  */
-static void _startMenuTransition(int id)
+static void startMenuTransition(int id)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -104,7 +104,7 @@ static void _startMenuTransition(int id)
 /**
  * Outdents the category and hoists the selected row to the top.
  */
-static void _continueMenuTransition(int id)
+static void continueMenuTransition(int id)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(31);
     menuItem->state = menuItemStateSlideX;
@@ -116,12 +116,12 @@ static void _continueMenuTransition(int id)
     menuItem->targetPosition0 = 18;
 }
 
-#ifdef _ITEMMENU
-static u_short _menuText[] = {
+#ifdef ITEMMENU
+static u_short menuTextTable[] = {
 #include "build/assets/MENU/MENU3.PRG/menuText.vsString"
 };
 #else
-static u_short _menuText[] = {
+static u_short menuTextTable[] = {
 #include "build/assets/MENU/MENUB.PRG/menuText.vsString"
 };
 #endif

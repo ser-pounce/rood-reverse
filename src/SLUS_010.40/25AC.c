@@ -61,7 +61,7 @@ typedef struct {
     int unk4;
     char unk8;
     char unk9;
-} _sfxHeader_t;
+} sfxHeader_t;
 
 typedef struct {
     union {
@@ -120,7 +120,7 @@ static void Sound_ProcessAkaoVM(FSoundChannel*, int);
 static void Sound_SetReverbMode(int in_ReverbMode);
 
 extern int g_Sound_EventDescriptor;
-extern char _soundFlush[64];
+extern char soundFlush[64];
 extern CdlATV g_Sound_CdlATV;
 extern D_80036770_t D_80036770;
 extern int D_800377E0[3];
@@ -130,7 +130,7 @@ extern char* g_Sound_Sfx_ProgramData;
 extern int D_800378A0;
 extern D_800378C0_t g_Sound_Vm2Params;
 extern int g_Sound_MutedMusicChannelMask;
-extern char _spuMemInfo;
+extern char spuMemInfo;
 extern volatile int g_bSpuTransferring;
 extern FSoundChannel g_SfxSoundChannels[12];
 extern int D_80039AFC;
@@ -441,7 +441,7 @@ int Sound_SfxHasVoiceFlag(u_long arg0)
 {
     int ret = 0;
     if (arg0 >= 0x80000000) {
-        ret = ((_sfxHeader_t*)arg0)->unk9 >> 7;
+        ret = ((sfxHeader_t*)arg0)->unk9 >> 7;
     } else if (g_Sound_Sfx_MetadataTableA[arg0] & 0x8000) {
         ret = 1;
     }
@@ -1182,10 +1182,10 @@ static void Sound_Start(void)
     int event;
 
     SpuStart();
-    SpuInitMalloc(4, &_spuMemInfo);
+    SpuInitMalloc(4, &spuMemInfo);
     SpuSetTransferMode(SPU_TRANSFER_BY_DMA);
     SpuSetTransferStartAddr(0x1010);
-    WriteSpu(_soundFlush, 64);
+    WriteSpu(soundFlush, 64);
     WaitForSpuTransfer();
     Sound_Setup();
     SpuSetIRQ(SPU_OFF);
@@ -1205,7 +1205,7 @@ static void Sound_Start(void)
 static void Sound_Stop(void)
 {
     if (g_bSpuTransferring == 1) {
-        WriteSpu(_soundFlush, 64);
+        WriteSpu(soundFlush, 64);
         WaitForSpuTransfer();
     }
     while (StopRCnt(RCntCNT2) == 0)

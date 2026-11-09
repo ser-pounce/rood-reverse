@@ -558,7 +558,7 @@ void vs_mainMenu_setStatsFromGem(int gemIndex)
  * @param row
  * @return Pointer to description.
  */
-static char* _weaponStatusView(int row)
+static char* weaponStatusView(int row)
 {
     char* menuText[2];
     int rowType;
@@ -622,7 +622,7 @@ static char* _weaponStatusView(int row)
  * @param row
  * @return Pointer to description.
  */
-static char* _bladeStatusView(UNUSED int arg0)
+static char* bladeStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -640,7 +640,7 @@ static char* _bladeStatusView(UNUSED int arg0)
  * @param row
  * @return Pointer to description.
  */
-static char* _gripStatusView(UNUSED int arg0)
+static char* gripStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -658,7 +658,7 @@ static char* _gripStatusView(UNUSED int arg0)
  * @param row
  * @return Pointer to description.
  */
-static char* _shieldStatusView(int arg0)
+static char* shieldStatusView(int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -705,7 +705,7 @@ static char* _shieldStatusView(int arg0)
  * @param row
  * @return Pointer to description.
  */
-static char* _armorStatusView(UNUSED int arg0)
+static char* armorStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -724,7 +724,7 @@ static char* _armorStatusView(UNUSED int arg0)
  * @param row
  * @return Pointer to description.
  */
-static char* _gemStatusView(UNUSED int arg0)
+static char* gemStatusView(UNUSED int arg0)
 {
     char* menuText[2];
     int rowType;
@@ -745,14 +745,14 @@ void vs_mainMenu_resetStatusViewCursor(void)
  * An unused status view UI element that sat between the item
  * details rows and the base stats.
  */
-static char _uIElement15Enabled = 0;
+static char uIElement15Enabled = 0;
 
 /**
  * Indicates whether the selected transition is valid.
  *
  * @return True / false.
  */
-static int _isUiElementReachable(int selectedElement)
+static int isUiElementReachable(int selectedElement)
 {
     int var_a0 = 0;
     int subType = vs_mainMenu_equipmentSubtype;
@@ -807,7 +807,7 @@ static int _isUiElementReachable(int selectedElement)
         break;
 
     case 15:
-        var_a0 = _uIElement15Enabled;
+        var_a0 = uIElement15Enabled;
         break;
 
     case 16:
@@ -841,9 +841,9 @@ int vs_mainMenu_statusViewCursorPositions[] = { vs_getXY(66, 28), vs_getXY(-4, 2
 
 void vs_mainMenu_renderStatusView(void)
 {
-    static char* (*statusViewDispatch[])(int row) = { _weaponStatusView, _bladeStatusView,
-        _gripStatusView, _shieldStatusView, _armorStatusView, _armorStatusView,
-        _gemStatusView };
+    static char* (*statusViewDispatch[])(int row) = { weaponStatusView, bladeStatusView,
+        gripStatusView, shieldStatusView, armorStatusView, armorStatusView,
+        gemStatusView };
 
     static char cursorAnimStep = 0;
     static char previousItem = 0;
@@ -868,7 +868,7 @@ void vs_mainMenu_renderStatusView(void)
             vs_mainMenu_statusViewNavigationMap[selectedElement][direction - 1];
     }
 
-    while (_isUiElementReachable(vs_mainMenu_selectedStatusViewElement) == 0) {
+    while (isUiElementReachable(vs_mainMenu_selectedStatusViewElement) == 0) {
 
         if (selectedElement == vs_mainMenu_selectedStatusViewElement) {
 
@@ -876,12 +876,12 @@ void vs_mainMenu_renderStatusView(void)
                 do {
                     --vs_mainMenu_selectedStatusViewElement;
                 } while (
-                    _isUiElementReachable(vs_mainMenu_selectedStatusViewElement) == 0);
+                    isUiElementReachable(vs_mainMenu_selectedStatusViewElement) == 0);
             } else {
                 do {
                     ++vs_mainMenu_selectedStatusViewElement;
                 } while (
-                    _isUiElementReachable(vs_mainMenu_selectedStatusViewElement) == 0);
+                    isUiElementReachable(vs_mainMenu_selectedStatusViewElement) == 0);
             }
 
             break;
@@ -965,7 +965,7 @@ void vs_mainMenu_renderStatusView(void)
             }
 
         } else if (vs_mainMenu_selectedStatusViewElement == 15) {
-            // Unused, see `_uIElement15Enabled`
+            // Unused, see `uIElement15Enabled`
             infoMsg = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_endsSetup];
         } else {
 
@@ -997,7 +997,7 @@ void vs_mainMenu_renderStatusView(void)
     i = vs_mainMenu_statusViewCursorPositions[vs_mainMenu_selectedStatusViewElement];
 
     if (vs_mainMenu_selectedStatusViewElement == 15) {
-        i += _uIElement15Enabled << 0x14;
+        i += uIElement15Enabled << 0x14;
     }
 
     if (vs_mainMenu_equipmentSubtype & 8) {
@@ -1007,7 +1007,7 @@ void vs_mainMenu_renderStatusView(void)
     }
 
     cursorAnimStep = vs_mainMenu_renderCursor(cursorAnimStep, i);
-    _uIElement15Enabled = 0;
+    uIElement15Enabled = 0;
 }
 
 void vs_mainMenu_unequipWeapon(void)
@@ -1124,8 +1124,8 @@ void vs_mainMenu_initItem(int itemCategory, int index)
 int vs_mainMenu_loadItemText(int load)
 {
     static UNUSED int bss_2; // Garbage, patched in MAINMENU_PRG.py
-    static vs_main_CdQueueSlot* _itemNamesCdQueueSlot;
-    static char _itemNamesLoading;
+    static vs_main_CdQueueSlot* itemNamesCdQueueSlot;
+    static char itemNamesLoading;
 
     vs_main_CdFile cdFile;
 
@@ -1140,23 +1140,23 @@ int vs_mainMenu_loadItemText(int load)
         cdFile.lba = VS_ITEMNAME_BIN_LBA;
         cdFile.size = VS_ITEMNAME_BIN_SIZE + VS_ITEMHELP_BIN_SIZE + VS_MENU12_BIN_SIZE;
 
-        _itemNamesCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        itemNamesCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
 
-        vs_main_cdEnqueue(_itemNamesCdQueueSlot, vs_mainMenu_itemNames);
+        vs_main_cdEnqueue(itemNamesCdQueueSlot, vs_mainMenu_itemNames);
 
-        _itemNamesLoading = 1;
+        itemNamesLoading = 1;
         return 0;
     }
 
-    if (_itemNamesLoading == 0) {
+    if (itemNamesLoading == 0) {
         return 1;
     }
 
-    if (_itemNamesCdQueueSlot->state == 4) {
+    if (itemNamesCdQueueSlot->state == 4) {
 
-        vs_main_freeCdQueueSlot(_itemNamesCdQueueSlot);
+        vs_main_freeCdQueueSlot(itemNamesCdQueueSlot);
 
-        _itemNamesLoading = 0;
+        itemNamesLoading = 0;
         return 1;
     }
 
@@ -1183,7 +1183,7 @@ int vs_mainMenu_ensureItemTextUnloaded(void)
 /**
  * Gets the ID for the selected category. Weapons are identified by their attached blade.
  */
-static int _getItemId(int category, int index, vs_main_inventory_t* inventory)
+static int getItemId(int category, int index, vs_main_inventory_t* inventory)
 {
     int id = 0;
 
@@ -1243,7 +1243,7 @@ int vs_mainMenu_findItem(int category, int id)
 /**
  * Updates `vs_mainMenu_inventoryIndices` with the provided id.
  */
-static void _setItemIndex(int itemCategory, int id)
+static void setItemIndex(int itemCategory, int id)
 {
     int i;
     u_char* index = vs_mainMenu_inventoryIndices[itemCategory];
@@ -1264,7 +1264,7 @@ void vs_mainMenu_rebuildInventory(int itemCategory)
 
     for (i = 0; i < capacity; ++i) {
         int index = indices[i];
-        if ((index != 0) && (_getItemId(itemCategory, index - 1, NULL) == 0)) {
+        if ((index != 0) && (getItemId(itemCategory, index - 1, NULL) == 0)) {
             indices[i] = 0;
         }
     }
@@ -1302,9 +1302,9 @@ void vs_mainMenu_rebuildInventory(int itemCategory)
     }
 
     for (i = 0; i < capacity; ++i) {
-        if ((_getItemId(itemCategory, i, NULL) != 0)
+        if ((getItemId(itemCategory, i, NULL) != 0)
             && (vs_mainMenu_findItem(itemCategory, i) == 0)) {
-            _setItemIndex(itemCategory, i);
+            setItemIndex(itemCategory, i);
         }
     }
 }
@@ -1315,7 +1315,7 @@ int vs_mainMenu_getItemCount(int itemCategory, vs_main_inventory_t* inventory)
     int count = 0;
 
     for (i = 0; i < vs_mainMenu_inventoryItemCapacities[itemCategory]; ++i) {
-        if (_getItemId(itemCategory, i, inventory) != 0) {
+        if (getItemId(itemCategory, i, inventory) != 0) {
             ++count;
         }
     }
@@ -1328,7 +1328,7 @@ int vs_mainMenu_getFirstEmptyItemSlot(int itemCategory, vs_main_inventory_t* inv
     int i;
 
     for (i = 0; i < vs_mainMenu_inventoryItemCapacities[itemCategory]; ++i) {
-        if (_getItemId(itemCategory, i, inventory) == 0) {
+        if (getItemId(itemCategory, i, inventory) == 0) {
             break;
         }
     }

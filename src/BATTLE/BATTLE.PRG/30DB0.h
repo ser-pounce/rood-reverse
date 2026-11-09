@@ -38,7 +38,7 @@ typedef struct {
 } vs_battle_texInfo_t;
 
 extern D_800F2458_t D_800F2458;
-extern _wepModelOffsets* vs_battle_commonWepBuffs[];
+extern wepModelOffsets_t* vs_battle_commonWepBuffs[];
 extern vs_battle_texInfo_t D_800F46A8[];
 extern vs_battle_texInfo_t vs_battle_wepTextures[20];
 extern u_char D_800E8F90[];

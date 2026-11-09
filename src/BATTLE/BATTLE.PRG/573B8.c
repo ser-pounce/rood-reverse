@@ -14,7 +14,7 @@ typedef struct {
     signed char power;
 } D_800F4B28_t;
 
-extern int (*_opcodeFunctionTable[])(u_char*, short);
+extern int (*opcodeFunctionTable[])(u_char*, short);
 extern vs_main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
@@ -55,7 +55,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
 
     while (1) {
         if (D_800F4C2C != 2) {
-            ret = _opcodeFunctionTable[*script](script, arg1);
+            ret = opcodeFunctionTable[*script](script, arg1);
         } else {
             ret = D_800F4C28[*script](script, arg1);
         }
@@ -182,7 +182,7 @@ int func_800BFEBC(short mode, short frame, short duration)
 void func_800C00E8(int arg0, void* arg1)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
-    D_800F4BF0.lba = (_evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
+    D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
     D_800F4BBC = vs_main_allocateCdQueueSlot(&D_800F4BF0);
     vs_main_cdEnqueue(D_800F4BBC, arg1);
 }

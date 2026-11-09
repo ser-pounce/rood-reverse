@@ -9,15 +9,15 @@ typedef struct {
     int pitch;
     int distance;
     int mode;
-} _sphericalValues;
+} sphericalValues_t;
 
 typedef struct {
-    _sphericalValues values;
-    _sphericalValues delta;
+    sphericalValues_t values;
+    sphericalValues_t delta;
     int initialDistance;
     int unk24;
     int speed;
-} _sphericalCamera;
+} sphericalCamera_t;
 
 typedef struct {
     POLY_F4 covered;
@@ -26,11 +26,11 @@ typedef struct {
 
 typedef struct {
     vs_camera_t fromCameraState;
-    _sphericalCamera fromSpherical;
+    sphericalCamera_t fromSpherical;
     int fromNearClip;
     int fromProjectionDistance;
     int fromFarClip;
-    _sphericalCamera toSpherical;
+    sphericalCamera_t toSpherical;
     int toNearClip;
     int toProjectionDistance;
     int toFarClip;
@@ -47,7 +47,7 @@ typedef struct {
 
 int vs_battle_getCameraRoll(void);
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
-int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera*);
+int vs_battle_syncCameraAnglesFromPosition(sphericalCamera_t*);
 void vs_battle_setCameraRoll(int arg0);
 void vs_battle_setFarClip(int arg0, int arg1);
 void vs_battle_initialiseCameraFromSpherical(VECTOR*, VECTOR*, int, int);
@@ -57,7 +57,7 @@ void vs_battle_setCameraPosition(VECTOR* inPosition);
 void vs_battle_getCameraLookAt(VECTOR* outLookAt);
 void vs_battle_setCameraLookAt(VECTOR* inLookAt);
 void vs_battle_setNearClip(int arg0);
-extern _sphericalCamera vs_battle_cameraCurrentSpherical;
+extern sphericalCamera_t vs_battle_cameraCurrentSpherical;
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;
 extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];

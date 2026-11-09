@@ -13,9 +13,9 @@
 /**
  * Prints the HP cost of a Break Art using action data.
  */
-static void _setHPCost(int id)
+static void setHPCost(int id)
 {
-    static char _digitBuffer[16];
+    static char digitBuffer[16];
 
     int flags;
     int i;
@@ -25,27 +25,27 @@ static void _setHPCost(int id)
     vs_mainmenu_setActionCost(1, "HP", 8, (flags >> 1) & 1);
 
     cost = vs_main_actions[id].cost;
-    _digitBuffer[15] = 0;
+    digitBuffer[15] = 0;
 
     i = 15;
     do {
         --i;
         cost = vs_battle_toBCD(cost);
-        _digitBuffer[i] = (cost & 0xF) + '0';
+        digitBuffer[i] = (cost & 0xF) + '0';
         cost >>= 4;
     } while (cost != 0);
 
     --i;
-    _digitBuffer[i] = '#';
+    digitBuffer[i] = '#';
 
-    vs_mainmenu_setActionCost(0, &_digitBuffer[i], 72, (flags >> 1) & 1);
+    vs_mainmenu_setActionCost(0, &digitBuffer[i], 72, (flags >> 1) & 1);
 }
 
 /**
  * Prints kills needed to unlock the next Break Art
  * @param row Effectively the count of already unlocked arts
  */
-static void _setNextArtUnlockPointsRemaining(int xOffset, int weaponCategory, int row)
+static void setNextArtUnlockPointsRemaining(int xOffset, int weaponCategory, int row)
 {
     char pointsBuf[16];
     int pos;
@@ -90,7 +90,7 @@ static void _setNextArtUnlockPointsRemaining(int xOffset, int weaponCategory, in
     vs_battle_renderTextRaw(pointsStr, pos + 96, NULL);
 }
 
-static u_short _strings[] = {
+static u_short strings[] = {
 #include "build/assets/MENU/MENU1.PRG/strings.vsString"
 };
 
@@ -104,7 +104,7 @@ enum drawArtsListOpt { opt_forceCursorMemory = 0x10 };
  * - Bits 4-32: Forces cursor memory
  * @return The selected row, negative if user cancelled, 0 otherwise.
  */
-static int _weaponArtsMenu(int typeCursorMem)
+static int weaponArtsMenu(int typeCursorMem)
 {
     enum state { init, waitForSelection, returnSelection };
 
@@ -129,7 +129,7 @@ static int _weaponArtsMenu(int typeCursorMem)
         typeCursorMem &= 0xF;
         weaponType = typeCursorMem;
         menuItem = vs_battle_setMenuItem(
-            10, 320, 34, 0x7E, 8, (char*)&_strings[_strings[(weaponType - 1) * 3]]);
+            10, 320, 34, 0x7E, 8, (char*)&strings[strings[(weaponType - 1) * 3]]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
@@ -158,8 +158,8 @@ static int _weaponArtsMenu(int typeCursorMem)
             if (vs_main_actions[actionId].unlocked) {
                 menuStrings[rowCount * 2] = (char*)vs_main_actions[actionId].name;
                 menuStrings[rowCount * 2 + 1] =
-                    (char*)&_strings[_strings[VS_strings_INDEX_daggerArt1 + i
-                                              + ((weaponType - 1) * 4)]];
+                    (char*)&strings[strings[VS_strings_INDEX_daggerArt1 + i
+                                            + ((weaponType - 1) * 4)]];
                 rowTypes[rowCount] = 0;
 
                 if ((weaponType != vs_battle_characterState->equippedWeaponCategory)
@@ -178,9 +178,9 @@ static int _weaponArtsMenu(int typeCursorMem)
         }
 
         if (vs_battle_shortcutInvoked == 0) {
-            menuStrings[rowCount * 2] = (char*)&_strings[VS_strings_OFFSET_viewArts];
+            menuStrings[rowCount * 2] = (char*)&strings[VS_strings_OFFSET_viewArts];
             menuStrings[rowCount * 2 + 1] =
-                (char*)&_strings[VS_strings_OFFSET_viewArtsDesc];
+                (char*)&strings[VS_strings_OFFSET_viewArtsDesc];
             rowTypes[rowCount] = 2;
             actionIds[rowCount] = 0xFFFF;
             ++rowCount;
@@ -235,7 +235,7 @@ static int _weaponArtsMenu(int typeCursorMem)
         } else {
             i = actionIds[vs_mainMenu_getConfirmedRow()];
             if (i != 0xFFFF) {
-                _setHPCost(i);
+                setHPCost(i);
             }
         }
         break;
@@ -255,7 +255,7 @@ static int _weaponArtsMenu(int typeCursorMem)
         animationIndex = vs_battle_animationIndices[animationIndex];
     }
 
-    _setNextArtUnlockPointsRemaining(
+    setNextArtUnlockPointsRemaining(
         vs_battle_rowAnimationSteps[animationIndex], weaponType, artsLearned);
 
     return 0;
@@ -266,7 +266,7 @@ static int _weaponArtsMenu(int typeCursorMem)
  *
  * @return The selected row, negative if user cancelled, 0 otherwise.
  */
-static int _weaponCategoriesMenu(int initialize)
+static int weaponCategoriesMenu(int initialize)
 {
     enum state { init, waitForSelection, returnSelection };
 
@@ -275,7 +275,7 @@ static int _weaponCategoriesMenu(int initialize)
 
     if (initialize != 0) {
         vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
-            10, 320, 34, 0x7E, 8, (char*)&_strings[VS_strings_OFFSET_viewArts]);
+            10, 320, 34, 0x7E, 8, (char*)&strings[VS_strings_OFFSET_viewArts]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
@@ -295,8 +295,8 @@ static int _weaponCategoriesMenu(int initialize)
         }
 
         for (i = 0; i < 10; ++i) {
-            menuStrings[i * 2] = (char*)&_strings[_strings[i * 3]];
-            menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 1]];
+            menuStrings[i * 2] = (char*)&strings[strings[i * 3]];
+            menuStrings[i * 2 + 1] = (char*)&strings[strings[i * 3 + 1]];
             rowTypes[i] = 0x04000000 * (i + 1);
             for (j = 0; j < 4; ++j) {
                 if (vs_main_actions[i * 4 + vs_main_actions_daggerArt1 + j].unlocked) {
@@ -304,7 +304,7 @@ static int _weaponCategoriesMenu(int initialize)
                 }
             }
             if (j == 4) {
-                menuStrings[i * 2 + 1] = (char*)&_strings[_strings[i * 3 + 2]];
+                menuStrings[i * 2 + 1] = (char*)&strings[strings[i * 3 + 2]];
                 rowTypes[i] |= 1;
             } else if (i == (vs_battle_characterState->equippedWeaponCategory - 1)) {
                 rowTypes[i] |= 4;
@@ -344,7 +344,7 @@ static int _weaponCategoriesMenu(int initialize)
 /**
  * Draws header
  */
-static void _setMenuHeader(void)
+static void setMenuHeader(void)
 {
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings
@@ -386,18 +386,18 @@ int vs_menu1_exec(u_char* state)
         // Fallthrough
 
     case artsInit:
-        _weaponArtsMenu(weaponType);
+        weaponArtsMenu(weaponType);
         *state = artsMenu;
         break;
 
     case artsInitWithTitle:
-        _setMenuHeader();
-        _weaponArtsMenu(weaponType | opt_forceCursorMemory);
+        setMenuHeader();
+        weaponArtsMenu(weaponType | opt_forceCursorMemory);
         *state = artsMenu;
         break;
 
     case artsMenu: {
-        int selectedRow = _weaponArtsMenu(0);
+        int selectedRow = weaponArtsMenu(0);
 
         if (selectedRow == menuSelectionConfirm) {
             break;
@@ -406,7 +406,7 @@ int vs_menu1_exec(u_char* state)
         if (selectedRow > 0) {
             if (selectedRow == menuSelectionBack) {
                 *state = weaponCategoryMenu;
-                _weaponCategoriesMenu(1);
+                weaponCategoriesMenu(1);
             } else {
                 D_800F4E98.executeAbility.s32 = selectedRow;
                 vs_battle_menuState.executeAbilityType = 5;
@@ -422,7 +422,7 @@ int vs_menu1_exec(u_char* state)
     }
 
     case weaponCategoryMenu: {
-        int row = _weaponCategoriesMenu(0);
+        int row = weaponCategoriesMenu(0);
 
         if (row == 0) {
             break;

@@ -22,7 +22,7 @@
  * A nonzero initFadeout initializes the menu; returns one when a save is
  * selected, -1 when cancelled, or zero while active.
  */
-static int _loadFileMenu(int initFadeout)
+static int loadFileMenu(int initFadeout)
 {
     enum state {
         init = 0,
@@ -49,14 +49,14 @@ static int _loadFileMenu(int initFadeout)
         selectedFile = 1;
 
         FILE_MENU_RESTORE_CURSOR();
-        _isSaving = 0;
+        isSaving = 0;
         state = init;
         return 0;
     }
     switch (state) {
     case init:
-        element = _initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
-            (char*)(_textTable + VS_MCMAN_BIN_OFFSET_load));
+        element = initFileMenuElement(0, vs_getXY(320, 34), vs_getWH(140, 12),
+            (char*)(textTable + VS_MCMAN_BIN_OFFSET_load));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 180;
         element->selected = 1;
@@ -64,42 +64,42 @@ static int _loadFileMenu(int initFadeout)
         state = displaySlot1;
         break;
     case displaySlot1:
-        if (_fileMenuElementsActive() != 0) {
-            element = _initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
-                (char*)(_textTable + VS_MCMAN_BIN_OFFSET_slot1));
+        if (fileMenuElementsActive() != 0) {
+            element = initFileMenuElement(1, vs_getXY(320, 50), vs_getWH(126, 12),
+                (char*)(textTable + VS_MCMAN_BIN_OFFSET_slot1));
             element->state = fileMenuElementStateAnimateX;
             element->targetPosition = 194;
             state = displaySlot2;
         }
         break;
     case displaySlot2:
-        element = _initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
-            (char*)(_textTable + VS_MCMAN_BIN_OFFSET_slot2));
+        element = initFileMenuElement(2, vs_getXY(320, 66), vs_getWH(126, 12),
+            (char*)(textTable + VS_MCMAN_BIN_OFFSET_slot2));
         element->state = fileMenuElementStateAnimateX;
         element->targetPosition = 194;
         state = waitForSlotAnimation;
         break;
     case waitForSlotAnimation:
-        if (_fileMenuElementsActive() != 0) {
+        if (fileMenuElementsActive() != 0) {
             state = handleInput;
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_selectSlot);
+            memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_selectSlot);
         }
         break;
     case handleInput:
-        _fileMenuElements[selectedFile].selected = 1;
-        _fileMenuElements[3 - selectedFile].selected = 0;
+        fileMenuElements[selectedFile].selected = 1;
+        fileMenuElements[3 - selectedFile].selected = 0;
         if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE);
-            _selectCursorXy = 0;
+            selectCursorXy = 0;
             for (i = 0; i < 3; ++i) {
-                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
-                _fileMenuElements[i].targetPosition = 320;
+                fileMenuElements[i].state = fileMenuElementStateAnimateX;
+                fileMenuElements[i].targetPosition = 320;
             }
             state = exit;
         } else if (vs_main_buttonsPressed.all & PADRright) {
             vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-            _selectLoadMemoryCard(selectedFile);
-            _selectCursorXy = 0;
+            selectLoadMemoryCard(selectedFile);
+            selectCursorXy = 0;
             state = slotSelected;
         } else {
             if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
@@ -107,11 +107,11 @@ static int _loadFileMenu(int initFadeout)
                 selectedFile = 3 - selectedFile;
                 FILE_MENU_STORE_CURSOR();
             }
-            _selectCursorXy = ((((selectedFile + 1) * 16) + 10) << 16) | 180;
+            selectCursorXy = ((((selectedFile + 1) * 16) + 10) << 16) | 180;
         }
         break;
     case slotSelected:
-        element = (fileMenuElements_t*)_selectLoadMemoryCard(0);
+        element = (fileMenuElements_t*)selectLoadMemoryCard(0);
         if (element != 0) {
             if ((long)element < 0) {
                 state = displaySlot1;
@@ -121,7 +121,7 @@ static int _loadFileMenu(int initFadeout)
         }
         break;
     case exit:
-        if (_fileMenuElementsActive() != 0) {
+        if (fileMenuElementsActive() != 0) {
             if (fadeout == 0) {
                 return -1;
             }
@@ -129,12 +129,12 @@ static int _loadFileMenu(int initFadeout)
         }
         break;
     case fadeAndReturnSelected:
-        if (++_fileMenuScreenFade > 30) {
+        if (++fileMenuScreenFade > 30) {
             return 1;
         }
         break;
     case fadeAndReturnNotSelected:
-        if (++_fileMenuScreenFade < 31) {
+        if (++fileMenuScreenFade < 31) {
             break;
         }
         return -1;

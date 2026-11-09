@@ -9,7 +9,7 @@ typedef struct {
     short height;
     short unk4;
     short unk6;
-} _mpdRoomCollisionMapSection;
+} mpdRoomCollisionMapSection_t;
 
 typedef struct {
     u_int unk0_0 : 5;
@@ -26,7 +26,7 @@ typedef struct {
     u_int unk0_17 : 1;
     u_int unk0_18 : 2;
     u_int unk0_20 : 12;
-} _mpdRoomSection3;
+} mpdRoomSection3_t;
 
 typedef struct {
     short unk0;
@@ -42,16 +42,16 @@ typedef struct {
     } unk8;
     char unkA;
     char unkB;
-} _mpdRoomSection9;
+} mpdRoomSection9_t;
 
 typedef struct {
-    _mpdRoomSection9 unk0;
+    mpdRoomSection9_t unk0;
     short keyOrSigil;
     short unkE;
     short unk10;
     char unk12;
     char unk13;
-} _mpdRoomSectionA;
+} mpdRoomSectionA_t;
 
 typedef struct {
     int unk0[5];
@@ -81,7 +81,7 @@ typedef struct {
     short unk52;
     short unk54;
     short unk56;
-} _mpdRoomSectionB;
+} mpdRoomSectionB_t;
 
 typedef struct {
     int unk0;
@@ -90,7 +90,7 @@ typedef struct {
     int* unkC;
     int* unk10;
     int unk14[0];
-} _mpdRoomSectionE;
+} mpdRoomSectionE_t;
 
 typedef struct {
     int visited;
@@ -113,7 +113,7 @@ typedef struct {
     u_short unk0_15 : 1;
     u_short unk2;
     char unk4[0];
-} _mpdRoomSection11;
+} mpdRoomSection11_t;
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -137,8 +137,8 @@ typedef struct {
     int unkA8;
     int unkAC;
     int unkB0;
-    _mpdRoomSection3 unkB4;
-} _mpdRoomSection12;
+    mpdRoomSection3_t unkB4;
+} mpdRoomSection12_t;
 
 typedef struct {
     short unk0;
@@ -152,14 +152,14 @@ typedef struct {
     short unk10;
     short unk12;
     vs_battle_loot unk14;
-} _mpdRoomSection13;
+} mpdRoomSection13_t;
 
 typedef struct {
     short minX;
     short minZ;
     short maxX;
     short maxZ;
-} _zoneContextBounds;
+} zoneContextBounds_t;
 
 typedef struct {
     char unk0;
@@ -192,30 +192,30 @@ typedef struct {
         u_int section18Len;
     } header;
     int* geometrySection;
-    _mpdRoomCollisionMapSection* collisionMapSection;
-    _mpdRoomSection3* section3;
+    mpdRoomCollisionMapSection_t* collisionMapSection;
+    mpdRoomSection3_t* section3;
     vs_main_warp_t* doorSection;
     int lightingSection;
     int section6;
     int section7;
     int section8;
-    _mpdRoomSection9* section9;
-    _mpdRoomSectionA* sectionA;
-    _mpdRoomSectionB* sectionB;
+    mpdRoomSection9_t* section9;
+    mpdRoomSectionA_t* sectionA;
+    mpdRoomSectionB_t* sectionB;
     void* textureEffectsSection;
     void* sectionD;
-    _mpdRoomSectionE* sectionE;
+    mpdRoomSectionE_t* sectionE;
     vs_battle_scene* sectionF;
     u_short* section10;
-    _mpdRoomSection11* section11;
-    _mpdRoomSection12* section12;
-    _mpdRoomSection13* section13;
+    mpdRoomSection11_t* section11;
+    mpdRoomSection12_t* section12;
+    mpdRoomSection13_t* section13;
     u_int* section14;
     int section15;
     int section16;
     int section17;
-    _zoneContextBounds* section18;
-} _mpdRoomSection;
+    zoneContextBounds_t* section18;
+} mpdRoomSection_t;
 
 typedef struct {
     int vertexCount;
@@ -234,10 +234,10 @@ typedef struct {
  * @return Unique room ID from 0-511.
  */
 int vs_battle_getCurrentRoomId(void);
-_mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
+mpdRoomSection3_t* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void vs_battle_setRoomsUnk0(vs_battle_scene*);
 int vs_battle_getCurrentSceneId(void);
-extern _mpdRoomSection vs_battle_roomData;
+extern mpdRoomSection_t vs_battle_roomData;
 
 void vs_battle_setDoorEntered(void);
 int vs_battle_inWorkshop(void);

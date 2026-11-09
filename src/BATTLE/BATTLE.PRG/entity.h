@@ -69,7 +69,7 @@ typedef struct {
     u_char unkD;
     u_char unkE;
     u_char unkF;
-} _armature_t;
+} armature_t;
 
 typedef struct {
     u_char unk0[48];
@@ -77,7 +77,7 @@ typedef struct {
     void* groupOffset;
     void* vertexOffset;
     void* polyOffset;
-    _armature_t armatures[0];
+    armature_t armatures[0];
 } D_800F4538_unk68;
 
 typedef struct {
@@ -106,7 +106,7 @@ typedef struct {
     int verticesOffset;
     int polygonsOffset;
     u_char unk40[0x7C0];
-} _wepModelOffsets;
+} wepModelOffsets_t;
 
 typedef struct {
     u_char nBones;
@@ -473,7 +473,7 @@ typedef struct {
     int unk14;
     short unk18;
     short unk1A;
-    _wepModelOffsets* offsets;
+    wepModelOffsets_t* offsets;
     MATRIX unk20[4];
     SVECTOR unkBoneInfo[4];
     u_short palettes[7][64];

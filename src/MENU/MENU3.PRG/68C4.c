@@ -8,9 +8,9 @@
 #include "src/MENU/MAINMENU.PRG/224.h"
 
 int func_80109320(int);
-void _populateDataSlot(int wepId, int material);
+void populateDataSlot(int wepId, int material);
 
-int _loadObjectData(int category, int wepId, int material)
+int loadObjectData(int category, int wepId, int material)
 {
     UNUSED int _[6];
     int i;
@@ -38,7 +38,7 @@ int _loadObjectData(int category, int wepId, int material)
             }
         }
 
-        _populateDataSlot(wepId, material);
+        populateDataSlot(wepId, material);
         func_8009D934(1, 0, 1);
 
         ++vs_battle_loadObjectDataState;
@@ -98,7 +98,7 @@ int func_80109320(int category)
     return category & 1;
 }
 
-void _populateDataSlot(int wepId, int material)
+void populateDataSlot(int wepId, int material)
 {
     vs_battle_objectData objData;
     int index;

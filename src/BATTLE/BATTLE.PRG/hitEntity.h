@@ -53,15 +53,15 @@ typedef struct {
     short armorDp;
     short shieldPp;
     int kind;
-} _hitEntity_t;
+} hitEntity_t;
 
 typedef struct {
     u_short actionIndex;
     char unk2;
     char unk3;
-    _hitEntity_t unk4;
+    hitEntity_t unk4;
     u_short unk48;
     u_short targetCount;
-    _hitEntity_t targets[30];
+    hitEntity_t targets[30];
     SVECTOR unk844;
 } D_800F19CC_t2;

@@ -15,27 +15,27 @@
 #include <libspu.h>
 #include <libds.h>
 
-static void _playNewGameSfx(void)
+static void playNewGameSfx(void)
 {
     vs_main_playSfxDefault(0x7E, 1);
     vs_main_playSfxDefault(0x7E, 2);
     vs_main_playSfxDefault(0x7E, 3);
 }
 
-static void _playMenuChangeSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
+static void playMenuChangeSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE); }
 
-static void _playMenuSelectSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
+static void playMenuSelectSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT); }
 
-static void _playMenuLeaveSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
+static void playMenuLeaveSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEAVE); }
 
-static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
+static char const* memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-static u_int _keystreamBits(int value)
+static u_int keystreamBits(int value)
 {
-    static u_int _keystreamState = 0x19660D;
-    u_int seed = _keystreamState;
+    static u_int keystreamState = 0x19660D;
+    u_int seed = keystreamState;
 
-    _keystreamState = seed * 0x19660D;
+    keystreamState = seed * 0x19660D;
     return seed >> (32 - value);
 }
 
@@ -43,7 +43,7 @@ static u_int _keystreamBits(int value)
     vs_main_gametime.all = 0; \
     vs_main_settings.menuFlags &= 0xFFDF; \
     vs_main_stateFlags.puzzleMode = 1 - vs_main_settings.puzzleModeOff
-#define KEYSTREAM_BITS(n) _keystreamBits(n)
+#define KEYSTREAM_BITS(n) keystreamBits(n)
 #define PACKAGE_SAVE_CLEAR_CONTAINER() \
     memset(&savedata2->containerData, 0, sizeof savedata2->containerData)
 #define PACKAGE_SAVE_UPDATE_SAVE_COUNT() vs_main_settings.currentGameSaveCount = 0
@@ -74,16 +74,16 @@ static u_int _keystreamBits(int value)
 
 #include "src/MENU/showSaveMenu.h"
 
-static char _frameBuf;
+static char frameBuf;
 static UNUSED char _3;
 
-static void _initSaveScreen(void)
+static void initSaveScreen(void)
 {
     DISPENV disp;
     DRAWENV draw;
     RECT rect;
 
-    _frameBuf = 0;
+    frameBuf = 0;
     SetDefDispEnv(&disp, 320, 0, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -96,14 +96,14 @@ static void _initSaveScreen(void)
     SetDispMask(1);
 }
 
-static void _saveScreenSwapBuf(void)
+static void saveScreenSwapBuf(void)
 {
     DISPENV disp;
     DRAWENV draw;
     int offset;
 
-    _frameBuf = (1 - _frameBuf);
-    offset = _frameBuf * 320;
+    frameBuf = (1 - frameBuf);
+    offset = frameBuf * 320;
     SetDefDispEnv(&disp, 320 - offset, 0, 320, 240);
     SetDefDrawEnv(&draw, offset, 0, 320, 240);
     disp.screen.y = 8;
@@ -127,17 +127,17 @@ typedef struct {
     char data[240][192];
 } menuBg_t;
 
-extern fontTable_t _fontTable[];
-extern u_long _debugFont[];
-extern uiTable_t _uiTable;
-extern menuBg_t _saveMenuBg_clut;
+extern fontTable_t fontTable[];
+extern u_long debugFont[];
+extern uiTable_t uiTable;
+extern menuBg_t saveMenuBg_clut;
 
-static int _gameLoadScreen(void)
+static int gameLoadScreen(void)
 {
     enum state {
         init = 0,
         loadMemcardMenu = 1,
-        loadFileMenu = 2,
+        loadFileMenuState = 2,
     };
 
     static RECT rect;
@@ -145,54 +145,54 @@ static int _gameLoadScreen(void)
 
     int exit;
 
-    _drawImage(vs_getXY(768, 0), &_uiTable.page0, vs_getWH(64, 224));
-    _drawImage(vs_getXY(448, 256), &_uiTable.page1, vs_getWH(64, 256));
-    _drawImage(vs_getXY(832, 0), &_fontTable[0], vs_getWH(64, 224));
-    _drawImage(vs_getXY(896, 0), &_fontTable[1], vs_getWH(64, 224));
-    _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
-    _drawImage(vs_getXY(768, 227), &_saveMenuBg_clut.clut, vs_getWH(256, 1));
+    drawImage(vs_getXY(768, 0), &uiTable.page0, vs_getWH(64, 224));
+    drawImage(vs_getXY(448, 256), &uiTable.page1, vs_getWH(64, 256));
+    drawImage(vs_getXY(832, 0), &fontTable[0], vs_getWH(64, 224));
+    drawImage(vs_getXY(896, 0), &fontTable[1], vs_getWH(64, 224));
+    drawImage(vs_getXY(960, 66), debugFont, vs_getWH(64, 158));
+    drawImage(vs_getXY(768, 227), &saveMenuBg_clut.clut, vs_getWH(256, 1));
     setRECT(&rect, 640, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     setRECT(&rect, 768, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(672, 256), &_saveMenuBg_clut.data, vs_getWH(96, 240));
-    _initSaveScreen();
+    drawImage(vs_getXY(672, 256), &saveMenuBg_clut.data, vs_getWH(96, 240));
+    initSaveScreen();
     state = init;
 
     while (1) {
         vs_main_gametimeUpdate(2);
-        _saveScreenSwapBuf();
+        saveScreenSwapBuf();
         vs_main_processPadState();
         switch (state) {
         case init:
             if (state == 0) {
-                _initMemcard(1);
+                initMemcard(1);
                 state = loadMemcardMenu;
             }
             break;
         case loadMemcardMenu:
-            if (_initMemcard(0) != 0) {
-                _initFileMenu();
-                _loadFileMenu(2);
-                state = loadFileMenu;
+            if (initMemcard(0) != 0) {
+                initFileMenu();
+                loadFileMenu(2);
+                state = loadFileMenuState;
             }
             break;
-        case loadFileMenu:
-            exit = _loadFileMenu(0);
+        case loadFileMenuState:
+            exit = loadFileMenu(0);
             if (exit != 0) {
-                _shutdownMemcard();
+                shutdownMemcard();
                 SetDispMask(0);
                 return exit;
             }
-            _drawFileMenuBg();
-            _drawFileMenu(_frameBuf);
+            drawFileMenuBg();
+            drawFileMenu(frameBuf);
             break;
         }
     }
 }
 
-static int _saveFileExists(void)
+static int saveFileExists(void)
 {
     struct DIRENTRY dir;
     char filename[22];
@@ -200,21 +200,21 @@ static int _saveFileExists(void)
     int i;
     int ret = 0;
 
-    _initMemcard(1);
+    initMemcard(1);
 
     do {
         vs_main_gametimeUpdate(2);
-    } while (_initMemcard(0) == 0);
+    } while (initMemcard(0) == 0);
 
     for (i = 1; i <= 2; ++i) {
-        _memcardEventHandler(i);
+        memcardEventHandler(i);
         do {
-            memCardState = _memcardEventHandler(0) & 3;
+            memCardState = memcardEventHandler(0) & 3;
             VSync(2);
         } while (memCardState == memcardEventPending);
 
         if (memCardState == memcardEventIoEnd) {
-            _rMemcpy(filename, _memcardFilenameTemplate, sizeof filename);
+            rMemcpy(filename, memcardFilenameTemplate, sizeof filename);
 
             filename[2] = i + '/';
             filename[20] = '?';
@@ -225,11 +225,11 @@ static int _saveFileExists(void)
             }
         }
     }
-    _shutdownMemcard();
+    shutdownMemcard();
     return ret;
 }
 
-static int _saveScreenConfirmation(int init)
+static int saveScreenConfirmation(int init)
 {
     enum state {
         initSlot1 = 0,
@@ -255,19 +255,19 @@ static int _saveScreenConfirmation(int init)
     switch (state) {
     case initSlot1:
     case initSlot2:
-        elem = _initFileMenuElement(state + 1, vs_getXY(320, state * 16 + 146),
+        elem = initFileMenuElement(state + 1, vs_getXY(320, state * 16 + 146),
             vs_getWH(126, 12),
-            (char*)&_textTable[_textTable[state + VS_MCMAN_BIN_INDEX_yesOption]]);
+            (char*)&textTable[textTable[state + VS_MCMAN_BIN_INDEX_yesOption]]);
         elem->state = fileMenuElementStateAnimateX;
         elem->targetPosition = 194;
         ++state;
         break;
     case waitForSlotAnimation:
-        state += _fileMenuElementsActive();
+        state += fileMenuElementsActive();
         break;
     case handleInput:
-        _fileMenuElements[confirm].selected = 1;
-        _fileMenuElements[3 - confirm].selected = 0;
+        fileMenuElements[confirm].selected = 1;
+        fileMenuElements[3 - confirm].selected = 0;
         if (vs_main_buttonsPressed.all & PADRdown) {
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
@@ -276,25 +276,25 @@ static int _saveScreenConfirmation(int init)
         }
         if (state == returnSelectedOption) {
             if (confirm == 1) {
-                _playMenuSelectSfx();
+                playMenuSelectSfx();
             } else {
-                _playMenuLeaveSfx();
+                playMenuLeaveSfx();
             }
-            _selectCursorXy = 0;
+            selectCursorXy = 0;
             for (i = 1; i < 3; ++i) {
-                _fileMenuElements[i].state = fileMenuElementStateAnimateX;
-                _fileMenuElements[i].targetPosition = 320;
+                fileMenuElements[i].state = fileMenuElementStateAnimateX;
+                fileMenuElements[i].targetPosition = 320;
             }
             break;
         }
         if (vs_main_buttonRepeat & (PADLup | PADLdown)) {
-            _playMenuChangeSfx();
+            playMenuChangeSfx();
             confirm = 3 - confirm;
         }
-        _selectCursorXy = vs_getXY(180, (confirm + 7) * 16 + 10);
+        selectCursorXy = vs_getXY(180, (confirm + 7) * 16 + 10);
         break;
     case returnSelectedOption:
-        if (_fileMenuElementsActive() != 0) {
+        if (fileMenuElementsActive() != 0) {
             return confirm;
         }
         break;
@@ -302,21 +302,21 @@ static int _saveScreenConfirmation(int init)
     return 0;
 }
 
-static void _saveScreenExitScreen(void)
+static void saveScreenExitScreen(void)
 {
-    _drawSprt(vs_getXY(256, 0), 0, vs_getWH(64, 224),
-        getTPage(direct16Bit, semiTransparencySubtract, (1 - _frameBuf) * 320 + 256, 0));
-    _drawSprt(0, 0, vs_getWH(256, 224),
-        getTPage(direct16Bit, semiTransparencySubtract, (1 - _frameBuf) * 320, 0));
+    drawSprt(vs_getXY(256, 0), 0, vs_getWH(64, 224),
+        getTPage(direct16Bit, semiTransparencySubtract, (1 - frameBuf) * 320 + 256, 0));
+    drawSprt(0, 0, vs_getWH(256, 224),
+        getTPage(direct16Bit, semiTransparencySubtract, (1 - frameBuf) * 320, 0));
     DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
-    _primBuf.prim.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
-    _primBuf.prim.tile.x0y0 = 0;
-    _primBuf.prim.tile.wh = vs_getWH(320, 224);
-    DrawPrim(&_primBuf);
+    primBufStatic.tag = vs_getTag(primBufStatic.prim.tile, primAddrNull);
+    primBufStatic.prim.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
+    primBufStatic.prim.tile.x0y0 = 0;
+    primBufStatic.prim.tile.wh = vs_getWH(320, 224);
+    DrawPrim(&primBufStatic);
 }
 
-static void _gameSaveScreen(void)
+static void gameSaveScreen(void)
 {
     enum state { init = 0, loading = 1, loaded = 2, confirmation = 3, exit = 4 };
 
@@ -327,77 +327,77 @@ static void _gameSaveScreen(void)
 
     int val;
 
-    _drawImage(vs_getXY(768, 0), &_uiTable.page0, vs_getWH(64, 224));
-    _drawImage(vs_getXY(448, 256), &_uiTable.page1, vs_getWH(64, 256));
-    _drawImage(vs_getXY(832, 0), &_fontTable[0], vs_getWH(64, 224));
-    _drawImage(vs_getXY(896, 0), &_fontTable[1], vs_getWH(64, 224));
-    _drawImage(vs_getXY(960, 66), _debugFont, vs_getWH(64, 158));
-    _drawImage(vs_getXY(768, 227), &_saveMenuBg_clut.clut, vs_getWH(256, 1));
+    drawImage(vs_getXY(768, 0), &uiTable.page0, vs_getWH(64, 224));
+    drawImage(vs_getXY(448, 256), &uiTable.page1, vs_getWH(64, 256));
+    drawImage(vs_getXY(832, 0), &fontTable[0], vs_getWH(64, 224));
+    drawImage(vs_getXY(896, 0), &fontTable[1], vs_getWH(64, 224));
+    drawImage(vs_getXY(960, 66), debugFont, vs_getWH(64, 158));
+    drawImage(vs_getXY(768, 227), &saveMenuBg_clut.clut, vs_getWH(256, 1));
     setRECT(&rect, 640, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     setRECT(&rect, 768, 256, 32, 240);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(672, 256), &_saveMenuBg_clut.data, vs_getWH(96, 240));
-    _initSaveScreen();
+    drawImage(vs_getXY(672, 256), &saveMenuBg_clut.data, vs_getWH(96, 240));
+    initSaveScreen();
 
     state = init;
 
     while (1) {
         vs_main_gametimeUpdate(2);
-        _saveScreenSwapBuf();
+        saveScreenSwapBuf();
         vs_main_processPadState();
-        _keystreamBits(0);
+        keystreamBits(0);
 
         switch (state) {
         case init:
-            _initMemcard(1);
+            initMemcard(1);
             state = loading;
             continue;
         case loading:
-            if (_initMemcard(0) != 0) {
-                _initFileMenu();
-                _showSaveMenu(1);
+            if (initMemcard(0) != 0) {
+                initFileMenu();
+                showSaveMenu(1);
                 state = loaded;
             }
             continue;
         case loaded:
-            val = _showSaveMenu(0);
+            val = showSaveMenu(0);
             if (val != 0) {
                 if (val < 0) {
-                    _memoryCardMessage =
-                        (char*)(_textTable + VS_MCMAN_BIN_OFFSET_savePrompt);
-                    _saveScreenConfirmation(1);
+                    memoryCardMessage =
+                        (char*)(textTable + VS_MCMAN_BIN_OFFSET_savePrompt);
+                    saveScreenConfirmation(1);
                     state = confirmation;
                 } else {
-                    _shutdownMemcard();
-                    _saveScreenExitScreen();
+                    shutdownMemcard();
+                    saveScreenExitScreen();
                     fadeTimer = 30;
                     state = exit;
                     continue;
                 }
             }
-            _drawFileMenuBg();
-            _drawFileMenu(_frameBuf);
+            drawFileMenuBg();
+            drawFileMenu(frameBuf);
             continue;
         case confirmation:
-            val = _saveScreenConfirmation(0);
+            val = saveScreenConfirmation(0);
             if (val != 0) {
                 if (val != 1) {
-                    _shutdownMemcard();
-                    _saveScreenExitScreen();
+                    shutdownMemcard();
+                    saveScreenExitScreen();
                     fadeTimer = 30;
                     state = exit;
                     continue;
                 }
-                _showSaveMenu(1);
+                showSaveMenu(1);
                 state = loaded;
             }
-            _drawFileMenuBg();
-            _drawFileMenu(_frameBuf);
+            drawFileMenuBg();
+            drawFileMenu(frameBuf);
             continue;
         case exit:
-            _saveScreenExitScreen();
+            saveScreenExitScreen();
             if (--fadeTimer == 0) {
                 SetDispMask(0);
                 return;
@@ -418,25 +418,25 @@ typedef struct {
     int frameComplete;
 } MovieData_t;
 
-static void _playMovie(DslLOC*);
-static u_short* _getNextMovieFrame(MovieData_t* arg0);
+static void playMovie(DslLOC*);
+static u_short* getNextMovieFrame(MovieData_t* arg0);
 
-static u_int _introMovieDisplayedAt;
-static int _introMoviePlaying;
-static int _dslMode;
+static u_int introMovieDisplayedAt;
+static int introMoviePlaying;
+static int dslMode;
 static UNUSED char _4[4];
-static DslLOC _introMovieLoc;
+static DslLOC introMovieLoc;
 static UNUSED char _5[28];
-static MovieData_t _movieData;
-static u_long* _movieRingBuf;
+static MovieData_t movieData;
+static u_long* movieRingBuf;
 static UNUSED char _6[4];
-static DECDCTTAB _vlcTable;
-static void* _encodedDataBuf0;
-static void* _encodedDataBuf1;
-static void* _decodedDataBuf0;
-static void* _decodedDataBuf1;
+static DECDCTTAB vlcTable;
+static void* encodedDataBuf0;
+static void* encodedDataBuf1;
+static void* decodedDataBuf0;
+static void* decodedDataBuf1;
 
-static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
+static void initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
 {
     arg0->frameBufs[0].x = x0;
     arg0->renderTarget.x = x0;
@@ -448,23 +448,23 @@ static void _initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int 
     arg0->frameBufIndex = 0;
     arg0->renderTarget.w = 24;
     arg0->frameComplete = 0;
-    arg0->encodedData[0] = _encodedDataBuf0;
-    arg0->encodedData[1] = _encodedDataBuf1;
-    arg0->decodedData[0] = _decodedDataBuf0;
-    arg0->decodedData[1] = _decodedDataBuf1;
+    arg0->encodedData[0] = encodedDataBuf0;
+    arg0->encodedData[1] = encodedDataBuf1;
+    arg0->decodedData[0] = decodedDataBuf0;
+    arg0->decodedData[1] = decodedDataBuf1;
     arg0->frameBufs[1].y = y1;
 }
 
-static void _initMoviePlayback(DslLOC* loc, void (*dctoutCb)(void))
+static void initMoviePlayback(DslLOC* loc, void (*dctoutCb)(void))
 {
     DecDCTReset(0);
     DecDCToutCallback(dctoutCb);
-    StSetRing(_movieRingBuf, 64);
+    StSetRing(movieRingBuf, 64);
     StSetStream(1, 1, -1, NULL, NULL);
-    _playMovie(loc);
+    playMovie(loc);
 }
 
-static void _decDCToutCallback(void)
+static void decDCToutCallback(void)
 {
     RECT rect;
     short rightEdge;
@@ -477,46 +477,46 @@ static void _decDCToutCallback(void)
         StCdIntrFlag = 0;
     }
 
-    index = _movieData.decodedDataIndex;
-    rect = _movieData.renderTarget;
-    rightEdge = _movieData.renderTarget.x + _movieData.renderTarget.w;
-    _movieData.decodedDataIndex = _movieData.decodedDataIndex == 0;
-    _movieData.renderTarget.x = rightEdge;
+    index = movieData.decodedDataIndex;
+    rect = movieData.renderTarget;
+    rightEdge = movieData.renderTarget.x + movieData.renderTarget.w;
+    movieData.decodedDataIndex = movieData.decodedDataIndex == 0;
+    movieData.renderTarget.x = rightEdge;
 
-    if (rightEdge < (_movieData.frameBufs[_movieData.frameBufIndex].x
-                     + _movieData.frameBufs[_movieData.frameBufIndex].w)) {
-        dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
-        DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
+    if (rightEdge < (movieData.frameBufs[movieData.frameBufIndex].x
+                     + movieData.frameBufs[movieData.frameBufIndex].w)) {
+        dataSize = movieData.renderTarget.w * movieData.renderTarget.h;
+        DecDCTout(movieData.decodedData[movieData.decodedDataIndex],
             ((int)(dataSize + (dataSize >> 31))) >> 1);
     } else {
-        _movieData.frameComplete = 1;
-        _movieData.frameBufIndex = _movieData.frameBufIndex < 1;
-        _movieData.renderTarget.x = _movieData.frameBufs[_movieData.frameBufIndex].x;
-        _movieData.renderTarget.y = _movieData.frameBufs[_movieData.frameBufIndex].y;
+        movieData.frameComplete = 1;
+        movieData.frameBufIndex = movieData.frameBufIndex < 1;
+        movieData.renderTarget.x = movieData.frameBufs[movieData.frameBufIndex].x;
+        movieData.renderTarget.y = movieData.frameBufs[movieData.frameBufIndex].y;
     }
-    LoadImage(&rect, _movieData.decodedData[index]);
+    LoadImage(&rect, movieData.decodedData[index]);
 }
 
-static int _decodeNextMovieFrame(MovieData_t* movie)
+static int decodeNextMovieFrame(MovieData_t* movie)
 {
     u_long* frameData;
     int i;
 
     i = 2000;
 
-    while ((frameData = (u_long*)_getNextMovieFrame(movie)) == 0) {
+    while ((frameData = (u_long*)getNextMovieFrame(movie)) == 0) {
         if (--i == 0) {
             return -1;
         }
     }
 
     movie->encodedDataIndex = movie->encodedDataIndex == 0;
-    DecDCTvlc2(frameData, movie->encodedData[movie->encodedDataIndex], _vlcTable);
+    DecDCTvlc2(frameData, movie->encodedData[movie->encodedDataIndex], vlcTable);
     StFreeRing(frameData);
     return 0;
 }
 
-static u_short* _getNextMovieFrame(MovieData_t* movie)
+static u_short* getNextMovieFrame(MovieData_t* movie)
 {
     RECT rect;
     void* addr;
@@ -530,22 +530,22 @@ static u_short* _getNextMovieFrame(MovieData_t* movie)
         }
     }
 
-    if ((_movieWidth != header->width) || (_movieHeight != header->height)) {
+    if ((movieWidth != header->width) || (movieHeight != header->height)) {
         setRECT(&rect, 0, 0, 480, 448);
         ClearImage(&rect, 0, 0, 0);
-        _movieWidth = header->width;
-        _movieHeight = header->height;
+        movieWidth = header->width;
+        movieHeight = header->height;
     }
-    temp_v1 = _movieWidth * 3;
+    temp_v1 = movieWidth * 3;
     movie->frameBufs[1].w = (int)(temp_v1 + (temp_v1 >> 31)) >> 1;
     movie->frameBufs[0].w = (int)(temp_v1 + (temp_v1 >> 31)) >> 1;
-    movie->frameBufs[1].h = _movieHeight;
-    movie->frameBufs[0].h = _movieHeight;
-    movie->renderTarget.h = _movieHeight;
+    movie->frameBufs[1].h = movieHeight;
+    movie->frameBufs[0].h = movieHeight;
+    movie->renderTarget.h = movieHeight;
     return addr;
 }
 
-static void _waitForFrame(MovieData_t* movie, UNUSED int arg1)
+static void waitForFrame(MovieData_t* movie, UNUSED int arg1)
 {
     volatile int sp0[2];
     int* new_var;
@@ -565,7 +565,7 @@ static void _waitForFrame(MovieData_t* movie, UNUSED int arg1)
     movie->frameComplete = 0;
 }
 
-static void _playMovie(DslLOC* loc)
+static void playMovie(DslLOC* loc)
 {
     u_char params[4];
 
@@ -579,10 +579,10 @@ static void _playMovie(DslLOC* loc)
         while (DsControl(DslSetmode, params, NULL) == 0)
             ;
         VSync(3);
-    } while (DsRead2(loc, _dslMode) == 0);
+    } while (DsRead2(loc, dslMode) == 0);
 }
 
-static void _displayPublisherAndDeveloper()
+static void displayPublisherAndDeveloper()
 {
     extern char publisher_clut[];
     extern char developer[];
@@ -596,8 +596,8 @@ static void _displayPublisherAndDeveloper()
 
     setRECT(&rect, 0, 0, 320, 512);
     ClearImage(&rect, 0, 0, 0);
-    _drawImage(vs_getXY(320, 64), publisher_clut, vs_getWH(16, 1));
-    _drawImage(vs_getXY(320, 0), publisher_clut + 32, vs_getWH(256 / 4, 48));
+    drawImage(vs_getXY(320, 64), publisher_clut, vs_getWH(16, 1));
+    drawImage(vs_getXY(320, 0), publisher_clut + 32, vs_getWH(256 / 4, 48));
     SetDefDispEnv(&disp, 0, 256, 320, 240);
     SetDefDrawEnv(&draw, 0, 0, 320, 240);
     disp.screen.y = 8;
@@ -616,7 +616,7 @@ static void _displayPublisherAndDeveloper()
         if (i > 331) {
             var_a3 = (i - 331) * 4;
         }
-        _drawSprt(vs_getXY(32, 88), vs_getUV0Clut(0, 0, 320, 64), vs_getWH(256, 48),
+        drawSprt(vs_getXY(32, 88), vs_getUV0Clut(0, 0, 320, 64), vs_getWH(256, 48),
             (var_a3 << 16) | (320 / 64));
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
@@ -627,7 +627,7 @@ static void _displayPublisherAndDeveloper()
         PutDrawEnv(&draw);
     }
 
-    _drawImage(vs_getXY(0, 240), developer, vs_getWH(128 / 4, 14));
+    drawImage(vs_getXY(0, 240), developer, vs_getWH(128 / 4, 14));
 
     for (i = 0; i < 364; ++i) {
         var_a3_2 = 0;
@@ -638,7 +638,7 @@ static void _displayPublisherAndDeveloper()
         } else if ((vs_main_buttonsState & 0xFFFF) != 0) {
             i = 331;
         }
-        _drawSprt(vs_getXY(96, 104), vs_getUV0Clut(0, 240, 0, 253), vs_getWH(128, 13),
+        drawSprt(vs_getXY(96, 104), vs_getUV0Clut(0, 240, 0, 253), vs_getWH(128, 13),
             var_a3_2 << 16);
         SetDefDispEnv(&disp, 0, (i & 1) * 256, 320, 240);
         SetDefDrawEnv(&draw, 0, (1 - (i & 1)) * 256, 320, 240);
@@ -652,51 +652,51 @@ static void _displayPublisherAndDeveloper()
     SetDispMask(0);
 }
 
-static void _initIntroMovie(void)
+static void initIntroMovie(void)
 {
-    _dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
-    DsIntToPos(VS_TITLE_STR_LBA, &_introMovieLoc);
-    _movieRingBuf = vs_main_allocHeap(0x20000);
-    _encodedDataBuf0 = vs_main_allocHeap(0x23000);
-    _encodedDataBuf1 = vs_main_allocHeap(0x23000);
-    _decodedDataBuf0 = vs_main_allocHeap(0x2A00);
-    _decodedDataBuf1 = vs_main_allocHeap(0x2A00);
-    _initMovieData(&_movieData, 0, 0, 0, 224);
-    _initMoviePlayback(&_introMovieLoc, _decDCToutCallback);
-    DecDCTvlcBuild(_vlcTable);
+    dslMode = DslModeStream2 | DslModeSpeed | DslModeRT;
+    DsIntToPos(VS_TITLE_STR_LBA, &introMovieLoc);
+    movieRingBuf = vs_main_allocHeap(0x20000);
+    encodedDataBuf0 = vs_main_allocHeap(0x23000);
+    encodedDataBuf1 = vs_main_allocHeap(0x23000);
+    decodedDataBuf0 = vs_main_allocHeap(0x2A00);
+    decodedDataBuf1 = vs_main_allocHeap(0x2A00);
+    initMovieData(&movieData, 0, 0, 0, 224);
+    initMoviePlayback(&introMovieLoc, decDCToutCallback);
+    DecDCTvlcBuild(vlcTable);
 
-    while (_decodeNextMovieFrame(&_movieData) == -1) {
-        DslLOC loc = _introMovieLoc;
-        _playMovie(&loc);
+    while (decodeNextMovieFrame(&movieData) == -1) {
+        DslLOC loc = introMovieLoc;
+        playMovie(&loc);
     }
-    _introMoviePlaying = 1;
-    _introMovieDisplayedAt = VSync(-1);
+    introMoviePlaying = 1;
+    introMovieDisplayedAt = VSync(-1);
 }
 
-static void _stopIntroMovie(void)
+static void stopIntroMovie(void)
 {
     SpuSetCommonMasterVolume(0, 0);
-    _introMoviePlaying = 0;
+    introMoviePlaying = 0;
     DecDCToutCallback(0);
     StUnSetRing();
     while (DsControlB(DslPause, 0, 0) == 0)
         ;
-    vs_main_freeHeap(_decodedDataBuf1);
-    vs_main_freeHeap(_decodedDataBuf0);
-    vs_main_freeHeap(_encodedDataBuf1);
-    vs_main_freeHeap(_encodedDataBuf0);
-    vs_main_freeHeap(_movieRingBuf);
+    vs_main_freeHeap(decodedDataBuf1);
+    vs_main_freeHeap(decodedDataBuf0);
+    vs_main_freeHeap(encodedDataBuf1);
+    vs_main_freeHeap(encodedDataBuf0);
+    vs_main_freeHeap(movieRingBuf);
     SpuSetCommonMasterVolume(0x3FFF, 0x3FFF);
 }
 
-static void _stopMovieIfComplete(void)
+static void stopMovieIfComplete(void)
 {
-    if ((_introMoviePlaying != 0) && ((VSync(-1) - _introMovieDisplayedAt) >= 4401)) {
-        _stopIntroMovie();
+    if ((introMoviePlaying != 0) && ((VSync(-1) - introMovieDisplayedAt) >= 4401)) {
+        stopIntroMovie();
     }
 }
 
-static int _playIntroMovie(void)
+static int playIntroMovie(void)
 {
     DslLOC loc;
     DISPENV disp;
@@ -706,27 +706,27 @@ static int _playIntroMovie(void)
     var_s2 = 0;
 
     while (1) {
-        DecDCTin(_movieData.encodedData[_movieData.encodedDataIndex], 3);
-        dataSize = _movieData.renderTarget.w * _movieData.renderTarget.h;
-        DecDCTout(_movieData.decodedData[_movieData.decodedDataIndex],
+        DecDCTin(movieData.encodedData[movieData.encodedDataIndex], 3);
+        dataSize = movieData.renderTarget.w * movieData.renderTarget.h;
+        DecDCTout(movieData.decodedData[movieData.decodedDataIndex],
             (int)(dataSize + (dataSize >> 0x1F)) >> 1);
 
-        while (_decodeNextMovieFrame(&_movieData) == -1) {
+        while (decodeNextMovieFrame(&movieData) == -1) {
             if ((u_int)(StGetBackloc(&loc) - 1) >= 0x44CU) {
-                loc = _introMovieLoc;
+                loc = introMovieLoc;
             }
-            _playMovie(&loc);
+            playMovie(&loc);
         }
 
-        _waitForFrame(&_movieData, 0);
+        waitForFrame(&movieData, 0);
         VSync(0);
         vs_main_processPadState();
 
-        if ((VSync(-1) - _introMovieDisplayedAt) >= 0x8F5) {
+        if ((VSync(-1) - introMovieDisplayedAt) >= 0x8F5) {
             return 0;
         }
 
-        SetDefDispEnv(&disp, 0, _movieData.frameBufIndex == 0 ? 224 : 0, 480, 224);
+        SetDefDispEnv(&disp, 0, movieData.frameBufIndex == 0 ? 224 : 0, 480, 224);
         disp.screen.h = 224;
         disp.screen.y = 8;
         disp.isrgb24 = 1;
@@ -762,21 +762,21 @@ typedef struct {
     char textBlendFactor;
 } menuItemState_t;
 
-static menuItemState_t _menuItemStates[10];
+static menuItemState_t menuItemStates[10];
 
-static void _setMenuItemFadeIn(int menuItem, char pos)
+static void setMenuItemFadeIn(int menuItem, char pos)
 {
-    _menuItemStates[menuItem].enabled = 1;
-    _menuItemStates[menuItem].state = menuItemStateStatic;
-    _menuItemStates[menuItem].textSaturation = 0;
-    _menuItemStates[menuItem].outlineSaturation = 0;
-    _menuItemStates[menuItem].textPos = pos;
-    _menuItemStates[menuItem].targetPos = pos;
-    _menuItemStates[menuItem].outlinePos = pos;
-    _menuItemStates[menuItem].textBlendFactor = 0;
+    menuItemStates[menuItem].enabled = 1;
+    menuItemStates[menuItem].state = menuItemStateStatic;
+    menuItemStates[menuItem].textSaturation = 0;
+    menuItemStates[menuItem].outlineSaturation = 0;
+    menuItemStates[menuItem].textPos = pos;
+    menuItemStates[menuItem].targetPos = pos;
+    menuItemStates[menuItem].outlinePos = pos;
+    menuItemStates[menuItem].textBlendFactor = 0;
 }
 
-static void _copyTitleBgData(void)
+static void copyTitleBgData(void)
 {
     RECT rect;
     int j;
@@ -794,15 +794,15 @@ static void _copyTitleBgData(void)
 #endif
 
     for (; i < MENUBGSZ / sizeof(int);) {
-        extern u_int _titleScreenBg[];
+        extern u_int titleScreenBg[];
 
-        pixelCounts = _titleScreenBg[i++];
+        pixelCounts = titleScreenBg[i++];
         for (j = pixelCounts & 0xFFFF; j != 0; --j) {
             *p++ = 0;
         }
 
         for (j = pixelCounts >> 16; j != 0; --j) {
-            *p++ = _titleScreenBg[i++];
+            *p++ = titleScreenBg[i++];
         }
     }
     DrawSync(0);
@@ -815,16 +815,16 @@ static void _copyTitleBgData(void)
 
     for (i = 0; i < 8; ++i) {
         setRECT(&rect, 480, i + 384, 16, 1);
-        LoadImage(&rect, (u_long*)_menuItemTextClut);
+        LoadImage(&rect, (u_long*)menuItemTextClut);
         DrawSync(0);
     }
     setRECT(&rect, 480, 394, 16, 1);
-    LoadImage(&rect, (u_long*)_menuItemOutlineClut);
+    LoadImage(&rect, (u_long*)menuItemOutlineClut);
     DrawSync(0);
     vs_main_freeHeap(data);
 }
 
-static void _initTitleScreen(void)
+static void initTitleScreen(void)
 {
     DISPENV dispenv;
     DRAWENV drawenv;
@@ -841,7 +841,7 @@ static void _initTitleScreen(void)
     VSync(0);
 }
 
-static void* _initMenu(int menuItem)
+static void* initMenu(int menuItem)
 {
     RECT rect;
     u_long* p;
@@ -849,12 +849,12 @@ static void* _initMenu(int menuItem)
     int i;
 
     for (i = 9; i >= 0; --i) {
-        _menuItemStates[i].enabled = 0;
+        menuItemStates[i].enabled = 0;
     }
 
-    _setMenuItemFadeIn(menuItem, 64);
-    _setMenuItemFadeIn((menuItem + 1) & 3, 96);
-    _setMenuItemFadeIn((menuItem + 3) & 3, 32);
+    setMenuItemFadeIn(menuItem, 64);
+    setMenuItemFadeIn((menuItem + 1) & 3, 96);
+    setMenuItemFadeIn((menuItem + 3) & 3, 32);
     p = vs_main_allocHeap(0x22380);
     offset = p + 160 * 64;
     setRECT(&rect, 192, 448, 160, 64);
@@ -870,9 +870,9 @@ static void* _initMenu(int menuItem)
     return p;
 }
 
-static void _freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
+static void freeHeap(void* arg0) { vs_main_freeHeap(arg0); }
 
-static void _fadeInMenu(u_short* bgData, int textBlendFactor)
+static void fadeInMenu(u_short* bgData, int textBlendFactor)
 {
     RECT rect;
     int g0;
@@ -917,7 +917,7 @@ static void _fadeInMenu(u_short* bgData, int textBlendFactor)
     vs_main_processPadState();
 }
 
-static void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
+static void fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
 {
     RECT rect;
     int i;
@@ -936,10 +936,10 @@ static void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
     dst = src + (180 * 24);
 
     for (i = 0; i < (180 * 24); ++i) {
-        extern u_short _menuCopyright[];
+        extern u_short menuCopyright[];
 
         r1 = src[i];
-        r0 = _menuCopyright[i];
+        r0 = menuCopyright[i];
         g0 = r0 & 0x3E0;
         b0 = r0 & 0x7C00;
         g1 = r1 & 0x3E0;
@@ -960,7 +960,7 @@ static void _fadeInMenuCopyright(u_short* arg0, int textBlendFactor)
     DrawSync(0);
 }
 
-static void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int clut1)
+static void setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int clut1)
 {
     RECT rect;
     short clut[16];
@@ -978,8 +978,8 @@ static void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int c
     clut[0] = 0;
 
     for (i = 1; i < 16; ++i) {
-        r0 = _menuItemTextClut[clut0][i];
-        r1 = _menuItemTextClut[clut1][i];
+        r0 = menuItemTextClut[clut0][i];
+        r1 = menuItemTextClut[clut1][i];
         g0 = r0 & 0x3E0;
         b0 = r0 & 0x7C00;
         r0 &= 0x1F;
@@ -1000,7 +1000,7 @@ static void _setMenuItemClut(int menuItem, int textBlendFactor, int clut0, int c
     DrawSync(0);
 }
 
-static void _setTitleMenuState(void)
+static void setTitleMenuState(void)
 {
     int i;
     int saturation;
@@ -1009,68 +1009,68 @@ static void _setTitleMenuState(void)
     i = 0;
 
     for (i = 0; i < 10; ++i) {
-        if (_menuItemStates[i].enabled == 0) {
+        if (menuItemStates[i].enabled == 0) {
             continue;
         }
-        saturation = _menuItemStates[i].textSaturation + 8;
+        saturation = menuItemStates[i].textSaturation + 8;
 
         if (saturation > 128) {
             saturation = 128;
         }
 
-        _menuItemStates[i].textSaturation = saturation;
+        menuItemStates[i].textSaturation = saturation;
 
-        switch (_menuItemStates[i].state) {
+        switch (menuItemStates[i].state) {
         case menuItemStateStatic:
-            if (saturation != 128 || _menuItemStates[i].textPos != 64) {
+            if (saturation != 128 || menuItemStates[i].textPos != 64) {
                 break;
             }
-            _menuItemStates[i].outlinePos = _menuItemStates[i].textPos;
-            textBlendFactor = _menuItemStates[i].textBlendFactor;
+            menuItemStates[i].outlinePos = menuItemStates[i].textPos;
+            textBlendFactor = menuItemStates[i].textBlendFactor;
             if (textBlendFactor < 16) {
-                _menuItemStates[i].outlineSaturation = textBlendFactor * 16;
+                menuItemStates[i].outlineSaturation = textBlendFactor * 16;
                 textBlendFactor += 4;
                 if (textBlendFactor > 16) {
                     textBlendFactor = 16;
                 }
-                _menuItemStates[i].textBlendFactor = textBlendFactor;
+                menuItemStates[i].textBlendFactor = textBlendFactor;
             }
             break;
         case menuItemStateUpper:
-            _menuItemStates[i].textPos -= 4;
-            if (_menuItemStates[i].textPos == _menuItemStates[i].targetPos) {
-                _menuItemStates[i].state = menuItemStateStatic;
+            menuItemStates[i].textPos -= 4;
+            if (menuItemStates[i].textPos == menuItemStates[i].targetPos) {
+                menuItemStates[i].state = menuItemStateStatic;
             }
             break;
         case menuItemStateLower:
-            _menuItemStates[i].textPos += 4;
-            if (_menuItemStates[i].textPos == _menuItemStates[i].targetPos) {
-                _menuItemStates[i].state = menuItemStateStatic;
+            menuItemStates[i].textPos += 4;
+            if (menuItemStates[i].textPos == menuItemStates[i].targetPos) {
+                menuItemStates[i].state = menuItemStateStatic;
             }
             break;
         }
 
-        textBlendFactor = _menuItemStates[i].textBlendFactor;
+        textBlendFactor = menuItemStates[i].textBlendFactor;
 
-        if (_menuItemStates[i].state < menuItemStateSubmenu) {
-            _setMenuItemClut(i, textBlendFactor, 0, 1);
+        if (menuItemStates[i].state < menuItemStateSubmenu) {
+            setMenuItemClut(i, textBlendFactor, 0, 1);
         }
-        if ((textBlendFactor != 0) && (_menuItemStates[i].textPos != 64)) {
-            _menuItemStates[i].textBlendFactor = textBlendFactor - 1;
+        if ((textBlendFactor != 0) && (menuItemStates[i].textPos != 64)) {
+            menuItemStates[i].textBlendFactor = textBlendFactor - 1;
         }
 
-        if (_menuItemStates[i].outlineSaturation != 0) {
-            if (_menuItemStates[i].outlinePos != _menuItemStates[i].textPos) {
-                _menuItemStates[i].outlineSaturation -= 16;
+        if (menuItemStates[i].outlineSaturation != 0) {
+            if (menuItemStates[i].outlinePos != menuItemStates[i].textPos) {
+                menuItemStates[i].outlineSaturation -= 16;
 
-                if (_menuItemStates[i].outlinePos < _menuItemStates[i].textPos) {
-                    _menuItemStates[i].outlinePos += 2;
+                if (menuItemStates[i].outlinePos < menuItemStates[i].textPos) {
+                    menuItemStates[i].outlinePos += 2;
                 } else {
-                    _menuItemStates[i].outlinePos -= 2;
+                    menuItemStates[i].outlinePos -= 2;
                 }
-            } else if ((_menuItemStates[i].textBlendFactor == 16)
-                       && (_menuItemStates[i].outlineSaturation > 128)) {
-                _menuItemStates[i].outlineSaturation -= 16;
+            } else if ((menuItemStates[i].textBlendFactor == 16)
+                       && (menuItemStates[i].outlineSaturation > 128)) {
+                menuItemStates[i].outlineSaturation -= 16;
             }
         }
     }
@@ -1081,7 +1081,7 @@ typedef struct {
     VS_SPRT sprt;
 } menuItemPrim_t;
 
-static void _drawTitleMenuItems(void)
+static void drawTitleMenuItems(void)
 {
     static menuItemPrim_t primBuf[341];
     static UNUSED char _[8];
@@ -1098,20 +1098,19 @@ static void _drawTitleMenuItems(void)
     prim = primBuf;
 
     for (i = 9; i >= 0; --i) {
-        if ((_menuItemStates[i].enabled == 0)
-            || (_menuItemStates[i].outlineSaturation == 0)) {
+        if ((menuItemStates[i].enabled == 0)
+            || (menuItemStates[i].outlineSaturation == 0)) {
             continue;
         }
         prim->tag = vs_getTag(prim->sprt, primAddrEnd);
         prim->sprt.tpage = outlineTpages[i];
         prim->sprt.r0g0b0code = vs_getRGB0Raw(primSprtSemtTrans,
-            _menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
-        if (_menuItemStates[i].state == menuItemStateSubmenu) {
-            prim->sprt.x0y0 =
-                (outlineXys[i] + (_menuItemStates[i].outlinePos << 16)) + 64;
+            menuItemStates[i].outlineSaturation * vs_getRGB888(1, 1, 1));
+        if (menuItemStates[i].state == menuItemStateSubmenu) {
+            prim->sprt.x0y0 = (outlineXys[i] + (menuItemStates[i].outlinePos << 16)) + 64;
         } else {
             prim->sprt.x0y0 =
-                outlineXys[i] + _menuItemStates[i].outlinePos * vs_getXY(1, 1);
+                outlineXys[i] + menuItemStates[i].outlinePos * vs_getXY(1, 1);
         }
         prim->sprt.u0v0clut = outlineUvs[i];
         prim->sprt.wh = outlineWhs[i];
@@ -1120,7 +1119,7 @@ static void _drawTitleMenuItems(void)
     }
 
     for (i = 9; i >= 0; --i) {
-        menuState = _menuItemStates;
+        menuState = menuItemStates;
         if (menuState[i].enabled == 0) {
             continue;
         }
@@ -1186,7 +1185,7 @@ static void _drawTitleMenuItems(void)
     }
 }
 
-static void _drawTitleMenu(void)
+static void drawTitleMenu(void)
 {
     static menuItemPrim_t sprtBuf[10];
     static UNUSED char _[16];
@@ -1194,7 +1193,7 @@ static void _drawTitleMenu(void)
     int i;
     menuItemPrim_t* sprt;
 
-    _setTitleMenuState();
+    setTitleMenuState();
     for (i = 0; i < 2; ++i) {
         sprt = sprtBuf;
         sprt->sprt.tpage =
@@ -1214,20 +1213,20 @@ static void _drawTitleMenu(void)
         sprt->sprt.u0v0clut = vs_getUV0Clut(32, 192, 0, 0);
         sprt->sprt.wh = vs_getWH(160, 64);
         DrawPrim(sprt);
-        _drawTitleMenuItems();
+        drawTitleMenuItems();
         if (i == 0) {
             DrawSync(0);
             VSync(0);
             vs_main_setVibrateParams();
         } else {
-            _stopMovieIfComplete();
+            stopMovieIfComplete();
         }
     }
 }
 
-static void _drawAndSyncTitleMenu(void)
+static void drawAndSyncTitleMenu(void)
 {
-    _drawTitleMenu();
+    drawTitleMenu();
     VSync(0);
     vs_main_processPadState();
 }
@@ -1244,224 +1243,224 @@ enum menuItems {
     menuItemSoundStereo = 7
 };
 
-static void _menuVibrationSettings(void)
+static void menuVibrationSettings(void)
 {
     int i;
     int vibrationSetting;
 
-    _menuItemStates[menuItemContinue].state = menuItemStateUpper;
-    _menuItemStates[menuItemSound].state = menuItemStateLower;
-    _menuItemStates[menuItemSound].targetPos = 128;
-    _menuItemStates[menuItemContinue].targetPos = 0;
-    _menuItemStates[menuItemVibration].state = menuItemStateSubmenu;
+    menuItemStates[menuItemContinue].state = menuItemStateUpper;
+    menuItemStates[menuItemSound].state = menuItemStateLower;
+    menuItemStates[menuItemSound].targetPos = 128;
+    menuItemStates[menuItemContinue].targetPos = 0;
+    menuItemStates[menuItemVibration].state = menuItemStateSubmenu;
     vibrationSetting = vs_main_settings.vibrationOn + menuItemVibrationOff;
-    _setMenuItemFadeIn(menuItemVibrationOn, 64);
-    _setMenuItemFadeIn(menuItemVibrationOff, 96);
-    _menuItemStates[menuItemVibrationOff].state = menuItemStateSubmenu;
-    _menuItemStates[menuItemVibrationOn].state = menuItemStateSubmenu;
-    _setMenuItemClut(menuItemVibrationOff, 0, 0, 0);
-    _setMenuItemClut(menuItemVibrationOn, 0, 0, 0);
+    setMenuItemFadeIn(menuItemVibrationOn, 64);
+    setMenuItemFadeIn(menuItemVibrationOff, 96);
+    menuItemStates[menuItemVibrationOff].state = menuItemStateSubmenu;
+    menuItemStates[menuItemVibrationOn].state = menuItemStateSubmenu;
+    setMenuItemClut(menuItemVibrationOff, 0, 0, 0);
+    setMenuItemClut(menuItemVibrationOn, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
-        _setMenuItemClut(menuItemVibration, i * 2, 1, 3);
-        _menuItemStates[menuItemVibration].textPos -= 4;
-        _drawAndSyncTitleMenu();
+        setMenuItemClut(menuItemVibration, i * 2, 1, 3);
+        menuItemStates[menuItemVibration].textPos -= 4;
+        drawAndSyncTitleMenu();
     }
-    _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
-    _menuItemStates[menuItemContinue].state = menuItemStateStatic;
-    _menuItemStates[menuItemSound].state = menuItemStateStatic;
+    menuItemStates[menuItemNewGame].state = menuItemStateStatic;
+    menuItemStates[menuItemContinue].state = menuItemStateStatic;
+    menuItemStates[menuItemSound].state = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
-        _drawAndSyncTitleMenu();
+        drawAndSyncTitleMenu();
     }
 
     for (i = 0; i < 8; ++i) {
-        _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
-        _menuItemStates[vibrationSetting].outlineSaturation =
-            i < 4 ? i * 64 : _menuItemStates[vibrationSetting].outlineSaturation - 16;
-        _drawAndSyncTitleMenu();
+        setMenuItemClut(vibrationSetting, i * 2, 0, 1);
+        menuItemStates[vibrationSetting].outlineSaturation =
+            i < 4 ? i * 64 : menuItemStates[vibrationSetting].outlineSaturation - 16;
+        drawAndSyncTitleMenu();
     }
     while (1) {
-        _drawAndSyncTitleMenu();
+        drawAndSyncTitleMenu();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
-            _playMenuSelectSfx();
+            playMenuSelectSfx();
             vs_main_settings.vibrationOn = vibrationSetting - 5;
             if (vibrationSetting == menuItemVibrationOn) {
                 vs_main_vibrationOnEffect(0);
             }
             break;
         } else if (vs_main_buttonsState & PADRdown) {
-            _playMenuLeaveSfx();
+            playMenuLeaveSfx();
             break;
         } else {
             if (vs_main_buttonsPressed.all & (PADLup | PADLdown | PADselect)) {
                 vibrationSetting = 11 - vibrationSetting;
-                _playMenuChangeSfx();
+                playMenuChangeSfx();
 
                 for (i = 1; i < 8; ++i) {
-                    _setMenuItemClut(vibrationSetting, i * 2, 0, 1);
-                    _setMenuItemClut(11 - vibrationSetting, i * 2, 1, 0);
-                    _menuItemStates[vibrationSetting].outlineSaturation =
+                    setMenuItemClut(vibrationSetting, i * 2, 0, 1);
+                    setMenuItemClut(11 - vibrationSetting, i * 2, 1, 0);
+                    menuItemStates[vibrationSetting].outlineSaturation =
                         i < 4 ? i * 64
-                              : _menuItemStates[vibrationSetting].outlineSaturation - 16;
-                    _menuItemStates[11 - vibrationSetting].outlineSaturation -= 16;
+                              : menuItemStates[vibrationSetting].outlineSaturation - 16;
+                    menuItemStates[11 - vibrationSetting].outlineSaturation -= 16;
                     if (i == 7) {
                         break;
                     }
-                    _drawAndSyncTitleMenu();
+                    drawAndSyncTitleMenu();
                 }
             }
         }
     }
-    _setMenuItemFadeIn(menuItemContinue, 0);
-    _setMenuItemFadeIn(menuItemSound, 128);
-    _menuItemStates[menuItemContinue].state = menuItemStateLower;
-    _menuItemStates[menuItemContinue].targetPos = 32;
-    _menuItemStates[menuItemSound].state = menuItemStateUpper;
-    _menuItemStates[menuItemSound].targetPos = 96;
+    setMenuItemFadeIn(menuItemContinue, 0);
+    setMenuItemFadeIn(menuItemSound, 128);
+    menuItemStates[menuItemContinue].state = menuItemStateLower;
+    menuItemStates[menuItemContinue].targetPos = 32;
+    menuItemStates[menuItemSound].state = menuItemStateUpper;
+    menuItemStates[menuItemSound].targetPos = 96;
     for (i = 1; i < 9; ++i) {
-        _setMenuItemClut(2, i * 2, 3, 1);
-        _menuItemStates[2].textPos += 4;
-        if (_menuItemStates[menuItemVibrationOff].textSaturation < 24) {
-            _menuItemStates[menuItemVibrationOff].textSaturation = 0;
+        setMenuItemClut(2, i * 2, 3, 1);
+        menuItemStates[2].textPos += 4;
+        if (menuItemStates[menuItemVibrationOff].textSaturation < 24) {
+            menuItemStates[menuItemVibrationOff].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemVibrationOff].textSaturation -= 24;
+            menuItemStates[menuItemVibrationOff].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemVibrationOn].textSaturation < 24) {
-            _menuItemStates[menuItemVibrationOn].textSaturation = 0;
+        if (menuItemStates[menuItemVibrationOn].textSaturation < 24) {
+            menuItemStates[menuItemVibrationOn].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemVibrationOn].textSaturation -= 24;
+            menuItemStates[menuItemVibrationOn].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemVibrationOff].outlineSaturation != 0) {
-            _menuItemStates[menuItemVibrationOff].outlineSaturation -= 16;
+        if (menuItemStates[menuItemVibrationOff].outlineSaturation != 0) {
+            menuItemStates[menuItemVibrationOff].outlineSaturation -= 16;
         }
-        if (_menuItemStates[menuItemVibrationOn].outlineSaturation != 0) {
-            _menuItemStates[menuItemVibrationOn].outlineSaturation -= 16;
+        if (menuItemStates[menuItemVibrationOn].outlineSaturation != 0) {
+            menuItemStates[menuItemVibrationOn].outlineSaturation -= 16;
         }
-        _drawAndSyncTitleMenu();
+        drawAndSyncTitleMenu();
     }
-    _menuItemStates[menuItemVibrationOff].enabled = 0;
-    _menuItemStates[menuItemVibrationOn].enabled = 0;
-    _menuItemStates[menuItemVibration].outlinePos = 64;
-    _menuItemStates[menuItemVibration].outlineSaturation = 64;
-    _drawAndSyncTitleMenu();
-    _menuItemStates[menuItemVibration].outlineSaturation = 128;
-    _drawAndSyncTitleMenu();
-    _menuItemStates[menuItemVibration].outlineSaturation = 192;
-    _drawTitleMenu();
-    _menuItemStates[menuItemVibration].textBlendFactor = 16;
-    _menuItemStates[menuItemVibration].state = menuItemStateStatic;
+    menuItemStates[menuItemVibrationOff].enabled = 0;
+    menuItemStates[menuItemVibrationOn].enabled = 0;
+    menuItemStates[menuItemVibration].outlinePos = 64;
+    menuItemStates[menuItemVibration].outlineSaturation = 64;
+    drawAndSyncTitleMenu();
+    menuItemStates[menuItemVibration].outlineSaturation = 128;
+    drawAndSyncTitleMenu();
+    menuItemStates[menuItemVibration].outlineSaturation = 192;
+    drawTitleMenu();
+    menuItemStates[menuItemVibration].textBlendFactor = 16;
+    menuItemStates[menuItemVibration].state = menuItemStateStatic;
 }
 
-static void _menuSoundSettings(void)
+static void menuSoundSettings(void)
 {
     int i;
     int soundSetting;
 
-    _menuItemStates[menuItemVibration].state = menuItemStateUpper;
-    _menuItemStates[menuItemNewGame].state = menuItemStateLower;
-    _menuItemStates[menuItemNewGame].targetPos = 128;
-    _menuItemStates[menuItemVibration].targetPos = 0;
-    _menuItemStates[menuItemSound].state = menuItemStateSubmenu;
+    menuItemStates[menuItemVibration].state = menuItemStateUpper;
+    menuItemStates[menuItemNewGame].state = menuItemStateLower;
+    menuItemStates[menuItemNewGame].targetPos = 128;
+    menuItemStates[menuItemVibration].targetPos = 0;
+    menuItemStates[menuItemSound].state = menuItemStateSubmenu;
     soundSetting = menuItemSoundStereo - (vs_main_settings.monoSound * 3);
-    _setMenuItemFadeIn(menuItemSoundStereo, 64);
-    _setMenuItemFadeIn(menuItemSoundMono, 96);
-    _menuItemStates[menuItemSoundMono].state = menuItemStateSubmenu;
-    _menuItemStates[menuItemSoundStereo].state = menuItemStateSubmenu;
-    _setMenuItemClut(menuItemSoundMono, 0, 0, 0);
-    _setMenuItemClut(menuItemSoundStereo, 0, 0, 0);
+    setMenuItemFadeIn(menuItemSoundStereo, 64);
+    setMenuItemFadeIn(menuItemSoundMono, 96);
+    menuItemStates[menuItemSoundMono].state = menuItemStateSubmenu;
+    menuItemStates[menuItemSoundStereo].state = menuItemStateSubmenu;
+    setMenuItemClut(menuItemSoundMono, 0, 0, 0);
+    setMenuItemClut(menuItemSoundStereo, 0, 0, 0);
     for (i = 1; i < 9; ++i) {
-        _setMenuItemClut(menuItemSound, i * 2, 1, 3);
-        _menuItemStates[menuItemSound].textPos -= 4;
-        _drawAndSyncTitleMenu();
+        setMenuItemClut(menuItemSound, i * 2, 1, 3);
+        menuItemStates[menuItemSound].textPos -= 4;
+        drawAndSyncTitleMenu();
     }
-    _menuItemStates[menuItemNewGame].state = menuItemStateStatic;
-    _menuItemStates[menuItemContinue].state = menuItemStateStatic;
-    _menuItemStates[menuItemVibration].state = menuItemStateStatic;
+    menuItemStates[menuItemNewGame].state = menuItemStateStatic;
+    menuItemStates[menuItemContinue].state = menuItemStateStatic;
+    menuItemStates[menuItemVibration].state = menuItemStateStatic;
     for (i = 1; i < 9; ++i) {
-        _drawAndSyncTitleMenu();
+        drawAndSyncTitleMenu();
     }
     for (i = 0; i < 8; ++i) {
-        _setMenuItemClut(soundSetting, i * 2, 0, 1);
-        _menuItemStates[soundSetting].outlineSaturation =
-            i < 4 ? i << 6 : _menuItemStates[soundSetting].outlineSaturation - 16;
-        _drawAndSyncTitleMenu();
+        setMenuItemClut(soundSetting, i * 2, 0, 1);
+        menuItemStates[soundSetting].outlineSaturation =
+            i < 4 ? i << 6 : menuItemStates[soundSetting].outlineSaturation - 16;
+        drawAndSyncTitleMenu();
     }
     while (1) {
-        _drawAndSyncTitleMenu();
+        drawAndSyncTitleMenu();
         if (vs_main_buttonsState & (PADstart | PADRright)) {
-            _playMenuSelectSfx();
+            playMenuSelectSfx();
             soundSetting = (soundSetting + 1) & 1;
             vs_main_settings.monoSound = soundSetting;
             vs_main_setMonoSound(soundSetting);
             Sound_SetCdMixVolume(0x7F);
             break;
         } else if (vs_main_buttonsState & PADRdown) {
-            _playMenuLeaveSfx();
+            playMenuLeaveSfx();
             break;
         } else {
             if (vs_main_buttonsPressed.all & (PADLup | PADLdown | PADselect)) {
                 soundSetting = 11 - soundSetting;
-                _playMenuChangeSfx();
+                playMenuChangeSfx();
                 for (i = 1; i < 8; ++i) {
-                    _setMenuItemClut(soundSetting, i * 2, 0, 1);
-                    _setMenuItemClut(11 - soundSetting, i * 2, 1, 0);
-                    _menuItemStates[soundSetting].outlineSaturation =
+                    setMenuItemClut(soundSetting, i * 2, 0, 1);
+                    setMenuItemClut(11 - soundSetting, i * 2, 1, 0);
+                    menuItemStates[soundSetting].outlineSaturation =
                         i < 4 ? i << 6
-                              : _menuItemStates[soundSetting].outlineSaturation - 16;
-                    _menuItemStates[11 - soundSetting].outlineSaturation -= 16;
+                              : menuItemStates[soundSetting].outlineSaturation - 16;
+                    menuItemStates[11 - soundSetting].outlineSaturation -= 16;
                     if (i == 7) {
                         break;
                     }
-                    _drawAndSyncTitleMenu();
+                    drawAndSyncTitleMenu();
                 }
             }
         }
     }
-    _setMenuItemFadeIn(menuItemVibration, 0);
-    _setMenuItemFadeIn(menuItemNewGame, 128);
-    _menuItemStates[menuItemVibration].state = menuItemStateLower;
-    _menuItemStates[menuItemVibration].targetPos = 32;
-    _menuItemStates[menuItemNewGame].state = menuItemStateUpper;
-    _menuItemStates[menuItemNewGame].targetPos = 96;
+    setMenuItemFadeIn(menuItemVibration, 0);
+    setMenuItemFadeIn(menuItemNewGame, 128);
+    menuItemStates[menuItemVibration].state = menuItemStateLower;
+    menuItemStates[menuItemVibration].targetPos = 32;
+    menuItemStates[menuItemNewGame].state = menuItemStateUpper;
+    menuItemStates[menuItemNewGame].targetPos = 96;
     for (i = 1; i < 9; ++i) {
-        _setMenuItemClut(menuItemSound, i * 2, 3, 1);
-        _menuItemStates[menuItemSound].textPos += 4;
-        if (_menuItemStates[menuItemSoundMono].textSaturation < 24) {
-            _menuItemStates[menuItemSoundMono].textSaturation = 0;
+        setMenuItemClut(menuItemSound, i * 2, 3, 1);
+        menuItemStates[menuItemSound].textPos += 4;
+        if (menuItemStates[menuItemSoundMono].textSaturation < 24) {
+            menuItemStates[menuItemSoundMono].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemSoundMono].textSaturation -= 24;
+            menuItemStates[menuItemSoundMono].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemSoundStereo].textSaturation < 24) {
-            _menuItemStates[menuItemSoundStereo].textSaturation = 0;
+        if (menuItemStates[menuItemSoundStereo].textSaturation < 24) {
+            menuItemStates[menuItemSoundStereo].textSaturation = 0;
         } else {
-            _menuItemStates[menuItemSoundStereo].textSaturation -= 24;
+            menuItemStates[menuItemSoundStereo].textSaturation -= 24;
         }
-        if (_menuItemStates[menuItemSoundMono].outlineSaturation != 0) {
-            _menuItemStates[menuItemSoundMono].outlineSaturation -= 16;
+        if (menuItemStates[menuItemSoundMono].outlineSaturation != 0) {
+            menuItemStates[menuItemSoundMono].outlineSaturation -= 16;
         }
-        if (_menuItemStates[menuItemSoundStereo].outlineSaturation != 0) {
-            _menuItemStates[menuItemSoundStereo].outlineSaturation -= 16;
+        if (menuItemStates[menuItemSoundStereo].outlineSaturation != 0) {
+            menuItemStates[menuItemSoundStereo].outlineSaturation -= 16;
         }
-        _drawAndSyncTitleMenu();
+        drawAndSyncTitleMenu();
     }
-    _menuItemStates[menuItemSoundMono].enabled = 0;
-    _menuItemStates[menuItemSoundStereo].enabled = 0;
-    _menuItemStates[menuItemSound].outlinePos = 64;
-    _menuItemStates[menuItemSound].outlineSaturation = 64;
-    _drawAndSyncTitleMenu();
-    _menuItemStates[menuItemSound].outlineSaturation = 128;
-    _drawAndSyncTitleMenu();
-    _menuItemStates[menuItemSound].outlineSaturation = 192;
-    _drawTitleMenu();
-    _menuItemStates[menuItemSound].textBlendFactor = 16;
-    _menuItemStates[menuItemSound].state = menuItemStateStatic;
+    menuItemStates[menuItemSoundMono].enabled = 0;
+    menuItemStates[menuItemSoundStereo].enabled = 0;
+    menuItemStates[menuItemSound].outlinePos = 64;
+    menuItemStates[menuItemSound].outlineSaturation = 64;
+    drawAndSyncTitleMenu();
+    menuItemStates[menuItemSound].outlineSaturation = 128;
+    drawAndSyncTitleMenu();
+    menuItemStates[menuItemSound].outlineSaturation = 192;
+    drawTitleMenu();
+    menuItemStates[menuItemSound].textBlendFactor = 16;
+    menuItemStates[menuItemSound].state = menuItemStateStatic;
 }
 
-static void _initGameData(void);
-static void _setTitleExitFlags(int arg0);
+static void initGameData(void);
+static void setTitleExitFlags(int arg0);
 
-static int _nop(void) { return 0; }
+static int noop(void) { return 0; }
 
-static void _initEnvironment(void)
+static void initEnvironment(void)
 {
     int monoSound;
     int vibrationOn;
@@ -1476,7 +1475,7 @@ static void _initEnvironment(void)
     vs_main_settings.abilityTimingDisplay = 1;
     vs_main_settings.cursorMemory = 1;
     if (vs_main_titleScreenCount == 0) {
-        _displayPublisherAndDeveloper();
+        displayPublisherAndDeveloper();
         vibrationOn = 1;
         monoSound = 0;
     }
@@ -1509,27 +1508,27 @@ int vs_title_exec(void)
     if (vs_main_saveGameClearData != 0) {
         vs_main_saveGameClearData = 0;
         vs_main_titleScreenCount = 0;
-        _gameSaveScreen();
+        gameSaveScreen();
     }
-    _initGameData();
-    _initEnvironment();
-    _introMoviePlaying = 0;
+    initGameData();
+    initEnvironment();
+    introMoviePlaying = 0;
     ++vs_main_titleScreenCount;
-    menuItem = _saveFileExists();
+    menuItem = saveFileExists();
 
     do {
         for (i = 7; i >= 0; --i) {
-            _menuItemStates[i].enabled = 0;
+            menuItemStates[i].enabled = 0;
         }
 
-        _copyTitleBgData();
-        _initIntroMovie();
-        _playIntroMovie();
-        _initTitleScreen();
+        copyTitleBgData();
+        initIntroMovie();
+        playIntroMovie();
+        initTitleScreen();
         SetDispMask(1);
-        menuData = _initMenu(menuItem);
+        menuData = initMenu(menuItem);
         for (i = 32; i >= 0; i -= 2) {
-            _fadeInMenuCopyright(menuData, i);
+            fadeInMenuCopyright(menuData, i);
         }
         VSync(0);
         setRECT(&rect, 688, 256, 160, 128);
@@ -1537,12 +1536,12 @@ int vs_title_exec(void)
         DrawSync(0);
         VSync(0);
         for (i = 32; i >= 0; i -= 4) {
-            _fadeInMenu(menuData, i);
-            _drawTitleMenu();
+            fadeInMenu(menuData, i);
+            drawTitleMenu();
         }
-        _freeHeap(menuData);
+        freeHeap(menuData);
         for (i = 0; i < 8; ++i) {
-            _drawAndSyncTitleMenu();
+            drawAndSyncTitleMenu();
         }
 
         vs_main_padDisconnectAll();
@@ -1552,7 +1551,7 @@ int vs_title_exec(void)
         while (1) {
             VSync(0);
             vs_main_processPadState();
-            if (_introMoviePlaying != 0) {
+            if (introMoviePlaying != 0) {
                 introMovieLastPlayed = VSync(-1);
             }
             if ((vs_main_buttonsState & 0xFFFF) != 0) {
@@ -1566,18 +1565,18 @@ int vs_title_exec(void)
             if (vs_main_buttonsState & (PADRright | PADstart)) {
                 switch (menuItem) {
                 case menuItemNewGame:
-                    selectedOption = _nop();
+                    selectedOption = noop();
                     break;
                 case menuItemContinue:
                     selectedOption = menuItemContinue;
                     break;
                 case menuItemVibration:
-                    _playMenuSelectSfx();
-                    _menuVibrationSettings();
+                    playMenuSelectSfx();
+                    menuVibrationSettings();
                     break;
                 case menuItemSound:
-                    _playMenuSelectSfx();
-                    _menuSoundSettings();
+                    playMenuSelectSfx();
+                    menuSoundSettings();
                     break;
                 }
 
@@ -1596,41 +1595,41 @@ int vs_title_exec(void)
             }
             if (i != 0) {
                 menuItem = (menuItem + i) & 3;
-                _playMenuChangeSfx();
+                playMenuChangeSfx();
                 if (i == 1) {
-                    _setMenuItemFadeIn((menuItem + 1) & 3, 0x80);
+                    setMenuItemFadeIn((menuItem + 1) & 3, 0x80);
                     for (i = 0; i < 4; ++i) {
-                        _menuItemStates[i].state = menuItemStateUpper;
-                        _menuItemStates[i].targetPos = _menuItemStates[i].textPos - 32;
+                        menuItemStates[i].state = menuItemStateUpper;
+                        menuItemStates[i].targetPos = menuItemStates[i].textPos - 32;
                     }
                 } else {
-                    _setMenuItemFadeIn((menuItem - 1) & 3, 0);
+                    setMenuItemFadeIn((menuItem - 1) & 3, 0);
                     for (i = 0; i < 4; ++i) {
-                        _menuItemStates[i].state = menuItemStateLower;
-                        _menuItemStates[i].targetPos = _menuItemStates[i].textPos + 32;
+                        menuItemStates[i].state = menuItemStateLower;
+                        menuItemStates[i].targetPos = menuItemStates[i].textPos + 32;
                     }
                 }
                 for (i = 0; i < 10; ++i) {
-                    _drawAndSyncTitleMenu();
+                    drawAndSyncTitleMenu();
                 }
             }
-            _drawTitleMenu();
+            drawTitleMenu();
         }
         if (selectedOption >= menuItemNewGame) {
-            if (_introMoviePlaying != 0) {
-                _stopIntroMovie();
+            if (introMoviePlaying != 0) {
+                stopIntroMovie();
             }
             if (selectedOption == menuItemContinue) {
-                _playMenuSelectSfx();
+                playMenuSelectSfx();
             } else {
-                _playNewGameSfx();
-                _setTitleExitFlags(selectedOption);
+                playNewGameSfx();
+                setTitleExitFlags(selectedOption);
             }
         }
 
         if (selectedOption == menuItemTimeout) {
             selectedOption = 4 - (vs_main_titleScreenCount & 1);
-            _setTitleExitFlags(selectedOption);
+            setTitleExitFlags(selectedOption);
         }
         for (i = 64; i > 0; --i) {
             VSync(0);
@@ -1647,16 +1646,16 @@ int vs_title_exec(void)
         VSync(0);
         SetDispMask(0);
         if (selectedOption == menuItemContinue) {
-            selectedOption = _gameLoadScreen();
+            selectedOption = gameLoadScreen();
             if (selectedOption == menuItemContinue) {
-                _setTitleExitFlags(menuItemContinue);
+                setTitleExitFlags(menuItemContinue);
             }
         }
     } while (selectedOption < menuItemNewGame);
     return selectedOption;
 }
 
-static void _initScreen(int w, int h, int distance, int r, int g, int b)
+static void initScreen(int w, int h, int distance, int r, int g, int b)
 {
     RECT rect = (RECT) { 0, 0, 1024, 512 };
     SetDispMask(0);
@@ -1682,7 +1681,7 @@ static void _initScreen(int w, int h, int distance, int r, int g, int b)
     PutDrawEnv(&vs_main_drawEnv[vs_main_frameBuf]);
 }
 
-static int _renderScreen(u_long* ot)
+static int renderScreen(u_long* ot)
 {
     UNUSED int _[2];
     int vsync;
@@ -1696,13 +1695,13 @@ static int _renderScreen(u_long* ot)
     return vsync;
 }
 
-static void _initGameData(void)
+static void initGameData(void)
 {
     int i;
     int j;
     char* v0;
 
-    _initScreen(640, 240, 512, 0, 0, 0);
+    initScreen(640, 240, 512, 0, 0, 0);
     i = 0x43F;
     v0 = ((char*)&vs_main_stateFlags) + i;
     do {
@@ -1741,7 +1740,7 @@ static void _initGameData(void)
     vs_main_spawnPoint.facing = 2;
 }
 
-static void _setTitleExitFlags(int cause)
+static void setTitleExitFlags(int cause)
 {
     switch (cause) {
     case 0: // New Game

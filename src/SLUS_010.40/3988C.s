@@ -2,9 +2,9 @@
 
 .set noreorder
 
-glabel _asmNop
+glabel asmNop
     nop
-endlabel _asmNop
+endlabel asmNop
 
 glabel nop8
     jr         $ra

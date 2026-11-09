@@ -77,15 +77,15 @@ void vs_mainMenu_initInventory(void)
     }
 }
 
-static UNUSED void _nop(void);
-static void _nop(void) { }
+static UNUSED void noop(void);
+static void noop(void) { }
 
 /**
  * Processes the object queue in the hope of finding a free slot.
  * Unused.
  */
-static UNUSED int _getNextEmptyObjectDataSlot(void);
-static int _getNextEmptyObjectDataSlot(void)
+static UNUSED int getNextEmptyObjectDataSlot(void);
+static int getNextEmptyObjectDataSlot(void)
 {
     vs_battle_processObjectDataQueue();
     return vs_battle_getEmptyObjectDataSlot();
@@ -93,10 +93,10 @@ static int _getNextEmptyObjectDataSlot(void)
 
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
 {
-    static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90,
+    static short weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90,
         100, SHRT_MAX };
 
-    static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX,
+    static short weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX,
         8192 }; // Last one junk?
 
     int i;
@@ -208,7 +208,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     subMaxRank = 0;
 
     for (i = 0; i < 11; ++i) {
-        if (subMaxParam < _weaponTitleSubmaxThresholds[i]) {
+        if (subMaxParam < weaponTitleSubmaxThresholds[i]) {
             subMaxRank = i;
             break;
         }
@@ -217,7 +217,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     maxRank = 0;
 
     for (i = 0; i < 3; ++i) {
-        if (maxParam < _weaponTitleMaxThresholds[i]) {
+        if (maxParam < weaponTitleMaxThresholds[i]) {
             maxRank = i;
             break;
         }
@@ -309,7 +309,7 @@ int vs_mainmenu_ready(void)
  * Called when menu is closing to add a 4 frame delay before
  * relinquishing control.
  */
-static int _quitDelay(void)
+static int quitDelay(void)
 {
     static int delay = 0;
 
@@ -366,7 +366,7 @@ void vs_mainMenu_exec(int arg0)
 
     if (selectedMenu != 0) {
         if (selectedMenu == 31) {
-            submenuReturn = _quitDelay();
+            submenuReturn = quitDelay();
         } else if (D_800F4EA0 & 0x200) {
             if (menuLoaded) {
                 if (selectedMenu == 15) {
@@ -672,12 +672,12 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
     return;
 }
 
-static inline int _subtract(int a0, int a1, int a2) { return (u_short)(a0 - (a1 - a2)); }
+static inline int subtract(int a0, int a1, int a2) { return (u_short)(a0 - (a1 - a2)); }
 
 /**
  * Draws the class / affinity / type pages
  */
-static void _renderStatPage(int xOffset)
+static void renderStatPage(int xOffset)
 {
     static char const* statHeaders[] = { "#HUMAN", "#BEAST", "#UNDEAD", "#PHANTOM",
         "#DRAGON", "#EVIL", NULL, NULL, "#PHYSICAL", "#AIR", "#FIRE", "#EARTH", "#WATER",
@@ -846,14 +846,14 @@ static void _renderStatPage(int xOffset)
 
         for (j = 2; j < 6; ++j) {
             vs_battle_addTile(before, 0x40330500,
-                _subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
-                _subtract(xOffset, j, 142) | ((var_s6 + j + 64) << 0x10));
+                subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
+                subtract(xOffset, j, 142) | ((var_s6 + j + 64) << 0x10));
         }
 
         for (j = 0; j < 8; ++j) {
             vs_battle_addTile(before, 0x405D3200,
-                _subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
-                _subtract(xOffset, j, 145) | ((var_s6 + j + 64) << 0x10));
+                subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
+                subtract(xOffset, j, 145) | ((var_s6 + j + 64) << 0x10));
         }
 
         vs_battle_insertTpage(
@@ -906,7 +906,7 @@ static void _renderStatPage(int xOffset)
 /**
  * Cycles to the next available stat page.
  */
-static int _getNextStatPage(int currentPage)
+static int getNextStatPage(int currentPage)
 {
     do {
         currentPage = (currentPage + 1) & 3;
@@ -920,7 +920,7 @@ void vs_mainMenu_updateStatPage(int enabledPage)
     vs_mainMenu_enabledStatPages = enabledPage;
 
     if (!((enabledPage >> vs_mainMenu_itemStatPage) & 1)) {
-        vs_mainMenu_itemStatPage = _getNextStatPage(vs_mainMenu_itemStatPage);
+        vs_mainMenu_itemStatPage = getNextStatPage(vs_mainMenu_itemStatPage);
     }
 }
 
@@ -956,7 +956,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
         if (D_801020F8 != 0) {
             --D_801020F8;
         } else if (vs_main_buttonsPressed.all & PADRleft) {
-            statPage = _getNextStatPage(statPage);
+            statPage = getNextStatPage(statPage);
             if (statPage != vs_mainMenu_itemStatPage) {
                 vs_main_playSfxDefault(0x7E, 14);
             } else {
@@ -971,7 +971,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
     }
 
     if (var_s1 <= 0) {
-        _renderStatPage(var_s1);
+        renderStatPage(var_s1);
     }
 
     vs_mainMenu_itemStatPage = statPage;
@@ -979,10 +979,10 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
 
 void vs_mainMenu_setRangeRisk(int range, int risk, int arg2, int arg3)
 {
-    _rangeRiskData[0] = range;
-    _rangeRiskData[1] = risk;
-    _rangeRiskData[2] = arg2;
-    _rangeRiskData[3] = arg3;
+    rangeRiskData[0] = range;
+    rangeRiskData[1] = risk;
+    rangeRiskData[2] = arg2;
+    rangeRiskData[3] = arg3;
 }
 
 void vs_mainMenu_setStrIntAgi(
@@ -1073,14 +1073,14 @@ void vs_mainMenu_renderEquipStats(int animate)
         --D_80102131;
     }
 
-    if (_rangeRiskData[3] != 0) {
+    if (rangeRiskData[3] != 0) {
         vs_battle_renderTextRaw("ORG/EQP", position + 4, temp_s4);
 
         for (i = 0; i < 2; ++i) {
             position += vs_getXY(0, 10);
             vs_battle_renderTextRaw(rangeRiskStr[i], position, temp_s4);
             if (valuesKnown != 0) {
-                stat = _rangeRiskData[i];
+                stat = rangeRiskData[i];
                 vs_mainMenu_renderIntColorDefault(stat, position + 28, temp_s4);
                 if (i == 0) {
                     stat += stats->currentRange - stats->weapon.range.range;
@@ -1125,17 +1125,17 @@ void vs_mainMenu_renderEquipStats(int animate)
 }
 
 static u_short dpPpBarAnimState = 0;
-static u_short _currentDp = 0;
-static u_short _maxDp = 0;
-static u_short _currentPp = 0;
-static u_short _maxPp = 0;
+static u_short currentDpStatic = 0;
+static u_short maxDpStatic = 0;
+static u_short currentPpStatic = 0;
+static u_short maxPpStatic = 0;
 
 void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
-    _currentPp = currentPp;
-    _maxPp = maxPp;
-    _currentDp = (currentDp + 99) / 100;
-    _maxDp = (maxDp + 99) / 100;
+    currentPpStatic = currentPp;
+    maxPpStatic = maxPp;
+    currentDpStatic = (currentDp + 99) / 100;
+    maxDpStatic = (maxDp + 99) / 100;
 }
 
 void vs_mainMenu_renderDpPpBars(int flags)
@@ -1180,42 +1180,44 @@ void vs_mainMenu_renderDpPpBars(int flags)
             if (target & 1) {
                 vs_battle_renderTextRaw("DP", (temp_s1 + vs_getXY(0, -1)) | 10, before);
 
-                temp = vs_battle_renderValue(0, temp_s1 | 66, _maxDp, before);
+                temp = vs_battle_renderValue(0, temp_s1 | 66, maxDpStatic, before);
                 vs_battle_renderValue(2, temp, 0, before);
-                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), _currentDp, before);
+                vs_battle_renderValue(
+                    1, temp + vs_getXY(-7, -2), currentDpStatic, before);
             }
 
             if (target & 2) {
                 vs_battle_renderTextRaw("PP", (temp_s1 + vs_getXY(0, -1)) | 80, before);
 
-                temp = vs_battle_renderValue(0, temp_s1 | 136, _maxPp, before);
+                temp = vs_battle_renderValue(0, temp_s1 | 136, maxPpStatic, before);
                 vs_battle_renderValue(2, temp, 0, before);
-                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), _currentPp, before);
+                vs_battle_renderValue(
+                    1, temp + vs_getXY(-7, -2), currentPpStatic, before);
             }
 
             temp_s1 += 8 << 16;
 
             if (target & 1) {
 
-                temp = _maxDp;
+                temp = maxDpStatic;
 
                 if (temp == 0) {
                     temp = 1;
                 }
 
-                vs_battle_renderStatBar(
-                    0, (((_currentDp << 6) + temp) - 1) / temp, before, temp_s1 | 10);
+                vs_battle_renderStatBar(0, (((currentDpStatic << 6) + temp) - 1) / temp,
+                    before, temp_s1 | 10);
             }
             if (target & 2) {
 
-                temp = _maxPp;
+                temp = maxPpStatic;
 
                 if (temp == 0) {
                     temp = 1;
                 }
 
-                vs_battle_renderStatBar(
-                    1, (((_currentPp << 6) + temp) - 1) / temp, before, temp_s1 | 80);
+                vs_battle_renderStatBar(1, (((currentPpStatic << 6) + temp) - 1) / temp,
+                    before, temp_s1 | 80);
             }
         }
     }

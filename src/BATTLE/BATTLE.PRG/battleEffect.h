@@ -6,7 +6,7 @@
 typedef struct {
     u_short lba;
     u_short size;
-} _loadFileContext;
+} loadFileContext_t;
 
 typedef struct {
     u_short type;
@@ -418,4 +418,4 @@ void vs_battle_setPlgLoadState(int);
 void vs_battle_configureEffectFbLoad(
     int lba, int size, int suffix, int isClut, int index);
 extern actionEffectRequest D_800F5230;
-extern _loadFileContext vs_battle_pFileLoadContext;
+extern loadFileContext_t vs_battle_pFileLoadContext;

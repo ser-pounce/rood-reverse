@@ -6,7 +6,7 @@
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 
-int _loadObject(int arg0)
+int loadObject(int arg0)
 {
     UNUSED int _[6];
     D_800F4538_t* new_var = D_800F4538[0];

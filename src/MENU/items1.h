@@ -13,23 +13,23 @@
 #include <libetc.h>
 #include <limits.h>
 
-static int _itemPaging(int items, int page);
-static void _startMenuTransition(int id);
-static void _continueMenuTransition(int id);
+static int itemPaging(int items, int page);
+static void startMenuTransition(int id);
+static void continueMenuTransition(int id);
 
-static int _ashleyYOffset = 0;
-static int _ashleyRenderState = 0;
-extern char _secondaryTitleEnabled;
-extern char _itemCategoryIconsEnabled;
-extern char _statusCommandState;
+static int ashleyYOffset = 0;
+static int ashleyRenderState = 0;
+extern char secondaryTitleEnabled;
+extern char itemCategoryIconsEnabled;
+extern char statusCommandState;
 
-static void _initMenuLayout(int selectedItem, int classAffinityType)
+static void initMenuLayout(int selectedItem, int classAffinityType)
 {
-    _ashleyRenderState = 1;
-    _itemCategoryIconsEnabled = 0;
-    _statusCommandState = 0;
+    ashleyRenderState = 1;
+    itemCategoryIconsEnabled = 0;
+    statusCommandState = 0;
 
-    _continueMenuTransition(selectedItem);
+    continueMenuTransition(selectedItem);
     vs_mainMenu_drawClassAffinityType(classAffinityType);
     vs_mainMenu_renderEquipStats(1);
 }
@@ -37,7 +37,7 @@ static void _initMenuLayout(int selectedItem, int classAffinityType)
 /**
  * Updates the UI after a new page is selected with L1 / R1
  */
-static void _switchItemStatusPage(int row, char* text[], u_int rowType, int page)
+static void switchItemStatusPage(int row, char* text[], u_int rowType, int page)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -56,7 +56,7 @@ static void _switchItemStatusPage(int row, char* text[], u_int rowType, int page
  * Combined method for setting the cursor memory and mapping the
  * item ID to a row index.
  */
-static int _getItemIndex(int itemCategory, int itemId)
+static int getItemIndex(int itemCategory, int itemId)
 {
     // Actually accesses struct at unk3A, might originally have been raw
     // pointer manipulation.
@@ -65,18 +65,18 @@ static int _getItemIndex(int itemCategory, int itemId)
     return vs_mainMenu_inventoryIndices[itemCategory][itemId];
 }
 
-static char _secondaryTitleAnimationStep;
-static char _itemCategoryIconsAnimationStep;
-static char _statusCommandAnimationStep;
-static char _selectedItemCategoryIconOnTop;
-static int _exitToBattle;
+static char secondaryTitleAnimationStep;
+static char itemCategoryIconsAnimationStep;
+static char statusCommandAnimationStep;
+static char selectedItemCategoryIconOnTop;
+static int exitToBattle;
 
 /**
  * Restores items view.
  *
  * @param clearDpPp Set to 1 if status view has DP and PP bars
  */
-static void _exitStatusView(int clearDpPp)
+static void exitStatusView(int clearDpPp)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -84,8 +84,8 @@ static void _exitStatusView(int clearDpPp)
     vs_mainMenu_drawClassAffinityType(-1);
     vs_mainMenu_renderEquipStats(2);
 
-    _selectedItemCategoryIconOnTop = 2;
-    _exitToBattle = vs_main_buttonsPressed.all & PADRup;
+    selectedItemCategoryIconOnTop = 2;
+    exitToBattle = vs_main_buttonsPressed.all & PADRup;
 
     if (clearDpPp != 0) {
         vs_mainMenu_renderDpPpBars(4);
@@ -100,7 +100,7 @@ static void _exitStatusView(int clearDpPp)
  * - Bits 8+: Row in current view
  * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
  */
-static int _weaponStatusView(int itemInfo)
+static int weaponStatusView(int itemInfo)
 {
     enum state { init, initWeapon, manageInput, returnMenuReady };
 
@@ -119,7 +119,7 @@ static int _weaponStatusView(int itemInfo)
         itemRow = itemInfo >> 8;
         itemIndex = (itemInfo - 1) & 0xFF;
 
-        _startMenuTransition(itemRow);
+        startMenuTransition(itemRow);
 
         _ = 0;
         initRow = 0;
@@ -131,7 +131,7 @@ static int _weaponStatusView(int itemInfo)
     switch (state) {
     case init:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuLayout(itemRow, 7);
+            initMenuLayout(itemRow, 7);
             vs_mainMenu_setStatsFromWeapon(vs_main_inventoryIndices.weapons[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
             state = initWeapon;
@@ -153,18 +153,18 @@ static int _weaponStatusView(int itemInfo)
 
     case manageInput:
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
-            _exitStatusView(1);
+            exitStatusView(1);
             state = 3;
             break;
         }
 
-        newIndex = _itemPaging(0, itemIndex);
+        newIndex = itemPaging(0, itemIndex);
 
         if (newIndex != itemIndex) {
             int weaponToDisplay;
 
             itemIndex = newIndex;
-            weaponToDisplay = _getItemIndex(0, newIndex);
+            weaponToDisplay = getItemIndex(0, newIndex);
 
             vs_mainMenu_setWeaponRowFromInventory(
                 &vs_main_inventory.weapons[weaponToDisplay - 1], menuText, &rowType,
@@ -172,7 +172,7 @@ static int _weaponStatusView(int itemInfo)
 
             do {
                 vs_mainMenu_setStatsFromWeapon(weaponToDisplay);
-                _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+                switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
                 for (i = 1; i < 6; ++i) {
                     vs_mainMenu_initWeaponDetailsRow(
@@ -197,7 +197,7 @@ static int _weaponStatusView(int itemInfo)
  * - Bits 8+: Row in current view
  * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
  */
-static int _bladeStatusView(int itemInfo)
+static int bladeStatusView(int itemInfo)
 {
     enum state { init, wait, manageInput, returnMenuReady };
 
@@ -214,7 +214,7 @@ static int _bladeStatusView(int itemInfo)
         itemRow = itemInfo >> 8;
         itemIndex = (itemInfo - 1) & 0xFF;
 
-        _startMenuTransition(itemRow);
+        startMenuTransition(itemRow);
 
         animationTimer = 10;
         state = init;
@@ -225,7 +225,7 @@ static int _bladeStatusView(int itemInfo)
     switch (state) {
     case init:
         if ((state == 0) && (vs_mainmenu_ready() != 0)) {
-            _initMenuLayout(itemRow, 3);
+            initMenuLayout(itemRow, 3);
             vs_mainMenu_setStatsFromBlade(vs_main_inventoryIndices.blades[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
             state = wait;
@@ -242,23 +242,23 @@ static int _bladeStatusView(int itemInfo)
 
     case manageInput:
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
-            _exitStatusView(1);
+            exitStatusView(1);
             state = returnMenuReady;
             break;
         }
 
-        newIndex = _itemPaging(1, (int)itemIndex);
+        newIndex = itemPaging(1, (int)itemIndex);
 
         if (newIndex != itemIndex) {
             int bladeToDisplay;
 
             itemIndex = newIndex;
-            bladeToDisplay = _getItemIndex(1, newIndex);
+            bladeToDisplay = getItemIndex(1, newIndex);
 
             vs_mainMenu_setBladeRow(&vs_main_inventory.blades[bladeToDisplay - 1],
                 meunText, &rowType, vs_battle_stringBuf);
             vs_mainMenu_setStatsFromBlade(bladeToDisplay);
-            _switchItemStatusPage(itemRow, meunText, rowType, newIndex);
+            switchItemStatusPage(itemRow, meunText, rowType, newIndex);
         }
         break;
 
@@ -277,7 +277,7 @@ static int _bladeStatusView(int itemInfo)
  * - Bits 8+: Row in current view
  * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
  */
-static int _gripStatusView(int itemInfo)
+static int gripStatusView(int itemInfo)
 {
     enum state { init, wait, manageInput, returnMenuReady };
 
@@ -296,7 +296,7 @@ static int _gripStatusView(int itemInfo)
         itemRow = itemInfo >> 8;
         itemIndex = (itemInfo - 1) & 0xFF;
 
-        _startMenuTransition(itemRow);
+        startMenuTransition(itemRow);
 
         _ = 0;
         animationTimer = 0;
@@ -308,7 +308,7 @@ static int _gripStatusView(int itemInfo)
     switch (state) {
     case init:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuLayout(itemRow, 4);
+            initMenuLayout(itemRow, 4);
             vs_mainMenu_setStatsFromGrip(vs_main_inventoryIndices.grips[itemIndex]);
             state = wait;
         }
@@ -324,21 +324,21 @@ static int _gripStatusView(int itemInfo)
 
     case manageInput:
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
-            _exitStatusView(0);
+            exitStatusView(0);
             state = returnMenuReady;
         } else {
-            int newIndex = _itemPaging(2, itemIndex);
+            int newIndex = itemPaging(2, itemIndex);
 
             if (newIndex != itemIndex) {
                 int gripToDisplay;
                 itemIndex = newIndex;
-                gripToDisplay = _getItemIndex(2, newIndex);
+                gripToDisplay = getItemIndex(2, newIndex);
 
                 vs_mainMenu_setGripRow(&vs_main_inventory.grips[gripToDisplay - 1],
                     menuText, &rowType, vs_battle_stringBuf);
 
                 vs_mainMenu_setStatsFromGrip(gripToDisplay);
-                _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+                switchItemStatusPage(itemRow, menuText, rowType, newIndex);
             }
         }
 
@@ -367,7 +367,7 @@ static int _gripStatusView(int itemInfo)
  * - Bits 8+: Row in current view
  * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
  */
-static int _shieldStatusView(int itemInfo)
+static int shieldStatusView(int itemInfo)
 {
     enum state { init, initShield, manageInput, returnMenuReady };
 
@@ -386,7 +386,7 @@ static int _shieldStatusView(int itemInfo)
         itemRow = itemInfo >> 8;
         itemIndex = (itemInfo - 1) & 0xFF;
 
-        _startMenuTransition(itemRow);
+        startMenuTransition(itemRow);
 
         _ = 0;
         initRow = 0;
@@ -398,7 +398,7 @@ static int _shieldStatusView(int itemInfo)
     switch (state) {
     case init:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuLayout(itemRow, 7);
+            initMenuLayout(itemRow, 7);
             vs_mainMenu_setStatsFromShield(vs_main_inventoryIndices.shields[itemIndex]);
             vs_mainMenu_renderDpPpBars(3);
 
@@ -426,22 +426,22 @@ static int _shieldStatusView(int itemInfo)
 
     case manageInput:
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
-            _exitStatusView(1);
+            exitStatusView(1);
             state = returnMenuReady;
             break;
         }
 
-        newIndex = _itemPaging(3, itemIndex);
+        newIndex = itemPaging(3, itemIndex);
 
         if (newIndex != itemIndex) {
             itemIndex = newIndex;
-            i = _getItemIndex(3, newIndex);
+            i = getItemIndex(3, newIndex);
 
             vs_mainMenu_setShieldRowFromInventory(&vs_main_inventory.shields[i - 1],
                 menuText, &rowType, vs_battle_stringBuf);
 
             vs_mainMenu_setStatsFromShield(i);
-            _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+            switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             for (i = 1; i < 4; ++i) {
                 vs_mainMenu_initShieldDetailsRow(
@@ -466,7 +466,7 @@ static int _shieldStatusView(int itemInfo)
  * - Bits 8+: Row in current view
  * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
  */
-static int _armorStatusView(int itemInfo)
+static int armorStatusView(int itemInfo)
 {
     enum state { init, wait, manageInput, returnMenuReady };
 
@@ -483,7 +483,7 @@ static int _armorStatusView(int itemInfo)
         itemRow = itemInfo >> 8;
         itemIndex = (itemInfo - 1) & 0xFF;
 
-        _startMenuTransition(itemRow);
+        startMenuTransition(itemRow);
 
         animationTimer = 10;
         status = 0;
@@ -494,7 +494,7 @@ static int _armorStatusView(int itemInfo)
     switch (status) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuLayout(itemRow, 7);
+            initMenuLayout(itemRow, 7);
             vs_mainMenu_setStatsFromArmor(vs_main_inventoryIndices.armor[itemIndex]);
             if (vs_main_inventory.armor[vs_main_inventoryIndices.armor[itemIndex] - 1]
                     .category
@@ -516,25 +516,25 @@ static int _armorStatusView(int itemInfo)
 
     case manageInput:
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
-            _exitStatusView(1);
+            exitStatusView(1);
             status = returnMenuReady;
 
             break;
         }
 
-        newIndex = _itemPaging(4, itemIndex);
+        newIndex = itemPaging(4, itemIndex);
 
         if (newIndex != itemIndex) {
             int armorToDisplay;
 
             itemIndex = newIndex;
-            armorToDisplay = _getItemIndex(4, newIndex);
+            armorToDisplay = getItemIndex(4, newIndex);
 
             vs_mainMenu_setArmorRowFromInventory(
                 &vs_main_inventory.armor[armorToDisplay - 1], menuText, &rowType,
                 vs_battle_stringBuf);
             vs_mainMenu_setStatsFromArmor(armorToDisplay);
-            _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+            switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             return 0;
         }
@@ -556,7 +556,7 @@ static int _armorStatusView(int itemInfo)
  * - Bits 8+: Row in current view
  * @return The value of vs_mainmenu_ready if itemInfo == 0, 0 otherwise.
  */
-static int _gemStatusView(int itemInfo)
+static int gemStatusView(int itemInfo)
 {
     enum state { init, wait, manageInput, returnMenuReady };
 
@@ -573,7 +573,7 @@ static int _gemStatusView(int itemInfo)
         itemRow = itemInfo >> 8;
         itemIndex = (itemInfo - 1) & 0xFF;
 
-        _startMenuTransition(itemRow);
+        startMenuTransition(itemRow);
 
         animationTimer = 10;
         state = init;
@@ -584,7 +584,7 @@ static int _gemStatusView(int itemInfo)
     switch (state) {
     case init:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuLayout(itemRow, 3);
+            initMenuLayout(itemRow, 3);
             vs_mainMenu_setStatsFromGem(vs_main_inventoryIndices.gems[itemIndex]);
 
             state = wait;
@@ -601,26 +601,26 @@ static int _gemStatusView(int itemInfo)
 
     case manageInput:
         if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
-            _exitStatusView(0);
+            exitStatusView(0);
 
             state = returnMenuReady;
-            _exitToBattle = vs_main_buttonsPressed.all & PADRup;
+            exitToBattle = vs_main_buttonsPressed.all & PADRup;
 
             break;
         }
 
-        newIndex = _itemPaging(5, itemIndex);
+        newIndex = itemPaging(5, itemIndex);
 
         if (newIndex != itemIndex) {
             int gemToDisplay;
 
             itemIndex = newIndex;
-            gemToDisplay = _getItemIndex(5, newIndex);
+            gemToDisplay = getItemIndex(5, newIndex);
 
             vs_mainMenu_setGemRow(&vs_main_inventory.gems[gemToDisplay - 1], menuText,
                 &rowType, vs_battle_stringBuf);
             vs_mainMenu_setStatsFromGem(gemToDisplay);
-            _switchItemStatusPage(itemRow, menuText, rowType, newIndex);
+            switchItemStatusPage(itemRow, menuText, rowType, newIndex);
 
             return 0;
         }
@@ -642,10 +642,10 @@ static int _gemStatusView(int itemInfo)
  * - Bits 4+: Page to display
  * @return int
  */
-static int _itemStatusDispatcher(int itemInfo)
+static int itemStatusDispatcher(int itemInfo)
 {
-    static int (*_statusViewDispatch[])(int) = { _weaponStatusView, _bladeStatusView,
-        _gripStatusView, _shieldStatusView, _armorStatusView, _gemStatusView };
+    static int (*statusViewDispatch[])(int) = { weaponStatusView, bladeStatusView,
+        gripStatusView, shieldStatusView, armorStatusView, gemStatusView };
 
     static u_char itemCategory;
 
@@ -655,23 +655,23 @@ static int _itemStatusDispatcher(int itemInfo)
     if (itemInfo != 0) {
         page = itemInfo >> 4;
         itemCategory = itemInfo & 0xF;
-        _selectedItemCategoryIconOnTop = 1;
-        _exitToBattle = 0;
+        selectedItemCategoryIconOnTop = 1;
+        exitToBattle = 0;
 
         vs_mainMenu_resetStatusViewCursor();
         vs_battle_getMenuItem(31)->itemPage = page & 0xFF;
         vs_mainMenu_setMenuCommand(menuActionNone);
     }
 
-    page = _statusViewDispatch[itemCategory](page);
+    page = statusViewDispatch[itemCategory](page);
     new_var = page != 0;
 
     if (new_var) {
-        if (_exitToBattle == 0) {
-            _itemCategoryIconsEnabled = 1;
-            _selectedItemCategoryIconOnTop = 0;
-            _statusCommandState = 1;
-            _ashleyRenderState = 0;
+        if (exitToBattle == 0) {
+            itemCategoryIconsEnabled = 1;
+            selectedItemCategoryIconOnTop = 0;
+            statusCommandState = 1;
+            ashleyRenderState = 0;
 
             vs_mainMenu_setMenuCommand(menuActionMenu);
 
@@ -697,7 +697,7 @@ static int _itemStatusDispatcher(int itemInfo)
  *
  * @param stat Must be in the range 0-24
  */
-static int _getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
+static int getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
 {
     switch (stat) {
     case 0:
@@ -733,7 +733,7 @@ static int _getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
 /**
  * Sorts weapons by the selected stat.
  */
-static void _sortWeapons(int stat)
+static void sortWeapons(int stat)
 {
     vs_battle_uiWeapon uiWeapon;
     char sortedIndices[8];
@@ -759,7 +759,7 @@ static void _sortWeapons(int stat)
 
                 vs_battle_applyWeapon(&uiWeapon, &weapon[index - 1]);
 
-                value = _getWeaponStatValue(stat, &uiWeapon);
+                value = getWeaponStatValue(stat, &uiWeapon);
 
                 if (maxValue < value) {
                     maxValue = value;
@@ -778,7 +778,7 @@ static void _sortWeapons(int stat)
 
                 vs_battle_applyWeapon(&uiWeapon, &weapon[index - 1]);
 
-                if (_getWeaponStatValue(stat, &uiWeapon) == maxValue) {
+                if (getWeaponStatValue(stat, &uiWeapon) == maxValue) {
                     sortedIndices[sortedPos++] = index;
                     indices[i] = 0;
                 }
@@ -794,7 +794,7 @@ static void _sortWeapons(int stat)
  *
  * @param stat Must be in the disjoint range 0-10 | 27-43
  */
-static int _getShieldStatValue(int stat, vs_battle_uiShield* shield)
+static int getShieldStatValue(int stat, vs_battle_uiShield* shield)
 {
     switch (stat) {
     case 1:
@@ -829,7 +829,7 @@ static int _getShieldStatValue(int stat, vs_battle_uiShield* shield)
 /**
  * Sorts shields by the selected stat.
  */
-static void _sortShields(int stat)
+static void sortShields(int stat)
 {
     vs_battle_uiShield uiShield;
     char sortedIndices[8];
@@ -855,7 +855,7 @@ static void _sortShields(int stat)
 
                 vs_battle_applyShield(&uiShield, &shield[index - 1]);
 
-                value = _getShieldStatValue(stat, &uiShield);
+                value = getShieldStatValue(stat, &uiShield);
 
                 if (maxValue < value) {
                     maxValue = value;
@@ -874,7 +874,7 @@ static void _sortShields(int stat)
 
                 vs_battle_applyShield(&uiShield, &shield[index - 1]);
 
-                if (_getShieldStatValue(stat, &uiShield) == maxValue) {
+                if (getShieldStatValue(stat, &uiShield) == maxValue) {
                     sortedIndices[sortedPos++] = index;
                     indices[i] = 0;
                 }
@@ -890,7 +890,7 @@ static void _sortShields(int stat)
  *
  * @param stat 0 = ID, count otherwise.
  */
-static int _getMiscStatValue(int stat, vs_main_inventoryMisc* misc)
+static int getMiscStatValue(int stat, vs_main_inventoryMisc* misc)
 {
     if (stat == 0) {
         return -misc->id;
@@ -901,7 +901,7 @@ static int _getMiscStatValue(int stat, vs_main_inventoryMisc* misc)
 /**
  * Sorts misc items by the selected stat.
  */
-static void _sortMisc(int stat)
+static void sortMisc(int stat)
 {
     char sortedIndices[64];
     int i;
@@ -921,7 +921,7 @@ static void _sortMisc(int stat)
             index = indices[i];
 
             if (index != 0) {
-                int value = _getMiscStatValue(stat, &misc[index - 1]);
+                int value = getMiscStatValue(stat, &misc[index - 1]);
 
                 if (maxValue < value) {
                     maxValue = value;
@@ -936,7 +936,7 @@ static void _sortMisc(int stat)
         for (i = 0; i < 0x40; ++i) {
             index = indices[i];
 
-            if ((index != 0) && (_getMiscStatValue(stat, &misc[index - 1]) == maxValue)) {
+            if ((index != 0) && (getMiscStatValue(stat, &misc[index - 1]) == maxValue)) {
                 sortedIndices[sortedPos++] = index;
                 indices[i] = 0;
             }
@@ -951,7 +951,7 @@ static void _sortMisc(int stat)
  *
  * @param stat Must be in the range 0-42
  */
-static int _getEquipmentStatValue(int stat, vs_battle_uiEquipment* equipment)
+static int getEquipmentStatValue(int stat, vs_battle_uiEquipment* equipment)
 {
     switch (stat) {
     case 0:
@@ -996,7 +996,7 @@ static int _getEquipmentStatValue(int stat, vs_battle_uiEquipment* equipment)
 /**
  * Copies equipment for the selected category.
  */
-static void _copyEquipment(
+static void copyEquipment(
     vs_battle_uiEquipment* equipment, int itemCategory, int itemIndex)
 {
     switch (itemCategory) {
@@ -1019,7 +1019,7 @@ static void _copyEquipment(
 /**
  * Sorts equipment by the selected stat.
  */
-static void _sortEquipment(int itemCategory, int stat)
+static void sortEquipment(int itemCategory, int stat)
 {
     vs_battle_uiEquipment uiEquipment;
     int i;
@@ -1041,9 +1041,9 @@ static void _sortEquipment(int itemCategory, int stat)
                 if (index != 0) {
                     int value;
 
-                    _copyEquipment(&uiEquipment, itemCategory, index - 1);
+                    copyEquipment(&uiEquipment, itemCategory, index - 1);
 
-                    value = _getEquipmentStatValue(stat, &uiEquipment);
+                    value = getEquipmentStatValue(stat, &uiEquipment);
 
                     if (maxValue < value) {
                         maxValue = value;
@@ -1060,9 +1060,9 @@ static void _sortEquipment(int itemCategory, int stat)
 
                 if (index != 0) {
 
-                    _copyEquipment(&uiEquipment, itemCategory, index - 1);
+                    copyEquipment(&uiEquipment, itemCategory, index - 1);
 
-                    if (_getEquipmentStatValue(stat, &uiEquipment) == maxValue) {
+                    if (getEquipmentStatValue(stat, &uiEquipment) == maxValue) {
                         sortedIndices[sortedPos++] = index;
                         indices[i] = 0;
                     }
@@ -1079,7 +1079,7 @@ static void _sortEquipment(int itemCategory, int stat)
  *
  * @return The stat used for sorting, negative if user cancelled, 0 otherwise.
  */
-static int _sortItems(int initItemCategory)
+static int sortItems(int initItemCategory)
 {
     enum state { init, sort };
 
@@ -1146,19 +1146,19 @@ static int _sortItems(int initItemCategory)
 
                 switch (itemCategory) {
                 case itemCategoryWeapon:
-                    _sortWeapons(weaponSortStats[i]);
+                    sortWeapons(weaponSortStats[i]);
                     break;
 
                 case itemCategoryShield:
-                    _sortShields(gripSortStats[i]);
+                    sortShields(gripSortStats[i]);
                     break;
 
                 case itemCategoryMisc:
-                    _sortMisc(miscSortStats[i]);
+                    sortMisc(miscSortStats[i]);
                     break;
 
                 default:
-                    _sortEquipment(itemCategory, sortStats[itemCategory][i]);
+                    sortEquipment(itemCategory, sortStats[itemCategory][i]);
                     break;
                 }
             } else {
@@ -1187,7 +1187,7 @@ static int _sortItems(int initItemCategory)
  *
  * @return Row discarded, negative on user cancel, 0 otherwise.
  */
-static int _discardMenu(int params)
+static int discardMenu(int params)
 {
 #pragma vsstring(start)
 

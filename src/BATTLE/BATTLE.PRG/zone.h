@@ -6,7 +6,7 @@
 
 typedef struct {
     u_char unk0[0x464];
-} _zndEnemy;
+} zndEnemy_t;
 
 typedef struct {
     u_char bytes[8];
@@ -40,13 +40,13 @@ typedef struct {
     u_char variant;
     u_char unk26;
     u_char sceneTest;
-} _mpdEnemy;
+} mpdEnemy_t;
 
 typedef struct {
     int zndId;
     vs_main_CdFile* mpdLbas;
     int zndEnemyCount;
-    _zndEnemy* zndEnemies;
+    zndEnemy_t* zndEnemies;
     vs_main_CdFile* zudFiles;
     int unk14;
     vs_main_CdQueueSlot* unk18;
@@ -60,7 +60,7 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    _zoneContextBounds bounds;
+    zoneContextBounds_t bounds;
     int unk48;
     int unk4C;
     int unk50;
@@ -68,8 +68,8 @@ typedef struct {
     vs_main_CdQueueSlot* mpdCdFile;
     void* mpdData;
     u_int mpdEnemyCount;
-    _mpdEnemy* mpdEnemies;
+    mpdEnemy_t* mpdEnemies;
     int unk68;
-} _zoneContext_t;
+} zoneContext_t;
 
-extern _zoneContext_t _zoneContext;
+extern zoneContext_t zoneContext;

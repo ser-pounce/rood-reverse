@@ -251,7 +251,7 @@ static char const D_80068EB4[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x4
 
 void func_80090C2C(int arg0)
 {
-    _mpdRoomSectionB* room = vs_battle_roomData.sectionB;
+    mpdRoomSectionB_t* room = vs_battle_roomData.sectionB;
 
     if (room != NULL) {
         int sound = -2;
@@ -315,7 +315,7 @@ void func_80090C2C(int arg0)
 void func_80090EEC(void)
 {
     int masks[] = { 0xF, 0x1F, 0x3F, 0x7F };
-    _mpdRoomSectionB* room = vs_battle_roomData.sectionB;
+    mpdRoomSectionB_t* room = vs_battle_roomData.sectionB;
 
     if ((room == NULL) || (D_800F1DCA == 0)) {
         return;

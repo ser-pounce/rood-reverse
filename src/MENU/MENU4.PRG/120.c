@@ -22,14 +22,14 @@
 #include "gpu.h"
 #include <libetc.h>
 
-static u_short _statusStrings[] = {
+static u_short statusStrings[] = {
 #include "build/assets/MENU/MENU4.PRG/status.vsString"
 };
 
 /**
  * Renders stats for the supplied weapon.
  */
-static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
+static void drawWeaponInfo(vs_battle_uiWeapon* weapon)
 {
     vs_mainMenu_equipmentSubtype = 1;
 
@@ -71,7 +71,7 @@ static void _drawWeaponInfo(vs_battle_uiWeapon* weapon)
 /**
  * Renders stats for the supplied shield.
  */
-static void _drawShieldInfo(vs_battle_uiShield* shield)
+static void drawShieldInfo(vs_battle_uiShield* shield)
 {
     vs_mainMenu_equipmentSubtype = 8;
 
@@ -107,7 +107,7 @@ static void _drawShieldInfo(vs_battle_uiShield* shield)
 /**
  * Renders stats for the supplied armor.
  */
-static void _drawArmorInfo(vs_battle_uiArmor* armor)
+static void drawArmorInfo(vs_battle_uiArmor* armor)
 {
     vs_mainMenu_equipmentSubtype = 16;
 
@@ -147,7 +147,7 @@ static void _drawArmorInfo(vs_battle_uiArmor* armor)
 /**
  * Renders stats for the supplied accessory.
  */
-static void _drawAccessoryInfo(vs_battle_uiAccessory* accessory)
+static void drawAccessoryInfo(vs_battle_uiAccessory* accessory)
 {
     vs_mainMenu_equipmentSubtype = 32;
 
@@ -172,7 +172,7 @@ static void _drawAccessoryInfo(vs_battle_uiAccessory* accessory)
 /**
  * Renders stats for the supplied blade.
  */
-static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
+static void drawBladeInfo(vs_battle_uiWeapon* weapon)
 {
     int i;
 
@@ -194,7 +194,7 @@ static void _drawBladeInfo(vs_battle_uiWeapon* weapon)
 /**
  * Renders stats for the supplied grip.
  */
-static void _drawGripInfo(vs_battle_uiEquipment* grip)
+static void drawGripInfo(vs_battle_uiEquipment* grip)
 {
     int i;
 
@@ -212,7 +212,7 @@ static void _drawGripInfo(vs_battle_uiEquipment* grip)
 /**
  * Renders stats for the supplied gem.
  */
-static void _drawGemInfo(vs_battle_uiEquipment* gem)
+static void drawGemInfo(vs_battle_uiEquipment* gem)
 {
     int i;
 
@@ -231,7 +231,7 @@ static void _drawGemInfo(vs_battle_uiEquipment* gem)
 /**
  * Prints the blade description.
  */
-static void _initBladeDescription(
+static void initBladeDescription(
     vs_battle_uiEquipment* blade, char* menuText[], UNUSED int rowTypes[])
 {
     char* str;
@@ -257,7 +257,7 @@ static void _initBladeDescription(
 /**
  * Prints the grip description.
  */
-static void _initGripInfo(
+static void initGripInfo(
     vs_battle_uiEquipment* grip, char* menuText[], UNUSED int rowTypes[])
 {
     char* str;
@@ -278,7 +278,7 @@ static void _initGripInfo(
 /**
  * Prints the gem description.
  */
-static void _initGemInfo(
+static void initGemInfo(
     vs_battle_uiEquipment* gem, char* menuText[], UNUSED int rowTypes[])
 {
     vs_battle_memcpy(vs_battle_stringBuf,
@@ -289,14 +289,14 @@ static void _initGemInfo(
     menuText[1] = vs_battle_stringBuf;
 }
 
-static char* _limbStatuses[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
+static char* limbStatuses[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", NULL };
 
 /**
  * Renders weapon components.
  *
  * @return The description text.
  */
-static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
+static char* drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
 {
     char* menuText[2];
     int rowType;
@@ -310,21 +310,21 @@ static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
         break;
 
     case 1:
-        _initBladeDescription(&weapon->blade, menuText, &rowType);
-        _drawBladeInfo(weapon);
+        initBladeDescription(&weapon->blade, menuText, &rowType);
+        drawBladeInfo(weapon);
         break;
 
     case 2:
-        _initGripInfo(&weapon->grip, menuText, &rowType);
-        _drawGripInfo(&weapon->grip);
+        initGripInfo(&weapon->grip, menuText, &rowType);
+        drawGripInfo(&weapon->grip);
         break;
 
     case 3:
     case 4:
     case 5:
         if (weapon->gems[row - 3].id != 0) {
-            _initGemInfo(&weapon->gems[row - 3], menuText, &rowType);
-            _drawGemInfo(&weapon->gems[row - 3]);
+            initGemInfo(&weapon->gems[row - 3], menuText, &rowType);
+            drawGemInfo(&weapon->gems[row - 3]);
         } else {
             vs_mainMenu_renderDpPpBars(8);
             vs_mainMenu_resetStats();
@@ -342,7 +342,7 @@ static char* _drawWeaponInfoRow(int row, vs_battle_uiWeapon* weapon)
  *
  * @return The description text.
  */
-static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
+static char* drawShieldInfoRow(int row, vs_battle_uiShield* shield)
 {
     char* menuText[2];
     int rowType;
@@ -355,8 +355,8 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
 
     } else if (row < 4) {
         if (shield->gems[row - 1].id != 0) {
-            _initGemInfo(&shield->gems[row - 1], (char**)&menuText, &rowType);
-            _drawGemInfo(&shield->gems[row - 1]);
+            initGemInfo(&shield->gems[row - 1], (char**)&menuText, &rowType);
+            drawGemInfo(&shield->gems[row - 1]);
         } else {
             vs_mainMenu_renderDpPpBars(8);
             vs_mainMenu_resetStats();
@@ -371,7 +371,7 @@ static char* _drawShieldInfoRow(int row, vs_battle_uiShield* shield)
  *
  * @return The description text.
  */
-static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
+static char* drawArmorInfoRow(vs_battle_uiArmor* arg0)
 {
     char* menuText[2];
     int rowType;
@@ -386,7 +386,7 @@ static char* _drawArmorInfoRow(vs_battle_uiArmor* arg0)
  *
  * @return The description text.
  */
-static char* _drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
+static char* drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
 {
     char* menuText[2];
     vs_main_inventoryArmor armor;
@@ -404,7 +404,7 @@ static char* _drawAccessoryInfoRow(vs_battle_uiAccessory* arg0)
  *
  * @return True / false
  */
-static int _equipmentDetailElementSelectable(int newSelection, int flags)
+static int equipmentDetailElementSelectable(int newSelection, int flags)
 {
     int v0;
     int v1;
@@ -465,7 +465,7 @@ static int _equipmentDetailElementSelectable(int newSelection, int flags)
  *
  * @return The next element to select.
  */
-static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
+static int updateEquipmentDetailSelection(u_int newSelection, int flags)
 {
     int direction = 0;
     int previousSelection = newSelection;
@@ -485,7 +485,7 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
     }
 
     while (1) {
-        if (_equipmentDetailElementSelectable(newSelection, flags)) {
+        if (equipmentDetailElementSelectable(newSelection, flags)) {
             break;
         }
 
@@ -494,14 +494,14 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
             if ((newSelection - 2) < 14) {
                 do {
                     --newSelection;
-                } while (!_equipmentDetailElementSelectable(newSelection, flags));
+                } while (!equipmentDetailElementSelectable(newSelection, flags));
 
                 return newSelection;
             }
 
             do {
                 ++newSelection;
-            } while (!_equipmentDetailElementSelectable(newSelection, flags));
+            } while (!equipmentDetailElementSelectable(newSelection, flags));
 
             return newSelection;
         }
@@ -514,44 +514,44 @@ static int _updateEquipmentDetailSelection(u_int newSelection, int flags)
     return newSelection;
 }
 
-static int _xPos = 0;
-static int _yPos = 0;
-static int _previousActor = 0;
-static int _selectedActor = 0;
-static int _drawBackgroundFirst = 0;
-static int _fadeScreen = 0;
-static int _animationStep = 0;
-static char _renderBasicStatsState = 0;
-static char _basicStatsAnimState = 0;
-static char _basicStatsAnimDelay = 0;
-static char _initializedActor = 0;
+static int xPosStatic = 0;
+static int yPosStatic = 0;
+static int previousActor = 0;
+static int selectedActor = 0;
+static int drawBackgroundFirst = 0;
+static int fadeScreen = 0;
+static int animationStepStatic = 0;
+static char renderBasicStatsState = 0;
+static char basicStatsAnimState = 0;
+static char basicStatsAnimDelay = 0;
+static char initializedActor = 0;
 
 /**
  * Resets values.
  *
  * @param arg0
  */
-static void _initEquipmentScreen(int actor)
+static void initEquipmentScreen(int actor)
 {
     if (actor == 0) {
-        _renderBasicStatsState = 1;
-        _basicStatsAnimDelay = 4;
-    } else if (_initializedActor == 0) {
+        renderBasicStatsState = 1;
+        basicStatsAnimDelay = 4;
+    } else if (initializedActor == 0) {
         func_800CB654(1);
-        _renderBasicStatsState = 4;
-        _basicStatsAnimDelay = 4;
+        renderBasicStatsState = 4;
+        basicStatsAnimDelay = 4;
     } else {
-        _renderBasicStatsState = 2;
-        _basicStatsAnimDelay = 4;
+        renderBasicStatsState = 2;
+        basicStatsAnimDelay = 4;
     }
 
-    _initializedActor = actor;
+    initializedActor = actor;
 }
 
 /**
  * Determines the next actor for L1 / R1 navigation.
  */
-static int _getNextValidActor(int currentActor, int targetActor)
+static int getNextValidActor(int currentActor, int targetActor)
 {
     int temp_a0;
 
@@ -570,7 +570,7 @@ static int _getNextValidActor(int currentActor, int targetActor)
     return currentActor;
 }
 
-static char _delayScreenUpdate = 0;
+static char delayScreenUpdate = 0;
 
 /**
  * Slides to the next or previous actor.
@@ -582,7 +582,7 @@ static char _delayScreenUpdate = 0;
  * - Bit 4: 1 == forward, 0 == reverse
  * @return True if animation complete.
  */
-static int _switchCurrentActor(int init)
+static int switchCurrentActor(int init)
 {
     enum state {
         menuLoaded,
@@ -597,7 +597,7 @@ static int _switchCurrentActor(int init)
     static u_int state = menuLoaded;
 
     if (init != 0) {
-        if (_selectedActor == 0) {
+        if (selectedActor == 0) {
             state = menuLoading;
         } else {
             vs_battle_playSfx10();
@@ -608,10 +608,10 @@ static int _switchCurrentActor(int init)
             state += 3;
         }
 
-        _selectedActor = init & 0xF;
+        selectedActor = init & 0xF;
 
         vs_battle_setMenuItem(
-            4, 180, 18, 140, 8, vs_battle_actors[_selectedActor - 1]->stats->name)
+            4, 180, 18, 140, 8, vs_battle_actors[selectedActor - 1]->stats->name)
             ->selected = 1;
 
         return 0;
@@ -619,42 +619,42 @@ static int _switchCurrentActor(int init)
 
     switch (state) {
     case menuLoaded:
-        if (_animationStep < 160) {
-            _drawBackgroundFirst = 1;
-            _animationStep += 32;
+        if (animationStepStatic < 160) {
+            drawBackgroundFirst = 1;
+            animationStepStatic += 32;
             break;
         } else {
-            _drawBackgroundFirst = 0;
+            drawBackgroundFirst = 0;
             func_800F9E0C();
         }
         // Fallthrough
 
     case menuLoading:
-        _fadeScreen = 1;
+        fadeScreen = 1;
 
-        func_800F9A24(_selectedActor - 1);
+        func_800F9A24(selectedActor - 1);
 
-        _delayScreenUpdate = 1;
-        _animationStep = -160;
+        delayScreenUpdate = 1;
+        animationStepStatic = -160;
         state = animateForward;
 
         break;
 
     case animateForward:
-        if (_animationStep < 0) {
-            _animationStep += 32;
+        if (animationStepStatic < 0) {
+            animationStepStatic += 32;
             break;
         }
 
-        _fadeScreen = 0;
+        fadeScreen = 0;
         state = complete;
 
         return 1;
 
     case menuLoadedReverse:
-        if (_animationStep >= -159) {
-            _fadeScreen = 1;
-            _animationStep -= 32;
+        if (animationStepStatic >= -159) {
+            fadeScreen = 1;
+            animationStepStatic -= 32;
             break;
         }
 
@@ -662,24 +662,24 @@ static int _switchCurrentActor(int init)
         // Fallthrough
 
     case menuLoadingReverse:
-        _fadeScreen = 0;
+        fadeScreen = 0;
 
-        func_800F9A24(_selectedActor - 1);
+        func_800F9A24(selectedActor - 1);
 
-        _delayScreenUpdate = 1;
-        _animationStep = 160;
+        delayScreenUpdate = 1;
+        animationStepStatic = 160;
         state = animateReverse;
 
         break;
 
     case animateReverse:
-        if (_animationStep > 0) {
-            _drawBackgroundFirst = 1;
-            _animationStep -= 32;
+        if (animationStepStatic > 0) {
+            drawBackgroundFirst = 1;
+            animationStepStatic -= 32;
             break;
         }
 
-        _drawBackgroundFirst = 0;
+        drawBackgroundFirst = 0;
         state = complete;
         return 1;
 
@@ -695,7 +695,7 @@ static int _switchCurrentActor(int init)
  *
  * @param withMax Optionally appends "· ???" for values with a maximum.
  */
-static void _renderUnknownValue(int xy, int withMax, u_long* before)
+static void renderUnknownValue(int xy, int withMax, u_long* before)
 {
     int i;
 
@@ -724,7 +724,7 @@ static void _renderUnknownValue(int xy, int withMax, u_long* before)
  * @param colorIndex High byte indicates if enemy has been analyzed,
  * if not then the bar is rendered as if it were full.
  */
-static void _renderStatBar(int colorIndex, int current, int max, int xy)
+static void renderStatBar(int colorIndex, int current, int max, int xy)
 {
     if (max == 0) {
         current = 0;
@@ -744,65 +744,65 @@ static void _renderStatBar(int colorIndex, int current, int max, int xy)
 /**
  * Renders HP / MP / Risk stats of current actor.
  */
-static void _renderBasicStats(void)
+static void renderBasicStats(void)
 {
     int i;
     int y;
-    vs_battle_actorStats* stats = vs_battle_actors[_selectedActor - 1]->stats;
+    vs_battle_actorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
     u_long* insertBefore = vs_scratch.unk4 - 0xC;
 
-    switch (_renderBasicStatsState) {
+    switch (renderBasicStatsState) {
     case 0:
         break;
     case 1:
-        if (_basicStatsAnimState == 0) {
-            if (_basicStatsAnimDelay == 0) {
+        if (basicStatsAnimState == 0) {
+            if (basicStatsAnimDelay == 0) {
                 func_800CB654(0);
-                _renderBasicStatsState = 0;
+                renderBasicStatsState = 0;
             } else {
-                --_basicStatsAnimDelay;
+                --basicStatsAnimDelay;
             }
         } else {
-            --_basicStatsAnimState;
-            stats = vs_battle_actors[_previousActor - 1]->stats;
+            --basicStatsAnimState;
+            stats = vs_battle_actors[previousActor - 1]->stats;
         }
         break;
 
     case 2:
-        if (_basicStatsAnimState != 0) {
-            --_basicStatsAnimState;
-            stats = vs_battle_actors[_previousActor - 1]->stats;
-        } else if (_basicStatsAnimDelay == 0) {
-            _renderBasicStatsState = 3;
+        if (basicStatsAnimState != 0) {
+            --basicStatsAnimState;
+            stats = vs_battle_actors[previousActor - 1]->stats;
+        } else if (basicStatsAnimDelay == 0) {
+            renderBasicStatsState = 3;
         } else {
-            --_basicStatsAnimDelay;
+            --basicStatsAnimDelay;
         }
         break;
 
     case 3:
-        if (_basicStatsAnimState < 4) {
-            ++_basicStatsAnimState;
+        if (basicStatsAnimState < 4) {
+            ++basicStatsAnimState;
         } else {
-            _renderBasicStatsState = 0;
+            renderBasicStatsState = 0;
         }
         break;
 
     case 4:
         if (D_800EB9B0 == 0x200000) {
-            if (_basicStatsAnimDelay == 0) {
-                _renderBasicStatsState = 3;
+            if (basicStatsAnimDelay == 0) {
+                renderBasicStatsState = 3;
             } else {
-                --_basicStatsAnimDelay;
+                --basicStatsAnimDelay;
             }
         }
         break;
     }
 
-    if (_basicStatsAnimState == 0) {
+    if (basicStatsAnimState == 0) {
         return;
     }
 
-    y = ((_basicStatsAnimState * 8) - 22) << 16;
+    y = ((basicStatsAnimState * 8) - 22) << 16;
 
     if (stats->isAnalyzed) {
 
@@ -820,29 +820,29 @@ static void _renderBasicStats(void)
 
         y += 1 << 16;
     } else {
-        _renderUnknownValue(y | 66, 1, insertBefore);
-        _renderUnknownValue(y | 136, 1, insertBefore);
+        renderUnknownValue(y | 66, 1, insertBefore);
+        renderUnknownValue(y | 136, 1, insertBefore);
 
         y += 16 << 16;
 
-        _renderUnknownValue(y | 64, 0, insertBefore);
+        renderUnknownValue(y | 64, 0, insertBefore);
     }
 
     for (i = 0; i < 3; ++i) {
         vs_battle_setSpriteDefaultTexPage(384,
-            D_800EBBEC[i] + ((_basicStatsAnimState - 4) << 0x13), D_800EBBFC[i] | 0x90000,
+            D_800EBBEC[i] + ((basicStatsAnimState - 4) << 0x13), D_800EBBFC[i] | 0x90000,
             insertBefore)[4] = D_800EBC00[i] | 0x37F60000;
     }
 
     y += -8 << 16;
     i = stats->isAnalyzed << 8;
 
-    _renderStatBar(i, stats->currentHP, stats->maxHP, y | 10);
-    _renderStatBar(i | 1, stats->currentMP, stats->maxMP, y | 80);
+    renderStatBar(i, stats->currentHP, stats->maxHP, y | 10);
+    renderStatBar(i | 1, stats->currentMP, stats->maxMP, y | 80);
 
     y += 4 << 16;
 
-    _renderStatBar(i | 2, stats->risk, 100, y | 10);
+    renderStatBar(i | 2, stats->risk, 100, y | 10);
 }
 
 /**
@@ -850,7 +850,7 @@ static void _renderBasicStats(void)
  *
  * @param subdued Final color shifted right by this amount, in practice either 0 or 1.
  */
-void _drawStatusIndicator(int colorIndex, int xy, int subdued)
+void drawStatusIndicator(int colorIndex, int xy, int subdued)
 {
     u_int color;
     u_long* prim;
@@ -873,7 +873,7 @@ void _drawStatusIndicator(int colorIndex, int xy, int subdued)
 /**
  * Draws the lines extending from the model to the limb name.
  */
-static void _drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
+static void drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
 {
     int temp_t2;
     int temp_v0;
@@ -915,7 +915,7 @@ static void _drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
  * Displays the stats's current status effects, sliding in from the left
  * depending on the animation step.
  */
-static void _renderStatusIcons(vs_battle_actorStats* stats, int animationStep)
+static void renderStatusIcons(vs_battle_actorStats* stats, int animationStep)
 {
     int i;
 
@@ -957,13 +957,13 @@ static void _renderStatusIcons(vs_battle_actorStats* stats, int animationStep)
     }
 }
 
-static u_char _selectedElement;
+static u_char selectedElement;
 
 /**
  * Updates the description box and ensures status navigation is
  * bounded correctly.
  */
-static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
+static int navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
 {
     static char animationState = 0;
     static char activeStatusModifiers[32];
@@ -996,7 +996,7 @@ static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
             if (selectedStatusModifier >= statusModifierCount) {
                 selectedStatusModifier = statusModifierCount - 1;
             }
-        } else if (_selectedElement == 11) {
+        } else if (selectedElement == 11) {
             selectedStatusModifier = 0;
         } else {
             if (statusModifierCount < 8) {
@@ -1040,15 +1040,15 @@ static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
                 }
             }
 
-            _xPos += xPos;
-            _yPos -= yPos;
+            xPosStatic += xPos;
+            yPosStatic -= yPos;
 
-            if (_yPos < 0) {
-                _yPos = 0;
+            if (yPosStatic < 0) {
+                yPosStatic = 0;
             }
 
-            if (_yPos > 896) {
-                _yPos = 896;
+            if (yPosStatic > 896) {
+                yPosStatic = 896;
             }
 
             return 0;
@@ -1059,7 +1059,7 @@ static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
         if (vs_main_buttonRepeat & PADLup) {
             if (yPos < 8) {
                 vs_battle_playMenuChangeSfx();
-                _selectedElement = 11;
+                selectedElement = 11;
                 return 1;
             }
             yPos -= 8;
@@ -1084,7 +1084,7 @@ static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
 
             if (((yPos & 7) == 7) || (yPos == statusModifierCount - 1)) {
                 vs_battle_playMenuChangeSfx();
-                _selectedElement = 6;
+                selectedElement = 6;
                 return 1;
             }
 
@@ -1099,9 +1099,9 @@ static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
         }
     }
 
-    vs_mainmenu_setInformationMessage((
-        char*)&_statusStrings[_statusStrings[activeStatusModifiers[selectedStatusModifier]
-                                             + VS_status_INDEX_strDown]]);
+    vs_mainmenu_setInformationMessage(
+        (char*)&statusStrings[statusStrings[activeStatusModifiers[selectedStatusModifier]
+                                            + VS_status_INDEX_strDown]]);
 
     if (arg1 != 0) {
         animationState = vs_mainMenu_renderCursor(
@@ -1116,7 +1116,7 @@ static int _navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
 /**
  * Returns limb count from 0-6  (although in practice any actor has at least 1).
  */
-static int _getLimbCount(int actor)
+static int getLimbCount(int actor)
 {
     int i;
 
@@ -1134,13 +1134,13 @@ static int _getLimbCount(int actor)
  *
  * @return Number of limbs + 2, +1 if the actor has an accessory.
  */
-static int _getEquipmentListRowCount(void)
+static int getEquipmentListRowCount(void)
 {
-    return _getLimbCount(_selectedActor - 1) + 2
-         + (vs_battle_actors[_selectedActor - 1]->stats->accessory.accessory.id != 0);
+    return getLimbCount(selectedActor - 1) + 2
+         + (vs_battle_actors[selectedActor - 1]->stats->accessory.accessory.id != 0);
 }
 
-enum _renderLimbUiState { _renderLimbUiNone, _renderLimbUiInit };
+enum renderLimbUiState_t { renderLimbUiNone, renderLimbUiInit };
 
 /**
  * Draws the condition, text, lines etc. for all limbs.
@@ -1148,7 +1148,7 @@ enum _renderLimbUiState { _renderLimbUiNone, _renderLimbUiInit };
  * @param init
  * @return Current state if init == -3, 0 otherwise.
  */
-static int _renderLimbUi(int init)
+static int renderLimbUi(int init)
 {
     static char state = 0;
     static u_char tempSelectedActor = 0;
@@ -1167,7 +1167,7 @@ static int _renderLimbUi(int init)
     int step;
 
     stats = vs_battle_actors[tempSelectedActor]->stats;
-    limbCount = _getLimbCount(tempSelectedActor);
+    limbCount = getLimbCount(tempSelectedActor);
 
     if (init != 0) {
         if (init > 0) {
@@ -1182,7 +1182,7 @@ static int _renderLimbUi(int init)
         if (init == -2) {
             state = 3;
         } else {
-            tempSelectedActor = _selectedActor - 1;
+            tempSelectedActor = selectedActor - 1;
             vs_mainMenu_populateBaseStats(tempSelectedActor);
             for (i = 0; i < 6; ++i) {
                 limbAnimSteps[i] = 12 + i;
@@ -1194,11 +1194,11 @@ static int _renderLimbUi(int init)
     }
 
     switch (state) {
-    case _renderLimbUiNone:
+    case renderLimbUiNone:
         break;
 
-    case _renderLimbUiInit:
-        _renderStatusIcons(stats, vs_battle_rowAnimationSteps[limbAnimSteps[0]]);
+    case renderLimbUiInit:
+        renderStatusIcons(stats, vs_battle_rowAnimationSteps[limbAnimSteps[0]]);
 
         for (i = 0; i < limbCount; ++i) {
 
@@ -1210,14 +1210,14 @@ static int _renderLimbUi(int init)
 
             limbStatus = vs_battle_getLimbStatus(limb);
 
-            _drawStatusIndicator(limbStatus,
+            drawStatusIndicator(limbStatus,
                 (vs_battle_rowAnimationSteps[step] + 216) | ((36 + i * 16) << 16), 0);
-            vs_battle_renderTextRaw(_limbStatuses[limbStatus],
+            vs_battle_renderTextRaw(limbStatuses[limbStatus],
                 (vs_battle_rowAnimationSteps[step] + 224) | ((34 + i * 16) << 16), 0);
 
             if (step < 8) {
                 func_800A13EC(1, limb->unk5, lineXy, 0);
-                _drawLimbLeaderLine(i, lineXy[0], 8 - step, 0);
+                drawLimbLeaderLine(i, lineXy[0], 8 - step, 0);
             }
 
             limbStatus = 0;
@@ -1236,7 +1236,7 @@ static int _renderLimbUi(int init)
         break;
 
     case 2:
-        _renderStatusIcons(stats, 0);
+        renderStatusIcons(stats, 0);
 
         step = D_800F4EE8.unk51[49];
 
@@ -1255,9 +1255,9 @@ static int _renderLimbUi(int init)
 
             limbStatus = vs_battle_getLimbStatus(limb);
 
-            _drawStatusIndicator(
+            drawStatusIndicator(
                 limbStatus, (0x24 + i * 0x10) * 0x10000 | 0xD8, temp_s6 - (i == sp20));
-            vs_battle_renderTextRawColor(_limbStatuses[limbStatus],
+            vs_battle_renderTextRawColor(limbStatuses[limbStatus],
                 224 | ((34 + i * 16) << 16),
                 i == sp20 ? vs_getRGB888(128, 128, 128) >> sp24
                           : vs_getRGB888(128, 128, 128) >> temp_s6,
@@ -1265,14 +1265,14 @@ static int _renderLimbUi(int init)
 
             func_800A13EC(1, limb->unk5, lineXy, 0);
 
-            if (!(step & 0x80) && ((_fadeScreen | _drawBackgroundFirst) == 0)) {
-                _drawLimbLeaderLine(i, lineXy[0], 8, i == step);
+            if (!(step & 0x80) && ((fadeScreen | drawBackgroundFirst) == 0)) {
+                drawLimbLeaderLine(i, lineXy[0], 8, i == step);
             }
         }
         break;
 
     case 3:
-        _renderStatusIcons(stats, limbAnimSteps[0] << 5);
+        renderStatusIcons(stats, limbAnimSteps[0] << 5);
 
         for (i = 0; i < limbCount; ++i) {
             if (limbAnimSteps[i] < 8) {
@@ -1285,9 +1285,9 @@ static int _renderLimbUi(int init)
 
                 limbStatus = vs_battle_getLimbStatus(limb);
 
-                _drawStatusIndicator(limbStatus,
+                drawStatusIndicator(limbStatus,
                     ((limbAnimSteps[i] << 5) + 216) | ((36 + i * 16) << 16), 0);
-                vs_battle_renderTextRaw(_limbStatuses[limbStatus],
+                vs_battle_renderTextRaw(limbStatuses[limbStatus],
                     ((limbAnimSteps[i] << 5) + 224) | ((34 + i * 16) << 16), 0);
             } else {
                 state = 0;
@@ -1301,7 +1301,7 @@ static int _renderLimbUi(int init)
 /**
  *  Slides the selected row to the left.
  */
-static void _setActiveRow(int row)
+static void setActiveRow(int row)
 {
     vs_battle_menuItem_t* menuItem;
 
@@ -1320,13 +1320,13 @@ static void _setActiveRow(int row)
  *
  * @param selectedRow
  */
-static void _animateEquipmentDetailTransition(int selectedRow)
+static void animateEquipmentDetailTransition(int selectedRow)
 {
     char icon;
     vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(32, -164, 18, 164, 8,
-        (char*)&_statusStrings[_statusStrings[selectedRow < 2
-                                                  ? selectedRow + VS_status_INDEX_weapon
-                                                  : VS_status_INDEX_armor]]);
+        (char*)&statusStrings[statusStrings[selectedRow < 2
+                                                ? selectedRow + VS_status_INDEX_weapon
+                                                : VS_status_INDEX_armor]]);
 
     menuItem->state = 5;
     menuItem->targetPosition0 = 16;
@@ -1350,9 +1350,9 @@ static void _animateEquipmentDetailTransition(int selectedRow)
 /**
  * General UI init routines.
  */
-static void _initUi(int selectedRow, int classAffinity)
+static void initUi(int selectedRow, int classAffinity)
 {
-    _animateEquipmentDetailTransition(selectedRow);
+    animateEquipmentDetailTransition(selectedRow);
     vs_mainMenu_drawClassAffinityType(classAffinity);
     vs_mainMenu_renderEquipStats(1);
 }
@@ -1360,7 +1360,7 @@ static void _initUi(int selectedRow, int classAffinity)
 /**
  * Renders the weapon and gems if any.
  */
-static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
+static void setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
 {
     char* menuText[2];
     u_int rowType;
@@ -1420,7 +1420,7 @@ static void _setWeaponRow(int row, vs_battle_uiWeapon* weapon, int init)
 /**
  * Renders the shield and gems if any.
  */
-static void _setShieldRow(int row, vs_battle_uiShield* shield, int init)
+static void setShieldRow(int row, vs_battle_uiShield* shield, int init)
 {
     char* menuText[2];
     int rowType;
@@ -1465,7 +1465,7 @@ static void _setShieldRow(int row, vs_battle_uiShield* shield, int init)
  *
  * @param clearDpPp Always true in practice.
  */
-static void _exitEquipmentDetail(int clearDpPp)
+static void exitEquipmentDetail(int clearDpPp)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1484,15 +1484,15 @@ static void _exitEquipmentDetail(int clearDpPp)
  * @return -1 on menu quit, positive equipment row to return to
  * if user returns, 0 otherwise.
  */
-static int _equipmentDetailScreen(int row)
+static int equipmentDetailScreen(int row)
 {
     enum state { init };
 
-    static char _cursorAnimState = 0;
-    static char _equipmentDetailState;
-    static char _selectedEquipmentRow;
-    static char _equipmentDetailRowToRender;
-    static char _equipmentDetailSelectedElement;
+    static char cursorAnimState = 0;
+    static char equipmentDetailState;
+    static char selectedEquipmentRow;
+    static char equipmentDetailRowToRender;
+    static char equipmentDetailSelectedElement;
 
     char* sp18[2];
     vs_main_inventoryArmor armor;
@@ -1509,102 +1509,102 @@ static int _equipmentDetailScreen(int row)
     vs_battle_menuItem_t* menuItem;
     unsigned char state;
 
-    vs_battle_actorStats* stats = vs_battle_actors[_selectedActor - 1]->stats;
+    vs_battle_actorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
 
     if (row != 0) {
-        _selectedEquipmentRow = row - 1;
-        _renderBasicStatsState = 0;
+        selectedEquipmentRow = row - 1;
+        renderBasicStatsState = 0;
 
         func_800CB654(1);
-        _setActiveRow(_selectedEquipmentRow);
+        setActiveRow(selectedEquipmentRow);
         vs_mainMenu_setMenuCommand(menuActionNone);
 
-        _equipmentDetailSelectedElement = 9;
-        _equipmentDetailRowToRender = 0;
-        _equipmentDetailState = init;
+        equipmentDetailSelectedElement = 9;
+        equipmentDetailRowToRender = 0;
+        equipmentDetailState = init;
 
         return 0;
     }
 
-    limbs = _getLimbCount(_selectedActor - 1);
+    limbs = getLimbCount(selectedActor - 1);
 
-    state = _equipmentDetailState;
+    state = equipmentDetailState;
 
     switch (state) {
     case init:
-        if (_basicStatsAnimState != 0) {
-            --_basicStatsAnimState;
+        if (basicStatsAnimState != 0) {
+            --basicStatsAnimState;
         }
 
         if (vs_mainmenu_ready() == 0) {
             break;
         }
 
-        _initUi(_selectedEquipmentRow, 7);
+        initUi(selectedEquipmentRow, 7);
 
-        switch (_selectedEquipmentRow) {
+        switch (selectedEquipmentRow) {
         case 0:
             vs_mainMenu_renderDpPpBars(3);
-            _drawWeaponInfo(&stats->weapon);
+            drawWeaponInfo(&stats->weapon);
             break;
 
         case 1:
             vs_mainMenu_renderDpPpBars(3);
-            _drawShieldInfo(&stats->shield);
+            drawShieldInfo(&stats->shield);
             break;
 
         default:
-            if ((_selectedEquipmentRow - 2) < limbs) {
+            if ((selectedEquipmentRow - 2) < limbs) {
                 vs_mainMenu_renderDpPpBars(1);
-                _drawArmorInfo(&stats->limbs[_selectedEquipmentRow - 2].armor);
+                drawArmorInfo(&stats->limbs[selectedEquipmentRow - 2].armor);
             } else {
                 vs_mainMenu_renderDpPpBars(0);
-                _drawAccessoryInfo(&stats->accessory);
+                drawAccessoryInfo(&stats->accessory);
             }
             break;
         }
 
-        _equipmentDetailState = 1;
+        equipmentDetailState = 1;
         break;
 
     case 1:
-        if (_equipmentDetailRowToRender < 10) {
+        if (equipmentDetailRowToRender < 10) {
 
-            ++_equipmentDetailRowToRender;
-            _animationStep =
-                128 - vs_battle_rowAnimationSteps[10 - _equipmentDetailRowToRender];
+            ++equipmentDetailRowToRender;
+            animationStepStatic =
+                128 - vs_battle_rowAnimationSteps[10 - equipmentDetailRowToRender];
 
-            if (_equipmentDetailRowToRender < 6) {
-                if (_basicStatsAnimState != 0) {
-                    --_basicStatsAnimState;
+            if (equipmentDetailRowToRender < 6) {
+                if (basicStatsAnimState != 0) {
+                    --basicStatsAnimState;
                 }
 
-                _renderBasicStatsState = 0;
+                renderBasicStatsState = 0;
 
                 func_800CB654(1);
 
-                if (_selectedEquipmentRow != 0 && _selectedEquipmentRow != state) {
+                if (selectedEquipmentRow != 0 && selectedEquipmentRow != state) {
                     return 0;
                 }
 
-                if (_selectedEquipmentRow == 0) {
-                    _setWeaponRow(_equipmentDetailRowToRender, &stats->weapon, 1);
-                } else if (_selectedEquipmentRow == 1) {
-                    _setShieldRow(_equipmentDetailRowToRender, &stats->shield, 1);
+                if (selectedEquipmentRow == 0) {
+                    setWeaponRow(equipmentDetailRowToRender, &stats->weapon, 1);
+                } else if (selectedEquipmentRow == 1) {
+                    setShieldRow(equipmentDetailRowToRender, &stats->shield, 1);
                 }
             }
             break;
         }
 
-        _equipmentDetailState = 2;
+        equipmentDetailState = 2;
         break;
 
     case 2:
         if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
             int a1;
             var_s0_2 = 0;
-            equipmentCount = _getEquipmentListRowCount();
-            var_s2 = _selectedEquipmentRow;
+            equipmentCount = getEquipmentListRowCount();
+            var_s2 = selectedEquipmentRow;
 
             if (vs_main_buttonRepeat & PADL1) {
                 var_s0_2 = equipmentCount - 1;
@@ -1650,7 +1650,7 @@ static int _equipmentDetailScreen(int row)
                 }
             }
 
-            if (var_s2 != _selectedEquipmentRow) {
+            if (var_s2 != selectedEquipmentRow) {
 
                 vs_battle_playMenuChangeSfx();
 
@@ -1658,15 +1658,15 @@ static int _equipmentDetailScreen(int row)
                     vs_mainMenu_deactivateMenuItem(i);
                 }
 
-                _selectedEquipmentRow = var_s2;
+                selectedEquipmentRow = var_s2;
 
                 switch (var_s2) {
                 case 0:
                     vs_mainMenu_renderDpPpBars(11);
-                    _drawWeaponInfo(&stats->weapon);
+                    drawWeaponInfo(&stats->weapon);
 
                     for (i = 1; i < 6; ++i) {
-                        _setWeaponRow(i, &stats->weapon, 0);
+                        setWeaponRow(i, &stats->weapon, 0);
                     }
 
                     vs_mainMenu_setWeaponRow(
@@ -1677,10 +1677,10 @@ static int _equipmentDetailScreen(int row)
 
                 case 1:
                     vs_mainMenu_renderDpPpBars(11);
-                    _drawShieldInfo(&stats->shield);
+                    drawShieldInfo(&stats->shield);
 
                     for (i = 1; i < 4; ++i) {
-                        _setShieldRow(i, &stats->shield, 0);
+                        setShieldRow(i, &stats->shield, 0);
                     }
 
                     vs_mainMenu_setShieldRow(
@@ -1692,13 +1692,13 @@ static int _equipmentDetailScreen(int row)
                     if ((var_s2 - 2) < limbs) {
                         vs_mainMenu_renderDpPpBars(
                             renderDpPpBarsTargetDp | renderDpPpBarsStatStatic);
-                        _drawArmorInfo(&stats->limbs[var_s2 - 2].armor);
+                        drawArmorInfo(&stats->limbs[var_s2 - 2].armor);
                         vs_mainMenu_setArmorRow(&stats->limbs[var_s2 - 2].armor, sp18,
                             &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_renderDpPpBars(
                             renderDpPpBarsTargetNone | renderDpPpBarsStatStatic);
-                        _drawAccessoryInfo((vs_battle_uiAccessory*)&stats->accessory);
+                        drawAccessoryInfo((vs_battle_uiAccessory*)&stats->accessory);
                         vs_battle_copyUiAccessoryStats(&armor, &stats->accessory);
                         vs_mainMenu_setArmorRowFromInventory(
                             &armor, sp18, &sp48, vs_battle_stringBuf);
@@ -1715,9 +1715,9 @@ static int _equipmentDetailScreen(int row)
                 vs_mainmenu_setInformationMessage(sp18[1]);
 
                 menuItem = vs_battle_setMenuItem(0x20, 0x10, 0x12, 0xA4, 8,
-                    (char*)&_statusStrings
-                        [_statusStrings[var_s2 < 2 ? (var_s2 + VS_status_INDEX_weapon)
-                                                   : VS_status_INDEX_armor]]);
+                    (char*)&statusStrings
+                        [statusStrings[var_s2 < 2 ? (var_s2 + VS_status_INDEX_weapon)
+                                                  : VS_status_INDEX_armor]]);
                 menuItem->selected = 1;
                 i = 0x1C;
 
@@ -1728,10 +1728,10 @@ static int _equipmentDetailScreen(int row)
                 }
 
                 menuItem->rowIcon = i;
-                _equipmentDetailSelectedElement = 9;
+                equipmentDetailSelectedElement = 9;
                 vs_mainMenu_cursorColor = 0;
-                _cursorAnimState = vs_mainMenu_renderCursor(
-                    _cursorAnimState, vs_mainMenu_statusViewCursorPositions[9]);
+                cursorAnimState = vs_mainMenu_renderCursor(
+                    cursorAnimState, vs_mainMenu_statusViewCursorPositions[9]);
                 vs_mainMenu_freezeTabArrows = 1;
 
                 vs_mainMenu_renderTabNavigation(1);
@@ -1745,43 +1745,43 @@ static int _equipmentDetailScreen(int row)
             vs_battle_getMenuItem(i)->selected = 0;
         }
 
-        previousSelection = _equipmentDetailSelectedElement;
+        previousSelection = equipmentDetailSelectedElement;
 
-        switch (_selectedEquipmentRow) {
+        switch (selectedEquipmentRow) {
         case 0:
             vs_mainMenu_renderDpPpBars(11);
-            _drawWeaponInfo(&stats->weapon);
+            drawWeaponInfo(&stats->weapon);
 
-            newSelection = _updateEquipmentDetailSelection(
+            newSelection = updateEquipmentDetailSelection(
                 previousSelection, stats->weapon.grip.gemSlots + 114);
 
             break;
 
         case 1:
             vs_mainMenu_renderDpPpBars(11);
-            _drawShieldInfo(&stats->shield);
+            drawShieldInfo(&stats->shield);
 
-            newSelection = _updateEquipmentDetailSelection(
+            newSelection = updateEquipmentDetailSelection(
                 previousSelection, stats->shield.base.gemSlots + 96);
 
             break;
 
         default:
             var_a0_5 = 8;
-            if ((_selectedEquipmentRow - 2) < limbs) {
+            if ((selectedEquipmentRow - 2) < limbs) {
                 var_a0_5 = 9;
             }
 
             vs_mainMenu_renderDpPpBars(var_a0_5);
-            newSelection = _updateEquipmentDetailSelection(
-                previousSelection, ((_selectedEquipmentRow - 2) < limbs) << 6);
+            newSelection = updateEquipmentDetailSelection(
+                previousSelection, ((selectedEquipmentRow - 2) < limbs) << 6);
 
             break;
         }
 
-        if (newSelection != _equipmentDetailSelectedElement) {
+        if (newSelection != equipmentDetailSelectedElement) {
             vs_battle_playMenuChangeSfx();
-            _equipmentDetailSelectedElement = newSelection;
+            equipmentDetailSelectedElement = newSelection;
         }
 
         if (newSelection < 2) {
@@ -1805,21 +1805,21 @@ static int _equipmentDetailScreen(int row)
                 break;
             }
         } else if (newSelection < 16) {
-            switch (_selectedEquipmentRow) {
+            switch (selectedEquipmentRow) {
             case 0:
-                var_s3 = _drawWeaponInfoRow(newSelection - 9, &stats->weapon);
+                var_s3 = drawWeaponInfoRow(newSelection - 9, &stats->weapon);
                 break;
 
             case 1:
-                var_s3 = _drawShieldInfoRow(newSelection - 9, &stats->shield);
+                var_s3 = drawShieldInfoRow(newSelection - 9, &stats->shield);
                 break;
 
             default:
-                if ((_selectedEquipmentRow - 2) < limbs) {
+                if ((selectedEquipmentRow - 2) < limbs) {
                     var_s3 =
-                        _drawArmorInfoRow(&stats->limbs[_selectedEquipmentRow - 2].armor);
+                        drawArmorInfoRow(&stats->limbs[selectedEquipmentRow - 2].armor);
                 } else {
-                    var_s3 = _drawAccessoryInfoRow(&stats->accessory);
+                    var_s3 = drawAccessoryInfoRow(&stats->accessory);
                 }
                 break;
             }
@@ -1829,10 +1829,10 @@ static int _equipmentDetailScreen(int row)
                     [newSelection + VS_ITEMHELP_BIN_INDEX_humanClassDesc]];
 
             if (newSelection >= 18) {
-                if (_selectedEquipmentRow == 0) {
+                if (selectedEquipmentRow == 0) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                             [newSelection + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
-                } else if ((_selectedEquipmentRow - 2) < limbs) {
+                } else if ((selectedEquipmentRow - 2) < limbs) {
                     var_s3 = (char*)&vs_mainMenu_itemHelp[vs_mainMenu_itemHelp
                             [newSelection + VS_ITEMHELP_BIN_INDEX_polearmGrip]];
                 }
@@ -1843,24 +1843,23 @@ static int _equipmentDetailScreen(int row)
 
         i = vs_mainMenu_statusViewCursorPositions[newSelection];
 
-        if ((_selectedEquipmentRow == 1)
-            && ((_equipmentDetailSelectedElement - 10) < 2U)) {
+        if ((selectedEquipmentRow == 1) && ((equipmentDetailSelectedElement - 10) < 2U)) {
             i += 7;
         }
 
-        vs_mainMenu_cursorColor = _equipmentDetailSelectedElement != 9;
-        _cursorAnimState = vs_mainMenu_renderCursor(_cursorAnimState, i);
+        vs_mainMenu_cursorColor = equipmentDetailSelectedElement != 9;
+        cursorAnimState = vs_mainMenu_renderCursor(cursorAnimState, i);
 
         if (vs_main_buttonsPressed.all & PADRup) {
-            _exitEquipmentDetail(1);
+            exitEquipmentDetail(1);
             return -1;
         }
 
         if (vs_main_buttonsPressed.all & PADRdown) {
-            _initEquipmentScreen(_selectedActor - 1);
-            _exitEquipmentDetail(1);
+            initEquipmentScreen(selectedActor - 1);
+            exitEquipmentDetail(1);
             vs_mainMenu_setMenuCommand(menuActionMenu);
-            return _selectedEquipmentRow + 1;
+            return selectedEquipmentRow + 1;
         }
 
         vs_mainMenu_freezeTabArrows = 1;
@@ -1877,7 +1876,7 @@ static int _equipmentDetailScreen(int row)
  *
  * @return Negative on user exit, 0 otherwise.
  */
-static int _equipmentScreen(int element)
+static int equipmentScreen(int element)
 {
     enum state {
         init,
@@ -1888,8 +1887,8 @@ static int _equipmentScreen(int element)
         equipDetailScreen
     };
 
-    static char _equipmentScreenState;
-    static u_char _timer;
+    static char equipmentScreenState;
+    static u_char timer;
     static UNUSED char _[2];
 
     char* rowStrings[18];
@@ -1905,24 +1904,24 @@ static int _equipmentScreen(int element)
     vs_battle_menuItem_t* menuItem;
     int new_var;
 
-    vs_battle_actorStats* stats = vs_battle_actors[_selectedActor - 1]->stats;
+    vs_battle_actorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
     vs_battle_uiEquipment_limb* limbs = stats->limbs;
 
-    limbCount = _getLimbCount(_selectedActor - 1);
-    rowCount = _getEquipmentListRowCount();
+    limbCount = getLimbCount(selectedActor - 1);
+    rowCount = getEquipmentListRowCount();
 
     if (element != 0) {
         D_800F4EE8.selectedEquipment = element + 1;
-        _equipmentScreenState = init;
+        equipmentScreenState = init;
         return 0;
     }
 
-    switch (_equipmentScreenState) {
+    switch (equipmentScreenState) {
     case init:
         for (i = 0; i < 9; ++i) {
-            rowStrings[i * 2] = (char*)&_statusStrings[VS_status_OFFSET_none];
+            rowStrings[i * 2] = (char*)&statusStrings[VS_status_OFFSET_none];
             rowStrings[i * 2 + 1] =
-                (char*)&_statusStrings[VS_status_OFFSET_nothingEquipped];
+                (char*)&statusStrings[VS_status_OFFSET_nothingEquipped];
             rowTypes[i] = 1;
         }
 
@@ -1937,7 +1936,7 @@ static int _equipmentScreen(int element)
                 &stats->shield, &rowStrings[2], rowTypes + 1, equipmentDescriptions[1]);
         }
 
-        temp_s5 = (stats->isAnalyzed == 0) & (_selectedActor != 1); // Disable row
+        temp_s5 = (stats->isAnalyzed == 0) & (selectedActor != 1); // Disable row
         new_var = 0xF000;
         temp_s1_2 = 0xF200;
         rowTypes[0] |= temp_s5 | new_var;
@@ -1971,21 +1970,21 @@ static int _equipmentScreen(int element)
 
         vs_main_settings.cursorMemory = temp_s1_2;
 
-        if (_animationStep != 0) {
-            _timer = 10;
+        if (animationStepStatic != 0) {
+            timer = 10;
         } else {
-            _timer = 0;
+            timer = 0;
         }
 
-        _equipmentScreenState = animWait;
+        equipmentScreenState = animWait;
         break;
 
     case animWait:
-        if (_timer != 0) {
-            --_timer;
-            _animationStep = vs_battle_rowAnimationSteps[_timer];
+        if (timer != 0) {
+            --timer;
+            animationStepStatic = vs_battle_rowAnimationSteps[timer];
         } else {
-            _equipmentScreenState = handleInput;
+            equipmentScreenState = handleInput;
         }
         break;
 
@@ -1994,7 +1993,7 @@ static int _equipmentScreen(int element)
 
         if (i != 0) {
 
-            vs_mainMenu_populateBaseStats(_selectedActor + 15);
+            vs_mainMenu_populateBaseStats(selectedActor + 15);
             vs_mainMenu_clearMenuExcept(4);
 
             if (i < 0) {
@@ -2005,47 +2004,47 @@ static int _equipmentScreen(int element)
                 if (temp_s5 >= limbCount) {
                     temp_s5 = limbCount - 1;
                 }
-                _selectedElement = temp_s5;
+                selectedElement = temp_s5;
                 return i;
             }
 
-            _equipmentDetailScreen(i);
+            equipmentDetailScreen(i);
 
-            _equipmentScreenState = equipDetailScreen;
+            equipmentScreenState = equipDetailScreen;
             break;
         }
 
         if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
 
-            i = _selectedActor - 1;
+            i = selectedActor - 1;
 
             if (vs_main_buttonsPressed.all & PADL1) {
-                i = _getNextValidActor(i, 14);
+                i = getNextValidActor(i, 14);
                 temp_s5 = 1;
             }
 
             if (vs_main_buttonsPressed.all & PADR1) {
-                i = _getNextValidActor(i, 1);
+                i = getNextValidActor(i, 1);
                 temp_s5 = 1 | (1 << 4);
             }
 
-            if (i != (_selectedActor - 1)) {
+            if (i != (selectedActor - 1)) {
 
-                _previousActor = _selectedActor;
+                previousActor = selectedActor;
 
-                _initEquipmentScreen(i);
-                _switchCurrentActor(i + temp_s5);
+                initEquipmentScreen(i);
+                switchCurrentActor(i + temp_s5);
                 vs_mainMenu_storeCursor();
                 vs_mainMenu_clearMenuExcept(4);
 
-                _equipmentScreenState = waitChangeActor;
+                equipmentScreenState = waitChangeActor;
             }
         }
         break;
 
     case waitChangeActor:
-        if (_switchCurrentActor(0)) {
-            _equipmentScreenState = waitActorInit;
+        if (switchCurrentActor(0)) {
+            equipmentScreenState = waitActorInit;
         }
         break;
 
@@ -2060,19 +2059,19 @@ static int _equipmentScreen(int element)
                 menuItem->selected = 1;
             }
 
-            _equipmentScreenState = init;
+            equipmentScreenState = init;
         }
         break;
 
     case equipDetailScreen:
-        i = _equipmentDetailScreen(0);
+        i = equipmentDetailScreen(0);
 
         if (i != 0) {
             if (i < 0) {
                 return -2;
             }
             D_800F4EE8.selectedEquipment = i - 1;
-            _equipmentScreenState = waitActorInit;
+            equipmentScreenState = waitActorInit;
         }
 
         break;
@@ -2083,13 +2082,13 @@ static int _equipmentScreen(int element)
 /**
  * Fade effect for the model when sliding in from the left.
  */
-static void _fadeScreenLeft(void)
+static void fadeScreenLeft(void)
 {
     int uv1Tpage;
     u_long* prim = vs_scratch.unk0;
     u_long* temp_t1 = vs_scratch.unk4;
 
-    if (_fadeScreen == 0) {
+    if (fadeScreen == 0) {
         return;
     }
 
@@ -2123,7 +2122,7 @@ static void _fadeScreenLeft(void)
 /**
  *  Re-renders background image each frame.
  */
-static void _drawMenuBackground(void)
+static void drawMenuBackground(void)
 {
     int uv1Tpage;
 
@@ -2131,7 +2130,7 @@ static void _drawMenuBackground(void)
     void* temp_a0 = vs_scratch.unk4;
     u_int* var_t9 = temp_a0 + 0x1FF4;
 
-    if (_drawBackgroundFirst != 0) {
+    if (drawBackgroundFirst != 0) {
         var_t9 = temp_a0 - 4;
     }
 
@@ -2192,21 +2191,22 @@ static void _drawMenuBackground(void)
 /**
  * Updates screen.
  */
-static void _drawScreen(void)
+static void drawScreen(void)
 {
     int temp_lo_5;
-    int xOffset = (128 - _animationStep);
+    int xOffset = (128 - animationStepStatic);
     int z = D_800F4538[1]->menuCameraDistance;
     int x = D_800F4538[1]->menuCameraHeightOffset;
     vs_camera_t* camera = &vs_scratch.camera;
 
-    camera->lookAt.vx = ((-rsin(_xPos) * xOffset) >> 8) * z;
+    camera->lookAt.vx = ((-rsin(xPosStatic) * xOffset) >> 8) * z;
     camera->lookAt.vy = -(x * ONE / 2);
-    camera->lookAt.vz = ((rcos(_xPos) * xOffset) >> 8) * z;
-    camera->position.vx = camera->lookAt.vx + ((rcos(_xPos) * rcos(_yPos)) >> 0xA) * z;
-    camera->position.vy = camera->lookAt.vy - rsin(_yPos) * z * 4;
+    camera->lookAt.vz = ((rcos(xPosStatic) * xOffset) >> 8) * z;
+    camera->position.vx =
+        camera->lookAt.vx + ((rcos(xPosStatic) * rcos(yPosStatic)) >> 0xA) * z;
+    camera->position.vy = camera->lookAt.vy - rsin(yPosStatic) * z * 4;
 
-    temp_lo_5 = (rsin(_xPos) * rcos(_yPos) >> 0xA) * z;
+    temp_lo_5 = (rsin(xPosStatic) * rcos(yPosStatic) >> 0xA) * z;
     camera->angles.vx = 0;
     camera->angles.vy = 0;
     camera->angles.vz = 0;
@@ -2215,44 +2215,43 @@ static void _drawScreen(void)
 
     func_8007ACB0();
 
-    if (_delayScreenUpdate) {
-        --_delayScreenUpdate;
+    if (delayScreenUpdate) {
+        --delayScreenUpdate;
     } else {
         func_800F9EB8(&vs_scratch.viewMatrix);
     }
 
-    _drawMenuBackground();
-    _fadeScreenLeft();
-    _renderLimbUi(0);
-    _renderBasicStats();
+    drawMenuBackground();
+    fadeScreenLeft();
+    renderLimbUi(0);
+    renderBasicStats();
 }
 
 /**
  * Retrieves limb condition text.
  */
-static void _renderSelectedLimbCondition(void)
+static void renderSelectedLimbCondition(void)
 {
     vs_battle_uiEquipment_limb* limb =
-        &vs_battle_actors[_selectedActor - 1]->stats->limbs[_selectedElement];
+        &vs_battle_actors[selectedActor - 1]->stats->limbs[selectedElement];
     vs_battle_stringContext.strings[0] =
         (char*)&vs_battle_statusStrings[vs_battle_statusStrings[limb->nameIndex]];
     vs_battle_stringContext.strings[1] =
-        (char*)&_statusStrings[_statusStrings[vs_battle_getLimbStatus(limb)
-                                              + VS_status_INDEX_critical]];
-    vs_battle_printf(
-        vs_battle_stringBuf, (char*)&_statusStrings[VS_status_OFFSET_values]);
+        (char*)&statusStrings[statusStrings[vs_battle_getLimbStatus(limb)
+                                            + VS_status_INDEX_critical]];
+    vs_battle_printf(vs_battle_stringBuf, (char*)&statusStrings[VS_status_OFFSET_values]);
     vs_mainmenu_setInformationMessage(vs_battle_stringBuf);
-    _renderLimbUi(_selectedElement + 1);
+    renderLimbUi(selectedElement + 1);
 }
 
 /**
  * Syncs the menu stats with the currently selected limb.
  */
-static void _renderSelectedLimbStats(void)
+static void renderSelectedLimbStats(void)
 {
     int i;
     vs_battle_uiEquipment_limb* limb =
-        &vs_battle_actors[_selectedActor - 1]->stats->limbs[_selectedElement];
+        &vs_battle_actors[selectedActor - 1]->stats->limbs[selectedElement];
 
     for (i = 0; i < 16; ++i) {
         vs_mainMenu_equipmentStats[i + 16] = limb->affinities[i & 7];
@@ -2261,10 +2260,10 @@ static void _renderSelectedLimbStats(void)
         vs_mainMenu_equipmentStats[i + 32] = limb->types[i];
     }
 
-    _renderLimbUi(_selectedElement + 0x81);
+    renderLimbUi(selectedElement + 0x81);
 }
 
-static char _selectedStatRow;
+static char selectedStatRow;
 static UNUSED char _[24];
 
 /**
@@ -2300,7 +2299,7 @@ int vs_menu4_exec(u_char* state)
     static UNUSED char _[12];
     static MATRIX D_80108198;
     static vs_camera_t D_801081B8;
-    static u_char _animationIndex;
+    static u_char animationIndex;
 
     int limbs;
     int var_s5;
@@ -2313,7 +2312,7 @@ int vs_menu4_exec(u_char* state)
     switch (*state) {
     case init:
         screenEnabled = 0;
-        _animationIndex = 10;
+        animationIndex = 10;
 
         if (vs_mainMenu_itemNames == NULL) {
             vs_mainMenu_loadItemText(1);
@@ -2328,15 +2327,15 @@ int vs_menu4_exec(u_char* state)
         func_8008A4DC(0);
         vs_mainMenu_setBackgroundRenderPriority(2046, 128);
 
-        _drawBackgroundFirst = 0;
-        _fadeScreen = 0;
-        _selectedActor = 0;
-        _previousActor = 0;
-        _renderBasicStatsState = 0;
-        _basicStatsAnimState = 0;
-        _initializedActor = 0;
+        drawBackgroundFirst = 0;
+        fadeScreen = 0;
+        selectedActor = 0;
+        previousActor = 0;
+        renderBasicStatsState = 0;
+        basicStatsAnimState = 0;
+        initializedActor = 0;
 
-        _switchCurrentActor(1);
+        switchCurrentActor(1);
 
         screenEnabled = 1;
         animWait = 1;
@@ -2352,15 +2351,15 @@ int vs_menu4_exec(u_char* state)
             vs_scratch.camera.angles.vx = 0;
             vs_scratch.camera.angles.vy = 0;
             vs_scratch.camera.angles.vz = 0;
-            _xPos = ONE / 16 * 11;
-            _yPos = 0;
+            xPosStatic = ONE / 16 * 11;
+            yPosStatic = 0;
 
             vs_mainMenu_initInformationBox();
 
-            _selectedElement = 0;
+            selectedElement = 0;
             vs_mainMenu_enabledStatPages = 0;
 
-            _renderSelectedLimbCondition();
+            renderSelectedLimbCondition();
 
             *state = 5;
         }
@@ -2371,12 +2370,12 @@ int vs_menu4_exec(u_char* state)
 
             --animWait;
 
-            _renderLimbUi(-1);
+            renderLimbUi(-1);
             vs_mainMenu_renderEquipStats(1);
 
         } else {
 
-            _renderSelectedLimbCondition();
+            renderSelectedLimbCondition();
 
             *state = 5;
         }
@@ -2385,35 +2384,36 @@ int vs_menu4_exec(u_char* state)
     case 5:
         var_s5 = 0;
 
-        if ((_selectedActor == 1)
-            || vs_battle_actors[_selectedActor - 1]->stats->isAnalyzed) {
+        if ((selectedActor == 1)
+            || vs_battle_actors[selectedActor - 1]->stats->isAnalyzed) {
             var_s5 = 1;
         }
 
         if (animWait != 0) {
-            if (_switchCurrentActor(0)) {
+            if (switchCurrentActor(0)) {
 
                 animWait = 0;
 
-                _renderLimbUi(-1);
+                renderLimbUi(-1);
                 vs_mainMenu_renderEquipStats(1);
 
-                userInput = _selectedElement;
+                userInput = selectedElement;
 
                 if (userInput < VS_status_INDEX_statDesc) {
-                    limbs = _getLimbCount(_selectedActor - 1) - 1;
+                    limbs = getLimbCount(selectedActor - 1) - 1;
                     if (limbs < userInput) {
-                        _selectedElement = limbs;
+                        selectedElement = limbs;
                     }
 
-                    _renderSelectedLimbCondition();
+                    renderSelectedLimbCondition();
                 } else {
-                    vs_mainmenu_setInformationMessage((char*)&_statusStrings
-                            [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
+                    vs_mainmenu_setInformationMessage(
+                        (char*)&statusStrings[statusStrings[userInput
+                                                            - VS_status_INDEX_statDesc]]);
                 }
             }
         } else if (vs_mainMenu_loadItemText(0) != 0) {
-            if (_renderLimbUi(-3) == 2) {
+            if (renderLimbUi(-3) == 2) {
                 if (vs_main_buttonsPressed.all & PADRup) {
 
                     vs_battle_playMenuLeaveSfx();
@@ -2429,12 +2429,12 @@ int vs_menu4_exec(u_char* state)
                     break;
 
                 } else if ((vs_main_buttonsPressed.all & PADRright)
-                           && ((_selectedElement < _getLimbCount(_selectedActor - 1))
+                           && ((selectedElement < getLimbCount(selectedActor - 1))
                                != 0)) {
 
                     vs_battle_playMenuSelectSfx();
                     vs_mainMenu_renderEquipStats(2);
-                    _renderLimbUi(-2);
+                    renderLimbUi(-2);
 
                     animWait = 8;
                     *state = viewEquipment;
@@ -2444,18 +2444,18 @@ int vs_menu4_exec(u_char* state)
                 var_s6 = 0;
 
                 if (var_s5 != 0) {
-                    int temp_s0_2 = _selectedElement;
-                    var_s6 = temp_s0_2 < _getLimbCount(_selectedActor - 1);
+                    int temp_s0_2 = selectedElement;
+                    var_s6 = temp_s0_2 < getLimbCount(selectedActor - 1);
                 }
 
                 if (vs_main_buttonsPressed.all & PADRleft) {
                     if (var_s6 != 0) {
 
                         vs_battle_playMenuSelectSfx();
-                        _renderSelectedLimbStats();
+                        renderSelectedLimbStats();
                         vs_mainMenu_drawClassAffinityType(6);
 
-                        _selectedStatRow = 0;
+                        selectedStatRow = 0;
                         animWait = 10;
                         *state = 9;
                         break;
@@ -2485,18 +2485,18 @@ int vs_menu4_exec(u_char* state)
                         }
                     }
 
-                    _xPos += userInput;
-                    _yPos -= limbs;
+                    xPosStatic += userInput;
+                    yPosStatic -= limbs;
 
-                    if (_yPos < 0) {
-                        _yPos = 0;
+                    if (yPosStatic < 0) {
+                        yPosStatic = 0;
                     }
-                    if (_yPos > 896) {
-                        _yPos = 896;
+                    if (yPosStatic > 896) {
+                        yPosStatic = 896;
                     }
                 } else {
 
-                    userInput = _selectedElement;
+                    userInput = selectedElement;
                     limbs = D_801080FC[userInput];
 
                     if (vs_main_buttonRepeat & PADLup) {
@@ -2506,7 +2506,7 @@ int vs_menu4_exec(u_char* state)
                     } else if (vs_main_buttonRepeat & PADLleft) {
                         userInput = limbs >> 16;
                     } else {
-                        userInput = _selectedElement;
+                        userInput = selectedElement;
                         if (vs_main_buttonRepeat & PADLright) {
                             userInput = limbs >> 24;
                         }
@@ -2514,109 +2514,108 @@ int vs_menu4_exec(u_char* state)
 
                     userInput &= 0xFF;
 
-                    _renderLimbUi(7);
+                    renderLimbUi(7);
 
                     if (userInput == 13) {
-                        if (_navigateStatusModifiers(
-                                vs_battle_actors[_selectedActor - 1]->stats, 1)
+                        if (navigateStatusModifiers(
+                                vs_battle_actors[selectedActor - 1]->stats, 1)
                             == 0) {
                             vs_battle_playMenuChangeSfx();
                             *state = 6;
                             break;
                         }
-                        userInput = _selectedElement;
+                        userInput = selectedElement;
                     }
 
                     if (userInput < 6) {
 
-                        limbs = _getLimbCount(_selectedActor - 1);
+                        limbs = getLimbCount(selectedActor - 1);
 
                         if (userInput < limbs) {
-                            _renderLimbUi(userInput + 1);
+                            renderLimbUi(userInput + 1);
                         } else {
                             userInput = 6;
                             if (!(vs_main_buttonRepeat & PADLdown)) {
                                 userInput = limbs - 1;
                                 if (!(vs_main_buttonRepeat & PADLup)) {
-                                    _selectedElement = userInput;
+                                    selectedElement = userInput;
                                 }
                             }
                         }
                     }
 
                     vs_mainMenu_cursorColor =
-                        (userInput < _getLimbCount(_selectedActor - 1)) ^ 1;
+                        (userInput < getLimbCount(selectedActor - 1)) ^ 1;
                     D_80108134 =
                         vs_mainMenu_renderCursor(D_80108134, D_801080C8[userInput]);
 
-                    if (userInput != _selectedElement) {
+                    if (userInput != selectedElement) {
 
                         vs_battle_playMenuChangeSfx();
 
                         if (userInput != 13) {
-                            _selectedElement = userInput;
+                            selectedElement = userInput;
                         }
                     }
 
                     if (userInput < 6) {
-                        _renderSelectedLimbCondition();
+                        renderSelectedLimbCondition();
                     } else {
-                        vs_mainmenu_setInformationMessage((char*)&_statusStrings
-                                [_statusStrings[userInput - VS_status_INDEX_statDesc]]);
+                        vs_mainmenu_setInformationMessage((char*)&statusStrings
+                                [statusStrings[userInput - VS_status_INDEX_statDesc]]);
                     }
                 }
             }
-            userInput = _selectedActor - 1;
+            userInput = selectedActor - 1;
 
             if (vs_main_buttonsPressed.all & PADR1) {
-                userInput = _getNextValidActor(userInput, 1);
+                userInput = getNextValidActor(userInput, 1);
                 limbs = 17;
             }
 
             if (vs_main_buttonsPressed.all & PADL1) {
-                userInput = _getNextValidActor(userInput, 14);
+                userInput = getNextValidActor(userInput, 14);
                 limbs = 1;
             }
 
-            if (userInput != (_selectedActor - 1)) {
+            if (userInput != (selectedActor - 1)) {
 
-                _previousActor = _selectedActor;
+                previousActor = selectedActor;
 
-                _renderLimbUi(-2);
+                renderLimbUi(-2);
                 vs_mainMenu_renderEquipStats(2);
-                _initEquipmentScreen(userInput);
-                _switchCurrentActor(userInput + limbs);
+                initEquipmentScreen(userInput);
+                switchCurrentActor(userInput + limbs);
 
                 animWait = 1;
             }
         }
 
-        vs_mainMenu_cursorColor =
-            (_selectedElement < _getLimbCount(_selectedActor - 1)) ^ 1;
+        vs_mainMenu_cursorColor = (selectedElement < getLimbCount(selectedActor - 1)) ^ 1;
         break;
 
     case 6:
         var_s5 = 0;
 
-        if ((_selectedActor == 1)
-            || vs_battle_actors[_selectedActor - 1]->stats->isAnalyzed) {
+        if ((selectedActor == 1)
+            || vs_battle_actors[selectedActor - 1]->stats->isAnalyzed) {
             var_s5 = 1;
         }
 
         if (animWait != 0) {
-            if (_switchCurrentActor(0)) {
+            if (switchCurrentActor(0)) {
 
-                _navigateStatusModifiers(vs_battle_actors[_selectedActor - 1]->stats, 0);
+                navigateStatusModifiers(vs_battle_actors[selectedActor - 1]->stats, 0);
 
                 animWait = 0;
 
-                _renderLimbUi(-1);
+                renderLimbUi(-1);
                 vs_mainMenu_renderEquipStats(1);
             }
         } else {
-            if (_renderLimbUi(-3) == 2) {
+            if (renderLimbUi(-3) == 2) {
 
-                userInput = _navigateStatusModifiers(0, 1);
+                userInput = navigateStatusModifiers(0, 1);
 
                 if (userInput != 0) {
                     switch (userInput) {
@@ -2635,26 +2634,26 @@ int vs_menu4_exec(u_char* state)
                 }
             }
 
-            userInput = _selectedActor - 1;
+            userInput = selectedActor - 1;
 
             if (vs_main_buttonsPressed.all & PADR1) {
-                userInput = _getNextValidActor(userInput, 1);
+                userInput = getNextValidActor(userInput, 1);
                 limbs = 17;
             }
 
             if (vs_main_buttonsPressed.all & PADL1) {
-                userInput = _getNextValidActor(userInput, 14);
+                userInput = getNextValidActor(userInput, 14);
                 limbs = 1;
             }
 
-            if (userInput != (_selectedActor - 1)) {
+            if (userInput != (selectedActor - 1)) {
 
-                _previousActor = _selectedActor;
+                previousActor = selectedActor;
 
-                _renderLimbUi(-2);
+                renderLimbUi(-2);
                 vs_mainMenu_renderEquipStats(2);
-                _initEquipmentScreen(userInput);
-                _switchCurrentActor(userInput + limbs);
+                initEquipmentScreen(userInput);
+                switchCurrentActor(userInput + limbs);
 
                 animWait = 1;
 
@@ -2667,7 +2666,7 @@ int vs_menu4_exec(u_char* state)
 
     case viewEquipment:
         if (animWait == 0) {
-            _equipmentScreen(_selectedElement + 1);
+            equipmentScreen(selectedElement + 1);
             *state = 8;
         } else {
             --animWait;
@@ -2675,7 +2674,7 @@ int vs_menu4_exec(u_char* state)
         break;
 
     case 8:
-        userInput = _equipmentScreen(0);
+        userInput = equipmentScreen(0);
 
         if (userInput != 0) {
             if (userInput != -2) {
@@ -2689,7 +2688,7 @@ int vs_menu4_exec(u_char* state)
 
     case 9:
         if (animWait != 0) {
-            _animationStep = 128 - vs_battle_rowAnimationSteps[--animWait];
+            animationStepStatic = 128 - vs_battle_rowAnimationSteps[--animWait];
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_battle_playMenuLeaveSfx();
@@ -2705,8 +2704,8 @@ int vs_menu4_exec(u_char* state)
         } else {
             if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
 
-                userInput = _selectedElement;
-                limbs = _getLimbCount(_selectedActor - 1);
+                userInput = selectedElement;
+                limbs = getLimbCount(selectedActor - 1);
 
                 if (vs_main_buttonRepeat & PADL1) {
                     char new_var = 1;
@@ -2721,17 +2720,17 @@ int vs_menu4_exec(u_char* state)
                     userInput -= limbs;
                 }
 
-                if (userInput != _selectedElement) {
+                if (userInput != selectedElement) {
 
                     vs_battle_playMenuChangeSfx();
 
-                    _selectedElement = userInput;
+                    selectedElement = userInput;
 
-                    _renderSelectedLimbStats();
+                    renderSelectedLimbStats();
                 }
             }
 
-            userInput = _selectedStatRow;
+            userInput = selectedStatRow;
             limbs = 11 - vs_mainMenu_itemStatPage * 4;
 
             if (userInput >= limbs) {
@@ -2751,15 +2750,15 @@ int vs_menu4_exec(u_char* state)
                 userInput -= limbs;
             }
 
-            if (userInput != _selectedStatRow) {
+            if (userInput != selectedStatRow) {
                 vs_battle_playMenuChangeSfx();
-                _selectedStatRow = userInput;
+                selectedStatRow = userInput;
             }
 
-            vs_mainmenu_setInformationMessage((char*)&_statusStrings
-                    [_statusStrings[userInput
-                                    + (limbs != 3 ? VS_status_INDEX_physicalDefense
-                                                  : VS_status_INDEX_bluntDefense)]]);
+            vs_mainmenu_setInformationMessage((char*)&statusStrings
+                    [statusStrings[userInput
+                                   + (limbs != 3 ? VS_status_INDEX_physicalDefense
+                                                 : VS_status_INDEX_bluntDefense)]]);
 
             D_80108134 =
                 vs_mainMenu_renderCursor(D_80108134, ((userInput * 16) + 50) << 16);
@@ -2770,9 +2769,9 @@ int vs_menu4_exec(u_char* state)
         var_s5 = 1;
 
         if (animWait != 0) {
-            _animationStep = vs_battle_rowAnimationSteps[--animWait];
+            animationStepStatic = vs_battle_rowAnimationSteps[--animWait];
         } else {
-            _renderLimbUi(_selectedElement + 1);
+            renderLimbUi(selectedElement + 1);
             *state = 5;
         }
         break;
@@ -2780,10 +2779,10 @@ int vs_menu4_exec(u_char* state)
     case waitQuitToMenu:
     case waitQuitToBattle:
         vs_mainMenu_renderEquipStats(2);
-        _renderLimbUi(-2);
-        _renderLimbUi(0);
-        _initEquipmentScreen(0);
-        _renderBasicStats();
+        renderLimbUi(-2);
+        renderLimbUi(0);
+        initEquipmentScreen(0);
+        renderBasicStats();
         vs_battle_setProjectionDistance(D_80108188);
 
         vs_scratch.viewMatrix = D_80108198;
@@ -2802,8 +2801,8 @@ int vs_menu4_exec(u_char* state)
         break;
 
     case quitToMenu:
-        _renderLimbUi(0);
-        _renderBasicStats();
+        renderLimbUi(0);
+        renderBasicStats();
         vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
 
@@ -2818,8 +2817,8 @@ int vs_menu4_exec(u_char* state)
         break;
 
     case quitToBattle:
-        _renderLimbUi(0);
-        _renderBasicStats();
+        renderLimbUi(0);
+        renderBasicStats();
         vs_mainMenu_toggleBackgroundFade(0);
         vs_mainMenu_dismissInformationBox();
 
@@ -2836,20 +2835,20 @@ int vs_menu4_exec(u_char* state)
     }
 
     if (screenEnabled != 0) {
-        _drawScreen();
+        drawScreen();
     }
 
     if (var_s5 != 0) {
-        if (_animationIndex != 0) {
-            --_animationIndex;
+        if (animationIndex != 0) {
+            --animationIndex;
         }
     } else {
-        _animationIndex = vs_battle_animationIndices[_animationIndex];
+        animationIndex = vs_battle_animationIndices[animationIndex];
     }
 
-    if (_animationIndex < 10) {
+    if (animationIndex < 10) {
 
-        userInput = vs_battle_rowAnimationSteps[_animationIndex];
+        userInput = vs_battle_rowAnimationSteps[animationIndex];
 
         vs_mainmenu_renderButtonBackground(16 - userInput, 38, 88, 10);
         vs_mainmenu_renderButton(buttonIdSquare, 8 - userInput, 36, 0);

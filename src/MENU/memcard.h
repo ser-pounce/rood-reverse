@@ -12,7 +12,7 @@
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 
 /* Memorycard save/load support and the file menu code shared by the title and menu
- * overlays. The including file defines _memcardFilenameTemplate first, and the
+ * overlays. The including file defines memcardFilenameTemplate first, and the
  * following overlay specific hooks (several refer to locals of the function using them):
  *  - PACKAGE_SAVE_PREPARE, KEYSTREAM_BITS, PACKAGE_SAVE_CLEAR_CONTAINER,
  *    PACKAGE_SAVE_UPDATE_SAVE_COUNT, PACKAGE_SAVE_SET_LOCATION: save data packaging
@@ -41,7 +41,7 @@
 #include <libetc.h>
 #include <string.h>
 
-static long _memcardEventDescriptors[8];
+static long memcardEventDescriptors[8];
 
 enum memcardEvents_e { memcardEventsSw, memcardEventsHw = 4 };
 
@@ -64,12 +64,12 @@ enum memcardEventHandler_e {
  * Returns the first signalled memorycard event of the requested type, or
  * memcardInternalEventNone when none of the four events is signalled.
  */
-static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
+static enum testMemcardEvents_e testMemcardEvents(enum memcardEvents_e type)
 {
     int i;
 
     for (i = 0; i < 4; ++i) {
-        if (TestEvent(_memcardEventDescriptors[i + type]) == 1) {
+        if (TestEvent(memcardEventDescriptors[i + type]) == 1) {
             return i;
         }
     }
@@ -79,19 +79,19 @@ static enum testMemcardEvents_e _testMemcardEvents(enum memcardEvents_e type)
 /**
  * Tests each event in the selected memorycard event group to clear its signal.
  */
-static void _resetMemcardEvents(enum memcardEvents_e type)
+static void resetMemcardEvents(enum memcardEvents_e type)
 {
     int i;
 
     for (i = 0; i < 4; ++i) {
-        TestEvent(_memcardEventDescriptors[i + type]);
+        TestEvent(memcardEventDescriptors[i + type]);
     }
 }
 
 /**
  * Uploads an image to VRAM and waits for the transfer to finish.
  */
-static void _drawImage(int xy, void* buffer, int wh)
+static void drawImage(int xy, void* buffer, int wh)
 {
     RECT rect;
 
@@ -104,7 +104,7 @@ static void _drawImage(int xy, void* buffer, int wh)
 /**
  * Reads an image from VRAM into a buffer and waits for the transfer.
  */
-static void _readImage(int xy, void* buffer, int wh)
+static void readImage(int xy, void* buffer, int wh)
 {
     RECT rect;
 
@@ -117,7 +117,7 @@ static void _readImage(int xy, void* buffer, int wh)
 /**
  * Copies count bytes in reverse order.
  */
-static void _rMemcpy(void* dst, void const* src, int count)
+static void rMemcpy(void* dst, void const* src, int count)
 {
     do {
         --count;
@@ -130,12 +130,12 @@ static void _rMemcpy(void* dst, void const* src, int count)
  *
  * @param port Zero selects memorycard port 1; any other value selects port 2.
  */
-static char* _memcardMakeFilename(int port, int fileNo)
+static char* memcardMakeFilename(int port, int fileNo)
 {
     static char filename[32];
 
     memset(filename, 0, ' ');
-    strcpy(filename, _memcardFilenameTemplate);
+    strcpy(filename, memcardFilenameTemplate);
     filename[2] = port == 0 ? '0' : '1';
     filename[20] = fileNo + '0';
     return filename;
@@ -146,43 +146,43 @@ static char* _memcardMakeFilename(int port, int fileNo)
  *
  * @param port Zero selects memorycard port 1; any other value selects port 2.
  */
-static char* _memcardMakeTempFilename(int port, int fileNo)
+static char* memcardMakeTempFilename(int port, int fileNo)
 {
     static char filename[32];
 
     memset(filename, 0, ' ');
-    strcpy(filename, _memcardFilenameTemplate);
+    strcpy(filename, memcardFilenameTemplate);
     filename[2] = port == 0 ? '0' : '1';
     filename[20] = fileNo + 'A' - 1;
     return filename;
 }
 
-static char* _spmcimg;
-static mcdata_t* _mcData;
-static u_short* _textTable;
+static char* spmcimgStatic;
+static mcdata_t* mcData;
+static u_short* textTable;
 static UNUSED char _0[4];
-static struct DIRENTRY* _memcardFiles[15];
-static struct DIRENTRY* _dirEntBuf;
+static struct DIRENTRY* memcardFiles[15];
+static struct DIRENTRY* dirEntBuf;
 /* Memorycard save helpers shared by the title and menu overlays. The including file
- * defines _memcardFilenameTemplate first. */
+ * defines memcardFilenameTemplate first. */
 
-static saveInfoFrame_t* _saveSlotInfo;
+static saveInfoFrame_t* saveSlotInfo;
 
 /**
  * Finds the save slot with the greatest generation number.
  *
  * @return Zero-based slot index; returns zero when no active slot is found.
  */
-static u_int _getNewestSaveFile(void)
+static u_int getNewestSaveFile(void)
 {
     u_int i;
     u_int maxCounter = 0;
     u_int fileIndex = 0;
 
     for (i = 0; i < 5; ++i) {
-        if (_saveSlotInfo[i].identity.base.slotState >= 3) {
-            if (maxCounter < _saveSlotInfo[i].identity.base.generation) {
-                maxCounter = _saveSlotInfo[i].identity.base.generation;
+        if (saveSlotInfo[i].identity.base.slotState >= 3) {
+            if (maxCounter < saveSlotInfo[i].identity.base.generation) {
+                maxCounter = saveSlotInfo[i].identity.base.generation;
                 fileIndex = i;
             }
         }
@@ -195,16 +195,16 @@ static u_int _getNewestSaveFile(void)
  *
  * @return One-based file number, or zero when the active save is absent.
  */
-static int _findCurrentSaveOnActiveMemcard(void)
+static int findCurrentSaveOnActiveMemcard(void)
 {
     int i;
     for (i = 0; i < 5; ++i) {
-        if ((_saveSlotInfo[i].identity.base.slotState >= slotStateInUse)
-            && (_saveSlotInfo[i].identity.base.slotState == vs_main_settings.slotState)
-            && (_saveSlotInfo[i].identity.key == vs_main_settings.key)
-            && (_saveSlotInfo[i].stats.cumulativeSaveCount
+        if ((saveSlotInfo[i].identity.base.slotState >= slotStateInUse)
+            && (saveSlotInfo[i].identity.base.slotState == vs_main_settings.slotState)
+            && (saveSlotInfo[i].identity.key == vs_main_settings.key)
+            && (saveSlotInfo[i].stats.cumulativeSaveCount
                 == vs_main_settings.cumulativeSaveCount)
-            && (_saveSlotInfo[i].identity.base.generation
+            && (saveSlotInfo[i].identity.base.generation
                 == vs_main_settings.saveFileGeneration)) {
             return i + 1;
         }
@@ -218,10 +218,10 @@ static int _findCurrentSaveOnActiveMemcard(void)
  * @return 1-5 for permanent files, -1 to -5 for temporary files, or zero if
  * the name is not a save file.
  */
-static int _memcardFileNumberFromFilename(char* filename)
+static int memcardFileNumberFromFilename(char* filename)
 {
     int i;
-    char const* gameCode = &_memcardFilenameTemplate[5];
+    char const* gameCode = &memcardFilenameTemplate[5];
 
     for (i = 0; i < 15; ++i) {
         if (gameCode[i] != filename[i]) {
@@ -250,7 +250,7 @@ static int _memcardFileNumberFromFilename(char* filename)
  * @return Nonzero if a sector checksum differs or the info-sector checksum is
  * nonzero; otherwise zero.
  */
-static int _verifySaveChecksums(savedata_t data[], int sectorCount)
+static int verifySaveChecksums(savedata_t data[], int sectorCount)
 {
     int checksum;
     int i;
@@ -283,7 +283,7 @@ static int _verifySaveChecksums(savedata_t data[], int sectorCount)
 /**
  * Decodes count bytes in place using the save format's key-driven byte stream.
  */
-static void _decode(u_int key, void* buf, int count)
+static void decode(u_int key, void* buf, int count)
 {
     for (; count != 0; --count) {
         key *= 0x19660D;
@@ -299,7 +299,7 @@ static void _decode(u_int key, void* buf, int count)
  * @return Zero if valid metadata was read, or one if all read/validation
  * attempts failed.
  */
-static int _readSaveFileInfo(int id)
+static int readSaveFileInfo(int id)
 {
     saveInfoFrame_t saveInfo[4];
     int i;
@@ -309,7 +309,7 @@ static int _readSaveFileInfo(int id)
 
     for (i = 0; i < 3; ++i) {
         int bytesRead;
-        int file = open(_memcardMakeFilename(port, id), O_RDONLY);
+        int file = open(memcardMakeFilename(port, id), O_RDONLY);
 
         if (file == -1) {
             continue;
@@ -319,28 +319,28 @@ static int _readSaveFileInfo(int id)
         if (bytesRead != sizeof saveInfo) {
             continue;
         }
-        _decode(saveInfo[3].identity.key, &saveInfo[3].identity.base.slotState,
+        decode(saveInfo[3].identity.key, &saveInfo[3].identity.base.slotState,
             sizeof saveInfo[3] - sizeof(int));
-        if (_verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
-            _rMemcpy(&_saveSlotInfo[id - 1], &saveInfo[3], sizeof saveInfo[3]);
+        if (verifySaveChecksums((savedata_t*)saveInfo, 2) == 0) {
+            rMemcpy(&saveSlotInfo[id - 1], &saveInfo[3], sizeof saveInfo[3]);
             return 0;
         }
     }
 
-    memset(&_saveSlotInfo[id - 1], 0, sizeof _saveSlotInfo[id - 1]);
+    memset(&saveSlotInfo[id - 1], 0, sizeof saveSlotInfo[id - 1]);
     return 1;
 }
 
 /**
  * Checks whether a recognized memorycard save filename ends in id.
  */
-static int _memcardSaveIdExists(int id)
+static int memcardSaveIdExists(int id)
 {
     int i;
 
     for (i = 0; i < 15; ++i) {
-        char* filename = _memcardFiles[i]->name;
-        if ((filename != NULL) && (_memcardFileNumberFromFilename(filename) != 0)
+        char* filename = memcardFiles[i]->name;
+        if ((filename != NULL) && (memcardFileNumberFromFilename(filename) != 0)
             && (filename[15] == id)) {
             return 1;
         }
@@ -353,15 +353,14 @@ static int _memcardSaveIdExists(int id)
  *
  * @return A bit per removed temporary slot, or 0x80 if an erase fails.
  */
-static int _deleteRedundantTempFiles(int port)
+static int deleteRedundantTempFiles(int port)
 {
     int i;
     int ret = 0;
 
     for (i = 0; i < 5; ++i) {
-        if ((_memcardSaveIdExists(i + '1') != 0)
-            && (_memcardSaveIdExists(i + 'A') != 0)) {
-            if (erase(_memcardMakeTempFilename(port, i + 1)) == 0) {
+        if ((memcardSaveIdExists(i + '1') != 0) && (memcardSaveIdExists(i + 'A') != 0)) {
+            if (erase(memcardMakeTempFilename(port, i + 1)) == 0) {
                 return 0x80;
             }
             ret |= 1 << i;
@@ -375,7 +374,7 @@ static int _deleteRedundantTempFiles(int port)
  *
  * @return Nonzero if cleanup of redundant temporary files fails.
  */
-static int _initSaveFileInfo(int port)
+static int initSaveFileInfo(int port)
 {
     long fileNo;
     int i;
@@ -383,38 +382,38 @@ static int _initSaveFileInfo(int port)
     int slotsAvailable = 15;
 
     for (i = 14; i >= 0; --i) {
-        _memcardFiles[i] = NULL;
+        memcardFiles[i] = NULL;
     }
 
-    fileNo = (long)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), _dirEntBuf);
-    _memcardFiles[0] = (void*)fileNo;
+    fileNo = (long)firstfile((port == 1) ? ("bu00:*") : ("bu10:*"), dirEntBuf);
+    memcardFiles[0] = (void*)fileNo;
 
     for (i = 1; (i < 15) && fileNo; ++i) {
-        fileNo = (long)nextfile(_dirEntBuf + i);
-        _memcardFiles[i] = (void*)fileNo;
+        fileNo = (long)nextfile(dirEntBuf + i);
+        memcardFiles[i] = (void*)fileNo;
     }
 
-    memset(_saveSlotInfo, 0, sizeof *_saveSlotInfo * 5);
-    tempFilesDeleted = _deleteRedundantTempFiles((port - 1) * 16);
+    memset(saveSlotInfo, 0, sizeof *saveSlotInfo * 5);
+    tempFilesDeleted = deleteRedundantTempFiles((port - 1) * 16);
     if (tempFilesDeleted & 0x80) {
         return 1;
     }
     for (i = 0; i < 15; ++i) {
-        struct DIRENTRY* file = _memcardFiles[i];
+        struct DIRENTRY* file = memcardFiles[i];
 
         if (file == NULL) {
             continue;
         }
-        fileNo = _memcardFileNumberFromFilename(file->name);
+        fileNo = memcardFileNumberFromFilename(file->name);
         if (fileNo != 0) {
             if (fileNo < 0) {
                 fileNo = -fileNo;
                 if ((tempFilesDeleted >> (fileNo - 1)) & 1) {
                     continue;
                 }
-                memset(&_saveSlotInfo[fileNo - 1], 0, sizeof _saveSlotInfo[fileNo - 1]);
-                _saveSlotInfo[fileNo - 1].identity.base.slotState = slotStateTemporary;
-            } else if (_readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
+                memset(&saveSlotInfo[fileNo - 1], 0, sizeof saveSlotInfo[fileNo - 1]);
+                saveSlotInfo[fileNo - 1].identity.base.slotState = slotStateTemporary;
+            } else if (readSaveFileInfo(((port - 1) << 16) | fileNo) != 0) {
                 slotsAvailable += (file->size + 0x1FFF) >> 13;
             }
         }
@@ -423,8 +422,8 @@ static int _initSaveFileInfo(int port)
 
     for (; slotsAvailable >= 3; slotsAvailable -= 3) {
         for (i = 0; i < 5; ++i) {
-            if (_saveSlotInfo[i].identity.base.slotState == slotStateUnavailable) {
-                _saveSlotInfo[i].identity.base.slotState = slotStateAvailable;
+            if (saveSlotInfo[i].identity.base.slotState == slotStateUnavailable) {
+                saveSlotInfo[i].identity.base.slotState = slotStateAvailable;
                 break;
             }
         }
@@ -441,10 +440,10 @@ static int _initSaveFileInfo(int port)
  *
  * @return Zero on success, or -1 if the file cannot be created.
  */
-static int _createSaveFile(int port, int id)
+static int createSaveFile(int port, int id)
 {
     long file;
-    char* fileName = _memcardMakeFilename((port - 1) * 16, id);
+    char* fileName = memcardMakeFilename((port - 1) * 16, id);
 
     erase(fileName);
     file = open(fileName, O_CREAT | (3 << 16));
@@ -461,7 +460,7 @@ static int _createSaveFile(int port, int id)
  * A nonzero initPort starts polling that card (1 or 2); subsequent calls with
  * zero advance the state and report pending, completion, timeout, or unformatted state.
  */
-static enum memcardEventHandler_e _memcardEventHandler(int initPort)
+static enum memcardEventHandler_e memcardEventHandler(int initPort)
 {
     enum state {
         init = 0,
@@ -491,7 +490,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         if (++initTimeout >= 4) {
             return memcardEventTimeout;
         }
-        _resetMemcardEvents(memcardEventsSw);
+        resetMemcardEvents(memcardEventsSw);
         if (_card_info(port) == 0) {
             break;
         }
@@ -500,7 +499,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         eventType = memcardEventsSw;
         // fallthrough
     case ready:
-        switch (_testMemcardEvents(memcardEventsSw)) {
+        switch (testMemcardEvents(memcardEventsSw)) {
         case memcardInternalEventIoEnd:
             state = loadReady;
             break;
@@ -519,7 +518,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         }
         break;
     case unformatted:
-        _resetMemcardEvents(memcardEventsHw);
+        resetMemcardEvents(memcardEventsHw);
         if (_card_clear(port) == 0) {
             break;
         }
@@ -529,7 +528,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         // fallthrough
     case confirmed:
         do {
-            event = _testMemcardEvents(memcardEventsHw);
+            event = testMemcardEvents(memcardEventsHw);
         } while (event == memcardInternalEventNone);
         if (event == memcardInternalEventIoEnd) {
             state = loadReady;
@@ -544,7 +543,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         state = init;
         break;
     case loadReady:
-        _resetMemcardEvents(memcardEventsSw);
+        resetMemcardEvents(memcardEventsSw);
         if (_card_load(port) == 0) {
             break;
         }
@@ -552,7 +551,7 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
         timeout = 0;
         // fallthrough
     case loaded:
-        event = _testMemcardEvents(memcardEventsSw);
+        event = testMemcardEvents(memcardEventsSw);
         switch (event) {
         case memcardInternalEventIoEnd:
             return eventType + memcardEventIoEnd;
@@ -579,15 +578,15 @@ static enum memcardEventHandler_e _memcardEventHandler(int initPort)
  * @return One for invalid data, zero when valid (and applied when write is
  * nonzero).
  */
-static int _applyLoadedSaveFile(int apply)
+static int applyLoadedSaveFile(int apply)
 {
     int blockCount;
-    savedata_t* spmcimg = (savedata_t*)_spmcimg;
+    savedata_t* spmcimg = (savedata_t*)spmcimgStatic;
     void* spmcimg2 = spmcimg + 1;
     savedata_t* s4 = spmcimg + 1;
     saveIdentity_t* identity = &spmcimg[1].info.identity;
 
-    _decode(identity->key, &identity->base.slotState,
+    decode(identity->key, &identity->base.slotState,
         sizeof(savedata_t) - (u_long) & ((savedata_t*)0)->info.identity.base.slotState);
 
     blockCount = 92;
@@ -595,7 +594,7 @@ static int _applyLoadedSaveFile(int apply)
         blockCount = 32;
     }
 
-    if ((_verifySaveChecksums(spmcimg + 1, blockCount) != 0)
+    if ((verifySaveChecksums(spmcimg + 1, blockCount) != 0)
         || (identity->base.version != SAVE_FORMAT_VERSION)) {
         do {
             return 1;
@@ -606,23 +605,23 @@ static int _applyLoadedSaveFile(int apply)
         return 0;
     }
 
-    _rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof vs_main_stateFlags);
-    _rMemcpy(
+    rMemcpy(&vs_main_stateFlags, spmcimg[1].stateFlags, sizeof vs_main_stateFlags);
+    rMemcpy(
         vs_main_actionsLearned, spmcimg[1].actionsLearned, sizeof vs_main_actionsLearned);
-    _rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
-    _rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
-    _rMemcpy(&vs_main_characterSnapshot, &spmcimg[1].character,
+    rMemcpy(&vs_main_mapStatus, spmcimg[1].mapStatus, sizeof vs_main_mapStatus);
+    rMemcpy(&vs_main_settings, &spmcimg[1].settings, sizeof vs_main_settings);
+    rMemcpy(&vs_main_characterSnapshot, &spmcimg[1].character,
         sizeof vs_main_characterSnapshot);
-    _rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
-    _rMemcpy(&vs_main_inventoryIndices, &spmcimg[1].inventoryIndices,
+    rMemcpy(&vs_main_inventory, &spmcimg[1].inventory, sizeof vs_main_inventory);
+    rMemcpy(&vs_main_inventoryIndices, &spmcimg[1].inventoryIndices,
         sizeof vs_main_inventoryIndices);
-    _rMemcpy(&vs_main_spawnPoint, &spmcimg[1].spawnPoint, sizeof vs_main_spawnPoint);
-    _rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof vs_main_scoredata);
+    rMemcpy(&vs_main_spawnPoint, &spmcimg[1].spawnPoint, sizeof vs_main_spawnPoint);
+    rMemcpy(&vs_main_scoredata, &spmcimg[1].scoreData, sizeof vs_main_scoredata);
     vs_main_zoneEnemyCacheIndex = s4->zoneEnemyCacheIndex;
-    _rMemcpy(
+    rMemcpy(
         vs_main_zoneEnemyCache, spmcimg[1].zoneEnemyCache, sizeof vs_main_zoneEnemyCache);
     spmcimg2 = &vs_main_artsStatus;
-    _rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
+    rMemcpy(&vs_main_artsStatus, &spmcimg[1].artsStatus, sizeof vs_main_artsStatus);
     vs_main_gametime.t = spmcimg[1].info.stats.gameTime.t;
     vs_main_setCharacterRestorePending();
     vs_main_setMonoSound(vs_main_settings.monoSound);
@@ -635,18 +634,18 @@ static int _applyLoadedSaveFile(int apply)
  *
  * @param targetFile Zero-based target slot used in the displayed save metadata.
  */
-static void _packageGameSaveData(int targetFile)
+static void packageGameSaveData(int targetFile)
 {
 #pragma sjis(start)
-    static const u_char _defaultFileTitle[] =
+    static const u_char defaultFileTitle[] =
         "ＶＡＧＲＡＮＴ　ＳＴＯＲＹ　ＦＩＬＥ　１　　　００：００：００　";
 #pragma sjis(end)
 
     long i;
     int j;
     int var_a0;
-    u_char const* s0 = _defaultFileTitle;
-    savedata_t* savedata = (savedata_t*)_spmcimg;
+    u_char const* s0 = defaultFileTitle;
+    savedata_t* savedata = (savedata_t*)spmcimgStatic;
     savedata_t* savedata2 = savedata + 1;
     savedata_t* savedata3 = savedata;
     saveInfoFrame_t* s5 = &savedata->info;
@@ -657,7 +656,7 @@ static void _packageGameSaveData(int targetFile)
     savedata->titleFrame.magic[1] = 'C';
     savedata->titleFrame.iconFlag = 0x11;
     savedata->titleFrame.blockCount = 3;
-    _rMemcpy(savedata->titleFrame.title, s0, sizeof savedata->titleFrame.title);
+    rMemcpy(savedata->titleFrame.title, s0, sizeof savedata->titleFrame.title);
     savedata->titleFrame.title[19] += (targetFile << 8);
 
     if (vs_main_gametime.t.h == 100) {
@@ -671,9 +670,9 @@ static void _packageGameSaveData(int targetFile)
         savedata->titleFrame.title[30] += ((vs_main_gametime.t.s % 10) << 8);
     }
     savedata3->titleFrame.title[31] = 0;
-    _rMemcpy(savedata3->titleFrame.iconPalette, _mcData->iconPalettes[targetFile],
+    rMemcpy(savedata3->titleFrame.iconPalette, mcData->iconPalettes[targetFile],
         sizeof savedata->titleFrame.iconPalette);
-    _rMemcpy(savedata3->iconFrame0, _mcData->iconBitmaps[targetFile],
+    rMemcpy(savedata3->iconFrame0, mcData->iconBitmaps[targetFile],
         sizeof savedata->iconFrame0);
 
     if (vs_main_settings.slotState == 0) {
@@ -690,11 +689,11 @@ static void _packageGameSaveData(int targetFile)
     vs_main_settings.saveFileGeneration = 0;
 
     for (i = 0; i < 5; ++i) {
-        if (_saveSlotInfo[i].identity.base.slotState >= slotStateInUse) {
+        if (saveSlotInfo[i].identity.base.slotState >= slotStateInUse) {
             if (vs_main_settings.saveFileGeneration
-                < _saveSlotInfo[i].identity.base.generation) {
+                < saveSlotInfo[i].identity.base.generation) {
                 vs_main_settings.saveFileGeneration =
-                    _saveSlotInfo[i].identity.base.generation;
+                    saveSlotInfo[i].identity.base.generation;
             }
         }
     }
@@ -716,51 +715,50 @@ static void _packageGameSaveData(int targetFile)
     s5->stats.clearCount = vs_main_stateFlags.clearCount;
     s5->stats.currentMP = vs_main_characterSnapshot.stats.currentMP;
     s5->stats.maxMP = vs_main_characterSnapshot.stats.maxMP;
-    _rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof savedata->stateFlags);
-    _rMemcpy(savedata->actionsLearned, vs_main_actionsLearned,
+    rMemcpy(savedata->stateFlags, &vs_main_stateFlags, sizeof savedata->stateFlags);
+    rMemcpy(savedata->actionsLearned, vs_main_actionsLearned,
         sizeof savedata->actionsLearned);
-    _rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
-    _rMemcpy(&savedata->settings, &vs_main_settings, sizeof savedata->settings);
-    _rMemcpy(
-        &savedata->character, &vs_main_characterSnapshot, sizeof savedata->character);
-    _rMemcpy(&savedata->inventory, &vs_main_inventory, sizeof savedata->inventory);
-    _rMemcpy(&savedata->inventoryIndices, &vs_main_inventoryIndices,
+    rMemcpy(savedata->mapStatus, &vs_main_mapStatus, sizeof savedata->mapStatus);
+    rMemcpy(&savedata->settings, &vs_main_settings, sizeof savedata->settings);
+    rMemcpy(&savedata->character, &vs_main_characterSnapshot, sizeof savedata->character);
+    rMemcpy(&savedata->inventory, &vs_main_inventory, sizeof savedata->inventory);
+    rMemcpy(&savedata->inventoryIndices, &vs_main_inventoryIndices,
         sizeof savedata->inventoryIndices);
-    _rMemcpy(&savedata->spawnPoint, &vs_main_spawnPoint, sizeof savedata->spawnPoint);
-    _rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof savedata->scoreData);
-    _rMemcpy(&savedata->containerData, &savedata2->containerData,
+    rMemcpy(&savedata->spawnPoint, &vs_main_spawnPoint, sizeof savedata->spawnPoint);
+    rMemcpy(&savedata->scoreData, &vs_main_scoredata, sizeof savedata->scoreData);
+    rMemcpy(&savedata->containerData, &savedata2->containerData,
         sizeof savedata->containerData);
     savedata->zoneEnemyCacheIndex = vs_main_zoneEnemyCacheIndex;
-    _rMemcpy(savedata->zoneEnemyCache, vs_main_zoneEnemyCache,
+    rMemcpy(savedata->zoneEnemyCache, vs_main_zoneEnemyCache,
         sizeof savedata->zoneEnemyCache);
-    _rMemcpy(&savedata->artsStatus, &vs_main_artsStatus, sizeof savedata->artsStatus);
+    rMemcpy(&savedata->artsStatus, &vs_main_artsStatus, sizeof savedata->artsStatus);
 
     for (i = 0; i < 92; ++i) {
         var_a0 = 0;
         if (i != 1) {
             for (j = 0; j < 256; ++j) {
-                var_a0 ^= _spmcimg[i * 0x100 + j];
+                var_a0 ^= spmcimgStatic[i * 0x100 + j];
             }
             s5->checksums[i] = var_a0;
         }
     }
     var_a0 = 0;
     for (j = 0; j < 256; ++j) {
-        var_a0 ^= _spmcimg[j + 256];
+        var_a0 ^= spmcimgStatic[j + 256];
     }
     s5->checksums[1] = var_a0;
     for (i = (long)&((savedata_t*)0)->info.identity.base.slotState;
         i < (int)sizeof(savedata_t); ++i) {
-        _spmcimg[i] += KEYSTREAM_BITS(8);
+        spmcimgStatic[i] += KEYSTREAM_BITS(8);
     }
 }
 
-static char _loadSaveDataErrorOffset;
+static char loadSaveDataErrorOffset;
 static UNUSED char _1[1];
-static u_short _fileProgressTarget;
-static u_short _filePreviousProgressCounter;
-static u_short _fileProgressPosition;
-static int _fileProgressCounter;
+static u_short fileProgressTarget;
+static u_short filePreviousProgressCounter;
+static u_short fileProgressPosition;
+static int fileProgressCounter;
 
 /**
  * Reads a permanent or temporary save.
@@ -770,7 +768,7 @@ static int _fileProgressCounter;
  *
  * @return Zero while pending, one when the read completes, or -1 after errors.
  */
-static int _loadSaveData(int portFileno)
+static int loadSaveData(int portFileno)
 {
     enum state { init = 0, reading = 1 };
 
@@ -782,17 +780,17 @@ static int _loadSaveData(int portFileno)
     static UNUSED short _;
     static int fd;
 
-    void* temp_s2 = (savedata_t*)_spmcimg + 1;
+    void* temp_s2 = (savedata_t*)spmcimgStatic + 1;
 
     if (portFileno != 0) {
         state = init;
         errors = 0;
-        _loadSaveDataErrorOffset = 0;
+        loadSaveDataErrorOffset = 0;
         port = portFileno >> 0xC;
         isTempSave = (portFileno >> 8) & 1;
         file = portFileno & 0xF;
-        _fileProgressPosition = 80;
-        _filePreviousProgressCounter = 0;
+        fileProgressPosition = 80;
+        filePreviousProgressCounter = 0;
         return 0;
     }
 
@@ -802,27 +800,27 @@ static int _loadSaveData(int portFileno)
         char* filename;
         int new_var = 320;
 
-        _fileProgressPosition +=
-            ((_fileProgressCounter - _filePreviousProgressCounter)
-                * ((_loadSaveDataErrorOffset * 20) - (_fileProgressPosition - new_var)))
-            / _fileProgressTarget;
-        _loadSaveDataErrorOffset = errors;
-        _fileProgressTarget = 192 - (isTempSave << 7);
-        _filePreviousProgressCounter = _fileProgressCounter;
+        fileProgressPosition +=
+            ((fileProgressCounter - filePreviousProgressCounter)
+                * ((loadSaveDataErrorOffset * 20) - (fileProgressPosition - new_var)))
+            / fileProgressTarget;
+        loadSaveDataErrorOffset = errors;
+        fileProgressTarget = 192 - (isTempSave << 7);
+        filePreviousProgressCounter = fileProgressCounter;
 
         memset(temp_s2, 0, sizeof(savedata_t));
 
         if (file & 8) {
-            filename = _memcardMakeTempFilename(port, file & 7);
+            filename = memcardMakeTempFilename(port, file & 7);
         } else {
-            filename = _memcardMakeFilename(port, file);
+            filename = memcardMakeFilename(port, file);
         }
         fd = open(filename, O_NOWAIT | O_RDONLY);
         if (fd == -1) {
             ++errors;
             break;
         }
-        _resetMemcardEvents(memcardEventsSw);
+        resetMemcardEvents(memcardEventsSw);
         nBytes = sizeof(savedata_t);
         if (isTempSave != 0) {
             nBytes = 0x2000;
@@ -836,7 +834,7 @@ static int _loadSaveData(int portFileno)
     }
         // fallthrough
     case reading: {
-        int event = _testMemcardEvents(memcardEventsSw);
+        int event = testMemcardEvents(memcardEventsSw);
         if (event < memcardInternalEventNone) {
             close(fd);
             if (event == memcardInternalEventIoEnd) {
@@ -859,7 +857,7 @@ static int _loadSaveData(int portFileno)
  *
  * @return Zero while pending, one on verified success, or -1 on failure.
  */
-static int _saveFile(int portFile)
+static int saveFile(int portFile)
 {
     enum state {
         init = 0,
@@ -884,17 +882,17 @@ static int _saveFile(int portFile)
     if (portFile != 0) {
         errors = 0;
         renameErrors = 0;
-        _loadSaveDataErrorOffset = 0;
+        loadSaveDataErrorOffset = 0;
         port = portFile >> 0xC;
         file = portFile & 7;
-        _fileProgressPosition = 80;
-        _filePreviousProgressCounter = 0;
-        state = _memcardSaveIdExists(file + 'A' - 1);
+        fileProgressPosition = 80;
+        filePreviousProgressCounter = 0;
+        state = memcardSaveIdExists(file + 'A' - 1);
         return 0;
     }
     switch (state) {
     case init:
-        if (rename(_memcardMakeFilename(port, file), _memcardMakeTempFilename(port, file))
+        if (rename(memcardMakeFilename(port, file), memcardMakeTempFilename(port, file))
             != 0) {
             errors = 0;
             renameErrors = 0;
@@ -905,20 +903,20 @@ static int _saveFile(int portFile)
         }
         break;
     case tempFileCreated:
-        temp_v1_2 = ((_fileProgressCounter - _filePreviousProgressCounter)
-                        * (320 - _fileProgressPosition))
-                  / _fileProgressTarget;
-        _filePreviousProgressCounter = _fileProgressCounter;
-        _fileProgressTarget = 384;
-        _fileProgressPosition += temp_v1_2;
-        fd = open(_memcardMakeTempFilename(port, file), O_NOWAIT | O_WRONLY);
+        temp_v1_2 = ((fileProgressCounter - filePreviousProgressCounter)
+                        * (320 - fileProgressPosition))
+                  / fileProgressTarget;
+        filePreviousProgressCounter = fileProgressCounter;
+        fileProgressTarget = 384;
+        fileProgressPosition += temp_v1_2;
+        fd = open(memcardMakeTempFilename(port, file), O_NOWAIT | O_WRONLY);
         ;
         if (fd == -1) {
             ++errors;
             break;
         }
-        _resetMemcardEvents(memcardEventsSw);
-        if (write(fd, _spmcimg, sizeof(savedata_t)) == -1) {
+        resetMemcardEvents(memcardEventsSw);
+        if (write(fd, spmcimgStatic, sizeof(savedata_t)) == -1) {
             close(fd);
             ++errors;
             break;
@@ -926,16 +924,16 @@ static int _saveFile(int portFile)
         state = readReady;
         // fallthrough
     case readReady: {
-        temp_s3 = _testMemcardEvents(memcardEventsSw);
+        temp_s3 = testMemcardEvents(memcardEventsSw);
         if (temp_s3 < memcardInternalEventNone) {
             close(fd);
             if (temp_s3 == memcardInternalEventIoEnd) {
                 state = verifyPending;
-                i = _fileProgressPosition;
-                temp_s3 = _filePreviousProgressCounter;
-                _loadSaveData((port << 12) | (file + 8));
-                _fileProgressPosition = i;
-                _filePreviousProgressCounter = temp_s3;
+                i = fileProgressPosition;
+                temp_s3 = filePreviousProgressCounter;
+                loadSaveData((port << 12) | (file + 8));
+                fileProgressPosition = i;
+                filePreviousProgressCounter = temp_s3;
             } else {
                 ++errors;
                 state = tempFileCreated;
@@ -944,7 +942,7 @@ static int _saveFile(int portFile)
         break;
     }
     case verifyPending:
-        temp_s3 = _loadSaveData(0);
+        temp_s3 = loadSaveData(0);
         if (temp_s3 == 0) {
             break;
         }
@@ -952,7 +950,7 @@ static int _saveFile(int portFile)
             return -1;
         }
         for (i = 0; i < (int)sizeof(savedata_t); ++i) {
-            if (_spmcimg[i] != _spmcimg[sizeof(savedata_t) + i]) {
+            if (spmcimgStatic[i] != spmcimgStatic[sizeof(savedata_t) + i]) {
                 break;
             }
         }
@@ -962,7 +960,7 @@ static int _saveFile(int portFile)
         state = fileVerified;
         break;
     case fileVerified:
-        if (rename(_memcardMakeTempFilename(port, file), _memcardMakeFilename(port, file))
+        if (rename(memcardMakeTempFilename(port, file), memcardMakeFilename(port, file))
             == 0) {
             ++renameErrors;
             errors = (renameErrors >> 4);
@@ -979,7 +977,7 @@ static int _saveFile(int portFile)
  * Call with nonzero init to start initialization and with zero to poll;
  * returns one when ready and zero otherwise.
  */
-static int _initMemcard(int init)
+static int initMemcard(int init)
 {
     enum state {
         none = 0,
@@ -987,10 +985,10 @@ static int _initMemcard(int init)
         enqueued = 2,
     };
 
-    static u_short _eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
-    static char _initMemcardState;
+    static u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
+    static char initMemcardState;
     static UNUSED char _[3];
-    static vs_main_CdQueueSlot* _initMemcardCdQueueSlot;
+    static vs_main_CdQueueSlot* initMemcardCdQueueSlot;
 
     vs_main_CdFile cdFile;
     int i;
@@ -998,35 +996,35 @@ static int _initMemcard(int init)
 
     if (init != 0) {
         MEMCARD_INIT_HOOK();
-        _spmcimg = vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
-        _mcData = (mcdata_t*)(_spmcimg + sizeof(savedata_t) * 3);
+        spmcimgStatic = vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
+        mcData = (mcdata_t*)(spmcimgStatic + sizeof(savedata_t) * 3);
         // Laid out in order after mcdata_t: MCMAN text table, slot info, DIRENTRY
-        _textTable = (u_short*)(_mcData + 1);
-        _saveSlotInfo = (saveInfoFrame_t*)(_textTable + 0x800);
-        _dirEntBuf = (struct DIRENTRY*)(_saveSlotInfo + 5);
+        textTable = (u_short*)(mcData + 1);
+        saveSlotInfo = (saveInfoFrame_t*)(textTable + 0x800);
+        dirEntBuf = (struct DIRENTRY*)(saveSlotInfo + 5);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
-        _initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(_initMemcardCdQueueSlot, _spmcimg);
-        _initMemcardState = none;
+        initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(initMemcardCdQueueSlot, spmcimgStatic);
+        initMemcardState = none;
         return 0;
     }
 
-    switch (_initMemcardState) {
+    switch (initMemcardState) {
     case none:
-        if (_initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
-            vs_main_freeCdQueueSlot(_initMemcardCdQueueSlot);
-            _drawImage(vs_getXY(800, 256), _spmcimg, vs_getWH(224, 256));
-            _initMemcardState = queueReady;
+        if (initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+            vs_main_freeCdQueueSlot(initMemcardCdQueueSlot);
+            drawImage(vs_getXY(800, 256), spmcimgStatic, vs_getWH(224, 256));
+            initMemcardState = queueReady;
         }
         return 0;
     case queueReady:
         cdFile.lba = VS_MCDATA_BIN_LBA; // MCMAN.BIN must immediately follow MCDATA.BIN on
                                         // the disk
         cdFile.size = VS_MCDATA_BIN_SIZE + VS_MCMAN_BIN_SIZE;
-        _initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(_initMemcardCdQueueSlot, _mcData);
-        _initMemcardState = enqueued;
+        initMemcardCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(initMemcardCdQueueSlot, mcData);
+        initMemcardState = enqueued;
         break;
     case enqueued:
         break;
@@ -1034,8 +1032,8 @@ static int _initMemcard(int init)
         return 0;
     }
 
-    if (_initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
-        vs_main_freeCdQueueSlot(_initMemcardCdQueueSlot);
+    if (initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        vs_main_freeCdQueueSlot(initMemcardCdQueueSlot);
         vs_main_enableReset(0);
         EnterCriticalSection();
 
@@ -1044,14 +1042,14 @@ static int _initMemcard(int init)
             if (i & 4) {
                 event = HwCARD;
             }
-            _memcardEventDescriptors[i] =
-                OpenEvent(event, _eventSpecs[i & 3], EvMdNOINTR, 0);
+            memcardEventDescriptors[i] =
+                OpenEvent(event, eventSpecs[i & 3], EvMdNOINTR, 0);
         }
 
         ExitCriticalSection();
 
         for (i = 0; i < 8; ++i) {
-            EnableEvent(_memcardEventDescriptors[i]);
+            EnableEvent(memcardEventDescriptors[i]);
         }
         return 1;
     }
@@ -1061,49 +1059,49 @@ static int _initMemcard(int init)
 /**
  * Disables and closes memorycard events and releases the support data.
  */
-static void _shutdownMemcard(void)
+static void shutdownMemcard(void)
 {
     int i;
 
     for (i = 0; i < 8; ++i) {
-        DisableEvent(_memcardEventDescriptors[i]);
+        DisableEvent(memcardEventDescriptors[i]);
     }
 
     EnterCriticalSection();
 
     for (i = 0; i < 8; ++i) {
-        CloseEvent(_memcardEventDescriptors[i]);
+        CloseEvent(memcardEventDescriptors[i]);
     }
 
     ExitCriticalSection();
     vs_main_enableReset(1);
-    vs_main_freeHeap(_spmcimg);
+    vs_main_freeHeap(spmcimgStatic);
     MEMCARD_SHUTDOWN_HOOK();
 }
 
-static fileMenuElements_t _fileMenuElements[10];
+static fileMenuElements_t fileMenuElements[10];
 static UNUSED char _2[8];
-static primBuf_t _primBuf;
+static primBuf_t primBufStatic;
 
 /**
  * Draws a textured sprite using packed coordinates, UV/CLUT, size and tpage.
  */
-static void _drawSprt(int xy, int uvClut, int wh, int tpage)
+static void drawSprt(int xy, int uvClut, int wh, int tpage)
 {
     DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-    _primBuf.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
-    _primBuf.prim.sprt.r0g0b0code =
+    primBufStatic.tag = vs_getTag(primBufStatic.prim.sprt, primAddrNull);
+    primBufStatic.prim.sprt.tpage = vs_getTpageRaw(tpage & 0x9FF);
+    primBufStatic.prim.sprt.r0g0b0code =
         vs_getRGB0Raw(primSprt, ((0x80 - (tpage >> 16)) * 0x010101));
-    _primBuf.prim.sprt.x0y0 = xy;
-    _primBuf.prim.sprt.u0v0clut = uvClut;
-    _primBuf.prim.sprt.wh = wh;
-    DrawPrim(&_primBuf);
+    primBufStatic.prim.sprt.x0y0 = xy;
+    primBufStatic.prim.sprt.u0v0clut = uvClut;
+    primBufStatic.prim.sprt.wh = wh;
+    DrawPrim(&primBufStatic);
 }
 
-static char _menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176,
-    200, 224, 248, 255, 255, 255, 255 };
-static signed char _cursorFileOpSaturation[] = { 0, -56, -112, -104, -96, -88, -80, -72,
+static char menuElementStops[] = { 0, 1, 2, 4, 8, 16, 32, 56, 80, 104, 128, 152, 176, 200,
+    224, 248, 255, 255, 255, 255 };
+static signed char cursorFileOpSaturation[] = { 0, -56, -112, -104, -96, -88, -80, -72,
     -64, -56, -48, -40, -32, -24, -16, -8 };
 
 enum vs_fileMenuUiIds_e {
@@ -1122,27 +1120,27 @@ enum vs_fileMenuUiIds_e {
 /**
  * Draws the selected UI element at the desired position.
  */
-static void _drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
+static void drawSaveInfoUI(int xy, enum vs_fileMenuUiIds_e id)
 {
-    static int _saveInfoUVClut[] = { vs_getUV0Clut(248, 8, 832, 223),
+    static int saveInfoUVClut[] = { vs_getUV0Clut(248, 8, 832, 223),
         vs_getUV0Clut(242, 0, 832, 223), vs_getUV0Clut(224, 120, 848, 223),
         vs_getUV0Clut(128, 56, 848, 223), vs_getUV0Clut(224, 112, 848, 223),
         vs_getUV0Clut(104, 56, 848, 223), vs_getUV0Clut(170, 76, 864, 223),
         vs_getUV0Clut(144, 0, 864, 223), vs_getUV0Clut(160, 0, 864, 223),
         vs_getUV0Clut(32, 9, 832, 223) };
-    static int _saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8),
+    static int saveInfoWh[] = { vs_getXY(3, 8), vs_getXY(13, 8), vs_getXY(17, 8),
         vs_getXY(22, 8), vs_getXY(26, 8), vs_getXY(19, 8), vs_getXY(10, 10),
         vs_getXY(16, 9), vs_getXY(18, 9), vs_getXY(5, 7) };
-    _drawSprt(xy, _saveInfoUVClut[id], _saveInfoWh[id], 0xC);
+    drawSprt(xy, saveInfoUVClut[id], saveInfoWh[id], 0xC);
 }
 
 /**
  * Draws value starting at its requested decimal place and advancing right.
  */
-static void _drawInteger(int xy, u_int value, u_int placeDivisor)
+static void drawInteger(int xy, u_int value, u_int placeDivisor)
 {
     do {
-        _drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
+        drawSprt(xy, vs_getUV0Clut(((value / placeDivisor) * 6), 0, 832, 223),
             vs_getWH(6, 10), getTPage(0, 0, 768, 0));
         value = value % placeDivisor;
         placeDivisor /= 10;
@@ -1153,7 +1151,7 @@ static void _drawInteger(int xy, u_int value, u_int placeDivisor)
 /**
  * Returns the number of decimal digits in a nonnegative integer.
  */
-static int _countDigits(int val)
+static int countDigits(int val)
 {
     int i;
 
@@ -1170,9 +1168,9 @@ enum statType_e { statTypeHP = 0, statTypeMP = 1 };
 /**
  * Draws the HP or MP label, current/max values, and proportional status bar.
  */
-static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
+static void drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int maxValue)
 {
-    static char _digitDivisors[] = { 0, 1, 10, 100 };
+    static char digitDivisors[] = { 0, 1, 10, 100 };
 
     int currentValueFactor;
     int maxValueDigits;
@@ -1207,53 +1205,53 @@ static void _drawHPMP(int xy, enum statType_e stat, u_int currentValue, u_int ma
             << 16);
 
     DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-    _primBuf.prim.tilePoly.tile.tpage =
+    primBufStatic.tag = vs_getTag(primBufStatic.prim.tilePoly, primAddrNull);
+    primBufStatic.prim.tilePoly.tile.tpage =
         vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
-    _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
+    primBufStatic.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 40, 64);
     wh = vs_getWH(66, 5);
     x1y1 = (currentValueDigits + vs_getXY(0, 9));
-    _primBuf.prim.tilePoly.tile.x0y0 = xy++ + vs_getXY(0, 8);
-    _primBuf.prim.tilePoly.tile.wh = wh;
-    _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
-    _primBuf.prim.tilePoly.polyG4.x0y0 = xy + vs_getXY(0, 9);
-    _primBuf.prim.tilePoly.polyG4.r1g1b1 = rgb0;
-    _primBuf.prim.tilePoly.polyG4.x1y1 = xy + x1y1;
-    _primBuf.prim.tilePoly.polyG4.r2g2b2 = rgb1;
-    _primBuf.prim.tilePoly.polyG4.x2y2 = xy + vs_getXY(0, 12);
-    _primBuf.prim.tilePoly.polyG4.r3g3b3 = rgb0;
-    _primBuf.prim.tilePoly.polyG4.x3y3 = vs_getXY(0, 12);
-    _primBuf.prim.tilePoly.polyG4.x3y3 =
-        xy + (currentValueDigits + _primBuf.prim.tilePoly.polyG4.x3y3);
-    DrawPrim(&_primBuf);
+    primBufStatic.prim.tilePoly.tile.x0y0 = xy++ + vs_getXY(0, 8);
+    primBufStatic.prim.tilePoly.tile.wh = wh;
+    primBufStatic.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, rgb1);
+    primBufStatic.prim.tilePoly.polyG4.x0y0 = xy + vs_getXY(0, 9);
+    primBufStatic.prim.tilePoly.polyG4.r1g1b1 = rgb0;
+    primBufStatic.prim.tilePoly.polyG4.x1y1 = xy + x1y1;
+    primBufStatic.prim.tilePoly.polyG4.r2g2b2 = rgb1;
+    primBufStatic.prim.tilePoly.polyG4.x2y2 = xy + vs_getXY(0, 12);
+    primBufStatic.prim.tilePoly.polyG4.r3g3b3 = rgb0;
+    primBufStatic.prim.tilePoly.polyG4.x3y3 = vs_getXY(0, 12);
+    primBufStatic.prim.tilePoly.polyG4.x3y3 =
+        xy + (currentValueDigits + primBufStatic.prim.tilePoly.polyG4.x3y3);
+    DrawPrim(&primBufStatic);
 
-    currentValueDigits = _countDigits(currentValue);
-    maxValueDigits = _countDigits(maxValue);
-    _drawSaveInfoUI(xy - 1, stat + vs_uiids_hp);
+    currentValueDigits = countDigits(currentValue);
+    maxValueDigits = countDigits(maxValue);
+    drawSaveInfoUI(xy - 1, stat + vs_uiids_hp);
     wh = currentValueDigits * 6;
     new_var4 = 55;
     xy = (xy - (wh - new_var4)) - (maxValueDigits * 5);
-    placeDivisor = _digitDivisors[currentValueDigits];
+    placeDivisor = digitDivisors[currentValueDigits];
     do {
-        _drawSprt(xy - vs_getXY(0, 1),
+        drawSprt(xy - vs_getXY(0, 1),
             (((currentValue / placeDivisor) << 3) + 64) | (getClut(832, 223) << 16),
             vs_getWH(7, 12), getTPage(0, 0, 768, 0));
         currentValue = currentValue % placeDivisor;
         placeDivisor /= 10;
         xy += 6;
     } while (placeDivisor != 0);
-    _drawSaveInfoUI(xy + 1, vs_uiids_dot);
-    _drawInteger(xy + 6, maxValue, _digitDivisors[maxValueDigits]);
+    drawSaveInfoUI(xy + 1, vs_uiids_dot);
+    drawInteger(xy + 6, maxValue, digitDivisors[maxValueDigits]);
 }
 
-static int _selectCursorXy;
-static char* _memoryCardMessage;
-static char _isSaving;
+static int selectCursorXy;
+static char* memoryCardMessage;
+static char isSaving;
 
 /**
  * Draws the save / load progress bar.
  */
-static void _fileProcessingAnim(int x, int y)
+static void fileProcessingAnim(int x, int y)
 {
     UNUSED char* new_var;
     int gradientColor1;
@@ -1262,7 +1260,7 @@ static void _fileProcessingAnim(int x, int y)
     u_int i;
 
     leftEdge = x - 48;
-    new_var = &_isSaving;
+    new_var = &isSaving;
 
     if (leftEdge < 64) {
         leftEdge = 64;
@@ -1271,25 +1269,25 @@ static void _fileProcessingAnim(int x, int y)
     gradientColor1 = 0;
     gradientColor2 = vs_getRGB888(224, 255, 0);
 
-    if (_isSaving != 0) {
+    if (isSaving != 0) {
         gradientColor2 = vs_getRGB888(255, 0, 127);
     }
 
     for (i = 0; i < 2; ++i) {
         DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4_tpage, primAddrNull);
-        _primBuf.prim.polyG4_tpage.r0g0b0code =
+        primBufStatic.tag = vs_getTag(primBufStatic.prim.polyG4_tpage, primAddrNull);
+        primBufStatic.prim.polyG4_tpage.r0g0b0code =
             vs_getRGB0Raw(primPolyG4SemiTrans, gradientColor1);
-        _primBuf.prim.polyG4_tpage.x0y0 = leftEdge | y;
-        _primBuf.prim.polyG4_tpage.x1y1 = x | y;
-        _primBuf.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
-        _primBuf.prim.polyG4_tpage.tpage =
+        primBufStatic.prim.polyG4_tpage.x0y0 = leftEdge | y;
+        primBufStatic.prim.polyG4_tpage.x1y1 = x | y;
+        primBufStatic.prim.polyG4_tpage.x2y2 = leftEdge | (y + vs_getXY(0, 32));
+        primBufStatic.prim.polyG4_tpage.tpage =
             vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-        _primBuf.prim.polyG4_tpage.r1g1b1 = gradientColor2;
-        _primBuf.prim.polyG4_tpage.r2g2b2 = gradientColor1;
-        _primBuf.prim.polyG4_tpage.r3g3b3 = gradientColor2;
-        _primBuf.prim.polyG4_tpage.x3y3 = x | (y + vs_getXY(0, 32));
-        DrawPrim(&_primBuf);
+        primBufStatic.prim.polyG4_tpage.r1g1b1 = gradientColor2;
+        primBufStatic.prim.polyG4_tpage.r2g2b2 = gradientColor1;
+        primBufStatic.prim.polyG4_tpage.r3g3b3 = gradientColor2;
+        primBufStatic.prim.polyG4_tpage.x3y3 = x | (y + vs_getXY(0, 32));
+        DrawPrim(&primBufStatic);
         leftEdge = x;
         x += 16;
         gradientColor1 = gradientColor2;
@@ -1300,62 +1298,63 @@ static void _fileProcessingAnim(int x, int y)
 /**
  * Draws the completion flash for a file operation.
  */
-static void _fileProcessingCompleteAnim(int colour, int y)
+static void fileProcessingCompleteAnim(int colour, int y)
 {
     int yOfst;
     int colour0;
     u_int i;
     int colour1 = 0;
 
-    if (_isSaving != 0) {
+    if (isSaving != 0) {
         colour0 = colour + (colour << 15);
     } else {
         colour0 = (colour - (colour >> 3)) + (colour << 8);
     }
 
     DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-    _primBuf.prim.tile_tpage.tpage =
+    primBufStatic.tag = vs_getTag(primBufStatic.prim.tile_tpage, primAddrNull);
+    primBufStatic.prim.tile_tpage.tpage =
         vs_getTpage(0, 0, clut4Bit, semiTransparencyFull, ditheringOn);
-    _primBuf.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
-    _primBuf.prim.tile_tpage.x0y0 = y | 64;
-    _primBuf.prim.tile_tpage.wh = vs_getWH(256, 32);
-    DrawPrim(&_primBuf);
+    primBufStatic.prim.tile_tpage.r0g0b0code = vs_getRGB0Raw(primTileSemiTrans, colour0);
+    primBufStatic.prim.tile_tpage.x0y0 = y | 64;
+    primBufStatic.prim.tile_tpage.wh = vs_getWH(256, 32);
+    DrawPrim(&primBufStatic);
 
     for (i = 0; i < 2; ++i) {
         DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.polyG4, primAddrNull);
+        primBufStatic.tag = vs_getTag(primBufStatic.prim.polyG4, primAddrNull);
         yOfst = y + vs_getXY(0, -8);
-        _primBuf.prim.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4SemiTrans, colour1);
-        _primBuf.prim.polyG4.x0y0 = yOfst | 64;
-        _primBuf.prim.polyG4.r1g1b1 = colour1;
-        _primBuf.prim.polyG4.x1y1 = yOfst | 320;
-        _primBuf.prim.polyG4.r2g2b2 = colour0;
-        _primBuf.prim.polyG4.x2y2 = y | 64;
-        _primBuf.prim.polyG4.r3g3b3 = colour0;
-        _primBuf.prim.polyG4.x3y3 = y | 320;
-        DrawPrim(&_primBuf);
+        primBufStatic.prim.polyG4.r0g0b0code =
+            vs_getRGB0Raw(primPolyG4SemiTrans, colour1);
+        primBufStatic.prim.polyG4.x0y0 = yOfst | 64;
+        primBufStatic.prim.polyG4.r1g1b1 = colour1;
+        primBufStatic.prim.polyG4.x1y1 = yOfst | 320;
+        primBufStatic.prim.polyG4.r2g2b2 = colour0;
+        primBufStatic.prim.polyG4.x2y2 = y | 64;
+        primBufStatic.prim.polyG4.r3g3b3 = colour0;
+        primBufStatic.prim.polyG4.x3y3 = y | 320;
+        DrawPrim(&primBufStatic);
         y += vs_getXY(0, 40);
         colour1 = colour0;
         colour0 = 0;
     }
 }
 
-static u_char _selectCursorColor;
-static char _fileMenuScreenFade;
+static u_char selectCursorColor;
+static char fileMenuScreenFade;
 
 /**
  * Resets menu elements, progress, fade, cursor and message state.
  */
-static void _initFileMenu(void)
+static void initFileMenu(void)
 {
-    _memoryCardMessage = NULL;
-    _selectCursorColor = 0;
-    _selectCursorXy = 0;
-    _fileProgressCounter = 0;
-    _fileMenuScreenFade = 0;
-    _fileProgressTarget = 384;
-    memset(_fileMenuElements, 0, sizeof _fileMenuElements);
+    memoryCardMessage = NULL;
+    selectCursorColor = 0;
+    selectCursorXy = 0;
+    fileProgressCounter = 0;
+    fileMenuScreenFade = 0;
+    fileProgressTarget = 384;
+    memset(fileMenuElements, 0, sizeof fileMenuElements);
 }
 
 /**
@@ -1363,13 +1362,13 @@ static void _initFileMenu(void)
  *
  * @return The initialized element in the shared file-menu element array.
  */
-static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* text)
+static fileMenuElements_t* initFileMenuElement(int id, int xy, int wh, char* text)
 {
     fileMenuElements_t* element;
     int i;
     u_int c;
 
-    element = &_fileMenuElements[id];
+    element = &fileMenuElements[id];
     memset(element, 0, sizeof *element);
     element->state = 1;
     element->slotId = -1;
@@ -1404,19 +1403,19 @@ static fileMenuElements_t* _initFileMenuElement(int id, int xy, int wh, char* te
 /**
  * Clears one element in menu element array.
  */
-static void _clearFileMenuElement(int id)
+static void clearFileMenuElement(int id)
 {
-    memset(&_fileMenuElements[id], 0, sizeof _fileMenuElements[id]);
+    memset(&fileMenuElements[id], 0, sizeof fileMenuElements[id]);
 }
 
 /**
  * Reports whether all file-menu elements have finished their animations.
  */
-static int _fileMenuElementsActive(void)
+static int fileMenuElementsActive(void)
 {
     int i;
 
-    for (i = 0; i < 10 && _fileMenuElements[i].state < fileMenuElementStateAnimateX; ++i)
+    for (i = 0; i < 10 && fileMenuElements[i].state < fileMenuElementStateAnimateX; ++i)
         ;
     return i == 10;
 }
@@ -1424,7 +1423,7 @@ static int _fileMenuElementsActive(void)
 /**
  * Draws a glyph (or applies a spacing control) and returns the next x position.
  */
-static int _printCharacter(u_int c, int x, int y, int clut)
+static int printCharacter(u_int c, int x, int y, int clut)
 {
     static int glyphWidths[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
         6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -1448,20 +1447,20 @@ static int _printCharacter(u_int c, int x, int y, int clut)
     }
     if (c != vs_char_space) {
         DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.sprt, primAddrNull);
-        _primBuf.prim.sprt.tpage =
+        primBufStatic.tag = vs_getTag(primBufStatic.prim.sprt, primAddrNull);
+        primBufStatic.prim.sprt.tpage =
             vs_getTpage(832, 0, clut4Bit, semiTransparencyFull, ditheringOff);
-        _primBuf.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
-        _primBuf.prim.sprt.x0y0 = (u_short)x | y << 16;
-        _primBuf.prim.sprt.wh = vs_getWH(12, 12);
-        _primBuf.prim.sprt.u0v0clut =
+        primBufStatic.prim.sprt.r0g0b0code = vs_getRGB0(primSprtSemtTrans, 128, 128, 128);
+        primBufStatic.prim.sprt.x0y0 = (u_short)x | y << 16;
+        primBufStatic.prim.sprt.wh = vs_getWH(12, 12);
+        primBufStatic.prim.sprt.u0v0clut =
             vs_getUV0Clut((c % 21) * 12, (c / 21) * 12, clut * 16 + 896, 222);
-        DrawPrim(&_primBuf);
+        DrawPrim(&primBufStatic);
     }
     return x + glyphWidths[c];
 }
 
-enum _findCurrentSave_e {
+enum findCurrentSave_e {
     findSaveTimeout = -2,
     findSaveNotFound = -1,
     findSavePending = 0
@@ -1472,7 +1471,7 @@ enum _findCurrentSave_e {
  *
  * A nonzero init restarts the search; subsequent calls return the current state.
  */
-static int _findCurrentSave(int init)
+static int findCurrentSave(int init)
 {
     static char state;
     static char subState;
@@ -1493,18 +1492,18 @@ static int _findCurrentSave(int init)
 
     if ((state & 1) == 0) {
         FIND_SAVE_ACCESSING_HOOK(
-            (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]));
-        _memoryCardMessage =
-            (char*)(_textTable + _textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
-        _memcardEventHandler(realPort + 1);
+            (char*)(textTable + textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]));
+        memoryCardMessage =
+            (char*)(textTable + textTable[VS_MCMAN_BIN_INDEX_accessing0 - 1 + port]);
+        memcardEventHandler(realPort + 1);
         ++state;
     } else {
-        event = _memcardEventHandler(0) & 3;
+        event = memcardEventHandler(0) & 3;
 
         if (event != memcardEventPending) {
             if (event == memcardEventIoEnd) {
-                if (_initSaveFileInfo(realPort + 1) == 0) {
-                    currentSave = _findCurrentSaveOnActiveMemcard();
+                if (initSaveFileInfo(realPort + 1) == 0) {
+                    currentSave = findCurrentSaveOnActiveMemcard();
                     if (currentSave != 0) {
                         return currentSave + (realPort * 16);
                     }
@@ -1524,12 +1523,12 @@ static int _findCurrentSave(int init)
     return state != 4 ? findSavePending : findSaveNotFound;
 }
 
-enum _memcardEventMask_e {
+enum memcardEventMask_e {
     memcardEventMaskIgnoreNoEvent = 0x30,
     memcardEventMaskAll = 0x70
 };
 
-enum _memcardMaskedHandler_e {
+enum memcardMaskedHandler_e {
     memcardMaskedHandlerError = -1,
     memcardMaskedHandlerPending = 0,
     memcardMaskedHandlerComplete = 1
@@ -1540,7 +1539,7 @@ enum _memcardMaskedHandler_e {
  *
  * A nonzero portMask starts polling; zero advances the operation.
  */
-static enum _memcardMaskedHandler_e _memcardMaskedHandler(int portMask)
+static enum memcardMaskedHandler_e memcardMaskedHandler(int portMask)
 {
     static char mask;
     static UNUSED char _[MEMCARD_MASKED_HANDLER_PAD];
@@ -1548,23 +1547,23 @@ static enum _memcardMaskedHandler_e _memcardMaskedHandler(int portMask)
     int event;
 
     if (portMask != 0) {
-        _memcardEventHandler(portMask & 3);
+        memcardEventHandler(portMask & 3);
         mask = (portMask >> 4);
         return memcardMaskedHandlerPending;
     }
-    event = _memcardEventHandler(0);
+    event = memcardEventHandler(0);
     if (event != memcardEventPending) {
         switch (event & mask) {
         case memcardEventIoEnd:
             return memcardMaskedHandlerComplete;
         case memcardEventTimeout:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_insertError);
+            memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_insertError);
             break;
         case memcardEventUnformatted:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_noData);
+            memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_noData);
             break;
         default:
-            _memoryCardMessage = (char*)(_textTable + VS_MCMAN_BIN_OFFSET_removed);
+            memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_removed);
             break;
         }
         return memcardMaskedHandlerError;
@@ -1575,7 +1574,7 @@ static enum _memcardMaskedHandler_e _memcardMaskedHandler(int portMask)
 /**
  * Prints a vs-encoded string.
  */
-static void _printString(char* text, int x, int y, int clut)
+static void printString(char* text, int x, int y, int clut)
 {
     static char arrowState = 0;
 
@@ -1588,12 +1587,12 @@ static void _printString(char* text, int x, int y, int clut)
         c = *text++;
         if (c < vs_char_control) {
             if (c < vs_char_nonPrinting) {
-                nextX = _printCharacter(c, nextX, y, clut);
+                nextX = printCharacter(c, nextX, y, clut);
             } else if (c == vs_char_confirm) {
                 tempArrowState = (arrowState + 1) % 12;
                 c = vs_char_arrow - (tempArrowState >> 2);
                 arrowState = tempArrowState;
-                nextX = _printCharacter(c, nextX, y, clut);
+                nextX = printCharacter(c, nextX, y, clut);
             } else if (c != vs_char_terminator) {
                 if (c == vs_char_newline) {
                     y += 13;
@@ -1618,7 +1617,7 @@ static void _printString(char* text, int x, int y, int clut)
 /**
  * Linearly blends RGB channels; factor ranges from zero to eight.
  */
-static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
+static u_int interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 {
     int component;
     u_int i;
@@ -1638,7 +1637,7 @@ static u_int _interpolateRGB(u_int colour1, u_int colour2, u_int factor)
 /**
  * Selects and blends the background colours for the two animation factors.
  */
-static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
+static u_int intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 {
     static int colors1[] = { vs_getRGB888(0x40, 0x30, 0x66),
         vs_getRGB888(0x40, 0x38, 0x20) };
@@ -1651,21 +1650,21 @@ static u_int _intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
     u_int color2;
 
     if (innerFactor < 9) {
-        color1 = _interpolateRGB(
+        color1 = interpolateRGB(
             vs_getRGB888(0, 65, 107), vs_getRGB888(25, 130, 108), innerFactor);
         color2 =
-            _interpolateRGB(vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
+            interpolateRGB(vs_getRGB888(0, 5, 51), vs_getRGB888(1, 40, 38), innerFactor);
     } else {
         color1 = colors1[((innerFactor >> 3) - 2)];
         color2 = colors2[((innerFactor >> 3) - 2)];
     }
-    return _interpolateRGB(color1, color2, outerFactor);
+    return interpolateRGB(color1, color2, outerFactor);
 }
 
 /**
  * Draws a menu element and updates its animation state.
  */
-static void _drawFileMenuElement(fileMenuElements_t* element)
+static void drawFileMenuElement(fileMenuElements_t* element)
 {
     u_long clut[130];
     saveInfoFrame_t* saveInfo;
@@ -1691,32 +1690,33 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
     }
     if ((element->slotId >= 5) || ((element->y - 72) < 0x51U)) {
         y = element->innertextBlendFactor;
-        var1 = _intepolateMenuItemBgColour(8 - element->outertextBlendFactor, y);
-        var2 = _intepolateMenuItemBgColour(element->outertextBlendFactor, y);
+        var1 = intepolateMenuItemBgColour(8 - element->outertextBlendFactor, y);
+        var2 = intepolateMenuItemBgColour(element->outertextBlendFactor, y);
         if (y & 7) {
             element->innertextBlendFactor = y + 1;
         }
         y = element->y << 16;
 
         DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.tilePoly, primAddrNull);
-        _primBuf.prim.tilePoly.tile.tpage =
+        primBufStatic.tag = vs_getTag(primBufStatic.prim.tilePoly, primAddrNull);
+        primBufStatic.prim.tilePoly.tile.tpage =
             vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
-        _primBuf.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-        _primBuf.prim.tilePoly.tile.x0y0 =
+        primBufStatic.prim.tilePoly.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+        primBufStatic.prim.tilePoly.tile.x0y0 =
             ((element->x + 2) & 0xFFFF) | (element->y + 2) << 16;
-        _primBuf.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
-        _primBuf.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
-        _primBuf.prim.tilePoly.polyG4.r1g1b1 = var2;
-        _primBuf.prim.tilePoly.polyG4.x1y1 = ((element->x + element->w) & 0xFFFF) | y;
-        _primBuf.prim.tilePoly.polyG4.r2g2b2 = var1;
-        _primBuf.prim.tilePoly.polyG4.x2y2 =
+        primBufStatic.prim.tilePoly.tile.wh = element->w | (element->h << 0x10);
+        primBufStatic.prim.tilePoly.polyG4.r0g0b0code = vs_getRGB0Raw(primPolyG4, var1);
+        primBufStatic.prim.tilePoly.polyG4.x0y0 = (u_short)element->x | y;
+        primBufStatic.prim.tilePoly.polyG4.r1g1b1 = var2;
+        primBufStatic.prim.tilePoly.polyG4.x1y1 =
+            ((element->x + element->w) & 0xFFFF) | y;
+        primBufStatic.prim.tilePoly.polyG4.r2g2b2 = var1;
+        primBufStatic.prim.tilePoly.polyG4.x2y2 =
             (u_short)element->x | ((element->y + element->h) << 0x10);
-        _primBuf.prim.tilePoly.polyG4.r3g3b3 = var2;
-        _primBuf.prim.tilePoly.polyG4.x3y3 =
+        primBufStatic.prim.tilePoly.polyG4.r3g3b3 = var2;
+        primBufStatic.prim.tilePoly.polyG4.x3y3 =
             ((element->x + element->w) & 0xFFFF) | ((element->y + element->h) << 0x10);
-        DrawPrim(&_primBuf);
+        DrawPrim(&primBufStatic);
 
         x = element->x + 6;
         for (var1 = 0; var1 < 32; ++var1) {
@@ -1724,15 +1724,15 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
             if (var2 == vs_char_spacing) {
                 x += element->text[++var1];
             } else if (var2 != 0xFF) {
-                x = _printCharacter(var2, x, element->y, 0);
+                x = printCharacter(var2, x, element->y, 0);
             } else {
                 break;
             }
         }
         var2 = element->slotId;
         if (var2 < 5) {
-            _readImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
-            saveInfo = &_saveSlotInfo[var2];
+            readImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
+            saveInfo = &saveSlotInfo[var2];
             location = element->saveLocation - 1;
             var1 = saveInfo->identity.base.slotState;
             if (saveInfo->identity.base.slotState < 3) {
@@ -1740,7 +1740,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                     location = -2;
                 } else if (saveInfo->identity.base.slotState == 2) {
                     location = -4;
-                } else if (_isSaving != 0) {
+                } else if (isSaving != 0) {
                     location = -1;
                 } else {
                     location = -5;
@@ -1749,15 +1749,15 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 location = -3;
             }
             if (location >= 32u) {
-                locationClut = _mcData->locationCluts[1];
+                locationClut = mcData->locationCluts[1];
             } else {
-                locationClut = _mcData->locationCluts[0];
+                locationClut = mcData->locationCluts[0];
             }
-            _drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
+            drawImage(vs_getXY(768, 227), locationClut, vs_getWH(256, 1));
             if (location < 0) {
                 uvClut = (~location << 13) | vs_getUV0Clut(64, 0, 768, 227);
                 xy = (element->x - 64) | y;
-                _drawSprt(xy, uvClut, vs_getWH(64, 32),
+                drawSprt(xy, uvClut, vs_getWH(64, 32),
                     ((8 - element->outertextBlendFactor) << 19) | 0x9C);
             } else {
                 int v0;
@@ -1767,80 +1767,80 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
                 new_var = (((location & 0x30) * 4) + 832) & 0x3FF;
                 v0 = new_var >> 6;
                 var_a3 = (((8 - element->outertextBlendFactor) << 19) | 0x90);
-                _drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
+                drawSprt(xy, uvClut, vs_getWH(64, 32), v0 | var_a3);
             }
-            _drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
-            _drawSaveInfoUI((element->x - 22) | y, vs_uiids_number);
-            _drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
+            drawImage(vs_getXY(768, 227), clut, vs_getWH(256, 1));
+            drawSaveInfoUI((element->x - 22) | y, vs_uiids_number);
+            drawInteger((element->x - 9) | y, var2 + 1, 0xAU);
             slotState = saveInfo->identity.base.slotState;
             if (slotState == slotStateUnavailable) {
-                _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_inUse),
+                printString((char*)(textTable + VS_MCMAN_BIN_OFFSET_inUse),
                     element->x + 6, element->y + 10, 3);
             } else if (slotState == slotStateAvailable) {
-                if (_isSaving == 0) {
-                    _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_empty),
+                if (isSaving == 0) {
+                    printString((char*)(textTable + VS_MCMAN_BIN_OFFSET_empty),
                         element->x + 6, element->y + 10, 3);
                 } else {
-                    _printString((char*)(_textTable + VS_MCMAN_BIN_OFFSET_new),
+                    printString((char*)(textTable + VS_MCMAN_BIN_OFFSET_new),
                         element->x + 6, element->y + 10, 0);
                 }
             } else {
                 y += 4 << 16;
-                _printString(
-                    (char*)&_textTable[_textTable[element->saveLocation
-                                                  + VS_MCMAN_BIN_INDEX_saveLocations]],
+                printString(
+                    (char*)&textTable[textTable[element->saveLocation
+                                                + VS_MCMAN_BIN_INDEX_saveLocations]],
                     element->x + 6, element->y + 4, 0);
-                _drawSaveInfoUI(y | 172, vs_uiids_map);
-                _drawSaveInfoUI(y | 189, vs_uiids_colon);
+                drawSaveInfoUI(y | 172, vs_uiids_map);
+                drawSaveInfoUI(y | 189, vs_uiids_colon);
                 var1 = saveInfo->stats.mapCompletion;
 
                 if (var1 == 100) {
-                    _drawInteger(y | 192, 100, 100);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 207, vs_uiids_percent);
+                    drawInteger(y | 192, 100, 100);
+                    drawSaveInfoUI((y + 0xFFFF0000) | 207, vs_uiids_percent);
                 } else {
-                    _drawInteger(y | 192, var1, 10);
-                    _drawSaveInfoUI((y + 0xFFFF0000) | 202, vs_uiids_percent);
+                    drawInteger(y | 192, var1, 10);
+                    drawSaveInfoUI((y + 0xFFFF0000) | 202, vs_uiids_percent);
                 }
-                _drawSaveInfoUI(y | 217, vs_uiids_save);
-                _drawSaveInfoUI(y | 239, vs_uiids_colon);
-                _drawInteger(y | 242, saveInfo->stats.cumulativeSaveCount, 1000);
-                _drawSaveInfoUI(y | 267, vs_uiids_clear);
-                _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->stats.clearCount, 10);
+                drawSaveInfoUI(y | 217, vs_uiids_save);
+                drawSaveInfoUI(y | 239, vs_uiids_colon);
+                drawInteger(y | 242, saveInfo->stats.cumulativeSaveCount, 1000);
+                drawSaveInfoUI(y | 267, vs_uiids_clear);
+                drawSaveInfoUI(y | 293, vs_uiids_colon);
+                drawInteger(y | 296, saveInfo->stats.clearCount, 10);
                 y += 13 << 16;
                 if (saveInfo->stats.clearCount != 0) {
-                    _drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), vs_getWH(16, 16),
+                    drawSprt(y | 69, vs_getUV0Clut(240, 16, 912, 223), vs_getWH(16, 16),
                         getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
                 }
-                _drawSaveInfoUI(y | 240, vs_uiids_time);
+                drawSaveInfoUI(y | 240, vs_uiids_time);
                 var1 = saveInfo->stats.gameTime.t.h;
                 if (var1 == 100) {
-                    _drawInteger(y | 263, var1, 100);
+                    drawInteger(y | 263, var1, 100);
                 } else {
-                    _drawInteger(y | 268, var1, 10);
+                    drawInteger(y | 268, var1, 10);
                 }
-                _drawSaveInfoUI(y | 279, vs_uiids_colon);
-                _drawInteger(y | 282, saveInfo->stats.gameTime.t.m, 10);
-                _drawSaveInfoUI(y | 293, vs_uiids_colon);
-                _drawInteger(y | 296, saveInfo->stats.gameTime.t.s, 10);
-                _drawHPMP(
+                drawSaveInfoUI(y | 279, vs_uiids_colon);
+                drawInteger(y | 282, saveInfo->stats.gameTime.t.m, 10);
+                drawSaveInfoUI(y | 293, vs_uiids_colon);
+                drawInteger(y | 296, saveInfo->stats.gameTime.t.s, 10);
+                drawHPMP(
                     y | 88, statTypeHP, saveInfo->stats.currentHP, saveInfo->stats.maxHP);
-                _drawHPMP(y | 158, statTypeMP, saveInfo->stats.currentMP,
+                drawHPMP(y | 158, statTypeMP, saveInfo->stats.currentMP,
                     saveInfo->stats.maxMP);
                 y -= 17 << 16;
             }
-            if ((element->selected != 0) && (_fileProgressCounter != 0)) {
-                if (_fileProgressCounter < 0) {
-                    signed char* p = (_cursorFileOpSaturation + _fileProgressCounter++);
-                    _fileProcessingCompleteAnim(-p[17], y);
+            if ((element->selected != 0) && (fileProgressCounter != 0)) {
+                if (fileProgressCounter < 0) {
+                    signed char* p = (cursorFileOpSaturation + fileProgressCounter++);
+                    fileProcessingCompleteAnim(-p[17], y);
                 } else {
                     int new_var3 = 0x140;
-                    _fileProcessingAnim(
-                        _fileProgressPosition
-                            + (((_fileProgressCounter - _filePreviousProgressCounter)
-                                   * ((_loadSaveDataErrorOffset * 0x14)
-                                       - (_fileProgressPosition - new_var3)))
-                                / _fileProgressTarget),
+                    fileProcessingAnim(
+                        fileProgressPosition
+                            + (((fileProgressCounter - filePreviousProgressCounter)
+                                   * ((loadSaveDataErrorOffset * 0x14)
+                                       - (fileProgressPosition - new_var3)))
+                                / fileProgressTarget),
                         y);
                 }
             }
@@ -1851,7 +1851,7 @@ static void _drawFileMenuElement(fileMenuElements_t* element)
 /**
  * Draws the menu elements, message area, cursor and fade.
  */
-static void _drawFileMenu(int framebuf)
+static void drawFileMenu(int framebuf)
 {
     int _[2];
     fileMenuElements_t* element;
@@ -1861,14 +1861,14 @@ static void _drawFileMenu(int framebuf)
     int state;
     int new_var;
 
-    element = _fileMenuElements;
+    element = fileMenuElements;
     x = 0;
     if (framebuf != 0) {
         x = 320;
     }
-    _drawSprt(vs_getXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(64, 64),
+    drawSprt(vs_getXY(256, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(64, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
-    _drawSprt(vs_getXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(256, 64),
+    drawSprt(vs_getXY(0, 176), vs_getUV0Clut(0, 176, 768, 227), vs_getWH(256, 64),
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 
     for (i = 0; i < 10; ++i, ++element) {
@@ -1883,11 +1883,11 @@ static void _drawFileMenu(int framebuf)
             } else {
 
                 for (j = 1; j < 16; ++j) {
-                    if ((element->targetPosition + _menuElementStops[j]) >= element->x) {
+                    if ((element->targetPosition + menuElementStops[j]) >= element->x) {
                         break;
                     }
                 }
-                element->x = element->targetPosition + _menuElementStops[j - 1];
+                element->x = element->targetPosition + menuElementStops[j - 1];
                 if (element->w < (320 - element->x)) {
                     element->w = 320 - element->x;
                 }
@@ -1899,11 +1899,11 @@ static void _drawFileMenu(int framebuf)
         if (state == fileMenuElementStateAnimateY) {
             if (element->y > element->targetPosition) {
                 for (j = 1; j < 16; ++j) {
-                    if ((element->targetPosition + _menuElementStops[j]) >= element->y) {
+                    if ((element->targetPosition + menuElementStops[j]) >= element->y) {
                         break;
                     }
                 }
-                element->y = (element->targetPosition + _menuElementStops[j - 1]);
+                element->y = (element->targetPosition + menuElementStops[j - 1]);
             }
             if (element->y == element->targetPosition) {
                 element->state = fileMenuElementStateStatic;
@@ -1912,11 +1912,11 @@ static void _drawFileMenu(int framebuf)
         if (state == fileMenuElementStateAnimateNegX) {
             if (element->x < element->targetPosition) {
                 for (j = 1; j < 16; ++j) {
-                    if (element->x >= -_menuElementStops[j]) {
+                    if (element->x >= -menuElementStops[j]) {
                         break;
                     }
                 }
-                element->x = -_menuElementStops[j - 1];
+                element->x = -menuElementStops[j - 1];
                 if (element->x == 0) {
                     element->state = fileMenuElementStateStatic;
                 }
@@ -1929,59 +1929,59 @@ static void _drawFileMenu(int framebuf)
             }
         }
         if (state != fileMenuElementStateInactive) {
-            _drawFileMenuElement(element);
+            drawFileMenuElement(element);
         }
     }
 
     for (i = 1; i < 4; ++i) {
         new_var = 256;
-        _drawSprt(vs_getXY(0, 187 - i), (187 - i) << 8, vs_getWH(256, 1),
+        drawSprt(vs_getXY(0, 187 - i), (187 - i) << 8, vs_getWH(256, 1),
             (x >> 6) | (((4 - i) << 21) | new_var));
-        _drawSprt(vs_getXY(256, 187 - i), (187 - i) << 8, vs_getWH(64, 1),
+        drawSprt(vs_getXY(256, 187 - i), (187 - i) << 8, vs_getWH(64, 1),
             (((int)(x + new_var)) >> 6) | (((4 - i) << 21) | new_var));
     }
-    _drawSprt(vs_getXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), vs_getWH(33, 7),
+    drawSprt(vs_getXY(10, 181), vs_getUV0Clut(64, 145, 848, 223), vs_getWH(33, 7),
         getTPage(clut4Bit, semiTransparencyHalf, 768, 0)); // "Caution"
     DrawSync(0);
-    _primBuf.tag = vs_getTag(_primBuf.prim.tile, primAddrNull);
-    _primBuf.prim.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
-    _primBuf.prim.tile.x0y0 = vs_getXY(0, 187);
-    _primBuf.prim.tile.wh = vs_getWH(320, 52);
-    DrawPrim(&_primBuf); // Message dialog background
-    if (_selectCursorXy != 0) {
-        _drawSprt(_selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), vs_getWH(16, 16),
-            (_cursorFileOpSaturation[_selectCursorColor] << 16)
+    primBufStatic.tag = vs_getTag(primBufStatic.prim.tile, primAddrNull);
+    primBufStatic.prim.tile.r0g0b0code = vs_getRGB0(primTile, 0, 0, 0);
+    primBufStatic.prim.tile.x0y0 = vs_getXY(0, 187);
+    primBufStatic.prim.tile.wh = vs_getWH(320, 52);
+    DrawPrim(&primBufStatic); // Message dialog background
+    if (selectCursorXy != 0) {
+        drawSprt(selectCursorXy, vs_getUV0Clut(32, 48, 896, 223), vs_getWH(16, 16),
+            (cursorFileOpSaturation[selectCursorColor] << 16)
                 | getTPage(clut4Bit, semiTransparencyHalf, 768, 0));
-        _selectCursorColor = (_selectCursorColor + 1) & 0xF;
+        selectCursorColor = (selectCursorColor + 1) & 0xF;
         if (vs_main_buttonsPressed.all & PADRup) {
             vs_main_playSfxDefault(0x7E, VS_SFX_INVALID);
         }
     } else {
-        _selectCursorColor = 0;
+        selectCursorColor = 0;
     }
-    if (_memoryCardMessage != NULL) {
-        _printString(_memoryCardMessage, 16, 192, 0);
+    if (memoryCardMessage != NULL) {
+        printString(memoryCardMessage, 16, 192, 0);
     }
-    if (_fileMenuScreenFade != 0) {
+    if (fileMenuScreenFade != 0) {
         DrawSync(0);
-        _primBuf.tag = vs_getTag(_primBuf.prim.tile_tpage, primAddrNull);
-        _primBuf.prim.tile_tpage.tpage =
+        primBufStatic.tag = vs_getTag(primBufStatic.prim.tile_tpage, primAddrNull);
+        primBufStatic.prim.tile_tpage.tpage =
             vs_getTpage(0, 0, direct16Bit, semiTransparencySubtract, ditheringOff);
-        _primBuf.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
-        _primBuf.prim.tile_tpage.wh = vs_getWH(320, 224);
-        _primBuf.prim.tile_tpage.r0g0b0code =
-            vs_getRGB0Raw(primTileSemiTrans, _fileMenuScreenFade * vs_getRGB888(8, 8, 8));
-        DrawPrim(&_primBuf);
+        primBufStatic.prim.tile_tpage.x0y0 = vs_getXY(0, 0);
+        primBufStatic.prim.tile_tpage.wh = vs_getWH(320, 224);
+        primBufStatic.prim.tile_tpage.r0g0b0code =
+            vs_getRGB0Raw(primTileSemiTrans, fileMenuScreenFade * vs_getRGB888(8, 8, 8));
+        DrawPrim(&primBufStatic);
     }
 }
 
 /**
  * Draws the static background texture for the file menu.
  */
-static void _drawFileMenuBg(void)
+static void drawFileMenuBg(void)
 {
-    _drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
+    drawSprt(vs_getXY(256, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(64, 176),
         getTPage(clut8Bit, semiTransparencyHalf, 768, 256));
-    _drawSprt(vs_getXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(256, 176),
+    drawSprt(vs_getXY(0, 0), vs_getUV0Clut(0, 0, 768, 227), vs_getWH(256, 176),
         getTPage(clut8Bit, semiTransparencyHalf, 640, 256));
 }

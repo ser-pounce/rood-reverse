@@ -1,9 +1,9 @@
 #include "gpu.h"
 
-int _movieWidth = 0;
-int _movieHeight = 0;
+int movieWidth = 0;
+int movieHeight = 0;
 
-u_short _menuItemTextClut[][16] = {
+u_short menuItemTextClut[][16] = {
     { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 2, 1), vs_getRGB5551(2, 0, 3, 1),
         vs_getRGB5551(3, 0, 4, 1), vs_getRGB5551(6, 0, 0, 1), vs_getRGB5551(9, 1, 0, 1),
         vs_getRGB5551(11, 2, 0, 1), vs_getRGB5551(13, 3, 0, 1),
@@ -21,7 +21,7 @@ u_short _menuItemTextClut[][16] = {
         vs_getRGB5551(31, 28, 19, 1) }
 };
 
-u_short _menuItemOutlineClut[][16] = {
+u_short menuItemOutlineClut[][16] = {
     { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 1, 1), vs_getRGB5551(0, 0, 4, 1),
         vs_getRGB5551(0, 0, 5, 1), vs_getRGB5551(0, 0, 8, 1), vs_getRGB5551(0, 0, 10, 1),
         vs_getRGB5551(0, 0, 12, 1), vs_getRGB5551(0, 0, 14, 1),

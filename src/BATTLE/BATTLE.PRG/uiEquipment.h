@@ -180,7 +180,7 @@ typedef struct {
     char dropRate;
     char unk32;
     char index;
-} _armorIntermediate;
+} armorIntermediate_t;
 
 typedef struct {
     vs_battle_uiEquipment equip;
@@ -188,7 +188,7 @@ typedef struct {
     char index;
     char unk32;
     char unk33;
-} _accessoryIntermediate;
+} accessoryIntermediate_t;
 
 void vs_battle_copyInventoryBladeStats(vs_battle_uiEquipment*, vs_main_inventoryBlade*);
 void vs_battle_copyInventoryGripStats(vs_battle_uiEquipment*, vs_main_inventoryGrip*);

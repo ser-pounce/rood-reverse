@@ -19,7 +19,7 @@
 /**
  * Prints the HP cost of an Ability using action data.
  */
-static void _setRiskCost(int id)
+static void setRiskCost(int id)
 {
     static char stringBuffer[16];
 
@@ -46,40 +46,40 @@ static void _setRiskCost(int id)
     vs_mainmenu_setActionCost(0, &stringBuffer[i], 72, 0);
 }
 
-u_short _battleAbilityStrings[] = {
+u_short battleAbilityStrings[] = {
 #include "build/assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
-static u_short* _abilityText = NULL;
-static int _highlightedAbility = 0;
-static u_int _abilityMenuState = 0;
-static char _selectedAbilityType = 0;
-static char _abilityCount = 0;
-static char _firstAbility = 0;
+static u_short* abilityText = NULL;
+static int highlightedAbility = 0;
+static u_int abilityMenuState = 0;
+static char selectedAbilityType = 0;
+static char abilityCountStatic = 0;
+static char firstAbility = 0;
 
-static char _unlockedChainAbilities[16];
-static char _unlockedDefenseAbilities[16];
+static char unlockedChainAbilities[16];
+static char unlockedDefenseAbilities[16];
 
 enum abilityType { abilityTypeChain = 24, abilityTypeDefense };
 
 /**
  * Initializes pagination, costs, and menu strings.
- * Peforms nothing if _abilityText has already been initialized.
+ * Peforms nothing if abilityText has already been initialized.
  *
  * @param menuText Pairs of string pointers for ability names and descriptions
  * @return 0 if nothing to perfom, 1 otherwise.
  */
-static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuText)
+static int initAbilityMenu(int abilityCount, int abilityType, u_short** menuText)
 {
     int abilitiesOverflowCount;
     u_short* text;
     int i = 0;
     int j = 0;
 
-    if (_abilityText != NULL) {
+    if (abilityText != NULL) {
         return 0;
     }
 
-    _selectedAbilityType = abilityType;
+    selectedAbilityType = abilityType;
 
     if (vs_main_settings.cursorMemory != 0) {
         i = D_800F4EE8.cursorMemories[abilityType * 2];
@@ -120,19 +120,19 @@ static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuTex
         }
     }
 
-    _highlightedAbility = i;
-    _firstAbility = j;
+    highlightedAbility = i;
+    firstAbility = j;
 
     if (abilityType == abilityTypeChain) {
-        _setRiskCost(_unlockedChainAbilities[i + j]);
+        setRiskCost(unlockedChainAbilities[i + j]);
     } else {
-        _setRiskCost(_unlockedDefenseAbilities[i + j]);
+        setRiskCost(unlockedDefenseAbilities[i + j]);
     }
 
-    _abilityCount = abilityCount;
-    _abilityMenuState = 0;
+    abilityCountStatic = abilityCount;
+    abilityMenuState = 0;
 
-    _abilityText = vs_main_allocHeapR(abilityCount * 128);
+    abilityText = vs_main_allocHeapR(abilityCount * 128);
 
     for (i = 0; i < abilityCount; ++i) {
 
@@ -140,27 +140,27 @@ static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuTex
 
         if (text != NULL) {
 
-            _abilityText[i * 64] = vs_char_spacing | 16 << 8;
+            abilityText[i * 64] = vs_char_spacing | 16 << 8;
 
             for (j = 0; j < 14; ++j) {
-                (i * 64 + j + _abilityText)[1] = text[j];
+                (i * 64 + j + abilityText)[1] = text[j];
             }
 
-            _abilityText[i * 64 + 15] = vs_char_terminator << 8 | vs_char_terminator;
+            abilityText[i * 64 + 15] = vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            _abilityText[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
+            abilityText[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
         }
 
         text = menuText[i * 2 + 1];
 
         if (text != NULL) {
-            _abilityText[i * 64 + 16] = vs_char_chunkSize;
+            abilityText[i * 64 + 16] = vs_char_chunkSize;
             for (j = 0; j < 46; ++j) {
-                _abilityText[i * 64 + j + 17] = text[j];
+                abilityText[i * 64 + j + 17] = text[j];
             }
-            _abilityText[i * 64 + 63] = vs_char_terminator << 8 | vs_char_terminator;
+            abilityText[i * 64 + 63] = vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            _abilityText[i * 64 + 16] = vs_char_terminator << 8 | vs_char_terminator;
+            abilityText[i * 64 + 16] = vs_char_terminator << 8 | vs_char_terminator;
         }
     }
 
@@ -170,13 +170,13 @@ static int _initAbilityMenu(int abilityCount, int abilityType, u_short** menuTex
 /**
  * Maps the selected ability to the desired joypad button
  */
-static void _mapAbility(int abilityType, int button, int abilityId)
+static void mapAbility(int abilityType, int button, int abilityId)
 {
     int i;
 
     if (abilityType == abilityTypeChain) {
 
-        abilityId = _unlockedChainAbilities[abilityId];
+        abilityId = unlockedChainAbilities[abilityId];
 
         if (vs_main_settings.mappedChainAbilities[button] == abilityId) {
             vs_battle_playMenuLeaveSfx();
@@ -196,7 +196,7 @@ static void _mapAbility(int abilityType, int button, int abilityId)
 
     } else {
 
-        abilityId = _unlockedDefenseAbilities[abilityId];
+        abilityId = unlockedDefenseAbilities[abilityId];
 
         if (vs_main_settings.mappedDefenseAbilities[button] == abilityId) {
             vs_battle_playMenuLeaveSfx();
@@ -221,9 +221,9 @@ static void _mapAbility(int abilityType, int button, int abilityId)
  *
  * @return 1 if the user backed out, 0 otherwise
  */
-static int _abilityMenu(void)
+static int abilityMenu(void)
 {
-    enum state { init, waitReady = 16, abilityMenu };
+    enum state { init, waitReady = 16, abilityMenuCase };
 
     static int cursorAnimStep = 0;
 
@@ -234,54 +234,54 @@ static int _abilityMenu(void)
     vs_battle_menuItem_t* menuItem;
     u_long* scratch = vs_scratch.unk8 + 8;
 
-    if (_abilityMenuState < 10) {
+    if (abilityMenuState < 10) {
 
-        menuItem = vs_battle_setMenuItem(_abilityMenuState + 20, 320,
-            (_abilityMenuState * 16) + 50, 0x7E, 0,
-            (char*)&_abilityText[(_firstAbility + _abilityMenuState) * 64]);
+        menuItem = vs_battle_setMenuItem(abilityMenuState + 20, 320,
+            (abilityMenuState * 16) + 50, 0x7E, 0,
+            (char*)&abilityText[(firstAbility + abilityMenuState) * 64]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
 
-        if ((_abilityMenuState == init) && (_firstAbility != 0)) {
+        if ((abilityMenuState == init) && (firstAbility != 0)) {
             menuItem->isScrollable = 1;
         }
 
-        if (++_abilityMenuState == _abilityCount) {
-            _abilityMenuState = waitReady;
+        if (++abilityMenuState == abilityCountStatic) {
+            abilityMenuState = waitReady;
         }
 
-        if (_abilityMenuState == 8) {
-            if ((_firstAbility + 8u) < _abilityCount) {
+        if (abilityMenuState == 8) {
+            if ((firstAbility + 8u) < abilityCountStatic) {
                 menuItem->isScrollable = 2;
             }
 
-            _abilityMenuState = waitReady;
+            abilityMenuState = waitReady;
         }
 
         return 0;
     }
 
-    vs_battle_getMenuItem(_highlightedAbility + 20);
+    vs_battle_getMenuItem(highlightedAbility + 20);
     vs_mainmenu_setInformationMessage(
-        (char*)(_abilityText + (((_highlightedAbility + _firstAbility) << 6) + 16)));
+        (char*)(abilityText + (((highlightedAbility + firstAbility) << 6) + 16)));
 
-    switch (_abilityMenuState) {
+    switch (abilityMenuState) {
     case waitReady:
         if (vs_mainmenu_ready() != 0) {
-            _abilityMenuState = abilityMenu;
+            abilityMenuState = abilityMenuCase;
         }
         break;
 
-    case abilityMenu:
+    case abilityMenuCase:
         vs_mainMenu_displayActionCost = 0;
-        selectedAbility = _highlightedAbility + _firstAbility;
-        previousFirstAbility = _firstAbility;
+        selectedAbility = highlightedAbility + firstAbility;
+        previousFirstAbility = firstAbility;
 
-        if (_abilityCount < 9) {
-            for (i = 0; i < _abilityCount; ++i) {
-                if (_selectedAbilityType == abilityTypeChain) {
+        if (abilityCountStatic < 9) {
+            for (i = 0; i < abilityCountStatic; ++i) {
+                if (selectedAbilityType == abilityTypeChain) {
 
-                    ability = _unlockedChainAbilities[i];
+                    ability = unlockedChainAbilities[i];
 
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
                         vs_mainmenu_renderButton(
@@ -299,7 +299,7 @@ static int _abilityMenu(void)
                     }
                 } else {
 
-                    ability = _unlockedDefenseAbilities[i];
+                    ability = unlockedDefenseAbilities[i];
 
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
                         vs_mainmenu_renderButton(
@@ -319,9 +319,9 @@ static int _abilityMenu(void)
             }
         } else {
             for (i = 0; i < 8; ++i) {
-                if (_selectedAbilityType == abilityTypeChain) {
+                if (selectedAbilityType == abilityTypeChain) {
 
-                    ability = _unlockedChainAbilities[i + _firstAbility];
+                    ability = unlockedChainAbilities[i + firstAbility];
 
                     if (vs_main_settings.mappedChainAbilities[0] == ability) {
                         vs_mainmenu_renderButton(
@@ -339,7 +339,7 @@ static int _abilityMenu(void)
                     }
                 } else {
 
-                    ability = _unlockedDefenseAbilities[i + _firstAbility];
+                    ability = unlockedDefenseAbilities[i + firstAbility];
 
                     if (vs_main_settings.mappedDefenseAbilities[0] == ability) {
                         vs_mainmenu_renderButton(
@@ -360,90 +360,90 @@ static int _abilityMenu(void)
         }
 
         if (vs_main_buttonsPressed.all & PADRright) {
-            _mapAbility(_selectedAbilityType, 0, selectedAbility);
+            mapAbility(selectedAbilityType, 0, selectedAbility);
         } else if (vs_main_buttonsPressed.all & PADRup) {
-            _mapAbility(_selectedAbilityType, 1, selectedAbility);
+            mapAbility(selectedAbilityType, 1, selectedAbility);
         } else if (vs_main_buttonsPressed.all & PADRleft) {
-            _mapAbility(_selectedAbilityType, 2, selectedAbility);
+            mapAbility(selectedAbilityType, 2, selectedAbility);
         }
 
-        vs_battle_getMenuItem(_highlightedAbility + 20)->selected = 0;
+        vs_battle_getMenuItem(highlightedAbility + 20)->selected = 0;
 
         if (vs_main_buttonsPressed.all & PADRdown) {
 
             vs_battle_playMenuLeaveSfx();
-            vs_main_freeHeapR(_abilityText);
+            vs_main_freeHeapR(abilityText);
 
-            _abilityText = NULL;
-            D_800F4EE8.cursorMemories[_selectedAbilityType * 2] = _highlightedAbility;
-            D_800F4EE8.cursorMemories[_selectedAbilityType * 2 + 1] = _firstAbility;
+            abilityText = NULL;
+            D_800F4EE8.cursorMemories[selectedAbilityType * 2] = highlightedAbility;
+            D_800F4EE8.cursorMemories[selectedAbilityType * 2 + 1] = firstAbility;
 
             return 1;
         }
 
         if (vs_main_buttonRepeat & PADLup) {
-            if (_abilityCount < 9) {
-                if (_highlightedAbility == 0) {
-                    _highlightedAbility = _abilityCount - 1;
+            if (abilityCountStatic < 9) {
+                if (highlightedAbility == 0) {
+                    highlightedAbility = abilityCountStatic - 1;
                 } else {
-                    --_highlightedAbility;
+                    --highlightedAbility;
                 }
             } else {
-                if (_firstAbility == 0) {
-                    if (_highlightedAbility == 0) {
+                if (firstAbility == 0) {
+                    if (highlightedAbility == 0) {
                         if (vs_main_buttonsPressed.all & PADLup) {
-                            _highlightedAbility = 7;
-                            _firstAbility = _abilityCount - 8;
+                            highlightedAbility = 7;
+                            firstAbility = abilityCountStatic - 8;
                         }
                     } else {
-                        --_highlightedAbility;
+                        --highlightedAbility;
                     }
                 } else {
-                    if (_highlightedAbility == 1) {
-                        --_firstAbility;
+                    if (highlightedAbility == 1) {
+                        --firstAbility;
                     } else {
-                        --_highlightedAbility;
+                        --highlightedAbility;
                     }
                 }
             }
         }
 
         if (vs_main_buttonRepeat & PADLdown) {
-            if (_abilityCount < 9) {
-                if (_highlightedAbility == (_abilityCount - 1)) {
-                    _highlightedAbility = 0;
+            if (abilityCountStatic < 9) {
+                if (highlightedAbility == (abilityCountStatic - 1)) {
+                    highlightedAbility = 0;
                 } else {
-                    ++_highlightedAbility;
+                    ++highlightedAbility;
                 }
             } else {
-                if (_firstAbility == (_abilityCount - 8)) {
-                    if (_highlightedAbility == 7) {
+                if (firstAbility == (abilityCountStatic - 8)) {
+                    if (highlightedAbility == 7) {
                         if (vs_main_buttonsPressed.all & PADLdown) {
-                            _highlightedAbility = 0;
-                            _firstAbility = 0;
+                            highlightedAbility = 0;
+                            firstAbility = 0;
                         }
                     } else {
-                        ++_highlightedAbility;
+                        ++highlightedAbility;
                     }
-                } else if (_highlightedAbility == 6) {
-                    ++_firstAbility;
+                } else if (highlightedAbility == 6) {
+                    ++firstAbility;
                 } else {
-                    ++_highlightedAbility;
+                    ++highlightedAbility;
                 }
             }
         }
 
-        if (selectedAbility != (_highlightedAbility + _firstAbility)) {
+        if (selectedAbility != (highlightedAbility + firstAbility)) {
             vs_battle_playMenuChangeSfx();
-            if (_firstAbility != previousFirstAbility) {
-                char abilityBuf[_abilityCount];
+            if (firstAbility != previousFirstAbility) {
+                char abilityBuf[abilityCountStatic];
 
-                for (i = 0; i < _abilityCount; ++i) {
+                for (i = 0; i < abilityCountStatic; ++i) {
                     abilityBuf[i] = 0;
                 }
 
-                ability = _abilityCount;
-                if (_abilityCount >= 9) {
+                ability = abilityCountStatic;
+                if (abilityCountStatic >= 9) {
                     ability = 8;
                 }
 
@@ -454,19 +454,19 @@ static int _abilityMenu(void)
 
                 for (i = 0;;) {
                     menuItem = vs_battle_setMenuItem(i + 20, 194, i * 16 + 50, 0x7E, 0,
-                        (char*)(_abilityText + ((_firstAbility + i) << 6)));
-                    menuItem->gradientState = abilityBuf[i + _firstAbility];
+                        (char*)(abilityText + ((firstAbility + i) << 6)));
+                    menuItem->gradientState = abilityBuf[i + firstAbility];
 
-                    if ((i == 0) && (_firstAbility != 0)) {
+                    if ((i == 0) && (firstAbility != 0)) {
                         menuItem->isScrollable = 1;
                     }
 
                     ++i;
 
-                    if (i == _abilityCount) {
+                    if (i == abilityCountStatic) {
                         break;
                     } else if (i == 8) {
-                        if ((_firstAbility + 8) < _abilityCount) {
+                        if ((firstAbility + 8) < abilityCountStatic) {
                             menuItem->isScrollable = 2;
                         }
                         break;
@@ -475,13 +475,13 @@ static int _abilityMenu(void)
             }
         }
 
-        vs_battle_getMenuItem(_highlightedAbility + 20)->selected = 1;
-        cursorAnimStep = vs_battle_drawCursor(cursorAnimStep, _highlightedAbility + 2);
+        vs_battle_getMenuItem(highlightedAbility + 20)->selected = 1;
+        cursorAnimStep = vs_battle_drawCursor(cursorAnimStep, highlightedAbility + 2);
 
-        if (_selectedAbilityType == abilityTypeChain) {
-            _setRiskCost(_unlockedChainAbilities[_highlightedAbility + _firstAbility]);
+        if (selectedAbilityType == abilityTypeChain) {
+            setRiskCost(unlockedChainAbilities[highlightedAbility + firstAbility]);
         } else {
-            _setRiskCost(_unlockedDefenseAbilities[_highlightedAbility + _firstAbility]);
+            setRiskCost(unlockedDefenseAbilities[highlightedAbility + firstAbility]);
         }
 
         break;
@@ -496,9 +496,9 @@ static int _abilityMenu(void)
  * @param
  * @return 1 if the user backed out, 0 otherwise.
  */
-static int _chainAbilityMenu(int initialize)
+static int chainAbilityMenu(int initialize)
 {
-    enum state { init, abilityMenu };
+    enum state { init, abilityMenuCase };
 
     static int state = 0;
     static UNUSED char _[4] = { 0 };
@@ -528,20 +528,20 @@ static int _chainAbilityMenu(int initialize)
 
             if (vs_main_actions[action].unlocked) {
                 menuStrings[count * 2] = (u_short*)vs_main_actions[action].name;
-                menuStrings[count * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
+                menuStrings[count * 2 + 1] = &battleAbilityStrings[battleAbilityStrings
                         [VS_battleAbilities_INDEX_chainAbilityEffect0 + i]];
-                _unlockedChainAbilities[count] = action;
+                unlockedChainAbilities[count] = action;
                 ++count;
             }
         }
 
-        _initAbilityMenu(count, abilityTypeChain, menuStrings);
+        initAbilityMenu(count, abilityTypeChain, menuStrings);
 
-        state = abilityMenu;
+        state = abilityMenuCase;
         break;
 
-    case abilityMenu:
-        if (_abilityMenu() != 0) {
+    case abilityMenuCase:
+        if (abilityMenu() != 0) {
             vs_mainMenu_clearMenuExcept(2);
             return 1;
         }
@@ -557,9 +557,9 @@ static int _chainAbilityMenu(int initialize)
  * @param
  * @return 1 if the user backed out, 0 otherwise.
  */
-static int _defenseAbilityMenu(int arg0)
+static int defenseAbilityMenu(int arg0)
 {
-    enum state { init, abilityMenu };
+    enum state { init, abilityMenuCase };
 
     static int state = 0;
     static UNUSED char _[4] = { 0 };
@@ -587,20 +587,20 @@ static int _defenseAbilityMenu(int arg0)
             int action = vs_battle_defenseAbilityOffsets[i];
             if (vs_main_actions[action].unlocked) {
                 menuStrings[row * 2] = (u_short*)vs_main_actions[action].name;
-                menuStrings[row * 2 + 1] = &_battleAbilityStrings[_battleAbilityStrings
+                menuStrings[row * 2 + 1] = &battleAbilityStrings[battleAbilityStrings
                         [VS_battleAbilities_INDEX_defenseAbilityEffect0 + i]];
-                _unlockedDefenseAbilities[row] = action;
+                unlockedDefenseAbilities[row] = action;
                 ++row;
             }
         }
 
-        _initAbilityMenu(row, abilityTypeDefense, menuStrings);
+        initAbilityMenu(row, abilityTypeDefense, menuStrings);
 
-        state = abilityMenu;
+        state = abilityMenuCase;
         break;
 
-    case abilityMenu:
-        if (_abilityMenu() != 0) {
+    case abilityMenuCase:
+        if (abilityMenu() != 0) {
             vs_mainMenu_clearMenuExcept(2);
             return 1;
         }
@@ -616,7 +616,7 @@ static int _defenseAbilityMenu(int arg0)
  *
  * @param row Effectively the count of already unlocked abilities
  */
-static void _setNextAbilityUnlockPointsRemaining(int row)
+static void setNextAbilityUnlockPointsRemaining(int row)
 {
     char pointsBuf[16];
     int pos;
@@ -698,15 +698,15 @@ int vs_menu2_exec(u_char* state)
             int type = vs_battle_shortcutInvoked - 7;
 
             vs_battle_setMenuItem(vs_battle_shortcutInvoked + 3, 0x140, 0x22, 0x8C, 8,
-                (char*)&_battleAbilityStrings[_battleAbilityStrings[type * 3]])
+                (char*)&battleAbilityStrings[battleAbilityStrings[type * 3]])
                 ->selected = 1;
 
             if (type == 0) {
                 *state = chain;
-                _chainAbilityMenu(1);
+                chainAbilityMenu(1);
             } else {
                 *state = defense;
-                _defenseAbilityMenu(1);
+                defenseAbilityMenu(1);
             }
 
             break;
@@ -717,8 +717,8 @@ int vs_menu2_exec(u_char* state)
         if (vs_mainmenu_ready() != 0) {
 
             menuStrings[0] =
-                (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_chainAbilities];
-            menuStrings[1] = (char*)&_battleAbilityStrings
+                (char*)&battleAbilityStrings[VS_battleAbilities_OFFSET_chainAbilities];
+            menuStrings[1] = (char*)&battleAbilityStrings
                 [VS_battleAbilities_OFFSET_chainAbilitiesDesc];
             rowTypes[0] = 0;
             rowTypes[1] = 0;
@@ -726,18 +726,18 @@ int vs_menu2_exec(u_char* state)
             if (vs_battle_chainAbilitiesUnlocked(0) == 0) {
                 // BUG: Should be rowTypes, but flow doesn't seem to be used anyway
                 menuStrings[0] = (char*)((long)menuStrings[0] | 1);
-                menuStrings[1] = (char*)&_battleAbilityStrings
+                menuStrings[1] = (char*)&battleAbilityStrings
                     [VS_battleAbilities_OFFSET_noChainAbilities];
             }
 
             menuStrings[2] =
-                (char*)&_battleAbilityStrings[VS_battleAbilities_OFFSET_defenseAbilities];
-            menuStrings[3] = (char*)&_battleAbilityStrings
+                (char*)&battleAbilityStrings[VS_battleAbilities_OFFSET_defenseAbilities];
+            menuStrings[3] = (char*)&battleAbilityStrings
                 [VS_battleAbilities_OFFSET_defenseAbilitiesDesc];
 
             if (vs_battle_chainAbilitiesUnlocked(1) == 0) {
                 rowTypes[1] |= 1;
-                menuStrings[3] = (char*)&_battleAbilityStrings
+                menuStrings[3] = (char*)&battleAbilityStrings
                     [VS_battleAbilities_OFFSET_noDefenseAbilities];
             }
 
@@ -764,13 +764,13 @@ int vs_menu2_exec(u_char* state)
 
             if (val == 1) {
                 *state = chain;
-                _chainAbilityMenu(1);
+                chainAbilityMenu(1);
                 break;
             }
 
             if (val == 2) {
                 *state = defense;
-                _defenseAbilityMenu(1);
+                defenseAbilityMenu(1);
                 break;
             }
 
@@ -785,7 +785,7 @@ int vs_menu2_exec(u_char* state)
         break;
 
     case chain:
-        if (_chainAbilityMenu(0) != 0) {
+        if (chainAbilityMenu(0) != 0) {
             if (vs_battle_shortcutInvoked != 0) {
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -798,7 +798,7 @@ int vs_menu2_exec(u_char* state)
         break;
 
     case defense:
-        if (_defenseAbilityMenu(0) != 0) {
+        if (defenseAbilityMenu(0) != 0) {
             if (vs_battle_shortcutInvoked != 0) {
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -835,7 +835,7 @@ int vs_menu2_exec(u_char* state)
     }
 
     if (menuAnimating != 0) {
-        _setNextAbilityUnlockPointsRemaining(vs_battle_rowAnimationSteps[pointsAnimStep]);
+        setNextAbilityUnlockPointsRemaining(vs_battle_rowAnimationSteps[pointsAnimStep]);
 
         if (pointsAnimStep != 0) {
             --pointsAnimStep;
@@ -845,7 +845,7 @@ int vs_menu2_exec(u_char* state)
 
             ++pointsAnimStep;
 
-            _setNextAbilityUnlockPointsRemaining(pointsAnimStep << 5);
+            setNextAbilityUnlockPointsRemaining(pointsAnimStep << 5);
         }
     }
 

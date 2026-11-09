@@ -51,7 +51,7 @@
 #include <rand.h>
 
 #define CAMERA_INPUT_LOCKED()                                                           \
-    ((D_800F196C == 3) || ((D_800F196C == 2) && ((_cameraMode == 4) || (_cameraMode == 11))))
+    ((D_800F196C == 3) || ((D_800F196C == 2) && ((cameraMode == 4) || (cameraMode == 11))))
 
 typedef struct {
     u_int unk0;
@@ -89,7 +89,7 @@ typedef struct {
 } D_800F19CC_t;
 
 typedef struct {
-    _mpdRoomSectionA* unk0;
+    mpdRoomSectionA_t* unk0;
     vs_battle_actorPosition unk4;
 } D_800F1910_t;
 
@@ -122,7 +122,7 @@ typedef struct {
 
 typedef struct {
     int unk0;
-    _mpdRoomSectionA* unk4;
+    mpdRoomSectionA_t* unk4;
 } D_800F1D28_t;
 
 typedef struct {
@@ -160,7 +160,7 @@ typedef struct {
     long timOffset;
     int timLen;
     int musicId;
-} _zndHeader;
+} zndHeader_t;
 
 typedef struct {
     POLY_FT4 poly[10];
@@ -193,7 +193,7 @@ typedef struct {
     int enemySectionLen;
     int lootSectionOffset;
     int lootSectionLen;
-} _mpdHeader;
+} mpdHeader_t;
 
 typedef struct {
     u_char type;
@@ -213,32 +213,32 @@ typedef struct {
     u_char unk10[0x18];
 } mpdObjectSpawn;
 
-int _loadMpdRoomSection(int, void* data);
-int _dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
-int _dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
-void _snapLookAtToPosition(VECTOR*);
+int loadMpdRoomSection(int, void* data);
+int dropMisc(vs_battle_loot*, vs_battle_uiMisc*);
+int dropMiscRand(vs_battle_loot*, vs_battle_uiMiscRand*);
+void snapLookAtToPosition(VECTOR*);
 void func_8006C350(void);
 void func_8006C39C(void);
 void func_8006C40C(void);
 int func_8006C5AC(int);
-static void _forgetZoneEnemies(int, int);
-int _removeActorById(u_int, int);
-void _applyAccessoryStats(vs_battle_uiAccessory*, _accessoryIntermediate*);
-void _applyArmorStats(vs_battle_uiArmor* arg0, _armorIntermediate* arg1);
+static void forgetZoneEnemies(int, int);
+int removeActorById(u_int, int);
+void applyAccessoryStats(vs_battle_uiAccessory*, accessoryIntermediate_t*);
+void applyArmorStats(vs_battle_uiArmor* arg0, armorIntermediate_t* arg1);
 void vs_battle_copyUiEquipmentStats(
     vs_main_inventoryArmor*, vs_battle_uiEquipment* equipment);
 void func_8006B214(void);
 void func_8006B2D4(void);
-void _updateEnemyKills(vs_battle_actor*);
-void _drawScreenTransition(void*);
-void _updateWeaponKillStreak(int);
-void _clampPositionToZoneBounds(VECTOR*, VECTOR*);
-int _computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
-int _stepTowardTarget(SVECTOR*, int, int);
+void updateEnemyKills(vs_battle_actor*);
+void drawScreenTransition(void*);
+void updateWeaponKillStreak(int);
+void clampPositionToZoneBounds(VECTOR*, VECTOR*);
+int computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
+int stepTowardTarget(SVECTOR*, int, int);
 void func_8006E158(void);
-void _computeCameraTransition(VECTOR*);
-int _stepCameraTransition(void);
-void _setRoomSeen(void);
+void computeCameraTransition(VECTOR*);
+int stepCameraTransition(void);
+void setRoomSeen(void);
 void func_8006F5CC(void);
 void func_8006F89C(void);
 void func_8006FA20(void);
@@ -250,10 +250,10 @@ void func_80070F28(int);
 void func_8007138C(void);
 void func_80072BA8(int);
 void func_80072EC4(int, int);
-void _endBattleCameraTransition(void);
+void endBattleCameraTransition(void);
 void func_80073718(void);
-void func_80073D30(_mpdRoomSectionA*, vs_battle_actorPosition*, int);
-void func_80073E30(_mpdRoomSectionA*, int);
+void func_80073D30(mpdRoomSectionA_t*, vs_battle_actorPosition*, int);
+void func_80073E30(mpdRoomSectionA_t*, int);
 int func_80074798(vs_battle_actorPosition*, u_char*);
 void func_80074B14(int arg0, vs_battle_tilePosition* arg1);
 void func_80076D50(u_int, int, int, int, int);
@@ -261,14 +261,14 @@ void func_80077130(vs_battle_actor*, int, int, int, int);
 vs_battle_actor_dat* func_80077240(
     int, int, int, int, int, int, vs_battle_objectData_flags*, int);
 void func_800773BC(vs_battle_actor*, int, int, int, int, int);
-vs_battle_actor* func_800775C0(int, _mpdEnemy*, vs_battle_charInitData*, int);
+vs_battle_actor* func_800775C0(int, mpdEnemy_t*, vs_battle_charInitData*, int);
 int func_80077F70(void);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
-void _computeSphericalOffset(VECTOR*, VECTOR*, _sphericalValues*);
-void _setCameraPositionFromAngles(_sphericalValues* arg0);
-void _setCameraLookAtFromAngles(_sphericalValues* arg0);
+void computeSphericalOffset(VECTOR*, VECTOR*, sphericalValues_t*);
+void setCameraPositionFromAngles(sphericalValues_t* arg0);
+void setCameraLookAtFromAngles(sphericalValues_t* arg0);
 void func_8007B10C(int, int, int, short, short);
 void func_8007B410(void);
 void func_8007B63C(void);
@@ -281,88 +281,88 @@ void func_8007BFF8(int);
 int func_8007C4E0(vs_main_warp_t*, int, int);
 int func_8007C5C0(vs_main_warp_t*, int, int);
 int func_8007C694(int, int, int, int, int);
-int _getLocationId(int, int);
+int getLocationId(int, int);
 void func_8007D360(void);
 void func_8007D41C(void);
-void _calculateWeaponClassAffinity(vs_battle_actorStats*);
-short _getDefenseGemBuff(vs_action_t*, vs_battle_actorStats*, int);
-int _doesAttackHit(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
+void calculateWeaponClassAffinity(vs_battle_actorStats*);
+short getDefenseGemBuff(vs_action_t*, vs_battle_actorStats*, int);
+int doesAttackHit(
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4);
 int func_8007F434(void);
-int _hitPrerequisiteCanApplyEffect(int arg0, u_char* arg1);
-int _getEnemyClass(u_char*);
-void func_80080000(vs_action_t*, _hitEntity_t*, short);
-void func_800801E0(vs_action_t*, _hitEntity_t*, short);
-void _adjustDpPp(vs_action_t*, vs_battle_actorStats*, vs_battle_actorStats*, int);
+int hitPrerequisiteCanApplyEffect(int arg0, u_char* arg1);
+int getEnemyClass(u_char*);
+void func_80080000(vs_action_t*, hitEntity_t*, short);
+void func_800801E0(vs_action_t*, hitEntity_t*, short);
+void adjustDpPp(vs_action_t*, vs_battle_actorStats*, vs_battle_actorStats*, int);
 void func_800803A4(vs_action_t*, vs_battle_actorStats*, vs_battle_actorStats*, int);
-void _triggerArmorAffinityChange(vs_action_t*, vs_battle_uiEquipment*, int, int, int);
-void _triggerClassChange(vs_action_t* arg0, vs_battle_uiEquipment*, int, int, int);
-int _applyStatus(int, _hitEntity_t*);
-int _clearStatus(int, _hitEntity_t*);
-static short _getPhysicalAttackDamage(
-    vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int, int);
-short _calculateStatChange(vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
-int _getActionCost(u_int, vs_battle_actorStats*, int);
-void func_80085008(_hitEntity_t*);
+void triggerArmorAffinityChange(vs_action_t*, vs_battle_uiEquipment*, int, int, int);
+void triggerClassChange(vs_action_t* arg0, vs_battle_uiEquipment*, int, int, int);
+int applyStatus(int, hitEntity_t*);
+int clearStatus(int, hitEntity_t*);
+static short getPhysicalAttackDamage(
+    vs_action_t*, hitEntity_t*, hitEntity_t*, int, int, int);
+short calculateStatChange(vs_action_t*, hitEntity_t*, hitEntity_t*, int, int);
+int getActionCost(u_int, vs_battle_actorStats*, int);
+void func_80085008(hitEntity_t*);
 void func_80085390(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4);
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
 void func_80086754(int, vs_battle_actorStats*);
-void _applyBattleAbilityEffect(_hitEntity_t*);
+void applyBattleAbilityEffect(hitEntity_t*);
 void func_80087EF4(vs_battle_actorStats*);
 int func_800882F4(void);
 int func_80088554(void);
 void func_80088CA0(void);
 void func_80089114(void);
-void _enableDispMask(void);
-void _disableDispMask(void);
+void enableDispMask(void);
+void disableDispMask(void);
 int func_8008ABF0(int arg0);
 void func_8008B320(void);
 void func_8008B390(int arg0, int* arg1);
 int func_8008B4C8(char arg0);
-static void _loadZnd(int id);
-void _loadMpd(int arg0);
-void _loadZndTims(void*);
+static void loadZnd(int id);
+void loadMpd(int arg0);
+void loadZndTims(void*);
 int func_8008AB80(int);
 int func_8008ABB8(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
-void _vsBattleNop2(int arg0);
-_zoneContextBounds* _getMapBounds(int arg0);
+void vsBattleNop2(int arg0);
+zoneContextBounds_t* getMapBounds(int arg0);
 void func_8008B1FC(void*);
 void func_8008B590(MATRIX*, int);
 void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
 D_800F1D08_t* func_8008BAC8(int, int, int);
-_mpdRoomSectionA* func_8008BC04(int, int, int);
-void func_8008BD74(_mpdRoomSectionA*);
-int func_8008BEBC(_mpdRoomSectionA* arg0);
-int func_8008BF48(_mpdRoomSectionA*);
+mpdRoomSectionA_t* func_8008BC04(int, int, int);
+void func_8008BD74(mpdRoomSectionA_t*);
+int func_8008BEBC(mpdRoomSectionA_t* arg0);
+int func_8008BF48(mpdRoomSectionA_t*);
 void func_8008C0C0(void);
-void func_8008C070(int arg0, _mpdRoomSectionA* arg1);
-int func_8008C1C8(_mpdRoomSectionA* arg0);
+void func_8008C070(int arg0, mpdRoomSectionA_t* arg1);
+int func_8008C1C8(mpdRoomSectionA_t* arg0);
 int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
 void func_8008CEB0(void);
 int func_8008D418(void);
-_mpdRoomSection9* func_8008D438(int, int, int);
-_mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2);
-void func_8008D5FC(_mpdRoomSectionA* arg0);
-void func_8008D658(_mpdRoomSectionA*);
+mpdRoomSection9_t* func_8008D438(int, int, int);
+mpdRoomSection13_t* func_8008D508(int arg0, int arg1, int arg2);
+void func_8008D5FC(mpdRoomSectionA_t* arg0);
+void func_8008D658(mpdRoomSectionA_t*);
 void func_8008D710(void);
-int _getDoorId(int);
+int getDoorId(int);
 void func_8008DF14(void);
-void func_8008DEAC(_mpdRoomSection9* arg0, int arg1);
+void func_8008DEAC(mpdRoomSection9_t* arg0, int arg1);
 void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3);
-_mpdRoomSection13* func_8008E370(int* arg0);
-_mpdRoomSectionA* func_8008E3B8(int* arg0);
-_mpdRoomSection9* func_8008E400(int*);
+mpdRoomSection13_t* func_8008E370(int* arg0);
+mpdRoomSectionA_t* func_8008E3B8(int* arg0);
+mpdRoomSection9_t* func_8008E400(int*);
 void func_8008E480(int arg0);
 void func_800E4C64(int);
 void func_8008E4DC(int);
-void _loadMpdLootSection(void* arg0);
+void loadMpdLootSection(void* arg0);
 void func_8008E6DC(int);
 void func_8008E8F8(void);
 void func_8008E938(void);
@@ -381,15 +381,15 @@ extern u_char D_800E8194[];
 extern u_char D_800E81B4[];
 extern u_char D_800E81C4[];
 extern u_char D_800E81D4[];
-extern char _wepIdCategories[];
+extern char wepIdCategories[];
 extern u_char D_800E8200[];
 extern int D_800E8204[];
 extern u_short D_800E82F4[];
-extern int (*_hitFunctions[])(vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
-extern int (*_attackPrerequisiteFunctions[])(vs_action_t*, u_char*);
-extern void (*_actionEffectMediators[])(
-    vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
-extern short (*_statCalculators[])(vs_action_t*, _hitEntity_t*, _hitEntity_t*, int, int);
+extern int (*hitFunctions[])(vs_action_t*, hitEntity_t*, hitEntity_t*, int, int);
+extern int (*attackPrerequisiteFunctions[])(vs_action_t*, u_char*);
+extern void (*actionEffectMediators[])(
+    vs_action_t*, hitEntity_t*, hitEntity_t*, int, int);
+extern short (*statCalculators[])(vs_action_t*, hitEntity_t*, hitEntity_t*, int, int);
 extern int D_800E8490;
 extern int D_800E8494;
 extern int D_800E8498;
@@ -405,7 +405,7 @@ extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
 extern void* D_800F1870;
-extern int _firstPersonViewEnabled;
+extern int firstPersonViewEnabled;
 extern vs_battle_charInitData* D_800F188C;
 extern int D_800F18A8;
 extern int D_800F18AC;
@@ -413,7 +413,7 @@ extern int D_800F18B0;
 extern D_800F18C8_t D_800F18C8;
 extern int D_800F18E0;
 extern void* D_800F18E4;
-extern u_int _cameraMode;
+extern u_int cameraMode;
 extern char D_800F18F8;
 extern int D_800F18FC;
 extern int D_800F1908;
@@ -426,9 +426,9 @@ extern int D_800F19D8;
 extern int D_800F19EC;
 extern u_int D_800F1A00;
 extern u_int D_800F1A04;
-extern u_int _lastValue;
+extern u_int lastValue;
 extern int D_800F1A0C;
-extern short _armorDpAdjustmentAmounts[];
+extern short armorDpAdjustmentAmounts[];
 extern int D_800F1A20;
 extern SVECTOR D_800F1A28;
 extern short D_800F1A2C;
@@ -475,7 +475,7 @@ extern u_int D_800F196C;
 void func_80069C6C(int arg0)
 {
     int hasTarget;
-    _hitEntity_t* new_var2;
+    hitEntity_t* new_var2;
 
     if (arg0 != 0) {
         return;
@@ -518,16 +518,16 @@ void func_80069D78(void)
 {
     vs_battle_syncCameraAnglesFromPosition(NULL);
     vs_scratch.firstPersonViewFacing =
-        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (_firstPersonViewEnabled << 0x10));
+        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (firstPersonViewEnabled << 0x10));
 }
 
-static void _clearZoneEnemyCache(void)
+static void clearZoneEnemyCache(void)
 {
     vs_main_zoneEnemyCacheIndex = 0;
     vs_main_bzero(vs_main_zoneEnemyCache, sizeof vs_main_zoneEnemyCache);
 }
 
-static void _forgetZoneEnemies(int mapId, int zndId)
+static void forgetZoneEnemies(int mapId, int zndId)
 {
     int i;
 
@@ -540,7 +540,7 @@ static void _forgetZoneEnemies(int mapId, int zndId)
     }
 }
 
-static vs_main_savedEnemyState_t* _findSavedEnemy(int arg0)
+static vs_main_savedEnemyState_t* findSavedEnemy(int arg0)
 {
     int i;
     void* var_a3 = NULL;
@@ -554,7 +554,7 @@ static vs_main_savedEnemyState_t* _findSavedEnemy(int arg0)
     return var_a3;
 }
 
-static vs_main_savedEnemyState_t* _getSavedEnemySlot(int arg0)
+static vs_main_savedEnemyState_t* getSavedEnemySlot(int arg0)
 {
     int i;
     void* var_a3;
@@ -595,7 +595,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     }
 
     stats = temp_s0->stats;
-    temp_v0 = _getSavedEnemySlot(temp_s0->unk27);
+    temp_v0 = getSavedEnemySlot(temp_s0->unk27);
     temp_v0->index = temp_s0->unk27 + 1;
     temp_v0->currentHP = stats->currentHP;
     temp_v0->maxHP = stats->maxHP;
@@ -626,7 +626,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     temp_v0->tile = sp10.unk0.unk0;
 }
 
-int _insertActor(vs_battle_actor* actor)
+int insertActor(vs_battle_actor* actor)
 {
 
     if ((actor->unk1C & 7) && (actor->id != 0)) {
@@ -651,7 +651,7 @@ int _insertActor(vs_battle_actor* actor)
     return 0;
 }
 
-int _removeActor(vs_battle_actor* actor)
+int removeActor(vs_battle_actor* actor)
 {
     if (actor->id != 0) {
         int i;
@@ -668,7 +668,7 @@ int _removeActor(vs_battle_actor* actor)
     return 0;
 }
 
-int _removeActorById(u_int actorId, int arg1)
+int removeActorById(u_int actorId, int arg1)
 {
     int i;
 
@@ -822,7 +822,7 @@ void vs_battle_applyShieldStats(
     }
 }
 
-void _applyAccessoryStats(vs_battle_uiAccessory* target, _accessoryIntermediate* source)
+void applyAccessoryStats(vs_battle_uiAccessory* target, accessoryIntermediate_t* source)
 {
     int i;
 
@@ -847,7 +847,7 @@ void _applyAccessoryStats(vs_battle_uiAccessory* target, _accessoryIntermediate*
     }
 }
 
-void _applyArmorStats(vs_battle_uiArmor* target, _armorIntermediate* source)
+void applyArmorStats(vs_battle_uiArmor* target, armorIntermediate_t* source)
 {
     int i;
 
@@ -1065,7 +1065,7 @@ void vs_battle_applyShield(vs_battle_uiShield* target, vs_main_inventoryShield* 
 
 void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_main_inventoryArmor* source)
 {
-    _armorIntermediate* tempArmor = vs_main_allocHeapR(sizeof *tempArmor);
+    armorIntermediate_t* tempArmor = vs_main_allocHeapR(sizeof *tempArmor);
     vs_main_bzero(tempArmor, sizeof *tempArmor);
 
     if (source != NULL) {
@@ -1076,14 +1076,14 @@ void vs_battle_applyArmor(vs_battle_uiArmor* target, vs_main_inventoryArmor* sou
         tempArmor->material = source->material;
     }
 
-    _applyArmorStats(target, tempArmor);
+    applyArmorStats(target, tempArmor);
     vs_main_freeHeapR(tempArmor);
 }
 
 void vs_battle_applyAccessory(
     vs_battle_uiAccessory* target, vs_main_inventoryArmor* source)
 {
-    _accessoryIntermediate* tempAccessory = vs_main_allocHeapR(sizeof *tempAccessory);
+    accessoryIntermediate_t* tempAccessory = vs_main_allocHeapR(sizeof *tempAccessory);
     vs_main_bzero(tempAccessory, sizeof *tempAccessory);
 
     if (source != NULL) {
@@ -1092,7 +1092,7 @@ void vs_battle_applyAccessory(
         vs_battle_copyInventoryArmorStats(&tempAccessory->equip, source);
     }
 
-    _applyAccessoryStats(target, tempAccessory);
+    applyAccessoryStats(target, tempAccessory);
     vs_main_freeHeapR(tempAccessory);
 }
 
@@ -1350,7 +1350,7 @@ void vs_battle_copyUiAccessoryStats(
     }
 }
 
-int _dropWeaponRand(vs_battle_lootedWeapon* looted, vs_battle_uiWeapon* base)
+int dropWeaponRand(vs_battle_lootedWeapon* looted, vs_battle_uiWeapon* base)
 {
     if (vs_main_getRand(0xFF) < base->dropRate) {
         int i;
@@ -1374,7 +1374,7 @@ int _dropWeaponRand(vs_battle_lootedWeapon* looted, vs_battle_uiWeapon* base)
     return 0;
 }
 
-int _dropShieldRand(vs_battle_lootedShield* looted, vs_battle_uiShield* base)
+int dropShieldRand(vs_battle_lootedShield* looted, vs_battle_uiShield* base)
 {
     if (vs_main_getRand(0xFF) < base->dropRate) {
         int i;
@@ -1394,7 +1394,7 @@ int _dropShieldRand(vs_battle_lootedShield* looted, vs_battle_uiShield* base)
     return 0;
 }
 
-int _dropAccessoryRand(vs_battle_lootedAccessory* looted, vs_battle_uiAccessory* base)
+int dropAccessoryRand(vs_battle_lootedAccessory* looted, vs_battle_uiAccessory* base)
 {
     if (vs_main_getRand(0xFF) < base->dropRate) {
 
@@ -1407,7 +1407,7 @@ int _dropAccessoryRand(vs_battle_lootedAccessory* looted, vs_battle_uiAccessory*
     return 0;
 }
 
-int _dropArmorRand(vs_battle_lootedArmor* looted, vs_battle_uiArmor* base)
+int dropArmorRand(vs_battle_lootedArmor* looted, vs_battle_uiArmor* base)
 {
     if (vs_main_getRand(0xFF) < base->dropRate) {
         int i;
@@ -1426,7 +1426,7 @@ int _dropArmorRand(vs_battle_lootedArmor* looted, vs_battle_uiArmor* base)
     return 0;
 }
 
-int _dropMisc(vs_battle_loot* looted, vs_battle_uiMisc* base)
+int dropMisc(vs_battle_loot* looted, vs_battle_uiMisc* base)
 {
     int ret;
     int i;
@@ -1447,7 +1447,7 @@ int _dropMisc(vs_battle_loot* looted, vs_battle_uiMisc* base)
     return ret;
 }
 
-int _dropMiscRand(vs_battle_loot* looted, vs_battle_uiMiscRand* base)
+int dropMiscRand(vs_battle_loot* looted, vs_battle_uiMiscRand* base)
 {
     looted->misc[2].id = base->id;
 
@@ -1462,7 +1462,7 @@ int _dropMiscRand(vs_battle_loot* looted, vs_battle_uiMiscRand* base)
     return 0;
 }
 
-void _dropLoot(vs_battle_actor* enemy)
+void dropLoot(vs_battle_actor* enemy)
 {
     int i;
     vs_battle_actorStats* stats = enemy->stats;
@@ -1474,23 +1474,23 @@ void _dropLoot(vs_battle_actor* enemy)
 
     vs_main_bzero(lootList, sizeof *lootList);
 
-    lootList->actorId |= _dropWeaponRand(&lootList->loot.weapon, &stats->weapon);
-    lootList->actorId |= _dropShieldRand(&lootList->loot.shield, &stats->shield);
-    lootList->actorId |= _dropAccessoryRand(&lootList->loot.accessory, &stats->accessory);
+    lootList->actorId |= dropWeaponRand(&lootList->loot.weapon, &stats->weapon);
+    lootList->actorId |= dropShieldRand(&lootList->loot.shield, &stats->shield);
+    lootList->actorId |= dropAccessoryRand(&lootList->loot.accessory, &stats->accessory);
 
     for (i = 0; i < 6; ++i) {
         if (stats->limbs[i].armor.armor.id != 0) {
             lootList->actorId |=
-                _dropArmorRand(lootList->loot.armor, &stats->limbs[i].armor);
+                dropArmorRand(lootList->loot.armor, &stats->limbs[i].armor);
         }
     }
 
-    lootList->actorId |= _dropMisc(&lootList->loot, &stats->miscItem);
-    lootList->actorId |= _dropMiscRand(&lootList->loot, &stats->unk960);
+    lootList->actorId |= dropMisc(&lootList->loot, &stats->miscItem);
+    lootList->actorId |= dropMiscRand(&lootList->loot, &stats->unk960);
 
     if (lootList->actorId != 0) {
 
-        vs_battle_lootListNode* node = _lootListHead;
+        vs_battle_lootListNode* node = lootListHead;
         int insertLoot = 1;
 
         while (node != NULL) {
@@ -1502,8 +1502,8 @@ void _dropLoot(vs_battle_actor* enemy)
 
         if (insertLoot != 0) {
             int actorId = enemy->id;
-            vs_battle_lootListNode* next = _lootListHead;
-            _lootListHead = lootList;
+            vs_battle_lootListNode* next = lootListHead;
+            lootListHead = lootList;
             lootList->actorId = actorId;
             lootList->next = next;
             return;
@@ -1513,7 +1513,7 @@ void _dropLoot(vs_battle_actor* enemy)
     vs_main_freeHeapR(lootList);
 }
 
-void _updateEnemyKills(vs_battle_actor* enemy)
+void updateEnemyKills(vs_battle_actor* enemy)
 {
     u_int subType = enemy->subType;
 
@@ -1547,7 +1547,7 @@ void _updateEnemyKills(vs_battle_actor* enemy)
     }
 }
 
-void _updateWeaponKillStreak(UNUSED int arg0)
+void updateWeaponKillStreak(UNUSED int arg0)
 {
     vs_battle_actorStats* stats = vs_battle_characterState->stats;
 
@@ -1565,7 +1565,7 @@ void _updateWeaponKillStreak(UNUSED int arg0)
     }
 }
 
-void _enemyDefeated(int arg0, int actorId, int arg2)
+void enemyDefeated(int arg0, int actorId, int arg2)
 {
     vs_battle_actor* enemy = vs_battle_actors[actorId];
 
@@ -1574,11 +1574,11 @@ void _enemyDefeated(int arg0, int actorId, int arg2)
     }
 
     if ((arg2 != 0) && (arg0 == 0)) {
-        _updateEnemyKills(enemy);
-        _updateWeaponKillStreak(0);
+        updateEnemyKills(enemy);
+        updateWeaponKillStreak(0);
     }
 
-    _dropLoot(enemy);
+    dropLoot(enemy);
 
     enemy->defeated = 1;
 }
@@ -1662,13 +1662,13 @@ void func_8006C40C(void)
     D_800F1968 = 0;
 }
 
-void _nop1(void) { }
+void nop1(void) { }
 
 void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
 
 void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
 
-void func_8006C4C4(int effectId, _hitEntity_t* arg1, int targetLimb)
+void func_8006C4C4(int effectId, hitEntity_t* arg1, int targetLimb)
 {
     actionEffectRequest sp10;
     D_800F19CC_t2* temp_s0 = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
@@ -1878,7 +1878,7 @@ void func_8006CA20(int arg0, SVECTOR* arg1)
             break;
         }
 
-        _applyBattleAbilityEffect(&temp_s0->unk4);
+        applyBattleAbilityEffect(&temp_s0->unk4);
     }
 }
 
@@ -1910,7 +1910,7 @@ void func_8006CB04(int arg0, SVECTOR* arg1)
                     }
                     break;
                 }
-                _applyBattleAbilityEffect(&temp_s2->targets[i]);
+                applyBattleAbilityEffect(&temp_s2->targets[i]);
                 applied = 1;
             }
         }
@@ -1954,7 +1954,7 @@ void func_8006CDB8(int arg0) { func_8009D854(arg0); }
 
 void func_8006CDD8(SVECTOR* arg0)
 {
-    _mpdRoomSection9* section = func_8008D438(arg0->vx / 128, arg0->vz / 128, 0);
+    mpdRoomSection9_t* section = func_8008D438(arg0->vx / 128, arg0->vz / 128, 0);
 
     if (section != NULL) {
         func_8008DEAC(section, 1);
@@ -1967,8 +1967,8 @@ void func_8006CE50(void) { func_8008D5A0(0xB4); }
 void func_8006CE70(SVECTOR* arg0)
 {
     int sp10;
-    _mpdRoomSectionA* temp_v0;
-    _mpdRoomSection13* temp_v0_2;
+    mpdRoomSectionA_t* temp_v0;
+    mpdRoomSection13_t* temp_v0_2;
     int new_var2 = 4;
     int new_var3 = 2;
 
@@ -2024,7 +2024,7 @@ void func_8006D064(void)
     D_800F185C = 0;
 }
 
-void _drawScreenTransition(void* ot)
+void drawScreenTransition(void* ot)
 {
     MATRIX rotTransMatrix;
     VECTOR screenCenter;
@@ -2190,7 +2190,7 @@ void _drawScreenTransition(void* ot)
     }
 }
 
-int _addMinDelta(int base, int a, int b)
+int addMinDelta(int base, int a, int b)
 {
     if (b < 0) {
         if (a >= b) {
@@ -2210,7 +2210,7 @@ int _addMinDelta(int base, int a, int b)
     return base;
 }
 
-int _add_min(int base, int a, int b)
+int add_min(int base, int a, int b)
 {
 
     if (b < 0) {
@@ -2227,7 +2227,7 @@ int _add_min(int base, int a, int b)
     return base;
 }
 
-void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
+void clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
 {
     UNUSED int _[2];
     int bound;
@@ -2236,8 +2236,8 @@ void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
     int v;
 
     entityRadius = (vs_battle_cameraCurrentSpherical.values.distance * ONE) / 2304;
-    bound = _zoneContext.bounds.minX * ONE * 128 + entityRadius * 360;
-    maxBound = _zoneContext.bounds.maxX * ONE * 128 - entityRadius * 360;
+    bound = zoneContext.bounds.minX * ONE * 128 + entityRadius * 360;
+    maxBound = zoneContext.bounds.maxX * ONE * 128 - entityRadius * 360;
 
     if (maxBound < bound) {
         outPos->vx = (bound + maxBound) >> 1;
@@ -2251,8 +2251,8 @@ void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
         }
     }
 
-    bound = _zoneContext.bounds.minZ * ONE * 128 + entityRadius * 360;
-    maxBound = _zoneContext.bounds.maxZ * ONE * 128 - entityRadius * 360;
+    bound = zoneContext.bounds.minZ * ONE * 128 + entityRadius * 360;
+    maxBound = zoneContext.bounds.maxZ * ONE * 128 - entityRadius * 360;
 
     if (maxBound < bound) {
         outPos->vz = (bound + maxBound) >> 1;
@@ -2282,7 +2282,7 @@ void _clampPositionToZoneBounds(VECTOR* inPos, VECTOR* outPos)
     }
 }
 
-int _computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
+int computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
     VECTOR* outDisplacement, int clampToZone, int maxSpeed)
 {
     SVECTOR targetPosScaled;
@@ -2297,7 +2297,7 @@ int _computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
     targetPosFixed.vy = targetPos->vy * ONE;
 
     if (clampToZone != 0) {
-        _clampPositionToZoneBounds(&targetPosFixed, &targetPosFixed);
+        clampPositionToZoneBounds(&targetPosFixed, &targetPosFixed);
     }
 
     targetPosScaled.vx = targetPosFixed.vx / ONE;
@@ -2370,27 +2370,27 @@ int _computeStepAndDisplacement(SVECTOR* targetPos, VECTOR* outStep,
     return notCentered;
 }
 
-int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
+int stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
 {
     VECTOR displacement;
     VECTOR step;
 
-    if (_computeStepAndDisplacement(
+    if (computeStepAndDisplacement(
             targetPos, &step, &displacement, transformFlag, maxSpeed)
         != 0) {
         vs_scratch.camera.lookAt.vx =
-            _addMinDelta(vs_scratch.camera.lookAt.vx, step.vx, displacement.vx);
+            addMinDelta(vs_scratch.camera.lookAt.vx, step.vx, displacement.vx);
         vs_scratch.camera.lookAt.vz =
-            _addMinDelta(vs_scratch.camera.lookAt.vz, step.vz, displacement.vz);
+            addMinDelta(vs_scratch.camera.lookAt.vz, step.vz, displacement.vz);
         vs_scratch.camera.lookAt.vy =
-            _addMinDelta(vs_scratch.camera.lookAt.vy, step.vy, displacement.vy);
+            addMinDelta(vs_scratch.camera.lookAt.vy, step.vy, displacement.vy);
     } else {
         vs_scratch.camera.lookAt.vx =
-            _add_min(vs_scratch.camera.lookAt.vx, step.vx, displacement.vx);
+            add_min(vs_scratch.camera.lookAt.vx, step.vx, displacement.vx);
         vs_scratch.camera.lookAt.vz =
-            _add_min(vs_scratch.camera.lookAt.vz, step.vz, displacement.vz);
+            add_min(vs_scratch.camera.lookAt.vz, step.vz, displacement.vz);
         vs_scratch.camera.lookAt.vy =
-            _add_min(vs_scratch.camera.lookAt.vy, step.vy, displacement.vy);
+            add_min(vs_scratch.camera.lookAt.vy, step.vy, displacement.vy);
     }
     if (vs_scratch.camera.lookAt.vy > 0) {
         vs_scratch.camera.lookAt.vy = 0;
@@ -2398,12 +2398,12 @@ int _stepTowardTarget(SVECTOR* targetPos, int transformFlag, int maxSpeed)
     return vs_battle_cameraCurrentSpherical.speed;
 }
 
-void _snapLookAtToPosition(VECTOR* arg0)
+void snapLookAtToPosition(VECTOR* arg0)
 {
     func_80077DF0_t sp10;
     int new_var;
 
-    _clampPositionToZoneBounds(arg0, &sp10.position);
+    clampPositionToZoneBounds(arg0, &sp10.position);
     sp10.lookAt.vx = sp10.position.vx - vs_scratch.camera.lookAt.vx;
     sp10.lookAt.vz = sp10.position.vz - vs_scratch.camera.lookAt.vz;
     sp10.lookAt.vy = sp10.position.vy - vs_scratch.camera.lookAt.vy;
@@ -2606,7 +2606,7 @@ void func_8006E640(int arg0)
     targetPos.vz = sp10.unk0.unk4.vz;
     targetPos.vy = sp10.unk0.unk4.vy - 0x5A;
     func_80074B14(arg0, &sp10.unk0.unk0);
-    switch (_cameraMode) {
+    switch (cameraMode) {
     case 1:
     case 3:
         func_8006E158();
@@ -2615,7 +2615,7 @@ void func_8006E640(int arg0)
             targetPos.vy = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vy;
             targetPos.vz = D_800F19CC->unk29C0[D_800F19CC->unk298D].unk0.vz;
         }
-        _stepTowardTarget(&targetPos, 0, 0x28);
+        stepTowardTarget(&targetPos, 0, 0x28);
         break;
     case 2:
         func_8006E158();
@@ -2623,14 +2623,14 @@ void func_8006E640(int arg0)
         targetPos.vy = D_800F19CC->unk2998.vy;
         targetPos.vz = D_800F19CC->unk2998.vz;
         if (func_800C4734() == 1) {
-            _stepTowardTarget(&targetPos, 0, 8);
+            stepTowardTarget(&targetPos, 0, 8);
             return;
         }
-        _stepTowardTarget(&targetPos, 0, 0x28);
+        stepTowardTarget(&targetPos, 0, 0x28);
         break;
     case 11:
         func_8006E158();
-        _stepTowardTarget(&targetPos, 1, 0x28);
+        stepTowardTarget(&targetPos, 1, 0x28);
         break;
     case 4:
         func_8006E158();
@@ -2781,8 +2781,8 @@ int func_8006EBF8(void)
     position.vx = sp10.unk0.unk4.vx << 0xC;
     position.vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
     position.vz = sp10.unk0.unk4.vz << 0xC;
-    _snapLookAtToPosition(&position);
-    _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
+    snapLookAtToPosition(&position);
+    setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
     return v;
 }
 
@@ -2843,7 +2843,7 @@ void func_8006EC7C(void)
     vs_scratch.camera.position.vx = sp10.unk0.unk4.vx * ONE;
     vs_scratch.camera.position.vz = sp10.unk0.unk4.vz * ONE;
     vs_scratch.camera.position.vy = (sp10.unk0.unk4.vy - 180) * ONE;
-    _setCameraLookAtFromAngles(&vs_battle_cameraCurrentSpherical.values);
+    setCameraLookAtFromAngles(&vs_battle_cameraCurrentSpherical.values);
 }
 
 void func_8006EF10(void)
@@ -2860,7 +2860,7 @@ void func_8006EF10(void)
     }
 }
 
-void _computeCameraTransition(VECTOR* targetPosition)
+void computeCameraTransition(VECTOR* targetPosition)
 {
     VECTOR cameraToTarget;
 
@@ -2923,7 +2923,7 @@ void _computeCameraTransition(VECTOR* targetPosition)
         / vs_battle_cameraTransition->transitionFrames;
 }
 
-int _stepCameraTransition(void)
+int stepCameraTransition(void)
 {
     int targetY;
     int nextY;
@@ -3007,7 +3007,7 @@ void func_8006F4B0(vs_battle_actorLocation* arg0)
     }
 }
 
-void _setRoomSeen(void)
+void setRoomSeen(void)
 {
     u_int scene;
     u_int room;
@@ -3026,18 +3026,18 @@ void _setRoomSeen(void)
 void func_8006F5CC(void)
 {
     D_800F196C = 1;
-    _cameraMode = 0;
-    _setRoomSeen();
+    cameraMode = 0;
+    setRoomSeen();
 }
 
 void func_8006F5FC(void)
 {
     D_800F196C = 12;
-    _cameraMode = 0;
+    cameraMode = 0;
     func_8009E5C4(0);
 }
 
-void func_8006F630(D_800F19CC_t5* arg0, D_800F19CC_t2* arg1, _hitEntity_t* arg2)
+void func_8006F630(D_800F19CC_t5* arg0, D_800F19CC_t2* arg1, hitEntity_t* arg2)
 {
     int effect = vs_main_actions[arg1->actionIndex].hitParams[0].effect;
     u_short var_v0;
@@ -3073,7 +3073,7 @@ void func_8006F630(D_800F19CC_t5* arg0, D_800F19CC_t2* arg1, _hitEntity_t* arg2)
         vs_battle_actors[arg2->unk0.hit.targetActor & 15]->stats->enemyClass;
 }
 
-int _isArtOrAbilityUnlocked(void)
+int isArtOrAbilityUnlocked(void)
 {
     int category;
     int unlockArt;
@@ -3122,8 +3122,8 @@ void func_8006F89C(void)
         func_8006F5FC();
         break;
     case 2:
-        if (_isArtOrAbilityUnlocked() != 0) {
-            _cameraMode = 0xD;
+        if (isArtOrAbilityUnlocked() != 0) {
+            cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
             func_8008D594(1);
@@ -3131,7 +3131,7 @@ void func_8006F89C(void)
                    && !(vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked)
                    && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
                    && (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0)) {
-            _cameraMode = 0xD;
+            cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
             func_8008D594(1);
@@ -3144,7 +3144,7 @@ void func_8006F89C(void)
             && !(vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked)
             && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
             && (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0)) {
-            _cameraMode = 0xD;
+            cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
             func_8008D594(1);
@@ -3163,25 +3163,25 @@ void func_8006FA20(void)
         && !((vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked))
         && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
         && (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0)) {
-        _cameraMode = 0xE;
+        cameraMode = 0xE;
         func_8006C39C();
         vs_battle_displaySceneMessage(0xC, (int)D_800F19CC->unk8.actionIndex, 1);
         vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked = 1;
         return;
     }
-    temp_v0_2 = _isArtOrAbilityUnlocked();
-    _cameraMode = 14;
+    temp_v0_2 = isArtOrAbilityUnlocked();
+    cameraMode = 14;
     func_8006C39C();
-    _setArtAndAbilityToUnlock(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
+    setArtAndAbilityToUnlock(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
 }
 
 void func_8006FB48(void)
 {
     if (vs_battle_getStateFlag(0xAB) > 2) {
-        if (_lootListHead != NULL) {
-            func_800CB158(_lootListHead);
+        if (lootListHead != NULL) {
+            func_800CB158(lootListHead);
             D_800F196C = 2;
-            _cameraMode = 12;
+            cameraMode = 12;
             func_8006C39C();
         } else {
             func_8006F89C();
@@ -3208,24 +3208,24 @@ void func_8006FBCC(int arg0)
     func_80095B70(0);
     D_800F18FC = arg0;
     vs_gametime_tickspeed = 2;
-    _cameraMode = 0xB;
+    cameraMode = 0xB;
 }
 
 void func_8006FCBC(void)
 {
     D_800F19CC_t2* temp_s0;
 
-    _cameraMode = 10;
+    cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
     func_8006C4A4(temp_s0->unk4.unk0.hit.targetActor,
         func_800A152C(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
 }
 
-void func_8006FD0C(void) { _cameraMode = 9; }
+void func_8006FD0C(void) { cameraMode = 9; }
 
 void func_8006FD1C(void)
 {
-    _hitEntity_t saved;
+    hitEntity_t saved;
     vs_battle_actorPosition position;
     D_800F19CC_t2* action;
     int i;
@@ -3248,7 +3248,7 @@ void func_8006FD1C(void)
         && (vs_battle_actors[action->targets[0].unk0.hit.targetActor]->stats->currentHP
             != 0)) {
         func_800DEEA4(action);
-        _cameraMode = 8;
+        cameraMode = 8;
         ++D_800F19CC->unk4;
         ++D_800F19CC->unk0;
         func_80085B10(vs_main_settings.mappedChainAbilities[D_800F19CC->unk2C03 - 1],
@@ -3266,7 +3266,7 @@ void func_8006FD1C(void)
         }
     } else if (D_800F19CC->battleAbilityInputSuccessful == 2) {
         func_800DEEA4(action);
-        _cameraMode = 8;
+        cameraMode = 8;
         ++D_800F19CC->unk4;
         saved = D_800F19CC->unk8.unk4;
         found = 0;
@@ -3377,12 +3377,12 @@ void func_80070278(void)
     func_800CB50C();
 
     D_800F19CC->unk2C03 = 0;
-    _cameraMode = 7;
+    cameraMode = 7;
 }
 
 void func_800704B0(void)
 {
-    _cameraMode = 6;
+    cameraMode = 6;
     func_800CF920();
 }
 
@@ -3390,7 +3390,7 @@ void func_800704D8(void)
 {
     D_800F196C = 5;
     D_800F19CC->unk8.actionIndex = 0;
-    _cameraMode = 1;
+    cameraMode = 1;
     func_800CB660((vs_battle_characterState->weaponDrawn & 1) | 2);
     func_800CAB40();
     func_8006C39C();
@@ -3453,7 +3453,7 @@ void func_8007053C(void)
 
     D_800F19CC->unk2C00 = kept;
     func_800C1664(kept, D_800F19CC->unk29C0, 1);
-    _cameraMode = 3;
+    cameraMode = 3;
 }
 
 void func_8007087C(D_800F19CC_t2* arg0)
@@ -3541,7 +3541,7 @@ void func_80070CAC(void)
     SVECTOR points[4];
     int count;
     int i;
-    _mpdRoomSection9* room;
+    mpdRoomSection9_t* room;
     D_800F19CC_t2* list = &D_800F19CC->unk8;
 
     list->targetCount = 0;
@@ -3700,7 +3700,7 @@ void func_80070F28(int arg0)
         }
     }
 
-    _cameraMode = 4;
+    cameraMode = 4;
 
     for (i = 0; i < 16; ++i) {
         if (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor) {
@@ -3896,7 +3896,7 @@ void func_8007138C(void)
         vs_battle_displaySceneMessage(0xB, action->actionIndex, 1);
     }
 
-    _cameraMode = 5;
+    cameraMode = 5;
 }
 
 void func_800719DC(UNUSED int arg0) { func_80070F28(0); }
@@ -3993,7 +3993,7 @@ void func_800719FC(UNUSED int arg0)
     D_800F19CC->unk2C00 = count;
     func_800C1664(count, D_800F19CC->unk29C0, 1);
     D_800F19CC->unk298C = 240;
-    _cameraMode = 3;
+    cameraMode = 3;
 }
 
 void func_80071F68(int arg0)
@@ -4085,7 +4085,7 @@ void func_80071F68(int arg0)
     }
 
     if (D_800E81D4[vs_main_actions[action].unk2_4] & 0x80) {
-        _mpdRoomSection13* room = func_8008E370(&i);
+        mpdRoomSection13_t* room = func_8008E370(&i);
 
         for (j = 0; j < i; ++j) {
             D_800F19CC->unk29C0[count].unk0.vx = room[j].unk0 * 128 + 64;
@@ -4149,7 +4149,7 @@ void func_80071F68(int arg0)
         }
     }
 
-    _cameraMode = 1;
+    cameraMode = 1;
 }
 
 void func_80072734(int arg0)
@@ -4236,10 +4236,10 @@ void func_80072734(int arg0)
             &D_800F19CC->unk29A0, &D_800F19CC->unk29B0, count, D_800F19CC->unk29C0);
     }
 
-    _cameraMode = 2;
+    cameraMode = 2;
 }
 
-void func_80072B9C(void) { _cameraMode = 0; }
+void func_80072B9C(void) { cameraMode = 0; }
 
 void func_80072BA8(int action)
 {
@@ -4290,7 +4290,7 @@ void func_80072BA8(int action)
         }
         D_800F19CC->unk2C00 = count;
         func_800C1664(count, D_800F19CC->unk29C0, 0);
-        _cameraMode = 1;
+        cameraMode = 1;
         return;
     }
 
@@ -4369,7 +4369,7 @@ void func_80072EC4(int arg0, int arg1)
     vs_main_setClutState(0);
 }
 
-void _initBattleCameraTransition(void)
+void initBattleCameraTransition(void)
 {
     VECTOR sp10;
     vs_battle_actorPosition sp20;
@@ -4399,10 +4399,10 @@ void _initBattleCameraTransition(void)
     setVector(&sp10, sp20.unk0.unk4.vx * ONE, (sp20.unk0.unk4.vy - 0xB4) * ONE,
         sp20.unk0.unk4.vz * ONE);
 
-    _computeCameraTransition(&sp10);
+    computeCameraTransition(&sp10);
 
     D_800F196C = 7;
-    _cameraMode = 0;
+    cameraMode = 0;
 
     func_800CB654(1);
 
@@ -4416,7 +4416,7 @@ void _initBattleCameraTransition(void)
     func_800A0870(1);
 }
 
-void _endBattleCameraTransition(void)
+void endBattleCameraTransition(void)
 {
     vs_scratch.camera = vs_battle_cameraTransition->fromCameraState;
 
@@ -4499,7 +4499,7 @@ void func_80073554(void)
 void func_8007357C(UNUSED int arg0, UNUSED int arg1)
 {
     D_800F196C = 5;
-    _cameraMode = 1;
+    cameraMode = 1;
     func_800CB660((vs_battle_characterState->weaponDrawn & 1) | 2);
     func_8006C39C();
 }
@@ -4550,7 +4550,7 @@ void func_80073718(void)
     int i;
 
     D_800F196C = 3;
-    _cameraMode = 2;
+    cameraMode = 2;
     vs_battle_setStateFlag(0xAC, vs_battle_characterState->weaponDrawn & 1);
     vs_battle_setStateFlag(
         0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
@@ -4596,7 +4596,7 @@ void func_80073898(void)
 {
     if ((func_800BEB10() << 16) != 0) {
         D_800F196C = 3;
-        _cameraMode = 1;
+        cameraMode = 1;
         return;
     }
     func_80073870();
@@ -4609,7 +4609,7 @@ void func_800738E4(void)
 
     func_8008D594(0);
     func_80095B70(0);
-    _firstPersonViewEnabled = 0;
+    firstPersonViewEnabled = 0;
 
     for (i = 0; i < 16; ++i) {
         if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk8 == 0x10)) {
@@ -4663,7 +4663,7 @@ void func_80073ACC(void)
     func_8006F5CC();
 }
 
-int func_80073AFC(_mpdRoomSectionA* arg0)
+int func_80073AFC(mpdRoomSectionA_t* arg0)
 {
     SVECTOR sp10;
     int action;
@@ -4736,7 +4736,8 @@ int func_80073AFC(_mpdRoomSectionA* arg0)
     return 1;
 }
 
-void func_80073D30(_mpdRoomSectionA* arg0, vs_battle_actorPosition* arg1, int targetStats)
+void func_80073D30(
+    mpdRoomSectionA_t* arg0, vs_battle_actorPosition* arg1, int targetStats)
 {
     actionEffectRequest request;
 
@@ -4762,7 +4763,7 @@ void func_80073D30(_mpdRoomSectionA* arg0, vs_battle_actorPosition* arg1, int ta
     func_800CF3F8(&request, 0);
 }
 
-void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
+void func_80073E30(mpdRoomSectionA_t* arg0, int arg1)
 {
     SVECTOR sp10;
     int var_s1;
@@ -4800,12 +4801,12 @@ void func_80073E30(_mpdRoomSectionA* arg0, int arg1)
     func_8009E070(0, &sp10, 3);
 }
 
-void func_80073F7C(_mpdRoomSectionA* arg0, vs_battle_actorLocation* arg1, int arg2)
+void func_80073F7C(mpdRoomSectionA_t* arg0, vs_battle_actorLocation* arg1, int arg2)
 {
     int i;
 
     D_800F196C = 8;
-    _cameraMode = 1;
+    cameraMode = 1;
     func_8006EF10();
     D_800F1910.unk0 = arg0;
     D_800F1910.unk4.unk0 = *arg1;
@@ -4820,14 +4821,14 @@ void func_80073F7C(_mpdRoomSectionA* arg0, vs_battle_actorLocation* arg1, int ar
     D_800F19CC->unk8.actionIndex = 0;
 }
 
-void func_80074050(_mpdRoomSectionA* arg0, int arg1)
+void func_80074050(mpdRoomSectionA_t* arg0, int arg1)
 {
     SVECTOR sp10;
     int i;
     int var_v0;
 
     D_800F196C = 9;
-    _cameraMode = 1;
+    cameraMode = 1;
     func_8006EF10();
     D_800F1910.unk0 = arg0;
     func_800A1108(arg1, &D_800F1910.unk4);
@@ -4854,7 +4855,7 @@ int func_80074120(void)
     sp10.vy = (u_short)D_800F1910.unk4.unk0.unk4.vy;
     sp10.vz = (u_short)D_800F1910.unk4.unk0.unk4.vz;
 
-    if ((_stepTowardTarget(&sp10, 0, 0x28) == 0)
+    if ((stepTowardTarget(&sp10, 0, 0x28) == 0)
         && (((func_800A0BE0(0) & 0x08000000) != 0))) {
         return 0;
     }
@@ -4868,12 +4869,12 @@ int func_8007418C(void)
     sp10.vx = (u_short)D_800F1910.unk4.unk0.unk4.vx;
     sp10.vy = (u_short)D_800F1910.unk4.unk0.unk4.vy;
     sp10.vz = (u_short)D_800F1910.unk4.unk0.unk4.vz;
-    return _stepTowardTarget(&sp10, 0, 0x28);
+    return stepTowardTarget(&sp10, 0, 0x28);
 }
 
 void func_800741D4(void)
 {
-    _cameraMode = 2;
+    cameraMode = 2;
     if (D_800F196C == 8) {
         vs_gametime_tickspeed = 4;
         func_80073D30(D_800F1910.unk0, &D_800F1910.unk4, D_800F1910.unk4.unkC);
@@ -4898,7 +4899,7 @@ void func_800742A4(void)
     SVECTOR sp10;
     int v;
 
-    _cameraMode = 4;
+    cameraMode = 4;
     vs_gametime_tickspeed = 2;
     v = 7;
     sp10.vx = (D_800F1910.unk0->unk0.unk0 << v) + 0x40;
@@ -4909,7 +4910,7 @@ void func_800742A4(void)
 
 void func_80074314(void)
 {
-    _cameraMode = 4;
+    cameraMode = 4;
     vs_gametime_tickspeed = 2;
     func_800CB50C();
     func_8008DEAC(&D_800F1910.unk0->unk0, 1);
@@ -4926,7 +4927,7 @@ int func_80074374(void)
     sp10.vx = sp18[2];
     sp10.vz = sp18[4];
     sp10.vy = sp18[3] - 0x5A;
-    temp_s0 = _stepTowardTarget(&sp10, 1, 0x28);
+    temp_s0 = stepTowardTarget(&sp10, 1, 0x28);
 
     if (func_8009E480() != 0) {
         return 0;
@@ -4939,7 +4940,7 @@ void func_800743E0()
     int temp_v1 = D_800F1910.unk0->keyOrSigil;
     int arg1;
 
-    _cameraMode = 3;
+    cameraMode = 3;
 
     if (temp_v1 != 0) {
         switch (temp_v1) {
@@ -4998,15 +4999,15 @@ void func_80074580(void)
         func_800A087C(0, func_800A0BE0(0) & ~2);
     }
 
-    if (_stepCameraTransition() != 0) {
-        _cameraMode = 1;
-        _firstPersonViewEnabled = 1;
+    if (stepCameraTransition() != 0) {
+        cameraMode = 1;
+        firstPersonViewEnabled = 1;
         D_800F19C8 = 1;
         func_8008C40C();
     }
 }
 
-void _checkFirstPersonViewExit(void)
+void checkFirstPersonViewExit(void)
 {
     vs_battle_actorPosition sp10;
 
@@ -5014,8 +5015,8 @@ void _checkFirstPersonViewExit(void)
         return;
     }
 
-    _cameraMode = 2;
-    _firstPersonViewEnabled = 0;
+    cameraMode = 2;
+    firstPersonViewEnabled = 0;
     D_800F19C8 = 0;
 
     func_800A1108(0, &sp10);
@@ -5043,10 +5044,10 @@ void _checkFirstPersonViewExit(void)
     vs_battle_cameraTransition->toProjectionDistance =
         vs_battle_cameraTransition->fromProjectionDistance;
     vs_battle_cameraTransition->toFarClip = vs_battle_cameraTransition->fromFarClip;
-    _computeSphericalOffset(&vs_battle_cameraTransition->fromCameraState.position,
+    computeSphericalOffset(&vs_battle_cameraTransition->fromCameraState.position,
         &vs_battle_cameraTransition->fromCameraState.lookAt,
         &vs_battle_cameraTransition->toSpherical.values);
-    _computeCameraTransition(&vs_battle_cameraTransition->fromCameraState.position);
+    computeCameraTransition(&vs_battle_cameraTransition->fromCameraState.position);
 }
 
 void func_80074744(void)
@@ -5054,8 +5055,8 @@ void func_80074744(void)
     if (vs_main_projectionDistance > 272) {
         func_800A087C(0, func_800A0BE0(0) | 2);
     }
-    if (_stepCameraTransition() != 0) {
-        _endBattleCameraTransition();
+    if (stepCameraTransition() != 0) {
+        endBattleCameraTransition();
     }
 }
 
@@ -5098,11 +5099,11 @@ int func_80074860(int arg0)
     return func_800BEC58(4, 0, (int)sp20, 1) == 1;
 }
 
-_mpdRoomSectionA* func_800748B8(int arg0)
+mpdRoomSectionA_t* func_800748B8(int arg0)
 {
     vs_battle_actorPosition sp10;
     u_char sp20[4];
-    _mpdRoomSectionA* temp_s1;
+    mpdRoomSectionA_t* temp_s1;
     u_char* s0 = sp20;
 
     func_800A1108(arg0, &sp10);
@@ -5117,11 +5118,11 @@ _mpdRoomSectionA* func_800748B8(int arg0)
     return temp_s1;
 }
 
-_mpdRoomSection13* func_80074950(int arg0)
+mpdRoomSection13_t* func_80074950(int arg0)
 {
     vs_battle_actorPosition sp10;
     u_char sp20[4];
-    _mpdRoomSection13* temp_v0;
+    mpdRoomSection13_t* temp_v0;
     int temp_s2;
     u_char* s1 = sp20;
 
@@ -5198,7 +5199,7 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
     u_int cellIndex;
     int actorOffset;
     int result = 0;
-    _mpdRoomSection3* cell;
+    mpdRoomSection3_t* cell;
     vs_battle_actor* actor;
     int layer = (u_int)flags >> 14;
 
@@ -5228,7 +5229,7 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
         || coordinates->unk0.z != actor->currentTile.z
         || layer != actor->currentTile.status || (flags & 0x70000)) {
         if (D_800F196C != 3) {
-            _mpdRoomSection9* trigger;
+            mpdRoomSection9_t* trigger;
 
             if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
                 func_80073898();
@@ -5254,7 +5255,7 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
 
                 if (trigger != NULL) {
                     if (trigger->unk6 != 16) {
-                        func_80073F7C((_mpdRoomSectionA*)trigger, position, actorIndex);
+                        func_80073F7C((mpdRoomSectionA_t*)trigger, position, actorIndex);
                         actor->currentTile = coordinates->unk0;
                         actor->currentTile.status = layer;
                         return 1;
@@ -5290,7 +5291,7 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
                             continue;
                         }
 
-                        if (door->zndId == _zoneContext.zndId) {
+                        if (door->zndId == zoneContext.zndId) {
                             func_8007C4E0(door, 0, 8);
                         } else {
                             func_8007C5C0(door, 0, 8);
@@ -5327,7 +5328,7 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
             destination.walkForward = 0;
             destination.faceCamera = 0;
 
-            if (destination.zndId == _zoneContext.zndId) {
+            if (destination.zndId == zoneContext.zndId) {
                 func_8007C4E0(&destination, 0, 8);
             } else {
                 func_8007C5C0(&destination, 0, 8);
@@ -5362,8 +5363,8 @@ int func_80074BAC(int actorIndex, vs_battle_actorLocation* position)
 
 int func_800751B8(int arg0, vs_battle_actorLocation* arg1)
 {
-    _mpdRoomSection9* temp_v0_2;
-    _mpdRoomSection3* temp_s4;
+    mpdRoomSection9_t* temp_v0_2;
+    mpdRoomSection3_t* temp_s4;
     int temp_s3;
     u_int temp_a2;
     u_int temp_v0;
@@ -5396,7 +5397,7 @@ int func_800751B8(int arg0, vs_battle_actorLocation* arg1)
                             temp_v0_2 =
                                 func_8008D438(s2->unk0.x, s2->unk0.z, s2->unk0.surface);
                             if ((temp_v0_2 != NULL) && (temp_v0_2->unk6 != 0x10)) {
-                                func_80073F7C((_mpdRoomSectionA*)temp_v0_2, arg1, arg0);
+                                func_80073F7C((mpdRoomSectionA_t*)temp_v0_2, arg1, arg0);
                                 memcpy(&temp_s0->currentTile, &s2->unk0,
                                     sizeof temp_s0->currentTile);
                                 temp_s0->currentTile.status = temp_s3;
@@ -6138,7 +6139,7 @@ void func_80076784(
     stats->currentAttackShapeAngle = stats->weapon.range.attackShapeAngle;
     stats->unk3B_0 = 1;
     vs_battle_applyShieldStats(&stats->shield, &init->shield);
-    _applyAccessoryStats(&stats->accessory, &init->accessory);
+    applyAccessoryStats(&stats->accessory, &init->accessory);
 
     for (i = 0; i < 6; ++i) {
         stats->limbs[i].hp = stats->limbs[i].maxHp = init->limbs[i].hp;
@@ -6164,7 +6165,7 @@ void func_80076784(
             stats->limbs[i].affinities[j] = init->limbs[i].affinities[j];
         }
 
-        _applyArmorStats(&stats->limbs[i].armor, &init->limbs[i].unk20);
+        applyArmorStats(&stats->limbs[i].armor, &init->limbs[i].unk20);
     }
 
     vs_battle_nop0(stats);
@@ -6426,7 +6427,7 @@ vs_battle_actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int blade
 
         if (bladeWepId != 0) {
             for (i = 1; i < 11; ++i) {
-                if (_wepIdCategories[i] >= bladeWepId) {
+                if (wepIdCategories[i] >= bladeWepId) {
                     break;
                 }
             }
@@ -6490,7 +6491,7 @@ vs_battle_actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMate
 }
 
 vs_battle_actor* func_800775C0(
-    int id, _mpdEnemy* spawn, vs_battle_charInitData* init, int flags)
+    int id, mpdEnemy_t* spawn, vs_battle_charInitData* init, int flags)
 {
     vs_battle_objectData object;
     vs_main_CdFile file;
@@ -6539,48 +6540,48 @@ vs_battle_actor* func_800775C0(
 
         loaded = 0;
 
-        if (_zoneContext.unk1C != NULL) {
-            if (zudIndex + 1 == _zoneContext.unk14) {
+        if (zoneContext.unk1C != NULL) {
+            if (zudIndex + 1 == zoneContext.unk14) {
                 loaded = 1;
             } else {
-                vs_main_freeHeapR(_zoneContext.unk1C);
-                _zoneContext.unk1C = NULL;
-                _zoneContext.unk14 = 0;
+                vs_main_freeHeapR(zoneContext.unk1C);
+                zoneContext.unk1C = NULL;
+                zoneContext.unk14 = 0;
             }
         }
 
         if (!loaded) {
-            file.lba = _zoneContext.zudFiles[zudIndex].lba;
-            file.size = _zoneContext.zudFiles[zudIndex].size;
+            file.lba = zoneContext.zudFiles[zudIndex].lba;
+            file.size = zoneContext.zudFiles[zudIndex].size;
 
-            if (_zoneContext.unk18 != NULL) {
+            if (zoneContext.unk18 != NULL) {
                 vs_main_nop9(0xA7, 0);
             }
 
-            _zoneContext.unk18 = vs_main_allocateCdQueueSlot(&file);
-            _zoneContext.unk1C = vs_main_allocHeapR(file.size);
-            vs_main_cdEnqueuePriority(_zoneContext.unk18, _zoneContext.unk1C);
+            zoneContext.unk18 = vs_main_allocateCdQueueSlot(&file);
+            zoneContext.unk1C = vs_main_allocHeapR(file.size);
+            vs_main_cdEnqueuePriority(zoneContext.unk18, zoneContext.unk1C);
 
-            while (_zoneContext.unk18->state != 4) {
+            while (zoneContext.unk18->state != 4) {
                 vs_main_gametimeUpdate(0);
             }
 
-            vs_main_freeCdQueueSlot(_zoneContext.unk18);
-            _zoneContext.unk18 = NULL;
-            _zoneContext.unk14 = zudIndex + 1;
+            vs_main_freeCdQueueSlot(zoneContext.unk18);
+            zoneContext.unk18 = NULL;
+            zoneContext.unk14 = zudIndex + 1;
         }
 
-        zud = _zoneContext.unk1C;
+        zud = zoneContext.unk1C;
         object.dataType = 2;
         object.index = id;
         object.dataAddr = zud->model + (u_long)zud;
-        object.modelId = _zoneContext.zndEnemies[zudIndex].unk0[2];
+        object.modelId = zoneContext.zndEnemies[zudIndex].unk0[2];
 
         if ((vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId
-                == _zoneContext.zndId)
+                == zoneContext.zndId)
             && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
-                == _zoneContext.mapId)
-            && ((saved = _findSavedEnemy(spawn->index)) != NULL)) {
+                == zoneContext.mapId)
+            && ((saved = findSavedEnemy(spawn->index)) != NULL)) {
             object.unkC.unk0_0 = saved->tile.x;
             object.unkC.unk0_16 = saved->tile.z;
             object.unkC.unk0_8 = saved->tile.surface;
@@ -6697,10 +6698,10 @@ vs_battle_actor* func_800775C0(
         actor->unk38 = init->unk2C;
 
         if ((vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId
-                == _zoneContext.zndId)
+                == zoneContext.zndId)
             && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
-                == _zoneContext.mapId)
-            && ((saved = _findSavedEnemy(spawn->index)) != NULL)) {
+                == zoneContext.mapId)
+            && ((saved = findSavedEnemy(spawn->index)) != NULL)) {
             actor->stats->currentHP = saved->currentHP;
             actor->stats->maxHP = saved->maxHP;
             actor->stats->currentMP = saved->currentMP;
@@ -6732,7 +6733,7 @@ vs_battle_actor* func_800775C0(
     return NULL;
 }
 
-int _isLookAtAtDestination(void)
+int isLookAtAtDestination(void)
 {
     func_80077DF0_t sp10;
     vs_battle_actorPosition sp30;
@@ -6744,7 +6745,7 @@ int _isLookAtAtDestination(void)
     if (sp10.position.vy > 0) {
         sp10.position.vy = 0;
     }
-    _clampPositionToZoneBounds(&sp10.position, &sp10.position);
+    clampPositionToZoneBounds(&sp10.position, &sp10.position);
     sp10.lookAt = vs_scratch.camera.lookAt;
 
     if ((sp10.position.vx == (sp10.lookAt.vx & ~0xFFF))
@@ -6836,7 +6837,7 @@ void func_8007820C(int arg0)
 
     func_800780A8(&sp10);
     if (arg0 != 0) {
-        _stepTowardTarget(&sp10, 1, 0x28);
+        stepTowardTarget(&sp10, 1, 0x28);
     }
 }
 
@@ -6902,7 +6903,7 @@ void func_80078364(void)
     }
 }
 
-void _handleCombatCameraZoom(void)
+void handleCombatCameraZoom(void)
 {
     SVECTOR sp18;
     VECTOR sp20;
@@ -6913,7 +6914,7 @@ void _handleCombatCameraZoom(void)
         if (D_800F19CC->unk2C0E == 0) {
             func_8007820C(1);
             func_800780A8(&sp18);
-            _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
+            computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
             if ((((sp20.vx | sp20.vy | sp20.vz) == 0)
                     && (vs_battle_cameraCurrentSpherical.delta.yaw == 0))
                 && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
@@ -6935,7 +6936,7 @@ void _handleCombatCameraZoom(void)
             }
             if (vs_main_projectionDistance == 0x300) {
                 func_800780A8(&sp18);
-                _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
+                computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
                 if ((((sp20.vx | sp20.vy | sp20.vz) == 0)
                         && (vs_battle_cameraCurrentSpherical.delta.yaw == 0))
                     && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
@@ -6953,7 +6954,7 @@ void _handleCombatCameraZoom(void)
             }
             if (vs_battle_cameraCurrentSpherical.values.distance == 0x900) {
                 func_800780A8(&sp18);
-                _computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
+                computeStepAndDisplacement(&sp18, &sp30, &sp20, 1, 0x28);
                 if ((((sp20.vx | sp20.vy | sp20.vz) == 0)
                         && (vs_battle_cameraCurrentSpherical.delta.yaw == 0))
                     && ((vs_battle_cameraCurrentSpherical.delta.mode == 1)
@@ -7066,13 +7067,13 @@ int func_80078828(int arg0)
         if (arg0 != 0) {
 
             if (temp_s1->unk4.unk0.hit.targetActor == 0) {
-                if (!(_getActionCost(vs_main_settings.mappedChainAbilities[arg0 - 1],
+                if (!(getActionCost(vs_main_settings.mappedChainAbilities[arg0 - 1],
                           vs_battle_characterState->stats, 0)
                         & 0xFF000000)) {
                     ret = 0;
                 }
             } else {
-                if (!(_getActionCost(vs_main_settings.mappedDefenseAbilities[arg0 - 1],
+                if (!(getActionCost(vs_main_settings.mappedDefenseAbilities[arg0 - 1],
                           vs_battle_characterState->stats, 0)
                         & 0xFF000000)) {
                     ret = 0;
@@ -7367,14 +7368,14 @@ int func_800792E4(int arg0, int arg1, int arg2)
     int ret = 0;
     if (vs_battle_actors[arg1] != NULL) {
         if (vs_battle_actors[arg1]->stats->currentHP == 0) {
-            _enemyDefeated(arg0, arg1, arg2);
+            enemyDefeated(arg0, arg1, arg2);
             if (arg1 == 0) {
                 func_8009722C();
                 func_800BEC58(0x40, 0, 0, 0);
                 func_80073898();
                 ret = 1;
             } else if (vs_battle_actors[arg1]->unk26 == 0) {
-                _removeActorById(arg1, 1);
+                removeActorById(arg1, 1);
             }
         } else {
             func_8009E5C4(arg1);
@@ -7420,7 +7421,7 @@ void func_800793C0(void)
         }
     }
     if ((vs_main_projectionDistance != 512) || (D_800F19D8 != D_800F19CC->unk2C0C)
-        || !_isLookAtAtDestination()) {
+        || !isLookAtAtDestination()) {
         return;
     }
     ready = 1;
@@ -7494,7 +7495,7 @@ void func_8007983C(void)
     }
 }
 
-void _finishLoadZnd(int id);
+void finishLoadZnd(int id);
 void func_80089DC0(int arg0);
 int func_80088B6C(void);
 void func_80088B8C(void);
@@ -7522,7 +7523,7 @@ void vs_battle_exec(void)
     func_800FA35C(vs_main_startState);
 
     while (1) {
-        _finishLoadZnd(vs_battle_spawnPoint.zndId);
+        finishLoadZnd(vs_battle_spawnPoint.zndId);
 
         do {
             func_80089DC0(vs_battle_spawnPoint.mpdId);
@@ -7644,7 +7645,7 @@ void vs_battle_exec(void)
                             if (!(status & 0x4000)) {
                                 if (!(status & 0x180000)
                                     && (vs_main_buttonsPressed.all & (PADj | PADstart))) {
-                                    _initBattleCameraTransition();
+                                    initBattleCameraTransition();
                                     break;
                                 }
 
@@ -7695,10 +7696,10 @@ void vs_battle_exec(void)
                             break;
 
                         case 3:
-                            if (_cameraMode == 1) {
+                            if (cameraMode == 1) {
                                 func_8006E158();
                                 func_800A4D8C();
-                                _setCameraPositionFromAngles(
+                                setCameraPositionFromAngles(
                                     &vs_battle_cameraCurrentSpherical.values);
 
                                 if (vs_battle_cameraCurrentSpherical.delta.yaw != 0) {
@@ -7748,7 +7749,7 @@ void vs_battle_exec(void)
                             break;
 
                         case 5:
-                            if (_cameraMode == 1) {
+                            if (cameraMode == 1) {
                                 func_800C97BC();
                                 menu = func_800CB66C();
                                 D_800F18EC = menu;
@@ -7792,13 +7793,13 @@ void vs_battle_exec(void)
                             break;
 
                         case 7:
-                            switch (_cameraMode) {
+                            switch (cameraMode) {
                             case 0:
                                 func_80074580();
                                 break;
 
                             case 1:
-                                _checkFirstPersonViewExit();
+                                checkFirstPersonViewExit();
                                 func_8006EC7C();
                                 break;
 
@@ -7806,14 +7807,14 @@ void vs_battle_exec(void)
                                 func_80074744();
 
                                 if (vs_main_buttonsPressed.all & (PADj | PADstart)) {
-                                    _initBattleCameraTransition();
+                                    initBattleCameraTransition();
                                 }
                                 break;
                             }
                             break;
 
                         case 8:
-                            switch (_cameraMode) {
+                            switch (cameraMode) {
                             case 1:
                                 if (!func_8007418C()) {
                                     func_800741D4();
@@ -7829,7 +7830,7 @@ void vs_battle_exec(void)
                             case 4:
                                 func_80074374();
 
-                                if (_isLookAtAtDestination()) {
+                                if (isLookAtAtDestination()) {
                                     func_800DEC88(&D_800F19CC->unk854[0]);
                                     func_8006FBCC(0);
                                     D_800F196C = 2;
@@ -7837,12 +7838,12 @@ void vs_battle_exec(void)
                                 break;
                             }
 
-                            _setCameraPositionFromAngles(
+                            setCameraPositionFromAngles(
                                 &vs_battle_cameraCurrentSpherical.values);
                             break;
 
                         case 9:
-                            switch (_cameraMode) {
+                            switch (cameraMode) {
                             case 1:
                                 if (!func_80074120()) {
                                     func_800741D4();
@@ -7864,7 +7865,7 @@ void vs_battle_exec(void)
                             case 4:
                                 ready = func_80074374();
 
-                                if (_isLookAtAtDestination() && ready) {
+                                if (isLookAtAtDestination() && ready) {
                                     func_800CB50C();
                                     func_8006FBCC(0);
                                     D_800F196C = 2;
@@ -7872,7 +7873,7 @@ void vs_battle_exec(void)
                                 break;
                             }
 
-                            _setCameraPositionFromAngles(
+                            setCameraPositionFromAngles(
                                 &vs_battle_cameraCurrentSpherical.values);
                             break;
 
@@ -7914,7 +7915,7 @@ void vs_battle_exec(void)
                         break;
 
                     case 2:
-                        switch (_cameraMode) {
+                        switch (cameraMode) {
                         case 7:
                         case 8:
                         case 9:
@@ -7922,7 +7923,7 @@ void vs_battle_exec(void)
                             break;
 
                         default:
-                            _setCameraPositionFromAngles(
+                            setCameraPositionFromAngles(
                                 &vs_battle_cameraCurrentSpherical.values);
                             break;
                         }
@@ -7957,7 +7958,7 @@ void vs_battle_exec(void)
                         case 2:
                             func_80088B8C();
 
-                            switch (_cameraMode) {
+                            switch (cameraMode) {
                             case 1:
                                 func_80078248();
                                 break;
@@ -7971,7 +7972,7 @@ void vs_battle_exec(void)
                                 break;
 
                             case 4:
-                                _handleCombatCameraZoom();
+                                handleCombatCameraZoom();
                                 break;
 
                             case 5:
@@ -8015,8 +8016,8 @@ void vs_battle_exec(void)
                                 break;
                             }
 
-                            if (_cameraMode < 4) {
-                                if (_cameraMode != 0) {
+                            if (cameraMode < 4) {
+                                if (cameraMode != 0) {
                                     func_800C0D78();
                                 }
                             }
@@ -8050,7 +8051,7 @@ void vs_battle_exec(void)
                         vs_main_updateClutSlots();
                     }
 
-                    _drawScreenTransition(ot);
+                    drawScreenTransition(ot);
                     func_8007D734(ot);
 
                     if (D_800F196C == 1) {
@@ -8084,7 +8085,7 @@ void vs_battle_exec(void)
 
 void func_8007A824(void* arg0) { func_800C64D0(D_800F1870 + 0x2084, arg0); }
 
-int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
+int vs_battle_syncCameraAnglesFromPosition(sphericalCamera_t* arg0)
 {
     VECTOR toCamera;
     VECTOR toCameraNorm;
@@ -8119,8 +8120,8 @@ int vs_battle_syncCameraAnglesFromPosition(_sphericalCamera* arg0)
     return yaw;
 }
 
-void _computeSphericalOffset(
-    VECTOR* outPosition, VECTOR* basePosition, _sphericalValues* angles)
+void computeSphericalOffset(
+    VECTOR* outPosition, VECTOR* basePosition, sphericalValues_t* angles)
 {
     outPosition->vx = rsin(angles->yaw);
     outPosition->vz = rcos(angles->yaw);
@@ -8131,13 +8132,13 @@ void _computeSphericalOffset(
     outPosition->vy = (outPosition->vy * angles->distance) + basePosition->vy;
 }
 
-void _setCameraPositionFromAngles(_sphericalValues* spherical)
+void setCameraPositionFromAngles(sphericalValues_t* spherical)
 {
-    _computeSphericalOffset(
+    computeSphericalOffset(
         &vs_scratch.camera.position, &vs_scratch.camera.lookAt, spherical);
 }
 
-void _setCameraLookAtFromAngles(_sphericalValues* spherical)
+void setCameraLookAtFromAngles(sphericalValues_t* spherical)
 {
     vs_scratch.camera.lookAt.vx = -rsin(spherical->yaw);
     vs_scratch.camera.lookAt.vz = -rcos(spherical->yaw);
@@ -8337,7 +8338,7 @@ void func_8007B470(void)
 
 void func_8007B4C4(void)
 {
-    _cameraMode = 2;
+    cameraMode = 2;
     func_8007B470();
     if (D_800F1864 != 0) {
         func_8009E5C4(0);
@@ -8348,8 +8349,8 @@ void func_8007B508(void)
 {
     if (!(vs_battle_getStateFlag(0xB6)) || ((vs_battle_getStateFlag(0xB6)) == 2)
         || ((vs_battle_getStateFlag(0xB6)) == 3)) {
-        if (_isArtOrAbilityUnlocked() != 0) {
-            _cameraMode = 5;
+        if (isArtOrAbilityUnlocked() != 0) {
+            cameraMode = 5;
             if (D_800F1864 != 0) {
                 func_8009E070(0, NULL, 6);
                 func_8006F848();
@@ -8362,7 +8363,7 @@ void func_8007B508(void)
         && !((vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked))
         && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
         && (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0)) {
-        _cameraMode = 5;
+        cameraMode = 5;
         if (D_800F1864 != 0) {
             func_8009E070(0, NULL, 6);
             func_8006F848();
@@ -8381,24 +8382,24 @@ void func_8007B63C(void)
         && !((vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked))
         && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
         && (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0)) {
-        _cameraMode = 6;
+        cameraMode = 6;
         func_8007B410();
         vs_battle_displaySceneMessage(0xC, D_800F19CC->unk8.actionIndex, 1);
         vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked = 1;
         return;
     }
-    temp_v0_2 = _isArtOrAbilityUnlocked();
-    _cameraMode = 6;
+    temp_v0_2 = isArtOrAbilityUnlocked();
+    cameraMode = 6;
     func_8007B410();
-    _setArtAndAbilityToUnlock(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
+    setArtAndAbilityToUnlock(temp_v0_2 >> 0x10, temp_v0_2 & 0xFFFF);
 }
 
 void func_8007B764(void)
 {
     if ((vs_battle_getStateFlag(0xAB)) >= 3) {
-        if (_lootListHead != NULL) {
-            func_800CB158(_lootListHead);
-            _cameraMode = 4;
+        if (lootListHead != NULL) {
+            func_800CB158(lootListHead);
+            cameraMode = 4;
             func_8007B410();
             return;
         }
@@ -8412,7 +8413,7 @@ void func_8007B7DC()
 {
     if (vs_battle_getStateFlag(0xAB) >= 3) {
         func_800CB23C();
-        _cameraMode = 3;
+        cameraMode = 3;
         func_8007B410();
         return;
     }
@@ -8479,7 +8480,7 @@ void func_8007B9CC(void)
 
 int func_8007B9FC(void)
 {
-    switch (_cameraMode) {
+    switch (cameraMode) {
     case 3:
         func_8007B834();
         return 1;
@@ -8518,25 +8519,25 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
             temp_v0->actorId |= 1;
         }
         if (temp_v0->actorId != 0) {
-            temp_a0 = _lootListHead;
+            temp_a0 = lootListHead;
             temp_v0->actorId = 0xFF;
-            _lootListHead = temp_v0;
+            lootListHead = temp_v0;
             temp_v0->next = temp_a0;
         } else {
             vs_main_freeHeapR(temp_v0);
         }
     }
-    if (_lootListHead != NULL) {
+    if (lootListHead != NULL) {
         D_800F1860 = 1;
-        func_800CB158(_lootListHead);
-        _cameraMode = 4;
+        func_800CB158(lootListHead);
+        cameraMode = 4;
         func_8007B410();
         return;
     }
     func_8007B4C4();
 }
 
-void vs_battle_forgetZoneEnemies(int arg0, int arg1) { _forgetZoneEnemies(arg0, arg1); }
+void vs_battle_forgetZoneEnemies(int arg0, int arg1) { forgetZoneEnemies(arg0, arg1); }
 
 void func_8007BBD8(int arg0, int arg1, int arg2)
 {
@@ -8603,7 +8604,7 @@ int func_8007BD8C(int arg0)
 int func_8007BDD8(int arg0)
 {
     func_8008C40C();
-    return _firstPersonViewEnabled = ~arg0 & 1;
+    return firstPersonViewEnabled = ~arg0 & 1;
 }
 
 int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
@@ -8682,7 +8683,7 @@ void func_8007C050(void)
     }
 }
 
-UNUSED int _isWeaponDrawn(int actor) { return vs_battle_actors[actor]->weaponDrawn & 1; }
+UNUSED int isWeaponDrawn(int actor) { return vs_battle_actors[actor]->weaponDrawn & 1; }
 
 void func_8007C0AC(int arg0, int arg1)
 {
@@ -8797,9 +8798,9 @@ int func_8007C398(void)
     }
 }
 
-void vs_battle_enableDispMask(void) { _enableDispMask(); }
+void vs_battle_enableDispMask(void) { enableDispMask(); }
 
-void vs_battle_disableDispMask(void) { _disableDispMask(); }
+void vs_battle_disableDispMask(void) { disableDispMask(); }
 
 void vs_battle_setScreenTransition(int arg0, int arg1, int arg2)
 {
@@ -8841,8 +8842,8 @@ int func_8007C4E0(vs_main_warp_t* arg0, int effect, int speed)
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    vs_battle_spawnPoint.zndId = _zoneContext.zndId;
-    _loadMpd(arg0->mpdId);
+    vs_battle_spawnPoint.zndId = zoneContext.zndId;
+    loadMpd(arg0->mpdId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -8865,7 +8866,7 @@ int func_8007C5C0(vs_main_warp_t* arg0, int effect, int speed)
     vs_battle_screenTransitionStep = 2;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    _loadZnd(arg0->zndId);
+    loadZnd(arg0->zndId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -8912,10 +8913,10 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
 
     if (zndId != vs_battle_spawnPoint.zndId) {
         vs_battle_screenTransitionStep = 2;
-        _loadZnd(zndId);
+        loadZnd(zndId);
     } else if (mpdId != vs_battle_spawnPoint.mpdId) {
         vs_battle_screenTransitionStep = 1;
-        _loadMpd(mpdId);
+        loadMpd(mpdId);
     }
 
     vs_battle_spawnPoint.zndId = zndId;
@@ -8927,7 +8928,7 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
     return 1;
 }
 
-int _getLocationId(int zoneId, int mapId)
+int getLocationId(int zoneId, int mapId)
 {
     int i;
 
@@ -8942,7 +8943,7 @@ int _getLocationId(int zoneId, int mapId)
 
 int vs_battle_getCurrentRoomId(void)
 {
-    return _getLocationId(_zoneContext.zndId, _zoneContext.mapId);
+    return getLocationId(zoneContext.zndId, zoneContext.mapId);
 }
 
 void func_8007C8A4(int arg0, int arg1)
@@ -9129,8 +9130,8 @@ void vs_battle_initialiseCameraFromSpherical(
     outputLookAt->vx = sp10.unk0.unk4.vx << 0xC;
     outputLookAt->vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
     outputLookAt->vz = sp10.unk0.unk4.vz << 0xC;
-    _clampPositionToZoneBounds(outputLookAt, outputLookAt);
-    _computeSphericalOffset(
+    clampPositionToZoneBounds(outputLookAt, outputLookAt);
+    computeSphericalOffset(
         outputPos, outputLookAt, &vs_battle_cameraCurrentSpherical.values);
 }
 
@@ -9243,14 +9244,14 @@ void func_8007D1A8(int arg0, int arg1)
     vs_battle_actor* temp_a0 = vs_battle_actors[arg0];
     if (temp_a0 != NULL) {
         if (arg1 != 0) {
-            temp_s0 = _removeActor(temp_a0);
+            temp_s0 = removeActor(temp_a0);
             func_800A09D8(arg0, arg1);
             if (temp_s0 != 0) {
                 func_800E7608(arg0);
                 func_800DEC88(NULL);
             }
         } else {
-            temp_s0 = _insertActor(temp_a0);
+            temp_s0 = insertActor(temp_a0);
             func_800A09D8(arg0, 0);
             if (temp_s0 != 0) {
                 func_800E5998();
@@ -9284,7 +9285,7 @@ void vs_battle_setActionUnlocked(u_int arg0)
     }
 }
 
-void func_8007D340(int arg0) { _removeActorById(arg0, 0); }
+void func_8007D340(int arg0) { removeActorById(arg0, 0); }
 
 void func_8007D360(void)
 {
@@ -9609,7 +9610,7 @@ int func_8007E1C0(int arg0)
     return 0;
 }
 
-void _calculateArmorClassAffinity(vs_battle_actorStats* stats, int arg1)
+void calculateArmorClassAffinity(vs_battle_actorStats* stats, int arg1)
 {
     int i;
 
@@ -9627,7 +9628,7 @@ void _calculateArmorClassAffinity(vs_battle_actorStats* stats, int arg1)
     }
 }
 
-void _calculateShieldClassAffinity(vs_battle_actorStats* stats)
+void calculateShieldClassAffinity(vs_battle_actorStats* stats)
 {
     short temp_v0_2;
     int i;
@@ -9649,7 +9650,7 @@ void _calculateShieldClassAffinity(vs_battle_actorStats* stats)
     }
 }
 
-void _calculateWeaponClassAffinity(vs_battle_actorStats* stats)
+void calculateWeaponClassAffinity(vs_battle_actorStats* stats)
 {
     short temp_v0_2;
     int i;
@@ -9671,7 +9672,7 @@ void _calculateWeaponClassAffinity(vs_battle_actorStats* stats)
     }
 }
 
-extern u_int _itemCategorySizes[];
+extern u_int itemCategorySizes[];
 
 int vs_battle_itemIdIsInInventory(int id)
 {
@@ -9680,7 +9681,7 @@ int vs_battle_itemIdIsInInventory(int id)
 
     if (id != 0) {
         for (i = 0; i < 8; ++i) {
-            if (id < _itemCategorySizes[i]) {
+            if (id < itemCategorySizes[i]) {
                 break;
             }
         }
@@ -9739,7 +9740,7 @@ int vs_battle_itemIdIsInInventory(int id)
     return 1;
 }
 
-short _getAttackGemBuff(vs_action_t* action, vs_battle_actorStats* stats)
+short getAttackGemBuff(vs_action_t* action, vs_battle_actorStats* stats)
 {
     int hasGemBuff = 0;
     int gemBuff = 0;
@@ -9768,7 +9769,7 @@ short _getAttackGemBuff(vs_action_t* action, vs_battle_actorStats* stats)
     return gemBuff;
 }
 
-short _getDefenseGemBuff(vs_action_t* action, vs_battle_actorStats* stats, int hitNumber)
+short getDefenseGemBuff(vs_action_t* action, vs_battle_actorStats* stats, int hitNumber)
 {
     int hasGemBuff;
     int i;
@@ -9887,33 +9888,33 @@ short _getDefenseGemBuff(vs_action_t* action, vs_battle_actorStats* stats, int h
     return gemBuff;
 }
 
-int _invalidHitFunction(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int invalidHitFunction(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-int func_8007E97C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int func_8007E97C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return D_800F1A04 != 0 ? 100 : 255;
 }
 
-int _getHitGemModifier(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target,
+int getHitGemModifier(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
     int hitNumber, UNUSED int arg4)
 {
     int gemModifier = 100;
     if ((source != NULL) && (source->kind == 0)) {
-        gemModifier += _getAttackGemBuff(
+        gemModifier += getAttackGemBuff(
             action, vs_battle_actors[source->unk0.hit.targetActor]->stats);
     }
     if ((target != NULL) && (target->kind == 0)) {
-        gemModifier -= _getDefenseGemBuff(
+        gemModifier -= getDefenseGemBuff(
             action, vs_battle_actors[target->unk0.hit.targetActor]->stats, hitNumber);
     }
     return gemModifier;
 }
 
-int _getAgilityDifference(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target,
+int getAgilityDifference(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
     int hitNumber, int addVariance)
 {
     int agiDiff;
@@ -9954,8 +9955,8 @@ int _getAgilityDifference(vs_action_t* action, _hitEntity_t* source, _hitEntity_
         agiDiff = v1 + variance;
     }
 
-    agiDiff += _getAttackGemBuff(action, sourceStats);
-    agiDiff -= _getDefenseGemBuff(action, targetStats, hitNumber);
+    agiDiff += getAttackGemBuff(action, sourceStats);
+    agiDiff -= getDefenseGemBuff(action, targetStats, hitNumber);
 
     if (agiDiff < 0) {
         agiDiff = 0;
@@ -9966,8 +9967,8 @@ int _getAgilityDifference(vs_action_t* action, _hitEntity_t* source, _hitEntity_
     return agiDiff;
 }
 
-int _getIntelligenceDifference(vs_action_t* action, _hitEntity_t* source,
-    _hitEntity_t* target, int hitNumber, int addVariance)
+int getIntelligenceDifference(vs_action_t* action, hitEntity_t* source,
+    hitEntity_t* target, int hitNumber, int addVariance)
 {
     int intDiff;
     int i;
@@ -10007,8 +10008,8 @@ int _getIntelligenceDifference(vs_action_t* action, _hitEntity_t* source,
         intDiff = v1 + variance;
     }
 
-    intDiff += _getAttackGemBuff(action, sourceStats);
-    intDiff -= _getDefenseGemBuff(action, targetStats, hitNumber);
+    intDiff += getAttackGemBuff(action, sourceStats);
+    intDiff -= getDefenseGemBuff(action, targetStats, hitNumber);
 
     if (intDiff < 0) {
         intDiff = 0;
@@ -10019,8 +10020,8 @@ int _getIntelligenceDifference(vs_action_t* action, _hitEntity_t* source,
     return intDiff;
 }
 
-int _getAgilityDifference2(vs_action_t* action, _hitEntity_t* source,
-    _hitEntity_t* target, int hitNumber, int addVariance)
+int getAgilityDifference2(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
+    int hitNumber, int addVariance)
 {
     int agiDiff;
     int i;
@@ -10062,8 +10063,8 @@ int _getAgilityDifference2(vs_action_t* action, _hitEntity_t* source,
         agiDiff = v1 + variance;
     }
 
-    agiDiff += _getAttackGemBuff(action, sourceStats);
-    agiDiff -= _getDefenseGemBuff(action, targetStats, hitNumber);
+    agiDiff += getAttackGemBuff(action, sourceStats);
+    agiDiff -= getDefenseGemBuff(action, targetStats, hitNumber);
 
     if (agiDiff < 0) {
         agiDiff = 0;
@@ -10074,8 +10075,8 @@ int _getAgilityDifference2(vs_action_t* action, _hitEntity_t* source,
     return agiDiff;
 }
 
-int _getRiskModifier(UNUSED vs_action_t* arg0, _hitEntity_t* source,
-    UNUSED _hitEntity_t* arg2, UNUSED int hitNumber, UNUSED int arg4)
+int getRiskModifier(UNUSED vs_action_t* arg0, hitEntity_t* source,
+    UNUSED hitEntity_t* arg2, UNUSED int hitNumber, UNUSED int arg4)
 {
     int rate =
         ((vs_battle_actors[source->unk0.hit.targetActor]->stats->risk + 150) * 100) / 256;
@@ -10085,8 +10086,8 @@ int _getRiskModifier(UNUSED vs_action_t* arg0, _hitEntity_t* source,
     return rate;
 }
 
-int _getChainEvasionModifier(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* target, UNUSED int arg3, UNUSED int arg4)
+int getChainEvasionModifier(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* target, UNUSED int arg3, UNUSED int arg4)
 {
     int rate;
 
@@ -10102,7 +10103,7 @@ int _getChainEvasionModifier(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1
     return rate;
 }
 
-int _doesAttackHit(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target,
+int doesAttackHit(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
     int hitNumber, int addVariance)
 {
     int chance;
@@ -10112,7 +10113,7 @@ int _doesAttackHit(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* targ
         && (vs_battle_actors[target->unk0.hit.targetActor]->stats->unk957 == 0x80)) {
         threshold = 100;
     } else {
-        threshold = _hitFunctions[action->hitParams[hitNumber].hitFunction](
+        threshold = hitFunctions[action->hitParams[hitNumber].hitFunction](
             action, source, target, hitNumber, addVariance);
         if ((action->type == actionTypeSpell)
             && (vs_battle_actors[target->unk0.hit.targetActor]->stats->statuses < 0)) {
@@ -10161,7 +10162,7 @@ int func_8007F434(void)
     return vs_main_getRand(100) < (var_s0 + 20);
 }
 
-int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
+int hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
 {
     vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[debuff];
     vs_battle_actorStats* stats = vs_battle_actors[*arg1]->stats;
@@ -10173,54 +10174,54 @@ int _hitPrerequisiteCanApplyEffect(int debuff, u_char* arg1)
     return 1;
 }
 
-int _getEnemyClass(u_char* arg0) { return vs_battle_actors[*arg0]->stats->enemyClass; }
+int getEnemyClass(u_char* arg0) { return vs_battle_actors[*arg0]->stats->enemyClass; }
 
-int _hitPrerequisiteNever0(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
+int hitPrerequisiteNever0(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteAlways0(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
+int hitPrerequisiteAlways0(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
 
-int _hitPrerequisiteAlways1(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
+int hitPrerequisiteAlways1(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
 
-int _hitPrerequisiteAlways2(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
+int hitPrerequisiteAlways2(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 1; }
 
-int _hitPrerequisiteUndead(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteUndead(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _getEnemyClass(arg1) == enemyClassUndead;
+    return getEnemyClass(arg1) == enemyClassUndead;
 }
 
-int _hitPrerequisiteNotUndead(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteNotUndead(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _getEnemyClass(arg1) != enemyClassUndead;
+    return getEnemyClass(arg1) != enemyClassUndead;
 }
 
-int _hitPrerequisiteNever1(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
+int hitPrerequisiteNever1(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteNever2(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
+int hitPrerequisiteNever2(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteNever3(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
+int hitPrerequisiteNever3(UNUSED vs_action_t* arg0, UNUSED u_char* arg1) { return 0; }
 
-int _hitPrerequisiteCanApplyStrDown(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyStrDown(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(5, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(5, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntDown(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyIntDown(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(7, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(7, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglDown(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyAglDown(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(9, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(9, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyEquipDown(vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyEquipDown(vs_action_t* arg0, u_char* arg1)
 {
     int i;
     int hasEquipment;
     vs_battle_actorStats* stats;
 
-    if (_hitPrerequisiteCanApplyEffect(19, arg1) != 0) {
+    if (hitPrerequisiteCanApplyEffect(19, arg1) != 0) {
         return 0;
     }
 
@@ -10248,33 +10249,33 @@ int _hitPrerequisiteCanApplyEquipDown(vs_action_t* arg0, u_char* arg1)
     return i = 0;
 }
 
-int _hitPrerequisiteCanApplyHalfMove(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyHalfMove(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(4, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(4, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyStrUp(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyStrUp(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(6, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(6, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyIntUp(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyIntUp(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(8, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(8, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAglUp(UNUSED vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyAglUp(UNUSED vs_action_t* arg0, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(10, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(10, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyEquipUp(vs_action_t* arg0, u_char* arg1)
+int hitPrerequisiteCanApplyEquipUp(vs_action_t* arg0, u_char* arg1)
 {
     int i;
     int hasEquipment;
     vs_battle_actorStats* stats;
 
-    if (_hitPrerequisiteCanApplyEffect(20, arg1) != 0) {
+    if (hitPrerequisiteCanApplyEffect(20, arg1) != 0) {
         return 0;
     }
 
@@ -10302,85 +10303,85 @@ int _hitPrerequisiteCanApplyEquipUp(vs_action_t* arg0, u_char* arg1)
     return i = 0;
 }
 
-int _hitPrerequisiteCanApplyQuicken(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyQuicken(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(11, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(11, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplySilence(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplySilence(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(12, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(12, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyMagicWard(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyMagicWard(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(18, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(18, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyRegen(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyRegen(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(17, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(17, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyParalysis(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyParalysis(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(13, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(13, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyPoison(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyPoison(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(14, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(14, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyNumbness(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyNumbness(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(15, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(15, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyCurse(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyCurse(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(16, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(16, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyAirAttackUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyAirAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if ((_hitPrerequisiteCanApplyEffect(21, arg1) == 0)
+    if ((hitPrerequisiteCanApplyEffect(21, arg1) == 0)
         && (vs_battle_actors[*arg1]->stats->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hitPrerequisiteCanApplyFireAttackUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyFireAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if ((_hitPrerequisiteCanApplyEffect(22, arg1) == 0)
+    if ((hitPrerequisiteCanApplyEffect(22, arg1) == 0)
         && (vs_battle_actors[*arg1]->stats->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hitPrerequisiteCanApplyEarthAttackUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyEarthAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if ((_hitPrerequisiteCanApplyEffect(23, arg1) == 0)
+    if ((hitPrerequisiteCanApplyEffect(23, arg1) == 0)
         && (vs_battle_actors[*arg1]->stats->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hitPrerequisiteCanApplyWaterAttackUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyWaterAttackUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if ((_hitPrerequisiteCanApplyEffect(24, arg1) == 0)
+    if ((hitPrerequisiteCanApplyEffect(24, arg1) == 0)
         && (vs_battle_actors[*arg1]->stats->weapon.blade.id != 0)) {
         return 1;
     }
     return 0;
 }
 
-int _hitPrerequisiteCanApplyAirDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyAirDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if (_hitPrerequisiteCanApplyEffect(25, arg1) == 0) {
+    if (hitPrerequisiteCanApplyEffect(25, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actorStats* stats = vs_battle_actors[*arg1]->stats;
@@ -10402,9 +10403,9 @@ int _hitPrerequisiteCanApplyAirDefenseUp(UNUSED vs_action_t* action, u_char* arg
     return 0;
 }
 
-int _hitPrerequisiteCanApplyFireDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyFireDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if (_hitPrerequisiteCanApplyEffect(26, arg1) == 0) {
+    if (hitPrerequisiteCanApplyEffect(26, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actorStats* stats = vs_battle_actors[*arg1]->stats;
@@ -10425,9 +10426,9 @@ int _hitPrerequisiteCanApplyFireDefenseUp(UNUSED vs_action_t* action, u_char* ar
     return 0;
 }
 
-int _hitPrerequisiteCanApplyEarthDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyEarthDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if (_hitPrerequisiteCanApplyEffect(27, arg1) == 0) {
+    if (hitPrerequisiteCanApplyEffect(27, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actorStats* stats = vs_battle_actors[*arg1]->stats;
@@ -10448,9 +10449,9 @@ int _hitPrerequisiteCanApplyEarthDefenseUp(UNUSED vs_action_t* action, u_char* a
     return 0;
 }
 
-int _hitPrerequisiteCanApplyWaterDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyWaterDefenseUp(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if (_hitPrerequisiteCanApplyEffect(28, arg1) == 0) {
+    if (hitPrerequisiteCanApplyEffect(28, arg1) == 0) {
         int i;
         int hasArmor = 0;
         vs_battle_actorStats* stats = vs_battle_actors[*arg1]->stats;
@@ -10472,44 +10473,44 @@ int _hitPrerequisiteCanApplyWaterDefenseUp(UNUSED vs_action_t* action, u_char* a
     return 0;
 }
 
-int _hitPrerequisiteCanApplyBanish(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyBanish(UNUSED vs_action_t* action, u_char* arg1)
 {
-    return _hitPrerequisiteCanApplyEffect(29, arg1) == 0;
+    return hitPrerequisiteCanApplyEffect(29, arg1) == 0;
 }
 
-int _hitPrerequisiteCanApplyExorcise(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyExorcise(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
-        && (_getEnemyClass(arg1) == enemyClassUndead)) {
+    if ((hitPrerequisiteCanApplyEffect(30, arg1) == 0)
+        && (getEnemyClass(arg1) == enemyClassUndead)) {
         return 1;
     }
     return 0;
 }
 
-int _hitPrerequisiteCanApplyDrain(UNUSED vs_action_t* action, u_char* arg1)
+int hitPrerequisiteCanApplyDrain(UNUSED vs_action_t* action, u_char* arg1)
 {
-    if ((_hitPrerequisiteCanApplyEffect(30, arg1) == 0)
-        && (_getEnemyClass(arg1) != enemyClassUndead)) {
+    if ((hitPrerequisiteCanApplyEffect(30, arg1) == 0)
+        && (getEnemyClass(arg1) != enemyClassUndead)) {
         return 1;
     }
     return 0;
 }
 
-int _hitPrerequisiteUnused0(UNUSED vs_action_t* action, u_char* arg1) { }
+int hitPrerequisiteUnused0(UNUSED vs_action_t* action, u_char* arg1) { }
 
-int _hitPrerequisiteUnused1(UNUSED vs_action_t* action, u_char* arg1) { }
+int hitPrerequisiteUnused1(UNUSED vs_action_t* action, u_char* arg1) { }
 
-int _hitPrerequisiteUnused2(UNUSED vs_action_t* action, u_char* arg1) { }
+int hitPrerequisiteUnused2(UNUSED vs_action_t* action, u_char* arg1) { }
 
-int _canPerformAttack(vs_action_t* action, u_char* arg1, int hitNumber)
+int canPerformAttack(vs_action_t* action, u_char* arg1, int hitNumber)
 {
     if (hitNumber != 0) {
         if ((action->hitParams[hitNumber].prerequisiteFunction == 1) && (arg1[3] == 4)) {
             return 0;
         }
     }
-    return _attackPrerequisiteFunctions[action->hitParams[hitNumber]
-            .prerequisiteFunction](action, arg1);
+    return attackPrerequisiteFunctions[action->hitParams[hitNumber].prerequisiteFunction](
+        action, arg1);
 }
 
 short func_8007FE5C(vs_action_t* action, short arg1, vs_battle_actorStats* sourceStats,
@@ -10590,14 +10591,14 @@ short func_8007FF8C(int arg0, short arg1, char* arg2)
     return (arg1 * var_t0) / 100;
 }
 
-void func_80080000(vs_action_t* action, _hitEntity_t* entity, short baseValue)
+void func_80080000(vs_action_t* action, hitEntity_t* entity, short baseValue)
 {
     int i;
     int limbs;
     vs_battle_actorStats* stats;
 
     for (i = 0; i < 6; ++i) {
-        _armorDpAdjustmentAmounts[i] = 0;
+        armorDpAdjustmentAmounts[i] = 0;
     }
 
     stats = vs_battle_actors[entity->unk0.hit.targetActor]->stats;
@@ -10618,8 +10619,8 @@ void func_80080000(vs_action_t* action, _hitEntity_t* entity, short baseValue)
 
         for (i = 0; i < 6; ++i) {
             if (stats->limbs[i].maxHp != 0) {
-                _armorDpAdjustmentAmounts[i] = baseValue / limbs;
-                entity->limbs[i].effects.value0 += _armorDpAdjustmentAmounts[i];
+                armorDpAdjustmentAmounts[i] = baseValue / limbs;
+                entity->limbs[i].effects.value0 += armorDpAdjustmentAmounts[i];
             }
         }
         break;
@@ -10627,22 +10628,22 @@ void func_80080000(vs_action_t* action, _hitEntity_t* entity, short baseValue)
     case 7:
     case 14:
         for (i = 0; i < 6; ++i) {
-            _armorDpAdjustmentAmounts[i] =
+            armorDpAdjustmentAmounts[i] =
                 (baseValue * stats->dpSplash[entity->unk0.hit.targetLimb][i]) / 100;
-            entity->limbs[i].effects.value0 += _armorDpAdjustmentAmounts[i];
+            entity->limbs[i].effects.value0 += armorDpAdjustmentAmounts[i];
         }
         break;
     case 6:
     case 8:
     case 11:
     case 12:
-        _armorDpAdjustmentAmounts[entity->unk0.hit.targetLimb] = baseValue;
+        armorDpAdjustmentAmounts[entity->unk0.hit.targetLimb] = baseValue;
         entity->limbs[entity->unk0.hit.targetLimb].effects.value0 += baseValue;
         break;
     }
 }
 
-void func_800801E0(vs_action_t* action, _hitEntity_t* entity, short amount)
+void func_800801E0(vs_action_t* action, hitEntity_t* entity, short amount)
 {
     int i;
     int limbDamageTaken = 0;
@@ -10659,7 +10660,7 @@ void func_800801E0(vs_action_t* action, _hitEntity_t* entity, short amount)
             if (stats->limbs[i].maxHp != 0) {
                 int temp_lo = (amount * (stats->limbs[i].maxHp - stats->limbs[i].hp))
                             / limbDamageTaken;
-                _armorDpAdjustmentAmounts[i] = temp_lo;
+                armorDpAdjustmentAmounts[i] = temp_lo;
                 entity->limbs[i].effects.value0 =
                     entity->limbs[i].effects.value0 + ((temp_lo << 0x10) >> 0xF);
             }
@@ -10667,7 +10668,7 @@ void func_800801E0(vs_action_t* action, _hitEntity_t* entity, short amount)
     }
 }
 
-void _adjustDpPp(vs_action_t* action, vs_battle_actorStats* sourceStats,
+void adjustDpPp(vs_action_t* action, vs_battle_actorStats* sourceStats,
     vs_battle_actorStats* targetStats, int amount)
 {
     int i;
@@ -10689,9 +10690,9 @@ void _adjustDpPp(vs_action_t* action, vs_battle_actorStats* sourceStats,
     }
 
     for (i = 0; i < 6; ++i) {
-        if (_armorDpAdjustmentAmounts[i] != 0) {
-            if (targetStats->limbs[i].armor.currentDp >= _armorDpAdjustmentAmounts[i]) {
-                targetStats->limbs[i].armor.currentDp -= _armorDpAdjustmentAmounts[i];
+        if (armorDpAdjustmentAmounts[i] != 0) {
+            if (targetStats->limbs[i].armor.currentDp >= armorDpAdjustmentAmounts[i]) {
+                targetStats->limbs[i].armor.currentDp -= armorDpAdjustmentAmounts[i];
             } else {
                 targetStats->limbs[i].armor.currentDp = 0;
             }
@@ -10751,7 +10752,7 @@ void func_800803A4(vs_action_t* action, vs_battle_actorStats* sourceStats,
     }
 }
 
-void _triggerArmorAffinityChange(vs_action_t* action, vs_battle_uiEquipment* equipment,
+void triggerArmorAffinityChange(vs_action_t* action, vs_battle_uiEquipment* equipment,
     int affinity, int arg3, int actorId)
 {
     int targetAffinity;
@@ -10870,7 +10871,7 @@ void _triggerArmorAffinityChange(vs_action_t* action, vs_battle_uiEquipment* equ
     }
 }
 
-void _triggerWeaponAffinityChange(vs_action_t* action, vs_battle_uiEquipment* equipment,
+void triggerWeaponAffinityChange(vs_action_t* action, vs_battle_uiEquipment* equipment,
     int affinity, int arg3, int suppressNotification)
 {
     int targetAffinity;
@@ -10989,7 +10990,7 @@ void _triggerWeaponAffinityChange(vs_action_t* action, vs_battle_uiEquipment* eq
     }
 }
 
-void _triggerClassChange(UNUSED vs_action_t* action, vs_battle_uiEquipment* equipment,
+void triggerClassChange(UNUSED vs_action_t* action, vs_battle_uiEquipment* equipment,
     int class, int arg3, int actorId)
 {
     int opposingClass0;
@@ -11127,14 +11128,14 @@ void func_80080C9C(
         if (stats->shield.base.id != 0) {
 
             if (arg2 != 0) {
-                _triggerClassChange(arg0, equipment, arg2 - 1, 0xF1, stats->unk957);
+                triggerClassChange(arg0, equipment, arg2 - 1, 0xF1, stats->unk957);
             }
             if (arg3 != 0) {
-                _triggerWeaponAffinityChange(
+                triggerWeaponAffinityChange(
                     arg0, equipment, arg3 - 1, 0xF1, stats->unk957);
             }
         }
-        _calculateShieldClassAffinity(stats);
+        calculateShieldClassAffinity(stats);
     } else {
 
         equipment = &stats->limbs[temp_s2].armor.armor;
@@ -11142,17 +11143,17 @@ void func_80080C9C(
         if (equipment->id != 0) {
             if (arg2 != 0) {
                 do {
-                    _triggerClassChange(arg0, equipment, arg2 - 1,
+                    triggerClassChange(arg0, equipment, arg2 - 1,
                         stats->limbs[temp_s2].nameIndex, stats->unk957);
                 } while (0);
             }
             if (arg3 != 0) {
-                _triggerWeaponAffinityChange(arg0, equipment, arg3 - 1,
+                triggerWeaponAffinityChange(arg0, equipment, arg3 - 1,
                     stats->limbs[temp_s2].nameIndex, stats->unk957);
             }
         }
 
-        _calculateArmorClassAffinity(stats, temp_s2);
+        calculateArmorClassAffinity(stats, temp_s2);
     }
 }
 
@@ -11162,18 +11163,18 @@ void func_80080F78(vs_action_t* action, vs_battle_actorStats* stats, int arg2, i
         vs_battle_uiEquipment* temp_s1 = &stats->weapon.blade;
         if (stats->weapon.blade.id != 0) {
             if (arg2 != 0) {
-                _triggerClassChange(action, temp_s1, arg2 - 1, 0xF0, stats->unk957);
+                triggerClassChange(action, temp_s1, arg2 - 1, 0xF0, stats->unk957);
             }
             if (arg3 != 0) {
-                _triggerArmorAffinityChange(
+                triggerArmorAffinityChange(
                     action, temp_s1, arg3 - 1, 0xF0, stats->unk957);
             }
         }
-        _calculateWeaponClassAffinity(stats);
+        calculateWeaponClassAffinity(stats);
     }
 }
 
-int _applyStatus(int arg0, _hitEntity_t* entity)
+int applyStatus(int arg0, hitEntity_t* entity)
 {
     int cleared = 0;
     int added = 0;
@@ -11195,7 +11196,7 @@ int _applyStatus(int arg0, _hitEntity_t* entity)
     return added | cleared;
 }
 
-int _clearStatus(int arg0, _hitEntity_t* entity)
+int clearStatus(int arg0, hitEntity_t* entity)
 {
     int ret = 0;
     vs_main_statusEffectParams_t* params = &vs_main_statusEffectParams[arg0];
@@ -11209,15 +11210,15 @@ int _clearStatus(int arg0, _hitEntity_t* entity)
     return ret;
 }
 
-void _statCalculatorNop(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+void statCalculatorNop(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-short _getLastValue(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short getLastValue(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
-    return _lastValue;
+    return lastValue;
 }
 
 typedef struct {
@@ -11244,12 +11245,12 @@ typedef struct {
     /* 0x20 */ short statFactor;
     /* 0x22 */ short shieldStatFactor;
     /* 0x24 */ short armorStatFactor;
-} _hitIntermediate;
+} hitIntermediate_t;
 
-static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
-    _hitEntity_t* target, int nHit, int withRandMod, int applyStatuses)
+static short getPhysicalAttackDamage(vs_action_t* action, hitEntity_t* source,
+    hitEntity_t* target, int nHit, int withRandMod, int applyStatuses)
 {
-    _hitIntermediate sp18;
+    hitIntermediate_t sp18;
     int attack;
     short maxAffinity;
     short value;
@@ -11444,16 +11445,16 @@ static short _getPhysicalAttackDamage(vs_action_t* action, _hitEntity_t* source,
     return value;
 }
 
-short _getPhysicalAttackDamageWithoutStatusModifiers(vs_action_t* action,
-    _hitEntity_t* source, _hitEntity_t* target, int nHit, int withRandMod)
+short getPhysicalAttackDamageWithoutStatusModifiers(vs_action_t* action,
+    hitEntity_t* source, hitEntity_t* target, int nHit, int withRandMod)
 {
-    return _getPhysicalAttackDamage(action, source, target, nHit, withRandMod, 0);
+    return getPhysicalAttackDamage(action, source, target, nHit, withRandMod, 0);
 }
 
-short _getMagicAttackDamage(vs_action_t* action, _hitEntity_t* source,
-    _hitEntity_t* target, int nHit, int addRandMod)
+short getMagicAttackDamage(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
+    int nHit, int addRandMod)
 {
-    _hitIntermediate sp18;
+    hitIntermediate_t sp18;
     short maxAffinity;
     short value;
     int i;
@@ -11619,8 +11620,8 @@ short _getMagicAttackDamage(vs_action_t* action, _hitEntity_t* source,
     return value;
 }
 
-short _previousHitFactor0(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short previousHitFactor0(vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return (((D_800F19CC->unk8.targets[0].unk0.hit.hp
                  + D_800F19CC->unk8.targets[0].unk0.hit.mp)
@@ -11629,7 +11630,7 @@ short _previousHitFactor0(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
          + (D_800F19CC->unk0 - 1);
 }
 
-short _hpLostFactor(vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* arg2,
+short hpLostFactor(vs_action_t* arg0, hitEntity_t* arg1, UNUSED hitEntity_t* arg2,
     int arg3, UNUSED int arg4)
 {
     vs_battle_actorStats* stats = vs_battle_actors[arg1->unk0.hit.targetActor]->stats;
@@ -11637,8 +11638,8 @@ short _hpLostFactor(vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* 
     return (v / 10) + (D_800F19CC->unk0 - 1);
 }
 
-short _previousHitFactor1(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short previousHitFactor1(vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     return (((D_800F19CC->unk8.targets[0].unk0.hit.hp
                  + D_800F19CC->unk8.targets[0].unk0.hit.mp)
@@ -11647,23 +11648,23 @@ short _previousHitFactor1(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
          + (D_800F19CC->unk0 - 1);
 }
 
-short _factorCurrentHp(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorCurrentHp(vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     int v = vs_battle_actors[arg2->unk0.hit.targetActor]->stats->currentHP
           * arg0->hitParams[arg3].statFactor;
     return (v / 100) + (D_800F19CC->unk0 - 1);
 }
 
-short _getWeaponPp(UNUSED vs_action_t* arg0, _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short getWeaponPp(UNUSED vs_action_t* arg0, hitEntity_t* arg1, UNUSED hitEntity_t* arg2,
+    UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg1->unk0.hit.targetActor]->stats->weapon.currentPp
          + ((u_short)D_800F19CC->unk0 - 1);
 }
 
-short _factorMagicDamageReceived(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorMagicDamageReceived(vs_action_t* action, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (((vs_main_actions[D_800F19CC->unk8.actionIndex].type)) == actionTypeSpell) {
@@ -11678,8 +11679,8 @@ short _factorMagicDamageReceived(vs_action_t* action, UNUSED _hitEntity_t* arg1,
     return var_a2;
 }
 
-short _factorPhysicalDamageReceived0(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorPhysicalDamageReceived0(vs_action_t* action, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (((vs_main_actions[D_800F19CC->unk8.actionIndex].type)) != actionTypeSpell) {
@@ -11694,20 +11695,20 @@ short _factorPhysicalDamageReceived0(vs_action_t* action, UNUSED _hitEntity_t* a
     return var_a2;
 }
 
-short _mpLostFactor(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+short mpLostFactor(
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     vs_battle_actorStats* stats = vs_battle_actors[arg1->unk0.hit.targetActor]->stats;
     return (stats->maxMP - stats->currentMP) * arg0->hitParams[arg3].statFactor / 10
          + (D_800F19CC->unk0 - 1);
 }
 
-static int _getRoomTrapLevel(void);
+static int getRoomTrapLevel(void);
 
-short _damageFromTrapPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* hit, int nHit, int withRandMod)
+short damageFromTrapPanel(vs_action_t* action, UNUSED hitEntity_t* arg1, hitEntity_t* hit,
+    int nHit, int withRandMod)
 {
-    _hitIntermediate sp10;
+    hitIntermediate_t sp10;
     short damage;
     int randMod;
     int dpMod;
@@ -11718,7 +11719,7 @@ short _damageFromTrapPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
 
     sp10.value = stats->maxHP / 10;
     sp10.value *= action->hitParams[nHit].statFactor;
-    sp10.value += (_getRoomTrapLevel() + 1) * 10;
+    sp10.value += (getRoomTrapLevel() + 1) * 10;
     sp10.type = action->hitParams[nHit].type;
     sp10.sourceAffinity = action->hitParams[nHit].affinity - 1;
     sp10.mediatingStat = stats->strength;
@@ -11823,10 +11824,10 @@ short _damageFromTrapPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
     return damage;
 }
 
-short _hpHealed(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target, int nHit,
-    int withRandMod)
+short hpHealedStatic(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
+    int nHit, int withRandMod)
 {
-    _hitIntermediate sp18;
+    hitIntermediate_t sp18;
     short value;
     int randMod;
     int attack;
@@ -11967,10 +11968,10 @@ short _hpHealed(vs_action_t* action, _hitEntity_t* source, _hitEntity_t* target,
     return value;
 }
 
-short _hpHealedFromHealPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* hit, int nHit, int withRandMod)
+short hpHealedFromHealPanel(vs_action_t* action, UNUSED hitEntity_t* arg1,
+    hitEntity_t* hit, int nHit, int withRandMod)
 {
-    _hitIntermediate sp10;
+    hitIntermediate_t sp10;
     short hpHealed;
     int randMod;
     int dpMod;
@@ -11982,7 +11983,7 @@ short _hpHealedFromHealPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
 
     sp10.value = stats->maxHP / 10;
     sp10.value *= action->hitParams[nHit].statFactor;
-    sp10.value += (_getRoomTrapLevel() + 1) * 10;
+    sp10.value += (getRoomTrapLevel() + 1) * 10;
     sp10.type = action->hitParams[nHit].type;
     sp10.sourceAffinity = action->hitParams[nHit].affinity - 1;
     sp10.mediatingStat = stats->strength;
@@ -12083,8 +12084,8 @@ short _hpHealedFromHealPanel(vs_action_t* action, UNUSED _hitEntity_t* arg1,
     return hpHealed;
 }
 
-short _itemRecovery(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, int arg4)
+short itemRecovery(vs_action_t* arg0, UNUSED hitEntity_t* arg1, UNUSED hitEntity_t* arg2,
+    int arg3, int arg4)
 {
     short temp_v0;
     short temp_s0 = arg0->hitParams[arg3].statFactor * 5;
@@ -12104,22 +12105,22 @@ short _itemRecovery(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
     return temp_s0;
 }
 
-short _getRecoverableHp(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short getRecoverableHp(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg2->unk0.hit.targetActor]->stats->maxHP
          - vs_battle_actors[arg2->unk0.hit.targetActor]->stats->currentHP;
 }
 
-short _getRecoverableMp(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short getRecoverableMp(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg2->unk0.hit.targetActor]->stats->maxMP
          - vs_battle_actors[arg2->unk0.hit.targetActor]->stats->currentMP;
 }
 
-short _previousHitFactor2(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short previousHitFactor2(vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     return (((D_800F19CC->unk8.targets[0].unk0.hit.hp
                  + D_800F19CC->unk8.targets[0].unk0.hit.mp)
@@ -12128,8 +12129,8 @@ short _previousHitFactor2(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
          + (D_800F19CC->unk0 - 1);
 }
 
-short _factorMagicDamageReceivedOfType(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorMagicDamageReceivedOfType(vs_action_t* action, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (vs_main_actions[D_800F19CC->unk8.actionIndex].type == actionTypeSpell) {
@@ -12145,8 +12146,8 @@ short _factorMagicDamageReceivedOfType(vs_action_t* action, UNUSED _hitEntity_t*
     return var_a2;
 }
 
-short _factorPhysicalDamageReceived1(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorPhysicalDamageReceived1(vs_action_t* action, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if (((vs_main_actions[D_800F19CC->unk8.actionIndex].type)) != actionTypeSpell) {
@@ -12161,8 +12162,8 @@ short _factorPhysicalDamageReceived1(vs_action_t* action, UNUSED _hitEntity_t* a
     return var_a2;
 }
 
-short _factorSpellCost(vs_action_t* action, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorSpellCost(vs_action_t* action, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_v0;
 
@@ -12177,8 +12178,8 @@ short _factorSpellCost(vs_action_t* action, UNUSED _hitEntity_t* arg1,
     return var_v0;
 }
 
-short _factorDamageReceived(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, int arg3, UNUSED int arg4)
+short factorDamageReceived(vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, int arg3, UNUSED int arg4)
 {
     short var_a2 = 0;
     if ((D_800F19CC->unk8.unk4.hpEffect == 1) || (D_800F19CC->unk8.unk4.hpEffect == 3)) {
@@ -12189,32 +12190,32 @@ short _factorDamageReceived(vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
     return var_a2;
 }
 
-short _getEquippedShieldDp(UNUSED vs_action_t* arg0, _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short getEquippedShieldDp(UNUSED vs_action_t* arg0, hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg1->unk0.hit.targetActor]->stats->shield.currentPp;
 }
 
-short _factorLastValue(UNUSED vs_action_t* arg0, _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+short factorLastValue(UNUSED vs_action_t* arg0, hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
-    return (_lastValue * arg0->hitParams[arg3].statFactor) / 10;
+    return (lastValue * arg0->hitParams[arg3].statFactor) / 10;
 }
 
-short _getPhysicalAttackDamageWithStatusModifiers(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+short getPhysicalAttackDamageWithStatusModifiers(
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
-    return _getPhysicalAttackDamage(arg0, arg1, arg2, arg3, arg4, 1);
+    return getPhysicalAttackDamage(arg0, arg1, arg2, arg3, arg4, 1);
 }
 
-short _getRisk(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+short getRisk(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     return vs_battle_actors[arg2->unk0.hit.targetActor]->stats->risk;
 }
 
-short _calculateStatChange(
-    vs_action_t* action, _hitEntity_t* arg1, _hitEntity_t* arg2, int hit, int arg4)
+short calculateStatChange(
+    vs_action_t* action, hitEntity_t* arg1, hitEntity_t* arg2, int hit, int arg4)
 {
     short amount;
 
@@ -12222,251 +12223,251 @@ short _calculateStatChange(
         && (vs_battle_actors[arg2->unk0.hit.targetActor]->stats->unk957 == 128)) {
         amount = 999;
     } else {
-        amount = _statCalculators[action->hitParams[hit].statCalculator](
+        amount = statCalculators[action->hitParams[hit].statCalculator](
             action, arg1, arg2, hit, arg4);
     }
 
-    _lastValue = amount;
+    lastValue = amount;
     return amount;
 }
 
-int func_80083990(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int func_80083990(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
 // TODO: Change return type, these only match with int and undefined return
-int func_80083998(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083998(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(5, arg2) != 0) {
+    if (applyStatus(5, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_800839E8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_800839E8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(7, arg2) != 0) {
+    if (applyStatus(7, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083A38(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083A38(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(9, arg2) != 0) {
+    if (applyStatus(9, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083A88(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083A88(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(19, arg2) != 0) {
+    if (applyStatus(19, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083AD8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083AD8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(4, arg2) != 0) {
+    if (applyStatus(4, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083B28(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083B28(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(6, arg2) != 0) {
+    if (applyStatus(6, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083B78(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083B78(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(8, arg2) != 0) {
+    if (applyStatus(8, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083BC8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083BC8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(10, arg2) != 0) {
+    if (applyStatus(10, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083C18(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083C18(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(20, arg2) != 0) {
+    if (applyStatus(20, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083C68(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083C68(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(11, arg2) != 0) {
+    if (applyStatus(11, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083CB8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083CB8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(12, arg2) != 0) {
+    if (applyStatus(12, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083D08(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int func_80083D08(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x12, arg2);
+    applyStatus(0x12, arg2);
 }
 
-int func_80083D2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083D2C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(17, arg2) != 0) {
+    if (applyStatus(17, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_80083D7C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083D7C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, int arg4)
 {
-    _applyStatus(0x1D, arg2);
+    applyStatus(0x1D, arg2);
     if (arg4 != 0) {
         vs_battle_actors[arg2->unk0.hit.targetActor]->stats->isAnalyzed = 1;
     }
 }
 
-int func_80083DEC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083DEC(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(13, arg2) != 0) {
+    if (applyStatus(13, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083E3C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083E3C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(14, arg2) != 0) {
+    if (applyStatus(14, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083E8C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083E8C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(15, arg2) != 0) {
+    if (applyStatus(15, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083EDC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083EDC(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_applyStatus(16, arg2) != 0) {
+    if (applyStatus(16, arg2) != 0) {
         arg2->unk1C_16 = 1;
     }
 }
 
-int func_80083F2C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083F2C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x15, arg2);
+    applyStatus(0x15, arg2);
 }
 
-int func_80083F50(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083F50(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x16, arg2);
+    applyStatus(0x16, arg2);
 }
 
-int func_80083F74(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083F74(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x17, arg2);
+    applyStatus(0x17, arg2);
 }
 
-int func_80083F98(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083F98(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x18, arg2);
+    applyStatus(0x18, arg2);
 }
 
-int func_80083FBC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083FBC(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x19, arg2);
+    applyStatus(0x19, arg2);
 }
 
-int func_80083FE0(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80083FE0(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x1A, arg2);
+    applyStatus(0x1A, arg2);
 }
 
-int func_80084004(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80084004(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x1B, arg2);
+    applyStatus(0x1B, arg2);
 }
 
-int func_80084028(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80084028(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _applyStatus(0x1C, arg2);
+    applyStatus(0x1C, arg2);
 }
 
-int func_8008404C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_8008404C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_clearStatus(0xD, arg2) != 0) {
+    if (clearStatus(0xD, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_8008409C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_8008409C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_clearStatus(0xE, arg2) != 0) {
+    if (clearStatus(0xE, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_800840EC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_800840EC(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_clearStatus(0x10, arg2) != 0) {
+    if (clearStatus(0x10, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_8008413C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_8008413C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    if (_clearStatus(0xF, arg2) != 0) {
+    if (clearStatus(0xF, arg2) != 0) {
         arg2->unk1C_16 = 2;
     }
 }
 
-int func_8008418C(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_8008418C(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     arg2->removeStatuses |=
         (vs_battle_actors[arg2->unk0.hit.targetActor]->stats->statuses & 0x1FFE1FE0);
 }
 
-int func_800841C8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_800841C8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     int temp_v1 = vs_battle_actors[arg2->unk0.hit.targetActor]->stats->statuses & 0xE000;
@@ -12477,21 +12478,21 @@ int func_800841C8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
     }
 }
 
-int func_80084228(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80084228(UNUSED vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     arg1->unk1C_26 = 2;
 }
 
-int func_80084248(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80084248(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
-    _clearStatus(0x1E, arg2);
+    clearStatus(0x1E, arg2);
     arg2->unk0.hit.hp = vs_battle_actors[arg2->unk0.hit.targetActor]->stats->currentHP;
     arg2->hpEffect = 1;
 }
 
-int func_800842AC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_800842AC(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     arg2->armorDp = arg2->unk0.hit.hp * 2;
@@ -12499,39 +12500,39 @@ int func_800842AC(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
     arg2->armorDpEffect = 1;
 }
 
-int func_800842F0(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* arg2,
+int func_800842F0(UNUSED vs_action_t* arg0, hitEntity_t* arg1, UNUSED hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     arg1->unk1C_26 = 2;
 }
 
-int func_80084310(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, int arg4)
+int func_80084310(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, int arg4)
 {
     if (arg4 != 0) {
         vs_battle_setStateFlag(0x40, 1);
     }
 }
 
-int func_80084340(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, int arg4)
+int func_80084340(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, int arg4)
 {
     if (arg4 != 0) {
         vs_battle_setStateFlag(0x20, 1);
     }
 }
 
-int func_80084370(UNUSED vs_action_t* arg0, _hitEntity_t* arg1, UNUSED _hitEntity_t* arg2,
+int func_80084370(UNUSED vs_action_t* arg0, hitEntity_t* arg1, UNUSED hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     arg1->unk1C_26 = 2;
 }
 
 int func_80084390(
-    vs_action_t* action, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* action, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (vs_main_actions[D_800F19CC->unk8.actionIndex].type == actionTypeSpell) {
-        short amount = _calculateStatChange(action, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(action, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(action, arg2, amount);
@@ -12539,10 +12540,10 @@ int func_80084390(
 }
 
 int func_80084440(
-    vs_action_t* action, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* action, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (vs_main_actions[D_800F19CC->unk8.actionIndex].type != actionTypeSpell) {
-        short amount = _calculateStatChange(action, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(action, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(action, arg2, amount);
@@ -12550,10 +12551,10 @@ int func_80084440(
 }
 
 int func_800844F0(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 0) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12561,10 +12562,10 @@ int func_800844F0(
 }
 
 int func_80084570(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 1) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12572,10 +12573,10 @@ int func_80084570(
 }
 
 int func_800845F0(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 2) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12583,10 +12584,10 @@ int func_800845F0(
 }
 
 int func_80084670(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 3) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12594,10 +12595,10 @@ int func_80084670(
 }
 
 int func_800846F0(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 4) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12605,10 +12606,10 @@ int func_800846F0(
 }
 
 int func_80084770(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 5) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12616,10 +12617,10 @@ int func_80084770(
 }
 
 int func_800847F0(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     if (D_800F19CC->unk8.unk2 == 6) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
@@ -12627,75 +12628,75 @@ int func_800847F0(
 }
 
 int func_80084870(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     int temp_v1 = D_800F19CC->unk8.unk4.hpEffect;
     if ((temp_v1 == 1) || ((temp_v1 == 3))) {
-        short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+        short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
         arg2->unk0.hit.hp += amount;
         arg2->hpEffect = 2;
         func_800801E0(arg0, arg2, amount);
     }
 }
 
-int _increaseStrengthRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int increaseStrengthRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->strength += amount;
     arg2->strengthEffect = 2;
 }
 
-int _increaseIntelligenceRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int increaseIntelligenceRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->intelligence += amount;
     arg2->intelligenceEffect = 2;
 }
 
-int _increaseAgilityRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int increaseAgilityRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->agility += amount;
     arg2->agilityEffect = 2;
 }
 
-int _increaseMaxHpRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int increaseMaxHpRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->maxHp += amount;
     arg2->maxHpEffect = 2;
 }
 
-int _increaseMaxMpRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int increaseMaxMpRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->maxMp += amount;
     arg2->maxMpEffect = 2;
 }
 
-int _decreaseStrengthRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int decreaseStrengthRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->strength += amount;
     arg2->strengthEffect = 1;
 }
 
-int _decreaseIntelligenceRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int decreaseIntelligenceRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->intelligence += amount;
     arg2->intelligenceEffect = 1;
 }
 
-int _decreaseAglityRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int decreaseAglityRand(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
     int amount = vs_main_getRand(4) + 1;
     arg2->agility += amount;
@@ -12703,7 +12704,7 @@ int _decreaseAglityRand(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
 }
 
 int func_80084B70(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     short temp_v0;
     vs_battle_actorStats* sourceStats =
@@ -12711,7 +12712,7 @@ int func_80084B70(
     vs_battle_actorStats* targetStats =
         vs_battle_actors[arg2->unk0.hit.targetActor]->stats;
     D_800F1A0C = 0;
-    temp_v0 = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+    temp_v0 = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
     arg2->unk0.hit.hp += temp_v0;
 
     if (D_800F1A0C != 0) {
@@ -12729,28 +12730,28 @@ int func_80084B70(
         }
 
         if (arg4 != 0) {
-            _adjustDpPp(arg0, sourceStats, targetStats, temp_v0);
+            adjustDpPp(arg0, sourceStats, targetStats, temp_v0);
             func_800803A4(arg0, sourceStats, targetStats, temp_v0);
         }
     }
 }
 
 int func_80084CAC(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
     vs_battle_actorStats* stats = vs_battle_actors[arg2->unk0.hit.targetActor]->stats;
-    short amount = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+    short amount = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
 
     if (stats->currentMP < amount) {
         amount = stats->currentMP;
-        _lastValue = stats->currentMP;
+        lastValue = stats->currentMP;
     }
 
     arg2->unk0.hit.mp += amount;
     arg2->mpEffect = 1;
 }
 
-int func_80084D44(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80084D44(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     if (vs_battle_actors[arg2->unk0.hit.targetActor]->stats->weapon.blade.id != 0) {
@@ -12761,7 +12762,7 @@ int func_80084D44(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
     }
 }
 
-int func_80084DA8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntity_t* arg2,
+int func_80084DA8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1, hitEntity_t* arg2,
     UNUSED int arg3, UNUSED int arg4)
 {
     vs_battle_actorStats* stats = vs_battle_actors[arg2->unk0.hit.targetActor]->stats;
@@ -12776,9 +12777,9 @@ int func_80084DA8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1, _hitEntit
 }
 
 int func_80084E28(
-    vs_action_t* action, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* action, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
-    short amount = _calculateStatChange(action, arg1, arg2, arg3, arg4);
+    short amount = calculateStatChange(action, arg1, arg2, arg3, arg4);
     arg2->unk0.hit.hp += amount;
     arg2->hpEffect = 2;
 
@@ -12788,33 +12789,33 @@ int func_80084E28(
 }
 
 int func_80084EA0(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
-    short temp_v0 = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+    short temp_v0 = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
     arg2->unk0.hit.mp = arg2->unk0.hit.mp + temp_v0;
     arg2->mpEffect = 2;
 }
 
 int func_80084EEC(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
-    short temp_v0 = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+    short temp_v0 = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
     arg2->weaponPp += temp_v0;
     arg2->weaponPpEffect = 2;
 }
 
 int func_80084F40(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
-    short temp_v0 = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+    short temp_v0 = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
     arg2->limbs[6].effects.value0 += temp_v0;
     arg2->weaponDpEffect = 2;
 }
 
 int func_80084F94(
-    vs_action_t* arg0, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int arg4)
+    vs_action_t* arg0, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int arg4)
 {
-    short temp_v0 = _calculateStatChange(arg0, arg1, arg2, arg3, arg4);
+    short temp_v0 = calculateStatChange(arg0, arg1, arg2, arg3, arg4);
     int var_v0 = temp_v0 << 0x10;
     if (var_v0 != 0) {
         arg2->risk += temp_v0;
@@ -12822,22 +12823,22 @@ int func_80084F94(
     }
 }
 
-int func_80084FF0(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int func_80084FF0(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-int func_80084FF8(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int func_80084FF8(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-int func_80085000(UNUSED vs_action_t* arg0, UNUSED _hitEntity_t* arg1,
-    UNUSED _hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
+int func_80085000(UNUSED vs_action_t* arg0, UNUSED hitEntity_t* arg1,
+    UNUSED hitEntity_t* arg2, UNUSED int arg3, UNUSED int arg4)
 {
 }
 
-void func_80085008(_hitEntity_t* arg0)
+void func_80085008(hitEntity_t* arg0)
 {
     int i;
     int var_v1;
@@ -12872,7 +12873,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_v1 = 1;
             }
             if (var_v1 == 0) {
-                _applyStatus(4, arg0);
+                applyStatus(4, arg0);
             }
         }
     } else {
@@ -12885,7 +12886,7 @@ void func_80085008(_hitEntity_t* arg0)
                 var_v1 = 1;
             }
             if (var_v1 != 0) {
-                _clearStatus(4, arg0);
+                clearStatus(4, arg0);
             }
         }
     }
@@ -12907,12 +12908,12 @@ void func_80085008(_hitEntity_t* arg0)
                 var_v1 = var_a2 << 0x10;
                 var_v1 = 0x10000 < var_v1;
                 if (!var_v1) {
-                    _applyStatus(D_800E8200[i], arg0);
+                    applyStatus(D_800E8200[i], arg0);
                 }
             } else {
                 var_v1 = (var_a2 << 0x10) > 0x10000;
                 if (var_v1) {
-                    _clearStatus(D_800E8200[i], arg0);
+                    clearStatus(D_800E8200[i], arg0);
                 }
             }
         }
@@ -12920,7 +12921,7 @@ void func_80085008(_hitEntity_t* arg0)
 }
 
 void func_80085390(
-    vs_action_t* action, _hitEntity_t* arg1, _hitEntity_t* arg2, int arg3, int hit)
+    vs_action_t* action, hitEntity_t* arg1, hitEntity_t* arg2, int arg3, int hit)
 {
     if ((arg2->kind == 0)
         && (vs_battle_actors[arg2->unk0.hit.targetActor]->stats->unk957 == 0x80)) {
@@ -12930,9 +12931,9 @@ void func_80085390(
         if ((arg2->kind == 0)
             && (vs_battle_actors[arg2->unk0.hit.targetActor]->stats->statuses
                 & 0x80040000)) {
-            _lastValue = 0;
+            lastValue = 0;
         } else {
-            _actionEffectMediators[action->hitParams[hit].effect](
+            actionEffectMediators[action->hitParams[hit].effect](
                 action, arg1, arg2, hit, arg3);
         }
         if (arg2->kind == 0) {
@@ -12943,7 +12944,7 @@ void func_80085390(
             }
         }
     } else {
-        _actionEffectMediators[action->hitParams[hit].effect](
+        actionEffectMediators[action->hitParams[hit].effect](
             action, arg1, arg2, hit, arg3);
     }
     if ((arg3 != 0) && (arg1->kind == 0) && (arg1->unk0.hit.targetActor == 0)
@@ -12970,7 +12971,7 @@ void func_80085390(
 
 void func_800856F8(void* arg0) { vs_main_bzero(arg0, 0x84C); }
 
-void func_80085718(_hitEntity_t* arg0)
+void func_80085718(hitEntity_t* arg0)
 {
     vs_main_bzero(arg0, sizeof *arg0);
     arg0->unk0.hit.unk3 = 6;
@@ -12985,7 +12986,7 @@ void func_80085718(_hitEntity_t* arg0)
  *         - bits 23-16 = enum action type
  *         - bits 15-0  = int cost
  */
-int _getActionCost(u_int actionId, vs_battle_actorStats* stats, int updateStat)
+int getActionCost(u_int actionId, vs_battle_actorStats* stats, int updateStat)
 {
     int requirementsMet;
     int actionType;
@@ -13079,7 +13080,7 @@ int _getActionCost(u_int actionId, vs_battle_actorStats* stats, int updateStat)
 
 void func_80085978(int arg0, int arg1)
 {
-    _getActionCost(arg0, vs_battle_actors[arg1]->stats, 0);
+    getActionCost(arg0, vs_battle_actors[arg1]->stats, 0);
 }
 
 void func_800859B4(u_int arg0, vs_battle_actorStats* stats, int arg2)
@@ -13096,7 +13097,7 @@ void func_800859B4(u_int arg0, vs_battle_actorStats* stats, int arg2)
     }
 }
 
-void func_80085A34(_hitEntity_t* arg0)
+void func_80085A34(hitEntity_t* arg0)
 {
     int i;
     u_int var_a1;
@@ -13138,14 +13139,14 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
     SVECTOR impact;
     vs_battle_actorStats* attackerStats;
     vs_battle_actorStats* stats;
-    _hitEntity_t* entry;
+    hitEntity_t* entry;
     int i;
     int hit;
     int redirected;
     int target;
     u_char limb;
     vs_action_t* spec = &vs_main_actions[action];
-    _hitEntity_t* user;
+    hitEntity_t* user;
     int best;
     short max;
 
@@ -13218,7 +13219,7 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
 
     hit = 0;
     user = &result->unk4;
-    _lastValue = 0;
+    lastValue = 0;
     D_800F1A04 = 0;
     D_800F1A00 = 0;
 
@@ -13238,7 +13239,7 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
             entry = &result->unk4;
             stats = vs_battle_actors[result->unk4.unk0.hit.targetActor]->stats;
             D_800F1A00 = 1;
-            D_800F1A04 = _doesAttackHit(spec, entry, entry, hit, arg3);
+            D_800F1A04 = doesAttackHit(spec, entry, entry, hit, arg3);
 
             if ((D_800F1A04 != 0) || (arg3 == 0)) {
                 func_80085390(spec, entry, entry, arg3, hit);
@@ -13304,10 +13305,10 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
                 }
 
                 stats = vs_battle_actors[entry->unk0.hit.targetActor]->stats;
-                D_800F1A00 = _canPerformAttack(spec, (u_char*)entry, hit);
+                D_800F1A00 = canPerformAttack(spec, (u_char*)entry, hit);
 
                 if (D_800F1A00 != 0) {
-                    D_800F1A04 = _doesAttackHit(spec, user, entry, hit, arg3);
+                    D_800F1A04 = doesAttackHit(spec, user, entry, hit, arg3);
 
                     if ((D_800F1A04 != 0) || (arg3 == 0)) {
                         func_80085390(spec, user, entry, arg3, hit);
@@ -13353,7 +13354,7 @@ void func_80085B10(int action, D_800F19CC_t2* result, D_800F19CC_t2* source, int
 
     if (arg3 && (attackerStats != NULL)) {
         func_800859B4(action, attackerStats, 1);
-        _getActionCost(action, attackerStats, 1);
+        getActionCost(action, attackerStats, 1);
     }
 }
 
@@ -13369,7 +13370,7 @@ int func_8008631C(int arg0, int arg1, int targetStats, int targetLimb, void* arg
     sp10.targets[0].kind = 0;
     sp10.targets[0].unk0.hit.targetLimb = targetLimb;
     func_80085B10(arg0, arg4, &sp10, 0);
-    return _getActionCost(arg0, vs_battle_actors[arg1]->stats, 0) & 0xFF000000;
+    return getActionCost(arg0, vs_battle_actors[arg1]->stats, 0) & 0xFF000000;
 }
 
 int func_800863A4(int arg0, int arg1, int targetStats, int arg3, SVECTOR* arg4,
@@ -13465,7 +13466,7 @@ int func_800863A4(int arg0, int arg1, int targetStats, int arg3, SVECTOR* arg4,
     }
 
     func_80085B10(arg0, arg6, &sp10, 0);
-    return _getActionCost(arg0, vs_battle_actors[arg1]->stats, 0) & 0xFF000000;
+    return getActionCost(arg0, vs_battle_actors[arg1]->stats, 0) & 0xFF000000;
 }
 
 void func_80086754(int arg0, vs_battle_actorStats* stats)
@@ -13638,7 +13639,7 @@ void func_80086754(int arg0, vs_battle_actorStats* stats)
             stats->weapon.unk168[statIncrease] = 0;
             stats->weapon.unk168[statDecrease] = 0;
 
-            _calculateWeaponClassAffinity(stats);
+            calculateWeaponClassAffinity(stats);
         }
     }
 
@@ -13700,7 +13701,7 @@ void func_80086754(int arg0, vs_battle_actorStats* stats)
             stats->shield.unk134[statIncrease] = 0;
             stats->shield.unk134[statDecrease] = 0;
 
-            _calculateShieldClassAffinity(stats);
+            calculateShieldClassAffinity(stats);
 
             for (i = 0; i < 6; ++i) {
                 if (stats->limbs[i].armor.armor.id != 0) {
@@ -13730,7 +13731,7 @@ void func_80086754(int arg0, vs_battle_actorStats* stats)
                 stats->limbs[i].armor.unk88[statIncrease] = 0;
                 stats->limbs[i].armor.unk88[statDecrease] = 0;
 
-                _calculateArmorClassAffinity(stats, i);
+                calculateArmorClassAffinity(stats, i);
             }
         }
 
@@ -13956,7 +13957,7 @@ void func_80087578(int arg0, int arg1, int arg2, int arg3)
     }
 }
 
-void _applyBattleAbilityEffect(_hitEntity_t* arg0)
+void applyBattleAbilityEffect(hitEntity_t* arg0)
 {
     int flag;
     u_int i;
@@ -14690,7 +14691,7 @@ int func_80088B6C(void) { return func_80088554(); }
 
 void func_80088B8C(void)
 {
-    if ((D_800F196C == 2) && (_cameraMode < 4) && (_cameraMode != 0)) {
+    if ((D_800F196C == 2) && (cameraMode < 4) && (cameraMode != 0)) {
         if ((D_800E8498 == 0)
             && (((vs_battle_actors[D_800F19CC->unk8.unk4.unk0.hit.targetActor]
                          ->stats->statuses
@@ -14714,54 +14715,54 @@ void func_80088CAC(void)
     if (vs_main_battleTimer.lifetime == 2) {
         func_8007BCCC();
     }
-    _clearZoneEnemyCache();
+    clearZoneEnemyCache();
 }
 
-void _loadMpdLbas(void* arg0, int size)
+void loadMpdLbas(void* arg0, int size)
 {
     if (size == 0) {
         vs_main_nop9(0x8B, 0);
     }
-    _zoneContext.mpdLbas = vs_main_allocHeap(size);
-    vs_main_memcpy(_zoneContext.mpdLbas, arg0, size);
+    zoneContext.mpdLbas = vs_main_allocHeap(size);
+    vs_main_memcpy(zoneContext.mpdLbas, arg0, size);
 }
 
-void _loadZndEnemies(long* data, UNUSED int arg1)
+void loadZndEnemies(long* data, UNUSED int arg1)
 {
-    _zoneContext.zndEnemyCount = *data;
+    zoneContext.zndEnemyCount = *data;
 
-    if (_zoneContext.zndEnemyCount != 0) {
-        _zoneContext.zudFiles = vs_main_allocHeap(_zoneContext.zndEnemyCount * 8);
-        vs_main_memcpy(_zoneContext.zudFiles, data + 1,
-            _zoneContext.zndEnemyCount * sizeof *_zoneContext.zudFiles);
-        _zoneContext.zndEnemies = vs_main_allocHeap(
-            _zoneContext.zndEnemyCount * sizeof *_zoneContext.zndEnemies);
-        vs_main_memcpy(_zoneContext.zndEnemies,
-            data + ((_zoneContext.zndEnemyCount * 2) + 1),
-            _zoneContext.zndEnemyCount * sizeof *_zoneContext.zndEnemies);
+    if (zoneContext.zndEnemyCount != 0) {
+        zoneContext.zudFiles = vs_main_allocHeap(zoneContext.zndEnemyCount * 8);
+        vs_main_memcpy(zoneContext.zudFiles, data + 1,
+            zoneContext.zndEnemyCount * sizeof *zoneContext.zudFiles);
+        zoneContext.zndEnemies =
+            vs_main_allocHeap(zoneContext.zndEnemyCount * sizeof *zoneContext.zndEnemies);
+        vs_main_memcpy(zoneContext.zndEnemies,
+            data + ((zoneContext.zndEnemyCount * 2) + 1),
+            zoneContext.zndEnemyCount * sizeof *zoneContext.zndEnemies);
         return;
     }
 
-    _zoneContext.zudFiles = NULL;
-    _zoneContext.zndEnemies = NULL;
+    zoneContext.zudFiles = NULL;
+    zoneContext.zndEnemies = NULL;
 }
 
-static void _loadZnd(int id)
+static void loadZnd(int id)
 {
     vs_main_CdFile cdFile;
 
     cdFile.lba = vs_main_zndFiles[id].lba;
     cdFile.size = vs_main_zndFiles[id].size;
-    if (_zoneContext.zndCdFile != 0) {
+    if (zoneContext.zndCdFile != 0) {
         vs_main_nop9(0x87, 0);
     }
-    _zoneContext.zndCdFile = vs_main_allocateCdQueueSlot(&cdFile);
-    if (_zoneContext.zndData != NULL) {
+    zoneContext.zndCdFile = vs_main_allocateCdQueueSlot(&cdFile);
+    if (zoneContext.zndData != NULL) {
         vs_main_nop9(0x88, 0);
     }
-    _zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
-    vs_main_cdEnqueuePriority(_zoneContext.zndCdFile, _zoneContext.zndData);
-    if (_zoneContext.unk30 != 0) {
+    zoneContext.zndData = vs_main_allocHeapR(cdFile.size);
+    vs_main_cdEnqueuePriority(zoneContext.zndCdFile, zoneContext.zndData);
+    if (zoneContext.unk30 != 0) {
         int temp_s0 = vs_main_zndMusicMap[id];
         if (vs_main_getCurrentMusicId() != temp_s0) {
             vs_main_fadeMusicVolume(vs_main_soundData.currentMusicSlot, 0, 0x78);
@@ -14769,38 +14770,38 @@ static void _loadZnd(int id)
     }
 }
 
-void _finishLoadZnd(int id)
+void finishLoadZnd(int id)
 {
     int musicId;
     int i;
-    _zndHeader* header;
+    zndHeader_t* header;
 
-    if (_zoneContext.zndCdFile == NULL) {
-        _loadZnd(id);
+    if (zoneContext.zndCdFile == NULL) {
+        loadZnd(id);
     }
 
-    while (_zoneContext.zndCdFile->state != vs_main_CdQueueStateLoaded) {
+    while (zoneContext.zndCdFile->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
-    vs_main_freeCdQueueSlot(_zoneContext.zndCdFile);
+    vs_main_freeCdQueueSlot(zoneContext.zndCdFile);
 
-    _zoneContext.zndCdFile = NULL;
+    zoneContext.zndCdFile = NULL;
 
     if (vs_main_battleTimer.lifetime == 1) {
         func_8007BCCC();
     }
 
-    header = _zoneContext.zndData;
+    header = zoneContext.zndData;
 
-    _loadZndEnemies((long*)(header->enemiesOffset + (long)header), header->enemiesLen);
-    _loadZndTims((long*)(header->timOffset + (long)header));
-    _loadMpdLbas((long*)(header->mpdOffset + (long)header), header->mpdLen);
+    loadZndEnemies((long*)(header->enemiesOffset + (long)header), header->enemiesLen);
+    loadZndTims((long*)(header->timOffset + (long)header));
+    loadMpdLbas((long*)(header->mpdOffset + (long)header), header->mpdLen);
 
     musicId = header->musicId;
 
     vs_main_freeHeapR(header);
-    _zoneContext.zndData = NULL;
+    zoneContext.zndData = NULL;
 
     if (vs_main_startState == 1) {
         func_800BEB9C(1);
@@ -14816,30 +14817,30 @@ void _finishLoadZnd(int id)
                 vs_main_freeMusic(++i);
             }
 
-            _zoneContext.musicSlot = 0;
+            zoneContext.musicSlot = 0;
 
             if (musicId != 0) {
                 vs_main_loadAndWaitSoundSlot(musicId);
-                _zoneContext.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
+                zoneContext.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
             }
         }
     }
-    _zoneContext.musicId = musicId;
-    _zoneContext.unk30 = 1;
-    _zoneContext.unk38 = 0;
+    zoneContext.musicId = musicId;
+    zoneContext.unk30 = 1;
+    zoneContext.unk38 = 0;
 }
 
 void func_80089098(void)
 {
     func_800BEBEC();
-    _vsBattleNop2(0);
-    if (_zoneContext.zndEnemies != NULL) {
-        vs_main_freeHeap(_zoneContext.zndEnemies);
+    vsBattleNop2(0);
+    if (zoneContext.zndEnemies != NULL) {
+        vs_main_freeHeap(zoneContext.zndEnemies);
     }
-    if (_zoneContext.zudFiles != NULL) {
-        vs_main_freeHeap(_zoneContext.zudFiles);
+    if (zoneContext.zudFiles != NULL) {
+        vs_main_freeHeap(zoneContext.zudFiles);
     }
-    vs_main_freeHeap(_zoneContext.mpdLbas);
+    vs_main_freeHeap(zoneContext.mpdLbas);
 }
 
 int func_80089104(void) { return D_800F18A8; }
@@ -14849,9 +14850,9 @@ void func_80089114(void)
     UNUSED int _[4];
     int slots[16];
     vs_battle_objectData_flags data;
-    _mpdEnemy* enemy;
+    mpdEnemy_t* enemy;
     vs_main_savedEnemyState_t* saved;
-    _zndEnemy* template;
+    zndEnemy_t* template;
     int i;
     int visible;
     u_short param;
@@ -14867,8 +14868,8 @@ void func_80089114(void)
         slots[j] = 0;
     }
 
-    for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
-        enemy = &_zoneContext.mpdEnemies[i];
+    for (i = 0; i < zoneContext.mpdEnemyCount; ++i) {
+        enemy = &zoneContext.mpdEnemies[i];
         slot = (enemy->type == 0) ? enemy->slot : ((mpdObjectSpawn*)enemy)->slot;
 
         if (slot < 16) {
@@ -14876,8 +14877,8 @@ void func_80089114(void)
         }
     }
 
-    for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
-        enemy = &_zoneContext.mpdEnemies[i];
+    for (i = 0; i < zoneContext.mpdEnemyCount; ++i) {
+        enemy = &zoneContext.mpdEnemies[i];
 
         if (enemy->type == 0) {
             visible = enemy->hidden == 0;
@@ -14979,7 +14980,7 @@ void func_80089114(void)
                 param |= 0x80;
             }
 
-            template = &_zoneContext.zndEnemies[id];
+            template = &zoneContext.zndEnemies[id];
             slot = enemy->slot;
 
             if (slot == 0) {
@@ -15001,12 +15002,12 @@ void func_80089114(void)
                 if (j >= 10) {
                     vs_main_nop10(0x86, 0);
 
-                    if (_zoneContext.unk1C != NULL) {
-                        vs_main_freeHeapR(_zoneContext.unk1C);
+                    if (zoneContext.unk1C != NULL) {
+                        vs_main_freeHeapR(zoneContext.unk1C);
                     }
 
-                    _zoneContext.unk1C = NULL;
-                    _zoneContext.unk14 = 0;
+                    zoneContext.unk1C = NULL;
+                    zoneContext.unk14 = 0;
                     return;
                 }
             } else if (vs_main_actorExtraShp[template->unk0[2]] != 0) {
@@ -15015,12 +15016,12 @@ void func_80089114(void)
                 } else {
                     vs_main_nop10(0x86, 0);
 
-                    if (_zoneContext.unk1C != NULL) {
-                        vs_main_freeHeapR(_zoneContext.unk1C);
+                    if (zoneContext.unk1C != NULL) {
+                        vs_main_freeHeapR(zoneContext.unk1C);
                     }
 
-                    _zoneContext.unk1C = NULL;
-                    _zoneContext.unk14 = 0;
+                    zoneContext.unk1C = NULL;
+                    zoneContext.unk14 = 0;
                     return;
                 }
             }
@@ -15070,19 +15071,19 @@ void func_80089114(void)
     }
 
     for (i = 0; i < 32; ++i) {
-        enemy = &_zoneContext.mpdEnemies[i];
-        saved = _findSavedEnemy(i);
+        enemy = &zoneContext.mpdEnemies[i];
+        saved = findSavedEnemy(i);
 
         if (saved != NULL) {
             saved->hidden = enemy->hidden;
         }
     }
-    if (_zoneContext.unk1C != NULL) {
-        vs_main_freeHeapR(_zoneContext.unk1C);
+    if (zoneContext.unk1C != NULL) {
+        vs_main_freeHeapR(zoneContext.unk1C);
     }
 
-    _zoneContext.unk1C = NULL;
-    _zoneContext.unk14 = 0;
+    zoneContext.unk1C = NULL;
+    zoneContext.unk14 = 0;
 }
 
 void func_80089888(void)
@@ -15133,25 +15134,25 @@ void func_80089888(void)
     func_800E6158();
 }
 
-static void _selectZoneEnemyCache(void)
+static void selectZoneEnemyCache(void)
 {
     int j;
     int i;
     int var_s4;
-    _mpdEnemy* temp_s2;
+    mpdEnemy_t* temp_s2;
     vs_main_savedEnemyState_t* temp_v0;
 
     var_s4 = 0;
 
     for (j = 0; j < 4; ++j) {
         if ((vs_main_zoneEnemyCache[j].lru != 0)
-            && (vs_main_zoneEnemyCache[j].zndId == _zoneContext.zndId)
-            && (vs_main_zoneEnemyCache[j].mapId == _zoneContext.mapId)) {
+            && (vs_main_zoneEnemyCache[j].zndId == zoneContext.zndId)
+            && (vs_main_zoneEnemyCache[j].mapId == zoneContext.mapId)) {
             var_s4 = 1;
             vs_main_zoneEnemyCacheIndex = j;
-            for (i = 0; i < _zoneContext.mpdEnemyCount; ++i) {
-                temp_s2 = &_zoneContext.mpdEnemies[i];
-                temp_v0 = _findSavedEnemy(i);
+            for (i = 0; i < zoneContext.mpdEnemyCount; ++i) {
+                temp_s2 = &zoneContext.mpdEnemies[i];
+                temp_v0 = findSavedEnemy(i);
                 if (temp_v0 != NULL) {
                     temp_s2->hidden = temp_v0->hidden;
                 }
@@ -15179,42 +15180,42 @@ static void _selectZoneEnemyCache(void)
     }
 
     vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].lru = 4;
-    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId = _zoneContext.zndId;
-    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId = _zoneContext.mapId;
+    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].zndId = zoneContext.zndId;
+    vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId = zoneContext.mapId;
 }
 
-void _loadMpdEnemySection(void* data, u_int dataLen)
+void loadMpdEnemySection(void* data, u_int dataLen)
 {
     if (dataLen != 0) {
-        _zoneContext.mpdEnemies = vs_main_allocHeap(dataLen);
-        vs_main_memcpy(_zoneContext.mpdEnemies, data, dataLen);
-        _zoneContext.mpdEnemyCount = dataLen / sizeof(_mpdEnemy);
+        zoneContext.mpdEnemies = vs_main_allocHeap(dataLen);
+        vs_main_memcpy(zoneContext.mpdEnemies, data, dataLen);
+        zoneContext.mpdEnemyCount = dataLen / sizeof(mpdEnemy_t);
         return;
     }
-    _zoneContext.mpdEnemies = NULL;
-    _zoneContext.mpdEnemyCount = 0;
+    zoneContext.mpdEnemies = NULL;
+    zoneContext.mpdEnemyCount = 0;
 }
 
-void _enableDispMask(void) { SetDispMask(1); }
+void enableDispMask(void) { SetDispMask(1); }
 
-void _disableDispMask(void) { SetDispMask(0); }
+void disableDispMask(void) { SetDispMask(0); }
 
-void _loadMpd(int id)
+void loadMpd(int id)
 {
     vs_main_CdFile file;
 
-    file.lba = _zoneContext.mpdLbas[id].lba;
-    file.size = _zoneContext.mpdLbas[id].size;
+    file.lba = zoneContext.mpdLbas[id].lba;
+    file.size = zoneContext.mpdLbas[id].size;
 
-    if (_zoneContext.mpdCdFile != NULL) {
+    if (zoneContext.mpdCdFile != NULL) {
         vs_main_nop9(0x89, 0);
     }
-    _zoneContext.mpdCdFile = vs_main_allocateCdQueueSlot(&file);
-    if (_zoneContext.mpdData != NULL) {
+    zoneContext.mpdCdFile = vs_main_allocateCdQueueSlot(&file);
+    if (zoneContext.mpdData != NULL) {
         vs_main_nop9(0x8A, 0);
     }
-    _zoneContext.mpdData = vs_main_allocHeapR(file.size);
-    vs_main_cdEnqueuePriority(_zoneContext.mpdCdFile, _zoneContext.mpdData);
+    zoneContext.mpdData = vs_main_allocHeapR(file.size);
+    vs_main_cdEnqueuePriority(zoneContext.mpdCdFile, zoneContext.mpdData);
 }
 
 void func_80089DC0(int arg0)
@@ -15227,34 +15228,34 @@ void func_80089DC0(int arg0)
     char* mpdHeader;
     int v0;
 
-    if (_zoneContext.mpdCdFile == NULL) {
-        _loadMpd(arg0);
+    if (zoneContext.mpdCdFile == NULL) {
+        loadMpd(arg0);
     }
 
-    while (_zoneContext.mpdCdFile->state != vs_main_CdQueueStateLoaded) {
+    while (zoneContext.mpdCdFile->state != vs_main_CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
-    vs_main_freeCdQueueSlot(_zoneContext.mpdCdFile);
-    _zoneContext.mpdCdFile = NULL;
+    vs_main_freeCdQueueSlot(zoneContext.mpdCdFile);
+    zoneContext.mpdCdFile = NULL;
 
     vs_main_prims[0] = vs_main_allocHeap(0x20000);
     vs_main_prims[1] = vs_main_allocHeap(0x20000);
 
     vs_main_clutInit();
 
-    mpdHeader = _zoneContext.mpdData;
-    v0 = ((_mpdHeader*)mpdHeader)->roomSectionOffset;
+    mpdHeader = zoneContext.mpdData;
+    v0 = ((mpdHeader_t*)mpdHeader)->roomSectionOffset;
 
-    _loadMpdRoomSection(0, (void*)(v0 + (int)mpdHeader));
+    loadMpdRoomSection(0, (void*)(v0 + (int)mpdHeader));
 
-    _zoneContext.zndId = vs_battle_spawnPoint.zndId;
-    _zoneContext.mapId = vs_battle_spawnPoint.mpdId;
+    zoneContext.zndId = vs_battle_spawnPoint.zndId;
+    zoneContext.mapId = vs_battle_spawnPoint.mpdId;
 
     var_a0 = vs_battle_getCurrentSceneId();
 
-    if (var_a0 != _zoneContext.unk68) {
-        _zoneContext.unk68 = var_a0;
+    if (var_a0 != zoneContext.unk68) {
+        zoneContext.unk68 = var_a0;
         func_80088CAC();
     }
 
@@ -15263,21 +15264,21 @@ void func_80089DC0(int arg0)
     }
 
     D_800F19A0 = 1;
-    var_a0 = _getCollisionMapDimensions(0);
-    _zoneContext.unk3C = (var_a0 & 0xFFFF) / 16;
+    var_a0 = getCollisionMapDimensions(0);
+    zoneContext.unk3C = (var_a0 & 0xFFFF) / 16;
 
     if (var_a0 < 0) {
         var_a0 += 0xFFFFF;
     }
-    _zoneContext.unk3E = var_a0 >> 0x14;
+    zoneContext.unk3E = var_a0 >> 0x14;
 
-    if (_getMapBounds(0) != NULL) {
-        _zoneContext.bounds = *_getMapBounds(0);
+    if (getMapBounds(0) != NULL) {
+        zoneContext.bounds = *getMapBounds(0);
     } else {
-        _zoneContext.bounds.minZ = 0;
-        _zoneContext.bounds.minX = 0;
-        _zoneContext.bounds.maxX = _zoneContext.unk3C;
-        _zoneContext.bounds.maxZ = _zoneContext.unk3E;
+        zoneContext.bounds.minZ = 0;
+        zoneContext.bounds.minX = 0;
+        zoneContext.bounds.maxX = zoneContext.unk3C;
+        zoneContext.bounds.maxZ = zoneContext.unk3E;
     }
 
     {
@@ -15293,9 +15294,9 @@ void func_80089DC0(int arg0)
 
     vs_main_loadBgColors();
 
-    if (((_mpdHeader*)mpdHeader)->lootSectionLen != 0) {
-        v0 = ((_mpdHeader*)mpdHeader)->lootSectionOffset;
-        _loadMpdLootSection((void*)(v0 + (int)mpdHeader));
+    if (((mpdHeader_t*)mpdHeader)->lootSectionLen != 0) {
+        v0 = ((mpdHeader_t*)mpdHeader)->lootSectionOffset;
+        loadMpdLootSection((void*)(v0 + (int)mpdHeader));
     }
 
     {
@@ -15303,17 +15304,17 @@ void func_80089DC0(int arg0)
         int arg2;
         int new_var;
         int arg4;
-        int arg0 = ((_mpdHeader*)mpdHeader)->clearedSectionOffset;
+        int arg0 = ((mpdHeader_t*)mpdHeader)->clearedSectionOffset;
         arg0 += (int)mpdHeader;
-        arg2 = ((_mpdHeader*)mpdHeader)->scriptSectionOffset;
+        arg2 = ((mpdHeader_t*)mpdHeader)->scriptSectionOffset;
         arg2 += ((int)mpdHeader);
-        arg4 = ((_mpdHeader*)mpdHeader)->doorSectionOffset;
+        arg4 = ((mpdHeader_t*)mpdHeader)->doorSectionOffset;
         arg4 += ((int)mpdHeader);
-        arg5 = ((_mpdHeader*)mpdHeader)->doorSectionLen;
+        arg5 = ((mpdHeader_t*)mpdHeader)->doorSectionLen;
         new_var = 1;
-        temp_s4 = _loadMpdClearedScriptDoorSections((void*)(arg0),
-            ((_mpdHeader*)mpdHeader)->clearedSectionLen, (void*)(arg2),
-            ((_mpdHeader*)mpdHeader)->scriptSectionLen, (void*)(arg4), arg5,
+        temp_s4 = loadMpdClearedScriptDoorSections((void*)(arg0),
+            ((mpdHeader_t*)mpdHeader)->clearedSectionLen, (void*)(arg2),
+            ((mpdHeader_t*)mpdHeader)->scriptSectionLen, (void*)(arg4), arg5,
             vs_main_startState == new_var);
     }
 
@@ -15321,15 +15322,15 @@ void func_80089DC0(int arg0)
         vs_main_startState = 5;
     }
 
-    v0 = ((_mpdHeader*)mpdHeader)->enemySectionOffset;
-    _loadMpdEnemySection(
-        (void*)(v0 + (int)mpdHeader), ((_mpdHeader*)mpdHeader)->enemySectionLen);
+    v0 = ((mpdHeader_t*)mpdHeader)->enemySectionOffset;
+    loadMpdEnemySection(
+        (void*)(v0 + (int)mpdHeader), ((mpdHeader_t*)mpdHeader)->enemySectionLen);
 
     vs_main_freeHeapR(mpdHeader);
 
     D_800F18C8.unk14 = 0;
 
-    _selectZoneEnemyCache();
+    selectZoneEnemyCache();
     func_80089888();
     func_80089114();
     func_800A35A8();
@@ -15337,7 +15338,7 @@ void func_80089DC0(int arg0)
     func_80086754(0x21000, vs_battle_characterState->stats);
 
     D_800F19C8 = 0;
-    _firstPersonViewEnabled = 0;
+    firstPersonViewEnabled = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
     func_8007D15C(1);
@@ -15376,7 +15377,7 @@ void func_80089DC0(int arg0)
     vs_battle_cameraCurrentSpherical.values.pitch = -384;
     vs_battle_cameraCurrentSpherical.unk24 = 0;
 
-    if ((_zoneContext.zndId == 27) && (_zoneContext.mapId == 1)) {
+    if ((zoneContext.zndId == 27) && (zoneContext.mapId == 1)) {
         vs_battle_cameraCurrentSpherical.values.pitch = -128;
     }
 
@@ -15388,12 +15389,12 @@ void func_80089DC0(int arg0)
     sp20.vy = sp40.unk0.unk4.vy * ONE - 90 * ONE;
     sp20.vz = sp40.unk0.unk4.vz * ONE;
 
-    _clampPositionToZoneBounds(&sp20, &lookAt);
+    clampPositionToZoneBounds(&sp20, &lookAt);
 
     vs_scratch.camera.lookAt = lookAt;
     vs_scratch.camera.angles.vy = vs_battle_cameraCurrentSpherical.values.yaw;
 
-    _setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
+    setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
     func_800A1108(0, &sp40);
     func_80074B14(0, &sp40.unk0.unk0);
     func_8007D360();
@@ -15419,7 +15420,7 @@ void func_80089DC0(int arg0)
                 vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
             }
             vs_battle_screenTransitionStep = 4;
-            _enableDispMask();
+            enableDispMask();
         }
     }
     vs_main_padDisconnectAll();
@@ -15430,7 +15431,7 @@ void func_8008A364(void)
     int i;
 
     for (i = 2; i < 16; ++i) {
-        _removeActorById(i, 0);
+        removeActorById(i, 0);
     }
 }
 
@@ -15442,14 +15443,14 @@ void func_8008A3A0(void)
         vs_scratch.unk4 = vs_main_ot[vs_main_frameBuf] + 0x10;
         ClearOTagR(vs_scratch.unk4, 0x800);
         func_8007DF40();
-        _drawScreenTransition(vs_scratch.unk4);
+        drawScreenTransition(vs_scratch.unk4);
         func_8007629C(vs_scratch.unk4 + 0x1FFC);
     }
 
     DrawSync(0);
     vs_main_gametimeUpdate(0);
     func_800BEB34();
-    _setRoomSeen();
+    setRoomSeen();
     func_8008ABF0(0);
     if (D_800F18E4 != NULL) {
         vs_main_freeHeap(D_800F18E4);
@@ -15503,7 +15504,7 @@ int func_8008A4FC(void)
 
     if ((func_8008B764(var_a0, var_a1, var_a2)->unk0_16 & 1)
         && (!(temp_v0_2 & 0x504000))) {
-        _mpdRoomSection9* room = func_8008D438(s0->x, s0->z, s0->surface);
+        mpdRoomSection9_t* room = func_8008D438(s0->x, s0->z, s0->surface);
         if ((room != NULL) && (room->unk6 == 16)) {
             return room->unkA;
         }
@@ -15517,7 +15518,7 @@ int vs_battle_getActionFlags(int actorId, int actionId)
     vs_battle_actorStats* stats = vs_battle_actors[actorId]->stats;
     int ret = stats->actionDelay != 0;
 
-    if (!(_getActionCost(actionId, stats, 0) & 0xFF000000)) {
+    if (!(getActionCost(actionId, stats, 0) & 0xFF000000)) {
         ret |= 2;
     }
 
@@ -15543,17 +15544,17 @@ int vs_battle_getActionFlags(int actorId, int actionId)
 
 void func_8008A6FC(void)
 {
-    vs_battle_lootListNode* var_a0 = _lootListHead;
+    vs_battle_lootListNode* var_a0 = lootListHead;
 
     while (var_a0 != 0) {
         vs_battle_lootListNode* temp_s0 = var_a0->next;
         vs_main_freeHeapR(var_a0);
         var_a0 = temp_s0;
     }
-    _lootListHead = NULL;
+    lootListHead = NULL;
 }
 
-void _loadZndTims(void* data)
+void loadZndTims(void* data)
 {
     TIM_IMAGE tim;
     u_long* timPtrs[4];
@@ -15608,12 +15609,12 @@ void _loadZndTims(void* data)
     DrawSync(0);
 }
 
-int _loadMpdRoomSection(int arg0, void* data)
+int loadMpdRoomSection(int arg0, void* data)
 {
     int i;
     void* temp_v0;
-    _mpdRoomSection* var_s0;
-    _mpdRoomSectionE* sectionE;
+    mpdRoomSection_t* var_s0;
+    mpdRoomSectionE_t* sectionE;
     u_int dataSz;
 
     D_800F1BB6 = 0;
@@ -15847,7 +15848,7 @@ void func_8008AC78(void)
     edge = nextLine++;
     AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + 5, edge);
     ((vs_scratch_t*)0x1F800000)->unk0 = nextLine;
-    _insertTPage(5, getTPage(0, 3, 0, 0));
+    insertTPage(5, getTPage(0, 3, 0, 0));
 
     if (vs_battle_characterState->weaponDrawn == 1) {
         int pulse = rsin(D_800F1BA0 << 8) / 64;
@@ -15873,12 +15874,12 @@ void func_8008AC78(void)
 
 void func_8008B1FC(void* arg0)
 {
-    SetRotMatrix((MATRIX*)0x1F800014); // _camera.viewMatrix
-    SetTransMatrix((MATRIX*)0x1F800014); // _camera.viewMatrix
+    SetRotMatrix((MATRIX*)0x1F800014); // camera.viewMatrix
+    SetTransMatrix((MATRIX*)0x1F800014); // camera.viewMatrix
     func_800983F8(arg0);
-    D_800F1CC0 = *(void**)0x1F800000; // _camera.unk0
+    D_800F1CC0 = *(void**)0x1F800000; // camera.unk0
     func_8009723C(arg0, D_800F19C8);
-    D_800F1BB8 = *(void**)0x1F800000; // _camera.unk0
+    D_800F1BB8 = *(void**)0x1F800000; // camera.unk0
     if (D_800F1BB0.unk6 != 0) {
         func_80098D6C(D_800F1CC0, D_800F1BB8, &D_800F1BB0, 0);
     }
@@ -15966,7 +15967,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     int roomCount = scene->roomCount;
 
     for (i = 0; i < roomCount; ++i, ++room) {
-        int locationId = _getLocationId(room->zoneId, room->mapId - 1);
+        int locationId = getLocationId(room->zoneId, room->mapId - 1);
         if (locationId > 0) {
             room->visited =
                 vs_main_mapStatus.roomFlags[locationId >> 5] & (1 << (locationId & 0x1F));
@@ -15976,7 +15977,7 @@ void vs_battle_setRoomsUnk0(vs_battle_scene* scene)
     }
 }
 
-void _vsBattleNop2(UNUSED int arg0) { }
+void vsBattleNop2(UNUSED int arg0) { }
 
 void func_8008B590(MATRIX* arg0, int arg1)
 {
@@ -16004,14 +16005,14 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-UNUSED _mpdRoomSection3* _getRoomDataSection3(void)
+UNUSED mpdRoomSection3_t* getRoomDataSection3(void)
 {
     return vs_battle_roomData.section3;
 }
 
 int func_8008B6FC(void) { return vs_battle_roomData.section6; }
 
-int _getCollisionMapDimensions(UNUSED int arg0)
+int getCollisionMapDimensions(UNUSED int arg0)
 {
     if (vs_battle_roomData.collisionMapSection != NULL) {
         return (vs_battle_roomData.collisionMapSection->height << 0x14)
@@ -16020,7 +16021,7 @@ int _getCollisionMapDimensions(UNUSED int arg0)
     return 0;
 }
 
-_zoneContextBounds* _getMapBounds(UNUSED int arg0)
+zoneContextBounds_t* getMapBounds(UNUSED int arg0)
 {
     if (vs_battle_roomData.section18 != NULL) {
         return vs_battle_roomData.section18;
@@ -16028,7 +16029,7 @@ _zoneContextBounds* _getMapBounds(UNUSED int arg0)
     return NULL;
 }
 
-_mpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
+mpdRoomSection3_t* func_8008B764(u_int width, u_int height, int arg2)
 {
     if (vs_battle_roomData.section3 != NULL) {
         if (arg2 >= 2) {
@@ -16049,7 +16050,7 @@ _mpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
 
 int func_8008B808(int arg0, int arg1, int arg2, int arg3)
 {
-    _mpdRoomSection3* temp_a0;
+    mpdRoomSection3_t* temp_a0;
 
     if (vs_battle_roomData.section3 != NULL) {
         if (arg3 != 0) {
@@ -16080,7 +16081,7 @@ void func_8008B8F8(char (*arg0)[12])
     if (arg0 != NULL) {
         int doorId;
         vs_main_memcpy(&D_800F1CC8, arg0, sizeof D_800F1CC8);
-        doorId = _getDoorId((*arg0)[8]);
+        doorId = getDoorId((*arg0)[8]);
         vs_battle_doorEntered = doorId;
     } else {
         vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
@@ -16124,7 +16125,7 @@ void func_8008B960(int arg0, int arg1, int arg2)
 
     if (var_s0 != NULL) {
         vs_main_memcpy(&D_800F1CC8, var_s0, sizeof D_800F1CC8);
-        temp_t4 = _getDoorId(var_s0->doorId);
+        temp_t4 = getDoorId(var_s0->doorId);
         vs_battle_doorEntered = temp_t4;
     } else {
         vs_main_bzero(&D_800F1CC8, sizeof D_800F1CC8);
@@ -16161,10 +16162,10 @@ D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-_mpdRoomSectionA* func_8008BC04(int arg0, int arg1, int arg2)
+mpdRoomSectionA_t* func_8008BC04(int arg0, int arg1, int arg2)
 {
     int temp_t2;
-    _mpdRoomSectionA* var_t0;
+    mpdRoomSectionA_t* var_t0;
     int i;
 
     if (vs_battle_roomData.sectionA != 0) {
@@ -16208,9 +16209,9 @@ _mpdRoomSectionA* func_8008BC04(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-void func_8008BD74(_mpdRoomSectionA* arg0)
+void func_8008BD74(mpdRoomSectionA_t* arg0)
 {
-    _mpdRoomSection3* var_a0;
+    mpdRoomSection3_t* var_a0;
 
     var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (var_a0 != NULL) {
@@ -16236,7 +16237,7 @@ void func_8008BD74(_mpdRoomSectionA* arg0)
     }
 }
 
-int func_8008BEBC(_mpdRoomSectionA* arg0)
+int func_8008BEBC(mpdRoomSectionA_t* arg0)
 {
     if (arg0->unk12 == 0) {
         u_int temp_a0 = (u_short)arg0->keyOrSigil;
@@ -16255,9 +16256,9 @@ int func_8008BEBC(_mpdRoomSectionA* arg0)
     return 0;
 }
 
-int func_8008BF48(_mpdRoomSectionA* arg0)
+int func_8008BF48(mpdRoomSectionA_t* arg0)
 {
-    _mpdRoomSectionA* temp_s0;
+    mpdRoomSectionA_t* temp_s0;
 
     if (arg0->unkE == 0) {
         vs_main_playSfxDefault(0x7E, 0x1D);
@@ -16284,7 +16285,7 @@ int func_8008BF48(_mpdRoomSectionA* arg0)
     return 1;
 }
 
-void func_8008C070(int arg0, _mpdRoomSectionA* arg1)
+void func_8008C070(int arg0, mpdRoomSectionA_t* arg1)
 {
     int i;
 
@@ -16301,7 +16302,7 @@ void func_8008C070(int arg0, _mpdRoomSectionA* arg1)
 
 void func_8008C0C0(void)
 {
-    _mpdRoomSectionA* temp_a0;
+    mpdRoomSectionA_t* temp_a0;
     int i;
 
     if (D_800F1D6A <= 0) {
@@ -16335,7 +16336,7 @@ void func_8008C0C0(void)
     }
 }
 
-int func_8008C1C8(_mpdRoomSectionA* arg0)
+int func_8008C1C8(mpdRoomSectionA_t* arg0)
 {
     if (func_80093764(arg0->unk0.unk8.lock.unk1) != 0) {
         return 0;
@@ -16346,7 +16347,7 @@ int func_8008C1C8(_mpdRoomSectionA* arg0)
     arg0->unk12 = 0;
     arg0->unkE = arg0->unkE == 0;
     if (arg0->unk10 != -1) {
-        _mpdRoomSectionA* p = vs_battle_roomData.sectionA;
+        mpdRoomSectionA_t* p = vs_battle_roomData.sectionA;
         if (p[arg0->unk10].unk0.unkA != 0) {
             if (p[arg0->unk10].unkE == 0) {
                 func_8008BD74(&p[arg0->unk10]);
@@ -16360,8 +16361,8 @@ int func_8008C1C8(_mpdRoomSectionA* arg0)
 
 int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
 {
-    _mpdRoomSection11* var_a1;
-    _mpdRoomSection11* new_var;
+    mpdRoomSection11_t* var_a1;
+    mpdRoomSection11_t* new_var;
     int i;
     int j;
     int len;
@@ -16389,7 +16390,7 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
             }
             j = new_var->unk2 + ((4 - (new_var->unk2 & 3)) & 3) + 4;
             i += j;
-            var_a1 = (_mpdRoomSection11*)((char*)var_a1 + j);
+            var_a1 = (mpdRoomSection11_t*)((char*)var_a1 + j);
         }
     }
     return 0;
@@ -16437,7 +16438,7 @@ void func_8008C518(int arg0) { func_8008C49C(arg0, -1); }
 
 void func_8008C538(void)
 {
-    _mpdRoomSection12* var_s2;
+    mpdRoomSection12_t* var_s2;
     int temp_s3;
     int i;
     int* temp_v0;
@@ -16476,7 +16477,7 @@ void func_8008C538(void)
 
 void func_8008C6B4(int arg0, int arg1)
 {
-    _mpdRoomSection12* temp_s0;
+    mpdRoomSection12_t* temp_s0;
     int* temp_v0_5;
 
     if (vs_battle_roomData.section12 != NULL) {
@@ -16519,7 +16520,7 @@ static short const D_80068BEC[] = { 8, 14, 16, 11, 7, 3, 1 };
 int func_8008C8A8(void)
 {
     SVECTOR point;
-    _mpdRoomSection12* object;
+    mpdRoomSection12_t* object;
     int count;
     int i;
     int tick;
@@ -16636,7 +16637,7 @@ int func_8008C8A8(void)
 
 void func_8008CEB0(void)
 {
-    _mpdRoomSection12* object;
+    mpdRoomSection12_t* object;
     int i;
     int count;
 
@@ -16646,7 +16647,7 @@ void func_8008CEB0(void)
         return;
     }
     object = vs_battle_roomData.section12;
-    count = vs_battle_roomData.header.section12Len / sizeof(_mpdRoomSection12);
+    count = vs_battle_roomData.header.section12Len / sizeof(mpdRoomSection12_t);
     for (i = 0; i < count; ++i, ++object) {
         UNUSED int _[8];
         SVECTOR vertices[4];
@@ -16655,7 +16656,7 @@ void func_8008CEB0(void)
         POLY_F4* polygon;
         int depth;
         int shade;
-        _mpdRoomSection3* cell;
+        mpdRoomSection3_t* cell;
         int height;
         int coordinate;
         int y;
@@ -16705,13 +16706,13 @@ void func_8008CEB0(void)
         setRGB0(polygon, shade / 2 + 16, shade / 2 + 16, shade / 2 + 16);
         AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, polygon++);
         ((vs_scratch_t*)0x1F800000)->unk0 = polygon;
-        _insertTPage(depth, getTPage(0, 2, 0, 0));
+        insertTPage(depth, getTPage(0, 2, 0, 0));
     }
 }
 
 int func_8008D2C0(SVECTOR arg0[])
 {
-    _mpdRoomSection12* var_t0;
+    mpdRoomSection12_t* var_t0;
     int i;
     int var_t1;
     int temp_t3;
@@ -16756,10 +16757,10 @@ int func_8008D418(void)
          | vs_battle_roomData.sectionB->unk54;
 }
 
-_mpdRoomSection9* func_8008D438(int arg0, int arg1, int arg2)
+mpdRoomSection9_t* func_8008D438(int arg0, int arg1, int arg2)
 {
     if (vs_battle_roomData.section9 != NULL) {
-        _mpdRoomSection9* var_t0 = vs_battle_roomData.section9;
+        mpdRoomSection9_t* var_t0 = vs_battle_roomData.section9;
         int temp_t1 =
             vs_battle_roomData.header.section9Len / sizeof *vs_battle_roomData.section9;
         int i;
@@ -16778,10 +16779,10 @@ _mpdRoomSection9* func_8008D438(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-_mpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2)
+mpdRoomSection13_t* func_8008D508(int arg0, int arg1, int arg2)
 {
     int temp_t1;
-    _mpdRoomSection13* var_a3;
+    mpdRoomSection13_t* var_a3;
     int i;
 
     var_a3 = vs_battle_roomData.section13;
@@ -16816,7 +16817,7 @@ void func_8008D5A0(int arg0)
     }
 }
 
-void func_8008D5FC(_mpdRoomSectionA* arg0)
+void func_8008D5FC(mpdRoomSectionA_t* arg0)
 {
     if ((signed char)arg0->unk0.unkB == 0) {
         arg0->unk0.unkB = 1;
@@ -16829,9 +16830,9 @@ void func_8008D5FC(_mpdRoomSectionA* arg0)
     }
 }
 
-void func_8008D658(_mpdRoomSectionA* arg0)
+void func_8008D658(mpdRoomSectionA_t* arg0)
 {
-    _mpdRoomSection3* temp_v0;
+    mpdRoomSection3_t* temp_v0;
 
     if (arg0->unk0.unk8.s16 == 0) {
         vs_main_playSfxDefault(0x7E, 0x3B);
@@ -16851,8 +16852,8 @@ void func_8008D658(_mpdRoomSectionA* arg0)
 
 void func_8008D710(void)
 {
-    _mpdRoomSection3* temp_s0;
-    _mpdRoomSection13* var_s3;
+    mpdRoomSection3_t* temp_s0;
+    mpdRoomSection13_t* var_s3;
     int temp_s4;
     int i;
 
@@ -16900,7 +16901,7 @@ void vs_battle_parseTim(u_long* arg0, TIM_IMAGE* tim)
     tim->paddr = arg0 + 3;
 }
 
-int _getDoorId(int door)
+int getDoorId(int door)
 {
     int* temp_v1;
 
@@ -16948,7 +16949,7 @@ void vs_battle_setDoorEntered2(int arg0)
 
 short func_8008DA24(int arg0, int arg1)
 {
-    _mpdRoomCollisionMapSection* collisionMap;
+    mpdRoomCollisionMapSection_t* collisionMap;
     int temp_fp;
     int temp_s0_2;
     int temp_s0_3;
@@ -17031,7 +17032,7 @@ short func_8008DA24(int arg0, int arg1)
 
 short func_8008DC7C(int arg0, int arg1)
 {
-    _mpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
+    mpdRoomCollisionMapSection_t* collisionMap = vs_battle_roomData.collisionMapSection;
     int var_a2 = 0x8000;
 
     if ((collisionMap != NULL) && ((u_int)(arg0 >> 7) < collisionMap->width)
@@ -17046,7 +17047,7 @@ short func_8008DC7C(int arg0, int arg1)
 short func_8008DD0C(int arg0, int arg1)
 {
     int temp_v1;
-    _mpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
+    mpdRoomCollisionMapSection_t* collisionMap = vs_battle_roomData.collisionMapSection;
     int var_a2 = 0;
     int new_var = 8;
 
@@ -17069,7 +17070,7 @@ int func_8008DDA8(int arg0, int arg1)
     int sp10 = 0x80008000;
     short* new_var = (short*)&sp10;
 
-    _mpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
+    mpdRoomCollisionMapSection_t* collisionMap = vs_battle_roomData.collisionMapSection;
 
     if ((collisionMap != NULL) && ((u_int)(arg0 >> 7) < collisionMap->width)) {
         if ((u_int)(arg1 >> 7) < collisionMap->height) {
@@ -17093,10 +17094,10 @@ int func_8008DDA8(int arg0, int arg1)
     return sp10;
 }
 
-void func_8008DEAC(_mpdRoomSection9* arg0, int arg1)
+void func_8008DEAC(mpdRoomSection9_t* arg0, int arg1)
 {
     if (arg0 == NULL) {
-        _mpdRoomSection9* var_a2 = vs_battle_roomData.section9;
+        mpdRoomSection9_t* var_a2 = vs_battle_roomData.section9;
         if (var_a2 != NULL) {
             int i;
             int temp_a3 = vs_battle_roomData.header.section9Len / 12;
@@ -17112,7 +17113,7 @@ void func_8008DEAC(_mpdRoomSection9* arg0, int arg1)
 
 void func_8008DF14(void)
 {
-    _mpdRoomSection9* var_s3;
+    mpdRoomSection9_t* var_s3;
     int count;
     int j;
     int var_s2;
@@ -17192,7 +17193,7 @@ void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
 void func_8008E224(int arg0, int arg1)
 {
     int* temp_v0;
-    _mpdRoomSection12* temp_s0 = vs_battle_roomData.section12;
+    mpdRoomSection12_t* temp_s0 = vs_battle_roomData.section12;
 
     if (temp_s0 != NULL) {
         temp_s0 = &vs_battle_roomData.section12[arg0];
@@ -17210,7 +17211,7 @@ void func_8008E224(int arg0, int arg1)
 
 void* func_8008E2D4(int arg0)
 {
-    _mpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
+    mpdRoomSection12_t* temp_v1 = vs_battle_roomData.section12;
 
     if (vs_battle_roomData.section12 != NULL) {
         temp_v1 = &vs_battle_roomData.section12[arg0];
@@ -17221,7 +17222,7 @@ void* func_8008E2D4(int arg0)
 
 int func_8008E320(int arg0)
 {
-    _mpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
+    mpdRoomSection12_t* temp_v1 = vs_battle_roomData.section12;
     if (vs_battle_roomData.section12 != NULL) {
         temp_v1 = &vs_battle_roomData.section12[arg0];
         if (temp_v1->unk4_0 == 1) {
@@ -17231,7 +17232,7 @@ int func_8008E320(int arg0)
     return -1;
 }
 
-_mpdRoomSection13* func_8008E370(int* arg0)
+mpdRoomSection13_t* func_8008E370(int* arg0)
 {
     if (vs_battle_roomData.section13 != NULL) {
         *arg0 =
@@ -17242,7 +17243,7 @@ _mpdRoomSection13* func_8008E370(int* arg0)
     return NULL;
 }
 
-_mpdRoomSectionA* func_8008E3B8(int* arg0)
+mpdRoomSectionA_t* func_8008E3B8(int* arg0)
 {
     if (vs_battle_roomData.sectionA != 0) {
         *arg0 =
@@ -17253,7 +17254,7 @@ _mpdRoomSectionA* func_8008E3B8(int* arg0)
     return 0;
 }
 
-_mpdRoomSection9* func_8008E400(int* arg0)
+mpdRoomSection9_t* func_8008E400(int* arg0)
 {
     if ((vs_main_stateFlags.unk20 != 0) || (vs_main_stateFlags.unk40 != 0)) {
         *arg0 = 0;
@@ -17277,14 +17278,14 @@ void func_8008E480(int arg0)
 
 short func_8008E4AC(void) { return vs_battle_roomData.sectionB->unk56; }
 
-static int _getRoomTrapLevel(void) { return vs_battle_roomData.sectionB->trapLevel; }
+static int getRoomTrapLevel(void) { return vs_battle_roomData.sectionB->trapLevel; }
 
 void func_8008E4DC(int arg0)
 {
     static u_short const D_80068BFC[0x10] = { 0x10, 1, 0x865, 0xC66, 0x869, 0xCA9, 0x88D,
         0x10AD, 0xCB1, 0x14D1, 0xCD5, 0x14F5, 0xCF9, 0x113A, 0x199B, 0x21FC };
 
-    _mpdRoomSection12* var_s0;
+    mpdRoomSection12_t* var_s0;
     int temp_s2;
     int i;
 
@@ -17335,7 +17336,7 @@ int vs_battle_getMapCompletion(void)
     return (value * 100) / 361;
 }
 
-void _loadMpdLootSection(void* data)
+void loadMpdLootSection(void* data)
 {
     if (vs_battle_roomData.section13 != NULL) {
         vs_main_memcpy(&vs_battle_roomData.section13->unk14, data,
@@ -17401,7 +17402,7 @@ void func_8008E8F8(void)
 
 void func_8008E938(void)
 {
-    _mpdRoomSectionB* temp_s0;
+    mpdRoomSectionB_t* temp_s0;
     int i;
 
     D_800F1DB4 = 0;
@@ -17425,7 +17426,7 @@ void func_8008E938(void)
             func_8008EB30(temp_s0->unk0);
         }
         if ((temp_s0->unk48[0].s32 == 0) && (temp_s0->unk48[1].s32 == 0)) {
-            _mpdRoomCollisionMapSection* collisionMap =
+            mpdRoomCollisionMapSection_t* collisionMap =
                 vs_battle_roomData.collisionMapSection;
             if (collisionMap != NULL) {
                 temp_s0->unk48[1].s16[0] = collisionMap->width * 4;
@@ -17446,10 +17447,10 @@ void func_8008E938(void)
 
 int func_8008EA90(int arg0)
 {
-    _mpdRoomSectionB* new_var2 = vs_battle_roomData.sectionB;
+    mpdRoomSectionB_t* new_var2 = vs_battle_roomData.sectionB;
 
     if (new_var2 != 0) {
-        _mpdRoomSectionB* new_var4 = new_var2;
+        mpdRoomSectionB_t* new_var4 = new_var2;
         new_var2 = vs_battle_roomData.sectionB;
         if ((arg0 == 0) || (new_var4->unk34 != 1)) {
             func_80090C2C(new_var4->unk34);
@@ -17713,7 +17714,7 @@ void func_8008F440(void)
     D_800F1DD4_t* particle;
     int i;
     int j;
-    _mpdRoomSection3* cell;
+    mpdRoomSection3_t* cell;
 
     SetRotMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_scratch_t*)0x1F800000)->viewMatrix);
@@ -17746,7 +17747,7 @@ void func_8008F440(void)
                     setRGB1(line, 32, 32, 100);
                     AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, line++);
                     ((vs_scratch_t*)0x1F800000)->unk0 = line;
-                    _insertTPage(depth, getTPage(0, 3, 0, 0));
+                    insertTPage(depth, getTPage(0, 3, 0, 0));
                     particle->unkE = 0;
                 }
             } else {
@@ -17824,7 +17825,7 @@ void func_8008F9A4(int arg0, int arg1)
 
 void func_8008FA14(D_800F1DD4_t* arg0)
 {
-    _mpdRoomSectionB* temp_s0 = vs_battle_roomData.sectionB;
+    mpdRoomSectionB_t* temp_s0 = vs_battle_roomData.sectionB;
 
     arg0->position.vx = temp_s0->unk48[0].s16[0] + (rand() % temp_s0->unk48[1].s16[0]);
     arg0->position.vz = temp_s0->unk48[0].s16[1] + (rand() % temp_s0->unk48[1].s16[1]);
@@ -17878,7 +17879,7 @@ void func_8008FAC8(void)
         setRGB2(prim, 0, 0, 0);
         AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
         ((vs_scratch_t*)0x1F800000)->unk0 = prim;
-        _insertTPage(depth, getTPage(0, 1, 0, 0));
+        insertTPage(depth, getTPage(0, 1, 0, 0));
     }
 }
 
@@ -17970,7 +17971,7 @@ void func_8008FDC4(void)
                     }
                     if (particle->unkE == 0) {
                         ((vs_scratch_t*)0x1F800000)->unk0 = prim;
-                        _insertTPage(depth, getTPage(0, 3, 64, 256));
+                        insertTPage(depth, getTPage(0, 3, 64, 256));
                     }
                 }
             } else {
@@ -18002,7 +18003,7 @@ void func_8008FDC4(void)
                     128 - (particle->unkD << 4));
                 AddPrim((u_long*)((vs_scratch_t*)0x1F800000)->unk4 + depth, prim++);
                 ((vs_scratch_t*)0x1F800000)->unk0 = prim;
-                _insertTPage(depth, getTPage(0, 3, 0, 0));
+                insertTPage(depth, getTPage(0, 3, 0, 0));
                 if (D_800F1BA4 == 0) {
                     particle->unkD += vs_gametime_tickspeed >> 1;
                 }
@@ -18141,12 +18142,12 @@ void func_80090434(void)
         }
     }
     ((vs_scratch_t*)0x1F800000)->unk0 = cursor;
-    _insertTPage(4, getTPage(0, 1, 64, 256));
+    insertTPage(4, getTPage(0, 1, 64, 256));
 }
 
 void func_80090A1C(D_800F1DD4_t* arg0)
 {
-    _mpdRoomSectionB* temp_s0;
+    mpdRoomSectionB_t* temp_s0;
 
     temp_s0 = vs_battle_roomData.sectionB;
     if (temp_s0 != NULL) {

@@ -15,15 +15,15 @@ extern int D_800F16F4;
 extern int D_800F58C4;
 extern int D_800F58D4;
 
-static inline int _historyRepeats(func_800E78F4_t* state)
+static inline int historyRepeats(func_800E78F4_t* state)
 {
     return *(int*)&state->unk70[0] == *(int*)&state->unk70[4]
         && *(int*)&state->unk78[0] == *(int*)&state->unk78[4];
 }
 
-static inline int _historyStalled(func_800E78F4_t* state)
+static inline int historyStalled(func_800E78F4_t* state)
 {
-    return state->unk81 == 255 ? _historyRepeats(state) : 0;
+    return state->unk81 == 255 ? historyRepeats(state) : 0;
 }
 
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
@@ -143,7 +143,7 @@ done:
     return changed;
 }
 
-static inline int _checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
+static inline int checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
     func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
     int extent = other != NULL ? other->unkB8 : 128;
@@ -151,7 +151,7 @@ static inline int _checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* stat
     return func_800E44E8(from, to, extent, state->unkB8);
 }
 
-static inline int _checkHeight(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
+static inline int checkHeight(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
     func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
     int height = other != NULL ? ABS(other->unk82) : 64;
@@ -202,10 +202,10 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     } else {
         if (++arg0->unk12B & 1) {
             arg0->unk1A4[id].unk0_30 =
-                !_checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
         } else {
             arg0->unk1A4[id].unk0_2 =
-                !_checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
         }
 
         if (arg0->unk1A4[id].unk0_2) {
@@ -464,7 +464,7 @@ void func_800D8EF4(void)
         state->unk120 = (((z & 0xFFFF) >> 6) << 16) | ((x & 0xFFFF) >> 6);
 
         if ((0x12600 >> state->unk124) & 1) {
-            if (_historyStalled(state)) {
+            if (historyStalled(state)) {
                 state->unk81 = 0;
                 state->unk19A = 30;
                 goto idle;

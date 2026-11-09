@@ -1088,8 +1088,8 @@ int vs_battle_setTextBox(int boxId, char* str)
         box->speed = 1;
         box->unk4 = 0;
         box->prevChunksPrinted = 0;
-        if (!(box->unk0.unk0_24 & 0x20)) {
-            func_800AAD4C(box->unk0.unk0_24, 0, box->unk2E + 1, 1);
+        if (!(box->unk0.speakerActor & 0x20)) {
+            func_800AAD4C(box->unk0.speakerActor, 0, box->speakerAnimation + 1, 1);
             box->unk2C = 1;
         }
         return 0;
@@ -1505,11 +1505,11 @@ void printVariableWidthFont(vs_TextBox* arg0)
             vs_main_playSfxDefault(0x7E, sfx);
         }
 
-        if (!(arg0->unk0.unk0_24 & 0x20)) {
+        if (!(arg0->unk0.speakerActor & 0x20)) {
             if (arg0->unk2C != 0) {
                 ++arg0->unk2C;
             } else {
-                func_800AAD4C(arg0->unk0.unk0_24, 0, 0, 0);
+                func_800AAD4C(arg0->unk0.speakerActor, 0, 0, 0);
             }
         }
         arg0->prevChunksPrinted = chunksPrinted;
@@ -4130,7 +4130,7 @@ void vs_battle_initTextBox(
     vs_TextBox* box = &vs_battle_textBoxes[id];
 
     *(int*)&box->unk0 = flags & 0xFFFF;
-    box->unk0.unk0_24 = 32;
+    box->unk0.speakerActor = 32;
     box->x = x;
     box->y = y;
     box->unk4 = 0;
@@ -4138,7 +4138,7 @@ void vs_battle_initTextBox(
     box->speed = 0;
     box->xIndent = x + 5;
     box->yIndent = y + 3;
-    box->unk2E = 0;
+    box->speakerAnimation = 0;
     box->brightness = 0x80;
     box->charsPerLine = charsPerLine;
     box->lineCount = h;
@@ -4174,8 +4174,8 @@ int vs_battle_dismissTextBox(int id)
 {
     vs_TextBox* box = &vs_battle_textBoxes[id];
 
-    if (!(box->unk0.unk0_24 & 0x20)) {
-        func_800AAD4C(box->unk0.unk0_24, 0, 0, 0);
+    if (!(box->unk0.speakerActor & 0x20)) {
+        func_800AAD4C(box->unk0.speakerActor, 0, 0, 0);
     }
 
     if (box->state != 0) {

@@ -99,7 +99,7 @@ typedef struct {
     u_int unk0_8 : 4;
     u_int unk0_12 : 4;
     u_int arrowAnimFrame : 8;
-    u_int unk0_24 : 6;
+    u_int speakerActor : 6;
     u_int done : 1;
     u_int unk0_31 : 1;
 } vs_TextBox_fields;
@@ -129,7 +129,7 @@ typedef struct {
     short unk28;
     short unk2A;
     short unk2C;
-    short unk2E;
+    short speakerAnimation;
 } vs_TextBox;
 
 typedef struct {

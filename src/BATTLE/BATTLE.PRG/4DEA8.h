@@ -67,7 +67,7 @@ int vs_battle_script_57(u_char*, short);
 int vs_battle_script_58(u_char*, short);
 int vs_battle_script_59(u_char*, short);
 int vs_battle_script_5A(u_char*, short);
-int vs_battle_script_5B(u_char*, short);
+int vs_battle_script_5B_setTextBoxSpeaker(u_char*, short);
 int vs_battle_script_5C(u_char*, short);
 int vs_battle_script_5D(u_char*, short);
 int vs_battle_script_5F(u_char*, short);

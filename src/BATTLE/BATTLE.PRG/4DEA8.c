@@ -377,7 +377,7 @@ int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
     return (skipRequested != 0) ? vs_battle_scriptYield : vs_battle_scriptNext;
 }
 
-void endScriptSkip(u_char* script)
+static void endScriptSkip(u_char* script)
 {
     short i;
     short endOpcode;
@@ -435,18 +435,21 @@ int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-// script[1]    = (parentBoxId << 4) | boxId
-// script[2-3]  = flags/type (passed to arg1 of initTextBox)
-// script[4]    = x (in some unit, scaled *2 - 0x20)
-// script[5]    = y (scaled - 0x20)
-// script[6]    = width in characters
-// script[7]    = height in lines
-// script[8-9]  = possibly texture
-// script[10]   = ?
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (parentBoxId << 4) | boxId
+ *   - [2-3] = flags/type (passed to arg1 of initTextBox)
+ *   - [4] = x (in some unit, scaled *2 - 0x20)
+ *   - [5] = y (scaled - 0x20)
+ *   - [6] = width in characters
+ *   - [7] = height in lines
+ *   - [8-9] = speaker actor (>= 0x2000: none)
+ *   - [10] = speaker animation
+ */
 int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
 {
     vs_TextBox* box;
-    short temp_v0_4;
+    short speakerSelector;
     short centerY;
     short centerX;
 
@@ -465,19 +468,23 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
         (script[4] * 2) - 32, script[5] - 32, script[6], script[7], centerX, centerY);
 
     box = vs_battle_getTextBox(script[1] & 0xF);
-    box->unk2E = script[10];
+    box->speakerAnimation = script[10];
 
-    temp_v0_4 = vs_battle_getShort(&script[8]);
-    if (temp_v0_4 < 0x2000) {
-        box->unk0.unk0_24 = func_800BFE50(temp_v0_4);
+    speakerSelector = vs_battle_getShort(&script[8]);
+
+    if (speakerSelector < 0x2000) {
+        box->unk0.speakerActor = func_800BFE50(speakerSelector);
     }
 
     return vs_battle_scriptNext;
 }
 
-// script[1] = boxId
-// script[2] = string index
-// script[3] = box can be overwritten
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ *   - [2] = string index
+ *   - [3] = box can be overwritten
+ */
 int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 {
     int temp_v0;
@@ -503,10 +510,13 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
     return vs_battle_scriptRepeat;
 }
 
-// script[1] = boxId
-int vs_battle_script_12_dismissTextBox(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ */
+int vs_battle_script_12_dismissTextBox(u_char* script, UNUSED short arg1)
 {
-    vs_battle_dismissTextBox(arg0[1]);
+    vs_battle_dismissTextBox(script[1]);
     return vs_battle_scriptNext;
 }
 
@@ -554,12 +564,15 @@ int func_800B6B98(
     return 0;
 }
 
-// script[1]   = boxId
-// script[2-3] = anchor id (resolved by func_800BFE50)
-// script[4-5] = flags/type (passed to arg1 of initTextBox)
-// script[6]   = width in characters
-// script[7]   = height in lines
-// script[8]   = ?
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ *   - [2-3] = anchor id (resolved by func_800BFE50)
+ *   - [4-5] = flags/type (passed to arg1 of initTextBox)
+ *   - [6] = width in characters
+ *   - [7] = height in lines
+ *   - [8] = speaker animation
+ */
 int vs_battle_script_13(u_char* script, UNUSED short arg1)
 {
     TextPlacement placements[4];
@@ -568,7 +581,7 @@ int vs_battle_script_13(u_char* script, UNUSED short arg1)
     TextPlacement* best = NULL;
     u_int width;
     u_int height;
-    int texture;
+    int speakerActor;
     short i;
 
     func_800BB7C4(func_800BFE50(vs_battle_getShort(script + 2)), &origin);
@@ -596,11 +609,11 @@ int vs_battle_script_13(u_char* script, UNUSED short arg1)
         script[6], script[7], best->x + (width >> 1), best->y + (height >> 1));
 
     box = vs_battle_getTextBox(script[1]);
-    // BUG: texture is never initialized
-    box->unk0.unk0_24 = texture;
+    // BUG: speakerActor is never initialized (and the script has no field for it)
+    box->unk0.speakerActor = speakerActor;
     box->unk0.unk0_6 = best->offset.alignment;
     box->unk0.unk0_12 = best->offset.flags;
-    box->unk2E = script[8];
+    box->speakerAnimation = script[8];
     return vs_battle_scriptNext;
 }
 
@@ -1685,7 +1698,7 @@ int vs_battle_script_5A(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_5B(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_5B_setTextBoxSpeaker(u_char* arg0, UNUSED short arg1)
 {
     vs_TextBox* temp_s1;
     u_short temp_s0;
@@ -1699,8 +1712,8 @@ int vs_battle_script_5B(u_char* arg0, UNUSED short arg1)
     } else {
         var_a0 = 0x20;
     }
-    temp_s1->unk0.unk0_24 = var_a0;
-    temp_s1->unk2E = arg0[1] >> 4;
+    temp_s1->unk0.speakerActor = var_a0;
+    temp_s1->speakerAnimation = arg0[1] >> 4;
     return vs_battle_scriptNext;
 }
 

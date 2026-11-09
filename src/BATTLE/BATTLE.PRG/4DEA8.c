@@ -483,30 +483,38 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = boxId
  *   - [2] = string index
- *   - [3] = box can be overwritten
+ *   - [3] = nonzero: do not wait for the player to advance the text
  */
 int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 {
-    int temp_v0;
+    int printStatus;
 
     if (vs_battle_textBoxStatuses[script[1]] == 0) {
+
         vs_battle_setTextBox(script[1], (char*)&scriptStrings[scriptStrings[script[2]]]);
+
         if (script[3] == 0) {
             vs_battle_textBoxStatuses[script[1]] = 1;
             return vs_battle_scriptRepeat;
         }
+
         return vs_battle_scriptNext;
     }
 
-    temp_v0 = vs_battle_setTextBox(script[1], 0);
+    printStatus = vs_battle_setTextBox(script[1], 0);
 
-    if (temp_v0 >= 0) {
-        if (temp_v0 > 0) {
-            vs_main_stateFlags.textBoxSelection = temp_v0;
+    if (printStatus >= 0) {
+
+        // Dead code: vs_battle_setTextBox only returns 0 or -1
+        if (printStatus > 0) {
+            vs_main_stateFlags.textBoxSelection = printStatus;
         }
+
         vs_battle_textBoxStatuses[script[1]] = 0;
+
         return vs_battle_scriptNext;
     }
+
     return vs_battle_scriptRepeat;
 }
 

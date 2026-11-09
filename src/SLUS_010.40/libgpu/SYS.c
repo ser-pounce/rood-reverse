@@ -14,6 +14,11 @@ typedef struct {
 } D_80033444_t;
 
 int SetIntrMask(int);
+u_int func_80029904(int, int, int);
+u_int func_80029924(short, short);
+u_int func_800299BC(short, short);
+u_int func_80029A54(short, short);
+u_int func_80029A70(RECT*);
 void func_8002A34C(u_long*);
 int func_8002A394(int);
 int func_8002ACFC(int);
@@ -111,7 +116,46 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetDrawOffset);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", SetDrawEnv);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029694);
+void func_80029694(DR_ENV* dr_env, DRAWENV* env)
+{
+    u_long* code = (u_long*)dr_env;
+    RECT rect;
+    int len;
+
+    code[1] = func_80029924(env->clip.x, env->clip.y);
+    code[2] = func_800299BC(env->clip.w + env->clip.x - 1, env->clip.y + env->clip.h - 1);
+    code[3] = func_80029A54(env->ofs[0], env->ofs[1]);
+    code[4] = func_80029904(env->dfe, env->dtd, env->tpage);
+    code[5] = func_80029A70(&env->tw);
+    code[6] = 0xE6000000;
+
+    len = 7;
+
+    if (env->isbg) {
+        setRECT(&rect, env->clip.x, env->clip.y, env->clip.w, env->clip.h);
+        setWH(&rect,
+            rect.w < 0                  ? 0
+            : rect.w > D_80033444.w - 1 ? D_80033444.w - 1
+                                        : rect.w,
+            rect.h < 0                  ? 0
+            : rect.h > D_80033444.h - 1 ? D_80033444.h - 1
+                                        : rect.h);
+
+        if ((rect.x & 0x3F) || (rect.w & 0x3F)) {
+            rect.x -= env->ofs[0];
+            rect.y -= env->ofs[1];
+            code[len++] = 0x60000000 | (env->b0 << 16) | (env->g0 << 8) | env->r0;
+            code[len++] = *(u_long*)&rect.x;
+            code[len++] = *(u_long*)&rect.w;
+        } else {
+            code[len++] = 0x02000000 | (env->b0 << 16) | (env->g0 << 8) | env->r0;
+            code[len++] = *(u_long*)&rect.x;
+            code[len++] = *(u_long*)&rect.w;
+        }
+    }
+
+    setlen(code, len - 1);
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_80029904);
 

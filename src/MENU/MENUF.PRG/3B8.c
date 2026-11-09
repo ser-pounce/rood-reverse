@@ -113,10 +113,10 @@ static void calculateScore(void);
 static void determineRank(void);
 
 static u_int buffReelSelection;
-static int rankStatic;
+static int riskbreakerRank;
 static int clearCount;
 static u_int score;
-static u_int mapCompletionStatic;
+static u_int mapCompletionPercent;
 static u_int elementAnimationState;
 static int buffReelIndex;
 static int onScreenMapCompletion;
@@ -247,7 +247,7 @@ int initCongratulationsScreen(void)
             vs_main_scoredata.openedChestCount = chestsOpened;
         }
 
-        mapCompletionStatic = (mapCompletion * 100) / 361;
+        mapCompletionPercent = (mapCompletion * 100) / 361;
 
         calculateScore();
         determineRank();
@@ -819,7 +819,7 @@ int renderCongratulationsScreen(void)
             screenTimer = 272;
             incrementingScore = 0;
             incrementingMapCompletion = 0;
-            onScreenMapCompletion = mapCompletionStatic;
+            onScreenMapCompletion = mapCompletionPercent;
             onScreenScore = score;
         }
     } else if (screenState == 1) {
@@ -1509,7 +1509,7 @@ void renderMapCompletion(int x, int y, int timer, UNUSED int arg3)
     if (timer > 0) {
         colors[0].cd = timer;
 
-        sprintf(buf, "%03d", mapCompletionStatic);
+        sprintf(buf, "%03d", mapCompletionPercent);
 
         x -= (disMap[21].w + disMap[26].w + disMap[19].w + 0x26) >> 1;
         i = 2;
@@ -1554,7 +1554,7 @@ void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg
 
     temp_s4 = arg0 + (arg2 * 8);
 
-    if ((mapCompletionStatic != 0) && (arg2 >= 32)) {
+    if ((mapCompletionPercent != 0) && (arg2 >= 32)) {
 
         if (onScreenMapCompletion == 0) {
             incrementingMapCompletion = 1;
@@ -1562,7 +1562,7 @@ void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg
             vs_main_playSfxDefault(0x7E, 0x72);
         }
 
-        if ((onScreenMapCompletion == mapCompletionStatic)
+        if ((onScreenMapCompletion == mapCompletionPercent)
             && (incrementingMapCompletion != 0)) {
             incrementingMapCompletion = 0;
 
@@ -1572,9 +1572,9 @@ void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg
     }
 
     if (arg2 >= 32) {
-        if (mapCompletionStatic >= 32) {
-            onScreenMapCompletion = (mapCompletionStatic * (arg2 - 32)) >> 5;
-        } else if (onScreenMapCompletion < mapCompletionStatic) {
+        if (mapCompletionPercent >= 32) {
+            onScreenMapCompletion = (mapCompletionPercent * (arg2 - 32)) >> 5;
+        } else if (onScreenMapCompletion < mapCompletionPercent) {
             ++onScreenMapCompletion;
         }
     }
@@ -1643,17 +1643,17 @@ void renderRiskbreakerRank(int x, int y, int timer)
 
         colors[0].cd = timer;
 
-        for (i = 0; i < riskbreakerRanks[rankStatic][0]; ++i) {
-            xInset += disMap[riskbreakerRanks[rankStatic][i + 1]].w;
+        for (i = 0; i < riskbreakerRanks[riskbreakerRank][0]; ++i) {
+            xInset += disMap[riskbreakerRanks[riskbreakerRank][i + 1]].w;
         }
 
         xInset /= 2;
         x -= xInset;
 
-        for (i = 0; i < riskbreakerRanks[rankStatic][0]; ++i) {
-            renderTexturePopIn(x, y, riskbreakerRanks[rankStatic][i + 1], colors);
+        for (i = 0; i < riskbreakerRanks[riskbreakerRank][0]; ++i) {
+            renderTexturePopIn(x, y, riskbreakerRanks[riskbreakerRank][i + 1], colors);
 
-            x += disMap[riskbreakerRanks[rankStatic][i + 1]].w;
+            x += disMap[riskbreakerRanks[riskbreakerRank][i + 1]].w;
         }
     }
 }
@@ -2794,7 +2794,7 @@ void determineRank(void)
     for (i = 0; i < 16; ++i) {
         if (unlockedTitles >= titleThresholds[i]) {
             if (score >= rankScores[i]) {
-                rankStatic = i;
+                riskbreakerRank = i;
                 return;
             }
         }

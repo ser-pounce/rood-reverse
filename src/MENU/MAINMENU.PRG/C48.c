@@ -1125,17 +1125,17 @@ void vs_mainMenu_renderEquipStats(int animate)
 }
 
 static u_short dpPpBarAnimState = 0;
-static u_short currentDpStatic = 0;
-static u_short maxDpStatic = 0;
-static u_short currentPpStatic = 0;
-static u_short maxPpStatic = 0;
+static u_short displayedDp = 0;
+static u_short displayedMaxDp = 0;
+static u_short displayedPp = 0;
+static u_short displayedMaxPp = 0;
 
 void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
-    currentPpStatic = currentPp;
-    maxPpStatic = maxPp;
-    currentDpStatic = (currentDp + 99) / 100;
-    maxDpStatic = (maxDp + 99) / 100;
+    displayedPp = currentPp;
+    displayedMaxPp = maxPp;
+    displayedDp = (currentDp + 99) / 100;
+    displayedMaxDp = (maxDp + 99) / 100;
 }
 
 void vs_mainMenu_renderDpPpBars(int flags)
@@ -1180,44 +1180,42 @@ void vs_mainMenu_renderDpPpBars(int flags)
             if (target & 1) {
                 vs_battle_renderTextRaw("DP", (temp_s1 + vs_getXY(0, -1)) | 10, before);
 
-                temp = vs_battle_renderValue(0, temp_s1 | 66, maxDpStatic, before);
+                temp = vs_battle_renderValue(0, temp_s1 | 66, displayedMaxDp, before);
                 vs_battle_renderValue(2, temp, 0, before);
-                vs_battle_renderValue(
-                    1, temp + vs_getXY(-7, -2), currentDpStatic, before);
+                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), displayedDp, before);
             }
 
             if (target & 2) {
                 vs_battle_renderTextRaw("PP", (temp_s1 + vs_getXY(0, -1)) | 80, before);
 
-                temp = vs_battle_renderValue(0, temp_s1 | 136, maxPpStatic, before);
+                temp = vs_battle_renderValue(0, temp_s1 | 136, displayedMaxPp, before);
                 vs_battle_renderValue(2, temp, 0, before);
-                vs_battle_renderValue(
-                    1, temp + vs_getXY(-7, -2), currentPpStatic, before);
+                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), displayedPp, before);
             }
 
             temp_s1 += 8 << 16;
 
             if (target & 1) {
 
-                temp = maxDpStatic;
+                temp = displayedMaxDp;
 
                 if (temp == 0) {
                     temp = 1;
                 }
 
-                vs_battle_renderStatBar(0, (((currentDpStatic << 6) + temp) - 1) / temp,
-                    before, temp_s1 | 10);
+                vs_battle_renderStatBar(
+                    0, (((displayedDp << 6) + temp) - 1) / temp, before, temp_s1 | 10);
             }
             if (target & 2) {
 
-                temp = maxPpStatic;
+                temp = displayedMaxPp;
 
                 if (temp == 0) {
                     temp = 1;
                 }
 
-                vs_battle_renderStatBar(1, (((currentPpStatic << 6) + temp) - 1) / temp,
-                    before, temp_s1 | 80);
+                vs_battle_renderStatBar(
+                    1, (((displayedPp << 6) + temp) - 1) / temp, before, temp_s1 | 80);
             }
         }
     }

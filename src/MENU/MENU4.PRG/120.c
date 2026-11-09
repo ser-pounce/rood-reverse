@@ -514,13 +514,13 @@ static int updateEquipmentDetailSelection(u_int newSelection, int flags)
     return newSelection;
 }
 
-static int xPosStatic = 0;
-static int yPosStatic = 0;
+static int screenXPos = 0;
+static int screenYPos = 0;
 static int previousActor = 0;
 static int selectedActor = 0;
 static int drawBackgroundFirst = 0;
 static int fadeScreen = 0;
-static int animationStepStatic = 0;
+static int screenAnimationStep = 0;
 static char renderBasicStatsState = 0;
 static char basicStatsAnimState = 0;
 static char basicStatsAnimDelay = 0;
@@ -619,9 +619,9 @@ static int switchCurrentActor(int init)
 
     switch (state) {
     case menuLoaded:
-        if (animationStepStatic < 160) {
+        if (screenAnimationStep < 160) {
             drawBackgroundFirst = 1;
-            animationStepStatic += 32;
+            screenAnimationStep += 32;
             break;
         } else {
             drawBackgroundFirst = 0;
@@ -635,14 +635,14 @@ static int switchCurrentActor(int init)
         func_800F9A24(selectedActor - 1);
 
         delayScreenUpdate = 1;
-        animationStepStatic = -160;
+        screenAnimationStep = -160;
         state = animateForward;
 
         break;
 
     case animateForward:
-        if (animationStepStatic < 0) {
-            animationStepStatic += 32;
+        if (screenAnimationStep < 0) {
+            screenAnimationStep += 32;
             break;
         }
 
@@ -652,9 +652,9 @@ static int switchCurrentActor(int init)
         return 1;
 
     case menuLoadedReverse:
-        if (animationStepStatic >= -159) {
+        if (screenAnimationStep >= -159) {
             fadeScreen = 1;
-            animationStepStatic -= 32;
+            screenAnimationStep -= 32;
             break;
         }
 
@@ -667,15 +667,15 @@ static int switchCurrentActor(int init)
         func_800F9A24(selectedActor - 1);
 
         delayScreenUpdate = 1;
-        animationStepStatic = 160;
+        screenAnimationStep = 160;
         state = animateReverse;
 
         break;
 
     case animateReverse:
-        if (animationStepStatic > 0) {
+        if (screenAnimationStep > 0) {
             drawBackgroundFirst = 1;
-            animationStepStatic -= 32;
+            screenAnimationStep -= 32;
             break;
         }
 
@@ -1040,15 +1040,15 @@ static int navigateStatusModifiers(vs_battle_actorStats* stats, int arg1)
                 }
             }
 
-            xPosStatic += xPos;
-            yPosStatic -= yPos;
+            screenXPos += xPos;
+            screenYPos -= yPos;
 
-            if (yPosStatic < 0) {
-                yPosStatic = 0;
+            if (screenYPos < 0) {
+                screenYPos = 0;
             }
 
-            if (yPosStatic > 896) {
-                yPosStatic = 896;
+            if (screenYPos > 896) {
+                screenYPos = 896;
             }
 
             return 0;
@@ -1571,7 +1571,7 @@ static int equipmentDetailScreen(int row)
         if (equipmentDetailRowToRender < 10) {
 
             ++equipmentDetailRowToRender;
-            animationStepStatic =
+            screenAnimationStep =
                 128 - vs_battle_rowAnimationSteps[10 - equipmentDetailRowToRender];
 
             if (equipmentDetailRowToRender < 6) {
@@ -1970,7 +1970,7 @@ static int equipmentScreen(int element)
 
         vs_main_settings.cursorMemory = temp_s1_2;
 
-        if (animationStepStatic != 0) {
+        if (screenAnimationStep != 0) {
             timer = 10;
         } else {
             timer = 0;
@@ -1982,7 +1982,7 @@ static int equipmentScreen(int element)
     case animWait:
         if (timer != 0) {
             --timer;
-            animationStepStatic = vs_battle_rowAnimationSteps[timer];
+            screenAnimationStep = vs_battle_rowAnimationSteps[timer];
         } else {
             equipmentScreenState = handleInput;
         }
@@ -2194,19 +2194,19 @@ static void drawMenuBackground(void)
 static void drawScreen(void)
 {
     int temp_lo_5;
-    int xOffset = (128 - animationStepStatic);
+    int xOffset = (128 - screenAnimationStep);
     int z = D_800F4538[1]->menuCameraDistance;
     int x = D_800F4538[1]->menuCameraHeightOffset;
     vs_camera_t* camera = &vs_scratch.camera;
 
-    camera->lookAt.vx = ((-rsin(xPosStatic) * xOffset) >> 8) * z;
+    camera->lookAt.vx = ((-rsin(screenXPos) * xOffset) >> 8) * z;
     camera->lookAt.vy = -(x * ONE / 2);
-    camera->lookAt.vz = ((rcos(xPosStatic) * xOffset) >> 8) * z;
+    camera->lookAt.vz = ((rcos(screenXPos) * xOffset) >> 8) * z;
     camera->position.vx =
-        camera->lookAt.vx + ((rcos(xPosStatic) * rcos(yPosStatic)) >> 0xA) * z;
-    camera->position.vy = camera->lookAt.vy - rsin(yPosStatic) * z * 4;
+        camera->lookAt.vx + ((rcos(screenXPos) * rcos(screenYPos)) >> 0xA) * z;
+    camera->position.vy = camera->lookAt.vy - rsin(screenYPos) * z * 4;
 
-    temp_lo_5 = (rsin(xPosStatic) * rcos(yPosStatic) >> 0xA) * z;
+    temp_lo_5 = (rsin(screenXPos) * rcos(screenYPos) >> 0xA) * z;
     camera->angles.vx = 0;
     camera->angles.vy = 0;
     camera->angles.vz = 0;
@@ -2351,8 +2351,8 @@ int vs_menu4_exec(u_char* state)
             vs_scratch.camera.angles.vx = 0;
             vs_scratch.camera.angles.vy = 0;
             vs_scratch.camera.angles.vz = 0;
-            xPosStatic = ONE / 16 * 11;
-            yPosStatic = 0;
+            screenXPos = ONE / 16 * 11;
+            screenYPos = 0;
 
             vs_mainMenu_initInformationBox();
 
@@ -2485,14 +2485,14 @@ int vs_menu4_exec(u_char* state)
                         }
                     }
 
-                    xPosStatic += userInput;
-                    yPosStatic -= limbs;
+                    screenXPos += userInput;
+                    screenYPos -= limbs;
 
-                    if (yPosStatic < 0) {
-                        yPosStatic = 0;
+                    if (screenYPos < 0) {
+                        screenYPos = 0;
                     }
-                    if (yPosStatic > 896) {
-                        yPosStatic = 896;
+                    if (screenYPos > 896) {
+                        screenYPos = 896;
                     }
                 } else {
 
@@ -2688,7 +2688,7 @@ int vs_menu4_exec(u_char* state)
 
     case 9:
         if (animWait != 0) {
-            animationStepStatic = 128 - vs_battle_rowAnimationSteps[--animWait];
+            screenAnimationStep = 128 - vs_battle_rowAnimationSteps[--animWait];
         } else if (vs_main_buttonsPressed.all & (PADRup | PADRdown)) {
 
             vs_battle_playMenuLeaveSfx();
@@ -2769,7 +2769,7 @@ int vs_menu4_exec(u_char* state)
         var_s5 = 1;
 
         if (animWait != 0) {
-            animationStepStatic = vs_battle_rowAnimationSteps[--animWait];
+            screenAnimationStep = vs_battle_rowAnimationSteps[--animWait];
         } else {
             renderLimbUi(selectedElement + 1);
             *state = 5;

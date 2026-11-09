@@ -85,7 +85,7 @@ extern void* wepFileData;
 extern int wepFileLoaded;
 extern vs_main_CdFile wepFile;
 extern vs_main_CdQueueSlot* wepCdSlot;
-extern void* shpDataStatic;
+extern void* shpDataBuf;
 extern int shpAllocated;
 extern vs_main_CdFile shpFile;
 extern vs_main_CdQueueSlot* shpCdSlot;
@@ -969,10 +969,10 @@ int loadShp(vs_battle_objectData* arg0)
         }
 
         shpFileSize <<= 0xB;
-        shpDataStatic = vs_main_allocHeapR(shpFileSize);
-        arg0->dataAddr = (u_long)shpDataStatic;
+        shpDataBuf = vs_main_allocHeapR(shpFileSize);
+        arg0->dataAddr = (u_long)shpDataBuf;
 
-        if (shpDataStatic == NULL) {
+        if (shpDataBuf == NULL) {
             return -2;
         }
 
@@ -1004,7 +1004,7 @@ int loadShp(vs_battle_objectData* arg0)
 
     if (shpAllocated != 0) {
         shpAllocated = 0;
-        vs_main_freeHeapR(shpDataStatic);
+        vs_main_freeHeapR(shpDataBuf);
     }
 
     loadShpState = 0;

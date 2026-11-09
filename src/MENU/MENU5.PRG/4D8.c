@@ -431,7 +431,7 @@ static int geomOffsetY;
 static int isCurrentScene;
 static int cameraDistance;
 static int currentScene;
-static int selectedMapStatic;
+static int chosenMap;
 static int isPaling;
 static int triggerHideUi;
 static int currentSceneRow;
@@ -803,7 +803,7 @@ static int menuManager(void)
     case displayMapMenu:
         renderScreen();
 
-        selectedMapStatic = new_var2 = mapSelectionMenu(0);
+        chosenMap = new_var2 = mapSelectionMenu(0);
 
         if (new_var2 == -1) {
             break;

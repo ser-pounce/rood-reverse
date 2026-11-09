@@ -789,7 +789,7 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
 char vs_mainMenu_itemsListRow = 0;
 static u_short* itemsText = NULL;
 static int selectedRow = 0;
-static u_char subMenuIdStatic = 0;
+static u_char currentSubMenuId = 0;
 static char subMenuRowInfo = 0;
 static char subMenuPage = 0;
 static char menuRowYOffset = 0;
@@ -805,7 +805,7 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
     int page = 0;
     int subMenuId = rowInfo & 0xFF;
     menuRowYOffset = (rowInfo >> 0xC);
-    subMenuIdStatic = subMenuId;
+    currentSubMenuId = subMenuId;
     rowInfo = (rowInfo >> 8) & 0xF;
 
     if (vs_main_settings.cursorMemory != 0) {
@@ -894,8 +894,8 @@ int vs_mainMenu_storeCursor(void)
     vs_main_freeHeapR(itemsText);
 
     itemsText = NULL;
-    D_800F4EE8.cursorMemories[subMenuIdStatic * 2] = selectedRow;
-    D_800F4EE8.cursorMemories[subMenuIdStatic * 2 + 1] = subMenuPage;
+    D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+    D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
 
     return (selectedRow + subMenuPage) | ((selectedRow + (subMenuRowInfo * 10)) << 8);
 }
@@ -1009,8 +1009,8 @@ void vs_mainMenu_renderItemsList(void)
                 vs_main_freeHeapR(itemsText);
 
                 itemsText = NULL;
-                D_800F4EE8.cursorMemories[subMenuIdStatic * 2] = selectedRow;
-                D_800F4EE8.cursorMemories[subMenuIdStatic * 2 + 1] = subMenuPage;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
                 selectedRow = -3;
 
                 return;
@@ -1025,8 +1025,8 @@ void vs_mainMenu_renderItemsList(void)
                     vs_main_freeHeapR(itemsText);
 
                     itemsText = NULL;
-                    D_800F4EE8.cursorMemories[subMenuIdStatic * 2] = selectedRow;
-                    D_800F4EE8.cursorMemories[subMenuIdStatic * 2 + 1] = subMenuPage;
+                    D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+                    D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
                     selectedRow = absRow;
 
                     return;
@@ -1043,8 +1043,8 @@ void vs_mainMenu_renderItemsList(void)
                 vs_main_freeHeapR(itemsText);
 
                 itemsText = NULL;
-                D_800F4EE8.cursorMemories[subMenuIdStatic * 2] = selectedRow;
-                D_800F4EE8.cursorMemories[subMenuIdStatic * 2 + 1] = subMenuPage;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
                 selectedRow = -2;
 
                 return;

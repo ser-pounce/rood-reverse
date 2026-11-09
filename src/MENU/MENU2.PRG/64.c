@@ -53,7 +53,7 @@ static u_short* abilityText = NULL;
 static int highlightedAbility = 0;
 static u_int abilityMenuState = 0;
 static char selectedAbilityType = 0;
-static char abilityCountStatic = 0;
+static char menuAbilityCount = 0;
 static char firstAbility = 0;
 
 static char unlockedChainAbilities[16];
@@ -129,7 +129,7 @@ static int initAbilityMenu(int abilityCount, int abilityType, u_short** menuText
         setRiskCost(unlockedDefenseAbilities[i + j]);
     }
 
-    abilityCountStatic = abilityCount;
+    menuAbilityCount = abilityCount;
     abilityMenuState = 0;
 
     abilityText = vs_main_allocHeapR(abilityCount * 128);
@@ -246,12 +246,12 @@ static int abilityMenu(void)
             menuItem->isScrollable = 1;
         }
 
-        if (++abilityMenuState == abilityCountStatic) {
+        if (++abilityMenuState == menuAbilityCount) {
             abilityMenuState = waitReady;
         }
 
         if (abilityMenuState == 8) {
-            if ((firstAbility + 8u) < abilityCountStatic) {
+            if ((firstAbility + 8u) < menuAbilityCount) {
                 menuItem->isScrollable = 2;
             }
 
@@ -277,8 +277,8 @@ static int abilityMenu(void)
         selectedAbility = highlightedAbility + firstAbility;
         previousFirstAbility = firstAbility;
 
-        if (abilityCountStatic < 9) {
-            for (i = 0; i < abilityCountStatic; ++i) {
+        if (menuAbilityCount < 9) {
+            for (i = 0; i < menuAbilityCount; ++i) {
                 if (selectedAbilityType == abilityTypeChain) {
 
                     ability = unlockedChainAbilities[i];
@@ -382,9 +382,9 @@ static int abilityMenu(void)
         }
 
         if (vs_main_buttonRepeat & PADLup) {
-            if (abilityCountStatic < 9) {
+            if (menuAbilityCount < 9) {
                 if (highlightedAbility == 0) {
-                    highlightedAbility = abilityCountStatic - 1;
+                    highlightedAbility = menuAbilityCount - 1;
                 } else {
                     --highlightedAbility;
                 }
@@ -393,7 +393,7 @@ static int abilityMenu(void)
                     if (highlightedAbility == 0) {
                         if (vs_main_buttonsPressed.all & PADLup) {
                             highlightedAbility = 7;
-                            firstAbility = abilityCountStatic - 8;
+                            firstAbility = menuAbilityCount - 8;
                         }
                     } else {
                         --highlightedAbility;
@@ -409,14 +409,14 @@ static int abilityMenu(void)
         }
 
         if (vs_main_buttonRepeat & PADLdown) {
-            if (abilityCountStatic < 9) {
-                if (highlightedAbility == (abilityCountStatic - 1)) {
+            if (menuAbilityCount < 9) {
+                if (highlightedAbility == (menuAbilityCount - 1)) {
                     highlightedAbility = 0;
                 } else {
                     ++highlightedAbility;
                 }
             } else {
-                if (firstAbility == (abilityCountStatic - 8)) {
+                if (firstAbility == (menuAbilityCount - 8)) {
                     if (highlightedAbility == 7) {
                         if (vs_main_buttonsPressed.all & PADLdown) {
                             highlightedAbility = 0;
@@ -436,14 +436,14 @@ static int abilityMenu(void)
         if (selectedAbility != (highlightedAbility + firstAbility)) {
             vs_battle_playMenuChangeSfx();
             if (firstAbility != previousFirstAbility) {
-                char abilityBuf[abilityCountStatic];
+                char abilityBuf[menuAbilityCount];
 
-                for (i = 0; i < abilityCountStatic; ++i) {
+                for (i = 0; i < menuAbilityCount; ++i) {
                     abilityBuf[i] = 0;
                 }
 
-                ability = abilityCountStatic;
-                if (abilityCountStatic >= 9) {
+                ability = menuAbilityCount;
+                if (menuAbilityCount >= 9) {
                     ability = 8;
                 }
 
@@ -463,10 +463,10 @@ static int abilityMenu(void)
 
                     ++i;
 
-                    if (i == abilityCountStatic) {
+                    if (i == menuAbilityCount) {
                         break;
                     } else if (i == 8) {
-                        if ((firstAbility + 8) < abilityCountStatic) {
+                        if ((firstAbility + 8) < menuAbilityCount) {
                             menuItem->isScrollable = 2;
                         }
                         break;

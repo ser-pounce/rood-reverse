@@ -211,12 +211,12 @@ int vs_menuE_exec(u_char* state)
 // Likely file split but...meh
 
 static int topMenu_state;
-static int selectedRowStatic;
+static int menuSelectedRow;
 static vs_main_CdQueueSlot* helpTextCdQueue;
 static vs_main_CdQueueSlot* helpAssetsCdQueue;
 static int showMenuState;
 static int scrollPosition;
-static int lineCountStatic;
+static int totalLineCount;
 static int pageArrowAnimState;
 static int helpPageLoadCounter;
 static int* helpText;
@@ -230,7 +230,7 @@ static int initMenuState(void)
     func_8007DFF0(0x1D, 3, 5);
     showMenuState = 0;
     scrollPosition = 0;
-    lineCountStatic = 0;
+    totalLineCount = 0;
     helpText = NULL;
     helpAssets = NULL;
     return 1;
@@ -333,13 +333,13 @@ static int showMenu(void)
         vs_battle_initTextBox(0, 0, 8, 0x34, 0x19, 0xA, 8, 0x34);
         scrollPosition = vs_battle_manualDisplayState
                              .scrollPositions[vs_battle_manualDisplayState.currentManual];
-        lineCountStatic = getRoundedLineCount();
+        totalLineCount = getRoundedLineCount();
         showMenuState = showSubMenu;
         helpPageLoadCounter = 0;
         break;
     case showSubMenu:
         currentPage = scrollPosition / 10;
-        lastPage = lineCountStatic / 10;
+        lastPage = totalLineCount / 10;
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
             showMenuState = initMenu;
         }
@@ -371,18 +371,18 @@ static int showMenu(void)
             }
         } else {
             if ((vs_main_buttonsPressed.all & PADLup) && (scrollPosition == 0)
-                && (lineCountStatic > 0)) {
-                scrollPosition = lineCountStatic;
+                && (totalLineCount > 0)) {
+                scrollPosition = totalLineCount;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if (vs_main_buttonsPressed.all & PADLdown
-                       && (scrollPosition == lineCountStatic) && (scrollPosition > 0)) {
+                       && (scrollPosition == totalLineCount) && (scrollPosition > 0)) {
                 scrollPosition = 0;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonRepeat & PADLup) && (scrollPosition > 0)) {
                 --scrollPosition;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             } else if ((vs_main_buttonRepeat & PADLdown)
-                       && (scrollPosition < lineCountStatic)) {
+                       && (scrollPosition < totalLineCount)) {
                 ++scrollPosition;
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
@@ -419,7 +419,7 @@ static int showMenu(void)
         if (scrollPosition > 0) {
             fadeMenuUpper();
         }
-        if (scrollPosition < lineCountStatic) {
+        if (scrollPosition < totalLineCount) {
             fadeMenuLower();
         }
         if (helpPageLoadCounter < 8) {
@@ -460,7 +460,7 @@ static int topMenu(int init)
 
     if (init != 0) {
         topMenu_state = initRows;
-        selectedRowStatic = 0;
+        menuSelectedRow = 0;
     }
 
     switch (topMenu_state) {
@@ -473,9 +473,9 @@ static int topMenu(int init)
         ++topMenu_state;
         break;
     case selectRow:
-        selectedRowStatic = getSelectedRow();
-        if (selectedRowStatic != -1) {
-            return selectedRowStatic;
+        menuSelectedRow = getSelectedRow();
+        if (menuSelectedRow != -1) {
+            return menuSelectedRow;
         }
         break;
     }

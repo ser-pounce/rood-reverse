@@ -1754,7 +1754,7 @@ static void* timData;
 static u_int rank;
 static int clearCount;
 static u_int score;
-static u_int mapCompletionStatic;
+static u_int mapCompletionPercent;
 static u_int onScreenMapCompletion;
 static u_int onScreenScore;
 static int submenuState;
@@ -1902,7 +1902,7 @@ static int initCongratulationsScreen(void)
             vs_main_scoredata.openedChestCount = chestsOpened;
         }
 
-        mapCompletionStatic = (vs_main_scoredata.mapCompletion * 100) / 361;
+        mapCompletionPercent = (vs_main_scoredata.mapCompletion * 100) / 361;
 
         updateScore();
         determineRank();
@@ -2329,7 +2329,7 @@ static void renderMapCompletion(int x, int y, int timer, UNUSED int _)
 
         colors[0].cd = timer;
 
-        sprintf(buf, "%03d", mapCompletionStatic);
+        sprintf(buf, "%03d", mapCompletionPercent);
 
         x -= ((disMap[disIndexRank0MapCompleted].w + disMap[disIndexRank0Colon].w
                   + disMap[disIndexRank0Percent].w + 38)
@@ -2376,14 +2376,14 @@ static void renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _
 
     temp_s4 = x + timer * 8;
 
-    if (mapCompletionStatic != 0 && timer >= 32) {
+    if (mapCompletionPercent != 0 && timer >= 32) {
 
         if (onScreenMapCompletion == 0) {
             incrementingMapCompletion = 1;
             vs_main_playSfxDefault(126, 114);
         }
 
-        if ((onScreenMapCompletion == mapCompletionStatic)
+        if ((onScreenMapCompletion == mapCompletionPercent)
             && (incrementingMapCompletion != 0)) {
             incrementingMapCompletion = 0;
             vs_main_evictSfx(126, 114);
@@ -2392,9 +2392,9 @@ static void renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _
     }
 
     if (timer >= 32) {
-        if (mapCompletionStatic >= 32u) {
-            onScreenMapCompletion = (u_int)(mapCompletionStatic * (timer - 32)) >> 5;
-        } else if (onScreenMapCompletion < mapCompletionStatic) {
+        if (mapCompletionPercent >= 32u) {
+            onScreenMapCompletion = (u_int)(mapCompletionPercent * (timer - 32)) >> 5;
+        } else if (onScreenMapCompletion < mapCompletionPercent) {
             onScreenMapCompletion += 1;
         }
     }

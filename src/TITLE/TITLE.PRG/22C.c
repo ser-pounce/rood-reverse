@@ -309,11 +309,11 @@ static void saveScreenExitScreen(void)
     drawSprt(0, 0, vs_getWH(256, 224),
         getTPage(direct16Bit, semiTransparencySubtract, (1 - frameBuf) * 320, 0));
     DrawSync(0);
-    primBufStatic.tag = vs_getTag(primBufStatic.prim.tile, primAddrNull);
-    primBufStatic.prim.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
-    primBufStatic.prim.tile.x0y0 = 0;
-    primBufStatic.prim.tile.wh = vs_getWH(320, 224);
-    DrawPrim(&primBufStatic);
+    sharedPrimBuf.tag = vs_getTag(sharedPrimBuf.prim.tile, primAddrNull);
+    sharedPrimBuf.prim.tile.r0g0b0code = vs_getRGB0(primTileSemiTrans, 8, 8, 8);
+    sharedPrimBuf.prim.tile.x0y0 = 0;
+    sharedPrimBuf.prim.tile.wh = vs_getWH(320, 224);
+    DrawPrim(&sharedPrimBuf);
 }
 
 static void gameSaveScreen(void)

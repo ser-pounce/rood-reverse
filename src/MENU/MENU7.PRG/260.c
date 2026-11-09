@@ -82,7 +82,7 @@ static int loadIntroSaveFile(int action)
         if (opmcimgSlot->state == vs_main_CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(opmcimgSlot);
             gametime.t = vs_main_gametime.t;
-            spmcimgStatic = (char*)(opMcImg - 1);
+            mcImageBuf = (char*)(opMcImg - 1);
             applyLoadedSaveFile(1);
             vs_main_gametime.t = gametime.t;
             new_var2 = opMcImg;
@@ -744,8 +744,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
             vs_mainMenu_setBackgroundRenderPriority(2046, 128);
             initFileMenu();
             if (vs_main_settings.containerEmpty) {
-                vs_battle_rMemzero(&((savedata_t*)spmcimgStatic + 1)->containerData,
-                    sizeof((savedata_t*)spmcimgStatic + 1)->containerData);
+                vs_battle_rMemzero(&((savedata_t*)mcImageBuf + 1)->containerData,
+                    sizeof((savedata_t*)mcImageBuf + 1)->containerData);
                 *state = 7;
             } else {
                 findCurrentSave(1);
@@ -785,8 +785,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
                 *state = 14;
             } else {
                 vs_main_settings.containerEmpty = 1;
-                vs_battle_rMemzero(&((savedata_t*)spmcimgStatic + 1)->containerData,
-                    sizeof((savedata_t*)spmcimgStatic + 1)->containerData);
+                vs_battle_rMemzero(&((savedata_t*)mcImageBuf + 1)->containerData,
+                    sizeof((savedata_t*)mcImageBuf + 1)->containerData);
                 *state = 7;
             }
         }
@@ -809,7 +809,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &vs_main_inventoryIndices,
             sizeof vs_menu_inventoryStorage->unkF00);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0,
-            &((savedata_t*)spmcimgStatic + 1)->containerData,
+            &((savedata_t*)mcImageBuf + 1)->containerData,
             sizeof vs_menu_inventoryStorage->unkFB0);
         shutdownMemcard();
         *state = 8;
@@ -841,7 +841,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         }
         break;
     case 10:
-        copyContainer(&((savedata_t*)spmcimgStatic + 1)->containerData,
+        copyContainer(&((savedata_t*)mcImageBuf + 1)->containerData,
             &vs_menu_inventoryStorage->unkC430.data,
             &vs_menu_inventoryStorage->unkC430.indices);
         showSaveMenu(2);

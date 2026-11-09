@@ -23,7 +23,7 @@ static u_char animStep;
 static UNUSED char _2[2];
 static char* charTable;
 static UNUSED char _3[8];
-static char stringBufStatic[20];
+static char nameInputBuf[20];
 
 // Purpose unclear.
 static char D_80105DB0 = 0;
@@ -44,20 +44,20 @@ static int insertDeleteHandler(int bufPos)
         vs_battle_playMenuChangeSfx();
 
         for (i = 19; bufPos < i; --i) {
-            stringBufStatic[i] = stringBufStatic[i - 1];
+            nameInputBuf[i] = nameInputBuf[i - 1];
         }
 
-        stringBufStatic[bufPos] = vs_char_space;
+        nameInputBuf[bufPos] = vs_char_space;
 
     } else if (vs_main_buttonRepeat & PADRleft) {
 
         vs_battle_playMenuChangeSfx();
 
         for (i = bufPos; i < 19; ++i) {
-            stringBufStatic[i] = stringBufStatic[i + 1];
+            nameInputBuf[i] = nameInputBuf[i + 1];
         }
 
-        stringBufStatic[19] = vs_char_space;
+        nameInputBuf[19] = vs_char_space;
 
     } else if ((vs_main_buttonsState & (PADL1 | PADR1)) != (PADL1 | PADR1)) {
 
@@ -100,10 +100,10 @@ static int copyNormalizedString(char* stringBuf)
     int i;
 
     for (pos = 0, i = 0; i < 20; ++pos, ++i) {
-        if (stringBufStatic[i] == vs_char_terminator) {
+        if (nameInputBuf[i] == vs_char_terminator) {
             break;
         }
-        stringBuf[pos] = stringBufStatic[i];
+        stringBuf[pos] = nameInputBuf[i];
     }
 
     stringBuf[pos--] = vs_char_terminator;
@@ -225,7 +225,7 @@ static void renderRenameMenu(int xOffset)
     vs_battle_setMenuItem(29, xOffset + 156, 48, 164, 0, namePlaceHolder)->selected = 1;
 
     for (j = 0; j < 20; ++j) {
-        counter = stringBufStatic[j];
+        counter = nameInputBuf[j];
 
         if (counter != vs_char_space) {
 
@@ -530,10 +530,10 @@ static int renameMenuInput(int initialize)
                 --currentPos;
 
                 for (var_s1 = currentPos; var_s1 < 19; ++var_s1) {
-                    stringBufStatic[var_s1] = stringBufStatic[var_s1 + 1];
+                    nameInputBuf[var_s1] = nameInputBuf[var_s1 + 1];
                 }
 
-                stringBufStatic[19] = 0x8F;
+                nameInputBuf[19] = 0x8F;
             }
         }
 
@@ -571,28 +571,28 @@ static int renameMenuInput(int initialize)
                     --currentPos;
 
                     for (var_a1 = currentPos; var_a1 < 19; ++var_a1) {
-                        stringBufStatic[var_a1] = stringBufStatic[var_a1 + 1];
+                        nameInputBuf[var_a1] = nameInputBuf[var_a1 + 1];
                     }
 
-                    stringBufStatic[19] = vs_char_space;
+                    nameInputBuf[19] = vs_char_space;
                 }
 
                 break;
 
             case 2:
                 for (var_a1 = currentPos; var_a1 < 0x13; ++var_a1) {
-                    stringBufStatic[var_a1] = stringBufStatic[var_a1 + 1];
+                    nameInputBuf[var_a1] = nameInputBuf[var_a1 + 1];
                 }
 
-                stringBufStatic[19] = vs_char_space;
+                nameInputBuf[19] = vs_char_space;
                 break;
 
             case 3:
                 for (var_a1 = 0x13; currentPos < var_a1; --var_a1) {
-                    stringBufStatic[var_a1] = stringBufStatic[var_a1 - 1];
+                    nameInputBuf[var_a1] = nameInputBuf[var_a1 - 1];
                 }
 
-                stringBufStatic[currentPos] = vs_char_space;
+                nameInputBuf[currentPos] = vs_char_space;
                 break;
             }
 
@@ -648,7 +648,7 @@ static int renameMenuInput(int initialize)
             vs_battle_playMenuChangeSfx();
 
             var_s1 = charTable[charTableColumn + (charTableRow * 15)];
-            stringBufStatic[currentPos] = var_s1;
+            nameInputBuf[currentPos] = var_s1;
 
             if (currentPos < 19) {
                 ++currentPos;
@@ -662,10 +662,10 @@ static int renameMenuInput(int initialize)
             if (currentPos != 0) {
                 --currentPos;
                 for (var_s1 = currentPos; var_s1 < 19; ++var_s1) {
-                    stringBufStatic[var_s1] = stringBufStatic[var_s1 + 1];
+                    nameInputBuf[var_s1] = nameInputBuf[var_s1 + 1];
                 }
 
-                stringBufStatic[19] = vs_char_space;
+                nameInputBuf[19] = vs_char_space;
             }
         }
 
@@ -842,7 +842,7 @@ int vs_menu8_execRename(char* state)
 
         v1 = vs_char_space;
         i = 19;
-        var_v0 = &stringBufStatic[i];
+        var_v0 = &nameInputBuf[i];
 
         for (; i >= 0; --i) {
             *var_v0-- = v1;
@@ -859,7 +859,7 @@ int vs_menu8_execRename(char* state)
                 } else if (c == vs_char_spacing) {
                     ++var_v1;
                 } else {
-                    stringBufStatic[i] = c;
+                    nameInputBuf[i] = c;
                 }
             }
         }

@@ -447,7 +447,7 @@ static int leaveItemSlotSelection(int arg0)
 static u_short* itemsList;
 static int itemsListSelection;
 static char itemsListState;
-static char itemCountStatic;
+static char listItemCount;
 static char itemsListWindow;
 static char rowInfoUnused;
 
@@ -464,7 +464,7 @@ static void populateItemsList(int count, char** text, int* rowTypes)
     u_short* temp_v1;
     vs_battle_menuItem_t* menuItem;
 
-    itemCountStatic = count;
+    listItemCount = count;
     itemsListWindow = 0;
     itemsListSelection = 0;
     itemsListState = 1;
@@ -538,7 +538,7 @@ static void navigateItemsList(int arg0)
     vs_battle_menuItem_t* menuItem;
 
     if (itemsListState < 6) {
-        if (itemsListState == itemCountStatic) {
+        if (itemsListState == listItemCount) {
             itemsListState = 16;
         } else {
             menuItem = vs_battle_setMenuItem(itemsListState + 20, 320,
@@ -556,7 +556,7 @@ static void navigateItemsList(int arg0)
             menuItem->material = (itemInfo >> 0x10) & 7;
             ++itemsListState;
             if (itemsListState == 6) {
-                if (itemCountStatic >= 7) {
+                if (listItemCount >= 7) {
                     menuItem->isScrollable = 2;
                 }
                 itemsListState = 16;
@@ -623,7 +623,7 @@ static void navigateItemsList(int arg0)
             }
 
             if (vs_main_buttonRepeat & PADLup) {
-                if (itemCountStatic < 7 || itemsListWindow == 0) {
+                if (listItemCount < 7 || itemsListWindow == 0) {
                     if (itemsListSelection != 0) {
                         --itemsListSelection;
                     }
@@ -637,12 +637,12 @@ static void navigateItemsList(int arg0)
             }
 
             if (vs_main_buttonRepeat & PADLdown) {
-                if (itemCountStatic < 7) {
-                    if (itemsListSelection < (itemCountStatic - 1)) {
+                if (listItemCount < 7) {
+                    if (itemsListSelection < (listItemCount - 1)) {
                         ++itemsListSelection;
                     }
                 } else {
-                    if (itemsListWindow == (itemCountStatic - 6)) {
+                    if (itemsListWindow == (listItemCount - 6)) {
                         if (itemsListSelection < 5) {
                             ++itemsListSelection;
                         }
@@ -660,13 +660,13 @@ static void navigateItemsList(int arg0)
 
                 if (itemsListWindow != previousWindow) {
 
-                    char unksp18[itemCountStatic];
+                    char unksp18[listItemCount];
 
-                    for (i = 0; i < itemCountStatic; ++i) {
+                    for (i = 0; i < listItemCount; ++i) {
                         unksp18[i] = 0;
                     }
 
-                    itemInfo = itemCountStatic;
+                    itemInfo = listItemCount;
 
                     if (itemInfo >= 7u) {
                         itemInfo = 6;
@@ -696,12 +696,12 @@ static void navigateItemsList(int arg0)
                         menuItem->material = (itemInfo >> 0x10) & 7;
                         ++i;
 
-                        if (i == itemCountStatic) {
+                        if (i == listItemCount) {
                             break;
                         }
 
                         if (i == 6) {
-                            if ((itemsListWindow + 6) < itemCountStatic) {
+                            if ((itemsListWindow + 6) < listItemCount) {
                                 menuItem->isScrollable = 2;
                             }
                             break;
@@ -2656,7 +2656,7 @@ static int repairMenu(int arg0)
     return 0;
 }
 
-static void* sydDataStatic = NULL;
+static void* sydDataBuf = NULL;
 
 /**
  * Loads the combination data file for blades, shields, or armor.
@@ -2677,11 +2677,11 @@ static int loadSyd(int id)
 
     if (id != 0) {
         --id;
-        sydDataStatic = vs_main_allocHeapR(sydSizes[id]);
+        sydDataBuf = vs_main_allocHeapR(sydSizes[id]);
         cdFile.lba = sydLbas[id];
         cdFile.size = sydSizes[id];
         sydCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(sydCdQueueSlot, sydDataStatic);
+        vs_main_cdEnqueue(sydCdQueueSlot, sydDataBuf);
         sydFileLoading = 1;
         return 0;
     }
@@ -2771,7 +2771,7 @@ static void setCombineBladeUi(int arg0)
     case 3:
         vs_battle_rMemzero(&bladeBuf, sizeof bladeBuf);
         combineBlades(&vs_main_inventory.blades[i - 1],
-            &vs_main_inventory.blades[temp_s2 - 1], &bladeBuf, sydDataStatic);
+            &vs_main_inventory.blades[temp_s2 - 1], &bladeBuf, sydDataBuf);
         break;
     }
 
@@ -3387,7 +3387,7 @@ static void initCombineShields(int arg0)
     case 3:
         vs_battle_rMemzero(&shieldBuf, sizeof shieldBuf);
         combineShields(&vs_main_inventory.shields[first - 1].base,
-            &vs_main_inventory.shields[second - 1].base, &shieldBuf.base, sydDataStatic);
+            &vs_main_inventory.shields[second - 1].base, &shieldBuf.base, sydDataBuf);
         break;
     }
 
@@ -3980,7 +3980,7 @@ static void initCombineArmor(int arg0)
     case 3:
         vs_battle_rMemzero(&armorBuf, sizeof armorBuf);
         combineArmor(&vs_main_inventory.armor[i - 1],
-            &vs_main_inventory.armor[temp_s3 - 1], &armorBuf, sydDataStatic);
+            &vs_main_inventory.armor[temp_s3 - 1], &armorBuf, sydDataBuf);
         break;
     }
 
@@ -4527,8 +4527,8 @@ static int combineTopMenu(int arg0)
         if (loadSyd(0) != 0) {
             i = combineMenus[state - 2](0);
             if (i != 0) {
-                vs_main_freeHeapR(sydDataStatic);
-                sydDataStatic = NULL;
+                vs_main_freeHeapR(sydDataBuf);
+                sydDataBuf = NULL;
                 if (i == -1) {
                     state = 5;
                     break;

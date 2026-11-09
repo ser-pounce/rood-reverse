@@ -72,8 +72,8 @@ static int showSaveMenu(int initState)
     switch (state) {
     case init:
         if (vs_main_settings.containerEmpty) {
-            memset(&((savedata_t*)spmcimgStatic + 1)->containerData, 0,
-                sizeof((savedata_t*)spmcimgStatic + 1)->containerData);
+            memset(&((savedata_t*)mcImageBuf + 1)->containerData, 0,
+                sizeof((savedata_t*)mcImageBuf + 1)->containerData);
             state = initSlot1;
         } else if (fileMenuElementsActive() != 0) {
             if (vs_main_settings.slotState != slotStateUnavailable) {
@@ -212,8 +212,8 @@ static int showSaveMenu(int initState)
             }
             if (state == eraseContainerData) {
                 containerDataEmpty = 1;
-                memset(&((savedata_t*)spmcimgStatic + 1)->containerData, 0,
-                    sizeof((savedata_t*)spmcimgStatic + 1)->containerData);
+                memset(&((savedata_t*)mcImageBuf + 1)->containerData, 0,
+                    sizeof((savedata_t*)mcImageBuf + 1)->containerData);
             }
             state = initSlot1;
         }

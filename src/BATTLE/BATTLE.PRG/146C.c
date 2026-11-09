@@ -11824,7 +11824,7 @@ short damageFromTrapPanel(vs_action_t* action, UNUSED hitEntity_t* arg1, hitEnti
     return damage;
 }
 
-short hpHealedStatic(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
+short calculateHpHealed(vs_action_t* action, hitEntity_t* source, hitEntity_t* target,
     int nHit, int withRandMod)
 {
     hitIntermediate_t sp18;

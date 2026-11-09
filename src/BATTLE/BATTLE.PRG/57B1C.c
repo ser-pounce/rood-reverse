@@ -8,6 +8,7 @@
 #include "scratch.h"
 #include "vs_inline_c.h"
 #include "src/SLUS_010.40/31724.h"
+#include "src/SLUS_010.40/memory.h"
 #include <inline_c.h>
 
 void func_800C031C(void)

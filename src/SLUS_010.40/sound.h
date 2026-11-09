@@ -17,7 +17,7 @@ typedef struct {
     int* sfxData[3]; // bank: [0] = entry count, [1..] = byte offsets to each effect
     vs_main_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
-    int* unk70[3];
+    UNUSED int* unused[3];
     int soundFileId;
     void* soundData;
     vs_main_CdQueueSlot* soundQueueSlot;
@@ -58,8 +58,9 @@ int vs_main_setSfxSlot3Data(void* bank);
 int vs_main_clearSfxSlot3(void);
 void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volume);
 void vs_main_playBankSfxDefault(int group, int* bank, u_int index);
-void vs_main_evictBankSfx(int group, int* bank, int index);
-void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int duration);
+void vs_main_evictBankSfx(int group, int const* bank, int index);
+void vs_main_fadeBankSfxVolume(
+    int group, int const* bank, int index, int volume, int duration);
 void vs_main_startCutsceneStreamDefault(int slot);
 void vs_main_setMonoSound(int set);
 int vs_main_setCutsceneStreamSlot3(void* stream);

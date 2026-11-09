@@ -1,4 +1,5 @@
 #pragma once
+#include "src/SLUS_010.40/inventory.h"
 #include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 
 int vs_menuD_exec(u_char*);

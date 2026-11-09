@@ -8,7 +8,7 @@
 #include "57B1C.h"
 #include "5BF94.h"
 #include "camera.h"
-#include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/pad.h"
 #include "gpu.h"
 #include "scratch.h"
 #include "vs_inline_c.h"

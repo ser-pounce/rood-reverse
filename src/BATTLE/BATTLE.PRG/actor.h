@@ -1,6 +1,7 @@
 #pragma once
 #include "entity.h"
 #include "uiEquipment.h"
+#include "tilePosition.h"
 #include <sys/types.h>
 #include <libgte.h>
 

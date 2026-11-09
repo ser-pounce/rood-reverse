@@ -7,9 +7,12 @@
 #include "44F14.h"
 #include "battleUnk.h"
 #include "entity.h"
-#include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
+#include "src/SLUS_010.40/clut.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/sound.h"
 #include "scratch.h"
+#include "tilePosition.h"
 #include <abs.h>
 
 typedef struct {

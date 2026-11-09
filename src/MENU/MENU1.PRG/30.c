@@ -1,5 +1,7 @@
 #include "common.h"
 #include "30.h"
+#include "src/SLUS_010.40/actions.h"
+#include "src/SLUS_010.40/gameState.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/battleUi.h"
 #include "src/MENU/MAINMENU.PRG/2D10.h"

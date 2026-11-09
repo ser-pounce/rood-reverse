@@ -1,8 +1,9 @@
 #pragma once
 
 #include "common.h"
+#include "gameState.h"
 #include "inventory.h"
-#include "main.h"
+#include "zoneState.h"
 #include "gpu.h"
 #include <sys/file.h>
 

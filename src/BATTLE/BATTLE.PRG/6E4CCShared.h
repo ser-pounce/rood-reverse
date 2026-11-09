@@ -2,6 +2,9 @@
 #include "5BF94.h"
 #include "6E4CC.h"
 #include "hitEntity.h"
+#include "src/SLUS_010.40/actions.h"
+#include "src/SLUS_010.40/cd.h"
+#include "tilePosition.h"
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) < (b) ? (b) : (a))

@@ -5,6 +5,7 @@
 #include "573B8.h"
 #include "5BF94.h"
 #include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/pad.h"
 #include <memory.h>
 #include <stddef.h>
 #include <inline_c.h>

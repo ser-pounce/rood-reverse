@@ -1,8 +1,22 @@
 #define VS_MAIN_INCLUDE
 #include "main.h"
+#include "gameFlags.h"
+#include "gameState.h"
+#include "graphics.h"
+#include "pad.h"
+#include "sound.h"
+#include "zoneState.h"
 #undef VS_MAIN_INCLUDE
 #include "common.h"
+#include "25AC.h"
+#include "actions.h"
+#include "cd.h"
+#include "clut.h"
+#include "inventory.h"
+#include "memory.h"
+#include "modifiers.h"
 #include "overlay.h"
+#include "zones.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"
 #include "src/BATTLE/BATTLE.PRG/entity.h"
@@ -11,6 +25,7 @@
 #include "src/TITLE/TITLE.PRG/22C.h"
 #include "src/ENDING/ENDING.PRG/D4.h"
 #include "build/src/include/lbas.h"
+#include <libds.h>
 #include <libapi.h>
 #include <libetc.h>
 #include <libpad.h>
@@ -169,7 +184,7 @@ typedef struct vs_main_HeapHeader {
 void __main(void);
 static void _unlockPadModeSwitch(void);
 static void _padResetDefaults(int, void*);
-static void _padSetActData(int arg0, int arg1, int arg2);
+static void _padSetActData(int port, int pos, int val);
 static void _initCdQueue(void);
 static void _diskReset(void);
 static void _processCdQueue(void);
@@ -1638,14 +1653,14 @@ void vs_main_setVibrateParams(void)
     }
 }
 
-void vs_main_vibrationOnEffect(int arg0)
+void vs_main_vibrationOnEffect(int effect)
 {
-    if (arg0 < _vibrationOnBank[0]) {
+    if (effect < _vibrationOnBank[0]) {
         vs_main_setVibrationBank(
-            &_vibrationOnBank[_vibrationOnBank[arg0 * 4 + 4]
-                              + (_vibrationOnBank[arg0 * 4 + 5] << 8)
-                              + (_vibrationOnBank[arg0 * 4 + 6] << 16)
-                              + (_vibrationOnBank[arg0 * 4 + 7] << 24)],
+            &_vibrationOnBank[_vibrationOnBank[effect * 4 + 4]
+                              + (_vibrationOnBank[effect * 4 + 5] << 8)
+                              + (_vibrationOnBank[effect * 4 + 6] << 16)
+                              + (_vibrationOnBank[effect * 4 + 7] << 24)],
             0xFF, 0x80);
     }
 }
@@ -1818,6 +1833,7 @@ void* vs_main_allocHeapR(u_int size)
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
+
             if (freeNode->blockSz == blockSz) {
                 lastNode->prev = freeNode->prev;
                 freeNode->prev->next = freeNode->next;
@@ -1826,12 +1842,16 @@ void* vs_main_allocHeapR(u_int size)
                 freeNode += freeNode->blockSz;
                 freeNode->blockSz = blockSz;
             }
-            return (u_long*)(freeNode + 1);
+
+            return freeNode + 1;
         }
+
         lastNode = freeNode;
+
         if (freeNode == &_heap) {
             return 0;
         }
+
         freeNode = freeNode->prev;
     }
 }
@@ -1848,24 +1868,29 @@ void* vs_main_allocHeap(u_int size)
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
+
             if (freeNode->blockSz == blockSz) {
                 lastNode->next = freeNode->next;
                 freeNode->next->prev = freeNode->prev;
             } else {
-                vs_main_HeapHeader* temp_v1 = freeNode + blockSz;
-                temp_v1->blockSz = freeNode->blockSz - blockSz;
-                temp_v1->prev = freeNode->prev;
-                temp_v1->next = freeNode->next;
-                temp_v1->prev->next = temp_v1;
-                temp_v1->next->prev = temp_v1;
+                vs_main_HeapHeader* remainder = freeNode + blockSz;
+                remainder->blockSz = freeNode->blockSz - blockSz;
+                remainder->prev = freeNode->prev;
+                remainder->next = freeNode->next;
+                remainder->prev->next = remainder;
+                remainder->next->prev = remainder;
                 freeNode->blockSz = blockSz;
             }
-            return (u_long*)(freeNode + 1);
+
+            return freeNode + 1;
         }
+
         lastNode = freeNode;
+
         if (freeNode == &_heap) {
             return 0;
         }
+
         freeNode = freeNode->next;
     }
 }
@@ -1885,7 +1910,7 @@ void vs_main_initHeap(void* heap, u_int size)
     _unusedHeap.blockSz = 0;
 }
 
-static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* arg2)
+static void _diskReadCallback(u_char intr, UNUSED u_char result[], UNUSED u_long* _)
 {
     if ((intr == DslDiskError) || (intr == DslNoIntr) || (_disk.state == diskReadError)) {
         DsReadyCallback(0);
@@ -2451,21 +2476,24 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int arg0) { Sound_SetMusicJumpThreshold(arg0); }
+void vs_main_setMusicJumpThreshold(int threshold)
+{
+    Sound_SetMusicJumpThreshold(threshold);
+}
 
-int vs_main_stopMusicSlot(int id)
+int vs_main_stopMusicSlot(int slot)
 {
     int i;
 
-    if (id != 0) {
-        if (vs_main_soundData.musicHandleBySlot[id - 1] != 0xFFFF) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicHandleBySlot[slot - 1] != 0xFFFF) {
 
-            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[id - 1]);
+            Sound_StopMusicById(vs_main_soundData.musicHandleBySlot[slot - 1]);
 
-            vs_main_soundData.musicHandleBySlot[id - 1] = 0xFFFF;
+            vs_main_soundData.musicHandleBySlot[slot - 1] = 0xFFFF;
         }
 
-        if (vs_main_soundData.currentMusicSlot == id) {
+        if (vs_main_soundData.currentMusicSlot == slot) {
             vs_main_soundData.currentMusicSlot = 0;
             vs_main_soundData.currentMusicData = NULL;
             vs_main_soundData.currentMusicHandle = 0xFFFF;
@@ -2487,23 +2515,23 @@ int vs_main_stopMusicSlot(int id)
     return 1;
 }
 
-int vs_main_queueMusicSlot(int id)
+int vs_main_queueMusicSlot(int slot)
 {
     u_int handle;
 
-    if (id != 0) {
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
             handle = Sound_QueueMusic(vs_main_soundData.currentMusicData);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -2512,25 +2540,25 @@ int vs_main_queueMusicSlot(int id)
     return 0;
 }
 
-int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
+int vs_main_playMusicSlotFadeIn(int slot, int volume, u_int duration)
 {
-    if (id != 0) {
+    if (slot != 0) {
 
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
             u_int handle;
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
 
             handle = Sound_StartMasterAndMusicVolumeFade(
-                vs_main_soundData.currentMusicData, arg2, arg1);
+                vs_main_soundData.currentMusicData, duration, volume);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -2539,25 +2567,25 @@ int vs_main_playMusicSlotFadeIn(int id, int arg1, u_int arg2)
     return 0;
 }
 
-int vs_main_playMusicSlot(int id, int arg1, int arg2)
+int vs_main_playMusicSlot(int slot, int volume, int duration)
 {
-    if (id != 0) {
-        if (vs_main_soundData.musicData[id - 1] != 0) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicData[slot - 1] != 0) {
             u_int handle;
 
-            vs_main_soundData.currentMusicSlot = id;
-            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[id - 1];
+            vs_main_soundData.currentMusicSlot = slot;
+            vs_main_soundData.currentMusicData = vs_main_soundData.musicData[slot - 1];
 
-            Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
+            Sound_FadeMasterVolumeByMusicId(0, duration, volume);
             handle = Sound_StartFieldMusic(vs_main_soundData.currentMusicData);
 
             if (handle != 0) {
-                vs_main_soundData.musicHandleBySlot[id - 1] = handle;
+                vs_main_soundData.musicHandleBySlot[slot - 1] = handle;
                 vs_main_soundData.currentMusicHandle = handle;
-                Sound_FadeMasterVolumeByMusicId(0, arg2, arg1);
+                Sound_FadeMasterVolumeByMusicId(0, duration, volume);
             }
 
-            vs_main_soundData.unk8 = vs_main_soundData.musicIds[id - 1];
+            vs_main_soundData.unk8 = vs_main_soundData.musicIds[slot - 1];
         }
 
         return vs_main_soundData.currentMusicHandle;
@@ -2725,44 +2753,45 @@ int vs_main_freeMusic(int slotId)
 
 static UNUSED int nop5(void) { return 0; }
 
-int vs_main_getMusicSlotVolume(int arg0)
+int vs_main_getMusicSlotVolume(int slot)
 {
-    if (arg0 != 0) {
-        if (vs_main_soundData.musicHandleBySlot[arg0 - 1] != 0xFFFF) {
+    if (slot != 0) {
+        if (vs_main_soundData.musicHandleBySlot[slot - 1] != 0xFFFF) {
             return Sound_GetMusicVolumeById(
-                vs_main_soundData.musicHandleBySlot[arg0 - 1]);
+                vs_main_soundData.musicHandleBySlot[slot - 1]);
         }
     }
 
     return 0;
 }
 
-int vs_main_getMusicSlotVolume2(int arg0) { return vs_main_getMusicSlotVolume(arg0); }
+int vs_main_getMusicSlotVolume2(int slot) { return vs_main_getMusicSlotVolume(slot); }
 
-int vs_main_fadeMusicVolume(int id, int arg1, int arg2)
+int vs_main_fadeMusicVolume(int slot, int volume, int duration)
 {
-    if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterVolumeByMusicId(vs_main_soundData.currentMusicHandle, arg2, arg1);
+    if (vs_main_soundData.currentMusicSlot == slot) {
+        Sound_FadeMasterVolumeByMusicId(
+            vs_main_soundData.currentMusicHandle, duration, volume);
         return 1;
     }
 
     return 0;
 }
 
-int vs_main_fadeMusicTempo(int id, int arg1, int arg2)
+int vs_main_fadeMusicTempo(int slot, int tempo, int duration)
 {
-    if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeTempoScale(arg2, arg1);
+    if (vs_main_soundData.currentMusicSlot == slot) {
+        Sound_FadeTempoScale(duration, tempo);
         return 1;
     }
 
     return 0;
 }
 
-int vs_main_fadeMusicPitch(int id, int arg1, int arg2)
+int vs_main_fadeMusicPitch(int slot, int pitch, int duration)
 {
-    if (vs_main_soundData.currentMusicSlot == id) {
-        Sound_FadeMasterPitchScale(arg2, arg1);
+    if (vs_main_soundData.currentMusicSlot == slot) {
+        Sound_FadeMasterPitchScale(duration, pitch);
         return 1;
     }
 
@@ -2792,39 +2821,39 @@ static UNUSED void _playSfxPool0Default(int id)
     }
 }
 
-static void _playSfxById(int id, int arg1, int arg2, int arg3)
+static void _playSfxById(int id, int voice, int pan, int volume)
 {
-    if (arg1 == 0x200) {
+    if (voice == 0x200) {
         if (id != Sound_GetPlayingSfxByGroup(0x200)) {
-            Sound_PlaySfx(id, 0x200, arg2, arg3);
+            Sound_PlaySfx(id, 0x200, pan, volume);
         }
     } else {
-        Sound_PlaySfx(id, arg1, arg2, arg3);
+        Sound_PlaySfx(id, voice, pan, volume);
     }
 }
 
-static void _playSfxFromPointer(void* data, int arg1, int arg2, int arg3)
+static void _playSfxFromPointer(void* data, int voice, int pan, int volume)
 {
-    if (arg1 == 0x200) {
+    if (voice == 0x200) {
         if (data != (void*)Sound_GetPlayingSfxByGroup(0x200)) {
-            Sound_PlaySfxFromPointer(data, 0x200, arg2, arg3);
+            Sound_PlaySfxFromPointer(data, 0x200, pan, volume);
         }
     } else {
-        Sound_PlaySfxFromPointer(data, arg1, arg2, arg3);
+        Sound_PlaySfxFromPointer(data, voice, pan, volume);
     }
 }
 
-void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
+void vs_main_playSfx(int group, int id, int pan, int volume)
 {
     void* sfx;
     int* bank;
 
-    switch (arg0) {
+    switch (group) {
     case 0x7E:
     case 0xFE:
         if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
 
-            _playSfxById(id & 0xFFFF, _nextVoicePool1, arg2, arg3);
+            _playSfxById(id & 0xFFFF, _nextVoicePool1, pan, volume);
 
             _nextVoicePool1 *= 2;
 
@@ -2833,7 +2862,7 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
             }
 
         } else {
-            _playSfxById(id & 0xFFFF, 0, arg2, arg3);
+            _playSfxById(id & 0xFFFF, 0, pan, volume);
         }
 
         break;
@@ -2841,9 +2870,9 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
     case 0x100:
     case 0x200:
         if (Sound_SfxHasVoiceFlag(id & 0xFFFF) != 0) {
-            _playSfxById(id & 0xFFFF, _nextVoicePool3, arg2, arg3);
+            _playSfxById(id & 0xFFFF, _nextVoicePool3, pan, volume);
         } else {
-            _playSfxById(id & 0xFFFF, 0, arg2, arg3);
+            _playSfxById(id & 0xFFFF, 0, pan, volume);
         }
 
         break;
@@ -2854,16 +2883,16 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 
         if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
 
-            _playSfxFromPointer(sfx, _nextVoicePool4, arg2, arg3);
+            _playSfxFromPointer(sfx, _nextVoicePool4, pan, volume);
 
             _nextVoicePool4 *= 2;
 
-            if (!(_nextVoicePool4 & arg0)) {
+            if (!(_nextVoicePool4 & group)) {
                 _nextVoicePool4 = 0x1000;
             }
 
         } else {
-            _playSfxFromPointer(sfx, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, pan, volume);
         }
 
         break;
@@ -2874,16 +2903,16 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
 
         if (Sound_SfxHasVoiceFlag((u_long)sfx) != 0) {
 
-            _playSfxFromPointer(sfx, _nextVoicePool5, arg2, arg3);
+            _playSfxFromPointer(sfx, _nextVoicePool5, pan, volume);
 
             _nextVoicePool5 *= 2;
 
-            if (!(_nextVoicePool5 & arg0)) {
+            if (!(_nextVoicePool5 & group)) {
                 _nextVoicePool5 = 0x100000;
             }
 
         } else {
-            _playSfxFromPointer(sfx, 0, arg2, arg3);
+            _playSfxFromPointer(sfx, 0, pan, volume);
         }
 
         break;
@@ -2894,87 +2923,88 @@ void vs_main_playSfx(int arg0, int id, int arg2, int arg3)
     }
 }
 
-void vs_main_playSfxDefault(int arg0, int id) { vs_main_playSfx(arg0, id, 0x80, 0x7F); }
+void vs_main_playSfxDefault(int group, int id) { vs_main_playSfx(group, id, 0x80, 0x7F); }
 
-int vs_main_computeSfxPan(int coords, int z)
+int vs_main_computeSfxPan(int pan, int depth)
 {
-    int v0;
-    int new_var2;
-    int v1;
+    int tmp;
+    int volume;
+    int limit;
 
-    v0 = coords;
+    tmp = pan;
 
-    if (coords < 0) {
-        v0 += 0xFFFF;
+    if (pan < 0) {
+        tmp += 0xFFFF;
     }
 
-    v0 = (v0 >> 16) << 16;
-    coords = (short)(coords - v0) - 160;
-    coords = (coords * 3) / 10;
+    tmp = (tmp >> 16) << 16;
+    pan = (short)(pan - tmp) - 160;
+    pan = (pan * 3) / 10;
 
-    if (coords < -96) {
-        coords = -96;
+    if (pan < -96) {
+        pan = -96;
     }
 
-    if (coords > 96) {
-        coords = 96;
+    if (pan > 96) {
+        pan = 96;
     }
 
-    coords += 128;
-    v1 = z - 768;
+    pan += 128;
+    limit = depth - 768;
 
-    if (v1 < 0) {
-        v1 = 0;
+    if (limit < 0) {
+        limit = 0;
     }
 
-    if (v1 > 4095) {
-        v1 = 4095;
+    if (limit > 4095) {
+        limit = 4095;
     }
 
-    v0 = v1;
+    tmp = limit;
 
-    if (v1 < 0) {
-        v0 = v1 + 31;
+    if (limit < 0) {
+        tmp = limit + 31;
     }
 
-    v0 >>= 5;
-    v1 = 127;
+    tmp >>= 5;
+    limit = 127;
 
-    new_var2 = v1 - v0;
-    return (coords << 16) + new_var2;
+    volume = limit - tmp;
+    return (pan << 16) + volume;
 }
 
-static void _do_panSfx(int arg0, int arg1, int coords, int z)
+static void _do_panSfx(int group, int id, int screenXY, int depth)
 {
-    coords = vs_main_computeSfxPan(coords, z);
+    int panAndVolume = vs_main_computeSfxPan(screenXY, depth);
+    int pan = panAndVolume >> 16;
+    int volume = panAndVolume & 0xFFFF;
 
-    z = coords & 0xFFFF;
-    coords = coords >> 0x10;
-
-    if (z > 0) {
-        vs_main_playSfx(arg0, arg1, coords, z);
+    if (volume > 0) {
+        vs_main_playSfx(group, id, pan, volume);
     }
 }
 
-void vs_main_panSfx(int arg0, int arg1, SVECTOR* vec)
+void vs_main_panSfx(int group, int id, SVECTOR* position)
 {
-    int z;
-    long coords;
-    long value;
+    int depth;
+    long screenXY;
+    long interpolation;
     long flag;
 
     SetRotMatrix(&vs_scratch.viewMatrix);
     SetTransMatrix(&vs_scratch.viewMatrix);
-    z = RotTransPers(vec, &coords, &value, &flag);
-    _do_panSfx(arg0, arg1, coords, z);
+    depth = RotTransPers(position, &screenXY, &interpolation, &flag);
+    _do_panSfx(group, id, screenXY, depth);
 }
 
-static void* _resolveSfxData(int arg0, int arg1)
+// Returns the address of effect `id` inside its bank for the bank groups, or NULL when
+// the group plays effects by id
+static void* _resolveSfxData(int group, int id)
 {
     void* sfx;
     int* bank;
 
-    switch (arg0) {
+    switch (group) {
     case 0x1:
     case 0x7E:
     case 0xFE:
@@ -2986,7 +3016,7 @@ static void* _resolveSfxData(int arg0, int arg1)
     case 0xFF000:
     case 0xF00000:
         sfx = bank = vs_main_soundData.sfxData[vs_main_soundData.currentSfxId - 1];
-        sfx += bank[arg1 + 1];
+        sfx += bank[id + 1];
 
         break;
 
@@ -3000,66 +3030,66 @@ static void* _resolveSfxData(int arg0, int arg1)
     return sfx;
 }
 
-void vs_main_fadeSfxVolume(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
-            Sound_FadeSfxVolumeMod((u_long)sfx, 0, arg3, arg2);
+            Sound_FadeSfxVolumeMod((u_long)sfx, 0, duration, volume);
         } else {
-            Sound_FadeSfxVolumeMod(arg1, 0, arg3, arg2);
+            Sound_FadeSfxVolumeMod(id, 0, duration, volume);
         }
     } else {
-        Sound_FadeSfxVolumeMod(0, arg0, arg3, arg2);
+        Sound_FadeSfxVolumeMod(0, group, duration, volume);
     }
 }
 
-void vs_main_fadeSfxPitch(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
-            Sound_FadeSfxPitchMod((u_long)sfx, 0, arg3, arg2);
+            Sound_FadeSfxPitchMod((u_long)sfx, 0, duration, pitch);
         } else {
-            Sound_FadeSfxPitchMod(arg1, 0, arg3, arg2);
+            Sound_FadeSfxPitchMod(id, 0, duration, pitch);
         }
 
     } else {
-        Sound_FadeSfxPitchMod(0, arg0, arg3, arg2);
+        Sound_FadeSfxPitchMod(0, group, duration, pitch);
     }
 }
 
-void vs_main_fadeSfxPan(int arg0, int arg1, int arg2, char arg3)
+void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
-            Sound_FadeSfxPanMod((u_long)sfx, 0, arg3, arg2);
+            Sound_FadeSfxPanMod((u_long)sfx, 0, duration, pan);
         } else {
-            Sound_FadeSfxPanMod(arg1, 0, arg3, arg2);
+            Sound_FadeSfxPanMod(id, 0, duration, pan);
         }
 
     } else {
-        Sound_FadeSfxPanMod(0, arg0, arg3, arg2);
+        Sound_FadeSfxPanMod(0, group, duration, pan);
     }
 }
 
-void vs_main_evictSfx(int arg0, int arg1)
+void vs_main_evictSfx(int group, int id)
 {
-    if (arg1 != 0) {
-        void* sfx = _resolveSfxData(arg0, arg1);
+    if (id != 0) {
+        void* sfx = _resolveSfxData(group, id);
 
         if (sfx != NULL) {
             Sound_EvictSfx((u_long)sfx, 0);
         } else {
-            Sound_EvictSfx(arg1, 0);
+            Sound_EvictSfx(id, 0);
         }
 
     } else {
-        Sound_EvictSfx(0, arg0);
+        Sound_EvictSfx(0, group);
     }
 }
 
@@ -3170,10 +3200,10 @@ static UNUSED int _loadAndFreeSfx(int id)
     return slot;
 }
 
-int vs_main_setCurrentSfx(int id)
+int vs_main_setCurrentSfx(int slot)
 {
-    if ((id - 1u < 3) && vs_main_soundData.sfxData[id - 1] != NULL) {
-        vs_main_soundData.currentSfxId = id;
+    if ((slot - 1u < 3) && vs_main_soundData.sfxData[slot - 1] != NULL) {
+        vs_main_soundData.currentSfxId = slot;
 
         return 1;
     }
@@ -3181,21 +3211,21 @@ int vs_main_setCurrentSfx(int id)
     return 0;
 }
 
-int vs_main_freeSfx(u_int id)
+int vs_main_freeSfx(u_int slot)
 {
-    if ((id - 1) < 3) {
-        if (vs_main_soundData.sfxData[id - 1] != NULL) {
+    if ((slot - 1) < 3) {
+        if (vs_main_soundData.sfxData[slot - 1] != NULL) {
 
-            if (vs_main_soundData.currentSfxId == id) {
+            if (vs_main_soundData.currentSfxId == slot) {
                 vs_main_soundData.currentSfxId = 0;
             }
 
             Sound_EvictSfx(-2, 0);
             Sound_EvictSfx(0, 0xFF000);
-            vs_main_freeHeapR(vs_main_soundData.sfxData[id - 1]);
+            vs_main_freeHeapR(vs_main_soundData.sfxData[slot - 1]);
 
-            vs_main_soundData.sfxIds[id - 1] = 0;
-            vs_main_soundData.sfxData[id - 1] = 0;
+            vs_main_soundData.sfxIds[slot - 1] = 0;
+            vs_main_soundData.sfxData[slot - 1] = 0;
 
             return 1;
         }
@@ -3203,10 +3233,10 @@ int vs_main_freeSfx(u_int id)
     return 0;
 }
 
-int vs_main_setSfxSlot3Data(void* arg0)
+int vs_main_setSfxSlot3Data(void* bank)
 {
     if (vs_main_soundData.sfxData[2] == 0) {
-        vs_main_soundData.sfxData[2] = arg0;
+        vs_main_soundData.sfxData[2] = bank;
         return 1;
     }
 
@@ -3269,9 +3299,9 @@ void vs_main_playBankSfx(int group, u_int bank[], u_int index, int pan, int volu
     _playSfxFromPointer(sfx, voice, pan, volume);
 }
 
-void vs_main_playBankSfxDefault(int arg0, int* arg1, u_int arg2)
+void vs_main_playBankSfxDefault(int group, int* bank, u_int index)
 {
-    vs_main_playBankSfx(arg0, arg1, arg2, 0x80, 0x7F);
+    vs_main_playBankSfx(group, bank, index, 0x80, 0x7F);
 }
 
 static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int depth)
@@ -3326,17 +3356,17 @@ static void _do_panBankSfx(int group, u_int bank[], int index, int pan, int dept
     }
 }
 
-static UNUSED void _panBankSfx(int arg0, u_int* arg1, int arg2, SVECTOR* vec)
+static UNUSED void _panBankSfx(int group, u_int* bank, int index, SVECTOR* position)
 {
-    int z;
-    long sxy;
-    long value;
+    int depth;
+    long screenXY;
+    long interpolation;
     long flag;
 
     SetRotMatrix(&vs_scratch.viewMatrix);
     SetTransMatrix(&vs_scratch.viewMatrix);
-    z = RotTransPers(vec, &sxy, &value, &flag);
-    _do_panBankSfx(arg0, arg1, arg2, sxy, z);
+    depth = RotTransPers(position, &screenXY, &interpolation, &flag);
+    _do_panBankSfx(group, bank, index, screenXY, depth);
 }
 
 void vs_main_evictBankSfx(int group, int* bank, int index)
@@ -3367,49 +3397,49 @@ void vs_main_fadeBankSfxVolume(int group, int* bank, int index, int volume, int 
 
 static UNUSED void _stopCutsceneStream(void) { Sound_StopCutsceneStream(); }
 
-static int _startCutsceneStream(int arg0, int arg1, int arg2)
+static int _startCutsceneStream(int slot, int pan, int volume)
 {
-    if ((arg0 - 1u) >= 3) {
+    if ((slot - 1u) >= 3) {
         return 0;
     }
 
-    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+    if (vs_main_soundData.unk64[slot - 1] == 0) {
         return 0;
     }
 
-    Sound_FadeOutCutscene(0, arg2);
-    Sound_StartCutsceneStream(vs_main_soundData.unk64[arg0 - 1], arg1, 1);
+    Sound_FadeOutCutscene(0, volume);
+    Sound_StartCutsceneStream(vs_main_soundData.unk64[slot - 1], pan, 1);
 
     return 1;
 }
 
-void vs_main_startCutsceneStreamDefault(int arg0)
+void vs_main_startCutsceneStreamDefault(int slot)
 {
-    _startCutsceneStream(arg0, 0x80, 0x7F);
+    _startCutsceneStream(slot, 0x80, 0x7F);
 }
 
-static UNUSED int _freeCutsceneStream(int arg0)
+static UNUSED int _freeCutsceneStream(int slot)
 {
-    if ((arg0 - 1u) >= 3) {
+    if ((slot - 1u) >= 3) {
         return 0;
     }
 
-    if (vs_main_soundData.unk64[arg0 - 1] == 0) {
+    if (vs_main_soundData.unk64[slot - 1] == 0) {
         return 0;
     }
 
     Sound_StopCutsceneStream();
-    vs_main_freeHeapR(vs_main_soundData.unk64[arg0 - 1]);
+    vs_main_freeHeapR(vs_main_soundData.unk64[slot - 1]);
 
-    vs_main_soundData.unk64[arg0 - 1] = 0;
+    vs_main_soundData.unk64[slot - 1] = 0;
 
     return 1;
 }
 
-int vs_main_setCutsceneStreamSlot3(void* arg0)
+int vs_main_setCutsceneStreamSlot3(void* stream)
 {
     if (vs_main_soundData.unk64[2] == 0) {
-        vs_main_soundData.unk64[2] = arg0;
+        vs_main_soundData.unk64[2] = stream;
         return 3;
     }
 
@@ -3853,7 +3883,7 @@ void vs_main_transformClutSlot(
     }
 }
 
-static inline int _shift_left(int arg0) { return arg0 << 0x10; }
+static inline int _shift_left(int channel) { return channel << 0x10; }
 
 static inline void _startBgAnim(int speed)
 {
@@ -3917,16 +3947,16 @@ void vs_main_fadeBgColors(int frames, CVECTOR* target)
     UPLOAD_BG_COLORS(bg, position, i);
 }
 
-static UNUSED void _fadeBgColorsStore(int arg0, CVECTOR* arg1)
+static UNUSED void _fadeBgColorsStore(int frames, CVECTOR* target)
 {
     int i;
 
     if (_clutState.active != 0) {
 
-        vs_main_fadeBgColors(arg0, arg1);
+        vs_main_fadeBgColors(frames, target);
 
         for (i = 0; i < 5; ++i) {
-            _clutState.bgBaseColors[i] = arg1[i];
+            _clutState.bgBaseColors[i] = target[i];
         }
     }
 }
@@ -4576,9 +4606,9 @@ void vs_main_updateClutSlots(void)
     }
 }
 
-static UNUSED void _stopClutSlotAnim(int arg0)
+static UNUSED void _stopClutSlotAnim(int slot)
 {
-    _clutState.slots[arg0].animState.active = 0;
+    _clutState.slots[slot].animState.active = 0;
 }
 
 void vs_main_loadClut(u_short const* img, u_int slot, u_int colorOffset, u_int count)

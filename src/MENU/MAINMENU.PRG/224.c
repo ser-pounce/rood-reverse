@@ -1,5 +1,7 @@
 #include "common.h"
 #include "224.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/memory.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/40564.h"
 #include "src/BATTLE/BATTLE.PRG/44F14.h"

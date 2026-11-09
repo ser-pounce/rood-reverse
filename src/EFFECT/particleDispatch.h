@@ -2,8 +2,8 @@
  * particleRender.h, or particleLineRender.h with VS_PARTICLE_UNTEXTURED defined. The
  * entry point is named by particleSetup.h. */
 
+#include "src/SLUS_010.40/memory.h"
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"
-#include "src/SLUS_010.40/main.h"
 
 int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {

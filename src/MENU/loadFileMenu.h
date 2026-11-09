@@ -1,5 +1,7 @@
 #pragma once
 #include "common.h"
+#include "src/SLUS_010.40/pad.h"
+#include "src/SLUS_010.40/sound.h"
 
 /* Load menu shared by the title and menu overlays. The including file defines
  * LOAD_FILE_MENU_PAD, the size of the alignment filler after the menu state, and

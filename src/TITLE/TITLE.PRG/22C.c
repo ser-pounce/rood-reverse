@@ -2,9 +2,18 @@
 #include "22C.h"
 #include "titleData.h"
 #include "src/SLUS_010.40/main.h"
+#include "src/SLUS_010.40/25AC.h"
+#include "src/SLUS_010.40/gameFlags.h"
+#include "src/SLUS_010.40/gameState.h"
+#include "src/SLUS_010.40/graphics.h"
+#include "src/SLUS_010.40/memory.h"
+#include "src/SLUS_010.40/pad.h"
 #include "src/SLUS_010.40/sfx.h"
+#include "src/SLUS_010.40/sound.h"
+#include "src/SLUS_010.40/zoneState.h"
 #include <libpress.h>
 #include <libspu.h>
+#include <libds.h>
 
 static void _playNewGameSfx(void)
 {

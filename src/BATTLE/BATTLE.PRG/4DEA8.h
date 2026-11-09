@@ -5,7 +5,7 @@
 
 int vs_battle_script_invalidOpcode(u_char*, short);
 int vs_battle_script_0A_waitEvtLoad(u_char*, short);
-int vs_battle_script_0C(u_char*, short);
+int vs_battle_script_0C_waitGimLoad(u_char*, short);
 int vs_battle_script_0D(u_char*, short);
 int vs_battle_script_0E(u_char*, short);
 int vs_battle_script_0F(u_char*, short);

@@ -148,7 +148,7 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 1;
+    u_int loading : 1;
     u_int unk0_2 : 1;
     u_int unk0_3 : 3;
     u_int unk0_6 : 18;
@@ -158,7 +158,7 @@ typedef struct {
     short unkA;
     short unkC;
     int unk10[0xFA];
-} D_800EB9BC_t;
+} Gim;
 
 typedef struct {
     char unk0;
@@ -328,7 +328,8 @@ extern char D_800F4C6A;
 
 extern char D_800F4B70[];
 extern u_short D_800F4B28[];
-extern D_800EB9BC_t* D_800EB9BC;
+extern Gim* gims;
+VS_HIDDEN(gims);
 
 int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 {
@@ -358,9 +359,9 @@ int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_0C(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return D_800EB9BC->unk0_1;
+    return gims->loading;
 }
 
 int vs_battle_script_0D(u_char* arg0, UNUSED short arg1)
@@ -609,7 +610,7 @@ int vs_battle_script_17(u_char* arg0, UNUSED short arg1)
 {
     D_800F4B30_t* new_var;
 
-    D_800EB9BC_t* temp_a1 = D_800EB9BC;
+    Gim* temp_a1 = gims;
 
     if (temp_a1 == NULL) {
         return vs_battle_scriptNext;
@@ -629,7 +630,7 @@ int vs_battle_script_17(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_18(u_char* arg0, UNUSED short arg1)
 {
-    D_800EB9BC_t* temp_a3 = D_800EB9BC;
+    Gim* temp_a3 = gims;
     int temp_a2 = arg0[5] >> 6;
     D_800F4B30_t* temp_a1 = &D_800F4B30[temp_a2];
 
@@ -2818,13 +2819,13 @@ void func_800BB9B0(void)
     short i;
     short temp_a0;
     D_800F4B30_t* var_s0 = D_800F4B30;
-    D_800EB9BC_t* var_s1 = D_800EB9BC;
+    Gim* var_s1 = gims;
 
     for (i = 0; i < 3; ++i, ++var_s0, ++var_s1) {
         if (var_s0->unk3 != 0) {
             var_s0->unk2 += vs_gametime_tickspeed >> 1;
             temp_a0 = func_800BFEBC(var_s0->unk1, var_s0->unk2, var_s0->unk3);
-            if (D_800EB9BC != NULL) {
+            if (gims != NULL) {
                 var_s1->unk8 = (var_s0->unk4 + ((var_s0->unk8 * temp_a0) >> 0xC));
                 var_s1->unkA = (var_s0->unk6 + ((var_s0->unkA * temp_a0) >> 0xC));
                 var_s1->unkC = (var_s0->unkC + ((var_s0->unkE * temp_a0) >> 0xC));

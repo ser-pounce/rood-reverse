@@ -89,7 +89,7 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 1;
+    u_int loading : 1;
     u_int unk0_2 : 1;
     u_int unk0_3 : 3;
     u_int unk0_6 : 3;
@@ -452,7 +452,8 @@ extern int D_800F5618;
 extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
-extern Gim* D_800EB9BC;
+extern Gim* gims;
+VS_HIDDEN(gims);
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -1895,14 +1896,14 @@ void vs_battle_loadGim(int id, int arg1)
     Gim* var_s0;
     int i;
 
-    if (D_800EB9BC == NULL) {
+    if (gims == NULL) {
         var_s0 = vs_main_allocHeapR(sizeof *var_s0 * 3);
-        D_800EB9BC = var_s0;
+        gims = var_s0;
         var_s0->data = vs_main_allocHeapR((char)gimLbas[id] << 0xB);
 
         for (i = 0; i < 3; ++i) {
             *(u_short*)var_s0 = 0;
-            var_s0->unk0_1 = 1;
+            var_s0->loading = 1;
             var_s0->unk0_6 = 1;
             var_s0->unk2 = arg1;
             var_s0->unk3 = 0x80;
@@ -1914,14 +1915,14 @@ void vs_battle_loadGim(int id, int arg1)
         }
         file.lba = gimLbas[id] >> 8;
         file.size = (u_char)gimLbas[id] << 0xB;
-        D_800EB9BC->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueue(D_800EB9BC->cdQueueSlot, D_800EB9BC->data);
+        gims->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
+        vs_main_cdEnqueue(gims->cdQueueSlot, gims->data);
     }
 }
 
 void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 {
-    Gim* gim = &D_800EB9BC[arg0];
+    Gim* gim = &gims[arg0];
     int step;
     int next;
     int i;
@@ -1960,31 +1961,31 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
     }
 
     if (gim->unk0_3 == 3) {
-        func_8007DFF0(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+        func_8007DFF0(gims->unk2 + gims->unk0_9, 1, 6);
     }
 }
 
 void func_800C86AC(void)
 {
-    Gim* var_s0 = D_800EB9BC;
+    Gim* var_s0 = gims;
     int i;
 
     if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
         func_8007E0A8(var_s0->unk2, var_s0->unk0_9, 6);
         for (i = 0; i < 3; ++i) {
             if (var_s0->unk0_3 == 3) {
-                func_8007E0A8(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+                func_8007E0A8(gims->unk2 + gims->unk0_9, 1, 6);
             }
             ++var_s0;
         }
-        vs_main_freeHeapR(D_800EB9BC);
-        D_800EB9BC = NULL;
+        vs_main_freeHeapR(gims);
+        gims = NULL;
     }
 }
 
 void func_800C8778(void)
 {
-    Gim* gim = D_800EB9BC;
+    Gim* gim = gims;
     Gim* second = gim + 1;
     Gim* third = gim + 2;
     int i;
@@ -2102,7 +2103,7 @@ void func_800C8778(void)
         vs_main_freeHeapR(gim->data);
 
         for (j = 0; j < 3; ++j) {
-            gim[j].unk0_1 = 0;
+            gim[j].loading = 0;
         }
 
         gim->unk0_6 = 3;
@@ -3050,7 +3051,7 @@ void vs_battle_initUi(void* fontData)
     D_800F4ED4 = 0;
     D_800EB9B4 = NULL;
     D_800EB9B8 = NULL;
-    D_800EB9BC = NULL;
+    gims = NULL;
     vs_battle_menuItems = 0;
     D_800EB9CE = 0;
     vs_battle_lowerScreenUiState = 0;
@@ -3988,7 +3989,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
 
 void func_800CCA90(int arg0)
 {
-    Gim* gim = &D_800EB9BC[arg0];
+    Gim* gim = &gims[arg0];
     int clut = (gim->unk2 - 16) << 6;
 
     if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {

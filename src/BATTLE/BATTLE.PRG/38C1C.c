@@ -188,7 +188,7 @@ int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
 {
     D_800F4538_t* actor;
     D_800F4538_t* obj;
-    vs_battle_WepModels* model;
+    vs_WepModels* model;
     UNUSED int _[22];
 
     *(MATRIX*)arg2 = *func_800A1DE8(arg0, arg1, &D_800F49B8);
@@ -342,7 +342,7 @@ int func_800A1C10(int actorId, int bone, SVECTOR* result, int endpoint)
     local.vz = 0;
 
     if ((bone & 0xF0) == 0x40) {
-        vs_battle_WepModels* weapon = vs_battle_wepModels[actorId * 2];
+        vs_WepModels* weapon = vs_battle_wepModels[actorId * 2];
 
         bone -= 0x3F;
 
@@ -384,7 +384,7 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
 
         scratch->matrix = object->bones[bone];
     } else if ((bone & 0xF0) == 0x40) {
-        vs_battle_WepModels* weapon = vs_battle_wepModels[actorId * 2];
+        vs_WepModels* weapon = vs_battle_wepModels[actorId * 2];
 
         if (weapon == NULL) {
             return NULL;

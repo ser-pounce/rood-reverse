@@ -202,9 +202,9 @@ typedef struct func_800E78F4_t {
     u_short unk46;
     vs_battle_tilePosition unk48;
     SVECTOR unk4C;
-    vs_battle_Actor* unk54;
+    vs_Actor* unk54;
     D_800F4538_t* unk58;
-    vs_battle_ActorStats* unk5C;
+    vs_ActorStats* unk5C;
     SVECTOR* unk60;
     vs_battle_tilePosition* unk64;
     int (*unk68)(struct func_800E78F4_t*);
@@ -368,7 +368,7 @@ typedef struct {
     func_800E78F4_t* unk1C;
     func_800E78F4_t* unk20;
     int unk24;
-    vs_battle_Actor* unk28[4];
+    vs_Actor* unk28[4];
 } D_800F58BC_t;
 
 typedef struct {
@@ -449,7 +449,7 @@ void func_800DC2E0(func_800DCAA0_t*, func_800DCAA0_t*);
 void func_800DC30C(short*, short*, int, int);
 void func_800DC344(func_800E78F4_t*, func_800DCAA0_t*);
 void func_800DC3CC(func_800E78F4_t*);
-void func_800DC3E8(vs_battle_ActorStats*, vs_battle_ActorStats*);
+void func_800DC3E8(vs_ActorStats*, vs_ActorStats*);
 void func_800DC424(func_800DC888_t*);
 int func_800DC484(int, int);
 int func_800DC48C(int, int);
@@ -522,7 +522,7 @@ extern D_800F58C8_t* D_800F58C8;
 extern u_short (*D_800F58D0)[32];
 extern D_800F58C8_t* D_800F58D8;
 extern int D_800F58E0;
-extern vs_battle_ActorStats* D_800F58E8;
+extern vs_ActorStats* D_800F58E8;
 extern func_800DCAA0_t (*D_800F58EC)[16];
 extern int D_800F58F0;
 extern int D_800F58F4;

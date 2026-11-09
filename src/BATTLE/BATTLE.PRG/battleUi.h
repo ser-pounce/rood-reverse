@@ -75,7 +75,7 @@ typedef struct {
     short targetPosition1;
     char text[32];
     char* subText;
-} vs_battle_MenuItem;
+} vs_MenuItem;
 
 enum vs_battle_menuStates {
     menuStateMainMenu,
@@ -90,7 +90,7 @@ typedef struct {
     char executeAbilityType;
     char loading;
     vs_Main_CdQueueSlot* cdQueue;
-} vs_battle_MenuState;
+} vs_MenuState;
 
 typedef struct {
     u_int unk0_0 : 4;
@@ -102,10 +102,10 @@ typedef struct {
     u_int unk0_24 : 6;
     u_int done : 1;
     u_int unk0_31 : 1;
-} vs_battle_TextBox_fields;
+} vs_TextBox_fields;
 
 typedef struct {
-    vs_battle_TextBox_fields unk0;
+    vs_TextBox_fields unk0;
     short unk4;
     short unk6;
     char* string;
@@ -130,7 +130,7 @@ typedef struct {
     short unk2A;
     short unk2C;
     short unk2E;
-} vs_battle_TextBox;
+} vs_TextBox;
 
 typedef struct {
     char cursorMemories[52];
@@ -168,7 +168,7 @@ typedef struct {
 typedef struct {
     int integers[10];
     char* strings[10];
-} vs_battle_StringContext;
+} vs_StringContext;
 
 int vs_battle_setTextBox(int, char*);
 char* vs_battle_printf(char*, char*);
@@ -210,15 +210,15 @@ int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness);
 /**
  * Gets menu row element.
  */
-vs_battle_MenuItem* vs_battle_getMenuItem(int row);
+vs_MenuItem* vs_battle_getMenuItem(int row);
 /**
  * Initializes a menu row element.
  *
  * @return The populated row.
  */
-vs_battle_MenuItem* vs_battle_setMenuItem(
+vs_MenuItem* vs_battle_setMenuItem(
     int row, int x, int y, int w, int backgroundWidth, char* text);
-void vs_battle_renderMenuItem(vs_battle_MenuItem*);
+void vs_battle_renderMenuItem(vs_MenuItem*);
 int func_800C930C(int);
 /**
  * Renders a digit or symbol from the battle digits.
@@ -237,8 +237,8 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy);
  *
  * @return Packed bits.
  */
-int vs_battle_getStatusFlags(vs_battle_ActorStats*);
-int vs_battle_getLimbStatus(vs_battle_UiEquipment_limb*);
+int vs_battle_getStatusFlags(vs_ActorStats*);
+int vs_battle_getLimbStatus(vs_UiEquipment_limb*);
 /**
  * Determines whether the selected spell class is available
  *
@@ -262,7 +262,7 @@ int vs_battle_drawCursor(int animStep, int position);
 u_int vs_battle_keystreamBits(int value);
 void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh);
 void vs_battle_insertTpage(int arg0, u_long* arg1);
-vs_battle_TextBox* vs_battle_getTextBox(int arg0);
+vs_TextBox* vs_battle_getTextBox(int arg0);
 void vs_battle_initTextBox(
     int id, int flags, int x, int y, int w, int h, int centerX, int centerY);
 int vs_battle_dismissTextBox(int);
@@ -276,9 +276,9 @@ extern u_short vs_battle_statusStrings[];
 extern char D_800EB9AE;
 extern char D_800EB9AF;
 extern int D_800EB9B0;
-extern vs_battle_LootListNode* D_800EB9C4;
-extern vs_battle_Loot* D_800EB9C8;
-extern vs_battle_MenuItem* vs_battle_menuItems;
+extern vs_LootListNode* D_800EB9C4;
+extern vs_Loot* D_800EB9C8;
+extern vs_MenuItem* vs_battle_menuItems;
 extern char vs_battle_rowAnimationSteps[];
 extern int D_800EBBEC[];
 extern char D_800EBBFC[];
@@ -305,10 +305,10 @@ extern int D_800F4EA0;
 extern D_800F4EE8_t D_800F4EE8;
 extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
-extern vs_battle_TextBox vs_battle_textBoxes[];
+extern vs_TextBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
-extern vs_battle_StringContext vs_battle_stringContext;
-extern vs_battle_MenuState vs_battle_menuState;
+extern vs_StringContext vs_battle_stringContext;
+extern vs_MenuState vs_battle_menuState;
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);
 void vs_battle_memcpy(void* dst, const void* src, int numBytes);

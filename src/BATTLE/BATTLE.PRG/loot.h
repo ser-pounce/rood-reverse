@@ -7,74 +7,74 @@ typedef struct {
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryBlade blade;
-    vs_main_InventoryGrip grip;
-    vs_main_InventoryGem gems[3];
+    vs_InventoryBlade blade;
+    vs_InventoryGrip grip;
+    vs_InventoryGem gems[3];
     char name[24];
-} vs_battle_LootedWeapon;
+} vs_LootedWeapon;
 
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryBlade blade;
-} vs_battle_LootedBlade;
+    vs_InventoryBlade blade;
+} vs_LootedBlade;
 
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryGrip grip;
-} vs_battle_LootedGrip;
+    vs_InventoryGrip grip;
+} vs_LootedGrip;
 
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryArmor shield;
-    vs_main_InventoryGem gems[3];
-} vs_battle_LootedShield;
+    vs_InventoryArmor shield;
+    vs_InventoryGem gems[3];
+} vs_LootedShield;
 
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryArmor armor;
-} vs_battle_LootedArmor;
+    vs_InventoryArmor armor;
+} vs_LootedArmor;
 
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryArmor accessory;
-} vs_battle_LootedAccessory;
+    vs_InventoryArmor accessory;
+} vs_LootedAccessory;
 
 typedef struct {
     char difficultyFlags;
     char unk1;
     char unk2;
     char unk3;
-    vs_main_InventoryGem gem;
-} vs_battle_LootedGem;
+    vs_InventoryGem gem;
+} vs_LootedGem;
 
 typedef struct {
     u_short id;
     char difficultyFlags;
     char count;
-} vs_battle_LootedMisc;
+} vs_LootedMisc;
 
 typedef struct {
-    vs_battle_LootedWeapon weapon;
-    vs_battle_LootedBlade blade;
-    vs_battle_LootedGrip grip;
-    vs_battle_LootedShield shield; // 0xF0
-    vs_battle_LootedArmor armor[2]; // 0x170
-    vs_battle_LootedAccessory accessory; // 0x1C8
-    vs_battle_LootedGem gem; // 0x1F4
-    vs_battle_LootedMisc misc[3]; // 0x214
-} vs_battle_Loot;
+    vs_LootedWeapon weapon;
+    vs_LootedBlade blade;
+    vs_LootedGrip grip;
+    vs_LootedShield shield; // 0xF0
+    vs_LootedArmor armor[2]; // 0x170
+    vs_LootedAccessory accessory; // 0x1C8
+    vs_LootedGem gem; // 0x1F4
+    vs_LootedMisc misc[3]; // 0x214
+} vs_Loot;

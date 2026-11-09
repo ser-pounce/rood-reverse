@@ -7,13 +7,13 @@ typedef struct {
     /* 0x00 */ short class[2][8];
     /* 0x20 */ short affinity[2][8];
     /* 0x40 */
-} vs_battle_ClassAffinityCurrent;
+} vs_ClassAffinityCurrent;
 
 typedef struct {
     /* 0x00 */ short class[8];
     /* 0x10 */ u_short affinity[8];
     /* 0x20 */
-} vs_battle_ClassAffinityBaseline;
+} vs_ClassAffinityBaseline;
 
 typedef struct {
     /* 0x00 */ u_short id;
@@ -35,18 +35,18 @@ typedef struct {
     /* 0x15 */ char gemSlots;
     /* 0x16 */ char gemEffects;
     /* 0x17 */ char index;
-    /* 0x18 */ vs_battle_Range range;
+    /* 0x18 */ vs_Range range;
     /* 0x1C */ signed char types[4];
     /* 0x20 */ signed char classes[8];
     /* 0x28 */ signed char affinities[8];
     /* 0x30 */
-} vs_battle_UiEquipment;
+} vs_UiEquipment;
 
 typedef struct {
     /* 0x000 */ char name[24];
-    /* 0x018 */ vs_battle_UiEquipment blade;
-    /* 0x048 */ vs_battle_UiEquipment grip;
-    /* 0x078 */ vs_battle_UiEquipment gems[3];
+    /* 0x018 */ vs_UiEquipment blade;
+    /* 0x048 */ vs_UiEquipment grip;
+    /* 0x078 */ vs_UiEquipment gems[3];
     /* 0x108 */ char wepId;
     /* 0x109 */ char damageTypeValue;
     /* 0x10A */ char risk;
@@ -65,17 +65,17 @@ typedef struct {
     /* 0x11E */ u_short baseInt;
     /* 0x120 */ short currentAgility;
     /* 0x122 */ u_short baseAgility;
-    /* 0x124 */ vs_battle_Range range;
-    /* 0x128 */ vs_battle_ClassAffinityCurrent classAffinityCurrent;
+    /* 0x124 */ vs_Range range;
+    /* 0x128 */ vs_ClassAffinityCurrent classAffinityCurrent;
     /* 0x168 */ short unk168[8];
-    /* 0x178 */ vs_battle_ClassAffinityBaseline classAffinityBaseline;
+    /* 0x178 */ vs_ClassAffinityBaseline classAffinityBaseline;
     /* 0x198 */
-} vs_battle_UiWeapon;
+} vs_UiWeapon;
 
 typedef struct {
     /* 0x000 */ int unk0[6];
-    /* 0x018 */ vs_battle_UiEquipment base;
-    /* 0x048 */ vs_battle_UiEquipment gems[3];
+    /* 0x018 */ vs_UiEquipment base;
+    /* 0x048 */ vs_UiEquipment gems[3];
     /* 0x0D8 */ char wepId;
     /* 0x0D9 */ char dropRate;
     /* 0x0DA */ u_char index;
@@ -91,14 +91,14 @@ typedef struct {
     /* 0x0EC */ short currentAgility;
     /* 0x0EE */ u_short baseAgility;
     /* 0x0F0 */ char types[4];
-    /* 0x0F4 */ vs_battle_ClassAffinityCurrent classAffinityCurrent;
+    /* 0x0F4 */ vs_ClassAffinityCurrent classAffinityCurrent;
     /* 0x134 */ short unk134[8];
-    /* 0x144 */ vs_battle_ClassAffinityBaseline classAffinityBaseline;
+    /* 0x144 */ vs_ClassAffinityBaseline classAffinityBaseline;
     /* 0x164 */
-} vs_battle_UiShield;
+} vs_UiShield;
 
 typedef struct {
-    /* 0x00 */ vs_battle_UiEquipment armor;
+    /* 0x00 */ vs_UiEquipment armor;
     /* 0x30 */ u_short currentDp;
     /* 0x32 */ u_short maxDp;
     /* 0x34 */ short currentStr;
@@ -108,15 +108,15 @@ typedef struct {
     /* 0x3C */ short currentAgility;
     /* 0x3E */ u_short baseAgility;
     /* 0x40 */ u_short types[4];
-    /* 0x48 */ vs_battle_ClassAffinityCurrent classAffinityCurrent;
+    /* 0x48 */ vs_ClassAffinityCurrent classAffinityCurrent;
     /* 0x88 */ short unk88[8];
     /* 0x98 */ char dropRate;
     /* 0x99 */ char unk99;
     /* 0x9A */ u_char index;
     /* 0x9B */ u_char unk9B;
-    /* 0x9C */ vs_battle_ClassAffinityBaseline classAffinityBaseline;
+    /* 0x9C */ vs_ClassAffinityBaseline classAffinityBaseline;
     /* 0xBC */
-} vs_battle_UiArmor;
+} vs_UiArmor;
 
 typedef struct {
     /* 0x00 */ short hp;
@@ -127,12 +127,12 @@ typedef struct {
     /* 0x07 */ char chainEvasion;
     /* 0x08 */ short types[4];
     /* 0x10 */ short affinities[8];
-    /* 0x20 */ vs_battle_UiArmor armor;
+    /* 0x20 */ vs_UiArmor armor;
     /* 0xDC */
-} vs_battle_UiEquipment_limb;
+} vs_UiEquipment_limb;
 
 typedef struct {
-    /* 0x00 */ vs_battle_UiEquipment accessory;
+    /* 0x00 */ vs_UiEquipment accessory;
     /* 0x30 */ short currentStr;
     /* 0x32 */ short currentInt;
     /* 0x34 */ short currentAgility;
@@ -142,40 +142,40 @@ typedef struct {
     /* 0x40 */ u_short classes[8];
     /* 0x50 */ u_short affinities[8];
     /* 0x60 */
-} vs_battle_UiAccessory;
+} vs_UiAccessory;
 
 typedef struct {
     u_short id;
     char count;
     char unk3;
-} vs_battle_UiMisc;
+} vs_UiMisc;
 
 typedef struct {
     u_short id;
     char dropRate;
     char unk3;
-} vs_battle_UiMiscRand;
+} vs_UiMiscRand;
 
 typedef struct {
-    vs_battle_UiEquipment blade;
-    vs_battle_UiEquipment grip;
-    vs_battle_UiEquipment gems[3];
+    vs_UiEquipment blade;
+    vs_UiEquipment grip;
+    vs_UiEquipment gems[3];
     char material;
     char dropRate;
     short index;
     char name[24]; /* vs_string */
-} vs_battle_WeaponIntermediate;
+} vs_WeaponIntermediate;
 
 typedef struct {
-    vs_battle_UiEquipment base;
-    vs_battle_UiEquipment gems[3];
+    vs_UiEquipment base;
+    vs_UiEquipment gems[3];
     char material;
     char dropRate;
     short index;
-} vs_battle_ShieldIntermediate;
+} vs_ShieldIntermediate;
 
 typedef struct {
-    vs_battle_UiEquipment equip;
+    vs_UiEquipment equip;
     char material;
     char dropRate;
     char unk32;
@@ -183,32 +183,32 @@ typedef struct {
 } ArmorIntermediate;
 
 typedef struct {
-    vs_battle_UiEquipment equip;
+    vs_UiEquipment equip;
     char dropRate;
     char index;
     char unk32;
     char unk33;
 } AccessoryIntermediate;
 
-void vs_battle_copyInventoryBladeStats(vs_battle_UiEquipment*, vs_main_InventoryBlade*);
-void vs_battle_copyInventoryGripStats(vs_battle_UiEquipment*, vs_main_InventoryGrip*);
-void vs_battle_copyInventoryArmorStats(vs_battle_UiEquipment*, vs_main_InventoryArmor*);
-void vs_battle_copyInventoryGemStats(vs_battle_UiEquipment*, vs_main_InventoryGem*);
-void vs_battle_applyWeapon(vs_battle_UiWeapon*, vs_main_InventoryWeapon*);
-void vs_battle_applyShield(vs_battle_UiShield*, vs_main_InventoryShield*);
-void vs_battle_applyArmor(vs_battle_UiArmor*, vs_main_InventoryArmor*);
-void vs_battle_applyAccessory(vs_battle_UiAccessory* arg0, vs_main_InventoryArmor* arg1);
-void vs_battle_equipWeapon(vs_main_InventoryWeapon*);
-void vs_battle_equipShield(vs_main_InventoryShield* shield);
-void vs_battle_equipArmor(int part, vs_main_InventoryArmor* armor);
-void vs_battle_equipAccessory(vs_main_InventoryArmor* accessory);
-void vs_battle_applyShieldStats(vs_battle_UiShield*, vs_battle_ShieldIntermediate*);
-void vs_battle_applyWeaponStats(vs_battle_UiWeapon*, vs_battle_WeaponIntermediate*);
+void vs_battle_copyInventoryBladeStats(vs_UiEquipment*, vs_InventoryBlade*);
+void vs_battle_copyInventoryGripStats(vs_UiEquipment*, vs_InventoryGrip*);
+void vs_battle_copyInventoryArmorStats(vs_UiEquipment*, vs_InventoryArmor*);
+void vs_battle_copyInventoryGemStats(vs_UiEquipment*, vs_InventoryGem*);
+void vs_battle_applyWeapon(vs_UiWeapon*, vs_InventoryWeapon*);
+void vs_battle_applyShield(vs_UiShield*, vs_InventoryShield*);
+void vs_battle_applyArmor(vs_UiArmor*, vs_InventoryArmor*);
+void vs_battle_applyAccessory(vs_UiAccessory* arg0, vs_InventoryArmor* arg1);
+void vs_battle_equipWeapon(vs_InventoryWeapon*);
+void vs_battle_equipShield(vs_InventoryShield* shield);
+void vs_battle_equipArmor(int part, vs_InventoryArmor* armor);
+void vs_battle_equipAccessory(vs_InventoryArmor* accessory);
+void vs_battle_applyShieldStats(vs_UiShield*, vs_ShieldIntermediate*);
+void vs_battle_applyWeaponStats(vs_UiWeapon*, vs_WeaponIntermediate*);
 void vs_battle_copyUiBladeStats(
-    vs_main_InventoryBlade* dropBlade, vs_battle_UiEquipment* targetBlade);
-void vs_battle_copyUiGripStats(vs_main_InventoryGrip*, vs_battle_UiEquipment*);
-void vs_battle_copyUiGemStats(vs_main_InventoryGem*, vs_battle_UiEquipment*);
-void vs_battle_copyUiWeaponStats(vs_main_InventoryWeapon* arg0, vs_battle_UiWeapon* arg1);
-void vs_battle_copyUiShieldStats(vs_main_InventoryShield*, vs_battle_UiShield*);
-void vs_battle_copyUiArmorStats(vs_main_InventoryArmor*, vs_battle_UiArmor*);
-void vs_battle_copyUiAccessoryStats(vs_main_InventoryArmor*, vs_battle_UiAccessory*);
+    vs_InventoryBlade* dropBlade, vs_UiEquipment* targetBlade);
+void vs_battle_copyUiGripStats(vs_InventoryGrip*, vs_UiEquipment*);
+void vs_battle_copyUiGemStats(vs_InventoryGem*, vs_UiEquipment*);
+void vs_battle_copyUiWeaponStats(vs_InventoryWeapon* arg0, vs_UiWeapon* arg1);
+void vs_battle_copyUiShieldStats(vs_InventoryShield*, vs_UiShield*);
+void vs_battle_copyUiArmorStats(vs_InventoryArmor*, vs_UiArmor*);
+void vs_battle_copyUiAccessoryStats(vs_InventoryArmor*, vs_UiAccessory*);

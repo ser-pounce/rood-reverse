@@ -367,7 +367,7 @@ int vs_menu7_gameOver(u_char* state)
     };
 
     static u_short clutBuf[256];
-    static vs_main_Settings settingsBackup;
+    static vs_Settings settingsBackup;
     static int resetDelay;
     static int difficulty;
 
@@ -487,7 +487,7 @@ static int promptYesNo(int initParams)
     static char cancelWithMenuButton;
     static UNUSED char _[34];
 
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     u_int buttons;
 
     if (initParams != 0) {
@@ -554,7 +554,7 @@ static u_short containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 /**
  * Returns a pointer to the start of a container index section.
  */
-static void* getContainerIndexOffset(int section, vs_menu_ContainerIndices* indices)
+static void* getContainerIndexOffset(int section, vs_ContainerIndices* indices)
 {
     int i = 0;
     int offset = 0;
@@ -571,12 +571,12 @@ static void* getContainerIndexOffset(int section, vs_menu_ContainerIndices* indi
  * Copies selected container inventory entries and remaps their cross-item
  * references into the target's compacted indices.
  */
-void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
-    vs_menu_ContainerIndices* toCopy)
+void copyContainer(
+    vs_ContainerData* target, vs_ContainerData* source, vs_ContainerIndices* toCopy)
 {
     int i;
     int j;
-    vs_menu_ContainerIndices* targetIndices;
+    vs_ContainerIndices* targetIndices;
     int sourceIndex;
 
     targetIndices = vs_main_allocHeapR(sizeof *targetIndices);
@@ -596,7 +596,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->weapons[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryWeapon* weapon = &target->weapons[i];
+            vs_InventoryWeapon* weapon = &target->weapons[i];
             vs_battle_copyAligned(
                 weapon, &source->weapons[sourceIndex - 1], sizeof *weapon);
             weapon->index = i + 1;
@@ -614,7 +614,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->blades[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryBlade* blade = &target->blades[i];
+            vs_InventoryBlade* blade = &target->blades[i];
             vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
             blade->index = i + 1;
             if (blade->assembledWeaponIndex != 0) {
@@ -627,7 +627,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->grips[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryGrip* grip = &target->grips[i];
+            vs_InventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
             grip->index = i + 1;
             if (grip->assembledWeaponIndex != 0) {
@@ -640,7 +640,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->shields[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryShield* shield = &target->shields[i];
+            vs_InventoryShield* shield = &target->shields[i];
             vs_battle_copyAligned(
                 shield, &source->shields[sourceIndex - 1], sizeof *shield);
             shield->index = i + 1;
@@ -655,7 +655,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->armor[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryArmor* armor = &target->armor[i];
+            vs_InventoryArmor* armor = &target->armor[i];
             vs_battle_copyAligned(armor, &source->armor[sourceIndex - 1], sizeof *armor);
             armor->index = i + 1;
         }
@@ -664,7 +664,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 192; ++i) {
         sourceIndex = toCopy->gems[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryGem* gem = &target->gems[i];
+            vs_InventoryGem* gem = &target->gems[i];
             vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
             gem->index = i + 1;
             if (gem->setItemIndex != 0) {
@@ -682,7 +682,7 @@ void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
     for (i = 0; i < 256; ++i) {
         sourceIndex = toCopy->misc[i];
         if (sourceIndex != 0) {
-            vs_main_InventoryMisc* item = &target->misc[i];
+            vs_InventoryMisc* item = &target->misc[i];
             vs_battle_rMemcpy(item, &source->misc[sourceIndex - 1], sizeof *item);
             item->index = i + 1;
         }
@@ -721,7 +721,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         option = promptYesNo(0);
         if (option != 0) {
             if (option >= 0) {
-                vs_battle_MenuItem* menuItem;
+                vs_MenuItem* menuItem;
                 initMemcard(1);
                 vs_mainMenu_toggleBackgroundFade(1);
                 vs_mainMenu_setMenuCommand(menuActionMenu);

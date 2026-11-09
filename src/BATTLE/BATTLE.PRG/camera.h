@@ -22,7 +22,7 @@ typedef struct {
 typedef struct {
     POLY_F4 covered;
     POLY_F4 edge;
-} vs_battle_ScreenTransitionWipePoly;
+} vs_ScreenTransitionWipePoly;
 
 typedef struct {
     vs_Camera fromCameraState;
@@ -43,7 +43,7 @@ typedef struct {
     int projectionDistanceStep;
     int transitionSpeed;
     int transitionFrames;
-} vs_battle_CameraTransition;
+} vs_CameraTransition;
 
 int vs_battle_getCameraRoll(void);
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
@@ -60,10 +60,10 @@ void vs_battle_setNearClip(int arg0);
 extern SphericalCamera vs_battle_cameraCurrentSpherical;
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;
-extern vs_battle_ScreenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
+extern vs_ScreenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
 extern POLY_G4 vs_battle_screenTransitionEdgePolyG4[];
 extern POLY_F4 vs_battle_screenTransitionPolyF4[];
-extern vs_battle_CameraTransition* vs_battle_cameraTransition;
+extern vs_CameraTransition* vs_battle_cameraTransition;
 extern u_int vs_battle_screenTransitionStep;
 extern int vs_battle_screenTransitionEffect;
 extern int vs_battle_screenTransitionWipeAngle;

@@ -19,7 +19,7 @@ typedef struct {
     int lStickY;
     int rStickX;
     int rStickY;
-} vs_main_StickPos;
+} vs_StickPos;
 
 typedef union {
     u_int all;
@@ -27,17 +27,17 @@ typedef union {
         char low;
         char hi;
     } pad[2];
-} vs_main_ButtonsPressed;
+} vs_ButtonsPressed;
 
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
 extern PortInfo vs_main_portInfo[2];
 extern u_int vs_main_buttonsReleased;
-extern vs_main_StickPos vs_main_stickPosBuf;
+extern vs_StickPos vs_main_stickPosBuf;
 extern u_int vs_main_buttonRepeat;
 extern char vs_main_padBuffer[2][34];
 extern u_int vs_main_buttonsPreviousState;
-extern vs_main_ButtonsPressed vs_main_buttonsPressed;
+extern vs_ButtonsPressed vs_main_buttonsPressed;
 extern u_int vs_main_buttonsState;
 #endif
 

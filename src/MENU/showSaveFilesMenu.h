@@ -33,7 +33,7 @@ static int showSaveFilesMenu(int initPort)
         leaveError = 10
     };
 
-    static vs_main_Settings settingsBackup;
+    static vs_Settings settingsBackup;
     static int saveSuccessful;
     static char state;
     static char port;
@@ -177,8 +177,7 @@ static int showSaveFilesMenu(int initPort)
         val = slot + page;
         memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_saving);
         rMemcpy(&settingsBackup, &vs_main_settings, sizeof settingsBackup);
-        rMemcpy(
-            (Savedata*)mcImageBuf + 2, (Savedata*)mcImageBuf + 1, sizeof(Savedata));
+        rMemcpy((Savedata*)mcImageBuf + 2, (Savedata*)mcImageBuf + 1, sizeof(Savedata));
         if (containerDataEmpty != 0) {
             backupMainSetting = vs_main_settings.containerEmpty;
             vs_main_settings.containerEmpty = 1;

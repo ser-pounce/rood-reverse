@@ -39,7 +39,7 @@ static void populateMenuRows(int count, u_short** menuText, int* rowTypes)
 {
     int i;
     int j;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     menuRowCount = count;
     itemsFirstRow = 0;
@@ -112,7 +112,7 @@ static void processEquipSubMenu(int hasSfx)
     int temp_s4;
     int i;
     int temp_s6;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (state < 6) {
         if (state == menuRowCount) {
@@ -310,7 +310,7 @@ static void populateUiAccessory(int accessoryId)
 
     if (accessoryId != 0) {
         int i;
-        vs_battle_UiAccessory accessory;
+        vs_UiAccessory accessory;
 
         vs_battle_applyAccessory(&accessory, &vs_mainMenu_armor[accessoryId - 1]);
 
@@ -464,8 +464,7 @@ static int equipAccessoryMenu(int initialize)
             }
 
             if (selectedAccessory != 1) {
-                vs_main_InventoryArmor* armor =
-                    &vs_main_inventory.armor[equippedItem - 1];
+                vs_InventoryArmor* armor = &vs_main_inventory.armor[equippedItem - 1];
                 armor->limb = 7;
 
                 vs_battle_equipAccessory(armor);
@@ -508,7 +507,7 @@ static int equipWeaponMenu(int initialize)
 
     int i;
     int index;
-    vs_main_InventoryWeapon* weapon;
+    vs_InventoryWeapon* weapon;
 
     if (initialize != 0) {
         for (i = 0; i < 8; ++i) {
@@ -585,8 +584,7 @@ static int equipWeaponMenu(int initialize)
 
                 if (index != 0) {
 
-                    vs_main_InventoryWeapon* weapon =
-                        &vs_main_inventory.weapons[index - 1];
+                    vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[index - 1];
 
                     if (weapon->isEquipped == 0) {
 
@@ -633,7 +631,7 @@ static int equipWeaponMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_main_InventoryBlade* blade;
+                vs_InventoryBlade* blade;
 
                 weapon = &vs_main_inventory.weapons[equippedItem - 1];
                 weapon->isEquipped = 1;
@@ -808,9 +806,8 @@ static int equipShieldMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_battle_ActorStats* stats;
-                vs_main_InventoryShield* shield =
-                    &vs_main_inventory.shields[equippedItem - 1];
+                vs_ActorStats* stats;
+                vs_InventoryShield* shield = &vs_main_inventory.shields[equippedItem - 1];
                 shield->isEquipped = 1;
 
                 stats = vs_battle_characterState->stats;
@@ -994,8 +991,7 @@ static int equipArmorMenu(int initBodyPart)
             if (selectedArmor == 1) {
                 vs_battle_equipArmor(bodyPart - 1, NULL);
             } else {
-                vs_main_InventoryArmor* armor =
-                    &vs_main_inventory.armor[equippedItem - 1];
+                vs_InventoryArmor* armor = &vs_main_inventory.armor[equippedItem - 1];
                 armor->limb = bodyPart;
 
                 vs_battle_equipArmor(bodyPart - 1, armor);
@@ -1065,9 +1061,9 @@ static int equipMenu(int initialize)
     char buf[768];
     int j;
     int i;
-    vs_battle_MenuItem* menuItem;
-    vs_main_InventoryShield* shield;
-    vs_main_InventoryWeapon* weapon;
+    vs_MenuItem* menuItem;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
 
     if (initialize != 0) {
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1128,7 +1124,7 @@ static int equipMenu(int initialize)
         }
 
         for (i = 2; i < 8; ++i) {
-            vs_main_InventoryArmor* armor = vs_main_inventory.armor;
+            vs_InventoryArmor* armor = vs_main_inventory.armor;
 
             for (j = 0; j < 16; ++j, ++armor) {
                 if (((i != 7) + armor->limb) == i) {
@@ -1502,7 +1498,7 @@ int vs_menu3_exec(u_char* state)
 
         int category = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
-        vs_battle_MenuItem* menuitem = vs_battle_setMenuItem(
+        vs_MenuItem* menuitem = vs_battle_setMenuItem(
             31, row + 180, 34, 140, 8, (char*)&menuTextTable[menuTextTable[category]]);
         menuitem->selected = 1;
 

@@ -58,7 +58,7 @@ void toggleMenuAction(int enable)
 /**
  * Feathers the top or bottom of the item and adds the scroll arrows.
  */
-void renderScrollableMenuItem(vs_battle_MenuItem* menuItem)
+void renderScrollableMenuItem(vs_MenuItem* menuItem)
 {
     static char previousFrameBuf = 0;
     static char navigationAnimState = 0;
@@ -251,7 +251,7 @@ int getSelectedRow(void)
 UNUSED void setMenuRow10(char* text);
 void setMenuRow10(char* text)
 {
-    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
     menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
@@ -468,8 +468,7 @@ int calculateProgress(void)
     }
 
     vs_main_memcpy(&cameraPositionBackup,
-        &((vs_Scratch*)getScratchAddr(0))->camera.position,
-        sizeof cameraPositionBackup);
+        &((vs_Scratch*)getScratchAddr(0))->camera.position, sizeof cameraPositionBackup);
     vs_main_memcpy(&cameraAnglesBackup,
         &((vs_Scratch*)getScratchAddr(0))->camera.angles.vx, sizeof cameraAnglesBackup);
     setTitleFlags();
@@ -562,7 +561,7 @@ int menuInput(void)
     };
 
     UNUSED int _[8];
-    vs_battle_TextBox* textBox;
+    vs_TextBox* textBox;
     GazetteRow* var_s0;
     int lStickX;
     int lStickY;
@@ -1684,8 +1683,8 @@ void renderScreenEdgeFade(void);
  */
 void renderTopMenu(int animStep)
 {
-    vs_battle_GeomOffset sp18;
-    vs_battle_GeomOffset sp20;
+    vs_GeomOffset sp18;
+    vs_GeomOffset sp20;
     char sp28[128];
     MATRIX spA8;
     void** scratch;
@@ -1764,7 +1763,7 @@ void renderTitleMenu(int animState)
     static char cursorAnimState = 0;
 
     int i;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     GazetteRow* row = gazetteRows;
     int selectedRow =
@@ -2022,9 +2021,9 @@ void renderEnemyMenu(int animState)
 
     for (; i < 8; ++i, ++enemy) {
         int x;
-        vs_battle_MenuItem* menuItem;
+        vs_MenuItem* menuItem;
 
-        vs_battle_Menu9CursorMemory* cursorMem = &vs_battle_menu9CursorMemory;
+        vs_Menu9CursorMemory* cursorMem = &vs_battle_menu9CursorMemory;
         int y = sp18 - 16;
 
         if ((56 + i * 16) < y) {
@@ -2077,8 +2076,8 @@ void renderEnemyDetailScreen(int animState, int state)
     char const* enemyClassName[] = { "HUMAN", "BEAST", "UNDEAD", "PHANTOM", "DRAGON",
         "EVIL" };
     MATRIX sp30;
-    vs_battle_GeomOffset sp50;
-    vs_battle_GeomOffset sp58;
+    vs_GeomOffset sp50;
+    vs_GeomOffset sp58;
     char sp60[12];
     int temp_s0;
     int temp_s2;
@@ -2238,9 +2237,9 @@ void renderBossRushDetails(int animState)
     u_short temp_v1_4;
     int s5;
     int i;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     char* intBuf;
-    vs_battle_Menu9CursorMemory* new_var;
+    vs_Menu9CursorMemory* new_var;
     int v1;
 
     row = gazetteRows;
@@ -2497,7 +2496,7 @@ void leaveBossRushMenu(void)
 
     for (i = 0; i < 8; ++i, ++p) {
         if (p->animationState == 0) {
-            vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(i);
+            vs_MenuItem* menuItem = vs_battle_getMenuItem(i);
             menuItem->state = 2;
             menuItem->targetPosition0 = 320;
         } else {
@@ -2525,7 +2524,7 @@ void renderBossRushRecords(int selected)
     int j;
     int var_s7;
     int time;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     void** p;
     void** r;
     void** q;

@@ -8,7 +8,7 @@ typedef struct {
     u_short tickInterval;
     u_int replacesMask;
     u_int blockedByMask;
-} vs_main_StatusEffectParams;
+} vs_StatusEffectParams;
 
 typedef struct {
     signed char phys;
@@ -37,4 +37,4 @@ typedef struct {
 } MaterialModifiers;
 
 extern MaterialModifiers vs_main_materialModifiers[8];
-extern vs_main_StatusEffectParams vs_main_statusEffectParams[];
+extern vs_StatusEffectParams vs_main_statusEffectParams[];

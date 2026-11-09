@@ -31,16 +31,16 @@
 
 static int loadArmFile(void);
 static int menuManager(void);
-static void snapMapToRoom(vs_battle_Scene* scene, int roomId);
-static void scaleRoomVertices(vs_battle_Scene* scene, int factor);
-static int getCurrentRoomIndex(vs_battle_Scene* scene);
+static void snapMapToRoom(vs_Scene* scene, int roomId);
+static void scaleRoomVertices(vs_Scene* scene, int factor);
+static int getCurrentRoomIndex(vs_Scene* scene);
 static void updateRoomIndex(int searchForward);
-static void setCenterpoint(vs_battle_Scene* scene, int roomId);
-static void smoothMapToCenterpoint(vs_battle_Scene* scene);
+static void setCenterpoint(vs_Scene* scene, int roomId);
+static void smoothMapToCenterpoint(vs_Scene* scene);
 static void renderScreen(void);
 static void setCamera(void);
 static int mapSelectionMenu(int arg0);
-static void renderMap(vs_battle_Scene* arg0);
+static void renderMap(vs_Scene* arg0);
 static int renderRoom(int arg0, void* arg1, int arg2, int arg3);
 static void buildYawMatrix(MATRIX* arg0, short arg1);
 static void buildPitchMatrix(MATRIX* arg0, short arg1);
@@ -197,7 +197,7 @@ static int mapSelection(void)
 
 void setMenuItemMapName(char* mapName, char fontColor)
 {
-    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
 
     menuItem->state = 2;
     menuItem->targetPosition0 = 0xB4;
@@ -436,7 +436,7 @@ static int isPaling;
 static int triggerHideUi;
 static int currentSceneRow;
 static int hideUi;
-static vs_battle_RoomName* roomNamesTable;
+static vs_RoomName* roomNamesTable;
 static short menuCommandsState;
 static short uiAnimationState;
 static UNUSED short _1[2];
@@ -918,7 +918,7 @@ static void renderScreen(void)
 
     DR_STP* stp;
     void** pScratch = (void**)getScratchAddr(0);
-    vs_main_Flags* flags;
+    vs_Flags* flags;
     int scene;
 
     drawUIControls();
@@ -1084,14 +1084,14 @@ static int mapLabelCount;
 /**
  * Enumerates and renders visited rooms.
  */
-static void renderMap(vs_battle_Scene* scene)
+static void renderMap(vs_Scene* scene)
 {
     int roomCount;
     int i;
-    vs_battle_Room* room;
+    vs_Room* room;
     int* new_var;
-    vs_battle_GeomOffset prevOffset;
-    vs_battle_GeomOffset tmpOffset;
+    vs_GeomOffset prevOffset;
+    vs_GeomOffset tmpOffset;
 
     tmpOffset.x = geomOffsetX + 0x90;
     tmpOffset.y = geomOffsetY + 0x88;
@@ -1102,7 +1102,7 @@ static void renderMap(vs_battle_Scene* scene)
     mapLabelCount = 0;
     new_var = &scene->roomCount;
     roomCount = *new_var;
-    room = (vs_battle_Room*)scene;
+    room = (vs_Room*)scene;
     room = scene->rooms;
 
     for (i = 0; i < roomCount; ++i, ++room) {
@@ -1514,7 +1514,7 @@ static int renderRoom(int roomIndex, void* roomData, int arg2, int arg3)
     return 1;
 }
 
-static void snapMapToRoom(vs_battle_Scene* scene, int roomId)
+static void snapMapToRoom(vs_Scene* scene, int roomId)
 {
     SVECTOR maxCorner;
     SVECTOR minCorner;
@@ -1522,10 +1522,10 @@ static void snapMapToRoom(vs_battle_Scene* scene, int roomId)
     int vertexCount;
     int i;
     int j;
-    vs_battle_RoomVertices* roomVertices;
+    vs_RoomVertices* roomVertices;
     SVECTOR* vector;
     u_int zSum;
-    vs_battle_Room* room = scene->rooms;
+    vs_Room* room = scene->rooms;
 
     maxCorner.vx = 0x7FFF;
     maxCorner.vy = 0x7FFF;
@@ -1581,17 +1581,17 @@ static void snapMapToRoom(vs_battle_Scene* scene, int roomId)
     centerPoint.vy = 0;
 }
 
-static void setCenterpoint(vs_battle_Scene* scene, int roomId)
+static void setCenterpoint(vs_Scene* scene, int roomId)
 {
     SVECTOR maxCorner;
     SVECTOR minCorner;
     int roomCount;
     int vertexCount;
     int i;
-    vs_battle_RoomVertices* roomVertices;
+    vs_RoomVertices* roomVertices;
     SVECTOR* vector;
     u_int zSum;
-    vs_battle_Room* room = scene->rooms;
+    vs_Room* room = scene->rooms;
 
     maxCorner.vx = 0x7FFF;
     maxCorner.vy = 0x7FFF;
@@ -1632,7 +1632,7 @@ static void setCenterpoint(vs_battle_Scene* scene, int roomId)
     centerPoint.vy = minCorner.vy;
 }
 
-static void smoothMapToCenterpoint(vs_battle_Scene* scene)
+static void smoothMapToCenterpoint(vs_Scene* scene)
 {
     SVECTOR svector;
     int coord;
@@ -1640,9 +1640,9 @@ static void smoothMapToCenterpoint(vs_battle_Scene* scene)
     int vertexCount;
     int j;
     int i;
-    vs_battle_RoomVertices* dataAddress;
+    vs_RoomVertices* dataAddress;
     SVECTOR* vector;
-    vs_battle_Room* room;
+    vs_Room* room;
 
     if (centerPoint.vx == 0 && centerPoint.vy == 0 && centerPoint.vz == 0) {
         return;
@@ -1731,15 +1731,15 @@ static void smoothMapToCenterpoint(vs_battle_Scene* scene)
     centerPoint.vz -= svector.vz;
 }
 
-static void scaleRoomVertices(vs_battle_Scene* scene, int factor)
+static void scaleRoomVertices(vs_Scene* scene, int factor)
 {
     SVECTOR* vector;
     int roomCount;
     int vertextCount;
     int j;
     int i;
-    vs_battle_RoomVertices* roomVertices;
-    vs_battle_Room* room;
+    vs_RoomVertices* roomVertices;
+    vs_Room* room;
 
     room = scene->rooms;
     roomCount = scene->roomCount;
@@ -1837,12 +1837,12 @@ static void darkenBackground(void)
     }
 }
 
-static int getCurrentRoomIndex(vs_battle_Scene* scene)
+static int getCurrentRoomIndex(vs_Scene* scene)
 {
     int i;
 
     int roomCount = scene->roomCount;
-    vs_battle_Room* room = vs_battle_roomData.sectionF->rooms;
+    vs_Room* room = vs_battle_roomData.sectionF->rooms;
     int zoneId = room->zoneId;
     int mapId = room->mapId;
     room = scene->rooms;
@@ -1868,7 +1868,7 @@ static int getCurrentRoomIndex(vs_battle_Scene* scene)
 static void updateRoomIndex(int searchForward)
 {
     int currentIndex = currentRoomIndex;
-    vs_battle_Room* room = ((vs_battle_Scene*)vs_battle_sceneBuffer)->rooms;
+    vs_Room* room = ((vs_Scene*)vs_battle_sceneBuffer)->rooms;
 
     do {
         if (searchForward > 0) {
@@ -1998,7 +1998,7 @@ static void drawUIControls(void)
 {
     static int uiXOffset;
 
-    vs_battle_TextBox* textBox = vs_battle_getTextBox(0);
+    vs_TextBox* textBox = vs_battle_getTextBox(0);
 
     if (uiAnimationState == 0) {
 
@@ -2234,7 +2234,7 @@ static void renderDoorName(int x, int y, int doorId)
 {
     int linePivotX;
     int xOffset = 186 - x;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (xOffset < 0) {
         xOffset += 3;
@@ -2366,8 +2366,8 @@ static void renderCompass(int x, int y, int angle)
     setSemiTrans(poly, 1);
     setShadeTex(poly, 1);
     setXY4(poly, compassBounds[0].x, compassBounds[0].y, compassBounds[1].x,
-        compassBounds[1].y, compassBounds[2].x, compassBounds[2].y,
-        compassBounds[3].x, compassBounds[3].y);
+        compassBounds[1].y, compassBounds[2].x, compassBounds[2].y, compassBounds[3].x,
+        compassBounds[3].y);
     setUV4(poly, 0x14, 0x88, 0x23, 0x88, 0x14, 0x99, 0x23, 0x99);
     setTPage(poly, 0, 0, 448, 256);
     setClut(poly, 992, 222);
@@ -2409,7 +2409,7 @@ static void computeRotatedRect(int arg0, int arg1, int arg2, int arg3, int arg4)
 static void renderConnectingMapName(int x, int y, int mapId)
 {
     int linePivotX;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     int areaVisited;
     int xOffset = 170 - x;
 
@@ -2469,8 +2469,7 @@ static void renderMapLabels(void)
 
     for (i = 0; i < mapLabelCount; ++i) {
         if (mapLabels[i].type != 0) {
-            renderConnectingMapName(
-                mapLabels[i].x, mapLabels[i].y, mapLabels[i].id);
+            renderConnectingMapName(mapLabels[i].x, mapLabels[i].y, mapLabels[i].id);
         }
     }
 }

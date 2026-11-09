@@ -23,7 +23,7 @@ void func_800F9A24(int arg0)
 
 void func_800F9A78(int arg0)
 {
-    vs_battle_ObjectData sp10;
+    vs_ObjectData sp10;
     D_800F4538_t* temp_s0;
     D_800F4538_t* temp_s2;
     int i;
@@ -60,8 +60,7 @@ void func_800F9A78(int arg0)
     }
 
     for (i = 0; i < 2; ++i) {
-        vs_battle_WepModels* temp_s0 =
-            vs_battle_wepModels[(temp_s2->unk0.unkF * 2) + i];
+        vs_WepModels* temp_s0 = vs_battle_wepModels[(temp_s2->unk0.unkF * 2) + i];
         if (temp_s0 != 0) {
             temp_v0 = vs_main_allocHeap(sizeof *temp_s0);
             sp10.dataType = 4;
@@ -242,7 +241,7 @@ int func_800F9EB8(MATRIX* arg0)
 
     for (i = 0; i < 2; ++i) {
         int v = i + 2;
-        vs_battle_WepModels* temp_a0 = vs_battle_wepModels[v];
+        vs_WepModels* temp_a0 = vs_battle_wepModels[v];
 
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
             MATRIX* bone = &temp_s1->bones[temp_a0->unkD];
@@ -320,7 +319,7 @@ void func_800FA2CC(void)
     temp_s1 = D_800F4538[0];
 
     for (i = 0; i < 2; ++i) {
-        vs_battle_WepModels* var_a0 = vs_battle_wepModels[i];
+        vs_WepModels* var_a0 = vs_battle_wepModels[i];
 
         if (var_a0 != 0) {
             if (temp_s1->unk0.weaponDrawn) {
@@ -358,7 +357,7 @@ void func_800FA2CC(void)
 
 void func_800FA3FC(int arg0)
 {
-    vs_battle_ObjectData sp10;
+    vs_ObjectData sp10;
 
     func_8009CC20(0, 0);
 

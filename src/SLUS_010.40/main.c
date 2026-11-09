@@ -521,7 +521,7 @@ MaterialModifiers vs_main_materialModifiers[] = {
         | vsBattleStatusAirDefUp | vsBattleStatusFireDefUp | vsBattleStatusEarthDefUp    \
         | vsBattleStatusWaterDefUp)
 
-vs_main_StatusEffectParams vs_main_statusEffectParams[] = {
+vs_StatusEffectParams vs_main_statusEffectParams[] = {
     { .status = vsBattleStatusHeadDown, .replacesMask = vsBattleStatusSilent },
     { .status = vsBattleStatusRightArmDown },
     { .status = vsBattleStatusLeftArmDown },
@@ -853,7 +853,7 @@ static UNUSED int _3;
 static vs_Main_CdQueueSlot cdQueue[32];
 static CdQueueCount cdQueueCount;
 static UNUSED int _4;
-vs_main_BattleTimer vs_main_battleTimer;
+vs_BattleTimer vs_main_battleTimer;
 int vs_main_startState;
 static int sp2;
 static u_short sfxData[0x2C00];
@@ -865,7 +865,7 @@ static UNUSED int _6;
 static u_int buttonHeldFrameCount[32];
 static Disk disk;
 static ClutState clutState;
-vs_main_StickPos vs_main_stickPosBuf;
+vs_StickPos vs_main_stickPosBuf;
 static int savedSp;
 short vs_main_screenX;
 short vs_main_screenWidth;
@@ -904,7 +904,7 @@ static void initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int u
 u_int vs_main_buttonsPreviousState;
 int vs_main_unused0;
 static UNUSED int _11[2];
-vs_main_ButtonsPressed vs_main_buttonsPressed;
+vs_ButtonsPressed vs_main_buttonsPressed;
 int vs_main_unused1;
 u_int vs_main_frameDuration;
 static UNUSED int _12[13];
@@ -1035,16 +1035,16 @@ static int nextVoicePool3;
 static int nextVoicePool4;
 static int nextVoicePool5;
 static UNUSED int _16[6];
-vs_main_Scoredata vs_main_scoredata;
+vs_Scoredata vs_main_scoredata;
 static UNUSED int _17;
 char vs_main_actionsLearned[32];
-vs_main_MapStatus vs_main_mapStatus;
-vs_main_Settings vs_main_settings;
-vs_main_ArtsStatus vs_main_artsStatus;
+vs_MapStatus vs_main_mapStatus;
+vs_Settings vs_main_settings;
+vs_ArtsStatus vs_main_artsStatus;
 int vs_main_zoneEnemyCacheIndex;
-vs_main_CharacterSnapshot vs_main_characterSnapshot;
-vs_main_Inventory vs_main_inventory;
-vs_main_Warp vs_main_spawnPoint;
+vs_CharacterSnapshot vs_main_characterSnapshot;
+vs_Inventory vs_main_inventory;
+vs_Warp vs_main_spawnPoint;
 vs_Gametime vs_main_gametime;
 
 int vs_main_gametimeUpdate(int mode)
@@ -1236,11 +1236,11 @@ void vs_main_setCharacterRestorePending(void)
 
 void vs_main_captureSaveState(void)
 {
-    vs_battle_ActorPosition position;
+    vs_ActorPosition position;
     int i;
     int actionByte;
-    vs_battle_ActorStats const* stats;
-    vs_main_CharacterSnapshot* snapshot;
+    vs_ActorStats const* stats;
+    vs_CharacterSnapshot* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
 
@@ -4810,7 +4810,7 @@ void vs_main_clutInit(void)
     }
 }
 
-vs_main_ZoneEnemyCache vs_main_zoneEnemyCache[4];
-vs_main_Flags vs_main_stateFlags;
-vs_main_InventoryIndices vs_main_inventoryIndices;
+vs_ZoneEnemyCache vs_main_zoneEnemyCache[4];
+vs_Flags vs_main_stateFlags;
+vs_InventoryIndices vs_main_inventoryIndices;
 static UNUSED int _18[0x15E];

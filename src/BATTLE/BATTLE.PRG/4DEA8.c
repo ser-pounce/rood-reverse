@@ -133,7 +133,7 @@ typedef struct {
     short unk1C8;
     short unk1CA;
     int unk1CC;
-    vs_battle_ActorPosition unk1D0;
+    vs_ActorPosition unk1D0;
     int unk1E0[2];
     u_short unk1E8;
     u_short unk1EA;
@@ -415,7 +415,7 @@ int func_800B68C4(u_char* arg0, short arg1)
 // script[10]   = ?
 int vs_battle_script_initTextBox(u_char* script, UNUSED short arg1)
 {
-    vs_battle_TextBox* box;
+    vs_TextBox* box;
     short temp_v0_4;
     short centerY;
     short centerX;
@@ -534,7 +534,7 @@ int func_800B6D48(u_char* script, UNUSED short arg1)
 {
     TextPlacement placements[4];
     SVECTOR origin;
-    vs_battle_TextBox* box;
+    vs_TextBox* box;
     TextPlacement* best = NULL;
     u_int width;
     u_int height;
@@ -720,7 +720,7 @@ int func_800B7428(u_char* arg0, short arg1)
 
 int func_800B7490(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition position;
+    vs_ActorPosition position;
     u_short actor = vs_battle_getShort(arg0 + 1);
     u_short flag = vs_battle_getShort(arg0 + 3);
 
@@ -753,7 +753,7 @@ int func_800B7574(u_char* arg0, short arg1)
     sp10[2] = arg0[7];
     sp10[3] = arg0[8];
     func_8007C928(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        vs_battle_getShort(arg0 + 3), (vs_battle_ObjectData_flags*)(sp10));
+        vs_battle_getShort(arg0 + 3), (vs_ObjectData_flags*)(sp10));
     return 0;
 }
 
@@ -853,7 +853,7 @@ int func_800B784C(u_char* arg0, short arg1)
 
 int func_800B792C(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition sp10;
+    vs_ActorPosition sp10;
 
     u_short temp_s4 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
@@ -903,7 +903,7 @@ int func_800B7A98(u_char* arg0, short arg1)
 
 int func_800B7B58(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition sp10;
+    vs_ActorPosition sp10;
     short temp_s3;
     short temp_s4;
     int temp_s1;
@@ -966,7 +966,7 @@ int func_800B7D10(u_char* arg0, short arg1)
 
 int func_800B7DC4(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition sp10;
+    vs_ActorPosition sp10;
     u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
     int var_a1;
@@ -1002,7 +1002,7 @@ int func_800B7DC4(u_char* arg0, short arg1)
 
 int func_800B7EF0(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition sp10;
+    vs_ActorPosition sp10;
     int temp_s0;
     int temp_s0_2;
     int var_a2;
@@ -1651,7 +1651,7 @@ int func_800B94D8(u_char* arg0, short arg1)
 
 int func_800B9564(u_char* arg0, short arg1)
 {
-    vs_battle_TextBox* temp_s1;
+    vs_TextBox* temp_s1;
     u_short temp_s0;
     int var_a0;
 
@@ -1772,7 +1772,7 @@ int func_800B988C(u_char* arg0, short arg1)
 
 int func_800B98C0(u_char* arg0, short arg1)
 {
-    vs_main_Warp sp10;
+    vs_Warp sp10;
 
     if (D_800F4BE2 == 0) {
 
@@ -2364,8 +2364,8 @@ int func_800BAC38(u_char* arg0, short arg1)
 
 int func_800BAC5C(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition sp10;
-    vs_battle_ActorPosition sp20;
+    vs_ActorPosition sp10;
+    vs_ActorPosition sp20;
     short temp_s3;
     short temp_v0;
     short temp_v0_2;
@@ -2421,8 +2421,8 @@ int func_800BAE74(u_char* arg0, short arg1)
 
 int func_800BAEA0(u_char* arg0, short arg1)
 {
-    vs_battle_ActorPosition sp10;
-    vs_battle_ActorPosition sp20;
+    vs_ActorPosition sp10;
+    vs_ActorPosition sp20;
     short temp_s0;
     int temp_s0_2;
     short temp_s1;
@@ -2689,7 +2689,7 @@ int vs_battle_script_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1)
 
 void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
 {
-    vs_battle_Actor* temp_v0;
+    vs_Actor* temp_v0;
     short var_s3 = 0;
     arg1->unk0 = 0;
     arg1->unk1 = 0;
@@ -2910,7 +2910,7 @@ void func_800BBE10(u_short arg0)
 
 void func_800BBE94(void)
 {
-    vs_battle_ActorPosition sp10;
+    vs_ActorPosition sp10;
 
     if (D_800F4BA4->unk1E8 == 0x2000) {
         D_800F4BA4->unk1EC.vz = 0;
@@ -4106,7 +4106,7 @@ int func_800BEC30(void)
 short func_800BEC58(short type, int arg1, int arg2, short mode)
 {
     char buf[64];
-    vs_battle_ActorPosition position;
+    vs_ActorPosition position;
     short i;
     short otherActorId;
     short flagId;

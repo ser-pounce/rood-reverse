@@ -125,7 +125,7 @@ static int getSelectedRow(void)
 static UNUSED void func_80102E48(char* text);
 void func_80102E48(char* text)
 {
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 9, text);
     menuItem->state = 2;

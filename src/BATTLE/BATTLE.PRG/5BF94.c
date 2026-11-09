@@ -1080,7 +1080,7 @@ char* vs_battle_printf(char* dest, char* src)
 
 int vs_battle_setTextBox(int boxId, char* str)
 {
-    vs_battle_TextBox* box = &vs_battle_textBoxes[boxId];
+    vs_TextBox* box = &vs_battle_textBoxes[boxId];
 
     if (str != NULL) {
         box->string = str;
@@ -1103,7 +1103,7 @@ int vs_battle_setTextBox(int boxId, char* str)
 
 int vs_battle_selectTextBox(u_char boxMask)
 {
-    vs_battle_TextBox tempBox;
+    vs_TextBox tempBox;
     short yPositions[8];
     int i;
     int j;
@@ -1248,7 +1248,7 @@ void vs_battle_setFontStyle(int arg0)
     D_800F4CB8 = arg0;
 }
 
-void printVariableWidthFont(vs_battle_TextBox* arg0)
+void printVariableWidthFont(vs_TextBox* arg0)
 {
     char intBuf[16];
     u_long* sp20 = D_800F51B8 + D_800F4E80 * 4;
@@ -1638,7 +1638,7 @@ __asm__("glabel printFixedWidthFontChar;"
         "endlabel printFixedWidthFontChar;");
 
 #pragma vsstring(start)
-void printFixedWidthFont(vs_battle_TextBox* ctx, int scale)
+void printFixedWidthFont(vs_TextBox* ctx, int scale)
 {
     int justify = 0;
     char* str = ctx->string;
@@ -1778,7 +1778,7 @@ void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
 }
 
 #pragma vsstring(start)
-void renderTextImmediate(vs_battle_TextBox* arg0, int arg1)
+void renderTextImmediate(vs_TextBox* arg0, int arg1)
 {
     RECT rect;
     int height;
@@ -2120,7 +2120,7 @@ void func_800C8778(void)
 
 int vs_battle_loadMenuPrg(int arg0)
 {
-    vs_battle_MenuState* state = &vs_battle_menuState;
+    vs_MenuState* state = &vs_battle_menuState;
     int subMenu = arg0 & 0x1F;
 
     if (subMenu == 31) {
@@ -2200,13 +2200,13 @@ void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader he
     vs_battle_initTextBox(7, (header << 8) | 4, 0, 1, 0, 4, 0, 0);
 }
 
-vs_battle_MenuItem* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
+vs_MenuItem* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
-vs_battle_MenuItem* vs_battle_setMenuItem(
+vs_MenuItem* vs_battle_setMenuItem(
     int row, int x, int y, int w, int backgroundWidth, char* text)
 {
-    vs_battle_MenuItem* menuItem;
-    vs_battle_MenuItem* var_a0;
+    vs_MenuItem* menuItem;
+    vs_MenuItem* var_a0;
     int i;
     u_int c;
 
@@ -2279,7 +2279,7 @@ int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness)
     return lerpColor(color0, color1, brightness, gradient);
 }
 
-void vs_battle_renderMenuItem(vs_battle_MenuItem* menuItem)
+void vs_battle_renderMenuItem(vs_MenuItem* menuItem)
 {
 
     int y = menuItem->gradientState;
@@ -2374,7 +2374,7 @@ void vs_battle_renderMenuItem(vs_battle_MenuItem* menuItem)
 int func_800C930C(int mode)
 {
     u_int selected = vs_battle_submenuStates[0];
-    vs_battle_MenuItem* items = vs_battle_menuItems;
+    vs_MenuItem* items = vs_battle_menuItems;
     u_int enabled = vs_main_settings.menuFlags;
     u_int mask;
 
@@ -2510,7 +2510,7 @@ int func_800C930C(int mode)
 
 void func_800C97BC(void)
 {
-    vs_battle_MenuItem* var_s2;
+    vs_MenuItem* var_s2;
     int temp_s1;
     int miscIndex;
     int i;
@@ -2700,7 +2700,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
     }
 }
 
-int vs_battle_getStatusFlags(vs_battle_ActorStats* stats)
+int vs_battle_getStatusFlags(vs_ActorStats* stats)
 {
     int i;
     int temp_v1 = (u_int)stats->statuses >> 5;
@@ -2716,7 +2716,7 @@ int vs_battle_getStatusFlags(vs_battle_ActorStats* stats)
     return var_a2;
 }
 
-int vs_battle_getLimbStatus(vs_battle_UiEquipment_limb* limb)
+int vs_battle_getLimbStatus(vs_UiEquipment_limb* limb)
 {
     int maxHp = limb->maxHp;
 
@@ -2859,7 +2859,7 @@ void func_800CA2DC(void)
     u_int flags;
     u_char icon;
     u_long* prim;
-    vs_battle_ActorStats* stats = vs_battle_characterState->stats;
+    vs_ActorStats* stats = vs_battle_characterState->stats;
     void* nextPrim = vs_scratch.unk4 - 4;
 
     func_800C9FE8();
@@ -3095,7 +3095,7 @@ void func_800CAB40(void)
 int func_800CABE0(int arg0)
 {
     int ret;
-    vs_battle_ActorStats* stats = vs_battle_characterState->stats;
+    vs_ActorStats* stats = vs_battle_characterState->stats;
     int temp_v0 = func_800A0BE0(0);
     int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
 
@@ -3280,14 +3280,14 @@ void func_800CB114(void)
     }
 }
 
-void func_800CB158(vs_battle_LootListNode* arg0)
+void func_800CB158(vs_LootListNode* arg0)
 {
     D_800EB9C4 = arg0;
     D_800EB9C8 = NULL;
     func_800CACD0(0xC, 2);
 }
 
-void func_800CB18C(vs_battle_Loot* arg0)
+void func_800CB18C(vs_Loot* arg0)
 {
     D_800EB9C8 = arg0;
     D_800EB9C4 = NULL;
@@ -3498,7 +3498,7 @@ void func_800CB83C(void)
     int id;
 
     for (id = 7; id != -1; --id) {
-        vs_battle_TextBox* box = &vs_battle_textBoxes[id];
+        vs_TextBox* box = &vs_battle_textBoxes[id];
         int state = box->state;
         int duration;
         int scale;
@@ -4101,7 +4101,7 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
     LoadImage(rect, buffer);
 }
 
-vs_battle_TextBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
+vs_TextBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
 TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
@@ -4126,7 +4126,7 @@ TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 void vs_battle_initTextBox(
     int id, int flags, int x, int y, int charsPerLine, int h, int centerX, int centerY)
 {
-    vs_battle_TextBox* box = &vs_battle_textBoxes[id];
+    vs_TextBox* box = &vs_battle_textBoxes[id];
 
     *(int*)&box->unk0 = flags & 0xFFFF;
     box->unk0.unk0_24 = 32;
@@ -4171,7 +4171,7 @@ void vs_battle_initTextBox(
 
 int vs_battle_dismissTextBox(int id)
 {
-    vs_battle_TextBox* box = &vs_battle_textBoxes[id];
+    vs_TextBox* box = &vs_battle_textBoxes[id];
 
     if (!(box->unk0.unk0_24 & 0x20)) {
         func_800AAD4C(box->unk0.unk0_24, 0, 0, 0);
@@ -4200,7 +4200,7 @@ void func_800CD0FC(int arg0, u_int arg1)
 // https://decomp.me/scratch/qBmPY
 void func_800CD158(int id)
 {
-    vs_battle_TextBox* box = &vs_battle_textBoxes[id];
+    vs_TextBox* box = &vs_battle_textBoxes[id];
     int y = box->y;
     u_long* ot = D_800F51B8 + id * 4 + 1;
     int edge = box->unk2A;
@@ -4275,7 +4275,7 @@ void func_800CD3E4(int index)
 {
     u_long* ot = D_800F51B8 + index * 4;
     u_int part;
-    vs_battle_TextBox* box = &vs_battle_textBoxes[index];
+    vs_TextBox* box = &vs_battle_textBoxes[index];
     u_short* verts = (u_short*)D_800EB588[box->unk0.unk0_8];
     u_char* shape;
     int header;
@@ -5767,7 +5767,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 
 void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 {
-    vs_battle_ActorPosition sp10;
+    vs_ActorPosition sp10;
     int sp20[2];
 
     if (arg1->actor < 0x10U) {

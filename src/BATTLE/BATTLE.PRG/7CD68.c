@@ -177,11 +177,11 @@ void func_800E5710(func_800E78F4_t* arg0)
 
 void func_800E5998(void)
 {
-    vs_battle_Actor* actor = vs_battle_actors[0]->next;
+    vs_Actor* actor = vs_battle_actors[0]->next;
 
     while (actor != NULL) {
         if (D_800F5878[actor->id]->unk16 == 0x10) {
-            vs_battle_Actor* other = vs_battle_actors[0]->next;
+            vs_Actor* other = vs_battle_actors[0]->next;
 
             while (other != NULL) {
                 if (other->unk30_0 == actor->unk30_9) {
@@ -205,7 +205,7 @@ void func_800E5A74(int* arg0, func_800E5A74_t* arg1)
 void func_800E5A9C(func_800E78F4_t* arg0, func_800E5A9C_t* arg1)
 {
     static const u_char D_80069C08[] = { 9, 7, 0, 0 };
-    vs_battle_Actor* actor = arg0->unk54;
+    vs_Actor* actor = arg0->unk54;
     u_int range = D_80069C1C[arg1->unk0_18];
     u_int step;
     int mode;
@@ -339,11 +339,11 @@ void func_800E6F9C(void);
 
 void func_800E6158(void) { func_800E6F9C(); }
 
-int func_800E6178(vs_battle_Actor* actor, short arg1)
+int func_800E6178(vs_Actor* actor, short arg1)
 {
     func_800E78F4_t* state;
     D_800F4538_t* model;
-    vs_battle_ActorStats* stats;
+    vs_ActorStats* stats;
     int id = actor->id;
     int packed;
     u_int radius;

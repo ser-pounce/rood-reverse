@@ -166,7 +166,7 @@ void func_800DCC94(
 {
     int special = 0;
     vs_ActionFlags flags = { 0 };
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
     func_800DC888_t* stats;
 
     if (arg3 != NULL) {
@@ -303,9 +303,9 @@ void func_800DD000(func_800E78F4_t* arg0, D_800F19CC_t2* arg1)
 
 void func_800DD344(func_800E78F4_t* arg0)
 {
-    vs_battle_Actor* actor;
-    vs_battle_Actor* target;
-    vs_battle_Actor* ally;
+    vs_Actor* actor;
+    vs_Actor* target;
+    vs_Actor* ally;
 
     if (arg0->unk13) {
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
@@ -371,7 +371,7 @@ void func_800DD604(func_800E78F4_t* arg0)
     int row;
     int col;
     func_800DCAA0_t* choice = &arg0->unk140;
-    vs_battle_ActorStats* stats = arg0->unk5C;
+    vs_ActorStats* stats = arg0->unk5C;
 
     for (row = 0; row < 6; ++row) {
         for (col = 0; col < 4; ++col) {
@@ -449,7 +449,7 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
     int limb;
     int part;
     int last;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
     func_800E78F4_t* target;
 
     func_800E4288(list, sizeof *list);
@@ -590,13 +590,13 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
 
 void func_800DE030(int arg0)
 {
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
     int ticks = (arg0 >> 5) + (arg0 >> 9);
 
     D_800F58BC->unk18 += arg0;
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        vs_battle_ActorStats* stats = actor->stats;
+        vs_ActorStats* stats = actor->stats;
         int statuses = stats->statuses;
         func_800E78F4_t* state;
         int i;
@@ -607,7 +607,7 @@ void func_800DE030(int arg0)
 
         if (D_800F58BC->unk18 > 2880) {
             for (limb = 0; limb < 6; ++limb) {
-                vs_battle_UiEquipment_limb* limbs = &stats->limbs[limb];
+                vs_UiEquipment_limb* limbs = &stats->limbs[limb];
 
                 limbs->hp += 2;
 
@@ -689,7 +689,7 @@ void func_800DE030(int arg0)
 
 static inline int snapshotActorStats(void)
 {
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     D_800F58E8 = vs_main_allocHeapR(sizeof *D_800F58E8 * 16);
 
@@ -706,7 +706,7 @@ static inline int snapshotActorStats(void)
 
 static inline void restoreActorStats(void)
 {
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
         func_800DC3E8(&D_800F58E8[actor->id], actor->stats);
@@ -727,9 +727,9 @@ void func_800DE3E4(func_800E78F4_t* arg0)
     int j;
     int delay;
     int minDelay;
-    vs_battle_Actor* actor;
-    vs_battle_ActorStats* stats = arg0->unk5C;
-    vs_battle_Actor* self;
+    vs_Actor* actor;
+    vs_ActorStats* stats = arg0->unk5C;
+    vs_Actor* self;
 
     D_800F58F0 = 0;
     D_800F58F4 = 0;
@@ -841,7 +841,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
         return;
     }
 
-    self = (vs_battle_Actor*)arg0->unk54;
+    self = (vs_Actor*)arg0->unk54;
 
     if (vs_battle_getStateFlag(0xA6) == 4 && self->unk9 == 24
         && self->commandArgs.s32[0] == 4) {
@@ -859,7 +859,7 @@ void func_800DEB10(D_800F19CC_t2* arg0)
     int i;
     int j;
     func_800E78F4_t* entry;
-    vs_battle_Actor* temp_t1;
+    vs_Actor* temp_t1;
 
     if (arg0 == NULL) {
         return;
@@ -910,7 +910,7 @@ int func_800DEC88(void* arg0)
 {
     D_800F19CC_t2* action = arg0;
     func_800DEC88_t* heap;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     D_800F58BC->unk18 = 0;
     heap = vs_main_allocHeapR(sizeof *heap);

@@ -2265,7 +2265,7 @@ int initCubePuzzleStart(void)
     static vs_Main_CdQueueSlot* iqDisCdSlot;
     static void* iqDisData;
 
-    vs_battle_Room* room;
+    vs_Room* room;
 
     struct {
         short zoneId;

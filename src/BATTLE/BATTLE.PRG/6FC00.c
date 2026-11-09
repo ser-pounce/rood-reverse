@@ -98,7 +98,7 @@ int func_800D85D8(func_800E78F4_t* arg0)
     int i;
     int changed = 0;
     u_char status;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     for (i = 0; i < arg0->unk470; ++i) {
         func_800DCAA0_t* entry = arg0->unk430[i];
@@ -166,7 +166,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     func_800DA1D4_t final;
     D_800F4538_t* object;
     func_800E78F4_t* other;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
     int owner;
     int blocked;
     int heading;
@@ -323,7 +323,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
 void func_800D8EF4(void)
 {
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     D_800F58E0 = 0;
     D_800F58BC->unk24 = 0;
@@ -336,7 +336,7 @@ void func_800D8EF4(void)
         int flags = actor->unk8;
         func_800E78F4_t* state;
         D_800F4538_t* object;
-        vs_battle_Actor* other;
+        vs_Actor* other;
         int id;
         int i;
         int arg;

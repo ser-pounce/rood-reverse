@@ -66,16 +66,16 @@ typedef struct {
     char stateFlags[0x440];
     char actionsLearned[32];
     char mapStatus[0x48];
-    vs_main_Settings settings;
-    vs_main_CharacterSnapshot character;
-    vs_main_Inventory inventory;
-    vs_main_InventoryIndices inventoryIndices;
-    vs_main_Warp spawnPoint;
-    vs_main_Scoredata scoreData;
+    vs_Settings settings;
+    vs_CharacterSnapshot character;
+    vs_Inventory inventory;
+    vs_InventoryIndices inventoryIndices;
+    vs_Warp spawnPoint;
+    vs_Scoredata scoreData;
     int zoneEnemyCacheIndex;
-    vs_main_ZoneEnemyCache zoneEnemyCache[4];
-    vs_main_ArtsStatus artsStatus;
-    vs_menu_ContainerData containerData;
+    vs_ZoneEnemyCache zoneEnemyCache[4];
+    vs_ArtsStatus artsStatus;
+    vs_ContainerData containerData;
     char pad[0x220];
 } Savedata;
 

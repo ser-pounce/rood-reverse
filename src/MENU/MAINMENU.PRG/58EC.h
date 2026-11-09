@@ -235,7 +235,7 @@ void vs_mainMenu_renderItemsList(void);
  * @return The x position immediately after the rendered character.
  */
 int vs_mainMenu_renderRowLabel(
-    u_int character, int x, vs_battle_MenuItem* menuItem, u_long* before);
+    u_int character, int x, vs_MenuItem* menuItem, u_long* before);
 
 /**
  * Renders the tab navigation arrows, e.g. in the inventory, container,
@@ -357,11 +357,11 @@ extern char bss_3[6];
  * as a flat array.
  *
  * struct vs_mainMenu_equipmentStats_t {
- *   vs_battle_ClassAffinityCurrent classAffinityCurrent;
+ *   vs_ClassAffinityCurrent classAffinityCurrent;
  *   short types[4];
  *   short damageType;
  *   short unk4A[11];
- *   vs_battle_ClassAffinityBaseline classAffinityBaseline;
+ *   vs_ClassAffinityBaseline classAffinityBaseline;
  * };
  */
 extern short vs_mainMenu_equipmentStats[64];

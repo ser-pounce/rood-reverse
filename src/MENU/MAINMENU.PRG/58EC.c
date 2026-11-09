@@ -162,9 +162,9 @@ int vs_mainMenu_actionInputProcessed(void)
  *
  * @return The selected row.
  */
-static vs_battle_MenuItem* renderActionRow(int row, int x)
+static vs_MenuItem* renderActionRow(int row, int x)
 {
-    vs_battle_MenuItem* menuItem =
+    vs_MenuItem* menuItem =
         vs_battle_setMenuItem(row + 32, x, ((row + menuActionsPageOffset) * 16) + 18, 126,
             0, (char*)((ItemsText*)sortItemsTextBuf)[itemActionListOffset + row].name);
 
@@ -186,7 +186,7 @@ void vs_mainMenu_renderItemActionMenu(void)
     int selectedAction;
     int i;
     int previousOffset;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (vs_mainMenu_actionMenuState < 10) {
         menuItem = renderActionRow(vs_mainMenu_actionMenuState, -194);
@@ -457,7 +457,7 @@ void vs_mainMenu_toggleBackgroundFade(int fadeState)
 
 void vs_mainMenu_deactivateMenuItem(int row)
 {
-    vs_battle_MenuItem* menuItem = &vs_battle_menuItems[row];
+    vs_MenuItem* menuItem = &vs_battle_menuItems[row];
     menuItem->state = menuItemStateInactive;
 }
 
@@ -907,10 +907,10 @@ int vs_mainmenu_getSelectedRow(void) { return itemsText != NULL ? -1 : selectedR
 /**
  * Sets the individual properties of a row based on its rowflags.
  */
-static vs_battle_MenuItem* initItemRow(int row, int x)
+static vs_MenuItem* initItemRow(int row, int x)
 {
     int temp_v1;
-    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(row + (subMenuRowInfo * 10), x,
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(row + (subMenuRowInfo * 10), x,
         ((row + subMenuRowInfo) * 16) + 18, menuRowYOffset + 126, 0,
         (char*)((ItemsText*)itemsText)[subMenuPage + row].name);
 
@@ -953,7 +953,7 @@ void vs_mainMenu_renderItemsList(void)
     int i;
     int var_s1;
     int page;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (subMenuRowCount == 0) {
 
@@ -1213,7 +1213,7 @@ static void renderBackground(int brightness)
 
 #pragma vsstring(start)
 int vs_mainMenu_renderRowLabel(
-    u_int character, int x, vs_battle_MenuItem* menuItem, u_long* before)
+    u_int character, int x, vs_MenuItem* menuItem, u_long* before)
 {
     int i;
     int uvClut;
@@ -1306,7 +1306,7 @@ void vs_mainMenu_renderTabNavigation(int mode)
 /**
  * Invoked on rows that have more rows above or below them.
  */
-static void renderScrollableRow(vs_battle_MenuItem* menuItem)
+static void renderScrollableRow(vs_MenuItem* menuItem)
 {
     static char previousFrameBuf = 0;
     static char animState = 0;
@@ -1454,7 +1454,7 @@ static void renderScrollableRow(vs_battle_MenuItem* menuItem)
 static void renderMenuItems(void)
 {
     int i;
-    vs_battle_MenuItem* menuItem = vs_battle_menuItems;
+    vs_MenuItem* menuItem = vs_battle_menuItems;
 
     for (i = 0; i < 40; ++i, ++menuItem) {
         int var_v1;

@@ -39,7 +39,7 @@ typedef struct {
 } D_1F8003BC_t;
 
 void func_800A2C48(D_800F4538_t* arg0);
-void func_800A36E0(int, int, vs_battle_ActorPosition*);
+void func_800A36E0(int, int, vs_ActorPosition*);
 int func_800A3DB4(int x, int z, int minimumHeight);
 void func_800A41D0(D_800F4538_t* actor, int mode);
 int func_800A4494(int, SVECTOR*);

@@ -18,7 +18,7 @@ typedef struct {
     u_short direction : 2;
     u_short distance : 2;
     u_short unk0_15 : 1;
-} vs_battle_Route;
+} vs_Route;
 
 extern u_char D_800F175C[];
 
@@ -130,17 +130,17 @@ int func_800DFAF8(UNUSED func_800E78F4_t* arg0, vs_battle_tilePosition arg1, int
 int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 {
     typedef union {
-        vs_battle_Route r[2];
+        vs_Route r[2];
         u_int raw;
     } RoutePair;
 
-    vs_battle_Route routes[2];
+    vs_Route routes[2];
     int distances[2];
     vs_battle_tilePosition position;
     int count;
     int i;
     int x;
-    vs_battle_Route route;
+    vs_Route route;
     RoutePair* pair;
 
     position = arg0->unk34;
@@ -344,7 +344,7 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     int dz;
     u_int radius;
     u_int height;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     if ((((D_1F8003D0_t*)0x1F8003D0)->unk2 >> arg1) & 1) {
         return ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1];
@@ -939,7 +939,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     u_char* tile =
         &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
     int old = *tile;
-    vs_battle_Actor* actor = arg0->unk54;
+    vs_Actor* actor = arg0->unk54;
     int result;
 
     *tile = func_800E1850(old, arg0->unk34, arg0->unk4C.vy);

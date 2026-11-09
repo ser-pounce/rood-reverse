@@ -176,7 +176,7 @@ loop:
         sfx[0] = script[1];
 
         for (; arg < 20; ++arg) {
-            vs_battle_WepModels* weapon = vs_battle_wepModels[arg];
+            vs_WepModels* weapon = vs_battle_wepModels[arg];
 
             if (weapon == NULL || weapon->nBones == 0 || weapon->unkD == 0
                 || weapon->actorId != id) {
@@ -1005,7 +1005,7 @@ void func_800AEF94(MATRIX* camera)
     }
 
     for (i = 0; i < 20; ++i) {
-        vs_battle_WepModels* weapon = vs_battle_wepModels[i];
+        vs_WepModels* weapon = vs_battle_wepModels[i];
 
         if (weapon == NULL || !weapon->unk8_4 || weapon->unkD == 0) {
             continue;

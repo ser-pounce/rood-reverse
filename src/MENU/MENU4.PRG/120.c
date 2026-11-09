@@ -29,7 +29,7 @@ static u_short statusStrings[] = {
 /**
  * Renders stats for the supplied weapon.
  */
-static void drawWeaponInfo(vs_battle_UiWeapon* weapon)
+static void drawWeaponInfo(vs_UiWeapon* weapon)
 {
     vs_mainMenu_equipmentSubtype = 1;
 
@@ -71,7 +71,7 @@ static void drawWeaponInfo(vs_battle_UiWeapon* weapon)
 /**
  * Renders stats for the supplied shield.
  */
-static void drawShieldInfo(vs_battle_UiShield* shield)
+static void drawShieldInfo(vs_UiShield* shield)
 {
     vs_mainMenu_equipmentSubtype = 8;
 
@@ -107,7 +107,7 @@ static void drawShieldInfo(vs_battle_UiShield* shield)
 /**
  * Renders stats for the supplied armor.
  */
-static void drawArmorInfo(vs_battle_UiArmor* armor)
+static void drawArmorInfo(vs_UiArmor* armor)
 {
     vs_mainMenu_equipmentSubtype = 16;
 
@@ -147,7 +147,7 @@ static void drawArmorInfo(vs_battle_UiArmor* armor)
 /**
  * Renders stats for the supplied accessory.
  */
-static void drawAccessoryInfo(vs_battle_UiAccessory* accessory)
+static void drawAccessoryInfo(vs_UiAccessory* accessory)
 {
     vs_mainMenu_equipmentSubtype = 32;
 
@@ -172,11 +172,11 @@ static void drawAccessoryInfo(vs_battle_UiAccessory* accessory)
 /**
  * Renders stats for the supplied blade.
  */
-static void drawBladeInfo(vs_battle_UiWeapon* weapon)
+static void drawBladeInfo(vs_UiWeapon* weapon)
 {
     int i;
 
-    vs_battle_UiEquipment* blade = &weapon->blade;
+    vs_UiEquipment* blade = &weapon->blade;
     vs_mainMenu_equipmentSubtype = 2;
 
     for (i = 0; i < 16; ++i) {
@@ -194,7 +194,7 @@ static void drawBladeInfo(vs_battle_UiWeapon* weapon)
 /**
  * Renders stats for the supplied grip.
  */
-static void drawGripInfo(vs_battle_UiEquipment* grip)
+static void drawGripInfo(vs_UiEquipment* grip)
 {
     int i;
 
@@ -212,7 +212,7 @@ static void drawGripInfo(vs_battle_UiEquipment* grip)
 /**
  * Renders stats for the supplied gem.
  */
-static void drawGemInfo(vs_battle_UiEquipment* gem)
+static void drawGemInfo(vs_UiEquipment* gem)
 {
     int i;
 
@@ -232,7 +232,7 @@ static void drawGemInfo(vs_battle_UiEquipment* gem)
  * Prints the blade description.
  */
 static void initBladeDescription(
-    vs_battle_UiEquipment* blade, char* menuText[], UNUSED int rowTypes[])
+    vs_UiEquipment* blade, char* menuText[], UNUSED int rowTypes[])
 {
     char* str;
 
@@ -257,8 +257,7 @@ static void initBladeDescription(
 /**
  * Prints the grip description.
  */
-static void initGripInfo(
-    vs_battle_UiEquipment* grip, char* menuText[], UNUSED int rowTypes[])
+static void initGripInfo(vs_UiEquipment* grip, char* menuText[], UNUSED int rowTypes[])
 {
     char* str;
 
@@ -278,8 +277,7 @@ static void initGripInfo(
 /**
  * Prints the gem description.
  */
-static void initGemInfo(
-    vs_battle_UiEquipment* gem, char* menuText[], UNUSED int rowTypes[])
+static void initGemInfo(vs_UiEquipment* gem, char* menuText[], UNUSED int rowTypes[])
 {
     vs_battle_memcpy(vs_battle_stringBuf,
         &vs_mainMenu_itemHelp[vs_mainMenu_itemHelp[gem->id - 261
@@ -296,7 +294,7 @@ static char* limbStatuses[] = { "DYING", "BAD", "AVERAGE", "GOOD", "EXCELLENT", 
  *
  * @return The description text.
  */
-static char* drawWeaponInfoRow(int row, vs_battle_UiWeapon* weapon)
+static char* drawWeaponInfoRow(int row, vs_UiWeapon* weapon)
 {
     char* menuText[2];
     int rowType;
@@ -342,7 +340,7 @@ static char* drawWeaponInfoRow(int row, vs_battle_UiWeapon* weapon)
  *
  * @return The description text.
  */
-static char* drawShieldInfoRow(int row, vs_battle_UiShield* shield)
+static char* drawShieldInfoRow(int row, vs_UiShield* shield)
 {
     char* menuText[2];
     int rowType;
@@ -371,7 +369,7 @@ static char* drawShieldInfoRow(int row, vs_battle_UiShield* shield)
  *
  * @return The description text.
  */
-static char* drawArmorInfoRow(vs_battle_UiArmor* arg0)
+static char* drawArmorInfoRow(vs_UiArmor* arg0)
 {
     char* menuText[2];
     int rowType;
@@ -386,10 +384,10 @@ static char* drawArmorInfoRow(vs_battle_UiArmor* arg0)
  *
  * @return The description text.
  */
-static char* drawAccessoryInfoRow(vs_battle_UiAccessory* arg0)
+static char* drawAccessoryInfoRow(vs_UiAccessory* arg0)
 {
     char* menuText[2];
-    vs_main_InventoryArmor armor;
+    vs_InventoryArmor armor;
     int rowType[2];
 
     vs_battle_copyUiAccessoryStats(&armor, arg0);
@@ -748,7 +746,7 @@ static void renderBasicStats(void)
 {
     int i;
     int y;
-    vs_battle_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
+    vs_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
     u_long* insertBefore = vs_scratch.unk4 - 0xC;
 
     switch (renderBasicStatsState) {
@@ -915,7 +913,7 @@ static void drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
  * Displays the stats's current status effects, sliding in from the left
  * depending on the animation step.
  */
-static void renderStatusIcons(vs_battle_ActorStats* stats, int animationStep)
+static void renderStatusIcons(vs_ActorStats* stats, int animationStep)
 {
     int i;
 
@@ -944,7 +942,7 @@ static void renderStatusIcons(vs_battle_ActorStats* stats, int animationStep)
             }
 
             // Nasty match hack
-            stats = (vs_battle_ActorStats*)vs_battle_setSpriteDefaultTexPage(
+            stats = (vs_ActorStats*)vs_battle_setSpriteDefaultTexPage(
                 128, (x & 0xFFFF) | y, vs_getWH(16, 16), vs_scratch.unk4 - 8);
 
             // 0x0F0F906A = Flags for toggling the icon palette
@@ -963,14 +961,14 @@ static u_char selectedElement;
  * Updates the description box and ensures status navigation is
  * bounded correctly.
  */
-static int navigateStatusModifiers(vs_battle_ActorStats* stats, int arg1)
+static int navigateStatusModifiers(vs_ActorStats* stats, int arg1)
 {
     static char animationState = 0;
     static char activeStatusModifiers[32];
     static u_char selectedStatusModifier;
     static u_char statusModifierCount;
     static UNUSED char _[2];
-    static UNUSED vs_battle_ActorStats* previousStats;
+    static UNUSED vs_ActorStats* previousStats;
 
     int yPos;
     int xPos;
@@ -1156,8 +1154,8 @@ static int renderLimbUi(int init)
     static int limbAnimSteps[6];
 
     int lineXy[2];
-    vs_battle_ActorStats* stats;
-    vs_battle_UiEquipment_limb* limb;
+    vs_ActorStats* stats;
+    vs_UiEquipment_limb* limb;
     int limbCount;
     int sp20;
     int sp24;
@@ -1303,7 +1301,7 @@ static int renderLimbUi(int init)
  */
 static void setActiveRow(int row)
 {
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     vs_mainMenu_menuItemFlyoutRight(4);
 
@@ -1323,7 +1321,7 @@ static void setActiveRow(int row)
 static void animateEquipmentDetailTransition(int selectedRow)
 {
     char icon;
-    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(32, -164, 18, 164, 8,
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(32, -164, 18, 164, 8,
         (char*)&statusStrings[statusStrings[selectedRow < 2
                                                 ? selectedRow + VS_status_INDEX_weapon
                                                 : VS_status_INDEX_armor]]);
@@ -1360,7 +1358,7 @@ static void initUi(int selectedRow, int classAffinity)
 /**
  * Renders the weapon and gems if any.
  */
-static void setWeaponRow(int row, vs_battle_UiWeapon* weapon, int init)
+static void setWeaponRow(int row, vs_UiWeapon* weapon, int init)
 {
     char* menuText[2];
     u_int rowType;
@@ -1369,11 +1367,11 @@ static void setWeaponRow(int row, vs_battle_UiWeapon* weapon, int init)
     int gemSlots = weapon->grip.gemSlots;
 
     if (row == 1) {
-        vs_main_InventoryBlade blade;
+        vs_InventoryBlade blade;
         vs_battle_copyUiBladeStats(&blade, &weapon->blade);
         vs_mainMenu_setBladeRow(&blade, menuText, &rowType, vs_battle_stringBuf);
     } else if (row == 2) {
-        vs_main_InventoryGrip grip;
+        vs_InventoryGrip grip;
         vs_battle_copyUiGripStats(&grip, &weapon->grip);
         vs_mainMenu_setGripRow(&grip, menuText, &rowType, vs_battle_stringBuf);
     } else {
@@ -1387,7 +1385,7 @@ static void setWeaponRow(int row, vs_battle_UiWeapon* weapon, int init)
             rowType = 0x58000000;
 
             if (weapon->gems[xOffset].id != 0) {
-                vs_main_InventoryGem gem;
+                vs_InventoryGem gem;
                 vs_battle_copyUiGemStats(&gem, &weapon->gems[xOffset]);
                 vs_mainMenu_setGemRow(&gem, menuText, &rowType, vs_battle_stringBuf);
             }
@@ -1401,7 +1399,7 @@ static void setWeaponRow(int row, vs_battle_UiWeapon* weapon, int init)
     vs_mainMenu_deactivateMenuItem(row + 20);
 
     if (xOffset != 0) {
-        vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(
+        vs_MenuItem* menuItem = vs_battle_setMenuItem(
             row + 20, 320 - xOffset, (row * 16) + 18, xOffset, 0, menuText[0]);
 
         menuItem->unselectable = menuText[1] == 0;
@@ -1420,7 +1418,7 @@ static void setWeaponRow(int row, vs_battle_UiWeapon* weapon, int init)
 /**
  * Renders the shield and gems if any.
  */
-static void setShieldRow(int row, vs_battle_UiShield* shield, int init)
+static void setShieldRow(int row, vs_UiShield* shield, int init)
 {
     char* menuText[2];
     int rowType;
@@ -1433,7 +1431,7 @@ static void setShieldRow(int row, vs_battle_UiShield* shield, int init)
         rowType = 0x58000000;
 
         if (shield->gems[gemSlot].id != 0) {
-            vs_main_InventoryGem gem;
+            vs_InventoryGem gem;
             vs_battle_copyUiGemStats(&gem, &shield->gems[gemSlot]);
             vs_mainMenu_setGemRow(&gem, menuText, &rowType, vs_battle_stringBuf);
         }
@@ -1446,7 +1444,7 @@ static void setShieldRow(int row, vs_battle_UiShield* shield, int init)
     vs_mainMenu_deactivateMenuItem(row + 20);
 
     if (gemSlot != 0) {
-        vs_battle_MenuItem* meuItem = vs_battle_setMenuItem(
+        vs_MenuItem* meuItem = vs_battle_setMenuItem(
             row + 20, 320 - gemSlot, (row * 16) + 18, gemSlot, 0, menuText[0]);
         meuItem->unselectable = menuText[1] == 0;
 
@@ -1495,7 +1493,7 @@ static int equipmentDetailScreen(int row)
     static char equipmentDetailSelectedElement;
 
     char* sp18[2];
-    vs_main_InventoryArmor armor;
+    vs_InventoryArmor armor;
     u_int sp48;
     int limbs;
     int equipmentCount;
@@ -1506,10 +1504,10 @@ static int equipmentDetailScreen(int row)
     int newSelection;
     char* var_s3;
     int previousSelection;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     unsigned char state;
 
-    vs_battle_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
+    vs_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
 
     if (row != 0) {
         selectedEquipmentRow = row - 1;
@@ -1698,7 +1696,7 @@ static int equipmentDetailScreen(int row)
                     } else {
                         vs_mainMenu_renderDpPpBars(
                             renderDpPpBarsTargetNone | renderDpPpBarsStateStatic);
-                        drawAccessoryInfo((vs_battle_UiAccessory*)&stats->accessory);
+                        drawAccessoryInfo((vs_UiAccessory*)&stats->accessory);
                         vs_battle_copyUiAccessoryStats(&armor, &stats->accessory);
                         vs_mainMenu_setArmorRowFromInventory(
                             &armor, sp18, &sp48, vs_battle_stringBuf);
@@ -1894,18 +1892,18 @@ static int equipmentScreen(int element)
     char* rowStrings[18];
     int rowTypes[9];
     char equipmentDescriptions[9][96];
-    vs_main_InventoryArmor sp3E0;
+    vs_InventoryArmor sp3E0;
     int rowCount;
     int limbCount;
     int rowType;
     int temp_s5;
     int i;
     int temp_s1_2;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     int new_var;
 
-    vs_battle_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
-    vs_battle_UiEquipment_limb* limbs = stats->limbs;
+    vs_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
+    vs_UiEquipment_limb* limbs = stats->limbs;
 
     limbCount = getLimbCount(selectedActor - 1);
     rowCount = getEquipmentListRowCount();
@@ -1943,7 +1941,7 @@ static int equipmentScreen(int element)
         rowTypes[1] |= temp_s5 | temp_s1_2;
 
         for (i = 2; i < rowCount; ++i, ++limbs) {
-            vs_main_InventoryArmor* p = &sp3E0;
+            vs_InventoryArmor* p = &sp3E0;
             rowType = temp_s5 | 0xF400;
 
             if ((i - 2) < limbCount) {
@@ -2232,7 +2230,7 @@ static void drawScreen(void)
  */
 static void renderSelectedLimbCondition(void)
 {
-    vs_battle_UiEquipment_limb* limb =
+    vs_UiEquipment_limb* limb =
         &vs_battle_actors[selectedActor - 1]->stats->limbs[selectedElement];
     vs_battle_stringContext.strings[0] =
         (char*)&vs_battle_statusStrings[vs_battle_statusStrings[limb->nameIndex]];
@@ -2250,7 +2248,7 @@ static void renderSelectedLimbCondition(void)
 static void renderSelectedLimbStats(void)
 {
     int i;
-    vs_battle_UiEquipment_limb* limb =
+    vs_UiEquipment_limb* limb =
         &vs_battle_actors[selectedActor - 1]->stats->limbs[selectedElement];
 
     for (i = 0; i < 16; ++i) {

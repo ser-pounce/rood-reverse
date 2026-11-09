@@ -48,10 +48,9 @@ void func_8006CDD8(SVECTOR*);
 void func_8006CE50(void);
 void func_8006CE70(SVECTOR*);
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
-void func_80076F24(
-    int id, vs_battle_CharInitData* arg1, int arg2, int arg3, int arg4, int arg5);
-vs_battle_Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, vs_battle_ObjectData_flags* arg6, int arg7);
+void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, int arg5);
+vs_Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
+    int shieldWepId, int shieldMaterial, vs_ObjectData_flags* arg6, int arg7);
 void func_80077EC4(void);
 int func_8007BD8C(int);
 void func_8007A824(void* prim);
@@ -96,10 +95,10 @@ void vs_battle_setScreenTransition(int, int, int);
 void vs_battle_setScreenTransitionWipeAngle(int);
 void func_8007C46C(int, int, int);
 void func_8007C4AC(int, int, int);
-void func_8007C580(vs_main_Warp*, int, int);
-void func_8007C654(vs_main_Warp*, int, int);
+void func_8007C580(vs_Warp*, int, int);
+void func_8007C654(vs_Warp*, int, int);
 void func_8007C8A4(int, int);
-int func_8007C928(u_int arg0, int arg1, vs_battle_ObjectData_flags* arg2);
+int func_8007C928(u_int arg0, int arg1, vs_ObjectData_flags* arg2);
 void func_8007CA20(int, int, int);
 void func_8007CAA4(int);
 void func_8007CB84(int, int wepId);
@@ -168,7 +167,7 @@ extern u_short* D_800F1BA8;
 extern D_800F1BAC_t (*D_800F1BAC)[32];
 extern short D_800F1BB6;
 extern DVECTOR* D_800F1CBC;
-extern vs_main_Warp D_800F1CC8;
+extern vs_Warp D_800F1CC8;
 extern short D_800F1CD4;
 extern char D_800F1CD6;
 extern VECTOR D_800F1CE0[2];

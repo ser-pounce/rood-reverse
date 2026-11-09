@@ -147,7 +147,7 @@ static int teleportMenu(int init)
  */
 static void setMenuHeader(void)
 {
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     menuItem = vs_battle_setMenuItem(0, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings[vs_battle_menuStrings[VS_menuStrings_INDEX_magic]]);

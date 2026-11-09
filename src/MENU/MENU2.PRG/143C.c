@@ -157,7 +157,7 @@ static int battleAbilityUnlocked(int initialize)
     int row;
     int i;
     int abilityState;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
     int action;
 
     if (initialize != 0) {

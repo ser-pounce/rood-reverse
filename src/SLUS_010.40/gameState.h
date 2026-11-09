@@ -23,7 +23,7 @@ typedef struct {
     u_short cumulativeSaveCount;
     u_short currentGameSaveCount;
     u_int saveFileGeneration;
-} vs_main_Settings;
+} vs_Settings;
 
 typedef union {
     struct {
@@ -62,14 +62,14 @@ typedef struct {
     char weaponKillStreak;
     u_short chainStreak;
     u_short healCount;
-} vs_main_Scoredata;
+} vs_Scoredata;
 
 typedef struct {
     short hp;
     short maxHp;
     short types[4];
     short affinities[8];
-} vs_main_CharacterSnapshotLimb;
+} vs_CharacterSnapshotLimb;
 
 typedef struct {
     int restorePending;
@@ -87,16 +87,16 @@ typedef struct {
     u_short actionDelay;
     int statuses;
     char statusTimers[8];
-    vs_main_CharacterSnapshotLimb limbs[6];
+    vs_CharacterSnapshotLimb limbs[6];
     int weaponDrawn;
     int cameraPitch;
     int cameraDistance;
-} vs_main_CharacterSnapshotStats;
+} vs_CharacterSnapshotStats;
 
 typedef struct {
-    vs_main_CharacterSnapshotStats stats;
+    vs_CharacterSnapshotStats stats;
     UNUSED int _[9];
-} vs_main_CharacterSnapshot;
+} vs_CharacterSnapshot;
 
 typedef struct {
     u_char artsLearned[12];
@@ -105,43 +105,43 @@ typedef struct {
         u_short battleAbilitiesUnlocked;
         u_short total;
     } kills;
-} vs_main_ArtsStatus;
+} vs_ArtsStatus;
 
 typedef struct {
     int roomFlags[16];
     int areaFlags[2];
-} vs_main_MapStatus;
+} vs_MapStatus;
 
 typedef struct {
-    vs_main_InventoryWeapon weapons[8];
-    vs_main_InventoryShield shields[8]; // 0x100
-    vs_main_InventoryBlade blades[16]; // 0x280
-    vs_main_InventoryGrip grips[16]; // 0x540
-    vs_main_InventoryArmor armor[16]; // 0x640
-    vs_main_InventoryGem gems[48]; // 0x8C0
-    vs_main_InventoryMisc misc[64]; // 0xE00
-} vs_main_Inventory;
+    vs_InventoryWeapon weapons[8];
+    vs_InventoryShield shields[8]; // 0x100
+    vs_InventoryBlade blades[16]; // 0x280
+    vs_InventoryGrip grips[16]; // 0x540
+    vs_InventoryArmor armor[16]; // 0x640
+    vs_InventoryGem gems[48]; // 0x8C0
+    vs_InventoryMisc misc[64]; // 0xE00
+} vs_Inventory;
 
 typedef struct {
     char mode;
     char savedMode;
     u_short lifetime;
     vs_Gametime time;
-} vs_main_BattleTimer;
+} vs_BattleTimer;
 
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
-extern vs_main_BattleTimer vs_main_battleTimer;
+extern vs_BattleTimer vs_main_battleTimer;
 extern int vs_gametime_tickspeed;
-extern vs_main_Scoredata vs_main_scoredata;
+extern vs_Scoredata vs_main_scoredata;
 extern char vs_main_actionsLearned[32];
-extern vs_main_MapStatus vs_main_mapStatus;
-extern vs_main_Settings vs_main_settings;
-extern vs_main_ArtsStatus vs_main_artsStatus;
-extern vs_main_CharacterSnapshot vs_main_characterSnapshot;
-extern vs_main_Inventory vs_main_inventory;
+extern vs_MapStatus vs_main_mapStatus;
+extern vs_Settings vs_main_settings;
+extern vs_ArtsStatus vs_main_artsStatus;
+extern vs_CharacterSnapshot vs_main_characterSnapshot;
+extern vs_Inventory vs_main_inventory;
 extern vs_Gametime vs_main_gametime;
-extern vs_main_InventoryIndices vs_main_inventoryIndices;
+extern vs_InventoryIndices vs_main_inventoryIndices;
 #endif
 
 void vs_main_setCharacterRestorePending(void);

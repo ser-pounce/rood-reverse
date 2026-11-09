@@ -129,9 +129,9 @@ typedef struct {
     char unk3A8[32];
     char chestsOpened[64];
     char unk400[64];
-} vs_main_Flags;
+} vs_Flags;
 
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
-extern vs_main_Flags vs_main_stateFlags;
+extern vs_Flags vs_main_stateFlags;
 #endif

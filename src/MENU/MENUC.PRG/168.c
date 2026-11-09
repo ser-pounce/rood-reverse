@@ -38,7 +38,7 @@ static void drawOk(int row, int brightness)
  */
 static void setMenuTitle(int id, int textTableOffset)
 {
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     int y = 18;
 
@@ -120,7 +120,7 @@ static int popSelectionHistory(int index)
 static void initMenuItem(int TextOffset, int icon)
 {
     int a0;
-    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(
         32, -164, 18, 164, 8, (char*)&vs_mainMenu_menu12Text[TextOffset]);
     menuItem->state = 5;
     menuItem->targetPosition0 = 16;
@@ -169,7 +169,7 @@ static int confirmationPrompt(int arg0)
     static char selectedOption;
 
     int i;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     int action = 0;
 
@@ -242,7 +242,7 @@ static int confirmCombine(int arg0)
 
     int i;
     u_short* text;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     int action = 0;
 
@@ -321,7 +321,7 @@ static void disassembleWeapon(int weaponIndex)
 {
     int i;
     int index;
-    vs_main_InventoryWeapon* weapon = &vs_main_inventory.weapons[weaponIndex];
+    vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[weaponIndex];
 
     if (weapon->blade == 0) {
         return;
@@ -357,9 +357,9 @@ static void assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
     int i;
     int weaponIndex;
 
-    vs_main_InventoryWeapon* weapon = &vs_main_inventory.weapons[combiningItem];
-    vs_main_InventoryBlade* blade = &vs_main_inventory.blades[bladeIndex];
-    vs_main_InventoryGrip* grip = &vs_main_inventory.grips[gripIndex];
+    vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[combiningItem];
+    vs_InventoryBlade* blade = &vs_main_inventory.blades[bladeIndex];
+    vs_InventoryGrip* grip = &vs_main_inventory.grips[gripIndex];
     int gemSlots = grip->gemSlots;
 
     disassembleWeapon(combiningItem);
@@ -394,7 +394,7 @@ static void assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
 static void disassembleShield(int index)
 {
     int i;
-    vs_main_InventoryShield* shield = &vs_main_inventory.shields[index];
+    vs_InventoryShield* shield = &vs_main_inventory.shields[index];
     int slots = shield->base.gemSlots;
 
     for (i = 0; i < slots; ++i) {
@@ -410,7 +410,7 @@ static void disassembleShield(int index)
  * Checks whether a blade category is supported by a grip category.
  * @return Nonzero when compatible; null components are treated as compatible.
  */
-static int isValidGrip(vs_main_InventoryBlade* blade, vs_main_InventoryGrip* grip)
+static int isValidGrip(vs_InventoryBlade* blade, vs_InventoryGrip* grip)
 {
     static u_short validGripFlags[] = { 0, 0xE, 0xF0, 0x100, 0x200 };
 
@@ -462,7 +462,7 @@ static void populateItemsList(int count, char** text, int* rowTypes)
     int j;
     int i;
     u_short* temp_v1;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     listItemCount = count;
     itemsListWindow = 0;
@@ -535,7 +535,7 @@ static void navigateItemsList(int arg0)
     int v1;
     int i;
     int previousWindow;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (itemsListState < 6) {
         if (itemsListState == listItemCount) {
@@ -772,7 +772,7 @@ static void setUiStats(int blade, int grip)
  */
 static void assembleBladeMenuHeader(int bladeGrip)
 {
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     int blade = (bladeGrip >> 4) & 0x3F;
     int grip = (bladeGrip >> 10) & 0x3F;
@@ -792,7 +792,7 @@ static void assembleBladeMenuHeader(int bladeGrip)
  */
 static void initMenuHeader(int arg0)
 {
-    vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(arg0);
+    vs_MenuItem* menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 4;
     menuItem->targetPosition0 = 155;
     menuItem->targetPosition1 = 18;
@@ -821,8 +821,8 @@ static int assembleBladeMenu(int params)
     void* textBuf;
     char** menuText;
     int itemId;
-    vs_main_InventoryBlade* blade = NULL;
-    vs_main_InventoryGrip* grip = NULL;
+    vs_InventoryBlade* blade = NULL;
+    vs_InventoryGrip* grip = NULL;
 
     if (params != 0) {
         bladeToAssemble = params & 0x7F;
@@ -943,8 +943,8 @@ static int assembleGripMenu(int params)
     char** menuText;
     int itemId;
 
-    vs_main_InventoryGrip* grip = NULL;
-    vs_main_InventoryBlade* blade = NULL;
+    vs_InventoryGrip* grip = NULL;
+    vs_InventoryBlade* blade = NULL;
 
     if (params != 0) {
         gripToAssemble = params & 0x7F;
@@ -1063,7 +1063,7 @@ static int attachGem(int params)
     void* textBuf;
     char** menuText;
 
-    vs_main_InventoryGem* gem = NULL;
+    vs_InventoryGem* gem = NULL;
 
     if (params != 0) {
         i = params & 0x7;
@@ -1194,9 +1194,9 @@ static int assembleMenu(int arg0)
     int temp_v1;
     int i;
     int gemSlots;
-    vs_main_InventoryBlade* blade;
-    vs_main_InventoryGrip* grip;
-    vs_battle_MenuItem* menuItem;
+    vs_InventoryBlade* blade;
+    vs_InventoryGrip* grip;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -1607,9 +1607,8 @@ static int assembleMenu(int arg0)
  */
 static void addGemSelector(UNUSED int arg0, int arg1)
 {
-    vs_battle_MenuItem* temp_v0 =
-        vs_battle_setMenuItem(arg1 + 10, 320, (arg1 * 16) + 18, 320 - 169, 0,
-            (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
+    vs_MenuItem* temp_v0 = vs_battle_setMenuItem(arg1 + 10, 320, (arg1 * 16) + 18,
+        320 - 169, 0, (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
     temp_v0->state = 2;
     temp_v0->targetPosition0 = 169;
     temp_v0->fontColor = 1;
@@ -1627,8 +1626,8 @@ static int attachGems(char* gems, int isShield)
     int i;
     int gem;
     u_char* attachedGems;
-    vs_main_InventoryShield* shield;
-    vs_main_InventoryWeapon* weapon;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
 
     weapon = &vs_main_inventory.weapons[combiningItem];
     shield = &vs_main_inventory.shields[combiningItem];
@@ -1696,9 +1695,9 @@ static int attachGemsMenu(int arg0)
     int i;
     int var_a2;
     int itemInfo;
-    vs_main_InventoryShield* shield;
-    vs_main_InventoryWeapon* weapon;
-    vs_battle_MenuItem* menuItem;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -1780,7 +1779,7 @@ static int attachGemsMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(0);
+            vs_MenuItem* menuItem = vs_battle_getMenuItem(0);
 
             var_a2 = 24;
             if (isShield != 0) {
@@ -2121,8 +2120,8 @@ static int disassembleMenu(int arg0)
     int j;
     int selectedItem;
     int itemInfo;
-    vs_main_InventoryShield* shield;
-    vs_battle_MenuItem* menuItem;
+    vs_InventoryShield* shield;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -2391,7 +2390,7 @@ static int renameWeaponMenu(int arg0)
     int rowTypes[8];
     int i;
     int itemId;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -2567,7 +2566,7 @@ static int repairMenu(int arg0)
         for (i = 0; i < 16; ++i) {
             new_var = vs_main_inventoryIndices.blades[i];
             if (new_var != 0) {
-                vs_main_InventoryBlade* blade = &vs_main_inventory.blades[new_var - 1];
+                vs_InventoryBlade* blade = &vs_main_inventory.blades[new_var - 1];
 
                 ppCost = blade->maxDp - blade->currentDp;
                 ppCost = blade->currentPp - (ppCost / 100);
@@ -2584,7 +2583,7 @@ static int repairMenu(int arg0)
         for (i = 0; i < 8; ++i) {
             new_var = vs_main_inventoryIndices.weapons[i];
             if (new_var != 0) {
-                vs_main_InventoryWeapon* weapon = &vs_main_inventory.weapons[new_var - 1];
+                vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[new_var - 1];
                 if (weapon->isEquipped != 0) {
                     vs_battle_equipWeapon(weapon);
                 }
@@ -2594,7 +2593,7 @@ static int repairMenu(int arg0)
         for (i = 0; i < 8; ++i) {
             new_var = vs_main_inventoryIndices.shields[i];
             if (new_var != 0) {
-                vs_main_InventoryShield* shield = &vs_main_inventory.shields[new_var - 1];
+                vs_InventoryShield* shield = &vs_main_inventory.shields[new_var - 1];
 
                 ppCost = shield->base.maxDp - shield->base.currentDp;
                 ppCost = shield->base.currentPp - (ppCost / 100);
@@ -2615,7 +2614,7 @@ static int repairMenu(int arg0)
         for (i = 0; i < 16; ++i) {
             new_var = vs_main_inventoryIndices.armor[i];
             if (new_var != 0) {
-                vs_main_InventoryArmor* armor = &vs_main_inventory.armor[new_var - 1];
+                vs_InventoryArmor* armor = &vs_main_inventory.armor[new_var - 1];
                 if (armor->category != 7) {
 
                     ppCost = armor->maxDp - armor->currentDp;
@@ -2702,9 +2701,9 @@ static int loadSyd(int id)
  * @param itemType Menu text category for the empty placeholder.
  * @param index Item name index, or zero for the placeholder.
  */
-static vs_battle_MenuItem* setItemRow(int itemType, int index)
+static vs_MenuItem* setItemRow(int itemType, int index)
 {
-    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(0, 155, 18, 165, 0,
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(0, 155, 18, 165, 0,
         (index == 0
                 ? (char*)&vs_mainMenu_menu12Text
                       [vs_mainMenu_menu12Text[itemType + VS_MENU12_BIN_INDEX_newBlade]]
@@ -2716,9 +2715,9 @@ static vs_battle_MenuItem* setItemRow(int itemType, int index)
 /**
  * Creates and starts the slide-in animation for a combination result row.
  */
-static vs_battle_MenuItem* initItemRow(int itemType, int index)
+static vs_MenuItem* initItemRow(int itemType, int index)
 {
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     menuItem = setItemRow(itemType, index);
     menuItem->state = 2;
@@ -2728,10 +2727,10 @@ static vs_battle_MenuItem* initItemRow(int itemType, int index)
     return menuItem;
 }
 
-static vs_main_InventoryBlade* combineBlades(
-    vs_main_InventoryBlade*, vs_main_InventoryBlade*, vs_main_InventoryBlade*, void*);
+static vs_InventoryBlade* combineBlades(
+    vs_InventoryBlade*, vs_InventoryBlade*, vs_InventoryBlade*, void*);
 
-static vs_main_InventoryBlade bladeBuf;
+static vs_InventoryBlade bladeBuf;
 static char combiningBladeIds[2];
 static UNUSED char _1[2];
 
@@ -2747,7 +2746,7 @@ static void setCombineBladeUi(int arg0)
     int var_s3;
     u_int temp_v1;
     int temp_s2;
-    vs_main_InventoryBlade* blade;
+    vs_InventoryBlade* blade;
 
     i = combiningBladeIds[0];
     temp_s2 = combiningBladeIds[1];
@@ -2819,7 +2818,7 @@ static int selectBlade(int arg0)
     char** menuText;
     int temp_a0;
     int itemId;
-    vs_main_InventoryBlade* blade = NULL;
+    vs_InventoryBlade* blade = NULL;
 
     if (arg0 != 0) {
         D_8010BC61 = arg0;
@@ -2925,8 +2924,7 @@ static int selectBlade(int arg0)
 /**
  * Sets the blade row's category, material, and equipped-state icon.
  */
-static void setBladeMenuItem(
-    vs_battle_MenuItem* menuItem, vs_main_InventoryBlade* blade)
+static void setBladeMenuItem(vs_MenuItem* menuItem, vs_InventoryBlade* blade)
 {
     int assembledWeapon;
 
@@ -2962,8 +2960,8 @@ static int combineBladeMenu(int arg0)
     int i;
     char* var_a0_2;
     int i_2;
-    vs_main_InventoryBlade* blade;
-    vs_battle_MenuItem* menuItem;
+    vs_InventoryBlade* blade;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         pushSelectionHistory(5);
@@ -3323,10 +3321,10 @@ static int combineBladeMenu(int arg0)
 /**
  * Populates stat display from a shield.
  */
-static void setShieldUi(vs_main_InventoryShield* shield)
+static void setShieldUi(vs_InventoryShield* shield)
 {
     int i;
-    vs_main_InventoryArmor* base = &shield->base;
+    vs_InventoryArmor* base = &shield->base;
 
     vs_mainMenu_resetStats();
 
@@ -3347,10 +3345,10 @@ static void setShieldUi(vs_main_InventoryShield* shield)
     vs_mainMenu_equipmentSubtype = 8;
 }
 
-static vs_main_InventoryArmor* combineShields(
-    vs_main_InventoryArmor*, vs_main_InventoryArmor*, vs_main_InventoryArmor*, void*);
+static vs_InventoryArmor* combineShields(
+    vs_InventoryArmor*, vs_InventoryArmor*, vs_InventoryArmor*, void*);
 
-static vs_main_InventoryShield shieldBuf;
+static vs_InventoryShield shieldBuf;
 static u_char itemsToCombine[16];
 
 /**
@@ -3362,7 +3360,7 @@ static u_char itemsToCombine[16];
 static void initCombineShields(int arg0)
 {
     u_int temp_v1;
-    vs_main_InventoryShield* shield;
+    vs_InventoryShield* shield;
 
     int first = itemsToCombine[0];
     int second = itemsToCombine[1];
@@ -3411,7 +3409,7 @@ static void initCombineShields(int arg0)
  * Builds a shield list row while temporarily hiding its installed gems.
  */
 static void initUiShield(
-    vs_main_InventoryShield* shield, char** menuText, int* rowTypes, char* stringBuf)
+    vs_InventoryShield* shield, char** menuText, int* rowTypes, char* stringBuf)
 {
     int gems = *(int*)shield->gems;
     *(int*)shield->gems = 0;
@@ -3438,7 +3436,7 @@ static int selectShields(int arg0)
     int i;
     void* stringBuf;
     int itemId;
-    vs_main_InventoryShield* shield;
+    vs_InventoryShield* shield;
 
     shield = NULL;
 
@@ -3554,8 +3552,7 @@ static int selectShields(int arg0)
 /**
  * Sets a shield row's icon, material, and equipped state indicator.
  */
-static void setShieldMenuItem(
-    vs_battle_MenuItem* menuItem, vs_main_InventoryShield* shield)
+static void setShieldMenuItem(vs_MenuItem* menuItem, vs_InventoryShield* shield)
 {
     menuItem->rowIcon = 15;
     menuItem->material = shield->base.material;
@@ -3587,9 +3584,9 @@ static int combineShieldMenu(int arg0)
     int temp_s1;
     int temp_s2;
     int temp_v1_2;
-    vs_main_InventoryShield* shield1;
-    vs_main_InventoryShield* shield0;
-    vs_battle_MenuItem* temp_v0;
+    vs_InventoryShield* shield1;
+    vs_InventoryShield* shield0;
+    vs_MenuItem* temp_v0;
 
     if (arg0 != 0) {
 
@@ -3939,10 +3936,10 @@ static int combineShieldMenu(int arg0)
     return 0;
 }
 
-static vs_main_InventoryArmor* combineArmor(
-    vs_main_InventoryArmor*, vs_main_InventoryArmor*, vs_main_InventoryArmor*, void*);
+static vs_InventoryArmor* combineArmor(
+    vs_InventoryArmor*, vs_InventoryArmor*, vs_InventoryArmor*, void*);
 
-static vs_main_InventoryArmor armorBuf;
+static vs_InventoryArmor armorBuf;
 static char combiningArmorIds[2];
 static UNUSED char _2[2];
 
@@ -3956,7 +3953,7 @@ static void initCombineArmor(int arg0)
 {
     int var_a0;
     u_int temp_v1;
-    vs_main_InventoryArmor* armor;
+    vs_InventoryArmor* armor;
 
     int i = combiningArmorIds[0];
     int temp_s3 = combiningArmorIds[1];
@@ -4036,7 +4033,7 @@ static int initUiArmor(int arg0)
     char* temp_v0;
     int itemId;
     int s0_2;
-    vs_main_InventoryArmor* var_s2;
+    vs_InventoryArmor* var_s2;
 
     var_s2 = NULL;
     if (arg0 != 0) {
@@ -4131,8 +4128,7 @@ static int initUiArmor(int arg0)
 /**
  * Sets an armor row's category icon, material, and equipped-state indicator.
  */
-static void setArmorMenuItem(
-    vs_battle_MenuItem* menuItem, vs_main_InventoryArmor* armor)
+static void setArmorMenuItem(vs_MenuItem* menuItem, vs_InventoryArmor* armor)
 {
     menuItem->rowIcon = armor->category + 14;
     menuItem->material = armor->material;
@@ -4161,9 +4157,9 @@ static int combineArmorMenu(int arg0)
     int var_s1;
     char* var_a0_2;
     int i_2;
-    vs_main_InventoryArmor* armor;
-    vs_battle_MenuItem* temp_a0;
-    vs_battle_MenuItem* temp_v0;
+    vs_InventoryArmor* armor;
+    vs_MenuItem* temp_a0;
+    vs_MenuItem* temp_v0;
 
     if (arg0 != 0) {
         pushSelectionHistory(5);
@@ -4437,7 +4433,7 @@ static int countItems(int category)
 {
     int i;
 
-    vs_main_InventoryArmor* armor = vs_main_inventory.armor;
+    vs_InventoryArmor* armor = vs_main_inventory.armor;
     int count = 0;
 
     if (category == 2) {
@@ -4562,7 +4558,7 @@ int vs_menuC_exec(u_char* state)
     char* menuText[12];
     int i;
     int selectedRow;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     switch (*state) {
     case 0:
@@ -4939,8 +4935,8 @@ static void* bladeCombinationInitData;
  * @param sydData Loaded blade combination data.
  * @return result.
  */
-static vs_main_InventoryBlade* combineBlades(vs_main_InventoryBlade* first,
-    vs_main_InventoryBlade* second, vs_main_InventoryBlade* result, void* sydData)
+static vs_InventoryBlade* combineBlades(vs_InventoryBlade* first,
+    vs_InventoryBlade* second, vs_InventoryBlade* result, void* sydData)
 {
     struct {
         char subId;
@@ -4955,7 +4951,7 @@ static vs_main_InventoryBlade* combineBlades(vs_main_InventoryBlade* first,
         char intelligence;
         char agility;
         char _;
-        vs_battle_Range range;
+        vs_Range range;
     }* info;
 
     combinationResults = sydData + ((Syd*)sydData)->combinationsOffset;
@@ -5018,8 +5014,8 @@ static ArmorInfo* shieldCombinationInitData;
  * @param sydData Loaded shield combination data.
  * @return result.
  */
-static vs_main_InventoryArmor* combineShields(vs_main_InventoryArmor* first,
-    vs_main_InventoryArmor* second, vs_main_InventoryArmor* result, void* sydData)
+static vs_InventoryArmor* combineShields(vs_InventoryArmor* first,
+    vs_InventoryArmor* second, vs_InventoryArmor* result, void* sydData)
 {
     ArmorInfo* info;
 
@@ -5068,8 +5064,8 @@ static ArmorInfo* combinationInitData;
  * @param sydData Loaded armor combination data.
  * @return result.
  */
-static vs_main_InventoryArmor* combineArmor(vs_main_InventoryArmor* first,
-    vs_main_InventoryArmor* second, vs_main_InventoryArmor* result, void* sydData)
+static vs_InventoryArmor* combineArmor(vs_InventoryArmor* first,
+    vs_InventoryArmor* second, vs_InventoryArmor* result, void* sydData)
 {
     ArmorInfo* info;
 

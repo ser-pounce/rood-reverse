@@ -493,7 +493,7 @@ typedef struct {
     int unk5DC;
     int unk5E0;
     int unk5E4;
-} vs_battle_WepModels;
+} vs_WepModels;
 
 typedef struct {
     D_800F45E0_unk0 unk0;
@@ -506,5 +506,5 @@ typedef struct {
 } D_800F45E0_t;
 
 extern D_800F4538_t* D_800F4538[17];
-extern vs_battle_WepModels* vs_battle_wepModels[20];
+extern vs_WepModels* vs_battle_wepModels[20];
 extern D_800F45E0_t* D_800F45E0[16];

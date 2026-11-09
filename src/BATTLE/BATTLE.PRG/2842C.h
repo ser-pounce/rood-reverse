@@ -7,14 +7,14 @@
 typedef struct {
     RECT uv;
     CVECTOR colors[4];
-} vs_battle_BackgroundTile;
+} vs_BackgroundTile;
 
 typedef struct {
     int width;
     int height;
     int unk8;
-    vs_battle_BackgroundTile tiles[0];
-} vs_battle_BackgroundLayout;
+    vs_BackgroundTile tiles[0];
+} vs_BackgroundLayout;
 
 short vs_battle_clamp(short arg0, int arg1, int arg2);
 void func_80090C2C(int arg0);
@@ -25,7 +25,7 @@ void func_8009134C(int, int);
 void func_80091378(void);
 int func_800913BC(int);
 void func_80091468(int, int);
-void func_8009147C(vs_battle_BackgroundLayout*, int, int, int);
+void func_8009147C(vs_BackgroundLayout*, int, int, int);
 void func_800918E8(int);
 void* func_8009195C(int arg0);
 int func_80091998(int);
@@ -60,4 +60,4 @@ void func_8009722C(void);
 void func_800941FC(void);
 int vs_battle_renderBattleAbilityTimingResult(int arg0);
 
-extern vs_battle_ObjectData vs_battle_objectDataSlots[16];
+extern vs_ObjectData vs_battle_objectDataSlots[16];

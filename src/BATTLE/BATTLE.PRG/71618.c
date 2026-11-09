@@ -143,7 +143,7 @@ int func_800DA1D4(func_800E78F4_t* arg0)
     int flag;
     int distance;
     func_800DCAA0_t* entry;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     switch (arg0->unk131) {
     case 0:
@@ -415,7 +415,7 @@ int func_800DAAD8(func_800E78F4_t* arg0)
 {
     func_800DCAA0_t* entry = arg0->unk430[0];
     int id;
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     if (!arg0->unk131 && func_800DA4BC(arg0, entry)) {
         return 1;
@@ -505,7 +505,7 @@ int func_800DAD9C(func_800E78F4_t* arg0)
 
     if (entry->unk4_5) {
         for (j = 0; j < 4; ++j) {
-            vs_battle_Actor* actor = D_800F58BC->unk28[j];
+            vs_Actor* actor = D_800F58BC->unk28[j];
 
             if (actor != NULL) {
                 D_800F45E0_t* model;
@@ -526,7 +526,7 @@ int func_800DAD9C(func_800E78F4_t* arg0)
 
 void func_800DAED0(void)
 {
-    vs_battle_Actor* actor;
+    vs_Actor* actor;
 
     for (actor = vs_battle_actors[0]->next; actor != NULL; actor = actor->next) {
         func_800E78F4_t* state = ((func_800E78F4_t**)0x1F80037C)[actor->id];

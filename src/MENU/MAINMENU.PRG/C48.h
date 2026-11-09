@@ -114,10 +114,10 @@ enum vs_mainMenu_renderDpPpBarsState {
  */
 void vs_mainMenu_renderDpPpBars(int flags);
 
-extern vs_main_InventoryGem* vs_mainMenu_gems;
-extern vs_menu_InventoryStorage* vs_menu_inventoryStorage;
-extern vs_main_InventoryGrip* vs_mainMenu_grips;
-extern vs_main_InventoryBlade* vs_mainMenu_blades;
-extern vs_main_InventoryArmor* vs_mainMenu_armor;
-extern vs_main_InventoryShield* vs_mainMenu_shields;
-extern vs_main_InventoryWeapon* vs_mainMenu_weapons;
+extern vs_InventoryGem* vs_mainMenu_gems;
+extern vs_InventoryStorage* vs_menu_inventoryStorage;
+extern vs_InventoryGrip* vs_mainMenu_grips;
+extern vs_InventoryBlade* vs_mainMenu_blades;
+extern vs_InventoryArmor* vs_mainMenu_armor;
+extern vs_InventoryShield* vs_mainMenu_shields;
+extern vs_InventoryWeapon* vs_mainMenu_weapons;

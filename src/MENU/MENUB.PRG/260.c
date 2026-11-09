@@ -36,8 +36,8 @@ static char controlsEnabled = 0;
 
 static LootListItem* lootList;
 static LootListItem* lootListWorkingCopy;
-static vs_main_Inventory* inventory;
-static vs_main_Inventory* inventoryBackup;
+static vs_Inventory* inventory;
+static vs_Inventory* inventoryBackup;
 static char showInventory;
 static u_char inventoryCapacityFlyinTimer;
 static char showLoot;
@@ -69,7 +69,7 @@ static int topLevelMenuTransition(int category)
     static char D_8010A681;
 
     int stepValue;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (category != 0) {
         D_800F4EE8.unk3A.currentItemCategory = category;
@@ -177,10 +177,9 @@ static int topLevelMenuTransition(int category)
 
         int itemCategory = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
-        vs_battle_MenuItem* menuItem =
-            vs_battle_setMenuItem(31, stepValue + 180, 34, 140, 8,
-                (char*)&menuTextTable[menuTextTable[itemCategory
-                                                    + VS_menuText_INDEX_weapons]]);
+        vs_MenuItem* menuItem = vs_battle_setMenuItem(31, stepValue + 180, 34, 140, 8,
+            (char*)&menuTextTable[menuTextTable[itemCategory
+                                                + VS_menuText_INDEX_weapons]]);
         menuItem->selected = 1;
 
         if (itemCategory != 7) {
@@ -256,7 +255,7 @@ static int disassembleItem(int itemIndex)
     static UNUSED char _;
 
     int i;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (itemIndex != 0) {
 
@@ -291,7 +290,7 @@ static int disassembleItem(int itemIndex)
 
         if (disassembleItemCategory != itemCategoryWeapon) {
 
-            vs_main_InventoryShield* shield = &inventory->shields[i];
+            vs_InventoryShield* shield = &inventory->shields[i];
             lootList[1].itemCategory = itemCategoryShield;
             lootList[1].itemIndex = i;
             lootList[1].state = lootStateIndent1;
@@ -306,7 +305,7 @@ static int disassembleItem(int itemIndex)
                 }
             }
         } else {
-            vs_main_InventoryWeapon* weapon = &inventory->weapons[i];
+            vs_InventoryWeapon* weapon = &inventory->weapons[i];
             lootList[1].itemCategory = itemCategoryBlade;
             lootList[1].itemIndex = weapon->blade - 1;
             lootList[1].state = lootStateIndent2;
@@ -395,7 +394,7 @@ static int disassembleItem(int itemIndex)
             (lootListCount - 1) * sizeof lootList[1]);
 
         if (disassembleItemCategory != itemCategoryWeapon) {
-            vs_main_InventoryShield* shield = &inventory->shields[i];
+            vs_InventoryShield* shield = &inventory->shields[i];
             for (i = 0; i < shield->base.gemSlots; ++i) {
                 int gem = shield->gems[i];
                 if (gem != 0) {
@@ -404,7 +403,7 @@ static int disassembleItem(int itemIndex)
                 }
             }
         } else {
-            vs_main_InventoryWeapon* weapon = &inventory->weapons[i];
+            vs_InventoryWeapon* weapon = &inventory->weapons[i];
             inventory->blades[weapon->blade - 1].assembledWeaponIndex = 0;
             inventory->grips[weapon->grip - 1].assembledWeaponIndex = 0;
 
@@ -474,8 +473,8 @@ static int consolidateMiscItems(int lootIndex)
     int i;
     int j;
     int var_v0;
-    vs_main_InventoryMisc* item;
-    vs_battle_MenuItem* menuItem;
+    vs_InventoryMisc* item;
+    vs_MenuItem* menuItem;
 
     if (lootIndex != 0) {
 
@@ -713,10 +712,10 @@ static int consolidateMiscItems(int lootIndex)
  * @param weapon Associated weapon index, or zero when the blade is not assembled.
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int copyBladeToInventory(vs_main_InventoryBlade* source, int weapon)
+static int copyBladeToInventory(vs_InventoryBlade* source, int weapon)
 {
     int index = 1;
-    vs_main_InventoryBlade* blade = inventory->blades;
+    vs_InventoryBlade* blade = inventory->blades;
 
     while (blade->id != 0) {
         ++blade;
@@ -740,10 +739,10 @@ static int copyBladeToInventory(vs_main_InventoryBlade* source, int weapon)
  * assembled.
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int copyGripToInventory(vs_main_InventoryGrip* source, int weaponIndex)
+static int copyGripToInventory(vs_InventoryGrip* source, int weaponIndex)
 {
     int index = 1;
-    vs_main_InventoryGrip* grip = inventory->grips;
+    vs_InventoryGrip* grip = inventory->grips;
 
     while (grip->id != 0) {
         ++grip;
@@ -767,10 +766,10 @@ static int copyGripToInventory(vs_main_InventoryGrip* source, int weaponIndex)
  * or zero when it is not attached.
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int copyGemToInventory(vs_main_InventoryGem* source, int item)
+static int copyGemToInventory(vs_InventoryGem* source, int item)
 {
     int index = 1;
-    vs_main_InventoryGem* gem = inventory->gems;
+    vs_InventoryGem* gem = inventory->gems;
 
     while (gem->id != 0) {
         ++gem;
@@ -793,10 +792,10 @@ static int copyGemToInventory(vs_main_InventoryGem* source, int item)
  * @param arg0 Looted weapon and component data.
  * @return The one-based weapon index, or zero if no weapon slot is available.
  */
-static int copyWeaponToInventory(vs_battle_LootedWeapon* arg0)
+static int copyWeaponToInventory(vs_LootedWeapon* arg0)
 {
     int i;
-    vs_main_InventoryWeapon* slot = inventory->weapons;
+    vs_InventoryWeapon* slot = inventory->weapons;
     int index = 1;
 
     while (slot->blade != 0) {
@@ -828,10 +827,10 @@ static int copyWeaponToInventory(vs_battle_LootedWeapon* arg0)
  *
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int copyArmorToInventory(vs_main_InventoryArmor* source)
+static int copyArmorToInventory(vs_InventoryArmor* source)
 {
     int index = 1;
-    vs_main_InventoryArmor* armor = inventory->armor;
+    vs_InventoryArmor* armor = inventory->armor;
 
     while (armor->id != 0) {
         ++armor;
@@ -853,11 +852,11 @@ static int copyArmorToInventory(vs_main_InventoryArmor* source)
  * @param arg0 Looted shield and attached gem data.
  * @return The one-based shield index, or zero if no shield slot is available.
  */
-static int copyShieldToInventory(vs_battle_LootedShield* arg0)
+static int copyShieldToInventory(vs_LootedShield* arg0)
 {
     int i;
 
-    vs_main_InventoryShield* shield = inventory->shields;
+    vs_InventoryShield* shield = inventory->shields;
     int index = 1;
 
     while (shield->base.id != 0) {
@@ -887,10 +886,10 @@ static int copyShieldToInventory(vs_battle_LootedShield* arg0)
  *
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int copyMiscToInventory(vs_battle_LootedMisc* arg0)
+static int copyMiscToInventory(vs_LootedMisc* arg0)
 {
     int index = 1;
-    vs_main_InventoryMisc* item = inventory->misc;
+    vs_InventoryMisc* item = inventory->misc;
 
     while (item->id != 0) {
         ++index;
@@ -972,8 +971,8 @@ static char* itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "ARM
 static int itemIncludesItemsInCategory(int arg0, LootListItem* arg1)
 {
     int i;
-    vs_main_InventoryShield* shield;
-    vs_main_InventoryWeapon* weapon;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
 
     int category = arg1->itemCategory;
     int count = 0;
@@ -1125,7 +1124,7 @@ static int droppableUnderCurrentDifficulty(int arg0)
  *
  * @param arg0 Battle loot record to apply.
  */
-void applyLootList(vs_battle_Loot* arg0)
+void applyLootList(vs_Loot* arg0)
 {
     int i;
 
@@ -1174,7 +1173,7 @@ void applyLootList(vs_battle_Loot* arg0)
  * Rebuilds the working inventory from a loot-list chain, or from the current
  * battle loot record when no chain is supplied.
  */
-static void applyAllLootLists(vs_battle_LootListNode* node)
+static void applyAllLootLists(vs_LootListNode* node)
 {
     vs_battle_rMemzero(inventory, sizeof *inventory);
 
@@ -1198,7 +1197,7 @@ static void displayCurrentLoot(int x)
     int i;
     int index;
     int temp_v1_3;
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     int count = lootListCount;
     LootListItem* loot = &lootList[lootListOffset];
@@ -1221,8 +1220,8 @@ static void displayCurrentLoot(int x)
 
         switch (loot->itemCategory) {
         case itemCategoryWeapon: {
-            vs_main_InventoryWeapon* weapon = &inventory->weapons[index];
-            vs_main_InventoryBlade* blade = &inventory->blades[weapon->blade - 1];
+            vs_InventoryWeapon* weapon = &inventory->weapons[index];
+            vs_InventoryBlade* blade = &inventory->blades[weapon->blade - 1];
             menuItem =
                 vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0, weapon->name);
             menuItem->rowIcon = blade->category;
@@ -1230,7 +1229,7 @@ static void displayCurrentLoot(int x)
             break;
         }
         case itemCategoryBlade: {
-            vs_main_InventoryBlade* blade2 = &inventory->blades[index];
+            vs_InventoryBlade* blade2 = &inventory->blades[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[blade2->id]);
             menuItem->rowIcon = blade2->category;
@@ -1238,14 +1237,14 @@ static void displayCurrentLoot(int x)
             break;
         }
         case itemCategoryGrip: {
-            vs_main_InventoryGrip* grip = &inventory->grips[index];
+            vs_InventoryGrip* grip = &inventory->grips[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[grip->id]);
             menuItem->rowIcon = grip->category + 10;
             break;
         }
         case itemCategoryShield: {
-            vs_main_InventoryShield* shield = &inventory->shields[index];
+            vs_InventoryShield* shield = &inventory->shields[index];
             menuItem = vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0,
                 vs_mainMenu_itemNames[shield->base.id]);
             menuItem->rowIcon = 15;
@@ -1253,7 +1252,7 @@ static void displayCurrentLoot(int x)
             break;
         }
         case itemCategoryArmor: {
-            vs_main_InventoryArmor* armor = &inventory->armor[index];
+            vs_InventoryArmor* armor = &inventory->armor[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[armor->id]);
             menuItem->rowIcon = armor->category + 0xE;
@@ -1261,14 +1260,14 @@ static void displayCurrentLoot(int x)
             break;
         }
         case itemCategoryGem: {
-            vs_main_InventoryGem* gem = &inventory->gems[index];
+            vs_InventoryGem* gem = &inventory->gems[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[gem->id]);
             menuItem->rowIcon = 22;
             break;
         }
         case itemCategoryMisc: {
-            vs_main_InventoryMisc* misc = &inventory->misc[index];
+            vs_InventoryMisc* misc = &inventory->misc[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[misc->id]);
             menuItem->count = misc->count;
@@ -1386,7 +1385,7 @@ static int discardItems(int init)
     static UNUSED char _;
     static char* itemName;
 
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (init != 0) {
         int i;
@@ -1520,7 +1519,7 @@ static int organizeInventory(LootListItem* loot)
     static char selectedRow;
     static char availableAction;
 
-    vs_battle_MenuItem* menuItem;
+    vs_MenuItem* menuItem;
 
     if (loot != NULL) {
         vs_mainMenu_initInformationBox();

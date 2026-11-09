@@ -43,9 +43,9 @@ typedef struct {
     char unk31;
     char unk32;
     char unk33;
-    vs_battle_WeaponIntermediate weapon;
-    vs_battle_ShieldIntermediate shield;
+    vs_WeaponIntermediate weapon;
+    vs_ShieldIntermediate shield;
     AccessoryIntermediate accessory;
     LimbInit limbs[6];
     int mpdIdentifer;
-} vs_battle_CharInitData;
+} vs_CharInitData;

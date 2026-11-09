@@ -2,7 +2,7 @@ sha1: 384e89e244324a416eb8e33dc8d60eb0d8bcdb64
 options:
   basename: ENDING/ENDING.PRG
   target_path: data/ENDING/ENDING.PRG
-  elf_path: build/data/ENDING/ENDING.PRG.elf
+  elf_path: build/data/ENDING/ENDING.PRG.sym.elf
   asm_path: build/src/ENDING/ENDING.PRG
   src_path: src/ENDING/ENDING.PRG
   asset_path: build/assets/ENDING/ENDING.PRG

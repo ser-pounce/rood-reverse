@@ -1,4 +1,4 @@
-$(BUILD)/data/MENU/MENU9.PRG: LDFLAGS += \
+$(BUILD)/data/MENU/MENU9.PRG.elf $(BUILD)/data/MENU/MENU9.PRG.sym.elf: LDFLAGS += \
 	--defsym=toVsStringPercentAlias=0x80106D5C
 
 $(BUILD)/src/MENU/MENU9.PRG/238.c.o: CC1FLAGS += -Wno-uninitialized

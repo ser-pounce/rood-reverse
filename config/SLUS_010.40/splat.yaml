@@ -2,7 +2,7 @@ sha1: fababcfd4325d42f350d95b3472874affeb0e48c
 options:
   basename: SLUS_010.40
   target_path: data/SLUS_010.40
-  elf_path: build/data/SLUS_010.40.elf
+  elf_path: build/data/SLUS_010.40.sym.elf
   asm_path: build/src/SLUS_010.40
   src_path: src/SLUS_010.40
   asset_path: build/assets/SLUS_010.40

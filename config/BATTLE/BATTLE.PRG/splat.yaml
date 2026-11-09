@@ -2,7 +2,7 @@ sha1: d53aaccc3b3a2fc057d05e0dcea92f7182bc72a9
 options:
   basename: BATTLE/BATTLE.PRG
   target_path: data/BATTLE/BATTLE.PRG
-  elf_path: build/data/BATTLE/BATTLE.PRG.elf
+  elf_path: build/data/BATTLE/BATTLE.PRG.sym.elf
   asm_path: build/src/BATTLE/BATTLE.PRG
   src_path: src/BATTLE/BATTLE.PRG
   asset_path: build/assets/BATTLE/BATTLE.PRG

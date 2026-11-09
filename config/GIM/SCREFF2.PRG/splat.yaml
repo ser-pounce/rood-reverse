@@ -2,7 +2,7 @@ sha1: 2fbcfe478a4279f1268f85fad365d45f7ceffd86
 options:
   basename: GIM/SCREFF2.PRG
   target_path: data/GIM/SCREFF2.PRG
-  elf_path: build/data/GIM/SCREFF2.PRG.elf
+  elf_path: build/data/GIM/SCREFF2.PRG.sym.elf
   asm_path: build/src/GIM/SCREFF2.PRG
   src_path: src/GIM/SCREFF2.PRG
   asset_path: build/assets/GIM/SCREFF2.PRG

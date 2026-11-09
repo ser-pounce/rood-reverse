@@ -30,7 +30,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
     DVECTOR* screenStart;
     int particle;
     int segment;
-    PFileTexture* texture;
+    vs_PFileTexture* texture;
     int width =
         func_800CFE1C(effect->unk30, vs_battle_sampleCurve(effect->unk17, state->unkC));
 

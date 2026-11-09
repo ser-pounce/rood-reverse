@@ -504,7 +504,7 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     DVECTOR* points;
     int i;
     int j;
-    PFileTexture* texture;
+    vs_PFileTexture* texture;
 
     vs_battle_lerpSvector(arg0->unk34[4],
         vs_battle_sampleCurve(arg0->unkE, arg3->curveSampleDistance), &arg1->unk108);

@@ -31,7 +31,7 @@ static int showLoadFilesMenu(int initPort)
     static char leaveTimer;
     static char completeTimer;
 
-    FileMenuElements* element;
+    vs_FileMenuElements* element;
     int currentSlot;
     int i;
 

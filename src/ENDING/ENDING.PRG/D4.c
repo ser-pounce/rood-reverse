@@ -2076,7 +2076,7 @@ enum disIndices {
     disIndexRank2Cartographer
 };
 
-static Texture disMap[] = {
+static vs_Texture disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },

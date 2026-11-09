@@ -84,7 +84,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     MATRIX* actorMatrix;
-    PFileTexture* texture;
+    vs_PFileTexture* texture;
 
     alive = 1;
     state = arg0->unk8;

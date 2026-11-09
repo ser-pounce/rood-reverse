@@ -158,7 +158,7 @@ static char* memcardMakeTempFilename(int port, int fileNo)
 }
 
 static char* mcImageBuf;
-static Mcdata* mcData;
+static vs_Mcdata* mcData;
 static u_short* textTable;
 static UNUSED char _0[4];
 static struct DIRENTRY* memcardFiles[15];
@@ -166,7 +166,7 @@ static struct DIRENTRY* dirEntBuf;
 /* Memorycard save helpers shared by the title and menu overlays. The including file
  * defines memcardFilenameTemplate first. */
 
-static SaveInfoFrame* saveSlotInfo;
+static vs_SaveInfoFrame* saveSlotInfo;
 
 /**
  * Finds the save slot with the greatest generation number.
@@ -250,7 +250,7 @@ static int memcardFileNumberFromFilename(char* filename)
  * @return Nonzero if a sector checksum differs or the info-sector checksum is
  * nonzero; otherwise zero.
  */
-static int verifySaveChecksums(Savedata data[], int sectorCount)
+static int verifySaveChecksums(vs_Savedata data[], int sectorCount)
 {
     int checksum;
     int i;
@@ -301,7 +301,7 @@ static void decode(u_int key, void* buf, int count)
  */
 static int readSaveFileInfo(int id)
 {
-    SaveInfoFrame saveInfo[4];
+    vs_SaveInfoFrame saveInfo[4];
     int i;
     int port = id >> 12;
 
@@ -321,7 +321,7 @@ static int readSaveFileInfo(int id)
         }
         decode(saveInfo[3].identity.key, &saveInfo[3].identity.base.slotState,
             sizeof saveInfo[3] - sizeof(int));
-        if (verifySaveChecksums((Savedata*)saveInfo, 2) == 0) {
+        if (verifySaveChecksums((vs_Savedata*)saveInfo, 2) == 0) {
             rMemcpy(&saveSlotInfo[id - 1], &saveInfo[3], sizeof saveInfo[3]);
             return 0;
         }
@@ -581,13 +581,13 @@ static enum memcardEventHandler_e memcardEventHandler(int initPort)
 static int applyLoadedSaveFile(int apply)
 {
     int blockCount;
-    Savedata* spmcimg = (Savedata*)mcImageBuf;
+    vs_Savedata* spmcimg = (vs_Savedata*)mcImageBuf;
     void* spmcimg2 = spmcimg + 1;
-    Savedata* s4 = spmcimg + 1;
-    SaveIdentity* identity = &spmcimg[1].info.identity;
+    vs_Savedata* s4 = spmcimg + 1;
+    vs_SaveIdentity* identity = &spmcimg[1].info.identity;
 
     decode(identity->key, &identity->base.slotState,
-        sizeof(Savedata) - (u_long) & ((Savedata*)0)->info.identity.base.slotState);
+        sizeof(vs_Savedata) - (u_long) & ((vs_Savedata*)0)->info.identity.base.slotState);
 
     blockCount = 92;
     if (apply != 0) {
@@ -645,10 +645,10 @@ static void packageGameSaveData(int targetFile)
     int j;
     int var_a0;
     u_char const* s0 = defaultFileTitle;
-    Savedata* savedata = (Savedata*)mcImageBuf;
-    Savedata* savedata2 = savedata + 1;
-    Savedata* savedata3 = savedata;
-    SaveInfoFrame* s5 = &savedata->info;
+    vs_Savedata* savedata = (vs_Savedata*)mcImageBuf;
+    vs_Savedata* savedata2 = savedata + 1;
+    vs_Savedata* savedata3 = savedata;
+    vs_SaveInfoFrame* s5 = &savedata->info;
 
     PACKAGE_SAVE_PREPARE();
     memset(savedata, 0, sizeof *savedata);
@@ -747,8 +747,8 @@ static void packageGameSaveData(int targetFile)
         var_a0 ^= mcImageBuf[j + 256];
     }
     s5->checksums[1] = var_a0;
-    for (i = (long)&((Savedata*)0)->info.identity.base.slotState;
-        i < (int)sizeof(Savedata); ++i) {
+    for (i = (long)&((vs_Savedata*)0)->info.identity.base.slotState;
+        i < (int)sizeof(vs_Savedata); ++i) {
         mcImageBuf[i] += KEYSTREAM_BITS(8);
     }
 }
@@ -780,7 +780,7 @@ static int loadSaveData(int portFileno)
     static UNUSED short _;
     static int fd;
 
-    void* temp_s2 = (Savedata*)mcImageBuf + 1;
+    void* temp_s2 = (vs_Savedata*)mcImageBuf + 1;
 
     if (portFileno != 0) {
         state = init;
@@ -808,7 +808,7 @@ static int loadSaveData(int portFileno)
         fileProgressTarget = 192 - (isTempSave << 7);
         filePreviousProgressCounter = fileProgressCounter;
 
-        memset(temp_s2, 0, sizeof(Savedata));
+        memset(temp_s2, 0, sizeof(vs_Savedata));
 
         if (file & 8) {
             filename = memcardMakeTempFilename(port, file & 7);
@@ -821,7 +821,7 @@ static int loadSaveData(int portFileno)
             break;
         }
         resetMemcardEvents(memcardEventsSw);
-        nBytes = sizeof(Savedata);
+        nBytes = sizeof(vs_Savedata);
         if (isTempSave != 0) {
             nBytes = 0x2000;
         }
@@ -916,7 +916,7 @@ static int saveFile(int portFile)
             break;
         }
         resetMemcardEvents(memcardEventsSw);
-        if (write(fd, mcImageBuf, sizeof(Savedata)) == -1) {
+        if (write(fd, mcImageBuf, sizeof(vs_Savedata)) == -1) {
             close(fd);
             ++errors;
             break;
@@ -949,12 +949,12 @@ static int saveFile(int portFile)
         if (temp_s3 < 0) {
             return -1;
         }
-        for (i = 0; i < (int)sizeof(Savedata); ++i) {
-            if (mcImageBuf[i] != mcImageBuf[sizeof(Savedata) + i]) {
+        for (i = 0; i < (int)sizeof(vs_Savedata); ++i) {
+            if (mcImageBuf[i] != mcImageBuf[sizeof(vs_Savedata) + i]) {
                 break;
             }
         }
-        if (i < (int)sizeof(Savedata)) {
+        if (i < (int)sizeof(vs_Savedata)) {
             return -1;
         }
         state = fileVerified;
@@ -997,10 +997,10 @@ static int initMemcard(int init)
     if (init != 0) {
         MEMCARD_INIT_HOOK();
         mcImageBuf = vs_main_allocHeap(VS_SPMCIMG_BIN_SIZE);
-        mcData = (Mcdata*)(mcImageBuf + sizeof(Savedata) * 3);
-        // Laid out in order after Mcdata: MCMAN text table, slot info, DIRENTRY
+        mcData = (vs_Mcdata*)(mcImageBuf + sizeof(vs_Savedata) * 3);
+        // Laid out in order after vs_Mcdata: MCMAN text table, slot info, DIRENTRY
         textTable = (u_short*)(mcData + 1);
-        saveSlotInfo = (SaveInfoFrame*)(textTable + 0x800);
+        saveSlotInfo = (vs_SaveInfoFrame*)(textTable + 0x800);
         dirEntBuf = (struct DIRENTRY*)(saveSlotInfo + 5);
         cdFile.lba = VS_SPMCIMG_BIN_LBA;
         cdFile.size = VS_SPMCIMG_BIN_SIZE;
@@ -1079,9 +1079,9 @@ static void shutdownMemcard(void)
     MEMCARD_SHUTDOWN_HOOK();
 }
 
-static FileMenuElements fileMenuElements[10];
+static vs_FileMenuElements fileMenuElements[10];
 static UNUSED char _2[8];
-static PrimBuf sharedPrimBuf;
+static vs_PrimBuf sharedPrimBuf;
 
 /**
  * Draws a textured sprite using packed coordinates, UV/CLUT, size and tpage.
@@ -1362,9 +1362,9 @@ static void initFileMenu(void)
  *
  * @return The initialized element in the shared file-menu element array.
  */
-static FileMenuElements* initFileMenuElement(int id, int xy, int wh, char* text)
+static vs_FileMenuElements* initFileMenuElement(int id, int xy, int wh, char* text)
 {
-    FileMenuElements* element;
+    vs_FileMenuElements* element;
     int i;
     u_int c;
 
@@ -1664,10 +1664,10 @@ static u_int intepolateMenuItemBgColour(u_int outerFactor, u_int innerFactor)
 /**
  * Draws a menu element and updates its animation state.
  */
-static void drawFileMenuElement(FileMenuElements* element)
+static void drawFileMenuElement(vs_FileMenuElements* element)
 {
     u_long clut[130];
-    SaveInfoFrame* saveInfo;
+    vs_SaveInfoFrame* saveInfo;
     int xy;
     int var_a3;
     int location;
@@ -1854,7 +1854,7 @@ static void drawFileMenuElement(FileMenuElements* element)
 static void drawFileMenu(int framebuf)
 {
     int _[2];
-    FileMenuElements* element;
+    vs_FileMenuElements* element;
     int j;
     int i;
     u_int x;

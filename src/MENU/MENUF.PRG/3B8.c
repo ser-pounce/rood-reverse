@@ -567,7 +567,7 @@ enum disIndices {
     disIndexEsc0Chicken = 125,
 };
 
-static Texture disMap[] = {
+static vs_Texture disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
@@ -1883,7 +1883,7 @@ void renderStoredTime(int x, int y, int slot, int timer)
 
 void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 {
-    Texture* texture;
+    vs_Texture* texture;
     POLY_FT4* poly;
     void** scratch;
 
@@ -1920,7 +1920,7 @@ void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 
 void renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clut)
 {
-    Texture* texture;
+    vs_Texture* texture;
     POLY_FT4* poly;
     void** scratch;
 

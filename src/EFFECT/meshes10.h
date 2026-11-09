@@ -64,7 +64,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int alive = 1;
     MATRIX* actorMatrix;
     int i;
-    PFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:

@@ -69,7 +69,7 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int speed;
     int oldAngle;
     MATRIX* actorMatrix;
-    PFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:

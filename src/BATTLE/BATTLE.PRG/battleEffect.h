@@ -6,7 +6,7 @@
 typedef struct {
     u_short lba;
     u_short size;
-} LoadFileContext;
+} vs_LoadFileContext;
 
 typedef struct {
     u_short type;
@@ -215,7 +215,7 @@ typedef struct {
     short y2;
     short x3;
     short y3;
-} PFileTexture;
+} vs_PFileTexture;
 
 typedef struct {
     int unk0;
@@ -226,7 +226,7 @@ typedef struct {
     char* block8Data;
     int block1TableCount;
     PFileTextureInfo* textureInfoTable[4];
-    PFileTexture* textures;
+    vs_PFileTexture* textures;
     int block2Count;
     u_short* block2Data;
     PFileBlock9* block9Data;
@@ -418,4 +418,4 @@ void vs_battle_setPlgLoadState(int);
 void vs_battle_configureEffectFbLoad(
     int lba, int size, int suffix, int isClut, int index);
 extern ActionEffectRequest D_800F5230;
-extern LoadFileContext vs_battle_pFileLoadContext;
+extern vs_LoadFileContext vs_battle_pFileLoadContext;

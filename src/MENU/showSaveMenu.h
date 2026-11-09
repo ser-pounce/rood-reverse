@@ -47,7 +47,7 @@ static int showSaveMenu(int initState)
     static UNUSED char _[3];
 
     u_short clear = vs_char_terminator | (vs_char_terminator << 8);
-    FileMenuElements* element;
+    vs_FileMenuElements* element;
     int currentSave;
     int val;
 
@@ -72,8 +72,8 @@ static int showSaveMenu(int initState)
     switch (state) {
     case init:
         if (vs_main_settings.containerEmpty) {
-            memset(&((Savedata*)mcImageBuf + 1)->containerData, 0,
-                sizeof((Savedata*)mcImageBuf + 1)->containerData);
+            memset(&((vs_Savedata*)mcImageBuf + 1)->containerData, 0,
+                sizeof((vs_Savedata*)mcImageBuf + 1)->containerData);
             state = initSlot1;
         } else if (fileMenuElementsActive() != 0) {
             if (vs_main_settings.slotState != slotStateUnavailable) {
@@ -212,8 +212,8 @@ static int showSaveMenu(int initState)
             }
             if (state == eraseContainerData) {
                 containerDataEmpty = 1;
-                memset(&((Savedata*)mcImageBuf + 1)->containerData, 0,
-                    sizeof((Savedata*)mcImageBuf + 1)->containerData);
+                memset(&((vs_Savedata*)mcImageBuf + 1)->containerData, 0,
+                    sizeof((vs_Savedata*)mcImageBuf + 1)->containerData);
             }
             state = initSlot1;
         }

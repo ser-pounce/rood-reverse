@@ -47,7 +47,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int column;
     int drawRow;
     int drawColumn;
-    PFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:

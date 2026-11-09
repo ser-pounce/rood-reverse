@@ -243,7 +243,7 @@ static int saveScreenConfirmation(int init)
     static u_char confirm;
     static UNUSED char _[5];
 
-    FileMenuElements* elem;
+    vs_FileMenuElements* elem;
     int i;
 
     if (init != 0) {

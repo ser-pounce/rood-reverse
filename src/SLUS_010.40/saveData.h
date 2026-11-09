@@ -50,19 +50,19 @@ typedef struct {
 typedef struct {
     int key;
     SaveBase base;
-} SaveIdentity;
+} vs_SaveIdentity;
 
 typedef struct {
-    SaveIdentity identity;
+    vs_SaveIdentity identity;
     Stats stats;
     char checksums[0x5C];
-} SaveInfoFrame;
+} vs_SaveInfoFrame;
 
 typedef struct {
     SaveTitleFrame titleFrame;
     char iconFrame0[0x80];
     char pocketStationIcon[0x80];
-    SaveInfoFrame info;
+    vs_SaveInfoFrame info;
     char stateFlags[0x440];
     char actionsLearned[32];
     char mapStatus[0x48];
@@ -77,7 +77,7 @@ typedef struct {
     vs_ArtsStatus artsStatus;
     vs_ContainerData containerData;
     char pad[0x220];
-} Savedata;
+} vs_Savedata;
 
 enum fileMenuElementState_e {
     fileMenuElementStateInactive = 0,
@@ -103,7 +103,7 @@ typedef struct {
     short w;
     short h;
     char text[32];
-} FileMenuElements;
+} vs_FileMenuElements;
 
 typedef struct {
     u_long tag;
@@ -119,7 +119,7 @@ typedef struct {
         } tilePoly;
         u_long raw[15];
     } prim;
-} PrimBuf;
+} vs_PrimBuf;
 
 typedef struct {
     u_short locationCluts[2][256];
@@ -128,4 +128,4 @@ typedef struct {
     char pocketStationIcons[7][128];
     // MCDATA.BIN is 0xBE0 bytes and MCMAN.BIN is read in at the next sector boundary
     UNUSED char _[0x420];
-} Mcdata;
+} vs_Mcdata;

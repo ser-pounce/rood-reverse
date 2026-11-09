@@ -49,6 +49,8 @@ static void setRiskCost(int id)
 u_short battleAbilityStrings[] = {
 #include "build/assets/MENU/MENU2.PRG/battleAbilities.vsString"
 };
+VS_HIDDEN(battleAbilityStrings);
+
 static u_short* abilityText = NULL;
 static int highlightedAbility = 0;
 static u_int abilityMenuState = 0;

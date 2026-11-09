@@ -20,7 +20,7 @@
 
 enum copyContainerFlags { copyContainerFlagsCopy = 0x10 };
 static int copyContainerItem(int, vs_ContainerData*, int, vs_ContainerData*);
-int func_80106C64(int, char**, int*, char*);
+static int func_80106C64(int, char**, int*, char*);
 
 void vs_menuD_initUiWeapon(
     vs_UiWeapon* target, vs_InventoryWeapon* source, vs_ContainerData* container)
@@ -698,7 +698,7 @@ static int pollItemNavigation(int itemCategory, int currentSelection)
     return currentSelection;
 }
 
-void func_80103E24(int arg0, int arg1)
+static void func_80103E24(int arg0, int arg1)
 {
     int i;
     u_long* var_v1;
@@ -733,7 +733,7 @@ void func_80103E24(int arg0, int arg1)
     }
 }
 
-void func_80103F64(int arg0)
+static void func_80103F64(int arg0)
 {
     vs_MenuItem* menuItem;
 
@@ -751,7 +751,7 @@ void func_80103F64(int arg0)
     menuItem->unselectable = 0;
 }
 
-void func_80103FD4(int arg0)
+static void func_80103FD4(int arg0)
 {
     vs_MenuItem* menuItem;
 
@@ -774,7 +774,7 @@ static void func_80104034(int arg0, int arg1)
     vs_mainMenu_renderEquipStats(1);
 }
 
-void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
+static void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
 {
     vs_MenuItem* menuItem;
 
@@ -787,14 +787,14 @@ void func_80104078(int arg0, char** arg1, u_int arg2, int arg3)
     vs_battle_getMenuItem(0x1F)->itemPage = arg3 + 1;
 }
 
-int func_80104114(int arg0, int arg1)
+static int func_80104114(int arg0, int arg1)
 {
     D_800F4EE8.cursorMemories[(arg0 + 0x51) * 2] = 0;
     D_800F4EE8.cursorMemories[(arg0 + 0x51) * 2 + 1] = arg1;
     return getContainerIndicesOffset(arg0, vs_menuD_containerData)[arg1];
 }
 
-void func_80104170(int arg0)
+static void func_80104170(int arg0)
 {
     vs_battle_playMenuLeaveSfx();
     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -827,7 +827,7 @@ static void setShieldUi(
     vs_mainMenu_setShieldRow(&shield, rowStrings, rowTypes, buf);
 }
 
-int weaponNavigation(int weaponIndex)
+static int weaponNavigation(int weaponIndex)
 {
     static char D_80109A30;
     static char D_80109A31;
@@ -900,7 +900,7 @@ int weaponNavigation(int weaponIndex)
     return 0;
 }
 
-int bladeNavigation(int bladeIndex)
+static int bladeNavigation(int bladeIndex)
 {
     static char D_80109A35;
     static char D_80109A36;
@@ -963,7 +963,7 @@ int bladeNavigation(int bladeIndex)
     return 0;
 }
 
-int gripNavigation(int arg0)
+static int gripNavigation(int arg0)
 {
     static char* D_80109954 = "X     0";
 
@@ -1035,7 +1035,7 @@ int gripNavigation(int arg0)
     return 0;
 }
 
-int shieldNavigation(int arg0)
+static int shieldNavigation(int arg0)
 {
     static char D_80109A3E;
     static char D_80109A3F;
@@ -1108,7 +1108,7 @@ int shieldNavigation(int arg0)
     return 0;
 }
 
-int armorNavigation(int arg0)
+static int armorNavigation(int arg0)
 {
     static char D_80109A43;
     static char D_80109A44;
@@ -1174,7 +1174,7 @@ int armorNavigation(int arg0)
     return 0;
 }
 
-int gemNavigation(int arg0)
+static int gemNavigation(int arg0)
 {
     static u_char D_80109A47;
     static u_char D_80109A48;
@@ -1233,7 +1233,7 @@ int gemNavigation(int arg0)
     return 0;
 }
 
-int func_80105008(int arg0)
+static int func_80105008(int arg0)
 {
     static int (*D_80109958[])(int) = { weaponNavigation, bladeNavigation, gripNavigation,
         shieldNavigation, armorNavigation, gemNavigation };
@@ -1271,7 +1271,7 @@ int func_80105008(int arg0)
     return temp_v0;
 }
 
-int getWeaponStat(int type, vs_UiWeapon* weapon)
+static int getWeaponStat(int type, vs_UiWeapon* weapon)
 {
     switch (type) {
     case 0:
@@ -1678,7 +1678,7 @@ static int displaySortMenu(int arg0)
     return 0;
 }
 
-int discardMenu(int arg0)
+static int discardMenu(int arg0)
 {
     enum state {
         init,
@@ -1923,7 +1923,7 @@ static char const* D_80109A08[] = { "GADGET BAG", "CONTAINER" };
 static char const* D_80109A10[] = { "$WEAPON", "$BLADE", "$GRIP", "$SHIELD", "$ARMOR",
     "$GEM", "$MISC" };
 
-void func_80106464(int arg0, int arg1, int arg2)
+static void func_80106464(int arg0, int arg1, int arg2)
 {
     int var_s2;
     int temp_s0;
@@ -1938,7 +1938,7 @@ void func_80106464(int arg0, int arg1, int arg2)
     vs_mainMenu_renderIntColor(arg2, temp_s0, var_s2, 0);
 }
 
-void func_80106504(void)
+static void func_80106504(void)
 {
     int i;
     int var_s1_2;
@@ -1957,7 +1957,7 @@ void func_80106504(void)
     }
 }
 
-int getWeaponsubItemCount(int arg0)
+static int getWeaponsubItemCount(int arg0)
 {
     int i;
     vs_InventoryWeapon* temp = &vs_menuD_containerData->data.weapons[arg0];
@@ -1969,7 +1969,7 @@ int getWeaponsubItemCount(int arg0)
     return count;
 }
 
-int getShieldsubItemCount(int arg0)
+static int getShieldsubItemCount(int arg0)
 {
     int i;
     vs_InventoryShield* shield = &vs_menuD_containerData->data.shields[arg0];
@@ -1981,7 +1981,7 @@ int getShieldsubItemCount(int arg0)
     return count;
 }
 
-int func_801066DC(int arg0, int arg1)
+static int func_801066DC(int arg0, int arg1)
 {
     int temp_s0 = countContainerItems(arg0, &D_80109A88->data);
     int temp_s1 =
@@ -1993,7 +1993,7 @@ int func_801066DC(int arg0, int arg1)
     return vs_mainMenu_inventoryItemCapacities[arg0] < temp_s1;
 }
 
-int func_80106784(int arg0, int arg1)
+static int func_80106784(int arg0, int arg1)
 {
     int i;
 
@@ -2038,7 +2038,7 @@ int func_80106784(int arg0, int arg1)
     return 0;
 }
 
-void func_801068BC(int arg0)
+static void func_801068BC(int arg0)
 {
     int temp_s0_2;
     int temp_s2;
@@ -2052,7 +2052,7 @@ void func_801068BC(int arg0)
     initContainerObject(temp_s2, temp_s0_2, &vs_menu_inventoryStorage->unk87B0);
 }
 
-void func_80106948(int arg0, int arg1)
+static void func_80106948(int arg0, int arg1)
 {
     copyContainerItem(arg0 | 0x10, &vs_menu_inventoryStorage->unk87B0, arg1,
         &vs_menuD_containerData->data);
@@ -2086,7 +2086,7 @@ static void func_80106A04(int arg0, int arg1)
     }
 }
 
-void func_80106A50(void)
+static void func_80106A50(void)
 {
     int j;
     int var_a1;
@@ -2143,7 +2143,7 @@ void func_80106A50(void)
     }
 }
 
-int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
+static int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
 {
     int itemCount;
     u_short* indices;
@@ -2307,7 +2307,7 @@ int func_80106C64(int itemCategory, char** text, int* rowTypes, char* textBuf)
     return itemCount;
 }
 
-void func_801071D8(int arg0)
+static void func_801071D8(int arg0)
 {
     int temp_v0_2;
     int i;
@@ -2330,7 +2330,7 @@ void func_801071D8(int arg0)
     }
 }
 
-int func_801072B0(int arg0)
+static int func_801072B0(int arg0)
 {
     static int D_80109A58;
     static char D_80109A5C;
@@ -2391,7 +2391,7 @@ int func_801072B0(int arg0)
     return 0;
 }
 
-int func_80107490(int arg0)
+static int func_80107490(int arg0)
 {
     static char D_80109A60[8];
     static char D_80109A68;
@@ -3037,7 +3037,7 @@ loop_1:
     return 0;
 }
 
-int func_801089BC(int arg0)
+static int func_801089BC(int arg0)
 {
     static char D_80109A2C = 0;
     static char D_80109A2D = 0;

@@ -848,7 +848,7 @@ static void renderBasicStats(void)
  *
  * @param subdued Final color shifted right by this amount, in practice either 0 or 1.
  */
-void drawStatusIndicator(int colorIndex, int xy, int subdued)
+static void drawStatusIndicator(int colorIndex, int xy, int subdued)
 {
     u_int color;
     u_long* prim;

@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "C48.h"
 
 /**
@@ -13,3 +14,4 @@
  * - Bits 16+: The highest stat identifier, where 0-5 == class, 6-12 == affinity.
  */
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
+VS_HIDDEN(vs_mainMenu_getEquipmentMaxStats);

@@ -7,9 +7,6 @@ $(BUILD)/data/SLUS_010.40.elf: private LDFLAGS += \
 	--defsym=g_pActiveMusicConfig2=0x80037820\
 	--defsym=vs_scratch=0x1F800000
 
-$(BUILD)/data/SLUS_010.40.sym.elf: LDFLAGS += \
-	--retain-symbols-file=config/SLUS_010.40/exports.txt
-
 $(BUILD)/src/SLUS_010.40/main.c.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.c.o: MASFLAGS += --expand-div
 $(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1VER := 2.7.2-cdk

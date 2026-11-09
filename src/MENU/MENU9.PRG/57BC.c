@@ -1,3 +1,4 @@
+#include "common.h"
 #include "57BC.h"
 #include "592C.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
@@ -38,12 +39,16 @@ int vs_menu9_loadZud(int zudIndex)
     return 1;
 }
 
+VS_HIDDEN(vs_menu9_loadZud);
+
 void vs_menu9_freeZud(void)
 {
     func_8009CFB0(1);
     func_8009CFB0(16);
     vs_menu9_freeZudFile();
 }
+
+VS_HIDDEN(vs_menu9_freeZud);
 
 void func_801080C8(void)
 {
@@ -56,3 +61,5 @@ void func_801080C8(void)
     func_800A087C(1, 3);
     func_8009F940(1, 0, NULL, NULL);
 }
+
+VS_HIDDEN(func_801080C8);

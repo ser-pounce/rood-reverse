@@ -748,7 +748,7 @@ static void renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
 static void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
 static void renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
 static void renderRiskbreakerRank(int arg0, int arg1, int arg2);
-void renderStatWheel(int, int, int, int);
+static void renderStatWheel(int, int, int, int);
 static void renderPressButtonPrompt(int, int, int, int);
 static void renderScore(int arg0, int arg1, int arg2, int arg3);
 static void renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
@@ -1299,7 +1299,7 @@ void pulseTimeAttackEnd(int arg0)
     LoadImage(&rect, (u_long*)clutBuf);
 }
 
-void pulseCubePuzzleEnd(int arg0)
+static void pulseCubePuzzleEnd(int arg0)
 {
     RECT rect;
     int var_a1;
@@ -1998,9 +1998,9 @@ void renderTime(int x, int y, int timer, int time, int isNewRecord)
     }
 }
 
-void renderAnimatedStatWheel(int x, int y, int texId);
+static void renderAnimatedStatWheel(int x, int y, int texId);
 
-void renderStatWheel(int x, int y, int timer, int arg3)
+static void renderStatWheel(int x, int y, int timer, int arg3)
 {
     static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 } };
 
@@ -2171,7 +2171,7 @@ void renderPressButtonPrompt(int x, int y, int arg2, int arg3)
 
 #include "src/renderTextures.h"
 
-void renderAnimatedStatWheel(int x, int y, int texId)
+static void renderAnimatedStatWheel(int x, int y, int texId)
 {
     int i;
     int brightness;

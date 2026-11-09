@@ -31,24 +31,31 @@ static char itemActionCount = 0;
 static char itemActionListOffset = 0;
 
 char rangeRiskData[8];
-short D_80102488[4];
-char D_80102490[8];
-short D_80102498[4];
+VS_HIDDEN(rangeRiskData);
 
-char menuActionsPageOffset;
+short D_80102488[4];
+VS_HIDDEN(D_80102488);
+
+char D_80102490[8];
+VS_HIDDEN(D_80102490);
+
+short D_80102498[4];
+VS_HIDDEN(D_80102498);
+
+static char menuActionsPageOffset;
 char vs_mainMenu_currentStatusViewItem;
-UNUSED char bss_7[2];
+static UNUSED char bss_7[2];
 u_short* vs_mainMenu_menu12Text;
 short vs_mainMenu_strIntAgi[8];
 u_char vs_mainMenu_selectedStatusViewElement;
 char vs_mainMenu_itemStatPage;
-UNUSED char bss_3[6];
+static UNUSED char bss_3[6];
 short vs_mainMenu_equipmentStats[64];
 u_short* vs_mainMenu_itemHelp;
 char vs_mainMenu_enabledStatPages;
 char vs_mainMenu_equipmentSubtype;
-UNUSED char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
-TextHeader textHeaders[2];
+static UNUSED char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
+static TextHeader textHeaders[2];
 char vs_mainMenu_containerEmptyBackup;
 
 void vs_mainMenu_addMenuActions(
@@ -396,7 +403,7 @@ char vs_mainMenu_displayActionCost = 0;
 char vs_mainMenu_cursorColor = 0;
 char vs_mainMenu_hideMenu = 0;
 int vs_mainMenu_backgroundFadeStep = 0;
-char backgroundFadeState = 0;
+static char backgroundFadeState = 0;
 static short backgroundOtOffset = -4;
 static short backgroundBrightness = 128;
 static char menuActionCurrent = 0;
@@ -559,10 +566,14 @@ int vs_mainMenu_renderIntWithThreshold(int value, int xy, int threshold, u_long*
     return vs_mainMenu_renderIntColor(value, xy, color, before);
 }
 
+VS_HIDDEN(vs_mainMenu_renderIntWithThreshold);
+
 void vs_mainMenu_renderIntColorDefault(int value, int xy, u_long* before)
 {
     vs_mainMenu_renderIntColor(value, xy, vs_getRGB888(128, 128, 128), before);
 }
+
+VS_HIDDEN(vs_mainMenu_renderIntColorDefault);
 
 /**
  * Fades the top or bottom 16 pixels of the icon, used for elements at the
@@ -1747,3 +1758,5 @@ void vs_mainMenu_renderScreen(void)
     vs_mainMenu_renderEquipStats(0);
     vs_mainMenu_renderDpPpBars(0);
 }
+
+VS_HIDDEN(vs_mainMenu_renderScreen);

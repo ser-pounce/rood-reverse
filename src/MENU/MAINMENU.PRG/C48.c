@@ -213,6 +213,8 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 }
 
+VS_HIDDEN(vs_mainMenu_getEquipmentMaxStats);
+
 void vs_mainMenu_menuItemFlyoutLeft(int row)
 {
     vs_MenuItem* menuItem = vs_battle_getMenuItem(row + 32);

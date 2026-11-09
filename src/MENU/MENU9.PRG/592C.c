@@ -201,6 +201,8 @@ void vs_menu9_loadZudFile(int id)
     }
 }
 
+VS_HIDDEN(vs_menu9_loadZudFile);
+
 int vs_menu9_parseZudFile(void)
 {
     vs_ObjectData slot;
@@ -293,11 +295,15 @@ int vs_menu9_parseZudFile(void)
     return 1;
 }
 
+VS_HIDDEN(vs_menu9_parseZudFile);
+
 void vs_menu9_freeZudFile(void)
 {
     vs_main_freeHeapR(zudBuffer);
     zudBuffer = NULL;
 }
+
+VS_HIDDEN(vs_menu9_freeZudFile);
 
 static UNUSED void noop(void);
 static void noop(void) { }

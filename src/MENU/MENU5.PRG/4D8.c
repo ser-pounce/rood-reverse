@@ -195,7 +195,7 @@ static int mapSelection(void)
     return row;
 }
 
-void setMenuItemMapName(char* mapName, char fontColor)
+static void setMenuItemMapName(char* mapName, char fontColor)
 {
     vs_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 8, mapName);
 
@@ -418,7 +418,7 @@ static int const ashleyIconBrightness[] = { 0x00404040, 0x00505050, 0x00606060,
 static UNUSED int const D_80102C40[] = { 0x006B4100, 0x006C8219, 0x00663040, 0x00203840,
     0x00330500, 0x00262801, 0x00200808, 0x00081010 };
 
-u_short mapNames[] = {
+static u_short mapNames[] = {
 #include "build/assets/MENU/MENU5.PRG/mapNames.vsString"
 };
 

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
@@ -95,3 +96,5 @@ void func_800FA7B0(void)
     D_800F4B19 = 0;
     D_800F4B18 = 0;
 }
+
+VS_HIDDEN(func_800FA7B0);

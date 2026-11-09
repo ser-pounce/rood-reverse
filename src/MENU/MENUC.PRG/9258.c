@@ -43,3 +43,5 @@ int loadObject(int arg0)
 
     return 1;
 }
+
+VS_HIDDEN(loadObject);

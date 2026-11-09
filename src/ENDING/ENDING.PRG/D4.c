@@ -476,6 +476,8 @@ typedef struct {
 } TimData;
 
 extern TimData illustSydney;
+VS_HIDDEN(illustSydney);
+
 static TimData* decompressedIllustData = &illustSydney;
 
 static u_short illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
@@ -592,6 +594,7 @@ static void renderllustration(CreditsElement* element)
 }
 
 extern u_char glyphWidths[];
+VS_HIDDEN(glyphWidths);
 
 /**
  * Measures the rendered width of a string.

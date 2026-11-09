@@ -44,7 +44,7 @@
 /**
  * Hides or shows the menu action at the very top of the menu.
  */
-void toggleMenuAction(int enable)
+static void toggleMenuAction(int enable)
 {
     if (enable != 0) {
         vs_mainMenu_setMenuCommand(menuActionMenu);
@@ -58,7 +58,7 @@ void toggleMenuAction(int enable)
 /**
  * Feathers the top or bottom of the item and adds the scroll arrows.
  */
-void renderScrollableMenuItem(vs_MenuItem* menuItem)
+static void renderScrollableMenuItem(vs_MenuItem* menuItem)
 {
     static char previousFrameBuf = 0;
     static char navigationAnimState = 0;
@@ -200,7 +200,7 @@ void renderScrollableMenuItem(vs_MenuItem* menuItem)
  * Stores the current cursor position and page and sets
  * the next menu rows.
  */
-void setRows(int rowCount, int absoluteRow, char* text[])
+static void setRows(int rowCount, int absoluteRow, char* text[])
 {
     int rowTypes[rowCount];
     int i;
@@ -232,7 +232,7 @@ void setRows(int rowCount, int absoluteRow, char* text[])
 /**
  * Hoists the selected row to the top, or clears the menu on cancellation.
  */
-int getSelectedRow(void)
+static int getSelectedRow(void)
 {
     int row = vs_mainmenu_getSelectedRow();
 
@@ -248,8 +248,8 @@ int getSelectedRow(void)
 /**
  * Unused, possibly copied from another menu.
  */
-UNUSED void setMenuRow10(char* text);
-void setMenuRow10(char* text)
+static UNUSED void setMenuRow10(char* text);
+static void setMenuRow10(char* text)
 {
     vs_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
     menuItem->state = menuItemStateSlideX;
@@ -261,17 +261,17 @@ void setMenuRow10(char* text)
 /**
  * Unused, possibly copied from another menu.
  */
-UNUSED void clearMenuExceptRow8(void);
-void clearMenuExceptRow8(void) { vs_mainMenu_clearMenuExcept(8); }
+static UNUSED void clearMenuExceptRow8(void);
+static void clearMenuExceptRow8(void) { vs_mainMenu_clearMenuExcept(8); }
 
 /**
  * Unused, possibly copied from another menu.
  */
-UNUSED void menuReady(void);
-void menuReady(void) { vs_mainmenu_ready(); }
+static UNUSED void menuReady(void);
+static void menuReady(void) { vs_mainmenu_ready(); }
 
-int calculateProgress(void);
-int menuInput(void);
+static int calculateProgress(void);
+static int menuInput(void);
 
 int vs_menu9_exec(u_char* state)
 {
@@ -384,8 +384,8 @@ typedef struct {
 } MonBinData;
 
 static void determineCharacterRank(void);
-void setTitleFlags(void);
-void calculateScore(void);
+static void setTitleFlags(void);
+static void calculateScore(void);
 
 static UNUSED int _0;
 static GazetteRow gazetteRows[32];
@@ -422,7 +422,7 @@ static VECTOR cameraAnglesBackup;
 /**
  * Recalculates the base game stats and stores the previous camera state.
  */
-int calculateProgress(void)
+static int calculateProgress(void)
 {
     int i;
     int j;
@@ -529,28 +529,28 @@ static UNUSED char noString[] = "NO\0";
 static char const* timeAttackReferenceTimes[] = { "$00:25:00", "$00:30:00", "$00:40:00",
     "$00:50:00", "$01:00:00", "$01:15:00", "$01:00:00", "$01:25:00" };
 
-void restoreCamera(void);
-void setEnemyDescription(void);
-int topMenu(int arg0);
-void renderTopMenu(int arg0);
-void setTitleRows(void);
-void renderTitleMenu(int arg0);
-void initEnemyList(void);
-void renderEnemyMenu(int arg0);
-void renderEnemyDetailScreen(int arg0, int arg1);
-void setStatText(void);
-void renderBossRushDetails(int);
-void printBossRushMenuRow(void);
-void leaveBossRushMenu(void);
-void renderBossRushRecords(int);
-void renderEnemyNavigation(int arg0);
+static void restoreCamera(void);
+static void setEnemyDescription(void);
+static int topMenu(int arg0);
+static void renderTopMenu(int arg0);
+static void setTitleRows(void);
+static void renderTitleMenu(int arg0);
+static void initEnemyList(void);
+static void renderEnemyMenu(int arg0);
+static void renderEnemyDetailScreen(int arg0, int arg1);
+static void setStatText(void);
+static void renderBossRushDetails(int);
+static void printBossRushMenuRow(void);
+static void leaveBossRushMenu(void);
+static void renderBossRushRecords(int);
+static void renderEnemyNavigation(int arg0);
 
 /**
  * Manages user input
  *
  * @return 1 == menu selected, 2 == exit, 0 otherwise
  */
-int menuInput(void)
+static int menuInput(void)
 {
     static int menuAnimState;
 
@@ -1404,7 +1404,7 @@ int menuInput(void)
 /**
  * Resets the camera back to the stored view.
  */
-void restoreCamera(void)
+static void restoreCamera(void)
 {
     vs_main_memcpy(&((vs_Scratch*)getScratchAddr(0))->camera.position,
         &cameraPositionBackup, sizeof cameraPositionBackup);
@@ -1416,7 +1416,7 @@ void restoreCamera(void)
  * Set's the current enemy description or a generic message if the enemy
  * hasn't been defeated.
  */
-void setEnemyDescription(void)
+static void setEnemyDescription(void)
 {
     if (monBinData[selectedEnemy].unlocked != 0) {
         vs_mainmenu_setInformationMessage(
@@ -1432,7 +1432,7 @@ void setEnemyDescription(void)
  *
  * @return -1 if initializing or user exits, selected row otherwise.
  */
-int topMenu(int initialize)
+static int topMenu(int initialize)
 {
     static int state;
     static int selectedRow;
@@ -1470,13 +1470,13 @@ int topMenu(int initialize)
     return -1;
 }
 
-void buildYawMatrix(MATRIX* arg0, short arg1);
-void buildPitchMatrix(MATRIX* arg0, short arg1);
+static void buildYawMatrix(MATRIX* arg0, short arg1);
+static void buildPitchMatrix(MATRIX* arg0, short arg1);
 
 /**
  * Updates the camera with the adjusted parameters.
  */
-void buildCameraMatrix(MATRIX* cameraMatrix)
+static void buildCameraMatrix(MATRIX* cameraMatrix)
 {
     SVECTOR negPosition;
     SVECTOR position;
@@ -1516,7 +1516,7 @@ void buildCameraMatrix(MATRIX* cameraMatrix)
 /**
  * Updates camera yaw angle.
  */
-void buildYawMatrix(MATRIX* cameraMatrix, short angle)
+static void buildYawMatrix(MATRIX* cameraMatrix, short angle)
 {
     int sine = rsin(-angle);
     int cosine = rcos(-angle);
@@ -1535,7 +1535,7 @@ void buildYawMatrix(MATRIX* cameraMatrix, short angle)
 /**
  * Updates camera pitch angle.
  */
-void buildPitchMatrix(MATRIX* pitchMatrix, short angle)
+static void buildPitchMatrix(MATRIX* pitchMatrix, short angle)
 {
     int sine = rsin(angle);
     int cosine = rcos(angle);
@@ -1554,7 +1554,7 @@ void buildPitchMatrix(MATRIX* pitchMatrix, short angle)
 /**
  * The quads behind the enemy number and class / name.
  */
-void renderEnemyInfoBg(int x, int y, int w, int h, int color)
+static void renderEnemyInfoBg(int x, int y, int w, int h, int color)
 {
     int i;
     int var_s7;
@@ -1596,7 +1596,7 @@ void renderEnemyInfoBg(int x, int y, int w, int h, int color)
 /**
  * The quads behind "Score" and "Risk Breaker Rank".
  */
-void renderGradientQuad(int x, int y, int w, int h, int color)
+static void renderGradientQuad(int x, int y, int w, int h, int color)
 {
     char b1;
     char g0;
@@ -1647,7 +1647,7 @@ void renderGradientQuad(int x, int y, int w, int h, int color)
  * The black footer background on the top menu
  * (replaced by an info box on other screens).
  */
-void renderFooterBg(int x)
+static void renderFooterBg(int x)
 {
     POLY_F4* polyF4;
     void** scratch = (void**)getScratchAddr(0);
@@ -1676,12 +1676,12 @@ void renderFooterBg(int x)
     insertTPage(7, getTPage(0, 2, 0, 0));
 }
 
-void renderScreenEdgeFade(void);
+static void renderScreenEdgeFade(void);
 
 /**
  * Bundles camera update and non-menu UI elements.
  */
-void renderTopMenu(int animStep)
+static void renderTopMenu(int animStep)
 {
     vs_GeomOffset sp18;
     vs_GeomOffset sp20;
@@ -1724,7 +1724,7 @@ void renderTopMenu(int animStep)
 /**
  * Configures the text and row status for the titles submenu.
  */
-void setTitleRows(void)
+static void setTitleRows(void)
 {
     int i;
     GazetteRow* row;
@@ -1751,14 +1751,14 @@ void setTitleRows(void)
     }
 }
 
-void renderTitleNo(int arg0, int arg1, int enemyNo, int arg3);
+static void renderTitleNo(int arg0, int arg1, int enemyNo, int arg3);
 
 /**
  * Manages the title selection menu and its animation.
  *
  * @param animState Value from 0-8, incremented or decremented linearly.
  */
-void renderTitleMenu(int animState)
+static void renderTitleMenu(int animState)
 {
     static char cursorAnimState = 0;
 
@@ -1837,7 +1837,7 @@ void renderTitleMenu(int animState)
  * De facto reserved for the first title when the window doesn't
  * start at index 01.
  */
-void renderTitleNo(int x, int y, int titleNo, int dimmed)
+static void renderTitleNo(int x, int y, int titleNo, int dimmed)
 {
     char digits[2];
     int i;
@@ -1880,7 +1880,7 @@ void renderTitleNo(int x, int y, int titleNo, int dimmed)
  * De facto reserved for the first enemy when the window doesn't
  * start at index 01.
  */
-void renderEnemyNo(int x, int y, int enemyNo, int dimmed)
+static void renderEnemyNo(int x, int y, int enemyNo, int dimmed)
 {
     char digits[2];
     int i;
@@ -1918,7 +1918,7 @@ void renderEnemyNo(int x, int y, int enemyNo, int dimmed)
 /**
  * Determines unlocked enemies and updates the two-way list.
  */
-void initEnemyList(void)
+static void initEnemyList(void)
 {
     int i;
     char index;
@@ -1974,7 +1974,7 @@ void initEnemyList(void)
  *
  * @param animState Value from 0-8, incremented or decremented linearly.
  */
-void renderEnemyMenu(int animState)
+static void renderEnemyMenu(int animState)
 {
     static char cursorAnimStep = 0;
 
@@ -2071,7 +2071,7 @@ void renderEnemyMenu(int animState)
 /**
  * @brief Sets the camera and enemy details.
  */
-void renderEnemyDetailScreen(int animState, int state)
+static void renderEnemyDetailScreen(int animState, int state)
 {
     char const* enemyClassName[] = { "HUMAN", "BEAST", "UNDEAD", "PHANTOM", "DRAGON",
         "EVIL" };
@@ -2148,7 +2148,7 @@ void renderEnemyDetailScreen(int animState, int state)
 /**
  * Draws a semitransparent gradient on the left and right edges of the screen.
  */
-void renderScreenEdgeFade(void)
+static void renderScreenEdgeFade(void)
 {
     void** scratch = (void**)0x1F800000;
     POLY_G4* poly = scratch[0];
@@ -2178,7 +2178,7 @@ void renderScreenEdgeFade(void)
     insertTPage(8, getTPage(0, 2, 0, 0));
 }
 
-void stringCopy(u_char* dest, u_char* src)
+static void stringCopy(u_char* dest, u_char* src)
 {
     while (*src != vs_char_terminator) {
         *dest++ = *src++;
@@ -2187,7 +2187,7 @@ void stringCopy(u_char* dest, u_char* src)
     *dest = *src;
 }
 
-void stringConcat(char* dest, char* src)
+static void stringConcat(char* dest, char* src)
 {
     while (*dest != vs_char_terminator) {
         ++dest;
@@ -2203,7 +2203,7 @@ void stringConcat(char* dest, char* src)
 /**
  * Sets the rows for the Gazette screen.
  */
-void setStatText(void)
+static void setStatText(void)
 {
     int i;
     GazetteRow* p;
@@ -2220,15 +2220,15 @@ void setStatText(void)
     }
 }
 
-void toVsStringInt(char* buf, int value);
-void printFastestClearTime(char* buf, int rounds, int totalSeconds);
-void toVsStringPercent(char* buf, int value);
+static void toVsStringInt(char* buf, int value);
+static void printFastestClearTime(char* buf, int rounds, int totalSeconds);
+static void toVsStringPercent(char* buf, int value);
 void toVsStringPercentAlias(char* buf, int value);
 
 /**
  * Formats and renders the boss rush data.
  */
-void renderBossRushDetails(int animState)
+static void renderBossRushDetails(int animState)
 {
     static char cursorAnimStep = 0;
 
@@ -2350,7 +2350,7 @@ void renderBossRushDetails(int animState)
 /**
  * Prints an integer in VS string encoding.
  */
-void toVsStringInt(char* buf, int value)
+static void toVsStringInt(char* buf, int value)
 {
     int len;
     int i;
@@ -2372,7 +2372,7 @@ void toVsStringInt(char* buf, int value)
 /**
  * Same as toVsStringInt but appends a %.
  */
-void toVsStringPercent(char* buf, int value)
+static void toVsStringPercent(char* buf, int value)
 {
     typedef struct {
         char data[4];
@@ -2402,7 +2402,7 @@ void toVsStringPercent(char* buf, int value)
 /**
  * Prints the best time, prepended with the game "round".
  */
-void printFastestClearTime(char* buf, int rounds, int totalSeconds)
+static void printFastestClearTime(char* buf, int rounds, int totalSeconds)
 {
     int len;
     int i;
@@ -2463,7 +2463,7 @@ void printFastestClearTime(char* buf, int rounds, int totalSeconds)
 /**
  * Sets the menu rows for the boss rush screen.
  */
-void printBossRushMenuRow(void)
+static void printBossRushMenuRow(void)
 {
     int i;
     GazetteRow* row;
@@ -2489,7 +2489,7 @@ void printBossRushMenuRow(void)
 /**
  *  Row animation when leaving record time menu.
  */
-void leaveBossRushMenu(void)
+static void leaveBossRushMenu(void)
 {
     int i;
     GazetteRow* p = gazetteRows;
@@ -2508,7 +2508,7 @@ void leaveBossRushMenu(void)
 /**
  * Renders the boss selection menu and currently selected boss records.
  */
-void renderBossRushRecords(int selected)
+static void renderBossRushRecords(int selected)
 {
     static char cursorAnimStep = 0;
 
@@ -2662,7 +2662,7 @@ void determineCharacterRank(void)
 /**
  * Checks game conditions and updates the unlocked titles
  */
-void setTitleFlags(void)
+static void setTitleFlags(void)
 {
     int i;
 
@@ -2782,7 +2782,7 @@ void setTitleFlags(void)
  * @param direction 0 == left, 1 == right, 2 == left transitioning, 3 == right
  * transitioning
  */
-void renderEnemyNavigation(int direction)
+static void renderEnemyNavigation(int direction)
 {
     int x;
     int clut;
@@ -2842,7 +2842,7 @@ void renderEnemyNavigation(int direction)
  * Determines the game score based on kills, attacks, boss rush scores
  * and other criteria.
  */
-void calculateScore(void)
+static void calculateScore(void)
 {
     short classPoints[6] = { 20, 20, 40, 80, 100, 60 };
     short weaponClassPoints[10] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };

@@ -1,7 +1,11 @@
+#include "common.h"
 #include "gpu.h"
 
 int movieWidth = 0;
+VS_HIDDEN(movieWidth);
+
 int movieHeight = 0;
+VS_HIDDEN(movieHeight);
 
 u_short menuItemTextClut[][16] = {
     { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 2, 1), vs_getRGB5551(2, 0, 3, 1),
@@ -20,6 +24,7 @@ u_short menuItemTextClut[][16] = {
         vs_getRGB5551(31, 25, 16, 1), vs_getRGB5551(31, 27, 18, 1),
         vs_getRGB5551(31, 28, 19, 1) }
 };
+VS_HIDDEN(menuItemTextClut);
 
 u_short menuItemOutlineClut[][16] = {
     { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(0, 0, 1, 1), vs_getRGB5551(0, 0, 4, 1),
@@ -38,12 +43,14 @@ u_short menuItemOutlineClut[][16] = {
         vs_getRGB5551(31, 22, 2, 1), vs_getRGB5551(26, 20, 10, 1),
         vs_getRGB5551(31, 25, 4, 1), vs_getRGB5551(28, 23, 10, 1) }
 };
+VS_HIDDEN(menuItemOutlineClut);
 
 int textUvs[] = { vs_getUV0Clut(128, 224, 480, 384), vs_getUV0Clut(0, 224, 480, 385),
     vs_getUV0Clut(128, 224, 480, 386), vs_getUV0Clut(0, 224, 480, 387),
     vs_getUV0Clut(0, 224, 480, 388), vs_getUV0Clut(0, 224, 480, 389),
     vs_getUV0Clut(128, 224, 480, 390), vs_getUV0Clut(128, 224, 480, 391),
     vs_getUV0Clut(128, 224, 480, 392), vs_getUV0Clut(0, 224, 480, 393) };
+VS_HIDDEN(textUvs);
 
 int textTpages[] = { vs_getTpage(512, 256, clut4Bit, semiTransparencyFull, ditheringOff),
     vs_getTpage(576, 256, clut4Bit, semiTransparencyFull, ditheringOff),
@@ -55,12 +62,14 @@ int textTpages[] = { vs_getTpage(512, 256, clut4Bit, semiTransparencyFull, dithe
     vs_getTpage(704, 256, clut4Bit, semiTransparencyFull, ditheringOff),
     vs_getTpage(768, 256, clut4Bit, semiTransparencyFull, ditheringOff),
     vs_getTpage(832, 256, clut4Bit, semiTransparencyFull, ditheringOff) };
+VS_HIDDEN(textTpages);
 
 int outlineUvs[] = { vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(0, 192, 480, 394),
     vs_getUV0Clut(0, 192, 480, 394), vs_getUV0Clut(128, 0, 480, 394),
     vs_getUV0Clut(144, 192, 480, 394), vs_getUV0Clut(160, 192, 480, 394),
     vs_getUV0Clut(160, 192, 480, 394), vs_getUV0Clut(128, 64, 480, 394),
     vs_getUV0Clut(128, 0, 480, 394), vs_getUV0Clut(128, 64, 480, 394) };
+VS_HIDDEN(outlineUvs);
 
 int outlineTpages[] = { vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, ditheringOff),
     vs_getTpage(64, 256, clut4Bit, semiTransparencyFull, ditheringOff),
@@ -72,14 +81,17 @@ int outlineTpages[] = { vs_getTpage(0, 256, clut4Bit, semiTransparencyFull, dith
     vs_getTpage(448, 256, clut4Bit, semiTransparencyFull, ditheringOff),
     vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff),
     vs_getTpage(448, 0, clut4Bit, semiTransparencyFull, ditheringOff) };
+VS_HIDDEN(outlineTpages);
 
 int outlineWhs[] = { vs_getWH(144, 64), vs_getWH(160, 64), vs_getWH(160, 64),
     vs_getWH(128, 64), vs_getWH(112, 64), vs_getWH(96, 64), vs_getWH(96, 64),
     vs_getWH(128, 64), vs_getWH(128, 64), vs_getWH(128, 64) };
+VS_HIDDEN(outlineWhs);
 
 int outlineXys[] = { vs_getXY(120, 224), vs_getXY(112, 224), vs_getXY(112, 224),
     vs_getXY(128, 224), vs_getXY(136, 224), vs_getXY(144, 224), vs_getXY(144, 224),
     vs_getXY(128, 224), vs_getXY(128, 224), vs_getXY(128, 224) };
+VS_HIDDEN(outlineXys);
 
 int D_80074C24[15][64] = {
     { 0x01010101, 0x00000000, 0x2731240F, 0x322A3124, 0x000000E7, 0x00000000, 0x00000000,
@@ -248,6 +260,8 @@ int D_80074C24[15][64] = {
         0x38000000, 0x39000000, 0x3A000000, 0x3B000000, 0x3C000000, 0x3D000000,
         0x3E000000, 0x3F000000, 0x40000000 }
 };
+VS_HIDDEN(D_80074C24);
 
 int actionsLearned[8] = { 0x0074FE7F, 0x00000000, 0x00000000, 0x00000000, 0xFFFDFD03,
     0x007EFEFD, 0x00000000, 0xFFFFFFFF };
+VS_HIDDEN(actionsLearned);

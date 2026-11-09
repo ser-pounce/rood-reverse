@@ -571,7 +571,7 @@ static void* getContainerIndexOffset(int section, vs_ContainerIndices* indices)
  * Copies selected container inventory entries and remaps their cross-item
  * references into the target's compacted indices.
  */
-void copyContainer(
+static void copyContainer(
     vs_ContainerData* target, vs_ContainerData* source, vs_ContainerIndices* toCopy)
 {
     int i;

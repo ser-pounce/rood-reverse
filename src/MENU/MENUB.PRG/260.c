@@ -1015,7 +1015,7 @@ static int itemIncludesItemsInCategory(int arg0, LootListItem* arg1)
 /**
  * Draws inventory capacities, item counts, and loot-menu controls.
  */
-void displayInventoryCapacities(int edgeX)
+static void displayInventoryCapacities(int edgeX)
 {
     int itemCountPos;
     int buttonBgPos;
@@ -1124,7 +1124,7 @@ static int droppableUnderCurrentDifficulty(int arg0)
  *
  * @param arg0 Battle loot record to apply.
  */
-void applyLootList(vs_Loot* arg0)
+static void applyLootList(vs_Loot* arg0)
 {
     int i;
 
@@ -1622,7 +1622,7 @@ static void setKeyFlag(int arg0);
  *
  * @param initialize Nonzero to reset the menu state, zero to process it.
  */
-int processLootMenu(int initialize)
+static int processLootMenu(int initialize)
 {
     enum state {
         init,

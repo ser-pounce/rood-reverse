@@ -129,8 +129,13 @@ typedef struct {
 
 extern FontTable fontTable[];
 extern u_long debugFont[];
+VS_HIDDEN(debugFont);
+
 extern UiTable uiTable;
+VS_HIDDEN(uiTable);
+
 extern MenuBg saveMenuBg_clut;
+VS_HIDDEN(saveMenuBg_clut);
 
 static int gameLoadScreen(void)
 {

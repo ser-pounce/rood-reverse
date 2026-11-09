@@ -7,8 +7,8 @@
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 
-int func_80109320(int);
-void populateDataSlot(int wepId, int material);
+static int func_80109320(int);
+static void populateDataSlot(int wepId, int material);
 
 int loadObjectData(int category, int wepId, int material)
 {
@@ -85,7 +85,9 @@ int loadObjectData(int category, int wepId, int material)
     return 1;
 }
 
-int func_80109320(int category)
+VS_HIDDEN(loadObjectData);
+
+static int func_80109320(int category)
 {
     if (category < 3) {
         return 0;
@@ -98,7 +100,7 @@ int func_80109320(int category)
     return category & 1;
 }
 
-void populateDataSlot(int wepId, int material)
+static void populateDataSlot(int wepId, int material)
 {
     vs_ObjectData objData;
     int index;

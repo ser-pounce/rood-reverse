@@ -88,12 +88,17 @@ void setMPCostDirect(int costDecimal, int disabled)
     vs_mainmenu_setActionCost(0, &MPCostDirectTextBuffer[i], 72, disabled);
 }
 
+VS_HIDDEN(setMPCostDirect);
+
 u_short magicStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/magic.vsString"
 };
+VS_HIDDEN(magicStrings);
+
 u_short teleportationStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
+VS_HIDDEN(teleportationStrings);
 
 /**
  * Encapsulates teleport target information.
@@ -112,6 +117,7 @@ int savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C00
     0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000 };
+VS_HIDDEN(savePointData);
 
 /**
  * Calculates MP cost of teleporting to a save point
@@ -152,6 +158,8 @@ int getTeleportCost(int targetSavePointId)
 
     return cost;
 }
+
+VS_HIDDEN(getTeleportCost);
 
 static char availableWarlockSpells[18];
 static u_char D_8010694A;
@@ -501,6 +509,8 @@ int warlockMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
+VS_HIDDEN(warlockMagicMenu);
+
 static char availableShamanSpells[6];
 static char _1[2];
 
@@ -602,6 +612,8 @@ int shamanMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
+VS_HIDDEN(shamanMagicMenu);
+
 static char availableSorcererSpells[18];
 static char _3[6];
 
@@ -702,6 +714,8 @@ int sorcererMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
+VS_HIDDEN(sorcererMagicMenu);
+
 static char availableEnchanterSpells[8];
 
 /**
@@ -800,5 +814,7 @@ int enchanterMagicMenu(u_int initShortcutInvoked)
     }
     return 0;
 }
+
+VS_HIDDEN(enchanterMagicMenu);
 
 static UNUSED const int _ = 0;

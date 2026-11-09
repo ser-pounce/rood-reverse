@@ -176,7 +176,7 @@ loop:
         sfx[0] = script[1];
 
         for (; arg < 20; ++arg) {
-            vs_battle_wepModels_t* weapon = vs_battle_wepModels[arg];
+            vs_battle_WepModels* weapon = vs_battle_wepModels[arg];
 
             if (weapon == NULL || weapon->nBones == 0 || weapon->unkD == 0
                 || weapon->actorId != id) {
@@ -720,7 +720,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
     int sp14;
     int id;
     int floor;
-    mpdRoomSection3_t* room;
+    MpdRoomSection3* room;
 
     if ((u_char)(arg1->animationId - 0xCA) < 18) {
         return;
@@ -832,7 +832,7 @@ void func_800AECA0(MATRIX* source)
 {
     MATRIX roll;
     D_1F80035C_t* scratch = (void*)0x1F80035C;
-    vs_scratch_t* view = (void*)0x1F800000;
+    vs_Scratch* view = (void*)0x1F800000;
     int i;
 
     for (i = 0; i < 3; ++i) {
@@ -900,7 +900,7 @@ void func_800AEF94(MATRIX* camera)
 {
     D_1F80035C_t* scratch;
     D_800F4538_t* actor;
-    vs_scratch_t* view;
+    vs_Scratch* view;
     int i;
     int j;
     UNUSED int _[10];
@@ -1005,7 +1005,7 @@ void func_800AEF94(MATRIX* camera)
     }
 
     for (i = 0; i < 20; ++i) {
-        vs_battle_wepModels_t* weapon = vs_battle_wepModels[i];
+        vs_battle_WepModels* weapon = vs_battle_wepModels[i];
 
         if (weapon == NULL || !weapon->unk8_4 || weapon->unkD == 0) {
             continue;

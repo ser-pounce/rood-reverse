@@ -100,7 +100,7 @@ void func_800D78B8(void) { D_800F5698 = D_800F569C; }
 
 void func_800D78CC(void) { D_800F569C = D_800F5698; }
 
-void parsePfileBlock5(pFileBlock5* block) { D_800F569C->block5Data = block; }
+void parsePfileBlock5(PFileBlock5* block) { D_800F569C->block5Data = block; }
 
 void func_800D78F0(void)
 {
@@ -117,7 +117,7 @@ void func_800D78F0(void)
 
 void parsePfileBlock3(void* block) { D_800F569C->block3Data = block; }
 
-void parsePfileCurveBlock(pFileCurveBlock* block)
+void parsePfileCurveBlock(PFileCurveBlock* block)
 {
     u_char* p;
     int i;
@@ -133,11 +133,11 @@ void parsePfileCurveBlock(pFileCurveBlock* block)
 
 void parsePfileBlock8(void* block) { D_800F569C->block8Data = block; }
 
-void parsePfileBlock9(pFileBlock9* arg0) { D_800F569C->block9Data = arg0; }
+void parsePfileBlock9(PFileBlock9* arg0) { D_800F569C->block9Data = arg0; }
 
 void parsePfileBlock10(void* arg0) { D_800F569C->block10Data = arg0; }
 
-void parsePfileBlock1(pFileBlock1* block)
+void parsePfileBlock1(PFileBlock1* block)
 {
     int i;
 
@@ -149,7 +149,7 @@ void parsePfileBlock1(pFileBlock1* block)
     }
 }
 
-void parsePfileBlock2(pFileBlock2* block)
+void parsePfileBlock2(PFileBlock2* block)
 {
     D_800F569C->block2Count = block->unk0;
     D_800F569C->block2Data = (void*)block;
@@ -176,7 +176,7 @@ void parsePfileBlock13(void* arg0)
 
 static int loadfile(int lba, int size, void* buf)
 {
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
 
     if (D_800F568C == NULL) {
         cdFile.lba = lba;
@@ -371,7 +371,7 @@ u_int func_800D8044(void) { return D_800F5680; }
 
 void vs_battle_setPlgLoadState(int arg0) { plgLoadState = arg0; }
 
-void func_800D8060(p_file_t* arg0)
+void func_800D8060(PFile* arg0)
 {
     while (1) {
         int meta = arg0->meta;
@@ -381,11 +381,11 @@ void func_800D8060(p_file_t* arg0)
             return;
 
         case 0x10000:
-            parsePfileBlock1((pFileBlock1*)arg0->data);
+            parsePfileBlock1((PFileBlock1*)arg0->data);
             break;
 
         case 0x20000:
-            parsePfileBlock2((pFileBlock2*)arg0->data);
+            parsePfileBlock2((PFileBlock2*)arg0->data);
             break;
 
         case 0x30000:
@@ -393,11 +393,11 @@ void func_800D8060(p_file_t* arg0)
             break;
 
         case 0x40000:
-            parsePfileCurveBlock((pFileCurveBlock*)arg0->data);
+            parsePfileCurveBlock((PFileCurveBlock*)arg0->data);
             break;
 
         case 0x50000:
-            parsePfileBlock5((pFileBlock5*)arg0->data);
+            parsePfileBlock5((PFileBlock5*)arg0->data);
             break;
 
         case 0x80000:
@@ -405,7 +405,7 @@ void func_800D8060(p_file_t* arg0)
             break;
 
         case 0x90000:
-            parsePfileBlock9((pFileBlock9*)arg0->data);
+            parsePfileBlock9((PFileBlock9*)arg0->data);
             break;
 
         case 0xA0000:

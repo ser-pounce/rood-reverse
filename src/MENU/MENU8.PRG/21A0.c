@@ -387,7 +387,7 @@ static int confirmationScreen(int init)
     case 0:
     case 1:
     case 2: {
-        vs_battle_menuItem_t* menuItem =
+        vs_battle_MenuItem* menuItem =
             vs_battle_setMenuItem(state + 20, 320, (state * 16) + 128, 0x7E, 0,
                 (char*)&renderRenameMenuStrings
                     [renderRenameMenuStrings[state + VS_rename_INDEX_optionYes]]);
@@ -488,7 +488,7 @@ static int renameMenuInput(int initialize)
     int selectedRow;
     int var_a1;
     int var_s1;
-    vs_main_inventoryWeapon* weapon;
+    vs_main_InventoryWeapon* weapon;
 
     if (initialize != 0) {
         charTableColumn = 0;

@@ -33,7 +33,7 @@ static int showSaveFilesMenu(int initPort)
         leaveError = 10
     };
 
-    static vs_main_settings_t settingsBackup;
+    static vs_main_Settings settingsBackup;
     static int saveSuccessful;
     static char state;
     static char port;
@@ -41,7 +41,7 @@ static int showSaveFilesMenu(int initPort)
     static char slot;
     static char leaveTimer;
 
-    fileMenuElements_t* element;
+    FileMenuElements* element;
     int val;
     int saveId;
     int i;
@@ -178,7 +178,7 @@ static int showSaveFilesMenu(int initPort)
         memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_saving);
         rMemcpy(&settingsBackup, &vs_main_settings, sizeof settingsBackup);
         rMemcpy(
-            (savedata_t*)mcImageBuf + 2, (savedata_t*)mcImageBuf + 1, sizeof(savedata_t));
+            (Savedata*)mcImageBuf + 2, (Savedata*)mcImageBuf + 1, sizeof(Savedata));
         if (containerDataEmpty != 0) {
             backupMainSetting = vs_main_settings.containerEmpty;
             vs_main_settings.containerEmpty = 1;
@@ -200,8 +200,8 @@ static int showSaveFilesMenu(int initPort)
                 memset(&saveSlotInfo[saveId], 0, sizeof saveSlotInfo[saveId]);
                 saveSlotInfo[saveId].identity.base.slotState = slotStateTemporary;
                 fileMenuElements[saveId + 5].saveLocation = 0;
-                rMemcpy((savedata_t*)mcImageBuf + 1, (savedata_t*)mcImageBuf + 2,
-                    sizeof(savedata_t));
+                rMemcpy((Savedata*)mcImageBuf + 1, (Savedata*)mcImageBuf + 2,
+                    sizeof(Savedata));
                 fileProgressCounter = 0;
                 rMemcpy(&vs_main_settings, &settingsBackup, sizeof vs_main_settings);
                 memoryCardMessage = (char*)(textTable + VS_MCMAN_BIN_OFFSET_saveFailed);

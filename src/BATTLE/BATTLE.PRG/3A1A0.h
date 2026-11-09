@@ -13,7 +13,7 @@ typedef struct {
 
 // The 0xE8-byte SHP header that parseShp copies to an actor's texMapOverlays
 typedef struct {
-    texMapOverlay_t texMapOverlays[8];
+    TexMapOverlay texMapOverlays[8];
     D_800F4538_unk614 unk20[2];
     D_800F4538_unk61C unk28[4];
     u_char unk48[0x28];
@@ -23,7 +23,7 @@ typedef struct {
     int unkC8[4];
     u_short spSeqSizes[4];
     int unkE0[2];
-} shpHeader_t;
+} ShpHeader;
 
 typedef struct {
     int unk0;
@@ -39,7 +39,7 @@ typedef struct {
 } D_1F8003BC_t;
 
 void func_800A2C48(D_800F4538_t* arg0);
-void func_800A36E0(int, int, vs_battle_actorPosition*);
+void func_800A36E0(int, int, vs_battle_ActorPosition*);
 int func_800A3DB4(int x, int z, int minimumHeight);
 void func_800A41D0(D_800F4538_t* actor, int mode);
 int func_800A4494(int, SVECTOR*);

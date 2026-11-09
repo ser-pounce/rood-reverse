@@ -58,7 +58,7 @@ void toggleMenuAction(int enable)
 /**
  * Feathers the top or bottom of the item and adds the scroll arrows.
  */
-void renderScrollableMenuItem(vs_battle_menuItem_t* menuItem)
+void renderScrollableMenuItem(vs_battle_MenuItem* menuItem)
 {
     static char previousFrameBuf = 0;
     static char navigationAnimState = 0;
@@ -251,7 +251,7 @@ int getSelectedRow(void)
 UNUSED void setMenuRow10(char* text);
 void setMenuRow10(char* text)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
+    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(10, 320, 34, 140, 9, text);
     menuItem->state = menuItemStateSlideX;
     menuItem->targetPosition0 = 180;
     menuItem->selected = 1;
@@ -367,7 +367,7 @@ typedef struct {
     short rowIndex;
     char* title;
     char* description;
-} gazetteRow_t;
+} GazetteRow;
 
 typedef struct {
     short zudIndex;
@@ -381,14 +381,14 @@ typedef struct {
     u_char next;
     UNUSED u_char _;
     char name[28];
-} monBinData_t;
+} MonBinData;
 
 static void determineCharacterRank(void);
 void setTitleFlags(void);
 void calculateScore(void);
 
 static UNUSED int _0;
-static gazetteRow_t gazetteRows[32];
+static GazetteRow gazetteRows[32];
 static SVECTOR cameraAngles;
 static int enemyNavigationState;
 static int menuState;
@@ -412,8 +412,8 @@ static u_short characterRank;
 static u_short clearCount;
 static u_short openedChestCount;
 static u_short mapCompletion;
-static vs_main_CdQueueSlot* monBinCdQueueSlot;
-static monBinData_t* monBinData;
+static vs_Main_CdQueueSlot* monBinCdQueueSlot;
+static MonBinData* monBinData;
 static u_short* enemyDescriptions;
 static UNUSED int _1[2];
 static VECTOR cameraPositionBackup;
@@ -468,10 +468,10 @@ int calculateProgress(void)
     }
 
     vs_main_memcpy(&cameraPositionBackup,
-        &((vs_scratch_t*)getScratchAddr(0))->camera.position,
+        &((vs_Scratch*)getScratchAddr(0))->camera.position,
         sizeof cameraPositionBackup);
     vs_main_memcpy(&cameraAnglesBackup,
-        &((vs_scratch_t*)getScratchAddr(0))->camera.angles.vx, sizeof cameraAnglesBackup);
+        &((vs_Scratch*)getScratchAddr(0))->camera.angles.vx, sizeof cameraAnglesBackup);
     setTitleFlags();
     calculateScore();
     determineCharacterRank();
@@ -479,7 +479,7 @@ int calculateProgress(void)
     return 1;
 }
 
-static const vs_main_CdFile monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
+static const vs_Main_CdFile monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
 
 /**
  * Stops used for the green and purple UI backgrounds
@@ -562,8 +562,8 @@ int menuInput(void)
     };
 
     UNUSED int _[8];
-    vs_battle_textBox* textBox;
-    gazetteRow_t* var_s0;
+    vs_battle_TextBox* textBox;
+    GazetteRow* var_s0;
     int lStickX;
     int lStickY;
     int selectedRow;
@@ -1407,9 +1407,9 @@ int menuInput(void)
  */
 void restoreCamera(void)
 {
-    vs_main_memcpy(&((vs_scratch_t*)getScratchAddr(0))->camera.position,
+    vs_main_memcpy(&((vs_Scratch*)getScratchAddr(0))->camera.position,
         &cameraPositionBackup, sizeof cameraPositionBackup);
-    vs_main_memcpy(&((vs_scratch_t*)getScratchAddr(0))->camera.angles.vx,
+    vs_main_memcpy(&((vs_Scratch*)getScratchAddr(0))->camera.angles.vx,
         &cameraAnglesBackup, sizeof cameraAnglesBackup);
 }
 
@@ -1485,7 +1485,7 @@ void buildCameraMatrix(MATRIX* cameraMatrix)
     int angle0;
     int angle1;
     int angle2;
-    vs_scratch_t* scratch;
+    vs_Scratch* scratch;
 
     angle0 = (angle1 = rsin(cameraAngles.vy));
     angle1 = rcos(cameraAngles.vx);
@@ -1498,7 +1498,7 @@ void buildCameraMatrix(MATRIX* cameraMatrix)
     angle2 = rsin(cameraAngles.vx) * -cameraDistance;
     position.vy = (angle2 / ONE) - (cameraHeightOffset / 2);
 
-    scratch = (vs_scratch_t*)getScratchAddr(0);
+    scratch = (vs_Scratch*)getScratchAddr(0);
     setVector(&scratch->camera.position, position.vx * ONE, position.vy * ONE,
         position.vz * ONE);
     scratch->camera.angles.vx = cameraAngles.vx;
@@ -1684,8 +1684,8 @@ void renderScreenEdgeFade(void);
  */
 void renderTopMenu(int animStep)
 {
-    vs_battle_geomOffset sp18;
-    vs_battle_geomOffset sp20;
+    vs_battle_GeomOffset sp18;
+    vs_battle_GeomOffset sp20;
     char sp28[128];
     MATRIX spA8;
     void** scratch;
@@ -1728,7 +1728,7 @@ void renderTopMenu(int animStep)
 void setTitleRows(void)
 {
     int i;
-    gazetteRow_t* row;
+    GazetteRow* row;
     int new_var;
 
     for (i = 0, row = gazetteRows; i < 32; ++i, ++row) {
@@ -1764,9 +1764,9 @@ void renderTitleMenu(int animState)
     static char cursorAnimState = 0;
 
     int i;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
 
-    gazetteRow_t* row = gazetteRows;
+    GazetteRow* row = gazetteRows;
     int selectedRow =
         vs_battle_menu9CursorMemory.titlePage + vs_battle_menu9CursorMemory.titleRow;
 
@@ -1923,7 +1923,7 @@ void initEnemyList(void)
 {
     int i;
     char index;
-    monBinData_t* enemy;
+    MonBinData* enemy;
 
     for (i = 0, enemy = monBinData; i < 78; ++i, ++enemy) {
         int j;
@@ -1983,7 +1983,7 @@ void renderEnemyMenu(int animState)
     int sp18;
     int selectedRow = vs_battle_menu9CursorMemory.encyclopaediaPage
                     + vs_battle_menu9CursorMemory.encyclopaediaRow;
-    monBinData_t* enemy = monBinData;
+    MonBinData* enemy = monBinData;
 
     for (i = 0; i < 78; ++i) {
 
@@ -2022,9 +2022,9 @@ void renderEnemyMenu(int animState)
 
     for (; i < 8; ++i, ++enemy) {
         int x;
-        vs_battle_menuItem_t* menuItem;
+        vs_battle_MenuItem* menuItem;
 
-        vs_battle_menu9CursorMemory_t* cursorMem = &vs_battle_menu9CursorMemory;
+        vs_battle_Menu9CursorMemory* cursorMem = &vs_battle_menu9CursorMemory;
         int y = sp18 - 16;
 
         if ((56 + i * 16) < y) {
@@ -2077,8 +2077,8 @@ void renderEnemyDetailScreen(int animState, int state)
     char const* enemyClassName[] = { "HUMAN", "BEAST", "UNDEAD", "PHANTOM", "DRAGON",
         "EVIL" };
     MATRIX sp30;
-    vs_battle_geomOffset sp50;
-    vs_battle_geomOffset sp58;
+    vs_battle_GeomOffset sp50;
+    vs_battle_GeomOffset sp58;
     char sp60[12];
     int temp_s0;
     int temp_s2;
@@ -2207,7 +2207,7 @@ void stringConcat(char* dest, char* src)
 void setStatText(void)
 {
     int i;
-    gazetteRow_t* p;
+    GazetteRow* p;
 
     for (i = 0, p = gazetteRows; i < 23; ++i, ++p) {
         p->x = 16;
@@ -2234,13 +2234,13 @@ void renderBossRushDetails(int animState)
     static char cursorAnimStep = 0;
 
     char sp18[32];
-    gazetteRow_t* row;
+    GazetteRow* row;
     u_short temp_v1_4;
     int s5;
     int i;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
     char* intBuf;
-    vs_battle_menu9CursorMemory_t* new_var;
+    vs_battle_Menu9CursorMemory* new_var;
     int v1;
 
     row = gazetteRows;
@@ -2377,9 +2377,9 @@ void toVsStringPercent(char* buf, int value)
 {
     typedef struct {
         char data[4];
-    } percent_t;
+    } Percent;
 #pragma vsstring(start)
-    static percent_t percent = { "%\0" };
+    static Percent percent = { "%\0" };
 #pragma vsstring(end)
 
     int len;
@@ -2397,7 +2397,7 @@ void toVsStringPercent(char* buf, int value)
 
     buf += len;
 
-    *((percent_t*)buf) = percent;
+    *((Percent*)buf) = percent;
 }
 
 /**
@@ -2467,7 +2467,7 @@ void printFastestClearTime(char* buf, int rounds, int totalSeconds)
 void printBossRushMenuRow(void)
 {
     int i;
-    gazetteRow_t* row;
+    GazetteRow* row;
 
     for (i = 0, row = gazetteRows; i < 8; ++i, ++row) {
         row->x = 194;
@@ -2493,11 +2493,11 @@ void printBossRushMenuRow(void)
 void leaveBossRushMenu(void)
 {
     int i;
-    gazetteRow_t* p = gazetteRows;
+    GazetteRow* p = gazetteRows;
 
     for (i = 0; i < 8; ++i, ++p) {
         if (p->animationState == 0) {
-            vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(i);
+            vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(i);
             menuItem->state = 2;
             menuItem->targetPosition0 = 320;
         } else {
@@ -2518,14 +2518,14 @@ void renderBossRushRecords(int selected)
 
     char sp28[16];
     int sp38;
-    gazetteRow_t* sp3C;
-    gazetteRow_t* var_s1;
+    GazetteRow* sp3C;
+    GazetteRow* var_s1;
     int var_fp;
     int i;
     int j;
     int var_s7;
     int time;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
     void** p;
     void** r;
     void** q;

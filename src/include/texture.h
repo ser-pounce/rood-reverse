@@ -9,7 +9,7 @@ typedef struct {
     char h;
     u_short tpage;
     u_short clut;
-} texture_t;
+} Texture;
 
 static void renderTextureFadeInTint(int, int, int, CVECTOR[]);
 static void renderTexturePopIn(int, int, int, CVECTOR[]);

@@ -124,7 +124,7 @@ composed:
     }
 }
 
-void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
+void func_800B217C(vs_battle_WepModels* weapon, MATRIX* source)
 {
     CVECTOR color;
     D_1F80035C_t* scratch = (void*)0x1F80035C;

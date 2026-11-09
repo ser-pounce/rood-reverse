@@ -101,7 +101,7 @@ def dump_actions(data: bytes) -> str:
         )
 
     parsed = VsMainActions(KaitaiStream(BytesIO(data)))
-    lines = ["#pragma vsstring(start)", "vs_action_t vs_main_actions[] = {"]
+    lines = ["#pragma vsstring(start)", "vs_Action vs_main_actions[] = {"]
     for action in parsed.actions:
         lines.extend(_format_action(action))
     lines.append("};")

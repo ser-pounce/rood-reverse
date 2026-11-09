@@ -100,7 +100,7 @@ int func_80109320(int category)
 
 void populateDataSlot(int wepId, int material)
 {
-    vs_battle_objectData objData;
+    vs_battle_ObjectData objData;
     int index;
     int var_a3;
 

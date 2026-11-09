@@ -115,22 +115,22 @@ static void saveScreenSwapBuf(void)
 typedef struct {
     char data[220][256 / 2];
     u_short clut[16][16];
-} fontTable_t;
+} FontTable;
 
 typedef struct {
     char page0[224][256 / 2];
     char page1[256][256 / 2];
-} uiTable_t;
+} UiTable;
 
 typedef struct {
     u_short clut[256];
     char data[240][192];
-} menuBg_t;
+} MenuBg;
 
-extern fontTable_t fontTable[];
+extern FontTable fontTable[];
 extern u_long debugFont[];
-extern uiTable_t uiTable;
-extern menuBg_t saveMenuBg_clut;
+extern UiTable uiTable;
+extern MenuBg saveMenuBg_clut;
 
 static int gameLoadScreen(void)
 {
@@ -243,7 +243,7 @@ static int saveScreenConfirmation(int init)
     static u_char confirm;
     static UNUSED char _[5];
 
-    fileMenuElements_t* elem;
+    FileMenuElements* elem;
     int i;
 
     if (init != 0) {
@@ -416,10 +416,10 @@ typedef struct {
     u_int frameBufIndex;
     RECT renderTarget;
     int frameComplete;
-} MovieData_t;
+} MovieData;
 
 static void playMovie(DslLOC*);
-static u_short* getNextMovieFrame(MovieData_t* arg0);
+static u_short* getNextMovieFrame(MovieData* arg0);
 
 static u_int introMovieDisplayedAt;
 static int introMoviePlaying;
@@ -427,7 +427,7 @@ static int dslMode;
 static UNUSED char _4[4];
 static DslLOC introMovieLoc;
 static UNUSED char _5[28];
-static MovieData_t movieData;
+static MovieData movieData;
 static u_long* movieRingBuf;
 static UNUSED char _6[4];
 static DECDCTTAB vlcTable;
@@ -436,7 +436,7 @@ static void* encodedDataBuf1;
 static void* decodedDataBuf0;
 static void* decodedDataBuf1;
 
-static void initMovieData(MovieData_t* arg0, short x0, short y0, short x1, int y1)
+static void initMovieData(MovieData* arg0, short x0, short y0, short x1, int y1)
 {
     arg0->frameBufs[0].x = x0;
     arg0->renderTarget.x = x0;
@@ -497,7 +497,7 @@ static void decDCToutCallback(void)
     LoadImage(&rect, movieData.decodedData[index]);
 }
 
-static int decodeNextMovieFrame(MovieData_t* movie)
+static int decodeNextMovieFrame(MovieData* movie)
 {
     u_long* frameData;
     int i;
@@ -516,7 +516,7 @@ static int decodeNextMovieFrame(MovieData_t* movie)
     return 0;
 }
 
-static u_short* getNextMovieFrame(MovieData_t* movie)
+static u_short* getNextMovieFrame(MovieData* movie)
 {
     RECT rect;
     void* addr;
@@ -545,7 +545,7 @@ static u_short* getNextMovieFrame(MovieData_t* movie)
     return addr;
 }
 
-static void waitForFrame(MovieData_t* movie, UNUSED int arg1)
+static void waitForFrame(MovieData* movie, UNUSED int arg1)
 {
     volatile int sp0[2];
     int* new_var;
@@ -760,9 +760,9 @@ typedef struct {
     char targetPos;
     char outlinePos;
     char textBlendFactor;
-} menuItemState_t;
+} MenuItemState;
 
-static menuItemState_t menuItemStates[10];
+static MenuItemState menuItemStates[10];
 
 static void setMenuItemFadeIn(int menuItem, char pos)
 {
@@ -1079,20 +1079,20 @@ static void setTitleMenuState(void)
 typedef struct {
     u_long tag;
     VS_SPRT sprt;
-} menuItemPrim_t;
+} MenuItemPrim;
 
 static void drawTitleMenuItems(void)
 {
-    static menuItemPrim_t primBuf[341];
+    static MenuItemPrim primBuf[341];
     static UNUSED char _[8];
 
     int textUv;
     int j;
-    menuItemState_t* menuState;
+    MenuItemState* menuState;
     int x;
     int wh;
     int i;
-    menuItemPrim_t* prim;
+    MenuItemPrim* prim;
     int saturation;
 
     prim = primBuf;
@@ -1187,11 +1187,11 @@ static void drawTitleMenuItems(void)
 
 static void drawTitleMenu(void)
 {
-    static menuItemPrim_t sprtBuf[10];
+    static MenuItemPrim sprtBuf[10];
     static UNUSED char _[16];
 
     int i;
-    menuItemPrim_t* sprt;
+    MenuItemPrim* sprt;
 
     setTitleMenuState();
     for (i = 0; i < 2; ++i) {

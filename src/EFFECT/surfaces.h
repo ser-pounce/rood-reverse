@@ -42,18 +42,18 @@
         func_800D6CF_t texture;                                                          \
     } name;
 
-VS_SURFACE_STATE_TYPE(vs_surfaceState, 5)
-VS_SURFACE_STATE_TYPE(vs_mirrorSurfaceState, 9)
+VS_SURFACE_STATE_TYPE(vs_SurfaceState, 5)
+VS_SURFACE_STATE_TYPE(vs_MirrorSurfaceState, 9)
 
 #undef VS_SURFACE_STATE_TYPE
 #endif
 
 #ifdef VS_SURFACE_MIRRORED
 #define VS_SURFACE_ROWS 9
-#define VS_SURFACE_STATE vs_mirrorSurfaceState
+#define VS_SURFACE_STATE vs_MirrorSurfaceState
 #else
 #define VS_SURFACE_ROWS 5
-#define VS_SURFACE_STATE vs_surfaceState
+#define VS_SURFACE_STATE vs_SurfaceState
 #endif
 
 #include "sphericalSurfaceVertices.h"
@@ -84,7 +84,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     MATRIX* actorMatrix;
-    pFileTexture* texture;
+    PFileTexture* texture;
 
     alive = 1;
     state = arg0->unk8;
@@ -278,7 +278,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         for (row = 0; row < VS_SURFACE_ROWS - 1; ++row) {
             int depth;
-            vs_gt4Prim* prim;
+            vs_Gt4Prim* prim;
 
             for (column = 0; column < 15; ++column) {
                 depth = (depths[row][column] + depths[row][column + 1]

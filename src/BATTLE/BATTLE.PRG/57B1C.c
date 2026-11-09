@@ -150,7 +150,7 @@ int func_800C0758(int phase, int segments, int index)
     short (*basis)[4] = (void*)0x1F800398;
     int i;
     int component;
-    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+    MenuShapeVertex* vertex = &D_800EB9B8->unk48[index];
 
     for (i = 0; i <= segments; ++index, ++i, ++vertex) {
         for (component = 0; component < 3; ++component) {
@@ -293,7 +293,7 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
 
 void func_800C0B50(func_800C1564_t* arg0, int arg1)
 {
-    menuShapeVertex* vertex;
+    MenuShapeVertex* vertex;
     MATRIX* matrix;
     int* scratch;
     VECTOR scale;

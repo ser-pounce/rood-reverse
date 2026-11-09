@@ -45,7 +45,7 @@ extern int D_800E90A8;
 extern u_char D_800E90CC[];
 extern u_char D_800E90D0[];
 extern int D_800F49E8;
-extern mpdRoomSection3_t* D_800F49F0;
+extern MpdRoomSection3* D_800F49F0;
 extern SVECTOR D_800F4B08;
 
 inline SVECTOR* func_800A4A24(int);
@@ -433,7 +433,7 @@ void func_800A35A8(void)
     }
 }
 
-void func_800A36E0(int actorId, int arg1, vs_battle_actorPosition* arg2)
+void func_800A36E0(int actorId, int arg1, vs_battle_ActorPosition* arg2)
 {
     D_800F4538_t* temp_a0 = D_800F4538[actorId];
     if (temp_a0 != NULL) {
@@ -1620,7 +1620,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
 int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 {
     SVECTOR sp;
-    mpdRoomSection3_t* ent;
+    MpdRoomSection3* ent;
     int h;
     int r;
     int los;
@@ -1889,7 +1889,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/3A1A0", func_800A76BC);
 
 int func_800A8B34(SVECTOR* arg0, int arg1)
 {
-    mpdRoomSection3_t* ent;
+    MpdRoomSection3* ent;
     int h;
     int elev2;
     int gx;

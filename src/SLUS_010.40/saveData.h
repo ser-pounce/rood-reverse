@@ -21,10 +21,10 @@ typedef struct {
     enum slotState_e slotState;
     u_int generation;
     int version;
-} saveBase_t;
+} SaveBase;
 
 typedef struct {
-    vs_Gametime_t gameTime;
+    vs_Gametime gameTime;
     u_short cumulativeSaveCount;
     u_short currentGameSaveCount;
     u_short currentHP;
@@ -35,7 +35,7 @@ typedef struct {
     char unk1B;
     u_short currentMP;
     u_short maxMP;
-} stats_t;
+} Stats;
 
 typedef struct {
     char magic[2]; // "SC"
@@ -45,39 +45,39 @@ typedef struct {
     char reserved44[0xC];
     char pocketStationHeader[0x10];
     char iconPalette[0x20];
-} saveTitleFrame_t;
+} SaveTitleFrame;
 
 typedef struct {
     int key;
-    saveBase_t base;
-} saveIdentity_t;
+    SaveBase base;
+} SaveIdentity;
 
 typedef struct {
-    saveIdentity_t identity;
-    stats_t stats;
+    SaveIdentity identity;
+    Stats stats;
     char checksums[0x5C];
-} saveInfoFrame_t;
+} SaveInfoFrame;
 
 typedef struct {
-    saveTitleFrame_t titleFrame;
+    SaveTitleFrame titleFrame;
     char iconFrame0[0x80];
     char pocketStationIcon[0x80];
-    saveInfoFrame_t info;
+    SaveInfoFrame info;
     char stateFlags[0x440];
     char actionsLearned[32];
     char mapStatus[0x48];
-    vs_main_settings_t settings;
-    vs_main_characterSnapshot_t character;
-    vs_main_inventory_t inventory;
-    vs_main_inventoryIndices_t inventoryIndices;
-    vs_main_warp_t spawnPoint;
-    vs_main_scoredata_t scoreData;
+    vs_main_Settings settings;
+    vs_main_CharacterSnapshot character;
+    vs_main_Inventory inventory;
+    vs_main_InventoryIndices inventoryIndices;
+    vs_main_Warp spawnPoint;
+    vs_main_Scoredata scoreData;
     int zoneEnemyCacheIndex;
-    vs_main_zoneEnemyCache_t zoneEnemyCache[4];
-    vs_main_artsStatus_t artsStatus;
-    vs_menu_containerData containerData;
+    vs_main_ZoneEnemyCache zoneEnemyCache[4];
+    vs_main_ArtsStatus artsStatus;
+    vs_menu_ContainerData containerData;
     char pad[0x220];
-} savedata_t;
+} Savedata;
 
 enum fileMenuElementState_e {
     fileMenuElementStateInactive = 0,
@@ -103,7 +103,7 @@ typedef struct {
     short w;
     short h;
     char text[32];
-} fileMenuElements_t;
+} FileMenuElements;
 
 typedef struct {
     u_long tag;
@@ -119,7 +119,7 @@ typedef struct {
         } tilePoly;
         u_long raw[15];
     } prim;
-} primBuf_t;
+} PrimBuf;
 
 typedef struct {
     u_short locationCluts[2][256];
@@ -128,4 +128,4 @@ typedef struct {
     char pocketStationIcons[7][128];
     // MCDATA.BIN is 0xBE0 bytes and MCMAN.BIN is read in at the next sector boundary
     UNUSED char _[0x420];
-} mcdata_t;
+} Mcdata;

@@ -1,4 +1,4 @@
-#include "texture_t.h"
+#include "texture.h"
 
 void renderTextureFadeInTint(int x, int y, int texId, CVECTOR colors[])
 {

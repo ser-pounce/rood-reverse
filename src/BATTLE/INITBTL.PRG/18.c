@@ -44,8 +44,8 @@ static void func_800F9CCC(void);
 #pragma vsstring(start)
 
 // Defaulted elements deliberately omitted for brevity, refer to the definition of
-// vs_battle_charInitData if you need to modify these.
-static vs_battle_charInitData D_800FAB18 = {
+// vs_battle_CharInitData if you need to modify these.
+static vs_battle_CharInitData D_800FAB18 = {
     .subType      = 174,
     .reach        = 7,
     .name         = "Ashley|>6|Riot\0",
@@ -324,8 +324,8 @@ static void func_800F9AD8(void)
 {
     int j;
     int i;
-    vs_battle_actorStats* stats = vs_battle_characterState->stats;
-    vs_main_characterSnapshotStats_t* s1 = &vs_main_characterSnapshot.stats;
+    vs_battle_ActorStats* stats = vs_battle_characterState->stats;
+    vs_main_CharacterSnapshotStats* s1 = &vs_main_characterSnapshot.stats;
 
     stats->currentHP = s1->currentHP;
     stats->maxHP = s1->maxHP;
@@ -382,7 +382,7 @@ static void func_800F9CCC(void)
     int bladeMaterial;
     int shieldMaterial;
 
-    vs_battle_objectData_flags sp20;
+    vs_battle_ObjectData_flags sp20;
 
     sp20.unk0_0 = 4;
     sp20.unk0_16 = 2;

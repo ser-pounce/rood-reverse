@@ -24,7 +24,7 @@ typedef struct {
     u_short unk12 : 1;
     u_short unk13 : 1;
     u_short unk14 : 2;
-} vs_actionFlags_t;
+} vs_ActionFlags;
 
 typedef struct {
     u_char id;
@@ -47,7 +47,7 @@ typedef struct {
     u_int flagsD_4 : 2;
     u_int flagsD_6 : 1;
     u_int unlocked : 1;
-    vs_actionFlags_t flagsE;
+    vs_ActionFlags flagsE;
     int unk10;
     struct {
         u_int effect : 7;
@@ -59,8 +59,8 @@ typedef struct {
         u_int affinity : 3;
     } hitParams[2];
     char name[24];
-} vs_action_t;
+} vs_Action;
 
-extern vs_action_t vs_main_actions[256];
+extern vs_Action vs_main_actions[256];
 extern u_short vs_main_artsPointsRequirements[][4];
 extern u_short vs_main_battleAbilitiesPointsRequirements[];

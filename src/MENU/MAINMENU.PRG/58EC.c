@@ -17,11 +17,11 @@
 #include "vs_string.h"
 #include <libetc.h>
 
-typedef struct textHeader_t {
+typedef struct TextHeader {
     char text[14];
     char disabled;
     char x;
-} textHeader_t;
+} TextHeader;
 
 char vs_mainMenu_actionMenuState = 0;
 static u_short* sortItemsTextBuf = NULL;
@@ -48,7 +48,7 @@ u_short* vs_mainMenu_itemHelp;
 char vs_mainMenu_enabledStatPages;
 char vs_mainMenu_equipmentSubtype;
 UNUSED char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
-textHeader_t textHeaders[2];
+TextHeader textHeaders[2];
 char vs_mainMenu_containerEmptyBackup;
 
 void vs_mainMenu_addMenuActions(
@@ -120,7 +120,7 @@ void vs_mainMenu_addMenuActions(
     for (i = 0; i < rowCount; ++i) {
         char* text;
 
-        ((itemsText_t*)sortItemsTextBuf)[i].menuRowFlags = rowTypes[i];
+        ((ItemsText*)sortItemsTextBuf)[i].menuRowFlags = rowTypes[i];
 
         if (menuText[i * 2] != NULL) {
             vs_battle_copyAligned(&sortItemsTextBuf[i * 64], menuText[i * 2], 26);
@@ -134,14 +134,14 @@ void vs_mainMenu_addMenuActions(
         text = menuText[i * 2 + 1];
 
         if (text != NULL) {
-            ((itemsText_t*)sortItemsTextBuf)[i].description[0] = vs_char_chunkSize;
+            ((ItemsText*)sortItemsTextBuf)[i].description[0] = vs_char_chunkSize;
 
             vs_battle_copyAligned(&sortItemsTextBuf[(i * 64) + 17], text, 92);
 
-            ((itemsText_t*)sortItemsTextBuf)[i].description[47] =
+            ((ItemsText*)sortItemsTextBuf)[i].description[47] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            ((itemsText_t*)sortItemsTextBuf)[i].description[0] =
+            ((ItemsText*)sortItemsTextBuf)[i].description[0] =
                 vs_char_terminator << 8 | vs_char_terminator;
         }
     }
@@ -162,13 +162,13 @@ int vs_mainMenu_actionInputProcessed(void)
  *
  * @return The selected row.
  */
-static vs_battle_menuItem_t* renderActionRow(int row, int x)
+static vs_battle_MenuItem* renderActionRow(int row, int x)
 {
-    vs_battle_menuItem_t* menuItem =
+    vs_battle_MenuItem* menuItem =
         vs_battle_setMenuItem(row + 32, x, ((row + menuActionsPageOffset) * 16) + 18, 126,
-            0, (char*)((itemsText_t*)sortItemsTextBuf)[itemActionListOffset + row].name);
+            0, (char*)((ItemsText*)sortItemsTextBuf)[itemActionListOffset + row].name);
 
-    int flags = ((itemsText_t*)sortItemsTextBuf)[itemActionListOffset + row].menuRowFlags;
+    int flags = ((ItemsText*)sortItemsTextBuf)[itemActionListOffset + row].menuRowFlags;
 
     menuItem->unselectable = flags & 1;
 
@@ -186,7 +186,7 @@ void vs_mainMenu_renderItemActionMenu(void)
     int selectedAction;
     int i;
     int previousOffset;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
 
     if (vs_mainMenu_actionMenuState < 10) {
         menuItem = renderActionRow(vs_mainMenu_actionMenuState, -194);
@@ -457,7 +457,7 @@ void vs_mainMenu_toggleBackgroundFade(int fadeState)
 
 void vs_mainMenu_deactivateMenuItem(int row)
 {
-    vs_battle_menuItem_t* menuItem = &vs_battle_menuItems[row];
+    vs_battle_MenuItem* menuItem = &vs_battle_menuItems[row];
     menuItem->state = menuItemStateInactive;
 }
 
@@ -863,7 +863,7 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
     for (i = 0; i < rowCount; ++i) {
         char* text;
 
-        ((itemsText_t*)itemsText)[i].menuRowFlags = rowTypes[i];
+        ((ItemsText*)itemsText)[i].menuRowFlags = rowTypes[i];
 
         if (strings[i * 2] != NULL) {
             vs_battle_copyAligned(&itemsText[i * 64], strings[i * 2], 26);
@@ -876,14 +876,14 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
         text = strings[i * 2 + 1];
 
         if (text != NULL) {
-            ((itemsText_t*)itemsText)[i].description[0] = vs_char_chunkSize;
+            ((ItemsText*)itemsText)[i].description[0] = vs_char_chunkSize;
 
             vs_battle_copyAligned(&itemsText[(i * 64) + 17], text, 92);
 
-            ((itemsText_t*)itemsText)[i].description[47] =
+            ((ItemsText*)itemsText)[i].description[47] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            ((itemsText_t*)itemsText)[i].description[0] =
+            ((ItemsText*)itemsText)[i].description[0] =
                 vs_char_terminator << 8 | vs_char_terminator;
         }
     }
@@ -907,14 +907,14 @@ int vs_mainmenu_getSelectedRow(void) { return itemsText != NULL ? -1 : selectedR
 /**
  * Sets the individual properties of a row based on its rowflags.
  */
-static vs_battle_menuItem_t* initItemRow(int row, int x)
+static vs_battle_MenuItem* initItemRow(int row, int x)
 {
     int temp_v1;
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(row + (subMenuRowInfo * 10), x,
+    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(row + (subMenuRowInfo * 10), x,
         ((row + subMenuRowInfo) * 16) + 18, menuRowYOffset + 126, 0,
-        (char*)((itemsText_t*)itemsText)[subMenuPage + row].name);
+        (char*)((ItemsText*)itemsText)[subMenuPage + row].name);
 
-    int flags = ((itemsText_t*)itemsText)[subMenuPage + row].menuRowFlags;
+    int flags = ((ItemsText*)itemsText)[subMenuPage + row].menuRowFlags;
 
     menuItem->unselectable = flags & 1;
     menuItem->backgroundWidth += (flags & 2) * 12;
@@ -953,7 +953,7 @@ void vs_mainMenu_renderItemsList(void)
     int i;
     int var_s1;
     int page;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
 
     if (subMenuRowCount == 0) {
 
@@ -1213,7 +1213,7 @@ static void renderBackground(int brightness)
 
 #pragma vsstring(start)
 int vs_mainMenu_renderRowLabel(
-    u_int character, int x, vs_battle_menuItem_t* menuItem, u_long* before)
+    u_int character, int x, vs_battle_MenuItem* menuItem, u_long* before)
 {
     int i;
     int uvClut;
@@ -1306,7 +1306,7 @@ void vs_mainMenu_renderTabNavigation(int mode)
 /**
  * Invoked on rows that have more rows above or below them.
  */
-static void renderScrollableRow(vs_battle_menuItem_t* menuItem)
+static void renderScrollableRow(vs_battle_MenuItem* menuItem)
 {
     static char previousFrameBuf = 0;
     static char animState = 0;
@@ -1454,7 +1454,7 @@ static void renderScrollableRow(vs_battle_menuItem_t* menuItem)
 static void renderMenuItems(void)
 {
     int i;
-    vs_battle_menuItem_t* menuItem = vs_battle_menuItems;
+    vs_battle_MenuItem* menuItem = vs_battle_menuItems;
 
     for (i = 0; i < 40; ++i, ++menuItem) {
         int var_v1;

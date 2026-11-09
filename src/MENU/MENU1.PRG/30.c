@@ -122,7 +122,7 @@ static int weaponArtsMenu(int typeCursorMem)
     int i;
 
     if (typeCursorMem != 0) {
-        vs_battle_menuItem_t* menuItem;
+        vs_battle_MenuItem* menuItem;
         isLastRow = 0;
         animationIndex = 10;
         forceCursorMemory = typeCursorMem >> 4;
@@ -274,7 +274,7 @@ static int weaponCategoriesMenu(int initialize)
     static int selectedRow = 0;
 
     if (initialize != 0) {
-        vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
+        vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(
             10, 320, 34, 0x7E, 8, (char*)&strings[VS_strings_OFFSET_viewArts]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 180;
@@ -346,7 +346,7 @@ static int weaponCategoriesMenu(int initialize)
  */
 static void setMenuHeader(void)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
+    vs_battle_MenuItem* menuItem = vs_battle_setMenuItem(1, 320, 18, 0x8C, 8,
         (char*)&vs_battle_menuStrings
             [vs_battle_menuStrings[VS_menuStrings_INDEX_breakArts]]);
 

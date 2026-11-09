@@ -35,12 +35,12 @@ typedef struct {
     short clut0;
     short clut1;
     u_char refCount;
-} vs_battle_texInfo_t;
+} vs_battle_TexInfo;
 
 extern D_800F2458_t D_800F2458;
-extern wepModelOffsets_t* vs_battle_commonWepBuffs[];
-extern vs_battle_texInfo_t D_800F46A8[];
-extern vs_battle_texInfo_t vs_battle_wepTextures[20];
+extern WepModelOffsets* vs_battle_commonWepBuffs[];
+extern vs_battle_TexInfo D_800F46A8[];
+extern vs_battle_TexInfo vs_battle_wepTextures[20];
 extern u_char D_800E8F90[];
 extern char D_800E8FC0;
 extern void* D_800F4768;
@@ -86,7 +86,7 @@ int func_8009FD5C(int, int, int);
 int func_8009FE74(int arg0, int arg1);
 void func_8009FF08(int, int, int, int);
 int func_8009FFA8(int arg0, int arg1);
-int func_800A0024(int arg0, vs_battle_actorLocation* arg1);
+int func_800A0024(int arg0, vs_battle_ActorLocation* arg1);
 int func_800A0104(int index, int material);
 int func_800A01C8(int, int, int, int);
 int func_800A0618(int, int, int, int);

@@ -28,11 +28,11 @@ typedef struct {
 // A copy of a tile that is compared against other tiles repeatedly, e.g. in a loop. The
 // matching build keeps it in a register as a plain word.
 #ifdef NON_MATCHING
-typedef vs_battle_tilePosition vs_battle_tileKey;
+typedef vs_battle_tilePosition vs_battle_TileKey;
 #define VS_TILE_KEY(tile) (tile)
 #define VS_TILE_KEY_EQ(key, tile) VS_TILE_EQ(key, tile)
 #else
-typedef int vs_battle_tileKey;
+typedef int vs_battle_TileKey;
 #define VS_TILE_KEY(tile) (*(int*)&(tile))
 #define VS_TILE_KEY_EQ(key, tile) ((key) == *(int*)&(tile))
 #endif

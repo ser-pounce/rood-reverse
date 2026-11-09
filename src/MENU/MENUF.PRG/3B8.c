@@ -14,7 +14,7 @@
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
-#include "texture_t.h"
+#include "texture.h"
 #include <stdio.h>
 #include <libetc.h>
 #include <rand.h>
@@ -24,7 +24,7 @@
 typedef struct {
     short stat;
     short amount;
-} buffReels_t;
+} BuffReels;
 
 static int initMenu(void);
 static int execMenu(void);
@@ -50,9 +50,9 @@ int vs_menuF_exec(u_char* state)
 
 #include "src/MENU/unused_vertices.h"
 
-enum disFileIndices_t { rankDis, timeDis, attackDis, iqDis, escDis };
+enum disFileIndices { rankDis, timeDis, attackDis, iqDis, escDis };
 
-static vs_main_CdFile const disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
+static vs_Main_CdFile const disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
     { VS_TIME_DIS_LBA, VS_TIME_DIS_SIZE }, { VS_ATTACK_DIS_LBA, VS_ATTACK_DIS_SIZE },
     { VS_IQ_DIS_LBA, VS_IQ_DIS_SIZE }, { VS_ESC_DIS_LBA, VS_ESC_DIS_SIZE } };
 
@@ -126,7 +126,7 @@ static int screenState;
 
 int initCongratulationsScreen(void)
 {
-    static vs_main_CdQueueSlot* cdSlot;
+    static vs_Main_CdQueueSlot* cdSlot;
     static void* timData;
 
     int i;
@@ -264,7 +264,7 @@ static u_short clutBuf[160];
 
 int initTimeAttackEnd(void)
 {
-    static vs_main_CdQueueSlot* cdSlot;
+    static vs_Main_CdQueueSlot* cdSlot;
     static void* timData;
 
     int i;
@@ -380,7 +380,7 @@ int initTimeAttackEnd(void)
 
 int initTimeAttackStart(void)
 {
-    static vs_main_CdQueueSlot* cdSlot;
+    static vs_Main_CdQueueSlot* cdSlot;
     static void* timData;
 
     if (vs_battle_submenuState == 0) {
@@ -567,7 +567,7 @@ enum disIndices {
     disIndexEsc0Chicken = 125,
 };
 
-static texture_t disMap[] = {
+static Texture disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
@@ -722,7 +722,7 @@ enum BuffReelStats {
     buffReelStatMp
 };
 
-static buffReels_t buffReels[][16] = {
+static BuffReels buffReels[][16] = {
     { { buffReelStatHp, 5 }, { buffReelStatHp, 3 }, { buffReelStatStr, 2 },
         { buffReelStatAgi, 1 }, { buffReelStatHp, 4 }, { buffReelStatInt, 1 },
         { buffReelStatMp, 2 }, { buffReelStatHp, 3 }, { buffReelStatStr, 2 },
@@ -1883,7 +1883,7 @@ void renderStoredTime(int x, int y, int slot, int timer)
 
 void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 {
-    texture_t* texture;
+    Texture* texture;
     POLY_FT4* poly;
     void** scratch;
 
@@ -1920,7 +1920,7 @@ void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 
 void renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clut)
 {
-    texture_t* texture;
+    Texture* texture;
     POLY_FT4* poly;
     void** scratch;
 
@@ -2262,10 +2262,10 @@ static short puzzleRankCap;
 
 int initCubePuzzleStart(void)
 {
-    static vs_main_CdQueueSlot* iqDisCdSlot;
+    static vs_Main_CdQueueSlot* iqDisCdSlot;
     static void* iqDisData;
 
-    vs_battle_room* room;
+    vs_battle_Room* room;
 
     struct {
         short zoneId;
@@ -2365,7 +2365,7 @@ int initCubePuzzleEnd(void)
 
 int initCubePuzzleQuit(void)
 {
-    static vs_main_CdQueueSlot* escDisCdSLot;
+    static vs_Main_CdQueueSlot* escDisCdSLot;
     static void* escDisData;
 
     TIM_IMAGE tim;

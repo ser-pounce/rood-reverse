@@ -14,7 +14,7 @@
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "scratch.h"
-#include "texture_t.h"
+#include "texture.h"
 #include <abs.h>
 #include <libetc.h>
 #include <memory.h>
@@ -71,8 +71,8 @@ enum creditsElementState {
     creditsElementStatePhase4,
 };
 
-typedef struct creditsElement_t {
-    void (*renderer)(struct creditsElement_t*);
+typedef struct CreditsElement {
+    void (*renderer)(struct CreditsElement*);
     u_char const* data;
     short state;
     u_short currentStep;
@@ -81,7 +81,7 @@ typedef struct creditsElement_t {
     int x;
     int y;
     UNUSED int _[6];
-} creditsElement_t;
+} CreditsElement;
 
 enum easeMode {
     easeModeLinear,
@@ -95,7 +95,7 @@ static int ease(short mode, short currentStep, short totalSteps);
 /**
  * Renders "The Phantom Pain" with a ripple effect.
  */
-static void renderPhantomPain(creditsElement_t* element)
+static void renderPhantomPain(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 90,
@@ -117,7 +117,7 @@ static void renderPhantomPain(creditsElement_t* element)
     u_short amplitude;
     u_short i;
     u_short j;
-    POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
+    POLY_FT4* poly = ((vs_Scratch*)0x1F800000)->unk0;
 
     memset(&rot, 0, sizeof rot);
 
@@ -207,11 +207,11 @@ static void renderPhantomPain(creditsElement_t* element)
             poly->clut = getClut(896, 83);
             poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
             poly->r0 = poly->g0 = poly->b0 = brightness;
-            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, poly++);
+            AddPrim(((vs_Scratch*)0x1F800000)->unk4 + 12, poly++);
         }
     }
 
-    ((vs_scratch_t*)0x1F800000)->unk0 = poly;
+    ((vs_Scratch*)0x1F800000)->unk0 = poly;
 }
 
 static void* insertTpage(int tPage, int otOffset);
@@ -219,7 +219,7 @@ static void* insertTpage(int tPage, int otOffset);
 /**
  * Renders the final "Fin" texture ("終劇" for the JP version).
  */
-static void renderFin(creditsElement_t* element)
+static void renderFin(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 60,
@@ -289,7 +289,7 @@ static void renderFin(creditsElement_t* element)
     p[index] = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
-static creditsElement_t creditsElements[32];
+static CreditsElement creditsElements[32];
 static u_char creditsComplete;
 static u_char isFadedOut;
 static u_char skipInvoked;
@@ -305,7 +305,7 @@ static UNUSED u_short _1;
 /**
  * Renders the game title.
  */
-static void renderVagrantStory(creditsElement_t* element)
+static void renderVagrantStory(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 60,
@@ -467,16 +467,16 @@ typedef struct {
     int size;
     RECT rect;
     u_char data[0];
-} timChunk_t;
+} TimChunk;
 
 typedef struct {
     int magic;
     int flags;
-    timChunk_t chunk;
-} timData_t;
+    TimChunk chunk;
+} TimData;
 
-extern timData_t illustSydney;
-static timData_t* decompressedIllustData = &illustSydney;
+extern TimData illustSydney;
+static TimData* decompressedIllustData = &illustSydney;
 
 static u_short illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
@@ -485,15 +485,15 @@ static void const* currentCompressedIllust;
 static void* currentDecompressedIllust;
 static void* compressedIllustBufs[16];
 
-static void loadTim(timData_t const*);
-static void initTimDecompress(timData_t*, void const*);
+static void loadTim(TimData const*);
+static void initTimDecompress(TimData*, void const*);
 
 /**
  * Renders a background illustration. Illustration IDs greater
  * than 4 are first decompressed. The illustrations are rendered by
  * subtractive blending with the background.
  */
-static void renderllustration(creditsElement_t* element)
+static void renderllustration(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 80,
@@ -630,14 +630,14 @@ static int creditsStrWidth(u_char const* str)
 /**
  * Renders a string from the credits script.
  */
-static void renderText(creditsElement_t* element)
+static void renderText(CreditsElement* element)
 {
     char const* str;
     short i;
     short len;
     short x;
     short y;
-    SPRT* sprt = ((vs_scratch_t*)0x1F800000)->unk0;
+    SPRT* sprt = ((vs_Scratch*)0x1F800000)->unk0;
     u_char charTableOffset = 0;
     short underline = 0;
 
@@ -693,13 +693,13 @@ static void renderText(creditsElement_t* element)
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
             sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-            addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
+            addPrim(((vs_Scratch*)0x1F800000)->unk4 + 12, sprt);
             ++sprt;
         }
     }
 
     if (underline != 0) {
-        vs_scratch_t const* scratch = (vs_scratch_t*)0x1F800000;
+        vs_Scratch const* scratch = (vs_Scratch*)0x1F800000;
         POLY_FT4* poly;
 
         x = 160 - ((element->width + 32) >> 1);
@@ -740,15 +740,15 @@ static void renderText(creditsElement_t* element)
         AddPrim(scratch->unk4 + 12, sprt++);
     }
 
-    ((vs_scratch_t*)0x1F800000)->unk0 = sprt;
-    ((vs_scratch_t*)0x1F800000)->unk0 =
+    ((vs_Scratch*)0x1F800000)->unk0 = sprt;
+    ((vs_Scratch*)0x1F800000)->unk0 =
         insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
 /**
  * Renders the copyright line.
  */
-static void renderCopyright(creditsElement_t* element)
+static void renderCopyright(CreditsElement* element)
 {
     int index;
     void** p = (void**)0x1F800000;
@@ -786,7 +786,7 @@ static void renderCopyright(creditsElement_t* element)
  * Renders the credits background, including 10px letterboxing bars at the top
  * and bottom, along with a 20px fade.
  */
-static void renderBackground(UNUSED creditsElement_t* element)
+static void renderBackground(UNUSED CreditsElement* element)
 {
     TILE* tile;
     POLY_G4* poly;
@@ -863,7 +863,7 @@ static void renderBackground(UNUSED creditsElement_t* element)
 /**
  * Fades in over 128 steps, used for the start of the credits roll.
  */
-static void screenFadeIn(creditsElement_t* element)
+static void screenFadeIn(CreditsElement* element)
 {
     if (element->state == creditsElementStateStarting) {
         element->currentStep = 0;
@@ -881,7 +881,7 @@ static void screenFadeIn(creditsElement_t* element)
 /**
  * Fades out over 128 steps, used for the end of the credits roll.
  */
-static void screenFadeOut(creditsElement_t* element)
+static void screenFadeOut(CreditsElement* element)
 {
     if (element->state == creditsElementStateStarting) {
         element->state = creditsElementStatePhase1;
@@ -907,7 +907,7 @@ static void screenFadeOut(creditsElement_t* element)
  * @param element The credits element being processed.
  * @return The computed result.
  */
-static void renderFadeOut(creditsElement_t* element)
+static void renderFadeOut(CreditsElement* element)
 {
     void** p = (void**)0x1F800000;
     TILE* tile = p[0];
@@ -938,7 +938,7 @@ static void streamEndingXa(void);
 static void setDrawEnv(DRAWENV*);
 static void renderCredits(void);
 static void resetElements(void);
-static creditsElement_t* addRenderer(void (*arg0)(creditsElement_t*));
+static CreditsElement* addRenderer(void (*arg0)(CreditsElement*));
 static void initEnvironment(void);
 static void updateClearGameStats(void);
 static void checkStreamXaEnd(void);
@@ -950,21 +950,21 @@ static void congratulationsScreen(void);
 void vs_ending_exec(void)
 {
     extern u_char const credits[];
-    extern timData_t const creditsFont;
-    extern timData_t const illustMerlose;
-    extern timData_t const illustDragon;
-    extern timData_t const illustSamantha;
-    extern timData_t const illustDuane;
-    extern timData_t const creditsBg;
-    extern timData_t const devCopyright;
-    extern timData_t const titleLogo;
-    extern timData_t const shugeki;
-    extern timData_t const fin;
-    extern timData_t const episodeLogo;
+    extern TimData const creditsFont;
+    extern TimData const illustMerlose;
+    extern TimData const illustDragon;
+    extern TimData const illustSamantha;
+    extern TimData const illustDuane;
+    extern TimData const creditsBg;
+    extern TimData const devCopyright;
+    extern TimData const titleLogo;
+    extern TimData const shugeki;
+    extern TimData const fin;
+    extern TimData const episodeLogo;
 
-    vs_main_CdFile file;
+    vs_Main_CdFile file;
     short i;
-    vs_main_CdQueueSlot* slot;
+    vs_Main_CdQueueSlot* slot;
 
     initEnvironment();
     SetGeomOffset(160, 112);
@@ -1096,10 +1096,10 @@ static void* insertTpage(int tPage, int otOffset)
 /**
  * Loads a TIM texture into memory.
  */
-static void loadTim(timData_t const* tim)
+static void loadTim(TimData const* tim)
 {
     RECT rect;
-    timChunk_t const* p = &tim->chunk;
+    TimChunk const* p = &tim->chunk;
 
     if (tim->flags & 8) {
         rect.x = p->rect.x;
@@ -1107,7 +1107,7 @@ static void loadTim(timData_t const* tim)
         rect.w = p->rect.w;
         rect.h = p->rect.h;
         LoadImage(&rect, (void*)p->data);
-        p = (timChunk_t const*)((void*)tim + (p->size + 8));
+        p = (TimChunk const*)((void*)tim + (p->size + 8));
     }
 
     rect.x = p->rect.x;
@@ -1124,7 +1124,7 @@ static void loadTim(timData_t const* tim)
 static void resetElements(void)
 {
     short i;
-    creditsElement_t* element = creditsElements;
+    CreditsElement* element = creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
         element->state = creditsElementStateInactive;
@@ -1139,7 +1139,7 @@ static int renderElements(void)
 {
     short i;
     short elementsRendered = 0;
-    creditsElement_t* element = creditsElements;
+    CreditsElement* element = creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
         if (element->state < creditsElementStateInactive) {
@@ -1159,12 +1159,12 @@ static int renderElements(void)
  * @param renderer The callback used to render the credits element.
  * @return The newly activated credits element.
  */
-static creditsElement_t* addRenderer(void (*renderer)(creditsElement_t*))
+static CreditsElement* addRenderer(void (*renderer)(CreditsElement*))
 {
     extern NORETURN void SystemError(char, long);
 
     short i;
-    creditsElement_t* element = &creditsElements[1];
+    CreditsElement* element = &creditsElements[1];
 
     for (i = 1; i < 32; ++i, ++element) {
         if (element->state == creditsElementStateInactive) {
@@ -1184,7 +1184,7 @@ static creditsElement_t* addRenderer(void (*renderer)(creditsElement_t*))
  *
  * @return The active first credits element, or NULL if the slot is still active.
  */
-static creditsElement_t* replaceMainRenderer(void (*renderer)(creditsElement_t*))
+static CreditsElement* replaceMainRenderer(void (*renderer)(CreditsElement*))
 {
     if (creditsElements[0].state == creditsElementStateInactive) {
         creditsElements[0].renderer = renderer;
@@ -1333,7 +1333,7 @@ static int ease(short mode, short currentStep, short totalSteps)
 /**
  * Initializes the TIM decompression work buffer for the active illustration.
  */
-static void initTimDecompress(timData_t* targetBuf, void const* compressedData)
+static void initTimDecompress(TimData* targetBuf, void const* compressedData)
 {
     compressionState = decompressionStateReady;
     currentCompressedIllust = compressedData;
@@ -1749,7 +1749,7 @@ static void updateTitles(void)
     }
 }
 
-static vs_main_CdQueueSlot* cdSlot;
+static vs_Main_CdQueueSlot* cdSlot;
 static void* timData;
 static u_int rank;
 static int clearCount;
@@ -1799,7 +1799,7 @@ static void updateScore(void);
  */
 static int initCongratulationsScreen(void)
 {
-    static const vs_main_CdFile endScrDisFiles[] = {
+    static const vs_Main_CdFile endScrDisFiles[] = {
         { VS_END_DIS_LBA, VS_END_DIS_SIZE },
         { VS_ENDSCR00_DIS_LBA, VS_ENDSCR00_DIS_SIZE },
         { VS_ENDSCR01_DIS_LBA, VS_ENDSCR01_DIS_SIZE },
@@ -2076,7 +2076,7 @@ enum disIndices {
     disIndexRank2Cartographer
 };
 
-static texture_t disMap[] = {
+static Texture disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },

@@ -41,7 +41,7 @@ static int loadFileMenu(int initFadeout)
     static char fadeout;
     static UNUSED char _[LOAD_FILE_MENU_PAD];
 
-    fileMenuElements_t* element;
+    FileMenuElements* element;
     int i;
 
     if (initFadeout != 0) {
@@ -111,7 +111,7 @@ static int loadFileMenu(int initFadeout)
         }
         break;
     case slotSelected:
-        element = (fileMenuElements_t*)selectLoadMemoryCard(0);
+        element = (FileMenuElements*)selectLoadMemoryCard(0);
         if (element != 0) {
             if ((long)element < 0) {
                 state = displaySlot1;

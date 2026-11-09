@@ -36,16 +36,16 @@ typedef struct {
     int unkC;
 } D_800E8FB4_t;
 
-int func_8009998C(vs_battle_objectData*);
+int func_8009998C(vs_battle_ObjectData*);
 void func_80099E7C(void*, int, int, int, int);
 void* func_8009A028(int* arg0, void* arg1, int arg2);
-int loadWep(vs_battle_objectData*);
-int parseWep(vs_battle_objectData*);
-int loadShp(vs_battle_objectData*);
-int parseShp(vs_battle_objectData*);
-int func_8009BE5C(vs_battle_objectData*);
-int loadSeq(vs_battle_objectData*);
-int loadEtm(vs_battle_objectData*);
+int loadWep(vs_battle_ObjectData*);
+int parseWep(vs_battle_ObjectData*);
+int loadShp(vs_battle_ObjectData*);
+int parseShp(vs_battle_ObjectData*);
+int func_8009BE5C(vs_battle_ObjectData*);
+int loadSeq(vs_battle_ObjectData*);
+int loadEtm(vs_battle_ObjectData*);
 void loadMaterialPalette(int index, int material);
 void func_8009CAEC(D_800F4538_t* arg0, int arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
@@ -83,15 +83,15 @@ extern u_char D_800E9090[];
 extern u_char D_800E919C[];
 extern void* wepFileData;
 extern int wepFileLoaded;
-extern vs_main_CdFile wepFile;
-extern vs_main_CdQueueSlot* wepCdSlot;
+extern vs_Main_CdFile wepFile;
+extern vs_Main_CdQueueSlot* wepCdSlot;
 extern void* shpDataBuf;
 extern int shpAllocated;
-extern vs_main_CdFile shpFile;
-extern vs_main_CdQueueSlot* shpCdSlot;
+extern vs_Main_CdFile shpFile;
+extern vs_Main_CdQueueSlot* shpCdSlot;
 extern u_short* etmData;
-extern vs_main_CdFile etmFile;
-extern vs_main_CdQueueSlot* etmFileCdSlot;
+extern vs_Main_CdFile etmFile;
+extern vs_Main_CdQueueSlot* etmFileCdSlot;
 extern void* wepFileEpilog;
 extern u_char* D_800F22B4;
 extern u_char D_800F22B8;
@@ -100,8 +100,8 @@ extern int D_800F22C0;
 extern int D_800F22C4;
 extern void* D_800F22C8;
 extern int D_800F22D0;
-extern vs_main_CdFile D_800F22D8;
-extern vs_main_CdQueueSlot* D_800F22E0;
+extern vs_Main_CdFile D_800F22D8;
+extern vs_Main_CdQueueSlot* D_800F22E0;
 extern u_char* D_800F22E4;
 extern u_char D_800F244F[];
 extern VECTOR D_800F4438;
@@ -134,11 +134,11 @@ int vs_battle_getEmptyObjectDataSlot(void)
     return -1;
 }
 
-inline int vs_battle_populateDataSlot(vs_battle_objectData* objectData)
+inline int vs_battle_populateDataSlot(vs_battle_ObjectData* objectData)
 {
     int i;
     int slot;
-    vs_battle_objectData* dst;
+    vs_battle_ObjectData* dst;
 
     for (i = 0; i < 16; ++i) {
         if (vs_battle_objectDataSlots[i].dataType == 0) {
@@ -163,7 +163,7 @@ int vs_battle_processObjectDataQueue(void)
 {
     int i;
     int ret;
-    vs_battle_objectData* slot = vs_battle_objectDataSlots;
+    vs_battle_ObjectData* slot = vs_battle_objectDataSlots;
 
     D_800F4580 = VSync(1);
 
@@ -224,11 +224,11 @@ int vs_battle_processObjectDataQueue(void)
 
 void func_80099854(int arg0)
 {
-    vs_battle_objectData objectData;
-    vs_battle_objectData* src;
+    vs_battle_ObjectData objectData;
+    vs_battle_ObjectData* src;
     int i;
     int slot;
-    vs_battle_objectData* dst;
+    vs_battle_ObjectData* dst;
 
     if (arg0 == 0) {
         return;
@@ -256,7 +256,7 @@ found:
     }
 }
 
-int func_80099900(vs_battle_objectData* arg0)
+int func_80099900(vs_battle_ObjectData* arg0)
 {
     int i;
 
@@ -273,7 +273,7 @@ int func_80099900(vs_battle_objectData* arg0)
 
 void func_80099960(void* arg0) { vs_main_memcpy(&D_800F4448, arg0, 0xE0); }
 
-int func_8009998C(vs_battle_objectData* arg0)
+int func_8009998C(vs_battle_ObjectData* arg0)
 {
     D_800F45E0_t* temp_a0;
     int temp_s0;
@@ -386,7 +386,7 @@ exit:
 
 int func_80099D6C(int actorId)
 {
-    vs_battle_objectData sp10;
+    vs_battle_ObjectData sp10;
     D_800F45E0_t* temp_s0;
     int i;
     int found;
@@ -409,7 +409,7 @@ int func_80099D6C(int actorId)
     sp10.actorId = temp_s0->unk16C.actorId;
 
     for (i = 0; i < 16; ++i) {
-        vs_battle_objectData* a2 = &sp10;
+        vs_battle_ObjectData* a2 = &sp10;
         if ((i != a2->index) && (D_800F45E0[i] != NULL)
             && (D_800F45E0[i]->unk16C.actorId == a2->actorId)) {
             a2->dataAddr = i;
@@ -474,14 +474,14 @@ void func_80099E7C(void* arg0, int arg1, int arg2, int arg3, int arg4)
     }
 }
 
-int func_80099FA8(vs_battle_objectData* objData)
+int func_80099FA8(vs_battle_ObjectData* objData)
 {
     int i;
     int index = objData->index;
 
     for (i = 0; i < 20; ++i) {
         if (i != index) {
-            vs_battle_wepModels_t* model = vs_battle_wepModels[i];
+            vs_battle_WepModels* model = vs_battle_wepModels[i];
             if ((model != NULL) && (model->actorId || (index < 4))
                 && (model->modelId == objData->modelId)) {
                 objData->dataAddr = i;
@@ -508,7 +508,7 @@ void* func_8009A028(int* arg0, void* arg1, int arg2)
     return arg0;
 }
 
-int loadWep(vs_battle_objectData* arg0)
+int loadWep(vs_battle_ObjectData* arg0)
 {
     int wepData;
     int found;
@@ -583,11 +583,11 @@ int loadWep(vs_battle_objectData* arg0)
     return wepData;
 }
 
-int parseWep(vs_battle_objectData* objectData)
+int parseWep(vs_battle_ObjectData* objectData)
 {
     u_char* pData;
-    wepModelOffsets_t* buf;
-    wepModelOffsets_t* dst;
+    WepModelOffsets* buf;
+    WepModelOffsets* dst;
     RECT rect;
     int i;
     int j;
@@ -599,7 +599,7 @@ int parseWep(vs_battle_objectData* objectData)
     int size; /* model-data byte size, then reused for the texture-format marker byte */
     int texV; /* 0xE0 texture VRAM-Y: the clut V-offset, also stored to rect.y */
 
-    vs_battle_wepModels_t* model = vs_battle_wepModels[objectData->index];
+    vs_battle_WepModels* model = vs_battle_wepModels[objectData->index];
 
     u_char* data =
         (u_char*)objectData->dataAddr; /* parse cursor walking the weapon-model file */
@@ -647,7 +647,7 @@ int parseWep(vs_battle_objectData* objectData)
                 vs_main_memcpy(buf, data, sizeof *buf);
 
                 /* dst doubles as the relocation delta for the copied pointers */
-                dst = (wepModelOffsets_t*)((u_long)buf - (u_long)data);
+                dst = (WepModelOffsets*)((u_long)buf - (u_long)data);
                 buf->texturesOffset += (u_long)dst;
                 buf->vertexGroupsOffset += (u_long)dst;
                 buf->verticesOffset += (u_long)dst;
@@ -672,7 +672,7 @@ int parseWep(vs_battle_objectData* objectData)
             int found;
             for (j = 0; j < 20; j++) {
                 if (j != objectData->index) {
-                    vs_battle_wepModels_t* other = vs_battle_wepModels[j];
+                    vs_battle_WepModels* other = vs_battle_wepModels[j];
                     if ((other != NULL) && ((other->actorId) || (objectData->index < 4))
                         && (other->modelId == objectData->modelId)) {
                         objectData->dataAddr = j;
@@ -845,7 +845,7 @@ void loadMaterialPalette(int index, int material)
     int count;
     int offset;
     int palette;
-    vs_battle_wepModels_t* model = vs_battle_wepModels[index];
+    vs_battle_WepModels* model = vs_battle_wepModels[index];
 
     do {
     } while (0);
@@ -869,9 +869,9 @@ void loadMaterialPalette(int index, int material)
 
 int func_8009AA84(int index)
 {
-    vs_battle_objectData objData;
+    vs_battle_ObjectData objData;
     int i;
-    vs_battle_wepModels_t* model = vs_battle_wepModels[index];
+    vs_battle_WepModels* model = vs_battle_wepModels[index];
 
     if ((model == NULL) || (model->nBones == 0)) {
         return -1;
@@ -883,7 +883,7 @@ int func_8009AA84(int index)
 
         if (index >= 4) {
             int var_v0;
-            vs_battle_objectData* obj = &objData;
+            vs_battle_ObjectData* obj = &objData;
 
             for (i = 0; i < 20; ++i) {
                 if ((i != obj->index) && ((vs_battle_wepModels[i] != NULL))
@@ -915,7 +915,7 @@ int func_8009AA84(int index)
     return 0;
 }
 
-inline int func_8009AC24(vs_battle_objectData* arg0)
+inline int func_8009AC24(vs_battle_ObjectData* arg0)
 {
     int i;
 
@@ -929,7 +929,7 @@ inline int func_8009AC24(vs_battle_objectData* arg0)
     return 0;
 }
 
-int loadShp(vs_battle_objectData* arg0)
+int loadShp(vs_battle_ObjectData* arg0)
 {
     int shpData;
     int found;
@@ -1011,10 +1011,10 @@ int loadShp(vs_battle_objectData* arg0)
     return shpData;
 }
 
-int parseShp(vs_battle_objectData* object)
+int parseShp(vs_battle_ObjectData* object)
 {
     RECT rect;
-    vs_battle_objectData queued;
+    vs_battle_ObjectData queued;
     D_800F4538_t* actor;
     D_800F4538_unk68* model;
     u_char* data;
@@ -1090,7 +1090,7 @@ int parseShp(vs_battle_objectData* object)
                 }
             }
 
-            *(vs_battle_objectData_flags*)&actor->unk0.currentTile = object->unkC;
+            *(vs_battle_ObjectData_flags*)&actor->unk0.currentTile = object->unkC;
 
             if (actor->unk5AC_27) {
                 D_800F22B8 = 0xA0;
@@ -1113,7 +1113,7 @@ int parseShp(vs_battle_objectData* object)
     }
 
     data += 4;
-    *(vs_battle_objectData_flags*)&actor->unk0.currentTile = object->unkC;
+    *(vs_battle_ObjectData_flags*)&actor->unk0.currentTile = object->unkC;
     actor->unk0.skip = 1;
     *(int*)&actor->unk0.nBones = *(int*)data;
     *(int*)&actor->unk0.nQuads = *(int*)(data + 4);
@@ -1372,7 +1372,7 @@ setupPalettes:
     actor->unk183C = D_800F4438.vx;
 
     for (i = 0; i < actor->unk0.nBones; ++i) {
-        armature_t* armature = &actor->unk0.unk68->armatures[i];
+        Armature* armature = &actor->unk0.unk68->armatures[i];
 
         if (armature->unk8 >= 3 && armature->unk8 < 7) {
             u_short* joint = actor->unk1880[armature->unk8 - 3];
@@ -1429,7 +1429,7 @@ setupPalettes:
     return 0;
 }
 
-inline int func_8009BD90(vs_battle_objectData* arg0)
+inline int func_8009BD90(vs_battle_ObjectData* arg0)
 {
     D_800F4538_t* temp_v1;
     int var_a2;
@@ -1449,12 +1449,12 @@ inline int func_8009BD90(vs_battle_objectData* arg0)
     return 0;
 }
 
-int func_8009BE5C(vs_battle_objectData* object)
+int func_8009BE5C(vs_battle_ObjectData* object)
 {
-    vs_battle_objectData queued;
+    vs_battle_ObjectData queued;
     D_800F4538_t* actor = D_800F4538[object->index];
     u_int sectors;
-    shpHeader_t* header;
+    ShpHeader* header;
     int result;
     int model;
 
@@ -1484,7 +1484,7 @@ int func_8009BE5C(vs_battle_objectData* object)
     default:
         switch (object->actorId) {
         case 0:
-            header = (shpHeader_t*)actor->texMapOverlays;
+            header = (ShpHeader*)actor->texMapOverlays;
             sectors = header->btSeqSizes[object->modelId] >> 11;
 
             if (!sectors) {
@@ -1627,7 +1627,7 @@ inline void func_8009C378(func_8009C378_t* arg0, func_8009C378_t* arg1)
     arg0->unk4 += (u_long)arg0;
 }
 
-int loadSeq(vs_battle_objectData* object)
+int loadSeq(vs_battle_ObjectData* object)
 {
     UNUSED int _[2];
     D_800F4538_t* actor;
@@ -1873,7 +1873,7 @@ tail:
 
 int func_8009CC20(int actorId, int arg1)
 {
-    vs_battle_objectData objectData;
+    vs_battle_ObjectData objectData;
     D_800F4538_t* actor;
     int i;
 
@@ -1979,7 +1979,7 @@ int func_8009CFA0(void) { return D_800E8F2C + 1; }
 
 int func_8009CFB0(int actorId)
 {
-    vs_battle_objectData sp10;
+    vs_battle_ObjectData sp10;
     D_800F4538_t* temp_s1;
     int i;
 
@@ -1994,7 +1994,7 @@ int func_8009CFB0(int actorId)
     }
 
     if (temp_s1->unk6E6 != 0x7F) {
-        vs_battle_objectData* a2;
+        vs_battle_ObjectData* a2;
         int var_v0;
         sp10.index = actorId;
         sp10.modelId = temp_s1->unk6E6;
@@ -2065,7 +2065,7 @@ int func_8009D208(int arg0)
     return 0;
 }
 
-int loadEtm(vs_battle_objectData* objdata)
+int loadEtm(vs_battle_ObjectData* objdata)
 {
     RECT rect;
     int fileSize;
@@ -2262,7 +2262,7 @@ void func_8009D88C(int arg0)
     }
 
     for (i = 0; i < 2; ++i) {
-        vs_battle_wepModels_t* model = vs_battle_wepModels[temp_a0->unk0.unkF * 2 + i];
+        vs_battle_WepModels* model = vs_battle_wepModels[temp_a0->unk0.unkF * 2 + i];
         if ((model != NULL) && (model->unkD != 0)) {
             if (model->unk8_4) {
                 model->unk11 = 0x40;
@@ -2292,7 +2292,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
         temp_s0->unk0.weaponDrawn = arg1;
 
         for (i = 0; i < 2; ++i) {
-            vs_battle_wepModels_t* temp_v1 = vs_battle_wepModels[arg0 * 2 + i];
+            vs_battle_WepModels* temp_v1 = vs_battle_wepModels[arg0 * 2 + i];
             if (temp_v1 != NULL) {
                 if (arg1 != 0) {
                     temp_v1->unk11 = 0x40;
@@ -3418,7 +3418,7 @@ int func_8009F794(D_800F45E0_t* arg0)
     int bestHeight;
     int i;
     int bestIndex;
-    vs_battle_tileKey tile;
+    vs_battle_TileKey tile;
 
     bestHeight = -0x7530;
     bestIndex = -1;
@@ -3456,7 +3456,7 @@ int func_8009F858(int arg0)
 
 void func_8009F898(int arg0, int arg1, int arg2)
 {
-    vs_battle_wepModels_t* model = vs_battle_wepModels[arg0 * 2];
+    vs_battle_WepModels* model = vs_battle_wepModels[arg0 * 2];
 
     if (model != NULL) {
         model->unk5C0 = arg2;
@@ -3745,7 +3745,7 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-int func_800A0024(int arg0, vs_battle_actorLocation* arg1)
+int func_800A0024(int arg0, vs_battle_ActorLocation* arg1)
 {
     D_800F45E0_t* temp_s0;
     int var_v0_2;
@@ -4070,7 +4070,7 @@ void func_800A087C(int actorId, int arg1)
             temp_a0->unk0.visible = arg1 >> 1;
         }
     } else {
-        vs_battle_wepModels_t* model;
+        vs_battle_WepModels* model;
         int new_var;
 
         temp_t0->unk0.skip = (arg1 & 1) ^ 1;
@@ -4289,7 +4289,7 @@ u_int func_800A0BE0(int actorId)
     return D_800F49E0;
 }
 
-int func_800A1108(int actorId, vs_battle_actorPosition* arg1)
+int func_800A1108(int actorId, vs_battle_ActorPosition* arg1)
 {
     D_800F4538_t* var_v1 = D_800F4538[actorId];
 

@@ -22,7 +22,7 @@ static int showLoadFilesMenu(int initPort)
         exiting = 5
     };
 
-    static vs_Gametime_t backupTime;
+    static vs_Gametime backupTime;
     static int fileLoaded;
     static char state;
     static char port;
@@ -31,7 +31,7 @@ static int showLoadFilesMenu(int initPort)
     static char leaveTimer;
     static char completeTimer;
 
-    fileMenuElements_t* element;
+    FileMenuElements* element;
     int currentSlot;
     int i;
 

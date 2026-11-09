@@ -6,11 +6,11 @@
 
 typedef struct {
     u_char unk0[0x464];
-} zndEnemy_t;
+} ZndEnemy;
 
 typedef struct {
     u_char bytes[8];
-} actorSpawnSettings;
+} ActorSpawnSettings;
 
 typedef struct {
     u_char type;
@@ -27,7 +27,7 @@ typedef struct {
     u_char direction;
     u_char z;
     u_char height;
-    actorSpawnSettings settings;
+    ActorSpawnSettings settings;
     u_char unk18[2];
     u_short itemId;
     u_short item2Id;
@@ -40,18 +40,18 @@ typedef struct {
     u_char variant;
     u_char unk26;
     u_char sceneTest;
-} mpdEnemy_t;
+} MpdEnemy;
 
 typedef struct {
     int zndId;
-    vs_main_CdFile* mpdLbas;
+    vs_Main_CdFile* mpdLbas;
     int zndEnemyCount;
-    zndEnemy_t* zndEnemies;
-    vs_main_CdFile* zudFiles;
+    ZndEnemy* zndEnemies;
+    vs_Main_CdFile* zudFiles;
     int unk14;
-    vs_main_CdQueueSlot* unk18;
+    vs_Main_CdQueueSlot* unk18;
     void* unk1C;
-    vs_main_CdQueueSlot* zndCdFile;
+    vs_Main_CdQueueSlot* zndCdFile;
     void* zndData;
     int musicId;
     int musicSlot;
@@ -60,16 +60,16 @@ typedef struct {
     int unk38;
     short unk3C;
     short unk3E;
-    zoneContextBounds_t bounds;
+    ZoneContextBounds bounds;
     int unk48;
     int unk4C;
     int unk50;
     int unk54;
-    vs_main_CdQueueSlot* mpdCdFile;
+    vs_Main_CdQueueSlot* mpdCdFile;
     void* mpdData;
     u_int mpdEnemyCount;
-    mpdEnemy_t* mpdEnemies;
+    MpdEnemy* mpdEnemies;
     int unk68;
-} zoneContext_t;
+} ZoneContext;
 
-extern zoneContext_t zoneContext;
+extern ZoneContext zoneContext;

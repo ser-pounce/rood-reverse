@@ -231,7 +231,7 @@ static int abilityMenu(void)
     int i;
     int previousFirstAbility;
     int ability;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
     u_long* scratch = vs_scratch.unk8 + 8;
 
     if (abilityMenuState < 10) {

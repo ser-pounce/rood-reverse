@@ -67,14 +67,14 @@ static char const* memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
  */
 static int loadIntroSaveFile(int action)
 {
-    static vs_main_CdQueueSlot* opmcimgSlot;
-    static savedata_t* opMcImg;
+    static vs_Main_CdQueueSlot* opmcimgSlot;
+    static Savedata* opMcImg;
 
-    vs_main_CdFile file;
+    vs_Main_CdFile file;
     void* new_var2;
-    vs_Gametime_t gametime;
+    vs_Gametime gametime;
     int lba;
-    vs_Gametime_t* new_var;
+    vs_Gametime* new_var;
 
     switch (action) {
     case 0:
@@ -148,12 +148,12 @@ static u_short menuItemTextClut[][16] = {
 static int initGameOver(int arg0)
 {
 
-    static vs_main_CdQueueSlot* queueSlot;
+    static vs_Main_CdQueueSlot* queueSlot;
     static u_int* gameOverBin;
     static int state;
     static UNUSED char _[8];
 
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
 
     if (arg0 != 0) {
         cdFile.lba = VS_GAMEOVER_BIN_LBA;
@@ -367,7 +367,7 @@ int vs_menu7_gameOver(u_char* state)
     };
 
     static u_short clutBuf[256];
-    static vs_main_settings_t settingsBackup;
+    static vs_main_Settings settingsBackup;
     static int resetDelay;
     static int difficulty;
 
@@ -487,7 +487,7 @@ static int promptYesNo(int initParams)
     static char cancelWithMenuButton;
     static UNUSED char _[34];
 
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
     u_int buttons;
 
     if (initParams != 0) {
@@ -554,7 +554,7 @@ static u_short containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 /**
  * Returns a pointer to the start of a container index section.
  */
-static void* getContainerIndexOffset(int section, vs_menu_containerIndices* indices)
+static void* getContainerIndexOffset(int section, vs_menu_ContainerIndices* indices)
 {
     int i = 0;
     int offset = 0;
@@ -571,12 +571,12 @@ static void* getContainerIndexOffset(int section, vs_menu_containerIndices* indi
  * Copies selected container inventory entries and remaps their cross-item
  * references into the target's compacted indices.
  */
-void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
-    vs_menu_containerIndices* toCopy)
+void copyContainer(vs_menu_ContainerData* target, vs_menu_ContainerData* source,
+    vs_menu_ContainerIndices* toCopy)
 {
     int i;
     int j;
-    vs_menu_containerIndices* targetIndices;
+    vs_menu_ContainerIndices* targetIndices;
     int sourceIndex;
 
     targetIndices = vs_main_allocHeapR(sizeof *targetIndices);
@@ -596,7 +596,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->weapons[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryWeapon* weapon = &target->weapons[i];
+            vs_main_InventoryWeapon* weapon = &target->weapons[i];
             vs_battle_copyAligned(
                 weapon, &source->weapons[sourceIndex - 1], sizeof *weapon);
             weapon->index = i + 1;
@@ -614,7 +614,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->blades[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryBlade* blade = &target->blades[i];
+            vs_main_InventoryBlade* blade = &target->blades[i];
             vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
             blade->index = i + 1;
             if (blade->assembledWeaponIndex != 0) {
@@ -627,7 +627,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->grips[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryGrip* grip = &target->grips[i];
+            vs_main_InventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
             grip->index = i + 1;
             if (grip->assembledWeaponIndex != 0) {
@@ -640,7 +640,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->shields[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryShield* shield = &target->shields[i];
+            vs_main_InventoryShield* shield = &target->shields[i];
             vs_battle_copyAligned(
                 shield, &source->shields[sourceIndex - 1], sizeof *shield);
             shield->index = i + 1;
@@ -655,7 +655,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->armor[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryArmor* armor = &target->armor[i];
+            vs_main_InventoryArmor* armor = &target->armor[i];
             vs_battle_copyAligned(armor, &source->armor[sourceIndex - 1], sizeof *armor);
             armor->index = i + 1;
         }
@@ -664,7 +664,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 192; ++i) {
         sourceIndex = toCopy->gems[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryGem* gem = &target->gems[i];
+            vs_main_InventoryGem* gem = &target->gems[i];
             vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
             gem->index = i + 1;
             if (gem->setItemIndex != 0) {
@@ -682,7 +682,7 @@ void copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
     for (i = 0; i < 256; ++i) {
         sourceIndex = toCopy->misc[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryMisc* item = &target->misc[i];
+            vs_main_InventoryMisc* item = &target->misc[i];
             vs_battle_rMemcpy(item, &source->misc[sourceIndex - 1], sizeof *item);
             item->index = i + 1;
         }
@@ -721,7 +721,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         option = promptYesNo(0);
         if (option != 0) {
             if (option >= 0) {
-                vs_battle_menuItem_t* menuItem;
+                vs_battle_MenuItem* menuItem;
                 initMemcard(1);
                 vs_mainMenu_toggleBackgroundFade(1);
                 vs_mainMenu_setMenuCommand(menuActionMenu);
@@ -744,8 +744,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
             vs_mainMenu_setBackgroundRenderPriority(2046, 128);
             initFileMenu();
             if (vs_main_settings.containerEmpty) {
-                vs_battle_rMemzero(&((savedata_t*)mcImageBuf + 1)->containerData,
-                    sizeof((savedata_t*)mcImageBuf + 1)->containerData);
+                vs_battle_rMemzero(&((Savedata*)mcImageBuf + 1)->containerData,
+                    sizeof((Savedata*)mcImageBuf + 1)->containerData);
                 *state = 7;
             } else {
                 findCurrentSave(1);
@@ -785,8 +785,8 @@ int vs_menu7_saveContainerMenu(u_char* state)
                 *state = 14;
             } else {
                 vs_main_settings.containerEmpty = 1;
-                vs_battle_rMemzero(&((savedata_t*)mcImageBuf + 1)->containerData,
-                    sizeof((savedata_t*)mcImageBuf + 1)->containerData);
+                vs_battle_rMemzero(&((Savedata*)mcImageBuf + 1)->containerData,
+                    sizeof((Savedata*)mcImageBuf + 1)->containerData);
                 *state = 7;
             }
         }
@@ -809,7 +809,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &vs_main_inventoryIndices,
             sizeof vs_menu_inventoryStorage->unkF00);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0,
-            &((savedata_t*)mcImageBuf + 1)->containerData,
+            &((Savedata*)mcImageBuf + 1)->containerData,
             sizeof vs_menu_inventoryStorage->unkFB0);
         shutdownMemcard();
         *state = 8;
@@ -841,7 +841,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         }
         break;
     case 10:
-        copyContainer(&((savedata_t*)mcImageBuf + 1)->containerData,
+        copyContainer(&((Savedata*)mcImageBuf + 1)->containerData,
             &vs_menu_inventoryStorage->unkC430.data,
             &vs_menu_inventoryStorage->unkC430.indices);
         showSaveMenu(2);

@@ -24,7 +24,7 @@ static int promptConfirm(int arg0)
     static char cancelled;
     static UNUSED char _[2];
 
-    fileMenuElements_t* temp_v0;
+    FileMenuElements* temp_v0;
     int i;
 
     if (arg0 != 0) {

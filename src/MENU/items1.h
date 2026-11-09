@@ -39,7 +39,7 @@ static void initMenuLayout(int selectedItem, int classAffinityType)
  */
 static void switchItemStatusPage(int row, char* text[], u_int rowType, int page)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
 
     vs_battle_playMenuChangeSfx();
 
@@ -697,7 +697,7 @@ static int itemStatusDispatcher(int itemInfo)
  *
  * @param stat Must be in the range 0-24
  */
-static int getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
+static int getWeaponStatValue(int stat, vs_battle_UiWeapon* weapon)
 {
     switch (stat) {
     case 0:
@@ -735,12 +735,12 @@ static int getWeaponStatValue(int stat, vs_battle_uiWeapon* weapon)
  */
 static void sortWeapons(int stat)
 {
-    vs_battle_uiWeapon uiWeapon;
+    vs_battle_UiWeapon uiWeapon;
     char sortedIndices[8];
     int i;
     int sortedPos;
 
-    vs_main_inventoryWeapon* weapon = vs_main_inventory.weapons;
+    vs_main_InventoryWeapon* weapon = vs_main_inventory.weapons;
     char* indices = vs_main_inventoryIndices.weapons;
 
     vs_battle_rMemzero(sortedIndices, 8);
@@ -794,7 +794,7 @@ static void sortWeapons(int stat)
  *
  * @param stat Must be in the disjoint range 0-10 | 27-43
  */
-static int getShieldStatValue(int stat, vs_battle_uiShield* shield)
+static int getShieldStatValue(int stat, vs_battle_UiShield* shield)
 {
     switch (stat) {
     case 1:
@@ -831,12 +831,12 @@ static int getShieldStatValue(int stat, vs_battle_uiShield* shield)
  */
 static void sortShields(int stat)
 {
-    vs_battle_uiShield uiShield;
+    vs_battle_UiShield uiShield;
     char sortedIndices[8];
     int i;
     int sortedPos;
 
-    vs_main_inventoryShield* shield = &vs_main_inventory.shields[0];
+    vs_main_InventoryShield* shield = &vs_main_inventory.shields[0];
     char* indices = vs_main_inventoryIndices.shields;
 
     vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
@@ -890,7 +890,7 @@ static void sortShields(int stat)
  *
  * @param stat 0 = ID, count otherwise.
  */
-static int getMiscStatValue(int stat, vs_main_inventoryMisc* misc)
+static int getMiscStatValue(int stat, vs_main_InventoryMisc* misc)
 {
     if (stat == 0) {
         return -misc->id;
@@ -907,7 +907,7 @@ static void sortMisc(int stat)
     int i;
     int sortedPos;
 
-    vs_main_inventoryMisc* misc = vs_main_inventory.misc;
+    vs_main_InventoryMisc* misc = vs_main_inventory.misc;
     char* indices = vs_main_inventoryIndices.misc;
 
     vs_battle_rMemzero(sortedIndices, sizeof sortedIndices);
@@ -951,7 +951,7 @@ static void sortMisc(int stat)
  *
  * @param stat Must be in the range 0-42
  */
-static int getEquipmentStatValue(int stat, vs_battle_uiEquipment* equipment)
+static int getEquipmentStatValue(int stat, vs_battle_UiEquipment* equipment)
 {
     switch (stat) {
     case 0:
@@ -997,7 +997,7 @@ static int getEquipmentStatValue(int stat, vs_battle_uiEquipment* equipment)
  * Copies equipment for the selected category.
  */
 static void copyEquipment(
-    vs_battle_uiEquipment* equipment, int itemCategory, int itemIndex)
+    vs_battle_UiEquipment* equipment, int itemCategory, int itemIndex)
 {
     switch (itemCategory) {
     case itemCategoryBlade:
@@ -1021,7 +1021,7 @@ static void copyEquipment(
  */
 static void sortEquipment(int itemCategory, int stat)
 {
-    vs_battle_uiEquipment uiEquipment;
+    vs_battle_UiEquipment uiEquipment;
     int i;
     int sortedPos = 0;
     int capacity = vs_mainMenu_inventoryItemCapacities[itemCategory];
@@ -1218,7 +1218,7 @@ static int discardMenu(int params)
     char* menuText[4];
     int rowTypes[2];
     int i;
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
     int nextStep;
     int nextCount;
 

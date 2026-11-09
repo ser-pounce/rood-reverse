@@ -171,4 +171,4 @@ extern short D_800F4C58[];
 extern char D_800F4C68;
 extern u_char D_800E9C30[];
 extern u_char* D_800EB588[];
-extern vs_main_CdQueueSlot* D_800F4BBC;
+extern vs_Main_CdQueueSlot* D_800F4BBC;

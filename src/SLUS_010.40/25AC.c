@@ -61,7 +61,7 @@ typedef struct {
     int unk4;
     char unk8;
     char unk9;
-} sfxHeader_t;
+} SfxHeader;
 
 typedef struct {
     union {
@@ -441,7 +441,7 @@ int Sound_SfxHasVoiceFlag(u_long arg0)
 {
     int ret = 0;
     if (arg0 >= 0x80000000) {
-        ret = ((sfxHeader_t*)arg0)->unk9 >> 7;
+        ret = ((SfxHeader*)arg0)->unk9 >> 7;
     } else if (g_Sound_Sfx_MetadataTableA[arg0] & 0x8000) {
         ret = 1;
     }

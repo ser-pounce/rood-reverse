@@ -9,28 +9,28 @@ typedef struct {
     int pitch;
     int distance;
     int mode;
-} sphericalValues_t;
+} SphericalValues;
 
 typedef struct {
-    sphericalValues_t values;
-    sphericalValues_t delta;
+    SphericalValues values;
+    SphericalValues delta;
     int initialDistance;
     int unk24;
     int speed;
-} sphericalCamera_t;
+} SphericalCamera;
 
 typedef struct {
     POLY_F4 covered;
     POLY_F4 edge;
-} vs_battle_screenTransitionWipePoly;
+} vs_battle_ScreenTransitionWipePoly;
 
 typedef struct {
-    vs_camera_t fromCameraState;
-    sphericalCamera_t fromSpherical;
+    vs_Camera fromCameraState;
+    SphericalCamera fromSpherical;
     int fromNearClip;
     int fromProjectionDistance;
     int fromFarClip;
-    sphericalCamera_t toSpherical;
+    SphericalCamera toSpherical;
     int toNearClip;
     int toProjectionDistance;
     int toFarClip;
@@ -43,11 +43,11 @@ typedef struct {
     int projectionDistanceStep;
     int transitionSpeed;
     int transitionFrames;
-} vs_battle_cameraTransition_t;
+} vs_battle_CameraTransition;
 
 int vs_battle_getCameraRoll(void);
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
-int vs_battle_syncCameraAnglesFromPosition(sphericalCamera_t*);
+int vs_battle_syncCameraAnglesFromPosition(SphericalCamera*);
 void vs_battle_setCameraRoll(int arg0);
 void vs_battle_setFarClip(int arg0, int arg1);
 void vs_battle_initialiseCameraFromSpherical(VECTOR*, VECTOR*, int, int);
@@ -57,13 +57,13 @@ void vs_battle_setCameraPosition(VECTOR* inPosition);
 void vs_battle_getCameraLookAt(VECTOR* outLookAt);
 void vs_battle_setCameraLookAt(VECTOR* inLookAt);
 void vs_battle_setNearClip(int arg0);
-extern sphericalCamera_t vs_battle_cameraCurrentSpherical;
+extern SphericalCamera vs_battle_cameraCurrentSpherical;
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;
-extern vs_battle_screenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
+extern vs_battle_ScreenTransitionWipePoly vs_battle_screenTransitionWipePolyF4[];
 extern POLY_G4 vs_battle_screenTransitionEdgePolyG4[];
 extern POLY_F4 vs_battle_screenTransitionPolyF4[];
-extern vs_battle_cameraTransition_t* vs_battle_cameraTransition;
+extern vs_battle_CameraTransition* vs_battle_cameraTransition;
 extern u_int vs_battle_screenTransitionStep;
 extern int vs_battle_screenTransitionEffect;
 extern int vs_battle_screenTransitionWipeAngle;

@@ -106,17 +106,17 @@ typedef struct {
     short unkC;
     u_short unkE;
     u_short* data;
-    vs_main_CdQueueSlot* cdQueueSlot;
+    vs_Main_CdQueueSlot* cdQueueSlot;
     u_short unk18[240];
     u_short imageTable[254];
     int unk3F4;
-} gim_t;
+} Gim;
 
 typedef struct {
-    actionEffectTarget* unk0;
-    actionEffectTarget* unk4;
-    actionEffectTarget* unk8;
-    actionEffectTarget* unkC;
+    ActionEffectTarget* unk0;
+    ActionEffectTarget* unk4;
+    ActionEffectTarget* unk8;
+    ActionEffectTarget* unkC;
     int unk10;
     char* unk14;
     int unk18;
@@ -142,10 +142,10 @@ typedef struct {
     u_int color : 4;
     u_int texture : 4;
     u_int life : 8;
-} effectTrailConfig;
+} EffectTrailConfig;
 
 typedef struct {
-    effectTrailConfig config;
+    EffectTrailConfig config;
     int index;
     int age;
     SVECTOR first[8];
@@ -156,7 +156,7 @@ typedef struct {
     SVECTOR currentSecond;
     long projectionDepth;
     long projectionFlags;
-} effectTrailState;
+} EffectTrailState;
 
 typedef struct {
     u_long tag;
@@ -199,7 +199,7 @@ typedef struct {
     u_char selectedIndex;
     u_char count;
     u_char unkC;
-} textBoxSelector_t;
+} TextBoxSelector;
 
 typedef struct {
     int unk0;
@@ -261,7 +261,7 @@ typedef struct {
 typedef struct {
     int count;
     short offsets[0];
-} pFileBlock11;
+} PFileBlock11;
 
 typedef struct {
     u_char actors[6];
@@ -286,7 +286,7 @@ void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
 int func_800CABE0(int);
 void func_800CCA90(int);
-void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
+void func_800CBBCC(Gim* arg0, int arg1, u_long* arg2);
 void func_800CD158(int);
 void func_800CD3E4(int);
 int breakArtsUnlocked(void);
@@ -294,7 +294,7 @@ extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CE9B0(void);
-char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2);
+char func_800CF218(ActionEffectRequest* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
@@ -390,8 +390,8 @@ extern u_short D_800EBDDC[];
 extern u_int keystreamState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
-extern void (*D_800EC25C[])(gim_t*, int, u_long*);
-extern textOffset D_800EC284[][2];
+extern void (*D_800EC25C[])(Gim*, int, u_long*);
+extern TextOffset D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -420,12 +420,12 @@ extern int D_800F4CC0;
 extern u_long D_800F4CD0;
 extern char D_800F4E68;
 extern char D_800F4E69;
-extern textBoxSelector_t textBoxSelector;
+extern TextBoxSelector textBoxSelector;
 extern int D_800F4ED4;
 extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
-extern vs_main_CdQueueSlot* D_800F5218;
+extern vs_Main_CdQueueSlot* D_800F5218;
 extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
@@ -452,7 +452,7 @@ extern int D_800F5618;
 extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
-extern gim_t* D_800EB9BC;
+extern Gim* D_800EB9BC;
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -1080,7 +1080,7 @@ char* vs_battle_printf(char* dest, char* src)
 
 int vs_battle_setTextBox(int boxId, char* str)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[boxId];
+    vs_battle_TextBox* box = &vs_battle_textBoxes[boxId];
 
     if (str != NULL) {
         box->string = str;
@@ -1103,7 +1103,7 @@ int vs_battle_setTextBox(int boxId, char* str)
 
 int vs_battle_selectTextBox(u_char boxMask)
 {
-    vs_battle_textBox tempBox;
+    vs_battle_TextBox tempBox;
     short yPositions[8];
     int i;
     int j;
@@ -1248,7 +1248,7 @@ void vs_battle_setFontStyle(int arg0)
     D_800F4CB8 = arg0;
 }
 
-void printVariableWidthFont(vs_battle_textBox* arg0)
+void printVariableWidthFont(vs_battle_TextBox* arg0)
 {
     char intBuf[16];
     u_long* sp20 = D_800F51B8 + D_800F4E80 * 4;
@@ -1638,7 +1638,7 @@ __asm__("glabel printFixedWidthFontChar;"
         "endlabel printFixedWidthFontChar;");
 
 #pragma vsstring(start)
-void printFixedWidthFont(vs_battle_textBox* ctx, int scale)
+void printFixedWidthFont(vs_battle_TextBox* ctx, int scale)
 {
     int justify = 0;
     char* str = ctx->string;
@@ -1778,7 +1778,7 @@ void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
 }
 
 #pragma vsstring(start)
-void renderTextImmediate(vs_battle_textBox* arg0, int arg1)
+void renderTextImmediate(vs_battle_TextBox* arg0, int arg1)
 {
     RECT rect;
     int height;
@@ -1891,8 +1891,8 @@ void renderTextImmediate(vs_battle_textBox* arg0, int arg1)
 
 void vs_battle_loadGim(int id, int arg1)
 {
-    vs_main_CdFile file;
-    gim_t* var_s0;
+    vs_Main_CdFile file;
+    Gim* var_s0;
     int i;
 
     if (D_800EB9BC == NULL) {
@@ -1921,7 +1921,7 @@ void vs_battle_loadGim(int id, int arg1)
 
 void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 {
-    gim_t* gim = &D_800EB9BC[arg0];
+    Gim* gim = &D_800EB9BC[arg0];
     int step;
     int next;
     int i;
@@ -1966,7 +1966,7 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 
 void func_800C86AC(void)
 {
-    gim_t* var_s0 = D_800EB9BC;
+    Gim* var_s0 = D_800EB9BC;
     int i;
 
     if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
@@ -1984,9 +1984,9 @@ void func_800C86AC(void)
 
 void func_800C8778(void)
 {
-    gim_t* gim = D_800EB9BC;
-    gim_t* second = gim + 1;
-    gim_t* third = gim + 2;
+    Gim* gim = D_800EB9BC;
+    Gim* second = gim + 1;
+    Gim* third = gim + 2;
     int i;
     int j;
     int count;
@@ -2054,7 +2054,7 @@ void func_800C8778(void)
         vs_battle_renderImage((width + 512) | 0x1FF0000, gim->data + count, 0x10040);
 
         for (j = 0; j < 3; ++j) {
-            gim_t* current = &gim[j];
+            Gim* current = &gim[j];
 
             switch (current->imageTable[2]) {
             case 0:
@@ -2120,7 +2120,7 @@ void func_800C8778(void)
 
 int vs_battle_loadMenuPrg(int arg0)
 {
-    vs_battle_menuState_t* state = &vs_battle_menuState;
+    vs_battle_MenuState* state = &vs_battle_menuState;
     int subMenu = arg0 & 0x1F;
 
     if (subMenu == 31) {
@@ -2133,7 +2133,7 @@ int vs_battle_loadMenuPrg(int arg0)
 
     if (loadedSubMenu != subMenu) {
         void* overlaySlot;
-        vs_main_CdFile file;
+        vs_Main_CdFile file;
         u_int fileData;
 
         loadedSubMenu = subMenu;
@@ -2200,13 +2200,13 @@ void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader he
     vs_battle_initTextBox(7, (header << 8) | 4, 0, 1, 0, 4, 0, 0);
 }
 
-vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
+vs_battle_MenuItem* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
-vs_battle_menuItem_t* vs_battle_setMenuItem(
+vs_battle_MenuItem* vs_battle_setMenuItem(
     int row, int x, int y, int w, int backgroundWidth, char* text)
 {
-    vs_battle_menuItem_t* menuItem;
-    vs_battle_menuItem_t* var_a0;
+    vs_battle_MenuItem* menuItem;
+    vs_battle_MenuItem* var_a0;
     int i;
     u_int c;
 
@@ -2279,7 +2279,7 @@ int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness)
     return lerpColor(color0, color1, brightness, gradient);
 }
 
-void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
+void vs_battle_renderMenuItem(vs_battle_MenuItem* menuItem)
 {
 
     int y = menuItem->gradientState;
@@ -2374,7 +2374,7 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
 int func_800C930C(int mode)
 {
     u_int selected = vs_battle_submenuStates[0];
-    vs_battle_menuItem_t* items = vs_battle_menuItems;
+    vs_battle_MenuItem* items = vs_battle_menuItems;
     u_int enabled = vs_main_settings.menuFlags;
     u_int mask;
 
@@ -2510,7 +2510,7 @@ int func_800C930C(int mode)
 
 void func_800C97BC(void)
 {
-    vs_battle_menuItem_t* var_s2;
+    vs_battle_MenuItem* var_s2;
     int temp_s1;
     int miscIndex;
     int i;
@@ -2700,7 +2700,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
     }
 }
 
-int vs_battle_getStatusFlags(vs_battle_actorStats* stats)
+int vs_battle_getStatusFlags(vs_battle_ActorStats* stats)
 {
     int i;
     int temp_v1 = (u_int)stats->statuses >> 5;
@@ -2716,7 +2716,7 @@ int vs_battle_getStatusFlags(vs_battle_actorStats* stats)
     return var_a2;
 }
 
-int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb* limb)
+int vs_battle_getLimbStatus(vs_battle_UiEquipment_limb* limb)
 {
     int maxHp = limb->maxHp;
 
@@ -2859,7 +2859,7 @@ void func_800CA2DC(void)
     u_int flags;
     u_char icon;
     u_long* prim;
-    vs_battle_actorStats* stats = vs_battle_characterState->stats;
+    vs_battle_ActorStats* stats = vs_battle_characterState->stats;
     void* nextPrim = vs_scratch.unk4 - 4;
 
     func_800C9FE8();
@@ -3095,7 +3095,7 @@ void func_800CAB40(void)
 int func_800CABE0(int arg0)
 {
     int ret;
-    vs_battle_actorStats* stats = vs_battle_characterState->stats;
+    vs_battle_ActorStats* stats = vs_battle_characterState->stats;
     int temp_v0 = func_800A0BE0(0);
     int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
 
@@ -3217,7 +3217,7 @@ int breakArtsUnlocked(void)
 int vs_battle_chainAbilitiesUnlocked(int defense)
 {
     int i;
-    vs_action_t* v0;
+    vs_Action* v0;
 
     for (i = 0; i < 14; ++i) {
         v0 = vs_main_actions;
@@ -3280,14 +3280,14 @@ void func_800CB114(void)
     }
 }
 
-void func_800CB158(vs_battle_lootListNode* arg0)
+void func_800CB158(vs_battle_LootListNode* arg0)
 {
     D_800EB9C4 = arg0;
     D_800EB9C8 = NULL;
     func_800CACD0(0xC, 2);
 }
 
-void func_800CB18C(vs_battle_loot* arg0)
+void func_800CB18C(vs_battle_Loot* arg0)
 {
     D_800EB9C8 = arg0;
     D_800EB9C4 = NULL;
@@ -3401,7 +3401,7 @@ void func_800CB560(void) { vs_battle_lowerScreenUiState = 0; }
 
 char const D_80069998[] = "00:00:00";
 
-void renderTimer(vs_Gametime_t* value)
+void renderTimer(vs_Gametime* value)
 {
     char sp10[4];
     int i;
@@ -3432,7 +3432,7 @@ D_800F18EC_t* func_800CB66C(void) { return &D_800F4E98; }
 
 void loadScreff2(int arg0)
 {
-    vs_main_CdFile file;
+    vs_Main_CdFile file;
     D_800EB9B4_t* p = D_800EB9B4;
     void* const* new_var;
 
@@ -3498,7 +3498,7 @@ void func_800CB83C(void)
     int id;
 
     for (id = 7; id != -1; --id) {
-        vs_battle_textBox* box = &vs_battle_textBoxes[id];
+        vs_battle_TextBox* box = &vs_battle_textBoxes[id];
         int state = box->state;
         int duration;
         int scale;
@@ -3613,7 +3613,7 @@ void func_800CB83C(void)
     vs_battle_keystreamBits(0);
 }
 
-void func_800CBBCC(gim_t* image, int clut, u_long* ot)
+void func_800CBBCC(Gim* image, int clut, u_long* ot)
 {
     int alpha = image->unk3;
     int background;
@@ -3749,7 +3749,7 @@ void func_800CBBCC(gim_t* image, int clut, u_long* ot)
     }
 }
 
-void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
+void func_800CC128(Gim* arg0, int arg1, u_long* arg2)
 {
     int var_s1;
     int new_var;
@@ -3777,7 +3777,7 @@ void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
         ((var_s1 + 0x100) >> 6) | new_var | 0xE1000000;
 }
 
-void func_800CC204(gim_t* image, int clut, u_long* ot)
+void func_800CC204(Gim* image, int clut, u_long* ot)
 {
     short left[240];
     short right[240];
@@ -3888,7 +3888,7 @@ void func_800CC5C0(u_long* arg0, int arg1)
         arg0, arg1 | 0xE3000000, (arg1 + 0x13F) | 0xE403BC00, arg1 | 0xE5000000);
 }
 
-void func_800CC600(gim_t* image, int clut, u_long* ot)
+void func_800CC600(Gim* image, int clut, u_long* ot)
 {
     int alpha;
     int inverse;
@@ -3988,7 +3988,7 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
 
 void func_800CCA90(int arg0)
 {
-    gim_t* gim = &D_800EB9BC[arg0];
+    Gim* gim = &D_800EB9BC[arg0];
     int clut = (gim->unk2 - 16) << 6;
 
     if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
@@ -4101,12 +4101,12 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
     LoadImage(rect, buffer);
 }
 
-vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
+vs_battle_TextBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
+TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
-    textOffset ret;
-    textOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    TextOffset ret;
+    TextOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
     int offsetX = p->x;
     int offsetY = p->y;
     int alignment = p->alignment;
@@ -4126,7 +4126,7 @@ textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 void vs_battle_initTextBox(
     int id, int flags, int x, int y, int charsPerLine, int h, int centerX, int centerY)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    vs_battle_TextBox* box = &vs_battle_textBoxes[id];
 
     *(int*)&box->unk0 = flags & 0xFFFF;
     box->unk0.unk0_24 = 32;
@@ -4171,7 +4171,7 @@ void vs_battle_initTextBox(
 
 int vs_battle_dismissTextBox(int id)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    vs_battle_TextBox* box = &vs_battle_textBoxes[id];
 
     if (!(box->unk0.unk0_24 & 0x20)) {
         func_800AAD4C(box->unk0.unk0_24, 0, 0, 0);
@@ -4200,7 +4200,7 @@ void func_800CD0FC(int arg0, u_int arg1)
 // https://decomp.me/scratch/qBmPY
 void func_800CD158(int id)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    vs_battle_TextBox* box = &vs_battle_textBoxes[id];
     int y = box->y;
     u_long* ot = D_800F51B8 + id * 4 + 1;
     int edge = box->unk2A;
@@ -4275,7 +4275,7 @@ void func_800CD3E4(int index)
 {
     u_long* ot = D_800F51B8 + index * 4;
     u_int part;
-    vs_battle_textBox* box = &vs_battle_textBoxes[index];
+    vs_battle_TextBox* box = &vs_battle_textBoxes[index];
     u_short* verts = (u_short*)D_800EB588[box->unk0.unk0_8];
     u_char* shape;
     int header;
@@ -4454,7 +4454,7 @@ void func_800CD3E4(int index)
 #undef POINT_X
 #undef POINT_Y
 
-void func_800CDCBC(effectTrailState* t, int head, int tail)
+void func_800CDCBC(EffectTrailState* t, int head, int tail)
 {
     long xy[4];
 
@@ -4516,7 +4516,7 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
 
 int func_800CE174(func_800D4910_t* node, u_int mode, int config)
 {
-    effectTrailState* t = node->unk8;
+    EffectTrailState* t = node->unk8;
     int result = 1;
 
     switch (mode) {
@@ -4729,7 +4729,7 @@ void func_800CE8F4(D_800F53B8_t* arg0)
 int func_800CE9B0(void)
 {
     UNUSED int _[10];
-    vs_main_CdFile sp38;
+    vs_Main_CdFile sp38;
     D_800F53B8_t* temp_s1;
     D_800F53B8_t* var_s0;
     int i;
@@ -5000,7 +5000,7 @@ int func_800CF060(void)
     return temp_s1 | temp_s0;
 }
 
-int func_800CF0E8(actionEffectRequest* arg0, int arg1, int arg2)
+int func_800CF0E8(ActionEffectRequest* arg0, int arg1, int arg2)
 {
     D_800F5230 = *arg0;
 
@@ -5035,7 +5035,7 @@ void func_800CF1A8(void)
     }
 }
 
-char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
+char func_800CF218(ActionEffectRequest* arg0, int arg1, int arg2)
 {
     D_800F53B8_t2 spawn;
     UNUSED int _[4];
@@ -5088,7 +5088,7 @@ char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
     return token;
 }
 
-int func_800CF3F8(actionEffectRequest* arg0, int arg1)
+int func_800CF3F8(ActionEffectRequest* arg0, int arg1)
 {
     UNUSED int _[4];
     func_800D7890(0);
@@ -5097,7 +5097,7 @@ int func_800CF3F8(actionEffectRequest* arg0, int arg1)
     return func_800CF218(arg0, 0, arg1);
 }
 
-int func_800CF458(actionEffectRequest* arg0, int arg1, int arg2)
+int func_800CF458(ActionEffectRequest* arg0, int arg1, int arg2)
 {
     return func_800CF218(arg0, arg1, arg2);
 }
@@ -5224,7 +5224,7 @@ void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
 
 void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
 {
-    actionEffectRequest request;
+    ActionEffectRequest request;
 
     request.effectId = 54;
     request.count = 1;
@@ -5255,7 +5255,7 @@ void func_800CF830(int arg0, int arg1)
 
 void func_800CF8BC(void)
 {
-    actionEffectRequest request;
+    ActionEffectRequest request;
 
     request.effectId = 56;
     request.count = 1;
@@ -5767,7 +5767,7 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 
 void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_battle_ActorPosition sp10;
     int sp20[2];
 
     if (arg1->actor < 0x10U) {
@@ -5878,7 +5878,7 @@ void func_800D0D08(D_800F53B8_t* arg0)
 void func_800D1104(int arg0)
 {
     int i;
-    pFileCurveBlock* temp_a2 = D_800F569C->curveBlock;
+    PFileCurveBlock* temp_a2 = D_800F569C->curveBlock;
 
     for (i = 0; i < temp_a2->count; ++i) {
         D_800F5330[i + 1] = D_800F569C->curves[i][arg0 % temp_a2->curveSizes[i]];
@@ -5887,7 +5887,7 @@ void func_800D1104(int arg0)
 
 int vs_battle_sampleCurve(int curveId, int distance)
 {
-    pFileCurveBlock* block = D_800F569C->curveBlock;
+    PFileCurveBlock* block = D_800F569C->curveBlock;
 
     if ((curveId != 0) && (block->count >= curveId)) {
         return D_800F569C->curves[curveId - 1][distance % block->curveSizes[curveId - 1]];
@@ -5899,7 +5899,7 @@ int vs_battle_sampleCurve(int curveId, int distance)
 int func_800D11F4(int arg0, int arg1)
 {
     u_char* buf = D_800F569C->block11Data;
-    pFileBlock11* table = (pFileBlock11*)buf;
+    PFileBlock11* table = (PFileBlock11*)buf;
     int offset;
     int v;
 
@@ -6859,12 +6859,12 @@ void func_800D52A4(func_800D2904_t* node)
     }
 }
 
-void* getPFileBlock3section(pFileBlock3* arg0, int arg1)
+void* getPFileBlock3section(PFileBlock3* arg0, int arg1)
 {
     return (char*)arg0 + arg0->offsets[arg1];
 }
 
-void* func_800D5564(pFileBlock3* arg0, int arg1, int arg2)
+void* func_800D5564(PFileBlock3* arg0, int arg1, int arg2)
 {
     func_800D55A4_t* entry = getPFileBlock3section(arg0, arg1);
     return (char*)arg0 + entry->unk4[arg2].unk2;
@@ -7105,7 +7105,7 @@ int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
     if (play) {
         u_char* sound = D_800F569C->block11Data;
         vs_main_setVibrationBank(
-            sound + *(((data[event->unk6] >> 9) & 31) + ((pFileBlock11*)sound)->offsets),
+            sound + *(((data[event->unk6] >> 9) & 31) + ((PFileBlock11*)sound)->offsets),
             255, 1);
     }
 
@@ -7139,7 +7139,7 @@ int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
     }
 
     if (arg2 != 0) {
-        actionEffectRequest* effect = &D_800F5230;
+        ActionEffectRequest* effect = &D_800F5230;
 
         for (i = 0; i < D_800F5230.count; ++i) {
             if ((effect->targets[i].type == 4)

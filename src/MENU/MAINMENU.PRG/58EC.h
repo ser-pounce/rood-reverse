@@ -5,7 +5,7 @@ typedef struct {
     u_short name[14];
     int menuRowFlags;
     u_short description[48];
-} itemsText_t;
+} ItemsText;
 
 enum vs_mainMenu_actionsMenuActions { actionMenuDiscard = 4, actionMenuSort = 45 };
 
@@ -235,7 +235,7 @@ void vs_mainMenu_renderItemsList(void);
  * @return The x position immediately after the rendered character.
  */
 int vs_mainMenu_renderRowLabel(
-    u_int character, int x, vs_battle_menuItem_t* menuItem, u_long* before);
+    u_int character, int x, vs_battle_MenuItem* menuItem, u_long* before);
 
 /**
  * Renders the tab navigation arrows, e.g. in the inventory, container,
@@ -357,11 +357,11 @@ extern char bss_3[6];
  * as a flat array.
  *
  * struct vs_mainMenu_equipmentStats_t {
- *   vs_battle_classAffinityCurrent classAffinityCurrent;
+ *   vs_battle_ClassAffinityCurrent classAffinityCurrent;
  *   short types[4];
  *   short damageType;
  *   short unk4A[11];
- *   vs_battle_classAffinityBaseline classAffinityBaseline;
+ *   vs_battle_ClassAffinityBaseline classAffinityBaseline;
  * };
  */
 extern short vs_mainMenu_equipmentStats[64];
@@ -382,7 +382,7 @@ extern char vs_mainMenu_enabledStatPages;
 extern char vs_mainMenu_equipmentSubtype;
 
 extern char bss_4[18];
-extern struct textHeader_t textHeaders[];
+extern struct TextHeader textHeaders[];
 
 /**
  * Purpose unclear, seems to be related to an unused game setting.

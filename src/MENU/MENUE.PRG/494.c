@@ -26,13 +26,13 @@ typedef struct {
     int unk4;
     int unk8;
     int unkC;
-} menuBgTransparencies_t;
+} MenuBgTransparencies;
 
 typedef struct {
     int unk0;
     int unk4;
     int unk8;
-} menuBgChunkWidths_t;
+} MenuBgChunkWidths;
 
 enum arrowType_e {
     arrowTypeUp,
@@ -47,7 +47,7 @@ typedef struct {
     short currentFrame;
     short timer;
     short isActive;
-} AnimationState_t;
+} AnimationState;
 
 static char* vsStrcpy(char* arg0, char* arg1);
 static int initMenuState(void);
@@ -55,7 +55,7 @@ static int showMenu(void);
 static void drawSprite(short*);
 static void drawPaginationArrow(enum arrowType_e arrowType);
 static void drawContentLines(void);
-static short getAnimationState(AnimationState_t* arg0);
+static short getAnimationState(AnimationState* arg0);
 static int topMenu(int arg0);
 static void copySprites(u_long const* arg0, int arg1);
 static void copyCluts(u_long* arg0, int arg1);
@@ -125,7 +125,7 @@ static int getSelectedRow(void)
 static UNUSED void func_80102E48(char* text);
 void func_80102E48(char* text)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_battle_MenuItem* menuItem;
 
     menuItem = vs_battle_setMenuItem(10, 320, 34, 0x8C, 9, text);
     menuItem->state = 2;
@@ -212,8 +212,8 @@ int vs_menuE_exec(u_char* state)
 
 static int topMenu_state;
 static int menuSelectedRow;
-static vs_main_CdQueueSlot* helpTextCdQueue;
-static vs_main_CdQueueSlot* helpAssetsCdQueue;
+static vs_Main_CdQueueSlot* helpTextCdQueue;
+static vs_Main_CdQueueSlot* helpAssetsCdQueue;
 static int showMenuState;
 static int scrollPosition;
 static int totalLineCount;
@@ -238,7 +238,7 @@ static int initMenuState(void)
 
 #include "src/MENU/unused_vertices.h"
 
-static vs_main_CdFile const helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
+static vs_Main_CdFile const helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
     mkHfoPair(HELP03), mkHfoPair(HELP04), mkHfoPair(HELP05), mkHfoPair(HELP06),
     mkHfoPair(HELP07), mkHfoPair(HELP08), mkHfoPair(HELP09), mkHfoPair(HELP10),
     mkHfoPair(HELP11), mkHfoPair(HELP12), mkHfoPair(HELP13), mkHfoPair(HELP14) };
@@ -649,7 +649,7 @@ static void drawSprite(short* data)
     u_long** scratch;
     short tPage;
 
-    if ((*data != 0) && ((getAnimationState((AnimationState_t*)data) << 0x10) != 0)) {
+    if ((*data != 0) && ((getAnimationState((AnimationState*)data) << 0x10) != 0)) {
         return;
     }
 
@@ -736,17 +736,17 @@ static void setPageBg(int x, int y, int w, int h, int color)
     insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
-static menuBgChunkWidths_t const menuBgChunkWidths = { 128, 128, 64 };
+static MenuBgChunkWidths const menuBgChunkWidths = { 128, 128, 64 };
 
-static menuBgTransparencies_t const menuBgTransparencies[] = { { 128, 115, 121, 88 },
+static MenuBgTransparencies const menuBgTransparencies[] = { { 128, 115, 121, 88 },
     { 76, 64, 53, 42 }, { 33, 24, 17, 11 }, { 6, 3, 1, 0 } };
 
 static void fadeMenuUpper(void)
 {
     int widths[4];
     int transparency[16];
-    menuBgTransparencies_t const* var_v0;
-    menuBgTransparencies_t* var_v1;
+    MenuBgTransparencies const* var_v0;
+    MenuBgTransparencies* var_v1;
     int i;
     int j;
     POLY_FT4* poly;
@@ -754,7 +754,7 @@ static void fadeMenuUpper(void)
 
     memcpy(widths, &menuBgChunkWidths, sizeof menuBgChunkWidths);
 
-    var_v1 = (menuBgTransparencies_t*)transparency;
+    var_v1 = (MenuBgTransparencies*)transparency;
     var_v0 = menuBgTransparencies;
 
     do {
@@ -796,8 +796,8 @@ static void fadeMenuLower(void)
 {
     int widths[4];
     int transparency[16];
-    menuBgTransparencies_t const* var_v0;
-    menuBgTransparencies_t* var_v1;
+    MenuBgTransparencies const* var_v0;
+    MenuBgTransparencies* var_v1;
     int i;
     int j;
     POLY_FT4* poly;
@@ -805,7 +805,7 @@ static void fadeMenuLower(void)
 
     memcpy(widths, &menuBgChunkWidths, sizeof menuBgChunkWidths);
 
-    var_v1 = (menuBgTransparencies_t*)transparency;
+    var_v1 = (MenuBgTransparencies*)transparency;
     var_v0 = menuBgTransparencies;
 
     do {
@@ -920,7 +920,7 @@ static void drawContentLines(void)
     for (i = 0; i < linesCount; ++i) {
         animationState = 0;
         if (*linesData != 0) {
-            animationState = getAnimationState((AnimationState_t*)linesData);
+            animationState = getAnimationState((AnimationState*)linesData);
         }
         linesData += 8;
         setLineF2(line);
@@ -941,7 +941,7 @@ static void drawContentLines(void)
     *(void**)getScratchAddr(0) = line;
 }
 
-static short getAnimationState(AnimationState_t* state)
+static short getAnimationState(AnimationState* state)
 {
     short nextState;
 

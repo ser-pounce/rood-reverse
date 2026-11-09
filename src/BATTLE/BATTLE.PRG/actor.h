@@ -7,14 +7,14 @@
 
 typedef struct {
     char unk0[0x5E8];
-} vs_battle_actorSubModel;
+} vs_battle_ActorSubModel;
 
 typedef struct {
     u_short id;
     char index : 4;
     char unk2_4 : 4;
     char unk3;
-} vs_battle_actor_unk8C0;
+} vs_battle_Actor_unk8C0;
 
 // Bits 0-4 are set while the matching limb is down (HP below 2), see D_800E8200 and
 // D_800E8204. The effects are: head, cannot cast like Silent; right arm, damage dealt
@@ -82,11 +82,11 @@ typedef struct {
     u_int unk3A : 8;
     u_int unk3B_0 : 3;
     u_int currentAttackShapeAngle : 5;
-    vs_battle_uiWeapon weapon;
-    vs_battle_uiShield shield;
-    vs_battle_uiAccessory accessory;
-    vs_battle_uiEquipment_limb limbs[6];
-    vs_battle_actor_unk8C0 armor[6][4];
+    vs_battle_UiWeapon weapon;
+    vs_battle_UiShield shield;
+    vs_battle_UiAccessory accessory;
+    vs_battle_UiEquipment_limb limbs[6];
+    vs_battle_Actor_unk8C0 armor[6][4];
     char dpSplash[6][6];
     int unk944;
     int statuses;
@@ -96,13 +96,13 @@ typedef struct {
     u_char isAnalyzed : 1;
     u_char unk956_2 : 6;
     u_char unk957;
-    vs_battle_uiMisc miscItem;
-    vs_battle_uiMisc unk95C;
-    vs_battle_uiMiscRand unk960;
-} vs_battle_actorStats;
+    vs_battle_UiMisc miscItem;
+    vs_battle_UiMisc unk95C;
+    vs_battle_UiMiscRand unk960;
+} vs_battle_ActorStats;
 
-typedef struct vs_battle_actor {
-    struct vs_battle_actor* next;
+typedef struct vs_battle_Actor {
+    struct vs_battle_Actor* next;
     int id;
     u_char unk8;
     u_char unk9;
@@ -143,35 +143,35 @@ typedef struct vs_battle_actor {
     u_int unk34_14 : 1;
     u_int unk34_15 : 17;
     int unk38;
-    vs_battle_actorStats* stats;
+    vs_battle_ActorStats* stats;
     int unk40;
     D_800F4538_t* unk44;
-    vs_battle_actorSubModel* unk48[2];
-} vs_battle_actor;
+    vs_battle_ActorSubModel* unk48[2];
+} vs_battle_Actor;
 
 typedef struct {
     struct {
-        vs_battle_actor unk0;
-        vs_battle_actorStats unk50;
+        vs_battle_Actor unk0;
+        vs_battle_ActorStats unk50;
     } unk0;
     D_800F4538_unk0 unk9B4;
     MATRIX unk6C[8];
     int unk16C;
     int unk170;
     int unk174;
-} vs_battle_actor_dat2;
+} vs_battle_Actor_dat2;
 
 typedef struct {
-    vs_battle_actor_dat2 unk0;
+    vs_battle_Actor_dat2 unk0;
     char unkB2C[0x1788];
-    vs_battle_actorSubModel unk22B4[2];
-} vs_battle_actor_dat;
+    vs_battle_ActorSubModel unk22B4[2];
+} vs_battle_Actor_dat;
 
-void vs_battle_nop0(vs_battle_actorStats*);
-vs_battle_actor* vs_battle_getActor(int actorId);
-void func_80086FA8(int, vs_battle_actorStats*);
-extern vs_battle_actor* vs_battle_actors[];
-extern vs_battle_actor* vs_battle_characterState;
+void vs_battle_nop0(vs_battle_ActorStats*);
+vs_battle_Actor* vs_battle_getActor(int actorId);
+void func_80086FA8(int, vs_battle_ActorStats*);
+extern vs_battle_Actor* vs_battle_actors[];
+extern vs_battle_Actor* vs_battle_characterState;
 
 /**
  * Retrieve action availability info.
@@ -195,5 +195,5 @@ int func_800A0768(int, CVECTOR*);
 int func_800A07FC(int, CVECTOR*);
 void func_800A087C(int actorId, int);
 u_int func_800A0BE0(int actorId);
-int func_800A1108(int, vs_battle_actorPosition*);
+int func_800A1108(int, vs_battle_ActorPosition*);
 int func_800A13EC(int, int, int*, int);

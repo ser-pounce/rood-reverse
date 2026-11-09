@@ -23,7 +23,7 @@ typedef struct {
     int commonSeqLen;
     u_long battleSeqOffset;
     int battleSeqLen;
-} zudData_t;
+} ZudData;
 
 static int zudLbas[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z009U16_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z013U15_ZUD_LBA,
@@ -163,8 +163,8 @@ static char paletteFlags[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 static char modelVariants[] = { 30, 31, 32, 33, 172, 173 };
 static char variantMap[] = { 27, 27, 72, 72, 80, 80, 72, 52 };
 
-static vs_main_CdQueueSlot* zudCdSlot;
-static zudData_t* zudData;
+static vs_Main_CdQueueSlot* zudCdSlot;
+static ZudData* zudData;
 static void* zudBuffer;
 static int modelVariant;
 static int paletteFlag;
@@ -173,7 +173,7 @@ void vs_menu9_loadZudFile(int id)
 {
     static int zudIndex;
 
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
     int i;
 
     cdFile.lba = zudLbas[id];
@@ -203,7 +203,7 @@ void vs_menu9_loadZudFile(int id)
 
 int vs_menu9_parseZudFile(void)
 {
-    vs_battle_objectData slot;
+    vs_battle_ObjectData slot;
 
     if (zudCdSlot != NULL) {
         if (zudCdSlot->state != vs_main_CdQueueStateLoaded) {

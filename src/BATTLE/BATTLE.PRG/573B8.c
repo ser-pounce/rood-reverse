@@ -15,7 +15,7 @@ typedef struct {
 } D_800F4B28_t;
 
 extern int (*opcodeFunctionTable[])(u_char*, short);
-extern vs_main_CdFile D_800F4BF0;
+extern vs_Main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
 void func_800C0150(void);

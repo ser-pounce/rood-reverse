@@ -16,12 +16,12 @@ typedef struct {
     u_long tag;
     POLY_GT4 poly;
     u_long drawMode;
-} vs_particlePrim;
+} vs_ParticlePrim;
 
 void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1* scratch,
     D_800F53B8_t* battle, func_800FA098_arg3* state)
 {
-    vs_particlePrim quad;
+    vs_ParticlePrim quad;
     DVECTOR screen[10];
     int depths[10];
     int angles[8];
@@ -30,7 +30,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
     DVECTOR* screenStart;
     int particle;
     int segment;
-    pFileTexture* texture;
+    PFileTexture* texture;
     int width =
         func_800CFE1C(effect->unk30, vs_battle_sampleCurve(effect->unk17, state->unkC));
 
@@ -82,7 +82,7 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
         int offsetY;
         int offsetX;
         int value;
-        vs_particlePrim* prim;
+        vs_ParticlePrim* prim;
         DVECTOR* point;
 
         gte_ldv0(points);

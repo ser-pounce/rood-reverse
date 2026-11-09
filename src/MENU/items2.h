@@ -186,7 +186,7 @@ static void restoreItemMenu(int itemCategory)
     }
 
     for (i = 20; i < 40; ++i) {
-        vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(i);
+        vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(i);
 
         if (menuItem->state == 2) {
             menuItem->state = 1;
@@ -251,7 +251,7 @@ static int itemNavigation(int initialize)
 
 loop_1:
     if (initialize != 0) {
-        vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
+        vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(3);
 
         if (menuItem->x > 180) {
             if (menuItem->x > 204) {
@@ -544,7 +544,7 @@ loop_1:
     }
 
     case 4: {
-        vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
+        vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(3);
 
         if (menuItem->x > 180) {
             if (menuItem->x > 204) {
@@ -638,7 +638,7 @@ loop_1:
         secondaryTitleEnabled = 1;
 
         {
-            vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
+            vs_battle_MenuItem* menuItem = vs_battle_getMenuItem(3);
 
             if (menuItem->x > 180) {
                 if (menuItem->x > 204) {

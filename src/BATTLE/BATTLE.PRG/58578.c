@@ -30,7 +30,7 @@ typedef struct {
         VS_POLY_G4_TPAGE poly;
         u_long tpage;
     } box;
-} labelBoxPrim_t;
+} LabelBoxPrim;
 
 int func_800C1034(func_800C1564_t* arg0, u_short* arg1);
 int func_800C123C(func_800C1564_t* arg0, u_short* arg1, int arg2);
@@ -613,7 +613,7 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0)
     int xy;
     int textXy;
     int color;
-    labelBoxPrim_t* prim;
+    LabelBoxPrim* prim;
 
     if (arg0->unk1 != 0) {
         gradient = 8;
@@ -771,7 +771,7 @@ int func_800C2254(int angle, int index)
     short (*basis)[3] = (void*)0x1F800398;
     int point = 0;
     int phase = angle;
-    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+    MenuShapeVertex* vertex = &D_800EB9B8->unk48[index];
 
     for (; point < 33; ++index, phase += ONE / 32, ++point, ++vertex) {
         int component;
@@ -795,7 +795,7 @@ int func_800C2368(int step, int radius, int index)
     short* basis = (short*)0x1F800398;
     int base;
     int i;
-    menuShapeVertex* vertex = &D_800EB9B8->unk48[index];
+    MenuShapeVertex* vertex = &D_800EB9B8->unk48[index];
 
     for (base = 0; base < ONE; base += ONE / 4) {
         int x = 0;
@@ -837,7 +837,7 @@ void func_800C253C(int type)
     short* basis = (short*)0x1F800398;
     int index = 0;
     int shape = D_800EB9B8->unk24.pad;
-    menuShapeVertex* vertices = D_800EB9B8->unk48;
+    MenuShapeVertex* vertices = D_800EB9B8->unk48;
     int count;
     int command;
     u_short* commands;
@@ -912,7 +912,7 @@ void func_800C253C(int type)
 
 void* func_800C282C(void)
 {
-    sphericalCamera_t camera;
+    SphericalCamera camera;
     int temp_a0;
     int temp_s2;
     int yaw;
@@ -1005,7 +1005,7 @@ void func_800C2B0C(SVECTOR* position, u_int row)
         int value = 0x10000;
 
         if ((x < width) & (z < height)) {
-            mpdRoomSection3_t* room = func_8008B764(x, z, 0);
+            MpdRoomSection3* room = func_8008B764(x, z, 0);
 
             if (room->unk0_6) {
                 value = 0xF0800000;

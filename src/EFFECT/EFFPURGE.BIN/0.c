@@ -157,7 +157,7 @@ static u_char fbcSlots[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 #define FBC_DEFAULT { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }
 #define FBC(x) { VS_E##x##_1_FBC_LBA - VS_E000_P_LBA, VS_E##x##_1_FBC_SIZE }
 
-static loadFileContext_t fbcFiles[] = {
+static LoadFileContext fbcFiles[] = {
     { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }, FBC(001), FBC(002),
     FBC(003), FBC(004), FBC(005), FBC_DEFAULT, FBC(007), FBC(008), FBC(009), FBC(010),
     FBC_DEFAULT, FBC_DEFAULT, FBC(013), FBC(014), FBC(015), FBC(016), FBC(017), FBC(018),
@@ -262,7 +262,7 @@ static u_char fbtSlots[] = { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 
 
 #define FBT(x) { VS_E##x##_FBT_LBA - VS_E000_P_LBA, VS_E##x##_FBT_SIZE }
 
-static loadFileContext_t fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(002_1),
+static LoadFileContext fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(002_1),
     FBT(002_2), FBT(003_1), FBT(003_2), FBT(004_1), FBT(004_2), FBT(005_1), FBT(005_2),
     FBT(005_3), FBT(007_1), FBT(007_2), FBT(008_1), FBT(008_2), FBT(009_1), FBT(009_2),
     FBT(010_1), FBT(010_2), FBT(013_1), FBT(013_2), FBT(014_1), FBT(014_2), FBT(015_1),
@@ -375,7 +375,7 @@ static loadFileContext_t fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(
 #define P(x) { VS_E##x##_P_LBA - VS_E000_P_LBA, VS_E##x##_P_SIZE }
 #define P_DEFAULT P(000)
 
-static loadFileContext_t pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004), P(005),
+static LoadFileContext pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004), P(005),
     P(006), P(007), P(008), P(009), P(010), P(011), P(012), P(013), P(014), P(015),
     P(016), P(017), P(018), P(019), P(020), P(021), P(022), P(023), P(024), P(025),
     P(026), P(027), P(028), P(029), P(030), P(031), P(032), P(033), P(034), P(035),
@@ -561,7 +561,7 @@ static effectExec effectEntryPoints[] = { vs_effect_analyze_0, vs_effect_solidSh
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
 
-static loadFileContext_t plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
+static LoadFileContext plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG(005), PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,

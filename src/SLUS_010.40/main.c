@@ -86,7 +86,7 @@ typedef struct {
     u_int ringWriteIndex;
     u_int ringBufIndex;
     int framesSinceLastRead;
-} disk_t;
+} Disk;
 
 typedef struct {
     int active;
@@ -95,27 +95,27 @@ typedef struct {
     int target;
     int scriptPos;
     int framesLeft;
-} padMotor_t;
+} PadMotor;
 
 typedef struct {
     u_short active;
     u_short id;
     char const* script;
-    padMotor_t motors[2];
-} padVibration_t;
+    PadMotor motors[2];
+} PadVibration;
 
 // A colour with 16.16 fixed point channels
 typedef struct {
     int r;
     int g;
     int b;
-} fixedColor_t;
+} FixedColor;
 
 // A fixed point colour and the step added to it every update while it fades
 typedef struct {
-    fixedColor_t current;
-    fixedColor_t step;
-} fade_t;
+    FixedColor current;
+    FixedColor step;
+} Fade;
 
 typedef struct {
     char active;
@@ -126,14 +126,14 @@ typedef struct {
     short pulseTarget[3];
     short grayAmount;
     short grayStep;
-    fade_t fade;
+    Fade fade;
     CVECTOR baseColor;
-} colorSlot_t;
+} ColorSlot;
 
 typedef struct {
     UNUSED char _;
     char locked;
-    struct clutAnimState_t {
+    struct ClutAnimState {
         u_char active;
         u_char frame;
         u_char tick;
@@ -153,12 +153,12 @@ typedef struct {
         u_char bindex;
     } colorInfo[256];
     u_short clutBase[256];
-} clutSlot_t;
+} ClutSlot;
 
 typedef struct {
     u_short uploadPending;
     u_short active;
-    clutSlot_t slots[14];
+    ClutSlot slots[14];
     u_char bgAnimActive;
     u_char bgAnimFrame;
     u_char bgAnimTick;
@@ -167,17 +167,17 @@ typedef struct {
     short bgTransitionTargetR;
     short bgTransitionTargetG;
     short bgTransitionTargetB;
-    fade_t bgColors[5];
+    Fade bgColors[5];
     CVECTOR bgBaseColors[5];
-    colorSlot_t colorSlots[17];
+    ColorSlot colorSlots[17];
     UNUSED u_char _[0x54];
-} clutState_t;
+} ClutState;
 
-typedef struct vs_main_HeapHeader {
-    struct vs_main_HeapHeader* prev;
-    struct vs_main_HeapHeader* next;
+typedef struct vs_Main_HeapHeader {
+    struct vs_Main_HeapHeader* prev;
+    struct vs_Main_HeapHeader* next;
     u_int blockSz;
-} __attribute__((aligned(16))) vs_main_HeapHeader;
+} __attribute__((aligned(16))) vs_Main_HeapHeader;
 
 void __main(void);
 static void unlockPadModeSwitch(void);
@@ -194,14 +194,14 @@ typedef struct {
     char wHi;
     char hLo;
     char hHi;
-} imgHeader_t;
+} ImgHeader;
 
 typedef struct {
     int processing : 16;
     int queued : 16;
-} cdQueueCount_t;
+} CdQueueCount;
 
-extern imgHeader_t nowLoading_header;
+extern ImgHeader nowLoading_header;
 extern u_long nowLoading_data[];
 
 // vibrationOnBank starts with an effect count, followed by a table of four-byte
@@ -347,7 +347,7 @@ signed char animOffset2[][2] = { ANIM_ROWS(ANIM_ROW2) };
 
 #include "build/assets/SLUS_010.40/vs_main_actions.h"
 
-material_modifiers_t vs_main_materialModifiers[] = {
+MaterialModifiers vs_main_materialModifiers[] = {
     // None
     { 0 },
     // Wood
@@ -521,7 +521,7 @@ material_modifiers_t vs_main_materialModifiers[] = {
         | vsBattleStatusAirDefUp | vsBattleStatusFireDefUp | vsBattleStatusEarthDefUp    \
         | vsBattleStatusWaterDefUp)
 
-vs_main_statusEffectParams_t vs_main_statusEffectParams[] = {
+vs_main_StatusEffectParams vs_main_statusEffectParams[] = {
     { .status = vsBattleStatusHeadDown, .replacesMask = vsBattleStatusSilent },
     { .status = vsBattleStatusRightArmDown },
     { .status = vsBattleStatusLeftArmDown },
@@ -667,7 +667,7 @@ u_char vs_main_locationZoneMapIds[] = { 100, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6,
         VS_ZONE##file##_ZND_LBA, VS_ZONE##file##_ZND_SIZE \
     }
 
-vs_main_CdFile vs_main_zndFiles[] = { ZNDLBA(000), ZNDLBA(001), ZNDLBA(002), ZNDLBA(003),
+vs_Main_CdFile vs_main_zndFiles[] = { ZNDLBA(000), ZNDLBA(001), ZNDLBA(002), ZNDLBA(003),
     ZNDLBA(004), ZNDLBA(005), ZNDLBA(006), ZNDLBA(007), ZNDLBA(008), ZNDLBA(009),
     ZNDLBA(010), ZNDLBA(011), ZNDLBA(012), ZNDLBA(013), ZNDLBA(014), ZNDLBA(015),
     ZNDLBA(016), ZNDLBA(017), ZNDLBA(018), ZNDLBA(019), ZNDLBA(020), ZNDLBA(021),
@@ -765,8 +765,8 @@ u_char vs_main_actorExtraShp[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 static void loadBattlePrg(void)
 {
-    vs_main_CdFile cdFile;
-    vs_main_CdQueueSlot* slot;
+    vs_Main_CdFile cdFile;
+    vs_Main_CdQueueSlot* slot;
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
@@ -796,8 +796,8 @@ static void loadBattlePrg(void)
 
 static void loadTitlePrg(void)
 {
-    vs_main_CdFile cdFile;
-    vs_main_CdQueueSlot* slot;
+    vs_Main_CdFile cdFile;
+    vs_Main_CdQueueSlot* slot;
 
     cdFile.lba = VS_TITLE_PRG_LBA;
     cdFile.size = VS_TITLE_PRG_SIZE;
@@ -815,8 +815,8 @@ static void loadTitlePrg(void)
 
 static void loadEndingPrg(void)
 {
-    vs_main_CdFile cdFile;
-    vs_main_CdQueueSlot* slot;
+    vs_Main_CdFile cdFile;
+    vs_Main_CdQueueSlot* slot;
 
     cdFile.lba = VS_ENDING_PRG_LBA;
     cdFile.size = VS_ENDING_PRG_SIZE;
@@ -838,22 +838,22 @@ static void* cdReadBuffer;
 static UNUSED int _0;
 static struct {
     int strength[2];
-    padVibration_t port[2];
-} padAct_t;
-portInfo_t vs_main_portInfo[2];
+    PadVibration port[2];
+} padAct;
+PortInfo vs_main_portInfo[2];
 static UNUSED u_char _2[2];
-static vs_main_HeapHeader heapList;
-static UNUSED vs_main_HeapHeader unusedHeap;
+static vs_Main_HeapHeader heapList;
+static UNUSED vs_Main_HeapHeader unusedHeap;
 static DslLOC cdReadLoc;
 static int cdaTrack;
 static int cdaMinute;
 static int cdaSecond;
 static int cdaPeak;
 static UNUSED int _3;
-static vs_main_CdQueueSlot cdQueue[32];
-static cdQueueCount_t cdQueueCount;
+static vs_Main_CdQueueSlot cdQueue[32];
+static CdQueueCount cdQueueCount;
 static UNUSED int _4;
-vs_main_battleTimer_t vs_main_battleTimer;
+vs_main_BattleTimer vs_main_battleTimer;
 int vs_main_startState;
 static int sp2;
 static u_short sfxData[0x2C00];
@@ -863,9 +863,9 @@ void* vs_main_ot[2];
 static int resetEnabled;
 static UNUSED int _6;
 static u_int buttonHeldFrameCount[32];
-static disk_t disk;
-static clutState_t clutState;
-vs_main_stickPos vs_main_stickPosBuf;
+static Disk disk;
+static ClutState clutState;
+vs_main_StickPos vs_main_stickPosBuf;
 static int savedSp;
 short vs_main_screenX;
 short vs_main_screenWidth;
@@ -875,7 +875,7 @@ u_int vs_main_buttonRepeat;
 static UNUSED int _7[4];
 char vs_main_padBuffer[2][34];
 static UNUSED int _8;
-soundData_t vs_main_soundData;
+SoundData vs_main_soundData;
 void* vs_main_prims[2];
 int vs_main_nearClip;
 static UNUSED int _9;
@@ -904,7 +904,7 @@ static void initScreen(int w, int h, UNUSED int projectionDistance, UNUSED int u
 u_int vs_main_buttonsPreviousState;
 int vs_main_unused0;
 static UNUSED int _11[2];
-vs_main_buttonsPressed_t vs_main_buttonsPressed;
+vs_main_ButtonsPressed vs_main_buttonsPressed;
 int vs_main_unused1;
 u_int vs_main_frameDuration;
 static UNUSED int _12[13];
@@ -1035,17 +1035,17 @@ static int nextVoicePool3;
 static int nextVoicePool4;
 static int nextVoicePool5;
 static UNUSED int _16[6];
-vs_main_scoredata_t vs_main_scoredata;
+vs_main_Scoredata vs_main_scoredata;
 static UNUSED int _17;
 char vs_main_actionsLearned[32];
-vs_main_mapStatus_t vs_main_mapStatus;
-vs_main_settings_t vs_main_settings;
-vs_main_artsStatus_t vs_main_artsStatus;
+vs_main_MapStatus vs_main_mapStatus;
+vs_main_Settings vs_main_settings;
+vs_main_ArtsStatus vs_main_artsStatus;
 int vs_main_zoneEnemyCacheIndex;
-vs_main_characterSnapshot_t vs_main_characterSnapshot;
-vs_main_inventory_t vs_main_inventory;
-vs_main_warp_t vs_main_spawnPoint;
-vs_Gametime_t vs_main_gametime;
+vs_main_CharacterSnapshot vs_main_characterSnapshot;
+vs_main_Inventory vs_main_inventory;
+vs_main_Warp vs_main_spawnPoint;
+vs_Gametime vs_main_gametime;
 
 int vs_main_gametimeUpdate(int mode)
 {
@@ -1236,11 +1236,11 @@ void vs_main_setCharacterRestorePending(void)
 
 void vs_main_captureSaveState(void)
 {
-    vs_battle_actorPosition position;
+    vs_battle_ActorPosition position;
     int i;
     int actionByte;
-    vs_battle_actorStats const* stats;
-    vs_main_characterSnapshot_t* snapshot;
+    vs_battle_ActorStats const* stats;
+    vs_main_CharacterSnapshot* snapshot;
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
 
@@ -1327,7 +1327,7 @@ static void unlockPadModeSwitch(void)
 
 static void padResetDefaults(int portID, UNUSED void const* _)
 {
-    portInfo_t* port = &vs_main_portInfo[portID >> 4];
+    PortInfo* port = &vs_main_portInfo[portID >> 4];
 
     port->exId = PadInfoMode(portID, InfoModeCurExID, 0);
 
@@ -1348,7 +1348,7 @@ static void padResetDefaults(int portID, UNUSED void const* _)
 
 u_int vs_main_updatePadState(int portID, char const padBuf[34])
 {
-    portInfo_t* port;
+    PortInfo* port;
     char mode;
     int btnStates;
 
@@ -1401,7 +1401,7 @@ void vs_main_padConnect(int portID, char const padBuf[34])
 {
     UNUSED int dummy[5];
 
-    portInfo_t* port = &vs_main_portInfo[portID >> 4];
+    PortInfo* port = &vs_main_portInfo[portID >> 4];
     int state = PadGetState(portID);
 
     if (state == PadStateFindPad) {
@@ -1446,7 +1446,7 @@ int vs_main_setVibrationBank(char const* script, u_int requestedSlot, int id)
 
     if (requestedSlot == 0xFF) {
         for (i = 0; i < 2; ++i) {
-            if (padAct_t.port[i].active == 0) {
+            if (padAct.port[i].active == 0) {
                 slot = i + 1;
                 break;
             }
@@ -1457,15 +1457,15 @@ int vs_main_setVibrationBank(char const* script, u_int requestedSlot, int id)
 
     if (slot != 0) {
         i = slot - 1;
-        padAct_t.port[i].script = script;
-        padAct_t.port[i].motors[0].scriptPos = 1;
-        padAct_t.port[i].motors[1].scriptPos = *script;
-        padAct_t.port[i].motors[1].framesLeft = 0;
-        padAct_t.port[i].motors[0].framesLeft = 0;
-        padAct_t.port[i].motors[1].value = 0;
-        padAct_t.port[i].motors[0].value = 0;
-        padAct_t.port[i].active = 1;
-        padAct_t.port[i].id = id;
+        padAct.port[i].script = script;
+        padAct.port[i].motors[0].scriptPos = 1;
+        padAct.port[i].motors[1].scriptPos = *script;
+        padAct.port[i].motors[1].framesLeft = 0;
+        padAct.port[i].motors[0].framesLeft = 0;
+        padAct.port[i].motors[1].value = 0;
+        padAct.port[i].motors[0].value = 0;
+        padAct.port[i].active = 1;
+        padAct.port[i].id = id;
 
         return slot;
     }
@@ -1476,10 +1476,10 @@ int vs_main_setVibrationBank(char const* script, u_int requestedSlot, int id)
 static int clearVibrationSlot(int slot)
 {
     int i = slot - 1;
-    padAct_t.port[i].motors[1].value = 0;
-    padAct_t.port[i].motors[0].value = 0;
-    padAct_t.port[i].script = 0;
-    padAct_t.port[i].active = 0;
+    padAct.port[i].motors[1].value = 0;
+    padAct.port[i].motors[0].value = 0;
+    padAct.port[i].script = 0;
+    padAct.port[i].active = 0;
 
     return slot;
 }
@@ -1498,7 +1498,7 @@ int vs_main_stopVibration(u_int slot, int id)
 
     if (id != 0) {
         for (i = 0; i < 2; ++i) {
-            if (padAct_t.port[i].id == id) {
+            if (padAct.port[i].id == id) {
                 clearVibrationSlot(i + 1);
             }
         }
@@ -1514,7 +1514,7 @@ int vs_main_stopVibration(u_int slot, int id)
 static int pauseVibrationSlot(int slot)
 {
     int i = slot - 1;
-    padAct_t.port[i].active = 0;
+    padAct.port[i].active = 0;
 
     return slot;
 }
@@ -1541,7 +1541,7 @@ static UNUSED int pauseVibration(int slot)
 static int resumeVibrationSlot(int slot)
 {
     int i = slot - 1;
-    padAct_t.port[i].active = 1;
+    padAct.port[i].active = 1;
 
     return slot;
 }
@@ -1572,10 +1572,10 @@ void vs_main_resetPadAct(void)
     vs_main_padDisconnectAll();
 
     for (i = 0; i < 2; ++i) {
-        padAct_t.port[i].script = NULL;
-        padAct_t.port[i].motors[1].value = 0;
-        padAct_t.port[i].motors[0].value = 0;
-        padAct_t.port[i].active = 0;
+        padAct.port[i].script = NULL;
+        padAct.port[i].motors[1].value = 0;
+        padAct.port[i].motors[0].value = 0;
+        padAct.port[i].active = 0;
     }
 }
 
@@ -1583,25 +1583,25 @@ void vs_main_setVibrateParams(void)
 {
     int j;
 
-    padAct_t.strength[1] = 0;
-    padAct_t.strength[0] = 0;
+    padAct.strength[1] = 0;
+    padAct.strength[0] = 0;
 
     for (j = 0; j < 2; ++j) {
 
         char const* script;
 
-        if (padAct_t.port[j].active == 0) {
+        if (padAct.port[j].active == 0) {
             continue;
         }
 
-        script = padAct_t.port[j].script;
+        script = padAct.port[j].script;
 
         if (script != 0) {
             int i;
 
             for (i = 0; i < 2; ++i) {
 
-                padMotor_t* motors = padAct_t.port[j].motors;
+                PadMotor* motors = padAct.port[j].motors;
 
                 if (motors[i].framesLeft == 0) {
 
@@ -1630,29 +1630,29 @@ void vs_main_setVibrateParams(void)
                     motors[i].value = motors[i].target;
                 }
 
-                padAct_t.strength[i] += motors[i].value;
+                padAct.strength[i] += motors[i].value;
 
-                if (padAct_t.strength[i] > 0xFF00) {
-                    padAct_t.strength[i] = 0xFF00;
-                } else if (padAct_t.strength[i] < 0) {
-                    padAct_t.strength[i] = 0;
+                if (padAct.strength[i] > 0xFF00) {
+                    padAct.strength[i] = 0xFF00;
+                } else if (padAct.strength[i] < 0) {
+                    padAct.strength[i] = 0;
                 }
             }
 
-            padAct_t.port[j].active =
-                padAct_t.port[j].motors[0].active | padAct_t.port[j].motors[1].active;
+            padAct.port[j].active =
+                padAct.port[j].motors[0].active | padAct.port[j].motors[1].active;
 
-            if (padAct_t.port[j].active == 0) {
-                padAct_t.port[j].script = 0;
+            if (padAct.port[j].active == 0) {
+                padAct.port[j].script = 0;
             }
         } else {
-            padAct_t.port[j].active = 0;
+            padAct.port[j].active = 0;
         }
     }
 
     if (vs_main_settings.vibrationOn != 0) {
-        padSetActData(0, 0, padAct_t.strength[0] / 256);
-        padSetActData(0, 1, padAct_t.strength[1] / 256);
+        padSetActData(0, 0, padAct.strength[0] / 256);
+        padSetActData(0, 1, padAct.strength[1] / 256);
     }
 }
 
@@ -1772,7 +1772,7 @@ int vs_main_processPadState(void)
 }
 
 static inline void insertFreeBlock(
-    vs_main_HeapHeader* freeNode, vs_main_HeapHeader* target)
+    vs_Main_HeapHeader* freeNode, vs_Main_HeapHeader* target)
 {
     if ((target + target->blockSz) == freeNode->next) {
         target->blockSz += freeNode->next->blockSz;
@@ -1796,8 +1796,8 @@ static inline void insertFreeBlock(
 
 void vs_main_freeHeapR(void* block)
 {
-    vs_main_HeapHeader* freeNode = heapList.prev;
-    vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
+    vs_Main_HeapHeader* freeNode = heapList.prev;
+    vs_Main_HeapHeader* target = (vs_Main_HeapHeader*)block - 1;
 
     for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->prev) {
         if (freeNode >= freeNode->next
@@ -1811,8 +1811,8 @@ void vs_main_freeHeapR(void* block)
 
 void vs_main_freeHeap(void* block)
 {
-    vs_main_HeapHeader* freeNode = heapList.next;
-    vs_main_HeapHeader* target = (vs_main_HeapHeader*)block - 1;
+    vs_Main_HeapHeader* freeNode = heapList.next;
+    vs_Main_HeapHeader* target = (vs_Main_HeapHeader*)block - 1;
 
     for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->next) {
         if (freeNode >= freeNode->next
@@ -1827,8 +1827,8 @@ void vs_main_freeHeap(void* block)
 void* vs_main_allocHeapR(u_int size)
 {
     u_int blockSz = ((size + 15) >> 4) + 1;
-    vs_main_HeapHeader* lastNode = &heapList;
-    vs_main_HeapHeader* freeNode = heapList.prev;
+    vs_Main_HeapHeader* lastNode = &heapList;
+    vs_Main_HeapHeader* freeNode = heapList.prev;
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
@@ -1857,8 +1857,8 @@ void* vs_main_allocHeapR(u_int size)
 
 void* vs_main_allocHeap(u_int size)
 {
-    vs_main_HeapHeader* lastNode = &heapList;
-    vs_main_HeapHeader* freeNode = heapList.next;
+    vs_Main_HeapHeader* lastNode = &heapList;
+    vs_Main_HeapHeader* freeNode = heapList.next;
     u_int blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
@@ -1868,7 +1868,7 @@ void* vs_main_allocHeap(u_int size)
                 lastNode->next = freeNode->next;
                 freeNode->next->prev = freeNode->prev;
             } else {
-                vs_main_HeapHeader* remainder = freeNode + blockSz;
+                vs_Main_HeapHeader* remainder = freeNode + blockSz;
                 remainder->blockSz = freeNode->blockSz - blockSz;
                 remainder->prev = freeNode->prev;
                 remainder->next = freeNode->next;
@@ -1892,7 +1892,7 @@ void* vs_main_allocHeap(u_int size)
 
 void vs_main_initHeap(void* heap, u_int size)
 {
-    vs_main_HeapHeader* node = heap;
+    vs_Main_HeapHeader* node = heap;
 
     heapList.prev = node;
     heapList.next = node;
@@ -2376,10 +2376,10 @@ static void initCdQueue(void)
         cdQueue[i].state = vs_main_CdQueueStateFree;
     }
 
-    cdQueueCount = (cdQueueCount_t) { 0, 0 };
+    cdQueueCount = (CdQueueCount) { 0, 0 };
 }
 
-vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
+vs_Main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_Main_CdFile const* file)
 {
     int i;
 
@@ -2394,7 +2394,7 @@ vs_main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_main_CdFile const* file)
     vs_main_nop9(162, 0);
 }
 
-void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot* slot)
+void vs_main_freeCdQueueSlot(vs_Main_CdQueueSlot* slot)
 {
     u_short state = slot->state - 2;
 
@@ -2405,7 +2405,7 @@ void vs_main_freeCdQueueSlot(vs_main_CdQueueSlot* slot)
     slot->state = vs_main_CdQueueStateFree;
 }
 
-void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
+void vs_main_cdEnqueue(vs_Main_CdQueueSlot* slot, void* vram)
 {
     slot->state = vs_main_CdQueueStateEnqueued;
     slot->vram = vram;
@@ -2413,10 +2413,10 @@ void vs_main_cdEnqueue(vs_main_CdQueueSlot* slot, void* vram)
     slot->priority = cdQueueCount.queued++;
 }
 
-void vs_main_cdEnqueuePriority(vs_main_CdQueueSlot* slot, void* vram)
+void vs_main_cdEnqueuePriority(vs_Main_CdQueueSlot* slot, void* vram)
 {
     int i;
-    vs_main_CdQueueSlot* queue = cdQueue;
+    vs_Main_CdQueueSlot* queue = cdQueue;
 
     for (i = 0; i < 32; ++i, ++queue) {
         if (queue->state == vs_main_CdQueueStateEnqueued) {
@@ -2439,7 +2439,7 @@ static void processCdQueue(void)
 
     if (cdQueueCount.processing || cdQueueCount.queued) {
 
-        vs_main_CdQueueSlot* slot = cdQueue;
+        vs_Main_CdQueueSlot* slot = cdQueue;
 
         int i = diskGetState();
 
@@ -2614,7 +2614,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
         if (targetSlot < 5) {
             if (vs_main_soundData.musicIds[slot] != id) {
 
-                vs_main_CdFile cdFile;
+                vs_Main_CdFile cdFile;
 
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop10(142, 0);
@@ -2626,7 +2626,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
 
                 if ((vs_main_soundData.musicQueueSlot[slot] != 0)
                     && (vs_main_soundData.musicQueueSlot[slot]
-                        != (vs_main_CdQueueSlot*)-1)) {
+                        != (vs_Main_CdQueueSlot*)-1)) {
                     vs_main_nop9(0x98, 0);
                 }
 
@@ -2684,7 +2684,7 @@ int vs_main_clearMusicLoadSlot(u_int slot)
                 == vs_main_CdQueueStateError) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
-                vs_main_soundData.musicQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+                vs_main_soundData.musicQueueSlot[slot - 1] = (vs_Main_CdQueueSlot*)-1;
 
                 return -1;
             }
@@ -3097,13 +3097,13 @@ int vs_main_loadSfxSlot(int id, u_int slot)
     if (slot - 1 < 3) {
         if (vs_main_soundData.sfxData[slot - 1] == NULL) {
 
-            vs_main_CdFile cdFile;
+            vs_Main_CdFile cdFile;
             u_int index = slot - 1;
             cdFile.lba = seLBAs[id];
             cdFile.size = seFileSizes[id];
 
             if ((vs_main_soundData.sfxQueueSlot[index] != NULL)
-                && (vs_main_soundData.sfxQueueSlot[index] != (vs_main_CdQueueSlot*)-1)) {
+                && (vs_main_soundData.sfxQueueSlot[index] != (vs_Main_CdQueueSlot*)-1)) {
                 vs_main_nop9(0x8F, 0);
             }
 
@@ -3157,7 +3157,7 @@ int vs_main_freeSfxQueueSlot(u_int slot)
                 == vs_main_CdQueueStateError) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
-                vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_main_CdQueueSlot*)-1;
+                vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_Main_CdQueueSlot*)-1;
 
                 return -1;
             }
@@ -3454,7 +3454,7 @@ int vs_main_clearCutsceneStreamSlot3(void)
 
 static void loadSoundFile(int file)
 {
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
     int loadedBanks = Sound_GetLoadedMusicBankIds();
 
     if (loadedBanks % 0x10000 == file || loadedBanks / 0x10000 == file) {
@@ -3465,7 +3465,7 @@ static void loadSoundFile(int file)
     cdFile.size = soundFileSizes[file];
 
     if (vs_main_soundData.soundQueueSlot != NULL
-        && vs_main_soundData.soundQueueSlot != (vs_main_CdQueueSlot*)-1) {
+        && vs_main_soundData.soundQueueSlot != (vs_Main_CdQueueSlot*)-1) {
         vs_main_nop9(0x93, 0);
     }
 
@@ -3657,7 +3657,7 @@ static void loadClutTransition(int duration, int slot, u_short const* sourceClut
     }
 
     if (duration != 0) {
-        struct clutAnimState_t* state = &clutState.slots[slot].animState;
+        struct ClutAnimState* state = &clutState.slots[slot].animState;
         state->active = 1;
         state->frame = 0;
         state->tick = 0;
@@ -3844,7 +3844,7 @@ static void transformClutSlot(
     }
 
     if (duration != 0) {
-        struct clutAnimState_t* p = &clutState.slots[slot].animState;
+        struct ClutAnimState* p = &clutState.slots[slot].animState;
         p->active = 1;
         p->frame = 0;
         p->tick = 0;
@@ -3904,7 +3904,7 @@ void vs_main_fadeBgColors(int frames, CVECTOR const* target)
 {
     int position[5];
     int i;
-    fade_t* bg;
+    Fade* bg;
 
     if (clutState.active == 0) {
         return;
@@ -3987,7 +3987,7 @@ static UNUSED void fadeBgColorsStore(int frames, CVECTOR const* target)
 static void transformBgColors(int mode, int frames, int rOffset, int gOffset, int bOffset)
 {
     int i;
-    fade_t* bg = clutState.bgColors;
+    Fade* bg = clutState.bgColors;
 
     for (i = 0; i < 5; ++i) {
         int lum;
@@ -4111,7 +4111,7 @@ void vs_main_transformBgColors(
     }
 }
 
-// Converts a 16.16 colour slot colour (`fade` is a fade_t*) to the signed byte offsets
+// Converts a 16.16 colour slot colour (`fade` is a Fade*) to the signed byte offsets
 // the lighting code takes, stored in the CVECTOR `position`
 #define SLOT_POSITION(position, fade)                  \
     (position).r = ((fade)->current.r / 65536) - 0x40;         \
@@ -4119,7 +4119,7 @@ void vs_main_transformBgColors(
     (position).b = ((fade)->current.b / 65536) - 0x40;         \
     (position).cd = 0
 
-static inline void startColorSlotAnim(colorSlot_t* slot, int speed)
+static inline void startColorSlotAnim(ColorSlot* slot, int speed)
 {
     slot->active = 1;
     slot->frame = 0;
@@ -4130,11 +4130,11 @@ static inline void startColorSlotAnim(colorSlot_t* slot, int speed)
 static void fadeColorSlot(int frames, int slot, CVECTOR const* color)
 {
     CVECTOR position;
-    colorSlot_t* cs;
+    ColorSlot* cs;
     int r;
     int g;
     int b;
-    fade_t* fade;
+    Fade* fade;
 
     if (clutState.active == 0) {
         return;
@@ -4186,8 +4186,8 @@ static void transformColorSlot(
     int r;
     int b;
     int g;
-    colorSlot_t* cs = &clutState.colorSlots[slot];
-    fade_t* fade = &cs->fade;
+    ColorSlot* cs = &clutState.colorSlots[slot];
+    Fade* fade = &cs->fade;
 
     // gray is the target grey amount: modes that average the channels fade it in
     gray = 0;
@@ -4332,7 +4332,7 @@ void vs_main_updateBgColors(void)
 {
     int position[5];
     int i;
-    fade_t* bg;
+    Fade* bg;
 
     if (clutState.bgAnimActive == 0) {
         return;
@@ -4387,9 +4387,9 @@ void vs_main_updateColorSlots(void)
     for (i = 0; i < 17; ++i) {
 
         CVECTOR position;
-        colorSlot_t* slots = clutState.colorSlots;
-        colorSlot_t* slot = &slots[i];
-        fade_t* fade = &slot->fade;
+        ColorSlot* slots = clutState.colorSlots;
+        ColorSlot* slot = &slots[i];
+        Fade* fade = &slot->fade;
 
         if (slot->active == 0) {
             continue;
@@ -4747,7 +4747,7 @@ static UNUSED void loadClutBaseOffset(u_short const* srcClut, int slot, u_short 
 void vs_main_loadBgColors(void)
 {
     int i;
-    fade_t* bg = clutState.bgColors;
+    Fade* bg = clutState.bgColors;
     int const* position = func_8008EB24();
 
     for (i = 0; i < 5; ++i) {
@@ -4810,7 +4810,7 @@ void vs_main_clutInit(void)
     }
 }
 
-vs_main_zoneEnemyCache_t vs_main_zoneEnemyCache[4];
-vs_main_flags_t vs_main_stateFlags;
-vs_main_inventoryIndices_t vs_main_inventoryIndices;
+vs_main_ZoneEnemyCache vs_main_zoneEnemyCache[4];
+vs_main_Flags vs_main_stateFlags;
+vs_main_InventoryIndices vs_main_inventoryIndices;
 static UNUSED int _18[0x15E];

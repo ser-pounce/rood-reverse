@@ -101,9 +101,9 @@ enum vs_mainMenu_renderDpPpBarsTarget {
 };
 
 enum vs_mainMenu_renderDpPpBarsState {
-    renderDpPpBarsStatSlideIn = 0 << 2,
-    renderDpPpBarsStatSlideOut = 1 << 2,
-    renderDpPpBarsStatStatic = 2 << 2
+    renderDpPpBarsStateSlideIn = 0 << 2,
+    renderDpPpBarsStateSlideOut = 1 << 2,
+    renderDpPpBarsStateStatic = 2 << 2
 };
 
 /**

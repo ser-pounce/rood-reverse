@@ -577,14 +577,14 @@ static char* weaponStatusView(int row)
         break;
 
     case 1:
-        vs_mainMenu_renderDpPpBars(renderDpPpBarsTargetBoth | renderDpPpBarsStatStatic);
+        vs_mainMenu_renderDpPpBars(renderDpPpBarsTargetBoth | renderDpPpBarsStateStatic);
         vs_mainMenu_setBladeRow(&vs_mainMenu_blades[weapon->blade - 1], menuText,
             &rowType, vs_battle_stringBuf);
         vs_mainMenu_setStatsFromBlade(weapon->blade);
         break;
 
     case 2:
-        vs_mainMenu_renderDpPpBars(renderDpPpBarsTargetNone | renderDpPpBarsStatStatic);
+        vs_mainMenu_renderDpPpBars(renderDpPpBarsTargetNone | renderDpPpBarsStateStatic);
         vs_mainMenu_setGripRow(&vs_mainMenu_grips[weapon->grip - 1], menuText, &rowType,
             vs_battle_stringBuf);
         vs_mainMenu_setStatsFromGrip(weapon->grip);
@@ -593,7 +593,7 @@ static char* weaponStatusView(int row)
     case 3:
     case 4:
     case 5:
-        vs_mainMenu_renderDpPpBars(renderDpPpBarsTargetNone | renderDpPpBarsStatStatic);
+        vs_mainMenu_renderDpPpBars(renderDpPpBarsTargetNone | renderDpPpBarsStateStatic);
         gem = weapon->gems[row - 3];
 
         if (gem != 0) {

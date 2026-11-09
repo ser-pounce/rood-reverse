@@ -1691,13 +1691,13 @@ static int equipmentDetailScreen(int row)
                 default:
                     if ((var_s2 - 2) < limbs) {
                         vs_mainMenu_renderDpPpBars(
-                            renderDpPpBarsTargetDp | renderDpPpBarsStatStatic);
+                            renderDpPpBarsTargetDp | renderDpPpBarsStateStatic);
                         drawArmorInfo(&stats->limbs[var_s2 - 2].armor);
                         vs_mainMenu_setArmorRow(&stats->limbs[var_s2 - 2].armor, sp18,
                             &sp48, vs_battle_stringBuf);
                     } else {
                         vs_mainMenu_renderDpPpBars(
-                            renderDpPpBarsTargetNone | renderDpPpBarsStatStatic);
+                            renderDpPpBarsTargetNone | renderDpPpBarsStateStatic);
                         drawAccessoryInfo((vs_battle_uiAccessory*)&stats->accessory);
                         vs_battle_copyUiAccessoryStats(&armor, &stats->accessory);
                         vs_mainMenu_setArmorRowFromInventory(

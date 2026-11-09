@@ -2,7 +2,7 @@
 #include "579C0.h"
 #include "57B1C.h"
 #include "58578.h"
-#include "5BF94.h"
+#include "5BF94Private.h"
 #include "battleUi.h"
 #include "gpu.h"
 #include "scratch.h"

@@ -1,5 +1,5 @@
 #include "common.h"
-#include "58EC.h"
+#include "58ECPrivate.h"
 #include "2D10.h"
 #include "C48.h"
 #include "src/SLUS_010.40/clut.h"

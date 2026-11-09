@@ -234,7 +234,6 @@ typedef struct {
  * @return Unique room ID from 0-511.
  */
 int vs_battle_getCurrentRoomId(void);
-MpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
 void vs_battle_setRoomsUnk0(vs_Scene*);
 int vs_battle_getCurrentSceneId(void);
 extern MpdRoomSection vs_battle_roomData;

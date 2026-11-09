@@ -3,15 +3,6 @@
 #include <stddef.h>
 #include <libgte.h>
 
-void func_800BBDDC(void);
-short func_800BEB00(void);
-short func_800BEB10(void);
-void func_800BEB34(void);
-void func_800BEB9C(int);
-void func_800BEBEC(void);
-char vs_battle_getStateFlag(short);
-int func_800BEC30(void);
-short func_800BEC58(short, int, int, short);
 int vs_battle_invalidOpcode(u_char*, short);
 int func_800B66F4(u_char*, short);
 int func_800B6724(u_char*, short);
@@ -155,20 +146,8 @@ int func_800BB554(u_char*, short);
 int func_800BB5A4(u_char*, short);
 int func_800BB5AC(u_char*, short);
 int func_800BB604(u_char*, short);
-int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
-    void* scriptSection, u_short scriptSectionLen, void* doorSection,
-    u_short doorSectionLen, int startState);
-int func_800BF850(void);
 
 extern short D_800F4BE2;
-extern char vs_battle_textBoxStatuses[];
 extern char D_800F4C08;
-extern char D_800F4C20;
-extern char D_800F4C2C;
 extern void* D_800F4C30;
 extern void* D_800F4C48;
-extern short D_800F4C58[];
-extern char D_800F4C68;
-extern u_char D_800E9C30[];
-extern u_char* D_800EB588[];
-extern vs_Main_CdQueueSlot* D_800F4BBC;

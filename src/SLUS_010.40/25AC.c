@@ -2,7 +2,7 @@
 // https://github.com/jdperos/chrono-cross-decomp/blob/master/src/slps_023.64/system/sound.c
 
 #include "common.h"
-#include "25AC.h"
+#include "25ACPrivate.h"
 #include "hw.h"
 #include "src/include/sound.h"
 #include <kernel.h>

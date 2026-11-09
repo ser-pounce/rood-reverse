@@ -1,7 +1,7 @@
 #include "common.h"
 #include "2D10.h"
 #include "58EC.h"
-#include "C48.h"
+#include "C48Private.h"
 #include "src/SLUS_010.40/cd.h"
 #include "src/SLUS_010.40/gameState.h"
 #include "src/SLUS_010.40/inventory.h"

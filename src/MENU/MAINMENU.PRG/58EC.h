@@ -123,17 +123,6 @@ int vs_mainMenu_renderCursor(u_int animStep, int xy);
  */
 int vs_mainMenu_renderIntColor(int value, int xy, int color, u_long* before);
 
-/**
- * Renders the provided value with preset colors based on
- * a comparison to `threshold`.
- */
-int vs_mainMenu_renderIntWithThreshold(int value, int xy, int threshold, u_long* before);
-
-/**
- * Invokes `vs_mainMenu_renderIntColor` with a neutral gray color.
- */
-void vs_mainMenu_renderIntColorDefault(int value, int xy, u_long* before);
-
 enum vs_mainMenu_icons { mainMenuIconGem = 22 };
 
 /**
@@ -246,11 +235,6 @@ int vs_mainMenu_renderRowLabel(
  * right of the screen, adding "L1/R1" prompts next to them.
  */
 void vs_mainMenu_renderTabNavigation(int mode);
-
-/**
- * Redraws the entire screen based on the current state.
- */
-void vs_mainMenu_renderScreen(void);
 
 /**
  * Controls whether the purple action cost elements are rendered.

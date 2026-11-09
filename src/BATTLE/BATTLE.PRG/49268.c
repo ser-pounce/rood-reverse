@@ -1,10 +1,11 @@
 #include "common.h"
-#include "49268.h"
+#include "30DB0Private.h"
+#include "49268Private.h"
 #include "38C1C.h"
 #include "44F14.h"
 #include "48C7C.h"
 #include "4B16C.h"
-#include "4DEA8.h"
+#include "4DEA8Private.h"
 #include "src/SLUS_010.40/graphics.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>

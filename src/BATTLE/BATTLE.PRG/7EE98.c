@@ -1,7 +1,7 @@
 #include "common.h"
 #include "6E4CC.h"
 #include "6E4CCShared.h"
-#include "4DEA8.h"
+#include "4DEA8Private.h"
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
 #include <rand.h>

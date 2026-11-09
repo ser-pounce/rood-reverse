@@ -1,0 +1,40 @@
+#pragma once
+#include "25AC.h"
+
+int TeardownSound(void);
+int InitSound(void);
+int Sound_BindAkaoSfxBlob(void* arg0);
+int Sound_GetMusicVolumeById(u_int);
+int Sound_GetLoadedMusicBankIds(void);
+int Sound_GetMusicPosition(void);
+u_int Sound_StartFieldMusic(void*);
+void Sound_StopMusicById(u_int);
+void Sound_PushMusicState(void);
+int Sound_ClearSuspendedMusic(void);
+u_int Sound_StartMasterAndMusicVolumeFade(void*, u_int, int);
+u_int Sound_QueueMusic(void*);
+int Sound_PlaySfx(u_long, int, int, int);
+int Sound_PlaySfxFromPointer(void*, int, int, int);
+void Sound_EvictSfx(u_long, int);
+int Sound_GetPlayingSfxByGroup(int);
+int Sound_SfxHasVoiceFlag(u_long);
+void Sound_SetSpeakerMode(int);
+void Sound_SetMusicJumpThreshold(int);
+void Sound_FadeSfxVolumeMod(u_long, int, int, int);
+void Sound_FadeSfxPanMod(u_long, int, int, int);
+void Sound_FadeSfxPitchMod(u_long, int, int, int);
+void Sound_FadeMasterVolumeByMusicId(u_long, int, int);
+void Sound_SetCdVolume(int);
+void Sound_FadeCdVolume(int, int);
+void Sound_FadeTempoScale(int, int);
+int Sound_FadeMasterPitchScale(int, int);
+void Sound_StopMusic(void);
+void Sound_StopSfx(void);
+void Sound_LoadAkaoBankBlocking(void*, int);
+int IsSpuTransferring(void);
+int Sound_ResetMusicBankIds(void);
+int Sound_LoadMusicBank(void*, int);
+int Sound_LoadSfxBank(void*, int, int);
+void Sound_StartCutsceneStream(void*, int, int);
+void Sound_StopCutsceneStream(void);
+void Sound_FadeOutCutscene(int, int);

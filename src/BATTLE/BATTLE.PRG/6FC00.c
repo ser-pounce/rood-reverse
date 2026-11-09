@@ -1,5 +1,5 @@
 #include "common.h"
-#include "6E4CC.h"
+#include "6E4CCPrivate.h"
 #include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"

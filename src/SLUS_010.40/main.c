@@ -1,5 +1,5 @@
 #define VS_MAIN_INCLUDE
-#include "main.h"
+#include "mainPrivate.h"
 #include "gameFlags.h"
 #include "gameState.h"
 #include "graphics.h"
@@ -8,14 +8,14 @@
 #include "zoneState.h"
 #undef VS_MAIN_INCLUDE
 #include "common.h"
-#include "25AC.h"
+#include "25ACPrivate.h"
 #include "actions.h"
 #include "cd.h"
 #include "clut.h"
 #include "inventory.h"
 #include "memory.h"
 #include "modifiers.h"
-#include "overlay.h"
+#include "overlayPrivate.h"
 #include "zones.h"
 #include "src/BATTLE/BATTLE.PRG/actor.h"
 #include "src/BATTLE/BATTLE.PRG/camera.h"

@@ -15,8 +15,6 @@ extern int vs_main_saveGameClearData;
 extern int vs_main_unused2;
 #endif
 
-int vs_main_execTitle(void);
-void vs_main_exec(void);
 int vs_main_gametimeUpdate(int mode);
 void vs_main_jumpToBattle(void);
 void vs_main_showEndingAndReturnToTitle(void);

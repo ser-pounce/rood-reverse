@@ -45,18 +45,8 @@ typedef struct {
     int transitionFrames;
 } vs_CameraTransition;
 
-int vs_battle_getCameraRoll(void);
 void vs_battle_lookAt(VECTOR* from, VECTOR* to, MATRIX* mat);
-int vs_battle_syncCameraAnglesFromPosition(SphericalCamera*);
-void vs_battle_setCameraRoll(int arg0);
-void vs_battle_setFarClip(int arg0, int arg1);
-void vs_battle_initialiseCameraFromSpherical(VECTOR*, VECTOR*, int, int);
 void vs_battle_setProjectionDistance(int);
-void vs_battle_getCameraPosition(VECTOR* outPosition);
-void vs_battle_setCameraPosition(VECTOR* inPosition);
-void vs_battle_getCameraLookAt(VECTOR* outLookAt);
-void vs_battle_setCameraLookAt(VECTOR* inLookAt);
-void vs_battle_setNearClip(int arg0);
 extern SphericalCamera vs_battle_cameraCurrentSpherical;
 extern DR_MODE vs_battle_screenTransitionDrMode[];
 extern int vs_battle_screenTransitionAlpha;

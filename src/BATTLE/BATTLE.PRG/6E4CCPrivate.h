@@ -1,0 +1,42 @@
+#pragma once
+#include "6E4CC.h"
+
+void func_800D7890(int arg0);
+void func_800D78B8(void);
+void func_800D78CC(void);
+int func_800D7BF8(void);
+void func_800D7C5C(void);
+int func_800D7CFC(void);
+int func_800D7EF4(void);
+void func_800D8060(PFile* arg0);
+void func_800DEEA4(D_800F19CC_t2* arg0);
+void func_800D7814(void);
+void func_800D78F0(void);
+void func_800DC638(void);
+int func_800DEC88(void*);
+void func_800E527C(int, int, int);
+void func_800E4C1C(int, int);
+void func_800E4C28(int, int);
+int func_800E5154(void);
+void func_800E5998(void);
+void func_800E6158(void);
+int func_800E6178(vs_Actor*, short);
+short func_800E6694(int actorId);
+void func_800E6700(int);
+void func_800E68EC(int, int);
+void func_800E6B24(int);
+int func_800E6C34(SVECTOR*, SVECTOR*, SVECTOR*, int);
+void func_800E6F1C(void);
+void func_800E7454(vs_Actor*);
+void func_800E7608(int);
+int func_800E45B4(void);
+void func_800E511C(void);
+void func_800E5308(void);
+int vs_battle_getMainMenuLba(void);
+int vs_battle_loadEffPurge(void);
+void func_800E685C(int, int, int);
+void func_800E6898(void*);
+void func_800E68A0(D_800F45E0_t*);
+void func_800E4BD8(int);
+extern int D_800F5684;
+extern void* vs_battle_pfileBuf;

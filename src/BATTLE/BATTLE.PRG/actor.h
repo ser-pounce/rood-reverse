@@ -168,7 +168,6 @@ typedef struct {
 } vs_Actor_dat;
 
 void vs_battle_nop0(vs_ActorStats*);
-vs_Actor* vs_battle_getActor(int actorId);
 void func_80086FA8(int, vs_ActorStats*);
 extern vs_Actor* vs_battle_actors[];
 extern vs_Actor* vs_battle_characterState;

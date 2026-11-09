@@ -184,8 +184,8 @@ void func_800C00E8(int arg0, void* arg1)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
     D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
-    D_800F4BBC = vs_main_allocateCdQueueSlot(&D_800F4BF0);
-    vs_main_cdEnqueue(D_800F4BBC, arg1);
+    evtCdSlot = vs_main_allocateCdQueueSlot(&D_800F4BF0);
+    vs_main_cdEnqueue(evtCdSlot, arg1);
 }
 
 void func_800C0150(void)

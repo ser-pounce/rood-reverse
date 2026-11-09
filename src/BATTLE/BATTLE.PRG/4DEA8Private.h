@@ -58,5 +58,5 @@ VS_HIDDEN(D_800E9C30);
 extern u_char* D_800EB588[];
 VS_HIDDEN(D_800EB588);
 
-extern vs_Main_CdQueueSlot* D_800F4BBC;
-VS_HIDDEN(D_800F4BBC);
+extern vs_Main_CdQueueSlot* evtCdSlot;
+VS_HIDDEN(evtCdSlot);

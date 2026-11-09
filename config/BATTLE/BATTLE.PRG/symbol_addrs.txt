@@ -1351,6 +1351,7 @@ vs_battle_wepTextures = 0x800F4770;
 D_800F4930 = 0x800F4930;
 mpdClearedSection = 0x800F4BAC;
 scriptStrings = 0x800F4BB0;
+evtCdSlot = 0x800F4BBC;
 mpdRoomDoorSection = 0x800F4BE8;
 vs_battle_textBoxStatuses = 0x800F4C00;
 mpdScriptSection = 0x800F4C50;

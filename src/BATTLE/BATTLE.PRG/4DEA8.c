@@ -345,7 +345,7 @@ int func_800B66EC(UNUSED u_char* arg0, UNUSED short arg1) { return 4; }
 
 int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    if ((D_800F4BBC != 0) && (D_800F4BBC->state != 4)) {
+    if ((evtCdSlot != 0) && (evtCdSlot->state != vs_main_CdQueueStateLoaded)) {
         return 1;
     }
 
@@ -4506,7 +4506,7 @@ void parseEvt(u_char* data)
     D_800F4B8B = 0;
     D_800F4B30[0].unk3 = D_800F4B30[1].unk3 = D_800F4B30[2].unk3 = 0;
     D_800F4C69 = vs_main_getcurrentMusicSlot();
-    D_800F4BBC = 0;
+    evtCdSlot = 0;
 
     for (i = 16; i < 32; ++i) {
         vs_battle_setStateFlag(i, 0);
@@ -4564,8 +4564,8 @@ int func_800BF850(void)
     }
 
     if (D_800F4C34 == 3) {
-        if (D_800F4BBC->state == 4) {
-            vs_main_freeCdQueueSlot(D_800F4BBC);
+        if (evtCdSlot->state == vs_main_CdQueueStateLoaded) {
+            vs_main_freeCdQueueSlot(evtCdSlot);
 
             if (D_800F4C54 != 0) {
                 vs_main_memcpy(D_800F4C30, D_800F4C24, 0x1800);

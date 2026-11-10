@@ -1,5 +1,6 @@
 #include "common.h"
 #include "gpu.h"
+#include "src/SLUS_010.40/libetc/INTR.h"
 #include <libgte.h>
 #include <libgpu.h>
 #include <libetc.h>
@@ -12,7 +13,16 @@ typedef struct {
     u_char reverse;
     short w;
     short h;
+    volatile int unk8;
+    void (*drawSyncCallback)(void);
 } D_80033444_t;
+
+typedef struct {
+    void (*exec)(void*, void*);
+    void* arg0;
+    void* arg1;
+    u_int data[21];
+} D_8003E400_t;
 
 int SetIntrMask(int);
 u_int func_80029904(int, int, int);
@@ -22,6 +32,9 @@ u_int func_80029A54(short, short);
 u_int func_80029A70(RECT*);
 void func_8002A34C(u_long*);
 int func_8002A394(int);
+void func_8002A698(void);
+void func_8002AB84(void);
+int func_8002ABB8(void);
 int func_8002ACFC(int);
 void func_8002B1DC(void*, int, int);
 
@@ -32,13 +45,14 @@ extern u_int* D_80033558;
 extern u_int* D_80033568;
 extern volatile int _qin;
 extern volatile int _qout;
+extern int D_80033574;
 extern int D_8003357C;
 extern int D_80033580;
 extern int D_80033584;
 extern u_long D_8003E2B0[];
 extern u_long D_8003E2D8[];
 extern u_char D_8003E2F8[0x100];
-extern u_char D_8003E400[0x1800];
+extern volatile D_8003E400_t D_8003E400[64];
 
 INCLUDE_RODATA("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", D_80010864);
 
@@ -236,7 +250,51 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A394);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A3C4);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A3E8);
+int func_8002A3E8(void (*exec)(void*, void*), u_int* arg0, int size, void* arg1)
+{
+    int i;
+
+    func_8002AB84();
+
+    while (((_qin + 1) & 0x3F) == _qout) {
+        if (func_8002ABB8()) {
+            return -1;
+        }
+
+        func_8002A698();
+    }
+
+    D_80033574 = SetIntrMask(0);
+    D_80033444.unk8 = 1;
+
+    if (D_80033444.unk1 == 0
+        || (_qin == _qout && !(*(volatile u_int*)D_80033558 & 0x1000000)
+            && D_80033444.drawSyncCallback == NULL)) {
+        while (!(*(volatile u_int*)D_8003354C & 0x4000000)) { }
+        exec(arg0, arg1);
+        SetIntrMask(D_80033574);
+        return 0;
+    }
+
+    DMACallback(2, func_8002A698);
+
+    if (size) {
+        for (i = 0; i < size / 4; ++i) {
+            D_8003E400[_qin].data[i] = arg0[i];
+        }
+
+        D_8003E400[_qin].arg0 = (void*)D_8003E400[_qin].data;
+    } else {
+        D_8003E400[_qin].arg0 = arg0;
+    }
+
+    D_8003E400[_qin].arg1 = arg1;
+    D_8003E400[_qin].exec = exec;
+    _qin = (_qin + 1) & 0x3F;
+    SetIntrMask(D_80033574);
+    func_8002A698();
+    return (_qin - _qout) & 0x3F;
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002A698);
 
@@ -252,7 +310,7 @@ int func_8002A8F8(int mode)
         *D_80033568 |= 0x800;
         *D_8003354C = 0;
         func_8002B1DC(D_8003E2F8, 0, sizeof D_8003E2F8);
-        func_8002B1DC(D_8003E400, 0, sizeof D_8003E400);
+        func_8002B1DC((void*)D_8003E400, 0, sizeof D_8003E400);
         break;
 
     case 1:

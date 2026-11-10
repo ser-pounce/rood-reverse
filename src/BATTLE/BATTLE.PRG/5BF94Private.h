@@ -17,8 +17,8 @@ VS_HIDDEN(loadGim);
 void func_800C64D0(u_long* arg0, int* arg1);
 VS_HIDDEN(func_800C64D0);
 
-void func_800C8550(u_int, void*, u_char*);
-VS_HIDDEN(func_800C8550);
+void activateGimImage(u_int, void*, u_char*);
+VS_HIDDEN(activateGimImage);
 
 void func_800C86AC(void);
 VS_HIDDEN(func_800C86AC);

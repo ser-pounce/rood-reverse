@@ -698,7 +698,7 @@ int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
     gim->scale = script[4] << 7;
     gim->brightness = script[5];
 
-    func_800C8550(script[1] >> 6, gim, script);
+    activateGimImage(script[1] >> 6, gim, script);
 
     return vs_battle_scriptNext;
 }

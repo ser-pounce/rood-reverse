@@ -1920,9 +1920,9 @@ void loadGim(int id, int vramSlot)
     }
 }
 
-void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
+void activateGimImage(u_int image, UNUSED void* arg1, UNUSED u_char* arg2)
 {
-    Gim* gim = &gims[arg0];
+    Gim* gim = &gims[image];
     int step;
     int next;
     int i;

@@ -113,7 +113,7 @@ short vs_battle_getShort(u_char* arg0)
 
 int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
 
-int func_800BFE50(u_short arg0)
+int resolveActorId(u_short arg0)
 {
     switch (arg0 >> 12) {
     case 0:

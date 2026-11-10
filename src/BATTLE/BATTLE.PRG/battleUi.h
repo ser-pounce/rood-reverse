@@ -11,8 +11,8 @@
 typedef struct {
     int x : 12;
     int y : 12;
-    u_int alignment : 2;
-    u_int flags : 4;
+    u_int flip : 2;
+    u_int tail : 4;
 } TextOffset;
 
 enum vs_battle_warlockSpellIds_e {
@@ -95,9 +95,9 @@ typedef struct {
 typedef struct {
     u_int unk0_0 : 4;
     u_int unk0_4 : 2;
-    u_int unk0_6 : 2;
-    u_int unk0_8 : 4;
-    u_int unk0_12 : 4;
+    u_int flip : 2;
+    u_int shape : 4;
+    u_int tail : 4;
     u_int arrowAnimFrame : 8;
     u_int speakerActor : 6;
     u_int done : 1;

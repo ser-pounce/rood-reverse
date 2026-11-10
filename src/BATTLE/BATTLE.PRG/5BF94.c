@@ -3346,7 +3346,7 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
         vs_battle_printf((char*)&D_800EB9D8[1],
             (char*)&vs_battle_menuStrings[VS_menuStrings_OFFSET_spellMastered]);
     } else if (arg0 == 11) {
-        vs_battle_textBoxes[7].unk0.unk0_8 = 0;
+        vs_battle_textBoxes[7].unk0.shape = 0;
         vs_battle_printf((char*)&D_800EB9D8[1],
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[vs_main_actions[arg1].type
                                                                 + 22]]);
@@ -4110,17 +4110,17 @@ TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
     TextOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
     int offsetX = p->x;
     int offsetY = p->y;
-    int alignment = p->alignment;
+    int flip = p->flip;
 
     if ((arg1 >> 2) & 1) {
         offsetX = -offsetX;
-        alignment ^= 2;
+        flip ^= 2;
     }
 
     ret.x = offsetX - ((arg2 * 12 + 10) >> 1);
     ret.y = offsetY - ((arg3 * 13 + 4) >> 1);
-    ret.alignment = alignment;
-    ret.flags = p->flags;
+    ret.flip = flip;
+    ret.tail = p->tail;
     return ret;
 }
 
@@ -4154,7 +4154,7 @@ void vs_battle_initTextBox(
     switch (box->unk0.unk0_0) {
     case 1:
         box->unk0.unk0_0 = 7;
-        box->unk0.unk0_8 = 0;
+        box->unk0.shape = 0;
         return;
     case 4:
         box->charsPerLine = 0x18;
@@ -4165,7 +4165,7 @@ void vs_battle_initTextBox(
         return;
     case 5:
         box->unk0.unk0_0 = 7;
-        box->unk0.unk0_8 = 2;
+        box->unk0.shape = 2;
         return;
     }
 }
@@ -4250,7 +4250,7 @@ void func_800CD158(int id)
             (0xF00000 - (y << 16)) | 320);
     }
     if (box->state == box->unk22 + 1) {
-        func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
+        func_800CD0FC(y - 7, box->unk0.shape - 1);
     }
 }
 
@@ -4277,7 +4277,7 @@ void func_800CD3E4(int index)
     u_long* ot = D_800F51B8 + index * 4;
     u_int part;
     vs_TextBox* box = &vs_battle_textBoxes[index];
-    u_short* verts = (u_short*)D_800EB588[box->unk0.unk0_8];
+    u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
     u_char* shape;
     int header;
     int* points = (int*)0x1F800088;
@@ -4299,9 +4299,9 @@ void func_800CD3E4(int index)
     }
 
     out = (short*)0x1F800088;
-    flip = box->unk0.unk0_6;
+    flip = box->unk0.flip;
     shape = (u_char*)verts;
-    part = ((int*)shape)[box->unk0.unk0_12];
+    part = ((int*)shape)[box->unk0.tail];
     verts = (u_short*)(shape + (shape[1] + 1) * 4);
     count = shape[2];
     header = *(int*)shape;
@@ -4311,7 +4311,7 @@ void func_800CD3E4(int index)
         *out++ = x + (((v & 0xFF) * w) >> 8);
         *out++ = y + (((v >> 8) * h) >> 8);
     }
-    if ((u_int)(box->unk0.unk0_12 - 1) < ((header >> 8) & 0xFF)) {
+    if ((u_int)(box->unk0.tail - 1) < ((header >> 8) & 0xFF)) {
         v = func_800CD3A0(verts[part & 0xFF], flip);
 
         for (; i < (header & 0xFF); ++i) {
@@ -4341,10 +4341,10 @@ void func_800CD3E4(int index)
         if (n == (part & 0xFF)) {
             v = 0;
 
-            for (k = 0; k < box->unk0.unk0_12; ++k) {
+            for (k = 0; k < box->unk0.tail; ++k) {
                 v += shape[k * 4 + 2];
             }
-            for (k = 0; k < shape[box->unk0.unk0_12 * 4 + 2]; ++k) {
+            for (k = 0; k < shape[box->unk0.tail * 4 + 2]; ++k) {
                 vs_battle_addTile(
                     ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v + k]);
                 n = v + k;
@@ -4371,7 +4371,7 @@ void func_800CD3E4(int index)
         for (k = 0; k < shape[n * 4 + 3]; ++k) {
             int quad;
 
-            if ((n != 0) && (n != box->unk0.unk0_12)) {
+            if ((n != 0) && (n != box->unk0.tail)) {
                 verts += 2;
                 continue;
             }

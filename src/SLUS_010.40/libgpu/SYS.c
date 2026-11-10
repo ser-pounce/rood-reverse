@@ -1,4 +1,5 @@
 #include "common.h"
+#include "gpu.h"
 #include <libgte.h>
 #include <libgpu.h>
 #include <libetc.h>
@@ -127,7 +128,7 @@ void func_80029694(DR_ENV* dr_env, DRAWENV* env)
     code[3] = func_80029A54(env->ofs[0], env->ofs[1]);
     code[4] = func_80029904(env->dfe, env->dtd, env->tpage);
     code[5] = func_80029A70(&env->tw);
-    code[6] = 0xE6000000;
+    code[6] = primMask << 24;
 
     len = 7;
 
@@ -144,11 +145,12 @@ void func_80029694(DR_ENV* dr_env, DRAWENV* env)
         if ((rect.x & 0x3F) || (rect.w & 0x3F)) {
             rect.x -= env->ofs[0];
             rect.y -= env->ofs[1];
-            code[len++] = 0x60000000 | (env->b0 << 16) | (env->g0 << 8) | env->r0;
+            code[len++] = (primTile << 24) | (env->b0 << 16) | (env->g0 << 8) | env->r0;
             code[len++] = *(u_long*)&rect.x;
             code[len++] = *(u_long*)&rect.w;
         } else {
-            code[len++] = 0x02000000 | (env->b0 << 16) | (env->g0 << 8) | env->r0;
+            code[len++] =
+                (primRectFill << 24) | (env->b0 << 16) | (env->g0 << 8) | env->r0;
             code[len++] = *(u_long*)&rect.x;
             code[len++] = *(u_long*)&rect.w;
         }

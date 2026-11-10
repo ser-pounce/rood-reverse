@@ -19,6 +19,7 @@ enum vs_primAddr { primAddrNull = 0, primAddrEnd = 0xFFFFFF };
 enum vs_primType {
     primShadeTex = 1,
     primSemiTrans = 2,
+    primRectFill = 0x02,
     primPolyFT3 = 0x24,
     primPolyFT4 = 0x2C,
     primPolyFT4ShadeTex = primPolyFT4 | primShadeTex,
@@ -35,7 +36,8 @@ enum vs_primType {
     primTile = 0x60,
     primTileSemiTrans = primTile | primSemiTrans,
     primSprt = 0x64,
-    primSprtSemtTrans = primSprt | primSemiTrans
+    primSprtSemtTrans = primSprt | primSemiTrans,
+    primMask = 0xE6
 };
 
 typedef struct {

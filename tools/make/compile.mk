@@ -9,7 +9,8 @@ TEXTXFORM ?= $(VPYTHON) -m tools.etc.textTransformer
 # libsn/SNMAIN is SN Systems hand-written asm and keeps the ASPSX (maspsx) path.
 PSQ_PATCH ?= $(SED) -E -e '1i .include "macro.inc"' -e 's/^\tmove\t([^,]+),(.+)$$/\taddu\t\1,\2,$$0/'
 
-CPPFLAGS ?= -nostdinc -I include/psx -I src/include -I ./ -D LEGACY_GCC -D_LANGUAGE_C
+CPPFLAGS ?= -nostdinc -I include/psx -I src/include -I ./ -D LEGACY_GCC -D_LANGUAGE_C \
+            -MF $(BUILD)/$*.c.d -MT $(BUILD)/$*.c.o
 CC1FLAGS ?= -G0 -O2 -Wall -quiet -funsigned-char -Wno-unused
 MASFLAGS ?= --aspsx-version=2.77 --macro-inc
 
@@ -17,10 +18,14 @@ PREPROCESS.c = $(CPP) $(CPPFLAGS) $<
 PREPROCESS.s = $(MAS) $(MASFLAGS)
 COMPILE.c    = $(PREPROCESS.c) | $(TEXTXFORM) | $(CC1) $(CC1FLAGS) | $(PREPROCESS.s) | $(COMPILE.s)
 
+$(BUILD)/%.c.o: CPPFLAGS += -MD
+$(BUILD)/%.c.o: ASFLAGS += --MD $(@:.o=.asm.d)
 $(BUILD)/%.c.o: %.c
 	$(ECHO) Compiling $<
 	$(COMPILE.c) $(OUTPUT_OPTION)
+	$(CAT) $(@:.o=.asm.d) >> $(@:.o=.d)
+	$(RM) $(RMFLAGS) $(@:.o=.asm.d)
 
-$(BUILD)/%.c.d: CPPFLAGS += -M -MF $@ -MT $(@:.d=.o) -MG
+$(BUILD)/%.c.d: CPPFLAGS += -M -MG
 $(BUILD)/%.c.d: %.c | $$(@D)/
 	$(PREPROCESS.c) $(OUTPUT_OPTION)

@@ -1628,7 +1628,7 @@ int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
     return 0;
 }
 
-int vs_battle_renderBattleAbilityTimingResult(int arg0)
+int renderBattleAbilityTimingResult(int arg0)
 {
     UNUSED int _[2];
     D_800F1BAC_t* p = *D_800F1BAC;

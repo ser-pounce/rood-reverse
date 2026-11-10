@@ -8,11 +8,11 @@ VS_HIDDEN(func_800C4794);
 int func_800C58F8(u_char*);
 VS_HIDDEN(func_800C58F8);
 
-int vs_battle_selectTextBox(u_char);
-VS_HIDDEN(vs_battle_selectTextBox);
+int selectTextBox(u_char);
+VS_HIDDEN(selectTextBox);
 
-void vs_battle_loadGim(int, int);
-VS_HIDDEN(vs_battle_loadGim);
+void loadGim(int, int);
+VS_HIDDEN(loadGim);
 
 void func_800C64D0(u_long* arg0, int* arg1);
 VS_HIDDEN(func_800C64D0);
@@ -50,8 +50,8 @@ VS_HIDDEN(func_800CB1C0);
 void setArtAndAbilityToUnlock(int art, int battleAbility);
 VS_HIDDEN(setArtAndAbilityToUnlock);
 
-void vs_battle_displaySceneMessage(int, int, int);
-VS_HIDDEN(vs_battle_displaySceneMessage);
+void displaySceneMessage(int, int, int);
+VS_HIDDEN(displaySceneMessage);
 
 int func_800CB45C(void);
 VS_HIDDEN(func_800CB45C);
@@ -74,8 +74,8 @@ VS_HIDDEN(func_800CB7DC);
 TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3);
 VS_HIDDEN(func_800CCE10);
 
-int vs_battle_decreaseMiscCount(int);
-VS_HIDDEN(vs_battle_decreaseMiscCount);
+int decreaseMiscCount(int);
+VS_HIDDEN(decreaseMiscCount);
 
 int func_800CEEBC(void);
 VS_HIDDEN(func_800CEEBC);
@@ -110,8 +110,8 @@ VS_HIDDEN(func_800CF8BC);
 void func_800CF920(void);
 VS_HIDDEN(func_800CF920);
 
-int vs_battle_validateShortcutSelection(int shortcut);
-VS_HIDDEN(vs_battle_validateShortcutSelection);
+int validateShortcutSelection(int shortcut);
+VS_HIDDEN(validateShortcutSelection);
 
 void func_800C8778(void);
 VS_HIDDEN(func_800C8778);
@@ -137,8 +137,8 @@ VS_HIDDEN(func_800D5260);
 void func_800D5294(int* arg0);
 VS_HIDDEN(func_800D5294);
 
-extern effectExec vs_battle_effectRenderers[];
-VS_HIDDEN(vs_battle_effectRenderers);
+extern effectExec effectRenderers[];
+VS_HIDDEN(effectRenderers);
 
 extern int D_800F5330[];
 VS_HIDDEN(D_800F5330);

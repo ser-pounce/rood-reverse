@@ -75,7 +75,7 @@ INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/6E4CC", func_800D6E44);
 void func_800D7814(void)
 {
     D_800F568C = NULL;
-    vs_battle_pfileBuf = NULL;
+    pfileBuf = NULL;
     D_800F56A0 = NULL;
     D_800F5874 = 0;
     D_800F5684 = 0;
@@ -196,7 +196,7 @@ static int loadfile(int lba, int size, void* buf)
     return 1;
 }
 
-int vs_battle_loadEffPurge(void)
+int loadEffPurge(void)
 {
     if (D_800F5684 == 0) {
         func_8007E180(2);
@@ -210,12 +210,12 @@ int func_800D7BF8(void)
 {
     int _[16];
 
-    if (vs_battle_pfileBuf == NULL) {
-        vs_battle_pfileBuf = vs_main_allocHeapR(vs_battle_pFileLoadContext.size);
+    if (pfileBuf == NULL) {
+        pfileBuf = vs_main_allocHeapR(vs_battle_pFileLoadContext.size);
     }
 
     return loadfile(vs_battle_pFileLoadContext.lba + VS_E000_P_LBA,
-        vs_battle_pFileLoadContext.size, vs_battle_pfileBuf);
+        vs_battle_pFileLoadContext.size, pfileBuf);
 }
 
 void func_800D7C5C(void)
@@ -232,9 +232,9 @@ void func_800D7C5C(void)
             D_800F5874 &= ~bit;
         }
     }
-    if (vs_battle_pfileBuf != NULL) {
-        vs_main_freeHeapR(vs_battle_pfileBuf);
-        vs_battle_pfileBuf = NULL;
+    if (pfileBuf != NULL) {
+        vs_main_freeHeapR(pfileBuf);
+        pfileBuf = NULL;
     }
 }
 
@@ -353,7 +353,7 @@ void vs_battle_configurePlg(int lba, int size, int entryPointCount)
 
 void vs_battle_setEffectExec(effectExec func, int index)
 {
-    vs_battle_effectRenderers[index] = func;
+    effectRenderers[index] = func;
 }
 
 void func_800D7FFC(int arg0) { D_800F5638.unk0 = arg0; }
@@ -430,4 +430,4 @@ void func_800D8060(PFile* arg0)
     }
 }
 
-int vs_battle_getMainMenuLba(void) { return VS_MAINMENU_PRG_LBA; }
+int getMainMenuLba(void) { return VS_MAINMENU_PRG_LBA; }

@@ -17,8 +17,8 @@ VS_HIDDEN(func_800BFEBC);
 void func_800C00E8(int, void*);
 VS_HIDDEN(func_800C00E8);
 
-short vs_battle_getShort(u_char* arg0);
-VS_HIDDEN(vs_battle_getShort);
+short getShort(u_char* arg0);
+VS_HIDDEN(getShort);
 
 extern short evtFile;
 VS_HIDDEN(evtFile);

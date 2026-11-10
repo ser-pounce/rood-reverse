@@ -35,8 +35,8 @@ VS_HIDDEN(func_800BEB9C);
 void func_800BEBEC(void);
 VS_HIDDEN(func_800BEBEC);
 
-char vs_battle_getStateFlag(short);
-VS_HIDDEN(vs_battle_getStateFlag);
+char getStateFlag(short);
+VS_HIDDEN(getStateFlag);
 
 int func_800BEC30(void);
 VS_HIDDEN(func_800BEC30);
@@ -52,8 +52,8 @@ VS_HIDDEN(loadMpdClearedScriptDoorSections);
 int func_800BF850(void);
 VS_HIDDEN(func_800BF850);
 
-extern char vs_battle_textBoxStatuses[];
-VS_HIDDEN(vs_battle_textBoxStatuses);
+extern char textBoxStatuses[];
+VS_HIDDEN(textBoxStatuses);
 
 extern char stopMusicOnSkip;
 VS_HIDDEN(stopMusicOnSkip);

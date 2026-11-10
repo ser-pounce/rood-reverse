@@ -36,10 +36,10 @@ short func_800BFBB8(u_char** arg0, short arg1)
         D_800F4C58[2] = 0;
         D_800F4C58[1] = 0;
         D_800F4C58[0] = 0;
-        vs_battle_textBoxStatuses[3] = 0;
-        vs_battle_textBoxStatuses[2] = 0;
-        vs_battle_textBoxStatuses[1] = 0;
-        vs_battle_textBoxStatuses[0] = 0;
+        textBoxStatuses[3] = 0;
+        textBoxStatuses[2] = 0;
+        textBoxStatuses[1] = 0;
+        textBoxStatuses[0] = 0;
 
         if (stopMusicOnSkip != 0) {
             vs_main_stopMusicSlot(0);
@@ -103,7 +103,7 @@ void func_800BFD9C(void)
     func_800BBDDC();
 }
 
-short vs_battle_getShort(u_char* arg0)
+short getShort(u_char* arg0)
 {
     if (!((long)arg0 & 1)) {
         return *(short*)arg0;
@@ -193,7 +193,7 @@ void func_800C0150(void)
     short i;
 
     for (i = 0; i < 17; ++i) {
-        if (vs_battle_getActor(i) != NULL) {
+        if (getActor(i) != NULL) {
             func_800A0204(i, 1, 0, 0);
         }
     }

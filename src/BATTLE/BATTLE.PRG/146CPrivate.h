@@ -152,11 +152,11 @@ VS_HIDDEN(vs_battle_enableDispMask);
 void vs_battle_disableDispMask(void);
 VS_HIDDEN(vs_battle_disableDispMask);
 
-void vs_battle_setScreenTransition(int, int, int);
-VS_HIDDEN(vs_battle_setScreenTransition);
+void setScreenTransition(int, int, int);
+VS_HIDDEN(setScreenTransition);
 
-void vs_battle_setScreenTransitionWipeAngle(int);
-VS_HIDDEN(vs_battle_setScreenTransitionWipeAngle);
+void setScreenTransitionWipeAngle(int);
+VS_HIDDEN(setScreenTransitionWipeAngle);
 
 void func_8007C46C(int, int, int);
 VS_HIDDEN(func_8007C46C);
@@ -200,8 +200,8 @@ VS_HIDDEN(func_8007CC4C);
 void func_8007CC6C(int);
 VS_HIDDEN(func_8007CC6C);
 
-int vs_battle_getEmptyObjectDataSlot2(void);
-VS_HIDDEN(vs_battle_getEmptyObjectDataSlot2);
+int getEmptyObjectDataSlot2(void);
+VS_HIDDEN(getEmptyObjectDataSlot2);
 
 int func_8007CF18(int);
 VS_HIDDEN(func_8007CF18);
@@ -224,11 +224,11 @@ VS_HIDDEN(func_8007D15C);
 void func_8007D1A8(int, int);
 VS_HIDDEN(func_8007D1A8);
 
-int vs_battle_isActionUnlocked(u_int);
-VS_HIDDEN(vs_battle_isActionUnlocked);
+int isActionUnlocked(u_int);
+VS_HIDDEN(isActionUnlocked);
 
-void vs_battle_setActionUnlocked(u_int);
-VS_HIDDEN(vs_battle_setActionUnlocked);
+void setActionUnlocked(u_int);
+VS_HIDDEN(setActionUnlocked);
 
 void func_8007D260(int arg0);
 VS_HIDDEN(func_8007D260);
@@ -267,8 +267,8 @@ VS_HIDDEN(func_80089104);
 int func_8008B808(int, int, int, int);
 VS_HIDDEN(func_8008B808);
 
-void vs_battle_setDoorEntered2(int arg0);
-VS_HIDDEN(vs_battle_setDoorEntered2);
+void setDoorEntered2(int arg0);
+VS_HIDDEN(setDoorEntered2);
 
 void func_8008C40C(void);
 VS_HIDDEN(func_8008C40C);

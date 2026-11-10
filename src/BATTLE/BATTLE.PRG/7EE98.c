@@ -267,7 +267,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
         func_800D836C(arg0);
     }
 
-    state = vs_battle_getStateFlag(0xA6);
+    state = getStateFlag(0xA6);
     temp_s0 = D_800F5920;
 
     if (temp_s0->unkC > 0) {

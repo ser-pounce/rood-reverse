@@ -128,5 +128,5 @@ VS_HIDDEN(func_8009722C);
 void func_800941FC(void);
 VS_HIDDEN(func_800941FC);
 
-int vs_battle_renderBattleAbilityTimingResult(int arg0);
-VS_HIDDEN(vs_battle_renderBattleAbilityTimingResult);
+int renderBattleAbilityTimingResult(int arg0);
+VS_HIDDEN(renderBattleAbilityTimingResult);

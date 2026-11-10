@@ -2,5 +2,5 @@
 #include "common.h"
 #include "actor.h"
 
-vs_Actor* vs_battle_getActor(int actorId);
-VS_HIDDEN(vs_battle_getActor);
+vs_Actor* getActor(int actorId);
+VS_HIDDEN(getActor);

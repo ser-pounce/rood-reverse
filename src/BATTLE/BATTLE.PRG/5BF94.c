@@ -1102,7 +1102,7 @@ int vs_battle_setTextBox(int boxId, char* str)
     return 0;
 }
 
-int vs_battle_selectTextBox(u_char boxMask)
+int selectTextBox(u_char boxMask)
 {
     vs_TextBox tempBox;
     short yPositions[8];
@@ -1890,7 +1890,7 @@ void renderTextImmediate(vs_TextBox* arg0, int arg1)
 }
 #pragma vsstring(end)
 
-void vs_battle_loadGim(int id, int vramSlot)
+void loadGim(int id, int vramSlot)
 {
     vs_Main_CdFile file;
     Gim* var_s0;
@@ -3231,7 +3231,7 @@ int vs_battle_chainAbilitiesUnlocked(int defense)
     return 0;
 }
 
-int vs_battle_validateShortcutSelection(int shortcut)
+int validateShortcutSelection(int shortcut)
 {
     int noneUnlocked = 0;
     int menuState = 0;
@@ -3329,7 +3329,7 @@ int dismissAllTextBoxes(void)
     return var_s1;
 }
 
-void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
+void displaySceneMessage(int arg0, int arg1, int arg2)
 {
     D_800EB9D8 = vs_main_allocHeapR(112);
     D_800F4E69 = arg2;
@@ -4012,7 +4012,7 @@ void func_800CCA90(int arg0)
                             : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 
-int vs_battle_decreaseMiscCount(int miscId)
+int decreaseMiscCount(int miscId)
 {
     int i;
 
@@ -4745,7 +4745,7 @@ int func_800CE9B0(void)
         break;
 
     case 6:
-        if (vs_battle_loadEffPurge() == 0) {
+        if (loadEffPurge() == 0) {
             vs_main_wait();
             vs_effpurge_exec();
             if ((D_800F5230.effectId != 0) && (vs_battle_pFileLoadContext.lba == 0)) {
@@ -4777,7 +4777,7 @@ int func_800CE9B0(void)
 
     case 3:
         if (func_800D7BF8() == 0) {
-            func_800D8060(vs_battle_pfileBuf);
+            func_800D8060(pfileBuf);
             func_800CF478(5);
 
             D_800F5224 = D_800F569C->block9Data->unk14;
@@ -4788,7 +4788,7 @@ int func_800CE9B0(void)
             }
 
             D_800F54A8 = 1;
-            sp38.lba = vs_battle_getMainMenuLba();
+            sp38.lba = getMainMenuLba();
             sp38.size = 0;
             D_800F5218 = vs_main_allocateCdQueueSlot(&sp38);
             vs_main_cdEnqueue(D_800F5218, NULL);
@@ -5944,7 +5944,7 @@ int func_800D12D8(int arg0)
     return sum;
 }
 
-int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
+static int lerpRatio(int arg0, int arg1, int arg2, int arg3)
 {
     int var_v0 = (arg1 - arg0) * ((arg2 * ONE) / arg3);
     return arg0 + var_v0 / ONE;
@@ -5986,7 +5986,7 @@ void func_800D155C(int arg0, int arg1, int arg2, int arg3, int arg4, int* arg5)
          >> 12;
 }
 
-int vs_battle_lerp(int arg0, int arg1, int arg2)
+static int lerp(int arg0, int arg1, int arg2)
 {
     int var_v0 = (arg1 - arg0) * arg2;
     return arg0 + (var_v0 / (ONE * 2));
@@ -5994,9 +5994,9 @@ int vs_battle_lerp(int arg0, int arg1, int arg2)
 
 void func_800D169C(SVECTOR* arg0, SVECTOR* arg1, int arg2, SVECTOR* arg3)
 {
-    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
-    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
-    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+    arg3->vx = lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = lerp(arg0->vz, arg1->vz, arg2);
 }
 
 void func_800D1718(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* arg4)
@@ -6011,9 +6011,9 @@ void func_800D1778(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* ar
 
 void func_800D17A8(VECTOR* arg0, VECTOR* arg1, int arg2, VECTOR* arg3)
 {
-    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
-    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
-    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+    arg3->vx = lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = lerp(arg0->vz, arg1->vz, arg2);
 }
 
 void func_800D1824(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
@@ -6028,12 +6028,12 @@ void func_800D1884(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
 
 int func_800D18B4(int arg0, int arg1, int arg2, int arg3)
 {
-    return vs_battle_lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
+    return lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
 }
 
 int func_800D1904(int arg0, int arg1, int arg2, int arg3)
 {
-    return vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
+    return lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
 void func_800D1930(void)
@@ -6080,9 +6080,9 @@ void func_800D197C(VECTOR* position, VECTOR* target, MATRIX* view)
 
 void func_800D1B18(D_800F54D8_t* arg0)
 {
-    vs_battle_getCameraPosition(&arg0->position);
-    vs_battle_getCameraLookAt(&arg0->lookAt);
-    arg0->roll = vs_battle_getCameraRoll() + ONE * 8;
+    getCameraPosition(&arg0->position);
+    getCameraLookAt(&arg0->lookAt);
+    arg0->roll = getCameraRoll() + ONE * 8;
     arg0->nearClip = vs_main_nearClip;
     arg0->projectionDistance = vs_main_projectionDistance;
     arg0->farClip = vs_scratch.camera.farClip;
@@ -6111,16 +6111,16 @@ void func_800D1B80(D_800F54D8_t* camera)
     offset.vz += rcos(yaw) * (horizontal >> 12);
     setVector(&position, camera->position.vx + offset.vx, camera->position.vy + offset.vy,
         camera->position.vz + offset.vz);
-    vs_battle_setCameraPosition(&position);
+    setCameraPosition(&position);
     setVector(&position, camera->lookAt.vx + offset.vx, camera->lookAt.vy + offset.vy,
         camera->lookAt.vz + offset.vz);
-    vs_battle_setCameraLookAt(&position);
-    vs_battle_setCameraRoll(camera->roll - 32768 + camera->unk2C);
-    vs_battle_setNearClip(camera->nearClip);
+    setCameraLookAt(&position);
+    setCameraRoll(camera->roll - 32768 + camera->unk2C);
+    setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
     // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
     // call and whether the far clip reaches func_80098194 is unpredictable
-    ((void (*)(int))vs_battle_setFarClip)(camera->farClip);
+    ((void (*)(int))setFarClip)(camera->farClip);
     func_8007ACB0();
 }
 
@@ -6447,7 +6447,7 @@ void func_800D2904(D_800F53B8_t* arg0)
     arg0->unk8 = 0;
 }
 
-void vs_battle_addVector(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+static void addVectors(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     arg2->vx = arg0->vx + arg1->vx;
     arg2->vy = arg0->vy + arg1->vy;
@@ -7060,7 +7060,7 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D5D74_t* temp_a3 = (func_800D5D74_t*)(arg1->unk6 * 8 + (u_int)arg1->unk0);
 
     if (temp_a3->unk0_0 == arg0->unkD1C.unk30->unk2) {
-        func_800CF694(arg0, vs_battle_effectRenderers[temp_a3->effectRenderer],
+        func_800CF694(arg0, effectRenderers[temp_a3->effectRenderer],
             (temp_a3->unk0_9 + temp_a3->unk0_21 * 256) | (temp_a3->unk4 << 0x10));
         return func_800D5780(arg1);
     }

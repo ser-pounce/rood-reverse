@@ -95,11 +95,11 @@ VS_HIDDEN(func_800E511C);
 void func_800E5308(void);
 VS_HIDDEN(func_800E5308);
 
-int vs_battle_getMainMenuLba(void);
-VS_HIDDEN(vs_battle_getMainMenuLba);
+int getMainMenuLba(void);
+VS_HIDDEN(getMainMenuLba);
 
-int vs_battle_loadEffPurge(void);
-VS_HIDDEN(vs_battle_loadEffPurge);
+int loadEffPurge(void);
+VS_HIDDEN(loadEffPurge);
 
 void func_800E685C(int, int, int);
 VS_HIDDEN(func_800E685C);
@@ -116,5 +116,5 @@ VS_HIDDEN(func_800E4BD8);
 extern int D_800F5684;
 VS_HIDDEN(D_800F5684);
 
-extern void* vs_battle_pfileBuf;
-VS_HIDDEN(vs_battle_pfileBuf);
+extern void* pfileBuf;
+VS_HIDDEN(pfileBuf);

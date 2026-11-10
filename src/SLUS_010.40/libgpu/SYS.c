@@ -39,9 +39,9 @@ int func_8002ACFC(int);
 void func_8002B1DC(void*, int, int);
 
 extern D_80033444_t D_80033444;
-extern u_int* D_8003354C;
+extern volatile u_int* D_8003354C;
 extern u_int* D_80033550;
-extern u_int* D_80033558;
+extern volatile u_int* D_80033558;
 extern u_int* D_80033568;
 extern volatile int _qin;
 extern volatile int _qout;
@@ -268,9 +268,9 @@ int func_8002A3E8(void (*exec)(void*, void*), u_int* arg0, int size, void* arg1)
     D_80033444.unk8 = 1;
 
     if (D_80033444.unk1 == 0
-        || (_qin == _qout && !(*(volatile u_int*)D_80033558 & 0x1000000)
+        || (_qin == _qout && !(*D_80033558 & 0x1000000)
             && D_80033444.drawSyncCallback == NULL)) {
-        while (!(*(volatile u_int*)D_8003354C & 0x4000000)) { }
+        while (!(*D_8003354C & 0x4000000)) { }
         exec(arg0, arg1);
         SetIntrMask(D_80033574);
         return 0;
@@ -308,7 +308,7 @@ int func_8002A8F8(int mode)
     case 5:
         *D_80033558 = 0x401;
         *D_80033568 |= 0x800;
-        *D_8003354C = 0;
+        *(u_int*)D_8003354C = 0;
         func_8002B1DC(D_8003E2F8, 0, sizeof D_8003E2F8);
         func_8002B1DC((void*)D_8003E400, 0, sizeof D_8003E400);
         break;
@@ -338,11 +338,9 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/SYS", func_8002AB84);
 int func_8002ABB8(void)
 {
     if ((VSync(-1) > D_80033580) || (D_80033584++ > 0xF0000)) {
-        volatile u_int* status = D_8003354C;
-
-        *status;
+        *D_8003354C;
         printf("GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x\n",
-            (_qin - _qout) & 0x3F, *status, *D_80033558, *D_80033550);
+            (_qin - _qout) & 0x3F, *D_8003354C, *D_80033558, *D_80033550);
         D_8003357C = SetIntrMask(0);
         _qin = _qout = 0;
         *D_80033558 = 0x401;

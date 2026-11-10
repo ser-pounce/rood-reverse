@@ -14,7 +14,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_0F_endSkipHandler, vs_battle_script_nop, vs_battle_script_nop,
     vs_battle_script_12_dismissTextBox, vs_battle_script_nop, vs_battle_script_yield,
     vs_battle_script_yield, vs_battle_script_16_loadGim, vs_battle_script_17_showGimImage,
-    vs_battle_script_18, vs_battle_script_19, vs_battle_script_yield,
+    vs_battle_script_18_tweenGimImage, vs_battle_script_19, vs_battle_script_yield,
     vs_battle_script_1B_setStringContextInt, vs_battle_script_invalidOpcode,
     vs_battle_script_1D, vs_battle_script_1E, vs_battle_script_1F, vs_battle_script_20,
     vs_battle_script_21, vs_battle_script_nop, vs_battle_script_23, vs_battle_script_24,

@@ -703,29 +703,38 @@ int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_18(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = x offset from the screen centre, signed, in units of 2 pixels
+ *   - [2] = y offset from the screen centre, signed, in units of 2 pixels
+ *   - [3] = target scale, 0x20 is full size
+ *   - [4] = target brightness
+ *   - [5] = (image << 6) | curve, curve 0-3 are built in and 4-7 are set up by script
+ *   - [6] = duration
+ */
+int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
 {
-    Gim* temp_a3 = gims;
-    int temp_a2 = arg0[5] >> 6;
-    GimTween* tween = &gimTweens[temp_a2];
+    Gim* gim = gims;
+    GimTween* tween = &gimTweens[script[5] >> 6];
 
-    if (temp_a3 == NULL) {
+    if (gim == NULL) {
         return vs_battle_scriptNext;
     }
 
-    temp_a3 += temp_a2;
+    gim += script[5] >> 6;
 
     if (tween->duration != 0) {
         return vs_battle_scriptRepeat;
     }
 
-    tween->deltaX = (((signed char)arg0[1] * 2) - (tween->startX = temp_a3->x));
-    tween->deltaY = (((signed char)arg0[2] * 2) - (tween->startY = temp_a3->y));
-    tween->deltaScale = ((arg0[3] << 7) - (tween->startScale = temp_a3->scale));
-    tween->deltaBrightness = arg0[4] - (tween->startBrightness = ((char*)temp_a3)[3]);
-    tween->curve = arg0[5] & 7;
-    tween->duration = arg0[6];
+    tween->deltaX = (((signed char)script[1] * 2) - (tween->startX = gim->x));
+    tween->deltaY = (((signed char)script[2] * 2) - (tween->startY = gim->y));
+    tween->deltaScale = ((script[3] << 7) - (tween->startScale = gim->scale));
+    tween->deltaBrightness = script[4] - (tween->startBrightness = gim->brightness);
+    tween->curve = script[5] & 7;
+    tween->duration = script[6];
     tween->elapsed = 0;
+
     return vs_battle_scriptNext;
 }
 

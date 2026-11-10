@@ -889,16 +889,23 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_20(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector for the empty slot to create the actor in
+ *   - [3-4] = entity id of the new actor, as used by actor selectors of kind 0
+ *   - [5-8] = tile to spawn on: x, surface, z and status
+ */
+int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 {
-    u_char sp10[12];
+    vs_battle_tilePosition tile[3];
 
-    sp10[0] = arg0[5];
-    sp10[1] = arg0[6];
-    sp10[2] = arg0[7];
-    sp10[3] = arg0[8];
-    func_8007C928(resolveActorId(getShort(arg0 + 1)), getShort(arg0 + 3),
-        (vs_ObjectData_flags*)(sp10));
+    tile[0].x = script[5];
+    tile[0].surface = script[6];
+    tile[0].z = script[7];
+    tile[0].status = script[8];
+
+    func_8007C928(resolveActorId(getShort(script + 1)), getShort(script + 3), tile);
+
     return vs_battle_scriptNext;
 }
 

@@ -1090,7 +1090,7 @@ int parseShp(vs_ObjectData* object)
                 }
             }
 
-            *(vs_ObjectData_flags*)&actor->unk0.currentTile = object->unkC;
+            actor->unk0.currentTile = object->unkC;
 
             if (actor->unk5AC_27) {
                 D_800F22B8 = 0xA0;
@@ -1113,7 +1113,7 @@ int parseShp(vs_ObjectData* object)
     }
 
     data += 4;
-    *(vs_ObjectData_flags*)&actor->unk0.currentTile = object->unkC;
+    actor->unk0.currentTile = object->unkC;
     actor->unk0.skip = 1;
     *(int*)&actor->unk0.nBones = *(int*)data;
     *(int*)&actor->unk0.nQuads = *(int*)(data + 4);

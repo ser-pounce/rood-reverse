@@ -382,12 +382,12 @@ static void func_800F9CCC(void)
     int bladeMaterial;
     int shieldMaterial;
 
-    vs_ObjectData_flags sp20;
+    vs_battle_tilePosition sp20;
 
-    sp20.unk0_0 = 4;
-    sp20.unk0_16 = 2;
-    sp20.unk0_8 = 0;
-    sp20.unk0_24 = 128;
+    sp20.x = 4;
+    sp20.z = 2;
+    sp20.surface = 0;
+    sp20.status = 128;
 
     bladeWepId = 0;
     bladeIndex = 0;

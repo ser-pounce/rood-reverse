@@ -257,7 +257,7 @@ int func_80074798(vs_ActorPosition*, u_char*);
 void func_80074B14(int arg0, vs_battle_tilePosition* arg1);
 void func_80076D50(u_int, int, int, int, int);
 void func_80077130(vs_Actor*, int, int, int, int);
-vs_Actor_dat* func_80077240(int, int, int, int, int, int, vs_ObjectData_flags*, int);
+vs_Actor_dat* func_80077240(int, int, int, int, int, int, vs_battle_tilePosition*, int);
 void func_800773BC(vs_Actor*, int, int, int, int, int);
 vs_Actor* func_800775C0(int, MpdEnemy*, vs_CharInitData*, int);
 int func_80077F70(void);
@@ -5956,7 +5956,7 @@ void func_8007647C(int arg0, int arg1)
 }
 
 vs_Actor* func_800765B0(
-    int index, int actorId, vs_ObjectData_flags* arg2, int material, int arg4)
+    int index, int actorId, vs_battle_tilePosition* arg2, int material, int arg4)
 {
     vs_ObjectData objData;
     int i;
@@ -5990,7 +5990,7 @@ vs_Actor* func_800765B0(
         objData.dataType = 6;
         objData.index = index;
         objData.unkC = *arg2;
-        objData.unkC.unk0_8 &= 1;
+        objData.unkC.surface &= 1;
         var_v1_2 = actorId;
         objData.unk4 = temp_v0->unk0.unk0.unk44;
         objData.actorId = actorId;
@@ -5999,7 +5999,7 @@ vs_Actor* func_800765B0(
         }
         objData.unk11 = var_v1_2 >> 8;
         objData.material = material;
-        objData.variant = arg2->unk0_8 >> 4;
+        objData.variant = arg2->surface >> 4;
 
         vs_battle_populateDataSlot(&objData);
 
@@ -6313,7 +6313,7 @@ void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, 
 }
 
 int func_80077078(
-    vs_Actor* arg0, int index, int wepId, vs_ObjectData_flags* arg3, int arg4)
+    vs_Actor* arg0, int index, int wepId, vs_battle_tilePosition* arg3, int arg4)
 {
     vs_ObjectData sp10;
 
@@ -6382,7 +6382,7 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
 }
 
 vs_Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, vs_ObjectData_flags* arg6, int arg7)
+    int shieldWepId, int shieldMaterial, vs_battle_tilePosition* arg6, int arg7)
 {
     int i;
     vs_Actor_dat* temp_v0;
@@ -6450,7 +6450,7 @@ void func_800773BC(vs_Actor* arg0, int arg1, int arg2, int arg3, int arg4, int a
 }
 
 vs_Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, vs_ObjectData_flags* arg6, int arg7)
+    int shieldWepId, int shieldMaterial, vs_battle_tilePosition* arg6, int arg7)
 {
     vs_Actor* temp_v0 = (vs_Actor*)func_80077240(
         arg0, arg1, bladeWepId, bladeMaterial, shieldWepId, shieldMaterial, arg6, arg7);
@@ -6556,20 +6556,20 @@ vs_Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flag
             && (vs_main_zoneEnemyCache[vs_main_zoneEnemyCacheIndex].mapId
                 == zoneContext.mapId)
             && ((saved = findSavedEnemy(spawn->index)) != NULL)) {
-            object.unkC.unk0_0 = saved->tile.x;
-            object.unkC.unk0_16 = saved->tile.z;
-            object.unkC.unk0_8 = saved->tile.surface;
+            object.unkC.x = saved->tile.x;
+            object.unkC.z = saved->tile.z;
+            object.unkC.surface = saved->tile.surface;
             height = saved->tile.status;
-            object.unkC.unk0_8 &= 1;
+            object.unkC.surface &= 1;
         } else {
-            object.unkC.unk0_0 = spawn->x;
-            object.unkC.unk0_16 = spawn->z;
-            object.unkC.unk0_8 = spawn->direction;
+            object.unkC.x = spawn->x;
+            object.unkC.z = spawn->z;
+            object.unkC.surface = spawn->direction;
             height = spawn->height * 64;
-            object.unkC.unk0_8 &= 1;
+            object.unkC.surface &= 1;
         }
 
-        object.unkC.unk0_24 = height;
+        object.unkC.status = height;
         object.unk4 = actor->unk44;
         object.actorId = 0xFF;
         object.variant = spawn->variant & 1;
@@ -8942,7 +8942,7 @@ int func_8007C8F8(int arg0)
     return vs_battle_populateDataSlot(&sp10) + 1;
 }
 
-int func_8007C928(u_int arg0, int arg1, vs_ObjectData_flags* arg2)
+int func_8007C928(u_int arg0, int arg1, vs_battle_tilePosition* arg2)
 {
     UNUSED int _[6];
     vs_Actor_dat* temp_v0;
@@ -14791,7 +14791,7 @@ void func_80089114(void)
 {
     UNUSED int _[4];
     int slots[16];
-    vs_ObjectData_flags data;
+    vs_battle_tilePosition data;
     MpdEnemy* enemy;
     vs_SavedEnemyState* saved;
     ZndEnemy* template;
@@ -14967,10 +14967,10 @@ void func_80089114(void)
 
             if (visible) {
                 if (id == 0x7F) {
-                    data.unk0_0 = enemy->x;
-                    data.unk0_16 = enemy->z;
-                    data.unk0_8 = enemy->direction;
-                    data.unk0_24 = enemy->height * 64;
+                    data.x = enemy->x;
+                    data.z = enemy->z;
+                    data.surface = enemy->direction;
+                    data.status = enemy->height * 64;
                     func_800774FC(slot, 0x7F, 0, 0, 0, 0, &data, param);
                 } else {
                     func_800775C0(slot, enemy, (vs_CharInitData*)template, param);
@@ -14982,10 +14982,10 @@ void func_80089114(void)
             u_int max = ((MpdObjectSpawn*)enemy)->flagMax;
 
             if ((flag >= ((MpdObjectSpawn*)enemy)->flagMin) && (flag <= max)) {
-                data.unk0_0 = ((MpdObjectSpawn*)enemy)->x;
-                data.unk0_16 = ((MpdObjectSpawn*)enemy)->z;
-                data.unk0_8 = ((MpdObjectSpawn*)enemy)->y;
-                data.unk0_24 = ((MpdObjectSpawn*)enemy)->direction * 64;
+                data.x = ((MpdObjectSpawn*)enemy)->x;
+                data.z = ((MpdObjectSpawn*)enemy)->z;
+                data.surface = ((MpdObjectSpawn*)enemy)->y;
+                data.status = ((MpdObjectSpawn*)enemy)->direction * 64;
                 slot = ((MpdObjectSpawn*)enemy)->slot;
 
                 if (slot == 0xFF) {
@@ -15004,7 +15004,7 @@ void func_80089114(void)
                 param = ((MpdObjectSpawn*)enemy)->model;
                 model = param;
                 func_800765B0(slot, (model >> 12) | (model & 0xF00), &data,
-                    ((model >> 3) & 0x1C) | (data.unk0_24 / 64), 0);
+                    ((model >> 3) & 0x1C) | (data.status / 64), 0);
             }
         }
     }

@@ -173,7 +173,7 @@ VS_HIDDEN(func_8007C654);
 void func_8007C8A4(int, int);
 VS_HIDDEN(func_8007C8A4);
 
-int func_8007C928(u_int arg0, int arg1, vs_ObjectData_flags* arg2);
+int func_8007C928(u_int arg0, int arg1, vs_battle_tilePosition* arg2);
 VS_HIDDEN(func_8007C928);
 
 void func_8007CA20(int, int, int);

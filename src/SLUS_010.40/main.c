@@ -2593,10 +2593,7 @@ int vs_main_playMusicSlot(int slot, int volume, int duration)
     return 0;
 }
 
-static UNUSED int vs_main_getcurrentMusicSlot(void)
-{
-    return vs_main_soundData.currentMusicSlot;
-}
+int vs_main_getcurrentMusicSlot(void) { return vs_main_soundData.currentMusicSlot; }
 
 int vs_main_getCurrentMusicId(void)
 {

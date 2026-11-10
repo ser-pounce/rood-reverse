@@ -273,7 +273,6 @@ VECTOR* vectorFixedPointMult(VECTOR*, VECTOR*, int);
 void vecToRotMatrix(VECTOR*, MATRIX*);
 int atan2FixedPoint(int arg0, int arg1);
 static int fixedPointMult(int a, int b);
-int vs_main_getcurrentMusicSlot(void);
 static int vectorMagnitude(VECTOR*);
 static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);

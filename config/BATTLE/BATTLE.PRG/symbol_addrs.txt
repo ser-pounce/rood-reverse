@@ -1,6 +1,4 @@
 vs_scratch = 0x1F800000; // absolute:True size:0x64
-vs_battle_saveEnemyState = 0x80069FC4;
-vs_battle_exec = 0x800798A4; // type:func
 vs_battle_lookAt = 0x8007AFA8;
 invalidHitFunction = 0x8007E974;
 getHitGemModifier = 0x8007E99C;
@@ -84,7 +82,6 @@ increaseMaxMpRand = 0x80084A3C;
 decreaseStrengthRand = 0x80084A8C;
 decreaseIntelligenceRand = 0x80084AD8;
 decreaseAglityRand = 0x80084B24;
-vs_battle_setDoorEntered = 0x8008AB68;
 func_800A0204 = 0x800A0204; // type:func
 func_800A190C = 0x800A190C; // type:func
 func_800A1AF8 = 0x800A1AF8; // type:func

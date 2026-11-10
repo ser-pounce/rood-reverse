@@ -19,7 +19,7 @@
 static char const* memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 #define PACKAGE_SAVE_PREPARE() vs_main_captureSaveState()
-#define KEYSTREAM_BITS(n) vs_battle_keystreamBits(n)
+#define KEYSTREAM_BITS(n) vs_battle_getRandBits(n)
 #define PACKAGE_SAVE_CLEAR_CONTAINER() \
     if (!(D_800F4EA0 & 0x400)) { \
         memset(&savedata2->containerData, 0, sizeof savedata2->containerData); \
@@ -924,7 +924,7 @@ static void drawPlayTime(void)
         time[3] = 0;
         vs_battle_renderTextRaw("1", 0xC800D8, vs_scratch.unk4 - 0x14);
     } else {
-        time[0] = ((((time[0] << 14) + vs_battle_keystreamBits(15)) * 5u) >> 14) / 3;
+        time[0] = ((((time[0] << 14) + vs_battle_getRandBits(15)) * 5u) >> 14) / 3;
     }
     for (i = 0; i < 4; ++i) {
         digits = vs_battle_toBCD(time[i]);

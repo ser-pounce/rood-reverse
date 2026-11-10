@@ -387,7 +387,7 @@ extern u_char spellClassCounts[];
 extern u_char* spellIds[];
 extern char D_800EBD68[];
 extern u_short D_800EBDDC[];
-extern u_int keystreamState;
+extern u_int randState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(Gim*, int, u_long*);
@@ -1931,13 +1931,13 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 
     if (gim->drawMode == 2) {
         u_short* p = gim->widths;
-        int angle = vs_battle_keystreamBits(9);
-        int target = vs_battle_keystreamBits(10);
+        int angle = vs_battle_getRandBits(9);
+        int target = vs_battle_getRandBits(10);
 
         for (i = 0; i < 240; ++i) {
             p[i] = (rsin(angle) >> 3) + 320;
-            step = vs_battle_keystreamBits(8) - 64;
-            next = vs_battle_keystreamBits(10);
+            step = vs_battle_getRandBits(8) - 64;
+            next = vs_battle_getRandBits(10);
 
             if (target < angle) {
                 angle -= step;
@@ -1955,7 +1955,7 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 
             if (angle < 0) {
                 angle = 128;
-                target = vs_battle_keystreamBits(10);
+                target = vs_battle_getRandBits(10);
             }
         }
     }
@@ -3611,7 +3611,7 @@ void func_800CB83C(void)
     }
 
     func_800CB708();
-    vs_battle_keystreamBits(0);
+    vs_battle_getRandBits(0);
 }
 
 void func_800CBBCC(Gim* image, int clut, u_long* ot)
@@ -4009,7 +4009,7 @@ void func_800CCA90(int arg0)
     D_800F51C8 = 0;
     D_800EC25C[gim->drawMode](gim, clut << 16,
         gim->scale & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
-                           : vs_scratch.unk8 + 0x18 - arg0 * 8);
+                            : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 
 int vs_battle_decreaseMiscCount(int miscId)
@@ -4054,10 +4054,10 @@ void vs_battle_rMemcpy(void* dest, void const* src, int size)
 
 int vs_battle_toBCD(int value) { return (value % 10) | ((value / 10) * 16); }
 
-u_int vs_battle_keystreamBits(int value)
+u_int vs_battle_getRandBits(int value)
 {
-    u_int temp_a1 = keystreamState;
-    keystreamState = temp_a1 * 0x19660D;
+    u_int temp_a1 = randState;
+    randState = temp_a1 * 0x19660D;
     return temp_a1 >> (32 - value);
 }
 

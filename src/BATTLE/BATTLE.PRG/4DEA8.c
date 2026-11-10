@@ -892,7 +892,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
 /**
  * @param script Opcode bytes:
  *   - [1-2] = actor selector for the empty slot to create the actor in
- *   - [3-4] = entity id of the new actor, as used by actor selectors of kind 0
+ *   - [3-4] = model index (OBJ/xx.SHP), doubles as the id the actor is looked up by
  *   - [5-8] = tile to spawn on and facing: x, surface, z and facing (1/256 turn)
  */
 int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
@@ -904,7 +904,7 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
     tile[0].z = script[7];
     tile[0].extra = script[8];
 
-    func_8007C928(resolveActorId(getShort(script + 1)), getShort(script + 3), tile);
+    spawnModelActor(resolveActorId(getShort(script + 1)), getShort(script + 3), tile);
 
     return vs_battle_scriptNext;
 }

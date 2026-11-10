@@ -8942,16 +8942,16 @@ int func_8007C8F8(int arg0)
     return vs_battle_populateDataSlot(&sp10) + 1;
 }
 
-int func_8007C928(u_int arg0, int arg1, vs_battle_tilePosition* arg2)
+int spawnModelActor(u_int slot, int modelId, vs_battle_tilePosition* tile)
 {
     UNUSED int _[6];
     vs_Actor_dat* temp_v0;
     vs_Actor** temp_s1;
     int s0;
 
-    if (arg0 < 16) {
-        if (vs_battle_actors[arg0] == NULL) {
-            temp_s1 = &vs_battle_actors[arg0];
+    if (slot < 16) {
+        if (vs_battle_actors[slot] == NULL) {
+            temp_s1 = &vs_battle_actors[slot];
             temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
             *temp_s1 = &temp_v0->unk0.unk0.unk0;
             temp_v0->unk0.unk0.unk0.stats = &temp_v0->unk0.unk0.unk50;
@@ -8959,8 +8959,8 @@ int func_8007C928(u_int arg0, int arg1, vs_battle_tilePosition* arg2)
             temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
             temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
             temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
-            func_80076D50(arg0, arg1, 0, 0, 6);
-            s0 = func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg2, 0);
+            func_80076D50(slot, modelId, 0, 0, 6);
+            s0 = func_80077078(&temp_v0->unk0.unk0.unk0, slot, modelId, tile, 0);
             func_800E6178(*temp_s1, -1);
             return s0 + 1;
         }

@@ -738,9 +738,10 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_19(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800C86AC();
+    unloadGim();
+
     return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
                                                         : vs_battle_scriptNext;
 }

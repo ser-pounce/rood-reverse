@@ -1965,20 +1965,24 @@ void activateGimImage(u_int image, UNUSED void* arg1, UNUSED u_char* arg2)
     }
 }
 
-void func_800C86AC(void)
+void unloadGim(void)
 {
     Gim* var_s0 = gims;
-    int i;
 
     if ((var_s0 != NULL) && (var_s0->loadState == 3)) {
+        int i;
+
         func_8007E0A8(var_s0->vramSlot, var_s0->pageCount, 6);
+
         for (i = 0; i < 3; ++i) {
             if (var_s0->drawMode == 3) {
                 func_8007E0A8(gims->vramSlot + gims->pageCount, 1, 6);
             }
             ++var_s0;
         }
+
         vs_main_freeHeapR(gims);
+
         gims = NULL;
     }
 }

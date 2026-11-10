@@ -15,7 +15,7 @@ int vs_battle_script_yield(u_char*, short);
 int vs_battle_script_16_loadGim(u_char*, short);
 int vs_battle_script_17_showGimImage(u_char*, short);
 int vs_battle_script_18_tweenGimImage(u_char*, short);
-int vs_battle_script_19(u_char*, short);
+int vs_battle_script_19_unloadGim(u_char*, short);
 int vs_battle_script_1B_setStringContextInt(u_char*, short);
 int vs_battle_script_1D(u_char*, short);
 int vs_battle_script_1E(u_char*, short);

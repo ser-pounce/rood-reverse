@@ -893,7 +893,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector for the empty slot to create the actor in
  *   - [3-4] = entity id of the new actor, as used by actor selectors of kind 0
- *   - [5-8] = tile to spawn on: x, surface, z and status
+ *   - [5-8] = tile to spawn on and facing: x, surface, z and facing (1/256 turn)
  */
 int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 {
@@ -902,7 +902,7 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
     tile[0].x = script[5];
     tile[0].surface = script[6];
     tile[0].z = script[7];
-    tile[0].status = script[8];
+    tile[0].extra = script[8];
 
     func_8007C928(resolveActorId(getShort(script + 1)), getShort(script + 3), tile);
 
@@ -991,7 +991,7 @@ int vs_battle_script_25(u_char* arg0, UNUSED short arg1)
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
     sp10[0].z = arg0[5];
-    sp10[0].status = arg0[6];
+    sp10[0].extra = arg0[6];
     if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800A97EC(temp_v0, sp10, 0, 0);
     } else {
@@ -1042,7 +1042,7 @@ int vs_battle_script_27(u_char* arg0, UNUSED short arg1)
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
     sp10[0].z = arg0[5];
-    sp10[0].status = 0xFF;
+    sp10[0].extra = 0xFF;
     if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800A9C54(temp_s0, sp10, 0);
     } else {
@@ -4521,7 +4521,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 if ((short)func_800A0024(p[1], &position.unk0) >= 0
                     && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0 || (position.unk0.unk0.status >> 2) + 1 == p[5])) {
+                    && (p[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == p[5])) {
                     result = 1;
                 }
 

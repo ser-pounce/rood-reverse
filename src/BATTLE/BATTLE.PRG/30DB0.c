@@ -353,7 +353,7 @@ exit:
     s1->unk0.skip = 1;
     s1->unk0.visible = 0;
     memcpy(&s1->unk0.currentTile, &arg0->unkC, sizeof(s1->unk0.currentTile));
-    s1->unk0.currentTile.status = 0;
+    s1->unk0.currentTile.extra = 0;
     s1->unk0.position.vx = (s1->unk0.currentTile.x << 7) + 0x40;
     s1->unk0.position.vz = (s1->unk0.currentTile.z << 7) + 0x40;
     s1->unk0.position.vy =
@@ -3770,7 +3770,7 @@ int func_800A0024(int arg0, vs_ActorLocation* arg1)
     }
 
     arg1->unk0 = temp_s0->unk0.currentTile;
-    arg1->unk0.status = temp_s0->unk16C.unk2;
+    arg1->unk0.extra = temp_s0->unk16C.unk2;
     var_v0_2 =
         func_800A6EE8(&temp_s0->unk0.position, 0, 0, 0) - temp_s0->unk0.position.vy;
     if (var_v0_2 < 0) {

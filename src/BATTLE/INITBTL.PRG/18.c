@@ -387,7 +387,7 @@ static void func_800F9CCC(void)
     sp20.x = 4;
     sp20.z = 2;
     sp20.surface = 0;
-    sp20.status = 128;
+    sp20.extra = 128;
 
     bladeWepId = 0;
     bladeIndex = 0;

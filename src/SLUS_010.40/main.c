@@ -1249,7 +1249,7 @@ void vs_main_captureSaveState(void)
     vs_main_spawnPoint.x = position.unk0.unk0.x;
     vs_main_spawnPoint.z = position.unk0.unk0.z;
     vs_main_spawnPoint.targetTile.arrivalSurface = position.unk0.unk0.surface;
-    vs_main_spawnPoint.facing = position.unk0.unk0.status >> 6;
+    vs_main_spawnPoint.facing = position.unk0.unk0.extra >> 6;
     // On a saved spawn point this field holds the scene id, not an unlock flag.
     vs_main_spawnPoint.unlockFlag = D_800F18E8.unk0_0;
 

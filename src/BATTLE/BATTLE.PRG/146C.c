@@ -5207,14 +5207,14 @@ int func_80074BAC(int actorIndex, vs_ActorLocation* position)
     if (coordinates->unk0.x != actor->currentTile.x
         || coordinates->unk0.surface != actor->currentTile.surface
         || coordinates->unk0.z != actor->currentTile.z
-        || layer != actor->currentTile.status || (flags & 0x70000)) {
+        || layer != actor->currentTile.extra || (flags & 0x70000)) {
         if (D_800F196C != 3) {
             MpdRoomSection9* trigger;
 
             if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
                 func_80073898();
                 actor->currentTile = coordinates->unk0;
-                actor->currentTile.status = layer;
+                actor->currentTile.extra = layer;
 
                 if (cell->unk0_16) {
                     trigger = func_8008D438(coordinates->unk0.x, coordinates->unk0.z,
@@ -5237,7 +5237,7 @@ int func_80074BAC(int actorIndex, vs_ActorLocation* position)
                     if (trigger->unk6 != 16) {
                         func_80073F7C((MpdRoomSectionA*)trigger, position, actorIndex);
                         actor->currentTile = coordinates->unk0;
-                        actor->currentTile.status = layer;
+                        actor->currentTile.extra = layer;
                         return 1;
                     }
 
@@ -5288,7 +5288,7 @@ int func_80074BAC(int actorIndex, vs_ActorLocation* position)
             actor->currentTile = coordinates->unk0;
         }
 
-        actor->currentTile.status = layer;
+        actor->currentTile.extra = layer;
     }
 
     if (result == 0 && cell->unk0_17 && position->unk4.vy >= 17) {
@@ -5303,7 +5303,7 @@ int func_80074BAC(int actorIndex, vs_ActorLocation* position)
             destination.z = destination.targetTile.z = coordinates->unk0.z;
             destination.targetTile.surface = coordinates->unk0.surface;
             destination.targetTile.arrivalSurface = 7;
-            destination.facing = coordinates->unk0.status >> 6;
+            destination.facing = coordinates->unk0.extra >> 6;
             destination.walkForward = 0;
             destination.faceCamera = 0;
 
@@ -5369,7 +5369,7 @@ int func_800751B8(int arg0, vs_ActorLocation* arg1)
             if (s2->unk0.x != temp_s0->currentTile.x
                 || s2->unk0.surface != temp_s0->currentTile.surface
                 || s2->unk0.z != temp_s0->currentTile.z
-                || temp_s3 != temp_s0->currentTile.status || (temp_v0 & 0x70000)) {
+                || temp_s3 != temp_s0->currentTile.extra || (temp_v0 & 0x70000)) {
                 if (D_800F196C != 3) {
                     if (temp_s4->unk0_16) {
                         if (!(temp_v0 & 0x16704000)) {
@@ -5379,7 +5379,7 @@ int func_800751B8(int arg0, vs_ActorLocation* arg1)
                                 func_80073F7C((MpdRoomSectionA*)temp_v0_2, arg1, arg0);
                                 memcpy(&temp_s0->currentTile, &s2->unk0,
                                     sizeof temp_s0->currentTile);
-                                temp_s0->currentTile.status = temp_s3;
+                                temp_s0->currentTile.extra = temp_s3;
                                 return 3;
                             }
                         }
@@ -5388,7 +5388,7 @@ int func_800751B8(int arg0, vs_ActorLocation* arg1)
                 if (!(temp_v0 & 0x504000)) {
                     memcpy(&temp_s0->currentTile, &s2->unk0, sizeof temp_s0->currentTile);
                 }
-                temp_s0->currentTile.status = temp_s3;
+                temp_s0->currentTile.extra = temp_s3;
             }
             if ((temp_s4->unk0_17)) {
                 if (arg1->unk4.vy >= 0x11) {
@@ -6219,7 +6219,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     }
 
     temp_s1->unk24 = arg4 & 0x1C;
-    temp_s1->currentTile.status = 0;
+    temp_s1->currentTile.extra = 0;
     temp_s1->currentTile.z = 0;
     temp_s1->currentTile.surface = 0;
     temp_s1->currentTile.x = 0;
@@ -6305,7 +6305,7 @@ void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, 
 
     temp_s0->unk24 = arg4 & 0x1C;
     temp_s0->unk8 = 0;
-    temp_s0->currentTile.status = 0;
+    temp_s0->currentTile.extra = 0;
     temp_s0->currentTile.z = 0;
     temp_s0->currentTile.surface = 0;
     temp_s0->currentTile.x = 0;
@@ -6559,7 +6559,7 @@ vs_Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flag
             object.unkC.x = saved->tile.x;
             object.unkC.z = saved->tile.z;
             object.unkC.surface = saved->tile.surface;
-            height = saved->tile.status;
+            height = saved->tile.extra;
             object.unkC.surface &= 1;
         } else {
             object.unkC.x = spawn->x;
@@ -6569,7 +6569,7 @@ vs_Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flag
             object.unkC.surface &= 1;
         }
 
-        object.unkC.status = height;
+        object.unkC.extra = height;
         object.unk4 = actor->unk44;
         object.actorId = 0xFF;
         object.variant = spawn->variant & 1;
@@ -14970,7 +14970,7 @@ void func_80089114(void)
                     data.x = enemy->x;
                     data.z = enemy->z;
                     data.surface = enemy->direction;
-                    data.status = enemy->height * 64;
+                    data.extra = enemy->height * 64;
                     func_800774FC(slot, 0x7F, 0, 0, 0, 0, &data, param);
                 } else {
                     func_800775C0(slot, enemy, (vs_CharInitData*)template, param);
@@ -14985,7 +14985,7 @@ void func_80089114(void)
                 data.x = ((MpdObjectSpawn*)enemy)->x;
                 data.z = ((MpdObjectSpawn*)enemy)->z;
                 data.surface = ((MpdObjectSpawn*)enemy)->y;
-                data.status = ((MpdObjectSpawn*)enemy)->direction * 64;
+                data.extra = ((MpdObjectSpawn*)enemy)->direction * 64;
                 slot = ((MpdObjectSpawn*)enemy)->slot;
 
                 if (slot == 0xFF) {
@@ -15004,7 +15004,7 @@ void func_80089114(void)
                 param = ((MpdObjectSpawn*)enemy)->model;
                 model = param;
                 func_800765B0(slot, (model >> 12) | (model & 0xF00), &data,
-                    ((model >> 3) & 0x1C) | (data.status / 64), 0);
+                    ((model >> 3) & 0x1C) | (data.extra / 64), 0);
             }
         }
     }

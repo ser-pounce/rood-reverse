@@ -464,7 +464,7 @@ void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 
         func_800AA290(arg0, arg1, -1, 0);
 
-        angle = arg1->status;
+        angle = arg1->extra;
         angle <<= 4;
         angle %= ONE;
         angle -= actor->unk0.facing;
@@ -495,10 +495,10 @@ void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
         actor->unk5EC.vec.vy = func_800A6EE8(&actor->unk5EC.vec, 0, 0, 1);
         angle = 0x8000;
 
-        if (arg1->status == 0xFF) {
+        if (arg1->extra == 0xFF) {
             actor->unk5EC.vec.pad = angle;
         } else {
-            actor->unk5EC.vec.pad = arg1->status * 16;
+            actor->unk5EC.vec.pad = arg1->extra * 16;
         }
 
         actor->unk5AC_0 = 1;
@@ -787,7 +787,7 @@ void func_800AA108(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 
             func_800AA290(arg0, arg1, -1, 0);
 
-            temp_a1 = arg1->status;
+            temp_a1 = arg1->extra;
             temp_a1 *= 0x10;
             temp_a1 %= 0x1000;
             temp_a1 -= temp_s0->unk0.facing;
@@ -899,7 +899,7 @@ void func_800AA490(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
     dz = arg1->z - actor->unk0.currentTile.z;
 
     if (angle == 0 && dz == 0) {
-        angle = arg1->status * 16;
+        angle = arg1->extra * 16;
     } else {
         angle = 0xC00 - ratan2(dz, angle);
         angle %= ONE;

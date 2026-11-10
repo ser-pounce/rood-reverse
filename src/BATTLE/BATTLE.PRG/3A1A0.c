@@ -441,7 +441,7 @@ void func_800A36E0(int actorId, int arg1, vs_ActorPosition* arg2)
         if (temp_a0->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {
             arg2->unk0.unk0 = temp_a0->unk0.currentTile;
         }
-        arg2->unk0.unk0.status = temp_a0->unk0.facing / 16;
+        arg2->unk0.unk0.extra = temp_a0->unk0.facing / 16;
     }
 }
 

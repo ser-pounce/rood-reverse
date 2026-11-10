@@ -43,7 +43,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
     }
 
     source = arg0->unk34;
-    pos.fields.status = 1;
+    pos.fields.extra = 1;
 
     if (arg1 == arg2) {
         directions = arg3;
@@ -74,11 +74,11 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
             }
         } else if (result >= 0) {
             pos.value = func_800DB93C(arg0, pos.fields, arg3, source);
-            if (pos.fields.status == 1) {
+            if (pos.fields.extra == 1) {
                 pos.fields.surface = 0;
                 return pos.value;
             }
-            if (pos.fields.status == 0) {
+            if (pos.fields.extra == 0) {
                 continue;
             }
         }
@@ -88,7 +88,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
     return 0;
 
 fail:
-    pos.fields.status = 2;
+    pos.fields.extra = 2;
     pos.fields.surface = 0;
     return pos.value;
 }
@@ -534,7 +534,7 @@ void func_800D8EF4(void)
         }
 
         if ((state->unk1C == 0) && VS_TILE_IS_SET(state->unk38)) {
-            int targetId = state->unk38.status;
+            int targetId = state->unk38.extra;
 
             if ((state->unk40 == 0) || (--state->unk40 == 0)
                 || (D_800F4538[targetId] == NULL)

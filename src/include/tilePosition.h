@@ -5,7 +5,10 @@ typedef struct {
     u_char x;
     u_char surface;
     u_char z;
-    u_char status;
+    // The meaning of the last byte depends on the record: the layer in an actor's
+    // current tile, the facing (1/256 turn) in a placement, the actor in an AI target
+    // tile, the result in a path search
+    u_char extra;
 } __attribute__((aligned(4))) vs_battle_tilePosition;
 
 // A tile is often handled as a single 32-bit word: it is cleared by storing -1 (all
@@ -15,10 +18,10 @@ typedef struct {
 #ifdef NON_MATCHING
 #define VS_TILE_CLEAR(tile) \
     ((tile) = (vs_battle_tilePosition) { 0xFF, 0xFF, 0xFF, 0xFF })
-#define VS_TILE_IS_SET(tile) ((tile).status < 0x80)
+#define VS_TILE_IS_SET(tile) ((tile).extra < 0x80)
 #define VS_TILE_EQ(a, b)                                                               \
     ((a).x == (b).x && (a).surface == (b).surface && (a).z == (b).z                  \
-        && (a).status == (b).status)
+        && (a).extra == (b).extra)
 #else
 #define VS_TILE_CLEAR(tile) (*(int*)&(tile) = -1)
 #define VS_TILE_IS_SET(tile) (*(int*)&(tile) >= 0)

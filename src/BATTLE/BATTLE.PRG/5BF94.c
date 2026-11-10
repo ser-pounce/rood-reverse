@@ -2897,7 +2897,7 @@ void func_800CA2DC(void)
     } else {
         k = vs_battle_textBoxes[7].state;
         if (!(vs_battle_lowerScreenUiState & 2)
-            && ((k == 0) || (k != (vs_battle_textBoxes[7].unk22 + 1)))) {
+            && ((k == 0) || (k != (vs_battle_textBoxes[7].animationDuration + 1)))) {
             k = 0xB80008;
 
             for (i = 0; i < 5; ++i) {
@@ -3518,7 +3518,7 @@ void func_800CB83C(void)
             continue;
         }
 
-        duration = box->unk22;
+        duration = box->animationDuration;
         scale = vs_gametime_tickspeed >> 1;
 
         if (state < 0) {
@@ -4149,7 +4149,7 @@ void vs_battle_initTextBox(
     box->centerX = centerX;
     box->centerY = centerY;
     // looks up { 10, 20, 10, 8 };
-    box->unk22 = ((0x45A5 >> ((box->unk0.unk0_4 * 4))) & 0xF) * 2;
+    box->animationDuration = ((0x45A5 >> ((box->unk0.unk0_4 * 4))) & 0xF) * 2;
 
     if (box->state <= 0) {
         box->state = 1;
@@ -4184,7 +4184,7 @@ int vs_battle_dismissTextBox(int id)
 
     if (box->state != 0) {
         if (box->state > 0) {
-            box->unk22 = 8;
+            box->animationDuration = 8;
             box->state = -1;
             box->unk0.unk0_4 = 0;
         }
@@ -4253,7 +4253,7 @@ void func_800CD158(int id)
         vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), vs_getXY(0, y),
             (0xF00000 - (y << 16)) | 320);
     }
-    if (box->state == box->unk22 + 1) {
+    if (box->state == box->animationDuration + 1) {
         func_800CD0FC(y - 7, box->unk0.shape - 1);
     }
 }

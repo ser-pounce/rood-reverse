@@ -122,7 +122,7 @@ typedef struct {
     u_char unk1F;
     char charsPerLine;
     char lineCount;
-    char unk22;
+    char animationDuration;
     char unk23;
     short unk24;
     short unk26;

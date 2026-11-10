@@ -787,9 +787,14 @@ int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_1D(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (boxId << 5) | animation duration (0-31)
+ */
+int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short arg1)
 {
-    vs_battle_getTextBox(arg0[1] >> 5)->unk22 = arg0[1] & 0x1F;
+    vs_battle_getTextBox(script[1] >> 5)->animationDuration = script[1] & 0x1F;
+
     return vs_battle_scriptNext;
 }
 

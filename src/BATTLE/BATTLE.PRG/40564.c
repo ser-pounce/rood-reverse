@@ -1941,9 +1941,9 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
         if (arg1->unk0.unk18 == 0) {
 
             if (arg1->unk0.unkA_5) {
-                func_800A0204(arg0, 0x1F, 0, 8);
+                vs_battle_setActorAnimation(arg0, 0x1F, 0, 8);
             } else {
-                func_800A0204(arg0, arg1->unk6E5, 0, 8);
+                vs_battle_setActorAnimation(arg0, arg1->unk6E5, 0, 8);
             }
 
             if (!(arg1->unk5AC_2)) {
@@ -1960,7 +1960,7 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
         if (arg1->unk0.unk1A == 0) {
             u_short facing;
 
-            func_800A0204(arg0, 1, 0, 8);
+            vs_battle_setActorAnimation(arg0, 1, 0, 8);
 
             facing = arg1->unk5EC.vec.pad;
 

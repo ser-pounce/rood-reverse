@@ -141,7 +141,7 @@ loop:
             arg -= 100;
         }
 
-        func_800A0204(id, arg, 0, 0);
+        vs_battle_setActorAnimation(id, arg, 0, 0);
         goto reload;
 
     case 24:
@@ -167,7 +167,7 @@ loop:
         arg = script[1];
         sfx[0] = 1;
     setAnimation:
-        func_800A0204(id, sfx[0], 0, arg);
+        vs_battle_setActorAnimation(id, sfx[0], 0, arg);
         goto reload;
 
     case 26:
@@ -202,14 +202,14 @@ loop:
         break;
 
     case 21:
-        func_800A0204(id, script[1], 0, 0);
+        vs_battle_setActorAnimation(id, script[1], 0, 0);
         actor->unk5AC_16 = 0;
         goto reload;
 
     case 22:
         arg = script[1];
         sfx[0] = script[2];
-        func_800A0204(id, arg, 0, sfx[0]);
+        vs_battle_setActorAnimation(id, arg, 0, sfx[0]);
         actor->unk5AC_16 = 0;
         goto reload;
 

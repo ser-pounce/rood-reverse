@@ -194,7 +194,7 @@ void func_800C0150(void)
 
     for (i = 0; i < 17; ++i) {
         if (getActor(i) != NULL) {
-            func_800A0204(i, 1, 0, 0);
+            vs_battle_setActorAnimation(i, 1, 0, 0);
         }
     }
 }

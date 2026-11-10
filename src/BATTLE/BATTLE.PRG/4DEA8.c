@@ -280,7 +280,8 @@ static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
-extern char D_800E9B58[];
+extern char animationBankBase[];
+VS_HIDDEN(animationBankBase);
 extern char skipResetPaletteOp[];
 VS_HIDDEN(skipResetPaletteOp);
 extern char skipTailMarkerOp[];
@@ -939,10 +940,18 @@ int vs_battle_script_21_walkToTile(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_22(u_char* arg0)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation index within the bank
+ *   - [4] = unused
+ *   - [5] = (bank << 6) | blend frames, the bank selects the base id in animationBankBase
+ */
+int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
 {
-    func_800A0204(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[5] >> 6] + arg0[3],
-        arg0[4], arg0[5] & 0x3F);
+    vs_battle_setActorAnimation(resolveActorId(getShort(script + 1)),
+        animationBankBase[script[5] >> 6] + script[3], script[4], script[5] & 0x3F);
+
     return vs_battle_scriptNext;
 }
 
@@ -1221,7 +1230,7 @@ int vs_battle_script_2F(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_30(u_char* arg0)
+int vs_battle_script_30(u_char* arg0, UNUSED short arg1)
 {
     short temp_v0;
     u_short temp_s3;
@@ -1257,10 +1266,10 @@ int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_32(u_char* arg0)
+int vs_battle_script_32(u_char* arg0, UNUSED short arg1)
 {
-    func_800A01C8(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[5] >> 6] + arg0[3],
-        arg0[5] & 0x3F, 0);
+    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
+        animationBankBase[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
     return vs_battle_scriptNext;
 }
 
@@ -1305,17 +1314,17 @@ int vs_battle_script_34(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_35(u_char* arg0)
+int vs_battle_script_35(u_char* arg0, UNUSED short arg1)
 {
-    func_800A0618(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[6] >> 6] + arg0[3],
-        arg0[6] & 0x3F, arg0[4]);
+    func_800A0618(resolveActorId(getShort(arg0 + 1)),
+        animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_36(u_char* arg0)
+int vs_battle_script_36(u_char* arg0, UNUSED short arg1)
 {
-    func_800A01C8(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[6] >> 6] + arg0[3],
-        arg0[6] & 0x3F, arg0[4]);
+    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
+        animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
     return vs_battle_scriptNext;
 }
 
@@ -1326,7 +1335,7 @@ int vs_battle_script_37(u_char* arg0, UNUSED short arg1)
     if (arg0[4] == 0xFF) {
         func_8009FBD8(temp_a0, -1);
     } else {
-        func_8009FBD8(temp_a0, D_800E9B58[arg0[3]] + arg0[4]);
+        func_8009FBD8(temp_a0, animationBankBase[arg0[3]] + arg0[4]);
     }
     return vs_battle_scriptNext;
 }
@@ -1966,7 +1975,7 @@ int vs_battle_script_69(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_6A(u_char* arg0)
+int vs_battle_script_6A(u_char* arg0, UNUSED short arg1)
 {
     func_8007C4AC(arg0[1], arg0[2], arg0[3] * 0x10);
     return vs_battle_scriptNext;
@@ -2015,7 +2024,7 @@ int vs_battle_script_6D(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_6E(void)
+int vs_battle_script_6E(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return func_8007C398() != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
@@ -2103,7 +2112,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
         t = arg0[2] - 1;
         t *= 2;
         u = (arg0[1] ^ 1) + 0x6D;
-        func_800A0204(0, t + u, 0, 0xA);
+        vs_battle_setActorAnimation(0, t + u, 0, 0xA);
         func_8009DBDC(0, arg0[1] ^ 1);
         ret = 1;
         D_800F4C4E = ret;
@@ -2114,7 +2123,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
         }
 
         if (func_800A0BE0(0) & 0x80) {
-            func_800A0204(0, arg0[1] != 0 ? 0x65 : 6, 0, 0xA);
+            vs_battle_setActorAnimation(0, arg0[1] != 0 ? 0x65 : 6, 0, 0xA);
             D_800F4C4E = 0;
             return vs_battle_scriptNext;
         }
@@ -2496,7 +2505,7 @@ int vs_battle_script_A8_setMusicJumpThreshold(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_A9(u_char* arg0)
+int vs_battle_script_A9(u_char* arg0, UNUSED short arg1)
 {
     short a0 = arg0[1];
     if (a0 == 0xFF) {
@@ -2567,7 +2576,7 @@ int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_B4(u_char* arg0)
+int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
 {
     if (D_800F4BF8 == 0) {
         func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);

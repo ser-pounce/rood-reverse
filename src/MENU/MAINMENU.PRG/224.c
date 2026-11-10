@@ -18,7 +18,7 @@ void func_800F9A24(int arg0)
 
     D_800F4538[1]->unk0.weaponDrawn = 1;
 
-    func_800A0204(1, 1, 0, 0);
+    vs_battle_setActorAnimation(1, 1, 0, 0);
 }
 
 void func_800F9A78(int arg0)

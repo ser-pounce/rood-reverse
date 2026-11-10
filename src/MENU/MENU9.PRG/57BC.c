@@ -30,7 +30,7 @@ int vs_menu9_loadZud(int zudIndex)
 
         D_800F4538[1]->unk0.weaponDrawn = 1;
 
-        func_800A0204(1, 1, 0, 0);
+        vs_battle_setActorAnimation(1, 1, 0, 0);
 
         vs_battle_loadObjectDataState = 0;
         return 0;

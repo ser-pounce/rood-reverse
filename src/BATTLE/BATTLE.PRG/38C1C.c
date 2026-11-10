@@ -560,7 +560,7 @@ void func_800A208C(
 
     actor->unk1816 = frames;
     actor->unk181A = 2;
-    func_800A0204(actor->unk0.unkF, animation, 0, 4);
+    vs_battle_setActorAnimation(actor->unk0.unkF, animation, 0, 4);
     actor->unk0.unkA_0 = 2;
     func_800A9EB4(actor->unk0.unkF, facing, 8);
 }
@@ -609,7 +609,7 @@ void func_800A249C(int arg0, int arg1)
         }
     }
 
-    func_800A0204(arg0, var_a2, 0, 0xA);
+    vs_battle_setActorAnimation(arg0, var_a2, 0, 0xA);
 }
 
 void func_800A2574(int arg0, short arg1)
@@ -649,7 +649,7 @@ void func_800A25EC(D_800F4538_t* actor)
 
         if (height > actor->unk0.position.vy && height - actor->unk0.position.vy >= 64) {
             setVector(&actor->unk0.unk34, 0, 0, 0);
-            func_800A0204(actor->unk0.unkF, 47, 0, 4);
+            vs_battle_setActorAnimation(actor->unk0.unkF, 47, 0, 4);
             actor->unk181A = 0;
             actor->unk0.unkA_3 = 0;
             actor->unk0.unk9_6 = 0;
@@ -695,7 +695,7 @@ void func_800A2790(D_800F4538_t* actor)
     }
 
     if (actor->animationId != animation) {
-        func_800A0204(actor->unk0.unkF, animation, 0, 4);
+        vs_battle_setActorAnimation(actor->unk0.unkF, animation, 0, 4);
     }
 }
 

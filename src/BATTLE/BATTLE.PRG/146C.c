@@ -6426,7 +6426,7 @@ vs_Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMateria
 
 void func_800773BC(vs_Actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
-    func_800A0204(arg1, 0, 0, 0);
+    vs_battle_setActorAnimation(arg1, 0, 0, 0);
     func_800A087C(arg1, 0x1847);
     vs_battle_actors[arg1] = arg0;
     func_80076D50(arg1, arg2, arg3, arg4, arg5);
@@ -6645,7 +6645,7 @@ vs_Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flag
             func_800A087C(id, 0x46);
         }
 
-        func_800A0204(id, 0, 0, 0);
+        vs_battle_setActorAnimation(id, 0, 0, 0);
         func_800A0AFC(id, actor->stats->unk31 * ONE, actor->stats->unk33 * ONE);
 
         if (actor->unk1C & 7) {

@@ -632,10 +632,14 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_14(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ */
+int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 {
-    return vs_battle_dismissTextBox(arg0[1]) != 0 ? vs_battle_scriptRepeat
-                                                  : vs_battle_scriptNext;
+    return vs_battle_dismissTextBox(script[1]) != 0 ? vs_battle_scriptRepeat
+                                                    : vs_battle_scriptNext;
 }
 
 int vs_battle_script_15_buttonPressed(u_char* arg0, UNUSED short arg1)

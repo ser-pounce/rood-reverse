@@ -5138,7 +5138,7 @@ int func_80074A20(int arg0)
             vs_battle_actors[arg0]->unk8 = 0x20;
             if (vs_battle_actors[arg0]->unk26 == 0) {
                 startActorDeath(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
-                func_800A09D8(arg0, 1);
+                setActorInactiveFlag(arg0, 1);
                 if ((vs_battle_actors[arg0]->unk27 != 0x80) || (arg0 == 0)) {
                     ret = 1;
                 }
@@ -9217,21 +9217,21 @@ int func_8007D15C(int arg0)
     return arg0;
 }
 
-void func_8007D1A8(int arg0, int arg1)
+void setActorInactive(int actorId, int inactive)
 {
     int temp_s0;
-    vs_Actor* temp_a0 = vs_battle_actors[arg0];
+    vs_Actor* temp_a0 = vs_battle_actors[actorId];
     if (temp_a0 != NULL) {
-        if (arg1 != 0) {
+        if (inactive != 0) {
             temp_s0 = removeActor(temp_a0);
-            func_800A09D8(arg0, arg1);
+            setActorInactiveFlag(actorId, inactive);
             if (temp_s0 != 0) {
-                func_800E7608(arg0);
+                func_800E7608(actorId);
                 func_800DEC88(NULL);
             }
         } else {
             temp_s0 = insertActor(temp_a0);
-            func_800A09D8(arg0, 0);
+            setActorInactiveFlag(actorId, 0);
             if (temp_s0 != 0) {
                 func_800E5998();
                 func_800DEC88(NULL);

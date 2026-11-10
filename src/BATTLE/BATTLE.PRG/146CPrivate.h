@@ -221,8 +221,8 @@ VS_HIDDEN(func_8007D08C);
 int func_8007D15C(int);
 VS_HIDDEN(func_8007D15C);
 
-void func_8007D1A8(int, int);
-VS_HIDDEN(func_8007D1A8);
+void setActorInactive(int actorId, int inactive);
+VS_HIDDEN(setActorInactive);
 
 int isActionUnlocked(u_int);
 VS_HIDDEN(isActionUnlocked);

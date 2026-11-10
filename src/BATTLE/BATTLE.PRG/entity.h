@@ -311,7 +311,7 @@ typedef struct {
     u_char unk5AC_21 : 1;
     u_char unk5AC_22 : 1;
     u_char unk5AC_23 : 1;
-    u_char unk5AC_24 : 1;
+    u_char inactive : 1;
     u_char unk5AC_25 : 1;
     u_char unk5AC_26 : 1;
     u_char unk5AC_27 : 1;

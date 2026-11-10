@@ -2191,7 +2191,7 @@ void func_8009D468(int arg0)
         temp_s1->unk6EE = 0;
         temp_s1->unk6EF = 0;
         temp_s1->unk1846 = 0;
-        temp_s1->unk5AC_24 = 0;
+        temp_s1->inactive = 0;
         temp_s1->unk0.skip = 1;
         temp_s1->unk0.visible = 1;
         temp_s1->unk0.freeze = 1;
@@ -3835,7 +3835,7 @@ int vs_battle_setActorAnimation(
     if (actor == NULL) {
         return -1;
     }
-    if (actor->unk5AC_24) {
+    if (actor->inactive) {
         return 0;
     }
 
@@ -4097,10 +4097,10 @@ void vs_battle_setActorFlags(int actorId, int flags)
     }
 }
 
-void func_800A09D8(int arg0, int arg1)
+void setActorInactiveFlag(int actorId, int inactive)
 {
-    if (D_800F4538[arg0] != NULL) {
-        D_800F4538[arg0]->unk5AC_24 = arg1;
+    if (D_800F4538[actorId] != NULL) {
+        D_800F4538[actorId]->inactive = inactive;
     }
 }
 
@@ -4238,7 +4238,7 @@ u_int vs_battle_getActorFlags(int actorId)
             && ((vs_battle_wepModels + 1)[temp_a1->unk0.unkF * 2]->unk8_4)) {
             D_800F49E0 |= 0x1000;
         }
-        if (temp_a1->unk5AC_24) {
+        if (temp_a1->inactive) {
             D_800F49E0 |= 0x2000;
         }
         if (temp_a1->unk0.unkA_0) {

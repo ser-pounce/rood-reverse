@@ -964,7 +964,7 @@ int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
  *     - bit 1: leave the blade model's flag unchanged (ignores bit 0)
  *     - bit 2: new flag value for the shield model
  *     - bit 3: leave the shield model's flag unchanged (ignores bit 2)
- *     - bit 5: take the actor out of the actor list (clear puts it back)
+ *     - bit 5: toggle actor deactivation
  */
 int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
 {
@@ -996,7 +996,7 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
             shieldFlag = (options << 0xA) & 0x1000;
         }
 
-        func_8007D1A8(actor, (options >> 5) & 1);
+        setActorInactive(actor, (options >> 5) & 1);
         vs_battle_setActorFlags(actor, bladeFlag | shieldFlag | script[3]);
         func_8009D88C(actor);
     }

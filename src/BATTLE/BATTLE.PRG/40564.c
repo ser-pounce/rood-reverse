@@ -144,7 +144,7 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
             continue;
         }
 
-        if (other->unk0.skip || (other->unk5AC_24) || other->unk0.unk13 == 0xFC
+        if (other->unk0.skip || (other->inactive) || other->unk0.unk13 == 0xFC
             || other->unk0.unkB_0 == 2 || scratch->excluded[i]) {
             continue;
         }
@@ -208,7 +208,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
         int oldDistance;
 
         if (other != NULL
-            && !(other->unk0.skip || (other->unk5AC_24) || other->unk0.unk13 == 0xFC
+            && !(other->unk0.skip || (other->inactive) || other->unk0.unk13 == 0xFC
                  || other->unk0.unkB_0 == 2)) {
             otherRadius = other->unk640;
 

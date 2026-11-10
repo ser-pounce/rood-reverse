@@ -4060,39 +4060,39 @@ int func_800A07FC(int arg0, CVECTOR* arg1)
 
 void func_800A0870(int arg0) { D_800E8FC0 = arg0; }
 
-void func_800A087C(int actorId, int arg1)
+void vs_battle_setActorFlags(int actorId, int flags)
 {
     D_800F4538_t* temp_t0 = D_800F4538[actorId];
 
     if (temp_t0 == NULL) {
         D_800F45E0_t* temp_a0 = D_800F45E0[actorId];
         if (temp_a0 != NULL) {
-            temp_a0->unk0.skip = (arg1 & 1) ^ 1;
-            temp_a0->unk0.visible = arg1 >> 1;
+            temp_a0->unk0.skip = (flags & 1) ^ 1;
+            temp_a0->unk0.visible = flags >> 1;
         }
     } else {
         vs_WepModels* model;
         int new_var;
 
-        temp_t0->unk0.skip = (arg1 & 1) ^ 1;
-        temp_t0->unk0.visible = arg1 >> 1;
-        temp_t0->unk0.freeze = arg1 >> 2;
-        temp_t0->unk0.unk9_7 = arg1 >> 6;
+        temp_t0->unk0.skip = (flags & 1) ^ 1;
+        temp_t0->unk0.visible = flags >> 1;
+        temp_t0->unk0.freeze = flags >> 2;
+        temp_t0->unk0.unk9_7 = flags >> 6;
 
         model = vs_battle_wepModels[actorId * 2];
-        new_var = (arg1 >> 11) & 1;
+        new_var = (flags >> 11) & 1;
         if (model != NULL) {
             model->unk8_4 = new_var;
         }
 
         model = vs_battle_wepModels[actorId * 2 + 1];
-        new_var = (arg1 >> 12) & 1;
+        new_var = (flags >> 12) & 1;
         if (model != NULL) {
             model->unk8_4 = new_var;
         }
 
         if (temp_t0->unk17FD >= 2) {
-            func_800A087C(temp_t0->unk17FD, arg1);
+            vs_battle_setActorFlags(temp_t0->unk17FD, flags);
         }
     }
 }
@@ -4175,7 +4175,7 @@ void func_800A0BA0(int arg0, int* arg1, int* arg2)
     }
 }
 
-u_int func_800A0BE0(int actorId)
+u_int vs_battle_getActorFlags(int actorId)
 {
     D_800F4538_t* temp_a1 = D_800F4538[actorId];
 

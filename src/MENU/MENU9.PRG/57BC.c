@@ -58,7 +58,7 @@ void func_801080C8(void)
     p->unk0.weaponDrawn = 0;
 
     func_800AD008(p, &p->unk704);
-    func_800A087C(1, 3);
+    vs_battle_setActorFlags(1, 3);
     func_8009F940(1, 0, NULL, NULL);
 }
 

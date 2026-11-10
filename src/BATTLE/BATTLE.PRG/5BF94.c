@@ -3102,7 +3102,7 @@ int func_800CABE0(int arg0)
 {
     int ret;
     vs_ActorStats* stats = vs_battle_characterState->stats;
-    int temp_v0 = func_800A0BE0(0);
+    int temp_v0 = vs_battle_getActorFlags(0);
     int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
 
     if ((temp_v0 & 0x40100000) == 0x100000) {
@@ -7125,7 +7125,7 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
     if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
         if ((arg0->unkD1C.unkC.type == 4)
-            && (func_800A0BE0(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
+            && (vs_battle_getActorFlags(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
             func_8007B29C(temp_s0->unk7, temp_s0->unk2,
                 arg0->unkD1C.unkC.value.actor.actor, temp_s0->unk4 - 0x80,
                 temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
@@ -7149,14 +7149,14 @@ int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
 
         for (i = 0; i < D_800F5230.count; ++i) {
             if ((effect->targets[i].type == 4)
-                && (func_800A0BE0(effect->targets[i].value.actor.actor) & 2)) {
+                && (vs_battle_getActorFlags(effect->targets[i].value.actor.actor) & 2)) {
                 func_8007B29C(entry->unk7, entry->unk2,
                     effect->targets[i].value.actor.actor, entry->unk4 - 128,
                     entry->unk5 - 128, entry->unk6 - 128);
             }
         }
     } else if ((arg0->unkD1C.unk24.type == 4)
-               && (func_800A0BE0(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
+               && (vs_battle_getActorFlags(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
         func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.value.actor.actor,
             entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
     }
@@ -7170,7 +7170,7 @@ int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
     if (temp_s2->unk0 == arg0->unkD1C.unk30->unk2) {
         for (i = 0; i < D_800F5230.otherCount; ++i) {
-            if (func_800A0BE0(D_800F5230.others[i]) & 2) {
+            if (vs_battle_getActorFlags(D_800F5230.others[i]) & 2) {
                 func_8007B29C(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
                     temp_s2->unk4 - 0x80, (temp_s2->unk5 - 0x80), (temp_s2->unk6 - 0x80));
             }

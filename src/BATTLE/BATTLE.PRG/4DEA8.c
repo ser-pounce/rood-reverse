@@ -955,36 +955,52 @@ int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_23(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = actor flags: bit 0 enabled, bit 1 visible, bit 2 frozen, bit 6 unknown
+ *   - [4] = flags for the weapon models and the actor list:
+ *     - bit 0: new flag value for the blade model
+ *     - bit 1: leave the blade model's flag unchanged (ignores bit 0)
+ *     - bit 2: new flag value for the shield model
+ *     - bit 3: leave the shield model's flag unchanged (ignores bit 2)
+ *     - bit 5: take the actor out of the actor list (clear puts it back)
+ */
+int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
-    int temp_s0;
-    int var_s1;
-    int var_s2;
-    int temp_v0;
-    u_int a1;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
 
     while (1) {
-        temp_s0 = nextActor(&sp10);
-        if (temp_s0 == 1) {
+        int shieldFlag;
+        int bladeFlag;
+        int flags;
+        u_int options;
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        temp_v0 = func_800A0BE0(temp_s0);
-        var_s2 = temp_v0 & 0x800;
-        var_s1 = temp_v0 & 0x1000;
-        a1 = arg0[4];
-        if (!(a1 & 2)) {
-            var_s2 = (a1 & 1) << 0xB;
+
+        flags = vs_battle_getActorFlags(actor);
+        bladeFlag = flags & 0x800;
+        shieldFlag = flags & 0x1000;
+        options = script[4];
+
+        if (!(options & 2)) {
+            bladeFlag = (options & 1) << 0xB;
         }
-        if (!(a1 & 8)) {
-            var_s1 = (a1 << 0xA) & 0x1000;
+
+        if (!(options & 8)) {
+            shieldFlag = (options << 0xA) & 0x1000;
         }
-        func_8007D1A8(temp_s0, (a1 >> 5) & 1);
-        func_800A087C(temp_s0, var_s2 | var_s1 | arg0[3]);
-        func_8009D88C(temp_s0);
+
+        func_8007D1A8(actor, (options >> 5) & 1);
+        vs_battle_setActorFlags(actor, bladeFlag | shieldFlag | script[3]);
+        func_8009D88C(actor);
     }
+
     return vs_battle_scriptNext;
 }
 
@@ -1238,7 +1254,7 @@ int vs_battle_script_30(u_char* arg0, UNUSED short arg1)
     u_short var_v0;
 
     temp_s2 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
-    temp_s3 = func_800A0BE0(temp_s2) ^ 0x81;
+    temp_s3 = vs_battle_getActorFlags(temp_s2) ^ 0x81;
     temp_v0 = getShort(arg0 + 3);
 
     if (temp_v0 & 1) {
@@ -2092,7 +2108,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
 
         if (scriptSkipMode == vs_battle_scriptSkipping || arg0[2] == 0) {
         block_5:
-            flags = func_800A0BE0(0);
+            flags = vs_battle_getActorFlags(0);
             c = arg0[1];
             mask = flags;
 
@@ -2103,7 +2119,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
                 mask &= 0xE7FF;
             }
 
-            func_800A087C(0, mask);
+            vs_battle_setActorFlags(0, mask);
 
             func_8009D88C(0);
             return vs_battle_scriptNext;
@@ -2122,7 +2138,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
             goto block_5;
         }
 
-        if (func_800A0BE0(0) & 0x80) {
+        if (vs_battle_getActorFlags(0) & 0x80) {
             vs_battle_setActorAnimation(0, arg0[1] != 0 ? 0x65 : 6, 0, 0xA);
             D_800F4C4E = 0;
             return vs_battle_scriptNext;
@@ -2626,9 +2642,9 @@ void func_800BAF6C(short arg0)
     for (actorId = 1; actorId < 17; ++actorId) {
         if (getActor(actorId) != NULL) {
             if (arg0 != 0) {
-                func_800A087C(actorId, func_800A0BE0(actorId) | 1);
+                vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) | 1);
             } else {
-                func_800A087C(actorId, func_800A0BE0(actorId) & ~1);
+                vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) & ~1);
             }
         }
     }
@@ -4517,7 +4533,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 9:
-                if (!(func_800A0BE0(0) & 0x104000)) {
+                if (!(vs_battle_getActorFlags(0) & 0x104000)) {
                     result = 1;
                 }
 

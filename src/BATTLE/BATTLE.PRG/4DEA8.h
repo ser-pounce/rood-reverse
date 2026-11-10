@@ -22,7 +22,7 @@ int vs_battle_script_1E_actorDeath(u_char*, short);
 int vs_battle_script_1F_getActorTile(u_char*, short);
 int vs_battle_script_20_spawnActor(u_char*, short);
 int vs_battle_script_21_walkToTile(u_char*, short);
-int vs_battle_script_23(u_char*, short);
+int vs_battle_script_23_setActorFlags(u_char*, short);
 int vs_battle_script_24(u_char*, short);
 int vs_battle_script_25(u_char*, short);
 int vs_battle_script_26(u_char*, short);

@@ -642,11 +642,16 @@ int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
                                                     : vs_battle_scriptNext;
 }
 
-int vs_battle_script_15_buttonPressed(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
+ */
+int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
 {
-    if (vs_main_buttonsPressed.all & arg0[1]) {
+    if (vs_main_buttonsPressed.all & script[1]) {
         return vs_battle_scriptYield;
     }
+
     return vs_battle_scriptRepeat;
 }
 

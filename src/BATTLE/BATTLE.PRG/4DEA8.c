@@ -746,9 +746,9 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
                                                         : vs_battle_scriptNext;
 }
 
-int vs_battle_script_1A(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return (gimTweens[2].duration | (gimTweens[0].duration | gimTweens[1].duration)) != 0
+    return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
              ? vs_battle_scriptRepeat
              : vs_battle_scriptNext;
 }

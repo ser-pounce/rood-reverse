@@ -342,7 +342,7 @@ static int disassembleItem(int itemIndex)
             (char*)&menuTextTable[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xC2;
-        vs_battle_stringContext.strings[0] =
+        vs_battle_printfArgs.strings[0] =
             disassembleItemCategory == 0
                 ? inventory->weapons[i].name
                 : vs_mainMenu_itemNames[inventory->shields[i].base.id];
@@ -587,7 +587,7 @@ static int consolidateMiscItems(int lootIndex)
             31, 320, 162, 0x7E, 0, (char*)&menuTextTable[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
-        vs_battle_stringContext.strings[0] = vs_mainMenu_itemNames[itemId];
+        vs_battle_printfArgs.strings[0] = vs_mainMenu_itemNames[itemId];
 
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
@@ -1482,7 +1482,7 @@ static int discardItems(int init)
         return state - 3;
 
     case 6:
-        vs_battle_stringContext.strings[0] = itemName;
+        vs_battle_printfArgs.strings[0] = itemName;
 
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(

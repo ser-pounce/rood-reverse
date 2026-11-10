@@ -168,7 +168,7 @@ typedef struct {
 typedef struct {
     int integers[10];
     char* strings[10];
-} vs_StringContext;
+} vs_PrintfArgs;
 
 int vs_battle_setTextBox(int, char*);
 char* vs_battle_printf(char*, char*);
@@ -307,7 +307,7 @@ extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
 extern vs_TextBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
-extern vs_StringContext vs_battle_stringContext;
+extern vs_PrintfArgs vs_battle_printfArgs;
 extern vs_MenuState vs_battle_menuState;
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);

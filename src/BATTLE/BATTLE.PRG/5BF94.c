@@ -1001,7 +1001,7 @@ char* vs_battle_printf(char* dest, char* src)
             switch (c) {
             case vs_char_printHex:
                 c = *src++;
-                integer = vs_battle_stringContext.integers[c % 10];
+                integer = vs_battle_printfArgs.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = '-';
@@ -1033,7 +1033,7 @@ char* vs_battle_printf(char* dest, char* src)
                 break;
             case vs_char_printDecimal:
                 c = *src++;
-                integer = vs_battle_stringContext.integers[c % 10];
+                integer = vs_battle_printfArgs.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = '-';
@@ -1062,8 +1062,8 @@ char* vs_battle_printf(char* dest, char* src)
                 }
                 break;
             case vs_char_printString:
-                dest = vs_battle_printf(
-                    dest, vs_battle_stringContext.strings[(u_char)*src++]);
+                dest =
+                    vs_battle_printf(dest, vs_battle_printfArgs.strings[(u_char)*src++]);
                 break;
             default:
                 *dest++ = c;
@@ -1409,7 +1409,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
                     break;
                 case 0xFD: // Print hex
                     hexBufPos = 0;
-                    var_a2 = vs_battle_stringContext.integers[opcodeParam % 10];
+                    var_a2 = vs_battle_printfArgs.integers[opcodeParam % 10];
                     var_a0 = 0x10000000;
                     if (var_a2 < 0) {
                         var_a2 = -var_a2;
@@ -1449,7 +1449,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
                     break;
                 case 0xFE: // Print decimal
                     decBufPos = 0;
-                    decInt = vs_battle_stringContext.integers[opcodeParam % 10];
+                    decInt = vs_battle_printfArgs.integers[opcodeParam % 10];
                     var_a2 = 1000000000;
                     if (decInt < 0) {
                         decInt = -decInt;
@@ -1490,7 +1490,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
                     break;
                 case 0xFF: // Print string reference
                     savedString = currentString;
-                    currentString = (char*)vs_battle_stringContext.strings[opcodeParam];
+                    currentString = (char*)vs_battle_printfArgs.strings[opcodeParam];
                     inInlineString = 1;
                     break;
                 }
@@ -2504,7 +2504,7 @@ int func_800C930C(int mode)
             }
         }
 
-        vs_battle_stringContext.strings[0] =
+        vs_battle_printfArgs.strings[0] =
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode + 12]];
     } else {
         vs_battle_textBoxes[7].state = 0;
@@ -3344,7 +3344,7 @@ void displaySceneMessage(int arg0, int arg1, int arg2)
     vs_battle_initTextBox(7, 0x304, 0, 1, 0, 3, 0, 0);
 
     D_800EB9D8[0] = 0x00F8 | (0x04FB << 16);
-    vs_battle_stringContext.strings[0] = vs_main_actions[arg1].name;
+    vs_battle_printfArgs.strings[0] = vs_main_actions[arg1].name;
 
     if (arg0 == 12) {
         vs_battle_printf((char*)&D_800EB9D8[1],
@@ -3356,7 +3356,7 @@ void displaySceneMessage(int arg0, int arg1, int arg2)
                                                                 + 22]]);
     } else {
         if (arg1 != 0) {
-            vs_battle_stringContext.strings[0] = D_800EBF58[(arg1 - 0x1CA) * 2];
+            vs_battle_printfArgs.strings[0] = D_800EBF58[(arg1 - 0x1CA) * 2];
         }
         vs_battle_printf((char*)D_800EB9D8, (char*)&D_800EBDDC[D_800EBDDC[arg0]]);
     }

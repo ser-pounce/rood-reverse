@@ -753,25 +753,37 @@ int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
              : vs_battle_scriptNext;
 }
 
-int vs_battle_script_1B_setStringContextInt(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = printf argument integer to set (0-9)
+ *   - [2-3] = state flag id in bits 0-9, type in bits 14-15: 0 = unsigned byte,
+ *     1 = signed byte, 2 = unsigned 16 bits, 3 = signed 16 bits. 2 and 3 read
+ *     two sequential state flags.
+ */
+int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
 {
-    int temp_s0 = getShort(arg0 + 2) & 0x3FF;
-    switch (arg0[3] >> 6) {
+    int flag = getShort(script + 2) & 0x3FF;
+
+    switch (script[3] >> 6) {
     case 0:
-        vs_battle_stringContext.integers[arg0[1]] = getStateFlag(temp_s0);
+        vs_battle_printfArgs.integers[script[1]] = getStateFlag(flag);
         break;
+
     case 1:
-        vs_battle_stringContext.integers[arg0[1]] = (signed char)getStateFlag(temp_s0);
+        vs_battle_printfArgs.integers[script[1]] = (signed char)getStateFlag(flag);
         break;
+
     case 2:
-        vs_battle_stringContext.integers[arg0[1]] =
-            getStateFlag(temp_s0) | ((getStateFlag(temp_s0 + 1)) << 8);
+        vs_battle_printfArgs.integers[script[1]] =
+            getStateFlag(flag) | ((getStateFlag(flag + 1)) << 8);
         break;
+
     case 3:
-        vs_battle_stringContext.integers[arg0[1]] =
-            (short)(getStateFlag(temp_s0) | ((getStateFlag(temp_s0 + 1)) << 8));
+        vs_battle_printfArgs.integers[script[1]] =
+            (short)(getStateFlag(flag) | ((getStateFlag(flag + 1)) << 8));
         break;
     }
+
     return vs_battle_scriptNext;
 }
 
